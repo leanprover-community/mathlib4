@@ -28,7 +28,7 @@ structure Goal where
   /-- Expression for `fun (x₁ : X₁) ... (xₙ : Xₙ) → P` for some `P : Sort u`
   The goal is to find `x₁`, ..., `xₙ` and proof/term of type `P x₁ ... xₙ` -/
   goal : Expr
-  
+
   dataSynthName : Name
 deriving Hashable, BEq
 
@@ -119,7 +119,7 @@ structure Theorems where
   theorems : RefinedDiscrTree Theorem := {}
   deriving Inhabited
 
-def Theorems.add (t : Theorems) (thms : Array Theorem) : MetaM Theorems := do 
+def Theorems.add (t : Theorems) (thms : Array Theorem) : MetaM Theorems := do
   return {
     theorems := thms.foldl (init := t.theorems) (fun t thm =>
       thm.keys.foldl (init := t) (fun t (key,entry) => t.insert key (entry,thm)))
@@ -140,8 +140,8 @@ abbrev Normalize := Expr → SimpM Simp.Result
 structure Context where
   config : Config := {}
   disch : Simp.Discharge := fun _ => pure .none
-  -- todo: do the same trick as `Simp.MethodsRef`/`Simp.Methods` which would 
-  --       allow us to define `Normalize` as `Expr → DataSynthM Simp.Result` 
+  -- todo: do the same trick as `Simp.MethodsRef`/`Simp.Methods` which would
+  --       allow us to define `Normalize` as `Expr → DataSynthM Simp.Result`
   --       i.e. use `DataSynthM` before defining it
   norm  : Normalize := fun e => return { expr := e }
 

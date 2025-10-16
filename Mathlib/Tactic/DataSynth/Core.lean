@@ -20,7 +20,7 @@ private def withMainTrace {α : Type} (msg : Except Exception α → DataSynthM 
     DataSynthM α :=
   withTraceNode `Meta.Tactic.data_synth msg x
 
-private def _root_.Lean.Meta.Simp.Result.andThen (r : Simp.Result) (f : Simp.Simproc) : 
+private def _root_.Lean.Meta.Simp.Result.andThen (r : Simp.Result) (f : Simp.Simproc) :
     SimpM Simp.Result := do
   match ← Simp.mkEqTransResultStep r (← f r.expr) with
   | .done r | .visit r | .continue (some r) => return r
@@ -33,7 +33,7 @@ def normalize (e : Expr) : DataSynthM (Simp.Result) := do
 
   let simpCache := (← getThe Simp.State).cache
   match simpCache.find? e with
-  | some r => 
+  | some r =>
     trace[Meta.Tactic.data_synth.normalize] m!"cached normalization\n{e}\n==>\n{r.expr}"
     return r
   | none =>
@@ -73,7 +73,7 @@ def Goal.getCandidateTheorems (g : Goal) : DataSynthM (Array Theorem) := do
   getTheorems e
 
 
-/-- Takes goal `e` solvable by `data_synth` and return `g : Goal`. Mainly, it replaces output 
+/-- Takes goal `e` solvable by `data_synth` and return `g : Goal`. Mainly, it replaces output
 arguments with bound variables.
 
 For example, it takes `HasFDerivAt ℝ f ?f' x` and returns `g : Goal` with `g.goal` being
@@ -91,7 +91,7 @@ def isDataSynthGoal? (e : Expr) : MetaM (Option Goal) := do
   let e' ← go fn args.toList outArgs.toList #[]
 
   return some {
-    -- instantiating mvars is important otherwise we can get different hashes for 
+    -- instantiating mvars is important otherwise we can get different hashes for
     -- the same expression which breaks caching
     goal := ← instantiateMVars e'
     dataSynthName := dataSynthDecl.name
@@ -136,7 +136,7 @@ def synthesizeAutoParam (x X : Expr) : DataSynthM Bool := do
   | .ok tacticSyntax =>
     let X' := X.appFn!.appArg! -- extract the actual type from `autoParam _ _`
     let disch := Mathlib.Meta.FunProp.tacticToDischarge ⟨tacticSyntax⟩
-    trace[Meta.Tactic.data_synth] 
+    trace[Meta.Tactic.data_synth]
       "calling auto param tactic {tacticSyntax.prettyPrint} to prove {X'}"
     let some r ← disch X' | return false
     try
@@ -158,7 +158,7 @@ def synthesizeArgument (x : Expr) : DataSynthM Bool := do
 
   let b ← forallTelescope X fun ys X => do
     if let .some g ← isDataSynthGoal? X then
-      -- call `data_synth` recursively 
+      -- call `data_synth` recursively
       if let .some r ← do dataSynth g then
         try
           x.mvarId!.assignIfDefEq (← mkLambdaFVars ys r.proof)
@@ -230,11 +230,11 @@ You can provide certain theorem arguments explicitelly with `hint` i.e. for `hin
 we assign `eᵢ` to `idᵢ`-th argument of theorem `thm`.
 
 Hints `hintPre` are applied before unification of `e` with theorem statement and `hintPost` are
-applied after unification. The main application if this is the theorem `HasFDerivAt.comp` where 
-we want to  provide `g` and `f` as `hintPre`. Only after unification the arguments `hg` and `hf` 
-have the right type, i.e. `g` and `f` are filled in, 
+applied after unification. The main application if this is the theorem `HasFDerivAt.comp` where
+we want to  provide `g` and `f` as `hintPre`. Only after unification the arguments `hg` and `hf`
+have the right type, i.e. `g` and `f` are filled in,
  -/
-def tryTheorem? (e : Expr) (thm : Theorem) (hintPre hintPost : Array (Nat × Expr) := #[]) : 
+def tryTheorem? (e : Expr) (thm : Theorem) (hintPre hintPost : Array (Nat × Expr) := #[]) :
     DataSynthM (Option Expr) := do
 
   withMainTrace
@@ -266,7 +266,7 @@ def tryTheorem? (e : Expr) (thm : Theorem) (hintPre hintPost : Array (Nat × Exp
 
   unless ← applyHints hintPost do return none
 
-  -- todo: redo this, make a queue of all argument an try synthesize them over and over, 
+  -- todo: redo this, make a queue of all argument an try synthesize them over and over,
   --       until done or no progress
   -- try to synthesize all arguments
   for x in xs do
@@ -284,7 +284,7 @@ def tryTheorem? (e : Expr) (thm : Theorem) (hintPre hintPost : Array (Nat × Exp
   return some thmProof
 
 
-def Goal.tryTheorem? (goal : Goal) (thm : Theorem) (hintPre hintPost : Array (Nat × Expr) := #[]) : 
+def Goal.tryTheorem? (goal : Goal) (thm : Theorem) (hintPre hintPost : Array (Nat × Expr) := #[]) :
     DataSynthM (Option Result) := do
   withProfileTrace "tryTheorem" do
 
@@ -329,10 +329,10 @@ partial def main (goal : Goal) : DataSynthM (Option Result) := do
   if let .some dispatch ← (← goal.getDataSynthDecl).getCustomDispatch then
     if let .some r ← dispatch goal then
       return r
-  
+
   return none
 
-def mainCached (goal : Goal) (initialTrace := true) : 
+def mainCached (goal : Goal) (initialTrace := true) :
     DataSynthM (Option Result) := do
   let go := do
     match (← get).cache[goal]? with

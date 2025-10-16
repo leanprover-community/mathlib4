@@ -2,8 +2,8 @@ import Lean
 
 open Lean Meta
 
-partial def normalizeCore (cache : IO.Ref (Std.HashMap ExprStructEq Expr)) (e : Expr) : 
-    CoreM Expr := 
+partial def normalizeCore (cache : IO.Ref (Std.HashMap ExprStructEq Expr)) (e : Expr) :
+    CoreM Expr :=
   (fun f => f cache) <| show MonadCacheT ExprStructEq Expr CoreM Expr from do
   checkCache { val := e : ExprStructEq } fun _ => Core.withIncRecDepth do
     match e.headBeta with
@@ -53,13 +53,13 @@ partial def normalizeCore (cache : IO.Ref (Std.HashMap ExprStructEq Expr)) (e : 
     | (mkApp3 (.const ``Prod.fst lvl) X Y xy) =>
       match (← normalizeCore cache xy) with
       | mkApp4 (.const ``Prod.mk _) _ _ x _ => return x
-      | .letE n t v b nonDep => 
+      | .letE n t v b nonDep =>
         normalizeCore cache (.letE n t v (mkApp3 (.const ``Prod.fst lvl) X Y b) nonDep)
       | xy => return (mkApp3 (.const ``Prod.fst lvl) X Y xy)
     | (mkApp3 (.const ``Prod.snd lvl) X Y xy) =>
       match (← normalizeCore cache xy) with
       | mkApp4 (.const ``Prod.mk _) _ _ _ y => return y
-      | .letE n t v b nonDep => 
+      | .letE n t v b nonDep =>
         normalizeCore cache (.letE n t v (mkApp3 (.const ``Prod.snd lvl) X Y b) nonDep)
       | xy => return (mkApp3 (.const ``Prod.snd lvl) X Y xy)
     | .app f x => do
@@ -71,7 +71,7 @@ partial def normalizeCore (cache : IO.Ref (Std.HashMap ExprStructEq Expr)) (e : 
         match f', x' with
         | .letE n t v b nonDep, x =>
           normalizeCore cache (.letE n t v (.app b (x.liftLooseBVars 0 1)) nonDep)
-        | f, .letE n t v b nonDep => 
+        | f, .letE n t v b nonDep =>
           normalizeCore cache (.letE n t v (.app (f.liftLooseBVars 0 1) b) nonDep)
         | f, x => normalizeCore cache (.app f x)
     | .lam n t b bi =>

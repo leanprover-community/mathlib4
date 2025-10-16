@@ -22,33 +22,33 @@ def hasFDerivAtDispatch (goal : Goal) : DataSynthM (Option Result) := do
       match b with
       | .app .. =>
         let .some (f, g) ← lambdaDecompose fn | return none
-    
+
         let compThm ← getTheoremFromConst ``HasFDerivAt.fun_comp
         let hints := #[(11, g), (13, f)]
 
         return ← goal.tryTheorem? compThm hints #[]
       | _ => return none
-    | _ => 
+    | _ =>
       return none
 
 run_meta Mathlib.Meta.DataSynth.setCustomDispatch ``HasFDerivAt ``hasFDerivAtDispatch
 
 
-def hasFDerivAtRegisterTheorem (thmName : Name) (_ : Syntax) (_ : AttributeKind) : 
-    AttrM Bool := 
+def hasFDerivAtRegisterTheorem (thmName : Name) (_ : Syntax) (_ : AttributeKind) :
+    AttrM Bool :=
   Prod.fst <$> MetaM.run do
   let info ← getConstInfo thmName
-  
+
   forallTelescope info.type fun xs b => do
     let fn := b.getArg! 10
 
-    match fn with 
-    | .lam _ _ b _ => 
+    match fn with
+    | .lam _ _ b _ =>
 
       if ¬b.hasLooseBVars then
         logInfo m!"Constant theorem!"
         return true
-                 
+
       match b with
       | (.app (.fvar fId) (.app (.fvar gId) (.bvar 0))) =>
         let .some fArg := xs.findIdx? (· == .fvar fId) | return false
@@ -60,7 +60,7 @@ def hasFDerivAtRegisterTheorem (thmName : Name) (_ : Syntax) (_ : AttributeKind)
 
     | _ => return false
 
-run_meta 
+run_meta
   Mathlib.Meta.DataSynth.setCustomTheoremRegister ``HasFDerivAt ``hasFDerivAtRegisterTheorem
 
 end Mathlib.Meta.DataSynth

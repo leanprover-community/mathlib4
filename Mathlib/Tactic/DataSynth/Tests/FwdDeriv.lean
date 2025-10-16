@@ -1,4 +1,4 @@
-import Lean 
+import Lean
 
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Comp
@@ -24,9 +24,9 @@ variable {G : Type*} [NormedAddCommGroup G] [NormedSpace R G]
 variable (R) in
 @[data_synth out f']
 structure HasFwdFDeriv (f : E → F) (f' : E → E → F × F) : Prop where
-  deriv : ∀ x, 
+  deriv : ∀ x,
     ∃ F, HasFDerivAt (𝕜:=R) f F x
-         ∧ 
+         ∧
          F = fun dx => (f' x dx).2
   eval : ∀ dx, f = fun x => (f' x dx).1
 
@@ -40,12 +40,12 @@ theorem hasFwdFDeriv_id : HasFwdFDeriv R (fun x : E => x) (fun x dx => (x,dx)) :
     constructor
     · exact hasFDerivAt_id x
     · rfl
-    
+
 -- @[data_synth]
 theorem hasFwdFDeriv_comp (g : E → F) (f : F → G) {g' f'}
     (hg : HasFwdFDeriv R g g') (hf : HasFwdFDeriv R f f') :
     HasFwdFDeriv R (fun x => f (g x))
-      (fun x dx => 
+      (fun x dx =>
         let ydy := g' x dx
         let zdz := f' ydy.1 ydy.2
         zdz) := by
@@ -55,7 +55,7 @@ theorem hasFwdFDeriv_comp (g : E → F) (f : F → G) {g' f'}
 theorem hasFwdFDeriv_let (g : E → F) (f : F → E → G) {g' f'}
     (hg : HasFwdFDeriv R g g') (hf : HasFwdFDeriv R (fun x : F×E => f x.1 x.2) f') :
     HasFwdFDeriv R (fun x => let y := g x; f y x)
-      (fun x dx => 
+      (fun x dx =>
         let ydy := g' x dx
         let zdz := f' (ydy.1,x) (ydy.2,dx)
         zdz) := by
@@ -64,8 +64,8 @@ theorem hasFwdFDeriv_let (g : E → F) (f : F → E → G) {g' f'}
 @[data_synth]
 theorem hasFwdFDeriv_mul [NormedSpace ℝ E] (f g : E → ℝ) {f' g'}
     (hf : HasFwdFDeriv ℝ f f') (hg : HasFwdFDeriv ℝ g g') :
-    HasFwdFDeriv ℝ (fun x => f x * g x) 
-      (fun x dx => 
+    HasFwdFDeriv ℝ (fun x => f x * g x)
+      (fun x dx =>
         let ydy := f' x dx
         let zdz := g' x dx
         let rdr := (ydy.1*zdz.1, ydy.1*zdz.2 + ydy.2*zdz.1)
@@ -73,28 +73,28 @@ theorem hasFwdFDeriv_mul [NormedSpace ℝ E] (f g : E → ℝ) {f' g'}
 
 @[data_synth]
 theorem hasFwdFDeriv_fst (f : E → F×G) {f'} (hf : HasFwdFDeriv R f f') :
-    HasFwdFDeriv R (fun x => (f x).1) 
-      (fun x dx => 
+    HasFwdFDeriv R (fun x => (f x).1)
+      (fun x dx =>
         let yzdyz := f' x dx
         let ydy := (yzdyz.1.1,yzdyz.2.1)
         ydy) := sorry
 
 @[data_synth]
 theorem hasFwdFDeriv_snd (f : E → F×G) {f'} (hf : HasFwdFDeriv R f f') :
-    HasFwdFDeriv R (fun x => (f x).2) 
-      (fun x dx => 
+    HasFwdFDeriv R (fun x => (f x).2)
+      (fun x dx =>
         let yzdyz := f' x dx
         let zdz := (yzdyz.1.2,yzdyz.2.2)
         zdz) := sorry
 
 @[data_synth]
 theorem hasFwdFDeriv_sin :
-    HasFwdFDeriv ℝ (fun x => Real.sin x) 
+    HasFwdFDeriv ℝ (fun x => Real.sin x)
       (fun x dx => (x.sin, dx*x.cos)) := sorry
 
 @[data_synth]
 theorem hasFwdFDeriv_cos :
-    HasFwdFDeriv ℝ (fun x => Real.cos x) 
+    HasFwdFDeriv ℝ (fun x => Real.cos x)
       (fun x dx => (x.cos, -dx*x.sin)) := sorry
 
 open Lean Meta
@@ -113,7 +113,7 @@ set_option trace.Meta.Tactic.data_synth true in
 
 
 open Mathlib.Meta.FunProp in
-/-- Perform non trivial decomposition of `fn = q(fun _ => _)` into 
+/-- Perform non trivial decomposition of `fn = q(fun _ => _)` into
 `f` and `g` such that `fn = f∘g`. -/
 def lambdaDecompose (fn : Expr) : MetaM (Option (Expr × Expr)) := do
   let .lam xname xtype b bi := fn
@@ -132,10 +132,10 @@ def lambdaDecompose (fn : Expr) : MetaM (Option (Expr × Expr)) := do
     let g := Expr.lam xname xtype gbody bi
     let .some (_, Y) := (← inferType g).arrow? | return none
 
-    let f ← 
+    let f ←
       withLocalDeclD `y Y fun y => do
         let ys ← mkProdSplitElem y depTaggedArgs.size
-        
+
         let mut args' := args
         for (i, _) in depTaggedArgs, yi in ys do
           args' := args'.set! i yi
@@ -170,13 +170,13 @@ open Mathlib.Meta.DataSynth
       match b with
       | .app .. =>
         let .some (f, g) ← lambdaDecompose fn | return none
-    
+
         let compThm ← getTheoremFromConst ``hasFwdFDeriv_comp
         let hints := #[(11, g), (12, f)]
 
         return ← goal.tryTheorem? compThm hints #[]
       | _ => return none
-    | _ => 
+    | _ =>
       return none)
 
 set_option trace.Meta.Tactic.data_synth true in
@@ -186,7 +186,7 @@ set_option trace.Meta.Tactic.data_synth true in
 set_option trace.Meta.Tactic.data_synth true in
 #check (by data_synth -zeta (disch:=skip) (norm:=skip) [norm] :
   HasFwdFDeriv ℝ (fun x : ℝ => Real.sin (x*x)) _)
-  
+
 
 end theorems
 
@@ -195,5 +195,3 @@ open Lean Meta Mathlib Meta DataSynth Std
 example (v t : ℝ) : deriv (fun t : ℝ => 1/2 * v * t^2) t = v * t := sorry
 example (x : ℝ) (hx : x ≠ 0) : deriv (fun x : ℝ => x⁻¹) x = - x^(-2:ℤ) := sorry
 example (x : EuclideanSpace ℝ (Fin 3)) : gradient (fun x => 1/‖x‖) x = -‖x‖^(-3:ℤ)•x := sorry
-
-

@@ -17,13 +17,13 @@ open Lean Meta
 namespace Mathlib.Meta.DataSynth
 
 
-initialize emptyDispatch : IO.Ref (Goal → DataSynthM (Option Result)) 
+initialize emptyDispatch : IO.Ref (Goal → DataSynthM (Option Result))
   ← IO.mkRef fun _ => return none
 initialize emptyTheoremsRegister : IO.Ref (Name → Syntax → AttributeKind → AttrM Bool)
   ← IO.mkRef fun _ _ _ => return false
 
 local instance : Inhabited (IO.Ref (Goal → DataSynthM (Option Result))) := ⟨emptyDispatch⟩
-local instance : Inhabited (IO.Ref (Name → Syntax → AttributeKind → AttrM Bool)) := 
+local instance : Inhabited (IO.Ref (Name → Syntax → AttributeKind → AttrM Bool)) :=
   ⟨emptyTheoremsRegister⟩
 
 /-- Each type of `data_synth` goal like `HasFDerivAt`, `HasFDerivWithinAt` etc. is
@@ -44,11 +44,11 @@ structure DataSynthDecl where
   unification is needed like application of `HasFDerivAt.comp`. -/
   customDispatchName? : Option Name -- Goal → DataSynthM (Option Result)
   /-- Custom theorem registration, `data_synth` with custom dispatch might want to register certain
-  theorems differently. This custom call will be used before registering a theorem as normal 
-  `data_synth` theorem. If `true` is returned then the theorem is not registered as normal 
-  `data_synth` theorem. 
-    
-  For example, `HasFDerivAt` will use this to register `HasFDerivAt.comp/pi/apply` theorems as 
+  theorems differently. This custom call will be used before registering a theorem as normal
+  `data_synth` theorem. If `true` is returned then the theorem is not registered as normal
+  `data_synth` theorem.
+
+  For example, `HasFDerivAt` will use this to register `HasFDerivAt.comp/pi/apply` theorems as
   they need custom unification procedure. -/
   customTheoremRegisterName? : Option Name
 deriving Inhabited
@@ -65,16 +65,16 @@ initialize dataSynthDeclsExt : DataSynthDeclsExt ←
   }
 
 open Qq in
-private unsafe def DataSynthDecl.getCustomDispatchImpl (decl : DataSynthDecl) : 
+private unsafe def DataSynthDecl.getCustomDispatchImpl (decl : DataSynthDecl) :
     MetaM (Option (Goal → DataSynthM (Option Result))) := do
 
   let some name := decl.customDispatchName? | return none
-  let disch ← Meta.evalExpr (Goal → DataSynthM (Option Result)) 
+  let disch ← Meta.evalExpr (Goal → DataSynthM (Option Result))
     q(Goal → DataSynthM (Option Result)) (Expr.const name [])
   return disch
 
 @[implemented_by DataSynthDecl.getCustomDispatchImpl]
-opaque DataSynthDecl.getCustomDispatch (decl : DataSynthDecl) : 
+opaque DataSynthDecl.getCustomDispatch (decl : DataSynthDecl) :
     MetaM (Option (Goal → DataSynthM (Option Result)))
 
 open Qq in
@@ -89,7 +89,7 @@ def setCustomDispatch (dataSynthName : Name) (dispatchName : Name) : MetaM Unit 
     dataSynthDeclsExt.add { decl with customDispatchName? := dispatchName }
 
 open Qq in
-private unsafe def DataSynthDecl.getCustomTheoremRegisterImpl (decl : DataSynthDecl) : 
+private unsafe def DataSynthDecl.getCustomTheoremRegisterImpl (decl : DataSynthDecl) :
     MetaM (Option (Name → Syntax → AttributeKind → AttrM Bool)) := do
 
   let some name := decl.customTheoremRegisterName? | return none
@@ -98,7 +98,7 @@ private unsafe def DataSynthDecl.getCustomTheoremRegisterImpl (decl : DataSynthD
   return disch
 
 @[implemented_by DataSynthDecl.getCustomTheoremRegisterImpl]
-opaque DataSynthDecl.getCustomTheoremRegister (decl : DataSynthDecl) : 
+opaque DataSynthDecl.getCustomTheoremRegister (decl : DataSynthDecl) :
     MetaM (Option (Name → Syntax → AttributeKind → AttrM Bool))
 
 open Qq in
@@ -112,7 +112,7 @@ def setCustomTheoremRegister (dataSynthName : Name) (theoremRegisterName : Name)
   if let some decl := s.find? dataSynthName then
     dataSynthDeclsExt.add { decl with customTheoremRegisterName? := theoremRegisterName }
 
-  
+
 /-- Get `data_synth` declaration if `e` is a `data_synth` goal. -/
 def getDataSynth? (e : Expr) : MetaM (Option DataSynthDecl) := do
 

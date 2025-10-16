@@ -9,7 +9,7 @@ namespace Mathlib.Meta.DataSynth
 
 open Lean Meta Mathlib.Meta.FunProp
 
-/-- Perform non-trivial decomposition of `fn = q(fun _ => _)` into 
+/-- Perform non-trivial decomposition of `fn = q(fun _ => _)` into
 `f` and `g` such that `fn = f∘g`. -/
 def lambdaDecompose (fn : Expr) : MetaM (Option (Expr × Expr)) := do
   let .lam xname xtype b bi := fn
@@ -31,7 +31,7 @@ def lambdaDecompose (fn : Expr) : MetaM (Option (Expr × Expr)) := do
       let g ← mkLambdaFVars #[xvar] gbody
       let .some (_, Y) := (← inferType g).arrow? | return none
 
-      let f ← 
+      let f ←
         withLocalDeclD `y Y fun y => do
           let ys ← mkProdSplitElem y depTaggedArgs.size
 

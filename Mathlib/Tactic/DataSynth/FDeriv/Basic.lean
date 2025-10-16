@@ -1,4 +1,4 @@
-import Lean 
+import Lean
 
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Comp
@@ -22,7 +22,7 @@ theorem hasFDerivAt_id' (x : E) :
 
 theorem HasFDerivAt.fun_comp
     {f : E → F} {f' : E →L[𝕜] F} {g : F → G} {g' : F →L[𝕜] G} {x : E}
-    (hg : HasFDerivAt g g' (f x)) (hf : HasFDerivAt f f' x) : 
+    (hg : HasFDerivAt g g' (f x)) (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => g (f x)) (g'.comp f') x :=
   HasFDerivAtFilter.comp x hg hf hf.continuousAt
 
@@ -35,7 +35,7 @@ open ContinuousLinearMap in
 theorem HasFDerivAt.fun_div
     (c d : E → 𝕜) (x : E) {c' d'}
     (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) (hx : d x ≠ 0) :
-    HasFDerivAt (𝕜:=𝕜) (fun y => c y / d y) 
+    HasFDerivAt (𝕜:=𝕜) (fun y => c y / d y)
       (smulRight ((smulRight c' (d x) - smulRight d' (c x))) ((d x ^ 2)⁻¹)) x := by
   sorry
 

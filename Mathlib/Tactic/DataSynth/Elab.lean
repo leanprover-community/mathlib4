@@ -33,7 +33,7 @@ open Parser.Tactic.Conv in
 def elabNormalizer (stx? : Option (TSyntax ``convSeq)) : Normalize := fun e => do
   match stx? with
   | .none => return { expr := e }
-  | .some stx => 
+  | .some stx =>
     let (r,_) ← (elabConvRewrite (← `(conv| ($stx))) e).run {} {}
     return r
 
@@ -61,9 +61,9 @@ unsafe def elabArgImpl (arg : Term) : TermElabM ArgResult := do
   -- is an identifier
   if Syntax.isIdent arg then
     let (declName,_) := x.getAppFnArgs
-    
+
     let (_,_,b) ← forallMetaTelescope type
-    
+
     -- simp theorem
     if b.isEq then
       let thm ← mkSimpTheoremFromConst declName
@@ -117,15 +117,15 @@ def elabArgs (args : Option (Syntax.TSepArray `term ",")) : TermElabM ArgsResult
   let mut r : ArgsResult := {}
   for arg in args do
     match ← elabArg arg with
-    | .simpThm _ => 
+    | .simpThm _ =>
       throwErrorAt arg "Currently simp theorems are not supported!"
-    | .dataSynthThm s => 
+    | .dataSynthThm s =>
       r := { r with dataSynthThms := r.dataSynthThms.push s }
-    | .discharger f => 
+    | .discharger f =>
       r := { r with discharger := r.discharger.tryNext f }
-    | .normalizer f => 
+    | .normalizer f =>
       r := { r with normalizer := r.normalizer >> f }
-    | .simproc _ => 
+    | .simproc _ =>
       throwErrorAt arg "Currently simprocs are not supported!"
   return r
 
@@ -142,8 +142,8 @@ def elabArgs (args : Option (Syntax.TSepArray `term ",")) : TermElabM ArgsResult
 
   let args ← elabArgs args
 
-  let ctx : Context := { 
-    config := cfg 
+  let ctx : Context := {
+    config := cfg
     norm := elabNormalizer norm >> args.normalizer
   }
   let thms := theoremsExt.getState (← getEnv)
@@ -158,7 +158,7 @@ def elabArgs (args : Option (Syntax.TSepArray `term ",")) : TermElabM ArgsResult
   let simpStateRef : IO.Ref Simp.State ← IO.mkRef {}
   let simpMethodsRef := (← Simp.mkDefaultMethods).toMethodsRef
 
-  let r? ← dataSynth g 
+  let r? ← dataSynth g
     ctx stateRef
     simpMethodsRef simpContext simpStateRef
 

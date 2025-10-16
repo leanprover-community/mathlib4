@@ -4,7 +4,7 @@ import Mathlib.Tactic.DataSynth.Elab
 import Mathlib.Tactic.DataSynth.FDeriv.Init
 import Mathlib.Tactic.DataSynth.FDeriv.Basic
 
-open Lean Meta Mathlib.Meta DataSynth 
+open Lean Meta Mathlib.Meta DataSynth
 simproc_decl fderiv_simproc_at (fderiv _ _ _) := fun e => do
 
   -- get arguments
@@ -25,11 +25,11 @@ simproc_decl fderiv_simproc_at (fderiv _ _ _) := fun e => do
 
   -- prepare data_synth context and state
   let cfg ← Simp.getConfig
-  let ctx : DataSynth.Context := { 
+  let ctx : DataSynth.Context := {
     config := { cfg with norm_simp := true }
     disch := (← Simp.getMethods).discharge?
   }
-  let state : IO.Ref DataSynth.State ← 
+  let state : IO.Ref DataSynth.State ←
     IO.mkRef { theorems := theoremsExt.getState (← getEnv) }
 
   -- call data_synth
@@ -43,7 +43,7 @@ simproc_decl fderiv_simproc_at (fderiv _ _ _) := fun e => do
 
 open Lean Meta in
 simproc_decl fderiv_simproc_any (fderiv _ _) := fun e => do
-  
+
   let f := e.appArg!
   let .some (E, _) := (← inferType f).arrow? | return .continue
 
@@ -54,9 +54,9 @@ simproc_decl fderiv_simproc_any (fderiv _ _) := fun e => do
     let fixResult (r : Simp.Result) : MetaM Simp.Result := do
       return { r with
         expr := ← mkLambdaFVars #[x] r.expr
-        proof? := ← r.proof?.mapM (fun p => mkLambdaFVars #[x] p >>= (mkAppM ``funext #[·])) 
+        proof? := ← r.proof?.mapM (fun p => mkLambdaFVars #[x] p >>= (mkAppM ``funext #[·]))
       }
-    
+
     -- call simproc for `fderiv R f x` and bind the free variable `x`
     match (← fderiv_simproc_at (e.beta #[x])) with
     | .done r => return .done (← fixResult r)
