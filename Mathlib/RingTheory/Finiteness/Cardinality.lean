@@ -103,7 +103,11 @@ end ModuleAndAlgebra
 namespace Module.Finite
 
 universe u
-variable (R : Type u) (M : Type*) [Ring R] [AddCommGroup M] [Module R M] [Module.Finite R M]
+variable (R : Type u) (M : Type*)
+
+section Ring
+
+variable [Ring R] [AddCommGroup M] [Module R M] [Module.Finite R M]
 
 /-- The kernel of a random surjective linear map from a finite free module
 to a given finite module. -/
@@ -115,5 +119,15 @@ protected abbrev repr : Type u := _ ⧸ kerRepr R M
 /-- The representative is isomorphic to the original module. -/
 noncomputable def reprEquiv : Finite.repr R M ≃ₗ[R] M :=
   LinearMap.quotKerEquivOfSurjective _ (Finite.exists_fin' R M).choose_spec.choose_spec
+
+end Ring
+
+section Semiring
+
+variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Finite R M]
+
+
+
+end Semiring
 
 end Module.Finite
