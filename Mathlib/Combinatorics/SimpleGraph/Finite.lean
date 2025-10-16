@@ -572,7 +572,7 @@ theorem card_edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Ad
 
 end Map
 
-theorem degree_eq_zero_of_subsingleton (G : SimpleGraph V) (v : V) [Fintype (G.neighborSet v)]
+theorem degree_eq_zero_of_subsingleton {G : SimpleGraph V} (v : V) [Fintype (G.neighborSet v)]
     [Subsingleton V] : G.degree v = 0 := by
   by_contra
   have := G.degree_pos_iff_exists_adj v

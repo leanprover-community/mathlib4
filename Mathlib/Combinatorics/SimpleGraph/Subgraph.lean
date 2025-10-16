@@ -808,6 +808,13 @@ theorem degree_pos_iff_exists_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighbo
     0 < G'.degree v ↔ ∃ w, G'.Adj v w := by
   simp only [degree, Fintype.card_pos_iff, nonempty_subtype, mem_neighborSet]
 
+theorem degree_eq_zero_of_subsingleton {G' : Subgraph G} (v : V) [Fintype (G'.neighborSet v)]
+    [Subsingleton G'.verts] : G'.degree v = 0 := by
+  by_cases hv : v ∈ G'.verts
+  · rw [← G'.coe_degree ⟨v, hv⟩]
+    exact G'.coe.degree_eq_zero_of_subsingleton ⟨v, hv⟩
+  · exact degree_eq_zero_if_notMem_verts hv
+
 theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
     G'.degree v = 1 ↔ ∃! w : V, G'.Adj v w := by
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
@@ -815,10 +822,9 @@ theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neig
 
 theorem nontrivial_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
     (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
-  rw [Nat.ne_zero_iff_zero_lt, degree_pos_iff_exists_adj] at h
-  obtain ⟨w, hw⟩ := h
-  exact nontrivial_of_ne ⟨v, G'.edge_vert hw⟩ ⟨w, G'.edge_vert hw.symm⟩
-    (Subtype.coe_ne_coe.mp hw.ne)
+  apply not_subsingleton_iff_nontrivial.mp
+  by_contra
+  simp_all [G'.degree_eq_zero_of_subsingleton v]
 
 @[simp]
 theorem _root_.SimpleGraph.card_neighborSet_toSubgraph (H : SimpleGraph V) (h : H ≤ G)
