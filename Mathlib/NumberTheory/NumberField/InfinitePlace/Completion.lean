@@ -214,27 +214,29 @@ def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completi
 
 end Completion
 
-namespace Extension
+namespace LiesOver
 
 open Completion
 
-variable {L : Type*} [Field L] [Algebra K L] (w : v.Extension L) {v}
+variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) [w.LiesOver v] {v}
 
-theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.abs)) := by
+theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) := by
   apply AddMonoidHomClass.isometry_of_norm
-  exact fun _ ↦ WithAbs.equiv_algebraMap_apply v.1 w.abs _ ▸ comp_of_comap_eq w.comap_eq _
+  exact fun _ ↦ WithAbs.equiv_algebraMap_apply v.1 w.1 _ ▸
+    comp_of_comap_eq (LiesOver.comap_eq w v) _
 
-instance : Algebra v.Completion w.1.Completion := w.isometry_algebraMap.mapRingHom.toAlgebra
+instance : Algebra v.Completion w.Completion :=
+  (LiesOver.isometry_algebraMap w).mapRingHom.toAlgebra
 
 @[simp]
 theorem algebraMap_coe (x : WithAbs v.1) :
-    algebraMap v.Completion w.1.Completion x = algebraMap (WithAbs v.1) (WithAbs w.abs) x :=
-  w.isometry_algebraMap.mapRingHom_coe _
+    algebraMap v.Completion w.1.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x :=
+  (LiesOver.isometry_algebraMap w).mapRingHom_coe _
 
 open UniformSpace.Completion NumberField.ComplexEmbedding in
 theorem extensionEmbedding_algebraMap
-    (h : w.1.embedding.comp (algebraMap K L) = v.embedding) (x : v.Completion) :
-    extensionEmbedding w.1 (algebraMap v.Completion w.1.Completion x) =
+    (h : w.embedding.comp (algebraMap K L) = v.embedding) (x : v.Completion) :
+    extensionEmbedding w (algebraMap v.Completion w.Completion x) =
       extensionEmbedding v x := by
   induction x using induction_on
   · exact isClosed_eq (Continuous.comp continuous_extension continuous_map) continuous_extension
@@ -242,8 +244,8 @@ theorem extensionEmbedding_algebraMap
 
 open UniformSpace.Completion NumberField.ComplexEmbedding in
 theorem conjugate_extensionEmbedding_algebraMap
-    (h : (conjugate w.1.embedding).comp (algebraMap K L) = v.embedding) (x : v.Completion) :
-    conjugate (extensionEmbedding w.1) (algebraMap _ _ x) = extensionEmbedding v x := by
+    (h : (conjugate w.embedding).comp (algebraMap K L) = v.embedding) (x : v.Completion) :
+    conjugate (extensionEmbedding w) (algebraMap _ _ x) = extensionEmbedding v x := by
   induction x using induction_on
   · exact isClosed_eq (Continuous.comp
       (by simpa using Continuous.comp Complex.continuous_conj continuous_extension) continuous_map)
@@ -252,8 +254,8 @@ theorem conjugate_extensionEmbedding_algebraMap
 
 open UniformSpace.Completion in
 theorem extensionEmbedding_algebraMap_of_isReal (h : v.IsReal) (x : v.Completion) :
-    extensionEmbedding w.1 (algebraMap _ _ x) = extensionEmbedding v x :=
+    extensionEmbedding w (algebraMap _ _ x) = extensionEmbedding v x :=
   extensionEmbedding_algebraMap w
-    ((w.comap_eq ▸ comap_embedding_of_isReal _ (w.comap_eq ▸ h)).symm) _
+    (((LiesOver.comap_eq w v) ▸ comap_embedding_of_isReal _ (LiesOver.comap_eq w v ▸ h)).symm) _
 
-end NumberField.InfinitePlace.Extension
+end NumberField.InfinitePlace.LiesOver
