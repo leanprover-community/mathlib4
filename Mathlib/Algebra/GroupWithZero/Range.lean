@@ -133,7 +133,7 @@ def ValueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
 variable (f) in
 /-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. -/
 @[simps!]
-def restrict₀ : A →*₀ ValueGroup₀ f where
+def ValueGroup₀.restrict₀ : A →*₀ ValueGroup₀ f where
   toFun a :=
     if h : f a = 0 then 0 else (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f)
   map_one' := by simp; rfl
@@ -145,12 +145,14 @@ def restrict₀ : A →*₀ ValueGroup₀ f where
     all_goals rw [mul_eq_zero] at h; tauto
   map_zero' := by simp
 
+open ValueGroup₀
+
 lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
     restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) := by simp [h]
 
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp
 
-lemma embedding_restrict₀ (a : A) : valueGroup₀.embedding (restrict₀ f a) = f a := by
+lemma embedding_restrict₀ (a : A) : ValueGroup₀.embedding (restrict₀ f a) = f a := by
   simp [restrict₀_apply]
   split_ifs <;>
   simp_all
