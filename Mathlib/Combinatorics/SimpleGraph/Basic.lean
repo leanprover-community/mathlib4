@@ -818,14 +818,6 @@ protected theorem nontrivial_iff : Nontrivial (SimpleGraph V) ↔ Nontrivial V :
   contrapose! h
   exact Unique.instSubsingleton
 
-theorem nontrivial_of_ne_bot {G : SimpleGraph V} (h : G ≠ ⊥) : Nontrivial V := by
-  contrapose! h
-  exact SimpleGraph.subsingleton_iff.mpr h |>.allEq _ _
-
-theorem nontrivial_of_ne_top {G : SimpleGraph V} (h : G ≠ ⊤) : Nontrivial V := by
-  contrapose! h
-  exact SimpleGraph.subsingleton_iff.mpr h |>.allEq _ _
-
 end Subsingleton
 
 end SimpleGraph
