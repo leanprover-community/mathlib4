@@ -34,6 +34,8 @@ variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
   [CompleteSpace F] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
   (φ : ImplicitFunctionData 𝕜 E F G) {n : WithTop ℕ∞}
 
+/-- The implicit function defined by a $C^n$ implicit equation is $C^n$. This applies to the general
+form of the implicit function theorem. -/
 theorem contDiff_implicitFunction (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt)
     (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (hn : 1 ≤ n) :
     ContDiffAt 𝕜 n φ.implicitFunction.uncurry (φ.prodFun φ.pt) := by
@@ -121,9 +123,8 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
   rw [nhds_prod_eq, eventually_swap_iff] at this hfst
   apply this.curry.self_of_nhds.mp
   apply hfst.curry.self_of_nhds.mono
-  intro x
   simp_rw [Prod.swap_prod_mk]
-  intro h1 h2
+  intro x h1 h2
   rw [← h2]
   congr 1
   ext
