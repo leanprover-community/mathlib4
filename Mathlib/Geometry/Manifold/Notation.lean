@@ -21,18 +21,18 @@ All of these elaborators are scoped to the `Manifold` namespace.
 We provide compact notation for differentiability and continuous differentiability on manifolds,
 including inference of the model with corners.
 
-| Notation            | Elaborates to                       |
-|---------------------|-------------------------------------|
-| `MDiff f`           | `MDifferentiable I J f`             |
-| `MDiffAt f x`       | `MDifferentiableAt I J f x`         |
-| `MDiff[u] f`        | `MDifferentiableOn I J f u`         |
-| `MDiffAt[u] f x`    | `MDifferentiableWithinAt I J f u x` |
-| `CMDiff n f`        | `ContMDiff I J n f`                 |
-| `CMDiffAt n f x`    | `ContMDiffAt I J n f x`             |
-| `CMDiff[u] n f`     | `ContMDiffOn I J n f u`             |
-| `CMDiffAt[u] n f x` | `ContMDiffWithinAt I J n f u x`     |
-| `mfderiv[u] f x`    | `mfderivWithin I J f u x`           |
-| `mfderiv% f x`      | `mfderiv I J f x`                   |
+| Notation                 | Elaborates to                       |
+|--------------------------|-------------------------------------|
+| `MDiff f`                | `MDifferentiable I J f`             |
+| `MDiffAt f x`            | `MDifferentiableAt I J f x`         |
+| `MDiff[u] f`             | `MDifferentiableOn I J f u`         |
+| `MDiffAt[u] f x`         | `MDifferentiableWithinAt I J f u x` |
+| `CMDiff n f`             | `ContMDiff I J n f`                 |
+| `CMDiffAt n f x`         | `ContMDiffAt I J n f x`             |
+| `CMDiff[u] n f`          | `ContMDiffOn I J n f u`             |
+| `CMDiffAt[u] n f x`      | `ContMDiffWithinAt I J n f u x`     |
+| `mfderiv[u] f x`         | `mfderivWithin I J f u x`           |
+| `mfderiv% f x`           | `mfderiv I J f x`                   |
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
 The search for models with corners uses the local context and is (almost) only based on expression
@@ -361,7 +361,43 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
           the set `{es}` : `{estype}`"
     let tgtI ← findModel tgt (src, srcI)
     return (srcI, tgtI)
-  | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
+  | _ =>
+    match_expr etype with
+    | OpenPartialHomeomorph src tgt _ _ =>
+      trace[Elab.DiffGeo.MDiff] m!"found a partial homeomorphism from {src} to {tgt}"
+      if tgt.hasLooseBVars then
+        -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
+        throwError "Term {e} is a dependent function, of type {etype}\nHint: you can use the `T%` \
+          elaborator to convert a dependent function to a non-dependent one"
+      let srcI ← findModel src
+      if let some es := es then
+        let estype ← inferType es
+        /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and
+        `estype` are acceptable.
+        TODO: consider attempting to coerce `es` to a `Set`. -/
+        if !(← isDefEq estype <|← mkAppM ``Set #[src]) then
+          throwError "The domain {src} of {e} is not definitionally equal to the carrier type of \
+            the set {es} : {estype}"
+      let tgtI ← findModel tgt (src, srcI)
+      return (srcI, tgtI)
+    | PartialEquiv src tgt =>
+      trace[Elab.DiffGeo.MDiff] m!"found a partial equivalence from {src} to {tgt}"
+      if tgt.hasLooseBVars then
+        -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
+        throwError "Term {e} is a dependent function, of type {etype}\nHint: you can use the `T%` \
+          elaborator to convert a dependent function to a non-dependent one"
+      let srcI ← findModel src
+      if let some es := es then
+        let estype ← inferType es
+        /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and
+        `estype` are acceptable.
+        TODO: consider attempting to coerce `es` to a `Set`. -/
+        if !(← isDefEq estype <|← mkAppM ``Set #[src]) then
+          throwError "The domain {src} of {e} is not definitionally equal to the carrier type of \
+            the set {es} : {estype}"
+      let tgtI ← findModel tgt (src, srcI)
+      return (srcI, tgtI)
+    | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
 end Elab
 

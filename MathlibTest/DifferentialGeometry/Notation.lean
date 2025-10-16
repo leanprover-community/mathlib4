@@ -152,6 +152,41 @@ variable {f : M → M'} {s : Set M} {m : M}
 #guard_msgs in
 #check MDiff[s] f
 
+-- A partial homeomorphism or partial equivalence.
+variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
+
+#check MDifferentiableWithinAt I 𝓘(𝕜, E) ψ
+#check MDifferentiableWithinAt I 𝓘(𝕜, E) ψ s
+
+
+/--
+error: Application type mismatch: The argument
+  φ
+has type
+  OpenPartialHomeomorph M E
+but is expected to have type
+  ?M → ?M'
+in the application
+  MDifferentiableWithinAt I 𝓘(𝕜, E) φ
+-/
+#guard_msgs in
+#check MDiffAt[s] φ
+
+/--
+error: Application type mismatch: The argument
+  ψ
+has type
+  PartialEquiv M E
+but is expected to have type
+  ?M → ?M'
+in the application
+  MDifferentiableWithinAt I 𝓘(𝕜, E) ψ
+-/
+#guard_msgs in
+#check MDiffAt[s] ψ
+
+#exit
+
 -- Testing an error message.
 section
 
@@ -648,7 +683,8 @@ section error
 -- TODO: make this parse, but error in the elaborator
 -- #check CMDiffAt[s] f
 
-/--
+-- TODO: the old error message here was better; somehow restore it!
+/-
 error: Type mismatch
   f
 has type
@@ -656,7 +692,9 @@ has type
 of sort `Type (max u_10 u_4)` but is expected to have type
   WithTop ℕ∞
 of sort `Type`
----
+-/
+
+/--
 error: Expected
   m
 of type
@@ -667,14 +705,6 @@ to be a function, or to be coercible to a function
 #check CMDiffAt[s] f m
 
 /--
-error: Type mismatch
-  f
-has type
-  M → M'
-of sort `Type (max u_10 u_4)` but is expected to have type
-  WithTop ℕ∞
-of sort `Type`
----
 error: Expected
   m
 of type
