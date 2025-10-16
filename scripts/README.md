@@ -95,8 +95,6 @@ to learn about it as well!
 - `lean-pr-testing-comments.sh`
   Generate comments and labels on a Lean or Batteries PR after CI has finished on a
   `*-pr-testing-NNNN` branch.
-- `update_nolints_CI.sh`
-  Update the `nolints.json` file to remove unneeded entries. Automatically run once a week.
 - `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR on the review queue.
   This script downloads a .json file with proposed assignments and makes the
   corresponding github API calls.
@@ -125,6 +123,8 @@ to learn about it as well!
   and attempts to merge the branch `lean-pr-testing-NNNN` into `master`.
   It will resolve conflicts in `lean-toolchain`, `lakefile.lean`, and `lake-manifest.json`.
   If there are more conflicts, it will bail.
+- `zulip_build_report.sh` is used to analyse the output from building the nightly-testing-green
+  branch with additional linting enabled, and posts a summary of its findings on zulip.
 
 **Managing downstream repos**
 - `downstream_repos.yml` contains basic information about significant downstream repositories.

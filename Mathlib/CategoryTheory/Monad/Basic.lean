@@ -27,7 +27,7 @@ open Category
 
 universe v₁ u₁
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable (C : Type u₁) [Category.{v₁} C]
 
 /-- The data of a monad on C consists of an endofunctor T together with natural transformations

@@ -32,6 +32,8 @@ variable {a b : α}
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
   Option.nontrivial
 
+instance [IsEmpty α] : Unique (WithBot α) := Option.instUniqueOfIsEmpty
+
 open Function
 
 theorem coe_injective : Injective ((↑) : α → WithBot α) :=
@@ -155,6 +157,12 @@ lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x
 
 @[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_bot := eq_bot_iff_forall_ne
 
+theorem forall_ne_bot {p : WithBot α → Prop} : (∀ x, x ≠ ⊥ → p x) ↔ ∀ x : α, p x := by
+  simp [ne_bot_iff_exists]
+
+theorem exists_ne_bot {p : WithBot α → Prop} : (∃ x ≠ ⊥, p x) ↔ ∃ x : α, p x := by
+  simp [ne_bot_iff_exists]
+
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
 
@@ -192,6 +200,50 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   invFun x := ⟨x, WithBot.coe_ne_bot⟩
   left_inv _ := by simp
   right_inv _ := by simp
+
+/-- Function that sends an element of `WithBot α` to `α`,
+with an arbitrary default value for `⊥`. -/
+noncomputable
+abbrev unbotA [Nonempty α] : WithBot α → α := unbotD (Classical.arbitrary α)
+
+lemma unbotA_eq_unbot [Nonempty α] {a : WithBot α} (ha : a ≠ ⊥) : unbotA a = unbot a ha := by
+  cases a with
+  | bot => contradiction
+  | coe a => simp
+
+end WithBot
+
+namespace Equiv
+
+/-- A universe-polymorphic version of `EquivFunctor.mapEquiv WithBot e`. -/
+@[simps apply]
+def withBotCongr (e : α ≃ β) : WithBot α ≃ WithBot β where
+  toFun := WithBot.map e
+  invFun := WithBot.map e.symm
+  left_inv x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+
+attribute [grind =] withBotCongr_apply
+
+@[simp]
+theorem withBotCongr_refl : withBotCongr (Equiv.refl α) = Equiv.refl _ :=
+  Equiv.ext <| congr_fun WithBot.map_id
+
+@[simp, grind =]
+theorem withBotCongr_symm (e : α ≃ β) : withBotCongr e.symm = (withBotCongr e).symm :=
+  rfl
+
+@[simp]
+theorem withBotCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
+    withBotCongr (e₁.trans e₂) = (withBotCongr e₁).trans (withBotCongr e₂) := by
+  ext x
+  simp
+
+end Equiv
+
+namespace WithBot
+
+variable {a b : α}
 
 section LE
 
@@ -465,6 +517,8 @@ variable {a b : α}
 instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
   Option.nontrivial
 
+instance [IsEmpty α] : Unique (WithTop α) := Option.instUniqueOfIsEmpty
+
 open Function
 
 theorem coe_injective : Injective ((↑) : α → WithTop α) :=
@@ -654,6 +708,12 @@ lemma eq_top_iff_forall_ne {x : WithTop α} : x = ⊤ ↔ ∀ a : α, ↑a ≠ x
 
 @[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_top := eq_top_iff_forall_ne
 
+theorem forall_ne_top {p : WithTop α → Prop} : (∀ x, x ≠ ⊤ → p x) ↔ ∀ x : α, p x := by
+  simp [ne_top_iff_exists]
+
+theorem exists_ne_top {p : WithTop α → Prop} : (∃ x ≠ ⊤, p x) ↔ ∃ x : α, p x := by
+  simp [ne_top_iff_exists]
+
 /-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
 def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
 
@@ -687,6 +747,50 @@ theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
   invFun x := ⟨x, WithTop.coe_ne_top⟩
   left_inv _ := by simp
   right_inv _:= by simp
+
+/-- Function that sends an element of `WithTop α` to `α`,
+with an arbitrary default value for `⊤`. -/
+noncomputable
+abbrev untopA [Nonempty α] : WithTop α → α := untopD (Classical.arbitrary α)
+
+lemma untopA_eq_untop [Nonempty α] {a : WithTop α} (ha : a ≠ ⊤) : untopA a = untop a ha := by
+  cases a with
+  | top => contradiction
+  | coe a => simp
+
+end WithTop
+
+namespace Equiv
+
+/-- A universe-polymorphic version of `EquivFunctor.mapEquiv WithTop e`. -/
+@[simps apply]
+def withTopCongr (e : α ≃ β) : WithTop α ≃ WithTop β where
+  toFun := WithTop.map e
+  invFun := WithTop.map e.symm
+  left_inv x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+
+attribute [grind =] withTopCongr_apply
+
+@[simp]
+theorem withTopCongr_refl : withTopCongr (Equiv.refl α) = Equiv.refl _ :=
+  Equiv.ext <| congr_fun WithBot.map_id
+
+@[simp, grind =]
+theorem withTopCongr_symm (e : α ≃ β) : withTopCongr e.symm = (withTopCongr e).symm :=
+  rfl
+
+@[simp]
+theorem withTopCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
+    withTopCongr (e₁.trans e₂) = (withTopCongr e₁).trans (withTopCongr e₂) := by
+  ext x
+  simp
+
+end Equiv
+
+namespace WithTop
+
+variable {a b : α}
 
 section LE
 

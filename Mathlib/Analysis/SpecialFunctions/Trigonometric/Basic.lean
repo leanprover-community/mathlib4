@@ -767,7 +767,7 @@ theorem cos_pi_div_three : cos (π / 3) = 1 / 2 := by
       ring
     linarith [cos_pi, cos_three_mul (π / 3)]
   rcases mul_eq_zero.mp h₁ with h | h
-  · linarith [pow_eq_zero h]
+  · linarith [eq_zero_of_pow_eq_zero h]
   · have : cos π < cos (π / 3) := by
       refine cos_lt_cos_of_nonneg_of_le_pi ?_ le_rfl ?_ <;> linarith [pi_pos]
     linarith [cos_pi]
@@ -821,7 +821,7 @@ theorem quadratic_root_cos_pi_div_five :
   calc s * (2 * c) = 2 * s * c := by rw [← mul_assoc, mul_comm 2]
                  _ = sin (2 * θ) := by rw [sin_two_mul]
                  _ = sin (π - 2 * θ) := by rw [sin_pi_sub]
-                 _ = sin (2 * θ + θ) := by congr; simp [hθ]; linarith
+                 _ = sin (2 * θ + θ) := by congr; linarith
                  _ = sin (2 * θ) * c + cos (2 * θ) * s := sin_add (2 * θ) θ
                  _ = 2 * s * c * c + cos (2 * θ) * s := by rw [sin_two_mul]
                  _ = 2 * s * c * c + (2 * c ^ 2 - 1) * s := by rw [cos_two_mul]

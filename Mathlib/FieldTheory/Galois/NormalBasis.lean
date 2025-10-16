@@ -26,7 +26,7 @@ variable (K L : Type*) [Field K] [Field L] [Algebra K L]
 open Polynomial FiniteField Module Submodule LinearMap in
 -- [ConradLinearChar] Theorem 3.7.
 private theorem exists_linearIndependent_algEquiv_apply_of_finite [Finite L] :
-    ∃ x : L, LinearIndependent K fun σ : L ≃ₐ[K] L ↦ σ x := by
+    ∃ x : L, LinearIndependent K fun σ : Gal(L/K) ↦ σ x := by
   have := Finite.of_injective _ (algebraMap K L).injective
   have := Fintype.ofFinite K
   /- Since `K[X]` is a PID and `L` is a finitely generated `K[X]`-module (with `X` acting as
@@ -56,16 +56,16 @@ variable [FiniteDimensional K L]
 
 -- [ConradLinearChar] Theorem 3.6.
 private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K] :
-    ∃ x : L, LinearIndependent K fun σ : L ≃ₐ[K] L ↦ σ x := by
+    ∃ x : L, LinearIndependent K fun σ : Gal(L/K) ↦ σ x := by
   classical
   /- Choose a basis `e` of `L` over `K` and form the matrix `M` with entries
     `∑ₖ i⁻¹j(eₖ)Xₖ` where `i,j ∈ Gal(L/K)` and `Xₖ`s are independent variables. -/
   have e := Module.Free.chooseBasis K L
-  let M : Matrix (L ≃ₐ[K] L) (L ≃ₐ[K] L) (MvPolynomial _ L) :=
+  let M : Matrix Gal(L/K) Gal(L/K) (MvPolynomial _ L) :=
     .of fun i j ↦ ∑ k, i.symm (j (e k)) • .X k
   /- By [ConradLinearChar] Lemma 3.4, there exists `{xₖ} ⊆ L` such that `∑ₖ j(eₖ)xₖ = 1`
     if `j = 1` and `∑ₖ j(eₖ)xₖ = 0` otherwise. -/
-  have hq : Submodule.span L (Set.range fun k (j : L ≃ₐ[K] L) ↦ j (e k)) = ⊤ := by
+  have hq : Submodule.span L (Set.range fun k (j : Gal(L/K)) ↦ j (e k)) = ⊤ := by
     apply span_flip_eq_top_iff_linearIndependent.mpr <|
       ((linearIndependent_algHom_toLinearMap K L L).comp _
         (algEquivEquivAlgHom K L).injective).map' _ (e.constr L).symm.ker
@@ -102,7 +102,7 @@ private theorem exists_linearIndependent_algEquiv_apply_of_infinite [Infinite K]
   simp [Algebra.smul_def, Matrix.mulVec_eq_sum, mul_comm]
 
 theorem exists_linearIndependent_algEquiv_apply :
-    ∃ x : L, LinearIndependent K fun σ : L ≃ₐ[K] L ↦ σ x := by
+    ∃ x : L, LinearIndependent K fun σ : Gal(L/K) ↦ σ x := by
   obtain h | h := finite_or_infinite K
   · have := Module.finite_of_finite K (M := L)
     exact exists_linearIndependent_algEquiv_apply_of_finite K L
@@ -114,14 +114,14 @@ variable [IsGalois K L]
 
 /-- Given a finite Galois extension `L/K`, `normalBasis K L` is a basis of `L` over `K`
 that is an orbit under the Galois group action. -/
-noncomputable def normalBasis : Module.Basis (L ≃ₐ[K] L) K L :=
+noncomputable def normalBasis : Module.Basis Gal(L/K) K L :=
   basisOfLinearIndependentOfCardEqFinrank
     (exists_linearIndependent_algEquiv_apply K L).choose_spec
     (Fintype.card_eq_nat_card.trans <| card_aut_eq_finrank K L)
 
 variable {K L}
 
-theorem normalBasis_apply (e : L ≃ₐ[K] L) : normalBasis K L e = e (normalBasis K L 1) := by
+theorem normalBasis_apply (e : Gal(L/K)) : normalBasis K L e = e (normalBasis K L 1) := by
   rw [normalBasis, coe_basisOfLinearIndependentOfCardEqFinrank, AlgEquiv.one_apply]
 
 end IsGalois

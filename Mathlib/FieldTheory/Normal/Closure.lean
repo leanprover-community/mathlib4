@@ -239,7 +239,7 @@ lemma normalClosure_def' : normalClosure F K L = ⨆ f : L →ₐ[F] L, K.map f 
   · exact le_iSup_of_le (f.liftNormal L) (fun b ⟨a, h⟩ ↦ ⟨a, a.2, h ▸ f.liftNormal_commutes L a⟩)
   · exact le_iSup_of_le (f.comp K.val) (fun b ⟨a, h⟩ ↦ ⟨⟨a, h.1⟩, h.2⟩)
 
-lemma normalClosure_def'' : normalClosure F K L = ⨆ f : L ≃ₐ[F] L, K.map f := by
+lemma normalClosure_def'' : normalClosure F K L = ⨆ f : Gal(L/F), K.map f := by
   refine (normalClosure_def' K).trans (le_antisymm (iSup_le (fun f ↦ ?_)) (iSup_le (fun f ↦ ?_)))
   · exact le_iSup_of_le (f.restrictNormal' L)
       (fun b ⟨a, h⟩ ↦ ⟨a, h.1, h.2 ▸ f.restrictNormal_commutes L a⟩)
@@ -273,7 +273,7 @@ lemma normal_iff_forall_fieldRange_le : Normal F K ↔ ∀ σ : K →ₐ[F] L, �
 lemma normal_iff_forall_map_le : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ ≤ K := by
   rw [normal_iff_normalClosure_le, normalClosure_def', iSup_le_iff]
 
-lemma normal_iff_forall_map_le' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ ≤ K := by
+lemma normal_iff_forall_map_le' : Normal F K ↔ ∀ σ : Gal(L/F), K.map ↑σ ≤ K := by
   rw [normal_iff_normalClosure_le, normalClosure_def'', iSup_le_iff]
 
 /-- If `L/K/F` is a field tower where `L/F` is normal, then
@@ -286,13 +286,13 @@ lemma normal_iff_forall_map_eq : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ
 ⟨fun h σ ↦ (K.fieldRange_val ▸ AlgHom.map_fieldRange K.val σ).trans
   (normal_iff_forall_fieldRange_eq.1 h _), fun h ↦ normal_iff_forall_map_le.2 (fun σ ↦ (h σ).le)⟩
 
-lemma normal_iff_forall_map_eq' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ = K :=
+lemma normal_iff_forall_map_eq' : Normal F K ↔ ∀ σ : Gal(L/F), K.map ↑σ = K :=
 ⟨fun h σ ↦ normal_iff_forall_map_eq.1 h σ, fun h ↦ normal_iff_forall_map_le'.2 (fun σ ↦ (h σ).le)⟩
 
 @[simp]
 lemma normalClosure_map_eq (K : IntermediateField F L) (σ : L →ₐ[F] L) :
     normalClosure F (K.map σ) L = normalClosure F K L := by
-  have (σ : L ≃ₐ[F] L) : normalClosure F (K.map (σ : L →ₐ[F] L)) L = normalClosure F K L := by
+  have (σ : Gal(L/F)) : normalClosure F (K.map (σ : L →ₐ[F] L)) L = normalClosure F K L := by
     simp_rw [normalClosure_def'', map_map]
     exact (Equiv.mulRight σ).iSup_congr fun _ ↦ rfl
   exact this ((Algebra.IsAlgebraic.algEquivEquivAlgHom _ _).symm σ)
