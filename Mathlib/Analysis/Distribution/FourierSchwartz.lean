@@ -22,9 +22,13 @@ namespace SchwartzMap
 
 variable
   (𝕜 : Type*) [RCLike 𝕜]
+  {W : Type*} [NormedAddCommGroup W] [NormedSpace ℂ W] [NormedSpace 𝕜 W]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
   {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
+
+section definition
 
 /-- The Fourier transform on a real inner product space, as a continuous linear map on the
 Schwartz space. -/
@@ -75,8 +79,10 @@ noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
         apply Finset.le_sup this (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2 (E := V) (F := E))
     _ = _ := by simp [mul_assoc]
 
-noncomputable
-def fourierTransform (f : 𝓢(V, E)) : 𝓢(V, E) := fourierTransformCLM ℝ f
+
+/-- The Fourier transform on a real inner product space, as a continuous linear map on the
+Schwartz space. -/
+noncomputable def fourierTransform (f : 𝓢(V, E)) : 𝓢(V, E) := fourierTransformCLM ℂ f
 
 @[simp]
 theorem fourierTransform_apply (f : 𝓢(V, E)) (x : V) : f.fourierTransform x = 𝓕 f x := rfl
@@ -132,5 +138,70 @@ def fourierTransformInv (f : 𝓢(V, E)) : 𝓢(V, E) := (fourierTransformCLE �
 
 @[simp] lemma fourierTransformCLE_symm_apply (f : 𝓢(V, E)) :
     (fourierTransformCLE 𝕜).symm f = f.fourierTransformInv := rfl
+
+@[simp]
+theorem fourier_inversion (f : 𝓢(V, E)) : f.fourierTransform.fourierTransformInv = f :=
+  (fourierTransformCLE ℂ).left_inv f
+
+@[simp]
+theorem fourier_inversion_inv (f : 𝓢(V, E)) : f.fourierTransformInv.fourierTransform = f :=
+  (fourierTransformCLE ℂ).right_inv f
+
+@[simp]
+theorem fourier_inversion_apply (f : 𝓢(V, E)) (x : V) : 𝓕⁻ f.fourierTransform x = f x := by
+  rw [← fourierTransformInv_apply, fourier_inversion]
+
+@[simp]
+theorem fourier_inversion_inv_apply (f : 𝓢(V, E)) (x : V) : 𝓕 f.fourierTransformInv x = f x := by
+  rw [← fourierTransform_apply, fourier_inversion_inv]
+
+end definition
+
+section fubini
+
+variable
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G]
+
+variable [CompleteSpace E] [CompleteSpace F]
+
+/-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
+Version where the multiplication is replaced by a general bilinear form `M`. -/
+theorem integral_bilin_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕 g x) := by
+  have := VectorFourier.integral_bilin_fourierIntegral_eq_flip M (μ := volume) (ν := volume)
+    (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
+  rwa [flip_innerₗ] at this
+
+theorem integral_sesq_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
+  have := VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M (μ := volume) (ν := volume)
+    (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
+  rwa [flip_innerₗ] at this
+
+/-- Plancherel's theorem for Schwartz functions. -/
+theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (f.fourierTransform ξ) (g.fourierTransform ξ) = ∫ x, M (f x) (g x) := by
+  have := integral_sesq_fourierIntegral_eq f g.fourierTransform M
+  simp only [fourierTransform_apply, fourier_inversion_apply] at this
+  assumption
+
+end fubini
+
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+section toL2
+
+theorem inner_fourierTransform_toL2_eq (f : 𝓢(V, H)) :
+    inner ℂ (f.fourierTransform.toLp 2) (f.fourierTransform.toLp 2) =
+    inner ℂ (f.toLp 2) (f.toLp 2) := by
+  simp only [inner_toL2_toL2_eq]
+  exact integral_sesq_fourier_fourier f f (innerSL ℂ)
+
+theorem norm_fourierTransform_toL2_eq (f : 𝓢(V, H)) :
+    ‖f.fourierTransform.toLp 2‖ = ‖f.toLp 2‖ := by
+  simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourierTransform_toL2_eq]
+
+end toL2
 
 end SchwartzMap
