@@ -807,13 +807,13 @@ open scoped Obj
 
 attribute [-simp] IsMonHom.one_hom_assoc in
 attribute [local simp← ] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
-attribute [simp] tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc MonObj.tensorObj.one_def
+attribute [local simp] tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc MonObj.tensorObj.one_def
   MonObj.tensorObj.mul_def in
 instance [F.LaxBraided] (M N : C) [MonObj M] [MonObj N] : IsMonHom («μ» F M N) where
   one_hom := by simp [← Functor.map_comp, leftUnitor_inv_comp_tensorHom_assoc]
 
 attribute [-simp] IsMonHom.one_hom IsMonHom.one_hom_assoc IsMonHom.mul_hom in
-attribute [simp] ε_tensorHom_comp_μ_assoc tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc
+attribute [local simp] ε_tensorHom_comp_μ_assoc tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc
   MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 instance [F.LaxBraided] : F.mapMon.LaxMonoidal where
   ε := .mk (ε F)
@@ -821,7 +821,7 @@ instance [F.LaxBraided] : F.mapMon.LaxMonoidal where
 
 attribute [-simp] IsMonHom.one_hom IsMonHom.one_hom_assoc IsMonHom.mul_hom in
 attribute [local simp← ] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
-attribute [simp] ε_tensorHom_comp_μ_assoc tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc
+attribute [local simp] ε_tensorHom_comp_μ_assoc tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc
   MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 instance [F.Braided] : F.mapMon.Monoidal :=
   CoreMonoidal.toMonoidal {
