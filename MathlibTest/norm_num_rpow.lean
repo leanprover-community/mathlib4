@@ -34,4 +34,3 @@ error: unsolved goals
 #guard_msgs in
 example : (-8 : ℝ) ^ (1 / 3 : ℝ) = -2 := by
   norm_num1
-
