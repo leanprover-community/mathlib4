@@ -47,6 +47,25 @@ theorem eval_sub {a b a' b' c : A} (ha : a = a') (hb : b = b') (hc : a' - b' = c
 
 end ring
 
+section semifield
+
+variable {R A : Type*} [Semifield R] [Semifield A] [Algebra R A]
+
+theorem isNNRat_eq_rawCast {a : A} {n d : ℕ} (h : IsNNRat a n d) :
+    a = (NNRat.rawCast n d + 0 : R) • 1 + 0 := by
+  simp [Mathlib.Tactic.Ring.cast_nnrat h, ← Algebra.algebraMap_eq_smul_one]
+
+end semifield
+
+section field
+
+variable {R A : Type*} [Field R] [Field A] [Algebra R A]
+
+theorem isRat_eq_rawCast {a : A} {n d : ℕ} (h : IsRat a (.negOfNat n) d) :
+    a = (Rat.rawCast (.negOfNat n) d + 0 : R) • 1 + 0 := by
+  simp [Mathlib.Tactic.Ring.cast_rat h, ← Algebra.algebraMap_eq_smul_one]
+
+end field
 variable {R A : Type*} [sR : CommSemiring R] [sA : CommSemiring A] [sAlg : Algebra R A]
 
 theorem add_overlap_nonzero {a₁ a₂ b₁ b₂ c₁ c₂ : R} (h₁ : a₁ + b₁ = c₁) (h₂ : a₂ + b₂ = c₂) :

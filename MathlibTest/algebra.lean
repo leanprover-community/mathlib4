@@ -88,9 +88,10 @@ example (x : ℚ) : (x + 1)^3 = x^3 + 3*x^2 + 3*x + 1 := by
 
 example (x : ℚ) (hx : x = 0) : (x+1)^10 = 1 := by
   algebra_nf
-  guard_target = 1 + x * 10 + x ^ 2 * 45 + x ^ 3 * 120 + x ^ 4 * 210 + x ^ 5 * 252 + x ^ 6 * 210 + x ^ 7 * 120 + x ^ 8 * 45 +
-      x ^ 9 * 10 +
-    x ^ 10 = 1
+  -- TODO: decide if we want to turn nsmul/zsmul/qsmul with literals into multiplication.
+  guard_target =
+    1 + 10 • x + 45 • x ^ 2 + 120 • x ^ 3 + 210 • x ^ 4 + 252 • x ^ 5 + 210 • x ^ 6 + 120 • x ^ 7 + 45 • x ^ 8 +
+      10 • x ^ 9 + x ^ 10 = 1
   simp [hx]
 
 example {a b : ℤ} (x y : ℚ) (ha : a = 2) : (a + b) • (x + y) = b • x + (2:ℤ) • (x + y) + b • y := by
@@ -119,3 +120,74 @@ example (x : ℚ) (n : ℕ) : (x + 2) ^ (2 * n+1) = ((x+2)^n)^2 * (x+2) := by
 example (x : ℚ) (n : ℕ) : (x^n + 1)^2 = 0 := by
   algebra_nf
   exact sorryAlgebraTest
+
+-- Tests for rational constant handling (evalCast function)
+
+-- Test positive rational constants
+example (x : ℚ) : (1/2) * x = x * (1/2) := by
+  algebra
+
+example (x : ℚ) : (3/4) * x + (1/4) * x = x := by
+  algebra with ℚ
+
+example (x y : ℚ) : (1/2) * (x + y) = (1/2) * x + (1/2) * y := by
+  algebra
+
+example (x : ℚ) : (2/3) * x + (1/3) * x = x := by
+  algebra with ℚ
+
+-- Test negative rational constants
+example (x : ℚ) : (-1/2) * x = -(x * (1/2)) := by
+  algebra with ℚ
+
+example (x : ℚ) : (-3/4) * x + (3/4) * x = 0 := by
+  algebra with ℚ
+
+example (x y : ℚ) : (-1/2) * x + (-1/2) * y = (-1/2) * (x + y) := by
+  algebra
+
+-- Test mixed rational and integer operations
+example (x : ℚ) : 2 * x + (1/2) * x = (5/2) * x := by
+  algebra with ℚ
+
+example (x : ℚ) : (1/2) * x - x = (-1/2) * x := by
+  algebra with ℚ
+
+example (x : ℚ) : 3 * x - (1/4) * x = (11/4) * x := by
+  algebra with ℚ
+
+-- Test rational constants in polynomial operations
+example (x : ℚ) : ((1/2) * x + (1/3))^2 = (1/4) * x^2 + (1/3) * x + (1/9) := by
+  algebra with ℚ
+
+example (x y : ℚ) : ((1/2) * x + (1/2) * y)^2 = (1/4) * (x^2 + 2 * x * y + y^2) := by
+  algebra with ℚ
+
+example (x : ℚ) : (x + (2/3))^3 = x^3 + 2 * x^2 + (4/3) * x + (8/27) := by
+  algebra with ℚ
+
+-- Test rational constants with scalar multiplication
+example (x : ℚ) : (1/2 : ℚ) • x = (1/2) * x := by
+  algebra
+
+example (x : ℚ) : (3/4 : ℚ) • x + (1/4 : ℚ) • x = x := by
+  algebra
+
+-- Test algebra_nf with rational constants
+example (x : ℚ) : (1/2) * x + (1/3) * x = 1 := by
+  algebra_nf with ℚ
+  guard_target = (5/6 : ℚ) • x = 1
+  exact sorryAlgebraTest
+
+example (x y : ℚ) : ((2/5) * x + (3/5) * y)^2 = 0 := by
+  algebra_nf with ℚ
+  exact sorryAlgebraTest
+
+-- Test with Algebra over ℚ
+example {A : Type*} [CommRing A] [Algebra ℚ A] (x y : A) :
+    (1/2 : ℚ) • (x + y) = (1/2 : ℚ) • x + (1/2 : ℚ) • y := by
+  algebra
+
+example {A : Type*} [CommRing A] [Algebra ℚ A] (x : A) :
+    (3/4 : ℚ) • x + (1/4 : ℚ) • x = x := by
+  algebra with ℚ

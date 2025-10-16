@@ -240,9 +240,15 @@ end ExSum
 
 structure Cache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) extends Ring.Cache sA where
   crA : Option Q(CommRing $A)
+  dA : Option Q(DivisionRing $A)
+  sfA : Option Q(Semifield $A)
+  fA : Option Q(Field $A)
 
 def mkCache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) : MetaM (Cache sA) := do return {
   crA := (← trySynthInstanceQ q(CommRing $A)).toOption
+  dA := (← trySynthInstanceQ q(DivisionRing $A)).toOption
+  sfA := (← trySynthInstanceQ q(Semifield $A)).toOption
+  fA := (← trySynthInstanceQ q(Field $A)).toOption
   toCache := ← Ring.mkCache sA
 }
 
@@ -460,7 +466,21 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
     have : $r =Q Int.rawCast (Int.negOfNat $lit) := ⟨⟩
     assumeInstancesCommute
     pure ⟨_, (ExProd.smul vr.toSum).toSum, (q(isInt_negOfNat_eq $p))⟩
-  -- We don't handle rational expressions in A at the moment.
+  | .isNNRat rA q n d p => do
+    -- TODO: use semifields here.
+    let some dsR := cR.sfA | none
+    let some dsA := cA.sfA | none
+    assumeInstancesCommute
+    let ⟨r, vr⟩ := Ring.ExProd.mkNNRat q($sR) q(inferInstance) q n d q(IsNNRat.den_nz (α := $A) $p)
+    have : $r =Q (NNRat.rawCast $n $d : $R) := ⟨⟩
+    pure ⟨_, (ExProd.smul vr.toSum).toSum, q(isNNRat_eq_rawCast (a := $a) $p)⟩
+  | .isNegNNRat dA q n d p => do
+    let some fR := cR.fA | none
+    let some fA := cA.fA | none
+    assumeInstancesCommute
+    let ⟨r, vr⟩ := Ring.ExProd.mkNegNNRat q($sR) q(inferInstance) q n d q(IsRat.den_nz $p)
+    have : $r =Q (Rat.rawCast (.negOfNat $n) $d : $R) := ⟨⟩
+    pure ⟨_, (ExProd.smul vr.toSum).toSum, (q(isRat_eq_rawCast (a := $a) $p))⟩
   | _ => none
 
 /--
