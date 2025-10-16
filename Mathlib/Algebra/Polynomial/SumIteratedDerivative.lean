@@ -204,7 +204,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     rw [Polynomial.map_zero] at hp
     replace hp := (mul_eq_zero.mp hp.symm).resolve_left ?_
     · rw [hp, eval_zero, smul_zero]
-    exact fun h => X_sub_C_ne_zero r (pow_eq_zero h)
+    exact fun h => X_sub_C_ne_zero r (eq_zero_of_pow_eq_zero h)
   let c k := if hk : q ≤ k then (aeval_iterate_derivative_of_ge A p q hk).choose else 0
   have c_le (k) : (c k).natDegree ≤ p.natDegree - k := by
     dsimp only [c]
