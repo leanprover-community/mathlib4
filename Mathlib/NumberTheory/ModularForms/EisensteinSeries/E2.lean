@@ -609,7 +609,8 @@ lemma G2_inde_lhs (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) - -2 * 
     rw [← Summable.tsum_sub]
     · congr
       ext M
-      simp [G2Term]
+      simp only [one_div, G2Term, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
+        Matrix.cons_val_fin_one, mul_inv_rev]
       have := poly_id z M N
       nth_rw 1 [← this]
       ring
