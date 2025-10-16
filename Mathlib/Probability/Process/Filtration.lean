@@ -48,7 +48,7 @@ structure Filtration {Ω : Type*} (ι : Type*) [Preorder ι] (m : MeasurableSpac
 
 attribute [coe] Filtration.seq
 
-variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
+variable {Ω ι : Type*} {m : MeasurableSpace Ω}
 
 instance [Preorder ι] : CoeFun (Filtration ι m) fun _ => ι → MeasurableSpace Ω :=
   ⟨fun f => f.seq⟩
@@ -246,14 +246,15 @@ end OfSet
 
 namespace Filtration
 
-variable [TopologicalSpace β] [MetrizableSpace β] [mβ : MeasurableSpace β] [BorelSpace β]
+variable {β : ι → Type*} [∀ i, TopologicalSpace (β i)] [∀ i, MetrizableSpace (β i)]
+  [mβ : ∀ i, MeasurableSpace (β i)] [∀ i, BorelSpace (β i)]
   [Preorder ι]
 
 /-- Given a sequence of functions, the natural filtration is the smallest sequence
 of σ-algebras such that the sequence of functions is measurable with respect to
 the filtration. -/
-def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m where
-  seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
+def natural (u : (i : ι) → Ω → β i) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m where
+  seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) (mβ j)
   mono' _ _ hij := biSup_mono fun _ => ge_trans hij
   le' i := by
     refine iSup₂_le ?_
@@ -264,9 +265,9 @@ section
 
 open MeasurableSpace
 
-theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι → Set Ω}
-    (hsm : ∀ i, MeasurableSet[m] (s i)) :
-    filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β)) fun i =>
+theorem filtrationOfSet_eq_natural [∀ i, MulZeroOneClass (β i)] [∀ i, Nontrivial (β i)]
+    {s : ι → Set Ω} (hsm : ∀ i, MeasurableSet[m] (s i)) :
+    filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β i)) fun i =>
       stronglyMeasurable_one.indicator (hsm i) := by
   simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
@@ -279,12 +280,12 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     simp
   · rintro t ⟨n, ht⟩
     suffices MeasurableSpace.generateFrom {t | n ≤ i ∧
-      MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β)) mβ] t} ≤
+      MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β n)) (mβ n)] t} ≤
         MeasurableSpace.generateFrom {t | ∃ (j : ι), j ≤ i ∧ s j = t} by
       exact this _ ht
     refine generateFrom_le ?_
     rintro t ⟨hn, u, _, hu'⟩
-    obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β)
+    obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β n)
     on_goal 4 => rw [Set.mem_singleton_iff] at heq
     all_goals rw [heq] at hu'; rw [← hu']
     exacts [MeasurableSet.univ, measurableSet_generateFrom ⟨n, hn, rfl⟩,
