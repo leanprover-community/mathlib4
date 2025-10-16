@@ -276,6 +276,12 @@ lemma _root_.LinearIsometryEquiv.lTensor_def (f : F ≃ₗᵢ[𝕜] G) :
 lemma _root_.LinearIsometryEquiv.rTensor_def (f : E ≃ₗᵢ[𝕜] F) :
     f.rTensor G = congrIsometry f (.refl 𝕜 G) := rfl
 
+lemma _root_.LinearIsometryEquiv.lTensor_symm (f : F ≃ₗᵢ[𝕜] G) :
+    (f.lTensor E).symm = f.symm.lTensor E := rfl
+
+lemma _root_.LinearIsometryEquiv.rTensor_symm (f : E ≃ₗᵢ[𝕜] F) :
+    (f.rTensor G).symm = f.symm.rTensor G := rfl
+
 @[simp] lemma _root_.LinearIsometryEquiv.toLinearEquiv_lTensor (f : F ≃ₗᵢ[𝕜] G) :
     (f.lTensor E).toLinearEquiv = f.toLinearEquiv.lTensor E := rfl
 
