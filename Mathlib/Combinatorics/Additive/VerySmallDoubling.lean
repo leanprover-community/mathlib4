@@ -342,6 +342,7 @@ private lemma op_smul_eq_iff_mem {H : Subgroup G} {c : Set G} {x : G}
   change _ = _ <• _
   rw [eq_comm, smul_eq_iff_eq_inv_smul, ← op_inv, op_smul_op_smul, rightCoset_mem_rightCoset]
   rwa [← op_smul_eq_mul, op_inv, ← SetLike.mem_coe, ← Set.mem_smul_set_iff_inv_smul_mem]
+
 omit [DecidableEq G] in
 private lemma op_smul_eq_op_smul_iff_mem {H : Subgroup G} {x y : G} :
     x ∈ (H : Set G) <• y ↔ (H : Set G) <• x = H <• y := op_smul_eq_iff_mem (mem_orbit _ _)
@@ -627,12 +628,10 @@ private lemma exists_nonempty_isFragment (hK : K < 1) (hS : S.Nonempty) :
     rw [Nat.lt_iff_add_one_le] at hA
     calc
           κ + 1
-      _ = (κ + 1) / ((κ + 1) / (1 - K)) * ((κ + 1) / (1 - K)) := by
-        rw [div_mul_cancel₀]; positivity
-      _ < (κ + 1) / ((κ + 1) / (1 - K)) * (t + 1) := by
-        gcongr; exact Nat.lt_floor_add_one ((κ + 1) / (1 - K))
+      _ = (κ + 1) / ((κ + 1) / (1 - K)) * ((κ + 1) / (1 - K)) := by field_simp
+      _ < (κ + 1) / ((κ + 1) / (1 - K)) * (t + 1) := by gcongr; exact Nat.lt_floor_add_one _
       _ = (1 - K) * (t + 1) := by field_simp
-      _ ≤ (1 - K) * #A      := by gcongr; rw [← Nat.cast_add_one, Nat.cast_le]; exact hA
+      _ ≤ (1 - K) * #A      := by norm_cast; gcongr
       _ ≤ ex A              := mul_card_le_expansion hS
   -- On the other hand, we essentially show that there are only finitely many possible values for
   -- `A` with `#A ≤ t`, and these values are found in the set `M = (⟦#S, t#S⟧ - K⟦1, t⟧) ∩ (κ, ∞)`.
@@ -640,18 +639,12 @@ private lemma exists_nonempty_isFragment (hK : K < 1) (hS : S.Nonempty) :
     K • (Icc 1 t).map Nat.castEmbedding : Finset ℝ) | κ < x}
   have smallA {A : Finset G} (hA : A.Nonempty) (hAt : #A ≤ t) : ex A ∈ M := by
     rw [mem_filter]
-    refine ⟨?_, (connectivity_le_expansion hK.le hS hA).lt_of_ne' <| H _ hA⟩
-    apply sub_mem_sub
+    refine ⟨sub_mem_sub ?_ ?_, (connectivity_le_expansion hK.le hS hA).lt_of_ne' <| H _ hA⟩
     · apply mem_map_of_mem
-      rw [mem_Icc]
-      refine ⟨card_le_card_mul_left hA, ?_⟩
-      calc  #(A * S)
-        _ ≤ #A * #S := card_mul_le
-        _ ≤ t * #S       := Nat.mul_le_mul_right #S hAt
+      exact mem_Icc.2 ⟨card_le_card_mul_left hA, by grw [card_mul_le, hAt]⟩
     · apply smul_mem_smul_finset
       apply mem_map_of_mem
-      rw [mem_Icc]
-      exact ⟨Nat.one_le_iff_ne_zero.mpr hA.card_ne_zero, hAt⟩
+      exact mem_Icc.2 ⟨Nat.one_le_iff_ne_zero.mpr hA.card_ne_zero, hAt⟩
   -- Now we take the minimum value of `M` (union `{κ + 1}` to handle the eventual emptiness of `M`
   -- and get better bounds). This will be strictly larger than `κ` by definition.
   have : (M ∪ {κ + 1}).Nonempty := by simp
