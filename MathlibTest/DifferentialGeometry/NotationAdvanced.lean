@@ -8,7 +8,6 @@ import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 import Mathlib.Geometry.Manifold.VectorField.LieBracket
 /-!
 # Tests for the differential geometry elaborators which require stronger imports
-
 -/
 
 set_option pp.unicode.fun true
@@ -36,7 +35,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [FiberBundle F V] [VectorBundle 𝕜 F V]
   -- `V` vector bundle
 
-/-! Tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
+/-! Additional tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
 section differentiability
 
 variable {EM' : Type*} [NormedAddCommGroup EM']
