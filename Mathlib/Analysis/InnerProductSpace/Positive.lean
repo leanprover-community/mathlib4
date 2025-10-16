@@ -327,7 +327,6 @@ theorem isPositive_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (S : E 
   simpa using isPositive_one.adjoint_conj S
 
 section LinearMap
-
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 
 @[aesop safe apply]
@@ -354,17 +353,23 @@ theorem _root_.LinearMap.isPositive_adjoint_comp_self (S : E →ₗ[𝕜] F) :
 
 end LinearMap
 
-theorem IsPositive.conj_starProjection [CompleteSpace E] (U : Submodule 𝕜 E) {T : E →L[𝕜] E}
+theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] E}
     (hT : T.IsPositive) [U.HasOrthogonalProjection] :
     (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
-  have := hT.conj_adjoint (U.starProjection)
-  rwa [(isSelfAdjoint_starProjection U).adjoint_eq] at this
+  simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
+    Function.comp_apply, coe_comp']
+  simp_rw [← coe_coe, U.starProjection_isSymmetric _ , hT.isSymmetric _,
+    U.starProjection_isSymmetric _, ← U.starProjection_isSymmetric _, coe_coe,
+    hT.inner_nonneg_right, implies_true, and_self]
 
-theorem IsPositive.orthogonalProjection_comp [CompleteSpace E] {T : E →L[𝕜] E} (hT : T.IsPositive)
-    (U : Submodule 𝕜 E) [CompleteSpace U] :
+theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPositive)
+    (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
-  have := hT.conj_adjoint (U.orthogonalProjection : E →L[𝕜] U)
-  rwa [U.adjoint_orthogonalProjection] at this
+  simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
+    Function.comp_apply, coe_comp']
+  simp_rw [U.inner_orthogonalProjection_eq_of_mem_right, Submodule.subtypeL_apply,
+    U.inner_orthogonalProjection_eq_of_mem_left, ← coe_coe, hT.isSymmetric _, coe_coe,
+    hT.inner_nonneg_right, implies_true, and_self]
 
 open scoped NNReal
 
