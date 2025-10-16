@@ -188,9 +188,9 @@ theorem reaches_eval {σ} {f : σ → Option σ} {a b} (ab : Reaches f a b) : ev
 
 /-- Given a relation `tr : σ₁ → σ₂ → Prop` between state spaces, and state transition functions
 `f₁ : σ₁ → Option σ₁` and `f₂ : σ₂ → Option σ₂`, `Respects f₁ f₂ tr` means that if `tr a₁ a₂` holds
-initially and `f₁` takes a step from `a₁` to `b₁`, then `f₂` will take one or more steps before
-reaching a state `b₂` satisfying `tr b₁ b₂`, and if `f₁ a₁` terminates then `f₂ a₂` also
-terminates. Such a relation `tr` is also known as a refinement. -/
+initially and `f₁` takes a step to `a₂` then `f₂` will take one or more steps before reaching a
+state `b₂` satisfying `tr a₂ b₂`, and if `f₁ a₁` terminates then `f₂ a₂` also terminates.
+Such a relation `tr` is also known as a refinement. -/
 def Respects {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ → Option σ₂) (tr : σ₁ → σ₂ → Prop) :=
   ∀ ⦃a₁ a₂⦄, tr a₁ a₂ → (match f₁ a₁ with
     | some b₁ => ∃ b₂, tr b₁ b₂ ∧ Reaches₁ f₂ a₂ b₂
