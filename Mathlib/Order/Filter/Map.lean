@@ -150,7 +150,7 @@ theorem principal_singleton (a : α) : 𝓟 {a} = pure a :=
 
 @[simp]
 theorem biSup_pure_eq_principal (s : Set α) : ⨆ a ∈ s, pure a = 𝓟 s :=
-  Filter.ext fun s => by simp only [mem_iSup]; rfl
+  Filter.ext fun s => by simp [Set.subset_def]
 
 @[simp]
 theorem iSup_pure_eq_top : ⨆ a, pure a = (⊤ : Filter α) := by

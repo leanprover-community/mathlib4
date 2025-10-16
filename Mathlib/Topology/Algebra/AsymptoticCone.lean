@@ -46,7 +46,7 @@ namespace AffineSpace
 
 variable (k P) in
 /-- In a topological affine space `P` over `k`, `AffineSpace.asymptoticNhds k P v` is the filter of
-neighborhoods at infinity in the direction of `v`. In a topological vector space, this is the filter
+neighborhoods at infinity in directions near `v`. In a topological vector space, this is the filter
 `Filter.atTop • 𝓝 v`. To support affine spaces, the actual definition is different and should be
 considered an implementation detail. Use `AffineSpace.asymptoticNhds_eq_smul` or
 `AffineSpace.asymptoticNhds_eq_smul` for unfolding. -/
