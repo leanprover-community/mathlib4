@@ -40,7 +40,7 @@ def ValueGroup₀.orderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
   map_rel_iff' := ValueGroup₀.monoidWithZeroHom_strictMono.le_iff_le
 
 @[simp]
-lemma ValueGroup₀.OrderEmbedding_apply (x : ValueGroup₀ f) :
+lemma ValueGroup₀.orderEmbedding_apply (x : ValueGroup₀ f) :
     ValueGroup₀.orderEmbedding x = WithZero.map' (valueGroup f).subtype x := rfl
 
 lemma ValueGroup₀.OrderEmbedding_mul (x y : ValueGroup₀ f) :
