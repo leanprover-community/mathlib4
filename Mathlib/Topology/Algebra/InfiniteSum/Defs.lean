@@ -335,9 +335,14 @@ theorem Multipliable.hasProd_iff (h : Multipliable f L) :
   Iff.intro HasProd.tprod_eq fun eq ↦ eq ▸ h.hasProd
 
 @[to_additive]
-theorem tprod_eq_of_multipliable_atTop [L.LeAtTop] (hf : Multipliable f) :
-     ∏'[L] b, f b = ∏' b, f b := by
-  rw [← Multipliable.hasProd_iff (hf.mono_filter L.le_atTop)]
-  exact (hf.hasProd.comp L.le_atTop).congr (by simp)
+theorem tprod_eq_of_le {L₁ L₂ : SummationFilter β} [L₁.NeBot]
+    (h : L₁.filter ≤ L₂.filter) (hf : Multipliable f L₂) : ∏'[L₁] b, f b = ∏'[L₂] b, f b := by
+  rw [← Multipliable.hasProd_iff (hf.mono_filter h)]
+  exact (hf.hasProd.comp h).congr (by simp)
+
+@[to_additive]
+theorem tprod_eq_of_multipliable_unconditional [L.LeAtTop] (hf : Multipliable f) :
+     ∏'[L] b, f b = ∏' b, f b :=
+  tprod_eq_of_le L.le_atTop hf
 
 end HasProd
