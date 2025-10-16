@@ -363,3 +363,32 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: A
 -/
 "
+
+-- We don't do further validation of names.
+
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 nameinalllowercase. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: A
+-/
+"
+
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 First middle LastName. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: A
+-/
+"
+
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 First Last Name jr.. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: A
+-/
+"
