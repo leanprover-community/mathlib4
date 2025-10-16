@@ -254,8 +254,8 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   rw [← hv]
   exact h.minDegree_eq_one_of_nontrivial
 
-/-- The graph resulting from removing a vertex of degree one from a preconnected graph is
-preconnected. -/
+/-- The graph resulting from removing a vertex of degree one from a (pre)connected graph is
+connected. -/
 lemma Preconnected.connected_induce_complement_singleton_of_degree_eq_one [DecidableEq V]
     (hconn : G.Preconnected) {v : V} [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) :
     (G.induce {v}ᶜ).Connected := by
