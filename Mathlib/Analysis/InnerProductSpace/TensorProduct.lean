@@ -91,9 +91,8 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   And so `x = 0`.
   -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
-  rw [Set.singleton_subset_iff] at hz
-  rw [← hz.choose_spec, inner_mapIncl_mapIncl] at hx
-  set y := hz.choose
+  obtain ⟨y, rfl⟩ := Set.singleton_subset_iff.mp hz
+  rw [inner_mapIncl_mapIncl] at hx
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
   rw [y.basis_sum_repr e.toBasis f.toBasis] at hx
@@ -108,7 +107,7 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   have : y = 0 := by
     rw [Basis.ext_elem_iff (e.toBasis.tensorProduct f.toBasis)]
     simp only [hx, map_zero, Finsupp.coe_zero, Pi.zero_apply, implies_true]
-  rw [← hz.choose_spec, (by rfl : hz.choose = y), this, map_zero]
+  rw [this, map_zero]
 
 private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
     0 ≤ RCLike.re (inner 𝕜 x x) := by
@@ -122,9 +121,8 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   which is clearly nonnegative.
   -/
   obtain ⟨E', F', iE', iF', hz⟩ := exists_finite_submodule_of_setFinite {x} (Set.finite_singleton x)
-  rw [Set.singleton_subset_iff] at hz
-  rw [← hz.choose_spec, inner_mapIncl_mapIncl]
-  set y := hz.choose
+  obtain ⟨y, rfl⟩ := Set.singleton_subset_iff.mp hz
+  rw [inner_mapIncl_mapIncl]
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
   rw [y.basis_sum_repr e.toBasis f.toBasis]
