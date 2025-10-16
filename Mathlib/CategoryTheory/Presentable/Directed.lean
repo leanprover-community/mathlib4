@@ -23,7 +23,7 @@ by Adámek and Rosický (theorem 1.5), but with a mistake:
 the construction by Deligne involves considering diagrams
 (see `CategoryTheory.IsCardinalFiltered.exists_cardinal_directed.Diagram`)
 which are not necessarily *subcategories* (the class of morphisms `W` does not
-have to be multiplicativebe.)
+have to be multiplicative.)
 
 ## References
 * [Alexander Grothendieck and Jean-Louis Verdier, *Exposé I : Préfaisceaux*,
