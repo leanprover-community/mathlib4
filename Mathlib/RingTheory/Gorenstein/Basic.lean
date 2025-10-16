@@ -171,17 +171,30 @@ lemma extendScalars'_map_shortExact (f : R →+* S) (flat : f.Flat)
     (T : ShortComplex (ModuleCat.{v} R)) (h : T.ShortExact) :
     (T.map (extendScalars' f)).ShortExact where
   exact := by
+    let _ := RingHom.toAlgebra f
+    have : Function.Exact (T.f.hom.baseChange S) (T.g.hom.baseChange S) :=
+      lTensor_exact S ((ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp h.exact)
+        h.moduleCat_surjective_g
     have : Function.Exact (ExtendScalars'.map' f T.f) (ExtendScalars'.map' f T.g) := by
+      simp only [ExtendScalars'.map', hom_ofHom]
 
       sorry
     exact (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr this
   mono_f := by
+    let _ := RingHom.toAlgebra f
+    have : Function.Injective (T.f.hom.baseChange S) :=
+      flat.lTensor_preserves_injective_linearMap T.f.hom h.moduleCat_injective_f
     have : Function.Injective (ExtendScalars'.map' f T.f) := by
+      simp only [ExtendScalars'.map', hom_ofHom]
 
       sorry
     exact (mono_iff_injective (T.map (extendScalars' f)).f).mpr this
   epi_g := by
+    let _ := RingHom.toAlgebra f
+    have : Function.Surjective (T.g.hom.baseChange S) :=
+      LinearMap.lTensor_surjective S h.moduleCat_surjective_g
     have : Function.Surjective (ExtendScalars'.map' f T.g) := by
+      simp only [ExtendScalars'.map', hom_ofHom]
 
       sorry
     exact (epi_iff_surjective (T.map (extendScalars' f)).g).mpr this
@@ -224,10 +237,12 @@ lemma IsBaseChange.of_exact {M₁ M₂ M₃ : Type*} [AddCommGroup M₁] [AddCom
     (comm1 : h₂.comp f = (f'.restrictScalars R).comp h₁)
     (comm2 : h₃.comp g = (g'.restrictScalars R).comp h₂)
     (isb1 : IsBaseChange S h₁) (isb2 : IsBaseChange S h₂) : IsBaseChange S h₃ := by
-  /-have eqmap : f'.restrictScalars R = IsTensorProduct.map isb1 isb2 LinearMap.id f := by
-    --use `comm1`
-    sorry-/
-
+  have eqmap : f' = (isb2.equiv.toLinearMap.comp (f.baseChange S)).comp
+    isb1.equiv.symm.toLinearMap := by
+    apply isb1.algHom_ext
+    intro x
+    have : h₂ (f x) = f' (h₁ x) := congrFun (congrArg DFunLike.coe comm1) x
+    simp [isb1.equiv_symm_apply, isb2.equiv_tmul, this]
   let N₃' := TensorProduct R S M₃
   let isb3' := TensorProduct.isBaseChange R M₃ S
   let g'' : N₂ →ₗ[S] N₃' := (g.baseChange S).comp isb2.equiv.symm.toLinearMap
