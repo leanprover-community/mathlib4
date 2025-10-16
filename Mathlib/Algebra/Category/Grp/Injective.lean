@@ -14,11 +14,11 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 
 In this file we prove that divisible groups are injective objects in category of (additive) abelian
 groups. The proof that the category of abelian groups has enough injective objects can be found
-in `Mathlib/Algebra/Category/Grp/EnoughInjectives.lean`.
+in `Mathlib/Algebra/Category/GrpCat/EnoughInjectives.lean`.
 
 ## Main results
 
-- `AddCommGrp.injective_of_divisible` : a divisible group is also an injective object.
+- `AddCommGrpCat.injective_of_divisible` : a divisible group is also an injective object.
 
 -/
 
@@ -43,15 +43,15 @@ theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun 
   rw [map_zsmul, LinearMap.toSpanSingleton_apply, DivisibleBy.div_cancel gₘ h0, ← map_zsmul g,
     SetLike.mk_smul_mk]
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
 theorem injective_as_module_iff : Injective (ModuleCat.of ℤ A) ↔
-    Injective (C := AddCommGrp) (AddCommGrp.of A) :=
-  ((forget₂ (ModuleCat ℤ) AddCommGrp).asEquivalence.map_injective_iff (ModuleCat.of ℤ A)).symm
+    Injective (C := AddCommGrpCat) (AddCommGrpCat.of A) :=
+  ((forget₂ (ModuleCat ℤ) AddCommGrpCat).asEquivalence.map_injective_iff (ModuleCat.of ℤ A)).symm
 
 instance injective_of_divisible [DivisibleBy A ℤ] :
-    Injective (C := AddCommGrp) (AddCommGrp.of A) :=
+    Injective (C := AddCommGrpCat) (AddCommGrpCat.of A) :=
   (injective_as_module_iff A).mp <|
     Module.injective_object_of_injective_module (inj := (Module.Baer.of_divisible A).injective)
 
-end AddCommGrp
+end AddCommGrpCat
