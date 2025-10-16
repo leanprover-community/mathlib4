@@ -34,8 +34,6 @@ namespace SimplexCategoryGenRel
 
 open CategoryTheory
 
-open CategoryTheory
-
 section AdmissibleLists
 -- Impl. note: We are not bundling admissible lists as a subtype of `List ℕ` so that it remains
 -- easier to perform inductive constructions and proofs on such lists, and we instead bundle
@@ -84,7 +82,7 @@ lemma cons (L : List ℕ) (hL : IsAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
       · simp [ha]
       · haveI := hL.le _ <| Nat.lt_of_succ_lt_succ hi
         rw [List.getElem_cons_succ]
-        omega
+        cutsat
 
 /-- The tail of an `m`-admissible list is (m+1)-admissible. -/
 lemma tail (a : ℕ) (l : List ℕ) (h : IsAdmissible m (a::l)) :
@@ -191,9 +189,8 @@ lemma standardσ_comp_standardσ (L₁ L₂ : List ℕ) {m₁ m₂ m₃ : ℕ}
 
 variable (m : ℕ) (L : List ℕ)
 
-/-- `simplicialEvalσ` is a lift to ℕ of `toSimplexCategory.map (standardσ m L _ _)).toOrderHom`.
+/-- `simplicialEvalσ` is a lift to ℕ of `(toSimplexCategory.map (standardσ m L _ _)).toOrderHom`.
 Rather than defining it as such, we define it inductively for less painful inductive reasoning,
-and we keep the (hidden) `eqToHom` business in the proof that it is indeed such a lift
 (see `simplicialEvalσ_of_isAdmissible`).
 It is expected to produce the correct result only if `L` is admissible, and values for
 non-admissible lists should be considered junk values. Similarly, values for out-of-bonds inputs
@@ -247,7 +244,7 @@ lemma simplicialEvalσ_of_isAdmissible
       SimplexCategory.comp_toOrderHom, SimplexCategory.Hom.toOrderHom_mk, OrderHom.comp_coe,
       Function.comp_apply, Fin.predAboveOrderHom_coe, simplicialEvalσ, ha₀, ← this] using aux _
 
-/-- Performing a simplicial insert in a list is the same as composition on the right by the
+/-- Performing a simplicial insertion in a list is the same as composition on the right by the
 corresponding degeneracy operator. -/
 lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : j < m + 1)
     (m₁ : ℕ) (hm₁ : m + L.length + 1 = m₁) :
@@ -260,7 +257,8 @@ lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : 
     simp only [simplicialInsert]
     split_ifs
     · simp
-    · have : ∀ (j k : ℕ) (h : j < (k + 1)), Fin.ofNat (k + 1) j = j := by simp
+    · have : ∀ (j k : ℕ) (h : j < (k + 1)), Fin.ofNat (k + 1) j = j := by simp -- helps grind below
+      have : a < m + 2 := by grind -- helps grind below
       have : σ (Fin.ofNat (m + 2) a) ≫ σ (.ofNat _ j) = σ (.ofNat _ (j + 1)) ≫ σ (.ofNat _ a) := by
         convert σ_comp_σ_nat (n := m) a j (by grind) (by grind) (by grind) <;> grind
       simp only [standardσ_cons, Category.assoc, this,
@@ -451,7 +449,8 @@ lemma standardδ_simplicialInsert (hL : IsAdmissible (n + 2) L) (j : ℕ) (hj : 
     simp only [simplicialInsert]
     split_ifs
     · simp
-    · have : ∀ (j k : ℕ) (h : j < k + 1), Fin.ofNat (k + 1) j = j := by simp
+    · have : ∀ (j k : ℕ) (h : j < (k + 1)), Fin.ofNat (k + 1) j = j := by simp -- helps grind below
+      have : a < n + 3 := by grind -- helps grind below
       have : δ (Fin.ofNat (n + 2) a) ≫ δ (.ofNat _ (j + 1)) = δ (.ofNat _ j) ≫ δ (.ofNat _ a) := by
         convert δ_comp_δ_nat (n := n) a j (by grind) (by grind) (by grind) <;> grind
       simp only [standardδ_cons, reassoc_of% this, h_rec hL.tail (j + 1) (by grind) (by grind)]

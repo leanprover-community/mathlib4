@@ -8,7 +8,7 @@ import Mathlib.Order.Sublattice
 /-!
 # Boolean subalgebras
 
-This file defines boolean subalgebras.
+This file defines Boolean subalgebras.
 -/
 
 open Function Set
@@ -16,7 +16,7 @@ open Function Set
 variable {ι : Sort*} {α β γ : Type*}
 
 variable (α) in
-/-- A boolean subalgebra of a boolean algebra is a set containing the bottom and top elements, and
+/-- A Boolean subalgebra of a Boolean algebra is a set containing the bottom and top elements, and
 closed under suprema, infima and complements. -/
 structure BooleanSubalgebra [BooleanAlgebra α] extends Sublattice α where
   compl_mem' {a} : a ∈ carrier → aᶜ ∈ carrier
@@ -58,7 +58,7 @@ lemma mem_carrier : a ∈ L.carrier ↔ a ∈ L := .rfl
 @[simp] lemma mk_lt_mk {L M : Sublattice α} (hL_compl hL_bot hM_compl hM_bot) :
     mk L hL_compl hL_bot < mk M hM_compl hM_bot ↔ L < M := .rfl
 
-/-- Copy of a boolean subalgebra with a new `carrier` equal to the old one. Useful to fix
+/-- Copy of a Boolean subalgebra with a new `carrier` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (L : BooleanSubalgebra α) (s : Set α) (hs : s = L) : BooleanSubalgebra α where
   toSublattice := L.toSublattice.copy s <| by subst hs; rfl
@@ -71,28 +71,28 @@ lemma coe_copy (L : BooleanSubalgebra α) (s : Set α) (hs) : L.copy s hs = s :=
 lemma copy_eq (L : BooleanSubalgebra α) (s : Set α) (hs) : L.copy s hs = L :=
   SetLike.coe_injective hs
 
-/-- Two boolean subalgebras are equal if they have the same elements. -/
+/-- Two Boolean subalgebras are equal if they have the same elements. -/
 lemma ext : (∀ a, a ∈ L ↔ a ∈ M) → L = M := SetLike.ext
 
-/-- A boolean subalgebra of a lattice inherits a bottom element. -/
+/-- A Boolean subalgebra of a lattice inherits a bottom element. -/
 instance instBotCoe : Bot L where bot := ⟨⊥, bot_mem⟩
 
-/-- A boolean subalgebra of a lattice inherits a top element. -/
+/-- A Boolean subalgebra of a lattice inherits a top element. -/
 instance instTopCoe : Top L where top := ⟨⊤, top_mem⟩
 
-/-- A boolean subalgebra of a lattice inherits a supremum. -/
+/-- A Boolean subalgebra of a lattice inherits a supremum. -/
 instance instSupCoe : Max L where max a b := ⟨a ⊔ b, L.supClosed a.2 b.2⟩
 
-/-- A boolean subalgebra of a lattice inherits an infimum. -/
+/-- A Boolean subalgebra of a lattice inherits an infimum. -/
 instance instInfCoe : Min L where min a b := ⟨a ⊓ b, L.infClosed a.2 b.2⟩
 
-/-- A boolean subalgebra of a lattice inherits a complement. -/
+/-- A Boolean subalgebra of a lattice inherits a complement. -/
 instance instHasComplCoe : HasCompl L where compl a := ⟨aᶜ, compl_mem a.2⟩
 
-/-- A boolean subalgebra of a lattice inherits a difference. -/
+/-- A Boolean subalgebra of a lattice inherits a difference. -/
 instance instSDiffCoe : SDiff L where sdiff a b := ⟨a \ b, sdiff_mem a.2 b.2⟩
 
-/-- A boolean subalgebra of a lattice inherits a Heyting implication. -/
+/-- A Boolean subalgebra of a lattice inherits a Heyting implication. -/
 instance instHImpCoe : HImp L where himp a b := ⟨a ⇨ b, himp_mem a.2 b.2⟩
 
 @[simp, norm_cast] lemma val_bot : (⊥ : L) = (⊥ : α) := rfl
@@ -115,12 +115,12 @@ instance instHImpCoe : HImp L where himp a b := ⟨a ⇨ b, himp_mem a.2 b.2⟩
 @[simp] lemma mk_himp_mk (a b : α) (ha hb) : (⟨a, ha⟩ ⇨ ⟨b, hb⟩ : L) = ⟨a ⇨ b, himp_mem ha hb⟩ :=
   rfl
 
-/-- A boolean subalgebra of a lattice inherits a boolean algebra structure. -/
+/-- A Boolean subalgebra of a lattice inherits a Boolean algebra structure. -/
 instance instBooleanAlgebraCoe (L : BooleanSubalgebra α) : BooleanAlgebra L :=
   Subtype.coe_injective.booleanAlgebra _ val_sup val_inf val_top val_bot val_compl val_sdiff
     val_himp
 
-/-- The natural lattice hom from a boolean subalgebra to the original lattice. -/
+/-- The natural lattice hom from a Boolean subalgebra to the original lattice. -/
 def subtype (L : BooleanSubalgebra α) : BoundedLatticeHom L α where
   toFun := ((↑) : L → α)
   map_bot' := L.val_bot
@@ -133,7 +133,7 @@ lemma subtype_apply (L : BooleanSubalgebra α) (a : L) : L.subtype a = a := rfl
 
 lemma subtype_injective (L : BooleanSubalgebra α) : Injective <| subtype L := Subtype.coe_injective
 
-/-- The inclusion homomorphism from a boolean subalgebra `L` to a bigger boolean subalgebra `M`. -/
+/-- The inclusion homomorphism from a Boolean subalgebra `L` to a bigger Boolean subalgebra `M`. -/
 def inclusion (h : L ≤ M) : BoundedLatticeHom L M where
   toFun := Set.inclusion h
   map_bot' := rfl
@@ -149,7 +149,7 @@ lemma inclusion_injective (h : L ≤ M) : Injective <| inclusion h := Set.inclus
 @[simp] lemma inclusion_rfl (L : BooleanSubalgebra α) : inclusion le_rfl = .id L := rfl
 @[simp] lemma subtype_comp_inclusion (h : L ≤ M) : M.subtype.comp (inclusion h) = L.subtype := rfl
 
-/-- The maximum boolean subalgebra of a lattice. -/
+/-- The maximum Boolean subalgebra of a lattice. -/
 instance instTop : Top (BooleanSubalgebra α) where
   top.carrier := univ
   top.bot_mem' := mem_univ _
@@ -157,7 +157,7 @@ instance instTop : Top (BooleanSubalgebra α) where
   top.supClosed' := supClosed_univ
   top.infClosed' := infClosed_univ
 
-/-- The trivial boolean subalgebra of a lattice. -/
+/-- The trivial Boolean subalgebra of a lattice. -/
 instance instBot : Bot (BooleanSubalgebra α) where
   bot.carrier := {⊥, ⊤}
   bot.bot_mem' := by simp
@@ -165,7 +165,7 @@ instance instBot : Bot (BooleanSubalgebra α) where
   bot.supClosed' _ := by simp
   bot.infClosed' _ := by simp
 
-/-- The inf of two boolean subalgebras is their intersection. -/
+/-- The inf of two Boolean subalgebras is their intersection. -/
 instance instInf : Min (BooleanSubalgebra α) where
   min L M :=  { carrier := L ∩ M
                 bot_mem' := ⟨bot_mem, bot_mem⟩
@@ -173,7 +173,7 @@ instance instInf : Min (BooleanSubalgebra α) where
                 supClosed' := L.supClosed.inter M.supClosed
                 infClosed' := L.infClosed.inter M.infClosed }
 
-/-- The inf of boolean subalgebras is their intersection. -/
+/-- The inf of Boolean subalgebras is their intersection. -/
 instance instInfSet : InfSet (BooleanSubalgebra α) where
   sInf S := { carrier := ⋂ L ∈ S, L
               bot_mem' := mem_iInter₂.2 fun _ _ ↦ bot_mem
@@ -185,9 +185,9 @@ instance instInfSet : InfSet (BooleanSubalgebra α) where
 
 instance instInhabited : Inhabited (BooleanSubalgebra α) := ⟨⊥⟩
 
-/-- The top boolean subalgebra is isomorphic to the original boolean algebra.
+/-- The top Boolean subalgebra is isomorphic to the original Boolean algebra.
 
-This is the boolean subalgebra version of `Equiv.Set.univ α`. -/
+This is the Boolean subalgebra version of `Equiv.Set.univ α`. -/
 def topEquiv : (⊤ : BooleanSubalgebra α) ≃o α where
   toEquiv := Equiv.Set.univ _
   map_rel_iff' := .rfl
@@ -228,7 +228,7 @@ instance instCompleteLattice : CompleteLattice (BooleanSubalgebra α) where
 instance [IsEmpty α] : Subsingleton (BooleanSubalgebra α) := SetLike.coe_injective.subsingleton
 instance [IsEmpty α] : Unique (BooleanSubalgebra α) := uniqueOfSubsingleton ⊤
 
-/-- The preimage of a boolean subalgebra along a bounded lattice homomorphism. -/
+/-- The preimage of a Boolean subalgebra along a bounded lattice homomorphism. -/
 def comap (f : BoundedLatticeHom α β) (L : BooleanSubalgebra β) : BooleanSubalgebra α where
   carrier := f ⁻¹' L
   bot_mem' := by simp
@@ -248,7 +248,7 @@ lemma comap_mono : Monotone (comap f) := fun _ _ ↦ preimage_mono
 @[simp] lemma comap_comap (L : BooleanSubalgebra γ) (g : BoundedLatticeHom β γ)
     (f : BoundedLatticeHom α β) : (L.comap g).comap f = L.comap (g.comp f) := rfl
 
-/-- The image of a boolean subalgebra along a monoid homomorphism is a boolean subalgebra. -/
+/-- The image of a Boolean subalgebra along a monoid homomorphism is a Boolean subalgebra. -/
 def map (f : BoundedLatticeHom α β) (L : BooleanSubalgebra α) : BooleanSubalgebra β where
   carrier := f '' L
   bot_mem' := ⟨⊥, by simp⟩
@@ -330,7 +330,7 @@ lemma map_inf (L M : BooleanSubalgebra α) (f : BoundedLatticeHom α β) (hf : I
 lemma map_top (f : BoundedLatticeHom α β) (h : Surjective f) : BooleanSubalgebra.map f ⊤ = ⊤ :=
   SetLike.coe_injective <| by simp [h.range_eq]
 
-/-- The minimum boolean subalgebra containing a given set. -/
+/-- The minimum Boolean subalgebra containing a given set. -/
 def closure (s : Set α) : BooleanSubalgebra α := sInf {L | s ⊆ L}
 
 variable {s : Set α}

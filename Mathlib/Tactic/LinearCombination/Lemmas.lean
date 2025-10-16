@@ -190,7 +190,7 @@ theorem lt_rearrange {α : Type*} [AddCommGroup α] [PartialOrder α] [IsOrdered
 
 theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a : α) = b)
     (H : (a' - b') ^ n - (a - b) = 0) : a' = b' := by
-  rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
+  rw [← sub_eq_zero] at p ⊢; apply eq_zero_of_pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
 end Tactic.LinearCombination
 
@@ -213,7 +213,7 @@ def addRelRelData : Ineq → Ineq → Name
   | lt, lt => ``add_lt_add
 
 /-- Finite inductive type extending `Mathlib.Ineq`: a type of inequality (`eq`, `le` or `lt`),
-together with, in the case of `lt`, a boolean, typically representing the strictness (< or ≤) of
+together with, in the case of `lt`, a Boolean, typically representing the strictness (< or ≤) of
 some other inequality. -/
 protected inductive WithStrictness : Type
   | eq : Ineq.WithStrictness

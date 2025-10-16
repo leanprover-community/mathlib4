@@ -248,7 +248,7 @@ theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continu
 theorem IsOpen.prod {s : Set X} {t : Set Y} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ×ˢ t) :=
   (hs.preimage continuous_fst).inter (ht.preimage continuous_snd)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean fails to find `t₁` and `t₂` by unification
+-- Porting note: Lean fails to find `t₁` and `t₂` by unification
 theorem nhds_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
   rw [prod_eq_inf, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
     (t₂ := TopologicalSpace.induced Prod.snd _), nhds_induced, nhds_induced]
@@ -622,6 +622,8 @@ variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
+  continuous_toFun := by dsimp; fun_prop
+  continuous_invFun := by dsimp; fun_prop
 
 @[simp]
 theorem prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :

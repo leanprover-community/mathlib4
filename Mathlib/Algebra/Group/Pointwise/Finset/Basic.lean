@@ -268,6 +268,15 @@ variable [DecidableEq α] [InvolutiveInv α] {s : Finset α} {a : α}
 @[to_additive (attr := simp)]
 lemma mem_inv' : a ∈ s⁻¹ ↔ a⁻¹ ∈ s := by simp [mem_inv, inv_eq_iff_eq_inv]
 
+@[to_additive (attr := simp)]
+theorem inv_filter (s : Finset α) (p : α → Prop) [DecidablePred p] :
+    ({x ∈ s | p x} : Finset α)⁻¹ = {x ∈ s⁻¹ | p x⁻¹} := by
+  ext; simp
+
+theorem inv_filter_univ (p : α → Prop) [Fintype α] [DecidablePred p] :
+    ({x | p x} : Finset α)⁻¹ = {x | p x⁻¹} := by
+  simp
+
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.trans Set.image_inv_eq_inv
 
@@ -795,9 +804,9 @@ variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   change ↑(npowRec n s) = (s : Set α) ^ n
-  induction' n with n ih
-  · rw [npowRec, pow_zero, coe_one]
-  · rw [npowRec, pow_succ, coe_mul, ih]
+  induction n with
+  | zero => rw [npowRec, pow_zero, coe_one]
+  | succ n ih => rw [npowRec, pow_succ, coe_mul, ih]
 
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
 @[to_additive /-- `Finset α` is an `AddMonoid` under pointwise operations if `α` is. -/]

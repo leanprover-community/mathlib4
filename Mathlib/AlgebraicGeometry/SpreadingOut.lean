@@ -84,7 +84,7 @@ lemma Scheme.exists_le_and_germ_injective (X : Scheme.{u}) (x : X) [X.IsGermInje
   exact ⟨X.basicOpen f, hxf, hU.basicOpen f, hf, injective_germ_basicOpen U hU x hx f hxf H⟩
 
 instance (x : X) [X.IsGermInjectiveAt x] [IsOpenImmersion f] :
-    Y.IsGermInjectiveAt (f.base x) := by
+    Y.IsGermInjectiveAt (f x) := by
   obtain ⟨U, hxU, hU, H⟩ := X.exists_germ_injective x
   refine ⟨⟨f ''ᵁ U, ⟨x, hxU, rfl⟩, hU.image_of_isOpenImmersion f, ?_⟩⟩
   refine ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
@@ -95,13 +95,13 @@ instance (x : X) [X.IsGermInjectiveAt x] [IsOpenImmersion f] :
 
 variable {f} in
 lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f] :
-    Y.IsGermInjectiveAt (f.base x) ↔ X.IsGermInjectiveAt x := by
+    Y.IsGermInjectiveAt (f x) ↔ X.IsGermInjectiveAt x := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
   obtain ⟨U, hxU, hU, hU', H⟩ :=
-    Y.exists_le_and_germ_injective (f.base x) (V := f.opensRange) ⟨x, rfl⟩
+    Y.exists_le_and_germ_injective (f x) (V := f.opensRange) ⟨x, rfl⟩
   obtain ⟨V, hV⟩ := (IsOpenImmersion.affineOpensEquiv f).surjective ⟨⟨U, hU⟩, hU'⟩
   obtain rfl : f ''ᵁ V = U := Subtype.eq_iff.mp (Subtype.eq_iff.mp hV)
-  obtain ⟨y, hy, e : f.base y = f.base x⟩ := hxU
+  obtain ⟨y, hy, e : f y = f x⟩ := hxU
   obtain rfl := f.isOpenEmbedding.injective e
   refine ⟨V, hy, V.2, ?_⟩
   replace H := ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
@@ -119,7 +119,7 @@ This is typically satisfied when `X` is integral or locally Noetherian.
 abbrev Scheme.IsGermInjective (X : Scheme.{u}) := ∀ x : X, X.IsGermInjectiveAt x
 
 lemma Scheme.IsGermInjective.of_openCover
-    {X : Scheme.{u}} (𝒰 : X.OpenCover) [∀ i, (𝒰.obj i).IsGermInjective] : X.IsGermInjective := by
+    {X : Scheme.{u}} (𝒰 : X.OpenCover) [∀ i, (𝒰.X i).IsGermInjective] : X.IsGermInjective := by
   intro x
   rw [← (𝒰.covers x).choose_spec]
   infer_instance
@@ -151,10 +151,10 @@ lemma Scheme.IsGermInjective.Spec
   exact ⟨⟨_, n, rfl⟩, hn⟩
 
 instance (priority := 100) [IsIntegral X] : X.IsGermInjective := by
-  refine fun x ↦ ⟨⟨(X.affineCover.map x).opensRange, X.affineCover.covers x,
-    (isAffineOpen_opensRange (X.affineCover.map x)), ?_⟩⟩
-  have : Nonempty (X.affineCover.map x).opensRange := ⟨⟨_, X.affineCover.covers x⟩⟩
-  have := (isAffineOpen_opensRange (X.affineCover.map x)).isLocalization_stalk
+  refine fun x ↦ ⟨⟨(X.affineCover.f _).opensRange, X.affineCover.covers x,
+    (isAffineOpen_opensRange (X.affineCover.f _)), ?_⟩⟩
+  have : Nonempty (X.affineCover.f _).opensRange := ⟨⟨_, X.affineCover.covers x⟩⟩
+  have := (isAffineOpen_opensRange (X.affineCover.f _)).isLocalization_stalk
     ⟨_, X.affineCover.covers x⟩
   exact @IsLocalization.injective _ _ _ _ _ (show _ from _) this
     (Ideal.primeCompl_le_nonZeroDivisors _)
@@ -162,7 +162,7 @@ instance (priority := 100) [IsIntegral X] : X.IsGermInjective := by
 instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   suffices ∀ (R : CommRingCat.{u}) (_ : IsNoetherianRing R), (Spec R).IsGermInjective by
     refine @Scheme.IsGermInjective.of_openCover _ (X.affineOpenCover.openCover) (fun i ↦ this _ ?_)
-    have := isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.map i)
+    have := isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.f i)
     infer_instance
   refine fun R hR ↦ Scheme.IsGermInjective.Spec fun I hI ↦ ?_
   let J := RingHom.ker <| algebraMap R (Localization.AtPrime I)
@@ -191,13 +191,13 @@ TODO: The condition on `X` is unnecessary when `Y` is locally of finite type.
 -/
 @[stacks 0BX6]
 lemma spread_out_unique_of_isGermInjective {x : X} [X.IsGermInjectiveAt x]
-    (f g : X ⟶ Y) (e : f.base x = g.base x)
+    (f g : X ⟶ Y) (e : f x = g x)
     (H : f.stalkMap x =
       Y.presheaf.stalkSpecializes (Inseparable.of_eq e.symm).specializes ≫ g.stalkMap x) :
     ∃ (U : X.Opens), x ∈ U ∧ U.ι ≫ f = U.ι ≫ g := by
   obtain ⟨_, ⟨V : Y.Opens, hV, rfl⟩, hxV, -⟩ :=
-    (isBasis_affine_open Y).exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
-  have hxV' : g.base x ∈ V := e ▸ hxV
+    Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
+  have hxV' : g x ∈ V := e ▸ hxV
   obtain ⟨U, hxU, _, hUV, HU⟩ := X.exists_le_and_germ_injective x (f ⁻¹ᵁ V ⊓ g ⁻¹ᵁ V) ⟨hxV, hxV'⟩
   refine ⟨U, hxU, ?_⟩
   rw [← Scheme.Hom.resLE_comp_ι _ (hUV.trans inf_le_left),
@@ -215,8 +215,8 @@ lemma spread_out_unique_of_isGermInjective {x : X} [X.IsGermInjectiveAt x]
   rintro U V rfl rfl
   have := ConcreteCategory.mono_of_injective _ HU
   rw [← cancel_mono (X.presheaf.germ U x hxU)]
-  simp only [Scheme.Hom.appLE, Category.assoc, X.presheaf.germ_res', ← Scheme.stalkMap_germ, H]
-  simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ]
+  simp only [Scheme.Hom.appLE, Category.assoc, X.presheaf.germ_res', ← Scheme.Hom.germ_stalkMap, H]
+  simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.Hom.germ_stalkMap]
 
 /--
 A variant of `spread_out_unique_of_isGermInjective`
@@ -227,10 +227,10 @@ lemma spread_out_unique_of_isGermInjective' {x : X} [X.IsGermInjectiveAt x]
     (e : X.fromSpecStalk x ≫ f = X.fromSpecStalk x ≫ g) :
     ∃ (U : X.Opens), x ∈ U ∧ U.ι ≫ f = U.ι ≫ g := by
   fapply spread_out_unique_of_isGermInjective
-  · simpa using congr(($e).base (IsLocalRing.closedPoint _))
+  · simpa using congr($e (IsLocalRing.closedPoint _))
   · apply Spec.map_injective
     rw [← cancel_mono (Y.fromSpecStalk _)]
-    simpa [Scheme.Spec_map_stalkSpecializes_fromSpecStalk]
+    simpa [Scheme.SpecMap_stalkSpecializes_fromSpecStalk]
 
 lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
     (φ : A ⟶ X.presheaf.stalk x) (φRA : R ⟶ A) (φRX : R ⟶ Γ(X, U))
@@ -322,21 +322,21 @@ TODO: The condition on `X` is unnecessary when `Y` is locally of finite presenta
 -/
 @[stacks 0BX6]
 lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermInjectiveAt x] {y : Y}
-    (e : sX.base x = sY.base y) (φ : Y.presheaf.stalk y ⟶ X.presheaf.stalk x)
+    (e : sX x = sY y) (φ : Y.presheaf.stalk y ⟶ X.presheaf.stalk x)
     (h : sY.stalkMap y ≫ φ =
       S.presheaf.stalkSpecializes (Inseparable.of_eq e).specializes ≫ sX.stalkMap x) :
     ∃ (U : X.Opens) (hxU : x ∈ U) (f : U.toScheme ⟶ Y),
       Spec.map φ ≫ Y.fromSpecStalk y = U.fromSpecStalkOfMem x hxU ≫ f ∧
       f ≫ sY = U.ι ≫ sX := by
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
-    (isBasis_affine_open S).exists_subset_of_mem_open (Set.mem_univ (sX.base x)) isOpen_univ
-  have hyU : sY.base y ∈ U := e ▸ hxU
+    S.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (sX x)) isOpen_univ
+  have hyU : sY y ∈ U := e ▸ hxU
   obtain ⟨_, ⟨V : Y.Opens, hV, rfl⟩, hyV, iVU⟩ :=
-    (isBasis_affine_open Y).exists_subset_of_mem_open hyU (sY ⁻¹ᵁ U).2
+    Y.isBasis_affineOpens.exists_subset_of_mem_open hyU (sY ⁻¹ᵁ U).2
   have : sY.appLE U V iVU ≫ Y.presheaf.germ V y hyV ≫ φ =
       sX.app U ≫ X.presheaf.germ (sX ⁻¹ᵁ U) x hxU := by
     rw [Scheme.Hom.appLE, Category.assoc, Y.presheaf.germ_res_assoc,
-      ← Scheme.stalkMap_germ_assoc, h]
+      ← Scheme.Hom.germ_stalkMap_assoc, h]
     simp
   obtain ⟨W, hxW, φ', i, hW, h₁, h₂⟩ :=
     exists_lift_of_germInjective (R := Γ(S, U)) (A := Γ(Y, V)) (U := sX ⁻¹ᵁ U) (x := x) hxU
@@ -347,8 +347,8 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
       Spec.map_comp, Category.assoc, ← IsAffineOpen.fromSpecStalk,
       IsAffineOpen.fromSpecStalk_eq_fromSpecStalk]
   · simp only [Category.assoc]
-    rw [← IsAffineOpen.Spec_map_appLE_fromSpec sY hU hV iVU, ← Spec.map_comp_assoc, ← h₂,
-      ← Scheme.Hom.appLE, ← hW.isoSpec_hom, IsAffineOpen.Spec_map_appLE_fromSpec sX hU hW i,
+    rw [← IsAffineOpen.SpecMap_appLE_fromSpec sY hU hV iVU, ← Spec.map_comp_assoc, ← h₂,
+      ← Scheme.Hom.appLE, ← hW.isoSpec_hom, IsAffineOpen.SpecMap_appLE_fromSpec sX hU hW i,
       ← Iso.eq_inv_comp, IsAffineOpen.isoSpec_inv_ι_assoc]
 
 /--
@@ -366,11 +366,11 @@ lemma spread_out_of_isGermInjective' [LocallyOfFiniteType sY] {x : X} [X.IsGermI
       φ = U.fromSpecStalkOfMem x hxU ≫ f ∧ f ≫ sY = U.ι ≫ sX := by
   have := spread_out_of_isGermInjective sX sY ?_ (Scheme.stalkClosedPointTo φ) ?_
   · simpa only [Scheme.Spec_stalkClosedPointTo_fromSpecStalk] using this
-  · rw [← Scheme.comp_base_apply, h, Scheme.comp_base_apply, Scheme.fromSpecStalk_closedPoint]
+  · rw [← Scheme.Hom.comp_apply, h, Scheme.Hom.comp_apply, Scheme.fromSpecStalk_closedPoint]
   · apply Spec.map_injective
     rw [← cancel_mono (S.fromSpecStalk _)]
-    simpa only [Spec.map_comp, Category.assoc, Scheme.Spec_map_stalkMap_fromSpecStalk,
+    simpa only [Spec.map_comp, Category.assoc, Scheme.SpecMap_stalkMap_fromSpecStalk,
       Scheme.Spec_stalkClosedPointTo_fromSpecStalk_assoc,
-      Scheme.Spec_map_stalkSpecializes_fromSpecStalk]
+      Scheme.SpecMap_stalkSpecializes_fromSpecStalk]
 
 end AlgebraicGeometry
