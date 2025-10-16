@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Data.Set.Notation
 public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Directed
@@ -31,7 +32,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 
 assert_not_exists CompleteLattice
 
-open Set
+open Set Set.Notation
 
 variable {α β : Type*}
 
@@ -123,10 +124,14 @@ theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·)
 @[simp] protected theorem IsChain.diff {s t : Set α} (h : IsChain r s) : IsChain r (s \ t) :=
   h.mono Set.diff_subset
 
-protected theorem IsChain.coe_univ_iff {s : Set α} :
-    @IsChain ↑s (r ↑· ↑·) Set.univ ↔ IsChain r s :=
-  ⟨fun h a ha b hb hne ↦ @h ⟨a, ha⟩ (by simp) ⟨b, hb⟩ (by simp) (by simp [hne]),
-   fun h a _ b _ hne ↦ @h a.1 a.2 b.1 b.2 (Subtype.coe_ne_coe.mpr hne)⟩
+theorem isChain_preimage_subtypeVal (s t : Set α) :
+    IsChain (fun x y : ↑s ↦ r x y) (s ↓∩ t : Set ↑s) ↔ IsChain r (s ∩ t) :=
+  ⟨fun h a ha b hb hne ↦ @h ⟨a, by grind⟩ (by grind) ⟨b, by grind⟩ (by grind) (by grind),
+   fun h a ha b hb hne ↦ @h a (by grind) b (by grind) (Subtype.coe_ne_coe.mpr hne)⟩
+
+theorem isChain_coe_univ_iff {s : Set α} :
+    @IsChain ↑s (r ↑· ↑·) Set.univ ↔ IsChain r s := by
+  simpa using isChain_preimage_subtypeVal s Set.univ
 
 section Rel
 

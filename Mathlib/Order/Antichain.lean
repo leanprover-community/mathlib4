@@ -27,7 +27,7 @@ relation is `G.Adj` for `G : SimpleGraph α`, this corresponds to independent se
 
 assert_not_exists CompleteLattice
 
-open Function Set
+open Function Set Set.Notation
 
 section General
 
@@ -176,12 +176,16 @@ theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
 @[simp] protected theorem diff {s t : Set α} (h : IsAntichain r s) : IsAntichain r (s \ t) :=
   h.subset Set.diff_subset
 
-protected theorem coe_univ_iff {s : Set α} :
-    @IsAntichain ↑s (r ↑· ↑·) Set.univ ↔ IsAntichain r s :=
-  ⟨fun h a ha b hb hne ↦ @h ⟨a, ha⟩ (by simp) ⟨b, hb⟩ (by simp) (by simp [hne]),
-   fun h a _ b _ hne ↦ @h a.1 a.2 b.1 b.2 (Subtype.coe_ne_coe.mpr hne)⟩
-
 end IsAntichain
+
+theorem isAntichain_preimage_subtypeVal (s t : Set α) :
+    IsAntichain (fun x y : ↑s ↦ r x y) (s ↓∩ t : Set ↑s) ↔ IsAntichain r (s ∩ t) :=
+  ⟨fun h a ha b hb hne ↦ @h ⟨a, by grind⟩ (by grind) ⟨b, by grind⟩ (by grind) (by grind),
+   fun h a ha b hb hne ↦ @h a (by grind) b (by grind) (Subtype.coe_ne_coe.mpr hne)⟩
+
+theorem isAntichain_coe_univ_iff {s : Set α} :
+    @IsAntichain ↑s (r ↑· ↑·) Set.univ ↔ IsAntichain r s := by
+  simpa using isAntichain_preimage_subtypeVal s Set.univ
 
 theorem isAntichain_union :
     IsAntichain r (s ∪ t) ↔
