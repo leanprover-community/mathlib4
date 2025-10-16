@@ -102,8 +102,8 @@ private theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x
   obtain e := stdOrthonormalBasis 𝕜 E'
   obtain f := stdOrthonormalBasis 𝕜 F'
   have (i) (j) : (e.toBasis.tensorProduct f.toBasis).repr y (i, j) = 0 := by
-    rw [inner_self y e f] at hx
-    rw [RCLike.ofReal_eq_zero, Finset.sum_eq_zero_iff_of_nonneg fun _ _ => by simp] at hx
+    rw [inner_self y e f, RCLike.ofReal_eq_zero,
+      Finset.sum_eq_zero_iff_of_nonneg fun _ _ => by simp] at hx
     simp only [Finset.mem_univ, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
       norm_eq_zero, forall_const, Prod.forall] at hx
     exact hx _ _
