@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Rat.Encodable
-import Mathlib.RingTheory.Real.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Instances.Real.Lemmas
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.RingTheory.Real.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.Rify
 
