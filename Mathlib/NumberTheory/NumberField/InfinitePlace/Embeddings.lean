@@ -117,7 +117,7 @@ theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ 
   rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
   refine h.resolve_right fun hp => ?_
   specialize hx (IsAlgClosed.lift (R := ℚ)).toRingHom
-  rw [pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
+  rw [eq_zero_of_pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
 
 end Bounded
 
