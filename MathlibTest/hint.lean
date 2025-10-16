@@ -6,6 +6,7 @@ import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Bound
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.ComputeDegree
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Finiteness
 import Mathlib.Tactic.GCongr
