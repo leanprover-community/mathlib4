@@ -25,8 +25,7 @@ A linear order with a bottom element is registered on OrderTypes, where `⊥` is
 
 ## Notation
 
-* `ω` is a notation for the first infinite OrderType in the scope `OrderType`,
-which is the order type of `ℕ` with its natural order.
+* `ω` is a notation for the order type of `ℕ` with its natural order.
 * `η` is a notation for the order type of the rational numbers,
 which is the order type of `ℚ` with its natural order.
 * `θ` is a notation for the order type of the real numbers on the interval `(0,1)`.
