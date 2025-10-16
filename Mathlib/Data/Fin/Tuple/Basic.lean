@@ -3,7 +3,7 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, Antoine Chambert-Loir
 -/
-import Mathlib.Data.Fin.Rev
+import Batteries.Data.Fin.Lemmas
 import Mathlib.Data.Nat.Find
 import Mathlib.Order.Fin.Basic
 
@@ -1271,3 +1271,4 @@ def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
   toFun f := (f 0, f 1)
   invFun p := Fin.cons p.1 <| Fin.cons p.2 finZeroElim
   left_inv _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
+
