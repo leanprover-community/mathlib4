@@ -172,14 +172,14 @@ def binaryProductLimit (X Y : Type u) : IsLimit (binaryProductCone X Y) where
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
   uniq _ _ w := funext fun x => Prod.ext (congr_fun (w ⟨left⟩) x) (congr_fun (w ⟨right⟩) x)
 
-/-- The category of types has `X × Y`, the usual cartesian product,
+/-- The category of types has `X × Y`, the usual Cartesian product,
 as the binary product of `X` and `Y`.
 -/
 @[simps]
 def binaryProductLimitCone (X Y : Type u) : Limits.LimitCone (pair X Y) :=
   ⟨_, binaryProductLimit X Y⟩
 
-/-- The categorical binary product in `Type u` is cartesian product. -/
+/-- The categorical binary product in `Type u` is Cartesian product. -/
 noncomputable def binaryProductIso (X Y : Type u) : Limits.prod X Y ≅ X × Y :=
   limit.isoLimitCone (binaryProductLimitCone X Y)
 
@@ -339,7 +339,7 @@ def productLimitCone {J : Type v} (F : J → Type max v u) :
     { lift := fun s x j => s.π.app ⟨j⟩ x
       uniq := fun _ _ w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x :) }
 
-/-- The categorical product in `Type max v u` is the type theoretic product `Π j, F j`. -/
+/-- The categorical product in `Type max v u` is the type-theoretic product `Π j, F j`. -/
 noncomputable def productIso {J : Type v} (F : J → Type max v u) : ∏ᶜ F ≅ ∀ j, F j :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
@@ -372,7 +372,7 @@ noncomputable def productLimitCone :
         simpa using (congr_fun (w ⟨j⟩) x :) }
 
 /-- The categorical product in `Type u` indexed in `Type v`
-is the type theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
+is the type-theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
 noncomputable def productIso :
     (∏ᶜ F : Type u) ≅ Shrink.{u} (∀ j, F j) :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
@@ -402,7 +402,7 @@ def coproductColimitCocone {J : Type v} (F : J → Type max v u) :
         funext ⟨j, x⟩
         exact congr_fun (w ⟨j⟩) x }
 
-/-- The categorical coproduct in `Type u` is the type theoretic coproduct `Σ j, F j`. -/
+/-- The categorical coproduct in `Type u` is the type-theoretic coproduct `Σ j, F j`. -/
 noncomputable def coproductIso {J : Type v} (F : J → Type max v u) : ∐ F ≅ Σ j, F j :=
   colimit.isoColimitCocone (coproductColimitCocone F)
 
@@ -863,6 +863,11 @@ lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
   · rintro ⟨s, rfl, rfl⟩
     apply Rel'.inl_inr
 
+instance mono_inr [Mono f] : Mono (inr f g) := by
+  rw [mono_iff_injective]
+  intro x₂ y₂ h
+  simpa using (Pushout.quot_mk_eq_iff f g (Sum.inr x₂) (Sum.inr y₂)).1 h
+
 end Pushout
 
 variable {f g}
@@ -889,6 +894,30 @@ lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : Is
     (by simp))]
   have := (mono_iff_injective f).2 h₁
   apply Pushout.inl_eq_inr_iff
+
+lemma pushoutCocone_inr_mono_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
+    [Mono f] : Mono c.inr := by
+  change Mono ((Pushout.inr f g) ≫
+    ((Cocones.forget _).mapIso
+      (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc
+        (Pushout.isColimitCocone f g)) (by simp))).inv)
+  infer_instance
+
+lemma pushoutCocone_inr_injective_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
+    (h₁ : Function.Injective f) : Function.Injective c.inr := by
+  rw [← mono_iff_injective] at h₁ ⊢
+  exact pushoutCocone_inr_mono_of_isColimit hc
+
+instance mono_inl [Mono g] : Mono (Pushout.inl f g) :=
+  pushoutCocone_inr_mono_of_isColimit
+    (PushoutCocone.flipIsColimit (Pushout.isColimitCocone f g))
+
+instance [Mono f] : Mono (pushout.inr f g) :=
+  (pushoutCocone_inr_mono_of_isColimit (pushoutIsPushout f g):)
+
+instance [Mono g] : Mono (pushout.inl f g) :=
+  pushoutCocone_inr_mono_of_isColimit
+    (PushoutCocone.flipIsColimit (pushoutIsPushout f g))
 
 end Pushout
 

@@ -186,7 +186,7 @@ theorem finrank_eq_one_iff' [Module.Free K V] :
   rw [← rank_eq_one_iff]
   exact toNat_eq_iff one_ne_zero
 
-/-- A finite dimensional module has dimension at most 1 iff
+/-- A finite-dimensional module has dimension at most 1 iff
 there is some `v : V` so every vector is a multiple of `v`.
 -/
 theorem finrank_le_one_iff [Module.Free K V] [Module.Finite K V] :

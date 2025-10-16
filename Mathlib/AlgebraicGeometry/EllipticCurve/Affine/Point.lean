@@ -48,7 +48,7 @@ This file defines the group law on nonsingular points `W⟮F⟯` in affine coord
 * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
   coordinates forms an abelian group under addition.
 
-## Notations
+## Notation
 
 * `W⟮K⟯`: the group of nonsingular points on `W` base changed to `K`.
 
@@ -380,9 +380,6 @@ lemma mk_XYIdeal'_neg_mul {x y : F} (h : W.Nonsingular x y) :
   exact (ClassGroup.mk_eq_one_of_coe_ideal <| (coeIdeal_mul ..).symm.trans <|
     FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero x, rfl⟩
 
-@[deprecated (since := "2025-02-01")] alias mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq :=
-  mk_XYIdeal'_neg_mul
-
 lemma mk_XYIdeal'_mul_mk_XYIdeal' [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     (h₂ : W.Nonsingular x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
@@ -525,8 +522,9 @@ variable [DecidableEq F]
 instance : Add W.Point :=
   ⟨add⟩
 
-instance : AddZeroClass W.Point :=
-  ⟨by rintro (_ | _) <;> rfl, by rintro (_ | _) <;> rfl⟩
+instance : AddZeroClass W.Point where
+  zero_add := by rintro (_ | _) <;> rfl
+  add_zero := by rintro (_ | _) <;> rfl
 
 lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
   rfl
@@ -534,8 +532,6 @@ lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
 lemma add_some {x₁ x₂ y₁ y₂ : F} (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) {h₁ : W.Nonsingular x₁ y₁}
     {h₂ : W.Nonsingular x₂ y₂} : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ hxy) := by
   simp only [add_def, add, dif_neg hxy]
-
-@[deprecated (since := "2025-02-28")] alias add_of_imp := add_some
 
 @[simp]
 lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
@@ -596,8 +592,6 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
       exact (CoordinateRing.mk_XYIdeal'_neg_mul h₂).symm
     · simp only [add_some hxy]
       exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ hxy).symm
-
-@[deprecated (since := "2025-02-01")] alias toClassFun := toClass
 
 lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
@@ -664,8 +658,6 @@ noncomputable def map : W'⟮F⟯ →+ W'⟮K⟯ where
         add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
     · simp only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
       rw [add_some fun h => hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩]
-
-@[deprecated (since := "2025-02-01")] alias mapFun := map
 
 lemma map_zero : map f (0 : W'⟮F⟯) = 0 :=
   rfl

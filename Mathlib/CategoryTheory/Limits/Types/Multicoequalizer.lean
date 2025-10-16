@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Types.Set
 import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Data.Set.FunctorToTypes
 import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 
 /-!

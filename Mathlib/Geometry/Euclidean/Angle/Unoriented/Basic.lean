@@ -166,20 +166,27 @@ product of their norms. -/
 theorem sin_angle_mul_norm_mul_norm (x y : V) :
     Real.sin (angle x y) * (‖x‖ * ‖y‖) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) := by
   unfold angle
-  rw [Real.sin_arccos, ← Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
-    ← Real.sqrt_mul' _ (mul_self_nonneg _), sq,
-    Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
-    real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm]
-  by_cases h : ‖x‖ * ‖y‖ = 0
-  · rw [show ‖x‖ * ‖x‖ * (‖y‖ * ‖y‖) = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) by ring, h, mul_zero,
-      mul_zero, zero_sub]
-    rcases eq_zero_or_eq_zero_of_mul_eq_zero h with hx | hy
-    · rw [norm_eq_zero] at hx
-      rw [hx, inner_zero_left, zero_mul, neg_zero]
-    · rw [norm_eq_zero] at hy
-      rw [hy, inner_zero_right, zero_mul, neg_zero]
-  · obtain ⟨hy, hx⟩ := mul_ne_zero_iff.mp h
-    field_simp
+  rw [Real.sin_arccos]
+  nth_rw 2 [← Real.sqrt_sq (mul_nonneg (norm_nonneg x) (norm_nonneg y))]
+  rw [← Real.sqrt_mul' _ (by positivity), sq]
+  rcases eq_or_ne x 0 with (rfl | hx); · simp
+  rcases eq_or_ne y 0 with (rfl | hy); · simp
+  simp only [real_inner_self_eq_norm_mul_norm]
+  field_simp
+
+/-- The sine of the angle between two vectors. -/
+theorem sin_angle {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
+    Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
+  rw [← sin_angle_mul_norm_mul_norm]
+  field_simp
+
+/-- The sine of the angle between `x` and `x + y`. -/
+theorem sin_angle_add {x y : V} (hx : x ≠ 0) (hy : x + y ≠ 0) :
+    Real.sin (angle x (x + y)) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖x + y‖) := by
+  rw [sin_angle hx hy]
+  field_simp
+  simp only [inner_add_left, inner_add_right, real_inner_comm]
+  ring_nf
 
 /-- The angle between two vectors is zero if and only if they are
 nonzero and one is a positive multiple of the other. -/
