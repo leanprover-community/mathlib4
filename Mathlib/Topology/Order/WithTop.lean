@@ -183,7 +183,7 @@ variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
 section Coe
 
 lemma isEmbedding_coe : Topology.IsEmbedding ((↑) : ι → WithTop ι) := by
-  refine WithTop.coe_strictMono.isEmbedding_of_ordConnected ?_
+  refine WithTop.coe_strictMono.isEmbedding_of_ordConnected (α := ι) ?_
   rw [WithTop.range_coe]
   exact Set.ordConnected_Iio
 

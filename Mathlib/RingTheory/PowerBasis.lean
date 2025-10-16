@@ -114,7 +114,7 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
       · simp only [hf, natDegree_zero, degree_zero] at h ⊢
         first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
       simp_all only [degree_eq_natDegree hf]
-      · first | exact WithBot.coe_lt_coe.1 h | exact WithBot.coe_lt_coe.2 h
+      · exact WithBot.coe_lt_coe.1 h
 
 theorem dim_ne_zero [Nontrivial S] (pb : PowerBasis R S) : pb.dim ≠ 0 := fun h =>
   not_nonempty_iff.mpr (h.symm ▸ Fin.isEmpty : IsEmpty (Fin pb.dim)) pb.basis.index_nonempty

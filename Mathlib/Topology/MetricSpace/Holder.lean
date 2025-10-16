@@ -205,7 +205,7 @@ lemma of_isEmpty [IsEmpty X] : HolderWith C r f := isEmptyElim
 
 lemma mono {C' : ℝ≥0} (hf : HolderWith C r f) (h : C ≤ C') :
     HolderWith C' r f :=
-  fun x₁ x₂ ↦ (hf x₁ x₂).trans (mul_left_mono (coe_le_coe.2 h))
+  fun x₁ x₂ ↦ (hf x₁ x₂).trans (by gcongr)
 
 end HolderWith
 
