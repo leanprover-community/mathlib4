@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Patrick Luo, Bhavik Mehta
 -/
 import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Combinatorics.Additive.Convolution
-import Mathlib.Data.Real.GoldenRatio
+import Mathlib.NumberTheory.Real.GoldenRatio
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Qify
