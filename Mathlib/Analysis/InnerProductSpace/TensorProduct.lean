@@ -239,9 +239,10 @@ def mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
 
 @[simp] theorem inner_comm_comm (x y : E ⊗[𝕜] F) :
     inner 𝕜 (TensorProduct.comm 𝕜 E F x) (TensorProduct.comm 𝕜 E F y) = inner 𝕜 x y :=
-  x.induction_on (by simp) (fun _ _ => y.induction_on (by simp) (by simp [mul_comm])
-    (fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2]))
-    (fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2])
+  x.induction_on (by simp) (fun _ _ =>
+    y.induction_on (by simp) (by simp [mul_comm])
+    fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2])
+  fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2]
 
 variable (𝕜 E F) in
 /-- The linear isometry equivalence version of `TensorProduct.comm`. -/
@@ -265,10 +266,10 @@ lemma commIsometry_symm :
 
 @[simp] theorem inner_lid_lid (x y : 𝕜 ⊗[𝕜] E) :
     inner 𝕜 (TensorProduct.lid 𝕜 E x) (TensorProduct.lid 𝕜 E y) = inner 𝕜 x y :=
-  x.induction_on (by simp) (fun _ _ => y.induction_on (by simp)
-    (by simp [inner_smul_left, inner_smul_right, mul_assoc])
-    (fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2]))
-    (fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2])
+  x.induction_on (by simp) (fun _ _ =>
+    y.induction_on (by simp) (by simp [inner_smul_left, inner_smul_right, mul_assoc])
+    fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2])
+  fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2]
 
 variable (𝕜 E) in
 /-- The linear isometry equivalence version of `TensorProduct.lid`. -/
@@ -294,12 +295,12 @@ def lidIsometry : 𝕜 ⊗[𝕜] E ≃ₗᵢ[𝕜] E :=
     inner 𝕜 (TensorProduct.assoc 𝕜 E F G x) (TensorProduct.assoc 𝕜 E F G y) = inner 𝕜 x y :=
   x.induction_on (by simp) (fun a b =>
     y.induction_on (by simp) (fun c d =>
-      a.induction_on (by simp) (fun e f =>
+      a.induction_on (by simp) (fun _ _ =>
         c.induction_on (by simp) (by simp [mul_assoc])
-        (fun _ _ h1 h2 => by simp only [add_tmul, inner_add_right, map_add, h1, h2]))
-      (fun _ _ h1 h2 => by simp only [add_tmul, inner_add_left, map_add, h1, h2]))
-    (fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2]))
-  (fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2])
+        fun _ _ h1 h2 => by simp only [add_tmul, inner_add_right, map_add, h1, h2])
+      fun _ _ h1 h2 => by simp only [add_tmul, inner_add_left, map_add, h1, h2])
+    fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2])
+  fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2]
 
 variable (𝕜 E F G) in
 /-- The linear isometry equivalence version of `TensorProduct.assoc`. -/
