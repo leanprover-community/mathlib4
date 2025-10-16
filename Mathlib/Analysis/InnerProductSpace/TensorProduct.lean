@@ -85,7 +85,6 @@ private theorem inner_self {ι ι' : Type*} [Fintype ι] [Fintype ι'] (x : E �
     (e : OrthonormalBasis ι 𝕜 E) (f : OrthonormalBasis ι' 𝕜 F) :
     inner 𝕜 x x = ∑ i, ‖(e.toBasis.tensorProduct f.toBasis).repr x i‖ ^ 2 := by
   classical
-  -- maybe turn this into a lemma
   have : x = ∑ i : ι, ∑ j : ι', (e.toBasis.tensorProduct f.toBasis).repr x (i, j) • e i ⊗ₜ f j := by
     conv_lhs => rw [← (e.toBasis.tensorProduct f.toBasis).sum_repr x]
     simp [← Finset.sum_product', Basis.tensorProduct_apply']
