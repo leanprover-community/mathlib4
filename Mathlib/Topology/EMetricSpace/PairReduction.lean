@@ -91,7 +91,6 @@ d(f(s), f(t)) ≤ d(f(tᵢ), f(s)) + d(f(tᵢ), f(t))
 ```
 taking supremums completes the proof (see `iSup_edist_pairSet`).
 
-
 ## References
 
 * [V. Krätschmer, M. Urusov, *A Kolmogorov–Chentsov Type Theorem on General Metric Spaces with
@@ -472,7 +471,8 @@ set `K ⊆ J²` such that for any function `f : T → E`:
 2. `∀ (s, t) ∈ K, d(s, t) ≤ cn`
 3. `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))`
 -/
-theorem pair_reduction (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [PseudoEMetricSpace E] :
+theorem EMetric.pair_reduction
+    (hJ_card : #J ≤ a ^ n) (c : ℝ≥0∞) (E : Type*) [PseudoEMetricSpace E] :
     ∃ K : Finset (T × T), K ⊆ J ×ˢ J
       ∧ #K ≤ a * #J
       ∧ (∀ s t, (s, t) ∈ K → edist s t ≤ n * c)
