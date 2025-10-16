@@ -515,6 +515,7 @@ elab_rules : tactic
 
 macro_rules
 | `(tactic| positivity [$h,*]) => `(tactic| · ($[have := $h];*); positivity)
+
 end Positivity
 
 end Mathlib.Tactic
