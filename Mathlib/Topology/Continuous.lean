@@ -324,18 +324,18 @@ in different definitionally equal ways (omitting some typing information)
 * `Continuous ↿(+)`. (`↿` is notation for recursively uncurrying a function)
 
 However, lemmas with this conclusion are not nice to use in practice because
-1. They confuse the elaborator. The following two examples fail, because of limitations in the
+1. They confuse the elaborator. The following example fails, because of limitations in the
   elaboration process.
   ```
   variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
   example : Continuous (fun x : M ↦ x + x) :=
     continuous_add.comp _
 
+  -- This example used to fail, but would be accepted if you wrote is as
+  -- `continuous_add.comp (continuous_id.prodMk continuous_id :)`.
   example : Continuous (fun x : M ↦ x + x) :=
     continuous_add.comp (continuous_id.prodMk continuous_id)
   ```
-  The second is a valid proof, which is accepted if you write it as
-  `continuous_add.comp (continuous_id.prodMk continuous_id :)`
 
 2. If the operation has more than 2 arguments, they are impractical to use, because in your
   application the arguments in the domain might be in a different order or associated differently.
@@ -345,17 +345,18 @@ However, lemmas with this conclusion are not nice to use in practice because
 A much more convenient way to write continuity lemmas is like `Continuous.add`:
 ```
 Continuous.add {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
-  Continuous (fun x ↦ f x + g x)
+  Continuous (f + g)
 ```
-The conclusion can be `Continuous (f + g)`, which is definitionally equal.
+The conclusion can be `Continuous (fun x ↦ f x + g x)`, which is definitionally equal.
 This has the following advantages
 * It supports projection notation, so is shorter to write.
 * `Continuous.add _ _` is recognized correctly by the elaborator and gives useful new goals.
 * It works generally, since the domain is a variable.
+  (Having a domain `Y × Z` would be less convenient in general.)
 
 As an example for a unary operation, we have `Continuous.neg`.
 ```
-Continuous.neg {f : X → G} (hf : Continuous f) : Continuous (fun x ↦ -f x)
+Continuous.neg {f : X → G} (hf : Continuous f) : Continuous (-f)
 ```
 For unary functions, the elaborator is not confused when applying the traditional lemma
 (like `continuous_neg`), but it's still convenient to have the short version available (compare
