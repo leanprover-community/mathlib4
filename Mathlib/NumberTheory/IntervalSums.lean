@@ -94,7 +94,7 @@ def SummationFilter.IocFilter : SummationFilter G where
   filter := atTop.map (fun N ↦ Ioc (-N) N)
 
 lemma SymmetricConditional_eq_map_Ioo :
-    (symmetricConditional ℤ).filter = atTop.map (fun N ↦ Ioo (-(N : ℤ)) N) := by
+    (symmetricConditional ℤ).filter = atTop.map (fun N ↦ Ioo (-N) N) := by
   rw [symmetricConditional, ← Nat.map_cast_int_atTop]
   ext s
   simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage]
