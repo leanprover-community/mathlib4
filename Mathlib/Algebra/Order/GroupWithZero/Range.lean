@@ -5,6 +5,7 @@ Authors: Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.GroupWithZero.WithZero
+import Mathlib.Algebra.Order.Hom.MonoidWithZero
 
 /-! # The range of a MonoidWithZeroHom
 
@@ -24,18 +25,19 @@ open WithZero
 
 /-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an homomorphism of monoids with zero. -/
 @[simps!]
-def ValueGroup₀.monoidWithZeroHom : ValueGroup₀ f →*₀ WithZero Bˣ :=
-  WithZero.map' (valueGroup f).subtype
+def ValueGroup₀.orderMonoidWithZeroHom : ValueGroup₀ f →*₀o WithZero Bˣ where
+  __ := WithZero.map' (valueGroup f).subtype
+  monotone' := map'_strictMono (Subtype.strictMono_coe _)|>.monotone
 
 lemma ValueGroup₀.monoidWithZeroHom_strictMono :
-    StrictMono (ValueGroup₀.monoidWithZeroHom (f := f)) :=
+    StrictMono (ValueGroup₀.orderMonoidWithZeroHom (f := f)) :=
   map'_strictMono (Subtype.strictMono_coe _)
 
 /-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an order embedding. In general, prefer
 the use of `ValueGroup₀.MonoidWithZeroHom` and apply the above lemma
 `ValueGroup₀.MonoidWithZeroHom_strictMono` if properties about ordering are needed. -/
 def ValueGroup₀.orderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
-  toFun := ValueGroup₀.monoidWithZeroHom
+  __ := ValueGroup₀.orderMonoidWithZeroHom
   inj' := ValueGroup₀.monoidWithZeroHom_strictMono.injective
   map_rel_iff' := ValueGroup₀.monoidWithZeroHom_strictMono.le_iff_le
 
