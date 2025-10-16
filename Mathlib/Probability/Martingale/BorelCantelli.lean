@@ -89,7 +89,7 @@ theorem stoppedAbove_le [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ic
     have h_top : min (i : ℕ∞) (leastGE f r ω) ≠ ⊤ :=
       ne_top_of_le_ne_top (by simp) (min_le_left _ _)
     lift min (i : ℕ∞) (leastGE f r ω) to ℕ using h_top with p
-    simp only [WithTop.untopA_coe_enat, Nat.cast_lt, gt_iff_lt] at *
+    simp only [untopD_coe_enat, Nat.cast_lt, gt_iff_lt] at *
     omega
 
 @[deprecated (since := "2025-09-08")] alias norm_stoppedValue_leastGE_le := stoppedAbove_le
