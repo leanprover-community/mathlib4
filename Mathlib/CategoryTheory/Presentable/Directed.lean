@@ -66,7 +66,6 @@ lemma Cardinal.IsRegular.exists_upper_bound {κ : Cardinal.{w}} (hκ : κ.IsRegu
     {ι : Type w} (c : ι → Cardinal.{w}) (hc : ∀ i, c i < κ) (hι : Cardinal.mk ι < κ) :
     ∃ (κ₀ : Cardinal.{w}), κ₀ < κ ∧ ∀ i, c i ≤ κ₀ := by
   have : Fact κ.IsRegular := ⟨hκ⟩
-  have : IsCardinalFiltered κ.ord.toType κ := inferInstance
   let f (i : ι) : κ.ord.toType :=
     Ordinal.enumIsoToType _ ⟨(c i).ord, by simpa using hc i⟩
   rw [← hasCardinalLT_iff_cardinal_mk_lt] at hι
