@@ -14,8 +14,6 @@ universe uR uS uK uL
 variable (R : Type uR) (S : Type uS) (K : Type uK) (L : Type uL)
 variable [CommSemiring R] [Semiring S] [Algebra R S] [Field K] [Field L] [Algebra K L]
 
-set_option linter.unusedTactic false
-
 /-! `Gal(S/R)` should always elaborate to `S ≃ₐ[R] S`,
 but `S ≃ₐ[R] S` should not pretty print as `Gal(S/R)` because `R` and `S` are not fields. -/
 
