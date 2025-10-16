@@ -10,6 +10,7 @@ import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.FieldTheory.Finiteness
+import Mathlib.FieldTheory.Galois.Notation
 import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
@@ -349,7 +350,7 @@ variable (L : Type*) [Field L] [Algebra K L]
 
 /-- If `L/K` is an algebraic extension of a finite field, the Frobenius `K`-algebra endomorphism
   of `L` is an automorphism. -/
-@[simps!] noncomputable def frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] : L ≃ₐ[K] L :=
+@[simps!] noncomputable def frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] : Gal(L/K) :=
   (Algebra.IsAlgebraic.algEquivEquivAlgHom K L).symm (frobeniusAlgHom K L)
 
 theorem coe_frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] :
@@ -394,7 +395,7 @@ theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
   ((Algebra.IsAlgebraic.algEquivEquivAlgHom K L).bijective.of_comp_iff' _).mp <| by
     simpa only [Function.comp_def, map_pow] using bijective_frobeniusAlgHom_pow K L
 
-instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ[K] L) where
+instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic Gal(L/K) where
   exists_zpow_surjective :=
     have := Finite.of_injective _ (algebraMap K L).injective
     have := Fintype.ofFinite K

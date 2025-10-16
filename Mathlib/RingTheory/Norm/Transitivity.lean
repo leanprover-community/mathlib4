@@ -266,7 +266,7 @@ theorem norm_eq_prod_embeddings [Algebra.IsSeparable K L] [IsAlgClosed E]
     exact Algebra.IsSeparable.isSeparable K _
 
 theorem norm_eq_prod_automorphisms [IsGalois K L] (x : L) :
-    algebraMap K L (norm K x) = ∏ σ : L ≃ₐ[K] L, σ x := by
+    algebraMap K L (norm K x) = ∏ σ : Gal(L/K), σ x := by
   apply FaithfulSMul.algebraMap_injective L (AlgebraicClosure L)
   rw [map_prod (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.prod_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
