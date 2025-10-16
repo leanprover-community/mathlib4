@@ -70,6 +70,11 @@ lemma piScalarRight_tmul_apply (x : A) (y : ι → R) (i : ι) :
     piScalarRight R S A ι (x ⊗ₜ y) i = y i • x :=
   rfl
 
+theorem Algebra.TensorProduct.piScalarRight_symm_apply_algebraMap (x : ι → R) :
+    (TensorProduct.piScalarRight R S A ι).symm (fun i => algebraMap _ _ (x i)) =
+      1 ⊗ₜ[R] (∑ i, Pi.single i (x i)) := by
+  simp [AlgEquiv.symm_apply_eq, algebraMap_eq_smul_one, piScalarRight_tmul]
+
 section
 
 variable (B C : Type*) [Semiring B] [Semiring C] [Algebra R B] [Algebra R C]
