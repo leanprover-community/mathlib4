@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Sums.Basic
 /-!
 # Embedding of `C ⊕ D` into `C ⋆ D`
 
-This file constructs a canonical functor `Join.fromSum` from `C ⊕ D` to `C ⋆ D` and give
+This file constructs a canonical functor `Join.fromSum` from `C ⊕ D` to `C ⋆ D` and gives
 its characterization in terms of the canonical inclusions.
 We also provide `Faithful` and `EssSurj` instances on this functor.
 
