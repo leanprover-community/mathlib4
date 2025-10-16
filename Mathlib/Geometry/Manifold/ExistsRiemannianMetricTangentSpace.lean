@@ -10,6 +10,8 @@ import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 import Mathlib.Topology.Algebra.Module.Equiv
 
+set_option linter.unusedSectionVars false
+
 /-! ## Existence of a Riemannian bundle metric
 
 Using a partition of unity, we prove the existence of a smooth Riemannian metric.
@@ -223,6 +225,17 @@ lemma g_global_add' (f : SmoothPartitionOfUnity B IB B) (p : B) (x y v : Tangent
     exact mul_ne_zero_iff.mp this |>.1
   exact @finsum_add_distrib _ ℝ _ _ _ h1 h2
 
+lemma g_global_smul' (f : SmoothPartitionOfUnity B IB B) (p : B) (x v : TangentSpace IB p)
+                     (m : ℝ) :
+  g_global f p v (m • x) = (RingHom.id ℝ) m • g_global f p v x := by
+  unfold g_global
+  simp_rw [g_smul']
+  simp_rw [mul_smul_comm]
+  have : ∑ᶠ (i : B), (RingHom.id ℝ) m • ((f i) p * g i p v x) =
+         (RingHom.id ℝ) m • ∑ᶠ (i : B), (f i) p * g i p v x :=
+    Eq.symm (smul_finsum ((RingHom.id ℝ) m) fun i ↦ (f i) p * g i p v x)
+  exact this
+
 omit [IsManifold IB ω B] [FiniteDimensional ℝ EB] [SigmaCompactSpace B]
      [T2Space B] in
 lemma g_global_symm (f : SmoothPartitionOfUnity B IB B)
@@ -272,7 +285,7 @@ def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
         ContinuousLinearMap.mk
           { toFun := fun w ↦ g_global f p v w
             map_add' := fun x y ↦ g_global_add' f p x y v
-            map_smul' := sorry }
+            map_smul' := fun m x ↦ g_global_smul' f p x v m }
           sorry
       map_add' := sorry
       map_smul' := sorry }
