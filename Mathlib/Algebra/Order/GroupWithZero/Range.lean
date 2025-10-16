@@ -41,15 +41,15 @@ def ValueGroup₀.orderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
 
 @[simp]
 lemma ValueGroup₀.OrderEmbedding_apply (x : ValueGroup₀ f) :
-    ValueGroup₀.OrderEmbedding x = WithZero.map' (valueGroup f).subtype x := rfl
+    ValueGroup₀.orderEmbedding x = WithZero.map' (valueGroup f).subtype x := rfl
 
 lemma ValueGroup₀.OrderEmbedding_mul (x y : ValueGroup₀ f) :
-    ValueGroup₀.OrderEmbedding (x * y) =
-      ValueGroup₀.OrderEmbedding x * ValueGroup₀.OrderEmbedding y := by simp
+    ValueGroup₀.orderEmbedding (x * y) =
+      ValueGroup₀.orderEmbedding x * ValueGroup₀.orderEmbedding y := by simp
 
 /-- The inclusion of `ValueGroup₀ f` into `B` as an order embedding. -/
 def ValueGroup₀.OrderEmbedding' : ValueGroup₀ f ↪o B :=
-  ValueGroup₀.OrderEmbedding.trans OrderIso.withZeroUnits.toOrderEmbedding
+  ValueGroup₀.orderEmbedding.trans OrderIso.withZeroUnits.toOrderEmbedding
 
 lemma ValueGroup₀.OrderEmbedding'_apply (x : ValueGroup₀ f) :
     ValueGroup₀.OrderEmbedding' x =
