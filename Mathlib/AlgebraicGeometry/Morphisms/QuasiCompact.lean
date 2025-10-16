@@ -37,7 +37,8 @@ of quasi-compact open sets are quasi-compact.
 -/
 @[mk_iff]
 class QuasiCompact (f : X ⟶ Y) : Prop where
-  /-- Preimage of compact open set under a quasi-compact morphism between schemes is compact. -/
+  /-- The preimage of a compact open set under a quasi-compact morphism between schemes is
+  compact. -/
   isCompact_preimage : ∀ U : Set Y, IsOpen U → IsCompact U → IsCompact (f ⁻¹' U)
 
 variable {f} in
