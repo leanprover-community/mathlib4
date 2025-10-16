@@ -13,6 +13,7 @@ import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.Tactic.MoveAdd
+import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
 # Schwartz space
@@ -67,7 +68,7 @@ noncomputable section
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 𝕜' D E F G V : Type*}
+variable {𝕜 𝕜' D E F G H V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -1415,6 +1416,25 @@ theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ 
     Continuous (fun f : 𝓢(E, F) ↦ f.toLp p μ) := (toLpCLM ℝ F p μ).continuous
 
 end Lp
+
+section L2
+
+open MeasureTheory
+
+variable [NormedAddCommGroup H] [NormedSpace ℝ H] [FiniteDimensional ℝ H]
+  [MeasurableSpace H] [BorelSpace H]
+  [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+
+@[simp]
+theorem inner_toL2_toL2_eq (f g : 𝓢(H, V)) (μ : Measure H := by volume_tac) [μ.HasTemperateGrowth] :
+    inner ℂ (f.toLp 2 μ) (g.toLp 2 μ) = ∫ x, inner ℂ (f x) (g x) ∂μ := by
+  apply integral_congr_ae
+  have hf_ae := f.coeFn_toLp 2 μ
+  have hg_ae := g.coeFn_toLp 2 μ
+  filter_upwards [hf_ae, hg_ae] with _ hf hg
+  rw [hf, hg]
+
+end L2
 
 section integration_by_parts
 

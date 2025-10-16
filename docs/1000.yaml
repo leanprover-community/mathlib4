@@ -1942,7 +1942,9 @@ Q2094241:
 
 Q2096184:
   title: Plancherel theorem
-  # also in undergrad.yml
+  decl: SchwartzMap.integral_inner_fourier_fourier
+  authors: Moritz Doll
+  date: 2025
 
 Q2109761:
   title: Uniformization theorem

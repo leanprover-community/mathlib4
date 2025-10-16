@@ -536,7 +536,7 @@ Measures and integral calculus:
     Parseval theorem: 'tsum_sq_fourierCoeff'
     Fourier transform on $\mathrm{L}^1(\R^d)$: 'Real.fourierIntegral'
     Fourier transform on $\mathrm{L}^2(\R^d)$: ''
-    Plancherel’s theorem: ''
+    Plancherel’s theorem: 'SchwartzMap.integral_inner_fourier_fourier'
     Fourier inversion formula: 'Continuous.fourier_inversion'
 
 # 11.
