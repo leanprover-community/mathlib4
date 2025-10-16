@@ -59,9 +59,35 @@ abbrev Copy := L
 set_option pp.explicit true in
 /--
 info:
-@AlgEquiv K L L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
-  (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹)))
-  (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹))) inst✝ inst✝ : Type uL
+@AlgEquiv K L L
+  (@Distrib.toAdd L
+    (@NonUnitalNonAssocSemiring.toDistrib L
+      (@NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring L
+        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocCommSemiring L
+          (@NonUnitalCommRing.toNonUnitalNonAssocCommRing L
+            (@CommRing.toNonUnitalCommRing L (@Field.toCommRing L inst✝¹)))))))
+  (@Distrib.toAdd L
+    (@NonUnitalNonAssocSemiring.toDistrib L
+      (@NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring L
+        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocCommSemiring L
+          (@NonUnitalCommRing.toNonUnitalNonAssocCommRing L
+            (@CommRing.toNonUnitalCommRing L (@Field.toCommRing L inst✝¹)))))))
+  (@Distrib.toMul L
+    (@NonUnitalNonAssocSemiring.toDistrib L
+      (@NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring L
+        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocCommSemiring L
+          (@NonUnitalCommRing.toNonUnitalNonAssocCommRing L
+            (@CommRing.toNonUnitalCommRing L (@Field.toCommRing L inst✝¹)))))))
+  (@Distrib.toMul L
+    (@NonUnitalNonAssocSemiring.toDistrib L
+      (@NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring L
+        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocCommSemiring L
+          (@NonUnitalCommRing.toNonUnitalNonAssocCommRing L
+            (@CommRing.toNonUnitalCommRing L (@Field.toCommRing L inst✝¹)))))))
+  (@Algebra.toSMul K L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
+    (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹))) inst✝)
+  (@Algebra.toSMul K L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
+    (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹))) inst✝) : Type uL
 -/
 #guard_msgs in
 #check Gal(L/K)
