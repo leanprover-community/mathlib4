@@ -31,7 +31,7 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 
 - `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
 
-- `NonTorsionWeight`: all values `w s` are non torsion in `M`.
+- `NonTorsionWeight`: all values `w s` are nontorsion in `M`.
 
 - `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
   `f = 0` for `NonTorsionWeight w` and `CanonicallyOrderedAddCommMonoid M`.
@@ -229,7 +229,7 @@ theorem le_degree {R : Type*}
     (s : σ) (f : σ →₀ R) :
     f s ≤ degree f := by
   by_cases h : s ∈ f.support
-  · exact CanonicallyOrderedAddCommMonoid.single_le_sum h
+  · exact Finset.single_le_sum_of_canonicallyOrdered h
   · simp only [notMem_support_iff] at h
     simp only [h, zero_le]
 

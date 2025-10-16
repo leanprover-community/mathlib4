@@ -744,4 +744,4 @@ lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
     · push_neg at h; obtain ⟨N, hN⟩ := h
       replace hN : f N = c + 1 := by specialize hc N; omega
       use c + 1, N; intro n hn
-      specialize mono_f hn; specialize hc n; omega
+      specialize mono_f hn; specialize hc n; cutsat
