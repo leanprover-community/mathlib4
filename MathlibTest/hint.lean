@@ -100,6 +100,16 @@ example : True := by
 
 end multiline_hint
 
+section finiteness
+/--
+info: Try these:
+  • 🎉 finiteness
+-/
+#guard_msgs in
+open ENNReal in
+example : (1 : ℝ≥0∞) < ∞ := by hint
+end finiteness
+
 section tauto_set
 
 register_hint tauto_set
