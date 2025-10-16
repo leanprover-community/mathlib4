@@ -121,7 +121,7 @@ theorem mem_torsion_iff_isPrimitiveRoot {G : Type*} [CommGroup G] {ζ : G} :
       IsPrimitiveRoot.orderOf ζ⟩
   · exact ⟨k, Nat.zero_lt_of_ne_zero hk₁, hk₂.pow_eq_one⟩
 
-theorem CommGroup.mem_torsion_of_isPrimitiveRoot (k : ℕ) [NeZero k] {G : Type*} [CommGroup G]
+theorem mem_torsion_of_isPrimitiveRoot (k : ℕ) [NeZero k] {G : Type*} [CommGroup G]
     {ζ : G} (hζ : IsPrimitiveRoot ζ k) :
     ζ ∈ CommGroup.torsion G :=
   mem_torsion_iff_isPrimitiveRoot.mpr ⟨k, NeZero.ne _, hζ⟩
