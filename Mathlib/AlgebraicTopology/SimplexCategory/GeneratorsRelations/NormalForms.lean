@@ -97,10 +97,10 @@ theorem isAdmissible_of_isChain_of_forall_getElem_le {m L} (hL : L.IsChain (· <
 
 namespace IsAdmissible
 
-theorem isChain {m L} (hL : IsAdmissible m L) :
+@[grind →] theorem isChain {m L} (hL : IsAdmissible m L) :
     L.IsChain (· < ·) := (isAdmissible_iff_isChain_and_le.mp hL).1
 
-theorem le {m} {L : List ℕ} (hL : IsAdmissible m L) : ∀ k (h : k < L.length),
+@[grind →] theorem le {m} {L : List ℕ} (hL : IsAdmissible m L) : ∀ k (h : k < L.length),
     L[k] ≤ m + k := (isAdmissible_iff_isChain_and_le.mp hL).2
 
 /-- The tail of an `m`-admissible list is (m+1)-admissible. -/
@@ -124,7 +124,7 @@ alias sorted := pairwise
 lemma head_lt {m a L} (hL : IsAdmissible m (a :: L)) :
     ∀ a' ∈ L, a < a' := fun _ => L.rel_of_pairwise_cons hL.pairwise
 
-lemma getElem_lt {m L} (hL : IsAdmissible m L)
+@[grind →] lemma getElem_lt {m L} (hL : IsAdmissible m L)
     {k : ℕ} {hk : k < L.length} : L[k] < m + L.length := by
   exact (hL.le k hk).trans_lt (Nat.add_lt_add_left hk _)
 
@@ -132,16 +132,15 @@ lemma getElem_lt {m L} (hL : IsAdmissible m L)
 @[simps]
 def getElemAsFin {m L} (hl : IsAdmissible m L) (k : ℕ)
     (hK : k < L.length) : Fin (m + k + 1) :=
-  Fin.mk L[k] <| Nat.le_iff_lt_add_one.mp (by simp [hl.le])
+  Fin.mk L[k] <| Nat.le_iff_lt_add_one.mp (by grind)
 
 /-- The head of an `m`-admissible list. -/
 @[simps!]
 def head {m a L} (hl : IsAdmissible m (a :: L)) : Fin (m + 1) :=
-  hl.getElemAsFin 0 (by simp)
+  hl.getElemAsFin 0 (by grind)
 
 theorem mono {n} (hmn : m ≤ n) (hL : IsAdmissible m L) : IsAdmissible n L :=
-  isAdmissible_of_isChain_of_forall_getElem_le hL.isChain
-  fun _ _ => (hL.le _ _).trans <| Nat.add_le_add_right hmn _
+  isAdmissible_of_isChain_of_forall_getElem_le (by grind) (by grind)
 
 end IsAdmissible
 
@@ -284,8 +283,7 @@ lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : 
       have : a < m + 2 := by grind -- helps grind below
       have : σ (Fin.ofNat (m + 2) a) ≫ σ (.ofNat _ j) = σ (.ofNat _ (j + 1)) ≫ σ (.ofNat _ a) := by
         convert σ_comp_σ_nat (n := m) a j (by grind) (by grind) (by grind) <;> grind
-      simp only [standardσ_cons, Category.assoc, this,
-        h_rec hL.of_cons (j + 1) (by grind) (by grind)]
+      grind [standardσ_cons]
 
 attribute [local grind] simplicialInsert_length simplicialInsert_isAdmissible in
 /-- Using `standardσ_simplicialInsert`, we can prove that every morphism satisfying `P_σ` is equal
@@ -316,6 +314,7 @@ theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf 
 
 section MemIsAdmissible
 
+@[grind]
 lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
     {k : ℕ} {hk : k < L.length} : simplicialEvalσ L L[k] = simplicialEvalσ L (L[k] + 1) := by
   induction L generalizing m k with | nil => grind | cons a L h_rec => cases k <;> grind
@@ -331,9 +330,7 @@ lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
 
 lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j : ℕ) (hj : j ∈ L) :
     j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) := by
-  simp_rw [List.mem_iff_getElem] at hj
-  rcases hj with ⟨k, hk, rfl⟩
-  exact ⟨hL.getElem_lt, hL.simplicialEvalσ_succ_getElem⟩
+  rw [List.mem_iff_getElem] at hj; grind
 
 /-- We can characterize elements in an admissible list as exactly those for which
 `simplicialEvalσ` takes the same value twice in a row. -/
