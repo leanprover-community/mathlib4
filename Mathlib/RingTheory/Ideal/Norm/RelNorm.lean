@@ -8,6 +8,7 @@ import Mathlib.NumberTheory.RamificationInertia.Galois
 import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.DedekindDomain.Instances
 import Mathlib.RingTheory.Ideal.Int
+import Mathlib.RingTheory.NormalClosure
 
 /-!
 
@@ -423,65 +424,18 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
   rw [one_eq_top]
   exact IsMaximal.ne_top inferInstance
 
-theorem foo (K L E T : Type*)
-    [Field K] [Algebra R K] [Field L] [Algebra S L] [Field E] [CommRing T] [Algebra L E]
-    [Algebra S E] [Algebra T E] [Algebra S T] [IsFractionRing R K] [IsFractionRing S L]
-    [IsIntegralClosure T S E] [Algebra R T] [Algebra R L] [Algebra K L] [IsScalarTower S L E]
-    [IsScalarTower R S T] [Algebra R E] [Algebra K E] [IsScalarTower R K L] [IsScalarTower R K E]
-    [IsScalarTower K L E] [IsScalarTower R S L] [IsScalarTower S T E] [FiniteDimensional K E]
-    [FaithfulSMul S T] [IsDomain T] [IsFractionRing T E] [IsGalois K E]
-    [P.IsMaximal] [p.IsMaximal] :
+theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal] [p.IsMaximal] :
     relNorm R P = p ^ p.inertiaDeg P := by
-  have : IsScalarTower R L E := IsScalarTower.to₁₃₄ R K L E
-  have : IsScalarTower R S E := IsScalarTower.to₁₂₄ R S L E
-  have : IsScalarTower R T E := IsScalarTower.to₁₃₄ R S T E
-  have : Module.Finite L E := Module.Finite.right K L E
-  have : Algebra.IsSeparable L E := Algebra.isSeparable_tower_top_of_isSeparable K L E
-  have : IsDedekindDomain T := IsIntegralClosure.isDedekindDomain S L E T
-  have : Module.Finite S T := IsIntegralClosure.finite S L E T
-  have : Module.Finite R T := Module.Finite.trans S T
-  have : FaithfulSMul R T := by
-    refine (faithfulSMul_iff_algebraMap_injective R T).mpr ?_
-    rw [IsScalarTower.algebraMap_eq R S T]
-    exact (FaithfulSMul.algebraMap_injective S T).comp (FaithfulSMul.algebraMap_injective R S)
+  let T := Ring.NormalClosure R S
   obtain ⟨Q, hQ₁, hQ₂⟩ : ∃ Q : Ideal T, Q.IsMaximal ∧ Q.LiesOver P :=
     exists_maximal_ideal_liesOver_of_isIntegral P
-  have : IsGalois L E := IsGalois.tower_top_of_isGalois K L E
   have : Q.LiesOver p := LiesOver.trans Q P p
-  have : IsGalois (FractionRing R) (FractionRing T) := by
-    refine IsGalois.of_equiv_equiv (F := K) (E := E) (f := (FractionRing.algEquiv R K).symm)
-      (g := (FractionRing.algEquiv T E).symm) ?_
-    ext
-    simpa using IsFractionRing.algEquiv_commutes (FractionRing.algEquiv R K).symm
-        (FractionRing.algEquiv T E).symm _
-  have : IsGalois (FractionRing S) (FractionRing T) := by
-    refine IsGalois.of_equiv_equiv (F := L) (E := E) (f := (FractionRing.algEquiv S L).symm)
-      (g := (FractionRing.algEquiv T E).symm) ?_
-    ext
-    simpa using IsFractionRing.algEquiv_commutes (FractionRing.algEquiv S L).symm
-        (FractionRing.algEquiv T E).symm _
   have h := relNorm_eq_pow_of_isPrime_isGalois Q p
+  have :  IsGalois (FractionRing S) (FractionRing T) :=
+    IsGalois.tower_top_of_isGalois (FractionRing R) (FractionRing S) (FractionRing T)
   rwa [← relNorm_relNorm R S, relNorm_eq_pow_of_isPrime_isGalois Q P, map_pow,
     inertiaDeg_algebra_tower p P Q, pow_mul, pow_left_inj] at h
   exact Nat.ne_zero_iff_zero_lt.mpr <| inertiaDeg_pos P Q
-
-theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal] [p.IsMaximal] :
-    relNorm R P = p ^ p.inertiaDeg P := by
-  let K := FractionRing R
-  let L := FractionRing S
-  let A := AlgebraicClosure L
-  let E := IntermediateField.normalClosure K L A
-  algebraize [(algebraMap L E).comp (algebraMap S L)]
-  let T := integralClosure S E
-  algebraize [(algebraMap S T).comp (algebraMap R S)]
-  have : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|
-      (FaithfulSMul.algebraMap_injective L E).comp (FaithfulSMul.algebraMap_injective S L)
-  have : FaithfulSMul R T := (faithfulSMul_iff_algebraMap_injective R T).mpr <|
-      (FaithfulSMul.algebraMap_injective S T).comp (FaithfulSMul.algebraMap_injective R S)
-  have : Module.Finite L E := Module.Finite.right K L E
-  have : IsFractionRing (integralClosure S E) E :=
-    integralClosure.isFractionRing_of_finite_extension L E
-  exact foo P p K L E T
 
 end relNorm_prime
 
