@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Products.Unitor
+import Mathlib.Data.Finite.Sigma
 
 /-!
 # `κ`-filtered categories and `κ`-directed poset
@@ -32,7 +33,7 @@ have to be multiplicative.)
 
 -/
 
-universe w
+universe u v w
 
 lemma CategoryTheory.MorphismProperty.toSet_iSup {C : Type*} [Category C]
     {ι : Type*} (W : ι → MorphismProperty C) :
@@ -53,9 +54,64 @@ lemma hasCardinalLT_punit (κ : Cardinal) (hκ : Cardinal.aleph0 ≤ κ) :
     HasCardinalLT PUnit κ :=
   hasCardinalLT_of_finite _ _ hκ
 
-lemma hasCardinalLT_sigma {ι : Type*} (α : ι → Type*) (κ : Cardinal) [Fact κ.IsRegular]
+lemma Cardinal.mk_surjective :
+    Function.Surjective (Cardinal.mk : Type w → Cardinal) := by
+  rintro ⟨_⟩; exact ⟨_, rfl⟩
+
+lemma hasCardinalLT_sigma' {ι : Type w} (α : ι → Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
-    HasCardinalLT (Σ i, α i) κ := sorry
+    HasCardinalLT (Σ i, α i) κ := by
+  have hκ : Cardinal.aleph0 ≤ κ := Cardinal.IsRegular.aleph0_le Fact.out
+  obtain hκ | rfl := hκ.lt_or_eq
+  · obtain ⟨κ₀, h₁, h₂, h₃, h₄⟩ : ∃ (κ₀ : Cardinal), Cardinal.aleph0 ≤ κ₀ ∧ κ₀ < κ ∧
+      Cardinal.mk ι ≤ κ₀ ∧ ∀ i, Cardinal.mk (α i) ≤ κ₀ := sorry
+    obtain ⟨X, rfl⟩ := κ₀.mk_surjective
+    rw [hasCardinalLT_iff_cardinal_mk_lt]
+    obtain ⟨φ⟩ := h₃
+    let ψ (i : ι) : α i ↪ X := (h₄ i).some
+    refine lt_of_le_of_lt ?_ h₂
+    trans Cardinal.mk (X × X)
+    · refine ⟨⟨fun ⟨i, a⟩ ↦ ⟨φ i, ψ i a⟩, fun ⟨i, a⟩ ⟨j, b⟩ h ↦ ?_⟩⟩
+      rw [Prod.ext_iff] at h
+      obtain rfl : i = j := φ.injective h.1
+      obtain rfl : a = b := (ψ i).injective h.2
+      rfl
+    · rw [← Cardinal.mul_def]
+      exact (Cardinal.mul_le_max_of_aleph0_le_left h₁).trans (by simp)
+  · simp only [hasCardinalLT_aleph0_iff] at hι hα ⊢
+    infer_instance
+
+@[simp]
+lemma hasCardinalLT_lift_iff (X : Type v) (κ : Cardinal.{w}) :
+    HasCardinalLT X (Cardinal.lift.{u} κ) ↔ HasCardinalLT X κ := by
+  simp [HasCardinalLT, ← (Cardinal.lift_strictMono.{max v w, max u}).lt_iff_lt]
+
+@[simp]
+lemma hasCardinalLT_ulift_iff (X : Type v) (κ : Cardinal.{w}) :
+    HasCardinalLT (ULift.{u} X) κ ↔ HasCardinalLT X κ :=
+  hasCardinalLT_iff_of_equiv Equiv.ulift κ
+
+lemma Cardinal.IsRegular.lift {κ : Cardinal.{w}} (hκ : κ.IsRegular) :
+    (Cardinal.lift.{u} κ).IsRegular := by
+  obtain ⟨h₁, h₂⟩ := hκ
+  constructor
+  · simpa
+  · rwa [← Cardinal.lift_ord, ← Ordinal.lift_cof, lift_le]
+
+lemma hasCardinalLT_sigma {ι : Type u} (α : ι → Type v) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
+    HasCardinalLT (Σ i, α i) κ := by
+  let ι' : Type max u v w := ULift.{max v w} ι
+  let α' (i : ι') : Type max u v w := ULift.{max u w} (α (ULift.down i))
+  let κ' : Cardinal.{max u v w} := Cardinal.lift.{max u v} κ
+  have : Fact κ'.IsRegular := ⟨Cardinal.IsRegular.lift Fact.out⟩
+  have := hasCardinalLT_sigma' α' κ'
+    (by rwa [hasCardinalLT_lift_iff, hasCardinalLT_ulift_iff]) (fun i ↦ by
+      rw [hasCardinalLT_lift_iff, hasCardinalLT_ulift_iff]
+      exact hα _)
+  rw [hasCardinalLT_lift_iff] at this
+  exact this.of_surjective (fun ⟨i, a⟩ ↦ ⟨ULift.down i, ULift.down a⟩)
+    (fun ⟨i, a⟩ ↦ ⟨⟨ULift.up i, ULift.up a⟩, rfl⟩)
 
 lemma hasCardinalLT_subtype_iSup
     {ι : Type*} {X : Type*} (P : ι → X → Prop) {κ : Cardinal} [Fact κ.IsRegular]
