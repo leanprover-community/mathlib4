@@ -82,7 +82,7 @@ def opensFunctor : X.Opens ⥤ Y.Opens :=
   LocallyRingedSpace.IsOpenImmersion.opensFunctor f.toLRSHom
 
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`.
-The prefered name in lemmas is `image` and it should be treated as an infix. -/
+The preferred name in lemmas is `image` and it should be treated as an infix. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
 
 @[simp] lemma coe_image {U : X.Opens} : f ''ᵁ U = f '' U := rfl

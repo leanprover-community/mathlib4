@@ -19,7 +19,7 @@ which we call an `AffineTargetMorphismProperty`. In this file, we provide API le
 local at the target, and special support for those properties whose `AffineTargetMorphismProperty`
 takes on a more simple form. We also provide API lemmas for properties local at the target.
 The main interfaces of the API are the typeclasses `IsLocalAtTarget`, `IsLocalAtSource` and
-`HasAffineProperty`, which we describle in detail below.
+`HasAffineProperty`, which we describe in detail below.
 
 ## `IsZariskiLocalAtTarget`
 

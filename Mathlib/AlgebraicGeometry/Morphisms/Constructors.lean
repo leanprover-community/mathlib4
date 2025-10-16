@@ -22,7 +22,7 @@ properties:
   `MorphismProperty.targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isZariskiLocalAtTarget`
 - `MorphismProperty.topologically`: Given a property `P` of maps of topological spaces,
   `(topologically P) f` holds if `P` holds for the underlying continuous map of `f`.
-- `MorphismProperty.stalkwise`: Given a property `P` of ring homs,
+- `MorphismProperty.stalkwise`: Given a property `P` of ring homomorphisms,
   `(stalkwise P) f` holds if `P` holds for all stalk maps.
 
 Also provides API for showing the standard locality and stability properties for these
