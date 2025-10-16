@@ -334,6 +334,12 @@ lemma Hom.algebraMap_toAlgHom (f : Hom P P') (x) : MvPolynomial.aeval P'.val (f.
   intro i
   simp [Hom.toAlgHom]
 
+/-- Version of `Hom.algebraMap_toAlgHom` where `S = S'`, sometimes useful for rewriting. -/
+lemma Hom.algebraMap_toAlgHom' [Algebra R' S] [IsScalarTower R R' S]
+    {P' : Generators R' S ι'} (f : Hom P P') (x : P.Ring) :
+    MvPolynomial.aeval P'.val (f.toAlgHom x) = MvPolynomial.aeval P.val x :=
+  f.algebraMap_toAlgHom _
+
 @[simp]
 lemma Hom.toAlgHom_X (f : Hom P P') (i) : f.toAlgHom (.X i) = f.val i :=
   MvPolynomial.aeval_X f.val i
