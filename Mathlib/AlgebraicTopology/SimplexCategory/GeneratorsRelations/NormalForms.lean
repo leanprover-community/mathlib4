@@ -90,7 +90,9 @@ theorem isAdmissible_iff_sorted_and_le : IsAdmissible m L ↔
     L.Sorted (· < ·) ∧ ∀ k, (h : k < L.length) → L[k] ≤ m + k :=
   isAdmissible_iff_pairwise_and_le
 
-end IsAdmissible
+theorem _root_.List.IsChain.isAdmissible_of_forall_getElem_le {m L} (hL : L.IsChain (· < ·))
+    (hL₂ : ∀ k, (h : k < L.length) → L[k] ≤ m + k) : IsAdmissible m L :=
+  (isAdmissible_iff_isChain_and_le.mpr ⟨hL, hL₂⟩)
 
 namespace IsAdmissible
 
@@ -138,11 +140,13 @@ def getElemAsFin {m L} (hl : IsAdmissible m L) (k : ℕ)
 def head {m a L} (hl : IsAdmissible m (a :: L)) : Fin (m + 1) :=
   hl.getElemAsFin 0 (by simp)
 
+theorem mono {n} (hmn : m ≤ n) (hL : IsAdmissible m L) : IsAdmissible n L :=
+  hL.isChain.isAdmissible_of_forall_getElem_le
+  fun _ _ => (hL.le _ _).trans <| Nat.add_le_add_right hmn _
+
 end IsAdmissible
 
-theorem _root_.List.IsChain.isAdmissible_of_forall_getElem_le {m L} (hL : L.IsChain (· < ·))
-    (hL₂ : ∀ k, (h : k < L.length) → L[k] ≤ m + k) : IsAdmissible m L :=
-  (isAdmissible_iff_isChain_and_le.mpr ⟨hL, hL₂⟩)
+end IsAdmissible
 
 /-- The construction `simplicialInsert` describes inserting an element in a list of integer and
 moving it to its "right place" according to the simplicial relations. Somewhat miraculously,
