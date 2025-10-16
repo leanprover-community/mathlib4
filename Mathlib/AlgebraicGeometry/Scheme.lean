@@ -90,7 +90,7 @@ instance : Category Scheme where
   comp f g := Hom.mk (f.toLRSHom ≫ g.toLRSHom)
 
 /-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.base).obj U`, the preimage of an open set `U` under `f`.
-The prefered name in lemmas is `preimage` and it should be treated as an infix. -/
+The preferred name in lemmas is `preimage` and it should be treated as an infix. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ⁻¹ᵁ " U:90 =>
   @Functor.obj (Scheme.Opens _) _ (Scheme.Opens _) _
     (Opens.map (f : Scheme.Hom _ _).base) U

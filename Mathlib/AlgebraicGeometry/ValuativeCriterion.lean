@@ -21,7 +21,7 @@ import Mathlib.RingTheory.Valuation.LocalSubring
   it is quasi-separated and satisfies the uniqueness part of the valuative criterion.
 - `AlgebraicGeometry.IsProper.eq_valuativeCriterion`:
   A morphism is proper if and only if
-  it is qcqs and of fintite type and satisfies the valuative criterion.
+  it is qcqs and of finite type and satisfies the valuative criterion.
 
 ## Future projects
 Show that it suffices to check discrete valuation rings when the base is Noetherian.
