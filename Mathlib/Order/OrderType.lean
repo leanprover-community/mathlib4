@@ -53,7 +53,7 @@ instance : LE PEmpty where
 
 
 instance : LE Empty where
- le x y := False
+ le _ _ := False
 
 instance : LinearOrder PEmpty where
  le_refl x := x.elim
@@ -78,8 +78,8 @@ def ordIsoOfIsEmpty (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β
     [IsEmpty β] [IsEmpty α] : α ≃o β :=
   ⟨Equiv.equivOfIsEmpty α β, @fun a ↦ isEmptyElim a⟩
 
-def OrderType.ofUniqueOfIrrefl [r : LinearOrder α]
-    [l : LinearOrder β] [Unique α] [Unique β] : α ≃o β :=
+def OrderType.ofUniqueOfIrrefl [LinearOrder α]
+    [LinearOrder β] [Unique α] [Unique β] : α ≃o β :=
   ⟨Equiv.ofUnique α β, by simp⟩
 
 /-- Equivalence relation on linear orders on arbitrary types in universe `u`, given by order
