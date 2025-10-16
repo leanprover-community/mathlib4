@@ -79,7 +79,7 @@ theorem absNorm_under_eq_sInf :
 theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
     (I : Ideal S) :
     absNorm (under ℤ I) ∣ absNorm I := by
-  by_cases h : Finite (S ⧸ I)
+  cases finite_or_infinite (S ⧸ I)
   · have : Fintype (S ⧸ I) := Fintype.ofFinite (S ⧸ I)
     have h_main {d : ℕ} : (d : S) ∈ I ↔ ∀ (x : S ⧸ I), d • x = 0 := by
       simp_rw [nsmul_eq_mul, ← map_natCast (Ideal.Quotient.mk I), ← Quotient.eq_zero_iff_mem]
@@ -87,8 +87,7 @@ theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] 
     rw [Ideal.absNorm_apply I, Submodule.cardQuot_apply, Nat.card_eq_fintype_card]
     simp_rw [absNorm_under_eq_sInf, h_main, ← AddMonoid.exponent_eq_sInf]
     exact AddGroup.exponent_dvd_card (G := S ⧸ I)
-  · rw [show absNorm I = 0 by
-      exact AddSubgroup.index_eq_zero_iff_infinite.mpr <| not_finite_iff_infinite.mp h]
+  · rw [absNorm_apply I, Submodule.cardQuot_apply, Nat.card_eq_zero_of_infinite]
     exact Nat.dvd_zero _
 
 end Ring
