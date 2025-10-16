@@ -301,7 +301,7 @@ Hint: Additional diagnostic information may be available using the `set_option d
 variable {α : Type*} {x' y' : α} {k : Set.Icc x' y' → ℝ} in
 #check MDiff k
 
-/-- error: Could not find a model with corners for ↑(Set.Icc x' y') -/
+/-- error: Could not find a model with corners for `↑(Set.Icc x' y')` -/
 #guard_msgs in
 variable {α : Type*} [Preorder α] {x' y' : α} {k : ℝ → Set.Icc x' y'} in
 #check CMDiff 2 k
