@@ -10,6 +10,8 @@ import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 import Mathlib.Topology.Algebra.Module.Equiv
 
+import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
+
 set_option linter.unusedSectionVars false
 
 /-! ## Existence of a Riemannian bundle metric
@@ -150,6 +152,22 @@ open Manifold
 noncomputable def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) : ℝ :=
   letI dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
   @Inner.inner ℝ EB _ (dψ v) (dψ w)
+
+-- I hope that I can prove `g` is smooth using the examples below
+
+example (p : B) : ContMDiffOn IB 𝓘(ℝ, EB) ω (extChartAt IB p) (chartAt HB p).source :=
+  contMDiffOn_extChartAt
+
+example (p : B) :
+  ContMDiffOn (IB.tangent) (𝓘(ℝ, EB).tangent) (ω - 1)
+    (tangentMapWithin IB 𝓘(ℝ, EB) (extChartAt IB p) (chartAt HB p).source)
+    (Bundle.TotalSpace.proj ⁻¹' (chartAt HB p).source) := by
+  apply ContMDiffOn.contMDiffOn_tangentMapWithin
+  · have : ContMDiffOn IB 𝓘(ℝ, EB) ω (extChartAt IB p) (chartAt HB p).source :=
+      contMDiffOn_extChartAt
+    exact this
+  · exact OrderTop.le_top (ω - 1 + 1)
+  · refine IsOpen.uniqueMDiffOn (chartAt HB p).open_source
 
 lemma g_add' (i p : B) (x y v : TangentSpace IB p) :
   g i p v (x + y) = g i p v x + g i p v y := by
