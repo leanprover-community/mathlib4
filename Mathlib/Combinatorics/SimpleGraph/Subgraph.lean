@@ -776,7 +776,7 @@ theorem finset_card_neighborSet_eq_degree {G' : Subgraph G} {v : V} [Fintype (G'
     (G'.neighborSet v).toFinset.card = G'.degree v := by
   rw [degree, Set.toFinset_card]
 
-theorem degree_eq_zero_if_notMem_verts {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
+theorem degree_of_notMem_verts {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
     (h : v ∉ G'.verts) : G'.degree v = 0 := by
   rw [degree, Fintype.card_eq_zero_iff, isEmpty_subtype]
   intro w
