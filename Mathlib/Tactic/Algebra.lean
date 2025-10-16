@@ -25,15 +25,6 @@ open Mathlib.Meta AtomM
 
 attribute [local instance] monadLiftOptionMetaM
 
-/-
-TODOs:
-* Handle division, inversion.
-* Handle expressions specific to `Polynomial`: Simplify Polynomial.map (note it sends X ↦ X),
-  and handle the Algebra (Polynomial _) (Polynomial _) instance gracefully.
-* The new normal form naturally puts the coefficients an the end as `x * y * 1 • r` and
-  `X^n * C a`. We fix this in post but we really ought to put it in front.
--/
-
 section ExSum
 
 open NormNum
@@ -843,13 +834,19 @@ def pickLargerRing (r1 r2 : Σ u : Lean.Level, Q(Type u)) :
 /-- Infer from the expression what base ring the normalization should use.
  Finds all scalar rings in the expression and picks the 'larger' one in the sense that
  it is an algebra over the smaller rings. -/
-def inferBase (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
+def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
   let rings ← collectScalarRings e
   let res ← match rings with
   | [] =>
-    /- TODO: If we can synthesize Algebra ℚ A or Algebra ℤ A, instead return ℚ or ℤ respectively.
-      Note this function does not currently know A. -/
-    return ⟨0, q(ℕ)⟩
+    match ca.fA, ca.czα, ca.crA with
+    | some _, some _, _ =>
+      -- A is a Field
+      return ⟨0, q(ℚ)⟩
+    | _, _, some _ =>
+      -- A is a CommRing
+      return ⟨0, q(ℤ)⟩
+    | _, _, _ =>
+      return ⟨0, q(ℕ)⟩
   | r :: rs => rs.foldlM pickLargerRing r
   return res
 
@@ -865,9 +862,7 @@ def isAtomOrDerivable (cr : Algebra.Cache sR) (ca : Algebra.Cache sA) (e : Q($A)
   | ``HSMul.hSMul, _, _, _| ``SMul.smul, _, _, _
   | ``HPow.hPow, _, _, _ | ``Pow.pow, _, _, _
   | ``Neg.neg, some _, some _, _
-  | ``HSub.hSub, some _, some _, _ | ``Sub.sub, some _, some _, _
-  | ``Inv.inv, _, _, some _
-  | ``HDiv.hDiv, _, _, some _ | ``Div.div, _, _, some _ => pure none
+  | ``HSub.hSub, some _, some _, _ | ``Sub.sub, some _, some _, _ => pure none
   -- for algebraMap, should probably match more closely.
   | ``DFunLike.coe, _, _, _ => pure none
   | _, _, _, _ => els
@@ -889,7 +884,10 @@ def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := 
   pure { expr := a, proof? := pa }
 
 def evalExprInfer (e : Expr) : AtomM Simp.Result := do
-  let ⟨_, R⟩ ← inferBase e
+  let ⟨_, A, e⟩ ← inferTypeQ' e
+  let sA ← synthInstanceQ q(CommSemiring $A)
+  let cA ← mkCache q($sA)
+  let ⟨_, R⟩ ← inferBase cA e
   evalExpr R e
 
 /-- Attempt to normalize all  -/
@@ -918,33 +916,33 @@ def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM 
     | throwError "algebra failed: not an equality"
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
+  have A : Q(Type v) := α
+  let sA ← synthInstanceQ q(CommSemiring $A)
+  let cA ← Algebra.mkCache sA
   let ⟨u, R⟩ ←
     match base with
       | .some p => do pure p
       | none => do
-        pure (← inferBase (← g.getType))
-  have A : Q(Type v) := α
-  let sA ← synthInstanceQ q(CommSemiring $A)
+        pure (← inferBase cA (← g.getType))
   let sR ← synthInstanceQ q(CommSemiring $R)
   let sAlg ← synthInstanceQ q(Algebra $R $A)
+  let cR ← Algebra.mkCache sR
   have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
-  let eq ← algCore q($sAlg) e₁ e₂
+  let eq ← algCore q($sAlg) cR cA e₁ e₂
   g.assign eq
 where
   /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
   and returns a proof that they are equal (or fails). -/
   algCore {u v : Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
-      {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (e₁ e₂ : Q($A)) : AtomM Q($e₁ = $e₂) := do
-    let cr ← Algebra.mkCache sR
-    let ca ← Algebra.mkCache sA
+      {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
+      (cR : Cache q($sR)) (cA : Cache q($sA)) (e₁ e₂ : Q($A)) : AtomM Q($e₁ = $e₂) := do
     profileitM Exception "algebra" (← getOptions) do
-      let ⟨a, va, pa⟩ ← eval sAlg cr ca e₁
-      let ⟨b, vb, pb⟩ ← eval sAlg cr ca e₂
+      let ⟨a, va, pa⟩ ← eval sAlg cR cA e₁
+      let ⟨b, vb, pb⟩ ← eval sAlg cR cA e₂
       unless va.eq vb do
         let g ← mkFreshExprMVar (← (← Ring.ringCleanupRef.get) q($a = $b))
         throwError "algebra failed, algebra expressions not equal\n{g.mvarId!}"
       let pb : Q($e₂ = $a) := pb
-      /- TODO: extract lemma -/
       return q(by simp_all)
 
 elab (name := algebra) "algebra":tactic =>
@@ -1046,17 +1044,19 @@ def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) 
     | throwError "algebra failed: not an equality"
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
+  have A : Q(Type v) := α
+  let sA ← synthInstanceQ q(CommSemiring $A)
+  let cA ← Algebra.mkCache sA
   let ⟨u, R⟩ ←
     match base with
       | .some p => do pure p
       | none => do
-        pure (← inferBase (← g.getType))
-  have A : Q(Type v) := α
-  let _sA ← synthInstanceQ q(CommSemiring $A)
-  let _sR ← synthInstanceQ q(CommSemiring $R)
+        pure (← inferBase cA (← g.getType))
+  let sR ← synthInstanceQ q(CommSemiring $R)
+  let cR ← Algebra.mkCache sR
   let sAlg ← synthInstanceQ q(Algebra $R $A)
   have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
-  let ⟨eq, mids⟩ ← AtomM.run .instances <| algCore q($sAlg) q($e₁) q($e₂)
+  let ⟨eq, mids⟩ ← AtomM.run .instances <| algCore q($sAlg) cR cA q($e₁) q($e₂)
   let res ← mids.mapM (runSimp (RingNF.cleanup {}))
   g.assign eq
   return res
@@ -1064,13 +1064,12 @@ where
   /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
   and returns a proof that they are equal (or fails). -/
   algCore {u v : Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
-      {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (e₁ e₂ : Q($A)) :
+      {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
+      (cR : Cache q($sR)) (cA : Cache q($sA)) (e₁ e₂ : Q($A)) :
       AtomM (Q($e₁ = $e₂) × List MVarId) := do
-    let cr ← Algebra.mkCache sR
-    let ca ← Algebra.mkCache sA
     profileitM Exception "algebra" (← getOptions) do
-      let ⟨_a, va, pa⟩ ← eval sAlg cr ca e₁
-      let ⟨_b, vb, pb⟩ ← eval sAlg cr ca e₂
+      let ⟨_a, va, pa⟩ ← eval sAlg cR cA e₁
+      let ⟨_b, vb, pb⟩ ← eval sAlg cR cA e₂
       let ⟨pab, mvars⟩ ← equateScalarsSum sAlg va vb
       return ⟨q(eq_trans_trans $pa $pb $pab), mvars⟩
 
