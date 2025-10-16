@@ -19,15 +19,6 @@ namespace TopologicalSpace
 
 variable {ι : Type*} [Preorder ι]
 
-instance [h : IsEmpty ι] : Subsingleton (WithTop ι) where
-  allEq a b := by
-    cases a with
-    | coe a => exfalso; exact h.elim a
-    | top =>
-      cases b with
-      | coe b => exfalso; exact h.elim b
-      | top => rfl
-
 @[nolint unusedArguments]
 instance [TopologicalSpace ι] [OrderTopology ι] : TopologicalSpace (WithTop ι) :=
   Preorder.topology _
