@@ -1065,26 +1065,31 @@ section Find
 
 variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n}
 
-/-- `find p` returns the first index `k` where `p k` is satisfied,
-  given that it is satisfied somewhere. -/
-protected def find : {n : ℕ} → (p : Fin n → Prop) → [DecidablePred p] → (h : ∃ k, p k) → Fin n
-  | 0, _, _, h => by simp at h | _ + 1, p, _, h =>
-    if h0 : p 0 then 0 else (Fin.find _ <| (exists_fin_succ.mp h).resolve_left h0).succ
+/-- `findX p` returns the smallest index `k` where `p k` is satisfied,
+  given that it is satisfied somewhere. Returns a subtype -/
+protected def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) :
+    { i : Fin n // p i ∧ ∀ j < i, ¬ p j } :=
+  go n (by grind)
+where
+  go (m : Nat) (hj : ∀ j, (hm : j < n - m) → ¬p ⟨j, by grind⟩) := match m with
+  | m + 1 => if hnm : p ⟨(n - (m + 1)), Nat.sub_lt h.choose.pos ((Nat.succ_pos _))⟩
+    then ⟨⟨n - (m + 1), _⟩, ⟨hnm, fun ⟨x, _⟩ h => hj x h⟩⟩ else go m (by grind)
+  | 0 => (hj _ (Fin.is_lt _) h.choose_spec).elim
 
-theorem find_succ {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ k, p k) : Fin.find p h =
-    if h0 : p 0 then 0 else (Fin.find _ <| (exists_fin_succ.mp h).resolve_left h0).succ := rfl
+/-- `find p` returns the smallest index `k` where `p k` is satisfied,
+  given that it is satisfied somewhere. -/
+protected def find {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) : Fin n :=
+  (Fin.findX p h).1
 
 /-- If `find p = i`, then `p i` holds -/
 @[grind]
-theorem find_spec (h : ∃ k, p k) : p (Fin.find p h) := by
-  induction n with | zero => simp at h | succ n ih => grind [find_succ]
+theorem find_spec (h : ∃ k, p k) : p (Fin.find p h) := (Fin.findX p h).2.1
 
 /-- If `find p = i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
 the indices where `p` holds. -/
 @[grind →]
-protected theorem find_min (h : ∃ k, p k) : {j : Fin n} → j < Fin.find p h → ¬ p j := by
-  induction n with | zero => simp at h | succ n ih =>
-  simp_rw [find_succ, forall_fin_succ, apply_dite, succ_lt_succ_iff, not_lt_zero]; grind
+protected theorem find_min (h : ∃ k, p k) {j : Fin n} : j < Fin.find p h → ¬ p j :=
+  (Fin.findX p h).2.2 _
 
 @[simp] theorem val_find (h : ∃ k, p k) : (Fin.find p h).val = Nat.find (Fin.exists_iff.mp h) :=
   ((Nat.find_eq_iff _).mpr ⟨⟨is_lt _, find_spec _⟩, fun _ hm ⟨_, hi⟩ => Fin.find_min h hm hi⟩).symm
@@ -1111,6 +1116,21 @@ theorem find_eq_iff {i : Fin n} (h : ∃ k, p k) : Fin.find p h = i ↔ p i ∧ 
 
 @[simp] lemma find_eq_zero {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ k, p k) :
   Fin.find p h = 0 ↔ p 0 := by simp [find_eq_iff]
+
+lemma find_of_not_zero {p : Fin (n + 1) → Prop} [DecidablePred p]
+    (h : ∃ i, p i) (h0 : ¬p 0) :
+    Fin.find p h =
+    (Fin.find (fun k => p k.succ) <| (exists_fin_succ.mp h).resolve_left h0).succ := by
+  simp_rw [find_eq_iff, forall_fin_succ, h0, not_false_eq_true,
+    implies_true, true_and, succ_lt_succ_iff]
+  exact ⟨find_spec (p := fun i => p i.succ) _, fun j => Fin.find_min _⟩
+
+theorem find_eq_dite {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ i, p i) :
+    Fin.find p h = if h0 : p 0 then 0 else
+    (Fin.find (fun k => p k.succ) <| (exists_fin_succ.mp h).resolve_left h0).succ := by
+  split_ifs
+  · grind [find_eq_zero]
+  · grind [find_of_not_zero]
 
 /-- If a predicate `q` holds at some `x` and implies `p` up to that `x`, then
 the earliest `xq` such that `q xq` is at least the smallest `xp` where `p xp`.
@@ -1144,12 +1164,6 @@ lemma find_congr' {hp : ∃ i, p i} {hq : ∃ i, q i} (hpq : ∀ {i}, p i ↔ q 
 
 lemma find_le (hi : p i) : Fin.find p ⟨i, hi⟩ ≤ i :=
   (Fin.find_le_iff _ _).2 ⟨i, le_refl _, hi⟩
-
-lemma find_of_not_zero {p : Fin (n + 1) → Prop} [DecidablePred p]
-    (h : ∃ i, p i) (h0 : ¬p 0) :
-    Fin.find p h =
-    (Fin.find (fun k => p k.succ) <| (exists_fin_succ.mp h).resolve_left h0).succ := by
-  simp_rw [find_succ, h0, dite_false]
 
 lemma find_pos {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ i, p i) :
     0 < Fin.find p h ↔ ¬p 0 := Fin.pos_iff_ne_zero.trans (Fin.find_eq_zero _).not
@@ -1271,4 +1285,3 @@ def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
   toFun f := (f 0, f 1)
   invFun p := Fin.cons p.1 <| Fin.cons p.2 finZeroElim
   left_inv _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
-
