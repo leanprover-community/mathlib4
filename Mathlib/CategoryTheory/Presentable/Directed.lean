@@ -50,69 +50,6 @@ lemma hasCardinalLT_of_finite
     HasCardinalLT X κ :=
   .of_le (by rwa [hasCardinalLT_aleph0_iff]) hκ
 
-lemma hasCardinalLT_punit (κ : Cardinal) (hκ : Cardinal.aleph0 ≤ κ) :
-    HasCardinalLT PUnit κ :=
-  hasCardinalLT_of_finite _ _ hκ
-
-lemma Cardinal.mk_surjective :
-    Function.Surjective (Cardinal.mk : Type w → Cardinal) := by
-  rintro ⟨_⟩; exact ⟨_, rfl⟩
-
-open CategoryTheory in
-lemma Cardinal.IsRegular.exists_upper_bound {κ : Cardinal.{w}} (hκ : κ.IsRegular)
-    {ι : Type w} (c : ι → Cardinal.{w}) (hc : ∀ i, c i < κ) (hι : Cardinal.mk ι < κ) :
-    ∃ (κ₀ : Cardinal.{w}), κ₀ < κ ∧ ∀ i, c i ≤ κ₀ := by
-  have : Fact κ.IsRegular := ⟨hκ⟩
-  let f (i : ι) : κ.ord.toType :=
-    Ordinal.enumIsoToType _ ⟨(c i).ord, by simpa using hc i⟩
-  rw [← hasCardinalLT_iff_cardinal_mk_lt] at hι
-  let m := IsCardinalFiltered.max f hι
-  have hm (i : ι) : f i ≤ m := leOfHom (IsCardinalFiltered.toMax f hι i)
-  have h (j : κ.ord.toType) : -- should be made a lemma?
-      ((Ordinal.enumIsoToType _).symm j).1.card < κ := by
-    obtain ⟨⟨a, ha⟩, rfl⟩ := κ.ord.enumIsoToType.surjective j
-    simpa only [OrderIso.symm_apply_apply, ← lt_ord, Set.mem_Iio] using ha
-  refine ⟨Cardinal.mk ((Ordinal.enumIsoToType _).symm m).1.toType, by simpa using h m, fun i ↦ ?_⟩
-  rw [mk_toType]
-  exact le_trans (by simp [f]) (Ordinal.card_le_card
-    (Subtype.mono_coe _ (κ.ord.enumIsoToType.symm.monotone (hm i))))
-
-lemma hasCardinalLT_sigma' {ι : Type w} (α : ι → Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
-    HasCardinalLT (Σ i, α i) κ := by
-  have hκ : Cardinal.aleph0 ≤ κ := Cardinal.IsRegular.aleph0_le Fact.out
-  obtain hκ | rfl := hκ.lt_or_eq
-  · obtain ⟨κ₀, h₁, h₂, h₃, h₄⟩ : ∃ (κ₀ : Cardinal), Cardinal.aleph0 ≤ κ₀ ∧ κ₀ < κ ∧
-        Cardinal.mk ι ≤ κ₀ ∧ ∀ i, Cardinal.mk (α i) ≤ κ₀ := by
-      obtain ⟨κ₀, h₁, h₂⟩ :=
-        Cardinal.IsRegular.exists_upper_bound (κ := κ) Fact.out
-          (fun (i : Option ι) ↦ match i with
-            | none => max Cardinal.aleph0 (Cardinal.mk ι)
-            | some i => Cardinal.mk (α i)) (by
-          rintro (_ | i)
-          · simp only [sup_lt_iff, ← hasCardinalLT_iff_cardinal_mk_lt]
-            exact ⟨hκ, hι⟩
-          · exact (hasCardinalLT_iff_cardinal_mk_lt _ _).1 (hα i)) (by
-              rwa [← hasCardinalLT_iff_cardinal_mk_lt,
-                hasCardinalLT_option_iff _ _ hκ.le])
-      exact ⟨κ₀, (le_max_left _ _).trans (h₂ .none), h₁,
-        (le_max_right _ _).trans (h₂ .none), fun i ↦ h₂ (.some i)⟩
-    obtain ⟨X, rfl⟩ := κ₀.mk_surjective
-    rw [hasCardinalLT_iff_cardinal_mk_lt]
-    obtain ⟨φ⟩ := h₃
-    let ψ (i : ι) : α i ↪ X := (h₄ i).some
-    refine lt_of_le_of_lt ?_ h₂
-    trans Cardinal.mk (X × X)
-    · refine ⟨⟨fun ⟨i, a⟩ ↦ ⟨φ i, ψ i a⟩, fun ⟨i, a⟩ ⟨j, b⟩ h ↦ ?_⟩⟩
-      rw [Prod.ext_iff] at h
-      obtain rfl : i = j := φ.injective h.1
-      obtain rfl : a = b := (ψ i).injective h.2
-      rfl
-    · rw [← Cardinal.mul_def]
-      exact (Cardinal.mul_le_max_of_aleph0_le_left h₁).trans (by simp)
-  · simp only [hasCardinalLT_aleph0_iff] at hι hα ⊢
-    infer_instance
-
 @[simp]
 lemma hasCardinalLT_lift_iff (X : Type v) (κ : Cardinal.{w}) :
     HasCardinalLT X (Cardinal.lift.{u} κ) ↔ HasCardinalLT X κ := by
@@ -129,6 +66,13 @@ lemma Cardinal.IsRegular.lift {κ : Cardinal.{w}} (hκ : κ.IsRegular) :
   constructor
   · simpa
   · rwa [← Cardinal.lift_ord, ← Ordinal.lift_cof, lift_le]
+
+lemma hasCardinalLT_sigma' {ι : Type w} (α : ι → Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
+    HasCardinalLT (Σ i, α i) κ := by
+  simp only [hasCardinalLT_iff_cardinal_mk_lt] at hι hα ⊢
+  rw [Cardinal.mk_sigma]
+  exact Cardinal.sum_lt_lift_of_isRegular.{w, w} Fact.out (by simpa) hα
 
 lemma hasCardinalLT_sigma {ι : Type u} (α : ι → Type v) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
@@ -421,7 +365,7 @@ def Diagram.single (j : J) : Diagram J κ where
   src := by rintro _ _ _ ⟨⟩; exact ⟨⟨⟩⟩
   tgt := by rintro _ _ _ ⟨⟩; exact ⟨⟨⟩⟩
   hW :=
-    (hasCardinalLT_punit κ (Cardinal.IsRegular.aleph0_le Fact.out)).of_surjective
+    (hasCardinalLT_of_finite _ κ (Cardinal.IsRegular.aleph0_le Fact.out)).of_surjective
         (fun (_ : Unit) ↦ ⟨Arrow.mk (𝟙 j), ⟨⟨⟩⟩⟩) (by
       rintro ⟨f, hf⟩
       refine ⟨⟨⟩, ?_⟩
@@ -429,7 +373,7 @@ def Diagram.single (j : J) : Diagram J κ where
       exact ((MorphismProperty.ofHoms_iff _ _).1
         ((MorphismProperty.arrow_mk_mem_toSet_iff _ _).1 hf)).choose_spec.symm)
   hP :=
-    (hasCardinalLT_punit κ (Cardinal.IsRegular.aleph0_le Fact.out)).of_surjective
+    (hasCardinalLT_of_finite _ κ (Cardinal.IsRegular.aleph0_le Fact.out)).of_surjective
       (fun (_ : Unit) ↦ ⟨j, by simp⟩) (fun ⟨k, hk⟩ ↦ ⟨⟨⟩, by aesop⟩)
 
 instance (j : J) : Finite (Subtype (Diagram.single (κ := κ) j).P) :=
