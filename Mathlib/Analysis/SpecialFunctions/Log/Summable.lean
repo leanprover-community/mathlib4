@@ -127,10 +127,7 @@ lemma Finset.norm_prod_one_add_sub_one_le (t : Finset ι) (f : ι → R) :
     generalize h : Real.exp (∑ i ∈ t, ‖f i‖) = A at ⊢ IH
     rw [sub_add_eq_add_sub, sub_le_sub_iff_right]
     transitivity A + ‖f x‖ * A
-    · gcongr
-      rw [← sub_add_cancel (∏ x ∈ t, (1 + f x)) 1]
-      refine (norm_add_le _ _).trans <| (add_le_add_right IH _).trans ?_
-      rw [norm_one, sub_add_cancel]
+    · grw [norm_le_norm_sub_add (∏ x ∈ t, (1 + f x)) 1, IH, norm_one, sub_add_cancel]
     rw [← one_add_mul, add_comm]
     exact mul_le_mul_of_nonneg_right (Real.add_one_le_exp _) (h ▸ Real.exp_nonneg _)
 
