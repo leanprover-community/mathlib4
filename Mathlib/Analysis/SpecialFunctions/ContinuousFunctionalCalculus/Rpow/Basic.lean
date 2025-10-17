@@ -5,11 +5,12 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Algebra.Order.Star.Prod
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
@@ -327,13 +328,15 @@ lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
 end pi
 
 /-- For an element `a` in a C⋆-algebra, TFAE:
-* `0 ≤ a`
-* `a = sqrt a * sqrt a`
-* `a = b * b` for some nonnegative `b`
-* `a = b * b` for some self-adjoint `b`
-* `a = star b * b` for some `b`
-* `a = b * star b` for some `b`
-* `a` is self-adjoint and has nonnegative spectrum -/
+1. `0 ≤ a`
+2. `a = sqrt a * sqrt a`
+3. `a = b * b` for some nonnegative `b`
+4. `a = b * b` for some self-adjoint `b`
+5. `a = star b * b` for some `b`
+6. `a = b * star b` for some `b`
+7. `a = a⁺`
+8. `a` is self-adjoint and `a⁻ = 0`
+9. `a` is self-adjoint and has nonnegative spectrum -/
 theorem _root_.CStarAlgebra.nonneg_TFAE {a : A} :
     [ 0 ≤ a,
       a = sqrt a * sqrt a,
@@ -341,8 +344,13 @@ theorem _root_.CStarAlgebra.nonneg_TFAE {a : A} :
       ∃ b : A, IsSelfAdjoint b ∧ a = b * b,
       ∃ b : A, a = star b * b,
       ∃ b : A, a = b * star b,
+      a = a⁺,
+      IsSelfAdjoint a ∧ a⁻ = 0,
       IsSelfAdjoint a ∧ QuasispectrumRestricts a ContinuousMap.realToNNReal ].TFAE := by
-  tfae_have 1 ↔ 7 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
+  tfae_have 1 ↔ 9 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
+  tfae_have 1 ↔ 7 := eq_comm.eq ▸ (CFC.posPart_eq_self a).symm
+  tfae_have 1 ↔ 8 := ⟨fun h => ⟨h.isSelfAdjoint, negPart_eq_zero_iff a |>.mpr h⟩,
+    fun h => negPart_eq_zero_iff a |>.mp h.2⟩
   tfae_have 1 → 2 := fun h => sqrt_mul_sqrt_self a |>.symm
   tfae_have 2 → 3 := fun h => ⟨sqrt a, sqrt_nonneg a, h⟩
   tfae_have 3 → 4 := fun ⟨b, hb⟩ => ⟨b, hb.1.isSelfAdjoint, hb.2⟩
@@ -361,6 +369,8 @@ theorem _root_.CStarAlgebra.nonneg_iff_eq_star_mul_self {a : A} :
     0 ≤ a ↔ ∃ b, a = star b * b := CStarAlgebra.nonneg_TFAE.out 0 4
 theorem _root_.CStarAlgebra.nonneg_iff_eq_mul_star_self {a : A} :
     0 ≤ a ↔ ∃ b, a = b * star b := CStarAlgebra.nonneg_TFAE.out 0 5
+theorem _root_.CStarAlgebra.nonneg_iff_isSelfAdjoint_and_negPart_eq_zero {a : A} :
+    0 ≤ a ↔ IsSelfAdjoint a ∧ a⁻ = 0 := CStarAlgebra.nonneg_TFAE.out 0 7
 
 end sqrt
 
