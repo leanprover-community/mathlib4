@@ -664,6 +664,7 @@ The general case is obtained by applying the previous result to
 the cartesian product `J × κ.ord.toType`.
 -/
 
+@[stacks 0032]
 lemma exists_cardinal_directed (J : Type w) [SmallCategory J] (κ : Cardinal.{w})
     [Fact κ.IsRegular] [IsCardinalFiltered J κ] :
     ∃ (α : Type w) (_ : PartialOrder α) (_ : IsCardinalFiltered α κ)
@@ -684,6 +685,7 @@ lemma IsFiltered.isDirected (α : Type w) [PartialOrder α] [IsFiltered α] :
   directed i j := ⟨max i j, leOfHom (leftToMax i j), leOfHom (rightToMax i j)⟩
 
 attribute [local instance] Cardinal.fact_isRegular_aleph0 in
+@[stacks 0032]
 lemma IsFiltered.exists_directed
     (J : Type w) [SmallCategory J] [IsFiltered J] :
     ∃ (α : Type w) (_ : PartialOrder α) (_ : IsDirected α (· ≤ ·)) (_ : Nonempty α)
