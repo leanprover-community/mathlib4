@@ -252,7 +252,7 @@ variable [CommGroup α] [MulLeftMono α]
 theorem leOnePart_min (a b : α) :
     (min a b)⁻ᵐ = max a⁻ᵐ b⁻ᵐ := by
   rcases le_total a b with h | h
-  · rw [min_eq_left h, max_comm, max_eq_right ((le_iff_oneLePart_leOnePart a b).1 h).2]
+  · rw [min_eq_left h, max_eq_left ((le_iff_oneLePart_leOnePart a b).1 h).2]
   · rw [min_eq_right h, max_eq_right ((le_iff_oneLePart_leOnePart b a).1 h).2]
 
 @[to_additive]
