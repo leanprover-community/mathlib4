@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Module.Torsion.Field
 import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.Algebra.Ring.Subring.Units
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
@@ -359,7 +360,8 @@ lemma eq_zero_of_sameRay_neg_smul_right [IsDomain R] [Module.IsTorsionFree R M] 
     exact (mul_neg_of_pos_of_neg hr₂ hr).trans hr₁
 
 /-- If a vector is in the same ray as its negation, that vector is zero. -/
-theorem eq_zero_of_sameRay_self_neg [Module.IsTorsionFree R M] (h : SameRay R x (-x)) : x = 0 := by
+theorem eq_zero_of_sameRay_self_neg [IsDomain R] [Module.IsTorsionFree R M] (h : SameRay R x (-x)) :
+    x = 0 := by
   nontriviality M; haveI : Nontrivial R := Module.nontrivial R M
   refine eq_zero_of_sameRay_neg_smul_right (neg_lt_zero.2 (zero_lt_one' R)) ?_
   rwa [neg_one_smul]
@@ -410,7 +412,7 @@ instance : InvolutiveNeg (Module.Ray R M) where
   -- Quotient.ind (fun a => congr_arg Quotient.mk' <| neg_neg _) x
 
 /-- A ray does not equal its own negation. -/
-theorem ne_neg_self [Module.IsTorsionFree R M] (x : Module.Ray R M) : x ≠ -x := by
+theorem ne_neg_self [IsDomain R] [Module.IsTorsionFree R M] (x : Module.Ray R M) : x ≠ -x := by
   induction x using Module.Ray.ind with | h x hx =>
   rw [neg_rayOfNeZero, Ne, ray_eq_iff]
   exact mt eq_zero_of_sameRay_self_neg hx
