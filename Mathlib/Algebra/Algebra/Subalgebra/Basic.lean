@@ -854,7 +854,7 @@ lemma setRange_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algeb
 
 instance instModuleIsTorsionFree' [IsDomain A] (S : Subalgebra R A) :
     Module.IsTorsionFree S A where
-  isSMulRegular s hs := .of_ne_zero <| by simpa using hs.ne_zero
+  isSMulRegular s hs := .of_ne_zero (r := s.val) <| by simpa using hs.ne_zero
 
 end Actions
 

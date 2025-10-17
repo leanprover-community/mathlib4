@@ -68,7 +68,7 @@ import Mathlib.RingTheory.SimpleModule.Basic
 Torsion, submodule, module, quotient
 -/
 
-/-! ### Torsion -/
+open Module
 
 namespace Ideal
 
@@ -100,7 +100,7 @@ theorem torsionOf_eq_top_iff (m : M) : torsionOf R M m = ⊤ ↔ m = 0 := by
   exact Submodule.mem_top
 
 @[simp]
-theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [Module.IsTorsionFree R M] (m : M) :
+theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [IsDomain R] [Module.IsTorsionFree R M] (m : M) :
     torsionOf R M m = ⊥ ↔ m ≠ 0 := by
   refine ⟨fun h contra => ?_, fun h => (Submodule.eq_bot_iff _).mpr fun r hr => ?_⟩
   · rw [contra, torsionOf_zero] at h
@@ -761,24 +761,9 @@ theorem coe_torsion_eq_annihilator_ne_bot :
       fun ⟨a, hax, ha⟩ => ⟨⟨_, mem_nonZeroDivisors_of_ne_zero ha⟩, hax x ⟨1, one_smul _ _⟩⟩⟩
 
 /-- A module over a domain is torsion-free iff its torsion submodule is trivial. -/
-theorem isTorsionFree_iff_torsion_eq_bot : Module.IsTorsionFree R M ↔ torsion R M = ⊥ := by
-  simp [torsion, torsion']
-  constructor <;> intro h
-  · rw [eq_bot_iff]
-    rintro x ⟨a, hax⟩
-    change (a : R) • x = 0 at hax
-    rcases smul_eq_zero.2 hax with h0 | h0
-    · exfalso
-      exact nonZeroDivisors.coe_ne_zero a h0
-    · exact h0
-  · exact
-      { eq_zero_or_eq_zero_of_smul_eq_zero := fun {a} {x} hax => by
-          by_cases ha : a = 0
-          · left
-            exact ha
-          · right
-            rw [← mem_bot R, ← h]
-            exact ⟨⟨a, mem_nonZeroDivisors_of_ne_zero ha⟩, hax⟩ }
+theorem isTorsionFree_iff_torsion_eq_bot : IsTorsionFree R M ↔ torsion R M = ⊥ := by
+  simp [torsion, torsion', subset_antisymm_iff, exists_ne, isTorsionFree_iff_smul_eq_zero]
+  grind
 
 lemma torsion_int {G} [AddCommGroup G] :
     (torsion ℤ G).toAddSubgroup = AddCommGroup.torsion G := by
@@ -802,8 +787,8 @@ theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
       obtain ⟨b, h⟩ := hax
       exact ⟨b * a, (mul_smul _ _ _).trans h⟩
 
-instance noZeroSMulDivisors [IsDomain R] : Module.IsTorsionFree R (M ⧸ torsion R M) :=
-  noZeroSMulDivisors_iff_torsion_eq_bot.mpr torsion_eq_bot
+instance instIsTorsionFree [IsDomain R] : Module.IsTorsionFree R (M ⧸ torsion R M) :=
+  isTorsionFree_iff_torsion_eq_bot.mpr torsion_eq_bot
 
 end QuotientTorsion
 

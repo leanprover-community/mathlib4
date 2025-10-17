@@ -119,7 +119,18 @@ end AddCommGroup
 end Semiring
 
 section Ring
-variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M] {m : M} {r₁ r₂ : R}
+variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] {m : M} {r₁ r₂ : R}
+
+lemma Module.isTorsionFree_iff_smul_eq_zero :
+    IsTorsionFree R M ↔ ∀ (r : R) (m : M), r • m = 0 → r = 0 ∨ m = 0 where
+  mp _ r m := smul_eq_zero.1
+  mpr h := by
+    use fun r hr m₁ m₂ hm ↦ ?_
+    simpa [sub_eq_zero, hr.ne_zero] using h r (m₁ - m₂) (by simpa [smul_sub, sub_eq_zero] using hm)
+
+alias ⟨_, Module.IsTorsionFree.of_smul_eq_zero⟩ := isTorsionFree_iff_smul_eq_zero
+
+variable [IsTorsionFree R M]
 
 variable (R) in
 lemma smul_left_injective (hm : m ≠ 0) : ((· • m) : R → M).Injective := by
