@@ -281,7 +281,7 @@ theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (
 theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) := LinearMap.isPositive_zero
 
 @[simp]
-theorem isPositive_id : IsPositive (id 𝕜 E : E →L[𝕜] E) := LinearMap.isPositive_id
+theorem isPositive_id : IsPositive (.id 𝕜 E : E →L[𝕜] E) := LinearMap.isPositive_id
 
 @[simp]
 theorem isPositive_one : IsPositive (1 : E →L[𝕜] E) := LinearMap.isPositive_one
