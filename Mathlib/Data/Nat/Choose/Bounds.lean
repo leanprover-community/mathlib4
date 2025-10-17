@@ -79,11 +79,8 @@ theorem choose_lt_two_pow (n k : ℕ) (p : 0 < n) : n.choose k < 2 ^ n := by
   exact choose_succ_le_two_pow (n - 1) k
 
 theorem choose_le_two_pow (n k : ℕ) : n.choose k ≤ 2 ^ n := by
-  obtain (rfl | hk) := eq_zero_or_pos k
-  · simp [Nat.one_le_two_pow]
-  · obtain (rfl | hn) := eq_zero_or_pos n
-    · have : choose 0 k = 0 := by convert Nat.choose_zero_succ (k - 1); omega
-      simp [this]
-    · exact (Nat.choose_lt_two_pow _ _ hn).le
+  obtain (rfl | hn) := eq_zero_or_pos n
+  · cases k <;> simp
+  · exact (Nat.choose_lt_two_pow _ _ hn).le
 
 end Nat
