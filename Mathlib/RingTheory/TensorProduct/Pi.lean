@@ -71,7 +71,7 @@ lemma piScalarRight_tmul_apply (x : A) (y : ι → R) (i : ι) :
   rfl
 
 theorem Algebra.TensorProduct.piScalarRight_symm_apply_algebraMap (x : ι → R) :
-    (TensorProduct.piScalarRight R S A ι).symm (algebraMap _ _ x) = 1 ⊗ₜ[R] x := by
+    (piScalarRight R S A ι).symm (algebraMap _ _ x) = 1 ⊗ₜ[R] x := by
   simp [AlgEquiv.symm_apply_eq, algebraMap_eq_smul_one, piScalarRight_tmul, Pi.smul_def']
 
 section
