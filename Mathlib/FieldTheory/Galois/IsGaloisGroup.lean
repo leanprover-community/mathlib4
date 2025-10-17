@@ -14,19 +14,50 @@ Given an action of a group `G` on an extension of fields `L/K`, we introduce a p
 we do not assume that `L` is an algebraic extension of `K`.
 -/
 
-variable (G H K L : Type*) [Group G] [Group H] [Field K] [Field L] [Algebra K L]
-  [MulSemiringAction G L] [MulSemiringAction H L]
+section CommRing
+
+variable (G A B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
+  [MulSemiringAction G B]
 
 /-- `G` is a Galois group for `L/K` if the action on `L` is faithful with fixed field `K`.
 In particular, we do not assume that `L` is an algebraic extension of `K`. -/
 class IsGaloisGroup where
-  faithful : FaithfulSMul G L
-  commutes : SMulCommClass G K L
-  isInvariant : Algebra.IsInvariant K L G
+  faithful : FaithfulSMul G B
+  commutes : SMulCommClass G A B
+  isInvariant : Algebra.IsInvariant A B G
+
+attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
+
+end CommRing
+
+section Field
+
+variable (G A B : Type*) [Group G] [CommSemiring A] [CommSemiring B] [Algebra A B]
+  [MulSemiringAction G B]
+
+theorem IsGaloisGroup.toIsFractionRing (K L : Type*) [Field K] [Field L] [Algebra K L]
+    [Algebra A K] [Algebra B L] [MulSemiringAction G L]
+    [IsFractionRing A K] [IsFractionRing B L] [hGAB : IsGaloisGroup G A B] :
+    IsGaloisGroup G K L := by
+
+  refine ⟨⟨?_⟩, ⟨?_⟩, ⟨?_⟩⟩
+  · have := hGAB.faithful
+    intro g₁ g₂ h
+    apply eq_of_smul_eq_smul (M := G) (α := B)
+    intro y
+    specialize h (algebraMap B L y)
+    sorry
+  · intro g x y
+
+    sorry
+  · sorry
+
+end Field
+
+variable (G H K L : Type*) [Group G] [Group H] [Field K] [Field L] [Algebra K L]
+  [MulSemiringAction G L] [MulSemiringAction H L]
 
 namespace IsGaloisGroup
-
-attribute [instance low] commutes isInvariant
 
 theorem fixedPoints_eq_bot [IsGaloisGroup G K L] :
     FixedPoints.intermediateField G = (⊥ : IntermediateField K L) := by

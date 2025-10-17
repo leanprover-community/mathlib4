@@ -9,6 +9,7 @@ import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.Relrank
 import Mathlib.GroupTheory.Perm.ClosureSwap
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+import Mathlib.NumberTheory.NumberField.Discriminant.Different
 import Mathlib.NumberTheory.RamificationInertia.Galois
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
@@ -33,6 +34,11 @@ variable (G K L : Type*) [Group G] [Field K] [Field L] [Algebra K L] [MulSemirin
 namespace IsGaloisGroup
 
 variable [hGKL : IsGaloisGroup G K L]
+
+protected theorem finite [FiniteDimensional K L] : Finite G := by
+  apply Nat.finite_of_card_ne_zero
+  rw [hGKL.card_eq_finrank]
+  exact Module.finrank_pos.ne'
 
 instance to_subgroup :
     IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L where
@@ -153,7 +159,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
   (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
-theorem Ideal.inertiaSubgroup_eq_ker : AddSubgroup.inertia Q.toAddSubgroup G =
+theorem Ideal.inertiaSubgroup_eq_ker : Q.toAddSubgroup.inertia G =
     (Ideal.Quotient.stabilizerHom Q P G).ker.map (MulAction.stabilizer G Q).subtype := by
   simp_rw [Subgroup.ext_iff, AddSubgroup.mem_inertia, Submodule.mem_toAddSubgroup,
     Subgroup.mem_map, MonoidHom.mem_ker, Subgroup.subtype_apply, AlgEquiv.ext_iff,
@@ -170,17 +176,19 @@ section inertiadef
 
 variable {A : Type*} [CommRing A] [IsDedekindDomain A] {P : Ideal A} (hP : P ≠ ⊥) [P.IsMaximal]
   {B : Type*} [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
-  (Q : Ideal B) [Q.IsPrime] (hQ : Q.LiesOver P)
+  (Q : Ideal B) [Q.IsPrime] [hQ : Q.LiesOver P]
   (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
   [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
-  [FiniteDimensional K L] [hKL : IsGalois K L]
-  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [MulSemiringAction G L]
-  [SMulCommClass G A B] [Algebra.IsInvariant A B G] [IsGaloisGroup G K L]
+  [FiniteDimensional K L]
+  (G : Type*) [Group G] [MulSemiringAction G B] [MulSemiringAction G L]
+  [SMulCommClass G A B] [Algebra.IsInvariant A B G] [hGKL : IsGaloisGroup G K L]
 
 include hP hQ K L in
 theorem Ideal.card_inertiaSubgroup [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
-    Nat.card (AddSubgroup.inertia Q.toAddSubgroup G) =
+    Nat.card (Q.toAddSubgroup.inertia G) =
       Ideal.ramificationIdx (algebraMap A B) P Q := by
+  have : Finite G := hGKL.finite
+  have : IsGalois K L := hGKL.isGalois
   rw [Ideal.inertiaSubgroup_eq_ker P Q G]
   have hf := Ideal.Quotient.stabilizerHom_surjective G P Q
   have : Finite ((B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) := Finite.of_surjective _ hf
@@ -205,6 +213,99 @@ theorem Ideal.card_inertiaSubgroup [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
   rw [Subgroup.card_subtype, key]
 
 end inertiadef
+
+section inertia
+
+theorem AddSubgroup.subgroupOf_inertia {M : Type*} [AddGroup M] (I : AddSubgroup M)
+    (G : Type*) [Group G] [MulAction G M] (H : Subgroup G) :
+    (I.inertia G).subgroupOf H = I.inertia H :=
+  rfl
+
+end inertia
+
+section ram
+
+open IsGaloisGroup
+
+open NumberField
+
+instance (K : Type*) [Field K] [NumberField K]
+    (G : Type*) [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) := by
+  sorry
+
+instance (K : Type*) [Field K] [NumberField K]
+    (G : Type*) [Group G] [MulSemiringAction G K] : SMulCommClass G (𝓞 K) K := by
+  sorry
+
+theorem genthm₀ (K : Type*) [Field K] [NumberField K]
+    (G : Type*) [Group G] [MulSemiringAction G K]
+    [IsGaloisGroup G ℚ K] :
+    ⨆ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
+  have : Finite G := IsGaloisGroup.finite G ℚ K
+  set H : Subgroup G := ⨆ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G
+  rw [eq_top_iff, ← fixingSubgroup_fixedPoints G ℚ K H, ← le_fixedPoints_iff_le_fixingSubgroup,
+    fixedPoints_top, le_bot_iff]
+  set F : IntermediateField ℚ K := FixedPoints.intermediateField H
+  have h : ∀ m : MaximalSpectrum (𝓞 K), m.asIdeal.toAddSubgroup.inertia G ≤ H := le_iSup _
+  replace h (m : MaximalSpectrum (𝓞 K)) : Nat.card (m.asIdeal.toAddSubgroup.inertia H) =
+      Nat.card (m.asIdeal.toAddSubgroup.inertia G) := by
+    rw [← Subgroup.map_subgroupOf_eq_of_le (h m), Subgroup.card_subtype,
+      AddSubgroup.subgroupOf_inertia]
+  replace h (m : MaximalSpectrum (𝓞 K)) :
+    Ideal.ramificationIdx (algebraMap (𝓞 F) (𝓞 K)) (m.asIdeal.under (𝓞 F)) m.asIdeal =
+      Ideal.ramificationIdx (algebraMap ℤ (𝓞 K)) (m.asIdeal.under ℤ) m.asIdeal := by
+    have : IsGalois ℚ K := IsGaloisGroup.isGalois G ℚ K
+    have : IsGalois F K := (IsGaloisGroup.to_subgroup G ℚ K H).isGalois
+    have : SMulCommClass (H) (𝓞 F) (𝓞 K) := sorry
+    have : Algebra.IsInvariant (𝓞 F) (𝓞 K) H := sorry
+    have : Algebra.IsInvariant ℤ (𝓞 K) G := sorry
+    have : Algebra.IsSeparable (𝓞 F ⧸ Ideal.under (𝓞 F) m.asIdeal) (𝓞 K ⧸ m.asIdeal) := sorry
+    have : Algebra.IsSeparable (ℤ ⧸ Ideal.under ℤ m.asIdeal) (𝓞 K ⧸ m.asIdeal) := sorry
+    rw [← @Ideal.card_inertiaSubgroup (𝓞 F) _ _ (m.asIdeal.under (𝓞 F)) ?_ _
+      (𝓞 K) _ _ _ _ m.asIdeal _ _ F K _ _ _ _ _ _ _ _ _ _ _ H _ _ _ _ _ _ _]
+    rw [← @Ideal.card_inertiaSubgroup ℤ _ _ (m.asIdeal.under ℤ) ?_ _ (𝓞 K) _ _ _ _ m.asIdeal _
+      _ ℚ K _ _ _ _ _ _ _ _ _ _ _ G _ _ _ _ _ _ _]
+    apply h
+    · sorry
+    · have key := m.asIdeal.over_under (A := 𝓞 F)
+      intro h
+      rw [h] at key
+      exact (m.asIdeal.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
+        (m.asIdeal.eq_bot_of_liesOver_bot (A := 𝓞 F))
+  replace h (m : MaximalSpectrum (𝓞 F)) :
+      Ideal.ramificationIdx (algebraMap ℤ (𝓞 F)) (m.asIdeal.under ℤ) m.asIdeal = 1 := by
+    let q : MaximalSpectrum (𝓞 K) := sorry
+    have key := @Ideal.ramificationIdx_algebra_tower ℤ (𝓞 F) (𝓞 K) _ _ _ _ _ _ _ _ _
+      (m.asIdeal.under ℤ) m.asIdeal q.asIdeal _ _
+    sorry
+  replace h (m : MaximalSpectrum (𝓞 F)) : Algebra.IsUnramifiedAt ℤ m.asIdeal := by
+    rw [Algebra.isUnramifiedAt_iff_of_isDedekindDomain]
+    · exact h m
+    · exact (m.asIdeal.bot_lt_of_maximal (RingOfIntegers.not_isField F)).ne'
+  replace h (m : MaximalSpectrum (𝓞 F)) : ¬ m.asIdeal ∣ differentIdeal ℤ (𝓞 F) := by
+    rw [dvd_differentIdeal_iff, not_not]
+    exact h m
+  replace h : differentIdeal ℤ (𝓞 F) = ⊤ := by
+    simp only [Ideal.dvd_iff_le] at h
+    sorry
+  -- define intermediate ring of integers and compute inertia degrees
+  replace h : (discr ↥F).natAbs = 1 := by
+    rw [← NumberField.absNorm_differentIdeal (K := F) (𝒪 := 𝓞 F), h, Ideal.absNorm_top]
+  suffices Module.finrank ℚ F ≤ 1 from
+    IntermediateField.finrank_eq_one_iff.mp (le_antisymm this Module.finrank_pos)
+  contrapose! h
+  replace h : 2 < |NumberField.discr F| := NumberField.abs_discr_gt_two h
+  contrapose! h
+  simp [Int.abs_eq_natAbs, h]
+
+theorem genthm (K : Type*) [Field K] [NumberField K]
+    (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K]
+    (G : Type*) [Group G] [MulSemiringAction G K]
+    [MulSemiringAction G R] [IsGaloisGroup G ℚ K] :
+    ⨆ m : MaximalSpectrum R, m.asIdeal.toAddSubgroup.inertia G = ⊤ := by
+  sorry
+
+end ram
 
 end Inertia
 
@@ -248,7 +349,7 @@ theorem tada -- R = ℤ, S = 𝓞 K
     (hf : (f.map (algebraMap R S)).roots.card = f.natDegree)
     -- at most one collision
     (h : (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
-    ∀ g ∈ AddSubgroup.inertia m.asIdeal.toAddSubgroup G,
+    ∀ g ∈ m.asIdeal.toAddSubgroup.inertia G,
       MulAction.toPermHom G (f.rootSet S) g = 1 ∨
         (MulAction.toPermHom G (f.rootSet S) g).IsSwap := by
   intro g hg
@@ -278,13 +379,13 @@ theorem tada' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
     (hf : f.Monic) (hf' : (f.map (algebraMap R S)).roots.card = f.natDegree)
     (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
     [MulAction.IsPretransitive G (f.rootSet S)] [FaithfulSMul G (f.rootSet S)]
-    (hG : ⨆ m : MaximalSpectrum S, AddSubgroup.inertia m.asIdeal.toAddSubgroup G = ⊤)
+    (hG : ⨆ m : MaximalSpectrum S, m.asIdeal.toAddSubgroup.inertia G = ⊤)
     (h : ∀ m : MaximalSpectrum S, f.natDegree ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
     Function.Bijective (MulAction.toPermHom G (f.rootSet S)) := by
   classical
   have hinj : Function.Injective (MulAction.toPermHom G (f.rootSet S)) := MulAction.toPerm_injective
   let X := ⋃ m : MaximalSpectrum S,
-    ((↑(AddSubgroup.inertia m.asIdeal.toAddSubgroup G : Subgroup G) : Set G) \ {1})
+    ((↑(m.asIdeal.toAddSubgroup.inertia G : Subgroup G) : Set G) \ {1})
   have hS1 : Subgroup.closure X = ⊤ := by
     simpa only [X, Subgroup.closure_iUnion, Subgroup.closure_eq, Subgroup.closure_diff_one]
   have hS2 : ∀ σ ∈ X, (MulAction.toPermHom G (f.rootSet S) σ).IsSwap := by
@@ -366,7 +467,8 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
     sorry
   refine tada' (S := R) f₀ hf₀ ?_ G ?_ ?_
   · sorry
-  · sorry
+  · have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
+    exact genthm K R G
   · sorry
 
 end Moore
@@ -432,16 +534,18 @@ attribute [local instance] Gal.splits_ℚ_ℂ
 
 theorem X_pow_sub_X_sub_one_gal :
     Function.Bijective (Gal.galActionHom (X ^ n - X - 1 : ℚ[X]) ℂ) := by
-  rcases le_or_gt n 1 with hn1 | hn1
+  rcases le_or_gt n 1 with hn | hn
   · have : Subsingleton ((X ^ n - X - 1 : ℚ[X]).rootSet ℂ) := by
-      sorry
+      apply Finset.card_le_one_iff_subsingleton_coe.mp
+      grw [Multiset.toFinset_card_le, card_roots', natDegree_map_le, natDegree_sub_le,
+        natDegree_sub_le, natDegree_X_pow, natDegree_X, natDegree_one, hn, max_self, Nat.max_zero]
     have : Unique ((X ^ n - X - 1 : ℚ[X]).Gal) := by
       refine Gal.uniqueGalOfSplits _ (splits_of_natDegree_le_one _ (by compute_degree!))
     apply Unique.bijective
   have hp : (X ^ n - X - 1 : ℤ[X]) = trinomial 0 1 n (-1) (-1) 1 := by
     simp only [trinomial, C_neg, C_1]; ring
-  have h := tada'' (X ^ n - X - 1) (hp ▸ trinomial_monic zero_lt_one hn1)
-    (X_pow_sub_X_sub_one_irreducible hn1.ne')
+  have h := tada'' (X ^ n - X - 1) (hp ▸ trinomial_monic zero_lt_one hn)
+    (X_pow_sub_X_sub_one_irreducible hn.ne')
   rwa [Polynomial.map_sub, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one,
     Polynomial.map_X] at h
 
