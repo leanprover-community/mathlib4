@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+import Mathlib.Analysis.Normed.Ring.WithAbs
 
 /-!
 # Ramification of infinite places of a number field
@@ -517,24 +518,24 @@ lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberFie
 
 namespace NumberField.InfinitePlace
 
-open ComplexEmbedding
+open ComplexEmbedding AbsoluteValue
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (w : InfinitePlace L) (v : InfinitePlace K)
 
-/-- An infinite place `w` of `L / K` lies over the infinite place `v` of `K` if `v` is the
-restriction of `w` to `K`. -/
-class LiesOver : Prop where
-  comap_eq' : w.comap (algebraMap K L) = v
-
 namespace LiesOver
 
-variable [w.LiesOver v]
+variable [w.1.LiesOver v.1]
 
-theorem comap_eq : w.comap (algebraMap K L) = v := LiesOver.comap_eq'
+theorem comap_eq : w.comap (algebraMap K L) = v := by
+  ext
+  simp_rw [comap_apply, coe_apply]
+  exact AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
 
 theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.mk_embedding, comap_eq w v]
 
+/-- If `w : InfinitePlace L` lies above `v : InfinitePlace K`, then either `w.embedding`
+extends `v.embedding` as complex embeddings, or `conjugate w.embedding` extends `v.embedding`. -/
 theorem embedding_comp_eq_or_conjugate_embedding_comp_eq :
     w.embedding.comp (algebraMap K L) = v.embedding ∨
       (conjugate w.embedding).comp (algebraMap K L) = v.embedding := by
@@ -542,16 +543,9 @@ theorem embedding_comp_eq_or_conjugate_embedding_comp_eq :
   | inl hl => exact .inl (hl ▸ congrArg embedding (mk_embedding_comp w v))
   | inr hr => simpa using .inr (hr ▸ congrArg embedding (mk_embedding_comp w v))
 
-theorem embedding_conjugate_comp_eq (h : ¬w.embedding.comp (algebraMap K L) = v.embedding) :
-    (conjugate w.embedding).comp (algebraMap K L) = v.embedding :=
-   (embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_left h
-
-theorem embedding_comp_eq (h : ¬(conjugate w.embedding).comp (algebraMap K L) = v.embedding) :
-    w.embedding.comp (algebraMap K L) = v.embedding :=
-  (embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_right h
-
 variable {v}
 
+/-- If `w : InfinitePlace L` lies above `v : InfinitePlace K` and `v` is complex, then so is `w`. -/
 theorem isComplex_of_isComplex_under (hv : v.IsComplex) : w.IsComplex := by
   rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv ⊢
   let ⟨x, hx⟩ := hv
@@ -559,6 +553,7 @@ theorem isComplex_of_isComplex_under (hv : v.IsComplex) : w.IsComplex := by
   rw [← comap_eq w v, ← mk_embedding w, comap_mk] at hx
   rcases embedding_mk_eq (w.embedding.comp (algebraMap K L)) with (_ | _) <;> aesop
 
+/-- If `w : InfinitePlace L` lies above `v : InfinitePlace K` and `w` is real, then so is `v`. -/
 theorem isReal_of_isReal_over (hw : w.IsReal) : v.IsReal := by
   rw [← not_isComplex_iff_isReal] at hw ⊢
   exact mt (isComplex_of_isComplex_under w) hw
