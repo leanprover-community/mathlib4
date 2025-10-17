@@ -324,9 +324,11 @@ instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
   inf_le_right D₁ D₂ := fun x ↦ by simp
   le_inf D₁ D₂ D₃ h₁₃ h₂₃ := fun x ↦ by simp [h₁₃ x, h₂₃ x]
 
+@[simp]
 lemma posPart_apply [AddCommGroup Y] [LinearOrder Y] (a : locallyFinsuppWithin U Y) (x : X) :
     a⁺ x = (a x)⁺ := rfl
 
+@[simp]
 lemma negPart_apply [AddCommGroup Y] [LinearOrder Y] (a : locallyFinsuppWithin U Y) (x : X) :
     a⁻ x = (a x)⁻ := rfl
 
