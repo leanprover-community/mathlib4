@@ -120,7 +120,7 @@ instance : One OrderType where
  one := ⟦LinOrd.of PUnit⟧
 
 @[simp]
-theorem type_toType (o : OrderType) : type o.toType = o :=
+theorem type_ordtoType (o : OrderType) : type o.toType = o :=
   o.out_eq
 
 theorem type_eq {α β} [LinearOrder α] [LinearOrder β] :
@@ -169,14 +169,14 @@ theorem type_unit : type Unit = 1 :=
 
 @[simp]
 theorem toType_empty_iff_eq_zero {o : OrderType} : IsEmpty o.toType ↔ o = 0 := by
-  rw [← @type_eq_zero_iff_isEmpty o.toType, type_toType]
+  rw [← @type_eq_zero_iff_isEmpty o.toType, type_ordtoType]
 
 instance isEmpty_toType_zero : IsEmpty (toType 0) :=
   toType_empty_iff_eq_zero.2 rfl
 
 @[simp]
 theorem toType_nonempty_iff_ne_zero {o : OrderType} : Nonempty o.toType ↔ o ≠ 0 := by
-  rw [← @type_ne_zero_iff_nonempty o.toType, type_toType]
+  rw [← @type_ne_zero_iff_nonempty o.toType, type_ordtoType]
 
 protected theorem one_ne_zero : (1 : OrderType) ≠ 0 :=
   type_ne_zero_of_nonempty
@@ -345,13 +345,42 @@ scoped notation "η" => OrderType.eta
 scoped notation "θ" => OrderType.theta
 
 open Classical
-in instance : Add OrderType where
+in instance : Add OrderType.{u} where
   add := Quotient.map₂ (fun r s ↦ ⟨(r ⊕ₗ s)⟩)
    (fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (choice ha) (choice hb)⟩)
 
-variable (o : OrderType)
+open Classical
+in instance : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
+  hAdd := Quotient.map₂ (fun r s ↦ ⟨(r ⊕ₗ s)⟩)
+   (fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (choice ha) (choice hb)⟩)
 
-#check o + 0
+@[simp]
+lemma type_add [LinearOrder α] [LinearOrder β] : type (α ⊕ₗ β) = (type α) + (type β) := rfl
 
+lemma OrderIso.sumLexEmpty (α : Type u) [LinearOrder α] : Nonempty (Lex (α ⊕ PEmpty) ≃o α) :=
+   ⟨OrderIso.ofRelIsoLT ((Sum.Lex.toLexRelIsoLT (α := α) (β := PEmpty)).symm.trans
+     (RelIso.sumLexEmpty (β := PEmpty) (α := α) (r := (· < ·)) (s := (· < ·))))⟩
+
+lemma OrderIso.emptySumLex (α : Type u) [LinearOrder α] : Nonempty (Lex (PEmpty ⊕ α) ≃o α) :=
+   ⟨OrderIso.ofRelIsoLT ((Sum.Lex.toLexRelIsoLT (α := PEmpty) (β := α)).trans
+     (RelIso.emptySumLex (β := α) (α := PEmpty) (r := (· < ·)) (s := (· < ·))))⟩
+
+open Classical in
+lemma add_zero (o : OrderType.{u}) : o + 0 = o :=
+  inductionOn o (fun α _ => RelIso.ordertype_congr (choice (OrderIso.sumLexEmpty α)))
+
+open Classical in
+lemma zero_add (o : OrderType.{u}) : 0 + o = o :=
+  inductionOn o (fun α _ => RelIso.ordertype_congr (choice (OrderIso.emptySumLex α)))
+
+open Classical in
+lemma add_assoc (o₁ o₂ o₃ : OrderType.{u}) : o₁ + o₂ + o₃ = o₁ + (o₂ + o₃) :=
+  inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ => RelIso.ordertype_congr (OrderIso.sumLexAssoc α β γ))
+
+instance : AddMonoid OrderType where
+  add_assoc := add_assoc
+  zero_add := zero_add
+  add_zero := add_zero
+  nsmul := nsmulRec
 
 end OrderType
