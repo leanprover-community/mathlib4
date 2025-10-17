@@ -228,18 +228,6 @@ theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
 
 end LinearMap
 
-theorem Submodule.coe_starProjection_le_coe_starProjection_iff {U V : Submodule 𝕜 E}
-    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
-    U.starProjection.toLinearMap ≤ V.starProjection ↔ U ≤ V := by
-  simp_rw [isSymmetricProjection_starProjection _ |>.le_iff_range_le_range <|
-      isSymmetricProjection_starProjection _, starProjection_coe_eq_isCompl_projection,
-    IsCompl.projection_range]
-
-theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
-    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
-    U.starProjection = V.starProjection ↔ U = V := by
-  simp only [le_antisymm_iff, ← Submodule.coe_starProjection_le_coe_starProjection_iff, ← coe_inj]
-
 namespace ContinuousLinearMap
 
 /-- A continuous linear endomorphism `T` of a Hilbert space is **positive** if it is symmetric
@@ -486,10 +474,17 @@ theorem IsIdempotentElem.TFAE [CompleteSpace E] {p : E →L[𝕜] E} (hp : IsIde
     (ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp)
   tfae_finish
 
-/-- `U.starProjection ≤ V.starProjection` iff `U ≤ V`. -/
-theorem _root_.Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
-    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
-    U.starProjection ≤ V.starProjection ↔ U ≤ V :=
-  coe_le_coe_iff (𝕜 := 𝕜) (E := E) _ _ |>.eq ▸ U.coe_starProjection_le_coe_starProjection_iff
-
 end ContinuousLinearMap
+
+/-- `U.starProjection ≤ V.starProjection` iff `U ≤ V`. -/
+theorem Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+    U.starProjection ≤ V.starProjection ↔ U ≤ V := by
+  simp_rw [← ContinuousLinearMap.coe_le_coe_iff, isSymmetricProjection_starProjection _
+      |>.le_iff_range_le_range <| isSymmetricProjection_starProjection _,
+    starProjection_coe_eq_isCompl_projection, IsCompl.projection_range]
+
+theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+    U.starProjection = V.starProjection ↔ U = V := by
+  simp only [le_antisymm_iff, ← Submodule.starProjection_le_starProjection]
