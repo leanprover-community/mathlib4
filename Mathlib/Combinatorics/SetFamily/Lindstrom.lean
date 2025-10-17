@@ -47,8 +47,8 @@ private lemma biUnion_eq_empty (s : Finset α) (f : α → Finset β) :
   grind
 
 /-- **Lindström's theorem** Suppose we are given a finite base set of size `n` and nonempty subsets
-  `f₁,...,fₘ` of the base set. If `n + 1 ≤ m`, then there exist disjoint nonempty sets of indices
-  `I, J ⊆ {1,...,m}` such that `⋃ i ∈ I, fᵢ = ⋃ j ∈ J, fⱼ`. -/
+`f₁,...,fₘ` of the base set. If `n + 1 ≤ m`, then there exist disjoint nonempty sets of indices
+`I, J ⊆ {1,...,m}` such that `⋃ i ∈ I, fᵢ = ⋃ j ∈ J, fⱼ`. -/
 theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion (f : α → Finset β)
     (h : Fintype.card β + 1 ≤ Fintype.card α) (hf : ∀ i, (f i).Nonempty) :
     ∃ I J : Finset α, Disjoint I J ∧ I.Nonempty ∧ J.Nonempty ∧ I.biUnion f = J.biUnion f := by
@@ -92,10 +92,11 @@ theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion (f : α → Finset β)
   have : J.Nonempty := by grind [biUnion_empty, biUnion_eq_empty, not_nonempty_iff_eq_empty]
   exact ⟨I, J, by grind [disjoint_left]⟩
 
+--set_option maxHeartbeats 400000
 /-- Strengthening of the Lindström's theorem. Suppose we are given a finite base set of size `n`
-  and nonempty subsets `f₁,...,fₘ` of the base set. If `n + 2 ≤ m`, then there exist disjoint
-  nonempty sets of indices `I, J ⊆ {1,...,m}` such that `⋃ i ∈ I, fᵢ = ⋃ j ∈ J, fⱼ` and
-  `⋂ i ∈ I, fᵢ = ⋂ j ∈ J, fⱼ`. -/
+and nonempty subsets `f₁,...,fₘ` of the base set. If `n + 2 ≤ m`, then there exist disjoint
+nonempty sets of indices `I, J ⊆ {1,...,m}` such that `⋃ i ∈ I, fᵢ = ⋃ j ∈ J, fⱼ` and
+`⋂ i ∈ I, fᵢ = ⋂ j ∈ J, fⱼ`. -/
 theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion_inf_eq_inf (f : α → Finset β)
     (h : Fintype.card β + 2 ≤ Fintype.card α) (hf : ∀ i, (f i).Nonempty) :
     ∃ I J : Finset α, Disjoint I J ∧ I.Nonempty ∧ J.Nonempty ∧ I.biUnion f = J.biUnion f
@@ -120,6 +121,7 @@ theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion_inf_eq_inf (f : α → 
   let I : Finset α := { i | 0 < c i }
   let J : Finset α := { i | c i < 0 }
   let Z : Finset α := { i | c i = 0 }
+  have : Disjoint I J := by grind only [= mem_filter, disjoint_left]
   have : I.Nonempty ∨ J.Nonempty := by grind [filter_nonempty_iff]
   have : ∀ a ∈ I, ∀ x ∈ f a, ∃ b ∈ J, x ∈ f b := by
     intro a ha x hx
@@ -136,21 +138,25 @@ theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion_inf_eq_inf (f : α → 
     simp only [mul_ite, v] at ha
     exact ⟨a, by grind⟩
   have : I.biUnion f = J.biUnion f := by grind
-  have : I.Nonempty := by grind [biUnion_empty, biUnion_eq_empty, not_nonempty_iff_eq_empty]
-  have : J.Nonempty := by grind [biUnion_empty, biUnion_eq_empty, not_nonempty_iff_eq_empty]
+  have : I.Nonempty := by grind [biUnion_eq_empty, biUnion_empty, not_nonempty_iff_eq_empty]
+  have : J.Nonempty := by grind [biUnion_eq_empty, biUnion_empty, not_nonempty_iff_eq_empty]
   -- From the definition of `cᵢ` it follows that the vector `∑ i ∈ I, cᵢvᵢ` is the same as the
   -- vector `-∑ j ∈ J, cⱼvⱼ`
   have hij : ∑ i ∈ I, c i • v i = -∑ j ∈ J, c j • v j := by
     calc
           ∑ i ∈ I, c i • v i
       _ = ∑ i ∈ I, c i • v i + ∑ z ∈ Z, c z • v z + ∑ j ∈ J, c j • v j - ∑ j ∈ J, c j • v j := by
-        simpa [left_eq_add] using Finset.sum_eq_zero (fun _ hi => by simp [mem_filter.mp hi])
+        simpa only [add_sub_cancel_right, left_eq_add] using
+          Finset.sum_eq_zero (fun _ hi => by simp [mem_filter.mp hi])
       _ = ∑ i with 0 ≤ c i, c i • v i + ∑ j with c j < 0, c j • v j - ∑ j ∈ J, c j • v j := by
-        simp [show I = {i ∈ ({i | 0 ≤ c i} : Finset α) | ¬c i = 0} by grind,
-          show Z = {i ∈ ({i | 0 ≤ c i} : Finset α) | c i = 0} by grind,
+        simp only [show I = {i ∈ ({i | 0 ≤ c i} : Finset α) | ¬c i = 0} by grind only [= mem_filter,
+            = nonempty_def, mem_univ, cases Or],
+          show Z = {i ∈ ({i | 0 ≤ c i} : Finset α) | c i = 0} by grind only [= mem_filter,
+            = nonempty_def, mem_univ, cases Or],
           ← sum_filter_not_add_sum_filter {i | 0 ≤ c i} (fun i => c i = 0), J]
       _ = -∑ j ∈ J, c j • v j := by
-        simpa [← sum_filter_add_sum_filter_not univ (fun i => 0 ≤ c i), β', v] using hc
+        simpa only [sub_eq_neg_self, ← sum_filter_add_sum_filter_not univ (fun i => 0 ≤ c i),
+          not_le, β', v] using hc
   -- Now we are ready to prove that the intersections are equal. What we do is essentially prove
   -- that for `t = ∑ i ∈ I, cᵢ`, `x ∈ ⋂ i ∈ I, fᵢ` if and only if `(∑ i ∈ I, cᵢvᵢ)ₓ = t` (and
   -- similarly `x ∈ ⋂ j ∈ J, fⱼ` if and only if `(-∑ j ∈ J, cⱼvⱼ)ₓ = t`). This is because `vᵢ ≤ 1`,
@@ -158,31 +164,34 @@ theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion_inf_eq_inf (f : α → 
   -- `vᵢ`'s are `1` at this coordinate. It then follows using the previous fact that the
   -- intersections are equal, which concludes the proof.
   have : I.inf f = J.inf f := by
-    simp [Finset.ext_iff, mem_inf]
+    simp only [Finset.ext_iff, mem_inf]
     intro x
     constructor
     · intro hx
       by_contra!
       obtain ⟨j₀, hj₀, h⟩ := this
-      suffices -∑ j ∈ J, c j * v j x < _ by exact lt_irrefl _ this
+      apply lt_irrefl <| -∑ j ∈ J, c j * v j x
       calc
             -∑ j ∈ J, c j * v j x
         _ < -∑ j ∈ J, c j := by
-          simpa using sum_lt_sum (fun j hj => by
+          gcongr -?_
+          exact sum_lt_sum (fun j hj => by
             nth_rewrite 1 [← mul_one (c j)]
             exact (mul_le_mul_left_of_neg (mem_filter.mp hj).2).mpr (v_le_one j x)
           ) ⟨j₀, hj₀, by
             nth_rewrite 1 [← mul_one (c j₀)]
-            exact (mul_lt_mul_left_of_neg (mem_filter.mp hj₀).2).mpr (by simp_all [β', v])
+            exact (mul_lt_mul_left_of_neg (mem_filter.mp hj₀).2).mpr (by simp only [h, ↓reduceIte,
+              zero_lt_one, v, β'])
           ⟩
-        _ = ∑ i ∈ I, c i := by
-          simpa [β', v] using Eq.symm congr($hij Option.none)
-        _ = ∑ i ∈ I, c i * v i x := Finset.sum_congr (rfl) (by simp_all [β', v])
-        _ = -∑ j ∈ J, c j * v j x := by simpa [β', v] using congr($hij x)
+        _ = ∑ i ∈ I, c i := by simpa only [Pi.neg_apply, sum_apply, Pi.smul_apply, smul_eq_mul,
+          mul_one, β', v] using Eq.symm congr($hij none)
+        _ = ∑ i ∈ I, c i * v i x := Finset.sum_congr (rfl) (by simp +contextual [β', v, hx])
+        _ = -∑ j ∈ J, c j * v j x := by simpa only [Pi.neg_apply, sum_apply, Pi.smul_apply,
+          smul_eq_mul, mul_one, β', v] using congr($hij x)
     · intro hx
       by_contra!
       obtain ⟨i₀, hi₀, h⟩ := this
-      suffices ∑ i ∈ I, c i * v i x < _ by exact lt_irrefl _ this
+      apply lt_irrefl <| ∑ i ∈ I, c i * v i x
       calc
             ∑ i ∈ I, c i * v i x
         _ < ∑ i ∈ I, c i := sum_lt_sum (fun i hi => by
@@ -190,10 +199,12 @@ theorem Finset.exists_disjoint_finset_biUnion_eq_biUnion_inf_eq_inf (f : α → 
             exact (mul_le_mul_iff_right₀ (mem_filter.mp hi).2).mpr <| v_le_one i x
           ) ⟨i₀, hi₀, by
             nth_rewrite 2 [← mul_one (c i₀)]
-            exact (mul_lt_mul_iff_right₀ (mem_filter.mp hi₀).2).mpr (by simp_all [β', v])
+            exact (mul_lt_mul_iff_right₀ (mem_filter.mp hi₀).2).mpr (by simp [h, β', v])
           ⟩
-        _ = -∑ j ∈ J, c j := by simpa [β', v] using congr($hij Option.none)
+        _ = -∑ j ∈ J, c j := by simpa only [Pi.neg_apply, sum_apply, Pi.smul_apply, smul_eq_mul,
+          mul_one, β', v] using congr($hij Option.none)
         _ = -∑ j ∈ J, c j * v j x := by
-          simpa using Finset.sum_congr (rfl) (by simp_all [β', v])
-        _ = ∑ i ∈ I, c i * v i x := by simpa [β', v] using Eq.symm congr($hij x)
-  exact ⟨I, J, by grind [disjoint_left]⟩
+          simpa using Finset.sum_congr (rfl) (by simp +contextual [β', v, hx])
+        _ = ∑ i ∈ I, c i * v i x := by simpa only [Pi.neg_apply, sum_apply, Pi.smul_apply,
+          smul_eq_mul, mul_one, β', v] using Eq.symm congr($hij x)
+  exact ⟨I, J, by simp only [and_self, *]⟩
