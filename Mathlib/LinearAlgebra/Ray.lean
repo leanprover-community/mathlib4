@@ -349,7 +349,7 @@ alias ⟨SameRay.of_neg, SameRay.neg⟩ := sameRay_neg_iff
 
 theorem sameRay_neg_swap : SameRay R (-x) y ↔ SameRay R x (-y) := by rw [← sameRay_neg_iff, neg_neg]
 
-theorem eq_zero_of_sameRay_neg_smul_right [Module.IsTorsionFree R M] {r : R} (hr : r < 0)
+lemma eq_zero_of_sameRay_neg_smul_right [IsDomain R] [Module.IsTorsionFree R M] {r : R} (hr : r < 0)
     (h : SameRay R x (r • x)) : x = 0 := by
   rcases h with (rfl | h₀ | ⟨r₁, r₂, hr₁, hr₂, h⟩)
   · rfl

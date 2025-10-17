@@ -10,12 +10,14 @@ import Mathlib.Algebra.Module.Torsion.Free
 /-!
 # Vector spaces are torsion-free
 
-In this file, we show that any module over a semifield is torsion-free.
+In this file, we show that any module over a division semiring is torsion-free.
+
+Note that more generally any reflexive module is torsion-free.
 -/
 
 open Module
 
-variable {𝕜 M : Type*} [Semifield 𝕜] [AddCommMonoid M] [Module 𝕜 M]
+variable {𝕜 M : Type*} [DivisionSemiring 𝕜] [AddCommMonoid M] [Module 𝕜 M]
 
 /-- Any (semi)vector space is torsion-free. -/
 instance Semifield.to_moduleIsTorsionFree : IsTorsionFree 𝕜 M where
