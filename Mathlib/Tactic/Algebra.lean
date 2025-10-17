@@ -208,7 +208,10 @@ variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring
 def _root_.Mathlib.Tactic.Ring.ExSum.one : Ring.ExSum q($sA) q(Nat.rawCast (nat_lit 1) + 0 : $A) :=
   .add (.const (e := q(Nat.rawCast (nat_lit 1) : $A)) 1 none) .zero
 
-/-- WARNING: n should be a natural literal. -/
+/--
+Constructs the expression for a natural number literal `n` in the algebra `A`.
+WARNING: `n` should be a natural literal.
+-/
 def mkNat (n : Q(ℕ)) : Ring.ExSum q($sA) q(Nat.rawCast $n + 0 : $A) :=
   .add (.const (e := q(Nat.rawCast ($n) : $A)) n.natLit! none) .zero
 section
@@ -229,12 +232,16 @@ end
 
 end ExSum
 
+/-- This cache contains typeclasses required during `algebra`'s execution. These assumptions
+  are stronger than `ring` because `algebra` occasionally requires commutativity to move between
+  the base ring and the algebra. -/
 structure Cache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) extends Ring.Cache sA where
   crA : Option Q(CommRing $A)
   dA : Option Q(DivisionRing $A)
   sfA : Option Q(Semifield $A)
   fA : Option Q(Field $A)
 
+/-- Create a new cache for `A` by doing the necessary instance searches. -/
 def mkCache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) : MetaM (Cache sA) := do return {
   crA := (← trySynthInstanceQ q(CommRing $A)).toOption
   dA := (← trySynthInstanceQ q(DivisionRing $A)).toOption
@@ -329,6 +336,12 @@ partial def evalAdd {a b : Q($A)} (va : ExSum sAlg a) (vb : ExSum sAlg b) :
         let ⟨_c, vc, pc⟩ ← evalAdd va vb₂
         return ⟨_, .add vb₁ vc, q(add_add_add_comm' $pc)⟩
 
+/-- Evaluates scalar multiplication `r • a` where `r` is a polynomial from the base ring
+and `a` is a monomial.
+
+* `r • (s • 1) = (r * s) • 1`
+* `r • (x ^ e * b) = x ^ e * (r • b)`
+-/
 partial def evalSMulExProd {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
   ExProd sAlg a →
   MetaM (Result (ExProd q($sAlg)) q($r • $a))
@@ -340,6 +353,12 @@ partial def evalSMulExProd {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
     return ⟨_, .mul vx ve vc, q(smul_mul_assoc $pc)⟩
 
 
+/-- Evaluates scalar multiplication `r • a` where `r` is a polynomial from the base ring
+and `a` is a polynomial.
+
+* `r • 0 = 0`
+* `r • (a + b) = (r • a) + (r • b)`
+-/
 partial def evalSMul {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
   ExSum sAlg a →
   MetaM (Result (ExSum q($sAlg)) q($r • $a))
@@ -350,6 +369,15 @@ partial def evalSMul {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum sR r) :
     let ⟨_, vt, pt⟩ ← evalSMul vr vt
     return ⟨_, .add va vt, q(smul_add $pa $pt)⟩
 
+/-- Multiplies two monomials `va, vb` together to get a normalized result monomial.
+
+* `(r • 1) * (s • 1) = (r * s) • 1`
+* `(x ^ e * a) * (s • 1) = x ^ e * (a * (s • 1))`
+* `(r • 1) * (x ^ e * b) = x ^ e * ((r • 1) * b)`
+* `(x ^ ea * a₂) * (x ^ eb * b₂) = x ^ (ea + eb) * (a₂ * b₂)` (if bases match)
+* `(x ^ ea * a₂) * (y ^ eb * b₂) = x ^ ea * (a₂ * (y ^ eb * b₂))` (if `x.lt y`)
+* `(x ^ ea * a₂) * (y ^ eb * b₂) = y ^ eb * ((x ^ ea * a₂) * b₂)` (if not `x.lt y`)
+-/
 partial def evalMul₂ {a b : Q($A)} (va : ExProd sAlg a) (vb : ExProd sAlg b) :
     MetaM <| Result (ExProd sAlg) q($a * $b) := do
   Lean.Core.checkSystem decl_name%.toString
@@ -439,6 +467,7 @@ def evalSub {a b : Q($A)} (rR : Q(CommRing $R)) (rA : Q(CommRing $A))
   return ⟨_, vd, (q(Ring.sub_pf $pc $pd) : Expr)⟩
 
 variable {a} in
+/-- Evaluates a numeric literal in the algebra `A` by lifting it through the base ring `R`. -/
 def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
     NormNum.Result a → Option (Result (ExSum sAlg) a)
   | .isNat _ (.lit (.natVal 0)) p => do
@@ -475,30 +504,30 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
   | _ => none
 
 /--
-The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
+The fallback case for exponentiating monomials is to use `ExBase.toProd` to just build an
 exponent expression. (This has a slightly different normalization than `evalPowAtom` because
 the input types are different.)
 
-* `x ^ e = (x + 0) ^ e * 1`
+* `a ^ e = (a + 0) ^ e * 1 • 1`
 -/
 def evalPowProdAtom {a : Q($A)} {b : Q(ℕ)} (va : ExProd sAlg a) (vb : Ring.ExProd Ring.sℕ b) :
     Result (ExProd sAlg) q($a ^ $b) :=
   ⟨_, (ExBase.sum va.toSum).toProd vb, q(pow_eq_pow_mul_smul_one)⟩
 
 /--
-The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
+The fallback case for exponentiating base expressions is to use `ExBase.toProd` to just build an
 exponent expression.
 
-* `x ^ e = x ^ e * 1 + 0`
+* `x ^ e = x ^ e * 1 • 1 + 0`
 -/
 def evalPowAtom {a : Q($A)} {b : Q(ℕ)} (va : ExBase sAlg a) (vb : Ring.ExProd Ring.sℕ b) :
     Result (ExSum sAlg) q($a ^ $b) :=
   ⟨_, (va.toProd vb).toSum, q(pow_eq_pow_mul_smul_one_add_zero)⟩
 
-/-- There are several special cases when exponentiating monomials:
+/-- Exponentiates a monomial `a` by an exponent `b`, with special cases:
 
-* `(r • 1) ^ b = r ^ b • 1 ^ b`
-* `(a * b) ^ e = a ^ e * b ^ e`
+* `(r • 1) ^ b = r ^ b • 1`
+* `(x ^ e * a) ^ b = x ^ (e * b) * (a ^ b)`
 
 In all other cases we use `evalPowProdAtom`.
 -/
@@ -517,13 +546,13 @@ def evalPowProd {a : Q($A)} {b : Q(ℕ)} (va : ExProd sAlg a) (vb : Ring.ExProd 
   return (← res.run).getD (evalPowProdAtom sAlg va vb)
 
 /--
-The main case of exponentiation of ring expressions is when `va` is a polynomial and `n` is a
+The main case of exponentiation of algebra expressions is when `va` is a polynomial and `n` is a
 nonzero literal expression, like `(x + y)^5`. In this case we work out the polynomial completely
 into a sum of monomials.
 
-* `x ^ 1 = x`
-* `x ^ (2*n) = x ^ n * x ^ n`
-* `x ^ (2*n+1) = x ^ n * x ^ n * x`
+* `a ^ 1 = a`
+* `a ^ (2*n) = (a ^ n) * (a ^ n)`
+* `a ^ (2*n+1) = (a ^ n) * (a ^ n) * a`
 -/
 partial def evalPowNat {a : Q($A)} (va : ExSum sAlg a) (n : Q(ℕ)) :
     MetaM <| Result (ExSum sAlg) q($a ^ $n) := do
@@ -545,14 +574,14 @@ partial def evalPowNat {a : Q($A)} (va : ExSum sAlg a) (n : Q(ℕ)) :
       have : $n =Q $m + $m + 1 := ⟨⟩
       return ⟨_, vd, q(pow_odd $pb $pc $pd)⟩
 
-/-- Exponentiates a polynomial `va` by a monomial `vb`, including several special cases.
+/-- Exponentiates a polynomial `va` by a monomial exponent `vb`, including several special cases.
 
 * `a ^ 1 = a`
 * `0 ^ e = 0` if `0 < e`
 * `(a + 0) ^ b = a ^ b` computed using `evalPowProd`
 * `a ^ b = (a ^ b') ^ k` if `b = b' * k` and `k > 1`
 
-Otherwise `a ^ b` is just encoded as `a ^ b * 1 + 0` using `evalPowAtom`.
+Otherwise `a ^ b` is just encoded as `a ^ b * 1 • 1 + 0` using `evalPowAtom`.
 -/
 partial def evalPow₁ {a : Q($A)} {b : Q(ℕ)} (va : ExSum sAlg a) (vb : Ring.ExProd Ring.sℕ b) :
     MetaM <| Result (ExSum sAlg) q($a ^ $b) := do
@@ -577,7 +606,7 @@ partial def evalPow₁ {a : Q($A)} {b : Q(ℕ)} (va : ExSum sAlg a) (vb : Ring.E
 
 /-- Exponentiates two polynomials `va, vb`.
 
-* `a ^ 0 = 1`
+* `a ^ 0 = 1 • 1 + 0`
 * `a ^ (b₁ + b₂) = a ^ b₁ * a ^ b₂`
 -/
 def evalPow {a : Q($A)} {b : Q(ℕ)} (va : ExSum sAlg a) (vb : Ring.ExSum Ring.sℕ b) :
@@ -609,8 +638,8 @@ def evalAtom :
 lemma algebraMap_eq_natCast {A : Type*} [CommSemiring A] (n : ℕ) : algebraMap ℕ A n = n := by
   simp only [eq_natCast]
 
-/-- Push `algebraMap`s into sums and products and convert `algebraMap`s from `ℕ`, `ℤ` and `ℚ` into
-casts -/
+/-- Push `algebraMap`s into sums and products and convert `algebraMap`s from `ℕ`, `ℤ` and `ℚ`
+into casts. -/
 def pushCast (e : Expr) : MetaM Simp.Result := do
   -- collect the available `push_cast` lemmas
   let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
@@ -623,8 +652,8 @@ def pushCast (e : Expr) : MetaM Simp.Result := do
   let (r, _) ← simp e ctx (simprocs := #[])
   return r
 
-/-- Handle scalar multiplication when the scalar ring R' doesn't match the base ring R.
-Assumes R is an R'-algebra (i.e., R' is smaller), and casts the scalar using algebraMap. -/
+/-- Handle scalar multiplication when the scalar ring `R'` doesn't match the base ring `R`.
+Assumes `R` is an `R'`-algebra (i.e., `R'` is smaller), and casts the scalar using `algebraMap`. -/
 def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(Type v)}
     {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
     (smul : Q(HSMul $R' $A $A)) (r' : Q($R')) (a : Q($A)) :
@@ -647,6 +676,11 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
   let pf : Q($r₀ = $r_cast) ← res.getProof
   return ⟨r₀, q($pf ▸ algebraMap_smul $R $r' $a)⟩
 
+/--
+Evaluates expression `e` of type `A` into a normalized representation as a polynomial over
+algebra `A` with base ring `R`. This is the main driver of `algebra`, which calls out to
+`evalAdd`, `evalMul`, `evalSMul`, `evalPow` etc.
+-/
 partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
     {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (cacheR : Algebra.Cache q($sR))
     (cacheA : Algebra.Cache q($sA)) (e : Q($A)) :
@@ -734,7 +768,7 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
-/-- If `e` has type `Type u` for some level `u`, return `u` and `e : Q(Type u)` -/
+/-- If `e` has type `Type u` for some level `u`, return `u` and `e : Q(Type u)`. -/
 def inferLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
   let .sort u ← whnf (← inferType e) | throwError "not a type{indentExpr e}"
   let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
@@ -744,7 +778,7 @@ section cleanup
 variable {R : Type*} [Semiring R]
 end cleanup
 /-- A cleanup routine for `algebra_nf`, which simplifies normalized expressions
-  to a more human-friendly format. -/
+to a more human-friendly format. -/
 def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   match cfg.mode with
   | .raw => pure r
@@ -764,6 +798,7 @@ theorem eq_congr {R : Type*} {a b a' b' : R} (ha : a = a') (hb : b = b') (h : a'
   subst ha hb
   exact h
 
+/-- Normalizes both sides of an equality goal in an algebra. Used by the `algebra` tactic. -/
 def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v)) :
     AtomM MVarId := do
   let some (A', e₁, e₂) :=
@@ -785,7 +820,8 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
   goal.assign q(eq_congr $pa $pb $g' : $e₁ = $e₂)
   return g'.mvarId!
 
-/-- Collect all scalar rings from scalar multiplications in the expression. -/
+/-- Collect all scalar rings from scalar multiplications and `algebraMap` applications in the
+expression. -/
 partial def collectScalarRings (e : Expr) : MetaM (List (Σ u : Lean.Level, Q(Type u))) := do
   match_expr e with
   | SMul.smul R _ _ _ a =>
@@ -850,6 +886,8 @@ def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Typ
   | r :: rs => rs.foldlM pickLargerRing r
   return res
 
+/-- Check if an expression is an atom or can be simplified by `norm_num`, versus being an algebraic
+operation that should be normalized by `eval`. Used by `algebra_nf`. -/
 def isAtomOrDerivable (cr : Algebra.Cache sR) (ca : Algebra.Cache sA) (e : Q($A)) :
     AtomM (Option (Option (Result (ExSum sAlg) e))) := do
   let els := try
@@ -867,6 +905,7 @@ def isAtomOrDerivable (cr : Algebra.Cache sR) (ca : Algebra.Cache sA) (e : Q($A)
   | ``DFunLike.coe, _, _, _ => pure none
   | _, _, _, _ => els
 
+/- The core of `algebra_nf with R` - normalize the expression `e` over the base ring `R` -/
 def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := do
   let e ← withReducible <| whnf e
   guard e.isApp -- all interesting ring expressions are applications
@@ -883,6 +922,11 @@ def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := 
   | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
   pure { expr := a, proof? := pa }
 
+/- The core of `algebra_nf` - normalize an expression while first inferring the base ring `R`.
+
+This is somewhat unstable as the normal form will depend on `R` and the inferred ring depends
+strongly on the form of the initial expression. For example: ⊢ P ((n : ℕ) • x) ∧ P ((n : ℤ) • x)
+is unchanged by `algebra_nf`-/
 def evalExprInfer (e : Expr) : AtomM Simp.Result := do
   let ⟨_, A, e⟩ ← inferTypeQ' e
   let sA ← synthInstanceQ q(CommSemiring $A)
@@ -956,6 +1000,10 @@ elab (name := algebraWith) "algebra" " with " R:term : tactic =>
     let g ← getMainGoal
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
 
+/-- Prove a monomial equals zero by setting its scalar equal to zero in a side goal.
+
+Used by `match_scalars_alg`
+-/
 def ExProd.equateZero {a : Q($A)}
 (va : ExProd q($sAlg) a) : MetaM <| Q($a = 0) × MVarId :=
   match va with
@@ -967,6 +1015,10 @@ def ExProd.equateZero {a : Q($A)}
     -- TODO: extract lemma
     return ⟨q(by subst_vars; simp), ids⟩
 
+/-- Prove a polynomial equals zero by setting its scalars equal to zero as side goals.
+
+Used by `match_scalars_alg`
+-/
 def equateZero {a : Q($A)} (va : ExSum q($sAlg) a) :
     MetaM <| Q($a = 0) × List MVarId :=
   match va with
@@ -977,6 +1029,11 @@ def equateZero {a : Q($A)} (va : ExSum q($sAlg) a) :
     let ⟨pf', mvars⟩ ← equateZero va₂
     return ⟨q(add_eq_zero $pf $pf'), id :: mvars⟩
 
+/-- Prove two monomials are equal by equating their scalars in the base ring. Assumes the monomials
+consist of the same factors.
+
+Used by `match_scalars_alg`.
+-/
 def ExProd.equateScalarsProd {a b : Q($A)} (va : ExProd q($sAlg) a) (vb : ExProd q($sAlg) b) :
     MetaM <| Q($a = $b) × Option MVarId := do
   match va, vb with
@@ -998,6 +1055,11 @@ def ExProd.equateScalarsProd {a b : Q($A)} (va : ExProd q($sAlg) a) (vb : ExProd
     -- This shouldn't happen - the caller should ensure structural equality
     throwError "equateScalarsProd: structure mismatch"
 
+
+/-- Prove two polylnomials are equal by equating their scalars in the base ring as side goals.
+
+Used by `match_scalars_alg`.
+-/
 def equateScalarsSum {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) b) :
     MetaM <| Q($a = $b) × List MVarId := do
   match va, vb with
@@ -1037,6 +1099,8 @@ def runSimp (f : Simp.Result → MetaM Simp.Result) (g : MVarId) : MetaM MVarId 
   let r ← f {expr := e, proof? := none}
   applySimpResultToTarget g e r
 
+/-- The core of `match_scalars_alg`. Normalizes both sides of an equation and proves their equality
+by creating side goals equating matching coefficients in the base ring. -/
 def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) :
     MetaM (List MVarId) :=
   do
