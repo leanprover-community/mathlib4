@@ -1743,6 +1743,7 @@ import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.InnerProductSpace.StarOrder
 import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.Analysis.InnerProductSpace.Symmetric
+import Mathlib.Analysis.InnerProductSpace.TensorProduct
 import Mathlib.Analysis.InnerProductSpace.Trace
 import Mathlib.Analysis.InnerProductSpace.TwoDim
 import Mathlib.Analysis.InnerProductSpace.WeakOperatorTopology
@@ -1777,6 +1778,7 @@ import Mathlib.Analysis.Meromorphic.Order
 import Mathlib.Analysis.Meromorphic.TrailingCoefficient
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+import Mathlib.Analysis.Normed.Affine.AsymptoticCone
 import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 import Mathlib.Analysis.Normed.Affine.Convex
 import Mathlib.Analysis.Normed.Affine.Isometry
@@ -2017,6 +2019,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Integral
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Analysis.SpecialFunctions.Pow.NthRootLemmas
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Sigmoid
 import Mathlib.Analysis.SpecialFunctions.SmoothTransition
@@ -3559,6 +3562,7 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Nat.Nth
+import Mathlib.Data.Nat.NthRoot.Defs
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Pairing
@@ -6410,6 +6414,7 @@ import Mathlib.Topology.Algebra.AffineSubspace
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.Algebra.Equiv
 import Mathlib.Topology.Algebra.Algebra.Rat
+import Mathlib.Topology.Algebra.AsymptoticCone
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
 import Mathlib.Topology.Algebra.ClopenNhdofOne

@@ -10,7 +10,7 @@ In this file, we establish that `P_δ` and `P_σ` morphisms in `SimplexCategoryG
 each admits a normal form.
 
 In both cases, the normal forms are encoded as an integer `m`, and a strictly increasing
-lists of integers `[i₀,…,iₙ]` such that `iₖ ≤ m + k` for all `k`. We define a predicate
+list of integers `[i₀,…,iₙ]` such that `iₖ ≤ m + k` for all `k`. We define a predicate
 `isAdmissible m : List ℕ → Prop` encoding this property. And provide some lemmas to help
 work with such lists.
 
@@ -41,7 +41,8 @@ section AdmissibleLists
 -- easier to perform inductive constructions and proofs on such lists, and we instead bundle
 -- propositions asserting that various List constructions produce admissible lists.
 
-/-- A list of natural numbers [i₀, ⋯, iₙ]) is said to be `m`-admissible (for `m : ℕ`) if
+variable (m : ℕ)
+/-- A list of natural numbers `[i₀, ⋯, iₙ]` is said to be `m`-admissible (for `m : ℕ`) if
 `i₀ < ⋯ < iₙ` and `iₖ ≤ m + k` for all `k`. This would suggest the definition
 `L.IsChain (· < ·) ∧ ∀ k, (h : k < L.length) → L[k] ≤ m + k`.
 However, we instead define `IsAdmissible` inductively and show, in
@@ -64,7 +65,7 @@ variable {m a b : ℕ} {L : List ℕ}
 
 @[simp, grind =]
 theorem isAdmissible_singleton_iff : IsAdmissible m [a] ↔ a ≤ m :=
-    ⟨fun | .singleton h => h, .singleton⟩
+  ⟨fun | .singleton h => h, .singleton⟩
 
 @[simp, grind =]
 theorem isAdmissible_cons_cons_iff : IsAdmissible m (a :: b :: L) ↔
@@ -83,8 +84,7 @@ theorem isAdmissible_iff_isChain_and_le : IsAdmissible m L ↔
   | cons_cons _ _ _ _ IH =>
     simp_rw [isAdmissible_cons_cons_iff, IH, List.length_cons, and_assoc,
       List.isChain_cons_cons, and_assoc, and_congr_right_iff, and_comm]
-    exact fun _ _ => ⟨fun h =>
-      fun | 0 => fun _ => h.1 | k + 1 => fun _ => (h.2 k _).trans (by grind),
+    exact fun _ _ => ⟨fun h => by grind,
       fun h => ⟨h 0 (by grind), fun k _ => (h (k + 1) (by grind)).trans (by grind)⟩⟩
 
 theorem isAdmissible_iff_pairwise_and_le : IsAdmissible m L ↔
@@ -93,7 +93,7 @@ theorem isAdmissible_iff_pairwise_and_le : IsAdmissible m L ↔
 
 theorem isAdmissible_of_isChain_of_forall_getElem_le {m L} (hL : L.IsChain (· < ·))
     (hL₂ : ∀ k, (h : k < L.length) → L[k] ≤ m + k) : IsAdmissible m L :=
-  (isAdmissible_iff_isChain_and_le.mpr ⟨hL, hL₂⟩)
+  isAdmissible_iff_isChain_and_le.mpr ⟨hL, hL₂⟩
 
 namespace IsAdmissible
 
@@ -125,8 +125,8 @@ lemma head_lt {m a L} (hL : IsAdmissible m (a :: L)) :
     ∀ a' ∈ L, a < a' := fun _ => L.rel_of_pairwise_cons hL.pairwise
 
 @[grind →] lemma getElem_lt {m L} (hL : IsAdmissible m L)
-    {k : ℕ} {hk : k < L.length} : L[k] < m + L.length := by
-  exact (hL.le k hk).trans_lt (Nat.add_lt_add_left hk _)
+    {k : ℕ} {hk : k < L.length} : L[k] < m + L.length :=
+  (hL.le k hk).trans_lt (Nat.add_lt_add_left hk _)
 
 /-- An element of a `m`-admissible list, as an element of the appropriate `Fin` -/
 @[simps]
@@ -217,7 +217,7 @@ variable (m : ℕ) (L : List ℕ)
 Rather than defining it as such, we define it inductively for less painful inductive reasoning,
 (see `simplicialEvalσ_of_isAdmissible`).
 It is expected to produce the correct result only if `L` is admissible, and values for
-non-admissible lists should be considered junk values. Similarly, values for out-of-bonds inputs
+non-admissible lists should be considered junk values. Similarly, values for out-of-bounds inputs
 are junk values. -/
 @[local grind]
 def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
@@ -317,7 +317,7 @@ section MemIsAdmissible
 @[grind]
 lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
     {k : ℕ} {hk : k < L.length} : simplicialEvalσ L L[k] = simplicialEvalσ L (L[k] + 1) := by
-  induction L generalizing m k with | nil => grind | cons a L h_rec => cases k <;> grind
+  induction L generalizing m k <;> grind
 
 lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
     (j : ℕ) (hj₁ : j < m + L.length) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
@@ -330,7 +330,7 @@ lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
 
 lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j : ℕ) (hj : j ∈ L) :
     j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) := by
-  rw [List.mem_iff_getElem] at hj; grind
+  grind [List.mem_iff_getElem]
 
 /-- We can characterize elements in an admissible list as exactly those for which
 `simplicialEvalσ` takes the same value twice in a row. -/
