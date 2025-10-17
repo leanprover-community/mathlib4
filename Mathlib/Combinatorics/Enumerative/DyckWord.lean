@@ -62,7 +62,7 @@ structure DyckWord where
   toList : List DyckStep
   /-- There are as many `U`s as `D`s -/
   count_U_eq_count_D : toList.count U = toList.count D
-  /-- Each prefix has as least as many `U`s as `D`s -/
+  /-- Each prefix has at least as many `U`s as `D`s -/
   count_D_le_count_U i : (toList.take i).count D ≤ (toList.take i).count U
   deriving DecidableEq
 

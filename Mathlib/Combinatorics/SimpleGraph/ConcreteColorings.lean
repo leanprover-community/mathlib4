@@ -12,7 +12,7 @@ import Mathlib.Data.Fin.Parity
 /-!
 # Concrete colorings of common graphs
 
-This file defines colorings for some common graphs
+This file defines colorings for some common graphs.
 
 ## Main declarations
 
