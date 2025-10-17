@@ -94,7 +94,7 @@ end
 
 -- see note [lower instance priority]
 instance (priority := 100) NNRatModule.noZeroSMulDivisors [AddCommMonoid M] [Module ℚ≥0 M] :
-    Module.IsTorsionFree ℕ M where
+    IsAddTorsionFree M where
   isSMulRegular n hn m₁ m₂ hm := by
     simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 n, *] using congr((n⁻¹ : ℚ≥0) • $hm)
 

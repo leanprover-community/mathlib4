@@ -3,6 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Torsion.Free
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
@@ -787,10 +788,8 @@ end PartialOrder
 end Semiring
 
 section Ring
-variable [Ring α] [AddCommGroup β] [Module α β] [Module.IsTorsionFree α β]
-
-section PartialOrder
-variable [PartialOrder α] [PartialOrder β]
+variable [Ring α] [IsDomain α] [AddCommGroup β] [Module α β] [Module.IsTorsionFree α β]
+  [PartialOrder α] [PartialOrder β]
 
 lemma SMulPosMono.toSMulPosStrictMono [SMulPosMono α β] : SMulPosStrictMono α β :=
   ⟨fun _b hb _a₁ _a₂ ha ↦ (smul_le_smul_of_nonneg_right ha.le hb.le).lt_of_ne <|
