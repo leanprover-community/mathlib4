@@ -8,7 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 /-!
 # The `arctan` function.
 
-Inequalities, identities and `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)`
+Inequalities, identities and `Real.tan` as an `OpenPartialHomeomorph` between `(-(π / 2), π / 2)`
 and the whole line.
 
 The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add_pi` or
@@ -257,7 +257,7 @@ lemma arctan_ne_mul_pi_div_two : ∀ (k : ℤ), arctan x ≠ (2 * k + 1) * π / 
   obtain ⟨lb, ub⟩ := arctan_mem_Ioo x
   rw [h, neg_eq_neg_one_mul, mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at lb
   rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at ub
-  norm_cast at lb ub; change -1 < _ at lb; omega
+  norm_cast at lb ub; change -1 < _ at lb; cutsat
 
 lemma arctan_add_arctan_lt_pi_div_two (h : x * y < 1) : arctan x + arctan y < π / 2 := by
   rcases le_or_gt y 0 with hy | hy
@@ -355,8 +355,8 @@ theorem continuous_arctan : Continuous arctan :=
 theorem continuousAt_arctan : ContinuousAt arctan x :=
   continuous_arctan.continuousAt
 
-/-- `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
-def tanPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+/-- `Real.tan` as an `OpenPartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
+def tanPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan
   source := Ioo (-(π / 2)) (π / 2)

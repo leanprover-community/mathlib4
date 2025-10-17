@@ -78,7 +78,7 @@ theorem minpoly_dvd_expand {p : ℕ} (hdiv : ¬p ∣ n) :
   letI : IsIntegrallyClosed ℤ := GCDMonoid.toIsIntegrallyClosed
   refine minpoly.isIntegrallyClosed_dvd (h.isIntegral hpos) ?_
   rw [aeval_def, coe_expand, ← comp, eval₂_eq_eval_map, map_comp, Polynomial.map_pow, map_X,
-    eval_comp, eval_pow, eval_X, ← eval₂_eq_eval_map, ← aeval_def]
+    eval_comp, eval_X_pow, ← eval₂_eq_eval_map, ← aeval_def]
   exact minpoly.aeval _ _
 
 /-- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of

@@ -208,6 +208,22 @@ lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1
   · rw [Finset.mem_filter_univ] at h
     simp [excenterWeightsUnnorm, h]
 
+lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    SignType.sign (s.excenterWeights {i} i) = -1 := by
+  simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
+  convert one_mul _
+  · rw [sign_eq_one_iff, inv_pos]
+    exact s.sum_excenterWeightsUnnorm_singleton_pos i
+  · simp [excenterWeightsUnnorm]
+
+lemma sign_excenterWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (h : i ≠ j) :
+    SignType.sign (s.excenterWeights {i} j) = 1 := by
+  simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
+  convert one_mul _
+  · rw [sign_eq_one_iff, inv_pos]
+    exact s.sum_excenterWeightsUnnorm_singleton_pos i
+  · simp [excenterWeightsUnnorm, h.symm]
+
 /-- The existence of the excenter opposite a vertex (in two or more dimensions), expressed in
 terms of `ExcenterExists`. -/
 lemma excenterExists_singleton [Nat.AtLeastTwo n] (i : Fin (n + 1)) : s.ExcenterExists {i} :=
@@ -523,7 +539,7 @@ lemma ExcenterExists.touchpoint_injective {signs : Finset (Fin (n + 1))}
         exact ⟨h', this⟩
       rw [← norm_eq_zero, ← dist_eq_norm_vsub, h.dist_excenter] at h0
       exact h.exradius_pos.ne' h0
-    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by omega)
+    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by cutsat)
     have hu : Set.range s.points =
         Set.range (s.faceOpposite i).points ∪ Set.range (s.faceOpposite j).points := by
       simp only [range_faceOpposite_points, ← Set.image_union, ← Set.compl_inter]
@@ -652,7 +668,7 @@ lemma sign_touchpointWeights_empty {i j : Fin (n + 1)} (hne : i ≠ j) :
   simp
 
 variable {s} in
-lemma touchpointWeights_eq_zero {signs : Finset (Fin (n + 1))} (i : Fin (n + 1)) :
+@[simp] lemma touchpointWeights_eq_zero {signs : Finset (Fin (n + 1))} (i : Fin (n + 1)) :
     s.touchpointWeights signs i i = 0 := by
   refine s.independent.eq_zero_of_affineCombination_mem_affineSpan
     (s.sum_touchpointWeights signs i) ?_ (Finset.mem_univ _)
@@ -661,6 +677,91 @@ lemma touchpointWeights_eq_zero {signs : Finset (Fin (n + 1))} (i : Fin (n + 1))
   convert s.touchpoint_mem_affineSpan _ _
   simp
 
+lemma touchpointWeights_empty_pos {i j : Fin (n + 1)} (hne : i ≠ j) :
+    0 < s.touchpointWeights ∅ i j := by
+  simpa [sign_eq_one_iff] using s.sign_touchpointWeights_empty hne
+
+attribute [local instance] Nat.AtLeastTwo.neZero_sub_one
+
+lemma touchpoint_empty_mem_interior_faceOpposite [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    s.touchpoint ∅ i ∈ (s.faceOpposite i).interior := by
+  rw [faceOpposite, ← affineCombination_touchpointWeights,
+    s.affineCombination_mem_interior_face_iff_pos _ (s.sum_touchpointWeights _ _)]
+  simp only [Finset.mem_compl, Finset.mem_singleton, Decidable.not_not, forall_eq,
+    touchpointWeights_eq_zero, and_true]
+  intro j hj
+  exact s.touchpointWeights_empty_pos (Ne.symm hj)
+
+lemma sign_touchpointWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (hne : i ≠ j) :
+    SignType.sign (s.touchpointWeights {i} i j) = 1 := by
+  rw [(s.excenterExists_singleton i).sign_touchpointWeights hne,
+    s.sign_excenterWeights_singleton_pos hne]
+
+lemma touchpointWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (hne : i ≠ j) :
+    0 < s.touchpointWeights {i} i j := by
+  simpa [sign_eq_one_iff] using s.sign_touchpointWeights_singleton_pos hne
+
+lemma touchpoint_singleton_mem_interior_faceOpposite [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    s.touchpoint {i} i ∈ (s.faceOpposite i).interior := by
+  rw [faceOpposite, ← affineCombination_touchpointWeights,
+    s.affineCombination_mem_interior_face_iff_pos _ (s.sum_touchpointWeights _ _)]
+  simp only [Finset.mem_compl, Finset.mem_singleton, Decidable.not_not, forall_eq,
+    touchpointWeights_eq_zero, and_true]
+  intro j hj
+  exact s.touchpointWeights_singleton_pos (Ne.symm hj)
+
+lemma sign_touchpointWeights_singleton_neg [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (hne : i ≠ j) :
+    SignType.sign (s.touchpointWeights {i} j i) = -1 := by
+  rw [(s.excenterExists_singleton i).sign_touchpointWeights hne.symm,
+    s.sign_excenterWeights_singleton_neg]
+
+lemma touchpointWeights_singleton_neg [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (hne : i ≠ j) :
+    s.touchpointWeights {i} j i < 0 := by
+  simpa [sign_eq_neg_one_iff] using s.sign_touchpointWeights_singleton_neg hne
+
 end Simplex
+
+namespace Triangle
+
+variable (t : Triangle ℝ P)
+
+lemma sbtw_touchpoint_empty {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    Sbtw ℝ (t.points i₁) (t.touchpoint ∅ i₂) (t.points i₃) := by
+  rw [← t.mem_interior_face_iff_sbtw h₁₃]
+  convert t.touchpoint_empty_mem_interior_faceOpposite i₂
+  rw [Affine.Simplex.faceOpposite]
+  convert rfl using 2
+  decide +revert
+
+lemma sbtw_touchpoint_singleton {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    Sbtw ℝ (t.points i₁) (t.touchpoint {i₂} i₂) (t.points i₃) := by
+  rw [← t.mem_interior_face_iff_sbtw h₁₃]
+  convert t.touchpoint_singleton_mem_interior_faceOpposite i₂
+  rw [Affine.Simplex.faceOpposite]
+  convert rfl using 2
+  decide +revert
+
+lemma touchpoint_singleton_sbtw {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    Sbtw ℝ (t.touchpoint {i₁} i₂) (t.points i₃) (t.points i₁) := by
+  rw [← Affine.Simplex.affineCombination_touchpointWeights]
+  have hw := t.sum_touchpointWeights {i₁} i₂
+  rw [(by clear hw; decide +revert : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃})] at hw
+  simp only [Nat.reduceAdd, Finset.mem_insert, h₁₂, Finset.mem_singleton, h₁₃, or_self,
+    not_false_eq_true, Finset.sum_insert, h₂₃, Simplex.touchpointWeights_eq_zero,
+    Finset.sum_singleton, zero_add] at hw
+  have h : t.touchpointWeights {i₁} i₂ =
+      Finset.affineCombinationLineMapWeights i₁ i₃ (t.touchpointWeights {i₁} i₂ i₃) := by
+    ext i
+    have h : i = i₁ ∨ i = i₂ ∨ i = i₃ := by clear hw; decide +revert
+    rcases h with rfl | rfl | rfl
+    · rw [Finset.affineCombinationLineMapWeights_apply_left h₁₃]
+      simp [← hw]
+    · simp [h₁₂.symm, h₂₃]
+    · simp [h₁₃]
+  rw [h, Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+    (Finset.mem_univ _), sbtw_iff_right_ne_and_left_mem_image_Ioi]
+  simp [t.independent.injective.ne h₁₃, ← hw, t.touchpointWeights_singleton_neg h₁₂]
+
+end Triangle
 
 end Affine
