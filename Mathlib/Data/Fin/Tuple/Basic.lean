@@ -69,8 +69,8 @@ For a **pivot** `p : Fin (n + 1)`,
 
 ### Miscellaneous
 
-* `Fin.find p` : returns the first index `n` where `p n` is satisfied given the hypothesis that
-  `∃ i, p i`.
+* `Fin.find p h` : returns the first index `i : Fin n` where `p i` is satisfied given the
+  hypothesis that `h : ∃ i, p i`.
 * `Fin.append a b` : append two tuples.
 * `Fin.repeat n a` : repeat a tuple `n` times.
 
