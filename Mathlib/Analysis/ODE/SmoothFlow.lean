@@ -119,7 +119,38 @@ def implicitEquation.leftDeriv (x : E) (α : C(Icc tmin tmax, E)) :
     simp_rw [ContinuousMap.dist_eq_iSup, ContinuousMap.const_apply, ciSup_const]
     exact fun _ ε hε ↦ ⟨ε, hε, fun _ h ↦ h⟩
 
+set_option linter.unusedVariables false in
+noncomputable def implicitEquation.rightDerivAux (f' : E → E →L[ℝ] E) (x : E)
+    (α : C(Icc tmin tmax, E)) :
+    C(Icc tmin tmax, E) → Icc tmin tmax → E :=
+  fun dα t ↦ -dα t + ∫ τ in t₀..t,
+    f' (α (projIcc tmin tmax (le_of_Icc t₀) τ)) (dα (projIcc tmin tmax (le_of_Icc t₀) τ))
 
+lemma implicitEquation.continuous_rightDerivAux (f' : E → E →L[ℝ] E) (x : E)
+    (α dα : C(Icc tmin tmax, E)) :
+    Continuous (implicitEquation.rightDerivAux t₀ f' x α dα) := by sorry
+
+noncomputable def implicitEquation.rightDerivAux' (f' : E → E →L[ℝ] E) (x : E)
+    (α : C(Icc tmin tmax, E)) :
+    C(Icc tmin tmax, E) → C(Icc tmin tmax, E) :=
+  fun dα ↦ ⟨implicitEquation.rightDerivAux t₀ f' x α dα,
+    implicitEquation.continuous_rightDerivAux t₀ f' x α dα⟩
+
+-- map_add, map_smul for implicitEquation.rightDerivAux'
+
+lemma implicitEquation.continuous_rightDerivAux' (f' : E → E →L[ℝ] E) (x : E)
+    (α : C(Icc tmin tmax, E)) :
+    Continuous (implicitEquation.rightDerivAux' t₀ f' x α) := by sorry
+
+/-- The left (`E`) part of the first derivative of the implicit equation, valid when `x ∈ u` and
+`range α ⊆ u` -/
+noncomputable def implicitEquation.rightDeriv (f' : E → E →L[ℝ] E) (x : E)
+    (α : C(Icc tmin tmax, E)) :
+    C(Icc tmin tmax, E) →L[ℝ] C(Icc tmin tmax, E) where
+  toFun := implicitEquation.rightDerivAux' t₀ f' x α
+  map_add' dα1 dα2 := sorry
+  map_smul' r dα := sorry
+  cont := implicitEquation.continuous_rightDerivAux' t₀ f' x α
 
 
 -- namespace test
