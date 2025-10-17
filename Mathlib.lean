@@ -4915,7 +4915,8 @@ import Mathlib.NumberTheory.ModularForms.Cusps
 import Mathlib.NumberTheory.ModularForms.DedekindEta
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion

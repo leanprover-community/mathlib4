@@ -13,7 +13,6 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.Separation.CompletelyRegular
-import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 
 /-!
 # Eisenstein series q-expansions
