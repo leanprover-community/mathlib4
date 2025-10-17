@@ -258,7 +258,7 @@ lemma LFunction_def_odd (hΦ : Φ.Odd) (s : ℂ) :
     LFunction Φ s = N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZetaOdd (toAddCircle j) s := by
   simp only [LFunction, hurwitzZeta, mul_add (Φ _), sum_add_distrib]
   congr 1
-  simp only [add_eq_right, ← neg_eq_self ℂ, ← sum_neg_distrib]
+  simp only [add_eq_right, ← neg_eq_self, ← sum_neg_distrib]
   refine Fintype.sum_equiv (.neg _) _ _ fun i ↦ ?_
   simp only [Equiv.neg_apply, hΦ i, map_neg, hurwitzZetaEven_neg, neg_mul]
 
