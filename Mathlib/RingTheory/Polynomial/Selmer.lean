@@ -136,23 +136,6 @@ section Inertia
 
 open scoped Pointwise
 
-section Galois
-
-variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
-  [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
-  [Algebra A B] [Algebra K L] [Algebra A L]
-  [IsScalarTower A K L] [IsScalarTower A B L]
-  [IsIntegrallyClosed A] [IsIntegralClosure B A L]
-
--- todo: generalize this to arbitrary group acting
-instance IsIntegralClosure.SMulCommClass [FiniteDimensional K L] :
-    let _ := IsIntegralClosure.MulSemiringAction A K L B
-    SMulCommClass (L ≃ₐ[K] L) A B := by
-  intro
-  exact ⟨fun f ↦ map_smul (galRestrict A K L B f)⟩
-
-end Galois
-
 section inertiadef
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
