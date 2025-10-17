@@ -487,4 +487,4 @@ theorem Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
 theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection = V.starProjection ↔ U = V := by
-  simp only [le_antisymm_iff, ← Submodule.starProjection_le_starProjection]
+  simp only [le_antisymm_iff, ← Submodule.starProjection_le_starProjection_iff]
