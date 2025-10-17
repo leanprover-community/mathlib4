@@ -1065,7 +1065,7 @@ section Find
 
 variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n}
 
-/-- `findX p` returns the smallest index `k` where `p k` is satisfied,
+/-- `findX p h` returns the smallest index `k` where `p k` is satisfied,
   given that it is satisfied somewhere. Returns a subtype. -/
 protected def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) :
     { i : Fin n // p i ∧ ∀ j < i, ¬ p j } := go n (by grind) where
@@ -1075,24 +1075,22 @@ protected def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k,
     then Subtype.mk _ ⟨hnm, fun _ => hj _⟩ else go m (by grind)
   | 0 => (hj _ (by grind) h.choose_spec).elim
 
-/-- `find p` returns the smallest index `k` where `p k` is satisfied,
+/-- `Fin.find p h` returns the smallest index `k` where `p k` is satisfied,
   given that it is satisfied somewhere. -/
 protected def find {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) : Fin n :=
   (Fin.findX p h).1
 
-/-- If `find p = i`, then `p i` holds -/
+/-- `Fin.find p h` satisfies `p`. -/
 protected theorem find_spec (h : ∃ k, p k) : p (Fin.find p h) := (Fin.findX p h).2.1
 
 grind_pattern Fin.find_spec => Fin.find p h
 
-/-- If `find p = i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
-the indices where `p` holds. -/
+/-- For `m : Fin n`, if `m < Fin.find p h` then `m` does not satisfy `p`. -/
 @[grind →]
-protected theorem find_min (h : ∃ k, p k) {j : Fin n} : j < Fin.find p h → ¬ p j :=
-  (Fin.findX p h).2.2 _
+protected theorem find_min (h : ∃ k, p k) : ∀ {j : Fin n}, j < Fin.find p h → ¬ p j :=
+  @(Fin.findX p h).2.2
 
-/-- If `find p = i`, then `p j` holds only for `i ≤ j`, i.e., `i` is minimal among
-the indices where `p` holds. -/
+/-- For `m : Fin n`, if `m` satsifies `p`, then `Fin.find p h ≤ m`. -/
 protected theorem find_le_of_pos (h : ∃ k, p k) {j : Fin n} :
     p j → Fin.find p h ≤ j := (j.find_min _ <| lt_of_not_ge ·).mtr
 
