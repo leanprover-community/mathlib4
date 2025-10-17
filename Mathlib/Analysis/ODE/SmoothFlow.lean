@@ -45,7 +45,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (f : E → E) (u
 
 open Classical in
 /-- The function whose zero set contains integral curves to the vector field `f` -/
-noncomputable def implicitFunAux : E × C(Icc tmin tmax, E) → Icc tmin tmax → E :=
+noncomputable def implicitEquationAux : E × C(Icc tmin tmax, E) → Icc tmin tmax → E :=
   fun ⟨x₀, α⟩ ↦
     if (x₀, α) ∈ u ×ˢ { α : C(Icc tmin tmax, E) | range α ⊆ u }
     then fun t ↦ x₀ - α t + ∫ τ in t₀..t, f (α (projIcc tmin tmax (le_of_Icc t₀) τ))
@@ -53,30 +53,30 @@ noncomputable def implicitFunAux : E × C(Icc tmin tmax, E) → Icc tmin tmax �
 
 variable {f u t₀} in
 open Classical in
-lemma implicitFunAux_apply {x₀ : E} {α : C(Icc tmin tmax, E)} :
-    implicitFunAux f u t₀ (x₀, α) =
+lemma implicitEquationAux_apply {x₀ : E} {α : C(Icc tmin tmax, E)} :
+    implicitEquationAux f u t₀ (x₀, α) =
       if (x₀, α) ∈ u ×ˢ { α : C(Icc tmin tmax, E) | range α ⊆ u }
         then fun t ↦ x₀ - α t + ∫ τ in t₀..t, f (α (projIcc tmin tmax (le_of_Icc t₀) τ))
         else fun _ ↦ 0 := rfl
 
 variable {f u t₀} in
-lemma implicitFunAux_apply_of_mem {x₀ : E} {α : C(Icc tmin tmax, E)}
+lemma implicitEquationAux_apply_of_mem {x₀ : E} {α : C(Icc tmin tmax, E)}
     (h : (x₀, α) ∈ u ×ˢ { α : C(Icc tmin tmax, E) | range α ⊆ u }) :
-    implicitFunAux f u t₀ (x₀, α) =
+    implicitEquationAux f u t₀ (x₀, α) =
       fun t ↦ x₀ - α t + ∫ τ in t₀..t, f (α (projIcc tmin tmax (le_of_Icc t₀) τ)) := by
-  rw [implicitFunAux_apply, if_pos h]
+  rw [implicitEquationAux_apply, if_pos h]
 
 variable {f u t₀} in
-lemma implicitFunAux_apply_of_not_mem {x₀ : E} {α : C(Icc tmin tmax, E)}
+lemma implicitEquationAux_apply_of_not_mem {x₀ : E} {α : C(Icc tmin tmax, E)}
     (h : (x₀, α) ∉ u ×ˢ { α : C(Icc tmin tmax, E) | range α ⊆ u }) :
-    implicitFunAux f u t₀ (x₀, α) = fun _ ↦ 0 := by
-  rw [implicitFunAux_apply, if_neg h]
+    implicitEquationAux f u t₀ (x₀, α) = fun _ ↦ 0 := by
+  rw [implicitEquationAux_apply, if_neg h]
 
 variable {f u} in
-lemma continuous_implicitFunAux (hf : ContinuousOn f u) (x₀ : E) (α : C(Icc tmin tmax, E)) :
-    Continuous (implicitFunAux f u t₀ (x₀, α)) := by
+lemma continuous_implicitEquationAux (hf : ContinuousOn f u) (x₀ : E) (α : C(Icc tmin tmax, E)) :
+    Continuous (implicitEquationAux f u t₀ (x₀, α)) := by
   by_cases h : (x₀, α) ∈ u ×ˢ { α : C(Icc tmin tmax, E) | range α ⊆ u }
-  · rw [implicitFunAux_apply_of_mem h]
+  · rw [implicitEquationAux_apply_of_mem h]
     simp_rw [mem_prod, mem_setOf_eq] at h
     obtain ⟨hx, hα⟩ := h
     apply Continuous.add (by fun_prop)
@@ -95,15 +95,29 @@ lemma continuous_implicitFunAux (hf : ContinuousOn f u) (x₀ : E) (α : C(Icc t
       exact Set.mem_range_self _
     · rw [Set.uIcc_of_le (le_of_Icc t₀)]
       exact Subtype.coe_prop _
-  · rw [implicitFunAux_apply_of_not_mem h]
+  · rw [implicitEquationAux_apply_of_not_mem h]
     fun_prop
 
 variable {f u} in
 /-- The requisite function defining the implicit equation `E × F → F` whose zero set contains
 integral curves to the vector field `f` -/
-noncomputable def implicitFun (hf : ContinuousOn f u) :
+noncomputable def implicitEquation (hf : ContinuousOn f u) :
     E × C(Icc tmin tmax, E) → C(Icc tmin tmax, E) :=
-  fun ⟨x₀, α⟩ ↦ ⟨implicitFunAux f u t₀ ⟨x₀, α⟩, continuous_implicitFunAux t₀ hf x₀ α⟩
+  fun ⟨x₀, α⟩ ↦ ⟨implicitEquationAux f u t₀ ⟨x₀, α⟩, continuous_implicitEquationAux t₀ hf x₀ α⟩
+
+set_option linter.unusedVariables false in
+/-- The left (`E`) part of the first derivative of the implicit equation, valid when `x ∈ u` and
+`range α ⊆ u` -/
+def implicitEquation.leftDeriv (x : E) (α : C(Icc tmin tmax, E)) :
+    E →L[ℝ] C(Icc tmin tmax, E) where
+  toFun dx := ContinuousMap.const (Icc tmin tmax) dx
+  map_add' x y := by congr
+  map_smul' r x := by congr
+  cont := by
+    rw [Metric.continuous_iff]
+    have : Nonempty (Icc tmin tmax) := ⟨t₀.val, t₀.property⟩
+    simp_rw [ContinuousMap.dist_eq_iSup, ContinuousMap.const_apply, ciSup_const]
+    exact fun _ ε hε ↦ ⟨ε, hε, fun _ h ↦ h⟩
 
 
 
