@@ -86,7 +86,7 @@ lemma levyProkhorovEDist_le_of_forall_add_pos_le (μ ν : Measure Ω) (δ : ℝ�
   · simp only [ε_top, add_top, le_top]
   apply sInf_le
   intro B B_mble
-  simpa only [add_assoc] using h ε B (coe_pos.mpr hε) coe_lt_top B_mble
+  simpa only [add_assoc] using h ε B (by positivity) coe_lt_top B_mble
 
 /-- A simple general sufficient condition for bounding `levyProkhorovEDist` from above. -/
 lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
@@ -516,13 +516,12 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
     ∃ (As : ℕ → Set Ω), (∀ n, MeasurableSet (As n)) ∧ (∀ n, Bornology.IsBounded (As n)) ∧
         (∀ n, diam (As n) ≤ ε) ∧ (⋃ n, As n = univ) ∧
         (Pairwise (fun (n m : ℕ) ↦ Disjoint (As n) (As m))) := by
-  by_cases X_emp : IsEmpty Ω
+  cases isEmpty_or_nonempty Ω
   · refine ⟨fun _ ↦ ∅, fun _ ↦ MeasurableSet.empty, fun _ ↦ Bornology.isBounded_empty, ?_, ?_,
             fun _ _ _ ↦ disjoint_of_subsingleton⟩
     · intro n
-      simpa only [diam_empty] using LT.lt.le ε_pos
+      simpa only [diam_empty] using ε_pos.le
     · subsingleton
-  push_neg at X_emp
   obtain ⟨xs, xs_dense⟩ := exists_dense_seq Ω
   have half_ε_pos : 0 < ε / 2 := half_pos ε_pos
   set Bs := fun n ↦ Metric.ball (xs n) (ε / 2)
