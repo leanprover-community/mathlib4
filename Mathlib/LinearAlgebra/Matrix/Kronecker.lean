@@ -404,6 +404,7 @@ theorem conjTranspose_kronecker' [Mul R] [StarMul R] (x : Matrix l m R) (y : Mat
     (x ⊗ₖ y)ᴴ = (yᴴ ⊗ₖ xᴴ).submatrix Prod.swap Prod.swap := by
   ext; simp
 
+/-- The invertible kronecker matrix of invertible matrices. -/
 def GeneralLinearGroup.kronecker [CommSemiring R] [Fintype n] [Fintype m] [DecidableEq n]
     [DecidableEq m] (x : (Matrix n n R)ˣ) (y : (Matrix m m R)ˣ) : (Matrix (n × m) (n × m) R)ˣ where
   val := x ⊗ₖ y
