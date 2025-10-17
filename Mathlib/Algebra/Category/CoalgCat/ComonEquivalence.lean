@@ -126,9 +126,11 @@ theorem tensorObj_comul (K L : CoalgCat R) :
       ∘ₗ TensorProduct.map Coalgebra.comul Coalgebra.comul := by
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
-  simp only [Comon.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse, ModuleCat.hom_comp,
-    comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe, ModuleCat.hom_ofHom,
-    tensorμ_eq_tensorTensorTensorComm, LinearEquiv.comp_toLinearMap_eq_iff]
+  simp only [Comon.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
+    comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe,
+    MonObj.tensorObj.mul_def, unop_comp, unop_tensorObj, unop_tensorHom,
+    BraidedCategory.unop_tensorμ, tensorμ_eq_tensorTensorTensorComm, ModuleCat.hom_comp,
+    ModuleCat.hom_ofHom, LinearEquiv.comp_toLinearMap_eq_iff]
   rfl
 
 theorem tensorHom_toLinearMap (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :

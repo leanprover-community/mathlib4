@@ -417,7 +417,7 @@ instance : (forget₂Mon C).Monoidal where
   «η» := 𝟙 _
   δ G H := 𝟙 _
 
-attribute [local simp] one_eq_one mul_eq_mul comp_mul in
+attribute [local simp] MonObj.tensorObj.mul_def mul_eq_mul comp_mul in
 instance instBraidedCategory : BraidedCategory (Grp C) :=
   .ofFaithful (forget₂Mon C) fun G H ↦ Grp.mkIso (β_ G.X H.X)
 
