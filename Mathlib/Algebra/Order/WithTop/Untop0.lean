@@ -109,7 +109,7 @@ theorem le_of_untop₀_le_untop₀ {a b : WithTop α}
   lift b to α using hb
   simp_all
 
-@[simp]
+@[simp, gcongr]
 theorem untop₀_le_untop₀_of_le {a b : WithTop α}
     (hb : b ≠ ⊤) (h : a ≤ b) :
     a.untop₀ ≤ b.untop₀ := by
