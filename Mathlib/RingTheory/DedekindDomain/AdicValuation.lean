@@ -556,7 +556,7 @@ theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K)
   rfl
 
 instance : Module.IsTorsionFree R (v.adicCompletionIntegers K) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by simp
+  smul_eq_zero.2 {c x} := by simp
 
 instance adicCompletion.instIsScalarTower' :
     IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where

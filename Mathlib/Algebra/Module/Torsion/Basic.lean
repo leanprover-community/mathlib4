@@ -760,14 +760,14 @@ theorem coe_torsion_eq_annihilator_ne_bot :
         nonZeroDivisors.coe_ne_zero _⟩,
       fun ⟨a, hax, ha⟩ => ⟨⟨_, mem_nonZeroDivisors_of_ne_zero ha⟩, hax x ⟨1, one_smul _ _⟩⟩⟩
 
-/-- A module over a domain has `Module.IsTorsionFree` iff its torsion submodule is trivial. -/
-theorem noZeroSMulDivisors_iff_torsion_eq_bot : Module.IsTorsionFree R M ↔ torsion R M = ⊥ := by
+/-- A module over a domain is torsion-free iff its torsion submodule is trivial. -/
+theorem isTorsionFree_iff_torsion_eq_bot : Module.IsTorsionFree R M ↔ torsion R M = ⊥ := by
+  simp [torsion, torsion']
   constructor <;> intro h
-  · haveI : Module.IsTorsionFree R M := h
-    rw [eq_bot_iff]
+  · rw [eq_bot_iff]
     rintro x ⟨a, hax⟩
     change (a : R) • x = 0 at hax
-    rcases eq_zero_or_eq_zero_of_smul_eq_zero hax with h0 | h0
+    rcases smul_eq_zero.2 hax with h0 | h0
     · exfalso
       exact nonZeroDivisors.coe_ne_zero a h0
     · exact h0
