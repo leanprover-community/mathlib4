@@ -137,7 +137,7 @@ lemma isZeckendorfRep_zeckendorf : ∀ n, (zeckendorf n).IsZeckendorfRep
   | 0 => by simp only [zeckendorf_zero, IsZeckendorfRep_nil]
   | n + 1 => by
     rw [zeckendorf_succ, IsZeckendorfRep, List.cons_append]
-    refine (isZeckendorfRep_zeckendorf _).cons' (fun a ha ↦ ?_)
+    refine (isZeckendorfRep_zeckendorf _).cons (fun a ha ↦ ?_)
     obtain h | h := eq_zero_or_pos (n + 1 - fib (greatestFib (n + 1)))
     · simp only [h, zeckendorf_zero, nil_append, head?_cons, Option.mem_some_iff] at ha
       subst ha

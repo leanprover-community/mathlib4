@@ -66,7 +66,7 @@ variable {s} {l : List α} {a : α}
 
 theorem cons_mem_subchain_iff :
     (a::l) ∈ s.subchain ↔ a ∈ s ∧ l ∈ s.subchain ∧ ∀ b ∈ l.head?, a < b := by
-  simp only [subchain, mem_setOf_eq, forall_mem_cons, isChain_cons', and_left_comm, and_comm,
+  simp only [subchain, mem_setOf_eq, forall_mem_cons, isChain_cons, and_left_comm, and_comm,
     and_assoc]
 
 @[simp]
@@ -270,7 +270,7 @@ theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
       exacts [(hy _ hi).ne h', not_le_of_gt (hy _ hi) (hx _ h').le]
   · intro l hl
     refine ⟨a::l, ⟨?_, ?_⟩, by simp⟩
-    · rw [isChain_cons']
+    · rw [isChain_cons]
       exact ⟨fun y hy ↦ hx _ (hl.2 _ (mem_of_mem_head? hy)), hl.1⟩
     · rintro x (_ | _)
       exacts [Or.inl (Set.mem_singleton a), Or.inr (hl.2 x ‹x ∈ l›)]

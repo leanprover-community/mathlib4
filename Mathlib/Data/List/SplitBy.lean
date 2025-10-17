@@ -86,11 +86,11 @@ private theorem isChain_of_mem_splitByLoop {r : α → α → Bool} {l : List α
     · exact (not_mem_nil hm).elim
     · apply List.isChain_reverse.1
       rw [reverse_reverse]
-      exact isChain_cons'.2 ⟨hga, hg⟩
+      exact isChain_cons.2 ⟨hga, hg⟩
   | cons b l IH =>
     simp only [splitBy.loop, reverse_cons] at h
     split at h
-    · apply IH _ (isChain_cons'.2 ⟨hga, hg⟩) h
+    · apply IH _ (isChain_cons.2 ⟨hga, hg⟩) h
       intro b hb
       rw [head?_cons, Option.mem_some_iff] at hb
       rwa [← hb]
@@ -98,7 +98,7 @@ private theorem isChain_of_mem_splitByLoop {r : α → α → Bool} {l : List α
       obtain rfl | hm := h
       · apply List.isChain_reverse.1
         rw [reverse_append, reverse_cons, reverse_nil, nil_append, reverse_reverse]
-        exact isChain_cons'.2 ⟨hga, hg⟩
+        exact isChain_cons.2 ⟨hga, hg⟩
       · apply IH _ isChain_nil hm
         rintro _ ⟨⟩
 
@@ -122,7 +122,7 @@ private theorem isChain_getLast_head_splitByLoop {r : α → α → Bool} (l : L
   | nil =>
     rw [splitBy.loop, reverse_cons]
     apply List.isChain_reverse.1
-    simpa using isChain_cons'.2 ⟨hga, hgs⟩
+    simpa using isChain_cons.2 ⟨hga, hgs⟩
   | cons b l IH =>
     rw [splitBy.loop]
     split
@@ -134,7 +134,7 @@ private theorem isChain_getLast_head_splitByLoop {r : α → α → Bool} (l : L
     · apply IH
       · simpa using hgs'
       · rw [reverse_cons]
-        apply isChain_cons'.2 ⟨hga, hgs⟩
+        apply isChain_cons.2 ⟨hga, hgs⟩
       · simpa
 
 theorem isChain_getLast_head_splitBy (r : α → α → Bool) (l : List α) :
