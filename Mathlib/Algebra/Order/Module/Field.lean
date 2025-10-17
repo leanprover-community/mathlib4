@@ -85,7 +85,8 @@ private theorem smul_nonneg_of_pos_of_pos (ha : 0 < a) (hb : 0 < b) : 0 ≤ a �
 end PosSMulMono
 
 section Module.IsTorsionFree
-variable [Zero α] [Zero β] [SMul α β] [Module.IsTorsionFree α β] {a : α} {b : β}
+variable [Semiring α] [IsDomain α] [AddCommMonoid β] [Module α β] [Module.IsTorsionFree α β]
+  {a : α} {b : β}
 
 private theorem smul_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) : a • b ≠ 0 :=
   smul_ne_zero ha.ne' hb

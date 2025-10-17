@@ -218,18 +218,3 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
   Commute.isNilpotent_finsum hf fun _ _ ↦ Commute.all _ _
 
 end CommSemiring
-
-lemma Module.IsTorsionFree.isReduced (R M : Type*) [Semiring R] [IsDomain R] [AddCommMonoid M]
-    [Module R M] [Nontrivial M] [Module.IsTorsionFree R M] : IsReduced R := by
-  refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
-  induction k with
-  | zero =>
-    rw [pow_zero] at hk
-    exact eq_zero_of_zero_eq_one hk.symm x
-  | succ k ih =>
-    obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
-    have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]
-    rw [pow_succ', mul_smul] at this
-    rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx
-    · rfl
-    · exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm
