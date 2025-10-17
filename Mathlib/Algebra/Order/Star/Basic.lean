@@ -222,12 +222,11 @@ theorem conjugate_nonneg' {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c 
 
 lemma IsUnit.conjugate_nonneg_iff {u x : R} (hu : IsUnit u) :
     0 ≤ u * x * star u ↔ 0 ≤ x := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨v, hv⟩ := hu.exists_left_inv
-    have := conjugate_nonneg' h v
-    simp_rw [← mul_assoc, hv, one_mul, mul_assoc, ← star_mul, hv, star_one, mul_one] at this
-    exact this
-  · exact conjugate_nonneg' h _
+  refine ⟨fun h ↦ ?_, fun h ↦ conjugate_nonneg' h _⟩
+  obtain ⟨v, hv⟩ := hu.exists_left_inv
+  have := conjugate_nonneg' h v
+  simp_rw [← mul_assoc, hv, one_mul, mul_assoc, ← star_mul, hv, star_one, mul_one] at this
+  exact this
 
 lemma IsUnit.conjugate_nonneg_iff' {u x : R} (hu : IsUnit u) :
     0 ≤ star u * x * u ↔ 0 ≤ x := by
