@@ -50,7 +50,7 @@ def ScottContinuousOn (D : Set (Set α)) (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 
 lemma ScottContinuousOn.mono (hD : D₁ ⊆ D₂) (hf : ScottContinuousOn D₂ f) :
-    ScottContinuousOn D₁ f := fun _  hdD₁ hd₁ hd₂ _ hda => hf (hD hdD₁) hd₁ hd₂ hda
+    ScottContinuousOn D₁ f := fun _ hdD₁ hd₁ hd₂ _ hda => hf (hD hdD₁) hd₁ hd₂ hda
 
 protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (h : ScottContinuousOn D f) : Monotone f := by
@@ -88,7 +88,7 @@ lemma ScottContinuousOn.prodMk (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
       exact (hp _ hb).2
 
 /-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
-sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
+sets. It can be shown that a function is Scott continuous if and only if it is continuous w.r.t. the
 Scott topology.
 -/
 def ScottContinuous (f : α → β) : Prop :=
@@ -111,6 +111,7 @@ section SemilatticeSup
 
 variable [SemilatticeSup β]
 
+/-- The join operation is Scott continuous -/
 lemma ScottContinuous.sup₂ :
     ScottContinuous fun b : β × β => (b.1 ⊔ b.2 : β) := fun d _ _ ⟨p₁, p₂⟩ hdp => by
   simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp

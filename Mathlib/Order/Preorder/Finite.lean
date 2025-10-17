@@ -16,7 +16,8 @@ contrapositively that non-empty sets without minimal or maximal elements are inf
 variable {ι α β : Type*}
 
 namespace Finset
-variable [Preorder α] {s : Finset α} {a : α}
+section IsTrans
+variable [LE α] [IsTrans α LE.le] {s : Finset α} {a : α}
 
 lemma exists_maximalFor (f : ι → α) (s : Finset ι) (hs : s.Nonempty) :
     ∃ i, MaximalFor (· ∈ s) f i := by
@@ -26,8 +27,8 @@ lemma exists_maximalFor (f : ι → α) (s : Finset ι) (hs : s.Nonempty) :
     obtain ⟨j, hj⟩ := ih
     by_cases hji : f j ≤ f i
     · refine ⟨i, mem_cons_self .., ?_⟩
-      simp only [mem_cons, forall_eq_or_imp, le_refl, imp_self, true_and]
-      exact fun k hk hik ↦ (hj.2 hk <| hji.trans hik).trans hji
+      simp only [mem_cons, forall_eq_or_imp, imp_self, true_and]
+      exact fun k hk hik ↦ _root_.trans (hj.2 hk <| _root_.trans hji hik) hji
     · exact ⟨j, mem_cons_of_mem hj.1, by simpa [hji] using hj.2⟩
 
 lemma exists_minimalFor (f : ι → α) (s : Finset ι) (hs : s.Nonempty) :
@@ -35,6 +36,11 @@ lemma exists_minimalFor (f : ι → α) (s : Finset ι) (hs : s.Nonempty) :
 
 lemma exists_maximal (hs : s.Nonempty) : ∃ i, Maximal (· ∈ s) i := s.exists_maximalFor id hs
 lemma exists_minimal (hs : s.Nonempty) : ∃ i, Minimal (· ∈ s) i := s.exists_minimalFor id hs
+
+end IsTrans
+
+section Preorder
+variable [Preorder α] {s : Finset α} {a : α}
 
 lemma exists_le_maximal (s : Finset α) (ha : a ∈ s) : ∃ b, a ≤ b ∧ Maximal (· ∈ s) b := by
   classical
@@ -47,11 +53,12 @@ lemma exists_le_minimal (s : Finset α) (ha : a ∈ s) : ∃ b ≤ a, Minimal (�
 
 @[deprecated (since := "2025-05-04")] alias exists_minimal_le := exists_le_minimal
 
+end Preorder
 end Finset
 
 namespace Set
-section Preorder
-variable [Preorder α] {s : Set α} {a : α}
+section IsTrans
+variable [LE α] [IsTrans α LE.le] {s : Set α} {a : α}
 
 lemma Finite.exists_maximalFor (f : ι → α) (s : Set ι) (h : s.Finite) (hs : s.Nonempty) :
     ∃ i, MaximalFor (· ∈ s) f i := by
@@ -82,6 +89,11 @@ lemma Finite.exists_minimalFor' (f : ι → α) (s : Set ι) (h : (f '' s).Finit
 @[deprecated (since := "2025-05-04")] alias Finite.exists_minimal_wrt := Finite.exists_minimalFor
 @[deprecated (since := "2025-05-04")] alias Finite.exists_maximal_wrt' := Finite.exists_maximalFor'
 @[deprecated (since := "2025-05-04")] alias Finite.exists_minimal_wrt' := Finite.exists_minimalFor'
+
+end IsTrans
+
+section Preorder
+variable [Preorder α] {s : Set α} {a : α}
 
 lemma Finite.exists_le_maximal (hs : s.Finite) (ha : a ∈ s) : ∃ b, a ≤ b ∧ Maximal (· ∈ s) b := by
   lift s to Finset α using hs; exact s.exists_le_maximal ha
@@ -117,7 +129,7 @@ variable [LinearOrder α] {s : Set α} {t : Set β} {f : α → β}
 lemma Infinite.exists_lt_map_eq_of_mapsTo (hs : s.Infinite) (hf : MapsTo f s t) (ht : t.Finite) :
     ∃ x ∈ s, ∃ y ∈ s, x < y ∧ f x = f y :=
   let ⟨x, hx, y, hy, hxy, hf⟩ := hs.exists_ne_map_eq_of_mapsTo hf ht
-  hxy.lt_or_lt.elim (fun hxy => ⟨x, hx, y, hy, hxy, hf⟩) fun hyx => ⟨y, hy, x, hx, hyx, hf.symm⟩
+  hxy.lt_or_gt.elim (fun hxy => ⟨x, hx, y, hy, hxy, hf⟩) fun hyx => ⟨y, hy, x, hx, hyx, hf.symm⟩
 
 lemma Finite.exists_lt_map_eq_of_forall_mem [Infinite α] (hf : ∀ a, f a ∈ t) (ht : t.Finite) :
     ∃ a b, a < b ∧ f a = f b := by

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Data.Finsupp.Antidiagonal
+import Mathlib.Data.Finsupp.Order
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-! # weights of Finsupp functions
@@ -30,7 +31,7 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 
 - `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
 
-- `NonTorsionWeight`: all values `w s` are non torsion in `M`.
+- `NonTorsionWeight`: all values `w s` are nontorsion in `M`.
 
 - `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
   `f = 0` for `NonTorsionWeight w` and `CanonicallyOrderedAddCommMonoid M`.
@@ -136,11 +137,6 @@ variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] (w : σ → M
   {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
   [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Module R M]
 
-instance : SMulPosMono ℕ M :=
-  ⟨fun b hb m m' h ↦ by
-    rw [← Nat.add_sub_of_le h, add_smul]
-    exact le_add_of_nonneg_right (nsmul_nonneg hb (m' - m))⟩
-
 variable {w} in
 theorem le_weight_of_ne_zero (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f := by
@@ -207,6 +203,9 @@ variable {R : Type*} [AddCommMonoid R]
 /-- The degree of a finsupp function. -/
 def degree (d : σ →₀ R) : R := ∑ i ∈ d.support, d i
 
+theorem degree_eq_sum [Fintype σ] (f : σ →₀ R) : f.degree = ∑ i, f i := by
+  rw [degree, Finset.sum_subset] <;> simp
+
 @[simp]
 theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
   sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
@@ -226,18 +225,18 @@ lemma degree_eq_zero_iff {R : Type*}
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
 
 theorem le_degree {R : Type*}
-    [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R] [CanonicallyOrderedAdd R]
+    [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (s : σ) (f : σ →₀ R) :
     f s ≤ degree f := by
   by_cases h : s ∈ f.support
-  · exact CanonicallyOrderedAddCommMonoid.single_le_sum h
+  · exact Finset.single_le_sum_of_canonicallyOrdered h
   · simp only [notMem_support_iff] at h
     simp only [h, zero_le]
 
 theorem degree_eq_weight_one {R : Type*} [Semiring R] :
     degree (R := R) (σ := σ) = weight (fun _ ↦ 1) := by
   ext d
-  simp only [degree, weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum]
+  simp only [degree, weight_apply, smul_eq_mul, mul_one, Finsupp.sum]
 
 theorem finite_of_degree_le [Finite σ] (n : ℕ) :
     {f : σ →₀ ℕ | degree f ≤ n}.Finite := by

@@ -63,7 +63,7 @@ taking a limit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
 noncomputable def limitPresheafOfModules : PresheafOfModules R where
   obj X := limit (F ⋙ evaluation R X)
-  map {_ Y} f := limMap (whiskerLeft F (restriction R f)) ≫
+  map {_ Y} f := limMap (Functor.whiskerLeft F (restriction R f)) ≫
     (preservesLimitIso (ModuleCat.restrictScalars (R.map f).hom) (F ⋙ evaluation R Y)).inv
   map_id X := by
     dsimp
@@ -71,7 +71,7 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
     apply limit.hom_ext
     intro j
     dsimp
-    simp only [limMap_π, Functor.comp_obj, evaluation_obj, whiskerLeft_app,
+    simp only [limMap_π, Functor.comp_obj, evaluation_obj, Functor.whiskerLeft_app,
       restriction_app, assoc]
     -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
     erw [preservesLimitIso_hom_π]
@@ -84,7 +84,7 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
       comp_id]
     apply limit.hom_ext
     intro j
-    simp only [Functor.comp_obj, evaluation_obj, limMap_π, whiskerLeft_app, restriction_app,
+    simp only [Functor.comp_obj, evaluation_obj, limMap_π, Functor.whiskerLeft_app, restriction_app,
       map_comp, ModuleCat.restrictScalarsComp'_inv_app, Functor.map_comp, assoc]
     -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
     erw [preservesLimitIso_hom_π]
@@ -130,7 +130,7 @@ noncomputable instance toPresheaf_preservesLimit :
     PreservesLimit F (toPresheaf R) :=
   preservesLimit_of_preserves_limit_cone (isLimitLimitCone F)
     (Limits.evaluationJointlyReflectsLimits _
-      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
+      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrpCat)
         (isLimitLimitCone F)))
 
 end Limits

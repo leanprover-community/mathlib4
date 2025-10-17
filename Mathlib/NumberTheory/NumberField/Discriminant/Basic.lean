@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.Algebra.Module.ZLattice.Covolume
-import Mathlib.Data.Real.Pi.Bounds
+import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
@@ -26,7 +26,7 @@ This file defines the discriminant of a number field.
 number field, discriminant
 -/
 
--- TODO. Rewrite some of the FLT results on the disciminant using the definitions and results of
+-- TODO. Rewrite some of the FLT results on the discriminant using the definitions and results of
 -- this file
 
 namespace NumberField
@@ -78,7 +78,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     ZLattice.covolume (mixedEmbedding.integerLattice K) =
-      (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
+      (2⁻¹) ^ nrComplexPlaces K * √|discr K| := by
   rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_integerLattice K),
     measureReal_def,
     volume_fundamentalDomain_latticeBasis, ENNReal.toReal_mul, ENNReal.toReal_pow,
@@ -89,7 +89,7 @@ open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ZLattice.covolume (mixedEmbedding.idealLattice K I) =
       (FractionalIdeal.absNorm (I : FractionalIdeal (𝓞 K)⁰ K)) *
-        (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
+        (2⁻¹) ^ nrComplexPlaces K * √|discr K| := by
   rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_idealLattice K I),
     measureReal_def,
     volume_fundamentalDomain_fractionalIdealLatticeBasis, volume_fundamentalDomain_latticeBasis,
@@ -210,16 +210,18 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
       exact Nat.le_add_left _ _
   intro n hn
   induction n, hn using Nat.le_induction with
-  | base => exact le_of_eq <| by norm_num [a, Nat.factorial_two]; field_simp; ring
+  | base => exact le_of_eq <| by simp [a, Nat.factorial_two]; field_simp; ring
   | succ m _ h_m =>
       suffices (3 : ℝ) ≤ (1 + 1 / m : ℝ) ^ (2 * m) by
         convert_to _ ≤ (a m) * (1 + 1 / m : ℝ) ^ (2 * m) / (4 / π)
         · simp_rw [a, add_mul, one_mul, pow_succ, Nat.factorial_succ]
-          field_simp; ring
+          field_simp
+          simp [field, div_pow]
+          ring
         · rw [_root_.le_div_iff₀ (by positivity), pow_succ]
           convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
-          field_simp; ring
-      refine le_trans (le_of_eq (by field_simp; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
+          field_simp
+      refine le_trans (le_of_eq (by simp [field]; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
       exact le_trans (by norm_num : (-2 : ℝ) ≤ 0) (by positivity)
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/
@@ -274,7 +276,7 @@ theorem finite_of_finite_generating_set {p : IntermediateField ℚ A → Prop}
   rw [← Set.finite_coe_iff] at hT
   refine Set.finite_coe_iff.mp <| Finite.of_injective
     (fun ⟨F, hF⟩ ↦ (⟨(h F hF).choose, (h F hF).choose_spec.1⟩ : T)) (fun _ _ h_eq ↦ ?_)
-  rw [Subtype.ext_iff_val, Subtype.ext_iff_val]
+  rw [Subtype.ext_iff, Subtype.ext_iff]
   convert congr_arg (ℚ⟮·⟯) (Subtype.mk_eq_mk.mp h_eq)
   all_goals exact (h _ (Subtype.mem _)).choose_spec.2
 
@@ -301,7 +303,7 @@ theorem rank_le_rankOfDiscrBdd :
   have h₂ : 1 < 3 * π / 4 := by
     rw [_root_.lt_div_iff₀ (by positivity), ← _root_.div_lt_iff₀' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
-  obtain h | h := lt_or_le 1 (finrank ℚ K)
+  obtain h | h := lt_or_ge 1 (finrank ℚ K)
   · apply le_max_of_le_right
     rw [Nat.le_floor_iff]
     · have h := le_trans (abs_discr_ge h) (Int.cast_le.mpr hK)
@@ -311,7 +313,7 @@ theorem rank_le_rankOfDiscrBdd :
       refine lt_of_le_of_lt ?_ (mul_lt_mul_of_pos_left
         (Real.rpow_lt_rpow_of_exponent_lt h₂ h) (by positivity : (0 : ℝ) < 4 / 9))
       rw [Real.rpow_logb (lt_trans zero_lt_one h₂) (ne_of_gt h₂) (by positivity), ← mul_assoc,
-            ← inv_div, inv_mul_cancel₀ (by norm_num), one_mul, Int.cast_natCast]
+            ← inv_div, inv_mul_cancel₀ (by simp), one_mul, Int.cast_natCast]
     · refine div_nonneg (Real.log_nonneg ?_) (Real.log_nonneg (le_of_lt h₂))
       rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff₀ (by positivity), one_mul,
         ← _root_.div_le_iff₀ (by positivity)]
@@ -329,7 +331,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
     ENNReal.ofReal_one, one_mul, mixedEmbedding.finrank, volume_fundamentalDomain_latticeBasis,
     coe_mul, ENNReal.coe_pow, coe_ofNat, show sqrt N = (1 : ℝ≥0∞) * sqrt N by rw [one_mul]]
   gcongr
-  · exact pow_le_one₀ (by positivity) (by norm_num)
+  · exact pow_le_one₀ (by positivity) (by simp)
   · rwa [← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs, ← Int.cast_abs,
       NNReal.coe_natCast, ← Int.cast_natCast, Int.cast_le]
   · exact one_le_two
@@ -358,7 +360,7 @@ theorem finite_of_discr_bdd_of_isReal :
   let C := Nat.ceil ((max B 1) ^ D *  Nat.choose D (D / 2))
   refine finite_of_finite_generating_set A _ (bUnion_roots_finite (algebraMap ℤ A) D
       (Set.finite_Icc (-C : ℤ) C)) (fun ⟨K, hK₀⟩ ⟨hK₁, hK₂⟩ ↦ ?_)
-  -- We now need to prove that each field is generated by an element of the union of the rootset
+  -- We now need to prove that each field is generated by an element of the union of the root set
   simp_rw [Set.mem_iUnion]
   -- this is purely an optimization
   have : CharZero K := SubsemiringClass.instCharZero K
@@ -406,7 +408,7 @@ theorem finite_of_discr_bdd_of_isComplex :
   let C := Nat.ceil ((max (sqrt (1 + B ^ 2)) 1) ^ D * Nat.choose D (D / 2))
   refine finite_of_finite_generating_set A _ (bUnion_roots_finite (algebraMap ℤ A) D
       (Set.finite_Icc (-C : ℤ) C)) (fun ⟨K, hK₀⟩ ⟨hK₁, hK₂⟩ ↦ ?_)
-  -- We now need to prove that each field is generated by an element of the union of the rootset
+  -- We now need to prove that each field is generated by an element of the union of the root set
   simp_rw [Set.mem_iUnion]
   -- this is purely an optimization
   have : CharZero K := SubsemiringClass.instCharZero K

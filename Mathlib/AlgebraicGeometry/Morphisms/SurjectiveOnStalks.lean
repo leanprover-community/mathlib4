@@ -16,7 +16,7 @@ We show that this class is stable under composition and base change.
 
 We also show that (`AlgebraicGeometry.SurjectiveOnStalks.isEmbedding_pullback`)
 if `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
-`X × Y` (cartesian product as topological spaces) with the induced topology.
+`X × Y` (Cartesian product as topological spaces) with the induced topology.
 -/
 
 open CategoryTheory CategoryTheory.Limits Topology
@@ -46,7 +46,7 @@ instance : MorphismProperty.IsMultiplicative @SurjectiveOnStalks where
   id_mem _ := inferInstance
   comp_mem {X Y Z} f g hf hg := by
     refine ⟨fun x ↦ ?_⟩
-    rw [Scheme.stalkMap_comp]
+    rw [Scheme.Hom.stalkMap_comp]
     exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.base x))
 
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [SurjectiveOnStalks f]
@@ -57,15 +57,15 @@ lemma eq_stalkwise :
     @SurjectiveOnStalks = stalkwise (Function.Surjective ·) := by
   ext; exact surjectiveOnStalks_iff _
 
-instance : IsLocalAtTarget @SurjectiveOnStalks :=
-  eq_stalkwise ▸ stalkwiseIsLocalAtTarget_of_respectsIso RingHom.surjective_respectsIso
+instance : IsZariskiLocalAtTarget @SurjectiveOnStalks :=
+  eq_stalkwise ▸ stalkwiseIsZariskiLocalAtTarget_of_respectsIso RingHom.surjective_respectsIso
 
-instance : IsLocalAtSource @SurjectiveOnStalks :=
-  eq_stalkwise ▸ stalkwise_isLocalAtSource_of_respectsIso RingHom.surjective_respectsIso
+instance : IsZariskiLocalAtSource @SurjectiveOnStalks :=
+  eq_stalkwise ▸ stalkwise_isZariskiLocalAtSource_of_respectsIso RingHom.surjective_respectsIso
 
 lemma Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
     SurjectiveOnStalks (Spec.map φ) ↔ RingHom.SurjectiveOnStalks φ.hom := by
-  rw [eq_stalkwise, stalkwise_Spec_map_iff RingHom.surjective_respectsIso,
+  rw [eq_stalkwise, stalkwise_SpecMap_iff RingHom.surjective_respectsIso,
     RingHom.SurjectiveOnStalks]
 
 instance : HasRingHomProperty @SurjectiveOnStalks RingHom.SurjectiveOnStalks :=
@@ -79,7 +79,7 @@ lemma iff_of_isAffine [IsAffine X] [IsAffine Y] :
 theorem of_comp [SurjectiveOnStalks (f ≫ g)] : SurjectiveOnStalks f := by
   refine ⟨fun x ↦ ?_⟩
   have := (f ≫ g).stalkMap_surjective x
-  rw [Scheme.stalkMap_comp] at this
+  rw [Scheme.Hom.stalkMap_comp] at this
   exact Function.Surjective.of_comp this
 
 instance stableUnderBaseChange :
@@ -87,7 +87,7 @@ instance stableUnderBaseChange :
   apply HasRingHomProperty.isStableUnderBaseChange
   apply RingHom.IsStableUnderBaseChange.mk
   · exact (HasRingHomProperty.isLocal_ringHomProperty @SurjectiveOnStalks).respectsIso
-  intros R S T _ _ _ _ _ H
+  intro R S T _ _ _ _ _ H
   exact H.baseChange
 
 variable {f} in
@@ -99,7 +99,7 @@ lemma mono_of_injective [SurjectiveOnStalks f] (hf : Function.Injective f.base) 
   · exact fun x ↦ ConcreteCategory.epi_of_surjective _ (f.stalkMap_surjective x)
 
 /-- If `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
-`X × Y` (cartesian product as topological spaces) with the induced topology. -/
+`X × Y` (Cartesian product as topological spaces) with the induced topology. -/
 lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [SurjectiveOnStalks g] :
     IsEmbedding (fun x ↦ ((pullback.fst f g).base x, (pullback.snd f g).base x)) := by
   let L := (fun x ↦ ((pullback.fst f g).base x, (pullback.snd f g).base x))
@@ -121,34 +121,35 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     obtain ⟨x, rfl⟩ := (Scheme.homeoOfIso (pullbackSpecIso R A B).symm).surjective x
     simp only [Scheme.homeoOfIso_apply, Function.comp_apply]
     ext
-    · simp only [L, ← Scheme.comp_base_apply, pullback.lift_fst, Iso.symm_hom,
+    · simp only [L, ← Scheme.Hom.comp_apply, pullback.lift_fst, Iso.symm_hom,
         Iso.inv_hom_id]
-      erw [← Scheme.comp_base_apply, pullbackSpecIso_inv_fst_assoc]
+      erw [← Scheme.Hom.comp_apply, pullbackSpecIso_inv_fst_assoc]
       rfl
-    · simp only [L, ← Scheme.comp_base_apply, pullback.lift_snd, Iso.symm_hom,
+    · simp only [L, ← Scheme.Hom.comp_apply, pullback.lift_snd, Iso.symm_hom,
         Iso.inv_hom_id]
-      erw [← Scheme.comp_base_apply, pullbackSpecIso_inv_snd_assoc]
+      erw [← Scheme.Hom.comp_apply, pullbackSpecIso_inv_snd_assoc]
       rfl
   let 𝒰 := S.affineOpenCover.openCover
-  let 𝒱 (i) := ((𝒰.pullbackCover f).obj i).affineOpenCover.openCover
-  let 𝒲 (i) := ((𝒰.pullbackCover g).obj i).affineOpenCover.openCover
-  let U (ijk : Σ i, (𝒱 i).J × (𝒲 i).J) : TopologicalSpace.Opens (X.carrier × Y) :=
-    ⟨{ P | P.1 ∈ ((𝒱 ijk.1).map ijk.2.1 ≫ (𝒰.pullbackCover f).map ijk.1).opensRange ∧
-          P.2 ∈ ((𝒲 ijk.1).map ijk.2.2 ≫ (𝒰.pullbackCover g).map ijk.1).opensRange },
-      (continuous_fst.1 _ ((𝒱 ijk.1).map ijk.2.1 ≫
-      (𝒰.pullbackCover f).map ijk.1).opensRange.2).inter (continuous_snd.1 _
-      ((𝒲 ijk.1).map ijk.2.2 ≫ (𝒰.pullbackCover g).map ijk.1).opensRange.2)⟩
+  let 𝒱 (i) := ((𝒰.pullback₁ f).X i).affineOpenCover.openCover
+  let 𝒲 (i) := ((𝒰.pullback₁ g).X i).affineOpenCover.openCover
+  let U (ijk : Σ i, (𝒱 i).I₀ × (𝒲 i).I₀) : TopologicalSpace.Opens (X.carrier × Y) :=
+    ⟨{ P | P.1 ∈ ((𝒱 ijk.1).f ijk.2.1 ≫ (𝒰.pullback₁ f).f ijk.1).opensRange ∧
+          P.2 ∈ ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullback₁ g).f ijk.1).opensRange },
+      (continuous_fst.1 _ ((𝒱 ijk.1).f ijk.2.1 ≫
+      (𝒰.pullback₁ f).f ijk.1).opensRange.2).inter (continuous_snd.1 _
+      ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullback₁ g).f ijk.1).opensRange.2)⟩
   have : Set.range L ⊆ (iSup U :) := by
-    simp only [Scheme.Cover.pullbackCover_J, Scheme.Cover.pullbackCover_obj, Set.range_subset_iff]
+    simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+      PreZeroHypercover.pullback₁_I₀, PreZeroHypercover.pullback₁_X, Set.range_subset_iff]
     intro z
     simp only [SetLike.mem_coe, TopologicalSpace.Opens.mem_iSup, Sigma.exists, Prod.exists]
     obtain ⟨is, s, hsx⟩ := 𝒰.exists_eq (f.base ((pullback.fst f g).base z))
-    have hsy : (𝒰.map is).base s = g.base ((pullback.snd f g).base z) := by
-      rwa [← Scheme.comp_base_apply, ← pullback.condition, Scheme.comp_base_apply]
-    obtain ⟨x : (𝒰.pullbackCover f).obj is, hx⟩ :=
+    have hsy : (𝒰.f is).base s = g.base ((pullback.snd f g).base z) := by
+      rwa [← Scheme.Hom.comp_apply, ← pullback.condition, Scheme.Hom.comp_apply]
+    obtain ⟨x : (𝒰.pullback₁ f).X is, hx⟩ :=
       Scheme.IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
         (P := @IsOpenImmersion) inferInstance _ _ hsx.symm
-    obtain ⟨y : (𝒰.pullbackCover g).obj is, hy⟩ :=
+    obtain ⟨y : (𝒰.pullback₁ g).X is, hy⟩ :=
       Scheme.IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
         (P := @IsOpenImmersion) inferInstance _ _ hsy.symm
     obtain ⟨ix, x, rfl⟩ := (𝒱 is).exists_eq x
@@ -156,8 +157,8 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     refine ⟨is, ix, iy, ⟨x, hx⟩, ⟨y, hy⟩⟩
   let 𝓤 := (Scheme.Pullback.openCoverOfBase 𝒰 f g).bind
     (fun i ↦ Scheme.Pullback.openCoverOfLeftRight (𝒱 i) (𝒲 i) _ _)
-  refine isEmbedding_of_iSup_eq_top_of_preimage_subset_range _ ?_ U this _ (fun i ↦ (𝓤.map i).base)
-    (fun i ↦ (𝓤.map i).continuous) ?_ ?_
+  refine isEmbedding_of_iSup_eq_top_of_preimage_subset_range _ ?_ U this _ (fun i ↦ (𝓤.f i).base)
+    (fun i ↦ (𝓤.f i).continuous) ?_ ?_
   · fun_prop
   · rintro i x ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
     obtain ⟨x₁', hx₁'⟩ :=
@@ -169,27 +170,26 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     obtain ⟨z, hz⟩ :=
       Scheme.IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
         (P := @IsOpenImmersion) inferInstance _ _ (hx₁'.trans hx₂'.symm)
-    refine ⟨(pullbackFstFstIso _ _ _ _ _ _ (𝒰.map i.1) ?_ ?_).hom.base z, ?_⟩
+    refine ⟨(pullbackFstFstIso _ _ _ _ _ _ (𝒰.f i.1) ?_ ?_).hom.base z, ?_⟩
     · simp [pullback.condition]
     · simp [pullback.condition]
     · dsimp only
-      rw [← hx₁', ← hz, ← Scheme.comp_base_apply]
-      erw [← Scheme.comp_base_apply]
+      rw [← hx₁', ← hz, ← Scheme.Hom.comp_apply]
+      erw [← Scheme.Hom.comp_apply]
       congr 5
       apply pullback.hom_ext <;> simp [𝓤, ← pullback.condition, ← pullback.condition_assoc]
   · intro i
-    have := H (S.affineOpenCover.obj i.1) (((𝒰.pullbackCover f).obj i.1).affineOpenCover.obj i.2.1)
-        (((𝒰.pullbackCover g).obj i.1).affineOpenCover.obj i.2.2)
-        ((𝒱 i.1).map i.2.1 ≫ 𝒰.pullbackHom f i.1)
-        ((𝒲 i.1).map i.2.2 ≫ 𝒰.pullbackHom g i.1)
-        ((𝒱 i.1).map i.2.1 ≫ (𝒰.pullbackCover f).map i.1)
-        ((𝒲 i.1).map i.2.2 ≫ (𝒰.pullbackCover g).map i.1)
-        (𝒰.map i.1) (by simp [pullback.condition]) (by simp [pullback.condition])
+    have := H (S.affineOpenCover.X i.1) (((𝒰.pullback₁ f).X i.1).affineOpenCover.X i.2.1)
+        (((𝒰.pullback₁ g).X i.1).affineOpenCover.X i.2.2)
+        ((𝒱 i.1).f i.2.1 ≫ 𝒰.pullbackHom f i.1)
+        ((𝒲 i.1).f i.2.2 ≫ 𝒰.pullbackHom g i.1)
+        ((𝒱 i.1).f i.2.1 ≫ (𝒰.pullback₁ f).f i.1)
+        ((𝒲 i.1).f i.2.2 ≫ (𝒰.pullback₁ g).f i.1)
+        (𝒰.f i.1) (by simp [pullback.condition]) (by simp [pullback.condition])
         inferInstance inferInstance inferInstance
     convert this using 7
     apply pullback.hom_ext <;>
-      simp [𝓤, ← pullback.condition, ← pullback.condition_assoc,
-        Scheme.Cover.pullbackHom]
+      simp [𝓤, Scheme.Cover.pullbackHom]
 
 end SurjectiveOnStalks
 

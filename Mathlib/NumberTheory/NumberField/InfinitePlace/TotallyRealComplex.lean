@@ -49,6 +49,14 @@ theorem nrComplexPlaces_eq_zero_iff :
     nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
 
+theorem IsTotallyReal.complexEmbedding_isReal [IsTotallyReal K] (φ : K →+* ℂ) :
+    ComplexEmbedding.IsReal φ :=
+  isReal_mk_iff.mp <| isReal (InfinitePlace.mk φ)
+
+@[simp]
+theorem IsTotallyReal.mult_eq [IsTotallyReal K] (w : InfinitePlace K) : mult w = 1 :=
+  mult_isReal ⟨w, isReal w⟩
+
 theorem IsTotallyReal.ofRingEquiv [IsTotallyReal F] (f : F ≃+* K) : IsTotallyReal K where
   isReal _ := (isReal_comap_iff f).mp <| IsTotallyReal.isReal _
 
@@ -57,6 +65,8 @@ theorem IsTotallyReal.of_algebra [IsTotallyReal K] [Algebra F K] : IsTotallyReal
   isReal w := by
     obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
     exact IsReal.comap _ (IsTotallyReal.isReal W)
+
+@[deprecated (since := "2025-05-19")] alias IsTotally.of_algebra := IsTotallyReal.of_algebra
 
 instance [IsTotallyReal K] (F : IntermediateField ℚ K) : IsTotallyReal F :=
   IsTotallyReal.of_algebra F K
@@ -98,6 +108,9 @@ def maximalRealSubfield : Subfield K where
   neg_mem' := by simp
   inv_mem' := by simp
 
+theorem mem_maximalRealSubfield_iff (x : K) :
+    x ∈ maximalRealSubfield K ↔ ∀ φ : K →+* ℂ, star (φ x) = φ x := .rfl
+
 instance isTotallyReal_maximalRealSubfield :
     IsTotallyReal (maximalRealSubfield K) where
   isReal w := by
@@ -113,7 +126,7 @@ theorem IsTotallyReal.le_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] 
   intro x hx φ
   rw [show φ x = (φ.comp E.subtype) ⟨x, hx⟩ by simp, RCLike.star_def, ← conjugate_coe_eq]
   refine RingHom.congr_fun ?_ _
-  exact ComplexEmbedding.isReal_iff.mp  <| isReal_mk_iff.mp <| isReal _
+  exact ComplexEmbedding.isReal_iff.mp <| isReal_mk_iff.mp <| isReal _
 
 theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} :
     IsTotallyReal E ↔ E ≤ maximalRealSubfield K :=
@@ -146,11 +159,19 @@ A number field `K` is totally complex if all of its infinite places are complex.
 @[mk_iff] class IsTotallyComplex (K : Type*) [Field K] [NumberField K] where
   isComplex : ∀ v : InfinitePlace K, v.IsComplex
 
-variable {K : Type*} [Field K] [NumberField K]
+variable {F : Type*} [Field F] {K : Type*} [Field K] [NumberField K] [Algebra F K]
 
 theorem nrRealPlaces_eq_zero_iff :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyComplex_iff]
+
+theorem IsTotallyComplex.complexEmbedding_not_isReal [IsTotallyComplex K] (φ : K →+* ℂ) :
+    ¬ ComplexEmbedding.IsReal φ :=
+  isReal_mk_iff.not.mp <| not_isReal_iff_isComplex.mpr <| isComplex (InfinitePlace.mk φ)
+
+@[simp]
+theorem IsTotallyComplex.mult_eq [IsTotallyComplex K] (w : InfinitePlace K) : mult w = 2 :=
+  mult_isComplex ⟨w, isComplex w⟩
 
 variable (K)
 

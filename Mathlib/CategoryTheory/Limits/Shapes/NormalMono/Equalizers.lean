@@ -26,8 +26,7 @@ namespace CategoryTheory.NormalMonoCategory
 variable [HasFiniteProducts C] [HasKernels C] [IsNormalMonoCategory C]
 
 /-- The pullback of two monomorphisms exists. -/
-@[irreducible, nolint defLemma] -- Porting note: changed to irreducible and a def
-def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
+lemma pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
     HasLimit (cospan a b) :=
   let ⟨P, f, haf, i⟩ := normalMonoOfMono a
   let ⟨Q, g, hbg, i'⟩ := normalMonoOfMono b
@@ -37,14 +36,12 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
         _ = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.fst := by rw [prod.lift_fst]
         _ = (0 : kernel (prod.lift f g) ⟶ P ⨯ Q) ≫ Limits.prod.fst := by rw [kernel.condition_assoc]
         _ = 0 := zero_comp
-
   let ⟨b', hb'⟩ :=
     KernelFork.IsLimit.lift' i' (kernel.ι (prod.lift f g)) <|
       calc kernel.ι (prod.lift f g) ≫ g
         _ = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.snd := by rw [prod.lift_snd]
         _ = (0 : kernel (prod.lift f g) ⟶ P ⨯ Q) ≫ Limits.prod.snd := by rw [kernel.condition_assoc]
         _ = 0 := zero_comp
-
   HasLimit.mk
     { cone :=
         PullbackCone.mk a' b' <| by
@@ -101,23 +98,19 @@ private abbrev P {X Y : C} (f g : X ⟶ Y) [Mono (prod.lift (𝟙 X) f)] [Mono (
   pullback (prod.lift (𝟙 X) f) (prod.lift (𝟙 X) g)
 
 /-- The equalizer of `f` and `g` exists. -/
--- Porting note: changed to irreducible def since irreducible_def was breaking things
-@[irreducible, nolint defLemma]
-def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
+lemma hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   have huv : (pullback.fst _ _ : P f g ⟶ X) = pullback.snd _ _ :=
     calc
       (pullback.fst _ _ : P f g ⟶ X) = pullback.fst _ _ ≫ 𝟙 _ := Eq.symm <| Category.comp_id _
       _ = pullback.fst _ _ ≫ prod.lift (𝟙 X) f ≫ Limits.prod.fst := by rw [prod.lift_fst]
       _ = pullback.snd _ _ ≫ prod.lift (𝟙 X) g ≫ Limits.prod.fst := by rw [pullback.condition_assoc]
       _ = pullback.snd _ _ := by rw [prod.lift_fst, Category.comp_id]
-
   have hvu : (pullback.fst _ _ : P f g ⟶ X) ≫ f = pullback.snd _ _ ≫ g :=
     calc
       (pullback.fst _ _ : P f g ⟶ X) ≫ f =
         pullback.fst _ _ ≫ prod.lift (𝟙 X) f ≫ Limits.prod.snd := by rw [prod.lift_snd]
       _ = pullback.snd _ _ ≫ prod.lift (𝟙 X) g ≫ Limits.prod.snd := by rw [pullback.condition_assoc]
       _ = pullback.snd _ _ ≫ g := by rw [prod.lift_snd]
-
   have huu : (pullback.fst _ _ : P f g ⟶ X) ≫ f = pullback.fst _ _ ≫ g := by rw [hvu, ← huv]
   HasLimit.mk
     { cone := Fork.ofι (pullback.fst _ _) huu
@@ -176,8 +169,7 @@ namespace CategoryTheory.NormalEpiCategory
 variable [HasFiniteCoproducts C] [HasCokernels C] [IsNormalEpiCategory C]
 
 /-- The pushout of two epimorphisms exists. -/
-@[irreducible, nolint defLemma] -- Porting note: made a def and re-added irreducible
-def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
+lemma pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
     HasColimit (span a b) :=
   let ⟨P, f, hfa, i⟩ := normalEpiOfEpi a
   let ⟨Q, g, hgb, i'⟩ := normalEpiOfEpi b
@@ -189,7 +181,6 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
           rw [coprod.inl_desc_assoc]
         _ = coprod.inl ≫ (0 : P ⨿ Q ⟶ cokernel (coprod.desc f g)) := by rw [cokernel.condition]
         _ = 0 := HasZeroMorphisms.comp_zero _ _
-
   let ⟨b', hb'⟩ :=
     CokernelCofork.IsColimit.desc' i' (cokernel.π (coprod.desc f g)) <|
       calc
@@ -198,7 +189,6 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
           rw [coprod.inr_desc_assoc]
         _ = coprod.inr ≫ (0 : P ⨿ Q ⟶ cokernel (coprod.desc f g)) := by rw [cokernel.condition]
         _ = 0 := HasZeroMorphisms.comp_zero _ _
-
   HasColimit.mk
     { cocone :=
         PushoutCocone.mk a' b' <| by
@@ -227,7 +217,7 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
               rw [CokernelCofork.π_ofπ] at ha'
               have reassoced {W : C} (h : cokernel (coprod.desc f g) ⟶ W) : a ≫ a' ≫ h
                 = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker ha']
-              simp [reassoced , PushoutCocone.condition s])
+              simp [reassoced, PushoutCocone.condition s])
           (fun s =>
             (cancel_epi b).1 <| by
               rw [CokernelCofork.π_ofπ] at hb'
@@ -258,8 +248,7 @@ private abbrev Q {X Y : C} (f g : X ⟶ Y) [Epi (coprod.desc (𝟙 Y) f)] [Epi (
   pushout (coprod.desc (𝟙 Y) f) (coprod.desc (𝟙 Y) g)
 
 /-- The coequalizer of `f` and `g` exists. -/
-@[irreducible, nolint defLemma] -- Porting note: changed to def and restored irreducible
-def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair f g) :=
+lemma hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair f g) :=
   have huv : (pushout.inl _ _ : Y ⟶ Q f g) = pushout.inr _ _ :=
     calc
       (pushout.inl _ _ : Y ⟶ Q f g) = 𝟙 _ ≫ pushout.inl _ _ := Eq.symm <| Category.id_comp _
@@ -267,7 +256,6 @@ def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair
       _ = (coprod.inl ≫ coprod.desc (𝟙 Y) g) ≫ pushout.inr _ _ := by
         simp only [Category.assoc, pushout.condition]
       _ = pushout.inr _ _ := by rw [coprod.inl_desc, Category.id_comp]
-
   have hvu : f ≫ (pushout.inl _ _ : Y ⟶ Q f g) = g ≫ pushout.inr _ _ :=
     calc
       f ≫ (pushout.inl _ _ : Y ⟶ Q f g) = (coprod.inr ≫ coprod.desc (𝟙 Y) f) ≫ pushout.inl _ _ := by
@@ -275,7 +263,6 @@ def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair
       _ = (coprod.inr ≫ coprod.desc (𝟙 Y) g) ≫ pushout.inr _ _ := by
         simp only [Category.assoc, pushout.condition]
       _ = g ≫ pushout.inr _ _ := by rw [coprod.inr_desc]
-
   have huu : f ≫ (pushout.inl _ _ : Y ⟶ Q f g) = g ≫ pushout.inl _ _ := by rw [hvu, huv]
   HasColimit.mk
     { cocone := Cofork.ofπ (pushout.inl _ _) huu

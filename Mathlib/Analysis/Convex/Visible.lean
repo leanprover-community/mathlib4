@@ -106,7 +106,7 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
       simp_rw [lineMap_apply_module, ← this, smul_add, smul_smul]
       match_scalars <;> field_simp <;> ring
     refine (convex_convexHull _ _).mem_of_wbtw this hε <| (convex_convexHull _ _).sum_mem ?_ ?_ ?_
-    · intros j hj
+    · intro j hj
       have := hw₀ j <| erase_subset _ _ hj
       positivity
     · rw [← sum_div, sum_erase_eq_sub hi, hw₁, div_self hwi.ne']
@@ -169,7 +169,7 @@ lemma IsClosed.exists_wbtw_isVisible (hs : IsClosed s) (hy : y ∈ s) (x : V) :
   replace hδ₀ : 0 < δ := hδ₀.lt_of_ne' <| by rintro hδ₀; simp [hδ₀] at h
   replace hε₁ : ε < 1 := hε₁.lt_of_ne <| by rintro rfl; simp at h
   rw [lineMap_lineMap_right] at hε
-  exact (csInf_le ht ⟨mul_nonneg hε₀ hδ₀.le, hε⟩).not_lt <| mul_lt_of_lt_one_left hδ₀ hε₁
+  exact (csInf_le ht ⟨mul_nonneg hε₀ hδ₀.le, hε⟩).not_gt <| mul_lt_of_lt_one_left hδ₀ hε₁
 
 -- TODO: Once we have cone hulls, the RHS can be strengthened to
 -- `coneHull ℝ x {y ∈ s | IsVisible ℝ (convexHull ℝ s) x y}`

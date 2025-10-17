@@ -6,6 +6,7 @@ Authors: David Kurniadi Angdinata
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
+import Mathlib.Tactic.Ring.NamePolyVars
 
 /-!
 # Weierstrass equations and the nonsingular condition in projective coordinates
@@ -95,6 +96,8 @@ universe r s u v
 
 variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
 
+name_poly_vars X, Y, Z over R
+
 namespace WeierstrassCurve
 
 /-! ## Projective coordinates -/
@@ -117,17 +120,17 @@ abbrev toAffine (W' : Projective R) : Affine R :=
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
   ext n; fin_cases n <;> rfl
 
-lemma fin3_def_ext (X Y Z : R) : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, Y, Z] z = Z :=
+lemma fin3_def_ext (a b c : R) : ![a, b, c] x = a ∧ ![a, b, c] y = b ∧ ![a, b, c] z = c :=
   ⟨rfl, rfl, rfl⟩
 
-lemma comp_fin3 (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
+lemma comp_fin3 (f : R → S) (a b c : R) : f ∘ ![a, b, c] = ![f a, f b, f c] :=
   (FinVec.map_eq ..).symm
 
 variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Projective R}
   {W : Projective F}
 
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u * P x, u * P y, u * P z] := by
-  simp [← List.ofFn_inj]
+  simp [← List.ofFn_inj, List.ofFn_succ]
 
 lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
     (u • P) x = u * P x ∧ (u • P) y = u * P y ∧ (u • P) z = u * P z :=
@@ -219,17 +222,17 @@ variable (W') in
 /-- The polynomial `W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)` associated to a
 Weierstrass curve `W` over a ring `R` in projective coordinates.
 
-This is represented as a term of type `MvPolynomial (Fin 3) R`, where `X 0`, `X 1`, and `X 2`
+This is represented as a term of type `MvPolynomial (Fin 3) R`, where `X`, `Y`, and `Z`
 represent `X`, `Y`, and `Z` respectively. -/
 noncomputable def polynomial : MvPolynomial (Fin 3) R :=
-  X 1 ^ 2 * X 2 + C W'.a₁ * X 0 * X 1 * X 2 + C W'.a₃ * X 1 * X 2 ^ 2
-    - (X 0 ^ 3 + C W'.a₂ * X 0 ^ 2 * X 2 + C W'.a₄ * X 0 * X 2 ^ 2 + C W'.a₆ * X 2 ^ 3)
+  Y ^ 2 * Z + C W'.a₁ * X * Y * Z + C W'.a₃ * Y * Z ^ 2
+    - (X ^ 3 + C W'.a₂ * X ^ 2 * Z + C W'.a₄ * X * Z ^ 2 + C W'.a₆ * Z ^ 3)
 
 lemma eval_polynomial (P : Fin 3 → R) : eval P W'.polynomial =
     P y ^ 2 * P z + W'.a₁ * P x * P y * P z + W'.a₃ * P y * P z ^ 2
       - (P x ^ 3 + W'.a₂ * P x ^ 2 * P z + W'.a₄ * P x * P z ^ 2 + W'.a₆ * P z ^ 3) := by
   rw [polynomial]
-  eval_simp
+  simp
 
 lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P W.polynomial / P z ^ 3 =
     W.toAffine.polynomial.evalEval (P x / P z) (P y / P z) := by
@@ -268,7 +271,7 @@ lemma equation_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) : W'.Equation P �
 lemma equation_zero : W'.Equation ![0, 1, 0] := by
   simp only [equation_of_Z_eq_zero, fin3_def_ext, zero_pow three_ne_zero]
 
-lemma equation_some (X Y : R) : W'.Equation ![X, Y, 1] ↔ W'.toAffine.Equation X Y := by
+lemma equation_some (a b : R) : W'.Equation ![a, b, 1] ↔ W'.toAffine.Equation a b := by
   simp only [equation_iff, Affine.equation_iff', fin3_def_ext, one_pow, mul_one]
 
 lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
@@ -277,7 +280,7 @@ lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 
 lemma X_eq_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equation P)
     (hPz : P z = 0) : P x = 0 :=
-  pow_eq_zero <| (equation_of_Z_eq_zero hPz).mp hP
+  eq_zero_of_pow_eq_zero <| (equation_of_Z_eq_zero hPz).mp hP
 
 /-! ## The nonsingular condition in projective coordinates -/
 
@@ -288,7 +291,7 @@ noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv x W'.polynomial
 
 lemma polynomialX_eq : W'.polynomialX =
-    C W'.a₁ * X 1 * X 2 - (C 3 * X 0 ^ 2 + C (2 * W'.a₂) * X 0 * X 2 + C W'.a₄ * X 2 ^ 2) := by
+    C W'.a₁ * Y * Z - (C 3 * X ^ 2 + C (2 * W'.a₂) * X * Z + C W'.a₄ * Z ^ 2) := by
   rw [polynomialX, polynomial]
   pderiv_simp
   ring1
@@ -296,7 +299,7 @@ lemma polynomialX_eq : W'.polynomialX =
 lemma eval_polynomialX (P : Fin 3 → R) : eval P W'.polynomialX =
     W'.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z + W'.a₄ * P z ^ 2) := by
   rw [polynomialX_eq]
-  eval_simp
+  simp
 
 lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     eval P W.polynomialX / P z ^ 2 = W.toAffine.polynomialX.evalEval (P x / P z) (P y / P z) := by
@@ -311,7 +314,7 @@ noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv y W'.polynomial
 
 lemma polynomialY_eq : W'.polynomialY =
-    C 2 * X 1 * X 2 + C W'.a₁ * X 0 * X 2 + C W'.a₃ * X 2 ^ 2 := by
+    C 2 * Y * Z + C W'.a₁ * X * Z + C W'.a₃ * Z ^ 2 := by
   rw [polynomialY, polynomial]
   pderiv_simp
   ring1
@@ -319,7 +322,7 @@ lemma polynomialY_eq : W'.polynomialY =
 lemma eval_polynomialY (P : Fin 3 → R) :
     eval P W'.polynomialY = 2 * P y * P z + W'.a₁ * P x * P z + W'.a₃ * P z ^ 2 := by
   rw [polynomialY_eq]
-  eval_simp
+  simp
 
 lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     eval P W.polynomialY / P z ^ 2 = W.toAffine.polynomialY.evalEval (P x / P z) (P y / P z) := by
@@ -334,8 +337,8 @@ noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
   pderiv z W'.polynomial
 
 lemma polynomialZ_eq : W'.polynomialZ =
-    X 1 ^ 2 + C W'.a₁ * X 0 * X 1 + C (2 * W'.a₃) * X 1 * X 2
-      - (C W'.a₂ * X 0 ^ 2 + C (2 * W'.a₄) * X 0 * X 2 + C (3 * W'.a₆) * X 2 ^ 2) := by
+    Y ^ 2 + C W'.a₁ * X * Y + C (2 * W'.a₃) * Y * Z
+      - (C W'.a₂ * X ^ 2 + C (2 * W'.a₄) * X * Z + C (3 * W'.a₆) * Z ^ 2) := by
   rw [polynomialZ, polynomial]
   pderiv_simp
   ring1
@@ -344,7 +347,7 @@ lemma eval_polynomialZ (P : Fin 3 → R) : eval P W'.polynomialZ =
     P y ^ 2 + W'.a₁ * P x * P y + 2 * W'.a₃ * P y * P z
       - (W'.a₂ * P x ^ 2 + 2 * W'.a₄ * P x * P z + 3 * W'.a₆ * P z ^ 2) := by
   rw [polynomialZ_eq]
-  eval_simp
+  simp
 
 /-- Euler's homogeneous function theorem in projective coordinates. -/
 theorem polynomial_relation (P : Fin 3 → R) : 3 * eval P W'.polynomial =
@@ -391,19 +394,19 @@ lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Nonsingular P 
 lemma nonsingular_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) :
     W'.Nonsingular P ↔
       W'.Equation P ∧ (3 * P x ^ 2 ≠ 0 ∨ P y ^ 2 + W'.a₁ * P x * P y - W'.a₂ * P x ^ 2 ≠ 0) := by
-  simp only [nonsingular_iff, hPz, add_zero, sub_zero, zero_sub, mul_zero,
+  simp only [nonsingular_iff, hPz, add_zero, zero_sub, mul_zero,
     zero_pow <| OfNat.ofNat_ne_zero _, neg_ne_zero, ne_self_iff_false, false_or]
 
 lemma nonsingular_zero [Nontrivial R] : W'.Nonsingular ![0, 1, 0] := by
   simp only [nonsingular_of_Z_eq_zero, equation_zero, true_and, fin3_def_ext, ← not_and_or]
   exact fun h => one_ne_zero <| by linear_combination (norm := ring1) h.right
 
-lemma nonsingular_some (X Y : R) : W'.Nonsingular ![X, Y, 1] ↔ W'.toAffine.Nonsingular X Y := by
+lemma nonsingular_some (a b : R) : W'.Nonsingular ![a, b, 1] ↔ W'.toAffine.Nonsingular a b := by
   simp_rw [nonsingular_iff, equation_some, fin3_def_ext, Affine.nonsingular_iff',
     Affine.equation_iff', and_congr_right_iff, ← not_and_or, not_iff_not, one_pow, mul_one,
     and_congr_right_iff, Iff.comm, iff_self_and]
-  intro h hX hY
-  linear_combination (norm := ring1) 3 * h - X * hX - Y * hY
+  intro h ha hb
+  linear_combination (norm := ring1) 3 * h - a * ha - b * hb
 
 lemma nonsingular_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z) (P y / P z) :=
@@ -464,9 +467,9 @@ lemma nonsingularLift_iff (P : Fin 3 → R) : W'.NonsingularLift ⟦P⟧ ↔ W'.
 lemma nonsingularLift_zero [Nontrivial R] : W'.NonsingularLift ⟦![0, 1, 0]⟧ :=
   nonsingular_zero
 
-lemma nonsingularLift_some (X Y : R) :
-    W'.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W'.toAffine.Nonsingular X Y :=
-  nonsingular_some X Y
+lemma nonsingularLift_some (a b : R) :
+    W'.NonsingularLift ⟦![a, b, 1]⟧ ↔ W'.toAffine.Nonsingular a b :=
+  nonsingular_some a b
 
 /-! ## Maps and base changes -/
 

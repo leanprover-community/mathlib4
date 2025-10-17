@@ -379,14 +379,14 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F whe
       mem_degreeLT.2 <| degree_interpolate_lt _ hvs⟩
   left_inv := by
     rintro ⟨f, hf⟩
-    simp only [Subtype.mk_eq_mk, Subtype.coe_mk, dite_eq_ite]
+    simp only [Subtype.mk_eq_mk, dite_eq_ite]
     rw [mem_degreeLT] at hf
     conv => rhs; rw [eq_interpolate hvs hf]
     exact interpolate_eq_of_values_eq_on _ _ fun _ hi => if_pos hi
   right_inv := by
     intro f
     ext ⟨i, hi⟩
-    simp only [Subtype.coe_mk, eval_interpolate_at_node _ hvs hi]
+    simp only [eval_interpolate_at_node _ hvs hi]
     exact dif_pos hi
 
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
@@ -405,7 +405,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
       WithBot.add_lt_add_iff_right (@WithBot.coe_ne_bot _ (#s - 1))]
     convert degree_interpolate_lt _
         (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hst hi, sdiff_subset⟩)))
-    rw [card_insert_of_notMem (notMem_sdiff_of_mem_right hi), card_sdiff hst, add_comm]
+    rw [card_insert_of_notMem (notMem_sdiff_of_mem_right hi), card_sdiff_of_subset hst, add_comm]
   · simp_rw [eval_finset_sum, eval_mul]
     by_cases hi' : i ∈ s
     · rw [← add_sum_erase _ _ hi', eval_basis_self (hvt.mono hst) hi',
@@ -523,17 +523,17 @@ theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈
 
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
 @[simp] theorem nodal_subgroup_eq_X_pow_card_sub_one [IsDomain R]
-  (G : Subgroup Rˣ) [Fintype G] :
-  nodal (G : Set Rˣ).toFinset ((↑) : Rˣ → R) = X ^ (Fintype.card G) - 1 := by
+    (G : Subgroup Rˣ) [Fintype G] :
+    nodal (G : Set Rˣ).toFinset ((↑) : Rˣ → R) = X ^ (Fintype.card G) - 1 := by
   have h : degree (1 : R[X]) < degree ((X : R[X]) ^ Fintype.card G) := by simp [Fintype.card_pos]
   apply eq_of_degree_le_of_eval_index_eq (v := ((↑) : Rˣ → R)) (G : Set Rˣ).toFinset
-  · exact Set.injOn_of_injective Units.ext
+  · exact Units.val_injective.injOn
   · simp
   · rw [degree_sub_eq_left_of_degree_lt h, degree_nodal, Set.toFinset_card, degree_pow, degree_X,
       nsmul_eq_mul, mul_one, Nat.cast_inj]
     exact rfl
   · rw [nodal_monic, leadingCoeff_sub_of_degree_lt h, monic_X_pow]
-  · intros i hi
+  · intro i hi
     rw [eval_nodal_at_node hi]
     replace hi : i ∈ G := by simpa using hi
     obtain ⟨g, rfl⟩ : ∃ g : G, g.val = i := ⟨⟨i, hi⟩, rfl⟩
@@ -561,9 +561,12 @@ theorem nodal_erase_eq_nodal_div (hi : i ∈ s) :
   rw [nodal_eq_mul_nodal_erase hi, mul_div_cancel_left₀]
   exact X_sub_C_ne_zero _
 
-theorem nodalWeight_eq_eval_nodal_derative (hi : i ∈ s) :
+theorem nodalWeight_eq_eval_derivative_nodal (hi : i ∈ s) :
     nodalWeight s v i = (eval (v i) (Polynomial.derivative (nodal s v)))⁻¹ := by
   rw [eval_nodal_derivative_eval_node_eq hi, nodalWeight_eq_eval_nodal_erase_inv]
+
+@[deprecated (since := "2025-07-08")]
+alias nodalWeight_eq_eval_nodal_derative := nodalWeight_eq_eval_derivative_nodal
 
 theorem nodalWeight_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : nodalWeight s v i ≠ 0 := by
   rw [nodalWeight, prod_ne_zero_iff]

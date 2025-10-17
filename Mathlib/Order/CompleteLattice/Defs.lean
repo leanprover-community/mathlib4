@@ -157,16 +157,7 @@ instance {α : Type*} [CompleteSemilatticeSup α] : CompleteSemilatticeInf αᵒ
 
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
-  CompleteSemilatticeInf α, Top α, Bot α where
-  /-- Any element is less than the top one. -/
-  protected le_top : ∀ x : α, x ≤ ⊤
-  /-- Any element is more than the bottom one. -/
-  protected bot_le : ∀ x : α, ⊥ ≤ x
-
--- see Note [lower instance priority]
-instance (priority := 100) CompleteLattice.toBoundedOrder [CompleteLattice α] :
-    BoundedOrder α :=
-  { ‹CompleteLattice α› with }
+    CompleteSemilatticeInf α, BoundedOrder α
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
@@ -369,6 +360,12 @@ theorem lt_iSup_iff {f : ι → α} : a < iSup f ↔ ∃ i, a < f i :=
 
 theorem iInf_lt_iff {f : ι → α} : iInf f < a ↔ ∃ i, f i < a :=
   sInf_lt_iff.trans exists_range_iff
+
+theorem lt_biSup_iff {s : Set β} {f : β → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
+  simp [lt_iSup_iff]
+
+theorem biInf_lt_iff {s : Set β} {f : β → α} : ⨅ i ∈ s, f i < a ↔ ∃ i ∈ s, f i < a := by
+  simp [iInf_lt_iff]
 
 end CompleteLinearOrder
 

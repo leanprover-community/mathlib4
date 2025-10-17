@@ -48,7 +48,7 @@ structure Filtration {Ω : Type*} (ι : Type*) [Preorder ι] (m : MeasurableSpac
 
 attribute [coe] Filtration.seq
 
-variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
+variable {Ω ι : Type*} {m : MeasurableSpace Ω}
 
 instance [Preorder ι] : CoeFun (Filtration ι m) fun _ => ι → MeasurableSpace Ω :=
   ⟨fun f => f.seq⟩
@@ -138,7 +138,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by
         by_cases h_nonempty : Set.Nonempty s
-        swap; · simp only [h_nonempty, Set.image_nonempty, if_false, le_refl]
+        swap; · simp only [h_nonempty, if_false, le_refl]
         simp only [h_nonempty, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
         refine fun f hf_mem => le_trans ?_ (f.mono hij)
@@ -218,10 +218,6 @@ theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Meas
     UniformIntegrable (fun i => μ[g|f i]) 1 μ :=
   hg.uniformIntegrable_condExp f.le
 
-@[deprecated (since := "2025-01-21")]
-alias Integrable.uniformIntegrable_condexp_filtration :=
-  Integrable.uniformIntegrable_condExp_filtration
-
 theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [CompleteSpace E] (f : Ω → E) {μ : Measure Ω} (ℱ : Filtration ι m)
     {i j : ι} (hij : i ≤ j) [SigmaFinite (μ.trim (ℱ.le j))] :
@@ -250,14 +246,15 @@ end OfSet
 
 namespace Filtration
 
-variable [TopologicalSpace β] [MetrizableSpace β] [mβ : MeasurableSpace β] [BorelSpace β]
+variable {β : ι → Type*} [∀ i, TopologicalSpace (β i)] [∀ i, MetrizableSpace (β i)]
+  [mβ : ∀ i, MeasurableSpace (β i)] [∀ i, BorelSpace (β i)]
   [Preorder ι]
 
 /-- Given a sequence of functions, the natural filtration is the smallest sequence
-of σ-algebras such that that sequence of functions is measurable with respect to
+of σ-algebras such that the sequence of functions is measurable with respect to
 the filtration. -/
-def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m where
-  seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
+def natural (u : (i : ι) → Ω → β i) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m where
+  seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) (mβ j)
   mono' _ _ hij := biSup_mono fun _ => ge_trans hij
   le' i := by
     refine iSup₂_le ?_
@@ -268,9 +265,9 @@ section
 
 open MeasurableSpace
 
-theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι → Set Ω}
-    (hsm : ∀ i, MeasurableSet[m] (s i)) :
-    filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β)) fun i =>
+theorem filtrationOfSet_eq_natural [∀ i, MulZeroOneClass (β i)] [∀ i, Nontrivial (β i)]
+    {s : ι → Set Ω} (hsm : ∀ i, MeasurableSet[m] (s i)) :
+    filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β i)) fun i =>
       stronglyMeasurable_one.indicator (hsm i) := by
   simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
@@ -280,15 +277,15 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     rw [comap_eq_generateFrom]
     refine measurableSet_generateFrom ⟨{1}, measurableSet_singleton 1, ?_⟩
     ext x
-    simp [Set.indicator_const_preimage_eq_union]
+    simp
   · rintro t ⟨n, ht⟩
     suffices MeasurableSpace.generateFrom {t | n ≤ i ∧
-      MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β)) mβ] t} ≤
+      MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β n)) (mβ n)] t} ≤
         MeasurableSpace.generateFrom {t | ∃ (j : ι), j ≤ i ∧ s j = t} by
       exact this _ ht
     refine generateFrom_le ?_
     rintro t ⟨hn, u, _, hu'⟩
-    obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β)
+    obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β n)
     on_goal 4 => rw [Set.mem_singleton_iff] at heq
     all_goals rw [heq] at hu'; rw [← hu']
     exacts [MeasurableSet.univ, measurableSet_generateFrom ⟨n, hn, rfl⟩,
@@ -334,9 +331,6 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
     simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
   · exact MemLp.zero
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp_limitProcess_of_eLpNorm_bdd := memLp_limitProcess_of_eLpNorm_bdd
 
 end Limit
 
@@ -387,13 +381,7 @@ def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
   le' s := s.measurable_restrict.comap_le
 
 lemma piFinset_eq_comap_restrict (s : Finset ι) :
-    piFinset (X := X) s = pi.comap s.toSet.restrict := by
-  apply le_antisymm
-  · simp_rw [piFinset, ← Set.piCongrLeft_comp_restrict, ← MeasurableEquiv.coe_piCongrLeft,
-      ← comap_comp]
-    exact MeasurableSpace.comap_mono <| (MeasurableEquiv.measurable _).comap_le
-  · rw [← piCongrLeft_comp_restrict, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
-    exact MeasurableSpace.comap_mono <| (MeasurableEquiv.measurable _).comap_le
+    piFinset (X := X) s = pi.comap s.toSet.restrict := rfl
 
 end piFinset
 

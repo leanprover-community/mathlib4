@@ -118,12 +118,11 @@ noncomputable def mkHomFromDouble : double f hi₀₁ ⟶ K where
       eqToHom (by rw [hk₁]) ≫ (doubleXIso₁ f hi₀₁ h).hom ≫ φ₁ ≫ eqToHom (by rw [hk₁])
     else 0
   comm' k₀ k₁ hk := by
-    dsimp
     by_cases h₀ : k₀ = i₀
     · subst h₀
       rw [dif_pos rfl]
       obtain rfl := c.next_eq hk hi₀₁
-      simp [dif_neg h.symm, dif_pos rfl, double_d f hi₀₁ h, comm]
+      simp [dif_neg h.symm, double_d f hi₀₁ h, comm]
     · rw [dif_neg h₀]
       by_cases h₁ : k₀ = i₁
       · subst h₁
@@ -178,7 +177,7 @@ noncomputable def evalCompCoyonedaCorepresentableBySingle (i : ι) [DecidableEq 
   homEquiv {K} :=
     { toFun g := (singleObjXSelf c i X).inv ≫ g.f i
       invFun f := mkHomFromSingle f (fun j hj ↦ (hi j hj).elim)
-      left_inv g := by aesop_cat
+      left_inv g := by cat_disch
       right_inv f := by simp }
   homEquiv_comp := by simp
 

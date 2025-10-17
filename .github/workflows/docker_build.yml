@@ -2,13 +2,14 @@ name: docker
 on:
   schedule:
     - cron: '0 0 * * *'   # Runs at 00:00 UTC every day
-  workflow_dispatch:  
+  workflow_dispatch:
 env:
   # Possibly change this to `hub.docker.com` in the future
   REGISTRY: ghcr.io
   REPO_NAME: ${{ github.repository }}
 jobs:
   build-and-push-docker-images:
+    if: github.repository == 'leanprover-community/mathlib4'
     strategy:
       fail-fast: false
       matrix:
@@ -50,7 +51,7 @@ jobs:
             org.opencontainers.image.licenses=Apache-2.0
       - name: Build and push docker image
         id: push
-        uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4 # v6.15.0
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           file: .docker/${{ matrix.image }}/Dockerfile
@@ -58,7 +59,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        uses: actions/attest-build-provenance@db473fddc028af60658334401dc6fa3ffd8669fd # v2.3.0
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.REPO_NAME }}/${{ matrix.image }}
           subject-digest: ${{ steps.push.outputs.digest }}

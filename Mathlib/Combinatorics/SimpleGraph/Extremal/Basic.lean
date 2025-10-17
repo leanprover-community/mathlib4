@@ -3,9 +3,7 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Algebra.Order.Floor.Defs
 import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Combinatorics.SimpleGraph.Copy
 
 /-!
@@ -24,6 +22,7 @@ This file introduces basic definitions for extremal graph theory, including extr
   If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
 -/
 
+assert_not_exists Field
 
 open Finset Fintype
 
@@ -61,7 +60,7 @@ end IsExtremal
 section ExtremalNumber
 
 open Classical in
-/-- The extremal number of a natural number `n` and a simple graph `H` is the the maximum number of
+/-- The extremal number of a natural number `n` and a simple graph `H` is the maximum number of
 edges in a `H`-free simple graph on `n` vertices.
 
 If `H` is contained in all simple graphs on `n` vertices, then this is `0`. -/
@@ -99,7 +98,7 @@ theorem card_edgeFinset_le_extremalNumber (h : H.Free G) :
 /-- If `G` has more than `extremalNumber (card V) H` edges, then `G` contains a copy of `H`. -/
 theorem IsContained.of_extremalNumber_lt_card_edgeFinset
     (h : extremalNumber (card V) H < #G.edgeFinset) : H ⊑ G := by
-  contrapose! h
+  contrapose h; push_neg
   exact card_edgeFinset_le_extremalNumber h
 
 /-- `extremalNumber (card V) H` is at most `x` if and only if every `H`-free simple graph `G` has
@@ -107,7 +106,7 @@ at most `x` edges. -/
 theorem extremalNumber_le_iff (H : SimpleGraph W) (m : ℕ) :
     extremalNumber (card V) H ≤ m ↔
       ∀ ⦃G : SimpleGraph V⦄ [DecidableRel G.Adj], H.Free G → #G.edgeFinset ≤ m := by
-  simp_rw [extremalNumber_of_fintypeCard_eq rfl, Finset.sup_le_iff, mem_filter, mem_univ, true_and]
+  simp_rw [extremalNumber_of_fintypeCard_eq rfl, Finset.sup_le_iff, mem_filter_univ]
   exact ⟨fun h _ _ h' ↦ by convert h _ h', fun h _ h' ↦ by convert h h'⟩
 
 /-- `extremalNumber (card V) H` is greater than `x` if and only if there exists a `H`-free simple
@@ -115,7 +114,7 @@ graph `G` with more than `x` edges. -/
 theorem lt_extremalNumber_iff (H : SimpleGraph W) (m : ℕ) :
     m < extremalNumber (card V) H ↔
       ∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, H.Free G ∧ m < #G.edgeFinset := by
-  simp_rw [extremalNumber_of_fintypeCard_eq rfl, Finset.lt_sup_iff, mem_filter, mem_univ, true_and]
+  simp_rw [extremalNumber_of_fintypeCard_eq rfl, Finset.lt_sup_iff, mem_filter_univ]
   exact ⟨fun ⟨_, h, h'⟩ ↦ ⟨_, _, h, h'⟩, fun ⟨_, _, h, h'⟩ ↦ ⟨_, h, by convert h'⟩⟩
 
 variable {R : Type*} [Semiring R] [LinearOrder R] [FloorSemiring R]
@@ -140,7 +139,6 @@ theorem IsContained.extremalNumber_le {W' : Type*} {H' : SimpleGraph W'} (h : H'
   rw [← Fintype.card_fin n, extremalNumber_le_iff]
   intro _ _ h'
   contrapose! h'
-  rw [not_not]
   exact h.trans (IsContained.of_extremalNumber_lt_card_edgeFinset h')
 
 /-- If `H₁ ≃g H₂`, then `extremalNumber n H₁` equals `extremalNumber n H₂`. -/
@@ -157,22 +155,31 @@ theorem extremalNumber_congr {n₁ n₂ : ℕ} {W₁ W₂ : Type*} {H₁ : Simpl
     intro G _ h
     apply card_edgeFinset_le_extremalNumber
     contrapose! h
-    rw [not_free] at h ⊢
     exact h.trans' ⟨e.toCopy⟩
 
 /-- If `H₁ ≃g H₂`, then `extremalNumber n H₁` equals `extremalNumber n H₂`. -/
 theorem extremalNumber_congr_right {W₁ W₂ : Type*} {H₁ : SimpleGraph W₁} {H₂ : SimpleGraph W₂}
-  (e : H₁ ≃g H₂) : extremalNumber n H₁ = extremalNumber n H₂ := extremalNumber_congr rfl e
+    (e : H₁ ≃g H₂) : extremalNumber n H₁ = extremalNumber n H₂ := extremalNumber_congr rfl e
 
 /-- `H`-free extremal graphs are `H`-free simple graphs having `extremalNumber (card V) H` many
 edges. -/
 theorem isExtremal_free_iff :
     G.IsExtremal H.Free ↔ H.Free G ∧ #G.edgeFinset = extremalNumber (card V) H := by
   rw [IsExtremal, and_congr_right_iff, ← extremalNumber_le_iff]
-  exact fun h ↦ ⟨eq_of_le_of_le (card_edgeFinset_le_extremalNumber h), ge_of_eq⟩
+  exact fun h ↦ ⟨eq_of_le_of_ge (card_edgeFinset_le_extremalNumber h), ge_of_eq⟩
 
 lemma card_edgeFinset_of_isExtremal_free (h : G.IsExtremal H.Free) :
     #G.edgeFinset = extremalNumber (card V) H := (isExtremal_free_iff.mp h).2
+
+/-- If `G` is `H.Free`, then `G.deleteIncidenceSet v` is also `H.Free` and has at most
+`extremalNumber (card V-1) H` many edges. -/
+theorem card_edgeFinset_deleteIncidenceSet_le_extremalNumber
+    [DecidableEq V] (h : H.Free G) (v : V) :
+    #(G.deleteIncidenceSet v).edgeFinset ≤ extremalNumber (card V - 1) H := by
+  rw [← card_edgeFinset_induce_compl_singleton, ← @card_unique ({v} : Set V), ← card_compl_set]
+  apply card_edgeFinset_le_extremalNumber
+  contrapose! h
+  exact h.trans ⟨Copy.induce G {v}ᶜ⟩
 
 end ExtremalNumber
 

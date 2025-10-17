@@ -48,7 +48,7 @@ could arise from this part and also flag that the file should contain a module d
 the `import` statements.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -303,10 +303,10 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       inMathlibRef.set (some val)
       return val
   -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
-  -- It is however active in the test file `MathlibTest.Header` for the linter itself.
+  -- It is however active in the test files for the linter itself.
   unless inMathlib? ||
     mainModule == `MathlibTest.Header || mainModule == `MathlibTest.DirectoryDependencyLinter.Test do return
-  unless Linter.getLinterValue linter.style.header (← getOptions) do
+  unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
@@ -327,7 +327,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- In that case, we parse until the end of the imports and add an extra `section` afterwards,
     -- so we trigger a "no module doc-string" warning.
     let fil ← getFileName
-    let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
+    let (stx, _) ← Parser.parseHeader { inputString := fm.source, fileName := fil, fileMap := fm }
     parseUpToHere (stx.raw.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
   -- Report on broad or duplicate imports.

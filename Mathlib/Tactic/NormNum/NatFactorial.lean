@@ -17,7 +17,7 @@ conquer strategy that improves performance and avoids exceeding the recursion de
 
 namespace Mathlib.Meta.NormNum
 
-open Nat Qq Lean Elab.Tactic Qq Meta
+open Nat Qq Lean Elab.Tactic Meta
 
 lemma asc_factorial_aux (n l m a b : ℕ) (h₁ : n.ascFactorial l = a)
     (h₂ : (n + l).ascFactorial m = b) : n.ascFactorial (l + m) = a * b := by

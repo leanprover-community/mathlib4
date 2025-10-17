@@ -153,7 +153,7 @@ instance haveLebesgueDecompositionSMul' (μ ν : Measure α) [HaveLebesgueDecomp
   lebesgue_decomposition := by
     obtain ⟨hmeas, hsing, hadd⟩ := haveLebesgueDecomposition_spec μ ν
     refine ⟨⟨r • μ.singularPart ν, r • μ.rnDeriv ν⟩, hmeas.const_smul _, hsing.smul _, ?_⟩
-    simp only [ENNReal.smul_def]
+    simp only
     rw [withDensity_smul _ hmeas, ← smul_add, ← hadd]
 
 instance haveLebesgueDecompositionSMul (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
@@ -661,7 +661,7 @@ theorem rnDeriv_smul_right_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
     simp [hr, hr_ne_top]
   have : (r.toNNReal)⁻¹ • rnDeriv ν μ = r⁻¹ • rnDeriv ν μ := by
     ext x
-    simp only [Pi.smul_apply, ENNReal.smul_def, ne_eq, smul_eq_mul]
+    simp only [Pi.smul_apply, ENNReal.smul_def, smul_eq_mul]
     rw [ENNReal.coe_inv, ENNReal.coe_toNNReal hr_ne_top]
     rw [ne_eq, ENNReal.toNNReal_eq_zero_iff]
     simp [hr, hr_ne_top]
@@ -731,7 +731,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       rcases this with ⟨n, hn⟩
       have hb₁ : (0 : ℝ) < (νA : ℝ)⁻¹ := by rw [_root_.inv_pos]; exact hb
       have h' : 1 / (↑n + 1) * νA < c := by
-        rw [← NNReal.coe_lt_coe, ← mul_lt_mul_right hb₁, NNReal.coe_mul, mul_assoc, ←
+        rw [← NNReal.coe_lt_coe, ← mul_lt_mul_iff_left₀ hb₁, NNReal.coe_mul, mul_assoc, ←
           NNReal.coe_inv, ← NNReal.coe_mul, mul_inv_cancel₀, ← NNReal.coe_mul, mul_one,
           NNReal.coe_inv]
         · exact hn
@@ -740,12 +740,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       rw [← ENNReal.coe_le_coe, ENNReal.coe_mul]
       exact hA₃ n
     · rw [not_lt, le_zero_iff] at hb
-      specialize hA₃ 0
-      simp? [hb] at hA₃ says
-        simp only [CharP.cast_eq_zero, zero_add, ne_eq, one_ne_zero, not_false_eq_true, div_self,
-          ENNReal.coe_one, hb, ENNReal.coe_zero, mul_zero, nonpos_iff_eq_zero,
-          ENNReal.coe_eq_zero] at hA₃
-      assumption
+      simpa [hb] using hA₃ 0
   -- since `μ` and `ν` are not mutually singular, `μ A = 0` implies `ν Aᶜ > 0`
   rw [MutuallySingular] at h; push_neg at h
   have := h _ hAmeas hμ
@@ -976,7 +971,7 @@ nonrec instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite
     _ = .sum fun n ↦ .restrict μ (s n) := by
       simp_rw [ξ, f, withDensity_indicator (hsm _), singularPart_add_rnDeriv]
     _ = μ := sum_restrict_disjointed_spanningSets ..
-  exact ⟨⟨(.sum ξ, ∑' n, f n), by measurability, hξ, hadd.symm⟩⟩
+  exact ⟨⟨(.sum ξ, ∑' n, f n), by fun_prop, hξ, hadd.symm⟩⟩
 
 section rnDeriv
 

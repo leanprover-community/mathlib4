@@ -68,7 +68,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     intro c x hc u hx
     dsimp only [f]
     rw [mul_rpow (exp_pos _).le ((rpow_nonneg hx.le) _), ← exp_mul, ← rpow_mul hx.le]
-    congr 2 <;> field_simp [hc.ne']; ring
+    congr 2 <;> field_simp
   -- show `f c u` is in `ℒp` for `p = 1/c`:
   have f_mem_Lp :
     ∀ {c u : ℝ} (hc : 0 < c) (hu : 0 < u),
@@ -158,7 +158,7 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
   | succ n hn =>
     have : x + n.succ = x + n + 1 := by push_cast; ring
     rw [this, hf_feq, hn]
-    · rw [Finset.range_succ, Finset.sum_insert Finset.notMem_range_self]
+    · rw [Finset.range_add_one, Finset.sum_insert Finset.notMem_range_self]
       abel
     · linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))]
 
@@ -206,7 +206,7 @@ theorem le_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     f x ≤ f 1 + x * log (n + 1) - x * log n + logGammaSeq x n := by
   rw [logGammaSeq, ← add_sub_assoc, le_sub_iff_add_le, ← f_add_nat_eq (@hf_feq) hx, add_comm x]
   refine (f_add_nat_le hf_conv (@hf_feq) (Nat.add_one_ne_zero n) hx hx').trans (le_of_eq ?_)
-  rw [f_nat_eq @hf_feq (by omega : n + 1 ≠ 0), Nat.add_sub_cancel, Nat.cast_add_one]
+  rw [f_nat_eq @hf_feq (by cutsat : n + 1 ≠ 0), Nat.add_sub_cancel, Nat.cast_add_one]
   ring
 
 theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
@@ -218,7 +218,7 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
   · rw [f_nat_eq @hf_feq, Nat.add_sub_cancel, Nat.cast_add_one, add_sub_cancel_right]
     · ring
     · exact Nat.succ_ne_zero _
-  · omega
+  · cutsat
 
 theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) :
@@ -232,7 +232,7 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     rw [sub_le_iff_le_add', sub_le_iff_le_add']
     convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
     ring
-  · show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
+  · change ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
     filter_upwards [eventually_ne_atTop 0] with n hn using
       le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv hf_feq hx hn)
 
@@ -241,16 +241,18 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) := by
   suffices ∀ m : ℕ, ↑m < x → x ≤ m + 1 → Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) by
     refine this ⌈x - 1⌉₊ ?_ ?_
-    · rcases lt_or_le x 1 with ⟨⟩
+    · rcases lt_or_ge x 1 with ⟨⟩
       · rwa [Nat.ceil_eq_zero.mpr (by linarith : x - 1 ≤ 0), Nat.cast_zero]
       · convert Nat.ceil_lt_add_one (by linarith : 0 ≤ x - 1)
         abel
     · rw [← sub_le_iff_le_add]; exact Nat.le_ceil _
   intro m
-  induction' m with m hm generalizing x
-  · rw [Nat.cast_zero, zero_add]
+  induction m generalizing x with
+  | zero =>
+    rw [Nat.cast_zero, zero_add]
     exact fun _ hx' => tendsto_logGammaSeq_of_le_one hf_conv (@hf_feq) hx hx'
-  · intro hy hy'
+  | succ m hm =>
+    intro hy hy'
     rw [Nat.cast_succ, ← sub_le_iff_le_add] at hy'
     rw [Nat.cast_succ, ← lt_sub_iff_add_lt] at hy
     specialize hm ((Nat.cast_nonneg _).trans_lt hy) hy hy'
@@ -324,7 +326,7 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   -- This can also be proved using the closed-form evaluation of `Gamma (1 / 2)` in
   -- `Mathlib/Analysis/SpecialFunctions/Gaussian.lean`, but we give a self-contained proof using
   -- log-convexity to avoid unnecessary imports.
-  have A : (0 : ℝ) < 3 / 2 := by norm_num
+  have A : (0 : ℝ) < 3 / 2 := by simp
   have :=
     BohrMollerup.f_add_nat_le convexOn_log_Gamma (fun {y} hy => ?_) two_ne_zero one_half_pos
       (by norm_num : 1 / 2 ≤ (1 : ℝ))
@@ -344,7 +346,7 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
 
 theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   convert
-    convexOn_Gamma.strict_mono_of_lt (by norm_num : (0 : ℝ) < 3 / 2)
+    convexOn_Gamma.strict_mono_of_lt (by simp : (0 : ℝ) < 3 / 2)
       (by norm_num : (3 / 2 : ℝ) < 2) (Gamma_two.symm ▸ Gamma_three_div_two_lt_one)
   symm
   rw [inter_eq_right]
@@ -429,8 +431,7 @@ theorem Gamma_mul_Gamma_add_half_of_pos {s : ℝ} (hs : 0 < s) :
   rw [← doublingGamma_eq_Gamma (mul_pos two_pos hs), doublingGamma,
     mul_div_cancel_left₀ _ (two_ne_zero' ℝ), (by abel : 1 - 2 * s = -(2 * s - 1)),
     rpow_neg zero_le_two]
-  field_simp [(sqrt_pos_of_pos pi_pos).ne', (rpow_pos_of_pos two_pos (2 * s - 1)).ne']
-  ring
+  field_simp
 
 end Doubling
 

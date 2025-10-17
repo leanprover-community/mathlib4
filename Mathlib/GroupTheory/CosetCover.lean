@@ -258,7 +258,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
       Finset.sum_sigma, Finset.sum_coe_sort_eq_attach]
     refine Finset.sum_congr rfl fun i _ => ?_
     by_cases hfi : (H i).FiniteIndex
-    · rw [← relindex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
+    · rw [← relIndex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
         mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr hfi.index_ne_zero)]
       simpa [K, hfi] using (ht i.1 i.2 hfi).1.card_left
     · rw [of_not_not (FiniteIndex.mk.mt hfi), Nat.cast_zero, inv_zero, zero_mul]
@@ -270,7 +270,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     refine Set.iUnion_congr fun hi => ?_
     by_cases hfi : (H i).FiniteIndex <;>
       simp [Set.smul_set_iUnion, Set.iUnion_subtype, ← leftCoset_assoc,
-        f, K, hHD, ← (ht i hi _).2, hi, hfi, hkfi]
+        f, K, hHD, ← (ht i hi _).2, hfi]
   · rw [hdensity]
     refine le_of_mul_le_mul_right ?_ (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hD.index_ne_zero))
     rw [one_mul, mul_assoc, inv_mul_cancel₀ (Nat.cast_ne_zero.mpr hD.index_ne_zero), mul_one,
@@ -333,7 +333,7 @@ of these subgroups has index not exceeding the number of cosets. -/
 theorem exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
   by_contra! h
-  apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_lt
+  apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_gt
   cases s.eq_empty_or_nonempty with
   | inl hs => simp only [hs, Finset.sum_empty, zero_lt_one]
   | inr hs =>
@@ -388,11 +388,6 @@ theorem Subspace.top_mem_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) 
     ⊤ ∈ s := by
   contrapose! hcovers
   exact Subspace.biUnion_ne_univ_of_top_notMem hcovers
-
-@[deprecated (since := "2024-10-29")]
-alias Subspace.biUnion_ne_univ_of_ne_top := Subspace.biUnion_ne_univ_of_top_notMem
-@[deprecated (since := "2024-10-29")]
-alias Subspace.exists_eq_top_of_biUnion_eq_univ := Subspace.top_mem_of_biUnion_eq_univ
 
 theorem Subspace.exists_eq_top_of_iUnion_eq_univ {ι} [Finite ι] {p : ι → Subspace k E}
     (hcovers : ⋃ i, (p i : Set E) = Set.univ) : ∃ i, p i = ⊤ := by

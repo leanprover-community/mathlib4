@@ -37,7 +37,7 @@ variable (f : R →+* S) (x : S)
 theorem eval₂_at_zero : p.eval₂ f 0 = f (coeff p 0) := by
   simp +contextual only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero,
     mul_one, sum, Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff,
-    RingHom.map_zero, imp_true_iff, eq_self_iff_true]
+    RingHom.map_zero, imp_true_iff]
 
 @[simp]
 theorem eval₂_C_X : eval₂ C X p = p :=
@@ -71,10 +71,7 @@ variable (f : R →+* S)
 @[simp]
 theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   rw [map, eval₂_def, coeff_sum, sum]
-  conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
-  refine Finset.sum_congr rfl fun x _hx => ?_
-  simp only [RingHom.coe_comp, Function.comp, coeff_C_mul_X_pow]
-  split_ifs <;> simp [f.map_zero]
+  simp_all
 
 lemma coeff_map_eq_comp (p : R[X]) (f : R →+* S) : (p.map f).coeff = f ∘ p.coeff := by
   ext n; exact coeff_map ..

@@ -57,7 +57,7 @@ lemma meas_le_of_le_of_forall_le_meas_thickening_add {ε₁ ε₂ : ℝ≥0∞} 
     (h_le : ε₁ ≤ ε₂) {B : Set Ω} (hε₁ : μ B ≤ ν (thickening ε₁.toReal B) + ε₁) :
     μ B ≤ ν (thickening ε₂.toReal B) + ε₂ := by
   by_cases ε_top : ε₂ = ∞
-  · simp only [ne_eq, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ε_top, toReal_top,
+  · simp only [ε_top, toReal_top,
                 add_top, le_top]
   apply hε₁.trans (add_le_add ?_ h_le)
   exact measure_mono (μ := ν) (thickening_mono (toReal_mono ε_top h_le) B)
@@ -86,7 +86,7 @@ lemma levyProkhorovEDist_le_of_forall_add_pos_le (μ ν : Measure Ω) (δ : ℝ�
   · simp only [ε_top, add_top, le_top]
   apply sInf_le
   intro B B_mble
-  simpa only [add_assoc] using h ε B (coe_pos.mpr hε) coe_lt_top B_mble
+  simpa only [add_assoc] using h ε B (by positivity) coe_lt_top B_mble
 
 /-- A simple general sufficient condition for bounding `levyProkhorovEDist` from above. -/
 lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
@@ -94,7 +94,7 @@ lemma levyProkhorovEDist_le_of_forall (μ ν : Measure Ω) (δ : ℝ≥0∞)
         μ B ≤ ν (thickening ε.toReal B) + ε ∧ ν B ≤ μ (thickening ε.toReal B) + ε) :
     levyProkhorovEDist μ ν ≤ δ := by
   by_cases δ_top : δ = ∞
-  · simp only [δ_top, add_top, le_top]
+  · simp only [δ_top, le_top]
   apply levyProkhorovEDist_le_of_forall_add_pos_le
   intro x B x_pos x_lt_top B_mble
   simpa only [← add_assoc] using h (δ + x) B (ENNReal.lt_add_right δ_top x_pos.ne.symm)
@@ -131,7 +131,6 @@ lemma levyProkhorovEDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure 
   apply levyProkhorovEDist_le_of_forall_add_pos_le
   intro ε B ε_pos ε_lt_top B_mble
   have half_ε_pos : 0 < ε / 2 := ENNReal.div_pos ε_pos.ne' ofNat_ne_top
-  have half_ε_lt_top : ε / 2 ≠ ∞ := by finiteness
   let r := levyProkhorovEDist μ ν + ε / 2
   let s := levyProkhorovEDist ν κ + ε / 2
   have lt_r : levyProkhorovEDist μ ν < r := lt_add_right LPμν_finite half_ε_pos.ne'
@@ -383,8 +382,7 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
       exact ENNReal.toReal_mono (by finiteness) <| measure_mono (subset_univ _)
   apply le_trans (setIntegral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
   · rw [integral_add]
-    · apply add_le_add_left
-      simp [(mul_comm _ ε).le]
+    · simp [(mul_comm _ ε).le]
     · exact intble₂
     · exact integrable_const ε
   · exact intble₁
@@ -518,18 +516,15 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
     ∃ (As : ℕ → Set Ω), (∀ n, MeasurableSet (As n)) ∧ (∀ n, Bornology.IsBounded (As n)) ∧
         (∀ n, diam (As n) ≤ ε) ∧ (⋃ n, As n = univ) ∧
         (Pairwise (fun (n m : ℕ) ↦ Disjoint (As n) (As m))) := by
-  by_cases X_emp : IsEmpty Ω
+  cases isEmpty_or_nonempty Ω
   · refine ⟨fun _ ↦ ∅, fun _ ↦ MeasurableSet.empty, fun _ ↦ Bornology.isBounded_empty, ?_, ?_,
             fun _ _ _ ↦ disjoint_of_subsingleton⟩
     · intro n
-      simpa only [diam_empty] using LT.lt.le ε_pos
-    · simp only [iUnion_empty]
-      apply Eq.symm
-      simp only [univ_eq_empty_iff, X_emp]
-  rw [not_isEmpty_iff] at X_emp
+      simpa only [diam_empty] using ε_pos.le
+    · subsingleton
   obtain ⟨xs, xs_dense⟩ := exists_dense_seq Ω
   have half_ε_pos : 0 < ε / 2 := half_pos ε_pos
-  set Bs := fun n ↦ Metric.ball (xs n) (ε/2)
+  set Bs := fun n ↦ Metric.ball (xs n) (ε / 2)
   set As := disjointed Bs
   refine ⟨As, ?_, ?_, ?_, ?_, ?_⟩
   · exact MeasurableSet.disjointed (fun n ↦ measurableSet_ball)
@@ -588,9 +583,9 @@ lemma LevyProkhorov.continuous_equiv_symm_probabilityMeasure :
   filter_upwards [(Finset.iInter_mem_sets Js_finite.toFinset).mpr <|
                     fun J _ ↦ mem_nhds_P _ (Gs_open J)] with Q hQ
   simp only [Finite.mem_toFinset, mem_setOf_eq, thickening_iUnion, mem_iInter] at hQ
-  -- Note that in order to show that the Lévy-Prokhorov distance `LPdist P Q` is small (`≤ 2*ε/3`),
-  -- it suffices to show that for arbitrary subsets `B ⊆ Ω`, the measure `P B` is bounded above up
-  -- to a small error by the `Q`-measure of a small thickening of `B`.
+  -- Note that in order to show that the Lévy-Prokhorov distance between `P` and `Q` is small
+  -- (`≤ 2*ε/3`), it suffices to show that for arbitrary subsets `B ⊆ Ω`, the measure `P B` is
+  -- bounded above up to a small error by the `Q`-measure of a small thickening of `B`.
   apply lt_of_le_of_lt ?_ (show 2*(ε/3) < ε by linarith)
   rw [dist_comm]
   -- Fix an arbitrary set `B ⊆ Ω`, and an arbitrary `δ > 2*ε/3` to gain some room for error
@@ -611,18 +606,19 @@ lemma LevyProkhorov.continuous_equiv_symm_probabilityMeasure :
       simp only [mem_Iio, compl_iUnion, mem_iInter, mem_compl_iff, not_forall, not_not,
                   exists_prop] at con
       obtain ⟨j, j_small, ω_in_Esj⟩ := con
-      exact disjoint_left.mp (Es_disjoint (show j ≠ i by omega)) ω_in_Esj ω_in_Esi
+      exact disjoint_left.mp (Es_disjoint (show j ≠ i by cutsat)) ω_in_Esj ω_in_Esi
     intro ω ω_in_B
     obtain ⟨i, hi⟩ := show ∃ n, ω ∈ Es n by simp only [← mem_iUnion, Es_cover, mem_univ]
     simp only [mem_Ici, mem_union, mem_iUnion, exists_prop]
     by_cases i_small : i ∈ Iio N
     · refine Or.inl ⟨i, ?_, self_subset_thickening third_ε_pos _ hi⟩
       simp only [mem_Iio, mem_setOf_eq, JB]
-      refine ⟨nonempty_iff_ne_empty.mp <| Set.nonempty_of_mem <| mem_inter ω_in_B hi, i_small⟩
+      push_neg
+      exact ⟨Set.nonempty_of_mem <| mem_inter ω_in_B hi, i_small⟩
     · exact Or.inr ⟨i, by simpa only [mem_Iio, not_lt] using i_small, hi⟩
   have subset_thickB : ⋃ i ∈ JB, thickening (ε / 3) (Es i) ⊆ thickening δ B := by
     intro ω ω_in_U
-    simp only [mem_setOf_eq, mem_iUnion, exists_prop] at ω_in_U
+    simp only [mem_iUnion, exists_prop] at ω_in_U
     obtain ⟨k, ⟨B_intersects, _⟩, ω_in_thEk⟩ := ω_in_U
     rw [mem_thickening_iff] at ω_in_thEk ⊢
     obtain ⟨w, w_in_Ek, w_near⟩ := ω_in_thEk

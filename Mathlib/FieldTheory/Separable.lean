@@ -315,7 +315,7 @@ theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
       have : f ∣ derivative f := by
         conv_lhs => rw [hg3, ← hu]
         rwa [Units.mul_right_dvd]
-      not_lt_of_le (natDegree_le_of_dvd this h) <|
+      not_lt_of_ge (natDegree_le_of_dvd this h) <|
         natDegree_derivative_lt <| mt derivative_of_natDegree_zero h⟩
 
 attribute [local instance] Ideal.Quotient.field in
@@ -365,7 +365,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
 theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p ≠ 0) :
     ∃ (n : ℕ) (g : F[X]), g.Separable ∧ expand F (p ^ n) g = f := by
   replace hp : p.Prime := (CharP.char_is_prime_or_zero F p).resolve_right hp
-  induction' hn : f.natDegree using Nat.strong_induction_on with N ih generalizing f
+  induction hn : f.natDegree using Nat.strong_induction_on generalizing f with | _ N ih
   rcases separable_or p hf with (h | ⟨h1, g, hg, hgf⟩)
   · refine ⟨0, f, h, ?_⟩
     rw [pow_zero, expand_one]
@@ -404,9 +404,8 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
   revert g₁ g₂
   wlog hn : n₁ ≤ n₂
   · intro g₁ hg₁ Hg₁ g₂ hg₂ Hg₂
-    simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_le hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
-  have hf0 : f ≠ 0 := hf.ne_zero
-  intros g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
+    simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_ge hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
+  intro g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
   rw [le_iff_exists_add] at hn
   rcases hn with ⟨k, rfl⟩
   rw [← hgf₁, pow_add, expand_mul, expand_inj (pow_pos hp n₁)] at hgf₂
@@ -514,12 +513,7 @@ theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f
     f.Separable := by
   rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
   · rintro ⟨⟩
-  rw [pos_iff_ne_zero, Ne, natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff]
-  refine fun hf1 => hf.not_isUnit ?_
-  rw [hf1, isUnit_C, isUnit_iff_ne_zero]
-  intro hf2
-  rw [hf2, C_0] at hf1
-  exact absurd hf1 hf.ne_zero
+  exact Irreducible.natDegree_pos hf
 
 end Field
 
@@ -755,13 +749,18 @@ variable {R S T : Type*} [CommRing S]
 variable {K L F : Type*} [Field K] [Field L] [Field F]
 variable [Algebra K S] [Algebra K L]
 
+theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
+    (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
+    Nat.card (S →ₐ[K] L) = pb.dim := by
+  classical
+  rw [Nat.card_congr pb.liftEquiv', Nat.subtype_card _ (fun x => Multiset.mem_toFinset),
+    ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
+  exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
+
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
     (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
   classical
-  let _ := (PowerBasis.AlgHom.fintype pb : Fintype (S →ₐ[K] L))
-  rw [Fintype.card_congr pb.liftEquiv', Fintype.card_of_subtype _ (fun x => Multiset.mem_toFinset),
-    ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
-  exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
+  rw [Fintype.card_eq_nat_card, AlgHom.natCard_of_powerBasis pb h_sep h_splits]
 
 end CardAlgHom

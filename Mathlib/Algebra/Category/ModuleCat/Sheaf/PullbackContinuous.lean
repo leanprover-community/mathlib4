@@ -57,7 +57,7 @@ end
 section
 
 variable [(PresheafOfModules.pushforward.{v} φ.val).IsRightAdjoint]
-  [HasWeakSheafify K AddCommGrp.{v}] [K.WEqualsLocallyBijective AddCommGrp.{v}]
+  [HasWeakSheafify K AddCommGrpCat.{v}] [K.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 namespace PullbackConstruction
 
@@ -80,12 +80,7 @@ noncomputable def adjunction :
         dsimp
         simp only [Functor.map_comp, Category.assoc]
       homEquiv_naturality_right := by
-        intros
-        dsimp
-        -- these erw seem difficult to remove
-        erw [Adjunction.homEquiv_naturality_right, Adjunction.homEquiv_naturality_right]
-        dsimp
-        rfl }
+        tauto }
 
 end PullbackConstruction
 
@@ -104,7 +99,7 @@ noncomputable def pullbackIso :
 
 section
 
-variable [HasWeakSheafify J AddCommGrp.{v}] [J.WEqualsLocallyBijective AddCommGrp.{v}]
+variable [HasWeakSheafify J AddCommGrpCat.{v}] [J.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 /-- The pullback of (pre)sheaves of modules commutes with the sheafification. -/
 noncomputable def sheafificationCompPullback :

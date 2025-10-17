@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Peter Nelson
 -/
-import Mathlib.Order.Antichain
+import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Order.WellFounded
 
 /-!
 # Minimality and Maximality
@@ -177,7 +179,7 @@ section Preorder
 variable [Preorder α]
 
 theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬ P y := by
-  simp [Minimal, lt_iff_le_not_le, not_imp_not, imp.swap]
+  simp [Minimal, lt_iff_le_not_ge, imp.swap]
 
 theorem maximal_iff_forall_gt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
   minimal_iff_forall_lt (α := αᵒᵈ)
@@ -188,10 +190,10 @@ theorem Minimal.not_prop_of_lt (h : Minimal P x) (hlt : y < x) : ¬ P y :=
 theorem Maximal.not_prop_of_gt (h : Maximal P x) (hlt : x < y) : ¬ P y :=
   (maximal_iff_forall_gt.1 h).2 hlt
 
-theorem Minimal.not_lt (h : Minimal P x) (hy : P y) : ¬ (y < x) :=
+theorem Minimal.not_lt (h : Minimal P x) (hy : P y) : ¬(y < x) :=
   fun hlt ↦ h.not_prop_of_lt hlt hy
 
-theorem Maximal.not_gt (h : Maximal P x) (hy : P y) : ¬ (x < y) :=
+theorem Maximal.not_gt (h : Maximal P x) (hy : P y) : ¬(x < y) :=
   fun hlt ↦ h.not_prop_of_gt hlt hy
 
 @[simp] theorem minimal_le_iff : Minimal (· ≤ y) x ↔ x ≤ y ∧ IsMin x :=
@@ -207,7 +209,7 @@ theorem Maximal.not_gt (h : Maximal P x) (hy : P y) : ¬ (x < y) :=
   minimal_lt_iff (α := αᵒᵈ)
 
 theorem not_minimal_iff_exists_lt (hx : P x) : ¬ Minimal P x ↔ ∃ y, y < x ∧ P y := by
-  simp_rw [not_minimal_iff hx, lt_iff_le_not_le, and_comm]
+  simp_rw [not_minimal_iff hx, lt_iff_le_not_ge, and_comm]
 
 alias ⟨exists_lt_of_not_minimal, _⟩ := not_minimal_iff_exists_lt
 
@@ -221,7 +223,7 @@ variable [WellFoundedLT α]
 
 lemma exists_minimalFor_of_wellFoundedLT (P : ι → Prop) (f : ι → α) (hP : ∃ i, P i) :
     ∃ i, MinimalFor P f i := by
-  simpa [not_lt_iff_le_imp_le, InvImage] using (instIsWellFoundedInvImage (· < ·) f).wf.has_min _ hP
+  simpa [not_lt_iff_le_imp_ge, InvImage] using (instIsWellFoundedInvImage (· < ·) f).wf.has_min _ hP
 
 lemma exists_minimal_of_wellFoundedLT (P : α → Prop) (hP : ∃ a, P a) : ∃ a, Minimal P a :=
   exists_minimalFor_of_wellFoundedLT P id hP
@@ -419,39 +421,11 @@ theorem IsLeast.minimal (h : IsLeast s x) : Minimal (· ∈ s) x :=
 theorem IsGreatest.maximal (h : IsGreatest s x) : Maximal (· ∈ s) x :=
   ⟨h.1, fun _b hb _ ↦ h.2 hb⟩
 
-theorem IsAntichain.minimal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Minimal (· ∈ s) x ↔ x ∈ s :=
-  ⟨fun h ↦ h.prop, fun h ↦ ⟨h, fun _ hys hyx ↦ (hs.eq hys h hyx).symm.le⟩⟩
-
-theorem IsAntichain.maximal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Maximal (· ∈ s) x ↔ x ∈ s :=
-  hs.to_dual.minimal_mem_iff
-
-/-- If `t` is an antichain shadowing and including the set of maximal elements of `s`,
-then `t` *is* the set of maximal elements of `s`. -/
-theorem IsAntichain.eq_setOf_maximal (ht : IsAntichain (· ≤ ·) t)
-    (h : ∀ x, Maximal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, b ≤ a ∧ Maximal (· ∈ s) b) :
-    {x | Maximal (· ∈ s) x} = t := by
-  refine Set.ext fun x ↦ ⟨h _, fun hx ↦ ?_⟩
-  obtain ⟨y, hyx, hy⟩ := hs x hx
-  rwa [← ht.eq (h y hy) hx hyx]
-
-/-- If `t` is an antichain shadowed by and including the set of minimal elements of `s`,
-then `t` *is* the set of minimal elements of `s`. -/
-theorem IsAntichain.eq_setOf_minimal (ht : IsAntichain (· ≤ ·) t)
-    (h : ∀ x, Minimal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, a ≤ b ∧ Minimal (· ∈ s) b) :
-    {x | Minimal (· ∈ s) x} = t :=
-  ht.to_dual.eq_setOf_maximal h hs
-
 end Preorder
 
 section PartialOrder
 
 variable [PartialOrder α]
-
-theorem setOf_maximal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Maximal P x} :=
-  fun _ hx _ ⟨hy, _⟩ hne hle ↦ hne (hle.antisymm <| hx.2 hy hle)
-
-theorem setOf_minimal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Minimal P x} :=
-  (setOf_maximal_antichain (α := αᵒᵈ) P).swap
 
 theorem IsLeast.minimal_iff (h : IsLeast s a) : Minimal (· ∈ s) x ↔ x = a :=
   ⟨fun h' ↦ h'.eq_of_ge h.1 (h.2 h'.prop), fun h' ↦ h' ▸ h.minimal⟩

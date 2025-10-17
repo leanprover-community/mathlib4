@@ -116,7 +116,7 @@ instance continuousSMul_aut_fiber (X : C) : ContinuousSMul (Aut F) (F.obj X) whe
     let g : Aut (F.obj X) × F.obj X → F.obj X := fun ⟨σ, x⟩ ↦ σ.hom x
     let h (q : Aut F × F.obj X) : Aut (F.obj X) × F.obj X :=
       ⟨((fun p ↦ p X) ∘ autEmbedding F) q.1, q.2⟩
-    show Continuous (g ∘ h)
+    change Continuous (g ∘ h)
     fun_prop
 
 /-- If `G` is a functor of categories of finite types, the induced map `Aut F → Aut (F ⋙ G)` is
@@ -126,7 +126,7 @@ lemma continuous_mapAut_whiskeringRight (G : FintypeCat.{w} ⥤ FintypeCat.{v}) 
   rw [Topology.IsInducing.continuous_iff (autEmbedding_isClosedEmbedding _).isInducing,
     continuous_pi_iff]
   intro X
-  show Continuous fun a ↦ G.mapAut (F.obj X) (autEmbedding F a X)
+  change Continuous fun a ↦ G.mapAut (F.obj X) (autEmbedding F a X)
   fun_prop
 
 /-- If `G` is a fully faithful functor of categories finite types, this is the automorphism of

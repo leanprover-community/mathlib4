@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Const
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 
@@ -189,7 +189,7 @@ theorem HasFDerivAt.hasDerivAt {f' : 𝕜 →L[𝕜] F} : HasFDerivAt f f' x →
 
 theorem hasStrictFDerivAt_iff_hasStrictDerivAt {f' : 𝕜 →L[𝕜] F} :
     HasStrictFDerivAt f f' x ↔ HasStrictDerivAt f (f' 1) x := by
-  simp [HasStrictDerivAt, HasStrictFDerivAt]
+  simp [HasStrictDerivAt]
 
 protected theorem HasStrictFDerivAt.hasStrictDerivAt {f' : 𝕜 →L[𝕜] F} :
     HasStrictFDerivAt f f' x → HasStrictDerivAt f (f' 1) x :=
@@ -351,9 +351,6 @@ theorem HasDerivWithinAt.mono_of_mem_nhdsWithin (h : HasDerivWithinAt f f' t x) 
     HasDerivWithinAt f f' s x :=
   HasFDerivWithinAt.mono_of_mem_nhdsWithin h hst
 
-@[deprecated (since := "2024-10-31")]
-alias HasDerivWithinAt.mono_of_mem := HasDerivWithinAt.mono_of_mem_nhdsWithin
-
 theorem HasDerivAt.hasDerivAtFilter (h : HasDerivAt f f' x) (hL : L ≤ 𝓝 x) :
     HasDerivAtFilter f f' x L :=
   HasFDerivAt.hasFDerivAtFilter h hL
@@ -460,8 +457,6 @@ theorem HasDerivWithinAt.deriv_eq_zero (hd : HasDerivWithinAt f 0 s x)
 theorem derivWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : derivWithin f s x = derivWithin f t x :=
   ((DifferentiableWithinAt.hasDerivWithinAt h).mono_of_mem_nhdsWithin st).derivWithin ht
-
-@[deprecated (since := "2024-10-31")] alias derivWithin_of_mem := derivWithin_of_mem_nhdsWithin
 
 theorem derivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : derivWithin f s x = derivWithin f t x :=
@@ -597,6 +592,12 @@ theorem derivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
     derivWithin f₁ s x = derivWithin f s x := by
   unfold derivWithin
   rw [fderivWithin_congr hs hx]
+
+lemma Set.EqOn.deriv {f g : 𝕜 → F} {s : Set 𝕜} (hfg : s.EqOn f g) (hs : IsOpen s) :
+    s.EqOn (deriv f) (deriv g) := by
+  intro x hx
+  rw [← derivWithin_of_isOpen hs hx, ← derivWithin_of_isOpen hs hx]
+  exact derivWithin_congr hfg (hfg hx)
 
 theorem Filter.EventuallyEq.deriv_eq (hL : f₁ =ᶠ[𝓝 x] f) : deriv f₁ x = deriv f x := by
   unfold deriv
@@ -795,6 +796,9 @@ theorem HasDerivWithinAt.continuousWithinAt (h : HasDerivWithinAt f f' s x) :
 
 theorem HasDerivAt.continuousAt (h : HasDerivAt f f' x) : ContinuousAt f x :=
   HasDerivAtFilter.tendsto_nhds le_rfl h
+
+theorem HasDerivWithinAt.continuousOn {f f' : 𝕜 → F} (h : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
+    ContinuousOn f s := fun x hx => (h x hx).continuousWithinAt
 
 protected theorem HasDerivAt.continuousOn {f f' : 𝕜 → F} (hderiv : ∀ x ∈ s, HasDerivAt f (f' x) x) :
     ContinuousOn f s := fun x hx => (hderiv x hx).continuousAt.continuousWithinAt

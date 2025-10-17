@@ -11,8 +11,6 @@ import Mathlib.Data.List.InsertIdx
 Split out from `Data.List.Basic` to reduce its dependencies.
 -/
 
-open List
-
 variable {α β γ : Type*}
 
 namespace List
@@ -21,23 +19,22 @@ namespace List
 theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] :=
   Set.eq_empty_iff_forall_notMem.trans eq_nil_iff_forall_not_mem.symm
 
-@[deprecated (since := "2024-12-10")] alias tail_reverse_eq_reverse_dropLast := tail_reverse
-
 theorem injOn_insertIdx_index_of_notMem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => l.insertIdx k x) { n | n ≤ l.length } := by
-  induction' l with hd tl IH
-  · intro n hn m hm _
+  intro n hn m hm h
+  induction l generalizing n m with
+  | nil =>
     simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]
-  · intro n hn m hm h
+  | cons hd tl IH =>
     simp only [length, Set.mem_setOf_eq] at hn hm
     simp only [mem_cons, not_or] at hx
     cases n <;> cases m
     · rfl
     · simp [hx.left] at h
     · simp [Ne.symm hx.left] at h
-    · simp only [true_and, eq_self_iff_true, insertIdx_succ_cons] at h
+    · simp only [insertIdx_succ_cons, cons.injEq, true_and] at h
       rw [Nat.succ_inj]
-      refine IH hx.right ?_ ?_ (by injection h)
+      refine IH hx.right ?_ ?_ h
       · simpa [Nat.succ_le_succ_iff] using hn
       · simpa [Nat.succ_le_succ_iff] using hm
 
@@ -47,9 +44,10 @@ alias injOn_insertIdx_index_of_not_mem := injOn_insertIdx_index_of_notMem
 theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α → α}
     (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) := by
   rintro _ ⟨l, rfl⟩
-  induction' l with b l H
-  · exact ⟨[], rfl⟩
-  · obtain ⟨c, hgf⟩ := hfg (Set.mem_range_self b)
+  induction l with
+  | nil => exact ⟨[], rfl⟩
+  | cons b l H =>
+    obtain ⟨c, hgf⟩ := hfg (Set.mem_range_self b)
     obtain ⟨m, hgf'⟩ := H
     rw [foldr_cons, ← hgf, ← hgf']
     exact ⟨c :: m, rfl⟩
@@ -101,7 +99,7 @@ theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ
   | _ :: _, [], _ => rfl
   | [], _ :: _, _ => rfl
   | a :: as, b :: bs, s => by
-    simp only [mapAccumr₂, foldr, mapAccumr₂_eq_foldr f as]
+    simp only [mapAccumr₂, mapAccumr₂_eq_foldr f as]
     rfl
 
 end MapAccumr

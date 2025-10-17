@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Sums.Basic
 /-!
 # Embedding of `C ⊕ D` into `C ⋆ D`
 
-This file constructs a canonical functor `Join.fromSum` from `C ⊕ D` to `C ⋆ D` and give
+This file constructs a canonical functor `Join.fromSum` from `C ⊕ D` to `C ⋆ D` and gives
 its characterization in terms of the canonical inclusions.
 We also provide `Faithful` and `EssSurj` instances on this functor.
 
@@ -21,7 +21,7 @@ variable (C D : Type*) [Category C] [Category D]
 
 /-- The canonical functor from the sum to the join.
 It sends `inl c` to `left c` and `inr d` to `right d`. -/
-@[simps! obj] -- Maps get characterized w.r.t the inclusions below
+@[simps! obj] -- Maps get characterized w.r.t. the inclusions below
 def fromSum : C ⊕ D ⥤ C ⋆ D := (inclLeft C D).sum' <| inclRight C D
 
 variable {C} in

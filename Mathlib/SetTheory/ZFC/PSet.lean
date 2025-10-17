@@ -403,7 +403,7 @@ theorem mem_powerset : ∀ {x y : PSet}, y ∈ powerset x ↔ y ⊆ x
 
 /-- The pre-set union operator -/
 def sUnion (a : PSet) : PSet :=
-  ⟨Σx, (a.Func x).Type, fun ⟨x, y⟩ => (a.Func x).Func y⟩
+  ⟨Σ x, (a.Func x).Type, fun ⟨x, y⟩ => (a.Func x).Func y⟩
 
 @[inherit_doc]
 prefix:110 "⋃₀ " => sUnion
@@ -430,7 +430,6 @@ theorem toSet_sUnion (x : PSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.toSe
 def image (f : PSet.{u} → PSet.{u}) (x : PSet.{u}) : PSet :=
   ⟨x.Type, f ∘ x.Func⟩
 
--- Porting note: H arguments made explicit.
 theorem mem_image {f : PSet.{u} → PSet.{u}} (H : ∀ x y, Equiv x y → Equiv (f x) (f y)) :
     ∀ {x y : PSet.{u}}, y ∈ image f x ↔ ∃ z ∈ x, Equiv y (f z)
   | ⟨_, A⟩, _ =>

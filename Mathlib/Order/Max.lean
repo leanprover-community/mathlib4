@@ -86,11 +86,11 @@ instance OrderDual.noMaxOrder [LT α] [NoMinOrder α] : NoMaxOrder αᵒᵈ :=
 
 -- See note [lower instance priority]
 instance (priority := 100) [Preorder α] [NoMinOrder α] : NoBotOrder α :=
-  ⟨fun a => (exists_lt a).imp fun _ => not_le_of_lt⟩
+  ⟨fun a => (exists_lt a).imp fun _ => not_le_of_gt⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) [Preorder α] [NoMaxOrder α] : NoTopOrder α :=
-  ⟨fun a => (exists_gt a).imp fun _ => not_le_of_lt⟩
+  ⟨fun a => (exists_gt a).imp fun _ => not_le_of_gt⟩
 
 instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α × β) :=
   ⟨fun ⟨a, b⟩ => by
@@ -122,9 +122,9 @@ instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)
 instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)] [∀ i, NoMinOrder (π i)] :
     NoMinOrder (∀ i, π i) :=
   ⟨fun a => by
-     classical
-      obtain ⟨b, hb⟩ := exists_lt (a <| Classical.arbitrary _)
-      exact ⟨_, update_lt_self_iff.2 hb⟩⟩
+    classical
+    obtain ⟨b, hb⟩ := exists_lt (a <| Classical.arbitrary _)
+    exact ⟨_, update_lt_self_iff.2 hb⟩⟩
 
 theorem NoBotOrder.to_noMinOrder (α : Type*) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
   { exists_lt := fun a => by simpa [not_le] using exists_not_ge a }
@@ -133,20 +133,10 @@ theorem NoTopOrder.to_noMaxOrder (α : Type*) [LinearOrder α] [NoTopOrder α] :
   { exists_gt := fun a => by simpa [not_le] using exists_not_le a }
 
 theorem noBotOrder_iff_noMinOrder (α : Type*) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=
-  ⟨fun h =>
-    haveI := h
-    NoBotOrder.to_noMinOrder α,
-    fun h =>
-    haveI := h
-    inferInstance⟩
+  ⟨fun _ => NoBotOrder.to_noMinOrder α, fun _ => inferInstance⟩
 
 theorem noTopOrder_iff_noMaxOrder (α : Type*) [LinearOrder α] : NoTopOrder α ↔ NoMaxOrder α :=
-  ⟨fun h =>
-    haveI := h
-    NoTopOrder.to_noMaxOrder α,
-    fun h =>
-    haveI := h
-    inferInstance⟩
+  ⟨fun _ => NoTopOrder.to_noMaxOrder α, fun _ => inferInstance⟩
 
 theorem NoMinOrder.not_acc [LT α] [NoMinOrder α] (a : α) : ¬Acc (· < ·) a := fun h =>
   Acc.recOn h fun x _ => (exists_lt x).recOn
@@ -268,9 +258,9 @@ theorem IsMin.mono (ha : IsMin a) (h : b ≤ a) : IsMin b := fun _ hc => h.trans
 
 theorem IsMax.mono (ha : IsMax a) (h : a ≤ b) : IsMax b := fun _ hc => (ha <| h.trans hc).trans h
 
-theorem IsMin.not_lt (h : IsMin a) : ¬b < a := fun hb => hb.not_le <| h hb.le
+theorem IsMin.not_lt (h : IsMin a) : ¬b < a := fun hb => hb.not_ge <| h hb.le
 
-theorem IsMax.not_lt (h : IsMax a) : ¬a < b := fun hb => hb.not_le <| h hb.le
+theorem IsMax.not_lt (h : IsMax a) : ¬a < b := fun hb => hb.not_ge <| h hb.le
 
 theorem not_isMin_of_lt (h : b < a) : ¬IsMin a := fun ha => ha.not_lt h
 
@@ -281,18 +271,18 @@ alias LT.lt.not_isMin := not_isMin_of_lt
 alias LT.lt.not_isMax := not_isMax_of_lt
 
 theorem isMin_iff_forall_not_lt : IsMin a ↔ ∀ b, ¬b < a :=
-  ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_le hab⟩
+  ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_ge hab⟩
 
 theorem isMax_iff_forall_not_lt : IsMax a ↔ ∀ b, ¬a < b :=
-  ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_le hab⟩
+  ⟨fun h _ => h.not_lt, fun h _ hba => of_not_not fun hab => h _ <| hba.lt_of_not_ge hab⟩
 
 @[simp]
 theorem not_isMin_iff : ¬IsMin a ↔ ∃ b, b < a := by
-  simp [lt_iff_le_not_le, IsMin, not_forall, exists_prop]
+  simp [lt_iff_le_not_ge, IsMin, not_forall]
 
 @[simp]
 theorem not_isMax_iff : ¬IsMax a ↔ ∃ b, a < b := by
-  simp [lt_iff_le_not_le, IsMax, not_forall, exists_prop]
+  simp [lt_iff_le_not_ge, IsMax, not_forall]
 
 @[simp]
 theorem not_isMin [NoMinOrder α] (a : α) : ¬IsMin a :=
@@ -364,23 +354,11 @@ variable [Preorder α] [Preorder β] {a : α} {b : β} {x : α × β}
 
 theorem IsBot.prodMk (ha : IsBot a) (hb : IsBot b) : IsBot (a, b) := fun _ => ⟨ha _, hb _⟩
 
-@[deprecated (since := "2025-02-22")]
-alias IsBot.prod_mk := IsBot.prodMk
-
 theorem IsTop.prodMk (ha : IsTop a) (hb : IsTop b) : IsTop (a, b) := fun _ => ⟨ha _, hb _⟩
-
-@[deprecated (since := "2025-02-22")]
-alias IsTop.prod_mk := IsTop.prodMk
 
 theorem IsMin.prodMk (ha : IsMin a) (hb : IsMin b) : IsMin (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
 
-@[deprecated (since := "2025-02-22")]
-alias IsMin.prod_mk := IsMin.prodMk
-
 theorem IsMax.prodMk (ha : IsMax a) (hb : IsMax b) : IsMax (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
-
-@[deprecated (since := "2025-02-22")]
-alias IsMax.prod_mk := IsMax.prodMk
 
 theorem IsBot.fst (hx : IsBot x) : IsBot x.1 := fun c => (hx (c, x.2)).1
 

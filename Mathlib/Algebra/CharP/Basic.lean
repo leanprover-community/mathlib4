@@ -5,7 +5,8 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.Group.ULift
+import Mathlib.Algebra.Ring.ULift
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.ULift
@@ -35,7 +36,7 @@ variable [CharP R p] {a b : ℕ}
 
 lemma natCast_eq_natCast' (h : a ≡ b [MOD p]) : (a : R) = b := by
   wlog hle : a ≤ b
-  · exact (this R p h.symm (le_of_not_le hle)).symm
+  · exact (this R p h.symm (le_of_not_ge hle)).symm
   rw [Nat.modEq_iff_dvd' hle] at h
   rw [← Nat.sub_add_cancel hle, Nat.cast_add, (cast_eq_zero_iff R p _).mpr h, zero_add]
 
@@ -46,7 +47,7 @@ variable [IsRightCancelAdd R]
 
 lemma natCast_eq_natCast : (a : R) = b ↔ a ≡ b [MOD p] := by
   wlog hle : a ≤ b
-  · rw [eq_comm, this R p (le_of_not_le hle), Nat.ModEq.comm]
+  · rw [eq_comm, this R p (le_of_not_ge hle), Nat.ModEq.comm]
   rw [Nat.modEq_iff_dvd' hle, ← cast_eq_zero_iff R p (b - a),
     ← add_right_cancel_iff (G := R) (a := a) (b := b - a), zero_add, ← Nat.cast_add,
     Nat.sub_add_cancel hle, eq_comm]
@@ -185,6 +186,8 @@ end CharZero
 
 namespace Fin
 
+open Fin.NatCast
+
 /-- The characteristic of `F_p` is `p`. -/
 @[stacks 09FS "First part. We don't require `p` to be a prime in mathlib."]
 instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff _ := natCast_eq_zero
@@ -196,7 +199,7 @@ variable [AddMonoidWithOne R]
 
 instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := by
   obtain hp | ⟨hp⟩ := ‹ExpChar R p›
-  · have := Prod.charZero_of_left R S; exact .zero
+  · constructor
   obtain _ | _ := ‹ExpChar S p›
   · exact (Nat.not_prime_one hp).elim
   · have := Prod.charP R S p; exact .prime hp
@@ -205,14 +208,10 @@ end AddMonoidWithOne
 
 section CommRing
 
-#adaptation_note
-/-- 2025-04-19 `IsCharP` has `n` as an outparam, but `CharP` does not.
-Remove after https://github.com/leanprover-community/mathlib4/pull/24216 is merged.
--/
-set_option synthInstance.checkSynthOrder false in
-instance (α : Type*) [CommRing α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
-  ofNat_eq_zero_iff m := by
-    rw [CommRing.toGrindCommRing_ofNat]
-    simpa [← Nat.dvd_iff_mod_eq_zero] using CharP.cast_eq_zero_iff α n m
+instance (α : Type*) [Semiring α] [IsLeftCancelAdd α] (n : ℕ) [CharP α n] :
+    Lean.Grind.IsCharP α n where
+  ofNat_ext_iff {a b} := by
+    rw [Lean.Grind.Semiring.ofNat_eq_natCast, Lean.Grind.Semiring.ofNat_eq_natCast]
+    exact CharP.cast_eq_iff_mod_eq α n
 
 end CommRing

@@ -43,12 +43,12 @@ def ofFn (n : ℕ) : (Fin n → R) →ₗ[R] R[X] where
     ext i
     by_cases h : i < n
     · simp [h]
-    · simp [List.getD_getElem?, h]
+    · simp [h]
   map_smul' x p := by
     ext i
     by_cases h : i < n
     · simp [h]
-    · simp [List.getD_getElem?, h]
+    · simp [h]
 
 theorem ofFn_zero (n : ℕ) : ofFn n (0 : Fin n → R) = 0 := by simp
 
@@ -69,7 +69,7 @@ theorem ofFn_coeff_eq_val_of_lt {n i : ℕ} (v : Fin n → R) (hi : i < n) :
 /-- If `n ≤ i` the `i`-th coefficient of `ofFn n v` is `0`. -/
 @[simp]
 theorem ofFn_coeff_eq_zero_of_ge {n i : ℕ} (v : Fin n → R) (hi : n ≤ i) : (ofFn n v).coeff i = 0 :=
-  by simp [ofFn, hi, Nat.not_lt_of_ge hi]
+  by simp [ofFn, Nat.not_lt_of_ge hi]
 
 /-- `ofFn n v` has `natDegree` smaller than `n`. -/
 theorem ofFn_natDegree_lt {n : ℕ} (h : 1 ≤ n) (v : Fin n → R) : (ofFn n v).natDegree < n := by
@@ -108,7 +108,7 @@ theorem ofFn_comp_toFn_eq_id_of_natDegree_lt {n : ℕ} {p : R[X]} (h_deg : p.nat
   ext i
   by_cases h : i < n
   · simp [h, toFn]
-  · have : p.coeff i = 0 := coeff_eq_zero_of_natDegree_lt <| by omega
+  · have : p.coeff i = 0 := coeff_eq_zero_of_natDegree_lt <| by cutsat
     simp_all
 
 end ofFn

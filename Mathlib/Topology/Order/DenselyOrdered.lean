@@ -48,7 +48,7 @@ theorem closure_Iio (a : α) [NoMinOrder α] : closure (Iio a) = Iic a :=
 theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := by
   apply Subset.antisymm
   · exact closure_minimal Ioo_subset_Icc_self isClosed_Icc
-  · rcases hab.lt_or_lt with hab | hab
+  · rcases hab.lt_or_gt with hab | hab
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
       simp only [insert_subset_iff, singleton_subset_iff]
@@ -147,14 +147,14 @@ theorem frontier_Iic [NoMaxOrder α] {a : α} : frontier (Iic a) = {a} :=
 
 @[simp]
 theorem frontier_Ioi' {a : α} (ha : (Ioi a).Nonempty) : frontier (Ioi a) = {a} := by
-  simp [frontier, closure_Ioi' ha, Iic_diff_Iio, Icc_self]
+  simp [frontier, closure_Ioi' ha]
 
 theorem frontier_Ioi [NoMaxOrder α] {a : α} : frontier (Ioi a) = {a} :=
   frontier_Ioi' nonempty_Ioi
 
 @[simp]
 theorem frontier_Iio' {a : α} (ha : (Iio a).Nonempty) : frontier (Iio a) = {a} := by
-  simp [frontier, closure_Iio' ha, Iic_diff_Iio, Icc_self]
+  simp [frontier, closure_Iio' ha]
 
 theorem frontier_Iio [NoMinOrder α] {a : α} : frontier (Iio a) = {a} :=
   frontier_Iio' nonempty_Iio
@@ -185,13 +185,7 @@ theorem nhdsWithin_Ioi_neBot [NoMaxOrder α] {a b : α} (H : a ≤ b) : NeBot (�
 theorem nhdsGT_neBot_of_exists_gt {a : α} (H : ∃ b, a < b) : NeBot (𝓝[>] a) :=
   nhdsWithin_Ioi_neBot' H (le_refl a)
 
-@[deprecated (since := "2024-12-22")]
-alias nhdsWithin_Ioi_self_neBot' := nhdsGT_neBot_of_exists_gt
-
 instance nhdsGT_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) := nhdsWithin_Ioi_neBot le_rfl
-
-@[deprecated nhdsGT_neBot (since := "2024-12-22")]
-theorem nhdsWithin_Ioi_self_neBot [NoMaxOrder α] (a : α) : NeBot (𝓝[>] a) := nhdsGT_neBot a
 
 theorem nhdsWithin_Iio_neBot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤ c) :
     NeBot (𝓝[Iio c] b) :=
@@ -204,9 +198,6 @@ theorem nhdsWithin_Iio_self_neBot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝
   nhdsWithin_Iio_neBot' H (le_refl b)
 
 instance nhdsLT_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) := nhdsWithin_Iio_neBot (le_refl a)
-
-@[deprecated nhdsLT_neBot (since := "2024-12-22")]
-theorem nhdsWithin_Iio_self_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) := nhdsLT_neBot a
 
 theorem right_nhdsWithin_Ico_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ico a b] b) :=
   (isLUB_Ico H).nhdsWithin_neBot (nonempty_Ico.2 H)
@@ -237,17 +228,11 @@ theorem comap_coe_nhdsLT_of_Ioo_subset (hb : s ⊆ Iio b) (hs : s.Nonempty → �
     obtain ⟨x : s, hx : ∀ z, x ≤ z → z ∈ u⟩ := mem_atTop_sets.1 hu
     exact ⟨Ioo x b, Ioo_mem_nhdsLT (hb x.2), fun z hz => hx _ hz.1.le⟩
 
-@[deprecated (since := "2024-12-22")]
-alias comap_coe_nhdsWithin_Iio_of_Ioo_subset := comap_coe_nhdsLT_of_Ioo_subset
-
 theorem comap_coe_nhdsGT_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) :
     comap ((↑) : s → α) (𝓝[>] a) = atBot := by
   apply comap_coe_nhdsLT_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
   simp only [OrderDual.exists, Ioo_toDual]
   exact hs
-
-@[deprecated (since := "2024-12-22")]
-alias comap_coe_nhdsWithin_Ioi_of_Ioo_subset := comap_coe_nhdsGT_of_Ioo_subset
 
 theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a < b, Ioo a b ⊆ s) :
     map ((↑) : s → α) atTop = 𝓝[<] b := by
@@ -270,28 +255,16 @@ the right endpoint in the ambient order. -/
 theorem comap_coe_Ioo_nhdsLT (a b : α) : comap ((↑) : Ioo a b → α) (𝓝[<] b) = atTop :=
   comap_coe_nhdsLT_of_Ioo_subset Ioo_subset_Iio_self fun h => ⟨a, nonempty_Ioo.1 h, Subset.refl _⟩
 
-@[deprecated (since := "2024-12-22")]
-alias comap_coe_Ioo_nhdsWithin_Iio := comap_coe_Ioo_nhdsLT
-
 /-- The `atBot` filter for an open interval `Ioo a b` comes from the right-neighbourhoods filter at
 the left endpoint in the ambient order. -/
 theorem comap_coe_Ioo_nhdsGT (a b : α) : comap ((↑) : Ioo a b → α) (𝓝[>] a) = atBot :=
   comap_coe_nhdsGT_of_Ioo_subset Ioo_subset_Ioi_self fun h => ⟨b, nonempty_Ioo.1 h, Subset.refl _⟩
 
-@[deprecated (since := "2024-12-22")]
-alias comap_coe_Ioo_nhdsWithin_Ioi := comap_coe_Ioo_nhdsGT
-
 theorem comap_coe_Ioi_nhdsGT (a : α) : comap ((↑) : Ioi a → α) (𝓝[>] a) = atBot :=
   comap_coe_nhdsGT_of_Ioo_subset (Subset.refl _) fun ⟨x, hx⟩ => ⟨x, hx, Ioo_subset_Ioi_self⟩
 
-@[deprecated (since := "2024-12-22")]
-alias comap_coe_Ioi_nhdsWithin_Ioi := comap_coe_Ioi_nhdsGT
-
 theorem comap_coe_Iio_nhdsLT (a : α) : comap ((↑) : Iio a → α) (𝓝[<] a) = atTop :=
   comap_coe_Ioi_nhdsGT (α := αᵒᵈ) a
-
-@[deprecated (since := "2024-12-22")]
-alias comap_coe_Iio_nhdsWithin_Iio := comap_coe_Iio_nhdsLT
 
 @[simp]
 theorem map_coe_Ioo_atTop {a b : α} (h : a < b) : map ((↑) : Ioo a b → α) atTop = 𝓝[<] b :=
@@ -387,7 +360,7 @@ theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
 /-- `Set.Ico a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ico hab.ne, Icc_eq_Ico_same_iff] at this
   exact this hab.le
@@ -395,7 +368,7 @@ theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
 /-- `Set.Ioc a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ioc hab.ne, Icc_eq_Ioc_same_iff] at this
   exact this hab.le
@@ -403,7 +376,7 @@ theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
 /-- `Set.Ioo a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ioo_iff {a b : α} : IsClosed (Set.Ioo a b) ↔ b ≤ a := by
-  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  refine ⟨fun h => le_of_not_gt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
   rw [closure_Ioo hab.ne, Icc_eq_Ioo_same_iff] at this
   exact this hab.le

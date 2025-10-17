@@ -48,7 +48,7 @@ theorem tendsto_const_mul_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop ↔ 0 < r := by
   refine ⟨fun hrf => not_le.mp fun hr => ?_, fun hr => (tendsto_const_mul_atTop_of_pos hr).mpr h⟩
   rcases ((h.eventually_ge_atTop 0).and (hrf.eventually_gt_atTop 0)).exists with ⟨x, hx, hrx⟩
-  exact (mul_nonpos_of_nonpos_of_nonneg hr hx).not_lt hrx
+  exact (mul_nonpos_of_nonpos_of_nonneg hr hx).not_gt hrx
 
 /-- If `f` tends to infinity along a nontrivial filter `l`, then
 `fun x ↦ f x * r` tends to infinity if and only if `0 < r`. -/
@@ -95,7 +95,12 @@ theorem tendsto_const_mul_pow_atTop_iff :
     exact pos_of_mul_pos_left hck (pow_nonneg hk _)
 
 lemma tendsto_zpow_atTop_atTop {n : ℤ} (hn : 0 < n) : Tendsto (fun x : α ↦ x ^ n) atTop atTop := by
-  lift n to ℕ using hn.le; simp [(Int.ofNat_pos.mp hn).ne']
+  lift n to ℕ using hn.le; simp [(Int.natCast_pos.mp hn).ne']
+
+theorem map_div_atTop_eq (k : α) (hk : 0 < k) : map (fun a => a / k) atTop = atTop :=
+  map_atTop_eq_of_gc (fun b => k * b) 1 (fun _ _ h => div_le_div_of_nonneg_right h (le_of_lt hk))
+    (fun a b _ => (by rw [div_le_iff₀' hk]))
+    fun b _ => (by rw [mul_div_assoc, mul_div_cancel₀]; exact ne_of_gt hk)
 
 end LinearOrderedSemifield
 
@@ -164,9 +169,9 @@ if and only if `r > 0` and `f` tends to infinity or `r < 0` and `f` tends to neg
 theorem tendsto_const_mul_atTop_iff [NeBot l] :
     Tendsto (fun x => r * f x) l atTop ↔ 0 < r ∧ Tendsto f l atTop ∨ r < 0 ∧ Tendsto f l atBot := by
   rcases lt_trichotomy r 0 with (hr | rfl | hr)
-  · simp [hr, hr.not_lt, tendsto_const_mul_atTop_of_neg]
+  · simp [hr, hr.not_gt, tendsto_const_mul_atTop_of_neg]
   · simp [not_tendsto_const_atTop]
-  · simp [hr, hr.not_lt, tendsto_const_mul_atTop_of_pos]
+  · simp [hr, hr.not_gt, tendsto_const_mul_atTop_of_pos]
 
 /-- The function `fun x ↦ f x * r` tends to infinity along a nontrivial filter
 if and only if `r > 0` and `f` tends to infinity or `r < 0` and `f` tends to negative infinity. -/

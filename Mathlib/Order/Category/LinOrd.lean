@@ -108,8 +108,8 @@ lemma hom_ext {X Y : LinOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [LinearOrder X] [LinearOrder Y] (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [LinearOrder X] [LinearOrder Y] (f : X →o Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : LinOrd} (f : X ⟶ Y) :

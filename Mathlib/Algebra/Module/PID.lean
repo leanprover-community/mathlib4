@@ -64,7 +64,7 @@ theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible
     IsSemisimpleModule R (torsionBy R M a) :=
   haveI := PrincipalIdealRing.isMaximal_of_irreducible h
   letI := Ideal.Quotient.field (R ∙ a)
-  (submodule_torsionBy_orderIso a).complementedLattice
+  (isSemisimpleModule_iff ..).mpr (submodule_torsionBy_orderIso a).complementedLattice
 
 variable [IsDomain R]
 
@@ -77,7 +77,6 @@ theorem Submodule.isInternal_prime_power_torsion_of_pid [DecidableEq (Ideal R)] 
         (IsPrincipal.generator (p : Ideal R) ^
           (factors (⊤ : Submodule R M).annihilator).count ↑p) := by
   convert isInternal_prime_power_torsion hM
-  ext p : 1
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ← Ideal.span_singleton_pow,
     Ideal.span_singleton_generator]
 
@@ -141,7 +140,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
     · symm; convert Ideal.torsionOf_eq_span_pow_pOrder hp hM y
       rw [← pow_add, Nat.sub_add_cancel hk]
   · use 0
-    rw [zero_smul, smul_zero, ← Nat.sub_add_cancel (le_of_not_le hk), pow_add, mul_smul, hM',
+    rw [zero_smul, smul_zero, ← Nat.sub_add_cancel (le_of_not_ge hk), pow_add, mul_smul, hM',
       smul_zero]
 
 open Submodule.Quotient
@@ -169,14 +168,15 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
     [h' : Module.Finite R M] :
     ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| M ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
   obtain ⟨d, s, hs⟩ := @Module.Finite.exists_fin _ _ _ _ _ h'; use d; clear h'
-  induction' d with d IH generalizing M
-  · use finZeroElim
+  induction d generalizing M with
+  | zero =>
+    use finZeroElim
     rw [Set.range_eq_empty, Submodule.span_empty] at hs
     haveI : Unique M :=
       ⟨⟨0⟩, fun x => by dsimp; rw [← Submodule.mem_bot R, hs]; exact Submodule.mem_top⟩
-    haveI : IsEmpty (Fin Nat.zero) := inferInstanceAs (IsEmpty (Fin 0))
     exact ⟨0⟩
-  · have : ∀ x : M, Decidable (x = 0) := fun _ => by classical infer_instance
+  | succ d IH =>
+    have : ∀ x : M, Decidable (x = 0) := fun _ => by classical infer_instance
     obtain ⟨j, hj⟩ := exists_isTorsionBy hM d.succ d.succ_ne_zero s hs
     let s' : Fin d → M ⧸ R ∙ s j := Submodule.Quotient.mk ∘ s ∘ j.succAbove
     -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
@@ -218,7 +218,8 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
       rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs'; simp only [mkQ_apply] at hs'
       simp only [s']; rw [← Function.comp_assoc, Set.range_comp (_ ∘ s), Fin.range_succAbove]
       rw [← Set.range_comp, ← Set.insert_image_compl_eq_range _ j, Function.comp_apply,
-        (Quotient.mk_eq_zero _).mpr (Submodule.mem_span_singleton_self _), span_insert_zero] at hs'
+        (Quotient.mk_eq_zero _).mpr (Submodule.mem_span_singleton_self _),
+        Submodule.span_insert_zero] at hs'
       exact hs'
 
 end PTorsion
@@ -229,12 +230,10 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTor
     ∃ (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
       Nonempty <| M ≃ₗ[R] ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
   obtain ⟨I, fI, _, p, hp, e, h⟩ := Submodule.exists_isInternal_prime_power_torsion_of_pid hM
-  haveI := fI
   have :
     ∀ i,
       ∃ (d : ℕ) (k : Fin d → ℕ),
         Nonempty <| torsionBy R M (p i ^ e i) ≃ₗ[R] ⨁ j, R ⧸ R ∙ p i ^ k j := by
-    haveI := fun i => isNoetherian_submodule' (torsionBy R M <| p i ^ e i)
     exact fun i =>
       torsion_by_prime_power_decomposition.{u, v} (hp i)
         ((isTorsion'_powers_iff <| p i).mpr fun x => ⟨e i, smul_torsionBy _ _⟩)
@@ -246,8 +245,9 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTor
           (DFinsupp.mapRange.linearEquiv fun i => (this i).choose_spec.choose_spec.some).trans <|
             (DirectSum.sigmaLcurryEquiv R).symm.trans
               (DFinsupp.mapRange.linearEquiv fun i => quotEquivOfEq _ _ ?_)⟩⟩
-  obtain ⟨i, j⟩ := i
   simp only
+
+variable (R M)
 
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated
   module over a PID is isomorphic to the product of a free module and a direct sum of some
@@ -255,17 +255,30 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTor
 theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
     ∃ (n : ℕ) (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
       Nonempty <| M ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
-  haveI := isNoetherian_submodule' (torsion R M)
-  haveI := Module.Finite.of_surjective _ (torsion R M).mkQ_surjective
   obtain ⟨I, fI, p, hp, e, ⟨h⟩⟩ :=
     equiv_directSum_of_isTorsion.{u, v} (@torsion_isTorsion R M _ _ _)
   obtain ⟨n, ⟨g⟩⟩ := @Module.basisOfFiniteTypeTorsionFree' R _ (M ⧸ torsion R M) _ _ _ _ _ _
-  haveI : Module.Projective R (M ⧸ torsion R M) := Module.Projective.of_basis ⟨g⟩
   obtain ⟨f, hf⟩ := Module.projective_lifting_property _ LinearMap.id (torsion R M).mkQ_surjective
   refine
     ⟨n, I, fI, p, hp, e,
       ⟨(lequivProdOfRightSplitExact (torsion R M).injective_subtype ?_ hf).symm.trans <|
           (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
+
+open LinearMap in
+theorem exists_ker_toSpanSingleton_eq_annihilator [Module.Finite R M] :
+    ∃ x : M, ker (toSpanSingleton R _ x) = annihilator R M := by
+  have ⟨m, ι, _, p, irr, n, ⟨e⟩⟩ := equiv_free_prod_directSum (R := R) (M := M)
+  refine ⟨e.symm (Finsupp.equivFunOnFinite.symm fun _ ↦ 1, DFinsupp.equivFunOnFintype.symm
+    fun _ ↦ mkQ _ 1), le_antisymm (fun x h ↦ ?_) fun x h ↦ mem_annihilator.mp h _⟩
+  rw [mem_ker, toSpanSingleton_apply, ← map_smul,
+    e.symm.map_eq_zero_iff, Prod.ext_iff, Finsupp.ext_iff, DFinsupp.ext_iff] at h
+  obtain _ | m := m
+  · rw [← mul_one x, ← smul_eq_mul, e.annihilator_eq, annihilator_prod]
+    simp_rw [annihilator_eq_top_iff.mpr inferInstance, DirectSum, annihilator_dfinsupp,
+      top_inf_eq, mem_iInf, Ideal.annihilator_quotient, ← Quotient.mk_eq_zero]
+    exact h.2
+  · rw [show x = 0 by simpa using h.1 0]
+    exact zero_mem _
 
 end Module

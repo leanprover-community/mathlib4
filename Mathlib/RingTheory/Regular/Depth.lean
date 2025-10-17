@@ -43,10 +43,9 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
     Subsingleton (N →ₗ[R] M) ↔ ∃ r ∈ Module.annihilator R N, IsSMulRegular M r := by
   refine ⟨fun hom0 ↦ ?_, fun ⟨r, mem_ann, reg⟩ ↦
     linearMap_subsingleton_of_mem_annihilator reg mem_ann⟩
-  by_cases htrivial : Subsingleton M
+  cases subsingleton_or_nontrivial M
   · exact ⟨0, ⟨Submodule.zero_mem (Module.annihilator R N), IsSMulRegular.zero⟩⟩
-  · let _ : Nontrivial M := not_subsingleton_iff_nontrivial.mp htrivial
-    by_contra! h
+  · by_contra! h
     have hexist : ∃ p ∈ associatedPrimes R M, Module.annihilator R N ≤ p := by
       rcases associatedPrimes.nonempty R M with ⟨Ia, hIa⟩
       apply (Ideal.subset_union_prime_finite (associatedPrimes.finite R M) Ia Ia _).mp
@@ -91,10 +90,10 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
       absurd hg
       apply LinearMap.ext
       intro np'
-      induction' np' using Submodule.Quotient.induction_on with np
-      show to_res np = 0
+      induction np' using Submodule.Quotient.induction_on with | _ np
+      change to_res np = 0
       apply inj1
-      show f np = _
+      change f np = _
       simp [eq0]
     absurd hom0
     let _ := Module.finitePresentation_of_finite R N

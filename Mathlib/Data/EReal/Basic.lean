@@ -352,15 +352,15 @@ lemma toReal_eq_toReal {x y : EReal} (hx_top : x ≠ ⊤) (hx_bot : x ≠ ⊥)
 
 lemma toReal_nonneg {x : EReal} (hx : 0 ≤ x) : 0 ≤ x.toReal := by
   cases x
-  · norm_num
+  · simp
   · exact toReal_coe _ ▸ EReal.coe_nonneg.mp hx
-  · norm_num
+  · simp
 
 lemma toReal_nonpos {x : EReal} (hx : x ≤ 0) : x.toReal ≤ 0 := by
   cases x
-  · norm_num
+  · simp
   · exact toReal_coe _ ▸ EReal.coe_nonpos.mp hx
-  · norm_num
+  · simp
 
 theorem toReal_le_toReal {x y : EReal} (h : x ≤ y) (hx : x ≠ ⊥) (hy : y ≠ ⊤) :
     x.toReal ≤ y.toReal := by
@@ -617,7 +617,7 @@ theorem coe_ennreal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
 
 @[simp] theorem range_coe_ennreal : range ((↑) : ℝ≥0∞ → EReal) = Set.Ici 0 :=
   Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x => match x with
-    | ⊥ => fun h => absurd h bot_lt_zero.not_le
+    | ⊥ => fun h => absurd h bot_lt_zero.not_ge
     | ⊤ => fun _ => ⟨⊤, rfl⟩
     | (x : ℝ) => fun h => ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
 
@@ -708,7 +708,7 @@ lemma coe_toENNReal {x : EReal} (hx : 0 ≤ x) : (x.toENNReal : EReal) = x := by
   · rw [if_pos h_top, h_top]
     rfl
   rw [if_neg h_top]
-  simp only [coe_ennreal_ofReal, ge_iff_le, hx, toReal_nonneg, max_eq_left]
+  simp only [coe_ennreal_ofReal, hx, toReal_nonneg, max_eq_left]
   exact coe_toReal h_top fun _ ↦ by simp_all only [le_bot_iff, zero_ne_bot]
 
 lemma coe_toENNReal_eq_max {x : EReal} : x.toENNReal = max 0 x := by
