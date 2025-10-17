@@ -518,25 +518,24 @@ noncomputable def to_equipartition (f : Equidecomp X G) : Equipartition X G wher
       disjoint_iUnion_right, Prod.forall]
     intro h3 p_1 p_2 p_3 h4
     classical rw [Finset.subset_image_iff] at h1
-    rcases h1 with ⟨s', ⟨h1, h5⟩⟩
-    rcases h2 with ⟨g', ⟨hg, h2⟩⟩
-    rw [← h5] at h4
+    rcases h1 with ⟨s', ⟨h1, rfl⟩⟩
+    rcases h2 with ⟨g', ⟨hg, rfl⟩⟩
     simp only [Finset.mem_image, Prod.mk.injEq, existsAndEq, true_and] at h4
-    rcases h4 with ⟨_, ⟨h4_2, _⟩⟩
-    simp only [← h2, ← h4_2, Set.disjoint_iff, inter_setOf_eq_sep, mem_setOf_eq, subset_empty_iff,
+    rcases h4 with ⟨_, rfl, _⟩
+    simp only [Set.disjoint_iff, inter_setOf_eq_sep, mem_setOf_eq, subset_empty_iff,
       eq_empty_iff_forall_notMem, not_and, not_exists, forall_exists_index]
     have h : g' ∉ s' := by grind
     grind
   supIndepTarget s h1 p h2 hp := by
     simp_all only [Bool.false_eq_true, dite_else_false, Finset.mem_image, Finset.sup_set_eq_biUnion,
       disjoint_iUnion_right, Prod.forall]
-    intro s' g' b' hA'
-    rcases h2 with ⟨g,⟨hg, hpg⟩⟩
-    simp only [← hpg, Finset.subset_image_iff] at h1 ⊢
-    rcases h1 with ⟨s_g, ⟨_ , h_s_g_s⟩⟩
-    simp only [← h_s_g_s, Finset.mem_image, Prod.mk.injEq, existsAndEq, true_and] at hA'
-    rcases hA' with ⟨hg', ⟨hs', hb'⟩⟩
-    simp only [← hb', Set.disjoint_iff, subset_empty_iff, eq_empty_iff_forall_notMem, mem_inter_iff,
+    intro _ _ _  hA'
+    rcases h2 with ⟨g, hg, rfl⟩
+    classical rw [Finset.subset_image_iff] at h1
+    rcases h1 with ⟨s_g, -, rfl⟩
+    simp only [Finset.mem_image, Prod.mk.injEq, existsAndEq, true_and] at hA'
+    rcases hA' with ⟨_ , -, rfl⟩
+    simp only [Set.disjoint_iff, subset_empty_iff, eq_empty_iff_forall_notMem, mem_inter_iff,
       mem_setOf_eq, not_and, not_exists, forall_exists_index]
     have h : g ∉ s_g := by grind
     grind
