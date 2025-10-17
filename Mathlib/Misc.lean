@@ -1,5 +1,15 @@
 import Mathlib
-import Mathlib.Riccardo
+
+
+theorem IsPrimitiveRoot.associated_sub_one_algEquiv_sub_one {n : ℕ} [NeZero n] {A R : Type*} {ζ : A}
+    [CommRing A] [CommRing R] [Algebra R A] [IsDomain A] (hζ : IsPrimitiveRoot ζ n)
+    (σ : A ≃ₐ[R] A) :
+    Associated (ζ - 1) (σ (ζ - 1)) := by
+  rw [map_sub, map_one, ← hζ.autToPow_spec R σ]
+  apply IsPrimitiveRoot.associated_sub_one_pow_sub_one_of_coprime
+  
+  sorry
+
 
 section ExpChar
 
