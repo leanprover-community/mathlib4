@@ -28,8 +28,6 @@ your own code.
 
 -/
 
-assert_not_exists Ring Module
-
 open Function
 
 section

@@ -93,13 +93,13 @@ instance SMulCommClass.rat' [Monoid α] [AddCommGroup M] [DistribMulAction α M]
 end
 
 -- see note [lower instance priority]
-instance (priority := 100) NNRatModule.noZeroSMulDivisors [AddCommMonoid M] [Module ℚ≥0 M] :
+instance (priority := 100) NNRatModule.to_isAddTorsionFree [AddCommMonoid M] [Module ℚ≥0 M] :
     IsAddTorsionFree M where
-  isSMulRegular n hn m₁ m₂ hm := by
+  nsmul_right_injective n hn m₁ m₂ hm := by
     simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 n, *] using congr((n⁻¹ : ℚ≥0) • $hm)
 
 -- see note [lower instance priority]
-instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module ℚ M] :
-    Module.IsTorsionFree ℤ M where
-  isSMulRegular n hn m₁ m₂ hm := by
-    simpa [← Int.cast_smul_eq_zsmul ℚ n, *] using congr((n⁻¹ : ℚ) • $hm)
+instance (priority := 100) RatModule.to_isAddTorsionFree [AddCommGroup M] [Module ℚ M] :
+    IsAddTorsionFree M where
+  nsmul_right_injective n hn m₁ m₂ hm := by
+    simpa [← Nat.cast_smul_eq_nsmul ℚ n, *] using congr((n⁻¹ : ℚ) • $hm)
