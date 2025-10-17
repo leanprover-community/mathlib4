@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.Analysis.Distribution.TemperedDistribution
+import Mathlib.Analysis.InnerProductSpace.NormPow
 
 /-!
 
@@ -21,6 +22,8 @@ open scoped Nat NNReal ContDiff
 
 variable {𝕜 𝕜' H D E F G V : Type*}
 
+#check norm_fderiv_norm_id_rpow
+
 variable [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup H] [NormedAddCommGroup V]
 
 variable --[NormedSpace ℝ E] [NormedSpace 𝕜 E]
@@ -29,7 +32,50 @@ variable --[NormedSpace ℝ E] [NormedSpace 𝕜 E]
   [MeasurableSpace H] [BorelSpace H]
   [NormedSpace 𝕜 V] [CompleteSpace E]
 
+variable (H) in
+@[simp]
+theorem fderiv_norm_sq' : fderiv ℝ (fun (x : H) ↦ ‖x‖^2) = 2 • (innerSL ℝ (E := H)) := by
+  ext1 x
+  simpa using (HasFDerivAt.norm_sq (hasFDerivAt_id x)).fderiv
 
+variable (H) in
+theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖^2).HasTemperateGrowth := by
+  apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
+  · simp only [fderiv_norm_sq']
+    convert (2 • (innerSL ℝ)).hasTemperateGrowth
+  · exact (contDiff_norm_sq ℝ (n := 1)).differentiable (Eq.refl _).le
+  · intro x
+    simp only [norm_pow, norm_norm, one_mul, add_pow_two]
+    apply le_add_of_nonneg_left
+    positivity
+
+theorem HasTemperateGrowth.add {f₁ f₂ : H → E}
+    (hf₁ : f₁.HasTemperateGrowth) (hf₂ : f₂.HasTemperateGrowth) : (f₁ + f₂).HasTemperateGrowth := by
+  refine ⟨hf₁.1.add hf₂.1, ?_⟩
+  intro n
+  obtain ⟨k₁, C₁, h₁⟩ := hf₁.2 n
+  obtain ⟨k₂, C₂, h₂⟩ := hf₂.2 n
+  use max k₁ k₂, C₁ + C₂
+  intro x
+  rw [iteratedFDeriv_add_apply (hf₁.1.contDiffAt.of_le ENat.LEInfty.out)
+    (hf₂.1.contDiffAt.of_le ENat.LEInfty.out)]
+  grw [norm_add_le, h₁ x, h₂ x, add_mul, add_le_add]
+  · gcongr
+    · have := h₁ 0
+      simp at this
+      grw [← this]
+      positivity
+    · apply le_add_of_nonneg_right (by positivity)
+    exact k₁.le_max_left k₂
+  · gcongr
+    · have := h₂ 0
+      simp at this
+      grw [← this]
+      positivity
+    · apply le_add_of_nonneg_right (by positivity)
+    exact k₁.le_max_right k₂
+
+#exit
 
 variable (f : 𝓢'(𝕜, H, E, V)) (g : H → 𝕜) (hg : g.HasTemperateGrowth)
 
