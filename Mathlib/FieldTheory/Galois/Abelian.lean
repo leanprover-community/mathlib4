@@ -19,7 +19,7 @@ variable [Field M] [Algebra K M] [Algebra L M] [IsScalarTower K L M]
 /-- The class of abelian extensions,
 defined as galois extensions whose galois group is commutative. -/
 class IsAbelianGalois (K L : Type*) [Field K] [Field L] [Algebra K L] : Prop extends
-  IsGalois K L, IsMulCommutative (L ≃ₐ[K] L)
+  IsGalois K L, IsMulCommutative Gal(L/K)
 
 lemma IsAbelianGalois.tower_bot [IsAbelianGalois K M] :
     IsAbelianGalois K L :=
@@ -54,6 +54,12 @@ instance (K L : Type*) [Field K] [Field L] [Algebra K L] [IsAbelianGalois K L]
     (K' : IntermediateField K L) : IsAbelianGalois K' L :=
   .tower_top K _ L
 
-lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic (L ≃ₐ[K] L)] :
+instance : IsAbelianGalois K K where
+  is_comm.comm _ _ := Subsingleton.elim _ _
+
+instance : IsAbelianGalois K (⊥ : IntermediateField K L) :=
+  .of_algHom (IntermediateField.botEquiv K L).toAlgHom
+
+lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] :
     IsAbelianGalois K L where
   is_comm := letI := IsCyclic.commGroup (α := L ≃ₐ[K] L); inferInstance
