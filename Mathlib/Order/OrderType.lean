@@ -120,6 +120,8 @@ instance inhabited : Inhabited OrderType :=
 instance : One OrderType where
  one := ⟦LinOrd.of PUnit⟧
 
+lemma one_def : (1 : OrderType) = type PUnit := rfl
+
 @[simp]
 theorem type_ordtoType (o : OrderType) : type o.toType = o :=
   o.out_eq
@@ -356,11 +358,12 @@ in instance : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
    (fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (choice ha) (choice hb)⟩)
 
 @[simp]
-lemma type_add [LinearOrder α] [LinearOrder β] : type (α ⊕ₗ β) = (type α) + (type β) := rfl
+lemma type_add (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
+    type (α ⊕ₗ β) = (type α) + (type β) := rfl
 
 lemma OrderIso.sumLexEmpty (α : Type u) [LinearOrder α] : Nonempty (Lex (α ⊕ PEmpty) ≃o α) :=
-   ⟨OrderIso.ofRelIsoLT ((Sum.Lex.toLexRelIsoLT (α := α) (β := PEmpty)).symm.trans
-     (RelIso.sumLexEmpty (β := PEmpty) (α := α) (r := (· < ·)) (s := (· < ·))))⟩
+  ⟨OrderIso.ofRelIsoLT ((Sum.Lex.toLexRelIsoLT (α := α) (β := PEmpty)).symm.trans
+    (RelIso.sumLexEmpty (β := PEmpty) (α := α) (r := (· < ·)) (s := (· < ·))))⟩
 
 lemma OrderIso.emptySumLex (α : Type u) [LinearOrder α] : Nonempty (Lex (PEmpty ⊕ α) ≃o α) :=
    ⟨OrderIso.ofRelIsoLT ((Sum.Lex.toLexRelIsoLT (α := PEmpty) (β := α)).trans
@@ -404,7 +407,11 @@ instance : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
    (fun _ _ ha _ _ hb ↦ ⟨OrderIso.prodLexCongr (choice ha) (choice hb)⟩)
 
 @[simp]
-lemma type_mul [LinearOrder α] [LinearOrder β] [LinearOrder γ] [LinearOrder δ] :
-    type (α ×ₗ γ) = (type α) * (type γ) := rfl
+lemma type_mul (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
+    type (α ×ₗ β) = (type α) * (type β) := rfl
+
+open Classical in
+lemma mul_one (o : OrderType) : o * 1 = o :=
+  inductionOn o (fun α _ ↦ RelIso.ordertype_congr (Prod.Lex.prodUnique α PUnit))
 
 end OrderType
