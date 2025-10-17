@@ -11,9 +11,9 @@ import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 We define the normal closure of an extension of domains `R ⊆ S` as a domain `T` such that
 `R ⊆ S ⊆ T` and the extension `Frac T / Frac R` is Galois, and prove several instances about it.
 
-Under the hood, it is defined as the `integralClosure` of `S` inside the
+Under the hood, `T` is defined as the `integralClosure` of `S` inside the
 `IntermediateField.normalClosure` of the extension `Frac S / Frac R` inside the `AlgebraicClosure`
-of `Frac S`.
+of `Frac S`. In particular, if `S` is a Dedekind domain, then `T` is also a Dedekind domain. 
 
 # Technical notes
 * Many instances are proved about the `IntermediateField.normalClosure` of the extension
