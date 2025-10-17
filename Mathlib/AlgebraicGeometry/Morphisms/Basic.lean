@@ -182,7 +182,7 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
 
 lemma of_forall_source_exists_preimage
     [P.RespectsRight IsOpenImmersion] [P.HasOfPostcompProperty IsOpenImmersion]
-    (f : X ⟶ Y) (hX : ∀ x, ∃ (U : Y.Opens), f.base x ∈ U ∧ P ((f ⁻¹ᵁ U).ι ≫ f)) :
+    (f : X ⟶ Y) (hX : ∀ x, ∃ (U : Y.Opens), f x ∈ U ∧ P ((f ⁻¹ᵁ U).ι ≫ f)) :
     P f := by
   choose U h₁ h₂ using hX
   apply IsZariskiLocalAtTarget.of_range_subset_iSup U
