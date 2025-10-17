@@ -29,6 +29,7 @@ where
     for tree in trees do
       tree.visitM' (postNode := visitNode)
   /-- Visits a node in a tree. -/
+  @[nolint unusedArguments]
   visitNode (_ctx : ContextInfo) (i : Info) (_children : PersistentArray InfoTree) :
       StateM (Array Suggestion) Unit := do
     let .ofCustomInfo ci := i

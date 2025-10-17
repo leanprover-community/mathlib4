@@ -48,7 +48,7 @@ example : n = n := by
   rfl
 
 /--
-info: theorem _private.MathlibTest.ExtractGoal.0._example.extracted_1 {z : Int} :
+info: theorem _example.extracted_1 {z : Int} :
   @Exists.{1} Nat fun (n : Nat) ↦ @Eq.{1} Int (@Nat.cast.{0} Int instNatCastInt n) z := sorry
 ---
 warning: declaration uses 'sorry'
