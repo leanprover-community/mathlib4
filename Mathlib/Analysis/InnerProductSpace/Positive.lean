@@ -211,7 +211,7 @@ theorem IsSymmetricProjection.isPositive {p : E →ₗ[𝕜] E} (hp : p.IsSymmet
 
 /-- A star projection operator is positive. -/
 @[deprecated (since := "2025-08-19")]
-alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
+alias IsPositive.of_isStarProjection := IsSymmetricProjection.isPositive
 
 theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ range p ≤ range q := by
