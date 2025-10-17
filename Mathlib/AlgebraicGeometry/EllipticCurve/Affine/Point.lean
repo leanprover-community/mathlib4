@@ -86,11 +86,11 @@ namespace Affine
 /-! ## The affine coordinate ring -/
 
 /-- The affine coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of a Weierstrass curve `W`. -/
-abbrev CoordinateRing : Type r :=
+abbrev CoordinateRing (W' : Affine R) : Type r :=
   AdjoinRoot W'.polynomial
 
 /-- The function field `R(W) := Frac(R[W])` of a Weierstrass curve `W`. -/
-abbrev FunctionField : Type r :=
+abbrev FunctionField (W' : Affine R) : Type r :=
   FractionRing W'.CoordinateRing
 
 namespace CoordinateRing
