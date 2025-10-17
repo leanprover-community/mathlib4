@@ -8,6 +8,7 @@ import Mathlib.Order.Category.LinOrd
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Sum.Order
+import Mathlib.Data.Prod.Lex
 /-!
 # OrderTypes
 
@@ -47,7 +48,9 @@ noncomputable section
 open Function Cardinal Set Equiv Order
 open scoped Cardinal InitialSeg
 
-universe u v w
+universe u v w w'
+
+variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type w'}
 
 instance : LE PEmpty where
  le _ _ := False
@@ -72,8 +75,6 @@ instance : LinearOrder Empty where
  toDecidableLE := Classical.decRel LE.le
 
 def PEmpty_iso : PEmpty ≃o PEmpty := by trivial
-
-variable {α : Type u} {β : Type v} {γ : Type w}
 
 def ordIsoOfIsEmpty (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β]
     [IsEmpty β] [IsEmpty α] : α ≃o β :=
@@ -382,5 +383,28 @@ instance : AddMonoid OrderType where
   zero_add := zero_add
   add_zero := add_zero
   nsmul := nsmulRec
+
+/-- `Equiv.prodCongr` promoted to an order isomorphism between lexicographic products. -/
+@[simps! apply]
+def OrderIso.prodLexCongr [LinearOrder α] [LinearOrder β]
+    [LinearOrder γ] [LinearOrder δ] (ea : α ≃o β) (eb : γ ≃o δ) : α ×ₗ γ ≃o β ×ₗ δ where
+  toEquiv := ofLex.trans ((Equiv.prodCongr ea eb).trans toLex)
+  map_rel_iff' := by
+    intro a b
+    simp [Prod.Lex.le_iff, OrderIso.lt_iff_lt]
+
+open Classical in
+instance : Mul OrderType where
+  mul := Quotient.map₂ (fun r s ↦ ⟨(r ×ₗ s)⟩)
+   (fun _ _ ha _ _ hb ↦ ⟨OrderIso.prodLexCongr (choice ha) (choice hb)⟩)
+
+open Classical in
+instance : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
+  hMul := Quotient.map₂ (fun r s ↦ ⟨(r ×ₗ s)⟩)
+   (fun _ _ ha _ _ hb ↦ ⟨OrderIso.prodLexCongr (choice ha) (choice hb)⟩)
+
+@[simp]
+lemma type_mul [LinearOrder α] [LinearOrder β] [LinearOrder γ] [LinearOrder δ] :
+    type (α ×ₗ γ) = (type α) * (type γ) := rfl
 
 end OrderType
