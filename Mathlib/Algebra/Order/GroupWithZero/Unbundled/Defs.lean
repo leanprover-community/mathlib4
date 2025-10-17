@@ -93,7 +93,7 @@ namely `a₁ ≤ a₂ → b * a₁ ≤ b * a₂` if `0 ≤ b`.
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `OrderedSemiring`. -/
 @[mk_iff] class PosMulMono : Prop where
-  /-- Do not use this. Use `mul_le_mul_of_nonneg_left` instead. -/
+  /-- Do not use this. Use `_root_.mul_le_mul_of_nonneg_left` instead. -/
   protected mul_le_mul_of_nonneg_left ⦃a : α⦄ (ha : 0 ≤ a) ⦃b c : α⦄ (hbc : b ≤ c) : a * b ≤ a * c
 
 /-- Typeclass for strict monotonicity of multiplication by positive elements on the left,
@@ -102,7 +102,7 @@ namely `a₁ < a₂ → b * a₁ < b * a₂` if `0 < b`.
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `StrictOrderedSemiring`. -/
 @[mk_iff] class PosMulStrictMono : Prop where
-  /-- Do not use this. Use `mul_lt_mul_of_pos_left` instead. -/
+  /-- Do not use this. Use `_root_.mul_lt_mul_of_pos_left` instead. -/
   protected mul_lt_mul_of_pos_left ⦃a : α⦄ (ha : 0 < a) ⦃b c : α⦄ (hbc : b < c) : a * b < a * c
 
 /-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
@@ -125,7 +125,7 @@ namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b` if `0 ≤ b`.
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `OrderedSemiring`. -/
 @[mk_iff] class MulPosMono : Prop where
-  /-- Do not use this. Use `mul_le_mul_of_nonneg_right` instead. -/
+  /-- Do not use this. Use `_root_.mul_le_mul_of_nonneg_right` instead. -/
   protected mul_le_mul_of_nonneg_right ⦃c : α⦄ (hc : 0 ≤ c) ⦃a b : α⦄ (hab : a ≤ b) : a * c ≤ b * c
 
 /-- Typeclass for strict monotonicity of multiplication by positive elements on the right,
@@ -134,7 +134,7 @@ namely `a₁ < a₂ → a₁ * b < a₂ * b` if `0 < b`.
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `StrictOrderedSemiring`. -/
 @[mk_iff] class MulPosStrictMono : Prop where
-  /-- Do not use this. Use `mul_lt_mul_of_pos_right` instead. -/
+  /-- Do not use this. Use `_root_.mul_lt_mul_of_pos_right` instead. -/
   protected mul_lt_mul_of_pos_right ⦃c : α⦄ (hc : 0 < c) ⦃a b : α⦄ (hab : a < b) : a * c < b * c
 
 /-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
@@ -159,6 +159,14 @@ variable [Mul α] [Zero α]
 section Preorder
 
 variable [Preorder α] {a b c d : α}
+
+instance PosMulMono.to_covariantClass_nonneg_mul_le [PosMulMono α] :
+    CovariantClass α≥0 α (fun x y => x * y) (· ≤ ·) where
+  elim a _b _c hbc := PosMulMono.mul_le_mul_of_nonneg_left a.2 hbc
+
+instance MulPosMono.to_covariantClass_nonneg_mul_le [MulPosMono α] :
+    CovariantClass α≥0 α (fun x y => y * x) (· ≤ ·) where
+  elim a _b _c hbc := MulPosMono.mul_le_mul_of_nonneg_right a.2 hbc
 
 instance PosMulMono.to_covariantClass_pos_mul_le [PosMulMono α] :
     CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) where

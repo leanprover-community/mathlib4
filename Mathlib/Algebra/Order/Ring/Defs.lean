@@ -117,6 +117,7 @@ multiplication by a nonnegative number is monotone. -/
 class IsOrderedRing (R : Type*) [Semiring R] [PartialOrder R] extends
     IsOrderedAddMonoid R, ZeroLEOneClass R, PosMulMono R, MulPosMono R where
 
+-- See note [lower instance priority]
 attribute [instance 100] IsOrderedRing.toZeroLEOneClass
 attribute [instance 200] IsOrderedRing.toPosMulMono
 attribute [instance 200] IsOrderedRing.toMulPosMono
@@ -127,6 +128,7 @@ class IsStrictOrderedRing (R : Type*) [Semiring R] [PartialOrder R] extends
     IsOrderedCancelAddMonoid R, ZeroLEOneClass R, Nontrivial R, PosMulStrictMono R,
     MulPosStrictMono R where
 
+-- See note [lower instance priority]
 attribute [instance 100] IsStrictOrderedRing.toZeroLEOneClass
 attribute [instance 100] IsStrictOrderedRing.toNontrivial
 attribute [instance 200] IsStrictOrderedRing.toPosMulStrictMono
