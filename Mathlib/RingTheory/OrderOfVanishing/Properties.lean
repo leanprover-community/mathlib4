@@ -100,22 +100,30 @@ lemma ord_neg (x : R) : ord R (-x) = ord R x:= by
   congr 2
   all_goals exact Ideal.span_singleton_neg x
 
+@[simp]
+lemma ord_mul_of_isUnit (a : R) (h : IsUnit a) (x : R) : ord R (a * x) = ord R x := by
+  rw [ord, ord, Ideal.span_singleton_mul_left_unit h x]
 /--
 In an `S` algebra `R`, the order of vanishing of `x : R` is equal to the order of vanishing
 of `a • x` for `a` a unit in `S`.
 -/
 @[simp]
-lemma ord_smul {S : Type*} [CommRing S] [Algebra S R]
+lemma ord_smul_of_isUnit {S : Type*} [CommRing S] [Algebra S R]
     (a : S) (h : IsUnit a) (x : R) : ord R (a • x) = ord R x := by
-  simp only [ord]
-  have : a • x = algebraMap S R a * x := by
-    exact Algebra.smul_def a x
-  rw [this]
-  have : IsUnit (algebraMap S R a) := by
-    exact RingHom.isUnit_map (algebraMap S R) h
-  congr 2
-  all_goals exact Ideal.span_singleton_mul_left_unit this x
+  rw [Algebra.smul_def a x]
+  exact ord_mul_of_isUnit ((algebraMap S R) a) (RingHom.isUnit_map (algebraMap S R) h) x
 
+/-
+Simple lemma saying `ord (x) ≤ ord (a * x)`. One should note that the order here
+is the order on `ℕ∞` where `∞` is a top element.
+-/
+lemma ord_le_mul (a : R) (x : R) : ord R x ≤ ord R (a * x) := by
+  simp only [ord]
+  suffices Ideal.span {a * x} ≤ Ideal.span {x} by
+    let g : (R ⧸ Ideal.span {a * x}) →ₗ[R] (R ⧸ Ideal.span {x}) := Submodule.factor this
+    refine Module.length_le_of_surjective (Submodule.factor this) (Submodule.factor_surjective this)
+  rw [@Ideal.span_singleton_le_span_singleton]
+  exact Dvd.intro_left (Algebra.algebraMap a) rfl
 
 /--
 In an `S` algebra `R`, the order of vanishing of `x : R` is less than or equal
@@ -123,21 +131,14 @@ to the order of vanishing of `a • x` for any `a : S`. One should note that the
 is the order on `ℕ∞` where `∞` is a top element.
 -/
 lemma ord_le_smul {S : Type*} [CommRing S] [Algebra S R] (a : S) (x : R) :
-    ord R x ≤ ord R (a • x) := by
-  simp only [ord]
-  suffices Ideal.span {a • x} ≤ Ideal.span {x} by
-    let g : (R ⧸ Ideal.span {a • x}) →ₗ[R] (R ⧸ Ideal.span {x}) := Submodule.factor this
-    refine Module.length_le_of_surjective (Submodule.factor this) (Submodule.factor_surjective this)
-  rw [@Ideal.span_singleton_le_span_singleton]
-  rw [@Algebra.smul_def']
-  exact Dvd.intro_left (Algebra.algebraMap a) rfl
+    ord R x ≤ ord R (a • x) := by simp [Algebra.smul_def, ord_le_mul]
 
 /--
 The order of vanishing of a unit is `0`.
 -/
 @[simp]
 lemma ord_of_isUnit (x : R) (hx : IsUnit x) : ord R x = 0 := by
-  simpa using ord_smul x hx (1 : R)
+  simpa using ord_smul_of_isUnit x hx (1 : R)
 
 section IsDiscreteValuationRing
 
