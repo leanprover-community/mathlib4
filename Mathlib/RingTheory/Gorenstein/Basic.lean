@@ -80,31 +80,10 @@ instance (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R 
 noncomputable def ExtendScalars'.obj' [UnivLE.{v, v'}] [Small.{v'} S]
     (M : ModuleCat.{v} R) : ModuleCat.{v'} S :=
   ModuleCat.of S (Shrink.{v'} (TensorProduct R S M))
-/-
-noncomputable instance [UnivLE.{v, v'}] [Small.{v'} S] (M : ModuleCat.{v} R) :
-    Module R ↑(ExtendScalars'.obj' S M) :=
-  inferInstanceAs (Module R (Shrink.{v'} (TensorProduct R S M)))
 
-instance [UnivLE.{v, v'}] [Small.{v'} S] (M : Type v) [AddCommGroup M] [Module R M] :
-  IsScalarTower R S (Shrink.{v'} (TensorProduct R S M)) :=
-  (Shrink.linearEquiv.{v'} R (TensorProduct R S M)).isScalarTower S
-
-noncomputable instance [UnivLE.{v, v'}] [Small.{v'} S]
-    (M : ModuleCat.{v} R) : IsScalarTower R S (ExtendScalars'.obj' S M) :=
-  (Shrink.linearEquiv.{v'} R (TensorProduct R S M)).isScalarTower S
-
-noncomputable def ExtendScalars'.obj'_map [UnivLE.{v, v'}] [Small.{v'} S]
-    (M : ModuleCat.{v} R) : M →ₗ[R] (ExtendScalars'.obj' S M) :=
-  (((Shrink.linearEquiv.{v'} S (TensorProduct R S M)).symm.toLinearMap.restrictScalars R).comp
-      (TensorProduct.mk R S M 1))
-
-lemma isBaseChange_obj'_map [UnivLE.{v, v'}] [Small.{v'} S]
-    (M : ModuleCat.{v} R) :
-    IsBaseChange S (ExtendScalars'.obj'_map S M) := by
-  apply IsBaseChange.of_equiv (Shrink.linearEquiv.{v'} S (TensorProduct R S M)).symm
-  simp [ExtendScalars'.obj'_map]
--/
---IsBaseChange.map
+open Algebra in
+noncomputable local instance (priority := 2000) [UnivLE.{v, v'}] [Small.{v'} S]
+    (N : ModuleCat.{v'} S) : Module R N := inferInstance
 
 noncomputable def ExtendScalars'.map' [UnivLE.{v, v'}] [Small.{v'} S]
     {M1 M2 : ModuleCat.{v} R} (g : M1 ⟶ M2) : obj' S M1 ⟶ obj' S M2 :=
@@ -189,8 +168,13 @@ open Algebra
 
 instance : Functor.Linear R (ModuleCat.extendScalars' R S) where
   map_smul {X Y} g r := by
-    --hom_smul, LinearMap.baseChange_smul
-    sorry
+    simp only [extendScalars', ExtendScalars'.map', hom_smul, LinearMap.baseChange_smul]
+    let _ : IsScalarTower R S (ExtendScalars'.obj' S X ⟶ ExtendScalars'.obj' S Y) := {
+      smul_assoc r s z := by
+        rw [Algebra.smul_def, ← smul_smul]
+        rfl }
+    rw [← algebraMap_smul S r, ← algebraMap_smul S r, LinearMap.comp_smul, LinearMap.smul_comp]
+    rfl
 
 end ModuleCat
 
@@ -269,10 +253,11 @@ instance (n : ℕ) (M N : ModuleCat.{v'} S) : IsScalarTower R S (Ext M N n) wher
     rw [Algebra.smul_def, ← smul_smul]
     rfl
 
-theorem Ext.isBaseChange [Module.Flat R S] (M N : ModuleCat.{v} R) (n : ℕ) :
-    IsBaseChange S
-    (Functor.mapExtLinearMap.{w, w'} (ModuleCat.extendScalars'.{v, v'} R S) R M N n) := by
+theorem Ext.isBaseChange_aux [Module.Flat R S] (M N : ModuleCat.{v} R) (n : ℕ) :
+    IsBaseChange S ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n) := by
   sorry
+
+
 
 end
 
@@ -949,6 +934,7 @@ theorem isCohenMacaulayLocalRing_of_isGorensteinLocalRing [IsGorensteinLocalRing
   rw [Module.supportDim_self_eq_ringKrullDim, eq] at le
   apply isCohenMacaulayLocalRing_of_ringKrullDim_le_depth R (le_of_le_of_eq le _)
   simp [IsLocalRing.depth_eq_of_iso (Shrink.linearEquiv.{u} R R).toModuleIso]
+-/
 
 /-
 variable {R} in
@@ -1021,5 +1007,4 @@ theorem isGroensteinLocalRing_tfae (n : ℕ) (h : ringKrullDim R = n) :
 
     sorry
   sorry
--/
 -/
