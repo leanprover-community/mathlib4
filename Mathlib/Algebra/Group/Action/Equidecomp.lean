@@ -522,7 +522,7 @@ noncomputable def to_equipartition (f : Equidecomp X G) : Equipartition X G wher
     rcases h2 with ⟨g', ⟨hg, h2⟩⟩
     rw [← h5] at h4
     simp only [Finset.mem_image, Prod.mk.injEq, existsAndEq, true_and] at h4
-    rcases h4 with ⟨h4_1, ⟨h4_2, h4_3⟩⟩
+    rcases h4 with ⟨_, ⟨h4_2, _⟩⟩
     simp only [← h2, ← h4_2, Set.disjoint_iff, inter_setOf_eq_sep, mem_setOf_eq, subset_empty_iff,
       eq_empty_iff_forall_notMem, not_and, not_exists, forall_exists_index]
     have h : g' ∉ s' := by grind
@@ -533,19 +533,15 @@ noncomputable def to_equipartition (f : Equidecomp X G) : Equipartition X G wher
     intro s' g' b' hA'
     rcases h2 with ⟨g,⟨hg, hpg⟩⟩
     simp only [← hpg, Finset.subset_image_iff] at h1 ⊢
-    rcases h1 with ⟨s_g, ⟨h_s_g, h_s_g_s⟩⟩
-    rw [← h_s_g_s] at hA'
-    simp only [Finset.mem_image, Prod.mk.injEq, existsAndEq, true_and] at hA'
+    rcases h1 with ⟨s_g, ⟨_ , h_s_g_s⟩⟩
+    simp only [← h_s_g_s, Finset.mem_image, Prod.mk.injEq, existsAndEq, true_and] at hA'
     rcases hA' with ⟨hg', ⟨hs', hb'⟩⟩
     simp only [← hb', Set.disjoint_iff, subset_empty_iff, eq_empty_iff_forall_notMem, mem_inter_iff,
       mem_setOf_eq, not_and, not_exists, forall_exists_index]
-    intro x hx hg_ _
-    rw [hg_]
     have h : g ∉ s_g := by grind
     grind
 
-theorem to_equipartition_source (f : Equidecomp X G) :
-    (f.to_equipartition).source = f.source := by
+theorem to_equipartition_source (f : Equidecomp X G) : (f.to_equipartition).source = f.source := by
   ext i
   simp only [Equipartition.source, to_equipartition, Bool.false_eq_true, dite_else_false,
     minimal_witness, Finset.sup_image, Finset.sup_set_eq_biUnion, Finset.mem_filter, comp_apply,
