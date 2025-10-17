@@ -338,7 +338,7 @@ lemma Preconnected.connected_induce_complement_singleton_of_degree_eq_one [Decid
 /-- A finite nontrivial (pre)connected graph contains a vertex that leaves the graph connected if
 removed. -/
 lemma Preconnected.exists_vertex_connected_induce_complement_singleton_of_fintype_of_nontrivial
-    (hpreconn : G.Preconnected) [DecidableEq V] [Fintype V] [Nontrivial V] :
+    [DecidableEq V] [Fintype V] [Nontrivial V] (hpreconn : G.Preconnected) :
     ∃ v : V, (G.induce {v}ᶜ).Connected := by
   obtain ⟨T, _, T_isTree⟩ := Connected.exists_isTree_le ⟨hpreconn⟩
   have ⟨hT, _⟩ := T_isTree
@@ -349,7 +349,7 @@ lemma Preconnected.exists_vertex_connected_induce_complement_singleton_of_fintyp
 
 /-- A finite connected graph contains a vertex that leaves the graph preconnected if removed. -/
 lemma Connected.exists_vertex_preconnected_induce_complement_singleton_of_fintype
-    (hconn : G.Connected) [DecidableEq V] [Fintype V] : ∃ v : V, (G.induce {v}ᶜ).Preconnected := by
+    [DecidableEq V] [Fintype V] (hconn : G.Connected) : ∃ v : V, (G.induce {v}ᶜ).Preconnected := by
   by_cases h : Nontrivial V
   · obtain ⟨v, hv⟩ :=
       Preconnected.exists_vertex_connected_induce_complement_singleton_of_fintype_of_nontrivial
