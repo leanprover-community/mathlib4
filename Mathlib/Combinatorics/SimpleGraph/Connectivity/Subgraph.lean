@@ -679,10 +679,10 @@ lemma Preconnected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq
 /-- A finite nontrivial (pre)connected graph contains a vertex that leaves the graph connected if
 removed. -/
 lemma Preconnected.exists_vertex_connected_deleteVerts_singleton_of_fintype_of_nontrivial
-    [DecidableEq V] {H : G.Subgraph} [Fintype H.verts] [Nontrivial H.verts] (h : H.Preconnected) :
-    ∃ v ∈ H.verts, (H.deleteVerts {v}).Connected := by
+    [DecidableEq V] {H : G.Subgraph} [Fintype H.verts] [Nontrivial H.verts]
+    (hpreconn : H.Preconnected) : ∃ v ∈ H.verts, (H.deleteVerts {v}).Connected := by
   obtain ⟨T, T_le_H, T_isTree⟩ :=
-    (Subgraph.connected_iff.mpr ⟨h, Set.Nonempty.of_subtype⟩).coe.exists_isTree_le
+    (Subgraph.connected_iff.mpr ⟨hpreconn, Set.Nonempty.of_subtype⟩).coe.exists_isTree_le
   have ⟨T_conn, _⟩ := T_isTree
   have := Classical.decRel T.Adj
   obtain ⟨v, hv⟩ := T_isTree.exists_vert_degree_one_of_nontrivial
