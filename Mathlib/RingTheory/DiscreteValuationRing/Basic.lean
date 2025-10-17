@@ -338,32 +338,30 @@ theorem eq_unit_mul_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irre
   use n, u
   apply mul_comm
 
+/-
+TODO: Find somewhere reasonable for this to go
+-/
+theorem div_smul_div_comm {G K : Type*}
+    [Group G] [Field K] [DistribMulAction G K] [IsScalarTower G K K]
+    (g h : G) (a b : K) (hb : b ≠ 0) :
+    (g / h) • (a / b) = (g • a) / (h • b) := by
+  rw [eq_div_iff_mul_eq (ne_of_apply_ne (h⁻¹ • ·) (by simpa)), smul_mul_smul_comm]
+  simp [hb]
+
 /--
 If `K` is the fraction field of a discrete valuation ring `R`, any element `x` of `K` can be
-expressed as `(algebraMap R K u)*(algebraMap R K ϖ)^n` for some `u : Rˣ`, `n : ℤ`.
+expressed as `u • (algebraMap R K ϖ)^n` for some `u : Rˣ`, `n : ℤ`.
 -/
-lemma eq_unit_mul_zpow_irreducible
-    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] {x : K} (hx : x ≠ 0) {ϖ : R}
-    (hϖ : Irreducible ϖ)
-    : ∃ (n : ℤ) (u : Rˣ), x = (algebraMap R K u)*(algebraMap R K ϖ)^n := by
-  let x1 := (IsLocalization.sec (nonZeroDivisors R) x).1
-  let x2 := (IsLocalization.sec (nonZeroDivisors R) x).2
-  have x1nez : x1 ≠ 0 := IsLocalization.sec_fst_ne_zero hx
-  have x2nez : x2.1 ≠ 0 := IsLocalization.sec_snd_ne_zero (fun _ a ↦ a) x
-  have : x = IsLocalization.mk' K x1 x2 := (IsLocalization.mk'_sec K x).symm
-  rw [this]
-  obtain ⟨n1, u1, h1⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible x1nez hϖ
-  rw [h1]
-  obtain ⟨n2, u2, h2⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible x2nez hϖ
-  simp only [IsFractionRing.mk'_eq_div, map_mul, map_pow, h2]
-  use (n1 : ℤ) - (n2 : ℤ)
-  use (u1 * u2⁻¹)
-  simp only [Units.val_mul, map_mul, map_units_inv]
-  field_simp
-  rw[← zpow_natCast, ← zpow_natCast, Field.div_eq_mul_inv, ← @zpow_neg, ← zpow_add₀]
-  · rfl
-  · exact IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors <|
-      mem_nonZeroDivisors_of_ne_zero <| Irreducible.ne_zero hϖ
+lemma exists_units_eq_smul_zpow_of_irreducible
+    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+    {ϖ : R} (hϖ : Irreducible ϖ) (x : K) (hx : x ≠ 0) :
+    ∃ (n : ℤ) (u : Rˣ), x = u • algebraMap R K ϖ ^ n := by
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := R) x
+  obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible (x := x) (by simp_all) hϖ
+  obtain ⟨m, v, rfl⟩ := eq_unit_mul_pow_irreducible (by simpa using hy) hϖ
+  have hϖ' : algebraMap R K ϖ ≠ 0 := by simpa using hϖ.ne_zero
+  refine ⟨n - m, u / v, ?_⟩
+  simp [hϖ', zpow_sub₀, div_smul_div_comm, Units.smul_def u, Units.smul_def v, Algebra.smul_def]
 
 open Submodule.IsPrincipal
 

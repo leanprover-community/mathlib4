@@ -6,11 +6,7 @@ Authors: Raphael Douglas Giles
 import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.RingTheory.Length
 import Mathlib.RingTheory.OrderOfVanishing.Basic
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.Topology.Instances.Nat
-import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Order of vanishing properties
@@ -22,40 +18,6 @@ computing the order of vanishing in a discrete valuation ring.
 variable {R : Type*} [CommRing R]
 
 open Ring
-
-section Nontrivial
-
-variable [Nontrivial R]
-
-/--
-The canonical monoid with zero hom from `WithZero (Multiplicative ℕ)` to
-`WithZero (Multiplicative ℤ)` is strictly monotone
--/
-lemma Nat.cast_withZero_mul_int_strictMono : StrictMono <|
-    (WithZero.map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ))) := by
-  intro a b h
-  apply WithZero.map'_strictMono ?_ h
-  intro x y hy
-  simp_all
-
-/--
-The canonical monoid with zero hom from `WithZero (Multiplicative ℕ)` to
-`WithZero (Multiplicative ℤ)` is monotone
--/
-lemma Nat.cast_withZero_mul_int_mono : Monotone <|
-    (WithZero.map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ))) :=
-  Nat.cast_withZero_mul_int_strictMono.monotone
-
-/--
-The canonical monoid with zero hom from `WithZero (Multiplicative ℕ)` to
-`WithZero (Multiplicative ℤ)` is injective
--/
-lemma Nat.cast_withZero_mul_int_injective : Function.Injective <|
-    (WithZero.map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ))) := by
-  apply WithZero.map'_injective
-  exact Isometry.injective fun x1 ↦ congrFun rfl
-
-end Nontrivial
 
 section NoetherianDimLEOne
 
@@ -70,16 +32,39 @@ of a non zero divisor `a` is not `⊤`.
 lemma ord_ne_top (a : R) (ha : a ∈ nonZeroDivisors R) : ord R a ≠ ⊤ := by
   simp [isFiniteLength_quotient_span_singleton R ha, Ring.ord, Module.length_ne_top_iff]
 
+open scoped nonZeroDivisors
+
+noncomputable
+def ordMonoidHom : R⁰ →* Multiplicative ℕ where
+  toFun x := .ofAdd <| (Ring.ord R x).untop (ord_ne_top _ x.2)
+  map_one' := by simp
+  map_mul' x y := by
+    rw [← ofAdd_add]
+    congr 1
+    apply WithTop.coe_injective
+    simp [ord_mul]
+
+lemma ord_eq_ordMonoidHom (x : R⁰) : Ring.ord R x = (ordMonoidHom x).toAdd := by
+  change _ = WithTop.some ((Ring.ord R x).untop (ord_ne_top _ x.2))
+  simp
+
+lemma ordMonoidWithZeroHom_eq_ordMonoidHom [Nontrivial R] (x : R⁰) :
+    ordMonoidWithZeroHom R x = .coe (.ofAdd ((ordMonoidHom x).toAdd : ℤ)) := by
+  simp only [SetLike.coe_mem, ordMonoidWithZeroHom_eq_ord, ordMonoidHom, MonoidHom.coe_mk,
+    OneHom.coe_mk, toAdd_ofAdd]
+  generalize_proofs ha
+  generalize ord R x.1 = a at *
+  induction a
+  · simp at ha
+  · rfl
+
 /--
 Analogue of `ord_ne_top` for `ordMonoidWithZeroHom`.
 -/
 lemma ordMonoidWithZeroHom_ne_zero [Nontrivial R] (a : R) (ha : a ∈ nonZeroDivisors R) :
     ordMonoidWithZeroHom R a ≠ 0 := by
-  have := ord_ne_top a ha
-  rw [WithTop.ne_top_iff_exists] at this
-  obtain ⟨a', ha'⟩ := this
-  simp only [ha, ordMonoidWithZeroHom_eq_ord, ← ha', ENat.some_eq_coe, ne_eq]
-  exact not_eq_of_beq_eq_false rfl
+  lift a to R⁰ using ha
+  simp [ordMonoidWithZeroHom_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord]
 
 variable [Nontrivial R]
 /--
@@ -89,18 +74,9 @@ the assumptions on the ring.
 -/
 lemma ord_le_iff (a b : R) (ha : a ∈ nonZeroDivisors R) (hb : b ∈ nonZeroDivisors R) :
     ord R a ≤ ord R b ↔ ordMonoidWithZeroHom R a ≤ ordMonoidWithZeroHom R b := by
-  rw [ordMonoidWithZeroHom_eq_ord a ha, ordMonoidWithZeroHom_eq_ord b hb]
-  obtain ⟨a', ha'⟩ := WithTop.ne_top_iff_exists.mp <| ord_ne_top a ha
-  obtain ⟨b', hb'⟩ := WithTop.ne_top_iff_exists.mp <| ord_ne_top b hb
-  rw [← ha', ← hb']
-  constructor
-  · exact fun h ↦ Nat.cast_withZero_mul_int_mono (WithZero.coe_le_coe.mpr (ENat.coe_le_coe.mp h))
-  · intro h
-    have := (StrictMono.le_iff_le Nat.cast_withZero_mul_int_strictMono
-            (a := WithZero.coe (a' : Multiplicative ℕ))
-            (b := WithZero.coe (b' : Multiplicative ℕ))).mp h
-    rw [WithTop.coe_le_coe]
-    rwa [WithZero.coe_le_coe] at this
+  lift a to R⁰ using ha
+  lift b to R⁰ using hb
+  simp [ordMonoidWithZeroHom_eq_ordMonoidHom, ord_eq_ordMonoidHom, -ordMonoidWithZeroHom_eq_ord]
 
 end NoetherianDimLEOne
 
@@ -161,13 +137,27 @@ The order of vanishing of a unit is `0`.
 -/
 @[simp]
 lemma ord_of_isUnit (x : R) (hx : IsUnit x) : ord R x = 0 := by
-  obtain ⟨x, rfl⟩ := hx
-  have : ord R ↑(x⁻¹) + ord R x = 0 := by
-    rw [← ord_mul, Units.inv_mul, ord_one]
-    exact IsUnit.mem_nonZeroDivisors (Units.isUnit x)
-  exact eq_zero_of_add_left this
+  simpa using ord_smul x hx (1 : R)
 
 section IsDiscreteValuationRing
+
+
+def Submodule.orderIsoOfAlgebraMapSurjective
+    {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
+    [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M where
+  toFun N := N.restrictScalars R
+  invFun N := ⟨N.toAddSubmonoid, by simpa [h.forall] using N.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' := .rfl
+
+lemma isSimpleModule_iff_isSimpleModule_of_algebraMap_surjective
+    {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
+    [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) : IsSimpleModule R M ↔ IsSimpleModule S M := by
+  rw [isSimpleModule_iff, isSimpleModule_iff,
+    (Submodule.orderIsoOfAlgebraMapSurjective h).isSimpleOrder_iff]
 
 variable [IsDomain R] [IsDiscreteValuationRing R]
 /--
@@ -177,36 +167,39 @@ theorem ord_irreducible (ϖ : R) (hϖ : Irreducible ϖ) : ord R ϖ = 1 := by
   rw [Ring.ord, Module.length_eq_one_iff]
   have : (Ideal.span {ϖ}).IsMaximal :=
     PrincipalIdealRing.isMaximal_of_irreducible hϖ
-  rw [isSimpleModule_iff]
-  refine { toNontrivial := Submodule.instNontrivial, eq_bot_or_eq_top := ?_ }
-  intro I
-  rw [or_iff_not_imp_right]
-  intro hI
+  rw [isSimpleModule_iff_isSimpleModule_of_algebraMap_surjective (S := R ⧸ Ideal.span {ϖ})
+    Ideal.Quotient.mk_surjective]
+  letI := Ideal.Quotient.field (Ideal.span {ϖ})
+  infer_instance
 
-  let J : Submodule R R := I.comap (Algebra.ofId R (R ⧸ Ideal.span {ϖ})).toLinearMap
-  have hJ1 : J ≠ ⊤ := by
-    contrapose! hI with hJ
-    rw[eq_top_iff] at hJ ⊢
-    intro x hx
-    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    specialize hJ (trivial : x ∈ ⊤)
-    simpa [J] using hJ
+variable (R) in
+lemma IsDiscreteValutationRing.krullDim_eq_one : ¬ KrullDimLE 0 R := by
+  intro a
+  have : IsLocalRing R := by exact IsLocalRing.of_singleton_maximalSpectrum
+  obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
+  have c := Ring.KrullDimLE.isNilpotent_iff_mem_maximalIdeal (x := ϖ)
+  have : ϖ ∈ IsLocalRing.maximalIdeal R := by
+    rw [Irreducible.maximalIdeal_eq hϖ]
+    exact Ideal.mem_span_singleton_self ϖ
+  have := c.mpr this
+  aesop
 
-  have hJ2 : Ideal.span {ϖ} ≤ J := by
-    intro x hx
-    have : (Ideal.Quotient.mk (Ideal.span {ϖ})) x = 0 := by
-      rwa [@Ideal.Quotient.eq_zero_iff_mem]
-    simp only [J, Submodule.mem_comap, AlgHom.toLinearMap_apply]
-    convert I.zero_mem
-
-  have aux := this.eq_of_le (J := J) hJ1 hJ2
-  rw [eq_bot_iff]
-  intro x hx
-  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  suffices x ∈ J by
-    rw [← aux] at this
-    simpa only [Submodule.mem_bot, @Ideal.Quotient.eq_zero_iff_mem]
-  simpa [J] using hx
+lemma ord_eq_addVal (x : R) : ord R x = IsDiscreteValuationRing.addVal R x := by
+  by_cases hx : x = 0
+  · simp [hx, Ring.ord]
+    subst hx
+    by_contra!
+    rw [Module.length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian] at this
+    have art := this.2
+    rw [Ideal.span_singleton_zero] at art
+    have : IsArtinianRing R :=
+      (LinearEquiv.isArtinian_iff (Submodule.quotEquivOfEqBot ⊥ rfl).symm).mpr art
+    exact (IsDiscreteValutationRing.krullDim_eq_one R) (PrimeSpectrum.instKrullDimLEOfNatNat R)
+  obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
+  obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx hϖ
+  rw [ord_mul, ord_pow, ord_irreducible ϖ hϖ]
+  · simp [IsDiscreteValuationRing.addVal_uniformizer hϖ]
+  all_goals simp_all [Irreducible.ne_zero hϖ]
 
 /--
 In a discrete valuation ring `R`, if the order of vansihing of `x` and `y` is
@@ -215,44 +208,22 @@ the same then `x` and `y` must be associated.
 lemma associated_of_ord_eq (x y : R) (hx : x ≠ 0) (hy : y ≠ 0)
     (h : ord R x = ord R y) : Associated x y := by
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
-  obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx hϖ
-  obtain ⟨n, β, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hy hϖ
-  nth_rewrite 2 [mul_comm] at h
-  rw [mul_comm, ord_mul, ord_mul, ord_pow, ord_pow] at h
-  · simp only [ord_irreducible ϖ hϖ, nsmul_eq_mul, mul_one, Units.isUnit, ord_of_isUnit, add_zero,
-    Nat.cast_inj] at h
-    simp [h, Associated.refl]
-  all_goals aesop
+  obtain ⟨m, α, hx'⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx hϖ
+  obtain ⟨n, β, hy'⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hy hϖ
+  rw [ord_eq_addVal x, ord_eq_addVal y, IsDiscreteValuationRing.addVal_def x α hϖ m hx',
+      IsDiscreteValuationRing.addVal_def y β hϖ n hy'] at h
+  simp [ENat.coe_inj.mp h, hx', hy', Associates.mk_eq_mk_iff_associated.mp rfl]
 
 /--
-For `x y : R` where `R` is a discrete vakuation ring, we have that
+For `x y : R` where `R` is a discrete valuation ring, we have that
 `min (ord R x) (ord R y) ≤ ord R (x + y)`. It should be noted that the order
 we're using here is the order on `ℕ∞`, where `⊤` is greater than everhing else.
 This is relevant since when we're working with `ordFrac` we work with `ℤᵐ⁰`, where the
 order instance has the `0` element less than everything else.
 -/
 theorem ord_add (x y : R) : min (Ring.ord R x) (Ring.ord R y) ≤ Ring.ord R (x + y) := by
-  classical
-  obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
-  by_cases hx0 : x = 0
-  · simp[hx0]
-  by_cases hy0 : y = 0
-  · simp[hy0]
-  obtain ⟨m, α, hx⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx0 hϖ
-  obtain ⟨n, β, hy⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hy0 hϖ
-  wlog hmn : m ≤ n
-  · rw [min_comm, add_comm]
-    apply this y x ϖ hϖ hy0 hx0 n β hy m α hx
-    omega
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
-  have : x + y = (α + β*ϖ^k) * ϖ^m := by
-    rw [hx, hy]
-    ring
-  rw [this, hx, hy, ord_mul, ord_mul, ord_mul, ord_pow, ord_pow,
-     ord_of_isUnit (α : R), ord_of_isUnit (β : R), ord_irreducible _ hϖ]
-  · simp only [nsmul_eq_mul, mul_one, zero_add, Nat.cast_add, self_le_add_right, inf_of_le_left,
-    self_le_add_left]
-  all_goals simp [hϖ.ne_zero]
+  rw [ord_eq_addVal x, ord_eq_addVal y, ord_eq_addVal (x + y)]
+  exact IsDiscreteValuationRing.addVal_add
 
 end IsDiscreteValuationRing
 
@@ -271,6 +242,7 @@ we work with the order on `ℕ∞` where the `∞` element is interpreted as a `
 -/
 lemma ordFrac_ge_one_of_ne_zero (x : R) (hx : x ≠ 0) :
     ordFrac R (algebraMap R K x) ≥ 1 := by
+
   simp [ordFrac_eq_ord R x hx, ordMonoidWithZeroHom_eq_ord x (by simp [hx])]
   suffices ord R x ≠ ⊤ by
     rw [ENat.ne_top_iff_exists] at this
@@ -352,8 +324,10 @@ theorem ordFrac_add [IsDiscreteValuationRing R] (x y : K) (h : x + y ≠ 0) :
   · simp[hx0]
   by_cases hy0 : y = 0
   · simp[hy0]
-  obtain ⟨m, α, hx⟩ := IsDiscreteValuationRing.eq_unit_mul_zpow_irreducible hx0 hϖ
-  obtain ⟨n, β, hy⟩ := IsDiscreteValuationRing.eq_unit_mul_zpow_irreducible hy0 hϖ
+  obtain ⟨m, α, hx⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hx0
+  obtain ⟨n, β, hy⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hy0
+
+  rw [Units.smul_def, Algebra.smul_def] at hx hy
   wlog hmn : m ≤ n
   · rw[min_comm, add_comm]
     have sm : y + x ≠ 0 := by  rwa [add_comm]
@@ -393,8 +367,10 @@ In a discrete valuation ring `R` with fraction ring `K`, if `x y : K` and
 theorem associated_of_ordFrac_eq [IsDiscreteValuationRing R] (x y : K) (hx : x ≠ 0) (hy : y ≠ 0)
     (h : ordFrac R x = ordFrac R y) : ∃ u : Rˣ, u • x = y := by
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
-  obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_zpow_irreducible hx hϖ
-  obtain ⟨n, β, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_zpow_irreducible hy hϖ
+  obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hx
+  obtain ⟨n, β, rfl⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hy
+
+  rw [Units.smul_def, Algebra.smul_def, Units.smul_def, Algebra.smul_def] at ⊢ h
   nth_rewrite 2 [mul_comm] at h
   rw [mul_comm, map_mul, map_mul, map_zpow₀, map_zpow₀] at h
   simp [ordFrac_irreducible ϖ hϖ, ordFrac_of_isUnit] at h
