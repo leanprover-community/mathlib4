@@ -404,20 +404,21 @@ theorem conjTranspose_kronecker' [Mul R] [StarMul R] (x : Matrix l m R) (y : Mat
     (x ⊗ₖ y)ᴴ = (yᴴ ⊗ₖ xᴴ).submatrix Prod.swap Prod.swap := by
   ext; simp
 
-def Matrix.GeneralLinearGroup.kronecker {R n m} [CommSemiring R] [Fintype n] [Fintype m]
-    [DecidableEq n] [DecidableEq m] (x : GL n R) (y : GL m R) :
-    GL (n × m) R where
+def GeneralLinearGroup.kronecker [CommSemiring R] [Fintype n] [Fintype m] [DecidableEq n]
+    [DecidableEq m] (x : (Matrix n n R)ˣ) (y : (Matrix m m R)ˣ) : (Matrix (n × m) (n × m) R)ˣ where
   val := x ⊗ₖ y
   inv := ↑x⁻¹ ⊗ₖ ↑y⁻¹
   val_inv := by
-    simp only [← mul_kronecker_mul, Units.mul_inv, zero_mul, implies_true, mul_zero, mul_one, kroneckerMap_one_one]
+    simp only [← mul_kronecker_mul, Units.mul_inv, zero_mul, implies_true, mul_zero, mul_one,
+      kroneckerMap_one_one]
   inv_val := by
-    simp only [← mul_kronecker_mul, Units.inv_mul, zero_mul, implies_true, mul_zero, mul_one, kroneckerMap_one_one]
+    simp only [← mul_kronecker_mul, Units.inv_mul, zero_mul, implies_true, mul_zero, mul_one,
+      kroneckerMap_one_one]
 
-theorem IsUnit.kronecker {R n m} [CommSemiring R] [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
+theorem IsUnit.kronecker [CommSemiring R] [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
     {x : Matrix n n R} {y : Matrix m m R} (hx : IsUnit x) (hy : IsUnit y) :
     IsUnit (x ⊗ₖ y) :=
-  Matrix.GeneralLinearGroup.kronecker hx.unit hy.unit |>.isUnit
+  GeneralLinearGroup.kronecker hx.unit hy.unit |>.isUnit
 
 end Kronecker
 
