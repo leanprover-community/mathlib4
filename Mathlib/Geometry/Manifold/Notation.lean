@@ -334,10 +334,12 @@ where
       | throwError "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
     return m
   /-- Attempt to find a model with corners on a space of continuous linear maps -/
-  -- TODO: should this also support continuous linear equivalences?
+  -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
+  -- corners as a normed space. Merely linear maps are not a normed space either.
   fromCLM : TermElabM Expr := do
     match_expr e with
     | ContinuousLinearMap k S _ _ _σ _E _ _ _F _ _ _ _ =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous `{k}`-linear maps"
       if ← isDefEq k S then
         -- TODO: check if σ is actually the identity!
         let eK : Term ← Term.exprToSyntax k
@@ -346,15 +348,6 @@ where
         Term.elabTerm iTerm none
       else
         throwError "Coefficients `{k}` and `{S}` of `{e}` are not definitionally equal"
-    -- | ContinuousLinearEquiv k S _ _ _σ _σ' _ _ _E _ _ _F _ _ _ _ =>
-    --   if ← isDefEq k S then
-    --     -- TODO: check if σ is actually the identity!
-    --     let eK : Term ← Term.exprToSyntax k
-    --     let eT : Term ← Term.exprToSyntax e
-    --     let iTerm : Term := ← ``(𝓘($eK, $eT))
-    --     Term.elabTerm iTerm none
-    --   else
-    --     throwError "Coefficients `{k}` and `{S}` of `{e}` are not definitionally equal"
     | _ => throwError "`{e}` is not a space of continuous linear maps"
   /-- Attempt to find a model with corners on a closed interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
