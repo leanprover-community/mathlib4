@@ -79,8 +79,7 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
   simp
 
 lemma isRetrocompact_basicOpen (s : Γ(X, ⊤)) : IsRetrocompact (X := X) (X.basicOpen s) :=
-  IsRetrocompact_iff_isSpectralMap_subtypeVal.mpr
-    ((quasiCompact_iff_spectral (X.basicOpen s).ι).mp inferInstance)
+  IsRetrocompact_iff_isSpectralMap_subtypeVal.mpr (X.basicOpen s).ι.isSpectralMap
 
 /-- Superseded by `isAffine_of_isAffineOpen_basicOpen`. -/
 private lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))

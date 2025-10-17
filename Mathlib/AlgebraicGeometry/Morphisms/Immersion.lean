@@ -149,18 +149,6 @@ lemma isImmersion_iff_exists : IsImmersion f ↔ ∃ (Z : Scheme) (g₁ : X ⟶ 
   ⟨fun _ ↦ ⟨_, f.liftCoborder, f.coborderRange.ι, inferInstance, inferInstance, f.liftCoborder_ι⟩,
     fun ⟨_, _, _, _, _, e⟩ ↦ e ▸ inferInstance⟩
 
-theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g]
-    [IsImmersion (f ≫ g)] : IsImmersion f where
-  __ := IsPreimmersion.of_comp f g
-  isLocallyClosed_range := by
-    rw [← Set.preimage_image_eq (Set.range _) g.isEmbedding.injective]
-    have := (f ≫ g).isLocallyClosed_range.preimage g.base.hom.2
-    simpa only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp] using this
-
-theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
-    IsImmersion (f ≫ g) ↔ IsImmersion f :=
-  ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
-
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsImmersion where
   of_isPullback := by
     intro X Y Y' S f g f' g' H hg
