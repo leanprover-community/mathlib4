@@ -33,16 +33,14 @@ instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrpCat.
             @LinearMap.mk _ _ _ _ _ _ _ _ _ A.isModule B.isModule
             { toFun := f,
               map_add' := AddMonoidHom.map_add f.hom }
-            (fun n x => by
-              convert AddMonoidHom.map_zsmul f.hom x n <;>
-                ext <;> apply int_smul_eq_zsmul), rfl⟩
+            (fun n x => AddMonoidHom.map_zsmul f.hom x n), rfl⟩
 
 /-- The forgetful functor from `ℤ` modules to `AddCommGrpCat` is essentially surjective. -/
 instance forget₂_addCommGrp_essSurj : (forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).EssSurj where
   mem_essImage A :=
     ⟨ModuleCat.of ℤ A,
-      ⟨{  hom := 𝟙 A
-          inv := 𝟙 A }⟩⟩
+      ⟨{  hom := by constructor; exact .id _
+          inv := by constructor; exact .id _ }⟩⟩
 
 noncomputable instance forget₂AddCommGroupIsEquivalence :
     (forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).IsEquivalence where

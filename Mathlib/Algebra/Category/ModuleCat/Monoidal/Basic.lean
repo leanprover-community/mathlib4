@@ -33,7 +33,7 @@ open CategoryTheory
 
 namespace ModuleCat
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [CommSemiring R]
 
 namespace MonoidalCategory
 
@@ -165,8 +165,12 @@ instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCatego
   (pentagon := fun M N K L ↦ pentagon M N K L)
   (triangle := fun M N ↦ triangle M N)
 
+/-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative semiring. -/
+instance : CommSemiring ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
+  inferInstanceAs <| CommSemiring R
+
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative ring. -/
-instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
+instance {R} [CommRing R] : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
   inferInstanceAs <| CommRing R
 
 theorem hom_tensorHom {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
@@ -293,6 +297,8 @@ lemma tensor_ext₃ {f g : M₁ ⊗ (M₂ ⊗ M₃) ⟶ M₄}
 end MonoidalCategory
 
 open Opposite
+
+variable {R : Type u} [CommRing R]
 
 instance : MonoidalPreadditive (ModuleCat.{u} R) := by
   refine ⟨?_, ?_, ?_, ?_⟩

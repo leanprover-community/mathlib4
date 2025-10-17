@@ -16,7 +16,7 @@ open CategoryTheory MonoidalCategory
 
 namespace ModuleCat
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [CommSemiring R]
 
 /-- (implementation) the braiding for R-modules -/
 def braiding (M N : ModuleCat.{u} R) : M ⊗ N ≅ N ⊗ M :=

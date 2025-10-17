@@ -16,9 +16,9 @@ import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.LocalRing.Module
 
 /-!
-# The Picard group of a commutative ring
+# The Picard group of a commutative semiring
 
-This file defines the Picard group `CommRing.Pic R` of a commutative ring `R` as the type of
+This file defines the Picard group `CommRing.Pic R` of a commutative semiring `R` as the type of
 invertible `R`-modules (in the sense that `M` is invertible if there exists another `R`-module
 `N` such that `M ⊗[R] N ≃ₗ[R] R`) up to isomorphism, equipped with tensor product as multiplication.
 
@@ -33,7 +33,7 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 - An invertible module is finite and projective (provided as instances).
 
 - `Module.Invertible.free_iff_linearEquiv`: an invertible module is free iff it is isomorphic to
-  the ring, i.e. its class is trivial in the Picard group.
+  the semiring, i.e. its class is trivial in the Picard group.
 
 ## References
 

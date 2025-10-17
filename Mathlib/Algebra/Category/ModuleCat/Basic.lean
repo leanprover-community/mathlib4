@@ -42,22 +42,22 @@ open CategoryTheory.Limits.WalkingParallelPair
 
 universe v u
 
-variable (R : Type u) [Ring R]
+variable (R : Type u) [Semiring R]
 
 /-- The category of R-modules and their morphisms.
 
-Note that in the case of `R = ℤ`, we cannot
-impose here that the `ℤ`-multiplication field from the module structure is defeq to the one coming
-from the `isAddCommGroup` structure (contrary to what we do for all module structures in
+Note that in the case of `R = ℕ`, we cannot
+impose here that the `ℕ`-multiplication field from the module structure is defeq to the one coming
+from the `isAddCommMonoid` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
 structure ModuleCat where
   private mk ::
   /-- the underlying type of an object in `ModuleCat R` -/
   carrier : Type v
-  [isAddCommGroup : AddCommGroup carrier]
+  [isAddCommMonoid : AddCommMonoid carrier]
   [isModule : Module R carrier]
 
-attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isModule
+attribute [instance] ModuleCat.isAddCommMonoid ModuleCat.isModule
 
 namespace ModuleCat
 
@@ -68,14 +68,14 @@ attribute [coe] ModuleCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `ModuleCat R`. -/
-abbrev of (X : Type v) [AddCommGroup X] [Module R X] : ModuleCat.{v} R :=
+abbrev of (X : Type v) [AddCommMonoid X] [Module R X] : ModuleCat.{v} R :=
   ⟨X⟩
 
-lemma coe_of (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X :=
+lemma coe_of (X : Type v) [Semiring X] [Module R X] : (of R X : Type v) = X :=
   rfl
 
 -- Ensure the roundtrips are reducibly defeq (so tactics like `rw` can see through them).
-example (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X := by with_reducible rfl
+example (X : Type v) [Semiring X] [Module R X] : (of R X : Type v) = X := by with_reducible rfl
 example (M : ModuleCat.{v} R) : of R M = M := by with_reducible rfl
 
 variable {R} in
@@ -104,7 +104,7 @@ abbrev Hom.hom {A B : ModuleCat.{v} R} (f : Hom A B) :=
   ConcreteCategory.hom (C := ModuleCat R) f
 
 /-- Typecheck a `LinearMap` as a morphism in `ModuleCat`. -/
-abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+abbrev ofHom {X Y : Type v} [AddCommMonoid X] [Module R X] [AddCommMonoid Y] [Module R Y]
     (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
   ConcreteCategory.ofHom (C := ModuleCat R) f
 
@@ -153,7 +153,7 @@ lemma hom_surjective {M N : ModuleCat.{v} R} :
   hom_bijective.surjective
 
 @[simp]
-lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
+lemma hom_ofHom {X Y : Type v} [AddCommMonoid X] [Module R X] [AddCommMonoid Y]
     [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
 
 @[simp]
@@ -161,16 +161,16 @@ lemma ofHom_hom {M N : ModuleCat.{v} R} (f : M ⟶ N) :
     ofHom (Hom.hom f) = f := rfl
 
 @[simp]
-lemma ofHom_id {M : Type v} [AddCommGroup M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
+lemma ofHom_id {M : Type v} [AddCommMonoid M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
 
 @[simp]
-lemma ofHom_comp {M N O : Type v} [AddCommGroup M] [AddCommGroup N] [AddCommGroup O] [Module R M]
+lemma ofHom_comp {M N O : Type v} [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid O] [Module R M]
     [Module R N] [Module R O] (f : M →ₗ[R] N) (g : N →ₗ[R] O) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g :=
   rfl
 
 /- Doesn't need to be `@[simp]` since `simp only` can solve this. -/
-lemma ofHom_apply {M N : Type v} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+lemma ofHom_apply {M N : Type v} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
     (f : M →ₗ[R] N) (x : M) : ofHom f x = f x := rfl
 
 lemma inv_hom_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
@@ -195,6 +195,31 @@ lemma forget_map {M N : ModuleCat.{v} R} (f : M ⟶ N) :
     (forget (ModuleCat.{v} R)).map f = f :=
   rfl
 
+instance hasForgetToAddCommMonoid : HasForget₂ (ModuleCat R) AddCommMonCat where
+  forget₂ :=
+    { obj := fun M => .of M
+      map := fun f => AddCommMonCat.ofHom f.hom.toAddMonoidHom }
+
+@[simp]
+theorem forget₂_addCommMonCat_obj (X : ModuleCat R) :
+    (forget₂ (ModuleCat R) AddCommMonCat).obj X = AddCommMonCat.of X :=
+  rfl
+
+theorem forget₂_addCommMonCat_obj_moduleCat_of (X : Type v) [AddCommMonoid X] [Module R X] :
+    (forget₂ (ModuleCat R) AddCommMonCat).obj (of R X) = AddCommMonCat.of X :=
+  rfl
+
+@[simp]
+theorem forget₂_addCommMonCat_map (X Y : ModuleCat R) (f : X ⟶ Y) :
+    (forget₂ (ModuleCat R) AddCommMonCat).map f = AddCommMonCat.ofHom f.hom :=
+  rfl
+
+section Ring
+
+variable (R : Type u) [Ring R]
+
+instance (M : ModuleCat R) : AddCommGroup M := Module.addCommMonoidToAddCommGroup R
+
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGrpCat where
   forget₂ :=
     { obj := fun M => AddCommGrpCat.of M
@@ -207,12 +232,14 @@ theorem forget₂_obj (X : ModuleCat R) :
 
 theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommGroup X] [Module R X] :
     (forget₂ (ModuleCat R) AddCommGrpCat).obj (of R X) = AddCommGrpCat.of X :=
-  rfl
+  congr_arg (@AddCommGrpCat.of X) <| by ext; rfl
 
 @[simp]
 theorem forget₂_map (X Y : ModuleCat R) (f : X ⟶ Y) :
     (forget₂ (ModuleCat R) AddCommGrpCat).map f = AddCommGrpCat.ofHom f.hom :=
   rfl
+
+end Ring
 
 instance : Inhabited (ModuleCat R) :=
   ⟨of R PUnit⟩
@@ -254,7 +281,7 @@ section
 
 /-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
 @[simps]
-def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂} {m₁ : Module R X₁}
+def LinearEquiv.toModuleIso {g₁ : AddCommMonoid X₁} {g₂ : AddCommMonoid X₂} {m₁ : Module R X₁}
     {m₂ : Module R X₂} (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ ModuleCat.of R X₂ where
   hom := ofHom (e : X₁ →ₗ[R] X₂)
   inv := ofHom (e.symm : X₂ →ₗ[R] X₁)
@@ -272,7 +299,7 @@ end CategoryTheory.Iso
 /-- linear equivalences between `Module`s are the same as (isomorphic to) isomorphisms
 in `ModuleCat` -/
 @[simps]
-def linearEquivIsoModuleIso {X Y : Type u} [AddCommGroup X] [AddCommGroup Y] [Module R X]
+def linearEquivIsoModuleIso {X Y : Type u} [AddCommMonoid X] [AddCommMonoid Y] [Module R X]
     [Module R Y] : (X ≃ₗ[R] Y) ≅ ModuleCat.of R X ≅ ModuleCat.of R Y where
   hom e := e.toModuleIso
   inv i := i.toLinearEquiv
@@ -300,6 +327,21 @@ instance : SMul ℕ (M ⟶ N) where
 
 @[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
+instance : SMul ℕ (M ⟶ N) where
+  smul n f := ⟨n • f.hom⟩
+
+instance : AddCommMonoid (M ⟶ N) :=
+  Function.Injective.addCommMonoid (Hom.hom) hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
+
+@[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
+    (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=
+  map_sum ({ toFun := ModuleCat.Hom.hom, map_zero' := ModuleCat.hom_zero, map_add' := hom_add } :
+    (M ⟶ N) →+ (M →ₗ[R] N)) _ _
+
+section Ring
+
+variable {R : Type u} [Ring R] {M N : ModuleCat R}
+
 instance : Neg (M ⟶ N) where
   neg f := ⟨-f.hom⟩
 
@@ -319,21 +361,20 @@ instance : AddCommGroup (M ⟶ N) :=
   Function.Injective.addCommGroup (Hom.hom) hom_injective
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
-@[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
-    (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=
-  map_sum ({ toFun := ModuleCat.Hom.hom, map_zero' := ModuleCat.hom_zero, map_add' := hom_add } :
-    (M ⟶ N) →+ (M →ₗ[R] N)) _ _
-
 instance : Preadditive (ModuleCat.{v} R) where
 
 instance forget₂_addCommGrp_additive :
     (forget₂ (ModuleCat.{v} R) AddCommGrpCat).Additive where
+
+end Ring
 
 /-- `ModuleCat.Hom.hom` bundled as an additive equivalence. -/
 @[simps!]
 def homAddEquiv : (M ⟶ N) ≃+ (M →ₗ[R] N) :=
   { homEquiv with
     map_add' := fun _ _ => rfl }
+
+instance : HasZeroMorphisms (ModuleCat.{v} R) where
 
 theorem subsingleton_of_isZero (h : IsZero M) : Subsingleton M := by
   refine subsingleton_of_forall_eq 0 (fun x ↦ ?_)
@@ -345,7 +386,7 @@ lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
   mpr _ := isZero_of_subsingleton M
 
 @[simp]
-lemma isZero_of_iff_subsingleton {M : Type*} [AddCommGroup M] [Module R M] :
+lemma isZero_of_iff_subsingleton {M : Type*} [AddCommMonoid M] [Module R M] :
     IsZero (of R M) ↔ Subsingleton M := isZero_iff_subsingleton
 
 end AddCommGroup
@@ -430,7 +471,18 @@ end
 
 end
 
-variable (M N : ModuleCat.{v} R)
+instance : (forget (ModuleCat.{v} R)).ReflectsIsomorphisms where
+  reflects f _ :=
+    (inferInstance : IsIso ((LinearEquiv.mk f.hom
+      (asIso ((forget (ModuleCat R)).map f)).toEquiv.invFun
+      (Equiv.left_inv _) (Equiv.right_inv _)).toModuleIso).hom)
+
+section Ring
+
+variable {R : Type u} [Ring R] (M N : ModuleCat.{v} R)
+
+/- TODO: generalize `CategoryTheory.Preadditive` to make
+`CategoryTheory.Preadditive.instSemiringEnd` work. -/
 
 /-- `ModuleCat.Hom.hom` as an isomorphism of rings. -/
 @[simps!] def endRingEquiv : End M ≃+* (M →ₗ[R] M) where
@@ -502,7 +554,7 @@ instance : Module R (mkOfSMul' φ) where
 given by `R`. -/
 abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
 
-lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
+--lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
 
 end
 
@@ -527,12 +579,6 @@ lemma forget₂_map_homMk :
 
 end
 
-instance : (forget (ModuleCat.{v} R)).ReflectsIsomorphisms where
-  reflects f _ :=
-    (inferInstance : IsIso ((LinearEquiv.mk f.hom
-      (asIso ((forget (ModuleCat R)).map f)).toEquiv.invFun
-      (Equiv.left_inv _) (Equiv.right_inv _)).toModuleIso).hom)
-
 instance : (forget₂ (ModuleCat.{v} R) AddCommGrpCat.{v}).ReflectsIsomorphisms where
   reflects f _ := by
     have : IsIso ((forget _).map f) := by
@@ -540,11 +586,20 @@ instance : (forget₂ (ModuleCat.{v} R) AddCommGrpCat.{v}).ReflectsIsomorphisms 
       infer_instance
     apply isIso_of_reflects_iso _ (forget _)
 
+end Ring
+
+instance : (forget₂ (ModuleCat.{v} R) AddCommMonCat.{v}).ReflectsIsomorphisms where
+  reflects f _ := by
+    have : IsIso ((forget _).map f) := by
+      change IsIso ((forget _).map ((forget₂ _ AddCommMonCat).map f))
+      infer_instance
+    apply isIso_of_reflects_iso _ (forget _)
+
 end ModuleCat
 
 section Bilinear
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [CommSemiring R]
 
 namespace ModuleCat
 
