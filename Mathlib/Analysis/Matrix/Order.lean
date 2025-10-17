@@ -209,28 +209,35 @@ theorem PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
   rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
     mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
+theorem isStrictlyPositive_iff_posDef [DecidableEq n] {x : Matrix n n 𝕜} :
+    IsStrictlyPositive x ↔ x.PosDef :=
+  ⟨fun h => h.nonneg.posSemidef.posDef_iff_isUnit.mpr h.isUnit,
+  fun h => h.isUnit.isStrictlyPositive h.posSemidef.nonneg⟩
+
+alias ⟨IsStrictlyPositive.posDef, PosDef.isStrictlyPositive⟩ := isStrictlyPositive_iff_posDef
+
+attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPositive
+
+@[deprecated IsStrictlyPositive.commute_iff (since := "2025-09-26")]
 theorem PosDef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
     Commute A B ↔ (A * B).PosDef := by
   classical
-  rw [commute_iff_mul_nonneg hA.posSemidef.nonneg hB.posSemidef.nonneg, nonneg_iff_posSemidef]
-  exact ⟨fun h => h.posDef_iff_isUnit.mpr <| hA.isUnit.mul hB.isUnit, fun h => h.posSemidef⟩
+  rw [hA.isStrictlyPositive.commute_iff hB.isStrictlyPositive, isStrictlyPositive_iff_posDef]
 
+@[deprecated IsStrictlyPositive.sqrt (since := "2025-09-26")]
 lemma PosDef.posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
-    PosDef (CFC.sqrt M) :=
-  (CFC.sqrt_nonneg M).posSemidef.posDef_iff_isUnit.mpr <|
-    CFC.isUnit_sqrt_iff M hM.posSemidef.nonneg |>.mpr hM.isUnit
+    PosDef (CFC.sqrt M) := hM.isStrictlyPositive.sqrt.posDef
 
 /--
 A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
 -/
+@[deprecated CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self (since := "2025-09-28")]
 lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
-    PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B := by
-  refine ⟨fun hA ↦ ⟨_, hA.posDef_sqrt.isUnit, ?_⟩, fun ⟨B, hB, hA⟩ ↦ (hA ▸ ?_)⟩
-  · simp [hA.posDef_sqrt.isHermitian.eq, CFC.sqrt_mul_sqrt_self A hA.posSemidef.nonneg]
-  · exact PosDef.conjTranspose_mul_self _ (mulVec_injective_of_isUnit hB)
+    PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B :=
+  isStrictlyPositive_iff_posDef.symm.trans CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
 
-@[deprecated (since := "07-08-2025")] alias PosDef.posDef_iff_eq_conjTranspose_mul_self :=
-  Matrix.posDef_iff_eq_conjTranspose_mul_self
+@[deprecated (since := "2025-08-07")] alias PosDef.posDef_iff_eq_conjTranspose_mul_self :=
+  CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
 
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
@@ -247,8 +254,9 @@ noncomputable def PosDef.matrixNormedAddCommGroup {M : Matrix n n 𝕜} (hM : M.
     smul_left := by simp
     definite x hx := by
       classical
-      obtain ⟨y, hy, rfl⟩ := Matrix.posDef_iff_eq_conjTranspose_mul_self.mp hM
-      rw [← mul_assoc, ← conjTranspose_conjTranspose x, ← conjTranspose_mul,
+      obtain ⟨y, hy, rfl⟩ := CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self.mp
+        hM.isStrictlyPositive
+      rw [← mul_assoc, ← conjTranspose_conjTranspose x, star_eq_conjTranspose, ← conjTranspose_mul,
         conjTranspose_conjTranspose, mul_assoc, trace_conjTranspose_mul_self_eq_zero_iff] at hx
       lift y to (Matrix n n 𝕜)ˣ using hy
       simpa [← mul_assoc] using congr(y⁻¹ * $hx) }
