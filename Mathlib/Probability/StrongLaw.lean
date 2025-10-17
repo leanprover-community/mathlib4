@@ -257,10 +257,10 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         · exact continuous_const.intervalIntegrable _ _
       _ = 𝔼[truncation X N] + ∫ x in 0..N, 1 ∂ρ := by
         rw [integral_truncation_eq_intervalIntegral_of_nonneg hint.1 hnonneg]
-      _ ≤ 𝔼[X] + ∫ x in 0..N, 1 ∂ρ :=
-        (add_le_add_right (integral_truncation_le_integral_of_nonneg hint hnonneg) _)
+      _ ≤ 𝔼[X] + ∫ x in 0..N, 1 ∂ρ := by
+        grw [integral_truncation_le_integral_of_nonneg hint hnonneg]
       _ ≤ 𝔼[X] + 1 := by
-        refine add_le_add le_rfl ?_
+        gcongr
         rw [intervalIntegral.integral_of_le (Nat.cast_nonneg _)]
         simp only [integral_const, measureReal_restrict_apply', measurableSet_Ioc, Set.univ_inter,
           Algebra.id.smul_eq_mul, mul_one]

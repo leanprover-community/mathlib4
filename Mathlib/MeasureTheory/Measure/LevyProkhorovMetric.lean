@@ -147,20 +147,16 @@ lemma levyProkhorovEDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure 
   refine ⟨?_, ?_⟩
   · calc μ B ≤ ν (thickening r.toReal B) + r :=
       left_measure_le_of_levyProkhorovEDist_lt lt_r B_mble
-    _ ≤ κ (thickening s.toReal (thickening r.toReal B)) + s + r :=
-      add_le_add_right
-        (left_measure_le_of_levyProkhorovEDist_lt lt_s isOpen_thickening.measurableSet) _
+    _ ≤ κ (thickening s.toReal (thickening r.toReal B)) + s + r := by
+      grw [left_measure_le_of_levyProkhorovEDist_lt lt_s isOpen_thickening.measurableSet]
     _ = κ (thickening s.toReal (thickening r.toReal B)) + (s + r) := add_assoc _ _ _
-    _ ≤ κ (thickening (s.toReal + r.toReal) B) + (s + r) :=
-      add_le_add_right (measure_mono (thickening_thickening_subset _ _ _)) _
+    _ ≤ κ (thickening (s.toReal + r.toReal) B) + (s + r) := by grw [thickening_thickening_subset]
   · calc κ B ≤ ν (thickening s.toReal B) + s :=
       right_measure_le_of_levyProkhorovEDist_lt lt_s B_mble
-    _ ≤ μ (thickening r.toReal (thickening s.toReal B)) + r + s :=
-      add_le_add_right
-        (right_measure_le_of_levyProkhorovEDist_lt lt_r isOpen_thickening.measurableSet) s
+    _ ≤ μ (thickening r.toReal (thickening s.toReal B)) + r + s := by
+      grw [right_measure_le_of_levyProkhorovEDist_lt lt_r isOpen_thickening.measurableSet]
     _ = μ (thickening r.toReal (thickening s.toReal B)) + (s + r) := by rw [add_assoc, add_comm r]
-    _ ≤ μ (thickening (r.toReal + s.toReal) B) + (s + r) :=
-      add_le_add_right (measure_mono (thickening_thickening_subset _ _ _)) _
+    _ ≤ μ (thickening (r.toReal + s.toReal) B) + (s + r) := by grw [thickening_thickening_subset]
     _ = μ (thickening (s.toReal + r.toReal) B) + (s + r) := by rw [add_comm r.toReal]
 
 /-- The Lévy-Prokhorov distance between finite measures:
@@ -421,7 +417,7 @@ lemma LevyProkhorov.continuous_equiv_probabilityMeasure :
   refine SeqContinuous.continuous ?_
   intro μs ν hμs
   set P := LevyProkhorov.equiv _ ν -- more palatable notation
-  set Ps := fun n ↦ LevyProkhorov.equiv _ (μs n) -- more palatable notation
+  set Ps := LevyProkhorov.equiv _ ∘ μs -- more palatable notation
   rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto]
   refine fun f ↦ tendsto_integral_of_forall_limsup_integral_le_integral ?_ f
   intro f f_nn
@@ -432,7 +428,7 @@ lemma LevyProkhorov.continuous_equiv_probabilityMeasure :
   apply _root_.le_of_forall_pos_le_add
   intro δ δ_pos
   apply limsup_le_of_le ?_
-  · obtain ⟨εs, ⟨_, ⟨εs_pos, εs_lim⟩⟩⟩ := exists_seq_strictAnti_tendsto (0 : ℝ)
+  · obtain ⟨εs, _, εs_pos, εs_lim⟩ := exists_seq_strictAnti_tendsto (0 : ℝ)
     have ε_of_room := Tendsto.add (tendsto_iff_dist_tendsto_zero.mp hμs) εs_lim
     have ε_of_room' : Tendsto (fun n ↦ dist (μs n) ν + εs n) atTop (𝓝[>] 0) := by
       rw [tendsto_nhdsWithin_iff]
@@ -445,20 +441,17 @@ lemma LevyProkhorov.continuous_equiv_probabilityMeasure :
     filter_upwards [key (aux _), ε_of_room <| Iio_mem_nhds <| half_pos <|
                       mul_pos (inv_pos.mpr norm_f_pos) δ_pos]
       with n hn hn'
-    simp only [mem_preimage, mem_Iio] at *
+    simp only [mem_preimage, Function.comp_def, mem_Iio] at *
     specialize εs_pos n
     have bound := BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt
                     (Ps n) P (ε := dist (μs n) ν + εs n) ?_ ?_ f ?_
-    · refine bound.trans ?_
-      apply (add_le_add_right hn.le _).trans
-      rw [BoundedContinuousFunction.integral_eq_integral_meas_le]
-      · rw [add_assoc, mul_comm]
-        gcongr
-        calc
-          δ / 2 + ‖f‖ * (dist (μs n) ν + εs n)
-          _ ≤ δ / 2 + ‖f‖ * (‖f‖⁻¹ * δ / 2) := by gcongr
-          _ = δ := by field_simp; ring
-      · exact Eventually.of_forall f_nn
+    · grw [bound, hn, BoundedContinuousFunction.integral_eq_integral_meas_le _ _ <| .of_forall f_nn,
+        add_assoc, mul_comm]
+      gcongr
+      calc
+        δ / 2 + ‖f‖ * (dist (μs n) ν + εs n)
+        _ ≤ δ / 2 + ‖f‖ * (‖f‖⁻¹ * δ / 2) := by gcongr
+        _ = δ := by field_simp; ring
     · positivity
     · rw [ENNReal.ofReal_add (by positivity) (by positivity), ← add_zero (levyProkhorovEDist _ _)]
       apply ENNReal.add_lt_add_of_le_of_lt (levyProkhorovEDist_ne_top _ _)

@@ -25,8 +25,7 @@ lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β]
     [PartialOrder β] (f : β → α) (mul : ∀ x y, f (x * y) = f x * f y)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) :
     IsOrderedMonoid β where
-  mul_le_mul_left a b ab c := le.1 <| by
-      rw [mul, mul]; apply mul_le_mul_left'; exact le.2 ab
+  mul_le_mul_left a b ab c := le.1 <| by rw [mul, mul]; grw [le.2 ab]
 
 /-- Pullback an `IsOrderedMonoid` under a strictly monotone map. -/
 @[to_additive /-- Pullback an `IsOrderedAddMonoid` under a strictly monotone map. -/]
@@ -89,7 +88,7 @@ See also `OrderIso.mulLeft` when working in an ordered group. -/
        See also `OrderIso.addLeft` when working in an additive ordered group. -/]
 def OrderEmbedding.mulLeft {α : Type*} [Mul α] [LinearOrder α]
     [MulLeftStrictMono α] (m : α) : α ↪o α :=
-  OrderEmbedding.ofStrictMono (fun n => m * n) fun _ _ w => mul_lt_mul_left' w m
+  OrderEmbedding.ofStrictMono (fun n => m * n) mul_right_strictMono
 
 /-- The order embedding sending `b` to `b * a`, for some fixed `a`.
 See also `OrderIso.mulRight` when working in an ordered group. -/
@@ -98,4 +97,4 @@ See also `OrderIso.mulRight` when working in an ordered group. -/
        See also `OrderIso.addRight` when working in an additive ordered group. -/]
 def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
     [MulRightStrictMono α] (m : α) : α ↪o α :=
-  OrderEmbedding.ofStrictMono (fun n => n * m) fun _ _ w => mul_lt_mul_right' w m
+  OrderEmbedding.ofStrictMono (fun n => n * m) mul_left_strictMono

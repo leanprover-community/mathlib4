@@ -292,8 +292,8 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
         exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
           Equiv.Set.sumCompl (range f)
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-  le_self_add a _ := (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
-  le_add_self a _ := (zero_add a).ge.trans <| add_le_add_right (Cardinal.zero_le _) _
+  le_self_add a b := (add_zero a).ge.trans <| by grw [Cardinal.zero_le b]
+  le_add_self a _ := (zero_add a).ge.trans <| by grw [Cardinal.zero_le]
 
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing

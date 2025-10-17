@@ -45,7 +45,7 @@ lemma Sublist.prod_le_prod' [Preorder M] [MulRightMono M]
     exact (ih' h₁.2).trans (le_mul_of_one_le_left' h₁.1)
   | cons₂ a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
-    exact mul_le_mul_left' (ih' h₁.2) _
+    grw [ih' h₁.2]
 
 @[to_additive sum_le_sum]
 lemma SublistForall₂.prod_le_prod' [Preorder M]
