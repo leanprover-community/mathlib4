@@ -147,27 +147,57 @@ instance (x : B) : IsTopologicalAddGroup (W E x) := by
 
 end
 
-open Manifold
-
 noncomputable def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) : ℝ :=
   letI dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
   @Inner.inner ℝ EB _ (dψ v) (dψ w)
 
--- I hope that I can prove `g` is smooth using the examples below
+noncomputable def G (i : B) (x : B) (v : TangentSpace IB x) :
+  TangentBundle IB B → ℝ
+| (⟨y, w⟩) =>
+    @Inner.inner ℝ EB _
+      (Bundle.TotalSpace.snd (tangentMap IB 𝓘(ℝ, EB) (extChartAt IB i) ⟨x, v⟩))
+      (Bundle.TotalSpace.snd (tangentMap IB 𝓘(ℝ, EB) (extChartAt IB i) ⟨y, w⟩))
 
-example (p : B) : ContMDiffOn IB 𝓘(ℝ, EB) ω (extChartAt IB p) (chartAt HB p).source :=
-  contMDiffOn_extChartAt
+theorem contMDiff_G (i p x : B) (v : TangentSpace IB x) :
+  ContMDiff (IB.tangent) (𝓘(ℝ, ℝ)) ω (G i x v) := by
 
-example (p : B) :
+  have : ContMDiffOn IB 𝓘(ℝ, EB) ω (extChartAt IB i) (chartAt HB i).source :=
+      contMDiffOn_extChartAt
+
+  have h_tangent :
+   ContMDiffOn IB.tangent (𝓘(ℝ, EB).tangent) (ω-1)
+    (tangentMapWithin IB 𝓘(ℝ, EB) (extChartAt IB i) (chartAt HB i).source)
+    (TotalSpace.proj ⁻¹' (chartAt HB i).source) :=
+    ContMDiffOn.contMDiffOn_tangentMapWithin this
+      (OrderTop.le_top (ω - 1 + 1)) (IsOpen.uniqueMDiffOn (chartAt HB i).open_source)
+
+  have h_snd : ContMDiff ((𝓘(ℝ, EB)).tangent) (𝓘(ℝ, EB)) ⊤
+    (fun p : TangentBundle (𝓘(ℝ, EB)) EB => Bundle.TotalSpace.snd p) := by
+      exact contMDiff_snd_tangentBundle_modelSpace EB 𝓘(ℝ, EB)
+
+  have h_sndOn : ContMDiffOn ((𝓘(ℝ, EB)).tangent) (𝓘(ℝ, EB)) ⊤
+    (fun p : TangentBundle (𝓘(ℝ, EB)) EB => Bundle.TotalSpace.snd p) ⊤ := fun x a ↦ h_snd x
+
+  -- So far we have (p, v) ↦ d(ψᵢ)ₚ · p is smooth
+  have h_fiber : ContMDiffOn IB.tangent 𝓘(ℝ, EB) ω
+    ((fun p ↦ p.snd) ∘ tangentMapWithin IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) (chartAt HB i).source)
+    (TotalSpace.proj ⁻¹' (chartAt HB i).source) :=
+      ContMDiffOn.comp h_sndOn h_tangent (fun ⦃a⦄ a ↦ trivial)
+
+  exact sorry
+
+example : ContDiff ℝ ω fun (p : EB × EB) ↦ @Inner.inner ℝ EB _ p.1 p.2 := contDiff_inner
+
+example (i : B) :
   ContMDiffOn (IB.tangent) (𝓘(ℝ, EB).tangent) (ω - 1)
-    (tangentMapWithin IB 𝓘(ℝ, EB) (extChartAt IB p) (chartAt HB p).source)
-    (Bundle.TotalSpace.proj ⁻¹' (chartAt HB p).source) := by
+    (tangentMapWithin IB 𝓘(ℝ, EB) (extChartAt IB i) (chartAt HB i).source)
+    (Bundle.TotalSpace.proj ⁻¹' (chartAt HB i).source) := by
   apply ContMDiffOn.contMDiffOn_tangentMapWithin
-  · have : ContMDiffOn IB 𝓘(ℝ, EB) ω (extChartAt IB p) (chartAt HB p).source :=
+  · have : ContMDiffOn IB 𝓘(ℝ, EB) ω (extChartAt IB i) (chartAt HB i).source :=
       contMDiffOn_extChartAt
     exact this
   · exact OrderTop.le_top (ω - 1 + 1)
-  · refine IsOpen.uniqueMDiffOn (chartAt HB p).open_source
+  · exact IsOpen.uniqueMDiffOn (chartAt HB i).open_source
 
 lemma g_add' (i p : B) (x y v : TangentSpace IB p) :
   g i p v (x + y) = g i p v x + g i p v y := by
@@ -312,9 +342,21 @@ def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
       map_smul' := sorry }
     sorry
 
+-- Is this the right approach?
+lemma foo (f : SmoothPartitionOfUnity B IB B) (x : B) : ContMDiffAt IB 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ) ω
+(fun y ↦
+  ContinuousLinearMap.inCoordinates EB (TangentSpace IB) (EB →L[ℝ] ℝ) (V (TangentSpace IB)) x y x y
+      (g_global_bilinear f y)) x := sorry
+
 lemma g_global_bilinear_smooth (f : SmoothPartitionOfUnity B IB B) :
   ContMDiff IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ω
-   (fun x ↦ TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_global_bilinear f x)) := sorry
+   (fun x ↦ TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_global_bilinear f x)) := by
+  intro x
+  rw [contMDiffAt_hom_bundle]
+  constructor
+  · exact contMDiffAt_id
+  · simp
+    exact foo f x
 
 noncomputable
 def g_global_smooth_section
