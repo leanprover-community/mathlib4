@@ -385,32 +385,33 @@ def downloadFiles
     (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool): IO Unit := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
-  if size > 0 then
-    IO.FS.createDirAll IO.CACHEDIR
-    IO.println s!"Attempting to download {size} file(s) from {repo} cache"
-    let failed ← if parallel then
-      IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
-      let args := #["--request", "GET", "--parallel",
-          -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
-          "--silent",
-          "--retry", "5", -- there seem to be some intermittent failures
-          "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-      let {success, failed, done, ..} ←
-        monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
-      IO.FS.removeFile IO.CURLCFG
-      if warnOnMissing && success + failed < done then
-        IO.eprintln "Warning: some files were not found in the cache."
-        IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
-        IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
-        IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
-      pure failed
-    else
-      let r ← hashMap.foldM (init := []) fun acc _ hash => do
-        pure <| (← IO.asTask do downloadFile repo hash) :: acc
-      pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
-    if failed > 0 then
-      IO.println s!"{failed} download(s) failed"
-      IO.Process.exit 1
+  if size == 0 then
+    return
+  IO.FS.createDirAll IO.CACHEDIR
+  IO.println s!"Attempting to download {size} file(s) from {repo} cache"
+  let failed ← if parallel then
+    IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
+    let args := #["--request", "GET", "--parallel",
+        -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
+        "--silent",
+        "--retry", "5", -- there seem to be some intermittent failures
+        "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+    let {success, failed, done, ..} ←
+      monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
+    IO.FS.removeFile IO.CURLCFG
+    if warnOnMissing && success + failed < done then
+      IO.eprintln "Warning: some files were not found in the cache."
+      IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
+      IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
+      IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
+    pure failed
+  else
+    let r ← hashMap.foldM (init := []) fun acc _ hash => do
+      pure <| (← IO.asTask do downloadFile repo hash) :: acc
+    pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
+  if failed > 0 then
+    IO.println s!"{failed} download(s) failed"
+    IO.Process.exit 1
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
