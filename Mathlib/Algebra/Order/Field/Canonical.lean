@@ -22,7 +22,7 @@ abbrev CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
   bot := 0
   bot_le := zero_le
   zero_le_one := zero_le_one
-  mul_le_mul_left := fun _ _ h _ ↦ mul_le_mul_of_nonneg_left h <| zero_le _
+  mul_le_mul_left _ _ h _ := by grw [h]
 
 variable [IsStrictOrderedRing α] [Sub α] [OrderedSub α]
 
