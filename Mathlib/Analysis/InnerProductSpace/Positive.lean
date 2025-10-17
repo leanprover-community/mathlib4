@@ -202,19 +202,20 @@ open ComplexOrder in
 
 /-- A symmetric projection is positive. -/
 @[aesop 10% apply, grind →]
-theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
+theorem IsSymmetricProjection.isPositive {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
     p.IsPositive :=
   hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
 
+@[deprecated (since := "2025-10-17")] alias IsPositive.of_isSymmetricProjection :=
+  IsSymmetricProjection.isPositive
+
 /-- A star projection operator is positive. -/
-@[deprecated (since := "19-08-2025")]
+@[deprecated (since := "2025-08-19")]
 alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
 
 theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ range p ≤ range q := by
-  refine ⟨fun ⟨h1, h2⟩ a ha ↦ ?_, fun hpq ↦
-    IsPositive.of_isSymmetricProjection <| hp.sub_of_comp_eq_right hq <|
-    hq.isIdempotentElem.comp_eq_right_iff _|>.mpr hpq⟩
+  refine ⟨fun ⟨h1, h2⟩ a ha ↦ ?_, fun hpq ↦ (hp.sub_of_range_le_range hq hpq).isPositive⟩
   specialize h2 a
   have hh {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) : RCLike.re ⟪T a, a⟫_𝕜 = ‖T a‖ ^ 2 := by
     conv_lhs => rw [← hT.isIdempotentElem]
