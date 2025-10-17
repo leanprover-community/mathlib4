@@ -126,15 +126,12 @@ lemma linearIndependent_single_one : LinearIndependent R fun i : ι ↦ single i
 end Semiring
 
 section Ring
+variable {R M ι : Type*} [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M]
 
-variable {R : Type*} {M : Type*} {ι : Type*}
-variable [Ring R] [AddCommGroup M] [Module R M]
-
-lemma linearIndependent_single_of_ne_zero [Module.IsTorsionFree R M] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+lemma linearIndependent_single_of_ne_zero {v : ι → M} (hv : ∀ i, v i ≠ 0) :
     LinearIndependent R fun i : ι ↦ single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
-  exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by
-    simp +contextual [Fintype.linearIndependent_iff, hv]
+  exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by simp +contextual [hv]
 
 end Ring
 
