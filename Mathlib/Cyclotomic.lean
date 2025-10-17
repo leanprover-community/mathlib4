@@ -149,3 +149,74 @@ theorem NumberField.Units.torsionOrder_eq_of_isCyclotomicExtension (n : ℕ) [Ne
     · rw [eq_comm, Nat.lcm_eq_left_iff_dvd]
       intro h
       exact Nat.not_even_iff_odd.mpr (Odd.of_dvd_nat hn h) (even_torsionOrder K)
+
+open Ideal
+
+variable (p k : ℕ) [hp : Fact (Nat.Prime p)] {K : Type*} [Field K] [NumberField K]
+    [hK : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+    {ζ : K} (hζ : IsPrimitiveRoot ζ (p ^ (k + 1)))
+
+example (e : ℕ) (he : (hζ.toInteger - 1) ^ e ∣ p ∧ ¬ (hζ.toInteger - 1) ^ (e + 1) ∣ p) :
+    e = p ^ k * (p - 1) := by
+  obtain ⟨x, hx⟩ := he.1
+  have h_main := congr_arg (Int.natAbs ·) <| congr_arg (Algebra.norm ℤ ·) hx
+  dsimp at h_main
+  have : Algebra.norm ℤ (p : 𝓞 K) = p ^ Module.finrank ℚ K := sorry
+  rw [this] at h_main
+  by_cases hodd : p = 2
+  · sorry
+  rw [map_mul, map_pow, hζ.norm_toInteger_sub_one_of_prime_ne_two hodd] at h_main
+  have hx' : ¬ ↑p ∣ Algebra.norm ℤ x := by
+    by_contra!
+
+
+
+    sorry
+  have := congr_arg (Nat.factorization · p) h_main
+  dsimp at this
+  simp [Int.natAbs_mul, Int.natAbs_pow, Int.natAbs_cast, Nat.factorization_pow,
+    Finsupp.coe_smul, Nat.factorization_mul sorry sorry,
+    Pi.smul_apply, _root_.smul_eq_mul, Nat.Prime.factorization_self hp.out] at this
+  rw [Nat.factorization_eq_zero_of_not_dvd, add_zero] at this
+  rw [← this, IsCyclotomicExtension.Rat.finrank (p ^ (k + 1))]
+  rw [Nat.totient_prime_pow, Nat.add_sub_cancel_right]
+  exact hp.out
+  exact Nat.zero_lt_succ k
+  rwa [← Int.natCast_dvd]
+
+example (p k : ℕ) [hp : Fact (Nat.Prime p)] (hodd : p ≠ 2) {K : Type*} [Field K] [NumberField K]
+    [hK : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+    {P : Ideal (𝓞 K)} [P.IsMaximal] [P.LiesOver (span {(p : ℤ)})] :
+    ramificationIdx (algebraMap ℤ (𝓞 K)) (span {(p : ℤ)}) P = p ^ k * (p - 1) := by
+  let hζ := IsCyclotomicExtension.zeta_spec (p ^ (k + 1)) ℚ K
+  have t₀ := hζ.zeta_sub_one_prime
+  have t₁ := hζ.norm_toInteger_sub_one_of_prime_ne_two hodd
+  have : P = span {hζ.toInteger - 1} := sorry
+  rw [this]
+
+  have t₂ : FiniteMultiplicity (hζ.toInteger - 1) (algebraMap ℤ (𝓞 K) p) := by
+    apply?
+  have := t₂.multiplicity_eq_iff.mp rfl
+  obtain ⟨x, hx⟩ := this.1
+  have := congr_arg (Algebra.norm ℚ ·) <| congr_arg (algebraMap (𝓞 K) K ·) hx
+  set e := multiplicity (hζ.toInteger - 1) (algebraMap ℤ (𝓞 K) p)
+  dsimp only at this
+
+  rw [← Algebra.coe_norm_int] at this
+  rw? at this
+  rw [map_mul, map_pow, t₁] at this
+
+  rw [Ideal.IsDedekindDomain.ramificationIdx_eq_multiplicity]
+  simp [algebraMap_int_eq, map_span, eq_intCast, Set.image_singleton, Int.cast_natCast]
+  rw [FiniteMultiplicity.multiplicity_eq_iff]
+  simp_rw [span_singleton_pow, dvd_iff_le, Ideal.span_singleton_le_span_singleton]
+
+  obtain ⟨x, hx⟩ := IsPrimitiveRoot.toInteger_sub_one_dvd_prime hζ
+
+  apply Ideal.ramificationIdx_spec
+  · simp [algebraMap_int_eq, map_span, eq_intCast, Set.image_singleton, Int.cast_natCast,
+      span_singleton_pow, span_singleton_le_span_singleton]
+
+
+    sorry
+  · sorry

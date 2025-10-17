@@ -1,10 +1,67 @@
-import Mathlib.Data.Int.Star
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
-import Mathlib.NumberTheory.Cyclotomic.Rat
-import Mathlib.Algebra.Group.NatPowAssoc
-import Mathlib.Algebra.CharP.Two
+import Mathlib
+import Mathlib.Riccardo
+
+section ExpChar
+
+variable (p : ℕ)
+
+local notation3 "𝒑" => (Ideal.span {(p : ℤ)})
+
+attribute [local instance] Ideal.Quotient.field
+
+instance [hp : Fact (Nat.Prime p)] : CharP (ℤ ⧸ 𝒑) p := by
+  refine CharP.quotient ℤ p ?_
+  rw [mem_nonunits_iff, isUnit_iff_dvd_one, Int.natCast_dvd_ofNat]
+  exact Nat.Prime.not_dvd_one hp.out
+
+theorem Int.ideal_span_ne_bot [NeZero p] : 𝒑 ≠ ⊥ := by
+  rw [ne_eq, Ideal.span_singleton_eq_bot]
+  exact NeZero.ne _
+
+instance [NeZero p] : Finite (ℤ ⧸ 𝒑) := by
+  refine Ideal.finiteQuotientOfFreeOfNeBot 𝒑 ?_
+  exact Int.ideal_span_ne_bot _
+
+theorem Int.card_ideal_quot : Nat.card (ℤ ⧸ 𝒑) = p := by
+  simp [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply]
+
+end ExpChar
+
+@[simp]
+theorem rootsOfUnity_pow_eq_one {M : Type*} [CommMonoid M] (k : ℕ) (ζ : rootsOfUnity k M) :
+    ζ ^ k = 1 := by
+  rw [Subtype.ext_iff, Subgroup.coe_pow, Subgroup.coe_one, ← mem_rootsOfUnity]
+  exact ζ.prop
+
+open Ideal in
+theorem Int.mem_ideal_of_liesOver_span {R : Type*} [Ring R] (d : ℤ) (I : Ideal R)
+    [h : I.LiesOver (span {d})] : (d : R) ∈ I := by
+  simp [Int.cast_mem_ideal_iff, ← (liesOver_iff _ _).mp h]
+
+@[simp]
+theorem MulChar.one_apply_zero {R : Type*} [Nontrivial R] [CommMonoidWithZero R] {R' : Type*}
+    [CommMonoidWithZero R'] : (1 : MulChar R R') 0 = 0 := dif_neg not_isUnit_zero
+
+theorem gaussSum_one {R : Type*} [CommRing R] [Fintype R] [DecidableEq R] {R' : Type*}
+    [CommRing R'] : gaussSum (1 : MulChar R R') (1 : AddChar R R') = (Fintype.card Rˣ) := by
+  classical
+  simp [gaussSum, MulChar.sum_one_eq_card_units]
+
+theorem gaussSum_one_left {R : Type*} [Field R] [Fintype R] {R' : Type*} [CommRing R'] [IsDomain R']
+    (ψ : AddChar R R') : gaussSum 1 ψ = if ψ = 0 then (Fintype.card R : R') - 1 else -1 := by
+  classical
+  rw [gaussSum, ← Finset.univ.add_sum_erase _ (Finset.mem_univ 0), MulChar.one_apply_zero,
+    zero_mul, zero_add]
+  have : ∀ x ∈ Finset.univ.erase (0 : R), (1 : MulChar R R') x = 1 := by
+    intro x hx
+    exact MulChar.one_apply <| isUnit_iff_ne_zero.mpr <| Finset.ne_of_mem_erase hx
+  simp_rw +contextual [this, one_mul]
+  rw [Finset.sum_erase_eq_sub (Finset.mem_univ 0), AddChar.map_zero_eq_one, AddChar.sum_eq_ite,
+    ite_sub, zero_sub]
+
+theorem gaussSum_one_right {R : Type*} [CommRing R] [Fintype R] {R' : Type*} [CommRing R']
+    [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1) : gaussSum χ 1 = 0 := by
+  simpa [gaussSum] using MulChar.sum_eq_zero_of_ne_one hχ
 
 theorem Nat.eq_or_eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (h' : a.totient = b.totient) :
     a = b ∨ 2 * a = b := by
