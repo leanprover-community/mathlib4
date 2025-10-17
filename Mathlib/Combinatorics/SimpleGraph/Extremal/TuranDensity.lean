@@ -12,7 +12,7 @@ import Mathlib.Data.Nat.Choose.Cast
 /-!
 # Turán density
 
-This files defines the **Turán density** of a simple graph.
+This file defines the **Turán density** of a simple graph.
 
 ## Main definitions
 
