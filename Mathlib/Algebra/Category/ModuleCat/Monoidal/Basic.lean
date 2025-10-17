@@ -300,7 +300,8 @@ namespace ModuleCat
 variable {R : Type u} [CommRing R]
 
 @[simps -isSimp]
-instance instMonoidalCategoryStruct : MonoidalCategoryStruct (ModuleCat.{u} R) where
+instance MonoidalCategory.instMonoidalCategoryStruct :
+    MonoidalCategoryStruct (ModuleCat.{u} R) where
   tensorObj M N := of R (TensorProduct R M N)
   whiskerLeft M _ _ f := ofHom <| f.hom.lTensor M
   whiskerRight f M := ofHom <| f.hom.rTensor M

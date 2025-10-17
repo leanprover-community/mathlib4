@@ -103,7 +103,7 @@ end MonoidalCategory
 
 end SemimoduleCat
 
-namespace ModuleCat
+namespace ModuleCat.MonoidalCategory
 
 variable {R : Type u} [CommRing R]
 
@@ -125,14 +125,14 @@ theorem braiding_inv_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
     ((β_ M N).inv : N ⊗ M ⟶ M ⊗ N) (n ⊗ₜ m) = m ⊗ₜ n :=
   rfl
 
-/- theorem tensorμ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
+theorem tensorμ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
     tensorμ A B C D = ofHom (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap :=
   ModuleCat.hom_ext <| TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
-    TensorProduct.ext <| LinearMap.ext₂ fun _ _ => rfl -/
+    TensorProduct.ext <| LinearMap.ext₂ fun _ _ => rfl
 
 @[simp]
 theorem tensorμ_apply
     {A B C D : ModuleCat R} (x : A) (y : B) (z : C) (w : D) :
     tensorμ A B C D ((x ⊗ₜ y) ⊗ₜ (z ⊗ₜ w)) = (x ⊗ₜ z) ⊗ₜ (y ⊗ₜ w) := rfl
 
-end ModuleCat
+end ModuleCat.MonoidalCategory
