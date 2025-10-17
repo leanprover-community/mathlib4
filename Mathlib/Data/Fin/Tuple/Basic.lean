@@ -1065,18 +1065,15 @@ section Find
 
 variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n}
 
-/-- `findX p h` returns the smallest index `k` where `p k` is satisfied,
-  given that it is satisfied somewhere. Returns a subtype. -/
-protected def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) :
+private def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) :
     { i : Fin n // p i ∧ ∀ j < i, ¬ p j } := go n (by grind) where
-  /-- Auxilary function for `Fin.findX` which is tail-recursive. -/
-  go (m : Nat) (hj : ∀ j, (hm : j < n - m) → ¬p ⟨j, by grind⟩) := match m with
-  | m + 1 => if hnm : p <| Fin.mk _ <| n.sub_lt h.choose.pos (by grind)
-    then Subtype.mk _ ⟨hnm, fun _ => hj _⟩ else go m (by grind)
-  | 0 => (hj _ (by grind) h.choose_spec).elim
+  go (m : Nat) (hj : ∀ j (hm : j < n - m), ¬p ⟨j, by grind⟩) := match m with
+  | m + 1 => if hnm : p ⟨_, n.sub_lt h.choose.pos (by grind)⟩
+    then ⟨_, ⟨hnm, (hj ·.val)⟩⟩ else go m (by grind)
+  | 0 => absurd h (fun ⟨⟨_, _⟩, _⟩ => by grind)
 
-/-- `Fin.find p h` returns the smallest index `k` where `p k` is satisfied,
-  given that it is satisfied somewhere. -/
+/-- `Fin.find p h` returns the smallest index `k : Fin n` where `p k` is satisfied,
+  given that it is satisfied for some `k`. -/
 protected def find {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) : Fin n :=
   (Fin.findX p h).1
 
