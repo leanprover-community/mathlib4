@@ -176,19 +176,25 @@ section inertiadef
 
 variable {A : Type*} [CommRing A] [IsDedekindDomain A] {P : Ideal A} (hP : P ≠ ⊥) [P.IsMaximal]
   {B : Type*} [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
-  (Q : Ideal B) [Q.IsPrime] [hQ : Q.LiesOver P]
-  (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
-  [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
-  [FiniteDimensional K L]
-  (G : Type*) [Group G] [MulSemiringAction G B] [MulSemiringAction G L]
-  [SMulCommClass G A B] [Algebra.IsInvariant A B G] [hGKL : IsGaloisGroup G K L]
+  (Q : Ideal B) [Q.IsPrime] [hQ : Q.LiesOver P] [NoZeroSMulDivisors A B]
+  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [IsGaloisGroup G A B]
 
-include hP hQ K L in
+include hP in
 theorem Ideal.card_inertiaSubgroup [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
     Nat.card (Q.toAddSubgroup.inertia G) =
       Ideal.ramificationIdx (algebraMap A B) P Q := by
-  have : Finite G := hGKL.finite
+  let K := FractionRing A
+  let L := FractionRing B
+  have : FaithfulSMul A L := by
+    rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq A B L]
+    apply (IsFractionRing.injective B L).comp
+    exact NoZeroSMulDivisors.iff_algebraMap_injective.mp inferInstance
+  let : Algebra K L := FractionRing.liftAlgebra A L
+  let _ : MulSemiringAction G L := MulSemiringAction.compHom L
+      ((IsFractionRing.fieldEquivOfAlgEquivHom K L).comp (MulSemiringAction.toAlgAut G A B))
+  have hGKL : IsGaloisGroup G K L := IsGaloisGroup.toIsFractionRing G A B K L
   have : IsGalois K L := hGKL.isGalois
+  have : FiniteDimensional K L := hGKL.finiteDimensional
   rw [Ideal.inertiaSubgroup_eq_ker P Q G]
   have hf := Ideal.Quotient.stabilizerHom_surjective G P Q
   have : Finite ((B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) := Finite.of_surjective _ hf
@@ -230,11 +236,18 @@ open IsGaloisGroup
 open NumberField
 
 instance (K : Type*) [Field K] [NumberField K]
-    (G : Type*) [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) := by
-  sorry
+    (G : Type*) [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) where
+  smul := fun g x ↦ ⟨g • (x : K), sorry⟩
+  one_smul := sorry
+  mul_smul := sorry
+  smul_zero := sorry
+  smul_add := sorry
+  smul_one := sorry
+  smul_mul := sorry
 
-instance (K : Type*) [Field K] [NumberField K]
-    (G : Type*) [Group G] [MulSemiringAction G K] : SMulCommClass G (𝓞 K) K := by
+instance inst4 (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
+    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G K L] :
+    IsGaloisGroup G (𝓞 K) (𝓞 L) := by
   sorry
 
 theorem genthm₀ (K : Type*) [Field K] [NumberField K]
@@ -253,18 +266,20 @@ theorem genthm₀ (K : Type*) [Field K] [NumberField K]
       AddSubgroup.subgroupOf_inertia]
   replace h (m : MaximalSpectrum (𝓞 K)) :
     Ideal.ramificationIdx (algebraMap (𝓞 F) (𝓞 K)) (m.asIdeal.under (𝓞 F)) m.asIdeal =
-      Ideal.ramificationIdx (algebraMap ℤ (𝓞 K)) (m.asIdeal.under ℤ) m.asIdeal := by
-    have : IsGalois ℚ K := IsGaloisGroup.isGalois G ℚ K
-    have : IsGalois F K := (IsGaloisGroup.to_subgroup G ℚ K H).isGalois
-    have : SMulCommClass (H) (𝓞 F) (𝓞 K) := sorry
-    have : Algebra.IsInvariant (𝓞 F) (𝓞 K) H := sorry
-    have : Algebra.IsInvariant ℤ (𝓞 K) G := sorry
+      Ideal.ramificationIdx (algebraMap (𝓞 ℚ) (𝓞 K)) (m.asIdeal.under (𝓞 ℚ)) m.asIdeal := by
+    -- have : IsGalois ℚ K := IsGaloisGroup.isGalois G ℚ K
+    -- have : IsGalois F K := (IsGaloisGroup.to_subgroup G ℚ K H).isGalois
+    -- have : SMulCommClass (H) (𝓞 F) (𝓞 K) := sorry
+    -- have : Algebra.IsInvariant (𝓞 F) (𝓞 K) H := sorry
+    -- have : Algebra.IsInvariant ℤ (𝓞 K) G := sorry
     have : Algebra.IsSeparable (𝓞 F ⧸ Ideal.under (𝓞 F) m.asIdeal) (𝓞 K ⧸ m.asIdeal) := sorry
-    have : Algebra.IsSeparable (ℤ ⧸ Ideal.under ℤ m.asIdeal) (𝓞 K ⧸ m.asIdeal) := sorry
-    rw [← @Ideal.card_inertiaSubgroup (𝓞 F) _ _ (m.asIdeal.under (𝓞 F)) ?_ _
-      (𝓞 K) _ _ _ _ m.asIdeal _ _ F K _ _ _ _ _ _ _ _ _ _ _ H _ _ _ _ _ _ _]
-    rw [← @Ideal.card_inertiaSubgroup ℤ _ _ (m.asIdeal.under ℤ) ?_ _ (𝓞 K) _ _ _ _ m.asIdeal _
-      _ ℚ K _ _ _ _ _ _ _ _ _ _ _ G _ _ _ _ _ _ _]
+    have : Algebra.IsSeparable (𝓞 ℚ ⧸ Ideal.under (𝓞 ℚ) m.asIdeal) (𝓞 K ⧸ m.asIdeal) := sorry
+    have key := @Ideal.card_inertiaSubgroup (𝓞 F) _ _ (m.asIdeal.under (𝓞 F)) ?_ _ (𝓞 K) _ _
+      _ _ m.asIdeal _ _ _ H _ _ _ _ _
+    rw [← @Ideal.card_inertiaSubgroup (𝓞 F) _ _ (m.asIdeal.under (𝓞 F)) ?_ _ (𝓞 K) _ _
+      _ _ m.asIdeal _ _ _ H _ _ _ _ _]
+    rw [← @Ideal.card_inertiaSubgroup (𝓞 ℚ) _ _ (m.asIdeal.under (𝓞 ℚ)) ?_ _ (𝓞 K) _ _
+      _ _ m.asIdeal _ _ _ G _ _ _ _ _]
     apply h
     · sorry
     · have key := m.asIdeal.over_under (A := 𝓞 F)
@@ -272,6 +287,12 @@ theorem genthm₀ (K : Type*) [Field K] [NumberField K]
       rw [h] at key
       exact (m.asIdeal.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
         (m.asIdeal.eq_bot_of_liesOver_bot (A := 𝓞 F))
+    · have key := m.asIdeal.over_under (A := 𝓞 F)
+      intro h
+      rw [h] at key
+      exact (m.asIdeal.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
+        (m.asIdeal.eq_bot_of_liesOver_bot (A := 𝓞 F))
+  -- switch over from 𝓞 ℚ to ℤ at some point
   replace h (m : MaximalSpectrum (𝓞 F)) :
       Ideal.ramificationIdx (algebraMap ℤ (𝓞 F)) (m.asIdeal.under ℤ) m.asIdeal = 1 := by
     let q : MaximalSpectrum (𝓞 K) := sorry

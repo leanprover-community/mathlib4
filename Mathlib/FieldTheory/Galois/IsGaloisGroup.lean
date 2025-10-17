@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.Invariant.Defs
+import Mathlib.RingTheory.Invariant.Basic
 
 /-!
 # Predicate for Galois Groups
@@ -32,25 +32,61 @@ end CommRing
 
 section Field
 
-variable (G A B : Type*) [Group G] [CommSemiring A] [CommSemiring B] [Algebra A B]
+theorem smul_div₀ {G : Type*} {R : Type*} [Group G] [DivisionRing R]
+    [MulSemiringAction G R] (g : G) (m n : R) : g • (m / n) = (g • m) / (g • n) := by
+  by_cases hn : n = 0
+  · rw [hn, div_zero, smul_zero, div_zero]
+  rw [eq_div_iff ((smul_ne_zero_iff_ne g).mpr hn), ← smul_mul', div_mul_cancel₀ m hn]
+
+theorem IsFractionRing.nontrivial' (R F : Type*) [CommSemiring R] [CommSemiring F] [Algebra R F]
+    [h : IsFractionRing R F] [Nontrivial F] : Nontrivial R := by
+  rw [← not_subsingleton_iff_nontrivial]
+  intro
+  apply (h.map_units 1).ne_zero
+  rw [Submonoid.coe_one, Subsingleton.elim (1 : R) (0 : R), map_zero]
+
+variable (G A B : Type*) [Group G] [Finite G] [CommRing A] [CommRing B] [Algebra A B]
   [MulSemiringAction G B]
 
 theorem IsGaloisGroup.toIsFractionRing (K L : Type*) [Field K] [Field L] [Algebra K L]
-    [Algebra A K] [Algebra B L] [MulSemiringAction G L]
+    [Algebra A K] [Algebra B L] [Algebra A L] [IsScalarTower A K L] [IsScalarTower A B L]
     [IsFractionRing A K] [IsFractionRing B L] [hGAB : IsGaloisGroup G A B] :
+    let _ : MulSemiringAction G L := MulSemiringAction.compHom L
+      ((IsFractionRing.fieldEquivOfAlgEquivHom K L).comp (MulSemiringAction.toAlgAut G A B))
     IsGaloisGroup G K L := by
-
-  refine ⟨⟨?_⟩, ⟨?_⟩, ⟨?_⟩⟩
+  let _ : MulSemiringAction G L := MulSemiringAction.compHom L
+      ((IsFractionRing.fieldEquivOfAlgEquivHom K L).comp (MulSemiringAction.toAlgAut G A B))
+  have hG (g : G) (b : B) : g • algebraMap B L b = algebraMap B L (g • b) :=
+    IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L _ b
+  refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ ?_⟩, ⟨?_⟩⟩
   · have := hGAB.faithful
-    intro g₁ g₂ h
-    apply eq_of_smul_eq_smul (M := G) (α := B)
-    intro y
-    specialize h (algebraMap B L y)
-    sorry
-  · intro g x y
-
-    sorry
-  · sorry
+    exact eq_of_smul_eq_smul fun y ↦ by simpa [hG] using h (algebraMap B L y)
+  · obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := A) x
+    obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective (A := B) y
+    simp only [Algebra.smul_def, smul_mul', smul_div₀, map_div₀, smul_algebraMap, hG,
+      ← IsScalarTower.algebraMap_apply A K L, IsScalarTower.algebraMap_apply A B L]
+  · intro x h
+    have : Nontrivial A := IsFractionRing.nontrivial' A K
+    have : Nontrivial B := IsFractionRing.nontrivial' B L
+    have := Algebra.IsInvariant.isIntegral A B G
+    obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+    have hy' : algebraMap B L y ≠ 0 := by
+      have : y ≠ 0 := fun h ↦ zero_notMem_nonZeroDivisors (h ▸ hy)
+      simpa
+    obtain ⟨b, a, ha, hb⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) y).exists_smul_eq_mul x hy
+    rw [mul_comm, Algebra.smul_def, mul_comm] at hb
+    have ha' : (algebraMap B L) (algebraMap A B a) ≠ 0 := by
+      rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A K L]
+      simpa
+    have hxy : algebraMap B L x / algebraMap B L y =
+        algebraMap B L b / algebraMap B L (algebraMap A B a) := by
+      rw [div_eq_div_iff hy' ha', ← map_mul, hb, map_mul]
+    simp only [hxy, smul_div₀, hG, smul_algebraMap, div_left_inj' ha', IsFractionRing.coe_inj] at h
+    obtain ⟨b, rfl⟩ := hGAB.isInvariant.isInvariant b h
+    use algebraMap A K b / algebraMap A K a
+    simp only [map_div₀, ← IsScalarTower.algebraMap_apply A K L,
+      IsScalarTower.algebraMap_apply A B L]
+    rw [div_eq_div_iff ha' hy', ← map_mul, ← map_mul, hb]
 
 end Field
 
