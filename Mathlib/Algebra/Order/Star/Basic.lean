@@ -220,6 +220,19 @@ theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c :
 theorem conjugate_nonneg' {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c := by
   simpa only [star_star] using conjugate_nonneg ha (star c)
 
+lemma IsUnit.conjugate_nonneg_iff {u x : R} (hu : IsUnit u) :
+    0 ≤ u * x * star u ↔ 0 ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨v, hv⟩ := hu.exists_left_inv
+    have := conjugate_nonneg' h v
+    simp_rw [← mul_assoc, hv, one_mul, mul_assoc, ← star_mul, hv, star_one, mul_one] at this
+    exact this
+  · exact conjugate_nonneg' h _
+
+lemma IsUnit.conjugate_nonneg_iff' {u x : R} (hu : IsUnit u) :
+    0 ≤ star u * x * u ↔ 0 ≤ x := by
+  simpa using hu.star.conjugate_nonneg_iff
+
 @[aesop 90% apply (rule_sets := [CStarAlgebra])]
 protected theorem IsSelfAdjoint.conjugate_nonneg {a : R} (ha : 0 ≤ a) {c : R}
     (hc : IsSelfAdjoint c) : 0 ≤ c * a * c := by
