@@ -29,17 +29,11 @@ variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module �
 
 lemma expect_eq_zero_iff_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
     𝔼 i ∈ s, f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
-  rw [←sum_eq_zero_iff_of_nonneg hf, expect, smul_eq_zero, or_iff_right_iff_imp,
-      inv_eq_zero, Nat.cast_eq_zero, card_eq_zero]
-  intro hs
-  rw [hs, sum_empty]
+  simp +contextual [expect, sum_eq_zero_iff_of_nonneg hf]
 
 lemma expect_eq_zero_iff_of_nonpos (hf : ∀ i ∈ s, f i ≤ 0) :
     𝔼 i ∈ s, f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
-  rw [←sum_eq_zero_iff_of_nonpos hf, expect, smul_eq_zero, or_iff_right_iff_imp,
-      inv_eq_zero, Nat.cast_eq_zero, card_eq_zero]
-  intro hs
-  rw [hs, sum_empty]
+  simp +contextual [expect, sum_eq_zero_iff_of_nonpos hf]
 
 section PosSMulMono
 variable [PosSMulMono ℚ≥0 α] {a : α}
