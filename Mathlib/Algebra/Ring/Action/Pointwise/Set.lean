@@ -49,12 +49,19 @@ lemma add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b �
   rintro _ ⟨x, hx, rfl⟩
   simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)
 
-variable [IsDomain α] [Module.IsTorsionFree α β] {a : α} {t : Set β}
+variable [IsDomain α] [Module.IsTorsionFree α β] {a : α} {s : Set α} {t : Set β}
 
 lemma zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
   refine ⟨?_, zero_mem_smul_set⟩
   rintro ⟨b, hb, h⟩
   rwa [(smul_eq_zero.1 h).resolve_left ha] at hb
+
+lemma zero_mem_smul_iff : 0 ∈ s • t ↔ 0 ∈ s ∧ t.Nonempty ∨ 0 ∈ t ∧ s.Nonempty where
+  mp | ⟨a, ha, b, hb, h⟩ => by
+      obtain rfl | rfl := smul_eq_zero.1 h; exacts [.inl ⟨ha, b, hb⟩, .inr ⟨hb, a, ha⟩]
+  mpr
+  | .inl ⟨hs, b, hb⟩ => ⟨0, hs, b, hb, zero_smul _ _⟩
+  | .inr ⟨ht, a, ha⟩ => ⟨a, ha, 0, ht, smul_zero _⟩
 
 end Semiring
 

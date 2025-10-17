@@ -70,7 +70,7 @@ theorem Submodule.eq_top_of_nonempty_interior' [NeBot (𝓝[{ x : R | IsUnit x }
   have hy' : y ∈ ↑s := mem_of_mem_nhds hy
   rwa [s.add_mem_iff_right hy', ← Units.smul_def, s.smul_mem_iff' u] at hu
 
-variable (R M)
+variable (R M) [IsDomain R]
 
 /-- Let `R` be a topological ring such that zero is not an isolated point (e.g., a nontrivially
 normed field, see `NormedField.punctured_nhds_neBot`). Let `M` be a nontrivial module over `R`
