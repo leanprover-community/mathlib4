@@ -837,6 +837,12 @@ lemma prod_dvd_prod_of_dvd (f g : ι → M) (h : ∀ i ∈ s, f i ∣ g i) :
     ∏ i ∈ s, f i ∣ ∏ i ∈ s, g i :=
   Multiset.prod_dvd_prod_of_dvd _ _ h
 
+@[to_additive]
+theorem prod_map_equiv (e : ι ≃ κ) : (s.map e).prod (f ∘ e.symm) = s.prod f := by simp
+
+@[to_additive]
+theorem prod_comp_equiv {f : κ → M} (e : ι ≃ κ) : s.prod (f ∘ e) = (s.map e).prod f := by simp
+
 end CommMonoid
 
 section CancelCommMonoid
