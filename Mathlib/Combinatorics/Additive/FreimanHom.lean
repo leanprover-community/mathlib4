@@ -14,7 +14,7 @@ import Mathlib.Data.ZMod.Defs
 /-!
 # Freiman homomorphisms
 
-In this file, we define Freiman homomorphisms and isomorphism.
+In this file, we define Freiman homomorphisms and isomorphisms.
 
 An `n`-Freiman homomorphism from `A` to `B` is a function `f : α → β` such that `f '' A ⊆ B` and
 `f x₁ * ... * f xₙ = f y₁ * ... * f yₙ` for all `x₁, ..., xₙ, y₁, ..., yₙ ∈ A` such that
@@ -57,7 +57,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 
 * `MonoidHomClass.isMulFreimanHom` could be relaxed to `MulHom.toFreimanHom` by proving
   `(s.map f).prod = (t.map f).prod` directly by induction instead of going through `f s.prod`.
-* Affine maps are Freiman homs.
+* Affine maps are Freiman homomorphisms.
 -/
 
 assert_not_exists Field Ideal TwoSidedIdeal
