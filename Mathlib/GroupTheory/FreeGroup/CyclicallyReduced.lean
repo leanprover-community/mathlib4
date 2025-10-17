@@ -47,11 +47,11 @@ theorem isCyclicallyReduced_cons_append_iff {a b : α × Bool} :
 namespace IsCyclicallyReduced
 
 @[to_additive (attr := simp)]
-theorem nil : IsCyclicallyReduced ([] : List (α × Bool)) := by
+protected theorem nil : IsCyclicallyReduced ([] : List (α × Bool)) := by
   simp [IsCyclicallyReduced]
 
 @[to_additive (attr := simp)]
-theorem singleton {x : (α × Bool)} : IsCyclicallyReduced [x] := by
+protected theorem singleton {x : (α × Bool)} : IsCyclicallyReduced [x] := by
   simp [IsCyclicallyReduced]
 
 
@@ -87,6 +87,34 @@ def reduceCyclically [DecidableEq α] : List (α × Bool) → List (α × Bool) 
 namespace reduceCyclically
 variable [DecidableEq α]
 
+@[to_additive (attr := simp)]
+protected theorem nil : reduceCyclically ([] : List (α × Bool)) = [] := by simp [reduceCyclically]
+
+@[to_additive (attr := simp)]
+protected theorem singleton {a : α × Bool} : reduceCyclically [a] = [a] := by
+  simp [reduceCyclically]
+
+@[to_additive]
+protected theorem cons_append {a b : α × Bool} (l : List (α × Bool)) :
+    reduceCyclically (a :: (l ++ [b])) =
+    if b.1 = a.1 ∧ (!b.2) = a.2 then reduceCyclically l else a :: l ++ [b] := by
+  simp [reduceCyclically]
+
+
+@[to_additive]
+theorem isCyclicallyReduced (w : List (α × Bool)) (h : IsReduced w) :
+    IsCyclicallyReduced (reduceCyclically w) := by
+  induction w using List.bidirectionalRec
+  case nil => simp
+  case singleton => simp
+  case cons_append a l b ih =>
+    rw [reduceCyclically.cons_append]
+    split
+    case isTrue => exact ih (h.infix ⟨[a], [b], rfl⟩)
+    case isFalse h' =>
+      rw [isCyclicallyReduced_cons_append_iff]
+      exact ⟨h, by simpa using h'⟩
+
 /-- Partner function to `reduceCyclically`. See `reduceCyclically.conjugation`. -/
 @[to_additive /-- Partner function to `reduceCyclically`. See `reduceCyclically.conjugation`. -/]
 def conjugator : List (α × Bool) → List (α × Bool) :=
@@ -96,55 +124,29 @@ def conjugator : List (α × Bool) → List (α × Bool) :=
     (cons_append := fun a _ b rCC => if b.1 = a.1 ∧ (!b.2) = a.2 then a :: rCC else [] )
 
 @[to_additive (attr := simp)]
-theorem nil : reduceCyclically ([] : List (α × Bool)) = [] := by simp [reduceCyclically]
+protected theorem conjugator.nil : conjugator ([] : List (α × Bool)) = [] := by simp [conjugator]
 
 @[to_additive (attr := simp)]
-theorem singleton {a : α × Bool} : reduceCyclically [a] = [a] := by simp [reduceCyclically]
-
-@[to_additive (attr := simp)]
-theorem conjugator.nil : conjugator ([] : List (α × Bool)) = [] := by simp [conjugator]
-
-@[to_additive (attr := simp)]
-theorem conjugator.singleton {a : α × Bool} : conjugator [a] = [] := by simp [conjugator]
+protected theorem conjugator.singleton {a : α × Bool} : conjugator [a] = [] := by simp [conjugator]
 
 @[to_additive]
-theorem cons_append {a b : α × Bool} (l : List (α × Bool)) :
-    reduceCyclically (a :: (l ++ [b])) =
-    if b.1 = a.1 ∧ (!b.2) = a.2 then reduceCyclically l else a :: l ++ [b] := by
-  simp [reduceCyclically]
-
-@[to_additive]
-theorem conjugator.cons_append {a b : α × Bool} (l : List (α × Bool)) :
+protected theorem conjugator.cons_append {a b : α × Bool} (l : List (α × Bool)) :
     conjugator (a :: (l ++ [b])) = if b.1 = a.1 ∧ (!b.2) = a.2 then a :: conjugator l else [] := by
   simp [conjugator]
 
 @[to_additive]
-theorem conjugation (w : List (α × Bool)) :
-    w = conjugator w ++ reduceCyclically w ++ invRev (conjugator w) := by
+theorem conj_conjugator_reduceCyclically (w : List (α × Bool)) :
+    conjugator w ++ reduceCyclically w ++ invRev (conjugator w) = w := by
   induction w using List.bidirectionalRec
   case nil => simp
   case singleton => simp
   case cons_append a l b eq =>
-    rw [cons_append, conjugator.cons_append]
+    rw [reduceCyclically.cons_append, conjugator.cons_append]
     split
     case isTrue h =>
-      nth_rw 1 [eq]
+      nth_rw 4 [← eq]
       simp [invRev, h.1.symm, h.2.symm]
     case isFalse => simp
-
-@[to_additive]
-theorem sound (w : List (α × Bool)) (h : IsReduced w) :
-    IsCyclicallyReduced (reduceCyclically w) := by
-  induction w using List.bidirectionalRec
-  case nil => simp
-  case singleton => simp
-  case cons_append a l b ih =>
-    rw [cons_append]
-    split
-    case isTrue => exact ih (h.infix ⟨[a], [b], rfl⟩)
-    case isFalse h' =>
-      rw [isCyclicallyReduced_cons_append_iff]
-      exact ⟨h, by simpa using h'⟩
 
 end reduceCyclically
 end FreeGroup
