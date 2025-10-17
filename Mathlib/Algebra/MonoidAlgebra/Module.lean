@@ -209,9 +209,9 @@ end SMul
 
 section Semiring
 
-instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [Module.IsTorsionFree R k] :
+instance moduleIsTorsionFree [Semiring R] [Semiring k] [Module R k] [Module.IsTorsionFree R k] :
     Module.IsTorsionFree R k[G] :=
-  Finsupp.noZeroSMulDivisors
+  Finsupp.moduleIsTorsionFree
 
 end Semiring
 
