@@ -93,7 +93,7 @@ instance : (Action.forget V G).Braided where
 end
 
 instance [SymmetricCategory V] : SymmetricCategory (Action V G) :=
-  symmetricCategoryOfFaithful (Action.forget V G)
+  .ofFaithful (Action.forget V G)
 
 section
 
