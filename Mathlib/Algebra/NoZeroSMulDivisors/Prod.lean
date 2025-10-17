@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Module.Prod
 
 /-!
 # Prod instances for Module.IsTorsionFree
@@ -16,9 +16,9 @@ variable {R M N : Type*}
 
 namespace Prod
 
-instance noZeroSMulDivisors [Zero R] [Zero M] [Zero N]
-    [SMulWithZero R M] [SMulWithZero R N] [Module.IsTorsionFree R M] [Module.IsTorsionFree R N] :
-    Module.IsTorsionFree R (M × N) where
+instance noZeroSMulDivisors [Semiring R] [IsDomain R] [AddCommGroup M] [AddCommGroup N]
+    [Module R M] [Module R N] [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N] :
+    NoZeroSMulDivisors R (M × N) where
   eq_zero_or_eq_zero_of_smul_eq_zero {c xy} h := by simpa [Prod.ext_iff, or_and_left] using h
 
 end Prod

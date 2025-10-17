@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
@@ -48,12 +49,12 @@ lemma add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b �
   rintro _ ⟨x, hx, rfl⟩
   simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)
 
-variable [Module.IsTorsionFree α β]
+variable [IsDomain α] [Module.IsTorsionFree α β] {a : α} {t : Set β}
 
 lemma zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
   refine ⟨?_, zero_mem_smul_set⟩
   rintro ⟨b, hb, h⟩
-  rwa [(eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left ha] at hb
+  rwa [(smul_eq_zero.1 h).resolve_left ha] at hb
 
 end Semiring
 

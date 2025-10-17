@@ -104,28 +104,14 @@ protected noncomputable def mulDistribMulActionSet [Monoid α] [Monoid β] [MulD
 
 scoped[Pointwise] attribute [instance] Set.distribMulActionSet Set.mulDistribMulActionSet
 
-instance instNoZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [Module.IsTorsionFree α β] :
-    Module.IsTorsionFree (Set α) (Set β) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {s t} h := by
+instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) where
+  eq_zero_or_eq_zero_of_mul_eq_zero {s t} h := by
     by_contra! H
-    have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
-    rw [Ne, ← hst.of_smul_left.subset_zero_iff, Ne,
-      ← hst.of_smul_right.subset_zero_iff] at H
+    have hst : (s * t).Nonempty := h.symm.subst zero_nonempty
+    rw [Ne, ← hst.of_smul_left.subset_zero_iff, Ne, ← hst.of_smul_right.subset_zero_iff] at H
     simp only [not_subset, mem_zero] at H
     obtain ⟨⟨a, hs, ha⟩, b, ht, hb⟩ := H
-    exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul hs ht).elim ha hb
-
-instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [Module.IsTorsionFree α β] :
-    Module.IsTorsionFree α (Set β) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {a s} h := by
-    by_contra! H
-    have hst : (a • s).Nonempty := h.symm.subst zero_nonempty
-    rw [Ne, Ne, ← hst.of_image.subset_zero_iff, not_subset] at H
-    obtain ⟨ha, b, ht, hb⟩ := H
-    exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul_set ht).elim ha hb
-
-instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) where
-  eq_zero_or_eq_zero_of_mul_eq_zero h := eq_zero_or_eq_zero_of_smul_eq_zero h
+    exact (eq_zero_or_eq_zero_of_mul_eq_zero <| h.subset <| mul_mem_mul hs ht).elim ha hb
 
 section GroupWithZero
 variable [GroupWithZero α] [MulAction α β] {s t : Set β} {a : α}

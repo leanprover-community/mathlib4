@@ -47,7 +47,7 @@ instance (priority := 100) NoZeroDivisors.toNoZeroSMulDivisors [Zero R] [Mul R]
     [NoZeroDivisors R] : NoZeroSMulDivisors R R :=
   ⟨fun {_ _} => eq_zero_or_eq_zero_of_mul_eq_zero⟩
 
-instance [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M] :
+instance [Semiring R] [IsDomain R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M] :
     Module.IsTorsionFree R M where
   isSMulRegular r hr m₁ m₂ hm := by
     dsimp at hm
