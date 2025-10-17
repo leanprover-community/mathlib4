@@ -21,7 +21,7 @@ instance Pi.instStarOrderedRing : StarOrderedRing (Π i, A i) where
     simp only [Pi.le_def, StarOrderedRing.le_iff]
     have : closure (Set.range fun s : Π i, A i ↦ star s * s) =
         pi Set.univ fun i => (closure <| Set.range fun s : A i ↦ star s * s) := by
-      rw [← closure_pi (fun i => Set.mem_range.mpr ⟨0, by simp⟩)]
+      rw [← closure_pi fun _ => Set.mem_range.mpr ⟨0, by simp⟩]
       congr
       ext x
       simp only [Set.mem_range, funext_iff, mul_apply, star_apply, Set.mem_pi,
