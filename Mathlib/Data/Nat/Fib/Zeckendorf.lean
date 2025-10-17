@@ -76,11 +76,11 @@ lemma fib_greatestFib_le (n : ℕ) : fib (greatestFib n) ≤ n :=
   findGreatest_spec (P := (fun k ↦ fib k ≤ n)) (zero_le _) <| zero_le _
 
 lemma greatestFib_mono : Monotone greatestFib :=
-  fun _a _b hab ↦ findGreatest_mono (fun _k ↦ hab.trans') <| add_le_add_right hab _
+  fun _a _b hab ↦ findGreatest_mono (fun _k ↦ hab.trans') <| by gcongr
 
 @[simp] lemma le_greatestFib : m ≤ greatestFib n ↔ fib m ≤ n :=
   ⟨fun h ↦ (fib_mono h).trans <| fib_greatestFib_le _,
-    fun h ↦ le_findGreatest (m.le_fib_add_one.trans <| add_le_add_right h _) h⟩
+    fun h ↦ le_findGreatest (m.le_fib_add_one.trans <| by gcongr) h⟩
 
 @[simp] lemma greatestFib_lt : greatestFib m < n ↔ m < fib n :=
   lt_iff_lt_of_le_iff_le le_greatestFib
