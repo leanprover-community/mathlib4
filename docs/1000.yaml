@@ -1942,7 +1942,9 @@ Q2094241:
 
 Q2096184:
   title: Plancherel theorem
-  # also in undergrad.yml
+  decl: SchwartzMap.integral_inner_fourier_fourier
+  authors: Moritz Doll
+  date: 2025
 
 Q2109761:
   title: Uniformization theorem
@@ -3074,6 +3076,9 @@ Q5443005:
 
 Q5445112:
   title: Fernique's theorem
+  decl: ProbabilityTheory.IsGaussian.exists_integrable_exp_sq
+  authors: Rémy Degenne
+  date: 2025
 
 Q5445311:
   title: Ferrero–Washington theorem
@@ -3193,6 +3198,9 @@ Q5638112:
 
 Q5638886:
   title: Hahn embedding theorem
+  decl: hahnEmbedding_isOrderedAddMonoid
+  authors: Weiyi Wang
+  date: 2025
 
 Q5643485:
   title: Halpern–Läuchli theorem
