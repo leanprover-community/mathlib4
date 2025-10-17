@@ -455,12 +455,8 @@ theorem card_multiples (n p : ℕ) : #{e ∈ range n | p ∣ e + 1} = n / p := b
 
 /-- Exactly `n / p` naturals in `(0, n]` are multiples of `p`. -/
 theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : #{x ∈ Ioc 0 n | p ∣ x} = n / p := by
-  induction n with
-  | zero => simp
-  | succ n IH =>
-    simp [Nat.succ_div, add_ite, add_zero, filter_insert, apply_ite card, IH,
-      Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n),
-      ← Finset.insert_Ioc_right_eq_Ioc_add_one (zero_le _)]
+  induction n <;> simp [Nat.succ_div, add_ite, ← insert_Ioc_right_eq_Ioc_add_one, filter_insert,
+    apply_ite card, *]
 
 /-- There are exactly `⌊N/n⌋` positive multiples of `n` that are `≤ N`.
 See `Nat.card_multiples` for a "shifted-by-one" version. -/

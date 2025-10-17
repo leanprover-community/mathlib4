@@ -291,7 +291,7 @@ theorem encard_diff_le_aux {B₁ B₂ : Set α}
   rw [insert_diff_of_mem _ hf.1, diff_diff_comm, ← union_singleton, ← diff_diff, diff_diff_right,
     inter_singleton_eq_empty.mpr he.2, union_empty] at hencard
   rw [← encard_diff_singleton_add_one he, ← encard_diff_singleton_add_one hf]
-  exact add_le_add_right hencard 1
+  gcongr
 termination_by (B₂ \ B₁).encard
 
 variable {B₁ B₂ : Set α}

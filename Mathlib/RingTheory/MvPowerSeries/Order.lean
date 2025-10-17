@@ -297,9 +297,7 @@ theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ 
     ∑ i ∈ s, (f i).weightedOrder w ≤ (∏ i ∈ s, f i).weightedOrder w := by
   induction s using Finset.cons_induction with
   | empty => simp
-  | cons a s ha ih =>
-    rw [Finset.sum_cons ha, Finset.prod_cons ha]
-    exact le_trans (add_le_add_left ih _) (le_weightedOrder_mul _)
+  | cons a s ha ih => grw [Finset.sum_cons ha, Finset.prod_cons ha, ih, le_weightedOrder_mul]
 
 alias weightedOrder_mul_ge := le_weightedOrder_mul
 

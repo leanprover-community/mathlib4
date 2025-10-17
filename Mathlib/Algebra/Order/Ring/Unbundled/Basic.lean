@@ -454,7 +454,7 @@ theorem add_le_mul_of_left_le_right [ZeroLEOneClass R] [NeZero (1 : R)]
       _ ≤ a := a2
       _ ≤ b := ab
   calc
-    a + b ≤ b + b := add_le_add_right ab b
+    a + b ≤ b + b := by gcongr
     _ = 2 * b := (two_mul b).symm
     _ ≤ a * b := (mul_le_mul_iff_left₀ this).mpr a2
 
@@ -467,7 +467,7 @@ theorem add_le_mul_of_right_le_left [ZeroLEOneClass R] [NeZero (1 : R)]
       _ ≤ b := b2
       _ ≤ a := ba
   calc
-    a + b ≤ a + a := add_le_add_left ba a
+    a + b ≤ a + a := by gcongr
     _ = a * 2 := (mul_two a).symm
     _ ≤ a * b := (mul_le_mul_iff_right₀ this).mpr b2
 
@@ -687,8 +687,7 @@ lemma sq_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
   obtain ha | ha := le_or_gt 0 a
   · exact pow_succ_nonneg ha _
   obtain ⟨b, hab⟩ := exists_add_of_le ha.le
-  have hb : 0 < b := not_le.1 fun hb ↦
-    ((add_le_add_left hb a).trans_lt ((add_zero a).trans_lt ha)).ne' hab
+  have hb : 0 < b := not_le.1 fun hb ↦ (add_neg_of_neg_of_nonpos ha hb).ne' hab
   calc
     0 ≤ b ^ 2 := pow_succ_nonneg hb.le _
     _ = b ^ 2 + a * (a + b) := by rw [← hab, mul_zero, add_zero]

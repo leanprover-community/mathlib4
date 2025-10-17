@@ -184,9 +184,8 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
       card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜),
       cast_add, _root_.add_div, add_comm]
     rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
-    exact add_le_add_left ((ih <| le_of_succ_le hk).trans <|
-      local_lubell_yamamoto_meshalkin_inequality_div
-        (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <| sized_falling _ _) _
+    grw [ih <| le_of_succ_le hk, local_lubell_yamamoto_meshalkin_inequality_div
+      (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <| sized_falling _ _]
 
 end Falling
 

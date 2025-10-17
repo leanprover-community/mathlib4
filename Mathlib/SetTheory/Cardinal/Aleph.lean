@@ -603,7 +603,7 @@ theorem preBeth_le_beth (o : Ordinal) : preBeth o ≤ ℶ_ o :=
   preBeth_le_preBeth.2 (Ordinal.le_add_left _ _)
 
 theorem beth_strictMono : StrictMono beth :=
-  preBeth_strictMono.comp fun _ _ h ↦ add_lt_add_left h _
+  preBeth_strictMono.comp fun _ _ h ↦ by gcongr
 
 theorem beth_mono : Monotone beth :=
   beth_strictMono.monotone

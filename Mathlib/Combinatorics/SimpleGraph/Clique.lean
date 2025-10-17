@@ -754,7 +754,7 @@ variable [DecidableRel H.Adj]
 
 @[gcongr, mono]
 theorem cliqueFinset_mono (h : G ≤ H) : G.cliqueFinset n ⊆ H.cliqueFinset n :=
-  monotone_filter_right _ fun _ ↦ IsNClique.mono h
+  monotone_filter_right _ fun _ _ ↦ IsNClique.mono h
 
 variable [Fintype β] [DecidableEq β] (G)
 

@@ -407,7 +407,7 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
   suffices ∀ n ≥ N, d n = d N from (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
   intro n hn
   dsimp [d]
-  rw [eventually_constant_prod _ (add_le_add_right hn 1)]
+  rw [eventually_constant_prod (N := N + 1) _ (by gcongr)]
   intro m hm
   simp [huv m (le_of_lt hm)]
 

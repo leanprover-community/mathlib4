@@ -145,9 +145,9 @@ lemma exists_of_count_lt_count {a b : ℕ} (h : a.count p < b.count p) : ∃ x �
 variable {q : ℕ → Prop}
 variable [DecidablePred q]
 
-theorem count_mono_left {n : ℕ} (hpq : ∀ k, p k → q k) : count p n ≤ count q n := by
-  simp only [count_eq_card_filter_range]
-  exact card_le_card ((range n).monotone_filter_right hpq)
+@[gcongr]
+theorem count_mono_left {n : ℕ} (hpq : ∀ k < n, p k → q k) : count p n ≤ count q n :=
+  List.countP_mono_left <| by simpa
 
 end Count
 
