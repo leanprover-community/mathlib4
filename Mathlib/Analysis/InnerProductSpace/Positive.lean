@@ -212,7 +212,7 @@ alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
 
 theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ range p ≤ range q := by
-  refine ⟨fun ⟨h1, h2⟩ a ha => ?_, fun hpq ↦
+  refine ⟨fun ⟨h1, h2⟩ a ha ↦ ?_, fun hpq ↦
     IsPositive.of_isSymmetricProjection <| hp.sub_of_comp_eq_right hq <|
     hq.isIdempotentElem.comp_eq_right_iff _|>.mpr hpq⟩
   specialize h2 a
@@ -488,4 +488,4 @@ theorem Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
 theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection = V.starProjection ↔ U = V := by
-  simp only [le_antisymm_iff, ← Submodule.starProjection_le_starProjection_iff]
+  simp only [le_antisymm_iff, ← starProjection_le_starProjection_iff]
