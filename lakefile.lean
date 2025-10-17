@@ -8,7 +8,7 @@ open Lake DSL
 
 require "leanprover-community" / "batteries" @ git "lean-pr-testing-10735"
 require "leanprover-community" / "Qq" @ git "nightly-testing"
-require "leanprover-community" / "aesop" @ git "master"
+require aesop from git "https://github.com/mhuisi/aesop" @ "mhuisi/bump-nightly-to-2025-10-17"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.75-pre3" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
@@ -27,6 +27,9 @@ require "leanprover-community" / "plausible" @ git "main"
 `lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.mathlibStandardSet, true⟩,
+  ⟨`linter.checkInitImports, true⟩,
+  ⟨`linter.allScriptsDocumented, true⟩,
+  ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
   -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
