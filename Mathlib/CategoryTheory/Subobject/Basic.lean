@@ -728,7 +728,7 @@ Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subob
 and then taking representatives.
 -/
 def existsCompRepresentativeIso (f : X ⟶ Y) :
-    («exists» f) ⋙ representative ≅ representative ⋙ (MonoOver.exists f) :=
+    «exists» f ⋙ representative ≅ representative ⋙ MonoOver.exists f :=
   lowerCompRepresentativeIso _
 
 /-- `exists f` applied to a subobject `x` is isomorphic to the image of `x.arrow ≫ f`. -/
@@ -740,10 +740,6 @@ def existsIsoImage (f : X ⟶ Y) (x : Subobject X) :
 @[simps! F_I F_m]
 def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
     ImageFactorisation (x.arrow ≫ f) :=
-  have h :
-    (existsIsoImage f x).hom ≫ ((Image.imageFactorisation (x.arrow ≫ f)).F.m) =
-      ((«exists» f).obj x).arrow :=
-    Over.w ((existsCompRepresentativeIso f).app x).hom
   let :=
     ImageFactorisation.ofIsoI
       (Image.imageFactorisation (x.arrow ≫ f))
@@ -751,7 +747,7 @@ def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
   ImageFactorisation.copy this
     ((«exists» f).obj x).arrow
     this.F.e
-    (by rw [h.symm]; simp [this])
+    (by simpa [this, -Over.w] using (Over.w ((existsCompRepresentativeIso f).app x).hom).symm)
 
 end Exists
 
