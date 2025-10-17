@@ -271,9 +271,9 @@ equipped with the representation induced by the diagonal action of `G`. -/
 def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
   Iso.refl _
 
-instance x_projective (G : Type u) [Group G] [DecidableEq G] (n : ℕ) :
-    Projective ((standardComplex k G).X n) :=
-  inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
+instance x_projective (G : Type u) [Group G] (n : ℕ) :
+    Projective ((standardComplex k G).X n) := by
+  classical exact inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
@@ -370,7 +370,7 @@ end standardComplex
 
 open HomologicalComplex.Hom standardComplex
 
-variable [Group G] [DecidableEq G]
+variable [Group G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
 def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
@@ -395,6 +395,7 @@ namespace barComplex
 
 open Rep Finsupp
 
+variable [DecidableEq G]
 variable (n)
 
 /-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
@@ -425,6 +426,8 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
 end barComplex
 
 open barComplex
+
+variable [DecidableEq G]
 
 /-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
 differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to

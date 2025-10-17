@@ -57,11 +57,11 @@ theorem decomposition_Q (n q : ℕ) :
   | succ q hq =>
     by_cases hqn : q + 1 ≤ n + 1
     swap
-    · rw [Q_is_eventually_constant (show n + 1 ≤ q by omega), hq]
+    · rw [Q_is_eventually_constant (show n + 1 ≤ q by cutsat), hq]
       congr 1
       ext ⟨x, hx⟩
       simp_rw [Finset.mem_filter_univ]
-      omega
+      cutsat
     · obtain ⟨a, ha⟩ := Nat.le.dest (Nat.succ_le_succ_iff.mp hqn)
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
       symm
@@ -74,7 +74,7 @@ theorem decomposition_Q (n q : ℕ) :
         rfl
       · ext ⟨i, hi⟩
         simp_rw [Finset.mem_erase, Finset.mem_filter_univ, q', ne_eq, Fin.mk.injEq]
-        omega
+        cutsat
 
 variable (X)
 

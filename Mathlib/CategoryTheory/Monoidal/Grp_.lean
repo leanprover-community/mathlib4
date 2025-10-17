@@ -257,8 +257,6 @@ theorem inv_hom [GrpObj A] [GrpObj B] (f : A ⟶ B) [IsMonHom f] : ι ≫ f = f 
 lemma toMonObj_injective {X : C} :
     Function.Injective (@GrpObj.toMonObj C ‹_› ‹_› X) := by
   intro h₁ h₂ e
-  let X₁ : Grp_ C := @Grp_.mk _ _ _ X h₁
-  let X₂ : Grp_ C := @Grp_.mk _ _ _ X h₂
   suffices h₁.inv = h₂.inv by cases h₁; congr!
   apply lift_left_mul_ext (𝟙 _)
   rw [left_inv]
@@ -465,8 +463,8 @@ protected instance Faithful.mapGrp [F.Faithful] : F.mapGrp.Faithful where
 protected instance Full.mapGrp [F.Full] [F.Faithful] : F.mapGrp.Full where
   map_surjective := F.mapMon.map_surjective
 
-/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Grp(F) : Grp C ⥤ Grp D` is fully
-faithful too. -/
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
+`GrpCat(F) : GrpCat C ⥤ GrpCat D` is fully faithful too. -/
 @[simps]
 protected def FullyFaithful.mapGrp (hF : F.FullyFaithful) : F.mapGrp.FullyFaithful where
   preimage f := .mk <| hF.preimage f.hom

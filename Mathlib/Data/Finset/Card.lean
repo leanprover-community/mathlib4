@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Cardinality of a finite set
@@ -494,7 +495,7 @@ lemma injOn_of_surjOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hsurj 
   have : #(s.image f) = #t := by rw [this]
   have : #(s.image f) ≤ #s := card_image_le
   rw [← card_image_iff]
-  omega
+  cutsat
 
 /--
 Given a surjective map `f` defined on a finite set `s` to another finite set `t`, if `s` is no
@@ -629,7 +630,7 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #
   classical
   refine Nat.decreasingInduction' ?_ hnt ⟨t, by simp [hst]⟩
   intro k _ hnk ⟨u, hu₁, hu₂, hu₃⟩
-  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by rw [← card_pos]; grind
+  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by grind
   exact ⟨u.erase a, by grind⟩
 
 /-- We can shrink a set to any smaller size. -/
@@ -644,7 +645,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
     (hXY : 2 * n < #(X ∪ Y)) : ∃ C : Finset α, n < #C ∧ (C ⊆ X ∨ C ⊆ Y) := by
   have h₁ : #(X ∩ (Y \ X)) = 0 := Finset.card_eq_zero.mpr (by grind)
   have h₂ : #(X ∪ Y) = #X + #(Y \ X) := by grind
-  obtain h | h : n < #X ∨ n < #(Y \ X) := by grind
+  obtain h | h : n < #X ∨ n < #(Y \ X) := by cutsat
   · exact ⟨X, by grind⟩
   · exact ⟨Y \ X, by grind⟩
 

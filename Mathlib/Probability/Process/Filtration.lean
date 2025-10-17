@@ -250,7 +250,7 @@ variable [TopologicalSpace β] [MetrizableSpace β] [mβ : MeasurableSpace β] [
   [Preorder ι]
 
 /-- Given a sequence of functions, the natural filtration is the smallest sequence
-of σ-algebras such that that sequence of functions is measurable with respect to
+of σ-algebras such that the sequence of functions is measurable with respect to
 the filtration. -/
 def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Filtration ι m where
   seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
