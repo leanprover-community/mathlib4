@@ -255,9 +255,34 @@ instance (n : ℕ) (M N : ModuleCat.{v'} S) : IsScalarTower R S (Ext M N n) wher
 
 theorem Ext.isBaseChange_aux [Module.Flat R S] (M N : ModuleCat.{v} R) (n : ℕ) :
     IsBaseChange S ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n) := by
+  induction n generalizing M N
+  · sorry
+  · rename_i n ih
+
+    sorry
+
+noncomputable def ModuleCat.iso_extendScalars' {M : ModuleCat.{v} R} {MS : ModuleCat.{v'} S}
+    (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f) :
+    MS ≅ (ModuleCat.extendScalars'.{v, v'} R S).obj M :=
+  (isb1.equiv.symm.trans (Shrink.linearEquiv S (TensorProduct R S M)).symm).toModuleIso
+
+noncomputable def Ext.isBaseChange_map [Module.Flat R S] {M N : ModuleCat.{v} R}
+    {MS NS : ModuleCat.{v'} S} (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f) (g : N →ₗ[R] NS)
+    (isb2 : IsBaseChange S g) (n : ℕ) : Ext M N n →ₗ[R] Ext MS NS n :=
+  let e : Ext ((ModuleCat.extendScalars'.{v, v'} R S).obj M)
+    ((ModuleCat.extendScalars'.{v, v'} R S).obj N) n ≃ₗ[S]
+    Ext MS NS n :=
+    --ModuleCat.iso_extendScalars' S f isb1
+    --ModuleCat.iso_extendScalars' S g isb2
+    sorry
+  (e.restrictScalars R).toLinearMap.comp
+    ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n)
+
+theorem Ext.isBaseChange [Module.Flat R S] (M N : ModuleCat.{v} R) (MS NS : ModuleCat.{v'} S)
+    (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f) (g : N →ₗ[R] NS) (isb2 : IsBaseChange S g) (n : ℕ) :
+    IsBaseChange S (Ext.isBaseChange_map S f isb1 g isb2 n) := by
+
   sorry
-
-
 
 end
 
