@@ -337,12 +337,12 @@ where
   -- TODO: should this also support continuous linear equivalences?
   fromCLM : TermElabM Expr := do
     match_expr e with
-    | ContinuousLinearMap k S _ _ _σ _E _ _ _F _ _  _ _ =>
+    | ContinuousLinearMap k S _ _ _σ _E _ _ _F _ _ _ _ =>
       if ← isDefEq k S then
         -- TODO: check if σ is actually the identity!
         let eK : Term ← Term.exprToSyntax k
         let eT : Term ← Term.exprToSyntax e
-        let iTerm : Term := ← ``(𝓘($eK, $eT))
+        let iTerm : Term ← ``(𝓘($eK, $eT))
         Term.elabTerm iTerm none
       else
         throwError "Coefficients {k} and {S} of {e} are not definitionally equal"
