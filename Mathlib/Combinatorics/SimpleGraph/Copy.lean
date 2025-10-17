@@ -15,8 +15,8 @@ For two simple graphs `G` and `H`, a *copy* of `G` in `H` is a (not necessarily 
 `H` isomorphic to `G`.
 
 If there exists a copy of `G` in `H`, we say that `H` *contains* `G`. This is equivalent to saying
-that there is an injective graph homomorphism `G → H` between them (this is **not** the same as a graph
-embedding, as we do not require the subgraph to be induced).
+that there is an injective graph homomorphism `G → H` between them (this is **not** the same as a
+graph embedding, as we do not require the subgraph to be induced).
 
 If there exists an induced copy of `G` in `H`, we say that `H` *inducingly contains* `G`. This is
 equivalent to saying that there is a graph embedding `G ↪ H`.
