@@ -7,6 +7,7 @@ import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Order.Category.LinOrd
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Data.Real.Basic
+import Mathlib.Data.Sum.Order
 /-!
 # OrderTypes
 
@@ -183,25 +184,19 @@ protected theorem one_ne_zero : (1 : OrderType) ≠ 0 :=
 instance nontrivial : Nontrivial OrderType.{u} :=
   ⟨⟨1, 0, OrderType.one_ne_zero⟩⟩
 
-/-- `Quotient.inductionOn` specialized to OrderTypes.
-
-Not to be confused with well-founded recursion `OrderType.induction`. -/
+/-- `Quotient.inductionOn` specialized to OrderTypes. -/
 @[elab_as_elim]
 theorem inductionOn {C : OrderType → Prop} (o : OrderType)
     (H : ∀ α [LinearOrder α], C (type α)) : C o :=
   Quot.inductionOn o (fun α ↦ H α)
 
-/-- `Quotient.inductionOn₂` specialized to OrderTypes.
-
-Not to be confused with well-founded recursion `OrderType.induction`. -/
+/-- `Quotient.inductionOn₂` specialized to OrderTypes. -/
 @[elab_as_elim]
 theorem inductionOn₂ {C : OrderType → OrderType → Prop} (o₁ o₂ : OrderType)
     (H : ∀ α [LinearOrder α] β [LinearOrder β], C (type α) (type β)) : C o₁ o₂ :=
   Quotient.inductionOn₂ o₁ o₂ fun α β ↦ H α β
 
-/-- `Quotient.inductionOn₃` specialized to OrderTypes.
-
-Not to be confused with well-founded recursion `OrderType.induction`. -/
+/-- `Quotient.inductionOn₃` specialized to OrderTypes. -/
 @[elab_as_elim]
 theorem inductionOn₃ {C : OrderType → OrderType → OrderType → Prop} (o₁ o₂ o₃ : OrderType)
     (H : ∀ α [LinearOrder α] β [LinearOrder β] γ [LinearOrder γ],
@@ -210,7 +205,7 @@ theorem inductionOn₃ {C : OrderType → OrderType → OrderType → Prop} (o�
     H α β γ
 
 open Classical in
-/-- To prove a result on OrderTypes, it suffices to prove it for order types of well-orders. -/
+/-- To prove a result on OrderTypes, it suffices to prove it for order types of linear orders. -/
 @[elab_as_elim]
 theorem inductionOnLinOrd {C : OrderType → Prop} (o : OrderType)
     (H : ∀ α [LinearOrder α], C (type α)) : C o :=
@@ -254,7 +249,7 @@ instance partialOrder : PartialOrder OrderType where
     Quotient.inductionOn₃ a b c fun _ _ _ ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩
   le_antisymm a b :=
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ ↦ by
-      refine Quot.sound ⟨⟨⟨h₁,h₂,sorry,sorry⟩,by sorry⟩⟩
+      refine Quot.sound ⟨⟨⟨h₁,h₂,sorry,sorry⟩,by simp⟩⟩
 
 
 instance : LinearOrder OrderType :=
@@ -348,5 +343,15 @@ scoped notation "η" => OrderType.eta
 
 @[inherit_doc]
 scoped notation "θ" => OrderType.theta
+
+open Classical
+in instance : Add OrderType where
+  add := Quotient.map₂ (fun r s ↦ ⟨(r ⊕ₗ s)⟩)
+   (fun _ _ ha _ _ hb ↦ ⟨OrderIso.sumLexCongr (choice ha) (choice hb)⟩)
+
+variable (o : OrderType)
+
+#check o + 0
+
 
 end OrderType
