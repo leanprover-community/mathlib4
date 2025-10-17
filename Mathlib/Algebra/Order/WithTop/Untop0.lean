@@ -84,7 +84,7 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
 ## Simplifying Lemmas in cases where α is a OrderedAddCommGroup
 -/
 
-section orderedAddCommGroup
+section OrderedAddCommGroup
 
 variable
   [AddCommGroup α] [PartialOrder α]
@@ -99,7 +99,6 @@ lemma untop₀_nonneg {a : WithTop α} :
   | top => tauto
   | coe a => simp
 
-@[simp]
 theorem le_of_untop₀_le_untop₀ {a b : WithTop α}
     (ha : a ≠ ⊤) (h : a.untop₀ ≤ b.untop₀) :
     a ≤ b := by
@@ -119,13 +118,13 @@ theorem untop₀_le_untop₀_of_le {a b : WithTop α}
   lift a to α using ha
   simp_all
 
-end orderedAddCommGroup
+end OrderedAddCommGroup
 
 /-!
 ## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
 -/
 
-section linearOrderedAddCommGroup
+section LinearOrderedAddCommGroup
 
 variable
   [AddCommGroup α] [LinearOrder α]
@@ -154,6 +153,6 @@ theorem untop₀_min {a b : WithTop α}
   rw [not_le] at h
   simp [min_eq_right h.le, min_eq_right (coe_lt_coe.mpr h).le]
 
-end linearOrderedAddCommGroup
+end LinearOrderedAddCommGroup
 
 end WithTop
