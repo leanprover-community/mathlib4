@@ -66,11 +66,9 @@ lemma untop₀_add [AddZeroClass α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b
     (a + b).untop₀ = a.untop₀ + b.untop₀ := untopD_add ha hb
 
 @[simp]
-lemma untop₀_neg [AddCommGroup α] (a : WithTop α) :
-    (-a).untop₀ = -a.untop₀ := by
-  cases a with
-  | top => simp
-  | coe a =>
+lemma untop₀_neg [AddCommGroup α] : ∀ a : WithTop α, (-a).untop₀ = -a.untop₀
+  | ⊤ => by simp
+  | (a : α) => by
     rw [← LinearOrderedAddCommGroup.coe_neg, untop₀_coe]
     simp
 
