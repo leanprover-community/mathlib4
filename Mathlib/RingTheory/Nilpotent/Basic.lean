@@ -219,9 +219,8 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
 
 end CommSemiring
 
-lemma Module.IsTorsionFree.isReduced (R M : Type*)
-    [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [Module.IsTorsionFree R M] :
-    IsReduced R := by
+lemma Module.IsTorsionFree.isReduced (R M : Type*) [Semiring R] [IsDomain R] [AddCommMonoid M]
+    [Module R M] [Nontrivial M] [Module.IsTorsionFree R M] : IsReduced R := by
   refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
   induction k with
   | zero =>

@@ -36,16 +36,15 @@ section SMul
 
 variable {S : Type*}
 
-instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [Module.IsTorsionFree R k] :
-    Module.IsTorsionFree R (MonoidAlgebra k G) :=
-  Finsupp.noZeroSMulDivisors
-
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
     DistribMulAction R (MonoidAlgebra k G) :=
   Finsupp.distribMulAction G k
 
 instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra k G) :=
   Finsupp.module G k
+
+instance moduleIsTorsionFree [Semiring R] [Semiring k] [Module R k] [Module.IsTorsionFree R k] :
+    Module.IsTorsionFree R (MonoidAlgebra k G) := Finsupp.moduleIsTorsionFree
 
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
     FaithfulSMul R (MonoidAlgebra k G) :=
