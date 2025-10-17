@@ -49,14 +49,11 @@ to form the Dirichlet ring.
 
 ## Notation
 
-All notation is localized in the namespace `ArithmeticFunction`.
-
 The arithmetic functions `ζ`, `σ`, `ω`, `Ω` and `μ` have Greek letter names.
-
-In addition, there are separate locales `ArithmeticFunction.zeta` for `ζ`,
+This notation is scpoed to the separate locales `ArithmeticFunction.zeta` for `ζ`,
 `ArithmeticFunction.sigma` for `σ`, `ArithmeticFunction.omega` for `ω`,
 `ArithmeticFunction.Omega` for `Ω`, and `ArithmeticFunction.Moebius` for `μ`,
-to allow for selective access to these notations.
+to allow for selective access.
 
 The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom notation
 `∏ᵖ p ∣ n, f p` when applied to `n`.
@@ -381,10 +378,9 @@ def zeta : ArithmeticFunction ℕ :=
   ⟨fun x => ite (x = 0) 0 1, rfl⟩
 
 @[inherit_doc]
-scoped[ArithmeticFunction] notation "ζ" => ArithmeticFunction.zeta
-
-@[inherit_doc]
 scoped[ArithmeticFunction.zeta] notation "ζ" => ArithmeticFunction.zeta
+
+open scoped zeta
 
 @[simp]
 theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
@@ -469,6 +465,8 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring R]
 
+open scoped zeta
+
 @[simp]
 theorem pmul_zeta (f : ArithmeticFunction R) : f.pmul ↑ζ = f := by
   ext x
@@ -482,6 +480,8 @@ theorem zeta_pmul (f : ArithmeticFunction R) : (ζ : ArithmeticFunction R).pmul 
 end NonAssocSemiring
 
 variable [Semiring R]
+
+open scoped zeta
 
 /-- This is the pointwise power of `ArithmeticFunction`s. -/
 def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
@@ -803,6 +803,8 @@ end IsMultiplicative
 
 section SpecialFunctions
 
+open scoped zeta
+
 /-- The identity on `ℕ` as an `ArithmeticFunction`. -/
 def id : ArithmeticFunction ℕ :=
   ⟨_root_.id, rfl⟩
@@ -832,10 +834,9 @@ def sigma (k : ℕ) : ArithmeticFunction ℕ :=
   ⟨fun n => ∑ d ∈ divisors n, d ^ k, by simp⟩
 
 @[inherit_doc]
-scoped[ArithmeticFunction] notation "σ" => ArithmeticFunction.sigma
-
-@[inherit_doc]
 scoped[ArithmeticFunction.sigma] notation "σ" => ArithmeticFunction.sigma
+
+open scoped sigma
 
 theorem sigma_apply {k n : ℕ} : σ k n = ∑ d ∈ divisors n, d ^ k :=
   rfl
@@ -975,10 +976,9 @@ def cardFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.length, by simp⟩
 
 @[inherit_doc]
-scoped[ArithmeticFunction] notation "Ω" => ArithmeticFunction.cardFactors
-
-@[inherit_doc]
 scoped[ArithmeticFunction.Omega] notation "Ω" => ArithmeticFunction.cardFactors
+
+open scoped Omega
 
 theorem cardFactors_apply {n : ℕ} : Ω n = n.primeFactorsList.length :=
   rfl
@@ -1042,10 +1042,9 @@ def cardDistinctFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.dedup.length, by simp⟩
 
 @[inherit_doc]
-scoped[ArithmeticFunction] notation "ω" => ArithmeticFunction.cardDistinctFactors
-
-@[inherit_doc]
 scoped[ArithmeticFunction.omega] notation "ω" => ArithmeticFunction.cardDistinctFactors
+
+open scoped omega
 
 theorem cardDistinctFactors_zero : ω 0 = 0 := by simp
 
@@ -1087,10 +1086,9 @@ def moebius : ArithmeticFunction ℤ :=
   ⟨fun n => if Squarefree n then (-1) ^ cardFactors n else 0, by simp⟩
 
 @[inherit_doc]
-scoped[ArithmeticFunction] notation "μ" => ArithmeticFunction.moebius
-
-@[inherit_doc]
 scoped[ArithmeticFunction.Moebius] notation "μ" => ArithmeticFunction.moebius
+
+open scoped Moebius
 
 @[simp]
 theorem moebius_apply_of_squarefree {n : ℕ} (h : Squarefree n) : μ n = (-1) ^ cardFactors n :=
