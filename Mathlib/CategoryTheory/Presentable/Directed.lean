@@ -45,95 +45,6 @@ lemma CategoryTheory.MorphismProperty.toSet_max {C : Type*} [Category C]
     (W₁ W₂ : MorphismProperty C) :
     (W₁ ⊔ W₂).toSet = W₁.toSet ∪ W₂.toSet := rfl
 
-lemma hasCardinalLT_of_finite
-    (X : Type*) [Finite X] (κ : Cardinal) (hκ : Cardinal.aleph0 ≤ κ) :
-    HasCardinalLT X κ :=
-  .of_le (by rwa [hasCardinalLT_aleph0_iff]) hκ
-
-@[simp]
-lemma hasCardinalLT_lift_iff (X : Type v) (κ : Cardinal.{w}) :
-    HasCardinalLT X (Cardinal.lift.{u} κ) ↔ HasCardinalLT X κ := by
-  simp [HasCardinalLT, ← (Cardinal.lift_strictMono.{max v w, max u}).lt_iff_lt]
-
-@[simp]
-lemma hasCardinalLT_ulift_iff (X : Type v) (κ : Cardinal.{w}) :
-    HasCardinalLT (ULift.{u} X) κ ↔ HasCardinalLT X κ :=
-  hasCardinalLT_iff_of_equiv Equiv.ulift κ
-
-lemma Cardinal.IsRegular.lift {κ : Cardinal.{w}} (hκ : κ.IsRegular) :
-    (Cardinal.lift.{u} κ).IsRegular := by
-  obtain ⟨h₁, h₂⟩ := hκ
-  constructor
-  · simpa
-  · rwa [← Cardinal.lift_ord, ← Ordinal.lift_cof, lift_le]
-
-lemma hasCardinalLT_sigma' {ι : Type w} (α : ι → Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
-    HasCardinalLT (Σ i, α i) κ := by
-  simp only [hasCardinalLT_iff_cardinal_mk_lt] at hι hα ⊢
-  rw [Cardinal.mk_sigma]
-  exact Cardinal.sum_lt_lift_of_isRegular.{w, w} Fact.out (by simpa) hα
-
-lemma hasCardinalLT_sigma {ι : Type u} (α : ι → Type v) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
-    HasCardinalLT (Σ i, α i) κ := by
-  let ι' : Type max u v w := ULift.{max v w} ι
-  let α' (i : ι') : Type max u v w := ULift.{max u w} (α (ULift.down i))
-  let κ' : Cardinal.{max u v w} := Cardinal.lift.{max u v} κ
-  have : Fact κ'.IsRegular := ⟨Cardinal.IsRegular.lift Fact.out⟩
-  have := hasCardinalLT_sigma' α' κ'
-    (by rwa [hasCardinalLT_lift_iff, hasCardinalLT_ulift_iff]) (fun i ↦ by
-      rw [hasCardinalLT_lift_iff, hasCardinalLT_ulift_iff]
-      exact hα _)
-  rw [hasCardinalLT_lift_iff] at this
-  exact this.of_surjective (fun ⟨i, a⟩ ↦ ⟨ULift.down i, ULift.down a⟩)
-    (fun ⟨i, a⟩ ↦ ⟨⟨ULift.up i, ULift.up a⟩, rfl⟩)
-
-lemma hasCardinalLT_subtype_iSup
-    {ι : Type*} {X : Type*} (P : ι → X → Prop) {κ : Cardinal} [Fact κ.IsRegular]
-    (hι : HasCardinalLT ι κ) (hP : ∀ i, HasCardinalLT (Subtype (P i)) κ) :
-    HasCardinalLT (Subtype (⨆ i, P i)) κ :=
-  (hasCardinalLT_sigma (fun i ↦ Subtype (P i)) κ hι hP).of_surjective
-    (fun ⟨i, x, hx⟩ ↦ ⟨x, by simp only [iSup_apply, iSup_Prop_eq]; exact ⟨i, hx⟩⟩) (by
-    rintro ⟨_, h⟩
-    simp only [iSup_apply, iSup_Prop_eq] at h
-    obtain ⟨i, hi⟩ := h
-    exact ⟨⟨i, _, hi⟩, rfl⟩)
-
-lemma hasCardinalLT_iUnion
-    {ι : Type*} {X : Type*} (S : ι → Set X) {κ : Cardinal} [Fact κ.IsRegular]
-    (hι : HasCardinalLT ι κ) (hS : ∀ i, HasCardinalLT (S i) κ) :
-    HasCardinalLT (⋃ i, S i) κ := by
-  convert hasCardinalLT_subtype_iSup S hι hS using 2
-  ext x
-  change _ ↔ ((⨆ i, S i) : X → Prop ) x
-  aesop
-
-lemma hasCardinalLT_subtype_max
-    {X : Type*} {P₁ P₂ : X → Prop} {κ : Cardinal} (hκ : Cardinal.aleph0 ≤ κ)
-    (h₁ : HasCardinalLT (Subtype P₁) κ) (h₂ : HasCardinalLT (Subtype P₂) κ) :
-    HasCardinalLT (Subtype (P₁ ⊔ P₂)) κ := by
-  have : HasCardinalLT (Subtype P₁ ⊕ Subtype P₂) κ := by
-    rw [hasCardinalLT_sum_iff _ _ _ hκ]
-    exact ⟨h₁, h₂⟩
-  refine this.of_surjective (Sum.elim (fun x ↦ ⟨x.1, Or.inl x.2⟩)
-    (fun x ↦ ⟨x.1, Or.inr x.2⟩)) ?_
-  rintro ⟨x, hx | hx⟩
-  · exact ⟨Sum.inl ⟨x, hx⟩, rfl⟩
-  · exact ⟨Sum.inr ⟨x, hx⟩, rfl⟩
-
-lemma hasCardinalLT_union
-    {X : Type*} {S₁ S₂ : Set X} {κ : Cardinal} [Fact κ.IsRegular]
-    (h₁ : HasCardinalLT S₁ κ) (h₂ : HasCardinalLT S₂ κ) :
-    HasCardinalLT (S₁ ∪ S₂ : Set _) κ :=
-  hasCardinalLT_subtype_max (Cardinal.IsRegular.aleph0_le Fact.out) h₁ h₂
-
-lemma hasCardinalLT_prod {T₁ T₂ : Type*} {κ : Cardinal} [Fact κ.IsRegular]
-    (h₁ : HasCardinalLT T₁ κ) (h₂ : HasCardinalLT T₂ κ) :
-    HasCardinalLT (T₁ × T₂) κ :=
-  (hasCardinalLT_sigma (fun (t : T₁) ↦ T₂) κ h₁ (fun _ ↦ h₂)).of_surjective
-    (fun ⟨t₁, t₂⟩ ↦ (t₁, t₂)) (by rintro ⟨t₁, t₂⟩; exact ⟨⟨t₁, t₂⟩, rfl⟩)
-
 section
 
 open CategoryTheory Limits
@@ -428,8 +339,8 @@ def Diagram.max (D₁ D₂ : Diagram J κ) :
     rintro _ _ _ (h | h)
     · exact Or.inl (D₁.tgt h)
     · exact Or.inr (D₂.tgt h)
-  hW := hasCardinalLT_union D₁.hW D₂.hW
-  hP := hasCardinalLT_union D₁.hP D₂.hP
+  hW := hasCardinalLT_union (Cardinal.IsRegular.aleph0_le Fact.out) D₁.hW D₂.hW
+  hP := hasCardinalLT_union (Cardinal.IsRegular.aleph0_le Fact.out) D₁.hP D₂.hP
 
 variable [IsCardinalFiltered J κ]
   (hJ : ∀ (e : J), ∃ (m : J) (_ : e ⟶ m), IsEmpty (m ⟶ e))
@@ -461,7 +372,8 @@ lemma isCardinalFiltered_aux
       (hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out))
     let T := Σ (i : ι), Subtype (D i).P
     have hT : HasCardinalLT (ι × T) κ :=
-      hasCardinalLT_prod hι (hasCardinalLT_sigma _ _ hι (fun i ↦ (D i).hP))
+      hasCardinalLT_prod (Cardinal.IsRegular.aleph0_le Fact.out)
+      hι (hasCardinalLT_sigma _ _ hι (fun i ↦ (D i).hP))
     refine hT.of_injective (fun ⟨⟨i₁, i₂, j⟩, h₁, h₂⟩ ↦ ⟨i₁, i₂, ⟨j, h₂⟩⟩) ?_
     rintro ⟨⟨i₁, i₂, j⟩, _, _⟩ ⟨⟨i₁', i₂', j'⟩, _, _⟩ h
     rw [Prod.ext_iff, Sigma.ext_iff] at h
@@ -505,7 +417,7 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithTerminal J κ) κ :=
           · exact Or.inr rfl
         hW := by
           rw [MorphismProperty.toSet_max]
-          exact hasCardinalLT_union D₁.hW
+          exact hasCardinalLT_union (Cardinal.IsRegular.aleph0_le Fact.out) D₁.hW
             (hasCardinalLT_toSet_morphismPropertyOfHoms _
               (hasCardinalLT_sigma _ _ hι (fun i ↦ (D i).hP)))
         hP := hasCardinalLT_subtype_max (Cardinal.IsRegular.aleph0_le Fact.out)
@@ -593,13 +505,13 @@ lemma final_functor : (functor J κ).Final := by
         · exact D₀.tgt hf
         · exact Or.inr ⟨⟨⟩⟩
       hW :=
-        hasCardinalLT_union
-          (hasCardinalLT_union D.hW
+        hasCardinalLT_union (Cardinal.IsRegular.aleph0_le Fact.out)
+          (hasCardinalLT_union (Cardinal.IsRegular.aleph0_le Fact.out) D.hW
             (hasCardinalLT_toSet_morphismPropertyOfHoms _
             (hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out))))
           (hasCardinalLT_toSet_morphismPropertyOfHoms _ D.hP)
       hP :=
-        hasCardinalLT_union D.hP
+        hasCardinalLT_union (Cardinal.IsRegular.aleph0_le Fact.out) D.hP
           (hasCardinalLT_subtype_objectPropertyOfObj _
             (hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out))) }
   have h₂ {j : J} (hj : D.P j) {f : j ⟶ m₁} (hf : D₁.W f) :
