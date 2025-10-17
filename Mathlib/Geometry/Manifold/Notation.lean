@@ -288,12 +288,12 @@ where
       let srcIT : Term ← Term.exprToSyntax I
       let resTerm : Term ← ``(ModelWithCorners.prod $srcIT (ModelWithCorners.tangent $srcIT))
       Term.elabTerm resTerm none
-    | _ => throwError "{V} is not a `TangentSpace`"
+    | _ => throwError "`{V}` is not a `TangentSpace`"
   /-- Attempt to find a model on a `TangentBundle` -/
   fromTangentBundle : TermElabM Expr := do
     match_expr e with
     | TangentBundle _k _ _E _ _ _H _ I M _ _ => do
-      trace[Elab.DiffGeo.MDiff] "{e} is a `TangentBundle` over model `{I}` on `{M}`"
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a `TangentBundle` over model `{I}` on `{M}`"
       let srcIT : Term ← Term.exprToSyntax I
       let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
       Term.elabTerm resTerm none
@@ -324,8 +324,8 @@ where
             trace[Elab.DiffGeo.MDiff] "`{e}` is the charted space of `{M}` via `{inst}`"
             return some H else return none
         | _ => return none
-      | throwError "Couldn't find a `ChartedSpace` structure on {e} among local instances, \
-          and {e} is not the charted space of some type in the local context either."
+      | throwError "Couldn't find a `ChartedSpace` structure on `{e}` among local instances, \
+          and `{e}` is not the charted space of some type in the local context either."
     let some m ← findSomeLocalHyp? fun fvar type ↦ do
         match_expr type with
         | ModelWithCorners _ _ _ _ _ H' _ => do
@@ -345,7 +345,7 @@ where
         let iTerm : Term ← ``(𝓘($eK, $eT))
         Term.elabTerm iTerm none
       else
-        throwError "Coefficients {k} and {S} of {e} are not definitionally equal"
+        throwError "Coefficients `{k}` and `{S}` of `{e}` are not definitionally equal"
     -- | ContinuousLinearEquiv k S _ _ _σ _σ' _ _ _E _ _ _F _ _ _ _ =>
     --   if ← isDefEq k S then
     --     -- TODO: check if σ is actually the identity!
@@ -354,26 +354,26 @@ where
     --     let iTerm : Term := ← ``(𝓘($eK, $eT))
     --     Term.elabTerm iTerm none
     --   else
-    --     throwError "Coefficients {k} and {S} of {e} are not definitionally equal"
-    | _ => throwError "{e} is not a space of continuous linear maps"
+    --     throwError "Coefficients `{k}` and `{S}` of `{e}` are not definitionally equal"
+    | _ => throwError "`{e}` is not a space of continuous linear maps"
   /-- Attempt to find a model with corners on a closed interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
     let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
-      | throwError "{e} is not a coercion of a set to a type"
+      | throwError "`{e}` is not a coercion of a set to a type"
     match e with
     | mkApp4 (.const `Set.Icc _) α _ _x _y =>
       if ← isDefEq α q(ℝ) then
         -- We need not check if `x < y` is a fact in the local context: Lean will verify this
         -- itself when trying to synthesize a ChartedSpace instance.
         mkAppOptM `modelWithCornersEuclideanHalfSpace #[q(1 : ℕ), none]
-      else throwError "{e} is a closed interval of type {α}, which is not definitially equal to ℝ"
-    | _ => throwError "{e} is not a closed real interval"
+      else throwError "`{e}` is a closed interval of type {α}, which is not definitially equal to ℝ"
+    | _ => throwError "`{e}` is not a closed real interval"
   /-- Attempt to find a model with corners on the upper half plane in complex space -/
   fromUpperHalfPlane : TermElabM Expr := do
     if (← instantiateMVars e).cleanupAnnotations.isConstOf `UpperHalfPlane then
       let c ← Term.exprToSyntax (mkConst `Complex)
       Term.elabTerm (← `(𝓘($c))) none
-    else throwError "{e} is not the complex upper half plane"
+    else throwError "`{e}` is not the complex upper half plane"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
   fromNormedField : TermElabM Expr := do
@@ -440,7 +440,7 @@ scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
 --     if let some src := src[0]? then
 --       let srcI ← findModel (← inferType src)
 --       if Lean.Expr.occurs src tgt then
---         throwErrorAt t "Term {e} is a dependent function, of type {etype}\n\
+--         throwErrorAt t "Term `{e}` is a dependent function, of type `{etype}`\n\
 --         Hint: you can use the `T%` elaborator to convert a dependent function \
 --         to a non-dependent one"
 --       let tgtI ← findModel tgt (src, srcI)
