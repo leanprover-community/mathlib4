@@ -734,6 +734,9 @@ def mapMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] : F.mapMon ⟶ F'.mapM
 def mapMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapMon ≅ F'.mapMon :=
   NatIso.ofComponents fun X ↦ Mon.mkIso (e.app _)
 
+attribute [local simp] ε_tensorHom_comp_μ_assoc in
+instance [F.LaxMonoidal] : IsMonHom (ε F) where
+
 end LaxMonoidal
 
 section OplaxMonoidal
@@ -796,6 +799,44 @@ same on monoid objects as on objects. -/
     refine ⟨.mk N, ⟨Mon.mkIso e ?_ ?_⟩⟩ <;> simp
 
 end Monoidal
+
+section BraidedCategory
+variable [BraidedCategory C] [BraidedCategory D] (F)
+
+open scoped Obj
+
+attribute [-simp] IsMonHom.one_hom_assoc in
+attribute [local simp← ] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
+attribute [local simp] tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc MonObj.tensorObj.one_def
+  MonObj.tensorObj.mul_def in
+instance [F.LaxBraided] (M N : C) [MonObj M] [MonObj N] : IsMonHom («μ» F M N) where
+  one_hom := by simp [← Functor.map_comp, leftUnitor_inv_comp_tensorHom_assoc]
+
+attribute [-simp] IsMonHom.one_hom IsMonHom.one_hom_assoc IsMonHom.mul_hom in
+attribute [local simp] ε_tensorHom_comp_μ_assoc tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc
+  MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
+instance [F.LaxBraided] : F.mapMon.LaxMonoidal where
+  ε := .mk (ε F)
+  «μ» M N := .mk («μ» F M.X N.X)
+
+attribute [-simp] IsMonHom.one_hom IsMonHom.one_hom_assoc IsMonHom.mul_hom in
+attribute [local simp← ] tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc in
+attribute [local simp] ε_tensorHom_comp_μ_assoc tensorμ_comp_μ_tensorHom_μ_comp_μ_assoc
+  MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
+instance [F.Braided] : F.mapMon.Monoidal :=
+  CoreMonoidal.toMonoidal {
+    εIso := Mon.mkIso (Monoidal.εIso F)
+    μIso M N := Mon.mkIso (Monoidal.μIso F M.X N.X) <| by simp [← Functor.map_comp]
+  }
+
+end BraidedCategory
+
+variable [SymmetricCategory C] [SymmetricCategory D]
+
+instance [F.LaxBraided] : F.mapMon.LaxBraided where
+  braided M N := by ext; exact Functor.LaxBraided.braided ..
+
+instance [F.Braided] : F.mapMon.Braided where
 
 variable (C D) in
 /-- `mapMon` is functorial in the lax monoidal functor. -/
@@ -990,6 +1031,4 @@ Projects:
   in `Mathlib/CategoryTheory/Monoidal/Internal/Module.lean`.)
 * Can you transport this monoidal structure to `RingCat` or `AlgCat R`?
   How does it compare to the "native" one?
-* Show that when `F` is a lax braided functor `C ⥤ D`, the functor `map_Mon F : Mon C ⥤ Mon D`
-  is lax monoidal.
 -/
