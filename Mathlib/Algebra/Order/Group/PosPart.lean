@@ -258,10 +258,9 @@ theorem leOnePart_min (a b : α) :
 @[to_additive]
 theorem leOnePart_max (a b : α) :
     (max a b)⁻ᵐ = min a⁻ᵐ b⁻ᵐ := by
-  rcases lt_trichotomy a b with h | h | h
-  · rw [max_eq_right h.le, min_comm, min_eq_left ((le_iff_oneLePart_leOnePart a b).1 h.le).2]
-  · simp_all
-  · rw [min_comm, max_eq_left h.le, min_eq_right ((le_iff_oneLePart_leOnePart b a).1 h.le).2]
+  rcases le_total a b with h | h
+  · rw [max_eq_right h, min_comm, min_eq_left ((le_iff_oneLePart_leOnePart a b).1 h).2]
+  · rw [min_comm, max_eq_left h, min_eq_right ((le_iff_oneLePart_leOnePart b a).1 h).2]
 
 end commutativeGroupCovariantmul
 end LinearOrder
