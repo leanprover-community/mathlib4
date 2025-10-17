@@ -1066,7 +1066,7 @@ section Find
 variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n}
 
 /-- `findX p` returns the smallest index `k` where `p k` is satisfied,
-  given that it is satisfied somewhere. Returns a subtype -/
+  given that it is satisfied somewhere. Returns a subtype. -/
 protected def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) :
     { i : Fin n // p i ∧ ∀ j < i, ¬ p j } := go n (by grind) where
   /-- Auxilary function for `Fin.findX` which is tail-recursive. -/
