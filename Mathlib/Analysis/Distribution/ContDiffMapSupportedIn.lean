@@ -181,6 +181,8 @@ instance : Add 𝓓^{n}_{K}(E, F) where
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
+-- TODO:  can this and the next lemma be auto-generated, e.g. by making `add` a definition tagged with `simps`?
+-- Investigate the same question for `zero` above and `sub` , `neg` and `smul` below.
 @[simp]
 lemma coe_add (f g : 𝓓^{n}_{K}(E, F)) : (f + g : 𝓓^{n}_{K}(E, F)) = (f : E → F) + g :=
   rfl
