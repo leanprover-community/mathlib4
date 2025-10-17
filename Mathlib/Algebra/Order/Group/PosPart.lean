@@ -211,7 +211,10 @@ end CommGroup
 end Lattice
 
 section LinearOrder
-variable [LinearOrder α] [Group α] {a b : α}
+variable [LinearOrder α] {a b : α}
+
+section group
+variable [Group α]
 
 @[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
   rw [oneLePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
@@ -240,6 +243,28 @@ variable [MulRightMono α]
   sup_lt_iff.trans <| by rw [inv_lt']
 
 end covariantmul
+end group
+
+section commutativeGroupCovariantmul
+variable [CommGroup α] [MulLeftMono α]
+
+@[to_additive]
+theorem leOnePart_min (a b : α) :
+    (min a b)⁻ᵐ = max a⁻ᵐ b⁻ᵐ := by
+  rcases lt_trichotomy a b with h | h | h
+  · rw [min_eq_left h.le, max_comm, max_eq_right ((le_iff_oneLePart_leOnePart a b).1 h.le).2]
+  · simp_all
+  · rw [min_comm, min_eq_left h.le, max_eq_right ((le_iff_oneLePart_leOnePart b a).1 h.le).2]
+
+@[to_additive]
+theorem leOnePart_max (a b : α) :
+    (max a b)⁻ᵐ = min a⁻ᵐ b⁻ᵐ := by
+  rcases lt_trichotomy a b with h | h | h
+  · rw [max_eq_right h.le, min_comm, min_eq_left ((le_iff_oneLePart_leOnePart a b).1 h.le).2]
+  · simp_all
+  · rw [min_comm, max_eq_left h.le, min_eq_right ((le_iff_oneLePart_leOnePart b a).1 h.le).2]
+
+end commutativeGroupCovariantmul
 end LinearOrder
 
 namespace Pi

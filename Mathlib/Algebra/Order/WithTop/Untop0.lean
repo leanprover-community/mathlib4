@@ -52,7 +52,7 @@ lemma coe_untop₀_of_ne_top {a : WithTop α} (ha : a ≠ ⊤) :
 end Zero
 
 /-!
-## Simplifying Lemmas in cases where α is an AddMonoid
+## Simplifying Lemmas in cases where α is an AddMonoid or AddGroup
 -/
 @[simp]
 lemma untopD_add [Add α] {a b : WithTop α} {c : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
@@ -64,6 +64,15 @@ lemma untopD_add [Add α] {a b : WithTop α} {c : α} (ha : a ≠ ⊤) (hb : b �
 @[simp]
 lemma untop₀_add [AddZeroClass α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (a + b).untop₀ = a.untop₀ + b.untop₀ := untopD_add ha hb
+
+@[simp]
+lemma untop₀_neg [AddCommGroup α] (a : WithTop α) :
+    (-a).untop₀ = -a.untop₀ := by
+  cases a with
+  | top => simp
+  | coe a =>
+    rw [← LinearOrderedAddCommGroup.coe_neg, untop₀_coe]
+    simp
 
 /-!
 ## Simplifying Lemmas in cases where α is a MulZeroClass
@@ -77,27 +86,76 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
 ## Simplifying Lemmas in cases where α is a OrderedAddCommGroup
 -/
 
+section orderedAddCommGroup
+
+variable
+  [AddCommGroup α] [PartialOrder α]
+
 /--
 Elements of ordered additive commutative groups are nonnegative iff their untop₀ is nonnegative.
 -/
 @[simp]
-lemma untop₀_nonneg [AddCommGroup α] [PartialOrder α] {a : WithTop α} :
+lemma untop₀_nonneg {a : WithTop α} :
     0 ≤ a.untop₀ ↔ 0 ≤ a := by
   cases a with
   | top => tauto
   | coe a => simp
 
+@[simp]
+theorem le_of_untop₀_le_untop₀ {a b : WithTop α}
+    (ha : a ≠ ⊤) (h : a.untop₀ ≤ b.untop₀) :
+    a ≤ b := by
+  lift a to α using ha
+  by_cases hb : b = ⊤
+  · simp_all
+  lift b to α using hb
+  simp_all
+
+@[simp]
+theorem untop₀_le_untop₀_of_le {a b : WithTop α}
+    (hb : b ≠ ⊤) (h : a ≤ b) :
+    a.untop₀ ≤ b.untop₀ := by
+  lift b to α using hb
+  by_cases ha : a = ⊤
+  · simp_all
+  lift a to α using ha
+  simp_all
+
+end orderedAddCommGroup
+
 /-!
 ## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
 -/
 
+section linearOrderedAddCommGroup
+
+variable
+  [AddCommGroup α] [LinearOrder α]
+
 @[simp]
-lemma untop₀_neg [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] (a : WithTop α) :
-    (-a).untop₀ = -a.untop₀ := by
-  cases a with
-  | top => simp
-  | coe a =>
-    rw [← LinearOrderedAddCommGroup.coe_neg, untop₀_coe]
-    simp
+theorem untop₀_max {a b : WithTop α}
+    (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+    (max a b).untop₀ = max a.untop₀ b.untop₀ := by
+  lift a to α using ha
+  lift b to α using hb
+  simp only [untop₀_coe]
+  by_cases h : a ≤ b
+  · simp [max_eq_right h, max_eq_right (coe_le_coe.mpr h)]
+  rw [not_le] at h
+  simp [max_eq_left h.le, max_eq_left (coe_lt_coe.mpr h).le]
+
+@[simp]
+theorem untop₀_min {a b : WithTop α}
+    (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+    (min a b).untop₀ = min a.untop₀ b.untop₀ := by
+  lift a to α using ha
+  lift b to α using hb
+  simp only [untop₀_coe]
+  by_cases h : a ≤ b
+  · simp [min_eq_left h, min_eq_left (coe_le_coe.mpr h)]
+  rw [not_le] at h
+  simp [min_eq_right h.le, min_eq_right (coe_lt_coe.mpr h).le]
+
+end linearOrderedAddCommGroup
 
 end WithTop
