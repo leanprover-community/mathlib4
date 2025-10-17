@@ -34,9 +34,7 @@ variable (F : J ⥤ C)
 /-- The cone associated to a lower bound of a functor. -/
 def coneOfLowerBound {x : C} (h : x ∈ lowerBounds (Set.range F.obj)) : Cone F where
   pt := x
-  π := {
-    app i := homOfLE (h (Set.mem_range_self _))
-  }
+  π := { app i := homOfLE (h (Set.mem_range_self _)) }
 
 /-- The point of a cone is a lower bound. -/
 lemma conePt_mem_lowerBounds (c : Cone F) : c.pt ∈ lowerBounds (Set.range F.obj) := by
@@ -61,9 +59,7 @@ lemma hasLimit_iff_hasGLB : HasLimit F ↔ ∃ x, IsGLB (Set.range F.obj) x := b
 /-- The cocone associated to an upper bound of a functor -/
 def coconePt_mem_upperBounds {x : C} (h : x ∈ upperBounds (Set.range F.obj)) : Cocone F where
   pt := x
-  ι := {
-    app i := homOfLE (h (Set.mem_range_self _))
-  }
+  ι := { app i := homOfLE (h (Set.mem_range_self _)) }
 
 /-- The point of a cocone is an upper bound. -/
 lemma upperBoundOfCocone (c : Cocone F) : c.pt ∈ upperBounds (Set.range F.obj) := by
