@@ -1068,12 +1068,12 @@ variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n
 /-- `findX p` returns the smallest index `k` where `p k` is satisfied,
   given that it is satisfied somewhere. Returns a subtype -/
 protected def findX {n : ℕ} (p : Fin n → Prop) [DecidablePred p] (h : ∃ k, p k) :
-    { i : Fin n // p i ∧ ∀ j < i, ¬ p j } :=
-  go n (by grind) where
-    go (m : Nat) (hj : ∀ j, (hm : j < n - m) → ¬p ⟨j, by grind⟩) := match m with
-    | m + 1 => if hnm : p <| Fin.mk _ <| n.sub_lt h.choose.pos (by grind)
-      then Subtype.mk _ ⟨hnm, fun _ => hj _⟩ else go m (by grind)
-    | 0 => (hj _ (by grind) h.choose_spec).elim
+    { i : Fin n // p i ∧ ∀ j < i, ¬ p j } := go n (by grind) where
+  /-- Auxilary function for `Fin.findX` which is tail-recursive. -/
+  go (m : Nat) (hj : ∀ j, (hm : j < n - m) → ¬p ⟨j, by grind⟩) := match m with
+  | m + 1 => if hnm : p <| Fin.mk _ <| n.sub_lt h.choose.pos (by grind)
+    then Subtype.mk _ ⟨hnm, fun _ => hj _⟩ else go m (by grind)
+  | 0 => (hj _ (by grind) h.choose_spec).elim
 
 /-- `find p` returns the smallest index `k` where `p k` is satisfied,
   given that it is satisfied somewhere. -/
@@ -1104,7 +1104,7 @@ theorem find_eq_iff {i : Fin n} (h : ∃ k, p k) : Fin.find p h = i ↔ p i ∧ 
   ((Nat.find_eq_iff _).mpr ⟨⟨is_lt _, Fin.find_spec _⟩,
     fun _ hm ⟨_, hi⟩ => Fin.find_min h hm hi⟩).symm
 
-@[simp] theorem find_nat_lt {p : ℕ → Prop} [DecidablePred p] (h : ∃ k < n, p k) :
+theorem find_nat_lt {p : ℕ → Prop} [DecidablePred p] (h : ∃ k < n, p k) :
     Nat.find (p := p) (by grind) = Fin.find (n := n) (p ·) (Fin.exists_iff.mpr <| by grind) := by
   rw [val_find]
   have := h.choose_spec; exact Nat.find_congr (x := h.choose) (by grind) (by grind)
