@@ -99,12 +99,12 @@ def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.unop g.unop :
       (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
 
 lemma unop_π_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
-    c.unop.π.app .one = (Quiver.Hom.unop (c.ι.app .zero)) := by
-  simp [unop, walkingParallelPairOpEquiv]
+    c.unop.π.app .one = Quiver.Hom.unop (c.ι.app .zero) := by
+  simp [unop]
 
 lemma unop_π_app_zero {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
-    c.unop.π.app .zero = (Quiver.Hom.unop (c.ι.app .one)) := by
-  simp [unop, walkingParallelPairOpEquiv]
+    c.unop.π.app .zero = Quiver.Hom.unop (c.ι.app .one) := by
+  simp [unop]
 
 theorem unop_ι {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
     c.unop.ι = c.π.unop := by simp [Cofork.unop, Fork.ι]
@@ -115,12 +115,12 @@ def op {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.op g.op :=
     (Cone.whisker walkingParallelPairOpEquiv.functor (Cocone.op c))
 
 lemma op_π_app_one {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
-    c.op.π.app .one = (Quiver.Hom.op (c.ι.app .zero)) := by
-  simp [op, walkingParallelPairOpEquiv]
+    c.op.π.app .one = Quiver.Hom.op (c.ι.app .zero) := by
+  simp [op]
 
 lemma op_π_app_zero {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
-    c.op.π.app .zero = (Quiver.Hom.op (c.ι.app .one)) := by
-  simp [op, walkingParallelPairOpEquiv]
+    c.op.π.app .zero = Quiver.Hom.op (c.ι.app .one) := by
+  simp [op]
 
 theorem op_ι {X Y : C} {f g : X ⟶ Y} (c : Cofork f g) :
     c.op.ι = c.π.op := by simp [Cofork.op, Fork.ι]
@@ -135,12 +135,12 @@ def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.unop g.unop :
     (Cone.whisker walkingParallelPairOpEquiv.inverse c))
 
 lemma unop_ι_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
-    c.unop.ι.app .one = (Quiver.Hom.unop (c.π.app .zero)) := by
-  simp [unop, walkingParallelPairOpEquiv]
+    c.unop.ι.app .one = Quiver.Hom.unop (c.π.app .zero) := by
+  simp [unop]
 
 lemma unop_ι_app_zero {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
-    c.unop.ι.app .zero = (Quiver.Hom.unop (c.π.app .one)) := by
-  simp [unop, walkingParallelPairOpEquiv]
+    c.unop.ι.app .zero = Quiver.Hom.unop (c.π.app .one) := by
+  simp [unop]
 
 theorem unop_π {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     c.unop.π = c.ι.unop := by simp [Fork.unop, Cofork.π]
@@ -152,12 +152,12 @@ def op {X Y : C} {f g : X ⟶ Y} (c : Fork f g) : Cofork f.op g.op :=
     (Cocone.whisker walkingParallelPairOpEquiv.functor (Cone.op c))
 
 lemma op_ι_app_one {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
-    c.op.ι.app .one = (Quiver.Hom.op (c.π.app .zero)) := by
-  simp [op, walkingParallelPairOpEquiv]
+    c.op.ι.app .one = Quiver.Hom.op (c.π.app .zero) := by
+  simp [op]
 
 lemma op_ι_app_zero {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
-    c.op.ι.app .zero = (Quiver.Hom.op (c.π.app .one)) := by
-  simp [op, walkingParallelPairOpEquiv]
+    c.op.ι.app .zero = Quiver.Hom.op (c.π.app .one) := by
+  simp [op]
 
 theorem op_π {X Y : C} {f g : X ⟶ Y} (c : Fork f g) :
     c.op.π = c.ι.op := by simp [Fork.op, Cofork.π]
@@ -240,14 +240,14 @@ def ofπUnopIsoOfι {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f 
   Fork.ext (Iso.refl _) (by simp [Cofork.unop_ι, h])
 
 /-- `Cofork.ofπ π w` is a colimit cocone if and only if `Fork.ofι π.op w'` in the opposite
-category is a limit cocone. -/
+category is a limit cone. -/
 def isColimitOfπEquivIsLimitOp {X Y P : C} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
     (w' : π'.op ≫ f.op = π'.op ≫ g.op) (h : π = π') :
     IsColimit (Cofork.ofπ π w) ≃ IsLimit (Fork.ofι π'.op w') :=
   (Cofork.ofπ π w).isColimitEquivIsLimitOp.trans (IsLimit.equivIsoLimit (ofπOpIsoOfι π π' w w' h))
 
 /-- `Cofork.ofπ π w` is a colimit cocone in `Cᵒᵖ` if and only if `Fork.ofι π'.unop w'` in `C` is
-a limit cocone. -/
+a limit cone. -/
 def isColimitOfπEquivIsLimitUnop {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
     (w' : π'.unop ≫ f.unop = π'.unop ≫ g.unop) (h : π = π') :
     IsColimit (Cofork.ofπ π w) ≃ IsLimit (Fork.ofι π'.unop w') :=
@@ -282,14 +282,14 @@ def ofιUnopIsoOfπ {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι
     (Fork.ofι ι w).unop ≅ Cofork.ofπ ι'.unop w' :=
   Cofork.ext (Iso.refl _) (by simp [Fork.unop_π, h])
 
-/-- `Fork.ofι ι w` is a limit cocone if and only if `Cofork.ofπ ι'.op w'` in the opposite
+/-- `Fork.ofι ι w` is a limit cone if and only if `Cofork.ofπ ι'.op w'` in the opposite
 category is a colimit cocone. -/
 def isLimitOfιEquivIsColimitOp {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
     (w' : f.op ≫ ι'.op = g.op ≫ ι'.op) (h : ι = ι') :
     IsLimit (Fork.ofι ι w) ≃ IsColimit (Cofork.ofπ ι'.op w') :=
   (Fork.ofι ι w).isLimitEquivIsColimitOp.trans (IsColimit.equivIsoColimit (ofιOpIsoOfπ ι ι' w w' h))
 
-/-- `Fork.ofι ι w` is a limit cocone in `Cᵒᵖ` if and only if `Cofork.ofπ ι.unop w.unop` in `C` is
+/-- `Fork.ofι ι w` is a limit cone in `Cᵒᵖ` if and only if `Cofork.ofπ ι.unop w.unop` in `C` is
 a colimit cocone. -/
 def isLimitOfιEquivIsColimitUnop {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
     (w' : f.unop ≫ ι'.unop = g.unop ≫ ι'.unop) (h : ι = ι') :
@@ -302,7 +302,7 @@ end Fork
 namespace Cofork
 
 /-- `Cofork.ofπ f pullback.condition` is a colimit cocone if and only if
-`Fork.ofι f.op pushout.condition` in the opposite category is a limit cocone. -/
+`Fork.ofι f.op pushout.condition` in the opposite category is a limit cone. -/
 def isColimitCoforkPushoutEquivIsColimitForkOpPullback
     {X Y : C} {f : X ⟶ Y} [HasPullback f f] [HasPushout f.op f.op] :
     IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.op pushout.condition) where
@@ -317,7 +317,7 @@ def isColimitCoforkPushoutEquivIsColimitForkOpPullback
   right_inv := by cat_disch
 
 /-- `Cofork.ofπ f pullback.condition` is a colimit cocone in `Cᵒᵖ` if and only if
-`Fork.ofι f.unop pushout.condition` in `C` is a limit cocone. -/
+`Fork.ofι f.unop pushout.condition` in `C` is a limit cone. -/
 def isColimitCoforkPushoutEquivIsColimitForkUnopPullback
     {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPullback f f] [HasPushout f.unop f.unop] :
     IsColimit (Cofork.ofπ f pullback.condition) ≃ IsLimit (Fork.ofι f.unop pushout.condition) where
@@ -336,7 +336,7 @@ end Cofork
 
 namespace Fork
 
-/-- `Fork.ofι f pushout.condition` is a limit cocone if and only if
+/-- `Fork.ofι f pushout.condition` is a limit cone if and only if
 `Cofork.ofπ f.op pullback.condition` in the opposite category is a colimit cocone. -/
 def isLimitForkPushoutEquivIsColimitForkOpPullback
     {X Y : C} {f : X ⟶ Y} [HasPushout f f] [HasPullback f.op f.op] :
@@ -356,7 +356,7 @@ def isLimitForkPushoutEquivIsColimitForkOpPullback
   left_inv := by cat_disch
   right_inv := by cat_disch
 
-/-- `Fork.ofι f pushout.condition` is a limit cocone in `Cᵒᵖ` if and only if
+/-- `Fork.ofι f pushout.condition` is a limit cone in `Cᵒᵖ` if and only if
 `Cofork.ofπ f.op pullback.condition` in `C` is a colimit cocone. -/
 def isLimitForkPushoutEquivIsColimitForkUnopPullback
     {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPushout f f] [HasPullback f.unop f.unop] :
