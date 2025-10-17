@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Control.Basic
-import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Monad
@@ -16,10 +15,10 @@ import Mathlib.Tactic.Common
 # Basic properties of lists
 -/
 
-assert_not_exists GroupWithZero
 assert_not_exists Lattice
+assert_not_exists Monoid
+assert_not_exists Preorder
 assert_not_exists Prod.swap_eq_iff_eq_swap
-assert_not_exists Ring
 assert_not_exists Set.range
 
 open Function
@@ -407,9 +406,7 @@ theorem head!_append [Inhabited α] (t : List α) {s : List α} (h : s ≠ []) :
 
 theorem mem_head?_append_of_mem_head? {s t : List α} {x : α} (h : x ∈ s.head?) :
     x ∈ (s ++ t).head? := by
-  cases s
-  · contradiction
-  · exact h
+  grind [Option.mem_def]
 
 theorem head?_append_of_ne_nil :
     ∀ (l₁ : List α) {l₂ : List α} (_ : l₁ ≠ []), head? (l₁ ++ l₂) = head? l₁
@@ -511,7 +508,7 @@ end IndexOf
 
 section deprecated
 
-theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_eq_none le_rfl
+theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_eq_none (Nat.le_refl _)
 
 /-- A version of `getElem_map` that can be used for rewriting. -/
 theorem getElem_map_rev (f : α → β) {l} {n : Nat} {h : n < l.length} :
