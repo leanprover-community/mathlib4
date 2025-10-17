@@ -83,15 +83,13 @@ theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).
     use p
     simp [hp]
 
-theorem natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum := by
-  induction l with
-  | nil => simp
-  | cons hd tl IH => simpa using natDegree_mul_le.trans (add_le_add_left IH _)
+theorem natDegree_list_prod_le : ∀ l : List S[X], natDegree l.prod ≤ (l.map natDegree).sum
+  | [] => by simp
+  | p :: l => by dsimp; grw [natDegree_mul_le, natDegree_list_prod_le]
 
-theorem degree_list_prod_le (l : List S[X]) : degree l.prod ≤ (l.map degree).sum := by
-  induction l with
-  | nil => simp
-  | cons hd tl IH => simpa using (degree_mul_le _ _).trans (add_le_add_left IH _)
+theorem degree_list_prod_le : ∀ l : List S[X], degree l.prod ≤ (l.map degree).sum
+  | [] => by simp
+  | p :: l => by dsimp; grw [degree_mul_le, degree_list_prod_le]
 
 theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p ∈ l, natDegree p ≤ n) :
     coeff (List.prod l) (l.length * n) = (l.map fun p => coeff p n).prod := by
