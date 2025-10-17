@@ -147,11 +147,7 @@ theorem untop₀_min {a b : WithTop α}
     (min a b).untop₀ = min a.untop₀ b.untop₀ := by
   lift a to α using ha
   lift b to α using hb
-  simp only [untop₀_coe]
-  by_cases h : a ≤ b
-  · simp [min_eq_left h, min_eq_left (coe_le_coe.mpr h)]
-  rw [not_le] at h
-  simp [min_eq_right h.le, min_eq_right (coe_lt_coe.mpr h).le]
+  norm_cast
 
 end LinearOrderedAddCommGroup
 
