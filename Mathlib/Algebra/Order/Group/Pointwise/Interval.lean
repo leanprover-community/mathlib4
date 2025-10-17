@@ -127,7 +127,8 @@ lemma smul_Icc (a b c : α) : a • Icc b c = Icc (a * b) (a * c) := by
   ext x
   constructor
   · rintro ⟨y, ⟨hby, hyc⟩, rfl⟩
-    exact ⟨mul_le_mul_left' hby _, mul_le_mul_left' hyc _⟩
+    dsimp
+    constructor <;> gcongr
   · rintro ⟨habx, hxac⟩
     obtain ⟨y, hy, rfl⟩ := exists_one_le_mul_of_le habx
     refine ⟨b * y, ⟨le_mul_of_one_le_right' hy, ?_⟩, (mul_assoc ..).symm⟩

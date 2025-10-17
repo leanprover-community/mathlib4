@@ -213,7 +213,7 @@ theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c :
     rw [star_mul, ← mul_assoc, mul_assoc _ _ c]
   · calc
       0 ≤ star c * x * c + 0 := by rw [add_zero]; exact hx
-      _ ≤ star c * x * c + star c * y * c := add_le_add_left hy _
+      _ ≤ star c * x * c + star c * y * c := by gcongr
       _ ≤ _ := by rw [mul_add, add_mul]
 
 @[aesop safe apply]

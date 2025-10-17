@@ -124,7 +124,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   rcases eq_or_ne (d x y) 0 with hd₀ | hd₀
   · simp only [hd₀, zero_le]
   rsuffices ⟨z, z', hxz, hzz', hz'y⟩ : ∃ z z' : X, d x z ≤ L.sum ∧ d z z' ≤ L.sum ∧ d z' y ≤ L.sum
-  · exact (hd x z z' y).trans (mul_le_mul_left' (max_le hxz (max_le hzz' hz'y)) _)
+  · grw [hd x z z' y, max_le hxz (max_le hzz' hz'y)]
   set s : Set ℕ := { m : ℕ | 2 * (take m L).sum ≤ L.sum }
   have hs₀ : 0 ∈ s := by simp [s]
   have hsne : s.Nonempty := ⟨0, hs₀⟩

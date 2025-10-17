@@ -187,6 +187,7 @@ lemma bind_toFinset [DecidableEq α] (s : Multiset α) (t : α → Multiset β) 
 
 lemma biUnion_mono (h : ∀ a ∈ s, t₁ a ⊆ t₂ a) : s.biUnion t₁ ⊆ s.biUnion t₂ := by grind
 
+@[gcongr]
 lemma biUnion_subset_biUnion_of_subset_left (t : α → Finset β) (h : s₁ ⊆ s₂) :
     s₁.biUnion t ⊆ s₂.biUnion t := by grind
 

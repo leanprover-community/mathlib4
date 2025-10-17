@@ -145,9 +145,7 @@ instance (priority := 100) IsBoundedSMul.continuousSMul : ContinuousSMul α β w
         ≤ dist (a' • b') (a • b') + dist (a • b') (a • b) := dist_triangle ..
       _ ≤ dist a' a * dist b' 0 + dist a 0 * dist b' b :=
         add_le_add (dist_pair_smul _ _ _) (dist_smul_pair _ _ _)
-      _ ≤ δ * (δ + dist b 0) + dist a 0 * δ := by
-          have : dist b' 0 ≤ δ + dist b 0 := (dist_triangle _ _ _).trans <| add_le_add_right hb.le _
-          gcongr
+      _ ≤ δ * (δ + dist b 0) + dist a 0 * δ := by gcongr; grw [dist_triangle b' b 0, hb]
       _ < ε := hδε
 
 instance (priority := 100) IsBoundedSMul.toUniformContinuousConstSMul :

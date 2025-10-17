@@ -487,8 +487,7 @@ obviously true if `s ∪ t` is unbounded. -/
 theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
     diam (s ∪ t) ≤ diam s + dist x y + diam t := by
   simp only [diam, dist_edist]
-  refine (ENNReal.toReal_le_add' (EMetric.diam_union xs yt) ?_ ?_).trans
-    (add_le_add_right ENNReal.toReal_add_le _)
+  grw [ENNReal.toReal_le_add' (EMetric.diam_union xs yt), ENNReal.toReal_add_le]
   · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
     exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_left
   · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_right

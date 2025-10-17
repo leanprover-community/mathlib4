@@ -103,6 +103,7 @@ theorem infEdist_zero_of_mem (h : x ∈ s) : infEdist x s = 0 :=
   nonpos_iff_eq_zero.1 <| @edist_self _ _ x ▸ infEdist_le_edist_of_mem h
 
 /-- The edist is antitone with respect to inclusion. -/
+@[gcongr]
 theorem infEdist_anti (h : s ⊆ t) : infEdist x t ≤ infEdist x s :=
   iInf_le_iInf_of_subset h
 
@@ -350,15 +351,13 @@ theorem hausdorffEdist_triangle : hausdorffEdist s u ≤ hausdorffEdist s t + ha
       calc
         infEdist x u ≤ infEdist x t + hausdorffEdist t u :=
           infEdist_le_infEdist_add_hausdorffEdist
-        _ ≤ hausdorffEdist s t + hausdorffEdist t u :=
-          add_le_add_right (infEdist_le_hausdorffEdist_of_mem xs) _
+        _ ≤ hausdorffEdist s t + hausdorffEdist t u := by grw [infEdist_le_hausdorffEdist_of_mem xs]
   · change ∀ x ∈ u, infEdist x s ≤ hausdorffEdist s t + hausdorffEdist t u
     exact fun x xu =>
       calc
         infEdist x s ≤ infEdist x t + hausdorffEdist t s :=
           infEdist_le_infEdist_add_hausdorffEdist
-        _ ≤ hausdorffEdist u t + hausdorffEdist t s :=
-          add_le_add_right (infEdist_le_hausdorffEdist_of_mem xu) _
+        _ ≤ hausdorffEdist u t + hausdorffEdist t s := by grw [infEdist_le_hausdorffEdist_of_mem xu]
         _ = hausdorffEdist s t + hausdorffEdist t u := by simp [hausdorffEdist_comm, add_comm]
 
 /-- Two sets are at zero Hausdorff edistance if and only if they have the same closure. -/

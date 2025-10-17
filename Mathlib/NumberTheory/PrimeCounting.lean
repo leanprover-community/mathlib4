@@ -132,13 +132,9 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) 
     _ ≤ π' k + #{p ∈ Ico k (k + n) | p.Prime} := by
       rw [primeCounting', count_eq_card_filter_range]
     _ ≤ π' k + #{b ∈ Ico k (k + n) | a.Coprime b} := by
-      refine add_le_add_left (card_le_card ?_) k.primeCounting'
-      simp only [subset_iff, and_imp, mem_filter, mem_Ico]
-      intro p succ_k_le_p p_lt_n p_prime
-      constructor
-      · exact ⟨succ_k_le_p, p_lt_n⟩
-      · rw [coprime_comm]
-        exact coprime_of_lt_prime h0 (lt_of_lt_of_le h1 succ_k_le_p) p_prime
+      gcongr with p hp
+      rw [coprime_comm]
+      exact coprime_of_lt_prime h0 <| h1.trans_le (mem_Ico.1 hp).1
     _ ≤ π' k + totient a * (n / a + 1) := by
       rw [add_le_add_iff_left]
       exact Ico_filter_coprime_le k n h0

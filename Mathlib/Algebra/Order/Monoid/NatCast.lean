@@ -43,13 +43,13 @@ lemma zero_le_four [Preorder α] [ZeroLEOneClass α] [AddLeftMono α] :
 lemma one_le_two [LE α] [ZeroLEOneClass α] [AddLeftMono α] :
     (1 : α) ≤ 2 :=
   calc (1 : α) = 1 + 0 := (add_zero 1).symm
-     _ ≤ 1 + 1 := add_le_add_left zero_le_one _
+     _ ≤ 1 + 1 := by gcongr; exact zero_le_one
      _ = 2 := one_add_one_eq_two
 
 lemma one_le_two' [LE α] [ZeroLEOneClass α] [AddRightMono α] :
     (1 : α) ≤ 2 :=
   calc (1 : α) = 0 + 1 := (zero_add 1).symm
-     _ ≤ 1 + 1 := add_le_add_right zero_le_one _
+     _ ≤ 1 + 1 := by gcongr; exact zero_le_one
      _ = 2 := one_add_one_eq_two
 
 section

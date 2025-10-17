@@ -185,7 +185,7 @@ theorem isFiniteKernel_withDensity_of_bounded (κ : Kernel α β) [IsFiniteKerne
           ∫⁻ b in Set.univ, f a b ∂κ a ≤ ∫⁻ _ in Set.univ, B ∂κ a := lintegral_mono (hf_B a)
           _ = B * κ a Set.univ := by
             simp only [Measure.restrict_univ, MeasureTheory.lintegral_const]
-          _ ≤ B * κ.bound := mul_le_mul_left' (measure_le_bound κ a Set.univ) _⟩⟩
+          _ ≤ B * κ.bound := by grw [measure_le_bound]⟩⟩
   · rw [withDensity_of_not_measurable _ hf]
     infer_instance
 
