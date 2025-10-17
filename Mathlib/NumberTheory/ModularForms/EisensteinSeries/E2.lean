@@ -38,12 +38,13 @@ lemma e2Summand_summable (m : ℤ) (z : ℍ) : Summable (fun n ↦ eisSummand 2 
   simp [eisSummand]
 
 @[simp]
-lemma e2Summand_zero_eq_riemannZeta_two (z : ℍ) : e2Summand 0 z = 2 * riemannZeta 2 := by
+lemma e2Summand_zero_eq_two_riemannZeta_two (z : ℍ) : e2Summand 0 z = 2 * riemannZeta 2 := by
   simpa [e2Summand, eisSummand] using
     (two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (k := 2) (by grind) (by simp)).symm
 
-theorem e2Summand_even (z : ℍ) (n : ℤ) : e2Summand n z = e2Summand (-n) z := by
-  simp only [e2Summand, ← tsum_comp_neg (fun a ↦ eisSummand 2 ![-n, a] z)]
+theorem e2Summand_even (z : ℍ) : (e2Summand · z).Even := by
+  intro n
+  simp [e2Summand, ← tsum_comp_neg (fun a ↦ eisSummand 2 ![-n, a] z)]
   congr
   ext b
   simp only [eisSummand, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
