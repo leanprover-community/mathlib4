@@ -36,3 +36,5 @@ where
     let some tti := ci.value.get? TryThisInfo
       | return
     modify (·.push tti.suggestion)
+
+end Lean.Elab
