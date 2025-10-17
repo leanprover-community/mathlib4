@@ -480,10 +480,11 @@ end ContinuousLinearMap
 theorem Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection ≤ V.starProjection ↔ U ≤ V := by
-  simp_rw [← ContinuousLinearMap.coe_le_coe_iff, isSymmetricProjection_starProjection _
+  simp_rw [← coe_le_coe_iff, isSymmetricProjection_starProjection _
       |>.le_iff_range_le_range <| isSymmetricProjection_starProjection _,
     starProjection_coe_eq_isCompl_projection, IsCompl.projection_range]
 
+/-- `U.starProjection = V.starProjection` iff `U = V`. -/
 theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection = V.starProjection ↔ U = V := by
