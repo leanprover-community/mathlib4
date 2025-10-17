@@ -103,7 +103,7 @@ end multiline_hint
 section finiteness
 /--
 info: Try these:
-  • 🎉 finiteness
+  [apply] 🎉 finiteness
 -/
 #guard_msgs in
 open ENNReal in
@@ -177,12 +177,12 @@ info: Try these:
 example (R : Type) (a b : R) [CommRing R] (u₁ : Rˣ) : a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁ := by hint
 end field_simp
 
-section finiteness
+-- This test was originally here to ensure `finiteness` closed the goal,
+-- but apparently `tauto_set` also works.
 /--
 info: Try these:
-  [apply] 🎉 finiteness
+  [apply] 🎉 tauto_set
 -/
 #guard_msgs in
 open ENNReal in
 example : (1 : ℝ≥0∞) < ∞ := by hint
-end finiteness
