@@ -298,6 +298,11 @@ instance Nonneg.instContinuousFunctionalCalculus :
     isUniformEmbedding_subtype_val le_rfl
     (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
+theorem IsStrictlyPositive.commute_iff {a b : A} (ha : IsStrictlyPositive a)
+    (hb : IsStrictlyPositive b) : Commute a b ↔ IsStrictlyPositive (a * b) := by
+  rw [commute_iff_mul_nonneg ha.nonneg hb.nonneg]
+  exact ⟨fun h => ha.isUnit.mul hb.isUnit |>.isStrictlyPositive h, fun h => h.nonneg⟩
+
 end Nonneg
 
 /-!
