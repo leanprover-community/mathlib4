@@ -352,6 +352,7 @@ lemma Connected.exists_vertex_preconnected_induce_complement_singleton_of_fintyp
     (hconn : G.Connected) [DecidableEq V] [Fintype V] : ∃ v : V, (G.induce {v}ᶜ).Preconnected := by
   by_cases h : Nontrivial V
   · obtain ⟨v, hv⟩ :=
+      Preconnected.exists_vertex_connected_induce_complement_singleton_of_fintype_of_nontrivial
       hconn.preconnected
     exact ⟨v, hv.preconnected⟩
   · use hconn.nonempty.some
