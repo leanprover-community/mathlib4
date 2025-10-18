@@ -135,7 +135,7 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ β) :=
     fun f g ↦ by
       cases isEmpty_or_nonempty α
       · simp [edist_def]
-      have : BddAbove <| .range fun x ↦ dist (toFun f x) (toFun g x) := sorry
+      have : BddAbove <| .range fun x ↦ dist (toFun f x) (toFun g x) := Finite.bddAbove_range _
       exact ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ by simp [edist_def, ciSup_le_iff this]
 
 lemma dist_def [BoundedSpace β] (f g : α →ᵤ β) :

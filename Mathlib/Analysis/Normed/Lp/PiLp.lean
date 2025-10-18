@@ -60,15 +60,6 @@ are equivalent on `ℝ^n` for abstract (norm equivalence) reasons. Instead, we g
 We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 -/
 
--- TODO: Move
--- namespace ENNReal
-
--- open scoped ENNReal NNReal
-
-
-
--- end ENNReal
-
 -- -- TODO: Replace `Set.eq_empty_of_isEmpty`
 lemma eq_empty_of_isEmpty' (s : Set α) [IsEmpty s] : s = ∅ := by
   simpa using ‹IsEmpty s›
