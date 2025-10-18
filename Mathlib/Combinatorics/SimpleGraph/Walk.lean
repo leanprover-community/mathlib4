@@ -933,7 +933,7 @@ def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → So
 lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → Sort*}
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) →
     motive (q.cons h) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
-    @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
+    @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := rfl
 
 theorem end_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : v ∈ p.support.tail :=
   p.notNilRec (by simp) h

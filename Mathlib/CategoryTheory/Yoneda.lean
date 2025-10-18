@@ -741,8 +741,7 @@ lemma coyonedaEquiv_naturality {X Y : C} {F : C ⥤ Type v₁} (f : coyoneda.obj
   simp
 
 lemma coyonedaEquiv_comp {X : C} {F G : C ⥤ Type v₁} (α : coyoneda.obj (op X) ⟶ F) (β : F ⟶ G) :
-    coyonedaEquiv (α ≫ β) = β.app _ (coyonedaEquiv α) := by
-  rfl
+    coyonedaEquiv (α ≫ β) = β.app _ (coyonedaEquiv α) := rfl
 
 lemma coyonedaEquiv_coyoneda_map {X Y : C} (f : X ⟶ Y) :
     coyonedaEquiv (coyoneda.map f.op) = f := by
@@ -935,14 +934,12 @@ def Functor.sectionsEquivHom (F : C ⥤ Type u₂) (X : Type u₂) [Unique X] :
 
 lemma Functor.sectionsEquivHom_naturality {F G : C ⥤ Type u₂} (f : F ⟶ G) (X : Type u₂) [Unique X]
     (x : F.sections) :
-    (G.sectionsEquivHom X) ((sectionsFunctor C).map f x) = (F.sectionsEquivHom X) x ≫ f := by
-  rfl
+    (G.sectionsEquivHom X) ((sectionsFunctor C).map f x) = (F.sectionsEquivHom X) x ≫ f := rfl
 
 lemma Functor.sectionsEquivHom_naturality_symm {F G : C ⥤ Type u₂} (f : F ⟶ G) (X : Type u₂)
     [Unique X] (τ : (const C).obj X ⟶ F) :
     (G.sectionsEquivHom X).symm (τ ≫ f) =
-      (sectionsFunctor C).map f ((F.sectionsEquivHom X).symm τ) := by
-  rfl
+      (sectionsFunctor C).map f ((F.sectionsEquivHom X).symm τ) := rfl
 
 /-- A natural isomorphism between the sections functor `(C ⥤ Type _) ⥤ Type _` and the co-Yoneda
 embedding of a terminal functor, specifically a constant functor on a given singleton type `X`. -/

@@ -115,8 +115,7 @@ instance : Inhabited (Closeds α) :=
   ⟨⊥⟩
 
 @[simp, norm_cast]
-theorem coe_sup (s t : Closeds α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t := by
-  rfl
+theorem coe_sup (s t : Closeds α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t := rfl
 
 @[simp, norm_cast]
 theorem coe_inf (s t : Closeds α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
@@ -147,7 +146,7 @@ theorem coe_sInf {S : Set (Closeds α)} : (↑(sInf S) : Set α) = ⋂ i ∈ S, 
 
 @[simp]
 lemma coe_sSup {S : Set (Closeds α)} : ((sSup S : Closeds α) : Set α) =
-    closure (⋃₀ ((↑) '' S)) := by rfl
+    closure (⋃₀ ((↑) '' S)) := rfl
 
 @[simp, norm_cast]
 theorem coe_finset_sup (f : ι → Closeds α) (s : Finset ι) :

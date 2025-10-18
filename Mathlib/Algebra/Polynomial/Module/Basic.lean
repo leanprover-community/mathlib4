@@ -88,8 +88,7 @@ noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
   inferInstanceAs (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
 
 lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
-    f • m = aeval (Finsupp.lmapDomain M R Nat.succ) f m := by
-  rfl
+    f • m = aeval (Finsupp.lmapDomain M R Nat.succ) f m := rfl
 
 instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
     IsScalarTower S R (PolynomialModule R M) :=

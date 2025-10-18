@@ -330,8 +330,7 @@ lemma toHom_comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [
     [Module R N₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
     {P : RootPairing ι R M N} {P₁ : RootPairing ι₁ R M₁ N₁} {P₂ : RootPairing ι₂ R M₂ N₂}
     (g : RootPairing.Equiv P₁ P₂) (f : RootPairing.Equiv P P₁) :
-    (Equiv.comp g f).toHom = Hom.comp g.toHom f.toHom := by
-  rfl
+    (Equiv.comp g f).toHom = Hom.comp g.toHom f.toHom := rfl
 
 @[simp]
 lemma id_comp {ι₂ M₂ N₂ : Type*}
@@ -391,8 +390,7 @@ lemma weightEquiv_comp_toLin {P : RootPairing ι R M N} (x y : RootPairing.Equiv
 
 @[simp]
 lemma weightEquiv_mul {P : RootPairing ι R M N} (x y : RootPairing.Equiv P P) :
-    weightEquiv P P x * weightEquiv P P y = weightEquiv P P y ≪≫ₗ weightEquiv P P x := by
-  rfl
+    weightEquiv P P x * weightEquiv P P y = weightEquiv P P y ≪≫ₗ weightEquiv P P x := rfl
 
 @[simp]
 lemma coweightEquiv_comp_toLin {P : RootPairing ι R M N} (x y : RootPairing.Equiv P P) :
@@ -401,8 +399,7 @@ lemma coweightEquiv_comp_toLin {P : RootPairing ι R M N} (x y : RootPairing.Equ
 
 @[simp]
 lemma coweightEquiv_mul {P : RootPairing ι R M N} (x y : RootPairing.Equiv P P) :
-    coweightEquiv P P x * coweightEquiv P P y = coweightEquiv P P y ≪≫ₗ coweightEquiv P P x := by
-  rfl
+    coweightEquiv P P x * coweightEquiv P P y = coweightEquiv P P y ≪≫ₗ coweightEquiv P P x := rfl
 
 /-- The inverse of a root pairing equivalence. -/
 def symm {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]

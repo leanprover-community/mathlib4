@@ -181,8 +181,7 @@ lemma hom_ext {M N : Mod_ D A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) :
   Hom.ext h
 
 @[simp]
-theorem id_hom' (M : Mod_ D A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by
-  rfl
+theorem id_hom' (M : Mod_ D A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := rfl
 
 @[simp]
 theorem comp_hom' {M N K : Mod_ D A} (f : M ⟶ N) (g : N ⟶ K) :

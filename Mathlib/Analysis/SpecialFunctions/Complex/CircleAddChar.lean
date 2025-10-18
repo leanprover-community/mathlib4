@@ -100,8 +100,7 @@ noncomputable def rootsOfUnityAddChar (n : ℕ) [NeZero n] :
   map_add_eq_mul' _ _:= by ext; simp [AddChar.map_add_eq_mul]
 
 @[simp] lemma rootsOfUnityAddChar_val (n : ℕ) [NeZero n] (x : ZMod n) :
-    (rootsOfUnityAddChar n x).val = toCircle x := by
-  rfl
+    (rootsOfUnityAddChar n x).val = toCircle x := rfl
 
 end ZMod
 
