@@ -3,8 +3,7 @@ Copyright (c) 2023 Kyle Miller, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Set.Card
+import Mathlib.Combinatorics.SimpleGraph.Acyclic
 
 /-!
 # Connectivity of subgraphs and induced graphs
@@ -36,6 +35,11 @@ instance {H : G.Subgraph} : CoeFun H.Preconnected (fun _ => ∀ u v : H.verts, H
 
 protected lemma preconnected_iff {H : G.Subgraph} :
     H.Preconnected ↔ H.coe.Preconnected := ⟨fun ⟨h⟩ => h, .mk⟩
+
+lemma preconnected_bot {H : G.Subgraph} (h : H.verts.Subsingleton) (eq_bot : H = ⊥)
+    : (⊥ : G.Subgraph).Preconnected := by
+  rw [Subgraph.preconnected_iff, coe_bot, ← eq_bot]
+  exact @SimpleGraph.preconnected_bot _ ((H.verts.subsingleton_coe).mpr h)
 
 /-- A subgraph is connected if it is connected when coerced to be a simple graph.
 
@@ -263,6 +267,25 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
 
 lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toSubgraph.Adj u' v') :
     u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
+
+lemma verts_toSubgraph_toPath_subset {u v : V} {p : G.Walk u v} [DecidableEq V] :
+    (p.toPath : G.Walk u v).toSubgraph.verts ⊆ {x | x ∈ p.support} := by
+  simpa using p.support_toPath_subset
+
+lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
+    p.toSubgraph.Adj u' v' ↔ s(u', v') ∈ p.edges := by
+  rw [← p.mem_edges_toSubgraph]
+  rfl
+
+lemma adj_toSubgraph_toPath {u v u' v' : V} {p : G.Walk u v} [DecidableEq V]
+    (hp : (p.toPath : G.Walk u v).toSubgraph.Adj u' v') : p.toSubgraph.Adj u' v' := by
+  simp_all only [adj_toSubgraph_iff_mem_edges]
+  exact p.edges_toPath_subset hp
+
+lemma toSubgraph_toPath_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
+    (p.toPath : G.Walk u v).toSubgraph ≤ p.toSubgraph := by
+  refine ⟨?_, fun _ _ h ↦ adj_toSubgraph_toPath h⟩
+  simpa using p.verts_toSubgraph_toPath_subset
 
 namespace IsPath
 
@@ -567,5 +590,145 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
       refine ⟨hw, Walk.connected_induce_support _ _ _⟩
 
 end induced_subgraphs
+
+protected theorem Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : H.Connected) :
+    (toSubgraph H h).Connected := by
+  obtain ⟨hpreconn, _⟩ := hconn
+  simp_all only [Subgraph.connected_iff_forall_exists_walk_subgraph, toSubgraph_verts,
+    Set.univ_nonempty, Set.mem_univ, forall_const, true_and]
+  intro u v
+  obtain ⟨p, _⟩ := hpreconn.set_univ_walk_nonempty u v
+  use p.transfer G (fun e he ↦ edgeSet_subset_edgeSet.mpr h (p.edges_subset_edgeSet he))
+  constructor
+  · simp
+  · intro x y hxy
+    rw [Walk.adj_toSubgraph_iff_mem_edges, Walk.edges_transfer] at hxy
+    exact p.edges_subset_edgeSet hxy
+
+namespace Subgraph
+
+protected lemma Connected.map_Subgraph_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
+    (f : G'.coe →g G) (hconn : G''.Connected) : (G''.map f).Connected := by
+  rw [connected_iff_forall_exists_walk_subgraph]
+  simp only [map_verts, Set.image_nonempty, hconn.nonempty, Set.mem_image, Subtype.exists,
+    forall_exists_index, and_imp, true_and]
+  intro u v u' _ hu'' hfu'' v' _ hv'' hfv''
+  rw [← hfu'', ← hfv'']
+  rw [connected_iff_forall_exists_walk_subgraph] at hconn
+  obtain ⟨_, hp⟩ := hconn
+  obtain ⟨p, _⟩ := hp hu'' hv''
+  use p.map f
+  rw [p.toSubgraph_map]
+  gcongr
+
+protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
+    (hconn : G''.Connected) :
+    (Subgraph.coeSubgraph G'').Connected := by
+  exact hconn.map_Subgraph_coe G'.hom
+
+/-- The graph resulting from removing a vertex of degree one from a (pre)connected graph is
+connected. -/
+lemma Preconnected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq V] {H : G.Subgraph}
+    (hpreconn : H.Preconnected) {v : V} [Fintype ↑(H.neighborSet v)] (hdeg : H.degree v = 1) :
+    (H.deleteVerts {v}).Connected := by
+  refine (H.deleteVerts {v}).connected_iff_forall_exists_walk_subgraph.mpr ⟨?_, ?_⟩
+  · have := (H.nontrivial_of_degree_ne_zero (ne_zero_of_eq_one hdeg)).exists_pair_ne
+    apply Set.diff_nonempty.mpr
+    grind
+  /- There exists a walk between any two vertices w and x in H.deleteVerts {v}
+  via the unique vertex u adjacent to vertex v. -/
+  · intro w x w_mem_H' x_mem_H'
+    have exists_walk_le_H := @H.preconnected_iff_forall_exists_walk_subgraph.mp hpreconn
+    obtain ⟨u, H_adj_v_u, u_unique⟩ := degree_eq_one_iff_unique_adj.mp hdeg
+    obtain ⟨puw, puw_le_H⟩ :=
+      exists_walk_le_H (H.edge_vert H_adj_v_u.symm) (Set.mem_of_mem_inter_left w_mem_H')
+    obtain ⟨pux, pux_le_H⟩ :=
+      exists_walk_le_H (H.edge_vert H_adj_v_u.symm) (Set.mem_of_mem_inter_left x_mem_H')
+    /- A path between vertex u and another vertex in H.deleteVerts {v}
+    is contained in H.deleteVerts {v}. -/
+    have p_le_H' {z : V} (z_mem_H' : z ∈ (H.deleteVerts {v}).verts) {p : G.Walk u z}
+        (p_le_H : p.toSubgraph ≤ H) : (p.toPath : G.Walk u z).toSubgraph ≤ H.deleteVerts {v} := by
+      obtain ⟨p_verts_subset_H_verts, H_adj_if_p_adj⟩ := p_le_H
+      rw [p.verts_toSubgraph] at p_verts_subset_H_verts
+      /- Prove vertex v is not in the path by showing that vertex u is passed twice. -/
+      have v_not_mem_p' : v ∉ (p.toPath : G.Walk u z).toSubgraph.verts := by
+        rw [Walk.verts_toSubgraph, Set.mem_setOf_eq]
+        by_contra v_mem_p'
+        obtain ⟨puv, pvz, p'_eq_puvz⟩ := Walk.mem_support_iff_exists_append.mp v_mem_p'
+        have not_nil_pvz : ¬pvz.Nil := by
+          refine Walk.not_nil_of_ne (by_contra ?_)
+          aesop
+        have : (p.toPath : G.Walk u z).support.Duplicate u := by
+          rw [p'_eq_puvz, Walk.support_append, List.duplicate_iff_two_le_count, List.count_append]
+          have := pvz.toSubgraph_adj_snd not_nil_pvz
+          have := List.one_le_count_iff.mpr puv.start_mem_support
+          have := List.one_le_count_iff.mpr (Walk.snd_mem_tail_support not_nil_pvz)
+          rw [u_unique pvz.snd (H_adj_if_p_adj <| p.adj_toSubgraph_toPath <| by simp_all)] at this
+          omega
+        simpa [List.nodup_iff_forall_not_duplicate.mp p.toPath.nodup_support]
+      constructor
+      · exact Set.subset_diff_singleton
+          (.trans p.verts_toSubgraph_toPath_subset p_verts_subset_H_verts) v_not_mem_p'
+      · intro a b p'_adj_a_b
+        refine deleteVerts_adj.mpr ⟨?_, ?_, ?_, ?_, ?_⟩
+        · exact H.edge_vert (H_adj_if_p_adj <| p.adj_toSubgraph_toPath p'_adj_a_b)
+        · have := (p.toPath : G.Walk u z).toSubgraph.edge_vert p'_adj_a_b
+          aesop
+        · exact H.edge_vert (H_adj_if_p_adj <| p.adj_toSubgraph_toPath p'_adj_a_b.symm)
+        · have := (p.toPath : G.Walk u z).toSubgraph.edge_vert p'_adj_a_b.symm
+          aesop
+        · exact H_adj_if_p_adj <| p.adj_toSubgraph_toPath p'_adj_a_b
+    use .append puw.toPath.reverse (pux.toPath : G.Walk u x)
+    simpa using ⟨p_le_H' w_mem_H' puw_le_H, p_le_H' x_mem_H' pux_le_H⟩
+
+/-- A finite nontrivial (pre)connected graph contains a vertex that leaves the graph connected if
+removed. -/
+lemma Preconnected.exists_vertex_connected_deleteVerts_singleton_of_fintype_of_nontrivial
+    [DecidableEq V] {H : G.Subgraph} [Fintype H.verts] [Nontrivial H.verts]
+    (hpreconn : H.Preconnected) : ∃ v ∈ H.verts, (H.deleteVerts {v}).Connected := by
+  obtain ⟨T, T_le_H, T_isTree⟩ :=
+    (Subgraph.connected_iff.mpr ⟨hpreconn, Set.Nonempty.of_subtype⟩).coe.exists_isTree_le
+  have ⟨T_conn, _⟩ := T_isTree
+  have := Classical.decRel T.Adj
+  obtain ⟨v, hv⟩ := T_isTree.exists_vert_degree_one_of_nontrivial
+  use v, v.coe_prop
+  apply @Connected.mono _ _ (.coeSubgraph ((toSubgraph T T_le_H).deleteVerts {v}))
+  · obtain ⟨_, _⟩ := coeSubgraph_le (toSubgraph T T_le_H)
+    constructor
+    · simp only [map_verts, hom_apply, Subgraph.induce_verts]
+      grind
+    · intro _ _ ⟨_, _, _, _, _⟩
+      aesop
+  · aesop
+  · have := Fintype.ofFinite ((toSubgraph T T_le_H).neighborSet v)
+    apply Connected.coeSubgraph
+    apply (T_conn.toSubgraph T_le_H).preconnected.connected_deleteVerts_singleton_of_degree_eq_one
+    simp [← hv]
+
+/-- A finite connected graph contains a vertex that leaves the graph preconnected if removed. -/
+lemma Connected.exists_vertex_preconnected_deleteVerts_singleton_of_fintype
+    [DecidableEq V] {H : G.Subgraph} [Fintype H.verts] (hconn : H.Connected) :
+    ∃ v ∈ H.verts, (H.deleteVerts {v}).Preconnected := by
+  by_cases h : Nontrivial H.verts
+  · obtain ⟨v, hv⟩ :=
+      Preconnected.exists_vertex_connected_deleteVerts_singleton_of_fintype_of_nontrivial
+      hconn.preconnected
+    exact ⟨v, hv.left, hv.right.preconnected⟩
+  · obtain ⟨v, hv⟩ := hconn.nonempty
+    use v
+    refine ⟨hv, ?_⟩
+    have := not_nontrivial_iff_subsingleton.mp h
+    have : H.deleteVerts {v} = ⊥ := by
+      ext w x
+      · aesop
+      · simp only [induce_adj, Set.mem_diff, Set.mem_singleton_iff, not_bot_adj, iff_false,
+        not_and, and_imp]
+        intro hw _ hx _
+        by_contra adj_w_x
+        exact adj_w_x.ne (Subtype.coe_inj.mpr (this.allEq ⟨w, hw⟩ ⟨x, hx⟩))
+    rw [this]
+    exact preconnected_bot (by simp_all) this
+
+end Subgraph
 
 end SimpleGraph
