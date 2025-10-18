@@ -68,7 +68,7 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
 
 @[simp] lemma Additive.mem_toAddSubgroup (S : Subgroup G) (g : Additive G) :
     g ∈ S.toAddSubgroup ↔ Additive.toMul g ∈ S :=
-  Iff.rfl
+  .rfl
 
 /-- Additive subgroups of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
 abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
@@ -76,7 +76,7 @@ abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
 
 @[simp] lemma AddSubgroup.mem_toSubgroup' (S : AddSubgroup (Additive G)) (g : G) :
     g ∈ toSubgroup' S ↔ Additive.ofMul g ∈ S :=
-  Iff.rfl
+  .rfl
 
 /-- Additive subgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
 -/
@@ -90,7 +90,7 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
 
 @[simp] lemma Multiplicative.mem_toSubgroup (S : AddSubgroup A) (a : Multiplicative A) :
     a ∈ S.toSubgroup ↔ Multiplicative.toAdd a ∈ S :=
-  Iff.rfl
+  .rfl
 
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
 -/
@@ -99,7 +99,7 @@ abbrev Subgroup.toAddSubgroup' : Subgroup (Multiplicative A) ≃o AddSubgroup A 
 
 @[simp] lemma Subgroup.mem_toAddSubgroup' (S : Subgroup (Multiplicative A)) (a : A) :
     a ∈ toAddSubgroup' S ↔ Multiplicative.ofAdd a ∈ S :=
-  Iff.rfl
+  .rfl
 
 end mul_add
 
