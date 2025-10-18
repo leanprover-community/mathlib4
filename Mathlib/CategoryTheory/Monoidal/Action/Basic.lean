@@ -27,13 +27,10 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 ## TODOs/Projects
 * Equivalence between actions of `C` on `D` and pseudofunctors from the
   classifying bicategory of `C` to `Cat`.
-* Left actions as monoidal functors C ⥤ (D ⥤ D)ᴹᵒᵖ.
-* Right actions as monoidal functors C ⥤ D ⥤ D.
-* (Right) Action of `(C ⥤ C)` on `C`.
 * Left/Right Modules in `D` over a monoid object in `C`.
   Equivalence with `Mod_` when `D` is `C`. Bimodules objects.
 * Given a monad `M` on `C`, equivalence between `Algebra M`, and modules in `C`
-  on `M.toMon : Mon_ (C ⥤ C)`.
+  on `M.toMon : Mon (C ⥤ C)`.
 * Canonical left action of `Type u` on `u`-small cocomplete categories via the
   copower.
 
@@ -103,7 +100,7 @@ scoped notation "λₗ["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
 end MonoidalLeftAction
 
 open scoped MonoidalLeftAction in
-/-- A `MonoidalLeftAction C D` is is the data of:
+/-- A `MonoidalLeftAction C D` is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ₗ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ₗ d : c ⊙ₗ d ⟶ c' ⊙ₗ d`.
@@ -417,7 +414,7 @@ scoped notation "ρᵣ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 end MonoidalRightAction
 
 open scoped MonoidalRightAction in
-/-- A `MonoidalRightAction C D` is is the data of:
+/-- A `MonoidalRightAction C D` is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ᵣ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ᵣ d : c ⊙ᵣ d ⟶ c' ⊙ᵣ d`.

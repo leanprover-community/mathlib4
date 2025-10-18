@@ -58,10 +58,6 @@ theorem AEStronglyMeasurable.stronglyMeasurableAtFilter_of_mem {s}
     (h : AEStronglyMeasurable f (μ.restrict s)) (hl : s ∈ l) : StronglyMeasurableAtFilter f l μ :=
   ⟨s, hl, h⟩
 
-@[deprecated (since := "2025-02-12")]
-alias AeStronglyMeasurable.stronglyMeasurableAtFilter_of_mem :=
-    AEStronglyMeasurable.stronglyMeasurableAtFilter_of_mem
-
 protected theorem MeasureTheory.StronglyMeasurable.stronglyMeasurableAtFilter
     (h : StronglyMeasurable f) : StronglyMeasurableAtFilter f l μ :=
   h.aestronglyMeasurable.stronglyMeasurableAtFilter
@@ -409,6 +405,11 @@ theorem IntegrableOn.integrable_of_forall_notMem_eq_zero
 @[deprecated (since := "2025-05-23")]
 alias IntegrableOn.integrable_of_forall_not_mem_eq_zero :=
   IntegrableOn.integrable_of_forall_notMem_eq_zero
+
+theorem IntegrableOn.of_inter_support {f : α → ε'}
+    (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :
+    IntegrableOn f s μ := by
+  simpa using hf.of_forall_diff_eq_zero hs
 
 theorem integrableOn_iff_integrable_of_support_subset
     {f : α → ε'} (h1s : support f ⊆ s) : IntegrableOn f s μ ↔ Integrable f μ := by

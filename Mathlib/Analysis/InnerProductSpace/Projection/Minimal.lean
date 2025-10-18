@@ -101,13 +101,8 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
         repeat' exact Subtype.mem _
         repeat' exact le_of_lt one_half_pos
         exact add_halves 1
-      have eq₁ : 4 * δ * δ ≤ 4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ := by
-        simp_rw [mul_assoc]
-        gcongr
-      have eq₂ : ‖a‖ ≤ δ + div :=
-          le_trans (le_of_lt <| hw q) (add_le_add_left (Nat.one_div_le_one_div hq) _)
-      have eq₂' : ‖b‖ ≤ δ + div :=
-          le_trans (le_of_lt <| hw p) (add_le_add_left (Nat.one_div_le_one_div hp) _)
+      have eq₂ : ‖a‖ ≤ δ + div := by grw [hw, Nat.one_div_le_one_div hq]
+      have eq₂' : ‖b‖ ≤ δ + div := by grw [hw, Nat.one_div_le_one_div hp]
       rw [dist_eq_norm]
       apply nonneg_le_nonneg_of_sq_le_sq
       · exact sqrt_nonneg _

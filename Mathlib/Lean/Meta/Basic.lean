@@ -68,3 +68,54 @@ def Lean.Meta.mkRel (n : Name) (lhs rhs : Expr) : MetaM Expr :=
     return mkApp2 (.const ``Iff []) lhs rhs
   else
     mkAppM n #[lhs, rhs]
+
+/--
+Given a metavariable `inst` whose type is a class, tries to synthesize the instance then runs `k`.
+If synthesis fails, then runs `k` with `inst` as a local instance and then substitutes `inst`
+into the resulting expression.
+
+Example: `reassocExprHom` operates by applying simp lemmas that assume a `Category` instance.
+The category might not yet be known, which can prevent simp lemmas from applying.
+We can add `inst` as a local instance to deal with this.
+However, if the instance is synthesizable, we prefer running `k` directly
+so that the local instance doesn't affect typeclass inference.
+-/
+def Lean.Meta.withEnsuringLocalInstance {α : Type} (inst : MVarId) (k : MetaM (Expr × α)) :
+    MetaM (Expr × α) := do
+  let instE := mkMVar inst
+  match ← trySynthInstance (← inferType instE) with
+  | .some e =>
+    unless ← isDefEq instE e do
+      throwError "failed to assign synthesized type class instance {indentExpr e}\n\
+        to{indentExpr instE}"
+    k
+  | _ =>
+    withLetDecl `inst (← inferType instE) instE fun inst' => do
+      let (e, v) ← k
+      let e' := (← e.abstractM #[inst']).instantiate1 instE
+      return (e', v)
+
+/-- Checks that `e` has type `expectedType` (i.e. that its type is defeq to `expectedType`
+at the current transparency). If not, coerces `e` to this type
+or fails with a descriptive error. -/
+def Lean.Meta.ensureHasType (e expectedType : Expr) : MetaM Expr := do
+  let ty ← inferType e
+  if ← withNewMCtxDepth (isDefEq ty expectedType) then return e else
+    (← coerceSimple? e expectedType).toOption.getDM <|
+      throwError "Expected{indentD e}\nto have type{indentD ty}\n or to be coercible to it"
+
+/-- Checks that `e` is a function (i.e. that its type is a `.forallE` after `instantiateMVars` and
+`whnf`). If not, coerces `e` to a function or fails with a descriptive error. -/
+def Lean.Meta.ensureIsFunction (e : Expr) : MetaM Expr := do
+  let ty ← whnf <| ← instantiateMVars <| ← inferType e
+  if ty.isForall then return e else (← coerceToFunction? e).getDM <|
+    throwError "Expected{indentD e}\nof type{indentD ty}\nto be a function, or to be coercible to \
+      a function"
+
+/-- Checks that `e` is a type (i.e. that its type is a `Sort` after `instantiateMVars` and
+`whnf`). If not, coerces `e` to a Sort or fails with a descriptive error. -/
+def Lean.Meta.ensureIsSort (e : Expr) : MetaM Expr := do
+  let ty ← whnf <| ← instantiateMVars <| ← inferType e
+  if ty.isSort then return e else (← coerceToSort? e).getDM <|
+    throwError "Expected{indentD e}\nof type{indentD ty}\nto be a Sort, or to be coercible to \
+      a Sort"

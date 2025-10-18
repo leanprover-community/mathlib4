@@ -96,6 +96,8 @@ theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ) : (rootsOfUnity k M).map f
   rintro _ ⟨ζ, h, rfl⟩
   simp_all only [← map_pow, mem_rootsOfUnity, SetLike.mem_coe, MonoidHom.map_one]
 
+instance : Subsingleton (rootsOfUnity 1 M) := by simp [subsingleton_iff]
+
 @[norm_cast]
 theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
     (((ζ ^ m :) : Rˣ) : R) = ((ζ : Rˣ) : R) ^ m := by
@@ -151,23 +153,24 @@ theorem MulEquiv.restrictRootsOfUnity_symm (σ : R ≃* S) :
     (σ.restrictRootsOfUnity k).symm = σ.symm.restrictRootsOfUnity k :=
   rfl
 
-theorem coe_rootsOfUnity_to_set [NeZero k] :
+@[simp]
+theorem Units.val_set_image_rootsOfUnity [NeZero k] :
     ((↑) : Rˣ → _) '' (rootsOfUnity k R) = {z : R | z^k = 1} := by
   ext x
   exact ⟨fun ⟨y,hy1,hy2⟩ => by rw [← hy2]; exact (mem_rootsOfUnity' k y).mp hy1,
     fun h ↦ ⟨(rootsOfUnity.mkOfPowEq x h), ⟨Subtype.coe_prop (rootsOfUnity.mkOfPowEq x h), rfl⟩⟩⟩
 
-theorem rootsOfUnity_one_set : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
+theorem Units.val_set_image_rootsOfUnity_one : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
   ext x
   simp
 
 end CommMonoid
 
 open Set in
-theorem rootsOfUnity_two_set [CommRing R] [NoZeroDivisors R] :
+theorem Units.val_set_image_rootsOfUnity_two [CommRing R] [NoZeroDivisors R] :
     ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
   ext x
-  rw [mem_insert_iff, mem_singleton_iff, ← sq_eq_one_iff, coe_rootsOfUnity_to_set, mem_setOf_eq]
+  simp
 
 section IsDomain
 
@@ -236,19 +239,13 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ 
     zpow_natCast, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
 
-lemma coe_rootsOfUnity_to_nthRootsFinset :
-    ((↑) : Rˣ → R) '' (rootsOfUnity k R) = nthRootsFinset k (1 : R) := by
-  ext x
-  rw [mem_coe, Polynomial.mem_nthRootsFinset (Nat.pos_of_neZero k), coe_rootsOfUnity_to_set,
-    Set.mem_setOf_eq]
-
 end IsDomain
 
 section Reduced
 
 variable (R) [CommRing R] [IsReduced R]
 
--- @[simp] -- Porting note: simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
+-- simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ) [ExpChar R p] {ζ : Rˣ} :
     ζ ∈ rootsOfUnity (p ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
   simp only [mem_rootsOfUnity', ExpChar.pow_prime_pow_mul_eq_one_iff]

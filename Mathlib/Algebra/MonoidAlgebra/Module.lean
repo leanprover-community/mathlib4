@@ -101,10 +101,6 @@ section MiscTheorems
 
 variable [Semiring k]
 
-/-- Copy of `Finsupp.smul_single'` that avoids the `MonoidAlgebra = Finsupp` defeq abuse. -/
-theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
-  Finsupp.smul_single' c a b
-
 theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r := by
   simp
 
@@ -203,10 +199,6 @@ instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonem
 
 instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
   Finsupp.module G k
-
-instance smulCommClass [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMulCommClass R S k] :
-    SMulCommClass R S k[G] :=
-  Finsupp.smulCommClass G k
 
 /-! It is hard to state the equivalent of `DistribMulAction G k[G]`
 because we've never discussed actions of additive groups. -/

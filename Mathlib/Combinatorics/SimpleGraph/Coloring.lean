@@ -234,9 +234,14 @@ noncomputable def Colorable.toColoring [Fintype α] {n : ℕ} (hc : G.Colorable 
   rw [← Fintype.card_fin n] at hn
   exact G.recolorOfCardLE hn hc.some
 
-theorem Colorable.of_embedding {V' : Type*} {G' : SimpleGraph V'} (f : G ↪g G') {n : ℕ}
+theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} (f : G →g G') {n : ℕ}
     (h : G'.Colorable n) : G.Colorable n :=
   ⟨(h.toColoring (by simp)).comp f⟩
+
+@[deprecated SimpleGraph.Colorable.of_hom (since := "2025-09-01")]
+theorem Colorable.of_embedding {V' : Type*} {G' : SimpleGraph V'} (f : G ↪g G') {n : ℕ}
+    (h : G'.Colorable n) : G.Colorable n :=
+  Colorable.of_hom f h
 
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
@@ -316,17 +321,6 @@ theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton
   cases Subsingleton.elim v w
   simp
 
-theorem chromaticNumber_eq_zero_of_isempty (G : SimpleGraph V) [IsEmpty V] :
-    G.chromaticNumber = 0 := by
-  rw [← nonpos_iff_eq_zero, ← Nat.cast_zero, chromaticNumber_le_iff_colorable]
-  apply colorable_of_isEmpty
-
-theorem isEmpty_of_chromaticNumber_eq_zero (G : SimpleGraph V) [Finite V]
-    (h : G.chromaticNumber = 0) : IsEmpty V := by
-  have h' := G.colorable_chromaticNumber_of_fintype
-  rw [h] at h'
-  exact G.isEmpty_of_colorable_zero h'
-
 theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.chromaticNumber := by
   rw [hc.chromaticNumber_eq_sInf, Nat.cast_pos]
   apply le_csInf (colorable_set_nonempty_of_colorable hc)
@@ -342,6 +336,18 @@ theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
   rw [chromaticNumber_ne_top_iff_exists] at h
   obtain ⟨n, hn⟩ := h
   exact colorable_chromaticNumber hn
+
+theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 := by
+  rw [← nonpos_iff_eq_zero, ← Nat.cast_zero, chromaticNumber_le_iff_colorable]
+  apply colorable_of_isEmpty
+
+@[deprecated (since := "2025-09-15")]
+alias chromaticNumber_eq_zero_of_isempty := chromaticNumber_eq_zero_of_isEmpty
+
+theorem isEmpty_of_chromaticNumber_eq_zero (h : G.chromaticNumber = 0) : IsEmpty V := by
+  have := colorable_of_chromaticNumber_ne_top (h ▸ ENat.zero_ne_top)
+  rw [h] at this
+  exact G.isEmpty_of_colorable_zero this
 
 theorem Colorable.mono_left {G' : SimpleGraph V} (h : G ≤ G') {n : ℕ} (hc : G'.Colorable n) :
     G.Colorable n :=
@@ -361,9 +367,14 @@ theorem chromaticNumber_mono (G' : SimpleGraph V)
     (h : G ≤ G') : G.chromaticNumber ≤ G'.chromaticNumber :=
   chromaticNumber_le_of_forall_imp fun _ => Colorable.mono_left h
 
+theorem chromaticNumber_mono_of_hom {V' : Type*} {G' : SimpleGraph V'}
+    (f : G →g G') : G.chromaticNumber ≤ G'.chromaticNumber :=
+  chromaticNumber_le_of_forall_imp fun _ => Colorable.of_hom f
+
+@[deprecated SimpleGraph.chromaticNumber_mono_of_hom (since := "2025-09-01")]
 theorem chromaticNumber_mono_of_embedding {V' : Type*} {G' : SimpleGraph V'}
     (f : G ↪g G') : G.chromaticNumber ≤ G'.chromaticNumber :=
-  chromaticNumber_le_of_forall_imp fun _ => Colorable.of_embedding f
+  chromaticNumber_mono_of_hom f
 
 lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     card α ≤ G.chromaticNumber ↔ ∀ C : G.Coloring α, Surjective C := by
@@ -528,7 +539,6 @@ end completeMultipartiteGraph
 theorem free_of_colorable {W : Type*} {H : SimpleGraph W}
     (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
   contrapose! nhc with hc'
-  rw [not_not] at hc'
   exact ⟨hc.some.comp hc'.some.toHom⟩
 
 end SimpleGraph
