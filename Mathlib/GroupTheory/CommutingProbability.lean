@@ -205,7 +205,6 @@ theorem commProb_reciprocal (n : ℕ) :
       have h1 := (Nat.div_add_mod n 4).symm
       zify at h0 h1 ⊢
       linear_combination (h0 + h1 * (n % 4)) * n
-    · have := hn.pos.ne'
-      positivity
+    · positivity [hn.pos.ne']
 
 end DihedralGroup
