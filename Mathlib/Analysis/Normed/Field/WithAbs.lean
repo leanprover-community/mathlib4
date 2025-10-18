@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Ring.WithAbs
+import Mathlib.FieldTheory.Separable
 
 /-!
 # WithAbs for fields
@@ -25,8 +26,20 @@ namespace WithAbs
 
 section more_instances
 
-instance normedField [Field R] (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
+variable {R' : Type*} [Field R] [Field R']
+
+instance instField (v : AbsoluteValue R S) : Field (WithAbs v) := ‹Field R›
+
+instance normedField (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
   v.toNormedField
+
+instance [Module R R'] [FiniteDimensional R R'] (v : AbsoluteValue R S) :
+    FiniteDimensional (WithAbs v) R' :=
+  ‹FiniteDimensional R R'›
+
+instance [Algebra R R'] [Algebra.IsSeparable R R'] (v : AbsoluteValue R S) :
+    Algebra.IsSeparable (WithAbs v) R' :=
+  ‹Algebra.IsSeparable R R'›
 
 end more_instances
 
