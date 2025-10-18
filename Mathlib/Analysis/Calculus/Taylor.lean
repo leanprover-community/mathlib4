@@ -159,7 +159,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
     exact (monomial_has_deriv_aux y x _).hasDerivWithinAt.const_mul _
   convert this.smul hf using 1
   field_simp
-  rw [neg_smul, sub_eq_add_neg]
+  module
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
 

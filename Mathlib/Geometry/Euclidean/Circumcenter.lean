@@ -131,7 +131,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     congr
     rw [hcr₃val]
     congr 2
-    field_simp
+    field
 
 /-- Given a finite nonempty affinely independent family of points,
 there is a unique (circumcenter, circumradius) pair for those points
