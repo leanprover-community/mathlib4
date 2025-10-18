@@ -306,8 +306,8 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
         rw [pow_zero, one_mul, add_comm]
         exact le_self_add
       | succ _ ih =>
-        rw [add_comm, pow_add, pow_one, mul_assoc]
-        exact le_add_right (mul_le_mul_left' ih _)
+        grw [add_comm, pow_add, pow_one, mul_assoc, ih]
+        exact le_self_add
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
