@@ -220,7 +220,9 @@ Hint: Additional diagnostic information may be available using the `set_option d
 
 end
 
--- Inferring a model with corners on a space of linear maps between normed spaces
+-- Inferring a model with corners on a space of continuous linear maps between normed spaces
+section
+
 variable {f : M → E →L[𝕜] E'} in
 /-- info: MDifferentiable I 𝓘(𝕜, E →L[𝕜] E') f : Prop -/
 #guard_msgs in
@@ -230,6 +232,42 @@ variable {f : M → E →L[𝕜] E'} in
 /-- info: ContMDiff I 𝓘(𝕜, E →L[𝕜] E') 2 f : Prop -/
 #guard_msgs in
 #check CMDiff 2 f
+
+-- And the same test if E' is a normed space over a field 𝕜'' which is defeq to 𝕜, but not at
+-- reducible transparency: this is meant to test the transparency handling in the definitional
+-- equality check in the model inference.
+variable {𝕜' E'' : Type*} [NontriviallyNormedField 𝕜'] [NormedAddCommGroup E''] [NormedSpace 𝕜' E'']
+  [Module 𝕜 E'']
+
+/--
+error: failed to synthesize
+  NontriviallyNormedField (E →L[𝕜] E'')
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#synth NontriviallyNormedField (E →L[𝕜] E'')
+
+/--
+error: failed to synthesize
+  SeminormedAddCommGroup (E →L[𝕜] E'')
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#synth NormedSpace 𝕜 (E →L[𝕜] E'')
+
+variable {f : M → E →L[𝕜] E''} in
+/-- error: Could not find a model with corners for `E →L[𝕜] E''` -/
+#guard_msgs in
+#check MDiff f
+
+variable {f : M → E →L[𝕜] E''} in
+/-- error: Could not find a model with corners for `E →L[𝕜] E''` -/
+#guard_msgs in
+#check CMDiff 2 f
+
+end
 
 /-! Inferring a model with corners on a real interval -/
 section interval
