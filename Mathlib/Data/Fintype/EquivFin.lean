@@ -182,7 +182,7 @@ instance (priority := 100) Finite.of_subsingleton {α : Sort*} [Subsingleton α]
   Finite.of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
 
 -- Higher priority for `Prop`s
-instance prop (p : Prop) : Finite p :=
+instance instFiniteProp (p : Prop) : Finite p :=
   Finite.of_subsingleton
 
 /-- This instance also provides `[Finite s]` for `s : Set α`. -/
