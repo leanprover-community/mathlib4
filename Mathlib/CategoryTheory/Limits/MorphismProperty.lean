@@ -101,6 +101,24 @@ lemma CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] [L.
   rw [P.costructuredArrowObj_iff, P.costructuredArrow_iso_iff e]
   simpa using P.id_mem (L.obj Y)
 
+lemma closedUnderColimitsOfShape {J : Type*} [Category J] {P : MorphismProperty T}
+    [P.RespectsIso] [PreservesColimitsOfShape J L] [HasColimitsOfShape J A]
+    (c : ∀ (D : J ⥤ T) [HasColimit D], Cocone D)
+    (hc : ∀ (D : J ⥤ T) [HasColimit D], IsColimit (c D))
+    (H : ∀ (D : J ⥤ T) [HasColimit D] {X : T} (s : D ⟶ (Functor.const J).obj X),
+      (∀ j, P (s.app j)) → P ((hc D).desc (Cocone.mk X s))) (X : T) :
+    ClosedUnderColimitsOfShape J (P.costructuredArrowObj L (X := X)) := by
+  intro D c' hc' hD'
+  let hd : IsColimit (Functor.mapCocone (CategoryTheory.CostructuredArrow.proj L X ⋙ L) c') :=
+    isColimitOfPreserves _ hc'
+  have heq : c'.pt.hom = hd.desc { pt := X, ι := { app j := (D.obj j).hom } } := by
+    refine hd.hom_ext fun j ↦ ?_
+    simp only [Functor.const_obj_obj, IsColimit.fac]
+    simp
+  rw [P.costructuredArrowObj_iff, heq, ← hd.coconePointUniqueUpToIso_hom_desc (hc _),
+    P.cancel_left_of_respectsIso]
+  exact H _ _ hD'
+
 end
 
 section
