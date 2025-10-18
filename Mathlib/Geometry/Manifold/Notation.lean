@@ -361,7 +361,8 @@ where
         -- We need not check if `x < y` is a fact in the local context: Lean will verify this
         -- itself when trying to synthesize a ChartedSpace instance.
         mkAppOptM `modelWithCornersEuclideanHalfSpace #[q(1 : ℕ), none]
-      else throwError "`{e}` is a closed interval of type `{α}`, which is not definitionally equal to ℝ"
+      else throwError "`{e}` is a closed interval of type `{α}`, \
+        which is not definitionally equal to ℝ"
     | _ => throwError "`{e}` is not a closed real interval"
   /-- Attempt to find a model with corners on the upper half plane in complex space -/
   fromUpperHalfPlane : TermElabM Expr := do
