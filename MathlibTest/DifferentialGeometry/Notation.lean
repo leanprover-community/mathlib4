@@ -844,7 +844,7 @@ section
 variable {EM' : Type*} [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-variable {f : M → M'} {s: Set M}
+  {f : M → M'} {s : Set M}
 
 /-- info: {x | MDifferentiableAt I I' f x} : Set M -/
 #guard_msgs in
