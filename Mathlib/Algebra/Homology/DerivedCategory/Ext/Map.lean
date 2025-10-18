@@ -3,8 +3,8 @@ Copyright (c) 2025 Nailin Guan, Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Jingting Wang
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 
 /-!
@@ -30,7 +30,7 @@ noncomputable def Functor.mapShiftedHom
     ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) n →
     ShiftedHom ((singleFunctor D 0).obj (F.obj X)) ((singleFunctor D 0).obj (F.obj Y)) n :=
   fun f ↦ (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫
-    f.map F.mapDerivedCategory ≫ ((shiftFunctor (DerivedCategory D) (n : ℤ)).map
+    f.map F.mapDerivedCategory ≫ ((shiftFunctor (DerivedCategory D) n).map
       ((F.mapDerivedCategorySingleFunctor 0).hom.app Y))
 
 /-- The map between `Ext` induced by `F.mapShiftedHomAddHom`. -/
@@ -98,8 +98,7 @@ lemma Functor.mapShiftedHomAddHom_linear [HasDerivedCategory.{w} C] [HasDerivedC
     (X Y : C) (n : ℤ) (r : R)
     (x : ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) (n : ℤ)) :
     (F.mapShiftedHomAddHom X Y n) (r • x) = r • ((F.mapShiftedHomAddHom X Y n) x)  := by
-  simp only [mapShiftedHomAddHom, mapShiftedHom, Int.cast_ofNat_Int, comp_obj, AddMonoidHom.coe_mk,
-    ZeroHom.coe_mk]
+  simp only [mapShiftedHomAddHom, mapShiftedHom, comp_obj, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
   rw [← Linear.comp_smul, ← Linear.smul_comp]
   congr
   simp [ShiftedHom.map, F.mapDerivedCategory.map_smul]
@@ -131,14 +130,16 @@ lemma Functor.mapExtLinearMap_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : 
 
 namespace Abelian.Ext
 
-lemma mk₀_apply_eq_mapExt_mk₀ [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X ⟶ Y) :
+lemma mapExt_mk₀_eq_mk₀_map [HasExt.{w} C] [HasExt.{w'} D] {X Y : C} (f : X ⟶ Y) :
     F.mapExt X Y 0 (mk₀ f) = mk₀ (F.map f) := sorry
 
 lemma mapExt_comp_eq_comp_mapExt [HasExt.{w} C] [HasExt.{w'} D] {X Y Z : C} {a b : ℕ}
     (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + b = c) :
     F.mapExt X Z c (α.comp β h) = (F.mapExt X Y a α).comp (F.mapExt Y Z b β) h := by
-  simp only [Functor.mapExt, Function.comp_apply]
   sorry
+
+lemma mapExt_extClass_eq_extClass_map [HasExt.{w} C] [HasExt.{w'} D] {S : ShortComplex C}
+    (hS : S.ShortExact) : F.mapExt S.X₃ S.X₁ 1 hS.extClass = (hS.map_of_exact F).extClass := sorry
 
 end Abelian.Ext
 
