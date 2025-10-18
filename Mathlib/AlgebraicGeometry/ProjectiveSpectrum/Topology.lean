@@ -381,7 +381,7 @@ theorem basicOpen_eq_union_of_projection (f : A) :
           contrapose! hz with H
           classical
           rw [← DirectSum.sum_support_decompose 𝒜 f]
-          apply Ideal.sum_mem _ fun i _ => H i with ⟨i, hi⟩
+          apply sum_mem fun i _ => H i with ⟨i, hi⟩
         exact ⟨basicOpen 𝒜 (GradedAlgebra.proj 𝒜 i f), ⟨i, rfl⟩, by rwa [mem_basicOpen]⟩
       · obtain ⟨_, ⟨i, rfl⟩, hz⟩ := hz
         exact fun rid => hz (z.1.2 i rid)
