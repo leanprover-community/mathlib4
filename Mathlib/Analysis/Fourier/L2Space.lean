@@ -19,7 +19,7 @@ variable
   [NormedAddCommGroup V]
   [MeasurableSpace V] [BorelSpace V]
 
-open SchwartzMap MeasureTheory
+open SchwartzMap MeasureTheory FourierTransform
 
 variable [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
 
@@ -39,15 +39,19 @@ def Lp.fourierTransformLI : (Lp (α := V) E 2) ≃ₗᵢ[ℂ] (Lp (α := V) E 2)
         exact Ne.symm ENNReal.top_ne_ofNat)
     (by
       intro f
-      convert (norm_fourierTransform_toL2_eq f.fourierTransformInv).symm
+      convert (norm_fourierTransform_toL2_eq (𝓕⁻ f)).symm
       simp)
 
 noncomputable
-def Lp.fourierTransform (f : Lp (α := V) E 2) : Lp (α := V) E 2 := fourierTransformLI V E f
+instance Lp.instFourierTransform : FourierTransform (Lp (α := V) E 2) (Lp (α := V) E 2) where
+  fourierTransform := fourierTransformLI V E
+
+noncomputable
+instance Lp.instFourierTransformInv : FourierTransformInv (Lp (α := V) E 2) (Lp (α := V) E 2) where
+  fourierTransformInv := (fourierTransformLI V E).symm
 
 @[simp]
-theorem toLp_fourierTransform_eq (f : 𝓢(V, E)) :
-    Lp.fourierTransform (f.toLp 2) = f.fourierTransform.toLp 2 := by
+theorem toLp_fourierTransform_eq (f : 𝓢(V, E)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq (LinearMap.ker_eq_bot_of_injective (injective_toLp _ _))
   · apply SchwartzMap.denseRange_toLpCLM
     exact Ne.symm ENNReal.top_ne_ofNat
@@ -57,28 +61,24 @@ theorem toLp_fourierTransform_eq (f : 𝓢(V, E)) :
   exact (norm_fourierTransform_toL2_eq f).le
 
 @[simp]
-theorem toLp_fourierTransform_symm_eq (f : 𝓢(V, E)) :
-    (Lp.fourierTransformLI V E).symm (f.toLp 2) = f.fourierTransformInv.toLp 2 := by
+theorem toLp_fourierTransformInv_eq (f : 𝓢(V, E)) : 𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq (LinearMap.ker_eq_bot_of_injective (injective_toLp _ _))
   · apply SchwartzMap.denseRange_toLpCLM
     exact Ne.symm ENNReal.top_ne_ofNat
   use 1
   intro f
   rw [one_mul]
-  convert (norm_fourierTransform_toL2_eq f.fourierTransformInv).symm.le
+  convert (norm_fourierTransform_toL2_eq (𝓕⁻ f)).symm.le
   simp
-
-
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [CompleteSpace F]
 
 /-- The Fourier transform on `L^2` coincides with the Fourier transform on `𝓢'`. -/
 theorem foo (f : Lp (α := V) E 2) :
-    TemperedDistribution.fourierTransform (Lp.toTemperedDistribution ℂ F f) =
-      (Lp.toTemperedDistribution ℂ F (Lp.fourierTransform f)) := by
+    𝓕 (Lp.toTemperedDistribution ℂ F f) = (Lp.toTemperedDistribution ℂ F (𝓕 f)) := by
   set p := fun f : Lp (α := V) E 2 ↦
-    TemperedDistribution.fourierTransform (Lp.toTemperedDistribution ℂ F f) =
-      (Lp.toTemperedDistribution ℂ F (Lp.fourierTransform f))
+    𝓕 (Lp.toTemperedDistribution ℂ F f) =
+      (Lp.toTemperedDistribution ℂ F (𝓕 f))
   apply DenseRange.induction_on (p := p)
     ( SchwartzMap.denseRange_toLpCLM (F := E) (E := V) (μ := volume) (p := 2)
       (Ne.symm ENNReal.top_ne_ofNat)) f

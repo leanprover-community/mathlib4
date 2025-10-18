@@ -489,6 +489,8 @@ section fourier
 
 namespace TemperedDistribution
 
+open FourierTransform
+
 variable
   [NormedSpace ℂ E]
   [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
@@ -500,15 +502,15 @@ variable (𝕜 H E V) in
 def fourierTransformCLM : 𝓢'(𝕜, H, E, V) →L[𝕜] 𝓢'(𝕜, H, E, V) :=
   mkCompCLM V (SchwartzMap.fourierTransformCLM 𝕜)
 
-def fourierTransform (f : 𝓢'(𝕜, H, E, V)) : 𝓢'(𝕜, H, E, V) := fourierTransformCLM 𝕜 H E V f
+instance instFourierTransform : FourierTransform 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V) where
+  fourierTransform := fourierTransformCLM 𝕜 H E V
 
 @[simp]
 theorem fourierTransformCLM_apply (f : 𝓢'(𝕜, H, E, V)) :
-    fourierTransformCLM 𝕜 H E V f = fourierTransform f := rfl
+    fourierTransformCLM 𝕜 H E V f = 𝓕 f := rfl
 
 @[simp]
-theorem fourierTransform_apply (f : 𝓢'(𝕜, H, E, V)) (g : 𝓢(H, E)) :
-    fourierTransform f g = f g.fourierTransform := rfl
+theorem fourierTransform_apply (f : 𝓢'(𝕜, H, E, V)) (g : 𝓢(H, E)) : 𝓕 f g = f (𝓕 g) := rfl
 
 variable (f : 𝓢(H, E))
 
@@ -518,17 +520,17 @@ variable [CompleteSpace E] [CompleteSpace V]
 /-- The distributional Fourier transform and the classical Fourier transform coincide on
 `𝓢(ℝ, F)`. -/
 theorem fourierTransformCLM_toTemperedDistributionCLM_eq (f : 𝓢(H, E)) :
-    fourierTransform (toTemperedDistributionCLM ℂ H E V volume f) =
-    toTemperedDistributionCLM ℂ H E V volume f.fourierTransform := by
+    𝓕 (toTemperedDistributionCLM ℂ H E V volume f) =
+    toTemperedDistributionCLM ℂ H E V volume (𝓕 f) := by
   ext g
   congr 1
   simp only [fourierTransform_apply, toTemperedDistributionCLM_apply_apply,
     SchwartzMap.fourierTransform_apply]
   exact integral_bilin_fourierIntegral_eq_flip g f (.id ℂ _)
 
-example : fourierTransform (delta' 𝕜 E (0 : H)) = volume.toTemperedDistribution 𝕜 E := by
+example : 𝓕 (delta' 𝕜 E (0 : H)) = volume.toTemperedDistribution 𝕜 E := by
   ext f x
-  simp [Real.fourierIntegral_eq]
+  simp [SchwartzMap.fourierTransform_apply, Real.fourierIntegral_eq]
 
 end TemperedDistribution
 

@@ -26,10 +26,7 @@ variable {𝕜 𝕜' H D E F G V : Type*}
 
 variable [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup H] [NormedAddCommGroup V]
 
-variable --[NormedSpace ℝ E] [NormedSpace 𝕜 E]
-  [NormedSpace 𝕜 E]
-  [InnerProductSpace ℝ H]
-  [NormedSpace 𝕜 V]
+variable [NormedSpace 𝕜 E] [InnerProductSpace ℝ H] [NormedSpace 𝕜 V]
 
 section has_growth
 
@@ -176,7 +173,7 @@ def SchwartzMap.fourierMultiplierCLM (g : H → 𝕜) :
     (fourierTransformCLM 𝕜)
 
 theorem fourierMultiplierCLM_apply (g : H → 𝕜) (f : 𝓢(H, E)) :
-    fourierMultiplierCLM g f = ((smulLeftCLM E g) f.fourierTransform).fourierTransformInv := by
+    fourierMultiplierCLM g f = 𝓕⁻ ((smulLeftCLM E g) (𝓕 f)) := by
   unfold fourierMultiplierCLM
   simp
 
@@ -230,22 +227,45 @@ theorem memSobolev_one_iff {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} : MemSobolev 1 
   convert memSobolev_iff f (.const 1)
   simp
 
-variable (H E V) [CompleteSpace E] in
-def laplacian : 𝓢'(ℂ, H, E, V) →L[ℂ] 𝓢'(ℂ, H, E, V) :=
-    TemperedDistribution.fourierMultiplierCLM E V (‖·‖ ^ 2)
+class Laplacian (X : Type*) (Y : outParam (Type*)) where
+  /-- `Δ f` is the Laplace operator applied to `f`. The meaning of this notation is
+  type-dependent. -/
+  laplacian : X → Y
+
+namespace Laplacian
+
+@[inherit_doc] scoped notation "Δ" => Laplacian.laplacian
+
+end Laplacian
+
+open Laplacian
+
+noncomputable
+instance TemperedDistribution.instLaplacian [CompleteSpace E] :
+    Laplacian 𝓢'(ℂ, H, E, V) 𝓢'(ℂ, H, E, V) where
+  laplacian := TemperedDistribution.fourierMultiplierCLM E V (‖·‖ ^ 2 : H → ℂ)
 
 theorem laplacian_mem_Sobolev_norm_sq {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : MemSobolev (‖·‖ ^ 2) f) :
-    MemSobolev 1 (laplacian H _ V f) := by
+    MemSobolev 1 (Δ f) := by
   rw [memSobolev_one_iff]
   rw [memSobolev_iff] at hf; swap
   · convert (hasTemperateGrowth_norm_sq H).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
     simp
   obtain ⟨g, hg⟩ := hf
   use g
-  rw [← hg, laplacian]
+  rw [← hg]
+  rfl
 
 theorem foo1 {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : MemSobolev (fun x ↦ 1 + ‖x‖ ^ 2) f) :
-    MemSobolev 1 (laplacian H _ V f) := by
+    MemSobolev 1 (Δ f) := by
   apply laplacian_mem_Sobolev_norm_sq
+  rw [memSobolev_iff]; swap
+  · convert (hasTemperateGrowth_norm_sq H).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
+    simp
+  rw [memSobolev_iff] at hf; swap
+  · convert ((Function.HasTemperateGrowth.const 1).add (hasTemperateGrowth_norm_sq H)).comp_clm_left
+      (RCLike.ofRealCLM (K := ℂ))
+    simp
+  obtain ⟨f', hf'⟩ := hf
 
   sorry
