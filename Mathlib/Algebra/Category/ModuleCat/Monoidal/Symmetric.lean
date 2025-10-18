@@ -3,7 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Transport
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 
 /-!
