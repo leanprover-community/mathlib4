@@ -868,7 +868,7 @@ elab "#show_corr " cmd:command : command => do
       let ppAtPos := {pp with startPos := ppPos}
       if let some (rg, msg) := mkRangeError ppR.kinds origAtPos ppAtPos then
         -- TODO: temporary change, hopefully reduces false positives!
-        if mkWdw origAtPos != mkWdw ppAtPos then
+        if mkWdw origAtPos != mkWdw ppAtPos && !(mkWdw origAtPos).contains '¬' then
           logWarningAt (.ofRange rg)
             m!"{msg}\n\
             This part of the code\n  '{mkWdw origAtPos}'\n\
@@ -1498,7 +1498,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let ppAtPos := {pp with startPos := ppPos}
       if let some (rg, msg, mid) := mkRangeError ppR.kinds origAtPos ppAtPos then
         -- TODO: temporary change, hopefully reduces no-op warning spew
-        if mkWdw origAtPos != mkWdw ppAtPos mid then
+        if mkWdw origAtPos != mkWdw ppAtPos mid && !(mkWdw origAtPos).contains '¬' then
           Linter.logLint linter.style.commandStart (.ofRange rg)
             m!"{msg}\n\n\
             This part of the code\n  '{mkWdw origAtPos}'\n\
@@ -1510,7 +1510,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let ppAtPos := {pp with startPos := ppPos}
       if let some (rg, msg, mid) := mkRangeError ppR.kinds origAtPos ppAtPos then
         -- TODO: temporary change, hopefully reduces no-op warning spew
-        if mkWdw origAtPos != mkWdw ppAtPos mid then
+        if mkWdw origAtPos != mkWdw ppAtPos mid && !(mkWdw origAtPos).contains '¬' then
           logInfoAt (.ofRange rg)
             m!"{msg}\n\n\
             This part of the code\n  '{mkWdw origAtPos}'\n\
