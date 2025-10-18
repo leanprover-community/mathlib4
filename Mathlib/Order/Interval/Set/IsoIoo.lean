@@ -20,7 +20,7 @@ open Set
 We consider the actual implementation to be a "black box", so it is irreducible.
 -/
 @[irreducible]
-def orderIsoIooNegOneOne (k : Type*) [Field k] [LinearOrder k] [IsStrictOrderedRing k] :
+def orderIsoIooNegOneOne (k : Type*) [Field k] [LinearOrder k] [IsOrderedRing k] :
     k ≃o Ioo (-1 : k) 1 := by
   refine StrictMono.orderIsoOfRightInverse ?_ ?_ (fun x ↦ x / (1 - |↑x|)) ?_
   · refine codRestrict (fun x ↦ x / (1 + |x|)) _ fun x ↦ abs_lt.1 ?_

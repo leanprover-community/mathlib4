@@ -14,7 +14,7 @@ ordered commutative group.
 -/
 
 
-variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+variable {K : Type*} [Field K] [LinearOrder K] [IsOrderedRing K]
 
 namespace Positive
 
