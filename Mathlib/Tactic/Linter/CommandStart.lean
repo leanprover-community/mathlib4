@@ -867,10 +867,12 @@ elab "#show_corr " cmd:command : command => do
       let origAtPos := {orig with startPos := origPos}
       let ppAtPos := {pp with startPos := ppPos}
       if let some (rg, msg) := mkRangeError ppR.kinds origAtPos ppAtPos then
-        logWarningAt (.ofRange rg)
-          m!"{msg}\n\
-          This part of the code\n  '{mkWdw origAtPos}'\n\
-          should be written as\n  '{indentD <| mkWdw ppAtPos}'\n"
+        -- TODO: temporary change, hopefully reduces false positives!
+        if mkWdw origAtPos != mkWdw ppAtPos then
+          logWarningAt (.ofRange rg)
+            m!"{msg}\n\
+            This part of the code\n  '{mkWdw origAtPos}'\n\
+            should be written as\n  '{indentD <| mkWdw ppAtPos}'\n"
     let fm ← getFileMap
     let sorted := corr.toArray.qsort (·.1 < ·.1)
     let mut msgs := #[]
@@ -1495,20 +1497,24 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let origAtPos := {orig with startPos := origPos}
       let ppAtPos := {pp with startPos := ppPos}
       if let some (rg, msg, mid) := mkRangeError ppR.kinds origAtPos ppAtPos then
-        Linter.logLint linter.style.commandStart (.ofRange rg)
-          m!"{msg}\n\n\
-          This part of the code\n  '{mkWdw origAtPos}'\n\
-          should be written as\n  '{mkWdw ppAtPos mid}'\n"
+        -- TODO: temporary change, hopefully reduces no-op warning spew
+        if mkWdw origAtPos != mkWdw ppAtPos mid then
+          Linter.logLint linter.style.commandStart (.ofRange rg)
+            m!"{msg}\n\n\
+            This part of the code\n  '{mkWdw origAtPos}'\n\
+            should be written as\n  '{mkWdw ppAtPos mid}'\n"
 
     for (origPos, ppR) in excluded.filter (fun _ _ => false) do
       let ppPos := ppR.pos
       let origAtPos := {orig with startPos := origPos}
       let ppAtPos := {pp with startPos := ppPos}
       if let some (rg, msg, mid) := mkRangeError ppR.kinds origAtPos ppAtPos then
-        logInfoAt (.ofRange rg)
-          m!"{msg}\n\n\
-          This part of the code\n  '{mkWdw origAtPos}'\n\
-          should be written as\n  '{mkWdw ppAtPos mid}'\n\n{ppR.kinds}\n"
+        -- TODO: temporary change, hopefully reduces no-op warning spew
+        if mkWdw origAtPos != mkWdw ppAtPos mid then
+          logInfoAt (.ofRange rg)
+            m!"{msg}\n\n\
+            This part of the code\n  '{mkWdw origAtPos}'\n\
+            should be written as\n  '{mkWdw ppAtPos mid}'\n\n{ppR.kinds}\n"
 
 /-
   if let some mexs ← getExceptions stx then
