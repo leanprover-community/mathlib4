@@ -42,14 +42,15 @@ Arguments:
 -/
 def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
     (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
-    (construct : Expr → Expr → List Name → MetaM (Expr × List Name)) :
+    (construct : Expr → List Name → MetaM (Expr × List Name)) :
     MetaM Unit := do
   let tgt := match src with
     | Name.str n s => Name.mkStr n <| s ++ suffix
     | x => x
   addDeclarationRangesFromSyntax tgt (← getRef) ref
   let info ← getConstInfo src
-  let (newValue, newLevels) ← construct info.type info.value! info.levelParams
+  let value := .const src (info.levelParams.map mkLevelParam)
+  let (newValue, newLevels) ← construct value info.levelParams
   let newValue ← instantiateMVars newValue
   let newType ← instantiateMVars (← inferType newValue)
   match info with
