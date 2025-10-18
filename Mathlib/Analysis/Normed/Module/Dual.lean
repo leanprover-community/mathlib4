@@ -105,7 +105,9 @@ theorem eq_iff_forall_dual_eq {x y : E} : x = y ↔ ∀ g : StrongDual 𝕜 E, g
   rw [← sub_eq_zero, eq_zero_iff_forall_dual_eq_zero 𝕜 (x - y)]
   simp [sub_eq_zero]
 
+variable (E) in
 /-- The inclusion of a normed space in its double strong dual is an isometry onto its image. -/
+@[simps!]
 def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
   { inclusionInDoubleDual 𝕜 E with
     norm_map' := by
@@ -116,6 +118,10 @@ def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] StrongDual 𝕜 (StrongDual 𝕜
       refine le_csInf ContinuousLinearMap.bounds_nonempty ?_
       rintro c ⟨hc1, hc2⟩
       exact norm_le_dual_bound 𝕜 x hc1 hc2 }
+
+theorem double_dual_norm_eq (x : E) : ‖(inclusionInDoubleDual 𝕜 E) x‖ = ‖x‖ := by
+  change ‖(inclusionInDoubleDualLi 𝕜 E) x‖ = ‖x‖
+  simp
 
 end BidualIsometry
 
