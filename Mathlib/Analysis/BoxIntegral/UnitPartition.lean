@@ -7,6 +7,7 @@ import Mathlib.Algebra.Module.ZLattice.Basic
 import Mathlib.Analysis.BoxIntegral.Integrability
 import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+import Mathlib.Topology.Algebra.InfiniteSum.Const
 
 /-!
 # Unit Partition
