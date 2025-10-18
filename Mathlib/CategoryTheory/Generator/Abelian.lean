@@ -33,7 +33,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG : IsSeparator G) :
     ∃ G : C, Injective G ∧ IsCoseparator G := by
   haveI : WellPowered.{v} C := wellPowered_of_isDetector G hG.isDetector
-  haveI : HasProductsOfShape (Subobject (op G)) C := hasProductsOfShape_of_small _ _
+  haveI : HasProductsOfShape (Subobject (op G)) C := hasProductsOfShape_of_small.{v} _ _
   let T : C := Injective.under (piObj fun P : Subobject (op G) => unop P)
   refine ⟨T, inferInstance, (Preadditive.isCoseparator_iff _).2 fun X Y f hf => ?_⟩
   refine (Preadditive.isSeparator_iff _).1 hG _ fun h => ?_
