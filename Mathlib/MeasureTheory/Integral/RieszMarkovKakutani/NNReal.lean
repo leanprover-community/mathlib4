@@ -148,7 +148,8 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
         let evaluatef := fun φ : WeakDual ℝ C(X, ℝ) ↦ φ f
         have : {φ | 0 ≤ φ ↑f} = evaluatef ⁻¹' Set.Ici 0 := by ext x; simp [evaluatef]
         simp only [this]; refine (IsClosed.preimage ?_ isClosed_Ici)
-        · apply WeakDual.eval_continuous --Why does this work? I can't change it to an exact or refine statement
+        · apply WeakDual.eval_continuous
+--Why does this work? I can't change it to an exact or refine statement
     · exact fun _ h ↦ h.1.1
   apply UniformSpace.compactSpace_iff_seqCompactSpace.mpr
   constructor
@@ -189,9 +190,7 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   have hΦ2 : SeqCompactSpace Φ := by sorry
   apply IsSeqCompact.range
   intro s L hL
-
   simp [T]
-
   sorry
 
 end Arav
