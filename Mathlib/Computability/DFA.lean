@@ -7,6 +7,7 @@ import Mathlib.Computability.Language
 import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Tactic.NormNum
+import Mathlib.Data.Fintype.Prod
 
 /-!
 # Deterministic Finite Automata
@@ -175,6 +176,116 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
   have h := M.evalFrom_of_pow hb hb'
   rwa [mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]
 
+section SetClosure
+
+variable {σ' : Type v}
+
+/--
+`M.compl` constructs a DFA for the complement of the language of `M`.
+
+Use `Mᶜ` rather than directly using this function.
+-/
+def compl (M : DFA α σ) : DFA α σ where
+  step := M.step
+  start := M.start
+  accept := M.acceptᶜ
+
+instance : HasCompl (DFA α σ) := ⟨compl⟩
+
+@[simp]
+theorem compl_accept_eq_accept_compl : Mᶜ.accept = M.acceptᶜ := rfl
+
+@[simp]
+theorem compl_accepts_eq_accepts_compl : Mᶜ.accepts = M.acceptsᶜ := rfl
+
+theorem mem_accept_compl {s : σ} : s ∈ Mᶜ.accept ↔ s ∉ M.accept := by simp
+
+theorem mem_accepts_compl {x : List α} : x ∈ Mᶜ.accepts ↔ x ∉ M.accepts :=
+  mem_accept_compl M
+
+/--
+Cartesian product of two DFAs with an arbitrary acceptance condition given by the binary Boolean
+algebra operation `p`. `p` takes in whether `M₁` and `M₂` accept their respective inputs and
+returns whether the product of the two DFAs should accept the pair of inputs.
+
+This is a generalization of the intersection of two DFAs to arbitrary binary set operations.
+-/
+def prod (M₁ : DFA α σ) (M₂ : DFA α σ') (p : Prop → Prop → Prop) : DFA α (σ × σ') where
+  step := fun ⟨s₁, s₂⟩ a => (M₁.step s₁ a, M₂.step s₂ a)
+  start := (M₁.start, M₂.start)
+  accept := {s | p (s.fst ∈ M₁.accept) (s.snd ∈ M₂.accept)}
+
+theorem prod_accept_iff
+    (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
+    s ∈ (M₁.prod M₂ p).accept ↔ p (s.fst ∈ M₁.accept) (s.snd ∈ M₂.accept) := by
+  simp [prod]
+
+theorem prod_evalFrom
+    (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) (s : σ × σ') :
+    (M₁.prod M₂ p).evalFrom s x = ⟨M₁.evalFrom s.1 x, M₂.evalFrom s.2 x⟩ := by
+  revert s
+  dsimp [evalFrom, prod]
+  induction x with
+  | nil => simp
+  | cons a x ih =>
+    intro s
+    simp [List.foldl, ih, DFA.step]
+
+theorem prod_accepts_iff
+    (p : Prop → Prop → Prop) (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
+    x ∈ (M₁.prod M₂ p).accepts ↔ p (x ∈ M₁.accepts) (x ∈ M₂.accepts) := by
+  simp only [accepts, acceptsFrom, prod_evalFrom]
+  rfl
+
+/--
+Constructs a DFA for the intersection of the languages of two DFAs.
+
+There is no instance for this to provide the `M₁ ∩ M₂` syntax, because M₁ and M₂ have
+different state types. -/
+def inter (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := prod M₁ M₂ And
+
+theorem inter_accept_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
+    s ∈ (M₁.inter M₂).accept ↔ s.fst ∈ M₁.accept ∧ s.snd ∈ M₂.accept := by
+  simp [inter, prod_accept_iff]
+
+theorem inter_accepts_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
+    x ∈ (M₁.inter M₂).accepts ↔ x ∈ M₁.accepts ∧ x ∈ M₂.accepts := by
+  simp [inter, prod_accepts_iff]
+
+theorem inter_accept_eq_prod_accept (M₁ : DFA α σ) (M₂ : DFA α σ') :
+    (M₁.inter M₂).accept = M₁.accept ×ˢ M₂.accept := by
+  ext ⟨s₁, s₂⟩
+  simp [inter_accept_iff]
+
+theorem inter_accepts_eq_inter (M₁ : DFA α σ) (M₂ : DFA α σ') :
+    (M₁.inter M₂).accepts = M₁.accepts ∩ M₂.accepts := by
+  ext x
+  simp only [inter_accepts_iff]
+  rfl
+
+/--
+Constructs a DFA for the union of the languages of two DFAs.
+
+There is no instance for this to provide the `M₁ ∪ M₂` syntax, because M₁ and M₂ have
+different state types. -/
+def union (M₁ : DFA α σ) (M₂ : DFA α σ') : DFA α (σ × σ') := prod M₁ M₂ Or
+
+theorem union_accept_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (s : σ × σ') :
+    s ∈ (M₁.union M₂).accept ↔ s.fst ∈ M₁.accept ∨ s.snd ∈ M₂.accept := by
+  simp [union, prod_accept_iff]
+
+theorem union_accepts_iff (M₁ : DFA α σ) (M₂ : DFA α σ') (x : List α) :
+    x ∈ (M₁.union M₂).accepts ↔ x ∈ M₁.accepts ∨ x ∈ M₂.accepts := by
+  simp [union, prod_accepts_iff]
+
+theorem union_accepts_union (M₁ : DFA α σ) (M₂ : DFA α σ') :
+    (M₁.union M₂).accepts = M₁.accepts + M₂.accepts := by
+  ext x
+  simp only [union_accepts_iff]
+  rfl
+
+end SetClosure
+
 section Maps
 
 variable {α' σ' : Type*}
@@ -257,6 +368,8 @@ end Maps
 
 end DFA
 
+variable {α : Type u}
+
 /-- A regular language is a language that is defined by a DFA with finite states. -/
 def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
   ∃ σ : Type, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
@@ -278,3 +391,41 @@ This is more general than using the definition of `Language.IsRegular` directly,
 theorem Language.isRegular_iff {T : Type u} {L : Language T} :
     L.IsRegular ↔ ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L :=
   ⟨Language.isRegular_iff.helper, Language.isRegular_iff.helper⟩
+
+/-- Regular languages are closed under complement. -/
+theorem Language.isRegular_compl_iff {L : Language α} : Lᶜ.IsRegular ↔ L.IsRegular := by
+  constructor
+  · rintro ⟨σ, _, M, hM⟩
+    rw [<- compl_compl M.accepts] at hM
+    apply compl_inj_iff.mp at hM
+    rw [<- DFA.compl_accepts_eq_accepts_compl] at hM
+    exact ⟨σ, inferInstance, Mᶜ, hM⟩
+  · rintro ⟨σ, _, M, hM⟩
+    use σ, inferInstance, Mᶜ
+    rw [DFA.compl_accepts_eq_accepts_compl, hM]
+
+/-- Regular languages are closed under binary set operations. -/
+theorem Language.isRegular_prod (p : Prop → Prop → Prop) {L₁ L₂ : Language α}
+    {h₁ : L₁.IsRegular} {h₂ : L₂.IsRegular} : IsRegular ({ x : List α | p (x ∈ L₁) (x ∈ L₂) }) := by
+  have ⟨σ₁, _, M₁, hM₁⟩ := h₁
+  have ⟨σ₂, _, M₂, hM₂⟩ := h₂
+  use σ₁ × σ₂, inferInstance, M₁.prod M₂ p
+  rw [<- hM₁, <- hM₂]
+  apply Set.ext
+  intro x
+  simp
+  apply DFA.prod_accepts_iff
+
+/-- Regular languages are closed under intersection. -/
+theorem Language.isRegular_inter {L₁ L₂ : Language α} {h₁ : L₁.IsRegular} {h₂ : L₂.IsRegular} :
+    (L₁ ∩ L₂).IsRegular := by
+  apply Language.isRegular_prod And
+  · exact h₁
+  · exact h₂
+
+/-- Regular languages are closed under union. -/
+theorem Language.isRegular_union {L₁ L₂ : Language α} {h₁ : L₁.IsRegular} {h₂ : L₂.IsRegular} :
+    (L₁ ∪ L₂).IsRegular := by
+  apply Language.isRegular_prod Or
+  · exact h₁
+  · exact h₂
