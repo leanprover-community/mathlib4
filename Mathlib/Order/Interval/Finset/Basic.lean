@@ -1170,7 +1170,7 @@ lemma monotone_iff_forall_wcovBy [Preorder α] [LocallyFiniteOrder α] [Preorder
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⩿ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
   simpa [transGen_eq_self (r := (· ≤ · : β → β → Prop)) transitive_le]
-    using TransGen.lift f h <| le_iff_transGen_wcovBy.mp hab
+    using TransGen.lift f @h <| le_iff_transGen_wcovBy.mp hab
 
 /-- A function from a locally finite partial order is monotone if and only if it is monotone when
 restricted to pairs satisfying `a ⋖ b`. -/
@@ -1178,14 +1178,14 @@ lemma monotone_iff_forall_covBy [PartialOrder α] [LocallyFiniteOrder α] [Preor
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⋖ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
   simpa [reflTransGen_eq_self (r := (· ≤ · : β → β → Prop)) IsRefl.reflexive transitive_le]
-    using ReflTransGen.lift f h <| le_iff_reflTransGen_covBy.mp hab
+    using ReflTransGen.lift f @h <| le_iff_reflTransGen_covBy.mp hab
 
 /-- A function from a locally finite preorder is strictly monotone if and only if it is strictly
 monotone when restricted to pairs satisfying `a ⋖ b`. -/
 lemma strictMono_iff_forall_covBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : StrictMono f ↔ ∀ a b : α, a ⋖ b → f a < f b := by
   refine ⟨fun hf _ _ h ↦ hf h.lt, fun h a b hab ↦ ?_⟩
-  have := Relation.TransGen.lift f h (a := a) (b := b)
+  have := Relation.TransGen.lift f @h (x := a) (y := b)
   rw [← lt_iff_transGen_covBy, transGen_eq_self (@lt_trans β _)] at this
   exact this hab
 
