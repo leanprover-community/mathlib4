@@ -275,6 +275,7 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
 
 variable {A} [TopologicalSpace A] {s : Set A} {g g₁ g₂ : A → E}
 
+/-- Proposition 1.34 of [hatcher02]. -/
 theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (he : f ∘ g₁ = f ∘ g₂) (a : A) (ha : g₁ a = g₂ a) : g₁ = g₂ :=
   hf.isSeparatedMap.eq_of_comp_eq hf.isLocalHomeomorph.isLocallyInjective h₁ h₂ he a ha
