@@ -262,6 +262,10 @@ lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl
     (succ : ∀ n hmn, P n hmn → P (n + 1) (le_succ_of_le hmn)) : ∀ n hmn, P n hmn :=
   @Nat.leRec (motive := P) _ base succ
 
+/-- An equivalent formulation of the induction step. -/
+lemma le_induction_step_iff {P : ℕ → Prop} : (∀ n, P n → P (n + 1)) ↔ (∀ n m, n ≤ m → P n → P m) :=
+  ⟨fun h _ m hnm hn ↦ Nat.le_induction hn (fun m _ ↦ h m) m hnm, fun h _ ↦ h _ _ <| by cutsat⟩
+
 /-- Induction principle deriving the next case from the two previous ones. -/
 def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
     (more : ∀ n, P n → P (n + 1) → P (n + 2)) : ∀ a, P a
