@@ -54,7 +54,7 @@ def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>"
   let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
   if s.hasError then
     Except.error (s.toErrorMsg ictx)
-  else if input.atEnd s.pos then
+  else if s.pos.atEnd input then
     Except.ok ⟨s.stxStack.back⟩
   else
     Except.error ((s.mkError "end of input").toErrorMsg ictx)
