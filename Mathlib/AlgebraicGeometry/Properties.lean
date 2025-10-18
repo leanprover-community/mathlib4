@@ -5,6 +5,9 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.RingTheory.LocalProperties.Reduced
+import Mathlib.Topology.KrullDimension
+import Mathlib.RingTheory.Ideal.Height
+import Mathlib.Topology.Sober
 
 /-!
 # Basic properties of schemes
@@ -297,5 +300,39 @@ noncomputable
 instance [IsIntegral X] : OrderTop X where
   top := genericPoint X
   le_top a := genericPoint_specializes a
+
+open IrreducibleCloseds Set in
+@[stacks 02I4]
+lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X)
+    [IsOpenImmersion f] : Order.coheight (f.base x) = Order.coheight x :=
+  coheight_eq_of_isOpenEmbedding f.base (Scheme.Hom.continuous f) f.isOpenEmbedding
+
+open Order in
+lemma ideal_height_eq_coheight (R : CommRingCat) (x : Spec R) :
+  x.asIdeal.height = coheight x := by
+  rw[Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight]
+  congr
+  ext
+  simp only [PrimeSpectrum.instPartialOrder, PartialOrder.lift, PrimeSpectrum.le_iff_specializes]
+  exact Eq.to_iff rfl
+
+open Order in
+@[stacks 02IZ]
+lemma stalk_dim_eq_coheight {X : Scheme} (x : X) :
+  ringKrullDim (X.presheaf.stalk x) = Order.coheight x := by
+  wlog h : ∃ R, X = Spec R
+  · obtain ⟨R, f, hf, hsub⟩ := AlgebraicGeometry.Scheme.exists_affine_mem_range_and_range_subset
+      (show x ∈ ⊤ from trivial)
+    obtain ⟨y, rfl⟩ := Set.mem_range.mp hsub.1
+    rw [coheight_eq_of_isOpenImmersion, ← this _ ⟨R, rfl⟩]
+    exact Order.krullDim_eq_of_orderIso
+      (PrimeSpectrum.comapEquiv (asIso (Scheme.Hom.stalkMap f y)).commRingCatIsoToRingEquiv)
+  obtain ⟨R, rfl⟩ := h
+  let k : Algebra ↑R ↑((Spec R).presheaf.stalk x) := StructureSheaf.stalkAlgebra (↑R) x
+  have : IsLocalization.AtPrime (↑((Spec R).presheaf.stalk x)) x.asIdeal :=
+    StructureSheaf.IsLocalization.to_stalk R x
+  rw [IsLocalization.AtPrime.ringKrullDim_eq_height x.asIdeal ((Spec R).presheaf.stalk x)]
+  apply WithBot.coe_eq_coe.mpr
+  exact ideal_height_eq_coheight R x
 
 end AlgebraicGeometry
