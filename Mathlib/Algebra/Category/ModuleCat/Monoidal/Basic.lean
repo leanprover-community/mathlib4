@@ -207,10 +207,24 @@ theorem hom_inv_associator {M N K : ModuleCat.{u} R} :
 
 namespace MonoidalCategory
 
+lemma tensorUnit_eq : 𝟙_ (ModuleCat R) = of R R := rfl
+
 @[simp]
+lemma carrier_of_tensorObj_of {X Y : Type u} [AddCommGroup X] [Module R X]
+    [AddCommGroup Y] [Module R Y] :
+    ((of R X) ⊗ (of R Y)).carrier = TensorProduct R X Y := by
+  rfl
+
+@[simp]
+lemma hom_tensorHom {W X Y Z : ModuleCat R} (f : W ⟶ X) (g : Y ⟶ Z) :
+    (f ⊗ₘ g).hom = TensorProduct.map f.hom g.hom :=
+  rfl
+
 theorem tensorHom_tmul {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
     (f ⊗ₘ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
   rfl
+
+@[deprecated (since := "2024-09-30")] alias hom_apply := tensorHom_tmul
 
 @[simp]
 theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
@@ -244,6 +258,14 @@ theorem rightUnitor_inv_apply {M : ModuleCat.{u} R} (m : M) :
     ((ρ_ M).inv : M ⟶ M ⊗ 𝟙_ (ModuleCat.{u} R)) m = m ⊗ₜ[R] 1 :=
   TensorProduct.rid_symm_apply m
 
+lemma leftUnitor_inv_hom_apply {X : ModuleCat R} (x : X.carrier) :
+    (λ_ X).inv.hom x = (TensorProduct.lid R X).symm x :=
+  rfl
+
+lemma rightUnitor_inv_hom_apply {X : ModuleCat R} (x : X.carrier) :
+    (ρ_ X).inv.hom x = (TensorProduct.rid R X).symm x :=
+  rfl
+
 @[simp]
 theorem associator_hom_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
     ((α_ M N K).hom : (M ⊗ N) ⊗ K ⟶ M ⊗ N ⊗ K) (m ⊗ₜ n ⊗ₜ k) = m ⊗ₜ (n ⊗ₜ k) :=
@@ -252,6 +274,19 @@ theorem associator_hom_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
 @[simp]
 theorem associator_inv_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
     ((α_ M N K).inv : M ⊗ N ⊗ K ⟶ (M ⊗ N) ⊗ K) (m ⊗ₜ (n ⊗ₜ k)) = m ⊗ₜ n ⊗ₜ k :=
+  rfl
+
+@[simp]
+lemma hom_ofHom_whiskerRight_of {Z W : Type u}
+    [AddCommGroup Z] [Module R Z] [AddCommGroup W] [Module R W] (f : Z →ₗ[R] W)
+    (X : Type u) [AddCommGroup X] [Module R X] :
+    (ModuleCat.ofHom f ▷ ModuleCat.of R X).hom = f.rTensor X :=
+  rfl
+
+@[simp]
+lemma hom_of_whiskerLeft_ofHom (X : Type u) [AddCommGroup X] [Module R X]
+    {Z W : Type u} [AddCommGroup Z] [Module R Z] [AddCommGroup W] [Module R W] (f : Z →ₗ[R] W) :
+    (ModuleCat.of R X ◁ ModuleCat.ofHom f).hom = f.lTensor X :=
   rfl
 
 variable {M₁ M₂ M₃ M₄ : ModuleCat.{u} R}
