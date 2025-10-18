@@ -621,6 +621,17 @@ jobs:
           python3 scripts/yaml_check.py docs/100.yaml docs/1000.yaml docs/overview.yaml docs/undergrad.yaml
           lake exe check-yaml
 
+      - name: check the PR title format
+        if: github.event.pull_request.draft == false && github.event.pull_request.base == 'master'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -eo pipefail
+          echo "$TITLE"
+          label_names=$(echo "${{ toJson(github.event.pull_request.labels) }}" | jq -r '.[].name')
+          echo "$label_names"
+          lake exe check-title-labels --labels "$label_names" "$TITLE"
+
       - name: generate our import graph
         run: |
           lake exe graph
