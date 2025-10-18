@@ -82,7 +82,7 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsSeparated f] :
   MorphismProperty.pullback_snd f g inferInstance
 
 instance (f : X ⟶ Y) (V : Y.Opens) [IsSeparated f] : IsSeparated (f ∣_ V) :=
-  MorphismProperty.of_isPullback (isPullback_morphismRestrict f V).flip ‹_›
+  IsZariskiLocalAtTarget.restrict ‹_› V
 
 instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [IsSeparated f] :
     IsSeparated (f.resLE V U e) := by

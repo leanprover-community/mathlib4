@@ -112,7 +112,7 @@ instance : HasAffineProperty @QuasiSeparated (fun X _ _ _ ↦ QuasiSeparatedSpac
     quasiSeparated_eq_diagonal_is_quasiCompact.symm
     (by ext; exact quasiCompact_affineProperty_iff_quasiSeparatedSpace _)
 
-instance (priority := 900) quasiSeparatedOfMono (f : X ⟶ Y) [Mono f] :
+instance (priority := 900) (f : X ⟶ Y) [Mono f] :
     QuasiSeparated f where
 
 instance quasiSeparated_isStableUnderComposition :
@@ -143,7 +143,7 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated f] :
   MorphismProperty.pullback_snd f g inferInstance
 
 instance (f : X ⟶ Y) (V : Y.Opens) [QuasiSeparated f] : QuasiSeparated (f ∣_ V) :=
-  MorphismProperty.of_isPullback (isPullback_morphismRestrict f V).flip ‹_›
+  IsZariskiLocalAtTarget.restrict ‹_› V
 
 instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [QuasiSeparated f] :
     QuasiSeparated (f.resLE V U e) := by
@@ -167,7 +167,7 @@ instance [QuasiSeparatedSpace X] : QuasiSeparated X.toSpecΓ :=
   HasAffineProperty.iff_of_isAffine.mpr ‹_›
 
 theorem Scheme.quasiSeparatedSpace_of_isOpenCover
-    {I : Type u} (U : I → X.Opens) (hU : IsOpenCover U)
+    {I : Type*} (U : I → X.Opens) (hU : IsOpenCover U)
     (hU₁ : ∀ i, IsAffineOpen (U i)) (hU₂ : ∀ i j, IsCompact (X := X) (U i ∩ U j)) :
     QuasiSeparatedSpace X := by
   letI := HasAffineProperty.isLocal_affineProperty @QuasiCompact

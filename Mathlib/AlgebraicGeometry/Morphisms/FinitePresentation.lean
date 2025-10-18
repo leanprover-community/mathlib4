@@ -74,11 +74,12 @@ instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [LocallyOfFinitePresen
     LocallyOfFinitePresentation (Limits.pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ inferInstance
 
-instance (f : X ⟶ Y) (V : Y.Opens) [LocallyOfFiniteType f] : LocallyOfFiniteType (f ∣_ V) :=
-  MorphismProperty.of_isPullback (isPullback_morphismRestrict f V).flip ‹_›
+instance (f : X ⟶ Y) (V : Y.Opens) [LocallyOfFinitePresentation f] :
+    LocallyOfFinitePresentation (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
 
-instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [LocallyOfFiniteType f] :
-    LocallyOfFiniteType (f.resLE V U e) := by
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [LocallyOfFinitePresentation f] :
+    LocallyOfFinitePresentation (f.resLE V U e) := by
   delta Scheme.Hom.resLE; infer_instance
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [hf : LocallyOfFinitePresentation f] :

@@ -76,7 +76,7 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsFinite f] : IsFinite (Limits.pullback.sn
   MorphismProperty.pullback_snd _ _ inferInstance
 
 instance (f : X ⟶ Y) (V : Y.Opens) [IsFinite f] : IsFinite (f ∣_ V) :=
-  MorphismProperty.of_isPullback (isPullback_morphismRestrict f V).flip ‹_›
+  IsZariskiLocalAtTarget.restrict ‹_› V
 
 lemma iff_isIntegralHom_and_locallyOfFiniteType :
     IsFinite f ↔ IsIntegralHom f ∧ LocallyOfFiniteType f := by
@@ -132,8 +132,8 @@ instance : MorphismProperty.HasOfPostcompProperty @IsFinite @IsSeparated :=
 lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [IsFinite (f ≫ g)] [IsSeparated g] :
     IsFinite f := MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
 
-lemma comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsClosedImmersion g] :
-    IsClosedImmersion (f ≫ g) ↔ IsClosedImmersion f :=
+lemma comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsFinite g] :
+    IsFinite (f ≫ g) ↔ IsFinite f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
 end IsFinite

@@ -69,7 +69,7 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [Flat f] : Flat (pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ inferInstance
 
 instance (f : X ⟶ Y) (V : Y.Opens) [Flat f] : Flat (f ∣_ V) :=
-  MorphismProperty.of_isPullback (isPullback_morphismRestrict f V).flip ‹_›
+  IsZariskiLocalAtTarget.restrict ‹_› V
 
 instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [Flat f] : Flat (f.resLE V U e) := by
   delta Scheme.Hom.resLE; infer_instance

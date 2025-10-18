@@ -383,7 +383,7 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] :
 
 instance (f : X ⟶ Y) (V : Y.Opens) [IsClosedImmersion f] :
     IsClosedImmersion (f ∣_ V) :=
-  MorphismProperty.of_isPullback (isPullback_morphismRestrict f V).flip ‹_›
+  IsZariskiLocalAtTarget.restrict ‹_› V
 
 /-- Closed immersions are locally of finite type. -/
 instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
