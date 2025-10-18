@@ -36,7 +36,6 @@ variable {R : Type*} (S : Type*) (T : Type*) [CommRing R] [CommRing S] [CommRing
 local notation3 "K" => FractionRing R
 local notation3 "L" => FractionRing S
 local notation3 "F" => FractionRing T
-
 section
 
 theorem algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul {A : Type*} (B : Type*)
@@ -188,6 +187,10 @@ instance [NoZeroSMulDivisors S T] : NoZeroSMulDivisors Sₚ Tₚ :=
   NoZeroSMulDivisors_of_isLocalization S T Sₚ Tₚ <|
     algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ <|
       Ideal.primeCompl_le_nonZeroDivisors P
+
+instance [Algebra.IsIntegral R S] : Algebra.IsIntegral Rₚ Sₚ :=
+  Algebra.isIntegral_def.mpr <| (algebraMap_eq_map_map_submonoid P.primeCompl S Rₚ Sₚ ▸
+    isIntegral_localization : (algebraMap Rₚ Sₚ).IsIntegral)
 
 variable [NoZeroSMulDivisors R T]
 
