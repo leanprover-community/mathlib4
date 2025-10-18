@@ -171,7 +171,7 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
       replicate_dedup n.succ_ne_zero]
 
 theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
-  simp_rw [count_eq_of_nodup <| nodup_dedup l, mem_dedup]
+  simp_rw [List.Nodup.count <| nodup_dedup l, mem_dedup]
 
 theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=
   perm_iff_count.2 fun a =>
