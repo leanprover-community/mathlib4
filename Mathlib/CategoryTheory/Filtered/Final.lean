@@ -436,22 +436,24 @@ end Pi
 
 section Prod
 
-instance final_fst [IsFiltered D] : (Prod.fst C D).Final := by
-  let F : D ⥤ Discrete PUnit.{1} := (Functor.const _).obj (Discrete.mk .unit)
-  have hF : F.Final := Functor.final_of_isFiltered_of_pUnit _
-  change (Functor.prod (𝟭 C) F ⋙ (prod.rightUnitorEquivalence.{0} C).functor).Final
-  infer_instance
+open IsFiltered in
+instance final_fst [IsFilteredOrEmpty C] [IsFiltered D] : (Prod.fst C D).Final := by
+  apply Functor.final_of_exists_of_isFiltered
+  · exact fun c => ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
+  · intro c ⟨c', d'⟩ f g
+    exact ⟨(coeq f g, d'), (coeqHom f g, 𝟙 d'), coeq_condition _ _⟩
 
-instance final_snd [IsFiltered C] : (Prod.snd C D).Final :=
+instance final_snd [IsFiltered C] [IsFilteredOrEmpty D] : (Prod.snd C D).Final :=
   inferInstanceAs ((Prod.braiding C D).functor ⋙ Prod.fst D C).Final
 
-instance initial_fst [IsCofiltered D] : (Prod.fst C D).Initial := by
-  let F : D ⥤ Discrete PUnit.{1} := (Functor.const _).obj (Discrete.mk .unit)
-  have hF : F.Initial := Functor.initial_of_isCofiltered_pUnit _
-  change (Functor.prod (𝟭 C) F ⋙ (prod.rightUnitorEquivalence.{0} C).functor).Initial
-  infer_instance
+open IsCofiltered in
+instance initial_fst [IsCofilteredOrEmpty C] [IsCofiltered D] : (Prod.fst C D).Initial := by
+  apply Functor.initial_of_exists_of_isCofiltered
+  · exact fun c => ⟨(c, nonempty.some), ⟨𝟙 c⟩⟩
+  · intro c ⟨c', d'⟩ f g
+    exact ⟨(eq f g, d'), (eqHom f g, 𝟙 d'), eq_condition _ _⟩
 
-instance initial_snd [IsCofiltered C] : (Prod.snd C D).Initial :=
+instance initial_snd [IsCofiltered C] [IsCofilteredOrEmpty D] : (Prod.snd C D).Initial :=
   inferInstanceAs ((Prod.braiding C D).functor ⋙ Prod.fst D C).Initial
 
 end Prod
