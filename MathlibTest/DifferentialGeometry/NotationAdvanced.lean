@@ -309,26 +309,10 @@ variable {α : Type*} [Preorder α] {x' y' : α} {k : ℝ → Set.Icc x' y'} in
 -- Now, with a fact about x < y: these should behave well.
 variable {x y : ℝ} [Fact (x < y)] {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
 
--- This test fails, but for reasons not specific to the elaborator.
-/--
-error: failed to synthesize
-  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc 0 2)
-
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
--/
+/-- info: MDifferentiable (𝓡∂ 1) J g : Prop -/
 #guard_msgs in
-variable [h: Fact ((0 : ℝ) ≤ (2 : ℝ))] {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
+variable [h: Fact ((0 : ℝ) < (2 : ℝ))] {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
 #check MDiff g
-
-/--
-error: failed to synthesize
-  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc 0 2)
-
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
--/
-#guard_msgs in
-variable [h: Fact ((0 : ℝ) ≤ (2 : ℝ))] {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
-#check MDifferentiable (𝓡∂ 1) J g
 
 /-- info: MDifferentiable (𝓡∂ 1) J g : Prop -/
 #guard_msgs in
