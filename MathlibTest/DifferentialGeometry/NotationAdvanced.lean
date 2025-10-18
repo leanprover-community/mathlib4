@@ -331,6 +331,30 @@ variable (h : x ≤ y) in
 #guard_msgs in
 #check MDiffAt k ⟨x, by simp; linarith⟩
 
+-- Test for the definitional equality check: for this type, `isDefEq` succeeds, but
+-- `withReducible <| isDefEq` would not.
+def RealCopy := ℝ
+
+instance : Preorder RealCopy := inferInstanceAs (Preorder ℝ)
+instance : TopologicalSpace RealCopy := inferInstanceAs (TopologicalSpace ℝ)
+
+-- Repeat the same test for an interval in RealCopy.
+variable {x y : RealCopy} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
+  [Fact (x < y)]
+
+noncomputable instance : ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y) :=
+  instIccChartedSpace x y
+
+/-- info: MDifferentiableAt (𝓡∂ 1) J g : ↑(Set.Icc x y) → Prop -/
+#guard_msgs in
+#check MDiffAt g
+/-- info: MDifferentiable 𝓘(ℝ, E'') (𝓡∂ 1) h : Prop -/
+#guard_msgs in
+#check MDiff h
+/-- info: ContMDiff (𝓡∂ 1) 𝓘(ℝ, ℝ) 2 k : Prop -/
+#guard_msgs in
+#check CMDiff 2 k
+
 end interval
 
 section UpperHalfPlane
