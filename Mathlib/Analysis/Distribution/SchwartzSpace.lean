@@ -893,14 +893,15 @@ variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
+open Classical in
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
-def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
-    𝓢(D, E) →L[𝕜] 𝓢(D, G) := by
-  refine mkCLM (fun f x => B (f x) (g x))
+def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) (g : D → F) :
+    𝓢(D, E) →L[𝕜] 𝓢(D, G) :=
+  if hg : g.HasTemperateGrowth then mkCLM (fun f x => B (f x) (g x))
     (fun _ _ _ => by simp) (fun _ _ _ => by simp)
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
-      ((f.smooth ⊤).prodMk hg.1)) ?_
+      ((f.smooth ⊤).prodMk hg.1)) (by
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
   use
@@ -938,19 +939,33 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   rw [pow_add]
   move_mul [(1 + ‖x‖) ^ l]
   gcongr
-  simp
+  simp ) else 0
 
 @[simp]
 theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
-    (f : 𝓢(D, E)) (x : D) : bilinLeftCLM B hg f x = B (f x) (g x) := rfl
+    (f : 𝓢(D, E)) (x : D) : bilinLeftCLM B g f x = B (f x) (g x) := by
+  unfold bilinLeftCLM
+  simp only [hg, ↓reduceDIte]
+  rfl
+
+/-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
+where `B` is a continuous `𝕜`-linear map and `g` is a Schwartz function. -/
+def bilinLeftSchwartzCLM (B : E →L[𝕜] F →L[𝕜] G) (g : 𝓢(D, F)) :
+    𝓢(D, E) →L[𝕜] 𝓢(D, G) := bilinLeftCLM B g
+
+@[simp]
+theorem bilinLeftSchwartzCLM_apply (B : E →L[𝕜] F →L[𝕜] G) (g : 𝓢(D, F))
+    (f : 𝓢(D, E)) (x : D) : bilinLeftSchwartzCLM B g f x = B (f x) (g x) :=
+  bilinLeftCLM_apply _ g.hasTemperateGrowth f x
 
 variable (E) in
-def smulLeftCLM {g : D → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢(D, E) →L[𝕜] 𝓢(D, E) :=
-    bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
+def smulLeftCLM (g : D → 𝕜) : 𝓢(D, E) →L[𝕜] 𝓢(D, E) :=
+    bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip g
 
 @[simp]
 theorem smulLeftCLM_apply {g : D → 𝕜} (hg : g.HasTemperateGrowth)
-    (f : 𝓢(D, E)) (x : D) : smulLeftCLM E hg f x = (g x) • f x := rfl
+    (f : 𝓢(D, E)) (x : D) : smulLeftCLM E g f x = (g x) • f x :=
+  bilinLeftCLM_apply (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg f x
 
 variable [NonUnitalNormedRing R] [NormedSpace 𝕜 R] [NormedSpace ℝ R] [IsScalarTower 𝕜 R R]
   [SMulCommClass 𝕜 R R]
@@ -958,15 +973,15 @@ variable [NonUnitalNormedRing R] [NormedSpace 𝕜 R] [NormedSpace ℝ R] [IsSca
 @[simp]
 theorem smulLeftCLM_mul {g₁ g₂ : D → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) :
-    smulLeftCLM E hg₁ ∘L smulLeftCLM E hg₂ = smulLeftCLM E (hg₁.mul hg₂) := by
+    smulLeftCLM E g₁ ∘L smulLeftCLM E g₂ = smulLeftCLM E (g₁ * g₂) := by
   ext f x
-  simp [smul_smul]
+  simp [hg₁, hg₂, hg₁.mul hg₂, smul_smul]
 
 @[simp]
 theorem smulLeftCLM_const (c : 𝕜) :
-    smulLeftCLM E (Function.HasTemperateGrowth.const c (E := D)) = c • .id 𝕜 _ := by
+    smulLeftCLM E (fun (_ : D) ↦ c) = c • .id 𝕜 _ := by
   ext
-  simp
+  simp [Function.HasTemperateGrowth.const c (E := D)]
 
 end Multiplication
 
@@ -1503,11 +1518,15 @@ variable [NormedAddCommGroup V] [NormedSpace ℝ V]
 Version for a general bilinear map. -/
 theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(ℝ, F))
     (L : E →L[ℝ] F →L[ℝ] V) :
-    ∫ (x : ℝ), L (f x) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) :=
-  MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
-    f.hasDerivAt g.hasDerivAt (bilinLeftCLM L (derivCLM ℝ g).hasTemperateGrowth f).integrable
-    (bilinLeftCLM L g.hasTemperateGrowth (derivCLM ℝ f)).integrable
-    (bilinLeftCLM L g.hasTemperateGrowth f).integrable
+    ∫ (x : ℝ), L (f x) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) := by
+  apply MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
+    f.hasDerivAt g.hasDerivAt
+  · convert (bilinLeftSchwartzCLM L (derivCLM ℝ g) f).integrable (μ := volume)
+    simp
+  · convert (bilinLeftSchwartzCLM L g (derivCLM ℝ f)).integrable (μ := volume)
+    simp
+  · convert (bilinLeftSchwartzCLM L g f).integrable (μ := volume)
+    exact (bilinLeftSchwartzCLM_apply _ _ _ _).symm
 
 variable [RCLike 𝕜] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
 

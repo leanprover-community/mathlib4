@@ -27,10 +27,11 @@ variable {𝕜 𝕜' H D E F G V : Type*}
 variable [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup H] [NormedAddCommGroup V]
 
 variable --[NormedSpace ℝ E] [NormedSpace 𝕜 E]
-  [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
-  [InnerProductSpace ℝ H] [FiniteDimensional ℝ H]
-  [MeasurableSpace H] [BorelSpace H]
-  [NormedSpace 𝕜 V] [CompleteSpace E]
+  [NormedSpace 𝕜 E]
+  [InnerProductSpace ℝ H]
+  [NormedSpace 𝕜 V]
+
+section has_growth
 
 variable (H) in
 @[simp]
@@ -49,7 +50,9 @@ theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖^2).HasTemperateGro
     apply le_add_of_nonneg_left
     positivity
 
-theorem HasTemperateGrowth.add {f₁ f₂ : H → E}
+variable [NormedSpace ℝ E]
+
+theorem Function.HasTemperateGrowth.add {f₁ f₂ : H → E}
     (hf₁ : f₁.HasTemperateGrowth) (hf₂ : f₂.HasTemperateGrowth) : (f₁ + f₂).HasTemperateGrowth := by
   refine ⟨hf₁.1.add hf₂.1, ?_⟩
   intro n
@@ -75,7 +78,29 @@ theorem HasTemperateGrowth.add {f₁ f₂ : H → E}
     · apply le_add_of_nonneg_right (by positivity)
     exact k₁.le_max_right k₂
 
-#exit
+section comp_clm
+
+variable [NormedAddCommGroup F] [NormedSpace ℝ F]
+
+theorem Function.HasTemperateGrowth.comp_clm_left {f : H → E} (hf : f.HasTemperateGrowth)
+    (g : E →L[ℝ] F) : (g ∘ f).HasTemperateGrowth := by
+  refine ⟨hf.1.continuousLinearMap_comp _, ?_⟩
+  intro n
+  obtain ⟨k, C, h⟩ := hf.2 n
+  use k, ‖g‖ * C
+  intro x
+  grw [ContinuousLinearMap.iteratedFDeriv_comp_left g hf.1.contDiffAt ENat.LEInfty.out,
+    ContinuousLinearMap.norm_compContinuousMultilinearMap_le, h, mul_assoc]
+
+end comp_clm
+
+theorem HasTemperateGrowth.const_rpow {f : H → ℝ} (hf : f.HasTemperateGrowth)
+    (hf' : ∃ (C : ℝ) (_ : 0 < C), ∀ x, C < f x)
+    {r : ℝ} : (fun x ↦ (f x) ^ r).HasTemperateGrowth := by
+  obtain ⟨C, hC, hf'⟩ := hf'
+  refine ⟨hf.1.rpow_const_of_ne (fun x ↦ (hC.trans (hf' x)).ne'), ?_⟩
+  intro n
+  sorry
 
 variable (f : 𝓢'(𝕜, H, E, V)) (g : H → 𝕜) (hg : g.HasTemperateGrowth)
 
@@ -133,45 +158,94 @@ theorem bar (s : ℝ) : (fun (x : H) ↦ (1 + ‖x‖^2)^(s/2)).HasTemperateGrow
   move_mul [(1 + ‖x‖) ^ n, (1 + ‖x‖) ^ k]
   gcongr
 
-def SchwartzMap.fourierMultiplierCLM {g : H → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢(H, E) →L[𝕜] 𝓢(H, E) :=
-    (fourierTransformCLE 𝕜).symm.toContinuousLinearMap ∘L (smulLeftCLM E hg) ∘L
-      (fourierTransformCLM 𝕜)
+end has_growth
 
-theorem fourierMultiplierCLM_apply {g : H → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢(H, E)) :
-    fourierMultiplierCLM hg f = ((smulLeftCLM E hg) f.fourierTransform).fourierTransformInv := by
+variable
+  [NormedSpace ℂ E]
+  [SMulCommClass ℂ 𝕜 E]
+  [FiniteDimensional ℝ H]
+  [MeasurableSpace H] [BorelSpace H]
+
+section multiplier
+
+variable [CompleteSpace E]
+
+def SchwartzMap.fourierMultiplierCLM (g : H → 𝕜) :
+    𝓢(H, E) →L[𝕜] 𝓢(H, E) :=
+  (fourierTransformCLE 𝕜).symm.toContinuousLinearMap ∘L (smulLeftCLM E g) ∘L
+    (fourierTransformCLM 𝕜)
+
+theorem fourierMultiplierCLM_apply (g : H → 𝕜) (f : 𝓢(H, E)) :
+    fourierMultiplierCLM g f = ((smulLeftCLM E g) f.fourierTransform).fourierTransformInv := by
   unfold fourierMultiplierCLM
   simp
 
 @[simp]
 theorem SchwartzMap.fourierMultiplierCLM_const_apply (f : 𝓢(H, E)) (c : 𝕜) :
-    fourierMultiplierCLM (Function.HasTemperateGrowth.const c) f = c • f := by
+    fourierMultiplierCLM (fun _ ↦ c) f = c • f := by
   unfold fourierMultiplierCLM
   simp
 
 variable (E V) in
-def TemperedDistribution.fourierMultiplierCLM {g : H → 𝕜} (hg : g.HasTemperateGrowth) :
+def TemperedDistribution.fourierMultiplierCLM (g : H → 𝕜) :
     𝓢'(𝕜, H, E, V) →L[𝕜] 𝓢'(𝕜, H, E, V) :=
-  mkCompCLM V (SchwartzMap.fourierMultiplierCLM hg)
+  mkCompCLM V (SchwartzMap.fourierMultiplierCLM g)
 
 @[simp]
-theorem TemperedDistribution.fourierMultiplierCLM_apply {g : H → 𝕜} (hg : g.HasTemperateGrowth)
-  (f : 𝓢'(𝕜, H, E, V)) (h : 𝓢(H, E)) : TemperedDistribution.fourierMultiplierCLM E V hg f h =
-      f (SchwartzMap.fourierMultiplierCLM hg h) := rfl
+theorem TemperedDistribution.fourierMultiplierCLM_apply (g : H → 𝕜) (f : 𝓢'(𝕜, H, E, V))
+    (h : 𝓢(H, E)) : TemperedDistribution.fourierMultiplierCLM E V g f h =
+      f (SchwartzMap.fourierMultiplierCLM g h) := rfl
 
 @[simp]
 theorem TemperedDistribution.fourierMultiplierCLM_const_apply (f : 𝓢'(𝕜, H, E, V)) (c : 𝕜) :
-    TemperedDistribution.fourierMultiplierCLM E V (.const c) f = c • f := by
+    TemperedDistribution.fourierMultiplierCLM E V (fun _ ↦ c) f = c • f := by
   ext
   simp
 
+end multiplier
+
 variable [NormedSpace ℂ V] [CompleteSpace V]
 
-def memSobolev {g : H → ℂ} (hg : g.HasTemperateGrowth) (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) : Prop :=
-  ∃ (f' : Lp E 2 (volume : Measure H)),
-    TemperedDistribution.fourierMultiplierCLM (E →L[ℂ] V) V hg f = Lp.toTemperedDistribution ℂ V f'
+open Classical in
+def MemSobolev (g : H → ℂ) (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) : Prop :=
+  if _hg : g.HasTemperateGrowth then
+    ∃ (f' : Lp E 2 (volume : Measure H)),
+    TemperedDistribution.fourierMultiplierCLM (E →L[ℂ] V) V g f = Lp.toTemperedDistribution ℂ V f'
+  else False
 
-theorem memSobolev_one {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : memSobolev (.const 1) f) :
+theorem memSobolev_iff {g : H → ℂ} (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) (hg : g.HasTemperateGrowth) :
+    MemSobolev g f ↔ ∃ (f' : Lp E 2 (volume : Measure H)),
+    .fourierMultiplierCLM (E →L[ℂ] V) V g f = Lp.toTemperedDistribution ℂ V f' := by
+  simp only [MemSobolev, dite_else_false]
+  exact ⟨fun ⟨_, h⟩ ↦ h, fun h ↦ ⟨hg, h⟩⟩
+
+theorem MemSobolev.exists {g : H → ℂ} {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hg : g.HasTemperateGrowth)
+    (hf : MemSobolev g f) :
+    ∃ (f' : Lp E 2 (volume : Measure H)),
+    .fourierMultiplierCLM (E →L[ℂ] V) V g f = Lp.toTemperedDistribution ℂ V f' :=
+  (memSobolev_iff f hg).mp hf
+
+theorem memSobolev_one_iff {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} : MemSobolev 1 f ↔
     ∃ (f' : Lp E 2 (volume : Measure H)), f = Lp.toTemperedDistribution ℂ V f' := by
-  rcases hf with ⟨f', hf'⟩
-  use f'
-  simpa using hf'
+  convert memSobolev_iff f (.const 1)
+  simp
+
+variable (H E V) [CompleteSpace E] in
+def laplacian : 𝓢'(ℂ, H, E, V) →L[ℂ] 𝓢'(ℂ, H, E, V) :=
+    TemperedDistribution.fourierMultiplierCLM E V (‖·‖ ^ 2)
+
+theorem laplacian_mem_Sobolev_norm_sq {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : MemSobolev (‖·‖ ^ 2) f) :
+    MemSobolev 1 (laplacian H _ V f) := by
+  rw [memSobolev_one_iff]
+  rw [memSobolev_iff] at hf; swap
+  · convert (hasTemperateGrowth_norm_sq H).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
+    simp
+  obtain ⟨g, hg⟩ := hf
+  use g
+  rw [← hg, laplacian]
+
+theorem foo1 {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : MemSobolev (fun x ↦ 1 + ‖x‖ ^ 2) f) :
+    MemSobolev 1 (laplacian H _ V f) := by
+  apply laplacian_mem_Sobolev_norm_sq
+
+  sorry

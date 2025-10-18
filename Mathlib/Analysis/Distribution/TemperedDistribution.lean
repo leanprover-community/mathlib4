@@ -97,16 +97,19 @@ section pairing
 variable [NormedSpace ℝ V] [SMulCommClass ℝ 𝕜 V]
 
 def pairingLM : 𝓢(E, F) →ₗ[𝕜] 𝓢(E, F →L[𝕜] V) →L[𝕜] 𝓢(E, V) where
-  toFun f := bilinLeftCLM (.id 𝕜 _) f.hasTemperateGrowth
+  toFun f := bilinLeftSchwartzCLM (.id 𝕜 _) f
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-theorem pairingLM_apply (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) :
-  pairingLM f g = fun x => g x (f x) := rfl
-
 @[simp]
 theorem pairingLM_apply_apply (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) (x : E) :
-  pairingLM f g x = g x (f x) := rfl
+    pairingLM f g x = g x (f x) := by
+  simp [pairingLM]
+
+theorem pairingLM_apply (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) :
+    pairingLM f g = fun x ↦ g x (f x) := by
+  ext x
+  simp
 
 end pairing
 
@@ -124,13 +127,12 @@ variable [NormedSpace ℝ V] [SMulCommClass ℝ 𝕜 V]
 
 def pairingCLM (g : 𝓢(E, F →L[𝕜] V)) : 𝓢(E, F) →L[𝕜] 𝓢(E, V) :=
   mkCLM (fun f => pairingLM f g)
-  (fun _ _ _ => by simp only [map_add, ContinuousLinearMap.add_apply, SchwartzMap.add_apply,
-    pairingLM_apply_apply])
-  (fun _ _ _ => by simp only [map_smul, coe_smul', Pi.smul_apply, SchwartzMap.smul_apply,
-    pairingLM_apply_apply, RingHom.id_apply])
+  (fun _ _ _ => by simp)
+  (fun _ _ _ => by simp)
   (fun f => by
-    apply ((ContinuousLinearMap.restrictScalarsL _ F _ ℝ ℝ).contDiff.fun_comp
-      (g.smooth ⊤)).clm_apply (f.smooth ⊤))
+    convert ((ContinuousLinearMap.restrictScalarsL _ F _ ℝ ℝ).contDiff.fun_comp
+      (g.smooth ⊤)).clm_apply (f.smooth ⊤)
+    simp)
   (by
       intro (k, n)
       simp only [pairingLM_apply]
@@ -201,13 +203,13 @@ variable [BorelSpace E] [SecondCountableTopology E]
 variable [NormedSpace ℝ V]
 
 variable (𝕜 V) in
-def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(𝕜, E, F →L[𝕜] V, V) :=
-    (ContinuousLinearMap.toWOT _ _ _) ((integralCLM 𝕜 μ) ∘L (bilinLeftCLM (.id 𝕜 _) hf))
+def toTemperedDistribution (f : E → F) : 𝓢'(𝕜, E, F →L[𝕜] V, V) :=
+    (ContinuousLinearMap.toWOT _ _ _) ((integralCLM 𝕜 μ) ∘L (bilinLeftCLM (.id 𝕜 _) f))
 
 @[simp]
 theorem toTemperedDistribution_apply {f : E → F} (hf : f.HasTemperateGrowth) (g : 𝓢(E, F →L[𝕜] V)) :
-    toTemperedDistribution 𝕜 V (μ := μ) hf g = ∫ (x : E), (g x) (f x) ∂μ := by
-  rfl
+    toTemperedDistribution 𝕜 V (μ := μ) f g = ∫ (x : E), (g x) (f x) ∂μ := by
+  simp [toTemperedDistribution, ContinuousLinearMap.toWOT_apply, hf]
 
 end Function.HasTemperateGrowth
 
@@ -325,7 +327,7 @@ variable (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) (x : E)
 theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) :
     toTemperedDistributionCLM 𝕜 E F V μ f g = ∫ (x : E), (g x) (f x) ∂μ := by
-  rfl
+  simp [toTemperedDistributionCLM, ContinuousLinearMap.toWOT_apply]
 
 end SchwartzMap
 
@@ -414,33 +416,33 @@ variable [NormedSpace ℝ D]
 variable (V) in
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
-def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
-    𝓢'(𝕜, D, G, V) →L[𝕜] 𝓢'(𝕜, D, E, V) := mkCompCLM V (SchwartzMap.bilinLeftCLM B hg)
+def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) (g : D → F) :
+    𝓢'(𝕜, D, G, V) →L[𝕜] 𝓢'(𝕜, D, E, V) := mkCompCLM V (SchwartzMap.bilinLeftCLM B g)
 
 variable [NonUnitalNormedRing R] [NormedSpace 𝕜 R] [NormedSpace ℝ R] [IsScalarTower 𝕜 R R]
   [SMulCommClass 𝕜 R R]
 
-def mulLeftCLM {g : D → R} (hg : g.HasTemperateGrowth) : 𝓢'(𝕜, D, R, V) →L[𝕜] 𝓢'(𝕜, D, R, V) :=
-    bilinLeftCLM V (ContinuousLinearMap.mul 𝕜 R) hg
+def mulLeftCLM (g : D → R) : 𝓢'(𝕜, D, R, V) →L[𝕜] 𝓢'(𝕜, D, R, V) :=
+    bilinLeftCLM V (ContinuousLinearMap.mul 𝕜 R) g
 
 variable (E V) in
-def smulLeftCLM {g : D → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢'(𝕜, D, E, V) →L[𝕜] 𝓢'(𝕜, D, E, V) :=
-    bilinLeftCLM V (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
+def smulLeftCLM (g : D → 𝕜) : 𝓢'(𝕜, D, E, V) →L[𝕜] 𝓢'(𝕜, D, E, V) :=
+    bilinLeftCLM V (ContinuousLinearMap.lsmul 𝕜 𝕜).flip g
 
 @[simp]
-theorem smulLeftCLM_apply_apply {g : D → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢'(𝕜, D, E, V))
-    (f' : 𝓢(D, E)) : smulLeftCLM E V hg f f' =
-    f (SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg f') :=
-  mkCompCLM_apply_apply _ _ _
+theorem smulLeftCLM_apply_apply (g : D → 𝕜) (f : 𝓢'(𝕜, D, E, V))
+    (f' : 𝓢(D, E)) : smulLeftCLM E V g f f' =
+    f (SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip g f') := by
+  simp [_root_.smulLeftCLM, _root_.bilinLeftCLM]
 
 variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] {μ : Measure D}
   [μ.HasTemperateGrowth] [NormedSpace ℝ V]
 
 theorem smulLeftCLM_toTemperedDistributionCLM_eq {g : D → 𝕜} (hg : g.HasTemperateGrowth)
-    (f : 𝓢(D, E)) : smulLeftCLM (E →L[𝕜] V) V hg (toTemperedDistributionCLM 𝕜 D E V μ f) =
-    toTemperedDistributionCLM 𝕜 D E V μ (SchwartzMap.smulLeftCLM E hg f) := by
+    (f : 𝓢(D, E)) : smulLeftCLM (E →L[𝕜] V) V g (toTemperedDistributionCLM 𝕜 D E V μ f) =
+    toTemperedDistributionCLM 𝕜 D E V μ (SchwartzMap.smulLeftCLM E g f) := by
   ext f' y
-  simp
+  simp [hg]
 
 end Multiplication
 
@@ -520,6 +522,8 @@ theorem fourierTransformCLM_toTemperedDistributionCLM_eq (f : 𝓢(H, E)) :
     toTemperedDistributionCLM ℂ H E V volume f.fourierTransform := by
   ext g
   congr 1
+  simp only [fourierTransform_apply, toTemperedDistributionCLM_apply_apply,
+    SchwartzMap.fourierTransform_apply]
   exact integral_bilin_fourierIntegral_eq_flip g f (.id ℂ _)
 
 example : fourierTransform (delta' 𝕜 E (0 : H)) = volume.toTemperedDistribution 𝕜 E := by
