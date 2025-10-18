@@ -56,7 +56,7 @@ section Field
 
 variable {𝕜 E F : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
-  [ContinuousSMul 𝕜 F]
+  [ContinuousConstSMul 𝕜 F]
 
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
 instance [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] : FiniteDimensional 𝕜 (E →L[𝕜] F) :=
