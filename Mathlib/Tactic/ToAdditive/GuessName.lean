@@ -35,7 +35,7 @@ open String in
 
 E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`. -/
-partial def _root_.String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) :
+partial def _root_.String.splitCase (s : String) (i₀ : Pos.Raw := 0) (r : List String := []) :
     List String := Id.run do
   -- We test if we need to split between `i₀` and `i₁`.
   let i₁ := s.next i₀
@@ -60,7 +60,7 @@ partial def _root_.String.splitCase (s : String) (i₀ : Pos := 0) (r : List Str
   return splitCase s i₁ r
 
 /-- Helper for `capitalizeLike`. -/
-partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : String :=
+partial def capitalizeLikeAux (s : String) (i : String.Pos.Raw := 0) (p : String) : String :=
   if p.atEnd i || s.atEnd i then
     p
   else

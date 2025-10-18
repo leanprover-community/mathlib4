@@ -6,7 +6,6 @@ Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Data.String.Defs
 import Batteries.Tactic.Lint
-import Batteries.Lean.Position
 
 /-! # Conv widget
 
@@ -87,7 +86,8 @@ open Lean Syntax in
 /-- Return the link text and inserted text above and below of the conv widget. -/
 @[nolint unusedArguments]
 def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
-    (params : SelectInsertParams) : MetaM (String × String × Option (String.Pos × String.Pos)) := do
+    (params : SelectInsertParams) :
+    MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)) := do
   let some pos := locations[0]? | throwError "You must select something."
   let (fvar, subexprPos) ← match pos with
   | ⟨_, .target subexprPos⟩ => pure (none, subexprPos)
@@ -134,6 +134,6 @@ open scoped Json in
 /-- Display a widget panel allowing to generate a `conv` call zooming to the subexpression selected
 in the goal. -/
 elab stx:"conv?" : tactic => do
-  let some replaceRange := (← getFileMap).rangeOfStx? stx | return
+  let some replaceRange := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
     (pure <| json% { replaceRange: $(replaceRange) }) stx

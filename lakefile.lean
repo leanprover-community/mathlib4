@@ -6,17 +6,18 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "main"
-require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.74" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "batteries" @ git "lean-pr-testing-10832"
+require "leanprover-community" / "Qq" @ git "nightly-testing"
+require aesop from git "https://github.com/mhuisi/aesop" @ "mhuisi/bump-nightly-to-2025-10-17"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.75-pre3" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
     If this does not work, report your issue on the Lean Zulip."
-require "leanprover-community" / "importGraph" @ git "main"
+require "leanprover-community" / "importGraph" @ git "nightly-testing"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
+
 
 /-!
 ## Options for building mathlib
