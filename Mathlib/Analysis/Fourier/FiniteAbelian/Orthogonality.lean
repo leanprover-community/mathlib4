@@ -42,7 +42,7 @@ section RCLike
 variable [RCLike R] [Fintype G]
 
 lemma wInner_cWeight_self (ψ : AddChar G R) : ⟪(ψ : G → R), ψ⟫ₙ_[R] = 1 := by
-  simp [wInner_cWeight_eq_expect, ψ.norm_apply, RCLike.mul_conj]
+  simp [wInner_cWeight_eq_expect, ψ.norm_apply]
 
 end RCLike
 end AddGroup
