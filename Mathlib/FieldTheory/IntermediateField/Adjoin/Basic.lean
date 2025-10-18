@@ -387,7 +387,7 @@ theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α
 noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
     AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
   AlgEquiv.ofBijective
-    (AdjoinRoot.liftHom (minpoly F α) (AdjoinSimple.gen F α) (aeval_gen_minpoly F α))
+    (AdjoinRoot.liftAlgHom (minpoly F α) _ (AdjoinSimple.gen F α) (aeval_gen_minpoly F α))
     (by
       set f := AdjoinRoot.lift _ _ (aeval_gen_minpoly F α :)
       haveI := Fact.mk (minpoly.irreducible h)
