@@ -145,7 +145,7 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
       · refine ⟨b, mem_insert _ _, hcb, ?_⟩
         calc
           δ c ≤ m := le_csSup bddA (mem_image_of_mem _ ⟨ct, H⟩)
-          _ = τ * (m / τ) := by field_simp
+          _ = τ * (m / τ) := by field
           _ ≤ τ * δ b := by gcongr
       · rw [← not_disjoint_iff_nonempty_inter] at hcb
         exact (hcb (H _ H')).elim
