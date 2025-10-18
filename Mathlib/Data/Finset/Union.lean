@@ -124,6 +124,14 @@ theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b :
     (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i => (t i).fold op (b i) f :=
   (congr_arg _ <| Multiset.map_bind _ _ _).trans (Multiset.fold_bind _ _ _ _ _)
 
+lemma pairwiseDisjoint_filter {f : α → Finset β} (h : Set.PairwiseDisjoint ↑s f)
+    (p : β → Prop) [DecidablePred p] : Set.PairwiseDisjoint ↑s fun a ↦ (f a).filter p :=
+  fun _ h₁ _ h₂ hne ↦ Finset.disjoint_filter_filter (h h₁ h₂ hne)
+
+theorem filter_disjiUnion (s : Finset α) (f : α → Finset β) (h) (p : β → Prop) [DecidablePred p] :
+    (s.disjiUnion f h).filter p
+      = s.disjiUnion (fun a ↦ (f a).filter p) (pairwiseDisjoint_filter h p) := by grind
+
 end DisjiUnion
 
 section BUnion
@@ -179,6 +187,7 @@ lemma bind_toFinset [DecidableEq α] (s : Multiset α) (t : α → Multiset β) 
 
 lemma biUnion_mono (h : ∀ a ∈ s, t₁ a ⊆ t₂ a) : s.biUnion t₁ ⊆ s.biUnion t₂ := by grind
 
+@[gcongr]
 lemma biUnion_subset_biUnion_of_subset_left (t : α → Finset β) (h : s₁ ⊆ s₂) :
     s₁.biUnion t ⊆ s₂.biUnion t := by grind
 

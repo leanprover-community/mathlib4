@@ -131,7 +131,7 @@ theorem one_lt_rootMultiplicity_iff_isRoot
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
   refine ⟨fun h ↦ ⟨h 0 (by simp), h 1 (by simp)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
   obtain (_ | _ | m) := m
-  exacts [h0, h1, by omega]
+  exacts [h0, h1, by cutsat]
 
 end CommRing
 
@@ -163,7 +163,7 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative
     (hroot : ∀ m ≤ n, (derivative^[m] p).IsRoot t) :
     n < p.rootMultiplicity t :=
   lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors h hroot <|
-    mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 <| Nat.factorial_ne_zero n
+    mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 <| by positivity
 
 theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative
     [CharZero R] {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0) :
@@ -188,7 +188,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
   rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
-  omega
+  cutsat
 
 section NormalizationMonoid
 
@@ -337,6 +337,8 @@ theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) 
 
 theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :=
   divByMonic_eq_div p (monic_X_sub_C a) ▸ mul_divByMonic_eq_iff_isRoot
+
+alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
 
 instance instEuclideanDomain : EuclideanDomain R[X] :=
   { Polynomial.commRing,
@@ -692,14 +694,28 @@ theorem map_normalize [DecidableEq R] [Field S] [DecidableEq S] (f : R →+* S) 
   · simp [hp]
   · simp [normalize_apply, Polynomial.map_mul, normUnit, hp]
 
+theorem monic_mapAlg_iff [Semiring S] [Nontrivial S] [Algebra R S] {p : R[X]} :
+    (mapAlg R S p).Monic ↔ p.Monic := by
+  simp [mapAlg_eq_map, monic_map_iff]
+
 end Field
 
 end Polynomial
 
+namespace Irreducible
+
+variable {F : Type*} [DivisionSemiring F] {f : F[X]}
+
 /-- An irreducible polynomial over a field must have positive degree. -/
-theorem Irreducible.natDegree_pos {F : Type*} [DivisionSemiring F] {f : F[X]} (h : Irreducible f) :
-    0 < f.natDegree := Nat.pos_of_ne_zero fun H ↦ by
+theorem natDegree_pos (h : Irreducible f) : 0 < f.natDegree := Nat.pos_of_ne_zero fun H ↦ by
   obtain ⟨x, hf⟩ := natDegree_eq_zero.1 H
   by_cases hx : x = 0
   · rw [← hf, hx, map_zero] at h; exact not_irreducible_zero h
   exact h.1 (hf ▸ isUnit_C.2 (Ne.isUnit hx))
+
+/-- An irreducible polynomial over a field must have positive degree. -/
+theorem degree_pos (h : Irreducible f) : 0 < f.degree := by
+  rw [← natDegree_pos_iff_degree_pos]
+  exact h.natDegree_pos
+
+end Irreducible

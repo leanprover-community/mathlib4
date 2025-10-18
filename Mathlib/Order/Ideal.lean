@@ -145,7 +145,7 @@ theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈
   @Set.mem_of_mem_of_subset P x I J
 
 /-- A proper ideal is one that is not the whole set.
-    Note that the whole set might not be an ideal. -/
+Note that the whole set might not be an ideal. -/
 @[mk_iff]
 class IsProper (I : Ideal P) : Prop where
   /-- This ideal is not the whole set. -/

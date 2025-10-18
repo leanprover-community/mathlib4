@@ -21,9 +21,7 @@ open Nat
 namespace Int
 
 theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
-  by_cases h : m ≥ n
-  · exact le_of_eq (Int.ofNat_sub h).symm
-  · simp [le_of_not_ge h]
+  cutsat
 
 /-! ### `succ` and `pred` -/
 
@@ -116,7 +114,7 @@ theorem ediv_emod_unique'' {a b r q : Int} (h : b ≠ 0) :
     a / b = q ∧ a % b = r ↔ r + b * q = a ∧ 0 ≤ r ∧ r < |b| := by
   constructor
   · intro ⟨rfl, rfl⟩
-    exact ⟨emod_add_ediv a b, emod_nonneg _ h, emod_lt_abs _ h⟩
+    exact ⟨emod_add_mul_ediv a b, emod_nonneg _ h, emod_lt_abs _ h⟩
   · intro ⟨rfl, hz, hb⟩
     constructor
     · rw [Int.add_mul_ediv_left r q h, ediv_eq_zero_of_lt_abs hz hb]

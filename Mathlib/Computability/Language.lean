@@ -25,11 +25,11 @@ with respect to other language operations.
 * `l + m`: union of languages `l` and `m`
 * `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
 * `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
-* `1`: language consisting of only the empty string.
-  This is because it is the unit of the `*` operator.
-* `l∗`: Kleene's star – language of strings consisting of arbitrarily many
-  members of `l` concatenated together
-  (Note that this is the Unicode asterisk `∗`, and not the more common star `*`)
+* `1`: language consisting of only the empty string. This is because it is the unit of the `*`
+  operator.
+* `l∗`: Kleene star – language of strings consisting of arbitrarily many members of `l`
+  concatenated together. Note that this notation uses the Unicode asterisk operator `∗`, as opposed
+  to the more common ASCII asterisk `*`.
 
 ## Main definitions
 
@@ -226,13 +226,7 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
   induction n generalizing x with
-  | zero =>
-    simp only [mem_one, pow_zero, length_eq_zero_iff]
-    constructor
-    · rintro rfl
-      exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
-    · rintro ⟨_, rfl, rfl, _⟩
-      rfl
+  | zero => simp
   | succ n ihn =>
     simp only [pow_succ', mem_mul, ihn]
     constructor
@@ -312,8 +306,8 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
         rw [pow_zero, one_mul, add_comm]
         exact le_self_add
       | succ _ ih =>
-        rw [add_comm, pow_add, pow_one, mul_assoc]
-        exact le_add_right (mul_le_mul_left' ih _)
+        grw [add_comm, pow_add, pow_one, mul_assoc, ih]
+        exact le_self_add
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/

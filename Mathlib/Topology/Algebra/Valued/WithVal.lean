@@ -3,6 +3,7 @@ Copyright (c) 2025 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 import Mathlib.NumberTheory.NumberField.Basic
@@ -75,16 +76,37 @@ instance {P S : Type*} [Ring S] [Semiring P] [Module P R] [Module P S]
     [Algebra R S] [IsScalarTower P R S] :
     IsScalarTower P (WithVal v) S := inferInstanceAs (IsScalarTower P R S)
 
-instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
-
 end Instances
+
+section Ring
 
 variable [Ring R] (v : Valuation R Γ₀)
 
 /-- Canonical ring equivalence between `WithVal v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
-theorem apply_equiv (r : WithVal v) : v (WithVal.equiv v r) = v r := rfl
+/-- Canonical valuation on the `WithVal v` type synonym. -/
+def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
+
+@[simp] lemma valuation_equiv_symm (x : R) : valuation v ((equiv v).symm x) = v x := rfl
+
+instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ :=
+  Valued.mk' (valuation v)
+
+theorem apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
+
+@[simp] theorem apply_symm_equiv (r : R) : Valued.v ((equiv v).symm r) = v r := rfl
+
+end Ring
+
+section CommRing
+
+variable [CommRing R] (v : Valuation R Γ₀)
+
+instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
+instance : (valuation v).Compatible := .ofValuation (valuation v)
+
+end CommRing
 
 end WithVal
 

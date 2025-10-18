@@ -32,17 +32,30 @@ namespace Subgroup
 variable {G : Type*} [Group G] (H K : Subgroup G) (S T : Set G)
 
 /-- `S` and `T` are complements if `(*) : S × T → G` is a bijection.
-  This notion generalizes left transversals, right transversals, and complementary subgroups. -/
-@[to_additive "`S` and `T` are complements if `(+) : S × T → G` is a bijection"]
+This notion generalizes left transversals, right transversals, and complementary subgroups.
+
+If `S` and `T` are `SetLike`s such as `Subgroup`s, see `isComplement_iff_bijective` for a
+more ergonomic way to unfold.
+-/
+@[to_additive /-- `S` and `T` are complements if `(+) : S × T → G` is a bijection
+
+If `S` and `T` are `SetLike`s such as `AddSubgroup`s, see `isComplement_iff_bijective` for a
+more ergonomic way to unfold. -/]
 def IsComplement : Prop :=
   Function.Bijective fun x : S × T => x.1.1 * x.2.1
 
 /-- `H` and `K` are complements if `(*) : H × K → G` is a bijection -/
-@[to_additive "`H` and `K` are complements if `(+) : H × K → G` is a bijection"]
+@[to_additive /-- `H` and `K` are complements if `(+) : H × K → G` is a bijection -/]
 abbrev IsComplement' :=
   IsComplement (H : Set G) (K : Set G)
 
 variable {H K S T}
+
+/-- The correct way to unfold `IsComplement` for `SetLike`s such as `Subgroup`s -/
+@[to_additive /-- The correct way to unfold `IsComplement` for `SetLike`s such as `AddSubgroup`s -/]
+theorem isComplement_iff_bijective {S : Type*} [SetLike S G] (s t : S) :
+    IsComplement (G := G) s t ↔ Function.Bijective fun x : s × t => (x.1 : G) * (x.2 : G) :=
+  Iff.rfl
 
 @[to_additive]
 theorem isComplement'_def : IsComplement' H K ↔ IsComplement (H : Set G) (K : Set G) :=
@@ -65,9 +78,8 @@ theorem IsComplement'.symm (h : IsComplement' H K) : IsComplement' K H := by
       (fun x => Prod.ext (inv_inv _) (inv_inv _)) fun x => Prod.ext (inv_inv _) (inv_inv _)
   let ψ : G ≃ G := Equiv.mk (fun g : G => g⁻¹) (fun g : G => g⁻¹) inv_inv inv_inv
   suffices hf : (ψ ∘ fun x : H × K => x.1.1 * x.2.1) = (fun x : K × H => x.1.1 * x.2.1) ∘ ϕ by
-    rw [isComplement'_def, IsComplement, ← Equiv.bijective_comp ϕ]
-    apply (congr_arg Function.Bijective hf).mp -- Porting note: This was a `rw` in mathlib3
-    rwa [ψ.comp_bijective]
+    rwa [isComplement'_def, isComplement_iff_bijective, ← Equiv.bijective_comp ϕ, ← hf,
+      ψ.comp_bijective]
   exact funext fun x => mul_inv_rev _ _
 
 @[to_additive]
@@ -275,7 +287,7 @@ lemma exists_isComplement_right (H : Subgroup G) (g : G) :
     exact hq
 
 /-- Given two subgroups `H' ⊆ H`, there exists a left transversal to `H'` inside `H`. -/
-@[to_additive "Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H`"]
+@[to_additive /-- Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H` -/]
 lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     ∃ S : Set G, S * H' = H ∧ Nat.card S * Nat.card H' = Nat.card H := by
   let H'' : Subgroup H := H'.comap H.subtype
@@ -291,7 +303,7 @@ lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
       exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
 
 /-- Given two subgroups `H' ⊆ H`, there exists a right transversal to `H'` inside `H`. -/
-@[to_additive "Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H`"]
+@[to_additive /-- Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H` -/]
 lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     ∃ S : Set G, H' * S = H ∧ Nat.card H' * Nat.card S = Nat.card H := by
   let H'' : Subgroup H := H'.comap H.subtype
@@ -447,12 +459,12 @@ theorem coe_equiv_snd_eq_one_iff_mem {g : G} (h1 : 1 ∈ T) :
   rw [equiv_snd_eq_inv_mul, inv_mul_eq_one, equiv_fst_eq_self_iff_mem _ h1]
 
 /-- A left transversal is in bijection with left cosets. -/
-@[to_additive "A left transversal is in bijection with left cosets."]
+@[to_additive /-- A left transversal is in bijection with left cosets. -/]
 noncomputable def leftQuotientEquiv (hS : IsComplement S H) : G ⧸ H ≃ S :=
   (Equiv.ofBijective _ (isComplement_subgroup_right_iff_bijective.mp hS)).symm
 
 /-- A left transversal is finite iff the subgroup has finite index. -/
-@[to_additive "A left transversal is finite iff the subgroup has finite index."]
+@[to_additive /-- A left transversal is finite iff the subgroup has finite index. -/]
 theorem finite_left_iff (h : IsComplement S H) : Finite S ↔ H.FiniteIndex := by
   rw [← h.leftQuotientEquiv.finite_iff]
   exact ⟨fun _ ↦ finiteIndex_of_finite_quotient, fun _ ↦ finite_quotient_of_finiteIndex⟩
@@ -473,8 +485,8 @@ theorem leftQuotientEquiv_apply {f : G ⧸ H → G} (hf : ∀ q, (f q : G ⧸ H)
 
 /-- A left transversal can be viewed as a function mapping each element of the group
   to the chosen representative from that left coset. -/
-@[to_additive "A left transversal can be viewed as a function mapping each element of the group
-  to the chosen representative from that left coset."]
+@[to_additive /-- A left transversal can be viewed as a function mapping each element of the group
+  to the chosen representative from that left coset. -/]
 noncomputable def toLeftFun (hS : IsComplement S H) : G → S := leftQuotientEquiv hS ∘ Quotient.mk''
 
 @[to_additive]
@@ -488,13 +500,13 @@ theorem inv_mul_toLeftFun_mem (hS : IsComplement S H) (g : G) :
   (congr_arg (· ∈ H) (by rw [mul_inv_rev, inv_inv])).mp (H.inv_mem (inv_toLeftFun_mul_mem hS g))
 
 /-- A right transversal is in bijection with right cosets. -/
-@[to_additive "A right transversal is in bijection with right cosets."]
+@[to_additive /-- A right transversal is in bijection with right cosets. -/]
 noncomputable def rightQuotientEquiv (hT : IsComplement H T) :
     Quotient (QuotientGroup.rightRel H) ≃ T :=
   (Equiv.ofBijective _ (isComplement_subgroup_left_iff_bijective.mp hT)).symm
 
 /-- A right transversal is finite iff the subgroup has finite index. -/
-@[to_additive "A right transversal is finite iff the subgroup has finite index."]
+@[to_additive /-- A right transversal is finite iff the subgroup has finite index. -/]
 theorem finite_right_iff (h : IsComplement H T) : Finite T ↔ H.FiniteIndex := by
   rw [← h.rightQuotientEquiv.finite_iff,
     (QuotientGroup.quotientRightRelEquivQuotientLeftRel H).finite_iff]
@@ -517,8 +529,8 @@ theorem rightQuotientEquiv_apply {f : Quotient (QuotientGroup.rightRel H) → G}
 
 /-- A right transversal can be viewed as a function mapping each element of the group
   to the chosen representative from that right coset. -/
-@[to_additive "A right transversal can be viewed as a function mapping each element of the group
-  to the chosen representative from that right coset."]
+@[to_additive /-- A right transversal can be viewed as a function mapping each element of the group
+  to the chosen representative from that right coset. -/]
 noncomputable def toRightFun (hT : IsComplement H T) : G → T := rightQuotientEquiv hT ∘ .mk''
 
 @[to_additive]
@@ -546,11 +558,11 @@ section Action
 open Pointwise MulAction
 
 /-- The collection of left transversals of a subgroup -/
-@[to_additive "The collection of left transversals of a subgroup."]
+@[to_additive /-- The collection of left transversals of a subgroup. -/]
 abbrev LeftTransversal (H : Subgroup G) := {S : Set G // IsComplement S H}
 
 /-- The collection of right transversals of a subgroup -/
-@[to_additive "The collection of right transversals of a subgroup."]
+@[to_additive /-- The collection of right transversals of a subgroup. -/]
 abbrev RightTransversal (H : Subgroup G) := {T : Set G // IsComplement H T}
 
 variable {F : Type*} [Group F] [MulAction F G] [QuotientAction F H]

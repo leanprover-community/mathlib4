@@ -116,8 +116,8 @@ def _root_.CategoryTheory.Iso.toContinuousLinearEquiv
     {X Y : TopModuleCat R} (e : X ≅ Y) : X ≃L[R] Y where
   __ := e.hom.hom
   invFun := e.inv.hom
-  left_inv x := by aesop_cat
-  right_inv x := by aesop_cat
+  left_inv x := by cat_disch
+  right_inv x := by cat_disch
 
 instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
   add f g := ofHom (f.hom + g.hom)
@@ -397,10 +397,9 @@ def freeMap {X Y : TopCat.{v}} (f : X ⟶ Y) : freeObj R X ⟶ freeObj R Y :=
     refine sInf_le ⟨continuousSMul_induced (Finsupp.lmapDomain _ _ f.hom),
       continuousAdd_induced (Finsupp.lmapDomain _ _ f.hom), ?_⟩
     rw [← coinduced_le_iff_le_induced]
-    refine le_trans ?_ hτ₃
-    refine le_of_eq_of_le ?_ (coinduced_mono (continuous_iff_coinduced_le.mp f.hom.2))
+    grw [← hτ₃, ← coinduced_mono (continuous_iff_coinduced_le.mp f.hom.2)]
     rw [coinduced_compose, coinduced_compose]
-    congr 1
+    congr! 1
     ext x
     simp [coe_freeObj]⟩
 

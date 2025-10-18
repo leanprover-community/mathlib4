@@ -34,7 +34,7 @@ theorem cos_eq_zero_iff {θ : ℂ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1
   rw [cos, h, ← exp_pi_mul_I, exp_eq_exp_iff_exists_int, mul_right_comm]
   refine exists_congr fun x => ?_
   refine (iff_of_eq <| congr_arg _ ?_).trans (mul_right_inj' <| mul_ne_zero two_ne_zero I_ne_zero)
-  field_simp; ring
+  ring
 
 theorem cos_ne_zero_iff {θ : ℂ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 := by
   rw [← not_exists, not_iff_not, cos_eq_zero_iff]
@@ -44,11 +44,11 @@ theorem sin_eq_zero_iff {θ : ℂ} : sin θ = 0 ↔ ∃ k : ℤ, θ = k * π := 
   constructor
   · rintro ⟨k, hk⟩
     use k + 1
-    field_simp [eq_add_of_sub_eq hk]
+    simp [eq_add_of_sub_eq hk]
     ring
   · rintro ⟨k, rfl⟩
     use k - 1
-    field_simp
+    simp
     ring
 
 theorem sin_ne_zero_iff {θ : ℂ} : sin θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π := by
@@ -62,7 +62,7 @@ See also `Complex.tan_eq_zero_iff'`. -/
 theorem tan_eq_zero_iff {θ : ℂ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ := by
   rw [tan, div_eq_zero_iff, ← mul_eq_zero, ← mul_right_inj' two_ne_zero, mul_zero,
     ← mul_assoc, ← sin_two_mul, sin_eq_zero_iff]
-  field_simp [mul_comm, eq_comm]
+  simp [field, mul_comm, eq_comm]
 
 theorem tan_ne_zero_iff {θ : ℂ} : tan θ ≠ 0 ↔ ∀ k : ℤ, (k * π / 2 : ℂ) ≠ θ := by
   rw [← not_exists, not_iff_not, tan_eq_zero_iff]
@@ -85,7 +85,7 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
     _ ↔ sin ((x - y) / 2) = 0 ∨ sin ((x + y) / 2) = 0 := or_comm
     _ ↔ (∃ k : ℤ, y = 2 * k * π + x) ∨ ∃ k : ℤ, y = 2 * k * π - x := by
       apply or_congr <;>
-        field_simp [sin_eq_zero_iff, (by simp : -(2 : ℂ) ≠ 0), eq_sub_iff_add_eq',
+        simp [field, sin_eq_zero_iff, eq_sub_iff_add_eq',
           sub_eq_iff_eq_add, mul_comm (2 : ℂ), mul_right_comm _ (2 : ℂ)]
       constructor <;> · rintro ⟨k, rfl⟩; use -k; simp
     _ ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x := exists_or.symm
@@ -93,7 +93,7 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
 theorem sin_eq_sin_iff {x y : ℂ} :
     sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x := by
   simp only [← Complex.cos_sub_pi_div_two, cos_eq_cos_iff, sub_eq_iff_eq_add]
-  refine exists_congr fun k => or_congr ?_ ?_ <;> refine Eq.congr rfl ?_ <;> field_simp <;> ring
+  refine exists_congr fun k => or_congr ?_ ?_ <;> refine Eq.congr rfl ?_ <;> simp [field] <;> ring
 
 theorem cos_eq_one_iff {x : ℂ} : cos x = 1 ↔ ∃ k : ℤ, k * (2 * π) = x := by
   rw [← cos_zero, eq_comm, cos_eq_cos_iff]
@@ -132,6 +132,31 @@ theorem tan_add' {x y : ℂ}
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) :=
   tan_add (Or.inl h)
 
+theorem tan_sub {x y : ℂ}
+    (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
+      (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) := by
+  have := tan_add (x := x) (y := -y) <| by
+    rcases h with ⟨x_ne, minus_y_ne⟩ | ⟨x_eq, minus_y_eq⟩
+    · refine .inl ⟨x_ne, fun l => ?_⟩
+      rw [Ne, neg_eq_iff_eq_neg]
+      convert minus_y_ne (-l - 1) using 2
+      push_cast
+      ring
+    · refine .inr ⟨x_eq, ?_⟩
+      rcases minus_y_eq with ⟨l, rfl⟩
+      use -l - 1
+      push_cast
+      ring
+  rw [tan_neg] at this
+  convert this using 2
+  ring
+
+theorem tan_sub' {x y : ℂ}
+    (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) :=
+  tan_sub (Or.inl h)
+
 theorem tan_two_mul {z : ℂ} : tan (2 * z) = (2 : ℂ) * tan z / ((1 : ℂ) - tan z ^ 2) := by
   by_cases h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2
   · rw [two_mul, two_mul, sq, tan_add (Or.inl ⟨h, h⟩)]
@@ -166,9 +191,7 @@ theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
 theorem cos_eq_iff_quadratic {z w : ℂ} :
     cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 := by
   rw [← sub_eq_zero]
-  field_simp [cos, exp_neg, exp_ne_zero]
-  refine Eq.congr ?_ rfl
-  ring
+  simpa [field, cos, exp_neg] using Eq.congr (by ring) rfl
 
 theorem cos_surjective : Function.Surjective cos := by
   intro x
