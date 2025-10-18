@@ -377,6 +377,15 @@ theorem coe_inf {c d : Con M} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d :=
 theorem inf_iff_and {c d : Con M} {x y} : (c ⊓ d) x y ↔ c x y ∧ d x y :=
   Iff.rfl
 
+@[to_additive]
+instance [Nonempty M] : Nonempty c.Quotient :=
+  inferInstanceAs (Nonempty <| Quotient c.toSetoid)
+
+@[to_additive]
+instance [hc : Fact (c ≠ ⊤)] : Nontrivial c.Quotient :=
+  have : Fact (c.toSetoid ≠ ⊤) := ⟨fun H ↦ hc.out <| toSetoid_inj H⟩
+  inferInstanceAs (Nontrivial <| Quotient c.toSetoid)
+
 /-- The inductively defined smallest congruence relation containing a binary relation `r` equals
 the infimum of the set of congruence relations containing `r`. -/
 @[to_additive addConGen_eq /-- The inductively defined smallest additive congruence relation
@@ -490,23 +499,25 @@ theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N}
     comap f H c x y ↔ c (f x) (f y) :=
   Iff.rfl
 
-section
-
-open Quotient
-
-end
-
 end
 
 section MulOneClass
 
 variable [MulOneClass M] (c : Con M)
 
+@[to_additive]
+instance one : One c.Quotient where
+  -- Using Quotient.mk'' here instead of c.toQuotient
+  -- since c.toQuotient is not reducible.
+  -- This would lead to non-defeq diamonds since this instance ends up in
+  -- quotients modulo ideals.
+  one := Quotient.mk'' (1 : M)
+  -- one := ((1 : M) : c.Quotient)
+
 /-- The quotient of a monoid by a congruence relation is a monoid. -/
 @[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`. -/]
 instance mulOneClass : MulOneClass c.Quotient where
-  one := ((1 : M) : c.Quotient)
   mul_one x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
   one_mul x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
 
@@ -535,15 +546,6 @@ protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _
   | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul (Con.pow c n h) h
-
-@[to_additive]
-instance one [MulOneClass M] (c : Con M) : One c.Quotient where
-  -- Using Quotient.mk'' here instead of c.toQuotient
-  -- since c.toQuotient is not reducible.
-  -- This would lead to non-defeq diamonds since this instance ends up in
-  -- quotients modulo ideals.
-  one := Quotient.mk'' (1 : M)
-  -- one := ((1 : M) : c.Quotient)
 
 instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) :
     SMul ℕ c.Quotient where
