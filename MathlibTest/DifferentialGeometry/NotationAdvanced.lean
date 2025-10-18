@@ -391,13 +391,13 @@ variable (h : x ≤ y) in
 
 -- Test for the definitional equality check: for this type, `isDefEq` succeeds, but
 -- `withReducible <| isDefEq` would not.
-def RealCopy := ℝ
+def RealCopy' := ℝ
 
-instance : Preorder RealCopy := inferInstanceAs (Preorder ℝ)
-instance : TopologicalSpace RealCopy := inferInstanceAs (TopologicalSpace ℝ)
+instance : Preorder RealCopy' := inferInstanceAs (Preorder ℝ)
+instance : TopologicalSpace RealCopy' := inferInstanceAs (TopologicalSpace ℝ)
 
 -- Repeat the same test for an interval in RealCopy.
-variable {x y : RealCopy} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
+variable {x y : RealCopy'} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
   [Fact (x < y)]
 
 noncomputable instance : ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y) :=
