@@ -341,6 +341,38 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
 
+/-- Connecting two unreachable vertices by an edge preserves acyclicity. -/
+theorem IsAcyclic.isAcyclic_sup_fromEdgeSet_of_notMem_reachabilitySet {e : Sym2 V}
+    (hnreach : e ∉ G.reachabilitySet) (hacyc : G.IsAcyclic) : (G ⊔ fromEdgeSet {e}).IsAcyclic := by
+  refine isAcyclic_iff_forall_edge_isBridge.mpr fun e' he' ↦ ?_
+  by_cases heq : e' = e
+  · rw [heq]
+    exact isBridge_sup_fromEdgeSet_of_notMem_reachabilitySet hnreach
+  rw [edgeSet_sup] at he'
+  refine IsBridge.isBridge_sup_fromEdgeSet_of_notMem_reachabilitySet hnreach <|
+    isAcyclic_iff_forall_edge_isBridge.mp hacyc (he'.elim id fun h ↦ False.elim <| heq ?_)
+  rw [edgeSet_fromEdgeSet] at h
+  exact h.left
+
+/-- Connecting two unreachable vertices by an edge preserves acyclicity. -/
+theorem IsAcyclic.isAcyclic_sup_fromEdgeSet_of_not_reachable {u v : V} (hnreach : ¬G.Reachable u v)
+    (hacyc : G.IsAcyclic) : (G ⊔ fromEdgeSet {s(u, v)}).IsAcyclic :=
+  isAcyclic_sup_fromEdgeSet_of_notMem_reachabilitySet hnreach hacyc
+
+/-- Connecting two unreachable vertices by an edge results in an acyclic graph if and only if
+the original graph was acyclic and the vertices had no path between them. -/
+theorem notMem_reachabilitySet_and_isAcyclic_iff_isAcyclic_sup_fromEdgeSet {e : Sym2 V}
+    (hndiag : ¬e.IsDiag) (hnedge : e ∉ G.edgeSet) :
+    e ∉ G.reachabilitySet ∧ G.IsAcyclic ↔ (G ⊔ fromEdgeSet {e}).IsAcyclic := by
+  refine ⟨fun ⟨hnreach, hacyc⟩ ↦ hacyc.isAcyclic_sup_fromEdgeSet_of_notMem_reachabilitySet hnreach,
+    fun hacyc' ↦ ⟨fun hreach ↦ ?_, hacyc'.anti le_sup_left⟩⟩
+  refine isBridge_iff_mem_edgeSet_and_notMem_reachabilitySet_deleteEdges.mp
+    (isAcyclic_iff_forall_edge_isBridge.mp hacyc' <| by grind [edgeSet_sup, edgeSet_fromEdgeSet])
+      |>.right <| reachabilitySet_mono ?_ hreach
+  rw [deleteEdges, sup_sdiff]
+  apply le_sup_of_le_left
+  rw [← deleteEdges, deleteEdges_eq_self.mpr <| Set.disjoint_singleton_left.mpr hnedge |>.symm]
+
 /-- A minimally connected graph is a tree. -/
 lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
@@ -355,6 +387,19 @@ lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
     htree.IsAcyclic.path_unique ⟨p.mapLe hle, hp.mapLe hle⟩ <| Path.singleton hadj
   simp only [edges_map, Hom.coe_ofLE, Sym2.map_id, List.map_id_fun, id_eq] at this
   simp [this, p.adj_of_mem_edges]
+
+/-- A maximally acyclic graph is a tree. -/
+theorem isTree_iff_maximal_isAcyclic : G.IsTree ↔ Nonempty V ∧ Maximal IsAcyclic G := by
+  refine ⟨fun htree ↦ ⟨htree.isConnected.nonempty, htree.IsAcyclic,
+    fun G' hacyc' hle u v hadj' ↦ ?_⟩, fun ⟨_, hacyc, hmax⟩ ↦ ⟨⟨fun _ _ ↦ ?_⟩, hacyc⟩⟩
+  · have ⟨p⟩ := htree.isConnected.preconnected u v
+    have := isBridge_iff_adj_and_forall_walk_mem_edges.mp
+      (isAcyclic_iff_forall_adj_isBridge.mp hacyc' hadj') |>.right <| p.mapLe hle
+    simp only [p.edges_map, Hom.coe_ofLE, Sym2.map_id, List.map_id_fun] at this
+    exact p.adj_of_mem_edges this
+  · refine Classical.byContradiction fun hnreachable ↦ hnreachable <| Adj.reachable ?_
+    have hle' := hmax (hacyc.isAcyclic_sup_fromEdgeSet_of_not_reachable hnreachable) le_sup_left
+    exact le_sup_right.trans hle' <| by grind [fromEdgeSet_adj, Reachable.rfl]
 
 /-- Every connected graph has a spanning tree. -/
 lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
