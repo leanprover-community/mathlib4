@@ -81,8 +81,14 @@ noncomputable def partialLeftAdjointHomEquiv {X : F.PartialLeftAdjointSource} {Y
 lemma partialLeftAdjointHomEquiv_comp {X : F.PartialLeftAdjointSource} {Y Y' : D}
     (f : F.partialLeftAdjointObj X ⟶ Y) (g : Y ⟶ Y') :
     F.partialLeftAdjointHomEquiv (f ≫ g) =
-      F.partialLeftAdjointHomEquiv f ≫ F.map g := by
-  apply CorepresentableBy.homEquiv_comp
+      F.partialLeftAdjointHomEquiv f ≫ F.map g :=
+  CorepresentableBy.homEquiv_comp ..
+
+lemma partialLeftAdjointHomEquiv_symm_comp {X : F.PartialLeftAdjointSource} {Y Y' : D}
+    (f : X.obj ⟶ F.obj Y) (g : Y ⟶ Y') :
+    F.partialLeftAdjointHomEquiv.symm f ≫ g
+      = F.partialLeftAdjointHomEquiv.symm (f ≫ F.map g) :=
+  CorepresentableBy.homEquiv_symm_comp ..
 
 /-- Given `F : D ⥤ C`, this is `F.partialLeftAdjoint` on morphisms. -/
 noncomputable def partialLeftAdjointMap {X Y : F.PartialLeftAdjointSource}
@@ -124,6 +130,25 @@ noncomputable def partialLeftAdjoint : F.PartialLeftAdjointSource ⥤ D where
 
 variable {F}
 
+noncomputable def partialLeftAdjoint_adjoint_of_leftAdjointObjIsDefined_eq_top
+    (h : F.leftAdjointObjIsDefined = ⊤) :
+    F.leftAdjointObjIsDefined.lift (𝟭 C) (by simp [h]) ⋙ F.partialLeftAdjoint ⊣ F :=
+  Adjunction.mkOfHomEquiv {
+    homEquiv c _ := F.partialLeftAdjointHomEquiv (X := ⟨c, by simp [h]⟩)
+    homEquiv_naturality_left_symm f g := by
+      suffices h :
+          F.partialLeftAdjointHomEquiv.symm (f ≫ g)
+            = F.partialLeftAdjointMap f ≫ F.partialLeftAdjointHomEquiv.symm g by
+        simpa using h
+      -- type equality hell
+      expose_names
+      change (⟨X, by simp [h]⟩ : F.PartialLeftAdjointSource) ⟶ ⟨F.obj Y, by simp [h]⟩ at g
+      suffices h : f ≫ g = f ≫ F.partialLeftAdjointHomEquiv (F.partialLeftAdjointHomEquiv.symm g) by
+        apply F.partialLeftAdjointHomEquiv.injective
+        simp [F.partialLeftAdjointHomEquiv_map_comp]
+      exact congrArg (f ≫ ·) (F.partialLeftAdjointHomEquiv.apply_symm_apply g).symm
+    homEquiv_naturality_right _ _ := F.partialLeftAdjointHomEquiv_comp ..
+  }
 lemma isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
     (h : F.leftAdjointObjIsDefined = ⊤) : F.IsRightAdjoint := by
   replace h : ∀ X, IsCorepresentable (F ⋙ coyoneda.obj (op X)) := fun X ↦ by
@@ -225,6 +250,12 @@ lemma partialRightAdjointHomEquiv_comp {X X' : C} {Y : F.PartialRightAdjointSour
       F.map g ≫ F.partialRightAdjointHomEquiv f :=
   RepresentableBy.homEquiv_comp ..
 
+lemma comp_partialRightAdjointHomEquiv_symm {X X' : C} {Y : F.PartialRightAdjointSource}
+    (x : F.obj X' ⟶ Y.obj) (f : X ⟶ X') :
+    f ≫ F.partialRightAdjointHomEquiv.symm x
+      = F.partialRightAdjointHomEquiv.symm (F.map f ≫ x) :=
+  RepresentableBy.comp_homEquiv_symm ..
+
 /-- Given `F : C ⥤ D`, this is `F.partialRightAdjoint` on morphisms. -/
 noncomputable def partialRightAdjointMap {X Y : F.PartialRightAdjointSource}
     (f : X ⟶ Y) : F.partialRightAdjointObj X ⟶ F.partialRightAdjointObj Y :=
@@ -264,6 +295,21 @@ noncomputable def partialRightAdjoint : F.PartialRightAdjointSource ⥤ C where
       partialRightAdjointHomEquiv_map]
 
 variable {F}
+
+noncomputable def adjoint_partialRightAdjoint_of_rightAdjointObjIsDefined_eq_top
+    (h : F.rightAdjointObjIsDefined = ⊤) :
+    F ⊣ F.rightAdjointObjIsDefined.lift (𝟭 D) (by simp [h]) ⋙ F.partialRightAdjoint :=
+  Adjunction.mkOfHomEquiv {
+    homEquiv _ d := (F.partialRightAdjointHomEquiv (Y := ⟨d, by simp [h]⟩)).symm
+    homEquiv_naturality_left_symm _ _ := F.partialRightAdjointHomEquiv_comp _ _
+    homEquiv_naturality_right f g := by
+      suffices h :
+          F.partialRightAdjointHomEquiv.symm (f ≫ g)
+            = F.partialRightAdjointHomEquiv.symm f ≫ F.partialRightAdjointMap g by
+        simpa using h
+      apply F.partialRightAdjointHomEquiv.injective
+      simp [F.partialRightAdjointHomEquiv_map_comp]
+  }
 
 lemma isLeftAdjoint_of_rightAdjointObjIsDefined_eq_top
     (h : F.rightAdjointObjIsDefined = ⊤) : F.IsLeftAdjoint := by
