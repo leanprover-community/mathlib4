@@ -73,8 +73,7 @@ lemma sub_scalar_sq_eq_disc [NeZero (2 : K)] :
   fin_cases i <;>
   fin_cases j <;>
   · simp [Matrix.mul_apply]
-    field_simp
-    ring
+    field
 
 variable (m) in
 /-- The unique eigenvalue of a parabolic matrix (junk if `m` is not parabolic). -/

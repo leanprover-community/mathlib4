@@ -57,7 +57,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
   by_cases h : z = 0
   · have : s = 0 := hs.unique (by simpa [ha 0 hn, h] using hasSum_at_zero a)
     exact ⟨a n, by simp [h, hn.ne', this], by simpa [h] using hasSum_at_zero fun m => a (m + n)⟩
-  · refine ⟨(z ^ n)⁻¹ • s, by match_scalars; field_simp, ?_⟩
+  · refine ⟨(z ^ n)⁻¹ • s, by match_scalars; field, ?_⟩
     have h1 : ∑ i ∈ Finset.range n, z ^ i • a i = 0 :=
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
     have h2 : HasSum (fun m => z ^ (m + n) • a (m + n)) s := by

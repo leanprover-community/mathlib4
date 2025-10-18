@@ -179,9 +179,8 @@ lemma logDeriv_sineTerm_eq_cotTerm (hx : x ∈ ℂ_ℤ) (i : ℕ) :
       aesop
   simp only [Int.cast_add, Int.cast_natCast, Int.cast_one, ne_eq, sineTerm, logDeriv_apply,
     deriv_const_add', deriv_div_const, deriv.fun_neg', differentiableAt_fun_id, deriv_fun_pow,
-    Nat.cast_ofNat, Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, cotTerm, one_div] at *
-  field_simp
-  ring
+    Nat.cast_ofNat, deriv_id'', cotTerm] at *
+  field
 
 lemma logDeriv_prod_sineTerm_eq_sum_cotTerm (hx : x ∈ ℂ_ℤ) (n : ℕ) :
     logDeriv (fun (z : ℂ) ↦ ∏ j ∈ Finset.range n, (1 + sineTerm z j)) x =

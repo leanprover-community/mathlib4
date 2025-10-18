@@ -105,7 +105,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
       have cnpos : 0 < c n := cnpos'
       calc
-        (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by field_simp; ring
+        (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by field
         _ ≤ ε * c n := by
           gcongr
           refine le_trans (neg_le_abs _) ?_
