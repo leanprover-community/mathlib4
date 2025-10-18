@@ -74,11 +74,13 @@ theorem ContDiff.hasStrictDerivAt {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiff �
     HasStrictDerivAt f (deriv f x) x :=
   hf.contDiffAt.hasStrictDerivAt hn
 
-/-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
-and `‖p x 1‖₊ < K`, then `f` is `K`-Lipschitz in a neighborhood of `x` within `s`. -/
-theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt {E F : Type*}
+variable {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
     {p : E → FormalMultilinearSeries ℝ E F} {s : Set E} {x : E}
+
+/-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
+and `‖p x 1‖₊ < K`, then `f` is `K`-Lipschitz in a neighborhood of `x` within `s`. -/
+theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt
     (hf : HasFTaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) (K : ℝ≥0)
     (hK : ‖p x 1‖₊ < K) : ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
   set f' := fun y => continuousMultilinearCurryFin1 ℝ E F (p y 1)
@@ -94,17 +96,14 @@ theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt {E F : Type*}
 
 /-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
 then `f` is Lipschitz in a neighborhood of `x` within `s`. -/
-theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith {E F : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
-    {p : E → FormalMultilinearSeries ℝ E F} {s : Set E} {x : E}
+theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith
     (hf : HasFTaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) :
     ∃ K, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t :=
   (exists_gt _).imp <| hf.exists_lipschitzOnWith_of_nnnorm_lt hs
 
 /-- If `f` is `C^1` within a convex set `s` at `x`, then it is Lipschitz on a neighborhood of `x`
 within `s`. -/
-theorem ContDiffWithinAt.exists_lipschitzOnWith {E F : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F} {s : Set E} {x : E}
+theorem ContDiffWithinAt.exists_lipschitzOnWith
     (hf : ContDiffWithinAt ℝ 1 f s x) (hs : Convex ℝ s) :
     ∃ K : ℝ≥0, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
   rcases hf 1 le_rfl with ⟨t, hst, p, hp⟩
@@ -128,13 +127,83 @@ theorem ContDiffAt.exists_lipschitzOnWith {f : E' → F'} {x : E'} (hf : ContDif
     ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t :=
   (hf.hasStrictFDerivAt le_rfl).exists_lipschitzOnWith
 
-/-- If `f` is `C^1`, it is locally Lipschitz. -/
+/-- If `f` is `C¹` on a convex set `s`, it is locally Lipschitz on `s`. -/
+lemma ContDiffOn.locallyLipschitzOn {f : E → F} {s : Set E} (hs : Convex ℝ s)
+    (hf : ContDiffOn ℝ 1 f s) : LocallyLipschitzOn s f := by
+  intro x hx
+  obtain ⟨K, t, ht, hf⟩ := ContDiffWithinAt.exists_lipschitzOnWith (hf x hx) hs
+  use K, t
+
+/-- If `f` is `C¹`, it is locally Lipschitz. -/
 lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : LocallyLipschitz f := by
   intro x
   rcases hf.contDiffAt.exists_lipschitzOnWith with ⟨K, t, ht, hf⟩
   use K, t
 
-/-- A `C^1` function with compact support is Lipschitz. -/
+-- missing lemma, should be easy (but irrelevant for this PR)
+lemma LipschitzOnWith.closure {K}
+    (hcont : ContinuousOn f (closure s)) (hf : LipschitzOnWith K f s) :
+    LipschitzOnWith K f (closure s) := by
+  sorry
+
+-- TODO: move to Lipschitz.lean
+open Metric in
+/-- If `f` is locally Lipschitz on a compact set `s`, it is Lipschitz on `s`. -/
+lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {α β : Type*} [PseudoMetricSpace α]
+    [PseudoMetricSpace β] {f : α → β} {s : Set α} (hs : IsCompact s)
+    (hf : LocallyLipschitzOn s f) : ∃ K, LipschitzOnWith K f s := by
+  have hf' := hf.continuousOn
+  replace hf : ∀ x ∈ s, ∃ ε > 0, ∃ K, LipschitzOnWith K f (ball x ε ∩ s) := fun x hx ↦ by
+    let ⟨K, t, ht, hf⟩ := hf hx
+    let ⟨ε, hε, hε'⟩ := Metric.mem_nhdsWithin_iff.1 ht
+    exact ⟨ε, hε, K, hf.mono hε'⟩
+  choose ε hε K hf using hf
+  have : ∀ x (hx : x ∈ s), ∃ K' : ℝ≥0, ∀ y ∈ s.diff (ball x (ε x hx)),
+      edist (f x) (f y) ≤ K' * edist x y := fun x hx ↦ by
+    let ⟨K', hK'⟩ := (hs.diff isOpen_ball).bddAbove_image
+      (f := fun y ↦ dist (f x) (f y) / dist x y) <| .div (.mono (by fun_prop) s.diff_subset)
+        (by fun_prop) fun y hy ↦ ((hε x hx).trans_le <| not_lt.1 <| dist_comm x y ▸ hy.2).ne.symm
+    refine ⟨⟨K' ⊔ 0, le_sup_right⟩, fun y hy ↦ ?_⟩
+    rw [edist_nndist, edist_nndist, ← ENNReal.coe_mul, ENNReal.coe_le_coe]
+    refine (div_le_iff₀ ?_).1 ?_
+    · exact NNReal.coe_pos.1 <| coe_nndist x y ▸
+        ((hε x hx).trans_le <| not_lt.1 <| dist_comm x y ▸ hy.2)
+    · simp [← NNReal.coe_le_coe, (mem_upperBounds.1 hK') _ <| Set.mem_image_of_mem _ hy]
+  choose K' hK' using this
+  obtain ⟨t, ht⟩ := hs.elim_nhdsWithin_subcover' (fun x hx ↦ s ∩ ball x (ε x hx / 2))
+    (fun x hx ↦ inter_mem_nhdsWithin s <| ball_mem_nhds x <| half_pos <| hε x hx)
+  use t.sup fun i ↦ K _ i.2 + 2 * K' _ i.2
+  intro x hx y hy
+  let ⟨z, hz, hx'⟩ := mem_iUnion₂.1 <| ht hx
+  by_cases hy' : y ∈ ball z.1 (ε _ z.2)
+  · refine (hf _ z.2 ⟨hx'.2.trans <| half_lt_self <| hε _ z.2, hx⟩ ⟨hy', hy⟩).trans <|
+      mul_le_mul_of_nonneg_right ?_ <| zero_le _
+    exact ENNReal.coe_le_coe.2 <| t.le_sup_of_le hz <| le_self_add
+  · refine (edist_triangle_left _ _ (f z)).trans ?_
+    refine .trans ?_ <| mul_le_mul_of_nonneg_right (ENNReal.coe_le_coe.2 <| t.le_sup hz) (zero_le _)
+    refine (add_le_add (hf _ z.2 ⟨mem_ball_self <| hε _ z.2, z.2⟩ ⟨hx'.2.trans <| half_lt_self <|
+      hε _ z.2, hx⟩) <| hK' _ z.2 _ ⟨hy, hy'⟩).trans ?_
+    refine (add_le_add_left (mul_le_mul_of_nonneg_left (edist_triangle_left z.1 y x)
+      (zero_le _)) _).trans ?_
+    simp_rw [edist_dist, ENNReal.coe_nnreal_eq]
+    rw [← ENNReal.ofReal_mul, ← ENNReal.ofReal_mul, ← ENNReal.ofReal_add, ← ENNReal.ofReal_mul,
+      ← ENNReal.ofReal_add, NNReal.coe_add, NNReal.coe_mul, NNReal.coe_ofNat,
+      mul_add, ← add_assoc, dist_comm, ← add_mul]
+    · have h : dist x z ≤ dist x y := by
+        linarith [mem_ball.1 hx'.2, (not_lt (α := ℝ)).1 hy', dist_triangle_left y z x]
+      apply ENNReal.ofReal_le_ofReal
+      refine (add_le_add_right (mul_le_mul_of_nonneg_left h (by positivity)) _).trans ?_
+      linarith
+    all_goals positivity
+
+/-- If `f` is `C¹` on a convex compact set `s`, it is Lipschitz on `s`. -/
+theorem ContDiffOn.exists_lipschitzOnWith {s : Set E} {f : E → F} {n} (hf : ContDiffOn ℝ n f s)
+    (hn : 1 ≤ n) (hs : Convex ℝ s) (hs' : IsCompact s) :
+    ∃ K, LipschitzOnWith K f s := by
+  apply LocallyLipschitzOn.exists_lipschitzOnWith_of_compact hs'
+  apply (hf.of_le hn).locallyLipschitzOn hs
+
+/-- A `C^n` function with compact support is Lipschitz. -/
 theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'}
     (hf : HasCompactSupport f) (h'f : ContDiff 𝕂 n f) (hn : 1 ≤ n) :
     ∃ C, LipschitzWith C f := by
