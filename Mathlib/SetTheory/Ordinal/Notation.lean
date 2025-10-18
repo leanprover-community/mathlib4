@@ -837,7 +837,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · exact
         lt_of_lt_of_le Rl
           (opow_le_opow_right omega0_pos <|
-            mul_le_mul_left' (succ_le_succ_iff.2 (Nat.cast_le.2 (le_of_lt k.lt_succ_self))) _)
+            mul_le_mul_right (succ_le_succ_iff.2 (Nat.cast_le.2 (le_of_lt k.lt_succ_self))) _)
   calc
     (ω0 ^ (k.succ : Ordinal)) * α' + R'
     _ = (ω0 ^ succ (k : Ordinal)) * α' + ((ω0 ^ (k : Ordinal)) * α' * m + R) := by
@@ -855,7 +855,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       rw [opow_mul, opow_succ]
       gcongr
       exact No.snd'.repr_lt
-    · have := mul_le_mul_left' (one_le_iff_pos.2 <| Nat.cast_pos'.2 n.pos) (ω0 ^ succ (k : Ordinal))
+    · have := mul_le_mul_right (one_le_iff_pos.2 <| Nat.cast_pos'.2 n.pos) (ω0 ^ succ (k : Ordinal))
       rw [opow_mul]
       simpa [-opow_succ]
   · cases m

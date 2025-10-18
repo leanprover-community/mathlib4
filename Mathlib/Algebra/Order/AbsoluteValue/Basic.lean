@@ -98,7 +98,7 @@ protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
 lemma listSum_le [AddLeftMono S] (l : List R) : abv l.sum ≤ (l.map abv).sum := by
   induction l with
   | nil => simp
-  | cons head tail ih => exact (abv.add_le ..).trans <| add_le_add_left ih (abv head)
+  | cons head tail ih => exact (abv.add_le ..).trans <| add_le_add_right ih (abv head)
 
 @[simp]
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
@@ -189,7 +189,7 @@ lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
     calc
       abv (n + 1) ≤ abv n + abv 1 := abv.add_le ..
       _ = abv n + 1 := congrArg (abv n + ·) abv.map_one
-      _ ≤ n + 1 := add_le_add_right hn 1
+      _ ≤ n + 1 := by gcongr
 
 end IsDomain
 

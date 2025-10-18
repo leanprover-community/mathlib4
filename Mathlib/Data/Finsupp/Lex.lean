@@ -138,7 +138,7 @@ section Left
 variable [AddLeftStrictMono N]
 
 instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (α →₀ N)) :=
-  ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
+  ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_right ha _⟩⟩
 
 instance Lex.addLeftMono : AddLeftMono (Lex (α →₀ N)) :=
   addLeftMono_of_addLeftStrictMono _
@@ -151,7 +151,7 @@ variable [AddRightStrictMono N]
 
 instance Lex.addRightStrictMono : AddRightStrictMono (Lex (α →₀ N)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
-    ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
+    ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_left ha _⟩⟩
 
 instance Lex.addRightMono : AddRightMono (Lex (α →₀ N)) :=
   addRightMono_of_addRightStrictMono _
