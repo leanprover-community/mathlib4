@@ -431,7 +431,7 @@ theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
           exact leadingCoeff_eq_zero.mp hi
         calc
           (p ^ i * p).natDegree ≤ (p ^ i).natDegree + p.natDegree := natDegree_mul_le
-          _ < i * p.natDegree + p.natDegree := add_lt_add_right h1 _
+          _ < i * p.natDegree + p.natDegree := by gcongr
     · rw [← natDegree_pow' hp1, ← leadingCoeff_pow' hp1]
       exact coeff_mul_degree_add_degree _ _
 
