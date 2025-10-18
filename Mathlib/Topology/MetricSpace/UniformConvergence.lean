@@ -39,6 +39,7 @@ There are a few advantages of equipping this space with this metric structure.
   `α` is compact, `C(α, β)`, relative to their underlying bare functions.
 -/
 
+
 variable {α β γ : Type*} [PseudoEMetricSpace γ]
 open scoped UniformConvergence NNReal ENNReal
 open Filter Topology Uniformity
@@ -130,11 +131,12 @@ variable [PseudoMetricSpace β]
 noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ β) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun f g ↦ ⨆ x, dist (toFun f x) (toFun g x))
-    (fun _ _ ↦ by
-      have := BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-      refine (iSup_le fun x ↦ EMetric.edist_le_diam_of_mem ?_ ?_).trans_lt this |>.ne
-      all_goals trivial)
-    (fun _ _ ↦ by simp [edist_def, ENNReal.toReal_iSup (fun _ ↦ edist_ne_top _ _), dist_edist])
+    (fun _ _ ↦ Real.iSup_nonneg fun i ↦ dist_nonneg)
+    fun f g ↦ by
+      cases isEmpty_or_nonempty α
+      · simp [edist_def]
+      have : BddAbove <| .range fun x ↦ dist (toFun f x) (toFun g x) := Finite.bddAbove_range _
+      exact ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ by simp [edist_def, ciSup_le_iff this]
 
 lemma dist_def [BoundedSpace β] (f g : α →ᵤ β) :
     dist f g = ⨆ x, dist (toFun f x) (toFun g x) :=
@@ -279,17 +281,18 @@ variable [Finite 𝔖] [PseudoMetricSpace β]
 
 noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
-    (fun f g ↦ ⨆ x ∈ ⋃₀ 𝔖, dist (toFun 𝔖 f x) (toFun 𝔖 g x))
-    (fun _ _ ↦ by
-      have := BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-      exact (iSup₂_le fun x _ ↦ EMetric.edist_le_diam_of_mem (Set.mem_univ _) (Set.mem_univ _))
-        |>.trans_lt this |>.ne)
-    (fun _ _ ↦ by
-      simp only [dist_edist, edist_def, ← ENNReal.toReal_iSup (fun _ ↦ edist_ne_top _ _)]
-      rw [ENNReal.toReal_iSup]
-      have := BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-      refine fun x ↦ lt_of_le_of_lt (iSup_le fun hx ↦ ?_) this |>.ne
-      exact EMetric.edist_le_diam_of_mem (Set.mem_univ _) (Set.mem_univ _))
+    (fun f g ↦ ⨆ x : ⋃₀ 𝔖, dist (toFun 𝔖 f x) (toFun 𝔖 g x))
+    (fun _ _ ↦ Real.iSup_nonneg fun i ↦ dist_nonneg)
+    fun f g ↦ by
+      cases isEmpty_or_nonempty (⋃₀ 𝔖)
+      · simp_all [edist_def]
+      have : BddAbove (.range fun x : ⋃₀ 𝔖 ↦ dist (toFun 𝔖 f x) (toFun 𝔖 g x)) := by
+        use (EMetric.diam (.univ : Set β)).toReal
+        simp +contextual [mem_upperBounds, eq_comm (a := dist _ _), ← edist_dist,
+          ← ENNReal.ofReal_le_iff_le_toReal BoundedSpace.bounded_univ.ediam_ne_top,
+          EMetric.edist_le_diam_of_mem]
+      refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
+      simp [edist_def, ciSup_le_iff this]
 
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) where
   bounded_univ := by

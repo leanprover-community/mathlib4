@@ -479,6 +479,9 @@ theorem eq_empty_of_subset_empty {s : Set α} : s ⊆ ∅ → s = ∅ :=
 theorem eq_empty_of_isEmpty [IsEmpty α] (s : Set α) : s = ∅ :=
   eq_empty_of_subset_empty fun x _ => isEmptyElim x
 
+-- lemma eq_empty_of_isEmpty' (s : Set α) [IsEmpty s] : s = ∅ := by
+--   simpa using ‹IsEmpty s›
+
 /-- There is exactly one set of a type that is empty. -/
 instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
   default := ∅
