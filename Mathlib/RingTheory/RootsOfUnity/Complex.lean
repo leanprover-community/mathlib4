@@ -60,7 +60,7 @@ theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
   refine ⟨i, hi, ((isPrimitiveRoot_exp n hn).pow_iff_coprime (Nat.pos_of_ne_zero hn) i).mp h, ?_⟩
   rw [← exp_nat_mul]
   congr 1
-  field_simp
+  field
 
 /-- The complex `n`-th roots of unity are exactly the
 complex numbers of the form `exp (2 * Real.pi * Complex.I * (i / n))` for some `i < n`. -/
@@ -75,7 +75,7 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
     refine ⟨i, hi, ?_⟩
     rw [← H, ← exp_nat_mul]
     congr 1
-    field_simp
+    field
   · rintro ⟨i, _, H⟩
     rw [← H, ← exp_nat_mul, exp_eq_one_iff]
     use i

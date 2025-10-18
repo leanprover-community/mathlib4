@@ -158,7 +158,7 @@ lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
     simp [field]
   · simp_rw [norm_mul, norm_real, one_div, inv_rpow hx.le, rpow_neg hx.le, inv_inv, norm_inv,
       norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_add hx]
-    field_simp
+    field
 
 /-- Power asymptotic for `f - f₀` as `x → 0`. -/
 lemma hf_zero' (P : WeakFEPair E) :

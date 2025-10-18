@@ -175,7 +175,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [A ε εpos, Ioi_mem_atTop 0] with n hn (npos : 0 < n)
     calc
       u n / n ≤ (n * l + ε * (1 + ε + l) * n) / n := by gcongr; linarith only [hn]
-      _ = (l + ε * (1 + ε + l)) := by field_simp
+      _ = (l + ε * (1 + ε + l)) := by field
       _ < d := hε
 
 /-- If a monotone sequence `u` is such that `u ⌊c^n⌋₊ / ⌊c^n⌋₊` converges to a limit `l` for all

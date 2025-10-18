@@ -36,14 +36,13 @@ lemma Complex.cot_eq_exp_ratio (z : ℂ) :
   rw [Complex.cot, Complex.sin, Complex.cos]
   have h1 : exp (z * I) + exp (-z * I) = exp (-(z * I)) * (exp (2 * I * z) + 1) := by
     rw [mul_add, ← Complex.exp_add]
-    simp only [mul_one]
     ring_nf
   have h2 : (exp (-z * I) - exp (z * I)) = exp (-(z * I)) * ((1 - exp (2 * I * z))) := by
     ring_nf
     rw [mul_assoc, ← Complex.exp_add]
     ring_nf
   rw [h1, h2]
-  field_simp
+  field
 
 /- The version one probably wants to use more. -/
 lemma Complex.cot_pi_eq_exp_ratio (z : ℂ) :

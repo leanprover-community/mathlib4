@@ -267,7 +267,7 @@ lemma integral_exp_mul_I_eq_sinc (r : ℝ) :
   · simp [hr]
   rw [sinc_of_ne_zero hr]
   norm_cast
-  field_simp
+  field
 
 /-- Helper lemma for `integral_log`: case where `a = 0` and `b` is positive. -/
 lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in 0..b, log s = b * log b - b := by
@@ -370,7 +370,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
         (Or.inl hz)).div_const (2 * (t + 1)) using 1
       simp [field]
     convert (HasDerivAt.comp (↑x) (g _) f).comp_ofReal using 1
-    · field_simp
+    · field
     · exact mod_cast add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg x)
   · apply Continuous.intervalIntegrable
     refine continuous_ofReal.mul ?_

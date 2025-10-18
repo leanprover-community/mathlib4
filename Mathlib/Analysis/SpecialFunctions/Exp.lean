@@ -141,10 +141,7 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
     exact hy
   simp only [gt_iff_lt, dist_zero_right, Set.mem_setOf_eq, norm_mul, Complex.norm_exp] at *
   apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) (le_of_lt ha))
-  have hrr : ε / (2 * a.exp) * a.exp = ε / 2 := by
-    nth_rw 2 [mul_comm]
-    field_simp
-  rw [hrr]
+  field_simp
   exact div_two_lt_of_pos hε
 
 end ComplexContinuousExpComp

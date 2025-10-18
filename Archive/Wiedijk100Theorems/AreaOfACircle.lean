@@ -111,8 +111,7 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
       simp [f]
       field_simp
       simp (disch := positivity)
-      field_simp
-      ring_nf
+      field
     · suffices -(1 : ℝ) < (r : ℝ)⁻¹ * x by exact this.ne'
       calc
         -(1 : ℝ) = (r : ℝ)⁻¹ * -r := by simp [inv_mul_cancel₀ hlt.ne']

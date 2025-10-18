@@ -78,7 +78,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
       _ ≤ √((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
       _ = √(1 - 2 * x + (1 + s ^ 2) * x * x) := by congr 1; ring
       _ ≤ √(1 - 2 * x + (1 + s ^ 2) * (1 / (1 + s ^ 2)) * x) := by gcongr
-      _ = √(1 - x) := by congr 1; field_simp; ring
+      _ = √(1 - x) := by congr 1; field
       _ ≤ 1 - x / 2 := by
         simp_rw [sub_eq_add_neg, ← neg_div]
         refine sqrt_one_add_le <| neg_le_neg_iff.mpr (hx₁.trans_le ?_).le

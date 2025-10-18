@@ -119,8 +119,7 @@ lemma cosZeta_eq (a : UnitAddCircle) (s : ℂ) :
 lemma sinZeta_eq (a : UnitAddCircle) (s : ℂ) :
     sinZeta a s = (expZeta a s - expZeta (-a) s) / (2 * I) := by
   rw [expZeta, expZeta, cosZeta_neg, sinZeta_neg]
-  field_simp
-  ring_nf
+  field
 
 lemma hasSum_expZeta_of_one_lt_re (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ cexp (2 * π * I * a * n) / n ^ s) (expZeta a s) := by
