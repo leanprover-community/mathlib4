@@ -1181,6 +1181,7 @@ noncomputable def compContinuousLinearMapMultilinear :
 `ContinuousMultilinearMap.compContinuousLinearMap`
 sending a continuous multilinear map `g` to `g (f₁ ·, ..., fₙ ·)` is continuous-linear in `g` and
 continuous-multilinear in `f₁, ..., fₙ`. -/
+@[simps! apply_apply]
 noncomputable def compContinuousLinearMapContinuousMultilinear :
     ContinuousMultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i)
       ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
@@ -1190,7 +1191,25 @@ noncomputable def compContinuousLinearMapContinuousMultilinear :
       rw [one_mul]
       apply norm_compContinuousLinearMapL_le
 
-variable {𝕜 E E₁}
+variable {𝕜 E E₁ G}
+
+/-- Fréchet derivative of `compContinuousLinearMap f g` with respect to `g`.
+The derivative with respect to `f` is given by `compContinuousLinearMapL`. -/
+noncomputable def fderivCompContinuousLinearMap [DecidableEq ι]
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) (g : ∀ i, E i →L[𝕜] E₁ i) :
+    (∀ i, E i →L[𝕜] E₁ i) →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
+  ContinuousLinearMap.apply _ _ f
+    |>.compContinuousMultilinearMap (compContinuousLinearMapContinuousMultilinear 𝕜 _ _ _)
+    |>.linearDeriv g
+
+@[simp]
+lemma fderivCompContinuousLinearMap_apply [DecidableEq ι]
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) (g : ∀ i, E i →L[𝕜] E₁ i)
+    (dg : ∀ i, E i →L[𝕜] E₁ i) (v : ∀ i, E i) :
+    f.fderivCompContinuousLinearMap g dg v = ∑ i, f fun j ↦ (update g i (dg i) j) (v j) := by
+  simp [fderivCompContinuousLinearMap]
+
+variable (G)
 
 /-- `ContinuousMultilinearMap.compContinuousLinearMap` as a bundled continuous linear equiv,
 given `f : Π i, E i ≃L[𝕜] E₁ i`. -/
