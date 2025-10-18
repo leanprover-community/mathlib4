@@ -136,9 +136,9 @@ initialize registerBuiltinAttribute {
   | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
-    addRelatedDecl src "_assoc" ref stx? fun type value levels => do
+    addRelatedDecl src "_assoc" ref stx? fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
-        let pf ← reassocExpr' value type
+        let pf ← reassocExpr' value none
         pure (pf, levels)
   | _ => throwUnsupportedSyntax }
 
