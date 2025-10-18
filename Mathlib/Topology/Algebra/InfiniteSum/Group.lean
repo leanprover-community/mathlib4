@@ -346,7 +346,7 @@ variable {G : Type*} [TopologicalSpace G] [CommGroup G] [IsTopologicalGroup G] {
 theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1 : G)) :
     ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k ∈ t, f k) ∈ e := by
   classical
-  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_prod_vanishing.1 hf.hasProd.cauchySeq e he
 
@@ -354,7 +354,7 @@ theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈
 theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 1) :
     ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∏' b : t, f b) ∈ e := by
   classical
-  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
