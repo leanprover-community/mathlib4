@@ -54,6 +54,7 @@ end Zero
 /-!
 ## Simplifying Lemmas in cases where α is an AddMonoid
 -/
+
 @[simp]
 lemma untopD_add [Add α] {a b : WithTop α} {c : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (a + b).untopD c = a.untopD c + b.untopD c := by
@@ -64,6 +65,9 @@ lemma untopD_add [Add α] {a b : WithTop α} {c : α} (ha : a ≠ ⊤) (hb : b �
 @[simp]
 lemma untop₀_add [AddZeroClass α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (a + b).untop₀ = a.untop₀ + b.untop₀ := untopD_add ha hb
+
+@[simp]
+lemma untop₀_natCast [AddMonoidWithOne α] (n : ℕ) : untop₀ (n : WithTop α) = n := rfl
 
 /-!
 ## Simplifying Lemmas in cases where α is a MulZeroClass
