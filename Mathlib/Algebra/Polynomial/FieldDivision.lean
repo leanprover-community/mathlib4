@@ -249,11 +249,15 @@ theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 <
     rw [eq_C_of_degree_le_zero h] at hp0 hp
     exact hp (IsUnit.map C (IsUnit.mk0 (coeff p 0) (mt C_inj.2 (by simpa using hp0))))
 
+end DivisionRing
+
+section SimpleRing
+
+variable [Ring R] [IsSimpleRing R] {p q : R[X]}
+
 @[simp]
-protected theorem map_eq_zero [Semiring S] [Nontrivial S] (f : R →+* S) : p.map f = 0 ↔ p = 0 := by
-  simp only [Polynomial.ext_iff]
-  congr!
-  simp [map_eq_zero, coeff_map, coeff_zero]
+protected theorem map_eq_zero [Semiring S] [Nontrivial S] (f : R →+* S) : p.map f = 0 ↔ p = 0 :=
+  Polynomial.map_eq_zero_iff f.injective
 
 theorem map_ne_zero [Semiring S] [Nontrivial S] {f : R →+* S} (hp : p ≠ 0) : p.map f ≠ 0 :=
   mt (Polynomial.map_eq_zero f).1 hp
@@ -261,23 +265,23 @@ theorem map_ne_zero [Semiring S] [Nontrivial S] {f : R →+* S} (hp : p ≠ 0) :
 @[simp]
 theorem degree_map [Semiring S] [Nontrivial S] (p : R[X]) (f : R →+* S) :
     degree (p.map f) = degree p :=
-  p.degree_map_eq_of_injective f.injective
+  degree_map_eq_from_simpleRing _ _
 
 @[simp]
 theorem natDegree_map [Semiring S] [Nontrivial S] (f : R →+* S) :
     natDegree (p.map f) = natDegree p :=
-  natDegree_eq_of_degree_eq (degree_map _ f)
+  natDegree_map_eq_from_simpleRing _ _
 
 @[simp]
 theorem leadingCoeff_map [Semiring S] [Nontrivial S] (f : R →+* S) :
-    leadingCoeff (p.map f) = f (leadingCoeff p) := by
-  simp only [← coeff_natDegree, coeff_map f, natDegree_map]
+    leadingCoeff (p.map f) = f (leadingCoeff p) :=
+  leadingCoeff_map_eq_from_simpleRing _ _
 
 theorem monic_map_iff [Semiring S] [Nontrivial S] {f : R →+* S} {p : R[X]} :
-    (p.map f).Monic ↔ p.Monic := by
-  rw [Monic, leadingCoeff_map, ← f.map_one, Function.Injective.eq_iff f.injective, Monic]
+    (p.map f).Monic ↔ p.Monic :=
+  Function.Injective.monic_map_iff f.injective |>.symm
 
-end DivisionRing
+end SimpleRing
 
 section Field
 
