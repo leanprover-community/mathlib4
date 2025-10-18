@@ -575,6 +575,41 @@ theorem coe_restrict_scalarsL' : ⇑(restrictScalarsL 𝕜 E F 𝕜' 𝕜'') = r
 
 end RestrictScalars
 
+section Prod
+
+variable {𝕜 E F G : Type*} (S : Type*) [NormedField 𝕜] [Semiring S]
+  [AddCommGroup E] [Module 𝕜 E]
+  [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+  [AddCommGroup F] [Module 𝕜 F]
+  [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+  [AddCommGroup G] [Module 𝕜 G]
+  [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+  [Module S G] [SMulCommClass 𝕜 S G] [ContinuousConstSMul S G]
+
+/-- `ContinuousLinearMap.coprod` as a `ContinuousLinearEquiv`. -/
+@[simps!]
+def coprodEquivL : ((E →L[𝕜] G) × (F →L[𝕜] G)) ≃L[S] (E × F →L[𝕜] G) where
+  __ := coprodEquiv
+  continuous_toFun :=
+    (((fst 𝕜 E F).precomp G).coprod ((snd 𝕜 E F).precomp G)).continuous
+  continuous_invFun :=
+    (((inl 𝕜 E F).precomp G).prod ((inr 𝕜 E F).precomp G)).continuous
+
+variable [Module S F] [SMulCommClass 𝕜 S F] [ContinuousConstSMul S F]
+
+/-- `ContinuousLinearMap.prod` as a `ContinuousLinearEquiv`. -/
+@[simps! apply]
+def prodL : ((E →L[𝕜] F) × (E →L[𝕜] G)) ≃L[S] (E →L[𝕜] F × G) where
+  __ := prodₗ S
+  continuous_toFun := by
+    change Continuous fun x => id 𝕜 _ ∘L prodₗ S x
+    simp_rw [← coprod_inl_inr]
+    exact (((inl 𝕜 F G).postcomp E).coprod ((inr 𝕜 F G).postcomp E)).continuous
+  continuous_invFun :=
+    (((fst 𝕜 F G).postcomp E).prod ((snd 𝕜 F G).postcomp E)).continuous
+
+end Prod
+
 end ContinuousLinearMap
 
 open ContinuousLinearMap
