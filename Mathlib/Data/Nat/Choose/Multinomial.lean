@@ -145,13 +145,13 @@ variable {α : Type*}
   for the big operations
 -/
 def multinomial (f : α →₀ ℕ) : ℕ :=
-  (f.sum fun _ => id)! / f.prod fun _ n => n !
+  (f.sum fun _ x ↦ x)! / f.prod fun _ n => n !
 
 theorem multinomial_eq (f : α →₀ ℕ) : f.multinomial = Nat.multinomial f.support f :=
   rfl
 
 theorem multinomial_update (a : α) (f : α →₀ ℕ) :
-    f.multinomial = (f.sum fun _ => id).choose (f a) * (f.update a 0).multinomial := by
+    f.multinomial = (f.sum fun _ x ↦ x).choose (f a) * (f.update a 0).multinomial := by
   simp only [multinomial_eq]
   classical
     by_cases h : a ∈ f.support
