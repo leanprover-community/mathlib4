@@ -6522,6 +6522,7 @@ import Mathlib.Topology.Algebra.Order.Support
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.PontryaginDual
+import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 import Mathlib.Topology.Algebra.ProperAction.Basic
 import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 import Mathlib.Topology.Algebra.ProperConstSMul
