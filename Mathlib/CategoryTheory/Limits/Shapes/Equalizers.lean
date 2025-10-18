@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel
 -/
 import Mathlib.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
@@ -172,7 +173,7 @@ theorem walkingParallelPairOpEquiv_counitIso_one :
   rfl
 
 variable {C : Type u} [Category.{v} C]
-variable {X Y : C}
+variable {X Y Z : C}
 
 /-- `parallelPair f g` is the diagram in `C` consisting of the two morphisms `f` and `g` with
 common domain and codomain. -/
@@ -354,6 +355,23 @@ theorem Cofork.coequalizer_ext (s : Cofork f g) {W : C} {k l : s.pt ⟶ W}
     (h : Cofork.π s ≫ k = Cofork.π s ≫ l) : ∀ j : WalkingParallelPair, s.ι.app j ≫ k = s.ι.app j ≫ l
   | zero => by simp only [s.app_zero_eq_comp_π_left, Category.assoc, h]
   | one => h
+
+@[simp]
+theorem Fork.ofι_eq_self (w : Fork f g) : Fork.ofι w.ι w.condition = w :=
+  let ext (w w' : Fork f g) (hp : w.pt = w'.pt) (hπ : w.π = hp ▸ w'.π) : w = w' := by
+    cases w; cases hp; cases hπ; rfl
+  have (X : WalkingParallelPair) : (Fork.ofι w.ι w.condition).π.app X = w.π.app X := by
+    cases X <;> simp
+  ext _ w (by rfl) (NatTrans.ext (funext this))
+
+@[simp]
+theorem Cofork.ofπ_eq_self (w : Cofork f g) : Cofork.ofπ w.π w.condition = w :=
+  let ext (w w' : Cofork f g) (hp : w.pt = w'.pt) (hι : w.ι = hp ▸ w'.ι) : w = w' := by
+    cases w; cases hp; cases hι; rfl
+  have (X : WalkingParallelPair) :
+    (Cofork.ofπ w.π w.condition).ι.app X = w.ι.app X := by
+    cases X <;> simp
+  ext _ w (by rfl) (NatTrans.ext (funext this))
 
 theorem Fork.IsLimit.hom_ext {s : Fork f g} (hs : IsLimit s) {W : C} {k l : W ⟶ s.pt}
     (h : k ≫ Fork.ι s = l ≫ Fork.ι s) : k = l :=
@@ -698,6 +716,22 @@ def Cofork.isColimitOfIsos {X' Y' : C} (c : Cofork f g) (hc : IsColimit c)
     (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by cat_disch) : IsColimit c' :=
   (Cofork.isColimitEquivOfIsos c c' e₀ e₁ e) hc
 
+lemma eq_of_lift_eq_diag (p : BinaryFan Z Z) (hp : IsLimit p)
+      {e : X ⟶ Y} {f g : Y ⟶ Z} {h : X ⟶ Z}
+      (eq : e ≫ hp.lift (BinaryFan.mk f g) = h ≫ (hp.lift (BinaryFan.mk (𝟙 Z) (𝟙 Z)))) :
+    e ≫ f = e ≫ g :=
+  by calc
+    e ≫ f = h     := by simpa using congr($eq ≫ p.fst)
+    _     = e ≫ g := by simpa using congr($eq.symm ≫ p.snd)
+
+lemma eq_of_desc_eq_codiag (p : BinaryCofan X X) (hp : IsColimit p)
+      {e : Y ⟶ Z} {f g : X ⟶ Y} {h : X ⟶ Z}
+      (eq : (hp.desc (BinaryCofan.mk f g)) ≫ e = (hp.desc (BinaryCofan.mk (𝟙 X) (𝟙 X))) ≫ h) :
+    f ≫ e = g ≫ e :=
+  by calc
+    f ≫ e = h     := by simpa using congr(p.inl ≫ $eq)
+    _     = g ≫ e := by simpa using congr(p.inr ≫ $eq.symm)
+
 variable (f g)
 
 section
@@ -739,6 +773,15 @@ theorem equalizer.condition : equalizer.ι f g ≫ f = equalizer.ι f g ≫ g :=
 noncomputable def equalizerIsEqualizer : IsLimit (Fork.ofι (equalizer.ι f g)
     (equalizer.condition f g)) :=
   IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
+
+/-- The equalizer built from `equalizer.fork f g` is limiting. -/
+noncomputable def equalizerIsEqualizer' : IsLimit (equalizer.fork f g) :=
+  IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
+
+@[simp]
+theorem equalizer.fork_ofι :
+    Fork.ofι (equalizer.ι f g) (equalizer.condition f g) = equalizer.fork f g :=
+  Fork.ofι_eq_self (equalizer.fork f g)
 
 variable {f g}
 
@@ -887,6 +930,15 @@ theorem coequalizer.condition : f ≫ coequalizer.π f g = g ≫ coequalizer.π 
 noncomputable def coequalizerIsCoequalizer :
     IsColimit (Cofork.ofπ (coequalizer.π f g) (coequalizer.condition f g)) :=
   IsColimit.ofIsoColimit (colimit.isColimit _) (Cofork.ext (Iso.refl _) (by simp))
+
+/-- The cofork built from `coequalizer.π f g` is colimiting. -/
+noncomputable def coequalizerIsCoequalizer' : IsColimit (coequalizer.cofork f g) :=
+  IsColimit.ofIsoColimit (colimit.isColimit _) (Cofork.ext (Iso.refl _) (by simp))
+
+@[simp]
+theorem coequalizer.cofork_ofπ :
+    Cofork.ofπ (coequalizer.π f g) (coequalizer.condition f g) = coequalizer.cofork f g :=
+  Cofork.ofπ_eq_self (coequalizer.cofork f g)
 
 variable {f g}
 
@@ -1225,6 +1277,19 @@ def splitEpiOfIdempotentOfIsColimitCofork {X : C} {f : X ⟶ X} (hf : f ≫ f = 
 noncomputable def splitEpiOfIdempotentCoequalizer {X : C} {f : X ⟶ X} (hf : f ≫ f = f)
     [HasCoequalizer (𝟙 X) f] : SplitEpi (coequalizer.π (𝟙 X) f) :=
   splitEpiOfIdempotentOfIsColimitCofork _ hf (colimit.isColimit _)
+
+variable [HasBinaryProducts C]
+
+local notation "p⟨" f ", " g "⟩" => Limits.prod.lift f g
+
+/-- For `f : X ⟶ Y`, the pairing `p⟨𝟙 X, f⟩ : X ⟶ X ⨯ Y` is the equalizer
+of the pair `(prod.fst ≫ f, prod.snd)`. -/
+noncomputable def graph_as_equalizer {X Y : C} (f : X ⟶ Y) :
+    IsLimit (Fork.ofι p⟨𝟙 X, f⟩ ((by simp) : p⟨𝟙 X, f⟩ ≫ prod.fst ≫ f = p⟨𝟙 X, f⟩ ≫ prod.snd)) :=
+  Fork.IsLimit.mk _
+    (fun s => s.ι ≫ prod.fst)
+    (fun s => ((by simp[prod.comp_lift, s.condition])))
+    (fun s m eq => by simp[← eq])
 
 end CategoryTheory.Limits
 
