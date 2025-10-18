@@ -13,7 +13,7 @@ Given `F : C ⥤ D` and `P : D ⥤ Type w`, we define a map
 show that it is a bijection when `F` is initial.
 As `Functor.sections` identify to limits of functors to types
 (at least under suitable universe assumptions), this could
-be deduce from general results about limits and
+be deduced from general results about limits and
 initial functors, but we provide a more down to earth proof.
 
 -/
