@@ -35,7 +35,7 @@ theorem Module.Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R M N} {�
     map_sum_finset, map_smul_univ, h]
 
 @[deprecated (since := "2025-05-12")]
-alias Basis.ext_multilinear_fin := Basis.ext_multilinear
+alias Basis.ext_multilinear_fin := Module.Basis.ext_multilinear
 
 
 
@@ -46,23 +46,26 @@ variable [Fintype ι] [∀ i, Fintype (κ i)] [CommSemiring R]
 variable [∀ i, AddCommMonoid (M i)] [AddCommMonoid N]
 variable [∀ i, Module R (M i)] [Module R N]
 
--- /-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
--- on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ Π₀ j : κ i, M i j`. -/
--- noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N) :
---     Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) :=
---   .ofEquivFun <| by
---     classical
---     -- switch to dfinsupp
---     let b := fun i => (b i).equivFun
---     let b' := b'.repr ≪≫ₗ (finsuppLequivDFinsupp R)
---     suffices
---         MultilinearMap R (fun i => Π₀ j : κ i, R) (Π₀ i : ι', R) ≃ₗ[R]
---           Π₀ (x : ((i : ι) → κ i) × ι'), R from
---       b'.congrRightMultilinear R ≪≫ₗ LinearEquiv.congrLeftMultilinear (b · |>.symm) ≪≫ₗ this
+/-
+open Module in
+/-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
+on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ Π₀ j : κ i, M i j`. -/
+noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N) :
+    Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) :=
+  .ofEquivFun <| by
+    classical
+    -- switch to dfinsupp
+    let b := fun i => (b i).equivFun
+    let b' := b'.repr ≪≫ₗ (finsuppLequivDFinsupp R)
+    suffices
+        MultilinearMap R (fun i => Π₀ j : κ i, R) (Π₀ i : ι', R) ≃ₗ[R]
+          Π₀ (x : ((i : ι) → κ i) × ι'), R from
+      b'.congrRightMultilinear R ≪≫ₗ LinearEquiv.congrLeftMultilinear (b · |>.symm) ≪≫ₗ this
 
---     refine (fromDFinsuppEquiv _ _).symm ≪≫ₗ
---       LinearEquiv.piCongrRight (fun i => MultilinearMap.piRingEquiv.symm) ≪≫ₗ ?_
---     -- some annoying swap between Π and Π₀
---     sorry
+    refine (fromDFinsuppEquiv _ _).symm ≪≫ₗ
+      LinearEquiv.piCongrRight (fun i => MultilinearMap.piRingEquiv.symm) ≪≫ₗ ?_
+    -- some annoying swap between Π and Π₀
+    sorry
+-/
 
 end Basis

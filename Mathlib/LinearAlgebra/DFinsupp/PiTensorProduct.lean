@@ -71,7 +71,7 @@ theorem dfinsupp_tprod_apply (x : Π i, Π₀ j, M i j) (p : Π i, κ i) :
   simp only [MultilinearMap.compLinearMap_apply, DFinsupp.lsingle_apply, compMultilinearMap_apply,
     coe_comp, LinearEquiv.coe_coe, Function.comp_apply, dfinsupp_tprod_single,
     DFinsupp.lapply_apply, appLHS, appRHS]
-  obtain rfl | hp := eq_or_ne p' p
+  obtain rfl | hp := eq_or_ne p p'
   · simp only [DFinsupp.single_eq_same]
   · obtain ⟨i, hi⟩ := Function.ne_iff.1 hp
     rw [DFinsupp.single_eq_of_ne hp, ((tprod R).map_coord_zero i ?_).symm]

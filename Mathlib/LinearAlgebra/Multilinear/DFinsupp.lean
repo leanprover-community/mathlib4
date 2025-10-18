@@ -248,6 +248,7 @@ variable [Fintype ι] [∀ i, Fintype (κ i)] [CommSemiring R]
 variable [∀ i, AddCommMonoid (M i)] [AddCommMonoid N]
 variable [∀ i, Module R (M i)] [Module R N]
 
+open Module in
 /-- A basis for multilinear maps given a finite basis on each domain and a basis on the codomain. -/
 noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N) :
     Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) where
@@ -260,7 +261,8 @@ noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) 
       refine ?_ ≪≫ₗ (finsuppLequivDFinsupp R).symm
       let b := fun i => (b i).repr ≪≫ₗ (finsuppLequivDFinsupp R)
       let b' := b'.repr ≪≫ₗ (finsuppLequivDFinsupp R)
-      exact b'.congrRightMultilinear R ≪≫ₗ LinearEquiv.congrLeftMultilinear (b · |>.symm) ≪≫ₗ this
+      exact b'.multilinearMapCongrRight R ≪≫ₗ LinearEquiv.multilinearMapCongrLeft (b · |>.symm) ≪≫ₗ
+        this
     refine (fromDFinsuppEquiv _ _).symm ≪≫ₗ
       LinearEquiv.piCongrRight (fun i => MultilinearMap.piRingEquiv.symm) ≪≫ₗ ?_
     -- some annoying swap between Π and Π₀
@@ -268,46 +270,16 @@ noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) 
     exact DFinsupp.linearEquivFunOnFintype.symm ≪≫ₗ
       (DFinsupp.sigmaCurryLEquiv (M := fun _ _ => R)).symm
 
+open Module in
 theorem _root_.Basis.multilinearMap_apply (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N)
     (i : (Π i, κ i) × ι') :
     Basis.multilinearMap b b' i =
       ((LinearMap.id (M := R)).smulRight (b' i.2)).compMultilinearMap (
         MultilinearMap.mkPiRing R ι 1 |>.compLinearMap fun i' => (b i').coord (i.1 i')
       ) := by
-  -- TODO: clean this up
-  obtain ⟨i, j⟩ := i
-  classical
-  simp [Basis.multilinearMap, Equiv.sigmaEquivProd]
-  set bd' := (finsuppLequivDFinsupp R).symm.trans b'.repr.symm
-  set bd := fun i => ((b i).repr ≪≫ₗ (finsuppLequivDFinsupp R)).toLinearMap
-  conv_lhs =>
-    enter [2, 1, 2, 2, 2]
-    tactic =>
-      trans DFinsupp.single (β := fun _ => Π₀ _, R) i (DFinsupp.single j (1 : R))
-      sorry
-  simp [DFinsupp.linearEquivFunOnFintype, LinearEquiv.piCongrRight, MultilinearMap.piRingEquiv,
-    MultilinearMap.smulRight,
-      LinearMap.smulRight]
-  conv_lhs =>
-    enter [2]
-    simp [LinearMap.compMultilinearMap, Function.comp_def]
-    enter [1, 2, i'']
-    tactic =>
-      trans Pi.single (f := fun _ => _) i (MultilinearMap.mkPiRing R ι (DFinsupp.single j 1)) i''
-      sorry
-  simp [fromDFinsuppEquiv, dfinsuppFamily_single_left, ← LinearMap.comp_compMultilinearMap,
-    LinearEquiv.toLinearMap]
-  conv_lhs =>
-    enter [2, 1, 1]
-    tactic =>
-      trans .id
-      ext
-      simp
-  simp [compLinearMap_assoc, bd]
-  refine Basis.ext_multilinear b fun v => ?_
-  simp [Basis.multilinearMap, Finsupp.linearCombination, MultilinearMap.piRingEquiv]
   sorry
 
+open Module in
 /-- The elements of the basis are the maps which scale `b' ii.2` by the
 product of all the `ii.1 ·` coordinates along `b i`. -/
 theorem _root_.Basis.multilinearMap_apply_apply (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N)
