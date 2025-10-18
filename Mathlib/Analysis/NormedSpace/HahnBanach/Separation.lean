@@ -235,6 +235,7 @@ theorem separate_convex_open_set {s : Set E}
   simp only [re_extendTo𝕜'ₗ]
   exact hg
 
+/-- [Rudin, *Functional Analysis* (Theorem 3.4 (a))][rudin1991] -/
 theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht : Convex ℝ t)
     (disj : Disjoint s t) : ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧
     ∀ b ∈ t, u ≤ re (f b) := by
@@ -268,6 +269,7 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
 
 variable [LocallyConvexSpace ℝ E]
 
+/-- [Rudin, *Functional Analysis* (Theorem 3.4 (b))][rudin1991] -/
 theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsCompact s)
     (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : Disjoint s t) :
     ∃ (f : StrongDual 𝕜 E) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) := by
