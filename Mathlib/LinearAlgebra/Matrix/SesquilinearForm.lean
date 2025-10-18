@@ -56,10 +56,10 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, smul_add, sum_add_distrib, add_smul])
     (fun c v w => by
       simp only [Pi.smul_apply, smul_sum, smul_eq_mul, σ₁.map_mul, ← smul_comm _ (σ₁ c),
-        MulAction.mul_smul])
+        SemigroupAction.mul_smul])
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, sum_add_distrib])
     (fun _ v w => by
-      simp only [Pi.smul_apply, smul_eq_mul, map_mul, MulAction.mul_smul, smul_sum])
+      simp only [Pi.smul_apply, smul_eq_mul, map_mul, SemigroupAction.mul_smul, smul_sum])
 
 variable [DecidableEq n] [DecidableEq m]
 
