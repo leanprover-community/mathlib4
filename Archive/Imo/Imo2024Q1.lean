@@ -86,7 +86,7 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
         _ ≤ ⌈α⁻¹⌉₊ * α := by gcongr; exact Nat.le_ceil α⁻¹
     · calc ⌈α⁻¹⌉₊ * α
         _ < (α⁻¹ + 1) * α := by gcongr; exact Nat.ceil_lt_add_one (inv_nonneg.2 h0.le)
-        _ = 1 + α := by field_simp
+        _ = 1 + α := by field
         _ ≤ (1 : ℕ) + 1 := by gcongr; norm_cast
   · apply Finset.sum_eq_zero
     intro x hx
@@ -154,7 +154,7 @@ lemma not_condition_of_mem_Ioo {α : ℝ} (h : α ∈ Set.Ioo 0 2) : ¬Condition
   rcases h with ⟨-, h2⟩
   have hna' : 2 - (n : ℝ)⁻¹ ≤ α := by
     convert hna using 1
-    field_simp
+    field
   rw [sub_eq_add_neg, ← le_sub_iff_add_le', neg_le, neg_sub] at hna'
   rw [le_inv_comm₀ (by linarith) (mod_cast hn), ← not_lt] at hna'
   apply hna'

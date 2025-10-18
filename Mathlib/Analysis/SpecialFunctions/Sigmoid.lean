@@ -108,8 +108,7 @@ lemma sigmoid_neg (x : ℝ) : sigmoid (-x) = 1 - sigmoid x := by
 
 lemma sigmoid_mul_rexp_neg (x : ℝ) : sigmoid x * exp (-x) = sigmoid (-x) := by
   rw [sigmoid_neg, sigmoid_def]
-  field_simp
-  ring
+  field
 
 open Set in
 lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
