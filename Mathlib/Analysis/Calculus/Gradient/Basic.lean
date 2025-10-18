@@ -12,7 +12,7 @@ import Mathlib.Analysis.Calculus.Deriv.Basic
 
 ## Main Definitions
 
-Let `f` be a function from a Hilbert Space `F` to `𝕜` (`𝕜` is `ℝ` or `ℂ`) , `x` be a point in `F`
+Let `f` be a function from a Hilbert Space `F` to `𝕜` (`𝕜` is `ℝ` or `ℂ`), `x` be a point in `F`
 and `f'` be a vector in F. Then
 
   `HasGradientWithinAt f f' s x`
@@ -28,10 +28,10 @@ This file contains the following parts of gradient.
 * the definition of gradient.
 * the theorems translating between `HasGradientAtFilter` and `HasFDerivAtFilter`,
   `HasGradientWithinAt` and `HasFDerivWithinAt`, `HasGradientAt` and `HasFDerivAt`,
-  `Gradient` and `fderiv`.
+  `gradient` and `fderiv`.
 * theorems the Uniqueness of Gradient.
 * the theorems translating between  `HasGradientAtFilter` and `HasDerivAtFilter`,
-  `HasGradientAt` and `HasDerivAt`, `Gradient` and `deriv` when `F = 𝕜`.
+  `HasGradientAt` and `HasDerivAt`, `gradient` and `deriv` when `F = 𝕜`.
 * the theorems about the congruence of the gradient.
 * the theorems about the gradient of constant function.
 * the theorems about the continuity of a function admitting a gradient.
@@ -156,9 +156,7 @@ variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
-    ext; simp
-  rwa [HasDerivAtFilter, this]
+  tauto
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by

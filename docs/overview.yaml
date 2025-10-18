@@ -12,7 +12,7 @@ General algebra:
     presheafed space: 'AlgebraicGeometry.PresheafedSpace'
     sheafed space: 'AlgebraicGeometry.SheafedSpace'
     monoidal category: 'CategoryTheory.MonoidalCategory'
-    cartesian closed: 'CategoryTheory.CartesianClosed'
+    Cartesian closed: 'CategoryTheory.CartesianClosed'
     abelian category: 'CategoryTheory.Abelian'
 
   Numbers:
@@ -58,7 +58,7 @@ General algebra:
     subring: 'Subring'
     localization: 'Localization'
     local ring: 'IsLocalRing'
-    noetherian ring: 'IsNoetherianRing'
+    Noetherian ring: 'IsNoetherianRing'
     ordered ring: 'OrderedRing'
 
   Ideals and quotients:
@@ -149,7 +149,7 @@ General algebra:
 
   Representation theory:
     representation : 'Representation'
-    category of finite dimensional representations : 'FDRep'
+    category of finite-dimensional representations : 'FDRep'
     character : 'FDRep.character'
     orthogonality of characters : 'FDRep.char_orthonormal'
 
@@ -161,7 +161,7 @@ Linear algebra:
     vector space: 'Module'
     quotient space: 'Submodule.hasQuotient'
     tensor product: 'TensorProduct'
-    noetherian module: 'IsNoetherian'
+    Noetherian module: 'IsNoetherian'
     basis: 'Module.Basis'
     multilinear map: 'MultilinearMap'
     alternating map: 'AlternatingMap'
@@ -268,8 +268,8 @@ Analysis:
     normed vector space over a normed field: 'NormedSpace'
     topology on a normed vector space: 'NormSMulClass.toIsBoundedSMul'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
-    finite dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
-    Heine-Borel theorem (finite dimensional normed spaces are proper): 'FiniteDimensional.proper'
+    finite-dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
+    Heine-Borel theorem (finite-dimensional normed spaces are proper): 'FiniteDimensional.proper'
     norm of a continuous linear map: 'LinearMap.mkContinuous'
     Banach-Steinhaus theorem: 'banach_steinhaus'
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
@@ -358,10 +358,11 @@ Analysis:
     principle of isolated zeros: 'AnalyticAt.eventually_eq_zero_or_eventually_ne_zero'
     principle of analytic continuation: 'AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq'
     analyticity of holomorphic functions: 'DifferentiableOn.analyticAt'
-    Schwarz lemma: 'Complex.abs_le_abs_of_mapsTo_ball_self'
+    Schwarz lemma: 'Complex.norm_le_norm_of_mapsTo_ball_self'
     removable singularity: 'Complex.differentiableOn_update_limUnder_insert_of_isLittleO'
     Phragmen-Lindelöf principle: 'PhragmenLindelof.horizontal_strip'
     fundamental theorem of algebra: 'Complex.isAlgClosed'
+    First Main Theorem of Value Distribution Theory: 'ValueDistribution.characteristic_sub_characteristic_inv_le'
 
   Distribution theory:
     Schwartz space: 'SchwartzMap'
@@ -394,7 +395,7 @@ Probability Theory:
     almost sure convergence: 'MeasureTheory.ae'
     convergence in distribution: 'MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto'
     Markov inequality: 'MeasureTheory.mul_meas_ge_le_lintegral'
-    Chebychev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
+    Chebyshev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
     strong law of large numbers: 'ProbabilityTheory.strong_law_ae'
   Stochastic Processes:
     martingale: 'MeasureTheory.Martingale'
@@ -436,6 +437,11 @@ Geometry:
     general linear group as a Lie group: 'Units.instLieGroupModelWithCornersSelf'
     discrete spaces are 0-manifolds: 'IsManifold.of_discreteTopology'
     0-manifolds are discrete spaces: 'ChartedSpace.discreteTopology'
+
+  Riemannian manifolds:
+    Riemannian/bundle metric: 'Bundle.RiemannianMetric'
+    Smooth bundle metric: 'Bundle.ContMDiffRiemannianMetric'
+    Riemannian manifold: 'IsRiemannianManifold'
 
   Smooth vector and fiber bundles:
     (topological) fiber bundle: 'FiberBundle'

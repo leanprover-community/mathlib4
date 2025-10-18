@@ -104,7 +104,7 @@ conditional expectation kernel for `m`, `condExpKernel μ m`, and the restrictio
 Note that `condExpKernel μ m ∘ₘ μ.trim hm = μ`. The definition is equivalent to the two
 conditions
 * for all `t`, `exp (t * X)` is `μ`-integrable,
-* for `μ.trim hm`-almost all `ω`, for all `t`, the mgf with respect to the the conditional
+* for `μ.trim hm`-almost all `ω`, for all `t`, the mgf with respect to the conditional
   distribution `condExpKernel μ m ω` is bounded by `exp (c * t ^ 2 / 2)`.
 
 For any `t`, we can write the mgf of `X` with respect to the conditional expectation kernel as
@@ -404,7 +404,7 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
           (κ ω')[fun ω ↦ exp (t * Y ω) ^ (q : ℝ)] ^ (1 / (q : ℝ)) := by
         simp_rw [mul_add, exp_add]
         apply integral_mul_le_Lp_mul_Lq_of_nonneg
-        · exact ⟨by field_simp [p, q], by positivity, by positivity⟩
+        · exact ⟨by simp [field, p, q], by positivity, by positivity⟩
         · exact ae_of_all _ fun _ ↦ exp_nonneg _
         · exact ae_of_all _ fun _ ↦ exp_nonneg _
         · simpa using (hlX t)
@@ -417,8 +417,10 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
         · exact hmY (t * q)
       _ = exp ((cX.sqrt + cY.sqrt) ^ 2 * t ^ 2 / 2) := by
         simp_rw [← exp_mul, ← exp_add]
-        field_simp [p, q]
-        ring }
+        simp only [NNReal.coe_div, NNReal.coe_add, coe_sqrt, one_div, inv_div, exp_eq_exp, p, q]
+        field_simp
+        linear_combination t ^ 2 * (-√↑cY * Real.sq_sqrt cX.coe_nonneg
+            -√↑cX * Real.sq_sqrt cY.coe_nonneg) }
 
 variable {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ} {cY : ℝ≥0}
 
@@ -663,7 +665,7 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX μ)
   simpa [HasSubgaussianMGF_iff_kernel] using this
 
 lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX μ)
-    (hY : HasSubgaussianMGF Y cY μ) (hindep : IndepFun X Y μ) :
+    (hY : HasSubgaussianMGF Y cY μ) (hindep : X ⟂ᵢ[μ] Y) :
     HasSubgaussianMGF (fun ω ↦ X ω + Y ω) (cX + cY) μ where
   integrable_exp_mul t := by
     simp_rw [mul_add, exp_add]
@@ -745,7 +747,7 @@ protected lemma mgf_le_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] 
     convert variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
     · exact isProbabilityMeasure_tilted (hi u)
     · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
-  _ = (‖b - a‖₊ / 2) ^ 2 := by field_simp
+  _ = (‖b - a‖₊ / 2) ^ 2 := by simp [field]
 
 /-- **Hoeffding's lemma**: with respect to a probability measure `μ`, if `X` is a random variable
 that has expectation zero and is almost surely in `Set.Icc a b` for some `a ≤ b`, then `X` has a
@@ -822,14 +824,14 @@ lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure
     induction n with
     | zero => simp [h0]
     | succ n =>
-      specialize hn fun i hi ↦ h_subG i (by omega)
+      specialize hn fun i hi ↦ h_subG i (by cutsat)
       simp_rw [Finset.sum_range_succ _ (n + 1)]
-      refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n (by omega))
+      refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n (by cutsat))
       refine HasSubgaussianMGF.trim (ℱ.le n) ?_ hn
       refine Finset.measurable_fun_sum (Finset.range (n + 1)) fun m hm ↦
         ((h_adapted m).mono (ℱ.mono ?_)).measurable
       simp only [Finset.mem_range] at hm
-      omega
+      cutsat
 
 /-- **Azuma-Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]

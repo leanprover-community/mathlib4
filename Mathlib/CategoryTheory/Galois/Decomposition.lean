@@ -77,7 +77,7 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
     (n : ℕ) : ∀ (X : C), n = Nat.card (F.obj X) → ∃ (ι : Type) (f : ι → C)
     (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
-  induction' n using Nat.strongRecOn with n hi
+  induction n using Nat.strongRecOn with | _ n hi
   intro X hn
   by_cases h : IsConnected X
   · exact has_decomp_connected_components_aux_conn X
@@ -128,7 +128,6 @@ variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 lemma fiber_in_connected_component (X : C) (x : F.obj X) : ∃ (Y : C) (i : Y ⟶ X) (y : F.obj Y),
     F.map i y = x ∧ IsConnected Y ∧ Mono i := by
   obtain ⟨ι, f, g, hl, hc, he⟩ := has_decomp_connected_components X
-  have : Fintype ι := Fintype.ofFinite ι
   let s : Cocone (Discrete.functor f ⋙ F) := F.mapCocone (Cofan.mk X g)
   let s' : IsColimit s := isColimitOfPreserves F hl
   obtain ⟨⟨j⟩, z, h⟩ := Concrete.isColimit_exists_rep _ s' x

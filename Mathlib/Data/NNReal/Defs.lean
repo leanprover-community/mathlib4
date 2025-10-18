@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Data.Real.Archimedean
 
 /-!
@@ -40,7 +40,7 @@ replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` whi
 of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with a hypothesis
 `hf : ∀ x, 0 ≤ f x`.
 
-## Notations
+## Notation
 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
@@ -60,6 +60,11 @@ namespace NNReal
 
 @[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
+/-- Coercion `ℝ≥0 → ℝ`. -/
+@[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
+
+instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
+
 instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
 instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
@@ -77,8 +82,26 @@ instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
 noncomputable instance : LinearOrder ℝ≥0 :=
   Subtype.instLinearOrder _
 
-noncomputable instance : Semifield ℝ≥0 :=
-  Nonneg.semifield
+noncomputable instance : Inv ℝ≥0 where
+  inv x := ⟨(x : ℝ)⁻¹, inv_nonneg.mpr x.2⟩
+
+noncomputable instance : Div ℝ≥0 where
+  div x y := ⟨(x : ℝ) / (y : ℝ), div_nonneg x.2 y.2⟩
+
+noncomputable instance : SMul ℚ≥0 ℝ≥0 where
+  smul x y := ⟨x • (y : ℝ), by rw [NNRat.smul_def]; exact mul_nonneg x.cast_nonneg y.2⟩
+
+noncomputable instance zpow : Pow ℝ≥0 ℤ where
+  pow x n := ⟨(x : ℝ) ^ n, zpow_nonneg x.2 _⟩
+
+/-- Redo the `Nonneg.semifield` instance, because this will get unfolded a lot,
+and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in places where
+it needs to be reducible(-with-instances).
+-/
+noncomputable instance : Semifield ℝ≥0 := fast_instance%
+  Function.Injective.semifield toReal Subtype.val_injective
+    rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
 instance : IsOrderedRing ℝ≥0 :=
   Nonneg.isOrderedRing
@@ -86,26 +109,11 @@ instance : IsOrderedRing ℝ≥0 :=
 instance : IsStrictOrderedRing ℝ≥0 :=
   Nonneg.isStrictOrderedRing
 
-noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 where
-  /- Both `LinearOrderedCommGroupWithZero` and `Semifield` inherit from `CommGroupWithZero`.
-  However, if we project both of them into a `GroupWithZero` and try to unify them
-  at `reducible_and_instances` transparency, then we unfold `instSemifield` into `Nonneg.semifield`
-  which also causes an unfolding of `NNReal` to `{x // 0 ≤ x}`. Those two are (intentionally!)
-  not defeq at `reducible_and_instances`, even though the instances on them are.
-
-  So we either need to copy all the `Nonneg` instances and redefine them specifically for `NNReal`,
-  or we need to avoid the unfold in the unification. The latter has a smaller impact.
-  -/
-  __ := instSemifield.toCommGroupWithZero.toGroupWithZero
-  __ := Nonneg.linearOrderedCommGroupWithZero
+noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
+  Nonneg.linearOrderedCommGroupWithZero
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
-
-/-- Coercion `ℝ≥0 → ℝ`. -/
-@[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
-
-instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
 -- Simp lemma to put back `n.val` into the normal form given by the coercion.
 @[simp]
@@ -306,7 +314,8 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[simp, norm_cast] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
-@[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
+@[gcongr] private alias ⟨_, GCongr.coe_le_coe_of_le⟩ := coe_le_coe
+@[gcongr, bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
 
@@ -322,8 +331,12 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 /-- Alias for the use of `gcongr` -/
 @[gcongr] alias ⟨_, GCongr.toReal_le_toReal⟩ := coe_le_coe
 
-protected theorem _root_.Real.toNNReal_mono : Monotone Real.toNNReal := fun _ _ h =>
-  max_le_max h (le_refl 0)
+protected theorem _root_.Real.toNNReal_monotone : Monotone Real.toNNReal := fun _ _ h =>
+  max_le_max_right _ h
+
+@[gcongr]
+protected theorem _root_.Real.toNNReal_mono {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) : r₁.toNNReal ≤ r₂.toNNReal :=
+  Real.toNNReal_monotone h
 
 @[simp]
 theorem _root_.Real.toNNReal_coe {r : ℝ≥0} : Real.toNNReal r = r :=
@@ -347,8 +360,8 @@ theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
 def gi : GaloisInsertion Real.toNNReal (↑) :=
-  GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_mono Real.le_coe_toNNReal fun _ =>
-    Real.toNNReal_coe
+  GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_monotone Real.le_coe_toNNReal
+    fun _ => Real.toNNReal_coe
 
 -- note that anything involving the (decidability of the) linear order,
 -- will be noncomputable, everything else should not be.
@@ -370,7 +383,8 @@ example : Semiring ℝ≥0 := by infer_instance
 
 example : CommMonoid ℝ≥0 := by infer_instance
 
-example : IsOrderedMonoid ℝ≥0 := by infer_instance
+example : IsOrderedMonoid ℝ≥0 := instLinearOrderedCommGroupWithZero.toIsOrderedMonoid
+
 
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
 
@@ -380,11 +394,11 @@ example : NoMaxOrder ℝ≥0 := by infer_instance
 
 instance instPosSMulStrictMono {α} [Preorder α] [MulAction ℝ α] [PosSMulStrictMono ℝ α] :
     PosSMulStrictMono ℝ≥0 α where
-  elim _r hr _a₁ _a₂ ha := (smul_lt_smul_of_pos_left ha (coe_pos.2 hr):)
+  smul_lt_smul_of_pos_left _r hr _a₁ _a₂ ha := (smul_lt_smul_of_pos_left ha (coe_pos.2 hr) :)
 
 instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MulAction ℝ α] [SMulPosStrictMono ℝ α] :
     SMulPosStrictMono ℝ≥0 α where
-  elim _a ha _r₁ _r₂ hr := (smul_lt_smul_of_pos_right (coe_lt_coe.2 hr) ha :)
+  smul_lt_smul_of_pos_right _a ha _r₁ _r₂ hr := (smul_lt_smul_of_pos_right (coe_lt_coe.2 hr) ha :)
 
 /-- If `a` is a nonnegative real number, then the closed interval `[0, a]` in `ℝ` is order
 isomorphic to the interval `Set.Iic a`. -/
@@ -497,12 +511,9 @@ theorem coe_min (x y : ℝ≥0) : ((min x y : ℝ≥0) : ℝ) = min (x : ℝ) (y
 theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
   q.2
 
-instance instOrderedSMul {M : Type*} [AddCommMonoid M] [PartialOrder M]
-    [Module ℝ M] [OrderedSMul ℝ M] :
-    OrderedSMul ℝ≥0 M where
-  smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) :)
-  lt_of_smul_lt_smul_of_pos {_ _ c} hab _ :=
-    lt_of_smul_lt_smul_of_nonneg_left (by exact hab) (NNReal.coe_nonneg c)
+instance instIsStrictOrderedModule {M : Type*} [AddCommMonoid M] [PartialOrder M]
+    [Module ℝ M] [IsStrictOrderedModule ℝ M] :
+    IsStrictOrderedModule ℝ≥0 M := Nonneg.instIsStrictOrderedModule
 
 end NNReal
 
@@ -734,18 +745,18 @@ section Inv
 
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
-  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h]
+  rw [← mul_le_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h]
 
 theorem inv_le_of_le_mul {r p : ℝ≥0} (h : 1 ≤ r * p) : r⁻¹ ≤ p := by
   by_cases r = 0 <;> simp [*, inv_le]
 
 @[simp]
 theorem le_inv_iff_mul_le {r p : ℝ≥0} (h : p ≠ 0) : r ≤ p⁻¹ ↔ r * p ≤ 1 := by
-  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
+  rw [← mul_le_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
 @[simp]
 theorem lt_inv_iff_mul_lt {r p : ℝ≥0} (h : p ≠ 0) : r < p⁻¹ ↔ r * p < 1 := by
-  rw [← mul_lt_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
+  rw [← mul_lt_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
 theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
   if h0 : c = 0 then by simp [h0] else (div_le_iff₀ (pos_iff_ne_zero.2 h0)).2 h
@@ -813,9 +824,7 @@ theorem le_toNNReal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y
   (le_toNNReal_iff_coe_le <| x.2.trans h).2 h
 
 nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
-  rw [← bddAbove_coe] at hs
-  rw [← coe_inj, coe_sSup, NNReal.coe_zero]
-  exact sSup_of_not_bddAbove hs
+  grind [csSup_of_not_bddAbove, csSup_empty, bot_eq_zero']
 
 theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=
   sSup_of_not_bddAbove hf
@@ -863,7 +872,7 @@ theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConne
     exact ⟨z, h.out hx hy ⟨toNNReal_le_iff_le_coe.1 hz.1, hz.2⟩, toNNReal_coe⟩
 
 theorem preimage_real_toNNReal (h : t.OrdConnected) : (Real.toNNReal ⁻¹' t).OrdConnected :=
-  h.preimage_mono Real.toNNReal_mono
+  h.preimage_mono Real.toNNReal_monotone
 
 end OrdConnected
 
@@ -872,8 +881,6 @@ end Set
 namespace Real
 
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
--- Porting note (kmill): `pp_nodot` has no affect here
--- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
   toFun x := ⟨|x|, abs_nonneg x⟩

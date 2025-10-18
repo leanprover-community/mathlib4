@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Mul
+import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Higher differentiability of composition
@@ -20,7 +20,7 @@ We also expand the API around `C^n` functions.
 
 Similar results are given for `C^n` functions on domains.
 
-## Notations
+## Notation
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
@@ -257,11 +257,11 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (i : ℕ) :
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
       (g : F →L[𝕜] G).compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) := by
-  induction' i with i IH generalizing x
-  · ext1 m
+  induction i generalizing x with ext1 m
+  | zero =>
     simp only [iteratedFDerivWithin_zero_apply, comp_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, coe_coe]
-  · ext1 m
+  | succ i IH =>
     rw [iteratedFDerivWithin_succ_apply_left]
     have Z : fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i (g ∘ f) s) s x =
         fderivWithin 𝕜 (g.continuousMultilinearMapCongrRight (fun _ : Fin i => E) ∘
@@ -419,11 +419,11 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_right (g : G ≃L[𝕜] 
     (hs : UniqueDiffOn 𝕜 s) {x : G} (hx : g x ∈ s) (i : ℕ) :
     iteratedFDerivWithin 𝕜 i (f ∘ g) (g ⁻¹' s) x =
       (iteratedFDerivWithin 𝕜 i f s (g x)).compContinuousLinearMap fun _ => g := by
-  induction' i with i IH generalizing x
-  · ext1
+  induction i generalizing x with ext1 m
+  | zero =>
     simp only [iteratedFDerivWithin_zero_apply, comp_apply,
-     ContinuousMultilinearMap.compContinuousLinearMap_apply]
-  · ext1 m
+      ContinuousMultilinearMap.compContinuousLinearMap_apply]
+  | succ i IH =>
     simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply,
       ContinuousLinearEquiv.coe_coe, iteratedFDerivWithin_succ_apply_left]
     have : fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i (f ∘ g) (g ⁻¹' s)) (g ⁻¹' s) x =
@@ -501,8 +501,8 @@ end linear
 /-! ### The Cartesian product of two C^n functions is C^n. -/
 section prod
 
-/-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the cartesian
-product of `f` and `g` admits the cartesian product of `p` and `q` as a Taylor series. -/
+/-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the Cartesian
+product of `f` and `g` admits the Cartesian product of `p` and `q` as a Taylor series. -/
 theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
     (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
@@ -519,7 +519,7 @@ theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
 @[deprecated (since := "2025-03-09")]
 alias HasFTaylorSeriesUpToOn.prod := HasFTaylorSeriesUpToOn.prodMk
 
-/-- The cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
+/-- The Cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
 @[fun_prop]
 theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
@@ -543,7 +543,7 @@ theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
 @[deprecated (since := "2025-03-09")]
 alias ContDiffWithinAt.prod := ContDiffWithinAt.prodMk
 
-/-- The cartesian product of `C^n` functions on domains is `C^n`. -/
+/-- The Cartesian product of `C^n` functions on domains is `C^n`. -/
 @[fun_prop]
 theorem ContDiffOn.prodMk {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x : E => (f x, g x)) s := fun x hx =>
@@ -552,7 +552,7 @@ theorem ContDiffOn.prodMk {s : Set E} {f : E → F} {g : E → G} (hf : ContDiff
 @[deprecated (since := "2025-03-09")]
 alias ContDiffOn.prod := ContDiffOn.prodMk
 
-/-- The cartesian product of `C^n` functions at a point is `C^n`. -/
+/-- The Cartesian product of `C^n` functions at a point is `C^n`. -/
 @[fun_prop]
 theorem ContDiffAt.prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x : E => (f x, g x)) x :=
@@ -561,7 +561,7 @@ theorem ContDiffAt.prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f 
 @[deprecated (since := "2025-03-09")]
 alias ContDiffAt.prod := ContDiffAt.prodMk
 
-/-- The cartesian product of `C^n` functions is `C^n`. -/
+/-- The Cartesian product of `C^n` functions is `C^n`. -/
 @[fun_prop]
 theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x : E => (f x, g x) :=
@@ -1162,7 +1162,7 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
   · intro z hz
     have := hvf' (z, g z) hz.1
     refine this.comp _ (hasFDerivAt_prodMk_right _ _).hasFDerivWithinAt ?_
-    exact mapsTo'.mpr (image_prodMk_subset_prod_right hz.2)
+    exact mapsTo_iff_image_subset.mpr (image_prodMk_subset_prod_right hz.2)
   · exact (hf'.continuousLinearMap_comp <| (ContinuousLinearMap.compL 𝕜 F (E × F) G).flip
       (ContinuousLinearMap.inr 𝕜 E F)).comp_of_mem_nhdsWithin_image x₀
       (contDiffWithinAt_id.prodMk hg) hst
@@ -1183,8 +1183,7 @@ theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : S
   have : ∀ k : ℕ, k ≤ m → ContDiffWithinAt 𝕜 k (fun x => fderivWithin 𝕜 (f x) t (g x)) s x₀ := by
     intro k hkm
     obtain ⟨v, hv, -, f', hvf', hf'⟩ :=
-      (hf.of_le <| (add_le_add_right hkm 1).trans hmn).hasFDerivWithinAt_nhds (by simp)
-        (hg.of_le hkm) hgt
+      (hf.of_le <| by grw [hkm, hmn]).hasFDerivWithinAt_nhds (by simp) (hg.of_le hkm) hgt
     refine hf'.congr_of_eventuallyEq_insert ?_
     filter_upwards [hv, ht]
     exact fun y hy h2y => (hvf' y hy).fderivWithin h2y
@@ -1250,11 +1249,13 @@ theorem ContDiffWithinAt.fderivWithin_right_apply
 theorem ContDiffWithinAt.iteratedFDerivWithin_right {i : ℕ} (hf : ContDiffWithinAt 𝕜 n f s x₀)
     (hs : UniqueDiffOn 𝕜 s) (hmn : m + i ≤ n) (hx₀s : x₀ ∈ s) :
     ContDiffWithinAt 𝕜 m (iteratedFDerivWithin 𝕜 i f s) s x₀ := by
-  induction' i with i hi generalizing m
-  · simp only [CharP.cast_eq_zero, add_zero] at hmn
+  induction i generalizing m with
+  | zero =>
+    simp only [CharP.cast_eq_zero, add_zero] at hmn
     exact (hf.of_le hmn).continuousLinearMap_comp
       ((continuousMultilinearCurryFin0 𝕜 E F).symm : _ →L[𝕜] E [×0]→L[𝕜] F)
-  · rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
+  | succ i hi =>
+    rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
     exact ((hi hmn).fderivWithin_right hs le_rfl hx₀s).continuousLinearMap_comp
       ((continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (i+1) ↦ E) F).symm :
         _ →L[𝕜] E [×(i+1)]→L[𝕜] F)

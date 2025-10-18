@@ -3,6 +3,7 @@ Copyright (c) 2024 Anatole Dedeker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guirardel
 -/
+import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.Maps.OpenQuotient
@@ -106,7 +107,7 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] :
 
 /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/
 @[to_additive /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/]
-theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
+instance t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
     T2Space (Quotient (MulAction.orbitRel G X)) := by
   rw [t2_iff_isClosed_diagonal]
   set R := MulAction.orbitRel G X
@@ -140,7 +141,7 @@ theorem t2Space_of_properSMul_of_t1Group [h_proper : ProperSMul G X] [T1Space G]
   have : g ∘ f = fun x ↦ (x, x) := by ext x <;> simp [f, g]
   have range_gf : range (g ∘ f) = diagonal X := by simp [this]
   rw [← range_gf]
-  exact (proper_f.comp proper_g).isClosed_range
+  exact (proper_g.comp proper_f).isClosed_range
 
 @[deprecated (since := "2025-03-21")]
 alias t2Space_of_properSMul_of_t2Group := t2Space_of_properSMul_of_t1Group
@@ -159,10 +160,51 @@ theorem properSMul_of_isClosedEmbedding {H : Type*} [Group H] [MulAction H X] [T
     have : (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) = (fun hx ↦ (f hx.1 • hx.2, hx.2)) := by
       simp [f_compat]
     rw [this]
-    exact h.comp <| ProperSMul.isProperMap_smul_pair
+    exact ProperSMul.isProperMap_smul_pair.comp h
 
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on `X`, then so does `H`. -/
 @[to_additive
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on `X`, then so does `H`. -/]
 instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X :=
   properSMul_of_isClosedEmbedding H.subtype H_closed.isClosedEmbedding_subtypeVal fun _ _ ↦ rfl
+
+/-- The action `G ↷ G` by left translations is proper. -/
+@[to_additive
+/-- The action `G ↷ G` by left translations is proper. -/]
+instance [IsTopologicalGroup G] : ProperSMul G G where
+  isProperMap_smul_pair := by
+    let Φ : G × G ≃ₜ G × G :=
+    { toFun := fun gh ↦ (gh.1 * gh.2, gh.2)
+      invFun := fun gh ↦ (gh.1 * gh.2⁻¹, gh.2)
+      left_inv := fun _ ↦ by simp
+      right_inv := fun _ ↦ by simp }
+    exact Φ.isProperMap
+
+open MulOpposite in
+/-- The action `Gᵐᵒᵖ ↷ G` by right translations is proper. -/
+@[to_additive
+/-- The action `Gᵐᵒᵖ ↷ G` by right translations is proper. -/]
+instance [IsTopologicalGroup G] : ProperSMul Gᵐᵒᵖ G where
+  isProperMap_smul_pair := by
+    let Φ : Gᵐᵒᵖ × G ≃ₜ G × G :=
+    { toFun := fun gh ↦ (gh.2 * (unop gh.1), gh.2)
+      invFun := fun gh ↦ (op (gh.2⁻¹ * gh.1), gh.2)
+      left_inv := fun _ ↦ by simp
+      right_inv := fun _ ↦ by simp }
+    exact Φ.isProperMap
+
+/-- Given a closed subgroup `H` of a topological group `G`, the right action of `H` on `G`
+is proper. Note that the corresponding statement for the left action can be proven by
+`inferInstance`. -/
+@[to_additive /-- Given a closed subgroup `H` of an additive topological group `G`, the right
+action of `H` on `G` is proper. Note that the corresponding statement for the left action can be
+proven by `inferInstance`. -/]
+instance [IsTopologicalGroup G] {H : Subgroup G} [H_closed : IsClosed (H : Set G)] :
+    ProperSMul H.op G :=
+  have : IsClosed (H.op : Set Gᵐᵒᵖ) := H_closed.preimage MulOpposite.continuous_unop
+  inferInstance
+
+@[to_additive]
+instance QuotientGroup.instT2Space [IsTopologicalGroup G] {H : Subgroup G} [IsClosed (H : Set G)] :
+    T2Space (G ⧸ H) :=
+  t2Space_quotient_mulAction_of_properSMul

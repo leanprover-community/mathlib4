@@ -348,7 +348,6 @@ theorem isPurelyInseparable_of_finSepDegree_eq_one
   by_cases H : Algebra.IsAlgebraic F E
   · rw [isPurelyInseparable_iff]
     refine fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, fun hsep ↦ ?_⟩
-    have : Algebra.IsAlgebraic F⟮x⟯ E := Algebra.IsAlgebraic.tower_top (K := F) F⟮x⟯
     have := finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E
     rw [hdeg, mul_eq_one, (finSepDegree_adjoin_simple_eq_finrank_iff F E x
         (Algebra.IsAlgebraic.isAlgebraic x)).2 hsep,
@@ -443,7 +442,7 @@ lemma isSeparable_iff_finInsepDegree_eq_one :
   rw [← separableClosure.eq_top_iff, ← IntermediateField.finrank_eq_one_iff_eq_top, finInsepDegree]
 
 variable {F E} in
-/-- An algebraic extension is purely inseparable if and only if all of its finite dimensional
+/-- An algebraic extension is purely inseparable if and only if all of its finite-dimensional
 subextensions are purely inseparable. -/
 theorem isPurelyInseparable_iff_fd_isPurelyInseparable [Algebra.IsAlgebraic F E] :
     IsPurelyInseparable F E ↔
@@ -500,7 +499,6 @@ separable closure of `F` in `E` if and only if `E` is purely inseparable over it
 theorem separableClosure_le_iff [Algebra.IsAlgebraic F E] (L : IntermediateField F E) :
     separableClosure F E ≤ L ↔ IsPurelyInseparable L E := by
   refine ⟨fun h ↦ ?_, fun _ ↦ separableClosure_le F E L⟩
-  have := separableClosure.isPurelyInseparable F E
   letI := (inclusion h).toAlgebra
   letI : SMul (separableClosure F E) L := Algebra.toSMul
   haveI : IsScalarTower (separableClosure F E) L E := IsScalarTower.of_algebraMap_eq (congrFun rfl)
@@ -566,10 +564,9 @@ namespace Field
 as a natural number. This means that the cardinality of `Field.Emb F E` and the degree of
 `(separableClosure F E) / F` are both finite or infinite, and when they are finite, they
 coincide. -/
-@[stacks 09HJ "`sepDegree` is defined as the right hand side of 09HJ"]
+@[stacks 09HJ "`sepDegree` is defined as the right-hand side of 09HJ"]
 theorem finSepDegree_eq [Algebra.IsAlgebraic F E] :
     finSepDegree F E = Cardinal.toNat (sepDegree F E) := by
-  have : Algebra.IsAlgebraic (separableClosure F E) E := Algebra.IsAlgebraic.tower_top (K := F) _
   have h := finSepDegree_mul_finSepDegree_of_isAlgebraic F (separableClosure F E) E |>.symm
   haveI := separableClosure.isSeparable F E
   haveI := separableClosure.isPurelyInseparable F E

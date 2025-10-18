@@ -337,7 +337,7 @@ lemma deriv2_qaryEntropy :
         · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
           have d_oneminus (p : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) p = -1 := by
             rw [deriv_const_sub 1, deriv_id'']
-          field_simp [sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
+          simp [field, sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
           ring
       · apply DifferentiableAt.add
         simp only [differentiableAt_const]
@@ -376,13 +376,13 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
       linarith
     simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]
-    · field_simp
+    · simp only [sub_pos, gt_iff_lt]
       rw [← log_mul (by linarith) (by linarith)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr hp.1)
       · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left, show 0 < (q : ℝ) - 1 by linarith]
       · have qpos : 0 < (q : ℝ) := by positivity
         have : q * p < q - 1 := by
-          convert (mul_lt_mul_left qpos).2 hp.2 using 1
+          convert mul_lt_mul_of_pos_left hp.2 qpos using 1
           simp only [mul_sub, mul_one, isUnit_iff_ne_zero, ne_eq, ne_of_gt qpos, not_false_eq_true,
             IsUnit.mul_inv_cancel]
         linarith
@@ -400,7 +400,7 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
     have zero_lt_1_sub_p : 0 < 1 - p := by simp_all only [sub_pos, interior_Icc, mem_Ioo]
     simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]
-    · simp
+    · simp only [sub_neg, gt_iff_lt]
       rw [← log_mul (by linarith) (by linarith)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr (show 0 < (↑q - 1) * (1 - p) by nlinarith))
       · simp_all only [mem_Ioi]
@@ -409,14 +409,11 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
         ring_nf
         simp only [add_lt_iff_neg_right, neg_add_lt_iff_lt_add, add_zero, gt_iff_lt]
         have : (q : ℝ) - 1 < p * q := by
-          have tmp := mul_lt_mul_of_pos_right hp.1 qpos
-          simp at tmp
-          have : (q : ℝ) ≠ 0 := (ne_of_lt qpos).symm
-          have asdfasfd : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
+          have h1 := mul_lt_mul_of_pos_right hp.1 qpos
+          have h2 : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
             _ = q - (q : ℝ)⁻¹ * (q : ℝ) := by ring
-            _ = q - 1 := by simp_all only [ne_eq, isUnit_iff_ne_zero,
-              not_false_eq_true, IsUnit.inv_mul_cancel]
-          rwa [asdfasfd] at tmp
+            _ = q - 1 := by simp [qpos.ne']
+          rwa [h2] at h1
         nlinarith
     exact (ne_of_gt (lt_add_neg_iff_lt.mp zero_lt_1_sub_p : p < 1)).symm
 

@@ -23,8 +23,8 @@ the linear order `Fin (n + 1)` to `C`, in other words
 
 ## Projects
 
-* Prove that the 0-simplicies of `SimplicialNerve C` may be identified with the objects of `C`
-* Prove that the 1-simplicies of `SimplicialNerve C` may be identified with the morphisms of `C`
+* Prove that the 0-simplices of `SimplicialNerve C` may be identified with the objects of `C`
+* Prove that the 1-simplices of `SimplicialNerve C` may be identified with the morphisms of `C`
 * Prove that the simplicial nerve of a simplicial category `C`, such that `sHom X Y` is a Kan
   complex for every pair of objects `X Y : C`, is a quasicategory.
 * Define the quasicategory of anima as the simplicial nerve of the simplicial category of
@@ -129,23 +129,18 @@ abbrev comp (i j k : SimplicialThickening J) : Hom i j ⊗ Hom j k ⟶ Hom i k :
 @[simp]
 lemma id_comp (i j : SimplicialThickening J) :
     (λ_ (Hom i j)).inv ≫ id i ▷ Hom i j ≫ comp i i j = 𝟙 (Hom i j) := by
-  rw [Iso.inv_comp_eq]
-  ext
-  exact Functor.ext (fun _ ↦ by simp)
+  aesop
 
 @[simp]
 lemma comp_id (i j : SimplicialThickening J) :
     (ρ_ (Hom i j)).inv ≫ Hom i j ◁ id j ≫ comp i j j = 𝟙 (Hom i j) := by
-  rw [Iso.inv_comp_eq]
-  ext
-  exact Functor.ext (fun _ ↦ by simp)
+  aesop
 
 @[simp]
 lemma assoc (i j k l : SimplicialThickening J) :
     (α_ (Hom i j) (Hom j k) (Hom k l)).inv ≫ comp i j k ▷ Hom k l ≫ comp i k l =
       Hom i j ◁ comp j k l ≫ comp i j l := by
-  ext
-  exact Functor.ext (fun _ ↦ by simp)
+  aesop
 
 end SimplicialCategory
 
