@@ -73,7 +73,7 @@ lemma _root_.IsUnit.isStrictlyPositive_conjugate_iff {u a : A} (hu : IsUnit u) :
     IsStrictlyPositive (u * a * star u) ↔ IsStrictlyPositive a := by
   simp_rw [IsStrictlyPositive.iff_of_unital, hu.conjugate_nonneg_iff]
   lift u to Aˣ using hu
-  rw [mul_assoc, Units.isUnit_units_mul, ← Units.coe_star, Units.isUnit_mul_units]
+  rw [← Units.coe_star, Units.isUnit_mul_units, Units.isUnit_units_mul]
 
 lemma _root_.IsUnit.isStrictlyPositive_conjugate_iff' {u a : A} (hu : IsUnit u) :
     IsStrictlyPositive (star u * a * u) ↔ IsStrictlyPositive a := by
