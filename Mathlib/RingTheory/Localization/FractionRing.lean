@@ -491,6 +491,8 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
 
 variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]
 
+/-- The fraction ring of a nontrivial ring is nontrivial. See `FractionRing.nontrivial'` for
+the converse implication. -/
 protected theorem nontrivial [Nontrivial R] : Nontrivial S := by
   by_contra!
   obtain ⟨c, hc⟩ := h.exists_of_eq (x := 1) (y := 0) (Subsingleton.elim _ _)
