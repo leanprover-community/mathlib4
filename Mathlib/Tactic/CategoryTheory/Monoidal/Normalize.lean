@@ -59,16 +59,18 @@ theorem eval_monoidalComp
 
 variable [MonoidalCategory C]
 
-@[nolint synTaut]
+@[to_additive (attr := nolint synTaut)]
 theorem evalWhiskerLeft_nil (f : C) {g h : C} (α : g ≅ h) :
     (whiskerLeftIso f α).hom = (whiskerLeftIso f α).hom := by
   simp
 
+@[to_additive]
 theorem evalWhiskerLeft_of_cons {f g h i j : C}
     (α : g ≅ h) (η : h ⟶ i) {ηs : i ⟶ j} {θ : f ⊗ i ⟶ f ⊗ j} (e_θ : f ◁ ηs = θ) :
     f ◁ (α.hom ≫ η ≫ ηs) = (whiskerLeftIso f α).hom ≫ f ◁ η ≫ θ := by
   simp [e_θ]
 
+@[to_additive]
 theorem evalWhiskerLeft_comp {f g h i : C}
     {η : h ⟶ i} {η₁ : g ⊗ h ⟶ g ⊗ i} {η₂ : f ⊗ g ⊗ h ⟶ f ⊗ g ⊗ i}
     {η₃ : f ⊗ g ⊗ h ⟶ (f ⊗ g) ⊗ i} {η₄ : (f ⊗ g) ⊗ h ⟶ (f ⊗ g) ⊗ i}
@@ -77,35 +79,40 @@ theorem evalWhiskerLeft_comp {f g h i : C}
     (f ⊗ g) ◁ η = η₄ := by
   simp [e_η₁, e_η₂, e_η₃, e_η₄]
 
+@[to_additive]
 theorem evalWhiskerLeft_id {f g : C} {η : f ⟶ g}
     {η₁ : f ⟶ 𝟙_ C ⊗ g} {η₂ : 𝟙_ C ⊗ f ⟶ 𝟙_ C ⊗ g}
     (e_η₁ : η ≫ (λ_ _).inv = η₁) (e_η₂ : (λ_ _).hom ≫ η₁ = η₂) :
     𝟙_ C ◁ η = η₂ := by
   simp [e_η₁, e_η₂]
 
+@[to_additive]
 theorem eval_whiskerLeft {f g h : C}
     {η η' : g ⟶ h} {θ : f ⊗ g ⟶ f ⊗ h}
     (e_η : η = η') (e_θ : f ◁ η' = θ) :
     f ◁ η = θ := by
   simp [e_η, e_θ]
 
+@[to_additive]
 theorem eval_whiskerRight {f g h : C}
     {η η' : f ⟶ g} {θ : f ⊗ h ⟶ g ⊗ h}
     (e_η : η = η') (e_θ : η' ▷ h = θ) :
     η ▷ h = θ := by
   simp [e_η, e_θ]
 
+@[to_additive]
 theorem eval_tensorHom {f g h i : C}
     {η η' : f ⟶ g} {θ θ' : h ⟶ i} {ι : f ⊗ h ⟶ g ⊗ i}
     (e_η : η = η') (e_θ : θ = θ') (e_ι : η' ⊗ₘ θ' = ι) :
     η ⊗ₘ θ = ι := by
   simp [e_η, e_θ, e_ι]
 
-@[nolint synTaut]
+@[to_additive (attr := nolint synTaut)]
 theorem evalWhiskerRight_nil {f g : C} (α : f ≅ g) (h : C) :
     (whiskerRightIso α h).hom = (whiskerRightIso α h).hom := by
   simp
 
+@[to_additive]
 theorem evalWhiskerRight_cons_of_of {f g h i j : C}
     {α : f ≅ g} {η : g ⟶ h} {ηs : h ⟶ i} {ηs₁ : h ⊗ j ⟶ i ⊗ j}
     {η₁ : g ⊗ j ⟶ h ⊗ j} {η₂ : g ⊗ j ⟶ i ⊗ j} {η₃ : f ⊗ j ⟶ i ⊗ j}
@@ -114,6 +121,7 @@ theorem evalWhiskerRight_cons_of_of {f g h i j : C}
     (α.hom ≫ η ≫ ηs) ▷ j = η₃ := by
   simp_all
 
+@[to_additive]
 theorem evalWhiskerRight_cons_whisker {f g h i j k : C}
     {α : g ≅ f ⊗ h} {η : h ⟶ i} {ηs : f ⊗ i ⟶ j}
     {η₁ : h ⊗ k ⟶ i ⊗ k} {η₂ : f ⊗ (h ⊗ k) ⟶ f ⊗ (i ⊗ k)} {ηs₁ : (f ⊗ i) ⊗ k ⟶ j ⊗ k}
@@ -127,6 +135,7 @@ theorem evalWhiskerRight_cons_whisker {f g h i j k : C}
   simp at e_η₁ e_η₅
   simp [e_η₁, e_η₂, e_ηs₁, e_ηs₂, e_η₃, e_η₄, e_η₅]
 
+@[to_additive]
 theorem evalWhiskerRight_comp {f f' g h : C}
     {η : f ⟶ f'} {η₁ : f ⊗ g ⟶ f' ⊗ g} {η₂ : (f ⊗ g) ⊗ h ⟶ (f' ⊗ g) ⊗ h}
     {η₃ : (f ⊗ g) ⊗ h ⟶ f' ⊗ (g ⊗ h)} {η₄ : f ⊗ (g ⊗ h) ⟶ f' ⊗ (g ⊗ h)}
@@ -135,16 +144,19 @@ theorem evalWhiskerRight_comp {f f' g h : C}
     η ▷ (g ⊗ h) = η₄ := by
   simp [e_η₁, e_η₂, e_η₃, e_η₄]
 
+@[to_additive]
 theorem evalWhiskerRight_id {f g : C}
     {η : f ⟶ g} {η₁ : f ⟶ g ⊗ 𝟙_ C} {η₂ : f ⊗ 𝟙_ C ⟶ g ⊗ 𝟙_ C}
     (e_η₁ : η ≫ (ρ_ _).inv = η₁) (e_η₂ : (ρ_ _).hom ≫ η₁ = η₂) :
     η ▷ 𝟙_ C = η₂ := by
   simp [e_η₁, e_η₂]
 
+@[to_additive]
 theorem evalWhiskerRightAux_of {f g : C} (η : f ⟶ g) (h : C) :
     η ▷ h = (Iso.refl _).hom ≫ η ▷ h ≫ (Iso.refl _).hom := by
   simp
 
+@[to_additive]
 theorem evalWhiskerRightAux_cons {f g h i j : C} {η : g ⟶ h} {ηs : i ⟶ j}
     {ηs' : i ⊗ f ⟶ j ⊗ f} {η₁ : g ⊗ (i ⊗ f) ⟶ h ⊗ (j ⊗ f)}
     {η₂ : g ⊗ (i ⊗ f) ⟶ (h ⊗ j) ⊗ f} {η₃ : (g ⊗ i) ⊗ f ⟶ (h ⊗ j) ⊗ f}
@@ -153,6 +165,7 @@ theorem evalWhiskerRightAux_cons {f g h i j : C} {η : g ⟶ h} {ηs : i ⟶ j}
     (η ⊗ₘ ηs) ▷ f = η₃ := by
   simp [← e_ηs', ← e_η₁, ← e_η₂, ← e_η₃, MonoidalCategory.tensorHom_def]
 
+@[to_additive]
 theorem evalWhiskerRight_cons_of {f f' g h i : C} {α : f' ≅ g} {η : g ⟶ h} {ηs : h ⟶ i}
     {ηs₁ : h ⊗ f ⟶ i ⊗ f} {η₁ : g ⊗ f ⟶ h ⊗ f} {η₂ : g ⊗ f ⟶ i ⊗ f}
     {η₃ : f' ⊗ f ⟶ i ⊗ f}
@@ -161,10 +174,12 @@ theorem evalWhiskerRight_cons_of {f f' g h i : C} {α : f' ≅ g} {η : g ⟶ h}
     (α.hom ≫ η ≫ ηs) ▷ f = η₃ := by
   simp_all
 
+@[to_additive evalHorizontalCompAux_add_of]
 theorem evalHorizontalCompAux_of {f g h i : C} (η : f ⟶ g) (θ : h ⟶ i) :
     η ⊗ₘ θ = (Iso.refl _).hom ≫ (η ⊗ₘ θ) ≫ (Iso.refl _).hom := by
   simp
 
+@[to_additive evalHorizontalCompAux_add_cons]
 theorem evalHorizontalCompAux_cons {f f' g g' h i : C} {η : f ⟶ g} {ηs : f' ⟶ g'} {θ : h ⟶ i}
     {ηθ : f' ⊗ h ⟶ g' ⊗ i} {η₁ : f ⊗ (f' ⊗ h) ⟶ g ⊗ (g' ⊗ i)}
     {ηθ₁ : f ⊗ (f' ⊗ h) ⟶ (g ⊗ g') ⊗ i} {ηθ₂ : (f ⊗ f') ⊗ h ⟶ (g ⊗ g') ⊗ i}
@@ -173,6 +188,7 @@ theorem evalHorizontalCompAux_cons {f f' g g' h i : C} {η : f ⟶ g} {ηs : f' 
     (η ⊗ₘ ηs) ⊗ₘ θ = ηθ₂ := by
   simp_all
 
+@[to_additive]
 theorem evalHorizontalCompAux'_whisker {f f' g g' h : C} {η : g ⟶ h} {θ : f' ⟶ g'}
     {ηθ : g ⊗ f' ⟶ h ⊗ g'} {η₁ : f ⊗ (g ⊗ f') ⟶ f ⊗ (h ⊗ g')}
     {η₂ : f ⊗ (g ⊗ f') ⟶ (f ⊗ h) ⊗ g'} {η₃ : (f ⊗ g) ⊗ f' ⟶ (f ⊗ h) ⊗ g'}
@@ -182,6 +198,7 @@ theorem evalHorizontalCompAux'_whisker {f f' g g' h : C} {η : g ⟶ h} {θ : f'
   simp only [← e_ηθ, ← e_η₁, ← e_η₂, ← e_η₃]
   simp [MonoidalCategory.tensorHom_def]
 
+@[to_additive]
 theorem evalHorizontalCompAux'_of_whisker {f f' g g' h : C} {η : g ⟶ h} {θ : f' ⟶ g'}
     {η₁ : g ⊗ f ⟶ h ⊗ f} {ηθ : (g ⊗ f) ⊗ f' ⟶ (h ⊗ f) ⊗ g'}
     {ηθ₁ : (g ⊗ f) ⊗ f' ⟶ h ⊗ (f ⊗ g')}
@@ -192,11 +209,12 @@ theorem evalHorizontalCompAux'_of_whisker {f f' g g' h : C} {η : g ⟶ h} {θ :
   simp only [← e_η₁, ← e_ηθ, ← e_ηθ₁, ← e_ηθ₂]
   simp [MonoidalCategory.tensorHom_def]
 
-@[nolint synTaut]
+@[to_additive (attr := nolint synTaut) evalHorizontalComp_add_nil_nil]
 theorem evalHorizontalComp_nil_nil {f g h i : C} (α : f ≅ g) (β : h ≅ i) :
     (α ⊗ᵢ β).hom = (α ⊗ᵢ β).hom := by
   simp
 
+@[to_additive evalHorizontalComp_add_nil_cons]
 theorem evalHorizontalComp_nil_cons {f f' g g' h i : C}
     {α : f ≅ g} {β : f' ≅ g'} {η : g' ⟶ h} {ηs : h ⟶ i}
     {η₁ : g ⊗ g' ⟶ g ⊗ h} {ηs₁ : g ⊗ h ⟶ g ⊗ i}
@@ -207,6 +225,7 @@ theorem evalHorizontalComp_nil_cons {f f' g g' h i : C}
     α.hom ⊗ₘ (β.hom ≫ η ≫ ηs) = η₃ := by
   simp_all [MonoidalCategory.tensorHom_def]
 
+@[to_additive evalHorizontalComp_add_cons_nil]
 theorem evalHorizontalComp_cons_nil {f f' g g' h i : C}
     {α : f ≅ g} {η : g ⟶ h} {ηs : h ⟶ i} {β : f' ≅ g'}
     {η₁ : g ⊗ g' ⟶ h ⊗ g'} {ηs₁ : h ⊗ g' ⟶ i ⊗ g'} {η₂ : g ⊗ g' ⟶ i ⊗ g'} {η₃ : f ⊗ f' ⟶ i ⊗ g'}
@@ -215,6 +234,7 @@ theorem evalHorizontalComp_cons_nil {f f' g g' h i : C}
     (α.hom ≫ η ≫ ηs) ⊗ₘ β.hom = η₃ := by
   simp_all [MonoidalCategory.tensorHom_def']
 
+@[to_additive evalHorizontalComp_add_cons_cons]
 theorem evalHorizontalComp_cons_cons {f f' g g' h h' i i' : C}
     {α : f ≅ g} {η : g ⟶ h} {ηs : h ⟶ i}
     {β : f' ≅ g'} {θ : g' ⟶ h'} {θs : h' ⟶ i'}
