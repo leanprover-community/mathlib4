@@ -82,6 +82,41 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
       · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
       · simp only [length_singleton]; cutsat
 
+/-- takes `i < (scanl f b l).length` -/
+theorem getElem_scanl_eq_foldl_take {i : ℕ} (h : i < (scanl f b l).length) :
+    (scanl f b l)[i] = foldl f b (l.take i) := by
+  induction i generalizing b l with
+  | zero => exact getElem_scanl_zero
+  | succ i ih =>
+    simp only [length_scanl, Nat.add_lt_add_iff_right] at h ih
+    obtain ⟨hd, tl, rfl⟩ := exists_cons_of_length_pos (Nat.zero_lt_of_lt h)
+    exact ih h
+
+lemma lt_scanl_length_of_lt_length_add_one {i : ℕ} (h : i < l.length + 1) :
+    i < (scanl f b l).length :=
+  lt_of_lt_of_eq h (length_scanl b l).symm
+
+/-- an alternative taking `i < l.length + 1` -/
+theorem getElem_scanl_eq_foldl_take' {i : ℕ} (h : i < l.length + 1) :
+    getElem (scanl f b l) i (lt_scanl_length_of_lt_length_add_one h) = foldl f b (l.take i) :=
+  getElem_scanl_eq_foldl_take (lt_scanl_length_of_lt_length_add_one h)
+
+lemma lt_scanl_length_of_le_length {i : ℕ} (h : i ≤ l.length) : i < (scanl f b l).length :=
+  lt_scanl_length_of_lt_length_add_one (lt_add_one_of_le h)
+
+/-- an alternative taking `i ≤ l.length` -/
+theorem getElem_scanl_eq_foldl_take'' {i : ℕ} (h : i ≤ l.length) :
+    getElem (scanl f b l) i (lt_scanl_length_of_le_length h) = foldl f b (l.take i) :=
+  getElem_scanl_eq_foldl_take (lt_scanl_length_of_le_length h)
+
+theorem get_scanl_eq_foldl_take {i : Fin (scanl f b l).length} :
+    (scanl f b l).get i = foldl f b (l.take i) :=
+  getElem_scanl_eq_foldl_take i.isLt
+
+theorem get_scanl_eq_foldl_take' {i : Fin (l.length + 1)} :
+    (scanl f b l).get (i.cast (length_scanl b l).symm) = foldl f b (l.take i) :=
+  getElem_scanl_eq_foldl_take' i.isLt
+
 /-! ### List.scanr -/
 
 variable {f : α → β → β}
