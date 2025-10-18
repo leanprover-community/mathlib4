@@ -191,14 +191,3 @@ def MulDistribMulAction.toMonoidEnd : M →* Monoid.End A where
   map_mul' x y := MonoidHom.ext <| mul_smul x y
 
 end MulDistribMulAction
-
-section MulDistribMulAction
-variable [Monoid M] [Group A] [MulDistribMulAction M A]
-
-@[simp] lemma smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
-  (MulDistribMulAction.toMonoidHom A r).map_inv x
-
-lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
-  map_div (MulDistribMulAction.toMonoidHom A r) x y
-
-end MulDistribMulAction
