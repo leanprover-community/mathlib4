@@ -537,6 +537,10 @@ theorem graph_injective : Injective (graph : (α → β) → SetRel α β) := by
 
 theorem graph_comp (f : β → γ) (g : α → β) : graph (f ∘ g) = graph g ○ graph f := by aesop
 
+/-- The higher-arity graph of a function. Describes α-argument functions from β to β. -/
+def tupleGraph (f : (α → β) → β) : Set ((α ⊕ Unit) → β) :=
+  { v | f (v ∘ Sum.inl) = v (Sum.inr ()) }
+
 end Function
 
 theorem Equiv.graph_inv (f : α ≃ β) : (f.symm : β → α).graph = SetRel.inv (f : α → β).graph := by
