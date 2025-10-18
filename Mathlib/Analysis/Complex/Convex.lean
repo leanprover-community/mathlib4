@@ -88,6 +88,9 @@ lemma Convex.rectangle_subset {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ
     Rectangle z w ⊆ U := by
   simpa only [rectangle_eq_convexHull] using convexHull_min (by grind) U_convex
 
+-- This also follows easily from `isPathConnected_compl_singleton_of_one_lt_rank`,
+-- or that `Complex.range_exp` and `Complex.continuous_exp`,
+-- but both of them requires a lot more import.
 instance : PathConnectedSpace ℂˣ :=
   have : PathConnectedSpace { z : ℂ // z ≠ 0 } :=
     (isPathConnected_iff_pathConnectedSpace (F := {0}ᶜ)).mp (by
