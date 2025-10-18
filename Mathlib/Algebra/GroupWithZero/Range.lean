@@ -65,7 +65,7 @@ end mrange
 
 variable {A B F : Type*} [FunLike F A B] (f : F)
 
-section MonoidWithZero
+section MonoidWithZeroHom
 
 variable [MonoidWithZero A] [MonoidWithZero B] [MonoidWithZeroHomClass F A B]
 
@@ -117,11 +117,52 @@ lemma mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ valueGroup f := by
 lemma inv_mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b⁻¹ ∈ valueGroup f :=
   Subgroup.inv_mem _ (mem_valueGroup f hb)
 
-end MonoidWithZero
+end MonoidWithZeroHom
 
+noncomputable section Restrict
+
+variable [MonoidWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
+  [DecidablePred fun b : B ↦ b = 0]
+
+/-- The inclusion of `valueGroup₀ f` into `B` as a multiplicative homomorphism. -/
+@[simps!]
+def valueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
+  MonoidWithZeroHom.comp (WithZero.withZeroUnitsEquiv (G := B))
+    <| WithZero.map' (valueGroup f).subtype
+
+variable (f) in
+/-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. It cannot land
+in `valueMonoid₀ f` because in general `f a` needs not be a unit, so it will not be in
+`valueMonoid₀ f`. -/
+@[simps!]
+def restrict₀ : A →*₀ ValueGroup₀ f where
+  toFun a :=
+    if h : f a ≠ 0 then (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) else 0
+  map_one' := by simp; rfl
+  map_mul' := by
+    intro a b
+    simp only [map_mul, ne_eq, Units.mk0_mul, dite_mul, zero_mul]
+    split_ifs with h hb ha
+    any_goals rfl
+    all_goals rw [mul_eq_zero] at h; tauto
+  map_zero' := by simp
+
+@[simp]
+lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
+    restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) := by simp [h]
+
+lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp
+
+lemma embedding_restrict₀ (a : A) : valueGroup₀.embedding (restrict₀ f a) = f a := by
+  simp [restrict₀_apply]
+  split_ifs <;>
+  simp_all
+
+end Restrict
 noncomputable section GroupWithZero
 
 variable [GroupWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
+
 
 /- When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide.-/
 lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid := by
@@ -133,7 +174,8 @@ lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid :
     simp [hy]
   · simp [Submonoid.closure_union]
 
-variable (f) in
+variable (f)
+
 lemma valueMonoid_eq_valueGroup' : (valueMonoid f : Set Bˣ) = valueGroup f := by
   rw [valueMonoid_eq_valueGroup, coe_toSubmonoid]
 
@@ -147,6 +189,26 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
   · rintro ⟨⟨y, hy⟩, hx₀⟩
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [Units.val_mk0, mem_range] using ⟨y, hy⟩
+
+variable [DecidablePred fun b : B ↦ b = 0]
+
+lemma restrict₀_range_eq_top : range (restrict₀ f) = ⊤ := by
+  rw [top_eq_univ, range_eq_univ]
+  intro x
+  match x with
+  | 0 => use 0; simp
+  | some ⟨u, hu⟩ =>
+    change u ∈ (valueGroup f : Set Bˣ) at hu
+    rw [← valueMonoid_eq_valueGroup'] at hu
+    obtain ⟨v, hv⟩ := hu
+    use v
+    simp [restrict₀_apply, hv, Units.ne_zero, WithZero.coe]
+
+open Function
+
+variable [DecidablePred fun b : B ↦ b = 0]
+
+open Function
 
 end GroupWithZero
 section CommGroupWithZero
