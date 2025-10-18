@@ -352,7 +352,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
       simpa using ha
     -- `M ≃ A • M` because `M` is torsion free and `A ≠ 0`
     let φ : M →ₗ[R] M := LinearMap.lsmul R M A
-    have : LinearMap.ker φ = ⊥ := @LinearMap.ker_lsmul R M _ _ _ _ _ hA
+    have : LinearMap.ker φ = ⊥ := LinearMap.ker_lsmul hA
     let ψ := LinearEquiv.ofInjective φ (LinearMap.ker_eq_bot.mp this)
     have : LinearMap.range φ ≤ N := by
       -- as announced, `A • M ⊆ N`

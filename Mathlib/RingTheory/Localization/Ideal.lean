@@ -283,11 +283,11 @@ theorem bot_lt_comap_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p
     { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
 
 variable (R) in
-lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing Rₚ] [CommRing Sₚ]
-    [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ] [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ]
-    [IsScalarTower R Rₚ Sₚ] {M : Submonoid R} (hM : M ≤ R⁰) [IsLocalization M Rₚ]
-    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ] [Module.IsTorsionFree R S] [IsDomain S] :
-    Module.IsTorsionFree Rₚ Sₚ := by
+lemma _root_.NoZeroSMulDivisors_of_isLocalization [IsDomain R] [IsDomain S] (Rₚ Sₚ : Type*)
+    [CommRing Rₚ] [IsDomain Rₚ] [CommRing Sₚ] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
+    [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] {M : Submonoid R} (hM : M ≤ R⁰)
+    [IsLocalization M Rₚ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ]
+    [Module.IsTorsionFree R S] : Module.IsTorsionFree Rₚ Sₚ := by
   have e : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
     Submonoid.map_le_of_le_comap _ <| hM.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
