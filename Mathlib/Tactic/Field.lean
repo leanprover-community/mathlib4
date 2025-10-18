@@ -77,4 +77,4 @@ elab (name := field) "field" d:(ppSpace discharger)? args:(ppSpace simpArgs)? : 
 end Mathlib.Tactic.FieldSimp
 
 /-! We register `field` with the `hint` tactic. -/
-register_hint field
+register_hint 850 field
