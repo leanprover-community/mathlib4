@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Matrix.RowCol
+import Mathlib.LinearAlgebra.Matrix.RowCol
 /-!
 # Permanent of a matrix
 
@@ -100,9 +100,6 @@ theorem permanent_updateCol_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R
   congr 1 with p
   rw [Finset.prod_congr rfl (fun i hi ↦ ?_)]
   simp only [ne_eq, ne_of_mem_erase hi, not_false_eq_true, updateCol_ne]
-
-@[deprecated (since := "2024-12-11")]
-alias permanent_updateColumn_smul := permanent_updateCol_smul
 
 @[simp]
 theorem permanent_updateRow_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R) :

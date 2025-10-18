@@ -404,7 +404,7 @@ def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G
   toFun := f
   map_act' := by simp
 
-/-- The dihedral quandle. This is the conjugation quandle of the dihedral group restrict to flips.
+/-- The dihedral quandle. This is the conjugation quandle of the dihedral group restricted to flips.
 
 Used for Fox n-colorings of knots. -/
 def Dihedral (n : ℕ) :=

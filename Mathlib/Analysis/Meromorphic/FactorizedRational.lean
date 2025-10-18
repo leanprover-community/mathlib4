@@ -198,7 +198,7 @@ Compute the trailing coefficient of the factorized rational function associated 
 -/
 
 /-
-Low-priotity TODO: Using that non-trivially normed fields contain infinitely many elements that are
+Low-priority TODO: Using that non-trivially normed fields contain infinitely many elements that are
 no roots of unity, it might be possible to drop assumption `h` here and in some of the theorems
 below.
 -/
@@ -214,10 +214,7 @@ theorem meromorphicTrailingCoeffAt_factorizedRational {d : 𝕜 → ℤ} {x : �
   by_cases hxy : x = y
   · rw [hxy, meromorphicTrailingCoeffAt_id_sub_const]
     simp_all
-  · rw [meromorphicTrailingCoeffAt_id_sub_const]
-    simp only [hxy, reduceIte]
-    congr
-    apply (Function.update_of_ne (by tauto) _ _).symm
+  · grind [Function.update_of_ne, meromorphicTrailingCoeffAt_id_sub_const]
 
 /--
 Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute the trailing coefficient of the

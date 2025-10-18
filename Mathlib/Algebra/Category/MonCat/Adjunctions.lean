@@ -31,12 +31,13 @@ open CategoryTheory
 namespace MonCat
 
 /-- The functor of adjoining a neutral element `one` to a semigroup. -/
-@[to_additive (attr := simps) "The functor of adjoining a neutral element `zero` to a semigroup"]
+@[to_additive (attr := simps)
+/-- The functor of adjoining a neutral element `zero` to a semigroup -/]
 def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
   obj S := MonCat.of (WithOne S)
-  map f := ofHom (WithOne.map f.hom)
-  map_id _ := MonCat.hom_ext WithOne.map_id
-  map_comp _ _ := MonCat.hom_ext (WithOne.map_comp _ _)
+  map f := ofHom (WithOne.mapMulHom f.hom)
+  map_id _ := MonCat.hom_ext WithOne.mapMulHom_id
+  map_comp _ _ := MonCat.hom_ext (WithOne.mapMulHom_comp _ _)
 
 @[to_additive]
 instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
@@ -45,7 +46,7 @@ instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
       map f := Semigrp.ofHom f.hom.toMulHom }
 
 /-- The `adjoinOne`-forgetful adjunction from `Semigrp` to `MonCat`. -/
-@[to_additive "The `adjoinZero`-forgetful adjunction from `AddSemigrp` to `AddMonCat`"]
+@[to_additive /-- The `adjoinZero`-forgetful adjunction from `AddSemigrp` to `AddMonCat` -/]
 def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv X Y :=
@@ -56,7 +57,8 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
         ext ⟨_ | _⟩ <;> simp <;> rfl }
 
 /-- The free functor `Type u ⥤ MonCat` sending a type `X` to the free monoid on `X`. -/
-@[to_additive "The free functor `Type u ⥤ AddMonCat` sending a type `X` to the free monoid on `X`."]
+@[to_additive
+/-- The free functor `Type u ⥤ AddMonCat` sending a type `X` to the free additive monoid on `X`. -/]
 def free : Type u ⥤ MonCat.{u} where
   obj α := MonCat.of (FreeMonoid α)
   map f := ofHom (FreeMonoid.map f)
@@ -64,7 +66,7 @@ def free : Type u ⥤ MonCat.{u} where
   map_comp _ _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl)
 
 /-- The free-forgetful adjunction for monoids. -/
-@[to_additive "The free-forgetful adjunction for additive monoids."]
+@[to_additive /-- The free-forgetful adjunction for additive monoids. -/]
 def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
     -- The hint `(C := MonCat)` below speeds up the declaration by 10 times.

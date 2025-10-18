@@ -119,7 +119,7 @@ namespace Cat
 inductive FreeReflRel {V} [ReflQuiver V] : (X Y : Paths V) → (f g : X ⟶ Y) → Prop
   | mk {X : V} : FreeReflRel X X (Quiver.Hom.toPath (𝟙rq X)) .nil
 
-/-- A reflexive quiver generates a free category, defined as as quotient of the free category
+/-- A reflexive quiver generates a free category, defined as a quotient of the free category
 on its underlying quiver (called the "path category") by the hom relation that uses the specified
 reflexivity arrows as the identity arrows. -/
 def FreeRefl (V) [ReflQuiver V] := Quotient (C := Paths V) (FreeReflRel (V := V))
@@ -184,8 +184,9 @@ def freeReflMap {V W : Type*} [ReflQuiver.{v₁ + 1} V] [ReflQuiver.{v₂ + 1} W
 
 theorem freeReflMap_naturality
     {V W : Type*} [ReflQuiver.{v₁ + 1} V] [ReflQuiver.{v₂ + 1} W] (F : V ⥤rq W) :
-  FreeRefl.quotientFunctor V ⋙ freeReflMap F =
-    freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor W := Quotient.lift_spec _ _ _
+    FreeRefl.quotientFunctor V ⋙ freeReflMap F =
+    freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor W :=
+  Quotient.lift_spec _ _ _
 
 /-- The functor sending a reflexive quiver to the free category it generates, a quotient of
 its path category -/

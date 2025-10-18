@@ -85,7 +85,7 @@ Any pseudo extended metric space is a topological space and a uniform space (see
 `UniformSpace`), where the topology and uniformity come from the metric.
 Note that a T1 pseudo extended metric space is just an extended metric space.
 
-We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
+We make the uniformity/topology part of the data instead of deriving it from the metric. This e.g.
 ensures that we do not get a diamond when doing
 `[PseudoEMetricSpace α] [PseudoEMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
@@ -141,10 +141,8 @@ theorem edist_congr {w x y z : α} (hl : edist w x = 0) (hr : edist y z = 0) :
     edist w y = edist x z :=
   (edist_congr_right hl).trans (edist_congr_left hr)
 
-theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + edist z t :=
-  calc
-    edist x t ≤ edist x z + edist z t := edist_triangle x z t
-    _ ≤ edist x y + edist y z + edist z t := add_le_add_right (edist_triangle x y z) _
+theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + edist z t := by
+  grw [edist_triangle _ z, edist_triangle]
 
 /-- Reformulation of the uniform structure in terms of the extended distance -/
 theorem uniformity_pseudoedist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } :=
@@ -319,7 +317,8 @@ distance, with a topology defeq to the initial one. -/
 namespace MulOpposite
 
 /-- Pseudoemetric space instance on the multiplicative opposite of a pseudoemetric space. -/
-@[to_additive "Pseudoemetric space instance on the additive opposite of a pseudoemetric space."]
+@[to_additive
+/-- Pseudoemetric space instance on the additive opposite of a pseudoemetric space. -/]
 instance {α : Type*} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ :=
   PseudoEMetricSpace.induced unop ‹_›
 
@@ -346,7 +345,7 @@ end ULift
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
 instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
-  PseudoEMetricSpace (α × β) where
+    PseudoEMetricSpace (α × β) where
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
   edist_comm x y := by simp [edist_comm]
@@ -580,7 +579,7 @@ Any extended metric space is a T1 topological space and a uniform space (see `To
 `T1Space`, `UniformSpace`), where the topology and uniformity come from the metric.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric.
-This eg ensures that we do not get a diamond when doing
+This e.g. ensures that we do not get a diamond when doing
 `[EMetricSpace α] [EMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/
@@ -666,7 +665,7 @@ instance {α : Type*} {p : α → Prop} [EMetricSpace α] : EMetricSpace (Subtyp
   EMetricSpace.induced Subtype.val Subtype.coe_injective ‹_›
 
 /-- EMetric space instance on the multiplicative opposite of an emetric space. -/
-@[to_additive "EMetric space instance on the additive opposite of an emetric space."]
+@[to_additive /-- EMetric space instance on the additive opposite of an emetric space. -/]
 instance {α : Type*} [EMetricSpace α] : EMetricSpace αᵐᵒᵖ :=
   EMetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
 

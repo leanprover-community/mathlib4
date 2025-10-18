@@ -66,7 +66,6 @@ instance [Mono f] : Inhabited (IsKernelPair f (𝟙 _) (𝟙 _)) :=
 
 variable {f a b}
 
--- Porting note: `lift` and the two following simp lemmas were introduced to ease the port
 /--
 Given a pair of morphisms `p`, `q` to `X` which factor through `f`, they factor through any kernel
 pair of `f`.
@@ -165,21 +164,16 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
   refine ⟨⟨by rw [pullback.lift_fst, pullback.lift_fst]⟩, ⟨PullbackCone.isLimitAux _
     (fun s => pullback.lift (s.fst ≫ pullback.fst _ _)
       (h.lift (s.fst ≫ pullback.snd _ _) (s.snd ≫ pullback.snd _ _) ?_ ) ?_) (fun s => ?_)
-        (fun s => ?_) (fun s m hm => ?_)⟩⟩
+        (fun s => ?_) (fun s (m : _ ⟶ pullback f (a₁ ≫ g)) hm => ?_)⟩⟩
   · simp_rw [Category.assoc, ← pullback.condition, ← Category.assoc, s.condition]
   · simp only [assoc, lift_fst_assoc, pullback.condition]
   · ext <;> simp
   · ext
     · simp [s.condition]
     · simp
-  · #adaptation_note /-- nightly-2024-04-01
-    This `symm` (or the following ones that undo it) wasn't previously necessary. -/
-    symm
-    apply pullback.hom_ext
-    · symm
-      simpa using hm WalkingCospan.left =≫ pullback.fst f g
-    · symm
-      apply PullbackCone.IsLimit.hom_ext h.isLimit
+  · apply pullback.hom_ext
+    · simpa using hm WalkingCospan.left =≫ pullback.fst f g
+    · apply PullbackCone.IsLimit.hom_ext h.isLimit
       · simpa using hm WalkingCospan.left =≫ pullback.snd f g
       · simpa using hm WalkingCospan.right =≫ pullback.snd f g
 

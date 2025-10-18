@@ -69,7 +69,7 @@ protected theorem list_sum_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.sum �
   list_sum_mem
 
 /-- Product of a multiset of elements in a `Subsemiring` of a `CommSemiring`
-    is in the `Subsemiring`. -/
+is in the `Subsemiring`. -/
 protected theorem multiset_prod_mem {R} [CommSemiring R] (s : Subsemiring R) (m : Multiset R) :
     (∀ a ∈ m, a ∈ s) → m.prod ∈ s :=
   multiset_prod_mem m
@@ -186,6 +186,7 @@ instance : Bot (Subsemiring R) :=
 instance : Inhabited (Subsemiring R) :=
   ⟨⊥⟩
 
+@[norm_cast]
 theorem coe_bot : ((⊥ : Subsemiring R) : Set R) = Set.range ((↑) : ℕ → R) :=
   (Nat.castRingHom R).coe_rangeS
 
@@ -522,8 +523,8 @@ theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
       | mul x y _ _ ht hu =>
         obtain ⟨⟨t, ht1, ht2⟩, ⟨u, hu1, hu2⟩⟩ := And.intro ht hu
         exact ⟨t ++ u, List.forall_mem_append.2 ⟨ht1, hu1⟩, by rw [List.prod_append, ht2, hu2]⟩
-    | one => exact ⟨[], List.forall_mem_nil _, rfl⟩
-    | mul x y _ _ hL hM =>
+    | zero => exact ⟨[], List.forall_mem_nil _, rfl⟩
+    | add x y _ _ hL hM =>
       obtain ⟨⟨L, HL1, HL2⟩, ⟨M, HM1, HM2⟩⟩ := And.intro hL hM
       exact ⟨L ++ M, List.forall_mem_append.2 ⟨HL1, HM1⟩, by
         rw [List.map_append, List.sum_append, HL2, HM2]⟩
@@ -800,7 +801,7 @@ namespace RingEquiv
 variable {s t : Subsemiring R}
 
 /-- Makes the identity isomorphism from a proof two subsemirings of a multiplicative
-    monoid are equal. -/
+monoid are equal. -/
 def subsemiringCongr (h : s = t) : s ≃+* t :=
   { Equiv.setCongr <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
@@ -916,11 +917,6 @@ instance mulAction [MulAction R' α] (S : Subsemiring R') : MulAction S α :=
 instance distribMulAction [AddMonoid α] [DistribMulAction R' α] (S : Subsemiring R') :
     DistribMulAction S α :=
   inferInstance
-
-instance (priority := low) [AddCommMonoid α] [Module R' α] {S' : Type*} [SetLike S' R']
-    [SubsemiringClass S' R'] (s : S') : Module s α where
-  add_smul r₁ r₂ := add_smul (r₁ : R') r₂
-  zero_smul := zero_smul R'
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance mulDistribMulAction [Monoid α] [MulDistribMulAction R' α] (S : Subsemiring R') :

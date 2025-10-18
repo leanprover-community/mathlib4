@@ -83,10 +83,4 @@ lemma prop_shift_iff_of_isStableUnderShift {G : Type*} [AddGroup G] [HasShift C 
 
 end ObjectProperty
 
-@[deprecated (since := "2025-02-25")] alias PredicateShift := ObjectProperty.shift
-@[deprecated (since := "2025-02-25")] alias predicateShift_iff := ObjectProperty.prop_shift_iff
-@[deprecated (since := "2025-02-25")] alias predicateShift_zero := ObjectProperty.shift_zero
-@[deprecated (since := "2025-02-25")] alias predicateShift_predicateShift :=
-  ObjectProperty.shift_shift
-
 end CategoryTheory

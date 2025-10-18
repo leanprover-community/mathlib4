@@ -183,12 +183,8 @@ lemma sectionCotangent_zero_of_notMem_range (i : ι) (hi : i ∉ Set.range P.map
   classical
   contrapose hi
   rw [sectionCotangent_eq_iff] at hi
-  simp only [Basis.repr_self, map_zero, Pi.zero_apply, not_forall,
-    Finsupp.single_apply, ite_eq_right_iff] at hi
-  obtain ⟨j, hij, _⟩ := hi
-  simp only [Set.mem_range, not_exists, not_forall, not_not]
-  use j
-  exact hij.symm
+  simp only [Basis.repr_self, map_zero, Pi.zero_apply, Finsupp.single_apply] at hi
+  grind
 
 @[deprecated (since := "2025-05-23")]
 alias sectionCotangent_zero_of_not_mem_range := sectionCotangent_zero_of_notMem_range
@@ -200,7 +196,7 @@ See `SubmersivePresentation.basisKaehler` for the special case `κ = (Set.range 
 -/
 noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     (hf : Function.Injective f) (hcompl : IsCompl (Set.range f) (Set.range P.map)) :
-    Basis κ S (Ω[S⁄R]) := by
+    Basis κ S Ω[S⁄R] := by
   apply P.cotangentSpaceBasis.ofSplitExact (sectionCotangent_comp P)
     Extension.exact_cotangentComplex_toKaehler Extension.toKaehler_surjective hf (b := P.map)
   · intro i
@@ -220,7 +216,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
 for `i` in the complement of `σ` in `ι` form a basis of `Ω[S⁄R]`. -/
 @[stacks 00T7 "(2)"]
 noncomputable def basisKaehler :
-    Basis ((Set.range P.map)ᶜ : Set _) S (Ω[S⁄R]) :=
+    Basis ((Set.range P.map)ᶜ : Set _) S Ω[S⁄R] :=
   P.basisKaehlerOfIsCompl Subtype.val_injective <| by
     rw [Subtype.range_coe_subtype]
     exact IsCompl.symm isCompl_compl
@@ -228,7 +224,7 @@ noncomputable def basisKaehler :
 /-- If `P` is a submersive presentation of `S` as an `R`-algebra, `Ω[S⁄R]` is free. -/
 @[stacks 00T7 "(2)"]
 theorem free_kaehlerDifferential (P : SubmersivePresentation R S ι σ) :
-    Module.Free S (Ω[S⁄R]) :=
+    Module.Free S Ω[S⁄R] :=
   Module.Free.of_basis P.basisKaehler
 
 attribute [local instance] Fintype.ofFinite in
@@ -236,15 +232,62 @@ attribute [local instance] Fintype.ofFinite in
 `Ω[S⁄R]` is free of rank the dimension of `P`, i.e. the number of generators minus the number
 of relations. -/
 theorem rank_kaehlerDifferential [Nontrivial S] [Finite ι]
-    (P : SubmersivePresentation R S ι σ) : Module.rank S (Ω[S⁄R]) = P.dimension := by
+    (P : SubmersivePresentation R S ι σ) : Module.rank S Ω[S⁄R] = P.dimension := by
   simp only [rank_eq_card_basis P.basisKaehler, Fintype.card_compl_set,
     Presentation.dimension, Nat.card_eq_fintype_card, Set.card_range_of_injective P.map_inj]
 
 end SubmersivePresentation
 
+section LocalizationAway
+
+variable (r : R) [IsLocalization.Away r S]
+
+instance : Module.Free S (Generators.localizationAway S r).toExtension.Cotangent :=
+  inferInstanceAs <|
+    Module.Free S ((SubmersivePresentation.localizationAway S r).toExtension.Cotangent)
+
+variable (S) in
+/-- The image of `g * X - 1` in `I/I²` if `I` is the kernel of the canonical presentation
+of the localization of `S` away from `g`. -/
+noncomputable
+abbrev Generators.cMulXSubOneCotangent : (Generators.localizationAway S r).toExtension.Cotangent :=
+  Extension.Cotangent.mk ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩
+
+lemma Generators.cMulXSubOneCotangent_eq :
+    cMulXSubOneCotangent S r = Extension.Cotangent.mk ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩ :=
+  rfl
+
+lemma SubmersivePresentation.basisCotangent_localizationAway_apply (x : Unit) :
+    (SubmersivePresentation.localizationAway S r).basisCotangent x =
+      Generators.cMulXSubOneCotangent S r :=
+  basisCotangent_apply _ _
+
+variable (S) in
+/--
+The basis of `(g * X - 1) / (g * X - 1)²` given by the image of `g * X - 1`.
+
+This is def-eq to `(SubmersivePresentation.localizationAway T g).basisCotangent`, but
+```
+(SubmersivePresentation.localizationAway T g).toExtension =
+  (Generators.localizationAway T g).toExtension
+```
+is not reducibly def-eq. Hence using the general `SubmersivePresentation.basisCotangent` leads
+to `erw` hell.
+-/
+noncomputable
+def Generators.basisCotangentAway (r : R) [IsLocalization.Away r S] :
+    Module.Basis Unit S (localizationAway S r).toExtension.Cotangent :=
+  (SubmersivePresentation.localizationAway S r).basisCotangent
+
+lemma Generators.basisCotangentAway_apply (x : Unit) :
+    basisCotangentAway S r x = cMulXSubOneCotangent S r :=
+  SubmersivePresentation.basisCotangent_apply _ _
+
+end LocalizationAway
+
 /-- If `S` is `R`-standard smooth, `Ω[S⁄R]` is a free `S`-module. -/
 instance IsStandardSmooth.free_kaehlerDifferential [IsStandardSmooth R S] :
-    Module.Free S (Ω[S⁄R]) := by
+    Module.Free S Ω[S⁄R] := by
   obtain ⟨_, _, _, _, ⟨P⟩⟩ := ‹IsStandardSmooth R S›
   exact P.free_kaehlerDifferential
 
@@ -257,12 +300,12 @@ instance IsStandardSmooth.subsingleton_h1Cotangent [IsStandardSmooth R S] :
 `S`-module of rank `n`. -/
 theorem IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential [Nontrivial S] (n : ℕ)
     [IsStandardSmoothOfRelativeDimension n R S] :
-    Module.rank S (Ω[S⁄R]) = n := by
+    Module.rank S Ω[S⁄R] = n := by
   obtain ⟨_, _, _, _, ⟨P, hP⟩⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
   rw [P.rank_kaehlerDifferential, hP]
 
 instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
-    [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton (Ω[S⁄R]) := by
+    [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton Ω[S⁄R] := by
   cases subsingleton_or_nontrivial S
   · exact Module.subsingleton S _
   haveI : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0

@@ -33,7 +33,7 @@ is algebraic and that every algebraic element over a field is integral.
   remains transcendental over any algebraic `R`-subalgebra that has no zero divisors.
 -/
 
-assert_not_exists LocalRing
+assert_not_exists IsLocalRing
 
 universe u v w
 
@@ -154,9 +154,6 @@ theorem exists_integral_multiple (hz : IsAlgebraic R z) : ∃ y ≠ (0 : R), IsI
     ⟨p.integralNormalization, monic_integralNormalization p_ne_zero,
       integralNormalization_aeval_eq_zero px fun _ ↦ (map_eq_zero_iff _ inj).mp⟩
   exact ⟨_, a_ne_zero, Algebra.smul_def a z ▸ x_integral⟩
-
-@[deprecated (since := "2024-11-30")]
-alias _root_.exists_integral_multiple := exists_integral_multiple
 
 variable (R) in
 theorem _root_.Algebra.IsAlgebraic.exists_integral_multiples [NoZeroDivisors R]
@@ -320,8 +317,6 @@ variable (R S A) [NoZeroDivisors S]
 @[stacks 09GJ] theorem IsAlgebraic.trans [Algebra.IsAlgebraic R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
   ⟨fun _ ↦ (alg.1 _).restrictScalars _⟩
-
-@[deprecated (since := "2025-02-08")] alias IsAlgebraic.trans' := IsAlgebraic.trans
 
 theorem IsIntegral.trans_isAlgebraic [Algebra.IsIntegral R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=

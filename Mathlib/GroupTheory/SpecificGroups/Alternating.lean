@@ -41,11 +41,11 @@ consisting of the even permutations.
   of `Equiv.Perm α` contains the alternating group.
 
 * `Equiv.Perm.alternatingGroup.center_eq_bot`: when `4 ≤ Nat.card α`,
-then center of `alternatingGroup α` is trivial.
+  then center of `alternatingGroup α` is trivial.
 
 ## Instances
 
-* The alternating group is a characteristic subgroup of the permutaiton group.
+* The alternating group is a characteristic subgroup of the permutation group.
 
 ## Tags
 alternating group permutation simple characteristic index
@@ -110,6 +110,13 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 @[nontriviality]
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
+
+/-- The group isomorphism between `alternatingGroup`s induced by the given `Equiv`. -/
+@[simps ! apply_coe]
+def Equiv.altCongrHom {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
+    ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
+  e.permCongrHom.subgroupMap (alternatingGroup α) |>.trans <|
+    MulEquiv.subgroupCongr <| by simp [Subgroup.ext_iff, Subgroup.map_equiv_eq_comap_symm]
 
 theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
     2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by
@@ -240,7 +247,7 @@ open Equiv.Perm
 theorem eq_bot_of_card_le_two (h2 : card α ≤ 2) : alternatingGroup α = ⊥ := by
   nontriviality α
   suffices hα' : card α = 2 by
-    rw [Subgroup.eq_bot_iff_card, ← Nat.mul_right_inj (a := 2) (by norm_num),
+    rw [Subgroup.eq_bot_iff_card, ← Nat.mul_right_inj (a := 2) (by simp),
       Nat.card_eq_fintype_card, two_mul_card_alternatingGroup, mul_one, card_perm, hα',
       Nat.factorial_two]
   exact h2.antisymm Fintype.one_lt_card
@@ -274,7 +281,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         (⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ : alternatingGroup (Fin 5)) ∈
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
-      -- Porting note: added `:` to help the elaborator
+      -- Porting note: added `:` to help the elaborator (otherwise we get a timeout)
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 
@@ -321,7 +328,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   · simp at ha
   · have h04 : (0 : Fin 5) ≠ 4 := by decide
     have h13 : (1 : Fin 5) ≠ 3 := by decide
-    rw [Disjoint.cycleType, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
+    rw [Disjoint.cycleType_mul, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
       card_support_swap h04, card_support_swap h13]
     · simp
     · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]
@@ -390,28 +397,28 @@ theorem center_eq_bot (hα4 : 4 ≤ Nat.card α) :
   have : 2 ≤ (({a, g a} : Finset α)ᶜ).card := by
     rw [← Nat.add_le_add_iff_left, Finset.card_add_card_compl]
     rw [← Nat.card_eq_fintype_card]
-    rw [Finset.card_pair (id (Ne.symm hab))]
+    rw [Finset.card_pair hab.symm]
     exact hα4
   rw [← Nat.lt_iff_add_one_le, Finset.one_lt_card_iff] at this
   obtain ⟨c, d, hc, hd, hcd⟩ := this
-  simp only [Finset.compl_insert, Finset.mem_erase, ne_eq, Finset.mem_compl,
+  simp only [Finset.compl_insert, Finset.mem_erase, ← ne_eq, Finset.mem_compl,
     Finset.mem_singleton] at hc hd
   let k := swap (g a) d * swap (g a) c
   have hka : k • a = a := by
     simp only [Perm.smul_def, coe_mul, Function.comp_apply, k]
-    rw [swap_apply_of_ne_of_ne (x := a) hab.symm (Ne.symm hc.1)]
-    rw [swap_apply_of_ne_of_ne (Ne.symm hab) (Ne.symm hd.1)]
+    rw [swap_apply_of_ne_of_ne (x := a) hab.symm hc.1.symm]
+    rw [swap_apply_of_ne_of_ne hab.symm hd.1.symm]
   have hkga : k • (g a) = c := by
     simp only [Perm.smul_def, coe_mul, Function.comp_apply, swap_apply_left, k]
     rw [swap_apply_of_ne_of_ne hc.2 hcd]
   suffices k • (⟨g, hg⟩ : alternatingGroup α) • a ≠ c by
     apply this; simp [← hkga]
   suffices k • (⟨g, hg⟩ : alternatingGroup α) • a = (⟨g, hg⟩ : alternatingGroup α) • k • a by
-    rw [this, hka]; exact Ne.symm hc.right
+    rw [this, hka]; exact hc.right.symm
   rw [Subgroup.mem_center_iff] at hg'
   suffices k ∈ alternatingGroup α by
     simp only [← Subgroup.mk_smul k this, ← mul_smul, hg']
-  simp [k, Ne.symm hc.2, Ne.symm hd.2]
+  simp [k, hc.2.symm, hd.2.symm]
 
 end alternatingGroup
 

@@ -409,7 +409,7 @@ noncomputable abbrev coinvariantsTensorMk :
 variable {A B}
 
 lemma coinvariantsTensorMk_apply (a : A) (b : B) :
-  coinvariantsTensorMk A B a b = Coinvariants.mk _ (a ⊗ₜ[k] b) := rfl
+    coinvariantsTensorMk A B a b = Coinvariants.mk _ (a ⊗ₜ[k] b) := rfl
 
 @[ext]
 lemma coinvariantsTensor_hom_ext {M : ModuleCat k}

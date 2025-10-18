@@ -29,7 +29,7 @@ assert_not_exists MonoidWithZero DenselyOrdered
 variable {G M S : Type*}
 
 /-- Two elements commute if `a * b = b * a`. -/
-@[to_additive "Two elements additively commute if `a + b = b + a`"]
+@[to_additive /-- Two elements additively commute if `a + b = b + a` -/]
 def Commute [Mul S] (a b : S) : Prop :=
   SemiconjBy a b b
 
@@ -46,17 +46,17 @@ section Mul
 variable [Mul S]
 
 /-- Equality behind `Commute a b`; useful for rewriting. -/
-@[to_additive "Equality behind `AddCommute a b`; useful for rewriting."]
+@[to_additive /-- Equality behind `AddCommute a b`; useful for rewriting. -/]
 protected theorem eq {a b : S} (h : Commute a b) : a * b = b * a :=
   h
 
 /-- Any element commutes with itself. -/
-@[to_additive (attr := refl, simp) "Any element commutes with itself."]
+@[to_additive (attr := refl, simp) /-- Any element commutes with itself. -/]
 protected theorem refl (a : S) : Commute a a :=
   Eq.refl (a * a)
 
 /-- If `a` commutes with `b`, then `b` commutes with `a`. -/
-@[to_additive (attr := symm) "If `a` commutes with `b`, then `b` commutes with `a`."]
+@[to_additive (attr := symm) /-- If `a` commutes with `b`, then `b` commutes with `a`. -/]
 protected theorem symm {a b : S} (h : Commute a b) : Commute b a :=
   Eq.symm h
 
@@ -85,13 +85,13 @@ variable [Semigroup S] {a b c : S}
 
 /-- If `a` commutes with both `b` and `c`, then it commutes with their product. -/
 @[to_additive (attr := simp)
-"If `a` commutes with both `b` and `c`, then it commutes with their sum."]
+/-- If `a` commutes with both `b` and `c`, then it commutes with their sum. -/]
 theorem mul_right (hab : Commute a b) (hac : Commute a c) : Commute a (b * c) :=
   SemiconjBy.mul_right hab hac
 
 /-- If both `a` and `b` commute with `c`, then their product commutes with `c`. -/
 @[to_additive (attr := simp)
-"If both `a` and `b` commute with `c`, then their product commutes with `c`."]
+/-- If both `a` and `b` commute with `c`, then their product commutes with `c`. -/]
 theorem mul_left (hac : Commute a c) (hbc : Commute b c) : Commute (a * b) c :=
   SemiconjBy.mul_left hac hbc
 

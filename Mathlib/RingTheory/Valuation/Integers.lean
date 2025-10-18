@@ -67,9 +67,8 @@ theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) 
     v (algebraMap O R x) = 1 :=
   let ⟨u, hu⟩ := hx
   le_antisymm (H _) <| by
-    rw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
-      (algebraMap O R).map_mul, v.map_mul]
-    exact mul_le_mul_left' (H (u⁻¹ : Units O)) _
+    grw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
+      (algebraMap O R).map_mul, v.map_mul, H (u⁻¹ : Units O)]
 
 theorem one_of_isUnit (hv : Integers v O) {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
   one_of_isUnit' hx hv.map_le_one
@@ -92,9 +91,8 @@ theorem isUnit_of_one (hv : Integers v O) {x : O} (hx : IsUnit (algebraMap O R x
 
 theorem le_of_dvd (hv : Integers v O) {x y : O} (h : x ∣ y) :
     v (algebraMap O R y) ≤ v (algebraMap O R x) := by
-  let ⟨z, hz⟩ := h
-  rw [← mul_one (v (algebraMap O R x)), hz, RingHom.map_mul, v.map_mul]
-  exact mul_le_mul_left' (hv.2 z) _
+  obtain ⟨z, rfl⟩ := h
+  grw [← mul_one (v (algebraMap O R x)), RingHom.map_mul, v.map_mul, hv.2 z]
 
 lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
   constructor <;> intro h
@@ -130,8 +128,7 @@ theorem dvd_of_le (hv : Integers v O) {x y : O}
       hx.symm ▸ dvd_zero y)
     fun hy : algebraMap O F y ≠ 0 =>
     have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
-      rw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul]
-      exact mul_le_mul_left' h _
+      grw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul, h]
     let ⟨z, hz⟩ := hv.3 this
     ⟨z, hv.1 <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
 
@@ -195,7 +192,7 @@ theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
 
 lemma coe_span_singleton_eq_setOf_le_v_algebraMap (hv : Integers v O) (x : O) :
     (Ideal.span {x} : Set O) = {y : O | v (algebraMap O F y) ≤ v (algebraMap O F x)} := by
-  rcases eq_or_ne x 0 with rfl|hx
+  rcases eq_or_ne x 0 with rfl | hx
   · simp [Set.singleton_zero, Ideal.span_zero, map_eq_zero_iff _ hv.hom_inj]
   ext
   simp [SetLike.mem_coe, Ideal.mem_span_singleton, hv.dvd_iff_le]
@@ -204,7 +201,7 @@ lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
     [Subsingleton (MonoidHom.mrange v)ˣ] :
     Function.Bijective (algebraMap O F) := by
   refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
-  rcases eq_or_ne x 0 with rfl|hx
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   · exact (congr_arg Units.val (Subsingleton.elim (α := (MonoidHom.mrange v)ˣ)
       ((isUnit_iff_ne_zero.mpr hx).unit.map v.toMonoidHom.mrangeRestrict) 1)).le

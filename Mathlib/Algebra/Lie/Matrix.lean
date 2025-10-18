@@ -101,7 +101,7 @@ instance : LieRingModule (Matrix n n R) (n → R) where
   leibniz_lie x y v := by simp only [Ring.lie_def, mulVec_mulVec, sub_mulVec, sub_add_cancel]
 
 instance : LieModule R (Matrix n n R) (n → R) where
-  smul_lie := smul_mulVec_assoc
+  smul_lie := smul_mulVec
   lie_smul t A := mulVec_smul A t
 
 @[simp] lemma lie_apply (A : Matrix n n R) (v : n → R) : ⁅A, v⁆ = A *ᵥ v := rfl

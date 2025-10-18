@@ -21,9 +21,12 @@ In practice, all such linters check for code style issues.
 Currently, this file contains linters checking
 - if the string "adaptation note" is used instead of the command #adaptation_note,
 - for lines with windows line endings,
-- for lines containing trailing whitespace.
+- for lines containing trailing whitespace,
+- for module names to be in upper camel case,
+- for module names to be valid Windows filenames, and containing no forbidden characters such as
+  `!`, `.` or spaces.
 
-For historic reasons, some further such check checks are written in a Python script `lint-style.py`:
+For historic reasons, some further such checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
 
 This linter has a file for style exceptions (to avoid false positives in the implementation),
@@ -64,7 +67,7 @@ inductive ErrorFormat
   /-- Produce style error output aimed at humans: no error code, clickable file name -/
   | humanReadable : ErrorFormat
   /-- Produce an entry in the style-exceptions file: mention the error code, slightly uglier
-  than humand-readable output -/
+  than human-readable output -/
   | exceptionsFile : ErrorFormat
   /-- Produce output suitable for Github error annotations: in particular,
   duplicate the file path, line number and error code -/
@@ -137,7 +140,7 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
   let errorMessage := errctx.error.errorMessage
   match style with
   | ErrorFormat.github =>
-   -- We are outputting for github: duplicate file path, line number and error code,
+    -- We are outputting for github: duplicate file path, line number and error code,
     -- so that they are also visible in the plain text output.
     let path := errctx.path
     let nr := errctx.lineNumber
@@ -248,7 +251,7 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
       errors := errors.push (StyleError.semicolon, idx + 1)
       -- We spell the bad string pattern this way to avoid the linter firing on itself.
       fixedLines := fixedLines.set! idx (line.replace (⟨[' ', ';']⟩ : String) ";")
-   return (errors, if errors.size > 0 then some fixedLines else none)
+  return (errors, if errors.size > 0 then some fixedLines else none)
 
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
@@ -306,7 +309,10 @@ def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorC
   return (errors, if changes_made then some changed else none)
 
 /-- Enables the old Python-based style linters. -/
-register_option linter.pythonStyle : Bool := { defValue := true }
+-- TODO: these linters assume they are being run in `./scripts` and do not work on
+-- downstream projects. Fix this before re-enabling them by default.
+-- Or better yet: port them to Lean 4.
+register_option linter.pythonStyle : Bool := { defValue := false }
 
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
@@ -381,5 +387,65 @@ def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) 
     IO.eprintln
       s!"error: module name '{bad}' is not in 'UpperCamelCase': it should be '{good}' instead"
   return badNames.size
+
+/-- Verify that no module name is forbidden according to Windows' filename rules. -/
+register_option linter.modulesForbiddenWindows : Bool := { defValue := true }
+
+/-- Verifies that no module in `modules` contains CON, PRN, AUX, NUL, COM1, COM2, COM3, COM4, COM5,
+COM6, COM7, COM8, COM9, COM¹, COM², COM³, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9,
+LPT¹, LPT² or LPT³ in its filename, as these are forbidden on Windows.
+
+Also verify that module names contain no forbidden characters such as `*`, `?` (Windows),
+`!` (forbidden on Nix OS) or `.` (might result from confusion with a module name).
+
+Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
+Return the number of module names violating this rule. -/
+def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
+  unless getLinterValue linter.modulesUpperCamelCase opts do return 0
+  let forbiddenNames := [
+    "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
+    "COM9", "COM¹", "COM²", "COM³", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8",
+    "LPT9", "LPT¹", "LPT²", "LPT³"
+  ]
+  -- We also check for the exclamation mark (which is not forbidden on Windows, but e.g. on Nix OS),
+  -- but do so below (with a custom error message).
+  let forbiddenCharacters := [
+    '<', '>', '"', '/', '\\', '|', '?', '*',
+  ]
+  let mut badNamesNum := 0
+  for name in modules do
+    let mut isBad := false
+    let mut badComps : List String := []
+    let mut badChars : List String := []
+    for comp in name.componentsRev do
+      let .str .anonymous s := comp | continue
+      if forbiddenNames.contains s.toUpper then
+        badComps := s :: badComps
+      else
+        if s.contains '!' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains forbidden character '!'"
+        else if s.contains '.' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains forbidden character '.'"
+        else if s.contains ' ' || s.contains '\t' || s.contains '\n' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains a whitespace character"
+        for c in forbiddenCharacters do
+          if s.contains c then
+            badChars := c.toString :: badChars
+    if !badComps.isEmpty || !badChars.isEmpty then
+      isBad := true
+    if isBad then badNamesNum := badNamesNum + 1
+
+    if !badComps.isEmpty then
+      IO.eprintln s!"error: module name '{name}' contains \
+        component{if badComps.length > 1 then "s" else ""} '{badComps}', \
+        which {if badComps.length > 1 then "are" else "is"} forbidden in Windows filenames."
+    if !badChars.isEmpty then
+      IO.eprintln s!"error: module name '{name}' contains \
+        character{if badChars.length > 1 then "s" else ""} '{badChars}', \
+        which {if badChars.length > 1 then "are" else "is"} forbidden in Windows filenames."
+  return badNamesNum
 
 end Mathlib.Linter.TextBased

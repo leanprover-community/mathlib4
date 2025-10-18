@@ -114,7 +114,7 @@ namespace GroupExtension
 variable [Group N] [Group E] [Group G] (S : GroupExtension N E G)
 
 /-- The range of the inclusion map is a normal subgroup. -/
-@[to_additive "The range of the inclusion map is a normal additive subgroup."]
+@[to_additive /-- The range of the inclusion map is a normal additive subgroup. -/]
 instance normal_inl_range : S.inl.range.Normal :=
   S.range_inl_eq_ker_rightHom ▸ S.rightHom.normal_ker
 
@@ -191,14 +191,14 @@ theorem rightHom_map (e : E) : S'.rightHom (equiv e) = S.rightHom e :=
   congrFun equiv.rightHom_comm e
 
 /-- The inverse of an equivalence of group extensions is an equivalence. -/
-@[to_additive "The inverse of an equivalence of additive group extensions is an equivalence."]
+@[to_additive /-- The inverse of an equivalence of additive group extensions is an equivalence. -/]
 def symm : S'.Equiv S where
   __ := equiv.toMulEquiv.symm
   inl_comm := by rw [MulEquiv.symm_comp_eq, ← equiv.inl_comm]
   rightHom_comm := by rw [MulEquiv.comp_symm_eq, ← equiv.rightHom_comm]
 
 /-- See Note [custom simps projection]. -/
-@[to_additive "See Note [custom simps projection]."] -- this comment fixes the syntax highlighting "
+@[to_additive /-- See Note [custom simps projection]. -/]
 def Simps.symm_apply : E' → E := equiv.symm
 
 @[to_additive (attr := simp)]
@@ -211,10 +211,10 @@ attribute [simps! symm_apply] AddGroupExtension.Equiv.symm
 attribute [simps! symm_apply] symm
 
 /-- The composition of monoid isomorphisms associated to equivalences of group extensions gives
-    another equivalence. -/
+another equivalence. -/
 @[to_additive (attr := simps!)
-      "The composition of monoid isomorphisms associated to equivalences of additive group
-      extensions gives another equivalence."]
+/-- The composition of monoid isomorphisms associated to equivalences of additive group
+extensions gives another equivalence. -/]
 def trans {E'' : Type*} [Group E''] {S'' : GroupExtension N E'' G} (equiv' : S'.Equiv S'') :
     S.Equiv S'' where
   __ := equiv.toMulEquiv.trans equiv'.toMulEquiv
@@ -224,7 +224,7 @@ def trans {E'' : Type*} [Group E''] {S'' : GroupExtension N E'' G} (equiv' : S'.
 
 variable (S)
 /-- A group extension is equivalent to itself. -/
-@[to_additive (attr := simps!) "An additive group extension is equivalent to itself."]
+@[to_additive (attr := simps!) /-- An additive group extension is equivalent to itself. -/]
 def refl : S.Equiv S where
   __ := MulEquiv.refl E
   inl_comm := rfl
@@ -308,8 +308,8 @@ end Splitting
 /-- A splitting of an extension `S` is `N`-conjugate to another iff there exists `n : N` such that
 the section homomorphism is a conjugate of the other section homomorphism by `S.inl n`. -/
 @[to_additive
-      "A splitting of an extension `S` is `N`-conjugate to another iff there exists `n : N` such
-      that the section homomorphism is a conjugate of the other section homomorphism by `S.inl n`."]
+/-- A splitting of an extension `S` is `N`-conjugate to another iff there exists `n : N` such
+that the section homomorphism is a conjugate of the other section homomorphism by `S.inl n`. -/]
 def IsConj (s s' : S.Splitting) : Prop := ∃ n : N, s = fun g ↦ S.inl n * s' g * (S.inl n)⁻¹
 
 end GroupExtension

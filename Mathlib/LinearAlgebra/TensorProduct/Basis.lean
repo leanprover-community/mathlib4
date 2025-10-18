@@ -130,7 +130,7 @@ def TensorProduct.equivFinsuppOfBasisLeft : M ⊗[R] N ≃ₗ[R] ι →₀ N :=
 lemma TensorProduct.equivFinsuppOfBasisLeft_apply_tmul (m : M) (n : N) :
     (TensorProduct.equivFinsuppOfBasisLeft ℬ) (m ⊗ₜ n) =
     (ℬ.repr m).mapRange (· • n) (zero_smul _ _) := by
-  ext; simp [equivFinsuppOfBasisLeft]
+  simp [equivFinsuppOfBasisLeft]
 
 lemma TensorProduct.equivFinsuppOfBasisLeft_apply_tmul_apply
     (m : M) (n : N) (i : ι) :

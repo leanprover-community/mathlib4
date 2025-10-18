@@ -60,13 +60,13 @@ a proof. -/
 def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremFor n
 
 lemma fermatLastTheoremFor_zero : FermatLastTheoremFor 0 :=
-  fun _ _ _ _ _ _ ↦ by norm_num
+  fun _ _ _ _ _ _ ↦ by simp
 
 lemma not_fermatLastTheoremFor_one : ¬ FermatLastTheoremFor 1 :=
-  fun h ↦ h 1 1 2 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  fun h ↦ h 1 1 2 (by simp) (by simp) (by simp) (by simp)
 
 lemma not_fermatLastTheoremFor_two : ¬ FermatLastTheoremFor 2 :=
-  fun h ↦ h 3 4 5 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  fun h ↦ h 3 4 5 (by simp) (by simp) (by simp) (by simp)
 
 variable {R : Type*} [Semiring R] [NoZeroDivisors R] {m n : ℕ}
 

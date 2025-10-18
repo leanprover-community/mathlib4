@@ -1,26 +1,15 @@
 /-
-Copyright (c) 2018 Johannes Hölzl. All rights reserved.
+Copyright (c) 2022 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Jens Wagemaker
+Authors: Paul Lezeau
 -/
 import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
-# Associated, prime, and irreducible elements.
+# Order on associates
 
-In this file we define the predicate `Prime p`
-saying that an element of a commutative monoid with zero is prime.
-Namely, `Prime p` means that `p` isn't zero, it isn't a unit,
-and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`;
-
-In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `Irreducible`,
-however this is not true in general.
-
-We also define an equivalence relation `Associated`
-saying that two elements of a monoid differ by a multiplication by a unit.
-Then we show that the quotient type `Associates` is a monoid
-and prove basic properties of this quotient.
+This file shows that divisibility makes associates into a canonically ordered monoid.
 -/
 
 variable {M : Type*} [CancelCommMonoidWithZero M]
@@ -32,6 +21,7 @@ instance instIsOrderedMonoid : IsOrderedMonoid (Associates M) where
 
 instance : CanonicallyOrderedMul (Associates M) where
   exists_mul_of_le h := h
+  le_mul_self _ b := ⟨b, mul_comm ..⟩
   le_self_mul _ b := ⟨b, rfl⟩
 
 end Associates
