@@ -31,15 +31,9 @@ this is a basis over `Fin 3 → R`.
 
 -/
 
-open Function Module Set Submodule
-
+open Function LinearMap Module Set Submodule
 namespace Pi
-
-open LinearMap
-
-open Set
-
-variable {R : Type*}
+variable {ι R M : Type*}
 
 section Module
 
@@ -56,15 +50,14 @@ theorem linearIndependent_single_one (ι R : Type*) [Semiring R] [DecidableEq ι
   exact Pi.linearIndependent_single (fun (_ : ι) (_ : Unit) ↦ (1 : R))
     <| by simp +contextual [Fintype.linearIndependent_iffₛ]
 
-lemma linearIndependent_single_of_ne_zero {ι R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+lemma linearIndependent_single_of_ne_zero [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
     [Module.IsTorsionFree R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
     LinearIndependent R fun i : ι ↦ Pi.single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
-  exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by
-    simp +contextual [Fintype.linearIndependent_iff, hv]
+  exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by simp +contextual [hv]
 
 @[deprecated linearIndependent_single_of_ne_zero (since := "2025-04-14")]
-theorem linearIndependent_single_ne_zero {ι R : Type*} [Ring R] [NoZeroDivisors R] [DecidableEq ι]
+theorem linearIndependent_single_ne_zero [Ring R] [IsDomain R] [NoZeroDivisors R] [DecidableEq ι]
     {v : ι → R} (hv : ∀ i, v i ≠ 0) : LinearIndependent R (fun i : ι ↦ Pi.single i (v i)) :=
   linearIndependent_single_of_ne_zero hv
 
