@@ -256,7 +256,10 @@ instance (n : ℕ) (M N : ModuleCat.{v'} S) : IsScalarTower R S (Ext M N n) wher
 theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [Module.Flat R S] (M N : ModuleCat.{v} R)
     (n : ℕ) : IsBaseChange S ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n) := by
   induction n generalizing M N
-  · sorry
+  · -- linearEquiv₀
+    -- (ModuleCat.extendScalars'.{v, v'} R S).mapLinearMap R
+    --((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n)
+    sorry
   · rename_i n ih
 
     sorry
