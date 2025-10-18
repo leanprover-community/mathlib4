@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Strahinja Gvozdić, Bhavik Mehta
 -/
 import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
