@@ -233,39 +233,59 @@ variable {f : M → E →L[𝕜] E'} in
 #guard_msgs in
 #check CMDiff 2 f
 
--- And the same test if E' is a normed space over a field 𝕜'' which is defeq to 𝕜, but not at
--- reducible transparency: this is meant to test the transparency handling in the definitional
--- equality check in the model inference.
-variable {𝕜' E'' : Type*} [NontriviallyNormedField 𝕜'] [NormedAddCommGroup E''] [NormedSpace 𝕜' E'']
-  [Module 𝕜 E'']
+section
+
+-- And the same test if E is a real normed space and E' is a normed space over a field R' which is
+-- definitionally equal to ℝ, but not at reducible transparency: this is meant to test the
+-- transparency handling in the definitional equality check in the model inference.
+
+def RealCopy := ℝ
+
+noncomputable instance : NormedField RealCopy := inferInstanceAs (NormedField ℝ)
+
+variable {E'' E''' : Type*} [NormedAddCommGroup E''] [NormedAddCommGroup E''']
+  [NormedSpace ℝ E''] [NormedSpace RealCopy E''']
 
 /--
 error: failed to synthesize
-  NontriviallyNormedField (E →L[𝕜] E'')
+  Module ℝ E'''
 
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
-#synth NontriviallyNormedField (E →L[𝕜] E'')
+#synth Module ℝ E'''
+instance : Module ℝ  E''' := inferInstanceAs (Module RealCopy E''')
 
 /--
 error: failed to synthesize
-  SeminormedAddCommGroup (E →L[𝕜] E'')
+  NormedSpace 𝕜 (E'' →L[ℝ] E'')
 
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
-#synth NormedSpace 𝕜 (E →L[𝕜] E'')
+#synth NormedSpace 𝕜 (E'' →L[ℝ] E'')
 
-variable {f : M → E →L[𝕜] E''} in
-/-- error: Could not find a model with corners for `E →L[𝕜] E''` -/
+/--
+error: failed to synthesize
+  NormedSpace ℝ (E'' →L[ℝ] E''')
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#synth NormedSpace ℝ (E'' →L[ℝ] E''')
+
+
+variable {f : M → E'' →L[ℝ] E'''} in
+/-- error: Could not find a model with corners for `E'' →L[ℝ] E'''` -/
 #guard_msgs in
 #check MDiff f
 
-variable {f : M → E →L[𝕜] E''} in
-/-- error: Could not find a model with corners for `E →L[𝕜] E''` -/
+variable {f : M → E'' →L[ℝ] E'''} in
+/-- error: Could not find a model with corners for `E'' →L[ℝ] E'''` -/
 #guard_msgs in
 #check CMDiff 2 f
+
+end
 
 end
 
