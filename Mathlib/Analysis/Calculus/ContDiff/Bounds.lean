@@ -504,15 +504,29 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
 
 /-- If the derivatives of `g` at `f x` are bounded by `C`, and the `i`-th derivative
 of `f` at `x` is bounded by `D^i` for all `1 ≤ i ≤ n`, then the `n`-th derivative
+of `g ∘ f` is bounded by `n! * C * D^n`.
+
+Version with derivative of `g` only bounded on the range of `f`. -/
+theorem norm_iteratedFDeriv_comp_le' {g : F → G} {f : E → F} {n : ℕ} {N : WithTop ℕ∞}
+    {t : Set F} (ht : Set.range f ⊆ t) (ht' : UniqueDiffOn 𝕜 t)
+    (hg : ContDiffOn 𝕜 N g t) (hf : ContDiff 𝕜 N f) (hn : n ≤ N) (x : E) {C : ℝ} {D : ℝ}
+    (hC : ∀ i, i ≤ n → ‖iteratedFDerivWithin 𝕜 i g t (f x)‖ ≤ C)
+    (hD : ∀ i, 1 ≤ i → i ≤ n → ‖iteratedFDeriv 𝕜 i f x‖ ≤ D ^ i) :
+    ‖iteratedFDeriv 𝕜 n (g ∘ f) x‖ ≤ n ! * C * D ^ n := by
+  simp_rw [← iteratedFDerivWithin_univ] at hD ⊢
+  exact norm_iteratedFDerivWithin_comp_le hg hf.contDiffOn hn ht' uniqueDiffOn_univ
+    (by simp [mapsTo_iff_subset_preimage, ht]) (mem_univ x) hC hD
+
+/-- If the derivatives of `g` at `f x` are bounded by `C`, and the `i`-th derivative
+of `f` at `x` is bounded by `D^i` for all `1 ≤ i ≤ n`, then the `n`-th derivative
 of `g ∘ f` is bounded by `n! * C * D^n`. -/
 theorem norm_iteratedFDeriv_comp_le {g : F → G} {f : E → F} {n : ℕ} {N : WithTop ℕ∞}
     (hg : ContDiff 𝕜 N g) (hf : ContDiff 𝕜 N f) (hn : n ≤ N) (x : E) {C : ℝ} {D : ℝ}
     (hC : ∀ i, i ≤ n → ‖iteratedFDeriv 𝕜 i g (f x)‖ ≤ C)
     (hD : ∀ i, 1 ≤ i → i ≤ n → ‖iteratedFDeriv 𝕜 i f x‖ ≤ D ^ i) :
     ‖iteratedFDeriv 𝕜 n (g ∘ f) x‖ ≤ n ! * C * D ^ n := by
-  simp_rw [← iteratedFDerivWithin_univ] at hC hD ⊢
-  exact norm_iteratedFDerivWithin_comp_le hg.contDiffOn hf.contDiffOn hn uniqueDiffOn_univ
-    uniqueDiffOn_univ (mapsTo_univ _ _) (mem_univ x) hC hD
+  simp_rw [← iteratedFDerivWithin_univ] at hC
+  exact norm_iteratedFDeriv_comp_le' (subset_univ _) uniqueDiffOn_univ hg.contDiffOn hf hn x hC hD
 
 section Apply
 
