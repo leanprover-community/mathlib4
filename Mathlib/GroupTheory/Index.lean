@@ -213,63 +213,6 @@ theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b �
     exact one_mem _
   · rwa [ha, inv_mem_iff (x := b)]
 
-/-- A subgroup has index two if and only if there exists `a` such that for all `b`, exactly one
-of `a * b` and `b` belong to `H`. -/
-@[to_additive /-- An additive subgroup has index two if and only if there exists `a` such that
-for all `b`, exactly one of `a + b` and `b` belong to `H`. -/]
-theorem index_eq_two_iff' : H.index = 2 ↔ ∃ a, ∀ b, Xor' (a * b ∈ H) (b ∈ H) := by
-  rw [index_eq_two_iff, (Equiv.inv G).exists_congr]
-  refine fun a ↦ (Equiv.inv G).forall_congr fun b ↦ ?_
-  simp only [Equiv.inv_apply, inv_mem_iff, ← mul_inv_rev]
-
-/-- A subgroup `H` has index two if and only if there exists `a ∉ H` such that for all `b`, one
-of `b * a` and `b` belongs to `H`. -/
-@[to_additive /-- An additive subgroup `H` has index two if and only if there exists `a ∉ H` such
-that for all `b`, one of `b + a` and `b` belongs to `H`. -/]
-lemma index_eq_two_iff_exists_notMem_and :
-    H.index = 2 ↔ ∃ a, a ∉ H ∧ ∀ b, (b * a ∈ H) ∨ (b ∈ H) := by
-  simp only [index_eq_two_iff, xor_iff_or_and_not_and]
-  exact exists_congr fun a ↦ ⟨fun h ↦ ⟨fun ha ↦ ((h a)).2 ⟨mul_mem ha ha, ha⟩, fun b ↦ (h b).1⟩,
-    fun h b ↦ ⟨h.2 b, fun h' ↦ h.1 (by simpa using mul_mem (inv_mem h'.2) h'.1)⟩⟩
-
-/-- A subgroup `H` has index two if and only if there exists `a ∉ H` such that for all `b`, one
-of `a * b` and `b` belongs to `H`. -/
-@[to_additive /-- An additive subgroup has index two if and only if there exists `a ∉ H` such that
-for all `b`, one of `a + b` and `b` belongs to `H`. -/]
-lemma index_eq_two_iff_exists_notMem_and' :
-    H.index = 2 ↔ ∃ a, a ∉ H ∧ ∀ b, (a * b ∈ H) ∨ (b ∈ H) := by
-  simp only [index_eq_two_iff', xor_iff_or_and_not_and]
-  exact exists_congr fun a ↦ ⟨fun h ↦ ⟨fun ha ↦ ((h a)).2 ⟨mul_mem ha ha, ha⟩, fun b ↦ (h b).1⟩,
-    fun h b ↦ ⟨h.2 b, fun h' ↦ h.1 (by simpa using mul_mem h'.1 (inv_mem h'.2))⟩⟩
-
-/-- Relative version of `Subgroup.index_eq_two_iff`. -/
-@[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff`. -/]
-theorem relIndex_eq_two_iff : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor' (b * a ∈ H) (b ∈ H) := by
-  simp [Subgroup.relIndex, Subgroup.index_eq_two_iff, mem_subgroupOf]
-
-/-- Relative version of `Subgroup.index_eq_two_iff'`. -/
-@[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff'`. -/]
-theorem relIindex_eq_two_iff' : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor' (a * b ∈ H) (b ∈ H) := by
-  simp [Subgroup.relIndex, Subgroup.index_eq_two_iff', mem_subgroupOf]
-
-/-- Relative version of `Subgroup.index_eq_two_iff_exists_notMem_and`. -/
-@[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff_exists_notMem_and`. -/]
-lemma relIndex_eq_two_iff_exists_notMem_and {G : Type*} [Group G] {H K : Subgroup G} :
-    H.relIndex K = 2 ↔ ∃ a ∈ K, a ∉ H ∧ ∀ b ∈ K, (b * a ∈ H) ∨ (b ∈ H) := by
-  rw [Subgroup.relIndex, Subgroup.index_eq_two_iff_exists_notMem_and]
-  simp only [mem_subgroupOf, coe_mul, Subtype.forall, Subtype.exists, exists_and_left, exists_prop]
-  refine exists_congr fun g ↦ ?_
-  simp only [and_left_comm]
-
-/-- Relative version of `Subgroup.index_eq_two_iff_exists_notMem_and'`. -/
-@[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff_exists_notMem_and'`. -/]
-lemma relIndex_eq_two_iff_exists_notMem_and' {G : Type*} [Group G] {H K : Subgroup G} :
-    H.relIndex K = 2 ↔ ∃ a ∈ K, a ∉ H ∧ ∀ b ∈ K, (a * b ∈ H) ∨ (b ∈ H) := by
-  rw [Subgroup.relIndex, Subgroup.index_eq_two_iff_exists_notMem_and']
-  simp only [mem_subgroupOf, coe_mul, Subtype.forall, Subtype.exists, exists_and_left, exists_prop]
-  refine exists_congr fun g ↦ ?_
-  simp only [and_left_comm]
-
 @[to_additive]
 theorem mul_mem_iff_of_index_two (h : H.index = 2) {a b : G} : a * b ∈ H ↔ (a ∈ H ↔ b ∈ H) := by
   by_cases ha : a ∈ H; · simp only [ha, true_iff, mul_mem_cancel_left ha]
@@ -498,7 +441,7 @@ theorem relIndex_inf_le : (H ⊓ K).relIndex L ≤ H.relIndex L * K.relIndex L :
   · exact (le_of_eq (relIndex_eq_zero_of_le_left inf_le_left h)).trans (zero_le _)
   rw [← inf_relIndex_right, inf_assoc, ← relIndex_mul_relIndex _ _ L inf_le_right inf_le_right,
     inf_relIndex_right, inf_relIndex_right]
-  exact mul_le_mul_right' (relIndex_le_of_le_right inf_le_right h) (K.relIndex L)
+  grw [relIndex_le_of_le_right inf_le_right h]
 
 @[deprecated (since := "2025-08-12")] alias relindex_inf_le := relIndex_inf_le
 
