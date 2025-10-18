@@ -873,15 +873,16 @@ noncomputable def Factors.piQuotientLinearEquiv (p : Ideal R) (hp : map (algebra
         RingHomCompTriple.comp_apply, Pi.mul_apply, Pi.algebraMap_apply]
       congr }
 
+variable (K L : Type*) [Field K] [Field L] [IsDedekindDomain R] [Algebra R K] [IsFractionRing R K]
+  [Algebra S L] [IsFractionRing S L] [Algebra K L] [Algebra R L] [IsScalarTower R S L]
+  [IsScalarTower R K L] [Module.Finite R S]
+
 open scoped Classical in
 /-- The **fundamental identity** of ramification index `e` and inertia degree `f`:
 for `P` ranging over the primes lying over `p`, `∑ P, e P * f P = [Frac(S) : Frac(R)]`;
 here `S` is a finite `R`-module (and thus `Frac(S) : Frac(R)` is a finite extension) and `p`
 is maximal. -/
-theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDomain R]
-    [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L] [Algebra K L]
-    [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Module.Finite R S]
-    {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+theorem sum_ramification_inertia {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
     ∑ P ∈ primesOverFinset p S,
         ramificationIdx (algebraMap R S) p P * inertiaDeg p P = finrank K L := by
   set e := ramificationIdx (algebraMap R S) p
@@ -903,12 +904,37 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
       algebraMap_injective_of_field_isFractionRing R S K L, le_bot_iff]
   · exact finrank_quotient_map p K L
 
+theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥)
+    (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
+    p.inertiaDeg P ≤ Module.finrank K L := by
+  classical
+  have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
+  rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
+  refine le_trans (Nat.le_mul_of_pos_left _ ?_) (Nat.le_add_right _ _)
+  exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hp0
+
+theorem ramificationIdx_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
+    (hp0 : p ≠ ⊥) (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
+    p.ramificationIdx (algebraMap R S) P ≤ Module.finrank K L := by
+  classical
+  have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
+  rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
+  refine le_trans (Nat.le_mul_of_pos_right _ ?_) (Nat.le_add_right _ _)
+  exact Nat.pos_iff_ne_zero.mpr <|  inertiaDeg_ne_zero p P
+
+theorem card_primesOverFinset_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
+    (hp0 : p ≠ ⊥) : Finset.card (primesOverFinset p S) ≤ Module.finrank K L := by
+  rw [← sum_ramification_inertia S K L hp0, Finset.card_eq_sum_ones]
+  refine Finset.sum_le_sum fun P hP ↦ ?_
+  have : P.IsPrime := ((mem_primesOverFinset_iff hp0 _).mp hP).1
+  have : P.LiesOver p := ((mem_primesOverFinset_iff hp0 _).mp hP).2
+  refine Right.one_le_mul ?_ ?_
+  · exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hp0
+  · exact Nat.pos_iff_ne_zero.mpr <| inertiaDeg_ne_zero p P
+
 /-- `Ideal.sum_ramification_inertia`, in the local (DVR) case. -/
-lemma ramificationIdx_mul_inertiaDeg_of_isLocalRing
-    (K L : Type*) [Field K] [Field L] [IsLocalRing S]
-    [IsDedekindDomain R] [Algebra R K] [IsFractionRing R K] [Algebra S L]
-    [IsFractionRing S L] [Algebra K L] [Algebra R L] [IsScalarTower R S L]
-    [IsScalarTower R K L] [Module.Finite R S] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+lemma ramificationIdx_mul_inertiaDeg_of_isLocalRing [IsLocalRing S] {p : Ideal R} [p.IsMaximal]
+    (hp0 : p ≠ ⊥) :
     ramificationIdx (algebraMap R S) p (IsLocalRing.maximalIdeal S) *
       p.inertiaDeg (IsLocalRing.maximalIdeal S) = Module.finrank K L := by
   have := FaithfulSMul.of_field_isFractionRing R S K L
