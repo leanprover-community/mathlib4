@@ -60,7 +60,7 @@ lemma _root_.IsUnit.isStrictlyPositive [LE A] [Monoid A] [Zero A]
 lemma isSelfAdjoint [Semiring A] [PartialOrder A] [StarRing A] [StarOrderedRing A] {a : A}
     (ha : IsStrictlyPositive a) : IsSelfAdjoint a := ha.nonneg.isSelfAdjoint
 
-@[simp, grind]
+@[simp, grind .]
 lemma _root_.isStrictlyPositive_one [LE A] [Monoid A] [Zero A] [ZeroLEOneClass A] :
     IsStrictlyPositive (1 : A) := iff_of_unital.mpr ⟨zero_le_one, isUnit_one⟩
 
