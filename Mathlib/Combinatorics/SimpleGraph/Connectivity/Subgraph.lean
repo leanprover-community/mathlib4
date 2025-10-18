@@ -134,9 +134,8 @@ lemma coe_toSubgraph_eq_toSimpleGraph : C.toSubgraph.coe = C.toSimpleGraph :=
   induce_eq_coe_induce_top C.supp |>.symm
 
 lemma spanningCoe_toSimpleGraph_adj_eq_toSubgraph_adj :
-    C.toSimpleGraph.spanningCoe.Adj = C.toSubgraph.Adj := by
-  rw [← coe_toSubgraph_eq_toSimpleGraph, Subgraph.spanningCoe_coe_eq_spanningCoe]
-  grind [Subgraph.spanningCoe_adj]
+    C.toSimpleGraph.spanningCoe.Adj = C.toSubgraph.Adj :=
+  spanningCoe_induce_adj_eq_induce_top_adj _
 
 lemma toSubgraph_connected : C.toSubgraph.Connected :=
   ⟨C.coe_toSubgraph_eq_toSimpleGraph ▸ C.connected_toSimpleGraph⟩
