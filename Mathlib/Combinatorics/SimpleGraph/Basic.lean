@@ -201,6 +201,8 @@ def IsSubgraph (x y : SimpleGraph V) : Prop :=
 instance : LE (SimpleGraph V) :=
   ⟨IsSubgraph⟩
 
+lemma le_iff_adj {G H : SimpleGraph V} : G ≤ H ↔ ∀ v w, G.Adj v w → H.Adj v w := .rfl
+
 @[simp]
 theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Prop) = (· ≤ ·) :=
   rfl
@@ -519,16 +521,10 @@ theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, 
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
 
 theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
-  refine ⟨fun h ↦ ?_, fun ⟨a, b, hab⟩ ↦ ?_⟩
-  · contrapose! h
-    exact le_bot_iff.mp h
-  · grind [SimpleGraph.bot_adj]
+  simp [← le_bot_iff, le_iff_adj]
 
 theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
-  refine ⟨fun h ↦ ?_, fun ⟨a, b, hne, hab⟩ ↦ ?_⟩
-  · contrapose! h
-    exact eq_top_iff.mpr h
-  · grind [SimpleGraph.top_adj]
+  simp [← top_le_iff, le_iff_adj]
 
 variable (G G₁ G₂)
 
