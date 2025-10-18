@@ -129,6 +129,7 @@ variable (C : G.ConnectedComponent)
 def toSubgraph : G.Subgraph :=
   Subgraph.induce ⊤ C.supp
 
+@[simp]
 lemma coe_toSubgraph_eq_toSimpleGraph : C.toSubgraph.coe = C.toSimpleGraph :=
   induce_eq_coe_induce_top C.supp |>.symm
 
