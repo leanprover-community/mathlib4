@@ -59,10 +59,12 @@ protected lemma IsInducing.induced (f : X → Y) : @IsInducing X Y (induced f �
 
 variable [TopologicalSpace X]
 
+@[fun_prop]
 protected lemma IsInducing.id : IsInducing (@id X) := ⟨induced_id.symm⟩
 
 variable [TopologicalSpace Z]
 
+@[fun_prop]
 protected lemma IsInducing.comp (hg : IsInducing g) (hf : IsInducing f) :
     IsInducing (g ∘ f) :=
   ⟨by rw [hf.eq_induced, hg.eq_induced, induced_compose]⟩
@@ -122,6 +124,7 @@ lemma continuousAt_iff' (hf : IsInducing f) {x : X} (h : range f ∈ 𝓝 (f x))
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) := by
   simp_rw [ContinuousAt, Filter.Tendsto, ← hf.map_nhds_of_mem _ h, Filter.map_map, comp]
 
+@[fun_prop]
 protected lemma continuous (hf : IsInducing f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
 
@@ -166,14 +169,17 @@ alias _root_.Function.Injective.isEmbedding_induced := IsEmbedding.induced
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
+@[fun_prop]
 lemma isInducing (hf : IsEmbedding f) : IsInducing f := hf.toIsInducing
 
 lemma mk' (f : X → Y) (inj : Injective f) (induced : ∀ x, comap f (𝓝 (f x)) = 𝓝 x) :
     IsEmbedding f :=
   ⟨isInducing_iff_nhds.2 fun x => (induced x).symm, inj⟩
 
+@[fun_prop]
 protected lemma id : IsEmbedding (@id X) := ⟨.id, fun _ _ h => h⟩
 
+@[fun_prop]
 protected lemma comp (hg : IsEmbedding g) (hf : IsEmbedding f) : IsEmbedding (g ∘ f) :=
   { hg.isInducing.comp hf.isInducing with injective := fun _ _ h => hf.injective <| hg.injective h }
 
@@ -235,9 +241,11 @@ theorem isQuotientMap_iff_isClosed :
 
 namespace IsQuotientMap
 
+@[fun_prop]
 protected theorem id : IsQuotientMap (@id X) :=
   ⟨fun x => ⟨x, rfl⟩, coinduced_id.symm⟩
 
+@[fun_prop]
 protected theorem comp (hg : IsQuotientMap g) (hf : IsQuotientMap f) : IsQuotientMap (g ∘ f) :=
   ⟨hg.surjective.comp hf.surjective, by rw [hg.eq_coinduced, hf.eq_coinduced, coinduced_compose]⟩
 
@@ -252,6 +260,7 @@ theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : Le
 protected theorem continuous_iff (hf : IsQuotientMap f) : Continuous g ↔ Continuous (g ∘ f) := by
   rw [continuous_iff_coinduced_le, continuous_iff_coinduced_le, hf.eq_coinduced, coinduced_compose]
 
+@[fun_prop]
 protected theorem continuous (hf : IsQuotientMap f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
 
@@ -579,7 +588,9 @@ section IsOpenEmbedding
 
 variable [TopologicalSpace X] [TopologicalSpace Y]
 
+@[fun_prop]
 lemma IsOpenEmbedding.isEmbedding (hf : IsOpenEmbedding f) : IsEmbedding f := hf.toIsEmbedding
+
 lemma IsOpenEmbedding.isInducing (hf : IsOpenEmbedding f) : IsInducing f :=
   hf.isEmbedding.isInducing
 
@@ -607,6 +618,7 @@ theorem IsOpenEmbedding.continuousAt_iff [TopologicalSpace Z] (hf : IsOpenEmbedd
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) :=
   hf.tendsto_nhds_iff'
 
+@[fun_prop]
 theorem IsOpenEmbedding.continuous (hf : IsOpenEmbedding f) : Continuous f :=
   hf.isEmbedding.continuous
 
@@ -614,6 +626,7 @@ lemma IsOpenEmbedding.isOpen_iff_preimage_isOpen (hf : IsOpenEmbedding f) {s : S
     (hs : s ⊆ range f) : IsOpen s ↔ IsOpen (f ⁻¹' s) := by
   rw [hf.isOpen_iff_image_isOpen, image_preimage_eq_inter_range, inter_eq_self_of_subset_left hs]
 
+@[fun_prop]
 lemma IsOpenEmbedding.of_isEmbedding_isOpenMap (h₁ : IsEmbedding f) (h₂ : IsOpenMap f) :
     IsOpenEmbedding f :=
   ⟨h₁, h₂.isOpen_range⟩
@@ -643,8 +656,10 @@ lemma isOpenEmbedding_iff_continuous_injective_isOpenMap :
 namespace IsOpenEmbedding
 variable [TopologicalSpace Z]
 
+@[fun_prop]
 protected lemma id : IsOpenEmbedding (@id X) := ⟨.id, IsOpenMap.id.isOpen_range⟩
 
+@[fun_prop]
 protected lemma comp (hg : IsOpenEmbedding g)
     (hf : IsOpenEmbedding f) : IsOpenEmbedding (g ∘ f) :=
   ⟨hg.1.comp hf.1, (hg.isOpenMap.comp hf.isOpenMap).isOpen_range⟩
@@ -678,8 +693,11 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 namespace IsClosedEmbedding
 
+@[fun_prop]
 lemma isEmbedding (hf : IsClosedEmbedding f) : IsEmbedding f := hf.toIsEmbedding
+@[fun_prop]
 lemma isInducing (hf : IsClosedEmbedding f) : IsInducing f := hf.isEmbedding.isInducing
+@[fun_prop]
 lemma continuous (hf : IsClosedEmbedding f) : Continuous f := hf.isEmbedding.continuous
 
 lemma tendsto_nhds_iff {g : ι → X} {l : Filter ι} {x : X} (hf : IsClosedEmbedding f) :
@@ -714,8 +732,10 @@ lemma isClosedEmbedding_iff_continuous_injective_isClosedMap {f : X → Y} :
   mp h := ⟨h.continuous, h.injective, h.isClosedMap⟩
   mpr h := .of_continuous_injective_isClosedMap h.1 h.2.1 h.2.2
 
+@[fun_prop]
 protected theorem id : IsClosedEmbedding (@id X) := ⟨.id, IsClosedMap.id.isClosed_range⟩
 
+@[fun_prop]
 theorem comp (hg : IsClosedEmbedding g) (hf : IsClosedEmbedding f) :
     IsClosedEmbedding (g ∘ f) :=
   ⟨hg.isEmbedding.comp hf.isEmbedding, (hg.isClosedMap.comp hf.isClosedMap).isClosed_range⟩
