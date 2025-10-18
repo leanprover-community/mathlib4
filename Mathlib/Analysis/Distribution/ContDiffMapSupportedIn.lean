@@ -165,16 +165,26 @@ theorem toBoundedContinuousFunction_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
 
 section AddCommGroup
 
+
+/-- The zero function -/
+@[simps]
+def zero : 𝓓^{n}_{K}(E, F) := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
+
+-- simps "kind of" works, but not exactly as I want: it generates an `apply` lemma,
+-- but its right hand side has the form `0 a`, not `0`.
+-- TODO: can I generate `coe_zero` also?
+
 instance : Zero 𝓓^{n}_{K}(E, F) where
-  zero := .mk 0 contDiff_zero_fun fun _ _ ↦ rfl
+  zero := zero
 
 @[simp]
 lemma coe_zero : (0 : 𝓓^{n}_{K}(E, F)) = (0 : E → F) :=
   rfl
 
-@[simp]
-lemma zero_apply (x : E) : (0 : 𝓓^{n}_{K}(E, F)) x = 0 :=
-  rfl
+-- the previous version of the lemma
+-- @[simp]
+-- lemma zero_apply (x : E) : (0 : 𝓓^{n}_{K}(E, F)) x = 0 :=
+--   rfl
 
 instance : Add 𝓓^{n}_{K}(E, F) where
   add f g := .mk (f + g) (f.contDiff.add g.contDiff) <| by
