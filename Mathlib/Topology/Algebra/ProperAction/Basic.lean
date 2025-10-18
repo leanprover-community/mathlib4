@@ -193,10 +193,12 @@ instance [IsTopologicalGroup G] : ProperSMul Gᵐᵒᵖ G where
       right_inv := fun _ ↦ by simp }
     exact Φ.isProperMap
 
-example [IsTopologicalGroup G] {H : Subgroup G} [IsClosed (H : Set G)] : ProperSMul H G :=
-  inferInstance
-
-@[to_additive]
+/-- Given a closed subgroup `H` of a topological group `G`, the right action of `H` on `G`
+is proper. Note that the corresponding statement for the left action can be proven by
+`inferInstance`. -/
+@[to_additive /-- Given a closed subgroup `H` of an additive topological group `G`, the right
+action of `H` on `G` is proper. Note that the corresponding statement for the left action can be
+proven by `inferInstance`. -/]
 instance [IsTopologicalGroup G] {H : Subgroup G} [H_closed : IsClosed (H : Set G)] :
     ProperSMul H.op G :=
   have : IsClosed (H.op : Set Gᵐᵒᵖ) := H_closed.preimage MulOpposite.continuous_unop
