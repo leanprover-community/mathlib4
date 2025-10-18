@@ -199,8 +199,7 @@ private lemma summable_F'' : Summable F'' := by
   suffices Summable fun (pk : Nat.Primes × ℕ) ↦ (pk.1 : ℝ)⁻¹ ^ (pk.2 + 3 / 2 : ℝ) by
     refine (Summable.mul_left 2 this).of_nonneg_of_le (fun pk ↦ ?_) (fun pk ↦ F''_le pk.1 pk.2)
     simp only [F'', Function.comp_apply, F', F₀, Prod.map_fst, id_eq, Prod.map_snd, Nat.cast_pow]
-    have := vonMangoldt_nonneg (n := (pk.1 : ℕ) ^ (pk.2 + 2))
-    positivity
+    positivity [vonMangoldt_nonneg (n := (pk.1 : ℕ) ^ (pk.2 + 2))]
   conv => enter [1, pk]; rw [Real.rpow_add <| hp₀ pk.1, Real.rpow_natCast]
   refine (summable_prod_of_nonneg (fun _ ↦ by positivity)).mpr ⟨(fun p ↦ ?_), ?_⟩
   · dsimp only -- otherwise the `exact` below times out
@@ -209,8 +208,7 @@ private lemma summable_F'' : Summable F'' := by
     conv => enter [1, p]; rw [tsum_mul_right, tsum_geometric_of_lt_one (hp₀ p).le (hp₁ p)]
     refine (summable_rpow.mpr (by norm_num : -(3 / 2 : ℝ) < -1)).mul_left 2
       |>.of_nonneg_of_le (fun p ↦ ?_) (fun p ↦ ?_)
-    · have := sub_pos.mpr (hp₁ p)
-      positivity
+    · positivity [sub_pos.mpr (hp₁ p)]
     · rw [Real.inv_rpow p.val.cast_nonneg, Real.rpow_neg p.val.cast_nonneg]
       gcongr
       rw [inv_le_comm₀ (sub_pos.mpr (hp₁ p)) zero_lt_two, le_sub_comm,
@@ -223,8 +221,7 @@ on primes in an arithmetic progression. -/
 lemma summable_residueClass_non_primes_div :
     Summable fun n : ℕ ↦ (if n.Prime then 0 else residueClass a n) / n := by
   have h₀ (n : ℕ) : 0 ≤ (if n.Prime then 0 else residueClass a n) / n := by
-    have := residueClass_nonneg a n
-    positivity
+    positivity [residueClass_nonneg a n]
   have hleF₀ (n : ℕ) : (if n.Prime then 0 else residueClass a n) / n ≤ F₀ n := by
     refine div_le_div_of_nonneg_right ?_ n.cast_nonneg
     split_ifs; exacts [le_rfl, residueClass_le a n]
