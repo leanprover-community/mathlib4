@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Noetherian.Basic
 
 We prove that given `IsScalarTower F K A`, if `A` is finite as a module over `F` then
 `A` is finite over `K`, and
-(as long as `A` is Noetherian over `F` and we have `Module.IsTorsionFree K A`) `K` is finite over `F`.
+(as long as `A` is Noetherian over `F` and torsion-free over `K`) `K` is finite over `F`.
 
 In particular these conditions hold when `A`, `F`, and `K` are fields.
 
@@ -40,7 +40,7 @@ variable [Ring F] [Ring K] [Module F K]
 
 Note this cannot be an instance as Lean cannot infer `A`.
 -/
-theorem left [Nontrivial A] : Module.Finite F K :=
+theorem left [IsDomain K] [Nontrivial A] : Module.Finite F K :=
   let ⟨x, hx⟩ := exists_ne (0 : A)
   Module.Finite.of_injective
     (LinearMap.ringLmapEquivSelf K ℕ A |>.symm x |>.restrictScalars F) (smul_left_injective K hx)
