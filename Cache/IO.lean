@@ -408,8 +408,7 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
-    IO.println s!"Unpacked in {(← IO.monoMsNow) - now} ms"
-    IO.println "Completed successfully!"
+    IO.println s!"Completed successfully. Unpacked in {(← IO.monoMsNow) - now} ms."
   else IO.println "No cache files to decompress"
 
 instance : Ord FilePath where
