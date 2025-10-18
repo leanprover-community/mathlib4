@@ -20,7 +20,7 @@ case, it would be a particular case of Čech cohomology (TODO).
 
 ## TODO
 
-* show that if `1 ⟶ G₁ ⟶ G₂ ⟶ G₃ ⟶ 1` is a short exact sequence of sheaves
+* show that if `1 ⟶ G₁ ⟶ G₂ ⟶ G₃ ⟶ 1` is a short-exact sequence of sheaves
   of groups, and `x₃` is a global section of `G₃` which can be locally lifted
   to a section of `G₂`, there is an associated canonical cohomology class of `G₁`
   which is trivial iff `x₃` can be lifted to a global section of `G₂`.
