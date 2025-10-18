@@ -499,6 +499,9 @@ lemma isDiag_map (hf : Injective f) : (e.map f).IsDiag ↔ e.IsDiag :=
 theorem diag_isDiag (a : α) : IsDiag (diag a) :=
   Eq.refl a
 
+theorem isDiag_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiag :=
+  z.ind Subsingleton.elim
+
 /-- The set of all `Sym2 α` elements on the diagonal. -/
 def diagSet : Set (Sym2 α) :=
   Set.range diag
@@ -517,6 +520,9 @@ theorem diagSet_eq_setOf_isDiag : diagSet = { z : Sym2 α | z.IsDiag } :=
 
 theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = { z : Sym2 α | ¬z.IsDiag } :=
   congrArg _ diagSet_eq_setOf_isDiag
+
+theorem diagSet_eq_univ_of_subsingleton [Subsingleton α] : @diagSet α = Set.univ :=
+  Set.ext fun z ↦ ⟨fun _ ↦ trivial, z.ind fun a b _ ↦ Subsingleton.elim a b ▸ ⟨_, rfl⟩⟩
 
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
