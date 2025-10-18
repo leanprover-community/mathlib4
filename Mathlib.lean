@@ -2551,6 +2551,7 @@ import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.Bifunctor
 import Mathlib.CategoryTheory.Localization.Bousfield
+import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
@@ -2704,6 +2705,7 @@ import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.ObjectProperty.Ind
 import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 import Mathlib.CategoryTheory.ObjectProperty.Opposite
+import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 import Mathlib.CategoryTheory.ObjectProperty.Retract
 import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.ObjectProperty.Small
