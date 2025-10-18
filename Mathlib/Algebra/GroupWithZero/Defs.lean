@@ -48,6 +48,9 @@ variable [Mul M₀] [Zero M₀] [IsLeftCancelMulZero M₀] {a b c : M₀}
 theorem mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
   IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha h
 
+theorem mul_left_cancel_iff₀ (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
+  ⟨mul_left_cancel₀ ha, congrArg _⟩
+
 theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective (a * ·) :=
   fun _ _ => mul_left_cancel₀ ha
 
@@ -64,6 +67,9 @@ variable [Mul M₀] [Zero M₀] [IsRightCancelMulZero M₀] {a b c : M₀}
 
 theorem mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
   IsRightCancelMulZero.mul_right_cancel_of_ne_zero hb h
+
+theorem mul_right_cancel_iff₀ (hb : b ≠ 0) : a * b = c * b ↔ a = c :=
+  ⟨mul_right_cancel₀ hb, congrArg (· * b)⟩
 
 theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b :=
   fun _ _ => mul_right_cancel₀ hb
