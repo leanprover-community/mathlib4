@@ -65,17 +65,17 @@ protected lemma IsRegular.smul_ne_zero_iff_right (hr : IsRegular r) : r • m �
 variable [IsDomain R]
 
 lemma IsSMulRegular.of_ne_zero (hr : r ≠ 0) : IsSMulRegular M r :=
-  (isRegular_iff_ne_zero.2 hr).isSMulRegular
+  (isRegular_of_ne_zero hr).isSMulRegular
 
 variable (M) in
 lemma smul_right_injective (hr : r ≠ 0) : ((r • ·) : M → M).Injective :=
-  (isRegular_iff_ne_zero.2 hr).smul_right_injective _
+  (isRegular_of_ne_zero hr).smul_right_injective _
 
 @[simp] lemma smul_right_inj (hr : r ≠ 0) : r • m₁ = r • m₂ ↔ m₁ = m₂ :=
-  (isRegular_iff_ne_zero.2 hr).smul_right_inj
+  (isRegular_of_ne_zero hr).smul_right_inj
 
 lemma smul_eq_zero_iff_right (hr : r ≠ 0) : r • m = 0 ↔ m = 0 :=
-  (isRegular_iff_ne_zero.2 hr).smul_eq_zero_iff_right
+  (isRegular_of_ne_zero hr).smul_eq_zero_iff_right
 
 lemma smul_ne_zero_iff_right (hr : r ≠ 0) : r • m ≠ 0 ↔ m ≠ 0 := (smul_eq_zero_iff_right hr).ne
 

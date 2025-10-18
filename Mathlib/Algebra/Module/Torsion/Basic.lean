@@ -728,7 +728,7 @@ theorem torsion_isTorsion : Module.IsTorsion R (torsion R M) :=
 end Torsion'
 
 section Torsion
-
+section CommSemiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable (R M)
@@ -760,17 +760,23 @@ theorem coe_torsion_eq_annihilator_ne_bot :
         nonZeroDivisors.coe_ne_zero _⟩,
       fun ⟨a, hax, ha⟩ => ⟨⟨_, mem_nonZeroDivisors_of_ne_zero ha⟩, hax x ⟨1, one_smul _ _⟩⟩⟩
 
-/-- A module over a domain is torsion-free iff its torsion submodule is trivial. -/
-theorem isTorsionFree_iff_torsion_eq_bot : IsTorsionFree R M ↔ torsion R M = ⊥ := by
-  simp [torsion, torsion', subset_antisymm_iff, exists_ne, isTorsionFree_iff_smul_eq_zero]
-  grind
-
 lemma torsion_int {G} [AddCommGroup G] :
     (torsion ℤ G).toAddSubgroup = AddCommGroup.torsion G := by
   ext x
   refine ((isOfFinAddOrder_iff_zsmul_eq_zero (x := x)).trans ?_).symm
   simp [mem_nonZeroDivisors_iff_ne_zero]
 
+end CommSemiring
+
+section CommRing
+variable [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
+
+/-- A module over a domain is torsion-free iff its torsion submodule is trivial. -/
+lemma isTorsionFree_iff_torsion_eq_bot : IsTorsionFree R M ↔ torsion R M = ⊥ := by
+  simp [torsion, torsion', subset_antisymm_iff, exists_ne, isTorsionFree_iff_smul_eq_zero]
+  grind
+
+end CommRing
 end Torsion
 
 namespace QuotientTorsion
@@ -943,15 +949,15 @@ end AddSubgroup
 section InfiniteRange
 
 @[simp]
-lemma infinite_range_add_smul_iff
-    [AddCommGroup M] [Ring R] [Module R M] [Infinite R] [Module.IsTorsionFree R M] (x y : M) :
+lemma infinite_range_add_smul_iff [Ring R] [IsDomain R] [Infinite R] [AddCommGroup M] [Module R M]
+    [IsTorsionFree R M] (x y : M) :
     (Set.range <| fun r : R ↦ x + r • y).Infinite ↔ y ≠ 0 := by
   refine ⟨fun h hy ↦ by simp [hy] at h, fun h ↦ Set.infinite_range_of_injective fun r s hrs ↦ ?_⟩
   rw [add_right_inj] at hrs
   exact smul_left_injective _ h hrs
 
 @[simp]
-lemma infinite_range_add_nsmul_iff [AddCommGroup M] [Module.IsTorsionFree ℤ M] (x y : M) :
+lemma infinite_range_add_nsmul_iff [AddCommGroup M] [IsAddTorsionFree M] (x y : M) :
     (Set.range <| fun n : ℕ ↦ x + n • y).Infinite ↔ y ≠ 0 := by
   refine ⟨fun h hy ↦ by simp [hy] at h, fun h ↦ Set.infinite_range_of_injective fun r s hrs ↦ ?_⟩
   rw [add_right_inj, ← natCast_zsmul, ← natCast_zsmul] at hrs
@@ -962,7 +968,7 @@ end InfiniteRange
 
 section
 
-variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M] [Module.IsTorsionFree R M]
+variable (R M : Type*) [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M]
 
 variable {M} in
 lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
