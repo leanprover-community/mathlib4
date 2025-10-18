@@ -17,7 +17,7 @@ and provides basic API.
 
 ## Main declarations
 
-+ `CFC.abs`: The absolute value declaration as `abs a := CFC.sqrt (star a * a)`.
++ `CFC.abs`: The absolute value as `abs a := CFC.sqrt (star a * a)`.
 
 -/
 
@@ -163,10 +163,10 @@ variable {p : A → Prop} [RCLike 𝕜]
 
 open ComplexOrder
 
-lemma cfcₙ_norm_sq_nonneg (f : 𝕜 → 𝕜) (a : A) : 0 ≤ cfcₙ (fun z ↦ star (f z) * (f z)) a :=
+lemma _root_.cfcₙ_norm_sq_nonneg (f : 𝕜 → 𝕜) (a : A) : 0 ≤ cfcₙ (fun z ↦ star (f z) * (f z)) a :=
   cfcₙ_nonneg fun _ _ ↦ star_mul_self_nonneg _
 
-lemma cfcₙ_norm_nonneg (f : 𝕜 → 𝕜) (a : A) : 0 ≤ cfcₙ (‖f ·‖ : 𝕜 → 𝕜) a :=
+lemma _root_.cfcₙ_norm_nonneg (f : 𝕜 → 𝕜) (a : A) : 0 ≤ cfcₙ (‖f ·‖ : 𝕜 → 𝕜) a :=
   cfcₙ_nonneg fun _ _ ↦ by simp
 
 variable [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
@@ -190,7 +190,7 @@ lemma abs_eq_cfcₙ_coe_norm (a : A) (ha : p a := by cfc_tac) :
   conv_rhs => rw [← cfcₙ_id' 𝕜 a, ← cfcₙ_star, ← cfcₙ_mul ..]
   simp [RCLike.conj_mul, sq]
 
-lemma cfcₙ_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_tac)
+lemma _root_.cfcₙ_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((fun z ↦ (‖z‖ : 𝕜)) '' quasispectrum 𝕜 a) := by cfc_cont_tac) :
     cfcₙ (f ‖·‖) a = cfcₙ f (abs a) := by
   obtain (hf0 | hf0) := em (f 0 = 0)
@@ -261,7 +261,7 @@ variable [StarModule 𝕜 A] [StarModule ℝ A] [IsScalarTower ℝ 𝕜 A] in
 lemma abs_algebraMap (c : 𝕜) : abs (algebraMap 𝕜 A c) = algebraMap ℝ A ‖c‖ := by
   simp [Algebra.algebraMap_eq_smul_one]
 
-lemma cfc_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_tac)
+lemma _root_.cfc_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((fun z ↦ (‖z‖ : 𝕜)) '' spectrum 𝕜 a) := by cfc_cont_tac) :
     cfc (f ‖·‖) a = cfc f (abs a) := by
   rw [abs_eq_cfcₙ_coe_norm 𝕜 a, cfcₙ_eq_cfc, ← cfc_comp' ..]
