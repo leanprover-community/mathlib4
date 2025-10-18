@@ -3,12 +3,9 @@ Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.MulAction
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Topology.Bornology.Absorbs
-
 /-!
 # Local convexity
 
@@ -28,6 +25,12 @@ For a module over a normed ring:
 * `Absorbent`: A set `s` is absorbent if every point eventually belongs to all large scalings of
   `s`.
 * `Balanced`: A set `s` is balanced if `a • s ⊆ s` for all `a` of norm less than `1`.
+
+## Main Results
+* `Absorbent.submodule_eq_top` shows that when the base field is nontrivially normed, an absorbent
+  submodule is actually the whole space. As an application, we show in
+  `Absorbent.subset_image_iff_surjective` that a linear function is surjective if and only if its
+  image contains an absorbent set.
 
 ## References
 
@@ -265,8 +268,9 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
+variable [PartialOrder 𝕜] in
 protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull 𝕜 s) := by
   suffices Convex 𝕜 { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull 𝕜 s } by
     rw [balanced_iff_smul_mem] at hs ⊢
@@ -275,6 +279,26 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
   intro x hx y hy u v hu hv huv a ha
   rw [smul_add, ← smul_comm u, ← smul_comm v]
   exact convex_convexHull 𝕜 s (hx a ha) (hy a ha) hu hv huv
+
+variable {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E]
+
+theorem Absorbent.submodule_eq_top {V : S} (hV : Absorbent 𝕜 (V : Set E)) :
+    (V : Set E) = ⊤ := by
+  rw [eq_top_iff]
+  rintro x -
+  obtain ⟨c, hc, hc'⟩ :=
+    ((absorbent_iff_eventually_nhdsNE_zero.mp hV x).and eventually_mem_nhdsWithin).exists
+  rw [← inv_smul_smul₀ hc' x]
+  exact SMulMemClass.smul_mem c⁻¹ hc
+
+variable {F ℱ 𝕜₂ : Type*} [Field 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
+variable [AddCommGroup F] [Module 𝕜₂ F]
+variable [FunLike ℱ F E] [SemilinearMapClass ℱ σ F E]
+
+theorem Absorbent.subset_range_iff_surjective [RingHomSurjective σ] {f : ℱ} {s : Set E}
+    (hs_abs : Absorbent 𝕜 s) : s ⊆ LinearMap.range f ↔ (⇑f).Surjective :=
+  ⟨fun hs_sub ↦ range_eq_univ.mp (by
+    simp [← LinearMap.coe_range, (hs_abs.mono hs_sub).submodule_eq_top]), fun h a _ ↦ h a⟩
 
 end NontriviallyNormedField
 
