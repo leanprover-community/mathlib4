@@ -61,24 +61,23 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 -/
 
 -- TODO: Move
-namespace ENNReal
+-- namespace ENNReal
 
-open scoped ENNReal NNReal
+-- open scoped ENNReal NNReal
 
-lemma eq_of_forall_le_nnreal_iff : ∀ {x y : ℝ≥0∞}, (∀ r : ℝ≥0, x ≤ r ↔ y ≤ r) → x = y
-  | ⊤, ⊤, _ => rfl
-  | ⊤, (y : ℝ≥0), h => by simpa using h y
-  | (x : ℝ≥0), ⊤, h => by simpa using h x
-  | (x : ℝ≥0), (y : ℝ≥0), h => by simpa using eq_of_forall_ge_iff <| by simpa using h
+-- lemma eq_of_forall_le_nnreal_iff : ∀ {x y : ℝ≥0∞}, (∀ r : ℝ≥0, x ≤ r ↔ y ≤ r) → x = y
+--   | ⊤, ⊤, _ => rfl
+--   | ⊤, (y : ℝ≥0), h => by simpa using h y
+--   | (x : ℝ≥0), ⊤, h => by simpa using h x
+--   | (x : ℝ≥0), (y : ℝ≥0), h => by simpa using eq_of_forall_ge_iff <| by simpa using h
 
-@[simp, norm_cast] lemma ofReal_le_coe {x : ℝ} {y : ℝ≥0} : ENNReal.ofReal x ≤ y ↔ x ≤ y := by
-  simp [← ofReal_le_ofReal_iff]
 
-end ENNReal
 
--- TODO: Replace `Set.eq_empty_of_isEmpty`
-lemma Set.eq_empty_of_isEmpty' {α : Type*} (s : Set α) [IsEmpty s] : s = ∅ := by
-  simpa using ‹IsEmpty s›
+-- end ENNReal
+
+-- -- TODO: Replace `Set.eq_empty_of_isEmpty`
+-- lemma Set.eq_empty_of_isEmpty' {α : Type*} (s : Set α) [IsEmpty s] : s = ∅ := by
+--   simpa using ‹IsEmpty s›
 
 open Module Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal WithLp
 
