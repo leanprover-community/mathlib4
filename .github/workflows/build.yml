@@ -150,7 +150,7 @@ jobs:
         shell: bash
         run: |
           # Construct the LEAN_SRC_PATH using the toolchain directory
-          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake:.lake/packages/Cli:.lake/packages/batteries:.lake/packages/Qq:.lake/packages/aesop:.lake/packages/proofwidgets:.lake/packages/importGraph:.lake/packages/LeanSearchClient:.lake/packages/plausible"
+          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake:.lake/packages/Cli:.lake/packages/batteries:.lake/packages/Qq:.lake/packages/aesop:.lake/packages/proofwidgets:.lake/packages/importGraph:.lake/packages/LeanSearchClient:.lake/packages/plausible:.lake/packages/requests:.lake/packages/openAI_client:.lake/packages/reap"
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH"
 
           # Set it as an environment variable for subsequent steps
