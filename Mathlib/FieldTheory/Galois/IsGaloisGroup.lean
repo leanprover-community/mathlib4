@@ -32,23 +32,20 @@ end CommRing
 
 section Field
 
+instance {G : Type*} {A : Type*} [Group G] [GroupWithZero A]
+    [MulDistribMulAction G A] : SMulZeroClass G A where
+  smul_zero g := by
+    apply not_imp_comm.mp mul_inv_cancel₀
+    rw [← smul_left_cancel_iff g⁻¹, smul_mul', inv_smul_smul, zero_mul, smul_one]
+    exact zero_ne_one
+
 theorem smul_div₀ {G : Type*} {R : Type*} [Group G] [GroupWithZero R]
     [MulDistribMulAction G R] (g : G) (m n : R) :
     g • (m / n) = (g • m) / (g • n) := by
-  have : g • (0 : R) = 0 := by
-    by_contra! hg
-    rw [← isUnit_iff_ne_zero] at hg
-    obtain ⟨x, hx⟩ := hg
-    apply not_isUnit_zero (M₀ := R)
-    refine ⟨⟨g⁻¹ • x, g⁻¹ • x⁻¹, ?_, ?_⟩, ?_⟩
-    · simp [← smul_mul']
-    · simp [← smul_mul']
-    · simpa [inv_smul_eq_iff]
   by_cases hn : n = 0
-  · rw [hn, div_zero, this, div_zero]
-  rw [eq_div_iff, ← smul_mul', div_mul_cancel₀ m hn]
-  rwa [← this, Ne, smul_left_cancel_iff]
--- Algebra/GroupWithZero/Action (but can we simplify proof further)
+  · rw [hn, div_zero, smul_zero, div_zero]
+  · rw [eq_div_iff, ← smul_mul', div_mul_cancel₀ m hn]
+    rwa [← smul_zero g, ne_eq, smul_left_cancel_iff]
 
 theorem IsFractionRing.nontrivial' (R F : Type*) [CommSemiring R] [CommSemiring F] [Algebra R F]
     [h : IsFractionRing R F] [Nontrivial F] : Nontrivial R := by
