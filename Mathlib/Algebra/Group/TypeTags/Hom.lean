@@ -3,20 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Transport algebra morphisms between additive and multiplicative types.
 -/
 
-
-universe u v
-
-variable {α : Type u} {β : Type v}
-
 open Additive (ofMul toMul)
 open Multiplicative (ofAdd toAdd)
+
+variable {M N α β : Type*}
 
 /-- Reinterpret `α →+ β` as `Multiplicative α →* Multiplicative β`. -/
 @[simps]
@@ -37,6 +35,10 @@ def AddMonoidHom.toMultiplicative [AddZeroClass α] [AddZeroClass β] :
 lemma AddMonoidHom.coe_toMultiplicative [AddZeroClass α] [AddZeroClass β] (f : α →+ β) :
     ⇑(toMultiplicative f) = ofAdd ∘ f ∘ toAdd := rfl
 
+@[simp]
+lemma AddMonoidHom.toMultiplicative_id [AddZeroClass α] :
+    (id α).toMultiplicative = .id (Multiplicative α) := rfl
+
 /-- Reinterpret `α →* β` as `Additive α →+ Additive β`. -/
 @[simps]
 def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
@@ -53,8 +55,15 @@ def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
   }
 
 @[simp, norm_cast]
-lemma MonoidHom.coe_toMultiplicative [MulOneClass α] [MulOneClass β] (f : α →* β) :
+lemma MonoidHom.coe_toAdditive [MulOneClass α] [MulOneClass β] (f : α →* β) :
     ⇑(toAdditive f) = ofMul ∘ f ∘ toMul := rfl
+
+@[deprecated (since := "2025-07-12")]
+alias MonoidHom.coe_toMultiplicative := MonoidHom.coe_toAdditive
+
+@[simp]
+lemma MonoidHom.coe_toAdditive_id [MulOneClass α] :
+    (id α).toAdditive = .id (Additive α) := rfl
 
 /-- Reinterpret `Additive α →+ β` as `α →* Multiplicative β`. -/
 @[simps]
@@ -153,3 +162,18 @@ lemma proving equality in `α →* Multiplicative β` from equality in `Additive
 lemma Additive.addMonoidHom_ext [MulOneClass α] [AddZeroClass β]
     (f g : Additive α →+ β) (h : f.toMultiplicativeRight = g.toMultiplicativeRight) : f = g :=
   AddMonoidHom.toMultiplicativeRight.injective h
+
+section AddCommMonoid
+variable [AddMonoid M] [AddCommMonoid N]
+
+@[simp]
+lemma AddMonoidHom.toMultiplicative_add (f g : M →+ N) :
+    (f + g).toMultiplicative = f.toMultiplicative * g.toMultiplicative := rfl
+
+end AddCommMonoid
+
+/-- `MonoidHom.toAdditiveRight` as a `MulEquiv`. -/
+def MonoidHom.toAdditiveRightMulEquiv [AddMonoid M] [CommMonoid N] :
+    (Multiplicative M →* N) ≃* Multiplicative (M →+ Additive N) where
+  toEquiv := MonoidHom.toAdditiveRight.trans Multiplicative.ofAdd
+  map_mul' _ _ := rfl
