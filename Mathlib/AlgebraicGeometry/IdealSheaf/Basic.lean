@@ -767,6 +767,13 @@ def kerFunctor (Y : Scheme.{u}) : (Over Y)ᵒᵖ ⥤ IdealSheafData Y where
   map_id _ := Subsingleton.elim _ _
   map_comp _ _ := Subsingleton.elim _ _
 
+variable (X) in
+@[simp]
+lemma ker_toSpecΓ [CompactSpace X] : X.toSpecΓ.ker = ⊥ := by
+  have : QuasiCompact X.toSpecΓ := (quasiCompact_over_affine_iff _).mpr ‹_›
+  apply IdealSheafData.ext_of_isAffine
+  simpa using RingHom.ker_coe_equiv (ΓSpecIso Γ(X, ⊤)).commRingCatIsoToRingEquiv
+
 end ker
 
 end Scheme

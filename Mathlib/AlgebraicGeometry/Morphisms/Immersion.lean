@@ -31,7 +31,7 @@ open CategoryTheory Limits
 
 namespace AlgebraicGeometry
 
-variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Y)
 
 /-- A morphism of schemes `f : X ⟶ Y` is an immersion if
 1. the underlying map of topological spaces is an embedding
@@ -149,18 +149,6 @@ lemma isImmersion_iff_exists : IsImmersion f ↔ ∃ (Z : Scheme) (g₁ : X ⟶ 
   ⟨fun _ ↦ ⟨_, f.liftCoborder, f.coborderRange.ι, inferInstance, inferInstance, f.liftCoborder_ι⟩,
     fun ⟨_, _, _, _, _, e⟩ ↦ e ▸ inferInstance⟩
 
-theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g]
-    [IsImmersion (f ≫ g)] : IsImmersion f where
-  __ := IsPreimmersion.of_comp f g
-  isLocallyClosed_range := by
-    rw [← Set.preimage_image_eq (Set.range _) g.isEmbedding.injective]
-    have := (f ≫ g).isLocallyClosed_range.preimage g.base.hom.2
-    simpa only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp] using this
-
-theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
-    IsImmersion (f ≫ g) ↔ IsImmersion f :=
-  ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
-
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsImmersion where
   of_isPullback := by
     intro X Y Y' S f g f' g' H hg
@@ -188,6 +176,29 @@ instance : IsImmersion (pullback.diagonal f) := by
     diagonalCoverDiagonalRange f 𝒰 𝒱) ≫ Scheme.Opens.ι _) := inferInstance
   rwa [morphismRestrict_ι, H, ← Scheme.topIso_hom,
     MorphismProperty.cancel_left_of_respectsIso (P := @IsImmersion)] at this
+
+/-- The map `X ×[S] Y ⟶ X ×[T] Y` induced by any `S ⟶ T` is always an immersion. -/
+instance {S T : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) :
+    IsImmersion (pullback.mapDesc f g i) :=
+  MorphismProperty.of_isPullback (pullback_map_diagonal_isPullback f g i) inferInstance
+
+instance : MorphismProperty.HasOfPostcompProperty @IsImmersion ⊤ :=
+  MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
+    fun _ _ _ _ ↦ inferInstanceAs (IsImmersion _)
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion g] : IsImmersion (pullback.fst f g) :=
+  MorphismProperty.pullback_fst _ _ ‹_›
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion f] : IsImmersion (pullback.snd f g) :=
+  MorphismProperty.pullback_snd _ _ ‹_›
+
+lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion (f ≫ g)] :
+    IsImmersion f :=
+  MorphismProperty.HasOfPostcompProperty.of_postcomp (W' := ⊤) _ g trivial ‹_›
+
+theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
+    IsImmersion (f ≫ g) ↔ IsImmersion f :=
+  ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
 
 instance : IsImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsImmersion _ (prodIsoPullback X X).hom]
