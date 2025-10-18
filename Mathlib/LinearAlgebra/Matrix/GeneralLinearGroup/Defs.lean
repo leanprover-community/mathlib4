@@ -182,7 +182,7 @@ lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := b
   simp only [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
 
 section kronecker
-variable {R : Type*} {m : Type*} [CommSemiring R] [Fintype m] [DecidableEq m]
+variable {R m : Type*} [CommSemiring R] [Fintype m] [DecidableEq m]
 
 open scoped Kronecker
 
