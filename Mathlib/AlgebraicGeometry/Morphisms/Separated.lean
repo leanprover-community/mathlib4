@@ -73,6 +73,10 @@ instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsS
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   infer_instance
 
+instance : IsZariskiLocalAtTarget @IsSeparated := by
+  rw [isSeparated_eq_diagonal_isClosedImmersion]
+  infer_instance
+
 instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsSeparated g] :
     IsSeparated (pullback.fst f g) :=
   MorphismProperty.pullback_fst f g inferInstance
@@ -87,10 +91,6 @@ instance (f : X ⟶ Y) (V : Y.Opens) [IsSeparated f] : IsSeparated (f ∣_ V) :=
 instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [IsSeparated f] :
     IsSeparated (f.resLE V U e) := by
   delta Scheme.Hom.resLE; infer_instance
-
-instance : IsZariskiLocalAtTarget @IsSeparated := by
-  rw [isSeparated_eq_diagonal_isClosedImmersion]
-  infer_instance
 
 instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   constructor
