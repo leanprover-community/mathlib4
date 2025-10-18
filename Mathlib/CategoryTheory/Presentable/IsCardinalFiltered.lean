@@ -199,4 +199,31 @@ instance isCardinalFiltered_under
               dsimp at this ⊢
               simp only [reassoc_of% this, Category.comp_id] } }⟩
 
+instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
+    [Category.{v} J₁] [Category.{v'} J₂] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalFiltered J₁ κ] [IsCardinalFiltered J₂ κ] :
+    IsCardinalFiltered (J₁ × J₂) κ where
+  nonempty_cocone F hC := ⟨by
+    let c₁ := cocone (F ⋙ Prod.fst _ _) hC
+    let c₂ := cocone (F ⋙ Prod.snd _ _) hC
+    exact
+      { pt := (c₁.pt, c₂.pt)
+        ι.app i := (c₁.ι.app i, c₂.ι.app i)
+        ι.naturality i j f := by
+          ext
+          · simpa using c₁.w f
+          · simpa using c₂.w f}⟩
+
+instance isCardinalFiltered_pi {ι : Type u'} (J : ι → Type u) [∀ i, Category.{v} (J i)]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [∀ i, IsCardinalFiltered (J i) κ] :
+    IsCardinalFiltered (∀ i, J i) κ where
+  nonempty_cocone {C _} F hC := ⟨by
+    let c (i : ι) := cocone (F ⋙ Pi.eval J i) hC
+    exact
+      { pt i := (c i).pt
+        ι.app X i := (c i).ι.app X
+        ι.naturality {X Y} f := by
+          ext i
+          simpa using (c i).ι.naturality f }⟩
+
 end CategoryTheory
