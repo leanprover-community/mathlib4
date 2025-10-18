@@ -178,8 +178,8 @@ theorem ofNat_zero : ofNat 0 = false := rfl
 theorem ofNat_add_one {n : Nat} : ofNat (n + 1) = true := rfl
 
 @[simp] lemma toNat_beq_zero (b : Bool) : (b.toNat == 0) = !b := by grind
-@[simp] lemma toNat_bne_zero (b : Bool) : (b.toNat != 0) =  b := by simp [bne]
-@[simp] lemma toNat_beq_one (b : Bool) : (b.toNat == 1) =  b := by cases b <;> rfl
+@[simp] lemma toNat_bne_zero (b : Bool) : (b.toNat != 0) = b := by simp [bne]
+@[simp] lemma toNat_beq_one (b : Bool) : (b.toNat == 1) = b := by cases b <;> rfl
 @[simp] lemma toNat_bne_one (b : Bool) : (b.toNat != 1) = !b := by simp [bne]
 
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
