@@ -19,9 +19,9 @@ import Mathlib.RingTheory.Flat.Localization
   The canonical isomorphism `T ⊗[S] H¹(L_{S⁄R}) ≃ₗ[T] H¹(L_{T⁄R})` for `T` a localization of `S`.
 -/
 
-universe u
+universe u₁ v₁
 
-variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
+variable (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 open TensorProduct
@@ -77,13 +77,13 @@ Suppose we have a morphism of extensions of `R`-algebras
 0 → I → P → S → 0
 ```
 -/
-variable {P : Extension.{u} R S} {Q : Extension.{u} R T} (f : P.Hom Q)
+variable {P : Extension.{u₁} R S} {Q : Extension.{v₁} R T} (f : P.Hom Q)
 
 /-- If `P → Q` is formally étale, then `T ⊗ₛ (S ⊗ₚ Ω[P/R]) ≃ T ⊗_Q Ω[Q/R]`. -/
 noncomputable
 def tensorCotangentSpace
     (H : f.toRingHom.FormallyEtale) :
-    T ⊗[S] P.CotangentSpace ≃ₗ[T] Q.CotangentSpace :=
+    T ⊗[S] P.CotangentSpace ≃ₗ[T] Q.CotangentSpace := by
   letI := f.toRingHom.toAlgebra
   haveI : IsScalarTower R P.Ring Q.Ring :=
     .of_algebraMap_eq fun r ↦ (f.toRingHom_algebraMap r).symm
@@ -92,38 +92,36 @@ def tensorCotangentSpace
   haveI : IsScalarTower P.Ring Q.Ring T :=
     .of_algebraMap_eq fun r ↦ (f.algebraMap_toRingHom r).symm
   haveI : FormallyEtale P.Ring Q.Ring := ‹_›
-  { __ := (CotangentSpace.map f).liftBaseChange T
-    invFun := LinearMap.liftBaseChange T (by
-      refine LinearMap.liftBaseChange _ ?_ ∘ₗ
-        (tensorKaehlerEquivOfFormallyEtale R P.Ring Q.Ring).symm.toLinearMap
-      exact (TensorProduct.mk _ _ _ 1).restrictScalars P.Ring ∘ₗ
-        (TensorProduct.mk _ _ _ 1).restrictScalars P.Ring)
-    left_inv x := by
-      change (LinearMap.liftBaseChange _ _ ∘ₗ LinearMap.liftBaseChange _ _) x =
-        LinearMap.id (R := T) x
-      congr 1
-      ext : 4
-      refine Derivation.liftKaehlerDifferential_unique
-        (R := R) (S := P.Ring) (M := T ⊗[S] P.CotangentSpace) _ _ ?_
-      ext a
-      have : (tensorKaehlerEquivOfFormallyEtale R P.Ring Q.Ring).symm
-          ((D R Q.Ring) (f.toRingHom a)) = 1 ⊗ₜ D _ _ a :=
-        tensorKaehlerEquivOfFormallyEtale_symm_D_algebraMap R P.Ring Q.Ring a
-      simp [this]
-    right_inv x := by
-      change (LinearMap.liftBaseChange _ _ ∘ₗ LinearMap.liftBaseChange _ _) x =
-        LinearMap.id (R := T) x
-      congr 1
-      ext a
-      dsimp
-      obtain ⟨x, hx⟩ := (tensorKaehlerEquivOfFormallyEtale R P.Ring _).surjective (D R Q.Ring a)
-      simp only [one_smul, ← hx, LinearEquiv.symm_apply_apply]
-      change (((CotangentSpace.map f).liftBaseChange T).restrictScalars Q.Ring ∘ₗ
-        LinearMap.liftBaseChange _ _) x = ((TensorProduct.mk _ _ _ 1) ∘ₗ
-          (tensorKaehlerEquivOfFormallyEtale R P.Ring Q.Ring).toLinearMap) x
-      congr 1
-      ext a
-      simp; rfl }
+  let toLinearMap : T ⊗[S] P.CotangentSpace →ₗ[T] Q.CotangentSpace :=
+    (CotangentSpace.map f).liftBaseChange T
+  let symm.toLinearMap : Q.CotangentSpace →ₗ[T] T ⊗[S] P.CotangentSpace := by
+    refine LinearMap.liftBaseChange T ?_
+    refine LinearMap.liftBaseChange Q.Ring ?_ ∘ₗ
+      (tensorKaehlerEquivOfFormallyEtale R P.Ring Q.Ring).symm.toLinearMap
+    exact (TensorProduct.mk S T P.CotangentSpace 1).restrictScalars P.Ring ∘ₗ
+      (TensorProduct.mk P.Ring S Ω[P.Ring⁄R] 1).restrictScalars P.Ring
+  have left_inv : symm.toLinearMap ∘ₗ toLinearMap = LinearMap.id := by
+    ext : 4
+    refine Derivation.liftKaehlerDifferential_unique
+      (R := R) (S := P.Ring) (M := T ⊗[S] P.CotangentSpace) _ _ ?_
+    ext a
+    have : (tensorKaehlerEquivOfFormallyEtale R P.Ring Q.Ring).symm
+        ((D R Q.Ring) (f.toRingHom a)) = 1 ⊗ₜ D _ _ a :=
+      tensorKaehlerEquivOfFormallyEtale_symm_D_algebraMap R P.Ring Q.Ring a
+    simp [this, symm.toLinearMap, toLinearMap]
+  have right_inv : toLinearMap ∘ₗ symm.toLinearMap = LinearMap.id := by
+    ext a
+    simp only [toLinearMap, symm.toLinearMap]
+    dsimp
+    obtain ⟨x, hx⟩ := (tensorKaehlerEquivOfFormallyEtale R P.Ring _).surjective (D R Q.Ring a)
+    simp only [one_smul, ← hx, LinearEquiv.symm_apply_apply]
+    change (((CotangentSpace.map f).liftBaseChange T).restrictScalars Q.Ring ∘ₗ
+      LinearMap.liftBaseChange _ _) x = ((TensorProduct.mk _ _ _ 1) ∘ₗ
+        (tensorKaehlerEquivOfFormallyEtale R P.Ring Q.Ring).toLinearMap) x
+    congr 1
+    ext a
+    simp; rfl
+  exact .ofLinear toLinearMap symm.toLinearMap right_inv left_inv
 
 /-- (Implementation)
 If `J ≃ Q ⊗ₚ I` (e.g. when `T = Q ⊗ₚ S` and `P → Q` is flat), then `T ⊗ₛ I/I² ≃ J/J²`.

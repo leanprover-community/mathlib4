@@ -11,6 +11,8 @@ import Mathlib.RingTheory.TensorProduct.Free
 # Formally smooth local algebras
 -/
 
+universe u₁
+
 open TensorProduct IsLocalRing KaehlerDifferential
 
 /--
@@ -23,7 +25,7 @@ Then `S` is formally smooth iff `k ⊗ₛ I/I² → k ⊗ₚ Ω[P/R]` is injecti
 where `k` is the residue field of `S`.
 -/
 theorem Algebra.FormallySmooth.iff_injective_lTensor_residueField {R S} [CommRing R]
-    [CommRing S] [IsLocalRing S] [Algebra R S] (P : Algebra.Extension R S)
+    [CommRing S] [IsLocalRing S] [Algebra R S] (P : Algebra.Extension.{u₁} R S)
     [FormallySmooth R P.Ring]
     [Module.Free P.Ring Ω[P.Ring⁄R]] [Module.Finite P.Ring Ω[P.Ring⁄R]]
     (h' : P.ker.FG) :
