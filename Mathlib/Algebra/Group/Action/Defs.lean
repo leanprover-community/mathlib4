@@ -571,6 +571,17 @@ lemma smul_mul' (a : M) (b₁ b₂ : N) : a • (b₁ * b₂) = a • b₁ * a �
 
 end MulDistribMulAction
 
+section MulDistribMulAction
+variable [Monoid M] [Group N] [MulDistribMulAction M N]
+
+@[simp] lemma smul_inv' (r : M) (x : N) : r • x⁻¹ = (r • x)⁻¹ :=
+  eq_inv_of_mul_eq_one_left <| by rw [← smul_mul', inv_mul_cancel, smul_one]
+
+lemma smul_div' (r : M) (x y : N) : r • (x / y) = r • x / r • y := by
+  rw [div_eq_mul_inv, smul_mul', smul_inv', div_eq_mul_inv]
+
+end MulDistribMulAction
+
 section IsCancelSMul
 
 variable (G P : Type*)
