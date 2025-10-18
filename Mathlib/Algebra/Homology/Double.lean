@@ -205,7 +205,7 @@ noncomputable def evalCompCoyonedaCorepresentable (X : C) (j : ι) :
   · exact evalCompCoyonedaCorepresentableByDoubleId _
       (fun hj ↦ c.not_rel_of_eq hj h.choose_spec) _
   · apply evalCompCoyonedaCorepresentableBySingle
-    obtain _ | _ := c.exists_distinct_prev_or j <;> tauto
+    obtain _ | _ := c.exists_distinct_prev_or j <;> grind
 
 instance (X : C) (j : ι) : (eval C c j ⋙ coyoneda.obj (op X)).IsCorepresentable where
   has_corepresentation := ⟨_, ⟨evalCompCoyonedaCorepresentable c X j⟩⟩

@@ -119,7 +119,7 @@ lemma ab_exact_iff_function_exact :
     refine ⟨h, ?_⟩
     rintro ⟨x₁, rfl⟩
     simp only [ab_zero_apply]
-  · tauto
+  · grind
 
 lemma ab_exact_iff_ker_le_range : S.Exact ↔ S.g.hom.ker ≤ S.f.hom.range := S.ab_exact_iff
 
@@ -149,7 +149,7 @@ variable (S)
 lemma ShortExact.ab_exact_iff_function_exact :
     S.Exact ↔ Function.Exact S.f S.g := by
   rw [ab_exact_iff_range_eq_ker, AddMonoidHom.exact_iff]
-  tauto
+  grind
 
 end ShortComplex
 

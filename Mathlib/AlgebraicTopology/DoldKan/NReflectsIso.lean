@@ -56,7 +56,7 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
       have h₂₀ := h₂ 0
       dsimp at h₁₀ h₂₀
       simp only [id_comp] at h₁₀ h₂₀
-      tauto
+      grind
     | succ n hn =>
       use φ { a := PInfty.f (n + 1) ≫ (inv (N₁.map f)).f.f (n + 1)
               b := fun i => inv (f.app (op ⦋n⦌)) ≫ X.σ i }

@@ -98,7 +98,7 @@ theorem prod_range_div_prod_range {G : Type*} [CommGroup G] {f : ℕ → G} {n m
   congr
   apply Finset.ext
   simp only [mem_Ico, mem_filter, mem_range, *]
-  tauto
+  grind
 
 /-- The two ways of summing over `(i, j)` in the range `a ≤ i ≤ j < b` are equal. -/
 theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :

@@ -78,7 +78,7 @@ variable (R L) in
 derivations is an ideal of the latter. -/
 lemma ad_isIdealMorphism : (ad R L).IsIdealMorphism := by
   simp_rw [LieHom.isIdealMorphism_iff, lie_der_ad_eq_ad_der]
-  tauto
+  grind
 
 /-- A derivation `D` belongs to the ideal range of the adjoint action iff it is of the form `ad x`
 for some `x` in the Lie algebra `L`. -/
