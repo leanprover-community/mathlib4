@@ -11,9 +11,9 @@ import Mathlib.Algebra.Field.MinimalAxioms
 import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
-# The First Order Theory of Fields
+# The First-Order Theory of Fields
 
-This file defines the first order theory of fields as a theory over the language of rings.
+This file defines the first-order theory of fields as a theory over the language of rings.
 
 ## Main definitions
 
@@ -47,7 +47,7 @@ inductive FieldAxiom : Type
   | leftDistrib : FieldAxiom
   | existsPairNE : FieldAxiom
 
-/-- The first order sentence corresponding to each field axiom -/
+/-- The first-order sentence corresponding to each field axiom -/
 @[simp]
 def FieldAxiom.toSentence : FieldAxiom → Language.ring.Sentence
   | .addAssoc => ∀' ∀' ∀' (((&0 + &1) + &2) =' (&0 + (&1 + &2)))
@@ -74,7 +74,7 @@ def FieldAxiom.toProp (K : Type*) [Add K] [Mul K] [Neg K] [Zero K] [One K] :
   | .leftDistrib => ∀ x y z : K, x * (y + z) = x * y + x * z
   | .existsPairNE => ∃ x y : K, x ≠ y
 
-/-- The first order theory of fields, as a theory over the language of rings -/
+/-- The first-order theory of fields, as a theory over the language of rings -/
 def _root_.FirstOrder.Language.Theory.field : Language.ring.Theory :=
   Set.range FieldAxiom.toSentence
 
@@ -133,7 +133,7 @@ instance on `K`. This instance is to be used on models for the language of field
 not already have the ring operations on the Type.
 
 Always add `fieldOfModelField` as a local instance first before using this instance.
-  -/
+-/
 noncomputable abbrev compatibleRingOfModelField (K : Type*) [Language.ring.Structure K]
     [Theory.field.Model K] : CompatibleRing K :=
   compatibleRingOfRingStructure K

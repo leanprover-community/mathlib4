@@ -3,7 +3,8 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Connected.TotallyDisconnected
 /-!
 
 # Separation and (dis)connectedness properties of topological spaces.
@@ -11,7 +12,7 @@ import Mathlib.Topology.Separation
 This file provides an instance `T2Space X` given `TotallySeparatedSpace X`.
 
 ## TODO
-* Move the last part of `Topology/Separation` to this file.
+* Move the last part of `Topology/Separation` to this file.
 -/
 
 

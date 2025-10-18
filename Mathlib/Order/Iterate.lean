@@ -39,16 +39,18 @@ lemmas in this section formalize this fact for different inequalities made stric
 
 theorem seq_le_seq (hf : Monotone f) (n : ℕ) (h₀ : x 0 ≤ y 0) (hx : ∀ k < n, x (k + 1) ≤ f (x k))
     (hy : ∀ k < n, f (y k) ≤ y (k + 1)) : x n ≤ y n := by
-  induction' n with n ihn
-  · exact h₀
-  · refine (hx _ n.lt_succ_self).trans ((hf <| ihn ?_ ?_).trans (hy _ n.lt_succ_self))
+  induction n with
+  | zero => exact h₀
+  | succ n ihn =>
+    refine (hx _ n.lt_succ_self).trans ((hf <| ihn ?_ ?_).trans (hy _ n.lt_succ_self))
     · exact fun k hk => hx _ (hk.trans n.lt_succ_self)
     · exact fun k hk => hy _ (hk.trans n.lt_succ_self)
 
 theorem seq_pos_lt_seq_of_lt_of_le (hf : Monotone f) {n : ℕ} (hn : 0 < n) (h₀ : x 0 ≤ y 0)
     (hx : ∀ k < n, x (k + 1) < f (x k)) (hy : ∀ k < n, f (y k) ≤ y (k + 1)) : x n < y n := by
-  induction' n with n ihn
-  · exact hn.false.elim
+  induction n with
+  | zero => exact hn.false.elim
+  | succ n ihn =>
   suffices x n ≤ y n from (hx n n.lt_succ_self).trans_le ((hf this).trans <| hy n n.lt_succ_self)
   cases n with
   | zero => exact h₀
@@ -156,14 +158,14 @@ theorem iterate_le_of_map_le (h : Commute f g) (hf : Monotone f) (hg : Monotone 
   apply hf.seq_le_seq n
   · rfl
   · intros; rw [iterate_succ_apply']
-  · intros; simp [h.iterate_right _ _, hg.iterate _ hx]
+  · simp [h.iterate_right _ _, hg.iterate _ hx]
 
 theorem iterate_pos_lt_of_map_lt (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x}
     (hx : f x < g x) {n} (hn : 0 < n) : f^[n] x < g^[n] x := by
   apply hf.seq_pos_lt_seq_of_le_of_lt hn
   · rfl
   · intros; rw [iterate_succ_apply']
-  · intros; simp [h.iterate_right _ _, hg.iterate _ hx]
+  · simp [h.iterate_right _ _, hg.iterate _ hx]
 
 theorem iterate_pos_lt_of_map_lt' (h : Commute f g) (hf : StrictMono f) (hg : Monotone g) {x}
     (hx : f x < g x) {n} (hn : 0 < n) : f^[n] x < g^[n] x :=

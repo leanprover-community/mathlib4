@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Countable
-import Mathlib.Order.Disjointed
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.Measurability
 
@@ -35,6 +35,7 @@ contains all of them.
 measurable space, σ-algebra, measurable function
 -/
 
+assert_not_exists Covariant MonoidWithZero
 
 open Set Encodable Function Equiv
 
@@ -59,13 +60,9 @@ instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 
--- Porting note (#11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
-namespace MeasureTheory
-set_option quotPrecheck false in
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
-scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
+scoped[MeasureTheory] notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
-end MeasureTheory
 open MeasureTheory
 
 section
@@ -143,7 +140,7 @@ theorem MeasurableSet.biInter {f : β → Set α} {s : Set β} (hs : s.Countable
 
 theorem Set.Finite.measurableSet_biInter {f : β → Set α} {s : Set β} (hs : s.Finite)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
- .biInter hs.countable h
+  .biInter hs.countable h
 
 theorem Finset.measurableSet_biInter {f : β → Set α} (s : Finset β)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
@@ -205,11 +202,6 @@ protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet 
   cases i
   exacts [h₂, h₁]
 
-@[simp, measurability]
-protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, MeasurableSet (f i)) (n) :
-    MeasurableSet (disjointed f n) :=
-  disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
-
 protected theorem MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p } := by
   by_cases p <;> simp [*]
 
@@ -257,14 +249,14 @@ theorem measurableSet_insert {a : α} {s : Set α} :
   classical
   exact ⟨fun h =>
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
-    else insert_diff_self_of_not_mem ha ▸ h.diff (.singleton _),
+    else insert_diff_self_of_notMem ha ▸ h.diff (.singleton _),
     fun h => h.insert a⟩
 
 theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : MeasurableSet s :=
   hs.induction_on .empty .singleton
 
 theorem Set.Finite.measurableSet {s : Set α} (hs : s.Finite) : MeasurableSet s :=
-  Finite.induction_on hs MeasurableSet.empty fun _ _ hsm => hsm.insert _
+  Finite.induction_on _ hs .empty fun _ _ hsm => hsm.insert _
 
 @[measurability]
 protected theorem Finset.measurableSet (s : Finset α) : MeasurableSet (↑s : Set α) :=
@@ -327,12 +319,14 @@ theorem measurableSet_generateFrom {s : Set (Set α)} {t : Set α} (ht : t ∈ s
   .basic t ht
 
 @[elab_as_elim]
-theorem generateFrom_induction (p : Set α → Prop) (C : Set (Set α)) (hC : ∀ t ∈ C, p t)
-    (h_empty : p ∅) (h_compl : ∀ t, p t → p tᶜ)
-    (h_Union : ∀ f : ℕ → Set α, (∀ n, p (f n)) → p (⋃ i, f i)) {s : Set α}
-    (hs : MeasurableSet[generateFrom C] s) : p s := by
+theorem generateFrom_induction (C : Set (Set α))
+    (p : ∀ s : Set α, MeasurableSet[generateFrom C] s → Prop) (hC : ∀ t ∈ C, ∀ ht, p t ht)
+    (empty : p ∅ (measurableSet_empty _)) (compl : ∀ t ht, p t ht → p tᶜ ht.compl)
+    (iUnion : ∀ (s : ℕ → Set α) (hs : ∀ n, MeasurableSet[generateFrom C] (s n)),
+      (∀ n, p (s n) (hs n)) → p (⋃ i, s i) (.iUnion hs)) (s : Set α)
+    (hs : MeasurableSet[generateFrom C] s) : p s hs := by
   induction hs
-  exacts [hC _ ‹_›, h_empty, h_compl _ ‹_›, h_Union ‹_› ‹_›]
+  exacts [hC _ ‹_› _, empty, compl _ ‹_› ‹_›, iUnion ‹_› ‹_› ‹_›]
 
 theorem generateFrom_le {s : Set (Set α)} {m : MeasurableSpace α}
     (h : ∀ t ∈ s, MeasurableSet[m] t) : generateFrom s ≤ m :=
@@ -352,10 +346,10 @@ theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
     (∀ s, MeasurableSet[generateFrom S] s → (x ∈ s ↔ y ∈ s)) ↔ (∀ s ∈ S, x ∈ s ↔ y ∈ s) := by
   refine ⟨fun H s hs ↦ H s (.basic s hs), fun H s ↦ ?_⟩
   apply generateFrom_induction
-  · exact H
+  · exact fun s hs _ ↦ H s hs
   · rfl
-  · exact fun _ ↦ Iff.not
-  · intro f hf
+  · exact fun _ _ ↦ Iff.not
+  · intro f _ hf
     simp only [mem_iUnion, hf]
 
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains
@@ -417,19 +411,20 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
   let b : MeasurableSpace α :=
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
-      measurableSet_compl := by simp (config := { contextual := true }) [or_imp]
-      measurableSet_iUnion := fun f hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
+      measurableSet_compl := by simp +contextual [or_imp]
+      measurableSet_iUnion := fun _ hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
-    bot_unique fun s hs =>
+    bot_unique fun _ hs =>
       hs.elim (fun s => s.symm ▸ @measurableSet_empty _ ⊥) fun s =>
         s.symm ▸ @MeasurableSet.univ _ ⊥
   this ▸ Iff.rfl
 
 @[simp, measurability] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 
-@[simp, nolint simpNF] -- Porting note (#11215): TODO: `simpNF` claims that
--- this lemma doesn't simplify LHS
-theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
+@[simp]
+-- The `m₁` parameter gets filled in by typeclass instance synthesis (for some reason...)
+-- so we have to order it *after* `m₂`. Otherwise `simp` can't apply this lemma.
+theorem measurableSet_inf {m₂ m₁ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=
   Iff.rfl
 
@@ -517,7 +512,7 @@ end MeasurableFunctions
 
 /-- A typeclass mixin for `MeasurableSpace`s such that all sets are measurable. -/
 class DiscreteMeasurableSpace (α : Type*) [MeasurableSpace α] : Prop where
-  /-- Do not use this. Use `measurableSet_discrete` instead. -/
+  /-- Do not use this. Use `MeasurableSet.of_discrete` instead. -/
   forall_measurableSet : ∀ s : Set α, MeasurableSet s
 
 instance : @DiscreteMeasurableSpace α ⊤ :=
@@ -529,19 +524,18 @@ instance (priority := 100) MeasurableSingletonClass.toDiscreteMeasurableSpace [M
   forall_measurableSet _ := (Set.to_countable _).measurableSet
 
 section DiscreteMeasurableSpace
-variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α]
+variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] {s : Set α} {f : α → β}
 
-@[measurability] lemma measurableSet_discrete (s : Set α) : MeasurableSet s :=
+@[measurability] lemma MeasurableSet.of_discrete : MeasurableSet s :=
   DiscreteMeasurableSpace.forall_measurableSet _
 
-@[measurability]
-lemma measurable_discrete (f : α → β) : Measurable f := fun _ _ ↦ measurableSet_discrete _
+@[measurability, fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
 To be monitored. -/
 -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableSingletonClass :
     MeasurableSingletonClass α where
-  measurableSet_singleton _ := measurableSet_discrete _
+  measurableSet_singleton _ := .of_discrete
 
 end DiscreteMeasurableSpace

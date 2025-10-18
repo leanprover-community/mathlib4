@@ -16,7 +16,7 @@ series.
 ## Main results
 
 * `NormedAddCommGroup.completeSpace_of_summable_imp_tendsto`: A normed additive group is
-complete if any absolutely convergent series converges in the space.
+  complete if any absolutely convergent series converges in the space.
 
 ## References
 
@@ -42,7 +42,7 @@ lemma Metric.exists_subseq_summable_dist_of_cauchySeq (u : ℕ → α) (hu : Cau
     (fun n => (1 / (2 : ℝ))^n) (fun n => by positivity)
   refine ⟨f, hf₁, ?_⟩
   refine Summable.of_nonneg_of_le (fun n => by positivity) ?_ summable_geometric_two
-  exact fun n => le_of_lt <| hf₂ n (f (n+1)) <| hf₁.monotone (Nat.le_add_right n 1)
+  exact fun n => le_of_lt <| hf₂ n (f (n + 1)) <| hf₁.monotone (Nat.le_add_right n 1)
 
 end Metric
 
@@ -51,7 +51,7 @@ section Normed
 variable {E : Type*} [NormedAddCommGroup E]
 
 /-- A normed additive group is complete if any absolutely convergent series converges in the
-space.  -/
+space. -/
 lemma NormedAddCommGroup.completeSpace_of_summable_imp_tendsto
     (h : ∀ u : ℕ → E,
       Summable (‖u ·‖) → ∃ a, Tendsto (fun n => ∑ i ∈ range n, u i) atTop (𝓝 a)) :
@@ -60,7 +60,7 @@ lemma NormedAddCommGroup.completeSpace_of_summable_imp_tendsto
   intro u hu
   obtain ⟨f, hf₁, hf₂⟩ := Metric.exists_subseq_summable_dist_of_cauchySeq u hu
   simp only [dist_eq_norm] at hf₂
-  let v n := u (f (n+1)) - u (f n)
+  let v n := u (f (n + 1)) - u (f n)
   have hv_sum : (fun n => (∑ i ∈ range n, v i)) = fun n => u (f n) - u (f 0) := by
     ext n
     exact sum_range_sub (u ∘ f) n
@@ -73,14 +73,14 @@ lemma NormedAddCommGroup.completeSpace_of_summable_imp_tendsto
   simpa only [sub_add_cancel] using h₁
 
 /-- In a complete normed additive group, every absolutely convergent series converges in the
-space.  -/
+space. -/
 lemma NormedAddCommGroup.summable_imp_tendsto_of_complete [CompleteSpace E] (u : ℕ → E)
     (hu : Summable (‖u ·‖)) : ∃ a, Tendsto (fun n => ∑ i ∈ range n, u i) atTop (𝓝 a) := by
   refine cauchySeq_tendsto_of_complete <| cauchySeq_of_summable_dist ?_
   simp [dist_eq_norm, sum_range_succ, hu]
 
 /-- In a normed additive group, every absolutely convergent series converges in the
-space iff the space is complete.  -/
+space iff the space is complete. -/
 lemma NormedAddCommGroup.summable_imp_tendsto_iff_completeSpace :
     (∀ u : ℕ → E, Summable (‖u ·‖) → ∃ a, Tendsto (fun n => ∑ i ∈ range n, u i) atTop (𝓝 a))
      ↔ CompleteSpace E :=

@@ -11,18 +11,11 @@ import Mathlib.Tactic.Ring
 # IMO 1964 Q1
 
 (a) Find all positive integers $n$ for which $2^n-1$ is divisible by $7$.
-
 (b) Prove that there is no positive integer $n$ for which $2^n+1$ is divisible by $7$.
 
-We define a predicate for the solutions in (a), and prove that it is the set of positive
-integers which are a multiple of 3.
+For (a), we find that the order of $2$ mod $7$ is $3$. Therefore for (b), it suffices to check
+$n = 0, 1, 2$.
 -/
-
-
-/-!
-## Intermediate lemmas
--/
-
 
 open Nat
 
@@ -35,15 +28,11 @@ theorem two_pow_mod_seven (n : ℕ) : 2 ^ n ≡ 2 ^ (n % 3) [MOD 7] :=
     _ ≡ 1 ^ (n / 3) * 2 ^ t [MOD 7] := by gcongr; decide
     _ = 2 ^ t := by ring
 
-/-!
-## The question
--/
+end Imo1964Q1
 
+open Imo1964Q1
 
-def ProblemPredicate (n : ℕ) : Prop :=
-  7 ∣ 2 ^ n - 1
-
-theorem imo1964_q1a (n : ℕ) (_ : 0 < n) : ProblemPredicate n ↔ 3 ∣ n := by
+theorem imo1964_q1a (n : ℕ) (_ : 0 < n) : 7 ∣ 2 ^ n - 1 ↔ 3 ∣ n := by
   let t := n % 3
   have : t < 3 := Nat.mod_lt _ (by decide)
   calc 7 ∣ 2 ^ n - 1 ↔ 2 ^ n ≡ 1 [MOD 7] := by
@@ -53,15 +42,11 @@ theorem imo1964_q1a (n : ℕ) (_ : 0 < n) : ProblemPredicate n ↔ 3 ∣ n := by
     _ ↔ t = 0 := by interval_cases t <;> decide
     _ ↔ 3 ∣ n := by rw [dvd_iff_mod_eq_zero]
 
-end Imo1964Q1
-
-open Imo1964Q1
-
 theorem imo1964_q1b (n : ℕ) : ¬7 ∣ 2 ^ n + 1 := by
   intro h
   let t := n % 3
   have : t < 3 := Nat.mod_lt _ (by decide)
   have H : 2 ^ t + 1 ≡ 0 [MOD 7] := calc
-    2 ^ t + 1 ≡ 2 ^ n + 1 [MOD 7 ] := by gcongr ?_ + 1; exact (two_pow_mod_seven n).symm
+    2 ^ t + 1 ≡ 2 ^ n + 1 [MOD 7] := by gcongr ?_ + 1; exact (two_pow_mod_seven n).symm
       _ ≡ 0 [MOD 7] := h.modEq_zero_nat
   interval_cases t <;> contradiction

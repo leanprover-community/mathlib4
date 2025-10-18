@@ -6,11 +6,15 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.ToAdditive
+import Mathlib.Util.AssertExists
+
 /-!
 # Basic definitions about topological spaces
 
 This file contains definitions about topology that do not require imports
-other than `Mathlib.Data.Set.Lattice`.
+other than `Mathlib/Data/Set/Lattice.lean`.
 
 ## Main definitions
 
@@ -53,11 +57,12 @@ We introduce notation `IsOpen[t]`, `IsClosed[t]`, `closure[t]`, `Continuous[t₁
 that allow passing custom topologies to these predicates and functions without using `@`.
 -/
 
+assert_not_exists Monoid
+
 universe u v
 open Set
 
 /-- A topology on `X`. -/
-@[to_additive existing TopologicalSpace]
 class TopologicalSpace (X : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set X → Prop
@@ -100,7 +105,7 @@ def IsClopen (s : Set X) : Prop :=
 
 /--
 A set is locally closed if it is the intersection of some open set and some closed set.
-Also see `isLocallyClosed_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed`.
+Also see `isLocallyClosed_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed.lean`.
 -/
 def IsLocallyClosed (s : Set X) : Prop := ∃ (U Z : Set X), IsOpen U ∧ IsClosed Z ∧ s = U ∩ Z
 
@@ -150,6 +155,28 @@ def IsOpenMap (f : X → Y) : Prop := ∀ U : Set X, IsOpen U → IsOpen (f '' U
 /-- A map `f : X → Y` is said to be a *closed map*,
 if the image of any closed `U : Set X` is closed in `Y`. -/
 def IsClosedMap (f : X → Y) : Prop := ∀ U : Set X, IsClosed U → IsClosed (f '' U)
+
+/-- An open quotient map is an open map `f : X → Y` which is both an open map and a quotient map.
+Equivalently, it is a surjective continuous open map.
+We use the latter characterization as a definition.
+
+Many important quotient maps are open quotient maps, including
+
+- the quotient map from a topological space to its quotient by the action of a group;
+- the quotient map from a topological group to its quotient by a normal subgroup;
+- the quotient map from a topological space to its separation quotient.
+
+Contrary to general quotient maps,
+the category of open quotient maps is closed under `Prod.map`.
+-/
+@[mk_iff]
+structure IsOpenQuotientMap (f : X → Y) : Prop where
+  /-- An open quotient map is surjective. -/
+  surjective : Function.Surjective f
+  /-- An open quotient map is continuous. -/
+  continuous : Continuous f
+  /-- An open quotient map is an open map. -/
+  isOpenMap : IsOpenMap f
 
 end Defs
 

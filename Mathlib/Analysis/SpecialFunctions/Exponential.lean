@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Eric Wieser
 -/
 import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Complex.Exponential
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!
@@ -205,7 +206,6 @@ end DerivRCLike
 theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp ℂ := by
   refine funext fun x => ?_
   rw [Complex.exp, exp_eq_tsum_div]
-  have : CauSeq.IsComplete ℂ norm := Complex.instIsComplete
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable ℝ x).hasSum.tendsto_sum_nat
 
 theorem Real.exp_eq_exp_ℝ : Real.exp = NormedSpace.exp ℝ := by
@@ -218,7 +218,7 @@ these results from `hasFDerivAt_exp_of_mem_ball` applied to the algebra `𝔸`.
 
 One possible solution for that would be to apply `hasFDerivAt_exp_of_mem_ball` to the
 commutative algebra `Algebra.elementalAlgebra 𝕊 x`. Unfortunately we don't have all the required
-API, so we leave that to a future refactor (see leanprover-community/mathlib#19062 for discussion).
+API, so we leave that to a future refactor (see https://github.com/leanprover-community/mathlib3/pull/19062 for discussion).
 
 We could also go the other way around and deduce `hasFDerivAt_exp_of_mem_ball` from
 `hasFDerivAt_exp_smul_const_of_mem_ball` applied to `𝕊 := 𝔸`, `x := (1 : 𝔸)`, and `t := x`.
@@ -254,7 +254,7 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasFDerivAt (fun u : 𝕊 => exp 𝕂 (u • x)) (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t := by
   -- TODO: prove this via `hasFDerivAt_exp_of_mem_ball` using the commutative ring
-  -- `Algebra.elementalAlgebra 𝕊 x`. See leanprover-community/mathlib#19062 for discussion.
+  -- `Algebra.elementalAlgebra 𝕊 x`. See https://github.com/leanprover-community/mathlib3/pull/19062 for discussion.
   have hpos : 0 < (expSeries 𝕂 𝔸).radius := (zero_le _).trans_lt htx
   rw [hasFDerivAt_iff_isLittleO_nhds_zero]
   suffices (fun (h : 𝕊) => exp 𝕂 (t • x) *
@@ -286,7 +286,7 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp 𝕂 (t • x))) t := by
   convert hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
   ext t'
-  show Commute (t' • x) (exp 𝕂 (t • x))
+  change Commute (t' • x) (exp 𝕂 (t • x))
   exact (((Commute.refl x).smul_left t').smul_right t).exp_right 𝕂
 
 theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
@@ -307,7 +307,7 @@ theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
   let ⟨_, _⟩ := analyticAt_exp_of_mem_ball (t • x) htx
   convert hasStrictFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
   ext t'
-  show Commute (t' • x) (exp 𝕂 (t • x))
+  change Commute (t' • x) (exp 𝕂 (t • x))
   exact (((Commute.refl x).smul_left t').smul_right t).exp_right 𝕂
 
 variable {𝕂}

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Tactic.LinearCombination
@@ -18,8 +18,6 @@ noncomputable section
 
 namespace Polynomial
 
-open Polynomial
-
 universe u v w x y z
 
 variable {R : Type u} {S : Type v} {T : Type w} {ι : Type x} {k : Type y} {A : Type z} {a b : R}
@@ -31,7 +29,7 @@ section Identities
   These belong somewhere else. But not in group_power because they depend on tactic.ring_exp
 
   Maybe use `Data.Nat.Choose` to prove it.
- -/
+-/
 /-- `(x + y)^n` can be expressed as `x^n + n*x^(n-1)*y + k * y^2` for some `k` in the ring.
 -/
 def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
@@ -39,7 +37,7 @@ def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
   | 0 => ⟨0, by simp⟩
   | 1 => ⟨0, by simp⟩
   | n + 2 => by
-    cases' (powAddExpansion x y (n + 1)) with z hz
+    obtain ⟨z, hz⟩ := (powAddExpansion x y (n + 1))
     exists x * z + (n + 1) * x ^ n + z * y
     calc
       (x + y) ^ (n + 2) = (x + y) * (x + y) ^ (n + 1) := by ring
@@ -89,7 +87,7 @@ def powSubPowFactor (x y : R) : ∀ i : ℕ, { z : R // x ^ i - y ^ i = z * (x -
   | 0 => ⟨0, by simp⟩
   | 1 => ⟨1, by simp⟩
   | k + 2 => by
-    cases' @powSubPowFactor x y (k + 1) with z hz
+    obtain ⟨z, hz⟩ := @powSubPowFactor x y (k + 1)
     exists z * x + y ^ (k + 1)
     linear_combination (norm := ring) x * hz
 

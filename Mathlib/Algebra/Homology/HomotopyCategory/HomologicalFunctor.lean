@@ -19,6 +19,8 @@ sequence of a short exact sequences of homological complexes.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory
 
 variable {C : Type*} [Category C] [Abelian C]

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
-/-!
+import Mathlib.Data.Finite.Sigma
 
+/-!
 # Description of the covering sieves of the extensive topology
 
 This file characterises the covering sieves of the extensive topology.
@@ -53,7 +54,8 @@ lemma extensiveTopology.mem_sieves_iff_contains_colimit_cofan {X : C} (S : Sieve
     apply (extensiveCoverage C).mem_toGrothendieck_sieves_of_superset (R := Presieve.ofArrows Y π)
     · exact fun _ _ hh ↦ by cases hh; exact h' _
     · refine ⟨α, inferInstance, Y, π, rfl, ?_⟩
-      erw [Limits.Cofan.isColimit_iff_isIso_sigmaDesc (c := Cofan.mk X π)]
+      rw [show IsIso (Sigma.desc π) ↔ _ from
+        Limits.Cofan.isColimit_iff_isIso_sigmaDesc (c := Cofan.mk X π)]
       exact h
 
 end CategoryTheory

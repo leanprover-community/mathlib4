@@ -3,12 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.List.Dedup
+import Mathlib.Data.Multiset.UnionInter
 
 /-!
 # Erasing duplicates in a multiset.
 -/
 
+assert_not_exists Monoid
 
 namespace Multiset
 
@@ -40,8 +42,10 @@ theorem dedup_cons_of_mem {a : α} {s : Multiset α} : a ∈ s → dedup (a ::�
   Quot.induction_on s fun _ m => @congr_arg _ _ _ _ ofList <| List.dedup_cons_of_mem m
 
 @[simp]
-theorem dedup_cons_of_not_mem {a : α} {s : Multiset α} : a ∉ s → dedup (a ::ₘ s) = a ::ₘ dedup s :=
-  Quot.induction_on s fun _ m => congr_arg ofList <| List.dedup_cons_of_not_mem m
+theorem dedup_cons_of_notMem {a : α} {s : Multiset α} : a ∉ s → dedup (a ::ₘ s) = a ::ₘ dedup s :=
+  Quot.induction_on s fun _ m => congr_arg ofList <| List.dedup_cons_of_notMem m
+
+@[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem := dedup_cons_of_notMem
 
 theorem dedup_le (s : Multiset α) : dedup s ≤ s :=
   Quot.induction_on s fun _ => (dedup_sublist _).subperm
@@ -70,7 +74,7 @@ alias ⟨_, Nodup.dedup⟩ := dedup_eq_self
 
 theorem count_dedup (m : Multiset α) (a : α) : m.dedup.count a = if a ∈ m then 1 else 0 :=
   Quot.induction_on m fun _ => by
-    simp only [quot_mk_to_coe'', coe_dedup, mem_coe, List.mem_dedup, coe_nodup, coe_count]
+    simp only [quot_mk_to_coe'', coe_dedup, mem_coe, coe_count]
     apply List.count_dedup _ _
 
 @[simp]
@@ -103,11 +107,6 @@ theorem dedup_map_dedup_eq [DecidableEq β] (f : α → β) (s : Multiset α) :
     dedup (map f (dedup s)) = dedup (map f s) := by
   simp [dedup_ext]
 
-@[simp]
-theorem dedup_nsmul {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : (n • s).dedup = s.dedup := by
-  ext a
-  by_cases h : a ∈ s <;> simp [h, h0]
-
 theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedup ↔ s ≤ t := by
   simp [le_dedup, hno]
 
@@ -118,12 +117,12 @@ theorem Subset.dedup_add_right {s t : Multiset α} (h : s ⊆ t) :
 
 theorem Subset.dedup_add_left {s t : Multiset α} (h : t ⊆ s) :
     dedup (s + t) = dedup s := by
-  rw [add_comm, Subset.dedup_add_right h]
+  rw [s.add_comm, Subset.dedup_add_right h]
 
 theorem Disjoint.dedup_add {s t : Multiset α} (h : Disjoint s t) :
     dedup (s + t) = dedup s + dedup t := by
   induction s, t using Quot.induction_on₂
-  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.dedup_append h
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.dedup_append (by simpa using h)
 
 /-- Note that the stronger `List.Subset.dedup_append_right` is proved earlier. -/
 theorem _root_.List.Subset.dedup_append_left {s t : List α} (h : t ⊆ s) :
@@ -131,9 +130,3 @@ theorem _root_.List.Subset.dedup_append_left {s t : List α} (h : t ⊆ s) :
   rw [← coe_eq_coe, ← coe_dedup, ← coe_add, Subset.dedup_add_left h, coe_dedup]
 
 end Multiset
-
-theorem Multiset.Nodup.le_nsmul_iff_le {α : Type*} {s t : Multiset α} {n : ℕ} (h : s.Nodup)
-    (hn : n ≠ 0) : s ≤ n • t ↔ s ≤ t := by
-  classical
-    rw [← h.le_dedup_iff_le, Iff.comm, ← h.le_dedup_iff_le]
-    simp [hn]

@@ -20,7 +20,9 @@ macro "continuity" : attr =>
 
 /--
 The tactic `continuity` solves goals of the form `Continuous f` by applying lemmas tagged with the
-`continuity` user attribute. -/
+`continuity` user attribute.
+
+`fun_prop` is a (usually more powerful) alternative to `continuity`. -/
 macro "continuity" : tactic =>
   `(tactic| aesop (config := { terminal := true })
      (rule_sets := [$(Lean.mkIdent `Continuous):ident]))
@@ -34,4 +36,4 @@ macro "continuity?" : tactic =>
 
 -- Todo: implement `continuity!` and `continuity!?` and add configuration, original
 -- syntax was (same for the missing `continuity` variants):
--- syntax (name := continuity) "continuity" (config)? : tactic
+-- syntax (name := continuity) "continuity" optConfig : tactic

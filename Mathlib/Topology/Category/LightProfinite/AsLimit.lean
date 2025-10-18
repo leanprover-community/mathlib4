@@ -20,8 +20,6 @@ noncomputable section
 
 open CategoryTheory Limits CompHausLike
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 namespace LightProfinite
 
 universe u
@@ -36,14 +34,14 @@ abbrev diagram : ℕᵒᵖ ⥤ LightProfinite := S.fintypeDiagram ⋙ FintypeCat
 
 /--
 A cone over `S.diagram` whose cone point is isomorphic to `S`.
-(Auxiliary definition, use `S.asLimitCone` instead.)
+(Auxiliary definition, use `S.asLimitCone` instead.)
 -/
 def asLimitConeAux : Cone S.diagram :=
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   liftLimit hc
 
-/-- An auxiliary isomorphism of cones used to prove that `S.asLimitConeAux` is a limit cone. -/
+/-- An auxiliary isomorphism of cones used to prove that `S.asLimitConeAux` is a limit cone. -/
 def isoMapCone : lightToProfinite.mapCone S.asLimitConeAux ≅ S.toLightDiagram.cone :=
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
@@ -51,7 +49,7 @@ def isoMapCone : lightToProfinite.mapCone S.asLimitConeAux ≅ S.toLightDiagram.
 
 /--
 `S.asLimitConeAux` is indeed a limit cone.
-(Auxiliary definition, use `S.asLimit` instead.)
+(Auxiliary definition, use `S.asLimit` instead.)
 -/
 def asLimitAux : IsLimit S.asLimitConeAux :=
   let hc : IsLimit (lightToProfinite.mapCone S.asLimitConeAux) :=
@@ -79,8 +77,7 @@ abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
-  simp? says simp only [toCompHausLike_obj, Functor.comp_obj,
-      FintypeCat.toLightProfinite_obj_toTop_α, toCompHausLike_map, coe_of]
+  simp only [Functor.comp_obj, toCompHausLike_map]
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   exact liftedLimitMapsToOriginal_inv_map_π hc _
@@ -94,7 +91,7 @@ lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
 abbrev component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
 
 /-- The transition map from `S_{n+1}` to `S_n` in `S.diagram`. -/
-abbrev transitionMap (n : ℕ) :  S.component (n+1) ⟶ S.component n :=
+abbrev transitionMap (n : ℕ) :  S.component (n + 1) ⟶ S.component n :=
   S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩
 
 /-- The transition map from `S_m` to `S_n` in `S.diagram`, when `m ≤ n`. -/

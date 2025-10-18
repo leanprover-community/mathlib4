@@ -3,9 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Batteries.Data.String.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
-import Mathlib.Tactic.AdaptationNote
 import Mathlib.Algebra.Order.Group.Nat
 
 /-!
@@ -15,6 +15,8 @@ Supplementary theorems about the `String` type.
 -/
 
 namespace String
+
+@[simp] theorem endPos_empty : "".endPos = 0 := rfl
 
 /-- `<` on string iterators. This coincides with `<` on strings as lists. -/
 def ltb (s₁ s₂ : Iterator) : Bool :=
@@ -26,11 +28,13 @@ def ltb (s₁ s₂ : Iterator) : Bool :=
     else true
   else false
 
+/-- This overrides an instance in core Lean. -/
 instance LT' : LT String :=
   ⟨fun s₁ s₂ ↦ ltb s₁.iter s₂.iter⟩
 
-instance decidableLT : @DecidableRel String (· < ·) := by
-  simp only [LT']
+/-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
+instance decidableLT' : DecidableLT String := by
+  simp only [DecidableLT, LT']
   infer_instance -- short-circuit type class inference
 
 /-- Induction on `String.ltb`. -/
@@ -60,7 +64,7 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
   intro ⟨cs₁⟩ ⟨cs₂⟩ i₁ i₂ <;>
   intros <;>
   (conv => lhs; unfold ltb) <;> (conv => rhs; unfold ltb) <;>
-  simp only [Iterator.hasNext_cons_addChar, ite_false, ite_true, *]
+  simp only [Iterator.hasNext_cons_addChar, ite_false, ite_true, *, reduceCtorEq]
   · rename_i h₂ h₁ heq ih
     simp only [Iterator.next, next, heq, Iterator.curr, get_cons_addChar, ite_true] at ih ⊢
     repeat rw [Pos.addChar_right_comm _ c]
@@ -75,14 +79,12 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
     · unfold ltb; decide
     · rename_i c₂ cs₂; apply iff_of_true
       · unfold ltb
-        #adaptation_note /-- v4.7.0-rc1 exclude reduceMk from simp -/
-        simp [-reduceMk, Iterator.hasNext, Char.utf8Size_pos]
+        simp [Iterator.hasNext, Char.utf8Size_pos]
       · apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih; apply iff_of_false
       · unfold ltb
-        #adaptation_note /-- v4.7.0-rc1 exclude reduceMk from simp -/
-        simp [-reduceMk, Iterator.hasNext]
-      · apply not_lt_of_lt; apply List.nil_lt_cons
+        simp [Iterator.hasNext]
+      · apply not_lt_of_gt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
       simp only [Iterator.hasNext, Pos.byteIdx_zero, endPos, utf8ByteSize, utf8ByteSize.go,
         add_pos_iff, Char.utf8Size_pos, or_true, decide_eq_true_eq, ↓reduceIte, Iterator.curr, get,
@@ -90,18 +92,18 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
       split_ifs with h
       · subst c₂
         suffices ltb ⟨⟨c₁ :: cs₁⟩, (0 : Pos) + c₁⟩ ⟨⟨c₁ :: cs₂⟩, (0 : Pos) + c₁⟩ =
-          ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩ by rw [this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
+          ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩ by rw [this]; exact (ih cs₂).trans List.lex_cons_iff.symm
         apply ltb_cons_addChar
       · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
         cases e <;> rename_i h'
-        · contradiction
         · assumption
+        · contradiction
 
 instance LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 
-instance decidableLE : @DecidableRel String (· ≤ ·) := by
-  simp only [LE]
+instance decidableLE : DecidableLE String := by
+  simp only [DecidableLE, LE]
   infer_instance -- short-circuit type class inference
 
 @[simp]
@@ -114,16 +116,12 @@ theorem toList_inj {s₁ s₂ : String} : s₁.toList = s₂.toList ↔ s₁ = s
 theorem asString_nil : [].asString = "" :=
   rfl
 
-@[deprecated (since := "2024-06-04")] alias nil_asString_eq_empty := asString_nil
-
 @[simp]
 theorem toList_empty : "".toList = [] :=
   rfl
 
 theorem asString_toList (s : String) : s.toList.asString = s :=
   rfl
-
-@[deprecated (since := "2024-06-04")] alias asString_inv_toList := asString_toList
 
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
   | ⟨s⟩, h => by
@@ -138,24 +136,25 @@ theorem head_empty : "".data.head! = default :=
   rfl
 
 instance : LinearOrder String where
-  le_refl a := le_iff_toList_le.mpr le_rfl
+  le_refl _ := le_iff_toList_le.mpr le_rfl
   le_trans a b c := by
     simp only [le_iff_toList_le]
     apply le_trans
-  lt_iff_le_not_le a b := by
-    simp only [lt_iff_toList_lt, le_iff_toList_le, lt_iff_le_not_le]
+  lt_iff_le_not_ge a b := by
+    simp only [lt_iff_toList_lt, le_iff_toList_le, lt_iff_le_not_ge]
   le_antisymm a b := by
     simp only [le_iff_toList_le, ← toList_inj]
     apply le_antisymm
   le_total a b := by
     simp only [le_iff_toList_le]
     apply le_total
-  decidableLE := String.decidableLE
+  toDecidableLE := String.decidableLE
+  toDecidableEq := inferInstance
+  toDecidableLT := String.decidableLT'
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt, toList]
     split_ifs <;>
-    simp only [List.lt_iff_lex_lt] at * <;>
-    contradiction
+    simp only [List.lt_iff_lex_lt] at *
 
 end String
 
@@ -165,8 +164,6 @@ namespace List
 
 theorem toList_asString (l : List Char) : l.asString.toList = l :=
   rfl
-
-@[deprecated (since := "2024-06-04")] alias toList_inv_asString := toList_asString
 
 @[simp]
 theorem length_asString (l : List Char) : l.asString.length = l.length :=

@@ -3,8 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # fintype instance for `Set α`, when `α` is a fintype
@@ -29,34 +29,34 @@ variable [Fintype α] {s : Finset α} {k : ℕ}
   coe_injective <| by simp [-coe_eq_univ]
 
 lemma filter_subset_univ [DecidableEq α] (s : Finset α) :
-    filter (fun t ↦ t ⊆ s) univ = powerset s := by ext; simp
+    ({t | t ⊆ s} : Finset _) = powerset s := by ext; simp
 
 @[simp] lemma powerset_eq_univ : s.powerset = univ ↔ s = univ := by
   rw [← Finset.powerset_univ, powerset_inj]
 
-lemma mem_powersetCard_univ : s ∈ powersetCard k (univ : Finset α) ↔ card s = k :=
+lemma mem_powersetCard_univ : s ∈ powersetCard k (univ : Finset α) ↔ #s = k :=
   mem_powersetCard.trans <| and_iff_right <| subset_univ _
 
 variable (α)
 
 @[simp] lemma univ_filter_card_eq (k : ℕ) :
-    (univ : Finset (Finset α)).filter (fun s ↦ s.card = k) = univ.powersetCard k := by ext; simp
+    ({s | #s = k} : Finset (Finset α)) = univ.powersetCard k := by ext; simp
 
 end Finset
 
 @[simp]
 theorem Fintype.card_finset_len [Fintype α] (k : ℕ) :
-    Fintype.card { s : Finset α // s.card = k } = Nat.choose (Fintype.card α) k := by
+    Fintype.card { s : Finset α // #s = k } = Nat.choose (Fintype.card α) k := by
   simp [Fintype.subtype_card, Finset.card_univ]
 
 instance Set.fintype [Fintype α] : Fintype (Set α) :=
   ⟨(@Finset.univ (Finset α) _).map coeEmb.1, fun s => by
     classical
-    refine mem_map.2 ⟨Finset.univ.filter (· ∈ s), Finset.mem_univ _, (coe_filter _ _).trans ?_⟩
+    refine mem_map.2 ⟨({a | a ∈ s} : Finset _), Finset.mem_univ _, (coe_filter _ _).trans ?_⟩
     simp⟩
 
 -- Not to be confused with `Set.Finite`, the predicate
-instance Set.finite' [Finite α] : Finite (Set α) := by
+instance Set.instFinite [Finite α] : Finite (Set α) := by
   cases nonempty_fintype α
   infer_instance
 

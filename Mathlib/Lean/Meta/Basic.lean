@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Init
 import Lean.Meta.AppBuilder
@@ -68,3 +68,29 @@ def Lean.Meta.mkRel (n : Name) (lhs rhs : Expr) : MetaM Expr :=
     return mkApp2 (.const ``Iff []) lhs rhs
   else
     mkAppM n #[lhs, rhs]
+
+/--
+Given a metavariable `inst` whose type is a class, tries to synthesize the instance then runs `k`.
+If synthesis fails, then runs `k` with `inst` as a local instance and then substitutes `inst`
+into the resulting expression.
+
+Example: `reassocExprHom` operates by applying simp lemmas that assume a `Category` instance.
+The category might not yet be known, which can prevent simp lemmas from applying.
+We can add `inst` as a local instance to deal with this.
+However, if the instance is synthesizable, we prefer running `k` directly
+so that the local instance doesn't affect typeclass inference.
+-/
+def Lean.Meta.withEnsuringLocalInstance {α : Type} (inst : MVarId) (k : MetaM (Expr × α)) :
+    MetaM (Expr × α) := do
+  let instE := mkMVar inst
+  match ← trySynthInstance (← inferType instE) with
+  | .some e =>
+    unless ← isDefEq instE e do
+      throwError "failed to assign synthesized type class instance {indentExpr e}\n\
+        to{indentExpr instE}"
+    k
+  | _ =>
+    withLetDecl `inst (← inferType instE) instE fun inst' => do
+      let (e, v) ← k
+      let e' := (← e.abstractM #[inst']).instantiate1 instE
+      return (e', v)

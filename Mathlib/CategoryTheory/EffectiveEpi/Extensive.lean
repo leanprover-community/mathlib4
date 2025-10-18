@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 # Preserving and reflecting effective epis on extensive categories
 
-We prove that a functor between `FinitaryPreExtensive` categories preserves (resp. reflects) finite
+We prove that a functor between `FinitaryPreExtensive` categories preserves (resp. reflects) finite
 effective epi families if it preserves (resp. reflects) effective epis.
 -/
 
@@ -25,7 +25,7 @@ theorem effectiveEpi_desc_iff_effectiveEpiFamily {α : Type} [Finite α]
     {B : C} (X : α → C) (π : (a : α) → X a ⟶ B) :
     EffectiveEpi (Sigma.desc π) ↔ EffectiveEpiFamily X π := by
   exact ⟨fun h ↦ ⟨⟨@effectiveEpiFamilyStructOfEffectiveEpiDesc _ _ _ _ X π _ h _ _ (fun g ↦
-    (FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X a) g inferInstance).epi_of_iso)⟩⟩,
+    (FinitaryPreExtensive.isIso_sigmaDesc_fst (fun a ↦ Sigma.ι X a) g inferInstance).epi_of_iso)⟩⟩,
     fun _ ↦ inferInstance⟩
 
 variable {D : Type*} [Category D] [FinitaryPreExtensive D]

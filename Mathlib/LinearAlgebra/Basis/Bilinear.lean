@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.Basis.Defs
 # Lemmas about bilinear maps with a basis over each argument
 -/
 
+open Module
 
 namespace LinearMap
 
@@ -41,8 +42,8 @@ Version for semi-bilinear maps, see `sum_repr_mul_repr_mul` for the bilinear ver
 theorem sum_repr_mul_repr_mulₛₗ {B : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (x y) :
     ((b₁.repr x).sum fun i xi => (b₂.repr y).sum fun j yj => ρ₁₂ xi • σ₁₂ yj • B (b₁ i) (b₂ j)) =
       B x y := by
-  conv_rhs => rw [← b₁.total_repr x, ← b₂.total_repr y]
-  simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum₂, map_sum, LinearMap.map_smulₛₗ₂,
+  conv_rhs => rw [← b₁.linearCombination_repr x, ← b₂.linearCombination_repr y]
+  simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂, map_sum, LinearMap.map_smulₛₗ₂,
     LinearMap.map_smulₛₗ]
 
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis.
@@ -51,8 +52,8 @@ Version for bilinear maps, see `sum_repr_mul_repr_mulₛₗ` for the semi-biline
 theorem sum_repr_mul_repr_mul {B : Mₗ →ₗ[Rₗ] Nₗ →ₗ[Rₗ] Pₗ} (x y) :
     ((b₁'.repr x).sum fun i xi => (b₂'.repr y).sum fun j yj => xi • yj • B (b₁' i) (b₂' j)) =
       B x y := by
-  conv_rhs => rw [← b₁'.total_repr x, ← b₂'.total_repr y]
-  simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum₂, map_sum, LinearMap.map_smul₂,
+  conv_rhs => rw [← b₁'.linearCombination_repr x, ← b₂'.linearCombination_repr y]
+  simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂, map_sum, LinearMap.map_smul₂,
     LinearMap.map_smul]
 
 end AddCommMonoid

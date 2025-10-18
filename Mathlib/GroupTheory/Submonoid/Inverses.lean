@@ -15,17 +15,17 @@ since the inverses are unique. When `N ≤ IsUnit.Submonoid M`, this is precisel
 the pointwise inverse of `N`, and we may define `leftInvEquiv : S.leftInv ≃* S`.
 
 For the pointwise inverse of submonoids of groups, please refer to the file
-`Mathlib.Algebra.Group.Submonoid.Pointwise`.
+`Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 
 `N.leftInv` is distinct from `N.units`, which is the subgroup of `Mˣ` containing all units that are
-in `N`. See the implementation notes of `Mathlib.GroupTheory.Submonoid.Units` for more details on
-related constructions.
+in `N`. See the implementation notes of `Mathlib/GroupTheory/Submonoid/Units.lean` for more details
+on related constructions.
 
 ## TODO
 
 Define the submonoid of right inverses and two-sided inverses.
-See the comments of #10679 for a possible implementation.
-
+See the comments of https://github.com/leanprover-community/mathlib4/pull/10679 for a possible
+implementation.
 -/
 
 
@@ -56,7 +56,7 @@ variable [Monoid M] (S : Submonoid M)
 
 /-- `S.leftInv` is the submonoid containing all the left inverses of `S`. -/
 @[to_additive
-      "`S.leftNeg` is the additive submonoid containing all the left additive inverses of `S`."]
+/-- `S.leftNeg` is the additive submonoid containing all the left additive inverses of `S`. -/]
 def leftInv : Submonoid M where
   carrier := { x : M | ∃ y : S, x * y = 1 }
   one_mem' := ⟨1, mul_one 1⟩
@@ -70,7 +70,7 @@ theorem leftInv_leftInv_le : S.leftInv.leftInv ≤ S := by
   rw [← mul_one x, ← h₁, ← mul_assoc, h₂, one_mul]
 
 @[to_additive]
-theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ : _) : M) ∈ S.leftInv :=
+theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ :) : M) ∈ S.leftInv :=
   ⟨⟨x, hx⟩, x.inv_val⟩
 
 @[to_additive]
@@ -86,8 +86,8 @@ theorem leftInv_leftInv_eq (hS : S ≤ IsUnit.submonoid M) : S.leftInv.leftInv =
 /-- The function from `S.leftInv` to `S` sending an element to its right inverse in `S`.
 This is a `MonoidHom` when `M` is commutative. -/
 @[to_additive
-      "The function from `S.leftAdd` to `S` sending an element to its right additive
-inverse in `S`. This is an `AddMonoidHom` when `M` is commutative."]
+/-- The function from `S.leftAdd` to `S` sending an element to its right additive
+inverse in `S`. This is an `AddMonoidHom` when `M` is commutative. -/]
 noncomputable def fromLeftInv : S.leftInv → S := fun x ↦ x.prop.choose
 
 @[to_additive (attr := simp)]
@@ -118,9 +118,8 @@ theorem fromLeftInv_eq_iff (a : S.leftInv) (b : M) :
   rw [← IsUnit.mul_right_inj (leftInv_le_isUnit _ a.prop), S.mul_fromLeftInv, eq_comm]
 
 /-- The `MonoidHom` from `S.leftInv` to `S` sending an element to its right inverse in `S`. -/
-@[to_additive (attr := simps)
-    "The `AddMonoidHom` from `S.leftNeg` to `S` sending an element to its
-    right additive inverse in `S`."]
+@[to_additive (attr := simps) /-- The `AddMonoidHom` from `S.leftNeg` to `S` sending an element to
+its right additive inverse in  `S`. -/]
 noncomputable def fromCommLeftInv : S.leftInv →* S where
   toFun := S.fromLeftInv
   map_one' := S.fromLeftInv_one
@@ -132,24 +131,19 @@ noncomputable def fromCommLeftInv : S.leftInv →* S where
 variable (hS : S ≤ IsUnit.submonoid M)
 
 /-- The submonoid of pointwise inverse of `S` is `MulEquiv` to `S`. -/
-@[to_additive (attr := simps apply) "The additive submonoid of pointwise additive inverse of `S` is
-`AddEquiv` to `S`."]
+@[to_additive (attr := simps apply) /-- The additive submonoid of pointwise additive inverse of `S`
+is `AddEquiv` to `S`. -/]
 noncomputable def leftInvEquiv : S.leftInv ≃* S :=
   { S.fromCommLeftInv with
-    invFun := fun x ↦ by
-      choose x' hx using hS x.prop
-      exact ⟨x'.inv, x, hx ▸ x'.inv_val⟩
-    left_inv := fun x ↦
-      Subtype.eq <| by
-        dsimp only; generalize_proofs h; rw [← h.choose.mul_left_inj]
-        conv => rhs; rw [h.choose_spec]
-        exact h.choose.inv_val.trans (S.mul_fromLeftInv x).symm
-    right_inv := fun x ↦ by
-      dsimp only [fromCommLeftInv]
+    invFun := fun x ↦ ⟨↑(hS x.2).unit⁻¹, x, by simp⟩
+    left_inv := by
+      intro x
       ext
-      rw [fromLeftInv_eq_iff]
-      convert (hS x.prop).choose.inv_val
-      exact (hS x.prop).choose_spec.symm }
+      simp [← Units.mul_eq_one_iff_inv_eq]
+    right_inv := by
+      rintro ⟨x, hx⟩
+      ext
+      simp [fromLeftInv_eq_iff] }
 
 @[to_additive (attr := simp)]
 theorem fromLeftInv_leftInvEquiv_symm (x : S) : S.fromLeftInv ((S.leftInvEquiv hS).symm x) = x :=

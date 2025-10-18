@@ -5,7 +5,7 @@ Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
-import Mathlib.CategoryTheory.Sites.OneHypercover
+import Mathlib.CategoryTheory.Sites.Hypercover.One
 
 /-!
 # The 1-hypercover of a glue data
@@ -42,10 +42,10 @@ noncomputable def oneHypercover : Scheme.zariskiTopology.OneHypercover D.glued w
   I₁ _ _ := PUnit
   Y i₁ i₂ _ := D.V (i₁, i₂)
   p₁ i₁ i₂ _ := D.f i₁ i₂
-  p₂ i₁ i₂ j := D.t i₁ i₂ ≫ D.f i₂ i₁
+  p₂ i₁ i₂ _ := D.t i₁ i₂ ≫ D.f i₂ i₁
   w i₁ i₂ _ := by simp only [Category.assoc, Scheme.GlueData.glue_condition]
   mem₀ := by
-    refine zariskiTopology.superset_covering ?_ (zariskiTopology_openCover D.openCover)
+    refine zariskiTopology.superset_covering ?_ D.openCover.mem_grothendieckTopology
     rw [Sieve.generate_le_iff]
     rintro W _ ⟨i⟩
     exact ⟨_, 𝟙 _, _, ⟨i⟩, by simp; rfl⟩

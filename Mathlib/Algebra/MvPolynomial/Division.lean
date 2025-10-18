@@ -189,14 +189,11 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
     have hj := hx j
     have hi := hx i
     classical
-      simp_rw [coeff_monomial, if_pos] at hj hi
-      simp_rw [coeff_monomial_mul'] at hi hj
-      split_ifs at hi hj with hi hi
-      · exact ⟨Or.inr hi, _, hj⟩
-      · exact ⟨Or.inl hj, hj.symm ▸ dvd_zero _⟩
-    -- Porting note: two goals remain at this point in Lean 4
-    · simp_all only [or_true, dvd_mul_right, and_self]
-    · simp_all only [ite_self, le_refl, ite_true, dvd_mul_right, or_false, and_self]
+    simp_rw [coeff_monomial, if_pos] at hj hi
+    simp_rw [coeff_monomial_mul'] at hi hj
+    split_ifs at hj with hi
+    · exact ⟨Or.inr hi, _, hj⟩
+    · exact ⟨Or.inl hj, hj.symm ▸ dvd_zero _⟩
   · rintro ⟨h | hij, d, rfl⟩
     · simp_rw [h, monomial_zero, dvd_zero]
     · refine ⟨monomial (j - i) d, ?_⟩
@@ -206,19 +203,19 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
 theorem monomial_one_dvd_monomial_one [Nontrivial R] {i j : σ →₀ ℕ} :
     monomial i (1 : R) ∣ monomial j 1 ↔ i ≤ j := by
   rw [monomial_dvd_monomial]
-  simp_rw [one_ne_zero, false_or_iff, dvd_rfl, and_true_iff]
+  simp_rw [one_ne_zero, false_or, dvd_rfl, and_true]
 
 @[simp]
 theorem X_dvd_X [Nontrivial R] {i j : σ} :
     (X i : MvPolynomial σ R) ∣ (X j : MvPolynomial σ R) ↔ i = j := by
   refine monomial_one_dvd_monomial_one.trans ?_
   simp_rw [Finsupp.single_le_iff, Nat.one_le_iff_ne_zero, Finsupp.single_apply_ne_zero,
-    ne_eq, not_false_eq_true, and_true]
+    ne_eq, reduceCtorEq, not_false_eq_true, and_true]
 
 @[simp]
 theorem X_dvd_monomial {i : σ} {j : σ →₀ ℕ} {r : R} :
     (X i : MvPolynomial σ R) ∣ monomial j r ↔ r = 0 ∨ j i ≠ 0 := by
   refine monomial_dvd_monomial.trans ?_
-  simp_rw [one_dvd, and_true_iff, Finsupp.single_le_iff, Nat.one_le_iff_ne_zero]
+  simp_rw [one_dvd, and_true, Finsupp.single_le_iff, Nat.one_le_iff_ne_zero]
 
 end MvPolynomial

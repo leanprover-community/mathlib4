@@ -40,7 +40,7 @@ def edges : List (Verts × Verts) :=
 def adj (v w : Verts) : Bool := (v, w) ∈ edges || (w, v) ∈ edges
 
 /-- The Königsberg graph structure. While the Königsberg bridge problem
-is usually described using a multigraph, the we use a "mediant" construction
+is usually described using a multigraph, we use a "mediant" construction
 to transform it into a simple graph -- every edge in the multigraph is subdivided
 into a path of two edges. This construction preserves whether a graph is Eulerian.
 
@@ -81,6 +81,6 @@ theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : F
   have h' := setOf_odd_degree_eq
   apply_fun Fintype.card at h'
   rw [h'] at h
-  norm_num at h
+  simp at h
 
 end Konigsberg

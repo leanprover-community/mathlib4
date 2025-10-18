@@ -6,6 +6,7 @@ Authors: Patrick Massot
 
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.CongrM
+import Batteries.Lean.Position
 
 /-! # CongrM widget
 

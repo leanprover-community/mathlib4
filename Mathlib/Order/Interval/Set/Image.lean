@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger, Yaël Dillies
+Authors: Kim Morrison, Yaël Dillies
 -/
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Data.Set.Function
@@ -243,13 +243,13 @@ private lemma image_subtype_val_Ixx_Ixi {p q r : α → α → Prop} {a b : α} 
     (h : ∀ {x}, r c x → p a x) :
     Subtype.val '' {y : {x // p a x ∧ q x b} | r c.1 y.1} = {y : α | r c.1 y ∧ q y b} :=
   (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r c.1 y}).trans <| by
-    ext; simp (config := { contextual := true }) [@and_comm (r _ _), h]
+    ext; simp +contextual [@and_comm (r _ _), h]
 
 private lemma image_subtype_val_Ixx_Iix {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
     (h : ∀ {x}, r x c → q x b) :
     Subtype.val '' {y : {x // p a x ∧ q x b} | r y.1 c.1} = {y : α | p a y ∧ r y c.1} :=
   (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r y c.1}).trans <| by
-    ext; simp (config := { contextual := true}) [h]
+    ext; simp +contextual [h]
 
 variable [Preorder α] {p : α → Prop}
 

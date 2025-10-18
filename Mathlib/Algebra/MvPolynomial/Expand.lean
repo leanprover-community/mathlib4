@@ -29,7 +29,6 @@ noncomputable def expand (p : ℕ) : MvPolynomial σ R →ₐ[R] MvPolynomial σ
   { (eval₂Hom C fun i ↦ X i ^ p : MvPolynomial σ R →+* MvPolynomial σ R) with
     commutes' := fun _ ↦ eval₂Hom_C _ _ _ }
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem expand_C (p : ℕ) (r : R) : expand p (C r : MvPolynomial σ R) = C r :=
   eval₂Hom_C _ _ _
 
@@ -43,8 +42,7 @@ theorem expand_monomial (p : ℕ) (d : σ →₀ ℕ) (r : R) :
   bind₁_monomial _ _ _
 
 theorem expand_one_apply (f : MvPolynomial σ R) : expand 1 f = f := by
-  simp only [expand, pow_one, eval₂Hom_eq_bind₂, bind₂_C_left, RingHom.toMonoidHom_eq_coe,
-    RingHom.coe_monoidHom_id, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.id_apply, RingHom.id_apply]
+  simp only [expand, pow_one, eval₂Hom_eq_bind₂, bind₂_C_left, AlgHom.coe_mk, RingHom.id_apply]
 
 @[simp]
 theorem expand_one : expand 1 = AlgHom.id R (MvPolynomial σ R) := by
@@ -68,7 +66,7 @@ theorem map_expand (f : R →+* S) (p : ℕ) (φ : MvPolynomial σ R) :
 @[simp]
 theorem rename_expand (f : σ → τ) (p : ℕ) (φ : MvPolynomial σ R) :
     rename f (expand p φ) = expand p (rename f φ) := by
-  simp [expand, bind₁_rename, rename_bind₁, Function.comp]
+  simp [expand, bind₁_rename, rename_bind₁, Function.comp_def]
 
 @[simp]
 theorem rename_comp_expand (f : σ → τ) (p : ℕ) :

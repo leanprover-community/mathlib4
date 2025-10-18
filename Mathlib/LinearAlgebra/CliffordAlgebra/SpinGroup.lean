@@ -3,6 +3,7 @@ Copyright (c) 2022 Jiale Miao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiale Miao, Utensil Song, Eric Wieser
 -/
+import Mathlib.Algebra.Ring.Action.ConjAct
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.LinearAlgebra.CliffordAlgebra.Star
@@ -121,7 +122,7 @@ theorem involute_act_ι_mem_range_ι [Invertible (2 : R)]
     simp_rw [← hz', ← hy', LinearMap.mem_range_self]
 
 /-- If x is in `lipschitzGroup Q`, then `(ι Q).range` is closed under twisted conjugation.
-The reverse statement presumably is true only in finite dimensions.-/
+The reverse statement presumably is true only in finite dimensions. -/
 theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
     [Invertible (2 : R)] :
     ConjAct.toConjAct x • LinearMap.range (ι Q) = LinearMap.range (ι Q) := by
@@ -140,7 +141,7 @@ theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzG
 theorem coe_mem_iff_mem {x : (CliffordAlgebra Q)ˣ} :
     ↑x ∈ (lipschitzGroup Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ↔
     x ∈ lipschitzGroup Q := by
-  simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply, exists_prop]
+  simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply]
   norm_cast
   exact exists_eq_right
 
@@ -187,7 +188,7 @@ theorem involute_act_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ 
   lipschitzGroup.involute_act_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
 /-- If x is in `pinGroup Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
-statement presumably being true only in finite dimensions.-/
+statement presumably being true only in finite dimensions. -/
 theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q)
     [Invertible (2 : R)] : ConjAct.toConjAct x • LinearMap.range (ι Q) = LinearMap.range (ι Q) :=
   lipschitzGroup.conjAct_smul_range_ι (units_mem_lipschitzGroup hx)
@@ -207,11 +208,11 @@ theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pi
   rcases hx with ⟨⟨y, hy₁, hy₂⟩, _hx₂, hx₃⟩
   simp only [Subgroup.coe_toSubmonoid, SetLike.mem_coe] at hy₁
   simp only [Units.coeHom_apply] at hy₂
-  simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply, exists_prop]
+  simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply]
   refine ⟨star y, ?_, by simp only [hy₂, Units.coe_star]⟩
   rw [← hy₂] at hx₃
   have hy₃ : y * star y = 1 := by
-    rw [← Units.eq_iff]
+    rw [← Units.val_inj]
     simp only [hx₃, Units.val_mul, Units.coe_star, Units.val_one]
   apply_fun fun x => y⁻¹ * x at hy₃
   simp only [inv_mul_cancel_left, mul_one] at hy₃
@@ -306,7 +307,7 @@ theorem units_mem_lipschitzGroup {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spin
     x ∈ lipschitzGroup Q :=
   pinGroup.units_mem_lipschitzGroup (mem_pin hx)
 
-/-- If x is in `spinGroup Q`, then `involute x` is equal to x.-/
+/-- If x is in `spinGroup Q`, then `involute x` is equal to x. -/
 theorem involute_eq {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : involute x = x :=
   involute_eq_of_mem_even (mem_even hx)
 
@@ -319,13 +320,13 @@ theorem conjAct_smul_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ 
     [Invertible (2 : R)] (y : M) : ConjAct.toConjAct x • ι Q y ∈ LinearMap.range (ι Q) :=
   lipschitzGroup.conjAct_smul_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
-/- This is another version of `conjAct_smul_ι_mem_range_ι` which uses `involute`.-/
+/- This is another version of `conjAct_smul_ι_mem_range_ι` which uses `involute`. -/
 theorem involute_act_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
     [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
   lipschitzGroup.involute_act_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
 /- If x is in `spinGroup Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
-statement presumably being true only in finite dimensions.-/
+statement presumably being true only in finite dimensions. -/
 theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
     [Invertible (2 : R)] : ConjAct.toConjAct x • LinearMap.range (ι Q) = LinearMap.range (ι Q) :=
   lipschitzGroup.conjAct_smul_range_ι (units_mem_lipschitzGroup hx)
@@ -341,7 +342,7 @@ theorem mul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : 
 /-- See `star_mem_iff` for both directions. -/
 theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x ∈ spinGroup Q := by
   rw [mem_iff] at hx ⊢
-  cases' hx with hx₁ hx₂
+  obtain ⟨hx₁, hx₂⟩ := hx
   refine ⟨pinGroup.star_mem hx₁, ?_⟩
   dsimp only [CliffordAlgebra.even] at hx₂ ⊢
   simp only [Submodule.mem_toSubalgebra] at hx₂ ⊢
