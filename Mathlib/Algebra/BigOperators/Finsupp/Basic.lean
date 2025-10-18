@@ -245,10 +245,6 @@ theorem prod_neg_index [SubtractionMonoid G] [CommMonoid M] {g : α →₀ G} {h
     (h0 : ∀ a, h a 0 = 1) : (-g).prod h = g.prod fun a b => h a (-b) :=
   prod_mapRange_index h0
 
-end Finsupp
-
-namespace Finsupp
-
 theorem finset_sum_apply [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) (a : α) :
     (∑ i ∈ S, f i) a = ∑ i ∈ S, f i a :=
   map_sum (applyAddHom a) _ _
@@ -285,6 +281,27 @@ theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f
 @[simp]
 theorem sum_zero [Zero M] [AddCommMonoid N] {f : α →₀ M} : (f.sum fun _ _ => (0 : N)) = 0 :=
   Finset.sum_const_zero
+
+theorem sum_eq_one_iff (d : α →₀ ℕ) : sum d (fun _ n ↦ n) = 1 ↔ ∃ a, single a 1 = d := by
+  classical
+  refine ⟨fun h1 ↦ ?_, ?_⟩
+  · have hd0 : d ≠ 0 := fun h ↦ by simp [h] at h1
+    obtain ⟨a, ha⟩ := ne_iff.mp hd0
+    rw [coe_zero, Pi.zero_apply, ne_eq] at ha
+    rw [← add_sum_erase' _ a _ (fun _ ↦ rfl), Nat.add_eq_one_iff] at h1
+    rcases h1 with (⟨ha', _⟩ | ⟨ha, ha'⟩)
+    · exact absurd ha' ha
+    · use a
+      simp only [sum, support_erase, sum_eq_zero_iff, mem_erase] at ha'
+      ext b
+      by_cases hb : b = a
+      · rw [hb, single_eq_same, ha]
+      · rw [single_eq_of_ne hb, eq_comm]
+        simp only [mem_support_iff, and_imp] at ha'
+        simpa [erase_ne hb] using ha' b (hb)
+  · rintro ⟨a, rfl⟩
+    rw [sum_eq_single a ?_ (fun _ ↦ rfl), single_eq_same]
+    exact fun _ _ hba ↦ single_eq_of_ne hba
 
 @[to_additive (attr := simp)]
 theorem prod_mul [Zero M] [CommMonoid N] {f : α →₀ M} {h₁ h₂ : α → M → N} :
