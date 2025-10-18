@@ -360,7 +360,7 @@ domain. -/
 def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g f) :
     Quotient (ker f) ≃ β where
   toFun := kerLift f
-  invFun := Quotient.mk'' ∘ g
+  invFun b := Quotient.mk'' (g b)
   left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
   right_inv := hf
 
