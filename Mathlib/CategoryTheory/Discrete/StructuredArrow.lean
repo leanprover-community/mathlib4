@@ -38,7 +38,7 @@ def structuredArrowEquivalenceOfUnique
 
 /-- If `F : C ⥤ Discrete T` is a functor with `T` containing
 a unique element `t`, then this is the equivalence
-`CotructuredArrow F (Discrete.mk t) ≌ C`. -/
+`CostructuredArrow F (Discrete.mk t) ≌ C`. -/
 def costructuredArrowEquivalenceOfUnique
     (F : C ⥤ Discrete T) (t : T) [Subsingleton T] :
     CostructuredArrow F (.mk t) ≌ C where
