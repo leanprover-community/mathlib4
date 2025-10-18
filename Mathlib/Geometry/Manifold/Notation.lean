@@ -339,7 +339,7 @@ where
   fromCLM : TermElabM Expr := do
     match_expr e with
     | ContinuousLinearMap k S _ _ _σ _E _ _ _F _ _ _ _ =>
-      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous `{k}`-linear maps"
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
       if ← isDefEq k S then
         -- TODO: check if σ is actually the identity!
         let eK : Term ← Term.exprToSyntax k
