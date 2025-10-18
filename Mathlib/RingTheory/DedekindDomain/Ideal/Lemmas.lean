@@ -1008,6 +1008,10 @@ theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
     (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
     (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
 
+include hpb in
+theorem mem_primesOverFinset_iff {P : Ideal B} : P ∈ primesOverFinset p B ↔ P ∈ primesOver p B := by
+  rw [← Finset.mem_coe, coe_primesOverFinset hpb]
+
 variable {R} (A) in
 theorem IsLocalRing.primesOverFinset_eq [IsLocalRing A] [IsDedekindDomain A]
     [Algebra R A] [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
