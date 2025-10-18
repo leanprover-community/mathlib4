@@ -12,6 +12,7 @@ import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Data.Finite.Sigma
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Basic properties of group actions
