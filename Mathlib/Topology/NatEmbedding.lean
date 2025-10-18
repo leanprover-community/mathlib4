@@ -3,23 +3,20 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
+# Infinite Hausdorff topological spaces
+
+In this file we prove several properties of infinite Hausdorff topological spaces.
+
+- ``exists_seq_infinite_isOpen_pairwise_disjoint`: there exists a sequence
+  of pairwise disjoint infinite open sets;
+- `exists_topology_isEmbedding_nat`: there exista a topological embedding of `ℕ` into the space;
+- `exists_infinite_discreteTopology`: there exists an infinite subset with discrete topology.
 -/
 
 open Function Filter Set Topology
-
-theorem Set.infinite_iUnion_of_left {α β : Type*} [Infinite α]
-    {s : α → Set β} (hne : ∀ a, (s a).Nonempty) (hd : Pairwise (Disjoint on s)) :
-    (⋃ a, s a).Infinite :=
-  have := fun a ↦ (hne a).to_subtype
-  infinite_coe_iff.mp <| .of_injective (sigmaToiUnion _) (sigmaToiUnion_injective _ hd)
-
-theorem Set.infinite_iUnion_of_right {ι : Sort _} {β : Type*} {s : ι → Set β} {i : ι}
-    (h : (s i).Infinite) : (⋃ a, s a).Infinite :=
-  h.mono <| subset_iUnion _ _
 
 variable (X : Type*) [TopologicalSpace X] [T2Space X] [Infinite X]
 
@@ -31,8 +28,10 @@ theorem exists_seq_infinite_isOpen_pairwise_disjoint :
       Pairwise (Disjoint on U) by
     rcases this with ⟨U, hne, ho, hd⟩
     refine ⟨fun n ↦ ⋃ m, U (.pair n m), ?_, fun _ ↦ isOpen_iUnion fun _ ↦ ho _, ?_⟩
-    · refine fun n ↦ infinite_iUnion_of_left (fun _ ↦ hne _) (fun m m' hne ↦ hd ?_)
-      simpa
+    · refine fun n ↦ infinite_iUnion fun i j hij ↦ ?_
+      suffices n.pair i = n.pair j by simpa
+      apply hd.eq
+      simpa [hij, onFun] using (hne _).ne_empty
     · refine fun n n' hne ↦ disjoint_iUnion_left.2 fun m ↦ disjoint_iUnion_right.2 fun m' ↦ hd ?_
       simp [hne]
   by_cases h : DiscreteTopology X
@@ -61,8 +60,8 @@ theorem exists_seq_infinite_isOpen_pairwise_disjoint :
 /-- If `X` is an infinite Hausdorff topological space, then there exists a topological embedding
 `f : ℕ → X`.
 
-Note: this theorem is true for an infinite KC-space but the proof in this case is different. -/
-theorem exists_topology_embedding_nat : ∃ f : ℕ → X, IsEmbedding f := by
+Note: this theorem is true for an infinite KC-space but the proof in that case is different. -/
+theorem exists_topology_isEmbedding_nat : ∃ f : ℕ → X, IsEmbedding f := by
   rcases exists_seq_infinite_isOpen_pairwise_disjoint X with ⟨U, hUi, hUo, hd⟩
   choose f hf using fun n ↦ (hUi n).nonempty
   refine ⟨f, IsInducing.isEmbedding ⟨Eq.symm (eq_bot_of_singletons_open fun n ↦ ⟨U n, hUo n, ?_⟩)⟩⟩
@@ -72,6 +71,6 @@ theorem exists_topology_embedding_nat : ∃ f : ℕ → X, IsEmbedding f := by
 /-- If `X` is an infinite Hausdorff topological space, then there exists an infinite set `s : Set X`
 that has the induced topology is the discrete topology. -/
 theorem exists_infinite_discreteTopology : ∃ s : Set X, s.Infinite ∧ DiscreteTopology s := by
-  rcases exists_topology_embedding_nat X with ⟨f, hf⟩
+  rcases exists_topology_isEmbedding_nat X with ⟨f, hf⟩
   refine ⟨range f, infinite_range_of_injective hf.injective, ?_⟩
   exact hf.toHomeomorph.symm.isEmbedding.discreteTopology
