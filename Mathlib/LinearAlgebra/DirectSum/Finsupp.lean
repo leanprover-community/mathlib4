@@ -80,7 +80,7 @@ variable (ι : Type*) [DecidableEq ι]
 noncomputable def finsuppLeft :
     (ι →₀ M) ⊗[R] N ≃ₗ[R] ι →₀ M ⊗[R] N :=
   congr (finsuppLEquivDirectSum R M ι) (.refl R N) ≪≫ₗ
-    directSumLeft R (fun _ ↦ M) N ≪≫ₗ (finsuppLEquivDirectSum R _ ι).symm
+    directSumLeft R R (fun _ ↦ M) N ≪≫ₗ (finsuppLEquivDirectSum R _ ι).symm
 
 variable {R M N ι}
 
@@ -115,7 +115,7 @@ variable (R M N ι)
 noncomputable def finsuppRight :
     M ⊗[R] (ι →₀ N) ≃ₗ[R] ι →₀ M ⊗[R] N :=
   congr (.refl R M) (finsuppLEquivDirectSum R N ι) ≪≫ₗ
-    directSumRight R M (fun _ : ι ↦ N) ≪≫ₗ (finsuppLEquivDirectSum R _ ι).symm
+    directSumRight R R M (fun _ : ι ↦ N) ≪≫ₗ (finsuppLEquivDirectSum R _ ι).symm
 
 variable {R M N ι}
 
