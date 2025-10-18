@@ -12,6 +12,7 @@ set_option linter.style.multiGoal true
 set_option linter.style.cases true
 set_option linter.unusedSectionVars true
 set_option linter.style.longFile 0
+set_option linter.unusedTactic false
 set_option linter.unusedSectionVars true
 set_option linter.unusedVariables true
 set_option linter.style.commandStart true
@@ -892,7 +893,7 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
           · apply house_nonneg
           · apply house_nonneg
       · apply house_nonneg
-    ·
+    · stop
       apply mul_le_mul
       · apply mul_le_mul
         · apply house_alg_int_leq_pow
@@ -1192,8 +1193,6 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
       left
       rw [← sq_n]
 }
-
-#exit
 
 def applylemma82 [DecidableEq (h7.K →+* ℂ)] :=
     NumberField.house.exists_ne_zero_int_vec_house_le h7.K
@@ -1670,7 +1669,8 @@ lemma iteratedDeriv_vanishes (k : ℕ) :
     (Complex.log h7.α)^(-k : ℤ)) * 0 → deriv^[k] (h7.R q hq0 h2mq) (h7.l q u) = 0 := by {
       apply mul_left_cancel₀
       by_contra H
-      simp only [Int.cast_mul, Int.cast_pow, map_mul, map_pow, map_intCast, zpow_neg, zpow_natCast,
+      simp only [Int.cast_mul, Int.cast_pow, map_mul, map_pow,
+        map_intCast, zpow_neg, zpow_natCast,
         mul_eq_zero, pow_eq_zero_iff', Int.cast_eq_zero, ne_eq, not_or, inv_eq_zero] at H
       rcases H with ⟨h1, h2⟩
       · apply h7.c₁neq0; assumption
@@ -1964,7 +1964,8 @@ lemma sys_coe_bar_r :
     rw [map_pow]
     have : (↑(a q t) + (b q t) • h7.β) ^
       (h7.r q hq0 h2mq) * cexp (h7.ρ q t * (h7.l₀ q hq0 h2mq)) =
-        (↑(a q t) + ↑(b q t) * h7.β)^(h7.r q hq0 h2mq) * cexp (h7.ρ q t * (h7.l₀ q hq0 h2mq)) := by {
+        (↑(a q t) + ↑(b q t) * h7.β)^(h7.r q hq0 h2mq) *
+          cexp (h7.ρ q t * (h7.l₀ q hq0 h2mq)) := by {
       simp_all only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply,
         Fin.coe_modNat, zpow_neg,
         Fin.coe_divNat, Nat.cast_add, Nat.cast_one, nsmul_eq_mul,
@@ -2345,7 +2346,6 @@ lemma ρ_is_int :
           apply IsIntegral.pow
           · rw [← zsmul_eq_mul]; exact isIntegral_c₁γ K α' β' γ'
 
-
 def c1ρ : 𝓞 h7.K := RingOfIntegers.restrict _
   (fun _ => (ρ_is_int h7 q hq0 h2mq)) ℤ
 
@@ -2386,8 +2386,7 @@ lemma eq5zero : 1 ≤ norm
         have : 1 ≤ |↑(h7.c₁)| := by {
           rw [le_abs']
           right
-          exact h7.one_leq_c₁
-        }
+          exact h7.one_leq_c₁}
         refine one_le_pow₀ ?_
         exact mod_cast this
       · apply norm_nonneg
@@ -3694,7 +3693,11 @@ lemma abs_R : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^ (h7.r q hq0 h2mq) *
       sorry
     · apply Complex.norm_exp_le_exp_norm
     · simp only [norm_nonneg]
-    · sorry
+    · apply mul_nonneg
+      · simp only [Real.rpow_natCast]
+        apply pow_nonneg
+        apply h7.zero_leq_c₄
+      · positivity
   · apply sum_le_sum
     intros i hi
     apply mul_le_mul
@@ -3751,7 +3754,6 @@ lemma abs_R : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^ (h7.r q hq0 h2mq) *
 
 include hz in
 lemma norm_sub_l0_lower_bound_on_sphere:
-
     h7.m * (h7.r q hq0 hq2m : ℝ) / (q : ℝ) ≤ ‖z - (h7.l₀ q hq0 hq2m : ℂ)‖ := by
   calc _ = (h7.m * (1 + (h7.r q hq0 hq2m : ℝ) / (q : ℝ)) - h7.m : ℝ) := by ring
        _ ≤ ‖z‖ - ‖(h7.l₀ q hq0 hq2m : ℂ)‖ := by
@@ -3832,7 +3834,10 @@ lemma prod_dist_eq' :
     sorry
   · intro k hk
     simp
+    intro H
+    simp_all only [Finset.le_eq_subset]
     sorry
+
 
 lemma prod_dist_le' (m l₀ : ℕ) (hl : l₀ < m) :
     ∏ k ∈ (Finset.range m \ { l₀ }), Int.natAbs (l₀ - k) ≤ (m - 1).factorial := by
@@ -3856,8 +3861,14 @@ lemma abs_denom
 
     _ ≤ (c₁₁) ^ (h7.r q hq0 h2mq) *
         (q / (h7.r q hq0 h2mq)) ^ (h7.m * h7.r q hq0 h2mq) := ?_
-  · sorry
-  · sorry
+  · simp only [zpow_neg, zpow_natCast, Complex.norm_mul, norm_inv, norm_pow, norm_prod,
+    Complex.norm_div, le_refl]
+  · apply mul_le_mul
+    · sorry
+    · rw [norm_prod]
+      sorry
+    · sorry
+    · sorry
   · sorry
 
 
@@ -4061,66 +4072,22 @@ lemma use6and8 :
   · rw [← this]
     sorry
 
-def c₁₅ : ℝ := c₁₄ --* c₅
+def c₁₅ : ℝ := c₁₄ * h7.c₅ q hq0 h2mq
 
 -- include α β σ hq0 h2mq hd hirr htriv K σ α' β' γ' habc h2mq u t in
--- theorem main : r ^ ((r - 3 * (h)) / 2) ≥ c₁₅ K α' β' γ' q ^ r := by
---   --have := rgeqn α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
---   sorry
---   --use r_geq_n K α β hirr htriv σ hd α' β' γ' habc q u t hq0 h2mq
+theorem main : (h7.r q hq0 h2mq) ^ (((h7.r q hq0 h2mq) - 3 * (h7.h)) / 2) ≥
+   h7.c₁₅ q hq0 h2mq ^ (h7.r q hq0 h2mq) := by
+  --have := rgeqn α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq
+  sorry
+  --use r_geq_n K α β hirr htriv σ hd α' β' γ' habc q u t hq0 h2mq
 
--- lemma use5 : r^((r - 3 * (h)) / 2) < c₁₅ K α' β' γ' q ^r := by
---   calc _ < c₁₄^r * (c₅) ^r := ?_
---        _ = (c₁₅ K α' β' γ' q) ^r := ?_
---   · sorry
---   · rw [← mul_pow]
---     simp only [c₁₅]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+lemma use5 : (h7.r q hq0 h2mq)^(((h7.r q hq0 h2mq) - 3 * (h7.h)) / 2) <
+    (h7.c₁₅ q hq0 h2mq) ^ (h7.r q hq0 h2mq) := by
+  calc _ < c₁₄^(h7.r q hq0 h2mq) * (h7.c₅ q hq0 h2mq) ^(h7.r q hq0 h2mq) := ?_
+       _ = (h7.c₁₅ q hq0 h2mq) ^(h7.r q hq0 h2mq) := ?_
+  · sorry
+  · rw [← mul_pow]
+    simp only [c₁₅]
 
 --include hα hβ α β σ hq0 h2mq hd hirr htriv K σ h2mq t q in
 theorem hilbert7 (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ β)
