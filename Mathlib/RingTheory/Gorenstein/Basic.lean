@@ -253,15 +253,55 @@ instance (n : ℕ) (M N : ModuleCat.{v'} S) : IsScalarTower R S (Ext M N n) wher
     rw [Algebra.smul_def, ← smul_smul]
     rfl
 
-theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [Module.Flat R S] (M N : ModuleCat.{v} R)
-    (n : ℕ) : IsBaseChange S ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n) := by
-  induction n generalizing M N
-  · -- linearEquiv₀
-    -- (ModuleCat.extendScalars'.{v, v'} R S).mapLinearMap R
-    --((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n)
-    sorry
-  · rename_i n ih
+instance (M N : ModuleCat.{v'} S) : IsScalarTower R S (M ⟶ N) where
+  smul_assoc r s x := by
+    rw [Algebra.smul_def, ← smul_smul]
+    rfl
 
+theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module.Flat R S]
+    (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N] (n : ℕ) :
+    IsBaseChange S ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n) := by
+  induction n generalizing M N
+  · have isb : IsBaseChange S ((ModuleCat.extendScalars'.{v, v'} R S).mapLinearMap R
+      (X := M) (Y := N)) := by
+      sorry
+    convert ((IsBaseChange.ofEquiv linearEquiv₀).comp isb).comp
+      (IsBaseChange.ofEquiv linearEquiv₀.symm)
+    ext x
+    rcases (Ext.mk₀_bijective M N).2 x with ⟨y, hy⟩
+    simp [← hy, Ext.mapExt_mk₀_eq_mk₀_map, linearEquiv₀, addEquiv₀, homEquiv₀]
+  · rename_i n ih _ _
+    rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
+    let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
+      (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
+    have surjf : Function.Surjective f := by simpa [f] using hf'
+    let T : ShortComplex (ModuleCat.{v} R) := {
+      f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
+      g := ModuleCat.ofHom.{v} f
+      zero := by
+        ext x
+        simp }
+    have S_exact' : Function.Exact (ConcreteCategory.hom T.f) (ConcreteCategory.hom T.g) := by
+      intro x
+      simp [T]
+    have T_exact : T.ShortExact := {
+      exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mpr S_exact'
+      mono_f := (ModuleCat.mono_iff_injective T.f).mpr (LinearMap.ker f).injective_subtype
+      epi_g := (ModuleCat.epi_iff_surjective T.g).mpr surjf}
+    let _ : Module.Finite R T.X₂ := by
+      simp [T, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
+    let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
+    let _ : Module.Free R T.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
+    have proj := ModuleCat.projective_of_categoryTheory_projective T.X₂
+    let TS := (T.map (ModuleCat.extendScalars'.{v, v'} R S))
+    have TS_exact : TS.ShortExact := T_exact.map_of_exact (ModuleCat.extendScalars'.{v, v'} R S)
+    let _ : Module.Free S TS.X₂ := by
+      simp only [ModuleCat.extendScalars', ShortComplex.map_X₂, ModuleCat.ExtendScalars'.obj', TS]
+      exact Module.Free.of_equiv (Shrink.linearEquiv S (TensorProduct R S T.X₂)).symm
+    have proj' := ModuleCat.projective_of_categoryTheory_projective TS.X₂
+    --Define the `LinearMap`s
+    --Use `IsBaseChange.of_exact`
+    --Verify conditions (proof exactness)
     sorry
 
 noncomputable def ModuleCat.iso_extendScalars' {M : ModuleCat.{v} R} {MS : ModuleCat.{v'} S}
@@ -288,13 +328,12 @@ noncomputable def Ext.isBaseChange_map [Module.Flat R S] {M N : ModuleCat.{v} R}
 
 --This is false alarm
 set_option linter.unusedSectionVars false in
-theorem Ext.isBaseChange [Module.Flat R S] (M N : ModuleCat.{v} R) (MS NS : ModuleCat.{v'} S)
+theorem Ext.isBaseChange [IsNoetherianRing R] [Module.Flat R S] (M N : ModuleCat.{v} R)
+    [Module.Finite R M] [Module.Finite R N] (MS NS : ModuleCat.{v'} S)
     (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f) (g : N →ₗ[R] NS) (isb2 : IsBaseChange S g) (n : ℕ) :
-    IsBaseChange S (Ext.isBaseChange_map.{v, v'} S f isb1 g isb2 n) := by
-  let isb := Ext.isBaseChange_aux.{v, v'} S M N n
-  apply IsBaseChange.of_equiv (isb.equiv.trans (isBaseChange_map_aux S f isb1 g isb2 n))
-  intro x
-  simp [isBaseChange_map, IsBaseChange.equiv_tmul]
+    IsBaseChange S (Ext.isBaseChange_map.{v, v'} S f isb1 g isb2 n) :=
+  (Ext.isBaseChange_aux.{v, v'} S M N n).comp
+  (IsBaseChange.ofEquiv (isBaseChange_map_aux S f isb1 g isb2 n))
 
 end CategoryTheory.Abelian
 
