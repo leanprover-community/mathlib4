@@ -48,7 +48,7 @@ quotient monoid, isomorphism theorems
 -/
 
 
-variable (M : Type*) {N : Type*} {P : Type*}
+variable (S M : Type*) {N : Type*} {P : Type*}
 
 open Function Setoid
 
@@ -57,6 +57,19 @@ preserves addition. -/
 structure AddCon [Add M] extends Setoid M where
   /-- Additive congruence relations are closed under addition -/
   add' : ∀ {w x y z}, r w x → r y z → r (w + y) (x + z)
+
+/-- A congruence relation that preserves additive action. -/
+structure VAddCon [VAdd S M] extends Setoid M where
+  /-- A `VAddCon` is closed under additive action. -/
+  vadd (s : S) {x y} : r x y → r (s +ᵥ x) (s +ᵥ y)
+
+/-- A congruence relation that preserves scalar multiplication. -/
+@[to_additive] structure SMulCon [SMul S M] extends Setoid M where
+  /-- A `SMulCon` is closed under scalar multiplication. -/
+  smul (s : S) {x y} : r x y → r (s • x) (s • y)
+
+/-- A congruence relation that preserves addition and scalar multiplication. -/
+structure AddSMulCon [Add M] [SMul S M] extends AddCon M, SMulCon S M
 
 /-- A congruence relation on a type with a multiplication is an equivalence relation which
 preserves multiplication. -/
@@ -70,6 +83,9 @@ add_decl_doc AddCon.toSetoid
 
 /-- The equivalence relation underlying a multiplicative congruence relation. -/
 add_decl_doc Con.toSetoid
+
+/-- The `SMulCon` underlying an `AddSMulCon`. -/
+add_decl_doc AddSMulCon.toSMulCon
 
 variable {M}
 
@@ -537,7 +553,7 @@ protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
   | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul (Con.pow c n h) h
 
 @[to_additive]
-instance one [MulOneClass M] (c : Con M) : One c.Quotient where
+instance one [Mul M] [One M] (c : Con M) : One c.Quotient where
   -- Using Quotient.mk'' here instead of c.toQuotient
   -- since c.toQuotient is not reducible.
   -- This would lead to non-defeq diamonds since this instance ends up in
@@ -558,6 +574,9 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 an `AddSemigroup`. -/]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient := fast_instance%
   Function.Surjective.semigroup _ Quotient.mk''_surjective fun _ _ => rfl
+
+@[to_additive] instance {M} [CommMagma M] (c : Con M) : CommMagma c.Quotient := fast_instance%
+  Function.Surjective.commMagma _ Quotient.mk''_surjective fun _ _ => rfl
 
 /-- The quotient of a commutative semigroup by a congruence relation is a semigroup. -/
 @[to_additive /-- The quotient of an `AddCommSemigroup` by an additive congruence relation is
@@ -713,3 +732,62 @@ theorem induction_on_units {p : Units c.Quotient → Prop} (u : Units c.Quotient
 end Units
 
 end Con
+
+variable {S}
+
+namespace SMulCon
+
+/-- The quotient by a congruence relation preserving scalar multiplication. -/
+@[to_additive /-- The quotient by a congruence relation preserving additive action. -/]
+protected def Quotient [SMul S M] (c : SMulCon S M) : Type _ := Quotient c.toSetoid
+
+@[to_additive] instance [SMul S M] (c : SMulCon S M) : SMul S c.Quotient where
+  smul s := Quotient.map (s • ·) (@c.smul s)
+
+@[to_additive] instance [SMul S M] [One M] (c : SMulCon S M) : One c.Quotient where
+  one := ⟦1⟧
+
+instance [SMul S M] [Zero M] (c : SMulCon S M) : Zero c.Quotient where
+  zero := ⟦0⟧
+
+end SMulCon
+
+namespace AddSMulCon
+
+/-- The quotient by a congruence relation preserving addition and scalar multiplication. -/
+protected def Quotient [Add M] [SMul S M] (c : AddSMulCon S M) : Type _ := Quotient c.toSetoid
+
+instance [SMul S M] [Add M] (c : AddSMulCon S M) : SMul S c.Quotient :=
+  inferInstanceAs (SMul S c.toSMulCon.Quotient)
+
+instance [SMul S M] [Zero M] [Add M] (c : AddSMulCon S M) : Zero c.Quotient where
+  zero := ⟦0⟧
+
+instance [SMul S M] [Add M] (c : AddSMulCon S M) : Add c.Quotient :=
+  inferInstanceAs (Add c.toAddCon.Quotient)
+
+instance [SMul S M] [AddZeroClass M] (c : AddSMulCon S M) : AddZeroClass c.Quotient :=
+  inferInstanceAs (AddZeroClass c.toAddCon.Quotient)
+
+instance [SMul S M] [AddCommMagma M] (c : AddSMulCon S M) : AddCommMagma c.Quotient :=
+  inferInstanceAs (AddCommMagma c.toAddCon.Quotient)
+
+instance [SMul S M] [AddSemigroup M] (c : AddSMulCon S M) : AddSemigroup c.Quotient :=
+  inferInstanceAs (AddSemigroup c.toAddCon.Quotient)
+
+instance [SMul S M] [AddCommSemigroup M] (c : AddSMulCon S M) : AddCommSemigroup c.Quotient :=
+  inferInstanceAs (AddCommSemigroup c.toAddCon.Quotient)
+
+instance [SMul S M] [AddMonoid M] (c : AddSMulCon S M) : AddMonoid c.Quotient :=
+  inferInstanceAs (AddMonoid c.toAddCon.Quotient)
+
+instance [SMul S M] [AddCommMonoid M] (c : AddSMulCon S M) : AddCommMonoid c.Quotient :=
+  inferInstanceAs (AddCommMonoid c.toAddCon.Quotient)
+
+instance [SMul S M] [AddGroup M] (c : AddSMulCon S M) : AddGroup c.Quotient :=
+  inferInstanceAs (AddGroup c.toAddCon.Quotient)
+
+instance [SMul S M] [AddCommGroup M] (c : AddSMulCon S M) : AddCommGroup c.Quotient :=
+  inferInstanceAs (AddCommGroup c.toAddCon.Quotient)
+
+end AddSMulCon
