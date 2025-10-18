@@ -503,8 +503,8 @@ theorem diag_isDiag (a : α) : IsDiag (diag a) :=
 def diagSet : Set (Sym2 α) :=
   Set.range diag
 
-theorem isDiag_iff_mem_diagSet (z : Sym2 α) : IsDiag z ↔ z ∈ diagSet :=
-  ⟨z.inductionOn fun a b (h : a = b) ↦ ⟨a, h ▸ rfl⟩, fun ⟨i, hi⟩ ↦ hi ▸ diag_isDiag i⟩
+theorem isDiag_iff_mem_diagSet (z : Sym2 α) : z.IsDiag ↔ z ∈ diagSet :=
+  ⟨z.ind fun a b (h : a = b) ↦ ⟨a, h ▸ rfl⟩, fun ⟨_, h⟩ ↦ h ▸ rfl⟩
 
 @[deprecated (since := "2025-10-14")] alias isDiag_iff_mem_range_diag := isDiag_iff_mem_diagSet
 @[deprecated (since := "2025-10-14")] alias ⟨IsDiag.mem_range_diag, _⟩ := isDiag_iff_mem_diagSet
@@ -512,9 +512,8 @@ theorem isDiag_iff_mem_diagSet (z : Sym2 α) : IsDiag z ↔ z ∈ diagSet :=
 theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b :=
   isDiag_iff_mem_diagSet _ |>.symm
 
-theorem diagSet_eq_setOf_isDiag : diagSet = { z : Sym2 α | z.IsDiag } := by
-  ext z
-  exact isDiag_iff_mem_diagSet z |>.symm
+theorem diagSet_eq_setOf_isDiag : diagSet = { z : Sym2 α | z.IsDiag } :=
+  Set.ext fun _ ↦ isDiag_iff_mem_diagSet _ |>.symm
 
 theorem diagSet_compl_eq_setOf_not_isDiag : diagSetᶜ = { z : Sym2 α | ¬z.IsDiag } :=
   congrArg _ diagSet_eq_setOf_isDiag
