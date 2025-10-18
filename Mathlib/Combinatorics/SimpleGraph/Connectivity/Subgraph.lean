@@ -129,12 +129,11 @@ variable (C : G.ConnectedComponent)
 def toSubgraph : G.Subgraph :=
   Subgraph.induce ⊤ C.supp
 
-lemma toSubgraph_coe_eq_toSimpleGraph :
-    C.toSubgraph.coe = C.toSimpleGraph :=
+lemma coe_toSubgraph_eq_toSimpleGraph : C.toSubgraph.coe = C.toSimpleGraph :=
   induce_eq_coe_induce_top C.supp |>.symm
 
 lemma toSubgraph_connected : C.toSubgraph.Connected :=
-  ⟨C.toSubgraph_coe_eq_toSimpleGraph ▸ C.connected_toSimpleGraph⟩
+  ⟨C.coe_toSubgraph_eq_toSimpleGraph ▸ C.connected_toSimpleGraph⟩
 
 end ConnectedComponent
 
