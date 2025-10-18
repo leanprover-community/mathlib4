@@ -402,3 +402,27 @@ theorem Monotone.map_liminf_of_continuousAt {f : R → S} (f_incr : Monotone f) 
   f_incr.map_limsInf_of_continuousAt f_cont cobdd bdd_below
 
 end Monotone
+
+section
+
+variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [DenselyOrdered α]
+  [CompleteLattice β] {f : α → β}
+
+lemma Antitone.liminf_nhdsGT_eq_iSup₂_of_exists_gt (hf : Antitone f) (a : α) (hb : ∃ b, a < b) :
+    (𝓝[>] a).liminf f = ⨆ r > a, f r := by
+  rw [(nhdsGT_basis_of_exists_gt hb).liminf_eq_iSup_iInf]
+  refine le_antisymm (iSup₂_mono' fun r hr ↦ ?_) (iSup₂_mono' fun r hr ↦ ?_)
+  · obtain ⟨b, hb⟩ := exists_between hr
+    use b, hb.1
+    exact iInf₂_le b hb
+  · use r, hr
+    apply le_iInf
+    simp only [Set.mem_Ioo, le_iInf_iff, and_imp]
+    intro i hi0 hir
+    exact hf hir.le
+
+lemma liminf_nhdsGT_eq_iSup₂ [NoMaxOrder α] (hf : Antitone f) (a : α) :
+    (𝓝[>] a).liminf f = ⨆ r > a, f r :=
+  hf.liminf_nhdsGT_eq_iSup₂_of_exists_gt a (exists_gt a)
+
+end
