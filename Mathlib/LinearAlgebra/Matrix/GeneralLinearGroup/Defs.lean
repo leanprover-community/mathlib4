@@ -190,12 +190,8 @@ open scoped Kronecker
 protected def kronecker (x : GL n R) (y : GL m R) : GL (n × m) R where
   val := x ⊗ₖ y
   inv := ↑x⁻¹ ⊗ₖ ↑y⁻¹
-  val_inv := by
-    simp only [← mul_kronecker_mul, Units.mul_inv, zero_mul, implies_true, mul_zero, mul_one,
-      kroneckerMap_one_one]
-  inv_val := by
-    simp only [← mul_kronecker_mul, Units.inv_mul, zero_mul, implies_true, mul_zero, mul_one,
-      kroneckerMap_one_one]
+  val_inv := by simp only [← mul_kronecker_mul, Units.mul_inv, one_kronecker_one]
+  inv_val := by simp only [← mul_kronecker_mul, Units.inv_mul, one_kronecker_one]
 
 theorem _root_.Matrix.IsUnit.kronecker {x : Matrix n n R} {y : Matrix m m R}
     (hx : IsUnit x) (hy : IsUnit y) : IsUnit (x ⊗ₖ y) :=
