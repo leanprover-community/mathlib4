@@ -151,6 +151,12 @@ noncomputable def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _
   letI dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
   @Inner.inner ℝ EB _ (dψ v) (dψ w)
 
+noncomputable def g_comp (i : B) :
+  B × TangentBundle IB B × TangentBundle IB B → ℝ :=
+  fun x =>
+    let f := Bundle.TotalSpace.snd ∘ tangentMap IB 𝓘(ℝ, EB) (extChartAt IB i)
+    ((fun x ↦ @Inner.inner ℝ EB _ x.1 x.2) ∘ Prod.map f f) (x.2)
+
 noncomputable def G (i : B) (x : B) (v : TangentSpace IB x) :
   TangentBundle IB B → ℝ
 | (⟨y, w⟩) =>
@@ -158,7 +164,7 @@ noncomputable def G (i : B) (x : B) (v : TangentSpace IB x) :
       (Bundle.TotalSpace.snd (tangentMap IB 𝓘(ℝ, EB) (extChartAt IB i) ⟨x, v⟩))
       (Bundle.TotalSpace.snd (tangentMap IB 𝓘(ℝ, EB) (extChartAt IB i) ⟨y, w⟩))
 
-theorem contMDiff_G (i p x : B) (v : TangentSpace IB x) :
+theorem contMDiff_G (i x : B) (v : TangentSpace IB x) :
   ContMDiff (IB.tangent) (𝓘(ℝ, ℝ)) ω (G i x v) := by
 
   have : ContMDiffOn IB 𝓘(ℝ, EB) ω (extChartAt IB i) (chartAt HB i).source :=
@@ -178,12 +184,27 @@ theorem contMDiff_G (i p x : B) (v : TangentSpace IB x) :
   have h_sndOn : ContMDiffOn ((𝓘(ℝ, EB)).tangent) (𝓘(ℝ, EB)) ⊤
     (fun p : TangentBundle (𝓘(ℝ, EB)) EB => Bundle.TotalSpace.snd p) ⊤ := fun x a ↦ h_snd x
 
-  -- So far we have (p, v) ↦ d(ψᵢ)ₚ · p is smooth
+  -- So far we have (p, v) ↦ d(ψᵢ)ₚ(v) is smooth
   have h_fiber : ContMDiffOn IB.tangent 𝓘(ℝ, EB) ω
     ((fun p ↦ p.snd) ∘ tangentMapWithin IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) (chartAt HB i).source)
     (TotalSpace.proj ⁻¹' (chartAt HB i).source) :=
       ContMDiffOn.comp h_sndOn h_tangent (fun ⦃a⦄ a ↦ trivial)
 
+  have h_inneq : ContDiff ℝ ω fun (w : EB) ↦ @Inner.inner ℝ EB _ v w := by
+    exact contDiff_inner.comp (ContDiff.prodMk contDiff_const contDiff_id)
+  have h_inner : ContMDiff 𝓘(ℝ, EB) 𝓘(ℝ, ℝ) ⊤ fun (w : EB) ↦ @Inner.inner ℝ EB _ v w := by
+    apply ContDiff.contMDiff
+    exact h_inneq
+  have h_innerOn : ContMDiffOn 𝓘(ℝ, EB) 𝓘(ℝ, ℝ) ⊤ (fun (w : EB) ↦ @Inner.inner ℝ EB _ v w) ⊤ :=
+    fun x a ↦ h_inner x
+
+  have : ContMDiffOn IB.tangent 𝓘(ℝ, ℝ) ω
+   ((fun w ↦ @Inner.inner ℝ EB _ v w) ∘
+    (fun p ↦ p.snd) ∘
+    tangentMapWithin IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) (chartAt HB i).source)
+    (TotalSpace.proj ⁻¹' (chartAt HB i).source) :=
+      ContMDiffOn.comp h_innerOn h_fiber (fun ⦃a⦄ a ↦ trivial)
+  unfold G
   exact sorry
 
 example : ContDiff ℝ ω fun (p : EB × EB) ↦ @Inner.inner ℝ EB _ p.1 p.2 := contDiff_inner
@@ -207,6 +228,14 @@ lemma g_add' (i p : B) (x y v : TangentSpace IB p) :
   rw [h_map]
   exact @inner_add_right ℝ EB _ _ _ _ _ _
 
+lemma g_add'' (i p : B) (x y v : TangentSpace IB p) :
+  g i p (x + y) v = g i p x v + g i p y v := by
+  unfold g
+  let dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
+  have h_map : dψ (x + y) = dψ x + dψ y := ContinuousLinearMap.map_add dψ x y
+  rw [h_map]
+  exact @inner_add_left ℝ EB _ _ _ _ _ _
+
 lemma g_smul' (i p : B) (x v : TangentSpace IB p) (m : ℝ) :
   g i p v (m • x) = (RingHom.id ℝ) m • g i p v x := by
   unfold g
@@ -217,13 +246,21 @@ lemma g_smul' (i p : B) (x v : TangentSpace IB p) (m : ℝ) :
     @inner_smul_right_eq_smul ℝ EB _ _ _ _ _ _ _ _ _ _ (dψ v) (dψ x) m
   exact this
 
-omit [IsManifold IB ω B] in
+lemma g_smul'' (i p : B) (x v : TangentSpace IB p) (m : ℝ) :
+  g i p (m • v) x = (RingHom.id ℝ) m • g i p v x := by
+  unfold g
+  let dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
+  have : dψ (m • v) = m • dψ v := ContinuousLinearMap.map_smul_of_tower dψ m v
+  rw [this]
+  have : @Inner.inner ℝ EB _ (m • (dψ v)) (dψ x) = m • @Inner.inner ℝ EB _ (dψ v) (dψ x) :=
+    @inner_smul_left_eq_smul ℝ EB _ _ _ _ _ _ _ _ _ _ _ (dψ v) (dψ x) m
+  exact this
+
 lemma g_symm (i p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
   g i p v w = g i p w v := by
   unfold g
   rw [real_inner_comm]
 
-omit [IsManifold IB ω B] in
 lemma g_nonneg (i p : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
   0 ≤ g i p v v := by
   unfold g
@@ -245,6 +282,42 @@ lemma g_pos (i p : B) (hp : p ∈ (extChartAt IB i).source)
     have h2 : inv v = inv 0 := by simp [h, h1]
     exact hv (inj h2)
   exact real_inner_self_pos.mpr hx
+
+lemma g_cont (i p : B) (v : TangentSpace IB p) :
+  Continuous (fun w ↦ g i p v w) := by
+  unfold g
+
+  have continuous_inner_left {v : EB} : Continuous (fun w ↦ @Inner.inner ℝ EB _ v w) :=
+    continuous_inner.comp (continuous_const.prodMk continuous_id)
+
+  have h_desired : Continuous fun w ↦
+  @Inner.inner ℝ EB _ ((mfderiv IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) p) v)
+    ((mfderiv IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) p) w) := by
+    exact continuous_inner_left |>.comp (mfderiv IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) p).continuous
+
+  exact h_desired
+
+noncomputable
+def g_bilinear (f : SmoothPartitionOfUnity B IB B) (i p : B) :
+    W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p :=
+  ContinuousLinearMap.mk
+    { toFun := fun v ↦
+        ContinuousLinearMap.mk
+          { toFun := fun w ↦ g i p v w
+            map_add' := fun x y ↦ g_add' i p x y v
+            map_smul' := fun m x ↦ g_smul' i p x v m }
+          (g_cont i p v)
+      map_add' := fun x y ↦ by
+                    apply ContinuousLinearMap.ext
+                    intro w
+                    change g i p (x + y) w = g i p x w + g i p y w
+                    exact g_add'' i p x y w
+      map_smul' := fun m x ↦ by
+                    apply ContinuousLinearMap.ext
+                    intro w
+                    change g i p (m • x) w = m • g i p x w
+                    exact g_smul'' i p w x m }
+    (by sorry : Continuous _)
 
 variable [FiniteDimensional ℝ EB] [IsManifold IB ω B] [SigmaCompactSpace B] [T2Space B]
 
@@ -284,8 +357,6 @@ lemma g_global_smul' (f : SmoothPartitionOfUnity B IB B) (p : B) (x v : TangentS
     Eq.symm (smul_finsum ((RingHom.id ℝ) m) fun i ↦ (f i) p * g i p v x)
   exact this
 
-omit [IsManifold IB ω B] [FiniteDimensional ℝ EB] [SigmaCompactSpace B]
-     [T2Space B] in
 lemma g_global_symm (f : SmoothPartitionOfUnity B IB B)
         (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
   g_global f p v w = g_global f p w v := by
@@ -358,10 +429,14 @@ lemma g_global_bilinear_smooth (f : SmoothPartitionOfUnity B IB B) :
   · simp
     exact foo f x
 
+example : (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) =
+  fun b ↦ (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ]
+          ((@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ] Trivial B ℝ b)
+   := rfl
+
 noncomputable
 def g_global_smooth_section
-    (f : SmoothPartitionOfUnity B IB B)
-    (hf : f.IsSubordinate fun x ↦ (chartAt HB x).source) :
+    (f : SmoothPartitionOfUnity B IB B) :
     ContMDiffSection IB (EB →L[ℝ] EB →L[ℝ] ℝ) ⊤
       (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) :=
   { toFun := g_global_bilinear f
@@ -377,5 +452,5 @@ def riemannian_metric_exists
     symm := g_global_symm f
     pos := g_global_pos f (by simpa only [extChartAt_source] using hf)
     isVonNBounded := sorry
-    contMDiff := (g_global_smooth_section f hf).contMDiff_toFun
+    contMDiff := (g_global_smooth_section f).contMDiff_toFun
      }
