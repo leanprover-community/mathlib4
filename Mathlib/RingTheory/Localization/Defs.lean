@@ -292,19 +292,17 @@ theorem mk'_pow (x : R) (y : M) (n : ℕ) : mk' S (x ^ n) (y ^ n) = mk' S x y ^ 
 
 variable (M)
 
-theorem mk'_surjective (z : S) : ∃ (x : _) (y : M), mk' S x y = z :=
+theorem mk'_surjective : Surjective fun ((r, m) : R × M) ↦ mk' S r m := fun z ↦
   let ⟨r, hr⟩ := IsLocalization.surj _ z
-  ⟨r.1, r.2, (eq_mk'_iff_mul_eq.2 hr).symm⟩
+  ⟨r, (eq_mk'_iff_mul_eq.2 hr).symm⟩
 
-variable (S)
-
+variable (S) in
 /-- The localization of a `Fintype` is a `Fintype`. Cannot be an instance. -/
 noncomputable def fintype' [Fintype R] : Fintype S :=
   have := Classical.propDecidable
-  Fintype.ofSurjective (Function.uncurry <| IsLocalization.mk' S) fun a =>
-    Prod.exists'.mpr <| IsLocalization.mk'_surjective M a
+  .ofSurjective (Function.uncurry <| IsLocalization.mk' S) <| IsLocalization.mk'_surjective M
 
-variable {M S}
+variable {M}
 
 /-- Localizing at a submonoid with 0 inside it leads to the trivial ring. -/
 def uniqueOfZeroMem (h : (0 : R) ∈ M) : Unique S :=
