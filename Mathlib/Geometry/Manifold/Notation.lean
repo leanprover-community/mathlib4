@@ -353,16 +353,19 @@ where
   fromRealInterval : TermElabM Expr := do
     let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
       | throwError "`{e}` is not a coercion of a set to a type"
+    -- We don't use `match_expr` here to avoid importing `Set.Icc`.
+    -- Note that `modelWithCornersEuclideanHalfSpace` is also not imported.
     match e with
     | mkApp4 (.const `Set.Icc _) α _ _x _y =>
       if ← isDefEq α q(ℝ) then
         -- We need not check if `x < y` is a fact in the local context: Lean will verify this
         -- itself when trying to synthesize a ChartedSpace instance.
         mkAppOptM `modelWithCornersEuclideanHalfSpace #[q(1 : ℕ), none]
-      else throwError "`{e}` is a closed interval of type {α}, which is not definitially equal to ℝ"
+      else throwError "`{e}` is a closed interval of type `{α}`, which is not definitionally equal to ℝ"
     | _ => throwError "`{e}` is not a closed real interval"
   /-- Attempt to find a model with corners on the upper half plane in complex space -/
   fromUpperHalfPlane : TermElabM Expr := do
+    -- We don't use `match_expr` to avoid importing `UpperHalfPlane`.
     if (← instantiateMVars e).cleanupAnnotations.isConstOf `UpperHalfPlane then
       let c ← Term.exprToSyntax (mkConst `Complex)
       Term.elabTerm (← `(𝓘($c))) none
