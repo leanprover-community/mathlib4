@@ -45,43 +45,34 @@ section
 variable [AddCommMonoid G]
 
 /-- Divide by `of' k G g`, discarding terms not divisible by this. -/
-noncomputable def divOf [IsCancelAdd G] (x : k[G]) (g : G) : k[G] :=
-  -- note: comapping by `+ g` has the effect of subtracting `g` from every element in
-  -- the support, and discarding the elements of the support from which `g` can't be subtracted.
-  -- If `G` is an additive group, such as `ℤ` when used for `LaurentPolynomial`,
-  -- then no discarding occurs.
-  @Finsupp.comapDomain.addMonoidHom _ _ _ _ (g + ·) (add_right_injective g) x
+noncomputable def divOf [IsCancelAdd G] (x : k[G]) (g : G) : k[G] where
+  coeff := x.coeff.comapDomain (g + ·) (add_right_injective g).injOn
 
 local infixl:70 " /ᵒᶠ " => divOf
 
 section divOf
 variable [IsCancelAdd G]
 
+@[simp] lemma coeff_divOf (g : G) (x : k[G]) (g' : G) : (x /ᵒᶠ g).coeff g' = x.coeff (g + g') := rfl
+
+@[deprecated (since := "2025-10-14")] alias divOf_apply := coeff_divOf
+
 @[simp]
-theorem divOf_apply (g : G) (x : k[G]) (g' : G) : (x /ᵒᶠ g) g' = x (g + g') :=
+theorem support_coeff_divOf (g : G) (x : k[G]) :
+    (x /ᵒᶠ g).coeff.support = x.coeff.support.preimage (g + ·) (add_right_injective g).injOn :=
   rfl
 
-@[simp]
-theorem support_divOf (g : G) (x : k[G]) :
-    (x /ᵒᶠ g).support =
-      x.support.preimage (g + ·) (Function.Injective.injOn (add_right_injective g)) :=
-  rfl
+@[deprecated (since := "2025-10-14")] alias support_divOf := support_coeff_divOf
 
 @[simp]
-theorem zero_divOf (g : G) : (0 : k[G]) /ᵒᶠ g = 0 :=
-  map_zero (Finsupp.comapDomain.addMonoidHom _)
+theorem zero_divOf (g : G) : (0 : k[G]) /ᵒᶠ g = 0 := by ext; simp
 
 @[simp]
-theorem divOf_zero (x : k[G]) : x /ᵒᶠ 0 = x := by
-  ext
-  simp only [AddMonoidAlgebra.divOf_apply, zero_add]
+theorem divOf_zero (x : k[G]) : x /ᵒᶠ 0 = x := by ext; simp
 
-theorem add_divOf (x y : k[G]) (g : G) : (x + y) /ᵒᶠ g = x /ᵒᶠ g + y /ᵒᶠ g :=
-  map_add (Finsupp.comapDomain.addMonoidHom _) _ _
+theorem add_divOf (x y : k[G]) (g : G) : (x + y) /ᵒᶠ g = x /ᵒᶠ g + y /ᵒᶠ g := by ext; simp
 
-theorem divOf_add (x : k[G]) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ b := by
-  ext
-  simp only [AddMonoidAlgebra.divOf_apply, add_assoc]
+theorem divOf_add (x : k[G]) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ b := by ext; simp [add_assoc]
 
 /-- A bundled version of `AddMonoidAlgebra.divOf`. -/
 @[simps]
@@ -98,6 +89,7 @@ noncomputable def divOfHom : Multiplicative G →* AddMonoid.End k[G] where
 
 theorem of'_mul_divOf (a : G) (x : k[G]) : of' k G a * x /ᵒᶠ a = x := by
   ext
+  simp
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, single_mul_apply_aux, one_mul]
   intro c hc
   exact add_right_inj _
