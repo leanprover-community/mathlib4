@@ -11,6 +11,7 @@ import Batteries.Tactic.Trans
 import Batteries.Util.LibraryNote
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
+import Mathlib.Tactic.Linter.UnusedAssumptionInType
 
 /-!
 # Basic logic properties
@@ -137,8 +138,10 @@ protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
 
 /-! ### Declarations about `not` -/
 
+@[nolint decidableClassical]
 alias dec_em := Decidable.em
 
+@[nolint decidableClassical]
 theorem dec_em' (p : Prop) [Decidable p] : ¬p ∨ p := (dec_em p).symm
 
 alias em := Classical.em
@@ -196,6 +199,7 @@ theorem not_ne_iff {α : Sort*} {a b : α} : ¬a ≠ b ↔ a = b := not_not
 
 theorem of_not_imp : ¬(a → b) → a := open scoped Classical in Decidable.of_not_imp
 
+@[nolint decidableClassical]
 alias Not.decidable_imp_symm := Decidable.not_imp_symm
 
 theorem Not.imp_symm : (¬a → b) → ¬b → a := open scoped Classical in Not.decidable_imp_symm
