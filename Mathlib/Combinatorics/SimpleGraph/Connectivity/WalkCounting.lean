@@ -122,7 +122,7 @@ open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
   ext p
-  simp [finsetWalkLengthLT, mem_coe, mem_finsetWalkLength_iff]
+  simp [finsetWalkLengthLT, mem_finsetWalkLength_iff]
 
 variable {G} in
 theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
