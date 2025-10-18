@@ -1,3 +1,5 @@
+import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
@@ -218,17 +220,231 @@ Hint: Additional diagnostic information may be available using the `set_option d
 
 end
 
--- Inferring a model with corners on a space of linear maps between normed spaces
--- is currently not supported.
+-- Inferring a model with corners on a space of continuous linear maps between normed spaces
+section
+
 variable {f : M → E →L[𝕜] E'} in
-/-- error: Could not find a model with corners for `E →L[𝕜] E'` -/
+/-- info: MDifferentiable I 𝓘(𝕜, E →L[𝕜] E') f : Prop -/
 #guard_msgs in
 #check MDiff f
 
 variable {f : M → E →L[𝕜] E'} in
-/-- error: Could not find a model with corners for `E →L[𝕜] E'` -/
+/-- info: ContMDiff I 𝓘(𝕜, E →L[𝕜] E') 2 f : Prop -/
 #guard_msgs in
 #check CMDiff 2 f
+
+section
+
+-- And the same test if E is a real normed space and E' is a normed space over a field R' which is
+-- definitionally equal to ℝ, but not at reducible transparency: this is meant to test the
+-- transparency handling in the definitional equality check in the model inference.
+
+def RealCopy := ℝ
+
+noncomputable instance : NormedField RealCopy := inferInstanceAs (NormedField ℝ)
+
+variable {E'' E''' : Type*} [NormedAddCommGroup E''] [NormedAddCommGroup E''']
+  [NormedSpace ℝ E''] [NormedSpace RealCopy E''']
+
+/--
+error: failed to synthesize
+  Module ℝ E'''
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#synth Module ℝ E'''
+instance : Module ℝ  E''' := inferInstanceAs (Module RealCopy E''')
+
+/--
+error: failed to synthesize
+  NormedSpace 𝕜 (E'' →L[ℝ] E'')
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#synth NormedSpace 𝕜 (E'' →L[ℝ] E'')
+
+/--
+error: failed to synthesize
+  NormedSpace ℝ (E'' →L[ℝ] E''')
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#synth NormedSpace ℝ (E'' →L[ℝ] E''')
+
+
+variable {f : M → E'' →L[ℝ] E'''} in
+/-- error: Could not find a model with corners for `E'' →L[ℝ] E'''` -/
+#guard_msgs in
+#check MDiff f
+
+variable {f : M → E'' →L[ℝ] E'''} in
+/-- error: Could not find a model with corners for `E'' →L[ℝ] E'''` -/
+#guard_msgs in
+#check CMDiff 2 f
+
+end
+
+end
+
+/-! Inferring a model with corners on a real interval -/
+section interval
+
+-- Make a new real manifold N with model J.
+-- TODO: change this line to modify M and E instead (thus testing if everything
+-- still works in the presence of two instances over different fields).
+variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : ModelWithCorners ℝ E'' H}
+  {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
+
+-- Types match, but no fact x < y can be inferred: mostly testing error messages.
+variable {x y : ℝ} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
+
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc 0 2)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+variable {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
+#check CMDiff 2 g
+
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check CMDiff 2 g
+
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDiffAt h
+
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDiffAt k ⟨x, by linarith⟩
+
+-- A singleton interval: this also should not synthesize.
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x x)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+variable {k : Set.Icc x x → ℝ} in
+#check MDiff k
+
+/--
+error: failed to synthesize
+  Preorder α
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+variable {α : Type*} {x' y' : α} {k : Set.Icc x' y' → ℝ} in
+#check MDiff k
+
+/-- error: Could not find a model with corners for `↑(Set.Icc x' y')` -/
+#guard_msgs in
+variable {α : Type*} [Preorder α] {x' y' : α} {k : ℝ → Set.Icc x' y'} in
+#check CMDiff 2 k
+
+-- Now, with a fact about x < y: these should behave well.
+variable {x y : ℝ} [Fact (x < y)] {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
+
+/-- info: MDifferentiable (𝓡∂ 1) J g : Prop -/
+#guard_msgs in
+variable [h: Fact ((0 : ℝ) < (2 : ℝ))] {g : Set.Icc (0 : ℝ) (2 : ℝ) → M} in
+#check MDiff g
+
+/-- info: MDifferentiable (𝓡∂ 1) J g : Prop -/
+#guard_msgs in
+#check MDiff g
+
+/-- info: ContMDiff (𝓡∂ 1) J 2 g : Prop -/
+#guard_msgs in
+#check CMDiff 2 g
+
+/-- info: MDifferentiableAt 𝓘(ℝ, E'') (𝓡∂ 1) h : E'' → Prop -/
+#guard_msgs in
+#check MDiffAt h
+
+variable (h : x ≤ y) in
+/-- info: MDifferentiableAt (𝓡∂ 1) 𝓘(ℝ, ℝ) k ⟨x, ⋯⟩ : Prop -/
+#guard_msgs in
+#check MDiffAt k ⟨x, by simp; linarith⟩
+
+-- Test for the definitional equality check: for this type, `isDefEq` succeeds, but
+-- `withReducible <| isDefEq` would not.
+def RealCopy' := ℝ
+
+instance : Preorder RealCopy' := inferInstanceAs (Preorder ℝ)
+instance : TopologicalSpace RealCopy' := inferInstanceAs (TopologicalSpace ℝ)
+
+-- Repeat the same test for an interval in RealCopy.
+variable {x y : RealCopy'} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
+  [Fact (x < y)]
+
+noncomputable instance : ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y) :=
+  instIccChartedSpace x y
+
+/-- info: MDifferentiableAt (𝓡∂ 1) J g : ↑(Set.Icc x y) → Prop -/
+#guard_msgs in
+#check MDiffAt g
+/-- info: MDifferentiable 𝓘(ℝ, E'') (𝓡∂ 1) h : Prop -/
+#guard_msgs in
+#check MDiff h
+/-- info: ContMDiff (𝓡∂ 1) 𝓘(ℝ, ℝ) 2 k : Prop -/
+#guard_msgs in
+#check CMDiff 2 k
+
+end interval
+
+section UpperHalfPlane
+
+open scoped UpperHalfPlane
+
+-- Make a new complex manifold N with model J.
+-- TODO: change this line to modify M and E instead (thus testing if everything
+-- still works in the presence of two instances over different fields).
+variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℂ E''] {J : ModelWithCorners ℂ E'' H}
+  {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
+
+variable {g : ℍ → N} {h : E'' → ℍ} {k : ℍ → ℂ} {y : ℍ}
+
+/-- info: ContMDiff 𝓘(ℂ, ℂ) J 2 g : Prop -/
+#guard_msgs in
+variable {g : ℍ → M} in
+#check CMDiff 2 g
+
+/-- info: ContMDiff 𝓘(ℂ, ℂ) J 2 g : Prop -/
+#guard_msgs in
+#check CMDiff 2 g
+
+/-- info: MDifferentiableAt 𝓘(ℂ, E'') 𝓘(ℂ, ℂ) h : E'' → Prop -/
+#guard_msgs in
+#check MDiffAt h
+
+/-- info: MDifferentiableAt 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ) k y : Prop -/
+#guard_msgs in
+#check MDiffAt k y
+
+end UpperHalfPlane
 
 end differentiability
 
@@ -386,3 +602,105 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 end
 
 end mfderiv
+
+/-! Tests for the custom elaborators for `HasMFDeriv` and `HasMFDerivWithin` -/
+section HasMFDeriv
+
+variable {EM' : Type*} [NormedAddCommGroup EM']
+  [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+variable {f : M → M'} {s : Set M} {m : M} {f' : TangentSpace I m →L[𝕜] TangentSpace I' (f m)}
+
+/-- info: HasMFDerivAt I I' f m f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt% f m f'
+
+/-- info: HasMFDerivWithinAt I I' f s m f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt[s] f m f'
+
+variable {f : E → EM'} {s : Set E} {m : E}
+  -- #check mfderiv% f m tells us the type of f :-)
+  {f' : TangentSpace 𝓘(𝕜, E) m →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f m)}
+
+/-- info: HasMFDerivAt 𝓘(𝕜, E) 𝓘(𝕜, EM') f m f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt% f m f'
+
+/-- info: HasMFDerivWithinAt 𝓘(𝕜, E) 𝓘(𝕜, EM') f s m f' : Prop -/
+#guard_msgs in
+#check HasMFDerivAt[s] f m f'
+
+variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
+variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M] {x : M}
+
+/--
+info: mfderiv I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m))
+  x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) (TotalSpace.mk' E x (X x))
+-/
+#guard_msgs in
+#check mfderiv% (T% X) x
+
+variable {dXm : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) (TotalSpace.mk' E x (X x))}
+
+/-- info: HasMFDerivAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m)) x dXm : Prop -/
+#guard_msgs in
+#check HasMFDerivAt% (T% X) x dXm
+
+/-- info: HasMFDerivWithinAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m)) t x dXm : Prop -/
+#guard_msgs in
+variable {t : Set M} in
+#check HasMFDerivAt[t] (T% X) x dXm
+
+/--
+info: mfderiv I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x))
+  x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) (TotalSpace.mk' F x (σ x))
+-/
+#guard_msgs in
+#check mfderiv% (T% σ) x
+
+variable {dσm : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) (TotalSpace.mk' F x (σ x))}
+
+/-- info: HasMFDerivAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x dσm : Prop -/
+#guard_msgs in
+#check HasMFDerivAt% (T% σ) x dσm
+
+/-- info: HasMFDerivWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) t x dσm : Prop -/
+#guard_msgs in
+variable {t : Set M} in
+#check HasMFDerivAt[t] (T% σ) x dσm
+
+variable {t : Set E} {p : E}
+
+/--
+info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x)) t
+  p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' p (σ' p))
+-/
+#guard_msgs in
+#check mfderiv[t] (T% σ') p
+
+variable {dσ'p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' p (σ' p))}
+
+/--
+info: HasMFDerivAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x)) p dσ'p : Prop
+-/
+#guard_msgs in
+#check HasMFDerivAt% (T% σ') p dσ'p
+
+/--
+info: HasMFDerivWithinAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x)) t p dσ'p : Prop
+-/
+#guard_msgs in
+#check HasMFDerivAt[t] (T% σ') p dσ'p
+
+/--
+info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x))
+  t : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' x (σ' x))
+-/
+#guard_msgs in
+#check mfderiv[t] (T% σ')
+
+-- TODO: skipped the test about error messages (analogous to mfderiv(Within))
+
+end HasMFDeriv
