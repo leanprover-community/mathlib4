@@ -5,7 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
   Frédéric Dupuis, Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Equiv.Opposite
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Endomorphisms of a module
@@ -324,7 +324,7 @@ lemma smulRight_zero (f : M₁ →ₗ[R] S) : f.smulRight (0 : M) = 0 := by ext;
 lemma zero_smulRight (x : M) : (0 : M₁ →ₗ[R] S).smulRight x = 0 := by ext; simp
 
 @[simp]
-lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivisors S M] :
+lemma smulRight_apply_eq_zero_iff [IsDomain S] {f : M₁ →ₗ[R] S} {x : M} [Module.IsTorsionFree S M] :
     f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp

@@ -97,7 +97,7 @@ include M in
 theorem map_comap (J : Ideal S) :
     Ideal.map (algebraMap R S) (Ideal.comap (algebraMap R S) J) = J :=
   le_antisymm (Ideal.map_le_iff_le_comap.2 le_rfl) fun x hJ => by
-    obtain ⟨r, s, hx⟩ := mk'_surjective M x
+    obtain ⟨⟨r, s⟩, hx⟩ := mk'_surjective M x
     rw [← hx] at hJ ⊢
     exact
       Ideal.mul_mem_right _ _
@@ -151,9 +151,9 @@ theorem isPrime_iff_isPrime_disjoint (J : Ideal S) :
   · refine fun h => ⟨fun hJ => h.left.ne_top (eq_top_iff.2 ?_), ?_⟩
     · rwa [eq_top_iff, ← (orderEmbedding M S).le_iff_le] at hJ
     · intro x y hxy
-      obtain ⟨a, s, ha⟩ := mk'_surjective M x
-      obtain ⟨b, t, hb⟩ := mk'_surjective M y
-      have : mk' S (a * b) (s * t) ∈ J := by rwa [mk'_mul, ha, hb]
+      obtain ⟨⟨a, s⟩, ha⟩ := mk'_surjective M x
+      obtain ⟨⟨b, t⟩, hb⟩ := mk'_surjective M y
+      have : mk' S (a * b) (s * t) ∈ J := by simpa [mk'_mul, ha, hb]
       rw [mk'_mem_iff, ← Ideal.mem_comap] at this
       have this₂ := (h.1).mul_mem_iff_mem_or_mem.1 this
       rw [Ideal.mem_comap, Ideal.mem_comap] at this₂
@@ -204,7 +204,7 @@ lemma map_radical (I : Ideal R) :
     I.radical.map (algebraMap R S) = (I.map (algebraMap R S)).radical := by
   refine (I.map_radical_le (algebraMap R S)).antisymm ?_
   rintro x ⟨n, hn⟩
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalization.mk'_surjective M x
   simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M] at hn ⊢
   obtain ⟨s, hs, h⟩ := hn
   refine ⟨s, hs, n + 1, by convert I.mul_mem_left (s ^ n * x) h; ring⟩
@@ -244,7 +244,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
     Function.Surjective (Ideal.quotientMap I (algebraMap R S) H) := by
   intro s
   obtain ⟨s, rfl⟩ := Ideal.Quotient.mk_surjective s
-  obtain ⟨r, ⟨m, hm⟩, rfl⟩ := mk'_surjective M s
+  obtain ⟨⟨r, ⟨m, hm⟩⟩, rfl⟩ := mk'_surjective M s
   by_cases hM : (Ideal.Quotient.mk (I.comap (algebraMap R S))) m = 0
   · have : I = ⊤ := by
       rw [Ideal.eq_top_iff_one]
@@ -259,6 +259,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
     -- The rest of the proof is essentially just algebraic manipulations to prove the equality
     replace hn := congr_arg (Ideal.quotientMap I (algebraMap R S) le_rfl) hn
     rw [RingHom.map_one, RingHom.map_mul] at hn
+    dsimp
     rw [Ideal.quotientMap_mk, ← sub_eq_zero, ← RingHom.map_sub, Ideal.Quotient.eq_zero_iff_mem, ←
       Ideal.Quotient.eq_zero_iff_mem, RingHom.map_sub, sub_eq_zero, mk'_eq_mul_mk'_one]
     simp only [mul_eq_mul_left_iff, RingHom.map_mul]
@@ -282,11 +283,11 @@ theorem bot_lt_comap_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p
     { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
 
 variable (R) in
-lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing Rₚ] [CommRing Sₚ]
-    [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ] [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ]
-    [IsScalarTower R Rₚ Sₚ] {M : Submonoid R} (hM : M ≤ R⁰) [IsLocalization M Rₚ]
-    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ] [NoZeroSMulDivisors R S] [IsDomain S] :
-    NoZeroSMulDivisors Rₚ Sₚ := by
+lemma _root_.NoZeroSMulDivisors_of_isLocalization [IsDomain R] [IsDomain S] (Rₚ Sₚ : Type*)
+    [CommRing Rₚ] [IsDomain Rₚ] [CommRing Sₚ] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
+    [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] {M : Submonoid R} (hM : M ≤ R⁰)
+    [IsLocalization M Rₚ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ]
+    [Module.IsTorsionFree R S] : Module.IsTorsionFree Rₚ Sₚ := by
   have e : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
     Submonoid.map_le_of_le_comap _ <| hM.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
@@ -296,7 +297,7 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
     (algebraMap R S) (Submonoid.le_comap_map M) := by
     apply IsLocalization.ringHom_ext M
     simp only [IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
-  rw [NoZeroSMulDivisors.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
+  rw [Module.IsTorsionFree.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
     RingHom.ker_eq_bot_iff_eq_zero]
   intro x hx
   obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x

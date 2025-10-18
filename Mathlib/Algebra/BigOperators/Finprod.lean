@@ -6,7 +6,8 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Module.End
+import Mathlib.Algebra.Module.Torsion.Free
 import Mathlib.Algebra.Notation.FiniteSupport
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Defs
@@ -293,18 +294,18 @@ theorem MulEquivClass.map_finprod {F : Type*} [EquivLike F M N] [MulEquivClass F
     (f : α → M) : g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
   MulEquiv.map_finprod (MulEquivClass.toMulEquiv g) f
 
-/-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
+/-- The torsion-free assumption makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `(support f).Finite` instead, see `finsum_smul'`. -/
-theorem finsum_smul {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
-    (f : ι → R) (x : M) : (∑ᶠ i, f i) • x = ∑ᶠ i, f i • x := by
+theorem finsum_smul {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [Module.IsTorsionFree R M] (f : ι → R) (x : M) : (∑ᶠ i, f i) • x = ∑ᶠ i, f i • x := by
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
   · exact ((smulAddHom R M).flip x).map_finsum_of_injective (smul_left_injective R hx) _
 
-/-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
+/-- The torsion-free assumption makes sure that the result holds even when the support of `f` is
 infinite. For a more usual version assuming `(support f).Finite` instead, see `smul_finsum'`. -/
-theorem smul_finsum {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] (c : R) (f : ι → M) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i := by
+theorem smul_finsum {R M : Type*} [Semiring R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [Module.IsTorsionFree R M] (c : R) (f : ι → M) : c • ∑ᶠ i, f i = ∑ᶠ i, c • f i := by
   rcases eq_or_ne c 0 with (rfl | hc)
   · simp
   · exact (smulAddHom R M c).map_finsum_of_injective (smul_right_injective M hc) _

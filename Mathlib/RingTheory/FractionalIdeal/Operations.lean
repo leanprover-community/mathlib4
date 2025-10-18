@@ -579,7 +579,7 @@ theorem spanSingleton_le_iff_mem {x : P} {I : FractionalIdeal S P} :
     spanSingleton S x ≤ I ↔ x ∈ I := by
   rw [← coe_le_coe, coe_spanSingleton, Submodule.span_singleton_le_iff_mem, mem_coe]
 
-theorem spanSingleton_eq_spanSingleton [NoZeroSMulDivisors R P] {x y : P} :
+theorem spanSingleton_eq_spanSingleton [Module.IsTorsionFree R P] {x y : P} :
     spanSingleton S x = spanSingleton S y ↔ ∃ z : Rˣ, z • x = y := by
   rw [← Submodule.span_singleton_eq_span_singleton, spanSingleton, spanSingleton]
   exact Subtype.mk_eq_mk

@@ -215,6 +215,18 @@ theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
     mk (a₁ + b₁) (a₂ + b₂) (a₃ + b₃) (a₄ + b₄) :=
   rfl
 
+/-- The additive equivalence between a quaternion algebra over `R` and `Fin 4 → R`. -/
+@[simps! toEquiv]
+def addEquivTuple (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃+ (Fin 4 → R) where
+  toEquiv := equivTuple ..
+  map_add' _ _ := by ext i; fin_cases i <;> rfl
+
+@[simp]
+lemma coe_addEquivTuple (c₁ c₂ c₃ : R) : ⇑(addEquivTuple c₁ c₂ c₃) = equivTuple c₁ c₂ c₃ := rfl
+
+@[simp] lemma coe_symm_addEquivTuple (c₁ c₂ c₃ : R) :
+    ⇑(addEquivTuple c₁ c₂ c₃).symm = (equivTuple c₁ c₂ c₃).symm := rfl
+
 end Add
 
 section AddZeroClass
@@ -486,10 +498,18 @@ lemma coe_ofNat {n : ℕ} [n.AtLeastTwo] :
     ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
--- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
--- for `ℍ[R]`)
+instance [Monoid S] [MulAction S R] : MulAction S ℍ[R,c₁,c₂,c₃] := (equivTuple ..).mulAction _
+
+instance [Semiring S] [DistribMulAction S R] : DistribMulAction S ℍ[R,c₁,c₂,c₃] :=
+  (equivTuple ..).distribMulAction _
+
+instance [Semiring S] [Module S R] : Module S ℍ[R,c₁,c₂,c₃] := (equivTuple ..).module _
+
+instance [Semiring S] [Module S R] [Module.IsTorsionFree S R] :
+    Module.IsTorsionFree S ℍ[R,c₁,c₂,c₃] := (equivTuple ..).moduleIsTorsionFree _
+
+-- TODO: repeat weaker `MulAction`, `DistribMulAction`, and `Module` instances  for `ℍ[R]`)
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
-  smul := (· • ·)
   algebraMap :=
   { toFun s := coe (algebraMap S R s)
     map_one' := by simp only [map_one, coe_one]
@@ -504,12 +524,6 @@ theorem algebraMap_eq (r : R) : algebraMap R ℍ[R,c₁,c₂,c₃] r = ⟨r, 0, 
 
 theorem algebraMap_injective : (algebraMap R ℍ[R,c₁,c₂,c₃] : _ → _).Injective :=
   fun _ _ ↦ by simp [algebraMap_eq]
-
-instance [NoZeroDivisors R] : NoZeroSMulDivisors R ℍ[R,c₁,c₂,c₃] := ⟨by
-  rintro t ⟨a, b, c, d⟩ h
-  rw [or_iff_not_imp_left]
-  intro ht
-  simpa [QuaternionAlgebra.ext_iff, ht] using h⟩
 
 section
 
@@ -544,13 +558,7 @@ def imKₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   map_smul' _ _ := rfl
 
 /-- `QuaternionAlgebra.equivTuple` as a linear equivalence. -/
-def linearEquivTuple : ℍ[R,c₁,c₂,c₃] ≃ₗ[R] Fin 4 → R :=
-  LinearEquiv.symm -- proofs are not `rfl` in the forward direction
-    { (equivTuple c₁ c₂ c₃).symm with
-      toFun := (equivTuple c₁ c₂ c₃).symm
-      invFun := equivTuple c₁ c₂ c₃
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl }
+def linearEquivTuple : ℍ[R,c₁,c₂,c₃] ≃ₗ[R] Fin 4 → R := (equivTuple ..).linearEquiv _
 
 @[simp]
 theorem coe_linearEquivTuple :

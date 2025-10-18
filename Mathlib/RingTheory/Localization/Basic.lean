@@ -98,7 +98,7 @@ theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
     obtain rfl | ne := eq_or_ne j i
     · simpa using hs
     · simp [update_of_ne ne]
-  · obtain ⟨r, s, rfl⟩ := mk'_surjective S x
+  · obtain ⟨⟨r, s⟩, rfl⟩ := mk'_surjective S x
     exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩,
       by simp [map_mk']⟩
 
@@ -128,7 +128,7 @@ theorem linearMap_compatibleSMul (N₁ N₂) [AddCommMonoid N₁] [AddCommMonoid
     [Module S N₁] [Module R N₂] [Module S N₂] [IsScalarTower R S N₁] [IsScalarTower R S N₂] :
     LinearMap.CompatibleSMul N₁ N₂ S R where
   map_smul f s s' := by
-    obtain ⟨r, m, rfl⟩ := mk'_surjective M s
+    obtain ⟨⟨r, m⟩, rfl⟩ := mk'_surjective M s
     rw [← (map_units S m).smul_left_cancel]
     simp_rw [algebraMap_smul, ← map_smul, ← smul_assoc, smul_mk'_self, algebraMap_smul, map_smul]
 
@@ -450,7 +450,7 @@ theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRi
   letI := hR.toField
   replace hM := le_nonZeroDivisors_of_noZeroDivisors hM
   refine ⟨IsLocalization.injective _ hM, fun x => ?_⟩
-  obtain ⟨r, ⟨m, hm⟩, rfl⟩ := mk'_surjective M x
+  obtain ⟨⟨r, ⟨m, hm⟩⟩, rfl⟩ := mk'_surjective M x
   obtain ⟨n, hn⟩ := hR.mul_inv_cancel (nonZeroDivisors.ne_zero <| hM hm)
   exact ⟨r * n, by rw [eq_mk'_iff_mul_eq, ← map_mul, mul_assoc, _root_.mul_comm n, hn, mul_one]⟩
 

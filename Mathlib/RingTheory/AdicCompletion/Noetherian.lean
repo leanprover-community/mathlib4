@@ -24,7 +24,7 @@ theorem IsHausdorff.of_isLocalRing [IsLocalRing R] (h : I ≠ ⊤) : IsHausdorff
 instance [IsLocalRing R] : IsHausdorff (maximalIdeal R) M :=
   .of_le_jacobson _ _ (maximalIdeal_le_jacobson _)
 
-theorem IsHausdorff.of_noZeroSMulDivisors [NoZeroSMulDivisors R M] (h : I ≠ ⊤) : IsHausdorff I M :=
+theorem IsHausdorff.of_noZeroSMulDivisors [Module.IsTorsionFree R M] (h : I ≠ ⊤) : IsHausdorff I M :=
   ⟨fun x hx ↦ (I.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors h).le (by simpa [SModEq.zero] using hx)⟩
 
 theorem IsHausdorff.of_isDomain [IsDomain R] (h : I ≠ ⊤) : IsHausdorff I R :=

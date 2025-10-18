@@ -496,7 +496,7 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]
 theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
-    [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
+    [IsDomain L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   letI := Classical.decEq (G →* L)
   letI : MulAction L L := DistribMulAction.toMulAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
@@ -563,8 +563,8 @@ end Module
 
 section Nontrivial
 
-variable [Ring R] [Nontrivial R] [AddCommGroup M]
-variable [Module R M] [NoZeroSMulDivisors R M]
+variable [Ring R] [IsDomain R] [Nontrivial R] [AddCommGroup M]
+variable [Module R M] [Module.IsTorsionFree R M]
 variable {s t : Set M}
 
 theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :

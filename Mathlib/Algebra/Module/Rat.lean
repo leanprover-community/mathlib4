@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Field.Rat
 
 /-!
@@ -93,11 +93,13 @@ instance SMulCommClass.rat' [Monoid α] [AddCommGroup M] [DistribMulAction α M]
 end
 
 -- see note [lower instance priority]
-instance (priority := 100) NNRatModule.noZeroSMulDivisors [AddCommMonoid M] [Module ℚ≥0 M] :
-    NoZeroSMulDivisors ℕ M :=
-  ⟨fun {k} {x : M} h => by simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 k x] using h⟩
+instance (priority := 100) NNRatModule.to_isAddTorsionFree [AddCommMonoid M] [Module ℚ≥0 M] :
+    IsAddTorsionFree M where
+  nsmul_right_injective n hn m₁ m₂ hm := by
+    simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 n, *] using congr((n⁻¹ : ℚ≥0) • $hm)
 
 -- see note [lower instance priority]
-instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module ℚ M] :
-    NoZeroSMulDivisors ℤ M :=
-  ⟨fun {k} {x : M} h => by simpa [← Int.cast_smul_eq_zsmul ℚ k x] using h⟩
+instance (priority := 100) RatModule.to_isAddTorsionFree [AddCommGroup M] [Module ℚ M] :
+    IsAddTorsionFree M where
+  nsmul_right_injective n hn m₁ m₂ hm := by
+    simpa [← Nat.cast_smul_eq_nsmul ℚ n, *] using congr((n⁻¹ : ℚ) • $hm)

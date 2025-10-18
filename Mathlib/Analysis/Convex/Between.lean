@@ -415,7 +415,7 @@ theorem Wbtw.left_ne_right_of_ne_right {x y z : P} (h : Wbtw R x y z) (hne : y �
 theorem Sbtw.left_ne_right {x y z : P} (h : Sbtw R x y z) : x ≠ z :=
   h.wbtw.left_ne_right_of_ne_left h.2.1
 
-theorem sbtw_iff_mem_image_Ioo_and_ne [NoZeroSMulDivisors R V] {x y z : P} :
+theorem sbtw_iff_mem_image_Ioo_and_ne [Module.IsTorsionFree R V] {x y z : P} :
     Sbtw R x y z ↔ y ∈ lineMap x z '' Set.Ioo (0 : R) 1 ∧ x ≠ z := by
   refine ⟨fun h => ⟨h.mem_image_Ioo, h.left_ne_right⟩, fun h => ?_⟩
   rcases h with ⟨⟨t, ht, rfl⟩, hxz⟩
@@ -430,7 +430,7 @@ variable (R)
 theorem not_sbtw_self (x y : P) : ¬Sbtw R x y x :=
   fun h => h.left_ne_right rfl
 
-theorem wbtw_swap_left_iff [NoZeroSMulDivisors R V] {x y : P} (z : P) :
+theorem wbtw_swap_left_iff [Module.IsTorsionFree R V] {x y : P} (z : P) :
     Wbtw R x y z ∧ Wbtw R y x z ↔ x = y := by
   constructor
   · rintro ⟨hxyz, hyxz⟩
@@ -452,36 +452,36 @@ theorem wbtw_swap_left_iff [NoZeroSMulDivisors R V] {x y : P} (z : P) :
   · rintro rfl
     exact ⟨wbtw_self_left _ _ _, wbtw_self_left _ _ _⟩
 
-theorem wbtw_swap_right_iff [NoZeroSMulDivisors R V] (x : P) {y z : P} :
+theorem wbtw_swap_right_iff [Module.IsTorsionFree R V] (x : P) {y z : P} :
     Wbtw R x y z ∧ Wbtw R x z y ↔ y = z := by
   rw [wbtw_comm, wbtw_comm (z := y), eq_comm]
   exact wbtw_swap_left_iff R x
 
-theorem wbtw_rotate_iff [NoZeroSMulDivisors R V] (x : P) {y z : P} :
+theorem wbtw_rotate_iff [Module.IsTorsionFree R V] (x : P) {y z : P} :
     Wbtw R x y z ∧ Wbtw R z x y ↔ x = y := by rw [wbtw_comm, wbtw_swap_right_iff, eq_comm]
 
 variable {R}
 
-theorem Wbtw.swap_left_iff [NoZeroSMulDivisors R V] {x y z : P} (h : Wbtw R x y z) :
+theorem Wbtw.swap_left_iff [Module.IsTorsionFree R V] {x y z : P} (h : Wbtw R x y z) :
     Wbtw R y x z ↔ x = y := by rw [← wbtw_swap_left_iff R z, and_iff_right h]
 
-theorem Wbtw.swap_right_iff [NoZeroSMulDivisors R V] {x y z : P} (h : Wbtw R x y z) :
+theorem Wbtw.swap_right_iff [Module.IsTorsionFree R V] {x y z : P} (h : Wbtw R x y z) :
     Wbtw R x z y ↔ y = z := by rw [← wbtw_swap_right_iff R x, and_iff_right h]
 
-theorem Wbtw.rotate_iff [NoZeroSMulDivisors R V] {x y z : P} (h : Wbtw R x y z) :
+theorem Wbtw.rotate_iff [Module.IsTorsionFree R V] {x y z : P} (h : Wbtw R x y z) :
     Wbtw R z x y ↔ x = y := by rw [← wbtw_rotate_iff R x, and_iff_right h]
 
-theorem Sbtw.not_swap_left [NoZeroSMulDivisors R V] {x y z : P} (h : Sbtw R x y z) :
+theorem Sbtw.not_swap_left [Module.IsTorsionFree R V] {x y z : P} (h : Sbtw R x y z) :
     ¬Wbtw R y x z := fun hs => h.left_ne (h.wbtw.swap_left_iff.1 hs)
 
-theorem Sbtw.not_swap_right [NoZeroSMulDivisors R V] {x y z : P} (h : Sbtw R x y z) :
+theorem Sbtw.not_swap_right [Module.IsTorsionFree R V] {x y z : P} (h : Sbtw R x y z) :
     ¬Wbtw R x z y := fun hs => h.ne_right (h.wbtw.swap_right_iff.1 hs)
 
-theorem Sbtw.not_rotate [NoZeroSMulDivisors R V] {x y z : P} (h : Sbtw R x y z) : ¬Wbtw R z x y :=
+theorem Sbtw.not_rotate [Module.IsTorsionFree R V] {x y z : P} (h : Sbtw R x y z) : ¬Wbtw R z x y :=
   fun hs => h.left_ne (h.wbtw.rotate_iff.1 hs)
 
 @[simp]
-theorem wbtw_lineMap_iff [NoZeroSMulDivisors R V] {x y : P} {r : R} :
+theorem wbtw_lineMap_iff [Module.IsTorsionFree R V] {x y : P} {r : R} :
     Wbtw R x (lineMap x y r) y ↔ x = y ∨ r ∈ Set.Icc (0 : R) 1 := by
   by_cases hxy : x = y
   · rw [hxy, lineMap_same_apply]
@@ -489,7 +489,7 @@ theorem wbtw_lineMap_iff [NoZeroSMulDivisors R V] {x y : P} {r : R} :
   rw [or_iff_right hxy, Wbtw, affineSegment, (lineMap_injective R hxy).mem_set_image]
 
 @[simp]
-theorem sbtw_lineMap_iff [NoZeroSMulDivisors R V] {x y : P} {r : R} :
+theorem sbtw_lineMap_iff [Module.IsTorsionFree R V] {x y : P} {r : R} :
     Sbtw R x (lineMap x y r) y ↔ x ≠ y ∧ r ∈ Set.Ioo (0 : R) 1 := by
   rw [sbtw_iff_mem_image_Ioo_and_ne, and_comm, and_congr_right]
   intro hxy
@@ -538,45 +538,45 @@ theorem Wbtw.trans_right {w x y z : P} (h₁ : Wbtw R w x z) (h₂ : Wbtw R x y 
   rw [wbtw_comm] at *
   exact h₁.trans_left h₂
 
-theorem Wbtw.trans_sbtw_left [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : Wbtw R w y z)
+theorem Wbtw.trans_sbtw_left [Module.IsTorsionFree R V] {w x y z : P} (h₁ : Wbtw R w y z)
     (h₂ : Sbtw R w x y) : Sbtw R w x z := by
   refine ⟨h₁.trans_left h₂.wbtw, h₂.ne_left, ?_⟩
   rintro rfl
   exact h₂.right_ne ((wbtw_swap_right_iff R w).1 ⟨h₁, h₂.wbtw⟩)
 
-theorem Wbtw.trans_sbtw_right [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : Wbtw R w x z)
+theorem Wbtw.trans_sbtw_right [Module.IsTorsionFree R V] {w x y z : P} (h₁ : Wbtw R w x z)
     (h₂ : Sbtw R x y z) : Sbtw R w y z := by
   rw [wbtw_comm] at *
   rw [sbtw_comm] at *
   exact h₁.trans_sbtw_left h₂
 
-theorem Sbtw.trans_left [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : Sbtw R w y z)
+theorem Sbtw.trans_left [Module.IsTorsionFree R V] {w x y z : P} (h₁ : Sbtw R w y z)
     (h₂ : Sbtw R w x y) : Sbtw R w x z :=
   h₁.wbtw.trans_sbtw_left h₂
 
-theorem Sbtw.trans_right [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : Sbtw R w x z)
+theorem Sbtw.trans_right [Module.IsTorsionFree R V] {w x y z : P} (h₁ : Sbtw R w x z)
     (h₂ : Sbtw R x y z) : Sbtw R w y z :=
   h₁.wbtw.trans_sbtw_right h₂
 
-theorem Wbtw.trans_left_ne [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : Wbtw R w y z)
+theorem Wbtw.trans_left_ne [Module.IsTorsionFree R V] {w x y z : P} (h₁ : Wbtw R w y z)
     (h₂ : Wbtw R w x y) (h : y ≠ z) : x ≠ z := by
   rintro rfl
   exact h (h₁.swap_right_iff.1 h₂)
 
-theorem Wbtw.trans_right_ne [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : Wbtw R w x z)
+theorem Wbtw.trans_right_ne [Module.IsTorsionFree R V] {w x y z : P} (h₁ : Wbtw R w x z)
     (h₂ : Wbtw R x y z) (h : w ≠ x) : w ≠ y := by
   rintro rfl
   exact h (h₁.swap_left_iff.1 h₂)
 
-theorem Sbtw.trans_wbtw_left_ne [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : Sbtw R w y z)
+theorem Sbtw.trans_wbtw_left_ne [Module.IsTorsionFree R V] {w x y z : P} (h₁ : Sbtw R w y z)
     (h₂ : Wbtw R w x y) : x ≠ z :=
   h₁.wbtw.trans_left_ne h₂ h₁.ne_right
 
-theorem Sbtw.trans_wbtw_right_ne [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : Sbtw R w x z)
+theorem Sbtw.trans_wbtw_right_ne [Module.IsTorsionFree R V] {w x y z : P} (h₁ : Sbtw R w x z)
     (h₂ : Wbtw R x y z) : w ≠ y :=
   h₁.wbtw.trans_right_ne h₂ h₁.left_ne
 
-theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZeroSMulDivisors R V]
+theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [Module.IsTorsionFree R V]
     {ι : Type*} {p : ι → P} (ha : AffineIndependent R p) {w w₁ w₂ : ι → R} {s : Finset ι}
     (hw : ∑ i ∈ s, w i = 1) (hw₁ : ∑ i ∈ s, w₁ i = 1) (hw₂ : ∑ i ∈ s, w₂ i = 1)
     (h : s.affineCombination R p w ∈
@@ -743,7 +743,7 @@ variable {R}
 /-- Suppose lines from two vertices of a triangle to interior points of the opposite side meet at
 `p`. Then `p` lies in the interior of the first (and by symmetry the other) segment from a
 vertex to the point on the opposite side. -/
-theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
+theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [Module.IsTorsionFree R V]
     {t : Affine.Triangle R P} {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) {p₁ p₂ p : P}
     (h₁ : Sbtw R (t.points i₂) p₁ (t.points i₃)) (h₂ : Sbtw R (t.points i₁) p₂ (t.points i₃))
     (h₁' : p ∈ line[R, t.points i₁, p₁]) (h₂' : p ∈ line[R, t.points i₂, p₂]) :

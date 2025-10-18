@@ -199,7 +199,7 @@ lemma HasUnifEigenvalue.pow {f : End R M} {μ : R} (h : f.HasUnifEigenvalue μ 1
 /-- A nilpotent endomorphism has nilpotent eigenvalues.
 
 See also `LinearMap.isNilpotent_trace_of_isNilpotent`. -/
-lemma HasUnifEigenvalue.isNilpotent_of_isNilpotent [NoZeroSMulDivisors R M] {f : End R M}
+lemma HasUnifEigenvalue.isNilpotent_of_isNilpotent [Module.IsTorsionFree R M] {f : End R M}
     (hfn : IsNilpotent f) {μ : R} (hf : f.HasUnifEigenvalue μ 1) :
     IsNilpotent μ := by
   obtain ⟨m : M, hm⟩ := hf.exists_hasUnifEigenvector
@@ -448,7 +448,7 @@ lemma HasEigenvalue.pow {f : End R M} {μ : R} (h : f.HasEigenvalue μ) (n : ℕ
 
 See also `LinearMap.isNilpotent_trace_of_isNilpotent`. -/
 nonrec
-lemma HasEigenvalue.isNilpotent_of_isNilpotent [NoZeroSMulDivisors R M] {f : End R M}
+lemma HasEigenvalue.isNilpotent_of_isNilpotent [Module.IsTorsionFree R M] {f : End R M}
     (hfn : IsNilpotent f) {μ : R} (hf : f.HasEigenvalue μ) :
     IsNilpotent μ :=
   hf.isNilpotent_of_isNilpotent hfn
@@ -582,14 +582,14 @@ lemma isNilpotent_restrict_maxGenEigenspace_sub_algebraMap [IsNoetherian R M] (f
     _ (isNilpotent_restrict_genEigenspace_nat f μ (maxUnifEigenspaceIndex f μ))
   rw [maxGenEigenspace_eq]
 
-lemma disjoint_genEigenspace [NoZeroSMulDivisors R M]
+lemma disjoint_genEigenspace [Module.IsTorsionFree R M]
     (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ℕ∞) :
     Disjoint (f.genEigenspace μ₁ k) (f.genEigenspace μ₂ l) := by
   rw [genEigenspace_eq_iSup_genEigenspace_nat, genEigenspace_eq_iSup_genEigenspace_nat]
   simp_rw [genEigenspace_directed.disjoint_iSup_left, genEigenspace_directed.disjoint_iSup_right]
   rintro ⟨k, -⟩ ⟨l, -⟩
   nontriviality M
-  have := NoZeroSMulDivisors.isReduced R M
+  have := Module.IsTorsionFree.isReduced R M
   rw [disjoint_iff]
   set p := f.genEigenspace μ₁ k ⊓ f.genEigenspace μ₂ l
   by_contra hp
@@ -614,18 +614,18 @@ lemma disjoint_genEigenspace [NoZeroSMulDivisors R M]
     isNilpotent_iff_eq_zero, sub_eq_zero] at this
   contradiction
 
-lemma injOn_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : ℕ∞) :
+lemma injOn_genEigenspace [Module.IsTorsionFree R M] (f : End R M) (k : ℕ∞) :
     InjOn (f.genEigenspace · k) {μ | f.genEigenspace μ k ≠ ⊥} := by
   rintro μ₁ _ μ₂ hμ₂ hμ₁₂
   by_contra contra
   apply hμ₂
   simpa only [hμ₁₂, disjoint_self] using f.disjoint_genEigenspace contra k k
 
-lemma injOn_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
+lemma injOn_maxGenEigenspace [Module.IsTorsionFree R M] (f : End R M) :
     InjOn (f.maxGenEigenspace ·) {μ | f.maxGenEigenspace μ ≠ ⊥} :=
   injOn_genEigenspace f ⊤
 
-theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : ℕ∞) :
+theorem independent_genEigenspace [Module.IsTorsionFree R M] (f : End R M) (k : ℕ∞) :
     iSupIndep (f.genEigenspace · k) := by
   classical
   suffices ∀ μ₁ (s : Finset R), μ₁ ∉ s → Disjoint (f.genEigenspace μ₁ k)
@@ -665,19 +665,19 @@ theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : �
       exact Algebra.mul_sub_algebraMap_pow_commutes f μ₂ l
   rwa [ih.eq_bot, Submodule.mem_bot] at hyz
 
-theorem independent_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
+theorem independent_maxGenEigenspace [Module.IsTorsionFree R M] (f : End R M) :
     iSupIndep f.maxGenEigenspace := by
   apply independent_genEigenspace
 
 /-- The eigenspaces of a linear operator form an independent family of subspaces of `M`.  That is,
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
-theorem eigenspaces_iSupIndep [NoZeroSMulDivisors R M] (f : End R M) :
+theorem eigenspaces_iSupIndep [Module.IsTorsionFree R M] (f : End R M) :
     iSupIndep f.eigenspace :=
   (f.independent_genEigenspace 1).mono fun _ ↦ le_rfl
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
 independent. -/
-theorem eigenvectors_linearIndependent' {ι : Type*} [NoZeroSMulDivisors R M]
+theorem eigenvectors_linearIndependent' {ι : Type*} [Module.IsTorsionFree R M]
     (f : End R M) (μ : ι → R) (hμ : Function.Injective μ) (v : ι → M)
     (h_eigenvec : ∀ i, f.HasEigenvector (μ i) (v i)) : LinearIndependent R v :=
   f.eigenspaces_iSupIndep.comp hμ |>.linearIndependent _
@@ -689,7 +689,7 @@ independent. (Lemma 5.10 of [axler2015])
 We use the eigenvalues as indexing set to ensure that there is only one eigenvector for each
 eigenvalue in the image of `xs`.
 See `Module.End.eigenvectors_linearIndependent'` for an indexed variant. -/
-theorem eigenvectors_linearIndependent [NoZeroSMulDivisors R M]
+theorem eigenvectors_linearIndependent [Module.IsTorsionFree R M]
     (f : End R M) (μs : Set R) (xs : μs → M)
     (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent R xs :=
   f.eigenvectors_linearIndependent' (fun μ : μs ↦ μ) Subtype.coe_injective _ h_eigenvec
@@ -822,7 +822,7 @@ lemma genEigenspace_inf_le_add
       LinearMap.map_zero]
   · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hl₂, LinearMap.map_zero]
 
-lemma map_smul_of_iInf_genEigenspace_ne_bot [NoZeroSMulDivisors R M]
+lemma map_smul_of_iInf_genEigenspace_ne_bot [Module.IsTorsionFree R M]
     {L F : Type*} [SMul R L] [FunLike F L (End R M)] [MulActionHomClass F R L (End R M)] (f : F)
     (μ : L → R) (k : ℕ∞) (h_ne : ⨅ x, (f x).genEigenspace (μ x) k ≠ ⊥)
     (t : R) (x : L) :
@@ -835,7 +835,7 @@ lemma map_smul_of_iInf_genEigenspace_ne_bot [NoZeroSMulDivisors R M]
   simp only [g, map_smul]
   exact disjoint_genEigenspace (t • f x) (Ne.symm contra) k k
 
-lemma map_add_of_iInf_genEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
+lemma map_add_of_iInf_genEigenspace_ne_bot_of_commute [Module.IsTorsionFree R M]
     {L F : Type*} [Add L] [FunLike F L (End R M)] [AddHomClass F L (End R M)] (f : F)
     (μ : L → R) (k : ℕ∞) (h_ne : ⨅ x, (f x).genEigenspace (μ x) k ≠ ⊥)
     (h : ∀ x y, Commute (f x) (f y)) (x y : L) :

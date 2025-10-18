@@ -36,18 +36,19 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
 lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
 
 @[to_additive]
-lemma IsMulTorsionFree.pow_eq_one_iff (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 :=
+lemma IsMulTorsionFree.pow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 :=
   ⟨fun h ↦ by rwa [← pow_left_inj hn, one_pow], fun h ↦ by rw [h, one_pow]⟩
 
+@[to_additive (attr := simp)]
+lemma IsMulTorsionFree.pow_eq_one_iff : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
+  obtain rfl | hn := eq_or_ne n 0 <;> simp [pow_eq_one_iff_left, *]
+
 @[to_additive]
-lemma IsMulTorsionFree.pow_eq_one_iff' (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, pow_zero]⟩
-  by_contra h'
-  simpa [h] using (pow_left_injective h').ne ha
+lemma IsMulTorsionFree.pow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
 
 /-- See `sq_eq_one_iff` for a version that holds in rings. -/
 @[to_additive two_nsmul_eq_zero]
-lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := IsMulTorsionFree.pow_eq_one_iff (by cutsat)
+lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := IsMulTorsionFree.pow_eq_one_iff_left (by cutsat)
 
 end Monoid
 

@@ -446,7 +446,7 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
 
 open IsLocalRing in
 theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
-    [IsNoetherianRing R] [NoZeroSMulDivisors R M]
+    [IsNoetherianRing R] [Module.IsTorsionFree R M]
     [Module.Finite R M] (h : I ≠ ⊤) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
