@@ -492,14 +492,12 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
 variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]
 
 protected theorem nontrivial [Nontrivial R] : Nontrivial S := by
-  rw [← not_subsingleton_iff_nontrivial]
-  intro
-  obtain ⟨c, hc⟩ := h.exists_of_eq (x := 0) (y := 1) (Subsingleton.elim _ _)
-  simp [eq_comm] at hc
+  by_contra!
+  obtain ⟨c, hc⟩ := h.exists_of_eq (x := 1) (y := 0) (Subsingleton.elim _ _)
+  simp at hc
 
 theorem nontrivial' [Nontrivial S] : Nontrivial R := by
-  rw [← not_subsingleton_iff_nontrivial]
-  intro
+  by_contra!
   apply (h.map_units 1).ne_zero
   rw [Subsingleton.eq_zero ((1 : nonZeroDivisors R) : R), map_zero]
 
