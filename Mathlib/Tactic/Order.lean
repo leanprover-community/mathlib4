@@ -6,6 +6,7 @@ Authors: Vasilii Nesterov
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Tactic.Order.Preprocessing
+import Mathlib.Tactic.Order.ToInt
 import Mathlib.Tactic.Order.Graph.Basic
 import Mathlib.Tactic.Order.Graph.Tarjan
 import Mathlib.Util.ElabWithoutMVars
@@ -248,10 +249,6 @@ def orderCore (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId) :
     let TypeToAtoms ← collectFacts only? hyps negGoal
     for (type, (idxToAtom, facts)) in TypeToAtoms do
       let some orderType ← findBestOrderInstance type | continue
-      let facts : Array AtomicFact ← match orderType with
-      | .pre => preprocessFactsPreorder facts
-      | .part => preprocessFactsPartial facts idxToAtom
-      | .lin => preprocessFactsLinear facts idxToAtom
       trace[order] "Working on type {← ppExpr type} ({orderType})"
       let atomsMsg := String.intercalate "\n" <| Array.toList <|
         ← idxToAtom.toArray.sortDedup.mapM
@@ -259,16 +256,41 @@ def orderCore (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId) :
       trace[order] "Collected atoms:\n{atomsMsg}"
       let factsMsg := String.intercalate "\n" (facts.map toString).toList
       trace[order] "Collected facts:\n{factsMsg}"
-      let mut graph ← Graph.constructLeGraph idxToAtom.size facts idxToAtom
-      graph ← updateGraphWithNltInfSup graph idxToAtom facts
+      let facts ← replaceBotTop facts idxToAtom
+      let processedFacts : Array AtomicFact ← match orderType with
+      | .pre => preprocessFactsPreorder facts
+      | .part => preprocessFactsPartial facts idxToAtom
+      | .lin => preprocessFactsLinear facts idxToAtom
+      let factsMsg := String.intercalate "\n" (processedFacts.map toString).toList
+      trace[order] "Processed facts:\n{factsMsg}"
+      let mut graph ← Graph.constructLeGraph idxToAtom.size processedFacts
+      graph ← updateGraphWithNltInfSup graph idxToAtom processedFacts
       if orderType == .pre then
-        let some pf ← findContradictionWithNle graph idxToAtom facts | continue
+        let some pf ← findContradictionWithNle graph idxToAtom processedFacts | continue
         g.assign pf
         return
-      else
-        let some pf ← findContradictionWithNe graph idxToAtom facts | continue
+      if let some pf ← findContradictionWithNe graph idxToAtom processedFacts then
         g.assign pf
         return
+      -- if fast procedure failed and order is linear, we try `omega`
+      if orderType == .lin then
+        let .succ u ← getLevel type | throwError "Unexpected Prop"
+        let type : Q(Type u) := type
+        let instLinearOrder ← synthInstanceQ q(LinearOrder $type)
+        let (_, factsNat) ← translateToInt type instLinearOrder idxToAtom facts
+        let factsExpr : Array Expr := factsNat.filterMap fun factNat =>
+          match factNat with
+          | .eq _ _ proof => some proof
+          | .ne _ _ proof => some proof
+          | .le _ _ proof => some proof
+          | .nle _ _ proof => some proof
+          | .lt _ _ proof => some proof
+          | .nlt _ _ proof => some proof
+          | _ => none
+        try
+          Omega.omega factsExpr.toList g
+          return
+        catch _ => pure ()
     throwError ("No contradiction found.\n\n" ++
       "Additional diagnostic information may be available using " ++
       "the `set_option trace.order true` command.")
