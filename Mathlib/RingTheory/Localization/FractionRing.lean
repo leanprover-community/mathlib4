@@ -497,7 +497,7 @@ protected theorem nontrivial [Nontrivial R] : Nontrivial S := by
   obtain ⟨c, hc⟩ := h.exists_of_eq (x := 0) (y := 1) (Subsingleton.elim _ _)
   simp [eq_comm] at hc
 
-protected theorem nontrivial' [Nontrivial S] : Nontrivial R := by
+theorem nontrivial' [Nontrivial S] : Nontrivial R := by
   rw [← not_subsingleton_iff_nontrivial]
   intro
   apply (h.map_units 1).ne_zero
