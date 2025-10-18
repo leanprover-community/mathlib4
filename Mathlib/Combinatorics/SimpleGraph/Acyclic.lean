@@ -344,15 +344,8 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
 /-- Connecting two unreachable vertices by an edge preserves acyclicity. -/
 theorem IsAcyclic.isAcyclic_sup_fromEdgeSet_of_notMem_reachabilitySet {e : Sym2 V}
     (hnreach : e ∉ G.reachabilitySet) (hacyc : G.IsAcyclic) : (G ⊔ fromEdgeSet {e}).IsAcyclic := by
-  refine isAcyclic_iff_forall_edge_isBridge.mpr fun e' he' ↦ ?_
-  by_cases heq : e' = e
-  · rw [heq]
-    exact isBridge_sup_fromEdgeSet_of_notMem_reachabilitySet hnreach
-  rw [edgeSet_sup] at he'
-  refine IsBridge.isBridge_sup_fromEdgeSet_of_notMem_reachabilitySet hnreach <|
-    isAcyclic_iff_forall_edge_isBridge.mp hacyc (he'.elim id fun h ↦ False.elim <| heq ?_)
-  rw [edgeSet_fromEdgeSet] at h
-  exact h.left
+  grind [isAcyclic_iff_forall_edge_isBridge, isBridge_sup_fromEdgeSet_of_notMem_reachabilitySet,
+    edgeSet_sup, IsBridge.isBridge_sup_fromEdgeSet_of_notMem_reachabilitySet, edgeSet_fromEdgeSet]
 
 /-- Connecting two unreachable vertices by an edge preserves acyclicity. -/
 theorem IsAcyclic.isAcyclic_sup_fromEdgeSet_of_not_reachable {u v : V} (hnreach : ¬G.Reachable u v)
