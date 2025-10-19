@@ -289,7 +289,17 @@ theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
     (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball 0 sr.2 := by
   refine ⟨fun V => ?_⟩
   simp only [hp.hasBasis.mem_iff, SeminormFamily.basisSets_iff, Prod.exists]
-  grind
+  #adaptation_note
+  /--
+  nightly-2025-09-21
+  `grind` is failing here
+  Minimised in https://github.com/leanprover/lean4/pull/10497
+  -/
+  constructor
+  · rintro ⟨-, ⟨s, r, hr, rfl⟩, hV⟩
+    exact ⟨s, r, hr, hV⟩
+  · rintro ⟨s, r, hr, hV⟩
+    exact ⟨_, ⟨s, r, hr, rfl⟩, hV⟩
 
 theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     (𝓝 (x : E)).HasBasis
