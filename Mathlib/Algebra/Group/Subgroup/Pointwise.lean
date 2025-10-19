@@ -42,6 +42,10 @@ theorem term_match [Group G] (a1 a2 b1 b2 : G) :
   simp only [this, mul_assoc, inv_mul_cancel_left]
 
 open scoped Pointwise in
+/--
+If `H` and `K` are disjoint subgroups of `G`, gives an equivalence
+between the point-wise product `H.carrier * K.carrier` and cartesian product `H ×ˢ K`.
+-/
 noncomputable def equiv_mul_disjoint [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
     ((H.carrier : Set G) * (K.carrier : Set G) : Set G) ≃ (H:Set G) ×ˢ (K:Set G) := by
   symm
