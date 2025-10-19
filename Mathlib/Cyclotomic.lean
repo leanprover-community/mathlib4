@@ -49,6 +49,23 @@ theorem inertiaDeg_of_not_dvd (hm : ¬ p ∣ m) :
     rw [← Polynomial.map_cyclotomic_int, ← Polynomial.cyclotomic_eq_minpoly' _ (NeZero.pos m)]
     exact (zeta_spec m ℚ K).toInteger_isPrimitiveRoot
 
+#exit
+
+  rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff] at h
+  · rw [Polynomial.natDegree_of_dvd_cyclotomic_of_irreducible (p := p) (f := 1)]
+    · simp
+      exact (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
+    · simp
+    · simpa
+    · have := h.2.2
+      refine dvd_trans this ?_
+      rw [← Polynomial.map_cyclotomic_int]
+      rw [← Polynomial.cyclotomic_eq_minpoly' m (𝓞 K) _ (NeZero.pos _)]
+      exact IsPrimitiveRoot.toInteger_isPrimitiveRoot _
+    · exact h.1
+  · exact Polynomial.map_monic_ne_zero (minpoly.monic ζ.isIntegral)
+>>>>>>> refs/remotes/origin/wip
+
 theorem ramificationIdx_of_not_dvd (hm : ¬ p ∣ m) :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
   sorry

@@ -914,9 +914,11 @@ theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaxima
   exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hp0
 
 theorem ramificationIdx_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
-    (hp0 : p ≠ ⊥) (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
+    (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
     p.ramificationIdx (algebraMap R S) P ≤ Module.finrank K L := by
   classical
+  by_cases hp0 : p = ⊥
+  · simp [hp0]
   have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
   rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
   refine le_trans (Nat.le_mul_of_pos_right _ ?_) (Nat.le_add_right _ _)
