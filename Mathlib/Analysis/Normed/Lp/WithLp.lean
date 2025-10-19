@@ -6,7 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.Util.Superscript
 
 /-! # The `WithLp` type synonym
 
