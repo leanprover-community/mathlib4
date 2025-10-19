@@ -13,9 +13,8 @@ This file defines the inner product space structure on `Hᵐᵒᵖ` where we def
 the inner product naturally. We also define `OrthonormalBasis.mulOpposite`.
 -/
 
-variable {R 𝕜 H : Type*}
-
 namespace MulOpposite
+variable {𝕜 H : Type*}
 
 open MulOpposite
 
@@ -26,10 +25,8 @@ instance [Inner 𝕜 H] : Inner 𝕜 Hᵐᵒᵖ where inner x y := inner 𝕜 x.
 
 @[simp] theorem inner_op [Inner 𝕜 H] (x y : H) : inner 𝕜 (op x) (op y) = inner 𝕜 x y := rfl
 
-variable [SeminormedAddCommGroup H]
-
 section InnerProductSpace
-variable [RCLike 𝕜] [InnerProductSpace 𝕜 H]
+variable [RCLike 𝕜] [SeminormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 
 instance : InnerProductSpace 𝕜 Hᵐᵒᵖ where
   norm_sq_eq_re_inner x := (inner_self_eq_norm_sq x.unop).symm
@@ -54,7 +51,7 @@ noncomputable def _root_.OrthonormalBasis.mulOpposite (b : OrthonormalBasis ι �
 end orthonormal
 end InnerProductSpace
 
-variable [Semiring R] [Module R H]
+variable {R H : Type*} [SeminormedAddCommGroup H] [Semiring R] [Module R H]
 
 theorem isometry_opLinearEquiv : Isometry (opLinearEquiv R (M := H)) := fun _ _ => rfl
 
