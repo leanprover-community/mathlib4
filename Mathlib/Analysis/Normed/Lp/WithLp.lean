@@ -53,15 +53,11 @@ structure WithLp (p : ℝ≥0∞) (V : Type uV) : Type uV where
 
 section Notation
 
-open Lean PrettyPrinter.Delaborator SubExpr
+open Lean.PrettyPrinter.Delaborator
 
+-- This avoids `toLp p x` to be printed `{ ofLp := x }`.
 @[app_delab WithLp.toLp]
-def WithLp.delabToLp : Delab :=
-  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 3 do
-    let toLp ← withNaryFn delab
-    let p ← withNaryArg 0 delab
-    let x ← withNaryArg 2 delab
-    `($toLp $p $x)
+def WithLp.delabToLp : Delab := delabApp
 
 end Notation
 
