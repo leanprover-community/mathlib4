@@ -138,9 +138,6 @@ lemma unitClosedBall_eq_univ_of_discrete : (Metric.closedBall 0 1 : Set 𝕜) = 
   ext
   simp
 
-@[deprecated (since := "2024-12-01")]
-alias discreteTopology_unit_closedBall_eq_univ := unitClosedBall_eq_univ_of_discrete
-
 end Discrete
 
 end NormedDivisionRing
@@ -295,7 +292,7 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
     · exact ⟨x, hlt⟩
 
 noncomputable instance Real.normedField : NormedField ℝ :=
-  { Real.normedAddCommGroup, Real.field with
+  { Real.normedAddCommGroup, Real.instField with
     norm_mul := abs_mul }
 
 noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where

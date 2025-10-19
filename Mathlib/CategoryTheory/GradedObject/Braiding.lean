@@ -47,14 +47,14 @@ lemma braiding_naturality_right [HasTensor X Y] [HasTensor Y X] [HasTensor X Z] 
     (f : Y ⟶ Z) :
     whiskerLeft X f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ whiskerRight f X  := by
   dsimp [braiding]
-  aesop_cat
+  cat_disch
 
 variable {X Y} in
 lemma braiding_naturality_left [HasTensor Y Z] [HasTensor Z Y] [HasTensor X Z] [HasTensor Z X]
     (f : X ⟶ Y) :
     whiskerRight f Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ whiskerLeft Z f  := by
   dsimp [braiding]
-  aesop_cat
+  cat_disch
 
 lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
     [HasTensor Z X] [HasTensor X Z]
@@ -78,7 +78,7 @@ lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
     ιTensorObj₃'_associator_hom, Iso.inv_hom_id_assoc]
   conv_rhs => rw [ιTensorObj₃'_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
     ← MonoidalCategory.tensorHom_id,
-    ← MonoidalCategory.tensor_comp_assoc, id_comp, ι_tensorObjDesc,
+    MonoidalCategory.tensorHom_comp_tensorHom_assoc, id_comp, ι_tensorObjDesc,
     categoryOfGradedObjects_id, MonoidalCategory.comp_tensor_id, assoc,
     MonoidalCategory.tensorHom_id, MonoidalCategory.tensorHom_id,
     ← ιTensorObj₃'_eq_assoc Y X Z i₂ i₁ i₃ k
@@ -116,7 +116,7 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
     ιTensorObj₃_associator_inv, Iso.hom_inv_id_assoc]
   conv_rhs => rw [ιTensorObj₃_eq X Y Z i₁ i₂ i₃ k h _ rfl, assoc, ι_tensorHom_assoc,
     ← MonoidalCategory.id_tensorHom,
-    ← MonoidalCategory.tensor_comp_assoc, id_comp, ι_tensorObjDesc,
+    MonoidalCategory.tensorHom_comp_tensorHom_assoc, id_comp, ι_tensorObjDesc,
     categoryOfGradedObjects_id, MonoidalCategory.id_tensor_comp, assoc,
     MonoidalCategory.id_tensorHom, MonoidalCategory.id_tensorHom,
     ← ιTensorObj₃_eq_assoc X Z Y i₁ i₃ i₂ k
@@ -136,7 +136,7 @@ end Braided
 lemma symmetry [SymmetricCategory C] [HasTensor X Y] [HasTensor Y X] :
     (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 _ := by
   dsimp [braiding]
-  aesop_cat
+  cat_disch
 
 end Monoidal
 

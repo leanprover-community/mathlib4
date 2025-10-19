@@ -96,13 +96,7 @@ equals Kronecker delta.) -/
 theorem orthonormal_subtype_iff_ite [DecidableEq E] {s : Set E} :
     Orthonormal 𝕜 (Subtype.val : s → E) ↔ ∀ v ∈ s, ∀ w ∈ s, ⟪v, w⟫ = if v = w then 1 else 0 := by
   rw [orthonormal_iff_ite]
-  constructor
-  · intro h v hv w hw
-    convert h ⟨v, hv⟩ ⟨w, hw⟩ using 1
-    simp
-  · rintro h ⟨v, hv⟩ ⟨w, hw⟩
-    convert h v hv w hw using 1
-    simp
+  simp
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
@@ -282,7 +276,7 @@ theorem coe_basisOfOrthonormalOfCardEqFinrank [Fintype ι] [Nonempty ι] {v : ι
 theorem Orthonormal.ne_zero {v : ι → E} (hv : Orthonormal 𝕜 v) (i : ι) : v i ≠ 0 := by
   refine ne_of_apply_ne norm ?_
   rw [hv.1 i, norm_zero]
-  norm_num
+  simp
 
 end OrthonormalSets_Seminormed
 

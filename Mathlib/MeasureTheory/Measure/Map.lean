@@ -139,12 +139,6 @@ protected theorem map_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ�
       exact hf ⟨hfc.mk f, hfc.measurable_mk, (ae_smul_measure_iff hc).1 hfc.ae_eq_mk⟩
     simp [map_of_not_aemeasurable hf, map_of_not_aemeasurable hfc]
 
-
-@[deprecated Measure.map_smul (since := "2024-11-13")]
-protected theorem map_smul_nnreal (c : ℝ≥0) (μ : Measure α) (f : α → β) :
-    (c • μ).map f = c • μ.map f :=
-  μ.map_smul c f
-
 variable {f : α → β}
 
 lemma map_apply₀ {f : α → β} (hf : AEMeasurable f μ) {s : Set β}

@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Floor.Semiring
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Order.Filter.AtTopBot.Finite
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # `a * c ^ n < (n - d)!` holds true for sufficiently large `n`.

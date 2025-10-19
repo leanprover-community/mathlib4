@@ -41,6 +41,14 @@ instance : SetLike (Subalgebra R A) A where
 
 initialize_simps_projections Subalgebra (carrier → coe, as_prefix coe)
 
+@[simp]
+theorem coe_mk (s : Subsemiring A) (h) : (Subalgebra.mk (R := R) s h : Set A) = s :=
+  rfl
+
+@[simp]
+theorem mem_mk (s : Subsemiring A) (h) (x) : x ∈ Subalgebra.mk (R := R) s h ↔ x ∈ s :=
+  .rfl
+
 /-- The actual `Subalgebra` obtained from an element of a type satisfying `SubsemiringClass` and
 `SMulMemClass`. -/
 @[simps]
@@ -311,6 +319,10 @@ instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
   smul_def' := fun _ _ => Subtype.eq <| Algebra.smul_def _ _
 
 instance algebra : Algebra R S := S.algebra'
+
+@[simp]
+theorem mk_algebraMap {S : Subalgebra R A} (r : R) (hr : algebraMap R A r ∈ S) :
+    ⟨algebraMap R A r, hr⟩ = algebraMap R S r := rfl
 
 end
 
@@ -811,6 +823,20 @@ theorem algebraMap_eq {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring 
     [Algebra A α] (S : Subalgebra R A) : algebraMap S α = (algebraMap A α).comp S.val :=
   rfl
 
+theorem algebraMap_def {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
+    [Algebra R A] [Algebra A α] {S : Subalgebra R A} (s : S) :
+  algebraMap S α s = algebraMap A α (s : A) := rfl
+
+@[simp]
+theorem algebraMap_mk {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α]
+    [Algebra R A] [Algebra A α] {S : Subalgebra R A} (a : A) (ha : a ∈ S) :
+  algebraMap S α (⟨a, ha⟩ : S) = algebraMap A α a := rfl
+
+@[simp]
+lemma algebraMap_apply {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+    (S : Subalgebra R A) (x : S) : algebraMap S A x = x :=
+  rfl
+
 @[simp]
 theorem rangeS_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) : (algebraMap S A).rangeS = S.toSubsemiring := by
@@ -822,6 +848,11 @@ theorem range_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     (S : Subalgebra R A) : (algebraMap S A).range = S.toSubring := by
   rw [algebraMap_eq, Algebra.algebraMap_self, RingHom.id_comp, ← toSubring_subtype,
     Subring.range_subtype]
+
+@[simp]
+lemma setRange_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+    (S : Subalgebra R A) : Set.range (algebraMap S A) = (S : Set A) :=
+  SetLike.ext'_iff.mp S.rangeS_algebraMap
 
 instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
   ⟨fun {c} x h =>
@@ -1009,4 +1040,3 @@ lemma Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
 lemma NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
     (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
   cases S; rfl
-

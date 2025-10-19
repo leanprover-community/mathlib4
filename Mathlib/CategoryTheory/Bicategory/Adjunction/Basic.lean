@@ -82,9 +82,9 @@ structure Adjunction (f : a ⟶ b) (g : b ⟶ a) where
   /-- The counit of an adjunction. -/
   counit : g ≫ f ⟶ 𝟙 b
   /-- The composition of the unit and the counit is equal to the identity up to unitors. -/
-  left_triangle : leftZigzag unit counit = (λ_ _).hom ≫ (ρ_ _).inv := by aesop_cat
+  left_triangle : leftZigzag unit counit = (λ_ _).hom ≫ (ρ_ _).inv := by cat_disch
   /-- The composition of the unit and the counit is equal to the identity up to unitors. -/
-  right_triangle : rightZigzag unit counit = (ρ_ _).hom ≫ (λ_ _).inv := by aesop_cat
+  right_triangle : rightZigzag unit counit = (ρ_ _).hom ≫ (λ_ _).inv := by cat_disch
 
 @[inherit_doc] scoped infixr:15 " ⊣ " => Bicategory.Adjunction
 
@@ -238,7 +238,7 @@ structure Equivalence (a b : B) where
   /-- The composition `inv ≫ hom` is isomorphic to the identity. -/
   counit : inv ≫ hom ≅ 𝟙 b
   /-- The composition of the unit and the counit is equal to the identity up to unitors. -/
-  left_triangle : leftZigzagIso unit counit = λ_ hom ≪≫ (ρ_ hom).symm := by aesop_cat
+  left_triangle : leftZigzagIso unit counit = λ_ hom ≪≫ (ρ_ hom).symm := by cat_disch
 
 @[inherit_doc] scoped infixr:10 " ≌ " => Bicategory.Equivalence
 

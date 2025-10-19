@@ -37,7 +37,7 @@ lemma Finset.univ_of_card_le_three (h : Fintype.card R ≤ 3) :
   · have : Nontrivial R := by
       refine Fintype.one_lt_card_iff_nontrivial.1 ?_
       rw [h]
-      norm_num
+      simp
     rw [card_univ, h, card_insert_of_notMem, card_insert_of_notMem, card_singleton]
     · rw [mem_singleton]
       intro H

@@ -111,7 +111,7 @@ univ = closure {s simple}
 ```
 Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 
-## Notations
+## Notation
 
 * `α →ₛ E` : simple functions (defined in `Mathlib/MeasureTheory/Function/SimpleFunc.lean`)
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
@@ -350,9 +350,6 @@ theorem enorm_integral_le_lintegral_enorm (f : α → G) : ‖∫ a, f a ∂μ�
   apply ENNReal.ofReal_le_of_le_toReal
   exact norm_integral_le_lintegral_norm f
 
-@[deprecated (since := "2025-01-21")]
-alias ennnorm_integral_le_lintegral_ennnorm := enorm_integral_le_lintegral_enorm
-
 theorem integral_eq_zero_of_ae {f : α → G} (hf : f =ᵐ[μ] 0) : ∫ a, f a ∂μ = 0 := by
   simp [integral_congr_ae hf, integral_zero]
 
@@ -519,16 +516,10 @@ theorem integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f :
   · simp_rw [ofReal_norm_eq_enorm]
   · filter_upwards; simp_rw [Pi.zero_apply, norm_nonneg, imp_true_iff]
 
-@[deprecated (since := "2025-01-21")]
-alias integral_norm_eq_lintegral_nnnorm := integral_norm_eq_lintegral_enorm
-
 theorem ofReal_integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : Integrable f μ) : ENNReal.ofReal (∫ x, ‖f x‖ ∂μ) = ∫⁻ x, ‖f x‖ₑ ∂μ := by
   rw [integral_norm_eq_lintegral_enorm hf.aestronglyMeasurable, ENNReal.ofReal_toReal]
   exact lt_top_iff_ne_top.mp (hasFiniteIntegral_iff_enorm.mpr hf.2)
-
-@[deprecated (since := "2025-01-21")]
-alias ofReal_integral_norm_eq_lintegral_nnnorm := ofReal_integral_norm_eq_lintegral_enorm
 
 theorem SimpleFunc.integral_eq_integral (f : α →ₛ E) (hfi : Integrable f μ) :
     f.integral μ = ∫ x, f x ∂μ := by
@@ -580,7 +571,7 @@ theorem integral_eq_integral_pos_part_sub_integral_neg_part {f : α → ℝ} (hf
 
 section Order
 
-variable [PartialOrder E] [IsOrderedAddMonoid E] [OrderedSMul ℝ E] [OrderClosedTopology E]
+variable [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [OrderClosedTopology E]
 
 /-- The integral of a function which is nonnegative almost everywhere is nonnegative. -/
 lemma integral_nonneg_of_ae {f : α → E} (hf : 0 ≤ᵐ[μ] f) :
@@ -621,6 +612,7 @@ lemma integral_mono_of_nonneg {f g : α → E} (hf : 0 ≤ᵐ[μ] f) (hgi : Inte
   · exact integral_mono_ae hfi hgi h
   · exact integral_undef hfi ▸ integral_nonneg_of_ae (hf.trans h)
 
+@[gcongr]
 lemma integral_mono_measure {f : α → E} {ν : Measure α} (hle : μ ≤ ν)
     (hf : 0 ≤ᵐ[ν] f) (hfi : Integrable f ν) : ∫ (a : α), f a ∂μ ≤ ∫ (a : α), f a ∂ν := by
   borelize E
@@ -921,9 +913,6 @@ theorem MemLp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1
   · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
   exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf.2).ne
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.eLpNorm_eq_integral_rpow_norm := MemLp.eLpNorm_eq_integral_rpow_norm
 
 end NormedAddCommGroup
 
@@ -1333,7 +1322,6 @@ theorem integral_simpleFunc_larger_space (hm : m ≤ m0) (f : @SimpleFunc β m F
     (hf_int : Integrable f μ) :
     ∫ x, f x ∂μ = ∑ x ∈ @SimpleFunc.range β F m f, μ.real (f ⁻¹' {x}) • x := by
   simp_rw [← f.coe_toLargerSpace_eq hm]
-  have hf_int : Integrable (f.toLargerSpace hm) μ := by rwa [SimpleFunc.coe_toLargerSpace_eq]
   rw [SimpleFunc.integral_eq_sum _ hf_int]
   congr 1
 
@@ -1413,7 +1401,7 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
     rw [this, ENNReal.mul_top', if_neg, ENNReal.top_mul', if_neg]
     · exact le_top
     · simp [hr]
-    · norm_num
+    · simp
   haveI := hμ
   rw [integral_eq_integral_pos_part_sub_integral_neg_part hfint, sub_nonneg] at hfint'
   have hposbdd : ∫ ω, max (f ω) 0 ∂μ ≤ μ.real Set.univ • (r : ℝ) := by
@@ -1428,8 +1416,8 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
   rw [integral_add hfint.real_toNNReal]
   · simp only [Real.coe_toNNReal', ENNReal.toReal_mul, ENNReal.coe_toReal,
       toReal_ofNat] at hfint' ⊢
-    refine (add_le_add_left hfint' _).trans ?_
-    rwa [← two_mul, mul_assoc, mul_le_mul_left (two_pos : (0 : ℝ) < 2)]
+    grw [hfint']
+    rwa [← two_mul, mul_assoc, mul_le_mul_iff_right₀ (two_pos : (0 : ℝ) < 2)]
   · exact hfint.neg.sup (integrable_zero _ _ μ)
 
 theorem eLpNorm_one_le_of_le' {r : ℝ} (hfint : Integrable f μ) (hfint' : 0 ≤ ∫ x, f x ∂μ)

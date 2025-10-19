@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Control.Basic
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Order.Filter.Basic
@@ -148,6 +147,14 @@ theorem eventually_pure {a : α} {p : α → Prop} : (∀ᶠ x in pure a, p x) �
 @[simp]
 theorem principal_singleton (a : α) : 𝓟 {a} = pure a :=
   Filter.ext fun s => by simp only [mem_pure, mem_principal, singleton_subset_iff]
+
+@[simp]
+theorem biSup_pure_eq_principal (s : Set α) : ⨆ a ∈ s, pure a = 𝓟 s :=
+  Filter.ext fun s => by simp [Set.subset_def]
+
+@[simp]
+theorem iSup_pure_eq_top : ⨆ a, pure a = (⊤ : Filter α) := by
+  rw [← principal_univ, ← biSup_pure_eq_principal, iSup_univ]
 
 @[simp]
 theorem map_pure (f : α → β) (a : α) : map f (pure a) = pure (f a) :=

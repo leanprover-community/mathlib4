@@ -51,8 +51,8 @@ theorem prod_isUnit_iff {M : Type*} [CommMonoid M] {L : List M} :
 
 /-- If elements of a list commute with each other, then their product does not
 depend on the order of elements. -/
-@[to_additive "If elements of a list additively commute with each other, then their sum does not
-depend on the order of elements."]
+@[to_additive /-- If elements of a list additively commute with each other, then their sum does not
+depend on the order of elements. -/]
 lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
   refine h.foldr_eq' ?_ _
   apply Pairwise.forall_of_forall
@@ -113,9 +113,9 @@ namespace List
 
 lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
     length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by
-  induction' l₁ with x l₁ IH
-  · rfl
-  · simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
+  induction l₁ with
+  | nil => rfl
+  | cons x l₁ IH => simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
 
 lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
   | [] => rfl
@@ -129,9 +129,6 @@ theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by
   rw [← mem_range, ← ranges_flatten, mem_flatten]
-
-@[deprecated (since := "2024-11-18")]
-alias mem_mem_ranges_iff_lt_natSum := mem_mem_ranges_iff_lt_sum
 
 /-- In a flatten of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
