@@ -10,12 +10,11 @@ import Mathlib.Algebra.Order.Ring.WithTop
 /-!
 # Conversion from WithTop to Base Type
 
-For types α that are instances of `Zero`, we provide a convenient conversion,
-`WithTop.untop₀`, that maps elements `a : WithTop α` to `α`, by mapping `⊤` to
-zero.
+For types α that are instances of `Zero`, we provide a convenient conversion, `WithTop.untop₀`, that
+maps elements `a : WithTop α` to `α`, by mapping `⊤` to zero.
 
-For settings where `α` has additional structure, we provide a large number of
-simplifier lemmas, akin to those that already exists for `ENat.toNat`.
+For settings where `α` has additional structure, we provide a large number of simplifier lemmas,
+akin to those that already exists for `ENat.toNat`.
 -/
 
 namespace WithTop
@@ -25,7 +24,7 @@ section Zero
 variable [Zero α]
 
 /-- Conversion from `WithTop α` to `α`, mapping `⊤` to zero. -/
-def untop₀ [Zero α] (a : WithTop α) : α := a.untopD 0
+def untop₀ (a : WithTop α) : α := a.untopD 0
 
 /-!
 ## Simplifying Lemmas in cases where α is an Instance of Zero
@@ -52,8 +51,9 @@ lemma coe_untop₀_of_ne_top {a : WithTop α} (ha : a ≠ ⊤) :
 end Zero
 
 /-!
-## Simplifying Lemmas in cases where α is an AddMonoid or AddGroup
+## Simplifying Lemmas involving addition and negation
 -/
+
 @[simp]
 lemma untopD_add [Add α] {a b : WithTop α} {c : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (a + b).untopD c = a.untopD c + b.untopD c := by
@@ -118,12 +118,9 @@ end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable
-  [AddCommGroup α] [LinearOrder α]
+variable [AddCommGroup α] [LinearOrder α] {a b : WithTop α}
 
-@[simp]
-theorem untop₀_max {a b : WithTop α}
-    (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+@[simp] theorem untop₀_max (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (max a b).untop₀ = max a.untop₀ b.untop₀ := by
   lift a to α using ha
   lift b to α using hb
@@ -133,9 +130,7 @@ theorem untop₀_max {a b : WithTop α}
   rw [not_le] at h
   simp [max_eq_left h.le, max_eq_left (coe_lt_coe.mpr h).le]
 
-@[simp]
-theorem untop₀_min {a b : WithTop α}
-    (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+@[simp] theorem untop₀_min (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (min a b).untop₀ = min a.untop₀ b.untop₀ := by
   lift a to α using ha
   lift b to α using hb
