@@ -46,7 +46,7 @@ structure Digraph (V : Type*) where
   Adj : V → V → Prop
 
 /--
-Constructor for digraphs using a boolean function.
+Constructor for digraphs using a Boolean function.
 This is useful for creating a digraph with a decidable `Adj` relation,
 and it's used in the construction of the `Fintype (Digraph V)` instance.
 -/
@@ -117,15 +117,15 @@ instance : LE (Digraph V) := ⟨Digraph.IsSubgraph⟩
 theorem isSubgraph_eq_le : (Digraph.IsSubgraph : Digraph V → Digraph V → Prop) = (· ≤ ·) := rfl
 
 /-- The supremum of two digraphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
-instance : Sup (Digraph V) where
-  sup x y := { Adj := x.Adj ⊔ y.Adj }
+instance : Max (Digraph V) where
+  max x y := { Adj := x.Adj ⊔ y.Adj }
 
 @[simp]
 theorem sup_adj (x y : Digraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w := Iff.rfl
 
 /-- The infimum of two digraphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
-instance : Inf (Digraph V) where
-  inf x y := { Adj := x.Adj ⊓ y.Adj }
+instance : Min (Digraph V) where
+  min x y := { Adj := x.Adj ⊓ y.Adj }
 
 @[simp]
 theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w := Iff.rfl

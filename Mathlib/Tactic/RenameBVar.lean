@@ -42,6 +42,7 @@ Note: name clashes are resolved automatically.
 -/
 elab "rename_bvar " old:ident " → " new:ident loc?:(location)? : tactic => do
   let mvarId ← getMainGoal
+  instantiateMVarDeclMVars mvarId
   match loc? with
   | none => renameBVarTarget mvarId old.getId new.getId
   | some loc =>

@@ -10,13 +10,11 @@ import Mathlib.Algebra.GroupWithZero.NeZero
 # Faithful actions involving groups with zero
 -/
 
-assert_not_exists Equiv.Perm.equivUnitsEnd
-assert_not_exists Prod.fst_mul
-assert_not_exists Ring
+assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
 
 open Function
 
-variable {M N A B α β : Type*}
+variable {α : Type*}
 
 /-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
 instance CancelMonoidWithZero.faithfulSMul [CancelMonoidWithZero α] [Nontrivial α] :

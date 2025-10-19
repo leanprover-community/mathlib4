@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Yoneda
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.Util.AssertExists
 
 /-!
@@ -20,7 +21,7 @@ assert_not_exists AddCommMonoid
 
 open Opposite CategoryTheory Limits
 
-universe t w v u
+universe t w w' v u
 
 namespace CategoryTheory
 
@@ -33,7 +34,7 @@ variable {C : Type u} [Category.{v} C]
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
-  ι := { app := by aesop_cat }
+  ι := { app := by cat_disch }
 
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
 -/
@@ -47,7 +48,6 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X) where
       coyoneda_obj_map, Category.id_comp]
   uniq s m w := by
     apply funext; rintro ⟨⟩
-    dsimp
     rw [← w]
     simp
 
@@ -80,19 +80,19 @@ def Limits.coneOfSectionCompYoneda (F : J ⥤ Cᵒᵖ) (X : C)
   pt := Opposite.op X
   π := compYonedaSectionsEquiv F X s
 
-noncomputable instance yonedaPreservesLimit (F : J ⥤ Cᵒᵖ) (X : C) :
+instance yoneda_preservesLimit (F : J ⥤ Cᵒᵖ) (X : C) :
     PreservesLimit F (yoneda.obj X) where
-  preserves {c} hc := Nonempty.some (by
+  preserves {c} hc := by
     rw [Types.isLimit_iff]
     intro s hs
     exact ⟨(hc.lift (Limits.coneOfSectionCompYoneda F X ⟨s, hs⟩)).unop,
       fun j => Quiver.Hom.op_inj (hc.fac (Limits.coneOfSectionCompYoneda F X ⟨s, hs⟩) j),
       fun m hm => Quiver.Hom.op_inj
         (hc.uniq (Limits.coneOfSectionCompYoneda F X ⟨s, hs⟩) _
-          (fun j => Quiver.Hom.unop_inj (hm j)))⟩)
+          (fun j => Quiver.Hom.unop_inj (hm j)))⟩
 
 variable (J) in
-noncomputable instance yonedaPreservesLimitsOfShape (X : C) :
+noncomputable instance yoneda_preservesLimitsOfShape (X : C) :
     PreservesLimitsOfShape J (yoneda.obj X) where
 
 /-- The yoneda embeddings jointly reflect limits. -/
@@ -125,13 +125,13 @@ def Limits.coneOfSectionCompCoyoneda (F : J ⥤ C) (X : Cᵒᵖ)
   pt := X.unop
   π := compCoyonedaSectionsEquiv F X.unop s
 
-noncomputable instance coyonedaPreservesLimit (F : J ⥤ C) (X : Cᵒᵖ) :
+instance coyoneda_preservesLimit (F : J ⥤ C) (X : Cᵒᵖ) :
     PreservesLimit F (coyoneda.obj X) where
-  preserves {c} hc := Nonempty.some (by
+  preserves {c} hc := by
     rw [Types.isLimit_iff]
     intro s hs
     exact ⟨hc.lift (Limits.coneOfSectionCompCoyoneda F X ⟨s, hs⟩), hc.fac _,
-      hc.uniq (Limits.coneOfSectionCompCoyoneda F X ⟨s, hs⟩)⟩)
+      hc.uniq (Limits.coneOfSectionCompCoyoneda F X ⟨s, hs⟩)⟩
 
 variable (J) in
 noncomputable instance coyonedaPreservesLimitsOfShape (X : Cᵒᵖ) :
@@ -162,32 +162,39 @@ noncomputable def Limits.Cone.isLimitCoyonedaEquiv {F : J ⥤ C} (c : Cone F) :
 end
 
 /-- The yoneda embedding `yoneda.obj X : Cᵒᵖ ⥤ Type v` for `X : C` preserves limits. -/
-noncomputable instance yonedaPreservesLimits (X : C) :
+instance yoneda_preservesLimits (X : C) :
     PreservesLimitsOfSize.{t, w} (yoneda.obj X) where
 
 /-- The coyoneda embedding `coyoneda.obj X : C ⥤ Type v` for `X : Cᵒᵖ` preserves limits. -/
-noncomputable instance coyonedaPreservesLimits (X : Cᵒᵖ) :
+instance coyoneda_preservesLimits (X : Cᵒᵖ) :
     PreservesLimitsOfSize.{t, w} (coyoneda.obj X) where
 
-noncomputable instance yonedaFunctorPreservesLimits :
+instance yonedaFunctor_preservesLimits :
     PreservesLimitsOfSize.{t, w} (@yoneda C _) := by
-  apply preservesLimitsOfEvaluation
+  apply preservesLimits_of_evaluation
   intro K
   change PreservesLimitsOfSize (coyoneda.obj K)
   infer_instance
 
-noncomputable instance coyonedaFunctorPreservesLimits :
+noncomputable instance coyonedaFunctor_preservesLimits :
     PreservesLimitsOfSize.{t, w} (@coyoneda C _) := by
-  apply preservesLimitsOfEvaluation
+  apply preservesLimits_of_evaluation
   intro K
   change PreservesLimitsOfSize (yoneda.obj K)
   infer_instance
 
-noncomputable instance yonedaFunctorReflectsLimits :
+noncomputable instance yonedaFunctor_reflectsLimits :
     ReflectsLimitsOfSize.{t, w} (@yoneda C _) := inferInstance
 
-noncomputable instance coyonedaFunctorReflectsLimits :
+noncomputable instance coyonedaFunctor_reflectsLimits :
     ReflectsLimitsOfSize.{t, w} (@coyoneda C _) := inferInstance
+
+instance uliftYonedaFunctor_preservesLimits :
+    PreservesLimitsOfSize.{t, w} (uliftYoneda.{w'} : C ⥤ _) := by
+  apply preservesLimits_of_evaluation
+  intro K
+  change PreservesLimitsOfSize.{t, w} (coyoneda.obj K ⋙ uliftFunctor.{w'})
+  infer_instance
 
 namespace Functor
 
@@ -195,15 +202,15 @@ section Representable
 
 variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category J]
 
-noncomputable instance representablePreservesLimit (G : J ⥤ Cᵒᵖ) :
+instance representable_preservesLimit (G : J ⥤ Cᵒᵖ) :
     PreservesLimit G F :=
-  preservesLimitOfNatIso _ F.reprW
+  preservesLimit_of_natIso _ F.reprW
 
 variable (J) in
-noncomputable instance representablePreservesLimitsOfShape :
+instance representable_preservesLimitsOfShape :
     PreservesLimitsOfShape J F where
 
-noncomputable instance representablePreservesLimits :
+instance representable_preservesLimits :
     PreservesLimitsOfSize.{t, w} F where
 
 end Representable
@@ -212,15 +219,15 @@ section Corepresentable
 
 variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category J]
 
-noncomputable instance corepresentablePreservesLimit (G : J ⥤ C) :
+instance corepresentable_preservesLimit (G : J ⥤ C) :
     PreservesLimit G F :=
-  preservesLimitOfNatIso _ F.coreprW
+  preservesLimit_of_natIso _ F.coreprW
 
 variable (J) in
-noncomputable instance corepresentablePreservesLimitsOfShape :
+instance corepresentable_preservesLimitsOfShape :
     PreservesLimitsOfShape J F where
 
-noncomputable instance corepresentablePreservesLimits :
+instance corepresentable_preservesLimits :
     PreservesLimitsOfSize.{t, w} F where
 
 end Corepresentable

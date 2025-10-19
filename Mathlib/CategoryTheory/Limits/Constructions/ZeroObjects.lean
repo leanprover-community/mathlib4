@@ -32,7 +32,7 @@ def binaryFanZeroLeft (X : C) : BinaryFan (0 : C) X :=
 
 /-- The limit cone for the product with a zero object is limiting. -/
 def binaryFanZeroLeftIsLimit (X : C) : IsLimit (binaryFanZeroLeft X) :=
-  BinaryFan.isLimitMk (fun s => BinaryFan.snd s) (by aesop_cat) (by aesop_cat)
+  BinaryFan.isLimitMk (fun s => BinaryFan.snd s) (by cat_disch) (by simp)
     (fun s m _ h₂ => by simpa using h₂)
 
 instance hasBinaryProduct_zero_left (X : C) : HasBinaryProduct (0 : C) X :=
@@ -57,7 +57,7 @@ def binaryFanZeroRight (X : C) : BinaryFan X (0 : C) :=
 
 /-- The limit cone for the product with a zero object is limiting. -/
 def binaryFanZeroRightIsLimit (X : C) : IsLimit (binaryFanZeroRight X) :=
-  BinaryFan.isLimitMk (fun s => BinaryFan.fst s) (by aesop_cat) (by aesop_cat)
+  BinaryFan.isLimitMk (fun s => BinaryFan.fst s) (by simp) (by cat_disch)
     (fun s m h₁ _ => by simpa using h₁)
 
 instance hasBinaryProduct_zero_right (X : C) : HasBinaryProduct X (0 : C) :=
@@ -82,7 +82,7 @@ def binaryCofanZeroLeft (X : C) : BinaryCofan (0 : C) X :=
 
 /-- The colimit cocone for the coproduct with a zero object is colimiting. -/
 def binaryCofanZeroLeftIsColimit (X : C) : IsColimit (binaryCofanZeroLeft X) :=
-  BinaryCofan.isColimitMk (fun s => BinaryCofan.inr s) (by aesop_cat) (by aesop_cat)
+  BinaryCofan.isColimitMk (fun s => BinaryCofan.inr s) (by cat_disch) (by simp)
     (fun s m _ h₂ => by simpa using h₂)
 
 instance hasBinaryCoproduct_zero_left (X : C) : HasBinaryCoproduct (0 : C) X :=
@@ -107,7 +107,7 @@ def binaryCofanZeroRight (X : C) : BinaryCofan X (0 : C) :=
 
 /-- The colimit cocone for the coproduct with a zero object is colimiting. -/
 def binaryCofanZeroRightIsColimit (X : C) : IsColimit (binaryCofanZeroRight X) :=
-  BinaryCofan.isColimitMk (fun s => BinaryCofan.inl s) (by aesop_cat) (by aesop_cat)
+  BinaryCofan.isColimitMk (fun s => BinaryCofan.inl s) (by simp) (by cat_disch)
     (fun s m h₁ _ => by simpa using h₁)
 
 instance hasBinaryCoproduct_zero_right (X : C) : HasBinaryCoproduct X (0 : C) :=

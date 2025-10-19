@@ -10,36 +10,46 @@ on:
 jobs:
   merge-to-nightly:
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     steps:
-      - name: install elan
-        run: |
-          set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout nightly-testing from fork
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          fetch-depth: 0
+          repository: leanprover-community/mathlib4-nightly-testing
+          ref: nightly-testing
+          path: nightly-testing
           token: ${{ secrets.NIGHTLY_TESTING }}
+          fetch-depth: 0
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          lake-package-directory: "nightly-testing" # We will run `lake update` here later.
 
       - name: Configure Git User
         run: |
+          cd nightly-testing
           git config user.name "leanprover-community-mathlib4-bot"
           git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
 
       - name: Merge master to nightly favoring nightly changes
         run: |
-          git checkout nightly-testing
+          cd nightly-testing
+          git remote add upstream https://github.com/leanprover-community/mathlib4.git
+          git fetch upstream master
+          # Merge master into nightly-testing, resolving conflicts in favor of nightly-testing
           # If the merge goes badly, we proceed anyway via '|| true'.
           # CI will report failures on the 'nightly-testing' branch direct to Zulip.
-          git merge master --strategy-option ours --no-commit --allow-unrelated-histories || true
+          git merge upstream/master --strategy-option ours --no-commit --allow-unrelated-histories || true
           # We aggressively run `lake update`, to avoid having to do this by hand.
           # When Batteries changes break Mathlib, this will likely show up on nightly-testing first.
-          lake update
+          lake update -v
           git add .
           # If there's nothing to do (because there are no new commits from master),
           # that's okay, hence the '|| true'.
           git commit -m "Merge master into nightly-testing" || true
+          # Push to the mathlib4-nightly-testing fork
           git push origin nightly-testing

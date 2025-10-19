@@ -46,8 +46,6 @@ The congruences of a ring `R` biject to the congruences of the opposite ring `R�
 def opOrderIso : RingCon R ≃o RingCon Rᵐᵒᵖ where
   toFun := op
   invFun := unop
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' {c d} := by rw [le_def, le_def]; constructor <;> intro h _ _ h' <;> exact h h'
 
 end RingCon

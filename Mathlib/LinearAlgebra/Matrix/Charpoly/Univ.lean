@@ -11,7 +11,7 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
 # The universal characteristic polynomial
 
 In this file we define the universal characteristic polynomial `Matrix.charpoly.univ`,
-which is the charactistic polynomial of the matrix with entries `Xᵢⱼ`,
+which is the characteristic polynomial of the matrix with entries `Xᵢⱼ`,
 and hence has coefficients that are multivariate polynomials.
 
 It is universal in the sense that one obtains the characteristic polynomial of a matrix `M`
@@ -33,10 +33,10 @@ namespace Matrix.charpoly
 
 variable {R S : Type*} (n : Type*) [CommRing R] [CommRing S] [Fintype n] [DecidableEq n]
 variable (f : R →+* S)
-variable (R)
 
+variable (R) in
 /-- The universal characteristic polynomial for `n × n`-matrices,
-is the charactistic polynomial of `Matrix.mvPolynomialX n n ℤ` with entries `Xᵢⱼ`.
+is the characteristic polynomial of `Matrix.mvPolynomialX n n ℤ` with entries `Xᵢⱼ`.
 
 Its `i`-th coefficient is a homogeneous polynomial of degree `n - i`,
 see `Matrix.charpoly.univ_coeff_isHomogeneous`.
@@ -47,8 +47,6 @@ see `Matrix.charpoly.univ_map_eval₂Hom`. -/
 noncomputable
 abbrev univ : Polynomial (MvPolynomial (n × n) R) :=
   charpoly <| mvPolynomialX n n R
-
-variable {R}
 
 open MvPolynomial RingHomClass in
 @[simp]
@@ -77,7 +75,7 @@ lemma univ_natDegree [Nontrivial R] : (univ R n).natDegree = Fintype.card n :=
 @[simp]
 lemma univ_coeff_card : (univ R n).coeff (Fintype.card n) = 1 := by
   suffices Polynomial.coeff (univ ℤ n) (Fintype.card n) = 1 by
-    rw [← univ_map_map n (Int.castRingHom R), Polynomial.coeff_map, this, _root_.map_one]
+    rw [← univ_map_map n (Int.castRingHom R), Polynomial.coeff_map, this, map_one]
   rw [← univ_natDegree ℤ n]
   exact (univ_monic ℤ n).leadingCoeff
 
@@ -87,7 +85,7 @@ lemma optionEquivLeft_symm_univ_isHomogeneous :
   have aux : Fintype.card n = 0 + ∑ i : n, 1 := by
     simp only [zero_add, Finset.sum_const, smul_eq_mul, mul_one, Fintype.card]
   simp only [aux, univ, charpoly, charmatrix, scalar_apply, RingHom.mapMatrix_apply, det_apply',
-    sub_apply, map_apply, of_apply, map_sum, _root_.map_mul, map_intCast, map_prod, map_sub,
+    sub_apply, map_apply, of_apply, map_sum, map_mul, map_intCast, map_prod, map_sub,
     optionEquivLeft_symm_apply, Polynomial.aevalTower_C, rename_X, diagonal, mvPolynomialX]
   apply IsHomogeneous.sum
   rintro i -

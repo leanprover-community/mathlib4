@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModuleIntegers
+import Mathlib.Algebra.Module.LocalizedModule.Int
 import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.RingHom.Finite
 
@@ -56,6 +56,9 @@ lemma of_isLocalizedModule [Module.Finite R M] : Module.Finite Rₚ Mₚ := by
     (IsLocalization.mk' Rₚ (1 : R) m) (H this) using 0
   · rw [← hyx, ← IsLocalizedModule.mk'_one S, IsLocalizedModule.mk'_smul_mk']
     simp
+
+instance [Module.Finite R M] : Module.Finite (Localization S) (LocalizedModule S M) :=
+  of_isLocalizedModule S (LocalizedModule.mkLinearMap S M)
 
 end
 

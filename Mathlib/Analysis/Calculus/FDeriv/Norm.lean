@@ -27,7 +27,7 @@ at `t • x` when `t ≠ 0`.
 * `DifferentiableAt.fderiv_norm_self`: if the norm is differentiable at `x`,
   then `fderiv ℝ (‖·‖) x x = ‖x‖`.
 * `norm_fderiv_norm`: if the norm is differentiable at `x` then the operator norm of its derivative
-  is `1` (on a non trivial space).
+  is `1` (on a non-trivial space).
 
 ## Tags
 
@@ -38,7 +38,7 @@ differentiability, norm
 open ContinuousLinearMap Filter NNReal Real Set
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable {n : ℕ∞} {f : E →L[ℝ] ℝ} {x : E} {t : ℝ}
+variable {n : WithTop ℕ∞} {f : StrongDual ℝ E} {x : E} {t : ℝ}
 
 variable (E) in
 theorem not_differentiableAt_norm_zero [Nontrivial E] :
@@ -72,16 +72,16 @@ theorem contDiffAt_norm_smul_iff (ht : t ≠ 0) :
 
 theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t • x)) :
     ContDiffAt ℝ n (‖·‖) x := by
-  obtain rfl | hn : n = 0 ∨ 1 ≤ n := by
-    rw [← ENat.lt_one_iff_eq_zero]
-    exact lt_or_le ..
-  · rw [contDiffAt_zero]
+  rcases eq_bot_or_bot_lt n with rfl | hn
+  · apply contDiffAt_zero.2
     exact ⟨univ, univ_mem, continuous_norm.continuousOn⟩
+  replace hn : 1 ≤ n := ENat.add_one_natCast_le_withTop_of_lt hn
   obtain rfl | ht := eq_or_ne t 0
   · by_cases hE : Nontrivial E
     · rw [zero_smul] at h
-      exact (mt (ContDiffAt.differentiableAt · hn)) (not_differentiableAt_norm_zero E) h |>.elim
-    · rw [not_nontrivial_iff_subsingleton] at hE
+      exact (mt (ContDiffAt.differentiableAt · (mod_cast hn)))
+        (not_differentiableAt_norm_zero E) h |>.elim
+    · push_neg at hE
       rw [eq_const_of_subsingleton (‖·‖) 0]
       exact contDiffAt_const
   · exact contDiffAt_norm_smul_iff ht |>.2 h
@@ -148,7 +148,7 @@ theorem DifferentiableAt.differentiableAt_norm_of_smul (h : DifferentiableAt ℝ
   · by_cases hE : Nontrivial E
     · rw [zero_smul] at h
       exact not_differentiableAt_norm_zero E h |>.elim
-    · rw [not_nontrivial_iff_subsingleton] at hE
+    · push_neg at hE
       exact (hasFDerivAt_of_subsingleton _ _).differentiableAt
   · exact differentiableAt_norm_smul ht |>.2 h
 
@@ -162,14 +162,15 @@ theorem DifferentiableAt.fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖
   · conv_lhs => enter [1, 1]; change _root_.abs ∘ (fun t ↦ 1 + t)
     rw [deriv_comp, deriv_abs, deriv_const_add]
     · simp
-    · exact differentiableAt_abs (by norm_num)
+    · exact differentiableAt_abs (by simp)
     · exact differentiableAt_id.const_add _
-  · exact (differentiableAt_abs (by norm_num)).comp _ (differentiableAt_id.const_add _)
+  · exact (differentiableAt_abs (by simp)).comp _ (differentiableAt_id.const_add _)
 
 variable (x t) in
 theorem fderiv_norm_smul :
     fderiv ℝ (‖·‖) (t • x) = (SignType.sign t : ℝ) • (fderiv ℝ (‖·‖) x) := by
-  by_cases hE : Nontrivial E
+  cases subsingleton_or_nontrivial E
+  · simp_rw [(hasFDerivAt_of_subsingleton _ _).fderiv, smul_zero]
   · by_cases hd : DifferentiableAt ℝ (‖·‖) x
     · obtain rfl | ht := eq_or_ne t 0
       · simp only [zero_smul, _root_.sign_zero, SignType.coe_zero]
@@ -178,8 +179,6 @@ theorem fderiv_norm_smul :
     · rw [fderiv_zero_of_not_differentiableAt hd, fderiv_zero_of_not_differentiableAt]
       · simp
       · exact mt DifferentiableAt.differentiableAt_norm_of_smul hd
-  · rw [not_nontrivial_iff_subsingleton] at hE
-    simp_rw [(hasFDerivAt_of_subsingleton _ _).fderiv, smul_zero]
 
 theorem fderiv_norm_smul_pos (ht : 0 < t) :
     fderiv ℝ (‖·‖) (t • x) = fderiv ℝ (‖·‖) x := by

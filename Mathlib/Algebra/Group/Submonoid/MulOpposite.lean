@@ -19,9 +19,9 @@ variable {ι : Sort*} {M : Type*} [MulOneClass M]
 
 namespace Submonoid
 
-/-- Pull a submonoid back to an opposite submonoid along `MulOpposite.unop`-/
-@[to_additive (attr := simps) "Pull an additive submonoid back to an opposite submonoid along
-`AddOpposite.unop`"]
+/-- Pull a submonoid back to an opposite submonoid along `MulOpposite.unop` -/
+@[to_additive (attr := simps) /-- Pull an additive submonoid back to an opposite submonoid along
+`AddOpposite.unop` -/]
 protected def op (x : Submonoid M) : Submonoid Mᵐᵒᵖ where
   carrier := MulOpposite.unop ⁻¹' x
   mul_mem' ha hb := x.mul_mem hb ha
@@ -30,9 +30,9 @@ protected def op (x : Submonoid M) : Submonoid Mᵐᵒᵖ where
 @[to_additive (attr := simp)]
 theorem mem_op {x : Mᵐᵒᵖ} {S : Submonoid M} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
-/-- Pull an opposite submonoid back to a submonoid along `MulOpposite.op`-/
-@[to_additive (attr := simps) "Pull an opposite additive submonoid back to a submonoid along
-`AddOpposite.op`"]
+/-- Pull an opposite submonoid back to a submonoid along `MulOpposite.op` -/
+@[to_additive (attr := simps) /-- Pull an opposite additive submonoid back to a submonoid along
+`AddOpposite.op` -/]
 protected def unop (x : Submonoid Mᵐᵒᵖ) : Submonoid M where
   carrier := MulOpposite.op ⁻¹' x
   mul_mem' ha hb := x.mul_mem hb ha
@@ -66,8 +66,8 @@ theorem unop_le_unop_iff {S₁ S₂ : Submonoid Mᵐᵒᵖ} : S₁.unop ≤ S₂
   MulOpposite.unop_surjective.forall
 
 /-- A submonoid `H` of `G` determines a submonoid `H.op` of the opposite group `Gᵐᵒᵖ`. -/
-@[to_additive (attr := simps) "A additive submonoid `H` of `G` determines an additive submonoid
-`H.op` of the opposite group `Gᵐᵒᵖ`."]
+@[to_additive (attr := simps) /-- A additive submonoid `H` of `G` determines an additive submonoid
+`H.op` of the opposite group `Gᵐᵒᵖ`. -/]
 def opEquiv : Submonoid M ≃o Submonoid Mᵐᵒᵖ where
   toFun := Submonoid.op
   invFun := Submonoid.unop
@@ -157,7 +157,7 @@ theorem unop_iInf (S : ι → Submonoid Mᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S 
 
 @[to_additive]
 theorem op_closure (s : Set M) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Submonoid.unop_coe]
+  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Submonoid.coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 
@@ -167,7 +167,7 @@ theorem unop_closure (s : Set Mᵐᵒᵖ) : (closure s).unop = closure (MulOppos
   simp_rw [Set.preimage_preimage, MulOpposite.op_unop, Set.preimage_id']
 
 /-- Bijection between a submonoid `H` and its opposite. -/
-@[to_additive (attr := simps!) "Bijection between an additive submonoid `H` and its opposite."]
+@[to_additive (attr := simps!) /-- Bijection between an additive submonoid `H` and its opposite. -/]
 def equivOp (H : Submonoid M) : H ≃ H.op :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 

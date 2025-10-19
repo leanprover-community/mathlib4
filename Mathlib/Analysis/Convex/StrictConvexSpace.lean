@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.Normed.Module.Ray
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
 /-!
 # Strictly convex spaces
@@ -35,7 +36,7 @@ In a strictly convex space, we prove
 
 We also provide several lemmas that can be used as alternative constructors for `StrictConvex ℝ E`:
 
-- `StrictConvexSpace.of_strictConvex_closed_unit_ball`: if `closed_ball (0 : E) 1` is strictly
+- `StrictConvexSpace.of_strictConvex_unitClosedBall`: if `closed_ball (0 : E) 1` is strictly
   convex, then `E` is a strictly convex space;
 
 - `StrictConvexSpace.of_norm_add`: if `‖x + y‖ = ‖x‖ + ‖y‖` implies `SameRay ℝ x y` for all
@@ -57,18 +58,19 @@ open Convex Pointwise Set Metric
 require balls of positive radius with center at the origin to be strictly convex in the definition,
 then prove that any closed ball is strictly convex in `strictConvex_closedBall` below.
 
-See also `StrictConvexSpace.of_strictConvex_closed_unit_ball`. -/
-class StrictConvexSpace (𝕜 E : Type*) [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] : Prop where
+See also `StrictConvexSpace.of_strictConvex_unitClosedBall`. -/
+@[mk_iff]
+class StrictConvexSpace (𝕜 E : Type*) [NormedField 𝕜] [PartialOrder 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : Prop where
   strictConvex_closedBall : ∀ r : ℝ, 0 < r → StrictConvex 𝕜 (closedBall (0 : E) r)
 
-variable (𝕜 : Type*) {E : Type*} [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) {E : Type*} [NormedField 𝕜] [PartialOrder 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- A closed ball in a strictly convex space is strictly convex. -/
 theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
     StrictConvex 𝕜 (closedBall x r) := by
-  rcases le_or_lt r 0 with hr | hr
+  rcases le_or_gt r 0 with hr | hr
   · exact (subsingleton_closedBall x hr).strictConvex
   rw [← vadd_closedBall_zero]
   exact (StrictConvexSpace.strictConvex_closedBall r hr).vadd _
@@ -76,9 +78,9 @@ theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
 variable [NormedSpace ℝ E]
 
 /-- A real normed vector space is strictly convex provided that the unit ball is strictly convex. -/
-theorem StrictConvexSpace.of_strictConvex_closed_unit_ball [LinearMap.CompatibleSMul E E 𝕜 ℝ]
+theorem StrictConvexSpace.of_strictConvex_unitClosedBall [LinearMap.CompatibleSMul E E 𝕜 ℝ]
     (h : StrictConvex 𝕜 (closedBall (0 : E) 1)) : StrictConvexSpace 𝕜 E :=
-  ⟨fun r hr => by simpa only [smul_closedUnitBall_of_nonneg hr.le] using h.smul r⟩
+  ⟨fun r hr => by simpa only [smul_unitClosedBall_of_nonneg hr.le] using h.smul r⟩
 
 /-- Strict convexity is equivalent to `‖a • x + b • y‖ < 1` for all `x` and `y` of norm at most `1`
 and all strictly positive `a` and `b` such that `a + b = 1`. This lemma shows that it suffices to
@@ -87,7 +89,7 @@ theorem StrictConvexSpace.of_norm_combo_lt_one
     (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ∃ a b : ℝ, a + b = 1 ∧ ‖a • x + b • y‖ < 1) :
     StrictConvexSpace ℝ E := by
   refine
-    StrictConvexSpace.of_strictConvex_closed_unit_ball ℝ
+    StrictConvexSpace.of_strictConvex_unitClosedBall ℝ
       ((convex_closedBall _ _).strictConvex' fun x hx y hy hne => ?_)
   rw [interior_closedBall (0 : E) one_ne_zero, closedBall_diff_ball,
     mem_sphere_zero_iff_norm] at hx hy
@@ -101,7 +103,7 @@ theorem StrictConvexSpace.of_norm_combo_ne_one
       ∀ x y : E,
         ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ∃ a b : ℝ, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ ‖a • x + b • y‖ ≠ 1) :
     StrictConvexSpace ℝ E := by
-  refine StrictConvexSpace.of_strictConvex_closed_unit_ball ℝ
+  refine StrictConvexSpace.of_strictConvex_unitClosedBall ℝ
     ((convex_closedBall _ _).strictConvex ?_)
   simp only [interior_closedBall _ one_ne_zero, closedBall_diff_ball, Set.Pairwise,
     frontier_closedBall _ one_ne_zero, mem_sphere_zero_iff_norm]
@@ -164,8 +166,8 @@ theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x�
   rw [← norm_pos_iff] at hx hy
   have hxy : 0 < ‖x‖ + ‖y‖ := add_pos hx hy
   have :=
-    combo_mem_ball_of_ne (inv_norm_smul_mem_closed_unit_ball x)
-      (inv_norm_smul_mem_closed_unit_ball y) hne (div_pos hx hxy) (div_pos hy hxy)
+    combo_mem_ball_of_ne (inv_norm_smul_mem_unitClosedBall x)
+      (inv_norm_smul_mem_unitClosedBall y) hne (div_pos hx hxy) (div_pos hy hxy)
       (by rw [← add_div, div_self hxy.ne'])
   rwa [mem_ball_zero_iff, div_eq_inv_mul, div_eq_inv_mul, mul_smul, mul_smul, smul_inv_smul₀ hx.ne',
     smul_inv_smul₀ hy.ne', ← smul_add, norm_smul, Real.norm_of_nonneg (inv_pos.2 hxy).le, ←

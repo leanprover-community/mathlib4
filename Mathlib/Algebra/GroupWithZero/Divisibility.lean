@@ -6,6 +6,7 @@ Neil Strickland, Aaron Anderson
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Divisibility.Units
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Divisibility in groups with zero.
@@ -14,7 +15,7 @@ Lemmas about divisibility in groups and monoids with zero.
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 variable {α : Type*}
 
@@ -26,7 +27,7 @@ theorem eq_zero_of_zero_dvd (h : 0 ∣ a) : a = 0 :=
   Dvd.elim h fun c H' => H'.trans (zero_mul c)
 
 /-- Given an element `a` of a commutative semigroup with zero, there exists another element whose
-    product with zero equals `a` iff `a` equals zero. -/
+product with zero equals `a` iff `a` equals zero. -/
 @[simp]
 theorem zero_dvd_iff : 0 ∣ a ↔ a = 0 :=
   ⟨eq_zero_of_zero_dvd, fun h => by
@@ -40,13 +41,13 @@ theorem dvd_zero (a : α) : a ∣ 0 :=
 end SemigroupWithZero
 
 /-- Given two elements `b`, `c` of a `CancelMonoidWithZero` and a nonzero element `a`,
- `a*b` divides `a*c` iff `b` divides `c`. -/
+`a*b` divides `a*c` iff `b` divides `c`. -/
 theorem mul_dvd_mul_iff_left [CancelMonoidWithZero α] {a b c : α} (ha : a ≠ 0) :
     a * b ∣ a * c ↔ b ∣ c :=
   exists_congr fun d => by rw [mul_assoc, mul_right_inj' ha]
 
 /-- Given two elements `a`, `b` of a commutative `CancelMonoidWithZero` and a nonzero
-  element `c`, `a*c` divides `b*c` iff `a` divides `b`. -/
+element `c`, `a*c` divides `b*c` iff `a` divides `b`. -/
 theorem mul_dvd_mul_iff_right [CancelCommMonoidWithZero α] {a b c : α} (hc : c ≠ 0) :
     a * c ∣ b * c ↔ a ∣ b :=
   exists_congr fun d => by rw [mul_right_comm, mul_left_inj' hc]
@@ -168,3 +169,18 @@ lemma pow_dvd_pow_iff (ha₀ : a ≠ 0) (ha : ¬IsUnit a) : a ^ n ∣ a ^ m ↔ 
   · apply pow_dvd_pow
 
 end CancelCommMonoidWithZero
+
+section GroupWithZero
+variable [GroupWithZero α]
+
+/-- `∣` is not a useful definition if an inverse is available. -/
+@[simp]
+lemma GroupWithZero.dvd_iff {m n : α} : m ∣ n ↔ (m = 0 → n = 0) := by
+  refine ⟨fun ⟨a, ha⟩ hm => ?_, fun h => ?_⟩
+  · simp [hm, ha]
+  · refine ⟨m⁻¹ * n, ?_⟩
+    obtain rfl | hn := eq_or_ne n 0
+    · simp
+    · rw [mul_inv_cancel_left₀ (mt h hn)]
+
+end GroupWithZero

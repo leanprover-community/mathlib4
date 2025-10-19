@@ -16,15 +16,15 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 
 * `BialgHom R A B`: the type of `R`-bialgebra morphisms from `A` to `B`.
 * `Bialgebra.counitBialgHom R A : A →ₐc[R] R`: the counit of a bialgebra as a bialgebra
-homomorphism.
+  homomorphism.
 
-## Notations
+## Notation
 
 * `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
 
 -/
 
-open TensorProduct Bialgebra
+open TensorProduct Bialgebra Coalgebra Function
 
 universe u v w
 
@@ -48,8 +48,8 @@ notation:25 A " →ₐc[" R "] " B => BialgHom R A B
 from `A` to `B`. -/
 class BialgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
-    extends CoalgHomClass F R A B, MonoidHomClass F A B : Prop
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
+    extends CoalgHomClass F R A B, MonoidHomClass F A B
 
 namespace BialgHomClass
 
@@ -100,8 +100,10 @@ end BialgHomClass
 
 namespace BialgHom
 
-variable {R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-  [Semiring B] [Algebra R B] [Semiring C] [Algebra R C] [Semiring D] [Algebra R D]
+variable {R A B C D : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+
+section AlgebraCoalgebra
+variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
 instance funLike : FunLike (A →ₐc[R] B) A B where
@@ -146,9 +148,11 @@ theorem coe_coalgHom_mk {f : A →ₗc[R] B} (h h₁) :
     ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := by
   rfl
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑(f : A →ₗc[R] B) = f :=
   rfl
+
+lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rfl
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
@@ -224,7 +228,7 @@ variable (R A)
 
 variable {R A}
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BialgHom.id R A) = id :=
   rfl
 
@@ -272,7 +276,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐc[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
@@ -288,16 +292,34 @@ theorem one_apply (x : A) : (1 : A →ₐc[R] A) x = x :=
 theorem mul_apply (φ ψ : A →ₐc[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
 
+end AlgebraCoalgebra
+
+variable [Bialgebra R A] [Bialgebra R B]
+
+/-- Construct a bialgebra hom from an algebra hom respecting counit and comultiplication. -/
+@[simps!]
+def ofAlgHom (f : A →ₐ[R] B) (counit_comp : (counitAlgHom R B).comp f = counitAlgHom R A)
+    (map_comp_comul :
+      (Algebra.TensorProduct.map f f).comp (comulAlgHom _ _) = (comulAlgHom _ _).comp f) :
+    A →ₐc[R] B where
+  __ := f
+  map_smul' := map_smul f
+  counit_comp := congr(($counit_comp).toLinearMap)
+  map_comp_comul := congr(($map_comp_comul).toLinearMap)
+
 end BialgHom
 
 namespace Bialgebra
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
-variable (R : Type u) (A : Type v)
+variable (R A) in
+/-- The unit of a bialgebra as a `BialgHom`. -/
+noncomputable def unitBialgHom : R →ₐc[R] A :=
+  .ofAlgHom (Algebra.ofId R A) (by ext) (by ext)
 
-variable [CommSemiring R] [Semiring A] [Bialgebra R A]
-
+variable (R A) in
 /-- The counit of a bialgebra as a `BialgHom`. -/
-def counitBialgHom : A →ₐc[R] R :=
+noncomputable def counitBialgHom : A →ₐc[R] R :=
   { Coalgebra.counitCoalgHom R A, counitAlgHom R A with }
 
 @[simp]
@@ -307,8 +329,6 @@ theorem counitBialgHom_apply (x : A) :
 @[simp]
 theorem counitBialgHom_toCoalgHom :
     counitBialgHom R A = Coalgebra.counitCoalgHom R A := rfl
-
-variable {R}
 
 instance subsingleton_to_ring : Subsingleton (A →ₐc[R] R) :=
   ⟨fun _ _ => BialgHom.coe_coalgHom_injective (Subsingleton.elim _ _)⟩

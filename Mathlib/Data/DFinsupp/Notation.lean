@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Notation
 
 /-!
@@ -21,27 +21,30 @@ namespace DFinsupp
 
 open Lean Parser Term
 
-attribute [term_parser] Finsupp.stxSingle₀ Finsupp.stxUpdate₀
+namespace Internal
+open Finsupp.Internal
 
 /-- `DFinsupp` elaborator for `single₀`. -/
-@[term_elab Finsupp.stxSingle₀]
+@[term_elab Finsupp.Internal.stxSingle₀]
 def elabSingle₀ : Elab.Term.TermElab
   | `(term| single₀ $i $x) => fun ty? => do
     Elab.Term.tryPostponeIfNoneOrMVar ty?
-    let .some ty := ty? | Elab.throwUnsupportedSyntax
+    let some ty := ty? | Elab.throwUnsupportedSyntax
     let_expr DFinsupp _ _ _ := ← Meta.withReducible (Meta.whnf ty) | Elab.throwUnsupportedSyntax
     Elab.Term.elabTerm (← `(DFinsupp.single $i $x)) ty?
   | _ => fun _ => Elab.throwUnsupportedSyntax
 
 /-- `DFinsupp` elaborator for `update₀`. -/
-@[term_elab Finsupp.stxUpdate₀]
+@[term_elab Finsupp.Internal.stxUpdate₀]
 def elabUpdate₀ : Elab.Term.TermElab
   | `(term| update₀ $f $i $x) => fun ty? => do
     Elab.Term.tryPostponeIfNoneOrMVar ty?
-    let .some ty := ty? | Elab.throwUnsupportedSyntax
+    let some ty := ty? | Elab.throwUnsupportedSyntax
     let_expr DFinsupp _ _ _ := ← Meta.withReducible (Meta.whnf ty) | Elab.throwUnsupportedSyntax
     Elab.Term.elabTerm (← `(DFinsupp.update $f $i $x)) ty?
   | _ => fun _ => Elab.throwUnsupportedSyntax
+
+end Internal
 
 /-- Unexpander for the `fun₀ | i => x` notation. -/
 @[app_unexpander DFinsupp.single]

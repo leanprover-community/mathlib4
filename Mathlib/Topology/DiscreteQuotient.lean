@@ -5,6 +5,8 @@ Authors: Calle Sönne, Adam Topaz
 -/
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.Topology.Separation.Regular
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 
@@ -60,12 +62,12 @@ of finite discrete spaces.
 -/
 
 
-open Set Function TopologicalSpace
+open Set Function TopologicalSpace Topology
 
 variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- The type of discrete quotients of a topological space. -/
-@[ext] -- Porting note: in Lean 4, uses projection to `r` instead of `Setoid`.
+@[ext]
 structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X where
   /-- For every point `x`, the set `{ y | Rel x y }` is an open set. -/
   protected isOpen_setOf_rel : ∀ x, IsOpen (setOf (toSetoid x))
@@ -104,19 +106,16 @@ theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.toSetoid x) :=
   Set.ext fun _ => eq_comm.trans Quotient.eq''
 
 theorem proj_surjective : Function.Surjective S.proj :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.mk''_surjective
 
 theorem proj_isQuotientMap : IsQuotientMap S.proj :=
   isQuotientMap_quot_mk
-
-@[deprecated (since := "2024-10-22")]
-alias proj_quotientMap := proj_isQuotientMap
 
 theorem proj_continuous : Continuous S.proj :=
   S.proj_isQuotientMap.continuous
 
 instance : DiscreteTopology S :=
-  singletons_open_iff_discrete.1 <| S.proj_surjective.forall.2 fun x => by
+  discreteTopology_iff_isOpen_singleton.2 <| S.proj_surjective.forall.2 fun x => by
     rw [← S.proj_isQuotientMap.isOpen_preimage, fiber_eq]
     exact S.isOpen_setOf_rel _
 
@@ -136,7 +135,7 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.toSetoid x)) := by
   rw [← fiber_eq]
   apply isClopen_preimage
 
-instance : Inf (DiscreteQuotient X) :=
+instance : Min (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
 instance : SemilatticeInf (DiscreteQuotient X) :=
@@ -150,7 +149,7 @@ instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 
 instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
 
--- Porting note (#11215): TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
+-- TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/
@@ -282,7 +281,7 @@ theorem map_proj (cond : LEComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 @[simp]
 theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 
--- Porting note (#11215): TODO: figure out why `simpNF` says this is a bad `@[simp]` lemma
+/- This can't be a `@[simp]` lemma since `h1` and `h2` can't be found by unification in a Prop. -/
 theorem map_comp (h1 : LEComap g B C) (h2 : LEComap f A B) :
     map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩

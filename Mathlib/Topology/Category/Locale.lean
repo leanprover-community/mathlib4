@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Category.Frm
+import Mathlib.Topology.Category.CompHaus.Frm
 
 /-!
 # The category of locales
@@ -52,4 +53,5 @@ def topToLocale : TopCat ⥤ Locale :=
 instance CompHausToLocale.faithful : (compHausToTop ⋙ topToLocale.{u}).Faithful :=
   ⟨fun h => by
     dsimp at h
-    exact Opens.comap_injective (Quiver.Hom.op_inj h)⟩
+    exact ConcreteCategory.ext (Opens.comap_injective (congr_arg Frm.Hom.hom
+      (Quiver.Hom.op_inj h)))⟩

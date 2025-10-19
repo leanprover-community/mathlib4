@@ -3,14 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.Localization.Adjunction
 
 /-!
 # Bousfield localization
 
-Given a predicate `P : C → Prop` on the objects of a category `C`,
+Given a predicate `P : ObjectProperty C` on the objects of a category `C`,
 we define `Localization.LeftBousfield.W P : MorphismProperty C`
 as the class of morphisms `f : X ⟶ Y` such that for any `Z : C`
 such that `P Z`, the precomposition with `f` induces a bijection
@@ -42,9 +42,9 @@ namespace LeftBousfield
 
 section
 
-variable (P : C → Prop)
+variable (P : ObjectProperty C)
 
-/-- Given a predicate `P : C → Prop`, this is the class of morphisms `f : X ⟶ Y`
+/-- Given `P : ObjectProperty C`, this is the class of morphisms `f : X ⟶ Y`
 such that for all `Z : C` such that `P Z`, the precomposition with `f` induces
 a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`. -/
 def W : MorphismProperty C := fun _ _ f =>
@@ -58,11 +58,11 @@ noncomputable def W.homEquiv {X Y : C} {f : X ⟶ Y} (hf : W P f) (Z : C) (hZ : 
     (Y ⟶ Z) ≃ (X ⟶ Z) :=
   Equiv.ofBijective _ (hf Z hZ)
 
-lemma W_isoClosure : W (isoClosure P) = W P := by
+lemma W_isoClosure : W P.isoClosure = W P := by
   ext X Y f
   constructor
   · intro hf Z hZ
-    exact hf _ (le_isoClosure _ _ hZ)
+    exact hf _ (P.le_isoClosure _ hZ)
   · rintro hf Z ⟨Z', hZ', ⟨e⟩⟩
     constructor
     · intro g₁ g₂ eq
@@ -101,6 +101,10 @@ lemma W_iff_isIso {X Y : C} (f : X ⟶ Y) (hX : P X) (hY : P Y) :
     exact ⟨g, hg, (hf _ hY).1 (by simp only [reassoc_of% hg, comp_id])⟩
   · apply W_of_isIso
 
+instance : (W P).RespectsIso where
+  precomp f (_ : IsIso f) g hg := (W P).comp_mem f g (W_of_isIso _ f) hg
+  postcomp f (_ : IsIso f) g hg := (W P).comp_mem g f hg (W_of_isIso _ f)
+
 end
 
 section
@@ -117,9 +121,9 @@ lemma W_adj_unit_app (X : D) : W (· ∈ Set.range F.obj) (adj.unit.app X) := by
 
 lemma W_iff_isIso_map {X Y : D} (f : X ⟶ Y) :
     W (· ∈ Set.range F.obj) f ↔ IsIso (G.map f) := by
-  rw [← MorphismProperty.postcomp_iff _ _ _ (W_adj_unit_app adj Y)]
+  rw [← (W (· ∈ Set.range F.obj)).postcomp_iff _ _ (W_adj_unit_app adj Y)]
   erw [adj.unit.naturality f]
-  rw [MorphismProperty.precomp_iff _ _ _ (W_adj_unit_app adj X),
+  rw [(W (· ∈ Set.range F.obj)).precomp_iff _ _ (W_adj_unit_app adj X),
     W_iff_isIso _ _ ⟨_, rfl⟩ ⟨_, rfl⟩]
   constructor
   · intro h

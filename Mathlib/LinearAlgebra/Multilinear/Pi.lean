@@ -43,9 +43,9 @@ theorem pi_ext [Finite ι] [∀ i, Finite (κ i)] [∀ i, DecidableEq (κ i)]
       f.compLinearMap (fun i => LinearMap.single R _ (p i)) =
       g.compLinearMap (fun i => LinearMap.single R _ (p i))) : f = g := by
   ext x
-  show f (fun i ↦ x i) = g (fun i ↦ x i)
+  change f (fun i ↦ x i) = g (fun i ↦ x i)
   obtain ⟨i⟩ := nonempty_fintype ι
-  have (i) := (nonempty_fintype (κ i)).some
+  have (i : _) := (nonempty_fintype (κ i)).some
   have := Classical.decEq ι
   rw [funext (fun i ↦ Eq.symm (Finset.univ_sum_single (x i)))]
   simp_rw [MultilinearMap.map_sum_finset]
@@ -73,14 +73,12 @@ from each selection of indices (with domain `Π i, κ i`).
 def piFamily (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
     MultilinearMap R (fun i => Π j : κ i, M i j) (Π t : Π i, κ i, N t) where
   toFun x := fun p => f p (fun i => x i (p i))
-  map_add' {dec} m i x y := funext fun p => by
-    cases Subsingleton.elim dec (by infer_instance)
+  map_update_add' {dec} m i x y := funext fun p => by
     dsimp
-    simp_rw [Function.apply_update (fun i m => m (p i)) m, Pi.add_apply, (f p).map_add]
-  map_smul' {dec} m i c x := funext fun p => by
-    cases Subsingleton.elim dec (by infer_instance)
+    simp_rw [Function.apply_update (fun i m => m (p i)) m, Pi.add_apply, (f p).map_update_add]
+  map_update_smul' {dec} m i c x := funext fun p => by
     dsimp
-    simp_rw [Function.apply_update (fun i m => m (p i)) m, Pi.smul_apply, (f p).map_smul]
+    simp_rw [Function.apply_update (fun i m => m (p i)) m, Pi.smul_apply, (f p).map_update_smul]
 
 /-- When applied to a family of finitely-supported functions each supported on a single element,
 `piFamily` is itself supported on a single element, with value equal to the map `f` applied
@@ -98,6 +96,23 @@ theorem piFamily_single [Fintype ι] [∀ i, DecidableEq (κ i)]
     obtain ⟨i, hpqi⟩ := hpq
     apply (f q).map_coord_zero i
     simp_rw [Pi.single_eq_of_ne' hpqi]
+
+/-- When only one member of the family of multilinear maps is nonzero, the result consists only of
+the component from that member. -/
+@[simp]
+theorem piFamily_single_left_apply [Fintype ι] [∀ i, DecidableEq (κ i)]
+    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) (x : Π i j, M i j) :
+    piFamily (Pi.single p f) x = Pi.single p (f fun i => x i (p i)) := by
+  ext p'
+  obtain rfl | hp := eq_or_ne p p'
+  · simp
+  · simp [hp]
+
+theorem piFamily_single_left [Fintype ι] [∀ i, DecidableEq (κ i)]
+    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+    piFamily (Pi.single p f) =
+      (LinearMap.single R _ p).compMultilinearMap (f.compLinearMap fun i => .proj (p i)) :=
+  ext <| piFamily_single_left_apply _ _
 
 @[simp]
 theorem piFamily_compLinearMap_lsingle [Fintype ι] [∀ i, DecidableEq (κ i)]

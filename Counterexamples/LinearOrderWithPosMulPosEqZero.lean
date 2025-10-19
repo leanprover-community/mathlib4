@@ -68,13 +68,16 @@ instance commMonoid : CommMonoid Foo where
   mul_comm := by boom
   mul_assoc := by boom
 
-instance : LinearOrderedCommMonoidWithZero Foo :=
-  { Foo.linearOrder, Foo.commMonoid with
-    zero := 0
-    zero_mul := by boom
-    mul_zero := by boom
-    mul_le_mul_left := by rintro ⟨⟩ ⟨⟩ h ⟨⟩ <;> revert h <;> decide
-    zero_le_one := by decide }
+instance : LinearOrderedCommMonoidWithZero Foo where
+  __ := linearOrder
+  __ := commMonoid
+  zero := 0
+  zero_mul := by boom
+  mul_zero := by boom
+  mul_le_mul_left := by rintro ⟨⟩ ⟨⟩ h ⟨⟩ <;> revert h <;> decide
+  zero_le_one := by decide
+  bot := 0
+  bot_le := by boom
 
 theorem not_mul_pos : ¬∀ {M : Type} [LinearOrderedCommMonoidWithZero M],
     ∀ a b : M, 0 < a → 0 < b → 0 < a * b := by

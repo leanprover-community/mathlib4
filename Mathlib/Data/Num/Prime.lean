@@ -3,8 +3,8 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Num.Lemmas
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Num.ZNum
 import Mathlib.Tactic.Ring
 
 /-!
@@ -37,18 +37,19 @@ def minFacAux (n : PosNum) : ℕ → PosNum → PosNum
   | fuel + 1, k =>
     if n < k.bit1 * k.bit1 then n else if k.bit1 ∣ n then k.bit1 else minFacAux n fuel k.succ
 
-set_option linter.deprecated false in
 theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.bit1) :
     (minFacAux n fuel k : ℕ) = Nat.minFacAux n k.bit1 := by
-  induction' fuel with fuel ih generalizing k <;> rw [minFacAux, Nat.minFacAux]
-  · rw [Nat.zero_add, Nat.sqrt_lt] at h
+  induction fuel generalizing k <;> rw [minFacAux, Nat.minFacAux]
+  case zero =>
+    rw [Nat.zero_add, Nat.sqrt_lt] at h
     simp only [h, ite_true]
-  simp_rw [← mul_to_nat]
-  simp only [cast_lt, dvd_to_nat]
-  split_ifs <;> try rfl
-  rw [ih] <;> [congr; convert Nat.lt_succ_of_lt h using 1] <;>
-    simp only [cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
-      add_left_comm, ← one_add_one_eq_two]
+  case succ fuel ih =>
+    simp_rw [← mul_to_nat]
+    simp only [cast_lt, dvd_to_nat]
+    split_ifs <;> try rfl
+    rw [ih] <;> [congr; convert Nat.lt_succ_of_lt h using 1] <;>
+      simp only [cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
+        add_left_comm, ← one_add_one_eq_two]
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
 def minFac : PosNum → PosNum
@@ -58,8 +59,8 @@ def minFac : PosNum → PosNum
 
 @[simp]
 theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
-  cases' n with n
-  · rfl
+  obtain - | n := n
+  · simp [minFac]
   · rw [minFac, Nat.minFac_eq, if_neg]
     swap
     · simp [← two_mul]
@@ -70,8 +71,7 @@ theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
     calc
       (n : ℕ) + (n : ℕ) + 1 ≤ (n : ℕ) + (n : ℕ) + (n : ℕ) := by simp
       _ = (n : ℕ) * (1 + 1 + 1) := by simp only [mul_add, mul_one]
-      _ < _ := by
-        set_option simprocs false in simp [mul_lt_mul]
+      _ < _ := by simp [mul_lt_mul]
   · rw [minFac, Nat.minFac_eq, if_pos]
     · rfl
     simp [← two_mul]

@@ -48,9 +48,9 @@ assert_not_imported Mathlib.Tactic.Common
 -- `NeZero` theory should not be needed in the basic algebraic hierarchy
 assert_not_imported Mathlib.Algebra.NeZero
 
-assert_not_exists MonoidHom
+assert_not_exists MonoidHom Set
 
-open Function Set
+open Function
 
 universe u
 
@@ -172,6 +172,7 @@ See also note [forgetful inheritance].
 
 If the field has positive characteristic `p`, our division by zero convention forces
 `ratCast (1 / p) = 1 / 0 = 0`. -/
+@[stacks 09FD "first part"]
 class Field (K : Type u) extends CommRing K, DivisionRing K
 
 -- see Note [lower instance priority]
@@ -188,8 +189,6 @@ lemma smul_def (q : ℚ≥0) (a : K) : q • a = q * a := DivisionSemiring.nnqsm
 variable (K)
 
 @[simp] lemma smul_one_eq_cast (q : ℚ≥0) : q • (1 : K) = q := by rw [NNRat.smul_def, mul_one]
-
-@[deprecated (since := "2024-05-03")] alias smul_one_eq_coe := smul_one_eq_cast
 
 end NNRat
 
@@ -208,8 +207,6 @@ theorem smul_def (a : ℚ) (x : K) : a • x = ↑a * x := DivisionRing.qsmul_de
 @[simp]
 theorem smul_one_eq_cast (A : Type*) [DivisionRing A] (m : ℚ) : m • (1 : A) = ↑m := by
   rw [Rat.smul_def, mul_one]
-
-@[deprecated (since := "2024-05-03")] alias smul_one_eq_coe := smul_one_eq_cast
 
 end Rat
 

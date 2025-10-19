@@ -37,51 +37,51 @@ variable (S : ShortComplex Ab.{u})
 
 @[simp]
 lemma ab_zero_apply (x : S.X₁) : S.g (S.f x) = 0 := by
-  rw [← comp_apply, S.zero]
+  rw [← ConcreteCategory.comp_apply, S.zero]
   rfl
 
 /-- The canonical additive morphism `S.X₁ →+ AddMonoidHom.ker S.g` induced by `S.f`. -/
 @[simps!]
-def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g :=
+def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g.hom :=
     AddMonoidHom.mk' (fun x => ⟨S.f x, S.ab_zero_apply x⟩) (by aesop)
 
 /-- The explicit left homology data of a short complex of abelian group that is
 given by a kernel and a quotient given by the `AddMonoidHom` API. -/
 @[simps]
 def abLeftHomologyData : S.LeftHomologyData where
-  K := AddCommGrp.of (AddMonoidHom.ker S.g)
-  H := AddCommGrp.of ((AddMonoidHom.ker S.g) ⧸ AddMonoidHom.range S.abToCycles)
-  i := (AddMonoidHom.ker S.g).subtype
-  π := QuotientAddGroup.mk' _
+  K := AddCommGrpCat.of (AddMonoidHom.ker S.g.hom)
+  H := AddCommGrpCat.of ((AddMonoidHom.ker S.g.hom) ⧸ AddMonoidHom.range S.abToCycles)
+  i := AddCommGrpCat.ofHom <| (AddMonoidHom.ker S.g.hom).subtype
+  π := AddCommGrpCat.ofHom <| QuotientAddGroup.mk' _
   wi := by
     ext ⟨_, hx⟩
     exact hx
-  hi := AddCommGrp.kernelIsLimit _
+  hi := AddCommGrpCat.kernelIsLimit _
   wπ := by
     ext (x : S.X₁)
-    erw [QuotientAddGroup.eq_zero_iff]
-    rw [AddMonoidHom.mem_range]
+    dsimp
+    rw [QuotientAddGroup.eq_zero_iff, AddMonoidHom.mem_range]
     apply exists_apply_eq_apply
-  hπ := AddCommGrp.cokernelIsColimit (AddCommGrp.ofHom S.abToCycles)
+  hπ := AddCommGrpCat.cokernelIsColimit (AddCommGrpCat.ofHom S.abToCycles)
 
 @[simp]
-lemma abLeftHomologyData_f' : S.abLeftHomologyData.f' = S.abToCycles := rfl
+lemma abLeftHomologyData_f' : S.abLeftHomologyData.f' = AddCommGrpCat.ofHom S.abToCycles := rfl
 
 /-- Given a short complex `S` of abelian groups, this is the isomorphism between
 the abstract `S.cycles` of the homology API and the more concrete description as
 `AddMonoidHom.ker S.g`. -/
-noncomputable def abCyclesIso : S.cycles ≅ AddCommGrp.of (AddMonoidHom.ker S.g) :=
+noncomputable def abCyclesIso : S.cycles ≅ AddCommGrpCat.of (AddMonoidHom.ker S.g.hom) :=
   S.abLeftHomologyData.cyclesIso
 
--- This was a simp lemma until we made `AddCommGrp.coe_of` a simp lemma,
+-- This was a simp lemma until we made `AddCommGrpCat.coe_of` a simp lemma,
 -- after which the simp normal form linter complains.
 -- It was not used a simp lemma in Mathlib.
 -- Possible solution: higher priority function coercions that remove the `of`?
 -- @[simp]
-lemma abCyclesIso_inv_apply_iCycles (x : AddMonoidHom.ker S.g) :
+lemma abCyclesIso_inv_apply_iCycles (x : AddMonoidHom.ker S.g.hom) :
     S.iCycles (S.abCyclesIso.inv x) = x := by
   dsimp only [abCyclesIso]
-  rw [← comp_apply, S.abLeftHomologyData.cyclesIso_inv_comp_iCycles]
+  rw [← ConcreteCategory.comp_apply, S.abLeftHomologyData.cyclesIso_inv_comp_iCycles]
   rfl
 
 /-- Given a short complex `S` of abelian groups, this is the isomorphism between
@@ -89,13 +89,13 @@ the abstract `S.homology` of the homology API and the more explicit
 quotient of `AddMonoidHom.ker S.g` by the image of
 `S.abToCycles : S.X₁ →+ AddMonoidHom.ker S.g`. -/
 noncomputable def abHomologyIso : S.homology ≅
-    AddCommGrp.of ((AddMonoidHom.ker S.g) ⧸ AddMonoidHom.range S.abToCycles) :=
+    AddCommGrpCat.of ((AddMonoidHom.ker S.g.hom) ⧸ AddMonoidHom.range S.abToCycles) :=
   S.abLeftHomologyData.homologyIso
 
 lemma exact_iff_surjective_abToCycles :
     S.Exact ↔ Function.Surjective S.abToCycles := by
   rw [S.abLeftHomologyData.exact_iff_epi_f', abLeftHomologyData_f',
-    AddCommGrp.epi_iff_surjective]
+    AddCommGrpCat.epi_iff_surjective]
   rfl
 
 lemma ab_exact_iff :
@@ -121,15 +121,15 @@ lemma ab_exact_iff_function_exact :
     simp only [ab_zero_apply]
   · tauto
 
-lemma ab_exact_iff_ker_le_range : S.Exact ↔ S.g.ker ≤ S.f.range := S.ab_exact_iff
+lemma ab_exact_iff_ker_le_range : S.Exact ↔ S.g.hom.ker ≤ S.f.hom.range := S.ab_exact_iff
 
-lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.range = S.g.ker := by
+lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.hom.range = S.g.hom.ker := by
   rw [ab_exact_iff_ker_le_range]
   constructor
   · intro h
     refine le_antisymm ?_ h
     rintro _ ⟨x₁, rfl⟩
-    rw [AddMonoidHom.mem_ker, ← comp_apply, S.zero]
+    rw [AddMonoidHom.mem_ker, ← ConcreteCategory.comp_apply, S.zero]
     rfl
   · intro h
     rw [h]
@@ -138,11 +138,11 @@ variable {S}
 
 lemma ShortExact.ab_injective_f (hS : S.ShortExact) :
     Function.Injective S.f :=
-  (AddCommGrp.mono_iff_injective _).1 hS.mono_f
+  (AddCommGrpCat.mono_iff_injective _).1 hS.mono_f
 
 lemma ShortExact.ab_surjective_g (hS : S.ShortExact) :
     Function.Surjective S.g :=
-  (AddCommGrp.epi_iff_surjective _).1 hS.epi_g
+  (AddCommGrpCat.epi_iff_surjective _).1 hS.epi_g
 
 variable (S)
 

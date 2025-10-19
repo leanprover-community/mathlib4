@@ -68,14 +68,15 @@ instance _root_.GradedMonoid.isScalarTower_right :
 variable [DecidableEq ι]
 
 instance : Algebra R (⨁ i, A i) where
-  toFun := (DirectSum.of A 0).comp GAlgebra.toFun
-  map_zero' := AddMonoidHom.map_zero _
-  map_add' := AddMonoidHom.map_add _
-  map_one' := DFunLike.congr_arg (DirectSum.of A 0) GAlgebra.map_one
-  map_mul' a b := by
-    simp only [AddMonoidHom.comp_apply]
-    rw [of_mul_of]
-    apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.map_mul a b)
+  algebraMap :=
+  { toFun := (DirectSum.of A 0).comp GAlgebra.toFun
+    map_zero' := AddMonoidHom.map_zero _
+    map_add' := AddMonoidHom.map_add _
+    map_one' := DFunLike.congr_arg (DirectSum.of A 0) GAlgebra.map_one
+    map_mul' a b := by
+      simp only [AddMonoidHom.comp_apply]
+      rw [of_mul_of]
+      apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.map_mul a b) }
   commutes' r x := by
     change AddMonoidHom.mul (DirectSum.of _ _ _) x = AddMonoidHom.mul.flip (DirectSum.of _ _ _) x
     apply DFunLike.congr_fun _ x
@@ -103,7 +104,7 @@ theorem algebraMap_toAddMonoid_hom :
 /-- A family of `LinearMap`s preserving `DirectSum.GOne.one` and `DirectSum.GMul.mul`
 describes an `AlgHom` on `⨁ i, A i`. This is a stronger version of `DirectSum.toSemiring`.
 
-Of particular interest is the case when `A i` are bundled subojects, `f` is the family of
+Of particular interest is the case when `A i` are bundled subobjects, `f` is the family of
 coercions such as `Submodule.subtype (A i)`, and the `[GMonoid A]` structure originates from
 `DirectSum.GMonoid.ofAddSubmodules`, in which case the proofs about `GOne` and `GMul`
 can be discharged by `rfl`. -/
@@ -114,7 +115,7 @@ def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1
   { toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul with
     toFun := toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul
     commutes' := fun r => by
-      show toModule R _ _ f (algebraMap R _ r) = _
+      change toModule R _ _ f (algebraMap R _ r) = _
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
         ← lof_eq_of R, toModule_lof, hone] }
 
@@ -129,7 +130,7 @@ theorem algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
 theorem algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
   algHom_ext' R A fun i => LinearMap.ext <| h i
 
-/-- The piecewise multiplication from the `Mul` instance, as a bundled linear homomorphism.
+/-- The piecewise multiplication from the `Mul` instance, as a bundled linear map.
 
 This is the graded version of `LinearMap.mul`, and the linear version of `DirectSum.gMulHom` -/
 @[simps]
@@ -148,9 +149,7 @@ end DirectSum
 /-! ### Concrete instances -/
 
 
-/-- A direct sum of copies of an `Algebra` inherits the algebra structure.
-
--/
+/-- A direct sum of copies of an `Algebra` inherits the algebra structure. -/
 @[simps]
 instance Algebra.directSumGAlgebra {R A : Type*} [AddMonoid ι] [CommSemiring R]
     [Semiring A] [Algebra R A] : DirectSum.GAlgebra R fun _ : ι => A where

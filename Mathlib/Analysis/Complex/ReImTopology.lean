@@ -31,8 +31,7 @@ Each statement about `Complex.re` listed below has a counterpart about `Complex.
 complex, real part, imaginary part, closure, interior, frontier
 -/
 
-
-open Set
+open Set Topology
 
 noncomputable section
 
@@ -55,14 +54,8 @@ theorem isOpenMap_im : IsOpenMap im :=
 theorem isQuotientMap_re : IsQuotientMap re :=
   isHomeomorphicTrivialFiberBundle_re.isQuotientMap_proj
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_re := isQuotientMap_re
-
 theorem isQuotientMap_im : IsQuotientMap im :=
   isHomeomorphicTrivialFiberBundle_im.isQuotientMap_proj
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_im := isQuotientMap_im
 
 theorem interior_preimage_re (s : Set ℝ) : interior (re ⁻¹' s) = re ⁻¹' interior s :=
   (isOpenMap_re.preimage_interior_eq_interior_preimage continuous_re _).symm
@@ -151,7 +144,7 @@ theorem closure_reProdIm (s t : Set ℝ) : closure (s ×ℂ t) = closure s ×ℂ
     equivRealProdCLM.symm.toHomeomorph.preimage_closure] using @closure_prod_eq _ _ _ _ s t
 
 theorem interior_reProdIm (s t : Set ℝ) : interior (s ×ℂ t) = interior s ×ℂ interior t := by
-  rw [Set.reProdIm, Set.reProdIm, interior_inter, interior_preimage_re, interior_preimage_im]
+  rw [reProdIm, reProdIm, interior_inter, interior_preimage_re, interior_preimage_im]
 
 theorem frontier_reProdIm (s t : Set ℝ) :
     frontier (s ×ℂ t) = closure s ×ℂ frontier t ∪ frontier s ×ℂ closure t := by
@@ -189,21 +182,21 @@ variable {α ι : Type*}
 protected lemma TendstoUniformlyOn.re {f : ι → α → ℂ} {p : Filter ι} {g : α → ℂ} {K : Set α}
     (hf : TendstoUniformlyOn f g p K) :
     TendstoUniformlyOn (fun n x => (f n x).re) (fun y => (g y).re) p K := by
-  apply UniformContinuous.comp_tendstoUniformlyOn uniformlyContinous_re hf
+  apply UniformContinuous.comp_tendstoUniformlyOn uniformlyContinuous_re hf
 
 protected lemma TendstoUniformly.re {f : ι → α → ℂ} {p : Filter ι} {g : α → ℂ}
     (hf : TendstoUniformly f g p) :
     TendstoUniformly (fun n x => (f n x).re) (fun y => (g y).re) p := by
-  apply UniformContinuous.comp_tendstoUniformly uniformlyContinous_re hf
+  apply UniformContinuous.comp_tendstoUniformly uniformlyContinuous_re hf
 
 protected lemma TendstoUniformlyOn.im {f : ι → α → ℂ} {p : Filter ι} {g : α → ℂ} {K : Set α}
     (hf : TendstoUniformlyOn f g p K) :
     TendstoUniformlyOn (fun n x => (f n x).im) (fun y => (g y).im) p K := by
-  apply UniformContinuous.comp_tendstoUniformlyOn uniformlyContinous_im hf
+  apply UniformContinuous.comp_tendstoUniformlyOn uniformlyContinuous_im hf
 
 protected lemma TendstoUniformly.im {f : ι → α → ℂ} {p : Filter ι} {g : α → ℂ}
     (hf : TendstoUniformly f g p) :
     TendstoUniformly (fun n x => (f n x).im) (fun y => (g y).im) p := by
-  apply UniformContinuous.comp_tendstoUniformly uniformlyContinous_im hf
+  apply UniformContinuous.comp_tendstoUniformly uniformlyContinuous_im hf
 
 end continuity

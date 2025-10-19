@@ -3,8 +3,8 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Wen Yang
 -/
-import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Adjugate
+import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
@@ -18,14 +18,14 @@ the group structure on `SpecialLinearGroup n R` and the embedding into the gener
 
 ## Main definitions
 
- * `Matrix.SpecialLinearGroup` is the type of matrices with determinant 1
- * `Matrix.SpecialLinearGroup.group` gives the group structure (under multiplication)
- * `Matrix.SpecialLinearGroup.toGL` is the embedding `SLₙ(R) → GLₙ(R)`
+* `Matrix.SpecialLinearGroup` is the type of matrices with determinant 1
+* `Matrix.SpecialLinearGroup.group` gives the group structure (under multiplication)
+* `Matrix.SpecialLinearGroup.toGL` is the embedding `SLₙ(R) → GLₙ(R)`
 
 ## Notation
 
 For `m : ℕ`, we introduce the notation `SL(m,R)` for the special linear group on the fintype
-`n = Fin m`, in the locale `MatrixGroups`.
+`n = Fin m`, in the scope `MatrixGroups`.
 
 ## Implementation notes
 The inverse operation in the `SpecialLinearGroup` is defined to be the adjugate
@@ -41,7 +41,7 @@ of a regular `↑` coercion.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Special_linear_group
+* https://en.wikipedia.org/wiki/Special_linear_group
 
 ## Tags
 
@@ -83,8 +83,6 @@ verbose, or `A.val` which is not the simp-normal form for subtypes, we create a 
 notation. -/
 local notation:1024 "↑ₘ" A:1024 => ((A : SpecialLinearGroup n R) : Matrix n n R)
 
--- Porting note: moved this section upwards because it used to be not simp-normal.
--- Now it is, since coercion arrows are unfolded.
 section CoeFnInstance
 
 /-- This instance is here for convenience, but is literally the same as the coercion from
@@ -136,7 +134,6 @@ section CoeLemmas
 
 variable (A B : SpecialLinearGroup n R)
 
--- Porting note: shouldn't be `@[simp]` because cast+mk gets reduced anyway
 theorem coe_mk (A : Matrix n n R) (h : det A = 1) : ↑(⟨A, h⟩ : SpecialLinearGroup n R) = A :=
   rfl
 
@@ -174,7 +171,7 @@ theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : g i �
 end CoeLemmas
 
 instance monoid : Monoid (SpecialLinearGroup n R) :=
-  Function.Injective.monoid (↑) Subtype.coe_injective coe_one coe_mul coe_pow
+  Function.Injective.monoid _ Subtype.coe_injective coe_one coe_mul coe_pow
 
 instance : Group (SpecialLinearGroup n R) :=
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with
@@ -210,14 +207,6 @@ theorem toLin'_symm_to_linearMap (A : SpecialLinearGroup n R) :
 theorem toLin'_injective :
     Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h =>
   Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
-
-/-- `toGL` is the map from the special linear group to the general linear group -/
-def toGL : SpecialLinearGroup n R →* GeneralLinearGroup R (n → R) :=
-  (GeneralLinearGroup.generalLinearEquiv _ _).symm.toMonoidHom.comp toLin'
-
--- Porting note (#11036): broken dot notation
-theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.toLin'.toLinearMap :=
-  rfl
 
 variable {S : Type*} [CommRing S]
 
@@ -268,12 +257,13 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
 @[simps]
 def center_equiv_rootsOfUnity' (i : n) :
-    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R where
-  toFun A := rootsOfUnity.mkOfPowEq (↑ₘA i i) <| by
-    have : Nonempty n := ⟨i⟩
-    obtain ⟨r, hr, hr'⟩ := mem_center_iff.mp A.property
-    replace hr' : A.val i i = r := by simp [← hr']
-    simp [hr, hr']
+    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n) R where
+  toFun A :=
+    haveI : Nonempty n := ⟨i⟩
+    rootsOfUnity.mkOfPowEq (↑ₘA i i) <| by
+      obtain ⟨r, hr, hr'⟩ := mem_center_iff.mp A.property
+      replace hr' : A.val i i = r := by simp only [← hr', scalar_apply, diagonal_apply_eq]
+      simp only [hr', hr]
   invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
     Subgroup.mem_center_iff.mpr fun B ↦ Subtype.val_injective <| by simp [coe_mul]⟩
   left_inv A := by
@@ -282,7 +272,7 @@ def center_equiv_rootsOfUnity' (i : n) :
     simpa [← hr, Submonoid.smul_def, Units.smul_def] using smul_one_eq_diagonal r
   right_inv a := by
     obtain ⟨⟨a, _⟩, ha⟩ := a
-    exact SetCoe.ext <| Units.eq_iff.mp <| by simp
+    exact SetCoe.ext <| Units.ext <| by simp
   map_mul' A B := by
     dsimp
     ext
@@ -295,12 +285,15 @@ open scoped Classical in
 
 See also `center_equiv_rootsOfUnity'`. -/
 noncomputable def center_equiv_rootsOfUnity :
-    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R :=
+    center (SpecialLinearGroup n R) ≃* rootsOfUnity (max (Fintype.card n) 1) R :=
   (isEmpty_or_nonempty n).by_cases
   (fun hn ↦ by
-    rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, Nat.toPNat'_zero, rootsOfUnity_one]
-    exact MulEquiv.mulEquivOfUnique)
-  (fun _ ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
+    rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, max_eq_right_of_lt zero_lt_one,
+      rootsOfUnity_one]
+    exact MulEquiv.ofUnique)
+  (fun _ ↦
+    (max_eq_left (NeZero.one_le : 1 ≤ Fintype.card n)).symm ▸
+      center_equiv_rootsOfUnity' (Classical.arbitrary n))
 
 end center
 
@@ -314,6 +307,17 @@ instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
 theorem coe_matrix_coe (g : SpecialLinearGroup n ℤ) :
     ↑(g : SpecialLinearGroup n R) = (↑g : Matrix n n ℤ).map (Int.castRingHom R) :=
   map_apply_coe (Int.castRingHom R) g
+
+lemma map_intCast_injective [CharZero R] :
+    Function.Injective ((↑) : SpecialLinearGroup n ℤ → SpecialLinearGroup n R) := fun g h ↦ by
+  simp_rw [ext_iff, map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
+    Matrix.map_apply, Int.cast_inj]
+  tauto
+
+@[simp]
+lemma map_intCast_inj [CharZero R] {x y : SpecialLinearGroup n ℤ} :
+    (x : SpecialLinearGroup n R) = y ↔ x = y :=
+  map_intCast_injective.eq_iff
 
 end cast
 
@@ -346,18 +350,14 @@ open scoped MatrixGroups
 
 theorem SL2_inv_expl_det (A : SL(2, R)) :
     det ![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]] = 1 := by
-  rw [Matrix.det_fin_two, mul_comm]
-  simp only [cons_val_zero, cons_val_one, head_cons, mul_neg, neg_mul, neg_neg]
-  have := A.2
-  rw [Matrix.det_fin_two] at this
-  convert this
+  simpa [-det_coe, Matrix.det_fin_two, mul_comm] using A.2
 
 theorem SL2_inv_expl (A : SL(2, R)) :
     A⁻¹ = ⟨![![A.1 1 1, -A.1 0 1], ![-A.1 1 0, A.1 0 0]], SL2_inv_expl_det A⟩ := by
   ext
   have := Matrix.adjugate_fin_two A.1
   rw [coe_inv, this]
-  rfl
+  simp
 
 theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1), P ⟨!![a, b; c, d], by rwa [det_fin_two_of]⟩)
@@ -369,7 +369,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
     (hg : g 1 0 = 0) :
     ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
-  induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
+  induction g using Matrix.SpecialLinearGroup.fin_two_induction with | h a b c d h_det =>
   replace hg : c = 0 := by simpa using hg
   have had : a * d = 1 := by rwa [hg, mul_zero, sub_zero] at h_det
   refine ⟨a, b, left_ne_zero_of_mul_eq_one had, ?_⟩
@@ -452,11 +452,11 @@ This element acts naturally on the Euclidean plane as a rotation about the origi
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
 represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
 def S : SL(2, ℤ) :=
-  ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of]⟩
+  ⟨!![0, -1; 1, 0], by simp [Matrix.det_fin_two_of]⟩
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)`. -/
 def T : SL(2, ℤ) :=
-  ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of]⟩
+  ⟨!![1, 1; 0, 1], by simp [Matrix.det_fin_two_of]⟩
 
 theorem coe_S : ↑S = !![0, -1; 1, 0] :=
   rfl
@@ -467,18 +467,20 @@ theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
 theorem coe_T_inv : ↑(T⁻¹) = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
 
 theorem coe_T_zpow (n : ℤ) : (T ^ n).1 = !![1, n; 0, 1] := by
-  induction' n using Int.induction_on with n h n h
-  · rw [zpow_zero, coe_one, Matrix.one_fin_two]
-  · simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
+  induction n with
+  | zero => rw [zpow_zero, coe_one, Matrix.one_fin_two]
+  | succ n h =>
+    simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
     congrm !![_, ?_; _, _]
     rw [mul_one, mul_one, add_comm]
-  · simp_rw [zpow_sub, zpow_one, coe_mul, h, coe_T_inv, Matrix.mul_fin_two]
+  | pred n h =>
+    simp_rw [zpow_sub, zpow_one, coe_mul, h, coe_T_inv, Matrix.mul_fin_two]
     congrm !![?_, ?_; _, _] <;> ring
 
 @[simp]
 theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : (T ^ n * g) 1 = g 1 := by
   ext j
-  simp [coe_T_zpow, Matrix.vecMul, Matrix.dotProduct, Fin.sum_univ_succ, vecTail]
+  simp [coe_T_zpow, Matrix.vecMul, dotProduct, Fin.sum_univ_succ]
 
 @[simp]
 theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 := by
@@ -489,9 +491,13 @@ theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one (-1) g
 
 lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
-  simp only [S, Int.reduceNeg, pow_two, coe_mul, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
+  simp only [S, Int.reduceNeg, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
     vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,
     empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply]
   exact Eq.symm (eta_fin_two (-1))
+
+lemma T_S_rel : S • S • S • T • S • T • S = T⁻¹ := by
+  ext i j
+  fin_cases i <;> fin_cases j <;> rfl
 
 end ModularGroup

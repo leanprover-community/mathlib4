@@ -3,6 +3,7 @@ Copyright (c) 2023 Yaël Dillies, Chenyi Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chenyi Li, Ziyu Wang, Yaël Dillies
 -/
+import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
@@ -71,16 +72,14 @@ lemma UniformConvexOn.strictConvexOn (hf : UniformConvexOn s φ f) (hφ : ∀ r,
   refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt <|
     sub_lt_self _ ?_⟩
   rw [← sub_ne_zero, ← norm_pos_iff] at hxy
-  have := hφ _ hxy.ne'
-  positivity
+  positivity [hφ _ hxy.ne']
 
 lemma UniformConcaveOn.strictConcaveOn (hf : UniformConcaveOn s φ f) (hφ : ∀ r, r ≠ 0 → 0 < φ r) :
     StrictConcaveOn ℝ s f := by
   refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt' <|
     lt_add_of_pos_right _ ?_⟩
   rw [← sub_ne_zero, ← norm_pos_iff] at hxy
-  have := hφ _ hxy.ne'
-  positivity
+  positivity [hφ _ hxy.ne']
 
 lemma UniformConvexOn.add (hf : UniformConvexOn s φ f) (hg : UniformConvexOn s ψ g) :
     UniformConvexOn s (φ + ψ) (f + g) := by

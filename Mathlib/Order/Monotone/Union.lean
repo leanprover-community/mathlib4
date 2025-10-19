@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!
 # Monotonicity on intervals
@@ -39,9 +40,9 @@ protected theorem StrictMonoOn.union {s t : Set α} {c : α} (h₁ : StrictMonoO
       · exact ht.1
       exact (lt_irrefl _ (h'x.trans_le (hs.2 hx))).elim
   intro x hx y hy hxy
-  rcases lt_or_le x c with (hxc | hcx)
+  rcases lt_or_ge x c with (hxc | hcx)
   · have xs : x ∈ s := A _ hx hxc.le
-    rcases lt_or_le y c with (hyc | hcy)
+    rcases lt_or_ge y c with (hyc | hcy)
     · exact h₁ xs (A _ hy hyc.le) hxy
     · exact (h₁ xs hs.1 hxc).trans_le (h₂.monotoneOn ht.1 (B _ hy hcy) hcy)
   · have xt : x ∈ t := B _ hx hcx
@@ -87,9 +88,9 @@ protected theorem MonotoneOn.union_right {s t : Set α} {c : α} (h₁ : Monoton
       · exact ht.1
       exact (lt_irrefl _ (h'x.trans_le (hs.2 hx))).elim
   intro x hx y hy hxy
-  rcases lt_or_le x c with (hxc | hcx)
+  rcases lt_or_ge x c with (hxc | hcx)
   · have xs : x ∈ s := A _ hx hxc.le
-    rcases lt_or_le y c with (hyc | hcy)
+    rcases lt_or_ge y c with (hyc | hcy)
     · exact h₁ xs (A _ hy hyc.le) hxy
     · exact (h₁ xs hs.1 hxc.le).trans (h₂ ht.1 (B _ hy hcy) hcy)
   · have xt : x ∈ t := B _ hx hcx

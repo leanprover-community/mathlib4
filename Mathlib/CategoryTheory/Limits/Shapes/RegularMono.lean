@@ -16,10 +16,11 @@ A regular monomorphism is a morphism that is the equalizer of some parallel pair
 We give the constructions
 * `IsSplitMono → RegularMono` and
 * `RegularMono → Mono`
+
 as well as the dual constructions for regular epimorphisms. Additionally, we give the construction
 * `RegularEpi ⟶ StrongEpi`.
 
-We also define classes `RegularMonoCategory` and `RegularEpiCategory` for categories in which
+We also define classes `IsRegularMonoCategory` and `IsRegularEpiCategory` for categories in which
 every monomorphism or epimorphism is regular, and deduce that these categories are
 `StrongMonoCategory`s resp. `StrongEpiCategory`s.
 
@@ -40,13 +41,13 @@ variable {X Y : C}
 /-- A regular monomorphism is a morphism which is the equalizer of some parallel pair. -/
 class RegularMono (f : X ⟶ Y) where
   /-- An object in `C` -/
-  Z : C -- Porting note: violates naming but what is better?
+  Z : C
   /-- A map from the codomain of `f` to `Z` -/
   left : Y ⟶ Z
   /-- Another map from the codomain of `f` to `Z` -/
   right : Y ⟶ Z
   /-- `f` equalizes the two maps -/
-  w : f ≫ left = f ≫ right := by aesop_cat
+  w : f ≫ left = f ≫ right := by cat_disch
   /-- `f` is the equalizer of the two maps -/
   isLimit : IsLimit (Fork.ofι f w)
 
@@ -76,7 +77,7 @@ instance (priority := 100) RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono 
   isLimit := isSplitMonoEqualizes f
 
 /-- If `f` is a regular mono, then any map `k : W ⟶ Y` equalizing `RegularMono.left` and
-    `RegularMono.right` induces a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
+`RegularMono.right` induces a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
 def RegularMono.lift' {W : C} (f : X ⟶ Y) [RegularMono f] (k : W ⟶ Y)
     (h : k ≫ (RegularMono.left : Y ⟶ @RegularMono.Z _ _ _ _ f _) = k ≫ RegularMono.right) :
     { l : W ⟶ X // l ≫ f = k } :=
@@ -131,7 +132,7 @@ instance (priority := 100) strongMono_of_regularMono (f : X ⟶ Y) [RegularMono 
         simp only [Category.assoc, RegularMono.w]
       obtain ⟨t, ht⟩ := RegularMono.lift' _ _ this
       refine CommSq.HasLift.mk' ⟨t, (cancel_mono f).1 ?_, ht⟩
-      simp only [Arrow.mk_hom, Arrow.homMk'_left, Category.assoc, ht, sq.w])
+      simp only [Category.assoc, ht, sq.w])
 
 /-- A regular monomorphism is an isomorphism if it is an epimorphism. -/
 theorem isIso_of_regularMono_of_epi (f : X ⟶ Y) [RegularMono f] [Epi f] : IsIso f :=
@@ -142,24 +143,24 @@ section
 variable (C)
 
 /-- A regular mono category is a category in which every monomorphism is regular. -/
-class RegularMonoCategory where
+class IsRegularMonoCategory : Prop where
   /-- Every monomorphism is a regular monomorphism -/
-  regularMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], RegularMono f
+  regularMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], Nonempty (RegularMono f)
 
 end
 
 /-- In a category in which every monomorphism is regular, we can express every monomorphism as
-    an equalizer. This is not an instance because it would create an instance loop. -/
-def regularMonoOfMono [RegularMonoCategory C] (f : X ⟶ Y) [Mono f] : RegularMono f :=
-  RegularMonoCategory.regularMonoOfMono _
+an equalizer. This is not an instance because it would create an instance loop. -/
+def regularMonoOfMono [IsRegularMonoCategory C] (f : X ⟶ Y) [Mono f] : RegularMono f :=
+  (IsRegularMonoCategory.regularMonoOfMono _).some
 
 instance (priority := 100) regularMonoCategoryOfSplitMonoCategory [SplitMonoCategory C] :
-    RegularMonoCategory C where
-  regularMonoOfMono f _ := by
+    IsRegularMonoCategory C where
+  regularMonoOfMono f _ := ⟨by
     haveI := isSplitMono_of_mono f
-    infer_instance
+    infer_instance⟩
 
-instance (priority := 100) strongMonoCategory_of_regularMonoCategory [RegularMonoCategory C] :
+instance (priority := 100) strongMonoCategory_of_regularMonoCategory [IsRegularMonoCategory C] :
     StrongMonoCategory C where
   strongMono_of_mono f _ := by
     haveI := regularMonoOfMono f
@@ -168,11 +169,11 @@ instance (priority := 100) strongMonoCategory_of_regularMonoCategory [RegularMon
 /-- A regular epimorphism is a morphism which is the coequalizer of some parallel pair. -/
 class RegularEpi (f : X ⟶ Y) where
   /-- An object from `C` -/
-  W : C -- Porting note: violates naming convention but what is better?
+  W : C
   /-- Two maps to the domain of `f` -/
   (left right : W ⟶ X)
   /-- `f` coequalizes the two maps -/
-  w : left ≫ f = right ≫ f := by aesop_cat
+  w : left ≫ f = right ≫ f := by cat_disch
   /-- `f` is the coequalizer -/
   isColimit : IsColimit (Cofork.ofπ f w)
 
@@ -210,7 +211,7 @@ instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : 
   isColimit := isSplitEpiCoequalizes f
 
 /-- If `f` is a regular epi, then every morphism `k : X ⟶ W` coequalizing `RegularEpi.left` and
-    `RegularEpi.right` induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
+`RegularEpi.right` induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
 def RegularEpi.desc' {W : C} (f : X ⟶ Y) [RegularEpi f] (k : X ⟶ W)
     (h : (RegularEpi.left : RegularEpi.W f ⟶ X) ≫ k = RegularEpi.right ≫ k) :
     { l : Y ⟶ W // f ≫ l = k } :=
@@ -267,7 +268,7 @@ instance (priority := 100) strongEpi_of_regularEpi (f : X ⟶ Y) [RegularEpi f] 
         CommSq.HasLift.mk'
           ⟨t, ht,
             (cancel_epi f).1
-              (by simp only [← Category.assoc, ht, ← sq.w, Arrow.mk_hom, Arrow.homMk'_right])⟩)
+              (by simp only [← Category.assoc, ht, ← sq.w])⟩)
 
 /-- A regular epimorphism is an isomorphism if it is a monomorphism. -/
 theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) [RegularEpi f] [Mono f] : IsIso f :=
@@ -278,24 +279,24 @@ section
 variable (C)
 
 /-- A regular epi category is a category in which every epimorphism is regular. -/
-class RegularEpiCategory where
+class IsRegularEpiCategory : Prop where
   /-- Everyone epimorphism is a regular epimorphism -/
-  regularEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], RegularEpi f
+  regularEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Nonempty (RegularEpi f)
 
 end
 
 /-- In a category in which every epimorphism is regular, we can express every epimorphism as
-    a coequalizer. This is not an instance because it would create an instance loop. -/
-def regularEpiOfEpi [RegularEpiCategory C] (f : X ⟶ Y) [Epi f] : RegularEpi f :=
-  RegularEpiCategory.regularEpiOfEpi _
+a coequalizer. This is not an instance because it would create an instance loop. -/
+def regularEpiOfEpi [IsRegularEpiCategory C] (f : X ⟶ Y) [Epi f] : RegularEpi f :=
+  (IsRegularEpiCategory.regularEpiOfEpi _).some
 
 instance (priority := 100) regularEpiCategoryOfSplitEpiCategory [SplitEpiCategory C] :
-    RegularEpiCategory C where
-  regularEpiOfEpi f _ := by
+    IsRegularEpiCategory C where
+  regularEpiOfEpi f _ := ⟨by
     haveI := isSplitEpi_of_epi f
-    infer_instance
+    infer_instance⟩
 
-instance (priority := 100) strongEpiCategory_of_regularEpiCategory [RegularEpiCategory C] :
+instance (priority := 100) strongEpiCategory_of_regularEpiCategory [IsRegularEpiCategory C] :
     StrongEpiCategory C where
   strongEpi_of_epi f _ := by
     haveI := regularEpiOfEpi f

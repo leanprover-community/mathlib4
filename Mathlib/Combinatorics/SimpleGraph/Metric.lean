@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
 -/
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Data.ENat.Lattice
 
 /-!
@@ -32,6 +32,7 @@ graph metric, distance
 
 -/
 
+assert_not_exists Field
 
 namespace SimpleGraph
 
@@ -147,7 +148,7 @@ theorem edist_anti {G' : SimpleGraph V} (h : G ≤ G') :
     G'.edist u v ≤ G.edist u v := by
   by_cases hr : G.Reachable u v
   · obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_edist
-    rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
+    rw [← hw, ← Walk.length_map (.ofLE h)]
     apply edist_le
   · exact edist_eq_top_of_not_reachable hr ▸ le_top
 
@@ -191,12 +192,23 @@ protected theorem Reachable.pos_dist_of_ne (h : G.Reachable u v) (hne : u ≠ v)
     0 < G.dist u v :=
   Nat.pos_of_ne_zero (by simp [h, hne])
 
+protected theorem Reachable.one_lt_dist_of_ne_of_not_adj (h : G.Reachable u v) (hne : u ≠ v)
+    (hnadj : ¬G.Adj u v) : 1 < G.dist u v :=
+  Nat.lt_of_le_of_ne (h.pos_dist_of_ne hne) (by
+    by_contra! hc
+    obtain ⟨p, hp⟩ := Reachable.exists_walk_length_eq_dist h
+    exact hnadj (Walk.exists_length_eq_one_iff.mp ⟨p, hc ▸ hp⟩))
+
 protected theorem Connected.dist_eq_zero_iff (hconn : G.Connected) :
     G.dist u v = 0 ↔ u = v := by simp [hconn u v]
 
 protected theorem Connected.pos_dist_of_ne (hconn : G.Connected) (hne : u ≠ v) :
     0 < G.dist u v :=
   Nat.pos_of_ne_zero fun h ↦ False.elim <| hne <| (hconn.dist_eq_zero_iff).mp h
+
+protected theorem Connected.one_lt_dist_of_ne_of_not_adj (h : G.Connected) (hne : u ≠ v)
+    (hnadj : ¬G.Adj u v) : 1 < G.dist u v :=
+  Reachable.one_lt_dist_of_ne_of_not_adj (h u v) hne hnadj
 
 theorem dist_eq_zero_of_not_reachable (h : ¬G.Reachable u v) : G.dist u v = 0 := by
   simp [h]
@@ -218,8 +230,7 @@ theorem dist_comm : G.dist u v = G.dist v u := by
   rw [dist, dist, edist_comm]
 
 lemma dist_ne_zero_iff_ne_and_reachable : G.dist u v ≠ 0 ↔ u ≠ v ∧ G.Reachable u v := by
-  rw [ne_eq, dist_eq_zero_iff_eq_or_not_reachable.not]
-  push_neg; rfl
+  simp
 
 lemma Reachable.of_dist_ne_zero (h : G.dist u v ≠ 0) : G.Reachable u v :=
   (dist_ne_zero_iff_ne_and_reachable.mp h).2
@@ -235,6 +246,14 @@ The distance between vertices is equal to `1` if and only if these vertices are 
 theorem dist_eq_one_iff_adj : G.dist u v = 1 ↔ G.Adj u v := by
   rw [dist, ENat.toNat_eq_iff, ENat.coe_one, edist_eq_one_iff_adj]
   decide
+
+theorem Connected.diff_dist_adj (hG : G.Connected) (hadj : G.Adj v w) :
+    G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
+  have : G.dist v w = 1 := dist_eq_one_iff_adj.mpr hadj
+  have : G.dist w v = 1 := dist_eq_one_iff_adj.mpr hadj.symm
+  have : G.dist u w ≤ G.dist u v + G.dist v w := hG.dist_triangle
+  have : G.dist u v ≤ G.dist u w + G.dist w v := hG.dist_triangle
+  omega
 
 theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
@@ -267,13 +286,46 @@ lemma dist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).dist u v = 1 := by
 lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
+lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+    (h₁ : p₁.length = G.dist u v) (h₂ : p₂.IsSubwalk p₁) : p₂.length = G.dist u' v' := by
+  refine (dist_le _).eq_of_not_lt' fun hh ↦ ?_
+  obtain ⟨ru, rv, h⟩ := h₂
+  obtain ⟨s, _⟩ := p₂.reachable.exists_path_of_dist
+  let r := ru.append s |>.append rv
+  have : p₁.length = ru.length + p₂.length + rv.length := by simp [h]
+  have : r.length = ru.length + s.length + rv.length := by simp [r]
+  have := dist_le r
+  cutsat
+
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]
 protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
     G'.dist u v ≤ G.dist u v := by
   obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_dist
-  rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
+  rw [← hw, ← Walk.length_map (.ofLE h)]
   apply dist_le
+
+/-- This bundles and abstracts some facts about the first three vertices of a shortest walk
+of length at least two: the first and third nodes are different and not connected. -/
+lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v w)
+    (hl : 1 < G.dist v w) : ∃ (x a b : V), G.Adj x a ∧ G.Adj a b ∧ ¬ G.Adj x b ∧ x ≠ b := by
+  use v, p.getVert 1, p.getVert 2
+  have hnp : ¬p.Nil := by simpa [nil_iff_length_eq, hp] using Nat.ne_zero_of_lt hl
+  have : p.tail.tail.length < p.tail.length := by
+    rw [← p.tail.length_tail_add_one (by
+      simp only [not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢
+      cutsat)]
+    omega
+  have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; omega
+  by_cases hv : v = p.getVert 2
+  · have : G.dist v w ≤ p.tail.tail.length := by
+      simpa [hv, p.getVert_tail] using dist_le p.tail.tail
+    cutsat
+  by_cases hadj : G.Adj v (p.getVert 2)
+  · have : G.dist v w ≤ p.tail.tail.length + 1 :=
+      dist_le <| p.tail.tail.cons <| p.getVert_tail ▸ hadj
+    cutsat
+  exact ⟨p.adj_snd hnp, p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
 
 end dist
 

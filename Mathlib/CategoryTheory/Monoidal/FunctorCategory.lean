@@ -34,11 +34,11 @@ variable (F G F' G' : C ⥤ D)
 
 /-- (An auxiliary definition for `functorCategoryMonoidal`.)
 Tensor product of functors `C ⥤ D`, when `D` is monoidal.
- -/
+-/
 @[simps]
 def tensorObj : C ⥤ D where
   obj X := F.obj X ⊗ G.obj X
-  map f := F.map f ⊗ G.map f
+  map f := F.map f ⊗ₘ G.map f
 
 variable {F G F' G'}
 variable (α : F ⟶ G) (β : F' ⟶ G')
@@ -48,8 +48,9 @@ Tensor product of natural transformations into `D`, when `D` is monoidal.
 -/
 @[simps]
 def tensorHom : tensorObj F F' ⟶ tensorObj G G' where
-  app X := α.app X ⊗ β.app X
-  naturality X Y f := by dsimp; rw [← tensor_comp, α.naturality, β.naturality, tensor_comp]
+  app X := α.app X ⊗ₘ β.app X
+  naturality X Y f := by
+    dsimp; rw [tensorHom_comp_tensorHom, α.naturality, β.naturality, ← tensorHom_comp_tensorHom]
 
 /-- (An auxiliary definition for `functorCategoryMonoidal`.) -/
 @[simps]
@@ -98,12 +99,12 @@ theorem tensorObj_obj {F G : C ⥤ D} {X} : (F ⊗ G).obj X = F.obj X ⊗ G.obj 
   rfl
 
 @[simp]
-theorem tensorObj_map {F G : C ⥤ D} {X Y} {f : X ⟶ Y} : (F ⊗ G).map f = F.map f ⊗ G.map f :=
+theorem tensorObj_map {F G : C ⥤ D} {X Y} {f : X ⟶ Y} : (F ⊗ G).map f = F.map f ⊗ₘ G.map f :=
   rfl
 
 @[simp]
 theorem tensorHom_app {F G F' G' : C ⥤ D} {α : F ⟶ G} {β : F' ⟶ G'} {X} :
-    (α ⊗ β).app X = α.app X ⊗ β.app X :=
+    (α ⊗ₘ β).app X = α.app X ⊗ₘ β.app X :=
   rfl
 
 @[simp]
@@ -188,5 +189,25 @@ instance functorCategorySymmetric : SymmetricCategory (C ⥤ D) where
   symmetry F G := by ext X; apply symmetry
 
 end SymmetricCategory
+
+@[simps]
+instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    [MonoidalCategory E] (L : D ⥤ E) [L.LaxMonoidal] :
+    ((Functor.whiskeringRight C D E).obj L).LaxMonoidal where
+  ε := { app X := Functor.LaxMonoidal.ε L }
+  μ F G := { app X := Functor.LaxMonoidal.μ L (F.obj X) (G.obj X) }
+
+@[simps]
+instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    [MonoidalCategory E] (L : D ⥤ E) [L.OplaxMonoidal] :
+    ((Functor.whiskeringRight C D E).obj L).OplaxMonoidal where
+  η := { app X := Functor.OplaxMonoidal.η L }
+  δ F G := { app X := Functor.OplaxMonoidal.δ L (F.obj X) (G.obj X) }
+  oplax_left_unitality := by aesop
+  oplax_right_unitality := by aesop
+
+instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
+    ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
 end CategoryTheory.Monoidal

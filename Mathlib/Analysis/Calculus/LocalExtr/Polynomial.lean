@@ -3,7 +3,6 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Topology.Algebra.Polynomial
@@ -48,8 +47,8 @@ theorem card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]
 one. -/
 theorem card_roots_toFinset_le_derivative (p : ℝ[X]) :
     p.roots.toFinset.card ≤ p.derivative.roots.toFinset.card + 1 :=
-  p.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ.trans <|
-    add_le_add_right (Finset.card_mono Finset.sdiff_subset) _
+  p.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ.trans <| by
+    grw [Finset.sdiff_subset]
 
 /-- The number of roots of a real polynomial (counted with multiplicities) is at most the number of
 roots of its derivative (counted with multiplicities) plus one. -/
@@ -71,10 +70,9 @@ theorem card_roots_le_derivative (p : ℝ[X]) :
     _ ≤ (∑ x ∈ p.roots.toFinset, p.derivative.roots.count x) +
           ((∑ x ∈ p.derivative.roots.toFinset \ p.roots.toFinset,
             p.derivative.roots.count x) + 1) := by
-      simp only [← count_roots]
-      refine add_le_add_left (add_le_add_right ((Finset.card_eq_sum_ones _).trans_le ?_) _) _
-      refine Finset.sum_le_sum fun x hx => Nat.succ_le_iff.2 <| ?_
-      rw [Multiset.count_pos, ← Multiset.mem_toFinset]
+      simp only [← count_roots, Finset.card_eq_sum_ones]
+      gcongr with x hx
+      rw [Nat.succ_le_iff, Multiset.count_pos, ← Multiset.mem_toFinset]
       exact (Finset.mem_sdiff.1 hx).1
     _ = Multiset.card (derivative p).roots + 1 := by
       rw [← add_assoc, ← Finset.sum_union Finset.disjoint_sdiff, Finset.union_sdiff_self_eq_union, ←

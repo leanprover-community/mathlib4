@@ -10,7 +10,7 @@ import Mathlib.Topology.UniformSpace.Cauchy
 # Sequences in topological spaces
 
 In this file we prove theorems about relations
-between closure/compactness/continuity etc and their sequential counterparts.
+between closure/compactness/continuity etc. and their sequential counterparts.
 
 ## Main definitions
 
@@ -61,8 +61,8 @@ sequentially closed, sequentially compact, sequential space
 -/
 
 
-open Set Function Filter TopologicalSpace Bornology
-open scoped Topology Uniformity
+open Bornology Filter Function Set TopologicalSpace Topology
+open scoped Uniformity
 
 variable {X Y : Type*}
 
@@ -151,7 +151,7 @@ instance (priority := 100) FrechetUrysohnSpace.to_sequentialSpace [FrechetUrysoh
     SequentialSpace X :=
   ⟨fun s hs => by rw [← closure_eq_iff_isClosed, ← seqClosure_eq_closure, hs.seqClosure_eq]⟩
 
-theorem IsInducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y}
+theorem Topology.IsInducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y}
     (hf : IsInducing f) : FrechetUrysohnSpace X := by
   refine ⟨fun s x hx ↦ ?_⟩
   rw [hf.closure_eq_preimage_closure_image, mem_preimage, mem_closure_iff_seq_limit] at hx
@@ -159,9 +159,6 @@ theorem IsInducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y}
   choose v hv hvu using hus
   refine ⟨v, hv, ?_⟩
   simpa only [hf.tendsto_nhds_iff, Function.comp_def, hvu]
-
-@[deprecated (since := "2024-10-28")]
-alias Inducing.frechetUrysohnSpace := IsInducing.frechetUrysohnSpace
 
 /-- Subtype of a Fréchet-Urysohn space is a Fréchet-Urysohn space. -/
 instance Subtype.instFrechetUrysohnSpace [FrechetUrysohnSpace X] {p : X → Prop} :
@@ -210,12 +207,8 @@ protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
   rw [sup_eq_iSup]
   exact .iSup <| Bool.forall_bool.2 ⟨h₂, h₁⟩
 
-theorem IsQuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y} (hf : IsQuotientMap f) :
-    SequentialSpace Y :=
-  hf.2.symm ▸ .coinduced f
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.sequentialSpace := IsQuotientMap.sequentialSpace
+lemma Topology.IsQuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y}
+    (hf : IsQuotientMap f) : SequentialSpace Y := hf.2.symm ▸ .coinduced f
 
 /-- The quotient of a sequential space is a sequential space. -/
 instance Quotient.instSequentialSpace [SequentialSpace X] {s : Setoid X} :
@@ -338,7 +331,7 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
 
 variable [IsCountablyGenerated (𝓤 X)]
 
-/-- A sequentially compact set in a uniform set with countably generated uniformity filter
+/-- A sequentially compact set in a uniform space with countably generated uniformity filter
 is complete. -/
 protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s := fun l hl hls => by
   have := hl.1

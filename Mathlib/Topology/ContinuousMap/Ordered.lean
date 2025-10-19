@@ -13,8 +13,7 @@ import Mathlib.Topology.ContinuousMap.Defs
 -/
 
 
-variable {α : Type*} {β : Type*} {γ : Type*}
-variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 namespace ContinuousMap
 
@@ -35,7 +34,7 @@ theorem lt_def [PartialOrder β] {f g : C(α, β)} : f < g ↔ (∀ a, f a ≤ g
 section SemilatticeSup
 variable [SemilatticeSup β] [ContinuousSup β]
 
-instance sup : Sup C(α, β) where sup f g := { toFun := fun a ↦ f a ⊔ g a }
+instance sup : Max C(α, β) where max f g := { toFun := fun a ↦ f a ⊔ g a }
 
 @[simp, norm_cast] lemma coe_sup (f g : C(α, β)) : ⇑(f ⊔ g) = ⇑f ⊔ g := rfl
 
@@ -57,7 +56,7 @@ end SemilatticeSup
 section SemilatticeInf
 variable [SemilatticeInf β] [ContinuousInf β]
 
-instance inf : Inf C(α, β) where inf f g := { toFun := fun a ↦ f a ⊓ g a }
+instance inf : Min C(α, β) where min f g := { toFun := fun a ↦ f a ⊓ g a }
 
 @[simp, norm_cast] lemma coe_inf (f g : C(α, β)) : ⇑(f ⊓ g) = ⇑f ⊓ g := rfl
 

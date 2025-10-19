@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Order.Lattice
 
 /-!
@@ -78,17 +78,14 @@ namespace WithLower
 /-- `ofLower` is the identity function from the `WithLower` of a type. -/
 @[match_pattern] def ofLower : WithLower α ≃ α := Equiv.refl _
 
-@[simp] lemma to_WithLower_symm_eq : (@toLower α).symm = ofLower := rfl
-
-@[simp] lemma of_WithLower_symm_eq : (@ofLower α).symm = toLower := rfl
-
+@[simp] lemma toLower_symm : (@toLower α).symm = ofLower := rfl
+@[simp] lemma ofLower_symm : (@ofLower α).symm = toLower := rfl
 @[simp] lemma toLower_ofLower (a : WithLower α) : toLower (ofLower a) = a := rfl
 
 @[simp] lemma ofLower_toLower (a : α) : ofLower (toLower a) = a := rfl
 
 lemma toLower_inj {a b : α} : toLower a = toLower b ↔ a = b := Iff.rfl
 
--- Porting note: removed @[simp] to make linter happy
 theorem ofLower_inj {a b : WithLower α} : ofLower a = ofLower b ↔ a = b :=
   Iff.rfl
 
@@ -100,15 +97,31 @@ protected def rec {β : WithLower α → Sort*} (h : ∀ a, β (toLower a)) : �
 instance [Nonempty α] : Nonempty (WithLower α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithLower α) := ‹Inhabited α›
 
+section Preorder
+
 variable [Preorder α] {s : Set α}
 
 instance : Preorder (WithLower α) := ‹Preorder α›
-instance : TopologicalSpace (WithLower α) := lower α
+instance : TopologicalSpace (WithLower α) := lower (WithLower α)
 
-lemma isOpen_preimage_ofLower : IsOpen (ofLower ⁻¹' s) ↔ (lower α).IsOpen s := Iff.rfl
+@[simp] lemma toLower_le_toLower {x y : α} : toLower x ≤ toLower y ↔ x ≤ y := .rfl
+@[simp] lemma toLower_lt_toLower {x y : α} : toLower x < toLower y ↔ x < y := .rfl
+@[simp] lemma ofLower_le_ofLower {x y : WithLower α} : ofLower x ≤ ofLower y ↔ x ≤ y := .rfl
+@[simp] lemma ofLower_lt_ofLower {x y : WithLower α} : ofLower x < ofLower y ↔ x < y := .rfl
 
-lemma isOpen_def (T : Set (WithLower α)) : IsOpen T ↔ (lower α).IsOpen (WithLower.toLower ⁻¹' T) :=
+lemma isOpen_preimage_ofLower : IsOpen (ofLower ⁻¹' s) ↔ IsOpen[lower α] s := Iff.rfl
+
+lemma isOpen_def (T : Set (WithLower α)) : IsOpen T ↔ IsOpen[lower α] (WithLower.toLower ⁻¹' T) :=
   Iff.rfl
+
+theorem continuous_toLower [TopologicalSpace α] [ClosedIciTopology α] :
+    Continuous (toLower : α → WithLower α) :=
+  continuous_generateFrom_iff.mpr <| by rintro _ ⟨a, rfl⟩; exact isClosed_Ici.isOpen_compl
+
+end Preorder
+
+instance [PartialOrder α] : PartialOrder (WithLower α) := ‹PartialOrder α›
+instance [LinearOrder α] : LinearOrder (WithLower α) := ‹LinearOrder α›
 
 end WithLower
 
@@ -122,8 +135,8 @@ namespace WithUpper
 /-- `ofUpper` is the identity function from the `WithUpper` of a type. -/
 @[match_pattern] def ofUpper : WithUpper α ≃ α := Equiv.refl _
 
-@[simp] lemma to_WithUpper_symm_eq {α} : (@toUpper α).symm = ofUpper := rfl
-@[simp] lemma of_WithUpper_symm_eq : (@ofUpper α).symm = toUpper := rfl
+@[simp] lemma toUpper_symm {α} : (@toUpper α).symm = ofUpper := rfl
+@[simp] lemma ofUpper_symm : (@ofUpper α).symm = toUpper := rfl
 @[simp] lemma toUpper_ofUpper (a : WithUpper α) : toUpper (ofUpper a) = a := rfl
 @[simp] lemma ofUpper_toUpper (a : α) : ofUpper (toUpper a) = a := rfl
 lemma toUpper_inj {a b : α} : toUpper a = toUpper b ↔ a = b := Iff.rfl
@@ -137,14 +150,30 @@ protected def rec {β : WithUpper α → Sort*} (h : ∀ a, β (toUpper a)) : �
 instance [Nonempty α] : Nonempty (WithUpper α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithUpper α) := ‹Inhabited α›
 
+section Preorder
+
 variable [Preorder α] {s : Set α}
 
 instance : Preorder (WithUpper α) := ‹Preorder α›
-instance : TopologicalSpace (WithUpper α) := upper α
+instance : TopologicalSpace (WithUpper α) := upper (WithUpper α)
+
+@[simp] lemma toUpper_le_toUpper {x y : α} : toUpper x ≤ toUpper y ↔ x ≤ y := .rfl
+@[simp] lemma toUpper_lt_toUpper {x y : α} : toUpper x < toUpper y ↔ x < y := .rfl
+@[simp] lemma ofUpper_le_ofUpper {x y : WithUpper α} : ofUpper x ≤ ofUpper y ↔ x ≤ y := .rfl
+@[simp] lemma ofUpper_lt_ofUpper {x y : WithUpper α} : ofUpper x < ofUpper y ↔ x < y := .rfl
 
 lemma isOpen_preimage_ofUpper : IsOpen (ofUpper ⁻¹' s) ↔ (upper α).IsOpen s := Iff.rfl
 
 lemma isOpen_def {s : Set (WithUpper α)} : IsOpen s ↔ (upper α).IsOpen (toUpper ⁻¹' s) := Iff.rfl
+
+theorem continuous_toUpper [TopologicalSpace α] [ClosedIicTopology α] :
+    Continuous (toUpper : α → WithUpper α) :=
+  continuous_generateFrom_iff.mpr <| by rintro _ ⟨a, rfl⟩; exact isClosed_Iic.isOpen_compl
+
+end Preorder
+
+instance [PartialOrder α] : PartialOrder (WithUpper α) := ‹PartialOrder α›
+instance [LinearOrder α] : LinearOrder (WithUpper α) := ‹LinearOrder α›
 
 end WithUpper
 
@@ -198,7 +227,7 @@ variable {α}
 /-- If `α` is equipped with the lower topology, then it is homeomorphic to `WithLower α`.
 -/
 def withLowerHomeomorph : WithLower α ≃ₜ α :=
-  WithLower.ofLower.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithLower.ofLower.toHomeomorphOfIsInducing ⟨topology_eq α ▸ induced_id.symm⟩
 
 theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -211,9 +240,6 @@ instance _root_.OrderDual.instIsUpper [Preorder α] [TopologicalSpace α] [IsLow
 instance : ClosedIciTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Ici_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
--- Porting note: The old `IsLower.isClosed_Ici` was removed, since one can now use
--- the general `isClosed_Ici` lemma thanks to the instance above.
-
 /-- The upper closure of a finite set is closed in the lower topology. -/
 theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
   simp only [← UpperSet.iInf_Ici, UpperSet.coe_iInf]
@@ -221,7 +247,6 @@ theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α
 
 /-- Every set open in the lower topology is a lower set. -/
 theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
-  -- Porting note: `rw` leaves a shadowed assumption
   replace h := isOpen_iff_generate_Ici_compl.1 h
   induction h with
   | basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isUpperSet_Ici a).compl
@@ -231,6 +256,11 @@ theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
 
 theorem isUpperSet_of_isClosed (h : IsClosed s) : IsUpperSet s :=
   isLowerSet_compl.1 <| isLowerSet_of_isOpen h.isOpen_compl
+
+theorem tendsto_nhds_iff_not_le {β : Type*} {f : β → α} {l : Filter β} {x : α} :
+    Filter.Tendsto f l (𝓝 x) ↔ ∀ y, ¬y ≤ x → ∀ᶠ z in l, ¬y ≤ f z := by
+  simp [topology_eq_lowerTopology, tendsto_nhds_generateFrom_iff, Filter.Eventually, Ici,
+    compl_setOf]
 
 /--
 The closure of a singleton `{a}` in the lower topology is the left-closed right-infinite interval
@@ -288,6 +318,10 @@ lemma isTopologicalBasis_insert_univ_subbasis :
     use b ⊓ c
     rw [compl_Ici, compl_Ici, compl_Ici, Iio_inter_Iio])
 
+theorem tendsto_nhds_iff_lt {β : Type*} {f : β → α} {l : Filter β} {x : α} :
+    Filter.Tendsto f l (𝓝 x) ↔ ∀ y, x < y → ∀ᶠ z in l, f z < y := by
+  simp only [tendsto_nhds_iff_not_le, not_le]
+
 end LinearOrder
 
 section CompleteLinearOrder
@@ -320,7 +354,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
     · intro b hb
       simp only [sInter_image, mem_iInter, mem_compl_iff]
       intro s hs
-      obtain ⟨a,ha⟩ := (subset_insert_iff_of_not_mem hUS).mp hS1 hs
+      obtain ⟨a, ha⟩ := (subset_insert_iff_of_notMem hUS).mp hS1 hs
       subst hS2 ha
       simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_setOf_eq, mem_Iio, not_lt]
     · intro b hb
@@ -354,7 +388,7 @@ variable {α}
 /-- If `α` is equipped with the upper topology, then it is homeomorphic to `WithUpper α`.
 -/
 def withUpperHomeomorph : WithUpper α ≃ₜ α :=
-  WithUpper.ofUpper.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithUpper.ofUpper.toHomeomorphOfIsInducing ⟨topology_eq α ▸ induced_id.symm⟩
 
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -377,6 +411,10 @@ theorem isUpperSet_of_isOpen (h : IsOpen s) : IsUpperSet s :=
 
 theorem isLowerSet_of_isClosed (h : IsClosed s) : IsLowerSet s :=
   isUpperSet_compl.1 <| isUpperSet_of_isOpen h.isOpen_compl
+
+theorem tendsto_nhds_iff_not_le {β : Type*} {f : β → α} {l : Filter β} {x : α} :
+    Filter.Tendsto f l (𝓝 x) ↔ ∀ y, ¬x ≤ y → ∀ᶠ z in l, ¬f z ≤ y :=
+  IsLower.tendsto_nhds_iff_not_le (α := αᵒᵈ)
 
 /--
 The closure of a singleton `{a}` in the upper topology is the left-infinite right-closed interval
@@ -416,6 +454,10 @@ variable [LinearOrder α] [TopologicalSpace α] [IsUpper α]
 lemma isTopologicalBasis_insert_univ_subbasis :
     IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Iic a)ᶜ = s}) :=
   IsLower.isTopologicalBasis_insert_univ_subbasis (α := αᵒᵈ)
+
+theorem tendsto_nhds_iff_lt {β : Type*} {f : β → α} {l : Filter β} {x : α} :
+    Filter.Tendsto f l (𝓝 x) ↔ ∀ y < x, ∀ᶠ z in l, y < f z :=
+  IsLower.tendsto_nhds_iff_lt (α := αᵒᵈ)
 
 end LinearOrder
 
@@ -511,4 +553,4 @@ instance : IsUpper Prop where
         rcases hs with (rfl | rfl)
         · use True
         · use False)
-      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_le]))
+      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_ge]))

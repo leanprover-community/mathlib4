@@ -46,7 +46,6 @@ namespace IsUnifLocDoublingMeasure
 variable {α : Type*} [PseudoMetricSpace α] [MeasurableSpace α] (μ : Measure α)
   [IsUnifLocDoublingMeasure μ]
 
--- Porting note: added for missing infer kinds
 theorem exists_measure_closedBall_le_mul :
     ∃ C : ℝ≥0, ∀ᶠ ε in 𝓝[>] 0, ∀ x, μ (closedBall x (2 * ε)) ≤ C * μ (closedBall x ε) :=
   exists_measure_closedBall_le_mul''
@@ -66,19 +65,19 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
   let C := doublingConstant μ
   have hμ :
     ∀ n : ℕ, ∀ᶠ ε in 𝓝[>] 0, ∀ x,
-      μ (closedBall x ((2 : ℝ) ^ n * ε)) ≤ ↑(C ^ n) * μ (closedBall x ε) := by
-    intro n
-    induction' n with n ih
-    · simp
-    replace ih := eventually_nhdsWithin_pos_mul_left (two_pos : 0 < (2 : ℝ)) ih
-    refine (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => ?_
-    calc
-      μ (closedBall x ((2 : ℝ) ^ (n + 1) * ε)) = μ (closedBall x ((2 : ℝ) ^ n * (2 * ε))) := by
-        rw [pow_succ, mul_assoc]
-      _ ≤ ↑(C ^ n) * μ (closedBall x (2 * ε)) := hε.1 x
-      _ ≤ ↑(C ^ n) * (C * μ (closedBall x ε)) := by gcongr; exact hε.2 x
-      _ = ↑(C ^ (n + 1)) * μ (closedBall x ε) := by rw [← mul_assoc, pow_succ, ENNReal.coe_mul]
-  rcases lt_or_le K 1 with (hK | hK)
+      μ (closedBall x ((2 : ℝ) ^ n * ε)) ≤ ↑(C ^ n) * μ (closedBall x ε) := fun n ↦ by
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      replace ih := eventually_nhdsGT_zero_mul_left (two_pos : 0 < (2 : ℝ)) ih
+      refine (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => ?_
+      calc
+        μ (closedBall x ((2 : ℝ) ^ (n + 1) * ε)) = μ (closedBall x ((2 : ℝ) ^ n * (2 * ε))) := by
+          rw [pow_succ, mul_assoc]
+        _ ≤ ↑(C ^ n) * μ (closedBall x (2 * ε)) := hε.1 x
+        _ ≤ ↑(C ^ n) * (C * μ (closedBall x ε)) := by gcongr; exact hε.2 x
+        _ = ↑(C ^ (n + 1)) * μ (closedBall x ε) := by rw [← mul_assoc, pow_succ, ENNReal.coe_mul]
+  rcases lt_or_ge K 1 with (hK | hK)
   · refine ⟨1, ?_⟩
     simp only [ENNReal.coe_one, one_mul]
     refine eventually_mem_nhdsWithin.mono fun ε hε x t ht ↦ ?_
@@ -91,7 +90,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     · exact (mem_Ioi.mp hε₀).le
     · refine ht.trans ?_
       rw [← Real.rpow_natCast, ← Real.logb_le_iff_le_rpow]
-      exacts [Nat.le_ceil _, by norm_num, by linarith]
+      exacts [Nat.le_ceil _, by simp, by linarith]
 
 /-- A variant of `IsUnifLocDoublingMeasure.doublingConstant` which allows for scaling the
 radius by values other than `2`. -/
@@ -108,12 +107,12 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
         ∀ x t r, t ∈ Ioc 0 K → r ≤ R →
           μ (closedBall x (t * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   have h := Classical.choose_spec (exists_eventually_forall_measure_closedBall_le_mul μ K)
-  rcases mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 h with ⟨R, Rpos, hR⟩
+  rcases mem_nhdsGT_iff_exists_Ioc_subset.1 h with ⟨R, Rpos, hR⟩
   refine ⟨R, Rpos, fun x t r ht hr => ?_⟩
   rcases lt_trichotomy r 0 with (rneg | rfl | rpos)
   · have : t * r < 0 := mul_neg_of_pos_of_neg ht.1 rneg
     simp only [closedBall_eq_empty.2 this, measure_empty, zero_le']
-  · simp only [mul_zero, closedBall_zero]
+  · simp only [mul_zero]
     refine le_mul_of_one_le_of_le ?_ le_rfl
     apply ENNReal.one_le_coe_iff.2 (le_max_right _ _)
   · apply (hR ⟨rpos, hr⟩ x t ht.2).trans
@@ -124,12 +123,12 @@ theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x, μ (closedBall x (K * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   filter_upwards [Classical.choose_spec
       (exists_eventually_forall_measure_closedBall_le_mul μ K)] with r hr x
-  exact (hr x K le_rfl).trans (mul_le_mul_right' (ENNReal.coe_le_coe.2 (le_max_left _ _)) _)
+  grw [hr x K le_rfl, scalingConstantOf, ← le_max_left]
 
 theorem eventually_measure_le_scaling_constant_mul' (K : ℝ) (hK : 0 < K) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x,
       μ (closedBall x r) ≤ scalingConstantOf μ K⁻¹ * μ (closedBall x (K * r)) := by
-  convert eventually_nhdsWithin_pos_mul_left hK (eventually_measure_le_scaling_constant_mul μ K⁻¹)
+  convert eventually_nhdsGT_zero_mul_left hK (eventually_measure_le_scaling_constant_mul μ K⁻¹)
   simp [inv_mul_cancel_left₀ hK.ne']
 
 /-- A scale below which the doubling measure `μ` satisfies good rescaling properties when one

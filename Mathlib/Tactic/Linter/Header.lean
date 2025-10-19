@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
 import Lean.Elab.Command
+import Lean.Elab.ParseImportsFast
+import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
 #  The "header" linter
@@ -46,7 +48,7 @@ could arise from this part and also flag that the file should contain a module d
 the `import` statements.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -73,8 +75,8 @@ It returns the array of all `import` identifiers in `s`. -/
 partial
 def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
-  if s.isOfKind ``Lean.Parser.Module.import then
-    rest.push (s.getArgs.getD 2 default)
+  if let `(Lean.Parser.Module.import| import $n) := s then
+    rest.push n
   else
     rest
 
@@ -205,35 +207,26 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
     output := output.push (toSyntax copyright "-/", s!"Copyright too short!")
   return output
 
-/-- Check the `Syntax` `imports` for broad imports: either `Mathlib.Tactic` or any import
-starting with `Lake`. -/
-def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : Array (Syntax × String) := Id.run do
-  let mut output := #[]
-  for i in imports do
-    match i.getId with
-    | `Mathlib.Tactic =>
-      output := output.push (i, s!"Files in mathlib cannot import the whole tactic folder.")
-    | `Mathlib.Tactic.Replace =>
-      if mainModule != `Mathlib.Tactic then output := output.push (i,
-      s!"Mathlib.Tactic.Replace defines a deprecated form of the 'replace' tactic; \
-      please do not use it in mathlib.")
-    | `Mathlib.Tactic.Have =>
-      if ![`Mathlib.Tactic, `Mathlib.Tactic.Replace].contains mainModule then
-        output := output.push (i,
-          s!"Mathlib.Tactic.Have defines a deprecated form of the 'have' tactic; \
-          please do not use it in mathlib.")
-    | modName =>
-      if modName.getRoot == `Lake then
-      output := output.push (i,
-        s!"In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
-          (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
-          make sure to benchmark it. If this is fine, feel free to allow this linter.")
-      else if (`Mathlib.Deprecated).isPrefixOf modName &&
-          !(`Mathlib.Deprecated).isPrefixOf mainModule then
-        -- We do not complain about files in the `Deprecated` directory importing one another.
-        output := output.push (i, s!"Files in the `Deprecated` directory are not supposed to be imported.")
+/--
+`isInMathlib modName` returns `true` if `Mathlib.lean` imports the file `modName` and `false`
+otherwise.
+This is used by the `Header` linter as a heuristic of whether it should inspect the file or not.
+-/
+def isInMathlib (modName : Name) : IO Bool := do
+  let mlPath := ("Mathlib" : System.FilePath).addExtension "lean"
+  if ← mlPath.pathExists then
+    let res ← parseImports' (← IO.FS.readFile mlPath) ""
+    return (res.imports.map (·.module == modName)).any (·)
+  else return false
 
-  return output
+/-- `inMathlibRef` is
+* `none` at initialization time;
+* `some true` if the `header` linter has already discovered that the current file
+  is imported in `Mathlib.lean`;
+* `some false` if the `header` linter has already discovered that the current file
+  is *not* imported in `Mathlib.lean`.
+-/
+initialize inMathlibRef : IO.Ref (Option Bool) ← IO.mkRef none
 
 /--
 The "header" style linter checks that a file starts with
@@ -263,13 +256,60 @@ register_option linter.style.header : Bool := {
 
 namespace Style.header
 
+/-- Check the `Syntax` `imports` for broad imports:
+`Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`. -/
+def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElabM Unit := do
+  for i in imports do
+    match i.getId with
+    | `Mathlib.Tactic =>
+      Linter.logLint linter.style.header i "Files in mathlib cannot import the whole tactic folder."
+    | `Mathlib.Tactic.Replace =>
+      if mainModule != `Mathlib.Tactic then
+        Linter.logLint linter.style.header i
+          "'Mathlib.Tactic.Replace' defines a deprecated form of the 'replace' tactic; \
+          please do not use it in mathlib."
+    | `Mathlib.Tactic.Have =>
+      if ![`Mathlib.Tactic, `Mathlib.Tactic.Replace].contains mainModule then
+        Linter.logLint linter.style.header i
+          "'Mathlib.Tactic.Have' defines a deprecated form of the 'have' tactic; \
+          please do not use it in mathlib."
+    | modName =>
+      if modName.getRoot == `Lake then
+      Linter.logLint linter.style.header i
+        "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
+        (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and \
+        make sure to benchmark it. If this is fine, feel free to silence this linter."
+
+/-- Check the syntax `imports` for syntactically duplicate imports.
+The output is an array of `Syntax` atoms whose ranges are the import statements,
+and the embedded strings are the error message of the linter.
+-/
+def duplicateImportsCheck (imports : Array Syntax)  : CommandElabM Unit := do
+  let mut importsSoFar := #[]
+  for i in imports do
+    if importsSoFar.contains i then
+      Linter.logLint linter.style.header i m!"Duplicate imports: '{i}' already imported"
+    else importsSoFar := importsSoFar.push i
+
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.style.header (← getOptions) do
+  let mainModule ← getMainModule
+  let inMathlib? := ← match ← inMathlibRef.get with
+    | some d => return d
+    | none => do
+      let val ← isInMathlib mainModule
+      -- We store the answer to the question "is this file in `Mathlib.lean`?" in `inMathlibRef`
+      -- to avoid recomputing its value on every command. This is a performance optimisation.
+      inMathlibRef.set (some val)
+      return val
+  -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
+  -- It is however active in the test files for the linter itself.
+  unless inMathlib? ||
+    mainModule == `MathlibTest.Header || mainModule == `MathlibTest.DirectoryDependencyLinter.Test do return
+  unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
-  let mainModule ← getMainModule
   -- `Mathlib.lean` imports `Mathlib.Tactic`, which the broad imports check below would flag.
   -- Since that file is imports-only, we can simply skip linting it.
   if mainModule == `Mathlib then return
@@ -277,9 +317,9 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let md := (getMainModuleDoc (← getEnv)).toArray
   -- The end of the first module doc-string, or the end of the file if there is none.
   let firstDocModPos := match md[0]? with
-                          | none     => fm.positions.back
+                          | none     => fm.positions.back!
                           | some doc => fm.ofPosition doc.declarationRange.endPos
-  unless stx.getTailPos? == some firstDocModPos do
+  unless stx.getTailPos?.getD default ≤ firstDocModPos do
     return
   -- We try to parse the file up to `firstDocModPos`.
   let upToStx ← parseUpToHere firstDocModPos <|> (do
@@ -287,12 +327,18 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- In that case, we parse until the end of the imports and add an extra `section` afterwards,
     -- so we trigger a "no module doc-string" warning.
     let fil ← getFileName
-    let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
-    parseUpToHere (stx.getTailPos?.getD default) "\nsection")
+    let (stx, _) ← Parser.parseHeader { inputString := fm.source, fileName := fil, fileMap := fm }
+    parseUpToHere (stx.raw.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
-  -- Report on broad imports.
-  for (imp, msg) in broadImportsCheck importIds mainModule do
-    Linter.logLint linter.style.header imp msg
+  -- Report on broad or duplicate imports.
+  broadImportsCheck importIds mainModule
+  duplicateImportsCheck importIds
+  let errors ← directoryDependencyCheck mainModule
+  if errors.size > 0 then
+    let mut msgs := ""
+    for msg in errors do
+      msgs := msgs ++ "\n\n" ++ (← msg.toString)
+    Linter.logLint linter.directoryDependency stx msgs.trimLeft
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with

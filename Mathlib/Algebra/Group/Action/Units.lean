@@ -46,20 +46,20 @@ instance [Monoid M] [SMul M α] [FaithfulSMul M α] : FaithfulSMul Mˣ α where
 
 @[to_additive]
 instance instMulAction [Monoid M] [MulAction M α] : MulAction Mˣ α where
-  one_smul := (one_smul M : _)
+  one_smul := one_smul M
   mul_smul m n := mul_smul (m : M) n
 
 @[to_additive]
 instance smulCommClass_left [Monoid M] [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass Mˣ N α where smul_comm m n := (smul_comm (m : M) n : _)
+    SMulCommClass Mˣ N α where smul_comm m n := smul_comm (m : M) n
 
 @[to_additive]
 instance smulCommClass_right [Monoid N] [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass M Nˣ α where smul_comm m n := (smul_comm m (n : N) : _)
+    SMulCommClass M Nˣ α where smul_comm m n := smul_comm m (n : N)
 
 @[to_additive]
 instance [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower Mˣ N α where smul_assoc m n := (smul_assoc (m : M) n : _)
+    IsScalarTower Mˣ N α where smul_assoc m n := smul_assoc (m : M) n
 
 /-! ### Action of a group `G` on units of `M` -/
 
@@ -75,6 +75,16 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
   one_smul _ := Units.ext <| one_smul _ _
   mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 
+/-- This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond.
+
+Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
+@[simp]
+lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
+    u₁ • u₂ = u₁ * u₂ := by
+  fail_if_success rfl -- there is an instance diamond here
+  ext
+  rfl
+
 @[to_additive (attr := simp)]
 lemma val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
     (g : G) (m : Mˣ) : ↑(g • m) = g • (m : M) := rfl
@@ -85,24 +95,24 @@ lemma smul_inv [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsSca
     (g : G) (m : Mˣ) : (g • m)⁻¹ = g⁻¹ • m⁻¹ := ext rfl
 
 /-- Transfer `SMulCommClass G H M` to `SMulCommClass G H Mˣ`. -/
-@[to_additive "Transfer `VAddCommClass G H M` to `VAddCommClass G H (AddUnits M)`."]
+@[to_additive /-- Transfer `VAddCommClass G H M` to `VAddCommClass G H (AddUnits M)`. -/]
 instance smulCommClass' [Group G] [Group H] [Monoid M] [MulAction G M] [SMulCommClass G M M]
     [MulAction H M] [SMulCommClass H M M] [IsScalarTower G M M] [IsScalarTower H M M]
     [SMulCommClass G H M] :
     SMulCommClass G H Mˣ where smul_comm g h m := Units.ext <| smul_comm g h (m : M)
 
 /-- Transfer `IsScalarTower G H M` to `IsScalarTower G H Mˣ`. -/
-@[to_additive "Transfer `VAddAssocClass G H M` to `VAddAssocClass G H (AddUnits M)`."]
+@[to_additive /-- Transfer `VAddAssocClass G H M` to `VAddAssocClass G H (AddUnits M)`. -/]
 instance isScalarTower' [SMul G H] [Group G] [Group H] [Monoid M] [MulAction G M]
     [SMulCommClass G M M] [MulAction H M] [SMulCommClass H M M] [IsScalarTower G M M]
     [IsScalarTower H M M] [IsScalarTower G H M] :
     IsScalarTower G H Mˣ where smul_assoc g h m := Units.ext <| smul_assoc g h (m : M)
 
 /-- Transfer `IsScalarTower G M α` to `IsScalarTower G Mˣ α`. -/
-@[to_additive "Transfer `VAddAssocClass G M α` to `VAddAssocClass G (AddUnits M) α`."]
+@[to_additive /-- Transfer `VAddAssocClass G M α` to `VAddAssocClass G (AddUnits M) α`. -/]
 instance isScalarTower'_left [Group G] [Monoid M] [MulAction G M] [SMul M α] [SMul G α]
     [SMulCommClass G M M] [IsScalarTower G M M] [IsScalarTower G M α] :
-    IsScalarTower G Mˣ α where smul_assoc g m := (smul_assoc g (m : M) : _)
+    IsScalarTower G Mˣ α where smul_assoc g m := smul_assoc g (m : M)
 
 -- Just to prove this transfers a particularly useful instance.
 example [Monoid M] [Monoid N] [MulAction M N] [SMulCommClass M N N] [IsScalarTower M N N] :

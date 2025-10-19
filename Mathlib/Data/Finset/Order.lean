@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Defs
+import Mathlib.Data.Multiset.ZeroCons
+import Mathlib.Order.Directed
 
 /-!
 # Finsets of ordered types

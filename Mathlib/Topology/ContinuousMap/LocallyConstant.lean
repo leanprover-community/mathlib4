@@ -19,8 +19,8 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- The inclusion of locally-constant functions into continuous functions as a multiplicative
 monoid hom. -/
-@[to_additive (attr := simps)
-"The inclusion of locally-constant functions into continuous functions as an additive monoid hom."]
+@[to_additive (attr := simps) /-- The inclusion of locally-constant functions into continuous
+functions as an additive monoid hom. -/]
 def toContinuousMapMonoidHom [Monoid Y] [ContinuousMul Y] : LocallyConstant X Y →* C(X, Y) where
   toFun := (↑)
   map_one' := by
@@ -45,7 +45,7 @@ def toContinuousMapLinearMap (R : Type*) [Semiring R] [AddCommMonoid Y] [Module 
 /-- The inclusion of locally-constant functions into continuous functions as an algebra map. -/
 @[simps]
 def toContinuousMapAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y]
-    [TopologicalSemiring Y] : LocallyConstant X Y →ₐ[R] C(X, Y) where
+    [IsTopologicalSemiring Y] : LocallyConstant X Y →ₐ[R] C(X, Y) where
   toFun := (↑)
   map_one' := by
     ext
