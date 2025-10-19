@@ -184,12 +184,12 @@ lemma IsBaseChange.of_exact {M₁ M₂ M₃ : Type*} [AddCommGroup M₁] [AddCom
     [Module R M₁] [Module R M₂] [Module R M₃] {N₁ N₂ N₃ : Type*} [AddCommGroup N₁] [AddCommGroup N₂]
     [AddCommGroup N₃] [Module R N₁] [Module R N₂] [Module R N₃] [Module S N₁] [Module S N₂]
     [Module S N₃] [IsScalarTower R S N₁] [IsScalarTower R S N₂] [IsScalarTower R S N₃]
-    (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) (exac1 : Function.Exact f g) (surj1 : Function.Surjective g)
-    (f' : N₁ →ₗ[S] N₂) (g' : N₂ →ₗ[S] N₃) (exac2 : Function.Exact f' g')
+    {f : M₁ →ₗ[R] M₂} {g : M₂ →ₗ[R] M₃} (exac1 : Function.Exact f g) (surj1 : Function.Surjective g)
+    {f' : N₁ →ₗ[S] N₂} {g' : N₂ →ₗ[S] N₃} (exac2 : Function.Exact f' g')
     (surj2 : Function.Surjective g') (h₁ : M₁ →ₗ[R] N₁) (h₂ : M₂ →ₗ[R] N₂) (h₃ : M₃ →ₗ[R] N₃)
+    (isb1 : IsBaseChange S h₁) (isb2 : IsBaseChange S h₂)
     (comm1 : h₂.comp f = (f'.restrictScalars R).comp h₁)
-    (comm2 : h₃.comp g = (g'.restrictScalars R).comp h₂)
-    (isb1 : IsBaseChange S h₁) (isb2 : IsBaseChange S h₂) : IsBaseChange S h₃ := by
+    (comm2 : h₃.comp g = (g'.restrictScalars R).comp h₂) : IsBaseChange S h₃ := by
   have eqmap : f' = (isb2.equiv.toLinearMap.comp (f.baseChange S)).comp
     isb1.equiv.symm.toLinearMap := by
     apply isb1.algHom_ext
@@ -258,6 +258,8 @@ instance (M N : ModuleCat.{v'} S) : IsScalarTower R S (M ⟶ N) where
     rw [Algebra.smul_def, ← smul_smul]
     rfl
 
+set_option maxHeartbeats 350000 in
+--The dimension shifting is just too complicated
 theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N] (n : ℕ) :
     IsBaseChange S ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n) := by
@@ -281,28 +283,75 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       zero := by
         ext x
         simp }
-    have S_exact' : Function.Exact (ConcreteCategory.hom T.f) (ConcreteCategory.hom T.g) := by
+    have T_exact' : Function.Exact (ConcreteCategory.hom T.f) (ConcreteCategory.hom T.g) := by
       intro x
       simp [T]
     have T_exact : T.ShortExact := {
-      exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mpr S_exact'
+      exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mpr T_exact'
       mono_f := (ModuleCat.mono_iff_injective T.f).mpr (LinearMap.ker f).injective_subtype
       epi_g := (ModuleCat.epi_iff_surjective T.g).mpr surjf}
     let _ : Module.Finite R T.X₂ := by
       simp [T, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
-    let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
-    let _ : Module.Free R T.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
+    have _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
+    have _ : Module.Free R T.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
     have proj := ModuleCat.projective_of_categoryTheory_projective T.X₂
     let TS := (T.map (ModuleCat.extendScalars'.{v, v'} R S))
     have TS_exact : TS.ShortExact := T_exact.map_of_exact (ModuleCat.extendScalars'.{v, v'} R S)
-    let _ : Module.Free S TS.X₂ := by
+    have _ : Module.Free S TS.X₂ := by
       simp only [ModuleCat.extendScalars', ShortComplex.map_X₂, ModuleCat.ExtendScalars'.obj', TS]
       exact Module.Free.of_equiv (Shrink.linearEquiv S (TensorProduct R S T.X₂)).symm
     have proj' := ModuleCat.projective_of_categoryTheory_projective TS.X₂
-    --Define the `LinearMap`s
-    --Use `IsBaseChange.of_exact`
-    --Verify conditions (proof exactness)
-    sorry
+    let NS := ((ModuleCat.extendScalars'.{v, v'} R S).obj N)
+    let f : Ext T.X₂ N n →ₗ[R] Ext T.X₁ N n := {
+      __ := (mk₀ T.f).precomp N (zero_add n)
+      map_smul' r x := by simp }
+    let g : Ext T.X₁ N n →ₗ[R] Ext T.X₃ N (n + 1) := {
+      __ := T_exact.extClass.precomp N (add_comm 1 n)
+      map_smul' r x := by simp }
+    have exac1 : Function.Exact f g := (ShortComplex.ab_exact_iff_function_exact  _).mp
+        (Ext.contravariant_sequence_exact₁' T_exact N n (n + 1) (add_comm 1 n))
+    have isz1 : Limits.IsZero (AddCommGrpCat.of (Ext T.X₂ N (n + 1))) :=
+      @AddCommGrpCat.isZero_of_subsingleton _
+        (subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective)
+    have surj1 : Function.Surjective g := (AddCommGrpCat.epi_iff_surjective _).mp
+      ((Ext.contravariant_sequence_exact₃' T_exact N n (n + 1) (add_comm 1 n)).epi_f
+      (isz1.eq_zero_of_tgt _))
+    let f' : Ext TS.X₂ NS n →ₗ[S] Ext TS.X₁ NS n := {
+      __ := (mk₀ TS.f).precomp NS (zero_add n)
+      map_smul' s x := by simp }
+    let g' : Ext TS.X₁ NS n →ₗ[S] Ext TS.X₃ NS (n + 1) := {
+      __ := TS_exact.extClass.precomp NS (add_comm 1 n)
+      map_smul' s x := by simp }
+    have exac2 : Function.Exact f' g' := (ShortComplex.ab_exact_iff_function_exact  _).mp
+        (Ext.contravariant_sequence_exact₁' TS_exact NS n (n + 1) (add_comm 1 n))
+    have isz2 : Limits.IsZero (AddCommGrpCat.of (Ext TS.X₂ NS (n + 1))) :=
+      @AddCommGrpCat.isZero_of_subsingleton _
+        (subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective)
+    have surj2 : Function.Surjective g' := (AddCommGrpCat.epi_iff_surjective _).mp
+      ((Ext.contravariant_sequence_exact₃' TS_exact NS n (n + 1) (add_comm 1 n)).epi_f
+      (isz2.eq_zero_of_tgt _))
+    let h₁ : Ext T.X₂ N n →ₗ[R] Ext TS.X₂ NS n :=
+      (ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R T.X₂ N n
+    let h₂ : Ext T.X₁ N n →ₗ[R] Ext TS.X₁ NS n :=
+      (ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R T.X₁ N n
+    let h₃ : Ext T.X₃ N (n + 1) →ₗ[R] Ext TS.X₃ NS (n + 1) :=
+      (ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R T.X₃ N (n + 1)
+    apply IsBaseChange.of_exact S exac1 surj1 exac2 surj2 h₁ h₂ h₃ (ih T.X₂ N) (ih T.X₁ N)
+    · ext x
+      simp only [ShortComplex.map_X₁, ZeroHom.toFun_eq_coe,
+        AddMonoidHom.toZeroHom_coe, LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
+        Function.comp_apply, bilinearComp_apply_apply, ShortComplex.map_X₂, ShortComplex.map_f,
+        ← mapExt_mk₀_eq_mk₀_map, LinearMap.coe_restrictScalars, TS, h₂, f, f', h₁]
+      rw [Functor.mapExtLinearMap_coe, Functor.mapExtLinearMap_coe, Ext.mapExt_comp_eq_comp_mapExt]
+    · ext x
+      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+        LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
+        bilinearComp_apply_apply, LinearMap.coe_restrictScalars, h₃, g, g', h₂]
+      have : (ModuleCat.extendScalars'.{v, v'} R S).mapExt T.X₃ T.X₁ 1 T_exact.extClass =
+        TS_exact.extClass :=
+        Ext.mapExt_extClass_eq_extClass_map (ModuleCat.extendScalars'.{v, v'} R S) T_exact
+      erw [Functor.mapExtLinearMap_coe, Functor.mapExtLinearMap_coe]
+      rw [Ext.mapExt_comp_eq_comp_mapExt, this]
 
 noncomputable def ModuleCat.iso_extendScalars' {M : ModuleCat.{v} R} {MS : ModuleCat.{v'} S}
     (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f) :
@@ -340,7 +389,7 @@ end CategoryTheory.Abelian
 end
 
 end basechange
-/-
+
 lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := by
   have : (ringKrullDim R).unbot ringKrullDim_ne_bot ≠ ⊤ := by
     by_contra eq
@@ -1012,7 +1061,7 @@ theorem isCohenMacaulayLocalRing_of_isGorensteinLocalRing [IsGorensteinLocalRing
   rw [Module.supportDim_self_eq_ringKrullDim, eq] at le
   apply isCohenMacaulayLocalRing_of_ringKrullDim_le_depth R (le_of_le_of_eq le _)
   simp [IsLocalRing.depth_eq_of_iso (Shrink.linearEquiv.{u} R R).toModuleIso]
--/
+
 
 /-
 variable {R} in
