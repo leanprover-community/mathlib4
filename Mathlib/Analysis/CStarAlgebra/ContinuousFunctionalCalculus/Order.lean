@@ -367,7 +367,7 @@ lemma rpow_neg_one_le_rpow_neg_one {a b : A} (ha : IsStrictlyPositive a) (hab : 
   exact CStarAlgebra.inv_le_inv ha.nonneg hab
 
 lemma rpow_neg_one_le_one {a : A} (ha : 1 ≤ a) : a ^ (-1 : ℝ) ≤ 1 := by
-  lift a to Aˣ using isUnit_of_le (isUnit_one.isStrictlyPositive zero_le_one) ha
+  lift a to Aˣ using isUnit_of_le isStrictlyPositive_one ha
   rw [rpow_neg_one_eq_inv a (zero_le_one.trans ha)]
   exact inv_le_one ha
 
