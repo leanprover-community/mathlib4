@@ -1348,8 +1348,8 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
               · simp only [zero_le_one]
               · exact house_nonneg h7.β'
           · apply mul_nonneg;
-            · sorry
-            · sorry--apply Real.rpow_nonneg; simp only [Real.sqrt_nonneg]
+            · apply pow_nonneg; apply house_nonneg
+            · apply pow_nonneg; apply house_nonneg
       · apply pow_nonneg; norm_cast; apply h7.zero_leq_c₂
     · rw [le_iff_eq_or_lt]
       left
