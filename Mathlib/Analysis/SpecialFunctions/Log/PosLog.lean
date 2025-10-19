@@ -92,9 +92,8 @@ theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
     linarith
 
 @[gcongr]
-lemma posLog_le_posLog (x y : ℝ) (hx : 0 ≤ x) (hxy : x ≤ y) :
-    log⁺ x ≤ log⁺ y :=
-  Real.monotoneOn_posLog hx (hx.trans hxy) hxy
+lemma posLog_le_posLog {x y : ℝ} (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
+  monotoneOn_posLog hx (hx.trans hxy) hxy
 
 /-!
 ## Estimates for Products
