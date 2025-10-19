@@ -133,7 +133,7 @@ def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
       let diff := real.firstDiffPos st
       let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
       let f := origSubstring.str.drop (pos)
-      let extraLth := (f.takeWhile (· != st.get diff)).length
+      let extraLth := (f.takeWhile (· != diff.get st)).length
       let srcCtxt := zoomString real diff.1 5
       let ppCtxt  := zoomString st diff.1 5
       Linter.logLint linter.ppRoundtrip (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
