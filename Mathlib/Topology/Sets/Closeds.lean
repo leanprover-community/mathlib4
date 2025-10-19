@@ -438,17 +438,22 @@ def orderIsoSubtype' : IrreducibleCloseds α ≃o { x : Set α // IsClosed x ∧
 instance : PartialOrder (IrreducibleCloseds α) := inferInstance
 
 /-- The map on irreducible closed sets induced by a continuous map `f`. -/
-def map {f : β → α} (hf : Continuous f)
+def map (f : β → α) (hf : Continuous f)
     (c : IrreducibleCloseds β) : IrreducibleCloseds α where
-  carrier := closure (f '' c.carrier)
+  carrier := closure (f '' c)
   isIrreducible' := c.isIrreducible.image f hf.continuousOn |>.closure
   isClosed' := isClosed_closure
+
+@[simp]
+lemma coe_map (f : β → α) (hf : Continuous f) (s : IrreducibleCloseds β) :
+    (map f hf s : Set α) = closure (f '' s) :=
+  rfl
 
 /-- The map `IrreducibleCloseds.map` is injective when `f` is an embedding.
 This relies on the property of embeddings that a closed set in the domain is the preimage
 of the closure of its image. -/
-lemma map_injective_of_embedding {f : β → α} (hf : Topology.IsEmbedding f) :
-    Function.Injective (map hf.continuous) := by
+lemma map_injective_of_isEmbedding {f : β → α} (hf : Topology.IsEmbedding f) :
+    Function.Injective (map f hf.continuous) := by
   intro A B h_images_eq
   ext x
   have h_closures_eq : closure (f '' A.carrier) = closure (f '' B.carrier) :=
@@ -467,33 +472,15 @@ lemma map_injective_of_embedding {f : β → α} (hf : Topology.IsEmbedding f) :
     exact subset_closure (mem_image_of_mem f hx_in_B)⟩
 
 /-- The map `IrreducibleCloseds.map` is strictly monotone when `f` is an embedding. -/
-lemma map_strictMono_of_embedding {f : β → α} (hf : Topology.IsEmbedding f) :
-    StrictMono (map hf.continuous) := by
+lemma map_strictMono_of_isEmbedding {f : β → α} (hf : Topology.IsEmbedding f) :
+    StrictMono (map f hf.continuous) := by
   intro A B h_less_AB
   rw [← SetLike.coe_ssubset_coe] at h_less_AB ⊢
   exact ⟨closure_mono (Set.image_mono (subset_of_ssubset h_less_AB)), fun h_contra_subset =>
     (ne_of_lt (SetLike.coe_ssubset_coe.mp h_less_AB))
-    (map_injective_of_embedding hf (IrreducibleCloseds.ext
+    (map_injective_of_isEmbedding hf (IrreducibleCloseds.ext
       (Subset.antisymm (closure_mono (Set.image_mono (subset_of_ssubset h_less_AB)))
         h_contra_subset)))⟩
-
-/-! ### Maps for subspace embeddings -/
-
-/-- The canonical map from irreducible closed sets of a subspace `β` to irreducible
-closed sets of the ambient space `α`, defined by taking the closure of the image
-under the inclusion map. This is an instance of `IrreducibleCloseds.mapOfContinuous`. -/
-def mapIrreducibleClosed (β : Set α) : IrreducibleCloseds β → IrreducibleCloseds α :=
-  map continuous_subtype_val
-
-/-- The map `mapIrreducibleClosed` is injective, as it's induced by an embedding. -/
-lemma mapIrreducibleClosed_injective (β : Set α) :
-    Function.Injective (mapIrreducibleClosed β) :=
-  map_injective_of_embedding Topology.IsEmbedding.subtypeVal
-
-/-- The canonical map `mapIrreducibleClosed` is strictly monotone. -/
-lemma mapIrreducibleClosed_strictMono (β : Set α) :
-    StrictMono (mapIrreducibleClosed β) :=
-  map_strictMono_of_embedding Topology.IsEmbedding.subtypeVal
 
 end IrreducibleCloseds
 

@@ -44,7 +44,7 @@ to the Krull dimension of `Y`.
 -/
 theorem IsClosedEmbedding.topologicalKrullDim_le (f : X → Y) (hf : IsClosedEmbedding f) :
     topologicalKrullDim X ≤ topologicalKrullDim Y :=
-  krullDim_le_of_strictMono _ (map_strictMono_of_embedding hf.toIsEmbedding)
+  krullDim_le_of_strictMono _ (map_strictMono_of_isEmbedding hf.toIsEmbedding)
 
 /-- The topological Krull dimension is invariant under homeomorphisms -/
 theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :
@@ -63,7 +63,7 @@ theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :
 This generalizes `IsClosedEmbedding.topologicalKrullDim_le`. -/
 theorem IsEmbedding.topologicalKrullDim_le {f : Y → X} (hf : IsEmbedding f) :
     topologicalKrullDim Y ≤ topologicalKrullDim X :=
-  krullDim_le_of_strictMono _ (map_strictMono_of_embedding hf)
+  krullDim_le_of_strictMono _ (map_strictMono_of_isEmbedding hf)
 
 /-- The topological Krull dimension of any subspace is at most the dimension of the
 ambient space. -/
