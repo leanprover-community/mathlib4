@@ -82,7 +82,7 @@ theorem lift_kroneckerBilinear_apply (x : Matrix m m R ⊗[R] Matrix n n R) :
     fun _ _ h1 h2 => by simp only [map_add, h1, h2, add_apply]; rfl
 
 /-- The algebra equivalence between `⊗ₜ` and `⊗ₖ`, i.e., the equivalence between
-tensor products of matrices and their kronecker products.
+tensor products of matrices and their Kronecker product.
 The map is given by `x ⊗ₜ y ↦ x ⊗ₖ y` and inverse `x ⊗ₖ y ↦ x ⊗ₜ y`. -/
 -- TODO: upgrade this to `≃⋆ₐ` for when `R` is a ⋆-ring (after #27290)
 noncomputable def toKronecker :
