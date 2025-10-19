@@ -435,7 +435,7 @@ instance : SMulZeroClass α β where
     rw [← smul_one g, ← inv_smul_eq_iff, smul_mul', inv_smul_smul, zero_mul]
     exact zero_ne_one
 
-theorem smul_inv₀' (g : α) (x : β) : g • x⁻¹ = (g • x)⁻¹ := by
+@[simp] theorem smul_inv₀' (g : α) (x : β) : g • x⁻¹ = (g • x)⁻¹ := by
   by_cases hx : x = 0
   · rw [hx, inv_zero, smul_zero, inv_zero]
   · apply eq_inv_of_mul_eq_one_right
