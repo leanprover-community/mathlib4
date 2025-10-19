@@ -35,6 +35,19 @@ variable
   [FiberBundle F E] [VectorBundle ℝ F E]
   [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
 
+-- I have a smooth scalar function
+variable (φ : B → ℝ) (hφ : ContMDiff IB 𝓘(ℝ, ℝ) ⊤ φ)
+
+-- I have a smooth section of a vector bundle
+variable (s : ∀ x, E x) (hs : ContMDiff IB (IB.prod 𝓘(ℝ, F)) ⊤ (fun x ↦ TotalSpace.mk' F x (s x)))
+
+-- Question: Is φ • s a smooth section?
+example : ContMDiff IB (IB.prod 𝓘(ℝ, F)) ⊤
+    (fun x ↦ TotalSpace.mk' F x (φ x • s x)) := by
+  sorry
+
+#check contMDiff_totalSpace_weighted_sum_of_local_sections
+
 noncomputable instance : TopologicalSpace (TotalSpace EB (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) :=
   inferInstanceAs (TopologicalSpace (TangentBundle IB B))
 
@@ -298,7 +311,7 @@ lemma g_cont (i p : B) (v : TangentSpace IB p) :
   exact h_desired
 
 noncomputable
-def g_bilinear (f : SmoothPartitionOfUnity B IB B) (i p : B) :
+def g_bilinear (i p : B) :
     W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p :=
   ContinuousLinearMap.mk
     { toFun := fun v ↦
@@ -318,6 +331,117 @@ def g_bilinear (f : SmoothPartitionOfUnity B IB B) (i p : B) :
                     change g i p (m • x) w = m • g i p x w
                     exact g_smul'' i p w x m }
     (by sorry : Continuous _)
+
+lemma fuu (i x : B) (hx : x ∈ (chartAt HB i).source) :
+  ContMDiffWithinAt IB 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ) ω
+    (fun y ↦
+      ContinuousLinearMap.inCoordinates EB
+       (TangentSpace IB) (EB →L[ℝ] ℝ) (V (TangentSpace IB)) x y x y (g_bilinear i y))
+    (chartAt HB i).source x := by
+  sorry
+
+lemma g_bilinear_smooth (i : B) :
+  ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ω
+    (fun x ↦ @TotalSpace.mk' B (W (TangentSpace IB)) (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_bilinear i x))
+    (chartAt HB i).source := by
+  intro x hx
+  rw [contMDiffWithinAt_hom_bundle]
+  constructor
+  · exact contMDiffWithinAt_id
+  · simp
+    exact (fuu i x hx)
+
+-- lemma g_bilinear_smooth_ext (i : B) (φ : B → ℝ)
+--     (hφ_smooth : ContMDiff IB 𝓘(ℝ, ℝ) ω φ)
+--     (hφ_support : tsupport φ ⊆ (extChartAt IB i).source) :
+--   ContMDiff IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ω
+--     (fun x ↦ @TotalSpace.mk' B (W (TangentSpace IB)) (EB →L[ℝ] EB →L[ℝ] ℝ) x
+--       (φ x • g_bilinear i x)) := by
+--   intro x
+--   by_cases hx : x ∈ tsupport φ
+--   · -- reduce to chart at i
+--     have hx_chart : x ∈ (extChartAt IB i).source := hφ_support hx
+--     -- phi is smooth in chart
+--     have hφ_local : ContMDiffWithinAt IB 𝓘(ℝ, ℝ) ω φ (extChartAt IB i).source x := hφ_smooth.contMDiffOn x hx_chart
+--     -- g_bilinear is smooth in chart
+--     have hx_chart_base : x ∈ (chartAt HB i).source := by rw [extChartAt_source] at hx_chart; exact hx_chart
+--     have hg_local := @g_bilinear_smooth _ _ _ _ _ _ IB _ _ _ _ i x hx_chart_base
+--     -- scalar multiplication in the fiber is smooth in the chart
+--     exact sorry
+--   · -- outside support
+--     have : φ x • g_bilinear i x = 0 := by sorry
+--     exact contMDiffAt_const
+
+-- lemma g_bilinear_smooth_ext (i : B) (φ : B → ℝ)
+--     (hφ_smooth : ContMDiff IB 𝓘(ℝ, ℝ) ω φ)
+--     (hφ_support : tsupport φ ⊆ (extChartAt IB i).source) :
+--   ContMDiff IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ω
+--     (fun x ↦ @TotalSpace.mk' B (W (TangentSpace IB)) (EB →L[ℝ] EB →L[ℝ] ℝ) x
+--       (φ x • g_bilinear i x)) := by
+--   intro x
+--   by_cases hx : x ∈ tsupport φ
+--   · have : x ∈ tsupport φ := hx
+--     have hx_chart : x ∈ (extChartAt IB i).source := hφ_support hx
+--     let fiber (x : B) : W (TangentSpace IB) x := φ x • g_bilinear i x
+
+--     have h_fiber : ContMDiffOn IB (fun x => W (TangentSpace IB) x) ω
+--       fiber (extChartAt IB i).source := by
+--       exact ContMDiffOn.smul hφ_smooth.contMDiffOn (g_bilinear_smooth i).contMDiffOn_fiber
+
+
+--     have h_fiber : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ω
+--       fiber (extChartAt IB i).source :=
+--       ContMDiffOn.smul hφ_smooth.contMDiffOn (g_bilinear_smooth i)
+
+
+--     have : true := ContMDiff.smul hφ_smooth (g_bilinear_smooth i)
+--     exact ContMDiff.totalSpace_mk (ContMDiff.smul hφ_smooth hg_smooth) x
+
+--     exact ContMDiff.along_snd ((hφ_smooth.smul g_bilinear) : ContMDiff IB _ ω fiber) x
+
+--      -- Step 1: define fiber with explicit type
+--     let fiber (x : B) : W (TangentSpace IB) x := (φ x • g_bilinear i x : W (TangentSpace IB) x)
+
+--     -- Step 2: define the “base × fiber” map for smoothness reasoning
+--     let baseFiber : B → B × (EB →L[ℝ] EB →L[ℝ] ℝ) := fun x => (x, φ x • g_bilinear i x)
+
+
+--     let fiber (x : B) : W (TangentSpace IB) x := φ x • g_bilinear i x
+--     let foo := fun x => @TotalSpace.mk' B (W (TangentSpace IB)) (EB →L[ℝ] EB →L[ℝ] ℝ) x (fiber x)
+--     -- have : (fun x => @TotalSpace.mk' B (W (TangentSpace IB)) _ x ((φ x • g_bilinear i x)))
+--     --   = TotalSpace.mk' ∘ F := by
+--     --   rfl
+--     let foo := (fun x ↦ @TotalSpace.mk' B (W (TangentSpace IB)) (EB →L[ℝ] EB →L[ℝ] ℝ) x ((φ x • g_bilinear i x) :  W (TangentSpace IB) x))
+
+--     exact sorry
+--     -- apply ContMDiffAt.comp
+--     -- · sorry -- smoothness of scalar multiplication as a map
+--     -- · apply ContMDiffAt.prod_mk
+--     --   · exact hφ_smooth.contMDiffAt
+--     --   · sorry -- g_bilinear i smooth at x
+--     -- have hx_chart' : x ∈ (chartAt HB i).source := by
+--     --   rw [← extChartAt_source IB]
+--     --   exact hx_chart
+--     -- have hg : ContMDiffAt IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ω
+--     --   (fun x ↦ @TotalSpace.mk' B (W (TangentSpace IB)) (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_bilinear i x)) x := by
+--     --   apply (g_bilinear_smooth i).contMDiffAt
+--     --   exact IsOpen.mem_nhds (chartAt HB i).open_source hx_chart'
+--     -- have : true := ContMDiffAt.smul hφ_smooth.contMDiffAt hg
+--     -- exact sorry
+--   · have : x ∉ tsupport φ := hx
+--     exact sorry
+
+#check ContMDiff.along_snd
+#check ContMDiffAt.prodMk
+#check Function.uncurry
+
+#check @ContMDiffAt.smul
+#check ContMDiff.smul
+
+#check SmoothBumpCovering.IsSubordinate.toSmoothPartitionOfUnity
+
+#print SmoothPartitionOfUnity
+#check tsupport
 
 variable [FiniteDimensional ℝ EB] [IsManifold IB ω B] [SigmaCompactSpace B] [T2Space B]
 
