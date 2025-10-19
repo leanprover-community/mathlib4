@@ -285,10 +285,9 @@ theorem inertiaDeg_of_subsingleton [hp : p.IsMaximal] [hQ : Subsingleton (S ⧸ 
   exact dif_neg fun h => hp.ne_top <| h.symm.trans comap_top
 
 @[simp]
-theorem inertiaDeg_algebraMap [P.LiesOver p] [p.IsPrime] :
-    inertiaDeg p P = finrank (R ⧸ p) (S ⧸ P) := by
-  haveI : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
-  rw [inertiaDeg, dif_pos (over_def P p).symm]
+theorem inertiaDeg_algebraMap [P.LiesOver p] :
+    inertiaDeg p P = finrank (R ⧸ p) (S ⧸ P) :=
+  dif_pos (over_def P p).symm
 
 theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
   haveI : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
