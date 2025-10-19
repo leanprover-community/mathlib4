@@ -3,48 +3,8 @@ import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
 import Mathlib.Misc
 
-theorem Ideal.inertiaDeg_le_finrank {R : Type*} [CommRing R] (S : Type*) [CommRing S]
-    [IsDedekindDomain S] [Algebra R S] (K L : Type*) [Field K] [Field L] [IsDedekindDomain R]
-    [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L] [Algebra K L]
-    [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Module.Finite R S]
-    [NoZeroSMulDivisors R S] {p : Ideal R}
-    [p.IsMaximal] (hp0 : p ≠ ⊥) (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
-    p.inertiaDeg P ≤ Module.finrank K L := by
-  classical
-  have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
-  rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
-  refine le_trans (Nat.le_mul_of_pos_left _ ?_) (Nat.le_add_right _ _)
-  exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hp0
-
-theorem Ideal.ramificationIdx_le_finrank {R : Type*} [CommRing R] (S : Type*) [CommRing S]
-    [IsDedekindDomain S] [Algebra R S] (K L : Type*) [Field K] [Field L] [IsDedekindDomain R]
-    [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L] [Algebra K L]
-    [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Module.Finite R S]
-    [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) (P : Ideal S)
-    [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
-    p.ramificationIdx (algebraMap R S) P ≤ Module.finrank K L := by
-  classical
-  have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
-  rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
-  refine le_trans (Nat.le_mul_of_pos_right _ ?_) (Nat.le_add_right _ _)
-  exact Nat.pos_iff_ne_zero.mpr <|  inertiaDeg_ne_zero p P
-
-theorem Ideal.card_primesOverFinset_le_finrank {R : Type*} [CommRing R] (S : Type*) [CommRing S]
-    [IsDedekindDomain S] [Algebra R S] (K L : Type*) [Field K] [Field L] [IsDedekindDomain R]
-    [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L] [Algebra K L]
-    [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Module.Finite R S]
-    [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
-    Finset.card (primesOverFinset p S) ≤ Module.finrank K L := by
-  rw [← sum_ramification_inertia S K L hp0, Finset.card_eq_sum_ones]
-  refine Finset.sum_le_sum fun P hP ↦ ?_
-  have : P.IsPrime := ((mem_primesOverFinset_iff hp0 _).mp hP).1
-  have : P.LiesOver p := ((mem_primesOverFinset_iff hp0 _).mp hP).2
-  refine Right.one_le_mul ?_ ?_
-  · exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hp0
-  · exact Nat.pos_iff_ne_zero.mpr <| inertiaDeg_ne_zero p P
-
 open Polynomial in
-theorem Polynomial.cyclotomic_eq_minpoly' (n : ℕ) (R : Type*) [CommRing R] [IsDomain R]
+theorem Polynomial.cyclotomic_eq_minpoly' {n : ℕ} {R : Type*} [CommRing R] [IsDomain R]
     [CharZero R] {μ : R} (h : IsPrimitiveRoot μ n) (hpos : 0 < n) :
     cyclotomic n ℤ = minpoly ℤ μ := by
   have h' : IsPrimitiveRoot (algebraMap R (FractionRing R) μ) n :=
@@ -102,54 +62,72 @@ theorem liesOver_span_zeta_sub_one : (span {hζ.toInteger - 1}).LiesOver 𝒑 :=
   rw [span_singleton_le_iff_mem, mem_comap, algebraMap_int_eq, map_natCast]
   exact p_mem_span_zeta_sub_one p k hζ
 
-attribute [local instance] FractionRing.liftAlgebra in
-open Ideal NumberField in
-theorem primesOver_eq_singleton :
-    primesOver 𝒑 (𝓞 K) = {span {hζ.toInteger - 1}} := by
-  refine Set.eq_singleton_iff_unique_mem.mpr ⟨⟨inferInstance, liesOver_span_zeta_sub_one p k hζ⟩,
-    fun P hP ↦ ?_⟩
-  have hp : 𝒑 ≠ ⊥ := span_singleton_eq_bot.not.mpr <| NeZero.natCast_ne p ℤ
-  have hP₁ : P ≠ ⊥ := ne_bot_of_mem_primesOver hp hP
-  have hP₂ : Prime P := prime_of_isPrime hP₁ hP.1
-  have hP₃ := hP.2
-  rw [Ideal.liesOver_iff_dvd_map  hP.1.ne_top, map_span, Set.image_singleton,
-    span_singleton_eq_span_singleton.mpr <|
-      (associated_norm_zeta_sub_one p k hζ).symm.map (algebraMap ℤ (𝓞 K))] at hP₃
-  have : IsGalois (FractionRing ℤ) (FractionRing (𝓞 K)) := by
-    have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
-    refine IsGalois.of_equiv_equiv (f := (FractionRing.algEquiv ℤ ℚ).toRingEquiv.symm)
-      (g := (FractionRing.algEquiv (𝓞 K) K).toRingEquiv.symm) <|
-      RingHom.ext fun x ↦ IsFractionRing.algEquiv_commutes (FractionRing.algEquiv ℤ ℚ).symm
-        (FractionRing.algEquiv (𝓞 K) K).symm _
-  rw [← Algebra.intNorm_eq_norm, Algebra.algebraMap_intNorm_of_isGalois,
-    ← prod_span_singleton, Prime.dvd_finset_prod_iff hP₂] at hP₃
-  obtain ⟨σ, _, h⟩ := hP₃
-  rw [span_singleton_eq_span_singleton.mpr
-    (hζ.toInteger_isPrimitiveRoot.associated_sub_one_map_sub_one σ).symm] at h
-  rwa [prime_dvd_prime_iff_eq hP₂] at h
-  refine prime_of_isPrime ?_ (isPrime_span_zeta_sub_one p k hζ)
-  exact span_zeta_sub_one_ne_bot p k hζ
-
-theorem eq_span_zeta_sub_one_of_liesOver (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver 𝒑] :
-    P = span {hζ.toInteger - 1} := by
-  have : P ∈ primesOver 𝒑 (𝓞 K) := ⟨inferInstance, inferInstance⟩
-  rwa [primesOver_eq_singleton p k hζ] at this
-
 theorem inertiaDeg_span_zeta_sub_one : inertiaDeg 𝒑 (span {hζ.toInteger - 1}) = 1 := by
   have := liesOver_span_zeta_sub_one p k hζ
   rw [← Nat.pow_right_inj hp.out.one_lt, pow_one, ← absNorm_eq_pow_inertiaDeg' _ hp.out,
     absNorm_span_zeta_sub_one]
 
+attribute [local instance] FractionRing.liftAlgebra in
+theorem map_eq_span_zeta_sub_one_pow :
+    (map (algebraMap ℤ (𝓞 K)) 𝒑) = span {hζ.toInteger - 1} ^ Module.finrank ℚ K := by
+  have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
+  have : IsGalois (FractionRing ℤ) (FractionRing (𝓞 K)) := by
+    refine IsGalois.of_equiv_equiv (f := (FractionRing.algEquiv ℤ ℚ).toRingEquiv.symm)
+      (g := (FractionRing.algEquiv (𝓞 K) K).toRingEquiv.symm) <|
+        RingHom.ext fun x ↦ IsFractionRing.algEquiv_commutes (FractionRing.algEquiv ℤ ℚ).symm
+          (FractionRing.algEquiv (𝓞 K) K).symm _
+  rw [map_span, Set.image_singleton, span_singleton_eq_span_singleton.mpr
+    ((associated_norm_zeta_sub_one p k hζ).symm.map (algebraMap ℤ (𝓞 K))),
+    ← Algebra.intNorm_eq_norm, Algebra.algebraMap_intNorm_of_isGalois, ← prod_span_singleton]
+  conv_lhs =>
+    enter [2, σ]
+    rw [span_singleton_eq_span_singleton.mpr
+      (hζ.toInteger_isPrimitiveRoot.associated_sub_one_map_sub_one σ).symm]
+  rw [Finset.prod_const, Finset.card_univ, ← Fintype.card_congr (galRestrict ℤ ℚ K (𝓞 K)).toEquiv,
+    ← Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank]
+
 theorem ramificationIdx_span_zeta_sub_one :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 (span {hζ.toInteger - 1}) = p ^ k * (p - 1) := by
-  have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
   have := liesOver_span_zeta_sub_one p k hζ
+  have h := isPrime_span_zeta_sub_one p k hζ
   rw [← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
-    ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑) _ (𝓞 K) ℚ K,
-    ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hζ.toInteger - 1}) ℚ K,
+    IsDedekindDomain.ramificationIdx_eq_multiplicity _ h, map_eq_span_zeta_sub_one_pow p k hζ,
+    multiplicity_pow_self (span_zeta_sub_one_ne_bot p k hζ) (isUnit_iff.not.mpr h.ne_top)]
+  exact map_ne_bot_of_ne_bot <| by simpa using hp.out.ne_zero
+
+variable (K)
+
+include hK in
+theorem ncard_primesOver_of_prime_pow :
+    (primesOver 𝒑 (𝓞 K)).ncard = 1 := by
+  have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
+  have : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
+  have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn this (𝓞 K) ℚ K
+  have hζ := hK.zeta_spec
+  have := liesOver_span_zeta_sub_one p k hζ
+  rwa [ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hζ.toInteger - 1}) ℚ K,
     inertiaDegIn_eq_inertiaDeg 𝒑 (span {hζ.toInteger - 1}) ℚ K, inertiaDeg_span_zeta_sub_one,
-    mul_one, primesOver_eq_singleton p k hζ, Set.ncard_singleton, one_mul]
-  exact span_singleton_eq_bot.not.mpr <| NeZero.natCast_ne p ℤ
+    ramificationIdx_span_zeta_sub_one, mul_one, ← Nat.totient_prime_pow_succ hp.out,
+    ← finrank _ K, Nat.mul_eq_right] at h_main
+  exact Module.finrank_pos.ne'
+
+theorem eq_span_zeta_sub_one_of_liesOver (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
+    P = span {hζ.toInteger - 1} := by
+  have : P ∈ primesOver 𝒑 (𝓞 K) := ⟨hP₁, hP₂⟩
+  have : span {hζ.toInteger - 1} ∈ primesOver 𝒑 (𝓞 K) :=
+    ⟨isPrime_span_zeta_sub_one p k hζ, liesOver_span_zeta_sub_one p k hζ⟩
+  have := ncard_primesOver_of_prime_pow p k K
+  aesop
+
+include hK in
+theorem inertiaDeg_eq_of_prime_pow (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
+    inertiaDeg 𝒑 P = 1 := by
+  rw [eq_span_zeta_sub_one_of_liesOver p k K hK.zeta_spec P, inertiaDeg_span_zeta_sub_one]
+
+include hK in
+theorem ramificationIdx_eq_of_prime_pow (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
+    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
+  rw [eq_span_zeta_sub_one_of_liesOver p k K hK.zeta_spec P, ramificationIdx_span_zeta_sub_one]
 
 end PrimePow
 
@@ -160,22 +138,29 @@ variable (m : ℕ) [NeZero m] {K : Type*} [Field K] [NumberField K] [IsCyclotomi
 
 local notation3 "𝒑" => (Ideal.span {(p : ℤ)})
 
-open NumberField RingOfIntegers in
+open NumberField RingOfIntegers Ideal
+
 theorem inertiaDeg_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
   replace hm : p.Coprime m := not_not.mp <| (Nat.Prime.dvd_iff_not_coprime hp.out).not.mp hm
-  let ζ := (IsCyclotomicExtension.zeta_spec m ℚ K).toInteger
-  have h₁ : exponent ζ = 1 := by
-    rw [exponent_eq_one_iff]
-    exact IsCyclotomicExtension.Rat.adjoin_singleton_eq_top m K _
-  have h₂ : ¬ p ∣ exponent ζ := by
-    rw [h₁]
+  let ζ := (zeta_spec m ℚ K).toInteger
+  have h₁ : ¬ p ∣ exponent ζ := by
+    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top m K (zeta_spec m ℚ K)]
     exact hp.out.not_dvd_one
-  let hQ := Ideal.primesOverSpanEquivMonicFactorsMod h₂ ⟨P, ⟨inferInstance, inferInstance⟩⟩
-  have := Ideal.inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' h₂ hQ.2
-  simp only [Subtype.coe_eta, Equiv.symm_apply_apply, hQ] at this
-  rw [this]
-  have h := hQ.2
+  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ ⟨P, ⟨inferInstance, inferInstance⟩⟩).2
+  have h₃ := inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' h₁ h₂
+  simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
+  rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
+    (Polynomial.map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
+  rw [h₃, Polynomial.natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1) _ h₂.1]
+  · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
+  · refine dvd_trans h₂.2.2 ?_
+    rw [← Polynomial.map_cyclotomic_int, ← Polynomial.cyclotomic_eq_minpoly' _ (NeZero.pos m)]
+    exact (zeta_spec m ℚ K).toInteger_isPrimitiveRoot
+
+
+#exit
+
   rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff] at h
   · rw [Polynomial.natDegree_of_dvd_cyclotomic_of_irreducible (p := p) (f := 1)]
     · simp

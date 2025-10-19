@@ -59,6 +59,24 @@ theorem associated_pow_sub_one_pow_of_coprime (hζ : IsPrimitiveRoot ζ n)
     grind [Associated.trans, Associated.symm]
   exact hζ.associated_sub_one_pow_sub_one_of_coprime
 
+/-- Given an `n`-th primitive root of unity `ζ`, we have that `ζ - 1` is associated to any of its
+  conjugate. -/
+theorem associated_sub_one_map_sub_one {n : ℕ} [NeZero n] {R : Type*} [CommRing R] [Algebra R A]
+    (hζ : IsPrimitiveRoot ζ n) (σ : A ≃ₐ[R] A) : Associated (ζ - 1) (σ (ζ - 1)) := by
+  rw [map_sub, map_one, ← hζ.autToPow_spec R σ]
+  apply hζ.associated_sub_one_pow_sub_one_of_coprime
+  exact ZMod.val_coe_unit_coprime ((autToPow R hζ) σ)
+
+/-- Given an `n`-th primitive root of unity `ζ`, we have that two conjugates of `ζ - 1`
+  are associated. -/
+theorem associated_map_sub_one_map_sub_one {n : ℕ} [NeZero n] {R : Type*} [CommRing R] [Algebra R A]
+    (hζ : IsPrimitiveRoot ζ n) {σ τ : A ≃ₐ[R] A} :
+    Associated (σ (ζ - 1)) (τ (ζ - 1)) := by
+  rw [map_sub, map_sub, map_one, map_one, ← hζ.autToPow_spec R σ, ← hζ.autToPow_spec R τ]
+  apply hζ.associated_pow_sub_one_pow_of_coprime
+  · exact ZMod.val_coe_unit_coprime ((autToPow R hζ) τ)
+  · exact ZMod.val_coe_unit_coprime ((autToPow R hζ) σ)
+
 /-- Given an `n`-th primitive root of unity `ζ`, where `2 ≤ n`, we have that `∑ i ∈ range j, ζ ^ i`
   is a unit for all `j` coprime with `n`. This is the unit given by
   `associated_pow_sub_one_pow_of_coprime` (see
