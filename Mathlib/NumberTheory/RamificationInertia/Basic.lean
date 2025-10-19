@@ -313,6 +313,15 @@ lemma inertiaDeg_map_eq [p.IsMaximal] (P : Ideal S)
   rw [show P.map e = _ from map_comap_of_equiv (e : S ≃+* S₁)]
   exact p.inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁).symm P
 
+theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
+    [hP : P.LiesOver (⊥ : Ideal R)] :
+    (⊥ : Ideal R).inertiaDeg P = finrank R S := by
+  rw [inertiaDeg, dif_pos (over_def P (⊥ : Ideal R)).symm]
+  replace hP : P = ⊥ := eq_bot_of_liesOver_bot P (h := hP)
+  rw [Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot R).symm
+    ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
+  rfl
+
 end DecEq
 
 
@@ -895,8 +904,8 @@ theorem sum_ramification_inertia {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
       algebraMap_injective_of_field_isFractionRing R S K L, le_bot_iff]
   · exact finrank_quotient_map p K L
 
-theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥)
-    (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
+theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
+    (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] (hp0 : p ≠ ⊥) :
     p.inertiaDeg P ≤ Module.finrank K L := by
   classical
   have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
@@ -905,9 +914,11 @@ theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaxima
   exact Nat.pos_iff_ne_zero.mpr <| IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver _ hp0
 
 theorem ramificationIdx_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
-    (hp0 : p ≠ ⊥) (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
+    (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
     p.ramificationIdx (algebraMap R S) P ≤ Module.finrank K L := by
   classical
+  by_cases hp0 : p = ⊥
+  · simp [hp0]
   have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
   rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
   refine le_trans (Nat.le_mul_of_pos_right _ ?_) (Nat.le_add_right _ _)
