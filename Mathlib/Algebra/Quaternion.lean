@@ -216,7 +216,6 @@ theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
   rfl
 
 /-- The additive equivalence between a quaternion algebra over `R` and `Fin 4 → R`. -/
-@[simps! toEquiv]
 def addEquivTuple (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃+ (Fin 4 → R) where
   toEquiv := equivTuple ..
   map_add' _ _ := by ext i; fin_cases i <;> rfl
