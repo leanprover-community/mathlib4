@@ -99,7 +99,7 @@ theorem finite_set_of_fin_dim_affineIndependent [FiniteDimensional k V] {s : Set
 variable {k}
 
 /-- The supremum of two finite-dimensional affine subspaces is finite-dimensional. -/
-instance finiteDimensional_sup (s₁ s₂ : AffineSubspace k P)
+instance AffineSubspace.finiteDimensional_sup (s₁ s₂ : AffineSubspace k P)
     [FiniteDimensional k s₁.direction] [FiniteDimensional k s₂.direction] :
     FiniteDimensional k (s₁ ⊔ s₂).direction := by
   rcases eq_bot_or_nonempty s₁ with rfl | ⟨p₁, hp₁⟩
