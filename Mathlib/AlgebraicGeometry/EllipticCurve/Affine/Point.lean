@@ -85,10 +85,12 @@ namespace Affine
 
 /-! ## The affine coordinate ring -/
 
+variable (W') in
 /-- The affine coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of a Weierstrass curve `W`. -/
 abbrev CoordinateRing : Type r :=
   AdjoinRoot W'.polynomial
 
+variable (W') in
 /-- The function field `R(W) := Frac(R[W])` of a Weierstrass curve `W`. -/
 abbrev FunctionField : Type r :=
   FractionRing W'.CoordinateRing
@@ -407,7 +409,7 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     (Algebra.norm R[X] <| p • 1 + q • mk W' Y).degree = max (2 • p.degree) (2 • q.degree + 3) := by
   have hdp : (p ^ 2).degree = 2 • p.degree := degree_pow p 2
   have hdpq : (p * q * (C W'.a₁ * X + C W'.a₃)).degree ≤ p.degree + q.degree + 1 := by
-    simpa only [degree_mul] using add_le_add_left degree_linear_le (p.degree + q.degree)
+    grw [degree_mul, degree_mul, degree_linear_le]
   have hdq :
       (q ^ 2 * (X ^ 3 + C W'.a₂ * X ^ 2 + C W'.a₄ * X + C W'.a₆)).degree = 2 • q.degree + 3 := by
     rw [degree_mul, degree_pow, ← one_mul <| X ^ 3, ← C_1, degree_cubic <| one_ne_zero' R]

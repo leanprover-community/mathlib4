@@ -75,7 +75,7 @@ def id : ∀ X : C ⋆ D, Hom X X
 def comp : ∀ {x y z : C ⋆ D}, Hom x y → Hom y z → Hom x z
   | .left _x, .left _y, .left _z, f, g => ULift.up (ULift.down f ≫ ULift.down g)
   | .left _x, .left _y, .right _z, _, _ => PUnit.unit
-  | .left _x, .right _y, .right _z, _, _ =>  PUnit.unit
+  | .left _x, .right _y, .right _z, _, _ => PUnit.unit
   | .right _x, .right _y, .right _z, f, g => ULift.up (ULift.down f ≫ ULift.down g)
 
 instance : Category.{max v₁ v₂} (C ⋆ D) where
