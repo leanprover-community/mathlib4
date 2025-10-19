@@ -341,7 +341,7 @@ theorem comp_aeval (ha : HasEval a)
     [IsTopologicalRing T] [IsLinearTopology T T]
     [T2Space T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
-    ε.comp (aeval ha) = aeval (ha.map hε)  := by
+    ε.comp (aeval ha) = aeval (ha.map hε) := by
   apply DFunLike.ext'
   simp only [AlgHom.coe_comp, coe_aeval ha]
   rw [← RingHom.coe_coe,
