@@ -655,7 +655,7 @@ theorem subset_div {s t : Set α} :
 
 @[to_additive (attr := simp (default + 1))]
 lemma sup_div_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
-    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x /  y) ≤ a :=
+    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x / y) ≤ a :=
   sup_image₂_le
 
 @[to_additive]
