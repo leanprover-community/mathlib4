@@ -433,9 +433,7 @@ order isomorphism. -/
 def orderIsoSubtype' : IrreducibleCloseds α ≃o { x : Set α // IsClosed x ∧ IsIrreducible x } :=
   equivSubtype'.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
 
-/-! ### Partial order structure on irreducible closed sets and maps thereof-/
-
-instance : PartialOrder (IrreducibleCloseds α) := inferInstance
+/-! ### Partial order structure on irreducible closed sets and maps thereof.-/
 
 /-- The map on irreducible closed sets induced by a continuous map `f`. -/
 def map (f : β → α) (hf : Continuous f)
@@ -452,35 +450,20 @@ lemma coe_map (f : β → α) (hf : Continuous f) (s : IrreducibleCloseds β) :
 /-- The map `IrreducibleCloseds.map` is injective when `f` is an embedding.
 This relies on the property of embeddings that a closed set in the domain is the preimage
 of the closure of its image. -/
-lemma map_injective_of_isEmbedding {f : β → α} (hf : Topology.IsEmbedding f) :
+lemma map_injective_of_isInducing {f : β → α} (hf : Topology.IsInducing f) :
     Function.Injective (map f hf.continuous) := by
   intro A B h_images_eq
-  ext x
-  have h_closures_eq : closure (f '' A.carrier) = closure (f '' B.carrier) :=
-    congrArg IrreducibleCloseds.carrier h_images_eq
-  exact ⟨fun hx_in_A => by
-    rw [← B.isClosed.closure_eq, hf.closure_eq_preimage_closure_image]
-    simp_rw [mem_preimage]
-    change f x ∈ closure (f '' B.carrier)
-    rw [← h_closures_eq]
-    exact subset_closure (mem_image_of_mem f hx_in_A),
-  fun hx_in_B => by
-    rw [← A.isClosed.closure_eq, hf.closure_eq_preimage_closure_image]
-    simp_rw [mem_preimage]
-    change f x ∈ closure (f '' A.carrier)
-    rw [h_closures_eq]
-    exact subset_closure (mem_image_of_mem f hx_in_B)⟩
+  apply SetLike.coe_injective
+  replace h_images_eq : closure (f '' A) = closure (f '' B) := congr($h_images_eq)
+  rw [← A.isClosed.closure_eq, hf.closure_eq_preimage_closure_image, h_images_eq,
+    ← hf.closure_eq_preimage_closure_image, B.isClosed.closure_eq]
 
 /-- The map `IrreducibleCloseds.map` is strictly monotone when `f` is an embedding. -/
-lemma map_strictMono_of_isEmbedding {f : β → α} (hf : Topology.IsEmbedding f) :
+lemma map_strictMono_of_isInducing {f : β → α} (hf : Topology.IsInducing f) :
     StrictMono (map f hf.continuous) := by
-  intro A B h_less_AB
-  rw [← SetLike.coe_ssubset_coe] at h_less_AB ⊢
-  exact ⟨closure_mono (Set.image_mono (subset_of_ssubset h_less_AB)), fun h_contra_subset =>
-    (ne_of_lt (SetLike.coe_ssubset_coe.mp h_less_AB))
-    (map_injective_of_isEmbedding hf (IrreducibleCloseds.ext
-      (Subset.antisymm (closure_mono (Set.image_mono (subset_of_ssubset h_less_AB)))
-        h_contra_subset)))⟩
+  exact Monotone.strictMono_of_injective
+    (fun A B h_le => closure_mono <| Set.image_mono h_le)
+    (map_injective_of_isInducing hf)
 
 end IrreducibleCloseds
 

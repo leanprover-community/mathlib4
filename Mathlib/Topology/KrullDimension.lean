@@ -36,35 +36,29 @@ noncomputable def topologicalKrullDim (T : Type*) [TopologicalSpace T] : WithBot
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
-/--
-If `f : X → Y` is a closed embedding, then the Krull dimension of `X` is less than or equal
-to the Krull dimension of `Y`.
--/
-theorem IsClosedEmbedding.topologicalKrullDim_le (f : X → Y) (hf : IsClosedEmbedding f) :
-    topologicalKrullDim X ≤ topologicalKrullDim Y :=
-  krullDim_le_of_strictMono _ (map_strictMono_of_isEmbedding hf.toIsEmbedding)
-
-/-- The topological Krull dimension is invariant under homeomorphisms -/
-theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :
-    topologicalKrullDim X = topologicalKrullDim Y :=
-  have fwd : topologicalKrullDim X ≤ topologicalKrullDim Y :=
-    IsClosedEmbedding.topologicalKrullDim_le f h.isClosedEmbedding
-  have bwd : topologicalKrullDim Y ≤ topologicalKrullDim X :=
-    IsClosedEmbedding.topologicalKrullDim_le (h.homeomorph f).symm
-    (h.homeomorph f).symm.isClosedEmbedding
-  le_antisymm fwd bwd
-
 /-!
 ### Main dimension theorems -/
 
 /-- If `f : Y → X` is an embedding, then `dim(Y) ≤ dim(X)`.
 This generalizes `IsClosedEmbedding.topologicalKrullDim_le`. -/
-theorem IsEmbedding.topologicalKrullDim_le {f : Y → X} (hf : IsEmbedding f) :
+theorem IsInducing.topologicalKrullDim_le {f : Y → X} (hf : IsInducing f) :
     topologicalKrullDim Y ≤ topologicalKrullDim X :=
-  krullDim_le_of_strictMono _ (map_strictMono_of_isEmbedding hf)
+  krullDim_le_of_strictMono _ (map_strictMono_of_isInducing hf)
+
+@[deprecated (since := "2025-10-19")]
+alias IsClosedEmbedding.topologicalKrullDim_le := IsInducing.topologicalKrullDim_le
+
+/-- The topological Krull dimension is invariant under homeomorphisms -/
+theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :
+    topologicalKrullDim X = topologicalKrullDim Y :=
+  have fwd : topologicalKrullDim X ≤ topologicalKrullDim Y :=
+    IsInducing.topologicalKrullDim_le h.isClosedEmbedding.toIsInducing
+  have bwd : topologicalKrullDim Y ≤ topologicalKrullDim X :=
+    IsInducing.topologicalKrullDim_le (h.homeomorph f).symm.isClosedEmbedding.toIsInducing
+  le_antisymm fwd bwd
 
 /-- The topological Krull dimension of any subspace is at most the dimension of the
 ambient space. -/
 theorem topologicalKrullDim_subspace_le (X : Type*) [TopologicalSpace X] (Y : Set X) :
     topologicalKrullDim Y ≤ topologicalKrullDim X :=
-  IsEmbedding.topologicalKrullDim_le IsEmbedding.subtypeVal
+  IsInducing.topologicalKrullDim_le IsInducing.subtypeVal
