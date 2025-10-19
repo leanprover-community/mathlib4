@@ -35,14 +35,14 @@ open Pointwise
 
 variable {α G A S : Type*}
 
-theorem term_match {G : Type*} [Group G] (a1 a2 b1 b2 : G) :
+theorem term_match [Group G] (a1 a2 b1 b2 : G) :
     a1 * b1 = a2 * b2 → a2⁻¹ * a1 = b2 * b1⁻¹ := by
   intro h
   have : a1 = (a2 * b2) * b1⁻¹ := by exact eq_mul_inv_of_mul_eq h
   simp only [this, mul_assoc, inv_mul_cancel_left]
 
 open scoped Pointwise in
-noncomputable def equiv_mul_disjoint {G : Type*} [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
+noncomputable def equiv_mul_disjoint [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
     ((H.carrier : Set G) * (K.carrier : Set G) : Set G) ≃ (H:Set G) ×ˢ (K:Set G) := by
   symm
   apply Set.BijOn.equiv (fun (h, k) => h * k)
