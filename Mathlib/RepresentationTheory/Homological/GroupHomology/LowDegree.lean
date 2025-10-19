@@ -559,10 +559,10 @@ theorem isBoundary₀_iff (a : A) :
     IsBoundary₀ G a ↔ ∃ x : G →₀ A, x.sum (fun g z => g • z - z) = a := by
   constructor
   · rintro ⟨x, hx⟩
-    use x.sum (fun g a => single g (- (g⁻¹ • a)))
+    use x.sum (fun g a => single g (-(g⁻¹ • a)))
     simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
   · rintro ⟨x, hx⟩
-    use x.sum (fun g a => single g (- (g • a)))
+    use x.sum (fun g a => single g (-(g • a)))
     simp_all [sum_neg_index, sum_sum_index, neg_add_eq_sub]
 
 theorem isBoundary₁_iff (x : G →₀ A) :
