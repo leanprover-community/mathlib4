@@ -778,7 +778,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
   · rw [fnn]
     have this b (n : PosNum) : (cond b (↑n) 0 : ℕ) = ↑(cond b (pos n) 0 : Num) := by
       cases b <;> rfl
-    have this' b (n : PosNum) : ↑ (pos (PosNum.bit b n)) = Nat.bit b ↑n := by
+    have this' b (n : PosNum) : ↑(pos (PosNum.bit b n)) = Nat.bit b ↑n := by
       cases b <;> simp
     induction m generalizing n with | one => ?_ | bit1 m IH => ?_ | bit0 m IH => ?_ <;>
     obtain - | n | n := n

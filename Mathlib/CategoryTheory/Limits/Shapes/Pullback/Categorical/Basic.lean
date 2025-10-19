@@ -201,7 +201,7 @@ Note that this is *exactly* what an object of
 so `CatCommSqOver F G X` is in fact an abbreviation for
 `((whiskeringRight X A B).obj F) ⊡ ((whiskeringRight X C B).obj G)`. -/
 abbrev CatCommSqOver :=
-  (whiskeringRight X A B|>.obj F) ⊡ (whiskeringRight X C B|>.obj G)
+  (whiskeringRight X A B |>.obj F) ⊡ (whiskeringRight X C B |>.obj G)
 
 namespace CatCommSqOver
 
@@ -444,7 +444,7 @@ lemma transform_map_whiskerLeft
     {φ φ' : CatCospanTransform F₁ G₁ F₂ G₂} (α : φ ⟶ φ') :
     (transform X).map (ψ ◁ α) =
     (transformObjComp X ψ φ).hom ≫
-      whiskerLeft (transform X|>.obj ψ) (transform X|>.map α) ≫
+      whiskerLeft (transform X |>.obj ψ) (transform X |>.map α) ≫
       (transformObjComp X ψ φ').inv := by
   cat_disch
 
@@ -454,7 +454,7 @@ lemma transform_map_whiskerRight
     (φ : CatCospanTransform F₁ G₁ F₂ G₂) :
     (transform X).map (α ▷ φ) =
     (transformObjComp X ψ φ).hom ≫
-      whiskerRight (transform X|>.map α) (transform X|>.obj φ) ≫
+      whiskerRight (transform X |>.map α) (transform X |>.obj φ) ≫
       (transformObjComp X ψ' φ).inv := by
   cat_disch
 
@@ -467,10 +467,10 @@ lemma transform_map_associator
     (τ : CatCospanTransform F₂ G₂ F₃ G₃) :
     (transform X).map (α_ ψ φ τ).hom =
     (transformObjComp X (ψ.comp φ) τ).hom ≫
-      whiskerRight (transformObjComp X ψ φ).hom (transform X|>.obj τ) ≫
-      ((transform X|>.obj ψ).associator
-        (transform X|>.obj φ) (transform X|>.obj τ)).hom ≫
-      whiskerLeft (transform X|>.obj ψ) (transformObjComp X φ τ).inv ≫
+      whiskerRight (transformObjComp X ψ φ).hom (transform X |>.obj τ) ≫
+      ((transform X |>.obj ψ).associator
+        (transform X |>.obj φ) (transform X |>.obj τ)).hom ≫
+      whiskerLeft (transform X |>.obj ψ) (transformObjComp X φ τ).inv ≫
       (transformObjComp X ψ (φ.comp τ)).inv := by
   cat_disch
 
@@ -478,16 +478,16 @@ lemma transform_map_leftUnitor (X : Type u₇) [Category.{v₇} X]
     (ψ : CatCospanTransform F G F₁ G₁) :
     (transform X).map (λ_ ψ).hom =
     (transformObjComp X (.id F G) ψ).hom ≫
-      whiskerRight (transformObjId X F G).hom (transform X|>.obj ψ) ≫
-      (transform X|>.obj ψ).leftUnitor.hom := by
+      whiskerRight (transformObjId X F G).hom (transform X |>.obj ψ) ≫
+      (transform X |>.obj ψ).leftUnitor.hom := by
   cat_disch
 
 lemma transform_map_rightUnitor (X : Type u₇) [Category.{v₇} X]
     (ψ : CatCospanTransform F G F₁ G₁) :
     (transform X).map (ρ_ ψ).hom =
     (transformObjComp X ψ (.id F₁ G₁)).hom ≫
-      whiskerLeft (transform X|>.obj ψ) (transformObjId X F₁ G₁).hom ≫
-      (transform X|>.obj ψ).rightUnitor.hom := by
+      whiskerLeft (transform X |>.obj ψ) (transformObjId X F₁ G₁).hom ≫
+      (transform X |>.obj ψ).rightUnitor.hom := by
   cat_disch
 
 end transform
