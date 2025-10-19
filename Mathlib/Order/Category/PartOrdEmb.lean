@@ -4,16 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
 import Mathlib.Order.Category.PartOrd
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # Category of partial orders, with order embeddings as morphisms
 
-This defines `PartOrd`, the category of partial orders with order embeddings
+This defines `PartOrdEmb`, the category of partial orders with order embeddings
 as morphisms.
 
 -/
 
-open CategoryTheory
+open CategoryTheory Limits
 
 universe u
 
@@ -106,6 +107,10 @@ lemma comp_apply {X Y Z : PartOrdEmb} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 lemma Hom.injective {X Y : PartOrdEmb.{u}} (f : X ⟶ Y) : Function.Injective f :=
   f.hom'.injective
 
+lemma Hom.le_iff {X Y : PartOrdEmb.{u}} (f : X ⟶ Y) (x₁ x₂ : X) :
+    f x₁ ≤ f x₂ ↔ x₁ ≤ x₂ :=
+  f.hom'.map_rel_iff
+
 @[ext]
 lemma hom_ext {X Y : PartOrdEmb} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
@@ -166,3 +171,101 @@ theorem partOrdEmb_dual_comp_forget_to_pardOrd :
     PartOrdEmb.dual ⋙ forget₂ PartOrdEmb PartOrd =
       forget₂ PartOrdEmb PartOrd ⋙ PartOrd.dual :=
   rfl
+
+namespace PartOrdEmb
+
+variable {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ PartOrdEmb.{u}}
+
+namespace Limits
+
+variable {c : Cocone (F ⋙ forget _)} (hc : IsColimit c)
+
+@[nolint unusedArguments]
+def CoconePt (_ : IsColimit c) : Type u := c.pt
+
+open IsFiltered
+
+instance : PartialOrder (CoconePt hc) where
+  le x y := ∃ (j : J) (x' y' : F.obj j) (hx : c.ι.app j x' = x)
+      (hy : c.ι.app j y' = y), x' ≤ y'
+  le_refl x := by
+    obtain ⟨j, x', hx⟩ := Types.jointly_surjective_of_isColimit hc x
+    exact ⟨j, x', x', hx, hx, le_rfl⟩
+  le_trans := by
+    rintro x y z ⟨j, x₁, y₁, hx₁, hy₁, hxy⟩ ⟨k, y₂, z₁, hy₂, hz₁, hyz⟩
+    obtain ⟨l, a, b, h⟩ :=
+      (Types.FilteredColimit.isColimit_eq_iff _ hc (xi := y₁) (xj := y₂)).1
+        (hy₁.trans hy₂.symm)
+    exact ⟨l, F.map a x₁, F.map b z₁,
+      (ConcreteCategory.congr_hom (c.w a) x₁).trans hx₁,
+      (ConcreteCategory.congr_hom (c.w b) z₁).trans hz₁,
+      ((F.map a).hom.monotone hxy).trans
+        (le_of_eq_of_le h ((F.map b).hom.monotone hyz))⟩
+  le_antisymm := by
+    rintro x y ⟨j, x₁, y₁, hx₁, hy₁, h₁⟩ ⟨k, y₂, x₂, hy₂, hx₂, h₂⟩
+    obtain ⟨l, a, b, x₃, y₃, h₃, h₄, h₅, h₆⟩ :
+        ∃ (l : J) (a : j ⟶ l) (b : k ⟶ l) (x₃ y₃ : _),
+        x₃ = F.map a x₁ ∧ x₃ = F.map b x₂ ∧ y₃ = F.map a y₁ ∧ y₃ = F.map b y₂ := by
+      obtain ⟨l₁, a, b, h₃⟩ :=
+        (Types.FilteredColimit.isColimit_eq_iff _ hc (xi := x₁) (xj := x₂)).1
+          (hx₁.trans hx₂.symm)
+      obtain ⟨l₂, a', b', h₄⟩ :=
+        (Types.FilteredColimit.isColimit_eq_iff _ hc (xi := y₁) (xj := y₂)).1
+          (hy₁.trans hy₂.symm)
+      obtain ⟨l, c, c', h₅, h₆⟩ := IsFiltered.bowtie a a' b b'
+      exact ⟨l, a ≫ c, b ≫ c, F.map (a ≫ c) x₁, F.map (a' ≫ c') y₁, rfl,
+        by simpa, by rw [h₅], by simpa [h₆]⟩
+    have h₇ : x₃ = y₃ :=
+      le_antisymm
+        (by simpa only [h₃, h₅] using (F.map a).hom.monotone h₁)
+        (by simpa only [h₄, h₆] using (F.map b).hom.monotone h₂)
+    exact hx₁.symm.trans ((ConcreteCategory.congr_hom (c.w a) x₁).symm.trans
+      ((congr_arg (c.ι.app l) (h₃.symm.trans (h₇.trans h₅))).trans
+        ((ConcreteCategory.congr_hom (c.w a) y₁).trans hy₁)))
+
+@[simps]
+def cocone : Cocone F where
+  pt := .of (CoconePt hc)
+  ι.app j := ofHom
+    { toFun := c.ι.app j
+      inj' x y h := by
+        obtain ⟨k, a, ha⟩ := (Types.FilteredColimit.isColimit_eq_iff' hc x y).1 h
+        exact (F.map a).injective  ha
+      map_rel_iff' {x y} := by
+        refine ⟨?_, fun h ↦ ⟨j, x, y, rfl, rfl, h⟩⟩
+        rintro ⟨k, x', y', hx', hy', h⟩
+        sorry }
+  ι.naturality _ _ f := by ext x; exact ConcreteCategory.congr_hom (c.w f) x
+
+def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where
+  toFun := hc.desc ((forget _).mapCocone s)
+  inj' x y h := by
+    obtain ⟨j, x', y', rfl, rfl⟩ :
+        ∃ (j : J) (x' y' : F.obj j), c.ι.app j x' = x ∧ c.ι.app j y' = y := by
+      sorry
+    have := ((congr_fun (hc.fac ((forget _).mapCocone s) j) x').symm.trans h).trans
+      (congr_fun (hc.fac ((forget _).mapCocone s) j) y')
+    obtain rfl := (s.ι.app j).injective this
+    rfl
+  map_rel_iff' := sorry
+
+@[simp]
+lemma CoconePt.fac_apply (s : Cocone F) (j : J) (x : F.obj j) :
+    CoconePt.desc hc s (c.ι.app j x) = s.ι.app j x :=
+  congr_fun (hc.fac ((forget _).mapCocone s) j) x
+
+def isColimitCocone : IsColimit (cocone hc) where
+  desc s := ofHom (CoconePt.desc hc s)
+  uniq s m hm := by
+    ext x
+    obtain ⟨j, x, rfl⟩ := Types.jointly_surjective_of_isColimit hc x
+    exact ((ConcreteCategory.congr_hom (hm j)) x).trans (CoconePt.fac_apply hc s j x).symm
+
+instance : HasColimit F where
+  exists_colimit := ⟨_, isColimitCocone (colimit.isColimit (F ⋙ forget _))⟩
+
+instance : HasColimitsOfShape J PartOrdEmb.{u} where
+
+end Limits
+
+end PartOrdEmb
