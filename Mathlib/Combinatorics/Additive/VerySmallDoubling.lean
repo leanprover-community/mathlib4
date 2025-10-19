@@ -355,7 +355,7 @@ private lemma exists_subset_mul_eq_mul_injOn (H : Subgroup G) (A : Finset G) :
     (A.toSet.surjOn_image ((H : Set G) <• ·)).exists_subset_injOn_image_eq
   lift Z to Finset G using A.finite_toSet.subset hZA
   refine ⟨Z, mod_cast hZA, ?_, hZinj⟩
-  simpa [-Finset.mem_coe, Set.iUnion_op_smul_set] using congr(Set.sUnion $hHZA)
+  simpa [-SetLike.mem_coe, Set.iUnion_op_smul_set] using congr(Set.sUnion $hHZA)
 
 private lemma card_mul_eq_mul_card_of_injOn_opSMul {H : Subgroup G} [Fintype H]
     {Z : Finset G} (hZ : (Z : Set G).InjOn ((H : Set G) <• ·)) :
@@ -363,7 +363,7 @@ private lemma card_mul_eq_mul_card_of_injOn_opSMul {H : Subgroup G} [Fintype H]
   rw [card_mul_iff.2]
   · simp
   rintro ⟨h₁, z₁⟩ ⟨hh₁, hz₁⟩ ⟨h₂, z₂⟩ ⟨hh₂, hz₂⟩ h
-  simp only [Set.coe_toFinset, SetLike.mem_coe, mem_coe] at *
+  simp only [Set.coe_toFinset, SetLike.mem_coe] at *
   obtain rfl := hZ hz₁ hz₂ <| (rightCoset_eq_iff _).2 <| by
     simpa [eq_inv_mul_iff_mul_eq.2 h, mul_assoc] using mul_mem (inv_mem hh₂) hh₁
   simp_all
