@@ -57,11 +57,22 @@ theorem nnratCast_smul_eq {E : Type*} (R S : Type*) [AddCommMonoid E] [DivisionS
     [DivisionSemiring S] [Module R E] [Module S E] (r : ℚ≥0) (x : E) : (r : R) • x = (r : S) • x :=
   map_nnratCast_smul (AddMonoidHom.id E) R S r x
 
+/-- `nnqsmul` is equal to any other module structure via a cast. -/
+lemma NNRat.cast_smul_eq_nnqsmul (R : Type*) [DivisionSemiring R]
+    [AddCommMonoid M] [Module ℚ≥0 M] [Module R M] (q : ℚ≥0) (a : M) :
+    (q : R) • a = q • a :=
+  nnratCast_smul_eq _ _ _ _
+
 /-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
 agree on rational numbers in `R` and `S`. -/
 theorem ratCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing R]
     [DivisionRing S] [Module R E] [Module S E] (r : ℚ) (x : E) : (r : R) • x = (r : S) • x :=
   map_ratCast_smul (AddMonoidHom.id E) R S r x
+
+/-- `qsmul` is equal to any other module structure via a cast. -/
+lemma Rat.cast_smul_eq_qsmul (R : Type*) [DivisionRing R]
+    [AddCommGroup M] [Module ℚ M] [Module R M] (q : ℚ) (a : M) : (q : R) • a = q • a :=
+  ratCast_smul_eq _ _ _ _
 
 instance IsScalarTower.nnrat {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
     [Module ℚ≥0 R] [Module ℚ≥0 M] : IsScalarTower ℚ≥0 R M where
@@ -70,6 +81,16 @@ instance IsScalarTower.nnrat {R : Type u} {M : Type v} [Semiring R] [AddCommMono
 instance IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
     [Module ℚ R] [Module ℚ M] : IsScalarTower ℚ R M where
   smul_assoc r x y := map_rat_smul ((smulAddHom R M).flip y) r x
+
+lemma NNRat.cast_smul_eq_nnqsmul' (R) {α}
+    [DivisionSemiring R] [MulAction R α] [MulAction ℚ≥0 α] [IsScalarTower ℚ≥0 R α]
+    (q : ℚ≥0) (x : α) : (q : R) • x = q • x := by
+  rw [← one_smul R x, ← smul_assoc, ← smul_assoc]; simp
+
+lemma Rat.cast_smul_eq_qsmul' (R) {α}
+    [DivisionRing R] [MulAction R α] [MulAction ℚ α] [IsScalarTower ℚ R α]
+    (q : ℚ) (x : α) : (q : R) • x = q • x := by
+  rw [← one_smul R x, ← smul_assoc, ← smul_assoc]; simp
 
 section
 variable {α : Type u} {M : Type v}
