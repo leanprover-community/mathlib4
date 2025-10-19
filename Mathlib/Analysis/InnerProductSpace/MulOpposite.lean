@@ -13,7 +13,7 @@ This file defines the inner product space structure on `Hᵐᵒᵖ` where we def
 the inner product naturally. We also define `OrthonormalBasis.mulOpposite`.
 -/
 
-variable {𝕜 H : Type*}
+variable {R 𝕜 H : Type*}
 
 namespace MulOpposite
 
@@ -57,21 +57,21 @@ end InnerProductSpace
 theorem isometry_opLinearEquiv {R M : Type*} [Semiring R] [SeminormedAddCommGroup M] [Module R M] :
     Isometry (opLinearEquiv R (M := M)) := fun _ _ => rfl
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 H]
+variable [Semiring R] [Module R H]
 
-variable (𝕜 H) in
+variable (R H) in
 /-- The linear isometry equivalence version of the function `op`. -/
 @[simps!]
-def opLinearIsometryEquiv : H ≃ₗᵢ[𝕜] Hᵐᵒᵖ where
-  toLinearEquiv := opLinearEquiv 𝕜
+def opLinearIsometryEquiv : H ≃ₗᵢ[R] Hᵐᵒᵖ where
+  toLinearEquiv := opLinearEquiv R
   norm_map' _ := rfl
 
 @[simp]
 theorem toLinearEquiv_opLinearIsometryEquiv :
-    (opLinearIsometryEquiv 𝕜 H).toLinearEquiv = opLinearEquiv 𝕜 := rfl
+    (opLinearIsometryEquiv R H).toLinearEquiv = opLinearEquiv R := rfl
 
 @[simp]
 theorem toContinuousLinearEquiv_opLinearIsometryEquiv :
-    (opLinearIsometryEquiv 𝕜 H).toContinuousLinearEquiv = opContinuousLinearEquiv 𝕜 := rfl
+    (opLinearIsometryEquiv R H).toContinuousLinearEquiv = opContinuousLinearEquiv R := rfl
 
 end MulOpposite
