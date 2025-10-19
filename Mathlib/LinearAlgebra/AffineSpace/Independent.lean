@@ -420,14 +420,14 @@ lemma AffineIndependent.inf_affineSpan_eq_affineSpan_inter [Nontrivial k] {p : �
   constructor
   · rintro ⟨⟨fs₁, hfs₁, w₁, hw₁, rfl⟩, ⟨fs₂, hfs₂, w₂, hw₂, hw₁₂⟩⟩
     rw [affineIndependent_iff_indicator_eq_of_affineCombination_eq] at ha
-    replace ha := ha fs₁ fs₂ w₁ w₂ hw₁ hw₂ (hp's₁ ▸ hp's₂)
+    replace ha := ha fs₁ fs₂ w₁ w₂ hw₁ hw₂ hw₁₂
     refine ⟨fs₁ ∩ fs₂, by grind, w₁, ?_, ?_⟩
     · rw [← hw₁, ← fs₁.sum_inter_add_sum_diff fs₂, eq_comm]
       convert add_zero _
       refine Finset.sum_eq_zero ?_
       intro i hi
       rw [← Set.indicator_of_mem (s := ↑fs₁) (by grind) w₁, ha, Set.indicator_of_notMem (by grind)]
-    · rw [affineCombination_indicator_subset w₁ p Finset.inter_subset_left, hp's₁]
+    · rw [affineCombination_indicator_subset w₁ p Finset.inter_subset_left]
       refine affineCombination_congr (k := k) (P := P) _ ?_ (fun _ _ ↦ rfl)
       intro i hi
       rw [coe_inter, ← Set.indicator_indicator, Set.indicator_of_mem (by simpa using hi),
