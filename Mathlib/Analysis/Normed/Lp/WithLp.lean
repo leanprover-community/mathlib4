@@ -88,11 +88,11 @@ instance instAddCommGroup [AddCommGroup V] : AddCommGroup (WithLp p V) :=
 @[to_additive] instance instSMul [SMul K V] : SMul K (WithLp p V) :=
   (WithLp.equiv p V).smul K
 @[to_additive] instance instMulAction [Monoid K] [MulAction K V] : MulAction K (WithLp p V) :=
-  (WithLp.equiv p V).mulAction K
+  fast_instance% (WithLp.equiv p V).mulAction K
 instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V] :
-    DistribMulAction K (WithLp p V) := (WithLp.equiv p V).distribMulAction K
+    DistribMulAction K (WithLp p V) := fast_instance% (WithLp.equiv p V).distribMulAction K
 instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=
-  (WithLp.equiv p V).module K
+  fast_instance% (WithLp.equiv p V).module K
 
 variable {K V}
 
@@ -221,12 +221,6 @@ protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p 
   __ := WithLp.equiv _ _
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  toFun := WithLp.ofLp
-  invFun := WithLp.toLp p
-
-@[simp]
-lemma linearEquiv_symm_apply [Semiring K] [AddCommGroup V] [Module K V] :
-    ⇑(WithLp.linearEquiv p K V).symm = toLp p := rfl
 
 instance instModuleFinite
     [Semiring K] [AddCommGroup V] [Module K V] [Module.Finite K V] :
