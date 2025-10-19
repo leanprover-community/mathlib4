@@ -104,6 +104,9 @@ lemma zero_leq_c₁ : 0 ≤ h7.c₁ :=
 lemma c₁_neq_zero : h7.c₁ ≠ 0 :=
   Ne.symm (Int.ne_of_lt h7.one_leq_c₁)
 
+lemma one_leq_abs_c₁ : 1 ≤ |↑h7.c₁| := by
+  refine Int.one_le_abs (c₁_neq_zero h7)
+
 lemma isIntegral_c₁α : IsIntegral ℤ (h7.c₁ • h7.α') := by
   have h := IsIntegral_assoc (x := c' h7.γ') (y := c' h7.β') h7.K (c' h7.α') h7.α'
     (c'_IsIntegral h7.α')
@@ -764,8 +767,8 @@ lemma c₃_pow :
     rw [mul_pow, mul_pow, mul_pow]
 
 include h2mq in
-lemma q_eq_n_etc : ↑q ^ (h7.n q - 1) ≤
-  (Real.sqrt (2*h7.m)^(h7.n q - 1))* (Real.sqrt (h7.n q))^(h7.n q - 1) := by
+lemma q_eq_n_etc : ↑q ^ ((h7.n q) - 1) ≤
+  (Real.sqrt (2*h7.m)^((h7.n q)- 1))* (Real.sqrt (h7.n q))^((h7.n q)- 1) := by
   have : (Real.sqrt ((2*h7.m)*(h7.n q))) =
     Real.sqrt (2*h7.m)* Real.sqrt (h7.n q) := by {
     rw [Real.sqrt_mul]
@@ -791,6 +794,10 @@ lemma c_coeffspow :
       h7.c₁ ^ (h7.m * q - (a q t * h7.l q u)) *
       h7.c₁ ^ (h7.m * q - ((b q t * h7.l q u)))) •
   (h7.c₁ ^ (h7.k q u) * h7.c₁ ^ (a q t * h7.l q u) * h7.c₁ ^ (b q t * h7.l q u)) := sorry
+
+lemma pow_c₂ : h7.m * q - a q t * h7.l q u ≤ h7.m * (2 * (h7.m * h7.n q)) := sorry
+
+lemma pow_c₂' : h7.m * q - b q t * h7.l q u ≤ h7.m * (2 * (h7.m * h7.n q)) := sorry
 
 include hq0 h2mq in
 lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
@@ -846,15 +853,15 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
             (h7.c₁) ^ (h7.m * q - a q t * h7.l q u : ℕ)
              * (h7.c₁) ^ (h7.m * q - b q t * h7.l q u : ℕ)))| *
              ↑|h7.c₁| ^ ((h7.n q - 1) + (2 * h7.m * (2 * (h7.m * h7.n q))))
-            * (↑|↑q| ^ (h7.n q - 1) * (1 + house h7.β') ^ (h7.n q - 1) *
+            * (↑|↑q| ^ ((h7.n q ) - 1) * (1 + house h7.β') ^ (h7.n q - 1) *
                house h7.α' ^ (h7.m * (2 * (h7.m * h7.n q))) *
                house h7.γ' ^ (h7.m * (2 * (h7.m * h7.n q)))) := ?_
 
-         _ ≤ |(h7.c₁) ^ (h7.n q - 1 - h7.k q u : ℕ)| *
+         _ = |(h7.c₁) ^ (h7.n q - 1 - h7.k q u : ℕ)| *
             |(h7.c₁) ^ (h7.m * q - a q t * h7.l q u : ℕ)|
              * |(h7.c₁) ^ (h7.m * q - b q t * h7.l q u : ℕ)| *
              ↑|h7.c₁| ^ ((h7.n q - 1) + (2 * h7.m * (2 * (h7.m * h7.n q))))
-            * (↑|↑q| ^ (h7.n q - 1) * (1 + house h7.β') ^ (h7.n q - 1) *
+            * (↑|↑q| ^ ((h7.n q)- 1) * (1 + house h7.β') ^ (h7.n q - 1) *
                house h7.α' ^ (h7.m * (2 * (h7.m * h7.n q))) *
                house h7.γ' ^ (h7.m * (2 * (h7.m * h7.n q)))) := ?_
 
@@ -863,13 +870,13 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
              * |(h7.c₁)| ^ (h7.m * q - b q t * h7.l q u : ℕ) *
              ↑|h7.c₁| ^ ((h7.n q - 1) + (2 * h7.m * (2 * (h7.m * h7.n q))))
 
-            * (↑|↑q| ^ (h7.n q - 1) * (1 + house h7.β') ^ (h7.n q - 1) *
+            * (↑|↑q| ^ ((h7.n q) - 1) * (1 + house h7.β') ^ (h7.n q - 1) *
                house h7.α' ^ (h7.m * (2 * (h7.m * h7.n q))) *
                house h7.γ' ^ (h7.m * (2 * (h7.m * h7.n q)))) := ?_
 
          _ ≤  ↑(h7.c₂)^(h7.n q)
 
-             * (↑|↑q| ^ (h7.n q - 1) *
+             * (↑|↑q| ^ ((h7.n q ) - 1) *
               (1 + house h7.β') ^ (h7.n q - 1) *
                house h7.α' ^ (h7.m * (2 * (h7.m * h7.n q))) *
                 house h7.γ' ^ (h7.m * (2 * (h7.m * h7.n q)))) := ?_
@@ -886,7 +893,8 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
         (((a q t : ℕ) + b q t • h7.β')^(h7.k q u : ℕ))
          (h7.α' ^ (a q t * h7.l q u)) (h7.γ' ^ (b q t * h7.l q u))]
       simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow, Int.cast_mul, smul_eq_mul,mul_assoc]
-    · simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow,mul_assoc]
+    ·
+      simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow,mul_assoc]
       trans
       apply house_mul_le
       apply mul_le_mul ?_ ?_ (house_nonneg _) (house_nonneg _)
@@ -913,7 +921,8 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
       · apply mul_nonneg (house_nonneg _) (by
           apply mul_nonneg (house_nonneg _) (house_nonneg _))
       · apply house_nonneg
-    · apply mul_le_mul
+    ·
+      apply mul_le_mul
       · apply mul_le_mul
         · apply mul_le_mul
           · rfl
@@ -945,7 +954,8 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
       · apply mul_nonneg
         · apply mul_nonneg; apply house_nonneg; apply pow_nonneg; apply house_nonneg
         · apply pow_nonneg; apply house_nonneg
-    · apply mul_le_mul
+    ·
+      apply mul_le_mul
       · apply mul_le_mul
         · apply mul_le_mul
           · rw [← house_intCast (K:=h7.K)]
@@ -1029,7 +1039,8 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
       simp only [Nat.abs_cast, Int.cast_natCast]
       simp only [Int.cast_abs, Int.cast_pow]
       simp only [Int.cast_abs, Int.cast_pow]
-    · have := triple_comm ℝ
+    ·
+      have := triple_comm ℝ
        |(h7.c₁^(h7.n q - 1) : ℤ)|
        |(h7.c₁^(h7.m * (2 * (h7.m * h7.n q))) : ℤ)|
        |(h7.c₁^(h7.m * (2 * (h7.m * h7.n q))) : ℤ)|
@@ -1038,7 +1049,7 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
        ((house h7.γ') ^ (h7.m * (2 * (h7.m * h7.n q))))
       simp only [mul_assoc] at *
       simp only [zsmul_eq_mul] at *
-      rw [← this]
+      rw [← this]; clear this
       rw [abs_pow]; rw [abs_pow]; rw [← pow_add]; rw [← pow_add]
       apply mul_le_mul
       · simp only [abs_pow, Int.cast_pow, Int.cast_abs, le_refl]
@@ -1056,30 +1067,44 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
               · simp only [zero_le_one]
               · exact house_nonneg h7.β'
           · apply mul_nonneg; apply pow_nonneg;apply house_nonneg
-            apply pow_nonneg;apply house_nonneg
+            apply pow_nonneg; apply house_nonneg
         · apply pow_nonneg; simp only [Int.cast_abs, abs_nonneg]
-      · sorry
+      · simp only [Int.cast_mul, Int.cast_pow, Int.cast_abs, Nat.abs_cast]
+        apply mul_nonneg
+        · apply mul_nonneg
+          · apply pow_nonneg; simp only [abs_nonneg]
+          · apply mul_nonneg;
+            · apply pow_nonneg; simp only [abs_nonneg]
+            · apply pow_nonneg; simp only [abs_nonneg]
+        · apply mul_nonneg;
+          · apply pow_nonneg;
+            apply mul_nonneg;
+            · simp only [Nat.cast_nonneg]
+            · refine Left.add_nonneg ?_ ?_
+              · simp only [zero_le_one]
+              · exact house_nonneg h7.β'
+          · apply mul_nonneg;
+            · apply pow_nonneg; apply house_nonneg
+            · apply pow_nonneg; apply house_nonneg
       · simp only [Int.cast_abs, abs_nonneg]
 
-    · rw [← pow_add]
-      rw [← pow_add]
-      sorry
+    · rw [← pow_add]; rw [← pow_add]
+      simp only [Int.cast_abs, Int.cast_pow, Nat.abs_cast, abs_pow]
+      rw [← pow_add]; rw [← pow_add]; rw [← pow_add]; rw [← pow_add]
 
-    · rw [abs_pow];rw [abs_pow];rw [abs_pow]
-      simp only [mul_assoc]
-      simp only [Int.cast_pow, Int.cast_abs, Nat.abs_cast]
+
+    · rw [abs_pow]; rw [abs_pow]; rw [abs_pow]
+      simp only [mul_assoc,Int.cast_pow, Int.cast_abs, Nat.abs_cast]
 
     ·
       apply mul_le_mul
-      · rw [← pow_add]
-        rw [← pow_add]
-        rw [← pow_add]
+      · rw [← pow_add]; rw [← pow_add]; rw [← pow_add]
         simp only [Int.cast_abs]
         unfold c₂
         simp only [Int.cast_pow, Int.cast_abs]
         rw [← pow_mul]
         refine pow_le_pow_right₀ ?_ ?_
-        · sorry
+        · exact mod_cast h7.one_leq_abs_c₁
         · rw [add_mul]
           rw [add_mul]
           simp only [one_mul]
@@ -1087,71 +1112,34 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
           rw [(Nat.two_mul (h7.m * (2 * (h7.m * h7.n q))))]
           simp only [add_assoc]
           refine Nat.add_le_add ?_ ?_
-          · sorry
+          · simp only [tsub_le_iff_right]
+            refine Nat.le_succ_of_le ?_
+            exact Nat.le_add_right (h7.n q) (h7.k q u)
           · refine Nat.add_le_add ?_ ?_
-            · sorry
+            · exact pow_c₂ h7 q u t
             · refine Nat.add_le_add ?_ ?_
-              · sorry
+              ·  exact pow_c₂' h7 q u t
               · simp only [add_le_add_iff_right, tsub_le_iff_right, le_add_iff_nonneg_right,
                 zero_le]
-
-
-
       · simp only [Nat.abs_cast, le_refl]
-      · sorry
-      · sorry
-
-
-      -- apply mul_le_mul
-      -- · simp only [Int.cast_abs]
-      --   calc _ ≤  ↑(h7.c₁)^ (h7.n q - 1 + 2 * h7.m * (2 * (h7.m * h7.n q))) := ?_
-      --        _ ≤ ((h7.c₁ : ℝ) ^ (1 + 2 * h7.m * (2 * h7.m))) ^ h7.n q :=?_
-      --   · stop
-      --     refine (pow_le_pow_iff_left₀ ?_ ?_ ?_).mpr ?_
-      --     · simp only [abs_nonneg]
-      --     · simp only [Int.cast_nonneg]
-      --       exact IsAbsoluteValue.abv_nonneg' (c' h7.α' * c' h7.β' * c' h7.γ')
-      --     · simp only [ne_eq, Nat.add_eq_zero, mul_eq_zero,
-      --         OfNat.ofNat_ne_zero, false_or, not_and, not_or]
-      --       intros HN
-      --       · constructor
-      --         · aesop
-      --         · constructor
-      --           · aesop
-      --           · sorry
-      --     · apply abs_le_of_sq_le_sq (le_refl _) (sorry)
-      --   · rw [← pow_mul]
-      --     refine pow_le_pow_right₀ ?_ ?_
-      --     · norm_cast
-      --       exact h7.one_leq_c₁
-      --     · rw [add_mul]
-      --       simp only [one_mul]
-      --       refine Nat.add_le_add ?_ ?_
-      --       · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le]
-      --       · simp only [mul_assoc]
-      --         apply Preorder.le_refl
-      --   · simp only [Int.cast_pow]
-      --     rfl
-      -- · apply Preorder.le_refl
-      -- · apply mul_nonneg
-      --   · sorry
-      --   · sorry
-      -- · apply pow_nonneg
-      --   simp only [Int.cast_pow]
-      --   apply pow_nonneg
-      --   simp only [Int.cast_nonneg]
-      --   exact h7.zero_leq_c₁
-
-
-
-
+      · apply mul_nonneg;
+        · apply mul_nonneg;
+          · apply mul_nonneg;
+            · apply pow_nonneg; simp only [abs_nonneg]
+            · apply pow_nonneg;
+              refine Left.add_nonneg ?_ ?_
+              · simp only [zero_le_one]
+              · exact house_nonneg h7.β'
+          · apply pow_nonneg; apply house_nonneg
+        · apply pow_nonneg; apply house_nonneg
+      · apply pow_nonneg; simp only [Int.cast_nonneg];exact zero_leq_c₂ h7
 
     ·
       rw [h7.c₃_pow q]
       simp only [mul_assoc]
       apply mul_le_mul
       · rfl
-      · calc _ ≤ (Real.sqrt (2*h7.m)^(h7.n q -1))* (Real.sqrt (h7.n q))^(h7.n q -1)
+      · calc _ ≤ (Real.sqrt (2*h7.m)^(h7.n q -1))* (Real.sqrt (h7.n q))^((h7.n q) -1)
                 * ((1 + house h7.β') ^ (h7.n q - 1) *
                   (house h7.α' ^ (h7.m * (2 * (h7.m * h7.n q))) *
                     house h7.γ' ^ (h7.m * (2 * (h7.m * h7.n q))))) := ?_
@@ -1171,6 +1159,7 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
 
         · apply mul_le_mul
           · simp only [Nat.abs_cast]
+
             apply h7.q_eq_n_etc q h2mq
           · apply Preorder.le_refl
           · apply mul_nonneg
@@ -1184,7 +1173,11 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
           · apply mul_nonneg
             · apply pow_nonneg; simp only [Real.sqrt_nonneg]
             · apply pow_nonneg; simp only [Real.sqrt_nonneg]
-        · sorry
+        · simp only [mul_assoc]
+          nth_rw 3 [mul_comm]
+          simp only [mul_assoc]
+          simp only [Nat.ofNat_nonneg, Real.sqrt_mul, le_refl]
+          sorry
         · simp only [mul_assoc]
           apply mul_le_mul
           · apply Preorder.le_refl
@@ -1206,7 +1199,12 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
           · sorry
         · simp only [mul_assoc]
           apply mul_le_mul
-          · sorry--easy
+          · refine Bound.pow_le_pow_right_of_le_one_or_one_le ?_
+            left
+            constructor
+            · refine Real.one_le_sqrt.mpr ?_
+              sorry
+            · sorry
           · apply mul_le_mul
             · sorry --easy
             · apply mul_le_mul
