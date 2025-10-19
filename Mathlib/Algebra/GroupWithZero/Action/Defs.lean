@@ -435,11 +435,13 @@ instance : SMulZeroClass α β where
     rw [← smul_one g, ← inv_smul_eq_iff, smul_mul', inv_smul_smul, zero_mul]
     exact zero_ne_one
 
-theorem smul_div₀ (g : α) (x y : β) : g • (x / y) = (g • x) / (g • y) := by
-  by_cases hy : y = 0
-  · rw [hy, div_zero, smul_zero, div_zero]
-  · conv_rhs => rw [← inv_mul_cancel_right₀ hy x]
-    rw [smul_mul', mul_div_cancel_right₀, div_eq_mul_inv]
-    rwa [ne_eq, ← eq_inv_smul_iff, smul_zero]
+@[simp] theorem smul_inv₀' (g : α) (x : β) : g • x⁻¹ = (g • x)⁻¹ := by
+  by_cases hx : x = 0
+  · rw [hx, inv_zero, smul_zero, inv_zero]
+  · apply eq_inv_of_mul_eq_one_right
+    rw [← smul_mul', mul_inv_cancel₀ hx, smul_one]
+
+@[simp] theorem smul_div₀' (g : α) (x y : β) : g • (x / y) = (g • x) / (g • y) := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, smul_mul', smul_inv₀']
 
 end MulDistribMulAction
