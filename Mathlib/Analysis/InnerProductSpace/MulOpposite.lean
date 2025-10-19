@@ -54,10 +54,9 @@ noncomputable def _root_.OrthonormalBasis.mulOpposite (b : OrthonormalBasis Î¹ ð
 end orthonormal
 end InnerProductSpace
 
-theorem isometry_opLinearEquiv {R M : Type*} [Semiring R] [SeminormedAddCommGroup M] [Module R M] :
-    Isometry (opLinearEquiv R (M := M)) := fun _ _ => rfl
-
 variable [Semiring R] [Module R H]
+
+theorem isometry_opLinearEquiv : Isometry (opLinearEquiv R (M := H)) := fun _ _ => rfl
 
 variable (R H) in
 /-- The linear isometry equivalence version of the function `op`. -/
