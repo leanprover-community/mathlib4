@@ -296,6 +296,29 @@ def LieEquiv.ofCoboundary (c' : twoCocycle R L V) (x : oneCochain R L V)
   left_inv y := by simp
   right_inv z := by simp
 
+lemma apply_sub_apply_mem_ker (E : Extension R N M) {s₁ s₂ : M →ₗ[R] E.L}
+    (hs₁ : Function.LeftInverse E.proj s₁) (hs₂ : Function.LeftInverse E.proj s₂)
+    (a : M) :
+    (s₁ a) - (s₂ a) ∈ LinearMap.ker E.proj.toLinearMap := by
+  rw [LinearMap.mem_ker, LieHom.coe_toLinearMap, map_sub, hs₁, hs₂, sub_eq_zero]
+
+/-- The 1-cochain attached to a pair of splittings of an extension. -/
+@[simps]
+def oneCochain_of_two_splitting (E : Extension R N M) {s₁ s₂ : M →ₗ[R] E.L}
+    (hs₁ : Function.LeftInverse E.proj s₁) (hs₂ : Function.LeftInverse E.proj s₂) :
+    oneCochain R M N where
+  toFun m := E.sectLeft (E.projInclEquiv ⟨(s₁ m) - (s₂ m), E.apply_sub_apply_mem_ker hs₁ hs₂ m⟩)
+  map_add' _ _ := by
+    rw [← map_add, ← map_add, AddMemClass.mk_add_mk, EquivLike.apply_eq_iff_eq,
+      EquivLike.apply_eq_iff_eq]
+    refine Subtype.mk_eq_mk.mpr ?_
+    rw [map_add, map_add, add_sub_add_comm]
+  map_smul' _ _ := by
+    rw [RingHom.id_apply, ← map_smul, EquivLike.apply_eq_iff_eq, ← map_smul,
+      EquivLike.apply_eq_iff_eq, SetLike.mk_smul_of_tower_mk]
+    refine Subtype.mk_eq_mk.mpr ?_
+    rw [LinearMap.map_smul_of_tower, smul_sub, LinearMap.map_smul_of_tower]
+
 end Extension
 
 end LieAlgebra
