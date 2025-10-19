@@ -442,8 +442,8 @@ theorem prod_eq_zero {ι} (f : ι → Cardinal.{u}) : prod f = 0 ↔ ∃ i, f i 
 
 theorem prod_ne_zero {ι} (f : ι → Cardinal) : prod f ≠ 0 ↔ ∀ i, f i ≠ 0 := by simp [prod_eq_zero]
 
-theorem lift_power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
-    (Cardinal.lift.{u, v} a) ^ sum f = prod fun i ↦ a ^ f i := by
+theorem lift_power_sum {ι : Type u} (a : Cardinal.{v}) (f : ι → Cardinal.{v}) :
+    lift.{u, v} a ^ sum f = prod fun i ↦ a ^ f i := by
   induction a using Cardinal.inductionOn with | _ α =>
   induction f using induction_on_pi with | _ f =>
   simp_rw [← mk_uLift, prod, sum, power_def]
@@ -453,7 +453,7 @@ theorem lift_power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
   refine (Equiv.arrowCongr outMkEquiv Equiv.ulift).trans ?_
   exact outMkEquiv.symm
 
-theorem power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
+theorem power_sum {ι : Type u} (a : Cardinal.{max u v}) (f : ι → Cardinal.{max u v}) :
     a ^ sum f = prod fun i ↦ a ^ f i := by
   simpa [← lift_umax] using lift_power_sum a f
 
