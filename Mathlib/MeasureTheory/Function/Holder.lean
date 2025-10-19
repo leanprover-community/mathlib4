@@ -240,7 +240,7 @@ protected lemma smul_assoc [IsScalarTower 𝕜' 𝕜 E]
   simp only [smul_def, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c f] with x hx
-  simp [- smul_eq_mul, hx]
+  simp [-smul_eq_mul, hx]
 
 protected lemma smul_comm [SMulCommClass 𝕜' 𝕜 E]
     (c : 𝕜') (f : Lp 𝕜 p μ) (g : Lp E q μ) :

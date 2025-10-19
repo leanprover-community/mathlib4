@@ -12,7 +12,7 @@ import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 Define the gamma measure over the reals.
 
 ## Main definitions
-* `gammaPDFReal`: the function `a r x ↦ r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))`
+* `gammaPDFReal`: the function `a r x ↦ r ^ a / (Gamma a) * x ^ (a - 1) * exp (-(r * x))`
   for `0 ≤ x` or `0` else, which is the probability density function of a gamma distribution with
   shape `a` and rate `r` (when `ha : 0 < a ` and `hr : 0 < r`).
 * `gammaPDF`: `ℝ≥0∞`-valued pdf,
@@ -40,7 +40,7 @@ section GammaPDF
 /-- The pdf of the gamma distribution depending on its scale and rate -/
 noncomputable
 def gammaPDFReal (a r x : ℝ) : ℝ :=
-  if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0
+  if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a - 1) * exp (-(r * x)) else 0
 
 /-- The pdf of the gamma distribution, as a function valued in `ℝ≥0∞` -/
 noncomputable
@@ -49,14 +49,14 @@ def gammaPDF (a r x : ℝ) : ℝ≥0∞ :=
 
 lemma gammaPDF_eq (a r x : ℝ) :
     gammaPDF a r x =
-      ENNReal.ofReal (if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0) :=
+      ENNReal.ofReal (if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a - 1) * exp (-(r * x)) else 0) :=
   rfl
 
 lemma gammaPDF_of_neg {a r x : ℝ} (hx : x < 0) : gammaPDF a r x = 0 := by
   simp only [gammaPDF_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]
 
 lemma gammaPDF_of_nonneg {a r x : ℝ} (hx : 0 ≤ x) :
-    gammaPDF a r x = ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))) := by
+    gammaPDF a r x = ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a - 1) * exp (-(r * x))) := by
   simp only [gammaPDF_eq, if_pos hx]
 
 /-- The Lebesgue integral of the gamma pdf over nonpositive reals equals 0 -/

@@ -115,7 +115,7 @@ rather than applications of `Function.Injective.ring` or other non-canonical con
 The advantage is then that `instRing.toSemiring` unifies almost immediately with `instSemiring`,
 rather than having to break it down into smaller pieces.
 -/
-syntax (name := fastInstance) "fast_instance%" term : term
+syntax (name := fastInstance) "fast_instance% " term : term
 
 @[term_elab fastInstance, inherit_doc fastInstance]
 def elabFastInstance : TermElab

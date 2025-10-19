@@ -67,9 +67,9 @@ structure Base (P : RootPairing ι R M N) where
   linearIndepOn_root : LinearIndepOn R P.root support
   linearIndepOn_coroot : LinearIndepOn R P.coroot support
   root_mem_or_neg_mem (i : ι) : P.root i ∈ AddSubmonoid.closure (P.root '' support) ∨
-                              - P.root i ∈ AddSubmonoid.closure (P.root '' support)
+                               -P.root i ∈ AddSubmonoid.closure (P.root '' support)
   coroot_mem_or_neg_mem (i : ι) : P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support) ∨
-                                - P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support)
+                                 -P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support)
 
 namespace Base
 
@@ -95,7 +95,7 @@ lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
 include b in
 lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
     (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j) :
-    P.root i ≠ - P.root j := by
+    P.root i ≠ -P.root j := by
   classical
   intro contra
   have := linearIndepOn_iff'.mp b.linearIndepOn_root ({i, j} : Finset ι) 1
@@ -175,7 +175,7 @@ variable [CharZero R]
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
     [NoZeroSMulDivisors ℤ M] [NoZeroSMulDivisors ℤ N]
     (i : ι) (h : i ∈ b.support) (t : R) (ht : t • P.root i ∈ range P.root) :
-    t = 1 ∨ t = - 1 := by
+    t = 1 ∨ t = -1 := by
   obtain ⟨z, hz⟩ := b.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h t ht
   obtain ⟨s, hs⟩ := IsUnit.exists_left_inv <| isUnit_of_mul_eq_one_right _ t hz
   replace ht : s • P.coroot i ∈ range P.coroot := by
@@ -184,7 +184,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
   obtain ⟨w, hw⟩ := b.flip.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h s ht
   have : (z : R) * w = 1 := by
     simpa [mul_mul_mul_comm _ t _ s, mul_comm t s, hs] using congr_arg₂ (· * ·) hz hw
-  suffices z = 1 ∨ z = - 1 by
+  suffices z = 1 ∨ z = -1 by
     rcases this with rfl | rfl
     · left; simpa using hz
     · right; simpa [neg_eq_iff_eq_neg] using hz

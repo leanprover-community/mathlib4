@@ -93,7 +93,7 @@ theorem d₁₀_single_one (a : A) : d₁₀ A (single 1 a) = 0 := by
   simp [d₁₀]
 
 theorem d₁₀_single_inv (g : G) (a : A) :
-    d₁₀ A (single g⁻¹ a) = - d₁₀ A (single g (A.ρ g a)) := by
+    d₁₀ A (single g⁻¹ a) = -d₁₀ A (single g (A.ρ g a)) := by
   simp [d₁₀]
 
 theorem range_d₁₀_eq_coinvariantsKer :

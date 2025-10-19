@@ -99,7 +99,7 @@ theorem single_mem_jacobson_matrix (I : Ideal R) :
   simp_rw [Ideal.mem_jacobson_iff]
   intro x xIJ p q M
   have ⟨z, zMx⟩ := xIJ (M q p)
-  let N : Matrix n n R := 1 - ∑ i, single i q (if i = q then 1 - z else (M i p)*x*z)
+  let N : Matrix n n R := 1 - ∑ i, single i q (if i = q then 1 - z else (M i p) * x * z)
   use N
   intro i j
   obtain rfl | qj := eq_or_ne q j
