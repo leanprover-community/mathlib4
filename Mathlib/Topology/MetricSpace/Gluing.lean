@@ -223,9 +223,8 @@ theorem Sum.dist_eq_glueDist {p q : X ⊕ Y} (x : X) (y : Y) :
 private theorem Sum.dist_comm (x y : X ⊕ Y) : Sum.dist x y = Sum.dist y x := by
   cases x <;> cases y <;> simp [Sum.dist, _root_.dist_comm, add_comm, add_left_comm]
 
-theorem Sum.one_le_dist_inl_inr {x : X} {y : Y} : 1 ≤ Sum.dist (.inl x) (.inr y) :=
-  le_trans (le_add_of_nonneg_right dist_nonneg) <|
-    add_le_add_right (le_add_of_nonneg_left dist_nonneg) _
+theorem Sum.one_le_dist_inl_inr {x : X} {y : Y} : 1 ≤ Sum.dist (.inl x) (.inr y) := by
+  grw [Sum.dist, ← le_add_of_nonneg_right dist_nonneg, ← le_add_of_nonneg_left dist_nonneg]
 
 theorem Sum.one_le_dist_inr_inl {x : X} {y : Y} : 1 ≤ Sum.dist (.inr y) (.inl x) := by
   rw [Sum.dist_comm]; exact Sum.one_le_dist_inl_inr
@@ -256,13 +255,13 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
     | .inl p, .inl q, .inl r => dist_triangle p q r
     | .inl p, .inr q, _ => by
       simp only [Sum.dist_eq_glueDist p q]
-      exact glueDist_triangle _ _ _ (by norm_num) _ _ _
+      exact glueDist_triangle _ _ _ (by simp) _ _ _
     | _, .inl q, .inr r => by
       simp only [Sum.dist_eq_glueDist q r]
-      exact glueDist_triangle _ _ _ (by norm_num) _ _ _
+      exact glueDist_triangle _ _ _ (by simp) _ _ _
     | .inr p, _, .inl r => by
       simp only [Sum.dist_eq_glueDist r p]
-      exact glueDist_triangle _ _ _ (by norm_num) _ _ _
+      exact glueDist_triangle _ _ _ (by simp) _ _ _
     | .inr p, .inr q, .inr r => dist_triangle p q r
   eq_of_dist_eq_zero {p q} h := by
     rcases p with p | p <;> rcases q with q | q
@@ -607,7 +606,9 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
   change inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]
-  exact le_succ _
+  · rfl
+  · rfl
+  · exact le_succ _
 
 theorem dense_iUnion_range_toInductiveLimit
     {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]

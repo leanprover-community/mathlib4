@@ -31,7 +31,7 @@ open EMetric ENNReal Filter MeasureTheory NNReal Set
 
 variable {α β ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 variable [NormedAddCommGroup β] [TopologicalSpace ε] [ContinuousENorm ε]
-  [TopologicalSpace ε'] [ENormedAddMonoid ε']
+  [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 namespace MeasureTheory
 
@@ -51,7 +51,7 @@ theorem integrable_mk {f : α → ε} (hf : AEStronglyMeasurable f μ) :
   exact coeFn_mk f hf
 
 theorem integrable_coeFn {f : α →ₘ[μ] ε} : MeasureTheory.Integrable f μ ↔ Integrable f := by
-  rw [← integrable_mk, mk_coeFn]
+  rw [← integrable_mk f.aestronglyMeasurable, mk_coeFn]
 
 theorem integrable_zero : Integrable (0 : α →ₘ[μ] ε') :=
   (MeasureTheory.integrable_zero α ε' μ).congr (coeFn_mk _ _).symm
@@ -204,8 +204,6 @@ theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
 theorem enorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ = ∫⁻ a, ‖f a‖ₑ ∂μ := by
   simp only [Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
   simp [eLpNorm, eLpNorm']
-
-@[deprecated (since := "2025-01-20")] alias nnnorm_toL1 := enorm_toL1
 
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by

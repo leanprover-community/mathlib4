@@ -72,6 +72,9 @@ end Associated
 
 attribute [local instance] Associated.setoid
 
+theorem Associated.of_eq [Monoid M] {a b : M} (h : a = b) : a ~ᵤ b :=
+  ⟨1, by rwa [Units.val_one, mul_one]⟩
+
 theorem unit_associated_one [Monoid M] {u : Mˣ} : (u : M) ~ᵤ 1 :=
   ⟨u⁻¹, Units.mul_inv u⟩
 
@@ -693,7 +696,7 @@ instance instPartialOrder : PartialOrder (Associates M) where
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates M) :=
   { (by infer_instance : CommMonoidWithZero (Associates M)) with
     mul_left_cancel_of_ne_zero := by
-      rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ha h
+      rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ h
       rcases Quotient.exact' h with ⟨u, hu⟩
       have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
       exact Quotient.sound' ⟨u, mul_left_cancel₀ (mk_ne_zero.1 ha) hu⟩ }

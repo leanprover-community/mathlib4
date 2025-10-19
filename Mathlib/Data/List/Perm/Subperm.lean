@@ -52,11 +52,6 @@ lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _
 
 protected alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 
-@[deprecated List.cons_subperm_of_not_mem_of_mem (since := "2024-12-11"), nolint unusedArguments]
-theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (_ : Nodup l₁) (h₁ : a ∉ l₁) (h₂ : a ∈ l₂)
-    (s : l₁ <+~ l₂) : a :: l₁ <+~ l₂ :=
-  cons_subperm_of_not_mem_of_mem h₁ h₂ s
-
 protected theorem Nodup.subperm (d : Nodup l₁) (H : l₁ ⊆ l₂) : l₁ <+~ l₂ :=
   subperm_of_subset d H
 

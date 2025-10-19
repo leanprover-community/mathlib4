@@ -115,9 +115,6 @@ lemma AnalyticAt.analyticOrderAt_ne_top (hf : AnalyticAt 𝕜 f z₀) :
 @[deprecated (since := "2025-05-03")]
 alias AnalyticAt.order_ne_top_iff := AnalyticAt.analyticOrderAt_ne_top
 
-@[deprecated (since := "2025-02-03")]
-alias AnalyticAt.order_neq_top_iff := AnalyticAt.analyticOrderAt_ne_top
-
 lemma analyticOrderAt_eq_zero : analyticOrderAt f z₀ = 0 ↔ ¬ AnalyticAt 𝕜 f z₀ ∨ f z₀ ≠ 0 := by
   by_cases hf : AnalyticAt 𝕜 f z₀
   · rw [← ENat.coe_zero, hf.analyticOrderAt_eq_natCast]
@@ -176,7 +173,7 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
           hfh.filter_mono nhdsWithin_le_nhds] with z hz hf' hf''
         rw [← inv_smul_eq_iff₀ (pow_ne_zero _ <| sub_ne_zero_of_ne hz), hf'', smul_comm,
           ← mul_smul] at hf'
-        rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by omega), ← hf']
+        rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by cutsat), ← hf']
 
 @[deprecated (since := "2025-05-03")] alias natCast_le_order_iff := natCast_le_analyticOrderAt
 
@@ -371,7 +368,7 @@ theorem isClopen_setOf_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
     simp only [isOpen_induced h₂t', mem_preimage, h₃t', and_self, and_true]
     intro w hw
     simp only [mem_setOf_eq]
-    grind [Set.mem_preimage, Set.mem_seq_iff]
+    grind
 
 /-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
 `f` has finite order at every point. -/

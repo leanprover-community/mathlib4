@@ -3,9 +3,10 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Orthogonal projection in Euclidean affine spaces
@@ -90,8 +91,6 @@ theorem orthogonalProjectionFn_vsub_mem_direction_orthogonal {s : AffineSubspace
     orthogonalProjectionFn s p -ᵥ p ∈ s.directionᗮ :=
   direction_mk' p s.directionᗮ ▸
     vsub_mem_direction (orthogonalProjectionFn_mem_orthogonal p) (self_mem_mk' _ _)
-
-attribute [local instance] AffineSubspace.toAddTorsor
 
 /-- Auxiliary definition for setting up the orthogonal projection. This one is a bundled affine
 map; the final `orthogonalProjection` is a continuous affine map. -/
@@ -223,10 +222,8 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
 /-- Orthogonal projection is idempotent. -/
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
-    orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by
-  ext
-  rw [orthogonalProjection_eq_self_iff]
-  exact orthogonalProjection_mem p
+    orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p :=
+  orthogonalProjection_mem_subspace_eq_self ((orthogonalProjection s) p)
 
 theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace ℝ P} [Nonempty s]
     [Nonempty s'] [s.direction.HasOrthogonalProjection] [s'.direction.HasOrthogonalProjection]

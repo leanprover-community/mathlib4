@@ -98,8 +98,6 @@ end ContinuousMap
 
 namespace Path.Homotopic
 
-attribute [local instance] Path.Homotopic.setoid
-
 local infixl:70 " ⬝ " => Quotient.comp
 
 section Pi
@@ -157,7 +155,7 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {a₁ a₂ 
   (q₂ : Path.Homotopic.Quotient b₁ b₂)
 
 /-- The product of homotopies h₁ and h₂.
-    This is `HomotopyRel.prod` specialized for path homotopies. -/
+This is `HomotopyRel.prod` specialized for path homotopies. -/
 def prodHomotopy (h₁ : Path.Homotopy p₁ p₁') (h₂ : Path.Homotopy p₂ p₂') :
     Path.Homotopy (p₁.prod p₂) (p₁'.prod p₂') :=
   ContinuousMap.HomotopyRel.prod h₁ h₂
@@ -175,7 +173,7 @@ theorem prod_lift : prod ⟦p₁⟧ ⟦p₂⟧ = ⟦p₁.prod p₂⟧ :=
 variable (r₁ : Path.Homotopic.Quotient a₂ a₃) (r₂ : Path.Homotopic.Quotient b₂ b₃)
 
 /-- Products commute with path composition.
-    This is `trans_prod_eq_prod_trans` descended to the quotient. -/
+This is `trans_prod_eq_prod_trans` descended to the quotient. -/
 theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) := by
   induction q₁, q₂ using Quotient.inductionOn₂
   induction r₁, r₂ using Quotient.inductionOn₂

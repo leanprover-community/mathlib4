@@ -258,7 +258,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
       Finset.sum_sigma, Finset.sum_coe_sort_eq_attach]
     refine Finset.sum_congr rfl fun i _ => ?_
     by_cases hfi : (H i).FiniteIndex
-    · rw [← relindex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
+    · rw [← relIndex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
         mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr hfi.index_ne_zero)]
       simpa [K, hfi] using (ht i.1 i.2 hfi).1.card_left
     · rw [of_not_not (FiniteIndex.mk.mt hfi), Nat.cast_zero, inv_zero, zero_mul]
@@ -388,11 +388,6 @@ theorem Subspace.top_mem_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) 
     ⊤ ∈ s := by
   contrapose! hcovers
   exact Subspace.biUnion_ne_univ_of_top_notMem hcovers
-
-@[deprecated (since := "2024-10-29")]
-alias Subspace.biUnion_ne_univ_of_ne_top := Subspace.biUnion_ne_univ_of_top_notMem
-@[deprecated (since := "2024-10-29")]
-alias Subspace.exists_eq_top_of_biUnion_eq_univ := Subspace.top_mem_of_biUnion_eq_univ
 
 theorem Subspace.exists_eq_top_of_iUnion_eq_univ {ι} [Finite ι] {p : ι → Subspace k E}
     (hcovers : ⋃ i, (p i : Set E) = Set.univ) : ∃ i, p i = ⊤ := by

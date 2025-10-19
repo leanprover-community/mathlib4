@@ -3,7 +3,7 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Notation.Pi.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.IsomorphismClasses
@@ -45,9 +45,9 @@ class HasZeroMorphisms where
   /-- Every morphism space has zero -/
   [zero : ∀ X Y : C, Zero (X ⟶ Y)]
   /-- `f` composed with `0` is `0` -/
-  comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by aesop_cat
+  comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by cat_disch
   /-- `0` composed with `f` is `0` -/
-  zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) := by aesop_cat
+  zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) := by cat_disch
 
 attribute [instance] HasZeroMorphisms.zero
 
@@ -64,7 +64,7 @@ theorem zero_comp [HasZeroMorphisms C] {X : C} {Y Z : C} {f : Y ⟶ Z} :
   HasZeroMorphisms.zero_comp X f
 
 instance hasZeroMorphismsPEmpty : HasZeroMorphisms (Discrete PEmpty) where
-  zero := by aesop_cat
+  zero := by cat_disch
 
 instance hasZeroMorphismsPUnit : HasZeroMorphisms (Discrete PUnit) where
   zero X Y := by repeat (constructor)
@@ -214,12 +214,12 @@ end IsZero
 
 /-- A category with a zero object has zero morphisms.
 
-    It is rarely a good idea to use this. Many categories that have a zero object have zero
-    morphisms for some other reason, for example from additivity. Library code that uses
-    `zeroMorphismsOfZeroObject` will then be incompatible with these categories because
-    the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
-    code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
-    asks for an instance of `HasZeroObjects`. -/
+It is rarely a good idea to use this. Many categories that have a zero object have zero
+morphisms for some other reason, for example from additivity. Library code that uses
+`zeroMorphismsOfZeroObject` will then be incompatible with these categories because
+the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
+code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
+asks for an instance of `HasZeroObjects`. -/
 def IsZero.hasZeroMorphisms {O : C} (hO : IsZero O) : HasZeroMorphisms C where
   zero X Y := { zero := hO.from_ X ≫ hO.to_ Y }
   zero_comp X {Y Z} f := by
@@ -241,12 +241,12 @@ open ZeroObject
 
 /-- A category with a zero object has zero morphisms.
 
-    It is rarely a good idea to use this. Many categories that have a zero object have zero
-    morphisms for some other reason, for example from additivity. Library code that uses
-    `zeroMorphismsOfZeroObject` will then be incompatible with these categories because
-    the `has_zero_morphisms` instances will not be definitionally equal. For this reason library
-    code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
-    asks for an instance of `HasZeroObjects`. -/
+It is rarely a good idea to use this. Many categories that have a zero object have zero
+morphisms for some other reason, for example from additivity. Library code that uses
+`zeroMorphismsOfZeroObject` will then be incompatible with these categories because
+the `has_zero_morphisms` instances will not be definitionally equal. For this reason library
+code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
+asks for an instance of `HasZeroObjects`. -/
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
   zero X _ := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
@@ -325,7 +325,7 @@ open ZeroObject
 @[simp]
 theorem id_zero : 𝟙 (0 : C) = (0 : (0 : C) ⟶ 0) := by apply HasZeroObject.from_zero_ext
 
--- This can't be a `simp` lemma because the left hand side would be a metavariable.
+-- This can't be a `simp` lemma because the left-hand side would be a metavariable.
 /-- An arrow ending in the zero object is zero -/
 theorem zero_of_to_zero {X : C} (f : X ⟶ 0) : f = 0 := by ext
 
@@ -361,8 +361,8 @@ def idZeroEquivIsoZero (X : C) : 𝟙 X = 0 ≃ (X ≅ 0) where
     { hom := 0
       inv := 0 }
   invFun i := zero_of_target_iso_zero (𝟙 X) i
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 theorem idZeroEquivIsoZero_apply_hom (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIsoZero X) h).hom = 0 :=
@@ -424,9 +424,9 @@ def isIsoZeroEquiv (X Y : C) : IsIso (0 : X ⟶ Y) ≃ 𝟙 X = 0 ∧ 𝟙 Y = 0
     rw [← IsIso.hom_inv_id (0 : X ⟶ Y)]
     rw [← IsIso.inv_hom_id (0 : X ⟶ Y)]
     simp only [comp_zero,and_self,zero_comp]
-  invFun h := ⟨⟨(0 : Y ⟶ X), by aesop_cat⟩⟩
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  invFun h := ⟨⟨(0 : Y ⟶ X), by cat_disch⟩⟩
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- A zero morphism `0 : X ⟶ X` is an isomorphism if and only if
 the identity on `X` is zero.
@@ -453,8 +453,8 @@ def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y �
     fconstructor
     · exact (idZeroEquivIsoZero X) hX
     · exact (idZeroEquivIsoZero Y) hY
-  · aesop_cat
-  · aesop_cat
+  · cat_disch
+  · cat_disch
 
 theorem isIso_of_source_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) (j : Y ≅ 0) :
     IsIso f := by
@@ -472,7 +472,7 @@ end IsIso
 /-- If there are zero morphisms, any initial object is a zero object. -/
 theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
     HasZeroObject C := by
-  refine ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩⟩
+  refine ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by cat_disch⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩⟩
   calc
     f = f ≫ 𝟙 _ := (Category.comp_id _).symm
     _ = f ≫ 0 := by congr!; subsingleton
@@ -481,7 +481,7 @@ theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
 /-- If there are zero morphisms, any terminal object is a zero object. -/
 theorem hasZeroObject_of_hasTerminal_object [HasZeroMorphisms C] [HasTerminal C] :
     HasZeroObject C := by
-  refine ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩⟩⟩
+  refine ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, by cat_disch⟩⟩⟩⟩
   calc
     f = 𝟙 _ ≫ f := (Category.id_comp _).symm
     _ = 0 ≫ f := by congr!; subsingleton

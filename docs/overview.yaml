@@ -12,7 +12,7 @@ General algebra:
     presheafed space: 'AlgebraicGeometry.PresheafedSpace'
     sheafed space: 'AlgebraicGeometry.SheafedSpace'
     monoidal category: 'CategoryTheory.MonoidalCategory'
-    cartesian closed: 'CategoryTheory.CartesianClosed'
+    Cartesian closed: 'CategoryTheory.CartesianClosed'
     abelian category: 'CategoryTheory.Abelian'
 
   Numbers:
@@ -58,7 +58,7 @@ General algebra:
     subring: 'Subring'
     localization: 'Localization'
     local ring: 'IsLocalRing'
-    noetherian ring: 'IsNoetherianRing'
+    Noetherian ring: 'IsNoetherianRing'
     ordered ring: 'OrderedRing'
 
   Ideals and quotients:
@@ -149,7 +149,7 @@ General algebra:
 
   Representation theory:
     representation : 'Representation'
-    category of finite dimensional representations : 'FDRep'
+    category of finite-dimensional representations : 'FDRep'
     character : 'FDRep.character'
     orthogonality of characters : 'FDRep.char_orthonormal'
 
@@ -161,7 +161,7 @@ Linear algebra:
     vector space: 'Module'
     quotient space: 'Submodule.hasQuotient'
     tensor product: 'TensorProduct'
-    noetherian module: 'IsNoetherian'
+    Noetherian module: 'IsNoetherian'
     basis: 'Module.Basis'
     multilinear map: 'MultilinearMap'
     alternating map: 'AlternatingMap'
@@ -268,14 +268,14 @@ Analysis:
     normed vector space over a normed field: 'NormedSpace'
     topology on a normed vector space: 'NormSMulClass.toIsBoundedSMul'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
-    finite dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
-    Heine-Borel theorem (finite dimensional normed spaces are proper): 'FiniteDimensional.proper'
+    finite-dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
+    Heine-Borel theorem (finite-dimensional normed spaces are proper): 'FiniteDimensional.proper'
     norm of a continuous linear map: 'LinearMap.mkContinuous'
     Banach-Steinhaus theorem: 'banach_steinhaus'
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
     absolutely convergent series in Banach spaces: 'Summable.of_norm'
     Hahn-Banach theorem: 'exists_extension_norm_eq'
-    dual of a normed space: 'NormedSpace.Dual'
+    dual of a normed space: 'StrongDual'
     isometric inclusion in double dual: 'NormedSpace.inclusionInDoubleDualLi'
     completeness of spaces of bounded continuous functions: 'BoundedContinuousFunction.instCompleteSpace'
 
@@ -358,10 +358,11 @@ Analysis:
     principle of isolated zeros: 'AnalyticAt.eventually_eq_zero_or_eventually_ne_zero'
     principle of analytic continuation: 'AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq'
     analyticity of holomorphic functions: 'DifferentiableOn.analyticAt'
-    Schwarz lemma: 'Complex.abs_le_abs_of_mapsTo_ball_self'
+    Schwarz lemma: 'Complex.norm_le_norm_of_mapsTo_ball_self'
     removable singularity: 'Complex.differentiableOn_update_limUnder_insert_of_isLittleO'
     Phragmen-Lindelöf principle: 'PhragmenLindelof.horizontal_strip'
     fundamental theorem of algebra: 'Complex.isAlgClosed'
+    First Main Theorem of Value Distribution Theory: 'ValueDistribution.characteristic_sub_characteristic_inv_le'
 
   Distribution theory:
     Schwartz space: 'SchwartzMap'
@@ -394,7 +395,7 @@ Probability Theory:
     almost sure convergence: 'MeasureTheory.ae'
     convergence in distribution: 'MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto'
     Markov inequality: 'MeasureTheory.mul_meas_ge_le_lintegral'
-    Chebychev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
+    Chebyshev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
     strong law of large numbers: 'ProbabilityTheory.strong_law_ae'
   Stochastic Processes:
     martingale: 'MeasureTheory.Martingale'
@@ -424,16 +425,23 @@ Geometry:
     pullback of vector fields: 'VectorField.mpullback'
     Lie bracket of vector field: 'VectorField.mlieBracket'
     Jacobi/Leibniz identity: 'VectorField.leibniz_identity_mlieBracket'
-    integral curves: 'IsIntegralCurve'
-    local existence of integral curves: 'exists_isIntegralCurveAt_of_contMDiffAt_boundaryless'
-    uniform time existence: 'exists_isIntegralCurve_of_isIntegralCurveOn'
+    integral curves: 'IsMIntegralCurve'
+    local existence of integral curves: 'exists_isMIntegralCurveAt_of_contMDiffAt_boundaryless'
+    uniform time existence: 'exists_isMIntegralCurve_of_isMIntegralCurveOn'
     # corollary for compact manifolds PRed, but not yet merged
-    uniqueness of integral curves: 'isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless'
+    uniqueness of integral curves: 'isMIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless'
     Lie group: 'LieGroup'
     Lie algebra of a Lie group: 'GroupLieAlgebra'
     sphere: 'EuclideanSpace.instIsManifoldSphere'
     closed interval: 'instIsManifoldIcc'
     general linear group as a Lie group: 'Units.instLieGroupModelWithCornersSelf'
+    discrete spaces are 0-manifolds: 'IsManifold.of_discreteTopology'
+    0-manifolds are discrete spaces: 'ChartedSpace.discreteTopology'
+
+  Riemannian manifolds:
+    Riemannian/bundle metric: 'Bundle.RiemannianMetric'
+    Smooth bundle metric: 'Bundle.ContMDiffRiemannianMetric'
+    Riemannian manifold: 'IsRiemannianManifold'
 
   Smooth vector and fiber bundles:
     (topological) fiber bundle: 'FiberBundle'
@@ -499,7 +507,7 @@ Combinatorics:
     Behrend's construction: 'Behrend.roth_lower_bound'
     # Growth:
     doubling constant: 'Finset.addConst'
-    Ruzsa covering lemma: 'Finset.exists_subset_add_sub'
+    Ruzsa covering lemma: 'Set.ruzsa_covering_add'
     Ruzsa triangle inequality: 'Finset.ruzsa_triangle_inequality_sub_sub_sub'
     Plünnecke-Petridis inequality: 'Finset.pluennecke_petridis_inequality_add'
     Small tripling implies small powers: 'Finset.small_pow_of_small_tripling'

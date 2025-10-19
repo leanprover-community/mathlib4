@@ -29,7 +29,7 @@ In this file we define `HopfAlgebra`, and provide instances for:
   the identity.
 
 (Note that all three facts have been proved for Hopf bimonoids in an arbitrary braided category,
-so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf_ (ModuleCat R)`.)
+so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (ModuleCat R)`.)
 
 ## References
 
@@ -39,6 +39,8 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf_ (M
 
 
 -/
+
+open Bialgebra
 
 universe u v w
 
@@ -64,7 +66,7 @@ namespace HopfAlgebra
 
 export HopfAlgebraStruct (antipode)
 
-variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
+variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A] {a : A}
 
 @[simp]
 theorem mul_antipode_rTensor_comul_apply (a : A) :
@@ -85,27 +87,41 @@ theorem antipode_one :
 
 open Coalgebra
 
-@[simp]
-lemma sum_antipode_mul_eq {a : A} (repr : Repr R a) :
+lemma sum_antipode_mul_eq_algebraMap_counit (repr : Repr R a) :
     ∑ i ∈ repr.index, antipode R (repr.left i) * repr.right i =
       algebraMap R A (counit a) := by
   simpa [← repr.eq, map_sum] using congr($(mul_antipode_rTensor_comul (R := R)) a)
 
-@[simp]
-lemma sum_mul_antipode_eq {a : A} (repr : Repr R a) :
+@[deprecated (since := "2025-05-29")]
+alias sum_antipode_mul_eq := sum_antipode_mul_eq_algebraMap_counit
+
+lemma sum_mul_antipode_eq_algebraMap_counit (repr : Repr R a) :
     ∑ i ∈ repr.index, repr.left i * antipode R (repr.right i) =
       algebraMap R A (counit a) := by
   simpa [← repr.eq, map_sum] using congr($(mul_antipode_lTensor_comul (R := R)) a)
 
-lemma sum_antipode_mul_eq_smul {a : A} (repr : Repr R a) :
+@[deprecated (since := "2025-05-29")]
+alias sum_mul_antipode_eq := sum_mul_antipode_eq_algebraMap_counit
+
+lemma sum_antipode_mul_eq_smul (repr : Repr R a) :
     ∑ i ∈ repr.index, antipode R (repr.left i) * repr.right i =
       counit (R := R) a • 1 := by
-  rw [sum_antipode_mul_eq, Algebra.smul_def, mul_one]
+  rw [sum_antipode_mul_eq_algebraMap_counit, Algebra.smul_def, mul_one]
 
-lemma sum_mul_antipode_eq_smul {a : A} (repr : Repr R a) :
+lemma sum_mul_antipode_eq_smul (repr : Repr R a) :
     ∑ i ∈ repr.index, repr.left i * antipode R (repr.right i) =
       counit (R := R) a • 1 := by
-  rw [sum_mul_antipode_eq, Algebra.smul_def, mul_one]
+  rw [sum_mul_antipode_eq_algebraMap_counit, Algebra.smul_def, mul_one]
+
+@[simp] lemma counit_antipode (a : A) : counit (R := R) (antipode R a) = counit a := by
+  calc
+        counit (antipode R a)
+    _ = counit (∑ i ∈ (ℛ R a).index, (ℛ R a).left i * antipode R ((ℛ R a).right i)) := by
+      simp_rw [map_sum, counit_mul, ← smul_eq_mul, ← map_smul, ← map_sum, sum_counit_smul]
+    _ = counit a := by simpa using congr(counit (R := R) $(sum_mul_antipode_eq_smul (ℛ R a)))
+
+@[simp] lemma counit_comp_antipode : counit ∘ₗ antipode R = counit (A := A) := by
+  ext; exact counit_antipode _
 
 end HopfAlgebra
 
