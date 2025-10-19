@@ -128,7 +128,6 @@ This definition comes from [serge_lang_algebra] -/
 structure IsExtremePt (x : α) (f : α → α) (y : α) : Prop where
   mem_bot : y ∈ bot x f
   map_le_of_mem_of_lt {z : α} (h : z ∈ bot x f) (h' : z < y) : f z ≤ y
-  map_le_of_mem_of_lt {z : α} (h : z ∈ bot x f) (h' : z < y) : f z ≤ y
 
 namespace IsExtremePt
 
