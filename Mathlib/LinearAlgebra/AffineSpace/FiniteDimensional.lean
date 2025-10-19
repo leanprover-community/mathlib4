@@ -103,11 +103,9 @@ instance AffineSubspace.finiteDimensional_sup (s₁ s₂ : AffineSubspace k P)
     [FiniteDimensional k s₁.direction] [FiniteDimensional k s₂.direction] :
     FiniteDimensional k (s₁ ⊔ s₂).direction := by
   rcases eq_bot_or_nonempty s₁ with rfl | ⟨p₁, hp₁⟩
-  · rw [bot_sup_eq]
-    infer_instance
+  · rwa [bot_sup_eq]
   rcases eq_bot_or_nonempty s₂ with rfl | ⟨p₂, hp₂⟩
-  · rw [sup_bot_eq]
-    infer_instance
+  · rwa [sup_bot_eq]
   rw [AffineSubspace.direction_sup hp₁ hp₂]
   infer_instance
 
