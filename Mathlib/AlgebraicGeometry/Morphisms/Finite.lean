@@ -72,9 +72,9 @@ instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsFinite f] [IsFinite g] : IsFinite (f 
 lemma iff_isIntegralHom_and_locallyOfFiniteType :
     IsFinite f ↔ IsIntegralHom f ∧ LocallyOfFiniteType f := by
   wlog hY : IsAffine Y
-  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
     simp_rw [this, forall_and]
   rw [HasAffineProperty.iff_of_isAffine (P := @IsFinite),
     HasAffineProperty.iff_of_isAffine (P := @IsIntegralHom),
@@ -96,9 +96,9 @@ lemma _root_.AlgebraicGeometry.IsClosedImmersion.iff_isFinite_and_mono :
     IsClosedImmersion f ↔ IsFinite f ∧ Mono f := by
   wlog hY : IsAffine Y
   · change _ ↔ _ ∧ monomorphisms _ f
-    rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := monomorphisms _) Y.affineCover]
+    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := monomorphisms _) Y.affineCover]
     simp_rw [this, forall_and, monomorphisms]
   rw [HasAffineProperty.iff_of_isAffine (P := @IsClosedImmersion),
     HasAffineProperty.iff_of_isAffine (P := @IsFinite),
@@ -118,18 +118,18 @@ instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : 
 
 end IsFinite
 
-/-- If `X` is a jacobson scheme and `k` is a field,
+/-- If `X` is a Jacobson scheme and `k` is a field,
 `Spec(k) ⟶ X` is finite iff it is (locally) of finite type.
 (The statement is more general to allow the empty scheme as well) -/
 lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
     {X Y : Scheme.{u}} {f : X ⟶ Y} [Subsingleton X] [IsReduced X] [JacobsonSpace Y] :
     IsFinite f ↔ LocallyOfFiniteType f := by
   wlog hY : ∃ S, Y = Spec S generalizing X Y
-  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
-    have inst (i) := ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding.injective.subsingleton
-    have inst (i) := isReduced_of_isOpenImmersion ((Y.affineCover.pullbackCover f).map i)
-    have inst (i) := JacobsonSpace.of_isOpenEmbedding (Y.affineCover.map i).isOpenEmbedding
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
+    have inst (i) := ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding.injective.subsingleton
+    have inst (i) := isReduced_of_isOpenImmersion ((Y.affineCover.pullback₁ f).f i)
+    have inst (i) := JacobsonSpace.of_isOpenEmbedding (Y.affineCover.f i).isOpenEmbedding
     exact forall_congr' fun i ↦ this ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hY
   wlog hX : ∃ R, X = Spec R generalizing X

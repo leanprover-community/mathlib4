@@ -43,12 +43,12 @@ def binomialSeries (A) [One A] [SMul R A] (r : R) : PowerSeries A :=
 
 @[simp]
 lemma binomialSeries_coeff [Semiring A] [SMul R A] (r : R) (n : ℕ) :
-    (coeff A n) (binomialSeries A r) = Ring.choose r n • 1 :=
+    coeff n (binomialSeries A r) = Ring.choose r n • 1 :=
   coeff_mk n fun n ↦ Ring.choose r n • 1
 
 @[simp]
 lemma binomialSeries_constantCoeff [Ring A] [Algebra R A] (r : R) :
-    (constantCoeff A) (binomialSeries A r) = 1 := by
+    constantCoeff (binomialSeries A r) = 1 := by
   simp [← coeff_zero_eq_constantCoeff_apply]
 
 @[simp]
@@ -67,7 +67,7 @@ lemma binomialSeries_nat [Ring A] [Algebra R A] (d : ℕ) :
   have hright : (1 + X) ^ d = (((1 : Polynomial A) + (Polynomial.X)) ^ d).toPowerSeries := by
     simp
   rw [hright, Polynomial.coeff_coe, binomialSeries_coeff, Polynomial.coeff_one_add_X_pow]
-  simp [Ring.choose_eq_nat_choose, Nat.cast_smul_eq_nsmul]
+  simp [Ring.choose_natCast, Nat.cast_smul_eq_nsmul]
 
 @[simp]
 lemma binomialSeries_zero [Ring A] [Algebra R A] :
@@ -85,7 +85,7 @@ lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
     simp only [invOneSubPow, coeff_mk, Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg,
       zsmul_eq_mul, mul_one]
     rw [show (-1 : ℤ) + -d = -(d + 1) by abel, Ring.choose_neg, Nat.choose_symm_add, Units.smul_def,
-      show (d : ℤ) + 1 + n - 1 = d + n by omega, ← Nat.cast_add, Ring.choose_eq_nat_choose]
+      show (d : ℤ) + 1 + n - 1 = d + n by cutsat, ← Nat.cast_add, Ring.choose_natCast]
     norm_cast
 
 end PowerSeries

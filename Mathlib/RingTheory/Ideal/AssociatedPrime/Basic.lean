@@ -21,9 +21,9 @@ We provide the definition and related lemmas about associated primes of modules.
 - `associatedPrimes`: The set of associated primes of a module.
 
 ## Main results
-- `exists_le_isAssociatedPrime_of_isNoetherianRing`: In a noetherian ring, any `ann(x)` is
+- `exists_le_isAssociatedPrime_of_isNoetherianRing`: In a Noetherian ring, any `ann(x)` is
   contained in an associated prime for `x ≠ 0`.
-- `associatedPrimes.eq_singleton_of_isPrimary`: In a noetherian ring, `I.radical` is the only
+- `associatedPrimes.eq_singleton_of_isPrimary`: In a Noetherian ring, `I.radical` is the only
   associated prime of `R ⧸ I` when `I` is primary.
 
 ## TODO

@@ -41,7 +41,6 @@ variable [CommRing A]
 variable [AddCommMonoid ι] [LinearOrder ι] [IsOrderedCancelAddMonoid ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
 
--- Porting note: This proof needs a long time to elaborate
 theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI : I.IsHomogeneous 𝒜)
     (I_ne_top : I ≠ ⊤)
     (homogeneous_mem_or_mem :
@@ -64,7 +63,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         `= proj max₁ x * proj max₂ y`
         `  + ∑ {(i, j) ∈ supports \ {(max₁, max₂)} | i + j = max₁ + max₂}, xᵢ * yⱼ`.
         This is a contradiction, because both `proj (max₁ + max₂) (x * y) ∈ I` and the sum on the
-        right hand side is in `I` however `proj max₁ x * proj max₂ y` is not in `I`.
+        right-hand side is in `I` however `proj max₁ x * proj max₂ y` is not in `I`.
         -/
       set set₁ := {i ∈ (decompose 𝒜 x).support | proj 𝒜 i x ∉ I} with set₁_eq
       set set₂ := {i ∈ (decompose 𝒜 y).support | proj 𝒜 i y ∉ I} with set₂_eq
@@ -102,13 +101,10 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         simp only [antidiag, mem_erase, Prod.mk_inj, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
-          rcases lt_trichotomy max₁ i with (h | rfl | h)
-          · exact Or.inl h
-          · refine False.elim (H₁ ⟨rfl, add_left_cancel H₄⟩)
-          · apply Or.inr
-            have := add_lt_add_right h j
-            rw [H₄] at this
-            exact lt_of_add_lt_add_left this
+          convert le_or_lt_of_add_le_add H₄.ge using 1
+          rw [Ne.le_iff_lt]
+          rintro rfl
+          cases H₁ ⟨rfl, add_left_cancel H₄⟩
         rcases max_lt with max_lt | max_lt
         · -- in this case `max₁ < i`, then `xᵢ ∈ I`; for otherwise `i ∈ set₁` then `i ≤ max₁`.
           have notMem : i ∉ set₁ := fun h =>
