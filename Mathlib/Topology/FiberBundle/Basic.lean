@@ -63,7 +63,7 @@ Let `Z : FiberBundleCore ι B F`. Then we define
                     open set in `B`.
 
 * `FiberPrebundle F E` : structure registering a cover of prebundle trivializations
-  and requiring that the relative transition maps are partial homeomorphisms.
+  and requiring that the relative transition maps are open partial homeomorphisms.
 * `FiberPrebundle.totalSpaceTopology a` : natural topology of the total space, making
   the prebundle into a bundle.
 
@@ -423,7 +423,7 @@ def proj : Z.TotalSpace → B :=
   Bundle.TotalSpace.proj
 
 /-- Local homeomorphism version of the trivialization change. -/
-def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
+def trivChange (i j : ι) : OpenPartialHomeomorph (B × F) (B × F) where
   source := (Z.baseSet i ∩ Z.baseSet j) ×ˢ univ
   target := (Z.baseSet i ∩ Z.baseSet j) ×ˢ univ
   toFun p := ⟨p.1, Z.coordChange i j p.1 p.2⟩
@@ -459,8 +459,8 @@ theorem mem_trivChange_source (i j : ι) (p : B × F) :
 between `proj ⁻¹ (baseSet i)` and `baseSet i × F`. As the fiber above `x` is `F` but read in the
 chart with index `index_at x`, the trivialization in the fiber above x is by definition the
 coordinate change from i to `index_at x`, so it depends on `x`.
-The local trivialization will ultimately be a partial homeomorphism. For now, we only introduce the
-partial equivalence version, denoted with a prime.
+The local trivialization will ultimately be an open partial homeomorphism. For now, we only
+introduce the partial equivalence version, denoted with a prime.
 In further developments, avoid this auxiliary version, and use `Z.local_triv` instead. -/
 def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
   source := Z.proj ⁻¹' Z.baseSet i
@@ -589,7 +589,7 @@ theorem continuous_const_section (v : F)
   refine continuous_iff_continuousAt.2 fun x => ?_
   have A : Z.baseSet (Z.indexAt x) ∈ 𝓝 x :=
     IsOpen.mem_nhds (Z.isOpen_baseSet (Z.indexAt x)) (Z.mem_baseSet_at x)
-  refine ((Z.localTrivAt x).toPartialHomeomorph.continuousAt_iff_continuousAt_comp_left ?_).2 ?_
+  refine ((Z.localTrivAt x).toOpenPartialHomeomorph.continuousAt_iff_continuousAt_comp_left ?_).2 ?_
   · exact A
   · apply continuousAt_id.prodMk
     simp only [mfld_simps]
@@ -656,7 +656,8 @@ theorem mem_localTrivAt_target (p : B × F) (b : B) :
 
 @[simp, mfld_simps]
 theorem localTriv_symm_apply (p : B × F) :
-    (Z.localTriv i).toPartialHomeomorph.symm p = ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩ :=
+    (Z.localTriv i).toOpenPartialHomeomorph.symm p =
+      ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩ :=
   rfl
 
 @[simp, mfld_simps]
@@ -708,7 +709,7 @@ variable (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
 /-- This structure permits to define a fiber bundle when trivializations are given as local
 equivalences but there is not yet a topology on the total space. The total space is hence given a
 topology in such a way that there is a fiber bundle structure for which the partial equivalences
-are also partial homeomorphisms and hence local trivializations. -/
+are also open partial homeomorphisms and hence local trivializations. -/
 structure FiberPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivializationAt : B → Pretrivialization F (π F E)
@@ -785,7 +786,7 @@ theorem continuous_totalSpaceMk (b : B) :
     Continuous[_, a.totalSpaceTopology] (TotalSpace.mk b) := by
   letI := a.totalSpaceTopology
   let e := a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas b)
-  rw [e.toPartialHomeomorph.continuous_iff_continuous_comp_left
+  rw [e.toOpenPartialHomeomorph.continuous_iff_continuous_comp_left
       (a.totalSpaceMk_preimage_source b)]
   exact continuous_iff_le_induced.2 (a.totalSpaceMk_isInducing b).eq_induced.le
 

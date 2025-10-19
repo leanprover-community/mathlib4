@@ -68,7 +68,7 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
 
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
-    binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
+    binaryRec z f n = bit_bodd_div2 n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
   cases n using bitCasesOn with
   | bit b n =>
     rw [binaryRec_eq _ _ (by right; simpa [bit_eq_zero_iff] using h)]
@@ -189,7 +189,7 @@ theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
       bodd_eq_bits_head, List.getI_zero_eq_headI]
     cases List.headI (bits n) <;> rfl
   | succ i ih =>
-    conv_lhs => rw [← bit_decomp n]
+    conv_lhs => rw [← bit_bodd_div2 n]
     rw [testBit_bit_succ, ih n.div2, div2_bits_eq_tail]
     cases n.bits <;> simp
 
@@ -242,7 +242,7 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
   rcases m with - | m
   <;> rcases n with - | n
   <;> try rw [bitwise_zero_left, bitwise_zero_right]
-  · specialize ih ((m+1) / 2) (div_lt_self' ..)
+  · specialize ih ((m + 1) / 2) (div_lt_self' ..)
     simp [bitwise_of_ne_zero, ih]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
@@ -351,15 +351,15 @@ theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
   by_cases h : (m + n) % 2 = 0
   · simp only [h, mod_two_eq_zero_iff_testBit_zero, testBit_zero, xor_mod_two_eq_one, decide_not,
       Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
-    omega
+    cutsat
   · simp only [mod_two_ne_zero] at h
     simp only [h, xor_mod_two_eq_one]
-    omega
+    cutsat
 
 @[simp]
 theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
   simp only [even_iff, xor_mod_two_eq]
-  omega
+  cutsat
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega
