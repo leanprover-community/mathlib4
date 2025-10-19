@@ -7,14 +7,6 @@ theorem Ideal.eq_of_dvd_of_isPrime {A : Type*} [CommRing A] [IsDedekindDomain A]
     rw [h, hI]
   exact (prime_dvd_prime_iff_eq (prime_of_isPrime hI hIP) (prime_of_isPrime hJ hJP)).mp h
 
-theorem IsPrimitiveRoot.associated_sub_one_map_sub_one {n : ℕ} [NeZero n] {A R : Type*}
-    {ζ : A} [CommRing A] [CommRing R] [Algebra R A] [IsDomain A] (hζ : IsPrimitiveRoot ζ n)
-    (σ : A ≃ₐ[R] A) :
-    Associated (ζ - 1) (σ (ζ - 1)) := by
-  rw [map_sub, map_one, ← hζ.autToPow_spec R σ]
-  apply hζ.associated_sub_one_pow_sub_one_of_coprime
-  exact ZMod.val_coe_unit_coprime ((autToPow R hζ) σ)
-
 section ExpChar
 
 variable (p : ℕ)
