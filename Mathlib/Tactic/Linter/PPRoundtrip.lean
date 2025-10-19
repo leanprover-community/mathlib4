@@ -43,7 +43,7 @@ After that, it applies some pre-emptive changes:
 * `notation3` is not followed by a pretty-printer space, so we add it here (https://github.com/leanprover-community/mathlib4/pull/15515).
 -/
 def polishPP (s : String) : String :=
-  let s := s.split (·.isWhitespace)
+  let s := s.splitToList (·.isWhitespace)
   (" ".intercalate (s.filter (!·.isEmpty)))
     |>.replace "/-!" "/-! "
     |>.replace "``` " "```  " -- avoid losing an existing space after the triple back-ticks
@@ -56,7 +56,7 @@ def polishPP (s : String) : String :=
 For this reason, `polishSource s` performs more conservative changes:
 it only replace all whitespace starting from a linebreak (`\n`) with a single whitespace. -/
 def polishSource (s : String) : String × Array Nat :=
-  let split := s.split (· == '\n')
+  let split := s.splitToList (· == '\n')
   let preWS := split.foldl (init := #[]) fun p q =>
     let txt := q.trimLeft.length
     (p.push (q.length - txt)).push txt

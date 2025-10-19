@@ -155,13 +155,13 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
-  let parts := line.split (· == ' ')
+  let parts := line.splitToList (· == ' ')
   match parts with
     | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: _errorMessage =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
-      let path := mkFilePath (filename.split (FilePath.pathSeparators.contains ·))
+      let path := mkFilePath (filename.splitToList (FilePath.pathSeparators.contains ·))
       -- Parse the error kind from the error code, ugh.
       -- NB: keep this in sync with `StyleError.errorCode` above!
       let err : Option StyleError := match errorCode with
