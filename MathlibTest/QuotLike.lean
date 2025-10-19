@@ -47,7 +47,7 @@ variable {α} [s : Setoid α] (a : α) (p : α → Prop) (x : Subtype p)
 -- #check ((mkQ x : _) : Quotient s)
 
 /--
-info: let_fun this := Exists.intro ⟦a⟧ rfl;
+info: have this := Exists.intro ⟦a⟧ rfl;
 this : ∃ y, id y = ⟦id a⟧
 -/
 #guard_msgs in #check show ∃ y, id y = ⟦id a⟧' from ⟨⟦a⟧, rfl⟩
@@ -62,6 +62,12 @@ variable (A B : Type*) [HintClass A B] (b : B)
 def Q := Quot (α := B) (HintClass.r A)
 
 instance : QuotLike (Q A B) B (HintClass.r A) where
+
+/--
+info: let this := ⋯;
+mkQ : B → Q A B
+-/
+#guard_msgs in #check let : QuotLike.HasQuot (Q A B) B (HintClass.r A) := ⟨⟩; (mkQ' : B → _)
 
 instance : QuotLike.HasQuotHint A (Q A B) B (HintClass.r A) where
 

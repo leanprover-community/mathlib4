@@ -379,11 +379,13 @@ variable {Qb β : Sort*} {rb : β → β → Prop} [QuotLike Qb β rb]
 variable {Qc γ : Sort*} {rc : γ → γ → Prop} [QuotLike Qc γ rc]
 variable {φ : Sort*}
 
+open Relator in
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements to a
 function `f : Qa → Qb`. -/
 protected def map (f : α → β) (h : (ra ⇒ rb) f f) : Qa → Qb :=
   (QuotLike.lift fun x ↦ ⟦f x⟧) fun _ _ ↦ (QuotLike.sound <| h ·)
 
+open Relator in
 @[simp]
 theorem map_mkQ (f : α → β) (h : (ra ⇒ rb) f f) (a : α) :
     QuotLike.map f h (⟦a⟧ : Qa) = (⟦f a⟧ : Qb) :=
@@ -451,12 +453,14 @@ lemma liftOn₂_mkQ [IsRefl α ra] [IsRefl β rb]
     QuotLike.liftOn₂ (⟦a⟧ : Qa) (⟦b⟧ : Qb) f h = f a b := by
   simp
 
+open Relator in
 /-- Map a function `f : α → β → γ` that sends equivalent elements to equivalent elements to a
 function `f : Qa → Qb → Qc`. -/
 protected def map₂ [IsRefl α ra] [IsRefl β rb] (f : α → β → γ)
     (h : (ra ⇒ rb ⇒ rc) f f) : Qa → Qb → Qc :=
   (QuotLike.lift₂ fun x y ↦ ⟦f x y⟧) fun _ _ _ _ ↦ (QuotLike.sound <| h · ·)
 
+open Relator in
 @[simp]
 theorem map₂_mkQ [IsRefl α ra] [IsRefl β rb] (f : α → β → γ) (h : (ra ⇒ rb ⇒ rc) f f)
     (a : α) (b : β) :
