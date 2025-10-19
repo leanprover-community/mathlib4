@@ -431,7 +431,7 @@ theorem sum_eq_iSup_of_mk_le_iSup {f : ι → Cardinal.{u}} (hι : ℵ₀ ≤ #�
   sum_eq_iSup_of_lift_mk_le_iSup hι ((lift_id #ι).symm ▸ h)
 
 @[deprecated (since := "2025-09-06")] alias sum_eq_iSup_lift := sum_eq_iSup_of_lift_mk_le_iSup
-@[deprecated (since := "2025-09-06")] alias sum_eq_iSup := sum_eq_iSup_of_lift_mk_le_iSup
+@[deprecated (since := "2025-09-06")] alias sum_eq_iSup := sum_eq_iSup_of_mk_le_iSup
 
 end ciSup
 
