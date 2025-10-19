@@ -26,29 +26,29 @@ namespace Real
 ## Definition, Notation and Reformulations
 -/
 /-- Definition: the positive part of the logarithm. -/
-noncomputable def posLog : ℝ → ℝ := fun r ↦ max 0 (log r)
+noncomputable def posLog : ℝ → ℝ := fun x ↦ max 0 (log x)
 
 /-- Notation `log⁺` for the positive part of the logarithm. -/
 scoped notation "log⁺" => posLog
 
 /-- Definition of the positive part of the logarithm, formulated as a theorem. -/
-theorem posLog_def {r : ℝ} : log⁺ r = max 0 (log r) := rfl
+theorem posLog_def {x : ℝ} : log⁺ x = max 0 (log x) := rfl
 
 /-!
 ## Elementary Properties
 -/
 
 /-- Presentation of `log` in terms of its positive part. -/
-theorem posLog_sub_posLog_inv {r : ℝ} : log⁺ r - log⁺ r⁻¹ = log r := by
+theorem posLog_sub_posLog_inv {x : ℝ} : log⁺ x - log⁺ x⁻¹ = log x := by
   rw [posLog_def, posLog_def, log_inv]
-  by_cases h : 0 ≤ log r
+  by_cases h : 0 ≤ log x
   · simp [h]
   · rw [not_le] at h
     simp [neg_nonneg.1 (Left.nonneg_neg_iff.2 h.le)]
 
 /-- Presentation of `log⁺` in terms of `log`. -/
-theorem half_mul_log_add_log_abs {r : ℝ} : 2⁻¹ * (log r + |log r|) = log⁺ r := by
-  by_cases hr : 0 ≤ log r
+theorem half_mul_log_add_log_abs {x : ℝ} : 2⁻¹ * (log x + |log x|) = log⁺ x := by
+  by_cases hr : 0 ≤ log x
   · simp [posLog, hr, abs_of_nonneg]
     ring
   · simp [posLog, le_of_not_ge hr, abs_of_nonpos]
@@ -99,15 +99,14 @@ theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
     linarith
 
 /-- The function `log⁺` commutes with taking powers. -/
-@[simp] lemma posLog_pow {n : ℕ} {a : ℝ} :
-    log⁺ (a ^ n) = n * log⁺ a := by
+@[simp] lemma posLog_pow {n : ℕ} {x : ℝ} : log⁺ (x ^ n) = n * log⁺ x := by
   by_cases hn : n = 0
   · simp_all
-  by_cases h₂a : |a| ≤ 1
+  by_cases hx : |x| ≤ 1
   · simp_all [pow_le_one₀, (posLog_eq_zero_iff _).2]
-  rw [not_le] at h₂a
-  have : 1 < |a ^ n| := by simp [one_lt_pow₀ h₂a hn]
-  simp [posLog_eq_log this.le, posLog_eq_log h₂a.le]
+  rw [not_le] at hx
+  have : 1 ≤ |x ^ n| := by simp_all [one_le_pow₀, hx.le]
+  simp [posLog_eq_log this, posLog_eq_log hx.le]
 
 /-!
 ## Estimates for Products
@@ -115,20 +114,18 @@ theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
 
 /-- Estimate for `log⁺` of a product. See `Real.posLog_prod` for a variant involving
 multiple factors. -/
-theorem posLog_mul {a b : ℝ} :
-    log⁺ (a * b) ≤ log⁺ a + log⁺ b := by
-  by_cases ha : a = 0
-  · simp [ha, posLog]
-  by_cases hb : b = 0
-  · simp [hb, posLog]
+theorem posLog_mul {x₁ x₂ : ℝ} : log⁺ (x₁ * x₂) ≤ log⁺ x₁ + log⁺ x₂ := by
+  by_cases h₁ : x₁ = 0
+  · simp [h₁, posLog]
+  by_cases h₂ : x₂ = 0
+  · simp [h₂, posLog]
   unfold posLog
-  nth_rw 1 [← add_zero 0, log_mul ha hb]
+  nth_rw 1 [← add_zero 0, log_mul h₁ h₂]
   exact max_add_add_le_max_add_max
 
 /-- Estimate for `log⁺` of a product. Special case of `Real.posLog_mul` where one of
 the factors is a natural number. -/
-theorem posLog_nat_mul {n : ℕ} {a : ℝ} :
-    log⁺ (n * a) ≤ log n + log⁺ a := by
+theorem posLog_nat_mul {n : ℕ} {x : ℝ} : log⁺ (n * x) ≤ log n + log⁺ x := by
   rw [← log_of_nat_eq_posLog]
   exact posLog_mul
 
@@ -196,20 +193,20 @@ lemma posLog_norm_sum_le {E : Type*} [NormedAddCommGroup E]
 /--
 Estimate for `log⁺` of a sum. See `Real.posLog_sum` for a variant involving multiple summands.
 -/
-theorem posLog_add {a b : ℝ} : log⁺ (a + b) ≤ log 2 + log⁺ a + log⁺ b := by
-  convert posLog_sum Finset.univ ![a, b] using 1 <;> simp [add_assoc]
+theorem posLog_add {x₁ x₂ : ℝ} : log⁺ (x₁ + x₂) ≤ log 2 + log⁺ x₁ + log⁺ x₂ := by
+  convert posLog_sum Finset.univ ![x₁, x₂] using 1 <;> simp [add_assoc]
 
 /--
 Variant of `posLog_add` for norms of elements in normed additive commutative groups, using
 monotonicity of `log⁺` and the triangle inequality.
 -/
-lemma posLog_norm_add_le {E : Type*} [NormedAddCommGroup E] (a b : E) :
-    log⁺ ‖a + b‖ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
-  calc log⁺ ‖a + b‖
-  _ ≤ log⁺ (‖a‖ + ‖b‖) := by
-    apply monotoneOn_posLog _ _ (norm_add_le a b)
-    <;> simp [add_nonneg (norm_nonneg a) (norm_nonneg b)]
-  _ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
+lemma posLog_norm_add_le {E : Type*} [NormedAddCommGroup E] (x₁ x₂ : E) :
+    log⁺ ‖x₁ + x₂‖ ≤ log⁺ ‖x₁‖ + log⁺ ‖x₂‖ + log 2 := by
+  calc log⁺ ‖x₁ + x₂‖
+  _ ≤ log⁺ (‖x₁‖ + ‖x₂‖) := by
+    apply monotoneOn_posLog _ _ (norm_add_le x₁ x₂)
+    <;> simp [add_nonneg (norm_nonneg x₁) (norm_nonneg x₂)]
+  _ ≤ log⁺ ‖x₁‖ + log⁺ ‖x₂‖ + log 2 := by
     convert posLog_add using 1
     ring
 
