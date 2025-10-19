@@ -364,7 +364,7 @@ theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
     h.tendsto.mono_left nhdsWithin_le_nhds
 
 open Multiset in
-lemma log_prod_eq_sum_log {α : Type*} {s : Multiset α} {f : α → ℝ} (hf : ∀ x ∈ s, f x ≠ 0) :
+lemma log_prod' {α : Type*} {s : Multiset α} {f : α → ℝ} (hf : ∀ x ∈ s, f x ≠ 0) :
     log (s.map f).prod = (s.map (fun x ↦ log (f x))).sum := by
   induction s using Multiset.induction_on with
   | empty => simp
@@ -374,12 +374,12 @@ lemma log_prod_eq_sum_log {α : Type*} {s : Multiset α} {f : α → ℝ} (hf : 
     have : (s.map f).prod ≠ 0 := by simpa using hf.2
     rw [log_mul hf.1 this, add_right_inj, ih]
 
-theorem log_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
-    log (∏ i ∈ s, f i) = ∑ i ∈ s, log (f i) := log_prod_eq_sum_log hf
+theorem log_prod {α : Type*} {s : Finset α} {f : α → ℝ} (hf : ∀ x ∈ s, f x ≠ 0) :
+    log (∏ i ∈ s, f i) = ∑ i ∈ s, log (f i) := log_prod' hf
 
 protected theorem _root_.Finsupp.log_prod {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
     (hg : ∀ a, g a (f a) = 0 → f a = 0) : log (f.prod g) = f.sum fun a b ↦ log (g a b) :=
-  log_prod _ _ fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
+  log_prod fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
 
 theorem log_nat_eq_sum_factorization (n : ℕ) :
     log n = n.factorization.sum fun p t => t * log p := by
