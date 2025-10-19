@@ -216,16 +216,12 @@ end equiv
 variable (K V)
 
 /-- `WithLp.equiv` as a linear equivalence. -/
-@[simps -fullyApplied]
+@[simps -fullyApplied apply symm_apply]
 protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V where
   toFun := WithLp.ofLp
   invFun := WithLp.toLp p
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-
-@[simp]
-lemma linearEquiv_symm_apply [Semiring K] [AddCommGroup V] [Module K V] :
-    ⇑(WithLp.linearEquiv p K V).symm = toLp p := rfl
 
 instance instModuleFinite
     [Semiring K] [AddCommGroup V] [Module K V] [Module.Finite K V] :
