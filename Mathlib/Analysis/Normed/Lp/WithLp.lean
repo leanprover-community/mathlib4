@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.Util.Superscript
 
 /-! # The `WithLp` type synonym
 
@@ -45,12 +46,25 @@ universe uK uK' uV
 /-- A type synonym for the given `V`, associated with the L`p` norm. Note that by default this just
 forgets the norm structure on `V`; it is up to downstream users to implement the L`p` norm (for
 instance, on `Prod` and finite `Pi` types). -/
-@[nolint unusedArguments]
 structure WithLp (p : ℝ≥0∞) (V : Type uV) : Type uV where
   /-- Converts an element of `V` to an element of `WithLp p V`. -/
   toLp (p) ::
   /-- Converts an element of `WithLp p V` to an element of `V`. -/
   ofLp : V
+
+section Notation
+
+open Lean PrettyPrinter.Delaborator SubExpr
+
+@[app_delab WithLp.toLp]
+def WithLp.delabToLp : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 3 do
+    let toLp ← withNaryFn delab
+    let p ← withNaryArg 0 delab
+    let x ← withNaryArg 2 delab
+    `($toLp $p $x)
+
+end Notation
 
 variable (p : ℝ≥0∞) (K : Type uK) (K' : Type uK') (V : Type uV)
 
