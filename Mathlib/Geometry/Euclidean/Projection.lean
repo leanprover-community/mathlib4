@@ -319,7 +319,7 @@ lemma orthogonalProjection_sup_of_orthogonalProjection_eq {s₁ s₂ : AffineSub
     {p : P} (h : (orthogonalProjection s₁ p : P) = orthogonalProjection s₂ p)
     [(s₁ ⊔ s₂).direction.HasOrthogonalProjection] :
     (orthogonalProjection (s₁ ⊔ s₂) p : P) = orthogonalProjection s₁ p := by
-  rw [orthogonalProjection_eq_iff_mem]
+  rw [coe_orthogonalProjection_eq_iff_mem]
   refine ⟨SetLike.le_def.1 le_sup_left (orthogonalProjection_mem _), ?_⟩
   rw [direction_sup_eq_sup_direction (orthogonalProjection_mem p) (h ▸ orthogonalProjection_mem p),
     ← Submodule.inf_orthogonal]
