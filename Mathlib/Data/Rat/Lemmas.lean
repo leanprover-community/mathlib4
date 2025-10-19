@@ -375,7 +375,6 @@ theorem pnatDen_one : (1 : ℚ).pnatDen = 1 :=
 theorem pnatDen_zero : (0 : ℚ).pnatDen = 1 :=
   rfl
 
-
 end PNatDen
 
 end Rat
