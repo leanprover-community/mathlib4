@@ -276,9 +276,10 @@ theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace ℝ P
   rw [← neg_vsub_eq_vsub_rev, inner_neg_right,
     orthogonalProjection_vsub_mem_direction_orthogonal s p c hc, neg_zero]
 
-/-- The characteristic property of the orthogonal projection. This form is typically more
-convenient to use than `inter_eq_singleton_orthogonalProjection`. -/
-lemma orthogonalProjection_eq_iff_mem {s : AffineSubspace ℝ P} [Nonempty s]
+/-- The characteristic property of the orthogonal projection, for a point given in the underlying
+space. This form is typically more convenient to use than
+`inter_eq_singleton_orthogonalProjection`. -/
+lemma coe_orthogonalProjection_eq_iff_mem {s : AffineSubspace ℝ P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p q : P} :
     orthogonalProjection s p = q ↔ q ∈ s ∧ p -ᵥ q ∈ s.directionᗮ := by
   constructor
@@ -293,11 +294,19 @@ lemma orthogonalProjection_eq_iff_mem {s : AffineSubspace ℝ P} [Nonempty s]
     simp only [Set.mem_inter_iff, SetLike.mem_coe]
     exact ⟨hqs, hq⟩
 
+/-- The characteristic property of the orthogonal projection, for a point given in the relevant
+subspace. This form is typically more convenient to use than
+`inter_eq_singleton_orthogonalProjection`. -/
+lemma orthogonalProjection_eq_iff_mem {s : AffineSubspace ℝ P} [Nonempty s]
+    [s.direction.HasOrthogonalProjection] {p : P} {q : s} :
+    orthogonalProjection s p = q ↔ p -ᵥ q ∈ s.directionᗮ := by
+  simpa using coe_orthogonalProjection_eq_iff_mem (s := s) (p := p) (q := (q : P))
+
 /-- A condition for two points to have the same orthogonal projection onto a given subspace. -/
 lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubspace ℝ P}
     [Nonempty s] [s.direction.HasOrthogonalProjection] {p q : P} :
     orthogonalProjection s p = orthogonalProjection s q ↔ p -ᵥ q ∈ s.directionᗮ := by
-  rw [← Subtype.coe_inj, orthogonalProjection_eq_iff_mem]
+  rw [← Subtype.coe_inj, coe_orthogonalProjection_eq_iff_mem]
   simp only [SetLike.coe_mem, true_and]
   rw [← s.directionᗮ.add_mem_iff_left (x := p -ᵥ q)
     (vsub_orthogonalProjection_mem_direction_orthogonal s q)]
