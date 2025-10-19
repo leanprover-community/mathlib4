@@ -22,15 +22,6 @@ variable {R M : Type*}
 
 section Module
 
-section Nat
-
-theorem Nat.noZeroSMulDivisors
-    (R) (M) [Semiring R] [CharZero R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] :
-    NoZeroSMulDivisors ℕ M where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by rw [← Nat.cast_smul_eq_nsmul R, smul_eq_zero]; simp
-
-end Nat
-
 variable [Semiring R]
 variable (R M)
 
@@ -59,6 +50,22 @@ theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M}
   (smul_right_injective M hc).eq_iff
 
 end SMulInjective
+
+section Nat
+variable (R M) [CharZero R] [NoZeroSMulDivisors R M]
+
+include R in
+lemma IsAddTorsionFree.of_noZeroSMulDivisors : IsAddTorsionFree M where
+  nsmul_right_injective n hn := by
+    simp_rw [← Nat.cast_smul_eq_nsmul R]; apply smul_right_injective; simpa
+
+@[deprecated IsAddTorsionFree.of_noZeroSMulDivisors (since := "2025-10-19")]
+theorem Nat.noZeroSMulDivisors
+    (R) (M) [Semiring R] [CharZero R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] :
+    NoZeroSMulDivisors ℕ M where
+  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by rw [← Nat.cast_smul_eq_nsmul R, smul_eq_zero]; simp
+
+end Nat
 end AddCommGroup
 
 section Module
@@ -82,11 +89,9 @@ theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : 
 
 end SMulInjective
 
-instance [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
-  ⟨fun {c x} hcx ↦ by rwa [← Nat.cast_smul_eq_nsmul ℤ, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
-
 variable (R M)
 
+@[deprecated IsAddTorsionFree.of_noZeroSMulDivisors (since := "2025-10-19")]
 theorem NoZeroSMulDivisors.int_of_charZero
     (R) (M) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M] [CharZero R] :
     NoZeroSMulDivisors ℤ M :=
@@ -94,14 +99,11 @@ theorem NoZeroSMulDivisors.int_of_charZero
 
 /-- Only a ring of characteristic zero can have a non-trivial module without additive or
 scalar torsion. -/
-theorem CharZero.of_noZeroSMulDivisors [Nontrivial M] [NoZeroSMulDivisors ℤ M] : CharZero R := by
+theorem CharZero.of_noZeroSMulDivisors [Nontrivial M] [IsAddTorsionFree M] : CharZero R := by
   refine ⟨fun {n m h} ↦ ?_⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   replace h : (n : ℤ) • x = (m : ℤ) • x := by simp [← Nat.cast_smul_eq_nsmul R, h]
   simpa using smul_left_injective ℤ hx h
-
-instance [AddCommGroup M] [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
-  ⟨fun {c x} hcx ↦ by rwa [← Nat.cast_smul_eq_nsmul ℤ c x, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
 
 end Module
 
