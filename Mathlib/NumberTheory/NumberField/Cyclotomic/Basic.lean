@@ -36,8 +36,7 @@ namespace IsCyclotomicExtension.Rat
 variable [CharZero K]
 
 variable (k K) in
-theorem finrank [NeZero k] [IsCyclotomicExtension {k} ℚ K] :
-    Module.finrank ℚ K = k.totient :=
+theorem finrank [NeZero k] [IsCyclotomicExtension {k} ℚ K] : Module.finrank ℚ K = k.totient :=
   IsCyclotomicExtension.finrank K <| Polynomial.cyclotomic.irreducible_rat (NeZero.pos _)
 
 /-- The discriminant of the power basis given by `ζ - 1`. -/

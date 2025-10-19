@@ -336,6 +336,17 @@ lemma star_lt_one_iff {x : R} : star x < 1 ↔ x < 1 := by
 protected theorem IsSelfAdjoint.sq_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤ a ^ 2 := by
   simp [sq, ha.mul_self_nonneg]
 
+lemma IsUnit.conjugate_nonneg_iff {u x : R} (hu : IsUnit u) :
+    0 ≤ u * x * star u ↔ 0 ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ conjugate_nonneg' h _⟩
+  obtain ⟨v, hv⟩ := hu.exists_left_inv
+  have := by simpa [← mul_assoc] using conjugate_nonneg' h v
+  rwa [hv, one_mul, mul_assoc, ← star_mul, hv, star_one, mul_one] at this
+
+lemma IsUnit.conjugate_nonneg_iff' {u x : R} (hu : IsUnit u) :
+    0 ≤ star u * x * u ↔ 0 ≤ x := by
+  simpa using hu.star.conjugate_nonneg_iff
+
 end Semiring
 
 namespace MulOpposite
