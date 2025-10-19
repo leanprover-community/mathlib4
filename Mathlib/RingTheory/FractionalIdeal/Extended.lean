@@ -61,7 +61,7 @@ def extended (I : FractionalIdeal M K) : FractionalIdeal N L where
 
 local notation "map_f" => (IsLocalization.map (S := K) L f hf)
 
-lemma mem_extended_iff (x : L) : (x ∈ I.extended L hf) ↔ x ∈ span B (map_f '' I) := by
+lemma mem_extended_iff (x : L) : x ∈ I.extended L hf ↔ x ∈ span B (map_f '' I) := by
   constructor <;> { intro hx; simpa }
 
 @[simp]
@@ -75,21 +75,21 @@ theorem extended_zero : extended L hf (0 : FractionalIdeal M K) = 0 :=
 
 variable {I}
 
-theorem extended_ne_zero [IsDomain K] [IsDomain L] [NoZeroSMulDivisors A K] [NoZeroSMulDivisors B L]
-    (hf' : Function.Injective f) (hI : I ≠ 0) : extended L hf I ≠ 0 := by
+theorem extended_ne_zero [IsDomain B] (hf' : Function.Injective f) (hI : I ≠ 0) (hN : 0 ∉ N) :
+    extended L hf I ≠ 0 := by
   simp only [ne_eq, ← coeToSubmodule_inj, coe_extended_eq_span, coe_zero, Submodule.span_eq_bot,
     Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     not_forall]
   obtain ⟨x, hx₁, hx₂⟩ : ∃ x ∈ I, x ≠ 0 := by simpa [ne_eq, eq_zero_iff] using hI
   refine ⟨x, hx₁, ?_⟩
-  exact (map_ne_zero_iff _ (IsLocalization.map_injective_of_injective' _ _ _ hf hf')).mpr hx₂
+  exact (map_ne_zero_iff _ (IsLocalization.map_injective_of_injective' _ _ _ _ hN hf')).mpr hx₂
 
 @[simp]
-theorem extended_eq_zero_iff [IsDomain K] [IsDomain L] [NoZeroSMulDivisors A K]
-    [NoZeroSMulDivisors B L] (hf' : Function.Injective f) : extended L hf I = 0 ↔ I = 0 := by
+theorem extended_eq_zero_iff [IsDomain B] (hf' : Function.Injective f) (hN : 0 ∉ N) :
+    extended L hf I = 0 ↔ I = 0 := by
   refine ⟨?_, fun h ↦ h ▸ extended_zero _ _⟩
   contrapose!
-  exact fun h ↦ extended_ne_zero L hf hf' h
+  exact fun h ↦ extended_ne_zero L hf hf' h hN
 
 variable (I)
 
@@ -195,7 +195,11 @@ abbrev extendedHomₐ : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
 
 theorem extendedHomₐ_eq_zero_iff {I : FractionalIdeal A⁰ K} :
     extendedHomₐ L B I = 0 ↔ I = 0 :=
-  extended_eq_zero_iff _ _ (FaithfulSMul.algebraMap_injective _ _)
+  extended_eq_zero_iff _ _ (FaithfulSMul.algebraMap_injective _ _) zero_notMem_nonZeroDivisors
+
+theorem extendedHomₐ_coeIdeal_eq_map (I : Ideal A) :
+    (I : FractionalIdeal A⁰ K).extendedHomₐ L B =
+      (I.map (algebraMap A B) : FractionalIdeal B⁰ L) := extended_coeIdeal_eq_map L _ I
 
 variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [IsDomain A]
   [IsIntegrallyClosed A] [IsIntegrallyClosed B] [Algebra.IsIntegral A B]
@@ -217,8 +221,8 @@ theorem extendedHomₐ_le_one_iff : extendedHomₐ L B I ≤ 1 ↔ I ≤ 1 :=
 variable [IsDedekindDomain A] [IsDedekindDomain B]
 
 theorem one_le_extendedHomₐ_iff (hI : I ≠ 0) : 1 ≤ extendedHomₐ L B I ↔ 1 ≤ I := by
-  rw [← inv_le_inv_iff (by exact extended_ne_zero L _ (FaithfulSMul.algebraMap_injective _ _) hI)
-    (by simp), inv_one, ← map_inv₀, extendedHomₐ_le_one_iff, inv_le_comm hI (by simp), inv_one]
+  rw [← inv_le_inv_iff ((extendedHomₐ_eq_zero_iff _ _).not.mpr hI) (by simp), inv_one, ← map_inv₀,
+    extendedHomₐ_le_one_iff, inv_le_comm hI (by simp), inv_one]
 
 theorem extendedHomₐ_eq_one_iff (hI : I ≠ 0) : extendedHomₐ L B I = 1 ↔ I = 1 := by
   rw [le_antisymm_iff, extendedHomₐ_le_one_iff, one_le_extendedHomₐ_iff _ _ hI, ← le_antisymm_iff]
@@ -232,9 +236,8 @@ theorem extendedHomₐ_injective :
   · rwa [hI, map_zero, eq_comm, extendedHomₐ_eq_zero_iff L B, eq_comm, ← hI] at h
   by_cases hJ : J = 0
   · rwa [hJ, map_zero, extendedHomₐ_eq_zero_iff L B, ← hJ] at h
-  rwa [← mul_inv_eq_one₀ (extended_ne_zero _ _ (FaithfulSMul.algebraMap_injective _ _) hJ),
-    ← map_inv₀, ← map_mul, extendedHomₐ_eq_one_iff _ _ (mul_ne_zero hI (inv_ne_zero hJ)),
-    mul_inv_eq_one₀ hJ] at h
+  rwa [← mul_inv_eq_one₀ ((extendedHomₐ_eq_zero_iff _ _).not.mpr hJ), ← map_inv₀, ← map_mul,
+    extendedHomₐ_eq_one_iff _ _ (mul_ne_zero hI (inv_ne_zero hJ)), mul_inv_eq_one₀ hJ] at h
 
 theorem _root_.Ideal.map_algebraMap_injective :
     Function.Injective (fun I : Ideal A ↦ I.map (algebraMap A B)) := by

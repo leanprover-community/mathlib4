@@ -177,8 +177,8 @@ theorem GenContFract.of_isSimpContFract :
   of_partNum_eq_one nth_partNum_eq
 
 /-- Creates the simple continued fraction of a value. -/
-nonrec def SimpContFract.of : SimpContFract K :=
-  ⟨of v, GenContFract.of_isSimpContFract v⟩
+def SimpContFract.of : SimpContFract K :=
+  ⟨GenContFract.of v, GenContFract.of_isSimpContFract v⟩
 
 theorem SimpContFract.of_isContFract :
     (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>

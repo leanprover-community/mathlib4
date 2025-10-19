@@ -57,9 +57,9 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 * `HomogeneousLocalization.isLocalRing`: `HomogeneousLocalization 𝒜 x` is a local ring when `x` is
   the complement of some prime ideals.
 
-* `HomogeneousLocalization.map`: Let `A` and `B` be two graded rings and `g : A → B` a grading
-  preserving ring map. If `P ≤ A` and `Q ≤ B` are submonoids such that `P ≤ g⁻¹(Q)`, then `g`
-  induces a ring map between the homogeneous localization of `A` at `P` and the homogeneous
+* `HomogeneousLocalization.map`: Let `A` and `B` be two graded rings and `g : A → B` a
+  grading-preserving ring map. If `P ≤ A` and `Q ≤ B` are submonoids such that `P ≤ g⁻¹(Q)`, then
+  `g` induces a ring map between the homogeneous localization of `A` at `P` and the homogeneous
   localization of `B` at `Q`.
 
 ## References
