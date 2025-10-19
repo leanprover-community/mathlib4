@@ -418,7 +418,7 @@ lemma AffineIndependent.inf_affineSpan_eq_affineSpan_inter [Nontrivial k] {p : �
   simp_rw [AffineSubspace.mem_inf_iff, Set.image_eq_range, mem_affineSpan_iff_eq_affineCombination,
     ← Finset.eq_affineCombination_subset_iff_eq_affineCombination_subtype]
   constructor
-  · rintro ⟨⟨fs₁, hfs₁, w₁, hw₁, hp's₁⟩, ⟨fs₂, hfs₂, w₂, hw₂, hp's₂⟩⟩
+  · rintro ⟨⟨fs₁, hfs₁, w₁, hw₁, rfl⟩, ⟨fs₂, hfs₂, w₂, hw₂, hw₁₂⟩⟩
     rw [affineIndependent_iff_indicator_eq_of_affineCombination_eq] at ha
     replace ha := ha fs₁ fs₂ w₁ w₂ hw₁ hw₂ (hp's₁ ▸ hp's₂)
     refine ⟨fs₁ ∩ fs₂, by grind, w₁, ?_, ?_⟩
