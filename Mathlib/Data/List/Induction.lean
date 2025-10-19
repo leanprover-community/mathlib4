@@ -160,7 +160,7 @@ theorem twoStepInduction_singleton {motive : (l : List α) → Sort*} (x : α) (
 theorem twoStepInduction_cons_cons {motive : (l : List α) → Sort*} (x y : α) (xs : List α)
     (nil : motive []) (singleton : ∀ x, motive [x])
     (cons_cons : ∀ x y xs, motive xs → (∀ y, motive (y :: xs)) → motive (x :: y :: xs)) :
-    twoStepInduction nil singleton cons_cons (x :: y :: xs)  =
+    twoStepInduction nil singleton cons_cons (x :: y :: xs) =
     cons_cons x y xs
     (twoStepInduction nil singleton cons_cons xs)
     (fun y => twoStepInduction nil singleton cons_cons (y :: xs)) := twoStepInduction.eq_3 ..

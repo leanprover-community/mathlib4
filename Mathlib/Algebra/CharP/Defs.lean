@@ -66,7 +66,7 @@ lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
     _ = ↑(k % p) := by simp [this]
 
-lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a:R) = (b:R) ↔ a % p = b % p := by
+lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a : R) = (b : R) ↔ a % p = b % p := by
   wlog hle : a ≤ b
   · simpa only [eq_comm] using (this _ _ (lt_of_not_ge hle).le)
   obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le hle

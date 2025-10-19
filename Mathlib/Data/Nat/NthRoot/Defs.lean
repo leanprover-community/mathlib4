@@ -40,5 +40,5 @@ def Nat.nthRoot : Nat → Nat → Nat
       go (n a : Nat)
       | 0, guess => guess
       | fuel + 1, guess =>
-        let next := (a / guess^(n + 1) + (n + 1) * guess) / (n + 2)
+        let next := (a / guess ^ (n + 1) + (n + 1) * guess) / (n + 2)
         if next < guess then go n a fuel next else guess
