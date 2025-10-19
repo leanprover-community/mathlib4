@@ -140,13 +140,16 @@ lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : Local
   rcases hf.contDiffAt.exists_lipschitzOnWith with ⟨K, t, ht, hf⟩
   use K, t
 
--- missing lemma, should be easy (but irrelevant for this PR)
-lemma LipschitzOnWith.closure {K}
+-- TODO: find home
+protected lemma LipschitzOnWith.closure {α β : Type*} [PseudoEMetricSpace α]
+    [PseudoEMetricSpace β] {f : α → β} {s : Set α} {K : ℝ≥0}
     (hcont : ContinuousOn f (closure s)) (hf : LipschitzOnWith K f s) :
     LipschitzOnWith K f (closure s) := by
-  sorry
+  have := ENNReal.continuous_const_mul (ENNReal.coe_ne_top (r := K))
+  refine fun x hx ↦ le_on_closure (fun y hy ↦ le_on_closure (fun x hx ↦ hf hx hy) ?_ ?_ hx) ?_ ?_
+  all_goals fun_prop
 
--- TODO: move to Lipschitz.lean
+-- TODO: find home
 open Metric in
 /-- If `f` is locally Lipschitz on a compact set `s`, it is Lipschitz on `s`. -/
 lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {α β : Type*} [PseudoMetricSpace α]
