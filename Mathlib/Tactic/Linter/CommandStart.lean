@@ -736,7 +736,7 @@ def atomOrIdentEndPos {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOpt
   if verbose? then
     if ppDropOrig == pp && (!ppDropOrig.isEmpty) then
       -- Temporary change, to reduce warning spam.
-      if !(k.contains `hygieneInfo && !k.contains `choice) then
+      if !(k.contains `hygieneInfo && !k.contains `choice) && False then
         logWarning m!"No change at{indentD m!"'{ppDropOrig}'"}\n{k.map MessageData.ofConstName}\n\n\
         Maybe because the `SyntaxNodeKind`s contain:\n\
         hygieneInfo: {k.contains `hygieneInfo}\n\
