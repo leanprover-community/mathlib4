@@ -8,7 +8,7 @@ import Mathlib.Order.Category.PartOrd
 /-!
 # Category of partial orders, with order embeddings as morphisms
 
-This defines `PartOrd`, the category of partial orders with order embeddings
+This defines `PartOrdEmb`, the category of partial orders with order embeddings
 as morphisms.
 
 -/
