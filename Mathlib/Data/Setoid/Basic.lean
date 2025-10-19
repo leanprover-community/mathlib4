@@ -6,7 +6,6 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen
 import Mathlib.Logic.Relation
 import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Order.GaloisConnection.Defs
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Equivalence relations
