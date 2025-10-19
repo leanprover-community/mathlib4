@@ -34,7 +34,6 @@ variable {R}
 
 theorem IsAlgebraic.nontrivial {a : A} (h : IsAlgebraic R a) : Nontrivial R := by
   contrapose! h
-  rw [not_nontrivial_iff_subsingleton] at h
   apply is_transcendental_of_subsingleton
 
 variable (R A)
@@ -401,9 +400,6 @@ theorem IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S)) {
   ⟨p.map (algebraMap _ _), by
     rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 
-@[deprecated (since := "2024-11-18")]
-alias IsAlgebraic.tower_top_of_injective := IsAlgebraic.extendScalars
-
 /-- A special case of `IsAlgebraic.extendScalars`. This is extracted as a theorem
   because in some cases `IsAlgebraic.extendScalars` will just runs out of memory. -/
 theorem IsAlgebraic.tower_top_of_subalgebra_le
@@ -418,9 +414,6 @@ theorem IsAlgebraic.tower_top_of_subalgebra_le
 theorem Transcendental.restrictScalars (hinj : Function.Injective (algebraMap R S)) {x : A}
     (h : Transcendental S x) : Transcendental R x := fun H ↦ h (H.extendScalars hinj)
 
-@[deprecated (since := "2024-11-18")]
-alias Transcendental.of_tower_top_of_injective := Transcendental.restrictScalars
-
 /-- A special case of `Transcendental.restrictScalars`. This is extracted as a theorem
   because in some cases `Transcendental.restrictScalars` will just runs out of memory. -/
 theorem Transcendental.of_tower_top_of_subalgebra_le
@@ -433,9 +426,6 @@ theorem Transcendental.of_tower_top_of_subalgebra_le
 theorem Algebra.IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S))
     [Algebra.IsAlgebraic R A] : Algebra.IsAlgebraic S A :=
   ⟨fun _ ↦ (Algebra.IsAlgebraic.isAlgebraic _).extendScalars hinj⟩
-
-@[deprecated (since := "2024-11-18")]
-alias Algebra.IsAlgebraic.tower_top_of_injective := Algebra.IsAlgebraic.extendScalars
 
 theorem Algebra.IsAlgebraic.tower_bot_of_injective [Algebra.IsAlgebraic R A]
     (hinj : Function.Injective (algebraMap S A)) :
@@ -628,10 +618,8 @@ theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
     rw [this]
     exact A.smul_mem (aeval x _).2 _
   have : aeval (x : L) p = 0 := by rw [Subalgebra.aeval_coe, aeval_eq, Subalgebra.coe_zero]
-  -- Porting note: this was a long sequence of `rw`.
-  rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def]
-  simp only [aeval_coe]
-  rw [map_inv₀, map_neg, inv_neg, neg_mul]
+  rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def,
+    aeval_coe, map_inv₀, map_neg, inv_neg, neg_mul]
 
 theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : IsAlgebraic K (x : L)) :
     (x⁻¹ : L) ∈ A := by

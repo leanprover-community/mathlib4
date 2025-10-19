@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Prod
 
 /-!
@@ -159,13 +160,21 @@ theorem piCongrRight_trans (e₁ : ∀ i, A₁ i ≃ₐ[R] A₂ i) (e₂ : ∀ i
   rfl
 
 variable (R A₁) in
+/-- The opposite of a direct product is isomorphic to the direct product of the opposites as
+algebras. -/
+def piMulOpposite : (Π i, A₁ i)ᵐᵒᵖ ≃ₐ[R] Π i, (A₁ i)ᵐᵒᵖ where
+  __ := RingEquiv.piMulOpposite A₁
+  commutes' _ := rfl
+
+variable (R A₁) in
 /--
 Transport dependent functions through an equivalence of the base space.
 
 This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
 -/
-def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) :=
-  .ofRingEquiv (f := .piCongrLeft' A₁ e) (by intro; ext; simp)
+def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) where
+  __ := RingEquiv.piCongrLeft' A₁ e
+  commutes' _ := rfl
 
 -- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
 @[simp low]

@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.Group.Cyclic
-import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
@@ -25,8 +24,8 @@ is commonly assumed in number theory. To avoid potential confusion with other de
 discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in this setting.
 
 ## Main Definitions
-* `Valuation.IsRankOneDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if if there is
-an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
+* `Valuation.IsRankOneDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if there is
+  an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
 * `Valuation.IsUniformizer`: Given a `Γ`-valued valuation `v` on a ring `R`, an element `π : R` is
   a uniformizer if `v π` is a generator of the value group that is `<1`.
 * `Valuation.Uniformizer`: A structure bundling an element of a ring and a proof that it is a
@@ -128,10 +127,10 @@ instance : Nontrivial (valueGroup v) :=
   ⟨1, ⟨generator v, by simp [← generator_zpowers_eq_valueGroup]⟩, ne_of_gt <| generator_lt_one v⟩
 
 instance [IsRankOneDiscrete v] : Nontrivial (valueMonoid v) := by
-  by_contra H
+  by_contra! H
   apply ((valueGroup v).nontrivial_iff_ne_bot).mp (by infer_instance)
   apply closure_eq_bot_iff.mpr
-  rw [not_nontrivial_iff_subsingleton, subsingleton_iff] at H
+  rw [subsingleton_iff] at H
   intro x hx
   specialize H ⟨x, hx⟩ ⟨1, one_mem_valueMonoid v⟩
   simpa using H
@@ -462,7 +461,7 @@ theorem exists_lift_of_le_one {x : K} (H : ((maximalIdeal A).valuation K) x ≤ 
       Valuation.map_mul, Integers.one_of_isUnit' u.isUnit (valuation_le_one _), one_mul,
       mul_inv, ← mul_assoc, Valuation.map_mul, map_mul, map_inv₀, map_inv₀,
       Integers.one_of_isUnit' w.isUnit (valuation_le_one _), inv_one, mul_one, ← div_eq_mul_inv,
-      ← map_div₀, ← @IsFractionRing.mk'_mk_eq_div _ _ K _ _ _ (π ^ n) _ hb,
+      ← map_div₀, ← IsFractionRing.mk'_mk_eq_div hb,
       valuation_of_mk', map_pow, map_pow] at H
     have h_mn : m ≤ n := by
       have v_π_lt_one := (intValuation_lt_one_iff_dvd (maximalIdeal A) π).mpr

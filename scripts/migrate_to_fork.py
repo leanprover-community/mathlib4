@@ -107,7 +107,7 @@ def get_user_input(prompt: str, default: Optional[str] = None) -> str:
 
 
 def yes_no_prompt(prompt: str, default: bool = True, auto_accept: bool = False) -> bool:
-    """Ask a yes/no question and return the boolean result."""
+    """Ask a yes/no question and return the Boolean result."""
     if auto_accept:
         print(f"{prompt} [Y/n]: Y (auto-accepted)")
         return True
@@ -290,7 +290,7 @@ def check_and_create_fork(username: str, auto_accept: bool = False) -> str:
     if yes_no_prompt("Would you like to create a fork?", auto_accept=auto_accept):
         try:
             print("Creating fork...")
-            run_command(['gh', 'repo', 'fork', 'leanprover-community/mathlib4', '--clone=false'])
+            run_command(['gh', 'repo', 'fork', 'leanprover-community/mathlib4', '--default-branch-only', '--clone=false'])
             print_success(f"Fork created: {repo_name}")
             return get_remote_url(repo_name, use_ssh)
         except Exception as e:

@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 The absolute value of an element in a group which is also a lattice is its supremum with its
 negation. This generalizes the usual absolute value on real numbers (`|x| = max x (-x)`).
 
-## Notations
+## Notation
 
 - `|a|`: The *absolute value* of an element `a` of an additive lattice ordered group
 - `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
@@ -70,19 +70,15 @@ theorem inv_le_of_mabs_le (h : |a|ₘ ≤ b) : b⁻¹ ≤ a :=
 theorem le_of_mabs_le (h : |a|ₘ ≤ b) : a ≤ b :=
   (mabs_le.mp h).2
 
-/-- The **triangle inequality** in `LinearOrderedCommGroup`s. -/
-@[to_additive "The **triangle inequality** in `LinearOrderedAddCommGroup`s."]
-theorem mabs_mul (a b : G) : |a * b|ₘ ≤ |a|ₘ * |b|ₘ := by
-  rw [mabs_le, mul_inv]
-  constructor <;> gcongr <;> apply_rules [inv_mabs_le, le_mabs_self]
+@[deprecated (since := "2025-08-14")] alias mabs_mul := mabs_mul_le
 
 @[to_additive]
-theorem mabs_mul' (a b : G) : |a|ₘ ≤ |b|ₘ * |b * a|ₘ := by simpa using mabs_mul b⁻¹ (b * a)
+theorem mabs_mul' (a b : G) : |a|ₘ ≤ |b|ₘ * |b * a|ₘ := by simpa using mabs_mul_le b⁻¹ (b * a)
 
 @[to_additive]
 theorem mabs_div (a b : G) : |a / b|ₘ ≤ |a|ₘ * |b|ₘ := by
   rw [div_eq_mul_inv, ← mabs_inv b]
-  exact mabs_mul a _
+  exact mabs_mul_le a _
 
 @[to_additive]
 theorem mabs_div_le_iff : |a / b|ₘ ≤ c ↔ a / b ≤ c ∧ b / a ≤ c := by
@@ -113,7 +109,7 @@ theorem mabs_div_mabs_le_mabs_div (a b : G) : |a|ₘ / |b|ₘ ≤ |a / b|ₘ :=
   div_le_iff_le_mul.2 <|
     calc
       |a|ₘ = |a / b * b|ₘ := by rw [div_mul_cancel]
-      _ ≤ |a / b|ₘ * |b|ₘ := mabs_mul _ _
+      _ ≤ |a / b|ₘ * |b|ₘ := mabs_mul_le _ _
 
 @[to_additive]
 theorem mabs_mabs_div_mabs_le_mabs_div (a b : G) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a / b|ₘ :=
@@ -121,14 +117,14 @@ theorem mabs_mabs_div_mabs_le_mabs_div (a b : G) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a
     ⟨mabs_div_mabs_le_mabs_div _ _, by rw [mabs_div_comm]; apply mabs_div_mabs_le_mabs_div⟩
 
 /-- `|a / b|ₘ ≤ n` if `1 ≤ a ≤ n` and `1 ≤ b ≤ n`. -/
-@[to_additive "`|a - b| ≤ n` if `0 ≤ a ≤ n` and `0 ≤ b ≤ n`."]
+@[to_additive /-- `|a - b| ≤ n` if `0 ≤ a ≤ n` and `0 ≤ b ≤ n`. -/]
 theorem mabs_div_le_of_one_le_of_le {a b n : G} (one_le_a : 1 ≤ a) (a_le_n : a ≤ n)
     (one_le_b : 1 ≤ b) (b_le_n : b ≤ n) : |a / b|ₘ ≤ n := by
   rw [mabs_div_le_iff, div_le_iff_le_mul, div_le_iff_le_mul]
   exact ⟨le_mul_of_le_of_one_le a_le_n one_le_b, le_mul_of_le_of_one_le b_le_n one_le_a⟩
 
 /-- `|a / b|ₘ < n` if `1 ≤ a < n` and `1 ≤ b < n`. -/
-@[to_additive "`|a - b| < n` if `0 ≤ a < n` and `0 ≤ b < n`."]
+@[to_additive /-- `|a - b| < n` if `0 ≤ a < n` and `0 ≤ b < n`. -/]
 theorem mabs_div_lt_of_one_le_of_lt {a b n : G} (one_le_a : 1 ≤ a) (a_lt_n : a < n)
     (one_le_b : 1 ≤ b) (b_lt_n : b < n) : |a / b|ₘ < n := by
   rw [mabs_div_lt_iff, div_lt_iff_lt_mul, div_lt_iff_lt_mul]
@@ -177,7 +173,7 @@ theorem eq_of_mabs_div_eq_one {a b : G} (h : |a / b|ₘ = 1) : a = b :=
 theorem mabs_div_le (a b c : G) : |a / c|ₘ ≤ |a / b|ₘ * |b / c|ₘ :=
   calc
     |a / c|ₘ = |a / b * (b / c)|ₘ := by rw [div_mul_div_cancel]
-    _ ≤ |a / b|ₘ * |b / c|ₘ := mabs_mul _ _
+    _ ≤ |a / b|ₘ * |b / c|ₘ := mabs_mul_le _ _
 
 @[to_additive]
 theorem mabs_div_le_max_div {a b c : G} (hac : a ≤ b) (hcd : b ≤ c) (d : G) :
@@ -189,8 +185,8 @@ theorem mabs_div_le_max_div {a b c : G} (hac : a ≤ b) (hcd : b ≤ c) (d : G) 
     exact le_max_of_le_right <| div_le_div_left' hac _
 
 @[to_additive]
-theorem mabs_mul_three (a b c : G) : |a * b * c|ₘ ≤ |a|ₘ * |b|ₘ * |c|ₘ :=
-  (mabs_mul _ _).trans (mul_le_mul_right' (mabs_mul _ _) _)
+theorem mabs_mul_three (a b c : G) : |a * b * c|ₘ ≤ |a|ₘ * |b|ₘ * |c|ₘ := by
+  grw [mabs_mul_le, mabs_mul_le]
 
 @[to_additive]
 theorem mabs_div_le_of_le_of_le {a b lb ub : G} (hal : lb ≤ a) (hau : a ≤ ub) (hbl : lb ≤ b)
@@ -231,9 +227,9 @@ theorem mabs_eq_inv_self : |a|ₘ = a⁻¹ ↔ a ≤ 1 := by
 /-- For an element `a` of a multiplicative linear ordered group,
 either `|a|ₘ = a` and `1 ≤ a`, or `|a|ₘ = a⁻¹` and `a < 1`. -/
 @[to_additive
-  "For an element `a` of an additive linear ordered group,
+  /-- For an element `a` of an additive linear ordered group,
   either `|a| = a` and `0 ≤ a`, or `|a| = -a` and `a < 0`.
-  Use cases on this lemma to automate linarith in inequalities"]
+  Use cases on this lemma to automate linarith in inequalities -/]
 theorem mabs_cases (a : G) : |a|ₘ = a ∧ 1 ≤ a ∨ |a|ₘ = a⁻¹ ∧ a < 1 := by
   cases le_or_gt 1 a <;> simp [*, le_of_lt]
 

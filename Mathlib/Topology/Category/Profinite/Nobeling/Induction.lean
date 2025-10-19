@@ -142,9 +142,6 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
 
-@[deprecated (since := "2024-10-26")]
-alias Nobeling.embedding := Nobeling.isClosedEmbedding
-
 end Profinite
 
 open Profinite NobelingProof

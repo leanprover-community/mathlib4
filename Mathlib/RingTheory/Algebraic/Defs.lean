@@ -26,7 +26,7 @@ An R-algebra is algebraic over R if and only if all its elements are algebraic o
 * `Subalgebra.isAlgebraic_iff`: a subalgebra is algebraic iff it is algebraic as an algebra.
 -/
 
-assert_not_exists IsIntegralClosure LinearIndependent LocalRing MvPolynomial
+assert_not_exists IsIntegralClosure LinearIndependent IsLocalRing MvPolynomial
 
 universe u v w
 open Polynomial

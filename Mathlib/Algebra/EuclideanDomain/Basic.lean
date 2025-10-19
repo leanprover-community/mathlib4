@@ -26,7 +26,7 @@ namespace EuclideanDomain
 variable {R : Type u}
 variable [EuclideanDomain R]
 
-/-- The well founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0` -/
+/-- The well-founded relation in a Euclidean Domain satisfying `a % b ≺ b` for `b ≠ 0` -/
 local infixl:50 " ≺ " => EuclideanDomain.r
 
 -- See note [lower instance priority]
@@ -255,9 +255,11 @@ theorem lcm_dvd {x y z : R} (hxz : x ∣ z) (hyz : y ∣ z) : lcm x y ∣ z := b
   rw [gcd_eq_gcd_ab, mul_add]
   apply dvd_add
   · rw [mul_left_comm]
-    exact mul_dvd_mul_left _ (hyz.mul_right _)
+    gcongr
+    apply hyz.mul_right
   · rw [mul_left_comm, mul_comm]
-    exact mul_dvd_mul_left _ (hxz.mul_right _)
+    gcongr
+    apply hxz.mul_right
 
 @[simp]
 theorem lcm_dvd_iff {x y z : R} : lcm x y ∣ z ↔ x ∣ z ∧ y ∣ z :=
@@ -306,8 +308,7 @@ section Div
 theorem mul_div_mul_cancel {a b c : R} (ha : a ≠ 0) (hcb : c ∣ b) : a * b / (a * c) = b / c := by
   by_cases hc : c = 0; · simp [hc]
   refine eq_div_of_mul_eq_right hc (mul_left_cancel₀ ha ?_)
-  rw [← mul_assoc, ← mul_div_assoc _ (mul_dvd_mul_left a hcb),
-    mul_div_cancel_left₀ _ (mul_ne_zero ha hc)]
+  rw [← mul_assoc, ← mul_div_assoc _ (by gcongr), mul_div_cancel_left₀ _ (mul_ne_zero ha hc)]
 
 theorem mul_div_mul_comm_of_dvd_dvd {a b c d : R} (hac : c ∣ a) (hbd : d ∣ b) :
     a * b / (c * d) = a / c * (b / d) := by
