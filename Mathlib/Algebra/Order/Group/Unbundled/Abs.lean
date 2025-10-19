@@ -296,6 +296,7 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Latti
 
 @[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := rfl
 
+@[push ←]
 lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
 
 end Pi

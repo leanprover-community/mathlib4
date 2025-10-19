@@ -189,6 +189,7 @@ instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
 theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
 
+@[push ←]
 theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 
