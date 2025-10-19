@@ -523,7 +523,7 @@ lemma comp_counit_app (X : E) :
     (adj₁.comp adj₂).counit.app X = H.map (adj₁.counit.app (I.obj X)) ≫ adj₂.counit.app X := by
   simp [Adjunction.comp]
 
-lemma comp_homEquiv :  (adj₁.comp adj₂).homEquiv =
+lemma comp_homEquiv : (adj₁.comp adj₂).homEquiv =
     fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _) :=
   mk'_homEquiv _
 

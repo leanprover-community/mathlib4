@@ -106,7 +106,7 @@ lemma parallelComp_id_right_comp_parallelComp {η : Kernel X' Z} [IsSFiniteKerne
     _ = swap Y T ∘ₖ (swap T Y ∘ₖ (ξ ∥ₖ Kernel.id) ∘ₖ (η ∥ₖ κ)) := by
       simp_rw [← comp_assoc, swap_swap, id_comp]
     _ = swap Y T ∘ₖ (swap T Y ∘ₖ ((ξ ∘ₖ η) ∥ₖ κ)) := by rw [this]
-    _ = ξ ∘ₖ η ∥ₖ κ  := by simp_rw [← comp_assoc, swap_swap, id_comp]
+    _ = ξ ∘ₖ η ∥ₖ κ := by simp_rw [← comp_assoc, swap_swap, id_comp]
   simp_rw [swap_parallelComp, comp_assoc, swap_parallelComp, ← comp_assoc,
     parallelComp_id_left_comp_parallelComp]
 

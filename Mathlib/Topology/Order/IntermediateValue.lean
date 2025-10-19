@@ -328,7 +328,7 @@ theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsC
     (hb : b ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ioc a b, (s ∩ Ico a x).Nonempty) : a ∈ s := by
   suffices OrderDual.toDual a ∈ ofDual ⁻¹' s by aesop
   have : IsClosed (OrderDual.ofDual ⁻¹' (s ∩ Icc a b)) := hs
-  rw [preimage_inter, ←Icc_toDual ] at this
+  rw [preimage_inter, ← Icc_toDual] at this
   apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
   rw [Ico_toDual, ← preimage_inter, preimage_equiv_eq_image_symm, mem_image] at hx
   aesop
