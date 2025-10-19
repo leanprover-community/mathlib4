@@ -549,7 +549,7 @@ instance nonempty_sup_left (s₁ s₂ : AffineSubspace k P) [Nonempty s₁] :
 
 instance nonempty_sup_right (s₁ s₂ : AffineSubspace k P) [Nonempty s₂] :
     Nonempty (s₁ ⊔ s₂ : AffineSubspace k P) :=
-  ⟨Classical.arbitrary s₂, SetLike.le_def.1 le_sup_right (Subtype.property _)⟩
+  .map (Set.inclusion <| SetLike.le_def.1 le_sup_right) ‹_›
 
 variable (k V)
 
