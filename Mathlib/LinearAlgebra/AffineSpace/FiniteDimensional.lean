@@ -98,6 +98,17 @@ theorem finite_set_of_fin_dim_affineIndependent [FiniteDimensional k V] {s : Set
 
 variable {k}
 
+/-- The supremum of two finite-dimensional affine subspaces is finite-dimensional. -/
+instance AffineSubspace.finiteDimensional_sup (s₁ s₂ : AffineSubspace k P)
+    [FiniteDimensional k s₁.direction] [FiniteDimensional k s₂.direction] :
+    FiniteDimensional k (s₁ ⊔ s₂).direction := by
+  rcases eq_bot_or_nonempty s₁ with rfl | ⟨p₁, hp₁⟩
+  · rwa [bot_sup_eq]
+  rcases eq_bot_or_nonempty s₂ with rfl | ⟨p₂, hp₂⟩
+  · rwa [sup_bot_eq]
+  rw [AffineSubspace.direction_sup hp₁ hp₂]
+  infer_instance
+
 /-- The `vectorSpan` of a finite subset of an affinely independent
 family has dimension one less than its cardinality. -/
 theorem AffineIndependent.finrank_vectorSpan_image_finset [DecidableEq P]
