@@ -109,6 +109,7 @@ instance : HShiftLeft PosNum Nat PosNum where hShiftLeft := PosNum.shiftl
 
 @[simp] lemma shiftl_eq_shiftLeft (p : PosNum) (n : Nat) : p.shiftl n = p <<< n := rfl
 
+set_option linter.style.commandStart false in -- TODO decide on the right style
 -- This shows that the tail-recursive definition is the same as the more naïve recursion.
 theorem shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), p <<< n.succ = bit0 (p <<< n)
   | _, 0       => rfl
@@ -203,6 +204,7 @@ def oneBits : Num → List Nat
 
 end Num
 
+set_option linter.style.commandStart false in -- TODO decide on the right style
 /-- This is a nonzero (and "non minus one") version of `SNum`.
 See the documentation of `SNum` for more details. -/
 inductive NzsNum : Type

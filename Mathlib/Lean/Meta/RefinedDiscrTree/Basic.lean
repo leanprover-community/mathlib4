@@ -134,6 +134,7 @@ where
   parenthesize (msg : MessageData) (paren : Bool) : MessageData :=
     if paren then msg.paren else msg.group
 
+set_option linter.style.commandStart false in -- TODO decide about this!
 /-- Return the number of arguments that the `Key` takes. -/
 def Key.arity : Key → Nat
   | .const _ nargs  => nargs

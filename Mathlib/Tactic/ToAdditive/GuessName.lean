@@ -144,6 +144,7 @@ def applyNameDict : List String → List String
   | x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict s
   | [] => []
 
+set_option linter.style.commandStart false in -- TODO decide about the manual alignment
 /--
 There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
 or "addComm" instead of "commAdd".

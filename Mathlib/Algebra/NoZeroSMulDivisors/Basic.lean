@@ -70,6 +70,7 @@ section SMulInjective
 variable (R)
 variable [NoZeroSMulDivisors R M]
 
+set_option linter.style.commandStart false in -- TODO decide about this!
 theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : R => c • x :=
   fun c d h =>
   sub_eq_zero.mp

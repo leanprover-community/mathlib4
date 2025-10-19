@@ -27,6 +27,9 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.eraseInduction`
 -/
 
+-- TODO: grind_patterns cause false positives
+set_option linter.style.commandStart false
+
 assert_not_exists Monoid
 
 open Function Multiset Nat

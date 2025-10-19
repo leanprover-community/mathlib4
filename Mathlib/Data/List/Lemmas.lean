@@ -80,6 +80,7 @@ theorem foldl_range_eq_of_range_eq {f : α → β → α} {g : α → γ → α}
 -/
 section MapAccumr
 
+set_option linter.style.commandStart false in -- TODO decide about this!
 theorem mapAccumr_eq_foldr {σ : Type*} (f : α → σ → σ × β) : ∀ (as : List α) (s : σ),
     mapAccumr f as s = List.foldr (fun a s =>
                                     let r := f a s.1
@@ -89,6 +90,7 @@ theorem mapAccumr_eq_foldr {σ : Type*} (f : α → σ → σ × β) : ∀ (as :
   | a :: as, s => by
     simp only [mapAccumr, foldr, mapAccumr_eq_foldr f as]
 
+set_option linter.style.commandStart false in -- TODO decide about this!
 theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ) :
     ∀ (as : List α) (bs : List β) (s : σ),
     mapAccumr₂ f as bs s = foldr (fun ab s =>

@@ -89,6 +89,7 @@ namespace Function.Embedding
 
 variable {α : Type*}
 
+set_option linter.style.commandStart false in -- TODO fix linter/pretty-printing!
 /-- The natural equivalence of `Fin 2 ↪ α` with pairs `(a, b)` of distinct elements of `α`. -/
 def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ { (a, b) : α × α | a ≠ b } where
   toFun e := ⟨(e 0, e 1), by

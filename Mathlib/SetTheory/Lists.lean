@@ -89,6 +89,7 @@ def ofList : List (Lists α) → Lists' α true
 @[simp]
 theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by induction l <;> simp [*]
 
+set_option linter.style.commandStart false in -- TODO decide about this!
 @[simp]
 theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
   suffices
@@ -229,6 +230,7 @@ instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_ins
 
 instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
 
+set_option linter.style.commandStart false in -- TODO decide about this!
 /-- A recursion principle for pairs of ZFA lists and proper ZFA prelists. -/
 def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
     (C0 : ∀ a, C (atom a)) (C1 : ∀ l, D l → C (of' l))

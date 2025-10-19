@@ -36,6 +36,7 @@ def padRight (mds : List MessageData) : MetaM (List MessageData) := do
 
   mds.mapM pad
 
+set_option linter.style.commandStart false in -- TODO decide about this!
 /-- Render a particular row of the Fitch table. -/
 def rowToMessageData :
     List MessageData → List MessageData → List MessageData → List Entry → MetaM MessageData
