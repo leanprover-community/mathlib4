@@ -545,12 +545,8 @@ instance instHasSolidNorm : HasSolidNorm (α →ᵇ β) :=
       rw [norm_le (norm_nonneg _)]
       exact fun t => (i1 t).trans (norm_coe_le_norm g t) }
 
-instance instIsOrderedAddMonoid : IsOrderedAddMonoid (α →ᵇ β) :=
-  { add_le_add_left := by
-      intro f g h₁ h t
-      simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_add, Pi.add_apply,
-        add_le_add_iff_left]
-      exact h₁ _ }
+instance instIsOrderedAddMonoid : IsOrderedAddMonoid (α →ᵇ β) where
+  add_le_add_left f g h₁ h t := by simpa using h₁ _
 
 end NormedLatticeOrderedGroup
 

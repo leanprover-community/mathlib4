@@ -100,7 +100,7 @@ theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : �
       commuting pairs as `H`. -/
   rw [commProb_def, commProb_def, div_le_iff₀, mul_assoc, ← mul_pow, ← Nat.cast_mul,
     mul_comm H.index, H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · refine Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) ?_
+  · refine Nat.card_le_card_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) ?_
     exact fun p q h ↦ by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
   · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2
@@ -110,7 +110,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
       conjugacy classes as `G ⧸ H`. -/
   rw [commProb_def', commProb_def', div_le_iff₀, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,
     H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · apply Finite.card_le_of_surjective
+  · apply Nat.card_le_card_of_surjective
     show Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
     exact ConjClasses.map_surjective Quotient.mk''_surjective
   · exact Nat.cast_ne_zero.mpr Finite.card_pos.ne'
@@ -205,7 +205,6 @@ theorem commProb_reciprocal (n : ℕ) :
       have h1 := (Nat.div_add_mod n 4).symm
       zify at h0 h1 ⊢
       linear_combination (h0 + h1 * (n % 4)) * n
-    · have := hn.pos.ne'
-      positivity
+    · positivity [hn.pos.ne']
 
 end DihedralGroup

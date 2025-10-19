@@ -189,6 +189,12 @@ theorem le_order_pow (φ : R⟦X⟧) (n : ℕ) : n • order φ ≤ order (φ ^ 
     apply le_trans _ (le_order_mul _ _)
     exact add_le_add_right hn φ.order
 
+theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R⟦X⟧) (s : Finset ι) :
+    ∑ i ∈ s, (φ i).order ≤ (∏ i ∈ s, φ i).order := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih => grw [Finset.sum_cons ha, Finset.prod_cons ha, ih, le_order_mul]
+
 alias order_mul_ge := le_order_mul
 
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
@@ -385,6 +391,12 @@ theorem order_pow [Nontrivial R] (φ : R⟦X⟧) (n : ℕ) :
   | zero => simp
   | succ n hn =>
     simp only [add_smul, one_smul, pow_succ, order_mul, hn]
+
+theorem order_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R] {ι : Type*}
+    (φ : ι → R⟦X⟧) (s : Finset ι) : (∏ i ∈ s, φ i).order = ∑ i ∈ s, (φ i).order := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih => rw [Finset.sum_cons ha, Finset.prod_cons ha, order_mul, ih]
 
 /-- The operation of dividing a power series by the largest possible power of `X`
 preserves multiplication. -/

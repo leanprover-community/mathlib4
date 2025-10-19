@@ -73,7 +73,7 @@ nonzero coefficient of degree equal to the order.
 is at least that degree.
 
 - `MvPowerSeries.nat_le_order`: if all coefficients of degree strictly smaller than some integer
-vanish, then the order is at at least that integer.
+vanish, then the order is at least that integer.
 
 - `MvPowerSeries.order_eq_nat_iff`:  the order of a power series is an integer `n` iff there exists
 a nonzero coefficient in that degree, and all coefficients below that degree vanish.
@@ -232,6 +232,9 @@ theorem weightedOrder_monomial_of_ne_zero {d : σ →₀ ℕ} {a : R} (h : a ≠
   classical
   rw [weightedOrder_monomial, if_neg h]
 
+@[simp]
+theorem weightedOrder_one [Nontrivial R] : (1 : MvPowerSeries σ R).weightedOrder w = 0 :=
+  weightedOrder_monomial_of_ne_zero w one_ne_zero
 
 /-- The order of the sum of two formal power series is at least the minimum of their orders. -/
 theorem min_weightedOrder_le_add :
@@ -288,6 +291,13 @@ theorem le_weightedOrder_mul :
       exfalso
       apply ne_of_lt (lt_of_lt_of_le hd <| add_le_add hi hj)
       rw [← hij, map_add, Nat.cast_add]
+
+theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ → ℕ)
+    (f : ι → MvPowerSeries σ R) (s : Finset ι) :
+    ∑ i ∈ s, (f i).weightedOrder w ≤ (∏ i ∈ s, f i).weightedOrder w := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih => grw [Finset.sum_cons ha, Finset.prod_cons ha, ih, le_weightedOrder_mul]
 
 alias weightedOrder_mul_ge := le_weightedOrder_mul
 
@@ -430,6 +440,10 @@ theorem le_order_mul : f.order + g.order ≤ order (f * g) :=
   le_weightedOrder_mul _
 
 alias order_mul_ge := le_order_mul
+
+theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*}
+    (f : ι → MvPowerSeries σ R) (s : Finset ι) : ∑ i ∈ s, (f i).order ≤ (∏ i ∈ s, f i).order :=
+  le_weightedOrder_prod _ _ _
 
 section Ring
 

@@ -192,6 +192,14 @@ def liftIoc (f : 𝕜 → B) : AddCircle p → B :=
 
 variable {p a}
 
+theorem equivIco_coe_eq {x : 𝕜} (hx : x ∈ Ico a (a + p)) : (equivIco p a) x = ⟨x, hx⟩ := by
+  rw [Equiv.apply_eq_iff_eq_symm_apply]
+  rfl
+
+theorem equivIoc_coe_eq {x : 𝕜} (hx : x ∈ Ioc a (a + p)) : (equivIoc p a) x = ⟨x, hx⟩ := by
+  rw [Equiv.apply_eq_iff_eq_symm_apply]
+  rfl
+
 theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : y ∈ Ico a (a + p)) :
     (x : AddCircle p) = y ↔ x = y := by
   refine ⟨fun h => ?_, by tauto⟩
@@ -202,19 +210,17 @@ theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : 
 
 theorem liftIco_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ico a (a + p)) :
     liftIco p a f ↑x = f x := by
-  have : (equivIco p a) x = ⟨x, hx⟩ := by
-    rw [Equiv.apply_eq_iff_eq_symm_apply]
-    rfl
-  rw [liftIco, comp_apply, this]
-  rfl
+  simp [liftIco, equivIco_coe_eq hx]
 
 theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p)) :
     liftIoc p a f ↑x = f x := by
-  have : (equivIoc p a) x = ⟨x, hx⟩ := by
-    rw [Equiv.apply_eq_iff_eq_symm_apply]
-    rfl
-  rw [liftIoc, comp_apply, this]
-  rfl
+  simp [liftIoc, equivIoc_coe_eq hx]
+
+lemma liftIco_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
+    liftIco p a (g ∘ f) x = g (liftIco p a f x) := rfl
+
+lemma liftIoc_comp_apply {α β : Type*} {f : 𝕜 → α} {g : α → β} {a : 𝕜} {x : AddCircle p} :
+    liftIoc p a (g ∘ f) x = g (liftIoc p a f x) := rfl
 
 lemma eq_coe_Ico (a : AddCircle p) : ∃ b, b ∈ Ico 0 p ∧ ↑b = a := by
   let b := QuotientAddGroup.equivIcoMod hp.out 0 a
@@ -253,9 +259,9 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
   exact (continuousAt_toIocMod hp.out a hx).codRestrict _
 
-/-- The quotient map `𝕜 → AddCircle p` as a partial homeomorphism. -/
-@[simps] def partialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
-    PartialHomeomorph 𝕜 (AddCircle p) where
+/-- The quotient map `𝕜 → AddCircle p` as an open partial homeomorphism. -/
+@[simps] def openPartialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
+    OpenPartialHomeomorph 𝕜 (AddCircle p) where
   toFun := (↑)
   invFun := fun x ↦ equivIco p a x
   source := Ioo a (a + p)
@@ -278,11 +284,14 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
     exact continuousOn_of_forall_continuousAt
       (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
 
+@[deprecated (since := "2025-08-29")] noncomputable alias
+  partialHomeomorphCoe := openPartialHomeomorphCoe
+
 lemma isLocalHomeomorph_coe [DiscreteTopology (zmultiples p)] [DenselyOrdered 𝕜] :
     IsLocalHomeomorph ((↑) : 𝕜 → AddCircle p) := by
   intro a
   obtain ⟨b, hb1, hb2⟩ := exists_between (sub_lt_self a hp.out)
-  exact ⟨partialHomeomorphCoe p b, ⟨hb2, lt_add_of_sub_right_lt hb1⟩, rfl⟩
+  exact ⟨openPartialHomeomorphCoe p b, ⟨hb2, lt_add_of_sub_right_lt hb1⟩, rfl⟩
 
 end Continuity
 
@@ -305,6 +314,20 @@ entire space. -/
 @[simp]
 theorem coe_image_Icc_eq : ((↑) : 𝕜 → AddCircle p) '' Icc a (a + p) = univ :=
   eq_top_mono (image_mono Ico_subset_Icc_self) <| coe_image_Ico_eq _ _
+
+/-- If functions on AddCircle agree on the image of the interval `[a, a + p)` then they are equal -/
+lemma Ico_ext {α : Type*} {f g : AddCircle p → α} (a : 𝕜)
+    (h : ∀ x ∈ Ico a (a + p), f x = g x) : f = g := by
+  rw [← Set.eqOn_univ, ← coe_image_Ico_eq p a]
+  rintro - ⟨x, hx, rfl⟩
+  exact h x hx
+
+/-- If functions on AddCircle agree on the image of the interval `(a, a + p]` then they are equal -/
+lemma Ioc_ext {α : Type*} {f g : AddCircle p → α} (a : 𝕜)
+    (h : ∀ x ∈ Ioc a (a + p), f x = g x) : f = g := by
+  rw [← Set.eqOn_univ, ← coe_image_Ioc_eq p a]
+  rintro - ⟨x, hx, rfl⟩
+  exact h x hx
 
 end LinearOrderedAddCommGroup
 
