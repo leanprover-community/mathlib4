@@ -741,7 +741,7 @@ def isColimitCocone : IsColimit (cocone f g) :=
       | Sum.inr x₂ => s.inr x₂) (by
     rintro _ _ ⟨t⟩
     exact congr_fun s.condition t)) (fun _ => rfl) (fun _ => rfl) (fun s m h₁ h₂ => by
-      ext ⟨x₁|x₂⟩
+      ext ⟨x₁ | x₂⟩
       · exact congr_fun h₁ x₁
       · exact congr_fun h₂ x₂)
 
