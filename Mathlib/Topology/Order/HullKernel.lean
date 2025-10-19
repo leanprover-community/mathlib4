@@ -117,7 +117,7 @@ lemma isTopologicalBasis_relativeLower (hT : ∀ p ∈ T, InfPrime p) :
   ext R
   simp only [preimage_compl, mem_setOf_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
   constructor <;> intro ha
-  · obtain ⟨a, ha'⟩ :=  ha
+  · obtain ⟨a, ha'⟩ := ha
     use {a}
     rw [← (Function.Injective.preimage_image Subtype.val_injective R), ← ha']
     simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, image_val_compl,
