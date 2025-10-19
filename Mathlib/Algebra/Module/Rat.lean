@@ -58,7 +58,7 @@ theorem nnratCast_smul_eq {E : Type*} (R S : Type*) [AddCommMonoid E] [DivisionS
   map_nnratCast_smul (AddMonoidHom.id E) R S r x
 
 /-- `nnqsmul` is equal to any other module structure via a cast. -/
-lemma NNRat.cast_smul_eq_nnqsmul (R : Type*) [DivisionSemiring R] [CharZero R]
+lemma NNRat.cast_smul_eq_nnqsmul (R : Type*) [DivisionSemiring R]
     [AddCommMonoid M] [Module ℚ≥0 M] [Module R M] (q : ℚ≥0) (a : M) :
     (q : R) • a = q • a :=
   nnratCast_smul_eq _ _ _ _
@@ -70,7 +70,7 @@ theorem ratCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing
   map_ratCast_smul (AddMonoidHom.id E) R S r x
 
 /-- `qsmul` is equal to any other module structure via a cast. -/
-lemma Rat.cast_smul_eq_qsmul (R : Type*) [DivisionRing R] [CharZero R]
+lemma Rat.cast_smul_eq_qsmul (R : Type*) [DivisionRing R]
     [AddCommGroup M] [Module ℚ M] [Module R M] (q : ℚ) (a : M) : (q : R) • a = q • a :=
   ratCast_smul_eq _ _ _ _
 
