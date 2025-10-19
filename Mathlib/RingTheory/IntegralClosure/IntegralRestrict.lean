@@ -76,7 +76,7 @@ variable [Algebra.IsAlgebraic K L]
 section galLift
 variable {A B B₂ B₃}
 
-/-- A generalization of the the lift `End(B/A) → End(L/K)` in an ALKB setup.
+/-- A generalization of the lift `End(B/A) → End(L/K)` in an ALKB setup.
 This is inverse to the restriction. See `galRestrictHom`. -/
 noncomputable
 def galLift (σ : B →ₐ[A] B₂) : L →ₐ[K] L₂ :=
@@ -170,21 +170,21 @@ lemma galRestrictHom_symm_algebraMap_apply (σ : B →ₐ[A] B) (x : B) :
 
 /-- The restriction `Aut(L/K) → Aut(B/A)` in an AKLB setup. -/
 noncomputable
-def galRestrict : (L ≃ₐ[K] L) ≃* (B ≃ₐ[A] B) :=
+def galRestrict : Gal(L/K) ≃* (B ≃ₐ[A] B) :=
   (AlgEquiv.algHomUnitsEquiv K L).symm.trans
     ((Units.mapEquiv <| galRestrictHom A K L B).trans (AlgEquiv.algHomUnitsEquiv A B))
 
 variable {K L}
 
-lemma coe_galRestrict_apply (σ : L ≃ₐ[K] L) :
+lemma coe_galRestrict_apply (σ : Gal(L/K)) :
     (galRestrict A K L B σ : B →ₐ[A] B) = galRestrictHom A K L B σ := rfl
 
 variable {B}
 
-lemma galRestrict_apply (σ : L ≃ₐ[K] L) (x : B) :
+lemma galRestrict_apply (σ : Gal(L/K)) (x : B) :
     galRestrict A K L B σ x = galRestrictHom A K L B σ x := rfl
 
-lemma algebraMap_galRestrict_apply (σ : L ≃ₐ[K] L) (x : B) :
+lemma algebraMap_galRestrict_apply (σ : Gal(L/K)) (x : B) :
     algebraMap B L (galRestrict A K L B σ x) = σ (algebraMap B L x) :=
   algebraMap_galRestrictHom_apply A K L B σ.toAlgHom x
 
@@ -198,7 +198,7 @@ end galois
 variable [FiniteDimensional K L]
 
 lemma prod_galRestrict_eq_norm [IsGalois K L] [IsIntegrallyClosed A] (x : B) :
-    (∏ σ : L ≃ₐ[K] L, galRestrict A K L B σ x) =
+    (∏ σ : Gal(L/K), galRestrict A K L B σ x) =
     algebraMap A B (IsIntegralClosure.mk' (R := A) A (Algebra.norm K <| algebraMap B L x)
       (Algebra.isIntegral_norm K (IsIntegralClosure.isIntegral A L x).algebraMap)) := by
   apply IsIntegralClosure.algebraMap_injective B A L
