@@ -492,7 +492,7 @@ theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
   apply le_antisymm
   · apply nfp_le_fp (isNormal_mul_right ha).monotone
     · rw [mul_succ]
-      apply add_le_add_left hca
+      gcongr
     · dsimp only; rw [← mul_assoc, ← opow_one_add, one_add_omega0]
   · obtain ⟨d, hd⟩ :=
       mul_eq_right_iff_opow_omega0_dvd.1 ((isNormal_mul_right ha).nfp_fp ((a ^ ω) * b + c))
@@ -501,7 +501,7 @@ theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
     have := le_nfp (a * ·) (a ^ ω * b + c)
     rw [hd] at this
     have := (add_lt_add_left hc (a ^ ω * b)).trans_le this
-    rw [add_zero, mul_lt_mul_left (opow_pos ω ha)] at this
+    rw [add_zero, mul_lt_mul_iff_right₀ (opow_pos ω ha)] at this
     rwa [succ_le_iff]
 
 theorem deriv_mul_eq_opow_omega0_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :

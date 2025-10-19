@@ -741,8 +741,8 @@ theorem setToFun_smul [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass �
     (hT : DominatedFinMeasAdditive μ T C) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
     (f : α → E) : setToFun μ T hT (c • f) = c • setToFun μ T hT f := by
   by_cases hf : Integrable f μ
-  · rw [setToFun_eq hT hf, setToFun_eq hT, Integrable.toL1_smul',
-      L1.setToL1_smul hT h_smul c _]
+  · rw [setToFun_eq hT hf, setToFun_eq hT (hf.smul c), Integrable.toL1_smul' f hf,
+      L1.setToL1_smul hT h_smul c]
   · by_cases hr : c = 0
     · rw [hr]; simp
     · have hf' : ¬Integrable (c • f) μ := by rwa [integrable_smul_iff hr f]
@@ -971,8 +971,7 @@ theorem setToFun_congr_measure_of_add_left {μ' : Measure α}
     setToFun (μ + μ') T hT_add f = setToFun μ' T hT f := by
   refine setToFun_congr_measure_of_integrable 1 one_ne_top ?_ hT_add hT f hf
   rw [one_smul]
-  nth_rw 1 [← zero_add μ']
-  exact add_le_add_right bot_le μ'
+  exact Measure.le_add_left le_rfl
 
 theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
     setToFun (∞ • μ) T hT f = 0 := by

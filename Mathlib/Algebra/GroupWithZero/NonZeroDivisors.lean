@@ -16,7 +16,7 @@ In this file we define the submonoid `nonZeroDivisors` and `nonZeroSMulDivisors`
 `MonoidWithZero`. We also define `nonZeroDivisorsLeft` and `nonZeroDivisorsRight` for
 non-commutative monoids.
 
-## Notations
+## Notation
 
 This file declares the notations:
 - `M₀⁰` for the submonoid of non-zero-divisors of `M₀`, in the scope `nonZeroDivisors`.
@@ -205,7 +205,7 @@ theorem le_nonZeroDivisors_of_noZeroDivisors {S : Submonoid M₀} (hS : (0 : M�
   mem_nonZeroDivisors_of_ne_zero <| by rintro rfl; exact hS hx
 
 theorem powers_le_nonZeroDivisors_of_noZeroDivisors (hx : x ≠ 0) : Submonoid.powers x ≤ M₀⁰ :=
-  le_nonZeroDivisors_of_noZeroDivisors fun h ↦ hx (h.recOn fun _ ↦ pow_eq_zero)
+  le_nonZeroDivisors_of_noZeroDivisors fun h ↦ hx (h.recOn fun _ ↦ eq_zero_of_pow_eq_zero)
 
 end NoZeroDivisors
 

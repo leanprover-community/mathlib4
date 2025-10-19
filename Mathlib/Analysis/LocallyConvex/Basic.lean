@@ -5,7 +5,8 @@ Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Topology.Bornology.Absorbs
 
 /-!
@@ -169,7 +170,7 @@ theorem absorbent_iff_eventually_nhdsNE_zero :
 @[deprecated (since := "2025-03-03")]
 alias absorbent_iff_eventually_nhdsWithin_zero := absorbent_iff_eventually_nhdsNE_zero
 
-alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsWithin_zero
+alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
 
 @[deprecated (since := "2025-03-03")]
 alias Absorbent.eventually_nhdsWithin_zero := Absorbent.eventually_nhdsNE_zero
@@ -264,18 +265,16 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
-variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
-
-protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
-  suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
+protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull 𝕜 s) := by
+  suffices Convex 𝕜 { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull 𝕜 s } by
     rw [balanced_iff_smul_mem] at hs ⊢
     refine fun a ha x hx => convexHull_min ?_ this hx a ha
-    exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
+    exact fun y hy a ha => subset_convexHull 𝕜 s (hs ha hy)
   intro x hx y hy u v hu hv huv a ha
-  simp only [smul_add, ← smul_comm]
-  exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
+  rw [smul_add, ← smul_comm u, ← smul_comm v]
+  exact convex_convexHull 𝕜 s (hx a ha) (hy a ha) hu hv huv
 
 end NontriviallyNormedField
 

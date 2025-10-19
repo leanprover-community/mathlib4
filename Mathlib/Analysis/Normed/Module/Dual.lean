@@ -9,7 +9,6 @@ import Mathlib.Analysis.Normed.Module.RCLike.Basic
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Topology.Algebra.Module.StrongDual
 
 /-!
 # The strong dual of a normed space
@@ -135,9 +134,9 @@ theorem isClosed_polar (s : Set E) : IsClosed (StrongDual.polar 𝕜 s) := by
 
 @[simp]
 theorem polar_closure (s : Set E) : StrongDual.polar 𝕜 (closure s) = StrongDual.polar 𝕜 s :=
-  ((strongDualPairing 𝕜 E).flip.polar_antitone subset_closure).antisymm <|
-    (strongDualPairing 𝕜 E).flip.polar_gc.l_le <|
-      closure_minimal ((strongDualPairing 𝕜 E).flip.polar_gc.le_u_l s) <| by
+  ((topDualPairing 𝕜 E).flip.polar_antitone subset_closure).antisymm <|
+    (topDualPairing 𝕜 E).flip.polar_gc.l_le <|
+      closure_minimal ((topDualPairing 𝕜 E).flip.polar_gc.le_u_l s) <| by
         simpa [LinearMap.flip_flip] using
           (isClosed_polar _ _).preimage (inclusionInDoubleDual 𝕜 E).continuous
 
@@ -149,7 +148,7 @@ theorem smul_mem_polar {s : Set E} {x' : StrongDual 𝕜 E} {c : 𝕜} (hc : ∀
     c⁻¹ • x' ∈ StrongDual.polar 𝕜 s := by
   by_cases c_zero : c = 0
   · simp only [c_zero, inv_zero, zero_smul]
-    exact (strongDualPairing 𝕜 E).flip.zero_mem_polar _
+    exact (topDualPairing 𝕜 E).flip.zero_mem_polar _
   have eq : ∀ z, ‖c⁻¹ • x' z‖ = ‖c⁻¹‖ * ‖x' z‖ := fun z => norm_smul c⁻¹ _
   have le : ∀ z, z ∈ s → ‖c⁻¹ • x' z‖ ≤ ‖c⁻¹‖ * ‖c‖ := by
     intro z hzs
@@ -218,7 +217,7 @@ theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E
   obtain ⟨a, ha⟩ : ∃ a : 𝕜, 1 < ‖a‖ := NormedField.exists_one_lt_norm 𝕜
   obtain ⟨r, r_pos, r_ball⟩ : ∃ r : ℝ, 0 < r ∧ ball 0 r ⊆ s := Metric.mem_nhds_iff.1 s_nhds
   exact isBounded_closedBall.subset
-    (((strongDualPairing 𝕜 E).flip.polar_antitone r_ball).trans <|
+    (((topDualPairing 𝕜 E).flip.polar_antitone r_ball).trans <|
       polar_ball_subset_closedBall_div ha r_pos)
 
 theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -226,7 +225,7 @@ theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddComm
     ⋂₀ (StrongDual.polar 𝕜 '' { F | F.Finite ∧ F ⊆ closedBall (0 : E) r⁻¹ }) = closedBall 0 r := by
   conv_rhs => rw [← inv_inv r]
   rw [← polar_closedBall (inv_pos_of_pos hr), StrongDual.polar,
-    (strongDualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar (closedBall (0 : E) r⁻¹)]
+    (topDualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar (closedBall (0 : E) r⁻¹)]
 
 end PolarSets
 
@@ -237,18 +236,17 @@ namespace LinearMap
 section NormedField
 
 variable {𝕜 E F : Type*}
-variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 
-variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
-
+open ComplexOrder in
 theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
   rw [polar_eq_biInter_preimage]
   exact AbsConvex.iInter₂ fun i hi =>
     ⟨balanced_closedBall_zero.mulActionHom_preimage (f := (B i : (F →ₑ[(RingHom.id 𝕜)] 𝕜))),
-      (convex_closedBall _ _).linear_preimage (B i)⟩
+      (convex_RCLike_iff_convex_real.mpr (convex_closedBall 0 1)).linear_preimage _⟩
 
 end NormedField
 

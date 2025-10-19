@@ -415,7 +415,6 @@ lemma holderTriple_coe_iff {p q r : ℝ≥0} (hr : r ≠ 0) :
   · rw [holderTriple_iff]
     have hp := h.ne_zero
     have hq := h.symm.ne_zero
-    have hr := h.ne_zero'
     exact_mod_cast h.inv_add_inv_eq_inv
 
 alias ⟨_, _root_.NNReal.HolderTriple.coe_ennreal⟩ := holderTriple_coe_iff
@@ -561,6 +560,9 @@ protected lemma inv_inv (hab : a + b = 1) : a⁻¹.HolderConjugate b⁻¹ where
 
 lemma inv_one_sub_inv (ha : a ≤ 1) : a⁻¹.HolderConjugate (1 - a)⁻¹ :=
   .inv_inv <| add_tsub_cancel_of_le ha
+
+lemma inv_one_sub_inv' (ha : 1 ≤ a) : a.HolderConjugate (1 - a⁻¹)⁻¹ := by
+  simpa using inv_one_sub_inv (ENNReal.inv_le_one.mpr ha)
 
 lemma one_sub_inv_inv (ha : a ≤ 1) : (1 - a)⁻¹.HolderConjugate a⁻¹ := (inv_one_sub_inv ha).symm
 

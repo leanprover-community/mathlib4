@@ -237,10 +237,6 @@ theorem nhds_ne_subtype_neBot_iff {S : Set X} {x : S} :
     (𝓝[≠] x).NeBot ↔ (𝓝[≠] (x : X) ⊓ 𝓟 S).NeBot := by
   rw [neBot_iff, neBot_iff, not_iff_not, nhds_ne_subtype_eq_bot_iff]
 
-theorem discreteTopology_subtype_iff {S : Set X} :
-    DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
-  simp_rw [discreteTopology_iff_nhds_ne, SetCoe.forall', nhds_ne_subtype_eq_bot_iff]
-
 end Top
 
 /-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
@@ -365,17 +361,61 @@ theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
     IsClosedMap ((↑) : s → X) :=
   hs.isClosedEmbedding_subtypeVal.isClosedMap
 
+theorem IsClosedMap.restrict {f : X → Y} (hf : IsClosedMap f) {s : Set X} (hs : IsClosed s) :
+    IsClosedMap (s.restrict f) :=
+  hf.comp hs.isClosedMap_subtype_val
+
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
     Continuous fun x => (⟨f x, hp x⟩ : Subtype p) :=
   continuous_induced_rng.2 h
 
+theorem IsOpenMap.subtype_mk {f : Y → X} (hf : IsOpenMap f) (hp : ∀ x, p (f x)) :
+    IsOpenMap fun x ↦ (⟨f x, hp x⟩ : Subtype p) := fun u hu ↦ by
+  convert (hf u hu).preimage continuous_subtype_val
+  exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
+
+theorem IsClosedMap.subtype_mk {f : Y → X} (hf : IsClosedMap f) (hp : ∀ x, p (f x)) :
+    IsClosedMap fun x ↦ (⟨f x, hp x⟩ : Subtype p) := fun u hu ↦ by
+  convert (hf u hu).preimage continuous_subtype_val
+  exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
+
+@[fun_prop]
+theorem Continuous.subtype_coind {f : Y → X} (hf : Continuous f) (hp : ∀ x, p (f x)) :
+    Continuous (Subtype.coind f hp) :=
+  hf.subtype_mk hp
+
+theorem IsOpenMap.subtype_coind {f : Y → X} (hf : IsOpenMap f) (hp : ∀ x, p (f x)) :
+    IsOpenMap (Subtype.coind f hp) :=
+  hf.subtype_mk hp
+
+theorem IsClosedMap.subtype_coind {f : Y → X} (hf : IsClosedMap f) (hp : ∀ x, p (f x)) :
+    IsClosedMap (Subtype.coind f hp) :=
+  hf.subtype_mk hp
+
+@[fun_prop]
 theorem Continuous.subtype_map {f : X → Y} (h : Continuous f) {q : Y → Prop}
     (hpq : ∀ x, p x → q (f x)) : Continuous (Subtype.map f hpq) :=
   (h.comp continuous_subtype_val).subtype_mk _
 
+theorem IsOpenMap.subtype_map {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y} (hs : IsOpen s)
+    (hst : ∀ x ∈ s, f x ∈ t) : IsOpenMap (Subtype.map f hst) :=
+  (hf.comp hs.isOpenMap_subtype_val).subtype_mk _
+
+theorem IsClosedMap.subtype_map {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
+    (hs : IsClosed s) (hst : ∀ x ∈ s, f x ∈ t) : IsClosedMap (Subtype.map f hst) :=
+  (hf.comp hs.isClosedMap_subtype_val).subtype_mk _
+
 theorem continuous_inclusion {s t : Set X} (h : s ⊆ t) : Continuous (inclusion h) :=
   continuous_id.subtype_map h
+
+theorem IsOpen.isOpenMap_inclusion {s t : Set X} (hs : IsOpen s) (h : s ⊆ t) :
+    IsOpenMap (inclusion h) :=
+  IsOpenMap.id.subtype_map hs h
+
+theorem IsClosed.isClosedMap_inclusion {s t : Set X} (hs : IsClosed s) (h : s ⊆ t) :
+    IsClosedMap (inclusion h) :=
+  IsClosedMap.id.subtype_map hs h
 
 @[simp]
 theorem continuous_rangeFactorization_iff {f : X → Y} :
@@ -438,10 +478,26 @@ theorem Continuous.codRestrict {f : X → Y} {s : Set Y} (hf : Continuous f) (hs
     Continuous (s.codRestrict f hs) :=
   hf.subtype_mk hs
 
+theorem IsOpenMap.codRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set Y} (hs : ∀ a, f a ∈ s) :
+    IsOpenMap (s.codRestrict f hs) :=
+  hf.subtype_mk hs
+
+theorem IsClosedMap.codRestrict {f : X → Y} (hf : IsClosedMap f) {s : Set Y} (hs : ∀ a, f a ∈ s) :
+    IsClosedMap (s.codRestrict f hs) :=
+  hf.subtype_mk hs
+
 @[continuity, fun_prop]
 theorem Continuous.restrict {f : X → Y} {s : Set X} {t : Set Y} (h1 : MapsTo f s t)
     (h2 : Continuous f) : Continuous (h1.restrict f s t) :=
   (h2.comp continuous_subtype_val).codRestrict _
+
+lemma IsOpenMap.mapsToRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y}
+    (hs : IsOpen s) (ht : MapsTo f s t) : IsOpenMap ht.restrict :=
+  (hf.restrict hs).codRestrict _
+
+lemma IsClosedMap.mapsToRestrict {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
+    (hs : IsClosed s) (ht : MapsTo f s t) : IsClosedMap ht.restrict :=
+  (hf.restrict hs).codRestrict _
 
 @[continuity, fun_prop]
 theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f) :
@@ -586,8 +642,8 @@ end Quotient
 
 section Pi
 
-variable {ι : Type*} {A : ι → Type*} {κ : Type*} [TopologicalSpace X]
-  [T : ∀ i, TopologicalSpace (A i)] {f : X → ∀ i : ι, A i}
+variable {ι : Type*} {A B : ι → Type*} {κ : Type*} [TopologicalSpace X]
+  [T : ∀ i, TopologicalSpace (A i)] [∀ i, TopologicalSpace (B i)] {f : X → ∀ i : ι, A i}
 
 theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i := by
   simp only [continuous_iInf_rng, continuous_induced_rng, comp_def]
@@ -613,22 +669,22 @@ theorem Filter.Tendsto.apply_nhds {l : Filter Y} {f : Y → ∀ i, A i} {x : ∀
   (continuousAt_apply i _).tendsto.comp h
 
 @[fun_prop]
-protected theorem Continuous.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
-    {f : ∀ i, A i → Y i} (hf : ∀ i, Continuous (f i)) : Continuous (Pi.map f) :=
+protected theorem Continuous.piMap
+    {f : ∀ i, A i → B i} (hf : ∀ i, Continuous (f i)) : Continuous (Pi.map f) :=
   continuous_pi fun i ↦ (hf i).comp (continuous_apply i)
 
 theorem nhds_pi {a : ∀ i, A i} : 𝓝 a = pi fun i => 𝓝 (a i) := by
   simp only [nhds_iInf, nhds_induced, Filter.pi]
 
-protected theorem IsOpenMap.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] {f : ∀ i, A i → Y i}
+protected theorem IsOpenMap.piMap {f : ∀ i, A i → B i}
     (hfo : ∀ i, IsOpenMap (f i)) (hsurj : ∀ᶠ i in cofinite, Surjective (f i)) :
     IsOpenMap (Pi.map f) := by
   refine IsOpenMap.of_nhds_le fun x ↦ ?_
   rw [nhds_pi, nhds_pi, map_piMap_pi hsurj]
   exact Filter.pi_mono fun i ↦ (hfo i).nhds_le _
 
-protected theorem IsOpenQuotientMap.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
-    {f : ∀ i, A i → Y i} (hf : ∀ i, IsOpenQuotientMap (f i)) : IsOpenQuotientMap (Pi.map f) :=
+protected theorem IsOpenQuotientMap.piMap
+    {f : ∀ i, A i → B i} (hf : ∀ i, IsOpenQuotientMap (f i)) : IsOpenQuotientMap (Pi.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2, .piMap (fun i ↦ (hf i).3) <|
     .of_forall fun i ↦ (hf i).1⟩
 
@@ -646,10 +702,18 @@ theorem continuousAt_pi' {f : X → ∀ i, A i} {x : X} (hf : ∀ i, ContinuousA
   continuousAt_pi.2 hf
 
 @[fun_prop]
-protected theorem ContinuousAt.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
-    {f : ∀ i, A i → Y i} {x : ∀ i, A i} (hf : ∀ i, ContinuousAt (f i) (x i)) :
+protected theorem ContinuousAt.piMap {f : ∀ i, A i → B i} {x : ∀ i, A i}
+    (hf : ∀ i, ContinuousAt (f i) (x i)) :
     ContinuousAt (Pi.map f) x :=
   continuousAt_pi.2 fun i ↦ (hf i).comp (continuousAt_apply i x)
+
+protected lemma Topology.IsInducing.piMap {f : ∀ i, A i → B i}
+    (hf : ∀ i, IsInducing (f i)) : IsInducing (Pi.map f) := by
+  simp [isInducing_iff_nhds, nhds_pi, (hf _).nhds_eq_comap, Filter.pi_comap]
+
+protected lemma Topology.IsEmbedding.piMap {f : ∀ i, A i → B i}
+    (hf : ∀ i, IsEmbedding (f i)) : IsEmbedding (Pi.map f) :=
+  ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2⟩
 
 theorem Pi.continuous_precomp' {ι' : Type*} (φ : ι' → ι) :
     Continuous (fun (f : (∀ i, A i)) (j : ι') ↦ f (φ j)) :=
@@ -901,6 +965,14 @@ theorem isClosed_set_pi {i : Set ι} {s : ∀ a, Set (A a)} (hs : ∀ a ∈ i, I
     IsClosed (pi i s) := by
   rw [pi_def]; exact isClosed_biInter fun a ha => (hs _ ha).preimage (continuous_apply _)
 
+protected lemma Topology.IsClosedEmbedding.piMap {f : ∀ i, A i → B i}
+    (hf : ∀ i, IsClosedEmbedding (f i)) : IsClosedEmbedding (Pi.map f) :=
+  ⟨.piMap fun i ↦ (hf i).1, by simpa using isClosed_set_pi fun i _ ↦ (hf i).2⟩
+
+protected lemma Topology.IsOpenEmbedding.piMap [Finite ι] {f : ∀ i, A i → B i}
+    (hf : ∀ i, IsOpenEmbedding (f i)) : IsOpenEmbedding (Pi.map f) :=
+  ⟨.piMap fun i ↦ (hf i).1, by simpa using isOpen_set_pi Set.finite_univ fun i _ ↦ (hf i).2⟩
+
 theorem mem_nhds_of_pi_mem_nhds {I : Set ι} {s : ∀ i, Set (A i)} (a : ∀ i, A i) (hs : I.pi s ∈ 𝓝 a)
     {i : ι} (hi : i ∈ I) : s i ∈ 𝓝 (a i) := by
   rw [nhds_pi] at hs; exact mem_of_pi_mem_pi hs hi
@@ -984,7 +1056,7 @@ variable [Finite ι] [∀ i, DiscreteTopology (A i)]
 
 /-- A finite product of discrete spaces is discrete. -/
 instance Pi.discreteTopology : DiscreteTopology (∀ i, A i) :=
-  singletons_open_iff_discrete.mp fun x => by
+  discreteTopology_iff_isOpen_singleton.mpr fun x => by
     rw [← univ_pi_singleton]
     exact isOpen_set_pi finite_univ fun i _ => (isOpen_discrete {x i})
 

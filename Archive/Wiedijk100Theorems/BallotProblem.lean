@@ -58,8 +58,7 @@ theorem staysPositive_cons_pos (x : ℤ) (hx : 0 < x) (l : List ℤ) :
     (x::l) ∈ staysPositive ↔ l ∈ staysPositive := by
   rw [staysPositive_cons, and_iff_left_iff_imp]
   intro h
-  have := sum_nonneg_of_staysPositive h
-  positivity
+  positivity [sum_nonneg_of_staysPositive h]
 
 /-- `countedSequence p q` is the set of lists of integers for which every element is `+1` or `-1`,
 there are `p` lots of `+1` and `q` lots of `-1`.
@@ -115,14 +114,14 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail, hl₀, List.head?_eq_head, hlast, beq_self_eq_true, if_pos rfl,
+      · rw [List.count_tail, hl₀, List.head?_eq_head hlnil, hlast, beq_self_eq_true, if_pos rfl,
           Nat.add_sub_cancel]
-      · rw [List.count_tail, hl₁, List.head?_eq_head, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail, hl₁, List.head?_eq_head hlnil, hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]
     · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail, hl₀, List.head?_eq_head, hlast, if_neg (by decide), Nat.sub_zero]
-      · rw [List.count_tail, hl₁, List.head?_eq_head, hlast, beq_self_eq_true, if_pos rfl,
+      · rw [List.count_tail, hl₀, List.head?_eq_head hlnil, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail, hl₁, List.head?_eq_head hlnil, hlast, beq_self_eq_true, if_pos rfl,
           Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]

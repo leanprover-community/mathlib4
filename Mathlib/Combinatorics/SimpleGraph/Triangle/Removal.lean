@@ -29,12 +29,16 @@ namespace SimpleGraph
 /-- An explicit form for the constant in the triangle removal lemma.
 
 Note that this depends on `SzemerediRegularity.bound`, which is a tower-type exponential. This means
-`triangleRemovalBound` is in practice absolutely tiny. -/
-noncomputable def triangleRemovalBound (ε : ℝ) : ℝ :=
-  min (2 * ⌈4/ε⌉₊^3)⁻¹ ((1 - ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊))^3)
+`triangleRemovalBound` is in practice absolutely tiny.
 
-lemma triangleRemovalBound_pos (hε : 0 < ε) (hε₁ : ε ≤ 1) : 0 < triangleRemovalBound ε := by
-  have : 0 < 1 - ε / 4 := by linarith
+This definition is meant to be used for small values of `ε`, and in particular is junk for values
+of `ε` greater than or equal to `1`. The junk value is chosen to be positive, so that
+`0 < ε → 0 < triangleRemovalBound ε` regardless of whether `ε < 1` or not. -/
+noncomputable def triangleRemovalBound (ε : ℝ) : ℝ :=
+  min (2 * ⌈4/ε⌉₊^3)⁻¹ ((1 - min 1 ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊))^3)
+
+lemma triangleRemovalBound_pos (hε : 0 < ε) : 0 < triangleRemovalBound ε := by
+  have : 0 < 1 - min 1 ε/4 := by have := min_le_left 1 ε; linarith
   unfold triangleRemovalBound
   positivity
 
@@ -47,6 +51,10 @@ lemma triangleRemovalBound_mul_cube_lt (hε : 0 < ε) :
     _ ≤ (2 * ⌈4 / ε⌉₊ ^ 3 : ℝ)⁻¹ * ↑⌈4 / ε⌉₊ ^ 3 := by gcongr; exact min_le_left _ _
     _ = 2⁻¹ := by rw [mul_inv, inv_mul_cancel_right₀]; positivity
     _ < 1 := by norm_num
+
+lemma triangleRemovalBound_le (hε₁ : ε ≤ 1) :
+    triangleRemovalBound ε ≤ (1 - ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊)) ^ 3 := by
+  simp [triangleRemovalBound, hε₁]
 
 private lemma aux {n k : ℕ} (hk : 0 < k) (hn : k ≤ n) : n < 2 * k * (n / k) := by
   rw [mul_assoc, two_mul, ← add_lt_add_iff_right (n % k), add_right_comm, add_assoc,
@@ -65,7 +73,7 @@ private lemma card_bound (hP₁ : P.IsEquipartition) (hP₃ : #P.parts ≤ bound
       (div_le_iff₀' (by positivity)).2 <| mod_cast (aux ‹_› P.card_parts_le_card).le
     _ ≤ (#s : ℝ) := mod_cast hP₁.average_le_card_part hX
 
-private lemma triangle_removal_aux (hε : 0 < ε) (hP₁ : P.IsEquipartition)
+private lemma triangle_removal_aux (hε : 0 < ε) (hε₁ : ε ≤ 1) (hP₁ : P.IsEquipartition)
     (hP₃ : #P.parts ≤ bound (ε / 8) ⌈4 / ε⌉₊)
     (ht : t ∈ (G.regularityReduced P (ε / 8) (ε / 4)).cliqueFinset 3) :
     triangleRemovalBound ε * card α ^ 3 ≤ #(G.cliqueFinset 3) := by
@@ -84,7 +92,7 @@ private lemma triangle_removal_aux (hε : 0 < ε) (hP₁ : P.IsEquipartition)
     have : ε / 4 ≤ 1 := ‹ε / 4 ≤ _›.trans (by exact mod_cast G.edgeDensity_le_one _ _); linarith
   calc
     _ ≤ (1 - ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊))^3 * card α ^ 3 := by
-      gcongr; exact min_le_right _ _
+      gcongr; exact triangleRemovalBound_le hε₁
     _ = (1 - 2 * (ε / 8)) * (ε / 8) ^ 3 * (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) *
           (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) * (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) := by
       ring
@@ -106,7 +114,8 @@ lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEq
       rw [univ_product_univ, mul_sub, filter_and_not, cast_card_sdiff]
       · norm_cast
         rw [two_mul_card_edgeFinset, two_mul_card_edgeFinset]
-      · exact monotone_filter_right _ fun xy hxy ↦ regularityReduced_le hxy
+      · gcongr with xy _
+        exact fun hxy ↦ regularityReduced_le hxy
     _ ≤ #(A ∪ B ∪ C) := by gcongr; exact unreduced_edges_subset
     _ ≤ #(A ∪ B) + #C := mod_cast (card_union_le _ _)
     _ ≤ #A + #B + #C := by gcongr; exact mod_cast card_union_le _ _
@@ -132,7 +141,7 @@ lemma FarFromTriangleFree.le_card_cliqueFinset (hG : G.FarFromTriangleFree ε) :
   rcases le_total (card α) l with hl' | hl'
   · calc
       _ ≤ triangleRemovalBound ε * ↑l ^ 3 := by
-        gcongr; exact (triangleRemovalBound_pos hε hG.lt_one.le).le
+        gcongr; exact (triangleRemovalBound_pos hε).le
       _ ≤ (1 : ℝ) := (triangleRemovalBound_mul_cube_lt hε).le
       _ ≤ _ := by simpa [one_le_iff_ne_zero] using (hG.cliqueFinset_nonempty hε).card_pos.ne'
   obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := szemeredi_regularity G (by positivity : 0 < ε / 8) hl'
@@ -141,7 +150,7 @@ lemma FarFromTriangleFree.le_card_cliqueFinset (hG : G.FarFromTriangleFree ε) :
   rw [mul_assoc] at k
   replace k := lt_of_mul_lt_mul_left k zero_le_two
   obtain ⟨t, ht⟩ := hG.cliqueFinset_nonempty' regularityReduced_le k
-  exact triangle_removal_aux hε hP₁ hP₃ ht
+  exact triangle_removal_aux hε hG.lt_one.le hP₁ hP₃ ht
 
 /-- **Triangle Removal Lemma**. If there are not too many triangles (on the order of `(card α)^3`)
 then they can all be removed by removing a few edges (on the order of `(card α)^2`). -/
@@ -158,20 +167,19 @@ end SimpleGraph
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq SimpleGraph
 
-/-- Extension for the `positivity` tactic: `SimpleGraph.triangleRemovalBound ε` is positive if
-`0 < ε ≤ 1`.
+/-- Extension for the `positivity` tactic: `SimpleGraph.triangleRemovalBound ε` is positive
+if `ε` is.
 
-Note this looks for `ε ≤ 1` in the context. -/
+This exploits the positivity of the junk value of `triangleRemovalBound ε` for `ε ≥ 1`. -/
 @[positivity triangleRemovalBound _]
 def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(triangleRemovalBound $ε) =>
-    let some hε₁ ← findLocalDeclWithTypeQ? q($ε ≤ 1) | failure
     let .positive hε ← core q(inferInstance) q(inferInstance) ε | failure
     assertInstancesCommute
-    pure (.positive q(triangleRemovalBound_pos $hε $hε₁))
+    pure (.positive q(triangleRemovalBound_pos $hε))
   | _, _, _ => throwError "failed to match on Int.ceil application"
 
-example (ε : ℝ) (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) : 0 < triangleRemovalBound ε := by positivity
+example (ε : ℝ) (hε : 0 < ε) : 0 < triangleRemovalBound ε := by positivity
 
 end Mathlib.Meta.Positivity

@@ -26,10 +26,10 @@ variable [Module.Finite ℤ 𝒪]
 open nonZeroDivisors
 
 lemma NumberField.absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).natAbs := by
-  refine (differentIdeal ℤ 𝒪).toAddSubgroup.relindex_top_right.symm.trans ?_
+  refine (differentIdeal ℤ 𝒪).toAddSubgroup.relIndex_top_right.symm.trans ?_
   rw [← Submodule.comap_map_eq_of_injective (f := Algebra.linearMap 𝒪 K)
     (FaithfulSMul.algebraMap_injective 𝒪 K) (differentIdeal ℤ 𝒪)]
-  refine (AddSubgroup.relindex_comap (IsLocalization.coeSubmodule K
+  refine (AddSubgroup.relIndex_comap (IsLocalization.coeSubmodule K
     (differentIdeal ℤ 𝒪)).toAddSubgroup (algebraMap 𝒪 K).toAddMonoidHom ⊤).trans ?_
   have := FractionalIdeal.quotientEquiv (R := 𝒪) (K := K) 1 (differentIdeal ℤ 𝒪)
     (differentIdeal ℤ 𝒪)⁻¹ 1 (by simp [differentIdeal_ne_bot]) FractionalIdeal.coeIdeal_le_one
@@ -45,7 +45,7 @@ lemma NumberField.absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (
     let e := IsIntegralClosure.equiv ℤ (RingOfIntegers K) K 𝒪
     simpa [e.symm.exists_congr_left, e] using mem_span_integralBasis K
   qify
-  refine (AddSubgroup.relindex_eq_abs_det (1 : Submodule 𝒪 K).toAddSubgroup (FractionalIdeal.dual
+  refine (AddSubgroup.relIndex_eq_abs_det (1 : Submodule 𝒪 K).toAddSubgroup (FractionalIdeal.dual
     ℤ ℚ 1 : FractionalIdeal 𝒪⁰ K).coeToSubmodule.toAddSubgroup ?_ b b' ?_ ?_).trans ?_
   · rw [Submodule.toAddSubgroup_le, ← FractionalIdeal.coe_one]
     exact FractionalIdeal.one_le_dual_one ℤ ℚ (L := K) (B := 𝒪)

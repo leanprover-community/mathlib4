@@ -42,7 +42,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `Set.seq`: monadic `seq` operation on sets;
   we don't use monadic notation to ensure support for maps between different universes.
 
-## Notations
+## Notation
 
 - `f '' s`: image of a set;
 - `f ⁻¹' s`: preimage of a set;
@@ -69,6 +69,8 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 @[simp, mfld_simps]
 theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+
+grind_pattern mem_setOf_eq => x ∈ setOf p
 
 /-- This lemma is intended for use with `rw` where a membership predicate is needed,
 hence the explicit argument and the equality in the reverse direction from normal.
@@ -169,9 +171,13 @@ theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.v
   simp only [Function.comp_apply]
   apply apply_rangeSplitting
 
+lemma Subtype.range_coind (f : α → β) {p : β → Prop} (h : ∀ (a : α), p (f a)) :
+    range (Subtype.coind f h) = Subtype.val ⁻¹' range f := by
+  simp [Set.ext_iff, Subtype.ext_iff]
+
 section Prod
 
-/-- The cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
+/-- The Cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
 def prod (s : Set α) (t : Set β) : Set (α × β) := {p | p.1 ∈ s ∧ p.2 ∈ t}
 
 @[default_instance]

@@ -214,7 +214,7 @@ def sumsq : List (Poly α) → Poly α
   | [] => 0
   | p::ps => p * p + sumsq ps
 
-theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
+@[simp] theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
   | [] => le_refl 0
   | p::ps => by
     rw [sumsq]
@@ -222,20 +222,7 @@ theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
 
 theorem sumsq_eq_zero (x) : ∀ l, sumsq l x = 0 ↔ l.Forall fun a : Poly α => a x = 0
   | [] => eq_self_iff_true _
-  | p::ps => by
-    rw [List.forall_cons, ← sumsq_eq_zero _ ps]; rw [sumsq]
-    exact
-      ⟨fun h : p x * p x + sumsq ps x = 0 =>
-        have : p x = 0 :=
-          eq_zero_of_mul_self_eq_zero <|
-            le_antisymm
-              (by
-                rw [← h]
-                have t := add_le_add_left (sumsq_nonneg x ps) (p x * p x)
-                rwa [add_zero] at t)
-              (mul_self_nonneg _)
-        ⟨this, by simpa [this] using h⟩,
-      fun ⟨h1, h2⟩ => by rw [add_apply, mul_apply, h1, h2]; rfl⟩
+  | p::ps => by simp [sumsq, add_eq_zero_iff_of_nonneg, mul_self_nonneg, sumsq_eq_zero]
 
 end
 
@@ -303,9 +290,8 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     let ⟨β, pl, h⟩ := this
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction l with | nil => exact ⟨ULift Empty, [], fun _ => by simp⟩ | cons S l IH =>
-  simp? at d says simp only [List.forall_cons] at d
+  obtain ⟨⟨β, p, pe⟩, dl⟩ := (List.forall_cons _ _ _).mp d
   exact
-    let ⟨⟨β, p, pe⟩, dl⟩ := d
     let ⟨γ, pl, ple⟩ := IH dl
     ⟨β ⊕ γ, p.map (inl ⊗ inr ∘ inl)::pl.map fun q => q.map (inl ⊗ inr ∘ inr),
       fun v => by
@@ -588,7 +574,7 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               rcases o with (ae | ⟨yz, x0⟩)
               · rw [ae, add_tsub_cancel_right]
               · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
-              omega⟩
+              cutsat⟩
 
 @[inherit_doc]
 scoped infixl:80 " D- " => Dioph.sub_dioph

@@ -30,7 +30,7 @@ variable {E X : Type*} [TopologicalSpace E] [TopologicalSpace X] (f : E → X) (
 
 **Remark**: `DiscreteTopology I ∧ ∃ Trivialization I f, x ∈ t.baseSet` would be a simpler
 definition, but unfortunately it does not work if `E` is nonempty but nonetheless `f` has empty
-fibers over `s`. If `PartialHomeomorph` could be refactored to work with an empty space and a
+fibers over `s`. If `OpenPartialHomeomorph` could be refactored to work with an empty space and a
 nonempty space while preserving the APIs, we could switch back to the definition. -/
 def IsEvenlyCovered (x : X) (I : Type*) [TopologicalSpace I] :=
   DiscreteTopology I ∧ ∃ U : Set X, x ∈ U ∧ IsOpen U ∧ IsOpen (f ⁻¹' U) ∧
@@ -181,13 +181,13 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
   have h := (hf (f x) hx).mem_toTrivialization_baseSet
   let he := e.mem_source.2 h
   refine
-    ⟨e.toPartialHomeomorph.trans
+    ⟨e.toOpenPartialHomeomorph.trans
         { toFun := fun p => p.1
           invFun := fun p => ⟨p, x, rfl⟩
           source := e.baseSet ×ˢ ({⟨x, rfl⟩} : Set (f ⁻¹' {f x}))
           target := e.baseSet
           open_source :=
-            e.open_baseSet.prod (singletons_open_iff_discrete.2 (hf (f x) hx).1 ⟨x, rfl⟩)
+            e.open_baseSet.prod (discreteTopology_iff_isOpen_singleton.1 (hf (f x) hx).1 ⟨x, rfl⟩)
           open_target := e.open_baseSet
           map_source' := fun p => And.left
           map_target' := fun p hp => ⟨hp, rfl⟩
@@ -195,7 +195,7 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
           right_inv' := fun p _ => rfl
           continuousOn_toFun := continuousOn_fst
           continuousOn_invFun := by fun_prop },
-      ⟨he, by rwa [e.toPartialHomeomorph.symm_symm, e.proj_toFun x he],
+      ⟨he, by rwa [e.toOpenPartialHomeomorph.symm_symm, e.proj_toFun x he],
         (hf (f x) hx).toTrivialization_apply⟩,
       fun p h => (e.proj_toFun p h.1).symm⟩
 
@@ -275,6 +275,7 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
 
 variable {A} [TopologicalSpace A] {s : Set A} {g g₁ g₂ : A → E}
 
+/-- Proposition 1.34 of [hatcher02]. -/
 theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (he : f ∘ g₁ = f ∘ g₂) (a : A) (ha : g₁ a = g₂ a) : g₁ = g₂ :=
   hf.isSeparatedMap.eq_of_comp_eq hf.isLocalHomeomorph.isLocallyInjective h₁ h₂ he a ha
