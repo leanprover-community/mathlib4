@@ -2728,6 +2728,7 @@ import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
+import Mathlib.CategoryTheory.Presentable.ColimitPresentation
 import Mathlib.CategoryTheory.Presentable.Finite
 import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 import Mathlib.CategoryTheory.Presentable.Limits
@@ -3638,7 +3639,6 @@ import Mathlib.Data.Real.EReal
 import Mathlib.Data.Real.Embedding
 import Mathlib.Data.Real.GoldenRatio
 import Mathlib.Data.Real.Hyperreal
-import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.Data.Real.Pi.Irrational
 import Mathlib.Data.Real.Pi.Leibniz
@@ -5384,7 +5384,7 @@ import Mathlib.Probability.Martingale.Upcrossing
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.ComplexMGF
 import Mathlib.Probability.Moments.Covariance
-import Mathlib.Probability.Moments.CovarianceBilin
+import Mathlib.Probability.Moments.CovarianceBilinDual
 import Mathlib.Probability.Moments.IntegrableExpMul
 import Mathlib.Probability.Moments.MGFAnalytic
 import Mathlib.Probability.Moments.SubGaussian
@@ -5857,6 +5857,7 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.RingTheory.Radical
+import Mathlib.RingTheory.Real.Irrational
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Regular.Depth
