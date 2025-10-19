@@ -324,10 +324,10 @@ theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x := rfl
 
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
 injective. -/
-theorem injective_kerLift (f : α → β) : Injective <| kerLift f :=
+theorem kerLift_injective (f : α → β) : Injective <| kerLift f :=
   fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
 
-@[deprecated (since := "2025-10-11")] alias ker_lift_injective := injective_kerLift
+@[deprecated (since := "2025-10-11")] alias ker_lift_injective := kerLift_injective
 
 /-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
 induced map from the quotient of α to β is injective. -/
@@ -347,7 +347,7 @@ theorem range_kerLift_eq_range : Set.range (kerLift f) = Set.range f :=
 /-- The quotient of `α` by the kernel of a function `f`
 bijects with the image of `f` lifted to the quotient. -/
 noncomputable def quotientKerEquivRangeKerLift : Quotient (ker f) ≃ Set.range (kerLift f) :=
-  .ofInjective _ <| injective_kerLift _
+  .ofInjective _ <| kerLift_injective _
 
 /-- The first isomorphism theorem for sets: the quotient of α by the kernel of a function f
 bijects with f's image. -/
