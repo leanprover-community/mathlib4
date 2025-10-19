@@ -436,8 +436,7 @@ lemma AffineIndependent.inf_affineSpan_eq_affineSpan_inter [Nontrivial k] {p : �
       intro hi₂
       rw [← Set.indicator_of_mem (s := ↑fs₁) (by simpa using hi) w₁, ha]
       simp [hi₂]
-  · rintro ⟨fs, hfs, w, hw, hp's⟩
-    exact ⟨⟨fs, by grind, w, hw, hp's⟩, ⟨fs, by grind, w, hw, hp's⟩⟩
+  · grind
 
 /-- If a family is affinely independent, and the spans of points
 indexed by two subsets of the index type have a point in common, those
