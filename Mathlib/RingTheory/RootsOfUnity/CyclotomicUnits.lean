@@ -76,7 +76,7 @@ theorem associated_map_sub_one_map_sub_one {n : ℕ} [NeZero n] {R : Type*} [Com
   apply hζ.associated_pow_sub_one_pow_of_coprime
   · exact ZMod.val_coe_unit_coprime ((autToPow R hζ) τ)
   · exact ZMod.val_coe_unit_coprime ((autToPow R hζ) σ)
-  
+
 /-- Given an `n`-th primitive root of unity `ζ`, where `2 ≤ n`, we have that `∑ i ∈ range j, ζ ^ i`
   is a unit for all `j` coprime with `n`. This is the unit given by
   `associated_pow_sub_one_pow_of_coprime` (see
