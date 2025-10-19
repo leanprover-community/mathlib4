@@ -130,7 +130,11 @@ structure IsExtremePt (x : α) (f : α → α) (y : α) : Prop where
   map_le_of_mem_of_lt {z : α} (h : z ∈ bot x f) (h' : z < y) : f z ≤ y
   map_le_of_mem_of_lt {z : α} (h : z ∈ bot x f) (h' : z < y) : f z ≤ y
 
-lemma eq_bot {y : α} (le_map : ∀ x, x ≤ f x) (hy : IsExtremePt x f y) :
+namespace IsExtremePt
+
+/-- If `y` is an extreme point and `f` is inflationary, then there are no element between `y` and
+`f y`. -/
+lemma bot_eq_of_le_or_map_le {y : α} (le_map : ∀ x, x ≤ f x) (hy : IsExtremePt x f y) :
     {z ∈ bot x f | z ≤ y ∨ f y ≤ z} = bot x f := by
   rw [← subset_bot_iff]
   · apply sep_subset
@@ -169,7 +173,7 @@ lemma setOf_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
     refine ⟨map_mem_bot le_map hy.mem_bot, ?_⟩
     intro z hz hzy
     have hz' := hz
-    rw [← eq_bot le_map hy] at hz'
+    rw [← bot_eq_of_le_or_map_le le_map hy] at hz'
     rcases hz' with ⟨_, (hz' | hz')⟩
     · rcases le_iff_lt_or_eq.1 hz' with (hz' | rfl)
       · exact le_trans (hy.map_le_of_mem_of_lt hz hz') (le_map y)
@@ -188,11 +192,11 @@ lemma setOf_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
     · push_neg at h
       obtain ⟨z, hz, hzy⟩ := h
       have h := hy
-      rw [← eq_bot le_map (hc hz)] at h
+      rw [← bot_eq_of_le_or_map_le le_map (hc hz)] at h
       obtain (hyz | rfl) := le_iff_lt_or_eq.1 (Or.resolve_right h.2 hzy)
       · exact le_trans ((hc hz).map_le_of_mem_of_lt hy hyz) (le_cSup _ _ hz)
       · have hc' := (bot_isAdmissible le_map).cSup_mem _ (subset_trans hc ((fun _ h ↦ h.mem_bot)))
-        rw [← eq_bot le_map (hc hz)] at hc'
+        rw [← bot_eq_of_le_or_map_le le_map (hc hz)] at hc'
         obtain ⟨_, (hc' | hc')⟩ := hc'
         · exfalso
           apply lt_irrefl y (lt_of_lt_of_le hy' hc')
@@ -211,12 +215,14 @@ lemma mem_bot_iff_isExtremePt {y : α} (le_map : ∀ x, x ≤ f x) :
 lemma bot_isChain (le_map : ∀ x, x ≤ f x) : IsChain (· ≤ ·) (bot x f) := by
   intro y hy z hz _
   rw [mem_bot_iff_isExtremePt le_map] at hy
-  rw [← eq_bot le_map hy] at hz
+  rw [← bot_eq_of_le_or_map_le le_map hy] at hz
   obtain ⟨_, (hz | hz)⟩ := hz
   · right; exact hz
   · left; exact le_trans (le_map y) hz
 
-open Function
+end IsExtremePt
+
+open Function IsExtremePt
 
 /- **The Bourbaki-Witt Theorem**: If `α` is a chain complete partial order and `f : α → α` is
 inflationary, then `f` has a fixed point -/
