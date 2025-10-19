@@ -276,6 +276,36 @@ theorem orthogonalProjection_vsub_orthogonalProjection (s : AffineSubspace ℝ P
   rw [← neg_vsub_eq_vsub_rev, inner_neg_right,
     orthogonalProjection_vsub_mem_direction_orthogonal s p c hc, neg_zero]
 
+/-- The characteristic property of the orthogonal projection. This form is typically more
+convenient to use than `inter_eq_singleton_orthogonalProjection`. -/
+lemma orthogonalProjection_eq_iff_mem {s : AffineSubspace ℝ P} [Nonempty s]
+    [s.direction.HasOrthogonalProjection] {p q : P} :
+    orthogonalProjection s p = q ↔ q ∈ s ∧ p -ᵥ q ∈ s.directionᗮ := by
+  constructor
+  · rintro rfl
+    exact ⟨orthogonalProjection_mem _, vsub_orthogonalProjection_mem_direction_orthogonal _ _⟩
+  · rintro ⟨hqs, hpq⟩
+    have hq : q ∈ mk' p s.directionᗮ := by
+      rwa [mem_mk', ← neg_mem_iff, neg_vsub_eq_vsub_rev]
+    suffices q ∈ ({(orthogonalProjection s p : P)} : Set P) by
+      simpa [eq_comm] using this
+    rw [← inter_eq_singleton_orthogonalProjection]
+    simp only [Set.mem_inter_iff, SetLike.mem_coe]
+    exact ⟨hqs, hq⟩
+
+/-- A condition for two points to have the same orthogonal projection onto a given subspace. -/
+lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubspace ℝ P}
+    [Nonempty s] [s.direction.HasOrthogonalProjection] {p q : P} :
+    orthogonalProjection s p = orthogonalProjection s q ↔ p -ᵥ q ∈ s.directionᗮ := by
+  suffices (orthogonalProjection s p : P) = orthogonalProjection s q ↔
+      p -ᵥ q ∈ s.directionᗮ by
+    simpa using this
+  rw [orthogonalProjection_eq_iff_mem]
+  simp only [SetLike.coe_mem, true_and]
+  rw [← s.directionᗮ.add_mem_iff_left (x := p -ᵥ q)
+    (vsub_orthogonalProjection_mem_direction_orthogonal s q)]
+  simp
+
 /-- Adding a vector to a point in the given subspace, then taking the
 orthogonal projection, produces the original point if the vector was
 in the orthogonal direction. -/
@@ -303,17 +333,9 @@ lemma orthogonalProjection_orthogonalProjection_of_le {s₁ s₂ : AffineSubspac
     [Nonempty s₂] [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
     (h : s₁ ≤ s₂) (p : P) :
     orthogonalProjection s₁ (orthogonalProjection s₂ p) = orthogonalProjection s₁ p := by
-  suffices orthogonalProjection s₁ (orthogonalProjection s₂ p) = (orthogonalProjection s₁ p : P) by
-     simpa using this
-  rw [← Set.singleton_eq_singleton_iff, ← inter_eq_singleton_orthogonalProjection,
-    ← inter_eq_singleton_orthogonalProjection]
-  congr 1
-  ext q
-  simp only [SetLike.mem_coe, mem_mk']
-  rw [← vsub_add_vsub_cancel q p (orthogonalProjection s₂ p)]
-  apply Submodule.add_mem_iff_left
+  rw [orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem]
   exact SetLike.le_def.1 (Submodule.orthogonal_le (direction_le h))
-    (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
+    (orthogonalProjection_vsub_mem_direction_orthogonal _ _)
 
 /-- The square of the distance from a point in `s` to `p₂` equals the
 sum of the squares of the distances of the two points to the
