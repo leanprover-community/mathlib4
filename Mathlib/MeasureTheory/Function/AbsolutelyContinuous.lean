@@ -36,7 +36,7 @@ We use the filter version to prove that absolutely continuous functions are clos
 and that absolutely continuous implies uniform continuous in
 `AbsolutelyContinuousOnInterval.uniformlyContinuousOn`
 
-We use the the `ε`-`δ` definition to prove that
+We use the `ε`-`δ` definition to prove that
 * Lipschitz continuous functions are absolutely continuous -
 `LipschitzOnWith.absolutelyContinuousOnInterval`;
 * absolutely continuous functions have bounded variation -
@@ -90,9 +90,7 @@ lemma disjWithin_comm (a b : ℝ) : disjWithin a b = disjWithin b a := by
 
 lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) :
     disjWithin c d ⊆ disjWithin a b := by
-  simp +contextual only [disjWithin, Finset.mem_range, setOf_subset_setOf, and_true,
-    and_imp, Prod.forall]
-  exact fun (n I h _ i hi) ↦ ⟨habcd (h i hi).left, habcd (h i hi).right⟩
+  grind [disjWithin]
 
 /-- `AbsolutelyContinuousOnInterval f a b`: A function `f` is *absolutely continuous* on `uIcc a b`
 if the function which (intuitively) maps `uIoc (a i) (b i)`, `i < n` to
@@ -173,10 +171,7 @@ theorem const_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M 
     AbsolutelyContinuousOnInterval (fun x ↦ α • f x) a b := by
   apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf.const_mul ‖α‖)
   · exact Finset.sum_nonneg (fun i hi ↦ by positivity)
-  · rw [Finset.mul_sum]
-    gcongr
-    simp only [dist_smul₀]
-    rfl
+  · simp [Finset.mul_sum, dist_smul₀]
 
 theorem const_mul {f : ℝ → ℝ} (α : ℝ) (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ α * f x) a b :=
@@ -201,8 +196,7 @@ theorem uniformlyContinuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
     simp only [disjWithin, Finset.mem_range, preimage_setOf_eq, Nat.lt_one_iff,
       forall_eq, mem_setOf_eq, mem_prod]
     simp
-  · simp only [totalLengthFilter, comap_comap]
-    congr 1
+  · simp [totalLengthFilter, comap_comap, Function.comp_def]
 
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` is continuous on `uIcc a b`. -/
 theorem continuousOn (hf : AbsolutelyContinuousOnInterval f a b) :
@@ -225,7 +219,7 @@ theorem fun_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
   unfold AbsolutelyContinuousOnInterval at hf hg
   apply squeeze_zero' ?_ ?_
     (by simpa using (hg.const_mul C).add (hf.const_mul D))
-  · exact Filter.Eventually.of_forall <| fun _ ↦ Finset.sum_nonneg (fun i hi ↦ by exact dist_nonneg)
+  · exact Filter.Eventually.of_forall <| fun _ ↦ Finset.sum_nonneg (fun i hi ↦ dist_nonneg)
   rw [eventually_inf_principal]
   filter_upwards with (n, I) hnI
   simp only [Finset.mul_sum, ← Finset.sum_add_distrib]
@@ -336,8 +330,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
           constructor <;> exact this (hp₂ _)
         · rw [PairwiseDisjoint]
           convert hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
-          rw [uIoc_of_le (hp₁ (by omega))]
-          rfl
+          rw [uIoc_of_le (hp₁ (by omega)), Nat.succ_eq_succ]
       · suffices p.2.val p.1 - p.2.val 0 < δ by
           convert this
           rw [← Finset.sum_range_sub]
