@@ -51,7 +51,7 @@ noncomputable def _root_.OrthonormalBasis.mulOpposite (b : OrthonormalBasis Î¹ ð
 end orthonormal
 end InnerProductSpace
 
-variable {R H : Type*} [SeminormedAddCommGroup H] [Semiring R] [Module R H]
+variable {R H : Type*} [Semiring R] [SeminormedAddCommGroup H] [Module R H]
 
 theorem isometry_opLinearEquiv : Isometry (opLinearEquiv R (M := H)) := fun _ _ => rfl
 
