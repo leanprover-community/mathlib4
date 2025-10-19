@@ -460,9 +460,9 @@ lemma map_injective_of_isInducing {f : β → α} (hf : Topology.IsInducing f) :
 
 /-- The map `IrreducibleCloseds.map` is strictly monotone when `f` is an embedding. -/
 lemma map_strictMono_of_isInducing {f : β → α} (hf : Topology.IsInducing f) :
-    StrictMono (map f hf.continuous) := by
-  exact Monotone.strictMono_of_injective
-    (fun A B h_le => closure_mono <| Set.image_mono h_le)
+    StrictMono (map f hf.continuous) :=
+  Monotone.strictMono_of_injective
+    (fun _ _ h_le => closure_mono <| Set.image_mono h_le)
     (map_injective_of_isInducing hf)
 
 end IrreducibleCloseds
