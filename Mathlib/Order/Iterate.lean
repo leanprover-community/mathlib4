@@ -158,14 +158,14 @@ theorem iterate_le_of_map_le (h : Commute f g) (hf : Monotone f) (hg : Monotone 
   apply hf.seq_le_seq n
   · rfl
   · intros; rw [iterate_succ_apply']
-  · intros; simp [h.iterate_right _ _, hg.iterate _ hx]
+  · simp [h.iterate_right _ _, hg.iterate _ hx]
 
 theorem iterate_pos_lt_of_map_lt (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x}
     (hx : f x < g x) {n} (hn : 0 < n) : f^[n] x < g^[n] x := by
   apply hf.seq_pos_lt_seq_of_le_of_lt hn
   · rfl
   · intros; rw [iterate_succ_apply']
-  · intros; simp [h.iterate_right _ _, hg.iterate _ hx]
+  · simp [h.iterate_right _ _, hg.iterate _ hx]
 
 theorem iterate_pos_lt_of_map_lt' (h : Commute f g) (hf : StrictMono f) (hg : Monotone g) {x}
     (hx : f x < g x) {n} (hn : 0 < n) : f^[n] x < g^[n] x :=

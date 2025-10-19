@@ -36,9 +36,9 @@ Appropriate definitions and results are also transported to the additive theory 
   `(fun h ↦ h * g) ⁻¹' s`, `(fun h ↦ g * h) ⁻¹' s`, `(fun h ↦ h * g⁻¹) ⁻¹' s`,
   `(fun h ↦ g⁻¹ * h) ⁻¹' s`, `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
   Expressions equal to one of these will be simplified.
-* We put all instances in the locale `Pointwise`, so that these instances are not available by
+* We put all instances in the scope `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-  since we expect the locale to be open whenever the instances are actually used (and making the
+  since we expect the scope to be open whenever the instances are actually used (and making the
   instances reducible changes the behavior of `simp`.
 
 ## Tags
@@ -48,18 +48,6 @@ pointwise subtraction
 -/
 
 assert_not_exists Set.iUnion MulAction MonoidWithZero OrderedAddCommMonoid
-
-library_note "pointwise nat action"/--
-Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
-`SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
-nat or int action coming from `Set β` being a `Monoid` or `DivInvMonoid`. For example,
-`2 • {a, b}` can both be `{2 • a, 2 • b}` (pointwise action, pointwise repeated addition,
-`Set.smulSet`) and `{a + a, a + b, b + a, b + b}` (nat or int action, repeated pointwise
-addition, `Set.NSMul`).
-
-Because the pointwise action can easily be spelled out in such cases, we give higher priority to the
-nat and int actions.
--/
 
 open Function MulOpposite
 
@@ -73,13 +61,13 @@ open Pointwise
 
 section SMul
 
-/-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in locale `Pointwise`. -/
+/-- The dilation of set `x • s` is defined as `{x • y | y ∈ s}` in scope `Pointwise`. -/
 @[to_additive
-/-- The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in locale `Pointwise`. -/]
+/-- The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in scope `Pointwise`. -/]
 protected def smulSet [SMul α β] : SMul α (Set β) where smul a := image (a • ·)
 
 /-- The pointwise scalar multiplication of sets `s • t` is defined as `{x • y | x ∈ s, y ∈ t}` in
-locale `Pointwise`. -/
+scope `Pointwise`. -/
 @[to_additive
 /-- The pointwise scalar addition of sets `s +ᵥ t` is defined as `{x +ᵥ y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/]

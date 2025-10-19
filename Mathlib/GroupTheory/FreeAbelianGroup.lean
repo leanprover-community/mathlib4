@@ -20,7 +20,7 @@ under pointwise addition. In this file, it is defined as the abelianisation
 of the free group on `α`. All the constructions and theorems required to show
 the adjointness of the construction and the forgetful functor are proved in this
 file, but the category-theoretic adjunction statement is in
-`Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
+`Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`.
 
 ## Main definitions
 
@@ -57,7 +57,7 @@ be in the same universe. But
 `FreeAbelianGroup.map (f : α → β)` is defined to be the `AddGroup`
 homomorphism `FreeAbelianGroup α →+ FreeAbelianGroup β` (with `α` and `β` now
 allowed to be in different universes), so `(map f).map_add`
-etc can be used to prove that `FreeAbelianGroup.map` preserves addition. The
+etc. can be used to prove that `FreeAbelianGroup.map` preserves addition. The
 functions `map_id`, `map_id_apply`, `map_comp`, `map_comp_apply` and `map_of_apply`
 are about `FreeAbelianGroup.map`.
 
@@ -120,11 +120,11 @@ variable {β : Type v} [AddCommGroup β] (f : α → β)
 
 open FreeAbelianGroup
 
--- Porting note: needed to add `(β := Multiplicative β)` and `using 1`.
+-- Porting note: needed to add `(β := Multiplicative β)`
 @[simp]
 theorem lift_apply_of (x : α) : lift f (of x) = f x := by
   convert Abelianization.lift_apply_of
-     (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x) using 1
+     (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
   exact (FreeGroup.lift_apply_of (β := Multiplicative β)).symm
 
 @[deprecated (since := "2025-07-23")] protected alias lift.of := lift_apply_of

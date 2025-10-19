@@ -340,7 +340,8 @@ theorem UniformContinuousOn.tendstoUniformlyOn [UniformSpace α] [UniformSpace �
   rw [tendstoUniformlyOn_iff_tendsto]
   change Tendsto (Prod.map ↿F ↿F ∘ φ) (𝓝[U] x ×ˢ 𝓟 V) (𝓤 γ)
   simp only [nhdsWithin, Filter.prod_eq_inf, comap_inf, inf_assoc, comap_principal, inf_principal]
-  refine hF.comp (Tendsto.inf ?_ <| tendsto_principal_principal.2 fun x hx => ⟨⟨hU, hx.2⟩, hx⟩)
+  refine Tendsto.comp hF
+    (Tendsto.inf ?_ <| tendsto_principal_principal.2 fun x hx => ⟨⟨hU, hx.2⟩, hx⟩)
   simp only [uniformity_prod_eq_comap_prod, tendsto_comap_iff,
     nhds_eq_comap_uniformity, comap_comap]
   exact tendsto_comap.prodMk (tendsto_diag_uniformity _ _)
@@ -359,7 +360,7 @@ namespace Filter.HasBasis
 
 variable {X ιX ια ιβ : Type*}
 
-/-- An anologue of `Filter.HasBasis.tendsto_right_iff` for `TendstoUniformlyOnFilter`. -/
+/-- An analogue of `Filter.HasBasis.tendsto_right_iff` for `TendstoUniformlyOnFilter`. -/
 lemma tendstoUniformlyOnFilter_iff_of_uniformity {F : X → α → β} {f : α → β}
     {l : Filter X} {l' : Filter α} {pβ : ιβ → Prop} {sβ : ιβ → Set (β × β)}
     (hβ : (uniformity β).HasBasis pβ sβ) :
@@ -367,7 +368,7 @@ lemma tendstoUniformlyOnFilter_iff_of_uniformity {F : X → α → β} {f : α �
       (∀ i, pβ i → ∀ᶠ n in l ×ˢ l', (f n.2, F n.1 n.2) ∈ sβ i) := by
   rw [tendstoUniformlyOnFilter_iff_tendsto, hβ.tendsto_right_iff]
 
-/-- An anologue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformlyOnFilter`. -/
+/-- An analogue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformlyOnFilter`. -/
 lemma tendstoUniformlyOnFilter_iff {F : X → α → β} {f : α → β}
     {l : Filter X} {l' : Filter α} {pX : ιX → Prop} {sX : ιX → Set X}
     {pα : ια → Prop} {sα : ια → Set α} {pβ : ιβ → Prop} {sβ : ιβ → Set (β × β)}
@@ -377,7 +378,7 @@ lemma tendstoUniformlyOnFilter_iff {F : X → α → β} {f : α → β}
       (∀ i, pβ i → ∃ j k, (pX j ∧ pα k) ∧ ∀ x a, x ∈ sX j → a ∈ sα k → (f a, F x a) ∈ sβ i) := by
   simp [hβ.tendstoUniformlyOnFilter_iff_of_uniformity, (hl.prod hl').eventually_iff]
 
-/-- An anologue of `Filter.HasBasis.tendsto_right_iff` for `TendstoUniformlyOn`. -/
+/-- An analogue of `Filter.HasBasis.tendsto_right_iff` for `TendstoUniformlyOn`. -/
 lemma tendstoUniformlyOn_iff_of_uniformity {F : X → α → β} {f : α → β}
     {l : Filter X} {s : Set α} {pβ : ιβ → Prop} {sβ : ιβ → Set (β × β)}
     (hβ : (uniformity β).HasBasis pβ sβ) :
@@ -385,7 +386,7 @@ lemma tendstoUniformlyOn_iff_of_uniformity {F : X → α → β} {f : α → β}
       (∀ i, pβ i → ∀ᶠ n in l, ∀ x ∈ s, (f x, F n x) ∈ sβ i) := by
   simp_rw [tendstoUniformlyOn_iff_tendsto, hβ.tendsto_right_iff, eventually_prod_principal_iff]
 
-/-- An anologue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformlyOn`. -/
+/-- An analogue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformlyOn`. -/
 lemma tendstoUniformlyOn_iff {F : X → α → β} {f : α → β}
     {l : Filter X} {s : Set α} {pX : ιX → Prop} {sX : ιX → Set X} {pβ : ιβ → Prop}
     {sβ : ιβ → Set (β × β)} (hl : l.HasBasis pX sX) (hβ : (uniformity β).HasBasis pβ sβ) :
@@ -393,7 +394,7 @@ lemma tendstoUniformlyOn_iff {F : X → α → β} {f : α → β}
       (∀ i, pβ i → ∃ j, pX j ∧ ∀ ⦃x⦄, x ∈ sX j → ∀ a ∈ s, (f a, F x a) ∈ sβ i) := by
   simp [hβ.tendstoUniformlyOn_iff_of_uniformity, hl.eventually_iff]
 
-/-- An anologue of `Filter.HasBasis.tendsto_right_iff` for `TendstoUniformly`. -/
+/-- An analogue of `Filter.HasBasis.tendsto_right_iff` for `TendstoUniformly`. -/
 lemma tendstoUniformly_iff_of_uniformity {F : X → α → β} {f : α → β}
     {l : Filter X} {pβ : ιβ → Prop} {sβ : ιβ → Set (β × β)}
     (hβ : (uniformity β).HasBasis pβ sβ) :
@@ -402,7 +403,7 @@ lemma tendstoUniformly_iff_of_uniformity {F : X → α → β} {f : α → β}
   simp_rw [← tendstoUniformlyOn_univ, hβ.tendstoUniformlyOn_iff_of_uniformity, mem_univ,
     true_imp_iff]
 
-/-- An anologue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformly`. -/
+/-- An analogue of `Filter.HasBasis.tendsto_iff` for `TendstoUniformly`. -/
 lemma tendstoUniformly_iff {F : X → α → β} {f : α → β}
     {l : Filter X} {pX : ιX → Prop} {sX : ιX → Set X} (hl : l.HasBasis pX sX)
     {pβ : ιβ → Prop} {sβ : ιβ → Set (β × β)} (hβ : (uniformity β).HasBasis pβ sβ) :

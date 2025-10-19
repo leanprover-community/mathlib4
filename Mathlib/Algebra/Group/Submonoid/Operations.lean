@@ -6,6 +6,7 @@ Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulAction
@@ -464,7 +465,7 @@ def prod (s : Submonoid M) (t : Submonoid N) :
   one_mem' := ⟨s.one_mem, t.one_mem⟩
   mul_mem' hp hq := ⟨s.mul_mem hp.1 hq.1, t.mul_mem hp.2 hq.2⟩
 
-@[to_additive coe_prod]
+@[to_additive (attr := norm_cast) coe_prod]
 theorem coe_prod (s : Submonoid M) (t : Submonoid N) :
     (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
@@ -609,7 +610,7 @@ variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
 
 open Submonoid
 
-library_note "range copy pattern"/--
+library_note2 «range copy pattern» /--
 For many categories (monoids, modules, rings, ...) the set-theoretic image of a morphism `f` is
 a subobject of the codomain. When this is the case, it is useful to define the range of a morphism
 in such a way that the underlying carrier set of the range subobject is definitionally
@@ -890,6 +891,24 @@ def inclusion {S T : Submonoid M} (h : S ≤ T) : S →* T :=
   S.subtype.codRestrict _ fun x => h x.2
 
 @[to_additive (attr := simp)]
+theorem coe_inclusion {S T : Submonoid M} (h : S ≤ T) (a : S) : (inclusion h a : M) = a :=
+  Set.coe_inclusion h a
+
+@[to_additive]
+theorem inclusion_injective {S T : Submonoid M} (h : S ≤ T) : Function.Injective <| inclusion h :=
+  Set.inclusion_injective h
+
+@[to_additive (attr := simp)]
+lemma inclusion_inj {S T : Submonoid M} (h : S ≤ T) {x y : S} :
+    inclusion h x = inclusion h y ↔ x = y :=
+  (inclusion_injective h).eq_iff
+
+@[to_additive (attr := simp)]
+theorem subtype_comp_inclusion {S T : Submonoid M} (h : S ≤ T) :
+    T.subtype.comp (inclusion h) = S.subtype :=
+  rfl
+
+@[to_additive (attr := simp)]
 theorem mrange_subtype (s : Submonoid M) : mrange s.subtype = s :=
   SetLike.coe_injective <| (coe_mrange _).trans <| Subtype.range_coe
 
@@ -926,6 +945,70 @@ theorem bot_or_nontrivial (S : Submonoid M) : S = ⊥ ∨ Nontrivial S := by
   element. -/]
 theorem bot_or_exists_ne_one (S : Submonoid M) : S = ⊥ ∨ ∃ x ∈ S, x ≠ (1 : M) :=
   S.bot_or_nontrivial.imp_right S.nontrivial_iff_exists_ne_one.mp
+
+section Pi
+
+variable {ι : Type*} {M : ι → Type*} [∀ i, MulOneClass (M i)]
+
+/-- A version of `Set.pi` for submonoids. Given an index set `I` and a family of submodules
+`s : Π i, Submonoid f i`, `pi I s` is the submonoid of dependent functions `f : Π i, f i` such that
+`f i` belongs to `Pi I s` whenever `i ∈ I`. -/
+@[to_additive /-- A version of `Set.pi` for `AddSubmonoid`s. Given an index set `I` and a family
+  of submodules `s : Π i, AddSubmonoid f i`, `pi I s` is the `AddSubmonoid` of dependent functions
+  `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/]
+def pi (I : Set ι) (S : ∀ i, Submonoid (M i)) : Submonoid (∀ i, M i) where
+  carrier := I.pi fun i => (S i).carrier
+  one_mem' i _ := (S i).one_mem
+  mul_mem' hp hq i hI := (S i).mul_mem (hp i hI) (hq i hI)
+
+@[to_additive]
+theorem coe_pi (I : Set ι) (S : ∀ i, Submonoid (M i)) :
+    (pi I S : Set (∀ i, M i)) = Set.pi I fun i => (S i : Set (M i)) :=
+  rfl
+
+@[to_additive]
+theorem mem_pi (I : Set ι) {S : ∀ i, Submonoid (M i)} {p : ∀ i, M i} :
+    p ∈ Submonoid.pi I S ↔ ∀ i, i ∈ I → p i ∈ S i :=
+  Iff.rfl
+
+@[to_additive]
+theorem pi_top (I : Set ι) : (pi I fun i => (⊤ : Submonoid (M i))) = ⊤ :=
+  ext fun x => by simp [mem_pi]
+
+@[to_additive]
+theorem pi_empty (H : ∀ i, Submonoid (M i)) : pi ∅ H = ⊤ :=
+  ext fun x => by simp [mem_pi]
+
+@[to_additive]
+theorem pi_bot : (pi Set.univ fun i => (⊥ : Submonoid (M i))) = ⊥ :=
+  ext fun x => by simp [mem_pi, funext_iff]
+
+@[to_additive]
+theorem le_pi_iff {I : Set ι} {S : ∀ i, Submonoid (M i)} {J : Submonoid (∀ i, M i)} :
+    J ≤ pi I S ↔ ∀ i ∈ I, J ≤ comap (Pi.evalMonoidHom M i) (S i) :=
+  Set.subset_pi_iff
+
+@[to_additive (attr := simp)]
+theorem mulSingle_mem_pi [DecidableEq ι] {I : Set ι} {S : ∀ i, Submonoid (M i)} (i : ι) (x : M i) :
+    Pi.mulSingle i x ∈ pi I S ↔ i ∈ I → x ∈ S i :=
+  Set.update_mem_pi_iff_of_mem (one_mem (pi I _))
+
+@[to_additive]
+theorem pi_eq_bot_iff (S : ∀ i, Submonoid (M i)) : pi Set.univ S = ⊥ ↔ ∀ i, S i = ⊥ := by
+  simp_rw [SetLike.ext'_iff]
+  exact Set.univ_pi_eq_singleton_iff
+
+@[to_additive]
+theorem le_comap_mulSingle_pi [DecidableEq ι] (S : ∀ i, Submonoid (M i)) {I i} :
+    S i ≤ comap (MonoidHom.mulSingle M i) (pi I S) :=
+  fun x hx => by simp [hx]
+
+@[to_additive]
+theorem iSup_map_mulSingle_le [DecidableEq ι] {I : Set ι} {S : ∀ i, Submonoid (M i)} :
+    ⨆ i, map (MonoidHom.mulSingle M i) (S i) ≤ pi I S :=
+  iSup_le fun _ => map_le_iff_le_comap.mpr (le_comap_mulSingle_pi _)
+
+end Pi
 
 end Submonoid
 
@@ -975,10 +1058,13 @@ theorem coe_submonoidMap_apply (e : M ≃* N) (S : Submonoid M) (g : S) :
     ((submonoidMap e S g : S.map (e : M →* N)) : N) = e g :=
   rfl
 
-@[to_additive (attr := simp) AddEquiv.add_submonoid_map_symm_apply]
+@[to_additive (attr := simp)]
 theorem submonoidMap_symm_apply (e : M ≃* N) (S : Submonoid M) (g : S.map (e : M →* N)) :
     (e.submonoidMap S).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.2⟩ :=
   rfl
+
+@[deprecated (since := "2025-08-20")]
+alias _root_.AddEquiv.add_submonoid_map_symm_apply := AddEquiv.addSubmonoidMap_symm_apply
 
 end MulEquiv
 
@@ -1016,10 +1102,12 @@ open AddSubmonoid Set
 
 namespace Nat
 
-@[simp] lemma addSubmonoid_closure_one : closure ({1} : Set ℕ) = ⊤ := by
+@[simp] lemma addSubmonoidClosure_one : closure ({1} : Set ℕ) = ⊤ := by
   refine (eq_top_iff' _).2 <| Nat.rec (zero_mem _) ?_
   simp_rw [Nat.succ_eq_add_one]
   exact fun n hn ↦ AddSubmonoid.add_mem _ hn <| subset_closure <| Set.mem_singleton _
+
+@[deprecated (since := "2025-08-14")] alias addSubmonoid_closure_one := addSubmonoidClosure_one
 
 end Nat
 

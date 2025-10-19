@@ -29,7 +29,7 @@ noncomputable section
 
 /-- `verschiebungFun x` shifts the coefficients of `x` up by one,
 by inserting 0 as the 0th coefficient.
-`x.coeff i` then becomes `(verchiebungFun x).coeff (i + 1)`.
+`x.coeff i` then becomes `(verschiebungFun x).coeff (i + 1)`.
 
 `verschiebungFun` is the underlying function of the additive monoid hom `WittVector.verschiebung`.
 -/
@@ -99,7 +99,7 @@ variable [hp : Fact p.Prime]
 
 /--
 `verschiebung x` shifts the coefficients of `x` up by one, by inserting 0 as the 0th coefficient.
-`x.coeff i` then becomes `(verchiebung x).coeff (i + 1)`.
+`x.coeff i` then becomes `(verschiebung x).coeff (i + 1)`.
 
 This is an additive monoid hom with underlying function `verschiebung_fun`.
 -/

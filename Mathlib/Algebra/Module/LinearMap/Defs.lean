@@ -215,7 +215,7 @@ def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.to
 @[simp]
 theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
 
--- Porting note: no longer a `simp`
+@[simp]
 theorem toFun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) := rfl
 
 @[ext]
@@ -426,6 +426,9 @@ instance coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) :=
 theorem coe_restrictScalars (f : M →ₗ[S] M₂) : ((f : M →ₗ[R] M₂) : M → M₂) = f :=
   rfl
 
+@[simp]
+lemma restrictScalars_self (f : M →ₗ[R] M₂) : f.restrictScalars R = f := rfl
+
 theorem restrictScalars_apply (fₗ : M →ₗ[S] M₂) (x) : restrictScalars R fₗ x = fₗ x :=
   rfl
 
@@ -437,6 +440,10 @@ theorem restrictScalars_injective :
 theorem restrictScalars_inj (fₗ gₗ : M →ₗ[S] M₂) :
     fₗ.restrictScalars R = gₗ.restrictScalars R ↔ fₗ = gₗ :=
   (restrictScalars_injective R).eq_iff
+
+@[simp]
+lemma restrictScalars_id [CompatibleSMul M M R S] :
+    (id (R := S) (M := M)).restrictScalars R = id := rfl
 
 end RestrictScalars
 

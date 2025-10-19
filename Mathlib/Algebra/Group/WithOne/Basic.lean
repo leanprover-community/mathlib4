@@ -46,7 +46,8 @@ section lift
 variable [Mul α] [MulOneClass β]
 
 /-- Lift a semigroup homomorphism `f` to a bundled monoid homomorphism. -/
-@[to_additive /-- Lift an add semigroup homomorphism `f` to a bundled add monoid homomorphism. -/]
+@[to_additive /--
+Lift an additive semigroup homomorphism `f` to a bundled additive monoid homomorphism. -/]
 def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   toFun f :=
     { toFun := fun x => Option.casesOn x 1 f, map_one' := rfl,
@@ -78,52 +79,86 @@ variable [Mul α] [Mul β] [Mul γ]
 
 /-- Given a multiplicative map from `α → β` returns a monoid homomorphism
   from `WithOne α` to `WithOne β` -/
-@[to_additive /-- Given an additive map from `α → β` returns an add monoid homomorphism from
+@[to_additive /-- Given an additive map from `α → β` returns an additive monoid homomorphism from
 `WithZero α` to `WithZero β` -/]
-def map (f : α →ₙ* β) : WithOne α →* WithOne β :=
+def mapMulHom (f : α →ₙ* β) : WithOne α →* WithOne β :=
   lift (coeMulHom.comp f)
 
 @[to_additive (attr := simp)]
-theorem map_coe (f : α →ₙ* β) (a : α) : map f (a : WithOne α) = f a :=
+theorem mapMulHom_coe (f : α →ₙ* β) (a : α) : mapMulHom f (a : WithOne α) = f a :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem map_id : map (MulHom.id α) = MonoidHom.id (WithOne α) := by
+theorem mapMulHom_id : mapMulHom (MulHom.id α) = MonoidHom.id (WithOne α) := by
   ext x
   induction x <;> rfl
 
+@[deprecated (since := "2025-08-26")]
+alias map_id := mapMulHom_id
+@[deprecated (since := "2025-08-26")]
+alias _root_.WithZero.map_id := WithZero.mapAddHom_id
+
 @[to_additive]
-theorem map_injective {f : α →ₙ* β} (hf : Function.Injective f) : Function.Injective (map f)
+theorem mapMulHom_injective {f : α →ₙ* β} (hf : Function.Injective f) :
+    Function.Injective (mapMulHom f)
   | none, none, _ => rfl
   | (a₁ : α), (a₂ : α), H => by simpa [hf.eq_iff] using H
 
+@[deprecated (since := "2025-08-26")]
+alias map_injective := mapMulHom_injective
+@[deprecated (since := "2025-08-26")]
+alias _root_.WithZero.map_injective := WithZero.mapAddHom_injective
+
 @[to_additive]
-theorem map_injective' : Function.Injective (WithOne.map (α := α) (β := β)) := fun f g h ↦
-  MulHom.ext fun x ↦ coe_injective <| by simp only [← map_coe, h]
+theorem mapMulHom_injective' :
+    Function.Injective (WithOne.mapMulHom (α := α) (β := β)) :=
+  fun f g h ↦ MulHom.ext fun x ↦ coe_injective <| by simp only [← mapMulHom_coe, h]
+
+@[deprecated (since := "2025-08-26")]
+alias map_injective' := mapMulHom_injective'
+@[deprecated (since := "2025-08-26")]
+alias _root_.WithZero.map_injective' := WithZero.mapAddHom_injective'
 
 @[to_additive (attr := simp)]
-theorem map_inj {f g : α →ₙ* β} : map f = map g ↔ f = g :=
-  map_injective'.eq_iff
+theorem mapMulHom_inj {f g : α →ₙ* β} : mapMulHom f = mapMulHom g ↔ f = g :=
+  mapMulHom_injective'.eq_iff
+
+@[deprecated (since := "2025-08-26")]
+alias map_inj := mapMulHom_inj
+@[deprecated (since := "2025-08-26")]
+alias _root_.WithZero.map_inj := WithZero.mapAddHom_inj
 
 @[to_additive]
-theorem map_map (f : α →ₙ* β) (g : β →ₙ* γ) (x) : map g (map f x) = map (g.comp f) x := by
+theorem mapMulHom_mapMulHom (f : α →ₙ* β) (g : β →ₙ* γ) (x) :
+    mapMulHom g (mapMulHom f x) = mapMulHom (g.comp f) x := by
   induction x <;> rfl
 
+@[deprecated (since := "2025-08-26")]
+alias map_map := mapMulHom_mapMulHom
+@[deprecated (since := "2025-08-26")]
+alias _root_.WithZero.map_map := WithZero.mapAddHom_mapAddHom
+
 @[to_additive (attr := simp)]
-theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map g).comp (map f) :=
-  MonoidHom.ext fun x => (map_map f g x).symm
+theorem mapMulHom_comp (f : α →ₙ* β) (g : β →ₙ* γ) :
+    mapMulHom (g.comp f) = (mapMulHom g).comp (mapMulHom f) :=
+  MonoidHom.ext fun x => (mapMulHom_mapMulHom f g x).symm
+
+@[deprecated (since := "2025-08-26")]
+alias map_comp := mapMulHom_comp
+@[deprecated (since := "2025-08-26")]
+alias _root_.WithZero.map_comp := WithZero.mapAddHom_comp
 
 /-- A version of `Equiv.optionCongr` for `WithOne`. -/
 @[to_additive (attr := simps apply) /-- A version of `Equiv.optionCongr` for `WithZero`. -/]
 def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :=
-  { map e.toMulHom with
-    toFun := map e.toMulHom, invFun := map e.symm.toMulHom,
+  { mapMulHom e.toMulHom with
+    toFun := mapMulHom e.toMulHom, invFun := mapMulHom e.symm.toMulHom,
     left_inv := (by induction · <;> simp)
     right_inv := (by induction · <;> simp) }
 
 @[to_additive (attr := simp)]
 theorem _root_.MulEquiv.withOneCongr_refl : (MulEquiv.refl α).withOneCongr = MulEquiv.refl _ :=
-  MulEquiv.toMonoidHom_injective map_id
+  MulEquiv.toMonoidHom_injective mapMulHom_id
 
 @[to_additive (attr := simp)]
 theorem _root_.MulEquiv.withOneCongr_symm (e : α ≃* β) :
@@ -133,7 +168,7 @@ theorem _root_.MulEquiv.withOneCongr_symm (e : α ≃* β) :
 @[to_additive (attr := simp)]
 theorem _root_.MulEquiv.withOneCongr_trans (e₁ : α ≃* β) (e₂ : β ≃* γ) :
     e₁.withOneCongr.trans e₂.withOneCongr = (e₁.trans e₂).withOneCongr :=
-  MulEquiv.toMonoidHom_injective (map_comp _ _).symm
+  MulEquiv.toMonoidHom_injective (mapMulHom_comp _ _).symm
 
 end Map
 

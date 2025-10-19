@@ -17,7 +17,7 @@ The characteristic of the ring of linear maps is determined by its base ring.
   the characteristic of `R` is equal to the characteristic of the `R`-linear
   endomorphisms of `M` when `M` contains a non-torsion element `x`.
 
-## Notations
+## Notation
 
 - `R` is a commutative semiring
 - `M` is a `R`-module
@@ -57,4 +57,3 @@ instance {D : Type*} [DivisionRing D] {p : ℕ} [CharP D p] :
 instance {D : Type*} [DivisionRing D] {p : ℕ} [ExpChar D p] :
     ExpChar (D →ₗ[Subring.center D] D) p :=
   expChar_of_injective_ringHom (Algebra.lmul (Subring.center D) D).toRingHom.injective p
-

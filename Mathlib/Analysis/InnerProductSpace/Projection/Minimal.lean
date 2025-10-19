@@ -11,7 +11,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 
 This file shows the existence of minimizers (also known as the Hilbert projection theorem).
 This is the key tool that is used to define `Submodule.orthogonalProjection` in
-`Mathlib/Analysis/InnerProductSpace/Projection/Basic`.
+`Mathlib/Analysis/InnerProductSpace/Projection/Basic.lean`.
 -/
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
@@ -23,9 +23,6 @@ local notation "absR" => @abs ℝ _ _
 
 open Topology RCLike Real Filter InnerProductSpace
 
--- FIXME this monolithic proof causes a deterministic timeout with `-T50000`
--- It should be broken in a sequence of more manageable pieces,
--- perhaps with individual statements for the three steps below.
 /-- **Existence of minimizers**, aka the **Hilbert projection theorem**.
 
 Let `u` be a point in a real inner product space, and let `K` be a nonempty complete convex subset.
@@ -104,13 +101,8 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
         repeat' exact Subtype.mem _
         repeat' exact le_of_lt one_half_pos
         exact add_halves 1
-      have eq₁ : 4 * δ * δ ≤ 4 * ‖u - half • (wq + wp)‖ * ‖u - half • (wq + wp)‖ := by
-        simp_rw [mul_assoc]
-        gcongr
-      have eq₂ : ‖a‖ ≤ δ + div :=
-          le_trans (le_of_lt <| hw q) (add_le_add_left (Nat.one_div_le_one_div hq) _)
-      have eq₂' : ‖b‖ ≤ δ + div :=
-          le_trans (le_of_lt <| hw p) (add_le_add_left (Nat.one_div_le_one_div hp) _)
+      have eq₂ : ‖a‖ ≤ δ + div := by grw [hw, Nat.one_div_le_one_div hq]
+      have eq₂' : ‖b‖ ≤ δ + div := by grw [hw, Nat.one_div_le_one_div hp]
       rw [dist_eq_norm]
       apply nonneg_le_nonneg_of_sq_le_sq
       · exact sqrt_nonneg _
