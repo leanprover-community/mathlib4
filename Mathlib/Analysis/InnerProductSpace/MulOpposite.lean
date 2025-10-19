@@ -26,7 +26,10 @@ instance [Inner 𝕜 H] : Inner 𝕜 Hᵐᵒᵖ where inner x y := inner 𝕜 x.
 
 @[simp] theorem inner_op [Inner 𝕜 H] (x y : H) : inner 𝕜 (op x) (op y) = inner 𝕜 x y := rfl
 
-variable [RCLike 𝕜] [SeminormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+variable [SeminormedAddCommGroup H]
+
+section InnerProductSpace
+variable [RCLike 𝕜] [InnerProductSpace 𝕜 H]
 
 instance : InnerProductSpace 𝕜 Hᵐᵒᵖ where
   norm_sq_eq_re_inner x := (inner_self_eq_norm_sq x.unop).symm
@@ -49,14 +52,19 @@ noncomputable def _root_.OrthonormalBasis.mulOpposite (b : OrthonormalBasis ι �
     b.mulOpposite.toBasis = b.toBasis.mulOpposite := rfl
 
 end orthonormal
+end InnerProductSpace
 
 theorem isometry_opLinearEquiv {R M : Type*} [Semiring R] [SeminormedAddCommGroup M] [Module R M] :
     Isometry (opLinearEquiv R (M := M)) := fun _ _ => rfl
 
+variable [NormedField 𝕜] [NormedSpace 𝕜 H]
+
 variable (𝕜 H) in
 /-- The linear isometry equivalence version of the function `op`. -/
 @[simps!]
-def opLinearIsometryEquiv : H ≃ₗᵢ[𝕜] Hᵐᵒᵖ := (opLinearEquiv 𝕜).isometryOfInner inner_op
+def opLinearIsometryEquiv : H ≃ₗᵢ[𝕜] Hᵐᵒᵖ where
+  toLinearEquiv := opLinearEquiv 𝕜
+  norm_map' _ := rfl
 
 @[simp]
 theorem toLinearEquiv_opLinearIsometryEquiv :
