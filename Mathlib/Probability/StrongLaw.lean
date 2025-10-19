@@ -257,10 +257,10 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         · exact continuous_const.intervalIntegrable _ _
       _ = 𝔼[truncation X N] + ∫ x in 0..N, 1 ∂ρ := by
         rw [integral_truncation_eq_intervalIntegral_of_nonneg hint.1 hnonneg]
-      _ ≤ 𝔼[X] + ∫ x in 0..N, 1 ∂ρ :=
-        (add_le_add_right (integral_truncation_le_integral_of_nonneg hint hnonneg) _)
+      _ ≤ 𝔼[X] + ∫ x in 0..N, 1 ∂ρ := by
+        grw [integral_truncation_le_integral_of_nonneg hint hnonneg]
       _ ≤ 𝔼[X] + 1 := by
-        refine add_le_add le_rfl ?_
+        gcongr
         rw [intervalIntegral.integral_of_le (Nat.cast_nonneg _)]
         simp only [integral_const, measureReal_restrict_apply', measurableSet_Ioc, Set.univ_inter,
           Algebra.id.smul_eq_mul, mul_one]
@@ -444,7 +444,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
     calc
       ∑ i ∈ range N, ℙ {ω | (u i * ε : ℝ) ≤ |S (u i) ω - 𝔼[S (u i)]|} ≤
           ∑ i ∈ range N, ENNReal.ofReal (Var[S (u i)] / (u i * ε) ^ 2) := by
-        refine sum_le_sum fun i _ => ?_
+        gcongr with i _
         apply meas_ge_le_variance_div_sq
         · exact memLp_finset_sum' _ fun j _ => (hident j).aestronglyMeasurable_fst.memLp_truncation
         · apply mul_pos (Nat.cast_pos.2 _) εpos
@@ -459,9 +459,8 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
         apply ENNReal.ofReal_le_ofReal
         simp_rw [div_eq_inv_mul, ← inv_pow, mul_inv, mul_comm _ (ε⁻¹), mul_pow, mul_assoc,
           ← mul_sum]
-        refine mul_le_mul_of_nonneg_left ?_ (sq_nonneg _)
-        conv_lhs => enter [2, i]; rw [inv_pow]
-        exact I2 N
+        gcongr
+        simpa only [inv_pow] using I2 N
   have I4 : (∑' i, ℙ {ω | (u i * ε : ℝ) ≤ |S (u i) ω - 𝔼[S (u i)]|}) < ∞ :=
     (le_of_tendsto_of_tendsto' (ENNReal.tendsto_nat_tsum _) tendsto_const_nhds I3).trans_lt
       ENNReal.ofReal_lt_top
