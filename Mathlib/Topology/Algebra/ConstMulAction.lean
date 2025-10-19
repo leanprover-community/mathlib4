@@ -279,6 +279,29 @@ theorem smul_mem_nhds_self [TopologicalSpace G] [ContinuousConstSMul G G] {g : G
     g • s ∈ 𝓝 g ↔ s ∈ 𝓝 1 := by
   rw [← smul_mem_nhds_smul_iff g⁻¹]; simp
 
+namespace MulAction.IsPretransitive
+
+variable (G)
+
+@[to_additive]
+lemma t1Space_iff (x : α) [IsPretransitive G α] :
+    T1Space α ↔ IsClosed {x} := by
+  refine ⟨fun H ↦ isClosed_singleton, fun hx ↦ ⟨fun y ↦ ?_⟩⟩
+  rcases MulAction.exists_smul_eq G x y with ⟨g, rfl⟩
+  rw [← image_singleton, image_smul]
+  exact hx.smul _
+
+@[to_additive]
+lemma discreteTopology_iff (x : α) [IsPretransitive G α] :
+    DiscreteTopology α ↔ IsOpen {x} := by
+  rw [discreteTopology_iff_isOpen_singleton]
+  refine ⟨fun H ↦ H _, fun hx y ↦ ?_⟩
+  rcases MulAction.exists_smul_eq G x y with ⟨g, rfl⟩
+  rw [← image_singleton, image_smul]
+  exact hx.smul _
+
+end MulAction.IsPretransitive
+
 end Group
 
 section GroupWithZero

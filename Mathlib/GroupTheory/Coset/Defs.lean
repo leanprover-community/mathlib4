@@ -233,6 +233,12 @@ theorem preimage_image_mk_eq_mul (N : Subgroup α) (s : Set α) :
   rw [preimage_image_mk_eq_iUnion_image, iUnion_subtype, ← image2_mul, ← iUnion_image_right]
   simp only [SetLike.mem_coe]
 
+@[to_additive]
+theorem preimage_mk_one (N : Subgroup α) :
+    mk ⁻¹' {(mk : α → α ⧸ N) 1} = N := by
+  rw [← image_singleton, preimage_image_mk_eq_mul]
+  simp
+
 end QuotientGroup
 
 namespace Subgroup
