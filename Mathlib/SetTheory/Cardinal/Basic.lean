@@ -254,7 +254,7 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
     (h : ∀ i, lift.{v'} (f i) ≤ lift.{v} (f' (g i))) : lift.{v'} (iSup f) ≤ lift.{v} (iSup f') :=
   lift_iSup_le_lift_iSup hf hf' h
 
-theorem lift_iSup_le_sum {ι} [Small.{v, u} ι] (f : ι → Cardinal.{v}) :
+theorem lift_iSup_le_sum {ι : Type u} [Small.{v} ι] (f : ι → Cardinal.{v}) :
     lift (⨆ i, f i) ≤ sum f := by
   rw [lift_iSup (bddAbove_of_small _)]
   exact ciSup_le' fun i => lift_le_sum f i
