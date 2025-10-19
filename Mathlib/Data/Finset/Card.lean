@@ -443,7 +443,7 @@ theorem exists_ne_map_eq_of_card_lt_of_maps_to (hc : #t < #s) {f : α → β}
   contrapose
   exact hz x hx y hy
 
-/-- a special case of `exists_ne_map_eq_of_card_lt_of_maps_to` where `t` is `s.image f` -/
+/-- a special case of `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` where `t` is `s.image f` -/
 theorem exists_ne_map_eq_of_card_image_lt [DecidableEq β] {f : α → β} (hc : #(s.image f) < #s) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y :=
   exists_ne_map_eq_of_card_lt_of_maps_to hc (coe_image (β := β) ▸ Set.mapsTo_image f s)
