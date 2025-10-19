@@ -40,7 +40,7 @@ See note [reducible non-instances]. -/
 abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
     Module (ZMod n) G :=
   match n with
-  | 0 => AddCommGroup.toIntModule G
+  | 0 => AddCommGroup.toIntModule
   | _ + 1 => AddCommMonoid.zmodModule h
 
 /-- The quotient of an abelian group by a subgroup containing all multiples of `n` is a
