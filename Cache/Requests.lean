@@ -31,7 +31,7 @@ def extractRepoFromUrl (url : String) : Option String := do
   let url := url.stripSuffix ".git"
   let pos ← url.revFind (· == '/')
   let pos ← url.revFindAux (fun c => c == '/'  || c == ':') pos
-  return url.extract (url.next pos) url.endPos
+  return (String.Pos.Raw.extract url) (String.Pos.Raw.next url pos) url.endPos
 
 /-- Spot check if a URL is valid for a git remote -/
 def isRemoteURL (url : String) : Bool :=
