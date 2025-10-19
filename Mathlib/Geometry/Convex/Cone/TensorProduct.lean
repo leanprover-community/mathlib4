@@ -3,7 +3,7 @@ Copyright (c) 2025 Bjørn Solheim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Solheim
 -/
-import Mathlib.Geometry.Convex.Cone.ConicalHull
+import Mathlib.Geometry.Convex.Cone.ConicalCombination
 import Mathlib.Geometry.Convex.Cone.Dual
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -74,7 +74,8 @@ def elementaryTensors (C₁ : PointedCone K G) (C₂ : PointedCone K H) : Set (G
 tensor products x ⊗ₜ y of cone elements. -/
 noncomputable def minTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
     : PointedCone K (G ⊗[K] H) :=
-  conicalHull K (elementaryTensors C₁ C₂)
+  PointedCone.span K (elementaryTensors C₁ C₂)
+  --conicalHull K (elementaryTensors C₁ C₂)
 
 /-- The maximal tensor product is the set of elements of the module tensor product
 space for which all elementary tensor products of dual cone elements φ₁ ⊗ₜ φ₂ are non-negative. -/
@@ -119,9 +120,9 @@ theorem elementaryTensors_subset_maxTensorProduct (C₁ : PointedCone K G) (C₂
 /-- The minimal tensor product is less than or equal to the maximal tensor product. -/
 theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone K G) (C₂ : PointedCone K H)
     : minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := by
-  -- minTensorProduct = conical hull of elementary tensors
-  -- maxTensorProduct contains all elementary tensors, hence it contains the conical hull
-  exact conicalHull_minimal K (elementaryTensors C₁ C₂) (maxTensorProduct C₁ C₂)
+  -- minTensorProduct = PointedCone.span of elementary tensors
+  -- maxTensorProduct contains all elementary tensors, hence it contains the span
+  exact PointedCone.span_minimal K (maxTensorProduct C₁ C₂) (elementaryTensors C₁ C₂)
     (elementaryTensors_subset_maxTensorProduct C₁ C₂)
 
 end PointedCone
