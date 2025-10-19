@@ -379,7 +379,7 @@ Applying `map F` and then `fromThinSkeleton` is isomorphic to first applying `fr
 and then applying `F`.
 -/
 noncomputable def mapCompFromThinSkeletonIso [Quiver.IsThin D] (F : C ⥤ D) :
-    map F ⋙ fromThinSkeleton D ≅ fromThinSkeleton C ⋙ F  :=
+    map F ⋙ fromThinSkeleton D ≅ fromThinSkeleton C ⋙ F :=
   Functor.isoWhiskerRight (fromThinSkeletonCompToThinSkeletonIso F).symm _ ≪≫
     Functor.isoWhiskerLeft (fromThinSkeleton C ⋙ F) (equivalence D).counitIso ≪≫
     Functor.rightUnitor (fromThinSkeleton C ⋙ F)
