@@ -7,7 +7,7 @@ import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 
 
-/-! ### Functions of temperate growth -/
+/-! # Functions and measures of temperate growth -/
 
 noncomputable section
 
