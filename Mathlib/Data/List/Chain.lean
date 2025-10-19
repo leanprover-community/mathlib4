@@ -486,7 +486,7 @@ theorem IsChain.induction (p : α → Prop) (l : List α) (h : IsChain r l)
     (carries : ∀ ⦃x y : α⦄, r x y → p x → p y) (initial : (lne : l ≠ []) → p (l.head lne)) :
     ∀ i ∈ l, p i := by
   induction l using twoStepInduction with
-  | nil => grind  [not_mem_nil]
+  | nil => grind [not_mem_nil]
   | singleton => grind
   | cons_cons a b l IH IH2 =>
     grind

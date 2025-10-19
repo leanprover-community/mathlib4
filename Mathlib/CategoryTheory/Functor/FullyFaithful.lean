@@ -59,7 +59,7 @@ lemma map_injective_iff (F : C ⥤ D) [Faithful F] {X Y : C} (f g : X ⟶ Y) :
   ⟨fun h => F.map_injective h, fun h => by rw [h]⟩
 
 theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
-    Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y))  := fun _ _ h =>
+    Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y)) := fun _ _ h =>
   Iso.ext (map_injective F (congr_arg Iso.hom h :))
 
 theorem map_surjective (F : C ⥤ D) [Full F] :
