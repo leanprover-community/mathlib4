@@ -631,55 +631,12 @@ connected. -/
 lemma Preconnected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq V] {H : G.Subgraph}
     (hpreconn : H.Preconnected) {v : V} [Fintype ↑(H.neighborSet v)] (hdeg : H.degree v = 1) :
     (H.deleteVerts {v}).Connected := by
-  refine (H.deleteVerts {v}).connected_iff_forall_exists_walk_subgraph.mpr ⟨?_, ?_⟩
-  · have := (H.nontrivial_of_degree_ne_zero (ne_zero_of_eq_one hdeg)).exists_pair_ne
-    apply Set.diff_nonempty.mpr
-    grind
-  /- There exists a walk between any two vertices w and x in H.deleteVerts {v}
-  via the unique vertex u adjacent to vertex v. -/
-  · intro w x w_mem_H' x_mem_H'
-    have exists_walk_le_H := @H.preconnected_iff_forall_exists_walk_subgraph.mp hpreconn
-    obtain ⟨u, H_adj_v_u, u_unique⟩ := degree_eq_one_iff_unique_adj.mp hdeg
-    obtain ⟨puw, puw_le_H⟩ :=
-      exists_walk_le_H (H.edge_vert H_adj_v_u.symm) (Set.mem_of_mem_inter_left w_mem_H')
-    obtain ⟨pux, pux_le_H⟩ :=
-      exists_walk_le_H (H.edge_vert H_adj_v_u.symm) (Set.mem_of_mem_inter_left x_mem_H')
-    /- A path between vertex u and another vertex in H.deleteVerts {v}
-    is contained in H.deleteVerts {v}. -/
-    have p_le_H' {z : V} (z_mem_H' : z ∈ (H.deleteVerts {v}).verts) {p : G.Walk u z}
-        (p_le_H : p.toSubgraph ≤ H) : (p.toPath : G.Walk u z).toSubgraph ≤ H.deleteVerts {v} := by
-      obtain ⟨p_verts_subset_H_verts, H_adj_if_p_adj⟩ := p_le_H
-      rw [p.verts_toSubgraph] at p_verts_subset_H_verts
-      /- Prove vertex v is not in the path by showing that vertex u is passed twice. -/
-      have v_not_mem_p' : v ∉ (p.toPath : G.Walk u z).toSubgraph.verts := by
-        rw [Walk.verts_toSubgraph, Set.mem_setOf_eq]
-        by_contra v_mem_p'
-        obtain ⟨puv, pvz, p'_eq_puvz⟩ := Walk.mem_support_iff_exists_append.mp v_mem_p'
-        have not_nil_pvz : ¬pvz.Nil := by
-          refine Walk.not_nil_of_ne (by_contra ?_)
-          aesop
-        have : (p.toPath : G.Walk u z).support.Duplicate u := by
-          rw [p'_eq_puvz, Walk.support_append, List.duplicate_iff_two_le_count, List.count_append]
-          have := pvz.toSubgraph_adj_snd not_nil_pvz
-          have := List.one_le_count_iff.mpr puv.start_mem_support
-          have := List.one_le_count_iff.mpr (Walk.snd_mem_tail_support not_nil_pvz)
-          rw [u_unique pvz.snd (H_adj_if_p_adj <| p.adj_toSubgraph_toPath <| by simp_all)] at this
-          omega
-        simpa [List.nodup_iff_forall_not_duplicate.mp p.toPath.nodup_support]
-      constructor
-      · exact Set.subset_diff_singleton
-          (.trans p.verts_toSubgraph_toPath_subset p_verts_subset_H_verts) v_not_mem_p'
-      · intro a b p'_adj_a_b
-        refine deleteVerts_adj.mpr ⟨?_, ?_, ?_, ?_, ?_⟩
-        · exact H.edge_vert (H_adj_if_p_adj <| p.adj_toSubgraph_toPath p'_adj_a_b)
-        · have := (p.toPath : G.Walk u z).toSubgraph.edge_vert p'_adj_a_b
-          aesop
-        · exact H.edge_vert (H_adj_if_p_adj <| p.adj_toSubgraph_toPath p'_adj_a_b.symm)
-        · have := (p.toPath : G.Walk u z).toSubgraph.edge_vert p'_adj_a_b.symm
-          aesop
-        · exact H_adj_if_p_adj <| p.adj_toSubgraph_toPath p'_adj_a_b
-    use .append puw.toPath.reverse (pux.toPath : G.Walk u x)
-    simpa using ⟨p_le_H' w_mem_H' puw_le_H, p_le_H' x_mem_H' pux_le_H⟩
+  have : v ∈ H.verts := (degree_eq_one_iff_unique_adj.mp hdeg).choose_spec.left.fst_mem
+  have h' := @hpreconn.coe.connected_induce_complement_singleton_of_degree_eq_one _ _ _
+    ⟨v, by tauto⟩ _ (by simp_all [coe_degree])
+  have : {⟨v, by tauto⟩}ᶜ = ({w | ↑w ∈ H.verts \ {v}} : Set H.verts) := by aesop
+  rw [this] at h'
+  exact Subgraph.connected_iff'.mpr ((Iso.connected_iff (coeInduceEquiv Set.diff_subset)).mpr h')
 
 /-- A finite nontrivial (pre)connected graph contains a vertex that leaves the graph connected if
 removed. -/
