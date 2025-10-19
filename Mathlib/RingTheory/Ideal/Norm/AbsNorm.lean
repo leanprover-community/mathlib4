@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
 import Mathlib.Algebra.CharP.Quotient
+import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
@@ -343,6 +344,58 @@ theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : absNorm (I : Ide
 theorem absNorm_pos_of_nonZeroDivisors (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
   absNorm_pos_iff_mem_nonZeroDivisors.mpr (SetLike.coe_mem I)
 
+/-- `ℤ` with its usual ring structure is not a field. -/
+theorem Int.not_isField : ¬IsField ℤ :=
+  fun h ↦ have := h.mul_inv_cancel (show 2 ≠ 0 by decide); by grind
+
+/-- The norm of a maximal ideal is a prime power.
+The prime is `(P.under ℤ).absNorm` and the exponent is `(P.under ℤ).inertialDeg P`.
+See `Ideal.absNorm_pow_inertiaDeg`. -/
+lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
+    ∃ p n, 0 < n ∧ ↑p ∈ P ∧ p.Prime ∧ P.absNorm = p ^ n := by
+  have hP : P ≠ ⊥ := by
+    refine Ring.ne_bot_of_isMaximal_of_not_isField ‹_› fun h ↦ Int.not_isField ?_
+    exact isField_of_isIntegral_of_isField (FaithfulSMul.algebraMap_injective ℤ S) h
+  letI := Ideal.finiteQuotientOfFreeOfNeBot P hP
+  cases nonempty_fintype (S ⧸ P)
+  letI := Ideal.Quotient.field P
+  obtain ⟨p, hpR⟩ := CharP.exists (S ⧸ P)
+  obtain ⟨n, hp, e⟩ := FiniteField.card (S ⧸ P) p
+  have hP : P.absNorm = p ^ (n : ℕ) := (Nat.card_eq_fintype_card.trans e:)
+  refine ⟨p, n, n.2, ?_, hp, hP⟩
+  rw [← Ideal.IsPrime.pow_mem_iff_mem (I := P) inferInstance _ n.pos, ← Nat.cast_pow, ← hP]
+  exact P.absNorm_mem
+
+lemma exists_isMaximal_dvd_of_dvd_absNorm
+    {p : ℤ} (hp : Prime p) (I : Ideal S) (hI : p ∣ I.absNorm) :
+    ∃ P : Ideal S, P.IsMaximal ∧ P.under ℤ = .span {p} ∧ P ∣ I := by
+  have : CharZero S := .of_noZeroSMulDivisors S S
+  have hpMax : (Ideal.span {p}).IsMaximal :=
+    ((Ideal.span_singleton_prime hp.ne_zero).mpr hp).isMaximal (by simpa using hp.ne_zero)
+  induction I using UniqueFactorizationMonoid.induction_on_prime with
+  | h₁ =>
+    obtain ⟨Q, hQ, e⟩ := Ideal.exists_ideal_over_maximal_of_isIntegral (S := S) (Ideal.span {p})
+      (fun x ↦ by simp +contextual)
+    exact ⟨Q, hQ, e, dvd_zero _⟩
+  | h₂ I hI' =>
+    obtain rfl : I = ⊤ := by simpa using hI'
+    cases hp.not_dvd_one (by simpa using hI)
+  | h₃ I P hI' hP IH =>
+    simp only [_root_.map_mul, Nat.cast_mul, hp.dvd_mul] at hI
+    cases hI with
+    | inr h =>
+      obtain ⟨Q, h₁, h₂, h₃⟩ := IH h
+      refine ⟨Q, h₁, h₂, dvd_mul_of_dvd_right h₃ _⟩
+    | inl hI =>
+      have := (Ideal.isPrime_of_prime hP).isMaximal hP.ne_zero
+      refine ⟨P, this, (hpMax.eq_of_le (by simpa using this.ne_top) ?_).symm, dvd_mul_right _ _⟩
+      obtain ⟨q, n, hn, hqP, hq, H⟩ := Ideal.exists_prime_and_absNorm_eq_pow P
+      rw [H, Nat.cast_pow, dvd_prime_pow (Nat.prime_iff_prime_int.mp hq)] at hI
+      obtain ⟨m, hmn, hp⟩ := hI
+      rw [Ideal.span_singleton_le_iff_mem]
+      have : m ≠ 0 := fun h ↦ hpMax.ne_top (Ideal.span_singleton_eq_top.mpr (by simpa [h] using hp))
+      exact Ideal.mem_of_dvd _ hp.symm.dvd (Ideal.pow_mem_of_mem _ (by simpa) _ this.bot_lt)
+
 theorem finite_setOf_absNorm_eq [CharZero S] (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I = n}.Finite := by
   obtain hn | hn := Nat.eq_zero_or_pos n
@@ -416,6 +469,12 @@ theorem Int.ideal_span_absNorm_eq_self (J : Ideal ℤ) :
     span {(absNorm J : ℤ)} = J := by
   obtain ⟨g, rfl⟩ := IsPrincipalIdealRing.principal J
   simp
+
+@[simp]
+theorem Int.prime_absNorm (J : Ideal ℤ) :
+    (absNorm J).Prime ↔ Prime J := by
+  obtain ⟨g, rfl⟩ := IsPrincipalIdealRing.principal J
+  simp [prime_span_singleton_iff, prime_iff_natAbs_prime]
 
 end Int
 
