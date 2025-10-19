@@ -258,6 +258,13 @@ instance (M N : ModuleCat.{v'} S) : IsScalarTower R S (M ⟶ N) where
     rw [Algebra.smul_def, ← smul_smul]
     rfl
 
+lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
+    (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N] :
+    IsBaseChange S ((ModuleCat.extendScalars'.{v, v'} R S).mapLinearMap R (X := M) (Y := N)) := by
+  sorry
+
+--This is false alarm
+set_option linter.unusedSectionVars false in
 set_option maxHeartbeats 350000 in
 --The dimension shifting is just too complicated
 theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module.Flat R S]
@@ -265,8 +272,7 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
     IsBaseChange S ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n) := by
   induction n generalizing M N
   · have isb : IsBaseChange S ((ModuleCat.extendScalars'.{v, v'} R S).mapLinearMap R
-      (X := M) (Y := N)) := by
-      sorry
+      (X := M) (Y := N)) := CategoryTheory.isBaseChange_hom.{v, v'} S M N
     convert ((IsBaseChange.ofEquiv linearEquiv₀).comp isb).comp
       (IsBaseChange.ofEquiv linearEquiv₀.symm)
     ext x
