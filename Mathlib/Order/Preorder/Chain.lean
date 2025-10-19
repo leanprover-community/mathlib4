@@ -256,7 +256,7 @@ protected theorem IsMaxChain.isEmpty_iff (h : IsMaxChain r s) : IsEmpty α ↔ I
 protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔ Nonempty s := by
   grind [not_nonempty_iff, IsMaxChain.isEmpty_iff]
 
-theorem IsMaxChain.symm (h : IsMaxChain r s) : IsMaxChain (flip r) s :=
+protected theorem IsMaxChain.symm (h : IsMaxChain r s) : IsMaxChain (flip r) s :=
   ⟨h.isChain.symm, fun _ ht₁ ht₂ ↦ h.2 ht₁.symm ht₂⟩
 
 open Classical in
