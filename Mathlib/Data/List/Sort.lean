@@ -548,6 +548,7 @@ theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r
   refine Sublist.trans ?_ (.append_left (.cons _ (.refl _)) _)
   rw [takeWhile_append_dropWhile]
 
+set_option linter.style.commandStart false in -- TODO decide!
 theorem cons_sublist_orderedInsert {l c : List α} {a : α} (hl : c <+ l) (ha : ∀ a' ∈ c, a ≼ a') :
     a :: c <+ orderedInsert r a l := by
   induction l with
@@ -608,6 +609,7 @@ theorem sorted_insertionSort : ∀ l, Sorted r (insertionSort r l)
 
 end TotalAndTransitive
 
+set_option linter.style.commandStart false in -- TODO decide!
 /--
 If `c` is a sorted sublist of `l`, then `c` is still a sublist of `insertionSort r l`.
 -/
@@ -633,6 +635,7 @@ theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [
 
 variable [IsAntisymm α r] [IsTotal α r] [IsTrans α r]
 
+set_option linter.style.commandStart false in -- TODO decide!
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
 additionally requires `IsAntisymm α r`, `IsTotal α r` and `IsTrans α r`.

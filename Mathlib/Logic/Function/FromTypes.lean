@@ -22,6 +22,7 @@ namespace Function
 
 open Matrix (vecCons vecHead vecTail vecEmpty)
 
+set_option linter.style.commandStart false in -- TODO decide on the right style
 /-- The type of `n`-ary functions `p 0 → p 1 → ... → p (n - 1) → τ`. -/
 def FromTypes : {n : ℕ} → (Fin n → Type u) → Type u → Type u
   | 0    , _, τ => τ
@@ -62,6 +63,7 @@ def fromTypes_cons_equiv {n} (α : Type u) (p : Fin n → Type u) (τ : Type u) 
 
 namespace FromTypes
 
+set_option linter.style.commandStart false in -- TODO decide on the right style
 /-- Constant `n`-ary function with value `t`. -/
 def const : {n : ℕ} → (p : Fin n → Type u) → {τ : Type u} → (t : τ) → FromTypes p τ
   | 0,     _, _, t => t

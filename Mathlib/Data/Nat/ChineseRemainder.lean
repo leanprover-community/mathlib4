@@ -57,6 +57,7 @@ alias modEq_list_prod_iff' := modEq_list_map_prod_iff
 
 variable (a s : ι → ℕ)
 
+set_option linter.style.commandStart false in -- TODO decide on the right style
 /-- The natural number less than `(l.map s).prod` congruent to
 `a i` mod `s i` for all  `i ∈ l`. -/
 def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →
