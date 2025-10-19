@@ -86,32 +86,24 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
 
 section OrderedAddCommGroup
 
-variable
-  [AddCommGroup α] [PartialOrder α]
+variable [AddCommGroup α] [PartialOrder α] {a b : WithTop α}
 
 /--
 Elements of ordered additive commutative groups are nonnegative iff their untop₀ is nonnegative.
 -/
-@[simp]
-lemma untop₀_nonneg {a : WithTop α} :
-    0 ≤ a.untop₀ ↔ 0 ≤ a := by
+@[simp] lemma untop₀_nonneg : 0 ≤ a.untop₀ ↔ 0 ≤ a := by
   cases a with
   | top => tauto
   | coe a => simp
 
-theorem le_of_untop₀_le_untop₀ {a b : WithTop α}
-    (ha : a ≠ ⊤) (h : a.untop₀ ≤ b.untop₀) :
-    a ≤ b := by
+theorem le_of_untop₀_le_untop₀ (ha : a ≠ ⊤) (h : a.untop₀ ≤ b.untop₀) : a ≤ b := by
   lift a to α using ha
   by_cases hb : b = ⊤
   · simp_all
   lift b to α using hb
   simp_all
 
-@[simp, gcongr]
-theorem untop₀_le_untop₀_of_le {a b : WithTop α}
-    (hb : b ≠ ⊤) (h : a ≤ b) :
-    a.untop₀ ≤ b.untop₀ := by
+@[simp, gcongr] theorem untop₀_le_untop₀_of_le (hb : b ≠ ⊤) (h : a ≤ b) : a.untop₀ ≤ b.untop₀ := by
   lift b to α using hb
   by_cases ha : a = ⊤
   · simp_all
