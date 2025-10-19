@@ -317,10 +317,12 @@ theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quoti
   rw [← Quotient.mk, Quotient.lift_mk f H, Hg, Function.comp_apply, Quotient.mk''_eq_mk]
 
 /-- Given a function `f`, lift it to the quotient by its kernel. -/
-def kerLift (f : α → β) : Quotient (ker f) → β := Quotient.lift f fun _ _ ↦ id
+def kerLift (f : α → β) : Quotient (ker f) → β :=
+  Quotient.lift f fun _ _ ↦ id
 
 @[simp]
-theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x := rfl
+theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x :=
+  rfl
 
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
 injective. -/
