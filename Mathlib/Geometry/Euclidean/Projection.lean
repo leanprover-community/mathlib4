@@ -333,17 +333,9 @@ lemma orthogonalProjection_orthogonalProjection_of_le {s₁ s₂ : AffineSubspac
     [Nonempty s₂] [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
     (h : s₁ ≤ s₂) (p : P) :
     orthogonalProjection s₁ (orthogonalProjection s₂ p) = orthogonalProjection s₁ p := by
-  suffices orthogonalProjection s₁ (orthogonalProjection s₂ p) = (orthogonalProjection s₁ p : P) by
-     simpa using this
-  rw [← Set.singleton_eq_singleton_iff, ← inter_eq_singleton_orthogonalProjection,
-    ← inter_eq_singleton_orthogonalProjection]
-  congr 1
-  ext q
-  simp only [SetLike.mem_coe, mem_mk']
-  rw [← vsub_add_vsub_cancel q p (orthogonalProjection s₂ p)]
-  apply Submodule.add_mem_iff_left
+  rw [orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem]
   exact SetLike.le_def.1 (Submodule.orthogonal_le (direction_le h))
-    (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
+    (orthogonalProjection_vsub_mem_direction_orthogonal _ _)
 
 /-- The square of the distance from a point in `s` to `p₂` equals the
 sum of the squares of the distances of the two points to the
