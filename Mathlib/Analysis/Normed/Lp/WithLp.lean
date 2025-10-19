@@ -55,7 +55,7 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- This avoids `toLp p x` being printed as `{ ofLp := x }`. -/
+/-- This prevents `toLp p x` being printed as `{ ofLp := x }` by `delabStructureInstance`. -/
 @[app_delab WithLp.toLp]
 def WithLp.delabToLp : Delab := delabApp
 
