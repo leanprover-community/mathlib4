@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Tactic.Polynomial
 
 section native_decide

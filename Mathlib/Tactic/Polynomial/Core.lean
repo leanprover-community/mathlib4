@@ -5,6 +5,7 @@ Authors: Arend Mellendijk
 -/
 import Lean.Elab.Term.TermElabM
 import Lean.Meta.Tactic.Simp.Attr
+import Mathlib.Init
 
 /-!
 # Setup for the `polynomial` tactic
