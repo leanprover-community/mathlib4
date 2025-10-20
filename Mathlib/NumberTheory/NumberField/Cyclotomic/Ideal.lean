@@ -23,9 +23,7 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 
 * `IsCyclotomicExtension.Rat.ramificationIdx_eq_of_prime_pow`: the ramification index of the prime
   ideal above `p` in `ℚ(ζ_pᵏ)` is `p ^ (k - 1) * (p - 1)`.
-
 -/
-
 
 namespace IsCyclotomicExtension.Rat
 
