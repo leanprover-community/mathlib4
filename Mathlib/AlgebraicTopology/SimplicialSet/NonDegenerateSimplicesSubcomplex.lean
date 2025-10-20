@@ -64,9 +64,7 @@ and `s : A.N` is such that `s.dim = d`, this is a term
 that is equal to `s`, but whose dimension if definitionally equal to `d`. -/
 abbrev cast : A.N where
   toN := s.toN.cast hd
-  notMem := by
-    subst hd
-    exact s.notMem
+  notMem := hd ▸ s.notMem
 
 lemma cast_eq_self : s.cast hd = s := by
   subst hd
