@@ -121,9 +121,7 @@ lemma tendsto_integral_thickenedIndicator_of_isClosed {Ω : Type*} {mΩ : Measur
     [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] (μ : Measure Ω) [IsFiniteMeasure μ] {F : Set Ω}
     (F_closed : IsClosed F) {δs : ℕ → ℝ} (δs_pos : ∀ (n : ℕ), 0 < δs n)
     (δs_lim : Tendsto δs atTop (𝓝 0)) :
-    Tendsto (fun n : ℕ ↦
-      ∫ ω, (thickenedIndicator (δs_pos n) F ω : ℝ) ∂μ)
-      atTop (𝓝 ((μ : Measure Ω).real F)) := by
+    Tendsto (fun n : ℕ ↦ ∫ ω, (thickenedIndicator (δs_pos n) F ω : ℝ) ∂μ) atTop (𝓝 (μ.real F)) := by
   -- we switch to the `lintegral` formulation and apply the corresponding lemma there
   let fs : ℕ → Ω → ℝ := fun n ω ↦ thickenedIndicator (δs_pos n) F ω
   have h_int n (ν : Measure Ω) [IsFiniteMeasure ν] : Integrable (fs n) ν := by
