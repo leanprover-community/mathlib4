@@ -503,7 +503,8 @@ alias ⟨SortedLT.isChain, IsChain.sortedLT⟩ := sortedLT_iff_isChain
 unseal SortedGT in theorem sortedGT_iff_isChain : SortedGT l ↔ IsChain (· > ·) l := Iff.rfl
 alias ⟨SortedGT.isChain, IsChain.sortedGT⟩ := sortedGT_iff_isChain
 
-attribute [grind ←] IsChain.sortedLE IsChain.sortedGE IsChain.sortedLT IsChain.sortedGT
+attribute [grind] sortedLE_iff_isChain sortedGE_iff_isChain
+  sortedLT_iff_isChain sortedGT_iff_isChain
 
 instance decidableSortedLE [DecidableLE α] : Decidable (l.SortedLE) :=
   decidable_of_iff' _ sortedLE_iff_isChain
@@ -526,8 +527,6 @@ alias ⟨SortedLT.pairwise, Pairwise.sortedLT⟩ := sortedLT_iff_pairwise
 theorem sortedGT_iff_pairwise : SortedGT l ↔ Pairwise (· > ·) l :=
   sortedGT_iff_isChain.trans isChain_iff_pairwise
 alias ⟨SortedGT.pairwise, Pairwise.sortedGT⟩ := sortedGT_iff_pairwise
-
-attribute [grind →] SortedLE.pairwise SortedGE.pairwise SortedLT.pairwise SortedGT.pairwise
 
 theorem sortedLE_iff_getElem : l.SortedLE ↔
     ∀ (i j : Nat) (_hi : i < l.length) (_hj : j < l.length), i < j → l[i] ≤ l[j] :=
