@@ -113,7 +113,7 @@ example (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
       (κ := 𝒑.primesOver (𝓞 Fₘ)) (g := primesOverRestrict 𝒑 (𝓞 Fₘ) (𝓞 K))
       (f := fun _ ↦ 1)
     simp_rw [← Fintype.card_eq_sum_ones] at this
-    
+
 
     have : (primesOverFinset 𝒑 (𝓞 K)).card =
         ∑ Q ∈ primesOverFinset 𝒑 (𝓞 Fₘ), (primesOverFinset Q (𝓞 K)).card := by
