@@ -167,7 +167,7 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
     parallelScanAux as newL newM else
   let ls := L.drop 1
   let ms := M.drop 1
-  match L.get 0, M.get 0 with
+  match L.front, M.front with
   | ' ', m =>
     if m.isWhitespace then
       parallelScanAux as ls ms.trimLeft

@@ -312,10 +312,12 @@ theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf 
 
 section MemIsAdmissible
 
-@[grind]
 lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
     {k : ℕ} {hk : k < L.length} : simplicialEvalσ L L[k] = simplicialEvalσ L (L[k] + 1) := by
   induction L generalizing m k <;> grind
+
+local grind_pattern IsAdmissible.simplicialEvalσ_succ_getElem =>
+  IsAdmissible m L, simplicialEvalσ L L[k]
 
 lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
     (j : ℕ) (hj₁ : j < m + L.length) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
