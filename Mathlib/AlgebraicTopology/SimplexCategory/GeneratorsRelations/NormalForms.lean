@@ -56,7 +56,6 @@ inductive IsAdmissible : (m : ℕ) → (L : List ℕ) → Prop
       (ha : a ≤ m) : IsAdmissible m (a :: b :: L')
 
 attribute [simp, grind ←] IsAdmissible.nil
-attribute [grind →] IsAdmissible.singleton
 attribute [grind →] IsAdmissible.cons_cons
 
 section IsAdmissible
@@ -315,7 +314,7 @@ section MemIsAdmissible
 @[grind]
 lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
     {k : ℕ} {hk : k < L.length} : simplicialEvalσ L L[k] = simplicialEvalσ L (L[k] + 1) := by
-  induction L generalizing m k <;> grind
+  induction L generalizing m k <;> grind [→ IsAdmissible.singleton]
 
 lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
     (j : ℕ) (hj₁ : j < m + L.length) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
