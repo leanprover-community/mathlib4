@@ -335,11 +335,6 @@ instance {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
   one_smul x := Subtype.ext (one_smul G x.1)
   mul_smul g h x := Subtype.ext (mul_smul g h x.1)
 
--- theorem _root_.Ideal.Quotient.mkₐ_apply (R₁ : Type*)
---     {A : Type*} [CommSemiring R₁] [Ring A] [Algebra R₁ A]
---     (I : Ideal A) [I.IsTwoSided] (x : A) : Ideal.Quotient.mkₐ R₁ I x = Ideal.Quotient.mk I x :=
---   rfl
-
 theorem _root_.Polynomial.Monic.mem_rootSet {T S : Type*} [CommRing T] [CommRing S] [IsDomain S]
     [Algebra T S] {p : T[X]} (hp : p.Monic) {a : S} : a ∈ p.rootSet S ↔ (aeval a) p = 0 := by
   simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
