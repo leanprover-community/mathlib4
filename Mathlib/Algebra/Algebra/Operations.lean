@@ -366,6 +366,10 @@ theorem mem_one {x : A} : x ∈ (1 : Submodule R A) ↔ ∃ y, algebraMap R A y 
 theorem smul_one_eq_span (x : A) : x • (1 : Submodule R A) = span R {x} := by
   rw [one_eq_span, smul_span, smul_set_singleton, smul_eq_mul, mul_one]
 
+theorem span_singleton_algebraMap_of_isUnit {r : R} (h : IsUnit r) :
+    span R {algebraMap R A r} = 1 := by
+  conv_rhs => rw [one_eq_span, ← span_singleton_smul_eq h, ← algebraMap_eq_smul_one]
+
 protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (1 : Submodule R A) = 1 := by
   ext
@@ -681,12 +685,45 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 /-- `span` is a semiring homomorphism (recall multiplication is pointwise multiplication of subsets
 on either side). -/
 @[simps]
-noncomputable def span.ringHom : SetSemiring A →+* Submodule R A where
+def span.ringHom : SetSemiring A →+* Submodule R A where
   toFun s := Submodule.span R (SetSemiring.down s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
   map_add' := span_union
   map_mul' s t := by simp_rw [SetSemiring.down_mul, span_mul_span]
+
+variable (R) in
+/-- `(span R {·})` as a monoid homomorphism. -/
+def spanSingleton : A →* Submodule R A :=
+  Submodule.span.ringHom.toMonoidHom.comp SetSemiring.singletonMonoidHom
+
+@[simp] lemma spanSingleton_apply (x : A) : spanSingleton R x = Submodule.span R {x} := rfl
+
+section FaithfulSMul
+
+variable [FaithfulSMul R A]
+
+theorem span_singleton_eq_one_iff {x : A} : span R {x} = 1 ↔ ∃ r : Rˣ, x = algebraMap R A r where
+  mp h := by
+    obtain ⟨r, rfl⟩ := mem_one.mp (h ▸ mem_span_singleton_self x)
+    have ⟨r', eq⟩ := mem_span_singleton.mp (h ▸ algebraMap_mem 1)
+    rw [Algebra.smul_def, ← map_mul, (FaithfulSMul.algebraMap_injective R A).eq_iff] at eq
+    exact ⟨.mkOfMulEqOne _ _ (mul_comm _ r ▸ eq), rfl⟩
+  mpr := by rintro ⟨r, rfl⟩; exact span_singleton_algebraMap_of_isUnit r.isUnit
+
+theorem ker_spanSingleton :
+    MonoidHom.mker (Submodule.spanSingleton R) = (IsUnit.submonoid R).map (algebraMap R A) := by
+  ext; simp_rw [Submonoid.mem_map, IsUnit.mem_submonoid_iff, IsUnit, existsAndEq, true_and, eq_comm]
+  exact span_singleton_eq_one_iff
+
+/-- The exactness at Aˣ of the exact sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A`.
+See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
+theorem ker_unitsMap_spanSingleton :
+    (Units.map (Submodule.spanSingleton R)).ker =
+    (Units.map (algebraMap R A).toMonoidHom).range := by
+  ext; simpa [Units.ext_iff, eq_comm] using span_singleton_eq_one_iff
+
+end FaithfulSMul
 
 section
 
