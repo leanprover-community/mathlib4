@@ -329,28 +329,10 @@ search (and was here first). -/
 protected theorem smul_mul_assoc (r : R) (x y : A) : r • x * y = r • (x * y) :=
   smul_mul_assoc r x y
 
-section MulDistribMulAction
-variable {G : Type*} [Monoid G] [MulDistribMulAction G A]
-
 @[simp]
-theorem _root_.smul_algebraMap [SMulCommClass G R A] (a : G) (r : R) :
-    a • algebraMap R A r = algebraMap R A r := by
+theorem _root_.smul_algebraMap {α : Type*} [Monoid α] [MulDistribMulAction α A]
+    [SMulCommClass α R A] (a : α) (r : R) : a • algebraMap R A r = algebraMap R A r := by
   rw [algebraMap_eq_smul_one, smul_comm a r (1 : A), smul_one]
-
-lemma _root_.SMulDistribClass.of_smul_algebraMap [SMul G R]
-    (H : ∀ g : G, ∀ r, g • algebraMap R A r = algebraMap R A (g • r)) : SMulDistribClass G R A where
-  smul_distrib_smul g r s := by simp [Algebra.smul_def, H]
-
-/-- Also see `algebraMap_smul` for a `IsScalarTower` version saying `↑r • g = r • g`. -/
-@[simp]
-lemma _root_.algebraMap_smul' {G R S : Type*} [SMul G R] [Monoid G]
-    [CommSemiring R] [Semiring S] [Algebra R S] [MulDistribMulAction G S]
-    [SMulDistribClass G R S] (g : G) (r : R) :
-    algebraMap R S (g • r) = g • algebraMap R S r := by
-  simpa [Algebra.smul_def] using (smul_distrib_smul g r (1 : S)).symm
-
-
-end MulDistribMulAction
 
 section compHom
 
