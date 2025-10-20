@@ -5,7 +5,7 @@ Authors: Arend Mellendijk
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Tactic.Algebra.Lemmas
-import Mathlib.Tactic.Module
+import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # The `algebra` tactic
@@ -28,11 +28,10 @@ This tactic is used internally to implement the `polynomial` tactic.
 -/
 
 open Lean hiding Module
-open Meta Elab Qq Mathlib.Tactic List Mathlib.Tactic.Module
+open Meta Elab Qq Mathlib.Tactic Mathlib.Meta AtomM
 
 namespace Mathlib.Tactic.Algebra
 
-open Mathlib.Meta AtomM
 
 attribute [local instance] monadLiftOptionMetaM
 

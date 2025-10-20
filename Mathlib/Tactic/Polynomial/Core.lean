@@ -3,7 +3,8 @@ Copyright (c) 2025 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-import Mathlib.Tactic.Algebra
+import Lean.Elab.Term.TermElabM
+import Lean.Meta.Tactic.Simp.Attr
 
 /-!
 # Setup for the `polynomial` tactic
@@ -17,7 +18,7 @@ with the `polynomial` tactic suite.
 namespace Mathlib.Tactic.Polynomial
 
 open Lean
-open Lean.Meta Qq Lean.Elab Term
+open Lean.Meta Lean.Elab Term
 
 
 /-- Attribute for identifying `polynomial` preprocessing extensions. These serve the purpose of
@@ -36,8 +37,9 @@ initialize polynomialPostExt : SimpExtension ←
     The `polynomial_post` simp attribute uses postprocessing lemmas \
     to turn `algebraMap`s into more specialized functions."
 
-/-- Attribute for identifying `polynomial` extensions. -/
-syntax (name := polynomialAttr) "polynomial " term,+ : attr
+/-- Attribute for identifying `polynomial` extensions. Used to tag procedures that infer the base
+ring of polynomial-like types. -/
+syntax (name := inferPolyBaseAttr) "infer_polynomial_base " term,+ : attr
 
 /-- An extension for `polynomial`. -/
 structure PolynomialExt where
@@ -71,16 +73,16 @@ initialize polynomialExt : PersistentEnvExtension Entry (Entry × PolynomialExt)
   }
 
 initialize registerBuiltinAttribute {
-  name := `polynomialAttr
-  descr := "adds a polynomial extension"
+  name := `inferPolyBaseAttr
+  descr := "adds a polynomial extension that infers the base ring of a polynomial-like type"
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
-    | `(attr| polynomial $es,*) => do
+    | `(attr| infer_polynomial_base $es,*) => do
       unless kind == AttributeKind.global do
-        throwError "invalid attribute 'polynomial', must be global"
+        throwError "invalid attribute 'infer_polynomial_base', must be global"
       let env ← getEnv
       unless (env.getModuleIdxFor? declName).isNone do
-        throwError "invalid attribute 'polynomial', declaration is in an imported module"
+        throwError "invalid attribute 'infer_polynomial_base', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
       let ext ← mkPolynomialExt declName
       let keys ← MetaM.run' <| es.getElems.mapM fun stx => do

@@ -6,11 +6,8 @@ Authors: Arend Mellendijk
 import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Tactic.Polynomial.Core
-
--- For the ring instance in testing.
-import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Tactic.Algebra
 
 /-!
 # Polynomial
@@ -36,13 +33,7 @@ expression.
 
 -/
 
-
-set_option linter.all false
-
-open Lean hiding Module
-open Meta Elab Qq Mathlib.Tactic List Mathlib.Tactic.Module Mathlib.Tactic.Algebra
-open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
-open Mathlib.Meta AtomM
+open Lean Mathlib.Tactic Mathlib.Tactic.Algebra Parser.Tactic Elab Meta Qq
 
 namespace Mathlib.Tactic.Polynomial
 
@@ -51,7 +42,7 @@ section extension
 end extension
 
 /-- Infer base ring for `Polynomial R` -/
-@[polynomial Polynomial _]
+@[infer_polynomial_base Polynomial _]
 def polynomialInferBase : PolynomialExt where
   infer := fun e ↦ do
   match_expr e with
@@ -59,7 +50,7 @@ def polynomialInferBase : PolynomialExt where
   | _ => failure
 
 /-- Infer base ring for `MvPolynomial _ R` -/
-@[polynomial MvPolynomial _ _]
+@[infer_polynomial_base MvPolynomial _ _]
 def mvPolynomialInferBaseImpl : PolynomialExt where
   infer := fun e ↦ do
   match_expr e with
@@ -73,10 +64,12 @@ variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 theorem _root_.Polynomial.algebraMap_eq_C : algebraMap R _ = Polynomial.C := rfl
 
 @[polynomial_post]
-theorem _root_.MvPolynomial.algebraMap_eq_C : algebraMap R (MvPolynomial σ R) = MvPolynomial.C := rfl
+theorem _root_.MvPolynomial.algebraMap_eq_C :
+    algebraMap R (MvPolynomial σ R) = MvPolynomial.C := rfl
 
 @[polynomial_pre]
-theorem _root_.MvPolynomial.C_eq_algebraMap : MvPolynomial.C = algebraMap R (MvPolynomial σ R) := rfl
+theorem _root_.MvPolynomial.C_eq_algebraMap :
+    MvPolynomial.C = algebraMap R (MvPolynomial σ R) := rfl
 
 @[polynomial_pre]
 theorem monomial_eq_smul (a : R) (n : ℕ) : Polynomial.monomial n a = a • (.X ^ n) := by
@@ -100,7 +93,7 @@ attribute [polynomial_pre] Polynomial.C_eq_algebraMap
 /- TODO: we don't currently have a good way to normalize monomials of MvPolynomials. These are
 indexed by finsupps, making it difficult to turn into the appropriate normal form. -/
 /-- Run the `polynomial_pre` simpset to turn nonstandard spellings of `algebraMap` such as
-`Polynomial.C` into  -/
+`Polynomial.C` into `algebraMap` -/
 def preprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
   let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
@@ -122,7 +115,7 @@ See also:
 elab (name := polynomial) "polynomial":tactic =>
   withMainContext do
     let g ← preprocess (← getMainGoal)
-    let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
+    let some (α, _, _) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
       | throwError "polynomial failed: not an equality"
     let mut β : Expr := default
     try
@@ -146,7 +139,7 @@ See also:
 * `polynomial_nf` for normalizing polynomial expressions into sum-of-monomial form. -/
 elab (name := matchCoeffients) "match_coefficients" :tactic =>
   Tactic.liftMetaTactic fun g ↦ do
-    let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
+    let some (α, _, _) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
       | throwError "match_coefficients failed: not an equality"
     let mut β : Expr := default
     try
@@ -159,12 +152,12 @@ elab (name := matchCoeffients) "match_coefficients" :tactic =>
 
 /-- Normalize a polynomial expression into standard form. Used by `polynomial_nf`. -/
 def evalExprPoly (e : Expr) : AtomM Simp.Result := do
-  let ⟨u, α, e⟩ ← inferTypeQ e
+  let ⟨_, α, e⟩ ← inferTypeQ e
   let mut R : Expr := default
   try R ← inferBase α
   --TODO : better error message that explains that the tactic can be extended?
   catch _ => throwError "not a polynomial"
-  let ⟨v, R'⟩ ← inferLevelQ R
+  let ⟨_, R'⟩ ← inferLevelQ R
   Algebra.evalExpr R' e
 
 /- We need `mul_one` even though `algebra` already has it, because `a • 1` -> `C a * 1` introduces
@@ -186,8 +179,8 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
     pure <| ←
       r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
-/-- Simplification tactic for polynomials over commutative (semi)rings, which rewrites all polynomial
-expressions into normal form.
+/-- Simplification tactic for polynomials over commutative (semi)rings, which rewrites all
+polynomial expressions into normal form.
 
 See also:
 * `polynomial` for proving equality of polynomials without producing side goals.

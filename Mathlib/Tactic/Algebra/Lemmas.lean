@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
 
-import Mathlib.Tactic.Module
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Tactic.Ring.RingNF
 
 /-! # Lemmas for the `algebra` tactic.
 
