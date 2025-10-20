@@ -433,6 +433,7 @@ instance : SMulZeroClass α β where
     rw [← smul_one g, ← inv_smul_eq_iff, smul_mul', inv_smul_smul, zero_mul]
     exact zero_ne_one
 
+/-- A version of `smul_inv'` for groups with zero. -/
 @[simp] theorem smul_inv₀' (g : α) (x : β) : g • x⁻¹ = (g • x)⁻¹ := by
   by_cases hx : x = 0
   · rw [hx, inv_zero, smul_zero, inv_zero]
