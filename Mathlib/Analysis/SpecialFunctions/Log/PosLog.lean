@@ -99,6 +99,10 @@ theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
     simp only [this, and_true, ge_iff_le]
     linarith
 
+@[gcongr]
+lemma posLog_le_posLog {x y : ℝ} (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
+  monotoneOn_posLog hx (hx.trans hxy) hxy
+
 /-- The function `log⁺` commutes with taking powers. -/
 @[simp] lemma posLog_pow {n : ℕ} {x : ℝ} : log⁺ (x ^ n) = n * log⁺ x := by
   by_cases hn : n = 0
@@ -202,13 +206,7 @@ Variant of `posLog_add` for norms of elements in normed additive commutative gro
 monotonicity of `log⁺` and the triangle inequality.
 -/
 lemma posLog_norm_add_le {E : Type*} [NormedAddCommGroup E] (x₁ x₂ : E) :
-    log⁺ ‖x₁ + x₂‖ ≤ log⁺ ‖x₁‖ + log⁺ ‖x₂‖ + log 2 := by
-  calc log⁺ ‖x₁ + x₂‖
-  _ ≤ log⁺ (‖x₁‖ + ‖x₂‖) := by
-    apply monotoneOn_posLog _ _ (norm_add_le x₁ x₂)
-    <;> simp [add_nonneg (norm_nonneg x₁) (norm_nonneg x₂)]
-  _ ≤ log⁺ ‖x₁‖ + log⁺ ‖x₂‖ + log 2 := by
-    convert posLog_add using 1
-    ring
+    log⁺ ‖a + b‖ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
+  grw [norm_add_le, posLog_add, add_rotate]
 
 end Real

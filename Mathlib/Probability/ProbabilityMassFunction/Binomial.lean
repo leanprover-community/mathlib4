@@ -36,21 +36,21 @@ def binomial (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
     · rw [add_tsub_cancel_of_le (mod_cast h), one_pow])
 
 theorem binomial_apply (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) (i : Fin (n + 1)) :
-    binomial p h n i = p^(i : ℕ) * (1-p)^((Fin.last n - i) : ℕ) * (n.choose i : ℕ) := by
+    binomial p h n i = p ^ (i : ℕ) * (1 - p) ^ ((Fin.last n - i) : ℕ) * (n.choose i : ℕ) := by
   simp [binomial]
 
 @[simp]
 theorem binomial_apply_zero (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
-    binomial p h n 0 = (1-p)^n := by
+    binomial p h n 0 = (1 - p) ^ n := by
   simp [binomial_apply]
 
 @[simp]
 theorem binomial_apply_last (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
-    binomial p h n (.last n) = p^n := by
+    binomial p h n (.last n) = p ^ n := by
   simp [binomial_apply]
 
 theorem binomial_apply_self (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
-    binomial p h n (.last n) = p^n := by simp
+    binomial p h n (.last n) = p ^ n := by simp
 
 /-- The binomial distribution on one coin is the Bernoulli distribution. -/
 theorem binomial_one_eq_bernoulli (p : ℝ≥0) (h : p ≤ 1) :
