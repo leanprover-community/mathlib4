@@ -67,7 +67,6 @@ instance : LinearOrder PEmpty where
  toDecidableLE := Classical.decRel LE.le
 
 instance : LinearOrder Empty where
- le x y := False
  le_refl x := x.elim
  le_trans x y z := x.elim
  le_antisymm x := x.elim
@@ -114,6 +113,7 @@ instance zero : Zero OrderType where
 
 lemma zero_def : (0 : OrderType) = type PEmpty := rfl
 
+
 instance inhabited : Inhabited OrderType :=
   ⟨0⟩
 
@@ -134,8 +134,8 @@ theorem _root_.RelIso.ordertype_congr {α β} [LinearOrder α]
     [LinearOrder β] (h : α ≃o β) : type α = type β :=
   type_eq.2 ⟨h⟩
 
-theorem type_eq_zero_of_empty [LinearOrder α] [IsEmpty α] : type α = 0 :=
-  (ordIsoOfIsEmpty α PEmpty).ordertype_congr
+theorem type_eq_zero_of_empty [LinearOrder α] [IsEmpty α] : type α = 0 := by
+ convert (ordIsoOfIsEmpty α PEmpty).ordertype_congr
 
 @[simp]
 theorem type_eq_zero_iff_isEmpty [LinearOrder α] : type α = 0 ↔ IsEmpty α :=
@@ -256,7 +256,6 @@ theorem type_le {α β}
 theorem _root_.RelEmbedding.type_le {α β}
     [LinearOrder α] [LinearOrder β] (h : α ↪o β) : type α ≤ type β :=
   ⟨h⟩
-
 
 protected theorem zero_le (o : OrderType) : 0 ≤ o :=
   inductionOn o (fun _ ↦ OrderEmbedding.ofIsEmpty.type_le)
