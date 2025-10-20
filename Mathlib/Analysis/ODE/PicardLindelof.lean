@@ -237,7 +237,7 @@ protected lemma mem_closedBall
     _ ≤ L * max (tmax - t₀) (t₀ - tmin) + r := by
       gcongr
       exact abs_sub_le_max_sub t.2.1 t.2.2 _
-    _ ≤ a - r + r := add_le_add_right h _
+    _ ≤ a - r + r := by gcongr
     _ = a := sub_add_cancel _ _
 
 lemma compProj_mem_closedBall

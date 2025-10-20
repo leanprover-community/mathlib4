@@ -201,4 +201,7 @@ variable [Monoid M] [Group A] [MulDistribMulAction M A]
 lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
   map_div (MulDistribMulAction.toMonoidHom A r) x y
 
+lemma smul_zpow' (r : M) (x : A) (z : ℤ) : r • (x ^ z) = (r • x) ^ z :=
+  map_zpow (MulDistribMulAction.toMonoidHom A r) x z
+
 end MulDistribMulAction
