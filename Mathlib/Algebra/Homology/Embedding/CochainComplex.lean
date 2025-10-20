@@ -161,28 +161,28 @@ lemma isStrictlyLE_of_le (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyLE p] :
   rw [isStrictlyLE_iff]
   intro i hi
   apply K.isZero_of_isStrictlyLE p
-  omega
+  cutsat
 
 lemma isStrictlyGE_of_ge (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyGE q] :
     K.IsStrictlyGE p := by
   rw [isStrictlyGE_iff]
   intro i hi
   apply K.isZero_of_isStrictlyGE q
-  omega
+  cutsat
 
 lemma isLE_of_le (p q : ℤ) (hpq : p ≤ q) [K.IsLE p] :
     K.IsLE q := by
   rw [isLE_iff]
   intro i hi
   apply K.exactAt_of_isLE p
-  omega
+  cutsat
 
 lemma isGE_of_ge (p q : ℤ) (hpq : p ≤ q) [K.IsGE q] :
     K.IsGE p := by
   rw [isGE_iff]
   intro i hi
   apply K.exactAt_of_isGE q
-  omega
+  cutsat
 
 section
 
@@ -214,28 +214,28 @@ lemma exists_iso_single (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
     ∃ (M : C), Nonempty (K ≅ (single _ _ n).obj M) :=
   ⟨K.X n, ⟨{
       hom := mkHomToSingle (𝟙 _) (fun i (hi : i + 1 = n) ↦
-        (K.isZero_of_isStrictlyGE n i (by omega)).eq_of_src _ _)
+        (K.isZero_of_isStrictlyGE n i (by cutsat)).eq_of_src _ _)
       inv := mkHomFromSingle (𝟙 _) (fun i (hi : n + 1 = i) ↦
-        (K.isZero_of_isStrictlyLE n i (by omega)).eq_of_tgt _ _)
+        (K.isZero_of_isStrictlyLE n i (by cutsat)).eq_of_tgt _ _)
       hom_inv_id := by
         ext i
         obtain hi | rfl | hi := lt_trichotomy i n
-        · apply (K.isZero_of_isStrictlyGE n i (by omega)).eq_of_src
+        · apply (K.isZero_of_isStrictlyGE n i (by cutsat)).eq_of_src
         · simp
-        · apply (K.isZero_of_isStrictlyLE n i (by omega)).eq_of_tgt
+        · apply (K.isZero_of_isStrictlyLE n i (by cutsat)).eq_of_tgt
       inv_hom_id := by aesop }⟩⟩
 
 instance (A : C) (n : ℤ) :
     IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n := by
   rw [isStrictlyGE_iff]
   intro i hi
-  exact isZero_single_obj_X _ _ _ _ (by omega)
+  exact isZero_single_obj_X _ _ _ _ (by cutsat)
 
 instance (A : C) (n : ℤ) :
     IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n := by
   rw [isStrictlyLE_iff]
   intro i hi
-  exact isZero_single_obj_X _ _ _ _ (by omega)
+  exact isZero_single_obj_X _ _ _ _ (by cutsat)
 
 variable [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] (n : ℤ)
 
@@ -273,7 +273,7 @@ lemma quasiIso_truncGEMap_iff :
     obtain ⟨k, rfl⟩ := Int.le.dest hi
     exact h k _ rfl
   · rintro h i i' rfl
-    exact h _ (by dsimp; omega)
+    exact h _ (by dsimp; cutsat)
 
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), QuasiIsoAt φ i := by
@@ -281,9 +281,9 @@ lemma quasiIso_truncLEMap_iff :
   constructor
   · intro h i hi
     obtain ⟨k, rfl⟩ := Int.le.dest hi
-    exact h k _ (by dsimp; omega)
+    exact h k _ (by dsimp; cutsat)
   · rintro h i i' rfl
-    exact h _ (by dsimp; omega)
+    exact h _ (by dsimp; cutsat)
 
 end
 
@@ -305,13 +305,13 @@ lemma isStrictlyLE_shift (n : ℤ) [K.IsStrictlyLE n] (a n' : ℤ) (h : a + n' =
     (K⟦a⟧).IsStrictlyLE n' := by
   rw [isStrictlyLE_iff]
   intro i hi
-  exact IsZero.of_iso (K.isZero_of_isStrictlyLE n _ (by omega)) (K.shiftFunctorObjXIso a i _ rfl)
+  exact IsZero.of_iso (K.isZero_of_isStrictlyLE n _ (by cutsat)) (K.shiftFunctorObjXIso a i _ rfl)
 
 lemma isStrictlyGE_shift (n : ℤ) [K.IsStrictlyGE n] (a n' : ℤ) (h : a + n' = n) :
     (K⟦a⟧).IsStrictlyGE n' := by
   rw [isStrictlyGE_iff]
   intro i hi
-  exact IsZero.of_iso (K.isZero_of_isStrictlyGE n _ (by omega)) (K.shiftFunctorObjXIso a i _ rfl)
+  exact IsZero.of_iso (K.isZero_of_isStrictlyGE n _ (by cutsat)) (K.shiftFunctorObjXIso a i _ rfl)
 
 section
 
@@ -321,14 +321,14 @@ lemma isLE_shift (n : ℤ) [K.IsLE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧)
   rw [isLE_iff]
   intro i hi
   rw [exactAt_iff_isZero_homology]
-  exact IsZero.of_iso (K.isZero_of_isLE n (a + i) (by omega))
+  exact IsZero.of_iso (K.isZero_of_isLE n (a + i) (by cutsat))
     (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)
 
 lemma isGE_shift (n : ℤ) [K.IsGE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsGE n' := by
   rw [isGE_iff]
   intro i hi
   rw [exactAt_iff_isZero_homology]
-  exact IsZero.of_iso (K.isZero_of_isGE n (a + i) (by omega))
+  exact IsZero.of_iso (K.isZero_of_isGE n (a + i) (by cutsat))
     (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)
 
 end

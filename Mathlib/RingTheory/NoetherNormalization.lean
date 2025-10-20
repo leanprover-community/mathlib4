@@ -113,7 +113,8 @@ private lemma degreeOf_t_neq_of_neq (hv : v ∈ f.support) (hw : w ∈ f.support
     (T f <| monomial w <| coeff w f).degreeOf 0 := by
   rw [degreeOf_zero_t _ _ <| mem_support_iff.mp hv, degreeOf_zero_t _ _ <| mem_support_iff.mp hw]
   refine sum_r_mul_neq f v w (fun i ↦ ?_) (fun i ↦ ?_) neq <;>
-  exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i)) (by omega)
+  exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i))
+    (by cutsat)
 
 private lemma leadingCoeff_finSuccEquiv_t :
     (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
@@ -255,7 +256,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k <| ker <| hom2 f I) = (hom2 f I) :=
         AlgHom.ext fun a ↦ by
           simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
-      exact ⟨s, by omega, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
+      exact ⟨s, by cutsat, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
         intg.trans _ _ <| (comp ▸ hom2_isIntegral f I fne fi).tower_top _ _⟩
 
 variable (k R : Type*) [Field k] [CommRing R] [Nontrivial R] [a : Algebra k R]

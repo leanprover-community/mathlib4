@@ -68,7 +68,7 @@ lemma CFC.monotoneOn_one_sub_one_add_inv_real :
     MonotoneOn (cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
   calc _ = cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) a := by
-          rw [cfcₙ_nnreal_eq_real _ ha]
+          rw [cfcₙ_nnreal_eq_real _ _ ha]
           refine cfcₙ_congr ?_
           intro x hx
           have hx' : 0 ≤ x := by grind
@@ -76,7 +76,7 @@ lemma CFC.monotoneOn_one_sub_one_add_inv_real :
     _ ≤ cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) b :=
           CFC.monotoneOn_one_sub_one_add_inv ha hb hab
     _ = cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹) b := by
-          rw [cfcₙ_nnreal_eq_real _ hb]
+          rw [cfcₙ_nnreal_eq_real _ _ hb]
           refine cfcₙ_congr ?_
           intro x hx
           have hx' : 0 ≤ x := by grind
