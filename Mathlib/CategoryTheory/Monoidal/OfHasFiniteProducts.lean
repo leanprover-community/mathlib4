@@ -41,20 +41,9 @@ section
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
 @[deprecated CartesianMonoidalCategory.ofHasFiniteProducts (since := "2025-10-19")]
 def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C :=
-  letI : MonoidalCategoryStruct C := {
-    tensorObj := fun X Y ↦ X ⨯ Y
-    whiskerLeft := fun _ _ _ g ↦ Limits.prod.map (𝟙 _) g
-    whiskerRight := fun {_ _} f _ ↦ Limits.prod.map f (𝟙 _)
-    tensorHom := fun f g ↦ Limits.prod.map f g
-    tensorUnit := ⊤_ C
-    associator := prod.associator
-    leftUnitor := fun P ↦ Limits.prod.leftUnitor P
-    rightUnitor := fun P ↦ Limits.prod.rightUnitor P
-  }
-  .ofTensorHom
-    (pentagon := prod.pentagon)
-    (triangle := prod.triangle)
-    (associator_naturality := @prod.associator_naturality _ _ _)
+  have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+  have : CartesianMonoidalCategory C := .ofHasFiniteProducts
+  inferInstance
 
 end
 
@@ -74,43 +63,19 @@ theorem tensor_ext {X Y Z : C} (f g : X ⟶ Y ⊗ Z)
     (w₁ : f ≫ prod.fst = g ≫ prod.fst) (w₂ : f ≫ prod.snd = g ≫ prod.snd) : f = g :=
   Limits.prod.hom_ext w₁ w₂
 
-@[deprecated "This is not true in the new formulation." (since := "2025-10-19"), simp]
+@[deprecated "This is an implementation detail." (since := "2025-10-19"), simp]
 theorem tensorUnit : 𝟙_ C = ⊤_ C := rfl
 
-@[deprecated "This is not true in the new formulation." (since := "2025-10-19"), simp]
+@[deprecated "This is an implementation detail." (since := "2025-10-19"), simp]
 theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
-  rfl
-
-@[deprecated "This is not true in the new formulation." (since := "2025-10-19"), simp]
-theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ₘ g = Limits.prod.map f g :=
-  rfl
-
-@[deprecated "Use the `CartesianMonoidalCategory.whiskerLeft_...` lemmas" (since := "2025-10-19"),
-  simp, reassoc]
-theorem whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f = Limits.prod.map (𝟙 X) f :=
-  rfl
-
-@[deprecated "Use the `CartesianMonoidalCategory.whiskerRight_...` lemmas" (since := "2025-10-19"),
-  simp, reassoc]
-theorem whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z = Limits.prod.map f (𝟙 Z) :=
   rfl
 
 @[deprecated CartesianMonoidalCategory.leftUnitor_hom (since := "2025-10-19"), simp, reassoc]
 theorem leftUnitor_hom (X : C) : (λ_ X).hom = Limits.prod.snd :=
   rfl
 
-@[deprecated "Use the `CartesianMonoidalCategory.leftUnitor_inv_...` lemmas"
-  (since := "2025-10-19"), simp, reassoc]
-theorem leftUnitor_inv (X : C) : (λ_ X).inv = prod.lift (terminal.from X) (𝟙 _) :=
-  rfl
-
 @[deprecated CartesianMonoidalCategory.rightUnitor_hom (since := "2025-10-19"), simp, reassoc]
 theorem rightUnitor_hom (X : C) : (ρ_ X).hom = Limits.prod.fst :=
-  rfl
-
-@[deprecated "Use the `CartesianMonoidalCategory.rightUnitor_inv_...` lemmas"
-  (since := "2025-10-19"), simp, reassoc]
-theorem rightUnitor_inv (X : C) : (ρ_ X).inv = prod.lift (𝟙 _) (terminal.from X) :=
   rfl
 
 @[deprecated "Use the `CartesianMonoidalCategory.associator_hom_...` lemmas"
@@ -169,14 +134,12 @@ open MonoidalCategory
 set_option linter.deprecated false in
 /-- The monoidal structure coming from finite products is symmetric.
 -/
-@[deprecated CartesianMonoidalCategory.ofHasFiniteProducts (since := "2025-10-19"), simps]
-def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : SymmetricCategory C where
-  braiding X Y := Limits.prod.braiding X Y
-  braiding_naturality_left f X := by simp
-  braiding_naturality_right X _ _ f := by simp
-  hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_hom]; simp
-  hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_inv]; simp
-  symmetry X Y := by simp
+@[deprecated CartesianMonoidalCategory.ofHasFiniteProducts (since := "2025-10-19"), simps!]
+def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : SymmetricCategory C :=
+  have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+  let : CartesianMonoidalCategory C := .ofHasFiniteProducts
+  have : BraidedCategory C := .ofCartesianMonoidalCategory
+  inferInstance
 
 end
 
