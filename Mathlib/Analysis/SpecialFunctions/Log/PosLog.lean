@@ -91,6 +91,10 @@ theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
     simp only [this, and_true, ge_iff_le]
     linarith
 
+@[gcongr]
+lemma posLog_le_posLog {x y : ℝ} (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
+  monotoneOn_posLog hx (hx.trans hxy) hxy
+
 /-!
 ## Estimates for Products
 -/
@@ -169,12 +173,6 @@ monotonicity of `log⁺` and the triangle inequality.
 -/
 lemma posLog_norm_add_le {E : Type*} [NormedAddCommGroup E] (a b : E) :
     log⁺ ‖a + b‖ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
-  calc log⁺ ‖a + b‖
-  _ ≤ log⁺ (‖a‖ + ‖b‖) := by
-    apply monotoneOn_posLog _ _ (norm_add_le a b)
-    <;> simp [add_nonneg (norm_nonneg a) (norm_nonneg b)]
-  _ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
-    convert posLog_add using 1
-    ring
+  grw [norm_add_le, posLog_add, add_rotate]
 
 end Real
