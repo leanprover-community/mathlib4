@@ -63,7 +63,7 @@ lemma abs_mul_abs (a : A) : abs a * abs a = star a * a :=
 in that case one should simply use `Commute.cfcₙ_nnreal` directly.
 
 The point of this theorem is to have simpler hypotheses. -/
-lemma Commute.abs_left {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+lemma _root_.Commute.cfcAbs_left {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     Commute (abs a) b :=
   .cfcₙ_nnreal (by simp_all [h₂.star_left]) _
 
@@ -71,33 +71,33 @@ lemma Commute.abs_left {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)
 in that case one should simply use `Commute.cfcₙ_nnreal` directly.
 
 The point of this theorem is to have simpler hypotheses. -/
-lemma Commute.abs_right {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+lemma _root_.Commute.cfcAbs_right {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     Commute b (abs a) :=
-  h₁.abs_left h₂ |>.symm
+  h₁.cfcAbs_left h₂ |>.symm
 
 /- The hypotheses could be weakened to `Commute (star a * a) (star b * b)`, but
 in that case one should simply use `Commute.cfcₙ_nnreal` (twice) directly.
 
 The point of this theorem is to have simpler hypotheses. -/
-lemma Commute.abs_abs {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+lemma _root_.Commute.cfcAbs_cfcAbs {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     Commute (abs a) (abs b) :=
   Commute.cfcₙ_nnreal (by simp_all [h₂.star_left]) _ |>.symm.cfcₙ_nnreal _ |>.symm
 
 /-- Normal elements commute with their absolute value. -/
 lemma commute_abs_self (a : A) (ha : IsStarNormal a := by cfc_tac) :
     Commute (abs a) a :=
-  .abs_left (.refl a) ha.star_comm_self.symm
+  .cfcAbs_left (.refl a) ha.star_comm_self.symm
 
-lemma Commute.abs_mul_eq {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
+lemma _root_.Commute.cfcAbs_mul_eq {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     abs (a * b) = abs a * abs b := by
-  have hab := h₁.abs_abs h₂
+  have hab := h₁.cfcAbs_cfcAbs h₂
   rw [abs, CFC.sqrt_eq_iff _ _ (star_mul_self_nonneg _)
     (hab.mul_nonneg (abs_nonneg a) (abs_nonneg b)), hab.eq, hab.mul_mul_mul_comm,
     abs_mul_abs, abs_mul_abs, star_mul, h₂.star_left.symm.mul_mul_mul_comm, h₁.eq]
 
 lemma abs_mul_self (a : A) (ha : IsStarNormal a := by cfc_tac) :
     abs (a * a) = star a * a := by
-  rw [Commute.abs_mul_eq (.refl a) ha.star_comm_self.symm, abs_mul_abs]
+  rw [Commute.cfcAbs_mul_eq (.refl a) ha.star_comm_self.symm, abs_mul_abs]
 
 lemma abs_nnrpow_two (a : A) : abs a ^ (2 : ℝ≥0) = star a * a := by
   simp only [abs_nonneg, nnrpow_two]
@@ -138,7 +138,7 @@ lemma abs_add_self (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : abs a + a = 2 
     congr($(CFC.posPart_add_negPart a) + $(CFC.posPart_sub_negPart a)).symm
 
 @[simp, grind =]
-lemma abs_abs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
+lemma cfcAbs_cfcAbs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
 
 variable [StarModule ℝ A]
 
