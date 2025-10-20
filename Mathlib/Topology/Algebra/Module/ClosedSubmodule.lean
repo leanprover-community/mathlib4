@@ -62,6 +62,9 @@ instance : SMulMemClass (ClosedSubmodule R M) R M where
 instance : Coe (ClosedSubmodule R M) (Submodule R M) where
   coe := toSubmodule
 
+instance [ContinuousAdd M] (s : ClosedSubmodule R M) :
+    ContinuousAdd s := AddSubmonoid.continuousAdd s.toAddSubmonoid
+
 @[simp] lemma carrier_eq_coe (s : ClosedSubmodule R M) : s.carrier = s := rfl
 
 @[simp] lemma mem_mk {s : Submodule R M} {hs} : x ∈ mk s hs ↔ x ∈ s := .rfl
