@@ -1,5 +1,14 @@
 import Mathlib.Tactic.Algebra
 
+/-!
+# Setup for the `polynomial` tactic
+
+This file initializes the environment extensions and simp sets used by the `polynomial` tactic.
+
+These extensions let downstream users use their own polynomial-like types (such as `PowerSeries`)
+with the `polynomial` tactic suite.
+
+-/
 namespace Mathlib.Tactic.Polynomial
 
 open Lean
@@ -30,7 +39,6 @@ structure PolynomialExt where
   /-- Attempts to infer the base `R` of an `Algebra R A` based only on `A`. e.g. returns `R` given
   `Polynomial R`. -/
   infer : Expr → MetaM Expr
-
 
 /-- Read a `polynomial` extension from a declaration of the right type. -/
 def mkPolynomialExt (n : Name) : ImportM PolynomialExt := do

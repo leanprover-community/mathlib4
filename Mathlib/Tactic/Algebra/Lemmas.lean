@@ -7,6 +7,9 @@ Authors: Arend Mellendijk
 import Mathlib.Tactic.Module
 import Mathlib.Algebra.Algebra.Defs
 
+/-! # Lemmas for the `algebra` tactic.
+
+-/
 
 open Mathlib.Meta.NormNum
 
@@ -66,6 +69,7 @@ theorem isRat_eq_rawCast {a : A} {n d : ℕ} (h : IsRat a (.negOfNat n) d) :
   simp [Mathlib.Tactic.Ring.cast_rat h, ← Algebra.algebraMap_eq_smul_one]
 
 end field
+
 variable {R A : Type*} [sR : CommSemiring R] [sA : CommSemiring A] [sAlg : Algebra R A]
 
 theorem add_overlap_nonzero {a₁ a₂ b₁ b₂ c₁ c₂ : R} (h₁ : a₁ + b₁ = c₁) (h₂ : a₂ + b₂ = c₂) :
@@ -97,7 +101,9 @@ theorem mul_eq_mul_of_eq {c a b : A}
   simp [h]
 
 section Nat
+
 variable {n d : ℕ}
+
 theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
 theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
 theorem mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp

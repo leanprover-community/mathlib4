@@ -8,12 +8,23 @@ import Mathlib.Tactic.Algebra.Lemmas
 import Mathlib.Tactic.Module
 
 /-!
-A suite of tactics for solving equations in commutative algebras over commutative (semi)rings,
+# The `algebra` tactic
+A suite of three tactics for solving equations in commutative algebras over commutative (semi)rings,
 where the exponents can also contain variables.
-Based largely on the implementation of `ring`.
+
+Based largely on the implementation of `ring`. The `algebra` normal form mirrors that of `ring`
+except that the constants are expressions in the base ring that are kept in ring normal form.
+
+## Organization
+The structure of this file closely matches that of `Ring.Basic`.
+
+* Normalized expressions are stored as an `ExSum`, a type which is part of the inductive family of
+types `ExSum`, `ExProd` and `ExBase`.
+* We implement evaluation functions (`evalAdd`, `evalMul`, etc.) for all of the operations we
+support, which take normalized expressions and return a new normalized expression together with
+a proof that the new expression equals the operation applied to the input expressions.
 
 This tactic is used internally to implement the `polynomial` tactic.
-
 -/
 
 open Lean hiding Module
