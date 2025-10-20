@@ -107,7 +107,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+variable [Field α] [LinearOrder α] [IsOrderedRing α]
   {l : Filter β} {f : β → α} {r : α}
 
 /-- If `r` is a positive constant, `fun x ↦ r * f x` tends to negative infinity along a filter

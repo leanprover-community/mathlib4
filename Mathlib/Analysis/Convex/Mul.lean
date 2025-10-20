@@ -166,7 +166,7 @@ protected lemma Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn 𝕜 univ f
 end LinearOrderedCommRing
 
 section LinearOrderedField
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
 
 open Int in
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m`. -/

@@ -61,7 +61,7 @@ lemma isVisible_iff_lineMap (hxy : x ≠ y) :
 end AddTorsor
 
 section Module
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
   [AddCommGroup V] [Module 𝕜 V] {s : Set V} {x y z : V}
 
 /-- If a point `x` sees a convex combination of points of a set `s` through `convexHull ℝ s ∌ x`,

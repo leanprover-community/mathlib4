@@ -31,7 +31,7 @@ namespace FloorSemiring
 
 open scoped Nat
 
-variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K]
+variable {K : Type*} [Field K] [LinearOrder K] [IsOrderedRing K] [FloorSemiring K]
   [TopologicalSpace K] [OrderTopology K]
 
 theorem tendsto_mul_pow_div_factorial_sub_atTop (a c : K) (d : ℕ) :

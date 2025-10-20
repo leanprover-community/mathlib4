@@ -189,7 +189,7 @@ end Field
 
 section LinearOrderedField
 
-variable [TopologicalSpace β] [Field β] [LinearOrder β] [IsStrictOrderedRing β] [OrderTopology β]
+variable [TopologicalSpace β] [Field β] [LinearOrder β] [IsOrderedRing β] [OrderTopology β]
 variable (f)
 
 theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :

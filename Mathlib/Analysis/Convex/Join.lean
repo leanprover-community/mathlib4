@@ -110,7 +110,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
   [AddCommGroup E] [Module 𝕜 E] {s t : Set E} {x : E}
 
 theorem convexJoin_assoc_aux (s t u : Set E) :
