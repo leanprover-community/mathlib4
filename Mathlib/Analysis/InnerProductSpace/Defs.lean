@@ -345,7 +345,7 @@ We need this for the `PreInnerProductSpace.Core` structure to prove the triangle
 when showing the core is a normed group and to take the quotient.
 
 (This is not intended for general use; see `Analysis.InnerProductSpace.Basic` for a variety of
-versions of Cauchy-Schwartz for an inner product space, rather than a `PreInnerProductSpace.Core`).
+versions of Cauchy-Schwarz for an inner product space, rather than a `PreInnerProductSpace.Core`).
 -/
 theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := by
   suffices discrim (normSqF x) (2 * ‖⟪x, y⟫_𝕜‖) (normSqF y) ≤ 0 by
