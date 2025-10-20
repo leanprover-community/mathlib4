@@ -23,7 +23,7 @@ basic lemmas about construction and elementary calculations are found there.
 
 * `IsOrtho`: states that two vectors are orthogonal with respect to a sesquilinear map
 * `IsSymm`, `IsAlt`: state that a sesquilinear form is symmetric and alternating, respectively
-* `orthogonalBilin`: provides the orthogonal complement with respect to a sesquilinear form
+* `orthogonalBilin` provides the orthogonal complement with respect to a sesquilinear form
 
 ## References
 
