@@ -61,8 +61,6 @@ def mul : Foo → Foo → Foo
   | _, _ => 0
 
 instance commMonoid : CommMonoid Foo where
-  mul := mul
-  one := 1
   one_mul := by boom
   mul_one := by boom
   mul_comm := by boom
@@ -71,7 +69,6 @@ instance commMonoid : CommMonoid Foo where
 instance : LinearOrderedCommMonoidWithZero Foo where
   __ := linearOrder
   __ := commMonoid
-  zero := 0
   zero_mul := by boom
   mul_zero := by boom
   mul_le_mul_left := by rintro ⟨⟩ ⟨⟩ h ⟨⟩ <;> revert h <;> decide

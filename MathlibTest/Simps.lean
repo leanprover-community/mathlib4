@@ -590,9 +590,7 @@ class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G wher
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
 @[simps] def bar : ExtendingStuff ℕ :=
-  { mul := (·*·)
-    zero := 0
-    neg := Nat.succ
+  { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
 
@@ -605,9 +603,7 @@ class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G 
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
 @[simps] def new_bar : new_ExtendingStuff ℕ :=
-  { mul := (·*·)
-    zero := 0
-    neg := Nat.succ
+  { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
 

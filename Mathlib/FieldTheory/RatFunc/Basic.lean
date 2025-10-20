@@ -264,10 +264,8 @@ variable (K) [CommRing K]
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
 def instCommMonoid : CommMonoid (RatFunc K) where
-  mul := (· * ·)
   mul_assoc := by frac_tac
   mul_comm := by frac_tac
-  one := 1
   one_mul := by frac_tac
   mul_one := by frac_tac
   npow := npowRec
@@ -277,15 +275,11 @@ def instCommMonoid : CommMonoid (RatFunc K) where
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
 -/
 def instAddCommGroup : AddCommGroup (RatFunc K) where
-  add := (· + ·)
   add_assoc := by frac_tac
   add_comm := by frac_tac
-  zero := 0
   zero_add := by frac_tac
   add_zero := by frac_tac
-  neg := Neg.neg
   neg_add_cancel := by frac_tac
-  sub := Sub.sub
   sub_eq_add_neg := by frac_tac
   nsmul := (· • ·)
   nsmul_zero := by smul_tac
@@ -297,15 +291,10 @@ def instAddCommGroup : AddCommGroup (RatFunc K) where
 
 instance instCommRing : CommRing (RatFunc K) :=
   { instCommMonoid K, instAddCommGroup K with
-    zero := 0
-    sub := Sub.sub
     zero_mul := by frac_tac
     mul_zero := by frac_tac
     left_distrib := by frac_tac
     right_distrib := by frac_tac
-    one := 1
-    nsmul := (· • ·)
-    zsmul := (· • ·)
     npow := npowRec }
 
 variable {K}
@@ -474,7 +463,6 @@ variable (K)
 @[stacks 09FK]
 instance instField [IsDomain K] : Field (RatFunc K) where
   inv_zero := by frac_tac
-  div := (· / ·)
   div_eq_mul_inv := by frac_tac
   mul_inv_cancel _ := mul_inv_cancel
   zpow := zpowRec
@@ -498,7 +486,6 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
     map_mul' x y := by simp only [mk_one', RingHom.map_mul, ofFractionRing_mul]
     map_one' := by simp only [mk_one', RingHom.map_one, ofFractionRing_one]
     map_zero' := by simp only [mk_one', RingHom.map_zero, ofFractionRing_zero] }
-  smul := (· • ·)
   smul_def' c x := by
     induction x using RatFunc.induction_on' with | _ p q hq
     rw [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, mk_one', ← mk_smul,
