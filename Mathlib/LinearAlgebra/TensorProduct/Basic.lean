@@ -1369,8 +1369,8 @@ protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
 
 instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
   { TensorProduct.addCommMonoid with
-    sub_eq_add_neg := fun _ _ => rfl
     neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
+    zsmul := (· • ·)
     zsmul_zero' := by simp
     zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
     zsmul_neg' := fun n x => by
