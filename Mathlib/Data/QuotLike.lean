@@ -358,14 +358,14 @@ protected abbrev recOnSubsingleton {motive : Q → Sort*}
 protected abbrev hrecOn {motive : Q → Sort*}
     (q : Q)
     (f : (a : α) → motive ⟦a⟧)
-    (h : (a b : α) → r a b → HEq (f a) (f b)) :
+    (h : (a b : α) → r a b → f a ≍ f b) :
     motive q :=
   _root_.QuotLike.recOn q f fun a b p ↦ eq_of_heq <| (eqRec_heq_self _ _).trans (h a b p)
 
 theorem hrecOn_mkQ {motive : Q → Sort*}
     (a : α)
     (f : (a : α) → motive ⟦a⟧)
-    (h : (a b : α) → r a b → HEq (f a) (f b)) :
+    (h : (a b : α) → r a b → f a ≍ f b) :
     QuotLike.hrecOn (motive := motive) ⟦a⟧ f h = f a := by
   simp
 
@@ -493,7 +493,7 @@ protected def recOnSubsingleton₂ {motive : Qa → Qb → Sort*}
 @[elab_as_elim]
 protected def hrecOn₂ [IsRefl α ra] [IsRefl β rb] {motive : Qa → Qb → Sort*}
     (qa : Qa) (qb : Qb) (f : ∀ a b, motive ⟦a⟧ ⟦b⟧)
-    (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) :
+    (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ ≍ f a₂ b₂) :
     motive qa qb :=
   QuotLike.hrecOn qa
     (fun a ↦ QuotLike.hrecOn qb (f a) (fun b₁ b₂ pb ↦ h _ _ _ _ (refl _) pb))
@@ -502,7 +502,7 @@ protected def hrecOn₂ [IsRefl α ra] [IsRefl β rb] {motive : Qa → Qb → So
 @[simp]
 theorem hrecOn₂_mkQ [IsRefl α ra] [IsRefl β rb] {motive : Qa → Qb → Sort*}
     (a : α) (b : β) (f : ∀ a b, motive ⟦a⟧ ⟦b⟧)
-    (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) :
+    (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ ≍ f a₂ b₂) :
     QuotLike.hrecOn₂ (motive := motive) ⟦a⟧ ⟦b⟧ f h = f a b := by
   simp [QuotLike.hrecOn₂]
 
