@@ -52,26 +52,4 @@ end orthonormal
 
 end InnerProductSpace
 
-section opIsometry
-variable {R H : Type*} [Semiring R] [SeminormedAddCommGroup H] [Module R H]
-
-theorem isometry_opLinearEquiv : Isometry (opLinearEquiv R (M := H)) := fun _ _ => rfl
-
-variable (R H) in
-/-- The linear isometry equivalence version of the function `op`. -/
-@[simps!]
-def opLinearIsometryEquiv : H ≃ₗᵢ[R] Hᵐᵒᵖ where
-  toLinearEquiv := opLinearEquiv R
-  norm_map' _ := rfl
-
-@[simp]
-theorem toLinearEquiv_opLinearIsometryEquiv :
-    (opLinearIsometryEquiv R H).toLinearEquiv = opLinearEquiv R := rfl
-
-@[simp]
-theorem toContinuousLinearEquiv_opLinearIsometryEquiv :
-    (opLinearIsometryEquiv R H).toContinuousLinearEquiv = opContinuousLinearEquiv R := rfl
-
-end opIsometry
-
 end MulOpposite
