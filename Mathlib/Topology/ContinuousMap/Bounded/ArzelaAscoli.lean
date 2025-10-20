@@ -51,7 +51,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
     isCompact_univ.elim_finite_subcover_image (fun x _ => (hU x).2.1) fun x _ =>
       mem_biUnion (mem_univ _) (hU x).1
   rcases hfin.nonempty_fintype with ⟨_⟩
-  obtain ⟨tβ : Set β, _, hfin, htβ : univ ⊆ ⋃y ∈ tβ, ball y ε₂⟩ :=
+  obtain ⟨tβ : Set β, _, hfin, htβ : univ ⊆ ⋃ y ∈ tβ, ball y ε₂⟩ :=
     @finite_cover_balls_of_compact β _ _ isCompact_univ _ ε₂0
   rcases hfin.nonempty_fintype with ⟨_⟩
   -- Associate to every point `y` in the space a nearby point `F y` in `tβ`

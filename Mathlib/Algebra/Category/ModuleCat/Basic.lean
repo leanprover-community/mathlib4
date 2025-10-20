@@ -86,7 +86,7 @@ structure Hom (M N : ModuleCat.{v} R) where
   /-- The underlying linear map. -/
   hom' : M →ₗ[R] N
 
-instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
+instance moduleCategory : Category.{v, max (v + 1) u} (ModuleCat.{v} R) where
   Hom M N := Hom M N
   id _ := ⟨LinearMap.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩

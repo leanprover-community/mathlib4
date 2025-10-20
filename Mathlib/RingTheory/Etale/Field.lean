@@ -124,7 +124,7 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
       apply IntermediateField.finiteDimensional_adjoin
       intro x _; exact (Algebra.IsSeparable.isSeparable K x).isIntegral
     have := IsSeparable.of_algHom _ _ (IsScalarTower.toAlgHom K (K⟮x, y⟯) L)
-    obtain ⟨⟨α, hα⟩, e⟩ := Field.exists_primitive_element K K⟮x,y⟯
+    obtain ⟨⟨α, hα⟩, e⟩ := Field.exists_primitive_element K K⟮x, y⟯
     apply_fun (IntermediateField.map (IntermediateField.val _)) at e
     rw [IntermediateField.adjoin_map, ← AlgHom.fieldRange_eq_map] at e
     simp only [IntermediateField.coe_val, Set.image_singleton,

@@ -591,7 +591,7 @@ lemma support_zpowers_of_mem_cycleFactorsFinset_le {g : Perm α}
 theorem pairwise_disjoint_of_mem_zpowers :
     Pairwise fun (i j : f.cycleFactorsFinset) ↦
       ∀ (x y : Perm α), x ∈ Subgroup.zpowers ↑i → y ∈ Subgroup.zpowers ↑j → Disjoint x y :=
-  fun c d  hcd ↦ fun x y hx hy ↦ by
+  fun c d hcd ↦ fun x y hx hy ↦ by
   obtain ⟨m, hm⟩ := hx; obtain ⟨n, hn⟩ := hy
   simp only [← hm, ← hn]
   apply Disjoint.zpow_disjoint_zpow
