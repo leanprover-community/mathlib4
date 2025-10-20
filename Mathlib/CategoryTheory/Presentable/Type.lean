@@ -22,9 +22,10 @@ open CategoryTheory Limits Opposite
 
 namespace HasCardinalLT
 
-variable {X : Type u} (κ : Cardinal.{u}) [Fact κ.IsRegular]
+variable (X : Type u) (κ : Cardinal.{u})
 
-lemma isCardinalPresentable (hX : HasCardinalLT X κ) :
+variable {X κ} in
+lemma isCardinalPresentable (hX : HasCardinalLT X κ) [Fact κ.IsRegular] :
     IsCardinalPresentable X κ where
   preservesColimitOfShape J _ _ :=
     ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨by
@@ -51,24 +52,57 @@ lemma isCardinalPresentable (hX : HasCardinalLT X κ) :
             fun x ↦ by simpa [φ] using IsCardinalFiltered.coeq_condition φ hX x⟩
         exact ⟨l, b, by ext x; simp [← hl x, hk]⟩⟩⟩⟩
 
-variable (X)
-
+/-- Given `X : Type u` and `κ : Cardinal.{u} X`, this is the preordered type
+of subsets of `X` of cardinality `< κ`. -/
 protected abbrev Set := { A : Set X // HasCardinalLT A κ }
 
-instance : IsCardinalFiltered (HasCardinalLT.Set X κ) κ :=
-  isCardinalFiltered_preorder _ _ (by
-    sorry)
+namespace Set
 
+instance [Fact κ.IsRegular] :
+    IsCardinalFiltered (HasCardinalLT.Set X κ) κ :=
+  isCardinalFiltered_preorder _ _
+    (fun ι A hι ↦ ⟨⟨⋃ (i : ι), (A i).val,
+      hasCardinalLT_iUnion _
+        (by rwa [hasCardinalLT_iff_cardinal_mk_lt]) (fun i ↦ (A i).prop)⟩,
+      le_iSup (fun i ↦ (A i).1)⟩)
+
+instance [Fact κ.IsRegular] :
+    IsFiltered (HasCardinalLT.Set X κ) :=
+  isFiltered_of_isCardinalFiltered _ κ
+
+lemma isFiltered_of_aleph0_le (hκ : Cardinal.aleph0 ≤ κ) :
+    IsFiltered (HasCardinalLT.Set X κ) where
+  nonempty := ⟨⟨∅, hasCardinalLT_of_finite _ _ hκ⟩⟩
+  toIsFilteredOrEmpty := by
+    have : IsDirected (HasCardinalLT.Set X κ) (· ≤ ·) :=
+      ⟨fun A B ↦ ⟨⟨A.val ∪ B.val, hasCardinalLT_union hκ A.prop B.prop⟩,
+        Set.subset_union_left, Set.subset_union_right⟩⟩
+    exact isFilteredOrEmpty_of_directed_le _
+
+/-- The functor `HasCardinalLT.Set X κ ⥤ Type u` which sends a subset of `X`
+of cardinality `κ` to the corresponding subtype. -/
 @[simps!]
-def Set.functor : HasCardinalLT.Set X κ ⥤ Type u :=
+def functor : HasCardinalLT.Set X κ ⥤ Type u :=
   Monotone.functor (f := Subtype.val) (by tauto) ⋙ Set.functorToTypes (X := X)
 
+/-- The cocone for `Set.functor X κ : HasCardinalLT.Set X κ ⥤ Type u` with point `X`. -/
 @[simps]
-def Set.cocone : Cocone (Set.functor X κ) where
+def cocone : Cocone (Set.functor X κ) where
   pt := X
   ι.app _ := Subtype.val
 
-def Set.isColimitCocone : IsColimit (cocone X κ) := sorry
+/-- Any type `X` is the (filtered) colimit of its subsets of cardinality `< κ`
+when `κ` is an infinite cardinal. (This colimit is `κ`-filtered when `κ` is
+a regular cardinal.) -/
+noncomputable def isColimitCocone
+    (hκ : Cardinal.aleph0 ≤ κ) : IsColimit (cocone X κ) := by
+  have := isFiltered_of_aleph0_le X κ hκ
+  refine Types.FilteredColimit.isColimitOf' _ _ (fun x ↦ ?_) ?_
+  · exact ⟨⟨{x}, hasCardinalLT_of_finite _ _ hκ⟩, ⟨x, by simp⟩, rfl⟩
+  · rintro A ⟨x, hx⟩ ⟨y, hy⟩ rfl
+    exact ⟨A, 𝟙 _, rfl⟩
+
+end Set
 
 end HasCardinalLT
 
@@ -78,14 +112,14 @@ namespace Types
 
 variable {X : Type u} (κ : Cardinal.{u}) [Fact κ.IsRegular]
 
-
 lemma isCardinalPresentable_iff :
     IsCardinalPresentable X κ ↔ HasCardinalLT X κ := by
   refine ⟨fun _ ↦ ?_, fun hX ↦ hX.isCardinalPresentable⟩
   have := preservesColimitsOfShape_of_isCardinalPresentable X κ
   obtain ⟨⟨A, hA⟩, f, hf⟩ := Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (coyoneda.obj (op X))
-      (HasCardinalLT.Set.isColimitCocone X κ)) (𝟙 X)
+      (HasCardinalLT.Set.isColimitCocone X κ
+        (Cardinal.IsRegular.aleph0_le Fact.out))) (𝟙 X)
   obtain rfl : A = .univ := by
     ext x
     have := congr_fun hf x
