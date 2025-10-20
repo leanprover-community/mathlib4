@@ -589,7 +589,7 @@ end BSemigroup
 class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps] def bar : ExtendingStuff ℕ :=
+@[simps!] def bar : ExtendingStuff ℕ :=
   { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
@@ -602,7 +602,7 @@ end
 class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
   new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
-@[simps] def new_bar : new_ExtendingStuff ℕ :=
+@[simps!] def new_bar : new_ExtendingStuff ℕ :=
   { neg := Nat.succ
     Subset := fun _ _ ↦ True
     new_axiom := fun _ ↦ trivial }
