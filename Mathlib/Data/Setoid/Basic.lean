@@ -339,7 +339,7 @@ theorem ker_eq_lift_of_injective {r : Setoid α} (f : α → β) (H : r ≤ ker 
       Quotient.exact <| h <| show Quotient.lift f H ⟦x⟧ = Quotient.lift f H ⟦y⟧ from hk)
     H
 
-theorem lift_injective_iff_ker_eq_of_le {r : Setoid α} (f : α → β)
+theorem lift_injective_iff_ker_eq_of_le {r : Setoid α} {f : α → β}
     (hle : r ≤ ker f) : Injective (Quotient.lift f hle) ↔ ker f = r :=
   ⟨ker_eq_lift_of_injective f hle, fun h ↦ h ▸ kerLift_injective _⟩
 
