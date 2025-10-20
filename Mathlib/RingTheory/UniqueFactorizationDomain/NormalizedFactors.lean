@@ -343,22 +343,22 @@ variable {β : Type*} [CancelCommMonoidWithZero β] [NormalizationMonoid β]
 If the monoid equiv `f : α ≃* β` commutes with `normalize` then, for `a : α`, it yields a
 bijection between the `normalizedFactors` of `a` and of `f a`.
 -/
-def normalizedFactorsEquiv [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x)) (a : α) :
+def normalizedFactorsEquiv (he : ∀ x, normalize (f x) = f (normalize x)) (a : α) :
     {x // x ∈ normalizedFactors a} ≃ {y // y ∈ normalizedFactors (f a)} :=
-  Equiv.subtypeEquiv f fun x ↦
-    if ha : a = 0 then by simp [ha] else by
-      simp [mem_normalizedFactors_iff' ha,
+  Equiv.subtypeEquiv f fun x ↦ by
+    rcases eq_or_ne a 0 with rfl | ha
+    · simp
+    · simp [mem_normalizedFactors_iff' ha,
         mem_normalizedFactors_iff' (EmbeddingLike.map_ne_zero_iff.mpr ha), map_dvd_iff_dvd_symm,
         MulEquiv.irreducible_iff, he]
 
 @[simp]
-theorem normalizedFactorsEquiv_apply [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x))
+theorem normalizedFactorsEquiv_apply (he : ∀ x, normalize (f x) = f (normalize x))
     {a p : α} (hp : p ∈ normalizedFactors a) :
     normalizedFactorsEquiv he a ⟨p, hp⟩ = f p := rfl
 
 @[simp]
-theorem normalizedFactorsEquiv_symm_apply [DecidableEq α]
-    (he : ∀ x, normalize (f x) = f (normalize x))
+theorem normalizedFactorsEquiv_symm_apply (he : ∀ x, normalize (f x) = f (normalize x))
     {a : α} {q : β} (hq : q ∈ normalizedFactors (f a)) :
     (normalizedFactorsEquiv he a).symm ⟨q, hq⟩ = (MulEquivClass.toMulEquiv f).symm q := rfl
 

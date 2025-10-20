@@ -296,12 +296,10 @@ variable (α)
 If `α` is a uniform space with countably generated uniformity filter (e.g., an `EMetricSpace`), then
 this condition is equivalent to `SecondCountableTopology α`. In this case the
 latter should be used as a typeclass argument in theorems because Lean can automatically deduce
-`TopologicalSpace.SeparableSpace` from `SecondCountableTopology` but it can't
-deduce `SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
-
-Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: the previous paragraph describes the state of the art in Lean 3.
-We can have instance cycles in Lean 4 but we might want to
-postpone adding them till after the port. -/
+`TopologicalSpace.SeparableSpace` from `SecondCountableTopology` using
+`TopologicalSpace.SecondCountableTopology.to_separableSpace`, but deducing
+`SecondCountableTopology` from `TopologicalSpace.SeparableSpace` requires more assumptions.
+-/
 @[mk_iff] class SeparableSpace : Prop where
   /-- There exists a countable dense set. -/
   exists_countable_dense : ∃ s : Set α, s.Countable ∧ Dense s
@@ -909,7 +907,7 @@ lemma IsTopologicalBasis.exists_countable
     obtain ⟨w, ws, xw⟩ : ∃ w ∈ s u, x ∈ w := by simpa using this
     refine ⟨w, ⟨u, u_mem, ws⟩, xw, ?_⟩
     apply Subset.trans (Subset.trans _ (hs u u_mem).symm.subset) uv
-    exact subset_iUnion₂_of_subset w ws fun ⦃a⦄ a ↦ a
+    exact subset_iUnion₂_of_subset w ws (Subset.refl _)
 
 /-- In a second countable topological space, any family generating the topology admits a
 countable generating subfamily. -/

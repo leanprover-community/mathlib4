@@ -38,7 +38,7 @@ This file defines the Selmer group $K(S, n)$ and some basic facts.
 * TODO: proofs of exactness of the sequence.
 * TODO: proofs of finiteness for global fields.
 
-## Notations
+## Notation
 
 * `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
 
