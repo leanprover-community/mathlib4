@@ -29,7 +29,7 @@ A graph is complete multipartite iff non-adjacency is transitive.
 
 * See also: `Mathlib/Combinatorics/SimpleGraph/FiveWheelLike.lean`.
   The lemma `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree` states that a maximally
-  `r + 1`-cliquefree graph is `r`-colorable iff it is complete multipartite.
+  `r + 1`-clique-free graph is `r`-colorable iff it is complete multipartite.
 
 * `SimpleGraph.completeEquipartiteGraph`: the **complete equipartite graph** in parts of *equal*
   size such that two vertices are adjacent if and only if they are in different parts.

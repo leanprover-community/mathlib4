@@ -11,7 +11,7 @@ import Mathlib.Order.Partition.Equipartition
 # Turán's theorem
 
 In this file we prove Turán's theorem, the first important result of extremal graph theory,
-which states that the `r + 1`-cliquefree graph on `n` vertices with the most edges is the complete
+which states that the `r + 1`-clique-free graph on `n` vertices with the most edges is the complete
 `r`-partite graph with part sizes as equal as possible (`turanGraph n r`).
 
 The forward direction of the proof performs "Zykov symmetrisation", which first shows
@@ -25,8 +25,8 @@ the property through `turanGraph n r` using the isomorphism provided by the forw
 ## Main declarations
 
 * `SimpleGraph.IsTuranMaximal`: `G.IsTuranMaximal r` means that `G` has the most number of edges for
-  its number of vertices while still being `r + 1`-cliquefree.
-* `SimpleGraph.turanGraph n r`: The canonical `r + 1`-cliquefree Turán graph on `n` vertices.
+  its number of vertices while still being `r + 1`-clique-free.
+* `SimpleGraph.turanGraph n r`: The canonical `r + 1`-clique-free Turán graph on `n` vertices.
 * `SimpleGraph.IsTuranMaximal.finpartition`: The result of Zykov symmetrisation, a finpartition of
   the vertices such that two vertices are in the same part iff they are non-adjacent.
 * `SimpleGraph.IsTuranMaximal.nonempty_iso_turanGraph`: The forward direction, an isomorphism
@@ -46,7 +46,7 @@ namespace SimpleGraph
 variable {V : Type*} [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj] {n r : ℕ}
 
 variable (G) in
-/-- An `r + 1`-cliquefree graph is `r`-Turán-maximal if any other `r + 1`-cliquefree graph on
+/-- An `r + 1`-clique-free graph is `r`-Turán-maximal if any other `r + 1`-clique-free graph on
 the same vertex set has the same or fewer number of edges. -/
 def IsTuranMaximal (r : ℕ) : Prop :=
   G.CliqueFree (r + 1) ∧ ∀ (H : SimpleGraph V) [DecidableRel H.Adj],
@@ -61,7 +61,7 @@ lemma IsTuranMaximal.le_iff_eq (hG : G.IsTuranMaximal r) (hH : H.CliqueFree (r +
   classical exact ⟨fun hGH ↦ edgeFinset_inj.1 <| eq_of_subset_of_card_le
     (edgeFinset_subset_edgeFinset.2 hGH) (hG.2 _ hH), le_of_eq⟩
 
-/-- The canonical `r + 1`-cliquefree Turán graph on `n` vertices. -/
+/-- The canonical `r + 1`-clique-free Turán graph on `n` vertices. -/
 def turanGraph (n r : ℕ) : SimpleGraph (Fin n) where Adj v w := v % r ≠ w % r
 
 lemma turanGraph_adj {v w} : (turanGraph n r).Adj v w ↔ v % r ≠ w % r :=
@@ -95,7 +95,7 @@ theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1)
   simp only [Fin.mk.injEq] at c
   exact absurd c ((@ha x y).mpr d)
 
-/-- An `r + 1`-cliquefree Turán-maximal graph is _not_ `r`-cliquefree
+/-- An `r + 1`-clique-free Turán-maximal graph is _not_ `r`-clique-free
 if it can accommodate such a clique. -/
 theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hG : G.IsTuranMaximal r) :
     ¬G.CliqueFree r := by
@@ -241,7 +241,7 @@ lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
   exact absurd (h.1.mono (Nat.succ_le_of_lt l)) ncf
 
 /-- There are `min n r` parts in a graph on `n` vertices satisfying `G.IsTuranMaximal r`.
-`min` handles the `n < r` case, when `G` is complete but still `r + 1`-cliquefree
+`min` handles the `n < r` case, when `G` is complete but still `r + 1`-clique-free
 for having insufficiently many vertices. -/
 theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (Fintype.card V) r := by
   set fp := h.finpartition
@@ -265,7 +265,7 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (Fintype.card V
 
 /-- **Turán's theorem**, forward direction.
 
-Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/
+Any `r + 1`-clique-free Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/
 theorem nonempty_iso_turanGraph :
     Nonempty (G ≃g turanGraph (Fintype.card V) r) := by
   classical
@@ -304,7 +304,7 @@ theorem isTuranMaximal_turanGraph (hr : 0 < r) : (turanGraph n r).IsTuranMaximal
   isTuranMaximal_of_iso Iso.refl hr
 
 /-- **Turán's theorem**. `turanGraph n r` is, up to isomorphism, the unique
-`r + 1`-cliquefree Turán-maximal graph on `n` vertices. -/
+`r + 1`-clique-free Turán-maximal graph on `n` vertices. -/
 theorem isTuranMaximal_iff_nonempty_iso_turanGraph (hr : 0 < r) :
     G.IsTuranMaximal r ↔ Nonempty (G ≃g turanGraph (Fintype.card V) r) :=
   ⟨fun h ↦ h.nonempty_iso_turanGraph, fun h ↦ isTuranMaximal_of_iso h.some hr⟩
