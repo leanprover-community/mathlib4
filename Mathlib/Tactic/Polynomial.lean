@@ -79,12 +79,12 @@ theorem _root_.MvPolynomial.algebraMap_eq_C : algebraMap R (MvPolynomial σ R) =
 theorem _root_.MvPolynomial.C_eq_algebraMap : MvPolynomial.C = algebraMap R (MvPolynomial σ R) := rfl
 
 @[polynomial_pre]
-theorem Polynomial.monomial_eq_smul (a : R) (n : ℕ) : Polynomial.monomial n a = a • (.X ^ n) := by
+theorem monomial_eq_smul (a : R) (n : ℕ) : Polynomial.monomial n a = a • (.X ^ n) := by
   rw [← Polynomial.C_mul_X_pow_eq_monomial, Polynomial.smul_eq_C_mul]
 
 -- polynomial_pre contains a lemma sending C -> algebraMap, so C is not simp normal form.
 @[polynomial_pre]
-theorem Polynomial.map_algebraMap (r : R) :
+theorem map_algebraMap (r : R) :
     Polynomial.map (algebraMap R A) (algebraMap R (Polynomial R) r) =
     algebraMap A (Polynomial A) (algebraMap R A r) := by
   simp
@@ -97,14 +97,14 @@ attribute [polynomial_pre] Polynomial.C_eq_algebraMap
   Polynomial.monomial_eq_smul Polynomial.map_add Polynomial.map_mul Polynomial.map_pow
   Polynomial.map_X Polynomial.map_natCast Polynomial.map_intCast
 
--- TODO: figure out what to do with Polynomial.map
 /- TODO: we don't currently have a good way to normalize monomials of MvPolynomials. These are
 indexed by finsupps, making it difficult to turn into the appropriate normal form. -/
+/-- Run the `polynomial_pre` simpset to turn nonstandard spellings of `algebraMap` such as
+`Polynomial.C` into  -/
 def preprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
   let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
   let preThms ← polynomialPreExt.getTheorems
-  -- IO.println s!"{preThms.lemmaNames.toList.map Origin.key}"
   let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[preThms, thms])
   let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
     throwError "internal error in polynomial tactic: preprocessing should not close goals"
@@ -112,6 +112,13 @@ def preprocess (mvarId : MVarId) : MetaM MVarId := do
 
 open Tactic
 
+/-- Prove equality of polynomials allowing for variables in the exponent.
+
+`example (a : ℚ) : (X + C a) * (X - C a) = X^2 + C (a^2) := by polynomial`
+
+See also:
+* `polynomial_nf` for normalizing polynomial expressions into sum-of-monomial form.
+* `match_coefficients` for creating side goals equating matching coefficients. -/
 elab (name := polynomial) "polynomial":tactic =>
   withMainContext do
     let g ← preprocess (← getMainGoal)
@@ -124,19 +131,33 @@ elab (name := polynomial) "polynomial":tactic =>
       throwError "polynomial failed: not an equality of (mv)polynomials"
     AtomM.run .default (Algebra.proveEq (some (← inferLevelQ β)) g)
 
+/-- Prove equality of polynomials by normalizing both sides and equating matching coefficients as
+side goals.
+
+```
+example (a b : ℚ) : (X + C 1) * (X - C 1) = X^2 + C a * X + C b := by
+  match_coefficients
+  /- ⊢ 0 = a
+     ⊢ -1 = b -/
+```
+
+See also:
+* `polynomial` for proving equality of polynomials without producing side goals.
+* `polynomial_nf` for normalizing polynomial expressions into sum-of-monomial form. -/
 elab (name := matchCoeffients) "match_coefficients" :tactic =>
   Tactic.liftMetaTactic fun g ↦ do
     let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
-      | throwError "polynomial failed: not an equality"
+      | throwError "match_coefficients failed: not an equality"
     let mut β : Expr := default
     try
       β ← inferBase α
-    catch _ => throwError "polynomial failed: not an equality of (mv)polynomials"
+    catch _ => throwError "match_coefficients failed: not an equality of (mv)polynomials"
     let goals ← matchScalarsAux (some (← inferLevelQ β)) (← preprocess g)
     /- TODO: What if the base ring is `Polynomial _`? We would have rewritten `C` into `_ • 1` and
     should really turn it back to `C`. Maybe we just rung the polynomial cleanup routine instead?-/
-    goals.mapM (runSimp (RingNF.cleanup {}))
+    goals.mapM (applySimp (RingNF.cleanup {}))
 
+/-- Normalize a polynomial expression into standard form. Used by `polynomial_nf`. -/
 def evalExprPoly (e : Expr) : AtomM Simp.Result := do
   let ⟨u, α, e⟩ ← inferTypeQ e
   let mut R : Expr := default
@@ -146,7 +167,7 @@ def evalExprPoly (e : Expr) : AtomM Simp.Result := do
   let ⟨v, R'⟩ ← inferLevelQ R
   Algebra.evalExpr R' e
 
-/- We need mul_one even though `algebra` already has it, because `a • 1` -> `C a * 1` introduces
+/- We need `mul_one` even though `algebra` already has it, because `a • 1` -> `C a * 1` introduces
 new ones. -/
 attribute [polynomial_post] mul_one Algebra.smul_def Polynomial.algebraMap_eq_C
 
@@ -165,6 +186,12 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
     pure <| ←
       r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
+/-- Simplification tactic for polynomials over commutative (semi)rings, which rewrites all polynomial
+expressions into normal form.
+
+See also:
+* `polynomial` for proving equality of polynomials without producing side goals.
+* `match_coefficients` for creating side goals equating matching coefficients. -/
 elab (name := polynomialNF) "polynomial_nf" tk:"!"? loc:(location)?  : tactic => do
   liftMetaTactic' preprocess
   let mut cfg := {}
@@ -173,6 +200,5 @@ elab (name := polynomialNF) "polynomial_nf" tk:"!"? loc:(location)?  : tactic =>
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (evalExprPoly) (cleanup cfg)
   transformAtLocation (m ·) "polynomial_nf" loc cfg.failIfUnchanged false
-
 
 end Mathlib.Tactic.Polynomial

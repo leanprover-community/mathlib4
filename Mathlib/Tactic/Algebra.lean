@@ -64,6 +64,7 @@ inductive ExProd : ∀ {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {_ : Q
 /-- A polynomial expression, which is a sum of monomials. -/
 inductive ExSum : ∀ {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {_ : Q(CommSemiring $R)}
   {_ : Q(CommSemiring $A)} (_ : Q(Algebra $R $A)), (a : Q($A)) → Type
+  /-- An empty sum. -/
   | zero {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
       {sR : Q(CommSemiring $R)}
       {sA : Q(CommSemiring $A)}
@@ -205,12 +206,12 @@ end
 variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A))
 
+/-- The number one in normal form. -/
 def _root_.Mathlib.Tactic.Ring.ExSum.one : Ring.ExSum q($sA) q(Nat.rawCast (nat_lit 1) + 0 : $A) :=
   .add (.const (e := q(Nat.rawCast (nat_lit 1) : $A)) 1 none) .zero
 
 /--
 Constructs the expression for a natural number literal `n` in the algebra `A`.
-WARNING: `n` should be a natural literal.
 -/
 def mkNat (n : Q(ℕ)) : Ring.ExSum q($sA) q(Nat.rawCast $n + 0 : $A) :=
   .add (.const (e := q(Nat.rawCast ($n) : $A)) n.natLit! none) .zero
@@ -236,33 +237,29 @@ end ExSum
   are stronger than `ring` because `algebra` occasionally requires commutativity to move between
   the base ring and the algebra. -/
 structure Cache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) extends Ring.Cache sA where
-  crA : Option Q(CommRing $A)
-  dA : Option Q(DivisionRing $A)
-  sfA : Option Q(Semifield $A)
-  fA : Option Q(Field $A)
+  /-- A CommRing instance on `A`, if available. -/
+  commRing : Option Q(CommRing $A)
+  /-- A DivisionRing instance on `A`, if available. -/
+  divisionRing : Option Q(DivisionRing $A)
+  /-- A Semifield instance on `A`, if available. -/
+  semifield : Option Q(Semifield $A)
+  /-- A Field instance on `A`, if available. -/
+  field : Option Q(Field $A)
 
 /-- Create a new cache for `A` by doing the necessary instance searches. -/
 def mkCache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) : MetaM (Cache sA) := do return {
-  crA := (← trySynthInstanceQ q(CommRing $A)).toOption
-  dA := (← trySynthInstanceQ q(DivisionRing $A)).toOption
-  sfA := (← trySynthInstanceQ q(Semifield $A)).toOption
-  fA := (← trySynthInstanceQ q(Field $A)).toOption
+  commRing := (← trySynthInstanceQ q(CommRing $A)).toOption
+  divisionRing := (← trySynthInstanceQ q(DivisionRing $A)).toOption
+  semifield := (← trySynthInstanceQ q(Semifield $A)).toOption
+  field := (← trySynthInstanceQ q(Field $A)).toOption
   toCache := ← Ring.mkCache sA
 }
 
-/- Copied from `ring` -/
-structure Result {u : Lean.Level} {A : Q(Type u)} (E : Q($A) → Type) (e : Q($A)) where
-  /-- The normalized result. -/
-  expr : Q($A)
-  /-- The data associated to the normalization. -/
-  val : E expr
-  /-- A proof that the original expression is equal to the normalized result. -/
-  proof : Q($e = $expr)
+open Mathlib.Tactic.Ring (Result)
+open NormNum hiding Result
 
 variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A)) (b : Q($A))
-
-open NormNum
 
 /--
 Two monomials are said to "overlap" if they differ by a constant factor, in which case the
@@ -434,6 +431,11 @@ def evalMul {a b : Q($A)} (va : ExSum sAlg a) (vb : ExSum sAlg b) :
     let ⟨_, vd, pd⟩ ← evalAdd sAlg vc₁ vc₂
     return ⟨_, vd, q(add_mul_of_add $pc₁ $pc₂ $pd)⟩
 
+/-- Negates a monomial `va` to get a normalized monomial.
+
+* `-(r • 1) = (-r) • 1`
+* `-(a * b) = a * (-b)`
+-/
 def evalNegProd {a : Q($A)} (rR : Q(CommRing $R)) (rA : Q(CommRing $A)) (va : ExProd sAlg a) :
     MetaM <| Result (ExProd sAlg) q(-$a) := do
   match va with
@@ -447,6 +449,11 @@ def evalNegProd {a : Q($A)} (rR : Q(CommRing $R)) (rA : Q(CommRing $A)) (va : Ex
     return ⟨_, .mul vx ve vc,
       (q(neg_pow_mul $x $e $pc))⟩
 
+/-- Negates a polynomial `va` to get a normalized polynomial.
+
+* `-0 = 0`
+* `-(a + b) = -a + (-b)`
+-/
 def evalNeg {a : Q($A)} (rR : Q(CommRing $R)) (rA : Q(CommRing $A)) (va : ExSum sAlg a) :
     MetaM <| Result (ExSum sAlg) q(-$a) := do
   match va with
@@ -479,8 +486,8 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
     pure ⟨_, (ExProd.smul (mkNat lit)).toSum,
       (q(by simp [← Algebra.algebraMap_eq_smul_one]; exact ($p).out))⟩
   | .isNegNat rA lit p => do
-    let some crR := cR.crA | none
-    let some crA := cA.crA | none
+    let some crR := cR.commRing | none
+    let some crA := cA.commRing | none
     let some rR := cR.rα | none
     let ⟨r, vr⟩ := Ring.ExProd.mkNegNat q($sR) q($rR) lit.natLit!
     have : $r =Q Int.rawCast (Int.negOfNat $lit) := ⟨⟩
@@ -488,15 +495,15 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
     pure ⟨_, (ExProd.smul vr.toSum).toSum, (q(isInt_negOfNat_eq $p))⟩
   | .isNNRat rA q n d p => do
     -- TODO: use semifields here.
-    let some dsR := cR.sfA | none
-    let some dsA := cA.sfA | none
+    let some dsR := cR.semifield | none
+    let some dsA := cA.semifield | none
     assumeInstancesCommute
     let ⟨r, vr⟩ := Ring.ExProd.mkNNRat q($sR) q(inferInstance) q n d q(IsNNRat.den_nz (α := $A) $p)
     have : $r =Q (NNRat.rawCast $n $d : $R) := ⟨⟩
     pure ⟨_, (ExProd.smul vr.toSum).toSum, q(isNNRat_eq_rawCast (a := $a) $p)⟩
   | .isNegNNRat dA q n d p => do
-    let some fR := cR.fA | none
-    let some fA := cA.fA | none
+    let some fR := cR.field | none
+    let some fA := cA.field | none
     assumeInstancesCommute
     let ⟨r, vr⟩ := Ring.ExProd.mkNegNNRat q($sR) q(inferInstance) q n d q(IsRat.den_nz $p)
     have : $r =Q (Rat.rawCast (.negOfNat $n) $d : $R) := ⟨⟩
@@ -619,6 +626,11 @@ def evalPow {a : Q($A)} {b : Q(ℕ)} (va : ExSum sAlg a) (vb : Ring.ExSum Ring.s
     let ⟨_, vd, pd⟩ ← evalMul sAlg vc₁ vc₂
     return ⟨_, vd, q(pow_add $pc₁ $pc₂ $pd)⟩
 
+/--
+Evaluates an atom, an expression where `algebra` can find no additional structure.
+
+* `a = a ^ 1 * (1 • 1) + 0`
+-/
 def evalAtom :
     AtomM (Result (ExSum q($sAlg)) q($a)) := do
   let r ← (← read).evalAtom a
@@ -633,10 +645,6 @@ def evalAtom :
       (q(atom_eq_pow_one_mul_smul_one_add_zero))
   | some (p : Q($a = $e')) => (q(atom_eq_pow_one_mul_smul_one_add_zero' $p))
   ⟩
-
-
-lemma algebraMap_eq_natCast {A : Type*} [CommSemiring A] (n : ℕ) : algebraMap ℕ A n = n := by
-  simp only [eq_natCast]
 
 /-- Push `algebraMap`s into sums and products and convert `algebraMap`s from `ℕ`, `ℤ` and `ℚ`
 into casts. -/
@@ -732,16 +740,16 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
     | _ => els
   | ``Neg.neg, some _, _ => match e with
     | ~q(-$a) =>
-      let some crR := cacheR.crA | els
-      let some crA := cacheA.crA | els
+      let some crR := cacheR.commRing | els
+      let some crA := cacheA.commRing | els
       let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
       let ⟨b, vb, p⟩ ← evalNeg sAlg crR crA va
       assumeInstancesCommute
       pure ⟨b, vb, q(eval_neg $pa $p)⟩
   | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _ => match e with
     | ~q($a - $b) =>
-      let some crR := cacheR.crA | els
-      let some crA := cacheA.crA | els
+      let some crR := cacheR.commRing | els
+      let some crA := cacheA.commRing | els
       let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
       let ⟨_, vb, pb⟩ ← eval sAlg cacheR cacheA b
       let ⟨c, vc, p⟩ ← evalSub sAlg crR crA va vb
@@ -774,9 +782,6 @@ def inferLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
   let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
   return ⟨v, e⟩
 
-section cleanup
-variable {R : Type*} [Semiring R]
-end cleanup
 /-- A cleanup routine for `algebra_nf`, which simplifies normalized expressions
 to a more human-friendly format. -/
 def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
@@ -793,10 +798,6 @@ def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
       (congrTheorems := ← getSimpCongrTheorems)
     pure <| ←
       r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
-
-theorem eq_congr {R : Type*} {a b a' b' : R} (ha : a = a') (hb : b = b') (h : a' = b') : a = b := by
-  subst ha hb
-  exact h
 
 /-- Normalizes both sides of an equality goal in an algebra. Used by the `algebra` tactic. -/
 def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v)) :
@@ -817,7 +818,7 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
   let (⟨b, _exb, pb⟩ : Result (ExSum sAlg) e₂) ← eval sAlg cr ca e₂
 
   let g' ← mkFreshExprMVarQ q($a = $b)
-  goal.assign q(eq_congr $pa $pb $g' : $e₁ = $e₂)
+  goal.assign q(($pa ▸ $pb ▸ $g') : $e₁ = $e₂)
   return g'.mvarId!
 
 /-- Collect all scalar rings from scalar multiplications and `algebraMap` applications in the
@@ -874,7 +875,7 @@ def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Typ
   let rings ← collectScalarRings e
   let res ← match rings with
   | [] =>
-    match ca.fA, ca.czα, ca.crA with
+    match ca.field, ca.czα, ca.commRing with
     | some _, some _, _ =>
       -- A is a Field
       return ⟨0, q(ℚ)⟩
@@ -894,14 +895,14 @@ def isAtomOrDerivable (cr : Algebra.Cache sR) (ca : Algebra.Cache sA) (e : Q($A)
       pure <| some (evalCast sAlg cr ca (← derive e))
     catch _ => pure (some none)
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
-  match n, ca.crA, cr.crA, ca.dsα with
+  match n, ca.commRing, cr.commRing, ca.dsα with
   | ``HAdd.hAdd, _, _, _ | ``Add.add, _, _, _
   | ``HMul.hMul, _, _, _ | ``Mul.mul, _, _, _
   | ``HSMul.hSMul, _, _, _| ``SMul.smul, _, _, _
   | ``HPow.hPow, _, _, _ | ``Pow.pow, _, _, _
   | ``Neg.neg, some _, some _, _
   | ``HSub.hSub, some _, some _, _ | ``Sub.sub, some _, some _, _ => pure none
-  -- for algebraMap, should probably match more closely.
+  -- for algebraMap, should possibly match more closely.
   | ``DFunLike.coe, _, _, _ => pure none
   | _, _, _, _ => els
 
@@ -934,24 +935,34 @@ def evalExprInfer (e : Expr) : AtomM Simp.Result := do
   let ⟨_, R⟩ ← inferBase cA e
   evalExpr R e
 
-/-- Attempt to normalize all  -/
-elab (name := algebraNF) "algebra_nf" tk:"!"? loc:(location)?  : tactic => do
-  -- let mut cfg ← elabConfig cfg
-  let mut cfg := {}
-  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
-  let loc := (loc.map expandLocation).getD (.targets #[] true)
-  let s ← IO.mkRef {}
-  let m := AtomM.recurse s cfg.toConfig (evalExprInfer) (cleanup cfg)
-  transformAtLocation (m ·) "algebra_nf" loc cfg.failIfUnchanged false
 
+/-- Attempt to normalize all expressions in an algebra over some fixed base ring. -/
 elab (name := algebraNFWith) "algebra_nf" tk:"!"? " with " R:term loc:(location)?  : tactic => do
-  -- let mut cfg ← elabConfig cfg
   let mut cfg := {}
   let ⟨_u, R⟩ ← inferLevelQ (← elabTerm R none)
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (evalExpr R) (cleanup cfg)
+  transformAtLocation (m ·) "algebra_nf" loc cfg.failIfUnchanged false
+
+/-- Attempt to normalize all expressions in algebras over commutative rings.
+
+The tactic attempts to infer the base ring from the expression being normalized, and may infer
+different rings on different subexpressions. This makes the normal form unpredictable.
+
+Use `algebra_nf with` instead. -/
+elab (name := algebraNF) "algebra_nf" tk:"!"? loc:(location)?  : tactic => do
+  let suggestion : Tactic.TryThis.Suggestion := {
+    suggestion := ← `(tactic| algebra_nf with _)
+    postInfo? := "\n\n 'algebra_nf' without specifying the base ring is unstable. \
+    Use `algebra_nf with` instead." }
+  Meta.Tactic.TryThis.addSuggestion (← getRef) suggestion (origSpan? := ← getRef)
+  let mut cfg := {}
+  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  let s ← IO.mkRef {}
+  let m := AtomM.recurse s cfg.toConfig (evalExprInfer) (cleanup cfg)
   transformAtLocation (m ·) "algebra_nf" loc cfg.failIfUnchanged false
 
 /-- Frontend of `algebra`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
@@ -989,11 +1000,21 @@ where
       let pb : Q($e₂ = $a) := pb
       return q(by simp_all)
 
+/-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
+goal as linear combinations of A-atoms over some semiring R, and close the goal if the two
+expressions are the same. The R-coefficients are put into ring normal form.
+
+The scalar ring R is inferred automatically by looking for scalar multiplications and algebraMaps
+present in the expressions.
+ -/
 elab (name := algebra) "algebra":tactic =>
   withMainContext do
     let g ← getMainGoal
     AtomM.run .default (proveEq none g)
 
+/-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
+goal as linear combinations of A-atoms over some semiring R, and close the goal if the two
+expressions are the same. The R-coefficients are put into ring normal form. -/
 elab (name := algebraWith) "algebra" " with " R:term : tactic =>
   withMainContext do
     let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
@@ -1058,8 +1079,7 @@ def ExProd.equateScalarsProd {a b : Q($A)} (va : ExProd q($sAlg) a) (vb : ExProd
 
 /-- Prove two polylnomials are equal by equating their scalars in the base ring as side goals.
 
-Used by `match_scalars_alg`.
--/
+Used by `match_scalars_alg`. -/
 def equateScalarsSum {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) b) :
     MetaM <| Q($a = $b) × List MVarId := do
   match va, vb with
@@ -1094,7 +1114,8 @@ def equateScalarsSum {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) 
         | some id => id :: ids
       ⟩
 
-def runSimp (f : Simp.Result → MetaM Simp.Result) (g : MVarId) : MetaM MVarId := do
+/-- Use `f` to simplify the type of a metavariable `g`. Does not recurse. -/
+def applySimp (f : Simp.Result → MetaM Simp.Result) (g : MVarId) : MetaM MVarId := do
   let e ← g.getType
   let r ← f {expr := e, proof? := none}
   applySimpResultToTarget g e r
@@ -1121,11 +1142,11 @@ def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) 
   let sAlg ← synthInstanceQ q(Algebra $R $A)
   have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
   let ⟨eq, mids⟩ ← AtomM.run .instances <| algCore q($sAlg) cR cA q($e₁) q($e₂)
-  let res ← mids.mapM (runSimp (RingNF.cleanup {}))
+  let res ← mids.mapM (applySimp (RingNF.cleanup {}))
   g.assign eq
   return res
 where
-  /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
+  /-- The core of `matchScalarsAux` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
   and returns a proof that they are equal (or fails). -/
   algCore {u v : Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
       {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
@@ -1137,10 +1158,20 @@ where
       let ⟨pab, mvars⟩ ← equateScalarsSum sAlg va vb
       return ⟨q(eq_trans_trans $pa $pb $pab), mvars⟩
 
+/-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
+goal as linear combinations of A-atoms over some semiring R, and reduce the goal to the respective
+equalities of the R-coefficients of each atom. The R-coefficients are put into ring normal form. -/
 elab (name := matchScalarsAlgWith) "match_scalars_alg" " with " R:term :tactic => withMainContext do
   let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
   Tactic.liftMetaTactic (matchScalarsAux <| .some ⟨u, R⟩)
 
+/-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
+goal as linear combinations of A-atoms over some semiring R, and reduce the goal to the respective
+equalities of the R-coefficients of each atom. The R-coefficients are put into ring normal form.
+
+The scalar ring R is inferred automatically by looking for scalar multiplications and algebraMaps
+present in the expressions.
+-/
 elab (name := matchScalarsAlg) "match_scalars_alg" :tactic =>
   Tactic.liftMetaTactic (matchScalarsAux .none)
 

@@ -5,20 +5,18 @@ namespace Mathlib.Tactic.Polynomial
 open Lean
 open Lean.Meta Qq Lean.Elab Term
 
--- /-- Attribute for identifying `polynomial` extensions. -/
--- syntax (name := polynomialPre) "polynomial_pre" : attr
 
--- register_simp_attr polynomial_pre
-
+/-- Attribute for identifying `polynomial` preprocessing extensions. These serve the purpose of
+removing any definitions specific to polynomials that `algebra` can't handle.
+e.g. `Polynomial.C` and `Polynomial.map` -/
 initialize polynomialPreExt : SimpExtension ←
   registerSimpAttr `polynomial_pre "\
     The `polynomial_pre` simp attribute uses preprocessing lemmas \
     to turn specialized functions into `algebraMap`s"
 
--- syntax (name := polynomialPost) "polynomial_post" : attr
-
--- register_simp_attr polynomial_post
-
+/-- Attribute for identifying `polynomial` postprocessing extensions. Used only by polynomial_nf.
+These serve the purpose of rewriting expressions in `algebra` normal form into a more readable form.
+e.g. `a • X` -> `algebraMap _ _ a * X` -> `C a * X`. -/
 initialize polynomialPostExt : SimpExtension ←
   registerSimpAttr `polynomial_post "\
     The `polynomial_post` simp attribute uses postprocessing lemmas \
@@ -83,6 +81,8 @@ initialize registerBuiltinAttribute {
     | _ => throwUnsupportedSyntax
 }
 
+/-- Infer the base ring of `Polynomial`-like types that are registered using the `polynomial`
+environment extensions. Includes e.g. `Polynomial` and `MvPolynomial`. -/
 def inferBase (e : Expr) : MetaM Expr := do
   for ext in ← (polynomialExt.getState (← getEnv)).2.getMatch e do
     try
