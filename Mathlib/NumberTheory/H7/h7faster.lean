@@ -2022,34 +2022,34 @@ lemma order_geq_n_foo (l' : Fin (h7.m)) :
   · apply order_neq_top h7 q hq0 h2mq l'
   exact H
 
-lemma order_geq_n : ∀ l' : Fin (h7.m), h7.n q ≤ analyticOrderAt (h7.R q hq0 h2mq) (l' + 1) := by
+lemma order_geq_n : ∀ l' : Fin (h7.m),
+    h7.n q ≤ analyticOrderAt (h7.R q hq0 h2mq) (l' + 1) := by
   intros l'
   apply order_geq_n_foo
   intros k hk
   have H := h7.iteratedDeriv_vanishes q hq0 h2mq ⟨k,hk⟩ l'
   rw [H]
 
---yes, because deriv's are zero
-lemma rneq0 : h7.r q hq0 h2mq ≠ 0 := by
-  have H : h7.n q ≤ h7.r q hq0 h2mq := by {
+lemma n_leq_r : h7.n q ≤ h7.r q hq0 h2mq := by
     have := h7.r_prop q hq0 h2mq
     obtain ⟨hr,hprop⟩ := this
     have := h7.order_geq_n q hq0 h2mq (h7.l₀' q hq0 h2mq)
     norm_cast at hr
     sorry--rw [← hr]
-  }
-  have : 0 < h7.n q := by {
+
+--yes, because deriv's are zero
+lemma rneq0 : h7.r q hq0 h2mq ≠ 0 := by
+  have H := n_leq_r h7 q hq0 h2mq
+  have : 0 < h7.n q := by
     unfold n; simp only [Nat.div_pos_iff, Nat.ofNat_pos,
     mul_pos_iff_of_pos_left]
     constructor
     · unfold m; exact Nat.zero_lt_succ (2 * h7.h + 1)
     · exact qsqrt_leq_2m h7 q hq0 h2mq
-    }
   simp_all only [ne_eq]
   apply Aesop.BuiltinRules.not_intro
   intro a
   simp_all only [nonpos_iff_eq_zero, lt_self_iff_false]
-
 
 lemma r_qeq_0 : 0 < h7.r q hq0 h2mq := by
   refine Nat.zero_lt_of_ne_zero ?_
@@ -3385,7 +3385,7 @@ lemma S.U_ne_of_mem' {z : ℂ}  (hz : z ∈ (S.U h7)) (k' : Fin (h7.m)) : z ≠ 
 def SR : ℂ → ℂ := fun z =>
   (h7.R q hq0 h2mq) z * (h7.r q hq0 h2mq).factorial *
     ((z - (h7.l₀' q hq0 h2mq + 1 : ℂ)) ^ (-(h7.r q hq0 h2mq) : ℤ)) *
-    (∏ k' ∈ Finset.range (h7.m * h7.n q) \ {↑(h7.l₀' q hq0 h2mq)},
+    (∏ k' ∈ Finset.range (h7.m) \ {↑(h7.l₀' q hq0 h2mq)},
       ((h7.l₀' q hq0 h2mq - (k' + 1)) / (z - (k' + 1 : ℂ))) ^ (h7.r q hq0 h2mq))
 
 lemma SR_analytic_S.U : AnalyticOn ℂ (h7.SR q hq0 h2mq) (S.U h7) := by
@@ -3474,44 +3474,43 @@ lemma S_eq_SRl0 :
   simp only [coe_image, coe_range, mem_compl_iff,
     Set.mem_image, Set.mem_Iio, not_exists,
     not_and] at hz
-  sorry
-  -- left
-  -- have := R'onC α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l₀
-  -- rw [this]
-  -- clear this
-  -- nth_rw 3 [mul_comm]
-  -- rw [mul_assoc]
-  -- congr
-  -- · rw [← mul_assoc]
-  --   nth_rw 2 [mul_comm]
-  --   have : (↑(r).factorial : ℂ) = ↑(r).factorial * 1 := by simp only [mul_one]
-  --   nth_rw 1 [this]
-  --   clear this
-  --   rw [mul_assoc]
-  --   refine (mul_right_inj' ?_).mpr ?_
-  --   · simp only [ne_eq, Nat.cast_eq_zero]
-  --     exact Nat.factorial_ne_zero r
-  --   · have : ((z - ↑↑l₀) ^ r )⁻¹ = (z - ↑↑l₀) ^ (- r : ℤ) := by {
-  --         simp only [zpow_neg, zpow_natCast]}
-  --     rw [this]; clear this
-  --     have : 1 = (z - ↑↑l₀) ^ (-↑(r : ℤ)) * (z - ↑↑l₀) ^ ↑r := by {
-  --       simp only [zpow_neg, zpow_natCast]
-  --       rw [mul_comm]
-  --       symm
-  --       apply Complex.mul_inv_cancel
-  --       intros Hz
-  --       simp only [pow_eq_zero_iff', ne_eq] at Hz
-  --       have : l₀ < m := by {simp only [Fin.is_lt]}
-  --       have H := hz  ↑(l₀) this
-  --       apply H
-  --       rw [sub_eq_add_neg] at Hz
-  --       rw [add_eq_zero_iff_eq_neg] at Hz
-  --       simp only [neg_neg] at Hz
-  --       symm
-  --       rw [Hz.1]-- l+1
-  --       sorry
-      --    }
-      -- sorry -- l+1
+  have := h7.R'onC q hq0 h2mq (h7.l₀' q hq0 h2mq) z
+  simp only at this
+  rw [this]; clear this
+  simp only [← mul_assoc]
+  nth_rw 6 [mul_comm]
+  rw [mul_assoc  (h7.R' q hq0 h2mq (h7.l₀' q hq0 h2mq) z)  ((z - (↑↑(h7.l₀' q hq0 h2mq) + 1)) ^ h7.r q hq0 h2mq)]
+  rw [mul_comm ((z - (↑↑(h7.l₀' q hq0 h2mq) + 1)) ^ h7.r q hq0 h2mq) ↑(h7.r q hq0 h2mq).factorial]
+  simp only [mul_assoc]
+  congr
+  rw [← one_mul (a:= ∏ k' ∈ Finset.range h7.m \ {↑(h7.l₀' q hq0 h2mq)},
+    ((↑↑(h7.l₀' q hq0 h2mq) - (↑k' + 1)) / (z - (↑k' + 1))) ^ h7.r q hq0 h2mq)]
+  simp only [← mul_assoc]
+  have H : ((z - ↑↑(h7.l₀' q hq0 h2mq)) ^ (h7.r q hq0 h2mq) )⁻¹ =
+      (z - ↑↑(h7.l₀' q hq0 h2mq)) ^ (- (h7.r q hq0 h2mq) : ℤ) := by {
+      simp only [zpow_neg, zpow_natCast]}
+  --rw [this]; clear this
+  have : 1 =  (z - (↑↑(h7.l₀' q hq0 h2mq) + 1)) ^ ↑(h7.r q hq0 h2mq) *
+      (z - (↑↑(h7.l₀' q hq0 h2mq) + 1)) ^ (-↑((h7.r q hq0 h2mq) : ℤ)) := by {
+    simp only [zpow_neg, zpow_natCast]
+    --rw [mul_comm]
+    symm
+    apply Complex.mul_inv_cancel
+    intros Hz
+    simp only [pow_eq_zero_iff', ne_eq] at Hz
+    have : (h7.l₀' q hq0 h2mq) < m := sorry
+    --have H := hz  ↑((h7.l₀' q hq0 h2mq)) this
+    -- apply H
+    -- rw [sub_eq_add_neg] at Hz
+    -- rw [add_eq_zero_iff_eq_neg] at Hz
+    -- simp only [neg_neg] at Hz
+    -- symm
+    -- rw [Hz.1]-- l+1
+    sorry}
+  simp only [zpow_neg, zpow_natCast] at this
+  nth_rw 1 [this]
+  simp only [mul_one]
+
 
 --fix l+1
 lemma SR_eq_SRl (l' : Fin (h7.m)) (hl : l' ≠ h7.l₀' q hq0 h2mq) :
@@ -3526,12 +3525,43 @@ lemma SR_eq_SRl (l' : Fin (h7.m)) (hl : l' ≠ h7.l₀' q hq0 h2mq) :
     Set.mem_image, Set.mem_Iio, not_exists,
     not_and] at hz
   have := R'onC h7 q hq0 h2mq l' z
-  rw [this]
-  clear this
+  simp only at this
+  rw [this]; clear this
+  simp only [← mul_assoc]
   nth_rw 8 [mul_comm]
-  simp only [mul_assoc]
-  --congr
+  rw [mul_assoc  (h7.R' q hq0 h2mq (l') z) ((z - (↑↑(l') + 1)) ^ h7.r q hq0 h2mq)]
+  rw [mul_comm ((z - (↑↑(l') + 1)) ^ h7.r q hq0 h2mq) ↑(h7.r q hq0 h2mq).factorial]
+  unfold R'
   sorry
+  -- simp only [mul_assoc]
+  -- congr
+  -- rw [← one_mul (a:= ∏ k' ∈ Finset.range h7.m \ {↑(h7.l₀' q hq0 h2mq)},
+  --   ((↑↑(h7.l₀' q hq0 h2mq) - (↑k' + 1)) / (z - (↑k' + 1))) ^ h7.r q hq0 h2mq)]
+  -- simp only [← mul_assoc]
+  -- have H : ((z - ↑↑(h7.l₀' q hq0 h2mq)) ^ (h7.r q hq0 h2mq) )⁻¹ =
+  --     (z - ↑↑(h7.l₀' q hq0 h2mq)) ^ (- (h7.r q hq0 h2mq) : ℤ) := by {
+  --     simp only [zpow_neg, zpow_natCast]}
+  -- --rw [this]; clear this
+  -- have : 1 =  (z - (↑↑(h7.l₀' q hq0 h2mq) + 1)) ^ ↑(h7.r q hq0 h2mq) *
+  --     (z - (↑↑(h7.l₀' q hq0 h2mq) + 1)) ^ (-↑((h7.r q hq0 h2mq) : ℤ)) := by {
+  --   simp only [zpow_neg, zpow_natCast]
+  --   --rw [mul_comm]
+  --   symm
+  --   apply Complex.mul_inv_cancel
+  --   intros Hz
+  --   simp only [pow_eq_zero_iff', ne_eq] at Hz
+  --   have : (h7.l₀' q hq0 h2mq) < m := sorry
+  --   --have H := hz  ↑((h7.l₀' q hq0 h2mq)) this
+  --   -- apply H
+  --   -- rw [sub_eq_add_neg] at Hz
+  --   -- rw [add_eq_zero_iff_eq_neg] at Hz
+  --   -- simp only [neg_neg] at Hz
+  --   -- symm
+  --   -- rw [Hz.1]-- l+1
+  --   sorry}
+  -- simp only [zpow_neg, zpow_natCast] at this
+  -- nth_rw 1 [this]
+  -- simp only [mul_one]
 
   -- refine (mul_right_inj' ?_).mpr ?_
   -- · unfold R'
