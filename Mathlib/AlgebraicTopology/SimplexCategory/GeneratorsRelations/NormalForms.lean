@@ -463,9 +463,7 @@ attribute [local grind] simplicialInsert_length simplicialInsert_isAdmissible in
 `P_δ` is equal to some `standardδ` for some admissible list of indices, which shows
 that every such morphism is equal to a morphism in "normal form". -/
 theorem exists_normal_form_P_δ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf : P_δ f) :
-    ∃ L : List ℕ,
-    ∃ m : ℕ,
-    ∃ b : ℕ,
+    ∃ L : List ℕ, ∃ m : ℕ, ∃ b : ℕ,
     ∃ h₁ : mk m = x, ∃ h₂ : y = mk b, ∃ h : m + L.length = b,
     (IsAdmissible (m + 1) L) ∧ f = standardδ L (by rwa [← h₁, h₂]) := by
   dsimp [P_δ] at hf
