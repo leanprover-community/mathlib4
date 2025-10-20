@@ -22,7 +22,7 @@ family as a basis of neighborhoods of zero. In particular, the given subgroups b
 (`RingSubgroupsBasis.nonarchimedean`).
 
 A special case of this construction is given by `SubmodulesBasis` where the subgroups are
-submodules in a commutative algebra. This important example gives rise to the adic topology
+sub-modules in a commutative algebra. This important example gives rise to the adic topology
 (studied in its own file).
 -/
 
