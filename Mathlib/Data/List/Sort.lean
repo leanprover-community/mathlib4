@@ -1,11 +1,9 @@
 /-
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad
+Authors: Jeremy Avigad, Wrenna Robson
 -/
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Pairwise
-import Mathlib.Data.List.TakeWhile
 import Mathlib.Order.Fin.Basic
 
 /-!
@@ -70,7 +68,7 @@ end Sorted
 
 section sort
 
-variable {α β : Type v} (r : α → α → Prop) (s : β → β → Prop)
+variable {α β : Type*} (r : α → α → Prop) (s : β → β → Prop)
 
 variable [DecidableRel r] [DecidableRel s]
 
@@ -107,20 +105,14 @@ example :
 theorem orderedInsert_nil (a : α) : [].orderedInsert r a = [a] :=
   rfl
 
-theorem orderedInsert_length : ∀ (L : List α) (a : α), (L.orderedInsert r a).length = L.length + 1
-  | [], _ => rfl
-  | hd :: tl, a => by
-    dsimp [orderedInsert]
-    split_ifs <;> simp [orderedInsert_length tl]
+theorem orderedInsert_length (L : List α) (a : α) :
+    (L.orderedInsert r a).length = L.length + 1 := by
+  induction L <;> grind [orderedInsert]
 
 /-- An alternative definition of `orderedInsert` using `takeWhile` and `dropWhile`. -/
-theorem orderedInsert_eq_take_drop (a : α) :
-    ∀ l : List α,
-      l.orderedInsert r a = (l.takeWhile fun b => ¬a ≼ b) ++ a :: l.dropWhile fun b => ¬a ≼ b
-  | [] => rfl
-  | b :: l => by
-    dsimp only [orderedInsert]
-    split_ifs with h <;> simp [takeWhile, dropWhile, *, orderedInsert_eq_take_drop a l]
+theorem orderedInsert_eq_take_drop (a : α) (l : List α) :
+      l.orderedInsert r a = (l.takeWhile fun b => ¬a ≼ b) ++ a :: l.dropWhile fun b => ¬a ≼ b := by
+    induction l <;> grind [orderedInsert, takeWhile, dropWhile]
 
 theorem insertionSort_cons_eq_take_drop (a : α) (l : List α) :
     insertionSort r (a :: l) =
@@ -130,26 +122,13 @@ theorem insertionSort_cons_eq_take_drop (a : α) (l : List α) :
 
 @[simp]
 theorem mem_orderedInsert {a b : α} {l : List α} :
-    a ∈ orderedInsert r b l ↔ a = b ∨ a ∈ l :=
-  match l with
-  | [] => by simp [orderedInsert]
-  | x :: xs => by
-    rw [orderedInsert]
-    split_ifs
-    · simp
-    · rw [mem_cons, mem_cons, mem_orderedInsert, or_left_comm]
+    a ∈ orderedInsert r b l ↔ a = b ∨ a ∈ l := by
+  induction l <;> grind [orderedInsert]
 
 theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
     (hl₁ : ∀ a ∈ l, a ≼ x ↔ f a ≼ f x) (hl₂ : ∀ a ∈ l, x ≼ a ↔ f x ≼ f a) :
     (l.orderedInsert r x).map f = (l.map f).orderedInsert s (f x) := by
-  induction l with
-  | nil => simp
-  | cons x xs ih =>
-    rw [List.forall_mem_cons] at hl₁ hl₂
-    simp only [List.map, List.orderedInsert, ← hl₂.1]
-    split_ifs
-    · rw [List.map, List.map]
-    · rw [List.map, ih (fun _ ha => hl₁.2 _ ha) (fun _ ha => hl₂.2 _ ha)]
+  induction l <;> grind [orderedInsert]
 
 section Correctness
 
@@ -217,19 +196,13 @@ alias Sorted.insertionSort_eq := Pairwise.insertionSort_eq
 /-- For a reflexive relation, insert then erasing is the identity. -/
 theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
     (xs.orderedInsert r x).erase x = xs := by
-  rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
-    takeWhile_append_dropWhile]
-  intro h
-  replace h := mem_takeWhile_imp h
-  simp [refl x] at h
+  induction xs <;> grind [orderedInsert, IsRefl]
 
 /-- Inserting then erasing an element that is absent is the identity. -/
 theorem erase_orderedInsert_of_notMem [DecidableEq α]
     {x : α} {xs : List α} (hx : x ∉ xs) :
     (xs.orderedInsert r x).erase x = xs := by
-  rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
-    takeWhile_append_dropWhile]
-  exact mt ((takeWhile_prefix _).sublist.subset ·) hx
+  induction xs <;> grind [orderedInsert, IsRefl]
 
 @[deprecated (since := "2025-05-23")]
 alias erase_orderedInsert_of_not_mem := erase_orderedInsert_of_notMem
@@ -255,9 +228,7 @@ theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : Li
       exact antisymm hrxy (hxs.1 _ hx)
 
 theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r x := by
-  rw [orderedInsert_eq_take_drop]
-  refine Sublist.trans ?_ (.append_left (.cons _ (.refl _)) _)
-  rw [takeWhile_append_dropWhile]
+  induction xs <;> grind [orderedInsert]
 
 theorem cons_sublist_orderedInsert {l c : List α} {a : α} (hl : c <+ l) (ha : ∀ a' ∈ c, a ≼ a') :
     a :: c <+ orderedInsert r a l := by
