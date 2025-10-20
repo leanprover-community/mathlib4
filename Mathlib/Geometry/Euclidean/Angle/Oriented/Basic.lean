@@ -991,28 +991,17 @@ lemma angle_eq_iff_oangle_eq_or_sameRay {x y z : V} (hx : x ≠ 0) (hz : z ≠ 0
         generalize (o.oangle x y).sign = sxy
         generalize (o.oangle y z).sign = syz
         decide +revert
-      rcases h0 with h0 | h0
-      · have h0' := o.eq_zero_or_angle_eq_zero_or_pi_of_sign_oangle_eq_zero h0
-        simp only [hx, hy, false_or] at h0'
-        rcases h0' with h0' | h0'
-        · rw [h0', eq_comm] at he
-          obtain ⟨-, r, hr0, rfl⟩ := InnerProductGeometry.angle_eq_zero_iff.1 h0'
-          obtain ⟨-, r', hr'0, rfl⟩ := InnerProductGeometry.angle_eq_zero_iff.1 he
-          simp_all
-        · rw [h0', eq_comm] at he
-          obtain ⟨-, r, hr0, rfl⟩ := InnerProductGeometry.angle_eq_pi_iff.1 h0'
-          obtain ⟨-, r', hr'0, rfl⟩ := InnerProductGeometry.angle_eq_pi_iff.1 he
-          simp_all
-      · have h0' := o.eq_zero_or_angle_eq_zero_or_pi_of_sign_oangle_eq_zero h0
-        simp only [hy, hz, false_or] at h0'
-        rcases h0' with h0' | h0'
-        · rw [h0'] at he
-          obtain ⟨-, r, hr0, rfl⟩ := InnerProductGeometry.angle_eq_zero_iff.1 h0'
-          obtain ⟨-, r', hr'0, rfl⟩ := InnerProductGeometry.angle_eq_zero_iff.1 he
-          simp_all
-        · rw [h0'] at he
-          obtain ⟨-, r, hr0, rfl⟩ := InnerProductGeometry.angle_eq_pi_iff.1 h0'
-          obtain ⟨-, r', hr'0, rfl⟩ := InnerProductGeometry.angle_eq_pi_iff.1 he
-          simp_all
+      have h0' : InnerProductGeometry.angle y z = 0 ∨ InnerProductGeometry.angle y z = π := by
+        rcases h0 with h0 | h0
+          <;> simpa [*] using o.eq_zero_or_angle_eq_zero_or_pi_of_sign_oangle_eq_zero h0
+      rcases h0' with h0' | h0'
+      · rw [h0'] at he
+        obtain ⟨-, r, hr0, rfl⟩ := InnerProductGeometry.angle_eq_zero_iff.1 h0'
+        obtain ⟨-, r', hr'0, rfl⟩ := InnerProductGeometry.angle_eq_zero_iff.1 he
+        simp_all
+      · rw [h0'] at he
+        obtain ⟨-, r, hr0, rfl⟩ := InnerProductGeometry.angle_eq_pi_iff.1 h0'
+        obtain ⟨-, r', hr'0, rfl⟩ := InnerProductGeometry.angle_eq_pi_iff.1 he
+        simp_all
 
 end Orientation
