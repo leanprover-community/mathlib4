@@ -15,7 +15,7 @@ import Mathlib.Tactic.Peel
 /-!
 # Eigenvectors and eigenvalues
 
-This file defines eigenspaces, eigenvalues, and eigenvalues, as well as their generalized
+This file defines eigenspaces, eigenvalues, and eigenvectors, as well as their generalized
 counterparts. We follow Axler's approach [axler2015] because it allows us to derive many properties
 without choosing a basis and without using matrices.
 

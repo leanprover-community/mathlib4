@@ -49,6 +49,7 @@
   "Mathlib.Data.Set.Notation",
   "Mathlib.Data.Sym.Sym2.Init",
   "Mathlib.Data.Vector.Basic",
+  "Mathlib.FieldTheory.Galois.Notation",
   "Mathlib.Geometry.Manifold.Instances.Real",
   "Mathlib.Geometry.Manifold.Notation",
   "Mathlib.Init",
@@ -425,6 +426,7 @@
   "Mathlib.Geometry.Manifold.Notation":
   ["Mathlib.Geometry.Manifold.ContMDiff.Defs",
    "Mathlib.Geometry.Manifold.MFDeriv.Defs"],
+  "Mathlib.FieldTheory.Galois.Notation": ["Mathlib.Algebra.Algebra.Equiv"],
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
