@@ -165,13 +165,16 @@ register_option linter.tacticAnalysis.rwMerge : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.rwMerge, inherit_doc linter.tacticAnalysis.rwMerge]
 def Mathlib.TacticAnalysis.rwMerge : TacticAnalysis.Config := .ofComplex {
-  out := (List MVarId × Array Syntax)
-  ctx := (Array (Array Syntax))
+  out := List MVarId × Array Syntax
+  ctx := Array (Array Syntax)
   trigger ctx stx :=
     match stx with
-    | `(tactic| rw [$args,*]) => .continue ((ctx.getD #[]).push args)
-    | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
-  test ctx goal := withOptions (fun opts => opts.set `grind.warning false) do
+    | `(tactic| rw [$args,*]) =>
+      match ctx with
+      | .some args' => .accept (args'.push args)
+      | .none => .continue #[args]
+    | _ => .skip
+  test ctx goal := do
     let ctxT : Array (TSyntax `Lean.Parser.Tactic.rwRule) := ctx.flatten.map (⟨·⟩)
     let tac ← `(tactic| rw [$ctxT,*])
     try
