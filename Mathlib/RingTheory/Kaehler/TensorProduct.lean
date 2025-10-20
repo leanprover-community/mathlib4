@@ -48,12 +48,6 @@ lemma mulActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
   change (TensorProduct.comm R S Ω[A⁄R]).symm (a • (TensorProduct.comm R S Ω[A⁄R]) (x + y)) = _
   rw [map_add, smul_add, (TensorProduct.comm R S Ω[A⁄R]).symm.map_add]
   rfl
-@[local simp]
-lemma mulActionBaseChange_smul_add (a : A) (x y : S ⊗[R] Ω[A⁄R]) :
-    a • (x + y) = a • x + a • y := by
-  change (TensorProduct.comm R S Ω[A⁄R]).symm (a • (TensorProduct.comm R S Ω[A⁄R]) (x + y)) = _
-  rw [map_add, smul_add, map_add]
-  rfl
 
 /-- (Implementation). `A`-module structure on `S ⊗[R] Ω[A⁄R]`. -/
 noncomputable
