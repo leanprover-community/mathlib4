@@ -62,7 +62,7 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
   gcongr
   rw [← CFC.rpow_neg_one_eq_cfc_inv, ← CFC.rpow_neg_one_eq_cfc_inv]
   exact rpow_neg_one_le_rpow_neg_one
-    ((isUnit_of_le isStrictlyPositive_one <| le_add_of_nonneg_right ha).isStrictlyPositive
+    ((isUnit_of_le 1 <| le_add_of_nonneg_right ha).isStrictlyPositive
       (add_nonneg zero_le_one ha))
     (by gcongr)
 

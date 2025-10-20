@@ -262,7 +262,7 @@ open CFC
 
 variable [PartialOrder A] [StarOrderedRing A]
 
-lemma CFC.conjugate_rpow_neg_one_half {a : A} (ha : IsStrictlyPositive a := by cfc_tac) :
+lemma CFC.conjugate_rpow_neg_one_half (a : A) (ha : IsStrictlyPositive a := by cfc_tac) :
     a ^ (-(1 / 2) : ℝ) * a * a ^ (-(1 / 2) : ℝ) = 1 := by
   lift a to Aˣ using ha.isUnit
   nth_rw 2 [← rpow_one (a : A)]
@@ -272,8 +272,8 @@ lemma CFC.conjugate_rpow_neg_one_half {a : A} (ha : IsStrictlyPositive a := by c
 
 /-- In a unital C⋆-algebra, if `a` is strictly positive, and `a ≤ b`, then `b` is
 invertible. -/
-lemma CStarAlgebra.isUnit_of_le {a b : A} (h : IsStrictlyPositive a := by cfc_tac)
-    (hab : a ≤ b) : IsUnit b := by
+lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
+    (h : IsStrictlyPositive a := by cfc_tac) : IsUnit b := by
   have h₀ := h.isUnit
   have ha := h.nonneg
   rw [← spectrum.zero_notMem_iff ℝ≥0] at h₀ ⊢
@@ -298,7 +298,7 @@ lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hb : IsStrictlyPositive b) (ha : 0 �
   · calc
       _ ≤ ↑b ^ (-(1 / 2) : ℝ) * (b : A) * ↑b ^ (-(1 / 2) : ℝ) :=
         IsSelfAdjoint.of_nonneg rpow_nonneg |>.conjugate_le_conjugate h
-      _ = 1 := conjugate_rpow_neg_one_half
+      _ = 1 := conjugate_rpow_neg_one_half (b : A)
   · calc
       a = (sqrt ↑b * ↑b ^ (-(1 / 2) : ℝ)) * a * (↑b ^ (-(1 / 2) : ℝ) * sqrt ↑b) := by
         simp only [CFC.sqrt_eq_rpow .., ← CFC.rpow_add b.isUnit]
@@ -361,19 +361,19 @@ lemma le_one_of_one_le_inv {a : Aˣ} (ha : 1 ≤ (↑a⁻¹ : A)) : (a : A) ≤ 
 
 lemma rpow_neg_one_le_rpow_neg_one {a b : A} (ha : IsStrictlyPositive a) (hab : a ≤ b) :
     b ^ (-1 : ℝ) ≤ a ^ (-1 : ℝ) := by
-  lift b to Aˣ using isUnit_of_le ha hab
+  lift b to Aˣ using isUnit_of_le a hab
   lift a to Aˣ using ha.isUnit
   rw [rpow_neg_one_eq_inv a, rpow_neg_one_eq_inv b (ha.nonneg.trans hab)]
   exact CStarAlgebra.inv_le_inv ha.nonneg hab
 
 lemma rpow_neg_one_le_one {a : A} (ha : 1 ≤ a) : a ^ (-1 : ℝ) ≤ 1 := by
-  lift a to Aˣ using isUnit_of_le isStrictlyPositive_one ha
+  lift a to Aˣ using isUnit_of_le 1 ha
   rw [rpow_neg_one_eq_inv a (zero_le_one.trans ha)]
   exact inv_le_one ha
 
 protected lemma _root_.IsStrictlyPositive.of_le {a b : A} (ha : IsStrictlyPositive a)
     (hab : a ≤ b) : IsStrictlyPositive b :=
-  ⟨ha.nonneg.trans hab, CStarAlgebra.isUnit_of_le ha hab⟩
+  ⟨ha.nonneg.trans hab, CStarAlgebra.isUnit_of_le a hab⟩
 
 theorem _root_.IsStrictlyPositive.add_nonneg {a b : A}
     (ha : IsStrictlyPositive a) (hb : 0 ≤ b) : IsStrictlyPositive (a + b) :=
