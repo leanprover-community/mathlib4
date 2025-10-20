@@ -1358,6 +1358,8 @@ theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :
 instance instDivisionRing : DivisionRing ℍ[R] where
   __ := Quaternion.instRing
   __ := Quaternion.instGroupWithZero
+  nnqsmul := (· • ·)
+  qsmul := (· • ·)
   nnratCast_def _ := by rw [← coe_nnratCast, NNRat.cast_def, coe_div, coe_natCast, coe_natCast]
   ratCast_def _ := by rw [← coe_ratCast, Rat.cast_def, coe_div, coe_intCast, coe_natCast]
   nnqsmul_def _ _ := by rw [← coe_nnratCast, coe_mul_eq_smul]; ext <;> exact NNRat.smul_def ..
