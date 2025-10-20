@@ -81,7 +81,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
       simp_all
   | succ k ih =>
     rw [show k + 1 + m = (k + m) + 1 by cutsat] at h₂
-    cases h : sel s <;> simp_all [enumerate] ; tauto
+    cases h : sel s <;> simp_all [enumerate]; tauto
 
 end Enumerate
 

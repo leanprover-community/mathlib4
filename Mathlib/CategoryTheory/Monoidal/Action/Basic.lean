@@ -100,7 +100,7 @@ scoped notation "λₗ["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
 end MonoidalLeftAction
 
 open scoped MonoidalLeftAction in
-/-- A `MonoidalLeftAction C D` is is the data of:
+/-- A `MonoidalLeftAction C D` is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ₗ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ₗ d : c ⊙ₗ d ⟶ c' ⊙ₗ d`.
@@ -414,7 +414,7 @@ scoped notation "ρᵣ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 end MonoidalRightAction
 
 open scoped MonoidalRightAction in
-/-- A `MonoidalRightAction C D` is is the data of:
+/-- A `MonoidalRightAction C D` is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ᵣ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ᵣ d : c ⊙ᵣ d ⟶ c' ⊙ᵣ d`.
