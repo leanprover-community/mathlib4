@@ -201,7 +201,8 @@ theorem hasBasis_nhds_of_ne_top' (xt : x ≠ ∞) :
       rcases lt_iff_exists_add_pos_lt.1 hb with ⟨δ, δ0, hδ⟩
       refine ⟨min ε δ, (lt_min ε0 (coe_pos.2 δ0)).ne', Icc_subset_Ioo ?_ ?_⟩
       · exact lt_tsub_comm.2 ((min_le_left _ _).trans_lt hε)
-      · exact (add_le_add_left (min_le_right _ _) _).trans_lt hδ
+      · grw [min_le_right]
+        exact hδ
     · exact ⟨(x - ε, x + ε), ⟨ENNReal.sub_lt_self xt x0.ne' ε0,
         lt_add_right xt ε0⟩, Ioo_subset_Icc_self⟩
 
@@ -293,9 +294,8 @@ theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
     rw [top_sub_coe, tendsto_nhds_top_iff_nnreal]
     refine fun x => ((lt_mem_nhds <| @coe_lt_top (b + 1 + x)).prod_nhds
       (ge_mem_nhds <| coe_lt_coe.2 <| lt_add_one b)).mono fun y hy => ?_
-    rw [lt_tsub_iff_left]
-    calc y.2 + x ≤ ↑(b + 1) + x := add_le_add_right hy.2 _
-    _ < y.1 := hy.1
+    grw [lt_tsub_iff_left, hy.2]
+    exact hy.1
   | (a : ℝ≥0), ∞, _ => by
     rw [sub_top]
     refine (tendsto_pure.2 ?_).mono_right (pure_le_nhds _)
@@ -405,7 +405,7 @@ protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a 
     intro x
     refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
     · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
-    · exact Or.inl fun h => H (pow_eq_zero h)
+    · exact Or.inl fun h => H (eq_zero_of_pow_eq_zero h)
     · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, not_true, Ne,
         not_false_iff, false_and]
     · simp only [H, true_or, Ne, not_false_iff]
@@ -1130,8 +1130,7 @@ theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC 
   rcases ENNReal.exists_nnreal_pos_mul_lt hC ε0.ne' with ⟨δ, δ0, hδ⟩
   rw [mul_comm] at hδ
   filter_upwards [EMetric.closedBall_mem_nhds x (ENNReal.coe_pos.2 δ0)] with y hy
-  refine ⟨tsub_le_iff_right.2 <| (h x y).trans ?_, (h y x).trans ?_⟩ <;>
-    refine add_le_add_left (le_trans (mul_le_mul_left' ?_ _) hδ.le) _
+  refine ⟨tsub_le_iff_right.2 <| (h x y).trans ?_, (h y x).trans ?_⟩ <;> grw [← hδ.le] <;> gcongr
   exacts [EMetric.mem_closedBall'.1 hy, EMetric.mem_closedBall.1 hy]
 
 theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
