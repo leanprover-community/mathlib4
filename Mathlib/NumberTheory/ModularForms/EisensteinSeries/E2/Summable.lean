@@ -129,11 +129,6 @@ lemma G2_Ico_cauchySeq (z : ℍ) : CauchySeq fun N : ℕ ↦ ∑ m ∈ Ico (-N :
   simp only [IcoFilter, ← Nat.map_cast_int_atTop, Filter.map_map, HasSum, tendsto_map'_iff] at *
   apply ha.congr (by simp)
 
-lemma HasSum_IcoFilter_iff {f : ℤ → ℂ} {x : ℂ} : HasSum f x (IcoFilter ℤ) ↔
-    Tendsto (fun N : ℕ ↦ ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)), f n) atTop (𝓝 x) := by
-  simp [HasSum, IcoFilter, ← Nat.map_cast_int_atTop, tendsto_map'_iff]
-  rfl
-
 lemma G2_q_exp (z : ℍ) : G2 z =
     (2 * riemannZeta 2) - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * cexp (2 * π * I * z) ^ (n : ℕ) := by
   apply HasSum.tsum_eq

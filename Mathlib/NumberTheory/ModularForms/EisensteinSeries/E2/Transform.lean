@@ -19,10 +19,10 @@ compute how it  transforms under the action of `S = [[0, -1], [1, 0]]` in term o
 
 open UpperHalfPlane hiding I
 
-open ModularForm EisensteinSeries  TopologicalSpace  intervalIntegral ModularGroup
-  Metric Filter Function Complex MatrixGroups Finset ArithmeticFunction Set SummationFilter
+open ModularForm EisensteinSeries  TopologicalSpace ModularGroup Filter Complex MatrixGroups Finset
+  Set SummationFilter
 
-open scoped Interval Real Topology BigOperators Nat
+open scoped Real Topology
 
 noncomputable section
 
@@ -34,7 +34,7 @@ private def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0,0] then 1 else if x = ![0
 private lemma δ_eq : δ ![0,0] = 1 := by simp [δ]
 
 @[simp]
-private lemma δ_eq2 : δ ![0, -1] = 2 := by simp [δ]
+private lemma δ_eq_two : δ ![0, -1] = 2 := by simp [δ]
 
 namespace EisensteinSeries
 
@@ -116,7 +116,7 @@ private lemma G2_S_action' (z : ℍ) : ∑'[IcoFilter ℤ] n : ℤ, (∑' m : �
 lemma tsum_IcoFilter_eq_zero (z : ℍ) (m : ℤ) :
     ∑'[IcoFilter ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by
   apply HasSum.tsum_eq
-  simp only [HasSum_IcoFilter_iff] at *
+  rw [HasSum_IcoFilter_iff]
   conv =>
     enter [1, N]
     rw [telescope_aux z m N]
@@ -241,21 +241,17 @@ private lemma tendsto_tsum_one_div_linear_sub_succ_eq (z : ℍ) :
         (g := fun n : ℕ ↦ ‖(n : ℂ)‖) (r := 2) (by simpa using tendsto_natCast_atTop_atTop)
     exact tendsto_comp_val_Ioi_atTop.mpr this
   · simp_rw [aux_tsum_identity_2]
-    have HH := aux_tendsto_tsum z
-    rw [← tendsto_comp_val_Ioi_atTop] at HH
-    exact HH
+    exact tendsto_comp_val_Ioi_atTop.mpr (aux_tendsto_tsum z)
 
 --these are the two key lemmas
 private lemma tsumFilter_tsum_eq (z : ℍ) :
     ∑'[IcoFilter ℤ] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
     -2 * π * I / z := by
   apply HasSum.tsum_eq
-  have := (tendsto_tsum_one_div_linear_sub_succ_eq z)
   simp only [one_div, neg_mul, HasSum, IcoFilter, ← Nat.map_cast_int_atTop, Filter.map_map,
     tendsto_map'_iff] at *
-  suffices H :
-    Tendsto (fun N : ℕ ↦ ∑ n ∈ Ico (-N : ℤ) N,
-     ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) atTop (𝓝 (-2 * π * I / z)) by
+  suffices H : Tendsto (fun N : ℕ ↦ ∑ n ∈ Ico (-N : ℤ) N,
+      ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) atTop (𝓝 (-2 * π * I / z)) by
     simpa using H.congr (by simp)
   exact tendsto_comp_val_Ioi_atTop.mp (tendsto_tsum_one_div_linear_sub_succ_eq z)
 
@@ -290,7 +286,7 @@ private lemma aux_identity (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ 
     · by_cases hn : n = -1
       · simp only [hb, Int.cast_zero, zero_mul, hn, Int.reduceNeg, Int.cast_neg, Int.cast_one,
         zero_add, neg_add_cancel, inv_zero, even_two, Even.neg_pow, one_pow, inv_one, mul_one,
-        δ_eq2, inv_neg, sub_zero]
+        δ_eq_two, inv_neg, sub_zero]
         ring
       · have hn0 : (n : ℂ) ≠ 0 := by aesop
         have hn1 : (n : ℂ) + 1 ≠ 0 := by norm_cast; grind
@@ -384,17 +380,16 @@ lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2
 
 lemma G2_T_transform : (G2 ∣[(2 : ℤ)] T) = G2 := by
   ext z
-  simp_rw [SL_slash_def, UpperHalfPlane.modular_T_smul z]
-  simp only [G2_q_exp, UpperHalfPlane.coe_vadd, ofReal_one, T,
-    denom_apply, Fin.isValue, Matrix.of_apply, Matrix.cons_val', Matrix.cons_val_zero,
-    Matrix.empty_val', Matrix.cons_val_fin_one, Matrix.cons_val_one, Int.cast_zero, zero_mul,
-    Int.cast_one, zero_add, Int.reduceNeg, zpow_neg, one_zpow, inv_one, mul_one,
-    ← exp_periodic.nat_mul 1 (2 * π * I * z), Nat.cast_one, one_mul, sub_right_inj,
-    mul_eq_mul_left_iff, mul_eq_zero, OfNat.ofNat_ne_zero, ne_eq, not_false_eq_true,
+  simp_rw [SL_slash_def, modular_T_smul z]
+  simp only [G2_q_exp, coe_vadd, ofReal_one, T, denom_apply, Fin.isValue, Matrix.of_apply,
+    Matrix.cons_val', Matrix.cons_val_zero, Matrix.empty_val', Matrix.cons_val_fin_one,
+    Matrix.cons_val_one, Int.cast_zero, zero_mul, Int.cast_one, zero_add, Int.reduceNeg, zpow_neg,
+    one_zpow, inv_one, mul_one, ← exp_periodic.nat_mul 1 (2 * π * I * z), Nat.cast_one, one_mul,
+    sub_right_inj,mul_eq_mul_left_iff, mul_eq_zero, OfNat.ofNat_ne_zero, ne_eq, not_false_eq_true,
     pow_eq_zero_iff, ofReal_eq_zero, Real.pi_ne_zero, or_self, or_false]
   grind
 
-lemma G2_slash_action (γ : SL(2, ℤ)) : (G2 ∣[(2 : ℤ)] γ) = G2 - D2 γ := by
+lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := by
   have := Subgroup.closure_induction (p := fun γ _ ↦ G2 ∣[(2 : ℤ)] γ = G2 - D2 γ)
     (k := ({S, T})) ?_ (by simp only [SlashAction.slash_one, D2_one, sub_zero])
   · refine this ?_ ?_ (by simp [SpecialLinearGroup.SL2Z_generators])
@@ -424,8 +419,7 @@ lemma G2_slash_action (γ : SL(2, ℤ)) : (G2 ∣[(2 : ℤ)] γ) = G2 - D2 γ :=
       aesop
     · simpa only [h2, D2_T, sub_zero] using G2_T_transform
 
-lemma E2_slash_action (γ : SL(2, ℤ)) :
-    (E2 ∣[(2 : ℤ)] γ) = E2 - (1 / (2 * riemannZeta 2)) • (D2 γ) := by
+lemma E2_slash_action (γ : SL(2, ℤ)) : E2 ∣[(2 : ℤ)] γ = E2 - (1 / (2 * riemannZeta 2)) • D2 γ := by
   ext z
   simp [E2, SL_smul_slash, G2_slash_action γ, mul_sub]
 

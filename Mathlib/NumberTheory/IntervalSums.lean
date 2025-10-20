@@ -173,6 +173,13 @@ lemma tprod_symmetricConditional_eq_tprod_IcoFilter [T2Space α]
     rw [prod_Icc_eq_prod_Ico_succ _ (by omega)]
   simpa using hf2
 
+@[to_additive]
+lemma HasProd_IcoFilter_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+    {f : ℤ → α} {a : α} : HasProd f a (IcoFilter ℤ) ↔
+    Tendsto (fun N : ℕ ↦ ∏ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)), f n) atTop (𝓝 a) := by
+  simp only [HasProd, IcoFilter, ← Nat.map_cast_int_atTop, Filter.map_map, tendsto_map'_iff]
+  rfl
+
 end comparisons
 
 end IntervalFilters

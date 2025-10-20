@@ -19,10 +19,8 @@ over non-symmetric intervals.
 
 open UpperHalfPlane hiding I
 
-open ModularForm EisensteinSeries  TopologicalSpace  intervalIntegral
-  Metric Filter Function Complex MatrixGroups Finset Set SummationFilter
-
-open scoped Interval Real Topology BigOperators Nat
+open ModularForm EisensteinSeries Matrix.SpecialLinearGroup Filter Complex MatrixGroups
+  SummationFilter Real
 
 noncomputable section
 
@@ -43,8 +41,7 @@ lemma e2Summand_zero_eq_two_riemannZeta_two (z : ℍ) : e2Summand 0 z = 2 * riem
 lemma e2Summand_even (z : ℍ) : (e2Summand · z).Even := by
   intro n
   simp only [e2Summand, ← tsum_comp_neg (fun a ↦ eisSummand 2 ![-n, a] z)]
-  congr
-  ext b
+  apply tsum_congr (fun b ↦  ?_)
   simp only [eisSummand, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
     Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, Int.cast_neg, neg_mul, inv_inj]
   rw_mod_cast [Int.cast_neg]
@@ -55,7 +52,7 @@ infinity of the partial sum of `m` in `[N,N]` of `e2Summand m`. This sum over sy
 intervals is handy in showing it is Summable. -/
 def G2 : ℍ → ℂ := fun z ↦ ∑'[symCondInt] m, e2Summand m z
 
-/-- The normalised Eisenstein series of weight `2` and level `1`. -/
+/-- The normalised Eisenstein series of weight `2` and level `1`. Defined as `G2 / 2 * ζ(2)`. -/
 def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) •  G2
 
 /-- This function measures the defect in `G2` being a modular form. -/
@@ -66,24 +63,21 @@ lemma D2_one : D2 1 = 0 := by
   simp [D2]
 
 private lemma denom_aux (A B : SL(2, ℤ)) (z : ℍ) : ((A * B) 1 0) * (denom B z) =
-  (A 1 0) * B.1.det + (B 1 0) * denom (A * B) z := by
-  simp_rw [← map_mul, ModularGroup.denom_apply]
+    (A 1 0) * B.1.det + (B 1 0) * denom (A * B) z := by
   have h0 := Matrix.two_mul_expl A.1 B.1
-  simp only [Fin.isValue, Matrix.SpecialLinearGroup.coe_mul, h0.2.2.1, Int.cast_add, Int.cast_mul,
-    Matrix.det_fin_two B.1, Int.cast_sub, h0.2.2.2]
+  simp only [Fin.isValue, coe_mul, h0.2.2.1, Int.cast_add, Int.cast_mul, ModularGroup.denom_apply,
+    Matrix.det_fin_two B.1, Int.cast_sub, ← map_mul, h0.2.2.2]
   ring
 
 lemma D2_mul (A B : SL(2, ℤ)) : D2 (A * B) = (D2 A) ∣[(2 : ℤ)] B + D2 B := by
   ext z
-  simp only [D2, mul_assoc, Fin.isValue, Matrix.SpecialLinearGroup.coe_mul, map_mul, ← mul_div,
+  simp only [D2, mul_assoc, Fin.isValue, coe_mul, map_mul, ← mul_div,
     SL_slash_def, ModularGroup.sl_moeb, Int.reduceNeg, zpow_neg, Pi.add_apply, ← mul_add,
     mul_eq_mul_left_iff, I_ne_zero, or_false, ofReal_eq_zero, Real.pi_ne_zero, OfNat.ofNat_ne_zero]
   have hde := denom_ne_zero B z
   have hd := denom_aux A B z
-  simp only [Fin.isValue, Matrix.SpecialLinearGroup.coe_mul, Matrix.SpecialLinearGroup.det_coe,
-    Int.cast_one, mul_one, ← sub_eq_iff_eq_add] at hd
+  simp only [Fin.isValue, coe_mul, det_coe, Int.cast_one, mul_one, ← sub_eq_iff_eq_add] at hd
   have : denom A (num B z / denom B z) = denom A ↑(↑B • z) := by
-    congr 1
     simp only [specialLinearGroup_apply, algebraMap_int_eq, Fin.isValue, eq_intCast, ofReal_intCast,
       UpperHalfPlane.coe_mk]
     rfl
