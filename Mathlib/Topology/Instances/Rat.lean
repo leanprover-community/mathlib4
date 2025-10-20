@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.NNRat.Order
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Ring.Real
@@ -124,17 +125,17 @@ instance : ContinuousSub ℚ≥0 :=
 instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
 instance : ContinuousInv₀ ℚ≥0 := inferInstance
 
+-- Special case of `IsBoundedSMul.continuousSMul` but this shortcut instance reduces dependencies
 instance : ContinuousSMul ℚ ℝ where
   continuous_smul := continuous_induced_dom.fst'.smul (M := ℝ) (X := ℝ) continuous_snd
 
-instance {R} [Ring R] [TopologicalSpace R] [Algebra ℚ R] [Algebra ℚ≥0 R] [ContinuousSMul ℚ R] :
-    ContinuousSMul ℚ≥0 R where
+instance {R : Type*} [TopologicalSpace R] [MulAction ℚ R] [MulAction ℚ≥0 R] [IsScalarTower ℚ≥0 ℚ R]
+    [ContinuousSMul ℚ R] : ContinuousSMul ℚ≥0 R where
   continuous_smul := by
-    convert continuous_induced_dom.fst'.smul (M := ℚ) (X := R) continuous_snd using 2
-    rw [← cast_smul_eq_nnqsmul ℚ]
-    rfl
+    conv in _ • _ => rw [← one_smul ℚ p.2, ← smul_assoc, smul_one_eq_cast]
+    fun_prop
 
 instance : ContinuousSMul ℚ≥0 NNReal where
-  continuous_smul := by apply Continuous.subtype_mk; fun_prop
+  continuous_smul := Continuous.subtype_mk (by fun_prop) _
 
 end NNRat
