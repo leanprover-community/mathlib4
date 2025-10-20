@@ -23,8 +23,8 @@ namespace DualNumber
 
 open TrivSqZeroExt
 
-variable (𝕜 : Type*) {R : Type*}
-variable [Field 𝕜] [CharZero 𝕜] [CommRing R] [Algebra ℚ R]
+variable {R : Type*}
+variable [CommRing R] [Algebra ℚ R]
 variable [UniformSpace R] [IsTopologicalRing R] [T2Space R]
 
 @[simp]
