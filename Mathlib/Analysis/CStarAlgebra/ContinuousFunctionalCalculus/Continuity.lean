@@ -322,7 +322,7 @@ theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
     (f : ℝ≥0 → ℝ≥0) (hf : ContinuousOn f s := by cfc_cont_tac) :
     ContinuousOn (cfc f) {a : A | 0 ≤ a ∧ spectrum ℝ≥0 a ⊆ s} := by
   have : {a : A | 0 ≤ a ∧ spectrum ℝ≥0 a ⊆ s}.EqOn (cfc f) (cfc (fun x : ℝ ↦ f x.toNNReal)) :=
-    fun a ha ↦ cfc_nnreal_eq_real _ ha.1
+    fun a ha ↦ cfc_nnreal_eq_real _ _ ha.1
   refine ContinuousOn.congr ?_ this
   replace hf : ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) (NNReal.toReal '' s) := by
     apply hf.ofReal_map_toNNReal
@@ -702,7 +702,7 @@ theorem continuousOn_cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ
     ContinuousOn (cfcₙ f · : A → A) {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s} := by
   have : {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s}.EqOn (cfcₙ f)
       (cfcₙ (fun x : ℝ ↦ f x.toNNReal)) :=
-    fun a ha ↦ cfcₙ_nnreal_eq_real _ ha.1
+    fun a ha ↦ cfcₙ_nnreal_eq_real _ _ ha.1
   refine ContinuousOn.congr ?_ this
   replace hf : ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) (NNReal.toReal '' s) := by
     apply hf.ofReal_map_toNNReal

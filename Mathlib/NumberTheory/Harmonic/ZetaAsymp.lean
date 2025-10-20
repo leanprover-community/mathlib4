@@ -260,7 +260,7 @@ lemma continuousOn_term (n : ℕ) :
     · exact this.le
     · linarith
   · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by linarith)]
-    exact_mod_cast term_welldef (by omega : 0 < (n + 1)) zero_lt_one
+    exact_mod_cast term_welldef (by cutsat : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
     refine continuousOn_of_forall_continuousAt (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)

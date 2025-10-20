@@ -29,9 +29,9 @@ def natAbsHom : ℤ →*₀ ℕ where
   map_zero' := Int.natAbs_zero
 
 lemma natAbs_natCast_sub_natCast_of_ge {a b : ℕ} (h : b ≤ a) : Int.natAbs (↑a - ↑b) = a - b := by
-  omega
+  cutsat
 
 lemma natAbs_natCast_sub_natCast_of_le {a b : ℕ} (h : a ≤ b) : Int.natAbs (↑a - ↑b) = b - a := by
-  omega
+  cutsat
 
 end Int

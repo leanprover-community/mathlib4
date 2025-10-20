@@ -36,7 +36,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
   simp
 
 @[simp] lemma take_eq_self_iff (x : List α) {n : ℕ} : x.take n = x ↔ x.length ≤ n :=
-  ⟨fun h ↦ by rw [← h]; simp; omega, take_of_length_le⟩
+  ⟨by grind, take_of_length_le⟩
 
 @[simp] lemma take_self_eq_iff (x : List α) {n : ℕ} : x = x.take n ↔ x.length ≤ n := by
   rw [Eq.comm, take_eq_self_iff]
@@ -150,24 +150,14 @@ end Filter
 /-! ### Miscellaneous lemmas -/
 
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
-  induction n generalizing xs
-  · cases xs <;> simp [dropSlice]
-  · cases xs <;> simp [dropSlice, *, Nat.succ_add]
+  induction n generalizing xs with cases xs with grind [dropSlice]
 
-@[simp]
+@[simp, grind =]
 theorem length_dropSlice (i j : ℕ) (xs : List α) :
-    (List.dropSlice i j xs).length = xs.length - min j (xs.length - i) := by
-  induction xs generalizing i j with
-  | nil => simp
-  | cons x xs xs_ih =>
-    cases i <;> simp only [List.dropSlice]
-    · cases j with
-      | zero => simp
-      | succ n => simp_all; omega
-    · simp [xs_ih]; omega
+    (dropSlice i j xs).length = xs.length - min j (xs.length - i) := by
+  induction xs generalizing i j with cases i with grind [dropSlice]
 
 theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
-    (List.dropSlice i j xs).length < xs.length := by
-  simp; omega
+    (dropSlice i j xs).length < xs.length := by grind
 
 end List

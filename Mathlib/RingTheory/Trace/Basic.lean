@@ -84,9 +84,8 @@ theorem PowerBasis.trace_gen_eq_sum_roots [Nontrivial S] (pb : PowerBasis K S)
     (hf : (minpoly K pb.gen).Splits (algebraMap K F)) :
     algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).aroots F).sum := by
   rw [PowerBasis.trace_gen_eq_nextCoeff_minpoly, RingHom.map_neg, ←
-    nextCoeff_map (algebraMap K F).injective,
-    sum_roots_eq_nextCoeff_of_monic_of_split ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _)
-      ((splits_id_iff_splits _).2 hf),
+    nextCoeff_map (algebraMap K F).injective, nextCoeff_eq_neg_sum_roots_of_monic_of_splits
+      ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _) ((splits_id_iff_splits _).2 hf),
     neg_neg]
 
 namespace IntermediateField.AdjoinSimple
@@ -182,7 +181,6 @@ lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [C
     letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
     rw [Algebra.trace_eq_matrix_trace b,
       Algebra.trace_eq_matrix_trace (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he]))]
-    change e.toAddMonoidHom _ = _
     rw [AddMonoidHom.map_trace]
     congr
     ext i j
@@ -235,16 +233,14 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
-  letI : ∀ f : L →ₐ[K] E, Fintype (haveI := f.toRingHom.toAlgebra; AlgHom L F E) := ?_
-  · rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen, ←
-      Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
-    · refine Finset.sum_congr rfl fun σ _ => ?_
-      letI : Algebra L E := σ.toRingHom.toAlgebra
-      simp only [Finset.sum_const, Finset.card_univ, ← AlgHom.card L F E]
-      congr!
-    · intro σ
-      simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
-        IsScalarTower.coe_toAlgHom']
+  rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
+    ← Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
+  · refine Finset.sum_congr rfl fun σ _ => ?_
+    letI : Algebra L E := σ.toRingHom.toAlgebra
+    simp_rw [Finset.sum_const, Finset.card_univ, ← AlgHom.card L F E]
+  · intro σ
+    simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
+      IsScalarTower.coe_toAlgHom']
 
 theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L] {x : L} :
     algebraMap K E (Algebra.trace K L x) = ∑ σ : L →ₐ[K] E, σ x := by
@@ -258,7 +254,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
     exact Algebra.IsSeparable.isSeparable K _
 
 theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :
-    algebraMap K L (Algebra.trace K L x) = ∑ σ : L ≃ₐ[K] L, σ x := by
+    algebraMap K L (Algebra.trace K L x) = ∑ σ : Gal(L/K), σ x := by
   apply FaithfulSMul.algebraMap_injective L (AlgebraicClosure L)
   rw [_root_.map_sum (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.sum_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.Field.GeomSum
+import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
@@ -641,8 +642,8 @@ theorem exists_pos_tsum_mul_lt_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) {
   refine ⟨fun i ↦ δ' i / max 1 (w i), fun i ↦ div_pos (Hpos _) (this i), ?_⟩
   refine lt_of_le_of_lt (ENNReal.tsum_le_tsum fun i ↦ ?_) Hsum
   rw [coe_div (this i).ne']
-  refine mul_le_of_le_div' (mul_le_mul_left' (ENNReal.inv_le_inv.2 ?_) _)
-  exact coe_le_coe.2 (le_max_right _ _)
+  refine mul_le_of_le_div' ?_
+  grw [← le_max_right]
 
 end ENNReal
 
@@ -664,7 +665,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
     (by
       refine (eventually_gt_atTop 0).mono fun n hn ↦ ?_
       rcases Nat.exists_eq_succ_of_ne_zero hn.ne.symm with ⟨k, rfl⟩
-      rw [← prod_range_add_one_eq_factorial, pow_eq_prod_const, div_eq_mul_inv, ← inv_eq_one_div,
+      rw [factorial_eq_prod_range_add_one, pow_eq_prod_const, div_eq_mul_inv, ← inv_eq_one_div,
         prod_natCast, Nat.cast_succ, ← Finset.prod_inv_distrib, ← prod_mul_distrib,
         Finset.prod_range_succ']
       simp only [one_mul, Nat.cast_add, zero_add, Nat.cast_one]
@@ -675,7 +676,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
       · positivity
       · refine (div_le_one <| mod_cast hn).mpr ?_
         norm_cast
-        omega)
+        cutsat)
 
 /-!
 ### Ceil and floor

@@ -3,6 +3,8 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Units.Opposite
+import Mathlib.Algebra.Regular.Opposite
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.RingTheory.Ideal.Prod
@@ -474,6 +476,70 @@ instance {ι} [Finite ι] : ∀ {R : ι → Type*} [Π i, Semiring (R i)] [∀ i
   · exact fun ih ↦ RingEquiv.isArtinianRing (.symm .piOptionEquivProd)
 
 namespace IsArtinianRing
+
+section Semiring
+
+variable {R : Type*} [Semiring R]
+
+theorem isUnit_iff_isRightRegular [IsArtinianRing R] {x : R} : IsUnit x ↔ IsRightRegular x := by
+  rw [IsRightRegular, IsUnit.isUnit_iff_mulRight_bijective, Bijective, and_iff_left_of_imp]
+  exact IsArtinian.surjective_of_injective_endomorphism (.toSpanSingleton R R x)
+
+theorem isUnit_iff_isRegular [IsArtinianRing R] {x : R} : IsUnit x ↔ IsRegular x := by
+  rw [isRegular_iff, ← isUnit_iff_isRightRegular, and_iff_right_of_imp (·.isRegular.1)]
+
+theorem isUnit_iff_isLeftRegular [IsArtinianRing Rᵐᵒᵖ] {x : R} : IsUnit x ↔ IsLeftRegular x := by
+  rw [← isRightRegular_op, ← isUnit_op, isUnit_iff_isRightRegular]
+
+theorem isUnit_iff_isRegular_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] {x : R} :
+    IsUnit x ↔ IsRegular x := by
+  rw [isRegular_iff, ← isUnit_iff_isLeftRegular, and_iff_left_of_imp (·.isRegular.2)]
+
+end Semiring
+
+section Ring
+
+variable {R : Type*} [Ring R]
+
+open nonZeroDivisors
+
+/-- If an element of an Artinian ring is not a zero divisor then it is a unit. -/
+theorem isUnit_of_mem_nonZeroDivisors [IsArtinianRing R] {a : R} (ha : a ∈ R⁰) : IsUnit a := by
+  rwa [isUnit_iff_isRegular, isRegular_iff_mem_nonZeroDivisors]
+
+theorem isUnit_of_mem_nonZeroDivisors_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] {a : R}
+    (ha : a ∈ R⁰) : IsUnit a := by
+  rwa [isUnit_iff_isRegular_of_mulOpposite, isRegular_iff_mem_nonZeroDivisors]
+
+/-- In an Artinian ring, an element is a unit iff it is a non-zero-divisor.
+See also `isUnit_iff_mem_nonZeroDivisors_of_finite`. -/
+theorem isUnit_iff_mem_nonZeroDivisors [IsArtinianRing R] {a : R} : IsUnit a ↔ a ∈ R⁰ := by
+  rw [isUnit_iff_isRegular, isRegular_iff_mem_nonZeroDivisors]
+
+theorem isUnit_iff_mem_nonZeroDivisors_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] {a : R} :
+    IsUnit a ↔ a ∈ R⁰ := by
+  rw [isUnit_iff_isRegular_of_mulOpposite, isRegular_iff_mem_nonZeroDivisors]
+
+variable (R)
+
+theorem isUnitSubmonoid_eq [IsArtinianRing R] : IsUnit.submonoid R = R⁰ := by
+  ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
+
+@[deprecated (since := "2025-08-26")] alias isUnit_submonoid_eq := isUnitSubmonoid_eq
+
+theorem isUnitSubmonoid_eq_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] :
+    IsUnit.submonoid R = R⁰ := by
+  ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors_of_mulOpposite]
+
+theorem isUnitSubmonoid_eq_nonZeroDivisorsRight [IsArtinianRing R] :
+    IsUnit.submonoid R = nonZeroDivisorsRight R := by
+  ext; rw [← isRightRegular_iff_mem_nonZeroDivisorsRight]; exact isUnit_iff_isRightRegular
+
+theorem nonZeroDivisorsLeft_eq_isUnitSubmonoid [IsArtinianRing Rᵐᵒᵖ] :
+    IsUnit.submonoid R = nonZeroDivisorsLeft R := by
+  ext; rw [← isLeftRegular_iff_mem_nonZeroDivisorsLeft]; exact isUnit_iff_isLeftRegular
+
+end Ring
 
 section CommSemiring
 

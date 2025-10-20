@@ -966,12 +966,7 @@ theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} 
     ⋃ i, Sigma.mk i '' (Sigma.mk i ⁻¹' s) = s := by
   ext x
   simp only [mem_iUnion, mem_image, mem_preimage]
-  constructor
-  · rintro ⟨i, a, h, rfl⟩
-    exact h
-  · intro h
-    obtain ⟨i, a⟩ := x
-    exact ⟨i, a, h, rfl⟩
+  grind
 
 theorem Sigma.univ (X : α → Type*) : (Set.univ : Set (Σ a, X a)) = ⋃ a, range (Sigma.mk a) :=
   Set.ext fun x =>
