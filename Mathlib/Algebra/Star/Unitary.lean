@@ -416,8 +416,10 @@ lemma _root_.spectrum.unitary_conjugate' {a : A} {u : unitary A} :
     spectrum R ((star u : A) * a * u) = spectrum R a := by
   simpa using spectrum.unitary_conjugate (u := star u)
 
-@[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate := spectrum.unitary_conjugate
-@[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate' := spectrum.unitary_conjugate'
+@[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate :=
+  spectrum.unitary_conjugate
+@[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate' :=
+  spectrum.unitary_conjugate'
 
 end UnitaryConjugate
 
