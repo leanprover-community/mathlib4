@@ -740,7 +740,7 @@ theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
     lintegral_lintegral_swap]
   · simp only [Pi.mul_apply, mul_inv_cancel_left, mlconvolution_def]
     conv in (∫⁻ _ , _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
-  all_goals first | fun_prop | simp; fun_prop
+  all_goals first | fun_prop | dsimp; fun_prop
 
 @[to_additive]
 theorem mconv_withDensity_eq_mlconvolution {f g : G → ℝ≥0∞}

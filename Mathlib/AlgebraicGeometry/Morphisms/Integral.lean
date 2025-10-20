@@ -71,8 +71,8 @@ instance (priority := 100) {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIntegralHom f] :
   apply universally_mono
   intro X Y f
   wlog hY : ∃ R, Y = Spec R
-  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := topologically _) Y.affineCover]
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := topologically _) Y.affineCover]
     exact fun a i ↦ this _ ⟨_, rfl⟩ (a i)
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
@@ -91,9 +91,9 @@ lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
   refine ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
   clear * -
   wlog hY : ∃ R, Y = Spec R
-  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover]
-    rw [IsLocalAtTarget.iff_of_openCover (P := @UniversallyClosed) Y.affineCover] at H₁
-    rw [IsLocalAtTarget.iff_of_openCover (P := @IsAffineHom) Y.affineCover] at H₂
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover]
+    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @UniversallyClosed) Y.affineCover] at H₁
+    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsAffineHom) Y.affineCover] at H₂
     exact fun _ ↦ this inferInstance inferInstance ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
@@ -109,7 +109,7 @@ lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
     .of_algebraMap_eq' (Polynomial.mapRingHom_comp_C _).symm
   refine H₁.out (Spec.map (CommRingCat.ofHom Polynomial.C))
     (Spec.map (CommRingCat.ofHom Polynomial.C)) (Spec.map _)
-    (isPullback_Spec_map_isPushout _ _ _ _
+    (isPullback_SpecMap_of_isPushout _ _ _ _
     (CommRingCat.isPushout_of_isPushout R S (Polynomial R) (Polynomial S))).flip
 
 lemma eq_universallyClosed_inf_isAffineHom :

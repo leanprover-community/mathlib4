@@ -226,7 +226,7 @@ lemma cot_series_rep' (hz : x ∈ ℂ_ℤ) : π * cot (π * x) - 1 / x =
 /-- The cotangent infinite sum representation. -/
 theorem cot_series_rep (hz : x ∈ ℂ_ℤ) :
     π * cot (π * x) = 1 / x + ∑' n : ℕ+, (1 / (x - n) + 1 / (x + n)) := by
-  have h0 := tsum_pnat_eq_tsum_succ fun n ↦ 1 / (x - n) + 1 / (x + n)
+  have h0 := tsum_pnat_eq_tsum_succ (f := fun n ↦ 1 / (x - n) + 1 / (x + n))
   have h1 := cot_series_rep' hz
   simp only [one_div, Nat.cast_add, Nat.cast_one] at *
   rw [h0, ← h1]
@@ -345,7 +345,7 @@ private lemma aux_summable_sub {k : ℕ} (hk : 1 ≤ k) (x : ℂ) :
 
 variable {z : ℂ}
 
--- We have this auxiliary ugly version on the lhs so the the rhs looks nicer.
+-- We have this auxiliary ugly version on the lhs so the rhs looks nicer.
 private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z ∈ ℍₒ) :
     (-1) ^ k * (k !) * z ^ (-1 - k : ℤ) +
       iteratedDerivWithin k (fun z ↦ ∑' n : ℕ, cotTerm z n) ℍₒ z =
