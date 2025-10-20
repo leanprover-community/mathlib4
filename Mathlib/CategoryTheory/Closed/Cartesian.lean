@@ -7,20 +7,20 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
-# Cartesian closed categories
+# Cartesian-closed categories
 
-We define exponentiable objects to be closed objects in a cartesian monoidal category,
+We define exponentiable objects to be closed objects in a Cartesian monoidal category,
 i.e. `(X × -)` is a left adjoint.
 
-We say a category is cartesian closed if every object is exponentiable
-(equivalently, that the category equipped with the cartesian monoidal structure is closed monoidal).
+We say a category is Cartesian closed if every object is exponentiable
+(equivalently, that the category equipped with the Cartesian monoidal structure is closed monoidal).
 
 Show that exponential forms a difunctor and define the exponential comparison morphisms.
 
 ## Implementation Details
 
-Cartesian closed categories require a `CartesianMonoidalCategory` instance. If one wishes to state
-that a category that `hasFiniteProducts` is cartesian closed, they should first promote the
+Cartesian-closed categories require a `CartesianMonoidalCategory` instance. If one wishes to state
+that a category that `hasFiniteProducts` is Cartesian closed, they should first promote the
 `hasFiniteProducts` instance to a `CartesianMonoidalCategory` one using
 `CategoryTheory.ofChosenFiniteProducts`.
 
@@ -39,7 +39,7 @@ open Category Limits MonoidalCategory CartesianMonoidalCategory
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {X X' Y Y' Z : C}
 
 /-- An object `X` is *exponentiable* if `(X × -)` is a left adjoint.
-We define this as being `Closed` in the cartesian monoidal structure. -/
+We define this as being `Closed` in the Cartesian monoidal structure. -/
 abbrev Exponentiable (X : C) := Closed X
 
 /-- Constructor for `Exponentiable X` which takes as an input an adjunction
@@ -56,18 +56,17 @@ def binaryProductExponentiable (hX : Exponentiable X) (hY : Exponentiable Y) :
     Exponentiable (X ⊗ Y) := tensorClosed hX hY
 
 /-- The terminal object is always exponentiable.
-This isn't an instance because most of the time we'll prove cartesian closed for all objects
+This isn't an instance because most of the time we'll prove Cartesian-closed for all objects
 at once, rather than just for this one.
 -/
 def terminalExponentiable : Exponentiable (𝟙_ C) := unitClosed
 
 variable (C) in
-/-- A category `C` is cartesian closed if it has finite products and every object is exponentiable.
-We define this as `MonoidalClosed` with respect to the cartesian monoidal structure. -/
+/-- A category `C` is Cartesian closed if it has finite products and every object is exponentiable.
+We define this as `MonoidalClosed` with respect to the Cartesian monoidal structure. -/
 abbrev CartesianClosed := MonoidalClosed C
 
 variable (C) in
--- Porting note: added to ease the port of `CategoryTheory.Closed.Types`
 /-- Constructor for `CartesianClosed C`. -/
 def CartesianClosed.mk (exp : ∀ (X : C), Exponentiable X) : CartesianClosed C where
   closed X := exp X
@@ -134,11 +133,11 @@ variable {A}
 -- Wrap these in a namespace so we don't clash with the core versions.
 namespace CartesianClosed
 
-/-- Currying in a cartesian closed category. -/
+/-- Currying in a Cartesian-closed category. -/
 def curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟹ X) :=
   (exp.adjunction A).homEquiv _ _
 
-/-- Uncurrying in a cartesian closed category. -/
+/-- Uncurrying in a Cartesian-closed category. -/
 def uncurry : (Y ⟶ A ⟹ X) → (A ⊗ Y ⟶ X) :=
   ((exp.adjunction A).homEquiv _ _).symm
 
@@ -246,7 +245,7 @@ theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
 @[simp]
 theorem pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by
   simp only [pre, Functor.map_id]
-  cat_disch
+  simp
 
 @[simp]
 theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]
@@ -256,7 +255,7 @@ theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [
 
 end Pre
 
-/-- The internal hom functor given by the cartesian closed structure. -/
+/-- The internal hom functor given by the Cartesian-closed structure. -/
 def internalHom [CartesianClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := exp X.unop
   map f := pre f.unop
@@ -338,7 +337,7 @@ section Functor
 
 variable [CartesianMonoidalCategory D]
 
-/-- Transport the property of being cartesian closed across an equivalence of categories.
+/-- Transport the property of being Cartesian closed across an equivalence of categories.
 
 Note we didn't require any coherence between the choice of finite products here, since we transport
 along the `prodComparison` isomorphism.

@@ -27,7 +27,7 @@ We provide natural isomorphisms `inlCompSum' : inl_ ⋙ F.sum' G ≅ F` and
 
 Furthermore, we provide `Functor.sumIsoExt`, which
 constructs a natural isomorphism of functors out of a sum out of natural isomorphism with
-their precomposition with the inclusion. This construction sholud be preferred when trying
+their precomposition with the inclusion. This construction should be preferred when trying
 to construct isomorphisms between functors out of a sum.
 
 We further define sums of functors and natural transformations, written `F.sum G` and `α.sum β`.
@@ -44,8 +44,6 @@ open Sum Functor
 section
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
-
-/- Porting note: `cat_disch` not firing on `assoc` where autotac in Lean 3 did -/
 
 /-- `sum C D` gives the direct sum of two categories.
 -/
@@ -64,10 +62,6 @@ instance sum : Category.{max v₁ v₂} (C ⊕ D) where
     match X, Y, Z, f, g with
     | inl _, inl _, inl _, f, g => ULift.up <|f.down ≫ g.down
     | inr _, inr _, inr _, f, g => ULift.up <| f.down ≫ g.down
-  assoc {W X Y Z} f g h :=
-    match X, Y, Z, W with
-    | inl _, inl _, inl _, inl _ => by simp
-    | inr _, inr _, inr _, inr _ => by simp
 
 @[aesop norm -10 destruct (rule_sets := [CategoryTheory])]
 theorem hom_inl_inr_false {X : C} {Y : D} (f : Sum.inl X ⟶ Sum.inr Y) : False := by
@@ -327,7 +321,7 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 def swapCompInl : inl_ C D ⋙ swap C D ≅ inr_ D C :=
   Functor.inlCompSum' (inr_ _ _) (inl_ _ _)
 
-/-- Precomposing `swap` with the right inclusion gives the leftt inclusion. -/
+/-- Precomposing `swap` with the right inclusion gives the left inclusion. -/
 @[simps! hom_app inv_app]
 def swapCompInr : inr_ C D ⋙ swap C D ≅ inl_ D C :=
   Functor.inrCompSum' (inr_ _ _) (inl_ _ _)

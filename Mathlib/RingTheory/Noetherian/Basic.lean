@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Algebra.Order.PartialSups
+import Mathlib.Algebra.Order.SuccPred.PartialSups
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Noetherian.Defs
 import Mathlib.RingTheory.Finiteness.Cardinality
@@ -21,7 +21,7 @@ A module satisfying these equivalent conditions is said to be a *Noetherian* R-m
 A ring is a *Noetherian ring* if it is Noetherian as a module over itself.
 
 (Note that we do not assume yet that our rings are commutative,
-so perhaps this should be called "left Noetherian".
+so perhaps this should be called "left-Noetherian".
 To avoid cumbersome names once we specialize to the commutative case,
 we don't make this explicit in the declaration names.)
 
@@ -262,7 +262,7 @@ theorem LinearIndependent.set_finite_of_isNoetherian [Nontrivial R] {s : Set M}
     (hi : LinearIndependent R ((↑) : s → M)) : s.Finite :=
   @Set.toFinite _ _ hi.finite_of_isNoetherian
 
-/-- A sequence `f` of submodules of a noetherian module,
+/-- A sequence `f` of submodules of a Noetherian module,
 with `f (n+1)` disjoint from the supremum of `f 0`, ..., `f n`,
 is eventually zero. -/
 theorem IsNoetherian.disjoint_partialSups_eventually_bot
@@ -294,7 +294,7 @@ theorem isNoetherian_of_submodule_of_noetherian (R M) [Semiring R] [AddCommMonoi
   isNoetherian_mk ⟨OrderEmbedding.wellFounded (Submodule.MapSubtype.orderEmbedding N).dual h.wf⟩
 
 /-- If `M / S / R` is a scalar tower, and `M / R` is Noetherian, then `M / S` is
-also noetherian. -/
+also Noetherian. -/
 theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M :=
   isNoetherian_mk ⟨(Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h.wf⟩

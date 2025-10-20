@@ -112,7 +112,7 @@ It is defined as the sum of the `FormalMultilinearSeries` `expSeries 𝕂 𝔸`.
 Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
 [`MatrixExponential`](./Mathlib/Analysis/Normed/Algebra/MatrixExponential) for lemmas
 specific to that case. -/
-noncomputable def exp (x : 𝔸) : 𝔸 :=
+noncomputable irreducible_def exp (x : 𝔸) : 𝔸 :=
   if h : Nonempty (Algebra ℚ 𝔸) then
     letI _ := h.some
     (NormedSpace.expSeries ℚ 𝔸).sum x
@@ -329,8 +329,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
   rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul_comm, ← Finset.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
   congr 1
-  have : (n ! : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr n.factorial_ne_zero
-  field_simp [this]
+  field_simp [n.factorial_ne_zero]
 
 /-- `NormedSpace.exp x` has explicit two-sided inverse `NormedSpace.exp (-x)`. -/
 noncomputable def invertibleExpOfMemBall [CharZero 𝕂] {x : 𝔸}
@@ -439,7 +438,7 @@ theorem expSeries_radius_eq_top [CharZero 𝕂] : (expSeries 𝕂 𝔸).radius =
       inv_div_inv, norm_mul, div_self this, norm_one, one_mul]
     apply norm_zero (E := 𝕂) ▸ Filter.Tendsto.norm
     apply (Filter.tendsto_add_atTop_iff_nat (f := fun n => (n : 𝕂)⁻¹) 1).mpr
-    exact tendsto_inverse_atTop_nhds_zero_nat
+    exact tendsto_inv_atTop_nhds_zero_nat
   · simp [this]
 
 theorem expSeries_radius_pos [CharZero 𝕂] : 0 < (expSeries 𝕂 𝔸).radius := by
@@ -557,8 +556,9 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     exp (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp := by
   classical
-    induction' s using Finset.induction_on with a s ha ih
-    · simp
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
     rw [Finset.noncommProd_insert_of_notMem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute 𝕂,
       ih (h.mono <| Finset.subset_insert _ _)]
     refine Commute.sum_right _ _ _ fun i hi => ?_

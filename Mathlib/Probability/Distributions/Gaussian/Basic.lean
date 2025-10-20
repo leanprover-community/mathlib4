@@ -39,15 +39,15 @@ namespace ProbabilityTheory
 /-- A measure is Gaussian if its map by every continuous linear form is a real Gaussian measure. -/
 class IsGaussian {E : Type*} [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
     {mE : MeasurableSpace E} (μ : Measure E) : Prop where
-  map_eq_gaussianReal (L : E →L[ℝ] ℝ) : μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal
+  map_eq_gaussianReal (L : StrongDual ℝ E) : μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal
 
 /-- A Gaussian measure is a probability measure. -/
 instance IsGaussian.toIsProbabilityMeasure {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
     [Module ℝ E] {mE : MeasurableSpace E} (μ : Measure E) [IsGaussian μ] :
     IsProbabilityMeasure μ where
   measure_univ := by
-    have : μ.map (0 : E →L[ℝ] ℝ) Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal]
-    simpa [Measure.map_apply (by fun_prop : Measurable (0 : E →L[ℝ] ℝ)) .univ] using this
+    have : μ.map (0 : StrongDual ℝ E) Set.univ = 1 := by simp [IsGaussian.map_eq_gaussianReal]
+    simpa [Measure.map_apply (by fun_prop : Measurable (0 : StrongDual ℝ E)) .univ] using this
 
 /-- A real Gaussian measure is Gaussian. -/
 instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianReal m v) where
@@ -181,5 +181,26 @@ instance (c : E) : IsGaussian (μ.map (fun x ↦ c - x)) := by
     rw [Measure.map_map (by fun_prop) (by fun_prop)] at this
     convert this using 1
   infer_instance
+
+/-- A product of Gaussian distributions is Gaussian. -/
+instance [SecondCountableTopologyEither E F] {ν : Measure F} [IsGaussian ν] :
+    IsGaussian (μ.prod ν) := by
+  refine isGaussian_of_charFunDual_eq fun L ↦ ?_
+  rw [charFunDual_prod, IsGaussian.charFunDual_eq, IsGaussian.charFunDual_eq, ← Complex.exp_add]
+  congr
+  let L₁ := L.comp (.inl ℝ E F)
+  let L₂ := L.comp (.inr ℝ E F)
+  suffices μ[L₁] * I - Var[L₁; μ] / 2 + (ν[L₂] * I - Var[L₂; ν] / 2)
+      = (μ.prod ν)[L] * I - Var[L; μ.prod ν] / 2 by convert this
+  rw [sub_add_sub_comm, ← add_mul]
+  congr
+  · simp_rw [integral_complex_ofReal]
+    rw [integral_continuousLinearMap_prod' (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F)))
+      (IsGaussian.integrable_dual ν (L.comp (.inr ℝ E F)))]
+    norm_cast
+  · field_simp
+    rw [variance_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 2 (by simp))
+      (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 2 (by simp))]
+    norm_cast
 
 end ProbabilityTheory

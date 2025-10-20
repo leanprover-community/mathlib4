@@ -45,7 +45,7 @@ open scoped Pointwise
 
 variable {α : Type*}
 
--- Porting note: see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
 run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
 
 namespace QuotientGroup
@@ -124,12 +124,10 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
-      -- Porting note: replace with `by group`
   invFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => (congr_arg (· ∈ s) (by simp)).mp (s.inv_mem h)
-      -- Porting note: replace with `by group`
   left_inv g :=
     Quotient.inductionOn' g fun g =>
       Quotient.sound'
@@ -234,6 +232,12 @@ theorem preimage_image_mk_eq_mul (N : Subgroup α) (s : Set α) :
     mk ⁻¹' ((mk : α → α ⧸ N) '' s) = s * N := by
   rw [preimage_image_mk_eq_iUnion_image, iUnion_subtype, ← image2_mul, ← iUnion_image_right]
   simp only [SetLike.mem_coe]
+
+@[to_additive]
+theorem preimage_mk_one (N : Subgroup α) :
+    mk ⁻¹' {(mk : α → α ⧸ N) 1} = N := by
+  rw [← image_singleton, preimage_image_mk_eq_mul]
+  simp
 
 end QuotientGroup
 

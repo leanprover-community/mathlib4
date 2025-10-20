@@ -98,11 +98,6 @@ theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleto
 
 alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
 
-private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
-  change #(ULift.{u} _) = #(ULift.{u} _) + 1
-  rw [← mk_option]
-  simp
-
 /-! ### Order properties -/
 
 theorem one_lt_iff_nontrivial {α : Type u} : 1 < #α ↔ Nontrivial α := by
@@ -632,7 +627,7 @@ theorem mk_univ {α : Type u} : #(@univ α) = #α :=
   rw [mul_def, mk_congr (Equiv.Set.prod ..)]
 
 theorem mk_image_le {α β : Type u} {f : α → β} {s : Set α} : #(f '' s) ≤ #s :=
-  mk_le_of_surjective surjective_onto_image
+  mk_le_of_surjective imageFactorization_surjective
 
 lemma mk_image2_le {α β γ : Type u} {f : α → β → γ} {s : Set α} {t : Set β} :
     #(image2 f s t) ≤ #s * #t := by
@@ -641,14 +636,14 @@ lemma mk_image2_le {α β γ : Type u} {f : α → β → γ} {s : Set α} {t : 
 
 theorem mk_image_le_lift {α : Type u} {β : Type v} {f : α → β} {s : Set α} :
     lift.{u} #(f '' s) ≤ lift.{v} #s :=
-  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_image⟩
+  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ imageFactorization_surjective⟩
 
 theorem mk_range_le {α β : Type u} {f : α → β} : #(range f) ≤ #α :=
-  mk_le_of_surjective surjective_onto_range
+  mk_le_of_surjective rangeFactorization_surjective
 
 theorem mk_range_le_lift {α : Type u} {β : Type v} {f : α → β} :
     lift.{u} #(range f) ≤ lift.{v} #α :=
-  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_range⟩
+  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ rangeFactorization_surjective⟩
 
 theorem mk_range_eq (f : α → β) (h : Injective f) : #(range f) = #α :=
   mk_congr (Equiv.ofInjective f h).symm
@@ -840,7 +835,6 @@ theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = 
 theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : Injective f) : lift.{v} #(f ⁻¹' s) ≤ lift.{u} #s := by
   rw [lift_mk_le.{0}]
-  -- Porting note: Needed to insert `mem_preimage.mp` below
   use Subtype.coind (fun x => f x.1) fun x => mem_preimage.mp x.2
   apply Subtype.coind_injective; exact h.comp Subtype.val_injective
 
