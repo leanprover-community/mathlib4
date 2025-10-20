@@ -42,7 +42,7 @@ theorem term_match [Group G] (a1 a2 b1 b2 : G) :
 
 open scoped Pointwise in
 theorem bijOn_product_mul [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
-    BijOn (fun (h, k) => h * k) (↑H ×ˢ ↑K) (H.carrier * K.carrier) := by
+    BijOn (fun (h, k) => h * k) (H ×ˢ K) (H * K : Set G) := by
   refine ⟨?_, ?_, ?_⟩
   · intro ⟨h, k⟩ HH
     simp only [mem_prod, SetLike.mem_coe] at HH
@@ -51,11 +51,11 @@ theorem bijOn_product_mul [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
     have crux : h2⁻¹ * h1 = k2 * k1⁻¹ := term_match _ _ _ _ HH
     rw [Subgroup.disjoint_def] at hHK
     have : h2⁻¹ * h1 ∈ H := by
-      have : h2⁻¹ ∈ H := by exact (Subgroup.inv_mem_iff H).mpr (H2.1)
-      exact (Subgroup.mul_mem_cancel_right H H1.1).mpr this
+      rw [Subgroup.mul_mem_cancel_right H H1.1]
+      exact (Subgroup.inv_mem_iff H).mpr (H2.1)
     specialize hHK this
     have : k2 * k1⁻¹ ∈ K := by
-      have : k1⁻¹ ∈ K := by exact (Subgroup.inv_mem_iff K).mpr (H1.2)
+      have : k1⁻¹ ∈ K := (Subgroup.inv_mem_iff K).mpr (H1.2)
       exact (Subgroup.mul_mem_cancel_right K this).mpr H2.2
     rw [← crux] at this
     specialize hHK this
@@ -76,7 +76,7 @@ If `H` and `K` are disjoint subgroups of `G`, gives an equivalence
 between the point-wise product `H.carrier * K.carrier` and cartesian product `H ×ˢ K`.
 -/
 noncomputable def equivMulDisjoint [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
-    ((H.carrier : Set G) * (K.carrier : Set G) : Set G) ≃ (H:Set G) ×ˢ (K:Set G) := by
+    ((H : Set G) * (K : Set G) : Set G) ≃ (H:Set G) ×ˢ (K:Set G) := by
   symm
   apply Set.BijOn.equiv (fun (h, k) => h * k)
   exact bijOn_product_mul H K hHK
