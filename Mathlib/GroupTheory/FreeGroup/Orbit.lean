@@ -46,7 +46,7 @@ theorem startsWith_mk_mul {w : α × Bool} (g : FreeGroup α)
 
 variable [MulAction (FreeGroup α) X]
 
-instance {w : α × Bool} : SMul ↑(startsWith w) X where
+instance {w : α × Bool} : SMul (startsWith w) X where
   smul g x := g.val • x
 
 @[simp]
