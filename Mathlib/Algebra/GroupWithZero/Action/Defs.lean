@@ -415,7 +415,6 @@ theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
 end
 
 section DistribMulAction
-
 variable [Group α] [AddMonoid β] [DistribMulAction α β]
 
 lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
