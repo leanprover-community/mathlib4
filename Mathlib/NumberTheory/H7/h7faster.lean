@@ -1956,9 +1956,9 @@ lemma exists_min_order_at :
   · exact hx
   · constructor
     · constructor
-      · norm_cast at h1
+      · exact id (Eq.symm h1)
       · intros x hx
-        exact le_of_eq_of_le (id (Eq.symm h1)) (h2 x hx)
+        exact h2 x hx
 
 abbrev l₀' : Fin (h7.m) := (exists_min_order_at h7 q hq0 h2mq).choose
 
