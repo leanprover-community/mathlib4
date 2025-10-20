@@ -426,7 +426,6 @@ lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
 end DistribMulAction
 
 section MulDistribMulAction
-
 variable [Group α] [GroupWithZero β] [MulDistribMulAction α β]
 
 instance : SMulZeroClass α β where
