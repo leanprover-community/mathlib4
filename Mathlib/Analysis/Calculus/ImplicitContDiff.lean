@@ -16,7 +16,7 @@ Let `E` and `F` be real or complex Banach spaces. Let `f : E × F → F` be a fu
 a point `(a, b) : E × F`, where `n ≥ 1`. Let `f'` be the derivative of `f` at `(a, b)`. If the range
 of `f'` is all of `F`, and the kernel of `f'` is the subspace `E × {0}` in `E × F`, then there
 exists a function `φ : E → F` such that `φ a = b`, and `f x (φ x) = f a b` holds for all `x` in a
-neighbourhood of `a`. Furthoremore, `φ` is $C^n$ at `a`.
+neighbourhood of `a`. Furthermore, `φ` is $C^n$ at `a`.
 
 ## TODO
 * Local uniqueness of the implicit function
@@ -27,17 +27,20 @@ neighbourhood of `a`. Furthoremore, `φ` is $C^n$ at `a`.
 implicit function, inverse function
 -/
 
+variable
+  {𝕜 : Type*} [RCLike 𝕜]
+
 namespace ImplicitFunctionData
 
-variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [CompleteSpace E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [CompleteSpace F] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
-  (φ : ImplicitFunctionData 𝕜 E F G) {n : WithTop ℕ∞}
+  {n : WithTop ℕ∞}
 
-/-- The implicit function defined by a $C^n$ implicit equation is $C^n$. This applies to the general
-form of the implicit function theorem. -/
-theorem contDiff_implicitFunction (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt)
-    (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (hn : 1 ≤ n) :
+/-- The implicit function defined by a $C^n$ implicit equation is $C^n$. Version for the general
+form. -/
+theorem contDiff_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G)
+    (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt) (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (hn : 1 ≤ n) :
     ContDiffAt 𝕜 n φ.implicitFunction.uncurry (φ.prodFun φ.pt) := by
   rw [implicitFunction, Function.uncurry_curry, toOpenPartialHomeomorph,
     ← HasStrictFDerivAt.localInverse_def]
@@ -53,9 +56,9 @@ open scoped Topology
 
 /-- A predicate stating the sufficient conditions on an implicit equation `f : E × F → F` that will
 lead to a $C^n$ implicit function `φ : E → F`. -/
-structure IsContDiffImplicitAt {𝕜 : Type*} [RCLike 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+structure IsContDiffImplicitAt
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     (n : WithTop ℕ∞) (f : E × F → F) (f' : E × F →L[𝕜] F) (a : E × F) : Prop where
   hasFDerivAt : HasFDerivAt f f' a
   contDiffAt : ContDiffAt 𝕜 n f a
@@ -66,7 +69,6 @@ structure IsContDiffImplicitAt {𝕜 : Type*} [RCLike 𝕜]
 namespace IsContDiffImplicitAt
 
 variable
-  {𝕜 : Type*} [RCLike 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
   {n : WithTop ℕ∞} {f : E × F → F} {f' : E × F →L[𝕜] F} {a : E × F}
