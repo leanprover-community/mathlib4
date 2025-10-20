@@ -8,6 +8,7 @@ import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Module.Submodule.Order
 import Mathlib.Algebra.Order.Module.Archimedean
 import Mathlib.Algebra.Order.Module.Equiv
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.RingTheory.HahnSeries.Lex
 
@@ -27,7 +28,7 @@ under `ArchimedeanClass.closedBall K c`. The embeddings from these submodules ar
 `HahnEmbedding.Seed K M R`.
 
 By setting `K = ℚ` and `R = ℝ`, the condition can be trivially satisfied, leading
-to a proof of the classic Hahn embedding theorem. (TODO: implement this)
+to a proof of the classic Hahn embedding theorem. (See `hahnEmbedding_isOrderedAddMonoid`)
 
 ## Main theorem
 
@@ -76,6 +77,13 @@ structure ArchimedeanStrata where
 
 namespace ArchimedeanStrata
 variable (u : ArchimedeanStrata K M) {c : ArchimedeanClass M}
+
+instance : Nonempty (ArchimedeanStrata K M) := by
+  have hstratum (c : ArchimedeanClass M) :
+      ∃ G : Submodule K M, Disjoint (ball K c) G ∧ ball K c ⊔ G = closedBall K c :=
+    IsModularLattice.exists_disjoint_and_sup_eq <| ball_le_closedBall _
+  choose g h1 h2 using hstratum
+  exact ⟨g, h1, h2⟩
 
 @[simp] lemma ball_eq_closedBall : ball K c = closedBall K c ↔ c = ⊤ where
   mp h := by
@@ -905,11 +913,11 @@ theorem sSupFun_strictMono [IsOrderedAddMonoid R] {c : Set (Partial seed)}
     LinearPMap.sSup_apply _ hmem ⟨(y - x).val, hf⟩
   rw [this]
   obtain ⟨f', _, hf'⟩ := (Set.mem_image _ _ _).mp hmem
-  have hmono: StrictMono f := hf'.symm ▸ f'.prop.strictMono
+  have hmono : StrictMono f := hf'.symm ▸ f'.prop.strictMono
   rw [show 0 = f 0 by simp]
   apply hmono
-  change 0 < y - x
-  simpa using h
+  rw [← Subtype.coe_lt_coe]
+  simp [h]
 
 theorem le_sSupFun {c : Set (Partial seed)} (hc : DirectedOn (· ≤ ·) c)
     {f : Partial seed} (hf : f ∈ c) :

@@ -6,6 +6,7 @@ Authors: Chris Birkbeck, David Loeffler
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 import Mathlib.RingTheory.EuclideanDomain
+import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 /-!
 # Eisenstein Series
@@ -119,6 +120,10 @@ lemma gammaSet_eq_gcd_mul_divIntMap {r : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ ga
 def gammaSetDivGcdEquiv (r : ℕ) [NeZero r] : gammaSet 1 r 0 ≃ gammaSet 1 1 0 :=
     Set.BijOn.equiv _ (gammaSet_div_gcd_to_gammaSet10_bijection r)
 
+@[simp]
+lemma gammaSetDivGcdEquiv_eq (r : ℕ) [NeZero r] (v : gammaSet 1 r 0) :
+    (gammaSetDivGcdEquiv r) v = divIntMap r v.1 := rfl
+
 /-- The equivalence between `(Fin 2 → ℤ)` and `Σ n : ℕ, gammaSet 1 n 0)` . -/
 def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
   apply (Equiv.sigmaFiberEquiv finGcdMap).symm.trans
@@ -209,8 +214,9 @@ lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
   and congruence condition given by `a : Fin 2 → ZMod N`. -/
 def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
-  slash_action_eq' A hA := by simp only [eisensteinSeries_slash_apply, Gamma_mem'.mp hA,
-    SpecialLinearGroup.coe_one, vecMul_one]
+  slash_action_eq' A hA := by
+    obtain ⟨A, (hA : A ∈ Γ(N)), rfl⟩ := hA
+    simp [SpecialLinearGroup.mapGL, ← SL_slash, eisensteinSeries_slash_apply, Gamma_mem'.mp hA]
 
 lemma eisensteinSeries_SIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeries_SIF a k z = eisensteinSeries a k z := rfl

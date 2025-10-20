@@ -117,7 +117,7 @@ section goals_heuristic
 namespace Lean.Elab.TacticInfo
 
 /-!
-###  Heuristics for determining goals goals that a tactic modifies what they become
+###  Heuristics for determining goals that a tactic modifies and what they become
 
 The two definitions `goalsTargetedBy`, `goalsCreatedBy` extract a list of
 `MVarId`s attempting to determine on which goals the tactic `t` is acting and what are the
@@ -260,7 +260,12 @@ def stoppers : Std.HashSet Name :=
     ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.tacticStop_,
     `Mathlib.Tactic.Abel.abelNF,
+    `Mathlib.Tactic.Abel.tacticAbel_nf!__,
     `Mathlib.Tactic.RingNF.ringNF,
+    `Mathlib.Tactic.RingNF.tacticRing_nf!__,
+    `Mathlib.Tactic.Group.group,
+    `Mathlib.Tactic.FieldSimp.fieldSimp,
+    `finiteness_nonterminal,
     -- "continuators": the *effect* of these tactics is similar the "properly stoppers" above,
     -- though they typically wrap other tactics inside them.
     -- The linter ignores the wrapper, but does recurse into the enclosed tactics
@@ -277,8 +282,13 @@ def stoppers : Std.HashSet Name :=
     ``cdot }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
-  `simp`, `simp_all`, `simpa`, `dsimp`, `constructor`, `congr`, `done`, `rfl`, `omega`, `abel`,
-  `ring`, `linarith`, `nlinarith`, `norm_cast`, `aesop`, `tauto`, `fun_prop`, `split`, `split_ifs`.
+  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`,
+  `omega` and `cutsat`, `grobner`
+  `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp`, `norm_num`,
+  `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
+  `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
+  `continuity` and `measurability`, `finiteness`, `finiteness?`,
+  `split`, `split_ifs`.
 -/
 def flexible : Std.HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
@@ -291,15 +301,33 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.tacticRfl,
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,
+    `Mathlib.Tactic.Abel.tacticAbel!,
+    `Mathlib.Tactic.Group.group,
     `Mathlib.Tactic.RingNF.ring,
+    `Mathlib.Tactic.RingNF.tacticRing!,
+    `Mathlib.Tactic.Module.tacticModule,
+    `Mathlib.Tactic.FieldSimp.fieldSimp,
+    ``Lean.Parser.Tactic.grind,
+    ``Lean.Parser.Tactic.grobner,
+    ``Lean.Parser.Tactic.cutsat,
     `Mathlib.Tactic.normNum,
-    `linarith,
-    `nlinarith,
+    `Mathlib.Tactic.linarith,
+    `Mathlib.Tactic.nlinarith,
+    `Mathlib.Tactic.tacticNlinarith!_,
     `Mathlib.Tactic.LinearCombination.linearCombination,
     ``Lean.Parser.Tactic.tacticNorm_cast__,
     `Aesop.Frontend.Parser.aesopTactic,
+    -- `cfc_tac` and `cfc_zero_tac` use `aesop` under the hood,
+    -- `cfc_cont_tactic` uses `fun_prop`: in practice, this should be robust enough.
+    `cfcTac,
+    `cfcZeroTac,
+    `cfcContTac,
+    -- `continuity` and `measurability` also use `aesop` under the hood.
+    `tacticContinuity,
+    `tacticMeasurability,
+    `finiteness,
+    `finiteness?,
     `Mathlib.Tactic.Tauto.tauto,
-    `Mathlib.Meta.FunProp.funPropTacStx,
     `Lean.Parser.Tactic.split,
     `Mathlib.Tactic.splitIfs }
 

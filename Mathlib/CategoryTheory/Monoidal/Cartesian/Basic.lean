@@ -27,9 +27,9 @@ We however develop the theory for any `F.OplaxMonoidal`/`F.Monoidal`/`F.Braided`
 requiring it to be the `ofChosenFiniteProducts` one. This is to avoid diamonds: Consider
 e.g. `𝟭 C` and `F ⋙ G`.
 
-In applications requiring a finite preserving functor to be oplax-monoidal/monoidal/braided,
-avoid `attribute [local instance] ofChosenFiniteProducts` but instead turn on the corresponding
-`ofChosenFiniteProducts` declaration for that functor only.
+In applications requiring a finite-product-preserving functor to be
+oplax-monoidal/monoidal/braided, avoid `attribute [local instance] ofChosenFiniteProducts` but
+instead turn on the corresponding `ofChosenFiniteProducts` declaration for that functor only.
 
 # Projects
 
@@ -91,8 +91,8 @@ lemma id_tensorHom_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensor
 
 @[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
-lemma tensor_comp (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
-    tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ :=
+lemma tensorHom_comp_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+    tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ = tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
 
 lemma pentagon (W X Y Z : C) :
@@ -157,7 +157,7 @@ abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   {
   toMonoidalCategory := .ofTensorHom
     (id_tensorHom_id := id_tensorHom_id ℬ)
-    (tensor_comp := tensor_comp ℬ)
+    (tensorHom_comp_tensorHom := tensorHom_comp_tensorHom ℬ)
     (pentagon := pentagon ℬ)
     (triangle := triangle 𝒯 ℬ)
     (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)

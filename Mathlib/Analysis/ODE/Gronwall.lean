@@ -100,14 +100,13 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
     (ha : f a ≤ δ) (bound : ∀ x ∈ Ico a b, f' x ≤ K * f x + ε) :
     ∀ x ∈ Icc a b, f x ≤ gronwallBound δ K ε (x - a) := by
   have H : ∀ x ∈ Icc a b, ∀ ε' ∈ Ioi ε, f x ≤ gronwallBound δ K ε' (x - a) := by
-    intro x hx ε' hε'
+    intro x hx ε' (hε' : ε < ε')
     apply image_le_of_liminf_slope_right_lt_deriv_boundary hf hf'
     · rwa [sub_self, gronwallBound_x0]
     · exact fun x => hasDerivAt_gronwallBound_shift δ K ε' x a
     · intro x hx hfB
-      rw [← hfB]
-      apply lt_of_le_of_lt (bound x hx)
-      exact add_lt_add_left (mem_Ioi.1 hε') _
+      grw [← hfB, bound x hx]
+      gcongr
     · exact hx
   intro x hx
   change f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
@@ -260,7 +259,7 @@ theorem ODE_solution_unique_of_mem_Icc_left
   have hv' : ∀ t ∈ Ico (-b) (-a), LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
     intro t ht
     replace ht : -t ∈ Ioc a b := by
-      simp at ht ⊢
+      simp only [mem_Ico, mem_Ioc] at ht ⊢
       constructor <;> linarith
     rw [← one_mul K]
     exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _ ht)

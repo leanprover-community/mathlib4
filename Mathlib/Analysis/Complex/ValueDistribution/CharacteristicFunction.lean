@@ -18,7 +18,7 @@ measure the "complexity" of objects. For rational functions, the characteristic 
 the degree times the logarithm, much like the logarithmic height in number theory reflects the
 degree of an algebraic number.
 
-See Section~VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section~1.1 of
+See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
 [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
 Approximation*][MR3156076] for a detailed discussion.
 

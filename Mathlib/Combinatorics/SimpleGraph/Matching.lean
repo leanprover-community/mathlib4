@@ -353,7 +353,7 @@ lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
     ∃ w', w ≠ w' ∧ G.Adj v w' := by
   simp_rw [← SimpleGraph.mem_neighborSet] at hadj ⊢
   have := h ⟨w, hadj⟩
-  obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by omega) w
+  obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by cutsat) w
   exact ⟨w', ⟨hww'.2.symm, hww'.1⟩⟩
 
 lemma IsCycles.existsUnique_ne_adj (h : G.IsCycles) (hadj : G.Adj v w) :
@@ -435,7 +435,7 @@ lemma IsCycles.snd_of_mem_support_of_isPath_of_adj [Finite V] {v w w' : V}
   have e : G.neighborSet (p.getVert n) ≃ p.toSubgraph.neighborSet (p.getVert n) := by
     refine @Classical.ofNonempty _ ?_
     rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _), ← Set.cast_ncard (Set.toFinite _),
-        hp.ncard_neighborSet_toSubgraph_internal_eq_two (by omega) (by omega),
+        hp.ncard_neighborSet_toSubgraph_internal_eq_two (by cutsat) (by cutsat),
         hcyc (Set.nonempty_of_mem hadj.symm)]
   rw [Subgraph.adj_comm, Subgraph.adj_iff_of_neighborSet_equiv e (Set.toFinite _)]
   exact hadj.symm
@@ -455,7 +455,7 @@ private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v
   have hnpvw' : ¬ p.toSubgraph.Adj v w' := by
     intro h
     exact hw'1 (hp.snd_of_toSubgraph_adj h)
-  -- If w = w', then then the reachability can be proved with just one edge
+  -- If w = w', then the reachability can be proved with just one edge
   by_cases hww' : w = w'
   · subst hww'
     have : (G \  p.toSubgraph.spanningCoe).Adj w v := by
@@ -480,7 +480,7 @@ termination_by Fintype.card V + 1 - p.length
 decreasing_by
   simp_wf
   have := Walk.IsPath.length_lt hp
-  omega
+  cutsat
 
 lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Finite V] {v w : V} (hcyc : G.IsCycles)
     (p : G.Walk v w) (hp : p.IsPath) : (G \ p.toSubgraph.spanningCoe).Reachable w v := by

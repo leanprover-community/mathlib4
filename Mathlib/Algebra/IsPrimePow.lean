@@ -6,6 +6,8 @@ Authors: Bhavik Mehta
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Nat
 import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Log
+import Mathlib.Data.Nat.Prime.Pow
 
 /-!
 # Prime powers
@@ -34,7 +36,7 @@ theorem isPrimePow_iff_pow_succ : IsPrimePow n ↔ ∃ (p : R) (k : ℕ), Prime 
 theorem not_isPrimePow_zero [NoZeroDivisors R] : ¬IsPrimePow (0 : R) := by
   simp only [isPrimePow_def, not_exists, not_and', and_imp]
   intro x n _hn hx
-  rw [pow_eq_zero hx]
+  rw [eq_zero_of_pow_eq_zero hx]
   simp
 
 theorem IsPrimePow.not_unit {n : R} (h : IsPrimePow n) : ¬IsUnit n :=
@@ -76,8 +78,37 @@ theorem isPrimePow_nat_iff_bounded (n : ℕ) :
   conv => { lhs; rw [← (pow_one p)] }
   exact Nat.pow_le_pow_right hp.one_lt.le hk
 
+theorem isPrimePow_nat_iff_bounded_log (n : ℕ) :
+    IsPrimePow n
+      ↔ ∃ k : ℕ, k ≤ Nat.log 2 n ∧ 0 < k ∧ ∃ p : ℕ, p ≤ n ∧ n = p ^ k ∧ p.Prime := by
+  rw [isPrimePow_nat_iff]
+  constructor
+  · rintro ⟨p, k, hp', hk', rfl⟩
+    refine ⟨k, ?_, hk', ⟨p, Nat.le_pow hk', rfl, hp'⟩⟩
+    · calc
+        k = Nat.log 2 (2 ^ k) := by simp
+        _ ≤ Nat.log 2 (p ^ k) := Nat.log_mono Nat.one_lt_two Nat.AtLeastTwo.prop
+                                   (Nat.pow_le_pow_left (Nat.Prime.two_le hp') k)
+  · rintro ⟨k, hk, hk', ⟨p, hp, rfl, hp'⟩⟩
+    exact ⟨p, k, hp', hk', rfl⟩
+
+theorem isPrimePow_nat_iff_bounded_log_minFac (n : ℕ) :
+    IsPrimePow n
+      ↔ ∃ k : ℕ, k ≤ Nat.log 2 n ∧ 0 < k ∧ n = n.minFac ^ k := by
+  rw [isPrimePow_nat_iff_bounded_log]
+  obtain rfl | h := eq_or_ne n 1
+  · simp
+  constructor
+  · rintro ⟨k, hkle, hk_pos, p, hle, heq, hprime⟩
+    refine ⟨k, hkle, hk_pos, ?_⟩
+    rw [heq, hprime.pow_minFac hk_pos.ne']
+  · rintro ⟨k, hkle, hk_pos, heq⟩
+    refine ⟨k, hkle, hk_pos, n.minFac, Nat.minFac_le ?_, heq, ?_⟩
+    · grind [Nat.minFac_prime_iff, nonpos_iff_eq_zero, Nat.log_zero_right, lt_self_iff_false]
+    · grind [Nat.minFac_prime_iff]
+
 instance {n : ℕ} : Decidable (IsPrimePow n) :=
-  decidable_of_iff' _ (isPrimePow_nat_iff_bounded n)
+  decidable_of_iff' _ (isPrimePow_nat_iff_bounded_log_minFac n)
 
 theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m ≠ 1) : IsPrimePow m := by
   grind [isPrimePow_nat_iff, Nat.dvd_prime_pow, Nat.pow_eq_one]

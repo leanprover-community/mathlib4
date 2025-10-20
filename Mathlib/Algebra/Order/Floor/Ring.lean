@@ -279,7 +279,7 @@ lemma mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊a * n
   rw [mul_comm, cast_mul_floor_div_cancel_of_pos hn]
 
 theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
-  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by omega) a
+  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by cutsat) a
 
 theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) {a : k} : ⌊a * n⌋ / n = ⌊a⌋ := by
   rw [mul_comm, natCast_mul_floor_div_cancel hn]
@@ -313,10 +313,7 @@ theorem fract_sub_self (a : R) : fract a - a = -⌊a⌋ :=
   sub_sub_cancel_left _ _
 
 theorem fract_add (a b : R) : ∃ z : ℤ, fract (a + b) - fract a - fract b = z :=
-  ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
-    unfold fract
-    simp only [sub_eq_add_neg, neg_add_rev, neg_neg, cast_add, cast_neg]
-    abel⟩
+  ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by unfold fract; grind⟩
 
 variable [IsStrictOrderedRing R]
 

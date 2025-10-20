@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable {T : Type u₁} [Category.{v₁} T]
 variable {D : Type u₂} [Category.{v₂} D]
 
@@ -280,6 +280,9 @@ The converse does not hold without additional assumptions on the underlying cate
 theorem epi_of_epi_left {f g : Over X} (k : f ⟶ g) [hk : Epi k.left] : Epi k :=
   (forget X).epi_of_epi_map hk
 
+instance epi_homMk {U V : Over X} {f : U.left ⟶ V.left} [Epi f] (w) : Epi (homMk f w) :=
+  (forget X).epi_of_epi_map ‹_›
+
 /--
 If `k.left` is a monomorphism, then `k` is a monomorphism. In other words, `Over.forget X` reflects
 monomorphisms.
@@ -289,6 +292,9 @@ This lemma is not an instance, to avoid loops in type class inference.
 -/
 theorem mono_of_mono_left {f g : Over X} (k : f ⟶ g) [hk : Mono k.left] : Mono k :=
   (forget X).mono_of_mono_map hk
+
+instance mono_homMk {U V : Over X} {f : U.left ⟶ V.left} [Mono f] (w) : Mono (homMk f w) :=
+  (forget X).mono_of_mono_map ‹_›
 
 /--
 If `k` is a monomorphism, then `k.left` is a monomorphism. In other words, `Over.forget X` preserves
@@ -538,7 +544,7 @@ lemma homMk_eta {U V : Under X} (f : U ⟶ V) (h) :
 
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
 lemma homMk_comp {U V W : Under X} (f : U.right ⟶ V.right) (g : V.right ⟶ W.right) (w_f w_g) :
-    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g])  = homMk f w_f ≫ homMk g w_g := by
+    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g]) = homMk f w_f ≫ homMk g w_g := by
   ext
   simp
 
@@ -685,7 +691,7 @@ def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
 
 variable (T) in
 /-- The functor defined by the under categories -/
-@[simps] def mapFunctor : Tᵒᵖ  ⥤ Cat where
+@[simps] def mapFunctor : Tᵒᵖ ⥤ Cat where
   obj X := Cat.of (Under X.unop)
   map f := map f.unop
   map_id X := mapId_eq X.unop
@@ -716,6 +722,9 @@ The converse does not hold without additional assumptions on the underlying cate
 theorem mono_of_mono_right {f g : Under X} (k : f ⟶ g) [hk : Mono k.right] : Mono k :=
   (forget X).mono_of_mono_map hk
 
+instance mono_homMk {U V : Under X} {f : U.right ⟶ V.right} [Mono f] (w) : Mono (homMk f w) :=
+  (forget X).mono_of_mono_map ‹_›
+
 /--
 If `k.right` is an epimorphism, then `k` is an epimorphism. In other words, `Under.forget X`
 reflects epimorphisms.
@@ -725,6 +734,9 @@ This lemma is not an instance, to avoid loops in type class inference.
 -/
 theorem epi_of_epi_right {f g : Under X} (k : f ⟶ g) [hk : Epi k.right] : Epi k :=
   (forget X).epi_of_epi_map hk
+
+instance epi_homMk {U V : Under X} {f : U.right ⟶ V.right} [Epi f] (w) : Epi (homMk f w) :=
+  (forget X).epi_of_epi_map ‹_›
 
 /--
 If `k` is an epimorphism, then `k.right` is an epimorphism. In other words, `Under.forget X`

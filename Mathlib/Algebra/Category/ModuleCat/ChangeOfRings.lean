@@ -671,7 +671,8 @@ Given `R`-module X and `S`-module Y and a map `X ⟶ (restrictScalars f).obj Y`,
 def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     (extendScalars f).obj X ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
-  refine ofHom {toFun := fun z => TensorProduct.lift ?_ z, map_add' := ?_, map_smul' := ?_}
+  refine ofHom
+    {toFun := fun z => TensorProduct.lift (σ₁₂ := .id _) ?_ z, map_add' := ?_, map_smul' := ?_}
   · refine
     {toFun := fun s => HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) => ?_,
       map_smul' := fun (r : R) (s : S) => ?_}
@@ -693,7 +694,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
       rw [mul_smul]
     | add _ _ ih1 ih2 => rw [smul_add, map_add, ih1, ih2, map_add, smul_add]
 
-/-- Given `R`-module X and `S`-module Y, `S`-linear linear maps `(extendScalars f).obj X ⟶ Y`
+/-- Given `R`-module X and `S`-module Y, `S`-linear maps `(extendScalars f).obj X ⟶ Y`
 bijectively correspond to `R`-linear maps `X ⟶ (restrictScalars f).obj Y`.
 -/
 @[simps symm_apply]
@@ -858,18 +859,18 @@ noncomputable instance preservesLimit_restrictScalars
     (F : J ⥤ ModuleCat.{v} S) [Small.{v} (F ⋙ forget _).sections] :
     PreservesLimit F (restrictScalars f) :=
   ⟨fun {c} hc => ⟨by
-    have hc' := isLimitOfPreserves (forget₂ _ AddCommGrp) hc
-    exact isLimitOfReflects (forget₂ _ AddCommGrp) hc'⟩⟩
+    have hc' := isLimitOfPreserves (forget₂ _ AddCommGrpCat) hc
+    exact isLimitOfReflects (forget₂ _ AddCommGrpCat) hc'⟩⟩
 
 instance preservesColimit_restrictScalars {R S : Type*} [Ring R] [Ring S]
     (f : R →+* S) {J : Type*} [Category J] (F : J ⥤ ModuleCat.{v} S)
-    [HasColimit (F ⋙ forget₂ _ AddCommGrp)] :
+    [HasColimit (F ⋙ forget₂ _ AddCommGrpCat)] :
     PreservesColimit F (ModuleCat.restrictScalars.{v} f) := by
-  have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrp) :=
-    inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGrp))
+  have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrpCat) :=
+    inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGrpCat))
   apply preservesColimit_of_preserves_colimit_cocone (HasColimit.isColimitColimitCocone F)
-  apply isColimitOfReflects (forget₂ _ AddCommGrp)
-  apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrp.{v})
+  apply isColimitOfReflects (forget₂ _ AddCommGrpCat)
+  apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrpCat.{v})
   exact HasColimit.isColimitColimitCocone F
 
 variable (R) in

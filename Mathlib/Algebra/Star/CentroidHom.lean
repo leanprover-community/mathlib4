@@ -12,9 +12,9 @@ import Mathlib.Algebra.Star.Basic
 /-!
 # Centroid homomorphisms on Star Rings
 
-When a (non unital, non-associative) semi-ring is equipped with an involutive automorphism the
+When a (nonunital, non-associative) semiring is equipped with an involutive automorphism the
 center of the centroid becomes a star ring in a natural way and the natural mapping of the centre of
-the semi-ring into the centre of the centroid becomes a *-homomorphism.
+the semiring into the centre of the centroid becomes a *-homomorphism.
 
 ## Tags
 

@@ -73,13 +73,13 @@ nonzero coefficient of degree equal to the order.
 is at least that degree.
 
 - `MvPowerSeries.nat_le_order`: if all coefficients of degree strictly smaller than some integer
-vanish, then the order is at at least that integer.
+vanish, then the order is at least that integer.
 
 - `MvPowerSeries.order_eq_nat_iff`:  the order of a power series is an integer `n` iff there exists
 a nonzero coefficient in that degree, and all coefficients below that degree vanish.
 
 - `MvPowerSeries.order_monomial`, `MvPowerSeries.order_monomial_of_ne_zero`: the order of a
-monomial, with a non zero coefficient
+monomial, with a nonzero coefficient
 
 - `MvPowerSeries.min_order_le_add`: the order of a sum of two power series is at least the minimum
 of their orders.
@@ -232,6 +232,9 @@ theorem weightedOrder_monomial_of_ne_zero {d : σ →₀ ℕ} {a : R} (h : a ≠
   classical
   rw [weightedOrder_monomial, if_neg h]
 
+@[simp]
+theorem weightedOrder_one [Nontrivial R] : (1 : MvPowerSeries σ R).weightedOrder w = 0 :=
+  weightedOrder_monomial_of_ne_zero w one_ne_zero
 
 /-- The order of the sum of two formal power series is at least the minimum of their orders. -/
 theorem min_weightedOrder_le_add :
@@ -280,14 +283,21 @@ theorem le_weightedOrder_mul :
   rw [coeff_mul, Finset.sum_eq_zero]
   rintro ⟨i, j⟩ hij
   by_cases hi : weight w i < f.weightedOrder w
-  · rw [coeff_eq_zero_of_lt_weightedOrder w hi, MulZeroClass.zero_mul]
+  · rw [coeff_eq_zero_of_lt_weightedOrder w hi, zero_mul]
   · by_cases hj : weight w j < g.weightedOrder w
-    · rw [coeff_eq_zero_of_lt_weightedOrder w hj, MulZeroClass.mul_zero]
+    · rw [coeff_eq_zero_of_lt_weightedOrder w hj, mul_zero]
     · rw [not_lt] at hi hj
       simp only [Finset.mem_antidiagonal] at hij
       exfalso
       apply ne_of_lt (lt_of_lt_of_le hd <| add_le_add hi hj)
       rw [← hij, map_add, Nat.cast_add]
+
+theorem le_weightedOrder_prod {R : Type*} [CommSemiring R] {ι : Type*} (w : σ → ℕ)
+    (f : ι → MvPowerSeries σ R) (s : Finset ι) :
+    ∑ i ∈ s, (f i).weightedOrder w ≤ (∏ i ∈ s, f i).weightedOrder w := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih => grw [Finset.sum_cons ha, Finset.prod_cons ha, ih, le_weightedOrder_mul]
 
 alias weightedOrder_mul_ge := le_weightedOrder_mul
 
@@ -320,6 +330,12 @@ theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type*} [CommRing R] (
     simp only [Finset.mem_insert, forall_eq_or_imp] at h
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm,
       coeff_mul_left_one_sub_of_lt_weightedOrder w h.1, ih h.2]
+
+@[simp]
+theorem weightedOrder_neg (f : MvPowerSeries σ R) : (-f).weightedOrder w = f.weightedOrder w := by
+  by_contra! h
+  have : f = 0 := by simpa using (weightedOrder_add_of_weightedOrder_ne w h).symm
+  simp [this] at h
 
 end Ring
 
@@ -425,6 +441,10 @@ theorem le_order_mul : f.order + g.order ≤ order (f * g) :=
 
 alias order_mul_ge := le_order_mul
 
+theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*}
+    (f : ι → MvPowerSeries σ R) (s : Finset ι) : ∑ i ∈ s, (f i).order ≤ (∏ i ∈ s, f i).order :=
+  le_weightedOrder_prod _ _ _
+
 section Ring
 
 variable {R : Type*} [Ring R] {f g : MvPowerSeries σ R}
@@ -444,6 +464,9 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (d : σ �
     (∀ i ∈ s, degree d < order (g i)) → coeff d (f * ∏ i ∈ s, (1 - g i)) = coeff d f := by
   rw [degree_eq_weight_one]
   exact coeff_mul_prod_one_sub_of_lt_weightedOrder _ d s f g
+
+@[simp]
+theorem order_neg (f : MvPowerSeries σ R) : (-f).order = f.order := weightedOrder_neg _ f
 
 end Ring
 
@@ -503,7 +526,7 @@ def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowe
   map_smul' a f := by
     ext d
     simp only [map_smul,
-      smul_eq_mul, RingHom.id_apply, coeff_apply, mul_ite, MulZeroClass.mul_zero]
+      smul_eq_mul, RingHom.id_apply, coeff_apply, mul_ite, mul_zero]
 
 theorem coeff_weightedHomogeneousComponent (p : ℕ) (d : σ →₀ ℕ) (f : MvPowerSeries σ R) :
     coeff d (weightedHomogeneousComponent w p f) =

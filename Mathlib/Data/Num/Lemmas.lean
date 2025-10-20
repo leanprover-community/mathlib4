@@ -484,11 +484,11 @@ theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
       rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul, ← Nat.bit_false_apply,
         Nat.size_bit]
       have := to_nat_pos n
-      dsimp [Nat.bit]; omega
+      dsimp [Nat.bit]; cutsat
   | bit1 n => by
       rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul, ← Nat.bit_true_apply,
         Nat.size_bit]
-      dsimp [Nat.bit]; omega
+      dsimp [Nat.bit]; cutsat
 
 theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n
   | 1 => rfl
@@ -778,7 +778,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
   · rw [fnn]
     have this b (n : PosNum) : (cond b (↑n) 0 : ℕ) = ↑(cond b (pos n) 0 : Num) := by
       cases b <;> rfl
-    have this' b (n : PosNum) : ↑ (pos (PosNum.bit b n)) = Nat.bit b ↑n := by
+    have this' b (n : PosNum) : ↑(pos (PosNum.bit b n)) = Nat.bit b ↑n := by
       cases b <;> simp
     induction m generalizing n with | one => ?_ | bit1 m IH => ?_ | bit0 m IH => ?_ <;>
     obtain - | n | n := n

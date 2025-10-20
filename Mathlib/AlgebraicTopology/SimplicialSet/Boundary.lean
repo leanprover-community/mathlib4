@@ -15,7 +15,7 @@ We introduce the boundary `∂Δ[n]` of the standard simplex `Δ[n]`.
 
 There isn't yet a complete API for simplices, boundaries, and horns.
 As an example, we should have a function that constructs
-from a non-surjective order preserving function `Fin n → Fin n`
+from a non-surjective order-preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
 

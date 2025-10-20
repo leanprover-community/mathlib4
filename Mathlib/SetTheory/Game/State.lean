@@ -61,7 +61,7 @@ theorem turnBound_ne_zero_of_left_move {s t : S} (m : t ∈ l s) : turnBound s �
 theorem turnBound_ne_zero_of_right_move {s t : S} (m : t ∈ r s) : turnBound s ≠ 0 := by
   intro h
   have t := right_bound m
-  omega
+  cutsat
 
 theorem turnBound_of_left {s t : S} (m : t ∈ l s) (n : ℕ) (h : turnBound s ≤ n + 1) :
     turnBound t ≤ n :=

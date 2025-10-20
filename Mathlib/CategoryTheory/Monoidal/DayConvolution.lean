@@ -80,7 +80,7 @@ variable (F G : C ⥤ V)
 
 instance leftKanExtension [DayConvolution F G] :
     (F ⊛ G).IsLeftKanExtension (unit F G) :=
-  isPointwiseLeftKanExtensionUnit F G|>.isLeftKanExtension
+  isPointwiseLeftKanExtensionUnit F G |>.isLeftKanExtension
 
 variable {F G}
 
@@ -156,7 +156,7 @@ variable (F G)
 corepresented by `F ⊛ G`. -/
 @[simps!]
 def corepresentableBy :
-    (Functor.whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ G)|>.CorepresentableBy
+    (Functor.whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ G) |>.CorepresentableBy
       (F ⊛ G) where
   homEquiv := Functor.homEquivOfIsLeftKanExtension _ (unit F G) _
   homEquiv_comp := by aesop
@@ -198,7 +198,7 @@ instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
 def corepresentableBy₂ :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C)) ⋙
-      coyoneda.obj (.op <| F ⊠ G ⊠ H)|>.CorepresentableBy (F ⊛ G ⊛ H) where
+      coyoneda.obj (.op <| F ⊠ G ⊠ H) |>.CorepresentableBy (F ⊛ G ⊛ H) where
   homEquiv :=
     (corepresentableBy F (G ⊛ H)).homEquiv.trans <|
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitRight (G ⊛ H) (unit G H) F) _
@@ -211,7 +211,7 @@ def corepresentableBy₂ :
 def corepresentableBy₂' :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((tensor C).prod (𝟭 C)) ⋙
-      coyoneda.obj (.op <| (F ⊠ G) ⊠ H)|>.CorepresentableBy ((F ⊛ G) ⊛ H) where
+      coyoneda.obj (.op <| (F ⊠ G) ⊠ H) |>.CorepresentableBy ((F ⊛ G) ⊛ H) where
   homEquiv :=
     (corepresentableBy (F ⊛ G) H).homEquiv.trans <|
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitLeft (F ⊛ G) (unit F G) H) _
@@ -219,7 +219,7 @@ def corepresentableBy₂' :
 
 /-- The isomorphism of functors between
 `((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -)` and
-`(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that coresponsds to the associator
+`(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that corresponds to the associator
 isomorphism for Day convolution through `corepresentableBy₂` and `corepresentableBy₂`. -/
 @[simps!]
 def associatorCorepresentingIso :
@@ -247,11 +247,11 @@ def associatorCorepresentingIso :
     _ ≅ (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C) ⋙ tensor C) ⋙
           coyoneda.obj (.op <| F ⊠ G ⊠ H) :=
       isoWhiskerLeft _ <|
-        coyoneda.mapIso <| Iso.op <| NatIso.ofComponents (fun _ ↦ α_ _ _ _|>.symm)
+        coyoneda.mapIso <| Iso.op <| NatIso.ofComponents (fun _ ↦ α_ _ _ _ |>.symm)
 
-/-- The asociator isomorphism for Day convolution -/
+/-- The associator isomorphism for Day convolution -/
 def associator : (F ⊛ G) ⊛ H ≅ F ⊛ G ⊛ H :=
-  corepresentableBy₂' F G H|>.ofIso (associatorCorepresentingIso F G H)|>.uniqueUpToIso <|
+  corepresentableBy₂' F G H |>.ofIso (associatorCorepresentingIso F G H) |>.uniqueUpToIso <|
     corepresentableBy₂ F G H
 
 /-- Characterizing the forward direction of the associator isomorphism
@@ -267,8 +267,8 @@ lemma associator_hom_unit_unit (x y z : C) :
       (F ⊛ G ⊛ H).map (α_ _ _ _).inv := by
   have := congrArg (fun t ↦ t.app ((x, y), z)) <|
       (corepresentableBy₂' F G H).homEquiv.rightInverse_symm <|
-        (corepresentableBy₂ F G H|>.ofIso
-          (associatorCorepresentingIso F G H).symm|>.homEquiv (𝟙 _))
+        (corepresentableBy₂ F G H |>.ofIso
+          (associatorCorepresentingIso F G H).symm |>.homEquiv (𝟙 _))
   dsimp [associator, Coyoneda.fullyFaithful, corepresentableBy₂,
     corepresentableBy₂', Functor.CorepresentableBy.ofIso, corepresentableBy₂,
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
@@ -288,8 +288,8 @@ lemma associator_inv_unit_unit (x y z : C) :
       ((F ⊛ G) ⊛ H).map (α_ x y z).hom := by
   have := congrArg (fun t ↦ t.app (x, y, z)) <|
       (corepresentableBy₂ F G H).homEquiv.rightInverse_symm <|
-        (corepresentableBy₂' F G H|>.ofIso
-          (associatorCorepresentingIso F G H)|>.homEquiv (𝟙 _))
+        (corepresentableBy₂' F G H |>.ofIso
+          (associatorCorepresentingIso F G H) |>.homEquiv (𝟙 _))
   dsimp [associator, Coyoneda.fullyFaithful, corepresentableBy₂,
     corepresentableBy₂', Functor.CorepresentableBy.ofIso, corepresentableBy₂,
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
@@ -305,7 +305,7 @@ theorem associator_naturality {F' G' H' : C ⥤ V}
       map (map f g) h ≫
         (associator F' G' H').hom =
       (associator F G H).hom ≫ map f (map g h) := by
-  apply (corepresentableBy₂' F G H)|>.homEquiv.injective
+  apply (corepresentableBy₂' F G H) |>.homEquiv.injective
   dsimp
   ext
   simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, Functor.prod_obj, tensor_obj,
@@ -344,7 +344,7 @@ lemma pentagon (H K : C ⥤ V)
       (extensionUnitLeft _ (unit F G) H) K) :=
     isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _
       (isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _
-        (isPointwiseLeftKanExtensionUnit F G))|>.isLeftKanExtension
+        (isPointwiseLeftKanExtensionUnit F G)) |>.isLeftKanExtension
   apply Functor.hom_ext_of_isLeftKanExtension (α := extensionUnitLeft ((F ⊛ G) ⊠ H)
       (extensionUnitLeft _ (unit F G) H) K)
   -- And then we compute...
@@ -396,7 +396,7 @@ class DayConvolutionUnit (F : C ⥤ V) where
   of `fromPUnit.{0} 𝟙_ V` along `fromPUnit.{0} 𝟙_ C`. -/
   isPointwiseLeftKanExtensionCan : Functor.LeftExtension.mk F
     ({app _ := can} : Functor.fromPUnit.{0} (𝟙_ V) ⟶
-      Functor.fromPUnit.{0} (𝟙_ C) ⋙ F)|>.IsPointwiseLeftKanExtension
+      Functor.fromPUnit.{0} (𝟙_ C) ⋙ F) |>.IsPointwiseLeftKanExtension
 
 namespace DayConvolutionUnit
 
@@ -426,11 +426,11 @@ variable (F : C ⥤ V)
 
 instance : (F ⊠ U).IsLeftKanExtension <| extensionUnitRight U (φ U) F :=
   isPointwiseLeftKanExtensionExtensionUnitRight
-    U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+    U (φ U) F isPointwiseLeftKanExtensionCan |>.isLeftKanExtension
 
 instance : (U ⊠ F).IsLeftKanExtension <| extensionUnitLeft U (φ U) F :=
   isPointwiseLeftKanExtensionExtensionUnitLeft
-    U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
+    U (φ U) F isPointwiseLeftKanExtensionCan |>.isLeftKanExtension
 
 /-- A `CorepresentableBy` structure that characterizes maps out of `U ⊛ F`
 by leveraging the fact that `U ⊠ F` is a left Kan extension of `(fromPUnit 𝟙_ V) ⊠ F`. -/
@@ -438,9 +438,9 @@ by leveraging the fact that `U ⊠ F` is a left Kan extension of `(fromPUnit �
 def corepresentableByLeft [DayConvolution U F] :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((Functor.fromPUnit.{0} (𝟙_ C)).prod (𝟭 C)) ⋙
-      coyoneda.obj (.op <| Functor.fromPUnit.{0} (𝟙_ V) ⊠ F)|>.CorepresentableBy (U ⊛ F) where
+      coyoneda.obj (.op <| Functor.fromPUnit.{0} (𝟙_ V) ⊠ F) |>.CorepresentableBy (U ⊛ F) where
   homEquiv :=
-    Functor.homEquivOfIsLeftKanExtension _ (DayConvolution.unit U F) _|>.trans <|
+    Functor.homEquivOfIsLeftKanExtension _ (DayConvolution.unit U F) _ |>.trans <|
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitLeft U (φ U) F) _
   homEquiv_comp := by aesop
 
@@ -450,9 +450,9 @@ leveraging the fact that `F ⊠ U` is a left Kan extension of `F ⊠ (fromPUnit 
 def corepresentableByRight [DayConvolution F U] :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (Functor.fromPUnit.{0} (𝟙_ C))) ⋙
-      coyoneda.obj (.op <| F ⊠ Functor.fromPUnit.{0} (𝟙_ V))|>.CorepresentableBy (F ⊛ U) where
+      coyoneda.obj (.op <| F ⊠ Functor.fromPUnit.{0} (𝟙_ V)) |>.CorepresentableBy (F ⊛ U) where
   homEquiv :=
-    Functor.homEquivOfIsLeftKanExtension _ (DayConvolution.unit F U) _|>.trans <|
+    Functor.homEquivOfIsLeftKanExtension _ (DayConvolution.unit F U) _ |>.trans <|
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitRight U (φ U) F) _
   homEquiv_comp := by aesop
 
@@ -514,12 +514,12 @@ def rightUnitorCorepresentingIso :
 
 /-- The left unitor isomorphism for Day convolution. -/
 def leftUnitor [DayConvolution U F] : U ⊛ F ≅ F :=
-  corepresentableByLeft U F|>.ofIso (leftUnitorCorepresentingIso F)|>.uniqueUpToIso
+  corepresentableByLeft U F |>.ofIso (leftUnitorCorepresentingIso F) |>.uniqueUpToIso
     <| Functor.corepresentableByEquiv.symm (.refl _)
 
 /-- The right unitor isomorphism for Day convolution. -/
 def rightUnitor [DayConvolution F U] : F ⊛ U ≅ F :=
-  corepresentableByRight U F|>.ofIso (rightUnitorCorepresentingIso F)|>.uniqueUpToIso
+  corepresentableByRight U F |>.ofIso (rightUnitorCorepresentingIso F) |>.uniqueUpToIso
     <| Functor.corepresentableByEquiv.symm (.refl _)
 
 section
@@ -643,11 +643,11 @@ lemma DayConvolution.triangle (F G U : C ⥤ V) [DayConvolutionUnit U]
   apply Functor.hom_ext_of_isLeftKanExtension _ (DayConvolution.unit _ _) _
   apply Functor.hom_ext_of_isLeftKanExtension
     (α := extensionUnitLeft (F ⊛ U) (DayConvolution.unit F U) G)
-  have : (F ⊠ U) ⊠ G|>.IsLeftKanExtension
+  have : (F ⊠ U) ⊠ G |>.IsLeftKanExtension
       (α := extensionUnitLeft (F ⊠ U) (extensionUnitRight U (DayConvolutionUnit.φ U) F) G) :=
     isPointwiseLeftKanExtensionExtensionUnitLeft (F ⊠ U) _ G
       (isPointwiseLeftKanExtensionExtensionUnitRight U (DayConvolutionUnit.φ U) F <|
-        DayConvolutionUnit.isPointwiseLeftKanExtensionCan (F := U))|>.isLeftKanExtension
+        DayConvolutionUnit.isPointwiseLeftKanExtensionCan (F := U)) |>.isLeftKanExtension
   apply Functor.hom_ext_of_isLeftKanExtension
     (α := extensionUnitLeft (F ⊠ U) (extensionUnitRight U (DayConvolutionUnit.φ U) F) G)
   ext
@@ -894,7 +894,7 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
         tensorHom_id, id_whiskerRight, Category.id_comp]
       dsimp [DayConvolution.convolution]
       simp)
-    (tensor_comp := fun _ _ _ _ => by
+    (tensorHom_comp_tensorHom := fun _ _ _ _ => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom, Functor.map_comp]
       apply (corepresentableBy (ι C V D|>.obj _) (ι C V D|>.obj _)).homEquiv.injective

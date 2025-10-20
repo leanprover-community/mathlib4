@@ -201,7 +201,8 @@ theorem hasBasis_nhds_of_ne_top' (xt : x ≠ ∞) :
       rcases lt_iff_exists_add_pos_lt.1 hb with ⟨δ, δ0, hδ⟩
       refine ⟨min ε δ, (lt_min ε0 (coe_pos.2 δ0)).ne', Icc_subset_Ioo ?_ ?_⟩
       · exact lt_tsub_comm.2 ((min_le_left _ _).trans_lt hε)
-      · exact (add_le_add_left (min_le_right _ _) _).trans_lt hδ
+      · grw [min_le_right]
+        exact hδ
     · exact ⟨(x - ε, x + ε), ⟨ENNReal.sub_lt_self xt x0.ne' ε0,
         lt_add_right xt ε0⟩, Ioo_subset_Icc_self⟩
 
@@ -282,7 +283,7 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
       rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
       conv_lhs => rw [← mul_one ε]
       rw [ENNReal.mul_lt_mul_left hε.ne' hε_top]
-      norm_num
+      simp
   · obtain ⟨n, hn⟩ := h ε hε
     exact ⟨n, hn.le⟩
 
@@ -293,9 +294,8 @@ theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
     rw [top_sub_coe, tendsto_nhds_top_iff_nnreal]
     refine fun x => ((lt_mem_nhds <| @coe_lt_top (b + 1 + x)).prod_nhds
       (ge_mem_nhds <| coe_lt_coe.2 <| lt_add_one b)).mono fun y hy => ?_
-    rw [lt_tsub_iff_left]
-    calc y.2 + x ≤ ↑(b + 1) + x := add_le_add_right hy.2 _
-    _ < y.1 := hy.1
+    grw [lt_tsub_iff_left, hy.2]
+    exact hy.1
   | (a : ℝ≥0), ∞, _ => by
     rw [sub_top]
     refine (tendsto_pure.2 ?_).mono_right (pure_le_nhds _)
@@ -405,7 +405,7 @@ protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a 
     intro x
     refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
     · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
-    · exact Or.inl fun h => H (pow_eq_zero h)
+    · exact Or.inl fun h => H (eq_zero_of_pow_eq_zero h)
     · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, not_true, Ne,
         not_false_iff, false_and]
     · simp only [H, true_or, Ne, not_false_iff]
@@ -514,7 +514,7 @@ theorem exists_frequently_lt_of_liminf_ne_top' {ι : Type*} {l : Filter ι} {x :
   simp_rw [not_exists, not_frequently, not_lt] at h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
-  filter_upwards [h (-r)] with i hi using(le_neg.1 hi).trans (neg_le_abs _)
+  filter_upwards [h (-r)] with i hi using (le_neg.1 hi).trans (neg_le_abs _)
 
 theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x : ι → ℝ}
     (hf : liminf (fun i => (Real.nnabs (x i) : ℝ≥0∞)) l ≠ ∞)
@@ -771,7 +771,7 @@ theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t 
 
 theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι → Set α) :
     ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := by
-  rw [← tsum_fintype]
+  rw [← tsum_fintype (L := SummationFilter.unconditional _)]
   exact tsum_iUnion_le_tsum f t
 
 theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
@@ -967,8 +967,7 @@ theorem tsum_strict_mono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : 
   tsum_lt_tsum hle hi hg
 
 theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) : 0 < ∑' b, g b := by
-  rw [← tsum_zero]
-  exact tsum_lt_tsum (fun a => zero_le _) hi hg
+  simpa using tsum_lt_tsum (fun a => zero_le _) hi hg
 
 open Classical in
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
@@ -1131,8 +1130,7 @@ theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC 
   rcases ENNReal.exists_nnreal_pos_mul_lt hC ε0.ne' with ⟨δ, δ0, hδ⟩
   rw [mul_comm] at hδ
   filter_upwards [EMetric.closedBall_mem_nhds x (ENNReal.coe_pos.2 δ0)] with y hy
-  refine ⟨tsub_le_iff_right.2 <| (h x y).trans ?_, (h y x).trans ?_⟩ <;>
-    refine add_le_add_left (le_trans (mul_le_mul_left' ?_ _) hδ.le) _
+  refine ⟨tsub_le_iff_right.2 <| (h x y).trans ?_, (h y x).trans ?_⟩ <;> grw [← hδ.le] <;> gcongr
   exacts [EMetric.mem_closedBall'.1 hy, EMetric.mem_closedBall.1 hy]
 
 theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
@@ -1442,7 +1440,7 @@ theorem limsup_add_of_right_tendsto_zero {u : Filter ι} {g : ι → ℝ≥0∞}
   rw [Filter.limsup_le_iff']
   rintro a hba
   filter_upwards [hb, ENNReal.tendsto_nhds_zero.1 hg _ <| tsub_pos_of_lt hba] with i hf hg
-  calc  f i + g i
+  calc f i + g i
     _ ≤ b + g i := by gcongr
     _ ≤ a := add_le_of_le_tsub_left_of_le hba.le hg
 

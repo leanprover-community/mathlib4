@@ -414,7 +414,7 @@ theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
 
 end
 
-section Group
+section DistribMulAction
 variable [Group α] [AddMonoid β] [DistribMulAction α β]
 
 lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
@@ -423,4 +423,24 @@ lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
 lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
   not_congr <| smul_eq_zero_iff_eq a
 
-end Group
+end DistribMulAction
+
+section MulDistribMulAction
+variable [Group α] [GroupWithZero β] [MulDistribMulAction α β]
+
+instance : SMulZeroClass α β where
+  smul_zero g := not_imp_comm.mp mul_inv_cancel₀ <| by
+    rw [← smul_one g, ← inv_smul_eq_iff, smul_mul', inv_smul_smul, zero_mul]
+    exact zero_ne_one
+
+/-- A version of `smul_inv'` for groups with zero. -/
+@[simp] theorem smul_inv₀' (g : α) (x : β) : g • x⁻¹ = (g • x)⁻¹ := by
+  by_cases hx : x = 0
+  · rw [hx, inv_zero, smul_zero, inv_zero]
+  · apply eq_inv_of_mul_eq_one_right
+    rw [← smul_mul', mul_inv_cancel₀ hx, smul_one]
+
+theorem smul_div₀' (g : α) (x y : β) : g • (x / y) = (g • x) / (g • y) := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, smul_mul', smul_inv₀']
+
+end MulDistribMulAction

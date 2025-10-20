@@ -386,7 +386,7 @@ theorem Ico_pow_dvd_eq_Ico_of_lt {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb
   simp only [Finset.mem_filter, mem_Ico, and_congr_left_iff, and_congr_right_iff]
   refine fun h1 h2 ↦ ⟨fun h ↦ ?_, fun h ↦ lt_of_pow_dvd_right hn (Prime.one_lt pp) h1⟩
   rcases p with - | p
-  · rw [zero_pow (by omega), zero_dvd_iff] at h1
+  · rw [zero_pow (by cutsat), zero_dvd_iff] at h1
     exact (hn h1).elim
   · rw [← Nat.pow_lt_pow_iff_right (Prime.one_lt pp)]
     apply lt_of_le_of_lt (le_of_dvd (Nat.zero_lt_of_ne_zero hn) h1) hb
@@ -396,7 +396,7 @@ divides `n`. Note `m` is prime. This set is expressed by filtering `Ico 1 b` whe
 greater than `log m n`. -/
 theorem factorization_eq_card_pow_dvd_of_lt (hm : m.Prime) (hn : 0 < n) (hb : n < m ^ b) :
     n.factorization m = #{i ∈ Ico 1 b | m ^ i ∣ n} := by
-  rwa [factorization_eq_card_pow_dvd n hm, Ico_pow_dvd_eq_Ico_of_lt hm (by omega)]
+  rwa [factorization_eq_card_pow_dvd n hm, Ico_pow_dvd_eq_Ico_of_lt hm (by cutsat)]
 
 /-! ### Factorization and coprimes -/
 
@@ -455,27 +455,18 @@ theorem card_multiples (n p : ℕ) : #{e ∈ range n | p ∣ e + 1} = n / p := b
 
 /-- Exactly `n / p` naturals in `(0, n]` are multiples of `p`. -/
 theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : #{x ∈ Ioc 0 n | p ∣ x} = n / p := by
-  induction n with
-  | zero => simp
-  | succ n IH =>
-    -- TODO: Golf away `h1` after Yaël PRs a lemma asserting this
-    have h1 : Ioc 0 n.succ = insert n.succ (Ioc 0 n) := by
-      rcases n.eq_zero_or_pos with (rfl | hn)
-      · simp
-      simp_rw [← Ico_add_one_add_one_eq_Ioc, Ico_insert_right (add_le_add_right hn.le 1),
-        Ico_add_one_right_eq_Icc]
-    simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, IH,
-      Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n)]
+  induction n <;> simp [Nat.succ_div, add_ite, ← insert_Ioc_right_eq_Ioc_add_one, filter_insert,
+    apply_ite card, *]
 
 /-- There are exactly `⌊N/n⌋` positive multiples of `n` that are `≤ N`.
 See `Nat.card_multiples` for a "shifted-by-one" version. -/
 lemma card_multiples' (N n : ℕ) : #{k ∈ range N.succ | k ≠ 0 ∧ n ∣ k} = N / n := by
   induction N with
-    | zero => simp [Finset.filter_false_of_mem]
-    | succ N ih =>
-        rw [Finset.range_add_one, Finset.filter_insert]
-        by_cases h : n ∣ N.succ
-        · simp [h, succ_div_of_dvd, ih]
-        · simp [h, succ_div_of_not_dvd, ih]
+  | zero => simp [Finset.filter_false_of_mem]
+  | succ N ih =>
+    rw [Finset.range_add_one, Finset.filter_insert]
+    by_cases h : n ∣ N.succ
+    · simp [h, succ_div_of_dvd, ih]
+    · simp [h, succ_div_of_not_dvd, ih]
 
 end Nat

@@ -270,7 +270,7 @@ noncomputable def basisOfBasisRight (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis
 @[simp]
 theorem algebraMap_basisOfBasisRight_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B) (i : ι) :
     H.basisOfBasisRight H' b i = algebraMap B S (b i) := by
-  simp [basisOfBasisRight, Subalgebra.algebraMap_def]
+  simp [basisOfBasisRight]
 
 @[simp]
 theorem mulMapLeftOfSupEqTop_symm_apply (H' : A ⊔ B = ⊤) (x : B) :
@@ -287,8 +287,7 @@ theorem leftMulMatrix_basisOfBasisRight_algebraMap (H' : A ⊔ B = ⊤) {ι : Ty
     Algebra.leftMulMatrix (H.basisOfBasisRight H' b) (algebraMap B S x) =
       RingHom.mapMatrix (algebraMap R A) (Algebra.leftMulMatrix b x) := by
   ext
-  simp [Algebra.leftMulMatrix_eq_repr_mul, ← H.algebraMap_basisOfBasisRight_repr_apply H',
-    Subalgebra.algebraMap_def]
+  simp [Algebra.leftMulMatrix_eq_repr_mul, ← H.algebraMap_basisOfBasisRight_repr_apply H']
 
 /--
 If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
@@ -778,7 +777,7 @@ theorem of_linearDisjoint_finite_left [Algebra.IsIntegral R A]
   rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
   intro x y hxy
   obtain ⟨M', hM, hf, h⟩ :=
-    TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
+    TensorProduct.exists_finite_submodule_left_of_setFinite' {x, y} (Set.toFinite _)
   obtain ⟨s, hs⟩ := Module.Finite.iff_fg.1 hf
   have hs' : (s : Set S) ⊆ A := by rwa [← hs, Submodule.span_le] at hM
   let A' := Algebra.adjoin R (s : Set S)

@@ -80,16 +80,16 @@ instance snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyOpen 
     UniversallyOpen (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g hf
 
-instance : IsLocalAtTarget @UniversallyOpen := by
+instance : IsZariskiLocalAtTarget @UniversallyOpen := by
   rw [eq]
-  apply universally_isLocalAtTarget
+  apply universally_isZariskiLocalAtTarget
   intro X Y f ι U hU H
   simp_rw [topologically, morphismRestrict_base] at H
   exact hU.isOpenMap_iff_restrictPreimage.mpr H
 
-instance : IsLocalAtSource @UniversallyOpen := by
+instance : IsZariskiLocalAtSource @UniversallyOpen := by
   rw [eq]
-  exact universally_isLocalAtSource _
+  exact universally_isZariskiLocalAtSource _
 
 end UniversallyOpen
 
@@ -101,18 +101,18 @@ lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
     (hf : GeneralizingMap f.base) : IsOpenMap f.base := by
   change topologically IsOpenMap f
   wlog hY : ∃ R, Y = Spec R
-  · rw [IsLocalAtTarget.iff_of_openCover (P := topologically IsOpenMap) Y.affineCover]
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := topologically IsOpenMap) Y.affineCover]
     intro i
     dsimp only [Scheme.Cover.pullbackHom]
     refine this _ ?_ ⟨_, rfl⟩
-    exact IsLocalAtTarget.of_isPullback (P := topologically GeneralizingMap)
-      (iY := Y.affineCover.map i) (IsPullback.of_hasPullback ..) hf
+    exact IsZariskiLocalAtTarget.of_isPullback (P := topologically GeneralizingMap)
+      (iY := Y.affineCover.f i) (IsPullback.of_hasPullback ..) hf
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
-  · rw [IsLocalAtSource.iff_of_openCover (P := topologically IsOpenMap) X.affineCover]
+  · rw [IsZariskiLocalAtSource.iff_of_openCover (P := topologically IsOpenMap) X.affineCover]
     intro i
     refine this f _ _ ?_ ⟨_, rfl⟩
-    exact IsLocalAtSource.comp (P := topologically GeneralizingMap) hf _
+    exact IsZariskiLocalAtSource.comp (P := topologically GeneralizingMap) hf _
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   algebraize [φ.hom]
@@ -122,7 +122,7 @@ lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
 
 /-- Any flat morphism is generalizing. -/
 lemma Flat.generalizingMap [Flat f] : GeneralizingMap f.base := by
-  have := HasRingHomProperty.of_isLocalAtSource_of_isLocalAtTarget.{u}
+  have := HasRingHomProperty.of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget.{u}
     (topologically GeneralizingMap)
   change topologically GeneralizingMap f
   rw [HasRingHomProperty.iff_appLE (P := topologically GeneralizingMap)]

@@ -44,6 +44,9 @@ def instAddMonoidWithOne' {α : Type u} [Semiring α] : AddMonoidWithOne α := i
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
 def instAddMonoidWithOne {α : Type u} [Ring α] : AddMonoidWithOne α := inferInstance
 
+/-- A shortcut (non)instance for `Nat.AtLeastTwo (n + 2)` to shrink generated proofs. -/
+lemma instAtLeastTwo (n : ℕ) : Nat.AtLeastTwo (n + 2) := inferInstance
+
 /-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
 def inferAddMonoidWithOne (α : Q(Type u)) : MetaM Q(AddMonoidWithOne $α) :=
   return ← synthInstanceQ q(AddMonoidWithOne $α) <|>
@@ -121,7 +124,7 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     | k+2 =>
       let k : Q(ℕ) := mkRawNatLit k
       let _x : Q(Nat.AtLeastTwo $lit) :=
-        (q(Nat.instAtLeastTwo (n := $k)) : Expr)
+        (q(instAtLeastTwo $k) : Expr)
       let a' : Q($α) := q(OfNat.ofNat $lit)
       pure ⟨a', (q(Eq.refl $a') : Expr)⟩
 

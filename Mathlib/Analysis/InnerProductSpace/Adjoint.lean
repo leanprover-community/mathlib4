@@ -17,7 +17,7 @@ We then use this to put a C⋆-algebra structure on `E →L[𝕜] E` with the ad
 operation.
 
 This construction is used to define an adjoint for linear maps (i.e. not continuous) between
-finite dimensional spaces.
+finite-dimensional spaces.
 
 ## Main definitions
 

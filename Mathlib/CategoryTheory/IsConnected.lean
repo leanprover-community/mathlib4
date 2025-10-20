@@ -409,8 +409,8 @@ theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂
   { zigzag_isPreconnected h with }
 
 theorem exists_zigzag' [IsConnected J] (j₁ j₂ : J) :
-    ∃ l, List.Chain Zag j₁ l ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂ :=
-  List.exists_chain_of_relationReflTransGen (isPreconnected_zigzag _ _)
+    ∃ l, List.IsChain Zag (j₁ :: l) ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂ :=
+  List.exists_isChain_cons_of_relationReflTransGen (isPreconnected_zigzag _ _)
 
 /-- If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
 morphisms, then J is connected.
@@ -418,12 +418,12 @@ morphisms, then J is connected.
 The converse of `exists_zigzag'`.
 -/
 theorem isPreconnected_of_zigzag (h : ∀ j₁ j₂ : J, ∃ l,
-    List.Chain Zag j₁ l ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :
+    List.IsChain Zag (j₁ :: l) ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :
     IsPreconnected J := by
   apply zigzag_isPreconnected
   intro j₁ j₂
   rcases h j₁ j₂ with ⟨l, hl₁, hl₂⟩
-  apply List.relationReflTransGen_of_exists_chain l hl₁ hl₂
+  apply List.relationReflTransGen_of_exists_isChain_cons l hl₁ hl₂
 
 /-- If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
 morphisms, then J is connected.
@@ -431,7 +431,7 @@ morphisms, then J is connected.
 The converse of `exists_zigzag'`.
 -/
 theorem isConnected_of_zigzag [Nonempty J] (h : ∀ j₁ j₂ : J, ∃ l,
-    List.Chain Zag j₁ l ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :
+    List.IsChain Zag (j₁ :: l) ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :
     IsConnected J :=
   { isPreconnected_of_zigzag h with }
 

@@ -157,28 +157,28 @@ section
 
 variable (F : Pseudofunctor B C) {a b : B}
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_right_hom {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom = F.map₂ (α_ f g h).inv ≫
     (F.mapComp (f ≫ g) h).hom ≫ (F.mapComp f g).hom ▷ F.map h ≫
     (α_ (F.map f) (F.map g) (F.map h)).hom :=
   F.toOplax.mapComp_assoc_right _ _ _
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_left_hom {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (F.mapComp (f ≫ g) h).hom ≫ (F.mapComp f g).hom ▷ F.map h =
     F.map₂ (α_ f g h).hom ≫ (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom
     ≫ (α_ (F.map f) (F.map g) (F.map h)).inv :=
   F.toOplax.mapComp_assoc_left _ _ _
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_right_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.map f ◁ (F.mapComp g h).inv ≫ (F.mapComp f (g ≫ h)).inv =
     (α_ (F.map f) (F.map g) (F.map h)).inv ≫ (F.mapComp f g).inv ▷ F.map h ≫
     (F.mapComp (f ≫ g) h).inv ≫ F.map₂ (α_ f g h).hom :=
   F.toLax.mapComp_assoc_right _ _ _
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_left_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (F.mapComp f g).inv ▷ F.map h ≫ (F.mapComp (f ≫ g) h).inv =
     (α_ (F.map f) (F.map g) (F.map h)).hom ≫ F.map f ◁ (F.mapComp g h).inv ≫
@@ -251,6 +251,16 @@ lemma mapId'_eq_mapId (b : B) :
     F.mapId' (𝟙 b) rfl = F.mapId b := by
   simp [mapId']
 
+@[simp]
+lemma toLax_mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by cat_disch) :
+    F.toLax.mapId' f hf = (F.mapId' f hf).inv :=
+  rfl
+
+@[simp]
+lemma toOplax_mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by cat_disch) :
+    F.toOplax.mapId' f hf = (F.mapId' f hf).hom :=
+  rfl
+
 /-- More flexible variant of `mapComp`. (See `Bicategory.Functor.Strict`
 for applications to strict bicategories.) -/
 def mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
@@ -261,6 +271,18 @@ def mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : 
 lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) :
     F.mapComp' f g _ rfl = F.mapComp f g := by
   simp [mapComp']
+
+@[simp]
+lemma toLax_mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
+    (h : f ≫ g = fg := by cat_disch) :
+    F.toLax.mapComp' f g fg h = (F.mapComp' f g fg h).inv :=
+  rfl
+
+@[simp]
+lemma toOplax_mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
+    (h : f ≫ g = fg := by cat_disch) :
+    F.toOplax.mapComp' f g fg h = (F.mapComp' f g fg h).hom :=
+  rfl
 
 end
 

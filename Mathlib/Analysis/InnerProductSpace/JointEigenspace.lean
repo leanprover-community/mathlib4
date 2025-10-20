@@ -81,7 +81,7 @@ variable [FiniteDimensional 𝕜 E]
 
 open IsFinitelySemisimple
 
-/-- If A and B are commuting symmetric operators on a finite dimensional inner product space
+/-- If A and B are commuting symmetric operators on a finite-dimensional inner product space
 then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace. -/
 theorem iSup_eigenspace_inf_eigenspace_of_commute (hB : B.IsSymmetric) (hAB : Commute A B) :
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
@@ -93,7 +93,7 @@ theorem iSup_eigenspace_inf_eigenspace_of_commute (hB : B.IsSymmetric) (hAB : Co
     using orthogonalComplement_iSup_eigenspaces_eq_bot <|
       hB.restrict_invariant <| mapsTo_genEigenspace_of_comm hAB α 1
 
-/-- If A and B are commuting symmetric operators acting on a finite dimensional inner product space,
+/-- If A and B are commuting symmetric operators acting on a finite-dimensional inner product space,
 then the simultaneous eigenspaces of A and B exhaust the space. -/
 theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute (hA : A.IsSymmetric)
     (hB : B.IsSymmetric) (hAB : Commute A B) :
@@ -101,7 +101,7 @@ theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute (hA : A.IsSymmetri
   simpa [iSup_eigenspace_inf_eigenspace_of_commute hB hAB] using
     Submodule.orthogonal_eq_bot_iff.mp <| hA.orthogonalComplement_iSup_eigenspaces_eq_bot
 
-/-- Given a commuting pair of symmetric linear operators on a finite dimensional inner product
+/-- Given a commuting pair of symmetric linear operators on a finite-dimensional inner product
 space, the space decomposes as an internal direct sum of simultaneous eigenspaces of these
 operators. -/
 theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric)
@@ -113,7 +113,7 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
 
 open scoped Function -- required for scoped `on` notation
 
-/-- A commuting family of symmetric linear maps on a finite dimensional inner
+/-- A commuting family of symmetric linear maps on a finite-dimensional inner
 product space is simultaneously diagonalizable. -/
 theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
     (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise (Commute on T)) :

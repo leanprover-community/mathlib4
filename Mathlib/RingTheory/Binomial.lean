@@ -292,7 +292,7 @@ theorem smeval_ascPochhammer_self_neg : ∀ n : ℕ,
     rw [ascPochhammer_succ_left, smeval_X_mul, smeval_comp, smeval_add, smeval_X, smeval_one,
       pow_zero, pow_one, one_smul, Nat.cast_add, Nat.cast_one, neg_add_rev, neg_add_cancel_comm,
       smeval_ascPochhammer_self_neg n, ← mul_assoc, mul_comm _ ((-1) ^ n),
-      show (-1 + -↑n = (-1 : ℤ) * (n + 1)) by omega, ← mul_assoc, pow_add, pow_one,
+      show (-1 + -↑n = (-1 : ℤ) * (n + 1)) by cutsat, ← mul_assoc, pow_add, pow_one,
       Nat.factorial, Nat.cast_mul, ← mul_assoc, Nat.cast_succ]
 
 @[simp]
@@ -312,7 +312,7 @@ theorem smeval_ascPochhammer_neg_add (n : ℕ) : ∀ k : ℕ,
 @[simp]
 theorem smeval_ascPochhammer_neg_of_lt {n k : ℕ} (h : n < k) :
     smeval (ascPochhammer ℕ k) (-n : ℤ) = 0 := by
-  rw [show k = n + (k - n - 1) + 1 by omega, smeval_ascPochhammer_neg_add]
+  rw [show k = n + (k - n - 1) + 1 by cutsat, smeval_ascPochhammer_neg_add]
 
 theorem smeval_ascPochhammer_nat_cast {R} [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n k : ℕ) :
     smeval (ascPochhammer ℕ k) (n : R) = smeval (ascPochhammer ℕ k) n := by

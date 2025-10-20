@@ -109,6 +109,9 @@ theorem lt_def {x y : ONote} : x < y ↔ repr x < repr y :=
 theorem le_def {x y : ONote} : x ≤ y ↔ repr x ≤ repr y :=
   Iff.rfl
 
+@[gcongr] alias ⟨repr_le_repr, _⟩ := le_def
+@[gcongr] alias ⟨repr_lt_repr, _⟩ := lt_def
+
 instance : WellFoundedRelation ONote :=
   ⟨(· < ·), InvImage.wf repr Ordinal.lt_wf⟩
 
@@ -227,11 +230,9 @@ theorem NFBelow.repr_lt {o b} (h : NFBelow o b) : repr o < ω ^ b := by
   | zero => exact opow_pos _ omega0_pos
   | oadd' _ _ h₃ _ IH =>
     rw [repr]
-    apply ((add_lt_add_iff_left _).2 IH).trans_le
-    rw [← mul_succ]
-    apply (mul_le_mul_left' (succ_le_of_lt (nat_lt_omega0 _)) _).trans
-    rw [← opow_succ]
-    exact opow_le_opow_right omega0_pos (succ_le_of_lt h₃)
+    apply (add_lt_add_left IH _).trans_le
+    grw [← mul_succ, succ_le_of_lt (nat_lt_omega0 _), ← opow_succ, succ_le_of_lt h₃]
+    exact omega0_pos
 
 theorem NFBelow.mono {o b₁ b₂} (bb : b₁ ≤ b₂) (h : NFBelow o b₁) : NFBelow o b₂ := by
   induction h with
@@ -269,8 +270,7 @@ theorem oadd_lt_oadd_2 {e o₁ o₂ : ONote} {n₁ n₂ : ℕ+} (h₁ : NF (oadd
   rwa [← mul_succ, mul_le_mul_iff_right₀ (opow_pos _ omega0_pos), succ_le_iff, Nat.cast_lt]
 
 theorem oadd_lt_oadd_3 {e n a₁ a₂} (h : a₁ < a₂) : oadd e n a₁ < oadd e n a₂ := by
-  rw [lt_def]; unfold repr
-  exact @add_lt_add_left _ _ _ _ (repr a₁) _ h _
+  rw [lt_def]; unfold repr; gcongr
 
 theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
   | 0, 0, _, _ => rfl
@@ -670,8 +670,8 @@ theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ r
         rw [← opow_add, Ordinal.add_sub_cancel_of_le (one_le_iff_ne_zero.2 this)]
       refine ⟨NF.oadd (by infer_instance) _ ?_, ?_⟩
       · simp only [opow_one, repr_sub, repr_one, Nat.cast_one] at this ⊢
-        refine IH₁.below_of_lt'
-          ((mul_lt_mul_left omega0_pos).1 <| lt_of_le_of_lt (le_add_right _ m') ?_)
+        refine IH₁.below_of_lt' <|
+          (mul_lt_mul_iff_right₀ omega0_pos).1 <| lt_of_le_of_lt (le_add_right _ m') ?_
         rw [← this, ← IH₂]
         exact h.snd'.repr_lt
       · rw [this]
@@ -775,14 +775,15 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
   rw [repr] at this
   apply (opow_le_opow_left b <| this.le).trans
   rw [← opow_mul, ← opow_mul]
-  apply opow_le_opow_right omega0_pos
   rcases le_or_gt ω (repr e) with h | h
-  · apply (mul_le_mul_left' (le_succ b) _).trans
-    rw [← add_one_eq_succ, add_mul_succ _ (one_add_of_omega0_le h), add_one_eq_succ, succ_le_iff,
-      mul_lt_mul_left (Ordinal.pos_iff_ne_zero.2 e0)]
-    exact isSuccLimit_omega0.succ_lt l
-  · apply (principal_mul_omega0 (isSuccLimit_omega0.succ_lt h) l).le.trans
-    simpa using mul_le_mul_right' (one_le_iff_ne_zero.2 e0) ω
+  · grw [le_succ b, ← add_one_eq_succ, add_mul_succ _ (one_add_of_omega0_le h), add_one_eq_succ]
+    · gcongr
+      · exact omega0_pos
+      · exact succ_le_iff.2 <| by gcongr; exact isSuccLimit_omega0.succ_lt l
+    · exact omega0_pos
+  · grw [show _ * _ < _ from principal_mul_omega0 (isSuccLimit_omega0.succ_lt h) l]
+    · simpa using mul_le_mul_right' (one_le_iff_ne_zero.2 e0) ω
+    · exact omega0_pos
 
 section
 
@@ -828,7 +829,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     apply principal_add_omega0_opow
     · simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, add_one_eq_succ,
         opow_mul, opow_succ, mul_assoc]
-      rw [mul_lt_mul_left ω00, ← Ordinal.opow_add]
+      gcongr ?_ * ?_
+      rw [← Ordinal.opow_add]
       have : _ < ω ^ (repr a0 + repr a0) := (No.below_of_lt ?_).repr_lt
       · exact mul_lt_omega0_opow rr0 this (nat_lt_omega0 _)
       · simpa using (add_lt_add_iff_left (repr a0)).2 e0
@@ -850,7 +852,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       @mul_omega0_dvd n (Nat.cast_pos'.2 n.pos) (nat_lt_omega0 _) _ αd]
     apply @add_absorp _ (repr a0 * succ ↑k)
     · refine principal_add_omega0_opow _ ?_ Rl
-      rw [opow_mul, opow_succ, mul_lt_mul_left ω00]
+      rw [opow_mul, opow_succ]
+      gcongr
       exact No.snd'.repr_lt
     · have := mul_le_mul_left' (one_le_iff_pos.2 <| Nat.cast_pos'.2 n.pos) (ω0 ^ succ (k : Ordinal))
       rw [opow_mul]
@@ -861,7 +864,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · rw [natCast_succ, add_mul_succ]
       apply add_absorp Rl
       rw [opow_mul, opow_succ]
-      apply mul_le_mul_left'
+      gcongr
       simpa [repr] using omega0_le_oadd a0 n a'
 
 end
@@ -1000,16 +1003,19 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
       refine
         ⟨isSuccLimit_mul this isSuccLimit_omega0, fun i =>
           ⟨this, ?_, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega0'⟩
-      rw [← mul_succ, ← natCast_succ, mul_lt_mul_left this]
+      rw [← mul_succ, ← natCast_succ]
+      gcongr
       apply nat_lt_omega0
     · have := opow_pos (repr a') omega0_pos
       refine
         ⟨isSuccLimit_add _ (isSuccLimit_mul this isSuccLimit_omega0), fun i => ⟨this, ?_, ?_⟩,
           exists_lt_add exists_lt_mul_omega0'⟩
-      · rw [← mul_succ, ← natCast_succ, mul_lt_mul_left this]
+      · rw [← mul_succ, ← natCast_succ]
+        gcongr
         apply nat_lt_omega0
       · refine fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (iha.2 H.fst)))
-        rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ, mul_lt_mul_left this]
+        rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ]
+        gcongr
         apply nat_lt_omega0
     · rcases iha with ⟨h1, h2, h3⟩
       refine ⟨isSuccLimit_opow one_lt_omega0 h1, fun i => ?_,

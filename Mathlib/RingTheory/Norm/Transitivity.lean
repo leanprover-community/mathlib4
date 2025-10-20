@@ -7,6 +7,11 @@ import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+import Mathlib.FieldTheory.IntermediateField.Algebraic
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.RingTheory.Norm.Basic
+import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Transitivity of algebra norm
@@ -194,3 +199,80 @@ theorem Algebra.norm_norm {A} [Ring A] [Algebra R A] [Algebra S A]
     [IsScalarTower R S A] [Module.Free S A] {a : A} :
     norm R (norm S a) = norm R a := by
   rw [norm_apply S, norm_apply R a, ← LinearMap.det_restrictScalars]; rfl
+
+variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L]
+
+open Module IntermediateField AdjoinSimple
+
+namespace Algebra
+
+theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] {x : L}
+    (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
+  by_cases h : FiniteDimensional K L
+  swap
+  · simpa [norm_eq_one_of_not_module_finite h] using isIntegral_one
+  let F := K⟮x⟯
+  rw [← norm_norm (S := F), ← coe_gen K x, ← IntermediateField.algebraMap_apply,
+    norm_algebraMap_of_basis (Module.Free.chooseBasis F L) (gen K x), map_pow]
+  apply IsIntegral.pow
+  rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure F)).injective,
+    norm_gen_eq_prod_roots _ (IsAlgClosed.splits_codomain _)]
+  refine IsIntegral.multiset_prod (fun y hy ↦ ⟨minpoly R x, minpoly.monic hx, ?_⟩)
+  suffices (aeval y) ((minpoly R x).map (algebraMap R K)) = 0 by simpa
+  obtain ⟨P, hP⟩ := minpoly.dvd K x (show aeval x ((minpoly R x).map (algebraMap R K)) = 0 by simp)
+  simp [hP, aeval_mul, (mem_aroots'.mp hy).2]
+
+theorem norm_eq_norm_adjoin (x : L) :
+    norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮x⟯ L := by
+  by_cases h : FiniteDimensional K L
+  swap
+  · rw [norm_eq_one_of_not_module_finite h]
+    by_cases hx : IsIntegral K x
+    · have h₁ : ¬ FiniteDimensional K⟮x⟯ L := fun H ↦ h <| by
+        have : FiniteDimensional K K⟮x⟯ := adjoin.finiteDimensional hx
+        exact Finite.trans K⟮x⟯ L
+      simp [finrank_of_not_finite h₁]
+    · rw [norm_eq_one_of_not_module_finite]
+      · simp
+      · refine fun H ↦ hx ?_
+        rw [← isIntegral_gen]
+        exact IsIntegral.isIntegral (gen K x)
+  let F := K⟮x⟯
+  nth_rw 1 [← coe_gen K x]
+  rw [← norm_norm (S := F), ← IntermediateField.algebraMap_apply,
+    norm_algebraMap_of_basis (Module.Free.chooseBasis F L) (gen K x), map_pow,
+    finrank_eq_card_chooseBasisIndex]
+
+variable (F E : Type*) [Field F] [Algebra K F] [Field E] [Algebra K E]
+
+variable {K} in
+theorem norm_eq_prod_roots {x : L} (hF : (minpoly K x).Splits (algebraMap K F)) :
+    algebraMap K F (norm K x) =
+      ((minpoly K x).aroots F).prod ^ finrank K⟮x⟯ L := by
+  rw [norm_eq_norm_adjoin K x, map_pow, IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots _ hF]
+
+variable [FiniteDimensional K L]
+
+/-- For `L/K` a finite separable extension of fields and `E` an algebraically closed extension
+of `K`, the norm (down to `K`) of an element `x` of `L` is equal to the product of the images
+of `x` over all the `K`-embeddings `σ` of `L` into `E`. -/
+theorem norm_eq_prod_embeddings [Algebra.IsSeparable K L] [IsAlgClosed E]
+    (x : L) : algebraMap K E (norm K x) = ∏ σ : L →ₐ[K] E, σ x := by
+  have hx := Algebra.IsSeparable.isIntegral K x
+  rw [norm_eq_norm_adjoin K x, RingHom.map_pow, ← adjoin.powerBasis_gen hx,
+    norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits_codomain _)]
+  · exact (prod_embeddings_eq_finrank_pow L (L := K⟮x⟯) E (adjoin.powerBasis hx)).symm
+  · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
+    exact Algebra.IsSeparable.isSeparable K _
+
+theorem norm_eq_prod_automorphisms [IsGalois K L] (x : L) :
+    algebraMap K L (norm K x) = ∏ σ : Gal(L/K), σ x := by
+  apply FaithfulSMul.algebraMap_injective L (AlgebraicClosure L)
+  rw [map_prod (algebraMap L (AlgebraicClosure L))]
+  rw [← Fintype.prod_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
+  · rw [← norm_eq_prod_embeddings _ _ x, ← IsScalarTower.algebraMap_apply]
+  · intro σ
+    simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
+      AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, algebraMap_self, RingHom.id_apply]
+
+end Algebra

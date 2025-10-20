@@ -91,8 +91,8 @@ theorem Injective.mem_periodicPts [Finite α] (h : Injective f) (x : α) : x ∈
   obtain ⟨m, n, heq, hne⟩ : ∃ m n, f^[m] x = f^[n] x ∧ m ≠ n := by
     simpa [Injective] using not_injective_infinite_finite (f^[·] x)
   rcases lt_or_gt_of_ne hne with hlt | hlt
-  · exact mk_mem_periodicPts (by omega) (iterate_cancel h heq.symm)
-  · exact mk_mem_periodicPts (by omega) (iterate_cancel h heq)
+  · exact mk_mem_periodicPts (by cutsat) (iterate_cancel h heq.symm)
+  · exact mk_mem_periodicPts (by cutsat) (iterate_cancel h heq)
 
 @[deprecated (since := "2025-04-27")]
 alias mem_periodicPts_of_injective :=  Injective.mem_periodicPts

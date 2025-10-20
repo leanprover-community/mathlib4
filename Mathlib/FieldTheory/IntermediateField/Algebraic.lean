@@ -112,7 +112,7 @@ theorem finrank_le_of_le_left [FiniteDimensional F L] (h : F ≤ E) : finrank E 
 theorem finrank_le_of_le_right [FiniteDimensional K E] (h : F ≤ E) : finrank K F ≤ finrank K E :=
   Nat.le_of_dvd Module.finrank_pos (finrank_dvd_of_le_right h)
 
-/-- Mapping a finite dimensional intermediate field along an algebra equivalence gives
+/-- Mapping a finite-dimensional intermediate field along an algebra equivalence gives
 a finite-dimensional intermediate field. -/
 instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
     FiniteDimensional K (E.map f) :=

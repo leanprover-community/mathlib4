@@ -70,12 +70,14 @@ inductive approach where one would prove smoothness statements without giving a 
 derivative). In the end, this approach is still satisfactory as it is good to have formulas for the
 iterated derivatives in various constructions.
 
-One point where we depart from this explicit approach is in the proof of smoothness of a
+One point where this explicit approach is particularly delicate is in the proof of smoothness of a
 composition: there is a formula for the `n`-th derivative of a composition (Faà di Bruno's formula),
-but it is very complicated and barely usable, while the inductive proof is very simple. Thus, we
-give the inductive proof. As explained above, it works by generalizing over the target space, hence
-it only works well if all spaces belong to the same universe. To get the general version, we lift
-things to a common universe using a trick.
+but it is very complicated, while the inductive proof is very simple. The inductive proof would
+be good enough for `C^n` functions with `n ∈ ℕ ∪ {∞}` (modulo polymorphism issues, i.e., one would
+need to first prove inductively the result when all spaces belong to the same universe, and then
+prove the general result by lifting all the spaces to a common universe). However, it would not
+work for `C^ω` functions. Therefore, we give the proof based on Faà di Bruno's formula, which is
+more complicated but more general.
 
 ### Variables management
 
@@ -120,7 +122,7 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAdd
 
 /-- `HasFTaylorSeriesUpToOn n f p s` registers the fact that `p 0 = f` and `p (m+1)` is a
 derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a predicate analogous to
-`HasFDerivWithinAt` but for higher order derivatives.
+`HasFDerivWithinAt` but for higher-order derivatives.
 
 Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
 `f` is analytic and `n = ∞`: an additional `1/m!` factor on the `m`th term is necessary for that. -/
@@ -188,7 +190,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_add (hN : ∞ ≤ N) (k : ℕ) :
     constructor
     · exact (H 0).zero_eq
     · intro m _
-      apply (H m.succ).fderivWithin m (by norm_cast; omega)
+      apply (H m.succ).fderivWithin m (by norm_cast; cutsat)
     · intro m _
       apply (H m).cont m (by simp)
 
@@ -674,7 +676,7 @@ lemma iteratedFDerivWithin_comp_sub (n : ℕ) (a : E) :
 
 /-- `HasFTaylorSeriesUpTo n f p` registers the fact that `p 0 = f` and `p (m+1)` is a
 derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a predicate analogous to
-`HasFDerivAt` but for higher order derivatives.
+`HasFDerivAt` but for higher-order derivatives.
 
 Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
 `f` is analytic and `n = ∞`: an addition `1/m!` factor on the `m`th term is necessary for that. -/

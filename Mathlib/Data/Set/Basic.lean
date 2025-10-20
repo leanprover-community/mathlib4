@@ -485,12 +485,19 @@ instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
   uniq := eq_empty_of_isEmpty
 
 /-- See also `Set.nonempty_iff_ne_empty`. -/
-theorem not_nonempty_iff_eq_empty {s : Set α} : ¬s.Nonempty ↔ s = ∅ := by
+@[push]
+theorem not_nonempty_iff_eq_empty : ¬s.Nonempty ↔ s = ∅ := by
   simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_notMem]
 
 /-- See also `Set.not_nonempty_iff_eq_empty`. -/
+@[push ←]
 theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty.not_right
+
+/-- Variant of `nonempty_iff_ne_empty` used by `push_neg`. -/
+@[push ←]
+theorem nonempty_iff_empty_ne : s.Nonempty ↔ ∅ ≠ s :=
+  nonempty_iff_ne_empty.trans ne_comm
 
 /-- See also `nonempty_iff_ne_empty'`. -/
 theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
@@ -551,7 +558,7 @@ theorem univ_eq_empty_iff : (univ : Set α) = ∅ ↔ IsEmpty α :=
 theorem empty_ne_univ [Nonempty α] : (∅ : Set α) ≠ univ := fun e =>
   not_isEmpty_of_nonempty α <| univ_eq_empty_iff.1 e.symm
 
-@[simp, grind]
+@[simp, grind ←]
 theorem subset_univ (s : Set α) : s ⊆ univ := fun _ _ => trivial
 
 @[simp, grind =]

@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.Order.Interval.Set.Infinite
 
 /-!
-# Complex number as a finite dimensional vector space over `ℝ`
+# Complex number as a finite-dimensional vector space over `ℝ`
 
 This file contains the `FiniteDimensional ℝ ℂ` instance, as well as some results about the rank
 (`finrank` and `Module.rank`).

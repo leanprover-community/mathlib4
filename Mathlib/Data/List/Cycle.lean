@@ -168,12 +168,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   subst hx
   intro H
   obtain ⟨_ | k, hk, hk'⟩ := getElem_of_mem H
-  · rw [← Option.some_inj] at hk'
-    rw [← getElem?_eq_getElem, dropLast_eq_take, getElem?_take_of_lt, getElem?_cons_zero,
-      Option.some_inj] at hk'
-    · exact hy (Eq.symm hk')
-    rw [length_cons]
-    exact length_pos_of_mem (by assumption)
+  · grind
   suffices k + 1 = l.length by simp [this] at hk
   rcases l with - | ⟨hd, tl⟩
   · simp at hk
@@ -189,7 +184,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
         Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
     · simp only [dropLast_cons₂, length_cons, length_dropLast, Nat.add_one_sub_one,
         Nat.add_lt_add_iff_right] at hk ⊢
-      omega
+      cutsat
     simpa using hk
 
 theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :
@@ -283,7 +278,7 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
 
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     prev l l[i] (get_mem _ _) =
-      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by omega))) :=
+      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by cutsat))) :=
   match l with
   | [] => by simp at hi
   | x::l => by
@@ -789,7 +784,7 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
     (fun l =>
       match l with
       | [] => True
-      | a :: m => Chain r a (m ++ [a]))
+      | a :: m => IsChain r (a :: m ++ [a]))
     fun a b hab =>
     propext <| by
       rcases a with - | ⟨a, l⟩ <;> rcases b with - | ⟨b, m⟩
@@ -817,14 +812,14 @@ theorem Chain.nil (r : α → α → Prop) : Cycle.Chain r (@nil α) := by trivi
 
 @[simp]
 theorem chain_coe_cons (r : α → α → Prop) (a : α) (l : List α) :
-    Chain r (a :: l) ↔ List.Chain r a (l ++ [a]) :=
+    Chain r (a :: l) ↔ List.IsChain r (a :: (l ++ [a])) :=
   Iff.rfl
 
 theorem chain_singleton (r : α → α → Prop) (a : α) : Chain r [a] ↔ r a a := by
-  rw [chain_coe_cons, nil_append, List.chain_singleton]
+  rw [chain_coe_cons, nil_append, List.isChain_pair]
 
 theorem chain_ne_nil (r : α → α → Prop) {l : List α} :
-    ∀ hl : l ≠ [], Chain r l ↔ List.Chain r (getLast l hl) l :=
+    ∀ hl : l ≠ [], Chain r l ↔ List.IsChain r (getLast l hl :: l) :=
   l.reverseRecOn (fun hm => hm.irrefl.elim) (by
     intro m a _H _
     rw [← coe_cons_eq_coe_append, chain_coe_cons, getLast_append_singleton])
@@ -834,11 +829,11 @@ theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cyc
   Quotient.inductionOn s fun l => by
     rcases l with - | ⟨a, l⟩
     · rfl
-    · simp [← concat_eq_append, ← List.map_concat, List.chain_map f]
+    · simp [← concat_eq_append, ← map_concat, List.isChain_cons_map f]
 
-nonrec theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
+theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain r (List.range n.succ) ↔ r n 0 ∧ ∀ m < n, r m m.succ := by
-  rw [range_succ, ← coe_cons_eq_coe_append, chain_coe_cons, ← range_succ, chain_range_succ]
+  rw [range_succ, ← coe_cons_eq_coe_append, chain_coe_cons, ← range_succ, isChain_cons_range_succ]
 
 variable {r : α → α → Prop} {s : Cycle α}
 
@@ -861,7 +856,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
   have Ha : a ∈ (a :: l : Cycle α) := by simp
   have Hl : ∀ {b} (_hb : b ∈ l), b ∈ (a :: l : Cycle α) := @fun b hb => by simp [hb]
   rw [Cycle.chain_coe_cons]
-  apply Pairwise.chain
+  apply Pairwise.isChain
   rw [pairwise_cons]
   refine
     ⟨fun b hb => ?_,
@@ -884,7 +879,7 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
     | nil => exact fun _ b hb ↦ (notMem_nil _ hb).elim
     | cons a l => ?_
     intro hs b hb c hc
-    rw [Cycle.chain_coe_cons, List.chain_iff_pairwise] at hs
+    rw [Cycle.chain_coe_cons, List.isChain_iff_pairwise] at hs
     simp only [pairwise_append, pairwise_cons, mem_append, mem_singleton, List.not_mem_nil,
       IsEmpty.forall_iff, imp_true_iff, Pairwise.nil, forall_eq, true_and] at hs
     simp only [mem_coe_iff, mem_cons] at hb hc
