@@ -96,6 +96,33 @@ lemma _root_.ConvexCone.toPointedCone_top : (⊤ : ConvexCone R E).toPointedCone
 instance canLift : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
   prf C hC := ⟨C.toPointedCone hC, rfl⟩
 
+/-- Construct a pointed cone from closure under two-element conical combinations.
+I.e., a nonempty set closed under two-element conical combinations is a pointed cone. -/
+def of_conicalCombination {E : Type*} [AddCommMonoid E] [Module R E]
+    (C : Set E) (h_nonempty : C.Nonempty)
+    (h_conecomb : ∀ (x : E), x ∈ C → ∀ (y : E), y ∈ C → ∀ (a b : R),
+      0 ≤ a → 0 ≤ b → a • x + b • y ∈ C) :
+    PointedCone R E where
+  carrier := C
+  zero_mem' := by
+    obtain ⟨x, hx⟩ := h_nonempty
+    simpa [zero_smul, add_zero] using h_conecomb x hx x hx 0 0 (le_refl _) (le_refl _)
+  add_mem' := by
+    intro x y hx hy
+    simpa [one_smul] using h_conecomb x hx y hy 1 1 zero_le_one zero_le_one
+  smul_mem' := by
+    intro c x hx
+    have := h_conecomb x hx x hx (c : R) 0 c.property (le_refl 0)
+    simp_all
+
+/-- A pointed cone contains all two-element conical combinations. -/
+theorem conicalCombination_mem (T : PointedCone R E) {x y : E}
+    (hx : x ∈ T.carrier) (hy : y ∈ T.carrier) {a b : R}
+    (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    a • x + b • y ∈ T.carrier :=
+  T.add_mem' (T.smul_mem' ⟨a, ha⟩ hx) (T.smul_mem' ⟨b, hb⟩ hy)
+
+
 variable (R) in
 /-- The span of a set `s` is the smallest pointed cone that contains `s`.
 
@@ -105,6 +132,14 @@ abbrev span (s : Set E) : PointedCone R E := Submodule.span R≥0 s
 
 lemma subset_span {s : Set E} : s ⊆ PointedCone.span R s := Submodule.subset_span
 
+lemma mem_span_set {s : Set E} : x ∈ span R s ↔
+      ∃ c : E →₀ R, ↑c.support ⊆ s ∧ (∀ y, 0 ≤ c y) ∧ c.sum (fun m r => r • m) = x := by
+  rw [Submodule.mem_span_set]
+  constructor
+  · rintro ⟨c, hc, rfl⟩
+    exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc, fun y ↦ (c y).2, rfl⟩
+  · rintro ⟨c, hc, hc₀, rfl⟩
+    exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
 end Definitions
 
 section Maps
