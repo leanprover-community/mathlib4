@@ -1389,8 +1389,6 @@ def applylemma82 [DecidableEq (h7.K →+* ℂ)] :=
   (fun u t => hAkl h7 q hq0 u t h2mq)
   (h7.cardmn q)
 
-#exit
-
 variable [ DecidableEq (h7.K →+* ℂ)]
 
 abbrev η : Fin (q * q) → 𝓞 h7.K :=
@@ -2469,32 +2467,26 @@ lemma ρ_is_int :
     · rw [mul_comm]
       --let l₀ : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
       rw [← zsmul_eq_mul]
-      have := triple_comm h7.K
+      have H := triple_comm h7.K
         (h7.c₁^(h7.r q hq0 h2mq))
         (h7.c₁^(h7.m * q) : ℤ)
         (h7.c₁^(h7.m * q) : ℤ)
         (((a q x : ℕ) + (b q x) • h7.β')^(h7.r q hq0 h2mq))
         (h7.α' ^ ((a q x) * ((h7.l₀ q hq0 h2mq))))
         (h7.γ' ^ ((b q x) * ((h7.l₀ q hq0 h2mq))))
-      have : IsIntegral ℤ
-       (-(h7.c₁ ^ ((h7.r q hq0 h2mq)) * h7.c₁ ^ (h7.m * q) * h7.c₁ ^ (h7.m * q)) •
-      --  let a : ℕ := (finProdFinEquiv.symm.toFun x).1 + 1;
-      --  let b : ℕ := (finProdFinEquiv.symm.toFun x).2 + 1;
-      --  let r := _root_.r α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq;
-      (↑(a q x) + (b q x) • h7.β') ^ (h7.r q hq0 h2mq) *
-       h7.α' ^ ((a q x) * (h7.l₀ q hq0 h2mq)) * h7.γ' ^ ((b q x) * ((h7.l₀ q hq0 h2mq)))) =
+      have : IsIntegral ℤ (-(h7.c₁ ^ h7.r q hq0 h2mq * h7.c₁ ^ (h7.m * q) * h7.c₁ ^ (h7.m * q)) •
+    ((↑(a q x) + b q x • h7.β') ^ h7.r q hq0 h2mq * h7.α' ^ (a q x * ↑(h7.l₀ q hq0 h2mq)) *
+      h7.γ' ^ (b q x * ↑(h7.l₀ q hq0 h2mq)))) =
          IsIntegral ℤ ((h7.c₁ ^ (h7.r q hq0 h2mq) •
           (↑(a q x) + (b q x) • h7.β') ^ (h7.r q hq0 h2mq)
            * h7.c₁ ^ (h7.m * q) • h7.α' ^ ((a q x) *
            (h7.l₀ q hq0 h2mq)) * h7.c₁ ^ (h7.m * q) •
              h7.γ' ^ ((b q x) * (h7.l₀ q hq0 h2mq)))) := by
-          rw [← this]
+          rw [← H]
           rw [neg_smul]
-          simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_mul, Int.cast_pow, neg_mul,
-            IsIntegral.neg_iff, eq_iff_iff]
-          congr
-          simp only [mul_assoc]
-      stop
+          simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_mul, Int.cast_pow,
+            IsIntegral.neg_iff]
+      clear H
       rw [this]
       apply IsIntegral.mul
       · apply IsIntegral.mul
@@ -2508,19 +2500,20 @@ lemma ρ_is_int :
             ·rw [mul_comm, mul_assoc]
              apply IsIntegral.mul <| IsIntegral.Nat _ _
              rw [mul_comm, ← zsmul_eq_mul]
-             exact isIntegral_c₁β K α' β' γ'
-        · apply c₁ac K α' β' γ' α' (m K) q a l₀ ?_ ?_
+             exact h7.isIntegral_c₁β
+        · apply h7.c₁ac
           · rw [mul_comm]
             apply Nat.mul_le_mul
             simp only [Fin.is_le']
-            exact bar' (finProdFinEquiv.symm.toFun t).1
-          · rw [← zsmul_eq_mul]; exact isIntegral_c₁α K α' β' γ'
-      · have : c₁ ^ (m * q - (b * l₀)) * (c₁ ^ (b * l₀)) = (c₁ ^ ((m * q))) := by
+            exact bar' (finProdFinEquiv.symm.toFun x).1
+          · rw [← zsmul_eq_mul]; exact h7.isIntegral_c₁α
+      · have : h7.c₁ ^ (h7.m * q - (b q x * (h7.l₀ q hq0 h2mq))) *
+           (h7.c₁ ^ ((b q x) * (h7.l₀ q hq0 h2mq))) = (h7.c₁ ^ ((h7.m * q))) := by
           rw [← pow_add, Nat.sub_add_cancel]
           nth_rw 1 [mul_comm]
           apply mul_le_mul
           · exact Fin.is_le'
-          · exact bar' (finProdFinEquiv.symm.toFun t).2
+          · exact bar' (finProdFinEquiv.symm.toFun x).2
           · simp only [zero_le]
           · simp only [zero_le]
         rw [← this]
@@ -2531,7 +2524,7 @@ lemma ρ_is_int :
           · apply IsIntegral.Cast
         · rw [← mul_pow]
           apply IsIntegral.pow
-          · rw [← zsmul_eq_mul]; exact isIntegral_c₁γ K α' β' γ'
+          · rw [← zsmul_eq_mul]; exact h7.isIntegral_c₁γ
 
 
 
@@ -3889,8 +3882,7 @@ lemma abs_R : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^ (h7.r q hq0 h2mq) *
  (h7.r q hq0 h2mq)^(1/2*((h7.r q hq0 h2mq)+3)) := by
 
   calc _ ≤ ∑ t, (‖(canonicalEmbedding h7.K) ((algebraMap (𝓞 h7.K) h7.K)
-             ((h7.η q hq0 h2mq) t)) h7.σ‖ *
-          ‖cexp (h7.ρ q t * z)‖) := ?_
+             ((h7.η q hq0 h2mq) t)) h7.σ‖ * ‖cexp (h7.ρ q t * z)‖) := ?_
 
        _ ≤ ∑ t : Fin (q*q), (h7.c₄ ^ (h7.n q : ℝ)) * (h7.n q : ℝ) ^ (((h7.n q : ℝ) + 1) / 2) *
          Real.exp ‖(h7.ρ q t * z)‖ := ?_
@@ -3936,16 +3928,96 @@ lemma abs_R : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^ (h7.r q hq0 h2mq) *
       unfold house at lemma82
       apply Preorder.le_refl _
     · unfold ρ
-      simp only [
-        Real.norm_eq_abs, Real.exp_le_exp]
-      rw [Complex.norm_mul]
-      rw [Complex.norm_mul]
-      calc _ ≤ ‖↑((a q i) : ℤ)‖ + ‖b q i • h7.β‖ * ‖Complex.log h7.α‖ * ‖z‖ := ?_
-           _ ≤ sorry := ?_
-           _ ≤ |↑q * (1 + ‖h7.β‖) * Real.log ‖h7.α‖ * ↑h7.m * (1 + ↑(h7.r q hq0 h2mq) / ↑q)| := ?_
-      · sorry
-      · sorry
-      · sorry
+      simp only [nsmul_eq_mul, norm_mul, Real.norm_eq_abs,
+        Real.exp_le_exp]
+      --rw [Complex.norm_mul]
+      --rw [Complex.norm_mul]
+      calc
+           _ ≤  (‖↑(a q i : ℂ)‖ + ‖↑(b q i) * h7.β‖) * ‖Complex.log h7.α‖ * ‖z‖ := ?_
+
+           _ ≤  (‖(q : ℂ)‖ + ‖q * h7.β‖) * ‖Complex.log h7.α‖ * ‖z‖ := ?_
+
+           _ ≤ (‖(q : ℂ)‖ + ((‖↑(q : ℤ)‖ * ‖h7.β‖))) * ‖Complex.log h7.α‖ * ‖z‖ := ?_
+
+           _ = (‖(q : ℂ)‖ * ((1 + ‖h7.β‖))) * ‖Complex.log h7.α‖ * ‖z‖ := ?_
+
+           _ ≤ |↑q| * |1 + ‖h7.β‖| * |Real.log ‖h7.α‖| * |↑h7.m| * |1 + ↑(h7.r q hq0 h2mq) / ↑q|:= ?_
+
+
+      · apply mul_le_mul
+        · apply mul_le_mul
+          · apply norm_add_le
+          · apply le_refl
+          · simp only [norm_nonneg]
+          · refine Left.add_nonneg ?_ ?_
+            · simp only [norm_nonneg]
+            · simp only [norm_nonneg]
+        · simp only [le_refl]
+        · simp only [norm_nonneg]
+        · apply mul_nonneg
+          · refine Left.add_nonneg ?_ ?_
+            · simp only [norm_natCast, Nat.cast_nonneg]
+            · simp only [norm_nonneg]
+          · simp only [norm_nonneg]
+
+      · apply mul_le_mul
+        · apply mul_le_mul
+          · refine add_le_add ?_ ?_
+            · simp only [norm_natCast, Nat.cast_le]
+              exact a_le_q q i
+            · simp only [Complex.norm_mul, norm_natCast]
+              apply mul_le_mul
+              · simp only [Nat.cast_le]
+                exact b_le_q q i
+              · simp only [le_refl]
+              · simp only [norm_nonneg]
+              · simp only [Nat.cast_nonneg]
+          · simp only [le_refl]
+          · simp only [norm_nonneg]
+          · refine Left.add_nonneg ?_ ?_
+            · simp only [norm_natCast, Nat.cast_nonneg]
+            · simp only [norm_nonneg]
+        · simp only [le_refl]
+        · simp only [norm_nonneg]
+        · apply mul_nonneg
+          · refine Left.add_nonneg ?_ ?_
+            · simp only [norm_natCast, Nat.cast_nonneg]
+            · simp only [norm_nonneg]
+          · simp only [norm_nonneg]
+
+      · apply mul_le_mul
+        · apply mul_le_mul
+          · refine add_le_add ?_ ?_
+            · simp only [norm_natCast, le_refl]
+            · simp only [Complex.norm_mul, norm_natCast, Int.norm_natCast, le_refl]
+          · simp only [le_refl]
+          · simp only [norm_nonneg]
+          · refine Left.add_nonneg ?_ ?_
+            · simp only [norm_natCast, Nat.cast_nonneg]
+            · apply mul_nonneg
+              · simp only [norm_nonneg]
+              · simp only [norm_nonneg]
+        · simp only [le_refl]
+        · simp only [norm_nonneg]
+        · sorry
+      · congr
+        nth_rw 1 [← mul_one (a:=(‖(q : ℂ)‖))]
+        rw [mul_add]
+        simp only [norm_natCast, mul_one, Int.norm_natCast]
+      · simp only [mul_assoc]
+        apply mul_le_mul
+        · simp only [norm_natCast, Nat.abs_cast, le_refl]
+        · apply mul_le_mul
+          · exact le_abs_self (1 + ‖h7.β‖)
+          · apply mul_le_mul
+            · sorry
+            · sorry
+            · sorry
+            · sorry
+          · sorry
+          · sorry
+        · sorry
+        · sorry
     · exact Real.exp_nonneg ‖h7.ρ q i * z‖
     · apply mul_nonneg
       · simp only [Real.rpow_natCast]
@@ -3953,6 +4025,7 @@ lemma abs_R : norm ((h7.R q hq0 h2mq) z) ≤ (c₁₀)^ (h7.r q hq0 h2mq) *
         exact h7.zero_leq_c₄
       · apply Real.rpow_nonneg
         simp only [Nat.cast_nonneg]
+
   · simp only [Real.rpow_natCast, norm_mul, Real.norm_eq_abs, sum_const, card_univ,
     Fintype.card_fin, nsmul_eq_mul, Nat.cast_mul]
     apply mul_le_mul
