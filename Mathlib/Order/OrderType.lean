@@ -239,7 +239,7 @@ For `OrderType`:
 Less-than-or-equal is defined such that linear orders `r` on `α` and `s` on `β`
 satisfy `type α ≤ type β` if there exists an order embedding from `α` to `β`.
 -/
-instance partialOrder : Preorder OrderType where
+instance preOrder : Preorder OrderType where
   le a b :=
     Quotient.liftOn₂ a b (fun r s ↦ Nonempty (r ↪o s))
     fun _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ propext
