@@ -1,5 +1,180 @@
 import Mathlib
 
+section primesOverRestrict
+
+@[simp]
+theorem Ideal.primesOverFinset_bot (A : Type*) [CommRing A] (B : Type*) [CommRing B] [Algebra A B]
+    [IsDedekindDomain B] :
+    primesOverFinset (⊥ : Ideal A) B = ∅ := by
+  classical
+  rw [primesOverFinset, map_bot, UniqueFactorizationMonoid.factors_eq_normalizedFactors,
+    ← zero_eq_bot, UniqueFactorizationMonoid.normalizedFactors_zero, Multiset.toFinset_eq_empty]
+
+-- variable {A : Type*} [CommSemiring A] (p : Ideal A)
+
+-- def Ideal.primesOverRestrict (B C : Type*) [CommSemiring B] [Semiring C] [Algebra A B]
+--     [Algebra A C] [Algebra B C] [IsScalarTower A B C] :
+--     p.primesOver C → p.primesOver B :=
+--   fun P ↦
+--     ⟨comap (algebraMap B C) P, ⟨IsPrime.under B P.1, under_liesOver_of_liesOver B P.1 p⟩⟩
+
+-- @[simp]
+-- theorem Ideal.primesOverRestrict_apply (B C : Type*) [CommSemiring B] [Semiring C] [Algebra A B]
+--     [Algebra A C] [Algebra B C] [IsScalarTower A B C] (P : p.primesOver C) :
+--     p.primesOverRestrict B C P = comap (algebraMap B C) P := rfl
+
+-- theorem Ideal.primesOverRestrict_surjective (B C : Type*) [CommRing B] [CommRing C]
+--     [Algebra A B] [Algebra A C] [Algebra B C] [IsScalarTower A B C] [FaithfulSMul B C]
+--     [Algebra.IsIntegral B C] :
+--     Function.Surjective (p.primesOverRestrict B C) := by
+--   intro P
+--   have hQ := exists_ideal_over_prime_of_isIntegral P.1 (⊥ : Ideal C)
+--     (by simp [comap_bot_of_injective _ (FaithfulSMul.algebraMap_injective B C)])
+--   refine ⟨⟨hQ.choose, ⟨hQ.choose_spec.2.1, ?_⟩⟩, ?_⟩
+--   · have : hQ.choose.LiesOver P.1 := (liesOver_iff _ _).mpr hQ.choose_spec.2.2.symm
+--     exact LiesOver.trans hQ.choose P.1 p
+--   · simpa [Subtype.ext_iff] using hQ.choose_spec.2.2
+
+open Ideal in
+theorem Ideal.mem_primesOver_of_mem_primesOver_and_liesOver {A : Type*} [CommSemiring A]
+    (p : Ideal A) {B C : Type*} [CommSemiring B] [Semiring C]
+    [Algebra A B] [Algebra A C] [Algebra B C] [IsScalarTower A B C] (P : Ideal B) (Q : Ideal C)
+    [P.LiesOver p] :
+    Q ∈ p.primesOver C ∧ Q.LiesOver P ↔ Q ∈ P.primesOver C :=
+  ⟨fun ⟨⟨h₁, _⟩, h₃⟩ ↦ ⟨h₁, h₃⟩, fun ⟨h₁, h₂⟩ ↦ ⟨⟨h₁, LiesOver.trans Q P p⟩, h₂⟩⟩
+
+
+
+-- theorem Ideal.primesOverRestrict_eq_iff (B C : Type*) [CommSemiring B] [Semiring C] [Algebra A B]
+--     [Algebra A C] [Algebra B C] [IsScalarTower A B C] (P : p.primesOver B)
+--     (Q : p.primesOver C) : p.primesOverRestrict B C Q = P ↔ Q.1.LiesOver P.1 := by
+--   sorry
+
+-- theorem Ideal.primesOverRestrict_eq_iff' (B C : Type*) [CommSemiring B] [Semiring C] [Algebra A B]
+--     [Algebra A C] [Algebra B C] [IsScalarTower A B C] (P : Ideal B) [P.LiesOver p]
+--     (Q : p.primesOver C) : p.primesOverRestrict B C Q = P ↔ Q.1 ∈ P.primesOver C := by
+--   simp [primesOver, primesOver.isPrime, liesOver_iff, under_def, eq_comm]
+
+theorem Ideal.card_primesOverFinset_eq_sum_card_primesOverFinset (A B C : Type*) [CommRing A]
+    [CommRing B] [IsDedekindDomain B] [CommRing C] [IsDedekindDomain C] [Algebra A B]
+    [NoZeroSMulDivisors A B] [Algebra A C] [NoZeroSMulDivisors A C] [Algebra B C]
+    [NoZeroSMulDivisors B C] [IsScalarTower A B C] (p : Ideal A) [p.IsMaximal] :
+    (primesOverFinset p C).card = ∑ P ∈ primesOverFinset p B, (primesOverFinset P C).card := by
+  classical
+  by_cases hp : p = ⊥
+  · simp [hp]
+  rw [Finset.card_eq_sum_ones, ← Finset.sum_fiberwise_of_maps_to (t := primesOverFinset p B)
+    (g := fun x ↦ comap (algebraMap B C) x)]
+  · refine Finset.sum_congr rfl fun P hP ↦ ?_
+    rw [← Finset.card_eq_sum_ones]
+    refine Finset.card_bijective (fun Q ↦ Q) Function.bijective_id fun Q ↦ ?_
+    rw [mem_primesOverFinset_iff hp] at hP
+    have hP' : P ≠ ⊥ := by
+      have := hP.2
+      apply ne_bot_of_liesOver_of_ne_bot hp
+    have : P.IsMaximal := by
+      have := hP.1
+      exact Ring.DimensionLEOne.maximalOfPrime hP' this
+    rw [Finset.mem_filter, mem_primesOverFinset_iff hp, mem_primesOverFinset_iff hP',
+      ← under_def, eq_comm, ← liesOver_iff]
+    have : P.LiesOver p := by
+      exact hP.2
+    exact mem_primesOver_of_mem_primesOver_and_liesOver p P Q
+  · intro Q hQ
+    rw [mem_primesOverFinset_iff hp] at hQ ⊢
+    have := hQ.1
+    have := hQ.2
+    exact ⟨IsPrime.under B Q, under_liesOver_of_liesOver B Q p⟩
+
+theorem Ideal.ncard_primesOver_eq_sum_ncard_primesOver (A B C : Type*) [CommRing A] [Nontrivial A]
+    [CommRing B] [IsDedekindDomain B] [CommRing C] [IsDedekindDomain C] [Algebra A B]
+    [NoZeroSMulDivisors A B] [Algebra A C] [NoZeroSMulDivisors A C] [Algebra B C]
+    [NoZeroSMulDivisors B C] [IsScalarTower A B C] [Algebra.IsIntegral A C]
+    [Algebra.IsIntegral A B] [Algebra.IsIntegral B C] (p : Ideal A) [p.IsMaximal] :
+    (p.primesOver C).ncard = ∑ P : p.primesOver B, (P.1.primesOver C).ncard := by
+  by_cases hp : p = ⊥
+  · simp [hp, primesOver_bot]
+    let _ : Unique (p.primesOver B) := by
+      rw [hp, primesOver_bot]
+      exact Set.uniqueSingleton ⊥
+    rw [Fintype.sum_subsingleton _  ⟨⊥, Ideal.bot_prime, hp ▸ Ideal.bot_liesOver_bot A B⟩,
+      primesOver_bot, Set.ncard_singleton]
+  have (P : p.primesOver B) : P.1 ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp _
+  simp_rw [← coe_primesOverFinset hp C, ← coe_primesOverFinset (this _) C, Set.ncard_coe_finset]
+  rw [card_primesOverFinset_eq_sum_card_primesOverFinset A B C, Finset.sum_subtype]
+  exact fun  _ ↦ by rw [mem_primesOverFinset_iff hp]
+
+
+#exit
+
+
+  classical
+  rw [Fintype.card_eq_sum_ones, ← Fintype.sum_fiberwise (primesOverRestrict p B C)]
+  refine Fintype.sum_congr _ _ fun P ↦ ?_
+  rw [← Fintype.card_eq_sum_ones]
+  have : Fintype (P.1.primesOver C) := sorry
+  rw [Set.ncard_eq_toFinset_card', Set.toFinset_card]
+  refine Fintype.card_congr ?_
+  refine Equiv.ofBijective ?_ ⟨?_, ?_⟩
+  · intro ⟨Q, hQ⟩
+    refine ⟨Q, ⟨inferInstance, ?_⟩⟩
+    rwa [primesOverRestrict_eq_iff] at hQ
+  · intro Q₁ Q₂ h
+    simpa [Subtype.ext_iff] using h
+  · intro Q
+    dsimp only
+    refine ⟨⟨⟨Q, ⟨?_, ?_⟩⟩, ?_⟩, rfl⟩
+    · infer_instance
+    · exact LiesOver.trans Q.1 P.1 p
+    · rw [primesOverRestrict_eq_iff]
+      infer_instance
+
+open Ideal in
+example (B C : Type*) [CommSemiring B] [Semiring C] [Algebra A B] [Algebra A C] [Algebra B C]
+    [IsScalarTower A B C] [Fintype (p.primesOver C)] [Fintype (p.primesOver B)] :
+    Fintype.card (p.primesOver C) = ∑ P : p.primesOver B, (P.1.primesOver C).ncard := by
+  classical
+  rw [Fintype.card_eq_sum_ones, ← Fintype.sum_fiberwise (primesOverRestrict p B C)]
+  refine Fintype.sum_congr _ _ fun P ↦ ?_
+  rw [← Fintype.card_eq_sum_ones]
+  have : Fintype (P.1.primesOver C) := sorry
+  rw [Set.ncard_eq_toFinset_card', Set.toFinset_card]
+  refine Fintype.card_congr ?_
+  refine Equiv.ofBijective ?_ ⟨?_, ?_⟩
+  · intro ⟨Q, hQ⟩
+    refine ⟨Q, ⟨inferInstance, ?_⟩⟩
+    rwa [primesOverRestrict_eq_iff] at hQ
+  · intro Q₁ Q₂ h
+    simpa [Subtype.ext_iff] using h
+  · intro Q
+    dsimp only
+    refine ⟨⟨⟨Q, ⟨?_, ?_⟩⟩, ?_⟩, rfl⟩
+    · infer_instance
+    · exact LiesOver.trans Q.1 P.1 p
+    · rw [primesOverRestrict_eq_iff]
+      infer_instance
+
+
+#exit
+  have : Fintype.card { Q // p.primesOverRestrict B C Q = P } =
+      Fintype.card (Subtype.val '' { Q | p.primesOverRestrict B C Q = P }) := by
+    sorry
+  rw [this]
+  rw [← Set.toFinset_card]
+  rw [eq_comm]
+  apply Fintype.card_of_finset'
+  intro Q
+  have := primesOverRestrict_eq_iff p B C
+
+
+
+
+
+
+
+end primesOverRestrict
+
+
 theorem Ideal.eq_of_dvd_of_isPrime {A : Type*} [CommRing A] [IsDedekindDomain A] {I J : Ideal A}
     [hIP : I.IsPrime] [hJP : J.IsPrime] (hJ : J ≠ ⊥) (h : I ∣ J) : I = J := by
   by_cases hI : I = ⊥

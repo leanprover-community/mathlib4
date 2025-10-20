@@ -83,6 +83,7 @@ open NumberField RingOfIntegers Ideal IntermediateField
 example (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     inertiaDeg 𝒑 P = orderOf (p : ZMod m) ∧
       ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
+  classical
   have : NeZero n := sorry
   have : NeZero m := sorry
   let ζ := zeta n ℚ K
@@ -107,7 +108,20 @@ example (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
   have h₁ := ramificationIdx_algebra_tower (p := 𝒑) (P := Pₚ) (Q := P) sorry sorry sorry
   have h₂ := inertiaDeg_algebra_tower 𝒑 Pₘ P
   have h₃ : (𝒑.primesOver (𝓞 K)).ncard = (𝒑.primesOver (𝓞 Fₘ)).ncard *
-    (Pₘ.primesOver (𝓞 K)).ncard := sorry
+      (Pₘ.primesOver (𝓞 K)).ncard := by
+    have := Fintype.sum_fiberwise (ι := 𝒑.primesOver (𝓞 K))
+      (κ := 𝒑.primesOver (𝓞 Fₘ)) (g := primesOverRestrict 𝒑 (𝓞 Fₘ) (𝓞 K))
+      (f := fun _ ↦ 1)
+    simp_rw [← Fintype.card_eq_sum_ones] at this
+    
+
+    have : (primesOverFinset 𝒑 (𝓞 K)).card =
+        ∑ Q ∈ primesOverFinset 𝒑 (𝓞 Fₘ), (primesOverFinset Q (𝓞 K)).card := by
+      rw [Finset.card_eq_sum_ones]
+      rw [← Finset.sum_fiberwise_of_maps_to _ (t := primesOverFinset 𝒑 (𝓞 Fₘ))
+        (g := fun Q ↦ comap (algebraMap (𝓞 Fₘ) (𝓞 K)) Q) (fun _ ↦ 1)]
+
+      sorry
   have : IsAbelianGalois ℚ K := IsCyclotomicExtension.isAbelianGalois {n} ℚ K
   have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑) sorry (𝓞 K)
     ℚ K
@@ -141,7 +155,7 @@ example (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     rw [mul_one, mul_one, inertiaDeg_of_not_dvd m, ramificationIdx_eq_of_prime_pow p k]
     exact Nat.pair_eq_pair.mp rfl
     exact hm
-  
+
 
   sorry
 
