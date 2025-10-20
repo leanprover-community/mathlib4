@@ -705,9 +705,8 @@ variable (f g)
 
 section
 
-/-- `HasEqualizer f g` represents a particular choice of limiting cone
-for the parallel pair of morphisms `f` and `g`.
--/
+/-- Two parallel morphisms `f` and `g` have an equalizer if the diagram `parallelPair f g` has a
+limit. -/
 abbrev HasEqualizer :=
   HasLimit (parallelPair f g)
 
@@ -854,9 +853,8 @@ theorem equalizer.isoSourceOfSelf_inv :
 
 section
 
-/-- `HasCoequalizer f g` represents a particular choice of colimiting cocone
-for the parallel pair of morphisms `f` and `g`.
--/
+/-- Two parallel morphisms `f` and `g` have a coequalizer if the diagram `parallelPair f g` has a
+colimit. -/
 abbrev HasCoequalizer :=
   HasColimit (parallelPair f g)
 
@@ -1060,11 +1058,13 @@ end Comparison
 
 variable (C)
 
-/-- `HasEqualizers` represents a choice of equalizer for every pair of morphisms -/
+/-- A category `HasEqualizers` if it has all limits of shape `WalkingParallelPair`, i.e. if it has
+an equalizer for every parallel pair of morphisms. -/
 abbrev HasEqualizers :=
   HasLimitsOfShape WalkingParallelPair C
 
-/-- `HasCoequalizers` represents a choice of coequalizer for every pair of morphisms -/
+/-- A category `HasCoequalizers` if it has all colimits of shape `WalkingParallelPair`, i.e. if it
+has a coequalizer for every parallel pair of morphisms. -/
 abbrev HasCoequalizers :=
   HasColimitsOfShape WalkingParallelPair C
 

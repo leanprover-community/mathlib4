@@ -13,7 +13,7 @@ import Mathlib.Data.List.Chain
 
 This file defines free groups over a type. Furthermore, it is shown that the free group construction
 is an instance of a monad. For the result that `FreeGroup` is the left adjoint to the forgetful
-functor from groups to types, see `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
+functor from groups to types, see `Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`.
 
 ## Main definitions
 
@@ -716,6 +716,10 @@ theorem range_lift_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   rw [Subgroup.closure_le]
   rintro _ ⟨a, rfl⟩
   exact ⟨FreeGroup.of a, by simp only [lift_apply_of]⟩
+
+@[to_additive]
+theorem closure_eq_range (s : Set β) : Subgroup.closure s = (lift ((↑) : s → β)).range := by
+  rw [FreeGroup.range_lift_eq_closure, Subtype.range_coe]
 
 /-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
 set of generators equals `⊤`. -/

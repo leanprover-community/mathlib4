@@ -83,8 +83,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
   have hJ : IsLocalization.coeSubmodule A J = ↑I * Submodule.span R {v} := by
     rw [coe_ext_iff, coe_mul, coe_one] at hinv
     apply Submodule.map_comap_eq_self
-    rw [← Submodule.one_eq_range, ← hinv]
-    exact mul_le_mul_left' ((Submodule.span_singleton_le_iff_mem _ _).2 hv) _
+    grw [← Submodule.one_eq_range, ← hinv, (Submodule.span_singleton_le_iff_mem _ _).2 hv]
   have : (1 : A) ∈ ↑I * Submodule.span R {v} := by
     rw [← hJ, h, IsLocalization.coeSubmodule_top, Submodule.mem_one]
     exact ⟨1, (algebraMap R _).map_one⟩
@@ -93,7 +92,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
   rw [← FractionalIdeal.coe_spanSingleton S, ← inv_inv I, eq_comm]
   refine congr_arg coeToSubmodule (Units.eq_inv_of_mul_eq_one_left (le_antisymm ?_ ?_))
   · conv_rhs => rw [← hinv, mul_comm]
-    apply mul_le_mul_left' (FractionalIdeal.spanSingleton_le_iff_mem.mpr hw)
+    grw [FractionalIdeal.spanSingleton_le_iff_mem.mpr hw]
   · rw [FractionalIdeal.one_le, ← hvw, mul_comm]
     exact FractionalIdeal.mul_mem_mul (FractionalIdeal.mem_spanSingleton_self _ _) hv
 
@@ -171,15 +170,19 @@ theorem Ideal.IsPrincipal.of_finite_maximals_of_isUnit (hf : {I : Ideal R | I.Is
     (FractionalIdeal.isPrincipal.of_finite_maximals_of_inv le_rfl hf I
       (↑hI.unit⁻¹ : FractionalIdeal R⁰ (FractionRing R)) hI.unit.mul_inv)
 
-/-- A Dedekind domain is a PID if its set of primes is finite. -/
-theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
-    (h : {I : Ideal R | I.IsPrime}.Finite) : IsPrincipalIdealRing R :=
+/-- A Dedekind domain is a PID if its set of maximal ideals is finite. -/
+theorem IsPrincipalIdealRing.of_finite_maximals [IsDedekindDomain R]
+    (h : {I : Ideal R | I.IsMaximal}.Finite) : IsPrincipalIdealRing R :=
   ⟨fun I => by
     obtain rfl | hI := eq_or_ne I ⊥
     · exact bot_isPrincipal
-    apply Ideal.IsPrincipal.of_finite_maximals_of_isUnit
-    · apply h.subset; exact @Ideal.IsMaximal.isPrime _ _
-    · exact isUnit_of_mul_eq_one _ _ (FractionalIdeal.coe_ideal_mul_inv I hI)⟩
+    apply Ideal.IsPrincipal.of_finite_maximals_of_isUnit h
+    exact isUnit_of_mul_eq_one _ _ (FractionalIdeal.coe_ideal_mul_inv I hI)⟩
+
+/-- A Dedekind domain is a PID if its set of primes is finite. -/
+theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
+    (h : {I : Ideal R | I.IsPrime}.Finite) : IsPrincipalIdealRing R :=
+  IsPrincipalIdealRing.of_finite_maximals <| h.subset fun _ hi ↦ hi.isPrime
 
 variable [IsDedekindDomain R]
 variable (S : Type*) [CommRing S]

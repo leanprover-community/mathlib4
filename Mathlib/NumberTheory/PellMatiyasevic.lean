@@ -583,13 +583,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
   | j + 1, ij, j2n, jnn, ntriv =>
     have lem2 : ∀ k > n, k ≤ 2 * n → (↑(xn a1 k % xn a1 n) : ℤ) =
         xn a1 n - xn a1 (2 * n - k) := fun k kn k2n => by
-      let k2nl :=
-        lt_of_add_lt_add_right <|
-          show 2 * n - k + k < n + k by
-            rw [tsub_add_cancel_of_le]
-            · rw [two_mul]
-              exact add_lt_add_left kn n
-            exact k2n
+      let k2nl : 2 * n - k < n := by cutsat
       have xle : xn a1 (2 * n - k) ≤ xn a1 n := le_of_lt <| strictMono_x a1 k2nl
       suffices xn a1 k % xn a1 n = xn a1 n - xn a1 (2 * n - k) by rw [this, Int.ofNat_sub xle]
       rw [← Nat.mod_eq_of_lt (Nat.sub_lt (x_pos a1 n) (x_pos a1 (2 * n - k)))]

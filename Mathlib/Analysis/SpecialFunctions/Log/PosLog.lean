@@ -76,6 +76,10 @@ theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
   · simp [hn, posLog]
   · simp [posLog_eq_log, Nat.one_le_iff_ne_zero.2 hn]
 
+/-- The function `log⁺` equals `log (max 1 _)` for non-negative real numbers. -/
+theorem posLog_eq_log_max_one {x : ℝ} (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
+  grind [le_abs, posLog_eq_log, log_one, max_eq_left, log_nonpos, posLog_def]
+
 /-- The function `log⁺` is monotone on the positive axis. -/
 theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
   intro x hx y hy hxy
@@ -86,6 +90,10 @@ theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
     have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 (not_le.1 h))) hxy
     simp only [this, and_true, ge_iff_le]
     linarith
+
+@[gcongr]
+lemma posLog_le_posLog {x y : ℝ} (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
+  monotoneOn_posLog hx (hx.trans hxy) hxy
 
 /-!
 ## Estimates for Products
@@ -168,12 +176,6 @@ monotonicity of `log⁺` and the triangle inequality.
 -/
 lemma posLog_norm_add_le {E : Type*} [NormedAddCommGroup E] (a b : E) :
     log⁺ ‖a + b‖ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
-  calc log⁺ ‖a + b‖
-  _ ≤ log⁺ (‖a‖ + ‖b‖) := by
-    apply monotoneOn_posLog _ _ (norm_add_le a b)
-    <;> simp [add_nonneg (norm_nonneg a) (norm_nonneg b)]
-  _ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
-    convert posLog_add using 1
-    ring
+  grw [norm_add_le, posLog_add, add_rotate]
 
 end Real

@@ -72,6 +72,7 @@ import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveCountable
 import Mathlib.Tactic.DeriveEncodable
 import Mathlib.Tactic.DeriveFintype
+import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Tactic.ENatToNat
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ErwQuestion
@@ -86,6 +87,7 @@ import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FieldSimp.Attr
 import Mathlib.Tactic.FieldSimp.Discharger

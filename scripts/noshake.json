@@ -49,6 +49,8 @@
   "Mathlib.Data.Set.Notation",
   "Mathlib.Data.Sym.Sym2.Init",
   "Mathlib.Data.Vector.Basic",
+  "Mathlib.FieldTheory.Galois.Notation",
+  "Mathlib.Geometry.Manifold.Notation",
   "Mathlib.Geometry.Manifold.Instances.Real",
   "Mathlib.Init",
   "Mathlib.LinearAlgebra.AffineSpace.Basic",
@@ -253,9 +255,9 @@
    "Mathlib.Data.PNat.Defs"],
   "Mathlib.Tactic.Order.CollectFacts":
   ["Mathlib.Order.BoundedOrder.Basic", "Mathlib.Order.Lattice"],
+  "Mathlib.Tactic.NormNum.Parity": ["Mathlib.Algebra.Ring.Int.Parity"],
   "Mathlib.Tactic.NormNum.ModEq":
   ["Mathlib.Data.Int.ModEq", "Mathlib.Tactic.NormNum.DivMod"],
-  "Mathlib.Tactic.NormNum.Parity": ["Mathlib.Algebra.Ring.Int.Parity"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":
@@ -348,6 +350,7 @@
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
   "Mathlib.Std.Data.HashMap": ["Std.Data.HashMap.AdditionalOperations"],
   "Mathlib.RingTheory.SimpleModule.Basic": ["Mathlib.Data.Matrix.Mul"],
+  "Mathlib.RingTheory.PowerSeries.Restricted": ["Mathlib.Tactic.Bound"],
   "Mathlib.RingTheory.PowerSeries.Evaluation":
   ["Mathlib.RingTheory.PowerSeries.PiTopology"],
   "Mathlib.RingTheory.PowerSeries.Basic":
@@ -362,7 +365,6 @@
   ["Mathlib.LinearAlgebra.FreeModule.IdealQuotient"],
   "Mathlib.RingTheory.Finiteness.Defs": ["Mathlib.Data.Finsupp.Defs"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
-  "Mathlib.RingTheory.PowerSeries.Restricted": ["Mathlib.Tactic.Bound"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.RepresentationTheory.FDRep":
@@ -419,6 +421,8 @@
   "Mathlib.Geometry.Manifold.PoincareConjecture":
   ["Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected",
    "Mathlib.Util.Superscript"],
+  "Mathlib.Geometry.Manifold.Notation":
+  ["Mathlib.Geometry.Manifold.ContMDiff.Defs", "Mathlib.Geometry.Manifold.MFDeriv.Defs"],
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
@@ -591,4 +595,5 @@
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
   "Batteries.CodeAction.Basic":
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
-  "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"]}}
+  "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"],
+  "Mathlib.FieldTheory.Galois.Notation" : ["Mathlib.Algebra.Algebra.Equiv"]}}

@@ -587,8 +587,8 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       ‖L e p q - L e' p' q'‖ =
           ‖L e p q - L e p r + (L e p r - L e' p' r) + (L e' p' r - L e' p' q')‖ := by
         congr 1; abel
-      _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ :=
-        (le_trans (norm_add_le _ _) (add_le_add_right (norm_add_le _ _) _))
+      _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ := by
+        grw [norm_add_le, norm_add_le]
       _ ≤ 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e := by gcongr
       _ = 12 * (1 / 2) ^ e := by ring
   /- For definiteness, use `L0 e = L e (n e) (n e)`, to have a single sequence. We claim that this
