@@ -74,7 +74,7 @@ section SemilatticeSup
 variable [SemilatticeSup M]
 
 instance semilatticeSup : SemilatticeSup (ι →₀ M) where
-  sup := zipWith (· ⊔ ·) (sup_idem _)
+  max := zipWith (· ⊔ ·) (sup_idem _)
   le_sup_left _f _g _i := le_sup_left
   le_sup_right _f _g _i := le_sup_right
   sup_le _f _g _h hf hg i := sup_le (hf i) (hg i)

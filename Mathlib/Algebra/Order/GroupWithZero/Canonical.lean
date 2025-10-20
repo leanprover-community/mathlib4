@@ -430,7 +430,7 @@ end PartialOrder
 section Lattice
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithZero α) where
-  sup
+  max
     -- note this is `Option.merge`, but with the right defeq when unfolding
     | 0, 0 => 0
     | (a : α), 0 => a
@@ -444,7 +444,7 @@ theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithZero α) 
   rfl
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithZero α) where
-  inf := .map₂ (· ⊓ ·)
+  min := .map₂ (· ⊓ ·)
   inf_le_left x y := by cases x <;> cases y <;> simp
   inf_le_right x y := by cases x <;> cases y <;> simp
   le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
