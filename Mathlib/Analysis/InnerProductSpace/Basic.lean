@@ -15,7 +15,7 @@ This file proves many basic properties of inner product spaces (real or complex)
 ## Main results
 
 - `inner_mul_inner_self_le`: the Cauchy-Schwarz inequality (one of many variants).
-- `norm_inner_eq_norm_iff`: the equality criterion in the Cauchy-Schwartz inequality (also in many
+- `norm_inner_eq_norm_iff`: the equality criterion in the Cauchy-Schwarz inequality (also in many
   variants).
 - `inner_eq_sum_norm_sq_div_four`: the polarization identity.
 
