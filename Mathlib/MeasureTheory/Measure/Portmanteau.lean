@@ -649,22 +649,6 @@ variable {α ι E : Type*} {m : MeasurableSpace α}
     {μ : Measure α} [IsProbabilityMeasure μ]
     {f f' : ι → α → E} {g : α → E} {l : Filter ι}
 
-lemma setIntegral_mono_on' {X : Type*} {mX : MeasurableSpace X}
-    {μ : Measure X} {f g : X → ℝ} {s : Set X}
-    (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ)
-    (hs : NullMeasurableSet s μ) (h : ∀ x ∈ s, f x ≤ g x) :
-    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
-  rw [setIntegral_congr_set hs.toMeasurable_ae_eq.symm,
-    setIntegral_congr_set hs.toMeasurable_ae_eq.symm]
-  refine setIntegral_mono_on_ae ?_ ?_ ?_ ?_
-  · rw [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
-    exact hf
-  · rw [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
-    exact hg
-  · exact measurableSet_toMeasurable μ s
-  · filter_upwards [hs.toMeasurable_ae_eq.mem_iff] with x hx
-    rw [hx]
-    exact h x
 lemma tendsto_integral_thickenedIndicator_of_isClosed {Ω : Type*}
     {mΩ : MeasurableSpace Ω} [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
     {μ : ProbabilityMeasure Ω}
@@ -714,7 +698,7 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     simpa using h f'
   -- To prove the other direction, we prove convergence of the measure of closed sets.
   -- We approximate the indicator function of a closed set by bounded Lipschitz functions.
-  refine fun h ↦ tendsto_of_limsup_measure_closed_le' fun s hs ↦ ?_
+  refine fun h ↦ tendsto_of_forall_isClosed_limsup_le' fun s hs ↦ ?_
   rcases F.eq_or_neBot with rfl | hne
   · simp only [limsup_bot, bot_le]
   suffices limsup (fun i ↦ (μs i : Measure Ω).real s) F ≤ (μ : Measure Ω).real s by

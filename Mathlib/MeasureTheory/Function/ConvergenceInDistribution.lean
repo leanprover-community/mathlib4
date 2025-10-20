@@ -200,7 +200,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub
     _ ≤ ∫ a in {x | ‖Y n x - X n x‖ < ε / 2}, L * (ε / 2) ∂μ
         + ∫ a in {x | ε / 2 ≤ ‖Y n x - X n x‖}, M ∂μ := by
       gcongr ?_ + ?_
-      · refine setIntegral_mono_on' h_int_sub.integrableOn integrableOn_const ?_ ?_
+      · refine setIntegral_mono_on₀ h_int_sub.integrableOn integrableOn_const ?_ ?_
         · exact nullMeasurableSet_lt (by fun_prop) (by fun_prop)
         · intro x hx
           simp only [Set.mem_setOf_eq] at hx
