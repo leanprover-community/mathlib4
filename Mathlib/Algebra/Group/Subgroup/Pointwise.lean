@@ -38,23 +38,15 @@ variable {α G A S : Type*}
 theorem term_match [Group G] (a1 a2 b1 b2 : G) :
     a1 * b1 = a2 * b2 → a2⁻¹ * a1 = b2 * b1⁻¹ := by
   intro h
-  have : a1 = (a2 * b2) * b1⁻¹ := by exact eq_mul_inv_of_mul_eq h
-  simp only [this, mul_assoc, inv_mul_cancel_left]
+  simp only [eq_mul_inv_of_mul_eq h, mul_assoc, inv_mul_cancel_left]
 
 open scoped Pointwise in
-/--
-If `H` and `K` are disjoint subgroups of `G`, gives an equivalence
-between the point-wise product `H.carrier * K.carrier` and cartesian product `H ×ˢ K`.
--/
-noncomputable def equiv_mul_disjoint [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
-    ((H.carrier : Set G) * (K.carrier : Set G) : Set G) ≃ (H:Set G) ×ˢ (K:Set G) := by
-  symm
-  apply Set.BijOn.equiv (fun (h, k) => h * k)
-  apply And.intro
+theorem bijOn_product_mul [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
+    BijOn (fun (h, k) => h * k) (↑H ×ˢ ↑K) (H.carrier * K.carrier) := by
+  refine ⟨?_, ?_, ?_⟩
   · intro ⟨h, k⟩ HH
     simp only [mem_prod, SetLike.mem_coe] at HH
     exact ⟨h, HH.1, k, HH.2, rfl⟩
-  apply And.intro
   · intro ⟨h1, k1⟩ H1 ⟨h2, k2⟩ H2 HH
     have crux : h2⁻¹ * h1 = k2 * k1⁻¹ := term_match _ _ _ _ HH
     rw [Subgroup.disjoint_def] at hHK
@@ -69,7 +61,7 @@ noncomputable def equiv_mul_disjoint [Group G] (H K : Subgroup G) (hHK : Disjoin
     specialize hHK this
     have : h2 * (h2 ⁻¹ * h1) = h2 * 1 := by
       rw [hHK]
-    simp at this
+    simp only [mul_inv_cancel_left, mul_one] at this
     have : (k2 * k1⁻¹) * k1 = 1 * k1 := by
       rw [← crux, hHK]
     grind [inv_mul_cancel_right, one_mul]
@@ -77,6 +69,17 @@ noncomputable def equiv_mul_disjoint [Group G] (H K : Subgroup G) (hHK : Disjoin
     obtain ⟨h, hh, k, hk, HH⟩ := hg
     simp only [Set.image_prod, Set.image2_mul, Set.mem_mul]
     exact ⟨h, hh, k, hk, HH⟩
+
+open scoped Pointwise in
+/--
+If `H` and `K` are disjoint subgroups of `G`, gives an equivalence
+between the point-wise product `H.carrier * K.carrier` and cartesian product `H ×ˢ K`.
+-/
+noncomputable def equivMulDisjoint [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
+    ((H.carrier : Set G) * (K.carrier : Set G) : Set G) ≃ (H:Set G) ×ˢ (K:Set G) := by
+  symm
+  apply Set.BijOn.equiv (fun (h, k) => h * k)
+  exact bijOn_product_mul H K hHK
 
 @[to_additive (attr := simp, norm_cast)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
