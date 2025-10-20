@@ -224,6 +224,7 @@ private theorem card_finMulAntidiag_pi (d n : ℕ) (hn : Squarefree n) :
   apply Finset.card_bij (Nat.primeFactorsPiBij d n) (primeFactorsPiBij_img d n hn)
     (primeFactorsPiBij_inj d n) (primeFactorsPiBij_surj d n hn)
 
+open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     #(finMulAntidiag d n) = d ^ ω n := by
   rw [← card_finMulAntidiag_pi d n hn, Finset.card_pi, Finset.prod_const,
@@ -296,6 +297,7 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
 end card_pair_lcm_eq
 
 open card_pair_lcm_eq in
+open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_pair_lcm_eq {n : ℕ} (hn : Squarefree n) :
     #{p ∈ (n.divisors ×ˢ n.divisors) | p.1.lcm p.2 = n} = 3 ^ ω n := by
   rw [← card_finMulAntidiag_of_squarefree hn, eq_comm]

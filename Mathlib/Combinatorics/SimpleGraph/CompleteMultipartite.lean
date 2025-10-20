@@ -16,20 +16,20 @@ A graph is complete multipartite iff non-adjacency is transitive.
 
 ## Main declarations
 
-* `SimpleGraph.IsCompleteMultipartite`: predicate for a graph to be complete-multi-partite.
+* `SimpleGraph.IsCompleteMultipartite`: predicate for a graph to be complete multipartite.
 
 * `SimpleGraph.IsCompleteMultipartite.setoid`: the `Setoid` given by non-adjacency.
 
 * `SimpleGraph.IsCompleteMultipartite.iso`: the graph isomorphism from a graph that
   `IsCompleteMultipartite` to the corresponding `completeMultipartiteGraph`.
 
-* `SimpleGraph.IsPathGraph3Compl`: predicate for three vertices to be a witness to
-  non-complete-multi-partite-ness of a graph G. (The name refers to the fact that the three
+* `SimpleGraph.IsPathGraph3Compl`: predicate for three vertices to witness the
+  non-complete-multipartiteness of a graph `G`. (The name refers to the fact that the three
   vertices form the complement of `pathGraph 3`.)
 
-* See also: `Mathlib/Combinatorics/SimpleGraph/FiveWheelLike.lean`
-  `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree` a maximally `r + 1`- cliquefree graph
-  is `r`-colorable iff it is complete-multipartite.
+* See also: `Mathlib/Combinatorics/SimpleGraph/FiveWheelLike.lean`.
+  The lemma `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree` states that a maximally
+  `r + 1`-cliquefree graph is `r`-colorable iff it is complete multipartite.
 
 * `SimpleGraph.completeEquipartiteGraph`: the **complete equipartite graph** in parts of *equal*
   size such that two vertices are adjacent if and only if they are in different parts.
