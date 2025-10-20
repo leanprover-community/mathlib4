@@ -544,7 +544,7 @@ lemma homMk_eta {U V : Under X} (f : U ⟶ V) (h) :
 
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
 lemma homMk_comp {U V W : Under X} (f : U.right ⟶ V.right) (g : V.right ⟶ W.right) (w_f w_g) :
-    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g])  = homMk f w_f ≫ homMk g w_g := by
+    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g]) = homMk f w_f ≫ homMk g w_g := by
   ext
   simp
 
@@ -691,7 +691,7 @@ def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
 
 variable (T) in
 /-- The functor defined by the under categories -/
-@[simps] def mapFunctor : Tᵒᵖ  ⥤ Cat where
+@[simps] def mapFunctor : Tᵒᵖ ⥤ Cat where
   obj X := Cat.of (Under X.unop)
   map f := map f.unop
   map_id X := mapId_eq X.unop
