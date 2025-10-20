@@ -97,7 +97,7 @@ of `C` on `D` and `D'`. -/
 class OplaxLeftLinear
     (F : D ⥤ D') (C : Type*) [Category C] [MonoidalCategory C]
     [MonoidalLeftAction C D] [MonoidalLeftAction C D'] where
-  /-- The oplax lineator morphism morphism. -/
+  /-- The oplax lineator morphism. -/
   δₗ (F) (c : C) (d : D) : F.obj (c ⊙ₗ d) ⟶ c ⊙ₗ F.obj d
   δₗ_naturality_left (F) {c c': C} (f : c ⟶ c') (d : D) :
     F.map (f ⊵ₗ d) ≫ δₗ c' d =
@@ -259,7 +259,7 @@ of `C` on `D` and `D'`. -/
 class OplaxRightLinear
     (F : D ⥤ D') (C : Type*) [Category C] [MonoidalCategory C]
     [MonoidalRightAction C D] [MonoidalRightAction C D'] where
-  /-- The oplax lineator morphism morphism. -/
+  /-- The oplax lineator morphism. -/
   δᵣ (F) (d : D) (c : C) : F.obj (d ⊙ᵣ c) ⟶ (F.obj d) ⊙ᵣ c
   δᵣ_naturality_right (F) (d : D) {c c': C} (f : c ⟶ c') :
     F.map (d ⊴ᵣ f) ≫ δᵣ d c' =

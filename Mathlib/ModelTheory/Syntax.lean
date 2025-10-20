@@ -413,7 +413,7 @@ def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.Bounded
     equal (t₁.relabel (Sum.map id (Fin.castLE h))) (t₂.relabel (Sum.map id (Fin.castLE h)))
   | _m, _n, h, rel R ts => rel R (Term.relabel (Sum.map id (Fin.castLE h)) ∘ ts)
   | _m, _n, h, imp f₁ f₂ => (f₁.castLE h).imp (f₂.castLE h)
-  | _m, _n, h, all f => (f.castLE (add_le_add_right h 1)).all
+  | _m, _n, h, all f => (f.castLE (by gcongr)).all
 
 @[simp]
 theorem castLE_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLE h = φ := by
