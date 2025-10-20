@@ -30,15 +30,10 @@ namespace Rat
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
 
-protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
-  rw [Rat.floor]
-  split
-  · next h => simp [h]
-  · next => rfl
-
+@[deprecated Rat.le_floor_iff (since := "2025-09-02")]
 protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
   | ⟨n, d, h, c⟩ => by
-    simp only [Rat.floor_def']
+    simp only [Rat.floor_def]
     rw [mk'_eq_divInt]
     have h' := Int.ofNat_lt.2 (Nat.pos_of_ne_zero h)
     conv =>
@@ -47,18 +42,24 @@ protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z :
     exact Int.le_ediv_iff_mul_le h'
 
 instance : FloorRing ℚ :=
-  (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor.symm
+  (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor_iff.symm
 
-protected theorem floor_def {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_def' q
+/--
+This variant of `floor_def` uses the `Int.floor` (for any `FloorRing`) rather than `Rat.floor`.
+-/
+protected theorem floor_def' {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_def q
 
-protected theorem ceil_def (q : ℚ) : ⌈q⌉ = -(-q.num / ↑q.den) := by
+/--
+This variant of `ceil_def` uses the `Int.ceil` (for any `FloorRing`) rather than `Rat.ceil`.
+-/
+protected theorem ceil_def' (q : ℚ) : ⌈q⌉ = -(-q.num / ↑q.den) := by
   change -⌊-q⌋ = _
-  rw [Rat.floor_def, num_neg_eq_neg_num, den_neg_eq_den]
+  rw [Rat.floor_def', num_neg_eq_neg_num, den_neg_eq_den]
 
 
 @[norm_cast]
 theorem floor_intCast_div_natCast (n : ℤ) (d : ℕ) : ⌊(↑n / ↑d : ℚ)⌋ = n / (↑d : ℤ) := by
-  rw [Rat.floor_def]
+  rw [Rat.floor_def']
   obtain rfl | hd := eq_zero_or_pos (a := d)
   · simp
   set q := (n : ℚ) / d with q_eq
@@ -287,7 +288,7 @@ end NormNum
 end Rat
 
 theorem Int.mod_nat_eq_sub_mul_floor_rat_div {n : ℤ} {d : ℕ} : n % d = n - d * ⌊(n : ℚ) / d⌋ := by
-  rw [eq_sub_of_add_eq <| Int.emod_add_ediv n d, Rat.floor_intCast_div_natCast]
+  rw [Int.emod_def, Rat.floor_intCast_div_natCast]
 
 theorem Nat.coprime_sub_mul_floor_rat_div_of_coprime {n d : ℕ} (n_coprime_d : n.Coprime d) :
     ((n : ℤ) - d * ⌊(n : ℚ) / d⌋).natAbs.Coprime d := by
@@ -325,10 +326,12 @@ theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).n
   -- we will work with the absolute value of the numerator, which is equal to the numerator
   have q_num_abs_eq_q_num : (q.num.natAbs : ℤ) = q.num := Int.natAbs_of_nonneg q_num_pos.le
   set q_inv : ℚ := q.den / q.num with q_inv_def
-  have q_inv_eq : q⁻¹ = q_inv := by rw [q_inv_def, inv_def', divInt_eq_div, Int.cast_natCast]
+  have q_inv_eq : q⁻¹ = q_inv := by rw [q_inv_def, inv_def, divInt_eq_div, Int.cast_natCast]
   suffices (q_inv - ⌊q_inv⌋).num < q.num by rwa [q_inv_eq]
   suffices ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num < q.num by
-    field_simp [q_inv, this, ne_of_gt q_num_pos]
+    simp only [gt_iff_lt, q_inv]
+    field_simp
+    simp [q_inv, this]
   suffices (q.den : ℤ) - q.num * ⌊q_inv⌋ < q.num by
     -- use that `q.num` and `q.den` are coprime to show that the numerator stays unreduced
     have : ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num = q.den - q.num * ⌊q_inv⌋ := by

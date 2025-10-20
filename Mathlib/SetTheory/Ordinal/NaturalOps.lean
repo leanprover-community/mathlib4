@@ -5,6 +5,11 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Family
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.NatOrdinal` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Natural operations on ordinals
@@ -159,7 +164,7 @@ theorem toNatOrdinal_min (a b : Ordinal) :
   rfl
 
 /-! We place the definitions of `nadd` and `nmul` before actually developing their API, as this
-guarantees we only need to open the `NaturalOps` locale once. -/
+guarantees we only need to open the `NaturalOps` scope once. -/
 
 /-- Natural addition on ordinals `a ♯ b`, also known as the Hessenberg sum, is recursively defined
 as the least ordinal greater than `a' ♯ b` and `a ♯ b'` for all `a' < a` and `b' < b`. In contrast
@@ -267,7 +272,7 @@ termination_by (a, b, c)
 @[simp]
 theorem nadd_zero (a : Ordinal) : a ♯ 0 = a := by
   rw [nadd, ciSup_of_empty fun _ : Iio 0 ↦ _, sup_bot_eq]
-  convert iSup_succ a
+  convert _root_.iSup_succ a
   rename_i x
   cases x
   exact nadd_zero _
@@ -334,9 +339,7 @@ instance : AddLeftMono NatOrdinal.{u} :=
   ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
 
 instance : AddLeftReflectLE NatOrdinal.{u} :=
-  ⟨fun a b c h => by
-    by_contra! h'
-    exact h.not_gt (add_lt_add_left h' a)⟩
+  ⟨fun a b c h => by by_contra! h'; exact h.not_gt (by gcongr)⟩
 
 instance : AddCommMonoid NatOrdinal :=
   { add := (· + ·)
@@ -517,8 +520,6 @@ theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
   convert csInf_Ici
   ext b
   refine ⟨fun H ↦ le_of_forall_lt (a := a) fun c hc ↦ ?_, fun ha c hc ↦ ?_⟩
-  -- Porting note: had to add arguments to `nmul_one` in the next two lines
-  -- for the termination checker.
   · simpa [nmul_one c] using H c hc
   · simpa [nmul_one c] using hc.trans_le ha
 termination_by a

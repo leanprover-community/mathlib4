@@ -31,7 +31,7 @@ open EMetric ENNReal Filter MeasureTheory NNReal Set
 
 variable {α β ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 variable [NormedAddCommGroup β] [TopologicalSpace ε] [ContinuousENorm ε]
-  [TopologicalSpace ε'] [ENormedAddMonoid ε']
+  [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 namespace MeasureTheory
 
@@ -51,7 +51,7 @@ theorem integrable_mk {f : α → ε} (hf : AEStronglyMeasurable f μ) :
   exact coeFn_mk f hf
 
 theorem integrable_coeFn {f : α →ₘ[μ] ε} : MeasureTheory.Integrable f μ ↔ Integrable f := by
-  rw [← integrable_mk, mk_coeFn]
+  rw [← integrable_mk f.aestronglyMeasurable, mk_coeFn]
 
 theorem integrable_zero : Integrable (0 : α →ₘ[μ] ε') :=
   (MeasureTheory.integrable_zero α ε' μ).congr (coeFn_mk _ _).symm

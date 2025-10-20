@@ -548,7 +548,7 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
 
 /-!
 Now we will prove that a compactly generated modular atomistic lattice is a complemented lattice.
-Most explicitly, every element is the complement of a supremum of indepedendent atoms.
+Most explicitly, every element is the complement of a supremum of independent atoms.
 -/
 
 /-- In an atomic lattice, every element `b` has a complement of the form `sSup s` relative to a
@@ -575,7 +575,7 @@ theorem exists_sSupIndep_disjoint_sSup_atoms (b c : α) (hbc : b ≤ c)
   simp_rw [maximal_subset_iff] at zorn
   obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := zorn
   refine ⟨s, s_ind, b_inf_Sup_s, le_antisymm ?_ ?_, fun a ha ↦ (s_atoms a ha).1⟩
-  · aesop
+  · simp_all
   rw [← h, sSup_le_iff]
   intro a ha
   rw [← inf_eq_left]

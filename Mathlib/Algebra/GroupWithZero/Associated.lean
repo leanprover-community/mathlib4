@@ -72,6 +72,9 @@ end Associated
 
 attribute [local instance] Associated.setoid
 
+theorem Associated.of_eq [Monoid M] {a b : M} (h : a = b) : a ~ᵤ b :=
+  ⟨1, by rwa [Units.val_one, mul_one]⟩
+
 theorem unit_associated_one [Monoid M] {u : Mˣ} : (u : M) ~ᵤ 1 :=
   ⟨u⁻¹, Units.mul_inv u⟩
 
@@ -252,11 +255,11 @@ theorem Irreducible.dvd_iff [Monoid M] {x y : M} (hx : Irreducible x) :
     y ∣ x ↔ IsUnit y ∨ Associated x y := by
   constructor
   · rintro ⟨z, hz⟩
-    obtain (h|h) := hx.isUnit_or_isUnit hz
+    obtain (h | h) := hx.isUnit_or_isUnit hz
     · exact Or.inl h
     · rw [hz]
       exact Or.inr (associated_mul_unit_left _ _ h)
-  · rintro (hy|h)
+  · rintro (hy | h)
     · exact hy.dvd
     · exact h.symm.dvd
 

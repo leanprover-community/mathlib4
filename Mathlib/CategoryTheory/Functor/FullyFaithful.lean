@@ -59,7 +59,7 @@ lemma map_injective_iff (F : C ⥤ D) [Faithful F] {X Y : C} (f g : X ⟶ Y) :
   ⟨fun h => F.map_injective h, fun h => by rw [h]⟩
 
 theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
-    Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y))  := fun _ _ h =>
+    Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y)) := fun _ _ h =>
   Iso.ext (map_injective F (congr_arg Iso.hom h :))
 
 theorem map_surjective (F : C ⥤ D) [Full F] :
@@ -299,14 +299,14 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C →
     (h_map : ∀ {X Y} {f : X ⟶ Y}, G.map (map f) ≍ F.map f) : C ⥤ D :=
   { obj, map := @map,
     map_id := by
-      intros X
+      intro X
       apply G.map_injective
       apply eq_of_heq
       trans F.map (𝟙 X)
       · exact h_map
       · rw [F.map_id, G.map_id, h_obj X]
     map_comp := by
-      intros X Y Z f g
+      intro X Y Z f g
       refine G.map_injective <| eq_of_heq <| h_map.trans ?_
       simp only [Functor.map_comp]
       grind }

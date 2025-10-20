@@ -7,11 +7,11 @@ import Mathlib.MeasureTheory.Function.L1Space.Integrable
 import Mathlib.MeasureTheory.Order.Group.Lattice
 
 /-!
-# Domain of the moment generating function
+# Domain of the moment-generating function
 
 For `X` a real random variable and `μ` a finite measure, the set
 `{t | Integrable (fun ω ↦ exp (t * X ω)) μ}` is an interval containing zero. This is the set of
-points for which the moment generating function `mgf X μ t` is well defined.
+points for which the moment-generating function `mgf X μ t` is well defined.
 We denote that set by `integrableExpSet X μ`.
 
 We prove the integrability of other functions for `t` in the interior of that interval.
@@ -534,9 +534,6 @@ lemma memLp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpS
   rw [← integrable_norm_rpow_iff hX.aestronglyMeasurable (mod_cast hp_zero) (by simp)]
   simp only [norm_eq_abs, ENNReal.coe_toReal]
   exact integrable_rpow_abs_of_mem_interior_integrableExpSet h p.2
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp_of_mem_interior_integrableExpSet := memLp_of_mem_interior_integrableExpSet
 
 section Complex
 

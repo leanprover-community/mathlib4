@@ -62,17 +62,17 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
       rw [contra] at hk'
       exact P.ne_zero _ hk'.choose_spec
     have aux (h : P.pairingIn ℤ i k = -2) : ¬P.pairingIn ℤ k i = -2 := by
-      have := P.reflexive_left
+      have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
       contrapose! hk'; exact (P.pairingIn_neg_two_neg_two_iff ℤ i k).mp ⟨h, hk'⟩
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i k
-    aesop -- #24551 (this should be faster)
+    aesop -- https://github.com/leanprover-community/mathlib4/issues/24551 (this should be faster)
   replace hki : P.pairing k i = -1 := by rw [← P.algebraMap_pairingIn ℤ, hki]; simp
   have : P.pairingIn ℤ l i = 1 - P.pairingIn ℤ j i := by
     apply algebraMap_injective ℤ R
     simp only [algebraMap_pairingIn, map_sub, map_one, algebraMap_pairingIn]
     convert (P.coroot' i : M →ₗ[R] R).congr_arg hl using 1
-    simp only [PerfectPairing.flip_apply_apply, map_sub, map_add,
-      root_coroot_eq_pairing, hki, pairing_same]
+    simp only [map_sub, map_add, LinearMap.flip_apply, root_coroot_eq_pairing, hki, pairing_same,
+      sub_left_inj]
     ring
   replace hij := pairingIn_le_zero_of_ne b hij.symm hj hi
   omega
@@ -109,11 +109,11 @@ variable {b : P.Base} {i j k l m : ι}
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_0 [P.IsNotG2]
     (hik_mem : P.root k + P.root i ∈ range P.root) :
     P.pairingIn ℤ k i = 0 ∨ (P.pairingIn ℤ k i < 0 ∧ P.chainBotCoeff i k = 0) := by
-  have _i := P.reflexive_left
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have := pairingIn_le_zero_of_root_add_mem hik_mem
   rw [add_comm] at hik_mem
   rw [P.chainBotCoeff_if_one_zero hik_mem, ite_eq_right_iff, P.pairingIn_eq_zero_iff (i := i)]
-  omega
+  cutsat
 
 variable [P.IsReduced] [P.IsIrreducible]
   (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j)
@@ -124,7 +124,8 @@ variable [P.IsReduced] [P.IsIrreducible]
 include hi hj hij h₁ h₂ h₃
 
 lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
-  have _i : NoZeroSMulDivisors ℤ M := have _i := P.reflexive_left; .int_of_charZero R M
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
   rw [← P.not_isG2_iff_isNotG2]
   intro contra
   obtain ⟨n, h₃⟩ := h₃
@@ -196,7 +197,8 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
     (hki : P.pairingIn ℤ k i = 0) :
-    have _i := P.reflexive_left; letI := P.indexNeg
+    have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+    letI := P.indexNeg
     P.root i + P.root m ∈ range P.root → P.root j + P.root (-l) ∈ range P.root →
       P.root j + P.root (-k) ∈ range P.root →
       (P.chainBotCoeff i m + 1) * (P.chainBotCoeff j (-k) + 1) =
@@ -258,7 +260,8 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
 open RootPositiveForm in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
     (hki' : P.pairingIn ℤ k i < 0) (hkj' : 0 < P.pairingIn ℤ k j) :
-    have _i := P.reflexive_left; letI := P.indexNeg
+    have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+    letI := P.indexNeg
     P.root i + P.root m ∈ range P.root → P.root j + P.root (-l) ∈ range P.root →
       P.root j + P.root (-k) ∈ range P.root →
       ¬ (P.chainBotCoeff i m = 1 ∧ P.chainBotCoeff j (-l) = 0) := by
@@ -289,11 +292,11 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
     simpa [← P.root_coroot_eq_pairing k, h₂, ← P.algebraMap_pairingIn ℤ]
   obtain ⟨aux₁, aux₂⟩ : P.pairingIn ℤ i j = -1 ∧ P.pairingIn ℤ k j = 2 := by
     suffices 0 < - P.pairingIn ℤ i j ∧ - P.pairingIn ℤ i j < P.pairingIn ℤ k j ∧
-      P.pairingIn ℤ k j ≤ 2 by omega
+      P.pairingIn ℤ k j ≤ 2 by cutsat
     refine ⟨?_, ?_, ?_⟩
     · rwa [neg_pos, P.pairingIn_lt_zero_iff, aux₀]
     · suffices P.pairingIn ℤ l j = P.pairingIn ℤ i j + P.pairingIn ℤ k j by
-        have := zero_le_pairingIn_of_root_sub_mem hlj_mem; omega
+        have := zero_le_pairingIn_of_root_sub_mem hlj_mem; cutsat
       suffices P.pairing l j = P.pairing i j + P.pairing k j from
         algebraMap_injective ℤ R <| by simpa only [algebraMap_pairingIn, map_add]
       simp [← P.root_coroot_eq_pairing l, ← h₁, add_comm]
@@ -312,7 +315,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
       (by simpa [posForm, rootLength] using (lt_of_le_of_lt hij_le hjk_lt).ne)
   /- Use the root length results to calculate a final root pairing. -/
   have aux₅ : P.pairingIn ℤ k i = -1 := by
-    suffices P.pairingIn ℤ j i = -1 by omega
+    suffices P.pairingIn ℤ j i = -1 by cutsat
     have aux : B.toInvariantForm.form (P.root i) (P.root i) =
         B.toInvariantForm.form (P.root j) (P.root j) := by simpa [posForm, rootLength] using aux₃
     have := P.pairingIn_pairingIn_mem_set_of_length_eq_of_ne aux hij (b.root_ne_neg_of_ne hi hj hij)
@@ -320,7 +323,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
   /- Use the newly calculated pairing result to obtain further information about root lengths. -/
   have aux₆ : B.rootLength k ≤ B.rootLength i := B.rootLength_le_of_pairingIn_eq <| Or.inl aux₅
   /- We now have contradictory information about root lengths. -/
-  omega
+  cutsat
 
 open chainBotCoeff_mul_chainTopCoeff in
 /-- This is Lemma 2.6 from [Geck](Geck2017). -/
@@ -329,7 +332,6 @@ lemma chainBotCoeff_mul_chainTopCoeff :
       (P.chainTopCoeff j l + 1) * (P.chainBotCoeff i k + 1) := by
   /- Setup some typeclasses. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  have _i := P.reflexive_left
   letI := P.indexNeg
   suffices (P.chainBotCoeff i m + 1) * (P.chainBotCoeff j (-k) + 1) =
       (P.chainBotCoeff j (-l) + 1) * (P.chainBotCoeff i k + 1) by simpa
@@ -367,7 +369,7 @@ lemma chainBotCoeff_mul_chainTopCoeff :
   have aux₄ : P.chainBotCoeff j (-l) = 0 ∨ P.chainBotCoeff j (-l) = 1 := by
     have := P.chainBotCoeff_if_one_zero hjl_mem
     split at this <;> simp only [this, true_or, or_true]
-  omega
+  cutsat
 
 end chainBotCoeff_mul_chainTopCoeff
 

@@ -33,7 +33,7 @@ theorem finRotate_of_lt {k : ℕ} (h : k < n) :
   dsimp [finRotate_succ]
   simp [finAddFlip_apply_mk_left h, Nat.add_comm]
 
-theorem finRotate_last' : finRotate (n + 1) ⟨n, by omega⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
+theorem finRotate_last' : finRotate (n + 1) ⟨n, by cutsat⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
   dsimp [finRotate_succ]
   rw [finAddFlip_apply_mk_right le_rfl]
   simp

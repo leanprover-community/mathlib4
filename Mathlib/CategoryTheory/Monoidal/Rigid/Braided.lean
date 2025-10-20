@@ -53,7 +53,10 @@ private theorem evaluation_coevaluation_braided' [inst : ExactPairing X Y] :
     _ = 𝟙 Y ⊗≫ η_ X Y ▷ Y ⊗≫ (𝟙 ((X ⊗ Y) ⊗ Y) ⊗≫ X ◁ (β_ Y Y).hom ⊗≫ (β_ X Y).hom ▷ Y
         ⊗≫ Y ◁ (β_ Y X).inv ⊗≫ (β_ Y Y).inv ▷ X ⊗≫ 𝟙 (Y ⊗ Y ⊗ X)) ⊗≫ Y ◁ ε_ X Y ⊗≫ 𝟙 Y := by
       congr 3
-      all_goals simp [monoidalComp]
+      on_goal 2 => simp [monoidalComp]
+      simp only [monoidalComp, MonoidalCoherence.assoc_iso, MonoidalCoherence.whiskerRight_iso,
+        MonoidalCoherence.refl_iso, whiskerRightIso_refl, Iso.trans_refl,
+        MonoidalCoherence.assoc'_iso, Iso.refl_trans, Iso.symm_hom, comp_id, id_comp]
       iterate 2 rw [← IsIso.eq_inv_comp]
       repeat rw [← assoc]
       iterate 4 rw [← IsIso.comp_inv_eq]

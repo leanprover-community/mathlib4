@@ -84,6 +84,23 @@ theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] : AntisymmRel r a b �
 
 alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
 
+namespace Mathlib.Tactic.GCongr
+
+variable {α : Type*} {a b : α} {r : α → α → Prop}
+
+lemma AntisymmRel.left (h : AntisymmRel r a b) : r a b := h.1
+lemma AntisymmRel.right (h : AntisymmRel r a b) : r b a := h.2
+
+/-- See if the term is `AntisymmRel r a b` and the goal is `r a b`. -/
+@[gcongr_forward] def exactAntisymmRelLeft : ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.left #[h])
+
+/-- See if the term is `AntisymmRel r a b` and the goal is `r b a`. -/
+@[gcongr_forward] def exactAntisymmRelRight : ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.right #[h])
+
+end Mathlib.Tactic.GCongr
+
 end Relation
 
 section LE
@@ -120,6 +137,9 @@ noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
   Quotient.out
 
 instance [Inhabited α] : Inhabited (Antisymmetrization α r) := by
+  unfold Antisymmetrization; infer_instance
+
+instance [Subsingleton α] : Subsingleton (Antisymmetrization α r) := by
   unfold Antisymmetrization; infer_instance
 
 @[elab_as_elim]
