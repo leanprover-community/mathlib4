@@ -49,7 +49,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup M]
+variable (M) [AddCommGroup M]
 
 instance AddCommGroup.toIntModule : Module ℤ M where
   one_smul := one_zsmul
