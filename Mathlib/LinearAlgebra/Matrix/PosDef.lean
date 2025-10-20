@@ -52,7 +52,7 @@ protected theorem PosSemidef.diagonal [StarOrderedRing R] [DecidableEq n] {d : n
   ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i),
     fun x => by
       refine Fintype.sum_nonneg fun i => ?_
-      simpa only [mulVec_diagonal, ← mul_assoc] using conjugate_nonneg (h i) _⟩
+      simpa only [mulVec_diagonal, ← mul_assoc] using star_left_conjugate_nonneg (h i) _⟩
 
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
 lemma posSemidef_diagonal_iff [StarOrderedRing R] [DecidableEq n] {d : n → R} :
@@ -327,8 +327,8 @@ protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R
       refine Fintype.sum_pos ?_
       simp_rw [mulVec_diagonal, ← mul_assoc, Pi.lt_def]
       obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
-      exact ⟨fun i => conjugate_nonneg (h i).le _,
-        i, conjugate_pos (h _) (isRegular_of_ne_zero hi)⟩⟩
+      exact ⟨fun i => star_left_conjugate_nonneg (h i).le _,
+        i, star_left_conjugate_pos (h _) (isRegular_of_ne_zero hi)⟩⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_diagonal_iff

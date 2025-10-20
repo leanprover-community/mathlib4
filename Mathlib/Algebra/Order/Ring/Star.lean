@@ -40,7 +40,7 @@ private lemma mul_le_mul_of_nonneg_left {R : Type*} [NonUnitalCommSemiring R] [P
   | mem _ h =>
     obtain ⟨x, rfl⟩ := h
     simp_rw [mul_assoc, mul_comm x, ← mul_assoc]
-    exact conjugate_le_conjugate hab x
+    exact star_left_conjugate_le_conjugate hab x
   | zero => simp
   | add x hx y hy =>
     simp only [← nonneg_iff, add_mul] at hx hy ⊢
