@@ -257,7 +257,7 @@ lemma card_inertia_eq_ramificationIdxIn
     [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S]
     (K L : Type*) [Field K] [Field L] [Algebra K L] [Algebra R L] [Algebra R K] [Algebra S L]
     [IsScalarTower R S L] [IsScalarTower R K L] [IsFractionRing R K] [IsFractionRing S L]
-    [MulSemiringAction G L] [SMulDistribClass G S L] [IsGaloisGroup G K L]
+    [MulSemiringAction G L] [IsGaloisGroup G K L]
     (p : Ideal R) (hp : p ≠ ⊥)
     (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
     Nat.card (P.toAddSubgroup.inertia G) = Ideal.ramificationIdxIn p S := by
