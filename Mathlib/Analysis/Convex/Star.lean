@@ -13,7 +13,7 @@ import Mathlib.Tactic.Module
 /-!
 # Star-convex sets
 
-This files defines star-convex sets (aka star domains, star-shaped set, radially convex set).
+This file defines star-convex sets (aka star domains, star-shaped set, radially convex set).
 
 A set is star-convex at `x` if every segment from `x` to a point in the set is contained in the set.
 

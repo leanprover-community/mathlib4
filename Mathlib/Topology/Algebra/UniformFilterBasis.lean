@@ -9,7 +9,7 @@ import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 /-!
 # Uniform properties of neighborhood bases in topological algebra
 
-This files contains properties of filter bases on algebraic structures that also require the theory
+This file contains properties of filter bases on algebraic structures that also require the theory
 of uniform spaces.
 
 The only result so far is a characterization of Cauchy filters in topological groups.

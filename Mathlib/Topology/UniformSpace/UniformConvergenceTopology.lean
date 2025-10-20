@@ -11,7 +11,7 @@ import Mathlib.Topology.UniformSpace.UniformApproximation
 /-!
 # Topology and uniform structure of uniform convergence
 
-This files endows `α → β` with the topologies / uniform structures of
+This file endows `α → β` with the topologies / uniform structures of
 - uniform convergence on `α`
 - uniform convergence on a specified family `𝔖` of sets of `α`, also called `𝔖`-convergence
 
@@ -20,7 +20,7 @@ convergence, we introduce type aliases `UniformFun α β` (denoted `α →ᵤ β
 `UniformOnFun α β 𝔖` (denoted `α →ᵤ[𝔖] β`) and we actually endow *these* with the structures
 of uniform and `𝔖`-convergence respectively.
 
-Usual examples of the second construction include :
+Usual examples of the second construction include:
 - the topology of compact convergence, when `𝔖` is the set of compacts of `α`
 - the strong topology on the dual of a topological vector space (TVS) `E`, when `𝔖` is the set of
   Von Neumann bounded subsets of `E`
@@ -57,7 +57,7 @@ This file contains a lot of technical facts, so it is heavily commented, proofs 
 * `UniformOnFun.t2Space_of_covering`: the topology of `𝔖`-convergence on `α →ᵤ[𝔖] β` is T₂ if
   `β` is T₂ and `𝔖` covers `α`
 * `UniformOnFun.tendsto_iff_tendstoUniformlyOn`:
-  `𝒱(α, β, 𝔖 uβ)` is indeed the uniform structure of `𝔖`-convergence
+  `𝒱(α, β, 𝔖, uβ)` is indeed the uniform structure of `𝔖`-convergence
 
 ### Functoriality and compatibility with product of uniform spaces
 

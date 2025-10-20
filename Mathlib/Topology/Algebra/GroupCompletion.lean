@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Group.Pointwise
 /-!
 # Completion of topological groups:
 
-This files endows the completion of a topological abelian group with a group structure.
+This file endows the completion of a topological abelian group with a group structure.
 More precisely the instance `UniformSpace.Completion.addGroup` builds an abelian group structure
 on the completion of an abelian group endowed with a compatible uniform structure.
 Then the instance `UniformSpace.Completion.isUniformAddGroup` proves this group structure is
