@@ -49,6 +49,7 @@
   "Mathlib.Data.Set.Notation",
   "Mathlib.Data.Sym.Sym2.Init",
   "Mathlib.Data.Vector.Basic",
+  "Mathlib.FieldTheory.Galois.Notation",
   "Mathlib.Geometry.Manifold.Notation",
   "Mathlib.Geometry.Manifold.Instances.Real",
   "Mathlib.Init",
@@ -596,4 +597,5 @@
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
   "Batteries.CodeAction.Basic":
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
-  "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"]}}
+  "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"],
+  "Mathlib.FieldTheory.Galois.Notation" : ["Mathlib.Algebra.Algebra.Equiv"]}}

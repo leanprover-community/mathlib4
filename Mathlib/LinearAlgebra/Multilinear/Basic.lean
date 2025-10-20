@@ -205,7 +205,7 @@ instance : SMul S (MultilinearMap R M₁ M₂) :=
 theorem smul_apply (f : MultilinearMap R M₁ M₂) (c : S) (m : ∀ i, M₁ i) : (c • f) m = c • f m :=
   rfl
 
-theorem coe_smul (c : S) (f : MultilinearMap R M₁ M₂) : ⇑(c • f) = c • (⇑ f) := rfl
+theorem coe_smul (c : S) (f : MultilinearMap R M₁ M₂) : ⇑(c • f) = c • (⇑f) := rfl
 
 end SMul
 
@@ -1138,8 +1138,7 @@ theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ∀ i, M₁ i) :
 theorem map_update_smul_left [DecidableEq ι] [Fintype ι]
     (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i) :
     f (update (c • m) i x) = c ^ (Fintype.card ι - 1) • f (update m i x) := by
-  have :
-    f ((Finset.univ.erase i).piecewise (c • update m i x) (update m i x)) =
+  have : f ((Finset.univ.erase i).piecewise (c • update m i x) (update m i x)) =
       (∏ _i ∈ Finset.univ.erase i, c) • f (update m i x) :=
     map_piecewise_smul f _ _ _
   simpa [← Function.update_smul c m] using this

@@ -62,9 +62,9 @@ section
 
 open CategoryTheory
 
-namespace Grp
+namespace GrpCat
 
-variable {A B : Grp.{u}} (f : A ⟶ B)
+variable {A B : GrpCat.{u}} (f : A ⟶ B)
 
 @[to_additive]
 theorem ker_eq_bot_of_mono [Mono f] : f.hom.ker = ⊥ :=
@@ -289,7 +289,7 @@ theorem surjective_of_epi [Epi f] : Function.Surjective f := by
   by_contra! r; rcases r with ⟨b, hb⟩
   exact
     SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
-      (congr_arg Grp.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))
+      (congr_arg GrpCat.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f :=
   ⟨fun _ => surjective_of_epi f, ConcreteCategory.epi_of_surjective f⟩
@@ -297,44 +297,44 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f :=
 theorem epi_iff_range_eq_top : Epi f ↔ f.hom.range = ⊤ :=
   Iff.trans (epi_iff_surjective _) (Subgroup.eq_top_iff' f.hom.range).symm
 
-end Grp
+end GrpCat
 
-namespace AddGrp
+namespace AddGrpCat
 
 
-variable {A B : AddGrp.{u}} (f : A ⟶ B)
+variable {A B : AddGrpCat.{u}} (f : A ⟶ B)
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   have i1 : Epi f ↔ Epi (groupAddGroupEquivalence.inverse.map f) := by
     refine ⟨?_, groupAddGroupEquivalence.inverse.epi_of_epi_map⟩
     intro e'
     apply groupAddGroupEquivalence.inverse.map_epi
-  rwa [Grp.epi_iff_surjective] at i1
+  rwa [GrpCat.epi_iff_surjective] at i1
 
 theorem epi_iff_range_eq_top : Epi f ↔ f.hom.range = ⊤ :=
   Iff.trans (epi_iff_surjective _) (AddSubgroup.eq_top_iff' f.hom.range).symm
 
-end AddGrp
+end AddGrpCat
 
-namespace Grp
+namespace GrpCat
 
 
-variable {A B : Grp.{u}} (f : A ⟶ B)
+variable {A B : GrpCat.{u}} (f : A ⟶ B)
 
-@[to_additive AddGrp.forget_grp_preserves_mono]
-instance forget_grp_preserves_mono : (forget Grp).PreservesMonomorphisms where
+@[to_additive AddGrpCat.forget_grp_preserves_mono]
+instance forget_grp_preserves_mono : (forget GrpCat).PreservesMonomorphisms where
   preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
 
-@[to_additive AddGrp.forget_grp_preserves_epi]
-instance forget_grp_preserves_epi : (forget Grp).PreservesEpimorphisms where
+@[to_additive AddGrpCat.forget_grp_preserves_epi]
+instance forget_grp_preserves_epi : (forget GrpCat).PreservesEpimorphisms where
   preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
 
-end Grp
+end GrpCat
 
-namespace CommGrp
+namespace CommGrpCat
 
 
-variable {A B : CommGrp.{u}} (f : A ⟶ B)
+variable {A B : CommGrpCat.{u}} (f : A ⟶ B)
 
 @[to_additive]
 theorem ker_eq_bot_of_mono [Mono f] : f.hom.ker = ⊥ :=
@@ -365,14 +365,14 @@ theorem epi_iff_range_eq_top : Epi f ↔ f.hom.range = ⊤ :=
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   rw [epi_iff_range_eq_top, MonoidHom.range_eq_top]
 
-@[to_additive AddCommGrp.forget_commGrp_preserves_mono]
-instance forget_commGrp_preserves_mono : (forget CommGrp).PreservesMonomorphisms where
+@[to_additive AddCommGrpCat.forget_commGrp_preserves_mono]
+instance forget_commGrp_preserves_mono : (forget CommGrpCat).PreservesMonomorphisms where
   preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
 
-@[to_additive AddCommGrp.forget_commGrp_preserves_epi]
-instance forget_commGrp_preserves_epi : (forget CommGrp).PreservesEpimorphisms where
+@[to_additive AddCommGrpCat.forget_commGrp_preserves_epi]
+instance forget_commGrp_preserves_epi : (forget CommGrpCat).PreservesEpimorphisms where
   preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
 
-end CommGrp
+end CommGrpCat
 
 end

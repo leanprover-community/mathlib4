@@ -53,7 +53,7 @@ theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
     calc
       u ((k + 1) * n + r) = u (n + (k * n + r)) := by congr 1; ring
       _ ≤ u n + u (k * n + r) := h _ _
-      _ ≤ u n + (k * u n + u r) := add_le_add_left IH _
+      _ ≤ u n + (k * u n + u r) := by grw [IH]
       _ = (k + 1 : ℕ) * u n + u r := by simp; ring
 
 include h in

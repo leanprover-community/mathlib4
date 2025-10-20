@@ -774,7 +774,7 @@ lemma RelCWComplex.skeletonLT_monotone [RelCWComplex C D] : Monotone (skeletonLT
 
 lemma RelCWComplex.skeleton_mono [RelCWComplex C D] {n m : ℕ∞} (h : m ≤ n) :
     (skeleton C m : Set X) ⊆ skeleton C n :=
-  skeletonLT_mono (add_le_add_right h 1)
+  skeletonLT_mono (by gcongr)
 
 lemma RelCWComplex.skeleton_monotone [RelCWComplex C D] : Monotone (skeleton C) :=
   fun _ _ h ↦ skeleton_mono h

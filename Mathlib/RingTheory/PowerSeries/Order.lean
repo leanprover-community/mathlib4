@@ -193,9 +193,7 @@ theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R�
     ∑ i ∈ s, (φ i).order ≤ (∏ i ∈ s, φ i).order := by
   induction s using Finset.cons_induction with
   | empty => simp
-  | cons a s ha ih =>
-    rw [Finset.sum_cons ha, Finset.prod_cons ha]
-    exact le_trans (add_le_add_left ih _) (le_order_mul _ _)
+  | cons a s ha ih => grw [Finset.sum_cons ha, Finset.prod_cons ha, ih, le_order_mul]
 
 alias order_mul_ge := le_order_mul
 

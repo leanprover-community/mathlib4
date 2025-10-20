@@ -672,7 +672,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
     <| (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (i := ζ) (by tauto)
   obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_neBot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
-  obtain ⟨N, hN⟩ :  ∃ N : ℤ, ∀ g : K⸨X⸩,
+  obtain ⟨N, hN⟩ : ∃ N : ℤ, ∀ g : K⸨X⸩,
     Valued.v (g - f) ≤ 1 → ∀ n < N, g.coeff n = 0 := by
     by_cases hf : f = 0
     · refine ⟨0, fun x hg ↦ ?_⟩

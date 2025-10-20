@@ -317,15 +317,11 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
       rw [← q.num_divInt_den, ← r.num_divInt_den, padicValRat_le_padicValRat_iff hqn hrn hqd hrd, ←
         emultiplicity_le_emultiplicity_iff] at h
       calc
-        _ ≤
-            min (emultiplicity (↑p) (q.num * r.den * q.den))
-              (emultiplicity (↑p) (↑q.den * r.num * ↑q.den)) :=
+        _ ≤ min (emultiplicity ↑p (q.num * r.den * q.den))
+                (emultiplicity ↑p (q.den * r.num * q.den)) :=
           le_min
             (by rw [emultiplicity_mul (a :=_ * _) (Nat.prime_iff_prime_int.1 hp.1), add_comm])
-            (by
-              rw [mul_assoc,
-                  emultiplicity_mul (b := _ * _) (Nat.prime_iff_prime_int.1 hp.1)]
-              exact add_le_add_left h _)
+            (by grw [mul_assoc, emultiplicity_mul (b := _ * _) (Nat.prime_iff_prime_int.1 hp.1), h])
         _ ≤ _ := min_le_emultiplicity_add
 
 /-- The minimum of the valuations of `q` and `r` is at most the valuation of `q + r`. -/
@@ -590,6 +586,30 @@ theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ) :
   nth_rw 2 [← zero_add 1]
   rw [Nat.succ_eq_add_one, ← Finset.sum_Ico_add' _ 0 _ 1,
     Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits, Nat.succ_eq_add_one]
+
+variable (p)
+
+theorem sub_one_mul_padicValNat_factorial_lt_of_ne_zero [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
+    (p - 1) * padicValNat p n.factorial < n := by
+  rw [sub_one_mul_padicValNat_factorial n]
+  refine Nat.sub_lt_self ?_ (digit_sum_le p n)
+  have hnil : p.digits n ≠ [] := Nat.digits_ne_nil_iff_ne_zero.mpr hn
+  exact Nat.sum_pos_iff_exists_pos.mpr
+    ⟨_, List.getLast_mem hnil, Nat.pos_of_ne_zero (Nat.getLast_digit_ne_zero p hn)⟩
+
+theorem padicValNat_factorial_lt_of_ne_zero [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
+    padicValNat p n.factorial < n := by
+  apply lt_of_le_of_lt _ (sub_one_mul_padicValNat_factorial_lt_of_ne_zero p hn)
+  conv_lhs => rw [← one_mul (padicValNat p n !)]
+  gcongr
+  exact le_sub_one_of_lt (Nat.Prime.one_lt hp.elim)
+
+theorem padicValNat_factorial_le [hp : Fact p.Prime] (n : ℕ) : padicValNat p n.factorial ≤ n := by
+  by_cases hn : n = 0
+  · simp [hn]
+  · exact le_of_lt (padicValNat_factorial_lt_of_ne_zero p hn)
+
+variable {p}
 
 /-- **Kummer's Theorem**
 

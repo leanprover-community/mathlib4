@@ -9,9 +9,9 @@ import Mathlib.CategoryTheory.Yoneda
 /-!
 # The forget functor is corepresentable
 
-It is shown that the forget functor `AddCommGrp.{u} ⥤ Type u` is corepresentable
-by `ULift ℤ`. Similar results are obtained for the variants `CommGrp`, `AddGrp`
-and `Grp`.
+It is shown that the forget functor `AddCommGrpCat.{u} ⥤ Type u` is corepresentable
+by `ULift ℤ`. Similar results are obtained for the variants `CommGrpCat`, `AddGrpCat`
+and `GrpCat`.
 
 -/
 
@@ -64,42 +64,42 @@ def fromULiftIntEquiv (α : Type u) [AddGroup α] : (ULift.{u} ℤ →+ α) ≃ 
 
 end AddMonoidHom
 
-/-- The forget functor `Grp.{u} ⥤ Type u` is corepresentable. -/
-def Grp.coyonedaObjIsoForget :
-    coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget Grp.{u} :=
+/-- The forget functor `GrpCat.{u} ⥤ Type u` is corepresentable. -/
+def GrpCat.coyonedaObjIsoForget :
+    coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget GrpCat.{u} :=
   NatIso.ofComponents fun M ↦
     (ConcreteCategory.homEquiv.trans (uliftZPowersHom M.carrier).symm).toIso
 
-/-- The forget functor `CommGrp.{u} ⥤ Type u` is corepresentable. -/
-def CommGrp.coyonedaObjIsoForget :
-    coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget CommGrp.{u} :=
+/-- The forget functor `CommGrpCat.{u} ⥤ Type u` is corepresentable. -/
+def CommGrpCat.coyonedaObjIsoForget :
+    coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget CommGrpCat.{u} :=
   NatIso.ofComponents fun M ↦
     (ConcreteCategory.homEquiv.trans (uliftZPowersHom M.carrier).symm).toIso
 
-/-- The forget functor `AddGrp.{u} ⥤ Type u` is corepresentable. -/
-def AddGrp.coyonedaObjIsoForget :
-    coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddGrp.{u} :=
+/-- The forget functor `AddGrpCat.{u} ⥤ Type u` is corepresentable. -/
+def AddGrpCat.coyonedaObjIsoForget :
+    coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddGrpCat.{u} :=
   NatIso.ofComponents fun M ↦
     (ConcreteCategory.homEquiv.trans (uliftZMultiplesHom M.carrier).symm).toIso
 
-/-- The forget functor `AddCommGrp.{u} ⥤ Type u` is corepresentable. -/
-def AddCommGrp.coyonedaObjIsoForget :
-    coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddCommGrp.{u} :=
+/-- The forget functor `AddCommGrpCat.{u} ⥤ Type u` is corepresentable. -/
+def AddCommGrpCat.coyonedaObjIsoForget :
+    coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddCommGrpCat.{u} :=
   NatIso.ofComponents fun M ↦
     (ConcreteCategory.homEquiv.trans (uliftZMultiplesHom M.carrier).symm).toIso
 
-instance Grp.forget_isCorepresentable :
-    (forget Grp.{u}).IsCorepresentable :=
-  Functor.IsCorepresentable.mk' Grp.coyonedaObjIsoForget
+instance GrpCat.forget_isCorepresentable :
+    (forget GrpCat.{u}).IsCorepresentable :=
+  Functor.IsCorepresentable.mk' GrpCat.coyonedaObjIsoForget
 
-instance CommGrp.forget_isCorepresentable :
-    (forget CommGrp.{u}).IsCorepresentable :=
-  Functor.IsCorepresentable.mk' CommGrp.coyonedaObjIsoForget
+instance CommGrpCat.forget_isCorepresentable :
+    (forget CommGrpCat.{u}).IsCorepresentable :=
+  Functor.IsCorepresentable.mk' CommGrpCat.coyonedaObjIsoForget
 
-instance AddGrp.forget_isCorepresentable :
-    (forget AddGrp.{u}).IsCorepresentable :=
-  Functor.IsCorepresentable.mk' AddGrp.coyonedaObjIsoForget
+instance AddGrpCat.forget_isCorepresentable :
+    (forget AddGrpCat.{u}).IsCorepresentable :=
+  Functor.IsCorepresentable.mk' AddGrpCat.coyonedaObjIsoForget
 
-instance AddCommGrp.forget_isCorepresentable :
-    (forget AddCommGrp.{u}).IsCorepresentable :=
-  Functor.IsCorepresentable.mk' AddCommGrp.coyonedaObjIsoForget
+instance AddCommGrpCat.forget_isCorepresentable :
+    (forget AddCommGrpCat.{u}).IsCorepresentable :=
+  Functor.IsCorepresentable.mk' AddCommGrpCat.coyonedaObjIsoForget
