@@ -134,7 +134,6 @@ noncomputable instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
     rintro _ ⟨F, hF⟩
     exact isIndObject_limit_of_discrete_of_hasLimitsOfShape _ hF)
 
-
 noncomputable instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
     CreatesLimitsOfShape (Discrete J) (Ind.inclusion C) :=
   inferInstanceAs <|
