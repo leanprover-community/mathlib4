@@ -19,7 +19,7 @@ example :
   with_reducible_and_instances rfl
 
 example :
-    (AddCommGroup.toIntModule : Module ℤ (SplittingField f)) =
+    (AddCommGroup.toIntModule _ : Module ℤ (SplittingField f)) =
       @Algebra.toModule _ _ _ _ (SplittingField.instAlgebra f) := by
   with_reducible_and_instances rfl
 

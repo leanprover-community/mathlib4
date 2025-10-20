@@ -7,7 +7,7 @@ example : (AddCommMonoid.toNatModule : Module ℕ (AlgebraicClosure k)) =
       @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) := by
   with_reducible_and_instances rfl
 
-example : (AddCommGroup.toIntModule : Module ℤ (AlgebraicClosure k)) =
+example : (AddCommGroup.toIntModule _ : Module ℤ (AlgebraicClosure k)) =
       @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) := by
   with_reducible_and_instances rfl
 
