@@ -116,7 +116,7 @@ theorem eq_of_empty [IsEmpty α] (f g : C_c(α, β)) : f = g :=
 
 /-- A continuous function on a compact space automatically has compact support. -/
 @[simps]
-def CompactlySupportedContinuousMap.equivContinuousMap [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
+def continuousMapEquiv [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
   toFun f :=
     { toFun := f
       hasCompactSupport' := HasCompactSupport.of_compactSpace f }
