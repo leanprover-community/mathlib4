@@ -241,11 +241,17 @@ noncomputable def ModuleCat.extendScalars'_map_LinearMap (M N : ModuleCat.{v} R)
   letI := ModuleCat.Algebra'.extendScalars'_linear.{v, v'} R S
   (ModuleCat.extendScalars'.{v, v'} R S).mapLinearMap R (X := M) (Y := N)
 
+--This is false alarm
+set_option linter.unusedSectionVars false in
+omit [UnivLE.{v, w}] [UnivLE.{v', w'}] [Small.{v, u} R] in
+lemma ModuleCat.extendScalars'_map_LinearMap_eq_mapAddHom (M N : ModuleCat.{v} R) :
+  extendScalars'_map_LinearMap.{v, v'} S M N =
+  (ModuleCat.extendScalars'.{v, v'} R S).mapAddHom (X := M) (Y := N) := rfl
+
 lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N] :
     IsBaseChange S (ModuleCat.extendScalars'_map_LinearMap.{v, v'} S M N) := by
   sorry
-
 
 noncomputable def ModuleCat.extendScalars'.mapExtLinearMap [Module.Flat R S]
   (M N : ModuleCat.{v} R) (n : ℕ) :
@@ -254,6 +260,12 @@ noncomputable def ModuleCat.extendScalars'.mapExtLinearMap [Module.Flat R S]
   letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
   letI := ModuleCat.Algebra'.extendScalars'_linear.{v, v'} R S
   ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n)
+
+--This is false alarm
+set_option linter.unusedSectionVars false in
+lemma ModuleCat.extendScalars'.mapExtLinearMap_eq_mapExt [Module.Flat R S]
+  (M N : ModuleCat.{v} R) (n : ℕ) : extendScalars'.mapExtLinearMap.{v, v'} S M N n =
+    (ModuleCat.extendScalars'.{v, v'} R S).mapExt M N n := rfl
 
 open ModuleCat
 
@@ -272,8 +284,13 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       (IsBaseChange.ofEquiv linearEquiv₀.symm)
     ext x
     rcases (Ext.mk₀_bijective M N).2 x with ⟨y, hy⟩
-    simp [← hy, extendScalars'.mapExtLinearMap, extendScalars'_map_LinearMap,
-      Ext.mapExt_mk₀_eq_mk₀_map, linearEquiv₀, addEquiv₀, homEquiv₀]
+    simp only [← hy, extendScalars'.mapExtLinearMap_eq_mapExt, mapExt_mk₀_eq_mk₀_map, linearEquiv₀,
+      addEquiv₀, homEquiv₀, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+      AddEquiv.coe_mk, Equiv.invFun_as_coe, AddEquiv.coe_toEquiv_symm, AddEquiv.symm_mk,
+      Equiv.symm_symm, LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
+      LinearEquiv.coe_symm_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
+      Equiv.ofBijective_symm_apply_apply, Equiv.ofBijective_apply]
+    congr 1
   · rename_i n ih _ _
     rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
     let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
@@ -338,19 +355,20 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
       extendScalars'.mapExtLinearMap.{v, v'} S T.X₃ N (n + 1)
     apply IsBaseChange.of_exact S exac1 surj1 exac2 surj2 h₁ h₂ h₃ (ih T.X₂ N) (ih T.X₁ N)
     · ext x
-      simp only [ShortComplex.map_X₁, ZeroHom.toFun_eq_coe, extendScalars'.mapExtLinearMap,
+      simp only [ShortComplex.map_X₁, ZeroHom.toFun_eq_coe,
         AddMonoidHom.toZeroHom_coe, LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk,
         Function.comp_apply, bilinearComp_apply_apply, ShortComplex.map_X₂, ShortComplex.map_f,
         ← mapExt_mk₀_eq_mk₀_map, LinearMap.coe_restrictScalars, TS, h₂, f, f', h₁]
-      rw [Functor.mapExtLinearMap_coe, Functor.mapExtLinearMap_coe, Ext.mapExt_comp_eq_comp_mapExt]
+      rw [extendScalars'.mapExtLinearMap_eq_mapExt, extendScalars'.mapExtLinearMap_eq_mapExt,
+        Ext.mapExt_comp_eq_comp_mapExt]
     · ext x
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, extendScalars'.mapExtLinearMap,
+      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
         LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
         bilinearComp_apply_apply, LinearMap.coe_restrictScalars, h₃, g, g', h₂]
       have : (ModuleCat.extendScalars'.{v, v'} R S).mapExt T.X₃ T.X₁ 1 T_exact.extClass =
         TS_exact.extClass :=
         Ext.mapExt_extClass_eq_extClass_map (ModuleCat.extendScalars'.{v, v'} R S) T_exact
-      erw [Functor.mapExtLinearMap_coe, Functor.mapExtLinearMap_coe]
+      erw [extendScalars'.mapExtLinearMap_eq_mapExt, extendScalars'.mapExtLinearMap_eq_mapExt]
       rw [Ext.mapExt_comp_eq_comp_mapExt, this]
 
 noncomputable def ModuleCat.iso_extendScalars' {M : ModuleCat.{v} R} {MS : ModuleCat.{v'} S}
