@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Data.Nat.Basic
 
 /-!
 # The natural numbers form a semiring
@@ -54,5 +55,7 @@ instance instCommSemiring : CommSemiring ℕ where
   __ := instCommMonoid
 
 instance instCharZero : CharZero ℕ where cast_injective := Function.injective_id
+
+instance instIsDomain : IsDomain ℕ where
 
 end Nat
