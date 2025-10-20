@@ -19,7 +19,11 @@ are also differentiable almost everywhere.
 ## Main definitions and results
 
 * `LocallyBoundedVariationOn.ae_differentiableWithinAt` shows that a bounded variation
-  function into a finite-dimensional real vector space is differentiable almost everywhere.
+  function on a subset of ℝ into a finite-dimensional real vector space is differentiable almost
+  everywhere, with `DifferentiableWithinAt` in its conclusion.
+* `BoundedVariationOn.ae_differentiableAt_of_mem_uIcc` shows that a bounded variation function on
+  an interval of ℝ into a finite-dimensional real vector space is differentiable almost everywhere,
+  with `DifferentiableAt` in its conclusion.
 * `LipschitzOnWith.ae_differentiableWithinAt` is the same result for Lipschitz functions.
 
 We also give several variations around these results.
@@ -71,6 +75,19 @@ theorem ae_differentiableWithinAt_of_mem {f : ℝ → V} {s : Set ℝ}
     exact A.symm.differentiableAt.comp_differentiableWithinAt x (hx xs)
   apply ae_differentiableWithinAt_of_mem_pi
   exact A.lipschitz.comp_locallyBoundedVariationOn h
+
+/-- A real function into a finite-dimensional real vector space with bounded variation on an
+interval is differentiable almost everywhere in this interval. This one differs from
+`LocallyBoundedVariationOn.ae_differentiableWithinAt_of_mem` by using `DifferentiableAt` instead of
+`DifferentiableWithinAt` in its conclusion. -/
+theorem _root_.BoundedVariationOn.ae_differentiableAt_of_mem_uIcc {f : ℝ → V} {a b : ℝ}
+    (h : BoundedVariationOn f (uIcc a b)) : ∀ᵐ x, x ∈ uIcc a b → DifferentiableAt ℝ f x := by
+  have h₁ : ∀ᵐ x, x ≠ min a b := by simp [ae_iff, measure_singleton]
+  have h₂ : ∀ᵐ x, x ≠ max a b := by simp [ae_iff, measure_singleton]
+  filter_upwards [h.locallyBoundedVariationOn.ae_differentiableWithinAt_of_mem, h₁, h₂]
+    with x hx₁ hx₂ hx₃ hx₄
+  rw [uIcc, mem_Icc] at hx₄
+  exact (hx₁ hx₄).differentiableAt (Icc_mem_nhds (by grind) (by grind))
 
 /-- A real function into a finite-dimensional real vector space with bounded variation on a set
 is differentiable almost everywhere in this set. -/
