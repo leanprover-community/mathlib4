@@ -371,11 +371,11 @@ roots of unity in `K` if `K` contains all of them.
 Note that this does not depend on a choice of `ⁿ√a`. -/
 noncomputable
 def autEquivRootsOfUnity [NeZero n] :
-    (L ≃ₐ[K] L) ≃* (rootsOfUnity n K) :=
+    Gal(L/K) ≃* (rootsOfUnity n K) :=
   (AlgEquiv.autCongr (adjoinRootXPowSubCEquiv hζ H (rootOfSplitsXPowSubC_pow a L)).symm).trans
     (autAdjoinRootXPowSubCEquiv hζ H).symm
 
-lemma autEquivRootsOfUnity_apply_rootOfSplit [NeZero n] (σ : L ≃ₐ[K] L) :
+lemma autEquivRootsOfUnity_apply_rootOfSplit [NeZero n] (σ : Gal(L/K)) :
     σ (rootOfSplitsXPowSubC (NeZero.pos n) a L) =
       autEquivRootsOfUnity hζ H L σ • (rootOfSplitsXPowSubC (NeZero.pos n) a L) := by
   obtain ⟨η, rfl⟩ := (autEquivRootsOfUnity hζ H L).symm.surjective σ
@@ -387,7 +387,7 @@ lemma autEquivRootsOfUnity_apply_rootOfSplit [NeZero n] (σ : L ≃ₐ[K] L) :
   rfl
 
 include hα in
-lemma autEquivRootsOfUnity_smul [NeZero n] (σ : L ≃ₐ[K] L) :
+lemma autEquivRootsOfUnity_smul [NeZero n] (σ : Gal(L/K)) :
     autEquivRootsOfUnity hζ H L σ • α = σ α := by
   have ⟨ζ, hζ'⟩ := hζ
   have hn := NeZero.pos n
@@ -404,12 +404,12 @@ lemma autEquivRootsOfUnity_smul [NeZero n] (σ : L ≃ₐ[K] L) :
 in `K`, then `Gal(L/K)` is isomorphic to `ZMod n`. -/
 noncomputable
 def autEquivZmod [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
-    (L ≃ₐ[K] L) ≃* Multiplicative (ZMod n) :=
+    Gal(L/K) ≃* Multiplicative (ZMod n) :=
   haveI hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   (autEquivRootsOfUnity ⟨ζ, (mem_primitiveRoots hn).mpr hζ⟩ H L).trans
     ((MulEquiv.subgroupCongr (IsPrimitiveRoot.zpowers_eq
-      (hζ.isUnit_unit' hn.ne')).symm).trans (AddEquiv.toMultiplicative'
-        (hζ.isUnit_unit' hn.ne').zmodEquivZPowers.symm))
+      (hζ.isUnit_unit' hn.ne')).symm).trans
+        (hζ.isUnit_unit' hn.ne').zmodEquivZPowers.symm.toMultiplicativeRight)
 
 include hα in
 lemma autEquivZmod_symm_apply_intCast [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℤ) :
@@ -424,7 +424,7 @@ lemma autEquivZmod_symm_apply_natCast [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot
   simpa only [Int.cast_natCast, zpow_natCast] using autEquivZmod_symm_apply_intCast H L hα hζ m
 
 include hζ H in
-lemma isCyclic_of_isSplittingField_X_pow_sub_C [NeZero n] : IsCyclic (L ≃ₐ[K] L) :=
+lemma isCyclic_of_isSplittingField_X_pow_sub_C [NeZero n] : IsCyclic Gal(L/K) :=
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   isCyclic_of_surjective _
     (autEquivZmod H _ <| (mem_primitiveRoots hn).mp hζ.choose_spec).symm.surjective
@@ -457,12 +457,12 @@ variable (K L)
 include hK in
 /-- If `L/K` is a cyclic extension of degree `n`, and `K` contains all `n`-th roots of unity,
 then `L = K[α]` for some `α ^ n ∈ K`. -/
-lemma exists_root_adjoin_eq_top_of_isCyclic [IsGalois K L] [IsCyclic (L ≃ₐ[K] L)] :
+lemma exists_root_adjoin_eq_top_of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] :
     ∃ (α : L), α ^ (finrank K L) ∈ Set.range (algebraMap K L) ∧ K⟮α⟯ = ⊤ := by
-  -- Let `ζ` be an `n`-th root of unity, and `σ` be a generator of `L ≃ₐ[K] L`.
+  -- Let `ζ` be an `n`-th root of unity, and `σ` be a generator of `Gal(L/K)`.
   have ⟨ζ, hζ⟩ := hK
   rw [mem_primitiveRoots finrank_pos] at hζ
-  obtain ⟨σ, hσ⟩ := ‹IsCyclic (L ≃ₐ[K] L)›
+  obtain ⟨σ, hσ⟩ := ‹IsCyclic Gal(L/K)›
   have hσ' := orderOf_eq_card_of_forall_mem_zpowers hσ
   -- Since the minimal polynomial of `σ` over `K` is `Xⁿ - 1`,
   -- `σ` has an eigenvector `v` with eigenvalue `ζ`.
@@ -538,7 +538,7 @@ Then `L/K` is cyclic iff
 lemma isCyclic_tfae (K L) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
     (hK : (primitiveRoots (Module.finrank K L) K).Nonempty) :
     List.TFAE [
-      IsGalois K L ∧ IsCyclic (L ≃ₐ[K] L),
+      IsGalois K L ∧ IsCyclic Gal(L/K),
       ∃ a : K, Irreducible (X ^ (finrank K L) - C a) ∧
         IsSplittingField K L (X ^ (finrank K L) - C a),
       ∃ (α : L), α ^ (finrank K L) ∈ Set.range (algebraMap K L) ∧ K⟮α⟯ = ⊤] := by

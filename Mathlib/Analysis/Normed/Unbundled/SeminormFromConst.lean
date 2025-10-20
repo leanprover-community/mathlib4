@@ -247,7 +247,7 @@ theorem seminormFromConst_const_mul (x : R) :
   have hlim : Tendsto (fun n ↦ seminormFromConst_seq c f x (n + 1)) atTop
       (𝓝 (seminormFromConst' hf1 hc hpm x)) := by
     apply (seminormFromConst_isLimit hf1 hc hpm x).comp
-      (tendsto_atTop_atTop_of_monotone (fun _ _ hnm ↦ add_le_add_right hnm 1) _)
+      (tendsto_atTop_atTop_of_monotone add_left_mono _)
     rintro n; use n; omega
   rw [seminormFromConst_apply_c hf1 hc hpm]
   apply tendsto_nhds_unique (seminormFromConst_isLimit hf1 hc hpm (c * x))

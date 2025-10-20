@@ -468,10 +468,8 @@ theorem eLpNorm_sub_le_of_dist_bdd (μ : Measure α)
         Real.norm_eq_abs, abs_of_nonneg hc]
       exact hf x hx
     · simp [Set.indicator_of_notMem hx]
-  refine le_trans (eLpNorm_mono this) ?_
-  rw [eLpNorm_indicator_const hs hp hp']
-  refine mul_le_mul_right' (le_of_eq ?_) _
-  rw [← ofReal_norm_eq_enorm, Real.norm_eq_abs, abs_of_nonneg hc]
+  grw [eLpNorm_mono this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm_eq_enorm,
+    Real.norm_eq_abs, abs_of_nonneg hc]
 
 /-- A sequence of uniformly integrable functions which converges μ-a.e. converges in Lp. -/
 theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
@@ -499,11 +497,10 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
   obtain ⟨N, hN⟩ := eventually_atTop.1 ht₂; clear ht₂
   refine ⟨N, fun n hn => ?_⟩
   rw [← t.indicator_self_add_compl (f n - g)]
-  refine le_trans (eLpNorm_add_le (((hf n).sub hg).indicator htm).aestronglyMeasurable
-    (((hf n).sub hg).indicator htm.compl).aestronglyMeasurable hp) ?_
-  rw [sub_eq_add_neg, Set.indicator_add' t, Set.indicator_neg']
-  refine le_trans (add_le_add_right (eLpNorm_add_le ((hf n).indicator htm).aestronglyMeasurable
-    (hg.indicator htm).neg.aestronglyMeasurable hp) _) ?_
+  grw [eLpNorm_add_le (((hf n).sub hg).indicator htm).aestronglyMeasurable
+    (((hf n).sub hg).indicator htm.compl).aestronglyMeasurable hp, sub_eq_add_neg,
+    Set.indicator_add' t, Set.indicator_neg', eLpNorm_add_le
+    ((hf n).indicator htm).aestronglyMeasurable (hg.indicator htm).neg.aestronglyMeasurable hp]
   have hnf : eLpNorm (t.indicator (f n)) p μ ≤ ENNReal.ofReal (ε.toReal / 3) := by
     refine heLpNorm₁ n t htm (le_trans ht₁ ?_)
     rw [ENNReal.ofReal_le_ofReal_iff hδ₁.le]
@@ -660,11 +657,12 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
       refine le_trans (eLpNorm_le_of_ae_bound this) ?_
       rw [mul_comm, Measure.restrict_apply' hs, Set.univ_inter, ENNReal.ofReal_coe_nnreal, one_div]
     _ ≤ ENNReal.ofReal (ε / 2) + C * ENNReal.ofReal (ε / (2 * C)) := by
-      refine add_le_add (hC i) (mul_le_mul_left' ?_ _)
+      grw [hC i]
+      gcongr
       rwa [one_div, ENNReal.rpow_inv_le_iff (ENNReal.toReal_pos hpzero hp'),
         ENNReal.ofReal_rpow_of_pos (div_pos hε (mul_pos two_pos (NNReal.coe_pos.2 hCpos)))]
     _ ≤ ENNReal.ofReal (ε / 2) + ENNReal.ofReal (ε / 2) := by
-      refine add_le_add_left ?_ _
+      gcongr
       rw [← ENNReal.ofReal_coe_nnreal, ← ENNReal.ofReal_mul (NNReal.coe_nonneg _), ← div_div,
         mul_div_cancel₀ _ (NNReal.coe_pos.2 hCpos).ne.symm]
     _ ≤ ENNReal.ofReal ε := by

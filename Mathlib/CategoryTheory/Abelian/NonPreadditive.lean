@@ -64,7 +64,11 @@ universe v u
 variable (C : Type u) [Category.{v} C]
 
 /-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, binary
-products and coproducts, and every monomorphism and every epimorphism is normal. -/
+products and coproducts, and every monomorphism and every epimorphism is normal.
+
+Notice that every such category is abelian (see `CategoryTheory.NonPreadditiveAbelian.preadditive`),
+so in practice it is preferable to work directly with `Abelian`.
+-/
 class NonPreadditiveAbelian extends HasZeroMorphisms C, IsNormalMonoCategory C,
     IsNormalEpiCategory C where
   [has_zero_object : HasZeroObject C]

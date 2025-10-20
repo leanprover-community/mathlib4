@@ -23,7 +23,7 @@ there are quite a few variations that are needed in practice.
 
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 open Opposite
 
 variable {C : Type u₁}

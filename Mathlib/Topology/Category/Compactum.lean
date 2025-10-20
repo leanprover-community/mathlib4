@@ -405,7 +405,7 @@ def homOfContinuous {X Y : Compactum} (f : X → Y) (cont : Continuous f) : X �
 
 end Compactum
 
-/-- The functor functor from Compactum to CompHaus. -/
+/-- The functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
   obj X := { toTop := TopCat.of X, prop := trivial }
   map := fun f => CompHausLike.ofHom _

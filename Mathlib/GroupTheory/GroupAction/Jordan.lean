@@ -110,11 +110,10 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
       → IsMultiplyPreprimitive G α 2) := by
   induction n using Nat.strong_induction_on generalizing α G with
   | h n hrec =>
-  have : Finite α := Or.resolve_right (finite_or_infinite α) (fun _ ↦ by
-      simp [Nat.card_eq_zero_of_infinite] at hsn')
-  have hs_ne_top : s ≠ ⊤ := by
+  have : Finite α := Nat.finite_of_card_ne_zero <| ne_zero_of_lt hsn'
+  have hs_ne_univ : s ≠ Set.univ := by
     intro hs
-    rw [hs, Set.top_eq_univ, Set.ncard_univ] at hsn
+    rw [hs, Set.ncard_univ] at hsn
     simp only [hsn, add_lt_add_iff_left, Nat.not_ofNat_lt_one] at hsn'
   have hs_nonempty : s.Nonempty := by
     simp [← Set.ncard_pos s.toFinite, hsn]
@@ -146,7 +145,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
     obtain ⟨a, ha, b, hb, hab⟩ := this
     -- apply Rudio to get g ∈ G such that a ∈ g • s, b ∉ g • s
     obtain ⟨g, hga, hgb⟩ :=
-      exists_mem_smul_and_notMem_smul (G := G) s.toFinite hs_nonempty hs_ne_top hab
+      exists_mem_smul_and_notMem_smul (G := G) s.toFinite hs_nonempty hs_ne_univ hab
     let t := s ∩ g • s
     have ht : t.Finite := s.toFinite.inter_of_left (g • s)
     have htm : t.ncard = t.ncard - 1 + 1 := by
@@ -274,7 +273,7 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
       a ∈ s ∧ s = insert a (Subtype.val '' t) by
       obtain ⟨a, t, _, hst⟩ := this
       have ha' : a ∉ Subtype.val '' t := by
-        intro h; rw [Set.mem_image] at h ; obtain ⟨x, hx⟩ := h
+        intro h; rw [Set.mem_image] at h; obtain ⟨x, hx⟩ := h
         apply x.prop; rw [hx.right]; exact Set.mem_singleton a
       have ht_prim : IsPreprimitive (stabilizer G a) (SubMulAction.ofStabilizer G a) := by
         rw [← is_one_preprimitive_iff]
@@ -336,8 +335,7 @@ theorem isMultiplyPretransitive_of_nontrivial {K : Type*} [Group K] [MulAction K
     · apply MulAction.isMultiplyPretransitive_of_le' hn
       simp [← hα]
     · suffices (IsEmpty (Fin n ↪ α)) by infer_instance
-      apply Or.resolve_right (isEmpty_or_nonempty _)
-      rwa [Function.Embedding.nonempty_iff_card_le, Fintype.card_fin,
+      rwa [← not_nonempty_iff, Function.Embedding.nonempty_iff_card_le, Fintype.card_fin,
         ← Nat.card_eq_fintype_card, hα]
   let φ := MulAction.toPermHom K α
   let f : α →ₑ[φ] α :=
@@ -414,7 +412,6 @@ theorem eq_top_of_isPreprimitive_of_isSwap_mem
     exact orderOf_dvd_card
   -- important case : Nat.card α ≥ 3
   obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα3
-  -- let s := (g.support : Set α)
   have hsc : Set.ncard ((g.support)ᶜ : Set α) = n + 1 := by
     apply Nat.add_left_cancel
     rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
@@ -453,18 +450,15 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
     simp only [orderOf_mk, h3g.orderOf]
     -- important case : Nat.card α ≥ 4
   obtain ⟨n, hn⟩ := Nat.exists_eq_add_of_le' hα4
-  --  refine is_full_minus_two_pretransitive_iff α _,
   apply IsMultiplyPretransitive.alternatingGroup_le
-  suffices IsMultiplyPreprimitive G α (Nat.card α - 2) by
-    apply IsMultiplyPreprimitive.isMultiplyPretransitive
-  -- suffices : IsMultiplyPreprimitive G α (Fintype.card α - 2)
-  -- apply this.left.alternatingGroup_le_of_sub_two
+  suffices IsMultiplyPreprimitive G α (Nat.card α - 2) from
+    IsMultiplyPreprimitive.isMultiplyPretransitive ..
   rw [show Nat.card α - 2 = n + 2 by grind]
   apply hG.isMultiplyPreprimitive (s := (g.supportᶜ : Set α))
   · apply Nat.add_left_cancel
     rw [Set.ncard_add_ncard_compl, Set.ncard_coe_finset,
       h3g.card_support, add_comm, hn]
-  · rw [hn]; grind
+  · grind
   have := isPretransitive_of_isCycle_mem h3g.isCycle hg
   apply IsPreprimitive.of_prime_card
   convert Nat.prime_three

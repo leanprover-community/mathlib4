@@ -109,7 +109,7 @@ lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
     .of_algebraMap_eq' (Polynomial.mapRingHom_comp_C _).symm
   refine H₁.out (Spec.map (CommRingCat.ofHom Polynomial.C))
     (Spec.map (CommRingCat.ofHom Polynomial.C)) (Spec.map _)
-    (isPullback_Spec_map_isPushout _ _ _ _
+    (isPullback_SpecMap_of_isPushout _ _ _ _
     (CommRingCat.isPushout_of_isPushout R S (Polynomial R) (Polynomial S))).flip
 
 lemma eq_universallyClosed_inf_isAffineHom :

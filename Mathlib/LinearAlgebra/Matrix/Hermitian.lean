@@ -45,8 +45,11 @@ instance (A : Matrix n n α) [Decidable (Aᴴ = A)] : Decidable (IsHermitian A) 
 
 theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 
-protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermitian) :
-    IsSelfAdjoint A := h
+theorem isHermitian_iff_isSelfAdjoint {A : Matrix n n α} :
+    A.IsHermitian ↔ IsSelfAdjoint A := Iff.rfl
+
+protected alias ⟨IsHermitian.isSelfAdjoint, _root_.IsSelfAdjoint.isHermitian⟩ :=
+  isHermitian_iff_isSelfAdjoint
 
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j

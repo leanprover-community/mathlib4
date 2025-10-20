@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
@@ -165,6 +166,18 @@ theorem Monoid.fg_def : Monoid.FG M ↔ (⊤ : Submonoid M).FG :=
 theorem Monoid.fg_iff :
     Monoid.FG M ↔ ∃ S : Set M, Submonoid.closure S = (⊤ : Submonoid M) ∧ S.Finite :=
   ⟨fun _ => (Submonoid.fg_iff ⊤).1 FG.fg_top, fun h => ⟨(Submonoid.fg_iff ⊤).2 h⟩⟩
+
+/-- A monoid is finitely generated iff there exists a surjective homomorphism from a `FreeMonoid`
+on finitely many generators. -/
+@[to_additive /-- A additive monoid is finitely generated iff there exists a surjective homomorphism
+from a `FreeAddMonoid` on finitely many generators.-/]
+theorem Monoid.fg_iff_exists_freeMonoid_hom_surjective :
+    Monoid.FG M ↔ ∃ (S : Set M) (_ : S.Finite) (φ : FreeMonoid S →* M), Function.Surjective φ := by
+  refine ⟨fun ⟨S, hS⟩ ↦ ⟨S, S.finite_toSet, FreeMonoid.lift Subtype.val, ?_⟩, ?_⟩
+  · rwa [← MonoidHom.mrange_eq_top, ← Submonoid.closure_eq_mrange]
+  · rintro ⟨S, hfin : Finite S, φ, hφ⟩
+    refine fg_iff.mpr ⟨φ '' Set.range FreeMonoid.of, ?_, Set.toFinite _⟩
+    simp [← MonoidHom.map_mclosure, hφ, FreeMonoid.closure_range_of, ← MonoidHom.mrange_eq_map]
 
 variable (M) in
 /-- A finitely generated monoid has a minimal generating set. -/
@@ -383,6 +396,18 @@ theorem Group.fg_iff : Group.FG G ↔ ∃ S : Set G, Subgroup.closure S = (⊤ :
 theorem Group.fg_iff' :
     Group.FG G ↔ ∃ (n : _) (S : Finset G), S.card = n ∧ Subgroup.closure (S : Set G) = ⊤ :=
   Group.fg_def.trans ⟨fun ⟨S, hS⟩ => ⟨S.card, S, rfl, hS⟩, fun ⟨_n, S, _hn, hS⟩ => ⟨S, hS⟩⟩
+
+/-- A group is finitely generated iff there exists a surjective homomorphism from a `FreeGroup`
+on finitely many generators. -/
+@[to_additive /-- An additive group is finitely generated iff there exists a surjective homomorphism
+from a `FreeAddGroup` on finitely many generators. -/]
+theorem Group.fg_iff_exists_freeGroup_hom_surjective :
+    Group.FG G ↔ ∃ (S : Set G) (_ : S.Finite) (φ : FreeGroup S →* G), Function.Surjective φ := by
+  refine ⟨fun ⟨S, hS⟩ ↦ ⟨S, S.finite_toSet, FreeGroup.lift Subtype.val, ?_⟩, ?_⟩
+  · rwa [← MonoidHom.range_eq_top, ← FreeGroup.closure_eq_range]
+  · rintro ⟨S, hfin : Finite S, φ, hφ⟩
+    refine fg_iff.mpr ⟨φ '' Set.range FreeGroup.of, ?_, Set.toFinite _⟩
+    simp [← MonoidHom.map_closure, hφ, FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
 
 /-- A group is finitely generated if and only if it is finitely generated as a monoid. -/
 @[to_additive /-- An additive group is finitely generated if and only

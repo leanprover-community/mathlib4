@@ -203,4 +203,4 @@ instance [NoZeroSMulDivisors S T] [Algebra.IsSeparable L F] :
     Algebra.IsSeparable (FractionRing Sₚ) (FractionRing Tₚ) := by
   refine FractionRing.isSeparable_of_isLocalization T Sₚ Tₚ (M := P') ?_
   apply algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul
-  exact fun _ h ↦  mem_nonZeroDivisors_of_ne_zero <| ne_of_mem_of_not_mem h <| by simp
+  exact fun _ h ↦ mem_nonZeroDivisors_of_ne_zero <| ne_of_mem_of_not_mem h <| by simp

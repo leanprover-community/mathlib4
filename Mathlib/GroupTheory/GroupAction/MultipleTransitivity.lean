@@ -614,7 +614,7 @@ theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm 
   simp only [Function.Embedding.smul_apply, Equiv.Perm.smul_def] at hgk
   simp [← hgk, Subgroup.smul_def, Perm.smul_def]
 
-@[deprecated  (since := "2025-10-03")]
+@[deprecated (since := "2025-10-03")]
 alias eq_top_if_isMultiplyPretransitive := eq_top_of_isMultiplyPretransitive
 
 end Equiv.Perm

@@ -163,8 +163,8 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   -- If the left translate of `t` by `g⁻¹` is disjoint from `t`, then we're easily done.
   obtain hgt | hgt := disjoint_or_nonempty_inter t (g⁻¹ • t)
   · rw [← card_smul_finset g⁻¹ t]
-    refine Or.inr ((add_le_add_right hst _).trans ?_)
-    rw [← card_union_of_disjoint hgt]
+    right
+    grw [hst, ← card_union_of_disjoint hgt]
     exact (card_le_card_mul_left hgs).trans (le_add_of_le_left aux1)
   -- Else, we're done by induction on either `(s', t')` or `(s'', t'')` depending on whether
   -- `|s| + |t| ≤ |s'| + |t'|` or `|s| + |t| < |s''| + |t''|`. One of those two inequalities must

@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.ModEq
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Equality modulo an element
@@ -30,6 +31,7 @@ to `AddSubgroup.ModEq` and multiplicativise it. Longer term, we could generalise
 also unify with `Nat.ModEq`.
 -/
 
+assert_not_exists Module
 
 namespace AddCommGroup
 
@@ -66,7 +68,7 @@ attribute [symm] ModEq.symm
 
 @[trans]
 theorem ModEq.trans : a ≡ b [PMOD p] → b ≡ c [PMOD p] → a ≡ c [PMOD p] := fun ⟨m, hm⟩ ⟨n, hn⟩ =>
-  ⟨m + n, by simp [add_smul, ← hm, ← hn]⟩
+  ⟨m + n, by simp [add_zsmul, ← hm, ← hn]⟩
 
 instance : IsTrans α (ModEq p) where
   trans _ _ _ := ModEq.trans
@@ -87,7 +89,7 @@ theorem modEq_neg : a ≡ b [PMOD -p] ↔ a ≡ b [PMOD p] :=
 alias ⟨ModEq.of_neg', ModEq.neg'⟩ := modEq_neg
 
 theorem modEq_sub (a b : α) : a ≡ b [PMOD b - a] :=
-  ⟨1, (one_smul _ _).symm⟩
+  ⟨1, by simp⟩
 
 @[simp]
 theorem modEq_zero : a ≡ b [PMOD 0] ↔ a = b := by simp [ModEq, sub_eq_zero, eq_comm]
@@ -127,28 +129,29 @@ protected theorem nsmul_add (n : ℕ) : a ≡ b [PMOD p] → n • p + a ≡ b [
   (nsmul_add_modEq _).trans
 
 protected theorem of_zsmul : a ≡ b [PMOD z • p] → a ≡ b [PMOD p] := fun ⟨m, hm⟩ =>
-  ⟨m * z, by rwa [mul_smul]⟩
+  ⟨m * z, by rwa [mul_zsmul]⟩
 
 protected theorem of_nsmul : a ≡ b [PMOD n • p] → a ≡ b [PMOD p] := fun ⟨m, hm⟩ =>
-  ⟨m * n, by rwa [mul_smul, natCast_zsmul]⟩
+  ⟨m * n, by rwa [mul_zsmul, natCast_zsmul]⟩
 
 protected theorem zsmul : a ≡ b [PMOD p] → z • a ≡ z • b [PMOD z • p] :=
-  Exists.imp fun m hm => by rw [← smul_sub, hm, smul_comm]
+  Exists.imp fun m hm => by rw [← zsmul_sub, hm, zsmul_comm]
 
 protected theorem nsmul : a ≡ b [PMOD p] → n • a ≡ n • b [PMOD n • p] :=
-  Exists.imp fun m hm => by rw [← smul_sub, hm, smul_comm]
+  Exists.imp fun m hm => by rw [← nsmul_sub, hm, ← natCast_zsmul, zsmul_comm, natCast_zsmul]
 
 end ModEq
 
 @[simp]
-theorem zsmul_modEq_zsmul [NoZeroSMulDivisors ℤ α] (hn : z ≠ 0) :
+theorem zsmul_modEq_zsmul [IsAddTorsionFree α] (hn : z ≠ 0) :
     z • a ≡ z • b [PMOD z • p] ↔ a ≡ b [PMOD p] :=
-  exists_congr fun m => by rw [← smul_sub, smul_comm, smul_right_inj hn]
+  exists_congr fun m => by rw [← zsmul_sub, zsmul_comm, zsmul_right_inj hn]
 
 @[simp]
-theorem nsmul_modEq_nsmul [NoZeroSMulDivisors ℕ α] (hn : n ≠ 0) :
+theorem nsmul_modEq_nsmul [IsAddTorsionFree α] (hn : n ≠ 0) :
     n • a ≡ n • b [PMOD n • p] ↔ a ≡ b [PMOD p] :=
-  exists_congr fun m => by rw [← smul_sub, smul_comm, smul_right_inj hn]
+  exists_congr fun m => by
+    rw [← nsmul_sub, ← natCast_zsmul p, zsmul_comm, natCast_zsmul, nsmul_right_inj hn]
 
 alias ⟨ModEq.zsmul_cancel, _⟩ := zsmul_modEq_zsmul
 
@@ -159,22 +162,25 @@ namespace ModEq
 @[simp]
 protected theorem add_iff_left :
     a₁ ≡ b₁ [PMOD p] → (a₁ + a₂ ≡ b₁ + b₂ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p]) := fun ⟨m, hm⟩ =>
-  (Equiv.addLeft m).symm.exists_congr_left.trans <| by simp [add_sub_add_comm, hm, add_smul, ModEq]
+  (Equiv.addLeft m).symm.exists_congr_left.trans <| by simp [add_sub_add_comm, hm, add_zsmul, ModEq]
 
 @[simp]
 protected theorem add_iff_right :
     a₂ ≡ b₂ [PMOD p] → (a₁ + a₂ ≡ b₁ + b₂ [PMOD p] ↔ a₁ ≡ b₁ [PMOD p]) := fun ⟨m, hm⟩ =>
-  (Equiv.addRight m).symm.exists_congr_left.trans <| by simp [add_sub_add_comm, hm, add_smul, ModEq]
+  (Equiv.addRight m).symm.exists_congr_left.trans <| by
+    simp [add_sub_add_comm, hm, add_zsmul, ModEq]
 
 @[simp]
 protected theorem sub_iff_left :
     a₁ ≡ b₁ [PMOD p] → (a₁ - a₂ ≡ b₁ - b₂ [PMOD p] ↔ a₂ ≡ b₂ [PMOD p]) := fun ⟨m, hm⟩ =>
-  (Equiv.subLeft m).symm.exists_congr_left.trans <| by simp [sub_sub_sub_comm, hm, sub_smul, ModEq]
+  (Equiv.subLeft m).symm.exists_congr_left.trans <| by
+    simp [sub_sub_sub_comm, hm, ← sub_eq_add_neg, sub_zsmul, ModEq]
 
 @[simp]
 protected theorem sub_iff_right :
     a₂ ≡ b₂ [PMOD p] → (a₁ - a₂ ≡ b₁ - b₂ [PMOD p] ↔ a₁ ≡ b₁ [PMOD p]) := fun ⟨m, hm⟩ =>
-  (Equiv.subRight m).symm.exists_congr_left.trans <| by simp [sub_sub_sub_comm, hm, sub_smul, ModEq]
+  (Equiv.subRight m).symm.exists_congr_left.trans <| by
+   simp [sub_sub_sub_comm, hm, ← sub_eq_add_neg, sub_zsmul, ModEq]
 
 protected alias ⟨add_left_cancel, add⟩ := ModEq.add_iff_left
 
@@ -257,7 +263,7 @@ theorem modEq_nsmul_cases (n : ℕ) (hn : n ≠ 0) :
     a ≡ b [PMOD p] ↔ ∃ i < n, a ≡ b + i • p [PMOD (n • p)] := by
   simp_rw [← sub_modEq_iff_modEq_add, modEq_comm (b := b)]
   simp_rw [AddCommGroup.ModEq, sub_right_comm, sub_eq_iff_eq_add (b := _ • _), ← natCast_zsmul,
-    smul_smul, ← add_smul]
+    ← mul_zsmul, ← add_zsmul]
   constructor
   · rintro ⟨k, hk⟩
     refine ⟨(k % n).toNat, ?_⟩

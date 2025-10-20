@@ -172,8 +172,9 @@ variable (𝕜)
 variable [CharZero 𝕜]
 
 include 𝕜 in
-theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x := fun h =>
-  ne_zero_of_mem_sphere hr x ((self_eq_neg 𝕜 _).mp (by (conv_lhs => rw [h]); rfl))
+theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x :=
+  have := noZeroSMulDivisors_nat_iff_isAddTorsionFree.1 <| Nat.noZeroSMulDivisors 𝕜 E
+  fun h => ne_zero_of_mem_sphere hr x (self_eq_neg.mp (by (conv_lhs => rw [h]); rfl))
 
 include 𝕜 in
 theorem ne_neg_of_mem_unit_sphere (x : sphere (0 : E) 1) : x ≠ -x :=

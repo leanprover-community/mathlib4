@@ -167,11 +167,6 @@ theorem prod_Ico_id_eq_factorial : ∀ n : ℕ, (∏ x ∈ Ico 1 (n + 1), x) = n
     rw [prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n, Nat.factorial_succ,
       prod_Ico_id_eq_factorial n, Nat.succ_eq_add_one, mul_comm]
 
-@[simp]
-theorem prod_range_add_one_eq_factorial : ∀ n : ℕ, (∏ x ∈ range n, (x + 1)) = n !
-  | 0 => rfl
-  | n + 1 => by simp [factorial, Finset.range_add_one, prod_range_add_one_eq_factorial n]
-
 section GaussSum
 
 /-- Gauss' summation formula -/

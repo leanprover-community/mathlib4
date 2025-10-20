@@ -801,6 +801,21 @@ lemma getVert_eq_support_getElem? {u v : V} {n : ℕ} (p : G.Walk u v) (h : n �
 @[deprecated (since := "2025-06-10")]
 alias getVert_eq_support_get? := getVert_eq_support_getElem?
 
+lemma getVert_eq_getD_support {u v : V} (p : G.Walk u v) (n : ℕ) :
+    p.getVert n = p.support.getD n v := by
+  by_cases h : n ≤ p.length
+  · simp [← getVert_eq_support_getElem? p h]
+  grind [getVert_of_length_le, length_support]
+
+theorem getVert_comp_val_eq_get_support {u v : V} (p : G.Walk u v) :
+    p.getVert ∘ Fin.val = p.support.get := by
+  grind [getVert_eq_support_getElem, length_support]
+
+theorem range_getVert_eq_range_support_getElem {u v : V} (p : G.Walk u v) :
+    Set.range p.getVert = Set.range p.support.get :=
+  Set.ext fun _ ↦ ⟨by grind [Set.range_list_get, getVert_mem_support],
+    fun ⟨n, _⟩ ↦ ⟨n, by grind [getVert_eq_support_getElem, length_support]⟩⟩
+
 theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
   rw [Walk.support_reverse]

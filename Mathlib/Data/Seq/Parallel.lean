@@ -96,11 +96,7 @@ theorem terminates_parallel.aux :
           (Sum.inr List.nil) l with a' | ls <;> erw [e] at e'
         · contradiction
         have := IH' m _ e
-        -- Porting note: `revert e'` & `intro e'` are required.
-        revert e'
-        cases destruct c <;> intro e' <;> [injection e'; injection e' with h']
-        rw [← h']
-        simp [this]
+        grind
     rcases h : parallel.aux2 l with a | l'
     · exact lem1 _ _ ⟨a, h⟩
     · have H2 : corec parallel.aux1 (l, S) = think _ := destruct_eq_think (by
