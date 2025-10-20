@@ -115,12 +115,12 @@ variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
 matrices, operators on a Hilbert space, elements of a C⋆-algebra, etc. -/
 noncomputable def log (a : A) : A := cfc Real.log a
 
-@[simp, grind]
+@[simp, grind =>]
 protected lemma _root_.IsSelfAdjoint.log {a : A} : IsSelfAdjoint (log a) := cfc_predicate _ a
 
-@[simp, grind] lemma log_zero : log (0 : A) = 0 := by simp [log]
+@[simp, grind =] lemma log_zero : log (0 : A) = 0 := by simp [log]
 
-@[simp, grind] lemma log_one : log (1 : A) = 0 := by simp [log]
+@[simp, grind =] lemma log_one : log (1 : A) = 0 := by simp [log]
 
 @[simp, grind =]
 lemma log_algebraMap {r : ℝ} : log (algebraMap ℝ A r) = algebraMap ℝ A (Real.log r) := by

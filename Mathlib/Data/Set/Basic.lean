@@ -558,7 +558,7 @@ theorem univ_eq_empty_iff : (univ : Set α) = ∅ ↔ IsEmpty α :=
 theorem empty_ne_univ [Nonempty α] : (∅ : Set α) ≠ univ := fun e =>
   not_isEmpty_of_nonempty α <| univ_eq_empty_iff.1 e.symm
 
-@[simp, grind]
+@[simp, grind ←]
 theorem subset_univ (s : Set α) : s ⊆ univ := fun _ _ => trivial
 
 @[simp, grind =]
