@@ -110,11 +110,8 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     split_ifs with h₁
     · convert card_parts_equitabilise_subset_le _ (card_aux₁ h₁) hB
     · convert card_parts_equitabilise_subset_le _ (card_aux₂ hP hU h₁) hB
-  rw [sum_const]
-  refine mul_le_mul_right' ?_ _
-  have t := card_filter_atomise_le_two_pow (s := U) hX
-  refine t.trans (pow_right_mono₀ (by simp) <| tsub_le_tsub_right ?_ _)
-  exact card_image_le.trans (card_le_card <| filter_subset _ _)
+  grw [sum_const, smul_eq_mul, card_filter_atomise_le_two_pow (s := U) hX,
+    Finpartition.card_nonuniformWitnesses_le, filter_subset] <;> simp
 
 private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ P.parts)
     (hUV : U ≠ V) (hunif : ¬G.IsUniform ε U V) (hPε : ↑100 ≤ ↑4 ^ #P.parts * ε ^ 5)
@@ -464,7 +461,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
     ↑(G.edgeDensity U V) ^ 2 - ε ^ 5 / 25 + ε ^ 4 / ↑3 ≤ ↑(G.edgeDensity U V) ^ 2 - ε ^ 5 / ↑25 +
         #(star hP G ε hU V) * #(star hP G ε hV U) / ↑16 ^ #P.parts *
           (↑9 / ↑16) * ε ^ 2 := by
-      apply add_le_add_left
+      gcongr
       have Ul : 4 / 5 * ε ≤ #(star hP G ε hU V) / _ :=
         eps_le_card_star_div hPα hPε hε₁ hU hV hUVne hUV
       have Vl : 4 / 5 * ε ≤ #(star hP G ε hV U) / _ :=
