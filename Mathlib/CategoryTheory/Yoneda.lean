@@ -210,7 +210,7 @@ structure RepresentableBy (F : Cᵒᵖ ⥤ Type v) (Y : C) where
   /-- the natural bijection `(X ⟶ Y) ≃ F.obj (op X)`. -/
   homEquiv {X : C} : (X ⟶ Y) ≃ F.obj (op X)
   homEquiv_comp {X X' : C} (f : X ⟶ X') (g : X' ⟶ Y) :
-    homEquiv (f ≫ g) = F.map f.op (homEquiv g) := by cat_disch
+    homEquiv (f ≫ g) = F.map f.op (homEquiv g)
 
 lemma RepresentableBy.comp_homEquiv_symm {F : Cᵒᵖ ⥤ Type v} {Y : C}
     (e : F.RepresentableBy Y) {X X' : C} (x : F.obj (op X')) (f : X ⟶ X') :
@@ -231,7 +231,7 @@ structure CorepresentableBy (F : C ⥤ Type v) (X : C) where
   /-- the natural bijection `(X ⟶ Y) ≃ F.obj Y`. -/
   homEquiv {Y : C} : (X ⟶ Y) ≃ F.obj Y
   homEquiv_comp {Y Y' : C} (g : Y ⟶ Y') (f : X ⟶ Y) :
-    homEquiv (f ≫ g) = F.map g (homEquiv f) := by cat_disch
+    homEquiv (f ≫ g) = F.map g (homEquiv f)
 
 lemma CorepresentableBy.homEquiv_symm_comp {F : C ⥤ Type v} {X : C}
     (e : F.CorepresentableBy X) {Y Y' : C} (y : F.obj Y) (g : Y ⟶ Y') :

@@ -55,8 +55,8 @@ def DenseAt.ofIso {Y' : D} (e : Y ≅ Y') : F.DenseAt Y' :=
 then `G` is also dense at `Y`. -/
 def DenseAt.ofNatIso {G : C ⥤ D} (e : F ≅ G) : G.DenseAt Y :=
   (IsColimit.equivOfNatIsoOfIso
-    ((Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerLeft _ e) _ _
-    (by exact Cocones.ext (Iso.refl _))).1
+      ((Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerLeft _ e) _ _
+      (by exact Cocones.ext (Iso.refl _)))
     (hY.whiskerEquivalence (CostructuredArrow.mapNatIso e.symm))
 
 /-- If `F : C ⥤ D` is dense at `Y : D`, then so is `G ⋙ F` if `G` is an equivalence. -/

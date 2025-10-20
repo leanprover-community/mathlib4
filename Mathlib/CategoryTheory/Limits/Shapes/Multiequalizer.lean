@@ -92,7 +92,7 @@ inductive WalkingMulticospan (J : MulticospanShape.{w, w'}) : Type max w w'
   | left : J.L → WalkingMulticospan J
   | right : J.R → WalkingMulticospan J
 
-/-- The type underlying the multiecoqualizer diagram. -/
+/-- The type underlying the multicoequalizer diagram. -/
 inductive WalkingMultispan (J : MultispanShape.{w, w'}) : Type max w w'
   | left : J.L → WalkingMultispan J
   | right : J.R → WalkingMultispan J
@@ -794,7 +794,7 @@ abbrev multiequalizer {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
 abbrev HasMulticoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C) :=
   HasColimit I.multispan
 
-/-- The multiecoqualizer of `I : MultispanIndex J C`. -/
+/-- The multicoequalizer of `I : MultispanIndex J C`. -/
 abbrev multicoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
     [HasMulticoequalizer I] : C :=
   colimit I.multispan

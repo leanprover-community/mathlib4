@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Presentable.Adjunction
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
+import Mathlib.CategoryTheory.Localization.Bousfield
 import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
@@ -18,7 +18,7 @@ import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 Let `W : MorphismProperty C` be a `w`-small property of morphisms in a
 locally `κ`-presentable category `C` (with `κ : Cardinal.{w}` a regular cardinal),
 such that the domains and codomains of morphisms satisfying `W` are `κ`-presentable.
-Then, the fullsubcategory `W.rightOrthogonal` is also locally `κ`-presentable
+Then, the fullsubcategory `W.isLocal` is also locally `κ`-presentable
 (it is also stable under `κ`-filtered colimits, and the inclusion functor as
 a left adjoint). This is essentially the implication (i) → (ii) in
 Theorem 1.39 in the book by Adámek and Rosický (note that according to the
@@ -26,7 +26,7 @@ errata to this book, the proof of (ii) → (i) in the book is wrong and
 the statement is wrong if `κ = ℵ₀`.).
 
 The main part in the proof is the existence of the left adjoint to the inclusion
-of `W.rightOrthogonal`. The construction proceeds by a transfinite iteration
+of `W.isLocal`. The construction proceeds by a transfinite iteration
 of a certain construction involving colimits `OrthogonalReflection.succStruct`
 (which shares certain similarities with the construction for "small object argument",
 see `CategoryTheory.SmallObject.Construction`: in the case of the small object
@@ -35,17 +35,17 @@ a *unique* lifting).
 
 Given `W : MorphismProperty C` (which should be small) and assuming the existence
 of certain colimits in `C`, we construct a morphism `toSucc W Z : Z ⟶ succ W Z` for
-any `Z : C`. This morphism belongs to `LeftBousfield.W W.rightOrthogonal` and
-is an isomorphism iff `Z` belongs to `W.rightOrthogonal`. By doing a transfinite
+any `Z : C`. This morphism belongs to `LeftBousfield.W W.isLocal` and
+is an isomorphism iff `Z` belongs to `W.isLocal`. By doing a transfinite
 iteration of this construction, we show that the inclusion
-of the full subcategory `W.rightOrthogonal` in `C` has a left adjoint functor
+of the full subcategory `W.isLocal` in `C` has a left adjoint functor
 when the domains and codomains of the morphisms satisfying `W` are `κ`-presentable.
 
 ## Main definitions
-* `MorphismProperty.isRightAdjoint_ι_rightOrthogonal`: existence of the left adjoint
-of the inclusion `W.rightOrthogonal ⥤ C`;
-* `MorphismProperty.isLocallyPresentable_rightOrthogonal`: the fullsubcategory
-`W.rightOrthogonal` is locally presentable.
+* `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
+of the inclusion `W.isLocal ⥤ C`;
+* `MorphismProperty.isLocallyPresentable_isLocal`: the fullsubcategory
+`W.isLocal` is locally presentable.
 
 
 ## References
@@ -57,7 +57,7 @@ universe w v' u' v u
 
 namespace CategoryTheory
 
-open Opposite Limits Localization
+open Limits Localization
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 
@@ -65,11 +65,11 @@ variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 instance (D : Type w) [SmallCategory.{w} D] : EssentiallySmall.{w} D :=
   essentiallySmallSelf D
 
-lemma MorphismProperty.isClosedUnderColimitsOfShape_rightOrthogonal
+lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
     (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
-    W.rightOrthogonal.IsClosedUnderColimitsOfShape J where
+    W.isLocal.IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
     obtain ⟨_, _⟩ := hW f hf
     refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
@@ -85,20 +85,18 @@ lemma MorphismProperty.isClosedUnderColimitsOfShape_rightOrthogonal
       obtain ⟨g, rfl⟩ := (p.prop_diag_obj j _ hf).2 g
       exact ⟨g ≫ p.ι.app j, by simp⟩
 
-lemma MorphismProperty.isCardinalAccessible_ι_rightOrthogonal
+lemma MorphismProperty.isCardinalAccessible_ι_isLocal
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [HasCardinalFilteredColimits C κ]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
-    W.rightOrthogonal.ι.IsCardinalAccessible κ where
+    W.isLocal.ι.IsCardinalAccessible κ where
   preservesColimitOfShape J _ _ := by
-    have := W.isClosedUnderColimitsOfShape_rightOrthogonal J κ hW
+    have := W.isClosedUnderColimitsOfShape_isLocal J κ hW
     infer_instance
 
 namespace OrthogonalReflection
 
 variable (Z : C)
-
-section
 
 /-- The index type parametrising the data of a morphism `f : X ⟶ Y` satisfying `W`
 and a morphism `X ⟶ Z`. -/
@@ -264,8 +262,8 @@ lemma toSucc_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
   ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z, by
     simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc]⟩
 
-lemma leftBousfieldW_rightOrthogonal_toSucc :
-    LeftBousfield.W W.rightOrthogonal (toSucc W Z) := by
+lemma leftBousfieldW_isLocal_toSucc :
+    LeftBousfield.W W.isLocal (toSucc W Z) := by
   refine fun T hT ↦ ⟨fun φ₁ φ₂ h ↦ ?_, fun g ↦ ?_⟩
   · ext ⟨⟩
     simp at h
@@ -279,7 +277,7 @@ lemma leftBousfieldW_rightOrthogonal_toSucc :
       (fun d ↦ (hT d.1.1.hom d.1.2).1 (by simp [reassoc_of% d.2.2])), by simp⟩
 
 lemma isIso_toSucc_iff :
-    IsIso (toSucc W Z) ↔ W.rightOrthogonal Z := by
+    IsIso (toSucc W Z) ↔ W.isLocal Z := by
   refine ⟨fun _ X Y f hf ↦ ?_, fun hZ ↦ ?_⟩
   · refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
     · simpa [← cancel_mono (toSucc W Z)] using
@@ -289,7 +287,7 @@ lemma isIso_toSucc_iff :
       simp only [Category.assoc] at hZ
       exact ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z ≫ inv (toSucc W Z),
         by simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc, hZ]⟩
-  · obtain ⟨f, hf⟩ := (leftBousfieldW_rightOrthogonal_toSucc W Z _ hZ).2 (𝟙 _)
+  · obtain ⟨f, hf⟩ := (leftBousfieldW_isLocal_toSucc W Z _ hZ).2 (𝟙 _)
     dsimp at hf
     refine ⟨f, hf, ?_⟩
     ext ⟨⟩
@@ -303,16 +301,13 @@ lemma isIso_toSucc_iff :
         ← D₁.ι_comp_t_assoc, pushout.condition]
     · simp [reassoc_of% hf]
 
-end
-
 open SmallObject
 
-variable [HasPushouts C] [∀ Z, HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
+variable [∀ Z, HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
   [∀ Z, HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
   [∀ Z, HasMulticoequalizer (D₂.multispanIndex W Z)]
 
 /-- The successor structure of the orthogonal-reflection construction. -/
-@[simps]
 noncomputable def succStruct (Z₀ : C) : SuccStruct C where
   X₀ := Z₀
   succ Z := succ W Z
@@ -325,18 +320,18 @@ variable (κ : Cardinal.{w}) [OrderBot κ.ord.toType]
 noncomputable def reflectionObj : C := (succStruct W Z).iteration κ.ord.toType
 
 /-- The map which shall exhibit `reflectionObj W Z κ` as the image of `Z` by
-the left adjoint of the inclusion of `W.rightOrthogonal`, see `corepresentableBy`. -/
+the left adjoint of the inclusion of `W.isLocal`, see `corepresentableBy`. -/
 noncomputable def reflection : Z ⟶ reflectionObj W Z κ :=
   (succStruct W Z).ιIteration κ.ord.toType
 
 /-- The morphism `reflection W Z κ : Z ⟶ reflectionObj W Z κ` is a transfinite
-compositions of morphisms in `LeftBousfield.W W.rightOrthogonal`. -/
+compositions of morphisms in `LeftBousfield.W W.isLocal`. -/
 noncomputable def transfiniteCompositionOfShapeReflection :
-    (LeftBousfield.W W.rightOrthogonal).TransfiniteCompositionOfShape κ.ord.toType
+    (LeftBousfield.W W.isLocal).TransfiniteCompositionOfShape κ.ord.toType
       (reflection W Z κ) :=
   ((succStruct W Z).transfiniteCompositionOfShapeιIteration κ.ord.toType).ofLE (by
     rintro Z₀ _ _ ⟨_⟩
-    exact leftBousfieldW_rightOrthogonal_toSucc W Z₀)
+    exact leftBousfieldW_isLocal_toSucc W Z₀)
 
 /-- The functor `κ.ord.toType ⥤ C` that is the diagram of the
 transfinite composition `transfiniteCompositionOfShapeReflection`. -/
@@ -379,9 +374,9 @@ lemma iteration_map_succ_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) {j : κ
 
 end
 
-lemma leftBousfieldW_rightOrthogonal_reflection :
-     LeftBousfield.W W.rightOrthogonal (reflection W Z κ) :=
-  (LeftBousfield.W W.rightOrthogonal).transfiniteCompositionsOfShape_le κ.ord.toType _
+lemma leftBousfieldW_isLocal_reflection :
+     LeftBousfield.W W.isLocal (reflection W Z κ) :=
+  (LeftBousfield.W W.isLocal).transfiniteCompositionsOfShape_le κ.ord.toType _
     ⟨transfiniteCompositionOfShapeReflection W Z κ⟩
 
 variable {W} {κ} [Fact κ.IsRegular]
@@ -389,8 +384,8 @@ variable {W} {κ} [Fact κ.IsRegular]
 
 include hW
 
-lemma rightOrthogonal_reflectionObj :
-    W.rightOrthogonal (reflectionObj W Z κ) := by
+lemma isLocal_reflectionObj :
+    W.isLocal (reflectionObj W Z κ) := by
   let H := transfiniteCompositionOfShapeReflection W Z κ
   intro X Y f hf
   obtain ⟨_, _⟩ := hW f hf
@@ -417,16 +412,16 @@ lemma rightOrthogonal_reflectionObj :
     exact ⟨g' ≫ H.incl.app (Order.succ j), by simp [reassoc_of% hg']⟩
 
 /-- The morphism `reflection W Z κ : Z ⟶ reflectionObj W Z κ` exhibits `reflectionObj W Z κ`
-as the image of `Z` by the left adjoint of the inclusion `W.rightOrthogonal.ι`. -/
+as the image of `Z` by the left adjoint of the inclusion `W.isLocal.ι`. -/
 noncomputable def corepresentableBy :
-  (W.rightOrthogonal.ι ⋙ coyoneda.obj (op Z)).CorepresentableBy
-    ⟨_, rightOrthogonal_reflectionObj Z hW⟩ where
-  homEquiv {A} := Equiv.ofBijective _ (leftBousfieldW_rightOrthogonal_reflection W Z κ _ A.2)
+  (W.isLocal.ι ⋙ coyoneda.obj (op Z)).CorepresentableBy
+    ⟨_, isLocal_reflectionObj Z hW⟩ where
+  homEquiv {A} := Equiv.ofBijective _ (leftBousfieldW_isLocal_reflection W Z κ _ A.2)
 
 variable (W κ)
 
 lemma isRightAdjoint_ι :
-    W.rightOrthogonal.ι.IsRightAdjoint := by
+    W.isLocal.ι.IsRightAdjoint := by
   rw [Functor.isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top]
   ext Z
   simpa using (corepresentableBy Z hW).isCorepresentable
@@ -436,26 +431,26 @@ end OrthogonalReflection
 namespace MorphismProperty
 
 open OrthogonalReflection in
-lemma isRightAdjoint_ι_rightOrthogonal
+lemma isRightAdjoint_ι_isLocal
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [MorphismProperty.IsSmall.{w} W] [LocallySmall.{w} C]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ)
     [HasColimitsOfSize.{w, w} C] :
-    W.rightOrthogonal.ι.IsRightAdjoint := by
+    W.isLocal.ι.IsRightAdjoint := by
   have : OrderBot κ.ord.toType :=
     Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
   have := D₁.hasCoproductsOfShape.{w} W
   have := D₂.hasColimitsOfShape.{w} W
   exact isRightAdjoint_ι W κ hW
 
-lemma isLocallyPresentable_rightOrthogonal
+lemma isLocallyPresentable_isLocal
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalLocallyPresentable C κ]
     [MorphismProperty.IsSmall.{w} W]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
-  IsCardinalLocallyPresentable W.rightOrthogonal.FullSubcategory κ := by
-    have := isRightAdjoint_ι_rightOrthogonal W κ hW
-    have := MorphismProperty.isCardinalAccessible_ι_rightOrthogonal W κ hW
-    exact (Adjunction.ofIsRightAdjoint W.rightOrthogonal.ι).isCardinalLocallyPresentable κ
+  IsCardinalLocallyPresentable W.isLocal.FullSubcategory κ := by
+    have := isRightAdjoint_ι_isLocal W κ hW
+    have := MorphismProperty.isCardinalAccessible_ι_isLocal W κ hW
+    exact (Adjunction.ofIsRightAdjoint W.isLocal.ι).isCardinalLocallyPresentable κ
 
 end MorphismProperty
 

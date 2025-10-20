@@ -7,9 +7,9 @@ import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
-# Objects that are orthogonal to a property of morphisms
+# Objects that are local with respect to a property of morphisms
 
-Given `W : MorphismProperty C`, we define `W.rightOrthogonal : ObjectProperty C`
+Given `W : MorphismProperty C`, we define `W.isLocal : ObjectProperty C`
 which is the property of objects `Z` such that for any `f : X ⟶ Y` satisfying `W`,
 the precomposition with `f` gives a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`.
 (In the file `CategoryTheory.Localization.Bousfield`, it is shown that this is
@@ -28,20 +28,20 @@ namespace MorphismProperty
 
 variable (W : MorphismProperty C)
 
-/-- The (right) orthogonal of `W : MorphismProperty C` is the property of objects `Z`
-such that for any `f : X ⟶ Y` such that `W f` holds, the precomposition
+/-- Given `W : MorphismProperty C`, this is the property of `W`-local objects, i.e.
+the objects `Z` such that for any `f : X ⟶ Y` such that `W f` holds, the precomposition
 with `f` gives a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`.
 (See the file `CategoryTheory.Localization.Bousfield` for the "dual" construction
 `Localization.LeftBousfield.W : ObjectProperty C → MorphismProperty C`.) -/
-def rightOrthogonal : ObjectProperty C :=
+def isLocal : ObjectProperty C :=
   fun Z ↦ ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
     W f → Function.Bijective (fun (g : _ ⟶ Z) ↦ f ≫ g)
 
-lemma rightOrthogonal_iff (Z : C) :
-    W.rightOrthogonal Z ↔ ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
+lemma isLocal_iff (Z : C) :
+    W.isLocal Z ↔ ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
       W f → Function.Bijective (fun (g : _ ⟶ Z) ↦ f ≫ g) := Iff.rfl
 
-instance : W.rightOrthogonal.IsClosedUnderIsomorphisms where
+instance : W.isLocal.IsClosedUnderIsomorphisms where
   of_iso {Z Z'} e hZ X Y f hf := by
     rw [← Function.Bijective.of_comp_iff _ (Iso.homToEquiv e).bijective]
     convert (Iso.homToEquiv e).bijective.comp (hZ f hf) using 1
