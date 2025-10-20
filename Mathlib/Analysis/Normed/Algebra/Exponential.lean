@@ -14,7 +14,7 @@ import Mathlib.Analysis.Analytic.OfScalars
 # Exponential in a Banach algebra
 
 In this file, we define `NormedSpace.exp : 𝔸 → 𝔸`,
-the exponential map in a topological algebra `𝔸` over the field `ℚ`.
+the exponential map in a topological algebra `𝔸`.
 
 While for most interesting results we need `𝔸` to be normed algebra, we do not require this in the
 definition in order to make `NormedSpace.exp` independent of a particular choice of norm. The
@@ -381,7 +381,8 @@ variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedDivisionRing 
 variable (𝕂)
 
 theorem norm_expSeries_div_summable_of_mem_ball (x : 𝔸)
-    (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : Summable fun n => ‖x ^ n / (n !)‖ := by
+    (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
+    Summable fun n => ‖x ^ n / (n !)‖ := by
   change Summable (norm ∘ _)
   rw [← expSeries_apply_eq_div' (𝕂 := 𝕂) x]
   exact norm_expSeries_summable_of_mem_ball x hx
@@ -407,8 +408,6 @@ section AnyFieldCommAlgebra
 
 variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
-
-variable (𝕂)
 
 /-- In a commutative Banach-algebra `𝔸` over a normed field `𝕂` of characteristic zero,
 `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`
@@ -446,8 +445,7 @@ theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by
 
 variable {𝕂 𝔸 𝔹}
 
-theorem norm_expSeries_summable (x : 𝔸) :
-    Summable fun n => ‖expSeries 𝕂 𝔸 n fun _ => x‖ :=
+theorem norm_expSeries_summable (x : 𝔸) : Summable fun n => ‖expSeries 𝕂 𝔸 n fun _ => x‖ :=
   norm_expSeries_summable_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
 variable (𝕂) in
@@ -598,8 +596,7 @@ theorem _root_.Prod.snd_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 
   map_exp 𝕂 (RingHom.snd 𝔸 𝔹) continuous_snd x
 
 theorem _root_.Pi.coe_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
-    [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
-    (i : ι) :
+    [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (i : ι) :
     exp x i = exp (x i) :=
   let ⟨_⟩ := nonempty_fintype ι
   map_exp 𝕂 (Pi.evalRingHom 𝔸 i) (continuous_apply _) x
@@ -610,8 +607,8 @@ theorem _root_.Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i,
   funext <| Pi.coe_exp 𝕂 x
 
 theorem _root_.Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [DecidableEq ι]
-    [∀ i, NormedRing (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)]
-    [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (j : ι) (xj : 𝔸 j) :
+    [∀ i, NormedRing (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
+    (j : ι) (xj : 𝔸 j) :
     Function.update (exp x) j (exp xj) = exp (Function.update x j xj) := by
   ext i
   simp_rw [Pi.exp_def 𝕂]
@@ -668,7 +665,7 @@ include 𝕂 in
 /-- In a commutative Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`,
 `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`. -/
 theorem exp_add {x y : 𝔸} : exp (x + y) = exp x * exp y :=
-  exp_add_of_mem_ball 𝕂 ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
+  exp_add_of_mem_ball ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
     ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
 include 𝕂 in
