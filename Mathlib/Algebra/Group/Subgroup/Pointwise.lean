@@ -35,12 +35,11 @@ open Pointwise
 
 variable {α G A S : Type*}
 
-theorem term_match [Group G] (a1 a2 b1 b2 : G) :
-    a1 * b1 = a2 * b2 → a2⁻¹ * a1 = b2 * b1⁻¹ := by
-  intro h
-  simp only [eq_mul_inv_of_mul_eq h, mul_assoc, inv_mul_cancel_left]
-
 open scoped Pointwise in
+/--
+If `H` and `K` are disjoint subgroups of `G` then `(h, k) ↦ h * k` gives a bijection between
+`H ×ᵃ K` and `H * K`
+-/
 theorem bijOn_product_mul [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
     BijOn (fun (h, k) => h * k) (H ×ˢ K) (H * K : Set G) := by
   refine ⟨?_, ?_, ?_⟩
@@ -48,7 +47,9 @@ theorem bijOn_product_mul [Group G] (H K : Subgroup G) (hHK : Disjoint H K) :
     simp only [mem_prod, SetLike.mem_coe] at HH
     exact ⟨h, HH.1, k, HH.2, rfl⟩
   · intro ⟨h1, k1⟩ H1 ⟨h2, k2⟩ H2 HH
-    have crux : h2⁻¹ * h1 = k2 * k1⁻¹ := term_match _ _ _ _ HH
+    have crux : h2⁻¹ * h1 = k2 * k1⁻¹ := by
+      simpa only [mul_assoc, mul_inv_cancel, mul_one, inv_mul_cancel_left]
+        using congr(h2⁻¹ * $HH * k1⁻¹)
     rw [Subgroup.disjoint_def] at hHK
     have : h2⁻¹ * h1 ∈ H := by
       rw [Subgroup.mul_mem_cancel_right H H1.1]
