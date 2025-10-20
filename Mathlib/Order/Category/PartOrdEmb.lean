@@ -5,12 +5,14 @@ Authors: Joël Riou, Johan Commelin
 -/
 import Mathlib.Order.Category.PartOrd
 import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+import Mathlib.CategoryTheory.Limits.Filtered
 
 /-!
 # Category of partial orders, with order embeddings as morphisms
 
 This defines `PartOrdEmb`, the category of partial orders with order embeddings
-as morphisms.
+as morphisms. We also show that `PartOrdEmb` has filtered colimits.
 
 -/
 
@@ -107,9 +109,9 @@ lemma comp_apply {X Y Z : PartOrdEmb} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 lemma Hom.injective {X Y : PartOrdEmb.{u}} (f : X ⟶ Y) : Function.Injective f :=
   f.hom'.injective
 
-lemma Hom.le_iff {X Y : PartOrdEmb.{u}} (f : X ⟶ Y) (x₁ x₂ : X) :
+lemma Hom.le_iff_le {X Y : PartOrdEmb.{u}} (f : X ⟶ Y) (x₁ x₂ : X) :
     f x₁ ≤ f x₂ ↔ x₁ ≤ x₂ :=
-  f.hom'.map_rel_iff
+  f.hom'.le_iff_le
 
 @[ext]
 lemma hom_ext {X Y : PartOrdEmb} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
@@ -180,6 +182,9 @@ namespace Limits
 
 variable {c : Cocone (F ⋙ forget _)} (hc : IsColimit c)
 
+/-- Given a functor `F : J ⥤ PartOrdEmb` and a colimit cocone `c` for
+`F ⋙ forget _`, this is the type `c.pt` on which we define a partial order
+which makes it the colimit of `F`. -/
 @[nolint unusedArguments]
 def CoconePt (_ : IsColimit c) : Type u := c.pt
 
@@ -212,8 +217,8 @@ instance : PartialOrder (CoconePt hc) where
       obtain ⟨l₂, a', b', h₄⟩ :=
         (Types.FilteredColimit.isColimit_eq_iff _ hc (xi := y₁) (xj := y₂)).1
           (hy₁.trans hy₂.symm)
-      obtain ⟨l, c, c', h₅, h₆⟩ := IsFiltered.bowtie a a' b b'
-      exact ⟨l, a ≫ c, b ≫ c, F.map (a ≫ c) x₁, F.map (a' ≫ c') y₁, rfl,
+      obtain ⟨l, d, d', h₅, h₆⟩ := IsFiltered.bowtie a a' b b'
+      exact ⟨l, a ≫ d, b ≫ d, F.map (a ≫ d) x₁, F.map (a' ≫ d') y₁, rfl,
         by simpa, by rw [h₅], by simpa [h₆]⟩
     have h₇ : x₃ = y₃ :=
       le_antisymm
@@ -223,6 +228,8 @@ instance : PartialOrder (CoconePt hc) where
       ((congr_arg (c.ι.app l) (h₃.symm.trans (h₇.trans h₅))).trans
         ((ConcreteCategory.congr_hom (c.w a) y₁).trans hy₁)))
 
+/-- The colimit cocone for a functor `F : J ⥤ PartOrdEmb` from a filtered
+category that is constructed from a colimit cocone for `F ⋙ forget _`. -/
 @[simps]
 def cocone : Cocone F where
   pt := .of (CoconePt hc)
@@ -230,30 +237,56 @@ def cocone : Cocone F where
     { toFun := c.ι.app j
       inj' x y h := by
         obtain ⟨k, a, ha⟩ := (Types.FilteredColimit.isColimit_eq_iff' hc x y).1 h
-        exact (F.map a).injective  ha
+        exact (F.map a).injective ha
       map_rel_iff' {x y} := by
         refine ⟨?_, fun h ↦ ⟨j, x, y, rfl, rfl, h⟩⟩
-        rintro ⟨k, x', y', hx', hy', h⟩
-        sorry }
+        rintro ⟨k, x', y', hx, hy, h⟩
+        obtain ⟨l₁, a₁, b₁, hl₁⟩ := (Types.FilteredColimit.isColimit_eq_iff _ hc).1 hx
+        obtain ⟨l₂, a₂, b₂, hl₂⟩ := (Types.FilteredColimit.isColimit_eq_iff _ hc).1 hy
+        dsimp at hx hy hl₁ hl₂
+        obtain ⟨m, d, d', h₁, h₂⟩ := bowtie a₁ a₂ b₁ b₂
+        rw [← (F.map (a₁ ≫ d)).le_iff_le] at h
+        rw [← (F.map (b₁ ≫ d)).le_iff_le]
+        conv_rhs => rw [h₂]
+        conv_rhs at h => rw [h₁]
+        simp only [Functor.map_comp, hom_comp, RelEmbedding.coe_trans, Function.comp_apply,
+          ← hl₁, ← hl₂]
+        simpa using h }
   ι.naturality _ _ f := by ext x; exact ConcreteCategory.congr_hom (c.w f) x
 
+/-- Auxiliary definition for `isColimitCocone`. -/
 def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where
   toFun := hc.desc ((forget _).mapCocone s)
   inj' x y h := by
-    obtain ⟨j, x', y', rfl, rfl⟩ :
-        ∃ (j : J) (x' y' : F.obj j), c.ι.app j x' = x ∧ c.ι.app j y' = y := by
-      sorry
-    have := ((congr_fun (hc.fac ((forget _).mapCocone s) j) x').symm.trans h).trans
-      (congr_fun (hc.fac ((forget _).mapCocone s) j) y')
-    obtain rfl := (s.ι.app j).injective this
+    obtain ⟨j, x', y', rfl, rfl⟩ :=
+      Types.FilteredColimit.jointly_surjective_of_isColimit₂ hc x y
+    obtain rfl := (s.ι.app j).injective
+      (((congr_fun (hc.fac ((forget _).mapCocone s) j) x').symm.trans h).trans
+        (congr_fun (hc.fac ((forget _).mapCocone s) j) y'))
     rfl
-  map_rel_iff' := sorry
+  map_rel_iff' {x y} := by
+    obtain ⟨j, x', y', rfl, rfl⟩ :=
+      Types.FilteredColimit.jointly_surjective_of_isColimit₂ hc x y
+    have hx := (congr_fun (hc.fac ((forget _).mapCocone s) j) x')
+    have hy := (congr_fun (hc.fac ((forget _).mapCocone s) j) y')
+    dsimp at hx hy ⊢
+    rw [hx, hy, OrderEmbedding.le_iff_le]
+    refine ⟨fun h ↦ ⟨j, _, _, rfl, rfl, h⟩, fun ⟨k, x, y, hx', hy', h⟩ ↦ ?_⟩
+    obtain ⟨l, f, g, hl⟩ := (Types.FilteredColimit.isColimit_eq_iff _ hc).1 hx'
+    obtain ⟨l', f', g', hl'⟩ := (Types.FilteredColimit.isColimit_eq_iff _ hc).1 hy'
+    obtain ⟨m, a, b, h₁, h₂⟩ := bowtie f f' g g'
+    dsimp at hl hl'
+    rw [← (F.map (f ≫ a)).le_iff_le] at h
+    rw [← (F.map (g ≫ a)).le_iff_le]
+    exact le_of_eq_of_le (by simp [hl]) (le_of_le_of_eq h (by simp [h₁, h₂, hl']))
 
 @[simp]
 lemma CoconePt.fac_apply (s : Cocone F) (j : J) (x : F.obj j) :
     CoconePt.desc hc s (c.ι.app j x) = s.ι.app j x :=
   congr_fun (hc.fac ((forget _).mapCocone s) j) x
 
+/-- A colimit cocone for `F : J ⥤ PartOrdEmb` (with `J` filtered) can be
+obtained from a colimit cocone for `F ⋙ forget _`. -/
 def isColimitCocone : IsColimit (cocone hc) where
   desc s := ofHom (CoconePt.desc hc s)
   uniq s m hm := by
@@ -264,7 +297,20 @@ def isColimitCocone : IsColimit (cocone hc) where
 instance : HasColimit F where
   exists_colimit := ⟨_, isColimitCocone (colimit.isColimit (F ⋙ forget _))⟩
 
+instance : PreservesColimit F (forget _) :=
+  preservesColimit_of_preserves_colimit_cocone
+    (isColimitCocone (colimit.isColimit (F ⋙ forget _)))
+    (colimit.isColimit (F ⋙ forget _))
+
 instance : HasColimitsOfShape J PartOrdEmb.{u} where
+
+instance : PreservesColimitsOfShape J (forget PartOrdEmb.{u}) where
+
+instance : HasFilteredColimitsOfSize.{u, u} PartOrdEmb.{u} where
+  HasColimitsOfShape _ := inferInstance
+
+instance : PreservesFilteredColimitsOfSize.{u, u} (forget PartOrdEmb.{u}) where
+  preserves_filtered_colimits _ := inferInstance
 
 end Limits
 
