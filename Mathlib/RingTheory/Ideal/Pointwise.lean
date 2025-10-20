@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Ideal.Maps
 This file provides the action `Ideal.pointwiseMulAction` which morally matches the action of
 `mulActionSet` (though here an extra `Ideal.span` is inserted).
 
-This actions is available in the `Pointwise` locale.
+This action is available in the `Pointwise` locale.
 
 ## Implementation notes
 

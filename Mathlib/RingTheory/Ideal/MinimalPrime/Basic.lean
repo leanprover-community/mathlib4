@@ -10,7 +10,7 @@ import Mathlib.Order.Minimal
 
 # Minimal primes
 
-We provide various results concerning the minimal primes above an ideal
+We provide various results concerning the minimal primes above an ideal.
 
 ## Main results
 - `Ideal.minimalPrimes`: `I.minimalPrimes` is the set of ideals that are minimal primes over `I`.
