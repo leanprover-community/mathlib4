@@ -11,8 +11,8 @@ import Mathlib.Topology.Algebra.Group.Quotient
 /-!
 # Closed subgroups of a topological group
 
-This file builds the frame of closed subgroups in a topological group `G` and its additive
-version `ClosedAddSubgroup`.
+This file builds the frame of closed subgroups in a topological group `G`,
+and its additive version `ClosedAddSubgroup`.
 
 # Main definitions and results
 
