@@ -306,7 +306,7 @@ lemma orthogonalProjection_eq_iff_mem {s : AffineSubspace ℝ P} [Nonempty s]
 lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubspace ℝ P}
     [Nonempty s] [s.direction.HasOrthogonalProjection] {p q : P} :
     orthogonalProjection s p = orthogonalProjection s q ↔ p -ᵥ q ∈ s.directionᗮ := by
-  rw [← Subtype.coe_inj, coe_orthogonalProjection_eq_iff_mem]
+  rw [Subtype.ext_iff, coe_orthogonalProjection_eq_iff_mem]
   simp only [SetLike.coe_mem, true_and]
   rw [← s.directionᗮ.add_mem_iff_left (x := p -ᵥ q)
     (vsub_orthogonalProjection_mem_direction_orthogonal s q)]
