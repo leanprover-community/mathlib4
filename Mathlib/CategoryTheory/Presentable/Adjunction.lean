@@ -15,6 +15,9 @@ then `F` preserves `κ`-presentable objects.
 Moreover, if `G : D ⥤ C` is fully faithful, then `D` is locally `κ`-presentable
 (resp `κ`-accessible) if `D` is.
 
+In particular, if `e : C ≌ D` is an equivalence of categories and
+`C` is locally presentable (resp. accessible), then so is `D`.
+
 -/
 
 universe w v v' u u'
@@ -23,10 +26,11 @@ namespace CategoryTheory
 
 open Limits Opposite
 
+variable {C : Type u} {D : Type u'} [Category.{v} C] [Category.{v'} D]
+
 namespace Adjunction
 
-variable {C : Type u} {D : Type u'} [Category.{v} C] [Category.{v'} D]
-  {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 include adj
 
@@ -80,5 +84,41 @@ lemma isCardinalAccessible [IsCardinalAccessibleCategory C κ]
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
 end Adjunction
+
+namespace Equivalence
+
+variable (e : C ≌ D)
+
+include e
+
+section
+
+variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
+
+lemma hasCardinalFilteredGenerator [HasCardinalFilteredGenerator C κ] :
+    HasCardinalFilteredGenerator D κ :=
+  e.toAdjunction.hasCardinalFilteredGenerator κ
+
+lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ] :
+    IsCardinalLocallyPresentable D κ :=
+  e.toAdjunction.isCardinalLocallyPresentable κ
+
+lemma isCardinalAccessible [IsCardinalAccessibleCategory C κ] :
+    IsCardinalAccessibleCategory D κ :=
+  e.toAdjunction.isCardinalAccessible κ
+
+end
+
+lemma isLocallyPresentable [IsLocallyPresentable.{w} C] :
+    IsLocallyPresentable.{w} D := by
+  obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} C
+  exact ⟨κ, inferInstance, e.isCardinalLocallyPresentable κ⟩
+
+lemma isAccessibleCategory [IsAccessibleCategory.{w} C] :
+    IsAccessibleCategory.{w} D := by
+  obtain ⟨κ, _, _⟩ := IsAccessibleCategory.exists_cardinal.{w} C
+  exact ⟨κ, inferInstance, e.isCardinalAccessible κ⟩
+
+end Equivalence
 
 end CategoryTheory
