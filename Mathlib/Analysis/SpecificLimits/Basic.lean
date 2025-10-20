@@ -642,8 +642,8 @@ theorem exists_pos_tsum_mul_lt_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) {
   refine ⟨fun i ↦ δ' i / max 1 (w i), fun i ↦ div_pos (Hpos _) (this i), ?_⟩
   refine lt_of_le_of_lt (ENNReal.tsum_le_tsum fun i ↦ ?_) Hsum
   rw [coe_div (this i).ne']
-  refine mul_le_of_le_div' (mul_le_mul_left' (ENNReal.inv_le_inv.2 ?_) _)
-  exact coe_le_coe.2 (le_max_right _ _)
+  refine mul_le_of_le_div' ?_
+  grw [← le_max_right]
 
 end ENNReal
 

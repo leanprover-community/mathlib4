@@ -152,6 +152,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Kim Morrison (@kim-em): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
 * Joël Riou (@joelriou): category theory, homology, algebraic geometry
+* Michael Rothgang (@grunweg): differential geometry, analysis, topology, linters
 * Damiano Testa (@adomani): algebra, algebraic geometry, number theory, tactics
 * Adam Topaz (@adamtopaz): algebra, category theory, algebraic geometry
 * Eric Wieser (@eric-wieser): algebra, infrastructure
