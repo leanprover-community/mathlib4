@@ -29,7 +29,7 @@ variable [CompleteSpace F] [BorelSpace E]
 
 variable [NormedSpace ℝ F]
 
-theorem foo3 {p : ENNReal} (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
+theorem exist_eLpNorm₁ {p : ENNReal} (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
     (h₁ : HasCompactSupport f) (h₂ : Continuous f) (h₃ : MemLp f p μ) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
       g.support ⊆ Metric.cthickening 1 (tsupport f) ∧ ∀ x, dist (g x) (f x) ≤ ε := by
@@ -54,7 +54,7 @@ theorem foo3 {p : ENNReal} (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E �
   intro x₀ hx₀
   exact (h (lt_of_lt_of_le hx₀ inf_le_left)).le
 
-theorem foo4 {p : ENNReal} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
+theorem exist_eLpNorm₂ {p : ENNReal} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
     (h₁ : HasCompactSupport f) (h₂ : Continuous f) (h₃ : MemLp f p μ) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
     eLpNorm (g - f) p μ ≤ ENNReal.ofReal ε := by
@@ -85,7 +85,7 @@ theorem foo4 {p : ENNReal} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 
     move_mul [ε]
     rw [← Real.rpow_add, one_div, neg_add_cancel, Real.rpow_zero, one_mul]
     exact hs₂
-  obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := foo3 hp₂ hε' h₁ h₂ h₃
+  obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := exist_eLpNorm₁ hp₂ hε' h₁ h₂ h₃
   refine ⟨g, hg₁, hg₂, ?_⟩
   have hs₃ : s.indicator (g - f) = g - f := by
     rw [Set.indicator_eq_self]
@@ -98,13 +98,13 @@ theorem foo4 {p : ENNReal} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 
   grw [← hs₃]
   exact (eLpNorm_sub_le_of_dist_bdd μ hp hs₁.measurableSet hε'.le (fun x _ ↦ hg₄ x)).trans hε₂
 
-theorem foo2 {p : ENNReal} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {f : E → F} (hf : MemLp f p μ)
+theorem exist_eLpNorm₃ {p : ENNReal} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {f : E → F} (hf : MemLp f p μ)
     {ε : ℝ} (hε : 0 < ε) :
     ∃ g, eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε ∧ HasCompactSupport g ∧ ContDiff ℝ ∞ g := by
   have hε₂ : 0 < ε/2 := by positivity
   have hε₂' : 0 < ENNReal.ofReal (ε/2) := by positivity
   obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := hf.exists_hasCompactSupport_eLpNorm_sub_le hp hε₂'.ne'
-  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := foo4 hp hp₂ hε₂ hg₁ hg₃ hg₄
+  obtain ⟨g', hg'₁, hg'₂, hg'₃⟩ := exist_eLpNorm₂ hp hp₂ hε₂ hg₁ hg₃ hg₄
   have hg'₄ : MemLp g' p μ := hg'₁.memLp_of_continuous hg'₂.continuous
   refine ⟨g', ?_, hg'₁, hg'₂⟩
   have : f - g' = (f - g) - (g' - g) := by simp
@@ -117,7 +117,8 @@ theorem SchwartzMap.denseRange_toLpCLM {p : ENNReal} (hp : p ≠ ⊤) [hp' : Fac
   intro f
   refine (mem_closure_iff_nhds_basis EMetric.nhds_basis_closed_eball).2 fun ε hε ↦ ?_
   by_cases hε' : ε ≠ ⊤
-  · obtain ⟨g, hg₁, hg₂, hg₃⟩ := foo2 hp hp'.out (Lp.memLp f) (ENNReal.toReal_pos hε.ne' hε')
+  · obtain ⟨g, hg₁, hg₂, hg₃⟩ := exist_eLpNorm₃ hp hp'.out (Lp.memLp f)
+      (ENNReal.toReal_pos hε.ne' hε')
     rw [ENNReal.ofReal_toReal hε'] at hg₁
     use (hg₂.toSchwartzMap hg₃).toLp p μ
     rw [EMetric.mem_closedBall']

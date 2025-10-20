@@ -224,7 +224,8 @@ variable [MeasurableSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 variable [BorelSpace E] [SecondCountableTopology E]
 variable [NormedSpace ℝ V] [CompleteSpace V]
 
-theorem foo (p : ENNReal) [hp : Fact (1 ≤ p)] : p.HolderConjugate (1 - p⁻¹)⁻¹ := by
+theorem _root_.ENNReal.inv_one_sub_inv' (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
+    p.HolderConjugate (1 - p⁻¹)⁻¹ := by
   rw [ENNReal.holderConjugate_iff]
   simp only [inv_inv]
   refine add_tsub_cancel_of_le ?_
@@ -243,7 +244,7 @@ variable (𝕜 V) in
 /-- Create a tempered distribution from a L^p function. -/
 def toTemperedDistribution {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
     𝓢'(𝕜, E, F →L[𝕜] V, V) :=
-  toTemperedDistribution_aux p ((1 - p⁻¹)⁻¹) hp (by simp [fact_iff]) (foo p) f
+  toTemperedDistribution_aux p ((1 - p⁻¹)⁻¹) hp (by simp [fact_iff]) p.inv_one_sub_inv' f
 
 @[simp]
 theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ)
@@ -272,7 +273,7 @@ def toTemperedDistributionCLM (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
     apply y.cont.comp
     set q := (1 - p⁻¹)⁻¹
     have hq : Fact (1 ≤ q) := by simp [q, fact_iff]
-    have hpq : ENNReal.HolderConjugate p q := foo p
+    have hpq : ENNReal.HolderConjugate p q := p.inv_one_sub_inv'
     exact (((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).flip.lpPairing μ p q).flip (g.toLp q μ)).cont
 
 @[simp]

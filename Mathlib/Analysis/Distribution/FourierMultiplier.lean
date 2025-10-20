@@ -23,8 +23,6 @@ open scoped Nat NNReal ContDiff
 
 variable {𝕜 𝕜' H D E F G V : Type*}
 
-#check norm_fderiv_norm_id_rpow
-
 variable [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup H] [NormedAddCommGroup V]
 
 variable [NormedSpace 𝕜 E] [InnerProductSpace ℝ H] [NormedSpace 𝕜 V]
