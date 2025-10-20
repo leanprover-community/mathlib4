@@ -1083,10 +1083,9 @@ instance instSMulPosReflectLE [SMulPosReflectLE α β] [SMulPosReflectLE α γ] 
 
 end SMul
 
-variable [Zero β] [Zero γ]
-
 section SMulWithZero
-variable [PartialOrder α] [PartialOrder β] [PartialOrder γ] [SMulWithZero α β] [SMulWithZero α γ]
+variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
+  [Zero β] [Zero γ] [SMulWithZero α β] [SMulWithZero α γ]
 
 instance instPosSMulStrictMono [PosSMulStrictMono α β] [PosSMulStrictMono α γ] :
     PosSMulStrictMono α (β × γ) where
@@ -1138,10 +1137,9 @@ instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosRefle
 
 end SMul
 
-variable [∀ i, Zero (β i)]
 
 section SMulWithZero
-variable [PartialOrder α] [∀ i, PartialOrder (β i)] [∀ i, SMulWithZero α (β i)]
+variable [∀ i, Zero (β i)] [PartialOrder α] [∀ i, PartialOrder (β i)] [∀ i, SMulWithZero α (β i)]
 
 instance instPosSMulStrictMono [∀ i, PosSMulStrictMono α (β i)] :
     PosSMulStrictMono α (∀ i, β i) where
