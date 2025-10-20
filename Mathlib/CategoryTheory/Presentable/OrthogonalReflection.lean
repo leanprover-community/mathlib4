@@ -35,7 +35,7 @@ lemma MorphismProperty.isClosedUnderColimitsOfShape_rightOrthogonal
     (J : Type u) [Category.{v} J] [EssentiallySmall.{w} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
-    W.rightOrthogonal.IsClosedUnderColimitsOfShape J where
+    W.isLocal.IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
     obtain ⟨_, _⟩ := hW f hf
     refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
