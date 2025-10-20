@@ -94,7 +94,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero M₀]
     simp only [Set.mem_setOf_eq] at hind
     obtain ⟨ha₁ | ha₂, hs⟩ := hm
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
-      refine hind x (y*k) ?_ hs ?_
+      refine hind x (y * k) ?_ hs ?_
       · simp only [← mul_assoc, ← hprod, ← Multiset.prod_cons, mul_comm]
         refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure ?_,
           Multiset.forall_mem_cons.2 ⟨subset_closure ?_, fun t ht => subset_closure (hs t ht)⟩⟩)

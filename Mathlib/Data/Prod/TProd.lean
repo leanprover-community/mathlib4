@@ -62,7 +62,7 @@ theorem fst_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk (i :: l) f).
 
 @[simp]
 theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) :
-    (TProd.mk.{u,v} (i :: l) f).2 = TProd.mk.{u,v} l f :=
+    (TProd.mk.{u, v} (i :: l) f).2 = TProd.mk.{u, v} l f :=
   rfl
 
 variable [DecidableEq ι]
