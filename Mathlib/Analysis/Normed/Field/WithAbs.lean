@@ -142,7 +142,7 @@ theorem isClosedEmbedding_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 that is locally compact, then the completion of the first normed field is also locally compact. -/
 theorem locallyCompactSpace [LocallyCompactSpace L] (h : Isometry f) :
-    LocallyCompactSpace (v.Completion) :=
+    LocallyCompactSpace v.Completion :=
   h.completion_extension.isClosedEmbedding.locallyCompactSpace
 
 end AbsoluteValue.Completion
