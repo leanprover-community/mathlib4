@@ -90,6 +90,7 @@ register_linter_set linter.nightlyRegressionSet :=
   linter.tacticAnalysis.regressions.linarithToGrind
   linter.tacticAnalysis.regressions.omegaToCutsat
   linter.tacticAnalysis.regressions.ringToGrind
+  linter.tacticAnalysis.regressions.tautoToGrind
 
 /-- Define a set of linters that run once a week and get posted to Zulip.
 -/
