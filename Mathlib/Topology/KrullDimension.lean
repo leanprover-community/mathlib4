@@ -39,8 +39,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 /-!
 ### Main dimension theorems -/
 
-/-- If `f : Y → X` is an embedding, then `dim(Y) ≤ dim(X)`.
-This generalizes `IsClosedEmbedding.topologicalKrullDim_le`. -/
+/-- If `f : Y → X` is inducing, then `dim(Y) ≤ dim(X)`. -/
 theorem IsInducing.topologicalKrullDim_le {f : Y → X} (hf : IsInducing f) :
     topologicalKrullDim Y ≤ topologicalKrullDim X :=
   krullDim_le_of_strictMono _ (map_strictMono_of_isInducing hf)
