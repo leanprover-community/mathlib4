@@ -13,8 +13,8 @@ import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
 Given `W : MorphismProperty C` (which should be small) and assuming the existence
 of certain colimits in `C`, we construct a morphism `toSucc W Z : Z ⟶ succ W Z` for
-any `Z : C`. This morphism belongs to `LeftBousfield.W W.rightOrthogonal` and
-is an isomorphism iff `Z` belongs to `W.rightOrthogonal`.
+any `Z : C`. This morphism belongs to `LeftBousfield.W W.isLocal` and
+is an isomorphism iff `Z` belongs to `W.isLocal`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -169,8 +169,8 @@ lemma toSucc_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
   ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z, by
     simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc]⟩
 
-lemma leftBousfieldW_rightOrthogonal_toSucc :
-    LeftBousfield.W W.rightOrthogonal (toSucc W Z) := by
+lemma leftBousfieldW_isLocal_toSucc :
+    LeftBousfield.W W.isLocal (toSucc W Z) := by
   refine fun T hT ↦ ⟨fun φ₁ φ₂ h ↦ ?_, fun g ↦ ?_⟩
   · ext ⟨⟩
     simp at h
@@ -184,7 +184,7 @@ lemma leftBousfieldW_rightOrthogonal_toSucc :
       (fun d ↦ (hT d.1.1.hom d.1.2).1 (by simp [reassoc_of% d.2.2])), by simp⟩
 
 lemma isIso_toSucc_iff :
-    IsIso (toSucc W Z) ↔ W.rightOrthogonal Z := by
+    IsIso (toSucc W Z) ↔ W.isLocal Z := by
   refine ⟨fun _ X Y f hf ↦ ?_, fun hZ ↦ ?_⟩
   · refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
     · simpa [← cancel_mono (toSucc W Z)] using
@@ -194,7 +194,7 @@ lemma isIso_toSucc_iff :
       simp only [Category.assoc] at hZ
       exact ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z ≫ inv (toSucc W Z),
         by simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc, hZ]⟩
-  · obtain ⟨f, hf⟩ := (leftBousfieldW_rightOrthogonal_toSucc W Z _ hZ).2 (𝟙 _)
+  · obtain ⟨f, hf⟩ := (leftBousfieldW_isLocal_toSucc W Z _ hZ).2 (𝟙 _)
     dsimp at hf
     refine ⟨f, hf, ?_⟩
     ext ⟨⟩
