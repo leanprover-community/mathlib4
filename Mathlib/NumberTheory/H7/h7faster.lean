@@ -1938,6 +1938,7 @@ lemma R_order_eq (z) :
     = h7.R_order q hq0 h2mq z :=
     (Rorder_exists h7 q hq0 h2mq z).choose_spec
 
+
 lemma exists_min_order_at :
   let s : Finset (Fin (h7.m)) := Finset.univ
   ∃ l₀' ∈ s, (∃ y, (analyticOrderAt (h7.R q hq0 h2mq) (l₀' + 1)) = y ∧
@@ -1947,24 +1948,20 @@ lemma exists_min_order_at :
      refine univ_nonempty_iff.mpr ?_
      refine Fin.pos_iff_nonempty.mp ?_
      exact h7.hm}
-  let f : (Fin (h7.m)) → ℕ∞ := fun x => (analyticOrderAt (h7.R q hq0 h2mq) x)
+  let f : (Fin (h7.m)) → ℕ∞ := fun x => (analyticOrderAt (h7.R q hq0 h2mq) (x + 1))
   have := exists_mem_finset_min' s f Hs
   obtain ⟨x, hx, ⟨r, h1, h2⟩⟩ := this
   use x
   constructor
   · exact hx
-  · use x
-    constructor
+  · constructor
+    · constructor
+      · norm_cast at h1
+        --exact id (Eq.symm h1)
+      · intros x hx
+        exact le_of_eq_of_le (id (Eq.symm h1)) (h2 x hx)
 
-    -- · constructor
-    --   · sorry
-    --   · sorry
-    -- · sorry
 
-      -- · exact id (Eq.symm h1)
-      -- · intros x hx
-      --   subst h1
-      --   simp_all only [Finset.mem_univ, forall_const, s, f]
 
 abbrev l₀' : Fin (h7.m) := (exists_min_order_at h7 q hq0 h2mq).choose
 
