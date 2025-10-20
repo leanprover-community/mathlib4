@@ -117,7 +117,7 @@ theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = ((n : α)
       simp
     · dsimp only [Num.succ'] at ep
       subst p
-      have : (↑(-↑a : ℤ) : α) = -1 + ↑(-↑a + 1 : ℤ) := by simp [add_comm (- ↑a : ℤ) 1]
+      have : (↑(-↑a : ℤ) : α) = -1 + ↑(-↑a + 1 : ℤ) := by simp [add_comm (-↑a : ℤ) 1]
       simpa using this
 
 @[simp]

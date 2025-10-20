@@ -434,8 +434,8 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
     obtain ⟨l, hl, -⟩ := BinaryCofan.IsColimit.desc' H (𝟙 X) (h.to X)
     refine ⟨⟨l, hl, BinaryCofan.IsColimit.hom_ext H (?_) (h.hom_ext _ _)⟩⟩
     rw [Category.comp_id]
-    have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (·≫inl c) hl
-    rwa [Category.assoc,Category.id_comp] at e
+    have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (· ≫ inl c) hl
+    rwa [Category.assoc, Category.id_comp] at e
   · intro
     exact
       ⟨BinaryCofan.IsColimit.mk _ (fun f _ => inv c.inl ≫ f)
