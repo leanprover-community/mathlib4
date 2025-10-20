@@ -51,9 +51,7 @@ lemma mk_surjective (s : A.N) :
 
 lemma ext_iff (x y : A.N) :
     x = y ↔ x.toN = y.toN := by
-  cases x
-  cases y
-  aesop
+  grind [cases SSet.Subcomplex.N]
 
 section
 
