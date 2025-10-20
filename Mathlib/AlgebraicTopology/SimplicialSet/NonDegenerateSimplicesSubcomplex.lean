@@ -9,7 +9,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 # The type of non degenerate simplices not in a subcomplex
 
 In this file, given a subcomplex `A` of a simplicial set `X`,
-we introduce the type `A.N` of non degenerate simplices of `X`
+we introduce the type `A.N` of nondegenerate simplices of `X`
 that are not in `A`.
 
 -/
