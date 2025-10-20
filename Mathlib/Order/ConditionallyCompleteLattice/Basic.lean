@@ -501,13 +501,13 @@ theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
     rw [this]
   by_cases B : BddAbove s ∨ BddAbove t
   · have Bs : BddAbove s := by
-      rcases B with hB|⟨b, hb⟩
+      rcases B with hB | ⟨b, hb⟩
       · exact hB
       · refine ⟨b, fun x hx ↦ ?_⟩
         rcases hs x hx with ⟨y, hy, hxy⟩
         exact hxy.trans (hb hy)
     have Bt : BddAbove t := by
-      rcases B with ⟨b, hb⟩|hB
+      rcases B with ⟨b, hb⟩ | hB
       · refine ⟨b, fun y hy ↦ ?_⟩
         rcases ht y hy with ⟨x, hx, hyx⟩
         exact hyx.trans (hb hx)
