@@ -465,6 +465,10 @@ def evalNeg {a : Q($A)} (rR : Q(CommRing $R)) (rA : Q(CommRing $A)) (va : ExSum 
     let ⟨_, vb₂, pb₂⟩ ← evalNeg rR rA va₂
     return ⟨_, .add vb₁ vb₂, (q(neg_add (A := $A) $pb₁ $pb₂):)⟩
 
+/-- Subtracts two polynomials `va` and `vb` to get a normalized polynomial.
+
+* `a - b = a + (-b)`
+-/
 def evalSub {a b : Q($A)} (rR : Q(CommRing $R)) (rA : Q(CommRing $A))
     (va : ExSum sAlg a) (vb : ExSum sAlg b) :
     MetaM <| Result (ExSum sAlg) q($a - $b) := do
@@ -906,7 +910,7 @@ def isAtomOrDerivable (cr : Algebra.Cache sR) (ca : Algebra.Cache sA) (e : Q($A)
   | ``DFunLike.coe, _, _, _ => pure none
   | _, _, _, _ => els
 
-/- The core of `algebra_nf with R` - normalize the expression `e` over the base ring `R` -/
+/-- The core of `algebra_nf with R` - normalize the expression `e` over the base ring `R` -/
 def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := do
   let e ← withReducible <| whnf e
   guard e.isApp -- all interesting ring expressions are applications
@@ -923,11 +927,11 @@ def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := 
   | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
   pure { expr := a, proof? := pa }
 
-/- The core of `algebra_nf` - normalize an expression while first inferring the base ring `R`.
+/-- The core of `algebra_nf` - normalize an expression while first inferring the base ring `R`.
 
 This is somewhat unstable as the normal form will depend on `R` and the inferred ring depends
 strongly on the form of the initial expression. For example: ⊢ P ((n : ℕ) • x) ∧ P ((n : ℤ) • x)
-is unchanged by `algebra_nf`-/
+is unchanged by `algebra_nf` -/
 def evalExprInfer (e : Expr) : AtomM Simp.Result := do
   let ⟨_, A, e⟩ ← inferTypeQ' e
   let sA ← synthInstanceQ q(CommSemiring $A)
