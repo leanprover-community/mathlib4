@@ -168,7 +168,7 @@ theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
   · simp
   constructor <;> intro H
   -- The forward direction is always true, the interesting part is the converse.
-  · exact UniformFun.uniformContinuous_toFun.continuous.tendsto _|>.comp H
+  · exact UniformFun.uniformContinuous_toFun.continuous.tendsto _ |>.comp H
   -- To prove it, assume that `F` tends to `f` *pointwise* along `ℱ`.
   · set S : Set (X → α) := closure (range F)
     set 𝒢 : Filter S := comap (↑) (map F ℱ)

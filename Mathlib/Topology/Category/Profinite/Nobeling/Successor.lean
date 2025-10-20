@@ -560,7 +560,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   rw [eq_sub_iff_add_eq] at hn
   have hn' := h₁ (Submodule.mem_top : n ∈ ⊤)
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn'
-  obtain ⟨w,hc⟩ := hn'
+  obtain ⟨w, hc⟩ := hn'
   rw [← hc, map_finsuppSum] at hn
   apply l.prop.1
   rw [← hn]
