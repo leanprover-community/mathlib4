@@ -18,7 +18,7 @@ Currently `Quiver` is defined with `Hom : V → V → Sort v`.
 This is different from the category theory setup,
 where we insist that morphisms live in some `Type`.
 There's some balance here: it's nice to allow `Prop` to ensure there are no multiple arrows,
-but it is also results in error-prone universe signatures when constraints require a `Type`.
+but it also results in error-prone universe signatures when constraints require a `Type`.
 -/
 
 open Opposite
