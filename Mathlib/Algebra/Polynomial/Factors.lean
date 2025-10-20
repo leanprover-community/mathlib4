@@ -30,49 +30,49 @@ This will eventually replace `Polynomial.Splits`. -/
 def Factors (f : R[X]) : Prop := f ∈ Submonoid.closure ({C a | a : R} ∪ {X + C a | a : R})
 
 @[simp, aesop safe apply]
-theorem factors_C (a : R) : Factors (C a) :=
+protected theorem Factors.C (a : R) : Factors (C a) :=
   Submonoid.mem_closure_of_mem (Set.mem_union_left _ ⟨a, rfl⟩)
 
 @[simp, aesop safe apply]
-theorem factors_zero : Factors (0 : R[X]) := by
-  simpa using factors_C (0 : R)
+protected theorem Factors.zero : Factors (0 : R[X]) := by
+  simpa using Factors.C (0 : R)
 
 @[simp, aesop safe apply]
-theorem factors_one : Factors (1 : R[X]) :=
-  factors_C (1 : R)
+protected theorem Factors.one : Factors (1 : R[X]) :=
+  Factors.C (1 : R)
 
 @[simp, aesop safe apply]
-theorem factors_X_add_C (a : R) : Factors (X + C a) :=
+theorem Factors.X_add_C (a : R) : Factors (X + C a) :=
   Submonoid.mem_closure_of_mem (Set.mem_union_right _ ⟨a, rfl⟩)
 
 @[simp, aesop safe apply]
-theorem factors_X : Factors (X : R[X]) := by
-  simpa using factors_X_add_C (0 : R)
+protected theorem Factors.X : Factors (X : R[X]) := by
+  simpa using Factors.X_add_C (0 : R)
 
 @[simp, aesop safe apply]
 protected theorem Factors.mul {f g : R[X]} (hf : Factors f) (hg : Factors g) :
     Factors (f * g) :=
   mul_mem hf hg
 
-theorem Factors.C_mul {f : R[X]} (hf : Factors f) (a : R) : Factors (C a * f) :=
-  (factors_C a).mul hf
+protected theorem Factors.C_mul {f : R[X]} (hf : Factors f) (a : R) : Factors (C a * f) :=
+  (Factors.C a).mul hf
 
 @[simp, aesop safe apply]
-theorem Factors.list_prod {l : List R[X]} (h : ∀ f ∈ l, Factors f) : Factors l.prod :=
+theorem Factors.listProd {l : List R[X]} (h : ∀ f ∈ l, Factors f) : Factors l.prod :=
   list_prod_mem h
 
 @[simp, aesop safe apply]
 protected theorem Factors.pow {f : R[X]} (hf : Factors f) (n : ℕ) : Factors (f ^ n) :=
   pow_mem hf n
 
-theorem factors_X_pow (n : ℕ) : Factors (X ^ n : R[X]) :=
-  factors_X.pow n
+theorem Factors.X_pow (n : ℕ) : Factors (X ^ n : R[X]) :=
+  Factors.X.pow n
 
-theorem factors_C_mul_X_pow (a : R) (n : ℕ) : Factors (C a * X ^ n) :=
-  (factors_X_pow n).C_mul a
+theorem Factors.C_mul_X_pow (a : R) (n : ℕ) : Factors (C a * X ^ n) :=
+  (Factors.X_pow n).C_mul a
 
 @[simp, aesop safe apply]
-theorem factors_monomial (n : ℕ) (a : R) : Factors (monomial n a) := by
+theorem Factors.monomial (n : ℕ) (a : R) : Factors (monomial n a) := by
   simp [← C_mul_X_pow_eq_monomial]
 
 protected theorem Factors.map {f : R[X]} (hf : Factors f) {S : Type*} [Semiring S] (i : R →+* S) :
@@ -83,9 +83,6 @@ theorem factors_of_natDegree_eq_zero {f : R[X]} (hf : natDegree f = 0) :
     Factors f :=
   (natDegree_eq_zero.mp hf).choose_spec ▸ by aesop
 
-theorem factors_of_isUnit [NoZeroDivisors R] {f : R[X]} (hf : IsUnit f) : Factors f :=
-  factors_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hf)
-
 end Semiring
 
 section CommSemiring
@@ -93,7 +90,7 @@ section CommSemiring
 variable [CommSemiring R]
 
 @[simp, aesop safe apply]
-theorem Factors.multiset_prod {m : Multiset R[X]} (hm : ∀ f ∈ m, Factors f) : Factors m.prod :=
+theorem Factors.multisetProd {m : Multiset R[X]} (hm : ∀ f ∈ m, Factors f) : Factors m.prod :=
   multiset_prod_mem _ hm
 
 @[simp, aesop safe apply]
@@ -118,7 +115,7 @@ theorem factors_iff_exists_multiset' {f : R[X]} :
       apply monic_multiset_prod_of_monic
       simp [monic_X_add_C]
   · rintro ⟨m, hm⟩
-    exact hm ▸ (factors_C _).mul (.multiset_prod (by simp [factors_X_add_C]))
+    exact hm ▸ (Factors.C _).mul (.multisetProd (by simp [Factors.X_add_C]))
 
 theorem Factors.natDegree_le_one_of_irreducible {f : R[X]} (hf : Factors f)
     (h : Irreducible f) : natDegree f ≤ 1 := by
@@ -143,8 +140,8 @@ section Ring
 variable [Ring R]
 
 @[simp, aesop safe apply]
-theorem factors_X_sub_C (a : R) : Factors (X - C a) := by
-  simpa using factors_X_add_C (-a)
+theorem Factors.X_sub_C (a : R) : Factors (X - C a) := by
+  simpa using Factors.X_add_C (-a)
 
 @[aesop safe apply]
 protected theorem Factors.neg {f : R[X]} (hf : Factors f) : Factors (-f) := by
@@ -166,7 +163,7 @@ theorem factors_iff_exists_multiset {f : R[X]} :
   refine factors_iff_exists_multiset'.trans ⟨?_, ?_⟩ <;>
     rintro ⟨m, hm⟩ <;> exact ⟨m.map (- ·), by simpa⟩
 
-theorem exists_root_of_factors {f : R[X]} (hf : Factors f) (hf0 : degree f ≠ 0) :
+theorem Factors.exists_eval_eq_zero {f : R[X]} (hf : Factors f) (hf0 : degree f ≠ 0) :
     ∃ a, eval a f = 0 := by
   obtain ⟨m, hm⟩ := factors_iff_exists_multiset.mp hf
   by_cases hf₀ : f.leadingCoeff = 0
@@ -193,13 +190,13 @@ theorem Factors.natDegree_eq_card_roots {f : R[X]} (hf : Factors f) :
   · simp [leadingCoeff_eq_zero.mp hf0]
   · conv_lhs => rw [hf.eq_prod_roots, natDegree_C_mul hf0, natDegree_multiset_prod_X_sub_C_eq_card]
 
-theorem roots_ne_zero_of_factors {f : R[X]} (hf : Factors f) (hf0 : natDegree f ≠ 0) :
+theorem Factors.roots_ne_zero {f : R[X]} (hf : Factors f) (hf0 : natDegree f ≠ 0) :
     f.roots ≠ 0 := by
-  obtain ⟨a, ha⟩ := exists_root_of_factors hf (degree_ne_of_natDegree_ne hf0)
+  obtain ⟨a, ha⟩ := hf.exists_eval_eq_zero (degree_ne_of_natDegree_ne hf0)
   exact mt (· ▸ (mem_roots (by aesop)).mpr ha) (Multiset.notMem_zero a)
 
 theorem factors_X_sub_C_mul_iff {f : R[X]} {a : R} : Factors ((X - C a) * f) ↔ Factors f := by
-  refine ⟨fun hf ↦ ?_, ((factors_X_sub_C _).mul ·)⟩
+  refine ⟨fun hf ↦ ?_, ((Factors.X_sub_C _).mul ·)⟩
   by_cases hf₀ : f = 0
   · aesop
   have := hf.eq_prod_roots
@@ -209,33 +206,31 @@ theorem factors_X_sub_C_mul_iff {f : R[X]} {a : R} : Factors ((X - C a) * f) ↔
   rw [mul_left_cancel₀ (X_sub_C_ne_zero _) this]
   aesop
 
-theorem factors_mul_iff {f g : R[X]} (hfg : f * g ≠ 0) :
+theorem factors_mul_iff {f g : R[X]} (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     Factors (f * g) ↔ Factors f ∧ Factors g := by
   refine ⟨fun h ↦ ?_, and_imp.mpr .mul⟩
   generalize hp : f * g = p at *
   generalize hn : p.natDegree = n
   induction n generalizing p f g with
   | zero =>
-    have hf₀ : f ≠ 0 := by aesop
-    have hg₀ : g ≠ 0 := by aesop
     rw [← hp, natDegree_mul hf₀ hg₀, Nat.add_eq_zero] at hn
     exact ⟨factors_of_natDegree_eq_zero hn.1, factors_of_natDegree_eq_zero hn.2⟩
   | succ n ih =>
-    obtain ⟨a, ha⟩ := exists_root_of_factors h (degree_ne_of_natDegree_ne <| hn ▸ by aesop)
+    obtain ⟨a, ha⟩ := Factors.exists_eval_eq_zero h (degree_ne_of_natDegree_ne <| hn ▸ by aesop)
     have := dvd_iff_isRoot.mpr ha
     rw [← hp, (prime_X_sub_C a).dvd_mul] at this
     wlog hf : X - C a ∣ f with hf2
-    · exact .symm <| hf2 _ ih _ ((mul_comm _ _).trans hp) hfg h hn _ ha this.symm <|
+    · exact .symm <| hf2 n ih hg₀ hf₀ p ((mul_comm g f).trans hp) h hn a ha this.symm <|
         this.resolve_left hf
     obtain ⟨f, rfl⟩ := hf
     rw [mul_assoc] at hp; subst hp
     rw [natDegree_mul (by aesop) (by aesop), natDegree_X_sub_C, add_comm, Nat.succ_inj] at hn
-    have := ih (f * g) rfl (by aesop) (factors_X_sub_C_mul_iff.mp h) hn
+    have := ih (by aesop) hg₀ (f * g) rfl  (factors_X_sub_C_mul_iff.mp h) hn
     aesop
 
 theorem Factors.of_dvd {f g : R[X]} (hg : Factors g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Factors f := by
   obtain ⟨g, rfl⟩ := hfg
-  exact ((factors_mul_iff hg₀).mp hg).1
+  exact ((factors_mul_iff (by aesop) (by aesop)).mp hg).1
 
 theorem Factors.splits {f : R[X]} (hf : Factors f) :
     f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g ≤ 1 :=
@@ -244,25 +239,31 @@ theorem Factors.splits {f : R[X]} (hf : Factors f) :
 
 end CommRing
 
-section Field
+section DivisionSemiring
 
-variable [Field R]
+variable [DivisionSemiring R]
 
-theorem factors_of_natDegree_le_one {f : R[X]} (hf : natDegree f ≤ 1) : Factors f := by
+theorem Factors.of_natDegree_le_one {f : R[X]} (hf : natDegree f ≤ 1) : Factors f := by
   obtain ⟨a, b, rfl⟩ := exists_eq_X_add_C_of_natDegree_le_one hf
   by_cases ha : a = 0
   · aesop
-  · rw [← mul_div_cancel₀ b ha, C_mul, ← mul_add]
-    aesop
+  · rw [← mul_inv_cancel_left₀ ha b, C_mul, ← mul_add]
+    exact (X_add_C (a⁻¹ * b)).C_mul a
 
-theorem factors_of_natDegree_eq_one {f : R[X]} (hf : natDegree f = 1) : Factors f :=
-  factors_of_natDegree_le_one hf.le
+theorem Factors.of_natDegree_eq_one {f : R[X]} (hf : natDegree f = 1) : Factors f :=
+  of_natDegree_le_one hf.le
 
-theorem factors_of_degree_le_one {f : R[X]} (hf : degree f ≤ 1) : Factors f :=
-  factors_of_natDegree_le_one (natDegree_le_of_degree_le hf)
+theorem Factors.of_degree_le_one {f : R[X]} (hf : degree f ≤ 1) : Factors f :=
+  of_natDegree_le_one (natDegree_le_of_degree_le hf)
 
-theorem factors_of_degree_eq_one {f : R[X]} (hf : degree f = 1) : Factors f :=
-  factors_of_degree_le_one hf.le
+theorem Factors.of_degree_eq_one {f : R[X]} (hf : degree f = 1) : Factors f :=
+  of_degree_le_one hf.le
+
+end DivisionSemiring
+
+section Field
+
+variable [Field R]
 
 open UniqueFactorizationMonoid in
 theorem factors_iff_splits {f : R[X]} :
@@ -276,8 +277,9 @@ theorem factors_iff_splits {f : R[X]} :
   · simp [hf0]
   obtain ⟨u, hu⟩ := factors_prod hf0
   rw [← hu]
-  refine (Factors.multiset_prod fun g hg ↦ ?_).mul (factors_of_isUnit u.isUnit)
-  exact factors_of_degree_eq_one (hf (irreducible_of_factor g hg) (dvd_of_mem_factors hg))
+  refine (Factors.multisetProd fun g hg ↦ ?_).mul
+    (factors_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit u.isUnit))
+  exact Factors.of_degree_eq_one (hf (irreducible_of_factor g hg) (dvd_of_mem_factors hg))
 
 end Field
 
