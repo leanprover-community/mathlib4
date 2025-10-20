@@ -373,7 +373,7 @@ theorem isRightInversion_of_mem_rightInvSeq {ω : List B} (hω : cs.IsReduced ω
     rw [cs.length_rightInvSeq] at hj
     calc
       ℓ (π (ω.eraseIdx j))
-      _ ≤ (ω.eraseIdx j).length := (cs.length_wordProd_le _)
+      _ ≤ (ω.eraseIdx j).length := cs.length_wordProd_le _
       _ < ω.length := by rw [← List.length_eraseIdx_add_one hj]; exact lt_add_one _
       _ = ℓ (π ω) := hω.symm
 
@@ -386,7 +386,7 @@ theorem isLeftInversion_of_mem_leftInvSeq {ω : List B} (hω : cs.IsReduced ω) 
     rw [cs.length_leftInvSeq] at hj
     calc
       ℓ (π (ω.eraseIdx j))
-      _ ≤ (ω.eraseIdx j).length := (cs.length_wordProd_le _)
+      _ ≤ (ω.eraseIdx j).length := cs.length_wordProd_le _
       _ < ω.length := by rw [← List.length_eraseIdx_add_one hj]; exact lt_add_one _
       _ = ℓ (π ω) := hω.symm
 
@@ -435,9 +435,9 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
   have h₅ := calc
     π ω = π ω * t * t' := by rw [mul_assoc, h₄]; group
     _ = (π (ω.eraseIdx j)) * t' :=
-        (congrArg (· * t') (cs.wordProd_mul_getD_rightInvSeq _ _))
+        congrArg (· * t') (cs.wordProd_mul_getD_rightInvSeq _ _)
     _ = π ((ω.eraseIdx j).eraseIdx (j' - 1)) :=
-        (cs.wordProd_mul_getD_rightInvSeq _ _)
+        cs.wordProd_mul_getD_rightInvSeq _ _
   have h₆ := calc
     ω.length = ℓ (π ω) := (rω.symm)
     _ = ℓ (π ((ω.eraseIdx j).eraseIdx (j' - 1))) := (congrArg cs.length h₅)
