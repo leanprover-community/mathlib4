@@ -114,7 +114,7 @@ lemma expChar_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A
     (h : Function.Injective (algebraMap R A)) (q : ℕ) [ExpChar R q] : ExpChar A q :=
   expChar_of_injective_ringHom h q
 
-theorem expChar_of_injective_algebraMap' (R : Type*) {A : Type*} [CommRing R] [CommRing A]
+theorem ExpChar.of_injective_algebraMap' (R : Type*) {A : Type*} [CommRing R] [CommRing A]
     [Algebra R A] [FaithfulSMul R A] (q : ℕ) [ExpChar R q] : ExpChar A q :=
   expChar_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) q
 
