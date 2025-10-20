@@ -419,7 +419,7 @@ lemma _root_.spectrum.unitary_star_left_conjugate {a : A} {u : unitary A} :
 @[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate :=
   spectrum.unitary_star_right_conjugate
 @[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate' :=
-  spectrum.unitary_star_left_conjugate'
+  spectrum.unitary_star_left_conjugate
 
 end UnitaryConjugate
 
