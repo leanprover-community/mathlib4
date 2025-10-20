@@ -642,24 +642,13 @@ removed. -/
 lemma Preconnected.exists_vertex_connected_deleteVerts_singleton_of_fintype_of_nontrivial
     [DecidableEq V] {H : G.Subgraph} [Fintype H.verts] [Nontrivial H.verts]
     (hpreconn : H.Preconnected) : ∃ v ∈ H.verts, (H.deleteVerts {v}).Connected := by
-  obtain ⟨T, T_le_H, T_isTree⟩ :=
-    (Subgraph.connected_iff.mpr ⟨hpreconn, Set.Nonempty.of_subtype⟩).coe.exists_isTree_le
-  have ⟨T_conn, _⟩ := T_isTree
-  have := Classical.decRel T.Adj
-  obtain ⟨v, hv⟩ := T_isTree.exists_vert_degree_one_of_nontrivial
-  use v, v.coe_prop
-  apply @Connected.mono _ _ (.coeSubgraph ((toSubgraph T T_le_H).deleteVerts {v}))
-  · obtain ⟨_, _⟩ := coeSubgraph_le (toSubgraph T T_le_H)
-    constructor
-    · simp only [map_verts, hom_apply, Subgraph.induce_verts]
-      grind
-    · intro _ _ ⟨_, _, _, _, _⟩
-      aesop
-  · aesop
-  · have := Fintype.ofFinite ((toSubgraph T T_le_H).neighborSet v)
-    apply Connected.coeSubgraph
-    apply (T_conn.toSubgraph T_le_H).preconnected.connected_deleteVerts_singleton_of_degree_eq_one
-    simp [← hv]
+  obtain ⟨⟨v, hv⟩, h'⟩ :=
+    hpreconn.coe.exists_vertex_connected_induce_complement_singleton_of_fintype_of_nontrivial
+  use v, hv
+  refine Subgraph.connected_iff'.mpr ((Iso.connected_iff (coeInduceEquiv Set.diff_subset)).mpr ?_)
+  have : ({w | ↑w ∈ H.verts \ {v}} : Set H.verts) = {⟨v, hv⟩}ᶜ := by aesop
+  rw [this]
+  exact h'
 
 /-- A finite connected graph contains a vertex that leaves the graph preconnected if removed. -/
 lemma Connected.exists_vertex_preconnected_deleteVerts_singleton_of_fintype
