@@ -422,7 +422,8 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
      (alternatingWord i j p)[k + 1]'(by simp [h]) =
      (alternatingWord j i p)[k]'(by simp; cutsat) := by
-  rw [getElem_alternatingWord i j p (k + 1) (by cutsat), getElem_alternatingWord j i p k (by cutsat)]
+  rw [getElem_alternatingWord i j p (k + 1) (by cutsat),
+    getElem_alternatingWord j i p k (by cutsat)]
   by_cases h_even : Even (p + k)
   · rw [if_pos h_even, ← add_assoc]
     simp only [ite_eq_right_iff, isEmpty_Prop, Nat.not_even_iff_odd, Even.add_one h_even,
