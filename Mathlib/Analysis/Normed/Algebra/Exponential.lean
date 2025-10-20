@@ -9,7 +9,6 @@ import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Analysis.SpecificLimits.RCLike
 
 /-!
 # Exponential in a Banach algebra
