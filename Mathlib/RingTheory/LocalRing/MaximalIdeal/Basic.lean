@@ -70,6 +70,9 @@ theorem le_maximalIdeal {J : Ideal R} (hJ : J ≠ ⊤) : J ≤ maximalIdeal R :=
   rcases Ideal.exists_le_maximal J hJ with ⟨M, hM1, hM2⟩
   rwa [← eq_maximalIdeal hM1]
 
+theorem le_maximalIdeal_of_isPrime (p : Ideal R) [hp : p.IsPrime] : p ≤ maximalIdeal R :=
+  le_maximalIdeal hp.ne_top
+
 /--
 An element `x` of a commutative local semiring is not contained in the maximal ideal
 iff it is a unit.
@@ -85,24 +88,6 @@ theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
       Ring.not_isField_iff_exists_prime.mpr ⟨_, h, Ideal.IsMaximal.isPrime' _⟩⟩
 
 end IsLocalRing
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.maximal_ideal_unique := IsLocalRing.maximal_ideal_unique
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.eq_maximalIdeal := IsLocalRing.eq_maximalIdeal
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.le_maximalIdeal := IsLocalRing.le_maximalIdeal
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.mem_maximalIdeal := IsLocalRing.mem_maximalIdeal
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.not_mem_maximalIdeal := IsLocalRing.not_mem_maximalIdeal
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.isField_iff_maximalIdeal_eq := IsLocalRing.isField_iff_maximalIdeal_eq
 
 end CommSemiring
 
@@ -125,12 +110,6 @@ theorem jacobson_eq_maximalIdeal (I : Ideal R) (h : I ≠ ⊤) :
 
 end IsLocalRing
 
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.maximalIdeal_le_jacobson := IsLocalRing.maximalIdeal_le_jacobson
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.jacobson_eq_maximalIdeal := IsLocalRing.jacobson_eq_maximalIdeal
-
 end CommRing
 
 namespace IsLocalRing
@@ -149,9 +128,3 @@ end IsLocalRing
 
 theorem IsLocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : IsLocalRing.maximalIdeal R = ⊥ :=
   IsLocalRing.isField_iff_maximalIdeal_eq.mp (Field.toIsField R)
-
-@[deprecated (since := "2024-11-09")]
-alias LocalRing.ker_eq_maximalIdeal := IsLocalRing.ker_eq_maximalIdeal
-
-@[deprecated (since := "2024-11-09")]
-alias LocalRing.maximalIdeal_eq_bot := IsLocalRing.maximalIdeal_eq_bot

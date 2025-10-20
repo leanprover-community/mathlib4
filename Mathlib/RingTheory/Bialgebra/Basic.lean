@@ -43,8 +43,6 @@ that satisfy the coalgebra axioms to define a bialgebra structure on `A`.
 bialgebra
 -/
 
-suppress_compilation
-
 universe u v w
 
 open Function
@@ -156,7 +154,6 @@ variable (R : Type u) [CommSemiring R]
 open Bialgebra
 
 /-- Every commutative (semi)ring is a bialgebra over itself -/
-noncomputable
 instance toBialgebra : Bialgebra R R where
   mul_compr₂_counit := by ext; simp
   counit_one := rfl
@@ -173,7 +170,6 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 then `Bialgebra.ofAlgHom` consumes the counit and comultiplication
 as algebra homomorphisms that satisfy the coalgebra axioms to define
 a bialgebra structure on `A`. -/
-noncomputable
 abbrev ofAlgHom (comul : A →ₐ[R] (A ⊗[R] A)) (counit : A →ₐ[R] R)
     (h_coassoc : (Algebra.TensorProduct.assoc R R A A A).toAlgHom.comp
       ((Algebra.TensorProduct.map comul (.id R A)).comp comul)

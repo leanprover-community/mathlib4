@@ -29,7 +29,7 @@ Generalize linear independence to:
   * arbitrary sets of polynomials which are pairwise different degree.
 -/
 
-open Submodule
+open Module Submodule
 open scoped Function
 
 variable (R : Type*)
@@ -38,9 +38,9 @@ namespace Polynomial
 
 /-- A sequence of polynomials such that the polynomial at index `i` has degree `i`. -/
 structure Sequence [Semiring R] where
-  /-- The `i`'th element in the sequence. Use `S i` instead, defined via `CoeFun`. -/
+  /-- The `i`-th element in the sequence. Use `S i` instead, defined via `CoeFun`. -/
   protected elems' : ℕ → R[X]
-  /-- The `i`'th element in the sequence has degree `i`. Use `S.degree_eq` instead. -/
+  /-- The `i`-th element in the sequence has degree `i`. Use `S.degree_eq` instead. -/
   protected degree_eq' (i : ℕ) : (elems' i).degree = i
 
 attribute [coe] Sequence.elems'
@@ -93,7 +93,6 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
     · simp [p_ne_zero]
     -- let u be the inverse of `S n`'s leading coefficient
     obtain ⟨u, leftinv, rightinv⟩ := isUnit_iff_exists.mp <| hCoeff n
-
     -- We'll show `P` is the difference of two terms in the span:
     --   a polynomial whose leading term matches `P`'s and lower degree terms match `S n`'s
     let head := P.leadingCoeff • u • S n -- a polynomial whose leading term matches P's and whose
@@ -133,7 +132,7 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
           mul_one, C_eq_zero, leadingCoeff_eq_zero]
       · apply head.ne_zero_of_degree_gt
         rw [← head_degree_eq]
-        exact natDegree_pos_iff_degree_pos.mp (by omega)
+        exact natDegree_pos_iff_degree_pos.mp (by cutsat)
     -- and that they have matching leading coefficients
     have hPhead : P.leadingCoeff = head.leadingCoeff := by
       rw [degree_eq_natDegree, head_degree_eq_natDegree] at head_degree_eq
@@ -175,9 +174,9 @@ variable (hCoeff : ∀ i, IsUnit (S i).leadingCoeff)
 noncomputable def basis : Basis ℕ R R[X] :=
   Basis.mk S.linearIndependent <| eq_top_iff.mp <| S.span hCoeff
 
-/-- The `i`'th basis vector is the `i`'th polynomial in the sequence. -/
+/-- The `i`-th basis vector is the `i`-th polynomial in the sequence. -/
 @[simp]
-lemma basis_eq_self  (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
+lemma basis_eq_self (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
 
 /-- Basis elements have strictly monotone degree. -/
 lemma basis_degree_strictMono : StrictMono <| degree ∘ (S.basis hCoeff) := fun _ _  ↦ by simp

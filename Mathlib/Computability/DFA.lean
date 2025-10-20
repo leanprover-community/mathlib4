@@ -31,7 +31,7 @@ a `Fintype` instance must be supplied for true DFAs.
 ## Main theorems
 
 - `DFA.pumping_lemma` : every sufficiently long string accepted by the DFA has a substring that can
-  be repeated arbitrarily many times
+  be repeated arbitrarily many times (and have the overall string still be accepted)
 
 ## Implementation notes
 
@@ -123,25 +123,19 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
           b ≠ [] ∧ M.evalFrom s a = q ∧ M.evalFrom q b = q ∧ M.evalFrom q c = t := by
   obtain ⟨n, m, hneq, heq⟩ :=
     Fintype.exists_ne_map_eq_of_card_lt
-      (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by norm_num)
+      (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by simp)
   wlog hle : (n : ℕ) ≤ m generalizing n m
-  · exact this m n hneq.symm heq.symm (le_of_not_le hle)
-  have hm : (m : ℕ) ≤ Fintype.card σ := Fin.is_le m
+  · exact this m n hneq.symm heq.symm (le_of_not_ge hle)
   refine
     ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n,
                     x.drop m, ?_, ?_, ?_, by rfl, ?_⟩
   · rw [List.take_append_drop, List.take_append_drop]
   · simp only [List.length_drop, List.length_take]
-    rw [min_eq_left (hm.trans hlen), min_eq_left hle, add_tsub_cancel_of_le hle]
-    exact hm
+    omega
   · intro h
     have hlen' := congr_arg List.length h
     simp only [List.length_drop, List.length, List.length_take] at hlen'
-    rw [min_eq_left, tsub_eq_zero_iff_le] at hlen'
-    · apply hneq
-      apply le_antisymm
-      assumption'
-    exact hm.trans hlen
+    omega
   have hq : M.evalFrom (M.evalFrom s ((x.take m).take n)) ((x.take m).drop n) =
       M.evalFrom s ((x.take m).take n) := by
     rw [List.take_take, min_eq_left hle, ← evalFrom_of_append, heq, ← min_eq_left hle, ←

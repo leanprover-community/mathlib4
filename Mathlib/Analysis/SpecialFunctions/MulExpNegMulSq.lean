@@ -48,7 +48,7 @@ theorem neg_mulExpNegMulSq_neg (ε x : ℝ) : - mulExpNegMulSq ε (-x) = mulExpN
   simp [mulExpNegMulSq]
 
 theorem mulExpNegMulSq_one_le_one (x : ℝ) : mulExpNegMulSq 1 x ≤ 1 := by
-  simp [mulExpNegMulSq]
+  simp only [mulExpNegMulSq, one_mul]
   rw [← le_div_iff₀ (exp_pos (-(x * x))), exp_neg, div_inv_eq_mul, one_mul]
   apply le_trans _ (add_one_le_exp (x * x))
   nlinarith
@@ -73,7 +73,7 @@ theorem _root_.Continuous.mulExpNegMulSq {α : Type*} [TopologicalSpace α] {f :
 
 theorem differentiableAt_mulExpNegMulSq (y : ℝ) :
     DifferentiableAt ℝ (mulExpNegMulSq ε) y :=
-  DifferentiableAt.mul differentiableAt_id' (by fun_prop)
+  DifferentiableAt.mul differentiableAt_fun_id (by fun_prop)
 
 @[fun_prop] theorem differentiable_mulExpNegMulSq : Differentiable ℝ (mulExpNegMulSq ε) :=
   fun _ => differentiableAt_mulExpNegMulSq _

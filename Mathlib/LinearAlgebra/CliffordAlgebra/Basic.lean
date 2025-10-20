@@ -64,14 +64,9 @@ end CliffordAlgebra
 -/
 def CliffordAlgebra :=
   RingQuot (CliffordAlgebra.Rel Q)
+deriving Inhabited, Ring, Algebra R
 
 namespace CliffordAlgebra
-
--- The `Inhabited, Semiring, Algebra` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabited _
-instance instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
 
 instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
@@ -84,9 +79,6 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
 example : (Semiring.toNatAlgebra : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Ring.toIntAlgebra _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
-
--- shortcut instance, as the other instance is slow
-instance instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
@@ -199,13 +191,29 @@ theorem induction {C : CliffordAlgebra Q → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : s.val.comp (lift Q of) = AlgHom.id R (CliffordAlgebra Q) := by
     ext x
-    simp [of]
-    -- porting note: `simp` should fire with the following lemma automatically
-    have := LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
-    exact this
+    simpa [of, -LinearMap.codRestrict_apply]
+      -- This `@[simp]` lemma applies to `coeSort s.subModule`, but the goal contains
+      -- a plain `coeSort s`. So we remove it from the `simp` arguments, and add it to
+      -- the term that `simpa` will simplify before applying.
+      using LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
   -- finding a proof is finding an element of the subalgebra
   rw [← AlgHom.id_apply (R := R) a, ← of_id]
   exact (lift Q of a).prop
+
+@[simp]
+theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι Q)) = ⊤ := by
+  refine top_unique fun x hx => ?_; clear hx
+  induction x using induction with
+  | algebraMap => exact algebraMap_mem _ _
+  | add x y hx hy => exact add_mem hx hy
+  | mul x y hx hy => exact mul_mem hx hy
+  | ι x => exact Algebra.subset_adjoin (Set.mem_range_self _)
+
+@[simp]
+theorem range_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap _ _ (Q m)) :
+    (lift Q ⟨f, cond⟩).range = Algebra.adjoin R (Set.range f) := by
+  simp_rw [← Algebra.map_top, ← adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
+    Function.comp_def, lift_ι_apply]
 
 theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebra R A]
     (f : M →ₗ[R] A) (hf : ∀ x, f x * f x = algebraMap _ _ (Q x)) (a b : M) :

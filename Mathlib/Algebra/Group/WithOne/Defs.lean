@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Option.Basic
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Common
 
@@ -33,7 +34,7 @@ universe u v w
 variable {α : Type u}
 
 /-- Add an extra element `1` to a type -/
-@[to_additive "Add an extra element `0` to a type"]
+@[to_additive /-- Add an extra element `0` to a type -/]
 def WithOne (α) :=
   Option α
 
@@ -81,13 +82,19 @@ instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
 /-- The canonical map from `α` into `WithOne α` -/
-@[to_additive (attr := coe) "The canonical map from `α` into `WithZero α`"]
+@[to_additive (attr := coe, match_pattern) /-- The canonical map from `α` into `WithZero α` -/]
 def coe : α → WithOne α :=
   Option.some
 
 @[to_additive]
 instance instCoeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
+
+@[to_additive]
+lemma «forall» {p : WithZero α → Prop} : (∀ x, p x) ↔ p 0 ∧ ∀ a : α, p a := Option.forall
+
+@[to_additive]
+lemma «exists» {p : WithZero α → Prop} : (∃ x, p x) ↔ p 0 ∨ ∃ a : α, p a := Option.exists
 
 /-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
@@ -115,7 +122,7 @@ lemma recOneCoe_coe {motive : WithOne α → Sort*} (h₁ h₂) (a : α) :
 
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
-      "Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
+/-- Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`. -/]
 def unone : ∀ {x : WithOne α}, x ≠ 1 → α | (x : α), _ => x
 
 @[to_additive (attr := simp) unzero_coe]
@@ -145,6 +152,10 @@ instance instCanLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
   Option.some_inj
+
+@[to_additive]
+lemma coe_injective : Function.Injective (coe : α → WithOne α) :=
+  Option.some_injective _
 
 @[to_additive (attr := elab_as_elim)]
 protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=

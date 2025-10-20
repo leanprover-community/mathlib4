@@ -56,7 +56,7 @@ the Jordan-Hölder theorem for modules/groups and the API should be transferred 
 theorems in this file will have stronger versions for modules. There will also need to be an API for
 mapping composition series across homomorphisms. It is also probably possible to
 provide an instance of `JordanHolderLattice` for any `ModularLattice`, and in this case the
-Jordan-Hölder theorem will say that there is a well defined notion of length of a modular lattice.
+Jordan-Hölder theorem will say that there is a well-defined notion of length of a modular lattice.
 However an instance of `JordanHolderLattice` for a modular lattice will not be able to contain
 the correct notion of isomorphism for modules, so a separate instance for modules will still be
 required and this will clash with the instance for modular lattices, and so at least one of these
@@ -131,7 +131,7 @@ the top. For a composition series `s`, `s.last` is the largest element of the se
 and `s.head` is the least element.
 -/
 abbrev CompositionSeries (X : Type u) [Lattice X] [JordanHolderLattice X] : Type u :=
-  RelSeries (IsMaximal (X := X))
+  RelSeries {(x, y) : X × X | IsMaximal x y}
 
 namespace CompositionSeries
 
@@ -203,17 +203,14 @@ theorem mem_eraseLast_of_ne_of_mem {s : CompositionSeries X} {x : X}
     conv_rhs => rw [← Nat.succ_sub (length_pos_of_nontrivial ⟨_, ⟨i, rfl⟩, _, s.last_mem, hx⟩),
       Nat.add_one_sub_one]
     exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [last, s.inj, Fin.ext_iff] using hx)
-  refine ⟨Fin.castSucc (n := s.length + 1) i, ?_⟩
-  simp [Fin.ext_iff, Nat.mod_eq_of_lt hi]
+  exact ⟨⟨↑i, hi⟩, by simp⟩
 
 theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
     x ∈ s.eraseLast ↔ x ≠ s.last ∧ x ∈ s := by
   simp only [RelSeries.mem_def, eraseLast]
   constructor
   · rintro ⟨i, rfl⟩
-    have hi : (i : ℕ) < s.length := by
-      conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
-      exact i.2
+    have hi : (i : ℕ) < s.length := by omega
     simp [last, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
   · intro h
     exact mem_eraseLast_of_ne_of_mem h.1 h.2
@@ -224,10 +221,11 @@ theorem lt_last_of_mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.le
 
 theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
     IsMaximal s.eraseLast.last s.last := by
-  have : s.length - 1 + 1 = s.length := by
-    conv_rhs => rw [← Nat.add_one_sub_one s.length]; rw [Nat.succ_sub h]
   rw [last_eraseLast, last]
-  convert s.step ⟨s.length - 1, by omega⟩; ext; simp [this]
+  have := s.step ⟨s.length - 1, by cutsat⟩
+  simp only [Fin.castSucc_mk, Fin.succ_mk, mem_setOf_eq] at this
+  convert this using 3
+  exact (tsub_add_cancel_of_le h).symm
 
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
     s = snoc (eraseLast s) s.last (isMaximal_eraseLast_last h) := by
@@ -281,7 +279,7 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     · intro i
       simpa [e, smash_castAdd, smash_succ_castAdd] using h₁.choose_spec i
     · intro i
-      simpa [e, smash_natAdd, smash_succ_natAdd] using h₂.choose_spec i⟩
+      simpa [e, -Fin.castSucc_natAdd, smash_natAdd, smash_succ_natAdd] using h₂.choose_spec i⟩
 
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)
@@ -295,7 +293,7 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
     refine Fin.lastCases ?_ ?_ i
     · simpa [e, apply_last] using hlast
     · intro i
-      simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
+      simpa [e, ← Fin.castSucc_succ] using hequiv.choose_spec i⟩
 
 theorem length_eq {s₁ s₂ : CompositionSeries X} (h : Equivalent s₁ s₂) : s₁.length = s₂.length := by
   simpa using Fintype.card_congr h.choose

@@ -34,6 +34,16 @@ instance Pi.canLift (ι : Sort*) (α β : ι → Sort*) (coe : ∀ i, β i → �
   prf f hf := ⟨fun i => Classical.choose (CanLift.prf (f i) (hf i)),
     funext fun i => Classical.choose_spec (CanLift.prf (f i) (hf i))⟩
 
+/-- Enable automatic handling of product types in `CanLift`. -/
+instance Prod.instCanLift {α β γ δ : Type*} {coeβα condβα coeδγ condδγ} [CanLift α β coeβα condβα]
+    [CanLift γ δ coeδγ condδγ] :
+    CanLift (α × γ) (β × δ) (Prod.map coeβα coeδγ) (fun x ↦ condβα x.1 ∧ condδγ x.2) where
+  prf := by
+    rintro ⟨x, y⟩ ⟨hx, hy⟩
+    rcases CanLift.prf (β := β) x hx with ⟨x, rfl⟩
+    rcases CanLift.prf (β := δ) y hy with ⟨y, rfl⟩
+    exact ⟨(x, y), by simp⟩
+
 theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i, Nonempty (α i)]
     {p : ι → Prop} (f : ∀ i : Subtype p, α i) :
     ∃ g : ∀ i : ι, α i, (fun i : Subtype p => g i) = f := by
@@ -56,7 +66,7 @@ instance Subtype.canLift {α : Sort*} (p : α → Prop) :
 
 namespace Mathlib.Tactic
 
-open Lean Parser Tactic Elab Tactic Meta
+open Lean Parser Elab Tactic Meta
 
 /-- Lift an expression to another type.
 * Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.
@@ -160,20 +170,11 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 
 elab_rules : tactic
-  | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none false
-
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName) => withMainContext <| Lift.main e t h newVarName none false
-
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName $newEqName) => withMainContext <| Lift.main e t h newVarName newEqName false
-
-elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName $newEqName $newPrfName) => withMainContext do
-  if h.isNone then Lift.main e t h newVarName newEqName false
-  else
-    let some h := h | unreachable!
-    if h.raw == newPrfName then Lift.main e t h newVarName newEqName true
-    else Lift.main e t h newVarName newEqName false
+| `(tactic| lift $e to $t $[using $h]? $[with $newVarName $[$newEqName]? $[$newPrfName]?]?) =>
+  withMainContext <|
+    let keepUsing := match h, newPrfName.join with
+      | some h, some newPrfName => h.raw == newPrfName
+      | _, _ => false
+    Lift.main e t h newVarName newEqName.join keepUsing
 
 end Mathlib.Tactic

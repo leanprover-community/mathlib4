@@ -3,7 +3,6 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
@@ -168,7 +167,7 @@ instance instPreorderTropical [Preorder R] : Preorder (Tropical R) :=
   { instLETropical, instLTTropical with
     le_refl := fun x => le_refl (untrop x)
     le_trans := fun _ _ _ h h' => le_trans (α := R) h h'
-    lt_iff_le_not_le := fun _ _ => lt_iff_le_not_le (α := R) }
+    lt_iff_le_not_ge := fun _ _ => lt_iff_le_not_ge (α := R) }
 
 /-- Reinterpret `x : R` as an element of `Tropical R`, preserving the order. -/
 def tropOrderIso [Preorder R] : R ≃o Tropical R :=
@@ -208,7 +207,7 @@ theorem trop_coe_ne_zero (x : R) : trop (x : WithTop R) ≠ 0 :=
   nofun
 
 @[simp]
-theorem zero_ne_trop_coe (x : R) : (0 : Tropical (WithTop R)) ≠ trop x :=
+theorem zero_ne_trop_coe (x : R) : 0 ≠ (trop x : Tropical (WithTop R)) :=
   nofun
 
 @[simp]
@@ -351,7 +350,7 @@ instance instAddMonoidWithOneTropical [LinearOrder R] [OrderTop R] [Zero R] :
   { instOneTropical, instAddCommMonoidTropical with
     natCast := fun n => if n = 0 then 0 else 1
     natCast_zero := rfl
-    natCast_succ := fun n => (untrop_inj_iff _ _).1 (by cases n <;> simp [Nat.cast]) }
+    natCast_succ := fun n => (untrop_inj_iff _ _).1 (by cases n <;> simp) }
 
 instance [Zero R] : Nontrivial (Tropical (WithTop R)) :=
   ⟨⟨0, 1, trop_injective.ne WithTop.top_ne_coe⟩⟩

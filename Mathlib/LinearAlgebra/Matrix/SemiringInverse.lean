@@ -89,13 +89,13 @@ theorem detp_mul :
     split_ifs with h h <;> simp only [hσ, h]
   rw [← mul_neg_one, hf (mem_ofSign.mpr (sign_swap hij)), sum_map]
   simp_rw [prod_mul_distrib, mulRightEmbedding_apply, Perm.mul_apply]
-  refine sum_congr rfl fun τ hτ ↦ congr_arg (_ *  ·) ?_
+  refine sum_congr rfl fun τ hτ ↦ congr_arg (_ * ·) ?_
   rw [← Equiv.prod_comp (swap i j)]
   simp only [hσ]
 
 theorem mul_adjp_apply_eq : (A * adjp s A) i i = detp s A := by
   have key := sum_fiberwise_eq_sum_filter (ofSign s) univ (· i) fun σ ↦ ∏ k, A k (σ k)
-  simp_rw [mem_univ, filter_True] at key
+  simp_rw [mem_univ, filter_true] at key
   simp_rw [mul_apply, adjp_apply, mul_sum, detp, ← key]
   refine sum_congr rfl fun x hx ↦ sum_congr rfl fun σ hσ ↦ ?_
   rw [← prod_mul_prod_compl ({i} : Finset n), prod_singleton, (mem_filter.mp hσ).2]
@@ -173,7 +173,7 @@ theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
   rw [← hσ.1, ← hτ, ← sign_inv] at h
   replace h := ne_of_apply_ne sign h
   rw [ne_eq, eq_comm, eq_inv_iff_mul_eq_one] at h
-  obtain ⟨l, hl1, hl2⟩ := exists_ne_of_one_lt_card (one_lt_card_support_of_ne_one h) (τ⁻¹ j)
+  obtain ⟨l, hl1, hl2⟩ := exists_mem_ne (one_lt_card_support_of_ne_one h) (τ⁻¹ j)
   rw [mem_support, ne_comm] at hl1
   rw [ne_eq, ← mem_singleton, ← mem_compl] at hl2
   rw [← prod_mul_prod_compl {τ⁻¹ j}, mul_mul_mul_comm, mul_comm, ← smul_eq_mul]
@@ -206,7 +206,7 @@ theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
   have h0 := detp_mul A B
   rw [hAB, detp_one_one, detp_neg_one_one, zero_add] at h0
   replace h := congr(B * $(detp_smul_adjp hAB))
-  simp only [mul_add, mul_smul, add_assoc] at h
+  simp only [mul_add, mul_smul] at h
   replace h := congr($h + (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) • 1)
   simp_rw [add_smul, ← smul_smul] at h
   rwa [add_assoc, add_add_add_comm, ← smul_add, ← smul_add,

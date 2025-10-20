@@ -50,7 +50,7 @@ variable [L.Structure M] [L.Structure N] [L.Structure P]
 
 open FirstOrder Cardinal
 
-open Structure Cardinal
+open Structure
 
 section ClosedUnder
 
@@ -288,7 +288,7 @@ theorem lift_card_closure_le_card_term : Cardinal.lift.{max u w} #(closure L s) 
 
 theorem lift_card_closure_le :
     Cardinal.lift.{u, w} #(closure L s) ≤
-      max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σi, L.Functions i)) := by
+      max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σ i, L.Functions i)) := by
   rw [← lift_umax]
   refine lift_card_closure_le_card_term.trans (Term.card_le.trans ?_)
   rw [mk_sum, lift_umax.{w, u}]
@@ -528,7 +528,7 @@ theorem map_id (S : L.Substructure M) : S.map (Hom.id L M) = S :=
 
 theorem map_closure (f : M →[L] N) (s : Set M) : (closure L s).map f = closure L (f '' s) :=
   Eq.symm <|
-    closure_eq_of_le (Set.image_subset f subset_closure) <|
+    closure_eq_of_le (Set.image_mono subset_closure) <|
       map_le_iff_le_comap.2 <| closure_le.2 fun x hx => subset_closure ⟨x, hx, rfl⟩
 
 @[simp]
@@ -634,22 +634,18 @@ def subtype (S : L.Substructure M) : S ↪[L] M where
 theorem subtype_apply {S : L.Substructure M} {x : S} : subtype S x = x :=
   rfl
 
-theorem subtype_injective (S : L.Substructure M): Function.Injective (subtype S) :=
+theorem subtype_injective (S : L.Substructure M) : Function.Injective (subtype S) :=
   Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 /-- The equivalence between the maximal substructure of a structure and the structure itself. -/
 def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
   toFun := subtype ⊤
   invFun m := ⟨m, mem_top m⟩
   left_inv m := by simp
-  right_inv _ := rfl
 
 @[simp]
 theorem coe_topEquiv :
@@ -830,6 +826,9 @@ def eqLocus (f g : M →[L] N) : Substructure L M where
       repeat' rw [Function.comp_apply]
       apply hx
     simp [h]
+
+@[simp]
+theorem mem_eqLocus {f g : M →[L] N} {x : M} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
 
 /-- If two `L.Hom`s are equal on a set, then they are equal on its substructure closure. -/
 theorem eqOn_closure {f g : M →[L] N} {s : Set M} (h : Set.EqOn f g s) :

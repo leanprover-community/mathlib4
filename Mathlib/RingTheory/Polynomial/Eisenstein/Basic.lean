@@ -3,6 +3,7 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 
@@ -56,13 +57,28 @@ namespace IsWeaklyEisensteinAt
 
 section CommSemiring
 
-variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}
+variable [CommSemiring R] {𝓟 : Ideal R} {f f' : R[X]}
 
 theorem map (hf : f.IsWeaklyEisensteinAt 𝓟) {A : Type v} [CommSemiring A] (φ : R →+* A) :
     (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
   refine (isWeaklyEisensteinAt_iff _ _).2 fun hn => ?_
   rw [coeff_map]
   exact mem_map_of_mem _ (hf.mem (lt_of_lt_of_le hn natDegree_map_le))
+
+theorem mul (hf : f.IsWeaklyEisensteinAt 𝓟) (hf' : f'.IsWeaklyEisensteinAt 𝓟) :
+    (f * f').IsWeaklyEisensteinAt 𝓟 := by
+  rw [isWeaklyEisensteinAt_iff] at hf hf' ⊢
+  intro n hn
+  rw [coeff_mul]
+  refine sum_mem _ fun x hx ↦ ?_
+  rcases lt_or_ge x.1 f.natDegree with hx1 | hx1
+  · exact mul_mem_right _ _ (hf hx1)
+  replace hx1 : x.2 < f'.natDegree := by
+    by_contra!
+    rw [HasAntidiagonal.mem_antidiagonal] at hx
+    replace hn := hn.trans_le natDegree_mul_le
+    linarith
+  exact mul_mem_left _ _ (hf' hx1)
 
 end CommSemiring
 
@@ -116,8 +132,6 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree_le {x : S} (hx : aeval x f = 0) (
 
 end Principal
 
--- Porting note: `Ideal.neg_mem_iff` was `neg_mem_iff` on line 142 but Lean was not able to find
--- NegMemClass
 theorem pow_natDegree_le_of_root_of_monic_mem (hf : f.IsWeaklyEisensteinAt 𝓟)
     {x : R} (hroot : IsRoot f x) (hmo : f.Monic) :
     ∀ i, f.natDegree ≤ i → x ^ i ∈ 𝓟 := by
@@ -128,7 +142,7 @@ theorem pow_natDegree_le_of_root_of_monic_mem (hf : f.IsWeaklyEisensteinAt 𝓟)
   rw [IsRoot.def, eval_eq_sum_range, Finset.range_add_one,
     Finset.sum_insert Finset.notMem_range_self, Finset.sum_range, hmo.coeff_natDegree, one_mul] at
     *
-  rw [eq_neg_of_add_eq_zero_left hroot, Ideal.neg_mem_iff]
+  rw [eq_neg_of_add_eq_zero_left hroot, neg_mem_iff]
   exact Submodule.sum_mem _ fun i _ => mul_mem_right _ _ (hf.mem (Fin.is_lt i))
 
 theorem pow_natDegree_le_of_aeval_zero_of_monic_mem_map (hf : f.IsWeaklyEisensteinAt 𝓟)

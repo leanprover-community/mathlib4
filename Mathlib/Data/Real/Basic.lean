@@ -302,20 +302,13 @@ protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : 
   induction x using Quot.induction_on
   exact h _
 
-theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := by
-  induction a using Real.ind_mk
-  induction b using Real.ind_mk
-  induction c using Real.ind_mk
-  simp only [mk_lt, ← mk_add]
-  show Pos _ ↔ Pos _; rw [add_sub_add_left_eq_sub]
-
 instance partialOrder : PartialOrder ℝ where
   le := (· ≤ ·)
   lt := (· < ·)
-  lt_iff_le_not_le a b := by
+  lt_iff_le_not_ge a b := by
     induction a using Real.ind_mk
     induction b using Real.ind_mk
-    simpa using lt_iff_le_not_le
+    simpa using lt_iff_le_not_ge
   le_refl a := by
     induction a using Real.ind_mk
     rw [mk_le]
@@ -353,12 +346,21 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
     simp only [le_iff_eq_or_lt]
     rintro a b ⟨rfl, h⟩
     · simp only [lt_self_iff_false, or_false, forall_const]
-    · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
+    · refine fun c => Or.inr ?_
+      induction a using Real.ind_mk with | _ a =>
+      induction b using Real.ind_mk with | _ b =>
+      induction c using Real.ind_mk with | _ c =>
+      simp only [mk_lt, ← mk_add] at *
+      change Pos _ at *
+      rwa [add_sub_add_left_eq_sub]
+
+@[deprecated (since := "2025-09-15")]
+protected alias add_lt_add_iff_left := _root_.add_lt_add_iff_left
 
 instance instIsStrictOrderedRing : IsStrictOrderedRing ℝ :=
   .of_mul_pos fun a b ↦ by
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
     simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
 instance instIsOrderedRing : IsOrderedRing ℝ :=
@@ -402,19 +404,19 @@ instance : DistribLattice ℝ :=
     max := (· ⊔ ·)
     le := (· ≤ ·)
     le_sup_left := by
-      intros a b
+      intro a b
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       dsimp only; rw [← mk_sup, mk_le]
       exact CauSeq.le_sup_left
     le_sup_right := by
-      intros a b
+      intro a b
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       dsimp only; rw [← mk_sup, mk_le]
       exact CauSeq.le_sup_right
     sup_le := by
-      intros a b c
+      intro a b c
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       induction c using Real.ind_mk
@@ -422,26 +424,26 @@ instance : DistribLattice ℝ :=
       exact CauSeq.sup_le
     min := (· ⊓ ·)
     inf_le_left := by
-      intros a b
+      intro a b
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       dsimp only; rw [← mk_inf, mk_le]
       exact CauSeq.inf_le_left
     inf_le_right := by
-      intros a b
+      intro a b
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       dsimp only; rw [← mk_inf, mk_le]
       exact CauSeq.inf_le_right
     le_inf := by
-      intros a b c
+      intro a b c
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       induction c using Real.ind_mk
       simp_rw [← mk_inf, mk_le]
       exact CauSeq.le_inf
     le_sup_inf := by
-      intros a b c
+      intro a b c
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       induction c using Real.ind_mk
@@ -461,7 +463,7 @@ instance : SemilatticeSup ℝ :=
 
 instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
   ⟨by
-    intros a b
+    intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
     simpa using CauSeq.le_total ..⟩
@@ -477,7 +479,7 @@ noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
 lemma ofCauchy_div (f g) : (⟨f / g⟩ : ℝ) = (⟨f⟩ : ℝ) / (⟨g⟩ : ℝ) := by
   simp_rw [div_eq_mul_inv, ofCauchy_mul, ofCauchy_inv]
 
-noncomputable instance field : Field ℝ where
+noncomputable instance instField : Field ℝ where
   mul_inv_cancel := by
     rintro ⟨a⟩ h
     rw [mul_comm]
@@ -503,9 +505,9 @@ noncomputable instance decidableLE (a b : ℝ) : Decidable (a ≤ b) := by infer
 
 noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_instance
 
-/-- Show an underlying cauchy sequence for real numbers.
+/-- Show an underlying Cauchy sequence for real numbers.
 
-The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
+The representative chosen is the one passed in the VM to `Quot.mk`, so two Cauchy sequences
 converging to the same number may be printed differently.
 -/
 unsafe instance : Repr ℝ where
@@ -514,11 +516,11 @@ unsafe instance : Repr ℝ where
 theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
   intro h
   induction x using Real.ind_mk
-  apply le_of_not_lt
+  apply le_of_not_gt
   rw [mk_lt]
   rintro ⟨K, K0, hK⟩
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
-  apply not_lt_of_le (H _ le_rfl).1
+  apply not_lt_of_ge (H _ le_rfl).1
   rw [← mk_const, mk_lt]
   refine ⟨_, half_pos K0, i, fun j ij => ?_⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)

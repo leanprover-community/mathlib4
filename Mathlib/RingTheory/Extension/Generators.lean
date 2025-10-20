@@ -30,7 +30,7 @@ import Mathlib.RingTheory.Extension.Basic
   ```
   A hom between `P` and `P'` is an assignment `X → P'` such that the arrows commute.
 
-- `Algebra.Generators.Cotangent`: The cotangent space wrt `P = R[X] → S`, i.e. the
+- `Algebra.Generators.Cotangent`: The cotangent space w.r.t. `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
 
 ## TODOs
@@ -48,38 +48,38 @@ universe w u v
 
 open TensorProduct MvPolynomial
 
-variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Algebra R S]
 
 /-- A family of generators of a `R`-algebra `S` consists of
 1. `vars`: The type of variables.
 2. `val : vars → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/
 structure Algebra.Generators where
-  /-- The type of variables. -/
-  vars : Type w
   /-- The assignment of each variable to a value in `S`. -/
-  val : vars → S
+  val : ι → S
   /-- A section of `R[X] → S`. -/
-  σ' : S → MvPolynomial vars R
+  σ' : S → MvPolynomial ι R
   aeval_val_σ' : ∀ s, aeval val (σ' s) = s
   /-- An `R[X]`-algebra instance on `S`. The default is the one induced by the map `R[X] → S`,
   but this causes a diamond if there is an existing instance. -/
-  algebra : Algebra (MvPolynomial vars R) S := (aeval val).toAlgebra
+  algebra : Algebra (MvPolynomial ι R) S := (aeval val).toAlgebra
   algebraMap_eq :
-    algebraMap (MvPolynomial vars R) S = aeval (R := R) val := by rfl
+    algebraMap (MvPolynomial ι R) S = aeval (R := R) val := by rfl
 
 namespace Algebra.Generators
 
-attribute [instance] algebra
+variable {R S ι}
+variable (P : Generators R S ι)
 
-variable {R S}
-variable (P : Generators.{w} R S)
-
-/-- The polynomial ring wrt a family of generators. -/
+set_option linter.unusedVariables false in
+/-- The polynomial ring w.r.t. a family of generators. -/
+@[nolint unusedArguments]
 protected
-abbrev Ring : Type (max w u) := MvPolynomial P.vars R
+abbrev Ring (P : Generators R S ι) : Type (max w u) := MvPolynomial ι R
 
-/-- The designated section of wrt a family of generators. -/
+instance : Algebra P.Ring S := P.algebra
+
+/-- The designated section of w.r.t. a family of generators. -/
 def σ : S → P.Ring := P.σ'
 
 /-- See Note [custom simps projection] -/
@@ -112,36 +112,35 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) :=
 section Construction
 
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
-@[simps val, simps -isSimp vars]
+@[simps val]
 noncomputable
-def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R := R) val)) :
-    Generators R S where
-  vars := vars
+def ofSurjective (val : ι → S) (h : Function.Surjective (aeval (R := R) val)) :
+    Generators R S ι where
   val := val
   σ' x := (h x).choose
   aeval_val_σ' x := (h x).choose_spec
 
 /-- If `algebraMap R S` is surjective, the empty type generates `S`. -/
 noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R S)) :
-    Generators.{w} R S :=
+    Generators R S PEmpty.{w + 1} :=
   ofSurjective PEmpty.elim <| fun s ↦ by
     use C (h s).choose
     simp [(h s).choose_spec]
 
 /-- The canonical generators for `R` as an `R`-algebra. -/
-noncomputable def id : Generators.{w} R R := ofSurjectiveAlgebraMap <| by
-  rw [id.map_eq_id]
+noncomputable def id : Generators R R PEmpty.{w + 1} := ofSurjectiveAlgebraMap <| by
+  rw [algebraMap_self]
   exact RingHomSurjective.is_surjective
 
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 noncomputable
-def ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) :
-    Generators R S :=
+def ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) :
+    Generators R S I :=
   ofSurjective (f ∘ X) (by rwa [show aeval (f ∘ X) = f by ext; simp])
 
 /-- Construct `Generators` from a family of generators of `S`. -/
 noncomputable
-def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S := by
+def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S s := by
   refine ofSurjective (Subtype.val : s → S) ?_
   rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
     Subtype.range_coe_subtype, Set.setOf_mem_eq]
@@ -150,8 +149,7 @@ variable (R S) in
 /-- The `Generators` containing the whole algebra, which induces the canonical map  `R[S] → S`. -/
 @[simps]
 noncomputable
-def self : Generators R S where
-  vars := S
+def self : Generators R S S where
   val := _root_.id
   σ' := X
   aeval_val_σ' := aeval_X _
@@ -168,12 +166,12 @@ section Localization
 
 variable (r : R) [IsLocalization.Away r S]
 
+variable (S) in
 /-- If `S` is the localization of `R` away from `r`, we obtain a canonical generator mapping
 to the inverse of `r`. -/
-@[simps val, simps -isSimp vars σ]
+@[simps val, simps -isSimp σ]
 noncomputable
-def localizationAway : Generators R S where
-  vars := Unit
+def localizationAway : Generators R S Unit where
   val _ := IsLocalization.Away.invSelf r
   σ' s :=
     letI a : R := (IsLocalization.Away.sec r s).1
@@ -189,14 +187,13 @@ def localizationAway : Generators R S where
 
 end Localization
 
-variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {ι' : Type*} {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
-@[simps val, simps -isSimp vars σ]
+@[simps val, simps -isSimp σ]
 noncomputable
-def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
-  vars := Q.vars ⊕ P.vars
+def comp (Q : Generators S T ι') (P : Generators R S ι) : Generators R T (ι' ⊕ ι) where
   val := Sum.elim Q.val (algebraMap S T ∘ P.val)
   σ' x := (Q.σ x).sum (fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1)
   aeval_val_σ' s := by
@@ -210,19 +207,19 @@ def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
 gives a family of generators `S[X] → T`. -/
-@[simps val, simps -isSimp vars]
+@[simps val]
 noncomputable
-def extendScalars (P : Generators R T) : Generators S T where
-  vars := P.vars
+def extendScalars (P : Generators R T ι) : Generators S T ι where
   val := P.val
   σ' x := map (algebraMap R S) (P.σ x)
   aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
 
 /-- If `P` is a family of generators of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
-@[simps! val, simps! -isSimp vars]
+@[simps! val]
 noncomputable
-def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators T (T ⊗[R] S) := by
+def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
+    Generators T (T ⊗[R] S) ι := by
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
   intro x
   induction x using TensorProduct.induction_on with
@@ -249,10 +246,8 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators 
 
 /-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
 are the induced generators indexed by `ι`. -/
-@[simps -isSimp vars]
-noncomputable def reindex (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars) :
-    Generators R S where
-  vars := ι
+noncomputable def reindex (P : Generators R S ι') (e : ι ≃ ι') :
+    Generators R S ι where
   val := P.val ∘ e
   σ' := rename e.symm ∘ P.σ
   aeval_val_σ' s := by
@@ -260,14 +255,43 @@ noncomputable def reindex (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.va
     rw [← MvPolynomial.aeval_rename]
     simp
 
-lemma reindex_val (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars) :
+lemma reindex_val (P : Generators R S ι') (e : ι ≃ ι') :
     (P.reindex e).val = P.val ∘ e :=
   rfl
 
+section
+
+variable {σ : Type*} {I : Ideal (MvPolynomial σ R)}
+  (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R)
+  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x)
+
+/--
+The naive generators for a quotient `R[Xᵢ] ⧸ I`.
+If the definitional equality of the section matters, it can be explicitly provided.
+-/
+@[simps val]
+noncomputable
+def naive (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R :=
+      Function.surjInv Ideal.Quotient.mk_surjective)
+    (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq) :
+    Generators R (MvPolynomial σ R ⧸ I) σ where
+  val i := Ideal.Quotient.mk _ (X i)
+  σ' := s
+  aeval_val_σ' x := by
+    conv_rhs => rw [← hs x, ← Ideal.Quotient.mkₐ_eq_mk R, aeval_unique (Ideal.Quotient.mkₐ _ I)]
+    simp [Function.comp_def]
+  algebra := inferInstance
+  algebraMap_eq := by ext x <;> simp [IsScalarTower.algebraMap_apply R (MvPolynomial σ R)]
+
+@[simp] lemma naive_σ : (Generators.naive s hs).σ = s := rfl
+
+end
+
 end Construction
 
-variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S')
-variable {R'' S''} [CommRing R''] [CommRing S''] [Algebra R'' S''] (P'' : Generators R'' S'')
+variable {R' S' ι' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S' ι')
+variable {R'' S'' ι'' : Type*} [CommRing R''] [CommRing S''] [Algebra R'' S'']
+  (P'' : Generators R'' S'' ι'')
 
 section Hom
 
@@ -287,7 +311,7 @@ Also see `Algebra.Generators.Hom.equivAlgHom`.
 @[ext]
 structure Hom where
   /-- The assignment of each variable in `I` to a value in `P' = R'[X']`. -/
-  val : P.vars → P'.Ring
+  val : ι → P'.Ring
   aeval_val : ∀ i, aeval P'.val (val i) = algebraMap S S' (P.val i)
 
 attribute [simp] Hom.aeval_val
@@ -309,6 +333,12 @@ lemma Hom.algebraMap_toAlgHom (f : Hom P P') (x) : MvPolynomial.aeval P'.val (f.
   apply MvPolynomial.algHom_ext
   intro i
   simp [Hom.toAlgHom]
+
+/-- Version of `Hom.algebraMap_toAlgHom` where `S = S'`, sometimes useful for rewriting. -/
+lemma Hom.algebraMap_toAlgHom' [Algebra R' S] [IsScalarTower R R' S]
+    {P' : Generators R' S ι'} (f : Hom P P') (x : P.Ring) :
+    MvPolynomial.aeval P'.val (f.toAlgHom x) = MvPolynomial.aeval P.val x :=
+  f.algebraMap_toAlgHom _
 
 @[simp]
 lemma Hom.toAlgHom_X (f : Hom P P') (i) : f.toAlgHom (.X i) = f.val i :=
@@ -387,39 +417,38 @@ lemma Hom.toAlgHom_comp_apply
   | add x y hx hy => simp only [map_add, hx, hy]
   | mul_X p i hp => simp only [map_mul, hp, toAlgHom_X, comp_val]; rfl
 
-variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- Given families of generators `X ⊆ T` over `S` and `Y ⊆ S` over `R`,
 there is a map of generators `R[Y] → R[X, Y]`. -/
 @[simps]
 noncomputable
-def toComp (Q : Generators S T) (P : Generators R S) : Hom P (Q.comp P) where
+def toComp (Q : Generators S T ι') (P : Generators R S ι) : Hom P (Q.comp P) where
   val i := X (.inr i)
   aeval_val i := by simp
 
-lemma toComp_toAlgHom (Q : Generators S T) (P : Generators R S) :
+lemma toComp_toAlgHom (Q : Generators S T ι') (P : Generators R S ι) :
     (Q.toComp P).toAlgHom = rename Sum.inr := rfl
 
 /-- Given families of generators `X ⊆ T` over `S` and `Y ⊆ S` over `R`,
 there is a map of generators `R[X, Y] → S[X]`. -/
 @[simps]
 noncomputable
-def ofComp (Q : Generators S T) (P : Generators R S) : Hom (Q.comp P) Q where
+def ofComp (Q : Generators S T ι') (P : Generators R S ι) : Hom (Q.comp P) Q where
   val i := i.elim X (C ∘ P.val)
   aeval_val i := by cases i <;> simp
 
-lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T) (P : Generators R S) (v₁ v₂ a) :
+lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T ι') (P : Generators R S ι) (v₁ v₂ a) :
     (Q.ofComp P).toAlgHom (monomial (Finsupp.sumElim v₁ v₂) a) =
       monomial v₁ (aeval P.val (monomial v₂ a)) := by
-  dsimp only [← comp_vars]
   rw [Hom.toAlgHom_monomial, monomial_eq]
-  simp only [MvPolynomial.algebraMap_apply, ofComp_val, aeval_monomial]
+  simp only [ofComp_val, aeval_monomial]
   rw [Finsupp.prod_sumElim]
   simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, ← map_pow, ← map_finsuppProd,
     C_mul, Algebra.smul_def, MvPolynomial.algebraMap_apply, mul_assoc]
   nth_rw 2 [mul_comm]
 
-lemma toComp_toAlgHom_monomial (Q : Generators S T) (P : Generators R S) (j a) :
+lemma toComp_toAlgHom_monomial (Q : Generators S T ι') (P : Generators R S ι) (j a) :
     (Q.toComp P).toAlgHom (monomial j a) =
       monomial (Finsupp.sumElim 0 j) a := by
   convert rename_monomial _ _ _
@@ -427,13 +456,13 @@ lemma toComp_toAlgHom_monomial (Q : Generators S T) (P : Generators R S) (j a) :
     simp [Finsupp.mapDomain_notin_range, Finsupp.mapDomain_apply Sum.inr_injective]
 
 @[simp]
-lemma toAlgHom_ofComp_rename (Q : Generators S T) (P : Generators R S) (p : P.Ring) :
+lemma toAlgHom_ofComp_rename (Q : Generators S T ι') (P : Generators R S ι) (p : P.Ring) :
     (Q.ofComp P).toAlgHom ((rename Sum.inr) p) = C (algebraMap _ _ p) :=
   have : (Q.ofComp P).toAlgHom.comp (rename Sum.inr) =
     (IsScalarTower.toAlgHom R S Q.Ring).comp (IsScalarTower.toAlgHom R P.Ring S) := by ext; simp
   DFunLike.congr_fun this p
 
-lemma toAlgHom_ofComp_surjective (Q : Generators S T) (P : Generators R S) :
+lemma toAlgHom_ofComp_surjective (Q : Generators S T ι') (P : Generators R S ι) :
     Function.Surjective (Q.ofComp P).toAlgHom := by
   intro p
   induction p using MvPolynomial.induction_on with
@@ -450,14 +479,14 @@ lemma toAlgHom_ofComp_surjective (Q : Generators S T) (P : Generators R S) :
       use p + q
       simp
   | mul_X p i hp =>
-      obtain ⟨(p : MvPolynomial (Q.vars ⊕ P.vars) R), rfl⟩ := hp
+      obtain ⟨(p : MvPolynomial (ι' ⊕ ι) R), rfl⟩ := hp
       use p * MvPolynomial.X (R := R) (Sum.inl i)
       simp [Algebra.Generators.ofComp, Algebra.Generators.Hom.toAlgHom]
 
 /-- Given families of generators `X ⊆ T`, there is a map `R[X] → S[X]`. -/
 @[simps]
 noncomputable
-def toExtendScalars (P : Generators R T) : Hom P (P.extendScalars S) where
+def toExtendScalars (P : Generators R T ι) : Hom P (P.extendScalars S) where
   val := X
   aeval_val i := by simp
 
@@ -496,19 +525,24 @@ lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
 variable {P} in
 lemma aeval_val_eq_zero {x} (hx : x ∈ P.ker) : aeval P.val x = 0 := by rwa [← algebraMap_apply]
 
-lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
+lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
+    (s : MvPolynomial σ R ⧸ I → MvPolynomial σ R) (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x) :
+    (Generators.naive s hs).ker = I :=
+  I.mk_ker
+
+lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     P.ker.map (Q.toComp P).toAlgHom = RingHom.ker (Q.ofComp P).toAlgHom := by
-  letI : DecidableEq (Q.vars →₀ ℕ) := Classical.decEq _
+  letI : DecidableEq (ι' →₀ ℕ) := Classical.decEq _
   apply le_antisymm
   · rw [Ideal.map_le_iff_le_comap]
     rintro x (hx : algebraMap P.Ring S x = 0)
     have : (Q.ofComp P).toAlgHom.comp (Q.toComp P).toAlgHom = IsScalarTower.toAlgHom R _ _ := by
       ext1; simp
-    simp only [comp_vars, AlgHom.toRingHom_eq_coe, Ideal.mem_comap, RingHom.coe_coe,
+    simp only [Ideal.mem_comap,
       RingHom.mem_ker, ← AlgHom.comp_apply, this, IsScalarTower.toAlgHom_apply]
     rw [IsScalarTower.algebraMap_apply P.Ring S, hx, map_zero]
   · rintro x (h₂ : (Q.ofComp P).toAlgHom x = 0)
-    let e : ((Q.comp P).vars →₀ ℕ) ≃+ (Q.vars →₀ ℕ) × (P.vars →₀ ℕ) :=
+    let e : (ι' ⊕ ι →₀ ℕ) ≃+ (ι' →₀ ℕ) × (ι →₀ ℕ) :=
       Finsupp.sumFinsuppAddEquivProdFinsupp
     suffices ∑ v ∈ (support x).map e, (monomial (e.symm v)) (coeff (e.symm v) x) ∈
         Ideal.map (Q.toComp P).toAlgHom.toRingHom P.ker by
@@ -526,8 +560,8 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
       have : (Q.toComp P).toAlgHom (monomial j (coeff (e.symm (i, j)) x)) =
           monomial (e.symm (0, j)) (coeff (e.symm (i, j)) x) :=
         toComp_toAlgHom_monomial ..
-      simp only [AlgHom.toRingHom_eq_coe, monomial_zero', RingHom.coe_coe, algHom_C,
-          MvPolynomial.algebraMap_eq, this]
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+          this]
       rw [monomial_mul, ← map_add, Prod.mk_add_mk, add_zero, zero_add, one_mul]
     · apply Ideal.mul_mem_left
       refine Ideal.mem_map_of_mem _ ?_
@@ -545,18 +579,18 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
       | monomial v a =>
         rw [finsum_eq_sum_of_support_subset _ (this _), ← Finset.sum_filter]
         obtain ⟨v, rfl⟩ := e.symm.surjective v
-        -- Rewrite `e` in the right hand side only.
-        conv_rhs => simp only [e, comp_vars, Finsupp.sumFinsuppAddEquivProdFinsupp,
+        -- Rewrite `e` in the right-hand side only.
+        conv_rhs => simp only [e, Finsupp.sumFinsuppAddEquivProdFinsupp,
           Finsupp.sumFinsuppEquivProdFinsupp, AddEquiv.symm_mk, AddEquiv.coe_mk,
           Equiv.coe_fn_symm_mk, ofComp_toAlgHom_monomial_sumElim]
         classical
-        simp only [comp_vars, coeff_monomial, ← e.injective.eq_iff,
+        simp only [coeff_monomial, ← e.injective.eq_iff,
           map_zero, AddEquiv.apply_symm_apply, apply_ite]
         rw [← apply_ite, Finset.sum_ite_eq]
-        simp only [Finset.mem_filter, Finset.mem_map_equiv, AddEquiv.coe_toEquiv_symm, comp_vars,
+        simp only [Finset.mem_filter, Finset.mem_map_equiv, AddEquiv.coe_toEquiv_symm,
           mem_support_iff, coeff_monomial, ↓reduceIte, ne_eq, ite_and, ite_not]
         split
-        · simp only [zero_smul, coeff_zero, *, map_zero, ite_self]
+        · simp only [*, map_zero, ite_self]
         · congr
       | add p q hp hq =>
         simp only [coeff_add, map_add, ite_add_zero]
@@ -571,7 +605,7 @@ Given `R[X] → S` and `S[Y] → T`, this is the lift of an element in `ker(S[Y]
 to `ker(R[X][Y] → S[Y] → T)` constructed from `P.σ`.
 -/
 noncomputable
-def kerCompPreimage (Q : Generators S T) (P : Generators R S) (x : Q.ker) :
+def kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker) :
     (Q.comp P).ker := by
   refine ⟨x.1.sum fun n r ↦ ?_, ?_⟩
   · -- The use of `refine` is intentional to control the elaboration order
@@ -587,34 +621,34 @@ def kerCompPreimage (Q : Generators S T) (P : Generators R S) (x : Q.ker) :
     simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ,
       coeff]
 
-lemma ofComp_kerCompPreimage (Q : Generators S T) (P : Generators R S) (x : Q.ker) :
+lemma ofComp_kerCompPreimage (Q : Generators S T ι') (P : Generators R S ι) (x : Q.ker) :
     (Q.ofComp P).toAlgHom (kerCompPreimage Q P x) = x := by
   conv_rhs => rw [← x.1.support_sum_monomial_coeff]
   rw [kerCompPreimage, map_finsuppSum, Finsupp.sum]
   refine Finset.sum_congr rfl fun j _ ↦ ?_
-  simp only [AlgHom.toLinearMap_apply, map_mul, Hom.toAlgHom_monomial]
+  simp only [map_mul, Hom.toAlgHom_monomial]
   rw [one_smul, Finsupp.prod_mapDomain_index_inj Sum.inl_injective]
   rw [rename, ← AlgHom.comp_apply, comp_aeval]
-  simp only [ofComp_val, Sum.elim_inr, Function.comp_apply, self_val, id_eq,
+  simp only [ofComp_val, Sum.elim_inr, Function.comp_apply,
     Sum.elim_inl, monomial_eq, Hom.toAlgHom_X]
   congr 1
   rw [aeval_def, IsScalarTower.algebraMap_eq R S, ← MvPolynomial.algebraMap_eq,
     ← coe_eval₂Hom, ← map_aeval, P.aeval_val_σ]
   simp [coeff]
 
-lemma map_ofComp_ker (Q : Generators S T) (P : Generators R S) :
+lemma map_ofComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
     Ideal.map (Q.ofComp P).toAlgHom (Q.comp P).ker = Q.ker := by
   ext x
   rw [Ideal.mem_map_iff_of_surjective _ (toAlgHom_ofComp_surjective Q P)]
   constructor
   · rintro ⟨x, hx, rfl⟩
-    simp only [ker_eq_ker_aeval_val, Submodule.coe_restrictScalars, SetLike.mem_coe,
-      RingHom.mem_ker, AlgHom.toLinearMap_apply, Submodule.restrictScalars_mem] at hx ⊢
-    rw [← hx, Hom.algebraMap_toAlgHom, id.map_eq_self]
+    simp only [ker_eq_ker_aeval_val,
+      RingHom.mem_ker] at hx ⊢
+    rw [← hx, Hom.algebraMap_toAlgHom, algebraMap_self_apply]
   · intro hx
     exact ⟨_, (kerCompPreimage Q P ⟨x, hx⟩).2, ofComp_kerCompPreimage Q P ⟨x, hx⟩⟩
 
-lemma ker_comp_eq_sup (Q : Generators S T) (P : Generators R S) :
+lemma ker_comp_eq_sup (Q : Generators S T ι') (P : Generators R S ι) :
     (Q.comp P).ker =
       Ideal.map (Q.toComp P).toAlgHom P.ker ⊔ Ideal.comap (Q.ofComp P).toAlgHom Q.ker := by
   rw [← map_ofComp_ker Q P,
@@ -624,7 +658,8 @@ lemma ker_comp_eq_sup (Q : Generators S T) (P : Generators R S) :
   simp only [le_sup_left, sup_of_le_left, sup_le_iff, le_refl, and_true]
   intro x hx
   simp only [RingHom.mem_ker] at hx
-  rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker, ← id.map_eq_self (MvPolynomial.aeval _ x)]
+  rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker,
+    ← algebraMap_self_apply (MvPolynomial.aeval _ x)]
   rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
 
 end Hom

@@ -74,7 +74,7 @@ lemma rootsOfUnity_zero (M : Type*) [CommMonoid M] : rootsOfUnity 0 M = ⊤ := b
 
 theorem rootsOfUnity.coe_injective {n : ℕ} :
     Function.Injective (fun x : rootsOfUnity n M ↦ x.val.val) :=
-  Units.ext.comp fun _ _ ↦ Subtype.eq
+  Units.val_injective.comp Subtype.val_injective
 
 /-- Make an element of `rootsOfUnity` from a member of the base ring, and a proof that it has
 a positive power equal to one. -/
@@ -95,6 +95,8 @@ theorem rootsOfUnity_le_of_dvd (h : k ∣ l) : rootsOfUnity k M ≤ rootsOfUnity
 theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ) : (rootsOfUnity k M).map f ≤ rootsOfUnity k N := by
   rintro _ ⟨ζ, h, rfl⟩
   simp_all only [← map_pow, mem_rootsOfUnity, SetLike.mem_coe, MonoidHom.map_one]
+
+instance : Subsingleton (rootsOfUnity 1 M) := by simp [subsingleton_iff]
 
 @[norm_cast]
 theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
@@ -151,7 +153,24 @@ theorem MulEquiv.restrictRootsOfUnity_symm (σ : R ≃* S) :
     (σ.restrictRootsOfUnity k).symm = σ.symm.restrictRootsOfUnity k :=
   rfl
 
+@[simp]
+theorem Units.val_set_image_rootsOfUnity [NeZero k] :
+    ((↑) : Rˣ → _) '' (rootsOfUnity k R) = {z : R | z^k = 1} := by
+  ext x
+  exact ⟨fun ⟨y,hy1,hy2⟩ => by rw [← hy2]; exact (mem_rootsOfUnity' k y).mp hy1,
+    fun h ↦ ⟨(rootsOfUnity.mkOfPowEq x h), ⟨Subtype.coe_prop (rootsOfUnity.mkOfPowEq x h), rfl⟩⟩⟩
+
+theorem Units.val_set_image_rootsOfUnity_one : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
+  ext x
+  simp
+
 end CommMonoid
+
+open Set in
+theorem Units.val_set_image_rootsOfUnity_two [CommRing R] [NoZeroDivisors R] :
+    ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
+  ext x
+  simp
 
 section IsDomain
 
@@ -178,8 +197,6 @@ def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 
       rcases x with ⟨x, hx⟩; rw [mem_nthRoots <| NeZero.pos k] at hx
       simp only [← pow_succ, ← pow_succ', hx, tsub_add_cancel_of_le NeZero.one_le]
     simp only [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, hx, Units.val_one]
-  left_inv := by rintro ⟨x, hx⟩; ext; rfl
-  right_inv := by rintro ⟨x, hx⟩; ext; rfl
 
 variable {k R}
 
@@ -228,7 +245,7 @@ section Reduced
 
 variable (R) [CommRing R] [IsReduced R]
 
--- @[simp] -- Porting note: simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
+-- simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ) [ExpChar R p] {ζ : Rˣ} :
     ζ ∈ rootsOfUnity (p ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
   simp only [mem_rootsOfUnity', ExpChar.pow_prime_pow_mul_eq_one_iff]

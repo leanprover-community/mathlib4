@@ -88,7 +88,7 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
   unfold FactorSet at p
   induction p  -- TODO: `induction_eliminator` doesn't work with `abbrev`
-  · simp only [eq_self_iff_true, Associates.prod_top]
+  · simp only [Associates.prod_top]
   · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
       iff_false, not_exists]
     exact fun a => not_and_of_not_right _ a.prop.ne_zero
@@ -259,14 +259,12 @@ theorem eq_of_factors_eq_factors {a b : Associates α} (h : a.factors = b.factor
   have : a.factors.prod = b.factors.prod := by rw [h]
   rwa [factors_prod, factors_prod] at this
 
-theorem eq_of_prod_eq_prod [Nontrivial α] {a b : FactorSet α} (h : a.prod = b.prod) : a = b := by
-  have : a.prod.factors = b.prod.factors := by rw [h]
-  rwa [prod_factors, prod_factors] at this
+@[deprecated (since := "2025-10-06")] alias eq_of_prod_eq_prod := FactorSet.unique
 
 @[simp]
 theorem factors_mul (a b : Associates α) : (a * b).factors = a.factors + b.factors := by
   nontriviality α
-  refine eq_of_prod_eq_prod <| eq_of_factors_eq_factors ?_
+  refine FactorSet.unique <| eq_of_factors_eq_factors ?_
   rw [prod_add, factors_prod, factors_prod, factors_prod]
 
 @[gcongr]
@@ -433,12 +431,12 @@ theorem coprime_iff_inf_one {a b : α} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
 
 theorem factors_self [Nontrivial α] {p : Associates α} (hp : Irreducible p) :
     p.factors = WithTop.some {⟨p, hp⟩} :=
-  eq_of_prod_eq_prod
+  FactorSet.unique
     (by rw [factors_prod, FactorSet.prod.eq_def]; dsimp; rw [prod_singleton])
 
 theorem factors_prime_pow [Nontrivial α] {p : Associates α} (hp : Irreducible p) (k : ℕ) :
     factors (p ^ k) = WithTop.some (Multiset.replicate k ⟨p, hp⟩) :=
-  eq_of_prod_eq_prod
+  FactorSet.unique
     (by
       rw [Associates.factors_prod, FactorSet.prod.eq_def]
       dsimp; rw [Multiset.map_replicate, Multiset.prod_replicate, Subtype.coe_mk])
@@ -452,17 +450,16 @@ theorem prime_pow_le_iff_le_bcount [DecidableEq (Associates α)] {m p : Associat
 
 @[simp]
 theorem factors_one [Nontrivial α] : factors (1 : Associates α) = 0 := by
-  apply eq_of_prod_eq_prod
+  apply FactorSet.unique
   rw [Associates.factors_prod]
   exact Multiset.prod_zero
 
 @[simp]
 theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
     (a ^ k).factors = k • a.factors := by
-  induction' k with n h
-  · rw [zero_nsmul, pow_zero]
-    exact factors_one
-  · rw [pow_succ, succ_nsmul, factors_mul, h]
+  induction k with
+  | zero => rw [zero_nsmul, pow_zero]; exact factors_one
+  | succ n h => rw [pow_succ, succ_nsmul, factors_mul, h]
 
 section count
 
@@ -558,10 +555,9 @@ theorem dvd_count_of_dvd_count_mul {a b : Associates α} (hb : b ≠ 0)
 theorem count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0)
     {p : Associates α} (hp : Irreducible p) (k : ℕ) :
     count p (a ^ k).factors = k * count p a.factors := by
-  induction' k with n h
-  · rw [pow_zero, factors_one, zero_mul, count_zero hp]
-  · rw [pow_succ', count_mul ha (pow_ne_zero _ ha) hp, h]
-    ring
+  induction k with
+  | zero => rw [pow_zero, factors_one, zero_mul, count_zero hp]
+  | succ n h => rw [pow_succ', count_mul ha (pow_ne_zero _ ha) hp, h]; ring
 
 theorem dvd_count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0)
     {p : Associates α} (hp : Irreducible p) (k : ℕ) : k ∣ count p (a ^ k).factors := by

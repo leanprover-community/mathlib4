@@ -38,7 +38,7 @@ This file defines the Selmer group $K(S, n)$ and some basic facts.
 * TODO: proofs of exactness of the sequence.
 * TODO: proofs of finiteness for global fields.
 
-## Notations
+## Notation
 
 * `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
 
@@ -68,7 +68,7 @@ namespace IsDedekindDomain
 
 noncomputable section
 
-open scoped Multiplicative nonZeroDivisors
+open scoped WithZero nonZeroDivisors
 
 universe u v
 
@@ -90,7 +90,7 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
 
 @[simp]
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
-    (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation K x := by
+    (v.valuationOfNeZeroToFun x : ℤᵐ⁰) = v.valuation K x := by
   classical
   rw [show v.valuation K x = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
@@ -110,7 +110,7 @@ def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
     simp only [valuationOfNeZeroToFun_eq]; exact map_mul _ _ _
 
 @[simp]
-theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤₘ₀) = v.valuation K x :=
+theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤᵐ⁰) = v.valuation K x :=
   valuationOfNeZeroToFun_eq v x
 
 @[simp]
@@ -123,12 +123,9 @@ theorem valuation_of_unit_eq (x : Rˣ) :
     change ¬v.valuation K (algebraMap R K x) < 1
     apply_fun v.intValuation at hx
     rw [map_one, map_mul] at hx
-    rw [not_lt, ← hx, ← mul_one <| v.valuation _ _, valuation_of_algebraMap,
-      mul_le_mul_left <| zero_lt_iff.2 <| left_ne_zero_of_mul_eq_one hx]
+    rw [not_lt, ← hx, ← mul_one <| v.valuation _ _, valuation_of_algebraMap]
+    gcongr
     exact v.intValuation_le_one _
-
--- Porting note: invalid attribute 'semireducible', declaration is in an imported module
--- attribute [local semireducible] MulOpposite
 
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=

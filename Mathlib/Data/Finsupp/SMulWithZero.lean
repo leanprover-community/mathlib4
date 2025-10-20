@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Data.Finsupp.Single
 
 /-!
 # Scalar multiplication on `Finsupp`
@@ -67,15 +67,15 @@ instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →�
   smul_zero _ := ext fun _ => smul_zero _
 
 instance isScalarTower [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMul R S]
-  [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
+    [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
   smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
 
 instance smulCommClass [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMulCommClass R S M] :
-  SMulCommClass R S (α →₀ M) where
+    SMulCommClass R S (α →₀ M) where
   smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
 
 instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ M] [IsCentralScalar R M] :
-  IsCentralScalar R (α →₀ M) where
+    IsCentralScalar R (α →₀ M) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
 variable {α M}

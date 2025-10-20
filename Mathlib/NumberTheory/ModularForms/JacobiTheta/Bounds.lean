@@ -54,7 +54,7 @@ private lemma exp_lt_aux {t : ℝ} (ht : 0 < t) : rexp (-π * t) < 1 := by
 
 private lemma isBigO_one_aux :
     IsBigO atTop (fun t : ℝ ↦ (1 - rexp (-π * t))⁻¹) (fun _ ↦ (1 : ℝ)) := by
-  refine ((Tendsto.const_sub _ ?_).inv₀ (by norm_num)).isBigO_one ℝ (c := ((1 - 0)⁻¹ : ℝ))
+  refine ((Tendsto.const_sub _ ?_).inv₀ (by simp)).isBigO_one ℝ (c := ((1 - 0)⁻¹ : ℝ))
   simpa only [neg_mul, tendsto_exp_comp_nhds_zero, tendsto_neg_atBot_iff]
     using tendsto_id.const_mul_atTop pi_pos
 
@@ -84,7 +84,7 @@ def F_nat (k : ℕ) (a t : ℝ) : ℝ := ∑' n, f_nat k a t n
 lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_nat k a t) := by
   have : Summable fun n : ℕ ↦ n ^ k * exp (-π * (n + a) ^ 2 * t) := by
     refine (((summable_pow_mul_jacobiTheta₂_term_bound (|a| * t) ht k).mul_right
-      (rexp (-π * a ^ 2 * t))).comp_injective Nat.cast_injective).of_norm_bounded _ (fun n ↦ ?_)
+      (rexp (-π * a ^ 2 * t))).comp_injective Nat.cast_injective).of_norm_bounded (fun n ↦ ?_)
     simp_rw [mul_assoc, Function.comp_apply, ← Real.exp_add, norm_mul, norm_pow, Int.cast_abs,
       Int.cast_natCast, norm_eq_abs, Nat.abs_cast, abs_exp]
     gcongr

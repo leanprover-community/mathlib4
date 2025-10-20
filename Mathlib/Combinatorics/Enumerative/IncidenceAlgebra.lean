@@ -213,8 +213,8 @@ instance instNonUnitalNonAssocSemiring [Preorder α] [LocallyFiniteOrder α]
   __ := instAddCommMonoid
   mul := (· * ·)
   zero := 0
-  zero_mul := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ MulZeroClass.zero_mul _
-  mul_zero := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ MulZeroClass.mul_zero _
+  zero_mul := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ zero_mul _
+  mul_zero := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ mul_zero _
   left_distrib := fun f g h ↦ by
     ext; exact Eq.trans (sum_congr rfl fun x _ ↦ left_distrib _ _ _) sum_add_distrib
   right_distrib := fun f g h ↦ by
@@ -300,14 +300,11 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
     map_mul' c d := by
         ext a b
         obtain rfl | h := eq_or_ne a b
-        · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, Algebra.mul_smul_comm,
-            boole_smul, constSMul_apply, ← ite_and, map_mul, Algebra.smul_mul_assoc,
-            if_pos rfl, eq_comm, and_self_iff, Icc_self]
+        · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, constSMul_apply, map_mul,
+            eq_comm, Icc_self]
           simp
-        · simp only [true_and, ite_self, le_rfl, one_apply, mul_one, Algebra.id.smul_eq_mul,
-            mul_apply, Algebra.mul_smul_comm, MulZeroClass.zero_mul, constSMul_apply,
-            ← ite_and, ite_mul, mul_ite, map_mul, mem_Icc, sum_ite_eq,
-            MulZeroClass.mul_zero, smul_zero, Algebra.smul_mul_assoc, if_pos rfl, if_neg h]
+        · simp only [one_apply, mul_one, Algebra.id.smul_eq_mul, mul_apply, zero_mul,
+            constSMul_apply, ← ite_and, ite_mul, mul_ite, map_mul, mul_zero, if_neg h]
           refine (sum_eq_zero fun x _ ↦ ?_).symm
           exact if_neg fun hx ↦ h <| hx.2.trans hx.1
     map_zero' := by rw [map_zero, zero_smul]
@@ -352,12 +349,7 @@ lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α
   rw [mem_Icc] at hx
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
 
-lemma zeta_mul_kappa [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableLE α]
-    (a b : α) : (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
-  rw [mul_apply, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]
-  refine sum_congr rfl fun x hx ↦ ?_
-  rw [mem_Icc] at hx
-  rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
+@[deprecated (since := "2025-09-28")] alias zeta_mul_kappa := zeta_mul_zeta
 
 section Mu
 variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
@@ -526,7 +518,7 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
     simpa [mul_assoc, zeta_mul_mu] using this
   clear a b
   ext a b
-  simp only [mul_boole, one_apply, mul_apply, coe_mk, zeta_apply]
+  simp only [mul_boole, one_apply, mul_apply, zeta_apply]
   calc
     ∑ x ∈ Icc a b, (if x ≤ b then mud a x else 0) = ∑ x ∈ Icc a b, mud a x := by
       congr! with x hx; exact if_pos (mem_Icc.1 hx).2
@@ -561,7 +553,7 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
     _ = ∑ z ∈ Ici x, ∑ y ∈ Icc x z, mu 𝕜 x y * zeta 𝕜 y z * f z := by
       rw [sum_sigma' (Ici x) fun y ↦ Ici y]
       rw [sum_sigma' (Ici x) fun z ↦ Icc x z]
-      simp only [mul_boole, MulZeroClass.zero_mul, ite_mul, zeta_apply]
+      simp only [mul_boole, zero_mul, ite_mul, zeta_apply]
       apply sum_nbij' (fun ⟨a, b⟩ ↦ ⟨b, a⟩) (fun ⟨a, b⟩ ↦ ⟨b, a⟩) <;>
         aesop (add simp mul_assoc) (add unsafe le_trans)
     _ = ∑ z ∈ Ici x, (mu 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) x z * f z := by
@@ -569,11 +561,11 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
     _ = ∑ y ∈ Ici x, ∑ z ∈ Ici y, (1 : IncidenceAlgebra 𝕜 α) x z * f z := by
       simp only [mu_mul_zeta 𝕜, one_apply, ite_mul, one_mul, zero_mul, sum_ite_eq, mem_Ici, le_refl,
         ↓reduceIte, ← add_sum_Ioi_eq_sum_Ici, left_eq_add]
-      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_le
+      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_ge
     _ = f x := by
       simp only [one_apply, ite_mul, one_mul, zero_mul, sum_ite_eq, mem_Ici,
         ← add_sum_Ioi_eq_sum_Ici, le_refl, ↓reduceIte, add_eq_left]
-      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_le
+      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_ge
 
 end InversionTop
 
@@ -609,7 +601,7 @@ end DecidableLe
 
 variable {𝕜} (f f₁ f₂ : IncidenceAlgebra 𝕜 α) (g g₁ g₂ : IncidenceAlgebra 𝕜 β)
 
-/-- The cartesian product of two incidence algebras. -/
+/-- The Cartesian product of two incidence algebras. -/
 protected def prod : IncidenceAlgebra 𝕜 (α × β) where
   toFun x y := f x.1 y.1 * g x.2 y.2
   eq_zero_of_not_le' x y hxy := by

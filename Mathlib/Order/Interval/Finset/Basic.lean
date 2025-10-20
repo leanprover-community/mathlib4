@@ -72,7 +72,8 @@ theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Ioc_of_lt⟩ := nonempty_Ioc
 
--- TODO: This is nonsense. A locally finite order is never densely ordered
+-- TODO: This is nonsense. A locally finite order is never densely ordered;
+-- See `not_lt_of_denselyOrdered_of_locallyFinite`
 @[simp]
 theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioo, Set.nonempty_Ioo]
@@ -90,6 +91,7 @@ theorem Ioc_eq_empty_iff : Ioc a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioc, Set.Ioc_eq_empty_iff]
 
 -- TODO: This is nonsense. A locally finite order is never densely ordered
+-- See `not_lt_of_denselyOrdered_of_locallyFinite`
 @[simp]
 theorem Ioo_eq_empty_iff [DenselyOrdered α] : Ioo a b = ∅ ↔ ¬a < b := by
   rw [← coe_eq_empty, coe_Ioo, Set.Ioo_eq_empty_iff]
@@ -106,19 +108,19 @@ theorem Ioo_eq_empty (h : ¬a < b) : Ioo a b = ∅ :=
 
 @[simp]
 theorem Icc_eq_empty_of_lt (h : b < a) : Icc a b = ∅ :=
-  Icc_eq_empty h.not_le
+  Icc_eq_empty h.not_ge
 
 @[simp]
 theorem Ico_eq_empty_of_le (h : b ≤ a) : Ico a b = ∅ :=
-  Ico_eq_empty h.not_lt
+  Ico_eq_empty h.not_gt
 
 @[simp]
 theorem Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
-  Ioc_eq_empty h.not_lt
+  Ioc_eq_empty h.not_gt
 
 @[simp]
 theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
-  Ioo_eq_empty h.not_lt
+  Ioo_eq_empty h.not_gt
 
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, true_and, le_rfl]
 
@@ -160,35 +162,27 @@ theorem Ioc_subset_Ioc (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Ioc a₁ b₁
 theorem Ioo_subset_Ioo (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Ioo a₁ b₁ ⊆ Ioo a₂ b₂ := by
   simpa [← coe_subset] using Set.Ioo_subset_Ioo ha hb
 
-@[gcongr]
 theorem Icc_subset_Icc_left (h : a₁ ≤ a₂) : Icc a₂ b ⊆ Icc a₁ b :=
   Icc_subset_Icc h le_rfl
 
-@[gcongr]
 theorem Ico_subset_Ico_left (h : a₁ ≤ a₂) : Ico a₂ b ⊆ Ico a₁ b :=
   Ico_subset_Ico h le_rfl
 
-@[gcongr]
 theorem Ioc_subset_Ioc_left (h : a₁ ≤ a₂) : Ioc a₂ b ⊆ Ioc a₁ b :=
   Ioc_subset_Ioc h le_rfl
 
-@[gcongr]
 theorem Ioo_subset_Ioo_left (h : a₁ ≤ a₂) : Ioo a₂ b ⊆ Ioo a₁ b :=
   Ioo_subset_Ioo h le_rfl
 
-@[gcongr]
 theorem Icc_subset_Icc_right (h : b₁ ≤ b₂) : Icc a b₁ ⊆ Icc a b₂ :=
   Icc_subset_Icc le_rfl h
 
-@[gcongr]
 theorem Ico_subset_Ico_right (h : b₁ ≤ b₂) : Ico a b₁ ⊆ Ico a b₂ :=
   Ico_subset_Ico le_rfl h
 
-@[gcongr]
 theorem Ioc_subset_Ioc_right (h : b₁ ≤ b₂) : Ioc a b₁ ⊆ Ioc a b₂ :=
   Ioc_subset_Ioc le_rfl h
 
-@[gcongr]
 theorem Ioo_subset_Ioo_right (h : b₁ ≤ b₂) : Ioo a b₁ ⊆ Ioo a b₂ :=
   Ioo_subset_Ioo le_rfl h
 
@@ -249,7 +243,16 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
 @[simp]
 theorem Ioc_disjoint_Ioc_of_le {d : α} (hbc : b ≤ c) : Disjoint (Ioc a b) (Ioc c d) :=
   disjoint_left.2 fun _ h1 h2 ↦ not_and_of_not_left _
-    ((mem_Ioc.1 h1).2.trans hbc).not_lt (mem_Ioc.1 h2)
+    ((mem_Ioc.1 h1).2.trans hbc).not_gt (mem_Ioc.1 h2)
+
+lemma _root_.not_lt_of_denselyOrdered_of_locallyFinite [DenselyOrdered α] (a b : α) :
+    ¬ a < b := by
+  intro h
+  induction hs : Finset.Icc a b using Finset.strongInduction generalizing b with | H i ih
+  subst hs
+  obtain ⟨c, hac, hcb⟩ := exists_between h
+  refine ih _ ?_ c hac rfl
+  exact Finset.Icc_ssubset_Icc_right (hac.trans hcb).le le_rfl hcb
 
 variable (a)
 
@@ -273,7 +276,7 @@ section Filter
 
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
     {x ∈ Ico a b | x < c} = ∅ :=
-  filter_false_of_mem fun _ hx => (hca.trans (mem_Ico.1 hx).1).not_lt
+  filter_false_of_mem fun _ hx => (hca.trans (mem_Ico.1 hx).1).not_gt
 
 theorem Ico_filter_lt_of_right_le [DecidablePred (· < c)] (hbc : b ≤ c) :
     {x ∈ Ico a b | x < c} = Ico a b :=
@@ -291,7 +294,7 @@ theorem Ico_filter_le_of_le_left {a b c : α} [DecidablePred (c ≤ ·)] (hca : 
 
 theorem Ico_filter_le_of_right_le {a b : α} [DecidablePred (b ≤ ·)] :
     {x ∈ Ico a b | b ≤ x} = ∅ :=
-  filter_false_of_mem fun _ hx => (mem_Ico.1 hx).2.not_le
+  filter_false_of_mem fun _ hx => (mem_Ico.1 hx).2.not_ge
 
 theorem Ico_filter_le_of_left_le {a b c : α} [DecidablePred (c ≤ ·)] (hac : a ≤ c) :
     {x ∈ Ico a b | c ≤ x} = Ico c b := by
@@ -465,14 +468,12 @@ theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
   Ioo_subset_Ioc_self.trans Ioc_subset_Iic_self
 
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
-  disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_lt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
+  disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_gt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
 /-- An equivalence between `Finset.Iic a` and `Set.Iic a`. -/
 def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
   toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
   invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
 
 end LocallyFiniteOrderBot
 
@@ -541,7 +542,7 @@ end LocallyFiniteOrder
 variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 
 theorem disjoint_Ioi_Iio (a : α) : Disjoint (Ioi a) (Iio a) :=
-  disjoint_left.2 fun _ hab hba => (mem_Ioi.1 hab).not_lt <| mem_Iio.1 hba
+  disjoint_left.2 fun _ hab hba => (mem_Ioi.1 hab).not_gt <| mem_Iio.1 hba
 
 end Preorder
 
@@ -557,7 +558,7 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
   rw [← coe_eq_singleton, coe_Icc, Set.Icc_eq_singleton_iff]
 
 theorem Ico_disjoint_Ico_consecutive (a b c : α) : Disjoint (Ico a b) (Ico b c) :=
-  disjoint_left.2 fun _ hab hbc => (mem_Ico.mp hab).2.not_le (mem_Ico.mp hbc).1
+  disjoint_left.2 fun _ hab hbc => (mem_Ico.mp hab).2.not_ge (mem_Ico.mp hbc).1
 
 @[simp]
 theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
@@ -881,7 +882,7 @@ theorem Ioo_filter_lt (a b c : α) : {x ∈ Ioo a b | x < c} = Ioo a (min b c) :
 theorem Iio_filter_lt {α} [LinearOrder α] [LocallyFiniteOrderBot α] (a b : α) :
     {x ∈ Iio a | x < b} = Iio (min a b) := by
   ext
-  simp [and_assoc]
+  simp
 
 @[simp]
 theorem Ico_diff_Ico_left (a b c : α) : Ico a b \ Ico a c = Ico (max a c) b := by
@@ -1095,7 +1096,6 @@ section Cover
 
 open Finset Relation
 
-set_option linter.unusedVariables false in -- `have` for wf induction triggers linter
 lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy : x ≤ y) :
     TransGen (· ⩿ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Icc x y`.
@@ -1109,13 +1109,13 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
   already. In that case, since `z` is maximal in `Ico x y`, then `z ⩿ y` and we can use the
   induction hypothesis to show that `Relation.TransGen (· ⩿ ·) x z`. -/
   · obtain ⟨z, hxz, hz⟩ :=
-      (Set.finite_Ico x y).exists_le_maximal <| Set.left_mem_Ico.2 <| hxy.lt_of_not_le hxy'
+      (Set.finite_Ico x y).exists_le_maximal <| Set.left_mem_Ico.2 <| hxy.lt_of_not_ge hxy'
     have z_card := calc
       #(Icc x z) ≤ #(Ico x y) := card_le_card <| Icc_subset_Ico_right hz.1.2
       _          < #(Icc x y) := this
     have h₁ := transGen_wcovBy_of_le hz.1.1
     have h₂ : z ⩿ y :=
-      ⟨hz.1.2.le, fun c hzc hcy ↦ hzc.not_le <| hz.2 ⟨hz.1.1.trans hzc.le, hcy⟩ hzc.le⟩
+      ⟨hz.1.2.le, fun c hzc hcy ↦ hzc.not_ge <| hz.2 ⟨hz.1.1.trans hzc.le, hcy⟩ hzc.le⟩
     exact .tail h₁ h₂
 termination_by #(Icc x y)
 
@@ -1132,7 +1132,6 @@ lemma le_iff_reflTransGen_covBy [PartialOrder α] [LocallyFiniteOrder α] {x y :
     x ≤ y ↔ ReflTransGen (· ⋖ ·) x y := by
   rw [le_iff_transGen_wcovBy, wcovBy_eq_reflGen_covBy, transGen_reflGen]
 
-set_option linter.unusedVariables false in -- `have` for wf induction triggers linter
 lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy : x < y) :
     TransGen (· ⋖ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Ico x y`.
@@ -1144,14 +1143,14 @@ lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
     (Ico_subset_Ico_right hz.1.2.le) |>.mpr ⟨z, mem_Ico.2 hz.1, right_notMem_Ico⟩
   /- Since `z` is maximal in `Ico x y`, `z ⋖ y`. -/
   have hzy : z ⋖ y :=
-    ⟨hz.1.2, fun c hc hcy ↦ hc.not_le <| hz.2 (⟨(hz.1.1.trans_lt hc).le, hcy⟩) hc.le⟩
+    ⟨hz.1.2, fun c hc hcy ↦ hc.not_ge <| hz.2 (⟨(hz.1.1.trans_lt hc).le, hcy⟩) hc.le⟩
   by_cases hxz : x < z
   /- when `x < z`, then we may use the induction hypothesis to get a chain
   `Relation.TransGen (· ⋖ ·) x z`, which we can extend with `Relation.TransGen.tail`. -/
   · exact .tail (transGen_covBy_of_lt hxz) hzy
   /- when `¬ x < z`, then actually `z ≤ x` (not because it's a linear order, but because
-  `x ≤ z`), and since `z ⋖ y` we conclude that `x ⋖ y` , then `Relation.TransGen.single`. -/
-  · simp only [lt_iff_le_not_le, not_and, not_not] at hxz
+  `x ≤ z`), and since `z ⋖ y` we conclude that `x ⋖ y`, then `Relation.TransGen.single`. -/
+  · simp only [lt_iff_le_not_ge, not_and, not_not] at hxz
     exact .single (hzy.of_le_of_lt (hxz hz.1.1) hxy)
 termination_by #(Ico x y)
 
@@ -1170,7 +1169,7 @@ restricted to pairs satisfying `a ⩿ b`. -/
 lemma monotone_iff_forall_wcovBy [Preorder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⩿ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
-  simpa [transGen_eq_self (r := ((· : β) ≤ ·)) transitive_le]
+  simpa [transGen_eq_self (r := (· ≤ · : β → β → Prop)) transitive_le]
     using TransGen.lift f h <| le_iff_transGen_wcovBy.mp hab
 
 /-- A function from a locally finite partial order is monotone if and only if it is monotone when
@@ -1178,7 +1177,7 @@ restricted to pairs satisfying `a ⋖ b`. -/
 lemma monotone_iff_forall_covBy [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⋖ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
-  simpa [reflTransGen_eq_self (r := ((· : β) ≤ ·)) IsRefl.reflexive transitive_le]
+  simpa [reflTransGen_eq_self (r := (· ≤ · : β → β → Prop)) IsRefl.reflexive transitive_le]
     using ReflTransGen.lift f h <| le_iff_reflTransGen_covBy.mp hab
 
 /-- A function from a locally finite preorder is strictly monotone if and only if it is strictly

@@ -43,7 +43,7 @@ lemma injective_valMinAbs : (valMinAbs : ZMod n → ℤ).Injective :=
 lemma valMinAbs_nonneg_iff [NeZero n] (x : ZMod n) : 0 ≤ x.valMinAbs ↔ x.val ≤ n / 2 := by
   rw [valMinAbs_def_pos]; split_ifs with h
   · exact iff_of_true (Nat.cast_nonneg _) h
-  · exact iff_of_false (sub_lt_zero.2 <| Int.ofNat_lt.2 x.val_lt).not_le h
+  · exact iff_of_false (sub_lt_zero.2 <| Int.ofNat_lt.2 x.val_lt).not_ge h
 
 lemma valMinAbs_mul_two_eq_iff (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val = n := by
   rcases n with - | n
@@ -75,7 +75,7 @@ lemma valMinAbs_spec [NeZero n] (x : ZMod n) (y : ℤ) :
     rw [← sub_eq_zero]
     apply @Int.eq_zero_of_abs_lt_dvd n
     · rw [← intCast_zmod_eq_zero_iff_dvd, Int.cast_sub, coe_valMinAbs, h.1, sub_self]
-    rw [← mul_lt_mul_right (@zero_lt_two ℤ _ _ _ _ _)]
+    rw [← mul_lt_mul_iff_left₀ (@zero_lt_two ℤ _ _ _ _ _)]
     nth_rw 1 [← abs_eq_self.2 (@zero_le_two ℤ _ _ _ _)]
     rw [← abs_mul, sub_mul, abs_lt]
     constructor <;> linarith only [x.valMinAbs_mem_Ioc.1, x.valMinAbs_mem_Ioc.2, h.2.1, h.2.2]
@@ -134,8 +134,8 @@ lemma val_eq_ite_valMinAbs [NeZero n] (a : ZMod n) :
 
 lemma prime_ne_zero (p q : ℕ) [hp : Fact p.Prime] [hq : Fact q.Prime] (hpq : p ≠ q) :
     (q : ZMod p) ≠ 0 := by
-  rwa [← Nat.cast_zero, Ne, eq_iff_modEq_nat, Nat.modEq_zero_iff_dvd, ←
-    hp.1.coprime_iff_not_dvd, Nat.coprime_primes hp.1 hq.1]
+  rwa [← Nat.cast_zero, Ne, natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd,
+    ← hp.1.coprime_iff_not_dvd, Nat.coprime_primes hp.1 hq.1]
 
 variable {n a : ℕ}
 
@@ -155,7 +155,7 @@ lemma valMinAbs_natCast_of_half_lt (ha : n / 2 < a) (ha' : a < n) :
     (a : ZMod n).valMinAbs = a - n := by
   cases n
   · cases not_lt_bot ha'
-  · simp [valMinAbs_def_pos, val_natCast, Nat.mod_eq_of_lt ha', ha.not_le]
+  · simp [valMinAbs_def_pos, val_natCast, Nat.mod_eq_of_lt ha', ha.not_ge]
 
 @[simp]
 lemma valMinAbs_natCast_eq_self [NeZero n] : (a : ZMod n).valMinAbs = a ↔ a ≤ n / 2 := by

@@ -570,10 +570,10 @@ end AddCommGroup
 
 open AddCommGroup
 
-/-- If `a` and `b` fall within the same cycle WRT `c`, then they are congruent modulo `p`. -/
+/-- If `a` and `b` fall within the same cycle w.r.t. `c`, then they are congruent modulo `p`. -/
 @[simp]
-theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [PMOD p] := by
-  simp_rw [toIcoMod_eq_toIcoMod, modEq_iff_eq_add_zsmul, sub_eq_iff_eq_add']
+theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [PMOD p] :=
+  toIcoMod_eq_toIcoMod _
 
 alias ⟨_, AddCommGroup.ModEq.toIcoMod_eq_toIcoMod⟩ := toIcoMod_inj
 
@@ -736,14 +736,14 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
   suffices hequiv : x₃' ≤ toIocMod hp x₂' x₁ by
     obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
     simpa [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
-  rcases le_or_lt x₃' (x₁ + p) with h₃₁ | h₁₃
+  rcases le_or_gt x₃' (x₁ + p) with h₃₁ | h₁₃
   · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p from hIoc₂₁.symm.trans_ge h₃₁
     apply (toIocMod_eq_iff hp).2
     exact ⟨⟨h₂₁, by simp [x₂', left_le_toIcoMod]⟩, -1, by simp⟩
   have hIoc₁₃ : toIocMod hp x₁ x₃' = x₃' - p := by
     apply (toIocMod_eq_iff hp).2
     exact ⟨⟨lt_sub_iff_add_lt.2 h₁₃, le_of_lt (h₃₂.trans h₂₁)⟩, 1, by simp⟩
-  have not_h₃₂ := (h.trans hIoc₁₃.le).not_lt
+  have not_h₃₂ := (h.trans hIoc₁₃.le).not_gt
   contradiction
 
 private theorem toIxxMod_antisymm (h₁₂₃ : toIcoMod hp a b ≤ toIocMod hp a c)
@@ -836,7 +836,7 @@ instance circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) :=
       rw [btw_cyclic] at h₃₂₁
       simp_rw [btw_coe_iff] at h₁₂₃ h₃₂₁
       simp_rw [← modEq_iff_eq_mod_zmultiples]
-      exact toIxxMod_antisymm _ h₁₂₃ h₃₂₁
+      simpa only [modEq_comm] using toIxxMod_antisymm _ h₁₂₃ h₃₂₁
     btw_total := fun x₁ x₂ x₃ => by
       induction x₁ using QuotientAddGroup.induction_on
       induction x₂ using QuotientAddGroup.induction_on
@@ -881,7 +881,7 @@ theorem toIcoDiv_zero_one (b : α) : toIcoDiv (zero_lt_one' α) 0 b = ⌊b⌋ :=
 theorem toIcoMod_eq_add_fract_mul (a b : α) :
     toIcoMod hp a b = a + Int.fract ((b - a) / p) * p := by
   rw [toIcoMod, toIcoDiv_eq_floor, Int.fract]
-  field_simp
+  simp [field, -Int.self_sub_floor]
   ring
 
 theorem toIcoMod_eq_fract_mul (b : α) : toIcoMod hp 0 b = Int.fract (b / p) * p := by
@@ -890,7 +890,7 @@ theorem toIcoMod_eq_fract_mul (b : α) : toIcoMod hp 0 b = Int.fract (b / p) * p
 theorem toIocMod_eq_sub_fract_mul (a b : α) :
     toIocMod hp a b = a + p - Int.fract ((a + p - b) / p) * p := by
   rw [toIocMod, toIocDiv_eq_neg_floor, Int.fract]
-  field_simp
+  simp [field, -Int.self_sub_floor]
   ring
 
 theorem toIcoMod_zero_one (b : α) : toIcoMod (zero_lt_one' α) 0 b = Int.fract b := by

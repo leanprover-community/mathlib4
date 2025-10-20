@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Order.BooleanAlgebra
+import Mathlib.Order.BooleanAlgebra.Defs
 import Mathlib.Order.Hom.Basic
 
 /-!
@@ -141,7 +141,6 @@ def OrderIso.isIdempotentElemMulZeroAddOne :
     {a : R // IsIdempotentElem a} ≃o {a : R × R // a.1 * a.2 = 0 ∧ a.1 + a.2 = 1} where
   toFun a := ⟨(a, 1 - a), by simp_rw [mul_sub, mul_one, a.2.eq, sub_self], by rw [add_sub_cancel]⟩
   invFun a := ⟨a.1.1, (IsIdempotentElem.of_mul_add a.2.1 a.2.2).1⟩
-  left_inv _ := rfl
   right_inv a := Subtype.ext <| Prod.ext rfl <| sub_eq_of_eq_add <| a.2.2.symm.trans (add_comm ..)
   map_rel_iff' := Iff.rfl
 

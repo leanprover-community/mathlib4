@@ -24,7 +24,7 @@ namespace PNat
 
 instance instCommMonoid : CommMonoid ℕ+ := Positive.commMonoid
 instance instIsOrderedCancelMonoid : IsOrderedCancelMonoid ℕ+ := Positive.isOrderedCancelMonoid
-instance instCancelCommMonoid : CancelCommMonoid ℕ+ := ⟨fun _ _ _ ↦ mul_left_cancel⟩
+instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
 instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
 
 @[simp]
@@ -258,7 +258,7 @@ theorem le_sub_one_of_lt {a b : ℕ+} (hab : a < b) : a ≤ b - (1 : ℕ+) := by
   rw [← coe_le_coe, sub_coe]
   split_ifs with h
   · exact Nat.le_pred_of_lt hab
-  · exact hab.le.trans (le_of_not_lt h)
+  · exact hab.le.trans (le_of_not_gt h)
 
 theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
   fun h =>

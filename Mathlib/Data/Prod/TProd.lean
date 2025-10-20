@@ -48,8 +48,6 @@ abbrev TProd (l : List ι) : Type v :=
 
 namespace TProd
 
-open List
-
 /-- Turning a function `f : ∀ i, α i` into an element of the iterated product `TProd α l`. -/
 protected def mk : ∀ (l : List ι) (_f : ∀ i, α i), TProd α l
   | [] => fun _ => PUnit.unit
@@ -64,7 +62,7 @@ theorem fst_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk (i :: l) f).
 
 @[simp]
 theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) :
-    (TProd.mk.{u,v} (i :: l) f).2 = TProd.mk.{u,v} l f :=
+    (TProd.mk.{u, v} (i :: l) f).2 = TProd.mk.{u, v} l f :=
   rfl
 
 variable [DecidableEq ι]
@@ -129,8 +127,6 @@ end List
 
 namespace Set
 
-open List
-
 /-- A product of sets in `TProd α l`. -/
 @[simp]
 protected def tprod : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α l)
@@ -145,7 +141,6 @@ theorem mk_preimage_tprod :
     have h : TProd.mk l f ∈ Set.tprod l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i := by
       change f ∈ TProd.mk l ⁻¹' Set.tprod l t ↔ f ∈ { x | x ∈ l }.pi t
       rw [mk_preimage_tprod l t]
-
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
     rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prodMk_mem_set_prod_eq]
     simp_rw [mem_setOf_eq, mem_cons]
