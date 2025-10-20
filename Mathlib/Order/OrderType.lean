@@ -1,19 +1,19 @@
 /-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Floris van Doorn
+Copyright (c) _
 -/
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Order.Category.LinOrd
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Sum.Order
 import Mathlib.Data.Prod.Lex
+import Mathlib.Logic.Equiv.Prod
 /-!
 # OrderTypes
 
 OrderTypes are defined as equivalences of linear orders under order isomorphism. They are endowed
-with a total order, where an OrderType is smaller than another one there is an order embedding
+with a preorder, where an OrderType is smaller than another one there is an order embedding
 into it.
 
 ## Main definitions
@@ -21,8 +21,10 @@ into it.
 * `OrderType`: the type of OrderTypes (in a given universe)
 * `OrderType.type α`: given a type `α` with a linear order, this is the corresponding OrderType,
 * `OrderType.card o`: the cardinality of an OrderType `o`.
+* `OrderType.addMonoid`: the additive monoid of OrderTypes.
+* `OrderType.mul o₁ o₂`: the product of two OrderTypes `o₁` and `o₂`.
 
-A linear order with a bottom element is registered on OrderTypes, where `⊥` is
+A pre order with a bottom element is registered on OrderTypes, where `⊥` is
 `0`, the OrderType corresponding to the empty type.
 
 ## Notation
@@ -40,13 +42,12 @@ A linear order with a bottom element is registered on OrderTypes, where `⊥` is
 
 ## Tags
 
-order type, order isomorphism, linear order, cardinal
+order type, order isomorphism, linear order
 -/
 
 noncomputable section
 
 open Function Cardinal Set Equiv Order
-open scoped Cardinal InitialSeg
 
 universe u v w w'
 
@@ -54,7 +55,6 @@ variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type w'}
 
 instance : LE PEmpty where
  le _ _ := False
-
 
 instance : LE Empty where
  le _ _ := False
@@ -95,13 +95,13 @@ instance OrderType.isEquivalent : Setoid LinOrd where
 def OrderType : Type (u + 1) :=
   Quotient OrderType.isEquivalent
 
-def OrderType.toType (o : OrderType) : Type u :=
+namespace OrderType
+
+def toType (o : OrderType) : Type u :=
   o.out.carrier
 
 instance linearOrder_toType (o : OrderType) : LinearOrder o.toType :=
   o.out.str
-
-namespace OrderType
 
 /-! ### Basic properties of the order type -/
 
@@ -215,8 +215,7 @@ theorem inductionOnLinOrd {C : OrderType → Prop} (o : OrderType)
   inductionOn o fun α ↦ H α
 
 open Classical in
-/-- To define a function on OrderTypes,
- it suffices to define them on all linear order isomorphisms.
+/-- To define a function on OrderTypes, it suffices to define them on all linear order isomorphisms.
 -/
 def liftOnLinOrd {δ : Sort v} (o : OrderType) (f : ∀ (α) [LinearOrder α], δ)
     (c : ∀ (α) [LinearOrder α] (β) [LinearOrder β],
@@ -232,7 +231,6 @@ theorem liftOnLinOrd_type {δ : Sort v} (f : ∀ (α) [LinearOrder α], δ)
   change Quotient.liftOn' ⟦_⟧ _ _ = _
   rw [Quotient.liftOn'_mk]
 
-
 /-! ### The order on OrderTypes -/
 
 /--
@@ -241,7 +239,7 @@ For `OrderType`:
 Less-than-or-equal is defined such that linear orders `r` on `α` and `s` on `β`
 satisfy `type α ≤ type β` if there exists an order embedding from `α` to `β`.
 -/
-instance partialOrder : PartialOrder OrderType where
+instance partialOrder : Preorder OrderType where
   le a b :=
     Quotient.liftOn₂ a b (fun r s ↦ Nonempty (r ↪o s))
     fun _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ propext
@@ -250,27 +248,18 @@ instance partialOrder : PartialOrder OrderType where
   le_refl := Quot.ind fun _ ↦ ⟨(OrderIso.refl _).toOrderEmbedding⟩
   le_trans a b c :=
     Quotient.inductionOn₃ a b c fun _ _ _ ⟨f⟩ ⟨g⟩ ↦ ⟨f.trans g⟩
-  le_antisymm a b :=
-    Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ ↦ by
-      refine Quot.sound ⟨⟨⟨h₁,h₂,sorry,sorry⟩,by simp⟩⟩
 
-
-instance : LinearOrder OrderType :=
-  {inferInstanceAs (PartialOrder OrderType) with
-    le_total := fun a b ↦ by
-       sorry
-    toDecidableLE := Classical.decRel _ }
-
-theorem _root_.InitialSeg.OrderType_type_le {α β}
+theorem type_le {α β}
     [LinearOrder α] [LinearOrder β] (h : α ↪o β) : type α ≤ type β :=
   ⟨h⟩
 
-theorem _root_.RelEmbedding.OrderType_type_le {α β}
+theorem _root_.RelEmbedding.type_le {α β}
     [LinearOrder α] [LinearOrder β] (h : α ↪o β) : type α ≤ type β :=
   ⟨h⟩
+
 
 protected theorem zero_le (o : OrderType) : 0 ≤ o :=
-  inductionOn o (fun _ ↦ OrderEmbedding.ofIsEmpty.OrderType_type_le)
+  inductionOn o (fun _ ↦ OrderEmbedding.ofIsEmpty.type_le)
 
 instance : OrderBot OrderType where
   bot := 0
@@ -283,18 +272,9 @@ theorem bot_eq_zero : (⊥ : OrderType) = 0 :=
 instance instIsEmptyIioZero : IsEmpty (Iio (0 : OrderType)) := by
   simp [← bot_eq_zero]
 
-protected theorem le_zero {o : OrderType} : o ≤ 0 ↔ o = 0 :=
-  le_bot_iff
-
-protected theorem pos_iff_ne_zero {o : OrderType} : 0 < o ↔ o ≠ 0 :=
-  bot_lt_iff_ne_bot
-
 @[simp]
 protected theorem not_lt_zero (o : OrderType) : ¬o < 0 :=
   not_lt_bot
-
-theorem eq_zero_or_pos : ∀ a : OrderType, a = 0 ∨ 0 < a :=
-  eq_bot_or_bot_lt
 
 instance : ZeroLEOneClass OrderType :=
   ⟨OrderType.zero_le _⟩
@@ -310,6 +290,7 @@ theorem type_le_iff' {α β} [inst1 : LinearOrder α]
     [inst2 : LinearOrder β] : type α ≤ type β ↔ Nonempty (inst1.le ↪r inst2.le) :=
   ⟨fun f ↦ f, fun f ↦ f⟩
 
+section Cardinal
 /-- The cardinal of an OrderType is the cardinality of any type on which a relation with that order
 type is defined. -/
 def card : OrderType → Cardinal :=
@@ -321,7 +302,10 @@ theorem card_type [LinearOrder α] : card (type α) = #α :=
 
 @[gcongr]
 theorem card_le_card {o₁ o₂ : OrderType} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
-  inductionOn o₁ fun _ ↦ inductionOn o₂ fun _ ↦ sorry
+  inductionOn o₁ fun _ ↦ inductionOn o₂ fun _ _ ⟨f⟩ ↦ ⟨f.toEmbedding⟩
+
+theorem ord_card_mono {o₁ o₂ : OrderType} (h : o₁ ≤ o₂) : (card o₁).ord ≤ (card o₂).ord :=
+  Cardinal.ord_mono (OrderType.card_le_card h)
 
 @[simp]
 theorem card_zero : card 0 = 0 := mk_eq_zero _
@@ -329,6 +313,7 @@ theorem card_zero : card 0 = 0 := mk_eq_zero _
 @[simp]
 theorem card_one : card 1 = 1 := mk_eq_one _
 
+end Cardinal
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 def omega0 : OrderType := type ℕ
 
@@ -371,17 +356,17 @@ lemma OrderIso.emptySumLex (α : Type u) [LinearOrder α] : Nonempty (Lex (PEmpt
 
 open Classical in
 lemma add_zero (o : OrderType.{u}) : o + 0 = o :=
-  inductionOn o (fun α _ => RelIso.ordertype_congr (choice (OrderIso.sumLexEmpty α)))
+  inductionOn o (fun α _ ↦ RelIso.ordertype_congr (choice (OrderIso.sumLexEmpty α)))
 
 open Classical in
 lemma zero_add (o : OrderType.{u}) : 0 + o = o :=
-  inductionOn o (fun α _ => RelIso.ordertype_congr (choice (OrderIso.emptySumLex α)))
+  inductionOn o (fun α _ ↦ RelIso.ordertype_congr (choice (OrderIso.emptySumLex α)))
 
 open Classical in
 lemma add_assoc (o₁ o₂ o₃ : OrderType.{u}) : o₁ + o₂ + o₃ = o₁ + (o₂ + o₃) :=
-  inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ => RelIso.ordertype_congr (OrderIso.sumLexAssoc α β γ))
+  inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.ordertype_congr (OrderIso.sumLexAssoc α β γ))
 
-instance : AddMonoid OrderType where
+instance addMonoid : AddMonoid OrderType where
   add_assoc := add_assoc
   zero_add := zero_add
   add_zero := add_zero
@@ -410,8 +395,43 @@ instance : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
 lemma type_mul (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
     type (α ×ₗ β) = (type α) * (type β) := rfl
 
+def Prod.Lex.unique_prod_symm_equiv [PartialOrder α] [Preorder β] [Unique β] : (β ×ₗ α) ≃o α ×ₗ β :=
+   (Prod.Lex.uniqueProd β α).trans (Prod.Lex.prodUnique α β).symm
+
 open Classical in
 lemma mul_one (o : OrderType) : o * 1 = o :=
   inductionOn o (fun α _ ↦ RelIso.ordertype_congr (Prod.Lex.prodUnique α PUnit))
+
+open Classical in
+lemma one_mul (o : OrderType) : 1 * o = o :=
+  inductionOn o (fun α _ ↦ RelIso.ordertype_congr (Prod.Lex.uniqueProd PUnit α))
+
+
+/-- `Equiv.prodAssoc` promoted to an order isomorphism. -/
+def OrderIso.prodAssoc (α : Type u) (β : Type v) (γ : Type w) [LE α] [LE β] [LE γ] :
+    (α × β) × γ ≃o α × (β × γ) :=
+  { Equiv.prodAssoc α β γ with
+    map_rel_iff' := fun {a b} ↦ by
+      rcases a with ⟨⟨_ , _⟩ , _⟩ ; rcases b with ⟨⟨_, _⟩ , _⟩ ;
+      simp [Equiv.prodAssoc, and_assoc] }
+
+/-- `Equiv.prodAssoc` promoted to an order isomorphism. -/
+def prodLexAssoc [LinearOrder α] [LinearOrder β] [LinearOrder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ :=
+  { Equiv.prodAssoc α β γ with
+    map_rel_iff' := fun {a b} ↦
+      ⟨fun h ↦
+        match a, b, h with
+        | ⟨⟨a1 , a2⟩ , a3⟩ , ⟨⟨b1, b2⟩ , b3⟩ , h => by sorry,
+        fun h ↦
+        match a, b, h with
+        | ⟨⟨_ , _⟩ , _⟩ , ⟨⟨_, _⟩ , _⟩ , h => by sorry⟩}
+
+section Ordinal
+
+def LinearOrder.toWellOrder (α : Type u) [LinearOrder α] [IsWellOrder α (· < ·)] : WellOrder :=
+  ⟨α, (· < ·), inferInstance⟩
+
+
+end Ordinal
 
 end OrderType
