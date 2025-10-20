@@ -20,7 +20,7 @@ continuous functions.
 When `β` has more structures, `C_c(α, β)` inherits such structures as `AddCommGroup`,
 `NonUnitalRing` and `StarRing`.
 
-When the domain `α` is compact, `CompactlySupportedContinuousMap.continuousMapEquiv` 
+When the domain `α` is compact, `CompactlySupportedContinuousMap.continuousMapEquiv`
 gives the identification `C(α, β) ≃ C_c(α, β)`.
 
 -/
