@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Order.Module.Basic
-import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.Rat.Cast.Order
 
 /-!
