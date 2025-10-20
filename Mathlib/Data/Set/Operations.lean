@@ -90,7 +90,7 @@ theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p 
 
 @[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
 
-@[simp, mfld_simps, grind]
+@[simp, mfld_simps, grind ←]
 theorem mem_univ (x : α) : x ∈ @univ α := trivial
 
 /-! ### Operations -/
