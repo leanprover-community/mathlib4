@@ -1072,7 +1072,7 @@ instance [Field K] {p : ℕ} [CharP K p] : CharP (RatFunc K) p :=
   charP_of_injective_algebraMap' K p
 
 instance [Field K] {p : ℕ} [ExpChar K p] : ExpChar (RatFunc K) p :=
-  expChar_of_injective_algebraMap' K p
+  ExpChar.of_injective_algebraMap' K p
 
 instance [Field K] [CharZero K] : CharZero (RatFunc K) :=
   Algebra.charZero_of_charZero K _

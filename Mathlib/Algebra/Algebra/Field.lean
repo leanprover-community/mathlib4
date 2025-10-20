@@ -13,13 +13,6 @@ import Mathlib.Data.Rat.Cast.Defs
 namespace algebraMap
 
 universe u v w u₁ v₁
-section FieldNontrivial
-
-variable {R A : Type*} [Field R] [CommSemiring A] [Nontrivial A] [Algebra R A]
-
-
-
-end FieldNontrivial
 
 section SemifieldSemidivisionRing
 
