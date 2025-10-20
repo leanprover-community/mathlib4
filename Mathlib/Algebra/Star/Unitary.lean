@@ -406,20 +406,20 @@ variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A] [StarMul A]
 
 /-- Unitary conjugation preserves the spectrum, star on left. -/
 @[simp]
-lemma _root_.spectrum.unitary_conjugate {a : A} {u : unitary A} :
+lemma _root_.spectrum.unitary_star_right_conjugate {a : A} {u : unitary A} :
     spectrum R (u * a * (star u : A)) = spectrum R a :=
   spectrum.units_conjugate (u := unitary.toUnits u)
 
 /-- Unitary conjugation preserves the spectrum, star on right. -/
 @[simp]
-lemma _root_.spectrum.unitary_conjugate' {a : A} {u : unitary A} :
+lemma _root_.spectrum.unitary_star_left_conjugate {a : A} {u : unitary A} :
     spectrum R ((star u : A) * a * u) = spectrum R a := by
   simpa using spectrum.unitary_conjugate (u := star u)
 
 @[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate :=
-  spectrum.unitary_conjugate
+  spectrum.unitary_star_right_conjugate
 @[deprecated (since := "2025-10-20")] alias spectrum.unitary_conjugate' :=
-  spectrum.unitary_conjugate'
+  spectrum.unitary_star_left_conjugate'
 
 end UnitaryConjugate
 
