@@ -61,6 +61,7 @@ def mul : Foo → Foo → Foo
   | _, _ => 0
 
 instance commMonoid : CommMonoid Foo where
+  mul := mul
   one_mul := by boom
   mul_one := by boom
   mul_comm := by boom
