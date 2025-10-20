@@ -85,7 +85,7 @@ theorem fst_integral_withLp [CompleteSpace F] (hf : Integrable f μ) :
   conv => enter [1, 1]; change WithLp.prodContinuousLinearEquiv q ℝ E F _
   rw [← ContinuousLinearEquiv.integral_comp_comm, fst_integral]
   · rfl
-  · simpa
+  · exact (ContinuousLinearEquiv.integrable_comp_iff _).2 hf
 
 theorem snd_integral_withLp [CompleteSpace E] (hf : Integrable f μ) :
     (∫ x, f x ∂μ).snd = ∫ x, (f x).snd ∂μ := by
@@ -93,7 +93,7 @@ theorem snd_integral_withLp [CompleteSpace E] (hf : Integrable f μ) :
   conv => enter [1, 1]; change WithLp.prodContinuousLinearEquiv q ℝ E F _
   rw [← ContinuousLinearEquiv.integral_comp_comm, snd_integral]
   · rfl
-  · simpa
+  · exact (ContinuousLinearEquiv.integrable_comp_iff _).2 hf
 
 end Prod
 

@@ -19,13 +19,13 @@ Currently `Quiver` is defined with `Hom : V → V → Sort v`.
 This is different from the category theory setup,
 where we insist that morphisms live in some `Type`.
 There's some balance here: it's nice to allow `Prop` to ensure there are no multiple arrows,
-but it is also results in error-prone universe signatures when constraints require a `Type`.
+but it also results in error-prone universe signatures when constraints require a `Type`.
 -/
 
 open Opposite
 
 -- We use the same universe order as in category theory.
--- See note [CategoryTheory universes]
+-- See note [category theory universes]
 universe v v₁ v₂ u u₁ u₂
 
 /-- A quiver `G` on a type `V` of vertices assigns to every pair `a b : V` of vertices

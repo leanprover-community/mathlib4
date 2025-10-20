@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster, Bryan G
 Jovan Gerbscheid
 -/
 import Batteries.Tactic.Trans
+import Lean.Compiler.NoncomputableAttr
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Tactic.Symm
