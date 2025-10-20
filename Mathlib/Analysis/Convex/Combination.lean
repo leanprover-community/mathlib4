@@ -127,7 +127,7 @@ theorem Finset.centerMass_filter_ne_zero [∀ i, Decidable (w i ≠ 0)] :
 
 namespace Finset
 
-variable [LinearOrder R] [IsStrictOrderedRing R] [IsOrderedAddMonoid α] [PosSMulMono R α]
+variable [LinearOrder R] [IsOrderedAddMonoid α] [PosSMulMono R α]
 
 theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i ∈ s, w i) :
