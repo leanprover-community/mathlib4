@@ -87,7 +87,7 @@ variable [Fintype α] {s t : Finset α}
 def univ : Finset α :=
   @Fintype.elems α _
 
-@[simp, grind, push]
+@[simp, grind ←, push]
 theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 
