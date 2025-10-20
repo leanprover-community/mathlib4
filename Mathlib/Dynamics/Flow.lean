@@ -170,7 +170,7 @@ def orbit (x : α) : Set α := @AddAction.orbit _ _ ϕ.toAddAction.toVAdd x
 
 theorem orbit_eq_range (x : α) : orbit ϕ x = Set.range (fun t => ϕ t x) := rfl
 
-theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ := by rfl
+theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ := Iff.rfl
 
 theorem mem_orbit (x : α) (t : τ) : ϕ t x ∈ orbit ϕ x :=
   (mem_orbit_iff ϕ).mpr (exists_apply_eq_apply (fun a ↦ ϕ.toFun a x) t)
