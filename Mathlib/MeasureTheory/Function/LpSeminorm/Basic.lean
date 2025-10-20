@@ -178,7 +178,7 @@ section Const
 This has instances when `p := ∞` or `μ.IsFiniteMeasure`. -/
 class MemLp.Const {α : Type u_1} {m0 : MeasurableSpace α} (p : ℝ≥0∞)
   (μ : Measure α) where
-  eLpNorm_const_lt_top' (c : ENNReal) (hc : ‖c‖ₑ ≠ ∞) : eLpNorm (fun _ ↦ c) p μ < ∞
+  eLpNorm_const_lt_top' (c : ℝ≥0∞) (hc : ‖c‖ₑ ≠ ∞) : eLpNorm (fun _ ↦ c) p μ < ∞
 
 variable {ε' ε'' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
   [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
@@ -386,6 +386,41 @@ theorem eLpNormEssSup_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0∞} (hfC
 
 instance : MemLp.Const ∞ μ where
   eLpNorm_const_lt_top' c hc := eLpNormEssSup_le_of_ae_enorm_bound (by simp) |>.trans_lt hc.lt_top
+
+/-- Check naming convention for this. Golf. -/
+theorem memLpConst_iff_zero_or_top_or_isFiniteMeasure {α : Type u_1} {m0 : MeasurableSpace α}
+    (p : ℝ≥0∞) (μ : Measure α) : MemLp.Const p μ ↔ p = 0 ∨ p = ∞ ∨ IsFiniteMeasure μ := by
+  constructor
+  · contrapose
+    push_neg
+    rintro ⟨h1, h2, h3⟩
+    by_contra h4
+    have H := eLpNorm_const' (μ := μ) (1 : ℝ≥0∞) h1 h2
+    have K := h4.1 (1 : ℝ≥0∞)
+    simp at *
+    rw [isFiniteMeasure_iff] at h3
+    simp at h3
+    rw [h3] at H
+    rw [H] at K
+    have LLL : ⊤ ^ p.toReal⁻¹ = (⊤ : ℝ≥0∞) := by simp only [ENNReal.rpow_eq_top_iff,
+      ENNReal.top_ne_zero, inv_neg'', false_and, inv_pos, true_and, false_or,
+      ENNReal.toReal_pos h1 h2]
+    rw [LLL] at K
+    contradiction
+  · rintro (rfl | rfl | _ )
+    · refine { eLpNorm_const_lt_top' := ?_ }; simp
+    · infer_instance
+    · infer_instance
+
+/-- Check naming convention for this. Golf. -/
+theorem memLpConst_iff_top_or_isFiniteMeasure_of_ne_zero {α : Type u_1} {m0 : MeasurableSpace α}
+    (p : ℝ≥0∞) (μ : Measure α) : p ≠ 0 → (MemLp.Const p μ ↔ p = ∞ ∨ IsFiniteMeasure μ) := by
+  intro h
+  have := memLpConst_iff_zero_or_top_or_isFiniteMeasure p μ
+  rw [this]
+  simp only [or_iff_right_iff_imp]
+  intro h1
+  contradiction
 
 theorem eLpNormEssSup_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNormEssSup f μ ≤ C :=
