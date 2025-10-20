@@ -67,10 +67,10 @@ theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
 
 /-- Evaluating a path homotopy at an intermediate point, giving us a `Path`.
 -/
-def eval (F : Homotopy p₀ p₁) (t : ℝ) : Path x₀ x₁ where
-  toFun := F.toHomotopy.extend t
-  source' := by simp [ContinuousMap.Homotopy.extend, Set.IccExtend]
-  target' := by simp [ContinuousMap.Homotopy.extend, Set.IccExtend]
+def eval (F : Homotopy p₀ p₁) (t : I) : Path x₀ x₁ where
+  toFun := F.toHomotopy.curry t
+  source' := by simp
+  target' := by simp
 
 @[simp]
 theorem eval_zero (F : Homotopy p₀ p₁) : F.eval 0 = p₀ := by
