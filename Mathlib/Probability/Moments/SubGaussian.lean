@@ -104,7 +104,7 @@ conditional expectation kernel for `m`, `condExpKernel μ m`, and the restrictio
 Note that `condExpKernel μ m ∘ₘ μ.trim hm = μ`. The definition is equivalent to the two
 conditions
 * for all `t`, `exp (t * X)` is `μ`-integrable,
-* for `μ.trim hm`-almost all `ω`, for all `t`, the mgf with respect to the the conditional
+* for `μ.trim hm`-almost all `ω`, for all `t`, the mgf with respect to the conditional
   distribution `condExpKernel μ m ω` is bounded by `exp (c * t ^ 2 / 2)`.
 
 For any `t`, we can write the mgf of `X` with respect to the conditional expectation kernel as
@@ -665,7 +665,7 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX μ)
   simpa [HasSubgaussianMGF_iff_kernel] using this
 
 lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX μ)
-    (hY : HasSubgaussianMGF Y cY μ) (hindep : IndepFun X Y μ) :
+    (hY : HasSubgaussianMGF Y cY μ) (hindep : X ⟂ᵢ[μ] Y) :
     HasSubgaussianMGF (fun ω ↦ X ω + Y ω) (cX + cY) μ where
   integrable_exp_mul t := by
     simp_rw [mul_add, exp_add]
