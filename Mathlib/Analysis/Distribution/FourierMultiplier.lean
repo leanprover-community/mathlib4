@@ -92,32 +92,16 @@ theorem Function.HasTemperateGrowth.comp_clm_left {f : H → E} (hf : f.HasTempe
 
 end comp_clm
 
-theorem HasTemperateGrowth.const_rpow {f : H → ℝ} (hf : f.HasTemperateGrowth)
-    (hf' : ∃ (C : ℝ) (_ : 0 < C), ∀ x, C < f x)
-    {r : ℝ} : (fun x ↦ (f x) ^ r).HasTemperateGrowth := by
-  obtain ⟨C, hC, hf'⟩ := hf'
-  refine ⟨hf.1.rpow_const_of_ne (fun x ↦ (hC.trans (hf' x)).ne'), ?_⟩
-  intro n
-  sorry
-
-variable (f : 𝓢'(𝕜, H, E, V)) (g : H → 𝕜) (hg : g.HasTemperateGrowth)
-
-@[fun_prop]
-theorem foo (s : ℝ) : ContDiff ℝ ∞ (fun (x : H) ↦ (1 + ‖x‖^2)^(s/2)) := by
-  have : ∀ (x : H), 1 + ‖x‖^2 ≠ 0 := by
-    intro x
-    positivity
-  exact (contDiff_const.add (contDiff_fun_id.norm_sq ℝ)).rpow_const_of_ne this
-
-theorem bar (s : ℝ) : (fun (x : H) ↦ (1 + ‖x‖^2)^(s/2)).HasTemperateGrowth := by
+theorem one_add_norm_inv : (fun (x : H) ↦ (1 + ‖x‖^2)⁻¹).HasTemperateGrowth := by
   constructor
   · have : ∀ (x : H), 1 + ‖x‖^2 ≠ 0 := by
       intro x
       positivity
-    exact (contDiff_const.add (contDiff_fun_id.norm_sq ℝ)).rpow_const_of_ne this
+    exact (contDiff_const.add (contDiff_fun_id.norm_sq ℝ)).inv this
   intro n
-  rcases exists_nat_gt s with ⟨k, hk⟩
-  use k + n, ↑n ! * k ^ n * 2 ^ n
+  obtain ⟨k, C, hC, h⟩ := _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux
+    ((Function.HasTemperateGrowth.const 1).add (hasTemperateGrowth_norm_sq H)) n
+  use (1 + k) * n, (1 + C)^n * ↑n ! * ↑n !
   intro x
   have hdiff1 : ContDiff ℝ ∞ (fun (x : H) ↦ (1 + ‖x‖^2)) :=
     contDiff_const.add (contDiff_fun_id.norm_sq ℝ)
@@ -127,8 +111,8 @@ theorem bar (s : ℝ) : (fun (x : H) ↦ (1 + ‖x‖^2)^(s/2)).HasTemperateGrow
     rw [← hy]
     simp only [Set.mem_setOf_eq, gt_iff_lt, t]
     exact lt_add_of_lt_add_left (c := 0) (by norm_num) (by positivity)
-  have hdiff2 : ContDiffOn ℝ ∞ (fun t ↦ t^(s/2)) t := by
-    refine ContDiffOn.rpow_const_of_ne ?_ ?_
+  have hdiff2 : ContDiffOn ℝ ∞ (fun t ↦ t⁻¹) t := by
+    refine ContDiffOn.inv ?_ ?_
     · exact contDiffOn_fun_id
     intro x hx
     simp only [Set.mem_setOf_eq, t] at hx
@@ -136,25 +120,53 @@ theorem bar (s : ℝ) : (fun (x : H) ↦ (1 + ‖x‖^2)^(s/2)).HasTemperateGrow
   have hn : n ≤ ∞ := ENat.LEInfty.out
   have hunique : UniqueDiffOn ℝ t := (isOpen_lt' (1 / 2)).uniqueDiffOn
   have hfderiv : (∀ (i : ℕ), 1 ≤ i → i ≤ n →
-      ‖iteratedFDeriv ℝ i (fun x ↦ 1 + ‖x‖ ^ 2) x‖ ≤ (2 * ‖x‖) ^ i) := by
+      ‖iteratedFDeriv ℝ i (fun x ↦ 1 + ‖x‖ ^ 2) x‖ ≤ ((1 + C) * (1 + ‖x‖) ^ (1 + k)) ^ i) := by
     intro i hi hi'
-
-    sorry
-  have hgderiv : (∀ i ≤ n,
-      ‖iteratedFDerivWithin ℝ i (fun y ↦ y ^ (s / 2)) t (1 + ‖x‖ ^ 2)‖ ≤ k^n * (1 + ‖x‖)^k) := by
+    apply (h i hi' x).trans
+    rw [mul_pow, ← pow_mul]
+    apply mul_le_mul_of_nonneg _ _ hC (by positivity)
+    · have : C ≤ 1 + C := by simp
+      apply this.trans
+      apply le_self_pow₀ _ (by positivity)
+      simp [hC]
+    · apply pow_le_pow_right₀
+      · simp
+      have : k ≤ 1 + k := by simp
+      apply this.trans
+      rw [le_mul_iff_one_le_right ]
+      exact hi
+      positivity
+  have hgderiv : ∀ i ≤ n,
+      ‖iteratedFDerivWithin ℝ i (fun y ↦ y⁻¹) t (1 + ‖x‖ ^ 2)‖ ≤ n ! := by
       intro i hi
       rw [norm_iteratedFDerivWithin_eq_norm_iteratedDerivWithin]
-      rw [iteratedDerivWithin_eq_iterate]
 
-      sorry
+      rw [iteratedDerivWithin_eq_iteratedDeriv hunique]; swap
+      · apply contDiffAt_inv
+        positivity
+      swap
+      · apply ht; simp
+      rw [iteratedDeriv_eq_iterate, iter_deriv_inv]
+      simp only [Int.reduceNeg, norm_mul, norm_pow, norm_neg, one_mem,
+        CStarRing.norm_of_mem_unitary, one_pow, RCLike.norm_natCast, one_mul, norm_zpow,
+        Real.norm_eq_abs]
+      have h1 : (↑i ! : ℝ) ≤ (↑n ! : ℝ) := by
+        norm_cast
+        exact Nat.factorial_le hi
+      have h2 : |1 + ‖x‖ ^ 2| ^ (-1 - ↑i : ℤ) ≤ 1 := by
+        apply zpow_le_one_of_nonpos₀
+        · have : 0 ≤ 1 + ‖x‖^2 := by positivity
+          simp [abs_of_nonneg this]
+        · simp
+      grw [mul_le_mul_of_nonneg h1 h2 (by positivity) zero_le_one, mul_one]
   have := norm_iteratedFDeriv_comp_le' ht hunique hdiff2 hdiff1 hn x hgderiv hfderiv
   have hpow : ‖x‖^n ≤ (1 + ‖x‖)^n := by
     refine pow_le_pow_left₀ (by positivity) ?_ n
     linarith
   apply le_trans this
-  grw [mul_pow, hpow, pow_add]
-  move_mul [(1 + ‖x‖) ^ n, (1 + ‖x‖) ^ k]
-  gcongr
+  rw [mul_pow, ← pow_mul]
+  grind
+
 
 end has_growth
 
@@ -243,6 +255,20 @@ theorem memSobolev_iff_fourierTransform [CompleteSpace E] {g : H → ℂ} (f : �
     apply_fun 𝓕⁻ at hf'
     rw [hf', toTemperedDistribution_fourierTransformInv_eq V f']
 
+theorem memSobolev_one_iff_fourierTransform [CompleteSpace E]
+    (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) : MemSobolev 1 f ↔ ∃ (f' : Lp E 2 (volume : Measure H)),
+    𝓕 f = Lp.toTemperedDistribution ℂ V f' := by
+  rw [memSobolev_one_iff]
+  constructor
+  · intro ⟨f', hf'⟩
+    use 𝓕 f'
+    rw [hf', toTemperedDistribution_fourierTransform_eq]
+  · intro ⟨f', hf'⟩
+    use 𝓕⁻ f'
+    apply_fun 𝓕⁻ at hf'
+    rw [TemperedDistribution.fourier_inversion] at hf'
+    rw [hf', toTemperedDistribution_fourierTransformInv_eq]
+
 end inner
 
 class Laplacian (X : Type*) (Y : outParam (Type*)) where
@@ -264,10 +290,12 @@ section normed
 
 variable [NormedSpace ℂ E]
 
+open Real
+
 noncomputable
 instance TemperedDistribution.instLaplacian [CompleteSpace E] :
     Laplacian 𝓢'(ℂ, H, E, V) 𝓢'(ℂ, H, E, V) where
-  laplacian := TemperedDistribution.fourierMultiplierCLM E V (‖·‖ ^ 2 : H → ℂ)
+  laplacian := TemperedDistribution.fourierMultiplierCLM E V (fun x ↦ ‖x‖ ^ 2 : H → ℂ)
 
 theorem laplacian_mem_Sobolev_norm_sq {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : MemSobolev (‖·‖ ^ 2) f) :
     MemSobolev 1 (Δ f) := by
@@ -277,6 +305,9 @@ theorem laplacian_mem_Sobolev_norm_sq {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf 
     simp
   obtain ⟨g, hg⟩ := hf
   use g
+  have : Lp.toTemperedDistribution ℂ V ((2 * π) ^ 2 • g) =
+      (2 * π) ^ 2 • (Lp.toTemperedDistribution ℂ V g) := by
+    exact (Lp.toTemperedDistributionCLM ℂ E V volume 2).map_smul_of_tower ((2 * π) ^ 2) g
   rw [← hg]
   rfl
 
@@ -294,17 +325,12 @@ theorem BoundedContinuousFunction.memLp_top (u : BoundedContinuousFunction H E) 
     filter_upwards with x
     exact BoundedContinuousFunction.norm_coe_le_norm u x
 
-variable [InnerProductSpace ℂ E] [CompleteSpace E]
-
-#check (ContinuousLinearMap.lsmul ℂ ℂ).holder 2 (u.memLp_top.toLp _) f
-
-variable (g : H → ℂ)
-
-#check (_root_.smulLeftCLM (𝕜 := ℂ) E V (g : H → ℂ))
+variable [InnerProductSpace ℂ E]
 
 theorem toTemperedDistribution_holder_eq (g : BoundedContinuousFunction H ℂ)
     (hg : Function.HasTemperateGrowth (g : H → ℂ)) :
-    Lp.toTemperedDistribution ℂ V ((ContinuousLinearMap.lsmul ℂ ℂ).holder 2 (g.memLp_top.toLp _) f) =
+    Lp.toTemperedDistribution ℂ V ((ContinuousLinearMap.lsmul ℂ ℂ).holder 2
+      (g.memLp_top.toLp _) f) =
     (_root_.smulLeftCLM _ V (g : H → ℂ)) (Lp.toTemperedDistribution ℂ V f) := by
   ext u y
   congr 1
@@ -315,8 +341,11 @@ theorem toTemperedDistribution_holder_eq (g : BoundedContinuousFunction H ℂ)
     ((SchwartzMap.smulLeftCLM (E →L[ℂ] V) g) u).coeFn_toLp (1 - 2⁻¹)⁻¹] with x h_holder hg' hu h'
   simp [h_holder, hg', hu, h', hg]
 
-variable (H) in
-def quotientBCF : BoundedContinuousFunction H ℂ :=
+section quotient
+
+variable (D) [NormedAddCommGroup D]
+
+def quotientBCF : BoundedContinuousFunction D ℂ :=
   BoundedContinuousFunction.ofNormedAddCommGroup (fun x ↦ ‖x‖^2 / (1 + ‖x‖^2)) (by
     apply Continuous.div
     · fun_prop
@@ -337,28 +366,49 @@ def quotientBCF : BoundedContinuousFunction H ℂ :=
     simp only [Real.norm_eq_abs, abs_eq_self]
     positivity)
 
-theorem foo1 {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : MemSobolev (fun x ↦ 1 + ‖x‖ ^ 2) f) :
+variable {D} in
+@[simp]
+lemma quotientBCF_apply (x : D) : quotientBCF D x = ‖x‖^2 / (1 + ‖x‖^2) := rfl
+
+variable [InnerProductSpace ℝ D]
+
+theorem quotientBCF_hasTemperateGrowth : Function.HasTemperateGrowth (quotientBCF D) := by
+  have ht₁ : Function.HasTemperateGrowth fun (x : D) ↦ (‖x‖ ^ 2 : ℂ) := by
+    convert (hasTemperateGrowth_norm_sq D).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
+    simp
+  have ht₂ : Function.HasTemperateGrowth fun (x : D) ↦ ((1 + ‖x‖ ^ 2)⁻¹ : ℂ) := by
+    convert (one_add_norm_inv (H := D)).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
+    simp
+  convert ht₁.mul ht₂
+
+end quotient
+
+variable [CompleteSpace E]
+
+theorem memSobolevLaplacian {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : MemSobolev (fun x ↦ 1 + ‖x‖ ^ 2) f) :
     MemSobolev 1 (Δ f) := by
   apply laplacian_mem_Sobolev_norm_sq
-  rw [memSobolev_iff_fourierTransform f]; swap
-  · convert (hasTemperateGrowth_norm_sq H).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
+  have ht₁ : Function.HasTemperateGrowth fun (x : H) ↦ (‖x‖ ^ 2 : ℂ) := by
+    convert (hasTemperateGrowth_norm_sq H).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
     simp
-  rw [memSobolev_iff_fourierTransform f] at hf; swap
-  · convert ((Function.HasTemperateGrowth.const 1).add (hasTemperateGrowth_norm_sq H)).comp_clm_left
+  have ht₂ : Function.HasTemperateGrowth fun (x : H) ↦ (1 + ‖x‖ ^ 2 : ℂ) := by
+    convert ((Function.HasTemperateGrowth.const 1).add (hasTemperateGrowth_norm_sq H)).comp_clm_left
       (RCLike.ofRealCLM (K := ℂ))
     simp
+  have ht₃ := quotientBCF_hasTemperateGrowth H
+  rw [memSobolev_iff_fourierTransform f ht₁]
+  rw [memSobolev_iff_fourierTransform f ht₂] at hf
   obtain ⟨f', hf'⟩ := hf
   use (ContinuousLinearMap.lsmul ℂ ℂ).holder 2 ((quotientBCF H).memLp_top.toLp _) f'
-
-  sorry
-  /-rw [memSobolev_iff]; swap
-  · convert (hasTemperateGrowth_norm_sq H).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
-    simp
-  rw [memSobolev_iff] at hf; swap
-  · convert ((Function.HasTemperateGrowth.const 1).add (hasTemperateGrowth_norm_sq H)).comp_clm_left
-      (RCLike.ofRealCLM (K := ℂ))
-    simp
-  obtain ⟨f', hf'⟩ := hf-/
+  have := DFunLike.congr_fun (mul_smulLeftCLM ht₂ ht₃) (𝓕 f)
+  simp only [coe_comp', Function.comp_apply] at this
+  rw [toTemperedDistribution_holder_eq f' (quotientBCF H) ht₃]
+  rw [← hf', this]
+  congr
+  ext x
+  simp only [Pi.mul_apply, quotientBCF_apply]
+  norm_cast
+  field_simp
 
 
 end inner

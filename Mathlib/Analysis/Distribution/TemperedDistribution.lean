@@ -445,6 +445,15 @@ theorem smulLeftCLM_apply_apply (g : D → 𝕜) (f : 𝓢'(𝕜, D, E, V)) (f' 
     smulLeftCLM E V g f f' = f (SchwartzMap.smulLeftCLM _ g f') := by
   rfl
 
+theorem mul_smulLeftCLM {g₁ g₂ : D → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM E V g₂ ∘L smulLeftCLM E V g₁ = smulLeftCLM E V (g₁ * g₂) := by
+  ext f f' y
+  congr 1
+  have := DFunLike.congr_fun (smulLeftCLM_mul hg₁ hg₂ (E := E)) f'
+  simp only [coe_comp', Function.comp_apply] at this
+  simp [this]
+
 variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] {μ : Measure D}
   [μ.HasTemperateGrowth] [NormedSpace ℝ V]
 
