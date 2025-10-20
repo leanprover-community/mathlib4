@@ -262,7 +262,7 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
       simp [ih j']
 
 lemma getElem_rightInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
-    (ris ω)[j]'(by simp  [h]) =
+    (ris ω)[j]'(by simp [h]) =
     (π (ω.drop (j + 1)))⁻¹
       * (Option.map (cs.simple) ω[j]?).getD 1
       * π (ω.drop (j + 1)) := by
