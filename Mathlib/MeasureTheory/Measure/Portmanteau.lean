@@ -608,17 +608,17 @@ condition `limsup μsₙ(F) ≤ μ(F)`, then the measures `μsₙ` converge weak
 Formulated here for countably generated filters.
 
 This lemma uses a coercion from `ProbabilityMeasure` to `Measure` in the hypothesis.
-See `tendsto_of_limsup_measure_closed_le` for the version without coercion. -/
-lemma tendsto_of_limsup_measure_closed_le'
+See `tendsto_of_forall_isClosed_limsup_le` for the version without coercion. -/
+lemma tendsto_of_forall_isClosed_limsup_le'
     (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ (μs i : Measure Ω) F) L ≤ (μ : Measure Ω) F) :
     Tendsto μs L (𝓝 μ) := by
   refine tendsto_of_forall_isOpen_le_liminf' ?_
   rwa [← limsup_measure_closed_le_iff_liminf_measure_open_ge]
 
-lemma tendsto_of_limsup_measure_closed_le_nat {μs : ℕ → ProbabilityMeasure Ω}
+lemma tendsto_of_forall_isClosed_limsup_le_nat {μs : ℕ → ProbabilityMeasure Ω}
     (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) atTop ≤ μ F) :
     Tendsto μs atTop (𝓝 μ) := by
-  refine tendsto_of_limsup_measure_closed_le' fun F hF_closed ↦ ?_
+  refine tendsto_of_forall_isClosed_limsup_le' fun F hF_closed ↦ ?_
   specialize h F hF_closed
   have aux : ENNReal.ofNNReal (limsup (fun i ↦ μs i F) atTop) =
       limsup (ENNReal.ofNNReal ∘ fun i ↦ μs i F) atTop :=
@@ -632,11 +632,11 @@ lemma tendsto_of_limsup_measure_closed_le_nat {μs : ℕ → ProbabilityMeasure 
 /-- One implication of the portmanteau theorem: if for all closed sets `F` we have the limsup
 condition `limsup μsₙ(F) ≤ μ(F)`, then the measures `μsₙ` converge weakly to the measure `μ`.
 Formulated here for countably generated filters. -/
-theorem tendsto_of_limsup_measure_closed_le
+theorem tendsto_of_forall_isClosed_limsup_le
     (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) L ≤ μ F) :
     Tendsto μs L (𝓝 μ) := by
   apply Filter.tendsto_of_seq_tendsto fun u hu ↦ ?_
-  apply tendsto_of_limsup_measure_closed_le_nat fun F hF ↦ le_trans ?_ (h F hF)
+  apply tendsto_of_forall_isClosed_limsup_le_nat fun F hF ↦ le_trans ?_ (h F hF)
   exact (limsup_comp (fun i ↦ μs i F) u _).trans_le
     (limsup_le_limsup_of_le hu (by isBoundedDefault) ⟨1, by simp⟩)
 
