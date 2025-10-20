@@ -3,7 +3,6 @@ Copyright (c) 2025 Bjørn Solheim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Solheim
 -/
-import Mathlib.Geometry.Convex.Cone.ConicalCombination
 import Mathlib.Geometry.Convex.Cone.Dual
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -32,10 +31,6 @@ PointedCone.dual
 - `minTensorProduct_le_maxTensorProduct`: the minimal tensor product
   is less than or equal to the maximal tensor product
 
-## ToDo
-
-The minimal and maximal tensor product are only equal when one or both cones are simplices.
-
 ## Notation
 
 - no special notation defined
@@ -49,7 +44,7 @@ available as https://arxiv.org/abs/1911.09663
 
 -/
 
-open Set Module Convex ConicalCombination TensorProduct LinearMap
+open Set Module Convex TensorProduct LinearMap
 open scoped TensorProduct
 
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
@@ -122,7 +117,6 @@ theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone K G) (C₂ : Po
     : minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := by
   -- minTensorProduct = PointedCone.span of elementary tensors
   -- maxTensorProduct contains all elementary tensors, hence it contains the span
-  exact PointedCone.span_minimal K (maxTensorProduct C₁ C₂) (elementaryTensors C₁ C₂)
-    (elementaryTensors_subset_maxTensorProduct C₁ C₂)
+  exact Submodule.span_le.mpr (elementaryTensors_subset_maxTensorProduct C₁ C₂)
 
 end PointedCone
