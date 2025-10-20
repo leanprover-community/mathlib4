@@ -19,7 +19,7 @@ We define a predicate `IsLocalFrame` for a collection of sections to be a local 
 and define basic notions (such as the coefficients of a section w.r.t. a local frame, and
 checking the smoothness of `t` via its coefficients in a local frame).
 
-In a future PR, given a basis `b` for `F` and a local trivialisation `e` for `V`,
+In future work, given a basis `b` for `F` and a local trivialisation `e` for `V`,
 we will construct a **smooth local frame** on `V` w.r.t. `e` and `b`,
 i.e. a collection of sections `sᵢ` of `V` which is smooth on `e.baseSet` such that `{sᵢ x}` is a
 basis of `V x` for each `x ∈ e.baseSet`. Any section `s` of `e` can be uniquely written as
@@ -83,8 +83,6 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
   [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
   [∀ x : M, TopologicalSpace (V x)]
-  -- not needed in this file
-  -- [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
   [FiberBundle F V] [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I]
   -- `V` vector bundle
 
@@ -141,14 +139,12 @@ def toBasisAt (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) : Basis ι 𝕜 (V 
 
 @[simp]
 lemma toBasisAt_coe (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (i : ι) :
-    (toBasisAt hs hx) i = s i x := by
+    toBasisAt hs hx i = s i x := by
   simpa only [toBasisAt] using Basis.mk_apply (hs.linearIndependent hx) (hs.generating hx) i
 
 open scoped Classical in
 /-- Coefficients of a section `s` of `V` w.r.t. a local frame `{s i}` on `u`.
 Outside of `u`, this returns the junk value 0. -/
--- NB. We don't use simps here, as we prefer to have dedicated `_apply` lemmas for the separate
--- cases.
 def repr (hs : IsLocalFrameOn I F n s u) (i : ι) : (Π x : M, V x) →ₗ[𝕜] M → 𝕜 where
   toFun s x := if hx : x ∈ u then (hs.toBasisAt hx).repr (s x) i else 0
   map_add' s s' := by
@@ -173,7 +169,7 @@ lemma repr_apply_of_mem (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (t : Π x
 -- TODO: add uniqueness of the decomposition; follows from the IsBasis property in the definition
 
 lemma repr_sum_eq [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M,  V x) (hx : x ∈ u) :
-    t x = (∑ i, (hs.repr i t x) • (s i x)) := by
+    t x = ∑ i, (hs.repr i t x) • (s i x) := by
   simpa [repr, hx] using (Basis.sum_repr (hs.toBasisAt hx) (t x)).symm
 
 /-- A local frame locally spans the space of sections for `V`: for each local frame `s i` on an open
