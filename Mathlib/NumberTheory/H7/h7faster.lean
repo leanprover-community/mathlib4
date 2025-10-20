@@ -805,6 +805,8 @@ lemma c_coeffspow :
   congr
   rw [← pow_add]
   sorry
+  sorry
+  sorry
   -- have : (h7.n q - 1) - h7.k q u + h7.k q u =
   --     (h7.n q - 1) + (- h7.k q u + h7.k q u) := sorry
   -- congr
@@ -812,7 +814,7 @@ lemma c_coeffspow :
 
   }
 
-#exit
+
 include h2mq in
 lemma pow_c₂ : h7.m * q - a q t * h7.l q u ≤ h7.m * (2 * (h7.m * h7.n q)) := by
   simp only [tsub_le_iff_right]
@@ -1324,7 +1326,12 @@ lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
                 · apply mul_nonneg;
                   · apply pow_nonneg; apply house_nonneg
                   · apply pow_nonneg; apply house_nonneg
-                · have : ((h7.m * 2) * h7.m) = (2 * h7.m^2) := sorry
+                · have : ((h7.m * 2) * h7.m) = (2 * h7.m^2) := by {
+                    rw [mul_comm]
+                    rw [← mul_assoc]
+                    rw [pow_two]
+                    rw [mul_comm]
+                  }
                   rw [this]; clear this
                   calc _ ≤ ((house h7.α' ^ (2 * h7.m ^ 2) *
                       house h7.γ' ^ (2 * h7.m ^ 2))) := ?_
