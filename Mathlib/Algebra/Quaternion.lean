@@ -175,8 +175,8 @@ theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) :
 theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂,c₃]) = y ↔ x = y :=
   coe_injective.eq_iff
 
-@[simps]
-instance : Zero ℍ[R,c₁,c₂,c₃] := ⟨⟨0, 0, 0, 0⟩⟩
+@[simps!]
+instance : Zero ℍ[R,c₁,c₂,c₃] := fast_instance% (equivProd c₁ c₂ c₃).zero
 
 @[scoped simp] theorem im_zero : (0 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
 
@@ -205,9 +205,8 @@ end Zero
 section Add
 variable [Add R]
 
-@[simps]
-instance : Add ℍ[R,c₁,c₂,c₃] :=
-  ⟨fun a b => ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩⟩
+@[simps!]
+instance : Add ℍ[R,c₁,c₂,c₃] := fast_instance% (equivProd c₁ c₂ c₃).add
 
 @[simp]
 theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -244,8 +243,8 @@ end AddZeroClass
 section Neg
 variable [Neg R]
 
-@[simps]
-instance : Neg ℍ[R,c₁,c₂,c₃] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
+@[simps!]
+instance : Neg ℍ[R,c₁,c₂,c₃] := fast_instance% (equivProd c₁ c₂ c₃).Neg
 
 @[simp]
 theorem neg_mk (a₁ a₂ a₃ a₄ : R) : -(mk a₁ a₂ a₃ a₄ : ℍ[R,c₁,c₂,c₃]) = ⟨-a₁, -a₂, -a₃, -a₄⟩ :=
@@ -264,9 +263,8 @@ variable [AddGroup R]
 @[simp, norm_cast]
 theorem coe_neg : ((-x : R) : ℍ[R,c₁,c₂,c₃]) = -x := by ext <;> simp
 
-@[simps]
-instance : Sub ℍ[R,c₁,c₂,c₃] :=
-  ⟨fun a b => ⟨a.1 - b.1, a.2 - b.2, a.3 - b.3, a.4 - b.4⟩⟩
+@[simps!]
+instance : Sub ℍ[R,c₁,c₂,c₃] := fast_instance% (equivProd c₁ c₂ c₃).sub
 
 @[simp] theorem im_sub : (a - b).im = a.im - b.im :=
   QuaternionAlgebra.ext (sub_zero _).symm rfl rfl rfl
@@ -303,6 +301,9 @@ theorem sub_re_self : a - a.re = a.im :=
 
 end AddGroup
 
+instance [AddCommGroup R] : AddCommGroup ℍ[R,c₁,c₂,c₃] :=
+  fast_instance% (equivProd c₁ c₂ c₃).addCommGroup
+
 section Ring
 variable [Ring R]
 
@@ -338,14 +339,13 @@ section SMul
 
 variable [SMul S R] [SMul T R] (s : S)
 
-@[simps]
-instance : SMul S ℍ[R,c₁,c₂,c₃] where smul s a := ⟨s • a.1, s • a.2, s • a.3, s • a.4⟩
+@[simps!]
+instance : SMul S ℍ[R,c₁,c₂,c₃] := fast_instance% (equivProd ..).smul _
 
-instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂,c₃] where
-  smul_assoc s t x := by ext <;> exact smul_assoc _ _ _
+instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂,c₃] :=
+  (equivTuple ..).isScalarTower ..
 
-instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂,c₃] where
-  smul_comm s t x := by ext <;> exact smul_comm _ _ _
+instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂,c₃] := (equivTuple ..).smulCommClass ..
 
 @[simp] theorem im_smul {S} [CommRing R] [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
   QuaternionAlgebra.ext (smul_zero s).symm rfl rfl rfl
@@ -359,14 +359,19 @@ theorem smul_mk (re im_i im_j im_k : R) :
 
 end SMul
 
+instance [Monoid S] [MulAction S R] : MulAction S ℍ[R,c₁,c₂,c₃] :=
+  fast_instance% (equivProd ..).mulAction _
+
 @[simp, norm_cast]
 theorem coe_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
     (↑(s • r) : ℍ[R,c₁,c₂,c₃]) = s • (r : ℍ[R,c₁,c₂,c₃]) :=
   QuaternionAlgebra.ext rfl (smul_zero _).symm (smul_zero _).symm (smul_zero _).symm
 
-instance [AddCommGroup R] : AddCommGroup ℍ[R,c₁,c₂,c₃] :=
-  (equivProd c₁ c₂ c₃).injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+instance [Semiring S] [AddCommGroup R] [DistribMulAction S R] : DistribMulAction S ℍ[R,c₁,c₂,c₃] :=
+  fast_instance% (equivProd ..).distribMulAction _
+
+instance [Semiring S] [AddCommGroup R] [Module S R] : Module S ℍ[R,c₁,c₂,c₃] :=
+  fast_instance% (equivProd ..).module _
 
 section AddCommGroupWithOne
 variable [AddCommGroupWithOne R]
@@ -497,14 +502,6 @@ lemma coe_ofNat {n : ℕ} [n.AtLeastTwo] :
     ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
-instance [Monoid S] [MulAction S R] : MulAction S ℍ[R,c₁,c₂,c₃] := (equivTuple ..).mulAction _
-
-instance [Semiring S] [DistribMulAction S R] : DistribMulAction S ℍ[R,c₁,c₂,c₃] :=
-  (equivTuple ..).distribMulAction _
-
-instance [Semiring S] [Module S R] : Module S ℍ[R,c₁,c₂,c₃] := (equivTuple ..).module _
-
--- TODO: repeat weaker `MulAction`, `DistribMulAction`, and `Module` instances  for `ℍ[R]`)
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
   algebraMap :=
   { toFun s := coe (algebraMap S R s)
@@ -788,6 +785,15 @@ instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower 
 
 instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] :=
   inferInstanceAs <| SMulCommClass S T ℍ[R,-1,0,-1]
+
+instance [Monoid S] [MulAction S R] : MulAction S ℍ[R] :=
+  inferInstanceAs <| MulAction S ℍ[R,-1,0,-1]
+
+instance [Semiring S] [DistribMulAction S R] : DistribMulAction S ℍ[R] :=
+  inferInstanceAs <| DistribMulAction S ℍ[R,-1,0,-1]
+
+instance [Semiring S] [Module S R] : Module S ℍ[R] :=
+  inferInstanceAs <| Module S ℍ[R,-1,0,-1]
 
 protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
   inferInstanceAs <| Algebra S ℍ[R,-1,0,-1]
