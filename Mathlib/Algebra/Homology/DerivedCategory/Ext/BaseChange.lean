@@ -11,6 +11,8 @@ import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.Flat.Localization
 /-!
 
 # Ext Commute with Flat Base Change
@@ -45,7 +47,7 @@ noncomputable def ExtendScalars'.obj' [UnivLE.{v, v'}] [Small.{v'} S]
   ModuleCat.of S (Shrink.{v'} (TensorProduct R S M))
 
 open Algebra in
-noncomputable local instance (priority := 2000) [UnivLE.{v, v'}] [Small.{v'} S]
+noncomputable local instance (priority := 2000)
     (N : ModuleCat.{v'} S) : Module R N := inferInstance
 
 noncomputable def ExtendScalars'.map' [UnivLE.{v, v'}] [Small.{v'} S]
@@ -230,6 +232,7 @@ lemma CategoryTheory.isBaseChange_hom [IsNoetherianRing R] [Module.Flat R S]
 set_option linter.unusedSectionVars false in
 set_option maxHeartbeats 350000 in
 --The dimension shifting is just too complicated
+@[nolint unusedArguments]
 theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Finite R N] (n : ℕ) :
     IsBaseChange S ((ModuleCat.extendScalars'.{v, v'} R S).mapExtLinearMap R M N n) := by
@@ -346,6 +349,7 @@ noncomputable def Ext.isBaseChange_map [Module.Flat R S] {M N : ModuleCat.{v} R}
 
 --This is false alarm
 set_option linter.unusedSectionVars false in
+@[nolint unusedArguments]
 theorem Ext.isBaseChange [IsNoetherianRing R] [Module.Flat R S] (M N : ModuleCat.{v} R)
     [Module.Finite R M] [Module.Finite R N] (MS NS : ModuleCat.{v'} S)
     (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f) (g : N →ₗ[R] NS) (isb2 : IsBaseChange S g) (n : ℕ) :
@@ -358,3 +362,41 @@ end CategoryTheory.Abelian
 end
 
 end basechange
+
+section Localization
+
+namespace CategoryTheory.Abelian
+
+open ModuleCat Algebra
+
+universe w w'
+
+variable (S : Submonoid R) (A : Type u') [CommRing A] [Algebra R A] [IsLocalization S A]
+
+variable [UnivLE.{v, v'}] [Small.{v', u'} A] [UnivLE.{v, w}] [UnivLE.{v', w'}] [Small.{v, u} R]
+  [Small.{v', u'} A]
+
+variable {R}
+
+noncomputable def Ext.isLocalizedModule_map {M N : ModuleCat.{v} R} {MS NS : ModuleCat.{v'} A}
+    (f : M →ₗ[R] MS) (isl1 : IsLocalizedModule S f) (g : N →ₗ[R] NS)
+    (isl2 : IsLocalizedModule S g) (n : ℕ) : Ext M N n →ₗ[R] Ext MS NS n :=
+    letI := IsLocalization.flat A S
+    (Ext.isBaseChange_map.{v, v'} A f (IsLocalizedModule.isBaseChange S A f) g
+      (IsLocalizedModule.isBaseChange S A g) n)
+
+--This is false alarm
+set_option linter.unusedSectionVars false in
+@[nolint unusedArguments]
+theorem Ext.isLocalizedModule [IsNoetherianRing R] {M N : ModuleCat.{v} R}
+    [Module.Finite R M] [Module.Finite R N] {MS NS : ModuleCat.{v'} A}
+    (f : M →ₗ[R] MS) (isl1 : IsLocalizedModule S f) (g : N →ₗ[R] NS)
+    (isl2 : IsLocalizedModule S g) (n : ℕ) :
+    IsLocalizedModule S (Ext.isLocalizedModule_map.{v, v'} S A f isl1 g isl2 n) :=
+  letI := IsLocalization.flat A S
+  (isLocalizedModule_iff_isBaseChange S A _).mpr (Ext.isBaseChange.{v, v'} A M N MS NS
+    f (IsLocalizedModule.isBaseChange S A f) g (IsLocalizedModule.isBaseChange S A g) n)
+
+end CategoryTheory.Abelian
+
+end Localization
