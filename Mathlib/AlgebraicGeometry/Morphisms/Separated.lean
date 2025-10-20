@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 # Separated morphisms
 
-A morphism of schemes is separated if its diagonal morphism is a closed immmersion.
+A morphism of schemes is separated if its diagonal morphism is a closed immersion.
 
 ## Main definitions
 - `AlgebraicGeometry.IsSeparated`: The class of separated morphisms.
@@ -82,7 +82,7 @@ instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   letI := f.hom.toAlgebra
   change IsClosedImmersion
     (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))))
-  rw [diagonal_Spec_map, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
+  rw [diagonal_SpecMap, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
   exact .spec_of_surjective _ fun x ↦ ⟨.tmul R 1 x,
     (Algebra.TensorProduct.lmul'_apply_tmul (R := R) (S := S) 1 x).trans (one_mul x)⟩
 
@@ -130,7 +130,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
     openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
   have H : (pullback.fst f f).base x = (pullback.snd f f).base x :=
-    hf (by rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply, pullback.condition])
+    hf (by rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.condition])
   let i := 𝒰.idx (f.base ((pullback.fst f f).base x))
   obtain ⟨y : 𝒰.X i, hy : (𝒰.f i).base y = f.base _⟩ :=
     𝒰.covers (f.base ((pullback.fst f f).base x))
@@ -159,14 +159,14 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
   let j := (𝒱 i).idx z
   obtain ⟨w : (𝒱 i).X j, hy : ((𝒱 i).f j).base w = z⟩ := (𝒱 i).covers z
   refine ⟨i, j, (pullback.diagonal ((𝒱 i).f j ≫ pullback.snd f (𝒰.f i))).base w, ?_⟩
-  rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
+  rw [← hz₁, ← hy, ← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply]
   simp only [diagonalCover, openCoverOfBase_I₀,
     Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
     Cover.pullbackHom, Precoverage.ZeroHypercover.bind_toPreZeroHypercover, openCoverOfBase_X,
     PreZeroHypercover.bind_X, openCoverOfLeftRight_I₀, openCoverOfLeftRight_X,
-    PreZeroHypercover.bind_f, openCoverOfLeftRight_f, openCoverOfBase_f, comp_coeBase,
+    PreZeroHypercover.bind_f, openCoverOfLeftRight_f, openCoverOfBase_f, Hom.comp_base,
     TopCat.hom_comp, ContinuousMap.comp_apply, ContinuousMap.comp_assoc]
-  simp_rw [← Scheme.comp_base_apply]
+  simp_rw [← Scheme.Hom.comp_apply]
   congr 5
   apply pullback.hom_ext <;> simp
 
@@ -177,8 +177,7 @@ lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
     (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ⁻¹ᵁ ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange
   have hU (i) : (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ''ᵁ U i =
       ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange := by
-    rw [TopologicalSpace.Opens.functor_obj_map_obj, inf_eq_right, Hom.image_top_eq_opensRange,
-      Opens.opensRange_ι]
+    rw [Scheme.Hom.image_preimage_eq_opensRange_inf, inf_eq_right, Opens.opensRange_ι]
     exact le_iSup (fun i : Σ i, (𝒱 i).I₀ ↦ ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange) i
   have hf : iSup U = ⊤ := (TopologicalSpace.Opens.map_iSup _ _).symm.trans
     (diagonalCoverDiagonalRange f 𝒰 𝒱).ι_preimage_self
