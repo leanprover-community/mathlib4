@@ -282,9 +282,6 @@ def evalIntFract : NormNumExt where eval {u α} e := do
       return .isRat _ (Int.fract q) n' d q(isRat_intFract_of_isRat_negOfNat _ $n $d $h)
   | _, _, _ => failure
 
-example : Int.fract (3.7 : ℚ) = 0.7 := by norm_num
-example : Int.fract (-3.7 : ℚ) = 0.3 := by norm_num
-
 end NormNum
 
 end Rat

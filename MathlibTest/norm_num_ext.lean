@@ -432,6 +432,8 @@ example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num
 
 example : Int.fract (2 : R) = 0 := by norm_num
 example : Int.fract (16 / 15 : K) = 1 / 15 := by norm_num
+example : Int.fract (3.7 : ℚ) = 0.7 := by norm_num
+example : Int.fract (-3.7 : ℚ) = 0.3 := by norm_num
 
 end floor
 
