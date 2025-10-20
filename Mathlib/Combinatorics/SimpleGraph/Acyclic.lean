@@ -331,8 +331,7 @@ lemma Preconnected.connected_induce_complement_singleton_of_degree_eq_one [Decid
     have := List.one_le_count_iff.mpr (pzx.snd_mem_tail_support (not_nil_of_ne (by aesop)))
     rw [hu _ (pzx.adj_snd (not_nil_of_ne (by aesop)))] at this
     cutsat
-  · rw [nonempty_subtype]
-    use u
+  · use u
     aesop
 
 /-- A finite nontrivial (pre)connected graph contains a vertex that leaves the graph connected if
