@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Presentable.Adjunction
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.Localization.Bousfield
+import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
 import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
@@ -57,7 +57,7 @@ universe w v' u' v u
 
 namespace CategoryTheory
 
-open Limits Localization
+open Limits Localization Opposite
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 
@@ -108,8 +108,7 @@ instance [MorphismProperty.IsSmall.{w} W] [LocallySmall.{w} C] :
   infer_instance
 
 lemma D₁.hasCoproductsOfShape [MorphismProperty.IsSmall.{w} W]
-    [LocallySmall.{w} C]
-    [HasCoproducts.{w} C] :
+    [LocallySmall.{w} C] [HasCoproducts.{w} C] :
     HasCoproductsOfShape (D₁ (W := W) (Z := Z)) C :=
   hasColimitsOfShape_of_equivalence
     (Discrete.equivalence (equivShrink.{w} _).symm)
@@ -123,6 +122,8 @@ variable {W Z} in
 /-- If `d : D₁ W Z` corresponds to the data of `f : X ⟶ Y` satisfying `W` and
 of a morphism `X ⟶ Z`, this is the object `Y`. -/
 def D₁.obj₂ (d : D₁ W Z) : C := d.1.1.right
+
+section
 
 variable [HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
 
@@ -218,6 +219,7 @@ lemma D₂.hasColimitsOfShape [HasColimitsOfSize.{w, w} C] :
   hasColimitsOfShape_of_equivalence (equivSmallModel.{w} _).symm
 
 end
+
 /-- The diagram of the multicoequalizer of all pair of morphisms `g₁ g₂ : Y ⟶ step W Z` with
 a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/
 @[simps]
@@ -226,6 +228,7 @@ noncomputable def D₂.multispanIndex : MultispanIndex (multispanShape W Z) C wh
   right _ := step W Z
   fst d := d.2.1.1
   snd d := d.2.1.2
+
 
 variable [HasMulticoequalizer (D₂.multispanIndex W Z)]
 
@@ -301,10 +304,12 @@ lemma isIso_toSucc_iff :
         ← D₁.ι_comp_t_assoc, pushout.condition]
     · simp [reassoc_of% hf]
 
+end
+
 open SmallObject
 
 variable [∀ Z, HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
-  [∀ Z, HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
+  [∀ Z, HasCoproduct (D₁.obj₂ (W := W) (Z := Z))] [HasPushouts C]
   [∀ Z, HasMulticoequalizer (D₂.multispanIndex W Z)]
 
 /-- The successor structure of the orthogonal-reflection construction. -/
