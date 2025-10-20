@@ -143,7 +143,7 @@ private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGen
   induction n generalizing x with
   | zero => cases hf with
     | of _ h => cases h; exact factor_δ_σ _ _
-    | id  => exact ⟨_, _, _, P_σ.σ i, P_δ.id_mem _, by simp⟩
+    | id => exact ⟨_, _, _, P_σ.σ i, P_δ.id_mem _, by simp⟩
     | comp_of j f hf hg =>
       obtain ⟨k⟩ := hg
       obtain ⟨rfl, rfl⟩ | hf' := eq_or_len_le_of_P_δ hf

@@ -1555,7 +1555,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- We skip `macro_rules`, since they cause parsing issues.
   if (stx.find? fun s =>
     #[``Parser.Command.macro_rules, ``Parser.Command.macro, ``Parser.Command.elab].contains
-      s.getKind ) |>.isSome then
+      s.getKind) |>.isSome then
     return
   let some upTo := CommandStart.endPos stx | return
 

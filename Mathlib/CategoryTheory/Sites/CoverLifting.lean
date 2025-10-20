@@ -145,7 +145,7 @@ lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow
             r.g₂ := h
             r.w := by simpa using w.symm
             .. }
-        simpa [r] using s.condition r )
+        simpa [r] using s.condition r)
 
 lemma liftAux_map' {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C}
     (a : W ⟶ Y) (b : W ⟶ Y') (w : G.map a ≫ f = G.map b ≫ f') :

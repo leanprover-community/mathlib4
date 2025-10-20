@@ -290,7 +290,7 @@ lemma natTransLift_app (F G : Quotient r ⥤ D)
 lemma comp_natTransLift {F G H : Quotient r ⥤ D}
     (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G)
     (τ' : Quotient.functor r ⋙ G ⟶ Quotient.functor r ⋙ H) :
-    natTransLift r τ ≫ natTransLift r τ' =  natTransLift r (τ ≫ τ') := by cat_disch
+    natTransLift r τ ≫ natTransLift r τ' = natTransLift r (τ ≫ τ') := by cat_disch
 
 @[simp]
 lemma natTransLift_id (F : Quotient r ⥤ D) :

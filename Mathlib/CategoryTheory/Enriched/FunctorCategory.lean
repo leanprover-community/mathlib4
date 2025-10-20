@@ -258,7 +258,7 @@ noncomputable abbrev precompEnrichedHom' {F₁' F₂' : K ⥤ C}
       rw [enrichedHom_condition_assoc, eHom_whisker_exchange,
         eHom_whisker_exchange, ← eHomWhiskerRight_comp_assoc,
         ← eHomWhiskerRight_comp_assoc, NatTrans.naturality]
-      dsimp )
+      dsimp)
 
 /-- If `F₁` and `F₂` are functors `J ⥤ C`, and `G : K ⥤ J`,
 then this is the induced morphism

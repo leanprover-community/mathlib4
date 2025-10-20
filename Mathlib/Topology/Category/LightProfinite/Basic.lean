@@ -108,7 +108,7 @@ instance : FintypeCat.toLightProfinite.Full :=
 instance (X : FintypeCat.{u}) : Fintype (FintypeCat.toLightProfinite.obj X) :=
   inferInstanceAs (Fintype X)
 
-instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) :=  inferInstanceAs (Fintype X)
+instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) := inferInstanceAs (Fintype X)
 
 end DiscreteTopology
 

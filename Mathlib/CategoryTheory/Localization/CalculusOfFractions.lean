@@ -538,7 +538,7 @@ lemma Qiso_hom_inv_id {X Y : C} (s : X ⟶ Y) (hs : W s) :
 
 @[reassoc (attr := simp)]
 lemma Qiso_inv_hom_id {X Y : C} (s : X ⟶ Y) (hs : W s) :
-    Qinv s hs  ≫ (Q W).map s = 𝟙 _ := (Qiso s hs).inv_hom_id
+    Qinv s hs ≫ (Q W).map s = 𝟙 _ := (Qiso s hs).inv_hom_id
 
 instance {X Y : C} (s : X ⟶ Y) (hs : W s) : IsIso (Qinv s hs) :=
   (inferInstance : IsIso (Qiso s hs).inv)

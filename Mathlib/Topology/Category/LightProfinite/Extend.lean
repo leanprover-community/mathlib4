@@ -82,7 +82,7 @@ If the projection maps in the cone are epimorphic and the cone is limiting, then
 theorem functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (functorOp c) := by
   have := functor_initial c hc
   have : ((StructuredArrow.toCostructuredArrow toLightProfinite c.pt)).IsEquivalence  :=
-    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence )
+    (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence)
   have : (functor c).rightOp.Final :=
     inferInstanceAs ((opOpEquivalence ℕ).inverse ⋙ (functor c).op).Final
   exact Functor.final_comp (functor c).rightOp _

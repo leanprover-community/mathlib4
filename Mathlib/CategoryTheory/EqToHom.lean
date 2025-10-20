@@ -362,7 +362,7 @@ def Equivalence.induced {T : Type*} (e : T ≃ D) :
   unitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp)) (fun {X Y} f ↦ by
     dsimp
     erw [eqToHom_trans_assoc _ (by simp), eqToHom_refl, Category.id_comp]
-    rfl )
+    rfl)
   counitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))
   functor_unitIso_comp X := eqToHom_trans (by simp) (by simp)
 

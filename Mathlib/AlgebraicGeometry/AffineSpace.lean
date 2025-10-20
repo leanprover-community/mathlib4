@@ -45,7 +45,7 @@ def AffineSpace (n : Type v) (S : Scheme.{max u v}) : Scheme.{max u v} :=
 namespace AffineSpace
 
 /-- `𝔸(n; S)` is the affine `n`-space over `S`. -/
-scoped [AlgebraicGeometry] notation "𝔸("n"; "S")" => AffineSpace n S
+scoped[AlgebraicGeometry] notation "𝔸("n"; "S")" => AffineSpace n S
 
 variable {n} in
 lemma of_mvPolynomial_int_ext {R} {f g : ℤ[n] ⟶ R} (h : ∀ i, f (.X i) = g (.X i)) : f = g := by

@@ -61,7 +61,7 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
   have : Nontrivial α := by
     rw [← ENat.one_lt_card_iff_nontrivial]
     exact lt_trans (by norm_num) hsn'
-  have hGa : IsCoatom (stabilizer G a) :=  by
+  have hGa : IsCoatom (stabilizer G a) := by
     rw [isCoatom_stabilizer_iff_preprimitive]
     exact isPreprimitive_of_is_two_pretransitive hG'
   apply hGa.right

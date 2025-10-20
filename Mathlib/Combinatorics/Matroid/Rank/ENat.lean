@@ -232,7 +232,7 @@ lemma le_eRk_iff : n ≤ M.eRk X ↔ ∃ I, I ⊆ X ∧ M.Indep I ∧ I.encard =
   refine ⟨fun h ↦ ?_, fun ⟨I, hIX, hI, hIc⟩ ↦ ?_⟩
   · obtain ⟨J, hJ⟩ := M.exists_isBasis' X
     rw [← hJ.encard_eq_eRk] at h
-    obtain ⟨I, hIJ, rfl⟩ :=  exists_subset_encard_eq h
+    obtain ⟨I, hIJ, rfl⟩ := exists_subset_encard_eq h
     exact ⟨_, hIJ.trans hJ.subset, hJ.indep.subset hIJ, rfl⟩
   rw [← hIc, ← hI.eRk_eq_encard]
   exact M.eRk_mono hIX

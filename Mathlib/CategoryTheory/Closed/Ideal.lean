@@ -133,7 +133,7 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
         ((reflector i).map (snd (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)
       isLimit := by
         apply isLimitOfReflects i
-        apply IsLimit.equivOfNatIsoOfIso (pairComp X Y _) _ _ _|>.invFun
+        apply IsLimit.equivOfNatIsoOfIso (pairComp X Y _) _ _ _ |>.invFun
           (tensorProductIsBinaryProduct (i.obj X) (i.obj Y))
         fapply BinaryFan.ext
         · change (reflector i ⋙ i).obj (i.obj X ⊗ i.obj Y) ≅ (𝟭 C).obj (i.obj X ⊗ i.obj Y)
@@ -142,7 +142,7 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
             haveI := reflective_products i
             use Limits.prod X Y
             constructor
-            apply Limits.PreservesLimitPair.iso i _ _|>.trans
+            apply Limits.PreservesLimitPair.iso i _ _ |>.trans
             refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit (pair (i.obj X) (i.obj Y)))
               (tensorProductIsBinaryProduct _ _)
           exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y))|>.symm

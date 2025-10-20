@@ -476,7 +476,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
   intro ε hε
   rw [sub_le_iff_le_add]
   have h_mul : smoothingFun μ x ^ a * smoothingFun μ y ^ b + ε ≤
-      max (smoothingFun μ x) (smoothingFun μ y) + ε :=  by
+      max (smoothingFun μ x) (smoothingFun μ y) + ε := by
     rw [max_def]
     split_ifs with h
     · rw [add_le_add_iff_right]

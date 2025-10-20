@@ -708,7 +708,7 @@ def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ {x y}, (f (y • 
     SkewMonoidAlgebra k G →+* R where
   __ := liftNC (f : k →+ R) g
   map_one' := liftNC_one _ _
-  map_mul' _ _ :=  liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm
+  map_mul' _ _ := liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm
 
 end Semiring
 

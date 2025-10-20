@@ -219,8 +219,8 @@ def fixAbbreviation : List String → List String
   | "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
   | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
   | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
-  | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
-  | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "is" :: "Central" :: "Scalar" :: s => "isCentralVAdd" :: fixAbbreviation s
+  | "Is" :: "Central" :: "Scalar" :: s => "IsCentralVAdd" :: fixAbbreviation s
   | "is" :: "Scalar" :: "Tower" :: s  => "vaddAssocClass" :: fixAbbreviation s
   | "Is" :: "Scalar" :: "Tower" :: s  => "VAddAssocClass" :: fixAbbreviation s
   | "function" :: "_" :: "add" :: "Semiconj" :: s

@@ -307,8 +307,8 @@ example : Lin (fun f : (α -o α ->> α) => (f x : α → α)) := by fun_prop
 example (y): Lin (fun f : (α ->> α -o α) => f x y) := by fun_prop
 
 
-example (f : α -o α ->> α) (y) : Lin (fun x  => f x y) := by fun_prop
-example (f : α ->> α -o α ->> α) (y) : Lin (fun x  => f y x y) := by fun_prop
+example (f : α -o α ->> α) (y) : Lin (fun x => f x y) := by fun_prop
+example (f : α ->> α -o α ->> α) (y) : Lin (fun x => f y x y) := by fun_prop
 
 example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
 example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop

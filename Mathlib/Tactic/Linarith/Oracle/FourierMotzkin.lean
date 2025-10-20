@@ -352,7 +352,7 @@ def mkLinarithData (hyps : List Comp) (maxVar : ℕ) : LinarithData :=
 
 /-- An oracle that uses Fourier-Motzkin elimination. -/
 def CertificateOracle.fourierMotzkin : CertificateOracle where
-  produceCertificate hyps maxVar :=  do
+  produceCertificate hyps maxVar := do
     let linarithData := mkLinarithData hyps maxVar
     let result ←
       (ExceptT.run (StateT.run (do validate; elimAllVarsM : LinarithM Unit) linarithData) :)

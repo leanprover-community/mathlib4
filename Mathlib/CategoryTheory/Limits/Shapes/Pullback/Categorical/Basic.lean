@@ -588,7 +588,7 @@ variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
 
 /-- The canonical compatibility square between (the object components of)
 `precompose` and `transform`.
-This is a "naturality square" if we think as `transform _|>.obj _` as the
+This is a "naturality square" if we think as `transform _ |>.obj _` as the
 (app component of the) map component of a pseudofunctor from the bicategory of
 categorical cospans with value in pseudofunctors
 (its value on the categorical cospan `F, G` being the pseudofunctor

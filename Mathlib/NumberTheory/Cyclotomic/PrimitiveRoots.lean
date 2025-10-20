@@ -239,7 +239,7 @@ theorem dvd_of_isCyclotomicExtension [IsCyclotomicExtension {n} ℚ K] {ζ : K}
 such that `x = (-ζ)^r`. -/
 theorem exists_neg_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
     (hno : Odd n) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
-    ∃ r : ℕ, x = (-ζ) ^ r :=  by
+    ∃ r : ℕ, x = (-ζ) ^ r := by
   have hnegζ : IsPrimitiveRoot (-ζ) (2 * n) := by
     convert IsPrimitiveRoot.orderOf (-ζ)
     rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
@@ -260,7 +260,7 @@ theorem exists_neg_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
 such that `x = ζ^r` or `x = -ζ^r`. -/
 theorem exists_pow_or_neg_mul_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
     (hno : Odd n) {ζ x : K} (hζ : IsPrimitiveRoot ζ n) (hx : IsOfFinOrder x) :
-    ∃ r : ℕ, r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
+    ∃ r : ℕ, r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) := by
   obtain ⟨r, hr⟩ := hζ.exists_neg_pow_of_isOfFinOrder hno hx
   refine ⟨r % n, Nat.mod_lt _ (NeZero.pos _), ?_⟩
   rw [show ζ ^ (r % n) = ζ ^ r from (IsPrimitiveRoot.eq_orderOf hζ).symm ▸ pow_mod_orderOf .., hr]

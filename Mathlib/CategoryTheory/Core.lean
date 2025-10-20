@@ -122,7 +122,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 @[simps!]
 def core {F G : C ⥤ D} (α : F ≅ G) : F.core ≅ G.core :=
   NatIso.ofComponents
-    (fun x ↦ Groupoid.isoEquivHom _ _|>.symm <| .mk <| α.app x.of)
+    (fun x ↦ Groupoid.isoEquivHom _ _ |>.symm <| .mk <| α.app x.of)
 
 @[simp]
 lemma coreComp {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) : (α ≪≫ β).core = α.core ≪≫ β.core := rfl
@@ -136,7 +136,7 @@ lemma coreWhiskerLeft {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) {G H : D
   cat_disch
 
 lemma coreWhiskerRight {E : Type u₃} [Category.{v₃} E] {F G : C ⥤ D} (η : F ≅ G) (H : D ⥤ E) :
-    (isoWhiskerRight η H ).core =
+    (isoWhiskerRight η H).core =
     F.coreComp H ≪≫ isoWhiskerRight η.core H.core ≪≫ (G.coreComp H).symm := by
   cat_disch
 

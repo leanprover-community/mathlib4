@@ -409,7 +409,7 @@ def RightExtension.postcompose₂ : RightExtension L F ⥤ RightExtension L (F �
   CostructuredArrow.map₂
     (F := (whiskeringRight _ _ _).obj G)
     (G := (whiskeringRight _ _ _).obj G)
-    ({app _ := associator _ _ _|>.inv}) (𝟙 _)
+    ({app _ := associator _ _ _ |>.inv}) (𝟙 _)
 
 variable {L F} {F' : D ⥤ H}
 /-- An isomorphism to describe the action of `LeftExtension.postcompose₂` on terms of the form
@@ -712,7 +712,7 @@ theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
   let Ψ := leftExtensionEquivalenceOfIso₁ e F₀
   obtain ⟨⟨hα⟩⟩ := (inferInstance : F₁.IsLeftKanExtension α)
   refine ⟨fun ⟨⟨h⟩⟩ => ⟨⟨?_⟩⟩, fun ⟨⟨h⟩⟩ => ⟨⟨?_⟩⟩⟩
-  · apply IsInitial.isInitialIffObj Ψ.inverse _|>.invFun
+  · apply IsInitial.isInitialIffObj Ψ.inverse _ |>.invFun
     haveI := LeftExtension.isUniversalPrecomp₂ α hα h
     let i :
         (LeftExtension.precomp₂ L' α).obj (LeftExtension.mk F₂ β) ≅
@@ -722,7 +722,7 @@ theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
         simp [Ψ, ← congr_app hγ x, ← Functor.map_comp]
     exact IsInitial.ofIso this i
   · apply LeftExtension.isUniversalOfPrecomp₂ α hα
-    apply IsInitial.isInitialIffObj Ψ.functor _|>.invFun
+    apply IsInitial.isInitialIffObj Ψ.functor _ |>.invFun
     let i :
         (LeftExtension.mk F₂ γ) ≅
         Ψ.functor.obj <| (LeftExtension.precomp₂ L' α).obj <|
@@ -848,7 +848,7 @@ instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
     F₁.IsLeftKanExtension α.hom := by
   refine ⟨⟨?_⟩⟩
   apply LeftExtension.isUniversalPostcomp₁Equiv
-    (G := L.functor) L.functor.leftUnitor F₀ _|>.invFun
+    (G := L.functor) L.functor.leftUnitor F₀ _ |>.invFun
   refine IsInitial.ofUniqueHom
     (fun y ↦ StructuredArrow.homMk <| α.inv ≫ y.hom ≫ y.right.leftUnitor.hom) ?_
   intro y m
@@ -865,7 +865,7 @@ instance isRightKanExtensionAlongEquivalence (α : L.functor ⋙ F₁ ≅ F₀) 
     F₁.IsRightKanExtension α.hom := by
   refine ⟨⟨?_⟩⟩
   apply RightExtension.isUniversalPostcomp₁Equiv
-    (G := L.functor) L.functor.leftUnitor F₀ _|>.invFun
+    (G := L.functor) L.functor.leftUnitor F₀ _ |>.invFun
   refine IsTerminal.ofUniqueHom
     (fun y ↦ CostructuredArrow.homMk <| y.left.leftUnitor.inv ≫ y.hom ≫ α.inv) ?_
   intro y m

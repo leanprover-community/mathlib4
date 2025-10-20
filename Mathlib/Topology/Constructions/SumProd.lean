@@ -1006,7 +1006,7 @@ theorem isInducing_sumElim :
     IsInducing (Sum.elim f g) ↔ IsInducing f ∧ IsInducing g ∧
       Disjoint (closure (range f)) (range g) ∧ Disjoint (range f) (closure (range g)) :=
   ⟨fun h ↦ ⟨h.sumElim_left, h.sumElim_right, h.disjoint_of_sumElim_aux,
-    ((Sum.elim_swap ▸ h.comp IsInducing.sumSwap).disjoint_of_sumElim_aux ).symm⟩,
+    ((Sum.elim_swap ▸ h.comp IsInducing.sumSwap).disjoint_of_sumElim_aux).symm⟩,
     fun ⟨hf, hg, hFg, hfG⟩ ↦ hf.sumElim hg hFg hfG⟩
 
 lemma Topology.IsInducing.sumElim_of_separatedNhds

@@ -115,7 +115,7 @@ lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
-  objMk (OrderHom.const _ k )
+  objMk (OrderHom.const _ k)
 
 @[simp]
 lemma const_down_toOrderHom (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) :

@@ -160,8 +160,8 @@ def sup : Max α :=
 def inf : Min α :=
   ⟨(· * ·)⟩
 
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.sup
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.inf
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.sup
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
