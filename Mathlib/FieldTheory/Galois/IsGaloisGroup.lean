@@ -32,21 +32,6 @@ end CommRing
 
 section Field
 
-instance {G : Type*} {A : Type*} [Group G] [GroupWithZero A]
-    [MulDistribMulAction G A] : SMulZeroClass G A where
-  smul_zero g := by
-    apply not_imp_comm.mp mul_inv_cancel₀
-    rw [← smul_left_cancel_iff g⁻¹, smul_mul', inv_smul_smul, zero_mul, smul_one]
-    exact zero_ne_one
-
-theorem smul_div₀ {G : Type*} {R : Type*} [Group G] [GroupWithZero R]
-    [MulDistribMulAction G R] (g : G) (m n : R) :
-    g • (m / n) = (g • m) / (g • n) := by
-  by_cases hn : n = 0
-  · rw [hn, div_zero, smul_zero, div_zero]
-  · rw [eq_div_iff, ← smul_mul', div_mul_cancel₀ m hn]
-    rwa [← smul_zero g, ne_eq, smul_left_cancel_iff]
-
 theorem IsFractionRing.nontrivial' (R F : Type*) [CommSemiring R] [CommSemiring F] [Algebra R F]
     [h : IsFractionRing R F] [Nontrivial F] : Nontrivial R := by
   rw [← not_subsingleton_iff_nontrivial]
@@ -72,7 +57,7 @@ theorem IsGaloisGroup.toIsFractionRing (K L : Type*) [Field K] [Field L] [Algebr
     exact eq_of_smul_eq_smul fun y ↦ by simpa [hG] using h (algebraMap B L y)
   · obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := A) x
     obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective (A := B) y
-    simp only [Algebra.smul_def, smul_mul', smul_div₀, map_div₀, smul_algebraMap, hG,
+    simp only [Algebra.smul_def, smul_mul', smul_div₀', map_div₀, smul_algebraMap, hG,
       ← IsScalarTower.algebraMap_apply A K L, IsScalarTower.algebraMap_apply A B L]
   · intro x h
     have : Nontrivial A := IsFractionRing.nontrivial' A K
@@ -90,7 +75,7 @@ theorem IsGaloisGroup.toIsFractionRing (K L : Type*) [Field K] [Field L] [Algebr
     have hxy : algebraMap B L x / algebraMap B L y =
         algebraMap B L b / algebraMap B L (algebraMap A B a) := by
       rw [div_eq_div_iff hy' ha', ← map_mul, hb, map_mul]
-    simp only [hxy, smul_div₀, hG, smul_algebraMap, div_left_inj' ha', IsFractionRing.coe_inj] at h
+    simp only [hxy, smul_div₀', hG, smul_algebraMap, div_left_inj' ha', IsFractionRing.coe_inj] at h
     obtain ⟨b, rfl⟩ := hGAB.isInvariant.isInvariant b h
     use algebraMap A K b / algebraMap A K a
     simp only [map_div₀, ← IsScalarTower.algebraMap_apply A K L,
