@@ -1448,15 +1448,19 @@ theorem memLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
     Lp F p μ := (f.memLp p μ).toLp
 
+instance instCoeToLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
+    Coe 𝓢(E, F) (Lp F p μ) where
+  coe f := f.toLp p μ
+
 theorem coeFn_toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
-    [hμ : μ.HasTemperateGrowth] : f.toLp p μ =ᵐ[μ] f := (f.memLp p μ).coeFn_toLp
+    [hμ : μ.HasTemperateGrowth] : (f : Lp F p μ) =ᵐ[μ] f := (f.memLp p μ).coeFn_toLp
 
 theorem norm_toLp {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
-    ‖f.toLp p μ‖ = ENNReal.toReal (eLpNorm f p μ) := by
+    ‖(f : Lp F p μ)‖ = ENNReal.toReal (eLpNorm f p μ) := by
   rw [Lp.norm_def, eLpNorm_congr_ae (coeFn_toLp f p μ)]
 
 theorem injective_toLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
-    [μ.IsOpenPosMeasure] : Function.Injective (fun f : 𝓢(E, F) ↦ f.toLp p μ) :=
+    [μ.IsOpenPosMeasure] : Function.Injective ((↑) : 𝓢(E, F) → (Lp F p μ)) :=
   fun f g ↦ by simpa [toLp] using (Continuous.ae_eq_iff_eq μ f.continuous g.continuous).mp
 
 variable (𝕜 F) in

@@ -14,10 +14,11 @@ import Mathlib.Analysis.Distribution.TemperedDistribution
 
 -/
 
+section FourierTransform
+
 variable
   {V E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
-  [NormedAddCommGroup V]
-  [MeasurableSpace V] [BorelSpace V]
+  [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V]
 
 open SchwartzMap MeasureTheory FourierTransform
 
@@ -71,22 +72,43 @@ theorem toLp_fourierTransformInv_eq (f : 𝓢(V, E)) : 𝓕⁻ (f.toLp 2) = (�
   convert (norm_fourierTransform_toL2_eq (𝓕⁻ f)).symm.le
   simp
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [CompleteSpace F]
 
+end FourierTransform
+
+
+variable {E F V : Type*}
+  [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+  [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
+  [NormedAddCommGroup V] [NormedSpace ℂ V] [CompleteSpace V]
+
+open SchwartzMap MeasureTheory FourierTransform
+
+variable (V) in
 /-- The Fourier transform on `L^2` coincides with the Fourier transform on `𝓢'`. -/
-theorem foo (f : Lp (α := V) E 2) :
-    𝓕 (Lp.toTemperedDistribution ℂ F f) = (Lp.toTemperedDistribution ℂ F (𝓕 f)) := by
-  set p := fun f : Lp (α := V) E 2 ↦
-    𝓕 (Lp.toTemperedDistribution ℂ F f) =
-      (Lp.toTemperedDistribution ℂ F (𝓕 f))
+theorem toTemperedDistribution_fourierTransform_eq (f : Lp (α := E) F 2) :
+    𝓕 (Lp.toTemperedDistribution ℂ V f) = (Lp.toTemperedDistribution ℂ V (𝓕 f)) := by
+  set p := fun f : Lp (α := E) F 2 ↦
+    𝓕 (Lp.toTemperedDistribution ℂ V f) =
+      (Lp.toTemperedDistribution ℂ V (𝓕 f))
   apply DenseRange.induction_on (p := p)
-    ( SchwartzMap.denseRange_toLpCLM (F := E) (E := V) (μ := volume) (p := 2)
+    ( SchwartzMap.denseRange_toLpCLM (F := F) (E := E) (μ := volume) (p := 2)
       (Ne.symm ENNReal.top_ne_ofNat)) f
   · apply isClosed_eq
-    · exact ((TemperedDistribution.fourierTransformCLM ℂ V _ F) ∘L
-        (Lp.toTemperedDistributionCLM ℂ E F volume 2)).cont
-    · exact (Lp.toTemperedDistributionCLM ℂ E F volume 2).cont.comp
-        (Lp.fourierTransformLI V E).continuous
+    · exact ((TemperedDistribution.fourierTransformCLM ℂ E _ V) ∘L
+        (Lp.toTemperedDistributionCLM ℂ F V volume 2)).cont
+    · exact (Lp.toTemperedDistributionCLM ℂ F V volume 2).cont.comp
+        (Lp.fourierTransformLI E F).continuous
   intro f
   unfold p
   simp [TemperedDistribution.fourierTransformCLM_toTemperedDistributionCLM_eq]
+
+variable (V) in
+theorem toTemperedDistribution_fourierTransformInv_eq (f : Lp (α := E) F 2) :
+    𝓕⁻ (Lp.toTemperedDistribution ℂ V f) = (Lp.toTemperedDistribution ℂ V (𝓕⁻ f)) := by
+  have := toTemperedDistribution_fourierTransform_eq V (𝓕⁻ f)
+  apply_fun 𝓕⁻ at this
+  simp only [TemperedDistribution.fourier_inversion] at this
+  rw [this]
+  congr
+  apply ((Lp.fourierTransformLI E F).right_inv _).symm

@@ -217,6 +217,8 @@ section LpSpace
 
 namespace MeasureTheory.Lp
 
+open scoped ENNReal
+
 variable [NormedSpace ℝ E] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
 variable [MeasurableSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 variable [BorelSpace E] [SecondCountableTopology E]
@@ -231,7 +233,7 @@ theorem foo (p : ENNReal) [hp : Fact (1 ≤ p)] : p.HolderConjugate (1 - p⁻¹)
 /-- Create a tempered distribution from a L^p function.
 
 This is a helper definition with unnecessary parameters. -/
-def toTemperedDistribution_aux (p q : ENNReal) (hp : Fact (1 ≤ p)) (hq : Fact (1 ≤ q))
+def toTemperedDistribution_aux (p q : ℝ≥0∞) (hp : Fact (1 ≤ p)) (hq : Fact (1 ≤ q))
     (hpq : ENNReal.HolderConjugate p q) (f : Lp F p μ) :
     𝓢'(𝕜, E, F →L[𝕜] V, V) :=
   (ContinuousLinearMap.toWOT _ _ _)
@@ -239,12 +241,12 @@ def toTemperedDistribution_aux (p q : ENNReal) (hp : Fact (1 ≤ p)) (hq : Fact 
 
 variable (𝕜 V) in
 /-- Create a tempered distribution from a L^p function. -/
-def toTemperedDistribution {p : ENNReal} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
+def toTemperedDistribution {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
     𝓢'(𝕜, E, F →L[𝕜] V, V) :=
   toTemperedDistribution_aux p ((1 - p⁻¹)⁻¹) hp (by simp [fact_iff]) (foo p) f
 
 @[simp]
-theorem toTemperedDistribution_apply {p : ENNReal} [hp : Fact (1 ≤ p)] (f : Lp F p μ)
+theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ)
     (g : 𝓢(E, F →L[𝕜] V)) :
     (toTemperedDistribution 𝕜 V f) g = ∫ (x : E), ((g.toLp (1 - p⁻¹)⁻¹ μ) x) (f x) ∂μ := by
   unfold Lp.toTemperedDistribution Lp.toTemperedDistribution_aux
@@ -253,7 +255,7 @@ theorem toTemperedDistribution_apply {p : ENNReal} [hp : Fact (1 ≤ p)] (f : Lp
 
 variable (𝕜 F V μ) in
 /-- The natural embedding of L^p into tempered distributions. -/
-def toTemperedDistributionCLM (p : ENNReal) [hp : Fact (1 ≤ p)] :
+def toTemperedDistributionCLM (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
     Lp F p μ →L[𝕜] 𝓢'(𝕜, E, F →L[𝕜] V, V) where
   toFun := toTemperedDistribution 𝕜 V
   map_add' f g := by
@@ -274,12 +276,12 @@ def toTemperedDistributionCLM (p : ENNReal) [hp : Fact (1 ≤ p)] :
     exact (((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).flip.lpPairing μ p q).flip (g.toLp q μ)).cont
 
 @[simp]
-theorem toTemperedDistributionCLM_apply {p : ENNReal} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
+theorem toTemperedDistributionCLM_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
     toTemperedDistributionCLM 𝕜 F V μ p f = toTemperedDistribution 𝕜 V f := rfl
 
 variable [FiniteDimensional ℝ E] [NormedSpace ℝ F] [CompleteSpace F] [IsLocallyFiniteMeasure μ]
 
-theorem injective_toTemperedDistributionCLM {p : ENNReal} [hp : Fact (1 ≤ p)] :
+theorem injective_toTemperedDistributionCLM {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] :
     LinearMap.ker (MeasureTheory.Lp.toTemperedDistributionCLM 𝕜 F F μ p) = ⊥ := by
   refine LinearMap.ker_eq_bot'.mpr ?_
   intro f hf
@@ -305,10 +307,11 @@ end LpSpace
 namespace SchwartzMap
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
-variable [MeasurableSpace E]
-variable [BorelSpace E] [SecondCountableTopology E]
+variable [SecondCountableTopology E] [NormedSpace ℝ V]
 
-variable [NormedSpace ℝ V]
+section MeasurableSpace
+
+variable [MeasurableSpace E] [BorelSpace E]
 
 variable (𝕜 E F V) in
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
@@ -328,6 +331,14 @@ theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) :
     toTemperedDistributionCLM 𝕜 E F V μ f g = ∫ (x : E), (g x) (f x) ∂μ := by
   simp [toTemperedDistributionCLM, ContinuousLinearMap.toWOT_apply]
+
+end MeasurableSpace
+
+variable [MeasureSpace E] [BorelSpace E]
+
+instance instCoeToTemperedDistribution [(volume (α := E)).HasTemperateGrowth] :
+    Coe 𝓢(E, F) 𝓢'(𝕜, E, F →L[𝕜] V, V) where
+  coe := toTemperedDistributionCLM 𝕜 E F V volume
 
 end SchwartzMap
 
@@ -430,10 +441,9 @@ def smulLeftCLM (g : D → 𝕜) : 𝓢'(𝕜, D, E, V) →L[𝕜] 𝓢'(𝕜, D
     bilinLeftCLM V (ContinuousLinearMap.lsmul 𝕜 𝕜).flip g
 
 @[simp]
-theorem smulLeftCLM_apply_apply (g : D → 𝕜) (f : 𝓢'(𝕜, D, E, V))
-    (f' : 𝓢(D, E)) : smulLeftCLM E V g f f' =
-    f (SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip g f') := by
-  simp [_root_.smulLeftCLM, _root_.bilinLeftCLM]
+theorem smulLeftCLM_apply_apply (g : D → 𝕜) (f : 𝓢'(𝕜, D, E, V)) (f' : 𝓢(D, E)) :
+    smulLeftCLM E V g f f' = f (SchwartzMap.smulLeftCLM _ g f') := by
+  rfl
 
 variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] {μ : Measure D}
   [μ.HasTemperateGrowth] [NormedSpace ℝ V]
@@ -512,6 +522,34 @@ theorem fourierTransformCLM_apply (f : 𝓢'(𝕜, H, E, V)) :
 @[simp]
 theorem fourierTransform_apply (f : 𝓢'(𝕜, H, E, V)) (g : 𝓢(H, E)) : 𝓕 f g = f (𝓕 g) := rfl
 
+section FourierTransformInv
+
+variable [CompleteSpace E]
+
+variable (𝕜 H E V) in
+def fourierTransformInvCLM : 𝓢'(𝕜, H, E, V) →L[𝕜] 𝓢'(𝕜, H, E, V) :=
+  mkCompCLM V (SchwartzMap.fourierTransformCLE 𝕜).symm.toContinuousLinearMap
+
+instance instFourierTransformInv : FourierTransformInv 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V) where
+  fourierTransformInv := fourierTransformInvCLM 𝕜 H E V
+
+@[simp]
+theorem fourierTransformInvCLM_apply (f : 𝓢'(𝕜, H, E, V)) :
+    fourierTransformInvCLM 𝕜 H E V f = 𝓕⁻ f := rfl
+
+@[simp]
+theorem fourierTransformInv_apply (f : 𝓢'(𝕜, H, E, V)) (g : 𝓢(H, E)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
+
+@[simp]
+theorem fourier_inversion (f : 𝓢'(𝕜, H, E, V)) : 𝓕⁻ (𝓕 f) = f := by
+  ext; simp
+
+@[simp]
+theorem fourier_inversion_inv (f : 𝓢'(𝕜, H, E, V)) : 𝓕 (𝓕⁻ f) = f := by
+  ext; simp
+
+end FourierTransformInv
+
 variable (f : 𝓢(H, E))
 
 variable [NormedSpace ℂ V]
@@ -520,8 +558,7 @@ variable [CompleteSpace E] [CompleteSpace V]
 /-- The distributional Fourier transform and the classical Fourier transform coincide on
 `𝓢(ℝ, F)`. -/
 theorem fourierTransformCLM_toTemperedDistributionCLM_eq (f : 𝓢(H, E)) :
-    𝓕 (toTemperedDistributionCLM ℂ H E V volume f) =
-    toTemperedDistributionCLM ℂ H E V volume (𝓕 f) := by
+    𝓕 (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) = 𝓕 f := by
   ext g
   congr 1
   simp only [fourierTransform_apply, toTemperedDistributionCLM_apply_apply,

@@ -5,6 +5,7 @@ Authors: Moritz Doll
 -/
 import Mathlib.Analysis.Distribution.TemperedDistribution
 import Mathlib.Analysis.InnerProductSpace.NormPow
+import Mathlib.Analysis.Fourier.L2Space
 
 /-!
 
@@ -158,45 +159,36 @@ theorem bar (s : ℝ) : (fun (x : H) ↦ (1 + ‖x‖^2)^(s/2)).HasTemperateGrow
 end has_growth
 
 variable
-  [NormedSpace ℂ E]
-  [SMulCommClass ℂ 𝕜 E]
   [FiniteDimensional ℝ H]
   [MeasurableSpace H] [BorelSpace H]
+
+section normed
+
+variable [NormedSpace ℂ E] [SMulCommClass ℂ 𝕜 E]
 
 section multiplier
 
 variable [CompleteSpace E]
 
-def SchwartzMap.fourierMultiplierCLM (g : H → 𝕜) :
-    𝓢(H, E) →L[𝕜] 𝓢(H, E) :=
-  (fourierTransformCLE 𝕜).symm.toContinuousLinearMap ∘L (smulLeftCLM E g) ∘L
-    (fourierTransformCLM 𝕜)
-
-theorem fourierMultiplierCLM_apply (g : H → 𝕜) (f : 𝓢(H, E)) :
-    fourierMultiplierCLM g f = 𝓕⁻ ((smulLeftCLM E g) (𝓕 f)) := by
-  unfold fourierMultiplierCLM
-  simp
-
-@[simp]
-theorem SchwartzMap.fourierMultiplierCLM_const_apply (f : 𝓢(H, E)) (c : 𝕜) :
-    fourierMultiplierCLM (fun _ ↦ c) f = c • f := by
-  unfold fourierMultiplierCLM
-  simp
-
 variable (E V) in
 def TemperedDistribution.fourierMultiplierCLM (g : H → 𝕜) :
     𝓢'(𝕜, H, E, V) →L[𝕜] 𝓢'(𝕜, H, E, V) :=
-  mkCompCLM V (SchwartzMap.fourierMultiplierCLM g)
+  fourierTransformInvCLM 𝕜 H E V ∘L (smulLeftCLM E V g) ∘L fourierTransformCLM 𝕜 H E V
 
-@[simp]
+theorem TemperedDistribution.fourierMultiplierCLM_eq (g : H → 𝕜) (f : 𝓢'(𝕜, H, E, V)) :
+    TemperedDistribution.fourierMultiplierCLM E V g f = 𝓕⁻ ((smulLeftCLM E V g) (𝓕 f)) := by
+  rfl
+
 theorem TemperedDistribution.fourierMultiplierCLM_apply (g : H → 𝕜) (f : 𝓢'(𝕜, H, E, V))
-    (h : 𝓢(H, E)) : TemperedDistribution.fourierMultiplierCLM E V g f h =
-      f (SchwartzMap.fourierMultiplierCLM g h) := rfl
+    (u : 𝓢(H, E)) : TemperedDistribution.fourierMultiplierCLM E V g f u =
+    f (𝓕 ((SchwartzMap.smulLeftCLM E g) (𝓕⁻ u))) := by
+  rfl
 
 @[simp]
 theorem TemperedDistribution.fourierMultiplierCLM_const_apply (f : 𝓢'(𝕜, H, E, V)) (c : 𝕜) :
     TemperedDistribution.fourierMultiplierCLM E V (fun _ ↦ c) f = c • f := by
   ext
+  unfold TemperedDistribution.fourierMultiplierCLM
   simp
 
 end multiplier
@@ -227,6 +219,32 @@ theorem memSobolev_one_iff {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} : MemSobolev 1 
   convert memSobolev_iff f (.const 1)
   simp
 
+end normed
+
+section inner
+
+variable [InnerProductSpace ℂ E]
+variable [NormedSpace ℂ V] [CompleteSpace V]
+
+theorem memSobolev_iff_fourierTransform [CompleteSpace E] {g : H → ℂ} (f : 𝓢'(ℂ, H, E →L[ℂ] V, V))
+    (hg : g.HasTemperateGrowth) : MemSobolev g f ↔ ∃ (f' : Lp E 2 (volume : Measure H)),
+    smulLeftCLM _ _ g (𝓕 f) = Lp.toTemperedDistribution ℂ V f' := by
+  rw [memSobolev_iff f hg]
+  constructor
+  · intro ⟨f', hf'⟩
+    use 𝓕 f'
+    apply_fun 𝓕 at hf'
+    rw [TemperedDistribution.fourierMultiplierCLM_eq,
+      TemperedDistribution.fourier_inversion_inv] at hf'
+    rw [hf', toTemperedDistribution_fourierTransform_eq V f']
+  · intro ⟨f', hf'⟩
+    use 𝓕⁻ f'
+    rw [TemperedDistribution.fourierMultiplierCLM_eq]
+    apply_fun 𝓕⁻ at hf'
+    rw [hf', toTemperedDistribution_fourierTransformInv_eq V f']
+
+end inner
+
 class Laplacian (X : Type*) (Y : outParam (Type*)) where
   /-- `Δ f` is the Laplace operator applied to `f`. The meaning of this notation is
   type-dependent. -/
@@ -239,6 +257,12 @@ namespace Laplacian
 end Laplacian
 
 open Laplacian
+
+variable [NormedSpace ℂ V] [CompleteSpace V]
+
+section normed
+
+variable [NormedSpace ℂ E]
 
 noncomputable
 instance TemperedDistribution.instLaplacian [CompleteSpace E] :
@@ -256,16 +280,85 @@ theorem laplacian_mem_Sobolev_norm_sq {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf 
   rw [← hg]
   rfl
 
+end normed
+
+section inner
+
+variable (u : BoundedContinuousFunction H ℂ) (f : Lp E 2 (volume : Measure H))
+
+theorem BoundedContinuousFunction.memLp_top (u : BoundedContinuousFunction H E) :
+    MemLp u ⊤ (volume : Measure H) := by
+  constructor
+  · exact u.continuous_toFun.aestronglyMeasurable
+  · apply MeasureTheory.eLpNormEssSup_lt_top_of_ae_bound (C := ‖u‖)
+    filter_upwards with x
+    exact BoundedContinuousFunction.norm_coe_le_norm u x
+
+variable [InnerProductSpace ℂ E] [CompleteSpace E]
+
+#check (ContinuousLinearMap.lsmul ℂ ℂ).holder 2 (u.memLp_top.toLp _) f
+
+variable (g : H → ℂ)
+
+#check (_root_.smulLeftCLM (𝕜 := ℂ) E V (g : H → ℂ))
+
+theorem toTemperedDistribution_holder_eq (g : BoundedContinuousFunction H ℂ)
+    (hg : Function.HasTemperateGrowth (g : H → ℂ)) :
+    Lp.toTemperedDistribution ℂ V ((ContinuousLinearMap.lsmul ℂ ℂ).holder 2 (g.memLp_top.toLp _) f) =
+    (_root_.smulLeftCLM _ V (g : H → ℂ)) (Lp.toTemperedDistribution ℂ V f) := by
+  ext u y
+  congr 1
+  simp
+  apply integral_congr_ae
+  filter_upwards [(ContinuousLinearMap.lsmul ℂ ℂ).coeFn_holder (r := 2) (g.memLp_top.toLp _) f,
+    g.memLp_top.coeFn_toLp, u.coeFn_toLp (1 - 2⁻¹)⁻¹,
+    ((SchwartzMap.smulLeftCLM (E →L[ℂ] V) g) u).coeFn_toLp (1 - 2⁻¹)⁻¹] with x h_holder hg' hu h'
+  simp [h_holder, hg', hu, h', hg]
+
+variable (H) in
+def quotientBCF : BoundedContinuousFunction H ℂ :=
+  BoundedContinuousFunction.ofNormedAddCommGroup (fun x ↦ ‖x‖^2 / (1 + ‖x‖^2)) (by
+    apply Continuous.div
+    · fun_prop
+    · fun_prop
+    intro x
+    norm_cast
+    positivity) 1 (by
+    intro x
+    simp only [Complex.norm_div, norm_pow, Complex.norm_real, norm_norm]
+    rw [div_le_iff₀]; swap
+    · rw [norm_pos_iff]
+      norm_cast
+      positivity
+    simp only [one_mul]
+    have : ‖x‖^2 ≤ 1 + ‖x‖^2 := by simp
+    convert this
+    norm_cast
+    simp only [Real.norm_eq_abs, abs_eq_self]
+    positivity)
+
 theorem foo1 {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : MemSobolev (fun x ↦ 1 + ‖x‖ ^ 2) f) :
     MemSobolev 1 (Δ f) := by
   apply laplacian_mem_Sobolev_norm_sq
-  rw [memSobolev_iff]; swap
+  rw [memSobolev_iff_fourierTransform f]; swap
+  · convert (hasTemperateGrowth_norm_sq H).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
+    simp
+  rw [memSobolev_iff_fourierTransform f] at hf; swap
+  · convert ((Function.HasTemperateGrowth.const 1).add (hasTemperateGrowth_norm_sq H)).comp_clm_left
+      (RCLike.ofRealCLM (K := ℂ))
+    simp
+  obtain ⟨f', hf'⟩ := hf
+  use (ContinuousLinearMap.lsmul ℂ ℂ).holder 2 ((quotientBCF H).memLp_top.toLp _) f'
+
+  sorry
+  /-rw [memSobolev_iff]; swap
   · convert (hasTemperateGrowth_norm_sq H).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
     simp
   rw [memSobolev_iff] at hf; swap
   · convert ((Function.HasTemperateGrowth.const 1).add (hasTemperateGrowth_norm_sq H)).comp_clm_left
       (RCLike.ofRealCLM (K := ℂ))
     simp
-  obtain ⟨f', hf'⟩ := hf
+  obtain ⟨f', hf'⟩ := hf-/
 
-  sorry
+
+end inner

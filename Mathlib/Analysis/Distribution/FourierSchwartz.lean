@@ -185,11 +185,11 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
 
 section toL2
 
-theorem inner_fourierTransform_toL2_eq (f : 𝓢(V, H)) :
-    inner ℂ ((𝓕 f).toLp 2) ((𝓕 f).toLp 2) =
-    inner ℂ (f.toLp 2) (f.toLp 2) := by
+theorem inner_fourierTransform_toL2_eq (f g : 𝓢(V, H)) :
+    inner ℂ ((𝓕 f).toLp 2) ((𝓕 g).toLp 2) =
+    inner ℂ (f.toLp 2) (g.toLp 2) := by
   simp only [inner_toL2_toL2_eq]
-  exact integral_sesq_fourier_fourier f f (innerSL ℂ)
+  exact integral_sesq_fourier_fourier f g (innerSL ℂ)
 
 theorem norm_fourierTransform_toL2_eq (f : 𝓢(V, H)) :
     ‖(𝓕 f).toLp 2‖ = ‖f.toLp 2‖ := by
