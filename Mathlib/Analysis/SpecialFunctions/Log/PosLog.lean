@@ -16,7 +16,7 @@ estimates.
 
 - `theorem posLog_sum : log⁺ (∑ i, f i) ≤ log n + ∑ i, log⁺ (f i)`
 
-See `Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage` for the presentation of
+See `Mathlib/Analysis/SpecialFunctions/Integrals/PosLogEqCircleAverage.lean` for the presentation of
 `log⁺` as a Circle Average.
 -/
 
