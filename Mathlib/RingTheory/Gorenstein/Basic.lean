@@ -490,6 +490,15 @@ end
 
 section injdim
 
+omit [IsLocalRing R] [IsNoetherianRing R] in
+lemma nontrivial_of_islocalizedModule (S : Submonoid R) {M MS : Type*} [AddCommGroup M] [Module R M]
+    [AddCommGroup MS] [Module R MS] (f : M →ₗ[R] MS) [IsLocalizedModule S f] (h : Nontrivial MS) :
+    Nontrivial M := by
+  by_contra!
+  absurd h
+  exact not_nontrivial_iff_subsingleton.mpr
+    (IsLocalizedModule.linearEquiv S f (LocalizedModule.mkLinearMap S M)).subsingleton
+
 section
 
 universe w
@@ -508,11 +517,19 @@ lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M] 
       (Shrink.{v} p.1.ResidueField)) (M.localizedModule p.1.primeCompl) i)) :
     Nontrivial (Ext.{w} (ModuleCat.of (Localization q.1.primeCompl)
       (Shrink.{v} q.1.ResidueField)) (M.localizedModule q.1.primeCompl) (i + 1)) := by
+  by_contra! sub
+  /- Shrink.{v} (Localization q.asIdeal.primeCompl ⧸
+    (p.1.map (algebraMap R (Localization q.asIdeal.primeCompl))))
+  -/
   sorry
 
 end
 
 variable [Small.{v} R]
+
+section
+
+open ModuleCat.Algebra
 
 --set_option pp.universes true in
 open associatedPrimes in
@@ -578,13 +595,17 @@ lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M]
         (ih (Nat.le_of_succ_le h))
   have ntr : Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R))) M
     q.length) := by
-    --apply `lem` obtain a ntr for `Localization (maximalIdeal R).primeCompl`
-    --then consider it as localization
+    let qq := q ⟨q.length, Nat.lt_succ.mpr (le_refl q.length)⟩
+    have ntr' : Nontrivial (Ext.{v} (ModuleCat.of (Localization qq.1.1.primeCompl)
+      (Shrink.{v, u} qq.1.1.ResidueField)) (M.localizedModule qq.1.1.primeCompl) q.length) :=
+      lem' q.length (le_refl _)
     sorry
   simp only [← hq, injectiveDimension_eq_sInf.{v, u, v} M, le_sInf_iff, Set.mem_setOf_eq]
   intro b hb
   by_contra! lt
   exact (not_subsingleton_iff_nontrivial.mpr ntr) (hb q.length lt)
+
+end
 
 open Limits in
 lemma injectiveDimension_eq_depth
