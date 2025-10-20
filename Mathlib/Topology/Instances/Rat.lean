@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.NNRat.Order
 import Mathlib.Topology.Algebra.Order.Archimedean
@@ -132,7 +131,7 @@ instance : ContinuousSMul ℚ ℝ where
 instance {R : Type*} [TopologicalSpace R] [MulAction ℚ R] [MulAction ℚ≥0 R] [IsScalarTower ℚ≥0 ℚ R]
     [ContinuousSMul ℚ R] : ContinuousSMul ℚ≥0 R where
   continuous_smul := by
-    conv in _ • _ => rw [← one_smul ℚ p.2, ← smul_assoc, smul_one_eq_cast]
+    conv in _ • _ => rw [← NNRat.cast_smul_eq_nnqsmul ℚ]
     fun_prop
 
 instance : ContinuousSMul ℚ≥0 NNReal where
