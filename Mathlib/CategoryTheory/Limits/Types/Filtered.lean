@@ -152,4 +152,15 @@ theorem colimit_eq_iff [HasColimit F] {i j : J} {xi : F.obj i} {xj : F.obj j} :
       ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj :=
   isColimit_eq_iff _ (colimit.isColimit F)
 
+open IsFiltered in
+variable {F} in
+lemma jointly_surjective_of_isColimit₂ {t : Cocone F} (ht : IsColimit t)
+    (x₁ x₂ : t.pt) :
+    ∃ (j : J) (y₁ y₂ : F.obj j), t.ι.app j y₁ = x₁ ∧ t.ι.app j y₂ = x₂ := by
+  obtain ⟨j₁, y₁, rfl⟩ := jointly_surjective_of_isColimit ht x₁
+  obtain ⟨j₂, y₂, rfl⟩ := jointly_surjective_of_isColimit ht x₂
+  exact ⟨max j₁ j₂, F.map (leftToMax _ _) y₁, F.map (rightToMax _ _) y₂,
+    congr_fun (t.w (leftToMax j₁ j₂)) y₁,
+    congr_fun (t.w (rightToMax j₁ j₂)) y₂⟩
+
 end CategoryTheory.Limits.Types.FilteredColimit
