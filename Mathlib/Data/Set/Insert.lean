@@ -37,8 +37,10 @@ variable {α : Type u} {s t : Set α} {a b : α}
 theorem insert_def (x : α) (s : Set α) : insert x s = { y | y = x ∨ y ∈ s } :=
   rfl
 
-@[simp, grind]
+@[simp]
 theorem subset_insert (x : α) (s : Set α) : s ⊆ insert x s := fun _ => Or.inr
+
+grind_pattern subset_insert => _ ⊆ insert x s
 
 theorem mem_insert (x : α) (s : Set α) : x ∈ insert x s :=
   Or.inl rfl

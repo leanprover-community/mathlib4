@@ -385,7 +385,7 @@ theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
   ⟨u, rfl⟩
 
-@[to_additive (attr := simp, grind)]
+@[to_additive (attr := simp, grind ←)]
 theorem isUnit_one [Monoid M] : IsUnit (1 : M) :=
   ⟨1, rfl⟩
 

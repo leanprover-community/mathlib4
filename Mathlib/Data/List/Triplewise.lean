@@ -27,7 +27,7 @@ inductive Triplewise (p : α → α → α → Prop) : List α → Prop
   | nil : [].Triplewise p
   | cons {a : α} {l : List α} : l.Pairwise (p a) → l.Triplewise p → (a :: l).Triplewise p
 
-attribute [simp, grind] Triplewise.nil
+attribute [simp, grind ←] Triplewise.nil
 
 variable {a b c : α} {l l₁ l₂ : List α} {p q : α → α → α → Prop} {f : α → β} {p' : β → β → β → Prop}
 
