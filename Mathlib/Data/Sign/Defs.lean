@@ -50,6 +50,9 @@ theorem neg_eq_neg_one : neg = -1 :=
 theorem pos_eq_one : pos = 1 :=
   rfl
 
+theorem trichotomy (a : SignType) : a = -1 ∨ a = 0 ∨ a = 1 := by
+  cases a <;> simp
+
 instance : Mul SignType :=
   ⟨fun x y =>
     match x with
