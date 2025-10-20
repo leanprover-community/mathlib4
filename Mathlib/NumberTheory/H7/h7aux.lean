@@ -108,6 +108,10 @@ lemma triple_comm (K : Type) [Field K] (a b c : ℤ) (x y z : K) :
  ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z := by
   simp only [zsmul_eq_mul, Int.cast_mul]; ring
 
+lemma triple_comm_int (a b c : ℤ) (x y z : ℤ) :
+ ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z := by
+  simp only [zsmul_eq_mul, Int.cast_mul]; ring
+
 variable [Field K] [NumberField K]
 
 /-- Let α be a non-zero algebraic integer. Then α has a conjugate α(i) with |α(i)| ≥ 1. -/
