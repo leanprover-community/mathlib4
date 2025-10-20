@@ -631,7 +631,7 @@ connected. -/
 lemma Preconnected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq V] {H : G.Subgraph}
     (hpreconn : H.Preconnected) {v : V} [Fintype ↑(H.neighborSet v)] (hdeg : H.degree v = 1) :
     (H.deleteVerts {v}).Connected := by
-  refine Subgraph.connected_iff'.mpr ((Iso.connected_iff (coeInduceEquiv Set.diff_subset)).mpr ?_)
+  refine Subgraph.connected_iff'.mpr ((coeInduceEquiv Set.diff_subset).connected_iff.mpr ?_)
   have hv : v ∈ H.verts := (degree_eq_one_iff_unique_adj.mp hdeg).choose_spec.left.fst_mem
   have : ({w | ↑w ∈ H.verts \ {v}} : Set H.verts) = {⟨v, hv⟩}ᶜ := by aesop
   rw [this]
@@ -642,37 +642,24 @@ removed. -/
 lemma Preconnected.exists_vertex_connected_deleteVerts_singleton_of_fintype_of_nontrivial
     [DecidableEq V] {H : G.Subgraph} [Fintype H.verts] [Nontrivial H.verts]
     (hpreconn : H.Preconnected) : ∃ v ∈ H.verts, (H.deleteVerts {v}).Connected := by
-  obtain ⟨⟨v, hv⟩, h'⟩ :=
+  obtain ⟨⟨v, hv⟩, h⟩ :=
     hpreconn.coe.exists_vertex_connected_induce_complement_singleton_of_fintype_of_nontrivial
   use v, hv
-  refine Subgraph.connected_iff'.mpr ((Iso.connected_iff (coeInduceEquiv Set.diff_subset)).mpr ?_)
+  refine Subgraph.connected_iff'.mpr ((coeInduceEquiv Set.diff_subset).connected_iff.mpr ?_)
   have : ({w | ↑w ∈ H.verts \ {v}} : Set H.verts) = {⟨v, hv⟩}ᶜ := by aesop
   rw [this]
-  exact h'
+  exact h
 
 /-- A finite connected graph contains a vertex that leaves the graph preconnected if removed. -/
 lemma Connected.exists_vertex_preconnected_deleteVerts_singleton_of_fintype
     [DecidableEq V] {H : G.Subgraph} [Fintype H.verts] (hconn : H.Connected) :
     ∃ v ∈ H.verts, (H.deleteVerts {v}).Preconnected := by
-  by_cases h : Nontrivial H.verts
-  · obtain ⟨v, hv⟩ :=
-      Preconnected.exists_vertex_connected_deleteVerts_singleton_of_fintype_of_nontrivial
-      hconn.preconnected
-    exact ⟨v, hv.left, hv.right.preconnected⟩
-  · obtain ⟨v, hv⟩ := hconn.nonempty
-    use v
-    refine ⟨hv, ?_⟩
-    have := not_nontrivial_iff_subsingleton.mp h
-    have : H.deleteVerts {v} = ⊥ := by
-      ext w x
-      · aesop
-      · simp only [induce_adj, Set.mem_diff, Set.mem_singleton_iff, not_bot_adj, iff_false,
-        not_and, and_imp]
-        intro hw _ hx _
-        by_contra adj_w_x
-        exact adj_w_x.ne (Subtype.coe_inj.mpr (this.allEq ⟨w, hw⟩ ⟨x, hx⟩))
-    rw [this]
-    exact preconnected_bot (by simp_all) this
+  obtain ⟨⟨v, hv⟩, h⟩ := hconn.coe.exists_vertex_preconnected_induce_complement_singleton_of_fintype
+  use v, hv
+  refine Subgraph.preconnected_iff.mpr ((coeInduceEquiv Set.diff_subset).preconnected_iff.mpr ?_)
+  have : ({w | ↑w ∈ H.verts \ {v}} : Set H.verts) = {⟨v, hv⟩}ᶜ := by aesop
+  rw [this]
+  exact h
 
 end Subgraph
 
