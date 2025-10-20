@@ -513,7 +513,6 @@ lemma eq_empty_of_isEmpty (s : Set α) [IsEmpty s] : s = ∅ := by
 
 /-- There is exactly one set of a type that is empty. -/
 instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
-  default := ∅
   uniq _ := eq_empty_of_isEmpty _
 
 theorem eq_empty_or_nonempty (s : Set α) : s = ∅ ∨ s.Nonempty :=
