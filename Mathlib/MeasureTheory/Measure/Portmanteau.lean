@@ -649,34 +649,6 @@ variable {α ι E : Type*} {m : MeasurableSpace α}
     {μ : Measure α} [IsProbabilityMeasure μ]
     {f f' : ι → α → E} {g : α → E} {l : Filter ι}
 
-lemma tendsto_integral_thickenedIndicator_of_isClosed {Ω : Type*}
-    {mΩ : MeasurableSpace Ω} [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
-    {μ : ProbabilityMeasure Ω}
-    (s : Set Ω) (hs : IsClosed s)
-    {δs : ℕ → ℝ} (δs_pos : ∀ (n : ℕ), 0 < δs n) (δs_lim : Tendsto δs atTop (𝓝 0)) :
-    Tendsto (fun n : ℕ ↦
-      ∫ ω, (thickenedIndicator (δs_pos n) s ω : ℝ) ∂μ)
-      atTop (𝓝 ((μ : Measure Ω).real s)) := by
-  -- we switch to the `lintegral` formulation and apply the corresponding lemma there
-  let fs : ℕ → Ω → ℝ := fun n ω ↦ thickenedIndicator (δs_pos n) s ω
-  have h_int n (ν : Measure Ω) [IsProbabilityMeasure ν] : Integrable (fs n) ν := by
-    refine .of_bound (by fun_prop) 1 (ae_of_all _ fun x ↦ ?_)
-    simp only [thickenedIndicator_apply, Real.norm_eq_abs, NNReal.abs_eq, NNReal.coe_le_one, fs]
-    exact thickenedIndicator_le_one (δs_pos _) s x
-  have h := tendsto_lintegral_thickenedIndicator_of_isClosed μ hs δs_pos δs_lim
-  have h_eq (n : ℕ) : ∫⁻ ω, thickenedIndicator (δs_pos n) s ω ∂μ
-      = ENNReal.ofReal (∫ ω, fs n ω ∂μ) := by
-    rw [lintegral_coe_eq_integral]
-    exact h_int _ _
-  simp_rw [h_eq] at h
-  rw [Measure.real_def]
-  have h_eq' : (fun n ↦ ∫ ω, fs n ω ∂μ) = fun n ↦ (ENNReal.ofReal (∫ ω, fs n ω ∂μ)).toReal := by
-    ext n
-    rw [ENNReal.toReal_ofReal]
-    refine integral_nonneg fun x ↦ ?_
-    simp [fs]
-  rwa [h_eq', ENNReal.tendsto_toReal_iff (by simp) (by finiteness)]
-
 /-- Weak convergence of probability measures is equivalent to the property that the integrals of
 every bounded Lipschitz function converge to the integral of the function against
 the limit measure. -/
@@ -715,7 +687,7 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     simp only [one_div, Real.norm_eq_abs, NNReal.abs_eq, NNReal.coe_le_one, fs]
     exact thickenedIndicator_le_one _ s x
   have key₁ : Tendsto (fun n ↦ ∫ ω, fs n ω ∂μ) atTop (𝓝 ((μ : Measure Ω).real s)) :=
-    tendsto_integral_thickenedIndicator_of_isClosed s hs (δs := fun n ↦ (1 : ℝ) / (n + 1))
+    tendsto_integral_thickenedIndicator_of_isClosed μ hs (δs := fun n ↦ (1 : ℝ) / (n + 1))
       (fun _ ↦ by positivity) tendsto_one_div_add_atTop_nhds_zero_nat
   have room₁ : (μ : Measure Ω).real s < (μ : Measure Ω).real s + ε / 2 := by simp [ε_pos]
   obtain ⟨M, hM⟩ := eventually_atTop.mp <| key₁.eventually_lt_const room₁
