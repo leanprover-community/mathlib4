@@ -631,12 +631,11 @@ connected. -/
 lemma Preconnected.connected_deleteVerts_singleton_of_degree_eq_one [DecidableEq V] {H : G.Subgraph}
     (hpreconn : H.Preconnected) {v : V} [Fintype ↑(H.neighborSet v)] (hdeg : H.degree v = 1) :
     (H.deleteVerts {v}).Connected := by
+  refine Subgraph.connected_iff'.mpr ((Iso.connected_iff (coeInduceEquiv Set.diff_subset)).mpr ?_)
   have hv : v ∈ H.verts := (degree_eq_one_iff_unique_adj.mp hdeg).choose_spec.left.fst_mem
-  have h' := @hpreconn.coe.connected_induce_complement_singleton_of_degree_eq_one _ _ _
-    ⟨v, hv⟩ _ (by simp_all [coe_degree])
-  have : {⟨v, hv⟩}ᶜ = ({w | ↑w ∈ H.verts \ {v}} : Set H.verts) := by aesop
-  rw [this] at h'
-  exact Subgraph.connected_iff'.mpr ((Iso.connected_iff (coeInduceEquiv Set.diff_subset)).mpr h')
+  have : ({w | ↑w ∈ H.verts \ {v}} : Set H.verts) = {⟨v, hv⟩}ᶜ := by aesop
+  rw [this]
+  exact hpreconn.coe.connected_induce_complement_singleton_of_degree_eq_one (by simp_all)
 
 /-- A finite nontrivial (pre)connected graph contains a vertex that leaves the graph connected if
 removed. -/
