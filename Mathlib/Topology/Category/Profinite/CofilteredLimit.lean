@@ -188,7 +188,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
       · suffices (fun a ↦ IsEmpty.elim hj a) ⁻¹' A = ∅ by
           rw [this]
           exact isOpen_empty
-        exact @Set.eq_empty_of_isEmpty _ hj _
+        exact Set.eq_empty_of_isEmpty _
       · ext x
         exact hj.elim' (C.π.app j x)
     by_contra! h
