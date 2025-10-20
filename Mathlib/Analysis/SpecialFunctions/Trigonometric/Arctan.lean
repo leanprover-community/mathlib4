@@ -162,13 +162,13 @@ theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
 @[gcongr]
 theorem arctan_mono : Monotone arctan := arctan_strictMono.monotone
 
-@[deprecated arctan_strictMono (since := "2025-08-13")]
+@[deprecated arctan_strictMono (since := "2025-10-20")]
 lemma arctan_lt_arctan (hxy : x < y) : arctan x < arctan y := arctan_strictMono hxy
 
 @[simp]
 theorem arctan_lt_arctan_iff : arctan x < arctan y ↔ x < y := arctan_strictMono.lt_iff_lt
 
-@[deprecated arctan_mono (since := "2025-08-13")]
+@[deprecated arctan_mono (since := "2025-10-20")]
 lemma arctan_le_arctan (hxy : x ≤ y) : arctan x ≤ arctan y :=
   arctan_strictMono.monotone hxy
 

@@ -86,10 +86,10 @@ lemma exp_monotone : Monotone exp := exp_strictMono.monotone
 
 @[simp] lemma one_le_exp_iff {a : EReal} : 1 ≤ exp a ↔ 0 ≤ a := exp_zero ▸ @exp_le_exp_iff 0 a
 
-@[deprecated exp_monotone (since := "2025-08-13")]
+@[deprecated exp_monotone (since := "2025-10-20")]
 lemma exp_le_exp {a b : EReal} (h : a ≤ b) : exp a ≤ exp b := by simpa
 
-@[deprecated exp_strictMono (since := "2025-08-13")]
+@[deprecated exp_strictMono (since := "2025-10-20")]
 lemma exp_lt_exp {a b : EReal} (h : a < b) : exp a < exp b := by simpa
 
 end Monotonicity

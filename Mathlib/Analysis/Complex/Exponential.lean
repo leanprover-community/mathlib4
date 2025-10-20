@@ -294,7 +294,7 @@ theorem exp_strictMono : StrictMono exp := fun x y h => by
   exact (lt_mul_iff_one_lt_left (exp_pos _)).2
       (lt_of_lt_of_le (by linarith) (add_one_le_exp_of_nonneg (by linarith)))
 
-@[deprecated exp_strictMono (since := "2025-08-13")]
+@[deprecated exp_strictMono (since := "2025-10-20")]
 theorem exp_lt_exp_of_lt {x y : ℝ} (h : x < y) : exp x < exp y := exp_strictMono h
 
 @[gcongr, mono]
