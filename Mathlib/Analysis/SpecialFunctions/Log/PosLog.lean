@@ -25,6 +25,7 @@ namespace Real
 /-!
 ## Definition, Notation and Reformulations
 -/
+
 /-- Definition: the positive part of the logarithm. -/
 noncomputable def posLog : ℝ → ℝ := fun x ↦ max 0 (log x)
 
@@ -114,10 +115,10 @@ theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
 
 /-- Estimate for `log⁺` of a product. See `Real.posLog_prod` for a variant involving
 multiple factors. -/
-theorem posLog_mul {x₁ x₂ : ℝ} : log⁺ (x₁ * x₂) ≤ log⁺ x₁ + log⁺ x₂ := by
-  by_cases h₁ : x₁ = 0
+theorem posLog_mul {x y : ℝ} : log⁺ (x * y) ≤ log⁺ x + log⁺ y := by
+  by_cases h₁ : x = 0
   · simp [h₁, posLog]
-  by_cases h₂ : x₂ = 0
+  by_cases h₂ : y = 0
   · simp [h₂, posLog]
   unfold posLog
   nth_rw 1 [← add_zero 0, log_mul h₁ h₂]
