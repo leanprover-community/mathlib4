@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Data.Int.Star
 import Mathlib.NumberTheory.LSeries.RiemannZeta
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.IntervalSums
 
 /-!
@@ -21,7 +20,7 @@ over non-symmetric intervals.
 open UpperHalfPlane hiding I
 
 open ModularForm EisensteinSeries  TopologicalSpace  intervalIntegral
-  Metric Filter Function Complex MatrixGroups Finset ArithmeticFunction Set SummationFilter
+  Metric Filter Function Complex MatrixGroups Finset Set SummationFilter
 
 open scoped Interval Real Topology BigOperators Nat
 
@@ -53,64 +52,59 @@ lemma e2Summand_even (z : ℍ) : (e2Summand · z).Even := by
 
 /-- The Eisenstein series of weight `2` and level `1` defined as the limit as `N` tends to
 infinity of the partial sum of `m` in `[N,N]` of `e2Summand m`. This sum over symmetric
-intervals is handy in showing it is Cauchy. -/
+intervals is handy in showing it is Summable. -/
 def G2 : ℍ → ℂ := fun z ↦ ∑'[symCondInt] m, e2Summand m z
 
 /-- The normalised Eisenstein series of weight `2` and level `1`. -/
 def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) •  G2
 
-/-- This function measures the defect in `E2` being a modular form. -/
+/-- This function measures the defect in `G2` being a modular form. -/
 def D2 (γ : SL(2, ℤ)) : ℍ → ℂ := fun z ↦ (2 * π * I * γ 1 0) / (denom γ z)
-
 
 lemma D2_one : D2 1 = 0 := by
   ext z
-  simp only [D2, Fin.isValue, Matrix.SpecialLinearGroup.coe_one, ne_eq, one_ne_zero,
-    not_false_eq_true, Matrix.one_apply_ne, Int.cast_zero, mul_zero, zero_div, Pi.zero_apply]
+  simp [D2]
 
 private lemma denom_aux (A B : SL(2, ℤ)) (z : ℍ) : ((A * B) 1 0) * (denom B z) =
   (A 1 0) * B.1.det + (B 1 0) * denom (A * B) z := by
-  simp_rw [← map_mul]
-  simp_rw [ModularGroup.denom_apply]
+  simp_rw [← map_mul, ModularGroup.denom_apply]
   have h0 := Matrix.two_mul_expl A.1 B.1
-  have h1 := Matrix.det_fin_two B.1
-  simp [Fin.isValue, Matrix.SpecialLinearGroup.coe_mul, h0.2.2.1, Int.cast_add, Int.cast_mul,
-    h1, Int.cast_sub, h0.2.2.2]
+  simp only [Fin.isValue, Matrix.SpecialLinearGroup.coe_mul, h0.2.2.1, Int.cast_add, Int.cast_mul,
+    Matrix.det_fin_two B.1, Int.cast_sub, h0.2.2.2]
   ring
 
-lemma D2_mul (A B : SL(2, ℤ)) : D2 (A * B) = ((D2 A) ∣[(2 : ℤ)] B) + (D2 B):= by
+lemma D2_mul (A B : SL(2, ℤ)) : D2 (A * B) = (D2 A) ∣[(2 : ℤ)] B + D2 B := by
   ext z
   simp only [D2, mul_assoc, Fin.isValue, Matrix.SpecialLinearGroup.coe_mul, map_mul, ← mul_div,
     SL_slash_def, ModularGroup.sl_moeb, Int.reduceNeg, zpow_neg, Pi.add_apply, ← mul_add,
     mul_eq_mul_left_iff, I_ne_zero, or_false, ofReal_eq_zero, Real.pi_ne_zero, OfNat.ofNat_ne_zero]
-  have hde : denom B z ≠ 0 := by exact denom_ne_zero (↑B) z
-  field_simp [hde]
+  have hde := denom_ne_zero B z
   have hd := denom_aux A B z
   simp only [Fin.isValue, Matrix.SpecialLinearGroup.coe_mul, Matrix.SpecialLinearGroup.det_coe,
     Int.cast_one, mul_one, ← sub_eq_iff_eq_add] at hd
-  simp only [Fin.isValue, pow_two, ← mul_assoc, denom_cocycle A B z.im_ne_zero,
-    mul_div_mul_right _ _ hde, ← hd, sub_div]
-  have : denom (↑A) (num ↑B ↑z / denom ↑B ↑z) = denom ↑A ↑(↑B • z) := by
+  have : denom A (num B z / denom B z) = denom A ↑(↑B • z) := by
     congr 1
     simp only [specialLinearGroup_apply, algebraMap_int_eq, Fin.isValue, eq_intCast, ofReal_intCast,
       UpperHalfPlane.coe_mk]
-    congr
-  simp only [Fin.isValue, this, ModularGroup.sl_moeb]
-  nth_rw 3 [mul_comm ]
+    rfl
+  field_simp
+  simp only [Fin.isValue, pow_two, ← mul_assoc, denom_cocycle A B z.im_ne_zero,
+    mul_div_mul_right _ _ hde, ← hd, sub_div, Fin.isValue, this, ModularGroup.sl_moeb]
+  nth_rw 3 [mul_comm]
   rw [← mul_assoc,  mul_div_cancel_right₀]
   · ring
-  · exact denom_ne_zero (↑A) (↑B • z)
+  · exact denom_ne_zero A (B • z)
 
-lemma D2_inv (A : SL(2, ℤ)) : (D2 A)∣[(2 : ℤ)] A⁻¹ = - D2 (A⁻¹) := by
+lemma D2_inv (A : SL(2, ℤ)) : (D2 A)∣[(2 : ℤ)] A⁻¹ = - D2 A⁻¹ := by
   have := D2_mul A A⁻¹
   simp only [mul_inv_cancel, SL_slash, D2_one] at this
-  exact eq_neg_of_add_eq_zero_left (_root_.id (Eq.symm this))
+  exact eq_neg_of_add_eq_zero_left (_root_.id (this.symm))
 
 lemma D2_T : D2 ModularGroup.T = 0 := by
   ext z
   simp [D2, ModularGroup.T]
 
-lemma D2_S (z : ℍ) : D2 ModularGroup.S z = 2 * (π : ℂ) * Complex.I / z := by
+lemma D2_S (z : ℍ) : D2 ModularGroup.S z = 2 * π * I / z := by
   simp [D2, ModularGroup.S, ModularGroup.denom_apply]
 
 end EisensteinSeries

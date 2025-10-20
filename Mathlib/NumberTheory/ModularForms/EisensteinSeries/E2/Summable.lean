@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 
 /-!
 # Summability of E2
@@ -121,8 +122,7 @@ lemma G2_eq_tsum_IcoFilter (z : ℍ) : G2 z = ∑'[IcoFilter ℤ] m, e2Summand m
   have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchySeq z) (e2Summand_even z)
   simpa using (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
-lemma G2_Ico_cauchySeq (z : ℍ) :
-    CauchySeq fun N : ℕ ↦ ∑ m ∈ Ico (-N : ℤ) N, e2Summand m z := by
+lemma G2_Ico_cauchySeq (z : ℍ) : CauchySeq fun N : ℕ ↦ ∑ m ∈ Ico (-N : ℤ) N, e2Summand m z := by
   apply Filter.Tendsto.cauchySeq (x := G2 z)
   obtain ⟨a, ha⟩ := Summable_IccFilter_G2_Ico z
   rw [G2_eq_tsum_IcoFilter z, (Summable.hasSum_iff (Summable_IccFilter_G2_Ico z)).mp ha]
@@ -130,7 +130,7 @@ lemma G2_Ico_cauchySeq (z : ℍ) :
   apply ha.congr (by simp)
 
 lemma HasSum_IcoFilter_iff {f : ℤ → ℂ} {x : ℂ} : HasSum f x (IcoFilter ℤ) ↔
-    Tendsto ((fun N : ℕ ↦ ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)), f n)) atTop (𝓝 x) := by
+    Tendsto (fun N : ℕ ↦ ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)), f n) atTop (𝓝 x) := by
   simp [HasSum, IcoFilter, ← Nat.map_cast_int_atTop, tendsto_map'_iff]
   rfl
 
