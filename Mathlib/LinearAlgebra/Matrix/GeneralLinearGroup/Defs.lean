@@ -181,6 +181,24 @@ lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := b
   rw [← Matrix.map_mul]
   simp only [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
 
+section kronecker
+variable {R m : Type*} [CommSemiring R] [Fintype m] [DecidableEq m]
+
+open scoped Kronecker
+
+/-- The invertible kronecker matrix of invertible matrices. -/
+protected def kronecker (x : GL n R) (y : GL m R) : GL (n × m) R where
+  val := x ⊗ₖ y
+  inv := ↑x⁻¹ ⊗ₖ ↑y⁻¹
+  val_inv := by simp only [← mul_kronecker_mul, Units.mul_inv, one_kronecker_one]
+  inv_val := by simp only [← mul_kronecker_mul, Units.inv_mul, one_kronecker_one]
+
+theorem _root_.Matrix.IsUnit.kronecker {x : Matrix n n R} {y : Matrix m m R}
+    (hx : IsUnit x) (hy : IsUnit y) : IsUnit (x ⊗ₖ y) :=
+  GeneralLinearGroup.kronecker hx.unit hy.unit |>.isUnit
+
+end kronecker
+
 end GeneralLinearGroup
 
 namespace SpecialLinearGroup
