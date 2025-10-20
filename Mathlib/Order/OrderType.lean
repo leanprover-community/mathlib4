@@ -415,8 +415,9 @@ def OrderIso.prodAssoc (α : Type u) (β : Type v) (γ : Type w) [LE α] [LE β]
       rcases a with ⟨⟨_ , _⟩ , _⟩ ; rcases b with ⟨⟨_, _⟩ , _⟩ ;
       simp [Equiv.prodAssoc, and_assoc] }
 
-/-- `Equiv.prodAssoc` promoted to an order isomorphism. -/
-def prodLexAssoc [LinearOrder α] [LinearOrder β] [LinearOrder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ :=
+/-- `Equiv.prodAssoc` promoted to an order isomorphism of lexicographic products. -/
+def OrderIso.prodLexAssoc (α : Type u) (β : Type v) (γ : Type w)
+    [LinearOrder α] [LinearOrder β] [LinearOrder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ :=
   { Equiv.prodAssoc α β γ with
     map_rel_iff' := fun {a b} ↦
       ⟨fun h ↦
@@ -426,11 +427,42 @@ def prodLexAssoc [LinearOrder α] [LinearOrder β] [LinearOrder γ] : (α ×ₗ 
         match a, b, h with
         | ⟨⟨_ , _⟩ , _⟩ , ⟨⟨_, _⟩ , _⟩ , h => by sorry⟩}
 
+
+/-- `Equiv.prodSumDistrib` promoted to an order isomorphism of lexicographic products. -/
+def OrderIso.prodSumDistrib (α : Type u) (β : Type v) (γ : Type w)
+    [LinearOrder α] [LinearOrder β] [LinearOrder γ] : α ×ₗ (β ⊕ₗ γ) ≃o (α ×ₗ β) ⊕ₗ (α ×ₗ γ) :=
+  { Equiv.prodSumDistrib α β γ with
+    map_rel_iff' := fun {a b} ↦
+      ⟨fun h ↦
+        match a, b, h with
+        | ⟨a1 , (Sum.inlₗ a2)⟩ ,⟨b1 , (Sum.inlₗ b2)⟩ , h => by sorry
+        | ⟨a1 , (Sum.inrₗ a2)⟩ ,⟨b1 , (Sum.inlₗ b2)⟩ , h => by sorry
+        | ⟨a1 , (Sum.inlₗ a2)⟩ ,⟨b1 , (Sum.inrₗ b2)⟩ , h => by sorry
+        | ⟨a1 , (Sum.inrₗ a2)⟩ ,⟨b1 , (Sum.inrₗ b2)⟩ , h => by sorry,
+        fun h ↦
+        match a, b, h with
+        | ⟨a1 , (Sum.inlₗ a2)⟩ ,⟨b1 , (Sum.inlₗ b2)⟩ , h => by sorry
+        | ⟨a1 , (Sum.inrₗ a2)⟩ ,⟨b1 , (Sum.inlₗ b2)⟩ , h => by sorry
+        | ⟨a1 , (Sum.inlₗ a2)⟩ ,⟨b1 , (Sum.inrₗ b2)⟩ , h => by sorry
+        | ⟨a1 , (Sum.inrₗ a2)⟩ ,⟨b1 , (Sum.inrₗ b2)⟩ , h => by sorry⟩ }
+
+open Classical in
+lemma mul_assoc (o₁ o₂ o₃ : OrderType.{u}) : o₁ * o₂ * o₃ = o₁ * (o₂ * o₃) :=
+  inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.ordertype_congr (OrderIso.prodLexAssoc α β γ))
+
+instance mulMonoid : Monoid OrderType where
+  mul_assoc := mul_assoc
+  one_mul := one_mul
+  mul_one := mul_one
+
+instance : LeftDistribClass OrderType where
+  left_distrib := fun o₁ o₂ o₃ ↦
+    inductionOn₃ o₁ o₂ o₃ (fun α _ β _ γ _ ↦ RelIso.ordertype_congr (OrderIso.prodSumDistrib α β γ))
+
 section Ordinal
 
 def LinearOrder.toWellOrder (α : Type u) [LinearOrder α] [IsWellOrder α (· < ·)] : WellOrder :=
   ⟨α, (· < ·), inferInstance⟩
-
 
 end Ordinal
 
