@@ -198,18 +198,18 @@ lemma exists_norm_sub_smul_one_eq_zero (x : F) :
 
 variable (F) [Nontrivial F]
 
+open Algebra in
 /-- A version of the **Gelfand-Mazur Theorem**.
 
 If `F` is a nontrivial normed `ℂ`-algebra with multiplicative norm, then we obtain a
 `ℂ`-algebra equivalence with `ℂ`. -/
 noncomputable
-def algEquivOfNormMul : ℂ ≃ₐ[ℂ] F := by
-  let e : ℂ →ₐ[ℂ] F := AlgHom.mk' (algebraMap ℂ F) (algebraMap.coe_smul ℂ ℂ F)
-  refine AlgEquiv.ofBijective e ⟨FaithfulSMul.algebraMap_injective ℂ F, fun x ↦ ?_⟩
-  obtain ⟨z, hz⟩ := exists_norm_sub_smul_one_eq_zero x
-  refine ⟨z, ?_⟩
-  rw [AlgHom.coe_mk', Algebra.algebraMap_eq_smul_one, eq_comm, ← sub_eq_zero]
-  exact norm_eq_zero.mp hz
+def algEquivOfNormMul : ℂ ≃ₐ[ℂ] F :=
+  .ofBijective (ofId ℂ F) <| by
+    refine ⟨FaithfulSMul.algebraMap_injective ℂ F, fun x ↦ ?_⟩
+    obtain ⟨z, hz⟩ := exists_norm_sub_smul_one_eq_zero x
+    refine ⟨z, ?_⟩
+    rwa [norm_eq_zero, sub_eq_zero, ← algebraMap_eq_smul_one, eq_comm, ← ofId_apply] at hz
 
 /-- A version of the **Gelfand-Mazur Theorem** for nontrivial normed `ℂ`-algebras `F`
 with multiplicative norm. -/
