@@ -1050,6 +1050,58 @@ theorem IsInt.rpow_eq_inv_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a
     a ^ b = (a ^ n)⁻¹ := by
   rw [h.1, Real.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_coe, zpow_natCast]
 
+@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
+theorem isNat_rpow_pos {a b : ℝ} {nb ne : ℕ}
+    (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
+    IsNat (a ^ b) ne := by
+  rwa [pb.out, rpow_natCast]
+
+@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
+theorem isNat_rpow_neg {a b : ℝ} {nb ne : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNat (a ^ (Int.negOfNat nb)) ne) :
+    IsNat (a ^ b) ne := by
+  rwa [pb.out, Real.rpow_intCast]
+
+@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
+theorem isInt_rpow_pos {a b : ℝ} {nb ne : ℕ}
+    (pb : IsNat b nb) (pe' : IsInt (a ^ nb) (Int.negOfNat ne)) :
+    IsInt (a ^ b) (Int.negOfNat ne) := by
+  rwa [pb.out, rpow_natCast]
+
+@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
+theorem isInt_rpow_neg {a b : ℝ} {nb ne : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsInt (a ^ (Int.negOfNat nb)) (Int.negOfNat ne)) :
+    IsInt (a ^ b) (Int.negOfNat ne) := by
+  rwa [pb.out, Real.rpow_intCast]
+
+@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
+theorem isNNRat_rpow_pos {a b : ℝ} {nb : ℕ}
+    {num den : ℕ}
+    (pb : IsNat b nb) (pe' : IsNNRat (a ^ nb) num den) :
+    IsNNRat (a ^ b) num den := by
+  rwa [pb.out, rpow_natCast]
+
+@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
+theorem isRat_rpow_pos {a b : ℝ} {nb : ℕ}
+    {num : ℤ} {den : ℕ}
+    (pb : IsNat b nb) (pe' : IsRat (a ^ nb) num den) :
+    IsRat (a ^ b) num den := by
+  rwa [pb.out, rpow_natCast]
+
+@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
+theorem isNNRat_rpow_neg {a b : ℝ} {nb : ℕ}
+    {num den : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNNRat (a ^ (Int.negOfNat nb)) num den) :
+    IsNNRat (a ^ b) num den := by
+  rwa [pb.out, Real.rpow_intCast]
+
+@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
+theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
+    {num : ℤ} {den : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a ^ (Int.negOfNat nb)) num den) :
+    IsRat (a ^ b) num den := by
+  rwa [pb.out, Real.rpow_intCast]
+
 /-- Given proofs
 - that `a` is a natural number `m`
 - that `b` is a nonnegative rational number `n / d`
@@ -1073,12 +1125,6 @@ theorem IsNNRat.rpow_isNNRat (a b : ℝ) (na da : ℕ) (ha : IsNNRat a na da)
   rw [← hden.1]
   apply (Real.rpow_pos_of_pos _ _).ne'
   exact lt_of_le_of_ne' da.cast_nonneg ha.den_nz
-
-theorem IsRat.neg_negOfNat (b : ℝ) (m n : ℕ) (h : IsRat b (Int.negOfNat m) n) :
-    IsNNRat (-b)  m n := by
-  rcases h with ⟨hn, rfl⟩
-  use hn
-  simp
 
 theorem rpow_isRat_eq_inv_rpow (a b : ℝ) (n d : ℕ) (hb : IsRat b (Int.negOfNat n) d) :
     a ^ b = (a⁻¹) ^ (n / d : ℝ) := by
