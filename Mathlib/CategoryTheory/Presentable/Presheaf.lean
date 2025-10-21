@@ -3,9 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.Type
 import Mathlib.CategoryTheory.Generator.Presheaf
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+import Mathlib.CategoryTheory.Presentable.StrongGenerator
 
 /-!
 # Categories of presheaves are locally presentable
@@ -82,9 +82,6 @@ instance {A : Type u'} [Category.{v'} A] [IsLocallyPresentable.{w} A] [HasPullba
   exists_cardinal := by
     obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} A
     exact ⟨κ, inferInstance, inferInstance⟩
-
-example (C : Type w) [SmallCategory C] :
-    IsLocallyPresentable.{w} (Cᵒᵖ ⥤ Type w) := inferInstance
 
 end Presheaf
 

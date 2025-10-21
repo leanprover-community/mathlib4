@@ -6,7 +6,6 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Iso
-import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 
 /-!
