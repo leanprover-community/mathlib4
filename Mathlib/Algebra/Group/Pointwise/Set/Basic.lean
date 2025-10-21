@@ -221,7 +221,6 @@ theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
 
 @[to_additive (attr := simp)]
 instance involutiveInv : InvolutiveInv (Set α) where
-  inv := Inv.inv
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
 
 @[to_additive (attr := simp)]

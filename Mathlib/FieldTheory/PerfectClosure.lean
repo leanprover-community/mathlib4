@@ -258,7 +258,6 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
           Quot.inductionOn g fun ⟨s, z⟩ => by
             apply congr_arg (Quot.mk _)
             simp only [iterate_map_add, ← iterate_add_apply, add_assoc, add_comm s _]
-    zero := 0
     zero_add := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr_arg (Quot.mk _) <| by
