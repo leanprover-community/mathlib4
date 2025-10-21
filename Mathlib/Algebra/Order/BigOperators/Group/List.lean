@@ -139,6 +139,28 @@ lemma prod_min_le [LinearOrder M] [MulLeftMono M]
   · apply min_le_left
   · apply min_le_right
 
+variable [PartialOrder M] [CanonicallyOrderedMul M]
+
+@[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i ↦ (L.take i).prod := by
+  refine monotone_nat_of_le_succ fun n => ?_
+  rcases lt_or_ge n L.length with h | h
+  · rw [prod_take_succ _ _ h]
+    exact le_self_mul
+  · simp [take_of_length_le h, take_of_length_le (le_trans h (Nat.le_succ _))]
+
+/-- See also `List.single_le_prod`. -/
+@[to_additive /-- See also `List.single_le_sum`. -/]
+theorem le_prod_of_mem {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod := by
+  induction xs with
+  | nil => simp at h₁
+  | cons y ys ih =>
+    simp only [mem_cons] at h₁
+    rcases h₁ with (rfl | h₁)
+    · simp
+    · specialize ih h₁
+      simp only [List.prod_cons]
+      exact le_mul_left ih
+
 end Monoid
 
 -- TODO: develop theory of tropical rings
@@ -179,35 +201,11 @@ lemma all_one_of_le_one_le_of_prod_eq_one [CommMonoid M] [PartialOrder M] [IsOrd
     {l : List M} (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) (hl₂ : l.prod = 1) {x : M} (hx : x ∈ l) : x = 1 :=
   _root_.le_antisymm (hl₂ ▸ single_le_prod hl₁ _ hx) (hl₁ x hx)
 
-section CanonicallyOrderedMul
-variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {l : List M}
-
-@[to_additive] lemma prod_eq_one_iff [IsOrderedMonoid M] : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
+@[to_additive] lemma prod_eq_one_iff [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+     [CanonicallyOrderedMul M] {l : List M} : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
     rw [List.eq_replicate_iff.2 ⟨_, h⟩, prod_replicate, one_pow]
     · exact (length l)
     · rfl⟩
-
-@[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i => (L.take i).prod := by
-  refine monotone_nat_of_le_succ fun n => ?_
-  rcases lt_or_ge n L.length with h | h
-  · rw [prod_take_succ _ _ h]
-    exact le_self_mul
-  · simp [take_of_length_le h, take_of_length_le (le_trans h (Nat.le_succ _))]
-
-/-- See also `List.single_le_prod`. -/
-@[to_additive /-- See also `List.single_le_sum`. -/]
-theorem le_prod_of_mem {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod := by
-  induction xs with
-  | nil => simp at h₁
-  | cons y ys ih =>
-    simp only [mem_cons] at h₁
-    rcases h₁ with (rfl | h₁)
-    · simp
-    · specialize ih h₁
-      simp only [List.prod_cons]
-      exact le_mul_left ih
-
-end CanonicallyOrderedMul
 
 end List
