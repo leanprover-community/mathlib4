@@ -193,23 +193,23 @@ open Classical in
 def MemSobolev (g : H → ℂ) (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) : Prop :=
   if _hg : g.HasTemperateGrowth then
     ∃ (f' : Lp E 2 (volume : Measure H)),
-    TemperedDistribution.fourierMultiplierCLM (E →L[ℂ] V) V g f = Lp.toTemperedDistribution ℂ V f'
+    TemperedDistribution.fourierMultiplierCLM (E →L[ℂ] V) V g f = (f' : 𝓢'(ℂ, H, E →L[ℂ] V, V))
   else False
 
 theorem memSobolev_iff {g : H → ℂ} (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) (hg : g.HasTemperateGrowth) :
     MemSobolev g f ↔ ∃ (f' : Lp E 2 (volume : Measure H)),
-    .fourierMultiplierCLM (E →L[ℂ] V) V g f = Lp.toTemperedDistribution ℂ V f' := by
+    .fourierMultiplierCLM (E →L[ℂ] V) V g f = (f' : 𝓢'(ℂ, H, E →L[ℂ] V, V)) := by
   simp only [MemSobolev, dite_else_false]
   exact ⟨fun ⟨_, h⟩ ↦ h, fun h ↦ ⟨hg, h⟩⟩
 
 theorem MemSobolev.exists {g : H → ℂ} {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hg : g.HasTemperateGrowth)
     (hf : MemSobolev g f) :
     ∃ (f' : Lp E 2 (volume : Measure H)),
-    .fourierMultiplierCLM (E →L[ℂ] V) V g f = Lp.toTemperedDistribution ℂ V f' :=
+    .fourierMultiplierCLM (E →L[ℂ] V) V g f = (f' : 𝓢'(ℂ, H, E →L[ℂ] V, V)) :=
   (memSobolev_iff f hg).mp hf
 
 theorem memSobolev_one_iff {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} : MemSobolev 1 f ↔
-    ∃ (f' : Lp E 2 (volume : Measure H)), f = Lp.toTemperedDistribution ℂ V f' := by
+    ∃ (f' : Lp E 2 (volume : Measure H)), f = f' := by
   convert memSobolev_iff f (.const 1)
   simp
 
@@ -222,7 +222,7 @@ variable [NormedSpace ℂ V] [CompleteSpace V]
 
 theorem memSobolev_iff_fourierTransform [CompleteSpace E] {g : H → ℂ} (f : 𝓢'(ℂ, H, E →L[ℂ] V, V))
     (hg : g.HasTemperateGrowth) : MemSobolev g f ↔ ∃ (f' : Lp E 2 (volume : Measure H)),
-    _root_.smulLeftCLM _ _ g (𝓕 f) = Lp.toTemperedDistribution ℂ V f' := by
+    _root_.smulLeftCLM _ _ g (𝓕 f) = f' := by
   rw [memSobolev_iff f hg]
   constructor
   · intro ⟨f', hf'⟩
@@ -238,7 +238,7 @@ theorem memSobolev_iff_fourierTransform [CompleteSpace E] {g : H → ℂ} (f : �
 
 theorem memSobolev_one_iff_fourierTransform [CompleteSpace E]
     (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) : MemSobolev 1 f ↔ ∃ (f' : Lp E 2 (volume : Measure H)),
-    𝓕 f = Lp.toTemperedDistribution ℂ V f' := by
+    𝓕 f = f' := by
   rw [memSobolev_one_iff]
   constructor
   · intro ⟨f', hf'⟩
@@ -363,9 +363,8 @@ variable [InnerProductSpace ℂ E]
 
 theorem toTemperedDistribution_holder_eq (g : BoundedContinuousFunction H ℂ)
     (hg : Function.HasTemperateGrowth (g : H → ℂ)) :
-    Lp.toTemperedDistribution ℂ V ((ContinuousLinearMap.lsmul ℂ ℂ).holder 2
-      (g.memLp_top.toLp _) f) =
-    (_root_.smulLeftCLM _ V (g : H → ℂ)) (Lp.toTemperedDistribution ℂ V f) := by
+    (((ContinuousLinearMap.lsmul ℂ ℂ).holder 2 (g.memLp_top.toLp _) f) : 𝓢'(ℂ, H, E →L[ℂ] V, V)) =
+    (_root_.smulLeftCLM _ V (g : H → ℂ)) (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) := by
   ext u y
   congr 1
   simp

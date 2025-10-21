@@ -93,7 +93,7 @@ open SchwartzMap MeasureTheory FourierTransform
 variable (V) in
 /-- The Fourier transform on `L^2` coincides with the Fourier transform on `𝓢'`. -/
 theorem toTemperedDistribution_fourierTransform_eq (f : Lp (α := E) F 2) :
-    𝓕 (Lp.toTemperedDistribution ℂ V f) = (Lp.toTemperedDistribution ℂ V (𝓕 f)) := by
+    𝓕 (f : 𝓢'(ℂ, E, F →L[ℂ] V, V)) = (𝓕 f : Lp (α := E) F 2) := by
   set p := fun f : Lp (α := E) F 2 ↦
     𝓕 (Lp.toTemperedDistribution ℂ V f) =
       (Lp.toTemperedDistribution ℂ V (𝓕 f))
@@ -111,7 +111,7 @@ theorem toTemperedDistribution_fourierTransform_eq (f : Lp (α := E) F 2) :
 
 variable (V) in
 theorem toTemperedDistribution_fourierTransformInv_eq (f : Lp (α := E) F 2) :
-    𝓕⁻ (Lp.toTemperedDistribution ℂ V f) = (Lp.toTemperedDistribution ℂ V (𝓕⁻ f)) := by
+    𝓕⁻ (f : 𝓢'(ℂ, E, F →L[ℂ] V, V)) = (𝓕⁻ f : Lp (α := E) F 2) := by
   have := toTemperedDistribution_fourierTransform_eq V (𝓕⁻ f)
   apply_fun 𝓕⁻ at this
   simp only [FourierPair.inv_fourier, FourierPairInv.fourier_inv] at this

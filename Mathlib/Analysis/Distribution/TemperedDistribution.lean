@@ -220,8 +220,7 @@ namespace MeasureTheory.Lp
 open scoped ENNReal
 
 variable [NormedSpace ℝ E] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
-variable [MeasurableSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
-variable [BorelSpace E] [SecondCountableTopology E]
+variable [SecondCountableTopology E]
 variable [NormedSpace ℝ V] [CompleteSpace V]
 
 theorem _root_.ENNReal.inv_one_sub_inv' (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
@@ -230,6 +229,8 @@ theorem _root_.ENNReal.inv_one_sub_inv' (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
   simp only [inv_inv]
   refine add_tsub_cancel_of_le ?_
   simpa only [ENNReal.inv_le_one] using hp.elim
+
+variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
 
 /-- Create a tempered distribution from a L^p function.
 
@@ -242,8 +243,8 @@ def toTemperedDistribution_aux (p q : ℝ≥0∞) (hp : Fact (1 ≤ p)) (hq : Fa
 
 variable (𝕜 V) in
 /-- Create a tempered distribution from a L^p function. -/
-def toTemperedDistribution {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
-    𝓢'(𝕜, E, F →L[𝕜] V, V) :=
+def toTemperedDistribution {p : ℝ≥0∞}
+    [hp : Fact (1 ≤ p)] (f : Lp F p μ) : 𝓢'(𝕜, E, F →L[𝕜] V, V) :=
   toTemperedDistribution_aux p ((1 - p⁻¹)⁻¹) hp (by simp [fact_iff]) p.inv_one_sub_inv' f
 
 @[simp]
@@ -253,10 +254,20 @@ theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f :
   unfold Lp.toTemperedDistribution Lp.toTemperedDistribution_aux
   simp [toWOT_apply, lpPairing_eq_integral]
 
+instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
+    CoeDep (Lp F p μ) f 𝓢'(𝕜, E, F →L[𝕜] V, V) where
+  coe := toTemperedDistribution 𝕜 V f
 
-variable (𝕜 F V μ) in
+@[simp]
+theorem coe_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ)
+    (g : 𝓢(E, F →L[𝕜] V)) :
+    (f : 𝓢'(𝕜, E, F →L[𝕜] V, V)) g = ∫ (x : E), ((g.toLp (1 - p⁻¹)⁻¹ μ) x) (f x) ∂μ :=
+  toTemperedDistribution_apply f g
+
+variable (𝕜 F V) in
 /-- The natural embedding of L^p into tempered distributions. -/
-def toTemperedDistributionCLM (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
+def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperateGrowth]
+    (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
     Lp F p μ →L[𝕜] 𝓢'(𝕜, E, F →L[𝕜] V, V) where
   toFun := toTemperedDistribution 𝕜 V
   map_add' f g := by
@@ -278,7 +289,7 @@ def toTemperedDistributionCLM (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] :
 
 @[simp]
 theorem toTemperedDistributionCLM_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
-    toTemperedDistributionCLM 𝕜 F V μ p f = toTemperedDistribution 𝕜 V f := rfl
+    toTemperedDistributionCLM 𝕜 F V μ p f = f := rfl
 
 variable [FiniteDimensional ℝ E] [NormedSpace ℝ F] [CompleteSpace F] [IsLocallyFiniteMeasure μ]
 
@@ -325,8 +336,6 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTem
     intro g y
     exact y.cont.comp ((integralCLM 𝕜 μ).cont.comp (pairingCLM g).cont)
 
-variable (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) (x : E)
-
 @[simp]
 theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) :
@@ -335,11 +344,16 @@ theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
 
 end MeasurableSpace
 
-variable [MeasureSpace E] [BorelSpace E]
+variable [MeasureSpace E] [BorelSpace E] [(volume (α := E)).HasTemperateGrowth]
 
-instance instCoeToTemperedDistribution [(volume (α := E)).HasTemperateGrowth] :
+instance instCoeToTemperedDistribution :
     Coe 𝓢(E, F) 𝓢'(𝕜, E, F →L[𝕜] V, V) where
   coe := toTemperedDistributionCLM 𝕜 E F V volume
+
+@[simp]
+theorem coe_apply (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) :
+    (f : 𝓢'(𝕜, E, F →L[𝕜] V, V)) g = ∫ (x : E), (g x) (f x) :=
+  toTemperedDistributionCLM_apply_apply volume f g
 
 end SchwartzMap
 
@@ -352,10 +366,8 @@ variable [NormedSpace ℝ V]
 
 variable [NormedSpace 𝕜 F] [NormedSpace ℝ F] [CompleteSpace V]
 
-variable (f : 𝓢(E, V))
-
 @[simp]
-theorem eq_embeddings (f : 𝓢(E, F)) : Lp.toTemperedDistribution 𝕜 V (f.toLp 2 μ) =
+theorem eq_embeddings (f : 𝓢(E, F)) : ((f.toLp 2 μ) : 𝓢'(𝕜, E, F →L[𝕜] V, V)) =
     SchwartzMap.toTemperedDistributionCLM 𝕜 E F V μ f := by
   ext g y
   congr 1
@@ -485,10 +497,8 @@ variable [NormedSpace ℝ V]
 
 /-- The distributional derivative and the classical derivative coincide on `𝓢(ℝ, F)`. -/
 theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
-    derivCLM V (toTemperedDistributionCLM 𝕜 ℝ F V volume f) =
-    toTemperedDistributionCLM 𝕜 ℝ F V volume f.deriv := by
+    derivCLM V (f : 𝓢'(𝕜, ℝ, F →L[𝕜] V, V)) = f.deriv := by
   ext g y
-  simp
   simp [integral_clm_comp_deriv_right_eq_neg_left, integral_neg]
 
 end deriv
