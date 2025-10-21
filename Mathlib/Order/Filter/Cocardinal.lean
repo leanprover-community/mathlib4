@@ -64,8 +64,8 @@ theorem hasBasis_cocardinal : HasBasis (cocardinal α hreg) {s : Set α | #s < c
       simp_all only [mem_cocardinal] ⟩⟩
 
 theorem frequently_cocardinal {p : α → Prop} :
-    (∃ᶠ x in cocardinal α hreg, p x) ↔ c ≤ # { x | p x } := by
-  simp only [Filter.Frequently, eventually_cocardinal, not_not,coe_setOf, not_lt]
+    (∃ᶠ x in cocardinal α hreg, p x) ↔ c ≤ #{ x | p x } := by
+  simp only [Filter.Frequently, eventually_cocardinal, not_not, coe_setOf, not_lt]
 
 lemma frequently_cocardinal_mem {s : Set α} :
     (∃ᶠ x in cocardinal α hreg, x ∈ s) ↔ c ≤ #s := frequently_cocardinal
