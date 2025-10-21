@@ -336,28 +336,6 @@ noncomputable instance : TopologicalSpace (TotalSpace (EB →L[ℝ] EB →L[ℝ]
   unfold W
   infer_instance
 
-noncomputable
-def g_global_smooth_sectiop
-  (f : SmoothPartitionOfUnity B IB B)
-  (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
-  ContMDiffSection (I := IB) (F := (EB →L[ℝ] EB →L[ℝ] ℝ)) (n := (⊤ : ℕ∞))
-    (V := (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))) :=
-  { toFun := fun x ↦ ∑ᶠ (j : B), (f j) x • g_bilinear j x
-    contMDiff_toFun := by
-      have h := contMDiff_totalSpace_weighted_sum_of_local_sections
-        (E := EB) (I := IB) (M := B)
-        (V := fun b => TangentSpace IB b →L[ℝ] (TangentSpace IB b →L[ℝ] Trivial B ℝ b))
-        (F_fiber := EB →L[ℝ] (EB →L[ℝ] ℝ))
-        (n := (⊤ : ℕ∞)) (ι := B)
-        (ρ := f)
-        (s_loc := g_bilinear)
-        (U := fun x ↦ (extChartAt IB x).source)
-        (by intro i; exact isOpen_extChartAt_source i)
-        h_sub
-        (by intro i; sorry)
-      exact h
-  }
-
 #check SmoothBumpCovering.IsSubordinate.toSmoothPartitionOfUnity
 
 #print SmoothPartitionOfUnity
@@ -457,21 +435,38 @@ def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
       map_smul' := sorry }
     sorry
 
--- Is this the right approach?
-lemma foo (f : SmoothPartitionOfUnity B IB B) (x : B) : ContMDiffAt IB 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ) ω
-(fun y ↦
-  ContinuousLinearMap.inCoordinates EB (TangentSpace IB) (EB →L[ℝ] ℝ) (V (TangentSpace IB)) x y x y
-      (g_global_bilinear f y)) x := sorry
+lemma g_global_bilinear_eq_sum (f : SmoothPartitionOfUnity B IB B) (p : B) :
+  g_global_bilinear f p = ∑ᶠ (j : B), (f j) p • g_bilinear j p := by
+  unfold W at *
+  simp only [g_global_bilinear, g_global]
+  ext v
+  simp only [ContinuousLinearMap.coe_mk']
+  exact sorry
 
-lemma g_global_bilinear_smooth (f : SmoothPartitionOfUnity B IB B) :
-  ContMDiff IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ω
-   (fun x ↦ TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_global_bilinear f x)) := by
-  intro x
-  rw [contMDiffAt_hom_bundle]
-  constructor
-  · exact contMDiffAt_id
-  · simp
-    exact foo f x
+lemma bar (f : SmoothPartitionOfUnity B IB B)
+        (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
+  ContMDiff IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞ fun x ↦
+    TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x
+                   ((∑ᶠ (j : B), (f j) x • g_bilinear j x :  W (TangentSpace IB) x)) := by
+      have h := contMDiff_totalSpace_weighted_sum_of_local_sections
+        (E := EB) (I := IB) (M := B)
+        (V := fun b => TangentSpace IB b →L[ℝ] (TangentSpace IB b →L[ℝ] Trivial B ℝ b))
+        (F_fiber := EB →L[ℝ] (EB →L[ℝ] ℝ))
+        (n := (⊤ : ℕ∞)) (ι := B)
+        (ρ := f)
+        (s_loc := g_bilinear)
+        (U := fun x ↦ (extChartAt IB x).source)
+        (by intro i; exact isOpen_extChartAt_source i)
+        h_sub
+        (by intro i; sorry)
+      exact h
+
+lemma g_global_bilinear_smooth (f : SmoothPartitionOfUnity B IB B)
+  (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
+  ContMDiff IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    (fun x ↦ TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_global_bilinear f x)) := by
+  simp_rw [g_global_bilinear_eq_sum]
+  exact (bar f h_sub)
 
 example : (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) =
   fun b ↦ (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ]
@@ -480,22 +475,23 @@ example : (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) =
 
 noncomputable
 def g_global_smooth_section
-    (f : SmoothPartitionOfUnity B IB B) :
-    ContMDiffSection (I := IB) (F := (EB →L[ℝ] EB →L[ℝ] ℝ)) (n := ⊤)
+    (f : SmoothPartitionOfUnity B IB B)
+    (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
+    ContMDiffSection (I := IB) (F := (EB →L[ℝ] EB →L[ℝ] ℝ)) (n := ∞)
       (V := (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))) :=
   { toFun := g_global_bilinear f
-    contMDiff_toFun := g_global_bilinear_smooth f }
+    contMDiff_toFun := g_global_bilinear_smooth f h_sub}
 
 noncomputable
 def riemannian_metric_exists
     (f : SmoothPartitionOfUnity B IB B)
     (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
     (hf : f.IsSubordinate fun x ↦ (chartAt HB x).source) :
-    ContMDiffRiemannianMetric (IB := IB) (n := ⊤) (F := EB)
+    ContMDiffRiemannianMetric (IB := IB) (n := ∞) (F := EB)
      (E := @TangentSpace ℝ _ _ _ _ _ _ IB B _ _) :=
   { inner := g_global_bilinear f
     symm := g_global_symm f
     pos := g_global_pos f (by simpa only [extChartAt_source] using hf)
     isVonNBounded := sorry
-    contMDiff := (g_global_smooth_sectiop f h_sub).contMDiff_toFun
+    contMDiff := (g_global_smooth_section f h_sub).contMDiff_toFun
      }
