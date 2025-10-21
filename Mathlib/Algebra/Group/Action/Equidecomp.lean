@@ -480,20 +480,17 @@ noncomputable def to_equipartition (f : Equidecomp X G) : Equipartition X G wher
      {y : X | if h : y ∈ f.target then f.target_witness h = g else false})) f.minimal_witness
   bot_notMem p h := by
     simp only [Bool.false_eq_true, dite_else_false, Finset.mem_image] at h
-    rcases h with ⟨g, ⟨hg, h⟩⟩
-    subst h
+    rcases h with ⟨g, ⟨hg, rfl⟩⟩
     simp only [minimal_witness, Finset.mem_filter, ne_eq, eq_empty_iff_forall_notMem, mem_setOf_eq,
       not_exists, not_forall, not_not] at hg ⊢
     grind
   decomp p hp := by
     simp only [Bool.false_eq_true, dite_else_false, Finset.mem_image] at hp
-    rcases hp with ⟨g, ⟨hg, hp⟩⟩
-    subst hp
+    rcases hp with ⟨g, ⟨hg, rfl⟩⟩
     apply le_antisymm
     · simp only [image_smul, target_witness, invFun_as_coe, le_eq_subset, subset_setOf,
       mem_smul_set, mem_setOf_eq, forall_exists_index, and_imp]
-      intro x1 x2 h1 h2 h3
-      subst h2
+      rintro x1 x2 h1 rfl h3
       rw [← (f.source_witness_spec h1).2] at h3
       have h5 : x1 ∈ f.target := by
         rw [← h3]
@@ -503,9 +500,8 @@ noncomputable def to_equipartition (f : Equidecomp X G) : Equipartition X G wher
       simp [h3, h5]
     · simp only [target_witness, invFun_as_coe, image_smul, le_eq_subset, setOf_subset,
       mem_smul_set, mem_setOf_eq, forall_exists_index]
-      intro x1 hx1 h1
+      rintro x1 hx1 rfl
       use f.invFun x1
-      subst h1
       simp only [invFun_as_coe, exists_prop, and_true]
       refine And.intro (PartialEquiv.map_target f.toPartialEquiv hx1) ?_
       have h4 := (f.source_witness_spec (id (Eq.refl (f.symm x1)) ▸ target_witness._proof_1 f
