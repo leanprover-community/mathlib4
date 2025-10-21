@@ -39,25 +39,25 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y)
 3. the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
 class IsImmersion (f : X ⟶ Y) : Prop extends IsPreimmersion f where
-  isLocallyClosed_range : IsLocallyClosed (Set.range f.base)
+  isLocallyClosed_range : IsLocallyClosed (Set.range f)
 
-lemma Scheme.Hom.isLocallyClosed_range (f : X.Hom Y) [IsImmersion f] :
-    IsLocallyClosed (Set.range f.base) :=
+lemma Scheme.Hom.isLocallyClosed_range (f : X ⟶ Y) [IsImmersion f] :
+    IsLocallyClosed (Set.range f) :=
   IsImmersion.isLocallyClosed_range
 
 /--
 Given an immersion `f : X ⟶ Y`, this is the biggest open set `U ⊆ Y` containing the image of `X`
 such that `X` is closed in `U`.
 -/
-def Scheme.Hom.coborderRange (f : X.Hom Y) [IsImmersion f] : Y.Opens :=
-  ⟨coborder (Set.range f.base), f.isLocallyClosed_range.isOpen_coborder⟩
+def Scheme.Hom.coborderRange (f : X ⟶ Y) [IsImmersion f] : Y.Opens :=
+  ⟨coborder (Set.range f), f.isLocallyClosed_range.isOpen_coborder⟩
 
 /--
 The first part of the factorization of an immersion `f : X ⟶ Y` to a closed immersion
 `f.liftCoborder : X ⟶ f.coborderRange` and a dominant open immersion `f.coborderRange.ι`.
 -/
 noncomputable
-def Scheme.Hom.liftCoborder (f : X.Hom Y) [IsImmersion f] : X ⟶ f.coborderRange :=
+def Scheme.Hom.liftCoborder (f : X ⟶ Y) [IsImmersion f] : X ⟶ f.coborderRange :=
   IsOpenImmersion.lift f.coborderRange.ι f (by simpa using subset_coborder)
 
 /--
@@ -65,7 +65,7 @@ Any (locally-closed) immersion can be factored into
 a closed immersion followed by a (dominant) open immersion.
 -/
 @[reassoc (attr := simp)]
-lemma Scheme.Hom.liftCoborder_ι (f : X.Hom Y) [IsImmersion f] :
+lemma Scheme.Hom.liftCoborder_ι (f : X ⟶ Y) [IsImmersion f] :
     f.liftCoborder ≫ f.coborderRange.ι = f :=
   IsOpenImmersion.lift_fac _ _ _
 
@@ -122,10 +122,10 @@ instance : IsZariskiLocalAtTarget @IsImmersion := by
   · simp_rw [Set.range_restrictPreimage]
     exact fun _ _ _ hU _ ↦ hU.isLocallyClosed_iff_coe_preimage
 
-instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsImmersion f where
+instance (priority := 900) (f : X ⟶ Y) [IsOpenImmersion f] : IsImmersion f where
   isLocallyClosed_range := f.isOpenEmbedding.2.isLocallyClosed
 
-instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsImmersion f where
+instance (priority := 900) (f : X ⟶ Y) [IsClosedImmersion f] : IsImmersion f where
   isLocallyClosed_range := f.isClosedEmbedding.2.isLocallyClosed
 
 instance : MorphismProperty.IsMultiplicative @IsImmersion where
@@ -162,6 +162,19 @@ instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsI
     rw [← Limits.pullback.lift_fst (f := f) (g := g.coborderRange.ι) g' (f' ≫ g.liftCoborder)
       (by simpa using H.w.symm)]
     infer_instance
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion g] : IsImmersion (Limits.pullback.fst f g) :=
+  MorphismProperty.pullback_fst _ _ ‹_›
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion f] : IsImmersion (Limits.pullback.snd f g) :=
+  MorphismProperty.pullback_snd _ _ ‹_›
+
+instance (f : X ⟶ Y) (V : Y.Opens) [IsImmersion f] : IsImmersion (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [IsImmersion f] :
+    IsImmersion (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
 
 open Limits Scheme.Pullback in
 /-- The diagonal morphism is always an immersion. -/

@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 # Separated morphisms
 
-A morphism of schemes is separated if its diagonal morphism is a closed immmersion.
+A morphism of schemes is separated if its diagonal morphism is a closed immersion.
 
 ## Main definitions
 - `AlgebraicGeometry.IsSeparated`: The class of separated morphisms.
@@ -77,6 +77,21 @@ instance : IsZariskiLocalAtTarget @IsSeparated := by
   rw [isSeparated_eq_diagonal_isClosedImmersion]
   infer_instance
 
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsSeparated g] :
+    IsSeparated (pullback.fst f g) :=
+  MorphismProperty.pullback_fst f g inferInstance
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsSeparated f] :
+    IsSeparated (pullback.snd f g) :=
+  MorphismProperty.pullback_snd f g inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [IsSeparated f] : IsSeparated (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [IsSeparated f] :
+    IsSeparated (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
+
 instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   constructor
   letI := f.hom.toAlgebra
@@ -122,7 +137,7 @@ open Scheme Pullback
 variable (𝒰 : Y.OpenCover) (𝒱 : ∀ i, (pullback f (𝒰.f i)).OpenCover)
 
 lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
-    (hf : Function.Injective f.base) :
+    (hf : Function.Injective f) :
     diagonalCoverDiagonalRange f 𝒰 𝒱 = ⊤ := by
   rw [← top_le_iff]
   rintro x -
@@ -148,7 +163,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   simp [← H, ← hz₁, ← hy]
 
 lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
-    Set.range (pullback.diagonal f).base ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
+    Set.range (pullback.diagonal f) ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
   rintro _ ⟨x, rfl⟩
   simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
     openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
@@ -189,7 +204,7 @@ lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
   infer_instance
 
 @[stacks 0DVA]
-lemma isSeparated_of_injective (hf : Function.Injective f.base) :
+lemma isSeparated_of_injective (hf : Function.Injective f) :
     IsSeparated f := by
   constructor
   let 𝒰 := Y.affineCover
@@ -200,10 +215,17 @@ lemma isSeparated_of_injective (hf : Function.Injective f.base) :
 
 end of_injective
 
+instance : MorphismProperty.HasOfPostcompProperty @IsClosedImmersion @IsSeparated :=
+  MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
+    fun _ _ _ _ ↦ inferInstanceAs (IsClosedImmersion _)
+
 lemma IsClosedImmersion.of_comp [IsClosedImmersion (f ≫ g)] [IsSeparated g] :
-    IsClosedImmersion f := by
-  rw [← pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
-  infer_instance
+    IsClosedImmersion f := MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
+
+variable {f g} in
+lemma IsClosedImmersion.comp_iff [IsClosedImmersion g] :
+    IsClosedImmersion (f ≫ g) ↔ IsClosedImmersion f :=
+  ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
 instance {I J : X.IdealSheafData} (h : I ≤ J) : IsClosedImmersion (I.inclusion h) := by
   have : IsClosedImmersion (I.inclusion h ≫ I.subschemeι) := by
@@ -220,15 +242,18 @@ variable {f g} in
 lemma IsSeparated.comp_iff [IsSeparated g] : IsSeparated (f ≫ g) ↔ IsSeparated f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
+instance : MorphismProperty.HasOfPostcompProperty @IsSeparated ⊤ where
+  of_postcomp f g _ _ := .of_comp f g
+
+instance : MorphismProperty.HasOfPostcompProperty @IsAffineHom @IsSeparated :=
+  MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
+    fun _ _ _ _ ↦ inferInstanceAs (IsAffineHom _)
+
 lemma IsAffineHom.of_comp [IsAffineHom (f ≫ g)] [IsSeparated g] :
-    IsAffineHom f := by
-  rw [← pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
-  have := MorphismProperty.pullback_snd (P := @IsAffineHom) (f ≫ g) g inferInstance
-  infer_instance
+    IsAffineHom f := MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
 
 variable {f g} in
-lemma IsAffineHom.comp_iff [IsAffineHom g] :
-    IsAffineHom (f ≫ g) ↔ IsAffineHom f :=
+lemma IsAffineHom.comp_iff [IsAffineHom g] : IsAffineHom (f ≫ g) ↔ IsAffineHom f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
 @[stacks 01KM]
