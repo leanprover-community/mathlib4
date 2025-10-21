@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.IdealSheaf.Basic
 import Mathlib.CategoryTheory.Adjunction.Opposites
 
@@ -674,6 +675,10 @@ instance [QuasiCompact f] : IsDominant f.toImage where
       ← Set.univ_subset_iff, ← Set.image_subset_iff, Set.image_univ,
       IdealSheafData.range_subschemeι, Hom.support_ker, ← Set.range_comp,
       ← TopCat.coe_comp, ← Scheme.Hom.comp_base, f.toImage_imageι]
+
+instance [QuasiCompact f] : QuasiCompact f.toImage :=
+  have : QuasiCompact (f.toImage ≫ f.imageι) := by simpa
+  .of_comp _ f.imageι
 
 instance : IsIso (IdealSheafData.subschemeι ⊥ : _ ⟶ X) :=
   ⟨Scheme.Hom.toImage (𝟙 X) ≫ IdealSheafData.inclusion bot_le,
