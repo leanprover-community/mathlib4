@@ -122,6 +122,8 @@ def continuousMapEquiv [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
       hasCompactSupport' := HasCompactSupport.of_compactSpace f }
   invFun f := f
 
+@[deprecated (since := "2025-10-21")] alias ContinuousMap.liftCompactlySupported := continuousMapEquiv
+
 variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
 
 /-- Composition of a continuous function `f` with compact support with another continuous function
