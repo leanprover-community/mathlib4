@@ -153,10 +153,10 @@ private lemma le_aeval_of_isMonicOfDegree (x : F) {M : ℝ} (hM : 0 ≤ M)
   | zero => simp [isMonicOfDegree_zero_iff.mp hp]
   | succ n ih =>
     obtain ⟨f₁, f₂, hf₁, hf₂, H⟩ := hp.eq_isMonicOfDegree_one_mul_isMonicOfDegree
-    obtain ⟨r, hr⟩ := isMonicOfDegree_one_iff.mp hf₁
+    obtain ⟨r, rfl⟩ := isMonicOfDegree_one_iff.mp hf₁
     have H' (y : F) : aeval y (X + C r) = y + r • 1 := by
       simp [Algebra.algebraMap_eq_smul_one]
-    rw [H, aeval_mul, norm_mul, mul_comm, pow_succ, hr, H', sub_add, ← sub_smul]
+    rw [H, aeval_mul, norm_mul, mul_comm, pow_succ, H', sub_add, ← sub_smul]
     exact mul_le_mul (ih hf₂) (h (c - r)) hM (norm_nonneg _)
 
 private lemma norm_sub_is_constant {x : F} {z : ℂ} (hz : ∀ z' : ℂ, ‖x - z • 1‖ ≤ ‖x - z' • 1‖)
