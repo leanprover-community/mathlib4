@@ -157,69 +157,6 @@ noncomputable def g_comp (i : B) :
     let f := Bundle.TotalSpace.snd ∘ tangentMap IB 𝓘(ℝ, EB) (extChartAt IB i)
     ((fun x ↦ @Inner.inner ℝ EB _ x.1 x.2) ∘ Prod.map f f) (x.2)
 
-noncomputable def G (i : B) (x : B) (v : TangentSpace IB x) :
-  TangentBundle IB B → ℝ
-| (⟨y, w⟩) =>
-    @Inner.inner ℝ EB _
-      (Bundle.TotalSpace.snd (tangentMap IB 𝓘(ℝ, EB) (extChartAt IB i) ⟨x, v⟩))
-      (Bundle.TotalSpace.snd (tangentMap IB 𝓘(ℝ, EB) (extChartAt IB i) ⟨y, w⟩))
-
-theorem contMDiff_G (i x : B) (v : TangentSpace IB x) :
-  ContMDiff (IB.tangent) (𝓘(ℝ, ℝ)) ω (G i x v) := by
-
-  have : ContMDiffOn IB 𝓘(ℝ, EB) ω (extChartAt IB i) (chartAt HB i).source :=
-      contMDiffOn_extChartAt
-
-  have h_tangent :
-   ContMDiffOn IB.tangent (𝓘(ℝ, EB).tangent) (ω-1)
-    (tangentMapWithin IB 𝓘(ℝ, EB) (extChartAt IB i) (chartAt HB i).source)
-    (TotalSpace.proj ⁻¹' (chartAt HB i).source) :=
-    ContMDiffOn.contMDiffOn_tangentMapWithin this
-      (OrderTop.le_top (ω - 1 + 1)) (IsOpen.uniqueMDiffOn (chartAt HB i).open_source)
-
-  have h_snd : ContMDiff ((𝓘(ℝ, EB)).tangent) (𝓘(ℝ, EB)) ⊤
-    (fun p : TangentBundle (𝓘(ℝ, EB)) EB => Bundle.TotalSpace.snd p) := by
-      exact contMDiff_snd_tangentBundle_modelSpace EB 𝓘(ℝ, EB)
-
-  have h_sndOn : ContMDiffOn ((𝓘(ℝ, EB)).tangent) (𝓘(ℝ, EB)) ⊤
-    (fun p : TangentBundle (𝓘(ℝ, EB)) EB => Bundle.TotalSpace.snd p) ⊤ := fun x a ↦ h_snd x
-
-  -- So far we have (p, v) ↦ d(ψᵢ)ₚ(v) is smooth
-  have h_fiber : ContMDiffOn IB.tangent 𝓘(ℝ, EB) ω
-    ((fun p ↦ p.snd) ∘ tangentMapWithin IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) (chartAt HB i).source)
-    (TotalSpace.proj ⁻¹' (chartAt HB i).source) :=
-      ContMDiffOn.comp h_sndOn h_tangent (fun ⦃a⦄ a ↦ trivial)
-
-  have h_inneq : ContDiff ℝ ω fun (w : EB) ↦ @Inner.inner ℝ EB _ v w := by
-    exact contDiff_inner.comp (ContDiff.prodMk contDiff_const contDiff_id)
-  have h_inner : ContMDiff 𝓘(ℝ, EB) 𝓘(ℝ, ℝ) ⊤ fun (w : EB) ↦ @Inner.inner ℝ EB _ v w := by
-    apply ContDiff.contMDiff
-    exact h_inneq
-  have h_innerOn : ContMDiffOn 𝓘(ℝ, EB) 𝓘(ℝ, ℝ) ⊤ (fun (w : EB) ↦ @Inner.inner ℝ EB _ v w) ⊤ :=
-    fun x a ↦ h_inner x
-
-  have : ContMDiffOn IB.tangent 𝓘(ℝ, ℝ) ω
-   ((fun w ↦ @Inner.inner ℝ EB _ v w) ∘
-    (fun p ↦ p.snd) ∘
-    tangentMapWithin IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) (chartAt HB i).source)
-    (TotalSpace.proj ⁻¹' (chartAt HB i).source) :=
-      ContMDiffOn.comp h_innerOn h_fiber (fun ⦃a⦄ a ↦ trivial)
-  unfold G
-  exact sorry
-
-example : ContDiff ℝ ω fun (p : EB × EB) ↦ @Inner.inner ℝ EB _ p.1 p.2 := contDiff_inner
-
-example (i : B) :
-  ContMDiffOn (IB.tangent) (𝓘(ℝ, EB).tangent) (ω - 1)
-    (tangentMapWithin IB 𝓘(ℝ, EB) (extChartAt IB i) (chartAt HB i).source)
-    (Bundle.TotalSpace.proj ⁻¹' (chartAt HB i).source) := by
-  apply ContMDiffOn.contMDiffOn_tangentMapWithin
-  · have : ContMDiffOn IB 𝓘(ℝ, EB) ω (extChartAt IB i) (chartAt HB i).source :=
-      contMDiffOn_extChartAt
-    exact this
-  · exact OrderTop.le_top (ω - 1 + 1)
-  · exact IsOpen.uniqueMDiffOn (chartAt HB i).open_source
-
 lemma g_add' (i p : B) (x y v : TangentSpace IB p) :
   g i p v (x + y) = g i p v x + g i p v y := by
   unfold g
@@ -330,11 +267,6 @@ noncomputable instance :
                    (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))) := by
     unfold W
     infer_instance
-
-noncomputable instance : TopologicalSpace (TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ)
-  (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))) := by
-  unfold W
-  infer_instance
 
 #check SmoothBumpCovering.IsSubordinate.toSmoothPartitionOfUnity
 
@@ -495,67 +427,3 @@ def riemannian_metric_exists
     isVonNBounded := sorry
     contMDiff := (g_global_smooth_section f h_sub).contMDiff_toFun
      }
-
-
-noncomputable def G (i : B) (x : B) (v : TangentSpace IB x) :
-  TangentBundle IB B → ℝ
-| (⟨y, w⟩) =>
-    @Inner.inner ℝ EB _
-      (Bundle.TotalSpace.snd (tangentMap IB 𝓘(ℝ, EB) (extChartAt IB i) ⟨x, v⟩))
-      (Bundle.TotalSpace.snd (tangentMap IB 𝓘(ℝ, EB) (extChartAt IB i) ⟨y, w⟩))
-
-theorem contMDiff_G (i x : B) (v : TangentSpace IB x) :
-  ContMDiff (IB.tangent) (𝓘(ℝ, ℝ)) ω (G i x v) := by
-
-  have : ContMDiffOn IB 𝓘(ℝ, EB) ω (extChartAt IB i) (chartAt HB i).source :=
-      contMDiffOn_extChartAt
-
-  have h_tangent :
-   ContMDiffOn IB.tangent (𝓘(ℝ, EB).tangent) (ω-1)
-    (tangentMapWithin IB 𝓘(ℝ, EB) (extChartAt IB i) (chartAt HB i).source)
-    (TotalSpace.proj ⁻¹' (chartAt HB i).source) :=
-    ContMDiffOn.contMDiffOn_tangentMapWithin this
-      (OrderTop.le_top (ω - 1 + 1)) (IsOpen.uniqueMDiffOn (chartAt HB i).open_source)
-
-  have h_snd : ContMDiff ((𝓘(ℝ, EB)).tangent) (𝓘(ℝ, EB)) ⊤
-    (fun p : TangentBundle (𝓘(ℝ, EB)) EB => Bundle.TotalSpace.snd p) := by
-      exact contMDiff_snd_tangentBundle_modelSpace EB 𝓘(ℝ, EB)
-
-  have h_sndOn : ContMDiffOn ((𝓘(ℝ, EB)).tangent) (𝓘(ℝ, EB)) ⊤
-    (fun p : TangentBundle (𝓘(ℝ, EB)) EB => Bundle.TotalSpace.snd p) ⊤ := fun x a ↦ h_snd x
-
-  -- So far we have (p, v) ↦ d(ψᵢ)ₚ(v) is smooth
-  have h_fiber : ContMDiffOn IB.tangent 𝓘(ℝ, EB) ω
-    ((fun p ↦ p.snd) ∘ tangentMapWithin IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) (chartAt HB i).source)
-    (TotalSpace.proj ⁻¹' (chartAt HB i).source) :=
-      ContMDiffOn.comp h_sndOn h_tangent (fun ⦃a⦄ a ↦ trivial)
-
-  have h_inneq : ContDiff ℝ ω fun (w : EB) ↦ @Inner.inner ℝ EB _ v w := by
-    exact contDiff_inner.comp (ContDiff.prodMk contDiff_const contDiff_id)
-  have h_inner : ContMDiff 𝓘(ℝ, EB) 𝓘(ℝ, ℝ) ⊤ fun (w : EB) ↦ @Inner.inner ℝ EB _ v w := by
-    apply ContDiff.contMDiff
-    exact h_inneq
-  have h_innerOn : ContMDiffOn 𝓘(ℝ, EB) 𝓘(ℝ, ℝ) ⊤ (fun (w : EB) ↦ @Inner.inner ℝ EB _ v w) ⊤ :=
-    fun x a ↦ h_inner x
-
-  have : ContMDiffOn IB.tangent 𝓘(ℝ, ℝ) ω
-   ((fun w ↦ @Inner.inner ℝ EB _ v w) ∘
-    (fun p ↦ p.snd) ∘
-    tangentMapWithin IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) (chartAt HB i).source)
-    (TotalSpace.proj ⁻¹' (chartAt HB i).source) :=
-      ContMDiffOn.comp h_innerOn h_fiber (fun ⦃a⦄ a ↦ trivial)
-  unfold G
-  exact sorry
-
-example : ContDiff ℝ ω fun (p : EB × EB) ↦ @Inner.inner ℝ EB _ p.1 p.2 := contDiff_inner
-
-example (i : B) :
-  ContMDiffOn (IB.tangent) (𝓘(ℝ, EB).tangent) (ω - 1)
-    (tangentMapWithin IB 𝓘(ℝ, EB) (extChartAt IB i) (chartAt HB i).source)
-    (Bundle.TotalSpace.proj ⁻¹' (chartAt HB i).source) := by
-  apply ContMDiffOn.contMDiffOn_tangentMapWithin
-  · have : ContMDiffOn IB 𝓘(ℝ, EB) ω (extChartAt IB i) (chartAt HB i).source :=
-      contMDiffOn_extChartAt
-    exact this
-  · exact OrderTop.le_top (ω - 1 + 1)
-  · exact IsOpen.uniqueMDiffOn (chartAt HB i).open_source
