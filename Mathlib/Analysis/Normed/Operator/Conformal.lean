@@ -42,7 +42,6 @@ noncomputable section
 
 open Function LinearIsometry ContinuousLinearMap
 
-
 /-- A continuous linear map `f'` is said to be conformal if it's
 a nonzero multiple of a linear isometry. -/
 def IsConformalMap {R : Type*} {X Y : Type*} [NormedField R] [SeminormedAddCommGroup X]
@@ -53,7 +52,7 @@ variable {R M N G M' : Type*} [NormedField R] [SeminormedAddCommGroup M] [Semino
   [SeminormedAddCommGroup G] [NormedSpace R M] [NormedSpace R N] [NormedSpace R G]
   [NormedAddCommGroup M'] [NormedSpace R M'] {f : M →L[R] N} {g : N →L[R] G} {c : R}
 
-theorem isConformalMap_id : IsConformalMap (id R M) :=
+theorem isConformalMap_id : IsConformalMap (.id R M) :=
   ⟨1, one_ne_zero, id, by simp⟩
 
 theorem IsConformalMap.smul (hf : IsConformalMap f) {c : R} (hc : c ≠ 0) :
@@ -61,7 +60,7 @@ theorem IsConformalMap.smul (hf : IsConformalMap f) {c : R} (hc : c ≠ 0) :
   rcases hf with ⟨c', hc', li, rfl⟩
   exact ⟨c * c', mul_ne_zero hc hc', li, smul_smul _ _ _⟩
 
-theorem isConformalMap_const_smul (hc : c ≠ 0) : IsConformalMap (c • id R M) :=
+theorem isConformalMap_const_smul (hc : c ≠ 0) : IsConformalMap (c • .id R M) :=
   isConformalMap_id.smul hc
 
 protected theorem LinearIsometry.isConformalMap (f' : M →ₗᵢ[R] N) :

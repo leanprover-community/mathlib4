@@ -270,25 +270,25 @@ lemma isClosedUnderColimitsOfShape_iff_op :
     P.IsClosedUnderColimitsOfShape J ↔
       P.op.IsClosedUnderLimitsOfShape Jᵒᵖ := by
   rw [isClosedUnderColimitsOfShape_iff, isClosedUnderLimitsOfShape_iff,
-    colimitsOfShape_eq_unop_limitsOfShape, ← op_le_op_iff, op_unop]
+    colimitsOfShape_eq_unop_limitsOfShape, ← op_monotone_iff, op_unop]
 
 lemma isClosedUnderLimitsOfShape_iff_op :
     P.IsClosedUnderLimitsOfShape J ↔
       P.op.IsClosedUnderColimitsOfShape Jᵒᵖ := by
   rw [isClosedUnderColimitsOfShape_iff, isClosedUnderLimitsOfShape_iff,
-    limitsOfShape_eq_unop_colimitsOfShape, ← op_le_op_iff, op_unop]
+    limitsOfShape_eq_unop_colimitsOfShape, ← op_monotone_iff, op_unop]
 
 lemma isClosedUnderColimitsOfShape_op_iff_op :
     P.IsClosedUnderColimitsOfShape Jᵒᵖ ↔
       P.op.IsClosedUnderLimitsOfShape J := by
   rw [isClosedUnderColimitsOfShape_iff, isClosedUnderLimitsOfShape_iff,
-    limitsOfShape_op, op_le_op_iff]
+    limitsOfShape_op, op_monotone_iff]
 
 lemma isClosedUnderLimitsOfShape_op_iff_op :
     P.IsClosedUnderLimitsOfShape Jᵒᵖ ↔
       P.op.IsClosedUnderColimitsOfShape J := by
   rw [isClosedUnderColimitsOfShape_iff, isClosedUnderLimitsOfShape_iff,
-    colimitsOfShape_op, op_le_op_iff]
+    colimitsOfShape_op, op_monotone_iff]
 
 instance [P.IsClosedUnderColimitsOfShape J] :
     P.op.IsClosedUnderLimitsOfShape Jᵒᵖ := by
