@@ -322,6 +322,22 @@ lemma algebraMap_eq_one_iff {r : R} : algebraMap R A r = 1 ↔ r = 1 :=
 
 end FaithfulSMul
 
+namespace algebraMap
+
+@[norm_cast, simp]
+theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
+  (FaithfulSMul.algebraMap_injective _ _).eq_iff
+
+@[norm_cast]
+theorem coe_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
+  FaithfulSMul.algebraMap_eq_zero_iff _ _
+
+@[deprecated coe_eq_zero_iff (since := "29/09/2025")]
+theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
+  coe_eq_zero_iff _ _ _
+
+end algebraMap
+
 lemma Algebra.charZero_of_charZero [CharZero R] : CharZero A :=
   have := algebraMap_comp_natCast R A
   ⟨this ▸ (FaithfulSMul.algebraMap_injective R A).comp CharZero.cast_injective⟩

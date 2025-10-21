@@ -3,6 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.RatFunc.Defs
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.Algebraic.Integral
@@ -1064,5 +1065,18 @@ theorem num_mul_denom_add_denom_mul_num_ne_zero {x y : RatFunc K} (hxy : x + y �
   exact (mul_ne_zero (num_ne_zero hxy) (mul_ne_zero x.denom_ne_zero y.denom_ne_zero)) h
 
 end NumDenom
+
+section Char
+
+instance [Field K] {p : ℕ} [CharP K p] : CharP (RatFunc K) p :=
+  charP_of_injective_algebraMap' K p
+
+instance [Field K] {p : ℕ} [ExpChar K p] : ExpChar (RatFunc K) p :=
+  ExpChar.of_injective_algebraMap' K p
+
+instance [Field K] [CharZero K] : CharZero (RatFunc K) :=
+  Algebra.charZero_of_charZero K _
+
+end Char
 
 end RatFunc

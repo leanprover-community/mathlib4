@@ -11,6 +11,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Field
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.Algebra.Hom.Rat
+import Mathlib.Algebra.Algebra.IsSimpleRing
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Operations
