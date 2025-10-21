@@ -435,9 +435,6 @@ variable {R}
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 
-@[simp]
-lemma toRingHom_ofId : RingHomClass.toRingHom (ofId R A) = algebraMap R A := rfl
-
 /-- This is a special case of a more general instance that we define in a later file. -/
 instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
   ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
