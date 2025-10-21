@@ -187,7 +187,6 @@ end AddCommGroup
 
 instance (priority := 100) divisibleByIntOfCharZero {𝕜} [DivisionRing 𝕜] [CharZero 𝕜] :
     DivisibleBy 𝕜 ℤ where
-  div q n := q / n
   div_zero q := by simp
   div_cancel {n} q hn := by
     rw [zsmul_eq_mul, (Int.cast_commute n _).eq, div_mul_cancel₀ q (Int.cast_ne_zero.mpr hn)]
