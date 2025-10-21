@@ -50,7 +50,7 @@ Uniqueness of the conditional expectation
 * `ae_eq_condExp_of_forall_setIntegral_eq`: an a.e. `m`-measurable function which verifies the
   equality of integrals is a.e. equal to `condExp`.
 
-## Notations
+## Notation
 
 For a measure `μ` defined on a measurable space structure `m₀`, another measurable space structure
 `m` with `hm : m ≤ m₀` (a sub-σ-algebra) and a function `f`, we define the notation
@@ -180,6 +180,7 @@ theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f|m]) := by
   · exact aestronglyMeasurable_condExpL1.stronglyMeasurable_mk
   · exact stronglyMeasurable_zero
 
+@[gcongr]
 theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f|m] =ᵐ[μ] μ[g|m] := by
   by_cases hm : m ≤ m₀
   swap; · simp_rw [condExp_of_not_le hm]; rfl

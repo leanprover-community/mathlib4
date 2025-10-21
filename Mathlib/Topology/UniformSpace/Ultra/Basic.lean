@@ -119,20 +119,8 @@ lemma IsTransitiveRel.mem_filter_prod_trans {s : Set (X × X)} {f g h : Filter X
     s ∈ f ×ˢ h :=
   Eventually.trans_prod (by simpa using hfg) (by simpa using hgh) hs
 
-lemma IsTransitiveRel.mem_filter_prod_comm {s : Set (X × X)} {f g h : Filter X} [g.NeBot]
-    (hs : IsTransitiveRel s) (hfg : s ∈ f ×ˢ g) (hgh : s ∈ g ×ˢ h) :
-    s ∈ f ×ˢ h := by
-  rw [mem_prod_iff] at hfg hgh ⊢
-  obtain ⟨t, ht, u, hu, htu⟩ := hfg
-  obtain ⟨v, hv, w, hw, hvw⟩ := hgh
-  replace htu : t ×ˢ (u ∩ v) ⊆ s := by
-    rw [Set.prod_inter]
-    refine inter_subset_left.trans htu
-  replace hvw : (u ∩ v) ×ˢ w ⊆ s := by
-    rw [Set.inter_prod]
-    refine inter_subset_right.trans hvw
-  refine ⟨_, ht, _, hw, hs.prod_subset_trans htu hvw <| g.nonempty_of_mem ?_⟩
-  simp [hu, hv]
+@[deprecated (since := "2025-10-08")]
+alias IsTransitiveRel.mem_filter_prod_comm := IsTransitiveRel.mem_filter_prod_trans
 
 open UniformSpace in
 lemma IsTransitiveRel.ball_subset_of_mem {V : Set (X × X)} (h : IsTransitiveRel V)

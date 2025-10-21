@@ -255,9 +255,7 @@ theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f 
   | succ m =>
   cases n with
   | zero => simp only [add_zero, Nat.cast_zero, mul_zero, map_zero]
-  | succ n =>
-  simp only [Nat.add_succ_sub_one, add_tsub_cancel_right]
-  rw [add_assoc, add_comm n 1]
+  | succ n => grind
 
 theorem derivative_eval (p : R[X]) (x : R) :
     p.derivative.eval x = p.sum fun n a => a * n * x ^ (n - 1) := by
@@ -387,7 +385,7 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
       refine sum_congr rfl fun k hk => ?_
       rw [mem_range] at hk
       congr
-      omega
+      cutsat
     · rw [Nat.choose_zero_right, tsub_zero]
 
 /--

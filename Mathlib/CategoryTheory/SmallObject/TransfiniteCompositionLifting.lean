@@ -183,13 +183,18 @@ lemma map_lift {i : J} (hij : i < j) :
 end wellOrderInductionData
 
 variable {p} [SuccOrder J] [WellFoundedLT J]
-  (hF : ∀ (j : J) (_ : ¬IsMax j), HasLiftingProperty (F.map (homOfLE (Order.le_succ j))) p)
+
+section
+
+variable (hF : ∀ (j : J) (_ : ¬IsMax j),
+  HasLiftingPropertyFixedBot (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g))
 
 open wellOrderInductionData in
 /-- The projective system `sqFunctor c p f g` has a `WellOrderInductionData` structure. -/
 noncomputable def wellOrderInductionData :
     (sqFunctor c p f g).WellOrderInductionData where
   succ j hj sq' :=
+    have := hF j hj sq'.f'
     have := hF j hj
     { f' := sq'.sq.lift
       w₁ := by
@@ -219,8 +224,17 @@ lemma hasLift : sq.HasLift := by
     fac_left := by rw [hl, hs]
     fac_right := hc.hom_ext (fun j ↦ by rw [reassoc_of% (hl j), SqStruct.w₂])}⟩⟩
 
+lemma hasLiftingPropertyFixedBot_ι_app_bot : HasLiftingPropertyFixedBot (c.ι.app ⊥) p g :=
+  fun _ sq ↦ hasLift hc hF sq
+
+end
+
+variable {c} (hF : ∀ (j : J) (_ : ¬IsMax j),
+  HasLiftingProperty (F.map (homOfLE (Order.le_succ j))) p)
+
+include hc hF
 lemma hasLiftingProperty_ι_app_bot : HasLiftingProperty (c.ι.app ⊥) p where
-  sq_hasLift sq := hasLift hc hF sq
+  sq_hasLift sq := hasLift hc (fun j hj _ _ ↦ by have := hF j hj; infer_instance) sq
 
 end transfiniteComposition
 

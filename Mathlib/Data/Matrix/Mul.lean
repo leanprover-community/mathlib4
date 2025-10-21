@@ -138,6 +138,16 @@ theorem dotProduct_comp_equiv_symm (e : n ≃ m) : u ⬝ᵥ x ∘ e.symm = u ∘
 theorem comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
   simp [← dotProduct_comp_equiv_symm, Function.comp_def _ e.symm]
 
+theorem dotProduct_sum {ι : Type*} (u : m → α) (s : Finset ι) (v : ι → (m → α)) :
+    u ⬝ᵥ ∑ i ∈ s, v i = ∑ i ∈ s, u ⬝ᵥ v i := by
+  simp only [dotProduct, Finset.sum_apply, Finset.mul_sum]
+  rw [Finset.sum_comm]
+
+theorem sum_dotProduct {ι : Type*} (s : Finset ι) (u : ι → (m → α)) (v : m → α) :
+    (∑ i ∈ s, u i) ⬝ᵥ v = ∑ i ∈ s, u i ⬝ᵥ v := by
+  simp only [dotProduct, Finset.sum_apply, Finset.sum_mul]
+  rw [Finset.sum_comm]
+
 end NonUnitalNonAssocSemiring
 
 section NonUnitalNonAssocSemiringDecidable
@@ -231,6 +241,37 @@ theorem dotProduct_smul [SMulCommClass R α α] (x : R) (v w : m → α) :
     v ⬝ᵥ x • w = x • (v ⬝ᵥ w) := by simp [dotProduct, Finset.smul_sum, mul_smul_comm]
 
 end DistribMulAction
+
+section CommRing
+variable [CommRing α] [Nontrivial m] [Nontrivial α]
+
+/-- For any vector `a` in a nontrivial commutative ring with nontrivial index,
+there exists a non-zero vector `b` such that `b ⬝ᵥ a = 0`. In other words,
+there exists a non-zero orthogonal vector. -/
+theorem exists_ne_zero_dotProduct_eq_zero (a : m → α) : ∃ b ≠ 0, b ⬝ᵥ a = 0 := by
+  obtain ⟨i, j, hij⟩ : ∃ i j : m, i ≠ j := nontrivial_iff.mp ‹_›
+  classical
+  use if a i = 0 then Pi.single i 1 else if a j = 0 then Pi.single j 1 else
+    fun k => if k = i then a j else if k = j then - a i else 0
+  split_ifs with h h2
+  · simp [h]
+  · simp [h2]
+  · refine ⟨Function.ne_iff.mpr ⟨i, by simp [h2]⟩, ?_⟩
+    simp [dotProduct, Finset.sum_ite, Finset.sum_eq_ite i, hij.symm, mul_comm (a i)]
+
+lemma not_injective_dotProduct_left (a : m → α) :
+    ¬ Function.Injective (dotProduct a) := by
+  intro h
+  obtain ⟨b, hb, hba⟩ := exists_ne_zero_dotProduct_eq_zero a
+  simpa [dotProduct_comm a b, hba, hb] using @h b 0
+
+lemma not_injective_dotProduct_right (a : m → α) :
+    ¬ Function.Injective (dotProduct · a) := by
+  intro h
+  obtain ⟨b, hb, hba⟩ := exists_ne_zero_dotProduct_eq_zero a
+  simpa [hba, hb] using @h b 0
+
+end CommRing
 
 end DotProduct
 
@@ -590,6 +631,9 @@ theorem vecMulVec_smul' [Semigroup α] (w : m → α) (r : α) (v : n → α) :
 theorem transpose_vecMulVec [CommMagma α] (w : m → α) (v : n → α) :
     (vecMulVec w v)ᵀ = vecMulVec v w :=
   ext fun _ _ => mul_comm _ _
+
+@[simp]
+theorem diag_vecMulVec [Mul α] (u v : n → α) : diag (vecMulVec u v) = u * v := rfl
 
 section NonUnitalNonAssocSemiring
 

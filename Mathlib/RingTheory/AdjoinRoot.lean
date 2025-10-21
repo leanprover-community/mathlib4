@@ -48,6 +48,7 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 noncomputable section
 
+open Algebra (FinitePresentation FiniteType)
 open Ideal Module Polynomial
 
 universe u v w
@@ -63,7 +64,7 @@ namespace AdjoinRoot
 
 section CommRing
 
-variable [CommRing R] (f : R[X])
+variable [CommRing R] (f g : R[X])
 
 instance instCommRing : CommRing (AdjoinRoot f) :=
   Ideal.Quotient.commRing _
@@ -149,17 +150,18 @@ theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
     algebraMap S (AdjoinRoot f) = (of f).comp (algebraMap S R) :=
   rfl
 
-theorem finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
-  .of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
+instance finiteType [CommSemiring S] [Algebra S R] [FiniteType S R] :
+    FiniteType S (AdjoinRoot f) := by
+  unfold AdjoinRoot; infer_instance
 
-theorem finitePresentation : Algebra.FinitePresentation R (AdjoinRoot f) :=
-  (Algebra.FinitePresentation.polynomial R).quotient (Submodule.fg_span_singleton f)
+instance finitePresentation [CommRing S] [Algebra S R] [FinitePresentation S R] :
+    FinitePresentation S (AdjoinRoot f) := .quotient (Submodule.fg_span_singleton f)
 
 /-- The adjoined root. -/
 def root : AdjoinRoot f :=
   mk f X
 
-variable {f}
+variable {f g}
 
 instance hasCoeT : CoeTC R (AdjoinRoot f) :=
   ⟨of f⟩
@@ -199,15 +201,19 @@ theorem mk_ne_zero_of_natDegree_lt (hf : Monic f) {g : R[X]} (h0 : g ≠ 0)
     (hd : natDegree g < natDegree f) : mk f g ≠ 0 :=
   mk_eq_zero.not.2 <| hf.not_dvd_of_natDegree_lt h0 hd
 
+theorem aeval_eq_of_algebra [CommRing S] [Algebra R S] (f : S[X]) (p : R[X]) :
+    aeval (root f) p = mk f (map (algebraMap R S) p) := by
+  induction p using Polynomial.induction_on with
+  | C a =>
+    simp only [Polynomial.aeval_C, Polynomial.map_C, mk_C]
+    rw [IsScalarTower.algebraMap_apply R S]
+    simp
+  | add p q _ _ => simp_all
+  | monomial n a _ => simp_all [pow_add, ← mul_assoc]
+
 @[simp]
-theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
-  Polynomial.induction_on p
-    (fun x => by
-      rw [aeval_C]
-      rfl)
-    (fun p q ihp ihq => by rw [map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
-    rw [map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, mk_C, RingHom.map_pow, mk_X]
-    rfl
+theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p := by
+  rw [aeval_eq_of_algebra, Algebra.algebraMap_self, Polynomial.map_id]
 
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
   refine Algebra.eq_top_iff.2 fun x => ?_
@@ -334,6 +340,62 @@ theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f
 
 end Prime
 
+/-- The canonical algebraic homomorphism from `AdjoinRoot f` to `AdjoinRoot g`, where
+the polynomial `g : K[X]` divides `f`. -/
+noncomputable def algHomOfDvd (f g : R[X]) (hgf : g ∣ f) : AdjoinRoot f →ₐ[R] AdjoinRoot g :=
+  liftHom f (root g) <| (aeval_eq _).trans <| by simp [mk_eq_zero, hgf]
+
+lemma coe_algHomOfDvd (f g : R[X]) (hgf) :
+    ⇑(algHomOfDvd f g hgf) = liftHom f (root g) ((aeval_eq _).trans <| by simp [mk_eq_zero, hgf]) :=
+  rfl
+
+/-- `algHomOfDvd` sends `AdjoinRoot.root f` to `AdjoinRoot.root q`. -/
+@[simp] lemma algHomOfDvd_root (f g : R[X]) (hgf) : algHomOfDvd f g hgf (root f) = root g := by
+  rw [algHomOfDvd, liftHom_root]
+
+/-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot g`,
+where the two polynomials `f g : R[X]` are associated. -/
+noncomputable def algEquivOfAssociated (f g : R[X]) (hfg : Associated f g) :
+    AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
+  .ofAlgHom (algHomOfDvd f g hfg.symm.dvd) (algHomOfDvd g f hfg.dvd) (by ext; simp) (by ext; simp)
+
+lemma coe_algEquivOfAssociated (f g : R[X]) (hfg) :
+    ⇑(algEquivOfAssociated f g hfg) = algHomOfDvd f g hfg.symm.dvd := rfl
+
+@[simp] lemma algEquivOfAssociated_symm (f g : R[X]) (hfg) :
+    (algEquivOfAssociated f g hfg).symm = algEquivOfAssociated g f hfg.symm := rfl
+
+lemma algEquivOfAssociated_toAlgHom (f g : R[X]) (hfg) :
+    (algEquivOfAssociated f g hfg).toAlgHom = algHomOfDvd f g hfg.symm.dvd := rfl
+
+/-- `algEquivOfAssociated` sends `AdjoinRoot.root f` to `AdjoinRoot.root g`. -/
+@[simp] lemma algEquivOfAssociated_root (f g : R[X]) (hfg) :
+    algEquivOfAssociated f g hfg (root f) = root g := by
+  rw [coe_algEquivOfAssociated, algHomOfDvd_root]
+
+/-- The canonical algebraic equivalence between `AdjoinRoot f` and `AdjoinRoot g`, where
+the two polynomials `f g : R[X]` are equal. -/
+noncomputable def algEquivOfEq (f g : R[X]) (hfg : f = g) : AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
+  algEquivOfAssociated f g (by rw [hfg])
+
+lemma coe_algEquivOfEq (f g : R[X]) (hfg) :
+    ⇑(algEquivOfEq f g hfg) = algHomOfDvd f g hfg.symm.dvd := rfl
+
+@[simp] lemma algEquivOfEq_symm (f g : R[X]) (hfg) :
+    (algEquivOfEq f g hfg).symm = algEquivOfEq g f hfg.symm := rfl
+
+lemma algEquivOfEq_toAlgHom (f g : R[X]) (hfg) :
+    (algEquivOfEq f g hfg).toAlgHom = algHomOfDvd f g hfg.symm.dvd := rfl
+
+/-- `algEquivOfEq` sends `AdjoinRoot.root f` to `AdjoinRoot.root g`. -/
+lemma algEquivOfEq_root (f g : R[X]) (hfg) : algEquivOfEq f g hfg (root f) = root g := by
+  rw [coe_algEquivOfEq, algHomOfDvd_root]
+
+@[deprecated (since := "2025-10-10")] alias algHomOfDvd_apply_root := algHomOfDvd_root
+@[deprecated (since := "2025-10-10")] alias algEquivOfEq_apply_root := algEquivOfEq_root
+@[deprecated (since := "2025-10-10")]
+alias algEquivOfAssociated_apply_root := algEquivOfAssociated_root
+
 end CommRing
 
 section Irreducible
@@ -376,7 +438,7 @@ variable (f)
 
 theorem mul_div_root_cancel [Fact (Irreducible f)] :
     (X - C (root f)) * ((f.map (of f)) / (X - C (root f))) = f.map (of f) :=
-  mul_div_eq_iff_isRoot.2 <| isRoot_root _
+  (isRoot_root _).mul_div_eq
 
 end Irreducible
 
@@ -547,6 +609,18 @@ theorem minpoly_powerBasis_gen (hf : f ≠ 0) :
 theorem minpoly_powerBasis_gen_of_monic (hf : f.Monic) (hf' : f ≠ 0 := hf.ne_zero) :
     minpoly K (powerBasis hf').gen = f := by
   rw [minpoly_powerBasis_gen hf', hf.leadingCoeff, inv_one, C.map_one, mul_one]
+
+/--
+See `finrank_quotient_span_eq_natDegree'` for a version over a ring when `f` is monic.
+-/
+theorem _root_.finrank_quotient_span_eq_natDegree {f : K[X]} :
+    Module.finrank K (K[X] ⧸ Ideal.span {f}) = f.natDegree := by
+  by_cases hf : f = 0
+  · rw [hf, natDegree_zero,
+      ((Submodule.quotEquivOfEqBot _ (by simp)).restrictScalars K).finrank_eq]
+    exact finrank_of_not_finite Polynomial.not_finite
+  rw [PowerBasis.finrank]
+  exact AdjoinRoot.powerBasis_dim hf
 
 end PowerBasis
 

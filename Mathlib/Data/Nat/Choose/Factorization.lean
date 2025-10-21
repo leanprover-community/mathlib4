@@ -221,7 +221,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
       have : 3 ≤ p := lt_of_le_of_ne hp.two_le hp'.symm
       calc
         n < 3 * p := hn
-        _ ≤ p * p := mul_le_mul_right' this p
+        _ ≤ p * p := by gcongr
         _ = p ^ 2 := (sq p).symm
         _ ≤ p ^ i := pow_right_mono₀ hp.one_lt.le hi
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),
@@ -232,7 +232,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
 theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) (p_le_n : p ≤ n)
     (big : 2 * n < 3 * p) : (centralBinom n).factorization p = 0 := by
   refine factorization_choose_of_lt_three_mul ?_ p_le_n (p_le_n.trans ?_) big
-  · omega
+  · cutsat
   · rw [two_mul, add_tsub_cancel_left]
 
 theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factorization p = 0 := by
@@ -277,6 +277,6 @@ at most `2n`. -/
 theorem prod_pow_factorization_centralBinom (n : ℕ) :
     (∏ p ∈ Finset.range (2 * n + 1), p ^ (centralBinom n).factorization p) = centralBinom n := by
   apply prod_pow_factorization_choose
-  omega
+  cutsat
 
 end Nat

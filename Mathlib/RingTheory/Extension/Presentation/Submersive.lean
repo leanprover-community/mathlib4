@@ -144,6 +144,33 @@ lemma aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix :
 
 end Matrix
 
+section
+
+variable [Finite σ]
+
+lemma jacobian_eq_det_aevalDifferential : P.jacobian = P.aevalDifferential.det := by
+  classical
+  cases nonempty_fintype σ
+  simp [← LinearMap.det_toMatrix', P.aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix,
+    jacobian_eq_jacobiMatrix_det, RingHom.map_det, P.algebraMap_eq]
+
+lemma isUnit_jacobian_iff_aevalDifferential_bijective :
+    IsUnit P.jacobian ↔ Function.Bijective P.aevalDifferential := by
+  rw [P.jacobian_eq_det_aevalDifferential, ← LinearMap.isUnit_iff_isUnit_det]
+  exact Module.End.isUnit_iff P.aevalDifferential
+
+lemma isUnit_jacobian_of_linearIndependent_of_span_eq_top
+    (hli : LinearIndependent S (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j)))
+    (hsp : Submodule.span S
+      (Set.range <| (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j))) = ⊤) :
+    IsUnit P.jacobian := by
+  classical
+  rw [isUnit_jacobian_iff_aevalDifferential_bijective]
+  exact LinearMap.bijective_of_linearIndependent_of_span_eq_top (Pi.basisFun _ _).span_eq
+    (by convert hli; simp) (by convert hsp; simp)
+
+end
+
 section Constructions
 
 /-- If `algebraMap R S` is bijective, the empty generators are a pre-submersive
@@ -220,7 +247,7 @@ lemma dimension_comp_eq_dimension_add_dimension [Finite ι] [Finite ι'] [Finite
   have : Nat.card σ' ≤ Nat.card ι' :=
     card_relations_le_card_vars_of_isFinite Q
   simp only [Nat.card_sum]
-  omega
+  cutsat
 
 section
 
@@ -355,9 +382,7 @@ lemma baseChange_jacobian [Finite σ] : (P.baseChange T).jacobian = 1 ⊗ₜ P.j
     simp only [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
       RingHom.mapMatrix_apply, Matrix.map_apply,
       Presentation.baseChange_toGenerators, MvPolynomial.pderiv_map]
-  rw [h]
-  erw [← RingHom.map_det, aeval_map_algebraMap]
-  rw [P.algebraMap_apply]
+  rw [h, ← RingHom.map_det, Generators.algebraMap_apply, aeval_map_algebraMap, P.algebraMap_apply]
   apply aeval_one_tmul
 
 end BaseChange
@@ -488,7 +513,7 @@ noncomputable def localizationAway : SubmersivePresentation R S Unit Unit where
   __ := PreSubmersivePresentation.localizationAway S r
   jacobian_isUnit := by
     rw [localizationAway_jacobian]
-    apply IsLocalization.map_units' (⟨r, 1, by simp⟩ : Submonoid.powers r)
+    apply IsLocalization.map_units _ (⟨r, 1, by simp⟩ : Submonoid.powers r)
 
 end Localization
 

@@ -22,7 +22,7 @@ once the `Field` class has been defined.
 
 - `Rat.divInt n d` constructs a rational number `q = n / d` from `n d : ℤ`.
 
-## Notations
+## Notation
 
 - `/.` is infix notation for `Rat.divInt`.
 
