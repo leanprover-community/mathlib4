@@ -186,7 +186,8 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 Variant of `posLog_sum` for norms of elements in normed additive commutative
 groups, using monotonicity of `log⁺` and the triangle inequality.
 -/
-lemma posLog_norm_sum_le {E : Type*} [NormedAddCommGroup E] {α : Type*} (s : Finset α) (f : α → E) :
+lemma posLog_norm_sum_le {E : Type*} [SeminormedAddCommGroup E] {α : Type*} (s : Finset α)
+    (f : α → E) :
     log⁺ ‖∑ t ∈ s, f t‖ ≤ log s.card + ∑ t ∈ s, log⁺ ‖f t‖ := by
   grw [norm_sum_le, posLog_sum]
 
@@ -200,7 +201,7 @@ theorem posLog_add {a b : ℝ} : log⁺ (a + b) ≤ log 2 + log⁺ a + log⁺ b 
 Variant of `posLog_add` for norms of elements in normed additive commutative groups, using
 monotonicity of `log⁺` and the triangle inequality.
 -/
-lemma posLog_norm_add_le {E : Type*} [NormedAddCommGroup E] (a b : E) :
+lemma posLog_norm_add_le {E : Type*} [SeminormedAddCommGroup E] (a b : E) :
     log⁺ ‖a + b‖ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
   grw [norm_add_le, posLog_add, add_rotate]
 
