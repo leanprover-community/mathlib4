@@ -106,6 +106,7 @@ open Polynomial
 
 namespace NormedAlgebra
 
+open Filter Topology in
 /- The key step: show that the norm of a suitable function is constant if the norm takes
 a positive minimum and condition `H` below is satisfied. -/
 private lemma aux {X E : Type*} [TopologicalSpace X] [PreconnectedSpace X]
@@ -113,23 +114,18 @@ private lemma aux {X E : Type*} [TopologicalSpace X] [PreconnectedSpace X]
     (h : ∀ y, M ≤ ‖f y‖) (hf : Continuous f)
     (H : ∀ {y} z, ‖f y‖ = M → ∀ n > 0, ‖f z‖ ≤ M * (1 + (‖f z - f y‖ / M) ^ n)) (y : X) :
     ‖f y‖ = M := by
-  suffices {y | ‖f y‖ = ‖f x‖} = Set.univ by simpa only [← this, hx] using Set.mem_univ y
-  refine IsClopen.eq_univ ⟨isClosed_eq (by fun_prop) (by fun_prop), ?_⟩ <| Set.nonempty_of_mem rfl
-  refine isOpen_iff_mem_nhds.mpr fun w hw ↦ ?_
-  simp only [Set.mem_setOf, hx] at hw ⊢
-  suffices ∃ U ∈ nhds w, ∀ u ∈ U, ‖f u‖ = M by
-    obtain ⟨U, hU₁, hU₂⟩ := this
-    exact Filter.mem_of_superset hU₁ fun u hu ↦ Set.mem_setOf.mpr <| hU₂ u hu
-  obtain ⟨U, hU₀, hU⟩ : ∃ U ∈ nhds w, ∀ u ∈ U, ‖f u - f w‖ < M := by
-    refine ⟨f ⁻¹' {y | ‖y - f w‖ < M}, hf.tendsto w ?_, fun _ H ↦ by simpa using H⟩
-    exact isOpen_lt (by fun_prop) (by fun_prop) |>.mem_nhds (by simpa)
-  refine ⟨U, hU₀, fun u hu ↦ (le_antisymm (h ..) ?_).symm⟩
-  refine ge_of_tendsto ?_ <| Filter.Eventually.mono (Filter.Ioi_mem_atTop 0) <| H u hw
-  conv => enter [3, 1]; rw [show M = M * (1 + 0) by ring] -- preparation
-  refine tendsto_const_nhds.mul <| tendsto_const_nhds.add <|
-    tendsto_pow_atTop_nhds_zero_of_abs_lt_one ?_
-  rw [abs_of_nonneg (by positivity)]
-  exact (div_lt_one hM).mpr <| hU u hu
+  suffices {y | ‖f y‖ = M} = Set.univ by simpa only [← this, hx] using Set.mem_univ y
+  refine IsClopen.eq_univ ⟨isClosed_eq (by fun_prop) (by fun_prop), ?_⟩ <| Set.nonempty_of_mem hx
+  rw [isOpen_iff_eventually]
+  intro w hw
+  filter_upwards [mem_map.mp <| hf.tendsto w (Metric.ball_mem_nhds (f w) hM)] with u hu
+  simp only [Set.mem_preimage, Metric.mem_ball, dist_eq_norm, ← div_lt_one₀ hM] at hu
+  apply le_antisymm ?_ (h u)
+  suffices Tendsto (fun n : ℕ ↦ M * (1 + (‖f u - f w‖ / M) ^ n)) atTop (𝓝 (M * (1 + 0))) by
+    refine ge_of_tendsto (by simpa) ?_
+    filter_upwards [Filter.Ioi_mem_atTop 0] with n hn
+    exact H u hw n hn
+  exact tendsto_pow_atTop_nhds_zero_of_lt_one (by positivity) hu |>.const_add 1 |>.const_mul M
 
 /-- In a normed algebra `F` over a normed field `𝕜` that is a proper space, the function
 `z : 𝕜 ↦ ‖x - z • 1‖` achieves a global minimum for every `x : F`. -/
