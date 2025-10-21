@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.Tactic.TFAE
