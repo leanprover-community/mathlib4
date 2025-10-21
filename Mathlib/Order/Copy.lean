@@ -84,7 +84,6 @@ def GeneralizedHeytingAlgebra.copy (c : GeneralizedHeytingAlgebra α)
   __ := Lattice.copy (@GeneralizedHeytingAlgebra.toLattice α c) le eq_le sup eq_sup inf eq_inf
   __ := OrderTop.copy (@GeneralizedHeytingAlgebra.toOrderTop α c) top eq_top
     (by rw [← eq_le]; exact fun _ _ ↦ .rfl)
-  himp := himp
   le_himp_iff _ _ _ := by simp [eq_le, eq_himp, eq_inf]
 
 /-- A function to create a provable equal copy of a generalised co-Heyting algebra
@@ -118,7 +117,6 @@ def HeytingAlgebra.copy (c : HeytingAlgebra α)
     eq_himp
   __ := OrderBot.copy (@HeytingAlgebra.toOrderBot α c) bot eq_bot
     (by rw [← eq_le]; exact fun _ _ ↦ .rfl)
-  compl := compl
   himp_bot := by simp [eq_le, eq_himp, eq_bot, eq_compl]
 
 /-- A function to create a provable equal copy of a co-Heyting algebra

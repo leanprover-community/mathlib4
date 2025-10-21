@@ -261,11 +261,9 @@ instance semilatticeSup : SemilatticeSup PartENat :=
       ⟨fun hz => ⟨hx₁ hz, hy₁ hz⟩, fun _ => sup_le (hx₂ _) (hy₂ _)⟩ }
 
 instance orderBot : OrderBot PartENat where
-  bot := ⊥
   bot_le _ := ⟨fun _ => trivial, fun _ => Nat.zero_le _⟩
 
 instance orderTop : OrderTop PartENat where
-  top := ⊤
   le_top _ := ⟨fun h => False.elim h, fun hy => False.elim hy⟩
 
 instance : ZeroLEOneClass PartENat where

@@ -335,26 +335,22 @@ instance : Min (UniformSpace α) :=
         rw [@nhds_inf _ u₁.toTopologicalSpace _, @nhds_eq_comap_uniformity _ u₁,
           @nhds_eq_comap_uniformity _ u₂, comap_inf] }⟩
 
-instance : CompleteLattice (UniformSpace α) :=
-  { inferInstanceAs (PartialOrder (UniformSpace α)) with
-    sup := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
-    le_sup_left := fun _ _ => UniformSpace.le_sInf fun _ ⟨h, _⟩ => h
-    le_sup_right := fun _ _ => UniformSpace.le_sInf fun _ ⟨_, h⟩ => h
-    sup_le := fun _ _ _ h₁ h₂ => UniformSpace.sInf_le ⟨h₁, h₂⟩
-    inf := (· ⊓ ·)
-    le_inf := fun a _ _ h₁ h₂ => show a.uniformity ≤ _ from le_inf h₁ h₂
-    inf_le_left := fun a _ => show _ ≤ a.uniformity from inf_le_left
-    inf_le_right := fun _ b => show _ ≤ b.uniformity from inf_le_right
-    top := ⊤
-    le_top := fun a => show a.uniformity ≤ ⊤ from le_top
-    bot := ⊥
-    bot_le := fun u => u.toCore.refl
-    sSup := fun tt => sInf { t | ∀ t' ∈ tt, t' ≤ t }
-    le_sSup := fun _ _ h => UniformSpace.le_sInf fun _ h' => h' _ h
-    sSup_le := fun _ _ h => UniformSpace.sInf_le h
-    sInf := sInf
-    le_sInf := fun _ _ hs => UniformSpace.le_sInf hs
-    sInf_le := fun _ _ ha => UniformSpace.sInf_le ha }
+instance : CompleteLattice (UniformSpace α) where
+  sup := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
+  le_sup_left := fun _ _ => UniformSpace.le_sInf fun _ ⟨h, _⟩ => h
+  le_sup_right := fun _ _ => UniformSpace.le_sInf fun _ ⟨_, h⟩ => h
+  sup_le := fun _ _ _ h₁ h₂ => UniformSpace.sInf_le ⟨h₁, h₂⟩
+  inf := (· ⊓ ·)
+  le_inf := fun a _ _ h₁ h₂ => show a.uniformity ≤ _ from le_inf h₁ h₂
+  inf_le_left := fun a _ => show _ ≤ a.uniformity from inf_le_left
+  inf_le_right := fun _ b => show _ ≤ b.uniformity from inf_le_right
+  le_top := fun a => show a.uniformity ≤ ⊤ from le_top
+  bot_le := fun u => u.toCore.refl
+  sSup := fun tt => sInf { t | ∀ t' ∈ tt, t' ≤ t }
+  le_sSup := fun _ _ h => UniformSpace.le_sInf fun _ h' => h' _ h
+  sSup_le := fun _ _ h => UniformSpace.sInf_le h
+  le_sInf := fun _ _ hs => UniformSpace.le_sInf hs
+  sInf_le := fun _ _ ha => UniformSpace.sInf_le ha
 
 theorem iInf_uniformity {ι : Sort*} {u : ι → UniformSpace α} : 𝓤[iInf u] = ⨅ i, 𝓤[u i] :=
   iInf_range

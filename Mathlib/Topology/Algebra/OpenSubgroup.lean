@@ -205,7 +205,6 @@ instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
 
 @[to_additive]
 instance : OrderTop (OpenSubgroup G) where
-  top := ⊤
   le_top _ := Set.subset_univ _
 
 @[to_additive (attr := simp, norm_cast)]

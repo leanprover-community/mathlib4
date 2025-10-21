@@ -169,14 +169,12 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   inf_le_left _ _ _ := inf_le_left
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ h_fg h_fh i := le_inf (h_fg i) (h_fh i)
-  sSup := sSup
   le_sSup _ f hf_mem _ := le_sSup ⟨f, hf_mem, rfl⟩
   sSup_le s f h_forall i :=
     sSup_le fun m' hm' => by
       obtain ⟨g, hg_mem, hfm'⟩ := hm'
       rw [← hfm']
       exact h_forall g hg_mem i
-  sInf := sInf
   sInf_le s f hf_mem i := by
     have hs : s.Nonempty := ⟨f, hf_mem⟩
     simp only [sInf_def, hs, if_true]
@@ -187,8 +185,6 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
     simp only [sInf_def, hs, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂]
     exact fun g hg_mem => h_forall g hg_mem i
-  top := ⊤
-  bot := ⊥
   le_top f i := f.le' i
   bot_le _ _ := bot_le
 

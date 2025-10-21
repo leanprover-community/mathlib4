@@ -156,7 +156,6 @@ theorem top_map {x : V} (hx : x ≠ 0) : (⊤ : ENormedSpace 𝕜 V) x = ⊤ :=
   if_neg hx
 
 noncomputable instance : OrderTop (ENormedSpace 𝕜 V) where
-  top := ⊤
   le_top e x := by obtain h | h := eq_or_ne x 0 <;> simp [top_map, h]
 
 noncomputable instance : SemilatticeSup (ENormedSpace 𝕜 V) :=
