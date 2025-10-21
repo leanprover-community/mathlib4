@@ -419,12 +419,10 @@ theorem exp_add_of_mem_ball [CharZero 𝕂] {x y : 𝔸}
 
 end AnyFieldCommAlgebra
 
-section RCLike
-
 section AnyAlgebra
 
-variable (𝕂 𝔸 𝔹 : Type*) [NontriviallyNormedField 𝕂] [CharZero 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
-variable [NormedRing 𝔹] [ContinuousSMul ℚ 𝕂]
+variable (𝕂 𝔸 : Type*) [NontriviallyNormedField 𝕂] [CharZero 𝕂] [ContinuousSMul ℚ 𝕂]
+variable [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 
 /-- In a normed algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, the series defining the exponential map
 has an infinite radius of convergence. -/
@@ -443,7 +441,7 @@ theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by
   rw [expSeries_radius_eq_top]
   exact WithTop.top_pos
 
-variable {𝕂 𝔸 𝔹}
+variable {𝕂 𝔸}
 
 theorem norm_expSeries_summable (x : 𝔸) : Summable fun n => ‖expSeries 𝕂 𝔸 n fun _ => x‖ :=
   norm_expSeries_summable_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
@@ -454,7 +452,9 @@ theorem norm_expSeries_summable' (x : 𝔸) : Summable fun n => ‖(n !⁻¹ : �
     (show x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius from
       (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
-section CompleteAlgebra
+theorem algebraMap_exp_comm [CompleteSpace 𝕂] (x : 𝕂) :
+    algebraMap 𝕂 𝔸 (exp x) = exp (algebraMap 𝕂 𝔸 x) :=
+  algebraMap_exp_comm_of_mem_ball x <| (expSeries_radius_eq_top 𝕂 𝕂).symm ▸ edist_lt_top _ _
 
 variable [CompleteSpace 𝔸]
 
@@ -476,75 +476,53 @@ theorem exp_hasFPowerSeriesOnBall : HasFPowerSeriesOnBall exp (expSeries 𝕂 �
 theorem exp_hasFPowerSeriesAt_zero : HasFPowerSeriesAt exp (expSeries 𝕂 𝔸) 0 :=
   exp_hasFPowerSeriesOnBall.hasFPowerSeriesAt
 
-section
-variable (𝕂)
-include 𝕂
+theorem exp_analytic (x : 𝔸) : AnalyticAt 𝕂 exp x :=
+  analyticAt_exp_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
+end AnyAlgebra
+
+section Rat
+variable {𝔸 𝔹 : Type*} [NormedRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸] [NormedRing 𝔹]
+
+@[continuity, fun_prop]
 theorem exp_continuous : Continuous (exp : 𝔸 → 𝔸) := by
   rw [← continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
-    expSeries_radius_eq_top 𝕂 𝔸]
+    expSeries_radius_eq_top ℚ 𝔸]
   exact continuousOn_exp
 
 open Topology in
 lemma _root_.Filter.Tendsto.exp {α : Type*} {l : Filter α} {f : α → 𝔸} {a : 𝔸}
     (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x => exp (f x)) l (𝓝 (exp a)) :=
-  ((exp_continuous 𝕂).tendsto _).comp hf
+  (exp_continuous.tendsto _).comp hf
 
-end
-
-@[continuity, fun_prop]
-theorem exp_continuous_rat [NormedAlgebra ℚ 𝔸] : Continuous (exp : 𝔸 → 𝔸) := by
-  rw [← continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
-    expSeries_radius_eq_top ℚ 𝔸]
-  exact continuousOn_exp
-
-open Topology in
-lemma _root_.Filter.Tendsto.exp_rat [NormedAlgebra ℚ 𝔸]
-    {α : Type*} {l : Filter α} {f : α → 𝔸} {a : 𝔸}
-    (hf : Tendsto f l (𝓝 a)) :
-    Tendsto (fun x => exp (f x)) l (𝓝 (exp a)) :=
-  (exp_continuous_rat.tendsto _).comp hf
-
-theorem exp_analytic (x : 𝔸) : AnalyticAt 𝕂 exp x :=
-  analyticAt_exp_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
-
-variable (𝕂)
-
-include 𝕂 in
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if `x` and `y` commute, then
 `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`. -/
 theorem exp_add_of_commute {x y : 𝔸} (hxy : Commute x y) : exp (x + y) = exp x * exp y :=
-  exp_add_of_commute_of_mem_ball hxy ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
-    ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
-
-section
-include 𝕂
+  exp_add_of_commute_of_mem_ball hxy ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
+    ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
 
 /-- `NormedSace.exp x` has explicit two-sided inverse `NormedSace.exp  𝕂 (-x)`. -/
 noncomputable def invertibleExp (x : 𝔸) : Invertible (exp x) :=
-  invertibleExpOfMemBall <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+  invertibleExpOfMemBall <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
 theorem isUnit_exp (x : 𝔸) : IsUnit (exp x) :=
-  isUnit_exp_of_mem_ball <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+  isUnit_exp_of_mem_ball <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
 theorem invOf_exp (x : 𝔸) [Invertible (exp x)] : ⅟(exp x) = exp (-x) :=
-  invOf_exp_of_mem_ball <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+  invOf_exp_of_mem_ball <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
 theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp x) = exp (-x) :=
-  letI := invertibleExp 𝕂 x
+  letI := invertibleExp x
   Ring.inverse_invertible _
 
 theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : x ∈ skewAdjoint 𝔸) : exp x ∈ unitary 𝔸 := by
   rw [unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
-    exp_add_of_commute 𝕂 (Commute.refl x).neg_left, ←
-    exp_add_of_commute 𝕂 (Commute.refl x).neg_right, neg_add_cancel, add_neg_cancel, exp_zero,
+    exp_add_of_commute (Commute.refl x).neg_left, ←
+    exp_add_of_commute (Commute.refl x).neg_right, neg_add_cancel, add_neg_cancel, exp_zero,
     and_self_iff]
 
-end
-
-include 𝕂 in
 open scoped Function in -- required for scoped `on` notation
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if a family of elements `f i` mutually
 commute then `NormedSpace.exp (∑ i, f i) = ∏ i, NormedSpace.exp (f i)`. -/
@@ -556,127 +534,109 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
   induction s using Finset.induction_on with
   | empty => simp
   | insert a s ha ih =>
-    rw [Finset.noncommProd_insert_of_notMem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute 𝕂,
+    rw [Finset.noncommProd_insert_of_notMem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute,
       ih (h.mono <| Finset.subset_insert _ _)]
     refine Commute.sum_right _ _ _ fun i hi => ?_
     exact h.of_refl (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)
 
-include 𝕂 in
 theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp (n • x) = exp x ^ n := by
   induction n with
   | zero => rw [zero_smul, pow_zero, exp_zero]
-  | succ n ih => rw [succ_nsmul, pow_succ, exp_add_of_commute 𝕂 ((Commute.refl x).smul_left n), ih]
+  | succ n ih => rw [succ_nsmul, pow_succ, exp_add_of_commute ((Commute.refl x).smul_left n), ih]
 
-include 𝕂 in
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
-theorem map_exp [Algebra 𝕂 𝔹]
+theorem map_exp [Algebra ℚ 𝔹]
     {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f) (x : 𝔸) :
     f (exp x) = exp (f x) :=
-  map_exp_of_mem_ball f hf x <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+  map_exp_of_mem_ball f hf x <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
-include 𝕂 in
 theorem exp_smul {G} [Monoid G] [MulSemiringAction G 𝔸] [ContinuousConstSMul G 𝔸] (g : G) (x : 𝔸) :
     exp (g • x) = g • exp x :=
-  (map_exp 𝕂 (MulSemiringAction.toRingHom G 𝔸 g) (continuous_const_smul g) x).symm
+  (map_exp (MulSemiringAction.toRingHom G 𝔸 g) (continuous_const_smul g) x).symm
 
-include 𝕂 in
 theorem exp_units_conj (y : 𝔸ˣ) (x : 𝔸) : exp (y * x * ↑y⁻¹ : 𝔸) = y * exp x * ↑y⁻¹ :=
-  exp_smul 𝕂 (ConjAct.toConjAct y) x
+  exp_smul (ConjAct.toConjAct y) x
 
-include 𝕂 in
 theorem exp_units_conj' (y : 𝔸ˣ) (x : 𝔸) : exp (↑y⁻¹ * x * y) = ↑y⁻¹ * exp x * y :=
-  exp_units_conj 𝕂 _ _
+  exp_units_conj _ _
 
-theorem _root_.Prod.fst_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) :
+theorem _root_.Prod.fst_exp [NormedAlgebra ℚ 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) :
     (exp x).fst = exp x.fst :=
-  map_exp 𝕂 (RingHom.fst 𝔸 𝔹) continuous_fst x
+  map_exp (RingHom.fst 𝔸 𝔹) continuous_fst x
 
-theorem _root_.Prod.snd_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) :
+theorem _root_.Prod.snd_exp [NormedAlgebra ℚ 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) :
     (exp x).snd = exp x.snd :=
-  map_exp 𝕂 (RingHom.snd 𝔸 𝔹) continuous_snd x
+  map_exp (RingHom.snd 𝔸 𝔹) continuous_snd x
 
 theorem _root_.Pi.coe_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
-    [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (i : ι) :
+    [∀ i, NormedAlgebra ℚ (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (i : ι) :
     exp x i = exp (x i) :=
   let ⟨_⟩ := nonempty_fintype ι
-  map_exp 𝕂 (Pi.evalRingHom 𝔸 i) (continuous_apply _) x
+  map_exp (Pi.evalRingHom 𝔸 i) (continuous_apply _) x
 
 theorem _root_.Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
-    [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) :
+    [∀ i, NormedAlgebra ℚ (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) :
     exp x = fun i => exp (x i) :=
-  funext <| Pi.coe_exp 𝕂 x
+  funext <| Pi.coe_exp x
 
 theorem _root_.Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [DecidableEq ι]
-    [∀ i, NormedRing (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
+    [∀ i, NormedRing (𝔸 i)] [∀ i, NormedAlgebra ℚ (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
     (j : ι) (xj : 𝔸 j) :
     Function.update (exp x) j (exp xj) = exp (Function.update x j xj) := by
   ext i
-  simp_rw [Pi.exp_def 𝕂]
+  simp_rw [Pi.exp_def]
   exact (Function.apply_update (fun i => exp) x j xj i).symm
 
-end CompleteAlgebra
-
-theorem algebraMap_exp_comm [CompleteSpace 𝕂] (x : 𝕂) :
-    algebraMap 𝕂 𝔸 (exp x) = exp (algebraMap 𝕂 𝔸 x) :=
-  algebraMap_exp_comm_of_mem_ball x <| (expSeries_radius_eq_top 𝕂 𝕂).symm ▸ edist_lt_top _ _
-
-end AnyAlgebra
+end Rat
 
 section DivisionAlgebra
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
-variable (𝕂)
-include 𝕂
+variable {𝔸 : Type*} [NormedDivisionRing 𝔸] [NormedAlgebra ℚ 𝔸]
 
 theorem norm_expSeries_div_summable (x : 𝔸) : Summable fun n => ‖(x ^ n / n ! : 𝔸)‖ :=
-  norm_expSeries_div_summable_of_mem_ball 𝕂 x
-    ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
+  norm_expSeries_div_summable_of_mem_ball ℚ x
+    ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
 
 variable [CompleteSpace 𝔸]
 
 theorem expSeries_div_summable (x : 𝔸) : Summable fun n => x ^ n / n ! :=
-  (norm_expSeries_div_summable 𝕂 x).of_norm
+  (norm_expSeries_div_summable x).of_norm
 
 theorem expSeries_div_hasSum_exp (x : 𝔸) : HasSum (fun n => x ^ n / n !) (exp x) :=
-  expSeries_div_hasSum_exp_of_mem_ball 𝕂 x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
+  expSeries_div_hasSum_exp_of_mem_ball ℚ x ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
 
 theorem exp_neg (x : 𝔸) : exp (-x) = (exp x)⁻¹ :=
-  exp_neg_of_mem_ball 𝕂 <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+  exp_neg_of_mem_ball ℚ <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
 theorem exp_zsmul (z : ℤ) (x : 𝔸) : exp (z • x) = exp x ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · rw [zpow_natCast, natCast_zsmul, exp_nsmul 𝕂]
-  · rw [zpow_neg, zpow_natCast, neg_smul, exp_neg 𝕂, natCast_zsmul, exp_nsmul 𝕂]
+  · rw [zpow_natCast, natCast_zsmul, exp_nsmul]
+  · rw [zpow_neg, zpow_natCast, neg_smul, exp_neg, natCast_zsmul, exp_nsmul]
 
 theorem exp_conj (y : 𝔸) (x : 𝔸) (hy : y ≠ 0) : exp (y * x * y⁻¹) = y * exp x * y⁻¹ :=
-  exp_units_conj 𝕂 (Units.mk0 y hy) x
+  exp_units_conj (Units.mk0 y hy) x
 
 theorem exp_conj' (y : 𝔸) (x : 𝔸) (hy : y ≠ 0) : exp (y⁻¹ * x * y) = y⁻¹ * exp x * y :=
-  exp_units_conj' 𝕂 (Units.mk0 y hy) x
+  exp_units_conj' (Units.mk0 y hy) x
 
 end DivisionAlgebra
 
 section CommAlgebra
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
-variable (𝕂)
+variable {𝕂 𝔸 : Type*} [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
-include 𝕂 in
 /-- In a commutative Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`,
 `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`. -/
 theorem exp_add {x y : 𝔸} : exp (x + y) = exp x * exp y :=
-  exp_add_of_mem_ball ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
-    ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
+  exp_add_of_mem_ball ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
+    ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
 
-include 𝕂 in
 /-- A version of `NormedSpace.exp_sum_of_commute` for a commutative Banach-algebra. -/
 theorem exp_sum {ι} (s : Finset ι) (f : ι → 𝔸) : exp (∑ i ∈ s, f i) = ∏ i ∈ s, exp (f i) := by
-  rw [exp_sum_of_commute 𝕂, Finset.noncommProd_eq_prod]
+  rw [exp_sum_of_commute, Finset.noncommProd_eq_prod]
   exact fun i _hi j _hj _ => Commute.all _ _
 
 end CommAlgebra
-
-end RCLike
 
 end Normed
 
@@ -694,7 +654,7 @@ theorem expSeries_eq_expSeries (n : ℕ) (x : 𝔸) :
 /-- A version of `Complex.ofReal_exp` for `NormedSpace.exp` instead of `Complex.exp` -/
 @[simp, norm_cast]
 theorem of_real_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=
-  map_exp ℝ (algebraMap ℝ ℂ) (continuous_algebraMap _ _) r
+  map_exp (algebraMap ℝ ℂ) (continuous_algebraMap _ _) r
 
 end ScalarTower
 
