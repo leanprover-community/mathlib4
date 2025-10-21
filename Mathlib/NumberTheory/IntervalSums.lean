@@ -64,13 +64,13 @@ def symmetricConditional : SummationFilter G where
   filter := atTop.map (fun g ↦ Icc (-g) g)
 
 /-- The SummationFilter on `ℤ` corresponding to the intervals `Icc -N N`. Note that this is
-the same as the limit over open intervals `Ioo -N N` (see `symmetricConditional_eq_map_Ioo`). -/
+the same as the limit over open intervals `Ioo -N N` (see `symCondInt_eq_map_Ioo`). -/
 abbrev symCondInt : SummationFilter ℤ := symmetricConditional ℤ
 
 lemma symmetricConditional_eq_map_Icc :
     (symmetricConditional G).filter = atTop.map (fun N ↦ Icc (-N) N) := rfl
 
-lemma symmetricConditional_eq_map_Icc_nat :
+lemma symCondInt_eq_map_Icc_nat :
     symCondInt.filter = atTop.map (fun N : ℕ ↦ Icc (-(N : ℤ)) N) := by
   rw [symCondInt, symmetricConditional, ← Nat.map_cast_int_atTop]
   rfl
@@ -83,7 +83,7 @@ def IcoFilter : SummationFilter G where
 def IocFilter : SummationFilter G where
   filter := atTop.map (fun N ↦ Ioc (-N) N)
 
-lemma symmetricConditional_eq_map_Ioo :
+lemma symCondInt_eq_map_Ioo :
     symCondInt.filter = atTop.map (fun N ↦ Ioo (-N) N) := by
   simp_rw [symmetricConditional, ← Nat.map_cast_int_atTop]
   ext s
@@ -143,12 +143,12 @@ section comparisons
 variable {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α] [ContinuousMul α]
 
 @[to_additive]
-lemma multipliable_IcoFilter_of_multiplible_symmetricConditional
+lemma multipliable_IcoFilter_of_multiplible_symCondInt
     (hf : Multipliable f symCondInt) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     Multipliable f (IcoFilter ℤ) := by
   have := (hf.hasProd)
   apply HasProd.multipliable (a := ∏'[symCondInt] (b : ℤ), f b)
-  simp only [HasProd, tendsto_map'_iff, symmetricConditional_eq_map_Icc_nat,
+  simp only [HasProd, tendsto_map'_iff, symCondInt_eq_map_Icc_nat,
     ← Nat.map_cast_int_atTop, IcoFilter] at *
   apply tendsto_of_div_tendsto_one _ this
   conv =>
@@ -158,13 +158,13 @@ lemma multipliable_IcoFilter_of_multiplible_symmetricConditional
   simpa using hf2
 
 @[to_additive]
-lemma tprod_symmetricConditional_eq_tprod_IcoFilter [T2Space α]
+lemma tprod_symCondInt_eq_tprod_IcoFilter [T2Space α]
     (hf : Multipliable f symCondInt) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     ∏'[symCondInt] b, f b = ∏'[IcoFilter ℤ] b, f b := by
   have := (hf.hasProd)
   apply symm
   apply HasProd.tprod_eq
-  simp only [HasProd, tendsto_map'_iff, symmetricConditional_eq_map_Icc_nat,
+  simp only [HasProd, tendsto_map'_iff, symCondInt_eq_map_Icc_nat,
     ← Nat.map_cast_int_atTop, IcoFilter] at *
   apply tendsto_of_div_tendsto_one _ this
   conv =>
@@ -172,6 +172,27 @@ lemma tprod_symmetricConditional_eq_tprod_IcoFilter [T2Space α]
     simp only [Pi.div_apply, comp_apply]
     rw [prod_Icc_eq_prod_Ico_succ _ (by omega)]
   simpa using hf2
+
+@[to_additive]
+lemma HasProd_symCondInt_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+    {f : ℤ → α} {a : α} : HasProd f a symCondInt ↔
+    Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.Icc (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
+  simp only [HasProd, symCondInt, symCondInt_eq_map_Icc_nat, tendsto_map'_iff]
+  rfl
+
+@[to_additive]
+lemma HasProd_IcoFilter_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+    {f : ℤ → α} {a : α} : HasProd f a (IcoFilter ℤ) ↔
+    Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.Ico (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
+  simp only [HasProd, IcoFilter, ← Nat.map_cast_int_atTop, Filter.map_map, tendsto_map'_iff]
+  rfl
+
+@[to_additive]
+lemma HasProd_IocFilter_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+    {f : ℤ → α} {a : α} : HasProd f a (IocFilter ℤ) ↔
+    Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.Ioc (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
+  simp only [HasProd, IocFilter, ← Nat.map_cast_int_atTop, Filter.map_map, tendsto_map'_iff]
+  rfl
 
 end comparisons
 
