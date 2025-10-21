@@ -971,8 +971,6 @@ theorem IndepFun.congr' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
   have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.fun_comp B
   rwa [← measure_congr h1, ← measure_congr h2, ← measure_congr (h1.inter h2)]
 
-@[deprecated (since := "2025-03-18")] alias IndepFun.ae_eq := IndepFun.congr'
-
 theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {mγ : MeasurableSpace γ} {mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
     (hfg : IndepFun f g κ μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
@@ -1200,9 +1198,6 @@ theorem iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f κ μ)
   simp only [s, Finset.mem_insert, Finset.mem_singleton, not_or]
   exact ⟨hik.symm, hjk.symm⟩
 
-@[deprecated (since := "2025-03-05")]
-alias ProbabilityTheory.Kernel.iIndepFun.indepFun_prod_mk := iIndepFun.indepFun_prodMk
-
 theorem iIndepFun.indepFun_prodMk₀ (hf_Indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (fun a ↦ (f i a, f j a)) (f k) κ μ := by
@@ -1227,10 +1222,6 @@ lemma iIndepFun.indepFun_prodMk_prodMk (hf_indep : iIndepFun f κ μ)
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
   exact (hf_indep.indepFun_finset {i, j} {k, l} (by aesop) hf_meas).comp (hg i j) (hg k l)
-
-@[deprecated (since := "2025-03-05")]
-alias ProbabilityTheory.Kernel.iIndepFun.indepFun_prod_mk_prod_mk :=
-  iIndepFun.indepFun_prodMk_prodMk
 
 theorem iIndepFun.indepFun_prodMk_prodMk₀ (hf_indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ))

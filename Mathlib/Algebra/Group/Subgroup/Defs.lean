@@ -708,27 +708,15 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-@[deprecated (since := "2025-04-09")] alias IsCommutative := IsMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.IsCommutative := IsAddCommutative
-
 /-- A subgroup of a commutative group is commutative. -/
 @[to_additive /-- A subgroup of a commutative group is commutative. -/]
 instance commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
     IsMulCommutative H :=
   ⟨CommMagma.to_isCommutative⟩
 
-@[deprecated (since := "2025-04-09")] alias commGroup_isCommutative := commGroup_isMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.addCommGroup_isCommutative :=
-  commGroup_isMulCommutative
-
 @[to_additive]
 lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
     a * b = b * a := by
   simpa only [MulMemClass.mk_mul_mk, Subtype.mk.injEq] using mul_comm (⟨a, ha⟩ : H) (⟨b, hb⟩ : H)
-
-@[deprecated (since := "2025-04-09")] alias mul_comm_of_mem_isCommutative :=
-  mul_comm_of_mem_isMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.add_comm_of_mem_isCommutative :=
-  _root_.AddSubgroup.add_comm_of_mem_isAddCommutative
 
 end Subgroup

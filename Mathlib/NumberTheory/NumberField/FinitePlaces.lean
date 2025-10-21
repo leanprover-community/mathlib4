@@ -166,9 +166,6 @@ noncomputable def FinitePlace.mk (v : HeightOneSpectrum (𝓞 K)) : FinitePlace 
 lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
     toNNReal (absNorm_ne_zero v) (Valued.v x) = adicAbv v x := rfl
 
-@[deprecated (since := "2025-03-01")]
-  alias toNNReal_Valued_eq_vadicAbv := toNNReal_valued_eq_adicAbv
-
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
 theorem FinitePlace.norm_def (x : WithVal (v.valuation K)) : ‖embedding v x‖ = adicAbv v x := by

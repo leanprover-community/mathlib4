@@ -52,14 +52,6 @@ section Mul
 
 variable [Mul G]
 
-/-- `leftMul g` denotes left multiplication by `g` -/
-@[to_additive /-- `leftAdd g` denotes left addition by `g` -/]
-def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
-
-/-- `rightMul g` denotes right multiplication by `g` -/
-@[to_additive /-- `rightAdd g` denotes right addition by `g` -/]
-def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
-
 attribute [deprecated HMul.hMul "Use (g * ·) instead" (since := "2025-04-08")] leftMul
 attribute [deprecated HAdd.hAdd "Use (g + ·) instead" (since := "2025-04-08")] leftAdd
 
