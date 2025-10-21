@@ -212,6 +212,37 @@ def mapIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) :
 @[simp] lemma enorm_map (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
     ‖map f.toLinearMap g.toLinearMap x‖ₑ = ‖x‖ₑ := mapIsometry f g |>.enorm_map x
 
+@[simp] lemma mapIsometry_id_id :
+    mapIsometry (.id : E →ₗᵢ[𝕜] E) (.id : F →ₗᵢ[𝕜] F) = .id := by ext; simp
+
+variable (E) in
+/-- This is the natural linear isometry induced by `f : F ≃ₗᵢ G`. -/
+def _root_.LinearIsometry.lTensor (f : F →ₗᵢ[𝕜] G) :
+    E ⊗[𝕜] F →ₗᵢ[𝕜] E ⊗[𝕜] G := mapIsometry .id f
+
+variable (G) in
+/-- This is the natural linear isometry induced by `f : E ≃ₗᵢ F`. -/
+def _root_.LinearIsometry.rTensor (f : E →ₗᵢ[𝕜] F) :
+    E ⊗[𝕜] G →ₗᵢ[𝕜] F ⊗[𝕜] G := mapIsometry f .id
+
+lemma _root_.LinearIsometry.lTensor_def (f : F →ₗᵢ[𝕜] G) :
+    f.lTensor E = mapIsometry .id f := rfl
+
+lemma _root_.LinearIsometry.rTensor_def (f : E →ₗᵢ[𝕜] F) :
+    f.rTensor G = mapIsometry f .id := rfl
+
+@[simp] lemma _root_.LinearIsometry.toLinearMap_lTensor (f : F →ₗᵢ[𝕜] G) :
+    (f.lTensor E).toLinearMap = f.toLinearMap.lTensor E := rfl
+
+@[simp] lemma _root_.LinearIsometry.toLinearMap_rTensor (f : E →ₗᵢ[𝕜] F) :
+    (f.rTensor G).toLinearMap = f.toLinearMap.rTensor G := rfl
+
+@[simp] lemma _root_.LinearIsometry.lTensor_apply (f : F →ₗᵢ[𝕜] G) (x : E ⊗[𝕜] F) :
+    f.lTensor E x = f.toLinearMap.lTensor E x := rfl
+
+@[simp] lemma _root_.LinearIsometry.rTensor_apply (f : E →ₗᵢ[𝕜] F) (x : E ⊗[𝕜] G) :
+    f.rTensor G x = f.toLinearMap.rTensor G x := rfl
+
 /-- The tensor product of two linear isometry equivalences is a linear isometry equivalence.
 In particular, this is the linear isometry equivalence version of `TensorProduct.congr f g` when `f`
 and `g` are linear isometry equivalences. -/
@@ -228,6 +259,50 @@ lemma congrIsometry_symm (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
 
 @[simp] lemma toLinearEquiv_congrIsometry (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
     (congrIsometry f g).toLinearEquiv = congr f.toLinearEquiv g.toLinearEquiv := rfl
+
+@[simp] lemma congrIsometry_refl_refl :
+    congrIsometry (.refl 𝕜 E) (.refl 𝕜 F) = .refl 𝕜 (E ⊗ F) :=
+  LinearIsometryEquiv.toLinearEquiv_inj.mp <| LinearEquiv.toLinearMap_inj.mp <| by ext; simp
+
+variable (E) in
+/-- This is the natural linear isometric equivalence induced by `f : F ≃ₗᵢ G`. -/
+def _root_.LinearIsometryEquiv.lTensor (f : F ≃ₗᵢ[𝕜] G) :
+    E ⊗[𝕜] F ≃ₗᵢ[𝕜] E ⊗[𝕜] G := congrIsometry (.refl 𝕜 E) f
+
+variable (G) in
+/-- This is the natural linear isometric equivalence induced by `f : E ≃ₗᵢ F`. -/
+def _root_.LinearIsometryEquiv.rTensor (f : E ≃ₗᵢ[𝕜] F) :
+    E ⊗[𝕜] G ≃ₗᵢ[𝕜] F ⊗[𝕜] G := congrIsometry f (.refl 𝕜 G)
+
+lemma _root_.LinearIsometryEquiv.lTensor_def (f : F ≃ₗᵢ[𝕜] G) :
+    f.lTensor E = congrIsometry (.refl 𝕜 E) f := rfl
+
+lemma _root_.LinearIsometryEquiv.rTensor_def (f : E ≃ₗᵢ[𝕜] F) :
+    f.rTensor G = congrIsometry f (.refl 𝕜 G) := rfl
+
+lemma _root_.LinearIsometryEquiv.symm_lTensor (f : F ≃ₗᵢ[𝕜] G) :
+    (f.lTensor E).symm = f.symm.lTensor E := rfl
+
+lemma _root_.LinearIsometryEquiv.symm_rTensor (f : E ≃ₗᵢ[𝕜] F) :
+    (f.rTensor G).symm = f.symm.rTensor G := rfl
+
+@[simp] lemma _root_.LinearIsometryEquiv.toLinearEquiv_lTensor (f : F ≃ₗᵢ[𝕜] G) :
+    (f.lTensor E).toLinearEquiv = f.toLinearEquiv.lTensor E := rfl
+
+@[simp] lemma _root_.LinearIsometryEquiv.toLinearIsometry_lTensor (f : F ≃ₗᵢ[𝕜] G) :
+    (f.lTensor E).toLinearIsometry = f.toLinearIsometry.lTensor E := rfl
+
+@[simp] lemma _root_.LinearIsometryEquiv.toLinearEquiv_rTensor (f : E ≃ₗᵢ[𝕜] F) :
+    (f.rTensor G).toLinearEquiv = f.toLinearEquiv.rTensor G := rfl
+
+@[simp] lemma _root_.LinearIsometryEquiv.toLinearIsometry_rTensor (f : E ≃ₗᵢ[𝕜] F) :
+    (f.rTensor G).toLinearIsometry = f.toLinearIsometry.rTensor G := rfl
+
+@[simp] lemma _root_.LinearIsometryEquiv.lTensor_apply (f : F ≃ₗᵢ[𝕜] G) (x : E ⊗[𝕜] F) :
+    f.lTensor E x = f.toLinearEquiv.lTensor E x := rfl
+
+@[simp] lemma _root_.LinearIsometryEquiv.rTensor_apply (f : E ≃ₗᵢ[𝕜] F) (x : E ⊗[𝕜] G) :
+    f.rTensor G x = f.toLinearEquiv.rTensor G x := rfl
 
 /-- The linear isometry version of `TensorProduct.mapIncl`. -/
 def mapInclIsometry (E' : Submodule 𝕜 E) (F' : Submodule 𝕜 F) :
