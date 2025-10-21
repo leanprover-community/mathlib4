@@ -183,8 +183,8 @@ protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
 
 @[to_additive (attr := simp) addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
-  rw [← isPeriodicPt_minimalPeriod (x * ·) 1, mul_left_iterate]
-  simp [orderOf]
+  convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
+  rw [orderOf, mul_left_iterate_apply_one]
 
 @[to_additive]
 theorem orderOf_eq_zero (h : ¬IsOfFinOrder x) : orderOf x = 0 := by
