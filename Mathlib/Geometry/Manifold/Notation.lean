@@ -119,8 +119,9 @@ end Elab
 
 open Elab in
 /--
-Elaborator for sections in a fibre bundle: converts a section `s : Π x : M, V x` as a dependent
-function to a non-dependent function into the total space. This handles the cases of
+Elaborator for sections in a fibre bundle: if an expression `e` is a section
+`s : Π x : M, V x` as a dependent function, convert it to a non-dependent function into the total
+space. This handles the cases of
 - sections of a trivial bundle
 - vector fields on a manifold (i.e., sections of the tangent bundle)
 - sections of an explicit fibre bundle
@@ -129,11 +130,10 @@ function to a non-dependent function into the total space. This handles the case
 This elaborator searches the local context for suitable hypotheses for the above cases by matching
 on the expression structure, avoiding `isDefEq`. Therefore, it is (hopefully) fast enough to always
 run.
--/
+
+Re-usable MetaM component for use in the `T%` elaborator. -/
 -- TODO: document how this elaborator works, any gotchas, etc.
--- TODO: factor out `MetaM` component for reuse
-scoped elab:max "T% " t:term:arg : term => do
-  let e ← Term.elabTerm t none
+private def totalSpaceElab (e : Expr) : MetaM Expr := do
   let etype ← whnf <| ← instantiateMVars <| ← inferType e
   match etype with
   | .forallE x base tgt _ => withLocalDeclD x base fun x ↦ do
@@ -179,6 +179,23 @@ scoped elab:max "T% " t:term:arg : term => do
         let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, e.app x]
         mkLambdaFVars #[x] body
   | _ => return e
+
+open Elab in
+/--
+Elaborator for sections in a fibre bundle: converts a section `s : Π x : M, V x` as a dependent
+function to a non-dependent function into the total space. This handles the cases of
+- sections of a trivial bundle
+- vector fields on a manifold (i.e., sections of the tangent bundle)
+- sections of an explicit fibre bundle
+- turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
+
+This elaborator searches the local context for suitable hypotheses for the above cases by matching
+on the expression structure, avoiding `isDefEq`. Therefore, it is (hopefully) fast enough to always
+run.
+-/
+scoped elab:max "T% " t:term:arg : term => do
+  let e ← Term.elabTerm t none
+  totalSpaceElab e
 
 namespace Elab
 
