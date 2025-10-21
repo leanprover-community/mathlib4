@@ -933,7 +933,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
       `Unit` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
   [Elab.DiffGeo.MDiff] Failed with error:
-      `Unit` is not a `EuclideanHalfSpace`
+      `Unit` is not a Euclidean space, half-space or quadrant
 [Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not the complex upper half plane

@@ -485,31 +485,64 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
 
 end interval
 
-/-! Tests for inferring a model with corners on Euclidean half-space -/
+/-! Tests for inferring a model with corners on Euclidean space, half-spaces and quadrants -/
 section HalfSpace
 
-variable {f : EuclideanHalfSpace 2 → ℝ} {x : EuclideanHalfSpace 2} {n m : ℕ} [NeZero n] [NeZero m]
-  {g : EuclideanHalfSpace n → EuclideanHalfSpace m} {y : EuclideanHalfSpace n}
+variable {n m n' m' : ℕ} [NeZero n] [NeZero m] [NeZero n'] [NeZero m']
+  {f : EuclideanSpace ℝ (Fin n) → ℝ} {g : EuclideanSpace ℝ (Fin n') → EuclideanSpace ℝ (Fin m')}
+  {a b : ℝ} [Fact (a < b)] {h : Set.Icc a b → EuclideanSpace ℝ (Fin m)}
 
-/-- info: ContMDiff (𝓡∂ 2) 𝓘(ℝ, ℝ) 2 f : Prop -/
+/-- info: MDifferentiable (𝓡 n) 𝓘(ℝ, ℝ) f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+/-- info: MDifferentiableAt (𝓡 n') (𝓡 m') g : EuclideanSpace ℝ (Fin n') → Prop -/
+#guard_msgs in
+#check MDiffAt g
+
+/-- info: ContMDiff (𝓡∂ 1) (𝓡 m) 2 h : Prop -/
+#guard_msgs in
+#check CMDiff 2 h
+
+variable {f' : EuclideanHalfSpace 2 → ℝ} {x : EuclideanHalfSpace 2}
+  {g' : EuclideanHalfSpace n → EuclideanHalfSpace m} {y : EuclideanHalfSpace n}
+
+/-- info: ContMDiff (𝓡∂ 2) 𝓘(ℝ, ℝ) 2 f' : Prop -/
+#guard_msgs in
+#check CMDiff 2 f'
+
+/-- info: MDifferentiableAt (𝓡∂ 2) 𝓘(ℝ, ℝ) f' x : Prop -/
+#guard_msgs in
+#check MDiffAt f' x
+
+/-- info: MDifferentiableAt (𝓡∂ n) (𝓡∂ m) g' y : Prop -/
+#guard_msgs in
+#check MDiffAt g' y
+
+/-- info: ContMDiff (𝓡∂ n) (𝓡∂ m) 37 g' : Prop -/
+#guard_msgs in
+#check CMDiff 37 g'
+
+variable {f : EuclideanHalfSpace 2 → EuclideanSpace ℝ (Fin 37)} in
+/-- info: ContMDiff (𝓡∂ 2) (𝓡 37) 2 f : Prop -/
 #guard_msgs in
 #check CMDiff 2 f
 
-/-- info: MDifferentiableAt (𝓡∂ 2) 𝓘(ℝ, ℝ) f x : Prop -/
+variable {f : EuclideanQuadrant 2 → EuclideanSpace ℝ (Fin 37)} in
+/-- info: ContMDiff (modelWithCornersEuclideanQuadrant 2) (𝓡 37) 2 f : Prop -/
 #guard_msgs in
-#check MDiffAt f x
+#check CMDiff 2 f
 
-/-- info: MDifferentiableAt (𝓡∂ n) (𝓡∂ m) g y : Prop -/
+variable {f : EuclideanSpace ℝ (Fin 37) → EuclideanQuadrant m'} in
+/-- info: MDifferentiable (𝓡 37) (modelWithCornersEuclideanQuadrant m') f : Prop -/
 #guard_msgs in
-#check MDiffAt g y
-
-/-- info: ContMDiff (𝓡∂ n) (𝓡∂ m) 37 g : Prop -/
-#guard_msgs in
-#check CMDiff 37 g
+#check MDiff f
 
 -- Future, when products are implemented!
 -- #guard_msgs in
 -- #check CMDiff 37 (Prod.map f g)
+-- #guard_msgs in
+-- #check CMDiff 37 (Prod.map f' g')
 
 end HalfSpace
 
