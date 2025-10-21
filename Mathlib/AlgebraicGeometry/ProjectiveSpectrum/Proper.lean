@@ -75,7 +75,7 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
 
 open TensorProduct in
 instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
-  refine ⟨IsLocalAtTarget.of_openCover (Pullback.openCoverOfLeftRight
+  refine ⟨IsZariskiLocalAtTarget.of_openCover (Pullback.openCoverOfLeftRight
     (affineOpenCover 𝒜).openCover (affineOpenCover 𝒜).openCover _ _) ?_⟩
   intro ⟨i, j⟩
   dsimp [Scheme, Cover.pullbackHom]
@@ -130,7 +130,7 @@ section LocallyOfFiniteType
 instance [Algebra.FiniteType (𝒜 0) A] : LocallyOfFiniteType (Proj.toSpecZero 𝒜) := by
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
-  rw [IsLocalAtSource.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
+  rw [IsZariskiLocalAtSource.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
     (Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx))]
   intro i
   rw [← MorphismProperty.cancel_left_of_respectsIso (P := @LocallyOfFiniteType)
@@ -287,8 +287,8 @@ theorem valuativeCriterion_existence_aux
             · simp; ring
           · ext i; congr 1; ring
           · ring
-      _ ≤ (∏ i : ι, ψ i₀ ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) :=
-          mul_le_mul_right' (Finset.prod_le_prod' fun i a ↦ pow_le_pow_left₀ zero_le' (hi₀ i) _) _
+      _ ≤ (∏ i : ι, ψ i₀ ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) := by
+          gcongr with i; exacts [fun i _ ↦ zero_le', zero_le', hi₀ i]
       _ = ψ i₀ ^ (d i₀ * a * d j) := by
           rw [Finset.prod_pow_eq_pow_sum, ← pow_add]
           simp_rw [mul_comm (d _) (ai _), hai]

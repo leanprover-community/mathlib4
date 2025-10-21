@@ -105,7 +105,7 @@ theorem rcomap_rcomap (r : SetRel α β) (s : SetRel β γ) (l : Filter γ) :
     rcomap r (rcomap s l) = rcomap (r.comp s) l :=
   filter_eq <| by
     ext t
-    simp only [rcomap_sets, SetRel.image, Filter.mem_sets, Set.mem_setOf_eq,SetRel.core_comp]
+    simp only [rcomap_sets, SetRel.image, Filter.mem_sets, Set.mem_setOf_eq, SetRel.core_comp]
     constructor
     · rintro ⟨u, ⟨v, vsets, hv⟩, h⟩
       exact ⟨v, vsets, Set.Subset.trans (SetRel.core_mono hv) h⟩
