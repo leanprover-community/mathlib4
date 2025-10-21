@@ -1,7 +1,19 @@
+/-
+Copyright (c) 2025 Moritz Doll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Moritz Doll
+-/
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.Analysis.Calculus.BumpFunction.SmoothApprox
 import Mathlib.MeasureTheory.Function.UniformIntegrable
+
+
+/-!
+
+# Density of smooth compactly supported functions in `Lp`
+
+-/
 
 
 variable {𝕜 𝕜' D E F G R V : Type*}

@@ -34,19 +34,6 @@ classical derivative.
 * `𝓢'(𝕜, E, F, V)`: The space of tempered distributions `TemperedDistribution 𝕜 E F V` localized
 in `SchwartzSpace`
 
-
-
-## Implementation details
-
-
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
-
-## Tags
-
-Foobars, barfoos
 -/
 
 noncomputable section
