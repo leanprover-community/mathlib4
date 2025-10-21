@@ -256,7 +256,7 @@ private lemma tsumFilter_tsum_eq (z : ℍ) :
   exact tendsto_comp_val_Ioi_atTop.mp (tendsto_tsum_one_div_linear_sub_succ_eq z)
 
 private lemma tsum_tsumFilter_eq (z : ℍ) :
-    ∑' m : ℤ, (∑'[IcoFilter ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) = 0 := by
+    ∑' m : ℤ, ∑'[IcoFilter ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by
   convert tsum_zero
   exact tsum_IcoFilter_eq_zero z _
 
@@ -264,7 +264,7 @@ end AuxiliaryLemmas
 
 section transform
 
-private lemma G2Term_add_delta_summable (z : ℍ) :
+lemma G2Term_add_delta_summable (z : ℍ) :
     Summable fun (m : Fin 2 → ℤ) ↦ (G2Term z m + δ m):= by
   have H :  Summable (fun m ↦ (G2Term z m)) := by
     apply summable_inv_of_isBigO_rpow_norm_inv (a := 3) (by linarith)
@@ -327,8 +327,8 @@ lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, (G2Term z ![m, n] + �
     simp
   · exact summable_zero.congr (fun b ↦ (by simp [← tsum_IcoFilter_eq_zero z b]))
 
-private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) -
-    -2 * π * I / z = ∑' n : ℤ, ∑' m : ℤ, (G2Term z ![m, n] + δ ![m, n]) := by
+private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2 * π * I / z =
+    ∑' n : ℤ, ∑' m : ℤ, (G2Term z ![m, n] + δ ![m, n]) := by
   rw [← tsumFilter_tsum_eq z, ← (G2_S_action' z),
     ← tsum_eq_of_summable_unconditional (L := IcoFilter ℤ), ← Summable.tsum_sub]
   · apply tsum_congr (fun N ↦ ?_)

@@ -174,10 +174,24 @@ lemma tprod_symmetricConditional_eq_tprod_IcoFilter [T2Space α]
   simpa using hf2
 
 @[to_additive]
+lemma HasProd_symCondInt_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+    {f : ℤ → α} {a : α} : HasProd f a symCondInt ↔
+    Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.Icc (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
+  simp only [HasProd, symCondInt, symmetricConditional_eq_map_Icc_nat, tendsto_map'_iff]
+  rfl
+
+@[to_additive]
 lemma HasProd_IcoFilter_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
     {f : ℤ → α} {a : α} : HasProd f a (IcoFilter ℤ) ↔
-    Tendsto (fun N : ℕ ↦ ∏ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)), f n) atTop (𝓝 a) := by
+    Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.Ico (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
   simp only [HasProd, IcoFilter, ← Nat.map_cast_int_atTop, Filter.map_map, tendsto_map'_iff]
+  rfl
+
+@[to_additive]
+lemma HasProd_IocFilter_iff {α : Type*} [CommMonoid α] [TopologicalSpace α]
+    {f : ℤ → α} {a : α} : HasProd f a (IocFilter ℤ) ↔
+    Tendsto (fun N : ℕ ↦ ∏ n ∈ Finset.Ioc (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
+  simp only [HasProd, IocFilter, ← Nat.map_cast_int_atTop, Filter.map_map, tendsto_map'_iff]
   rfl
 
 end comparisons
