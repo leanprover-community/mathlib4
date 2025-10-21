@@ -78,7 +78,7 @@ i.e., if `f ≫ h = g ≫ h` for all `h` with codomain in `𝒢` implies `f = g`
 def IsCoseparating : Prop :=
   ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), (∀ (G : C) (_ : P G) (h : Y ⟶ G), f ≫ h = g ≫ h) → f = g
 
-/-- We say that `P : ObjectProperty C` is a detecting set if the functors `C(G, -)`
+/-- We say that `P : ObjectProperty C` is detecting if the functors `C(G, -)`
 for `G : C` such that `P G` collectively reflect isomorphisms,
 i.e., if any `h` with domain `G` that `P G` uniquely factors through `f`,
 then `f` is an isomorphism. -/
