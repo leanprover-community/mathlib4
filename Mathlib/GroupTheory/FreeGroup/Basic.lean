@@ -13,7 +13,7 @@ import Mathlib.Data.List.Chain
 
 This file defines free groups over a type. Furthermore, it is shown that the free group construction
 is an instance of a monad. For the result that `FreeGroup` is the left adjoint to the forgetful
-functor from groups to types, see `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
+functor from groups to types, see `Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`.
 
 ## Main definitions
 
@@ -595,9 +595,6 @@ theorem red_invRev_iff : Red (invRev L₁) (invRev L₂) ↔ Red L₁ L₂ :=
 
 @[to_additive]
 instance : Group (FreeGroup α) where
-  mul := (· * ·)
-  one := 1
-  inv := Inv.inv
   mul_assoc := by rintro ⟨L₁⟩ ⟨L₂⟩ ⟨L₃⟩; simp
   one_mul := by rintro ⟨L⟩; rfl
   mul_one := by rintro ⟨L⟩; simp [one_eq_mk]
