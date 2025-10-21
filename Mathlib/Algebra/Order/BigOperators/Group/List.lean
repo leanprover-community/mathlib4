@@ -141,7 +141,7 @@ lemma prod_min_le [LinearOrder M] [MulLeftMono M]
 
 variable [PartialOrder M] [CanonicallyOrderedMul M]
 
-@[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i => (L.take i).prod := by
+@[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i ↦ (L.take i).prod := by
   refine monotone_nat_of_le_succ fun n => ?_
   rcases lt_or_ge n L.length with h | h
   · rw [prod_take_succ _ _ h]
