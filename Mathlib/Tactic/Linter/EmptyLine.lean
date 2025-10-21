@@ -86,6 +86,7 @@ abbrev SkippedFileSegments : Std.HashSet Name := Std.HashSet.emptyWithCapacity
   |>.insert `Util
   |>.insert `Meta
 
+/-- A convenience instance, so that we can add string positions. -/
 local instance : Add String.Pos.Raw where
   add := fun | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
