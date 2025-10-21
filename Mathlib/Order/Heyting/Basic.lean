@@ -195,6 +195,7 @@ abbrev HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α �
 abbrev HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α → α)
     (le_himp_iff : ∀ a b c, a ≤ compl b ⊔ c ↔ a ⊓ b ≤ c) : HeytingAlgebra α where
   himp := (compl · ⊔ ·)
+  compl := compl
   le_himp_iff := le_himp_iff
   himp_bot _ := sup_bot_eq _
 
