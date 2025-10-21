@@ -446,11 +446,8 @@ variable {𝕂 𝔸}
 theorem norm_expSeries_summable (x : 𝔸) : Summable fun n => ‖expSeries 𝕂 𝔸 n fun _ => x‖ :=
   norm_expSeries_summable_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
-variable (𝕂) in
 theorem norm_expSeries_summable' (x : 𝔸) : Summable fun n => ‖(n !⁻¹ : 𝕂) • x ^ n‖ :=
-  norm_expSeries_summable_of_mem_ball' x
-    (show x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius from
-      (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
+  norm_expSeries_summable_of_mem_ball' x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
 theorem algebraMap_exp_comm [CompleteSpace 𝕂] (x : 𝕂) :
     algebraMap 𝕂 𝔸 (exp x) = exp (algebraMap 𝕂 𝔸 x) :=
@@ -462,7 +459,7 @@ theorem expSeries_summable (x : 𝔸) : Summable fun n => expSeries 𝕂 𝔸 n 
   (norm_expSeries_summable x).of_norm
 
 theorem expSeries_summable' (x : 𝔸) : Summable fun n => (n !⁻¹ : 𝕂) • x ^ n :=
-  (norm_expSeries_summable' 𝕂 x).of_norm
+  (norm_expSeries_summable' x).of_norm
 
 theorem expSeries_hasSum_exp (x : 𝔸) : HasSum (fun n => expSeries 𝕂 𝔸 n fun _ => x) (exp x) :=
   expSeries_hasSum_exp_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
