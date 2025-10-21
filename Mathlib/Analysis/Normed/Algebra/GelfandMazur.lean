@@ -175,7 +175,7 @@ private lemma norm_sub_is_constant {x : F} {z : ℂ} (hz : ∀ z' : ℂ, ‖x - 
       simp only [field, div_pow, ← pow_succ', Nat.sub_add_cancel hn],
     le_div_iff₀ (by positivity)]
   obtain ⟨p, hp, hrel⟩ :=
-    (isMonicOfDegree_X_pow ℂ n).of_dvd_sub (by omega)
+    (isMonicOfDegree_X_pow ℂ n).of_dvd_sub (by grind)
       (isMonicOfDegree_X_sub_one (w - y)) (by compute_degree!) <| sub_dvd_pow_sub_pow X _ n
   grw [le_aeval_of_isMonicOfDegree x hM₀.le hz hp y]
   rw [eq_comm, ← eq_sub_iff_add_eq, mul_comm] at hrel
@@ -270,9 +270,9 @@ private lemma is_const_norm_φ {x : F} {z : ℝ × ℝ} (h : ∀ w, ‖φ x z‖
   have hdvd : q u ∣ q w ^ n - (q w - q u) ^ n := by
     nth_rewrite 1 [← sub_sub_self (q w) (q u)]
     exact sub_dvd_pow_sub_pow ..
-  have H' : ((q w - q u) ^ n).natDegree < 2 * n := by rw [hsub]; compute_degree; omega
-  obtain ⟨p, hp, hrel⟩ := ((hq w).pow n).of_dvd_sub (by omega) (hq u) H' hdvd; clear H' hdvd hsub
-  rw [show 2 * n - 2 = 2 * (n - 1) by omega] at hp
+  have H' : ((q w - q u) ^ n).natDegree < 2 * n := by rw [hsub]; compute_degree; grind
+  obtain ⟨p, hp, hrel⟩ := ((hq w).pow n).of_dvd_sub (by grind) (hq u) H' hdvd; clear H' hdvd hsub
+  rw [show 2 * n - 2 = 2 * (n - 1) by grind] at hp
   grw [le_aeval_of_isMonicOfDegree hM₀.le h hp]
   rw [← sub_eq_iff_eq_add, eq_comm, mul_comm] at hrel
   apply_fun (‖aeval x ·‖) at hrel
