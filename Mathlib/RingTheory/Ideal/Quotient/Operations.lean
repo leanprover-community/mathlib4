@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Patrick Massot
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Operations
-import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Ring.Fin
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Ideal.Quotient.Basic
