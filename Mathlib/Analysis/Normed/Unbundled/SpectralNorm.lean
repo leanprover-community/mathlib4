@@ -57,7 +57,7 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 * `spectralNorm_eq_of_equiv` : the `K`-algebra automorphisms of `L` are isometries with respect to
   the spectral norm.
 * `spectralNorm_eq_iSup_of_finiteDimensional_normal` : if `L/K` is finite and normal, then
-  `spectralNorm K L x = iSup (fun (σ : L ≃ₐ[K] L) ↦ f (σ x))`.
+  `spectralNorm K L x = iSup (fun (σ : Gal(L/K)) ↦ f (σ x))`.
 * `isPowMul_spectralNorm` : the spectral norm is power-multiplicative.
 * `isNonarchimedean_spectralNorm` : the spectral norm is nonarchimedean.
 * `spectralNorm_extends` : the spectral norm extends the norm on `K`.
@@ -463,7 +463,7 @@ theorem norm_le_spectralNorm {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (by rw [minpoly.aeval])
 
 /-- The `K`-algebra automorphisms of `L` are isometries with respect to the spectral norm. -/
-theorem spectralNorm_eq_of_equiv (σ : L ≃ₐ[K] L) (x : L) :
+theorem spectralNorm_eq_of_equiv (σ : Gal(L/K)) (x : L) :
     spectralNorm K L x = spectralNorm K L (σ x) := by
   simp only [spectralNorm, minpoly.algEquiv_eq]
 
@@ -474,11 +474,11 @@ section FiniteNormal
 variable (K L) [h_fin : FiniteDimensional K L] [hn : Normal K L]
 
 /--
-If `L/K` is finite and normal, then `spectralNorm K L x = supr (λ (σ : L ≃ₐ[K] L), f (σ x))`. -/
+If `L/K` is finite and normal, then `spectralNorm K L x = supr (λ (σ : Gal(L/K)), f (σ x))`. -/
 theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     {f : AlgebraNorm K L} (hf_pm : IsPowMul f) (hf_na : IsNonarchimedean f)
     (hf_ext : ∀ (x : K), f (algebraMap K L x) = ‖x‖) (x : L) :
-    spectralNorm K L x = ⨆ σ : L ≃ₐ[K] L, f (σ x) := by
+    spectralNorm K L x = ⨆ σ : Gal(L/K), f (σ x) := by
   classical
   have hf1 : f 1 = 1 := by
     rw [← (algebraMap K L).map_one, hf_ext]
@@ -497,7 +497,7 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     apply ciSup_le
     intro y
     split_ifs with h
-    · obtain ⟨σ, hσ⟩ : ∃ σ : L ≃ₐ[K] L, σ x = y := minpoly.exists_algEquiv_of_root'
+    · obtain ⟨σ, hσ⟩ : ∃ σ : Gal(L/K), σ x = y := minpoly.exists_algEquiv_of_root'
         (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
       rw [← hσ]
       convert le_ciSup (Finite.bddAbove_range _) σ
@@ -571,9 +571,9 @@ theorem spectralNorm_extends_of_finiteDimensional [IsUltrametricDist K] (x : K) 
 theorem spectralNorm_unique_of_finiteDimensional_normal {f : AlgebraNorm K L}
     (hf_pm : IsPowMul f) (hf_na : IsNonarchimedean f)
     (hf_ext : ∀ (x : K), f (algebraMap K L x) = ‖x‖₊)
-    (hf_iso : ∀ (σ : L ≃ₐ[K] L) (x : L), f x = f (σ x)) (x : L) : f x = spectralNorm K L x := by
-  have h_sup : (⨆ σ : L ≃ₐ[K] L, f (σ x)) = f x := by
-    rw [← @ciSup_const _ (L ≃ₐ[K] L) _ _ (f x)]
+    (hf_iso : ∀ (σ : Gal(L/K)) (x : L), f x = f (σ x)) (x : L) : f x = spectralNorm K L x := by
+  have h_sup : (⨆ σ : Gal(L/K), f (σ x)) = f x := by
+    rw [← @ciSup_const _ Gal(L/K) _ _ (f x)]
     exact iSup_congr fun σ ↦ by rw [hf_iso σ x]
   rw [spectralNorm_eq_iSup_of_finiteDimensional_normal K L hf_pm hf_na hf_ext, h_sup]
 
