@@ -38,8 +38,8 @@ theorem startsWith_mk_mul {w : α × Bool} (g : FreeGroup α)
     (h : ¬ g ∈ FreeGroup.startsWith (w.1, !w.2)) : mk [w] * g ∈ FreeGroup.startsWith w := by
   by_cases hC : 0 < g.toWord.length
   · simp only [startsWith, Set.mem_setOf_eq, getElem?_pos, Option.some.injEq,
-    Prod.eq_iff_fst_eq_snd_eq, not_and, Bool.not_eq_not, toWord_mul, toWord_mk, reduce.cons,
-    reduce_nil, List.cons_append, List.nil_append, reduce_toWord, hC] at *
+      Prod.eq_iff_fst_eq_snd_eq, not_and, Bool.not_eq_not, toWord_mul, toWord_mk, reduce.cons,
+      reduce_nil, List.cons_append, List.nil_append, reduce_toWord, hC] at *
     rw [show g.toWord = g.toWord.head (by grind) :: g.toWord.tail by grind]
     grind
   · simp_all [startsWith]
