@@ -282,7 +282,7 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
       rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
       conv_lhs => rw [← mul_one ε]
       rw [ENNReal.mul_lt_mul_left hε.ne' hε_top]
-      norm_num
+      simp
   · obtain ⟨n, hn⟩ := h ε hε
     exact ⟨n, hn.le⟩
 
@@ -405,7 +405,7 @@ protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a 
     intro x
     refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
     · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
-    · exact Or.inl fun h => H (pow_eq_zero h)
+    · exact Or.inl fun h => H (eq_zero_of_pow_eq_zero h)
     · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, not_true, Ne,
         not_false_iff, false_and]
     · simp only [H, true_or, Ne, not_false_iff]
@@ -694,7 +694,7 @@ theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0∞} (r : ℝ≥0∞) :
   refine ⟨HasSum.tendsto_sum_nat, fun h => ?_⟩
   rw [← iSup_eq_of_tendsto _ h, ← ENNReal.tsum_eq_iSup_nat]
   · exact ENNReal.summable.hasSum
-  · exact fun s t hst => Finset.sum_le_sum_of_subset (Finset.range_subset.2 hst)
+  · exact fun s t hst => Finset.sum_le_sum_of_subset (Finset.range_subset_range.2 hst)
 
 theorem tendsto_nat_tsum (f : ℕ → ℝ≥0∞) :
     Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop (𝓝 (∑' n, f n)) := by
@@ -761,7 +761,7 @@ theorem tsum_iUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (t : ι → Set
   _ = ∑' i, ∑' x : t i, f x := ENNReal.tsum_sigma' _
 
 theorem tsum_biUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (s : Set ι) (t : ι → Set α) :
-    ∑' x : ⋃ i ∈ s , t i, f x ≤ ∑' i : s, ∑' x : t i, f x :=
+    ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑' i : s, ∑' x : t i, f x :=
   calc ∑' x : ⋃ i ∈ s, t i, f x = ∑' x : ⋃ i : s, t i, f x := tsum_congr_set_coe _ <| by simp
   _ ≤ ∑' i : s, ∑' x : t i, f x := tsum_iUnion_le_tsum _ _
 
@@ -771,7 +771,7 @@ theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t 
 
 theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι → Set α) :
     ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := by
-  rw [← tsum_fintype]
+  rw [← tsum_fintype (L := SummationFilter.unconditional _)]
   exact tsum_iUnion_le_tsum f t
 
 theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
@@ -967,8 +967,7 @@ theorem tsum_strict_mono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : 
   tsum_lt_tsum hle hi hg
 
 theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) : 0 < ∑' b, g b := by
-  rw [← tsum_zero]
-  exact tsum_lt_tsum (fun a => zero_le _) hi hg
+  simpa using tsum_lt_tsum (fun a => zero_le _) hi hg
 
 open Classical in
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :

@@ -163,7 +163,7 @@ theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
     (F_eqcont : Equicontinuous F) (ℱ : Filter ι) (f : X → α) :
     Tendsto (UniformFun.ofFun ∘ F) ℱ (𝓝 <| UniformFun.ofFun f) ↔
     Tendsto F ℱ (𝓝 f) := by
-  -- Assume `ℱ` is non trivial.
+  -- Assume `ℱ` is non-trivial.
   rcases ℱ.eq_or_neBot with rfl | ℱ_ne
   · simp
   constructor <;> intro H

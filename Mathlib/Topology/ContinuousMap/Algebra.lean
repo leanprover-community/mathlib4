@@ -133,8 +133,8 @@ theorem pow_apply [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) (x : 
     (f ^ n) x = f x ^ n :=
   rfl
 
--- don't make auto-generated `coe_nsmul` and `nsmul_apply` simp, as the linter complains they're
--- redundant WRT `coe_smul`
+-- Don't make auto-generated `coe_nsmul` and `nsmul_apply` simp, as the linter complains they're
+-- redundant w.r.t. `coe_smul`
 attribute [simp] coe_pow pow_apply
 
 @[to_additive]
@@ -142,7 +142,7 @@ theorem pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C
     (f ^ n).comp g = f.comp g ^ n :=
   rfl
 
--- don't make `nsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
+-- Don't make `nsmul_comp` simp as the linter complains it's redundant w.r.t. `smul_comp`
 attribute [simp] pow_comp
 
 /-! ### `inv` and `neg` -/
@@ -200,8 +200,8 @@ theorem zpow_apply [Group β] [IsTopologicalGroup β] (f : C(α, β)) (z : ℤ) 
     (f ^ z) x = f x ^ z :=
   rfl
 
--- don't make auto-generated `coe_zsmul` and `zsmul_apply` simp as the linter complains they're
--- redundant WRT `coe_smul`
+-- Don't make auto-generated `coe_zsmul` and `zsmul_apply` simp as the linter complains they're
+-- redundant w.r.t. `coe_smul`
 attribute [simp] coe_zpow zpow_apply
 
 @[to_additive]
@@ -209,7 +209,7 @@ theorem zpow_comp [Group γ] [IsTopologicalGroup γ] (f : C(β, γ)) (z : ℤ) (
     (f ^ z).comp g = f.comp g ^ z :=
   rfl
 
--- don't make `zsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
+-- Don't make `zsmul_comp` simp as the linter complains it's redundant w.r.t. `smul_comp`
 attribute [simp] zpow_comp
 
 end ContinuousMap
@@ -363,20 +363,20 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
   /-- If an infinite sum of functions in `C(α, β)` converges to `g` (for the compact-open topology),
 then the pointwise sum converges to `g x` for all `x ∈ α`. -/]
 theorem hasProd_apply {γ : Type*} [CommMonoid β] [ContinuousMul β]
-    {f : γ → C(α, β)} {g : C(α, β)} (hf : HasProd f g) (x : α) :
-    HasProd (fun i : γ => f i x) (g x) := by
+    {f : γ → C(α, β)} {g : C(α, β)} {L : SummationFilter γ} (hf : HasProd f g L) (x : α) :
+    HasProd (fun i : γ => f i x) (g x) L := by
   let ev : C(α, β) →* β := (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
   exact hf.map ev (continuous_eval_const x)
 
 @[to_additive]
 theorem multipliable_apply [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Multipliable f) (x : α) : Multipliable fun i : γ => f i x :=
+    {L : SummationFilter γ} (hf : Multipliable f L) (x : α) : Multipliable (fun i : γ ↦ f i x) L :=
   (hasProd_apply hf.hasProd x).multipliable
 
 @[to_additive]
 theorem tprod_apply [T2Space β] [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Multipliable f) (x : α) :
-    ∏' i : γ, f i x = (∏' i : γ, f i) x :=
+    {L : SummationFilter γ} (hf : Multipliable f L) [L.NeBot] (x : α) :
+    ∏'[L] i : γ, f i x = (∏'[L] i : γ, f i) x :=
   (hasProd_apply hf.hasProd x).tprod_eq
 
 end ContinuousMap

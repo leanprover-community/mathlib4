@@ -46,7 +46,7 @@ variable {α β γ : Type*}
 
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
-  /-- Multiplication in a boolean ring is idempotent. -/
+  /-- Multiplication in a Boolean ring is idempotent. -/
   isIdempotentElem (a : α) : IsIdempotentElem a
 
 namespace BooleanRing
@@ -363,7 +363,7 @@ instance [Inhabited α] : Inhabited (AsBoolRing α) :=
   ‹Inhabited α›
 
 -- See note [reducible non-instances]
-/-- Every generalized Boolean algebra has the structure of a non unital commutative ring with the
+/-- Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
 following data:
 
 * `a + b` unfolds to `a ∆ b` (symmetric difference)

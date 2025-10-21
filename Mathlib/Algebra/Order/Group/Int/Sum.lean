@@ -5,7 +5,6 @@ Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.Int.Interval
 
 /-!
@@ -45,11 +44,11 @@ lemma sum_le_sum_range {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, x ≤ c) :
     ∑ x ∈ s, x ≤ ∑ n ∈ range #s, (c - n) := by
   convert sum_le_sum_Ioc hs
   refine sum_nbij (c - ·) ?_ ?_ ?_ (fun _ _ ↦ rfl)
-  · intro x mx; rw [mem_Ioc]; dsimp only; rw [mem_range] at mx; omega
-  · intro x mx y my (h : c - x = c - y); omega
+  · intro x mx; rw [mem_Ioc]; dsimp only; rw [mem_range] at mx; cutsat
+  · intro x mx y my (h : c - x = c - y); cutsat
   · intro x mx; simp_rw [coe_range, Set.mem_image, Set.mem_Iio]
     rw [mem_coe, mem_Ioc] at mx
-    use (c - x).toNat; omega
+    use (c - x).toNat; cutsat
 
 /-- Sharp lower bound for the sum of a finset of integers that is bounded below, `Ico` version. -/
 lemma sum_Ico_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :
@@ -74,8 +73,8 @@ lemma sum_range_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :
     ∑ n ∈ range #s, (c + n) ≤ ∑ x ∈ s, x := by
   convert sum_Ico_le_sum hs
   refine sum_nbij (c + ·) ?_ ?_ ?_ (fun _ _ ↦ rfl)
-  · intro x mx; rw [mem_Ico]; dsimp only; rw [mem_range] at mx; omega
-  · intro x mx y my (h : c + x = c + y); omega
+  · intro x mx; rw [mem_Ico]; dsimp only; rw [mem_range] at mx; cutsat
+  · intro x mx y my (h : c + x = c + y); cutsat
   · intro x mx; simp_rw [coe_range, Set.mem_image, Set.mem_Iio]
     rw [mem_coe, mem_Ico] at mx
     use (x - c).toNat; omega

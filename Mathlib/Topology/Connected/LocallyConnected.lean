@@ -25,7 +25,7 @@ section LocallyConnectedSpace
 
 /-- A topological space is **locally connected** if each neighborhood filter admits a basis
 of connected *open* sets. Note that it is equivalent to each point having a basis of connected
-(non necessarily open) sets but in a non-trivial way, so we choose this definition and prove the
+(not necessarily open) sets but in a non-trivial way, so we choose this definition and prove the
 equivalence later in `locallyConnectedSpace_iff_connected_basis`. -/
 class LocallyConnectedSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- Open connected neighborhoods form a basis of the neighborhoods filter. -/

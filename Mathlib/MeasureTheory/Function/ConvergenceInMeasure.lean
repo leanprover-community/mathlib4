@@ -188,7 +188,7 @@ theorem exists_nat_measure_lt_two_inv (hfg : TendstoInMeasure μ f atTop g) (n :
     ∃ N, ∀ m ≥ N, μ { x | (2 : ℝ≥0∞)⁻¹ ^ n ≤ edist (f m x) (g x) } ≤ (2⁻¹ : ℝ≥0∞) ^ n := by
   specialize hfg ((2⁻¹ : ℝ≥0∞) ^ n) (ENNReal.pow_pos (by simp) _)
   rw [ENNReal.tendsto_atTop_zero] at hfg
-  exact hfg ((2 : ℝ≥0∞)⁻¹ ^ n) (pos_iff_ne_zero.mpr fun h_zero => by simpa using pow_eq_zero h_zero)
+  exact hfg ((2 : ℝ≥0∞)⁻¹ ^ n) (pos_iff_ne_zero.mpr <| pow_ne_zero _ <| by simp)
 
 /-- Given a sequence of functions `f` which converges in measure to `g`,
 `seqTendstoAeSeqAux` is a sequence such that
@@ -262,7 +262,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
       rw [mul_comm, ← ENNReal.inv_pow, ← ENNReal.inv_pow, ENNReal.inv_le_iff_le_mul, ← mul_assoc,
         mul_comm (_ ^ n), mul_assoc, ← ENNReal.inv_le_iff_le_mul, inv_inv, ← pow_add]
       · gcongr
-        · norm_num
+        · simp
         · omega
       all_goals simp
     exact le_trans hNx.le h_inv_n_le_k

@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 
-# Krull dimension and non zero-divisors
+# Krull dimension and non-zero-divisors
 
 ## Main results
 - `ringKrullDim_quotient_succ_le_of_nonZeroDivisor`: If `r` is not a zero divisor, then

@@ -465,7 +465,7 @@ end affineSpan
 namespace AffineSubspace
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-  [S : AffineSpace V P]
+  [S : AffineSpace V P] {ι : Sort*}
 
 instance : CompleteLattice (AffineSubspace k P) :=
   {
@@ -722,8 +722,10 @@ theorem direction_eq_top_iff_of_nonempty {s : AffineSubspace k P} (h : (s : Set 
 /-- The inf of two affine subspaces, coerced to a set, is the intersection of the two sets of
 points. -/
 @[simp]
-theorem inf_coe (s₁ s₂ : AffineSubspace k P) : (s₁ ⊓ s₂ : Set P) = (s₁ : Set P) ∩ s₂ :=
+theorem coe_inf (s₁ s₂ : AffineSubspace k P) : (s₁ ⊓ s₂ : Set P) = (s₁ : Set P) ∩ s₂ :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
 
 /-- A point is in the inf of two affine subspaces if and only if it is in both of them. -/
 theorem mem_inf_iff (p : P) (s₁ s₂ : AffineSubspace k P) : p ∈ s₁ ⊓ s₂ ↔ p ∈ s₁ ∧ p ∈ s₂ :=
@@ -751,6 +753,55 @@ their directions. -/
 theorem direction_inf_of_mem_inf {s₁ s₂ : AffineSubspace k P} {p : P} (h : p ∈ s₁ ⊓ s₂) :
     (s₁ ⊓ s₂).direction = s₁.direction ⊓ s₂.direction :=
   direction_inf_of_mem ((mem_inf_iff p s₁ s₂).1 h).1 ((mem_inf_iff p s₁ s₂).1 h).2
+
+@[simp, norm_cast]
+theorem coe_sInf (t : Set (AffineSubspace k P)) :
+    ((sInf t : AffineSubspace k P) : Set P) = ⋂ s ∈ t, s :=
+  rfl
+
+theorem mem_sInf_iff (p : P) (t : Set (AffineSubspace k P)) : p ∈ sInf t ↔ ∀ s ∈ t, p ∈ s :=
+  Set.mem_iInter₂
+
+theorem direction_sInf (t : Set (AffineSubspace k P)) :
+    direction (sInf t) ≤ ⨅ s ∈ t, s.direction := by
+  simp only [direction_eq_vectorSpan, vectorSpan_def]
+  exact le_iInf₂ fun s hs => Submodule.span_mono <| vsub_self_mono <| biInter_subset_of_mem hs
+
+theorem direction_sInf_of_mem (t : Set (AffineSubspace k P)) (p : P) (h : ∀ s ∈ t, p ∈ s) :
+    direction (sInf t) = ⨅ s ∈ t, s.direction := by
+  apply (direction_sInf t).antisymm
+  intro v hv
+  rw [← vadd_mem_iff_mem_direction v ((mem_sInf_iff p t).mpr h), mem_sInf_iff]
+  intro s hs
+  rw [vadd_mem_iff_mem_direction v (h s hs)]
+  simp only [Submodule.mem_iInf] at hv
+  exact hv s hs
+
+theorem direction_sInf_of_mem_sInf (t : Set (AffineSubspace k P)) (p : P) (h : p ∈ sInf t) :
+    direction (sInf t) = ⨅ s ∈ t, s.direction :=
+  direction_sInf_of_mem t p <| (mem_sInf_iff p t).mp h
+
+@[simp, norm_cast]
+theorem coe_iInf (s : ι → AffineSubspace k P) :
+    ((iInf s : AffineSubspace k P) : Set P) = ⋂ i, s i := by
+  rw [iInf, coe_sInf, Set.biInter_range]
+
+theorem mem_iInf_iff (s : ι → AffineSubspace k P) (p : P) : p ∈ iInf s ↔ ∀ i, p ∈ s i := by
+  rw [iInf, mem_sInf_iff, Set.forall_mem_range]
+
+theorem direction_iInf (s : ι → AffineSubspace k P) :
+    (iInf s).direction ≤ ⨅ i, (s i).direction := by
+  apply (direction_sInf _).trans_eq
+  rw [iInf_range]
+
+theorem direction_iInf_of_mem (s : ι → AffineSubspace k P) (p : P) (h : ∀ i, p ∈ s i) :
+    (iInf s).direction = ⨅ i, (s i).direction := by
+  rw [iInf, direction_sInf_of_mem _ p ?_, iInf_range]
+  rwa [Set.forall_mem_range]
+
+theorem direction_iInf_of_mem_iInf (s : ι → AffineSubspace k P) (p : P) (h : p ∈ iInf s) :
+    (iInf s).direction = ⨅ i, (s i).direction := by
+  rw [iInf, direction_sInf_of_mem_sInf _ p h, iInf_range]
 
 /-- If one affine subspace is less than or equal to another, the same applies to their
 directions. -/

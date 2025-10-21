@@ -24,8 +24,7 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
 
 ## References
 
-* [Wikipedia, Dershowitz–Manna ordering*]
-(https://en.wikipedia.org/wiki/Dershowitz%E2%80%93Manna_ordering)
+* [Wikipedia, Dershowitz–Manna ordering](https://en.wikipedia.org/wiki/Dershowitz%E2%80%93Manna_ordering)
 
 * [CoLoR](https://github.com/fblanqui/color), a Coq library on rewriting theory and termination.
   Our code here is inspired by their formalization and the theorem is called `mOrd_wf` in the file
@@ -100,9 +99,9 @@ private lemma isDershowitzMannaLT_singleton_insert (h : OneStep N (a ::ₘ M)) :
 
 private lemma acc_oneStep_cons_of_acc_lt (ha : Acc LT.lt a) :
     ∀ {M}, Acc OneStep M → Acc OneStep (a ::ₘ M) := by
-  induction' ha with a _ ha
+  induction ha with | _ a _ ha
   rintro M hM
-  induction' hM with M hM ihM
+  induction hM with | _ M hM ihM
   refine .intro _ fun N hNM ↦ ?_
   obtain ⟨N, ⟨rfl, hNM'⟩ | ⟨rfl, hN⟩⟩ := isDershowitzMannaLT_singleton_insert hNM
   · exact ihM _ hNM'
@@ -135,8 +134,9 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
     IsDershowitzMannaLT M N → TransGen OneStep M N := by
   classical
   rintro ⟨X, Y, Z, hZ, hM, hN, hYZ⟩
-  induction' Z using Multiset.induction_on with z Z ih generalizing X Y M N
-  · simp at hZ
+  induction Z using Multiset.induction_on generalizing X Y M N with
+  | empty => simp at hZ
+  | cons z Z ih => ?_
   obtain rfl | hZ := eq_or_ne Z 0
   · exact .single ⟨X, Y, z, hM, hN, by simpa using hYZ⟩
   let Y' : Multiset α := Y.filter (· < z)

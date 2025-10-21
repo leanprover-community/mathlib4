@@ -329,8 +329,7 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   have i₁_lt_i : i₁ < i := Nat.pred_lt (ne_of_gt i_pos)
   have i₁_succ : i₁ + 1 = i := Nat.succ_pred_eq_of_pos i_pos
   have := Nat.find_min (c.index_exists j.2) i₁_lt_i
-  simp [lt_trans i₁_lt_i (c.index j).2, i₁_succ] at this
-  exact Nat.lt_le_asymm H this
+  simp_all [lt_trans i₁_lt_i (c.index j).2]
 
 /-- Mapping an element `j` of `Fin n` to the element in the block containing it, identified with
 `Fin (c.blocksFun (c.index j))` through the canonical increasing bijection. -/
@@ -752,8 +751,7 @@ theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
   | nil => cases hi
   | cons n ns IH =>
     rcases i with - | i
-    · rw [Nat.add_zero, List.take_zero, sum_nil]
-      simp
+    · simp
     · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
           sum_cons, splitAt_eq, drop_take, drop_drop]
       rw [Nat.add_sub_add_left]
@@ -1004,17 +1002,9 @@ theorem CompositionAsSet.toComposition_blocks (c : CompositionAsSet n) :
 @[simp]
 theorem CompositionAsSet.toComposition_boundaries (c : CompositionAsSet n) :
     c.toComposition.boundaries = c.boundaries := by
-  ext j
-  simp only [c.mem_boundaries_iff_exists_blocks_sum_take_eq, Composition.boundaries, Finset.mem_map]
-  constructor
-  · rintro ⟨i, _, hi⟩
-    refine ⟨i.1, ?_, ?_⟩
-    · simpa [c.card_boundaries_eq_succ_length] using i.2
-    · simp [Composition.boundary, Composition.sizeUpTo, ← hi]
-  · rintro ⟨i, i_lt, hi⟩
-    refine ⟨Fin.ofNat _ i, by simp, ?_⟩
-    rw [c.card_boundaries_eq_succ_length] at i_lt
-    simp [Composition.boundary, Nat.mod_eq_of_lt i_lt, Composition.sizeUpTo, hi]
+  ext ⟨j, hj⟩
+  simp [c.mem_boundaries_iff_exists_blocks_sum_take_eq, Composition.boundaries,
+    c.card_boundaries_eq_succ_length, Composition.boundary, Composition.sizeUpTo, Fin.exists_iff]
 
 @[simp]
 theorem Composition.toCompositionAsSet_boundaries (c : Composition n) :

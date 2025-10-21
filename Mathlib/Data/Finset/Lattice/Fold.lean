@@ -221,7 +221,7 @@ theorem sup_mem (s : Set α) (w₁ : ⊥ ∈ s) (w₂ : ∀ᵉ (x ∈ s) (y ∈ 
 
 @[simp]
 protected theorem sup_eq_bot_iff (f : β → α) (S : Finset β) : S.sup f = ⊥ ↔ ∀ s ∈ S, f s = ⊥ := by
-  classical induction' S using Finset.induction with a S _ hi <;> simp [*]
+  classical induction S using Finset.induction <;> simp [*]
 
 @[simp]
 lemma sup_disjSum (s : Finset β) (t : Finset γ) (f : β ⊕ γ → α) :
@@ -687,7 +687,7 @@ variable [SemilatticeSup α]
 
 theorem sup_of_mem {s : Finset β} (f : β → α) {b : β} (h : b ∈ s) :
     ∃ a : α, s.sup ((↑) ∘ f : β → WithBot α) = ↑a :=
-  Exists.imp (fun _ => And.left) (@le_sup (WithBot α) _ _ _ _ _ _ h (f b) rfl)
+  (WithBot.le_iff_forall.1 (le_sup (α := WithBot α) h) (f b) rfl).imp fun _ ↦ And.left
 
 /-- Given nonempty finset `s` then `s.sup' H f` is the supremum of its image under `f` in (possibly
 unbounded) join-semilattice `α`, where `H` is a proof of nonemptiness. If `α` has a bottom element
@@ -1118,14 +1118,14 @@ variable [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α}
 
 set_option linter.docPrime false in
 @[simp] lemma mem_sup' (hs) : a ∈ s.sup' hs f ↔ ∃ i ∈ s, a ∈ f i := by
-  induction' hs using Nonempty.cons_induction <;> simp [*]
+  induction hs using Nonempty.cons_induction <;> simp [*]
 
 set_option linter.docPrime false in
 @[simp] lemma mem_inf' (hs) : a ∈ s.inf' hs f ↔ ∀ i ∈ s, a ∈ f i := by
-  induction' hs using Nonempty.cons_induction <;> simp [*]
+  induction hs using Nonempty.cons_induction <;> simp [*]
 
 @[simp] lemma mem_sup : a ∈ s.sup f ↔ ∃ i ∈ s, a ∈ f i := by
-  induction' s using cons_induction <;> simp [*]
+  induction s using cons_induction <;> simp [*]
 
 @[simp]
 theorem sup_singleton_apply (s : Finset β) (f : β → α) :

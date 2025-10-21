@@ -25,11 +25,11 @@ with respect to other language operations.
 * `l + m`: union of languages `l` and `m`
 * `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
 * `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
-* `1`: language consisting of only the empty string.
-  This is because it is the unit of the `*` operator.
-* `l∗`: Kleene's star – language of strings consisting of arbitrarily many
-  members of `l` concatenated together
-  (Note that this is the Unicode asterisk `∗`, and not the more common star `*`)
+* `1`: language consisting of only the empty string. This is because it is the unit of the `*`
+  operator.
+* `l∗`: Kleene star – language of strings consisting of arbitrarily many members of `l`
+  concatenated together. Note that this notation uses the Unicode asterisk operator `∗`, as opposed
+  to the more common ASCII asterisk `*`.
 
 ## Main definitions
 

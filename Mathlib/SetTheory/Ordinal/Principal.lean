@@ -68,6 +68,7 @@ theorem not_principal_iff_of_monotone
     ¬ Principal op o ↔ ∃ a < o, o ≤ op a a := by
   simp [principal_iff_of_monotone h₁ h₂]
 
+@[simp]
 theorem principal_zero : Principal op 0 := fun a _ h =>
   (Ordinal.not_lt_zero a h).elim
 
@@ -93,6 +94,21 @@ theorem op_eq_self_of_principal (hao : a < o) (H : IsNormal (op a))
 
 theorem nfp_le_of_principal (hao : a < o) (ho : Principal op o) : nfp (op a) a ≤ o :=
   nfp_le fun n => (ho.iterate_lt hao n).le
+
+protected theorem Principal.sSup {s : Set Ordinal} (H : ∀ x ∈ s, Principal op x) :
+    Principal op (sSup s) := by
+  have : Principal op (sSup ∅) := by simp
+  by_cases hs : BddAbove s
+  · obtain rfl | hs' := s.eq_empty_or_nonempty
+    · assumption
+    simp only [Principal, lt_csSup_iff hs hs', forall_exists_index, and_imp]
+    intro x y a has ha b hbs hb
+    have h : max a b ∈ s := max_rec' _ has hbs
+    exact ⟨_, h, H (max a b) h (lt_max_of_lt_left ha) (lt_max_of_lt_right hb)⟩
+  · rwa [csSup_of_not_bddAbove hs]
+
+protected theorem Principal.iSup {ι} {f : ι → Ordinal} (H : ∀ i, Principal op (f i)) :
+    Principal op (⨆ i, f i) := Principal.sSup (by simpa)
 
 end Arbitrary
 
@@ -326,8 +342,9 @@ theorem mul_lt_omega0_opow (c0 : 0 < c) (ha : a < ω ^ c) (hb : b < ω) : a * b 
     obtain ⟨n, hn, an⟩ :=
       ((isNormal_mul_right <| opow_pos _ omega0_pos).limit_lt isSuccLimit_omega0).1 ha
     apply (mul_le_mul_right' (le_of_lt an) _).trans_lt
-    rw [opow_succ, mul_assoc, mul_lt_mul_iff_left (opow_pos _ omega0_pos)]
-    exact principal_mul_omega0 hn hb
+    rw [opow_succ, mul_assoc]
+    gcongr
+    exacts [opow_pos _ omega0_pos, principal_mul_omega0 hn hb]
   · rcases ((isNormal_opow one_lt_omega0).limit_lt l).1 ha with ⟨x, hx, ax⟩
     refine (mul_le_mul' (le_of_lt ax) (le_of_lt hb)).trans_lt ?_
     rw [← opow_succ, opow_lt_opow_iff_right one_lt_omega0]

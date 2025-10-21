@@ -127,7 +127,7 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
   constructor
   · rintro ⟨han, ⟨ha, han'⟩, rfl⟩
     simp [Nat.mul_div_eq_iff_dvd, han]
-    omega
+    cutsat
   · rintro ⟨rfl, hab⟩
     rw [mul_ne_zero_iff] at hab
     simpa [hab.1, hab.2] using Nat.le_mul_of_pos_right _ hab.2.bot_lt
@@ -317,12 +317,6 @@ theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
 theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
-
-/-- `Nat.swap_mem_divisorsAntidiagonal` with the LHS in simp normal form. -/
-@[deprecated swap_mem_divisorsAntidiagonal (since := "2025-02-17")]
-theorem swap_mem_divisorsAntidiagonal_aux {x : ℕ × ℕ} :
-    x.snd * x.fst = n ∧ ¬n = 0 ↔ x ∈ divisorsAntidiagonal n := by
-  rw [mem_divisorsAntidiagonal, mul_comm]
 
 lemma prodMk_mem_divisorsAntidiag {x y : ℕ} (hn : n ≠ 0) :
     (x, y) ∈ n.divisorsAntidiagonal ↔ x * y = n := by simp [hn]
@@ -570,10 +564,7 @@ theorem image_div_divisors_eq_divisors (n : ℕ) :
     rintro ⟨h1, -⟩
     exact ⟨n / a, mem_divisors.mpr ⟨div_dvd_of_dvd h1, hn⟩, Nat.div_div_self h1 hn⟩
 
-/- Porting note: Removed simp; simp_nf linter:
-Left-hand side does not simplify, when using the simp lemma on itself.
-This usually means that it will never apply. -/
-@[to_additive sum_div_divisors]
+@[to_additive (attr := simp) sum_div_divisors]
 theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α) :
     (∏ d ∈ n.divisors, f (n / d)) = n.divisors.prod f := by
   by_cases hn : n = 0; · simp [hn]
