@@ -38,6 +38,7 @@ variable (M β α : Type*) [SMul β α] [Monoid M] [MulAction M α]
 section Orbit
 
 variable {α}
+
 /-- The orbit of an element under an action. -/
 @[to_additive /-- The orbit of an element under an action. -/]
 def orbit (a : α) :=
