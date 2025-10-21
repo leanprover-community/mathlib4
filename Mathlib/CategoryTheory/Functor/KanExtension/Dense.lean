@@ -3,21 +3,24 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Canonical
+import Mathlib.CategoryTheory.Functor.KanExtension.DenseAt
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 /-!
 # Dense functors
 
-A functor `F : C ⥤ D` is dense (`F.IsDense`) if any `Y : D` is a
-canonical colimit relatively to `F`. When `F` is full, we show that this
+A functor `F : C ⥤ D` is dense (`F.IsDense`) if `𝟭 D` is a pointwise
+left Kan extension of `F` along itself, i.e. any `Y : D` is the
+colimit of all `F.obj X` for all morphisms `F.obj X ⟶ Y` (which
+is the condition `F.DenseAt Y`).
+When `F` is full, we show that this
 is equivalent to saying that the restricted Yoneda functor
 `D ⥤ Cᵒᵖ ⥤ Type _` is fully faithful (see the lemma
 `Functor.isDense_iff_fullyFaithful_restrictedULiftYoneda`).
 
 We also show that the range of a dense functor is a strong
-generator (see `Functor.isStrongGenerator_range_of_isDense`).
+generator (see `Functor.isStrongGenerator_of_isDense`).
 
 ## References
 
@@ -39,18 +42,23 @@ namespace Functor
 /-- A functor `F : C ⥤ D` is dense if any `Y : D` is a canonical colimit
 relatively to `F`. -/
 class IsDense (F : C ⥤ D) : Prop where
-  isCanonicalColimit_eq_top (F) : F.isCanonicalColimit = ⊤
+  isDenseAt (F) (Y : D) : F.isDenseAt Y
 
-/-- This is a choice of structure `CanonicalColimit F Y` when `F : C ⥤ D`
+/-- This is a choice of structure `F.DenseAt Y` when `F : C ⥤ D`
 is dense, and `Y : D`. -/
-noncomputable def canonicalColimitOfIsDense (F : C ⥤ D) [F.IsDense] (Y : D) :
-    CanonicalColimit F Y :=
-  ((IsDense.isCanonicalColimit_eq_top F).symm.le _ (by simp)).canonicalColimit
+noncomputable def denseAt (F : C ⥤ D) [F.IsDense] (Y : D) : F.DenseAt Y :=
+  (IsDense.isDenseAt F Y).some
+
+lemma isDense_iff_nonempty_isPointwiseLeftKanExtension (F : C ⥤ D) :
+    F.IsDense ↔
+      Nonempty ((LeftExtension.mk _ (rightUnitor F).inv).IsPointwiseLeftKanExtension) :=
+  ⟨fun _ ↦ ⟨fun _ ↦ F.denseAt _⟩, fun ⟨h⟩ ↦ ⟨fun _ ↦ ⟨h _⟩⟩⟩
 
 lemma IsDense.of_iso {F G : C ⥤ D} (e : F ≅ G) [F.IsDense] :
     G.IsDense where
-  isCanonicalColimit_eq_top := by
-    rw [← Functor.congr_isCanonicalColimit e, isCanonicalColimit_eq_top F]
+  isDenseAt Y := by
+    rw [← Functor.congr_isDenseAt e]
+    exact ⟨F.denseAt Y⟩
 
 lemma IsDense.iff_of_iso {F G : C ⥤ D} (e : F ≅ G) :
     F.IsDense ↔ G.IsDense :=
@@ -60,9 +68,7 @@ variable (F : C ⥤ D)
 
 instance (G : C' ⥤ C) [F.IsDense] [G.IsEquivalence] :
     (G ⋙ F).IsDense where
-  isCanonicalColimit_eq_top := by
-    ext Y
-    simpa using ⟨(F.canonicalColimitOfIsDense Y).ofEquivalence G.asEquivalence⟩
+  isDenseAt Y := ⟨(F.denseAt Y).precompEquivalence G⟩
 
 lemma IsDense.comp_left_iff_of_isEquivalence (G : C' ⥤ C) [G.IsEquivalence] :
     (G ⋙ F).IsDense ↔ F.IsDense := by
@@ -73,8 +79,8 @@ lemma IsDense.comp_left_iff_of_isEquivalence (G : C' ⥤ C) [G.IsEquivalence] :
 
 instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
   map_injective h :=
-    (canonicalColimitOfIsDense F _).hom_ext' (fun X p ↦
-      ULift.up_injective (congr_fun (NatTrans.congr_app h (op X)) (ULift.up p)))
+    (F.denseAt _).hom_ext' (fun X p ↦ by
+      simpa using ULift.up_injective (congr_fun (NatTrans.congr_app h (op X)) (ULift.up p)))
 
 instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
   map_surjective {Y Z} f := by
@@ -86,17 +92,17 @@ instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
               simpa [uliftFunctor, uliftYoneda,
                 restrictedULiftYoneda, ← ULift.down_inj] using
                 (congr_fun (f.naturality φ.left.op) (ULift.up g₂.hom)).symm }}
-    refine ⟨(canonicalColimitOfIsDense F Y).desc c, ?_⟩
+    refine ⟨(F.denseAt Y).desc c, ?_⟩
     ext ⟨X⟩ ⟨x⟩
-    exact ULift.down_injective ((canonicalColimitOfIsDense F Y).fac c (.mk x))
+    have := (F.denseAt Y).fac c (.mk x)
+    dsimp [c] at this
+    simpa using ULift.down_injective this
 
 variable {F} in
 lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
     (h : (restrictedULiftYoneda.{w} F).FullyFaithful) :
     F.IsDense where
-  isCanonicalColimit_eq_top := by
-    ext Y
-    simp only [Pi.top_apply, «Prop».top_eq_true, iff_true]
+  isDenseAt Y := by
     let φ (s : Cocone (CostructuredArrow.proj F Y ⋙ F)) :
         (restrictedULiftYoneda.{w} F).obj Y ⟶ (restrictedULiftYoneda F).obj s.pt :=
       { app := fun ⟨X⟩ ⟨x⟩ ↦ ULift.up (s.ι.app (.mk x))
@@ -118,20 +124,22 @@ lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
         fac s j := h.map_injective (by simp [hφ])
         uniq s m hm := h.map_injective (by
           ext ⟨X⟩ ⟨x⟩
-          simp [uliftYoneda, φ, ← hm] ) }⟩
+          simp [uliftYoneda, φ, ← hm])}⟩
 
 lemma isDense_iff_fullyFaithful_restrictedULiftYoneda [F.Full] :
     F.IsDense ↔ Nonempty (restrictedULiftYoneda.{w} F).FullyFaithful :=
   ⟨fun _ ↦ ⟨FullyFaithful.ofFullyFaithful _⟩,
     fun ⟨h⟩ ↦ IsDense.of_fullyFaithful_restrictedULiftYoneda h⟩
 
-lemma isStrongGenerator_range_of_isDense [F.IsDense] :
-    IsStrongGenerator (Set.range F.obj) :=
-  IsStrongGenerator.mk_of_exists_colimitPresentation.{max u₁ u₂ v₁ v₂}
-    (fun Y ↦ ⟨_, _, ColimitPresentation.mk _ _
-      (IsColimit.whiskerEquivalence (canonicalColimitOfIsDense F Y)
-        ((ShrinkHoms.equivalence _).symm.trans ((Shrink.equivalence _)).symm)),
-          fun j ↦ ⟨⟨_, by simp⟩, ⟨Iso.refl _⟩⟩⟩)
+open ObjectProperty in
+lemma isStrongGenerator_of_isDense [F.IsDense] :
+    IsStrongGenerator (.ofObj F.obj) :=
+  (IsStrongGenerator.mk_of_exists_colimitsOfShape.{max u₁ u₂ v₁ v₂} (fun Y ↦ ⟨_, _, ⟨{
+    ι := _
+    diag := _
+    isColimit := (IsColimit.whiskerEquivalence (F.denseAt Y)
+      ((ShrinkHoms.equivalence _).symm.trans ((Shrink.equivalence _)).symm))
+    prop_diag_obj := by simp }⟩⟩))
 
 end Functor
 
