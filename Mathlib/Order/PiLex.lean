@@ -47,7 +47,7 @@ protected def Lex (x y : ∀ i, β i) : Prop :=
 /- This unfortunately results in a type that isn't delta-reduced, so we keep the notation out of the
 basic API, just in case -/
 /-- The notation `Πₗ i, α i` refers to a pi type equipped with the lexicographic order. -/
-notation3 (prettyPrint := false) "Πₗ "(...)", "r:(scoped p => Lex (∀ i, p i)) => r
+notation3 (prettyPrint := false) "Πₗ " (...) ", " r:(scoped p => Lex (∀ i, p i)) => r
 
 @[simp]
 theorem toLex_apply (x : ∀ i, β i) (i : ι) : toLex x i = x i :=
