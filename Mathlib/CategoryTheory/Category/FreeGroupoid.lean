@@ -143,23 +143,7 @@ def strictUniversalPropertyFixedTarget :
   fac _ _ := lift_spec ..
   uniq F G h := by rw [lift_unique (of C ⋙ G) F h, ← lift_unique (of C ⋙ G) G rfl]
 
-instance : IsGroupoid (⊤ : MorphismProperty C).Localization where
-  all_isIso {X Y} f := by
-    have : MorphismProperty.isomorphisms (⊤ : MorphismProperty C).Localization = ⊤ := by
-      apply Localization.Construction.morphismProperty_is_top'
-      · intro X Y f
-        exact Iso.isIso_hom (Localization.Construction.wIso _ trivial)
-      · simp only [MorphismProperty.isomorphisms.iff]
-        infer_instance
-    convert_to MorphismProperty.isomorphisms (⊤ : MorphismProperty C).Localization f
-    rw [this]
-    trivial
-
-/-- Localization of a category with respect to all morphisms results in a groupoid. -/
-def groupoidLocalizationTop : Groupoid (⊤ : MorphismProperty C).Localization :=
-  Groupoid.ofIsGroupoid
-
-attribute [local instance] groupoidLocalizationTop
+attribute [local instance] Localization.groupoid
 
 instance : (of C).IsLocalization ⊤ :=
   .mk' _ _ strictUniversalPropertyFixedTarget strictUniversalPropertyFixedTarget
