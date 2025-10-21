@@ -5,6 +5,7 @@ Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
+
 /-!
 # Elaborators for differential geometry
 
@@ -20,18 +21,20 @@ All of these elaborators are scoped to the `Manifold` namespace.
 We provide compact notation for differentiability and continuous differentiability on manifolds,
 including inference of the model with corners.
 
-| Notation            | Elaborates to                       |
-|---------------------|-------------------------------------|
-| `MDiff f`           | `MDifferentiable I J f`             |
-| `MDiffAt f x`       | `MDifferentiableAt I J f x`         |
-| `MDiff[u] f`        | `MDifferentiableOn I J f u`         |
-| `MDiffAt[u] f x`    | `MDifferentiableWithinAt I J f u x` |
-| `CMDiff n f`        | `ContMDiff I J n f`                 |
-| `CMDiffAt n f x`    | `ContMDiffAt I J n f x`             |
-| `CMDiff[u] n f`     | `ContMDiffOn I J n f u`             |
-| `CMDiffAt[u] n f x` | `ContMDiffWithinAt I J n f u x`     |
-| `mfderiv[u] f x`    | `mfderivWithin I J f u x`           |
-| `mfderiv% f x`      | `mfderiv I J f x`                   |
+| Notation                 | Elaborates to                       |
+|--------------------------|-------------------------------------|
+| `MDiff f`                | `MDifferentiable I J f`             |
+| `MDiffAt f x`            | `MDifferentiableAt I J f x`         |
+| `MDiff[u] f`             | `MDifferentiableOn I J f u`         |
+| `MDiffAt[u] f x`         | `MDifferentiableWithinAt I J f u x` |
+| `CMDiff n f`             | `ContMDiff I J n f`                 |
+| `CMDiffAt n f x`         | `ContMDiffAt I J n f x`             |
+| `CMDiff[u] n f`          | `ContMDiffOn I J n f u`             |
+| `CMDiffAt[u] n f x`      | `ContMDiffWithinAt I J n f u x`     |
+| `mfderiv[u] f x`         | `mfderivWithin I J f u x`           |
+| `mfderiv% f x`           | `mfderiv I J f x`                   |
+| `HasMFDerivAt[s] f x f'` | `HasMFDerivWithinAt I J f s x f'`   |
+| `HasMFDerivAt% f x f'`   | `HasMFDerivAt I J f x f'`           |
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
 The search for models with corners uses the local context and is (almost) only based on expression
@@ -217,6 +220,7 @@ using the local context to infer the appropriate instance. This supports the fol
 - a model with corners on a manifold, or on its underlying model space
 - a closed interval of real numbers
 - the complex upper half plane
+- a space of continuous k-linear maps
 - the trivial model `𝓘(𝕜, E)` on a normed space
 - if the above are not found, try to find a `NontriviallyNormedField` instance on the type of `e`,
   and if successful, return `𝓘(𝕜)`.
