@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 
-# Krull dimension and non zero-divisors
+# Krull dimension and non-zero-divisors
 
 ## Main results
 - `ringKrullDim_quotient_succ_le_of_nonZeroDivisor`: If `r` is not a zero divisor, then
@@ -83,7 +83,7 @@ lemma ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial (σ : Type*) [Finite
   | h_option IH =>
     simp only [Nat.card_eq_fintype_card, Fintype.card_option, Nat.cast_add, Nat.cast_one,
       ← add_assoc] at IH ⊢
-    refine (add_le_add_right IH _).trans (ringKrullDim_succ_le_ringKrullDim_polynomial.trans ?_)
+    grw [IH, ringKrullDim_succ_le_ringKrullDim_polynomial]
     exact (ringKrullDim_eq_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv).ge
 
 open MvPolynomial in
@@ -95,7 +95,7 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     push_cast
     exact ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _
   · simp only [ENat.card_eq_top_of_infinite, WithBot.coe_top]
-    suffices ringKrullDim (MvPolynomial σ R) = ⊤ by aesop
+    suffices ringKrullDim (MvPolynomial σ R) = ⊤ by simp_all
     rw [WithBot.eq_top_iff_forall_ge]
     intro n
     let ι := Infinite.natEmbedding σ ∘ Fin.val (n := n + 1)

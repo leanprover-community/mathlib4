@@ -98,17 +98,10 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
   let f : A' →ₐ[R] Module.End R N :=
     AlgHom.ofLinearMap
       { toFun := fun x => (DistribMulAction.toLinearMap R M x).restrict x.prop
-        -- Porting note: was
-                -- `fun x y => LinearMap.ext fun n => Subtype.ext <| add_smul x y n`
-        map_add' := by intros x y; ext; exact add_smul _ _ _
-        -- Porting note: was
-                --  `fun r s => LinearMap.ext fun n => Subtype.ext <| smul_assoc r s n`
-        map_smul' := by intros r s; ext; apply smul_assoc }
-      -- Porting note: the next two lines were
-      --`(LinearMap.ext fun n => Subtype.ext <| one_smul _ _) fun x y =>`
-      --`LinearMap.ext fun n => Subtype.ext <| mul_smul x y n`
+        map_add' := by intro x y; ext; exact add_smul _ _ _
+        map_smul' := by intro r s; ext; apply smul_assoc }
       (by ext; apply one_smul)
-      (by intros x y; ext; apply mul_smul)
+      (by intro x y; ext; apply mul_smul)
   obtain ⟨a, ha₁, ha₂⟩ : ∃ a ∈ N, a ≠ (0 : M) := by
     by_contra! h'
     apply hN

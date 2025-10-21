@@ -27,13 +27,10 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 ## TODOs/Projects
 * Equivalence between actions of `C` on `D` and pseudofunctors from the
   classifying bicategory of `C` to `Cat`.
-* Left actions as monoidal functors C ⥤ (D ⥤ D)ᴹᵒᵖ.
-* Right actions as monoidal functors C ⥤ D ⥤ D.
-* (Right) Action of `(C ⥤ C)` on `C`.
 * Left/Right Modules in `D` over a monoid object in `C`.
   Equivalence with `Mod_` when `D` is `C`. Bimodules objects.
 * Given a monad `M` on `C`, equivalence between `Algebra M`, and modules in `C`
-  on `M.toMon : Mon_ (C ⥤ C)`.
+  on `M.toMon : Mon (C ⥤ C)`.
 * Canonical left action of `Type u` on `u`-small cocomplete categories via the
   copower.
 
@@ -103,7 +100,7 @@ scoped notation "λₗ["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
 end MonoidalLeftAction
 
 open scoped MonoidalLeftAction in
-/-- A `MonoidalLeftAction C D` is is the data of:
+/-- A `MonoidalLeftAction C D` is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ₗ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ₗ d : c ⊙ₗ d ⟶ c' ⊙ₗ d`.
@@ -187,7 +184,7 @@ open Category
 
 variable {C D} [MonoidalCategory C] [MonoidalLeftAction C D]
 
--- Simp normal forms are aligned with the ones in `MonoidalCateogry`.
+-- Simp normal forms are aligned with the ones in `MonoidalCategory`.
 
 @[simp]
 lemma id_actionHom (c : C) {d d' : D} (f : d ⟶ d') :
@@ -334,12 +331,12 @@ def curriedAction : C ⥤ D ⥤ D where
 variable {C} in
 /-- Bundle `d ↦ c ⊙ₗ d` as a functor. -/
 @[simps!]
-abbrev actionLeft (c : C) : D ⥤ D := curriedAction C D|>.obj c
+abbrev actionLeft (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ c ⊙ₗ d` as a functor. -/
 @[simps!]
-abbrev actionRight (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
+abbrev actionRight (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
 /-- Bundle `αₗ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
@@ -417,7 +414,7 @@ scoped notation "ρᵣ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 end MonoidalRightAction
 
 open scoped MonoidalRightAction in
-/-- A `MonoidalRightAction C D` is is the data of:
+/-- A `MonoidalRightAction C D` is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ᵣ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ᵣ d : c ⊙ᵣ d ⟶ c' ⊙ᵣ d`.
@@ -496,7 +493,7 @@ open Category
 
 variable {C D} [MonoidalCategory C] [MonoidalRightAction C D]
 
--- Simp normal forms are aligned with the ones in `MonoidalCateogry`.
+-- Simp normal forms are aligned with the ones in `MonoidalCategory`.
 
 @[simp]
 lemma actionHom_id {d d' : D} (f : d ⟶ d') (c : C) :
@@ -644,12 +641,12 @@ def curriedAction : C ⥤ D ⥤ D where
 variable {C} in
 /-- Bundle `d ↦ d ⊙ᵣ c` as a functor. -/
 @[simps!]
-abbrev actionRight (c : C) : D ⥤ D := curriedAction C D|>.obj c
+abbrev actionRight (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ d ⊙ᵣ c` as a functor. -/
 @[simps!]
-abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
+abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
 /-- Bundle `αᵣ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]

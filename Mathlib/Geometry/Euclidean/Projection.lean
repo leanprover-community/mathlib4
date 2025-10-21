@@ -5,8 +5,8 @@ Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
-import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Orthogonal projection in Euclidean affine spaces
@@ -91,8 +91,6 @@ theorem orthogonalProjectionFn_vsub_mem_direction_orthogonal {s : AffineSubspace
     orthogonalProjectionFn s p -ᵥ p ∈ s.directionᗮ :=
   direction_mk' p s.directionᗮ ▸
     vsub_mem_direction (orthogonalProjectionFn_mem_orthogonal p) (self_mem_mk' _ _)
-
-attribute [local instance] AffineSubspace.toAddTorsor
 
 /-- Auxiliary definition for setting up the orthogonal projection. This one is a bundled affine
 map; the final `orthogonalProjection` is a continuous affine map. -/

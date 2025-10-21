@@ -132,7 +132,7 @@ theorem isSubDPIdeal_inf_iff {A : Type*} [CommRing A] {I : Ideal A} (hI : Divide
     ∀ {n : ℕ} {a b : A} (_ : a ∈ I) (_ : b ∈ I) (_ : a - b ∈ J), hI.dpow n a - hI.dpow n b ∈ J := by
   refine ⟨fun hIJ n a b ha hb hab ↦ ?_, fun hIJ ↦ ?_⟩
   · have hab' : a - b ∈ I := I.sub_mem ha hb
-    rw [← add_sub_cancel b a, hI.dpow_add' hb hab', range_succ, sum_insert notMem_range_self,
+    rw [← add_sub_cancel b a, hI.dpow_add' hb hab', range_add_one, sum_insert notMem_range_self,
       tsub_self, hI.dpow_zero hab', mul_one, add_sub_cancel_left]
     exact J.sum_mem (fun i hi ↦  SemilatticeInf.inf_le_left J I ((J ⊓ I).smul_mem _
       (hIJ.dpow_mem _ (ne_of_gt (Nat.sub_pos_of_lt (mem_range.mp hi))) ⟨hab, hab'⟩)))
@@ -185,12 +185,13 @@ theorem isSubDPIdeal_iSup {ι : Type*} {J : ι → Ideal A} (hJ : ∀ i, IsSubDP
 
 theorem isSubDPIdeal_iInf {ι : Type*} {J : ι → Ideal A} (hJ : ∀ i, IsSubDPIdeal hI (J i)) :
     IsSubDPIdeal hI (I ⊓ iInf (fun i ↦ J i)) := by
-  by_cases hι : Nonempty ι
-  · refine ⟨fun _ hx ↦ hx.1, ?_⟩
+  cases isEmpty_or_nonempty ι with
+  | inr _ =>
+    refine ⟨fun _ hx ↦ hx.1, ?_⟩
     intro n hn x hx
     simp only [Ideal.mem_inf, mem_iInf] at hx ⊢
     exact ⟨hI.dpow_mem hn hx.1, fun i ↦  IsSubDPIdeal.dpow_mem (hJ i) n hn (hx.2 i)⟩
-  · simp only [not_nonempty_iff] at hι
+  | inl _ =>
     simp only [iInf_of_empty, le_top, inf_of_le_left]
     exact IsSubDPIdeal.self hI
 
@@ -280,7 +281,7 @@ instance : LT (SubDPIdeal hI) := ⟨fun J J' ↦ J.carrier < J'.carrier⟩
 
 theorem lt_iff {J J' : SubDPIdeal hI} : J < J' ↔ J.carrier < J'.carrier := Iff.rfl
 
-/-- I is a sub-dp-ideal ot itself. -/
+/-- `I` is a sub-dp-ideal of itself. -/
 instance : Top (SubDPIdeal hI) :=
   ⟨{carrier    := I
     isSubideal := le_refl _
@@ -288,7 +289,7 @@ instance : Top (SubDPIdeal hI) :=
 
 instance inhabited : Inhabited hI.SubDPIdeal := ⟨⊤⟩
 
-/-- `(0)` is a sub-dp-ideal ot the dp-ideal `I`. -/
+/-- `(0)` is a sub-dp-ideal of the dp-ideal `I`. -/
 instance : Bot (SubDPIdeal hI) :=
   ⟨{carrier    := ⊥
     isSubideal := bot_le
@@ -549,7 +550,7 @@ noncomputable def dpow : ℕ → B → B := fun n ↦
 variable {f} (hf : Function.Surjective f) {J} (hIJ : J = I.map f)
   (hIf : hI.IsSubDPIdeal (RingHom.ker f ⊓ I))
 
-/-- Divided powers on the the codomain `B` of a surjective ring homomorphism `f` are compatible
+/-- Divided powers on the codomain `B` of a surjective ring homomorphism `f` are compatible
   with `f`. -/
 theorem dpow_apply' (hIf : IsSubDPIdeal hI (RingHom.ker f ⊓ I)) {n : ℕ} {a : A} (ha : a ∈ I) :
     dpow hI f n (f a) = f (hI.dpow n a) := by

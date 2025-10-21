@@ -348,7 +348,7 @@ class HasBiproductsOfShape : Prop where
 
 attribute [instance 100] HasBiproductsOfShape.has_biproduct
 
-/-- `HasFiniteBiproducts C` represents a choice of biproduct for every family of objects in `C`
+/-- A category `HasFiniteBiproducts` if it has a biproduct for every finite family of objects in `C`
 indexed by a finite type. -/
 class HasFiniteBiproducts : Prop where
   out : ∀ n, HasBiproductsOfShape (Fin n) C
@@ -947,7 +947,6 @@ theorem biproduct.matrix_π (m : ∀ j k, f j ⟶ g k) (k : K) :
 @[reassoc (attr := simp)]
 theorem biproduct.ι_matrix (m : ∀ j k, f j ⟶ g k) (j : J) :
     biproduct.ι f j ≫ biproduct.matrix m = biproduct.lift fun k => m j k := by
-  ext
   simp [biproduct.matrix]
 
 /-- Extract the matrix components from a morphism of biproducts. -/
