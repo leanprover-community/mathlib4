@@ -153,9 +153,6 @@ instance nontrivial : Nontrivial ℚ where exists_pair_ne := ⟨1, 0, by decide�
 /-! ### The rational numbers are a group -/
 
 instance addCommGroup : AddCommGroup ℚ where
-  zero := 0
-  add := (· + ·)
-  neg := Neg.neg
   zero_add := Rat.zero_add
   add_zero := Rat.add_zero
   add_comm := Rat.add_comm
@@ -188,8 +185,6 @@ instance addCommSemigroup : AddCommSemigroup ℚ := by infer_instance
 instance addSemigroup : AddSemigroup ℚ := by infer_instance
 
 instance commMonoid : CommMonoid ℚ where
-  one := 1
-  mul := (· * ·)
   mul_one := Rat.mul_one
   one_mul := Rat.one_mul
   mul_comm := Rat.mul_comm

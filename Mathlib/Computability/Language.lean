@@ -139,17 +139,13 @@ theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
 
 instance instSemiring : Semiring (Language α) where
-  add := (· + ·)
   add_assoc := union_assoc
-  zero := 0
   zero_add := empty_union
   add_zero := union_empty
   add_comm := union_comm
-  mul := (· * ·)
   mul_assoc _ _ _ := image2_assoc append_assoc
   zero_mul _ := image2_empty_left
   mul_zero _ := image2_empty_right
-  one := 1
   one_mul l := by simp [mul_def, one_def]
   mul_one l := by simp [mul_def, one_def]
   natCast n := if n = 0 then 0 else 1

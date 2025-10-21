@@ -123,9 +123,9 @@ instance (priority := 100) : FaithfulSMul R K :=
 variable {R K}
 
 open algebraMap in
-@[norm_cast, simp]
+@[norm_cast]
 theorem coe_inj {a b : R} : (↑a : K) = ↑b ↔ a = b :=
-  (IsFractionRing.injective R K).eq_iff
+  algebraMap.coe_inj _ _
 
 protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] {x : R}
     (hx : x ∈ nonZeroDivisors R) : algebraMap R K x ≠ 0 :=

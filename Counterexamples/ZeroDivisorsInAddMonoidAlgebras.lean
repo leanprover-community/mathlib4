@@ -175,7 +175,6 @@ instance : Add F where
 /-- `F` would be a `CommSemiring`, using `min` as multiplication.  Again, we do not need this. -/
 instance : AddCommMonoid F where
   add_assoc := by boom
-  zero := 0
   zero_add := by boom
   add_zero := by boom
   add_comm := by boom

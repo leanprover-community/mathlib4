@@ -374,7 +374,6 @@ instance instIsScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N 
   ⟨fun a b f => ext' <| smul_assoc a b f.toFun⟩
 
 instance instMulAction : MulAction M (E →ₗ.[R] F) where
-  smul := (· • ·)
   one_smul := fun ⟨_s, f⟩ => ext' <| one_smul M f
   mul_smul a b f := ext' <| mul_smul a b f.toFun
 
