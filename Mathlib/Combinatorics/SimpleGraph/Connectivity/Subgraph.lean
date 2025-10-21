@@ -443,25 +443,23 @@ lemma _root_.SimpleGraph.Walk.toSubgraph_connected {u v : V} (p : G.Walk u v) :
   induction p with
   | nil => apply singletonSubgraph_connected
   | @cons _ w _ h p ih =>
-    apply (subgraphOfAdj_connected h).sup ih
-    exists w
+    refine Subgraph.connected_sup (subgraphOfAdj_connected h).preconnected ih.preconnected ⟨w, ?_⟩
     simp
 
 lemma induce_union_connected {H : G.Subgraph} {s t : Set V}
     (sconn : (H.induce s).Connected) (tconn : (H.induce t).Connected)
     (sintert : (s ⊓ t).Nonempty) :
     (H.induce (s ∪ t)).Connected := by
-  refine (sconn.sup tconn sintert).mono ?_ ?_
+  refine (Subgraph.connected_sup sconn.preconnected tconn.preconnected sintert).mono ?_ ?_
   · apply le_induce_union
   · simp
 
 lemma Connected.adj_union {H K : G.Subgraph}
     (Hconn : H.Connected) (Kconn : K.Connected) {u v : V} (uH : u ∈ H.verts) (vK : v ∈ K.verts)
     (huv : G.Adj u v) :
-    ((⊤ : G.Subgraph).induce {u, v} ⊔ H ⊔ K).Connected := by
-  refine ((top_induce_pair_connected_of_adj huv).sup Hconn ?_).sup Kconn ?_
-  · exact ⟨u, by simp [uH]⟩
-  · exact ⟨v, by simp [vK]⟩
+    ((⊤ : G.Subgraph).induce {u, v} ⊔ H ⊔ K).Connected :=
+  Subgraph.connected_sup (Subgraph.connected_sup (top_induce_pair_connected_of_adj huv).preconnected
+    Hconn.preconnected ⟨u, by simp [uH]⟩).preconnected Kconn.preconnected ⟨v, by simp [vK]⟩
 
 lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
     H.Preconnected ↔ ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
