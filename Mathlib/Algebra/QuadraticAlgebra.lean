@@ -89,6 +89,7 @@ instance : Zero (QuadraticAlgebra R a b) := ⟨⟨0, 0⟩⟩
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : QuadraticAlgebra R a b) = 0 := rfl
 
+@[simp]
 theorem coe_eq_zero_iff {r : R} : (r : QuadraticAlgebra R a b) = 0 ↔ r = 0 := by
   rw [← coe_zero, coe_inj]
 
@@ -106,6 +107,7 @@ instance : One (QuadraticAlgebra R a b) := ⟨⟨1, 0⟩⟩
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : QuadraticAlgebra R a b) = 1 := rfl
 
+@[simp]
 theorem coe_eq_one_iff {r : R} : (r : QuadraticAlgebra R a b) = 1 ↔ r = 1 := by
   rw [← coe_one, coe_inj]
 
@@ -439,7 +441,7 @@ theorem coe_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
     simp [QuadraticAlgebra.ext_iff, hr, hi]
 
 @[simp, norm_cast]
-theorem coe_dvd_ofSelf (z w : R) :
+theorem coe_dvd_iff_dvd {z w : R} :
     (z : QuadraticAlgebra R a b) ∣ w ↔ z ∣ w := by
   rw [coe_dvd_iff]
   constructor
@@ -460,7 +462,7 @@ instance [CharZero R] : CharZero (QuadraticAlgebra R a b) where
     simp [QuadraticAlgebra.ext_iff]
 
 @[simp]
-theorem smul_val (n : ℤ) (x y : R) :
+theorem zsmul_val (n : ℤ) (x y : R) :
     (n : QuadraticAlgebra R a b) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by
   ext <;> simp
 

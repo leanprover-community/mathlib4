@@ -47,11 +47,11 @@ def omega : QuadraticAlgebra R a b :=
 scoped notation "ω" => omega
 
 @[simp]
-theorem re_omega : (ω : QuadraticAlgebra R a b).re = 0 :=
+theorem omega_re : (ω : QuadraticAlgebra R a b).re = 0 :=
   rfl
 
 @[simp]
-theorem im_omega : (ω : QuadraticAlgebra R a b).im = 1 :=
+theorem omega_im : (ω : QuadraticAlgebra R a b).im = 1 :=
   rfl
 
 end
@@ -71,22 +71,21 @@ theorem omega_mul_mk (x y : R) : (ω : QuadraticAlgebra R a b) * ⟨x, y⟩ = �
 
 @[simp]
 theorem omega_mul_coe_mul_mk (n x y : R) :
-    (ω : QuadraticAlgebra R a b) * (↑n) * ⟨x, y⟩ = ⟨a * n * y, n * x + n * b * y⟩ := by
-  ext <;> simp; ring
+    (ω : QuadraticAlgebra R a b) * n * ⟨x, y⟩ = ⟨a * n * y, n * x + n * b * y⟩ := by
+  ext <;> simp only [re_mul, omega_re, re_coe, zero_mul, omega_im, mul_one, im_coe, mul_zero,
+    add_zero, im_mul, one_mul, zero_add]; ring
 
-theorem mk_eq_add_smul_omega {x y : R} :
+theorem mk_eq_add_smul_omega (x y : R) :
     (⟨x, y⟩ : QuadraticAlgebra R a b) = x + y • (ω : QuadraticAlgebra R a b) := by
   ext <;> simp
 
 variable {A : Type*} [Ring A] [Algebra R A]
 
 @[ext]
-theorem hom_ext {f g : QuadraticAlgebra R a b →ₐ[R] A}
+theorem algHom_ext {f g : QuadraticAlgebra R a b →ₐ[R] A}
     (h : f ω = g ω) : f = g := by
   ext ⟨x, y⟩
-  simp only [mk_eq_add_smul_omega, map_add, map_smul, h, add_left_inj]
-  change f (algebraMap R _ x) = g (algebraMap R _ x)
-  simp only [AlgHom.commutes]
+  simp [mk_eq_add_smul_omega, h, ← coe_algebraMap]
 
 /-- The unique `AlgHom` from `QuadraticAlgebra R a b` to an `R`-algebra `A`,
 constructed by replacing `ω` with the provided root.
@@ -139,35 +138,6 @@ def lift : { u : A // u * u = a • 1 + b • u } ≃ (QuadraticAlgebra R a b �
 
 end omega
 
-/- section omega'
-
-variable [Ring R]
-
-/-- The representative of the “other” root in the quadratic algebra.
-
-One has omega R a b + omega' R a b = b -/
-def ω' : QuadraticAlgebra R a b :=
-  ⟨b, -1⟩
-
-@[simp]
-theorem re_omega' : (ω' : QuadraticAlgebra R a b).re = b :=
-  rfl
-
-@[simp]
-theorem im_omega' : (ω' : QuadraticAlgebra R a b).im = -1 :=
-  rfl
-
-theorem omega_add_omega' :
-    (ω : QuadraticAlgebra R a b) + (ω' : QuadraticAlgebra R a b) = (b : R) := by
-  ext <;> simp
-
-theorem omega_mul_omega' :
-    (ω : QuadraticAlgebra R a b) * (ω' : QuadraticAlgebra R a b) = (-a : R) := by
-  ext <;> simp
-
-end omega'
--/
-
 section star
 
 variable [CommRing R]
@@ -183,25 +153,28 @@ theorem star_mk (x y : R) :
   rfl
 
 @[simp]
-theorem star_re (z : QuadraticAlgebra R a b) :
+theorem re_star (z : QuadraticAlgebra R a b) :
     (star z).re = z.re + b * z.im :=
   rfl
 
 @[simp]
-theorem star_im (z : QuadraticAlgebra R a b) :
+theorem im_star (z : QuadraticAlgebra R a b) :
     (star z).im = -z.im :=
   rfl
 
 theorem mul_star {x y : R} :
     (⟨x, y⟩ * star ⟨x, y⟩ : QuadraticAlgebra R a b) =
       x * x + b * x * y - a * y * y := by
-  ext <;> simp <;> ring
+  ext <;>
+  simp only [star_mk, mk_mul_mk, mul_neg, im_sub, im_add, im_mul, re_coe, im_coe, mul_zero,
+    zero_mul, add_zero, re_mul, sub_self, re_sub, re_add] <;> ring
 
 instance : StarRing (QuadraticAlgebra R a b) where
   star_involutive _ := by
     refine QuadraticAlgebra.ext (by simp) (neg_neg _)
-  star_mul a b := by ext <;> simp <;> ring
-  star_add _ _ := QuadraticAlgebra.ext (by simp [star_re]; ring) (neg_add _ _)
+  star_mul a b := by ext <;>
+    simp only [re_star, re_mul, im_mul, im_star, mul_neg, neg_mul, neg_neg] <;> ring
+  star_add _ _ := QuadraticAlgebra.ext (by simp only [re_star, re_add, im_add]; ring) (neg_add _ _)
 
 end star
 
@@ -224,20 +197,20 @@ theorem norm_zero : norm (0 : QuadraticAlgebra R a b) = 0 := by simp [norm]
 theorem norm_one : norm (1 : QuadraticAlgebra R a b) = 1 := by simp [norm]
 
 @[simp]
-theorem norm_coe (r : R) : norm (r : QuadraticAlgebra R a b) = r * r := by simp [norm_def]
+theorem norm_coe (r : R) : norm (r : QuadraticAlgebra R a b) = r ^ 2 := by simp [norm_def, pow_two]
 
 @[simp]
-theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n * n :=
-  by simp [norm_def]
+theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 :=
+  by simp [norm_def, pow_two]
 
 @[simp]
-theorem norm_intCast (n : ℤ) : norm (n : QuadraticAlgebra R a b) = n * n :=
-  by simp [norm_def]
+theorem norm_intCast (n : ℤ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 :=
+  by simp [norm_def, pow_two]
 
 @[simp]
 theorem norm_mul (z w : QuadraticAlgebra R a b) :
     norm (z * w) = norm z * norm w := by
-  simp [norm_def]; ring
+  simp only [norm_def, re_mul, im_mul]; ring
 
 /-- `norm` as a `MonoidHom`. -/
 def normMonoidHom : QuadraticAlgebra R a b →* R where
@@ -258,7 +231,7 @@ theorem norm_neg (x : QuadraticAlgebra R a b) : (-x).norm = x.norm := by
 
 @[simp]
 theorem norm_star (x : QuadraticAlgebra R a b) : (star x).norm = x.norm := by
-  simp [norm]; ring
+  simp only [norm, re_star, im_star, mul_neg, neg_mul, neg_neg, sub_left_inj]; ring
 
 theorem isUnit_iff_norm_isUnit {x : QuadraticAlgebra R a b} :
     IsUnit x ↔ IsUnit (x.norm) := by
@@ -285,8 +258,10 @@ theorem mker_norm_eq_unitary :
     MonoidHom.mker (@normMonoidHom R a b _) = unitary (QuadraticAlgebra R a b) :=
   Submonoid.ext fun _ => norm_eq_one_iff_mem_unitary
 
+open nonZeroDivisors
+
 theorem coe_mem_nonZeroDivisors_iff {r : R} :
-    (r : QuadraticAlgebra R a b) ∈ nonZeroDivisors _ ↔ r ∈ nonZeroDivisors R := by
+    (r : QuadraticAlgebra R a b) ∈ (QuadraticAlgebra R a b)⁰ ↔ r ∈ R⁰ := by
   simp only [mem_nonZeroDivisors_iff_right]
   constructor
   · intro H x hxr
@@ -299,7 +274,8 @@ theorem coe_mem_nonZeroDivisors_iff {r : R} :
     simp [QuadraticAlgebra.ext_iff, re_zero, im_zero, h _ hz.left, h _ hz.right]
 
 theorem star_mem_nonZeroDivisors {z : QuadraticAlgebra R a b}
-    (hz : z ∈ nonZeroDivisors _) : star z ∈ nonZeroDivisors _ :=  by
+    (hz : z ∈ (QuadraticAlgebra R a b)⁰) :
+    star z ∈ (QuadraticAlgebra R a b)⁰ :=  by
   rw [mem_nonZeroDivisors_iff_right] at hz ⊢
   intro w hw
   apply star_involutive.injective
@@ -308,13 +284,13 @@ theorem star_mem_nonZeroDivisors {z : QuadraticAlgebra R a b}
   rw [← star_involutive z, ← star_mul, mul_comm, hw, star_zero]
 
 theorem star_mem_nonZeroDivisors_iff {z : QuadraticAlgebra R a b} :
-    star z ∈ nonZeroDivisors _ ↔ z ∈ nonZeroDivisors _ := by
+    star z ∈ (QuadraticAlgebra R a b)⁰ ↔ z ∈ (QuadraticAlgebra R a b)⁰ := by
   refine ⟨fun h ↦ ?_, star_mem_nonZeroDivisors⟩
   rw [← star_involutive z]
   exact star_mem_nonZeroDivisors h
 
 theorem norm_mem_nonZeroDivisors_iff {z : QuadraticAlgebra R a b} :
-    z.norm ∈ nonZeroDivisors R ↔ z ∈ nonZeroDivisors _ := by
+    z.norm ∈ R⁰ ↔ z ∈ (QuadraticAlgebra R a b)⁰ := by
   constructor
   · simp only [mem_nonZeroDivisors_iff_right]
     intro h w hw
@@ -344,17 +320,13 @@ lemma norm_eq_zero_iff_eq_zero {z : QuadraticAlgebra R a b} :
     · exfalso
       rw [← pow_two, sub_eq_zero, ← eq_sub_iff_add_eq] at hz
       apply Hab.out (- z.re / z.im)
-      field_simp
-      rw [hz]
-      field_simp
-      ring
+      grind
   · intro hz
     simp [hz]
 
 /-- If `R` is a field and there is no `r : R` such that `r ^ 2 = a + b * r`,
 then `QuadraticAlgebra R a b` is a field. -/
 instance : Field (QuadraticAlgebra R a b) where
-  toCommRing := inferInstance
   inv z := (norm z)⁻¹ • star z
   mul_inv_cancel z hz := by
     rw [ne_eq, ← norm_eq_zero_iff_eq_zero] at hz

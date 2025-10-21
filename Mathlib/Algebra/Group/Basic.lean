@@ -123,7 +123,7 @@ theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by
 
 @[to_additive]
 theorem mul_mul_mul_comm' (a b c d : G) : a * b * c * d = a * c * b * d := by
-  simp only [mul_left_comm, mul_assoc]
+  grind
 
 @[to_additive]
 theorem mul_rotate (a b c : G) : a * b * c = b * c * a := by
