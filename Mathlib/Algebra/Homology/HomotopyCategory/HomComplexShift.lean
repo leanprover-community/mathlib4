@@ -63,7 +63,7 @@ def leftShift (a n' : ℤ) (hn' : n + a = n') : Cochain (K⟦a⟧) L n' :=
 
 lemma leftShift_v (a n' : ℤ) (hn' : n + a = n') (p q : ℤ) (hpq : p + n' = q)
     (p' : ℤ) (hp' : p' + n = q) :
-    (γ.leftShift a n' hn').v p q hpq = (a * n' + ((a * (a - 1))/2)).negOnePow •
+    (γ.leftShift a n' hn').v p q hpq = (a * n' + ((a * (a - 1)) / 2)).negOnePow •
       (K.shiftFunctorObjXIso a p p'
         (by rw [← add_left_inj n, hp', add_assoc, add_comm a, hn', hpq])).hom ≫ γ.v p' q hp' := by
   obtain rfl : p' = p + a := by cutsat
@@ -340,7 +340,7 @@ lemma shift_units_smul (a : ℤ) (x : Rˣ) :
 @[simp]
 lemma rightUnshift_smul {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : ℤ) (hn : n' + a = n) (x : R) :
     (x • γ).rightUnshift n hn = x • γ.rightUnshift n hn := by
-  change (rightShiftLinearEquiv  R K L n a n' hn).symm (x • γ) = _
+  change (rightShiftLinearEquiv R K L n a n' hn).symm (x • γ) = _
   apply map_smul
 
 @[simp]
@@ -352,7 +352,7 @@ lemma rightUnshift_units_smul {n' a : ℤ} (γ : Cochain K (L⟦a⟧) n') (n : �
 @[simp]
 lemma leftUnshift_smul {n' a : ℤ} (γ : Cochain (K⟦a⟧) L n') (n : ℤ) (hn : n + a = n') (x : R) :
     (x • γ).leftUnshift n hn = x • γ.leftUnshift n hn := by
-  change (leftShiftLinearEquiv  R K L n a n' hn).symm (x • γ) = _
+  change (leftShiftLinearEquiv R K L n a n' hn).symm (x • γ) = _
   apply map_smul
 
 @[simp]
