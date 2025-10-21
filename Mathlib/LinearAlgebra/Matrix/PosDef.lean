@@ -205,11 +205,6 @@ theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R)
     PosSemidef (A * Aᴴ) := by
   simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
--- move to a much earlier file
-theorem _root_.isSelfAdjoint_sum {ι R : Type*} [AddCommMonoid R] [StarAddMonoid R] (s : Finset ι)
-    {x : ι → R} (h : ∀ i ∈ s, IsSelfAdjoint (x i)) : IsSelfAdjoint (∑ i ∈ s, x i) := by
-  simpa [IsSelfAdjoint, star_sum] using Finset.sum_congr rfl fun _ hi => h _ hi
-
 theorem posSemidef_sum {ι : Type*} [AddLeftMono R]
     {x : ι → Matrix n n R} (s : Finset ι) (h : ∀ i ∈ s, PosSemidef (x i)) :
     PosSemidef (∑ i ∈ s, x i) := by
