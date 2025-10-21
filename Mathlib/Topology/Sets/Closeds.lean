@@ -5,8 +5,6 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Clopen
-import Mathlib.Topology.Constructions
-import Mathlib.Topology.Defs.Induced
 
 /-!
 # Closed sets
