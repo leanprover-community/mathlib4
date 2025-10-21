@@ -155,15 +155,13 @@ lemma IsSelfAdjoint.le_algebraMap_norm_self {a : A} (ha : IsSelfAdjoint a := by 
   · refine le_algebraMap_of_spectrum_le fun r hr => ?_
     calc r ≤ ‖r‖ := Real.le_norm_self r
       _ ≤ ‖a‖ := spectrum.norm_le_norm_of_mem hr
-  · rw [not_nontrivial_iff_subsingleton] at nontriv
+  · push_neg at nontriv
     simp
 
 lemma IsSelfAdjoint.neg_algebraMap_norm_le_self {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     - (algebraMap ℝ A ‖a‖) ≤ a := by
-  have : - a ≤ algebraMap ℝ A ‖a‖ := by
-    rw [← norm_neg]
-    exact IsSelfAdjoint.le_algebraMap_norm_self (neg ha)
-  exact neg_le.mp this
+  rw [neg_le, ← norm_neg]
+  exact ha.neg.le_algebraMap_norm_self
 
 lemma CStarAlgebra.mul_star_le_algebraMap_norm_sq {a : A} :
     a * star a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by

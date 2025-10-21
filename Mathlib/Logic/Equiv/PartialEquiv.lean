@@ -11,7 +11,7 @@ import Mathlib.Tactic.Attr.Core
 /-!
 # Partial equivalences
 
-This files defines equivalences between subsets of given types.
+This file defines equivalences between subsets of given types.
 An element `e` of `PartialEquiv α β` is made of two maps `e.toFun` and `e.invFun` respectively
 from α to β and from β to α (just like equivs), which are inverse to each other on the subsets
 `e.source` and `e.target` of respectively α and β.
@@ -69,7 +69,7 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 open Lean Meta Elab Tactic
 
 /-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
-functions (`PartialEquiv`, `PartialHomeomorph`, etc).
+functions (`PartialEquiv`, `OpenPartialHomeomorph`, etc).
 
 This is in a separate file from `Mathlib/Logic/Equiv/MfldSimpsAttr.lean` because attributes need a
 new file to become functional.

@@ -563,9 +563,9 @@ open HomComplex
 /-- The cochain complex of homomorphisms between two cochain complexes `F` and `G`.
 In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
 @[simps! X d_hom_apply]
-def HomComplex : CochainComplex AddCommGrp ℤ where
-  X i := AddCommGrp.of (Cochain F G i)
-  d i j := AddCommGrp.ofHom (δ_hom ℤ F G i j)
+def HomComplex : CochainComplex AddCommGrpCat ℤ where
+  X i := AddCommGrpCat.of (Cochain F G i)
+  d i j := AddCommGrpCat.ofHom (δ_hom ℤ F G i j)
   shape _ _ hij := by ext; simp [δ_shape _ _ hij]
   d_comp_d' _ _ _ _ _  := by ext; simp [δ_δ]
 

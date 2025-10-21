@@ -9,6 +9,9 @@ import Mathlib.NumberTheory.ArithmeticFunction
 
 open ArithmeticFunction
 
+-- access notation `ζ`, `μ` and `σ`
+open scoped zeta Moebius sigma
+
 variable {R : Type*} [Field R]
 
 set_option linter.unusedVariables false
