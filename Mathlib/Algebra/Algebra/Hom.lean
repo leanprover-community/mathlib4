@@ -286,7 +286,7 @@ theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
 
 @[simp]
-lemma coe_toLinearMap : ⇑φ.toLinearMap = ⇑φ := rfl
+lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
 
 theorem toLinearMap_injective :
     Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h =>
