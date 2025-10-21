@@ -134,7 +134,7 @@ theorem AffineTargetMorphismProperty.diagonal_of_openCover_source
     .of_iso (pullback_fst_map_snd_isPullback f (𝟙 _) (𝒰.f i.1 ≫ pullback.lift (𝟙 _) f)
       (𝒰.f i.2 ≫ pullback.lift (𝟙 _) f)) (asIso (pullback.map _ _ _ _ (𝟙 _) (𝟙 _)
       (pullback.fst _ _) (by simp) (by simp))) (.refl _) (pullback.congrHom (by simp) (by simp))
-      (.refl _) (by simp) (by aesop) (by simp) (by aesop)
+      (.refl _) (by simp) (by cat_disch) (by simp) (by cat_disch)
   rw [← Q.cancel_left_of_respectsIso this.isoPullback.hom, IsPullback.isoPullback_hom_snd]
   exact h𝒰 _ _
 
