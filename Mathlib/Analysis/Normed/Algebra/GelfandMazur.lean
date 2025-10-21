@@ -31,16 +31,16 @@ Acta Math. 41, 271-284 (1917))}(https://doi.org/10.1007/BF02422947).
 See also the concise version provided by Peter Scholze on
 [Math Overflow](https://mathoverflow.net/questions/10535/ways-to-prove-the-fundamental-theorem-of-algebra/420803#420803).
 
-This proof goes as follows. Let `x : F` be arbitrary; we need to show that `x = z•1`
-for some `z : ℂ`. We consider the function `z ↦ ‖x - z•1‖`. It has a minimum `M`,
-which it attains at some point `z`, which (upon replacing `x` by `x + z•1`) we can
+This proof goes as follows. Let `x : F` be arbitrary; we need to show that `x = z • 1`
+for some `z : ℂ`. We consider the function `z ↦ ‖x - z • 1‖`. It has a minimum `M`,
+which it attains at some point `z₀`, which (upon replacing `x` by `x - z₀ • 1`) we can
 assume to be zero. If `M = 0`, we are done, so assume not. For `n : ℕ`,
 a primitive `n`th root of unity `ζ : ℂ`, and `z : ℂ` with `|z| < M = ‖x‖` we then have that
-`M ≤ ‖x - z•1‖ = ‖x^n - z^n•1‖ / ∏ 0 < k < n, ‖x - (ζ^k*z)•1‖`,
-which is bounded by `(M^n + |z|^n)/M^(n-1) = M*(1 + (|z|/M)^n)`.
-Letting `n` tend to infinity then shows that `‖x - z•1‖ = M` (see `NormedAlgebra.aux`).
-This implies that the set of `z` such that `‖x - z•1‖ = M` is closed and open
-(and nonempty), so it is all of `ℂ`, which contradicts `‖x - z•1‖ ≥ |z| - M`
+`M ≤ ‖x - z • 1‖ = ‖x ^ n - z ^ n • 1‖ / ∏ 0 < k < n, ‖x - (ζ ^ k * z) • 1‖`,
+which is bounded by `(M ^ n + |z| ^ n)/M ^ (n - 1) = M * (1 + (|z| / M) ^ n)`.
+Letting `n` tend to infinity then shows that `‖x - z • 1‖ = M` (see `NormedAlgebra.aux`).
+This implies that the set of `z` such that `‖x - z • 1‖ = M` is closed and open
+(and nonempty), so it is all of `ℂ`, which contradicts `‖x - z • 1‖ ≥ |z| - M`
 when `|z|` is sufficiently large.
 
 ### The real case
@@ -50,7 +50,7 @@ then `F` is in fact a normed `ℂ`-agebra and we can use the result above, or el
 we adjoin a square root of `-1` to `F` to obtain a normed `ℂ`-agebra `F'` and
 apply the result to `F'`". The difficulty with formalizing this is that
 Mathlib does not provide a normed `ℂ`-algebra instance for `F'` (neither for
-`F' := AdjoinRoot (X^2 + 1 : F[X])` nor for `F' := TensorProduct ℝ ℂ F`),
+`F' := AdjoinRoot (X ^ 2 + 1 : F[X])` nor for `F' := TensorProduct ℝ ℂ F`),
 and it is not so straight-forward to set this up. So we take inspiration from the
 proof sketched above for the complex case to obtain a direct proof.
 
@@ -66,32 +66,35 @@ be the minimal value.
 Since every monic polynomial `f : ℝ[X]` of even degree can be written as a product
 of monic polynomials of degree `2`
 (see `Polynomial.IsMonicOfDegree.eq_isMonicOfDegree_two_mul_isMonicOfDegree`),
-it follows that `‖aeval x f‖ ≥ M^(f.natDegree / 2)`.
+it follows that `‖aeval x f‖ ≥ M ^ (f.natDegree / 2)`.
 
-(*) This is actually slightly subtle. It is certainly true for `‖x - r•1‖` with `r : ℝ`.
+(*) This is actually slightly subtle. It is certainly true for `‖x - r • 1‖` with `r : ℝ`.
 If the minimum of this is zero, then the minimum for monic polynomials of degree `2`
 will also be zero (and is attained on a one-dimensional subset). Otherwise, one can
-indeed show that a bound on `‖x^2 - a•x + b•1‖` implies bounds on `|a|` and `|b|`.
+indeed show that a bound on `‖x ^ 2 - a • x + b • 1‖` implies bounds on `|a|` and `|b|`.
 
-The goal is now to show that when `a` and `b` achieve the minimum `M` of `‖x^2 - a•x + b•1‖`,
-and `M > 0`, then we can find some neighborhood `U` of `(a,b)` in `ℝ × ℝ`
-such that `‖x^2 - a'•x + b'•1‖ = M` for all `(a',b') ∈ U`
-Then the set `S = {(a',b') | ‖x^2 - a'•x + b'•1‖ = M}` must be all of `ℝ × ℝ` (as it is
+The goal is now to show that when `a` and `b` achieve the minimum `M` of `‖x ^ 2 - a • x + b • 1‖`,
+and `M > 0`, then we can find some neighborhood `U` of `(a, b)` in `ℝ × ℝ`
+such that `‖x ^ 2 - a' • x + b' • 1‖ = M` for all `(a', b') ∈ U`
+Then the set `S = {(a', b') | ‖x ^ 2 - a' • x + b' • 1‖ = M}` must be all of `ℝ × ℝ` (as it is
 closed, open, and nonempty). (see `NormedAlgebra.Real.is_const_norm_sq_sub_add`).
-This will lead to a contradiction with the growth of `‖x^2 - a•x‖` as `|a|` gets large.
+This will lead to a contradiction with the growth of `‖x ^ 2 - a • x‖` as `|a|` gets large.
 
 To get there, the idea is, similarly to the complex case, to use the fact that
-`X^2 - a'*X + b'` divides the difference `(X^2 - a*X + b)^n - ((a'-a)*X - (b'-b))^n`;
-this gives us a monic polynomial `p` of degree `2*(n-1)` such that `(X^2 - a'*X + b')*p`
-equals this difference. By the above, `‖aeval x p‖ ≥ M^(n-1)`.
+`X ^ 2 - a' * X + b'` divides the difference
+`(X ^ 2 - a * X + b) ^ n - ((a' - a) * X - (b' - b)) ^ n`;
+this gives us a monic polynomial `p` of degree `2 * (n - 1)` such that `(X ^ 2 - a' * X + b') * p`
+equals this difference. By the above, `‖aeval x p‖ ≥ M ^ (n - 1)`.
 
-Since `(a',b') ↦ x^2 - a'•x + b'•1` is continuous, there will be a neighborhood `U`
-of `(a,b)` such that `‖(a'-a)•x - (b'-b)•1‖ = ‖(x^2-a•x+b•1) - (x^2-a'•x+b'•1)‖`
-is less than `M` for `(a',b') ∈ U`. For such `(a',b')`, it follows that
-`‖x^2 - a'•x + b'•1‖ ≤ ‖(x^2-a•x+b•1)^n - ((a'-a)•x-(b'-b)•1)^n‖ / ‖aeval x p‖`,
-which is bounded by `(M^n + c^n) / M^(n-1) = M * (1 + (c/M)^n)`, where
-`c = ‖(a'-a)•x-(b'-b)•1‖ < M`. So, letting `n` tend to infinity, we obtain that
-`M ≤ ‖x^2 - a'•x + b'•1‖ ≤ M`, as desired.
+Since `(a', b') ↦ x ^ 2 - a' • x + b' • 1` is continuous, there will be a neighborhood `U`
+of `(a, b)` such that
+`‖(a' - a) • x - (b' - b) • 1‖ = ‖(x ^ 2 - a • x + b • 1) - (x ^ 2 -a' • x + b' • 1)‖`
+is less than `M` for `(a', b') ∈ U`. For such `(a', b')`, it follows that
+`‖x ^ 2 - a' • x + b' • 1‖ ≤ ‖(x ^ 2 - a • x + b • 1) ^ n - ((a' - a) • x - (b' - b) • 1) ^ n‖ /`
+`‖aeval x p‖`,
+which is bounded by `(M ^ n + c ^ n) / M ^ (n - 1) = M * (1 + (c / M) ^ n)`, where
+`c = ‖(a' - a) • x - (b' - b) • 1‖ < M`. So, letting `n` tend to infinity, we obtain that
+`M ≤ ‖x ^ 2 - a' • x + b' • 1‖ ≤ M`, as desired.
 -/
 
 /-!
@@ -248,8 +251,8 @@ private lemma le_aeval_of_isMonicOfDegree {x : F} {M : ℝ} (hM : 0 ≤ M)
     rw [H, aeval_mul, norm_mul, mul_comm, pow_succ, hab, aeval_eq_φ x (a, b)]
     exact mul_le_mul (ih hf₂) (h (a, b)) hM (norm_nonneg _)
 
-/- The key step in the proof: if `a` and `b` are real numbers minimizing `‖x^2 - a•x + b•1‖`,
-and the minimal value is strictly positive, then the function `(s,t) ↦ ‖x^2 - s•x + t•1‖`
+/- The key step in the proof: if `a` and `b` are real numbers minimizing `‖x ^ 2 - a • x + b • 1‖`,
+and the minimal value is strictly positive, then the function `(s, t) ↦ ‖x ^ 2 - s • x + t • 1‖`
 is constant. -/
 private lemma is_const_norm_φ {x : F} {z : ℝ × ℝ} (h : ∀ w, ‖φ x z‖ ≤ ‖φ x w‖) (H : ‖φ x z‖ ≠ 0)
     (w : ℝ × ℝ) :
