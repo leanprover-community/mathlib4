@@ -18,4 +18,3 @@ open Filter Set
 open Topology
 
 variable {α : Type*}
-

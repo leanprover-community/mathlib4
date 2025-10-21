@@ -289,4 +289,3 @@ instance Algebra.IsQuadraticExtension.normal (F K : Type*) [Field F] [Field K] [
     obtain h | h := le_iff_lt_or_eq.mp (finrank_eq_two F K ▸ minpoly.natDegree_le x)
     · exact splits_of_natDegree_le_one _ (by rwa [Nat.le_iff_lt_add_one])
     · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
-
