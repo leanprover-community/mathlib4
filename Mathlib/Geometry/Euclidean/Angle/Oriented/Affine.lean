@@ -333,6 +333,22 @@ theorem angle_eq_iff_oangle_eq_of_sign_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h
   o.angle_eq_iff_oangle_eq_of_sign_eq (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₃) (vsub_ne_zero.2 hp₄)
     (vsub_ne_zero.2 hp₆) hs
 
+/-- If two unoriented angles are equal, and the signs of the corresponding oriented angles are
+negations of each other, then the oriented angles are negations of each other (even in degenerate
+cases). -/
+lemma oangle_eq_neg_of_angle_eq_of_sign_eq_neg {p₁ p₂ p₃ p₄ p₅ p₆ : P}
+    (h : ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆) (hs : (∡ p₁ p₂ p₃).sign = -(∡ p₄ p₅ p₆).sign) :
+    ∡ p₁ p₂ p₃ = -∡ p₄ p₅ p₆ :=
+  o.oangle_eq_neg_of_angle_eq_of_sign_eq_neg h hs
+
+/-- If the signs of two nondegenerate oriented angles between points are negations of each other,
+the oriented angles are negations of each other if and only if the unoriented angles are equal. -/
+lemma angle_eq_iff_oangle_eq_neg_of_sign_eq_neg {p₁ p₂ p₃ p₄ p₅ p₆ : P} (hp₁ : p₁ ≠ p₂)
+    (hp₃ : p₃ ≠ p₂) (hp₄ : p₄ ≠ p₅) (hp₆ : p₆ ≠ p₅) (hs : (∡ p₁ p₂ p₃).sign = -(∡ p₄ p₅ p₆).sign) :
+    ∠ p₁ p₂ p₃ = ∠ p₄ p₅ p₆ ↔ ∡ p₁ p₂ p₃ = -∡ p₄ p₅ p₆ :=
+  o.angle_eq_iff_oangle_eq_neg_of_sign_eq_neg (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₃)
+    (vsub_ne_zero.2 hp₄) (vsub_ne_zero.2 hp₆) hs
+
 /-- The oriented angle between three points equals the unoriented angle if the sign is
 positive. -/
 theorem oangle_eq_angle_of_sign_eq_one {p₁ p₂ p₃ : P} (h : (∡ p₁ p₂ p₃).sign = 1) :
@@ -739,5 +755,22 @@ theorem _root_.AffineSubspace.SOppSide.oangle_sign_eq_neg {s : AffineSubspace �
   rw [← (hp₃p₄.symm.trans (sOppSide_pointReflection hp₁ hp₃p₄.left_notMem)).oangle_sign_eq hp₁ hp₂,
     ← oangle_rotate_sign p₁, ← oangle_rotate_sign p₁, oangle_swap₁₃_sign,
     (sbtw_pointReflection_of_ne ℝ hp₁p₃).symm.oangle_sign_eq _]
+
+/-- The unoriented angles at `p₂` between `p₁` and `p₃`, and between `p₃` and `p₄`, are equal if
+and only if the oriented angles are equal (`p₃` lies on the angle bisector) or one of `p₁` and `p₄`
+is weakly between `p₂` and the other. -/
+lemma angle_eq_iff_oangle_eq_or_wbtw {p₁ p₂ p₃ p₄ : P} (hp₁ : p₁ ≠ p₂) (hp₄ : p₄ ≠ p₂) :
+    ∠ p₁ p₂ p₃ = ∠ p₃ p₂ p₄ ↔ ∡ p₁ p₂ p₃ = ∡ p₃ p₂ p₄ ∨ Wbtw ℝ p₂ p₁ p₄ ∨ Wbtw ℝ p₂ p₄ p₁ := by
+  simp_rw [angle, oangle,
+    o.angle_eq_iff_oangle_eq_or_sameRay (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₄)]
+  apply or_congr_right
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨r, hr, he⟩ := h.exists_pos_left (vsub_ne_zero.2 hp₁) (vsub_ne_zero.2 hp₄)
+    rw [← vsub_vadd p₁ p₂, ← vsub_vadd p₄ p₂, ← he]
+    nth_rw 1 4 [← one_smul ℝ (p₁ -ᵥ p₂)]
+    exact wbtw_or_wbtw_smul_vadd_of_nonneg _ _ zero_le_one hr.le
+  · rcases h with h | h
+    · exact h.sameRay_vsub_left
+    · exact h.sameRay_vsub_left.symm
 
 end EuclideanGeometry

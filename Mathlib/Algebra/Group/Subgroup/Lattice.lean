@@ -70,7 +70,7 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
     g ∈ S.toAddSubgroup ↔ Additive.toMul g ∈ S :=
   .rfl
 
-/-- Additive subgroups of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
+/-- Additive subgroups of an additive group `Additive G` are isomorphic to subgroups of `G`. -/
 abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
   Subgroup.toAddSubgroup.symm
 
