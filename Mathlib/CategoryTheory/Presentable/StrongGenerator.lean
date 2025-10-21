@@ -28,27 +28,6 @@ universe w v' v u' u
 namespace CategoryTheory
 
 -- to be moved
-instance CostructuredArrow.locallySmall {C : Type u} {D : Type u'} [Category.{u'} C]
-    [Category.{v'} D] (F : C ⥤ D) (Y : D) [LocallySmall.{w} C] :
-    LocallySmall.{w} (CostructuredArrow F Y) where
-  hom_small T₁ T₂ := small_of_injective (f := CommaMorphism.left)
-    (fun _ _ _ ↦ by aesop)
-
--- to be moved
-instance CostructuredArrow.small {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-    [Small.{w} C] [LocallySmall.{w} D]
-    {F : C ⥤ D} (X : D) : Small.{w} (CostructuredArrow F X) := by
-  let φ (f : CostructuredArrow F X) : Σ (Y : C), F.obj Y ⟶ X := ⟨_, f.hom⟩
-  have hφ : Function.Injective φ := by
-    intro f g h
-    obtain ⟨Y, f, rfl⟩ := CostructuredArrow.mk_surjective f
-    obtain ⟨Z, g, rfl⟩ := CostructuredArrow.mk_surjective g
-    obtain rfl : Y = Z := congr_arg Sigma.fst h
-    obtain rfl : f = g := by simpa [φ] using h
-    rfl
-  exact small_of_injective hφ
-
--- to be moved
 instance CostructuredArrow.essentiallySmall {C : Type u} {D : Type u'} [Category.{v} C]
     [Category.{v'} D] (F : C ⥤ D) (Y : D) [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
     EssentiallySmall.{w} (CostructuredArrow F Y) := by
