@@ -98,11 +98,6 @@ theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleto
 
 alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
 
-private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
-  change #(ULift.{u} _) = #(ULift.{u} _) + 1
-  rw [← mk_option]
-  simp
-
 /-! ### Order properties -/
 
 theorem one_lt_iff_nontrivial {α : Type u} : 1 < #α ↔ Nontrivial α := by
@@ -840,7 +835,6 @@ theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = 
 theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : Injective f) : lift.{v} #(f ⁻¹' s) ≤ lift.{u} #s := by
   rw [lift_mk_le.{0}]
-  -- Porting note: Needed to insert `mem_preimage.mp` below
   use Subtype.coind (fun x => f x.1) fun x => mem_preimage.mp x.2
   apply Subtype.coind_injective; exact h.comp Subtype.val_injective
 

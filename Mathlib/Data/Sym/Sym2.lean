@@ -624,7 +624,7 @@ theorem mem_toFinset {x : α} {z : Sym2 α} : x ∈ z.toFinset ↔ x ∈ z := by
   rw [← Sym2.mem_toMultiset, Sym2.toFinset, Multiset.mem_toFinset]
 
 lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
-  ext; simp [←Sym2.mem_toFinset, ←Sym2.mem_iff]
+  ext; simp [← Sym2.mem_toFinset, ← Sym2.mem_iff]
 
 /-- Mapping an unordered pair on the diagonal to a finite set produces a finset of size `1`. -/
 theorem card_toFinset_of_isDiag (z : Sym2 α) (h : z.IsDiag) : #(z : Sym2 α).toFinset = 1 := by
@@ -770,7 +770,6 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
 @[simp]
 theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other' h) = z := by
   induction z
-  have h' := mem_iff.mp h
   aesop (add norm unfold [Sym2.rec, Quot.rec]) (rule_sets := [Sym2])
 
 @[simp]

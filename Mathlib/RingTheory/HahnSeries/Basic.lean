@@ -318,6 +318,7 @@ theorem leadingCoeff_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
 
 @[deprecated (since := "2025-08-19")] alias leadingCoeff_of_ne := leadingCoeff_of_ne_zero
 
+@[simp]
 theorem leadingCoeff_eq_zero {x : HahnSeries Γ R} : x.leadingCoeff = 0 ↔ x = 0 := by
   obtain rfl | hx := eq_or_ne x 0 <;> simp [leadingCoeff_of_ne_zero, coeff_orderTop_ne, *]
 
@@ -482,6 +483,21 @@ theorem embDomain_injective {f : Γ ↪o Γ'} :
   rw [HahnSeries.ext_iff, funext_iff] at xy
   have xyg := xy (f g)
   rwa [embDomain_coeff, embDomain_coeff] at xyg
+
+@[simp]
+theorem orderTop_embDomain {Γ : Type*} [LinearOrder Γ] {f : Γ ↪o Γ'} {x : HahnSeries Γ R} :
+    (embDomain f x).orderTop = WithTop.map f x.orderTop := by
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
+  rw [← WithTop.coe_untop x.orderTop (by simpa using hx), WithTop.map_coe]
+  apply orderTop_eq_of_le
+  · simpa using coeff_orderTop_ne (by simp)
+  intro y hy
+  obtain ⟨z, hz, rfl⟩ :=
+    (Set.mem_image _ _ _).mp <| Set.mem_of_subset_of_mem support_embDomain_subset hy
+  rw [OrderEmbedding.le_iff_le, WithTop.untop_le_iff]
+  apply orderTop_le_of_coeff_ne_zero
+  simpa using hz
 
 end Domain
 

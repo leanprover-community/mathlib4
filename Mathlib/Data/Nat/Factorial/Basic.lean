@@ -34,7 +34,7 @@ def factorial : ℕ → ℕ
 /-- factorial notation `(n)!` for `Nat.factorial n`.
 In Lean, names can end with exclamation marks (e.g. `List.get!`), so you cannot write
 `n!` in Lean, but must write `(n)!` or `n !` instead. The former is preferred, since
-Lean can confuse the `!` in `n !` as the (prefix) boolean negation operation in some
+Lean can confuse the `!` in `n !` as the (prefix) Boolean negation operation in some
 cases.
 For numerals the parentheses are not required, so e.g. `0!` or `1!` work fine.
 Todo: replace occurrences of `n !` with `(n)!` in Mathlib. -/
@@ -403,6 +403,9 @@ theorem descFactorial_eq_zero_iff_lt {n : ℕ} : ∀ {k : ℕ}, n.descFactorial 
       Nat.sub_eq_zero_iff_le, Nat.lt_iff_le_and_ne, or_iff_left_iff_imp, and_imp]
     exact fun h _ => h
 
+@[simp]
+lemma descFactorial_pos {n k : ℕ} : 0 < n.descFactorial k ↔ k ≤ n := by simp [Nat.pos_iff_ne_zero]
+
 alias ⟨_, descFactorial_of_lt⟩ := descFactorial_eq_zero_iff_lt
 
 theorem add_descFactorial_eq_ascFactorial (n : ℕ) : ∀ k : ℕ,
@@ -435,13 +438,13 @@ theorem descFactorial_mul_descFactorial {k m n : ℕ} (hkm : k ≤ m) :
     (n - k).descFactorial (m - k) * n.descFactorial k = n.descFactorial m := by
   by_cases hmn : m ≤ n
   · apply Nat.mul_left_cancel (n - m).factorial_pos
-    rw [factorial_mul_descFactorial hmn, show n - m = (n - k) - (m - k) by omega, ← Nat.mul_assoc,
-      factorial_mul_descFactorial (show m - k ≤ n - k by omega),
+    rw [factorial_mul_descFactorial hmn, show n - m = (n - k) - (m - k) by cutsat, ← Nat.mul_assoc,
+      factorial_mul_descFactorial (show m - k ≤ n - k by cutsat),
       factorial_mul_descFactorial (le_trans hkm hmn)]
-  · rw [descFactorial_eq_zero_iff_lt.mpr (show n < m by omega)]
+  · rw [descFactorial_eq_zero_iff_lt.mpr (show n < m by cutsat)]
     by_cases hkn : k ≤ n
-    · rw [descFactorial_eq_zero_iff_lt.mpr (show n - k < m - k by omega), Nat.zero_mul]
-    · rw [descFactorial_eq_zero_iff_lt.mpr (show n < k by omega), Nat.mul_zero]
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n - k < m - k by cutsat), Nat.zero_mul]
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n < k by cutsat), Nat.mul_zero]
 
 /-- Avoid in favor of `Nat.factorial_mul_descFactorial` if you can. ℕ-division isn't worth it. -/
 theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n ! / (n - k)! := by
@@ -469,7 +472,7 @@ theorem pow_sub_lt_descFactorial' {n : ℕ} :
     ∀ {k : ℕ}, k + 2 ≤ n → (n - (k + 1)) ^ (k + 2) < n.descFactorial (k + 2)
   | 0, h => by
     rw [descFactorial_succ, Nat.pow_succ, Nat.pow_one, descFactorial_one]
-    exact Nat.mul_lt_mul_of_pos_left (by omega) (Nat.sub_pos_of_lt h)
+    exact Nat.mul_lt_mul_of_pos_left (by cutsat) (Nat.sub_pos_of_lt h)
   | k + 1, h => by
     rw [descFactorial_succ, Nat.pow_succ, Nat.mul_comm]
     refine Nat.mul_lt_mul_of_pos_left ?_ (Nat.sub_pos_of_lt h)
@@ -491,13 +494,12 @@ theorem descFactorial_le_pow (n : ℕ) : ∀ k : ℕ, n.descFactorial k ≤ n ^ 
     rw [descFactorial_succ, Nat.pow_succ, Nat.mul_comm _ n]
     exact Nat.mul_le_mul (Nat.sub_le _ _) (descFactorial_le_pow _ k)
 
-theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k → n.descFactorial k < n ^ k
+theorem descFactorial_lt_pow {n : ℕ} (hn : n ≠ 0) : ∀ {k : ℕ}, 2 ≤ k → n.descFactorial k < n ^ k
   | 0 => by rintro ⟨⟩
   | 1 => by intro; contradiction
   | k + 2 => fun _ => by
     rw [descFactorial_succ, pow_succ', Nat.mul_comm, Nat.mul_comm n]
-    exact Nat.mul_lt_mul_of_le_of_lt (descFactorial_le_pow _ _) (Nat.sub_lt hn k.zero_lt_succ)
-      (Nat.pow_pos (Nat.lt_of_succ_le hn))
+    exact Nat.mul_lt_mul_of_le_of_lt (descFactorial_le_pow _ _) (by omega) (Nat.pow_pos <| by omega)
 
 end DescFactorial
 
@@ -513,5 +515,73 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
     _ ≤ (n + 1)! * (n + 2) ^ (n + 1) :=
       Nat.mul_le_mul_left _ (Nat.pow_le_pow_left (le_add_left _ _) _)
     _ ≤ _ := Nat.factorial_mul_pow_le_factorial
+
+
+/-!
+# Factorial via binary splitting.
+
+We prove this is equal to the standard factorial and mark it `@[csimp]`.
+
+We could proceed further, with either Legendre or Luschny methods.
+-/
+
+/-!
+This is the highest factorial I can `#eval` using the naive implementation without a stack overflow:
+```
+/-- info: 114716 -/
+#guard_msgs in
+#eval 9718 ! |>.log2
+```
+
+We could implement a tail-recursive version (or just use `Nat.fold`),
+but instead let's jump straight to binary splitting.
+-/
+
+/-- Factorial implemented using binary splitting.
+
+While this still performs the same number of multiplications,
+the big-integer operands to each are much smaller. -/
+def factorialBinarySplitting (n : Nat) : Nat :=
+  if _ : n = 0 then 1 else prodRange 1 (n + 1)
+where
+  /--
+  `prodRange lo hi` is the product of the range `lo` to `hi` (exclusive),
+  computed by binary splitting.
+  -/
+  prodRange (lo hi : Nat) (h : lo < hi := by grind) : Nat :=
+    if _ : hi = lo + 1 then lo
+    else
+      let mid := (lo + hi) / 2
+      prodRange lo mid * prodRange mid hi
+
+theorem factorialBinarySplitting.factorial_mul_prodRange (lo hi : Nat) (h : lo < hi) :
+    lo ! * prodRange (lo + 1) (hi + 1) = hi ! := by
+  rw [prodRange]
+  split
+  · grind [factorial_succ]
+  · dsimp only
+    rw [← Nat.mul_assoc]
+    simp_rw [show (lo + 1 + (hi + 1)) / 2 = (lo + hi) / 2 + 1 by grind]
+    rw [factorial_mul_prodRange, factorial_mul_prodRange]
+    all_goals grind
+
+@[csimp]
+theorem factorialBinarySplitting_eq_factorial : @factorial = @factorialBinarySplitting := by
+  ext n
+  by_cases h : n = 0
+  · simp [h, factorialBinarySplitting]
+  · rw [factorialBinarySplitting, ← factorialBinarySplitting.factorial_mul_prodRange 0 n (by grind)]
+    simp [h]
+
+/-!
+We are now limited by time, not stack space,
+and this is much faster than even the tail-recursive version.
+
+```
+#time -- Less than 1s. (Tail-recursive version takes longer for `(10^5) !`.)
+#eval (10^6) ! |>.log2
+```
+-/
+
 
 end Nat

@@ -79,7 +79,7 @@ lemma valMinAbs_spec [NeZero n] (x : ZMod n) (y : ℤ) :
     rw [← sub_eq_zero]
     apply @Int.eq_zero_of_abs_lt_dvd n
     · rw [← intCast_zmod_eq_zero_iff_dvd, Int.cast_sub, coe_valMinAbs, h.1, sub_self]
-    rw [← mul_lt_mul_right (@zero_lt_two ℤ _ _ _ _ _)]
+    rw [← mul_lt_mul_iff_left₀ (@zero_lt_two ℤ _ _ _ _ _)]
     nth_rw 1 [← abs_eq_self.2 (@zero_le_two ℤ _ _ _ _)]
     rw [← abs_mul, sub_mul, abs_lt]
     constructor <;> linarith only [x.valMinAbs_mem_Ioc.1, x.valMinAbs_mem_Ioc.2, h.2.1, h.2.2]

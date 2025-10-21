@@ -139,7 +139,6 @@ def classToCong (x : Class.{u}) : Set Class.{u} :=
 
 @[simp]
 theorem classToCong_empty : classToCong ∅ = ∅ := by
-  ext
   simp [classToCong]
 
 /-- The power class of a class is the class of all subclasses that are ZFC sets -/

@@ -89,10 +89,6 @@ theorem lintegral_count [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
   congr
   exact funext fun a => lintegral_dirac a f
 
-@[deprecated ENNReal.tsum_const (since := "2025-02-06")]
-lemma _root_.ENNReal.tsum_const_eq (c : ℝ≥0∞) : ∑' _ : α, c = c * count (univ : Set α) := by
-  simp [mul_comm]
-
 /-- Markov's inequality for the counting measure with hypothesis using `tsum` in `ℝ≥0∞`. -/
 theorem _root_.ENNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α] {a : α → ℝ≥0∞}
     (a_mble : Measurable a) {c : ℝ≥0∞} (tsum_le_c : ∑' i, a i ≤ c) {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0)
@@ -348,7 +344,7 @@ theorem exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α} 
     rw [← SimpleFunc.lintegral_eq_lintegral, SimpleFunc.coe_map]
     simp only [Function.comp_apply]
   rcases SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral h'L with ⟨g, hg, gL, gtop⟩
-  exact ⟨g, fun x => (hg x).trans (coe_le_coe.1 (hg₀ x)), gL, gtop⟩
+  exact ⟨g, fun x => (hg x).trans (ENNReal.coe_le_coe.1 (hg₀ x)), gL, gtop⟩
 
 end SFinite
 

@@ -15,7 +15,7 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 * `AlgEquiv R A B`: the type of `R`-algebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
@@ -222,9 +222,8 @@ def refl : A₁ ≃ₐ[R] A₁ :=
 instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
 
-@[simp]
-theorem refl_toAlgHom : ↑(refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ :=
-  rfl
+@[simp, norm_cast] lemma refl_toAlgHom : (refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ := rfl
+@[simp, norm_cast] lemma refl_toRingHom : (refl : A₁ ≃ₐ[R] A₁) = RingHom.id A₁ := rfl
 
 @[simp]
 theorem coe_refl : ⇑(refl : A₁ ≃ₐ[R] A₁) = id :=
@@ -377,7 +376,25 @@ theorem symm_trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A�
     (e₁.trans e₂).symm x = e₁.symm (e₂.symm x) :=
   rfl
 
+@[simp] lemma self_trans_symm (e : A₁ ≃ₐ[R] A₂) : e.trans e.symm = refl := by ext; simp
+@[simp] lemma symm_trans_self (e : A₁ ≃ₐ[R] A₂) : e.symm.trans e = refl := by ext; simp
+
+@[simp, norm_cast]
+lemma toRingHom_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) :
+    (e₁.trans e₂ : A₁ →+* A₃) = .comp e₂ (e₁ : A₁ →+* A₂) := rfl
+
 end trans
+
+/-- `Equiv.cast (congrArg _ h)` as an algebra equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+@[simps!]
+protected def cast
+    {ι : Type*} {A : ι → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] {i j : ι} (h : i = j) :
+    A i ≃ₐ[R] A j where
+  __ := RingEquiv.cast h
+  commutes' _ := by cases h; rfl
 
 /-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'`, then the type of maps
 `A₁ →ₐ[R] A₂` is equivalent to the type of maps `A₁' →ₐ[R] A₂'`. -/
@@ -543,6 +560,15 @@ lemma toLinearMap_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective
 @[simp]
 lemma toAlgHom_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
     AlgHomClass.toAlgHom (ofBijective f hf) = f := rfl
+
+lemma ofBijective_apply_symm_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (x : A₂) :
+    f ((ofBijective f hf).symm x) = x :=
+  (ofBijective f hf).apply_symm_apply x
+
+@[simp]
+lemma ofBijective_symm_apply_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (x : A₁) :
+    (ofBijective f hf).symm (f x) = x :=
+  (ofBijective f hf).symm_apply_apply x
 
 section OfLinearEquiv
 
@@ -791,3 +817,25 @@ def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
+
+/-- If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then the canonical map `R → A` is an
+equivalence of `R`-algebras.
+
+Note that if `e : R ≃ₗ[R] A` is the linear equivalence, then this is not the same as the equivalence
+of algebras provided here unless `e 1 = 1`. -/
+@[simps] def LinearEquiv.algEquivOfRing
+    {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+    (e : R ≃ₗ[R] A) : R ≃ₐ[R] A where
+  __ := Algebra.ofId R A
+  invFun x := e.symm (e 1 * x)
+  left_inv x := calc
+    e.symm (e 1 * (algebraMap R A) x)
+      = e.symm (x • e 1) := by rw [Algebra.smul_def, mul_comm]
+    _ = x := by rw [map_smul, e.symm_apply_apply, smul_eq_mul, mul_one]
+  right_inv x := calc
+    (algebraMap R A) (e.symm (e 1 * x))
+      = (algebraMap R A) (e.symm (e 1 * x)) * e (e.symm 1 • 1) := by
+          rw [smul_eq_mul, mul_one, e.apply_symm_apply, mul_one]
+    _ = x := by rw [map_smul, Algebra.smul_def, mul_left_comm, ← Algebra.smul_def _ (e 1),
+          ← map_smul, smul_eq_mul, mul_one, e.apply_symm_apply, ← mul_assoc, ← Algebra.smul_def,
+          ← map_smul, smul_eq_mul, mul_one, e.apply_symm_apply, one_mul]
