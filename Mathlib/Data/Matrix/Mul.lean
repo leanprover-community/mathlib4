@@ -446,7 +446,6 @@ protected theorem mul_one [Fintype n] [DecidableEq n] (M : Matrix m n α) :
 
 instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix n n α) :=
   { Matrix.nonUnitalNonAssocSemiring, Matrix.instAddCommMonoidWithOne with
-    one := 1
     one_mul := Matrix.one_mul
     mul_one := Matrix.mul_one }
 
