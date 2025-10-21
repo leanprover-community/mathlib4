@@ -104,7 +104,7 @@ lemma posLog_le_posLog {x y : ℝ} (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤
   monotoneOn_posLog hx (hx.trans hxy) hxy
 
 /-- The function `log⁺` commutes with taking powers. -/
-@[simp] lemma posLog_pow {n : ℕ} {x : ℝ} : log⁺ (x ^ n) = n * log⁺ x := by
+@[simp] lemma posLog_pow (n : ℕ) (x : ℝ) : log⁺ (x ^ n) = n * log⁺ x := by
   by_cases hn : n = 0
   · simp_all
   by_cases hx : |x| ≤ 1
@@ -188,12 +188,7 @@ groups, using monotonicity of `log⁺` and the triangle inequality.
 -/
 lemma posLog_norm_sum_le {E : Type*} [NormedAddCommGroup E] {α : Type*} (s : Finset α) (f : α → E) :
     log⁺ ‖∑ t ∈ s, f t‖ ≤ log s.card + ∑ t ∈ s, log⁺ ‖f t‖ := by
-  calc log⁺ ‖∑ t ∈ s, f t‖
-  _ ≤ log⁺ (∑ t ∈ s, ‖f t‖) := by
-    apply monotoneOn_posLog (by simp) _ (norm_sum_le s f)
-    simp [Finset.sum_nonneg (fun i _ ↦ norm_nonneg (f i))]
-  _ ≤ log s.card + ∑ t ∈ s, log⁺ ‖f t‖ :=
-    posLog_sum s (‖f ·‖)
+  grw [norm_sum_le, posLog_sum]
 
 /--
 Estimate for `log⁺` of a sum. See `Real.posLog_sum` for a variant involving multiple summands.
