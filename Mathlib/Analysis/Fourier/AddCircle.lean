@@ -140,13 +140,10 @@ theorem fourier_coe_apply' {n : ℤ} {x : ℝ} :
 
 -- simp normal form is `fourier_zero'`
 theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
-  induction x using QuotientAddGroup.induction_on
-  simp only [fourier_coe_apply]
-  norm_num
+  simp
 
-theorem fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
-  have : fourier 0 x = @toCircle T 0 := by rw [fourier_apply, zero_smul]
-  rw [← this]; exact fourier_zero
+theorem fourier_zero' : @toCircle T 0 = (1 : ℂ) := by
+  simp
 
 -- simp normal form is *also* `fourier_zero'`
 theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
