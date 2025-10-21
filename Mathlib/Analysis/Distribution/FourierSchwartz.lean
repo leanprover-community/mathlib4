@@ -211,16 +211,6 @@ theorem fourierTransform_deriv (f : 𝓢(ℝ, E)) : 𝓕 f.deriv =
   simp only [smul_apply, ht₂, smulLeftCLM_apply, fourierTransform_apply, Complex.coe_smul]
   rw [← smul_one_smul ℂ x (𝓕 (f : ℝ → E) x), real_smul, smul_smul, mul_one]
 
-
-theorem fourierTransform_deriv' (f : 𝓢(ℝ, E)) : 𝓕 f.deriv =
-    smulLeftCLM ℂ E (fun (x : ℝ) ↦ 2 * π * I * (x : ℂ)) (𝓕 f) := by
-  have := fourierIntegral_deriv f.integrable f.differentiable f.deriv.integrable
-  ext x
-  convert congr_fun this x
-  rw [smulLeftCLM_apply]; swap
-  · sorry
-  rw [fourierTransform_apply]
-
 end deriv
 
 end SchwartzMap

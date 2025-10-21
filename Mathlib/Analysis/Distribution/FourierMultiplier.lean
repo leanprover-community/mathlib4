@@ -444,5 +444,4 @@ theorem memSobolevLaplacian {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : MemSobol
   norm_cast
   field_simp
 
-
 end inner
