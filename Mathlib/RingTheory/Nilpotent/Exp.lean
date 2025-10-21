@@ -90,7 +90,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
     calc ∑ i ∈ R2N, (i ! : ℚ)⁻¹ • (a + b) ^ i
         = ∑ i ∈ R2N, (i ! : ℚ)⁻¹ • ∑ j ∈ range (i + 1), a ^ j * b ^ (i - j) * i.choose j := ?_
       _ = ∑ i ∈ R2N, (∑ j ∈ range (i + 1),
-            ((j ! : ℚ)⁻¹ * ((i - j)! : ℚ)⁻¹) • (a ^ j * b ^ (i - j))) := ?_
+            ((j ! : ℚ)⁻¹ * ((i - j) ! : ℚ)⁻¹) • (a ^ j * b ^ (i - j))) := ?_
       _ = ∑ ij ∈ R2N ×ˢ R2N with ij.1 + ij.2 ≤ 2 * N,
             ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := ?_
     · refine sum_congr rfl fun i _ ↦ ?_
