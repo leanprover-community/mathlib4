@@ -68,8 +68,6 @@ section MulOneClass
 variable [Monoid R] [MulAction R M] [MulOneClass M] [IsScalarTower R M M] [SMulCommClass R M M]
 
 instance : MulOneClass (SubMulAction R M) where
-  mul := (· * ·)
-  one := 1
   mul_one a := by
     ext x
     simp only [mem_mul, mem_one, mul_smul_comm, exists_exists_eq_and, mul_one]
@@ -94,7 +92,6 @@ section Semigroup
 variable [Monoid R] [MulAction R M] [Semigroup M] [IsScalarTower R M M]
 
 instance : Semigroup (SubMulAction R M) where
-  mul := (· * ·)
   mul_assoc _ _ _ := SetLike.coe_injective (mul_assoc (_ : Set _) _ _)
 
 @[deprecated (since := "04-06-2025")] alias semiGroup := instSemigroup

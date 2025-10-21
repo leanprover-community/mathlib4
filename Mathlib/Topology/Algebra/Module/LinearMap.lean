@@ -807,8 +807,6 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
 
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   __ := ContinuousLinearMap.addCommMonoid
-  neg := (-·)
-  sub := (· - ·)
   sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
   nsmul := (· • ·)
   zsmul := (· • ·)
