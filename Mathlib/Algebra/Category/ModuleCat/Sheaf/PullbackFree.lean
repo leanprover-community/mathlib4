@@ -52,13 +52,13 @@ lemma bijective_pushforwardSections [Functor.IsContinuous.{v} F J K] [F.Final] :
     Function.Bijective (pushforwardSections φ (M := M)) :=
   Functor.bijective_sectionsPrecomp _ _
 
-variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
-  [K.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
+variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [K.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 /-- The canonical morphism `unit S ⟶ (pushforward.{u} φ).obj (unit R)`
 of sheaves of modules corresponding to a continuous map between ringed sites. -/
 def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
-  val.app X := ModuleCat.homMk ((forget₂ RingCat AddCommGrp).map (φ.val.app X)) (fun r ↦ by
+  val.app X := ModuleCat.homMk ((forget₂ RingCat AddCommGrpCat).map (φ.val.app X)) (fun r ↦ by
     ext m
     exact ((φ.val.app X).hom.map_mul _ _).symm)
   val.naturality f := by
@@ -110,8 +110,9 @@ instance [F.Final] : IsIso (pullbackObjUnitToUnit φ) := by
     Adjunction.homEquiv_naturality_right,
     pullbackPushforwardAdjunction_homEquiv_pullbackObjUnitToUnit]
 
-variable [HasWeakSheafify J AddCommGrp.{u}] [J.WEqualsLocallyBijective AddCommGrp.{u}]
-  [HasWeakSheafify K AddCommGrp.{u}] [K.WEqualsLocallyBijective AddCommGrp.{u}] [F.Final]
+variable [HasWeakSheafify J AddCommGrpCat.{u}] [HasWeakSheafify K AddCommGrpCat.{u}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [K.WEqualsLocallyBijective AddCommGrpCat.{u}] [F.Final]
 
 /-- The pullback of a free sheaf of modules is a free sheaf of modules. -/
 noncomputable def pullbackObjFreeIso (I : Type u) :
