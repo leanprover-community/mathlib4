@@ -104,50 +104,49 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let some str := stx.getSubstring? | return
   let allowed := stx.filter (AllowEmptyLines.contains ·.getKind)
   let allowedRanges := allowed.filterMap (·.getRange?)
-  if let one::rest := str.toString.trimRight.splitOn "\n\n" then
-    if rest.isEmpty then return
-    -- We extract all trailing ranges of all syntax nodes in `stx`, after we remove
-    -- leading and trailing whitespace from them.
-    -- These ranges typically represent embedded comments and we ignore line breaks inside them.
-    -- We do inspect leading and trailing whitespace though.
-    -- We treat `where` specially, since we allow empty lines in `where` fields.
-    let trails := stx.filterMap fun s =>
-      if let some str := s.getTrailing?
-      then
-        -- Handle `where` and `where` fields.
-        if s.getAtomVal == "where" ||
-           s.isOfKind ``Parser.Term.structInstField ||
-           s.isOfKind ``Parser.Command.structSimpleBinder then
-          s.getTrailing?.map (·.getRange)
-        else
-          let strim := str.trim
-          if strim.toString.toSlice.contains "\n\n" then
-            some strim.getRange
-          else none
-      else none
-    let trails : Std.HashSet String.Range := .ofArray trails
-    -- The entries of the array `rgs` represent
-    -- * the range of the offending line breaks,
-    -- * the line preceding an empty line and
-    -- * the line following an empty line.
-    let mut ranges : Array (String.Range × String × String) := #[]
-    let mut currOffset := str.startPos + one.endPos + ⟨1⟩
-    let mut prev := one.takeRightWhile (· != '\n')
-    for r in rest do
-      ranges := ranges.push (⟨currOffset, currOffset⟩, prev, r.takeWhile (· != '\n'))
-      currOffset := currOffset + r.endPos + ⟨2⟩
-      prev := r.takeRightWhile (· != '\n')
-    let allowedRanges := trails.insertMany allowedRanges
-    for (rg, before, after) in ranges do
-      if allowedRanges.any fun okRg ↦ okRg.start ≤ rg.start && rg.stop ≤ okRg.stop then
-        continue
-      -- `s` is a string of as many spaces (` `) as the characters of the previous line.
-      -- This, followed by the downarrow (`↓`) creates a pointer to an offending line break.
-      let s : String := .join <| List.replicate (before.length + 1) " "
-      Linter.logLint linter.style.emptyLine (.ofRange rg)
-        m!"Please, write a comment here or remove this line, \
-          but do not place empty lines within commands!\nContext:\n\
-          {indentD s!"{s.push '↓'}"}{indentD s!"⏎{before}⏎⏎{after}⏎"}"
+  let one :: rest@(_ :: _) := str.toString.trimRight.splitOn "\n\n" | return
+  -- We extract all trailing ranges of all syntax nodes in `stx`, after we remove
+  -- leading and trailing whitespace from them.
+  -- These ranges typically represent embedded comments and we ignore line breaks inside them.
+  -- We do inspect leading and trailing whitespace though.
+  -- We treat `where` specially, since we allow empty lines in `where` fields.
+  let trails := stx.filterMap fun s =>
+    if let some str := s.getTrailing?
+    then
+      -- Handle `where` and `where` fields.
+      if s.getAtomVal == "where" ||
+         s.isOfKind ``Parser.Term.structInstField ||
+         s.isOfKind ``Parser.Command.structSimpleBinder then
+        s.getTrailing?.map (·.getRange)
+      else
+        let strim := str.trim
+        if strim.toString.toSlice.contains "\n\n" then
+          some strim.getRange
+        else none
+    else none
+  let trails : Std.HashSet String.Range := .ofArray trails
+  -- The entries of the array `rgs` represent
+  -- * the range of the offending line breaks,
+  -- * the line preceding an empty line and
+  -- * the line following an empty line.
+  let mut ranges : Array (String.Range × String × String) := #[]
+  let mut currOffset := str.startPos + one.endPos + ⟨1⟩
+  let mut prev := one.takeRightWhile (· != '\n')
+  for r in rest do
+    ranges := ranges.push (⟨currOffset, currOffset⟩, prev, r.takeWhile (· != '\n'))
+    currOffset := currOffset + r.endPos + ⟨2⟩
+    prev := r.takeRightWhile (· != '\n')
+  let allowedRanges := trails.insertMany allowedRanges
+  for (rg, before, after) in ranges do
+    if allowedRanges.any fun okRg ↦ okRg.start ≤ rg.start && rg.stop ≤ okRg.stop then
+      continue
+    -- `s` is a string of as many spaces (` `) as the characters of the previous line.
+    -- This, followed by the downarrow (`↓`) creates a pointer to an offending line break.
+    let s : String := .join <| List.replicate (before.length + 1) " "
+    Linter.logLint linter.style.emptyLine (.ofRange rg)
+      m!"Please, write a comment here or remove this line, \
+        but do not place empty lines within commands!\nContext:\n\
+        {indentD s!"{s.push '↓'}"}{indentD s!"⏎{before}⏎⏎{after}⏎"}"
 
 initialize addLinter emptyLineLinter
 
