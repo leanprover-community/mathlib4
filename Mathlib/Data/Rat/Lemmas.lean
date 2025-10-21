@@ -182,7 +182,7 @@ theorem add_int_den (q : ℚ) (z : ℤ) : (q + z).den = q.den := by
 theorem add_int_num (q : ℚ) (z : ℤ) : (q + z).num = q.num + z * q.den := by
   simp [add_num_eq, num_add_int_gcd_den_eq_one]
 
-theorem den_eq_of_add_den_eq_one (q r : ℚ) (h : (q + r).den = 1) : q.den = r.den := by
+theorem den_eq_of_add_den_eq_one {q r : ℚ} (h : (q + r).den = 1) : q.den = r.den := by
   rw [← add_sub_cancel_right q r, sub_eq_add_neg, ← (den_eq_one_iff _).mp h, add_comm, add_int_den,
   den_neg_eq_den]
 
