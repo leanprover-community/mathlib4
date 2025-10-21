@@ -102,12 +102,6 @@ theorem IsOrderedCancelMonoid.of_mul_lt_mul_left {α : Type*} [CommMonoid α] [L
 
 end IsOrderedCancelMonoid
 
-attribute [nolint docBlame]
-  LinearOrderedAddCommMonoid.toLinearOrder
-  LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
-  LinearOrderedCancelAddCommMonoid.toLinearOrderedAddCommMonoid
-  LinearOrderedCommMonoid.toLinearOrder
-
 variable [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
 
 @[to_additive (attr := simp)]

@@ -133,7 +133,7 @@ lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ 
   Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
 
 set_option linter.deprecated false in
-@[deprecated Finset.insert_Ico_right_eq_Ico_succ_right (since := "2025-04-24")]
+@[deprecated Finset.insert_Ico_right_eq_Ico_succ (since := "2025-04-24")]
 theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
   rw [Ico_succ_right, ← Ico_insert_right h]
 
@@ -148,7 +148,7 @@ lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b :=
   simp only [mem_insert, mem_Icc]
   cutsat
 
-@[deprecated Finset.insert_Icc_eq_Icc_succ_right (since := "2025-04-24")]
+@[deprecated Finset.insert_Icc_right_eq_Icc_succ (since := "2025-04-24")]
 lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
   ext x
   simp only [mem_insert, mem_Icc]
