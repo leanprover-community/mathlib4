@@ -30,13 +30,13 @@ open Matrix hiding mul_smul
 open ModularGroup SpecialLinearGroup MatrixGroups
 
 /-- Extensionality theorem for `FixedDetMatrix` with respect to the underlying matrix, not
-entriwise. -/
+entrywise. -/
 lemma ext' {m : R} {A B : FixedDetMatrix n R m} (h : A.1 = B.1) : A = B := by
   cases A; cases B
   congr
 
 @[ext]
-lemma ext {m : R} {A B : FixedDetMatrix n R m} (h : ∀ i j , A.1 i j = B.1 i j) : A = B := by
+lemma ext {m : R} {A B : FixedDetMatrix n R m} (h : ∀ i j, A.1 i j = B.1 i j) : A = B := by
   apply ext'
   ext i j
   apply h
@@ -114,7 +114,7 @@ lemma reduce_of_pos {A : Δ m} (hc : (A.1 1 0) = 0) (ha : 0 < A.1 0 0) :
 lemma reduce_of_not_pos {A : Δ m} (hc : (A.1 1 0) = 0) (ha : ¬ 0 < A.1 0 0) :
     reduce A = (T ^ (-(-A.1 0 1 / -A.1 1 1))) • (S • (S • A)) := by
   rw [reduce]
-  simp only [abs_eq_zero, zpow_neg, Int.ediv_neg, neg_neg] at *
+  simp only [zpow_neg, Int.ediv_neg, neg_neg] at *
   simp_rw [if_pos hc, if_neg ha]
 
 @[simp]
@@ -181,23 +181,23 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
       set n : ℤ := A.1 0 1 / A.1 1 1
       have h3 := Int.emod_lt_abs (A.1 0 1) hd
       rw [← abs_eq_self.mpr <| Int.emod_nonneg _ hd] at h3
-      simp only [smul_def, Fin.isValue, coe_T_zpow]
+      simp only [smul_def, coe_T_zpow]
       suffices A.1 1 0 = 0 ∧ n * A.1 1 0 < A.1 0 0 ∧
           n * A.1 1 1 ≤ A.1 0 1 ∧ |A.1 0 1 + -(n * A.1 1 1)| < |A.1 1 1| by
         simpa only [reps, Fin.isValue, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, empty_mul,
           Equiv.symm_apply_apply, Set.mem_setOf_eq, of_apply, cons_val', vecMul, cons_dotProduct,
           vecHead, one_mul, vecTail, Function.comp_apply, Fin.succ_zero_eq_one, neg_mul,
-          dotProduct_empty, add_zero, zero_mul, zero_add, empty_val', cons_val_fin_one,
+          dotProduct_of_isEmpty, add_zero, zero_mul, zero_add, empty_val', cons_val_fin_one,
           cons_val_one, cons_val_zero, lt_add_neg_iff_add_lt, le_add_neg_iff_add_le]
-      simp_all only [h, mul_comm n, zero_mul, ← sub_eq_add_neg, ← h2,
-        Fin.isValue, h1, h3, and_true, true_and]
+      simp_all only [mul_comm n, zero_mul, ← sub_eq_add_neg, ← h2,
+        Fin.isValue, and_true]
     · simp only [reps, Fin.isValue, reduce_of_not_pos h h1, Int.ediv_neg, neg_neg, smul_def, ←
         mul_assoc, S_mul_S_eq, neg_mul, one_mul, coe_T_zpow, mul_neg, cons_mul, Nat.succ_eq_add_one,
         Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, neg_of, neg_cons, neg_empty,
         Set.mem_setOf_eq, of_apply, cons_val', Pi.neg_apply, vecMul, cons_dotProduct, vecHead,
-        vecTail, Function.comp_apply, Fin.succ_zero_eq_one, h, mul_zero, dotProduct_empty, add_zero,
-        zero_mul, neg_zero, empty_val', cons_val_fin_one, cons_val_one, cons_val_zero, lt_neg,
-        neg_add_rev, zero_add, le_add_neg_iff_add_le, ← le_neg, abs_neg, true_and]
+        vecTail, Function.comp_apply, Fin.succ_zero_eq_one, h, mul_zero, dotProduct_of_isEmpty,
+        add_zero, zero_mul, neg_zero, empty_val', cons_val_fin_one, cons_val_one, cons_val_zero,
+        lt_neg, neg_add_rev, zero_add, le_add_neg_iff_add_le, ← le_neg, abs_neg, true_and]
       refine ⟨?_, Int.ediv_mul_le _ hd, ?_⟩
       · simp only [Int.lt_iff_le_and_ne]
         exact ⟨not_lt.mp h1, A_a_ne_zero h hm⟩
@@ -218,13 +218,13 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
   refine ⟨?_, hT _⟩
   intro ih
   rw [show B = T⁻¹ • T • B by simp, ← T_S_rel_smul]
-  solve_by_elim (config := {maxDepth := 10})
+  solve_by_elim (maxDepth := 10)
 
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
      ∀ B (n : ℤ), C (T^n • B) ↔ C B := by
   intro B n
   induction n with
-  | zero => simp only [zpow_zero, one_smul, imp_self]
+  | zero => simp only [zpow_zero, one_smul]
   | succ n hn =>
     simpa only [add_comm (n:ℤ), zpow_add _ 1, ← smul_eq_mul, zpow_one, smul_assoc, prop_red_T hS hT]
   | pred m hm =>

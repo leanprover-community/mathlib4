@@ -151,6 +151,15 @@ instance : SetLike (FractionalIdeal S P) P where
 theorem mem_coe {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
   Iff.rfl
 
+/-- Partially-applied version of `FractionalIdeal.ext`. -/
+theorem coe_ext {I J : FractionalIdeal S P} : (I : Submodule R P) = (J : Submodule R P) → I = J :=
+  Subtype.ext
+
+/-- Partially-applied version of `FractionalIdeal.ext_iff`. -/
+theorem coe_ext_iff {I J : FractionalIdeal S P} :
+    I = J ↔ (I : Submodule R P) = (J : Submodule R P) :=
+  Subtype.ext_iff
+
 @[ext]
 theorem ext {I J : FractionalIdeal S P} : (∀ x, x ∈ I ↔ x ∈ J) → I = J :=
   SetLike.ext
@@ -184,12 +193,10 @@ end SetLike
 
 lemma zero_mem (I : FractionalIdeal S P) : 0 ∈ I := I.coeToSubmodule.zero_mem
 
--- Porting note: this seems to be needed a lot more than in Lean 3
 @[simp]
 theorem val_eq_coe (I : FractionalIdeal S P) : I.val = I :=
   rfl
 
--- Porting note: had to rephrase this to make it clear to `simp` what was going on.
 @[simp, norm_cast]
 theorem coe_mk (I : Submodule R P) (hI : IsFractional S I) :
     coeToSubmodule ⟨I, hI⟩ = I :=
@@ -257,6 +264,11 @@ theorem mem_coeIdeal {x : P} {I : Ideal R} :
     x ∈ (I : FractionalIdeal S P) ↔ ∃ x', x' ∈ I ∧ algebraMap R P x' = x :=
   mem_coeSubmodule _ _
 
+@[simp] -- Ensure `simp` is confluent for `x ∈ ((I : Ideal R) : FractionalIdeal S P)`.
+theorem mem_coeSubmodule {x : P} {I : Ideal R} :
+    x ∈ coeSubmodule P I ↔ ∃ x', x' ∈ I ∧ algebraMap R P x' = x :=
+  Iff.rfl
+
 theorem mem_coeIdeal_of_mem {x : R} {I : Ideal R} (hx : x ∈ I) :
     algebraMap R P x ∈ (I : FractionalIdeal S P) :=
   (mem_coeIdeal S).mpr ⟨x, hx, rfl⟩
@@ -293,7 +305,7 @@ section
 variable [loc : IsLocalization S P]
 
 variable (P) in
--- Cannot be @[simp] because `S` can not be inferred by `simp`.
+-- Cannot be @[simp] because `S` cannot be inferred by `simp`.
 theorem exists_mem_algebraMap_eq {x : R} {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (∃ x', x' ∈ I ∧ algebraMap R P x' = algebraMap R P x) ↔ x ∈ I :=
   ⟨fun ⟨_, hx', Eq⟩ => IsLocalization.injective _ h Eq ▸ hx', fun h => ⟨x, h, rfl⟩⟩
@@ -307,7 +319,7 @@ theorem coeIdeal_inj' (h : S ≤ nonZeroDivisors R) {I J : Ideal R} :
     (I : FractionalIdeal S P) = J ↔ I = J :=
   (coeIdeal_injective' h).eq_iff
 
--- Porting note: doesn't need to be @[simp] because it can be proved by coeIdeal_eq_zero
+-- Not `@[simp]` because `coeIdeal_eq_zero` (in `Operations.lean`) will prove this.
 theorem coeIdeal_eq_zero' {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (I : FractionalIdeal S P) = 0 ↔ I = (⊥ : Ideal R) :=
   coeIdeal_inj' h
@@ -388,9 +400,8 @@ theorem coe_le_coe {I J : FractionalIdeal S P} :
 
 theorem zero_le (I : FractionalIdeal S P) : 0 ≤ I := by
   intro x hx
-  -- Porting note: changed the proof from convert; simp into rw; exact
+  convert zero_mem I
   rw [(mem_zero_iff _).mp hx]
-  exact zero_mem I
 
 instance orderBot : OrderBot (FractionalIdeal S P) where
   bot := 0
@@ -464,6 +475,12 @@ theorem coe_add (I J : FractionalIdeal S P) : (↑(I + J) : Submodule R P) = I +
 theorem mem_add (I J : FractionalIdeal S P) (x : P) :
     x ∈ I + J ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = x := by
   rw [← mem_coe, coe_add, Submodule.add_eq_sup]; exact Submodule.mem_sup
+
+@[simp, norm_cast]
+lemma coeIdeal_inf [FaithfulSMul R P] (I J : Ideal R) :
+    (↑(I ⊓ J) : FractionalIdeal S P) = ↑I ⊓ ↑J := by
+  apply coeToSubmodule_injective
+  exact Submodule.map_inf (Algebra.linearMap R P) (FaithfulSMul.algebraMap_injective R P)
 
 @[simp, norm_cast]
 theorem coeIdeal_sup (I J : Ideal R) : ↑(I ⊔ J) = (I + J : FractionalIdeal S P) :=
@@ -582,6 +599,7 @@ instance commSemiring : CommSemiring (FractionalIdeal S P) :=
 
 instance : CanonicallyOrderedAdd (FractionalIdeal S P) where
   exists_add_of_le h := ⟨_, (sup_eq_right.mpr h).symm⟩
+  le_add_self _ _ := le_sup_right
   le_self_add _ _ := le_sup_left
 
 instance : IsOrderedRing (FractionalIdeal S P) :=
@@ -604,13 +622,17 @@ variable {S P}
 
 section Order
 
-theorem add_le_add_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' + I ≤ J' + J :=
-  sup_le_sup_left hIJ J'
+instance : AddLeftMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := sup_le_sup_left hIJ _
 
-theorem mul_le_mul_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' * I ≤ J' * J :=
-  mul_le.mpr fun _ hk _ hj => mul_mem_mul hk (hIJ hj)
+instance : AddRightMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := sup_le_sup_right hIJ _
+
+instance : MulLeftMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := mul_le.2 fun _ hk _ hj ↦ mul_mem_mul hk (hIJ hj)
+
+instance : MulRightMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := mul_le.2 fun _ hk _ hj ↦ mul_mem_mul (hIJ hk) hj
 
 theorem le_self_mul_self {I : FractionalIdeal S P} (hI : 1 ≤ I) : I ≤ I * I := by
   convert mul_left_mono I hI

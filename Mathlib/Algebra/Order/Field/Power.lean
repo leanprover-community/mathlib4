@@ -85,7 +85,7 @@ lemma zpow_eq_neg_zpow_iff₀ (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd
   | Int.ofNat m => by
     simp [pow_eq_neg_pow_iff, hb]
   | Int.negSucc m => by
-    simp only [← neg_ofNat_succ, zpow_neg, inv_pow, ← inv_neg, pow_eq_neg_pow_iff hb, inv_inj,
+    simp only [← neg_ofNat_succ, zpow_neg, ← inv_neg, pow_eq_neg_pow_iff hb, inv_inj,
       zpow_natCast]
     simp [parity_simps]
 
@@ -156,8 +156,8 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
         let _a ← synthInstanceQ q(Semifield $α)
         let _a ← synthInstanceQ q(LinearOrder $α)
         let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-        haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
+        haveI' : $e =Q $a ^ $b := ⟨⟩
         pure (.positive q(zpow_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"

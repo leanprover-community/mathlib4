@@ -33,7 +33,7 @@ computation. These are the parameters for the language:
 
 All of these variables denote "essentially finite" types, but for technical reasons it is
 convenient to allow them to be infinite anyway. When using an infinite type, we will be interested
-to prove that only finitely many values of the type are ever interacted with.
+in proving that only finitely many values of the type are ever interacted with.
 
 Given these parameters, there are a few common structures for the model that arise:
 
@@ -117,7 +117,7 @@ variable (σ : Type*)
 /-- The TM2 model removes the tape entirely from the TM1 model,
   replacing it with an arbitrary (finite) collection of stacks.
   The operation `push` puts an element on one of the stacks,
-  and `pop` removes an element from a stack (and modifying the
+  and `pop` removes an element from a stack (and modifies the
   internal state based on the result). `peek` modifies the
   internal state but does not remove an element. -/
 inductive Stmt
@@ -488,7 +488,7 @@ theorem step_run {k : K} (q : TM2.Stmt Γ Λ σ) (v : σ) (S : ∀ k, List (Γ k
 
 end
 
-/-- The translation of TM2 statements to TM1 statements. regular actions have direct equivalents,
+/-- The translation of TM2 statements to TM1 statements. Regular actions have direct equivalents,
 but stack actions are deferred by going to the corresponding `go` state, so that we can find the
 appropriate stack top. -/
 def trNormal : TM2.Stmt Γ Λ σ → TM1.Stmt (Γ' K Γ) (Λ' K Γ Λ σ) σ
@@ -517,7 +517,7 @@ noncomputable def trStmts₁ : TM2.Stmt Γ Λ σ → Finset (Λ' K Γ Λ σ)
   | _ => ∅
 
 theorem trStmts₁_run {k : K} {s : StAct K Γ σ k} {q : TM2.Stmt Γ Λ σ} :
-open scoped Classical in
+    open scoped Classical in
     trStmts₁ (stRun s q) = {go k s q, ret q} ∪ trStmts₁ q := by
   cases s <;> simp only [trStmts₁, stRun]
 
@@ -675,7 +675,6 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
 attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 
 theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   intro c₁ c₂ h
   obtain @⟨- | l, v, S, L, hT⟩ := h; · constructor
   rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ Reaches (TM1.step (tr M)) _ _
@@ -687,6 +686,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   | load a _ IH => exact IH _ hT
   | branch p q₁ q₂ IH₁ IH₂ =>
     unfold TM2.stepAux trNormal TM1.stepAux
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     beta_reduce
     cases p v <;> [exact IH₂ _ hT; exact IH₁ _ hT]
   | goto => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
@@ -764,7 +764,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       obtain ⟨IH₁, IH₂⟩ := IH ss' fun x hx ↦ sub x <| Or.inr hx
       refine ⟨by simp only [trNormal_run, TM1.SupportsStmt]; intros; exact hgo, fun l h ↦ ?_⟩
       rw [trStmts₁_run] at h
-      simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
+      simp only [Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
         at h
       rcases h with (⟨rfl | rfl⟩ | h)
       · cases s

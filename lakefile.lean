@@ -2,7 +2,6 @@ import Lake
 
 open Lake DSL
 
-
 /-!
 ## Mathlib dependencies on upstream projects
 -/
@@ -10,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.62" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.77" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -18,6 +17,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.62" -- ProofWidgets 
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
+
 
 /-!
 ## Options for building mathlib
@@ -27,7 +27,11 @@ require "leanprover-community" / "plausible" @ git "main"
 `lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.mathlibStandardSet, true⟩,
+  ⟨`linter.checkInitImports, true⟩,
+  ⟨`linter.allScriptsDocumented, true⟩,
+  ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
 ]
 
@@ -105,11 +109,6 @@ lean_exe mk_all where
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
 
-/-- `lake exe shake` checks files for unnecessary imports. -/
-lean_exe shake where
-  root := `Shake.Main
-  supportInterpreter := true
-
 /-- `lake exe lint-style` runs text-based style linters. -/
 lean_exe «lint-style» where
   srcDir := "scripts"
@@ -161,6 +160,13 @@ post_update pkg do
     return -- do not run in Mathlib itself
   if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
     let exeFile ← runBuild cache.fetch
-    let exitCode ← env exeFile.toString #["get"]
+    -- Run the command in the root package directory,
+    -- which is the one that holds the .lake folder and lean-toolchain file.
+    let cwd ← IO.Process.getCurrentDir
+    let exitCode ← try
+      IO.Process.setCurrentDir rootPkg.dir
+      env exeFile.toString #["get"]
+    finally
+      IO.Process.setCurrentDir cwd
     if exitCode ≠ 0 then
       error s!"{pkg.name}: failed to fetch cache"

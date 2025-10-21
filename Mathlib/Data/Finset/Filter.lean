@@ -119,42 +119,43 @@ theorem filter_subset (s : Finset α) : s.filter p ⊆ s :=
 
 variable {p}
 
-@[simp]
+@[simp, grind =]
 theorem mem_filter {s : Finset α} {a : α} : a ∈ s.filter p ↔ a ∈ s ∧ p a :=
   Multiset.mem_filter
 
 theorem mem_of_mem_filter {s : Finset α} (x : α) (h : x ∈ s.filter p) : x ∈ s :=
   Multiset.mem_of_mem_filter h
 
-theorem filter_ssubset {s : Finset α} : s.filter p ⊂ s ↔ ∃ x ∈ s, ¬p x :=
-  ⟨fun h =>
-    let ⟨x, hs, hp⟩ := Set.exists_of_ssubset h
-    ⟨x, hs, mt (fun hp => mem_filter.2 ⟨hs, hp⟩) hp⟩,
-    fun ⟨_, hs, hp⟩ => ⟨s.filter_subset _, fun h => hp (mem_filter.1 (h hs)).2⟩⟩
+theorem filter_ssubset {s : Finset α} : s.filter p ⊂ s ↔ ∃ x ∈ s, ¬p x := by grind
 
 variable (p)
 
-theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a => p a ∧ q a :=
-  ext fun a => by
-    simp only [mem_filter, and_assoc, Bool.decide_and, Bool.decide_coe, Bool.and_eq_true]
+theorem filter_filter (s : Finset α) : (s.filter p).filter q = s.filter fun a => p a ∧ q a := by
+  grind
 
 theorem filter_comm (s : Finset α) : (s.filter p).filter q = (s.filter q).filter p := by
-  simp_rw [filter_filter, and_comm]
+  grind
 
 -- We can replace an application of filter where the decidability is inferred in "the wrong way".
 theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidablePred p)
     [DecidablePred p] : @filter α p h s = s.filter p := by congr
 
 @[simp]
-theorem filter_True {h} (s : Finset α) : @filter _ (fun _ => True) h s = s := by ext; simp
+theorem filter_true {h} (s : Finset α) : @filter _ (fun _ => True) h s = s := by ext; simp
+
+@[deprecated (since := "2025-08-24")] alias filter_True := filter_true
 
 @[simp]
-theorem filter_False {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ := by ext; simp
+theorem filter_false {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ := by ext; simp
+
+@[deprecated (since := "2025-08-24")] alias filter_False := filter_false
 
 variable {p q}
 
+@[simp]
 lemma filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
 
+@[simp]
 theorem filter_eq_empty_iff : s.filter p = ∅ ↔ ∀ ⦃x⦄, x ∈ s → ¬p x := by simp [Finset.ext_iff]
 
 theorem filter_nonempty_iff : (s.filter p).Nonempty ↔ ∃ a ∈ s, p a := by
@@ -188,8 +189,7 @@ theorem monotone_filter_left : Monotone (filter p) := fun _ _ => filter_subset_f
 
 @[gcongr]
 theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
-    (h : p ≤ q) : s.filter p ⊆ s.filter q :=
-  Multiset.subset_of_le (Multiset.monotone_filter_right s.val h)
+    (h : ∀ a ∈ s, p a → q a) : s.filter p ⊆ s.filter q := by simp +contextual [subset_iff, h]
 
 @[simp, norm_cast]
 theorem coe_filter (s : Finset α) : ↑(s.filter p) = ({ x ∈ ↑s | p x } : Set α) :=

@@ -78,18 +78,18 @@ open scoped Classical in
 theorem volume_preserving_mixedSpaceToRealMixedSpace_symm :
     MeasurePreserving (mixedSpaceToRealMixedSpace K).symm :=
   (MeasurePreserving.id _).prod <|
-    volume_preserving_pi fun _ ↦  Complex.volume_preserving_equiv_real_prod.symm
+    volume_preserving_pi fun _ ↦ Complex.volume_preserving_equiv_real_prod.symm
 
 open scoped Classical in
 instance : IsAddHaarMeasure (volume : Measure (realMixedSpace K)) := prod.instIsAddHaarMeasure _ _
 
 /--
-The polar coordinate partial homeomorphism of `ℝ^r₁ × (ℝ × ℝ)^r₂` defined as the identity on
+The polar coordinate open partial homeomorphism of `ℝ^r₁ × (ℝ × ℝ)^r₂` defined as the identity on
 the first component and mapping `(rᵢ cos θᵢ, rᵢ sin θᵢ)ᵢ` to `(rᵢ, θᵢ)ᵢ` on the second component.
 -/
 @[simps! apply target]
-def polarCoordReal : PartialHomeomorph (realMixedSpace K) (realMixedSpace K) :=
-  (PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ polarCoord)
+def polarCoordReal : OpenPartialHomeomorph (realMixedSpace K) (realMixedSpace K) :=
+  (OpenPartialHomeomorph.refl _).prod (OpenPartialHomeomorph.pi fun _ ↦ polarCoord)
 
 theorem measurable_polarCoordReal_symm :
     Measurable (polarCoordReal K).symm := by
@@ -155,8 +155,7 @@ theorem lintegral_comp_polarCoordReal_symm (f : realMixedSpace K → ℝ≥0∞)
       (polarCoordReal K).open_target.measurableSet
       (fun x _ ↦ (hasFDerivAt_polarCoordReal_symm K x).hasFDerivWithinAt)
       (polarCoordReal K).symm.injOn f]
-  refine setLIntegral_congr_fun (polarCoordReal K).open_target.measurableSet ?_
-  filter_upwards with x hx
+  refine setLIntegral_congr_fun (polarCoordReal K).open_target.measurableSet (fun x hx ↦ ?_)
   simp_rw [det_fderivPolarCoordRealSymm, Finset.abs_prod,
     ENNReal.ofReal_prod_of_nonneg (fun _ _ ↦ abs_nonneg _), abs_of_mem_polarCoordReal_target K hx]
 
@@ -167,13 +166,13 @@ section mixedSpace
 variable [NumberField K]
 
 /--
-The polar coordinate partial homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and
+The polar coordinate open partial homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and
 `ℝ^r₁ × (ℝ × ℝ)^r₂` defined as the identity on the first component and mapping `(zᵢ)ᵢ` to
 `(‖zᵢ‖, Arg zᵢ)ᵢ` on the second component.
 -/
 @[simps!]
-protected noncomputable def polarCoord : PartialHomeomorph (mixedSpace K) (realMixedSpace K) :=
-  (PartialHomeomorph.refl _).prod (PartialHomeomorph.pi fun _ ↦ Complex.polarCoord)
+protected noncomputable def polarCoord : OpenPartialHomeomorph (mixedSpace K) (realMixedSpace K) :=
+  (OpenPartialHomeomorph.refl _).prod (OpenPartialHomeomorph.pi fun _ ↦ Complex.polarCoord)
 
 theorem polarCoord_target_eq_polarCoordReal_target :
     (mixedEmbedding.polarCoord K).target = (polarCoordReal K).target := rfl
@@ -211,7 +210,7 @@ open scoped Classical in
 protected theorem lintegral_comp_polarCoord_symm (f : mixedSpace K → ℝ≥0∞) :
     ∫⁻ x in (mixedEmbedding.polarCoord K).target, (∏ w : {w // IsComplex w}, .ofReal (x.2 w).1) *
       f ((mixedEmbedding.polarCoord K).symm x) = ∫⁻ x, f x := by
-  rw [← ( volume_preserving_mixedSpaceToRealMixedSpace_symm K).lintegral_comp_emb
+  rw [← (volume_preserving_mixedSpaceToRealMixedSpace_symm K).lintegral_comp_emb
     (mixedSpaceToRealMixedSpace K).symm.measurableEmbedding, ← lintegral_comp_polarCoordReal_symm,
     polarCoord_target_eq_polarCoordReal_target, polarCoord_symm_eq, Function.comp_def]
 
@@ -294,18 +293,18 @@ theorem volume_preserving_homeoRealMixedSpacePolarSpace [NumberField K] :
               (fun _ : InfinitePlace K ↦ ℝ) (fun w ↦ IsReal w)).symm).prod (.id volume)
 
 /--
-The polar coordinate partial homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and the polar
+The polar coordinate open partial homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and the polar
 space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to `x w` or `‖x w‖` depending on whether `w` is
 real or complex for the first component, and to `Arg (x w)`, `w` complex, for the second component.
 -/
 @[simps!]
-def polarSpaceCoord [NumberField K] : PartialHomeomorph (mixedSpace K) (polarSpace K) :=
+def polarSpaceCoord [NumberField K] : OpenPartialHomeomorph (mixedSpace K) (polarSpace K) :=
     (mixedEmbedding.polarCoord K).transHomeomorph (homeoRealMixedSpacePolarSpace K)
 
 theorem measurable_polarSpaceCoord_symm [NumberField K] :
     Measurable (polarSpaceCoord K).symm := by
-  rw [polarSpaceCoord, PartialHomeomorph.transHomeomorph_symm_apply]
-  exact ( measurable_polarCoord_symm K).comp (Homeomorph.measurable _)
+  rw [polarSpaceCoord, OpenPartialHomeomorph.transHomeomorph_symm_apply]
+  exact (measurable_polarCoord_symm K).comp (Homeomorph.measurable _)
 
 open scoped Classical in
 theorem polarSpaceCoord_target' [NumberField K] :
@@ -359,7 +358,7 @@ open scoped ComplexOrder Classical in
 private theorem volume_eq_two_pi_pow_mul_integral_aux
     (hA : normAtComplexPlaces ⁻¹' (normAtComplexPlaces '' A) = A) :
     normAtComplexPlaces '' A =
-      (mixedSpaceOfRealSpace⁻¹' A) ∩
+      (mixedSpaceOfRealSpace ⁻¹' A) ∩
         Set.univ.pi fun w ↦ if w.IsReal then Set.univ else Set.Ici 0 := by
   have h : ∀ (x : mixedSpace K), ∀ w, IsComplex w → 0 ≤ normAtComplexPlaces x w := by
     intro x w hw

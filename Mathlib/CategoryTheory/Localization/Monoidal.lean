@@ -5,4 +5,4 @@ Authors: Joël Riou, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 
-deprecated_module (since := "2025-05-15")
+deprecated_module (since := "2025-10-20")

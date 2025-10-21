@@ -13,7 +13,7 @@ We also prove some `simp` lemmas about cardinal arithmetic involving `𝔠`.
 
 ## Notation
 
-- `𝔠` : notation for `Cardinal.continuum` in locale `Cardinal`.
+- `𝔠` : notation for `Cardinal.continuum` in scope `Cardinal`.
 -/
 
 

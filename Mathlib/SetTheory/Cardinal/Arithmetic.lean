@@ -79,7 +79,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   · exact (mul_lt_aleph0 qo qo).trans_le ol
   · suffices (succ (typein LT.lt (g p))).card < #α from (IH _ this qo).trans_lt this
     rw [← lt_ord]
-    apply (isLimit_ord ol).succ_lt
+    apply (isSuccLimit_ord ol).succ_lt
     rw [e]
     apply typein_lt_type
 
@@ -284,7 +284,7 @@ theorem eq_of_add_eq_of_aleph0_le {a b c : Cardinal} (h : a + b = c) (ha : a < c
     apply self_le_add_left
   rw [← not_lt]; intro hb
   have : a + b < c := add_lt_of_lt hc ha hb
-  simp [h, lt_irrefl] at this
+  simp [h] at this
 
 theorem add_eq_left {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : b ≤ a) : a + b = a := by
   rw [add_eq_max ha, max_eq_left hb]
@@ -364,7 +364,7 @@ variable [Nonempty ι] [Nonempty ι']
 
 protected theorem ciSup_add (hf : BddAbove (range f)) (c : Cardinal.{v}) :
     (⨆ i, f i) + c = ⨆ i, f i + c := by
-  have : ∀ i, f i + c ≤ (⨆ i, f i) + c := fun i ↦ add_le_add_right (le_ciSup hf i) c
+  have (i : ι) : f i + c ≤ (⨆ i, f i) + c := by grw [le_ciSup hf i]
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · + c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_ge (⨆ i, f i) ℵ₀
@@ -393,7 +393,7 @@ protected theorem ciSup_mul (c : Cardinal.{v}) : (⨆ i, f i) * c = ⨆ i, f i *
   · have hfc : ¬ BddAbove (range (f · * c)) := fun bdd ↦ hf
       ⟨⨆ i, f i * c, forall_mem_range.mpr fun i ↦ (le_mul_right h0).trans (le_ciSup bdd i)⟩
     simp [iSup, csSup_of_not_bddAbove, hf, hfc]
-  have : ∀ i, f i * c ≤ (⨆ i, f i) * c := fun i ↦ mul_le_mul_right' (le_ciSup hf i) c
+  have (i : ι) : f i * c ≤ (⨆ i, f i) * c := by grw [← le_ciSup hf i]
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · * c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_ge (⨆ i, f i) ℵ₀
@@ -443,10 +443,10 @@ theorem add_one_inj {α β : Cardinal} : α + 1 = β + 1 ↔ α = β :=
 
 theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) :
     α + γ ≤ β + γ ↔ α ≤ β := by
-  refine ⟨fun h => ?_, fun h => add_le_add_right h γ⟩
+  refine ⟨fun h => ?_, fun h => by gcongr⟩
   contrapose h
   rw [not_le, lt_iff_le_and_ne, Ne] at h ⊢
-  exact ⟨add_le_add_right h.1 γ, mt (add_right_inj_of_lt_aleph0 γ₀).1 h.2⟩
+  exact ⟨by grw [h.1], mt (add_right_inj_of_lt_aleph0 γ₀).1 h.2⟩
 
 @[simp]
 theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n ↔ α ≤ β :=
@@ -467,17 +467,8 @@ theorem pow_le {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : μ < ℵ₀) : 
     Quotient.inductionOn κ
       (fun α H1 =>
         Nat.recOn n
-          (lt_of_lt_of_le
-              (by
-                rw [Nat.cast_zero, power_zero]
-                exact one_lt_aleph0)
-              H1).le
-          fun n ih =>
-          le_of_le_of_eq
-            (by
-              rw [Nat.cast_succ, power_add, power_one]
-              exact mul_le_mul_right' ih _)
-            (mul_eq_self H1))
+          (by grw [Nat.cast_zero, power_zero, one_lt_aleph0, H1])
+          fun n ih => by grw [Nat.cast_succ, power_add, power_one, ih, mul_eq_self H1])
       H1
 
 theorem pow_eq {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : 1 ≤ μ) (H3 : μ < ℵ₀) : κ ^ μ = κ :=
@@ -681,7 +672,7 @@ theorem mk_finset_of_infinite (α : Type u) [Infinite α] : #(Finset α) = #α :
 
 theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal) :
     #{ t : Set α // #t ≤ c } ≤ #α ^ c := by
-  refine le_trans ?_ (by rw [← add_one_eq (aleph0_le_mk α)])
+  rw [← add_one_eq (aleph0_le_mk α)]
   induction c using Cardinal.inductionOn with | _ β
   fapply mk_le_of_surjective
   · intro f
@@ -766,7 +757,7 @@ theorem mk_compl_eq_mk_compl_finite_lift {α : Type u} {β : Type v} [Finite α]
     lift t to Finset β using t.toFinite
     simp only [Finset.coe_sort_coe, mk_fintype, Fintype.card_coe, lift_natCast, Nat.cast_inj] at h2
     simp only [← Finset.coe_compl, Finset.coe_sort_coe, mk_coe_finset, Finset.card_compl,
-      lift_natCast, Nat.cast_inj, h1, h2]
+      lift_natCast, h1, h2]
 
 theorem mk_compl_eq_mk_compl_finite {α β : Type u} [Finite α] {s : Set α} {t : Set β}
     (h1 : #α = #β) (h : #s = #t) : #(sᶜ : Set α) = #(tᶜ : Set β) := by

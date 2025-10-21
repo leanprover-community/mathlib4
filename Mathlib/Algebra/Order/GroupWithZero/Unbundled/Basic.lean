@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Notation.Pi
+import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.Monotone.Basic
@@ -41,7 +41,7 @@ theorem mul_neg_of_pos_of_neg [PosMulStrictMono α] (ha : 0 < a) (hb : b < 0) : 
 
 @[simp]
 theorem mul_pos_iff_of_pos_left [PosMulStrictMono α] [PosMulReflectLT α] (h : 0 < a) :
-    0 < a * b ↔ 0 < b := by simpa using mul_lt_mul_left (b := 0) h
+    0 < a * b ↔ 0 < b := by simpa using mul_lt_mul_iff_right₀ (b := 0) h
 
 /-- Assumes right covariance. -/
 theorem Right.mul_pos [MulPosStrictMono α] (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
@@ -52,7 +52,7 @@ theorem mul_neg_of_neg_of_pos [MulPosStrictMono α] (ha : a < 0) (hb : 0 < b) : 
 
 @[simp]
 theorem mul_pos_iff_of_pos_right [MulPosStrictMono α] [MulPosReflectLT α] (h : 0 < b) :
-    0 < a * b ↔ 0 < a := by simpa using mul_lt_mul_right (b := 0) h
+    0 < a * b ↔ 0 < a := by simpa using mul_lt_mul_iff_left₀ (b := 0) h
 
 /-- Assumes left covariance. -/
 theorem Left.mul_nonneg [PosMulMono α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
@@ -261,41 +261,41 @@ lemma one_le_of_le_mul_right₀ [MulPosReflectLE α] (hb : 0 < b) (h : b ≤ a *
 
 @[simp]
 lemma le_mul_iff_one_le_right [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) : a ≤ a * b ↔ 1 ≤ b :=
-  Iff.trans (by rw [mul_one]) (mul_le_mul_left a0)
+  Iff.trans (by rw [mul_one]) (mul_le_mul_iff_right₀ a0)
 
 @[simp]
 theorem lt_mul_iff_one_lt_right [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) :
     a < a * b ↔ 1 < b :=
-  Iff.trans (by rw [mul_one]) (mul_lt_mul_left a0)
+  Iff.trans (by rw [mul_one]) (mul_lt_mul_iff_right₀ a0)
 
 @[simp]
 lemma mul_le_iff_le_one_right [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) : a * b ≤ a ↔ b ≤ 1 :=
-  Iff.trans (by rw [mul_one]) (mul_le_mul_left a0)
+  Iff.trans (by rw [mul_one]) (mul_le_mul_iff_right₀ a0)
 
 @[simp]
 theorem mul_lt_iff_lt_one_right [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) :
     a * b < a ↔ b < 1 :=
-  Iff.trans (by rw [mul_one]) (mul_lt_mul_left a0)
+  Iff.trans (by rw [mul_one]) (mul_lt_mul_iff_right₀ a0)
 
 /-! Lemmas of the form `a ≤ b * a ↔ 1 ≤ b` and `a * b ≤ b ↔ a ≤ 1`, assuming right covariance. -/
 
 @[simp]
 lemma le_mul_iff_one_le_left [MulPosMono α] [MulPosReflectLE α] (a0 : 0 < a) : a ≤ b * a ↔ 1 ≤ b :=
-  Iff.trans (by rw [one_mul]) (mul_le_mul_right a0)
+  Iff.trans (by rw [one_mul]) (mul_le_mul_iff_left₀ a0)
 
 @[simp]
 theorem lt_mul_iff_one_lt_left [MulPosStrictMono α] [MulPosReflectLT α] (a0 : 0 < a) :
     a < b * a ↔ 1 < b :=
-  Iff.trans (by rw [one_mul]) (mul_lt_mul_right a0)
+  Iff.trans (by rw [one_mul]) (mul_lt_mul_iff_left₀ a0)
 
 @[simp]
 lemma mul_le_iff_le_one_left [MulPosMono α] [MulPosReflectLE α] (b0 : 0 < b) : a * b ≤ b ↔ a ≤ 1 :=
-  Iff.trans (by rw [one_mul]) (mul_le_mul_right b0)
+  Iff.trans (by rw [one_mul]) (mul_le_mul_iff_left₀ b0)
 
 @[simp]
 theorem mul_lt_iff_lt_one_left [MulPosStrictMono α] [MulPosReflectLT α] (b0 : 0 < b) :
     a * b < b ↔ a < 1 :=
-  Iff.trans (by rw [one_mul]) (mul_lt_mul_right b0)
+  Iff.trans (by rw [one_mul]) (mul_lt_mul_iff_left₀ b0)
 
 /-! Lemmas of the form `1 ≤ b → a ≤ a * b`.
 
@@ -350,6 +350,10 @@ variable [MonoidWithZero M₀]
 
 section Preorder
 variable [Preorder M₀] {a b : M₀} {m n : ℕ}
+
+@[simp] lemma pow_succ_nonneg [PosMulMono M₀] (ha : 0 ≤ a) : ∀ n, 0 ≤ a ^ (n + 1)
+  | 0 => (pow_one a).symm ▸ ha
+  | _ + 1 => pow_succ a _ ▸ mul_nonneg (pow_succ_nonneg ha _) ha
 
 @[simp] lemma pow_nonneg [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 0 ≤ a) : ∀ n, 0 ≤ a ^ n
   | 0 => pow_zero a ▸ zero_le_one
@@ -442,13 +446,14 @@ lemma Bound.le_self_pow_of_pos [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 �
     a ≤ a ^ n := le_self_pow₀ ha hn.ne'
 
 @[mono, gcongr, bound]
-theorem pow_le_pow_left₀ [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀]
+theorem pow_le_pow_left₀ [PosMulMono M₀] [MulPosMono M₀]
     (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n
   | 0 => by simp
-  | n + 1 => by simpa only [pow_succ']
-      using mul_le_mul hab (pow_le_pow_left₀ ha hab _) (pow_nonneg ha _) (ha.trans hab)
+  | 1 => by simpa using hab
+  | n + 2 => by simpa only [pow_succ']
+      using mul_le_mul hab (pow_le_pow_left₀ ha hab _) (pow_succ_nonneg ha _) (ha.trans hab)
 
-lemma pow_left_monotoneOn [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀] :
+lemma pow_left_monotoneOn [PosMulMono M₀] [MulPosMono M₀] :
     MonotoneOn (fun a : M₀ ↦ a ^ n) {x | 0 ≤ x} :=
   fun _a ha _b _ hab ↦ pow_le_pow_left₀ ha hab _
 
@@ -506,23 +511,32 @@ lemma sq_pos_of_pos [PosMulStrictMono M₀] (ha : 0 < a) : 0 < a ^ 2 := by
   simpa only [sq] using mul_pos ha ha
 
 section strict_mono
-variable [ZeroLEOneClass M₀] [PosMulStrictMono M₀]
+variable [PosMulStrictMono M₀]
 
-@[simp] lemma pow_pos (ha : 0 < a) : ∀ n, 0 < a ^ n
+@[simp] lemma pow_succ_pos (ha : 0 < a) : ∀ n, 0 < a ^ (n + 1)
+  | 0 => by simpa using ha
+  | _ + 1 => pow_succ a _ ▸ mul_pos (pow_succ_pos ha _) ha
+
+@[simp] lemma pow_pos [ZeroLEOneClass M₀] (ha : 0 < a) : ∀ n, 0 < a ^ n
   | 0 => by nontriviality; rw [pow_zero]; exact zero_lt_one
   | _ + 1 => pow_succ a _ ▸ mul_pos (pow_pos ha _) ha
 
 @[gcongr, bound]
 lemma pow_lt_pow_left₀ [MulPosMono M₀] (hab : a < b)
     (ha : 0 ≤ a) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < b ^ n
-  | n + 1, _ => by
+  | 1, _ => by simpa using hab
+  | n + 2, _ => by
     simpa only [pow_succ] using mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
-      (pow_le_pow_left₀ ha hab.le _) hab ha (pow_pos (ha.trans_lt hab) _)
+      (pow_le_pow_left₀ ha hab.le _) hab ha (pow_succ_pos (ha.trans_lt hab) _)
 
 /-- See also `pow_left_strictMono₀` and `Nat.pow_left_strictMono`. -/
 lemma pow_left_strictMonoOn₀ [MulPosMono M₀] (hn : n ≠ 0) :
     StrictMonoOn (· ^ n : M₀ → M₀) {a | 0 ≤ a} :=
   fun _a ha _b _ hab ↦ pow_lt_pow_left₀ hab ha hn
+
+section ZeroLEOneClass
+
+variable [ZeroLEOneClass M₀]
 
 /-- See also `pow_right_strictMono'`. -/
 lemma pow_right_strictMono₀ (h : 1 < a) : StrictMono (a ^ ·) :=
@@ -541,12 +555,18 @@ lemma pow_le_pow_iff_right₀ (h : 1 < a) : a ^ n ≤ a ^ m ↔ n ≤ m :=
 lemma lt_self_pow₀ (h : 1 < a) (hm : 1 < m) : a < a ^ m := by
   simpa only [pow_one] using pow_lt_pow_right₀ h hm
 
+end ZeroLEOneClass
+
 lemma pow_right_strictAnti₀ (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ ·) :=
   strictAnti_nat_of_succ_lt fun n => by
+    have : ZeroLEOneClass M₀ := ⟨(h₀.trans h₁).le⟩
     simpa only [pow_succ, mul_one] using mul_lt_mul_of_pos_left h₁ (pow_pos h₀ n)
 
+lemma pow_le_pow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) : a ^ m ≤ a ^ n ↔ n ≤ m :=
+  (pow_right_strictAnti₀ ha₀ ha₁).le_iff_ge
+
 lemma pow_lt_pow_iff_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) : a ^ m < a ^ n ↔ n < m :=
-  (pow_right_strictAnti₀ h₀ h₁).lt_iff_lt
+  (pow_right_strictAnti₀ h₀ h₁).lt_iff_gt
 
 lemma pow_lt_pow_right_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) (hmn : m < n) : a ^ n < a ^ m :=
   (pow_lt_pow_iff_right_of_lt_one₀ h₀ h₁).2 hmn
@@ -591,7 +611,7 @@ lemma StrictMono.mul [PosMulStrictMono M₀] [MulPosStrictMono M₀] (hf : Stric
 end PartialOrder
 
 section LinearOrder
-variable [LinearOrder M₀] [ZeroLEOneClass M₀] [PosMulStrictMono M₀] {a b : M₀}
+variable [LinearOrder M₀] [PosMulStrictMono M₀] {a b : M₀}
   {m n : ℕ}
 
 lemma pow_le_pow_iff_left₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) :
@@ -606,6 +626,10 @@ lemma pow_lt_pow_iff_left₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) (hn
 lemma pow_left_inj₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) :
     a ^ n = b ^ n ↔ a = b :=
   (pow_left_strictMonoOn₀ hn).eq_iff_eq ha hb
+
+section ZeroLEOneClass
+
+variable [ZeroLEOneClass M₀]
 
 lemma pow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) := by
   obtain ha₁ | ha₁ := ha₁.lt_or_gt
@@ -646,6 +670,8 @@ lemma one_le_sq_iff₀ (ha : 0 ≤ a) : 1 ≤ a ^ 2 ↔ 1 ≤ a :=
 
 lemma one_lt_sq_iff₀ (ha : 0 ≤ a) : 1 < a ^ 2 ↔ 1 < a :=
   one_lt_pow_iff_of_nonneg ha (Nat.succ_ne_zero _)
+
+end ZeroLEOneClass
 
 variable [MulPosMono M₀]
 
@@ -911,11 +937,16 @@ variable {m n : ℤ}
 
 lemma zpow_nonneg (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_nonneg ha _
-  |-(n + 1 : ℕ) => by rw [zpow_neg, inv_nonneg, zpow_natCast]; exact pow_nonneg ha _
+  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_nonneg, zpow_natCast]; exact pow_nonneg ha _
 
 lemma zpow_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
-  |-(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
+  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
+
+omit [ZeroLEOneClass G₀] in
+lemma zpow_left_strictMonoOn₀ [MulPosMono G₀] (hn : 0 < n) :
+    StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by cutsat)
 
 lemma zpow_right_mono₀ (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   refine monotone_int_of_le_succ fun n ↦ ?_
@@ -940,7 +971,6 @@ lemma zpow_right_strictAnti₀ (ha₀ : 0 < a) (ha₁ : a < 1) : StrictAnti fun 
 @[gcongr]
 lemma zpow_le_zpow_right₀ (ha : 1 ≤ a) (hmn : m ≤ n) : a ^ m ≤ a ^ n := zpow_right_mono₀ ha hmn
 
-@[gcongr]
 lemma zpow_le_zpow_right_of_le_one₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) (hmn : m ≤ n) : a ^ n ≤ a ^ m :=
   zpow_right_anti₀ ha₀ ha₁ hmn
 
@@ -959,7 +989,6 @@ lemma one_le_zpow_of_nonpos₀ (ha₀ : 0 < a) (ha₁ : a ≤ 1) (hn : n ≤ 0) 
 lemma zpow_lt_zpow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n :=
   zpow_right_strictMono₀ ha hmn
 
-@[gcongr]
 lemma zpow_lt_zpow_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) (hmn : m < n) : a ^ n < a ^ m :=
   zpow_right_strictAnti₀ ha₀ ha₁ hmn
 
@@ -982,10 +1011,10 @@ lemma one_lt_zpow_of_neg₀ (ha₀ : 0 < a) (ha₁ : a < 1) (hn : n < 0) : 1 < a
   (zpow_right_strictMono₀ ha).lt_iff_lt
 
 lemma zpow_le_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
-    a ^ m ≤ a ^ n ↔ n ≤ m := (zpow_right_strictAnti₀ ha₀ ha₁).le_iff_le
+    a ^ m ≤ a ^ n ↔ n ≤ m := (zpow_right_strictAnti₀ ha₀ ha₁).le_iff_ge
 
 lemma zpow_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
-    a ^ m < a ^ n ↔ n < m := (zpow_right_strictAnti₀ ha₀ ha₁).lt_iff_lt
+    a ^ m < a ^ n ↔ n < m := (zpow_right_strictAnti₀ ha₀ ha₁).lt_iff_gt
 
 @[simp] lemma one_le_zpow_iff_right₀ (ha : 1 < a) : 1 ≤ a ^ n ↔ 0 ≤ n := by
   simp [← zpow_le_zpow_iff_right₀ ha]
@@ -1094,7 +1123,9 @@ lemma inv_lt_iff_one_lt_mul₀ (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := by
   rw [← mul_inv_lt_iff₀ ha, one_mul]
 
 lemma one_le_div₀ (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff₀ hb, one_mul]
+lemma one_lt_div₀ (hb : 0 < b) : 1 < a / b ↔ b < a := by rw [lt_div_iff₀ hb, one_mul]
 lemma div_le_one₀ (hb : 0 < b) : a / b ≤ 1 ↔ a ≤ b := by rw [div_le_iff₀ hb, one_mul]
+lemma div_lt_one₀ (hb : 0 < b) : a / b < 1 ↔ a < b := by rw [div_lt_iff₀ hb, one_mul]
 
 /-- One direction of `le_mul_inv_iff₀` where `c` is allowed to be `0` (but `b` must be nonnegative).
 -/
@@ -1190,14 +1221,13 @@ lemma lt_inv_of_lt_inv₀ (ha : 0 < a) (h : a < b⁻¹) : b < a⁻¹ :=
 
 lemma div_le_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
     a / b ≤ a / c ↔ c ≤ b := by
-  simp only [div_eq_mul_inv, mul_le_mul_left ha, inv_le_inv₀ hb hc]
+  simp only [div_eq_mul_inv, mul_le_mul_iff_right₀ ha, inv_le_inv₀ hb hc]
 
 lemma div_lt_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b < a / c ↔ c < b :=
   lt_iff_lt_of_le_iff_le' (div_le_div_iff_of_pos_left ha hc hb)
     (div_le_div_iff_of_pos_left ha hb hc)
 
 -- Not a `mono` lemma b/c `div_le_div₀` is strictly more general
-@[gcongr]
 lemma div_le_div_of_nonneg_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   gcongr

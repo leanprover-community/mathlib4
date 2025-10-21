@@ -83,6 +83,16 @@ theorem trace_eq_matrix_trace (f : M →ₗ[R] M) :
   rw [trace_eq_matrix_trace_of_finset R b.reindexFinsetRange, ← traceAux_def, ← traceAux_def,
     traceAux_eq R b b.reindexFinsetRange]
 
+variable {R} in
+@[simp] theorem _root_.Matrix.trace_toLin_eq (A : Matrix ι ι R) (b : Basis ι R M) :
+    LinearMap.trace R _ (Matrix.toLin b b A) = A.trace := by
+  simp [trace_eq_matrix_trace R b]
+
+variable {R} in
+@[simp] theorem _root_.Matrix.trace_toLin'_eq (A : Matrix ι ι R) :
+    LinearMap.trace R _ A.toLin' = A.trace :=
+  A.trace_toLin_eq (Pi.basisFun R ι)
+
 theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) := by
   classical
   by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
@@ -133,7 +143,7 @@ theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     obtain rfl | hij := eq_or_ne i j
     · simp
     rw [Matrix.trace_single_eq_of_ne j i (1 : R) hij.symm]
-    simp [Finsupp.single_eq_pi_single, hij]
+    simp [hij]
 
 /-- The trace of a linear map corresponds to the contraction pairing under the isomorphism
 `End(M) ≃ M* ⊗ M`. -/
@@ -205,7 +215,7 @@ variable {R M N P}
 theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M × N) (prodMap f g) = trace R M f + trace R N g := by
   have h := LinearMap.ext_iff.1 (trace_prodMap R M N) (f, g)
-  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id_coe, id,
+  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id,
     prodMapLinear_apply] at h
   exact h
 
@@ -219,7 +229,7 @@ theorem trace_tensorProduct : compr₂ (mapBilinear R M N M N) (trace R (M ⊗ N
     (compl₁₂_inj (show Surjective (dualTensorHom R M M) from (dualTensorHomEquiv R M M).surjective)
         (show Surjective (dualTensorHom R N N) from (dualTensorHomEquiv R N N).surjective)).1
   ext f m g n
-  simp only [AlgebraTensorModule.curry_apply, toFun_eq_coe, TensorProduct.curry_apply,
+  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
     coe_restrictScalars, compl₁₂_apply, compr₂_apply, mapBilinear_apply,
     trace_eq_contract_apply, contractLeft_apply, lsmul_apply, Algebra.id.smul_eq_mul,
     map_dualTensorHom, dualDistrib_apply]
@@ -254,6 +264,12 @@ theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
   have h := LinearMap.ext_iff.1 (LinearMap.ext_iff.1 (trace_comp_comm R M N) g) f
   simp only [llcomp_apply', compr₂_apply, flip_apply] at h
   exact h
+
+@[simp]
+lemma trace_smulRight (f : M →ₗ[R] R) (x : M) :
+    trace R M (f.smulRight x) = f x := by
+  rw [trace_eq_matrix_trace _ (Free.chooseBasis R M), ← (Free.chooseBasis R M).sum_repr x]
+  simp [- Basis.sum_repr, dotProduct]
 
 end
 
@@ -308,7 +324,7 @@ lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.En
   set n := g - algebraMap R _ μ
   replace hg : trace R M (f ∘ₗ n) = 0 := by
     rw [← isNilpotent_iff_eq_zero, ← Module.End.mul_eq_comp]
-    refine isNilpotent_trace_of_isNilpotent (Commute.isNilpotent_mul_right ?_ hg)
+    refine isNilpotent_trace_of_isNilpotent (Commute.isNilpotent_mul_left ?_ hg)
     exact h_comm.sub_right (Algebra.commute_algebraMap_right μ f)
   have hμ : g = algebraMap R _ μ + n := eq_add_of_sub_eq' rfl
   have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- TODO Surely exists?

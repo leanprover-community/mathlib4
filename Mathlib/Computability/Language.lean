@@ -25,11 +25,11 @@ with respect to other language operations.
 * `l + m`: union of languages `l` and `m`
 * `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
 * `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
-* `1`: language consisting of only the empty string.
-  This is because it is the unit of the `*` operator.
-* `l∗`: Kleene's star – language of strings consisting of arbitrarily many
-  members of `l` concatenated together
-  (Note that this is the Unicode asterisk `∗`, and not the more common star `*`)
+* `1`: language consisting of only the empty string. This is because it is the unit of the `*`
+  operator.
+* `l∗`: Kleene star – language of strings consisting of arbitrarily many members of `l`
+  concatenated together. Note that this notation uses the Unicode asterisk operator `∗`, as opposed
+  to the more common ASCII asterisk `*`.
 
 ## Main definitions
 
@@ -139,22 +139,18 @@ theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
 
 instance instSemiring : Semiring (Language α) where
-  add := (· + ·)
   add_assoc := union_assoc
-  zero := 0
   zero_add := empty_union
   add_zero := union_empty
   add_comm := union_comm
-  mul := (· * ·)
   mul_assoc _ _ _ := image2_assoc append_assoc
   zero_mul _ := image2_empty_left
   mul_zero _ := image2_empty_right
-  one := 1
   one_mul l := by simp [mul_def, one_def]
   mul_one l := by simp [mul_def, one_def]
   natCast n := if n = 0 then 0 else 1
   natCast_zero := rfl
-  natCast_succ n := by cases n <;> simp [Nat.cast, add_def, zero_def]
+  natCast_succ n := by cases n <;> simp [add_def, zero_def]
   left_distrib _ _ _ := image2_union_right
   right_distrib _ _ _ := image2_union_left
   nsmul := nsmulRec
@@ -198,7 +194,7 @@ theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
 
 theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
   intro h₁ h₂ x hx
-  simp only [mul_def, exists_and_left, mem_image2, image_prod] at hx ⊢
+  simp only [mul_def, mem_image2] at hx ⊢
   tauto
 
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
@@ -226,13 +222,7 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
   induction n generalizing x with
-  | zero =>
-    simp only [mem_one, pow_zero, length_eq_zero_iff]
-    constructor
-    · rintro rfl
-      exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
-    · rintro ⟨_, rfl, rfl, _⟩
-      rfl
+  | zero => simp
   | succ n ihn =>
     simp only [pow_succ', mem_mul, ihn]
     constructor
@@ -245,11 +235,7 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
 theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
   ext x
   simp only [mem_kstar, mem_iSup, mem_pow]
-  constructor
-  · rintro ⟨S, rfl, hS⟩
-    exact ⟨_, S, rfl, rfl, hS⟩
-  · rintro ⟨_, S, rfl, rfl, hS⟩
-    exact ⟨S, rfl, hS⟩
+  grind
 
 @[simp]
 theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
@@ -316,8 +302,8 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
         rw [pow_zero, one_mul, add_comm]
         exact le_self_add
       | succ _ ih =>
-        rw [add_comm, pow_add, pow_one, mul_assoc]
-        exact le_add_right (mul_le_mul_left' ih _)
+        grw [add_comm, pow_add, pow_one, mul_assoc, ih]
+        exact le_self_add
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/

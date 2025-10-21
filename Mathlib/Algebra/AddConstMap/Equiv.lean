@@ -31,7 +31,7 @@ add_decl_doc AddConstEquiv.toEquiv
 add_decl_doc AddConstEquiv.toAddConstMap
 
 @[inherit_doc]
-scoped [AddConstMap] notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
+scoped[AddConstMap] notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
 
 namespace AddConstEquiv
 
@@ -144,8 +144,6 @@ def equivUnits : (G ≃+c[a, a] G) ≃* (G →+c[a, a] G)ˣ where
   invFun u :=
     { toEquiv := Equiv.Perm.equivUnitsEnd.symm <| Units.map AddConstMap.toEnd u
       map_add_const' := u.1.2 }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 end AddConstEquiv

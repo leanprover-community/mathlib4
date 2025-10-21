@@ -132,7 +132,7 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
     ContinuousLinearMap.coe_id', id_eq, g]
   congr 1
   symm
-  simp [coe_fn_mk, inv_apply, Perm.inv_def,
+  simp [inv_apply, Perm.inv_def,
     ofBijective_symm_apply_apply, Function.Embedding.equivOfFiniteSelfEmbedding]
 
 private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset

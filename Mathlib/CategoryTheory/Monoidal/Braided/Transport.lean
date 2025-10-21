@@ -22,15 +22,24 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Monoidal
 
+<<<<<<< HEAD
 instance Transported.instBraidedCategory (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     BraidedCategory (Transported e) :=
   braidedCategoryOfFullyFaithful (equivalenceTransported e).inverse
+=======
+open Functor.LaxMonoidal Functor.OplaxMonoidal
+
+instance Transported.instBraidedCategory (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
+    BraidedCategory (Transported e) :=
+  BraidedCategory.ofFullyFaithful (equivalenceTransported e).inverse
+>>>>>>> 1f2d45d93162b9e9d44b5731392bf3087e4f3e97
 
 local notation "e'" e => equivalenceTransported e
 
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).inverse.Braided where
   braided X Y := by
+<<<<<<< HEAD
     simp [Transported.instBraidedCategory, braidedCategoryOfFullyFaithful,
       braidedCategoryOfFaithful]
 
@@ -41,6 +50,28 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     ((e' e).functor ⋙ (e' e).inverse).Braided where
 
+=======
+    simp [Transported.instBraidedCategory, BraidedCategory.ofFullyFaithful,
+      BraidedCategory.ofFaithful]
+
+/--
+This is a def because once we have that both `(e' e).inverse` and `(e' e).functor` are
+braided, this causes a diamond.
+-/
+def transportedFunctorCompInverseLaxBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
+    ((e' e).functor ⋙ (e' e).inverse).LaxBraided :=
+  Functor.LaxBraided.ofNatIso (e' e).unitIso
+
+attribute [local instance] transportedFunctorCompInverseLaxBraided in
+/--
+This is a def because once we have that both `(e' e).inverse` and `(e' e).functor` are
+braided, this causes a diamond.
+-/
+def transportedFunctorCompInverseBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
+    ((e' e).functor ⋙ (e' e).inverse).Braided where
+
+attribute [local instance] transportedFunctorCompInverseBraided in
+>>>>>>> 1f2d45d93162b9e9d44b5731392bf3087e4f3e97
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).functor.Braided where
   braided X Y := by
@@ -53,11 +84,20 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
       simp only [((e' e).functor ⋙ (e' e).inverse).map_braiding X Y,
         Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, assoc,
         Functor.Monoidal.μ_δ, comp_id, Functor.Monoidal.μ_δ_assoc]
+<<<<<<< HEAD
     simp only [Functor.comp_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
       Equivalence.symm_inverse, Equivalence.symm_functor,
       Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, Functor.LaxMonoidal.comp_μ, Functor.comp_map,
       Equivalence.inv_fun_map, Functor.id_obj, Functor.OplaxMonoidal.comp_δ, assoc] at this
     simp [← this]
+=======
+    simp? [-Adjunction.rightAdjointLaxMonoidal_μ]  at this says
+      simp only [Functor.comp_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
+        Equivalence.symm_inverse, Equivalence.symm_functor,
+        Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, comp_μ, Functor.comp_map,
+        Equivalence.inv_fun_map, Functor.id_obj, comp_δ, assoc] at this
+    simp [-Adjunction.rightAdjointLaxMonoidal_μ, ← this]
+>>>>>>> 1f2d45d93162b9e9d44b5731392bf3087e4f3e97
 
 instance Transported.instSymmetricCategory (e : C ≌ D) [MonoidalCategory C]
     [SymmetricCategory C] : SymmetricCategory (Transported e) :=

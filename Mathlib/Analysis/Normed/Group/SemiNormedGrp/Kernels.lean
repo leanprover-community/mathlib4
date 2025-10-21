@@ -39,10 +39,6 @@ def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       f.hom.1.range.normedMk (NormedAddGroupHom.isQuotientQuotient _).norm_le)
     (by
       ext x
-      -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026): was
-      -- simp only [ConcreteCategory.comp_apply, Limits.zero_comp, NormedAddGroupHom.zero_apply,
-      -- SemiNormedGrp₁.mkHom_apply, SemiNormedGrp₁.zero_apply,
-      -- ← NormedAddGroupHom.mem_ker, f.1.range.ker_normedMk, f.1.mem_range]
       rw [Limits.zero_comp, comp_apply, SemiNormedGrp₁.mkHom_apply,
         SemiNormedGrp₁.zero_apply, ← NormedAddGroupHom.mem_ker, f.hom.1.range.ker_normedMk,
         f.hom.1.mem_range]

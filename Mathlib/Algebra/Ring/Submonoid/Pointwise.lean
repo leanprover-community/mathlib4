@@ -109,7 +109,7 @@ lemma addSubmonoid_smul_sup : M • (N ⊔ P) = M • N ⊔ M • P :=
       exacts [le_sup_left (a := M • N) (smul_mem_smul hm hx),
         le_sup_right (a := M • N) (smul_mem_smul hm hx)]
     · apply (smul_zero (A := A) m).symm ▸ (M • N ⊔ M • P).zero_mem
-    · intros _ _ _ _ h1 h2; rw [smul_add]; exact add_mem h1 h2)
+    · intro _ _ _ _ h1 h2; rw [smul_add]; exact add_mem h1 h2)
   (sup_le (smul_le_smul_right le_sup_left) <| smul_le_smul_right le_sup_right)
 
 variable {ι : Sort*}
@@ -168,8 +168,8 @@ variable {M N P Q : AddSubmonoid R}
 
 @[mono, gcongr] lemma mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q := smul_le_smul hmp hnq
 
-@[gcongr] lemma mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P := smul_le_smul_left h
-@[gcongr] lemma mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P := smul_le_smul_right h
+lemma mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P := smul_le_smul_left h
+lemma mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P := smul_le_smul_right h
 
 lemma mul_subset_mul : (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) := smul_subset_smul
 
