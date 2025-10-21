@@ -1373,3 +1373,31 @@ lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' (Sigma.mk i '' s) = s 
   simp [image]
 
 end Sigma
+
+namespace Quot
+
+variable {α : Type*} {r : α → α → Prop}
+
+theorem range_toSet_eq_range_equivClassOf :
+    range (toSet (r := r)) = range (equivClassOf (r := r)) :=
+  lift_equivClassOf_eq_toSet ▸ range_quot_lift _
+
+theorem mk_preimage_singleton_eq_toSet (q : Quot r) : Quot.mk _ ⁻¹' {q} = toSet q := by
+  ext
+  grind
+
+end Quot
+
+namespace Quotient
+
+variable {α : Type*} {s : Setoid α}
+
+theorem range_toSet_eq_range_equivClassOf :
+    range (toSet (s := s)) = range (equivClassOf (s := s)) :=
+  lift_equivClassOf_eq_toSet ▸ range_quotient_lift _
+
+theorem mk_preimage_singleton_eq_toSet (q : Quotient s) : Quotient.mk _ ⁻¹' {q} = toSet q := by
+  ext
+  grind
+
+end Quotient

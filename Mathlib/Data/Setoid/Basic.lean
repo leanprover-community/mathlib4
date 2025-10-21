@@ -441,6 +441,62 @@ def sigmaQuotientEquivOfLe {r s : Setoid α} (hle : r ≤ s) :
 
 end Setoid
 
+namespace Quot
+
+variable {α : Type*} {r : α → α → Prop}
+
+theorem union_equivClassOf_eq_univ : ⋃ x, equivClassOf (r := r) x = Set.univ :=
+  Set.ext fun _ ↦ ⟨fun _ ↦ trivial, fun _ ↦ ⟨_, ⟨_, rfl⟩, mem_equivClassOf_self _⟩⟩
+
+theorem union_toSet_eq_univ : ⋃ (q : Quot r), q.toSet = Set.univ :=
+  Set.ext fun _ ↦ ⟨fun _ ↦ trivial, fun _ ↦ ⟨_, ⟨_, rfl⟩, mem_toSet_mk_self _⟩⟩
+
+/-- The range of `Quot.toSet` is equivalent to the quotient type. -/
+noncomputable def range_toSet_equiv : Set.range (toSet (r := r)) ≃ Quot r :=
+  Equiv.ofInjective _ toSet_injective |>.symm
+
+/-- The range of `Quot.equivClassOf` is equivalent to the quotient type. -/
+noncomputable def range_equivClassOf_equiv : Set.range (equivClassOf (r := r)) ≃ Quot r :=
+  range_toSet_eq_range_equivClassOf ▸ range_toSet_equiv
+
+/-- The dependent sum of the sets of all elements in a quotient is equivalent to the original type.
+-/
+def equivSigmaToSet : (Σ q : Quot r, q.toSet) ≃ α where
+  toFun := fun ⟨_, x, _⟩ ↦ x
+  invFun x := ⟨mk _ x, _, rfl⟩
+  left_inv := fun ⟨_, _, h⟩ ↦ Sigma.subtype_ext h rfl
+  right_inv _ := rfl
+
+end Quot
+
+namespace Quotient
+
+variable {α : Type*} {s : Setoid α}
+
+theorem union_equivClassOf_eq_univ : ⋃ x, equivClassOf (s := s) x = Set.univ :=
+  Set.ext fun _ ↦ ⟨fun _ ↦ trivial, fun _ ↦ ⟨_, ⟨_, rfl⟩, mem_equivClassOf_self _⟩⟩
+
+theorem union_toSet_eq_univ : ⋃ (q : Quotient s), q.toSet = Set.univ :=
+  Set.ext fun _ ↦ ⟨fun _ ↦ trivial, fun _ ↦ ⟨_, ⟨_, rfl⟩, mem_toSet_mk_self _⟩⟩
+
+/-- The range of `Quotient.toSet` is equivalent to the quotient type. -/
+noncomputable def range_toSet_equiv : Set.range (toSet (s := s)) ≃ Quotient s :=
+  Equiv.ofInjective _ toSet_injective |>.symm
+
+/-- The range of `Quotient.equivClassOf` is equivalent to the quotient type. -/
+noncomputable def range_equivClassOf_equiv : Set.range (equivClassOf (s := s)) ≃ Quotient s :=
+  range_toSet_eq_range_equivClassOf ▸ range_toSet_equiv
+
+/-- The dependent sum of the sets of all elements in a quotient is equivalent to the original type.
+-/
+def equivSigmaToSet : (Σ q : Quotient s, q.toSet) ≃ α where
+  toFun := fun ⟨_, x, _⟩ ↦ x
+  invFun x := ⟨Quotient.mk _ x, _, rfl⟩
+  left_inv := fun ⟨_, _, h⟩ ↦ Sigma.subtype_ext h rfl
+  right_inv _ := rfl
+
+end Quotient
+
 @[simp]
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
   simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply]
