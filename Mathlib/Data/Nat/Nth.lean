@@ -281,12 +281,11 @@ lemma nth_le_of_strictMonoOn_of_mapsTo {p : ℕ → Prop} (f : ℕ → ℕ)
     (hmono : StrictMonoOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) {n : ℕ} :
     nth p n ≤ f n := by
   by_cases hn : (∀ hf : Set.Finite (setOf p), n < hf.toFinset.card)
-  · induction n using Nat.strong_induction_on with
-    | _ n ih =>
-      rw [nth_eq_sInf]
-      refine csInf_le (by simp) ⟨hmaps hn, fun k hk => ?_⟩
-      refine lt_of_le_of_lt (ih k hk (fun hf => lt_trans hk (hn hf))) ?_
-      rwa [hmono.lt_iff_lt (fun hf => lt_trans hk (hn hf)) hn]
+  · induction n using Nat.strong_induction_on with | _ n ih =>
+    rw [nth_eq_sInf]
+    refine csInf_le (by simp) ⟨hmaps hn, fun k hk => ?_⟩
+    have : f k < f n := by apply hmono <;> grind
+    grind
   · push_neg at hn
     rcases hn with ⟨hf, hn⟩
     rw [nth, dif_pos hf, List.getD_eq_default _ _ (by simp [hn])]
