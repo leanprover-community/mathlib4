@@ -50,8 +50,7 @@ then the product of the embedding in `CliffordAlgebra Q` commutes up to a sign f
 nonrec theorem map_mul_map_of_isOrtho_of_mem_evenOdd
     {i₁ i₂ : ZMod 2} (hm₁ : m₁ ∈ evenOdd Q₁ i₁) (hm₂ : m₂ ∈ evenOdd Q₂ i₂) :
     map f₁ m₁ * map f₂ m₂ = (-1 : ℤˣ) ^ (i₂ * i₁) • (map f₂ m₂ * map f₁ m₁) := by
-  -- the strategy; for each variable, induct on powers of `ι`, then on the exponent of each
-  -- power.
+  -- for each variable, induct on powers of `ι`, then on the exponent of each power
   induction hm₁ using Submodule.iSup_induction' with
   | zero => rw [map_zero, zero_mul, mul_zero, smul_zero]
   | add _ _ _ _ ihx ihy => rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
