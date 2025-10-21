@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Field.GeomSum
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.CauSeq.Basic
@@ -40,13 +40,13 @@ lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
   rw [hk]
   dsimp only
   clear hk ji j
-  induction' k with k' hi
-  · simp [abv_zero abv]
-  simp only [Nat.succ_add, Nat.succ_eq_add_one, Finset.sum_range_succ_comm]
-  simp only [add_assoc, sub_eq_add_neg]
-  refine le_trans (abv_add _ _ _) ?_
-  simp only [sub_eq_add_neg] at hi
-  exact add_le_add (hm _ (le_add_of_nonneg_of_le (Nat.zero_le _) (le_max_left _ _))) hi
+  induction k with
+  | zero => simp [abv_zero abv]
+  | succ k hi =>
+    simp only [Nat.succ_add, Nat.succ_eq_add_one, Finset.sum_range_succ_comm]
+    simp only [add_assoc, sub_eq_add_neg]
+    simp only [sub_eq_add_neg] at hi
+    grw [abv_add abv, hm _ (by omega), hi]
 
 lemma of_abv (hf : IsCauSeq abs fun m ↦ ∑ n ∈ range m, abv (f n)) :
     IsCauSeq abv fun m ↦ ∑ n ∈ range m, f n :=
@@ -127,7 +127,7 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         ∑ i ∈ range K with max N M + 1 ≤ i, abv (f i) * (2 * Q) := by
         gcongr
         rw [sub_eq_add_neg]
-        refine le_trans (abv_add _ _ _) ?_
+        grw [abv_add abv]
         rw [two_mul, abv_neg abv]
         gcongr <;> exact le_of_lt (hQ _)
     _ < ε / (4 * Q) * (2 * Q) := by
@@ -170,7 +170,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
         rhs
         rw [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hl0), succ_nsmul, sub_add,
           add_sub_cancel_right]
-    _ < f j + ε := add_lt_add_right (hl j (le_trans hi.1 hj)) _
+    _ < f j + ε := by gcongr; exact hl _ <| hi.1.trans hj
 
 lemma of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
     (hnm : ∀ n ≥ m, f n ≤ f n.succ) : IsCauSeq abs f :=
@@ -209,10 +209,12 @@ lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1
     simpa [Nat.sub_add_cancel m_pos, pow_succ] using this
   generalize hk : m - n.succ = k
   replace hk : m = k + n.succ := (tsub_eq_iff_eq_add_of_le hmn).1 hk
-  induction' k with k ih generalizing m n
-  · rw [hk, Nat.zero_add, mul_right_comm, inv_pow _ _, ← div_eq_mul_inv, mul_div_cancel_right₀]
+  induction k generalizing m n with
+  | zero =>
+    rw [hk, Nat.zero_add, mul_right_comm, inv_pow _ _, ← div_eq_mul_inv, mul_div_cancel_right₀]
     positivity
-  · have kn : k + n.succ ≥ n.succ := by
+  | succ k ih =>
+    have kn : k + n.succ ≥ n.succ := by
       rw [← zero_add n.succ]; exact add_le_add (Nat.zero_le _) (by simp)
     rw [hk, Nat.succ_add, pow_succ r, ← mul_assoc]
     refine

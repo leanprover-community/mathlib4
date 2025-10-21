@@ -28,9 +28,7 @@ theorem eq_X_add_C_of_degree_le_one (h : degree p ≤ 1) : p = C (p.coeff 1) * X
   ext fun n =>
     Nat.casesOn n (by simp) fun n =>
       Nat.casesOn n (by simp [coeff_C]) fun m => by
-        -- Porting note: `by decide` → `Iff.mpr ..`
-        have : degree p < m.succ.succ := lt_of_le_of_lt h
-          (Iff.mpr WithBot.coe_lt_coe <| Nat.succ_lt_succ <| Nat.zero_lt_succ m)
+        have : degree p < m.succ.succ := lt_of_le_of_lt h Nat.one_lt_ofNat
         simp [coeff_eq_zero_of_degree_lt this]
 
 theorem eq_X_add_C_of_degree_eq_one (h : degree p = 1) :

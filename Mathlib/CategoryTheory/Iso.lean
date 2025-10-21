@@ -21,7 +21,7 @@ This file defines isomorphisms between objects of a category.
 - `of_iso` : convert from `Iso` to `IsIso`;
 - standard operations on isomorphisms (composition, inverse etc)
 
-## Notations
+## Notation
 
 - `X ≅ Y` : same as `Iso X Y`;
 - `α ≪≫ β` : composition of two isomorphisms; it is called `Iso.trans`
@@ -31,9 +31,11 @@ This file defines isomorphisms between objects of a category.
 category, category theory, isomorphism
 -/
 
+set_option mathlib.tactic.category.grind true
+
 universe v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 namespace CategoryTheory
 
 open Category
@@ -55,7 +57,7 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   is the identity on the target. -/
   inv_hom_id : inv ≫ hom = 𝟙 Y := by cat_disch
 
-attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
+attribute [reassoc (attr := simp), grind =] Iso.hom_inv_id Iso.inv_hom_id
 
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
@@ -64,18 +66,13 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 namespace Iso
 
-@[ext]
+set_option linter.style.commandStart false in -- false positive, calc blocks
+@[ext, grind ext]
 theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
-  suffices α.inv = β.inv by
-    cases α
-    cases β
-    cases w
-    cases this
-    rfl
+  suffices α.inv = β.inv by grind [Iso]
   calc
-    α.inv = α.inv ≫ β.hom ≫ β.inv   := by rw [Iso.hom_inv_id, Category.comp_id]
-    _     = (α.inv ≫ α.hom) ≫ β.inv := by rw [Category.assoc, ← w]
-    _     = β.inv                    := by rw [Iso.inv_hom_id, Category.id_comp]
+    α.inv = α.inv ≫ β.hom ≫ β.inv := by grind
+    _     = β.inv                 := by grind
 
 /-- Inverse isomorphism. -/
 @[symm]
@@ -83,21 +80,21 @@ def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
 
-@[simp]
+@[simp, grind =]
 theorem symm_hom (α : X ≅ Y) : α.symm.hom = α.inv :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem symm_inv (α : X ≅ Y) : α.symm.inv = α.hom :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem symm_mk {X Y : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id) :
     Iso.symm { hom, inv, hom_inv_id := hom_inv_id, inv_hom_id := inv_hom_id } =
       { hom := inv, inv := hom, hom_inv_id := inv_hom_id, inv_hom_id := hom_inv_id } :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem symm_symm_eq {X Y : C} (α : X ≅ Y) : α.symm.symm = α := rfl
 
 theorem symm_bijective {X Y : C} : Function.Bijective (symm : (X ≅ Y) → _) :=
@@ -111,7 +108,7 @@ theorem nonempty_iso_symm (X Y : C) : Nonempty (X ≅ Y) ↔ Nonempty (Y ≅ X) 
   ⟨fun h => ⟨h.some.symm⟩, fun h => ⟨h.some.symm⟩⟩
 
 /-- Identity isomorphism. -/
-@[refl, simps]
+@[refl, simps (attr := grind =)]
 def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
@@ -120,11 +117,11 @@ instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
 
 theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 
-@[simp]
+@[simp, grind =]
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 
 /-- Composition of two isomorphisms -/
-@[simps]
+@[simps (attr := grind =)]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
@@ -136,18 +133,18 @@ instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) wher
 /-- Notation for composition of isomorphisms. -/
 infixr:80 " ≪≫ " => Iso.trans -- type as `\ll \gg`.
 
-@[simp]
+@[simp, grind =]
 theorem trans_mk {X Y Z : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_id)
     (hom' : Y ⟶ Z) (inv' : Z ⟶ Y) (hom_inv_id') (inv_hom_id') (hom_inv_id'') (inv_hom_id'') :
     Iso.trans ⟨hom, inv, hom_inv_id, inv_hom_id⟩ ⟨hom', inv', hom_inv_id', inv_hom_id'⟩ =
      ⟨hom ≫ hom', inv' ≫ inv, hom_inv_id'', inv_hom_id''⟩ :=
   rfl
 
-@[simp]
+@[simp, grind _=_]
 theorem trans_symm (α : X ≅ Y) (β : Y ≅ Z) : (α ≪≫ β).symm = β.symm ≪≫ α.symm :=
   rfl
 
-@[simp]
+@[simp, grind _=_]
 theorem trans_assoc {Z' : C} (α : X ≅ Y) (β : Y ≅ Z) (γ : Z ≅ Z') :
     (α ≪≫ β) ≪≫ γ = α ≪≫ β ≪≫ γ := by
   ext; simp only [trans_hom, Category.assoc]
@@ -206,6 +203,8 @@ theorem hom_eq_inv (α : X ≅ Y) (β : Y ≅ X) : α.hom = β.inv ↔ β.hom = 
   rw [← symm_inv, inv_eq_inv α.symm β, eq_comm]
   rfl
 
+attribute [local grind] Function.LeftInverse Function.RightInverse
+
 /-- The bijection `(Z ⟶ X) ≃ (Z ⟶ Y)` induced by `α : X ≅ Y`. -/
 @[simps]
 def homToEquiv (α : X ≅ Y) {Z : C} : (Z ⟶ X) ≃ (Z ⟶ Y) where
@@ -224,7 +223,10 @@ def homFromEquiv (α : X ≅ Y) {Z : C} : (X ⟶ Z) ≃ (Y ⟶ Z) where
 
 end Iso
 
-/-- `IsIso` typeclass expressing that a morphism is invertible. -/
+/-- The `IsIso` typeclass expresses that a morphism is invertible.
+
+Given a morphism `f` with `IsIso f`, one can view `f` as an isomorphism via `asIso f` and get
+the inverse using `inv f`. -/
 class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y
@@ -236,11 +238,11 @@ noncomputable def inv (f : X ⟶ Y) [I : IsIso f] : Y ⟶ X :=
 
 namespace IsIso
 
-@[simp]
+@[simp, grind =]
 theorem hom_inv_id (f : X ⟶ Y) [I : IsIso f] : f ≫ inv f = 𝟙 X :=
   (Classical.choose_spec I.1).left
 
-@[simp]
+@[simp, grind =]
 theorem inv_hom_id (f : X ⟶ Y) [I : IsIso f] : inv f ≫ f = 𝟙 Y :=
   (Classical.choose_spec I.1).right
 
@@ -265,7 +267,7 @@ theorem inv_hom_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : Y ⟶ Z) : inv f �
 end IsIso
 
 lemma Iso.isIso_hom (e : X ≅ Y) : IsIso e.hom :=
-  ⟨e.inv, by simp, by simp⟩
+  ⟨e.inv, by simp only [hom_inv_id], by simp⟩
 
 lemma Iso.isIso_inv (e : X ≅ Y) : IsIso e.inv := e.symm.isIso_hom
 
@@ -281,14 +283,14 @@ noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
 -- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
-theorem asIso_hom (f : X ⟶ Y) {_ : IsIso f} : (asIso f).hom = f :=
+theorem asIso_hom (f : X ⟶ Y) [IsIso f] : (asIso f).hom = f :=
   rfl
 
 -- Porting note: the `IsIso f` argument had been instance implicit,
 -- but we've changed it to implicit as a `rw` in `Mathlib/CategoryTheory/Closed/Functor.lean`
 -- was failing to generate it by typeclass search.
 @[simp]
-theorem asIso_inv (f : X ⟶ Y) {_ : IsIso f} : (asIso f).inv = inv f :=
+theorem asIso_inv (f : X ⟶ Y) [IsIso f] : (asIso f).inv = inv f :=
   rfl
 
 namespace IsIso
@@ -304,16 +306,16 @@ instance (priority := 100) mono_of_iso (f : X ⟶ Y) [IsIso f] : Mono f where
     rw [← Category.comp_id g, ← Category.comp_id h, ← IsIso.hom_inv_id f,
       ← Category.assoc, w, ← Category.assoc]
 
-@[aesop apply safe (rule_sets := [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory]), grind ←=]
 theorem inv_eq_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     inv f = g := by
-  apply (cancel_epi f).mp
-  simp [hom_inv_id]
+  have := congrArg (inv f ≫ ·) hom_inv_id
+  grind
 
 theorem inv_eq_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id : g ≫ f = 𝟙 Y) :
     inv f = g := by
-  apply (cancel_mono f).mp
-  simp [inv_hom_id]
+  have := congrArg (· ≫ inv f) inv_hom_id
+  grind
 
 @[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem eq_inv_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
@@ -499,15 +501,13 @@ section
 
 variable {D : Type*} [Category D] {X Y : C} (e : X ≅ Y)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), grind =]
 lemma map_hom_inv_id (F : C ⥤ D) :
-    F.map e.hom ≫ F.map e.inv = 𝟙 _ := by
-  rw [← F.map_comp, e.hom_inv_id, F.map_id]
+    F.map e.hom ≫ F.map e.inv = 𝟙 _ := by grind
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), grind =]
 lemma map_inv_hom_id (F : C ⥤ D) :
-    F.map e.inv ≫ F.map e.hom = 𝟙 _ := by
-  rw [← F.map_comp, e.inv_hom_id, F.map_id]
+    F.map e.inv ≫ F.map e.hom = 𝟙 _ := by grind
 
 end
 

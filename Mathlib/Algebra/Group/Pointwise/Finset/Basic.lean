@@ -34,9 +34,9 @@ the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat actio
 
 ## Implementation notes
 
-We put all instances in the locale `Pointwise`, so that these instances are not available by
+We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-since we expect the locale to be open whenever the instances are actually used (and making the
+since we expect the scope to be open whenever the instances are actually used (and making the
 instances reducible changes the behavior of `simp`.
 
 ## Tags
@@ -61,8 +61,8 @@ section One
 
 variable [One α] {s : Finset α} {a : α}
 
-/-- The finset `1 : Finset α` is defined as `{1}` in locale `Pointwise`. -/
-@[to_additive "The finset `0 : Finset α` is defined as `{0}` in locale `Pointwise`."]
+/-- The finset `1 : Finset α` is defined as `{1}` in scope Pointwise`. -/
+@[to_additive /-- The finset `0 : Finset α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Finset α) :=
   ⟨{1}⟩
 
@@ -118,7 +118,7 @@ theorem card_one : #(1 : Finset α) = 1 :=
   card_singleton _
 
 /-- The singleton operation as a `OneHom`. -/
-@[to_additive "The singleton operation as a `ZeroHom`."]
+@[to_additive /-- The singleton operation as a `ZeroHom`. -/]
 def singletonOneHom : OneHom α (Finset α) where
   toFun := singleton; map_one' := singleton_one
 
@@ -131,7 +131,7 @@ theorem singletonOneHom_apply (a : α) : singletonOneHom a = {a} :=
   rfl
 
 /-- Lift a `OneHom` to `Finset` via `image`. -/
-@[to_additive (attr := simps) "Lift a `ZeroHom` to `Finset` via `image`"]
+@[to_additive (attr := simps) /-- Lift a `ZeroHom` to `Finset` via `image` -/]
 def imageOneHom [DecidableEq β] [One β] [FunLike F α β] [OneHomClass F α β] (f : F) :
     OneHom (Finset α) (Finset β) where
   toFun := Finset.image f
@@ -178,9 +178,9 @@ section Inv
 
 variable [DecidableEq α] [Inv α] {s t : Finset α} {a : α}
 
-/-- The pointwise inversion of finset `s⁻¹` is defined as `{x⁻¹ | x ∈ s}` in locale `Pointwise`. -/
+/-- The pointwise inversion of finset `s⁻¹` is defined as `{x⁻¹ | x ∈ s}` in scope `Pointwise`. -/
 @[to_additive
-      "The pointwise negation of finset `-s` is defined as `{-x | x ∈ s}` in locale `Pointwise`."]
+  /-- The pointwise negation of finset `-s` is defined as `{-x | x ∈ s}` in scope `Pointwise`. -/]
 protected def inv : Inv (Finset α) :=
   ⟨image Inv.inv⟩
 
@@ -268,6 +268,15 @@ variable [DecidableEq α] [InvolutiveInv α] {s : Finset α} {a : α}
 @[to_additive (attr := simp)]
 lemma mem_inv' : a ∈ s⁻¹ ↔ a⁻¹ ∈ s := by simp [mem_inv, inv_eq_iff_eq_inv]
 
+@[to_additive (attr := simp)]
+theorem inv_filter (s : Finset α) (p : α → Prop) [DecidablePred p] :
+    ({x ∈ s | p x} : Finset α)⁻¹ = {x ∈ s⁻¹ | p x⁻¹} := by
+  ext; simp
+
+theorem inv_filter_univ (p : α → Prop) [Fintype α] [DecidablePred p] :
+    ({x | p x} : Finset α)⁻¹ = {x | p x⁻¹} := by
+  simp
+
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.trans Set.image_inv_eq_inv
 
@@ -301,10 +310,10 @@ variable [DecidableEq α] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α 
   (f : F) {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
 
 /-- The pointwise multiplication of finsets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}`
-in locale `Pointwise`. -/
+in scope `Pointwise`. -/
 @[to_additive
-      "The pointwise addition of finsets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in
-      locale `Pointwise`."]
+  /-- The pointwise addition of finsets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in
+  scope `Pointwise`. -/]
 protected def mul : Mul (Finset α) :=
   ⟨image₂ (· * ·)⟩
 
@@ -416,8 +425,8 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
 /-- If a finset `u` is contained in the product of two sets `s * t`, we can find two finsets `s'`,
 `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' * t'`. -/
 @[to_additive
-      "If a finset `u` is contained in the sum of two sets `s + t`, we can find two finsets
-      `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' + t'`."]
+  /-- If a finset `u` is contained in the sum of two sets `s + t`, we can find two finsets
+  `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' + t'`. -/]
 theorem subset_mul {s t : Set α} :
     ↑u ⊆ s * t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' * t' :=
   subset_set_image₂
@@ -441,7 +450,7 @@ lemma map_op_mul (s t : Finset α) :
   simp [map_eq_image, image_op_mul]
 
 /-- The singleton operation as a `MulHom`. -/
-@[to_additive "The singleton operation as an `AddHom`."]
+@[to_additive /-- The singleton operation as an `AddHom`. -/]
 def singletonMulHom : α →ₙ* Finset α where
   toFun := singleton; map_mul' _ _ := (singleton_mul_singleton _ _).symm
 
@@ -454,7 +463,7 @@ theorem singletonMulHom_apply (a : α) : singletonMulHom a = {a} :=
   rfl
 
 /-- Lift a `MulHom` to `Finset` via `image`. -/
-@[to_additive (attr := simps) "Lift an `AddHom` to `Finset` via `image`"]
+@[to_additive (attr := simps) /-- Lift an `AddHom` to `Finset` via `image` -/]
 def imageMulHom [DecidableEq β] : Finset α →ₙ* Finset β where
   toFun := Finset.image f
   map_mul' _ _ := image_mul _
@@ -494,8 +503,8 @@ See `card_le_card_mul_left` for a more convenient but less general version for t
 left-cancellative multiplication.
 -/
 @[to_additive
-"See `card_le_card_add_left` for a more convenient but less general version for types with a
-left-cancellative addition."]
+/-- See `card_le_card_add_left` for a more convenient but less general version for types with a
+left-cancellative addition. -/]
 lemma card_le_card_mul_left_of_injective (has : a ∈ s) (ha : Function.Injective (a * ·)) :
     #t ≤ #(s * t) :=
   card_le_card_image₂_left _ has ha
@@ -505,8 +514,8 @@ See `card_le_card_mul_right` for a more convenient but less general version for 
 right-cancellative multiplication.
 -/
 @[to_additive
-"See `card_le_card_add_right` for a more convenient but less general version for types with a
-right-cancellative addition."]
+/-- See `card_le_card_add_right` for a more convenient but less general version for types with a
+right-cancellative addition. -/]
 lemma card_le_card_mul_right_of_injective (hat : a ∈ t) (ha : Function.Injective (· * a)) :
     #s ≤ #(s * t) :=
   card_le_card_image₂_right _ hat ha
@@ -522,8 +531,8 @@ variable [DecidableEq α] [Div α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b 
 /-- The pointwise division of finsets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
 @[to_additive
-      "The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`
-      in locale `Pointwise`."]
+  /-- The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`
+  in scope `Pointwise`. -/]
 protected def div : Div (Finset α) :=
   ⟨image₂ (· / ·)⟩
 
@@ -638,8 +647,8 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
 /-- If a finset `u` is contained in the product of two sets `s / t`, we can find two finsets `s'`,
 `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' / t'`. -/
 @[to_additive
-      "If a finset `u` is contained in the sum of two sets `s - t`, we can find two finsets
-      `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' - t'`."]
+  /-- If a finset `u` is contained in the sum of two sets `s - t`, we can find two finsets
+  `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' - t'`. -/]
 theorem subset_div {s t : Set α} :
     ↑u ⊆ s / t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' / t' :=
   subset_set_image₂
@@ -709,7 +718,7 @@ protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
 scoped[Pointwise] attribute [instance] Finset.nsmul Finset.npow Finset.zsmul Finset.zpow
 
 /-- `Finset α` is a `Semigroup` under pointwise operations if `α` is. -/
-@[to_additive "`Finset α` is an `AddSemigroup` under pointwise operations if `α` is. "]
+@[to_additive /-- `Finset α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
 protected def semigroup [Semigroup α] : Semigroup (Finset α) :=
   coe_injective.semigroup _ coe_mul
 
@@ -718,7 +727,7 @@ section CommSemigroup
 variable [CommSemigroup α] {s t : Finset α}
 
 /-- `Finset α` is a `CommSemigroup` under pointwise operations if `α` is. -/
-@[to_additive "`Finset α` is an `AddCommSemigroup` under pointwise operations if `α` is. "]
+@[to_additive /-- `Finset α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
 protected def commSemigroup : CommSemigroup (Finset α) :=
   coe_injective.commSemigroup _ coe_mul
 
@@ -737,7 +746,7 @@ section MulOneClass
 variable [MulOneClass α]
 
 /-- `Finset α` is a `MulOneClass` under pointwise operations if `α` is. -/
-@[to_additive "`Finset α` is an `AddZeroClass` under pointwise operations if `α` is."]
+@[to_additive /-- `Finset α` is an `AddZeroClass` under pointwise operations if `α` is. -/]
 protected def mulOneClass : MulOneClass (Finset α) :=
   coe_injective.mulOneClass _ (coe_singleton 1) coe_mul
 
@@ -753,7 +762,7 @@ theorem subset_mul_right {s : Finset α} (t : Finset α) (hs : (1 : α) ∈ s) :
   mem_mul.2 ⟨1, hs, a, ha, one_mul _⟩
 
 /-- The singleton operation as a `MonoidHom`. -/
-@[to_additive "The singleton operation as an `AddMonoidHom`."]
+@[to_additive /-- The singleton operation as an `AddMonoidHom`. -/]
 def singletonMonoidHom : α →* Finset α :=
   { singletonMulHom, singletonOneHom with }
 
@@ -766,7 +775,7 @@ theorem singletonMonoidHom_apply (a : α) : singletonMonoidHom a = {a} :=
   rfl
 
 /-- The coercion from `Finset` to `Set` as a `MonoidHom`. -/
-@[to_additive "The coercion from `Finset` to `set` as an `AddMonoidHom`."]
+@[to_additive /-- The coercion from `Finset` to `set` as an `AddMonoidHom`. -/]
 def coeMonoidHom : Finset α →* Set α where
   toFun := (↑)
   map_one' := coe_one
@@ -781,7 +790,7 @@ theorem coeMonoidHom_apply (s : Finset α) : coeMonoidHom s = s :=
   rfl
 
 /-- Lift a `MonoidHom` to `Finset` via `image`. -/
-@[to_additive (attr := simps) "Lift an `add_monoid_hom` to `Finset` via `image`"]
+@[to_additive (attr := simps) /-- Lift an `add_monoid_hom` to `Finset` via `image` -/]
 def imageMonoidHom [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β] (f : F) :
     Finset α →* Finset β :=
   { imageMulHom f, imageOneHom f with }
@@ -795,12 +804,12 @@ variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   change ↑(npowRec n s) = (s : Set α) ^ n
-  induction' n with n ih
-  · rw [npowRec, pow_zero, coe_one]
-  · rw [npowRec, pow_succ, coe_mul, ih]
+  induction n with
+  | zero => rw [npowRec, pow_zero, coe_one]
+  | succ n ih => rw [npowRec, pow_succ, coe_mul, ih]
 
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
-@[to_additive "`Finset α` is an `AddMonoid` under pointwise operations if `α` is. "]
+@[to_additive /-- `Finset α` is an `AddMonoid` under pointwise operations if `α` is. -/]
 protected def monoid : Monoid (Finset α) :=
   coe_injective.monoid _ coe_one coe_mul coe_pow
 
@@ -930,7 +939,7 @@ section CommMonoid
 variable [CommMonoid α]
 
 /-- `Finset α` is a `CommMonoid` under pointwise operations if `α` is. -/
-@[to_additive "`Finset α` is an `AddCommMonoid` under pointwise operations if `α` is. "]
+@[to_additive /-- `Finset α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
 protected def commMonoid : CommMonoid (Finset α) :=
   coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
@@ -955,7 +964,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 
 /-- `Finset α` is a division monoid under pointwise operations if `α` is. -/
 @[to_additive
-  "`Finset α` is a subtraction monoid under pointwise operations if `α` is."]
+  /-- `Finset α` is a subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionMonoid : DivisionMonoid (Finset α) :=
   coe_injective.divisionMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
@@ -1011,7 +1020,7 @@ end DivisionMonoid
 
 /-- `Finset α` is a commutative division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionCommMonoid
-      "`Finset α` is a commutative subtraction monoid under pointwise operations if `α` is."]
+  /-- `Finset α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Finset α) :=
   coe_injective.divisionCommMonoid _ coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
@@ -1174,8 +1183,8 @@ The size of `s * s` is at least the size of `s`, version with left-cancellative 
 See `card_le_card_mul_self'` for the version with right-cancellative multiplication.
 -/
 @[to_additive
-"The size of `s + s` is at least the size of `s`, version with left-cancellative addition.
-See `card_le_card_add_self'` for the version with right-cancellative addition."]
+/-- The size of `s + s` is at least the size of `s`, version with left-cancellative addition.
+See `card_le_card_add_self'` for the version with right-cancellative addition. -/]
 theorem card_le_card_mul_self {s : Finset α} : #s ≤ #(s * s) := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_left, *]
 
@@ -1207,8 +1216,8 @@ The size of `s * s` is at least the size of `s`, version with right-cancellative
 See `card_le_card_mul_self` for the version with left-cancellative multiplication.
 -/
 @[to_additive
-"The size of `s + s` is at least the size of `s`, version with right-cancellative addition.
-See `card_le_card_add_self` for the version with left-cancellative addition."]
+/-- The size of `s + s` is at least the size of `s`, version with right-cancellative addition.
+See `card_le_card_add_self` for the version with left-cancellative addition. -/]
 theorem card_le_card_mul_self' : #s ≤ #(s * s) := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_right, *]
 
@@ -1223,12 +1232,13 @@ lemma Nontrivial.pow (hs : s.Nontrivial) : ∀ {n}, n ≠ 0 → (s ^ n).Nontrivi
   | n + 2, _ => by simpa [pow_succ] using (hs.pow n.succ_ne_zero).mul hs
 
 /-- See `Finset.card_pow_mono` for a version that works for the empty set. -/
-@[to_additive "See `Finset.card_nsmul_mono` for a version that works for the empty set."]
+@[to_additive /-- See `Finset.card_nsmul_mono` for a version that works for the empty set. -/]
 protected lemma Nonempty.card_pow_mono (hs : s.Nonempty) : Monotone fun n : ℕ ↦ #(s ^ n) :=
   monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact card_le_card_mul_right hs
 
 /-- See `Finset.Nonempty.card_pow_mono` for a version that works for zero powers. -/
-@[to_additive "See `Finset.Nonempty.card_nsmul_mono` for a version that works for zero scalars."]
+@[to_additive
+/-- See `Finset.Nonempty.card_nsmul_mono` for a version that works for zero scalars. -/]
 lemma card_pow_mono (hm : m ≠ 0) (hmn : m ≤ n) : #(s ^ m) ≤ #(s ^ n) := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp [hm]

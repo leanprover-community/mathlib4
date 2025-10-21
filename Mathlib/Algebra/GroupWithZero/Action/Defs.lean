@@ -74,7 +74,6 @@ See note [reducible non-instances]. -/
 protected abbrev ZeroHom.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom A B)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  -- Porting note: `simp` no longer works here.
   smul_zero c := by rw [← map_zero f, ← smul, smul_zero]
 
 /-- Push forward the multiplication of `R` on `M` along a compatible surjective map `f : R → S`.
@@ -355,9 +354,7 @@ variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
 
--- Porting note: this probably is no longer relevant.
-/-! Since Lean 3 does not have definitional eta for structures, we have to make sure
-that the definition of `DistribMulAction.toDistribSMul` was done correctly,
+/-! We make sure that the definition of `DistribMulAction.toDistribSMul` was done correctly,
 and the two paths from `DistribMulAction` to `SMul` are indeed definitionally equal. -/
 example :
     (DistribMulAction.toMulAction.toSMul : SMul M A) =
@@ -417,7 +414,7 @@ theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
 
 end
 
-section Group
+section DistribMulAction
 variable [Group α] [AddMonoid β] [DistribMulAction α β]
 
 lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
@@ -426,4 +423,24 @@ lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
 lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
   not_congr <| smul_eq_zero_iff_eq a
 
-end Group
+end DistribMulAction
+
+section MulDistribMulAction
+variable [Group α] [GroupWithZero β] [MulDistribMulAction α β]
+
+instance : SMulZeroClass α β where
+  smul_zero g := not_imp_comm.mp mul_inv_cancel₀ <| by
+    rw [← smul_one g, ← inv_smul_eq_iff, smul_mul', inv_smul_smul, zero_mul]
+    exact zero_ne_one
+
+/-- A version of `smul_inv'` for groups with zero. -/
+@[simp] theorem smul_inv₀' (g : α) (x : β) : g • x⁻¹ = (g • x)⁻¹ := by
+  by_cases hx : x = 0
+  · rw [hx, inv_zero, smul_zero, inv_zero]
+  · apply eq_inv_of_mul_eq_one_right
+    rw [← smul_mul', mul_inv_cancel₀ hx, smul_one]
+
+theorem smul_div₀' (g : α) (x y : β) : g • (x / y) = (g • x) / (g • y) := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, smul_mul', smul_inv₀']
+
+end MulDistribMulAction

@@ -3,7 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 import Mathlib.Analysis.Normed.Lp.PiLp
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.UnitaryGroup
@@ -18,7 +18,7 @@ $$
 $$
 This is recorded in this file as an inner product space instance on `PiLp 2`.
 
-This file develops the notion of a finite dimensional Hilbert space over `𝕜 = ℂ, ℝ`, referred to as
+This file develops the notion of a finite-dimensional Hilbert space over `𝕜 = ℂ, ℝ`, referred to as
 `E`. We define an `OrthonormalBasis 𝕜 ι E` as a linear isometric equivalence
 between `E` and `EuclideanSpace 𝕜 ι`. Then `stdOrthonormalBasis` shows that such an equivalence
 always exists if `E` is finite dimensional. We provide language for converting between a basis
@@ -43,10 +43,10 @@ the last section, various properties of matrices are explored.
 - `Orthonormal.exists_orthonormalBasis_extension`: provides an existential result of an
   `OrthonormalBasis` extending a given orthonormal set
 
-- `exists_orthonormalBasis`: provides an orthonormal basis on a finite dimensional vector space
+- `exists_orthonormalBasis`: provides an orthonormal basis on a finite-dimensional vector space
 
-- `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given finite
-  dimensional inner product space
+- `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given
+finite-dimensional inner product space
 
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.
@@ -239,14 +239,14 @@ variable {ι 𝕜}
 abbrev EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 := PiLp.projₗ _ _ i
 
 /-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`, as a continuous linear map. -/
-abbrev EuclideanSpace.proj (i : ι) : EuclideanSpace 𝕜 ι →L[𝕜] 𝕜 := PiLp.proj _ _ i
+abbrev EuclideanSpace.proj (i : ι) : StrongDual 𝕜 (EuclideanSpace 𝕜 ι) := PiLp.proj _ _ i
 
 section DecEq
 
 variable [DecidableEq ι]
 
 -- TODO : This should be generalized to `PiLp`.
-/-- The vector given in euclidean space by being `a : 𝕜` at coordinate `i : ι` and `0 : 𝕜` at
+/-- The vector given in Euclidean space by being `a : 𝕜` at coordinate `i : ι` and `0 : 𝕜` at
 all other coordinates. -/
 def EuclideanSpace.single (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι :=
   toLp _ (Pi.single i a)
@@ -321,7 +321,7 @@ section finAddEquivProd
 `EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ`.
 
 See `PiLp.sumPiLpEquivProdLpPiLp` for the isometry version,
-where the RHS is equipped with the euclidean norm rather than the supremum norm. -/
+where the RHS is equipped with the Euclidean norm rather than the supremum norm. -/
 abbrev EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} [Fintype ι] [Fintype κ] :
     EuclideanSpace 𝕜 (ι ⊕ κ) ≃L[𝕜] EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ :=
   (PiLp.sumPiLpEquivProdLpPiLp 2 _).toContinuousLinearEquiv.trans <|
@@ -570,6 +570,32 @@ theorem _root_.Module.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : O
     (v.toOrthonormalBasis hv : ι → E) = ((v.toOrthonormalBasis hv).toBasis : ι → E) := by
       classical rw [OrthonormalBasis.coe_toBasis]
     _ = (v : ι → E) := by simp
+
+section Singleton
+variable {ι 𝕜 : Type*} [Unique ι] [RCLike 𝕜]
+
+variable (ι 𝕜) in
+/-- `OrthonormalBasis.singleton ι 𝕜` is the orthonormal basis sending the unique element of `ι` to
+`1 : 𝕜`. -/
+protected noncomputable def singleton : OrthonormalBasis ι 𝕜 𝕜 :=
+  (Basis.singleton ι 𝕜).toOrthonormalBasis (by simp [orthonormal_iff_ite, Unique.eq_default])
+
+@[simp]
+theorem singleton_apply (i) : OrthonormalBasis.singleton ι 𝕜 i = 1 := Basis.singleton_apply _ _ _
+
+@[simp]
+theorem singleton_repr (x i) : (OrthonormalBasis.singleton ι 𝕜).repr x i = x :=
+  Basis.singleton_repr _ _ _ _
+
+@[simp]
+theorem coe_singleton : ⇑(OrthonormalBasis.singleton ι 𝕜) = 1 := by
+  ext; simp
+
+@[simp]
+theorem toBasis_singleton : (OrthonormalBasis.singleton ι 𝕜).toBasis = Basis.singleton ι 𝕜 :=
+  Basis.toBasis_toOrthonormalBasis _ _
+
+end Singleton
 
 /-- `Pi.orthonormalBasis (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))` is the
 `Σ i, ι i`-indexed orthonormal basis on `Π i, E i` given by `B i` on each component. -/
@@ -1036,8 +1062,7 @@ space, there exists an isometry from the orthogonal complement of a nonzero sing
 `EuclideanSpace 𝕜 (Fin n)`. -/
 def OrthonormalBasis.fromOrthogonalSpanSingleton (n : ℕ) [Fact (finrank 𝕜 E = n + 1)] {v : E}
     (hv : v ≠ 0) : OrthonormalBasis (Fin n) 𝕜 (𝕜 ∙ v)ᗮ :=
-  -- Porting note: was `attribute [local instance] FiniteDimensional.of_fact_finrank_eq_succ`
-  haveI : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ (K := 𝕜) (V := E) n
+  have : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ (K := 𝕜) (V := E) n
   (stdOrthonormalBasis _ _).reindex <| finCongr <| finrank_orthogonal_span_singleton hv
 
 section LinearIsometry
@@ -1175,5 +1200,12 @@ theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
 theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
   simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
+
+/-- The matrix representation of `innerSL 𝕜 x` given by an orthonormal basis `b` and `b₂`
+is equal to `vecMulVec (star b₂) (star (b.repr x))`. -/
+theorem toMatrix_innerSL_apply [Fintype n] [DecidableEq n] [Fintype m]
+    (b : OrthonormalBasis n 𝕜 E) (b₂ : OrthonormalBasis m 𝕜 𝕜) (x : E) :
+    (innerSL 𝕜 x).toMatrix b.toBasis b₂.toBasis = vecMulVec (star b₂) (star (b.repr x)) := by
+  ext; simp [LinearMap.toMatrix_apply, vecMulVec_apply, OrthonormalBasis.repr_apply_apply, mul_comm]
 
 end Matrix

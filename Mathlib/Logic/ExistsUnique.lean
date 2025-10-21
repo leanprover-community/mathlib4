@@ -140,3 +140,15 @@ theorem ExistsUnique.unique₂ {p : α → Sort*} [∀ x, Subsingleton (p x)]
     (hpy₁ : p y₁) (hqy₁ : q y₁ hpy₁) (hpy₂ : p y₂) (hqy₂ : q y₂ hpy₂) : y₁ = y₂ := by
   simp only [existsUnique_iff_exists] at h
   exact h.unique ⟨hpy₁, hqy₁⟩ ⟨hpy₂, hqy₂⟩
+
+/-- This invokes the two `Decidable` arguments $O(n)$ times. -/
+instance List.decidableBExistsUnique {α : Type*} [DecidableEq α] (p : α → Prop) [DecidablePred p] :
+    (l : List α) → Decidable (∃! x, x ∈ l ∧ p x)
+  | [] => .isFalse <| by simp
+  | x :: xs =>
+    if hx : p x then
+      decidable_of_iff (∀ y ∈ xs, p y → x = y) (⟨fun h ↦ ⟨x, by grind⟩,
+        fun ⟨z, h⟩ y hy hp ↦ (h.2 x ⟨mem_cons_self, hx⟩).trans (by grind)⟩)
+    else
+      have := List.decidableBExistsUnique p xs
+      decidable_of_iff (∃! x, x ∈ xs ∧ p x) (by grind)

@@ -6,7 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.Order.SuccPred.Limit
 
 /-!
@@ -35,8 +35,7 @@ open Opposite
 
 namespace Functor
 
-variable {J : Type u} [LinearOrder J] [SuccOrder J]
-   (F : Jᵒᵖ ⥤ Type v)
+variable {J : Type u} [LinearOrder J] [SuccOrder J] (F : Jᵒᵖ ⥤ Type v)
 
 /-- Given a functor `F : Jᵒᵖ ⥤ Type v` where `J` is a well-ordered type, this data
 allows to construct a section of `F` from an element in `F.obj (op ⊥)`,

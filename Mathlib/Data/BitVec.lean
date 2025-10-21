@@ -24,7 +24,7 @@ variable {w : Nat}
 
 -- TODO: move to the Lean4 repository.
 open Fin.CommRing in
-theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
+theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2 ^ w)) = ↑z := by
   cases w
   case zero =>
     simp only [eq_nil]
@@ -35,8 +35,7 @@ theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
     rw [Int.max_eq_left]
     · have h : (2 ^ (w + 1) : Int) = (2 ^ (w + 1) : Nat) := by simp
       rw [h, Int.emod_bmod]
-    · refine Int.emod_nonneg z ?_
-      exact pow_ne_zero (w + 1) (by decide)
+    · omega
 
 open Fin.CommRing in
 @[simp] theorem toFin_intCast (z : ℤ) : (z : BitVec w).toFin = ↑z := by
@@ -88,8 +87,8 @@ instance : CommSemiring (BitVec w) :=
     toFin_add
     toFin_mul
     toFin_nsmul
-    (by convert toFin_pow)
-    (fun _ => rfl) /- toFin_natCast -/
+    toFin_pow
+    toFin_natCast
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
 instance : CommRing (BitVec w) :=

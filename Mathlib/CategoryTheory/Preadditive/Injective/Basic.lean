@@ -112,10 +112,10 @@ instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
     Nonempty.intro
       { J := WithBot X
         injective := inferInstance
-        f := Option.some
+        f := WithBot.some
         mono := by
           rw [mono_iff_injective]
-          exact Option.some_injective X }
+          exact WithBot.coe_injective }
 
 instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injective (P ⨯ Q) where
   factors g f mono := by
@@ -219,10 +219,7 @@ an arbitrarily chosen injective object under `cokernel f`.
 -/
 def syzygies : C :=
   under (cokernel f)
--- The `Injective` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Injective <| syzygies f := injective_under (cokernel f)
+deriving Injective
 
 /-- When `C` has enough injective,
 `Injective.d f : Y ⟶ syzygies f` is the composition

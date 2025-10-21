@@ -8,7 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 /-!
 # The `arctan` function.
 
-Inequalities, identities and `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)`
+Inequalities, identities and `Real.tan` as an `OpenPartialHomeomorph` between `(-(π / 2), π / 2)`
 and the whole line.
 
 The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add_pi` or
@@ -41,6 +41,19 @@ theorem tan_add'
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) :=
   tan_add (Or.inl h)
 
+theorem tan_sub {x y : ℝ}
+    (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
+      (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) := by
+  simpa only [← Complex.ofReal_inj, Complex.ofReal_sub, Complex.ofReal_add, Complex.ofReal_div,
+    Complex.ofReal_mul, Complex.ofReal_tan] using
+    @Complex.tan_sub (x : ℂ) (y : ℂ) (by convert h <;> norm_cast)
+
+theorem tan_sub' {x y : ℝ}
+    (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) :=
+  tan_sub (Or.inl h)
+
 theorem tan_two_mul : tan (2 * x) = 2 * tan x / (1 - tan x ^ 2) := by
   have := @Complex.tan_two_mul x
   norm_cast at *
@@ -66,12 +79,12 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   rcases le_or_gt 0 r with h | h
   · rw [lt_iff_not_ge] at hx_lt
     refine hx_lt ?_
-    rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_right (half_pos pi_pos)]
+    rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_iff_left₀ (half_pos pi_pos)]
     simp [h]
   · rw [lt_iff_not_ge] at hx_gt
     refine hx_gt ?_
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, neg_mul_eq_neg_mul,
-      mul_le_mul_right (half_pos pi_pos)]
+      mul_le_mul_iff_left₀ (half_pos pi_pos)]
     have hr_le : r ≤ -1 := by rwa [Int.lt_iff_add_one_le, ← le_neg_iff_add_nonpos_right] at h
     rw [← le_sub_iff_add_le, mul_comm, ← le_div_iff₀]
     · norm_num
@@ -242,9 +255,9 @@ lemma arctan_ne_mul_pi_div_two : ∀ (k : ℤ), arctan x ≠ (2 * k + 1) * π / 
   by_contra!
   obtain ⟨k, h⟩ := this
   obtain ⟨lb, ub⟩ := arctan_mem_Ioo x
-  rw [h, neg_eq_neg_one_mul, mul_div_assoc, mul_lt_mul_right (by positivity)] at lb
-  rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_right (by positivity)] at ub
-  norm_cast at lb ub; change -1 < _ at lb; omega
+  rw [h, neg_eq_neg_one_mul, mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at lb
+  rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at ub
+  norm_cast at lb ub; change -1 < _ at lb; cutsat
 
 lemma arctan_add_arctan_lt_pi_div_two (h : x * y < 1) : arctan x + arctan y < π / 2 := by
   rcases le_or_gt y 0 with hy | hy
@@ -273,9 +286,7 @@ theorem arctan_add_eq_add_pi (h : 1 < x * y) (hx : 0 < x) :
   have k := arctan_add (mul_inv x y ▸ inv_lt_one_of_one_lt₀ h)
   rw [arctan_inv_of_pos hx, arctan_inv_of_pos hy, show _ + _ = π - (arctan x + arctan y) by ring,
     sub_eq_iff_eq_add, ← sub_eq_iff_eq_add', sub_eq_add_neg, ← arctan_neg, add_comm] at k
-  convert k.symm using 3
-  field_simp
-  rw [show -x + -y = -(x + y) by ring, show x * y - 1 = -(1 - x * y) by ring, neg_div_neg_eq]
+  grind
 
 theorem arctan_add_eq_sub_pi (h : 1 < x * y) (hx : x < 0) :
     arctan x + arctan y = arctan ((x + y) / (1 - x * y)) - π := by
@@ -344,8 +355,8 @@ theorem continuous_arctan : Continuous arctan :=
 theorem continuousAt_arctan : ContinuousAt arctan x :=
   continuous_arctan.continuousAt
 
-/-- `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
-def tanPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+/-- `Real.tan` as an `OpenPartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
+def tanPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan
   source := Ioo (-(π / 2)) (π / 2)
