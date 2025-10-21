@@ -3,8 +3,8 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MapComap
-import Mathlib.Probability.Kernel.MeasurableLIntegral
+import Mathlib.Probability.Kernel.Composition.Comp
+import Mathlib.Probability.Kernel.Composition.ParallelComp
 
 /-!
 # Composition-product of kernels
@@ -30,7 +30,7 @@ that convention because it fits better with the use of the name `comp` elsewhere
 * Instances stating that `IsMarkovKernel`, `IsZeroOrMarkovKernel`, `IsFiniteKernel` and
   `IsSFiniteKernel` are stable by composition-product.
 
-## Notations
+## Notation
 
 * `κ ⊗ₖ η = ProbabilityTheory.Kernel.compProd κ η`
 
@@ -56,141 +56,61 @@ We define a kernel composition-product
 `compProd : Kernel α β → Kernel (α × β) γ → Kernel α (β × γ)`.
 -/
 
-open scoped Function -- required for scoped `on` notation
-
 variable {s : Set (β × γ)}
 
-/-- Auxiliary function for the definition of the composition-product of two kernels.
-For all `a : α`, `compProdFun κ η a` is a countably additive function with value zero on the empty
-set, and the composition-product of kernels is defined in `Kernel.compProd` through
-`Measure.ofMeasurable`. -/
-noncomputable def compProdFun (κ : Kernel α β) (η : Kernel (α × β) γ) (a : α) (s : Set (β × γ)) :
-    ℝ≥0∞ :=
-  ∫⁻ b, η (a, b) {c | (b, c) ∈ s} ∂κ a
-
-theorem compProdFun_empty (κ : Kernel α β) (η : Kernel (α × β) γ) (a : α) :
-    compProdFun κ η a ∅ = 0 := by
-  simp only [compProdFun, Set.mem_empty_iff_false, Set.setOf_false, measure_empty,
-    MeasureTheory.lintegral_const, zero_mul]
-
-theorem compProdFun_iUnion (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSFiniteKernel η] (a : α)
-    (f : ℕ → Set (β × γ)) (hf_meas : ∀ i, MeasurableSet (f i))
-    (hf_disj : Pairwise (Disjoint on f)) :
-    compProdFun κ η a (⋃ i, f i) = ∑' i, compProdFun κ η a (f i) := by
-  have h_Union : (fun b ↦ η (a, b) {c : γ | (b, c) ∈ ⋃ i, f i})
-      = fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}) := by
-    ext1 b
-    congr with c
-    simp only [Set.mem_iUnion, Set.iSup_eq_iUnion, Set.mem_setOf_eq]
-  rw [compProdFun, h_Union]
-  have h_tsum : (fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}))
-      = fun b ↦ ∑' i, η (a, b) {c : γ | (b, c) ∈ f i} := by
-    ext1 b
-    rw [measure_iUnion]
-    · intro i j hij s hsi hsj c hcs
-      have hbci : {(b, c)} ⊆ f i := by rw [Set.singleton_subset_iff]; exact hsi hcs
-      have hbcj : {(b, c)} ⊆ f j := by rw [Set.singleton_subset_iff]; exact hsj hcs
-      simpa only [Set.bot_eq_empty, Set.le_eq_subset, Set.singleton_subset_iff,
-        Set.mem_empty_iff_false] using hf_disj hij hbci hbcj
-    · exact fun i ↦ measurable_prodMk_left (hf_meas i)
-  rw [h_tsum, lintegral_tsum]
-  · simp [compProdFun]
-  · intro i
-    have hm : MeasurableSet {p : (α × β) × γ | (p.1.2, p.2) ∈ f i} :=
-      (hf_meas i).preimage (by fun_prop)
-    exact ((measurable_kernel_prodMk_left hm).comp measurable_prodMk_left).aemeasurable
-
-theorem compProdFun_tsum_right (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSFiniteKernel η] (a : α)
-    (hs : MeasurableSet s) : compProdFun κ η a s = ∑' n, compProdFun κ (seq η n) a s := by
-  simp_rw [compProdFun, (measure_sum_seq η _).symm]
-  have : ∫⁻ b, Measure.sum (fun n => seq η n (a, b)) {c : γ | (b, c) ∈ s} ∂κ a
-      = ∫⁻ b, ∑' n, seq η n (a, b) {c : γ | (b, c) ∈ s} ∂κ a := by
-    congr with b
-    rw [Measure.sum_apply]
-    exact measurable_prodMk_left hs
-  rw [this, lintegral_tsum]
-  exact fun n ↦ ((measurable_kernel_prodMk_left (κ := (seq η n))
-    ((measurable_fst.snd.prodMk measurable_snd) hs)).comp measurable_prodMk_left).aemeasurable
-
-theorem compProdFun_tsum_left (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSFiniteKernel κ] (a : α)
-    (s : Set (β × γ)) : compProdFun κ η a s = ∑' n, compProdFun (seq κ n) η a s := by
-  simp_rw [compProdFun, (measure_sum_seq κ _).symm, lintegral_sum_measure]
-
-theorem compProdFun_eq_tsum (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)
-    [IsSFiniteKernel η] (a : α) (hs : MeasurableSet s) :
-    compProdFun κ η a s = ∑' (n) (m), compProdFun (seq κ n) (seq η m) a s := by
-  simp_rw [compProdFun_tsum_left κ η a s, compProdFun_tsum_right _ η a hs]
-
-theorem measurable_compProdFun (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)
-    [IsSFiniteKernel η] (hs : MeasurableSet s) :
-    Measurable fun a ↦ compProdFun κ η a s := by
-  simp only [compProdFun]
-  have h_meas : Measurable (Function.uncurry fun a b => η (a, b) {c : γ | (b, c) ∈ s}) := by
-    have : (Function.uncurry fun a b => η (a, b) {c : γ | (b, c) ∈ s})
-        = fun p ↦ η p {c : γ | (p.2, c) ∈ s} := by
-      ext1 p
-      rw [Function.uncurry_apply_pair]
-    rw [this]
-    exact measurable_kernel_prodMk_left (measurable_fst.snd.prodMk measurable_snd hs)
-  exact h_meas.lintegral_kernel_prod_right
-
-open scoped Classical in
 /-- Composition-Product of kernels. For s-finite kernels, it satisfies
 `∫⁻ bc, f bc ∂(compProd κ η a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
 (see `ProbabilityTheory.Kernel.lintegral_compProd`).
 If either of the kernels is not s-finite, `compProd` is given the junk value 0. -/
-noncomputable def compProd (κ : Kernel α β) (η : Kernel (α × β) γ) : Kernel α (β × γ) :=
-  if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
-  { toFun := fun a ↦
-      have : IsSFiniteKernel η := h.2
-      Measure.ofMeasurable (fun s _ ↦ compProdFun κ η a s) (compProdFun_empty κ η a)
-        (compProdFun_iUnion κ η a)
-    measurable' := by
-      have : IsSFiniteKernel κ := h.1
-      have : IsSFiniteKernel η := h.2
-      refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
-      have : (fun a ↦ Measure.ofMeasurable (fun s _ ↦ compProdFun κ η a s) (compProdFun_empty κ η a)
-              (compProdFun_iUnion κ η a) s)
-          = fun a ↦ compProdFun κ η a s := by
-        ext1 a; rwa [Measure.ofMeasurable_apply]
-      rw [this]
-      exact measurable_compProdFun κ η hs }
-  else 0
+noncomputable irreducible_def compProd (κ : Kernel α β) (η : Kernel (α × β) γ) : Kernel α (β × γ) :=
+  swap γ β ∘ₖ (η ∥ₖ Kernel.id)
+    ∘ₖ deterministic MeasurableEquiv.prodAssoc.symm (MeasurableEquiv.measurable _)
+    ∘ₖ (Kernel.id ∥ₖ copy β) ∘ₖ (Kernel.id ∥ₖ κ) ∘ₖ copy α
 
 @[inherit_doc]
 scoped[ProbabilityTheory] infixl:100 " ⊗ₖ " => ProbabilityTheory.Kernel.compProd
-
-theorem compProd_apply_eq_compProdFun (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)
-    [IsSFiniteKernel η] (a : α) (hs : MeasurableSet s) :
-    (κ ⊗ₖ η) a s = compProdFun κ η a s := by
-  rw [compProd, dif_pos]
-  swap
-  · constructor <;> infer_instance
-  change
-    Measure.ofMeasurable (fun s _ => compProdFun κ η a s) (compProdFun_empty κ η a)
-        (compProdFun_iUnion κ η a) s =
-      ∫⁻ b, η (a, b) {c | (b, c) ∈ s} ∂κ a
-  rw [Measure.ofMeasurable_apply _ hs]
-  rfl
 
 @[simp]
 theorem compProd_of_not_isSFiniteKernel_left (κ : Kernel α β) (η : Kernel (α × β) γ)
     (h : ¬ IsSFiniteKernel κ) :
     κ ⊗ₖ η = 0 := by
-  rw [compProd, dif_neg]
-  simp [h]
+  simp [compProd, h]
 
 @[simp]
 theorem compProd_of_not_isSFiniteKernel_right (κ : Kernel α β) (η : Kernel (α × β) γ)
     (h : ¬ IsSFiniteKernel η) :
     κ ⊗ₖ η = 0 := by
-  rw [compProd, dif_neg]
-  simp [h]
+  simp [compProd, h]
 
 theorem compProd_apply (hs : MeasurableSet s) (κ : Kernel α β) [IsSFiniteKernel κ]
     (η : Kernel (α × β) γ) [IsSFiniteKernel η] (a : α) :
-    (κ ⊗ₖ η) a s = ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' s) ∂κ a :=
-  compProd_apply_eq_compProdFun κ η a hs
+    (κ ⊗ₖ η) a s = ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' s) ∂κ a := by
+  rw [compProd, comp_apply, copy_apply, Measure.dirac_bind (by fun_prop), comp_apply,
+    parallelComp_apply, Kernel.id_apply, Measure.bind_apply hs (by fun_prop),
+    lintegral_prod _ (Kernel.measurable_coe _ hs).aemeasurable, lintegral_dirac']
+  swap
+  · suffices Measurable fun p : α × β ↦
+      (swap γ β ∘ₖ (η ∥ₖ Kernel.id)
+        ∘ₖ deterministic MeasurableEquiv.prodAssoc.symm (MeasurableEquiv.measurable _)
+        ∘ₖ (Kernel.id ∥ₖ copy β)) p s by fun_prop
+    exact Kernel.measurable_coe _ hs
+  congr with b
+  rw [comp_apply, parallelComp_apply, Kernel.id_apply, copy_apply, Measure.dirac_prod_dirac,
+    Measure.dirac_bind (by fun_prop), comp_apply, deterministic_apply (by fun_prop),
+    Measure.dirac_bind (by fun_prop), comp_apply]
+  simp only [MeasurableEquiv.prodAssoc, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
+    Equiv.prodAssoc_symm_apply]
+  rw [parallelComp_apply, Kernel.id_apply, Measure.bind_apply hs (by fun_prop),
+    lintegral_prod _ (Kernel.measurable_coe _ hs).aemeasurable]
+  classical
+  have h_int x : ∫⁻ y, swap γ β (x, y) s ∂Measure.dirac b = (Prod.mk b ⁻¹' s).indicator 1 x := by
+    rw [lintegral_dirac']
+    · simp [swap_apply' _ hs, Set.indicator_apply]
+    · simpa [swap_apply' _ hs, Prod.swap_prod_mk] using
+        measurable_const.indicator (measurable_prodMk_right hs)
+  simp_rw [h_int]
+  rw [lintegral_indicator_one]
+  exact measurable_prodMk_left hs
 
 theorem le_compProd_apply (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) (s : Set (β × γ)) :
@@ -200,7 +120,7 @@ theorem le_compProd_apply (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel 
         ∫⁻ b, η (a, b) {c | (b, c) ∈ toMeasurable ((κ ⊗ₖ η) a) s} ∂κ a :=
       lintegral_mono fun _ => measure_mono fun _ h_mem => subset_toMeasurable _ _ h_mem
     _ = (κ ⊗ₖ η) a (toMeasurable ((κ ⊗ₖ η) a) s) :=
-      (Kernel.compProd_apply_eq_compProdFun κ η a (measurableSet_toMeasurable _ _)).symm
+      (compProd_apply (measurableSet_toMeasurable _ _) κ η a).symm
     _ = (κ ⊗ₖ η) a s := measure_toMeasurable s
 
 @[simp]
@@ -274,8 +194,8 @@ lemma compProd_deterministic_apply [MeasurableSingletonClass γ] {f : α × β �
     {s : Set (β × γ)} (hs : MeasurableSet s) (κ : Kernel α β) [IsSFiniteKernel κ] (x : α) :
     (κ ⊗ₖ deterministic f hf) x s = κ x {b | (b, f (x, b)) ∈ s} := by
   classical
-  simp only [deterministic_apply, measurableSet_setOf, Set.mem_setOf_eq, Measure.dirac_apply,
-    Set.mem_setOf_eq, Set.indicator_apply, Pi.one_apply, compProd_apply hs]
+  simp only [deterministic_apply, Measure.dirac_apply,
+    Set.indicator_apply, Pi.one_apply, compProd_apply hs]
   let t := {b | (b, f (x, b)) ∈ s}
   have ht : MeasurableSet t := (measurable_id.prodMk (hf.comp measurable_prodMk_left)) hs
   rw [← lintegral_add_compl _ ht]
@@ -359,7 +279,7 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
   rw [compProd_apply hu, restrict_apply' _ _ _ hu, compProd_apply (hu.inter (hs.prod ht))]
   simp only [restrict_apply, Set.preimage, Measure.restrict_apply' ht, Set.mem_inter_iff,
     Set.mem_prod]
-  have (b) : η (a, b) {c : γ | (b, c) ∈ u ∧ b ∈ s ∧ c ∈ t} =
+  have (b : _) : η (a, b) {c : γ | (b, c) ∈ u ∧ b ∈ s ∧ c ∈ t} =
       s.indicator (fun b => η (a, b) ({c : γ | (b, c) ∈ u} ∩ t)) b := by
     classical
     rw [Set.indicator_apply]
@@ -371,13 +291,13 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
 
 theorem compProd_restrict_left {s : Set β} (hs : MeasurableSet s) :
     Kernel.restrict κ hs ⊗ₖ η = Kernel.restrict (κ ⊗ₖ η) (hs.prod MeasurableSet.univ) := by
-  rw [← compProd_restrict]
-  · congr; exact Kernel.restrict_univ.symm
+  rw [← compProd_restrict hs MeasurableSet.univ]
+  congr; exact Kernel.restrict_univ.symm
 
 theorem compProd_restrict_right {t : Set γ} (ht : MeasurableSet t) :
     κ ⊗ₖ Kernel.restrict η ht = Kernel.restrict (κ ⊗ₖ η) (MeasurableSet.univ.prod ht) := by
-  rw [← compProd_restrict]
-  · congr; exact Kernel.restrict_univ.symm
+  rw [← compProd_restrict MeasurableSet.univ ht]
+  congr; exact Kernel.restrict_univ.symm
 
 end Restrict
 
@@ -420,7 +340,6 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
   ext1 n
   refine SimpleFunc.induction ?_ ?_ (F n)
   · intro c s hs
-    classical -- Porting note: Added `classical` for `Set.piecewise_eq_indicator`
     simp +unfoldPartialApp only [SimpleFunc.const_zero,
       SimpleFunc.coe_piecewise, SimpleFunc.coe_const, SimpleFunc.coe_zero,
       Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]
@@ -485,35 +404,26 @@ theorem setLIntegral_compProd_univ_left (κ : Kernel α β) [IsSFiniteKernel κ]
 
 end Lintegral
 
-theorem compProd_eq_tsum_compProd (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)
-    [IsSFiniteKernel η] (a : α) (hs : MeasurableSet s) :
-    (κ ⊗ₖ η) a s = ∑' (n : ℕ) (m : ℕ), (seq κ n ⊗ₖ seq η m) a s := by
-  simp_rw [compProd_apply_eq_compProdFun _ _ _ hs]; exact compProdFun_eq_tsum κ η a hs
-
-theorem compProd_eq_sum_compProd (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)
-    [IsSFiniteKernel η] : κ ⊗ₖ η = Kernel.sum fun n => Kernel.sum fun m => seq κ n ⊗ₖ seq η m := by
-  ext a s hs; simp_rw [Kernel.sum_apply' _ a hs]; rw [compProd_eq_tsum_compProd κ η a hs]
-
 theorem compProd_eq_sum_compProd_left (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ) :
-    κ ⊗ₖ η = Kernel.sum fun n => seq κ n ⊗ₖ η := by
-  by_cases h : IsSFiniteKernel η
-  swap
-  · simp_rw [compProd_of_not_isSFiniteKernel_right _ _ h]
-    simp
-  rw [compProd_eq_sum_compProd]
-  congr with n a s hs
-  simp_rw [Kernel.sum_apply' _ _ hs, compProd_apply_eq_compProdFun _ _ _ hs,
-    compProdFun_tsum_right _ η a hs]
+    κ ⊗ₖ η = Kernel.sum fun n ↦ seq κ n ⊗ₖ η := by
+  simp_rw [compProd_def]
+  rw [← comp_sum_left, ← comp_sum_right, ← parallelComp_sum_right, kernel_sum_seq]
 
 theorem compProd_eq_sum_compProd_right (κ : Kernel α β) (η : Kernel (α × β) γ)
     [IsSFiniteKernel η] : κ ⊗ₖ η = Kernel.sum fun n => κ ⊗ₖ seq η n := by
-  by_cases hκ : IsSFiniteKernel κ
-  swap
-  · simp_rw [compProd_of_not_isSFiniteKernel_left _ _ hκ]
-    simp
+  simp_rw [compProd_def]
+  rw [← comp_sum_left, ← comp_sum_left, ← comp_sum_left, ← comp_sum_left, ← comp_sum_right,
+    ← parallelComp_sum_left, kernel_sum_seq]
+
+theorem compProd_eq_sum_compProd (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)
+    [IsSFiniteKernel η] : κ ⊗ₖ η = Kernel.sum fun n ↦ Kernel.sum fun m ↦ seq κ n ⊗ₖ seq η m := by
+  simp_rw [← compProd_eq_sum_compProd_right, ← compProd_eq_sum_compProd_left]
+
+theorem compProd_eq_tsum_compProd (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)
+    [IsSFiniteKernel η] (a : α) (hs : MeasurableSet s) :
+    (κ ⊗ₖ η) a s = ∑' (n : ℕ) (m : ℕ), (seq κ n ⊗ₖ seq η m) a s := by
   rw [compProd_eq_sum_compProd]
-  simp_rw [compProd_eq_sum_compProd_left κ _]
-  rw [Kernel.sum_comm]
+  simp_rw [sum_apply' _ _ hs]
 
 instance IsMarkovKernel.compProd (κ : Kernel α β) [IsMarkovKernel κ] (η : Kernel (α × β) γ)
     [IsMarkovKernel η] : IsMarkovKernel (κ ⊗ₖ η) where
@@ -521,17 +431,17 @@ instance IsMarkovKernel.compProd (κ : Kernel α β) [IsMarkovKernel κ] (η : K
 
 instance IsZeroOrMarkovKernel.compProd (κ : Kernel α β) [IsZeroOrMarkovKernel κ]
     (η : Kernel (α × β) γ) [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (κ ⊗ₖ η) := by
-  obtain rfl | _ := eq_zero_or_isMarkovKernel κ <;> obtain rfl | _ := eq_zero_or_isMarkovKernel η
-  all_goals simpa using by infer_instance
+  rw [compProd_def]
+  infer_instance
 
 theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [IsFiniteKernel η] (a : α) :
-    (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
+    (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * η.bound := by
   by_cases hκ : IsSFiniteKernel κ
   swap
   · rw [compProd_of_not_isSFiniteKernel_left _ _ hκ]
     simp
   rw [compProd_apply .univ]
-  let Cη := IsFiniteKernel.bound η
+  let Cη := η.bound
   calc
     ∫⁻ b, η (a, b) Set.univ ∂κ a ≤ ∫⁻ _, Cη ∂κ a :=
       lintegral_mono fun b => measure_le_bound η (a, b) Set.univ
@@ -539,26 +449,45 @@ theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [
     _ = κ a Set.univ * Cη := mul_comm _ _
 
 instance IsFiniteKernel.compProd (κ : Kernel α β) [IsFiniteKernel κ] (η : Kernel (α × β) γ)
-    [IsFiniteKernel η] : IsFiniteKernel (κ ⊗ₖ η) :=
-  ⟨⟨IsFiniteKernel.bound κ * IsFiniteKernel.bound η,
-      ENNReal.mul_lt_top (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η), fun a =>
-      calc
-        (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := compProd_apply_univ_le κ η a
-        _ ≤ IsFiniteKernel.bound κ * IsFiniteKernel.bound η :=
-          mul_le_mul (measure_le_bound κ a Set.univ) le_rfl (zero_le _) (zero_le _)⟩⟩
+    [IsFiniteKernel η] : IsFiniteKernel (κ ⊗ₖ η) := by
+  rw [compProd_def]
+  infer_instance
 
 instance IsSFiniteKernel.compProd (κ : Kernel α β) (η : Kernel (α × β) γ) :
     IsSFiniteKernel (κ ⊗ₖ η) := by
-  by_cases h : IsSFiniteKernel κ
-  swap
-  · rw [compProd_of_not_isSFiniteKernel_left _ _ h]
-    infer_instance
-  by_cases h : IsSFiniteKernel η
-  swap
-  · rw [compProd_of_not_isSFiniteKernel_right _ _ h]
-    infer_instance
-  rw [compProd_eq_sum_compProd]
+  rw [compProd_def]
   infer_instance
+
+/-- `Kernel.compProd` is associative. We have to insert `MeasurableEquiv.prodAssoc` in two places
+because the products of types `α × β × γ` and `(α × β) × γ` are different. -/
+lemma compProd_assoc {δ : Type*} {mδ : MeasurableSpace δ}
+    {κ : Kernel α β} {η : Kernel (α × β) γ} {ξ : Kernel (α × β × γ) δ} :
+    (κ ⊗ₖ (η ⊗ₖ (ξ.comap MeasurableEquiv.prodAssoc (MeasurableEquiv.measurable _)))).map
+        MeasurableEquiv.prodAssoc.symm
+      = κ ⊗ₖ η ⊗ₖ ξ := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [hη]
+  by_cases hξ : IsSFiniteKernel ξ
+  swap
+  · have : ¬ IsSFiniteKernel
+        (ξ.comap MeasurableEquiv.prodAssoc (MeasurableEquiv.measurable _)) := by
+      refine fun h_sfin ↦ hξ ?_
+      have : ξ = (ξ.comap MeasurableEquiv.prodAssoc (MeasurableEquiv.measurable _)).comap
+          MeasurableEquiv.prodAssoc.symm (MeasurableEquiv.measurable _) := by
+        simp [← comap_comp_right]
+      rw [this]
+      infer_instance
+    simp [hξ, this]
+  ext a s hs
+  rw [compProd_apply hs, map_apply' _ (by fun_prop) _ hs,
+    compProd_apply (hs.preimage (by fun_prop)), lintegral_compProd]
+  swap; · exact measurable_kernel_prodMk_left' hs a
+  congr with b
+  rw [compProd_apply]
+  · congr
+  · exact hs.preimage (by fun_prop)
 
 lemma compProd_add_left (μ κ : Kernel α β) (η : Kernel (α × β) γ)
     [IsSFiniteKernel μ] [IsSFiniteKernel κ] :

@@ -72,10 +72,8 @@ def AllAgree (x : ∀ n, CofixA F n) :=
 @[simp]
 theorem agree_trivial {x : CofixA F 0} {y : CofixA F 1} : Agree x y := by constructor
 
-@[deprecated (since := "2024-12-25")] alias agree_trival := agree_trivial
-
 theorem agree_children {n : ℕ} (x : CofixA F (succ n)) (y : CofixA F (succ n + 1)) {i j}
-    (h₀ : HEq i j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) := by
+    (h₀ : i ≍ j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) := by
   obtain - | ⟨_, _, hagree⟩ := h₁; cases h₀
   apply hagree
 
@@ -86,18 +84,16 @@ def truncate : ∀ {n : ℕ}, CofixA F (n + 1) → CofixA F n
 
 theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) (h : Agree x y) :
     truncate y = x := by
-  induction n <;> cases x <;> cases y
-  · rfl
-  · -- cases' h with _ _ _ _ _ h₀ h₁
-    cases h
-    simp only [truncate, Function.comp_def, eq_self_iff_true, heq_iff_eq]
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext y`
-    rename_i n_ih a f y h₁
-    suffices (fun x => truncate (y x)) = f
-      by simp [this]
-    funext y
-    apply n_ih
-    apply h₁
+  induction n with
+  | zero =>
+    cases x
+    cases y
+    rfl
+  | succ n n_ih =>
+    cases h with | intro f y h₁ =>
+    simp only [truncate, Function.comp_def]
+    congr with y
+    exact n_ih _ _ (h₁ y)
 
 variable {X : Type w}
 variable (f : X → F X)
@@ -109,12 +105,9 @@ def sCorec : X → ∀ n, CofixA F n
   | j, succ _ => CofixA.intro (f j).1 fun i => sCorec ((f j).2 i) _
 
 theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
-  induction' n with n n_ih generalizing i
-  constructor
-  obtain ⟨y, g⟩ := f i
-  constructor
-  introv
-  apply n_ih
+  induction n generalizing i with
+  | zero => constructor
+  | succ n n_ih => exact .intro _ _ fun _ => n_ih _
 
 /-- `Path F` provides indices to access internal nodes in `Corec F` -/
 def Path (F : PFunctor.{uA, uB}) :=
@@ -134,11 +127,13 @@ theorem head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x
   rcases h₀ : x (succ n) with - | ⟨_, f₀⟩
   cases h₁ : x 1
   dsimp only [head']
-  induction' n with n n_ih
-  · rw [h₁] at h₀
+  induction n with
+  | zero =>
+    rw [h₁] at h₀
     cases h₀
     trivial
-  · have H := Hconsistent (succ n)
+  | succ n n_ih =>
+    have H := Hconsistent (succ n)
     cases h₂ : x (succ n)
     rw [h₀, h₂] at H
     apply n_ih (truncate ∘ f₀)
@@ -202,7 +197,7 @@ def head (x : M F) :=
 
 /-- return all the subtrees of the root of a tree `x : M F` -/
 def children (x : M F) (i : F.B (head x)) : M F :=
-  let H := fun n : ℕ => @head_succ' _ n 0 x.1 x.2
+  have H := fun n : ℕ => @head_succ' _ n 0 x.1 x.2
   { approx := fun n => children' (x.1 _) (cast (congr_arg _ <| by simp only [head, H]) i)
     consistent := by
       intro n
@@ -271,8 +266,9 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   apply ext'
   intro n
   dsimp only [M.mk]
-  induction' n with n
-  · apply @Subsingleton.elim _ CofixA.instSubsingleton
+  induction n with
+  | zero => apply @Subsingleton.elim _ CofixA.instSubsingleton
+  | succ n => ?_
   dsimp only [Approx.sMk, dest, head]
   rcases h : x.approx (succ n) with - | ⟨hd, ch⟩
   have h' : hd = head' (x.approx 1) := by
@@ -280,7 +276,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
     apply x.consistent
   revert ch
   rw [h']
-  intros ch h
+  intro ch h
   congr
   ext a
   dsimp only [children]
@@ -288,7 +284,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   rw [cast_eq_iff_heq] at hh
   revert a''
   rw [h]
-  intros _ hh
+  intro _ hh
   cases hh
   rfl
 
@@ -316,17 +312,17 @@ theorem approx_mk (a : F.A) (f : F.B a → M F) (i : ℕ) :
 
 @[simp]
 theorem agree'_refl {n : ℕ} (x : M F) : Agree' n x x := by
-  induction' n with _ n_ih generalizing x <;>
+  induction n generalizing x with | zero => ?_ | succ _ n_ih => ?_ <;>
   induction x using PFunctor.M.casesOn' <;> constructor <;> try rfl
-  intros
-  apply n_ih
+  intro; apply n_ih
 
 theorem agree_iff_agree' {n : ℕ} (x y : M F) :
     Agree (x.approx n) (y.approx <| n + 1) ↔ Agree' n x y := by
   constructor <;> intro h
-  · induction' n with _ n_ih generalizing x y
-    · constructor
-    · induction x using PFunctor.M.casesOn'
+  · induction n generalizing x y with
+    | zero => constructor
+    | succ _ n_ih =>
+      induction x using PFunctor.M.casesOn'
       induction y using PFunctor.M.casesOn'
       simp only [approx_mk] at h
       obtain - | ⟨_, _, hagree⟩ := h
@@ -334,11 +330,12 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
       intro i
       apply n_ih
       apply hagree
-  · induction' n with _ n_ih generalizing x y
-    · constructor
-    · obtain - | @⟨_, a, x', y'⟩ := h
-      induction' x using PFunctor.M.casesOn' with x_a x_f
-      induction' y using PFunctor.M.casesOn' with y_a y_f
+  · induction n generalizing x y with
+    | zero => constructor
+    | succ _ n_ih =>
+      obtain - | @⟨_, a, x', y'⟩ := h
+      induction x using PFunctor.M.casesOn' with | _ x_a x_f
+      induction y using PFunctor.M.casesOn' with | _ y_a y_f
       simp only [approx_mk]
       have h_a_1 := mk_inj ‹M.mk ⟨x_a, x_f⟩ = M.mk ⟨a, x'⟩›
       cases h_a_1
@@ -351,12 +348,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
 
 @[simp]
 theorem cases_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
-    PFunctor.M.cases f (M.mk x) = f x := by
-  dsimp only [M.mk, PFunctor.M.cases, dest, head, Approx.sMk, head']
-  cases x; dsimp only [Approx.sMk]
-  simp only [Eq.mpr]
-  apply congrFun
-  rfl
+    PFunctor.M.cases f (M.mk x) = f x := rfl
 
 @[simp]
 theorem casesOn_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
@@ -409,16 +401,18 @@ def iselect [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) : M F → F.A := f
 
 theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x : M F)
     (h : ¬IsPath ps x) : iselect ps x = head default := by
-  induction' ps with ps_hd ps_tail ps_ih generalizing x
-  · exfalso
+  induction ps generalizing x with
+  | nil =>
+    exfalso
     apply h
     constructor
-  · obtain ⟨a, i⟩ := ps_hd
-    induction' x using PFunctor.M.casesOn' with x_a x_f
+  | cons ps_hd ps_tail ps_ih =>
+    obtain ⟨a, i⟩ := ps_hd
+    induction x using PFunctor.M.casesOn' with | _ x_a x_f
     simp only [iselect, isubtree] at ps_ih ⊢
     by_cases h'' : a = x_a
     · subst x_a
-      simp only [dif_pos, eq_self_iff_true, casesOn_mk']
+      simp only [dif_pos, casesOn_mk']
       rw [ps_ih]
       intro h'
       apply h
@@ -445,7 +439,7 @@ theorem ichildren_mk [DecidableEq F.A] [Inhabited (M F)] (x : F (M F)) (i : F.Id
 @[simp]
 theorem isubtree_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : F.B a → M F)
     {i : F.B a} : isubtree (⟨_, i⟩ :: ps) (M.mk ⟨a, f⟩) = isubtree ps (f i) := by
-  simp only [isubtree, ichildren_mk, PFunctor.Obj.iget, dif_pos, isubtree, M.casesOn_mk']; rfl
+  simp only [isubtree, dif_pos, isubtree, M.casesOn_mk']; rfl
 
 @[simp]
 theorem iselect_nil [DecidableEq F.A] [Inhabited (M F)] {a} (f : F.B a → M F) :
@@ -468,22 +462,24 @@ theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map 
 theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx : Agree' n z x)
     (hy : Agree' n z y) (hrec : ∀ ps : Path F, n = ps.length → iselect ps x = iselect ps y) :
     x.approx (n + 1) = y.approx (n + 1) := by
-  induction' n with n n_ih generalizing x y z
-  · specialize hrec [] rfl
+  induction n generalizing x y z with
+  | zero =>
+    specialize hrec [] rfl
     induction x using PFunctor.M.casesOn'
     induction y using PFunctor.M.casesOn'
     simp only [iselect_nil] at hrec
     subst hrec
-    simp only [approx_mk, eq_self_iff_true, heq_iff_eq, zero_eq, CofixA.intro.injEq,
-      heq_eq_eq, eq_iff_true_of_subsingleton, and_self]
-  · cases hx
+    simp only [approx_mk, heq_iff_eq, CofixA.intro.injEq,
+      eq_iff_true_of_subsingleton, and_self]
+  | succ n n_ih =>
+    cases hx
     cases hy
     induction x using PFunctor.M.casesOn'
     induction y using PFunctor.M.casesOn'
     subst z
     iterate 3 (have := mk_inj ‹_›; cases this)
     rename_i n_ih a f₃ f₂ hAgree₂ _ _ h₂ _ _ f₁ h₁ hAgree₁ clr
-    simp only [approx_mk, eq_self_iff_true, heq_iff_eq]
+    simp only [approx_mk]
     have := mk_inj h₁
     cases this; clear h₁
     have := mk_inj h₂
@@ -502,11 +498,10 @@ theorem ext [Inhabited (M F)] [DecidableEq F.A] (x y : M F)
     (H : ∀ ps : Path F, iselect ps x = iselect ps y) :
     x = y := by
   apply ext'; intro i
-  induction' i with i i_ih
-  · cases x.approx 0
-    cases y.approx 0
-    constructor
-  · apply ext_aux x y x
+  induction i with
+  | zero => subsingleton
+  | succ i i_ih =>
+    apply ext_aux x y x
     · rw [← agree_iff_agree']
       apply x.consistent
     · rw [← agree_iff_agree', i_ih]
@@ -539,18 +534,20 @@ theorem nth_of_bisim [Inhabited (M F)] [DecidableEq F.A]
             isubtree ps s₁ = M.mk ⟨a, f⟩ ∧
               isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, f i ~ f' i := by
   intro h₀ hh
-  induction' s₁ using PFunctor.M.casesOn' with a f
-  induction' s₂ using PFunctor.M.casesOn' with a' f'
+  induction s₁ using PFunctor.M.casesOn' with | _ a f
+  induction s₂ using PFunctor.M.casesOn' with | _ a' f'
   obtain rfl : a = a' := bisim.head h₀
-  induction' ps with i ps ps_ih generalizing a f f'
-  · exists rfl, a, f, f', rfl, rfl
+  induction ps generalizing a f f' with
+  | nil =>
+    exists rfl, a, f, f', rfl, rfl
     apply bisim.tail h₀
+  | cons i ps ps_ih => ?_
   obtain ⟨a', i⟩ := i
   obtain rfl : a = a' := by rcases hh with hh|hh <;> cases isPath_cons hh <;> rfl
   dsimp only [iselect] at ps_ih ⊢
   have h₁ := bisim.tail h₀ i
-  induction' h : f i using PFunctor.M.casesOn' with a₀ f₀
-  induction' h' : f' i using PFunctor.M.casesOn' with a₁ f₁
+  induction h : f i using PFunctor.M.casesOn' with | _ a₀ f₀
+  induction h' : f' i using PFunctor.M.casesOn' with | _ a₁ f₁
   simp only [h, h', isubtree_cons] at ps_ih ⊢
   rw [h, h'] at h₁
   obtain rfl : a₀ = a₁ := bisim.head h₁

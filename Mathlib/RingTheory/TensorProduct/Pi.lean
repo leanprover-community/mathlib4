@@ -20,9 +20,9 @@ open TensorProduct
 
 namespace Algebra.TensorProduct
 
-variable (R S A : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [CommSemiring A]
+variable (R S A : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [Semiring A]
   [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-variable {ι : Type*} (B : ι → Type*) [∀ i, CommSemiring (B i)] [∀ i, Algebra R (B i)]
+variable {ι : Type*} (B : ι → Type*) [∀ i, Semiring (B i)] [∀ i, Algebra R (B i)]
 
 @[simp]
 lemma piRightHom_one : piRightHom R S A B 1 = 1 := rfl
@@ -42,13 +42,13 @@ lemma piRightHom_mul (x y : A ⊗[R] ∀ i, B i) :
 
 /-- The canonical map `A ⊗[R] (∀ i, B i) →ₐ[S] ∀ i, A ⊗[R] B i`. This is an isomorphism
 if `ι` is finite (see `Algebra.TensorProduct.piRight`). -/
-noncomputable def piRightHom : A ⊗[R] (∀ i, B i) →ₐ[S] ∀ i, A ⊗[R] B i :=
+def piRightHom : A ⊗[R] (∀ i, B i) →ₐ[S] ∀ i, A ⊗[R] B i :=
   AlgHom.ofLinearMap (_root_.TensorProduct.piRightHom R S A B) (by simp) (by simp)
 
 variable [Fintype ι] [DecidableEq ι]
 
 /-- Tensor product of rings commutes with finite products on the right. -/
-noncomputable def piRight : A ⊗[R] (∀ i, B i) ≃ₐ[S] ∀ i, A ⊗[R] B i :=
+def piRight : A ⊗[R] (∀ i, B i) ≃ₐ[S] ∀ i, A ⊗[R] B i :=
   AlgEquiv.ofLinearEquiv (_root_.TensorProduct.piRight R S A B) (by simp) (by simp)
 
 @[simp]
@@ -57,7 +57,7 @@ lemma piRight_tmul (x : A) (f : ∀ i, B i) :
 
 variable (ι) in
 /-- Variant of `Algebra.TensorProduct.piRight` with constant factors. -/
-noncomputable def piScalarRight : A ⊗[R] (ι → R) ≃ₐ[S] ι → A :=
+def piScalarRight : A ⊗[R] (ι → R) ≃ₐ[S] ι → A :=
   (piRight R S A (fun _ : ι ↦ R)).trans <|
     AlgEquiv.piCongrRight (fun _ ↦ Algebra.TensorProduct.rid R S A)
 
@@ -75,7 +75,7 @@ section
 variable (B C : Type*) [Semiring B] [Semiring C] [Algebra R B] [Algebra R C]
 
 /-- Tensor product of rings commutes with binary products on the right. -/
-noncomputable nonrec def prodRight : A ⊗[R] (B × C) ≃ₐ[S] A ⊗[R] B × A ⊗[R] C :=
+nonrec def prodRight : A ⊗[R] (B × C) ≃ₐ[S] A ⊗[R] B × A ⊗[R] C :=
   AlgEquiv.ofLinearEquiv (TensorProduct.prodRight R S A B C)
     (by simp [Algebra.TensorProduct.one_def])
     (LinearMap.map_mul_of_map_mul_tmul (fun _ _ _ _ ↦ by simp))

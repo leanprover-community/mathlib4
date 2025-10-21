@@ -74,13 +74,12 @@ termination_by a
 decreasing_by exact h
 
 theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
-  intros a b h
+  intro a b h
   rw [lfpApprox, lfpApprox]
-  refine sSup_le_sSup ?h
-  apply sup_le_sup_right
-  simp only [exists_prop, Set.le_eq_subset, Set.setOf_subset_setOf, forall_exists_index, and_imp,
+  gcongr sSup (?_ ∪ {x})
+  simp only [exists_prop, Set.setOf_subset_setOf, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
-  intros a' h'
+  intro a' h'
   use a'
   exact ⟨lt_of_lt_of_le h' h, rfl⟩
 
@@ -90,7 +89,7 @@ theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
   simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
 
 theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
-    lfpApprox f x (a+1) = f (lfpApprox f x a) := by
+    lfpApprox f x (a + 1) = f (lfpApprox f x a) := by
   apply le_antisymm
   · conv => left; rw [lfpApprox]
     apply sSup_le
@@ -101,7 +100,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     · apply le_trans h
       apply Monotone.imp f.monotone
       exact le_lfpApprox f x
-    · intros a' h
+    · intro a' h
       apply f.2; apply lfpApprox_monotone; exact h
   · conv => right; rw [lfpApprox]
     apply le_sSup
@@ -185,7 +184,7 @@ lemma lfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal}
   have lfpApprox_mem_fixedPoint :
       lfpApprox f x a ∈ fixedPoints f := by
     rw [mem_fixedPoints_iff, ← lfpApprox_add_one f x h_init]
-    exact Monotone.eq_of_le_of_le (lfpApprox_monotone f x)
+    exact Monotone.eq_of_ge_of_le (lfpApprox_monotone f x)
       h_fab (SuccOrder.le_succ a) (SuccOrder.succ_le_of_lt h_ab)
   rw [lfpApprox_eq_of_mem_fixedPoints f x h_init]
   · exact lfpApprox_mem_fixedPoint
@@ -262,7 +261,7 @@ theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
   le_lfpApprox f.dual x
 
 theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
-    gfpApprox f x (a+1) = f (gfpApprox f x a) :=
+    gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
   lfpApprox_add_one f.dual x h a
 
 theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by

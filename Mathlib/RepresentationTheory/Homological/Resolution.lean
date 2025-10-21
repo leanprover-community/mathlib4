@@ -35,7 +35,7 @@ We then construct the bar resolution. The `n`th object in this complex is the re
 `Gⁿ →₀ k[G]` defined pointwise by the left regular representation on `k[G]`. The differentials are
 defined by sending `(g₀, ..., gₙ)` to
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
-`j = 0, ... , n - 1`.
+`j = 0, ..., n - 1`.
 
 In `RepresentationTheory.Rep` we define an isomorphism `Rep.diagonalSuccIsoFree` between
 `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ) ↦ g₀·(g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ)`.
@@ -118,9 +118,9 @@ alias groupCohomology.resolution.diagonalSucc_inv_single_right :=
   Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_right
 
 /-- The `k[G]`-linear isomorphism `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹]`, where the `k[G]`-module structure on
-the lefthand side is `TensorProduct.leftModule`, whilst that of the righthand side comes from
+the left-hand side is `TensorProduct.leftModule`, whilst that of the right-hand side comes from
 `Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
-of the righthand side. -/
+of the right-hand side. -/
 @[deprecated "We now favour `Representation.finsuppLEquivFreeAsModule`" (since := "2025-06-04")]
 def ofMulActionBasisAux :
     MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]
@@ -131,20 +131,11 @@ def ofMulActionBasisAux :
     map_smul' := fun r x => by
       rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul e]
       congr 1
-      /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-      refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
-      · simp only [smul_zero]
-      · simp only [TensorProduct.smul_tmul']
-        show (r * x) ⊗ₜ y = _
-        rw [← ofMulAction_self_smul_eq_mul, smul_tprod_one_asModule]
-      · rw [smul_add, hz, hy, smul_add] -/
-      show _ = Representation.asAlgebraHom (tensorObj (Rep.leftRegular k G)
-        (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
       refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
-      · rw [smul_zero, map_zero]
+      · simp only [smul_zero]
       · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMulAction_self_smul_eq_mul]
         exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
-      · rw [smul_add, hz, hy, map_add] }
+      · rw [smul_add, hz, hy, smul_add] }
 
 /-- A `k[G]`-basis of `k[Gⁿ⁺¹]`, coming from the `k[G]`-linear isomorphism
 `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
@@ -280,9 +271,9 @@ equipped with the representation induced by the diagonal action of `G`. -/
 def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
   Iso.refl _
 
-instance x_projective (G : Type u) [Group G] [DecidableEq G] (n : ℕ) :
-    Projective ((standardComplex k G).X n) :=
-  inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
+instance x_projective (G : Type u) [Group G] (n : ℕ) :
+    Projective ((standardComplex k G).X n) := by
+  classical exact inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
@@ -335,10 +326,10 @@ a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere
 theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     (forget₂ToModuleCatHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
   refine ModuleCat.hom_ext <| Finsupp.lhom_ext fun (x : Fin 1 → G) r => ?_
-  show mapDomain _ _ _ = Finsupp.linearCombination _ _ _
+  change mapDomain _ _ _ = Finsupp.linearCombination _ _ _
   simp only [HomotopyEquiv.ofIso, Iso.symm_hom, compForgetAugmented, compForgetAugmentedIso,
     eqToIso.inv, HomologicalComplex.eqToHom_f]
-  show mapDomain _ (single x r) _ = _
+  change mapDomain _ (single x r) _ = _
   simp [Unique.eq_default (terminal.from _), single_apply, if_pos (Subsingleton.elim _ _)]
 
 theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by
@@ -379,7 +370,7 @@ end standardComplex
 
 open HomologicalComplex.Hom standardComplex
 
-variable [Group G] [DecidableEq G]
+variable [Group G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
 def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
@@ -404,12 +395,13 @@ namespace barComplex
 
 open Rep Finsupp
 
+variable [DecidableEq G]
 variable (n)
 
 /-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
 `k`-linear `G`-representation. It sends `(g₀, ..., gₙ)` to
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
-`j = 0, ... , n - 1`. -/
+`j = 0, ..., n - 1`. -/
 def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
   freeLift _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
     Finset.univ.sum fun j : Fin (n + 1) =>
@@ -435,10 +427,12 @@ end barComplex
 
 open barComplex
 
+variable [DecidableEq G]
+
 /-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
 differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
-`j = 0, ... , n - 1`. -/
+`j = 0, ..., n - 1`. -/
 noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
   ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun _ => by
     ext x

@@ -23,7 +23,7 @@ universe w v' u' v u
 
 namespace CategoryTheory
 
-open Category ConcreteCategory
+open Category ConcreteCategory Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   (A : Type u') [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type w}

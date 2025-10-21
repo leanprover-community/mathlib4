@@ -22,11 +22,9 @@ namespace PMF
 open ENNReal NNReal
 /-- The binomial `PMF`: the probability of observing exactly `i` “heads” in a sequence of `n`
 independent coin tosses, each having probability `p` of coming up “heads”. -/
-def binomial (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
+def binomial (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
   .ofFintype (fun i =>
-      -- Using `toNNReal` here makes this computable
-      ↑(p.toNNReal^(i : ℕ) * (1-p.toNNReal)^((Fin.last n - i) : ℕ) * (n.choose i : ℕ))) (by
-    lift p to ℝ≥0 using ne_top_of_lt <| h.trans_lt one_lt_top
+      ↑(p ^ (i : ℕ) * (1 - p) ^ ((Fin.last n - i) : ℕ) * (n.choose i : ℕ))) (by
     dsimp only
     norm_cast
     convert (add_pow p (1-p) n).symm
@@ -34,29 +32,28 @@ def binomial (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
       apply Finset.sum_congr rfl
       intro i hi
       rw [Finset.mem_range] at hi
-      rw [dif_pos hi, Fin.last]
+      rw [dif_pos hi]
     · rw [add_tsub_cancel_of_le (mod_cast h), one_pow])
 
-theorem binomial_apply (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) (i : Fin (n + 1)) :
-    binomial p h n i = p^(i : ℕ) * (1-p)^((Fin.last n - i) : ℕ) * (n.choose i : ℕ) := by
-  lift p to ℝ≥0 using ne_top_of_lt <| h.trans_lt one_lt_top
+theorem binomial_apply (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) (i : Fin (n + 1)) :
+    binomial p h n i = p ^ (i : ℕ) * (1 - p) ^ ((Fin.last n - i) : ℕ) * (n.choose i : ℕ) := by
   simp [binomial]
 
 @[simp]
-theorem binomial_apply_zero (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
-    binomial p h n 0 = (1-p)^n := by
+theorem binomial_apply_zero (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
+    binomial p h n 0 = (1 - p) ^ n := by
   simp [binomial_apply]
 
 @[simp]
-theorem binomial_apply_last (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
-    binomial p h n (.last n) = p^n := by
+theorem binomial_apply_last (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
+    binomial p h n (.last n) = p ^ n := by
   simp [binomial_apply]
 
-theorem binomial_apply_self (p : ℝ≥0∞) (h : p ≤ 1) (n : ℕ) :
-    binomial p h n (.last n) = p^n := by simp
+theorem binomial_apply_self (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) :
+    binomial p h n (.last n) = p ^ n := by simp
 
 /-- The binomial distribution on one coin is the Bernoulli distribution. -/
-theorem binomial_one_eq_bernoulli (p : ℝ≥0∞) (h : p ≤ 1) :
+theorem binomial_one_eq_bernoulli (p : ℝ≥0) (h : p ≤ 1) :
     binomial p h 1 = (bernoulli p h).map (cond · 1 0) := by
   ext i; fin_cases i <;> simp [tsum_bool, binomial_apply]
 

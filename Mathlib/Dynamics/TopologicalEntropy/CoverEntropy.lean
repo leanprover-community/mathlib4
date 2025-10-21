@@ -116,9 +116,9 @@ lemma IsDynCoverOf.nonempty_inter {T : X → X} {F : Set X} {U : Set (X × X)} {
   simp only [Finset.coe_filter, Finset.mem_filter, and_imp, imp_self, implies_true, and_true]
   refine ⟨fun y y_F ↦ ?_, Finset.card_mono (s.filter_subset _)⟩
   specialize h y_F
-  simp only [Finset.coe_sort_coe, mem_iUnion, Subtype.exists, exists_prop] at h
+  simp only [mem_iUnion, exists_prop] at h
   obtain ⟨z, z_s, y_Bz⟩ := h
-  simp only [coe_setOf, mem_setOf_eq, mem_iUnion, Subtype.exists, exists_prop]
+  simp only [mem_setOf_eq, mem_iUnion, exists_prop]
   exact ⟨z, ⟨z_s, nonempty_of_mem ⟨y_Bz, y_F⟩⟩, y_Bz⟩
 
 /-- From a dynamical cover `s` with entourage `U` and time `m`, we construct covers with entourage
@@ -171,7 +171,6 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
   -- that it is indeed a `(U ○ U, m * n)` cover, and that its cardinality is at most `card s ^ n`.
   -- Only the first point requires significant work.
   let sn := range dyncover
-  have := fintypeRange dyncover
   refine ⟨sn.toFinset, ?_, ?_⟩
   · -- We implement the argument at the beginning: given `y ∈ F`, we extract `t 0`, `t 1`, `t 2`
     -- such that `y`, `T^[m] y`, `T^[m]^[2] y` ... is `(dynEntourage T U m)`-close to `t 0`, `t 1`,
@@ -183,7 +182,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     have key : ∀ k : Fin n, ∃ z : s, y ∈ T^[m * k] ⁻¹' ball z (dynEntourage T U m) := by
       intro k
       have := h (MapsTo.iterate F_inv (m * k) y_F)
-      simp only [Finset.coe_sort_coe, mem_iUnion, Subtype.exists, exists_prop] at this
+      simp only [mem_iUnion, exists_prop] at this
       obtain ⟨z, z_s, hz⟩ := this
       exact ⟨⟨z, z_s⟩, hz⟩
     choose! t ht using key

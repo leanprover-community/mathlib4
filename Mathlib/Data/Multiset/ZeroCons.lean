@@ -132,7 +132,7 @@ overflow in `whnf`.
 protected
 def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
-      ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b)))
+      ∀ a a' m b, C_cons a (a' ::ₘ m) (C_cons a' m b) ≍ C_cons a' (a ::ₘ m) (C_cons a m b))
     (m : Multiset α) : C m :=
   Quotient.hrecOn m (@List.rec α (fun l => C ⟦l⟧) C_0 fun a l b => C_cons a ⟦l⟧ b) fun _ _ h =>
     h.rec_heq
@@ -144,13 +144,13 @@ def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
 protected
 def recOn (m : Multiset α) (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
-      ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b))) :
+      ∀ a a' m b, C_cons a (a' ::ₘ m) (C_cons a' m b) ≍ C_cons a' (a ::ₘ m) (C_cons a m b)) :
     C m :=
   Multiset.rec C_0 C_cons C_cons_heq m
 
 variable {C_0 : C 0} {C_cons : ∀ a m, C m → C (a ::ₘ m)}
   {C_cons_heq :
-    ∀ a a' m b, HEq (C_cons a (a' ::ₘ m) (C_cons a' m b)) (C_cons a' (a ::ₘ m) (C_cons a m b))}
+    ∀ a a' m b, C_cons a (a' ::ₘ m) (C_cons a' m b) ≍ C_cons a' (a ::ₘ m) (C_cons a m b)}
 
 @[simp]
 theorem recOn_0 : @Multiset.recOn α C (0 : Multiset α) C_0 C_cons C_cons_heq = C_0 :=
@@ -165,7 +165,7 @@ end Rec
 
 section Mem
 
-@[simp]
+@[simp, grind =]
 theorem mem_cons {a b : α} {s : Multiset α} : a ∈ b ::ₘ s ↔ a = b ∨ a ∈ s :=
   Quot.inductionOn s fun _ => List.mem_cons
 
@@ -184,7 +184,7 @@ theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a
     let ⟨l₁, l₂, e⟩ := append_of_mem h
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 
-@[simp]
+@[simp, grind ←]
 theorem notMem_zero (a : α) : a ∉ (0 : Multiset α) :=
   List.not_mem_nil
 
@@ -354,7 +354,7 @@ theorem lt_cons_self (s : Multiset α) (a : α) : s < a ::ₘ s :=
 theorem le_cons_self (s : Multiset α) (a : α) : s ≤ a ::ₘ s :=
   le_of_lt <| lt_cons_self _ _
 
-theorem cons_le_cons_iff (a : α) : a ::ₘ s ≤ a ::ₘ t ↔ s ≤ t :=
+@[simp] theorem cons_le_cons_iff (a : α) : a ::ₘ s ≤ a ::ₘ t ↔ s ≤ t :=
   Quotient.inductionOn₂ s t fun _ _ => subperm_cons a
 
 theorem cons_le_cons (a : α) : s ≤ t → a ::ₘ s ≤ a ::ₘ t :=
@@ -401,7 +401,7 @@ theorem singleton_le {a : α} {s : Multiset α} : {a} ≤ s ↔ a ∈ s :=
     e.symm ▸ cons_le_cons _ (zero_le _)⟩
 
 @[simp] lemma le_singleton : s ≤ {a} ↔ s = 0 ∨ s = {a} :=
-  Quot.induction_on s fun l ↦ by simp only [cons_zero, ← coe_singleton, quot_mk_to_coe'', coe_le,
+  Quot.induction_on s fun l ↦ by simp only [← coe_singleton, quot_mk_to_coe'', coe_le,
     coe_eq_zero, coe_eq_coe, perm_singleton, subperm_singleton_iff]
 
 @[simp] lemma lt_singleton : s < {a} ↔ s = 0 := by
@@ -431,7 +431,7 @@ theorem card_cons (a : α) (s : Multiset α) : card (a ::ₘ s) = card s + 1 :=
 
 @[simp]
 theorem card_singleton (a : α) : card ({a} : Multiset α) = 1 := by
-  simp only [← cons_zero, card_zero, eq_self_iff_true, card_cons]
+  simp only [← cons_zero, card_zero, card_cons]
 
 theorem card_pair (a b : α) : card {a, b} = 2 := by
   rw [insert_eq_cons, card_cons, card_singleton]
@@ -465,6 +465,12 @@ theorem card_eq_three {s : Multiset α} : card s = 3 ↔ ∃ x y z, s = {x, y, z
       (List.length_eq_three.mp h).imp fun _a =>
         Exists.imp fun _b => Exists.imp fun _c => congr_arg _,
     fun ⟨_a, _b, _c, e⟩ => e.symm ▸ rfl⟩
+
+theorem card_eq_four {s : Multiset α} : card s = 4 ↔ ∃ x y z w, s = {x, y, z, w} :=
+  ⟨Quot.inductionOn s fun _l h =>
+      (List.length_eq_four.mp h).imp fun _a =>
+        Exists.imp fun _b => Exists.imp fun _c => Exists.imp fun _d => congr_arg _,
+    fun ⟨_a, _b, _c, _d, e⟩ => e.symm ▸ rfl⟩
 
 /-! ### Map for partial functions -/
 

@@ -310,10 +310,10 @@ theorem nhdsNE_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedComp
   refine (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) ?_ ?_
   · rintro s ⟨hs, hso⟩
     refine ⟨_, (isOpen_iff_of_mem hs).mp hso, ?_⟩
-    simp [Subset.rfl]
+    simp
   · rintro s ⟨h₁, h₂⟩
     refine ⟨_, ⟨mem_compl infty_notMem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, ?_⟩
-    simp [compl_image_coe, ← diff_eq, subset_preimage_image]
+    simp [compl_image_coe, ← diff_eq]
 
 @[deprecated (since := "2025-03-02")]
 alias nhdsWithin_compl_infty_eq := nhdsNE_infty_eq
@@ -368,7 +368,7 @@ theorem tendsto_nhds_infty {α : Type*} {f : OnePoint X → α} {l : Filter α} 
       ∀ s ∈ l, f ∞ ∈ s ∧ ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
   tendsto_nhds_infty'.trans <| by
     simp only [tendsto_pure_left, hasBasis_coclosedCompact.tendsto_left_iff, forall_and,
-      and_assoc, exists_prop]
+      and_assoc]
 
 theorem continuousAt_infty' {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} :
     ContinuousAt f ∞ ↔ Tendsto (f ∘ (↑)) (coclosedCompact X) (𝓝 (f ∞)) :=
@@ -644,7 +644,7 @@ open OnePoint
 to the homeomorphism of their one point compactifications. -/
 @[simps]
 def onePointCongr (h : X ≃ₜ Y) : OnePoint X ≃ₜ OnePoint Y where
-  __ := h.toEquiv.optionCongr
+  __ := h.toEquiv.withTopCongr
   toFun := OnePoint.map h
   invFun := OnePoint.map h.symm
   continuous_toFun := continuous_map (map_continuous h) h.map_coclosedCompact.le

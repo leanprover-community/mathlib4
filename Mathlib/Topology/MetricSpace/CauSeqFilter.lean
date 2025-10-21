@@ -62,7 +62,7 @@ theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
   rcases mem_uniformity_dist.1 hs with ⟨ε, ⟨hε, hεs⟩⟩
   obtain ⟨N, hN⟩ := CauSeq.cauchy₂ f hε
   exists { n | n ≥ N }.image f
-  simp only [exists_prop, mem_atTop_sets, mem_map, mem_image, mem_setOf_eq]
+  simp only [mem_atTop_sets, mem_map]
   constructor
   · exists N
     intro b hb

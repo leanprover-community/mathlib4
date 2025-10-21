@@ -176,7 +176,7 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
   induction k with
   | zero =>
     simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
-      zero_eq, zero_add, range_one, sum_singleton, nonpos_iff_eq_zero, tsub_zero,
+      zero_add, range_one, sum_singleton, tsub_zero,
       choose_self, cast_one, div_one, cast_le]
     exact card_le_card (slice_subset_falling _ _)
   | succ k ih =>
@@ -184,9 +184,8 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
       card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜),
       cast_add, _root_.add_div, add_comm]
     rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
-    exact add_le_add_left ((ih <| le_of_succ_le hk).trans <|
-      local_lubell_yamamoto_meshalkin_inequality_div
-        (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <| sized_falling _ _) _
+    grw [ih <| le_of_succ_le hk, local_lubell_yamamoto_meshalkin_inequality_div
+      (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <| sized_falling _ _]
 
 end Falling
 

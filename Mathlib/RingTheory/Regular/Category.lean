@@ -19,7 +19,7 @@ open CategoryTheory Ideal Pointwise
 lemma LinearMap.exact_smul_id_smul_top_mkQ (M : Type v) [AddCommGroup M] [Module R M] (r : R) :
     Function.Exact (r • LinearMap.id : M →ₗ[R] M) (r • (⊤ : Submodule R M)).mkQ := by
   intro x
-  simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.ideal_span_singleton_smul r ⊤,
+  simp [Submodule.mem_smul_pointwise_iff_exists,
     Submodule.mem_smul_pointwise_iff_exists]
 
 namespace ModuleCat

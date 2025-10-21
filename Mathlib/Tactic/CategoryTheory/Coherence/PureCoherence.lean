@@ -178,9 +178,9 @@ def pureCoherence (ρ : Type) [Context ρ] [MkMor₂ (CoherenceM ρ)]
         | throwError "coherence requires an equality goal"
       let ctx : ρ ← mkContext η
       CoherenceM.run (ctx := ctx) do
-        let .some ηIso := (← MkMor₂.ofExpr η).isoLift? |
+        let some ηIso := (← MkMor₂.ofExpr η).isoLift? |
           throwError "could not find a structural isomorphism, but {η}"
-        let .some θIso := (← MkMor₂.ofExpr θ).isoLift? |
+        let some θIso := (← MkMor₂.ofExpr θ).isoLift? |
           throwError "could not find a structural isomorphism, but {θ}"
         let f ← ηIso.e.srcM
         let g ← ηIso.e.tgtM

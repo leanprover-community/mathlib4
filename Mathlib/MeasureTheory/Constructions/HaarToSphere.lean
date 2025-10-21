@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Field.Pointwise
-import Mathlib.Analysis.NormedSpace.SphereNormEquiv
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.Normed.Module.Ball.RadialEquiv
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
@@ -75,6 +75,17 @@ theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
 theorem toSphere_real_apply_univ : μ.toSphere.real univ = dim E * μ.real (ball 0 1) := by
   simp [measureReal_def]
 
+theorem toSphere_eq_zero_iff_finrank : μ.toSphere = 0 ↔ dim E = 0 := by
+  rw [← measure_univ_eq_zero, toSphere_apply_univ]
+  simp [IsOpen.measure_ne_zero]
+
+theorem toSphere_eq_zero_iff : μ.toSphere = 0 ↔ Subsingleton E :=
+  μ.toSphere_eq_zero_iff_finrank.trans Module.finrank_zero_iff
+
+@[simp]
+theorem toSphere_ne_zero [Nontrivial E] : μ.toSphere ≠ 0 := by
+  simp [toSphere_eq_zero_iff, not_subsingleton]
+
 instance : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
     rw [toSphere_apply_univ']
@@ -133,6 +144,24 @@ end Measure
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   [Nontrivial E] (μ : Measure E) [FiniteDimensional ℝ E] [BorelSpace E] [μ.IsAddHaarMeasure]
+
+lemma integrable_fun_norm_addHaar {f : ℝ → F} :
+    Integrable (f ‖·‖) μ ↔ IntegrableOn (fun y : ℝ ↦ y ^ (dim E - 1) • f y) (Ioi 0) := by
+  have := μ.measurePreserving_homeomorphUnitSphereProd.integrable_comp_emb (g := f ∘ (↑) ∘ Prod.snd)
+    (Homeomorph.measurableEmbedding _)
+  simp only [comp_def, homeomorphUnitSphereProd_apply_snd_coe] at this
+  rw [← restrict_compl_singleton (μ := μ) 0, ← IntegrableOn,
+    integrableOn_iff_comap_subtypeVal (by measurability), comp_def, this,
+    Integrable.comp_snd_iff (β := Ioi 0) (f := (f <| Subtype.val ·)),
+    integrableOn_iff_comap_subtypeVal, comp_def, Measure.volumeIoiPow,
+    integrable_withDensity_iff_integrable_smul', integrable_congr]
+  · refine .of_forall ?_
+    rintro ⟨x, hx : 0 < x⟩
+    simp (disch := positivity) [ENNReal.toReal_ofReal]
+  · fun_prop
+  · simp
+  · measurability
+  · simp
 
 lemma integral_fun_norm_addHaar (f : ℝ → F) :
     ∫ x, f (‖x‖) ∂μ = dim E • μ.real (ball 0 1) • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y :=
