@@ -825,8 +825,12 @@ section MkProperties
 
 variable {G : SimpleGraph V} {G' : SimpleGraph W}
 
+@[deprecated "Use the `Unique` instance instead." (since := "2025-10-21")]
 instance nonempty_singletonSubgraph_verts (v : V) : Nonempty (G.singletonSubgraph v).verts :=
   ⟨⟨v, Set.mem_singleton v⟩⟩
+
+instance (v : V) : Unique (G.singletonSubgraph v).verts :=
+  Set.uniqueSingleton _
 
 @[simp]
 theorem singletonSubgraph_le_iff (v : V) (H : G.Subgraph) :

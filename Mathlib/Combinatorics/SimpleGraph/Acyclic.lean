@@ -100,6 +100,33 @@ lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComp
   isConnected := c.connected_toSimpleGraph
   IsAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
 
+lemma isAcyclic_of_subsingleton [Subsingleton V] (G : SimpleGraph V) : G.IsAcyclic :=
+  fun v p hp ↦ hp.ne_nil <| match p with
+    | nil => rfl
+    | cons hadj _ => (G.irrefl <| Subsingleton.elim v _ ▸ hadj).elim
+
+lemma Subgraph.isAcyclic_coe_bot (G : SimpleGraph V) : (⊥ : G.Subgraph).coe.IsAcyclic :=
+  @isAcyclic_of_subsingleton _ (Set.isEmpty_coe_sort.mpr rfl).instSubsingleton _
+
+lemma isTree_of_nonempty_of_subsingleton [Nonempty V] [Subsingleton V] (G : SimpleGraph V) :
+    G.IsTree :=
+  ⟨⟨G.preconnected_of_subsingleton⟩, G.isAcyclic_of_subsingleton⟩
+
+theorem isTree_coe_singletonSubgraph (G : SimpleGraph V) (v : V) :
+    G.singletonSubgraph v |>.coe.IsTree :=
+  isTree_of_nonempty_of_subsingleton _
+
+theorem isTree_coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |>.coe.IsTree := by
+  refine ⟨⟨fun u' v' ↦ ?_⟩, fun w p hp ↦ ?_⟩
+  · have : (G.subgraphOfAdj h).verts = {u, v} := rfl
+    cases (by grind [Sym2.eq_iff] : u'.val = v'.val ∨ s(u, v) = s(u'.val, v'.val))
+    · grind [Reachable.refl]
+    · exact Adj.reachable <| by assumption
+  · have : s(u, v) = s(w.val, p.snd.val) := p.adj_snd <| nil_iff_eq_nil.not.mpr hp.ne_nil
+    have : s(u, v) = s(p.penultimate.val, w.val) :=
+      p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
+    grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
+
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
   simp_rw [isBridge_iff_adj_and_forall_cycle_notMem]
