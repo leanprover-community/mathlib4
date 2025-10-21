@@ -10,7 +10,7 @@ import Mathlib.GroupTheory.GroupAction.Defs
 For any `w : α × bool`, `FreeGroup.startsWith w` is the set of all elemenents of `FreeGroup α` that
 start with `w`.
 
-The main theorem `Orbit.duplicate` proves that applying `w⁻¹` to the Orbit of `x` under the action
+The main theorem `Orbit.duplicate` proves that applying `w⁻¹` to the orbit of `x` under the action
 of `FreeGroup.startsWith w` yields the orbit of `x` under the action of `FreeGroup.startsWith v`
 for every `v ≠ w⁻¹` (and the point `x`).
 -/
