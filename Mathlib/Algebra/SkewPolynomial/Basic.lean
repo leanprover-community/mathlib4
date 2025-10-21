@@ -60,7 +60,7 @@ The definition is inspired of [Papikian2023].
 Skew Polynomials, Twisted Polynomials.
 
 ## TODO :
-  - Add algebra instance (need the algebra instance in `SkewMonoidAlgebra`)
+  - Add algebra instance
   - Add `ext` lemma in terms of `Coeff`.
 -/
 
