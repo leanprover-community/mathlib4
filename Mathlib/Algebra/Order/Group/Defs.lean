@@ -55,10 +55,6 @@ instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
 ### Linearly ordered commutative groups
 -/
 
-
-attribute [nolint docBlame]
-  LinearOrderedCommGroup.toLinearOrder LinearOrderedAddCommGroup.toLinearOrder
-
 section LinearOrderedCommGroup
 
 variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
@@ -86,14 +82,14 @@ theorem exists_one_lt' [Nontrivial α] : ∃ a : α, 1 < a := by
   · exact ⟨y, h⟩
 
 -- see Note [lower instance priority]
-@[to_additive]
+@[to_additive LinearOrderedAddCommGroup.to_noMaxOrder]
 instance (priority := 100) LinearOrderedCommGroup.to_noMaxOrder [Nontrivial α] : NoMaxOrder α :=
   ⟨by
     obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt'
     exact fun a => ⟨a * y, lt_mul_of_one_lt_right' a hy⟩⟩
 
 -- see Note [lower instance priority]
-@[to_additive]
+@[to_additive LinearOrderedAddCommGroup.to_noMinOrder]
 instance (priority := 100) LinearOrderedCommGroup.to_noMinOrder [Nontrivial α] : NoMinOrder α :=
   ⟨by
     obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt'
