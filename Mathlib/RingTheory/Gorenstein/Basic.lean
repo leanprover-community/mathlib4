@@ -534,9 +534,36 @@ lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M] 
     Nontrivial (Ext.{w} (ModuleCat.of (Localization q.1.primeCompl)
       (Shrink.{v} q.1.ResidueField)) (M.localizedModule q.1.primeCompl) (i + 1)) := by
   by_contra! sub
-  /- Shrink.{v} (Localization q.asIdeal.primeCompl ⧸
-    (p.1.map (algebraMap R (Localization q.asIdeal.primeCompl))))
-  -/
+  /-let _ : Module.Finite (Localization q.asIdeal.primeCompl) M :=
+    Module.Finite.equiv (Shrink.linearEquiv (Localization q.1.primeCompl) _).symm-/
+  let _ : Module.Finite (Localization q.1.primeCompl) (M.localizedModule q.1.primeCompl) :=
+    Module.Finite.equiv (Shrink.linearEquiv (Localization q.1.primeCompl) _).symm
+  let f := (algebraMap R (Localization q.1.primeCompl))
+  have disj : Disjoint (q.asIdeal.primeCompl : Set R) p.asIdeal := by
+    rw [← le_compl_iff_disjoint_left]
+    intro r hr
+    simpa using le_of_lt lt hr
+  let _ : (p.1.map f).IsPrime :=
+    IsLocalization.isPrime_of_isPrime_disjoint q.1.primeCompl _ _ p.2 disj
+  have ne : p.1.map f ≠ maximalIdeal (Localization q.1.primeCompl) := sorry
+  have sub' : Subsingleton (Ext (ModuleCat.of (Localization q.1.primeCompl) (Shrink.{v}
+    (Localization q.1.primeCompl ⧸ (p.1.map f)))) (M.localizedModule q.1.primeCompl) i) := by
+    apply ext_subsingleton_of_all_gt (M.localizedModule q.1.primeCompl) i (p.1.map f) ne
+    intro r rgt hr
+    have cgt : r.comap f > p.1 := by
+      rw [← IsLocalization.comap_map_of_isPrime_disjoint q.1.primeCompl
+        (Localization q.1.primeCompl) p.1 p.2 disj]
+      apply lt_of_le_of_ne (Ideal.comap_mono (le_of_lt rgt))
+      apply ne_of_apply_ne (Ideal.map f)
+      rw [IsLocalization.map_comap q.1.primeCompl, IsLocalization.map_comap q.1.primeCompl]
+      exact ne_of_lt rgt
+    have cle : r.comap f ≤ q.1 := le_of_le_of_eq (Ideal.comap_mono (le_maximalIdeal_of_isPrime r))
+        (IsLocalization.AtPrime.comap_maximalIdeal (Localization q.1.primeCompl) q.1)
+    have ceq : r.comap f = q.1 := by simp [← eq_of_le ⟨r.comap f, r.comap_isPrime f⟩ cgt cle]
+    rw [← IsLocalization.map_comap q.1.primeCompl _ r, ceq,
+      Localization.AtPrime.map_eq_maximalIdeal]
+    exact sub
+
   sorry
 
 end
