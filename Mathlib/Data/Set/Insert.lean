@@ -37,8 +37,15 @@ variable {α : Type u} {s t : Set α} {a b : α}
 theorem insert_def (x : α) (s : Set α) : insert x s = { y | y = x ∨ y ∈ s } :=
   rfl
 
-@[simp, grind]
+@[simp]
 theorem subset_insert (x : α) (s : Set α) : s ⊆ insert x s := fun _ => Or.inr
+
+-- This is a fairly aggressive pattern; it might be safer to use
+-- `s ⊆ insert x s` or `_ ⊆ insert x s` instead.
+-- Currently Cslib relies on this.
+-- See `MathlibTest/grind/set.lean` for a test case illustrating the reasoning
+-- that Cslib is relying on.
+grind_pattern subset_insert => insert x s
 
 theorem mem_insert (x : α) (s : Set α) : x ∈ insert x s :=
   Or.inl rfl
