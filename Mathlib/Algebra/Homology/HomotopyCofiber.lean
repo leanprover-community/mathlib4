@@ -29,7 +29,7 @@ morphisms `φ₀ φ₁ : K ⟶ M` and a homotopy `h : Homotopy φ₀ φ₁`,
 see `cylinder.desc`. There is also a homotopy equivalence
 `cylinder.homotopyEquiv K : HomotopyEquiv K.cylinder K`. From the construction of
 the cylinder, we deduce the lemma `Homotopy.map_eq_of_inverts_homotopyEquivalences`
-which assert that if a functor inverts homotopy equivalences, then the image of
+which asserts that if a functor inverts homotopy equivalences, then the images of
 two homotopic maps are equal.
 
 -/

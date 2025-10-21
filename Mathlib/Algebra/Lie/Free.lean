@@ -109,9 +109,9 @@ and `f : α → L` is any function, then this function is the composite of
 `FreeLieAlgebra.of R` and a unique Lie algebra homomorphism
 `FreeLieAlgebra.lift R f : FreeLieAlgebra R α →ₗ⁅R⁆ L`.
 
-A typical element of `FreeLieAlgebra R α` is a `R`-linear combination of
+A typical element of `FreeLieAlgebra R α` is an `R`-linear combination of
 formal brackets of elements of `α`. For example if `x` and `y` are terms of type `α`
-and `a` and `b` are term of type `R` then
+and `a` and `b` are terms of type `R` then
 `(3 * a * a) • ⁅⁅x, y⁆, x⁆ - (2 * b - 1) • ⁅y, x⁆` is a "typical" element of `FreeLieAlgebra R α`.
 -/
 def FreeLieAlgebra :=

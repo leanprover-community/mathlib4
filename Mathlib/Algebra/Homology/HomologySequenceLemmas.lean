@@ -19,10 +19,10 @@ Then, we shall show in this file that if two out of the three maps `φ.τ₁`,
 `φ.τ₂`, `φ.τ₃` are quasi-isomorphisms, then the third is. We also obtain
 more specific separate lemmas which gives sufficient condition for one
 of these three morphisms to induce a mono/epi/iso in a given degree
-in terms of properties of the two others in the same or neighboring degrees.
+in terms of properties of the other two in the same or neighboring degrees.
 
 So far, we state only four lemmas for `φ.τ₃`. Eight more similar lemmas
-for `φ.τ₁` and `φ.τ₂` shall be also obtained (TODO).
+for `φ.τ₁` and `φ.τ₂` shall also be obtained (TODO).
 
 -/
 

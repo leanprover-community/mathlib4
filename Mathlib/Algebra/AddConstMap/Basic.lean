@@ -22,7 +22,7 @@ for bundled maps satisfying `f (x + a) = f x + b`.
 We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
 
 - maps between circles of different lengths;
-- self-maps $f\colon S^1\to  S^1$ of degree other than one,
+- self-maps $f\colon S^1\to S^1$ of degree other than one,
   including orientation-reversing maps.
 -/
 
@@ -31,7 +31,7 @@ assert_not_exists Finset
 open Function Set
 
 /-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`,
-denoted as `f: G →+c[a, b] H`.
+denoted as `f : G →+c[a, b] H`.
 
 One can think about `f` as a lift to `G` of a map between two `AddCircle`s. -/
 structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where

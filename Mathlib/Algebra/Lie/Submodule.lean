@@ -402,7 +402,7 @@ theorem iSup_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
     (↑(⨆ i, p i) : Submodule R M) = ⨆ i, (p i : Submodule R M) := by
   rw [iSup, sSup_toSubmodule]; ext; simp [Submodule.mem_sSup, Submodule.mem_iSup]
 
-/-- The set of Lie submodules of a Lie module form a complete lattice. -/
+/-- The set of Lie submodules of a Lie module forms a complete lattice. -/
 instance : CompleteLattice (LieSubmodule R L M) :=
   { toSubmodule_injective.completeLattice toSubmodule sup_toSubmodule inf_toSubmodule
       sSup_toSubmodule_eq_iSup sInf_toSubmodule_eq_iInf rfl rfl with

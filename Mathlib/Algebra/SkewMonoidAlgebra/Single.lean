@@ -7,7 +7,7 @@ import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 /-!
 # Modifying skew monoid algebra at exactly one point
 
-This file contains basic results on updating/erasing an element of a skew monoid algebras using
+This file contains basic results on updating/erasing an element of a skew monoid algebra using
 one point of the domain.
 -/
 
@@ -79,7 +79,7 @@ section update
 
 variable {M α : Type*} [AddCommMonoid M] (f : SkewMonoidAlgebra M α) (a a' : α) (b : M)
 
-/-- Replace the coefficent of an element `f` of a skew monoid algebra at a given point `a : α` by
+/-- Replace the coefficient of an element `f` of a skew monoid algebra at a given point `a : α` by
 a given value `b : M`.
 If `b = 0`, this amounts to removing `a` from the support of `f`.
 Otherwise, if `a` was not in the `support` of `f`, it is added to it. -/

@@ -62,7 +62,7 @@ noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
 /-- The right inclusion in the mapping cone. -/
 noncomputable def inr : G ⟶ mappingCone φ := homotopyCofiber.inr φ
 
-/-- The first projection from the mapping cone, as a cocyle of degree `1`. -/
+/-- The first projection from the mapping cone, as a cocycle of degree `1`. -/
 noncomputable def fst : Cocycle (mappingCone φ) F 1 :=
   Cocycle.mk (Cochain.mk (fun p q hpq => homotopyCofiber.fstX φ p q hpq)) 2 (by cutsat) (by
     ext p _ rfl
