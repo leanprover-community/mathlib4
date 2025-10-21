@@ -311,7 +311,6 @@ theorem isCoseparating_iff_mono
   · simpa [β, b] using huv =≫ Pi.π (b A) ⟨⟨G, hG⟩, f⟩
   · rw [← cancel_mono (Pi.lift (Sigma.snd (β := β Y)))]
     ext ⟨⟨_, hG⟩, _⟩
-    simp
     simpa using hh _ hG _
 
 end ObjectProperty
