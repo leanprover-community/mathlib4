@@ -843,7 +843,7 @@ lemma extendRestrictScalarsAdj_homEquiv_apply
 lemma extendRestrictScalarsAdj_unit_app_apply
     {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
     (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M) :
-    (extendRestrictScalarsAdj f).unit.app M m = (1 : S)⊗ₜ[R,f]m :=
+    (extendRestrictScalarsAdj f).unit.app M m = (1 : S) ⊗ₜ[R,f] m :=
   rfl
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
@@ -924,7 +924,7 @@ lemma homEquiv_extendScalarsComp (M : ModuleCat R₁) :
 
 lemma extendScalarsComp_hom_app_one_tmul (M : ModuleCat R₁) (m : M) :
     (extendScalarsComp f₁₂ f₂₃).hom.app M ((1 : R₃) ⊗ₜ m) =
-      (1 : R₃)⊗ₜ[R₂,f₂₃]((1 : R₂)⊗ₜ[R₁,f₁₂]m) := by
+      (1 : R₃) ⊗ₜ[R₂,f₂₃] ((1 : R₂) ⊗ₜ[R₁,f₁₂] m) := by
   rw [← extendRestrictScalarsAdj_homEquiv_apply, homEquiv_extendScalarsComp]
   rfl
 
