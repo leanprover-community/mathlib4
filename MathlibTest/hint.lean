@@ -20,15 +20,21 @@ import Mathlib.Tactic.TautoSet
 
 /--
 info: Try these:
-  [apply] 🎉 linarith
+  [apply] 🎉 trivial
+  [apply] norm_num
+  Remaining subgoals:
+  ⊢ False
 -/
 #guard_msgs in
 example (h : 1 < 0) : False := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 exact f p
+  [apply] 🎉 simp_all only [forall_const]
   [apply] norm_num
+  Remaining subgoals:
+  ⊢ Q
+  [apply] group
   Remaining subgoals:
   ⊢ Q
 -/
@@ -41,13 +47,28 @@ info: Try these:
   [apply] norm_num
   Remaining subgoals:
   ⊢ Q ∧ P ∧ R
+  [apply] group
+  Remaining subgoals:
+  ⊢ Q ∧ P ∧ R
 -/
 #guard_msgs in
 example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 linarith
+  [apply] 🎉 exact Std.not_gt_of_lt h
+  [apply] intro
+  Remaining subgoals:
+  ⊢ False
+  [apply] norm_num
+  Remaining subgoals:
+  ⊢ a ≤ b
+  [apply] group
+  Remaining subgoals:
+  ⊢ ¬b < a
+  [apply] simp_all only [not_lt]
+  Remaining subgoals:
+  ⊢ a ≤ b
 -/
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
@@ -55,6 +76,9 @@ example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 /--
 info: Try these:
   [apply] 🎉 ring
+  [apply] noncomm_ring
+  Remaining subgoals:
+  ⊢ 1369 • 1 - 1225 • 1 = 72 • 2
 -/
 #guard_msgs in
 example : 37^2 - 35^2 = 72 * 2 := by hint
@@ -74,13 +98,16 @@ example : Nat.Prime 37 := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 aesop
+  [apply] 🎉 grind
   [apply] ring_nf
   Remaining subgoals:
   ⊢ ∃ x, P x ∧ 0 ≤ x
   [apply] norm_num
   Remaining subgoals:
   ⊢ ∃ x, P x
+  [apply] group
+  Remaining subgoals:
+  ⊢ ∃ x, P x ∧ 0 ≤ x
   [apply] simp_all only [zero_le, and_true]
   Remaining subgoals:
   ⊢ ∃ x, P x
@@ -142,6 +169,9 @@ info: Try these:
   [apply] norm_num
   Remaining subgoals:
   ⊢ False
+  [apply] group
+  Remaining subgoals:
+  ⊢ 2 ≤ 1
   [apply] simp_all only [Nat.not_ofNat_le_one]
   Remaining subgoals:
   ⊢ False
@@ -178,6 +208,9 @@ info: Try these:
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
   [apply] norm_num
+  Remaining subgoals:
+  ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  [apply] group
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
 -/
