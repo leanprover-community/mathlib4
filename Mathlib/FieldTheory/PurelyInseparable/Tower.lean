@@ -84,7 +84,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
       Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
-  refine pow_eq_zero ((hlF _).symm.trans ?_)
+  refine eq_zero_of_pow_eq_zero ((hlF _).symm.trans ?_)
   convert map_zero (algebraMap F E)
   exact congr($h i)
 
@@ -269,7 +269,6 @@ theorem minpoly.map_eq_of_isSeparable_of_isPurelyInseparable (x : K)
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep'
   have := Algebra.IsSeparable.isAlgebraic F F⟮x⟯
-  have := Algebra.IsSeparable.isAlgebraic E E⟮x⟯
   rw [Polynomial.natDegree_map, ← adjoin.finrank hi, ← adjoin.finrank hi',
     ← finSepDegree_eq_finrank_of_isSeparable F _, ← finSepDegree_eq_finrank_of_isSeparable E _,
     finSepDegree_eq, finSepDegree_eq,

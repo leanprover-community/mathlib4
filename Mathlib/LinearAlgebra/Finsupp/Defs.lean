@@ -11,7 +11,7 @@ import Mathlib.Data.Finsupp.SMul
 # Properties of the module `α →₀ M`
 
 Given an `R`-module `M`, the `R`-module structure on `α →₀ M` is defined in
-`Data.Finsupp.Basic`.
+`Mathlib/Data/Finsupp/SMul.lean`.
 
 In this file we define `LinearMap` versions of various maps:
 
@@ -88,7 +88,7 @@ theorem lhom_ext ⦃φ ψ : (α →₀ M) →ₛₗ[σ₁₂] N⦄ (h : ∀ a b,
 We formulate this fact using equality of linear maps `φ.comp (lsingle a)` and `ψ.comp (lsingle a)`
 so that the `ext` tactic can apply a type-specific extensionality lemma to prove equality of these
 maps. E.g., if `M = R`, then it suffices to verify `φ (single a 1) = ψ (single a 1)`. -/
--- Porting note: The priority should be higher than `LinearMap.ext`.
+-- The priority should be higher than `LinearMap.ext`.
 @[ext high]
 theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₛₗ[σ₁₂] N⦄ (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) :
     φ = ψ :=
@@ -251,8 +251,7 @@ theorem mapRange.linearEquiv_symm (f : M ≃ₛₗ[σ₁₂] N) :
     ((mapRange.linearEquiv f).symm : (α →₀ _) ≃ₛₗ[σ₂₁] _) = mapRange.linearEquiv f.symm :=
   LinearEquiv.ext fun _x => rfl
 
--- Porting note: This priority should be higher than `LinearEquiv.coe_toAddEquiv`.
-@[simp 1500]
+@[simp]
 theorem mapRange.linearEquiv_toAddEquiv (f : M ≃ₛₗ[σ₁₂] N) :
     (mapRange.linearEquiv f).toAddEquiv = (mapRange.addEquiv f.toAddEquiv : (α →₀ M) ≃+ _) :=
   AddEquiv.ext fun _ => rfl

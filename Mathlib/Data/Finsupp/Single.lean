@@ -73,7 +73,11 @@ theorem single_eq_same : (single a b : α →₀ M) a = b := by
   classical exact Pi.single_eq_same (M := fun _ ↦ M) a b
 
 @[simp]
-theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
+theorem single_eq_of_ne (h : a' ≠ a) : (single a b : α →₀ M) a' = 0 := by
+  classical exact Pi.single_eq_of_ne h _
+
+@[simp]
+theorem single_eq_of_ne' (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
   classical exact Pi.single_eq_of_ne' h _
 
 theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
@@ -106,7 +110,7 @@ theorem support_single_subset : (single a b).support ⊆ {a} := by
   split_ifs <;> [exact empty_subset _; exact Subset.refl _]
 
 theorem single_apply_mem (x) : single a b x ∈ ({0, b} : Set M) := by
-  rcases em (a = x) with (rfl | hx) <;> [simp; simp [single_eq_of_ne hx]]
+  rcases em (x = a) with (rfl | hx) <;> [simp; simp [hx]]
 
 theorem range_single_subset : Set.range (single a b) ⊆ {0, b} :=
   Set.range_subset_iff.2 single_apply_mem
@@ -130,8 +134,8 @@ theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆
   refine ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, ?_⟩
   rintro ⟨h, rfl⟩
   ext x
-  by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
-  exact notMem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx)).symm) hx)
+  by_cases hx : x = a <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
+  exact notMem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx))) hx)
 
 theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     single a₁ b₁ = single a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ b₁ = 0 ∧ b₂ = 0 := by
@@ -143,7 +147,7 @@ theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     · rw [DFunLike.ext_iff] at eq
       have h₁ := eq a₁
       have h₂ := eq a₂
-      simp only [single_eq_same, single_eq_of_ne h, single_eq_of_ne (Ne.symm h)] at h₁ h₂
+      simp only [single_eq_same, single_eq_of_ne h, single_eq_of_ne' h] at h₁ h₂
       exact Or.inr ⟨h₁, h₂.symm⟩
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
     · rfl
@@ -238,7 +242,6 @@ theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
 @[simp]
 theorem equivFunOnFinite_single [DecidableEq α] [Finite α] (x : α) (m : M) :
     Finsupp.equivFunOnFinite (Finsupp.single x m) = Pi.single x m := by
-  ext
   simp [Finsupp.single_eq_pi_single, equivFunOnFinite]
 
 @[simp]
@@ -296,10 +299,7 @@ theorem update_self : f.update a (f a) = f := by
     simp
 
 @[simp]
-theorem zero_update : update 0 a b = single a b := by
-  classical
-    ext
-    rw [single_eq_update, coe_update, coe_zero]
+theorem zero_update : update 0 a b = single a b := rfl
 
 theorem support_update [DecidableEq α] [DecidableEq M] :
     support (f.update a b) = if b = 0 then f.support.erase a else insert a f.support := by
@@ -391,11 +391,11 @@ theorem erase_single {a : α} {b : M} : erase a (single a b) = 0 := by
   ext s; by_cases hs : s = a
   · rw [hs, erase_same, coe_zero, Pi.zero_apply]
   · rw [erase_ne hs]
-    exact single_eq_of_ne (Ne.symm hs)
+    exact single_eq_of_ne hs
 
 theorem erase_single_ne {a a' : α} {b : M} (h : a ≠ a') : erase a (single a' b) = single a' b := by
   ext s; by_cases hs : s = a
-  · rw [hs, erase_same, single_eq_of_ne h.symm]
+  · rw [hs, erase_same, single_eq_of_ne h]
   · rw [erase_ne hs]
 
 @[simp]
@@ -499,7 +499,7 @@ theorem zipWith_single_single (f : M → N → P) (hf : f 0 0 = 0) (a : α) (m :
     zipWith f hf (single a m) (single a n) = single a (f m n) := by
   ext a'
   rw [zipWith_apply]
-  obtain rfl | ha' := eq_or_ne a a'
+  obtain rfl | ha' := eq_or_ne a' a
   · rw [single_eq_same, single_eq_same, single_eq_same]
   · rw [single_eq_of_ne ha', single_eq_of_ne ha', single_eq_of_ne ha', hf]
 

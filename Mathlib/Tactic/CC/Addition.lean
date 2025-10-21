@@ -304,19 +304,19 @@ def eraseRBHSOccs (lhs rhs : ACApps) : CCM Unit := do
   eraseROccs lhs lhs true
   eraseROccs rhs lhs false
 
-/-- Insert `lhs` to the occurrences of arguments of `e` on the right hand side of
+/-- Insert `lhs` to the occurrences of arguments of `e` on the right-hand side of
 an equality in `acR`. -/
 @[inline]
 def insertRRHSOccs (e lhs : ACApps) : CCM Unit :=
   insertROccs e lhs false
 
-/-- Erase `lhs` to the occurrences of arguments of `e` on the right hand side of
+/-- Erase `lhs` to the occurrences of arguments of `e` on the right-hand side of
 an equality in `acR`. -/
 @[inline]
 def eraseRRHSOccs (e lhs : ACApps) : CCM Unit :=
   eraseROccs e lhs false
 
-/-- Try to simplify the right hand sides of equalities in `acR` by `H : lhs = rhs`. -/
+/-- Try to simplify the right-hand sides of equalities in `acR` by `H : lhs = rhs`. -/
 def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
   let some x := (← get).getVarWithLeastRHSOccs lhs | failure
   let some ent := (← get).acEntries[x]? | failure
@@ -339,7 +339,7 @@ def composeAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
           (oldRw ++ ofFormat (Format.line ++ "with" ++ .line) ++ newRw) ++
             ofFormat (Format.line ++ ":=" ++ .line) ++ ccs.ppACApps newRrhs)
 
-/-- Try to simplify the left hand sides of equalities in `acR` by `H : lhs = rhs`. -/
+/-- Try to simplify the left-hand sides of equalities in `acR` by `H : lhs = rhs`. -/
 def collapseAC (lhs rhs : ACApps) (H : DelayedExpr) : CCM Unit := do
   let some x := (← get).getVarWithLeastLHSOccs lhs | failure
   let some ent := (← get).acEntries[x]? | failure
@@ -894,11 +894,11 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
     ```
     t ▸ p ≍ p
 
-    theorem eqRec_heq'.{l₁, l₂} : ∀ {A : Sort l₂} {a : A} {P : (a' : A) → a = a' → Sort l₁}
-      (p : P a) {a' : A} (H : a = a'), @Eq.rec.{l₁ l₂} A a P p a' H ≍ p
+    theorem eqRec_heq_self.{l₁, l₂} : ∀ {A : Sort l₁} {a : A} {P : (a' : A) → a = a' → Sort l₂}
+      (p : P a rfl) {a' : A} (H : a = a'), HEq (@Eq.rec.{l₁ l₂} A a P p a' H) p
     ```
     -/
-    let proof := mkApp6 (.const ``eqRec_heq' [l₁, l₂]) A a P p a' H
+    let proof := mkApp6 (.const ``eqRec_heq_self [l₁, l₂]) A a P p a' H
     pushHEq e p proof
 
   if let .app (.app (.app (.const ``Ne [l₁]) α) a) b := e then

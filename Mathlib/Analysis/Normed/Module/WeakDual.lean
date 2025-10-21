@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+import Mathlib.Analysis.Normed.Operator.Completeness
 import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
@@ -54,10 +54,6 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 * Add the sequential Banach-Alaoglu theorem: the dual unit ball of a separable normed space `E`
   is sequentially compact in the weak-star topology. This would follow from the metrizability above.
 
-## Notations
-
-No new notation is introduced.
-
 ## Implementation notes
 
 Weak-* topology is defined generally in the file `Topology.Algebra.Module.WeakDual`.
@@ -102,7 +98,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module R M]
 /-- For vector spaces `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
 mapping). It is a linear equivalence. -/
 def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
-  LinearEquiv.refl R (M →L[R] R)
+  LinearEquiv.refl R (StrongDual R M)
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.toWeakDual := toWeakDual
 
@@ -240,7 +236,7 @@ theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E
   isClosed_image_coe_of_bounded_of_closed (isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds)
     (isClosed_polar _ _)
 
-/-- The image under `↑ : NormedSpace.Dual 𝕜 E → (E → 𝕜)` of a polar `polar 𝕜 s` of a
+/-- The image under `↑ : StrongDual 𝕜 E → (E → 𝕜)` of a polar `polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
 theorem _root_.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E}
     (s_nhds : s ∈ 𝓝 (0 : E)) :

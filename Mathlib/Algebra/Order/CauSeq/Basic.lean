@@ -432,11 +432,9 @@ theorem limZero_congr {f g : CauSeq β abv} (h : f ≈ g) : LimZero f ↔ LimZer
 
 theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
     ∃ K > 0, ∃ i, ∀ j ≥ i, K ≤ abv (f j) := by
-  haveI := Classical.propDecidable
   by_contra nk
   refine hf fun ε ε0 => ?_
-  simp? [not_forall] at nk says
-    simp only [gt_iff_lt, ge_iff_le, not_exists, not_and, not_forall, not_le] at nk
+  simp only [not_exists, not_and, not_forall, not_le] at nk
   obtain ⟨i, hi⟩ := f.cauchy₃ (half_pos ε0)
   rcases nk _ (half_pos ε0) i with ⟨j, ij, hj⟩
   refine ⟨j, fun k jk => ?_⟩
@@ -604,7 +602,9 @@ protected theorem mul_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f * g
       mul_le_mul h₁ h₂ (le_of_lt G0) (le_trans (le_of_lt F0) h₁)⟩
 
 theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
-  rcases Classical.em (LimZero f) with h | h <;> simp [*]
+  rcases Classical.em (LimZero f) with h | h
+  · simp [*]
+  simp only [false_or, h]
   rcases abv_pos_of_not_limZero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
   refine (le_total 0 (f i)).imp ?_ ?_ <;>

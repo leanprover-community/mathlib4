@@ -190,7 +190,8 @@ def check_workflow_uses_action(repo: Dict[str, str], workflow_name: str, expecte
     except KeyError:
         if not silent:
             # Splat out the repo data and workflow data in order to not mutate the original.
-            example_entry = {**repo, 'workflows': {**repo['workflows'], workflow_name: f'{workflow_name}.yml'}}
+            existing_workflows = repo.get('workflows', {})
+            example_entry = {**repo, 'workflows': {**existing_workflows, workflow_name: f'{workflow_name}.yml'}}
             yaml_example_entry = yaml.dump(example_entry)
             print(
 f"""  {FAIL} Consider adding a {workflow_name} workflow.
@@ -256,7 +257,7 @@ f"""  {FAIL} No toolchain tags found.
     Adding a tag for new releases helps users of your project to synchronize versions.
     A GitHub Action exists to handle tagging new releases for you.
     See https://github.com/leanprover-community/lean-release-tag/blob/HEAD/README.md for installation instructions.""")
-        
+
         success = check_workflow_uses_action(repo, 'build', 'leanprover/lean-action') and success
         success = check_workflow_uses_action(repo, 'docs', 'leanprover-community/docgen-action') and success
         success = check_workflow_uses_action(repo, 'release-tag', 'leanprover-community/lean-release-tag') and success

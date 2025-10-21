@@ -124,9 +124,9 @@ theorem map_inf (f : F) {p q : Submodule R M} (hf : Injective f) :
     (p ⊓ q).map f = p.map f ⊓ q.map f :=
   SetLike.coe_injective <| Set.image_inter hf
 
-lemma map_iInf {ι : Type*} [Nonempty ι] {p : ι → Submodule R M} (f : F) (hf : Injective f) :
+lemma map_iInf {ι : Sort*} [Nonempty ι] {p : ι → Submodule R M} (f : F) (hf : Injective f) :
     (⨅ i, p i).map f = ⨅ i, (p i).map f :=
-  SetLike.coe_injective <| by simpa only [map_coe, iInf_coe] using hf.injOn.image_iInter_eq
+  SetLike.coe_injective <| by simpa only [map_coe, coe_iInf] using hf.injOn.image_iInter_eq
 
 theorem range_map_nonempty (N : Submodule R M) :
     (Set.range (fun ϕ => Submodule.map ϕ N : (M →ₛₗ[σ₁₂] M₂) → Submodule R₂ M₂)).Nonempty :=
@@ -671,7 +671,7 @@ open Submodule
 
 theorem map_codRestrict [RingHomSurjective σ₂₁] (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (h p') :
     Submodule.map (codRestrict p f h) p' = comap p.subtype (p'.map f) :=
-  Submodule.ext fun ⟨x, hx⟩ => by simp [Subtype.ext_iff_val]
+  Submodule.ext fun ⟨x, hx⟩ => by simp [Subtype.ext_iff]
 
 theorem comap_codRestrict (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (hf p') :
     Submodule.comap (codRestrict p f hf) p' = Submodule.comap f (map p.subtype p') :=

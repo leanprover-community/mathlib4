@@ -38,14 +38,14 @@ theorem product_nil : ∀ l : List α, l ×ˢ (@nil β) = []
 @[simp]
 theorem mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
     (a, b) ∈ l₁ ×ˢ l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ := by
-  simp_all [SProd.sprod, product, mem_flatMap, mem_map, Prod.ext_iff, and_left_comm,
-    exists_and_left, exists_eq_left, exists_eq_right]
+  simp_all [SProd.sprod, product, mem_flatMap, mem_map, Prod.ext_iff, and_left_comm]
 
 theorem length_product (l₁ : List α) (l₂ : List β) :
     length (l₁ ×ˢ l₂) = length l₁ * length l₂ := by
-  induction' l₁ with x l₁ IH
-  · exact (Nat.zero_mul _).symm
-  · simp only [length, product_cons, length_append, IH, Nat.add_mul, Nat.one_mul, length_map,
+  induction l₁ with
+  | nil => exact (Nat.zero_mul _).symm
+  | cons x l₁ IH =>
+    simp only [length, product_cons, length_append, IH, Nat.add_mul, Nat.one_mul, length_map,
       Nat.add_comm]
 
 /-! ### sigma -/

@@ -208,7 +208,7 @@ theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
   refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
   · refine summable_of_ratio_test_tendsto_lt_one hr' ?_ ?_
     · refine (hc.eventually_ne (NNReal.coe_ne_zero.mpr hr)).mp (Eventually.of_forall ?_)
-      aesop
+      simp_all
     · simp_rw [norm_norm]
       exact tendsto_succ_norm_div_norm c hrz hc
   · filter_upwards [eventually_cofinite_ne 0] with n hn
@@ -249,13 +249,12 @@ theorem ofScalars_radius_eq_top_of_tendsto (hc : ∀ᶠ n in atTop, c n ≠ 0)
   refine radius_eq_top_of_summable_norm _ fun r' ↦ ?_
   by_cases hrz : r' = 0
   · apply Summable.comp_nat_add (k := 1)
-    simp [hrz]
-    exact (summable_const_iff 0).mpr rfl
+    simpa [hrz] using (summable_const_iff 0).mpr rfl
   · refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
     · apply summable_of_ratio_test_tendsto_lt_one zero_lt_one (hc.mp (Eventually.of_forall ?_))
       · simp only [norm_norm]
         exact mul_zero (_ : ℝ) ▸ tendsto_succ_norm_div_norm _ hrz (NNReal.coe_zero ▸ hc')
-      · aesop
+      · simp_all
     · filter_upwards [eventually_cofinite_ne 0] with n hn
       simp only [norm_mul, norm_norm, norm_pow, NNReal.norm_eq]
       gcongr
@@ -264,12 +263,12 @@ theorem ofScalars_radius_eq_top_of_tendsto (hc : ∀ᶠ n in atTop, c n ≠ 0)
 /-- If `‖c n.succ‖ / ‖c n‖` is unbounded, then the radius of convergence is zero. -/
 theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop atTop) : (ofScalars E c).radius = 0 := by
-  suffices (ofScalars E c).radius ≤ 0 by aesop
+  suffices (ofScalars E c).radius ≤ 0 by simp_all
   refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
   rw [← coe_zero, coe_le_coe]
   have := FormalMultilinearSeries.summable_norm_mul_pow _ hr
   contrapose! this
-  apply not_summable_of_ratio_norm_eventually_ge one_lt_two
+  apply not_summable_of_ratio_norm_eventually_ge ENNReal.one_lt_two
   · contrapose! hc
     apply not_tendsto_atTop_of_tendsto_nhds (a:=0)
     rw [not_frequently] at hc
@@ -283,7 +282,7 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
     · convert hc
       rw [pow_succ, div_mul_cancel_left₀, NNReal.coe_inv]
       aesop
-    · aesop
+    · simp_all
     · refine Ne.lt_of_le (fun hr' ↦ Not.elim ?_ hc) (norm_nonneg _)
       rw [← hr']
       simp [this]
@@ -314,7 +313,7 @@ theorem ofScalars_radius_eq_inv_of_tendsto_ENNReal [NormOneClass E] {r : ℝ≥0
     refine tendsto_ofReal_nhds_top.mp (Tendsto.congr' ?_ ((tendsto_add_atTop_iff_nat 1).mpr hc'))
     filter_upwards [hc'.eventually_ne top_ne_zero] with n hn
     apply (ofReal_div_of_pos (Ne.lt_of_le (Ne.symm ?_) (norm_nonneg _))).symm
-    aesop
+    simp_all
   · have hr' := toReal_ne_zero.mp hr.ne.symm
     have hr'' := toNNReal_ne_zero.mpr hr' -- this result could go in ENNReal
     convert ofScalars_radius_eq_inv_of_tendsto E c hr'' ?_

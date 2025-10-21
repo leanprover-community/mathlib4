@@ -218,11 +218,10 @@ private theorem isCycleOn_support_cycleOf_aux [DecidableEq α] [Fintype α] (f :
     · exact ⟨sameCycle_apply_right.1 (mem_support_cycleOf_iff_aux.1 h).1,
       (mem_support_cycleOf_iff_aux.1 h).2⟩
     · exact ⟨sameCycle_apply_right.2 (mem_support_cycleOf_iff_aux.1 h).1,
-      (mem_support_cycleOf_iff_aux.1 h).2⟩
-    , fun a ha b hb =>
-      by
-        rw [mem_coe, mem_support_cycleOf_iff_aux] at ha hb
-        exact ha.1.symm.trans hb.1⟩
+      (mem_support_cycleOf_iff_aux.1 h).2⟩,
+    fun a ha b hb ↦ by
+      rw [mem_coe, mem_support_cycleOf_iff_aux] at ha hb
+      exact ha.1.symm.trans hb.1⟩
 
 private theorem SameCycle.exists_pow_eq_of_mem_support_aux {f} [DecidableEq α] [Fintype α]
     [DecidableRel f.SameCycle] (h : SameCycle f x y) (hx : x ∈ f.support) :
@@ -592,7 +591,7 @@ lemma support_zpowers_of_mem_cycleFactorsFinset_le {g : Perm α}
 theorem pairwise_disjoint_of_mem_zpowers :
     Pairwise fun (i j : f.cycleFactorsFinset) ↦
       ∀ (x y : Perm α), x ∈ Subgroup.zpowers ↑i → y ∈ Subgroup.zpowers ↑j → Disjoint x y :=
-  fun c d  hcd ↦ fun x y hx hy ↦ by
+  fun c d hcd ↦ fun x y hx hy ↦ by
   obtain ⟨m, hm⟩ := hx; obtain ⟨n, hn⟩ := hy
   simp only [← hm, ← hn]
   apply Disjoint.zpow_disjoint_zpow

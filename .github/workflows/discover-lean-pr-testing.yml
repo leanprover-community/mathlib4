@@ -71,7 +71,7 @@ jobs:
         # Fetch the $OLD tag
         git fetch --depth=1 origin tag "$OLD" --no-tags
         # Fetch the $NEW tag.
-        # This will only fetch commits newer than previously fetched commits (ie $OLD)
+        # This will only fetch commits newer than previously fetched commits (i.e. $OLD)
         git fetch origin tag "$NEW" --no-tags
 
         # Get all commit SHAs between the $OLD and $NEW toolchains

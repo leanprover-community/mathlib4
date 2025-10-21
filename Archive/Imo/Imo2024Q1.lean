@@ -86,7 +86,7 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
         _ ≤ ⌈α⁻¹⌉₊ * α := by gcongr; exact Nat.le_ceil α⁻¹
     · calc ⌈α⁻¹⌉₊ * α
         _ < (α⁻¹ + 1) * α := by gcongr; exact Nat.ceil_lt_add_one (inv_nonneg.2 h0.le)
-        _ = 1 + α := by field_simp [h0.ne']
+        _ = 1 + α := by field_simp
         _ ≤ (1 : ℕ) + 1 := by gcongr; norm_cast
   · apply Finset.sum_eq_zero
     intro x hx
@@ -119,7 +119,7 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
       rw [Int.le_floor]
       calc ((2 * k : ℤ) : ℝ) = ((2 * k : ℤ) : ℝ) + 0 := (add_zero _).symm
         _ ≤ ((2 * k : ℤ) : ℝ) + (k - 1) / k := by gcongr; norm_cast; positivity
-        _ = (k + 1 : ℕ) * ((2 * (k : ℕ) - 1) / ((k : ℕ) : ℝ)) := by field_simp; ring
+        _ = (k + 1 : ℕ) * ((2 * (k : ℕ) - 1) / ((k : ℕ) : ℝ)) := by simp [field]; ring
         _ ≤ (k + 1 : ℕ) * α := by gcongr
     have hk2' : ⌊(k + 1 : ℕ) * α⌋ < (k + 1 : ℕ) * 2 := by
       rw [Int.floor_lt]

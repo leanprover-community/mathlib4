@@ -158,7 +158,6 @@ theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε.le
 
-open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 /-- This lemma is less general than `MeasureTheory.unifTight_finite` which applies to
 all sequences indexed by a finite type. -/
 private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
@@ -170,25 +169,19 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
     intro f hfLp ε hε
     by_cases hε_top : ε = ∞
     · exact ⟨∅, (by simp), fun _ => hε_top.symm ▸ le_top⟩
-    let g : Fin n → α → β := fun k => f k
-    have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i
+    let g : Fin n → α → β := fun k => f k.castSucc
+    have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i.castSucc
     obtain ⟨S, hμS, hFε⟩ := h hgLp hε
     obtain ⟨s, _, hμs, hfε⟩ :=
-      (hfLp n).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
+      (hfLp (Fin.last n)).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
     refine ⟨s ∪ S, (by measurability), fun i => ?_⟩
     by_cases hi : i.val < n
-    · rw [(_ : f i = g ⟨i.val, hi⟩)]
-      · rw [compl_union, ← indicator_indicator]
-        apply (eLpNorm_indicator_le _).trans
-        exact hFε (Fin.castLT i hi)
-      · simp only [Fin.coe_eq_castSucc, Fin.castSucc_mk, g]
-    · rw [(_ : i = n)]
-      · rw [compl_union, inter_comm, ← indicator_indicator]
-        exact (eLpNorm_indicator_le _).trans hfε.le
-      · have hi' := Fin.is_lt i
-        rw [Nat.lt_succ_iff] at hi'
-        rw [not_lt] at hi
-        simp [← le_antisymm hi' hi]
+    · rw [show f i = g ⟨i.val, hi⟩ from rfl, compl_union, ← indicator_indicator]
+      apply (eLpNorm_indicator_le _).trans
+      exact hFε (Fin.castLT i hi)
+    · obtain rfl : i = Fin.last n := Fin.ext (le_antisymm i.is_le (not_lt.mp hi))
+      rw [compl_union, inter_comm, ← indicator_indicator]
+      exact (eLpNorm_indicator_le _).trans hfε.le
 
 /-- A finite sequence of Lp functions is uniformly tight. -/
 theorem unifTight_finite [Finite ι] (hp_top : p ≠ ∞) {f : ι → α → β}

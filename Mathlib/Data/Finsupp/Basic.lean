@@ -402,7 +402,7 @@ theorem mapDomain_apply {f : α → β} (hf : Function.Injective f) (x : α →�
     mapDomain f x (f a) = x a := by
   rw [mapDomain, sum_apply, sum_eq_single a, single_eq_same]
   · intro b _ hba
-    exact single_eq_of_ne (hf.ne hba)
+    exact single_eq_of_ne' (hf.ne hba)
   · intro _
     rw [single_zero, coe_zero, Pi.zero_apply]
 
@@ -664,6 +664,15 @@ theorem comapDomain_single (f : α → β) (a : α) (m : M)
       support_single_ne_zero _ hm, coe_singleton, coe_singleton, single_eq_same]
     rw [support_single_ne_zero _ hm, coe_singleton] at hif
     exact ⟨fun x hx => hif hx rfl hx, rfl⟩
+
+lemma comapDomain_surjective [Finite β] {f : α → β} (hf : Function.Injective f) :
+    Function.Surjective fun l : β →₀ M ↦ Finsupp.comapDomain f l hf.injOn := by
+  classical
+  intro x
+  cases isEmpty_or_nonempty α
+  · exact ⟨0, Finsupp.ext <| fun a ↦ IsEmpty.elim ‹_› a⟩
+  obtain ⟨g, hg⟩ := hf.hasLeftInverse
+  exact ⟨Finsupp.equivFunOnFinite.symm (x ∘ g), Finsupp.ext <| fun a ↦ by simp [hg a]⟩
 
 end Zero
 
@@ -1257,7 +1266,7 @@ theorem extendDomain_single (a : Subtype P) (m : M) :
     (single a m).extendDomain = single a.val m := by
   ext a'
   dsimp only [extendDomain_toFun]
-  obtain rfl | ha := eq_or_ne a.val a'
+  obtain rfl | ha := eq_or_ne a' a.val
   · simp_rw [single_eq_same, dif_pos a.prop]
   · simp_rw [single_eq_of_ne ha, dite_eq_right_iff]
     intro h

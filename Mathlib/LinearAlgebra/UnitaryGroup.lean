@@ -83,7 +83,7 @@ open scoped Kronecker in
 /-- The kronecker product of two unitary matrices is unitary.
 
 This is stated for `unitary` instead of `unitaryGroup` as it holds even for
-non-commutive coefficients. -/
+non-commutative coefficients. -/
 theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m]
     [DecidableEq m] {U₁ : Matrix n n R} {U₂ : Matrix m m R}
     (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
@@ -117,7 +117,7 @@ def toLin' (A : unitaryGroup n α) :=
   Matrix.toLin' A.1
 
 theorem ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
-  Subtype.ext_iff_val.trans ⟨fun h i j => congr_fun (congr_fun h i) j, Matrix.ext⟩
+  Subtype.ext_iff.trans ⟨fun h i j => congr_fun (congr_fun h i) j, Matrix.ext⟩
 
 @[ext]
 theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
@@ -284,15 +284,7 @@ lemma of_mem_specialOrthogonalGroup_fin_two_iff {a b c d : R} :
     c * a + d * b = 0 ∧ c * c + d * d = 1) ∧ a * d - b * c = 1
   · simp [Matrix.mem_specialOrthogonalGroup_iff, Matrix.mem_orthogonalGroup_iff,
       ← Matrix.ext_iff, Fin.forall_fin_succ, Matrix.vecHead, Matrix.vecTail]
-  refine ⟨?_, ?_⟩
-  · rintro ⟨⟨⟨h₀, h₁⟩, -, h₂⟩, h₃⟩
-    refine ⟨?_, ?_, ?_⟩
-    · linear_combination - a * h₂ + c * h₁ + d * h₃
-    · linear_combination - c * h₀ + a * h₁ - b * h₃
-    · linear_combination h₀
-  · rintro ⟨rfl, rfl, H⟩
-    ring_nf at H ⊢
-    tauto
+  grind
 
 lemma mem_specialOrthogonalGroup_fin_two_iff {M : Matrix (Fin 2) (Fin 2) R} :
     M ∈ Matrix.specialOrthogonalGroup (Fin 2) R ↔

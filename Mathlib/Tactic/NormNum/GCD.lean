@@ -209,18 +209,18 @@ theorem isInt_ratNum : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
   | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
     constructor
     have : 0 < d := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
-    simp_rw [Rat.mul_num, Rat.intCast_den, invOf_eq_inv,
+    simp_rw [Rat.mul_num, Rat.den_intCast, invOf_eq_inv,
       Rat.inv_natCast_den_of_pos this, Rat.inv_natCast_num_of_pos this,
-      Rat.intCast_num, one_mul, mul_one, h, Nat.cast_one, Int.ediv_one, Int.cast_id]
+      Rat.num_intCast, one_mul, mul_one, h, Nat.cast_one, Int.ediv_one, Int.cast_id]
 
 theorem isNat_ratDen : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
     IsRat q n d → n.natAbs = n' → n'.gcd d = 1 → IsNat q.den d
   | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
     constructor
     have : 0 < d := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
-    simp_rw [Rat.mul_den, Rat.intCast_den, invOf_eq_inv,
+    simp_rw [Rat.mul_den, Rat.den_intCast, invOf_eq_inv,
       Rat.inv_natCast_den_of_pos this, Rat.inv_natCast_num_of_pos this,
-      Rat.intCast_num, one_mul, mul_one, Nat.cast_id, h, Nat.div_one]
+      Rat.num_intCast, one_mul, mul_one, Nat.cast_id, h, Nat.div_one]
 
 /-- Evaluates the `Rat.num` function. -/
 @[nolint unusedHavesSuffices, norm_num Rat.num _]

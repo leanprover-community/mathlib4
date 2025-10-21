@@ -5,6 +5,7 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.OreLocalization.Basic
 
@@ -50,9 +51,6 @@ a structure up to isomorphism, and reason about things that satisfy the predicat
 
 The infimum form of the localization congruence relation is chosen as 'canonical' here, since it
 shortens some proofs.
-
-To apply a localization map `f` as a function, we use `f.toMap`, as coercions don't work well for
-this structure.
 
 To reason about the localization as a quotient type, use `mk_eq_monoidOf_mk'` and associated
 lemmas. These show the quotient map `mk : M → S → Localization S` equals the
@@ -116,16 +114,15 @@ end Submonoid
 
 namespace Localization
 
--- Porting note: this does not work so it is done explicitly instead
--- run_cmd to_additive.map_namespace `Localization `AddLocalization
--- run_cmd Elab.Command.liftCoreM <| ToAdditive.insertTranslation `Localization `AddLocalization
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
+run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `Localization `AddLocalization
 
 /-- The congruence relation on `M × S`, `M` a `CommMonoid` and `S` a submonoid of `M`, whose
 quotient is the localization of `M` at `S`, defined as the unique congruence relation on
 `M × S` such that for any other congruence relation `s` on `M × S` where for all `y ∈ S`,
 `(1, 1) ∼ (y, y)` under `s`, we have that `(x₁, y₁) ∼ (x₂, y₂)` by `r` implies
 `(x₁, y₁) ∼ (x₂, y₂)` by `s`. -/
-@[to_additive AddLocalization.r
+@[to_additive
 /-- The congruence relation on `M × S`, `M` an `AddCommMonoid` and `S` an `AddSubmonoid` of `M`,
 whose quotient is the localization of `M` at `S`, defined as the unique congruence relation on
 `M × S` such that for any other congruence relation `s` on `M × S` where for all `y ∈ S`,
@@ -136,7 +133,7 @@ def r (S : Submonoid M) : Con (M × S) :=
 
 /-- An alternate form of the congruence relation on `M × S`, `M` a `CommMonoid` and `S` a
 submonoid of `M`, whose quotient is the localization of `M` at `S`. -/
-@[to_additive AddLocalization.r'
+@[to_additive
 /-- An alternate form of the congruence relation on `M × S`, `M` a `CommMonoid` and `S` a
 submonoid of `M`, whose quotient is the localization of `M` at `S`. -/]
 def r' : Con (M × S) := by
@@ -161,7 +158,7 @@ def r' : Con (M × S) := by
 /-- The congruence relation used to localize a `CommMonoid` at a submonoid can be expressed
 equivalently as an infimum (see `Localization.r`) or explicitly
 (see `Localization.r'`). -/
-@[to_additive AddLocalization.r_eq_r'
+@[to_additive
 /-- The additive congruence relation used to localize an `AddCommMonoid` at a submonoid can be
 expressed equivalently as an infimum (see `AddLocalization.r`) or explicitly
 (see `AddLocalization.r'`). -/]
@@ -176,11 +173,11 @@ theorem r_eq_r' : r S = r' S :=
 
 variable {S}
 
-@[to_additive AddLocalization.r_iff_exists]
+@[to_additive]
 theorem r_iff_exists {x y : M × S} : r S x y ↔ ∃ c : S, ↑c * (↑y.2 * x.1) = c * (x.2 * y.1) := by
   simp only [r_eq_r' S, r', Con.rel_mk]
 
-@[to_additive AddLocalization.r_iff_oreEqv_r]
+@[to_additive]
 theorem r_iff_oreEqv_r {x y : M × S} : r S x y ↔ (OreLocalization.oreEqv S M).r x y := by
   simp only [r_iff_exists, Subtype.exists, exists_prop, OreLocalization.oreEqv, smul_eq_mul,
     Submonoid.mk_smul]
@@ -805,10 +802,12 @@ theorem lift_of_comp (j : N →* P) : f.lift (f.isUnit_comp j) = j := by
   ext; simp_rw [lift_spec, j.comp_apply, ← map_mul, toMonoidHom_apply, sec_spec']
 
 @[to_additive]
-theorem epic_of_localizationMap {j k : N →* P}
-    (h : ∀ a, j.comp f.toMonoidHom a = k.comp f.toMonoidHom a) : j = k := by
-  rw [← f.lift_of_comp j, ← f.lift_of_comp k]
-  congr 1 with x; exact h x
+theorem epic_of_localizationMap {P : Type*} [Monoid P] {j k : N →* P}
+    (h : j.comp f.toMonoidHom = k.comp f.toMonoidHom) : j = k := by
+  ext n
+  obtain ⟨⟨m, s⟩, hn : n * f s = f m⟩ := f.surj n
+  replace h (a) : j (f a) = k (f a) := congr($h a)
+  exact ((f.map_units s).map j).mul_left_inj.mp <| by rw [← j.map_mul, h, ← k.map_mul, hn, h m]
 
 @[to_additive]
 theorem lift_unique {j : N →* P} (hj : ∀ x, j (f x) = g x) : f.lift hg = j := by
@@ -1354,3 +1353,39 @@ protected def localizationMap : S.LocalizationMap R[S⁻¹] := Localization.mono
 protected noncomputable def equivMonoidLocalization : Localization S ≃* R[S⁻¹] := MulEquiv.refl _
 
 end OreLocalization
+
+namespace Submonoid.LocalizationMap
+
+variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
+
+@[to_additive] theorem injective_iff (f : LocalizationMap S N) :
+    Injective f ↔ ∀ ⦃x⦄, x ∈ S → IsRegular x := by
+  simp_rw [Commute.isRegular_iff (Commute.all _), IsLeftRegular,
+    Injective, LocalizationMap.eq_iff_exists, exists_imp, Subtype.forall]
+  exact forall₂_swap
+
+@[to_additive] theorem top_injective_iff (f : (⊤ : Submonoid M).LocalizationMap N) :
+    Injective f ↔ IsCancelMul M := by
+  simp [injective_iff, isCancelMul_iff_forall_isRegular]
+
+@[to_additive] theorem map_isRegular (f : LocalizationMap S N) {m : M}
+    (hm : IsRegular m) : IsRegular (f m) := by
+  refine (Commute.isRegular_iff (Commute.all _)).mpr fun n₁ n₂ eq ↦ ?_
+  have ⟨ms₁, eq₁⟩ := f.surj n₁
+  have ⟨ms₂, eq₂⟩ := f.surj n₂
+  rw [← (f.map_units (ms₁.2 * ms₂.2)).mul_left_inj, Submonoid.coe_mul]
+  replace eq := congr($eq * f (ms₁.2 * ms₂.2))
+  simp_rw [mul_assoc] at eq
+  rw [map_mul, ← mul_assoc n₁, eq₁, ← mul_assoc n₂, mul_right_comm n₂, eq₂] at eq ⊢
+  simp_rw [← map_mul, eq_iff_exists] at eq ⊢
+  simp_rw [mul_left_comm _ m] at eq
+  exact eq.imp fun _ ↦ (hm.1 ·)
+
+@[to_additive] theorem isCancelMul (f : LocalizationMap S N) [IsCancelMul M] : IsCancelMul N := by
+  simp_rw [isCancelMul_iff_forall_isRegular, Commute.isRegular_iff (Commute.all _),
+    ← Commute.isRightRegular_iff (Commute.all _)]
+  intro n
+  have ⟨ms, eq⟩ := f.surj n
+  exact (eq ▸ f.map_isRegular (isCancelMul_iff_forall_isRegular.mp ‹_› ms.1)).2.of_mul
+
+end Submonoid.LocalizationMap

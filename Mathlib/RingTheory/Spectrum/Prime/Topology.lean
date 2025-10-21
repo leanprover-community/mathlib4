@@ -293,12 +293,6 @@ theorem discreteTopology_iff_finite_and_krullDimLE_zero : DiscreteTopology (Prim
     |>.mp <| discreteTopology_iff_forall_isClosed.mp ‹_› _⟩, fun ⟨_, _⟩ ↦
     .of_finite_of_isClosed_singleton fun p ↦ (isClosed_singleton_iff_isMaximal p).mpr inferInstance⟩
 
-@[deprecated discreteTopology_iff_finite_and_krullDimLE_zero (since := "2025-02-05")]
-theorem discreteTopology_iff_finite_and_isPrime_imp_isMaximal :
-    DiscreteTopology (PrimeSpectrum R) ↔
-    Finite (PrimeSpectrum R) ∧ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
-  rw [discreteTopology_iff_finite_and_krullDimLE_zero, Ring.krullDimLE_zero_iff]
-
 /-- The prime spectrum of a semiring has discrete Zariski topology iff there are only
 finitely many maximal ideals and their intersection is contained in the nilradical. -/
 theorem discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical :
@@ -753,9 +747,6 @@ def _root_.MaximalSpectrum.toPiLocalizationEquiv :
   .ofBijective _ ⟨MaximalSpectrum.toPiLocalization_injective R,
     maximalSpectrumToPiLocalization_surjective_of_discreteTopology R⟩
 
-@[deprecated (since := "2025-02-12")] noncomputable alias
-MaximalSpectrum.toPiLocalizationEquivtoLocalizationEquiv := MaximalSpectrum.toPiLocalizationEquiv
-
 theorem discreteTopology_iff_toPiLocalization_surjective {R} [CommSemiring R] :
     DiscreteTopology (PrimeSpectrum R) ↔ Function.Surjective (toPiLocalization R) :=
   ⟨fun _ ↦ toPiLocalization_surjective_of_discreteTopology _,
@@ -1191,7 +1182,7 @@ lemma vanishingIdeal_irreducibleComponents :
 lemma zeroLocus_minimalPrimes :
     zeroLocus ∘ (↑) '' minimalPrimes R = irreducibleComponents (PrimeSpectrum R) := by
   rw [← vanishingIdeal_irreducibleComponents, ← Set.image_comp, Set.EqOn.image_eq_self]
-  intros s hs
+  intro s hs
   simpa [zeroLocus_vanishingIdeal_eq_closure, closure_eq_iff_isClosed]
     using isClosed_of_mem_irreducibleComponents s hs
 

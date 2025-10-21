@@ -16,10 +16,10 @@ In this file we define the submonoid `nonZeroDivisors` and `nonZeroSMulDivisors`
 `MonoidWithZero`. We also define `nonZeroDivisorsLeft` and `nonZeroDivisorsRight` for
 non-commutative monoids.
 
-## Notations
+## Notation
 
 This file declares the notations:
-- `M₀⁰` for the submonoid of non-zero-divisors of `M₀`, in the locale `nonZeroDivisors`.
+- `M₀⁰` for the submonoid of non-zero-divisors of `M₀`, in the scope `nonZeroDivisors`.
 - `M₀⁰[M]` for the submonoid of non-zero smul-divisors of `M₀` with respect to `M`, in the locale
   `nonZeroSMulDivisors`
 
@@ -77,7 +77,7 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = {x : M₀ | x ≠ 0} := by
   ext x
   simp only [SetLike.mem_coe, mem_nonZeroDivisorsLeft_iff, mul_eq_zero, Set.mem_setOf_eq]
-  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by aesop⟩
+  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by simp_all⟩
   contrapose! h
   exact ⟨1, Or.inl h, one_ne_zero⟩
 
@@ -205,7 +205,7 @@ theorem le_nonZeroDivisors_of_noZeroDivisors {S : Submonoid M₀} (hS : (0 : M�
   mem_nonZeroDivisors_of_ne_zero <| by rintro rfl; exact hS hx
 
 theorem powers_le_nonZeroDivisors_of_noZeroDivisors (hx : x ≠ 0) : Submonoid.powers x ≤ M₀⁰ :=
-  le_nonZeroDivisors_of_noZeroDivisors fun h ↦ hx (h.recOn fun _ ↦ pow_eq_zero)
+  le_nonZeroDivisors_of_noZeroDivisors fun h ↦ hx (h.recOn fun _ ↦ eq_zero_of_pow_eq_zero)
 
 end NoZeroDivisors
 
@@ -283,15 +283,9 @@ theorem mem_nonZeroDivisors_of_injective [MonoidWithZeroHomClass F M₀ M₀'] {
   ⟨fun y hy ↦ hf <| map_zero f ▸ hx.1 (f y) (map_mul f x y ▸ map_zero f ▸ congrArg f hy),
     fun y hy ↦ hf <| map_zero f ▸ hx.2 (f y) (map_mul f y x ▸ map_zero f ▸ congrArg f hy)⟩
 
-@[deprecated (since := "2025-02-03")]
-alias mem_nonZeroDivisor_of_injective := mem_nonZeroDivisors_of_injective
-
 theorem comap_nonZeroDivisors_le_of_injective [MonoidWithZeroHomClass F M₀ M₀'] {f : F}
     (hf : Injective f) : M₀'⁰.comap f ≤ M₀⁰ :=
   fun _ ha ↦ mem_nonZeroDivisors_of_injective hf (Submonoid.mem_comap.mp ha)
-
-@[deprecated (since := "2025-02-03")]
-alias comap_nonZeroDivisor_le_of_injective := comap_nonZeroDivisors_le_of_injective
 
 end MonoidWithZero
 
