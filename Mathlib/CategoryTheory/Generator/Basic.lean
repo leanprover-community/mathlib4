@@ -66,7 +66,7 @@ namespace ObjectProperty
 
 variable (P : ObjectProperty C)
 
-/-- We say that `P : ObjectProperty C` is a separating set if the functors `C(G, -)`
+/-- We say that `P : ObjectProperty C` is separating if the functors `C(G, -)`
 for `G : C` such that `P G` are collectively faithful,
 i.e., if `h ≫ f = h ≫ g` for all `h` with domain in `𝒢` implies `f = g`. -/
 def IsSeparating : Prop :=
