@@ -22,5 +22,3 @@ A linear ordered (semi)field is a (semi)field equipped with a linear order such 
 
 -- Guard against import creep.
 assert_not_exists MonoidHom
-
-attribute [nolint docBlame] LinearOrderedSemifield.toSemifield LinearOrderedField.toField
