@@ -25,8 +25,6 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 - `SkewMonoidAlgebra k G`: the skew monoid algebra of `G` over `k` is the type of finite formal
 `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
-## TODO
-- lifting lemmas (see #10541)
 -/
 
 
