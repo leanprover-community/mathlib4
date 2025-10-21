@@ -85,17 +85,19 @@ instance : AddCommMonoid (SkewPolynomial R) := SkewMonoidAlgebra.instAddCommMono
 instance instSemiring [MulSemiringAction (Multiplicative ℕ) R] : Semiring (SkewPolynomial R) :=
   SkewMonoidAlgebra.instSemiring
 
-instance {S : Type*} [Semiring S] [Module S R] : Module S (SkewPolynomial R) :=
+variable {S S₁ S₂ : Type*}
+
+instance [Semiring S] [Module S R] : Module S (SkewPolynomial R) :=
   SkewMonoidAlgebra.instModule
 
-instance {S₁ S₂ : Type*} [Semiring S₁] [Semiring S₂] [Module S₁ R] [Module S₂ R]
+instance [Semiring S₁] [Semiring S₂] [Module S₁ R] [Module S₂ R]
     [SMulCommClass S₁ S₂ R] : SMulCommClass S₁ S₂ (SkewPolynomial R) :=
   SkewMonoidAlgebra.instSMulCommClass
 
-instance {S : Type*} [SMulZeroClass S R] : SMulZeroClass S (SkewPolynomial R) :=
+instance [SMulZeroClass S R] : SMulZeroClass S (SkewPolynomial R) :=
   SkewMonoidAlgebra.instSMulZeroClass
 
-instance {S₁ S₂ : Type*} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
+instance [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
     [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ (SkewPolynomial R) :=
   SkewMonoidAlgebra.instIsScalarTower
 
@@ -126,8 +128,9 @@ variable [MulSemiringAction (Multiplicative ℕ) R]
 The multiplication in a skew polynomial ring is given by `xr = φ(r)x`. -/
 abbrev φ := MulSemiringAction.toRingHom (Multiplicative ℕ) R (ofAdd 1)
 
+theorem φ_def : φ = MulSemiringAction.toRingHom (Multiplicative ℕ) R (ofAdd 1) := rfl
+
 lemma φ_iterate_apply (n : ℕ) (a : R) : (φ^[n] a) = ((ofAdd n) • a) := by
-  unfold φ
   induction n with
   | zero => simp
   | succ n hn =>
