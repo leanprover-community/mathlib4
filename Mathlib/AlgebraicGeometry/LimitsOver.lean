@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Comma
 # (Co)limits in over categories
 
 We show that if `P` is a morphism property in `Scheme` that is local at the source, then
-(co)limits in `P.Over ⊤ X` for `X : Scheme` of locally directed diagrams of open immersions
+colimits in `P.Over ⊤ X` for `X : Scheme` of locally directed diagrams of open immersions
 exist and agree with the colimit in `Scheme`.
 -/
 
@@ -37,9 +37,6 @@ noncomputable instance : HasColimit F :=
     inferInstanceAs <| IsOpenImmersion (F.map f).left
   have : ((F ⋙ Over.forget S) ⋙ Scheme.forget).IsLocallyDirected := ‹_›
   hasColimit_of_created _ (Over.forget S)
-
-instance : HasFiniteCoproducts (Over S) where
-  out := inferInstance
 
 end Over
 

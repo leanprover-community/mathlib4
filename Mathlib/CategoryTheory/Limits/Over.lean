@@ -43,6 +43,9 @@ instance [HasColimitsOfShape J C] : HasColimitsOfShape J (Over X) where
 instance [HasColimits C] : HasColimits (Over X) :=
   ⟨inferInstance⟩
 
+instance [HasFiniteCoproducts C] : HasFiniteCoproducts (Over X) where
+  out := inferInstance
+
 instance createsColimitsOfSize : CreatesColimitsOfSize.{w, w'} (forget X) :=
   CostructuredArrow.createsColimitsOfSize
 
