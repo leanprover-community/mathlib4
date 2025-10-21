@@ -309,12 +309,10 @@ lemma le_nth_of_monotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
     · use nth p (n + 1), nth_mem _ hn
       exact fun k hk => nth_lt_nth' hk hn
     rintro b ⟨hb, h⟩
-    have fnb : f n < b := lt_of_le_of_lt (ih (fun hf => Nat.lt_of_succ_lt (hn hf)))
-      (h n (Nat.lt_succ_self _))
     rcases hsurj hb with ⟨m, hm, rfl⟩
     apply hmono hn hm
     rw [Nat.succ_le]
-    exact hmono.reflect_lt (fun hf => Nat.lt_of_succ_lt (hn hf)) hm fnb
+    apply hmono.reflect_lt <;> grind
 
 /-- `Nat.nth p` is the unique strictly monotone function whose image is `setOf p` -/
 lemma eq_nth_of_strictMonoOn_of_mapsTo_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
