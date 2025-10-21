@@ -186,7 +186,7 @@ initialize gcongrExt : SimpleScopedEnvExtension GCongrLemma
 
 /-- Given an application `f a₁ .. aₙ`, return the name of `f`, and the array of arguments `aᵢ`. -/
 def getCongrAppFnArgs (e : Expr) : Option (Name × Array Expr) :=
-  match e with
+  match e.cleanupAnnotations with
   | .forallE n d b bi =>
     -- We determine here whether an arrow is an implication or a forall
     -- this approach only works if LHS and RHS are both dependent or both non-dependent
@@ -194,8 +194,10 @@ def getCongrAppFnArgs (e : Expr) : Option (Name × Array Expr) :=
       some (`_Forall, #[.lam n d b bi])
     else
       some (`_Implies, #[d, b])
-  | .proj n i e => some (.num n i, #[e])
-  | e => e.withApp fun f args => f.constName?.map (·, args)
+  | e => e.withApp fun
+    | .const n _, args => some (n, args)
+    | .proj n i e, args => some (.num n i, #[e] ++ args)
+    | _, _ => none
 
 /-- If `e` is of the form `r a b`, return `(r, a, b)`. -/
 def getRel (e : Expr) : Option (Name × Expr × Expr) :=
@@ -216,10 +218,10 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : Met
       {m} in the conclusion of {declTy}"
     -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
     let some (relName, lhs, rhs) := getRel (← whnf targetTy) | fail "No relation found"
-    let some (head, lhsArgs) := getCongrAppFnArgs (← whnf lhs) |
-      fail "LHS ({lhs}) is not suitable for congruence"
-    let some (head', rhsArgs) := getCongrAppFnArgs (← whnf rhs) |
-      fail "RHS ({rhs}) is not suitable for congruence"
+    let some (head, lhsArgs) := getCongrAppFnArgs lhs |
+      fail m!"LHS ({lhs}) is not suitable for congruence"
+    let some (head', rhsArgs) := getCongrAppFnArgs rhs |
+      fail m!"RHS ({rhs}) is not suitable for congruence"
     unless head == head' && lhsArgs.size == rhsArgs.size do
       fail "LHS and RHS do not have the same head function and arity"
     let mut numVarying := 0
@@ -234,8 +236,8 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : Met
       let isEq ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2)
       if !isEq then
         -- verify that the "varying argument" pairs are free variables (after eta-reduction)
-        let .fvar e1 := e1.eta | fail "Not all arguments are free variables"
-        let .fvar e2 := e2.eta | fail "Not all arguments are free variables"
+        let .fvar e1 := e1.eta | fail m!"Varying arguments should be free variables{indentExpr e1}"
+        let .fvar e2 := e2.eta | fail m!"Varying arguments should be free variables{indentExpr e2}"
         -- add such a pair to the `pairs` array
         pairs := pairs.push (i, e1, e2)
         numVarying := numVarying + 1
@@ -503,16 +505,18 @@ partial def _root_.Lean.MVarId.gcongr
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
-  let some (lhsHead, lhsArgs) := getCongrAppFnArgs (← whnfR lhs)
+  let (lhs, rhs) ←
+    if relName == `_Implies then (return (← whnfR lhs, ← whnfR rhs)) else pure (lhs, rhs)
+  let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs
     | if template.isNone then return (false, names, #[g])
       throwTacticEx `gcongr g m!"the head of {lhs} is not a constant"
-  let some (rhsHead, rhsArgs) := getCongrAppFnArgs (← whnfR rhs)
+  let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs
     | if template.isNone then return (false, names, #[g])
       throwTacticEx `gcongr g m!"the head of {rhs} is not a constant"
   -- B. If there is a template, check that it is of the form `tplHead _ ... _` and that
   -- `tplHead = lhsHead = rhsHead`
   let tplArgs ← if let some tpl := template then
-    let some (tplHead, tplArgs) := getCongrAppFnArgs (← whnfR tpl)
+    let some (tplHead, tplArgs) := getCongrAppFnArgs tpl
       | throwTacticEx `gcongr g m!"the head of {tpl} is not a constant"
     if grewriteHole.isNone then
       unless tplHead == lhsHead && tplArgs.size == lhsArgs.size do
