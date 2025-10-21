@@ -211,9 +211,7 @@ variable {R}
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
     (f : A →ₐ[R] B) : A →ₐ[S] B where
   __ := f
-  commutes' r := by
-    obtain ⟨r, rfl⟩ := h r
-    simp [← IsScalarTower.algebraMap_apply]
+  commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply]
 
 @[simp]
 lemma extendScalarsOfSurjective_apply (h : Function.Surjective (algebraMap R S))
