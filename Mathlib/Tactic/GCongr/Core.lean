@@ -186,7 +186,7 @@ initialize gcongrExt : SimpleScopedEnvExtension GCongrLemma
 
 /-- Given an application `f a₁ .. aₙ`, return the name of `f`, and the array of arguments `aᵢ`. -/
 def getCongrAppFnArgs (e : Expr) : Option (Name × Array Expr) :=
-  match e.cleanupAnnotations with
+  match e with
   | .forallE n d b bi =>
     -- We determine here whether an arrow is an implication or a forall
     -- this approach only works if LHS and RHS are both dependent or both non-dependent
@@ -215,8 +215,10 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : Met
       {m} in the conclusion of {declTy}"
     -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
     let some (relName, lhs, rhs) := getRel (← whnf targetTy) | fail "No relation found"
-    let some (head, lhsArgs) := getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
-    let some (head', rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
+    let some (head, lhsArgs) := getCongrAppFnArgs (← whnf lhs) |
+      fail "LHS ({lhs}) is not suitable for congruence"
+    let some (head', rhsArgs) := getCongrAppFnArgs (← whnf rhs) |
+      fail "RHS ({rhs}) is not suitable for congruence"
     unless head == head' && lhsArgs.size == rhsArgs.size do
       fail "LHS and RHS do not have the same head function and arity"
     let mut numVarying := 0
@@ -500,16 +502,16 @@ partial def _root_.Lean.MVarId.gcongr
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
-  let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs
+  let some (lhsHead, lhsArgs) := getCongrAppFnArgs (← whnfR lhs)
     | if template.isNone then return (false, names, #[g])
       throwTacticEx `gcongr g m!"the head of {lhs} is not a constant"
-  let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs
+  let some (rhsHead, rhsArgs) := getCongrAppFnArgs (← whnfR rhs)
     | if template.isNone then return (false, names, #[g])
       throwTacticEx `gcongr g m!"the head of {rhs} is not a constant"
   -- B. If there is a template, check that it is of the form `tplHead _ ... _` and that
   -- `tplHead = lhsHead = rhsHead`
   let tplArgs ← if let some tpl := template then
-    let some (tplHead, tplArgs) := getCongrAppFnArgs tpl
+    let some (tplHead, tplArgs) := getCongrAppFnArgs (← whnfR tpl)
       | throwTacticEx `gcongr g m!"the head of {tpl} is not a constant"
     if grewriteHole.isNone then
       unless tplHead == lhsHead && tplArgs.size == lhsArgs.size do
