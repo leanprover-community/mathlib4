@@ -57,7 +57,7 @@ lemma eqOn_abs_add_one_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsMIntegralCurveOn (γ a) v (Ioo (-a) a))
     {a : ℝ} : EqOn (fun t ↦ γ (|t| + 1) t) (γ a) (Ioo (-a) a) := by
-  intros t ht
+  intro t ht
   by_cases hlt : |t| + 1 < a
   · exact eqOn_of_isMIntegralCurveOn_Ioo hv γ hγx hγ
       (by positivity) hlt.le (abs_lt.mp <| lt_add_one _)
@@ -117,7 +117,7 @@ lemma eqOn_piecewise_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hγ' : IsMIntegralCurveOn γ' v (Ioo a' b'))
     (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
     EqOn (piecewise (Ioo a b) γ γ') γ' (Ioo a' b') := by
-  intros t ht
+  intro t ht
   suffices H : EqOn γ γ' (Ioo (max a a') (min b b')) by
     by_cases hmem : t ∈ Ioo a b
     · rw [piecewise, if_pos hmem]
@@ -146,7 +146,7 @@ lemma isMIntegralCurveOn_piecewise [BoundarylessManifold I M]
     (hγ' : IsMIntegralCurveOn γ' v (Ioo a' b')) {t₀ : ℝ}
     (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
     IsMIntegralCurveOn (piecewise (Ioo a b) γ γ') v (Ioo a b ∪ Ioo a' b') := by
-  intros t ht
+  intro t ht
   by_cases hmem : t ∈ Ioo a b
   · rw [piecewise, if_pos hmem]
     apply hγ t hmem |>.hasMFDerivAt (Ioo_mem_nhds hmem.1 hmem.2) |>.hasMFDerivWithinAt

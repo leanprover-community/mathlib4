@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Logic.IsEmpty
 import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.Push.Attr
 
 /-!
 # Types with a unique term
@@ -19,7 +20,7 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
 
 ## Main statements
 
-* `Unique.mk'`: an inhabited subsingleton type is `Unique`. This can not be an instance because it
+* `Unique.mk'`: an inhabited subsingleton type is `Unique`. This cannot be an instance because it
   would lead to loops in typeclass inference.
 
 * `Function.Surjective.unique`: if the domain of a surjective function is `Unique`, then its
@@ -148,7 +149,7 @@ theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
 
 variable {α : Sort*}
 
-@[simp]
+@[simp, push ←]
 theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
     @default (∀ a, β a) _ = fun a : α ↦ @default (β a) _ :=
   rfl

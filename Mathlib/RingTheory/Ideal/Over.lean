@@ -110,8 +110,8 @@ theorem under_top : under A (⊤ : Ideal B) = ⊤ := comap_top
 
 variable {A}
 
-/-- `P` lies over `p` if `p` is the preimage of `P` of the `algebraMap`. -/
-class LiesOver : Prop where
+/-- `P` lies over `p` if `p` is the preimage of `P` by the `algebraMap`. -/
+@[mk_iff] class LiesOver : Prop where
   over : p = P.under A
 
 instance over_under : P.LiesOver (P.under A) where over := rfl
@@ -305,6 +305,12 @@ instance primesOver.liesOver (Q : primesOver p B) : Q.1.LiesOver p :=
 /-- If an ideal `P` of `B` is prime and lying over `p`, then it is in `primesOver p B`. -/
 abbrev primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : primesOver p B :=
   ⟨P, ⟨hPp, hp⟩⟩
+
+variable {p} in
+theorem ne_bot_of_mem_primesOver {S : Type*} [Ring S] [Algebra R S] [Nontrivial S]
+    [NoZeroSMulDivisors R S] {p : Ideal R} (hp : p ≠ ⊥) {P : Ideal S}
+    (hP : P ∈ p.primesOver S) :
+    P ≠ ⊥ := @ne_bot_of_liesOver_of_ne_bot _ _ _ _ _ _ _ _ hp P hP.2
 
 end primesOver
 

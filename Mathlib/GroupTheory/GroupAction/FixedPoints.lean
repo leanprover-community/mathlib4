@@ -77,14 +77,23 @@ theorem minimalPeriod_eq_one_iff_fixedBy {a : α} {g : G} :
     Function.minimalPeriod (fun x => g • x) a = 1 ↔ a ∈ fixedBy α g :=
   Function.minimalPeriod_eq_one_iff_isFixedPt
 
+@[to_additive]
+theorem mem_fixedBy_zpow {g : G} {a : α} (h : a ∈ fixedBy α g) (j : ℤ) :
+    a ∈ fixedBy α (g ^ j) := by
+  rw [mem_fixedBy, zpow_smul_eq_iff_minimalPeriod_dvd, minimalPeriod_eq_one_iff_fixedBy.mpr h,
+    Int.natCast_one]
+  exact one_dvd j
+
+@[to_additive]
+theorem mem_fixedBy_zpowers_iff_mem_fixedBy {g : G} {a : α} :
+    (∀ j : ℤ, a ∈ fixedBy α (g ^ j)) ↔ a ∈ fixedBy α g :=
+  ⟨fun h ↦ by simpa using h 1, fun h j ↦ mem_fixedBy_zpow h j⟩
+
 variable (α) in
 @[to_additive]
 theorem fixedBy_subset_fixedBy_zpow (g : G) (j : ℤ) :
-    fixedBy α g ⊆ fixedBy α (g ^ j) := by
-  intro a a_in_fixedBy
-  rw [mem_fixedBy, zpow_smul_eq_iff_minimalPeriod_dvd,
-    minimalPeriod_eq_one_iff_fixedBy.mpr a_in_fixedBy, Int.natCast_one]
-  exact one_dvd j
+    fixedBy α g ⊆ fixedBy α (g ^ j) :=
+  fun _ h ↦ mem_fixedBy_zpow h j
 
 variable (M α) in
 @[to_additive (attr := simp)]

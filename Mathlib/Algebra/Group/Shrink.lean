@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.TransferInstance
+import Mathlib.Algebra.Group.Action.TransferInstance
 import Mathlib.Logic.Small.Defs
 import Mathlib.Tactic.SuppressCompilation
 
@@ -81,6 +81,17 @@ instance [Semigroup α] : Semigroup (Shrink.{v} α) := (equivShrink α).symm.sem
 
 @[to_additive]
 instance [CommSemigroup α] : CommSemigroup (Shrink.{v} α) := (equivShrink α).symm.commSemigroup
+
+@[to_additive]
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Shrink.{v} α) :=
+  (equivShrink α).symm.isLeftCancelMul
+
+@[to_additive]
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Shrink.{v} α) :=
+  (equivShrink α).symm.isRightCancelMul
+
+@[to_additive]
+instance [Mul α] [IsCancelMul α] : IsCancelMul (Shrink.{v} α) := (equivShrink α).symm.isCancelMul
 
 @[to_additive]
 instance [MulOneClass α] : MulOneClass (Shrink.{v} α) := (equivShrink α).symm.mulOneClass

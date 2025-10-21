@@ -100,8 +100,6 @@ structure ProfiniteGrp.Hom (A B : ProfiniteGrp.{u}) where
   /-- The underlying `ContinuousMonoidHom`. -/
   hom' : A →ₜ* B
 
-attribute [to_additive existing ProfiniteAddGrp.Hom.mk] ProfiniteGrp.Hom.mk
-
 @[to_additive]
 instance : Category ProfiniteGrp where
   Hom A B := ProfiniteGrp.Hom A B
@@ -228,9 +226,9 @@ instance : HasForget₂ FiniteGrp ProfiniteGrp where
     map := fun f => ⟨f.hom, by continuity⟩ }
 
 @[to_additive]
-instance : HasForget₂ ProfiniteGrp Grp where
-  forget₂.obj P := Grp.of P
-  forget₂.map f := Grp.ofHom f.hom.toMonoidHom
+instance : HasForget₂ ProfiniteGrp GrpCat where
+  forget₂.obj P := GrpCat.of P
+  forget₂.map f := GrpCat.ofHom f.hom.toMonoidHom
 
 /-- A closed subgroup of a profinite group is profinite. -/
 @[to_additive /-- A closed additive subgroup of a profinite additive group is profinite. -/]
@@ -287,11 +285,6 @@ In this section, we construct limits in the category of profinite groups.
 
 * `ProfiniteGrp.limitConeIsLimit`: `ProfiniteGrp.limitCone` is a limit cone.
 
-## TODO
-
-* Figure out the reason that is causing `to_additive` to fail in most part of this section
-  and generate the additive version correctly.
-
 -/
 
 section Limits
@@ -309,13 +302,16 @@ def limitConePtAux : Subgroup (Π j : J, F.obj j) where
   one_mem' := by simp only [Set.mem_setOf_eq, Pi.one_apply, map_one, implies_true]
   inv_mem' h _ _ π := by simp only [Pi.inv_apply, map_inv, h π]
 
+@[to_additive]
 instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (Group (limitConePtAux F))
 
+@[to_additive]
 instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (IsTopologicalGroup (limitConePtAux F))
 
 /-- The explicit limit cone in `ProfiniteGrp`. -/
+@[to_additive /-- The explicit limit cone in `ProfiniteAddGrp`. -/]
 abbrev limitCone : Limits.Cone F where
   pt := ofProfinite (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt
   π :=
@@ -332,6 +328,7 @@ abbrev limitCone : Limits.Cone F where
       exact funext fun x => (x.2 f).symm }
 
 /-- `ProfiniteGrp.limitCone` is a limit cone. -/
+@[to_additive /-- `ProfiniteAddGrp.limitCone` is a limit cone. -/]
 def limitConeIsLimit : Limits.IsLimit (limitCone F) where
   lift cone := ofHom
     { ((Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))).lift
@@ -346,31 +343,35 @@ def limitConeIsLimit : Limits.IsLimit (limitCone F) where
       ((forget₂ ProfiniteGrp Profinite).mapCone cone) ((forget₂ ProfiniteGrp Profinite).map m)
       (fun j ↦ congrArg (forget₂ ProfiniteGrp Profinite).map (h j))
 
+@[to_additive]
 instance : Limits.HasLimit F where
   exists_limit := Nonempty.intro
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
 
+@[to_additive]
 instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
   preservesLimitsOfShape := {
     preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
 
+@[to_additive]
 instance : CompactSpace (limitConePtAux F) :=
   inferInstanceAs (CompactSpace (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt)
 
 /-- The abbreviation for the limit of `ProfiniteGrp`s. -/
+@[to_additive /-- The abbreviation for the limit of `ProfiniteAddGrp`s. -/]
 abbrev limit : ProfiniteGrp := ProfiniteGrp.of (ProfiniteGrp.limitConePtAux F)
 
-@[ext]
+@[to_additive (attr := ext)]
 lemma limit_ext (x y : limit F) (hxy : ∀ j, x.val j = y.val j) : x = y :=
   Subtype.ext (funext hxy)
 
-@[simp]
+@[to_additive (attr := simp)]
 lemma limit_one_val (j : J) : (1 : limit F).val j = 1 :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 lemma limit_mul_val (x y : limit F) (j : J) : (x * y).val j = x.val j * y.val j :=
   rfl
 

@@ -60,6 +60,9 @@ instance (priority := 90) hasFiniteLimits_of_hasLimitsOfSize₀ [HasLimitsOfSize
     HasFiniteLimits C :=
   hasFiniteLimits_of_hasLimitsOfSize C
 
+instance (J : Type) [hJ : SmallCategory J] : Category (ULiftHom (ULift J)) :=
+  (@ULiftHom.category (ULift J) (@uliftCategory J hJ))
+
 /-- We can always derive `HasFiniteLimits C` by providing limits at an
 arbitrary universe. -/
 theorem hasFiniteLimits_of_hasFiniteLimits_of_size
@@ -71,12 +74,7 @@ theorem hasFiniteLimits_of_hasFiniteLimits_of_size
                           (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
       @ULiftHomULiftCategory.equiv J hJ
     apply @hasLimitsOfShape_of_equivalence (ULiftHom (ULift J))
-      (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ
-      (@Equivalence.symm J hJ (ULiftHom (ULift J))
-      (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) l) _
-    /- Porting note: tried to factor out (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ)
-    but when doing that would then find the instance and say it was not definitionally equal to
-    the provided one (the same thing factored out) -/
+      (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ l.symm _
 
 /-- A category has all finite colimits if every functor `J ⥤ C` with a `FinCategory J`
 instance and `J : Type` has a colimit.
@@ -146,7 +144,7 @@ end
 
 instance : FinCategory WalkingParallelPair where
   fintypeObj := fintypeWalkingParallelPair
-  fintypeHom := instFintypeWalkingParallelPairHom -- Porting note: could not be inferred
+  fintypeHom := instFintypeWalkingParallelPairHom
 
 /-- Equalizers are finite limits, so if `C` has all finite limits, it also has all equalizers -/
 example [HasFiniteLimits C] : HasEqualizers C := by infer_instance
@@ -185,8 +183,8 @@ end WidePullbackShape
 
 namespace WidePushoutShape
 
-instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) := by
-  rw [WidePushoutShape]; infer_instance
+instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) :=
+  inferInstanceAs <| Fintype (Option _)
 
 instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
   elems := by
@@ -213,9 +211,9 @@ instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) w
 
 -- We can't just made this an `abbreviation`
 -- because of https://github.com/leanprover-community/lean/issues/429
-/-- `HasFiniteWidePullbacks` represents a choice of wide pullback
-for every finite collection of morphisms
--/
+/-- A category `HasFiniteWidePullbacks` if it has all limits of shape `WidePullbackShape J` for
+finite `J`, i.e. if it has a wide pullback for every finite collection of morphisms with the same
+codomain. -/
 class HasFiniteWidePullbacks : Prop where
   /-- `C` has all wide pullbacks for any Finite `J` -/
   out (J : Type) [Finite J] : HasLimitsOfShape (WidePullbackShape J) C
@@ -225,9 +223,9 @@ instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWide
   haveI := @HasFiniteWidePullbacks.out C _ _ J
   infer_instance
 
-/-- `HasFiniteWidePushouts` represents a choice of wide pushout
-for every finite collection of morphisms
--/
+/-- A category `HasFiniteWidePushouts` if it has all colimits of shape `WidePushoutShape J` for
+finite `J`, i.e. if it has a wide pushout for every finite collection of morphisms with the same
+domain. -/
 class HasFiniteWidePushouts : Prop where
   /-- `C` has all wide pushouts for any Finite `J` -/
   out (J : Type) [Finite J] : HasColimitsOfShape (WidePushoutShape J) C

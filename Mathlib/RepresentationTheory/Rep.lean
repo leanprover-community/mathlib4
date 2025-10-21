@@ -62,7 +62,7 @@ instance (V : Rep k G) : Module k V := by
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
--- Porting note: was `V.ρ`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): was `V.ρ`
   (ModuleCat.endRingEquiv V.V).toMonoidHom.comp (Action.ρ V)
 
 /-- Lift an unbundled representation to `Rep`. -/
@@ -200,7 +200,6 @@ def mkQ (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
   hom := ModuleCat.ofHom <| Submodule.mkQ _
   comm _ := rfl
 
--- Porting note: the two following instances were found automatically in mathlib3
 instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.preservesLimits_forget _ _
 
@@ -470,10 +469,11 @@ def freeLiftLEquiv :
 
 variable {A}
 
+omit [DecidableEq α] in
 @[ext]
 lemma free_ext (f g : free k G α ⟶ A)
-    (h : ∀ i : α, f.hom (single i (single 1 1)) = g.hom (single i (single 1 1))) : f = g :=
-  (freeLiftLEquiv α A).injective (funext_iff.2 h)
+    (h : ∀ i : α, f.hom (single i (single 1 1)) = g.hom (single i (single 1 1))) : f = g := by
+  classical exact (freeLiftLEquiv α A).injective (funext_iff.2 h)
 
 section
 
@@ -483,7 +483,7 @@ variable (A B : Rep k G) (α : Type u) [DecidableEq α]
 
 open ModuleCat.MonoidalCategory
 
--- the proof below can be simplified after #24823 is merged
+-- the proof below can be simplified after https://github.com/leanprover-community/mathlib4/issues/24823 is merged
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
 @[simps! hom_hom inv_hom]
@@ -598,7 +598,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : 
 variable [DecidableEq (Fin n → G)]
 
 variable (k G n) in
-/-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the righthand representation is
+/-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the right-hand representation is
 defined pointwise by the left regular representation on `k[G]`. The map sends
 `single (g₀, ..., gₙ) a ↦ single (g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ) (single g₀ a)`. -/
 def diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
@@ -722,6 +722,7 @@ protected noncomputable def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
+@[simps]
 def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := ModuleCat.ofHom <| (TensorProduct.curry f.hom.hom).flip
@@ -736,17 +737,6 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
   left_inv _ := Action.Hom.ext (ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl)
 
 variable {A B C}
-
-/-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
-simplify. -/
-theorem homEquiv_apply_hom (f : A ⊗ B ⟶ C) :
-    (homEquiv A B C f).hom = ModuleCat.ofHom (TensorProduct.curry f.hom.hom).flip := rfl
-
-/-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
-simplify. -/
-theorem homEquiv_symm_apply_hom (f : B ⟶ (Rep.ihom A).obj C) :
-    ((homEquiv A B C).symm f).hom =
-      ModuleCat.ofHom (TensorProduct.uncurry k A B C f.hom.hom.flip) := rfl
 
 instance : MonoidalClosed (Rep k G) where
   closed A :=
@@ -956,11 +946,12 @@ instance free_projective {G α : Type u} [Group G] :
 
 section
 
-variable {G : Type u} [Group G] {n : ℕ} [DecidableEq (Fin n → G)]
+variable {G : Type u} [Group G] {n : ℕ}
 
 instance diagonal_succ_projective :
-    Projective (diagonal k G (n + 1)) :=
-  Projective.of_iso (diagonalSuccIsoFree k G n).symm inferInstance
+    Projective (diagonal k G (n + 1)) := by
+  classical
+  exact Projective.of_iso (diagonalSuccIsoFree k G n).symm inferInstance
 
 instance leftRegular_projective :
     Projective (leftRegular k G) :=

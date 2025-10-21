@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Perm.Subperm
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Quot
 import Mathlib.Order.Monotone.Defs
 import Mathlib.Order.RelClasses
@@ -160,6 +161,7 @@ theorem Subset.trans {s t u : Multiset α} : s ⊆ t → t ⊆ u → s ⊆ u := 
 theorem subset_iff {s t : Multiset α} : s ⊆ t ↔ ∀ ⦃x⦄, x ∈ s → x ∈ t :=
   Iff.rfl
 
+@[gcongr]
 theorem mem_of_subset {s t : Multiset α} {a : α} (h : s ⊆ t) : a ∈ s → a ∈ t :=
   @h _
 

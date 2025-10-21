@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
+import Mathlib.Util.AtLocation
 import Mathlib.Util.AtomM.Recurse
 
 /-!
@@ -361,7 +362,7 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (e₂', p₂) ← eval e₂
     let (e', p') ← evalAdd e₁' e₂'
     return (e', ← iapp ``subst_into_add #[e₁, e₂, e₁', e₂', e', p₁, p₂, p'])
-  | (``HSub.hSub, #[_, _, _ ,_, e₁, e₂]) => do
+  | (``HSub.hSub, #[_, _, _, _, e₁, e₂]) => do
     let e₂' ← mkAppM ``Neg.neg #[e₂]
     let e ← mkAppM ``HAdd.hAdd #[e₁, e₂']
     let (e', p) ← eval e
@@ -396,6 +397,29 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     else
       evalAtom e
   | _ => evalAtom e
+
+/-- Determine whether `e` will be handled as an atom by the `abel` tactic. The `match` in this
+function should be preserved to be parallel in case-matching to that in the
+`Mathlib.Tactic.Abel.eval` metaprogram. -/
+def isAtom (e : Expr) : Bool :=
+  match e.getAppFnArgs with
+  | (``HAdd.hAdd, #[_, _, _, _, _, _])
+  | (``HSub.hSub, #[_, _, _, _, _, _])
+  | (``Neg.neg, #[_, _, _])
+  | (``AddMonoid.nsmul, #[_, _, _, _])
+  | (``SubNegMonoid.zsmul, #[_, _, _, _])
+  | (``SMul.smul, #[.const ``Int _, _, _, _, _])
+  | (``SMul.smul, #[.const ``Nat _, _, _, _, _])
+  | (``HSMul.hSMul, #[.const ``Int _, _, _, _, _, _])
+  | (``HSMul.hSMul, #[.const ``Nat _, _, _, _, _, _])
+  | (``smul, #[_, _, _, _])
+  | (``smulg, #[_, _, _, _]) => false
+  /- The `OfNat.ofNat` and `Zero.zero` cases are deliberately omitted here: these two cases are not
+  strictly atoms for `abel`, but they are atom-like in that their handling by
+  `Mathlib.Tactic.Abel.eval` contains no recursive call. -/
+  -- | (``OfNat.ofNat, #[_, .lit (.natVal 0), _])
+  -- | (``Zero.zero, #[_, _])
+  | _ => true
 
 @[tactic_alt abel]
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
@@ -464,34 +488,11 @@ It differs in
 -/
 def evalExpr (e : Expr) : AtomM Simp.Result := do
   let e ← withReducible <| whnf e
-  guard e.isApp -- all interesting group expressions are applications
+  guard !(isAtom e)
   let (a, pa) ← eval e (← mkContext e)
-  guard !a.isAtom
   return { expr := a, proof? := pa }
 
 open Parser.Tactic
-/-- Use `abel_nf` to rewrite the main goal. -/
-def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← withReducible goal.getType'
-  let r ← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) tgt
-  if r.expr.isConstOf ``True then
-    goal.assign (← mkOfEqTrue (← r.getProof))
-    replaceMainGoal []
-  else
-    if r.expr == tgt then throwError "abel_nf made no progress"
-    replaceMainGoal [← applySimpResultToTarget goal tgt r]
-
-/-- Use `abel_nf` to rewrite hypothesis `h`. -/
-def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVarId) :
-    TacticM Unit := withMainContext do
-  let tgt ← instantiateMVars (← fvarId.getType)
-  let goal ← getMainGoal
-  let myres ← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) tgt
-  if myres.expr == tgt then throwError "abel_nf made no progress"
-  match ← applySimpResultToLocalDecl goal fvarId myres false with
-  | none => replaceMainGoal []
-  | some (_, newGoal) => replaceMainGoal [newGoal]
 
 @[tactic_alt abel]
 elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
@@ -499,8 +500,8 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic =
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
-    fun _ ↦ throwError "abel_nf made no progress"
+  let m := AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg)
+  transformAtLocation (m ·) "abel_nf" loc (failIfUnchanged := true) false
 
 @[tactic_alt abel]
 macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>

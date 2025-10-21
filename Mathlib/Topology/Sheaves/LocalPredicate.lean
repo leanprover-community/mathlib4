@@ -221,7 +221,7 @@ end PrelocalPredicate
 -/
 @[simps!]
 def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type _) X where
-  obj U := { f : ∀ x : U.unop , T x // P.pred f }
+  obj U := { f : ∀ x : U.unop, T x // P.pred f }
   map {_ _} i f := ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩
 
 namespace subpresheafToTypes
@@ -329,7 +329,7 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   obtain ⟨V, ⟨fV, hV⟩, rfl⟩ := jointly_surjective' tV
   -- Decompose everything into its constituent parts:
   dsimp
-  simp only [stalkToFiber, Types.Colimit.ι_desc_apply'] at h
+  simp only [stalkToFiber, Types.Colimit.ι_desc_apply] at h
   specialize w (unop U) (unop V) fU hU fV hV h
   rcases w with ⟨W, iU, iV, w⟩
   -- and put it back together again in the correct order.

@@ -12,8 +12,8 @@ import Mathlib.Topology.Sets.Opens
 /-!
 # Open subgroups of a topological group
 
-This files builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
-and its additive version `OpenAddSubgroup`.  This lattice has a top element, the subgroup of all
+This file builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
+and its additive version `OpenAddSubgroup`. This lattice has a top element, the subgroup of all
 elements, but no bottom element in general. The trivial subgroup which is the natural candidate
 bottom has no reason to be open (this happens only in discrete groups).
 
@@ -136,14 +136,8 @@ instance : Inhabited (OpenSubgroup G) :=
 
 @[to_additive]
 theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) := by
-  apply isOpen_compl_iff.1
-  refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ⟨(fun y ↦ y * x⁻¹) ⁻¹' U, ?_, ?_, ?_⟩
-  · refine fun u hux hu ↦ hx ?_
-    simp only [Set.mem_preimage, SetLike.mem_coe] at hux hu ⊢
-    convert U.mul_mem (U.inv_mem hux) hu
-    simp
-  · exact U.isOpen.preimage (continuous_mul_right _)
-  · simp [one_mem]
+  have := QuotientGroup.discreteTopology U.isOpen
+  exact QuotientGroup.t1Space_iff.mp inferInstance
 
 @[to_additive]
 theorem isClopen [ContinuousMul G] (U : OpenSubgroup G) : IsClopen (U : Set G) :=
@@ -291,27 +285,19 @@ lemma subgroupOf_isOpen (U K : Subgroup G) (h : IsOpen (K : Set G)) :
     IsOpen (K.subgroupOf U : Set U) :=
   Continuous.isOpen_preimage (continuous_iff_le_induced.mpr fun _ ↦ id) _ h
 
-@[to_additive]
+@[to_additive (attr := deprecated QuotientGroup.discreteTopology (since := "2025-10-09"))]
 lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
-    DiscreteTopology (G ⧸ U) := by
-  refine singletons_open_iff_discrete.mp (fun g ↦ ?_)
-  induction g using Quotient.inductionOn with | h g =>
-  change IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
-  convert_to IsOpen ((g * ·) '' U)
-  · ext g'
-    simp only [Set.mem_preimage, Set.mem_singleton_iff, QuotientGroup.eq, Set.image_mul_left]
-    rw [← U.inv_mem_iff]
-    simp
-  · exact Homeomorph.mulLeft g |>.isOpen_image |>.mpr h
+    DiscreteTopology (G ⧸ U) :=
+  QuotientGroup.discreteTopology h
 
 @[to_additive]
 instance [ContinuousMul G] (U : OpenSubgroup G) : DiscreteTopology (G ⧸ U.toSubgroup) :=
-  discreteTopology U.toSubgroup U.isOpen
+  QuotientGroup.discreteTopology U.isOpen
 
 @[to_additive]
 lemma quotient_finite_of_isOpen [ContinuousMul G] [CompactSpace G] (U : Subgroup G)
     (h : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
-  have : DiscreteTopology (G ⧸ U) := U.discreteTopology h
+  have : DiscreteTopology (G ⧸ U) := QuotientGroup.discreteTopology h
   finite_of_compact_of_discrete
 
 @[to_additive]
@@ -503,7 +489,7 @@ open Set Filter
 @[to_additive]
 lemma exist_mul_closure_nhds {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 (1 : G), W * T ⊆ W := by
   apply WClopen.isClosed.isCompact.induction_on (p := fun S ↦ ∃ T ∈ 𝓝 (1 : G), S * T ⊆ W)
-    ⟨Set.univ ,by simp only [univ_mem, empty_mul, empty_subset, and_self]⟩
+    ⟨Set.univ, by simp only [univ_mem, empty_mul, empty_subset, and_self]⟩
     (fun _ _ huv ⟨T, hT, mem⟩ ↦ ⟨T, hT, (mul_subset_mul_right huv).trans mem⟩)
     fun U V ⟨T₁, hT₁, mem1⟩ ⟨T₂, hT₂, mem2⟩ ↦ ⟨T₁ ∩ T₂, inter_mem hT₁ hT₂, by
       rw [union_mul]
@@ -539,7 +525,7 @@ theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [Topolog
     ∃ H : OpenSubgroup G, (H : Set G) ⊆ W := by
   rcases exists_mulInvClosureNhd WClopen with ⟨V, hV⟩
   let S : Subgroup G := {
-    carrier := ⋃ n , V ^ (n + 1)
+    carrier := ⋃ n, V ^ (n + 1)
     mul_mem' := fun ha hb ↦ by
       rcases mem_iUnion.mp ha with ⟨k, hk⟩
       rcases mem_iUnion.mp hb with ⟨l, hl⟩
@@ -557,7 +543,7 @@ theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [Topolog
       use k
       rw [← hV.inv]
       simpa only [inv_pow, Set.mem_inv, inv_inv] using hk }
-  have : IsOpen (⋃ n , V ^ (n + 1)) := by
+  have : IsOpen (⋃ n, V ^ (n + 1)) := by
     refine isOpen_iUnion (fun n ↦ ?_)
     rw [pow_succ]
     exact hV.isOpen.mul_left

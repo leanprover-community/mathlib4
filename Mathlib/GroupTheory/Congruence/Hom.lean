@@ -38,7 +38,7 @@ variable {F} [Mul M] [Mul N] [Mul P] [FunLike F M N] [MulHomClass F M N]
 
 
 /-- The natural homomorphism from a magma to its quotient by a congruence relation. -/
-@[to_additive (attr := simps)/-- The natural homomorphism from an additive magma to its quotient by
+@[to_additive (attr := simps) /-- The natural homomorphism from an additive magma to its quotient by
 an additive congruence relation. -/]
 def mkMulHom (c : Con M) : MulHom M c.Quotient where
   toFun := (↑)
@@ -129,7 +129,7 @@ def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
     ⟨comap ((↑) : M → c.Quotient) (fun _ _ => rfl) d, fun x y h =>
       show d x y by rw [c.eq.2 h]; exact d.refl _⟩
   left_inv d :=
-    Subtype.ext_iff_val.2 <|
+    Subtype.ext_iff.2 <|
       ext fun x y =>
         ⟨fun ⟨a, b, H, hx, hy⟩ =>
           d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
@@ -141,7 +141,7 @@ def correspondence {c : Con M} : { d // c ≤ d } ≃o Con c.Quotient where
         Con.induction_on₂ x y fun w z h => ⟨w, z, h, rfl, rfl⟩⟩
   map_rel_iff' {s t} := by
     constructor
-    · intros h x y hs
+    · intro h x y hs
       rcases h ⟨x, y, hs, rfl, rfl⟩ with ⟨a, b, ht, hx, hy⟩
       exact t.1.trans (t.1.symm <| t.2 <| c.eq.1 hx) (t.1.trans ht (t.2 <| c.eq.1 hy))
     · exact Relation.map_mono

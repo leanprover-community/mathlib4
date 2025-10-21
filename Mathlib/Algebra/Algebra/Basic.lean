@@ -73,7 +73,6 @@ end ULift
 /-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
 instance ofSubsemiring (S : Subsemiring R) : Algebra S A where
   algebraMap := (algebraMap R A).comp S.subtype
-  smul := (· • ·)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
 
@@ -91,7 +90,6 @@ theorem algebraMap_ofSubsemiring_apply (S : Subsemiring R) (x : S) : algebraMap 
 instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
     Algebra S A where
   algebraMap := (algebraMap R A).comp S.subtype
-  smul := (· • ·)
   commutes' r x := Algebra.commutes (r : R) x
   smul_def' r x := Algebra.smul_def (r : R) x
 
@@ -321,6 +319,22 @@ lemma algebraMap_eq_one_iff {r : R} : algebraMap R A r = 1 ↔ r = 1 :=
   map_eq_one_iff _ <| FaithfulSMul.algebraMap_injective R A
 
 end FaithfulSMul
+
+namespace algebraMap
+
+@[norm_cast, simp]
+theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
+  (FaithfulSMul.algebraMap_injective _ _).eq_iff
+
+@[norm_cast]
+theorem coe_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
+  FaithfulSMul.algebraMap_eq_zero_iff _ _
+
+@[deprecated coe_eq_zero_iff (since := "29/09/2025")]
+theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 :=
+  coe_eq_zero_iff _ _ _
+
+end algebraMap
 
 lemma Algebra.charZero_of_charZero [CharZero R] : CharZero A :=
   have := algebraMap_comp_natCast R A

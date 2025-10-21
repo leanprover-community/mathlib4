@@ -73,10 +73,10 @@ by defining `SeparationQuotient.lift'` and `SeparationQuotient.map` operations.
 
 ## Implementation notes
 
-This files used to contain definitions of `separationRel α` and `UniformSpace.SeparationQuotient α`.
+This file used to contain definitions of `separationRel α` and `UniformSpace.SeparationQuotient α`.
 These definitions were equal (but not definitionally equal)
 to `{x : α × α | Inseparable x.1 x.2}` and `SeparationQuotient α`, respectively,
-and were added to the library before their geneeralizations to topological spaces.
+and were added to the library before their generalizations to topological spaces.
 
 In https://github.com/leanprover-community/mathlib4/pull/10644, we migrated from these definitions
 to more general `Inseparable` and `SeparationQuotient`.

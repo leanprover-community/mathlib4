@@ -214,8 +214,7 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
   | limit b hb H =>
     intro hb'
     -- TODO: generalize the universes of the lemmas in this file so we don't have to rely on bsup
-    have : ⨆ a : Iio b, _ = _ :=
-      iSup_eq_bsup.{max u v, max u v} (f := fun x (_ : x < b) ↦ derivFamily f x)
+    have : ⨆ a : Iio b, _ = _ := iSup_Iio_eq_bsup (f := fun x (_ : x < b) ↦ derivFamily f x)
     rw [derivFamily_limit f hb, this]
     exact
       bsup_lt_ord_of_isRegular.{u, v} hc (ord_lt_ord.1 ((ord_card_le b).trans_lt hb')) fun o' ho' =>
@@ -237,7 +236,7 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
 def IsInaccessible (c : Cardinal) : Prop :=
   ℵ₀ < c ∧ c ≤ c.ord.cof ∧ ∀ x < c, 2 ^ x < c
 
-@[deprecated "use the default constructor for `IsInaccesible`" (since := "2025-07-01")]
+@[deprecated "use the default constructor for `IsInaccessible`" (since := "2025-07-01")]
 theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃ : ∀ x < c, (2 ^ x) < c) :
     IsInaccessible c :=
   ⟨h₁, h₂, h₃⟩
@@ -260,10 +259,12 @@ theorem IsInaccessible.isRegular {c : Cardinal} (h : IsInaccessible c) : IsRegul
 theorem IsInaccessible.isStrongLimit {c : Cardinal} (h : IsInaccessible c) : IsStrongLimit c :=
   ⟨h.ne_zero, h.2.2⟩
 
-theorem isInaccesible_def {c : Cardinal} :
+theorem isInaccessible_def {c : Cardinal} :
     IsInaccessible c ↔ ℵ₀ < c ∧ IsRegular c ∧ IsStrongLimit c where
   mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
   mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
+
+@[deprecated (since := "2025-08-20")] alias isInaccesible_def := isInaccessible_def
 
 -- Lean's foundations prove the existence of ℵ₀ many inaccessible cardinals
 theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
@@ -272,8 +273,8 @@ theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
 @[deprecated IsInaccessible.univ (since := "2025-07-01")]
 alias univ_inaccessible := IsInaccessible.univ
 
--- TODO: prove that `IsInaccessible o.card` implies `IsInaccesible (ℵ_ o)` and
--- `IsInaccesible (ℶ_ o)`
+-- TODO: prove that `IsInaccessible o.card` implies `IsInaccessible (ℵ_ o)` and
+-- `IsInaccessible (ℶ_ o)`
 
 end Cardinal
 
