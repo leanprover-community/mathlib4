@@ -19,17 +19,13 @@ This extension is Galois with cyclic Galois group of degree `n`, and the (arithm
 
 ## Main definition
 
-* `FiniteField.Extension k p n` is a non-canonically chosen extension of `k` of degree `n` (for `n > 0`).
+* `FiniteField.Extension k p n` is a non-canonically chosen extension of `k` of degree `n`
+  (for `n > 0`).
 
 ## Main Results
 
 * `FiniteField.algEquivExtension`: any other field extension `l/k` of degree `n` is (non-uniquely)
 isomorphic to our chosen `FiniteField.Extension k p n`.
-
-## TODO
-
-One could complete classify the category of finite fields of characteristic `p`, where
-`#(l₁ →ₐ[k] l₂) = [l₁:k]` if `[l₁:k] ∣ [l₂:k]` and `0` otherwise.
 
 -/
 
@@ -88,8 +84,8 @@ instance : IsSplittingField k (Extension k p n) (X ^ Nat.card k ^ n - X) := by
   convert FiniteField.isSplittingField_sub (Extension k p n) k
   · rw [Fintype.card_eq_nat_card, natCard_extension]
 
-instance : IsGalois k (Extension k p n) :=
-  GaloisField.instIsGaloisOfFinite
+example : IsGalois k (Extension k p n) :=
+  inferInstance
 
 example : IsCyclic Gal(Extension k p n / k) :=
   inferInstance
