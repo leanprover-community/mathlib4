@@ -10,6 +10,8 @@ import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.Normed.Module.WeakDual
+
+-- #set_option pp.proofs True
 /-!
 # Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
 
@@ -118,7 +120,12 @@ open MeasureTheory NormedSpace WeakDual CompactlySupported CompactlySupportedCon
 instance : PseudoMetricSpace (LevyProkhorov (ProbabilityMeasure X)) :=
   levyProkhorovDist_pseudoMetricSpace_probabilityMeasure
 
+lemma integ {μ : ProbabilityMeasure X} {f : C(X, ℝ)} : ‖∫ (x : X), f x ∂μ‖ ≤ ‖f‖ :=
+  BoundedContinuousFunction.norm_integral_le_norm μ
+  (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)
 
+
+--example {x y : ℝ} : x ≤ y * x := by
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let Φ := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1
     ∧ φ ⟨fun x ↦ 1, continuous_const⟩ = 1 ∧ ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f }
@@ -186,24 +193,41 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     ext μ; simp only [T,Set.mem_univ, Set.mem_range, true_iff, Φ]
     let μprob : ProbabilityMeasure X := (LevyProkhorov.equiv (ProbabilityMeasure X)) μ
     let L : C_c(X, ℝ) →ₚ[ℝ] ℝ := integralPositiveLinearMap (μprob : Measure X)
-
-    let L' : C(X,ℝ) →ₚ[ℝ] ℝ := by
-      use L
-    have hCcEqC : (C_c(X, ℝ) = C(X, ℝ)) := by
-      sorry
-    let incl : C_c(X,ℝ) →ₗ[ℝ] C(X,ℝ) := by
-      refine IsLinearMap.mk' ?_ ?_
-      exact fun a ↦ a.toContinuousMap
-      exact { map_add := fun x ↦ congrFun rfl, map_smul := fun c ↦ congrFun rfl }
-    have : RealRMK.rieszMeasure (Λ y) = μprob := by
-    -- let y_val : WeakDual ℝ C(X,ℝ) := WeakDual L
-    -- let φ0_strong := (L.toContinuousLinearMap).comp incl.toContinuousLinearMap
-      stop
-    --use WeakDual (integralPositiveLinearMap μ)
-    refine RealRMK.rieszMeasure_integralPositiveLinearMap (μ := (LevyProkhorov.equiv μ : Measure X))
-    sorry /-Riesz Representation-/
+    let liftL (L : (X →C_c ℝ) →ₚ[ℝ] ℝ) : (C(X, ℝ) →ₚ[ℝ] ℝ) :=
+      { toFun := fun f => L (ContinuousMap.liftCompactlySupported.toFun f),
+        map_add' := fun f g ↦  L.map_add' (ContinuousMap.liftCompactlySupported.toFun f) (ContinuousMap.liftCompactlySupported.toFun g),
+        map_smul' := fun c f ↦ L.map_smul' c (ContinuousMap.liftCompactlySupported.toFun f),
+        monotone' := fun _ _ _ ↦ L.monotone' (by bound)}
+    let W := ((liftL L).toLinearMap.mkContinuous 1 (by
+      intro f;simp only [Equiv.toFun_as_coe, integralPositiveLinearMap_toFun,
+        ContinuousMap.liftCompactlySupported_apply_toFun, LinearMap.coe_mk, AddHom.coe_mk,
+        one_mul, L, liftL]; exact integ))
+    let φ_weak : WeakDual ℝ (C(X,ℝ)) := W
+    have as_ball : φ_weak ∈ Φ := by
+      simp [Φ]
+      refine ⟨?_,?_,?_⟩
+      · apply ContinuousLinearMap.opNorm_le_bound W (by linarith)
+        intro f
+        simp [W, L, liftL, -Real.norm_eq_abs, integ]
+      · simp only [LinearMap.mkContinuous, Equiv.toFun_as_coe, integralPositiveLinearMap_toFun,
+        ContinuousMap.liftCompactlySupported_apply_toFun, φ_weak, L, W, liftL]
+        change (fun f ↦ ∫ (x : X), f x ∂↑μprob) (fun x ↦ 1) = 1
+        simp
+      · intro g hgpos
+        simp [φ_weak, L, W, liftL]
+        change (0 ≤ (fun f ↦ ∫ (x : X), f x ∂↑μprob) g.toContinuousMap)
+        simp only [coe_toContinuousMap]
+        exact integral_nonneg hgpos
+    let φ_fin : ↑Φ := by use φ_weak
+    use φ_fin
+    let μ' : ProbabilityMeasure X := μ
+    have g2 : IsProbabilityMeasure (RealRMK.rieszMeasure (Λ φ_fin)) := by exact IsPMeas φ_fin
+    change ⟨RealRMK.rieszMeasure (Λ φ_fin), g2⟩ = μ'
+    apply Subtype.ext
+    simp [φ_fin, φ_weak, Λ]
+    apply RealRMK.rieszMeasure_integralPositiveLinearMap
   simp only [this]
-  have hΦ2 : SeqCompactSpace Φ := by
+  have hΦ2 : SeqCompactSpace Φ := by --Jannette's Project I think?
     refine { isSeqCompact_univ := ?_ }
     obtain ⟨ds⟩ := hΦ1
     sorry
