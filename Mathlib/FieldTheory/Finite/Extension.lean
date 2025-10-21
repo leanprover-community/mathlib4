@@ -33,68 +33,6 @@ One could complete classify the category of finite fields of characteristic `p`,
 
 -/
 
--- MOVE:
-theorem dvd_pow_sub_one_of_dvd {R : Type*} [Ring R] {r : R} {a b : ℕ} (h : a ∣ b) :
-    r ^ a - 1 ∣ r ^ b - 1 := by
-  obtain ⟨n, rfl⟩ := h
-  exact pow_one_sub_dvd_pow_mul_sub_one r a n -- we have a worse version and it's misnamed
-
-theorem dvd_pow_pow_sub_self_of_dvd {R : Type*} [Ring R] {r : R} {p a b : ℕ} (h : a ∣ b) :
-    r ^ p ^ a - r ∣ r ^ p ^ b - r := by
-  by_cases hp₀ : p = 0
-  · by_cases hb₀ : b = 0
-    · rw [hp₀, hb₀, pow_zero, pow_one, sub_self]
-      exact dvd_zero _
-    have ha₀ : a ≠ 0 := by rintro rfl; rw [zero_dvd_iff] at h; tauto
-    rw [hp₀, zero_pow ha₀, zero_pow hb₀]
-  have hp (c) : 1 ≤ p ^ c := one_le_pow₀ <| pos_of_ne_zero hp₀
-  rw [← Nat.sub_add_cancel (hp a), ← Nat.sub_add_cancel (hp b), pow_succ', pow_succ',
-    ← mul_sub_one, ← mul_sub_one]
-  refine mul_dvd_mul_left _ (dvd_pow_sub_one_of_dvd ?_)
-  zify
-  rw [Nat.cast_sub (hp a), Nat.cast_sub (hp b), Nat.cast_pow, Nat.cast_pow]
-  exact dvd_pow_sub_one_of_dvd h
-
-open Polynomial FiniteField
-
-theorem FiniteField.pow_finrank_eq_natCard (p : ℕ) [Fact p.Prime]
-    (k : Type*) [AddCommGroup k] [Finite k] [Module (ZMod p) k] :
-    p ^ Module.finrank (ZMod p) k = Nat.card k := by
-  rw [Module.natCard_eq_pow_finrank (K := ZMod p), Nat.card_zmod]
-
-theorem FiniteField.pow_finrank_eq_card (p : ℕ) [Fact p.Prime]
-    (k : Type*) [AddCommGroup k] [Fintype k] [Module (ZMod p) k] :
-    p ^ Module.finrank (ZMod p) k = Fintype.card k := by
-  rw [pow_finrank_eq_natCard, Fintype.card_eq_nat_card]
-
-theorem FiniteField.nonempty_algHom_of_finrank_dvd {p : ℕ} [Fact p.Prime]
-    {k : Type*} [Field k] [Finite k] [Algebra (ZMod p) k]
-    {l : Type*} [Field l] [Finite l] [Algebra (ZMod p) l]
-    (h : Module.finrank (ZMod p) k ∣ Module.finrank (ZMod p) l) :
-    Nonempty (k →ₐ[ZMod p] l) := by
-  have := Fintype.ofFinite k
-  have := Fintype.ofFinite l
-  refine ⟨Polynomial.IsSplittingField.lift _ (X ^ Fintype.card k - X) ?_⟩
-  refine Polynomial.splits_of_splits_of_dvd _ ?_
-    (FiniteField.isSplittingField_sub l (ZMod p)).splits ?_
-  · rw [← pow_finrank_eq_card p l]
-    exact FiniteField.X_pow_card_pow_sub_X_ne_zero _ Module.finrank_pos.ne'
-      (Fact.out (p := p.Prime)).one_lt
-  · rw [← pow_finrank_eq_card p k, ← pow_finrank_eq_card p l]
-    exact dvd_pow_pow_sub_self_of_dvd h
-
-theorem FiniteField.card_gal_of_finite (K L : Type*) [Finite L] [Field K] [Field L] [Algebra K L] :
-    Fintype.card Gal(L/K) = Module.finrank K L :=
-  have := Finite.of_injective _ (algebraMap K L).injective
-  have := Fintype.ofFinite K
-  (Fintype.card_of_bijective (bijective_frobeniusAlgEquivOfAlgebraic_pow K L)).symm.trans <|
-    Fintype.card_fin _
-
-theorem FiniteField.natCard_gal_of_finite (K L : Type*) [Finite L] [Field K] [Field L] [Algebra K L] :
-    Nat.card Gal(L/K) = Module.finrank K L := by
-  rw [← card_gal_of_finite, Fintype.card_eq_nat_card]
--- END MOVE
-
 variable (k : Type*) [Field k] [Finite k]
 variable (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) k]
 variable (n : ℕ) [NeZero n]
@@ -156,11 +94,11 @@ instance : IsGalois k (Extension k p n) :=
 example : IsCyclic Gal(Extension k p n / k) :=
   inferInstance
 
-theorem card_gal_extension : Fintype.card Gal(Extension k p n / k) = n :=
-  (card_gal_of_finite _ _).trans <| finrank_extension _ _ _
-
 theorem natCard_gal_extension : Nat.card Gal(Extension k p n / k) = n :=
-  (natCard_gal_of_finite _ _).trans <| finrank_extension _ _ _
+  (IsGalois.card_aut_eq_finrank _ _).trans <| finrank_extension k p n
+
+theorem card_gal_extension : Fintype.card Gal(Extension k p n / k) = n :=
+  Fintype.card_eq_nat_card.trans <| natCard_gal_extension k p n
 
 /-- The Frobenius automorphism `x ↦ x ^ Nat.card k` that fixes `k`. -/
 noncomputable def Extension.frob :
