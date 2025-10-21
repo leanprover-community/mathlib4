@@ -86,6 +86,9 @@ abbrev SkippedFileSegments : Std.HashSet Name := Std.HashSet.emptyWithCapacity
   |>.insert `Util
   |>.insert `Meta
 
+local instance : Add String.Pos.Raw where
+  add := fun | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
+
 @[inherit_doc Mathlib.Linter.linter.style.emptyLine]
 def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.emptyLine (← getLinterOptions) do
@@ -140,7 +143,7 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
           continue
         -- `s` is a string of as many spaces (` `) as the characters of the previous line.
         -- This, followed by the downarrow (`↓`) creates a pointer to an offending line break.
-        let s : String := ⟨List.replicate (before.length + 1) ' '⟩
+        let s : String := .join <| List.replicate (before.length + 1) " "
         Linter.logLint linter.style.emptyLine (.ofRange rg)
           m!"Please, write a comment here or remove this line, \
             but do not place empty lines within commands!\nContext:\n\
