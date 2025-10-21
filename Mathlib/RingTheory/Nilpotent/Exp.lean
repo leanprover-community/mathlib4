@@ -92,7 +92,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
       _ = ∑ i ∈ R2N, (∑ j ∈ range (i + 1),
             ((j ! : ℚ)⁻¹ * ((i - j)! : ℚ)⁻¹) • (a ^ j * b ^ (i - j))) := ?_
       _ = ∑ ij ∈ R2N ×ˢ R2N with ij.1 + ij.2 ≤ 2 * N,
-            ((ij.1! : ℚ)⁻¹ * (ij.2! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := ?_
+            ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := ?_
     · refine sum_congr rfl fun i _ ↦ ?_
       rw [Commute.add_pow h₁ i]
     · simp_rw [smul_sum]
@@ -119,7 +119,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
         exact fun x y _ _ _ ↦ ⟨x + y, x, by cutsat⟩
       · simp only [mem_sigma, mem_range, implies_true]
   have z₁ : ∑ ij ∈ R2N ×ˢ R2N with ¬ ij.1 + ij.2 ≤ 2 * N,
-      ((ij.1! : ℚ)⁻¹ * (ij.2! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
+      ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
     sum_eq_zero fun i hi ↦ by
       rw [mem_filter] at hi
       cases le_or_gt (N + 1) i.1 with
@@ -127,11 +127,11 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
         | inr _ => rw [pow_eq_zero_of_le (by linarith) h₅, mul_zero, smul_zero]
   have split₁ := sum_filter_add_sum_filter_not (R2N ×ˢ R2N)
     (fun ij ↦ ij.1 + ij.2 ≤ 2 * N)
-    (fun ij ↦ ((ij.1! : ℚ)⁻¹ * (ij.2! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2))
+    (fun ij ↦ ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2))
   rw [z₁, add_zero] at split₁
   rw [split₁] at s₁
   have z₂ : ∑ ij ∈ R2N ×ˢ R2N with ¬ (ij.1 ≤ N ∧ ij.2 ≤ N),
-      ((ij.1! : ℚ)⁻¹ * (ij.2! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
+      ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
     sum_eq_zero fun i hi ↦ by
     simp only [not_and, not_le, mem_filter] at hi
     cases le_or_gt (N + 1) i.1 with
@@ -139,12 +139,12 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
       | inr h => rw [pow_eq_zero_of_le (hi.2 (Nat.le_of_lt_succ h)) h₅, mul_zero, smul_zero]
   have split₂ := sum_filter_add_sum_filter_not (R2N ×ˢ R2N)
     (fun ij ↦ ij.1 ≤ N ∧ ij.2 ≤ N)
-    (fun ij ↦ ((ij.1! : ℚ)⁻¹ * (ij.2! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2))
+    (fun ij ↦ ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2))
   rw [z₂, add_zero] at split₂
   rw [← split₂] at s₁
   have restrict : ∑ ij ∈ R2N ×ˢ R2N with ij.1 ≤ N ∧ ij.2 ≤ N,
-      ((ij.1! : ℚ)⁻¹ * (ij.2! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
-        ∑ ij ∈ RN ×ˢ RN, ((ij.1! : ℚ)⁻¹ * (ij.2! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
+      ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) =
+        ∑ ij ∈ RN ×ˢ RN, ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := by
     apply sum_congr
     · ext x
       simp only [mem_filter, mem_product, mem_range, hR2N, hRN]
@@ -154,7 +154,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
   have s₂ := by
     calc (∑ i ∈ RN, (i ! : ℚ)⁻¹ • a ^ i) * ∑ i ∈ RN, (i ! : ℚ)⁻¹ • b ^ i
         = ∑ i ∈ RN, ∑ j ∈ RN, ((i ! : ℚ)⁻¹ * (j ! : ℚ)⁻¹) • (a ^ i * b ^ j) := ?_
-      _ = ∑ ij ∈ RN ×ˢ RN, ((ij.1! : ℚ)⁻¹ * (ij.2! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := ?_
+      _ = ∑ ij ∈ RN ×ˢ RN, ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) := ?_
     · rw [sum_mul_sum]
       refine sum_congr rfl fun _ _ ↦ sum_congr rfl fun _ _ ↦ ?_
       rw [smul_mul_assoc, mul_smul_comm, smul_smul]
