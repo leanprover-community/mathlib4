@@ -1117,6 +1117,17 @@ section Induce
 
 variable {G' G'' : G.Subgraph} {s s' : Set V}
 
+@[simp]
+theorem IsInduced.eq_induce_top_verts (h : G'.IsInduced) : induce ⊤ G'.verts = G' :=
+  Subgraph.ext rfl <| funext₂ fun _ _ ↦ propext
+    ⟨fun ⟨hu, hv, h'⟩ ↦ h hu hv h', fun h ↦ ⟨G'.edge_vert h, G'.edge_vert h.symm, h.adj_sub⟩⟩
+
+theorem isInduced_iff_exists_eq_induce_top (G' : G.Subgraph) :
+    G'.IsInduced ↔ ∃ s, G' = induce ⊤ s := by
+  refine ⟨fun h ↦ ⟨G'.verts, h.eq_induce_top_verts.symm⟩, fun ⟨s, h⟩ _ hu _ hv hadj ↦ ?_⟩
+  rw [h, (h ▸ rfl : s = G'.verts)]
+  exact ⟨hu, hv, hadj⟩
+
 @[gcongr]
 theorem induce_mono (hg : G' ≤ G'') (hs : s ⊆ s') : G'.induce s ≤ G''.induce s' := by
   constructor
