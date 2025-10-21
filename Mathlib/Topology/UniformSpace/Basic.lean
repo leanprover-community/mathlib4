@@ -92,6 +92,9 @@ lemma isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) : IsOpen (ball x
 lemma isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) : IsClosed (ball x V) :=
   hV.preimage <| .prodMk_right _
 
+theorem isOpen_thickening {V : Set (α × α)} {s : Set α} (h : IsOpen V) : IsOpen (thickening V s) :=
+  isOpen_biUnion fun _ _ => isOpen_ball _ h
+
 /-!
 ### Neighborhoods in uniform spaces
 -/

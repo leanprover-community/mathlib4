@@ -160,6 +160,14 @@ theorem thickening_eq_biUnion_ball {δ : ℝ} {E : Set X} : thickening δ E = �
   simp only [mem_iUnion₂, exists_prop]
   exact mem_thickening_iff
 
+theorem thickening_eq_thickening (δ : ℝ) (E : Set X) :
+    UniformSpace.thickening {p | dist p.2 p.1 < δ} E = thickening δ E := by
+  simp only [thickening_eq_biUnion_ball, UniformSpace.thickening, ball_eq_ball]
+
+theorem thickening_eq_thickening' (δ : ℝ) (E : Set X) :
+    UniformSpace.thickening {p | dist p.1 p.2 < δ} E = thickening δ E := by
+  simp only [thickening_eq_biUnion_ball, UniformSpace.thickening, ball_eq_ball']
+
 protected theorem _root_.Bornology.IsBounded.thickening {δ : ℝ} {E : Set X} (h : IsBounded E) :
     IsBounded (thickening δ E) := by
   rcases E.eq_empty_or_nonempty with rfl | ⟨x, hx⟩
