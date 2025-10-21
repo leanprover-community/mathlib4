@@ -105,7 +105,7 @@ lemma Submodule.linearProjOfIsCompl_comp_surjective_of_exact
     (hmap : Submodule.map g q = ⊤) :
     Function.Surjective (Submodule.linearProjOfIsCompl p q hpq ∘ₗ f) := by
   rw [Set.surjective_iff_surjOn_univ, LinearMap.coe_comp, Set.surjOn_comp_iff, Set.image_univ]
-  rw [← LinearMap.range_coe, ← Submodule.top_coe (R := R), LinearMap.surjOn_iff_le_map,
+  rw [← LinearMap.coe_range, ← Submodule.top_coe (R := R), LinearMap.surjOn_iff_le_map,
     ← hfg.linearMap_ker_eq]
   intro x triv
   obtain ⟨a, haq, ha⟩ : g x.val ∈ q.map g := by rwa [hmap]
