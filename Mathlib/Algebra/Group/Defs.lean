@@ -52,12 +52,6 @@ section Mul
 
 variable [Mul G]
 
-attribute [deprecated HMul.hMul "Use (g * ·) instead" (since := "2025-04-08")] leftMul
-attribute [deprecated HAdd.hAdd "Use (g + ·) instead" (since := "2025-04-08")] leftAdd
-
-attribute [deprecated HMul.hMul "Use (· * g) instead" (since := "2025-04-08")] rightMul
-attribute [deprecated HAdd.hAdd "Use (· + g) instead" (since := "2025-04-08")] rightAdd
-
 /-- A mixin for left cancellative multiplication. -/
 @[mk_iff] class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
   /-- Multiplication is left cancellative (i.e. left regular). -/
