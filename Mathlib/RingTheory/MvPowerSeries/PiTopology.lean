@@ -60,7 +60,7 @@ topological nilpotency by proving that, if the base ring is equipped with a *lin
 a power series is topologically nilpotent if and only if its constant coefficient is.
 This is lemma `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`.
 
-Mathematically, everything proven in this files follows from that general statement. However,
+Mathematically, everything proven in this file follows from that general statement. However,
 formalizing this yields a few (minor) annoyances:
 
 - we would need to push the results in this file slightly lower in the import tree
@@ -73,7 +73,7 @@ formalizing this yields a few (minor) annoyances:
 
 Since the code duplication is rather minor (the interesting part of the proof is already extracted
 as `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`), we just leave this as is for now.
-But future contributors wishing to clean this up should feel free to give it a try !
+But future contributors wishing to clean this up should feel free to give it a try!
 
 -/
 
