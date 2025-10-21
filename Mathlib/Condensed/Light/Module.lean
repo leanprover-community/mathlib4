@@ -15,7 +15,7 @@ import Mathlib.Condensed.Light.Basic
 
 # Light condensed `R`-modules
 
-This files defines light condensed modules over a ring `R`.
+This file defines light condensed modules over a ring `R`.
 
 ## Main results
 
@@ -53,7 +53,7 @@ def LightCondensed.free : LightCondSet ⥤ LightCondMod R :=
 
 /-- The condensed version of the free-forgetful adjunction. -/
 noncomputable
-def LightCondensed.freeForgetAdjunction : free R ⊣ forget R :=  Sheaf.adjunction _ (ModuleCat.adj R)
+def LightCondensed.freeForgetAdjunction : free R ⊣ forget R := Sheaf.adjunction _ (ModuleCat.adj R)
 
 /--
 The category of condensed abelian groups, defined as sheaves of abelian groups over

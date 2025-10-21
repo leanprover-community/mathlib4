@@ -211,8 +211,6 @@ end Mul
 instance instNonUnitalNonAssocSemiring [Preorder α] [LocallyFiniteOrder α]
     [NonUnitalNonAssocSemiring 𝕜] : NonUnitalNonAssocSemiring (IncidenceAlgebra 𝕜 α) where
   __ := instAddCommMonoid
-  mul := (· * ·)
-  zero := 0
   zero_mul := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ zero_mul _
   mul_zero := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ mul_zero _
   left_distrib := fun f g h ↦ by
@@ -223,23 +221,17 @@ instance instNonUnitalNonAssocSemiring [Preorder α] [LocallyFiniteOrder α]
 instance instNonAssocSemiring [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
     [NonAssocSemiring 𝕜] : NonAssocSemiring (IncidenceAlgebra 𝕜 α) where
   __ := instNonUnitalNonAssocSemiring
-  mul := (· * ·)
-  zero := 0
-  one := 1
   one_mul := fun f ↦ by ext; simp [*]
   mul_one := fun f ↦ by ext; simp [*]
 
 instance instSemiring [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] :
     Semiring (IncidenceAlgebra 𝕜 α) where
   __ := instNonAssocSemiring
-  mul := (· * ·)
   mul_assoc f g h := by
     ext a b
     simp only [mul_apply, sum_mul, mul_sum, sum_sigma']
     apply sum_nbij' (fun ⟨a, b⟩ ↦ ⟨b, a⟩) (fun ⟨a, b⟩ ↦ ⟨b, a⟩) <;>
       aesop (add simp mul_assoc) (add unsafe le_trans)
-  one := 1
-  zero := 0
 
 instance instRing [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Ring 𝕜] :
     Ring (IncidenceAlgebra 𝕜 α) where
@@ -273,7 +265,6 @@ instance instIsScalarTower [Preorder α] [LocallyFiniteOrder α] [AddCommMonoid 
 
 instance [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] [Semiring 𝕝]
     [Module 𝕜 𝕝] : Module (IncidenceAlgebra 𝕜 α) (IncidenceAlgebra 𝕝 α) where
-  smul := (· • ·)
   one_smul f := by ext a b hab; simp [ite_smul, hab]
   mul_smul := smul_assoc
   smul_add f g h := by ext; exact Eq.trans (sum_congr rfl fun x _ ↦ smul_add _ _ _) sum_add_distrib

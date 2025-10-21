@@ -92,8 +92,6 @@ theorem dom_some (x : ℕ) : (some x).Dom :=
   trivial
 
 instance addCommMonoid : AddCommMonoid PartENat where
-  add := (· + ·)
-  zero := 0
   add_comm _ _ := Part.ext' and_comm fun _ _ => add_comm _ _
   zero_add _ := Part.ext' (iff_of_eq (true_and _)) fun _ _ => zero_add _
   add_zero _ := Part.ext' (iff_of_eq (and_true _)) fun _ _ => add_zero _
@@ -102,7 +100,6 @@ instance addCommMonoid : AddCommMonoid PartENat where
 
 instance : AddCommMonoidWithOne PartENat :=
   { PartENat.addCommMonoid with
-    one := 1
     natCast := some
     natCast_zero := rfl
     natCast_succ := fun _ => Part.ext' (iff_of_eq (true_and _)).symm fun _ _ => rfl }
