@@ -96,9 +96,9 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
         simp [Iterator.hasNext]
       · apply not_lt_of_gt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
-      simp only [Iterator.hasNext, Pos.Raw.byteIdx_zero, rawndPos_asString, utf8Len_cons, add_pos_iff,
-        Char.utf8Size_pos, or_true, decide_true, ↓reduceIte, Iterator.curr, Pos.Raw.get,
-        List.data_asString, Pos.Raw.utf8GetAux, Iterator.next, Pos.Raw.next,
+      simp only [Iterator.hasNext, Pos.Raw.byteIdx_zero, rawEndPos_asString, utf8Len_cons,
+        add_pos_iff, Char.utf8Size_pos, or_true, decide_true, ↓reduceIte, Iterator.curr,
+        Pos.Raw.get, List.data_asString, Pos.Raw.utf8GetAux, Iterator.next, Pos.Raw.next,
         Bool.ite_eq_true_distrib, decide_eq_true_eq]
       simp only [← String.mk_eq_asString]
       split_ifs with h
