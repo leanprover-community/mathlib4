@@ -237,7 +237,8 @@ using the local context to infer the appropriate instance. This supports the fol
 - the model with corners on the total space of a vector bundle
 - the model with corners on the tangent space of a manifold
 - a model with corners on a manifold, or on its underlying model space
-- a closed interval of real numbers
+- a closed interval of real numbers,
+- Euclidean space, Euclidean half-space and Euclidean quadrants
 - the complex upper half plane
 - a space of continuous k-linear maps
 - the trivial model `𝓘(𝕜, E)` on a normed space
@@ -377,13 +378,19 @@ where
       else
         throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
     | _ => throwError "`{e}` is not a space of continuous linear maps"
-  /-- Attempt to find a model with corners on a Euclidean half-space -/
+  /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant -/
   fromEuclideanSpace : TermElabM Expr := do
     -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace`.
-    match (← instantiateMVars e).cleanupAnnotations with--.isConstOf `EuclideanHalfSpace with
+    match (← instantiateMVars e).cleanupAnnotations with
+    | mkApp2 (.const `EuclideanSpace _) k _n =>
+      let eK : Term ← Term.exprToSyntax k
+      let eT : Term ← Term.exprToSyntax e
+      Term.elabTerm (← ``(𝓘($eK, $eT))) none
     | mkApp2 (.const `EuclideanHalfSpace _) n _ =>
       mkAppOptM `modelWithCornersEuclideanHalfSpace #[n, none]
-    | _ => throwError "`{e}` is not a `EuclideanHalfSpace`"
+    | mkApp (.const `EuclideanQuadrant _) n =>
+      mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
+    | _ => throwError "`{e}` is not a Euclidean space, half-space or quadrant"
   /-- Attempt to find a model with corners on a closed interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
     let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
