@@ -272,4 +272,30 @@ def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := 
   letI : Algebra (ZMod p) K' := ZMod.algebra _ _
   exact ↑(algEquivOfCardEq p hKK')
 
+theorem pow_finrank_eq_natCard (p : ℕ) [Fact p.Prime]
+    (k : Type*) [AddCommGroup k] [Finite k] [Module (ZMod p) k] :
+    p ^ Module.finrank (ZMod p) k = Nat.card k := by
+  rw [Module.natCard_eq_pow_finrank (K := ZMod p), Nat.card_zmod]
+
+theorem pow_finrank_eq_card (p : ℕ) [Fact p.Prime]
+    (k : Type*) [AddCommGroup k] [Fintype k] [Module (ZMod p) k] :
+    p ^ Module.finrank (ZMod p) k = Fintype.card k := by
+  rw [pow_finrank_eq_natCard, Fintype.card_eq_nat_card]
+
+theorem nonempty_algHom_of_finrank_dvd {p : ℕ} [Fact p.Prime]
+    {k : Type*} [Field k] [Finite k] [Algebra (ZMod p) k]
+    {l : Type*} [Field l] [Finite l] [Algebra (ZMod p) l]
+    (h : Module.finrank (ZMod p) k ∣ Module.finrank (ZMod p) l) :
+    Nonempty (k →ₐ[ZMod p] l) := by
+  have := Fintype.ofFinite k
+  have := Fintype.ofFinite l
+  refine ⟨Polynomial.IsSplittingField.lift _ (X ^ Fintype.card k - X) ?_⟩
+  refine Polynomial.splits_of_splits_of_dvd _ ?_
+    (FiniteField.isSplittingField_sub l (ZMod p)).splits ?_
+  · rw [← pow_finrank_eq_card p l]
+    exact FiniteField.X_pow_card_pow_sub_X_ne_zero _ Module.finrank_pos.ne'
+      (Fact.out (p := p.Prime)).one_lt
+  · rw [← pow_finrank_eq_card p k, ← pow_finrank_eq_card p l]
+    exact dvd_pow_pow_sub_self_of_dvd h
+
 end FiniteField
