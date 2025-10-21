@@ -60,7 +60,7 @@ lemma Module.Finite.exists_free_surjective [Module.Finite R S] :
 
 /-- If `S` is finitely presented as a module over `R`, it is finitely
 presented as an algebra over `R`. -/
-lemma Algebra.FinitePresentation.of_finitePresentation
+instance Algebra.FinitePresentation.of_finitePresentation
     [Module.FinitePresentation R S] : Algebra.FinitePresentation R S := by
   obtain ⟨S', _, _, _, _, _, f, hf⟩ := Module.Finite.exists_free_surjective R S
   refine .of_surjective hf ?_

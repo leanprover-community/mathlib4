@@ -1069,39 +1069,3 @@ def powQuotPowSuccEquivMapMkPowSuccPow :
 end PowQuot
 
 end Ideal
-
-section
-
-variable {R A B : Type*} [CommRing R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-variable (I : Ideal R) [Algebra (R ⧸ I) A] [Algebra (R ⧸ I) B]
-  [IsScalarTower R (R ⧸ I) A] [IsScalarTower R (R ⧸ I) B]
-
-/-- Any `f : A →ₐ[R] B` is also an `R ⧸ I`-algebra homomorphism if the `R`-algebra structure on
-`A` and `B` factors via `R ⧸ I`. -/
-def AlgHom.restrictQuotient (f : A →ₐ[R] B) : A →ₐ[R ⧸ I] B where
-  __ := f
-  commutes' r := by
-    obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
-    simp [← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
-
-@[simp]
-lemma AlgHom.restrictQuotient_apply (f : A →ₐ[R] B) (x : A) :
-    f.restrictQuotient I x = f x := rfl
-
-/-- Any `f : A ≃ₐ[R] B` is also an `R ⧸ I`-algebra isomorphism if the `R`-algebra structure on
-`A` and `B` factors via `R ⧸ I`. -/
-def AlgEquiv.restrictQuotient (f : A ≃ₐ[R] B) : A ≃ₐ[R ⧸ I] B where
-  __ := f
-  commutes' r := by
-    obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
-    simp [← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
-
-@[simp]
-lemma AlgEquiv.restrictQuotient_apply (f : A ≃ₐ[R] B) (x : A) :
-    f.restrictQuotient I x = f x := rfl
-
-@[simp]
-lemma AlgEquiv.restrictQuotient_symm_apply (f : A ≃ₐ[R] B) (x : B) :
-    (f.restrictQuotient I).symm x = f.symm x := rfl
-
-end
