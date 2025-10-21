@@ -340,24 +340,6 @@ instance [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y] :
   add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
 
 /--
-The negative part of a minimum is the maximum of the negative parts.
--/
-theorem negPart_min [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
-    (a b : locallyFinsuppWithin U Y) :
-    (min a b)⁻ = max a⁻ b⁻ := by
-  ext x
-  apply _root_.negPart_min
-
-/--
-The negative part of a maximum is the minimum of the negative parts.
--/
-theorem negPart_max [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
-    (a b : locallyFinsuppWithin U Y) :
-    (max a b)⁻ = min a⁻ b⁻ := by
-  ext x
-  apply _root_.negPart_max
-
-/--
 Taking the positive part of a function with locally finite support commutes with
 scalar multiplication by a natural number.
 -/

@@ -168,6 +168,9 @@ lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
   rw [← mul_left_inj a⁻ᵐ⁻¹, inf_mul, one_mul, mul_inv_cancel, ← div_eq_mul_inv,
     oneLePart_div_leOnePart, leOnePart_eq_inv_inf_one, inv_inv]
 
+@[to_additive] lemma leOnePart_min (a b : α) : (min a b)⁻ᵐ = max a⁻ᵐ b⁻ᵐ := by
+  simp [leOnePart, inv_inf, sup_sup_distrib_right]
+
 end MulRightMono
 
 end MulLeftMono
@@ -211,10 +214,7 @@ end CommGroup
 end Lattice
 
 section LinearOrder
-variable [LinearOrder α] {a b : α}
-
-section group
-variable [Group α]
+variable [LinearOrder α] [Group α] {a b : α}
 
 @[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
   rw [oneLePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
@@ -243,26 +243,6 @@ variable [MulRightMono α]
   sup_lt_iff.trans <| by rw [inv_lt']
 
 end covariantmul
-end group
-
-section commutativeGroupCovariantmul
-variable [CommGroup α] [MulLeftMono α]
-
-@[to_additive]
-theorem leOnePart_min (a b : α) :
-    (min a b)⁻ᵐ = max a⁻ᵐ b⁻ᵐ := by
-  rcases le_total a b with h | h
-  · rw [min_eq_left h, max_eq_left ((le_iff_oneLePart_leOnePart a b).1 h).2]
-  · rw [min_eq_right h, max_eq_right ((le_iff_oneLePart_leOnePart b a).1 h).2]
-
-@[to_additive]
-theorem leOnePart_max (a b : α) :
-    (max a b)⁻ᵐ = min a⁻ᵐ b⁻ᵐ := by
-  rcases le_total a b with h | h
-  · rw [max_eq_right h, min_comm, min_eq_left ((le_iff_oneLePart_leOnePart a b).1 h).2]
-  · rw [min_comm, max_eq_left h, min_eq_right ((le_iff_oneLePart_leOnePart b a).1 h).2]
-
-end commutativeGroupCovariantmul
 end LinearOrder
 
 namespace Pi
