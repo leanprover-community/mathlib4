@@ -469,10 +469,11 @@ def freeLiftLEquiv :
 
 variable {A}
 
+omit [DecidableEq α] in
 @[ext]
 lemma free_ext (f g : free k G α ⟶ A)
-    (h : ∀ i : α, f.hom (single i (single 1 1)) = g.hom (single i (single 1 1))) : f = g :=
-  (freeLiftLEquiv α A).injective (funext_iff.2 h)
+    (h : ∀ i : α, f.hom (single i (single 1 1)) = g.hom (single i (single 1 1))) : f = g := by
+  classical exact (freeLiftLEquiv α A).injective (funext_iff.2 h)
 
 section
 
@@ -482,7 +483,7 @@ variable (A B : Rep k G) (α : Type u) [DecidableEq α]
 
 open ModuleCat.MonoidalCategory
 
--- the proof below can be simplified after #24823 is merged
+-- the proof below can be simplified after https://github.com/leanprover-community/mathlib4/issues/24823 is merged
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
 @[simps! hom_hom inv_hom]
@@ -945,11 +946,12 @@ instance free_projective {G α : Type u} [Group G] :
 
 section
 
-variable {G : Type u} [Group G] {n : ℕ} [DecidableEq (Fin n → G)]
+variable {G : Type u} [Group G] {n : ℕ}
 
 instance diagonal_succ_projective :
-    Projective (diagonal k G (n + 1)) :=
-  Projective.of_iso (diagonalSuccIsoFree k G n).symm inferInstance
+    Projective (diagonal k G (n + 1)) := by
+  classical
+  exact Projective.of_iso (diagonalSuccIsoFree k G n).symm inferInstance
 
 instance leftRegular_projective :
     Projective (leftRegular k G) :=

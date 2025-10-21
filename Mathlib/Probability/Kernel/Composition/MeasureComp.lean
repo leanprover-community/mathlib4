@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Probability.Kernel.Composition.CompNotation
+import Mathlib.Probability.Kernel.Composition.KernelLemmas
 import Mathlib.Probability.Kernel.Composition.MeasureCompProd
-import Mathlib.Probability.Kernel.Composition.Prod
 
 /-!
 # Lemmas about the composition of a measure and a kernel
@@ -44,6 +44,8 @@ lemma snd_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFinite
   rw [bind_apply hs κ.aemeasurable, snd_apply hs, compProd_apply]
   · rfl
   · exact measurable_snd hs
+
+lemma comp_congr (h : ∀ᵐ a ∂μ, κ a = η a) : κ ∘ₘ μ = η ∘ₘ μ := bind_congr_right h
 
 lemma ae_ae_of_ae_comp {p : β → Prop} (h : ∀ᵐ ω ∂(κ ∘ₘ μ), p ω) :
     ∀ᵐ ω' ∂μ, ∀ᵐ ω ∂(κ ω'), p ω := by
@@ -87,6 +89,11 @@ lemma map_comp (μ : Measure α) (κ : Kernel α β) {f : β → γ} (hf : Measu
 lemma discard_comp (μ : Measure α) : Kernel.discard α ∘ₘ μ = μ .univ • Measure.dirac () := by
   ext s hs; simp [Measure.bind_apply hs (Kernel.aemeasurable _), mul_comm]
 
+lemma copy_comp_map {f : α → β} (hf : AEMeasurable f μ) :
+    Kernel.copy β ∘ₘ (μ.map f) = μ.map (fun a ↦ (f a, f a)) := by
+  rw [Kernel.copy, deterministic_comp_eq_map, AEMeasurable.map_map_of_aemeasurable (by fun_prop) hf]
+  rfl
+
 section CompProd
 
 lemma compProd_eq_comp_prod (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFiniteKernel κ] :
@@ -116,6 +123,12 @@ lemma prodMkLeft_comp_compProd {η : Kernel β γ} [SFinite μ] [IsSFiniteKernel
     (η.prodMkLeft α) ∘ₘ μ ⊗ₘ κ = η ∘ₘ κ ∘ₘ μ := by
   rw [← snd_compProd μ κ, Kernel.prodMkLeft, snd, ← deterministic_comp_eq_map measurable_snd,
     comp_assoc, Kernel.comp_deterministic_eq_comap]
+
+lemma compProd_deterministic [SFinite μ] {f : α → β} (hf : Measurable f) :
+    μ ⊗ₘ Kernel.deterministic f hf = μ.map (fun a ↦ (a, f a)) := by
+  rw [compProd_eq_comp_prod, Kernel.id, Kernel.deterministic_prod_deterministic,
+    deterministic_comp_eq_map]
+  rfl
 
 end CompProd
 

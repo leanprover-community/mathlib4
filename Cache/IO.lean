@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.15"
+  "0.1.16-pre3"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -90,7 +90,7 @@ def getLeanTar : IO String := do
 /-- Bump this number to invalidate the cache, in case the existing hashing inputs are insufficient.
 It is not a global counter, and can be reset to 0 as long as the lean githash or lake manifest has
 changed since the last time this counter was touched. -/
-def rootHashGeneration : UInt64 := 0
+def rootHashGeneration : UInt64 := 1
 
 /--
 `CacheM` stores the following information:
@@ -311,12 +311,20 @@ def mkBuildPaths (mod : Name) : CacheM <| List (FilePath × Bool) := do
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
     (packageDir / LIBDIR / path.withExtension "trace", true),
+    -- Note: the `.olean`, `.olean.server`, `.olean.private` files must be consecutive,
+    -- and in this order. The corresponding `.hash` files can come afterwards, in any order.
     (packageDir / LIBDIR / path.withExtension "olean", true),
+    (packageDir / LIBDIR / path.withExtension "olean.server", false),
+    (packageDir / LIBDIR / path.withExtension "olean.private", false),
     (packageDir / LIBDIR / path.withExtension "olean.hash", true),
+    (packageDir / LIBDIR / path.withExtension "olean.server.hash", false),
+    (packageDir / LIBDIR / path.withExtension "olean.private.hash", false),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
     (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
     (packageDir / IRDIR  / path.withExtension "c", true),
     (packageDir / IRDIR  / path.withExtension "c.hash", true),
+    -- (packageDir / LIBDIR / path.withExtension "ir", true),
+    -- (packageDir / LIBDIR / path.withExtension "ir.hash", true),
     (packageDir / LIBDIR / path.withExtension "extra", false)]
 
 /-- Check that all required build files exist. -/
@@ -484,7 +492,7 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
       IO.println s!"Searching directory {folder} for .lean files"
       if ← folder.pathExists then
         -- (2.) provided "module name" of an existing folder: walk dir
-        -- TODO: will be implemented in #21838
+        -- TODO: will be implemented in https://github.com/leanprover-community/mathlib4/issues/21838
         return .error "Entering a part of a module name \
           (i.e. `Mathlib.Data` when only the folder `Mathlib/Data/` but no \
           file `Mathlib/Data.lean` exists) is not supported yet!"

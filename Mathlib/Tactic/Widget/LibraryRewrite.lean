@@ -153,7 +153,7 @@ def addLocalRewriteEntry (decl : LocalDecl) :
 
 private abbrev ExtState := IO.Ref (Option (RefinedDiscrTree RewriteLemma))
 
-private builtin_initialize ExtState.default : ExtState ←
+private initialize ExtState.default : ExtState ←
   IO.mkRef none
 
 private instance : Inhabited ExtState where
@@ -527,7 +527,7 @@ are filtered out, as well as rewrites that have new metavariables in the replace
 To see all suggestions, click on the filter button (▼) in the top right.
 -/
 elab stx:"rw??" : tactic => do
-  let some range := (← getFileMap).rangeOfStx? stx | return
+  let some range := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
 

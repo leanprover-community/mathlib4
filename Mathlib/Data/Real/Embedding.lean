@@ -68,8 +68,6 @@ theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden : den ≠ 0) {x : M} :
     mkRat num den ∈ ratLt x ↔ num • 1 < den • x := by
   rw [Set.mem_setOf]
   obtain ⟨m, hm0, hnum, hden⟩ := Rat.mkRat_num_den hden (show mkRat num den = _ by rfl)
-  have hnum : num = (mkRat num den).num * m := hnum
-  have hden : den = (mkRat num den).den * m := hden
   conv in num • 1 => rw [hnum, mul_comm, ← smul_smul, natCast_zsmul]
   conv in den • x => rw [hden, mul_comm, ← smul_smul]
   exact (smul_lt_smul_iff_of_pos_left (Nat.zero_lt_of_ne_zero hm0)).symm
@@ -229,10 +227,9 @@ omit [One M] [ZeroLEOneClass M] [NeZero (1 : M)] in
 variable (M) in
 theorem exists_orderAddMonoidHom_real_injective :
     ∃ f : M →+o ℝ, Function.Injective f := by
-  by_cases h : Subsingleton M
+  cases subsingleton_or_nontrivial M
   · exact ⟨0, Function.injective_of_subsingleton _⟩
-  · have : Nontrivial M := not_subsingleton_iff_nontrivial.mp h
-    obtain ⟨a, ha⟩ := exists_ne (0 : M)
+  · obtain ⟨a, ha⟩ := exists_ne (0 : M)
     let one : One M := ⟨|a|⟩
     have : ZeroLEOneClass M := ⟨abs_nonneg a⟩
     have : NeZero (1 : M) := ⟨abs_ne_zero.mpr ha⟩
