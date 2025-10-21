@@ -843,7 +843,7 @@ variable {op : α → α → α} [ha : Std.Associative op]
 local notation a " ⋆ " b => op a b
 
 /-- Notation for `foldl op a l`. -/
-local notation l " <*> " a => foldl op a l
+local notation (priority := high) l " <*> " a => foldl op a l
 
 theorem foldl_op_eq_op_foldr_assoc :
     ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) ⋆ a₂) = a₁ ⋆ l.foldr (· ⋆ ·) a₂

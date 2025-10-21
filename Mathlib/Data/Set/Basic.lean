@@ -965,7 +965,7 @@ theorem subset_of_mem_powerset {x s : Set α} (h : x ∈ 𝒫 s) : x ⊆ s := @h
 theorem mem_powerset_iff (x s : Set α) : x ∈ 𝒫 s ↔ x ⊆ s :=
   Iff.rfl
 
-theorem powerset_inter (s t : Set α) : 𝒫(s ∩ t) = 𝒫 s ∩ 𝒫 t :=
+theorem powerset_inter (s t : Set α) : 𝒫 (s ∩ t) = 𝒫 s ∩ 𝒫 t :=
   ext fun _ => subset_inter_iff
 
 @[simp]
@@ -979,11 +979,11 @@ theorem powerset_nonempty : (𝒫 s).Nonempty :=
   ⟨∅, fun _ h => empty_subset s h⟩
 
 @[simp]
-theorem powerset_empty : 𝒫(∅ : Set α) = {∅} :=
+theorem powerset_empty : 𝒫 (∅ : Set α) = {∅} :=
   ext fun _ => subset_empty_iff
 
 @[simp]
-theorem powerset_univ : 𝒫(univ : Set α) = univ :=
+theorem powerset_univ : 𝒫 (univ : Set α) = univ :=
   eq_univ_of_forall subset_univ
 
 /-! ### Sets defined as an if-then-else -/
