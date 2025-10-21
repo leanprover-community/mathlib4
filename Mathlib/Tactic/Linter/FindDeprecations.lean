@@ -240,6 +240,7 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
   -- For each range `rg` in `ranges`, we isolate the unique entry of `stringPositions` that
   -- entirely contains `rg`.  This helps catching the full range of `open Nat in @[deprecated] ...`,
   -- rather than just the `@[deprecated] ...` range.
+  let : Sub String.Pos.Raw := ⟨fun | ⟨a⟩, ⟨b⟩ =>  ⟨a - b⟩⟩
   for rg in ranges do
     let candidate := stringPositions.filterMap (fun arr ↦
       let a := arr.head! - offset
