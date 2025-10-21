@@ -13,7 +13,7 @@ import Mathlib.Topology.Sets.Opens
 # Open subgroups of a topological group
 
 This file builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
- and its additive version `OpenAddSubgroup`. This lattice has a top element, the subgroup of all
+and its additive version `OpenAddSubgroup`. This lattice has a top element, the subgroup of all
 elements, but no bottom element in general. The trivial subgroup which is the natural candidate
 bottom has no reason to be open (this happens only in discrete groups).
 
