@@ -591,7 +591,7 @@ theorem Module.Basis.traceDual_inj {b' : Basis ι K L} :
   (traceDual_injective K L).eq_iff
 
 /--
-A family of vectors `v` is the dual for the trace of the basis `b` iff
+A family of vectors `v` is the dual for the trace of the basis `b` if and only if
 `∀ i j, Tr(v i * b j) = δ_ij`.
 -/
 @[simp]
