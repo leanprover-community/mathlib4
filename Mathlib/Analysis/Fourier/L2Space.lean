@@ -29,13 +29,11 @@ noncomputable
 def Lp.fourierTransformLI : (Lp (α := V) E 2) ≃ₗᵢ[ℂ] (Lp (α := V) E 2) :=
   (SchwartzMap.fourierTransformCLE ℂ (V := V) (E := E)).toLinearEquiv.extendOfIsometry
     (SchwartzMap.toLpCLM ℂ (E := V) E 2) (SchwartzMap.toLpCLM ℂ (E := V) E 2)
-    (LinearMap.ker_eq_bot_of_injective (injective_toLp _ _)) (by
-        apply SchwartzMap.denseRange_toLpCLM
-        exact Ne.symm ENNReal.top_ne_ofNat)
+    (LinearMap.ker_eq_bot_of_injective (injective_toLp _ _))
+    (by apply SchwartzMap.denseRange_toLpCLM (p := 2) ENNReal.top_ne_ofNat.symm)
     (by apply norm_fourierTransform_toL2_eq)
-    (LinearMap.ker_eq_bot_of_injective (injective_toLp _ _)) (by
-        apply SchwartzMap.denseRange_toLpCLM
-        exact Ne.symm ENNReal.top_ne_ofNat)
+    (LinearMap.ker_eq_bot_of_injective (injective_toLp _ _))
+    (by apply SchwartzMap.denseRange_toLpCLM (p := 2) ENNReal.top_ne_ofNat.symm)
     (by
       intro f
       convert (norm_fourierTransform_toL2_eq (𝓕⁻ f)).symm
@@ -61,7 +59,7 @@ instance instFourierPairInv : FourierPairInv (Lp (α := V) E 2) (Lp (α := V) E 
 theorem toLp_fourierTransform_eq (f : 𝓢(V, E)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq (LinearMap.ker_eq_bot_of_injective (injective_toLp _ _))
   · apply SchwartzMap.denseRange_toLpCLM
-    exact Ne.symm ENNReal.top_ne_ofNat
+    exact ENNReal.top_ne_ofNat.symm
   use 1
   intro f
   rw [one_mul]
@@ -71,7 +69,7 @@ theorem toLp_fourierTransform_eq (f : 𝓢(V, E)) : 𝓕 (f.toLp 2) = (𝓕 f).t
 theorem toLp_fourierTransformInv_eq (f : 𝓢(V, E)) : 𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq (LinearMap.ker_eq_bot_of_injective (injective_toLp _ _))
   · apply SchwartzMap.denseRange_toLpCLM
-    exact Ne.symm ENNReal.top_ne_ofNat
+    exact ENNReal.top_ne_ofNat.symm
   use 1
   intro f
   rw [one_mul]
@@ -95,19 +93,16 @@ variable (V) in
 theorem toTemperedDistribution_fourierTransform_eq (f : Lp (α := E) F 2) :
     𝓕 (f : 𝓢'(ℂ, E, F →L[ℂ] V, V)) = (𝓕 f : Lp (α := E) F 2) := by
   set p := fun f : Lp (α := E) F 2 ↦
-    𝓕 (Lp.toTemperedDistribution ℂ V f) =
-      (Lp.toTemperedDistribution ℂ V (𝓕 f))
+    𝓕 (f : 𝓢'(ℂ, E, F →L[ℂ] V, V)) = (𝓕 f : Lp (α := E) F 2)
   apply DenseRange.induction_on (p := p)
-    ( SchwartzMap.denseRange_toLpCLM (F := F) (E := E) (μ := volume) (p := 2)
-      (Ne.symm ENNReal.top_ne_ofNat)) f
+    (SchwartzMap.denseRange_toLpCLM (F := F) (E := E) (p := 2) ENNReal.top_ne_ofNat.symm) f
   · apply isClosed_eq
     · exact ((TemperedDistribution.fourierTransformCLM ℂ E _ V) ∘L
         (Lp.toTemperedDistributionCLM ℂ F V volume 2)).cont
     · exact (Lp.toTemperedDistributionCLM ℂ F V volume 2).cont.comp
         (Lp.fourierTransformLI E F).continuous
   intro f
-  unfold p
-  simp [TemperedDistribution.fourierTransformCLM_toTemperedDistributionCLM_eq]
+  simp [p, TemperedDistribution.fourierTransformCLM_toTemperedDistributionCLM_eq]
 
 variable (V) in
 theorem toTemperedDistribution_fourierTransformInv_eq (f : Lp (α := E) F 2) :
