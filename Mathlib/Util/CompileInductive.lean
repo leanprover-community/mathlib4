@@ -176,7 +176,7 @@ def compileInductiveOnly (iv : InductiveVal) (rv : RecursorVal) (warn := true) :
     }]
     Compiler.CSimp.add name .global
   for name in iv.all do
-    for aux in [mkRecOnName name, mkBRecOnName name] do
+    for aux in [mkRecOnName name, (mkBRecOnName name).str "go", mkBRecOnName name] do
       if let some (.defnInfo dv) := (← getEnv).find? aux then
         compileDefn dv
 
@@ -234,6 +234,7 @@ end Mathlib.Util
 
 -- `Nat.rec` already has a `@[csimp]` lemma in Lean.
 compile_def% Nat.recOn
+compile_def% Nat.brecOn.go
 compile_def% Nat.brecOn
 compile_inductive% Prod
 compile_inductive% List

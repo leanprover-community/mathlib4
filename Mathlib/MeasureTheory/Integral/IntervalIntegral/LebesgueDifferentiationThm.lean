@@ -70,7 +70,10 @@ theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} {a b : ℝ}
       |>.integrable_of_forall_notMem_eq_zero (by grind) |>.locallyIntegrable
   filter_upwards [LocallyIntegrable.ae_hasDerivAt_integral hg, h₁, h₂] with x hx _ _ _
   intro c hc
-  refine HasDerivWithinAt.hasDerivAt (s := Ioo a b) ?_ <| Ioo_mem_nhds (by grind) (by grind)
-  rw [show f x = g x by grind]
+  #adaptation_note /-- 2025-09-30 https://github.com/leanprover/lean4/issues/10622
+    `grind -order` calls used be `grind` -/
+  refine HasDerivWithinAt.hasDerivAt (s := Ioo a b) ?_ <|
+    Ioo_mem_nhds (by grind -order) (by grind -order)
+  rw [show f x = g x by grind -order]
   refine (hx c).hasDerivWithinAt.congr (fun y hy ↦ ?_) ?_
   all_goals apply intervalIntegral.integral_congr_ae' <;> filter_upwards <;> grind

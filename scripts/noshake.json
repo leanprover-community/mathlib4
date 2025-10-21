@@ -52,6 +52,7 @@
   "Mathlib.FieldTheory.Galois.Notation",
   "Mathlib.Geometry.Manifold.Notation",
   "Mathlib.Geometry.Manifold.Instances.Real",
+  "Mathlib.Geometry.Manifold.Notation",
   "Mathlib.Init",
   "Mathlib.LinearAlgebra.AffineSpace.Basic",
   "Mathlib.LinearAlgebra.Matrix.Notation",
@@ -227,6 +228,7 @@
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.Use": ["Batteries.Logic", "Mathlib.Tactic.WithoutCDot"],
+  "Mathlib.Tactic.ToExpr": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Tactic.ToAdditive.Frontend": ["Lean.Meta.Tactic.TryThis"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TautoSet":
@@ -397,6 +399,7 @@
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Logic.Equiv.Prod": ["Mathlib.Data.Prod.PProd"],
+  "Mathlib.Logic.Equiv.Fin.Basic": ["Batteries.Data.Fin.Lemmas"],
   "Mathlib.Logic.Equiv.Defs":
   ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
   "Mathlib.Logic.Basic":
@@ -422,7 +425,11 @@
   ["Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected",
    "Mathlib.Util.Superscript"],
   "Mathlib.Geometry.Manifold.Notation":
-  ["Mathlib.Geometry.Manifold.ContMDiff.Defs", "Mathlib.Geometry.Manifold.MFDeriv.Defs"],
+  ["Mathlib.Geometry.Manifold.ContMDiff.Defs",
+   "Mathlib.Geometry.Manifold.MFDeriv.Defs"],
+  "Mathlib.FieldTheory.Normal.Defs": ["Mathlib.FieldTheory.Galois.Notation"],
+  "Mathlib.FieldTheory.Galois.Notation": ["Mathlib.Algebra.Algebra.Equiv"],
+  "Mathlib.FieldTheory.Finite.Basic": ["Mathlib.FieldTheory.Galois.Notation"],
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
@@ -595,5 +602,4 @@
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
   "Batteries.CodeAction.Basic":
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
-  "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"],
-  "Mathlib.FieldTheory.Galois.Notation" : ["Mathlib.Algebra.Algebra.Equiv"]}}
+  "Batteries.Classes.SetNotation": ["Batteries.Util.ExtendedBinder"]}}

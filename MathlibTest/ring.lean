@@ -120,7 +120,7 @@ example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
 
 /--
 info: Try this:
-  ring_nf
+  [apply] ring_nf
   ⏎
   The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
     ⏎
@@ -140,7 +140,7 @@ example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
 
 /--
 info: Try this:
-  ring_nf
+  [apply] ring_nf
   ⏎
   The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
     ⏎
