@@ -7,9 +7,9 @@ import Mathlib.MeasureTheory.Measure.AEMeasurable
 import Mathlib.Order.Filter.EventuallyConst
 
 /-!
-# Measure preserving maps
+# Measure-preserving maps
 
-We say that `f : α → β` is a measure preserving map w.r.t. measures `μ : Measure α` and
+We say that `f : α → β` is a measure-preserving map w.r.t. measures `μ : Measure α` and
 `ν : Measure β` if `f` is measurable and `map f μ = ν`. In this file we define the predicate
 `MeasureTheory.MeasurePreserving` and prove its basic properties.
 
@@ -23,7 +23,7 @@ Isabelle formalization.
 
 ## Tags
 
-measure preserving map, measure
+measure-preserving map, measure
 -/
 
 open MeasureTheory.Measure Function Set
@@ -36,7 +36,7 @@ namespace MeasureTheory
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
 
-/-- `f` is a measure preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
+/-- `f` is a measure-preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
 and `map f μa = μb`. -/
 structure MeasurePreserving (f : α → β)
   (μa : Measure α := by volume_tac) (μb : Measure β := by volume_tac) : Prop where
@@ -178,12 +178,14 @@ open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
-  induction' n with n ih; · simp
-  simp only [add_smul, one_smul]
-  grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)]
-  replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
-    hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
-  rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [add_smul, one_smul]
+    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)]
+    replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
+      hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
+    rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
 
 /-- If `μ univ < n * μ s` and `f` is a map preserving measure `μ`,
 then for some `x ∈ s` and `0 < m < n`, `f^[m] x ∈ s`. -/

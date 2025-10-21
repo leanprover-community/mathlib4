@@ -13,7 +13,7 @@ Definition of the rank of a module, or dimension of a vector space, as a natural
 
 ## Main definitions
 
-Defined is `Module.finrank`, the dimension of a finite dimensional space, returning a
+Defined is `Module.finrank`, the dimension of a finite-dimensional space, returning a
 `Nat`, as opposed to `Module.rank`, which returns a `Cardinal`. When the space has infinite
 dimension, its `finrank` is by convention set to `0`.
 
@@ -105,7 +105,7 @@ open Module
 
 namespace LinearEquiv
 
-/-- The dimension of a finite dimensional space is preserved under linear equivalence. -/
+/-- The dimension of a finite-dimensional space is preserved under linear equivalence. -/
 theorem finrank_eq (f : M ≃ₗ[R] N) : finrank R M = finrank R N := by
   unfold finrank
   rw [← Cardinal.toNat_lift, f.lift_rank_eq, Cardinal.toNat_lift]

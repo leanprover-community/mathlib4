@@ -101,19 +101,21 @@ theorem support_mul_single_eq_image {r : k} {x : G} (rx : IsRightRegular x)
   simp [coeff_mul, mem_support_iff.mp yf, hrx, mem_support_iff, sum_single_index, mul_zero,
     ite_self, rx.eq_iff]
 
+end DecidableEq
+
 theorem support_mul_single [IsRightCancelMul G] (r : k) (x : G)
    (hrx : ∀ g : G, ∀ y, y * g • r = 0 ↔ y = 0) :
     (f * single x r).support = f.support.map (mulRightEmbedding x) := by
+  classical
   ext a
   simp [support_mul_single_eq_image f (IsRightRegular.all x) hrx]
 
 theorem support_single_mul [IsLeftCancelMul G] (r : k) (x : G)
     (hrx : ∀ y, r * x • y = 0 ↔ y = 0) :
     (single x r * f : SkewMonoidAlgebra k G).support = f.support.map (mulLeftEmbedding x) := by
+  classical
   ext a
   simp [support_single_mul_eq_image f (IsLeftRegular.all x) hrx]
-
-end DecidableEq
 
 section Span
 

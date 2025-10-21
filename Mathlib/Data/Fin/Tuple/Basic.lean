@@ -295,7 +295,7 @@ theorem append_left (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
 /-- Variant of `append_left` using `Fin.castLE` instead of `Fin.castAdd`. -/
 @[simp]
 theorem append_left' (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
-    append u v (Fin.castLE (by omega) i) = u i :=
+    append u v (Fin.castLE (by cutsat) i) = u i :=
   addCases_left _
 
 @[simp]
@@ -519,10 +519,7 @@ theorem snoc_comp_castSucc {α : Sort*} {a : α} {f : Fin n → α} :
 theorem snoc_last : snoc p x (last n) = x := by simp [snoc]
 
 lemma snoc_zero {α : Sort*} (p : Fin 0 → α) (x : α) :
-    Fin.snoc p x = fun _ ↦ x := by
-  ext y
-  have : Subsingleton (Fin (0 + 1)) := Fin.subsingleton_one
-  simp only [Subsingleton.elim y (Fin.last 0), snoc_last]
+    Fin.snoc p x = fun _ ↦ x := rfl
 
 @[simp]
 theorem snoc_comp_natAdd {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : α) :
@@ -819,7 +816,7 @@ lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
     (∃ i, P i) ↔ P p ∨ ∃ i, P (p.succAbove i) where
   mp := by
     rintro ⟨i, hi⟩
-    induction' i using p.succAboveCases
+    induction i using p.succAboveCases
     · exact .inl hi
     · exact .inr ⟨_, hi⟩
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
@@ -1205,7 +1202,7 @@ lemma comp_contractNth {β : Sort*} (opα : α → α → α) (opβ : β → β 
     (hf : ∀ x y, f (opα x y) = opβ (f x) (f y)) (j : Fin (n + 1)) (g : Fin (n + 1) → α) :
     f ∘ contractNth j opα g = contractNth j opβ (f ∘ g) := by
   ext x
-  rcases lt_trichotomy (x : ℕ) j with (h|h|h)
+  rcases lt_trichotomy (x : ℕ) j with (h | h | h)
   · simp only [Function.comp_apply, contractNth_apply_of_lt, h]
   · simp only [Function.comp_apply, contractNth_apply_of_eq, h, hf]
   · simp only [Function.comp_apply, contractNth_apply_of_gt, h]

@@ -113,11 +113,11 @@ attribute [local instance] SMulCommClass.symm
 `P`, change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
 def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P :=
   mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun _ _ m => (f m).map_add _ _)
-    (fun _ _  m  => (f m).map_smulₛₗ _ _)
+    (fun _ _ m => (f m).map_smulₛₗ _ _)
     (fun n m₁ m₂ => by simp only [map_add, add_apply])
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
     -- It looks like we now run out of assignable metavariables.
-    (fun c n  m  => by simp only [map_smulₛₗ _, smul_apply])
+    (fun c n m => by simp only [map_smulₛₗ _, smul_apply])
 
 @[simp]
 theorem flip_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (m : M) (n : N) : flip f n m = f m n := rfl
@@ -157,8 +157,7 @@ def compl₂ (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛ�
   map_add' _ _ := by
     simp [map_add]
   map_smul' _ _ := by
-    simp only [LinearMap.map_smulₛₗ, lcompₛₗ]
-    rfl
+    simp [LinearMap.map_smulₛₗ, lcompₛₗ]
 
 @[simp]
 theorem compl₂_apply (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) :

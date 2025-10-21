@@ -54,7 +54,7 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.dual`: reinterpret a monotone map `α →o β` as a monotone map `αᵒᵈ →o βᵒᵈ`;
 * `OrderHom.dualIso`: order isomorphism between `α →o β` and `(αᵒᵈ →o βᵒᵈ)ᵒᵈ`;
 * `OrderHom.compl`: order isomorphism `α ≃o αᵒᵈ` given by taking complements in a
-  boolean algebra;
+  Boolean algebra;
 
 We also define two functions to convert other bundled maps to `α →o β`:
 
@@ -1220,3 +1220,10 @@ lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder
     rw [hf.le_iff_ge]
 
 end DenselyOrdered
+
+universe v u in
+/-- The bijection `ULift.{v} α ≃ α` as an isomorphism of orders. -/
+@[pp_with_univ, simps!]
+def ULift.orderIso {α : Type u} [Preorder α] :
+    ULift.{v} α ≃o α :=
+  Equiv.ulift.toOrderIso (fun _ _ ↦ id) (fun _ _ ↦ id)

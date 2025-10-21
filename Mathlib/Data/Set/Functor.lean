@@ -26,6 +26,8 @@ variable {α β : Type u} {s : Set α} {f : α → Set β}
 instance : Alternative Set where
   pure a := {a}
   seq s t := s.seq (t ())
+  seqLeft s t := {a | a ∈ s ∧ (t ()).Nonempty}
+  seqRight s t := {b | s.Nonempty ∧ b ∈ t ()}
   map := Set.image
   orElse s t := s ∪ t ()
   failure := ∅
@@ -36,6 +38,14 @@ theorem fmap_eq_image (f : α → β) : f <$> s = f '' s :=
 
 @[simp]
 theorem seq_eq_set_seq (s : Set (α → β)) (t : Set α) : s <*> t = s.seq t :=
+  rfl
+
+@[simp]
+theorem seqLeft_def (s : Set α) (t : Set β) : s <* t = {a | a ∈ s ∧ t.Nonempty} :=
+  rfl
+
+@[simp]
+theorem seqRight_def (s : Set α) (t : Set β) : s *> t = {a | s.Nonempty ∧ a ∈ t} :=
   rfl
 
 @[simp]
@@ -59,8 +69,8 @@ theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : 
 
 instance : LawfulAlternative Set where
   pure_seq _ _ := Set.singleton_seq
-  seqLeft_eq _ _ := rfl
-  seqRight_eq _ _ := rfl
+  seqLeft_eq _ _ := by simp [Set.seq, Set.image2, Set.nonempty_def]
+  seqRight_eq s t := by simp [Set.seq, Set.image2, Set.nonempty_def]
   map_pure _ _ := Set.image_singleton
   seq_pure _ _ := Set.seq_singleton
   seq_assoc _ _ _ := Set.seq_seq
@@ -129,7 +139,7 @@ as was defined in `Data.Set.Notation`. -/
 attribute [local instance] Set.monad in
 /-- The coercion from `Set.monad` as an instance is equal to the coercion in `Data.Set.Notation`. -/
 theorem coe_eq_image_val (t : Set s) :
-    @Lean.Internal.coeM Set s α _ _ t = (t : Set α) := by
+    @Lean.Internal.coeM Set s α _ _ t = Subtype.val '' t := by
   change ⋃ (x ∈ t), {x.1} = _
   ext
   simp
@@ -139,8 +149,7 @@ variable {β : Set α} {γ : Set β} {a : α}
 theorem mem_image_val_of_mem (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : Set α) :=
   ⟨_, ha', rfl⟩
 
-theorem image_val_subset : (γ : Set α) ⊆ β := by
-  rintro _ ⟨⟨_, ha⟩, _, rfl⟩; exact ha
+theorem image_val_subset : (γ : Set α) ⊆ β := Subtype.coe_image_subset _ _
 
 theorem mem_of_mem_image_val (ha : a ∈ (γ : Set α)) : ⟨a, image_val_subset ha⟩ ∈ γ := by
   rcases ha with ⟨_, ha, rfl⟩; exact ha

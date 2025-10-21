@@ -121,12 +121,18 @@ theorem coe_natCast (n : ℕ) : ((n : ℤ_[p]) : ℚ_[p]) = n := rfl
 theorem coe_intCast (z : ℤ) : ((z : ℤ_[p]) : ℚ_[p]) = z := rfl
 
 /-- The coercion from `ℤ_[p]` to `ℚ_[p]` as a ring homomorphism. -/
+@[simps!]
 def Coe.ringHom : ℤ_[p] →+* ℚ_[p] := (subring p).subtype
 
 @[simp, norm_cast]
 theorem coe_pow (x : ℤ_[p]) (n : ℕ) : (↑(x ^ n) : ℚ_[p]) = (↑x : ℚ_[p]) ^ n := rfl
 
 theorem mk_coe (k : ℤ_[p]) : (⟨k, k.2⟩ : ℤ_[p]) = k := by simp
+
+@[simp]
+lemma coe_sum {α : Type*} (s : Finset α) (f : α → ℤ_[p]) :
+    (((∑ z ∈ s, f z) : ℤ_[p]) : ℚ_[p]) = ∑ z ∈ s, (f z : ℚ_[p]) := by
+  simp [← Coe.ringHom_apply, map_sum PadicInt.Coe.ringHom f s]
 
 /-- The inverse of a `p`-adic integer with norm equal to `1` is also a `p`-adic integer.
 Otherwise, the inverse is defined to be `0`. -/
@@ -215,6 +221,16 @@ theorem norm_eq_padic_norm {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : @norm ℤ_[p] _ 
 theorem norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := Padic.norm_p
 
 theorem norm_p_pow (n : ℕ) : ‖(p : ℤ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by simp
+
+@[simp]
+lemma one_le_norm_iff {x : ℤ_[p]} :
+    1 ≤ ‖x‖ ↔ ‖x‖ = 1 := by
+  simp [le_antisymm_iff, ← padic_norm_e_of_padicInt, x.prop]
+
+@[simp]
+lemma norm_natCast_p_sub_one :
+    ‖((p - 1 : ℕ) : ℤ_[p])‖ = 1 := by
+  simp [norm_def]
 
 private def cauSeq_to_rat_cauSeq (f : CauSeq ℤ_[p] norm) : CauSeq ℚ_[p] fun a => ‖a‖ :=
   ⟨fun n => f n, fun _ hε => by simpa [norm, norm_def] using f.cauchy hε⟩
@@ -329,7 +345,7 @@ theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
     rw [norm_eq_padic_norm] at h
     dsimp only
     rw [dif_pos h]
-    apply Subtype.ext_iff_val.2
+    apply Subtype.ext_iff.2
     simp [mul_inv_cancel₀ hk]
 
 theorem inv_mul {z : ℤ_[p]} (hz : ‖z‖ = 1) : z.inv * z = 1 := by rw [mul_comm, mul_inv hz]
@@ -362,6 +378,8 @@ def mkUnits {u : ℚ_[p]} (h : ‖u‖ = 1) : ℤ_[p]ˣ :=
   ⟨z, z.inv, mul_inv h, inv_mul h⟩
 
 @[simp]
+lemma val_mkUnits {u : ℚ_[p]} (h : ‖u‖ = 1) : (mkUnits h).val = ⟨u, h.le⟩ := rfl
+
 theorem mkUnits_eq {u : ℚ_[p]} (h : ‖u‖ = 1) : ((mkUnits h : ℤ_[p]) : ℚ_[p]) = u := rfl
 
 @[simp]
@@ -513,10 +531,10 @@ theorem algebraMap_apply (x : ℤ_[p]) : algebraMap ℤ_[p] ℚ_[p] x = x :=
   rfl
 
 instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
-  map_units' := fun ⟨x, hx⟩ => by
+  map_units := fun ⟨x, hx⟩ => by
     rwa [algebraMap_apply, isUnit_iff_ne_zero, PadicInt.coe_ne_zero, ←
       mem_nonZeroDivisors_iff_ne_zero]
-  surj' x := by
+  surj x := by
     by_cases hx : ‖x‖ ≤ 1
     · use (⟨x, hx⟩, 1)
       rw [Submonoid.coe_one, map_one, mul_one, PadicInt.algebraMap_apply, Subtype.coe_mk]

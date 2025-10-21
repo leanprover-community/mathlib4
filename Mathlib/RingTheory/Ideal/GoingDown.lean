@@ -63,6 +63,33 @@ lemma Ideal.exists_ideal_lt_liesOver_of_lt [Algebra.HasGoingDown R S]
   subst this
   simp [P.over_def p, P.over_def q] at hpq
 
+lemma Ideal.exists_ltSeries_of_hasGoingDown [Algebra.HasGoingDown R S]
+    (l : LTSeries (PrimeSpectrum R)) (P : Ideal S) [P.IsPrime] [lo : P.LiesOver l.last.asIdeal] :
+    ∃ (L : LTSeries (PrimeSpectrum S)),
+      L.length = l.length ∧
+      L.last = ⟨P, inferInstance⟩ ∧
+      List.map (algebraMap R S).specComap L.toList = l.toList := by
+  induction l using RelSeries.inductionOn generalizing P with
+  | singleton q =>
+    use RelSeries.singleton _ ⟨P, inferInstance⟩
+    simp only [RelSeries.singleton_length, RelSeries.last_singleton, RelSeries.toList_singleton,
+      List.map_cons, List.map_nil, List.cons.injEq, and_true, true_and]
+    ext : 1
+    simpa using lo.over.symm
+  | cons l q lt ih =>
+    simp only [RelSeries.last_cons] at lo
+    obtain ⟨L, len, last, spec⟩ := ih P
+    have : L.head.asIdeal.LiesOver l.head.asIdeal := by
+      constructor
+      rw [← L.toList_getElem_zero_eq_head, ← l.toList_getElem_zero_eq_head, Ideal.under_def]
+      have : l.toList[0] = (algebraMap R S).specComap L.toList[0] := by
+        rw [List.getElem_map_rev (algebraMap R S).specComap, List.getElem_of_eq spec.symm _]
+      rwa [RingHom.specComap, PrimeSpectrum.ext_iff] at this
+    obtain ⟨Q, Qlt, hQ, Qlo⟩ := Ideal.exists_ideal_lt_liesOver_of_lt L.head.asIdeal lt
+    use L.cons ⟨Q, hQ⟩ Qlt
+    simp only [RelSeries.cons_length, add_left_inj, RelSeries.last_cons]
+    exact ⟨len, last, by simpa [spec] using PrimeSpectrum.ext_iff.mpr Qlo.over.symm⟩
+
 namespace Algebra.HasGoingDown
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]

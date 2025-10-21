@@ -373,12 +373,10 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
 /-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f`
 equals the coefficient of `n` in `f` -/
 theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
-    coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) =
-      coeff n f := by
-  induction' f using MvPolynomial.induction_on' with j r p q hp hq generalizing n
-  swap
-  · simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
-  · rw [optionEquivLeft_monomial]
+    coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) = coeff n f := by
+  induction f using MvPolynomial.induction_on' generalizing n with
+  | monomial j r =>
+    rw [optionEquivLeft_monomial]
     classical
     simp only [Polynomial.coeff_monomial, MvPolynomial.coeff_monomial, apply_ite]
     simp only [coeff_zero]
@@ -390,6 +388,7 @@ theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomi
       apply False.elim (hj _)
       simp only [Finsupp.ext_iff, Option.forall, hj_none, true_and]
       simpa only [Finsupp.ext_iff] using hj_some
+  | add p q hp hq => simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
 
 theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Option S₁) R) :
     eval (fun x ↦ Option.elim x y s) f =
