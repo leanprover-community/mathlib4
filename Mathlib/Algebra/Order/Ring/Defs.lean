@@ -241,23 +241,6 @@ end LinearOrder
 /-! Note that `OrderDual` does not satisfy any of the ordered ring typeclasses due to the
 `zero_le_one` field. -/
 
-/- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
-explore changing this, but be warned that the instances involving `Domain` may cause typeclass
-search loops. -/
-attribute [nolint docBlame]
-  StrictOrderedSemiring.toOrderedCancelAddCommMonoid
-  StrictOrderedCommSemiring.toCommSemiring
-  LinearOrderedSemiring.toLinearOrderedAddCommMonoid
-  LinearOrderedRing.toLinearOrder
-  OrderedSemiring.toOrderedAddCommMonoid
-  OrderedCommSemiring.toCommSemiring
-  StrictOrderedCommRing.toCommRing
-  OrderedRing.toOrderedAddCommGroup
-  OrderedCommRing.toCommRing
-  StrictOrderedRing.toOrderedAddCommGroup
-  LinearOrderedCommSemiring.toLinearOrderedSemiring
-  LinearOrderedCommRing.toCommMonoid
-
 section OrderedRing
 
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] {a b c : R}
