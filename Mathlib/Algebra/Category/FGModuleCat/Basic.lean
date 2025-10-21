@@ -17,7 +17,7 @@ This introduces `FGModuleCat R`, the category of finitely generated modules over
 It is implemented as a full subcategory on a subtype of `ModuleCat R`.
 
 When `K` is a field,
-`FGModuleCatCat K` is the category of finite dimensional vector spaces over `K`.
+`FGModuleCat K` is the category of finite-dimensional vector spaces over `K`.
 
 We first create the instance as a preadditive category.
 When `R` is commutative we then give the structure as an `R`-linear monoidal category.
@@ -26,7 +26,7 @@ and then as a right-rigid monoidal category.
 
 ## Future work
 
-* Show that `FGModuleCat R` is abelian when `R` is (left)-noetherian.
+* Show that `FGModuleCat R` is abelian when `R` is (left)-Noetherian.
 
 -/
 
@@ -87,7 +87,7 @@ section Ring
 variable (R : Type u) [Ring R]
 
 @[simp] lemma hom_comp (A B C : FGModuleCat.{v} R) (f : A ⟶ B) (g : B ⟶ C) :
-  (f ≫ g).hom = g.hom.comp f.hom := rfl
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 @[simp] lemma hom_id (A : FGModuleCat.{v} R) : (𝟙 A : A ⟶ A).hom = LinearMap.id := rfl
 
@@ -100,7 +100,7 @@ abbrev of (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGMod
 
 @[simp]
 lemma of_carrier (V : Type v) [AddCommGroup V] [Module R V] [Module.Finite R V] :
-  of R V = V := rfl
+    of R V = V := rfl
 
 variable {R} in
 /-- Lift a linear map between finitely generated modules to `FGModuleCat R`. -/
@@ -120,7 +120,7 @@ instance : (forget₂ (FGModuleCat.{v} R) (ModuleCat.{v} R)).Full where
   map_surjective f := ⟨f, rfl⟩
 
 variable {R} in
-/-- Converts and isomorphism in the category `FGModuleCat R` to
+/-- Converts an isomorphism in the category `FGModuleCat R` to
 a `LinearEquiv` between the underlying modules. -/
 def isoToLinearEquiv {V W : FGModuleCat.{v} R} (i : V ≅ W) : V ≃ₗ[R] W :=
   ((forget₂ (FGModuleCat.{v} R) (ModuleCat.{v} R)).mapIso i).toLinearEquiv

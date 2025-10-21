@@ -235,9 +235,9 @@ theorem pi_div_four_le_arcsin {x} : π / 4 ≤ arcsin x ↔ √2 / 2 ≤ x := by
 theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) := fun x h => by
   rwa [mem_Ioo, ← arcsin_lt_pi_div_two, ← neg_pi_div_two_lt_arcsin, arcsin_sin h.1.le h.2.le]
 
-/-- `Real.sin` as a `PartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
+/-- `Real.sin` as an `OpenPartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
 @[simp]
-def sinPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+def sinPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := sin
   invFun := arcsin
   source := Ioo (-(π / 2)) (π / 2)
@@ -395,7 +395,7 @@ theorem tan_arccos (x : ℝ) : tan (arccos x) = √(1 - x ^ 2) / x := by
 -- The junk values for `arccos` and `sqrt` make this true even for `1 < x`.
 theorem arccos_eq_arcsin {x : ℝ} (h : 0 ≤ x) : arccos x = arcsin (√(1 - x ^ 2)) :=
   (arcsin_eq_of_sin_eq (sin_arccos _)
-      ⟨(Left.neg_nonpos_iff.2 (div_nonneg pi_pos.le (by norm_num))).trans (arccos_nonneg _),
+      ⟨(Left.neg_nonpos_iff.2 (div_nonneg pi_pos.le (by simp))).trans (arccos_nonneg _),
         arccos_le_pi_div_two.2 h⟩).symm
 
 -- The junk values for `arcsin` and `sqrt` make this true even for `1 < x`.

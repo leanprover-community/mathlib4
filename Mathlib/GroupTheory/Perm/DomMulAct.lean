@@ -125,11 +125,7 @@ theorem stabilizer_card' :
     apply Finset.prod_bij (fun g _ => g.val)
     · exact fun g _ => Finset.coe_mem g
     · exact fun g _ g' _ =>  SetCoe.ext
-    · exact fun g hg => by
-        rw [Finset.mem_image] at hg
-        obtain ⟨a, _, rfl⟩ := hg
-        use ⟨f a, by simp only [Finset.mem_image, Finset.mem_univ, true_and, exists_apply_eq_apply]⟩
-        simp only [Finset.univ_eq_attach, Finset.mem_attach, exists_const]
+    · simp
     · intro i _
       apply congr_arg
       apply Fintype.card_congr

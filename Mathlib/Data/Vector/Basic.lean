@@ -137,9 +137,6 @@ theorem get_eq_get_toList (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
 
-@[deprecated (since := "2024-12-20")]
-alias get_eq_get := get_eq_get_toList
-
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
   apply List.getElem_replicate
@@ -173,7 +170,7 @@ theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
 def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 
-theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by omega⟩ := by
+theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by cutsat⟩ := by
   obtain ⟨i, ih⟩ := i; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
@@ -314,9 +311,7 @@ into the provided starting value `b : β` and the recursed `scanl`
 This lemma is the `cons` version of `scanl_get`.
 -/
 @[simp]
-theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
-  simp only [scanl, toList_cons, List.scanl]; dsimp
-  simp only [cons]
+theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := rfl
 
 /-- The underlying `List` of a `Vector` after a `scanl` is the `List.scanl`
 of the underlying `List` of the original `Vector`.
@@ -364,10 +359,12 @@ theorem scanl_get (i : Fin n) :
     (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) := by
   rcases n with - | n
   · exact i.elim0
-  induction' n with n hn generalizing b
-  · have i0 : i = 0 := Fin.eq_zero _
+  induction n generalizing b with
+  | zero =>
+    have i0 : i = 0 := Fin.eq_zero _
     simp [scanl_singleton, i0, get_zero]; simp [get_eq_get_toList]
-  · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
+  | succ n hn =>
+    rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine Fin.cases ?_ ?_ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
     · intro i'
@@ -424,10 +421,12 @@ It is used as the default induction principle for the `induction` tactic.
 @[elab_as_elim, induction_eliminator]
 def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil) (cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
-  induction' n with n ih
-  · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
+  induction n with
+  | zero =>
+    rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     exact nil
-  · rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
+  | succ n ih =>
+    rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
     cases v_property
     exact cons (ih ⟨v, (add_left_inj 1).mp v_property⟩)
 
@@ -451,11 +450,13 @@ def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort*}
     (v : Vector α n) (w : Vector β n)
     (nil : C nil nil) (cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
     C v w := by
-  induction' n with n ih
-  · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
+  induction n with
+  | zero =>
+    rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
     exact nil
-  · rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
+  | succ n ih =>
+    rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
     cases v_property
     rcases w with ⟨_ | ⟨b, w⟩, w_property⟩
     cases w_property
@@ -469,12 +470,14 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
     (u : Vector α n) (v : Vector β n) (w : Vector γ n) (nil : C nil nil nil)
     (cons : ∀ {n a b c} {x : Vector α n} {y z}, C x y z → C (a ::ᵥ x) (b ::ᵥ y) (c ::ᵥ z)) :
     C u v w := by
-  induction' n with n ih
-  · rcases u with ⟨_ | ⟨-, -⟩, - | -⟩
+  induction n with
+  | zero =>
+    rcases u with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
     exact nil
-  · rcases u with ⟨_ | ⟨a, u⟩, u_property⟩
+  | succ n ih =>
+    rcases u with ⟨_ | ⟨a, u⟩, u_property⟩
     cases u_property
     rcases v with ⟨_ | ⟨b, v⟩, v_property⟩
     cases v_property
@@ -607,7 +610,7 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
 
 /-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element -/
 @[to_additive
-  "Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element"]
+  /-- Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element -/]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine (List.prod_set' v.toList i a).trans ?_
@@ -649,8 +652,7 @@ protected theorem traverse_def (f : α → F β) (x : α) :
 
 protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = pure x := by
   rintro ⟨x, rfl⟩; dsimp [Vector.traverse, cast]
-  induction' x with x xs IH; · rfl
-  simp! [IH]
+  induction x with | nil => rfl | cons x xs IH => simp! [IH]
 
 end
 
@@ -665,10 +667,12 @@ variable {α β γ : Type u}
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector α n) :
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Vector.traverse f <$> Vector.traverse g x) := by
-  induction' x with n x xs ih
-  · simp! [cast, *, functor_norm]
+  induction x with
+  | nil =>
+    simp! [cast, *, functor_norm]
     rfl
-  · rw [Vector.traverse_def, ih]
+  | cons ih =>
+    rw [Vector.traverse_def, ih]
     simp [functor_norm, Function.comp_def]
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
@@ -679,9 +683,10 @@ variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 
 protected theorem naturality {α β : Type u} (f : α → F β) (x : Vector α n) :
     η (x.traverse f) = x.traverse (@η _ ∘ f) := by
-  induction' x with n x xs ih
-  · simp! [functor_norm, cast, η.preserves_pure]
-  · rw [Vector.traverse_def, Vector.traverse_def, ← ih, η.preserves_seq, η.preserves_map]
+  induction x with
+  | nil => simp! [functor_norm, cast, η.preserves_pure]
+  | cons ih =>
+    rw [Vector.traverse_def, Vector.traverse_def, ← ih, η.preserves_seq, η.preserves_map]
     rfl
 
 end Traverse
@@ -698,24 +703,6 @@ instance : LawfulTraversable.{u} (flip Vector n) where
   id_map := by intro _ x; cases x; simp! [(· <$> ·)]
   comp_map := by intro _ _ _ _ _ x; cases x; simp! [(· <$> ·)]
   map_const := rfl
-
--- Porting note: not porting meta instances
--- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α]
---     [reflected _ α] {n : ℕ} : has_reflect (Vector α n) := fun v =>
---   @Vector.inductionOn α (fun n => reflected _) n v
---     ((by
---           trace
---             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---              unsupported tactic `reflect_name #[]" :
---           reflected _ @Vector.nil.{u}).subst
---       q(α))
---     fun n x xs ih =>
---     (by
---           trace
---             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---              unsupported tactic `reflect_name #[]" :
---           reflected _ @Vector.cons.{u}).subst₄
---       q(α) q(n) q(x) ih
 
 section Simp
 

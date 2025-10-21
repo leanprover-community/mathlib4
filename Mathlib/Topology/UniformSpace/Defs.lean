@@ -78,7 +78,7 @@ operations on filters, without directly manipulating entourages.
 * `UniformContinuous f` is a predicate saying a function `f : α → β` between uniform spaces
   is uniformly continuous : `∀ r ∈ 𝓤 β, ∀ᶠ (x : α × α) in 𝓤 α, (f x.1, f x.2) ∈ r`
 
-## Notations
+## Notation
 
 Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`,
 and `○` for composition of relations, seen as terms with type `Set (X × X)`.
@@ -178,14 +178,6 @@ theorem Monotone.compRel [Preorder β] {f g : β → Set (α × α)} (hf : Monot
 theorem compRel_mono {f g h k : Set (α × α)} (h₁ : f ⊆ h) (h₂ : g ⊆ k) : f ○ g ⊆ h ○ k :=
   fun _ ⟨z, h, h'⟩ => ⟨z, h₁ h, h₂ h'⟩
 
-@[gcongr]
-theorem compRel_left_mono {f g h : Set (α × α)} (h₁ : f ⊆ g) : f ○ h ⊆ g ○ h :=
-  fun _ ⟨z, h, h'⟩ => ⟨z, h₁ h, h'⟩
-
-@[gcongr]
-theorem compRel_right_mono {f g h : Set (α × α)} (h₁ : g ⊆ h) : f ○ g ⊆ f ○ h :=
-  fun _ ⟨z, h, h'⟩ => ⟨z, h, h₁ h'⟩
-
 theorem prodMk_mem_compRel {a b c : α} {s t : Set (α × α)} (h₁ : (a, c) ∈ s) (h₂ : (c, b) ∈ t) :
     (a, b) ∈ s ○ t :=
   ⟨c, h₁, h₂⟩
@@ -273,6 +265,20 @@ lemma isSymmetricRel_univ : IsSymmetricRel (Set.univ : Set (α × α)) := by
 lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
   Set.ext fun _ ↦ ht.mk_mem_comm
+
+lemma IsSymmetricRel.image_prodMap {U : Set (α × α)} (ht : IsSymmetricRel U) (f : α → β) :
+    IsSymmetricRel (Prod.map f f '' U) := by
+  rw [IsSymmetricRel, ← image_swap_eq_preimage_swap, ← image_comp, ← Prod.map_comp_swap, image_comp,
+      image_swap_eq_preimage_swap, ht]
+
+lemma IsSymmetricRel.prod_subset_comm {s : Set (α × α)} {t u : Set α} (hs : IsSymmetricRel s) :
+    t ×ˢ u ⊆ s ↔ u ×ˢ t ⊆ s := by
+  rw [← hs.eq, ← image_subset_iff, image_swap_prod, hs.eq]
+
+lemma IsSymmetricRel.mem_filter_prod_comm {s : Set (α × α)} {f g : Filter α}
+    (hs : IsSymmetricRel s) :
+    s ∈ f ×ˢ g ↔ s ∈ g ×ˢ f := by
+  rw [← hs.eq, ← mem_map, ← prod_comm, hs.eq]
 
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/

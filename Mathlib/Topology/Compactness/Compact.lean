@@ -628,8 +628,8 @@ variable (X) in
 `Filter.cocompact`. See also `Bornology.relativelyCompact` the bornology of sets with compact
 closure. -/
 def inCompact : Bornology X where
-  cobounded' := Filter.cocompact X
-  le_cofinite' := Filter.cocompact_le_cofinite
+  cobounded := Filter.cocompact X
+  le_cofinite := Filter.cocompact_le_cofinite
 
 theorem inCompact.isBounded_iff : @IsBounded _ (inCompact X) s ↔ ∃ t, IsCompact t ∧ s ⊆ t := by
   change sᶜ ∈ Filter.cocompact X ↔ _
@@ -887,15 +887,10 @@ theorem Topology.IsInducing.isCompact_iff {f : X → Y} (hf : IsInducing f) :
     hs ((map_mono F_le).trans_eq map_principal)
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.isCompact_iff := IsInducing.isCompact_iff
-
 /-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is compact
 if and only if `s` is compact. -/
 theorem Topology.IsEmbedding.isCompact_iff {f : X → Y} (hf : IsEmbedding f) :
     IsCompact s ↔ IsCompact (f '' s) := hf.isInducing.isCompact_iff
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isCompact_iff := IsEmbedding.isCompact_iff
 
 /-- The preimage of a compact set under an inducing map is a compact set. -/
 theorem Topology.IsInducing.isCompact_preimage (hf : IsInducing f) (hf' : IsClosed (range f))
@@ -903,30 +898,21 @@ theorem Topology.IsInducing.isCompact_preimage (hf : IsInducing f) (hf' : IsClos
   replace hK := hK.inter_right hf'
   rwa [hf.isCompact_iff, image_preimage_eq_inter_range]
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isCompact_preimage := IsInducing.isCompact_preimage
-
 lemma Topology.IsInducing.isCompact_preimage_iff {f : X → Y} (hf : IsInducing f) {K : Set Y}
     (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) ↔ IsCompact K := by
   rw [hf.isCompact_iff, image_preimage_eq_of_subset Kf]
-
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isCompact_preimage_iff := IsInducing.isCompact_preimage_iff
 
 /-- The preimage of a compact set in the image of an inducing map is compact. -/
 lemma Topology.IsInducing.isCompact_preimage' (hf : IsInducing f) {K : Set Y}
     (hK : IsCompact K) (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) :=
   (hf.isCompact_preimage_iff Kf).2 hK
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isCompact_preimage' := IsInducing.isCompact_preimage'
-
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
 theorem Topology.IsClosedEmbedding.isCompact_preimage (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
   hf.isInducing.isCompact_preimage (hf.isClosed_range) hK
 
-/-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
+/-- A closed embedding is proper, i.e., inverse images of compact sets are contained in compacts.
 Moreover, the preimage of a compact set is compact, see `IsClosedEmbedding.isCompact_preimage`. -/
 theorem Topology.IsClosedEmbedding.tendsto_cocompact (hf : IsClosedEmbedding f) :
     Tendsto f (Filter.cocompact X) (Filter.cocompact Y) :=
@@ -1005,14 +991,14 @@ lemma IsCompact.sigma_exists_finite_sigma_eq {X : ι → Type*} [∀ i, Topologi
     ∃ (s : Set ι) (t : ∀ i, Set (X i)), s.Finite ∧ (∀ i, IsCompact (t i)) ∧ s.sigma t = u := by
   obtain ⟨s, hs⟩ := hu.elim_finite_subcover (fun i : ι ↦ Sigma.mk i '' (Sigma.mk i ⁻¹' Set.univ))
     (fun i ↦ isOpenMap_sigmaMk _ <| isOpen_univ.preimage continuous_sigmaMk)
-    fun x hx ↦ (by aesop)
+    fun x hx ↦ (by simp)
   use s, fun i ↦ Sigma.mk i ⁻¹' u, s.finite_toSet, fun i ↦ ?_, ?_
   · exact Topology.IsClosedEmbedding.sigmaMk.isCompact_preimage hu
   · ext x
     simp only [Set.mem_sigma_iff, Finset.mem_coe, Set.mem_preimage, and_iff_right_iff_imp]
     intro hx
     obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hs hx)
-    aesop
+    simp_all
 
 /-- The coproduct of the cocompact filters on two topological spaces is the cocompact filter on
 their product. -/

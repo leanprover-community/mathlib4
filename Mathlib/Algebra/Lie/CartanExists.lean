@@ -95,7 +95,7 @@ lemma lieCharpoly_map_eval (r : R) :
     ext i; simp [mul_comm r]
   simp_rw [← coe_aeval_eq_evalRingHom, ← AlgHom.comp_toRingHom, MvPolynomial.comp_aeval,
     map_add, map_mul, aeval_C, Algebra.algebraMap_self, RingHom.id_apply, aeval_X, aux,
-    MvPolynomial.coe_aeval_eq_eval, polyCharpoly_map_eq_charpoly, LieHom.coe_toLinearMap]
+    MvPolynomial.coe_aeval_eq_eval, polyCharpoly_map_eq_charpoly, LieHom.coe_toLinearMap, map_add]
 
 lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly R M x y).coeff i).natDegree ≤ j := by
@@ -141,7 +141,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   { engel K x with
     lie_mem := by rintro ⟨u, hu⟩ y hy; exact (engel K x).lie_mem (hUle hu) hy }
   -- We may and do assume that `x ≠ 0`, since otherwise the statement is trivial.
-  obtain rfl|hx₀ := eq_or_ne x 0
+  obtain rfl | hx₀ := eq_or_ne x 0
   · simpa [Ex, Ey] using hmin Ey
   -- We denote by `Q` the quotient `L / E`, and by `r` the dimension of `E`.
   let Q := L ⧸ E
@@ -186,7 +186,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- Let us consider the `i`-th coefficient of `χ`, for `i < r`.
   intro i hi
   -- We separately consider the case `i = 0`.
-  obtain rfl|hi0 := eq_or_ne i 0
+  obtain rfl | hi0 := eq_or_ne i 0
   · -- `The polynomial `coeff χ 0` is zero if it evaluates to zero on all elements of `K`,
     -- provided that its degree is stictly less than `#K`.
     apply eq_zero_of_forall_eval_zero_of_natDegree_lt_card _ _ ?deg
@@ -210,7 +210,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
       · exact Subtype.coe_ne_coe.mp hx₀
       · dsimp only [z] at hz₀
-        simp only [hz₀, LieHom.map_zero, LinearMap.zero_apply]
+        simp only [hz₀, map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
     refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
     · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
@@ -272,7 +272,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     use s \ t
     refine ⟨?_, ?_⟩
     · refine le_trans ?_ (Finset.le_card_sdiff _ _)
-      omega
+      cutsat
     · intro α hα
       simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and, t] at hα
       exact hα.2 hψ
@@ -283,7 +283,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- Which follows from our assumptions `i < r` and `r ≤ s.card`
     -- and the fact that the degree of `coeff χ i` is less than or equal to `r - i`.
     apply lt_of_le_of_lt (lieCharpoly_coeff_natDegree _ _ _ _ i (r - i) _)
-    · omega
+    · cutsat
     · dsimp only [r] at hi ⊢
       rw [Nat.add_sub_cancel' hi.le]
   -- We need to show that for all `α ∈ s`, the polynomial `coeff χ i` evaluates to zero at `α`.
@@ -314,7 +314,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     obtain ⟨n, hn⟩ := hz
     use n
     apply_fun LieSubmodule.Quotient.mk' E at hn
-    rw [LieModuleHom.map_zero] at hn
+    rw [map_zero] at hn
     rw [← hn]
     clear hn
     induction n with
@@ -339,7 +339,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   use (toEnd K U Q v ^ k) z'
   refine ⟨?_, ?_⟩
   · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
-    apply Nat.find_min hz'; omega
+    apply Nat.find_min hz'; cutsat
   · rw [← hn, hk, pow_succ', Module.End.mul_apply]
 
 variable (K L)

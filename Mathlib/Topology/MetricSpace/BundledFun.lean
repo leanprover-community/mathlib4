@@ -139,7 +139,7 @@ lemma coe_finsetSup [IsOrderedAddMonoid R] {Y : Type*} {f : Y → PseudoMetric X
     ⇑(s.sup f) = s.sup' hs (f ·) := by
   induction hs using Finset.Nonempty.cons_induction with
   | singleton i => simp
-  | cons a s ha hs ih => funext; simp [hs, ih]
+  | cons a s ha hs ih => simp [hs, ih]
 
 lemma finsetSup_apply [IsOrderedAddMonoid R] {Y : Type*} {f : Y → PseudoMetric X R}
     {s : Finset Y} (hs : s.Nonempty) (x y : X) :
@@ -179,7 +179,7 @@ lemma IsUltra.finsetSup {Y : Type*} [AddCommMonoid R] [LinearOrder R] [AddLeftSt
     IsUltra (s.sup f) := by
   constructor
   intro x y z
-  rcases s.eq_empty_or_nonempty with rfl|hs
+  rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   simp_rw [finsetSup_apply hs]
   apply Finset.sup'_le

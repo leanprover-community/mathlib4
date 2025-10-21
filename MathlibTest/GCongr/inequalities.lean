@@ -139,11 +139,11 @@ example {a b c d x : ℝ} (h : a + c + 1 ≤ b + d + 1) :
   gcongr x ^ 2 * ?_ + 5
   linarith
 
-example {x y z : ℝ} (h : 2 ≤ z) : z * |x + y| ≤ z * (|x| + |y|) := by gcongr; apply abs_add
+example {x y z : ℝ} (h : 2 ≤ z) : z * |x + y| ≤ z * (|x| + |y|) := by gcongr; apply abs_add_le
 
-example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr; apply abs_add
-example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + _; apply abs_add
-example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + (A : ℝ); apply abs_add
+example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr; apply abs_add_le
+example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + _; apply abs_add_le
+example (A B C : ℝ) : |A + B| + C ≤ |A| + |B| + C := by gcongr ?_ + (A : ℝ); apply abs_add_le
 
 example {n i : ℕ} (hi : i ∈ range n) : 2 ^ i ≤ 2 ^ n := by
   gcongr
@@ -206,13 +206,22 @@ axiom f : ℕ → ℕ
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ≤ f y := by
   success_if_fail_with_msg
-    "gcongr failed, no @[gcongr] lemma applies for the template portion GCongrTests.f ?a and the relation LE.le"
+    "Tactic `gcongr` failed: there is no `@[gcongr]` lemma for relation 'LE.le' and constant 'GCongrTests.f'.
+
+x y : ℕ
+h : GCongrTests.f x ≤ GCongrTests.f y
+⊢ GCongrTests.f x ≤ GCongrTests.f y"
     (gcongr f ?a)
   exact h
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ^ 2 ≤ f y ^ 2 := by
   success_if_fail_with_msg
-    "gcongr failed, no @[gcongr] lemma applies for the template portion GCongrTests.f ?a and the relation LE.le"
+    "Tactic `gcongr` failed: there is no `@[gcongr]` lemma for relation 'LE.le' and constant 'GCongrTests.f'.
+
+case hab
+x y : ℕ
+h : GCongrTests.f x ≤ GCongrTests.f y
+⊢ GCongrTests.f x ≤ GCongrTests.f y"
     (gcongr (f ?a) ^ 2)
   gcongr
 

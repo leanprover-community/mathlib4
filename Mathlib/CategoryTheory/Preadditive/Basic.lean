@@ -53,14 +53,14 @@ namespace CategoryTheory
 variable (C : Type u) [Category.{v} C]
 
 /-- A category is called preadditive if `P ⟶ Q` is an abelian group such that composition is
-    linear in both variables. -/
+linear in both variables. -/
 @[stacks 00ZY]
 class Preadditive where
   homGroup : ∀ P Q : C, AddCommGroup (P ⟶ Q) := by infer_instance
   add_comp : ∀ (P Q R : C) (f f' : P ⟶ Q) (g : Q ⟶ R), (f + f') ≫ g = f ≫ g + f' ≫ g := by
-    aesop_cat
+    cat_disch
   comp_add : ∀ (P Q R : C) (f : P ⟶ Q) (g g' : Q ⟶ R), f ≫ (g + g') = f ≫ g + f ≫ g' := by
-    aesop_cat
+    cat_disch
 
 attribute [inherit_doc Preadditive] Preadditive.homGroup Preadditive.add_comp Preadditive.comp_add
 
@@ -186,9 +186,7 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 
-/-- Porting note: adding this before the ring instance allowed moduleEndRight to find
-the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
-to make use of them -/
+/-- This instance is split off from the `Ring (End X)` instance to speed up instance search. -/
 instance {X : C} : Semiring (End X) :=
   { End.monoid with
     zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
@@ -196,8 +194,6 @@ instance {X : C} : Semiring (End X) :=
     left_distrib := fun f g h => Preadditive.add_comp X X X g h f
     right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
 
-/-- Porting note: It looks like Ring's parent classes changed in
-Lean 4 so the previous instance needed modification. Was following my nose here. -/
 instance {X : C} : Ring (End X) :=
   { (inferInstance : Semiring (End X)),
     (inferInstance : AddCommGroup (End X)) with
@@ -329,7 +325,7 @@ theorem kernelForkOfFork_ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) :
 def isLimitForkOfKernelFork {c : KernelFork (f - g)} (i : IsLimit c) :
     IsLimit (forkOfKernelFork c) :=
   Fork.IsLimit.mk' _ fun s =>
-    ⟨i.lift (kernelForkOfFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; aesop_cat⟩
+    ⟨i.lift (kernelForkOfFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; cat_disch⟩
 
 @[simp]
 theorem isLimitForkOfKernelFork_lift {c : KernelFork (f - g)} (i : IsLimit c) (s : Fork f g) :
@@ -339,7 +335,7 @@ theorem isLimitForkOfKernelFork_lift {c : KernelFork (f - g)} (i : IsLimit c) (s
 /-- An equalizer of `f` and `g` is a kernel of `f - g`. -/
 def isLimitKernelForkOfFork {c : Fork f g} (i : IsLimit c) : IsLimit (kernelForkOfFork c) :=
   Fork.IsLimit.mk' _ fun s =>
-    ⟨i.lift (forkOfKernelFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; aesop_cat⟩
+    ⟨i.lift (forkOfKernelFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; cat_disch⟩
 
 variable (f g)
 
@@ -385,7 +381,7 @@ def isColimitCoforkOfCokernelCofork {c : CokernelCofork (f - g)} (i : IsColimit 
     IsColimit (coforkOfCokernelCofork c) :=
   Cofork.IsColimit.mk' _ fun s =>
     ⟨i.desc (cokernelCoforkOfCofork s), i.fac _ _, fun h => by
-      apply Cofork.IsColimit.hom_ext i; aesop_cat⟩
+      apply Cofork.IsColimit.hom_ext i; cat_disch⟩
 
 @[simp]
 theorem isColimitCoforkOfCokernelCofork_desc {c : CokernelCofork (f - g)} (i : IsColimit c)
@@ -398,7 +394,7 @@ def isColimitCokernelCoforkOfCofork {c : Cofork f g} (i : IsColimit c) :
     IsColimit (cokernelCoforkOfCofork c) :=
   Cofork.IsColimit.mk' _ fun s =>
     ⟨i.desc (coforkOfCokernelCofork s), i.fac _ _, fun h => by
-      apply Cofork.IsColimit.hom_ext i; aesop_cat⟩
+      apply Cofork.IsColimit.hom_ext i; cat_disch⟩
 
 variable (f g)
 

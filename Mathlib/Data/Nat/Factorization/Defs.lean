@@ -3,7 +3,9 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
+import Batteries.Data.List.Count
 import Mathlib.Data.Finsupp.Multiset
+import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
 
@@ -82,7 +84,7 @@ theorem Prime.factorization_pos_of_dvd {n p : ℕ} (hp : p.Prime) (hn : n ≠ 0)
 
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
     multiplicity p n = n.factorization p := by
-  simp [factorization, pp, padicValNat_def' pp.ne_one hn.bot_lt]
+  simp [factorization, pp, padicValNat_def' pp.ne_one hn]
 
 /-! ### Basic facts about factorization -/
 
@@ -176,11 +178,13 @@ theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : �
 /-- For any `p`, the power of `p` in `n^k` is `k` times the power in `n` -/
 @[simp]
 theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factorization := by
-  induction' k with k ih; · simp
-  rcases eq_or_ne n 0 with (rfl | hn)
-  · simp
-  rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
-    add_smul, one_smul, add_comm]
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    rcases eq_or_ne n 0 with (rfl | hn)
+    · simp
+    rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
+      add_smul, one_smul, add_comm]
 
 /-! ## Lemmas about factorizations of primes and prime powers -/
 
@@ -206,7 +210,7 @@ lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
     n.factorization n.minFac ≠ 0 := by
   refine mt (factorization_eq_zero_iff _ _).mp ?_
   push_neg
-  exact ⟨minFac_prime (by omega), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
+  exact ⟨minFac_prime (by cutsat), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
 
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 
@@ -265,8 +269,6 @@ theorem ordProj_dvd (n p : ℕ) : ordProj[p] n ∣ n := by
   rw [hp.primeFactorsList_pow, List.subperm_ext_iff]
   intro q hq
   simp [List.eq_of_mem_replicate hq]
-
-@[deprecated (since := "2024-10-24")] alias ord_proj_dvd := ordProj_dvd
 
 lemma ordProj_dvd_ordProj_iff_dvd (ha : a ≠ 0) (hb : b ≠ 0) :
     (∀ p : ℕ, ordProj[p] a ∣ ordProj[p] b) ↔ a ∣ b := by

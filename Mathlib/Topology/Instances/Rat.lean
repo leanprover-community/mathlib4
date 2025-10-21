@@ -39,9 +39,6 @@ theorem isDenseEmbedding_coe_real : IsDenseEmbedding ((↑) : ℚ → ℝ) :=
 theorem isEmbedding_coe_real : IsEmbedding ((↑) : ℚ → ℝ) :=
   isDenseEmbedding_coe_real.isEmbedding
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_coe_real := isEmbedding_coe_real
-
 theorem continuous_coe_real : Continuous ((↑) : ℚ → ℝ) :=
   uniformContinuous_coe_real.continuous
 
@@ -124,6 +121,6 @@ instance : ContinuousSub ℚ≥0 :=
       continuous_const).subtype_mk _⟩
 
 instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
-instance : HasContinuousInv₀ ℚ≥0 := inferInstance
+instance : ContinuousInv₀ ℚ≥0 := inferInstance
 
 end NNRat

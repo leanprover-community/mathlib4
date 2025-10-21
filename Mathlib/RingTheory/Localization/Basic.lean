@@ -338,15 +338,15 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     [IsLocalization M₁ S₁] [IsLocalization M₂ S₂]
     [IsLocalization (Algebra.algebraMapSubmonoid S₂ M₁) T] :
     IsLocalization (Algebra.algebraMapSubmonoid S₁ M₂) T where
-  map_units' := by
+  map_units := by
     rintro ⟨m, ⟨a, ha, rfl⟩⟩
     rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
-    exact IsUnit.map _ (IsLocalization.map_units' ⟨a, ha⟩)
-  surj' a := by
+    exact IsUnit.map _ (IsLocalization.map_units _ ⟨a, ha⟩)
+  surj a := by
     obtain ⟨⟨y, -, m, hm, rfl⟩, hy⟩ := surj (M := Algebra.algebraMapSubmonoid S₂ M₁) a
     rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₁ T] at hy
     obtain ⟨⟨z, n, hn⟩, hz⟩ := IsLocalization.surj (M := M₂) y
-    have hunit : IsUnit (algebraMap R S₁ m) := map_units' ⟨m, hm⟩
+    have hunit : IsUnit (algebraMap R S₁ m) := map_units _ ⟨m, hm⟩
     use ⟨algebraMap R S₁ z * hunit.unit⁻¹, ⟨algebraMap R S₁ n, n, hn, rfl⟩⟩
     rw [map_mul, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
     conv_rhs => rw [← IsScalarTower.algebraMap_apply]
@@ -371,11 +371,11 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     rw [← map_mul, ← map_mul, mul_assoc, mul_comm _ c, ha, map_mul, map_mul]
     ring
 
-variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommRing Rₘ] [CommRing Sₙ] [CommRing Rₘ'] [CommRing Sₙ']
-  [Algebra R Rₘ] [Algebra S Sₙ] [Algebra R Rₘ'] [Algebra S Sₙ'] [Algebra R Sₙ] [Algebra Rₘ Sₙ]
-  [Algebra Rₘ' Sₙ'] [Algebra R Sₙ'] (N : Submonoid S) [IsLocalization M Rₘ] [IsLocalization N Sₙ]
-  [IsLocalization M Rₘ'] [IsLocalization N Sₙ'] [IsScalarTower R Rₘ Sₙ] [IsScalarTower R S Sₙ]
-  [IsScalarTower R Rₘ' Sₙ'] [IsScalarTower R S Sₙ']
+variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommSemiring Rₘ] [CommSemiring Sₙ] [CommSemiring Rₘ']
+  [CommSemiring Sₙ'] [Algebra R Rₘ] [Algebra S Sₙ] [Algebra R Rₘ'] [Algebra S Sₙ'] [Algebra R Sₙ]
+  [Algebra Rₘ Sₙ] [Algebra Rₘ' Sₙ'] [Algebra R Sₙ'] (N : Submonoid S) [IsLocalization M Rₘ]
+  [IsLocalization N Sₙ] [IsLocalization M Rₘ'] [IsLocalization N Sₙ'] [IsScalarTower R Rₘ Sₙ]
+  [IsScalarTower R S Sₙ] [IsScalarTower R Rₘ' Sₙ'] [IsScalarTower R S Sₙ']
 
 theorem algEquiv_comp_algebraMap : (algEquiv N Sₙ Sₙ' : _ →+* Sₙ').comp (algebraMap Rₘ Sₙ) =
       (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') := by
@@ -441,20 +441,6 @@ lemma coe_algEquiv_symm :
 
 end Localization
 
-end CommSemiring
-
-section CommRing
-
-variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
-
-namespace Localization
-
-theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
-  simpa using mk_algebraMap (R := R) (A := ℤ) _
-
-end Localization
-
 open IsLocalization
 
 /-- If `R` is a field, then localizing at a submonoid not containing `0` adds no new elements. -/
@@ -478,7 +464,7 @@ theorem Field.localization_map_bijective {K Kₘ : Type*} [Field K] [CommRing K�
 -- way round causes issues with defeq of instances, so this is actually easier.
 section Algebra
 
-variable {S} {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
+variable {Rₘ Sₘ : Type*} [CommSemiring Rₘ] [CommSemiring Sₘ]
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
 variable [Algebra S Sₘ] [i : IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
 include S
@@ -502,7 +488,7 @@ noncomputable def localizationAlgebra : Algebra Rₘ Sₘ :=
       Rₘ →+* Sₘ).toAlgebra
 
 noncomputable instance : Algebra (Localization M)
-  (Localization (Algebra.algebraMapSubmonoid S M)) := localizationAlgebra M S
+    (Localization (Algebra.algebraMapSubmonoid S M)) := localizationAlgebra M S
 
 instance : IsScalarTower R (Localization M) (Localization (Algebra.algebraMapSubmonoid S M)) :=
   IsScalarTower.of_algebraMap_eq (fun x ↦
@@ -583,4 +569,54 @@ theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)
 
 end Algebra
 
+end CommSemiring
+
+section CommRing
+
+variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
+
+namespace IsLocalization
+
+variable (M) in
+/--
+Another version of `IsLocalization.map_injective_of_injective` that is more general for the choice
+of the localization submonoid but requires it does not contain zero.
+-/
+theorem map_injective_of_injective' {f : R →+* S} {Rₘ : Type*} [CommRing Rₘ] [Algebra R Rₘ]
+    [IsLocalization M Rₘ] (Sₘ : Type*) {N : Submonoid S} [CommRing Sₘ] [Algebra S Sₘ]
+    [IsLocalization N Sₘ] (hf : M ≤ Submonoid.comap f N) (hN : 0 ∉ N) [IsDomain S]
+    (hf' : Function.Injective f) :
+    Function.Injective (map Sₘ f hf : Rₘ →+* Sₘ) := by
+  refine (injective_iff_map_eq_zero (map Sₘ f hf)).mpr fun x h ↦ ?_
+  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  aesop (add simp [map_mk', mk'_eq_zero_iff])
+
+end IsLocalization
+
+theorem Localization.mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
+  simpa using mk_algebraMap (R := R) (A := ℤ) _
+
 end CommRing
+
+section Algebra
+
+-- This is not tagged with `@[ext]` because `A` and `W` cannot be inferred.
+theorem IsLocalization.algHom_ext {R A L B : Type*}
+    [CommSemiring R] [CommSemiring A] [CommSemiring L] [Semiring B]
+    (W : Submonoid A) [Algebra A L] [IsLocalization W L]
+    [Algebra R A] [Algebra R L] [IsScalarTower R A L] [Algebra R B]
+    {f g : L →ₐ[R] B} (h : f.comp (Algebra.algHom R A L) = g.comp (Algebra.algHom R A L)) :
+    f = g :=
+  AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext W <| RingHom.ext <| AlgHom.ext_iff.mp h
+
+-- This is a more specific case where the domain is `Localization W`, so this is tagged
+-- `@[ext high]` so that it will be automatically applied before the default extensionality lemmas
+-- which compare every element.
+@[ext high] theorem Localization.algHom_ext {R A B : Type*}
+    [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B] (W : Submonoid A)
+    {f g : Localization W →ₐ[R] B}
+    (h : f.comp (Algebra.algHom R A _) = g.comp (Algebra.algHom R A _)) :
+    f = g :=
+  IsLocalization.algHom_ext W h
+
+end Algebra

@@ -18,7 +18,7 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 
 ## Main definitions and results
 
-* `FractionalIdeal.absNorm`: the norm as a zero preserving morphism with values in `ℚ`.
+* `FractionalIdeal.absNorm`: the norm as a zero-preserving morphism with values in `ℚ`.
 * `FractionalIdeal.absNorm_eq'`: the value of the norm does not depend on the choice of
   `I.num` and `I.den`.
 * `FractionalIdeal.abs_det_basis_change`: the norm is given by the determinant

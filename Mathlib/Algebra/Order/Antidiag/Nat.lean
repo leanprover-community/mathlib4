@@ -15,9 +15,9 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 
 ## Main Results
 * There are `d^(ω n)` ways to write `n` as a product of `d` natural numbers, when `n` is squarefree
-(`card_finMulAntidiag_of_squarefree`)
+  (`card_finMulAntidiag_of_squarefree`)
 * There are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`, when `n` is squarefree
-(`card_pair_lcm_eq`)
+  (`card_pair_lcm_eq`)
 -/
 
 open Finset
@@ -162,15 +162,12 @@ lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
     ← Finset.mul_prod_erase _ _ (mem_erase.mpr ⟨hij, mem_univ _⟩), ← mul_assoc]
   apply Nat.dvd_mul_right
 
-@[deprecated (since := "2024-12-17")]
-alias finMulAntidiag_exists_unique_prime_dvd := finMulAntidiag_existsUnique_prime_dvd
-
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=
-  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i} , p
+  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i}, p
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
-  (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
+    (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
     Nat.primeFactorsPiBij d n f hf ∈ finMulAntidiag d n := by
   rw [mem_finMulAntidiag]
   refine ⟨?_, hn.ne_zero⟩
@@ -216,8 +213,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
-    ext ⟨p, hp⟩
-    refine ⟨by rintro rfl; apply hf, fun h => (hf_unique p hp i h).symm⟩
+    grind
   rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
   rw [primeFactors_filter_dvd_of_dvd hn.ne_zero this]
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this
@@ -228,6 +224,7 @@ private theorem card_finMulAntidiag_pi (d n : ℕ) (hn : Squarefree n) :
   apply Finset.card_bij (Nat.primeFactorsPiBij d n) (primeFactorsPiBij_img d n hn)
     (primeFactorsPiBij_inj d n) (primeFactorsPiBij_surj d n hn)
 
+open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     #(finMulAntidiag d n) = d ^ ω n := by
   rw [← card_finMulAntidiag_pi d n hn, Finset.card_pi, Finset.prod_const,
@@ -300,6 +297,7 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
 end card_pair_lcm_eq
 
 open card_pair_lcm_eq in
+open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_pair_lcm_eq {n : ℕ} (hn : Squarefree n) :
     #{p ∈ (n.divisors ×ˢ n.divisors) | p.1.lcm p.2 = n} = 3 ^ ω n := by
   rw [← card_finMulAntidiag_of_squarefree hn, eq_comm]

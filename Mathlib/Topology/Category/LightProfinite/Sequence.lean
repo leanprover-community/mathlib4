@@ -9,7 +9,7 @@ import Mathlib.Topology.Category.LightProfinite.Basic
 
 # The light profinite set classifying convergent sequences
 
-This files defines the light profinite set `ℕ∪{∞}`, defined as the one point compactification of
+This file defines the light profinite set `ℕ∪{∞}`, defined as the one point compactification of
 `ℕ`.
 -/
 
@@ -32,7 +32,7 @@ embedding.
 lemma isClosedEmbedding_natUnionInftyEmbedding : IsClosedEmbedding natUnionInftyEmbedding := by
   refine .of_continuous_injective_isClosedMap
     natUnionInftyEmbedding.continuous ?_ ?_
-  · rintro (_|n) (_|m) h
+  · rintro (_ | n) (_ | m) h
     · rfl
     · simp only [natUnionInftyEmbedding, one_div, ContinuousMap.coe_mk, zero_eq_inv] at h
       assumption_mod_cast

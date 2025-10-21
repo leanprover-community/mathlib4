@@ -186,7 +186,7 @@ theorem count_le_one_of_centralizer_le_alternating
     rw [← sum_cycleType, hk_cT]
     simp
   have that : Multiset.card (k : Perm α).cycleType = (c : Perm α).support.card := by
-    rw [← Nat.mul_left_inj (a := 2) (by norm_num), this]
+    rw [← Nat.mul_left_inj (a := 2) (by simp), this]
     simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk, card_ofPermHom_support]
     have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
     simp only [τ, support_swap H]
@@ -239,7 +239,7 @@ theorem centralizer_le_alternating_iff :
         exact hc.left
     · suffices y = 1 by simp [this]
       have := card_fixedPoints g
-      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by omega)
+      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by cutsat)
 
 namespace IsThreeCycle
 

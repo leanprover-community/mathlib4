@@ -31,6 +31,7 @@ section Limits
 
 variable {J : Type v} [Category.{w} J]
 
+attribute [local fun_prop] continuous_subtype_val
 /-- A choice of limit cone for a functor `F : J ⥤ TopCat`.
 Generally you should just use `limit.cone F`, unless you need the actual definition
 (which is in terms of `Types.limitCone`).
@@ -210,9 +211,6 @@ def isColimitCoconeOfForget (c : Cocone (F ⋙ forget)) (hc : IsColimit c) :
 
 end
 
-@[deprecated (since := "2024-12-31")] alias colimitCocone := coconeOfCoconeForget
-@[deprecated (since := "2024-12-31")] alias colimitCoconeIsColimit := isColimitCoconeOfForget
-
 section IsColimit
 
 variable (c : Cocone F) (hc : IsColimit c)
@@ -244,7 +242,7 @@ lemma isClosed_iff_of_isColimit (X : Set c.pt) :
   simp only [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,
     Functor.const_obj_obj, Set.preimage_compl]
 
-lemma continuous_iff_of_isColimit {X : Type w} [TopologicalSpace X] (f : c.pt → X) :
+lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt → X) :
     Continuous f ↔ ∀ (j : J), Continuous (f ∘ c.ι.app j) := by
   simp only [continuous_def, isOpen_iff_of_isColimit _ hc]
   tauto

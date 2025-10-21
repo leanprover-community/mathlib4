@@ -47,14 +47,15 @@ variable [Group α] {a b : α}
 
 /-- The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 1`, denoted `a⁺ᵐ`. -/
 @[to_additive
-"The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 0`, denoted `a⁺`."]
+/-- The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 0`, denoted `a⁺`. -/]
 instance instOneLePart : OneLePart α where
   oneLePart a := a ⊔ 1
 
 /-- The *negative part* of an element `a` in a lattice ordered group is `a⁻¹ ⊔ 1`, denoted `a⁻ᵐ `.
 -/
 @[to_additive
-"The *negative part* of an element `a` in a lattice ordered group is `(-a) ⊔ 0`, denoted `a⁻`."]
+/-- The *negative part* of an element `a` in a lattice ordered group is `(-a) ⊔ 0`, denoted `a⁻`.
+-/]
 instance instLeOnePart : LeOnePart α where
   leOnePart a := a⁻¹ ⊔ 1
 
@@ -85,17 +86,17 @@ instance instLeOnePart : LeOnePart α where
 @[to_additive (attr := simp)] alias ⟨_, oneLePart_of_le_one⟩ := oneLePart_eq_one
 
 /-- See also `leOnePart_eq_inv`. -/
-@[to_additive "See also `negPart_eq_neg`."]
+@[to_additive /-- See also `negPart_eq_neg`. -/]
 lemma leOnePart_eq_inv' : a⁻ᵐ = a⁻¹ ↔ 1 ≤ a⁻¹ := sup_eq_left
 
 /-- See also `leOnePart_eq_one`. -/
-@[to_additive "See also `negPart_eq_zero`."]
+@[to_additive /-- See also `negPart_eq_zero`. -/]
 lemma leOnePart_eq_one' : a⁻ᵐ = 1 ↔ a⁻¹ ≤ 1 := sup_eq_right
 
 @[to_additive] lemma oneLePart_le_one : a⁺ᵐ ≤ 1 ↔ a ≤ 1 := by simp [oneLePart]
 
 /-- See also `leOnePart_le_one`. -/
-@[to_additive "See also `negPart_nonpos`."]
+@[to_additive /-- See also `negPart_nonpos`. -/]
 lemma leOnePart_le_one' : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 
 @[to_additive] lemma leOnePart_le_one : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
@@ -247,7 +248,7 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] [∀ i, Group 
 @[to_additive (attr := simp)] lemma oneLePart_apply (f : ∀ i, α i) (i : ι) : f⁺ᵐ i = (f i)⁺ᵐ := rfl
 @[to_additive (attr := simp)] lemma leOnePart_apply (f : ∀ i, α i) (i : ι) : f⁻ᵐ i = (f i)⁻ᵐ := rfl
 
-@[to_additive] lemma oneLePart_def (f : ∀ i, α i) : f⁺ᵐ = fun i ↦ (f i)⁺ᵐ := rfl
-@[to_additive] lemma leOnePart_def (f : ∀ i, α i) : f⁻ᵐ = fun i ↦ (f i)⁻ᵐ := rfl
+@[to_additive (attr := push ←)] lemma oneLePart_def (f : ∀ i, α i) : f⁺ᵐ = fun i ↦ (f i)⁺ᵐ := rfl
+@[to_additive (attr := push ←)] lemma leOnePart_def (f : ∀ i, α i) : f⁻ᵐ = fun i ↦ (f i)⁻ᵐ := rfl
 
 end Pi

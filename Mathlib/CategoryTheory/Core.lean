@@ -3,10 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.Control.EquivFunctor
 import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Types
+import Mathlib.Control.EquivFunctor
 
 /-!
 # The core of a category
@@ -27,7 +27,7 @@ open Functor
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 /-- The core of a category C is the groupoid whose morphisms are all the
 isomorphisms of C. -/
 structure Core (C : Type u₁) where
@@ -110,7 +110,7 @@ def coreId : (𝟭 C).core ≅ 𝟭 (Core C) := Iso.refl _
 /-- The core of the composition of F and G is the composition of the cores. -/
 @[simps!]
 def coreComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) :
-  (F ⋙ G).core ≅ F.core ⋙ G.core := Iso.refl _
+    (F ⋙ G).core ≅ F.core ⋙ G.core := Iso.refl _
 
 end Functor
 
@@ -133,22 +133,22 @@ lemma coreId {F : C ⥤ D} : (Iso.refl F).core = Iso.refl F.core := rfl
 lemma coreWhiskerLeft {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) {G H : D ⥤ E} (η : G ≅ H) :
     (isoWhiskerLeft F η).core =
     F.coreComp G ≪≫ isoWhiskerLeft F.core η.core ≪≫ (F.coreComp H).symm := by
-  aesop_cat
+  cat_disch
 
 lemma coreWhiskerRight {E : Type u₃} [Category.{v₃} E] {F G : C ⥤ D} (η : F ≅ G) (H : D ⥤ E) :
     (isoWhiskerRight η H ).core =
     F.coreComp H ≪≫ isoWhiskerRight η.core H.core ≪≫ (G.coreComp H).symm := by
-  aesop_cat
+  cat_disch
 
 lemma coreLeftUnitor {F : C ⥤ D} :
     F.leftUnitor.core =
     (𝟭 C).coreComp F ≪≫ isoWhiskerRight (Functor.coreId C) _ ≪≫ F.core.leftUnitor := by
-  aesop_cat
+  cat_disch
 
 lemma coreRightUnitor {F : C ⥤ D} :
     F.rightUnitor.core =
     (F).coreComp (𝟭 D) ≪≫ isoWhiskerLeft _ (Functor.coreId D) ≪≫ F.core.rightUnitor := by
-  aesop_cat
+  cat_disch
 
 lemma coreAssociator {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
     (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') :
@@ -156,7 +156,7 @@ lemma coreAssociator {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Categ
     (F ⋙ G).coreComp H ≪≫ isoWhiskerRight (F.coreComp G) H.core ≪≫
       Functor.associator F.core G.core H.core ≪≫ (isoWhiskerLeft F.core (G.coreComp H)).symm ≪≫
       (F.coreComp (G ⋙ H)).symm := by
-  aesop_cat
+  cat_disch
 
 end Iso
 

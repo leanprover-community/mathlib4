@@ -83,6 +83,16 @@ theorem trace_eq_matrix_trace (f : M →ₗ[R] M) :
   rw [trace_eq_matrix_trace_of_finset R b.reindexFinsetRange, ← traceAux_def, ← traceAux_def,
     traceAux_eq R b b.reindexFinsetRange]
 
+variable {R} in
+@[simp] theorem _root_.Matrix.trace_toLin_eq (A : Matrix ι ι R) (b : Basis ι R M) :
+    LinearMap.trace R _ (Matrix.toLin b b A) = A.trace := by
+  simp [trace_eq_matrix_trace R b]
+
+variable {R} in
+@[simp] theorem _root_.Matrix.trace_toLin'_eq (A : Matrix ι ι R) :
+    LinearMap.trace R _ A.toLin' = A.trace :=
+  A.trace_toLin_eq (Pi.basisFun R ι)
+
 theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) := by
   classical
   by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
@@ -133,7 +143,7 @@ theorem trace_eq_contract_of_basis [Finite ι] (b : Basis ι R M) :
     obtain rfl | hij := eq_or_ne i j
     · simp
     rw [Matrix.trace_single_eq_of_ne j i (1 : R) hij.symm]
-    simp [Finsupp.single_eq_pi_single, hij]
+    simp [hij]
 
 /-- The trace of a linear map corresponds to the contraction pairing under the isomorphism
 `End(M) ≃ M* ⊗ M`. -/
@@ -254,6 +264,12 @@ theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
   have h := LinearMap.ext_iff.1 (LinearMap.ext_iff.1 (trace_comp_comm R M N) g) f
   simp only [llcomp_apply', compr₂_apply, flip_apply] at h
   exact h
+
+@[simp]
+lemma trace_smulRight (f : M →ₗ[R] R) (x : M) :
+    trace R M (f.smulRight x) = f x := by
+  rw [trace_eq_matrix_trace _ (Free.chooseBasis R M), ← (Free.chooseBasis R M).sum_repr x]
+  simp [- Basis.sum_repr, dotProduct]
 
 end
 

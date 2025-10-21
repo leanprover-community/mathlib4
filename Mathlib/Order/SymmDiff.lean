@@ -31,7 +31,7 @@ In generalized Boolean algebras, the symmetric difference operator is:
 * `symmDiff_comm`: commutative, and
 * `symmDiff_assoc`: associative.
 
-## Notations
+## Notation
 
 * `a ∆ b`: `symmDiff a b`
 * `a ⇔ b`: `bihimp a b`
@@ -699,10 +699,12 @@ end Prod
 
 namespace Pi
 
+@[push ←]
 theorem symmDiff_def [∀ i, GeneralizedCoheytingAlgebra (π i)] (a b : ∀ i, π i) :
     a ∆ b = fun i => a i ∆ b i :=
   rfl
 
+@[push ←]
 theorem bihimp_def [∀ i, GeneralizedHeytingAlgebra (π i)] (a b : ∀ i, π i) :
     a ⇔ b = fun i => a i ⇔ b i :=
   rfl

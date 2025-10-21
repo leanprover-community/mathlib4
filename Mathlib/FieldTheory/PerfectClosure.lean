@@ -26,7 +26,7 @@ import Mathlib.FieldTheory.Perfect
 
 ## Main results
 
-- `PerfectClosure.induction_on`: to prove a result for all elements of the prefect closure, one only
+- `PerfectClosure.induction_on`: to prove a result for all elements of the perfect closure, one only
   needs to prove it for all elements of the form `x ^ (p ^ -n)`.
 
 - `PerfectClosure.mk_mul_mk`, `PerfectClosure.one_def`, `PerfectClosure.mk_add_mk`,
@@ -150,7 +150,6 @@ instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
           Quot.inductionOn g fun ⟨s, z⟩ => by
-            simp only [quot_mk_eq_mk, mk_mul_mk] -- Porting note: added this line
             apply congr_arg (Quot.mk _)
             simp only [mul_assoc, iterate_map_mul, ← iterate_add_apply,
               add_comm, add_left_comm]
@@ -257,10 +256,8 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
           Quot.inductionOn g fun ⟨s, z⟩ => by
-            simp only [quot_mk_eq_mk, mk_add_mk] -- Porting note: added this line
             apply congr_arg (Quot.mk _)
             simp only [iterate_map_add, ← iterate_add_apply, add_assoc, add_comm s _]
-    zero := 0
     zero_add := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr_arg (Quot.mk _) <| by
@@ -282,7 +279,6 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
 instance instCommRing : CommRing (PerfectClosure K p) :=
   { instAddCommGroup K p, AddMonoidWithOne.unary,
     (inferInstance : CommMonoid (PerfectClosure K p)) with
-    -- Porting note: added `zero_mul`, `mul_zero`
     zero_mul := fun a => by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
@@ -295,8 +291,7 @@ instance instCommRing : CommRing (PerfectClosure K p) :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
           Quot.inductionOn g fun ⟨s, z⟩ => by
-            simp only [quot_mk_eq_mk, mk_add_mk, mk_mul_mk] -- Porting note: added this line
-            simp only [add_comm, add_left_comm]
+            simp only [quot_mk_eq_mk, mk_add_mk, mk_mul_mk, add_comm, add_left_comm]
             apply R.sound
             simp only [iterate_map_mul, iterate_map_add, ← iterate_add_apply,
               mul_add, add_comm, add_left_comm]
@@ -304,8 +299,8 @@ instance instCommRing : CommRing (PerfectClosure K p) :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
           Quot.inductionOn g fun ⟨s, z⟩ => by
-            simp only [quot_mk_eq_mk, mk_add_mk, mk_mul_mk] -- Porting note: added this line
-            simp only [add_assoc, add_comm _ s, add_left_comm _ s]
+            simp only [quot_mk_eq_mk, mk_add_mk, mk_mul_mk, add_assoc, add_comm _ s,
+              add_left_comm _ s]
             apply R.sound
             simp only [iterate_map_mul, iterate_map_add, ← iterate_add_apply,
               add_mul, add_comm, add_left_comm] }
@@ -350,9 +345,7 @@ theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   | zero =>
     induction x with
     | zero => simp
-    | succ x ih =>
-      rw [Nat.cast_succ, Nat.cast_succ, ih]
-      rfl
+    | succ x ih => simp [Nat.cast_succ, ih, one_def]
   | succ n ih =>
     rw [ih]; apply Quot.sound
     suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by

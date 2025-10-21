@@ -20,7 +20,7 @@ of uniform structures on `X`, as well as the pullback (`UniformSpace.comap`) of 
 coming from the pullback of filters.
 Like distance functions, uniform structures cannot be pushed forward in general.
 
-## Notations
+## Notation
 
 Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`,
 and `○` for composition of relations, seen as terms with type `Set (X × X)`.
@@ -46,9 +46,9 @@ universe u v ua ub uc ud
 
 variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
 
-open scoped Rel in
-lemma IsOpen.relComp [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {s : Rel α β}
-    {t : Rel β γ} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ○ t) := by
+open scoped SetRel in
+lemma IsOpen.relComp [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+    {s : SetRel α β} {t : SetRel β γ} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ○ t) := by
   conv =>
     arg 1; equals ⋃ b, (fun p => (p.1, b)) ⁻¹' s ∩ (fun p => (b, p.2)) ⁻¹' t => ext ⟨_, _⟩; simp
   exact isOpen_iUnion fun a ↦ hs.preimage (by fun_prop) |>.inter <| ht.preimage (by fun_prop)
@@ -239,9 +239,6 @@ theorem isOpen_iff_isOpen_ball_subset {s : Set α} :
         (ball_mono interior_subset x).trans hV'⟩
   · obtain ⟨V, hV, -, hV'⟩ := h x hx
     exact ⟨V, hV, hV'⟩
-
-@[deprecated (since := "2024-11-18")] alias
-isOpen_iff_open_ball_subset := isOpen_iff_isOpen_ball_subset
 
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : Dense s) (hU : U ∈ 𝓤 α) :
@@ -488,10 +485,35 @@ theorem toTopologicalSpace_inf {u v : UniformSpace α} :
 
 end UniformSpace
 
-theorem UniformContinuous.continuous [UniformSpace α] [UniformSpace β] {f : α → β}
-    (hf : UniformContinuous f) : Continuous f :=
+section
+
+variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] {f : α → β} {s t : Set α}
+
+theorem UniformContinuous.continuous (hf : UniformContinuous f) : Continuous f :=
   continuous_iff_le_induced.mpr <| UniformSpace.toTopologicalSpace_mono <|
     uniformContinuous_iff.1 hf
+
+lemma UniformContinuous.uniformContinuousOn (hf : UniformContinuous f) :
+    UniformContinuousOn f s :=
+  tendsto_inf_left hf
+
+lemma UniformContinuousOn.mono (hf : UniformContinuousOn f s) (ht : t ⊆ s) :
+    UniformContinuousOn f t :=
+  Tendsto.mono_left hf (inf_le_inf le_rfl (by simp [ht]))
+
+lemma UniformContinuousOn.comp {g : β → γ} {t : Set β} (hg : UniformContinuousOn g t)
+    (hf : UniformContinuousOn f s) (hst : MapsTo f s t) : UniformContinuousOn (g ∘ f) s := by
+  change Tendsto ((fun x ↦ (g x.1, g x.2)) ∘ (fun x ↦ (f x.1, f x.2))) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 γ)
+  apply Tendsto.comp hg
+  refine tendsto_inf.2 ⟨hf, tendsto_inf_right ?_⟩
+  simp only [tendsto_principal, mem_prod, eventually_principal, and_imp, Prod.forall]
+  exact fun a b ha hb ↦ ⟨hst ha, hst hb⟩
+
+lemma UniformContinuous.comp_uniformContinuousOn {g : β → γ}
+    (hg : UniformContinuous g) (hf : UniformContinuousOn f s) : UniformContinuousOn (g ∘ f) s :=
+  (hg.uniformContinuousOn (s := univ)).comp hf (mapsTo_univ _ _)
+
+end
 
 /-- Uniform space structure on `ULift α`. -/
 instance ULift.uniformSpace [UniformSpace α] : UniformSpace (ULift α) :=
@@ -603,6 +625,11 @@ theorem UniformContinuous.subtype_mk {p : α → Prop} [UniformSpace α] [Unifor
     (hf : UniformContinuous f) (h : ∀ x, p (f x)) :
     UniformContinuous (fun x => ⟨f x, h x⟩ : β → Subtype p) :=
   uniformContinuous_comap' hf
+
+theorem UniformContinuous.subtype_map [UniformSpace α] [UniformSpace β] {p : α → Prop}
+    {q : β → Prop} {f : α → β} (hf : UniformContinuous f) (h : ∀ x, p x → q (f x)) :
+    UniformContinuous (Subtype.map f h) :=
+  (hf.comp uniformContinuous_subtype_val).subtype_mk _
 
 theorem uniformContinuousOn_iff_restrict [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔ UniformContinuous (s.restrict f) := by
@@ -766,6 +793,10 @@ alias UniformContinuous.prod_mk_right := UniformContinuous.prodMk_right
 theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → δ}
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=
   (hf.comp uniformContinuous_fst).prodMk (hg.comp uniformContinuous_snd)
+
+lemma uniformContinuous_swap :
+    UniformContinuous (Prod.swap : α × β → β × α) :=
+  uniformContinuous_snd.prodMk uniformContinuous_fst
 
 theorem toTopologicalSpace_prod {α} {β} [u : UniformSpace α] [v : UniformSpace β] :
     @UniformSpace.toTopologicalSpace (α × β) instUniformSpaceProd =

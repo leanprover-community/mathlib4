@@ -5,7 +5,7 @@ Authors: David Loeffler, Geoffrey Irving, Stefan Kebekus
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+import Mathlib.Analysis.Normed.Operator.Mul
 import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.Analytic.OfScalars
 
@@ -40,7 +40,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
   refine ⟨by simp, WithTop.top_pos, fun _ => hasSum_single 0 fun n hn => ?_⟩
-  simp [constFormalMultilinearSeries_apply hn]
+  simp [constFormalMultilinearSeries_apply_of_nonzero hn]
 
 theorem hasFPowerSeriesAt_const {c : F} {e : E} :
     HasFPowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e :=
@@ -1137,10 +1137,12 @@ theorem Finset.analyticWithinAt_fun_sum {f : α → E → F} {c : E} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s c := by
   classical
-  induction' N using Finset.induction with a B aB hB
-  · simp only [Finset.sum_empty]
+  induction N using Finset.induction with
+  | empty =>
+    simp only [Finset.sum_empty]
     exact analyticWithinAt_const
-  · simp_rw [Finset.sum_insert aB]
+  | insert a B aB hB =>
+    simp_rw [Finset.sum_insert aB]
     simp only [Finset.mem_insert] at h
     exact (h a (Or.inl rfl)).add (hB fun b m ↦ h b (Or.inr m))
 
@@ -1196,10 +1198,12 @@ theorem Finset.analyticWithinAt_fun_prod {A : Type*} [NormedCommRing A] [NormedA
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s c := by
   classical
-  induction' N using Finset.induction with a B aB hB
-  · simp only [Finset.prod_empty]
+  induction N using Finset.induction with
+  | empty =>
+    simp only [Finset.prod_empty]
     exact analyticWithinAt_const
-  · simp_rw [Finset.prod_insert aB]
+  | insert a B aB hB =>
+    simp_rw [Finset.prod_insert aB]
     simp only [Finset.mem_insert] at h
     exact (h a (Or.inl rfl)).mul (hB fun b m ↦ h b (Or.inr m))
 
@@ -1301,3 +1305,68 @@ theorem HasFPowerSeriesWithinAt.unshift (hf : HasFPowerSeriesWithinAt f pf s x) 
   hrf.unshift.hasFPowerSeriesWithinAt
 
 end
+
+/-!
+### Composition with a linear map
+-/
+
+section compContinuousLinearMap
+
+variable {u : E →L[𝕜] F} {f : F → G} {pf : FormalMultilinearSeries 𝕜 F G} {s : Set F} {x : E}
+  {r : ℝ≥0∞}
+
+theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
+    (hf : HasFPowerSeriesWithinOnBall f pf s (u x) r) :
+    HasFPowerSeriesWithinOnBall (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x (r / ‖u‖ₑ) where
+  r_le := by
+    calc
+      _ ≤ pf.radius / ‖u‖ₑ := by
+        gcongr
+        exact hf.r_le
+      _ ≤ _ := pf.div_le_radius_compContinuousLinearMap _
+  r_pos := by
+    simp only [ENNReal.div_pos_iff, ne_eq, enorm_ne_top, not_false_eq_true, and_true]
+    exact pos_iff_ne_zero.mp hf.r_pos
+  hasSum hy1 hy2 := by
+    convert hf.hasSum _ _
+    · simp
+    · simp only [Set.mem_insert_iff, add_eq_left, Set.mem_preimage, map_add] at hy1 ⊢
+      rcases hy1 with (hy1 | hy1) <;> simp [hy1]
+    · simp only [EMetric.ball, edist_zero_right, Set.mem_setOf_eq] at hy2 ⊢
+      exact lt_of_le_of_lt (ContinuousLinearMap.le_opNorm_enorm _ _) (mul_lt_of_lt_div' hy2)
+
+theorem HasFPowerSeriesOnBall.compContinuousLinearMap (hf : HasFPowerSeriesOnBall f pf (u x) r) :
+    HasFPowerSeriesOnBall (f ∘ u) (pf.compContinuousLinearMap u) x (r / ‖u‖ₑ) := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf ⊢
+  exact hf.compContinuousLinearMap
+
+theorem HasFPowerSeriesAt.compContinuousLinearMap (hf : HasFPowerSeriesAt f pf (u x)) :
+    HasFPowerSeriesAt (f ∘ u) (pf.compContinuousLinearMap u) x :=
+  let ⟨r, hr⟩ := hf
+  ⟨r / ‖u‖ₑ, hr.compContinuousLinearMap⟩
+
+theorem HasFPowerSeriesWithinAt.compContinuousLinearMap
+    (hf : HasFPowerSeriesWithinAt f pf s (u x)) :
+    HasFPowerSeriesWithinAt (f ∘ u) (pf.compContinuousLinearMap u) (u ⁻¹' s) x :=
+  let ⟨r, hr⟩ := hf
+  ⟨r / ‖u‖ₑ, hr.compContinuousLinearMap⟩
+
+theorem AnalyticAt.compContinuousLinearMap (hf : AnalyticAt 𝕜 f (u x)) :
+    AnalyticAt 𝕜 (f ∘ u) x :=
+  let ⟨p, hp⟩ := hf
+  ⟨p.compContinuousLinearMap u, hp.compContinuousLinearMap⟩
+
+theorem AnalyticAtWithin.compContinuousLinearMap (hf : AnalyticWithinAt 𝕜 f s (u x)) :
+    AnalyticWithinAt 𝕜 (f ∘ u) (u ⁻¹' s) x :=
+  let ⟨p, hp⟩ := hf
+  ⟨p.compContinuousLinearMap u, hp.compContinuousLinearMap⟩
+
+theorem AnalyticOn.compContinuousLinearMap (hf : AnalyticOn 𝕜 f s) :
+    AnalyticOn 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
+  AnalyticAtWithin.compContinuousLinearMap (hf (u x) hx)
+
+theorem AnalyticOnNhd.compContinuousLinearMap (hf : AnalyticOnNhd 𝕜 f s) :
+    AnalyticOnNhd 𝕜 (f ∘ u) (u ⁻¹' s) := fun x hx =>
+  AnalyticAt.compContinuousLinearMap (hf (u x) hx)
+
+end compContinuousLinearMap
