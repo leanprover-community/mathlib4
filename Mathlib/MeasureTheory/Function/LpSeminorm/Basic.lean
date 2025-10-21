@@ -412,6 +412,10 @@ theorem memLpConst_iff_zero_or_top_or_isFiniteMeasure {α : Type u_1} {m0 : Meas
     · infer_instance
     · infer_instance
 
+@[simp]
+theorem memLpConst_of_eq_zero_or_top_or_isFiniteMeasure [h : MemLp.Const p μ] :
+    p = 0 ∨ p = ∞ ∨ IsFiniteMeasure μ := memLpConst_iff_zero_or_top_or_isFiniteMeasure p μ |>.mp h
+
 /-- Check naming convention for this. Golf. -/
 theorem memLpConst_iff_top_or_isFiniteMeasure_of_ne_zero {α : Type u_1} {m0 : MeasurableSpace α}
     (p : ℝ≥0∞) (μ : Measure α) : p ≠ 0 → (MemLp.Const p μ ↔ p = ∞ ∨ IsFiniteMeasure μ) := by
