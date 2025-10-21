@@ -5,7 +5,7 @@ Authors: Yizheng Zhu
 -/
 import Mathlib.Analysis.BoundedVariation
 import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 
 /-!
 # `f'` is interval integrable for certain classes of functions `f`
@@ -13,8 +13,8 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 This file proves that:
 * `MonotoneOn.intervalIntegrable_deriv` - If `f` is monotone on `a..b`, then `f'` is interval
 integrable on `a..b`.
-* `MonotoneOn.intervalIntegral_bound` - If `f` is monotone on `a..b`, then `∫ x in a..b, f' x` is
-in `uIcc 0 (f b - f a)`.
+* `MonotoneOn.intervalIntegral_bound` - If `f` is monotone on `a..b`, then the integral of `f'` on
+`a..b` is in `uIcc 0 (f b - f a)`.
 * `BoundedVariationOn.intervalIntegrable_deriv` - If `f` has bounded variation on `a..b`,
 then `f'` is interval integrable on `a..b`.
 * `AbsolutelyContinuousOnInterval.intervalIntegrable_deriv` - If `f` is absolutely continuous on
@@ -24,101 +24,12 @@ then `f'` is interval integrable on `a..b`.
 interval integrable, monotone, bounded variation, absolutely continuous
 -/
 
-open MeasureTheory Set Filter Function
+open MeasureTheory Set Filter
 
-open scoped Topology ENNReal Interval NNReal
+open scoped Topology
 
-theorem IntervalIntegrable.intervalIntegrable_slope {f : ℝ → ℝ} {a b c : ℝ}
-    (hf : IntervalIntegrable f volume a (b + c)) (hab : a ≤ b) (hc : 0 ≤ c) :
-    IntervalIntegrable (fun x ↦ slope f x (x + c)) volume a b := by
-  simp only [slope, add_sub_cancel_left, vsub_eq_sub, smul_eq_mul]
-  exact hf.comp_add_right c |>.mono_set (by grind [uIcc]) |>.sub (hf.mono_set (by grind [uIcc]))
-    |>.const_mul (c := c⁻¹)
-
-theorem MonotoneOn.intervalIntegrable_slope {f : ℝ → ℝ} {a b c : ℝ}
-    (hf : MonotoneOn f (Icc a (b + c))) (hab : a ≤ b) (hc : 0 ≤ c) :
-    IntervalIntegrable (fun x ↦ slope f x (x + c)) volume a b :=
-  uIcc_of_le (show a ≤ b + c by linarith) ▸ hf |>.intervalIntegrable.intervalIntegrable_slope hab hc
-
-theorem MonotoneOn.intervalIntegral_slope_bound {f : ℝ → ℝ} {a b c : ℝ}
-    (hf : MonotoneOn f (Icc a (b + c))) (hab : a ≤ b) (hc : 0 ≤ c) :
-    ∫ x in a..b, slope f x (x + c) ≤ f (b + c) - f a := by
-  rcases eq_or_lt_of_le hc with hc | hc
-  · simp only [← hc, add_zero, slope_same, intervalIntegral.integral_zero, sub_nonneg]
-    apply hf <;> grind
-  rw [← uIcc_of_le (by linarith)] at hf
-  have hf' := hf.intervalIntegrable (μ := volume)
-  simp only [slope, add_sub_cancel_left, vsub_eq_sub, smul_eq_mul,
-    intervalIntegral.integral_const_mul]
-  rw [intervalIntegral.integral_sub
-        (hf'.comp_add_right c |>.mono_set (by grind [uIcc]))
-        (hf'.mono_set (by grind [uIcc])),
-      intervalIntegral.integral_comp_add_right,
-      intervalIntegral.integral_interval_sub_interval_comm'
-        (hf'.mono_set (by grind [uIcc]))
-        (hf'.mono_set (by grind [uIcc]))
-        (hf'.mono_set (by grind [uIcc]))]
-  have fU : ∫ (x : ℝ) in b..b + c, f x ≤ c * f (b + c) := by
-    grw [intervalIntegral.integral_mono_on (g := fun _ ↦ f (b + c))
-          (by linarith)
-          (hf'.mono_set (by grind [uIcc]))
-          (by simp)
-          (by intros; apply hf <;> grind [uIcc])]
-    simp
-  have fL : c * f a ≤ ∫ (x : ℝ) in a..a + c, f x := by
-    grw [← intervalIntegral.integral_mono_on (f := fun _ ↦ f a)
-            (by linarith)
-            (by simp)
-            (hf'.mono_set (by grind [uIcc]))
-            (by intros; apply hf <;> grind [uIcc])]
-    simp
-  grw [fU, ← fL]
-  field_simp; rfl
-
-theorem lintegral_bound_of_tendsto_atTop_aemeasurable_enorm
-    {G : ℕ → ℝ → ℝ} {f : ℝ → ℝ} {μ : Measure ℝ}
-    (hGf : ∀ᵐ x ∂μ, Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (f x)))
-    (hG : ∀ (n : ℕ), AEMeasurable (fun x ↦ ‖G n x‖ₑ) μ) :
-    ∫⁻ x, ‖f x‖ₑ ∂μ ≤ liminf (fun n ↦ ∫⁻ x, ‖G n x‖ₑ ∂μ) atTop :=
-  lintegral_congr_ae (by filter_upwards [hGf] with x hx using hx.enorm.liminf_eq) ▸
-    (MeasureTheory.lintegral_liminf_le' hG)
-
-theorem lintegral_bound_of_tendsto_atTop_aestronglyMeasurable
-    {G : ℕ → ℝ → ℝ} {f : ℝ → ℝ} {μ : Measure ℝ}
-    (hGf : ∀ᵐ x ∂μ, Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (f x)))
-    (hG : ∀ (n : ℕ), AEStronglyMeasurable (G n) μ) :
-    ∫⁻ x, ‖f x‖ₑ ∂μ ≤ liminf (fun n ↦ ∫⁻ x, ‖G n x‖ₑ ∂μ) atTop :=
-  lintegral_bound_of_tendsto_atTop_aemeasurable_enorm hGf
-    (fun n ↦ (hG n).aemeasurable.enorm)
-
-theorem lintegral_interval_bound_of_tendsto_atTop_aestronglyMeasurable
-    {G : ℕ → ℝ → ℝ} {f : ℝ → ℝ} {a b : ℝ}
-    (hGf : ∀ᵐ x, x ∈ uIcc a b → Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (f x)))
-    (hG : ∀ (n : ℕ), AEStronglyMeasurable (G n) (volume.restrict (uIcc a b))) :
-    ∫⁻ x in uIcc a b, ‖f x‖ₑ ≤ liminf (fun n ↦ ∫⁻ x in uIcc a b, ‖G n x‖ₑ) atTop :=
-  lintegral_bound_of_tendsto_atTop_aestronglyMeasurable
-    ((MeasureTheory.ae_restrict_iff' (by measurability) |>.mpr hGf)) hG
-
-theorem integrable_of_tendsto_atTop_aestronglyMeasurable_liminf_ne_top
-    {G : ℕ → ℝ → ℝ} {f : ℝ → ℝ} {μ : Measure ℝ}
-    (hGf : ∀ᵐ x ∂μ, Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (f x)))
-    (hG : ∀ (n : ℕ), AEStronglyMeasurable (G n) μ)
-    (hG' : liminf (fun n ↦ ∫⁻ x, ‖G n x‖ₑ ∂μ) atTop ≠ ⊤) :
-    Integrable f μ :=
-  ⟨aestronglyMeasurable_of_tendsto_ae _ hG hGf,
-   lt_of_le_of_lt (lintegral_bound_of_tendsto_atTop_aestronglyMeasurable hGf hG)
-    hG'.lt_top⟩
-
-theorem intervalIntegrable_of_tendsto_atTop_aestronglyMeasurable_liminf_ne_top
-    {G : ℕ → ℝ → ℝ} {f : ℝ → ℝ} {a b : ℝ}
-    (hGf : ∀ᵐ x, x ∈ uIcc a b → Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (f x)))
-    (hG : ∀ (n : ℕ), AEStronglyMeasurable (G n) (volume.restrict (uIcc a b)))
-    (hG' : liminf (fun n ↦ ∫⁻ x in uIcc a b, ‖G n x‖ₑ) atTop ≠ ⊤) :
-    IntervalIntegrable f volume a b := by
-  rw [intervalIntegrable_iff']
-  exact integrable_of_tendsto_atTop_aestronglyMeasurable_liminf_ne_top
-    (MeasureTheory.ae_restrict_iff' (by measurability) |>.mpr hGf) hG hG'
-
+/-- If `f` is monotone on `a..b`, then `f'` is interval integrable on `a..b` and the integral of
+`f'` on `a..b` is in between `0` and `f b - f a`. -/
 theorem MonotoneOn.intervalIntegrable_deriv_intervalIntegral_bound {f : ℝ → ℝ} {a b : ℝ}
     (hf : MonotoneOn f (uIcc a b)) :
     IntervalIntegrable (deriv f) volume a b ∧ ∫ x in a..b, deriv f x ∈ uIcc 0 (f b - f a) := by
@@ -172,13 +83,13 @@ theorem MonotoneOn.intervalIntegrable_deriv_intervalIntegral_bound {f : ℝ → 
       _ = ENNReal.ofReal (f b - f a) := by grind
   have hG'₀ : liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G (n : ℝ)⁻¹ x‖ₑ) atTop ≠ ⊤ :=
     lt_of_le_of_lt hG' ENNReal.ofReal_lt_top |>.ne_top
-  rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab]
   have integrable_f_deriv := integrable_of_tendsto_atTop_aestronglyMeasurable_liminf_ne_top
     hGf hG hG'₀
-  refine ⟨integrable_f_deriv, ?_⟩
+  refine ⟨(intervalIntegrable_iff_integrableOn_Icc_of_le hab).mpr integrable_f_deriv, ?_⟩
   rw [MeasureTheory.ae_restrict_iff' (by simp)] at hGf
   rw [← uIcc_of_le hab] at hGf hG hG'
-  have ebound := lintegral_interval_bound_of_tendsto_atTop_aestronglyMeasurable hGf hG
+  have ebound := lintegral_bound_of_tendsto_atTop_aestronglyMeasurable
+    ((MeasureTheory.ae_restrict_iff' (by measurability) |>.mpr hGf)) hG
   grw [hG'] at ebound
   have : f a ≤ f b := hf (by simp [hab]) (by simp [hab]) hab
   rw [uIcc_of_le (by linarith), mem_Icc]
@@ -199,11 +110,14 @@ theorem MonotoneOn.intervalIntegrable_deriv_intervalIntegral_bound {f : ℝ → 
     rw [hfg (by grind [uIoc])]
     exact abs_eq_self.mpr hg.deriv_nonneg |>.symm
 
+/-- If `f` is monotone on `a..b`, then `f'` is interval integrable on `a..b`. -/
 theorem MonotoneOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
     (hf : MonotoneOn f (uIcc a b)) :
     IntervalIntegrable (deriv f) volume a b :=
   hf.intervalIntegrable_deriv_intervalIntegral_bound.left
 
+/-- If `f` is monotone on `a..b`, then the integral of `f'` on `a..b` is in between `0` and
+`f b - f a`. -/
 theorem MonotoneOn.intervalIntegral_bound {f : ℝ → ℝ} {a b : ℝ}
     (hf : MonotoneOn f (uIcc a b)) :
     ∫ x in a..b, deriv f x ∈ uIcc 0 (f b - f a) :=
