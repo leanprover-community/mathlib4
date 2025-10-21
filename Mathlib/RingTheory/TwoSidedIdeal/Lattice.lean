@@ -110,7 +110,7 @@ instance : Top (TwoSidedIdeal R) where
 lemma top_ringCon : (⊤ : TwoSidedIdeal R).ringCon = ⊤ := rfl
 
 @[simp]
-lemma mem_top {x : R} : x ∈ (⊤: TwoSidedIdeal R) := trivial
+lemma mem_top {x : R} : x ∈ (⊤ : TwoSidedIdeal R) := trivial
 
 instance : Bot (TwoSidedIdeal R) where
   bot := { ringCon := ⊥ }

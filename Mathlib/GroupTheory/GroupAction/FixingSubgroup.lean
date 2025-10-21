@@ -132,6 +132,10 @@ theorem fixingSubgroup_fixedPoints_gc :
       ((fun P : Subgroup M => fixedPoints P α) ∘ OrderDual.ofDual) :=
   fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
 
+@[to_additive (attr := simp)]
+lemma fixingSubgroup_empty : fixingSubgroup M (∅ : Set α) = ⊤ :=
+  GaloisConnection.l_bot (fixingSubgroup_fixedPoints_gc M α)
+
 @[to_additive]
 theorem fixingSubgroup_antitone : Antitone (fixingSubgroup M : Set α → Subgroup M) :=
   (fixingSubgroup_fixedPoints_gc M α).monotone_l
