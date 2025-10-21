@@ -982,6 +982,7 @@ import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Algebra.Order.Ring.Synonym
 import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+import Mathlib.Algebra.Order.Ring.Units
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Round
 import Mathlib.Algebra.Order.Star.Basic
@@ -1373,6 +1374,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
+import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
 import Mathlib.AlgebraicTopology.SimplicialSet.Op
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
@@ -2569,6 +2571,8 @@ import Mathlib.CategoryTheory.Localization.Linear
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.Localization.LocallySmall
 import Mathlib.CategoryTheory.Localization.Monoidal
+import Mathlib.CategoryTheory.Localization.Monoidal.Basic
+import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Preadditive
@@ -3839,6 +3843,7 @@ import Mathlib.FieldTheory.Finite.Polynomial
 import Mathlib.FieldTheory.Finite.Trace
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Fixed
+import Mathlib.FieldTheory.Galois.Abelian
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.Galois.GaloisClosure
 import Mathlib.FieldTheory.Galois.Infinite
@@ -4149,6 +4154,7 @@ import Mathlib.InformationTheory.KullbackLeibler.KLFun
 import Mathlib.Init
 import Mathlib.Lean.ContextInfo
 import Mathlib.Lean.CoreM
+import Mathlib.Lean.Elab.InfoTree
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.Elab.Tactic.Meta
 import Mathlib.Lean.Elab.Term
@@ -6520,6 +6526,7 @@ import Mathlib.Topology.Algebra.Order.Support
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.PontryaginDual
+import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 import Mathlib.Topology.Algebra.ProperAction.Basic
 import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 import Mathlib.Topology.Algebra.ProperConstSMul

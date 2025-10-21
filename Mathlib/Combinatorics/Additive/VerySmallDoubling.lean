@@ -82,12 +82,11 @@ lemma op_smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
 private lemma big_intersection (ha : a ∈ B) (hb : b ∈ B) :
     2 * #A ≤ #((a • A) ∩ (b • A)) + #(B * A) := by
   have : #((a • A) ∪ (b • A)) ≤ #(B * A) := by
-    refine card_le_card ?_
+    gcongr
     rw [union_subset_iff]
     exact ⟨smul_finset_subset_mul ha, smul_finset_subset_mul hb⟩
-  refine (add_le_add_left this _).trans_eq' ?_
-  rw [card_inter_add_card_union]
-  simp only [card_smul_finset, two_mul]
+  grw [← this, card_inter_add_card_union]
+  simp [card_smul_finset, two_mul]
 
 private lemma le_card_smul_inter_smul (hA : #(B * A) ≤ K * #A) (ha : a ∈ B) (hb : b ∈ B) :
     (2 - K) * #A ≤ #((a • A) ∩ (b • A)) := by
