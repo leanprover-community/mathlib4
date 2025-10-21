@@ -600,6 +600,3 @@ abbrev CommGrpMax.{u1, u2} := CommGrpCat.{max u1 u2}
 @[nolint checkUnivs]
 abbrev AddCommGrpMax.{u1, u2} := AddCommGrpCat.{max u1 u2}
 
-/-!
-Deprecated lemmas for `MonoidHom.comp` and categorical identities.
--/

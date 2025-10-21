@@ -578,25 +578,3 @@ lemma isConjExponent_iff_eq_conjExponent (hp : 1 â‰¤ p) : p.HolderConjugate q â†
 
 end ENNReal
 
-namespace Real
-
-namespace IsConjExponent
-
-end IsConjExponent
-
-end Real
-
-namespace NNReal
-
-namespace IsConjExponent
-
-end IsConjExponent
-
-end NNReal
-
-namespace ENNReal
-
-namespace IsConjExponent
-
-end IsConjExponent
-end ENNReal

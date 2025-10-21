@@ -877,10 +877,6 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
 
 end FoldlMFoldrM
 
-/-! ### intersperse -/
-
-/-! ### map for partial functions -/
-
 /-! ### filter -/
 
 theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
