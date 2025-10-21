@@ -1155,7 +1155,8 @@ def proveIsNatRPowIsNNRat
   return (r, ⟨er, q(IsNat.rpow_isNNRat $pa $pb $c $pc $d $pd $hcd)⟩)
 
 /-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.
-Works if `a`, `b`, and `a ^ b` are in fact rational numbers. -/
+Works if `a`, `b`, and `a ^ b` are in fact rational numbers,
+except for the case `a < 0`, `b` isn't integer. -/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
 def evalRPow : NormNumExt where eval {u αR} e := do
   match u, αR, e with
