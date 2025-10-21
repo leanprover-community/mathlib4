@@ -325,8 +325,6 @@ def mkBuildPaths (mod : Name) : CacheM <| List (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "ir.hash", false),
     (packageDir / IRDIR  / path.withExtension "c", true),
     (packageDir / IRDIR  / path.withExtension "c.hash", true),
-    -- (packageDir / LIBDIR / path.withExtension "ir", true),
-    -- (packageDir / LIBDIR / path.withExtension "ir.hash", true),
     (packageDir / LIBDIR / path.withExtension "extra", false)]
 
 /-- Check that all required build files exist. -/
