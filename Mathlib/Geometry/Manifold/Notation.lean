@@ -269,6 +269,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   if let some m ← tryStrategy m!"Manifold"       fromManifold       then return m
   if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return m
   if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return m
+  if let some m ← tryStrategy m!"EuclideanSpace" fromEuclideanSpace then return m
   if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return m
   if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return m
   throwError "Could not find a model with corners for `{e}`"
@@ -376,6 +377,13 @@ where
       else
         throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
     | _ => throwError "`{e}` is not a space of continuous linear maps"
+  /-- Attempt to find a model with corners on a Euclidean half-space -/
+  fromEuclideanSpace : TermElabM Expr := do
+    -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace`.
+    match (← instantiateMVars e).cleanupAnnotations with--.isConstOf `EuclideanHalfSpace with
+    | mkApp2 (.const `EuclideanHalfSpace _) n _ =>
+      mkAppOptM `modelWithCornersEuclideanHalfSpace #[n, none]
+    | _ => throwError "`{e}` is not a `EuclideanHalfSpace`"
   /-- Attempt to find a model with corners on a closed interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
     let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
