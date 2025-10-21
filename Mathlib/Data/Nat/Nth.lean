@@ -291,7 +291,7 @@ lemma nth_le_of_strictMonoOn_of_mapsTo {p : ℕ → Prop} (f : ℕ → ℕ)
     rw [nth, dif_pos hf, List.getD_eq_default _ _ (by simp [hn])]
     exact Nat.zero_le _
 
-/-- `Nat.nth p` is the greatest monotone function whose image contains `setOf p` -/
+/-- `Nat.nth p` is the greatest monotone function whose image contains `setOf p`. -/
 lemma le_nth_of_monotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
     (hsurj : Set.SurjOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
     (hmono : MonotoneOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) {n : ℕ}
@@ -313,7 +313,7 @@ lemma le_nth_of_monotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
     rw [Nat.succ_le]
     apply hmono.reflect_lt <;> grind
 
-/-- `Nat.nth p` is the unique strictly monotone function whose image is `setOf p` -/
+/-- `Nat.nth p` is the unique strictly monotone function whose image is `setOf p`. -/
 lemma eq_nth_of_strictMonoOn_of_mapsTo_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
     (hsurj : Set.SurjOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
     (hmaps : Set.MapsTo f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
