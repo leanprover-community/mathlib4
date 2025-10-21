@@ -577,4 +577,3 @@ lemma isConjExponent_iff_eq_conjExponent (hp : 1 ≤ p) : p.HolderConjugate q �
   ⟨fun h ↦ h.conj_eq, by rintro rfl; exact .conjExponent hp⟩
 
 end ENNReal
-

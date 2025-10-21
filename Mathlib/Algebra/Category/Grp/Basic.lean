@@ -599,4 +599,3 @@ abbrev CommGrpMax.{u1, u2} := CommGrpCat.{max u1 u2}
 /-- An alias for `AddCommGrpCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev AddCommGrpMax.{u1, u2} := AddCommGrpCat.{max u1 u2}
-
