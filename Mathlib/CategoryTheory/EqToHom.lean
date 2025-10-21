@@ -26,7 +26,7 @@ result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 namespace CategoryTheory
 
 open Opposite

@@ -328,14 +328,15 @@ private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
       · exact hf _
       · refine tsub_le_tsub_right (le_of_eq_of_le (Real.norm_of_nonneg ?_).symm (hC₁ n)) _
         exact mul_nonneg (norm_nonneg _) (sum_nonneg fun _ _ ↦ norm_nonneg _)
-      · exact add_le_add_left
-          (le_trans (neg_le_abs _) (Real.norm_eq_abs _ ▸ norm_integral_le_integral_norm _)) _
-      · refine add_le_add_left (setIntegral_mono_set ?_ ?_ Set.Ioc_subset_Ioi_self.eventuallyLE) C₁
-        · exact Iff.mp integrableOn_Ici_iff_integrableOn_Ioi <|
-            (integrable_norm_iff h_mes.aestronglyMeasurable).mpr <|
-              (locallyIntegrableOn_mul_sum_Icc _ m.cast_nonneg hf_int).integrableOn_of_isBigO_atTop
-                hg₁ hg₂
-        · filter_upwards with t using norm_nonneg _
+      · grw [sub_eq_add_neg, neg_le_abs, abs_integral_le_integral_abs]
+        simp
+      · unfold C₂
+        grw [setIntegral_mono_set ?_ (.of_forall fun _ ↦ norm_nonneg _)
+          Set.Ioc_subset_Ioi_self.eventuallyLE]
+        rw [← integrableOn_Ici_iff_integrableOn_Ioi, IntegrableOn,
+          integrable_norm_iff h_mes.aestronglyMeasurable]
+        exact (locallyIntegrableOn_mul_sum_Icc _ m.cast_nonneg hf_int).integrableOn_of_isBigO_atTop
+          hg₁ hg₂
 
 theorem summable_mul_of_bigO_atTop
     (hf_diff : ∀ t ∈ Set.Ici 0, DifferentiableAt ℝ (fun x ↦ ‖f x‖) t)

@@ -339,7 +339,7 @@ noncomputable def Matrix.toLinearMapₛₗ₂ : Matrix n m N₂ ≃ₗ[R] M₁ �
 /-- `Matrix.toLinearMap₂ b₁ b₂` is the same as `Matrix.toLinearMapₛₗ₂ b₁ b₂` but with
 `σ₁ := RingHom.id R` to avoid having to specify it. -/
 noncomputable def Matrix.toLinearMap₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₗ[R] M₂ →ₗ[R] N₂ :=
-  (LinearMap.toMatrix₂ b₁ b₂).symm
+  toLinearMapₛₗ₂ (.id R) b₁ b₂
 
 -- We make this and not `LinearMap.toMatrix₂` a `simp` lemma to avoid timeouts
 @[simp]
