@@ -2,17 +2,36 @@
 Copyright (c) 2025 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Hua
-
-NOTESThis expresses the universal property of the right adjoint to
-pullback without requiring the existence of the entire adjoint.
-See `Mathlib.CategoryTheory.Adjunction.PartialAdjoint`.
-
-This definition could be generalised to not require pullbacks, but such settings are rare.
-
-(also called exponentiable)
 -/
 import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
+
+/-!
+# Pushforward
+
+If pullbacks along a morphism `f : S ⟶ S'` exist,
+we say that an object `Y : Over S'` is a pushforward along `f` of an object `X : Over S`
+when it locally satisfies the right adjoint universal property with respect to
+the pullback functor `Over.pullback f : Over Y ⥤ Over X`.
+More formally,
+this means that the object `Y` represents the presheaf `Hom(pullback f (-), X)`.
+
+## Main declarations
+
+- `IsPushforward f X Y` says that `Y` is a pushforward along `f` of `X`.
+- `HasPushforward f X` says that a pushforward of `f` along `X` exists.
+- `pushforward f : Over S ⥤ Over S'` is the functor induced by a morphism `f : S ⟶ S'`
+  when all pushforwards along `f` exist.
+- `pullbackPushforwardAdjunction f : pullback f ⊣ pushforward f` is the defining adjunction
+  of pushforwards when all pushforwards along `f` exist.
+
+## Notes
+
+- There is a partial right adjoint induced by the condition `HasPushforward`.
+  See `Mathlib.CategoryTheory.Adjunction.PartialAdjoint`.
+- In the literature, the condition `HasPushforwards f` is also called "exponentiable",
+  and `IsPushforwardf f X Y` is also read as "`Y` is the internal product".
+-/
 
 noncomputable section
 
@@ -33,7 +52,7 @@ abbrev IsPushforward (X : Over S) (Y : Over S') :=
   ((Over.pullback f).op ⋙ yoneda.obj X).RepresentableBy Y
 
 /-- An object `X` in the slice over `S` has a pushforward along morphism `f : S ⟶ S'`
-when the partial right adjoint of pullback along `f` is well-defined on the object `X`. -/
+when the presheaf `Hom(pullback f (-), X)` is representable. -/
 abbrev HasPushforward (X : Over S) : Prop :=
   ((Over.pullback f).op ⋙ yoneda.obj X).IsRepresentable
 
