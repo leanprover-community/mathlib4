@@ -142,7 +142,7 @@ lemma ball_eq_singleton {n : ℕ} : Metric.ball n ((2 : ℝ) ^ (-n - 1 : ℤ)) =
 
 
 theorem TopIsDiscrete : DiscreteTopology ℕ := by
-  apply singletons_open_iff_discrete.mp
+  apply discreteTopology_iff_isOpen_singleton.mpr
   intro
   simpa only [← ball_eq_singleton] using isOpen_ball
 
