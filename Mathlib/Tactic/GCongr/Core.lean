@@ -194,6 +194,7 @@ def getCongrAppFnArgs (e : Expr) : Option (Name × Array Expr) :=
       some (`_Forall, #[.lam n d b bi])
     else
       some (`_Implies, #[d, b])
+  | .proj n i e => some (.num n i, #[e])
   | e => e.withApp fun f args => f.constName?.map (·, args)
 
 /-- If `e` is of the form `r a b`, return `(r, a, b)`. -/
