@@ -6973,6 +6973,7 @@ import Mathlib.Topology.UniformSpace.AbstractCompletion
 import Mathlib.Topology.UniformSpace.Ascoli
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.UniformSpace.Closeds
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.CompareReals
