@@ -24,15 +24,9 @@ variable {A B : Type*} [Semiring A] [Algebra k A] [Semiring B] [Algebra k B]
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom [MulSemiringAction G A] [SMulCommClass G k A] (f : A →ₐ[k] B)
   (g : G →* B) (h_comm : ∀ {x y}, (f (y • x)) * g y = (g y) * (f x)) :
-    SkewMonoidAlgebra A G →ₐ[k] B :=
-  { liftNCRingHom (f : A →+* B) g h_comm with
-    commutes' := by simp [liftNCRingHom] }
-
-theorem mapDomain_algebraMap {F : Type*} [FunLike F G H] [MonoidHomClass F G H]
-    [MulSemiringAction G A] [MulSemiringAction H A] [SMulCommClass G k A] [SMulCommClass H k A]
-    (f : F) (r : k) : mapDomain f (algebraMap k (SkewMonoidAlgebra A G) r) =
-      algebraMap k (SkewMonoidAlgebra A H) r := by
-  simp [coe_algebraMap, map_one, (· ∘ ·)]
+    SkewMonoidAlgebra A G →ₐ[k] B where
+  __ := liftNCRingHom (f : A →+* B) g h_comm
+  commutes' := by simp [liftNCRingHom]
 
 /- Hypotheses needed for `k`-algebra homomorphism from `SkewMonoidAlgebra k G`-/
 variable [MulSemiringAction G k] [SMulCommClass G k k]
@@ -63,7 +57,7 @@ theorem lift_apply' (F : G →* A) (f : SkewMonoidAlgebra k G) :
 theorem lift_apply (F : G →* A) (f : SkewMonoidAlgebra k G) :
     lift k G A F f = f.sum fun a b ↦ b • F a := by simp [lift_apply', Algebra.smul_def]
 
-theorem lift_def (F : G →* A) : ⇑(lift k G A F) =
+theorem lift_def (F : G →* A) : (lift k G A F : SkewMonoidAlgebra k G → A) =
     liftNC ((algebraMap k A : k →+* A) : k →+ A) F := rfl
 
 @[simp]
@@ -98,7 +92,7 @@ def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H
     (hf : ∀ (a : G) (x : A), a • x = (f a) • x) :
     SkewMonoidAlgebra A G →ₐ[k] SkewMonoidAlgebra A H where
   __ := mapDomainRingHom hf
-  commutes' := mapDomain_algebraMap f
+  commutes' := by simp [mapDomainRingHom]
 
 end lift
 
