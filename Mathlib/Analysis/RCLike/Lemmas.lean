@@ -52,7 +52,7 @@ namespace FiniteDimensional
 
 open RCLike
 
-library_note "RCLike instance"/--
+library_note2 «RCLike instance» /--
 This instance generates a type-class problem with a metavariable `?m` that should satisfy
 `RCLike ?m`. Since this can only be satisfied by `ℝ` or `ℂ`, this does not cause problems. -/
 

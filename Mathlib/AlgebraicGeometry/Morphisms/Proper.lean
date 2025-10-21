@@ -65,7 +65,7 @@ instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsP
   rw [isProper_eq]
   infer_instance
 
-instance : IsLocalAtTarget @IsProper := by
+instance : IsZariskiLocalAtTarget @IsProper := by
   rw [isProper_eq]
   infer_instance
 
@@ -134,7 +134,7 @@ theorem finite_appTop_of_universallyClosed (f : X ⟶ (Spec <| .of K))
     f.appTop.hom.Finite := by
   have x : X := Nonempty.some inferInstance
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
-    (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
+    X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
   letI := ((Scheme.ΓSpecIso (.of K)).commRingCatIsoToRingEquiv.toMulEquiv.isField
     (Field.toIsField K)).toField
   letI := (isField_of_universallyClosed K f).toField

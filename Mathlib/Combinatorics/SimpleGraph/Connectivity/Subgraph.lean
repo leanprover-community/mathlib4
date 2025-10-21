@@ -434,6 +434,7 @@ lemma exists_mem_support_forall_mem_support_imp_eq (s : Finset V)
 end Walk
 
 namespace Subgraph
+
 lemma _root_.SimpleGraph.Walk.toSubgraph_connected {u v : V} (p : G.Walk u v) :
     p.toSubgraph.Connected := by
   induction p with
@@ -561,7 +562,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
     obtain ⟨w, wt, hw⟩ := hv
     refine ⟨{x | x ∈ (Gpc u w).some.support}, ?_, ?_⟩
     · simp only [Finset.coe_biUnion, Finset.mem_coe, List.coe_toFinset]
-      exact fun x xw => Set.mem_iUnion₂.mpr ⟨w,wt,xw⟩
+      exact fun x xw => Set.mem_iUnion₂.mpr ⟨w, wt, xw⟩
     · simp only [Set.mem_setOf_eq, Walk.start_mem_support, exists_true_left]
       refine ⟨hw, Walk.connected_induce_support _ _ _⟩
 
