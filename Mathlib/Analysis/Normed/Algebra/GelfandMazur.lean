@@ -37,7 +37,7 @@ which it attains at some point `z₀`, which (upon replacing `x` by `x - z₀ �
 assume to be zero. If `M = 0`, we are done, so assume not. For `n : ℕ`,
 a primitive `n`th root of unity `ζ : ℂ`, and `z : ℂ` with `|z| < M = ‖x‖` we then have that
 `M ≤ ‖x - z • 1‖ = ‖x ^ n - z ^ n • 1‖ / ∏ 0 < k < n, ‖x - (ζ ^ k * z) • 1‖`,
-which is bounded by `(M ^ n + |z| ^ n)/M ^ (n - 1) = M * (1 + (|z| / M) ^ n)`.
+which is bounded by `(M ^ n + |z| ^ n) / M ^ (n - 1) = M * (1 + (|z| / M) ^ n)`.
 Letting `n` tend to infinity then shows that `‖x - z • 1‖ = M` (see `NormedAlgebra.aux`).
 This implies that the set of `z` such that `‖x - z • 1‖ = M` is closed and open
 (and nonempty), so it is all of `ℂ`, which contradicts `‖x - z • 1‖ ≥ |z| - M`
