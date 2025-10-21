@@ -94,15 +94,18 @@ protected lemma Connected.mono' {H H' : G.Subgraph}
     (h : H.Connected) : H'.Connected := by
   exact h.mono ⟨hv.le, hle⟩ hv
 
+protected lemma connected_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.Preconnected) (h₂ : G₂.Preconnected)
+    (h : (G₁.verts ∩ G₂.verts).Nonempty) : (G₁ ⊔ G₂).Connected := by
+  have ⟨_, hv₁, hv₂⟩ := h
+  exact ⟨connected_iff_exists_forall_reachable _ |>.mpr ⟨⟨_, .inl hv₁⟩, fun ⟨_, hw⟩ ↦ hw.elim
+    (fun hw ↦ Reachable.map (Subgraph.inclusion le_sup_left) <| h₁ ⟨_, hv₁⟩ ⟨_, hw⟩)
+    (fun hw ↦ Reachable.map (Subgraph.inclusion le_sup_right) <| h₂ ⟨_, hv₂⟩ ⟨_, hw⟩)⟩⟩
+
+@[deprecated Subgraph.connected_sup (since := "2025-10-22")]
 protected lemma Connected.sup {H K : G.Subgraph}
     (hH : H.Connected) (hK : K.Connected) (hn : (H ⊓ K).verts.Nonempty) :
-    (H ⊔ K).Connected := by
-  rw [Subgraph.connected_iff', connected_iff_exists_forall_reachable]
-  obtain ⟨u, hu, hu'⟩ := hn
-  exists ⟨u, Or.inl hu⟩
-  rintro ⟨v, (hv|hv)⟩
-  · exact Reachable.map (Subgraph.inclusion (le_sup_left : H ≤ H ⊔ K)) (hH ⟨u, hu⟩ ⟨v, hv⟩)
-  · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
+    (H ⊔ K).Connected :=
+  Subgraph.connected_sup hH.preconnected hK.preconnected hn
 
 /--
 This lemma establishes a condition under which a subgraph is the same as a connected component.
