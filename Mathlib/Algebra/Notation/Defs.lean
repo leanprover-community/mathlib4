@@ -74,6 +74,10 @@ attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
 attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 attribute [to_additive (attr := default_instance)] instHSMul
+
+@[to_additive]
+theorem SMul.smul_eq_hSMul {α β} [SMul α β] : (SMul.smul : α → β → β) = HSMul.hSMul := rfl
+
 attribute [to_additive existing (reorder := 1 2)] instHPow
 
 variable {G : Type*}

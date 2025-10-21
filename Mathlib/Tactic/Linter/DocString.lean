@@ -48,7 +48,7 @@ in the input string `docString`.
 If/when the `docString` linter expands, it may take on more string processing.
 -/
 def deindentString (currIndent : Nat) (docString : String) : String :=
-  let indent : String := ('\n' :: List.replicate currIndent ' ').asString
+  let indent : String := ⟨'\n' :: List.replicate currIndent ' '⟩
   docString.replace indent " "
 
 namespace Style
@@ -93,7 +93,7 @@ def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let tail := docTrim.length
     -- `endRange` creates an 0-wide range `n` characters from the end of `docStx`
     let endRange (n : Nat) : Syntax := .ofRange
-      {start := docStx.getTailPos?.get!.unoffsetBy ⟨n⟩, stop := docStx.getTailPos?.get!.unoffsetBy ⟨n⟩}
+      {start := docStx.getTailPos?.get! - ⟨n⟩, stop := docStx.getTailPos?.get! - ⟨n⟩}
     if docTrim.takeRight 1 == "," then
       Linter.logLintIf linter.style.docString (endRange (docString.length - tail + 3))
         s!"error: doc-strings should not end with a comma"
