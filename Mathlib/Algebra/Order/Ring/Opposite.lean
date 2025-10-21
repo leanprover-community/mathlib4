@@ -10,7 +10,7 @@ import Mathlib.Algebra.Ring.Opposite
 /-!
 # Ordered ring instances for `MulOpposite`/`AddOpposite`
 
-This files transfers ordered (semi)ring instances from `R` to `Rᵐᵒᵖ` and `Rᵃᵒᵖ`.
+This file transfers ordered (semi)ring instances from `R` to `Rᵐᵒᵖ` and `Rᵃᵒᵖ`.
 -/
 
 variable {R : Type*}
