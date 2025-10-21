@@ -414,7 +414,7 @@ lemma dualBasis_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.Is
   rwa [eq_comm, ← isSymm_iff_flip]
 
 @[simp]
-theorem dualBasis_eq_iff (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (v : ι → V) :
+theorem dualBasis_eq_iff {B : BilinForm K V} (hB : B.Nondegenerate) (b : Basis ι K V) (v : ι → V) :
     B.dualBasis hB b = v ↔ ∀ i j, B (v i) (b j) = if j = i then 1 else 0 :=
   ⟨fun h _ _ ↦ by rw [← h, apply_dualBasis_left],
     fun h ↦ funext fun _ ↦ (B.dualBasis hB b).ext_elem_iff.mpr fun _ ↦ by

@@ -35,7 +35,7 @@ the roots of the minimal polynomial of `s` over `R`.
   algebraically closed field
 * `traceForm_nondegenerate`: the trace form over a separable extension is a nondegenerate
   bilinear form
-* `Module.Basis.traceDual_powerBasis_eq`: The dual basis of a powerbasis `{1, x, x²...}` under the
+* `Module.Basis.traceDual_powerBasis_eq`: The dual basis of a power basis `{1, x, x²...}` under the
   trace form is `aᵢ / f'(x)`, with `f` being the minpoly of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 
 ## References
@@ -565,8 +565,8 @@ theorem Module.Basis.trace_traceDual_mul (i j : ι) :
 
 @[simp]
 theorem Module.Basis.trace_mul_traceDual (i j : ι) :
-    trace K L ((b i) * (b.traceDual j)) = if i = j then 1 else 0 := by
-  refine (traceForm K L).apply_dualBasis_right _ (traceForm_isSymm K) _ i j
+    trace K L ((b i) * (b.traceDual j)) = if i = j then 1 else 0 :=
+  (traceForm K L).apply_dualBasis_right _ (traceForm_isSymm K) _ i j
 
 @[simp]
 theorem Module.Basis.traceDual_traceDual :
@@ -585,6 +585,7 @@ theorem Module.Basis.traceDual_injective :
 
 variable {K L b}
 
+@[simp]
 theorem Module.Basis.traceDual_inj {b' : Basis ι K L} :
     b.traceDual = b'.traceDual ↔ b = b' :=
   (traceDual_injective K L).eq_iff
