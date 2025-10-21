@@ -143,7 +143,7 @@ instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) where
   equalizerSieve_mem := by
     rintro ⟨U⟩ (α β : U ⟶ _) h
     replace h : (yonedaGluedToSheaf hf).val.app _ α = (yonedaGluedToSheaf hf).val.app _ β := h
-    have mem := grothendieckTopology_cover (glueData hf).openCover
+    have mem := (glueData hf).openCover.mem_grothendieckTopology
     refine GrothendieckTopology.superset_covering _ ?_
       (zariskiTopology.intersection_covering (zariskiTopology.pullback_stable α mem)
         (zariskiTopology.pullback_stable β mem))
