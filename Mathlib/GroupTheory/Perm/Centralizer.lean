@@ -612,7 +612,8 @@ theorem cycleType_kerParam_apply_apply :
     apply cycleFactorsFinset_pairwise_disjoint g c.prop d.prop
     exact Subtype.coe_ne_coe.mpr h
   rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩, Prod.mk_mul_mk, mul_one,
-    one_mul, Finset.univ_eq_attach, Disjoint.cycleType (disjoint_ofSubtype_noncommPiCoprod g k v),
+    one_mul, Finset.univ_eq_attach,
+    Disjoint.cycleType_mul (disjoint_ofSubtype_noncommPiCoprod g k v),
     Subgroup.noncommPiCoprod_apply, Disjoint.cycleType_noncommProd hU, Finset.univ_eq_attach]
   exact congr_arg₂ _ cycleType_ofSubtype rfl
 

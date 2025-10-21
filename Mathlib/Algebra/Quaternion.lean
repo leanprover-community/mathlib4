@@ -489,7 +489,6 @@ lemma coe_ofNat {n : ℕ} [n.AtLeastTwo] :
 -- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
 -- for `ℍ[R]`)
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
-  smul := (· • ·)
   algebraMap :=
   { toFun s := coe (algebraMap S R s)
     map_one' := by simp only [map_one, coe_one]
@@ -1266,7 +1265,8 @@ theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ normSq.map_zero⟩
   rw [normSq_def', add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg]
     at h
-  · exact ext a 0 (pow_eq_zero h.1.1.1) (pow_eq_zero h.1.1.2) (pow_eq_zero h.1.2) (pow_eq_zero h.2)
+  · apply ext a 0 <;> apply eq_zero_of_pow_eq_zero
+    exacts [h.1.1.1, h.1.1.2, h.1.2, h.2]
   all_goals apply_rules [sq_nonneg, add_nonneg]
 
 theorem normSq_ne_zero : normSq a ≠ 0 ↔ a ≠ 0 := normSq_eq_zero.not
@@ -1338,7 +1338,6 @@ instance instInv : Inv ℍ[R] :=
 
 instance instGroupWithZero : GroupWithZero ℍ[R] :=
   { Quaternion.instNontrivial with
-    inv := Inv.inv
     inv_zero := by rw [inv_def, star_zero, smul_zero]
     mul_inv_cancel := fun a ha => by
       rw [inv_def, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
