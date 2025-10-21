@@ -100,6 +100,10 @@ theorem singleton_nonempty (a : α) : ({a} : Finset α).Nonempty :=
 theorem singleton_ne_empty (a : α) : ({a} : Finset α) ≠ ∅ :=
   (singleton_nonempty a).ne_empty
 
+@[simp]
+theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Finset α) :=
+  (singleton_ne_empty a).symm
+
 theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 
@@ -166,6 +170,9 @@ theorem eq_empty_of_ssubset_singleton {s : Finset α} {x : α} (hs : s ⊂ {x}) 
 
 /-- A finset is nontrivial if it has at least two elements. -/
 protected abbrev Nontrivial (s : Finset α) : Prop := (s : Set α).Nontrivial
+
+@[grind =]
+theorem nontrivial_def {s : Finset α} : s.Nontrivial ↔ ∃ a, a ∈ s ∧ ∃ b, b ∈ s ∧ a ≠ b := Iff.rfl
 
 nonrec lemma Nontrivial.nonempty (hs : s.Nontrivial) : s.Nonempty := hs.nonempty
 
