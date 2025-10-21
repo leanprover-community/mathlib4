@@ -3,13 +3,10 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
-import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 import Mathlib.AlgebraicGeometry.ResidueField
-import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
@@ -257,8 +254,8 @@ instance [CompactSpace X] : IsDominant X.toSpecΓ :=
 /-- If `f : X ⟶ Y` is open, injective, `X` is quasi-compact and `Y` is affine, then `f` is stalkwise
 injective if it is injective on global sections. -/
 lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
-    (hfopen : IsOpenMap f.base) (hfinj₁ : Function.Injective f.base)
-    (hfinj₂ : Function.Injective (f.appTop)) (x : X) :
+    (hfopen : IsOpenMap f) (hfinj₁ : Function.Injective f)
+    (hfinj₂ : Function.Injective f.appTop) (x : X) :
     Function.Injective (f.stalkMap x) := by
   let φ : Γ(Y, ⊤) ⟶ Γ(X, ⊤) := f.appTop
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
@@ -301,7 +298,7 @@ namespace IsClosedImmersion
 /-- If `f` is a closed immersion with affine target such that the induced map on global
 sections is injective, `f` is an isomorphism. -/
 theorem isIso_of_injective_of_isAffine [IsClosedImmersion f]
-    (hf : Function.Injective (f.appTop)) : IsIso f :=
+    (hf : Function.Injective f.appTop) : IsIso f :=
   isIso_iff_ker_eq_bot.mpr (Scheme.IdealSheafData.ext_of_isAffine
     (by simpa [f.ker_apply ⟨⊤, isAffineOpen_top Y⟩, ← RingHom.injective_iff_ker_eq_bot]))
 
@@ -310,7 +307,7 @@ variable (f)
 /-- If `f` is a closed immersion with affine target, the source is affine and
 the induced map on global sections is surjective. -/
 theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
-    IsAffine X ∧ Function.Surjective (f.appTop) := by
+    IsAffine X ∧ Function.Surjective f.appTop := by
   refine ⟨isAffine_of_isAffineHom f, ?_⟩
   simp only [← f.toImage_imageι, Scheme.Hom.comp_appTop, CommRingCat.hom_comp, RingHom.coe_comp,
     Scheme.Hom.image, Scheme.Hom.imageι]
@@ -343,6 +340,8 @@ end IsClosedImmersion
 
 end Affine
 
+variable {X Y Z : Scheme.{u}}
+
 /-- Being a closed immersion is local at the target. -/
 instance IsClosedImmersion.isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsClosedImmersion :=
   eq_inf ▸ inferInstance
@@ -354,6 +353,16 @@ instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmers
   convert HasAffineProperty.of_isZariskiLocalAtTarget @IsClosedImmersion
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 
+lemma isClosedImmersion_iff_isAffineHom {f : X ⟶ Y} :
+    IsClosedImmersion f ↔
+      IsAffineHom f ∧ ∀ U : Y.Opens, IsAffineOpen U → Function.Surjective (f.app U) := by
+  rw [HasAffineProperty.eq_targetAffineLocally @IsClosedImmersion]
+  exact targetAffineLocally_affineAnd_iff' RingHom.surjective_respectsIso _
+
+lemma Scheme.Hom.app_surjective (f : X ⟶ Y) (U : Y.Opens) (hU : IsAffineOpen U)
+    [IsClosedImmersion f] : Function.Surjective (f.app U) :=
+  (isClosedImmersion_iff_isAffineHom.mp ‹_›).2 U hU
+
 /-- Being a closed immersion is stable under base change. -/
 instance IsClosedImmersion.isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @IsClosedImmersion := by
@@ -364,26 +373,26 @@ instance IsClosedImmersion.isStableUnderBaseChange :
   exact ⟨inferInstance, RingHom.surjective_isStableUnderBaseChange.pullback_fst_appTop _
     RingHom.surjective_respectsIso f _ hsurj⟩
 
-instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion g] :
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion g] :
     IsClosedImmersion (Limits.pullback.fst f g) :=
   MorphismProperty.pullback_fst _ _ ‹_›
 
-instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] :
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsClosedImmersion f] :
     IsClosedImmersion (Limits.pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ ‹_›
+
+instance (f : X ⟶ Y) (V : Y.Opens) [IsClosedImmersion f] :
+    IsClosedImmersion (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
 
 /-- Closed immersions are locally of finite type. -/
 instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
     LocallyOfFiniteType f := by
-  wlog hY : IsAffine Y
-  · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := @LocallyOfFiniteType) _
-      (iSup_affineOpens_eq_top Y)]
-    intro U
-    have H : IsClosedImmersion (f ∣_ U) := IsZariskiLocalAtTarget.restrict h U
-    exact this _ U.2
-  obtain ⟨_, hf⟩ := h.isAffine_surjective_of_isAffine
-  rw [HasRingHomProperty.iff_of_isAffine (P := @LocallyOfFiniteType)]
-  exact RingHom.FiniteType.of_surjective (Scheme.Hom.app f ⊤).hom hf
+  rw [HasRingHomProperty.eq_affineLocally @LocallyOfFiniteType,
+    ← and_iff_right (inferInstanceAs (IsAffineHom f)) (b := affineLocally _ _),
+    ← targetAffineLocally_affineAnd_iff_affineLocally RingHom.finiteType_isLocal]
+  rw [HasAffineProperty.eq_targetAffineLocally @IsClosedImmersion] at h
+  exact targetAffineLocally_affineAnd_le (RingHom.FiniteType.of_surjective _) _ h
 
 /-- A surjective closed immersion is an isomorphism when the target is reduced. -/
 lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
@@ -394,7 +403,7 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
   simp
 
 lemma isClosed_singleton_iff_isClosedImmersion {X : Scheme} {x : X} :
-    IsClosed ({x} : Set X) ↔ IsClosedImmersion (X.fromSpecResidueField x) := by
+    IsClosed {x} ↔ IsClosedImmersion (X.fromSpecResidueField x) := by
   rw [← Scheme.range_fromSpecResidueField]
   exact ⟨fun H ↦ .of_isPreimmersion _ H,
     fun _ ↦ (X.fromSpecResidueField x).isClosedEmbedding.isClosed_range⟩
