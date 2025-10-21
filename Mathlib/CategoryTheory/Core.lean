@@ -116,16 +116,13 @@ def coreComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) :
 ```
                   F.core
             Core C ⥤ Core D
- includion C  ‖          ‖  inclusion D
+ inclusion C  ‖          ‖  inclusion D
               V          V
               C    ⥤    D
                     F
 ```
 thought of as pseudonaturality of `inclusion`,
 when viewing `Core` as a pseudofunctor.
-`Core` is in fact a strict 2-functor,
-and this isomorphism is an equality of functors under the hood,
-and thus can be promoted to a naturality condition between 1-functors.
 -/
 @[simps!]
 def coreCompInclusionIso (F : C ⥤ D) :
