@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
@@ -117,14 +117,10 @@ theorem isTree_coe_singletonSubgraph (G : SimpleGraph V) (v : V) :
   isTree_of_nonempty_of_subsingleton _
 
 theorem isTree_coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |>.coe.IsTree := by
-  refine ⟨⟨fun u' v' ↦ ?_⟩, fun w p hp ↦ ?_⟩
-  · have : (G.subgraphOfAdj h).verts = {u, v} := rfl
-    cases (by grind [Sym2.eq_iff] : u'.val = v'.val ∨ s(u, v) = s(u'.val, v'.val))
-    · grind [Reachable.refl]
-    · exact Adj.reachable <| by assumption
-  · have : _ = _ := p.adj_snd <| nil_iff_eq_nil.not.mpr hp.ne_nil
-    have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
-    grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
+  refine ⟨Subgraph.subgraphOfAdj_connected h, fun w p hp ↦ ?_⟩
+  have : _ = _ := p.adj_snd <| nil_iff_eq_nil.not.mpr hp.ne_nil
+  have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
+  grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
