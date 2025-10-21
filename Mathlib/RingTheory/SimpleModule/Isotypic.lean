@@ -67,7 +67,7 @@ theorem IsIsotypicOfType.of_subsingleton [Subsingleton M] : IsIsotypicOfType R M
   fun S ↦ (IsIsotypicOfType.of_subsingleton R M S).isIsotypic S
 
 theorem IsIsotypicOfType.of_isSimpleModule [IsSimpleModule R M] : IsIsotypicOfType R M M :=
-  fun S hS  ↦ by
+  fun S hS ↦ by
     rw [isSimpleModule_iff_isAtom, isAtom_iff_eq_top] at hS
     exact ⟨.trans (.ofEq _ _ hS) Submodule.topEquiv⟩
 
