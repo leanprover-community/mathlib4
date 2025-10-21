@@ -199,12 +199,6 @@ instance : MorphismProperty.HasOfPostcompProperty @IsImmersion ⊤ :=
   MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
     fun _ _ _ _ ↦ inferInstanceAs (IsImmersion _)
 
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion g] : IsImmersion (pullback.fst f g) :=
-  MorphismProperty.pullback_fst _ _ ‹_›
-
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion f] : IsImmersion (pullback.snd f g) :=
-  MorphismProperty.pullback_snd _ _ ‹_›
-
 lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion (f ≫ g)] :
     IsImmersion f :=
   MorphismProperty.HasOfPostcompProperty.of_postcomp (W' := ⊤) _ g trivial ‹_›
