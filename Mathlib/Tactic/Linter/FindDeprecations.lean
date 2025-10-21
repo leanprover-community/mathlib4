@@ -59,7 +59,7 @@ structure DeprecationInfo where
 
 This position is after all trailing whitespace and comments that may follow the imports of `fname`.
 -/
-def getPosAfterImports (fname : String) : CommandElabM String.Pos := do
+def getPosAfterImports (fname : String) : CommandElabM String.Pos.Raw := do
   let file ← IO.FS.readFile fname
   let fm := file.toFileMap
   let (_, fileStartPos, _) ← parseImports fm.source (← getFileName)
@@ -148,7 +148,7 @@ def deprecatedHashMap (oldDate newDate : String) :
 * The command removes all consecutive whitespace following the end of each range.
 -/
 def removeRanges (file : String) (rgs : Array String.Range) : String := Id.run do
-  let mut curr : String.Pos := 0
+  let mut curr : String.Pos.Raw := 0
   let mut fileSubstring := file.toSubstring
   let mut tot := ""
   let last := fileSubstring.stopPos
@@ -180,7 +180,7 @@ It makes the assumption that there is a unique `: [` substring and then retrieve
 Note that this is the output of `Mathlib.Linter.CommandRanges.commandRangesLinter`
 that the script here is parsing.
 -/
-def parseLine (line : String) : Option (List String.Pos) :=
+def parseLine (line : String) : Option (List String.Pos.Raw) :=
   match (line.dropRight 1).splitOn ": [" with
   | [_, rest] =>
     let nums := rest.splitOn ", "
@@ -236,7 +236,7 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
   -- * `p₂` is the end of the command, excluding trailing whitespace and comments;
   -- * `p₁` is the end of the command, including trailing whitespace and comments.
   let stringPositions := (commandPositions.stdout.splitOn "\n").map parseLine |>.reduceOption
-  let mut removals : Std.HashSet (List String.Pos) := ∅
+  let mut removals : Std.HashSet (List String.Pos.Raw) := ∅
   -- For each range `rg` in `ranges`, we isolate the unique entry of `stringPositions` that
   -- entirely contains `rg`.  This helps catching the full range of `open Nat in @[deprecated] ...`,
   -- rather than just the `@[deprecated] ...` range.
