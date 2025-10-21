@@ -618,7 +618,7 @@ lemma IsPushout.cancelBaseChangeAux_symm_tmul (s : S) (m : M) :
 This is the cancelling on the left version of
 `TensorProduct.AlgebraTensorModule.cancelBaseChange`. -/
 noncomputable
-def IsPushout.cancelBaseChange [SMulCommClass A S B] : B ⊗[A] M ≃ₗ[S] S ⊗[R] M :=
+def IsPushout.cancelBaseChange : B ⊗[A] M ≃ₗ[S] S ⊗[R] M :=
   LinearEquiv.symm <|
   AddEquiv.toLinearEquiv (IsPushout.cancelBaseChangeAux R S A B M).symm <| by
     intro s x

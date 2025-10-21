@@ -402,6 +402,13 @@ instance (priority := 200) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semi
     [Algebra R A] : SMulCommClass R A A :=
   IsScalarTower.to_smulCommClass
 
+-- see Note [lower instance priority]
+instance (priority := 100) {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
+    [Algebra R A] [Algebra S A] :
+    SMulCommClass R S A where
+  smul_comm r s a := by
+    rw [Algebra.smul_def, mul_smul_comm, ← Algebra.smul_def]
+
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _
 
