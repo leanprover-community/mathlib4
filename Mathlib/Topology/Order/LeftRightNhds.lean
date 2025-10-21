@@ -344,7 +344,7 @@ theorem orderTopology_of_nhds_mabs {α : Type*} [TopologicalSpace α] [CommGroup
   letI := Preorder.topology α; letI : OrderTopology α := ⟨rfl⟩
   exact (nhds_eq_iInf_mabs_div a).symm
 
-@[to_additive]
+@[to_additive LinearOrderedAddCommGroup.tendsto_nhds]
 theorem LinearOrderedCommGroup.tendsto_nhds {x : Filter β} {a : α} :
     Tendsto f x (𝓝 a) ↔ ∀ ε > (1 : α), ∀ᶠ b in x, |f b / a|ₘ < ε := by
   simp [nhds_eq_iInf_mabs_div, mabs_div_comm a]
