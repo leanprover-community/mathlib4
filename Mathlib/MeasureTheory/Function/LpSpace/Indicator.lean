@@ -256,6 +256,7 @@ theorem Lp.norm_const' (hp_zero : p ≠ 0) (hp_top : p ≠ ∞) :
   map_smul' _ _ := rfl
 
 end MemLp.Const
+
 section IsFiniteMeasure
 
 variable [IsFiniteMeasure μ]
@@ -273,8 +274,8 @@ theorem Lp.norm_const_le :
 
 /-- `MeasureTheory.Lp.const` as a `ContinuousLinearMap`. -/
 @[simps! apply]
-protected def Lp.constL (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [Fact (1 ≤ p)]
-     : E →L[𝕜] Lp E p μ :=
+protected def Lp.constL (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [Fact (1 ≤ p)] :
+    E →L[𝕜] Lp E p μ :=
   (Lp.constₗ p μ 𝕜).mkContinuous (μ.real Set.univ ^ (1 / p.toReal)) fun _ ↦
     (Lp.norm_const_le _ _ _).trans_eq (mul_comm _ _)
 
