@@ -89,7 +89,7 @@ lemma IsQuasiAffine.of_isImmersion
     [Y.IsQuasiAffine] [IsImmersion f] [CompactSpace X] : X.IsQuasiAffine := by
   wlog hY : IsAffine Y
   · refine @this _ _ (f ≫ Y.toSpecΓ) ?_ ?_ _ ?_ <;> clear this <;> infer_instance
-  have : QuasiCompact f := by rwa [quasiCompact_over_affine_iff]
+  have : QuasiCompact f := by rwa [quasiCompact_iff_compactSpace]
   have : IsAffine f.image :=
     HasAffineProperty.iff_of_isAffine.mp (inferInstanceAs (IsAffineHom f.imageι))
   exact .of_isOpenImmersion f.toImage

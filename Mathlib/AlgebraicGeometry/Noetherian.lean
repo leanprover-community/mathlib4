@@ -207,7 +207,7 @@ instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
 @[stacks 01OY]
 instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoetherian X] :
     QuasiSeparatedSpace X := by
-  apply (quasiSeparatedSpace_iff_affine X).mpr
+  apply quasiSeparatedSpace_iff_forall_affineOpens.mpr
   intro U V
   have hInd := U.2.fromSpec.isOpenEmbedding.isInducing
   apply (hInd.isCompact_preimage_iff ?_).mp

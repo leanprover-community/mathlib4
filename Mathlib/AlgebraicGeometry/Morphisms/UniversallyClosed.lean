@@ -97,6 +97,9 @@ instance universallyClosed_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @Univ
   simp_rw [topologically, morphismRestrict_base] at H
   exact hU.isClosedMap_iff_restrictPreimage.mpr H
 
+instance (f : X ⟶ Y) (V : Y.Opens) [UniversallyClosed f] : UniversallyClosed (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
 open Scheme.Pullback _root_.PrimeSpectrum MvPolynomial in
 /-- If `X` is universally closed over a field, then `X` is quasi-compact. -/
 lemma compactSpace_of_universallyClosed
