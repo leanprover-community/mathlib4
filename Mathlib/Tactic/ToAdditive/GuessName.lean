@@ -49,15 +49,15 @@ partial def _root_.String.splitCase (s : String) (i₀ : Pos.Raw := 0) (r : List
   * We split after a lower-case letter that is followed by an upper-case letter
     (unless it is part of a name in `endCapitalNames`). -/
   if i₀.get s == '_' || i₁.get s == '_' then
-    return splitCase (String.Pos.Raw.extract s i₁ s.endPos) 0 <| (String.Pos.Raw.extract s 0 i₁)::r
+    return splitCase (String.Pos.Raw.extract s i₁ s.rawEndPos) 0 <| (String.Pos.Raw.extract s 0 i₁)::r
   if (i₁.get s).isUpper then
     if let some strs := endCapitalNames[String.Pos.Raw.extract s 0 i₁]? then
       if let some (pref, newS) := strs.findSome?
-        fun x : String ↦ (String.Pos.Raw.extract s i₁ s.endPos).dropPrefix? x
+        fun x : String ↦ (String.Pos.Raw.extract s i₁ s.rawEndPos).dropPrefix? x
           |>.map (x, ·.toString) then
         return splitCase newS 0 <| (String.Pos.Raw.extract s 0 i₁ ++ pref)::r
     if !(i₀.get s).isUpper then
-      return splitCase (String.Pos.Raw.extract s i₁ s.endPos) 0 <|
+      return splitCase (String.Pos.Raw.extract s i₁ s.rawEndPos) 0 <|
         (String.Pos.Raw.extract s 0 i₁)::r
   return splitCase s i₁ r
 
