@@ -735,7 +735,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux
   intro x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← trace_quotient_eq_of_isDedekindDomain,
     ← isNilpotent_iff_eq_zero]
-  refine trace_isNilpotent_of_isNilpotent ⟨e, ?_⟩
+  refine isNilpotent_trace_of_isNilpotent ⟨e, ?_⟩
   rw [← map_pow, Ideal.Quotient.eq_zero_iff_mem]
   exact (Ideal.dvd_iff_le.mp this) <| Ideal.pow_mem_pow hx _
 

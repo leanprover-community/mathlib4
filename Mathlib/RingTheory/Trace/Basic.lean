@@ -527,9 +527,12 @@ section isNilpotent
 namespace Algebra
 
 /-- The trace of a nilpotent element is nilpotent. -/
-lemma trace_isNilpotent_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
+lemma isNilpotent_trace_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (trace R S x) :=
   LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
+
+@[deprecated (since := "2025-10-21")] alias trace_isNilpotent_of_isNilpotent :=
+  isNilpotent_trace_of_isNilpotent
 
 end Algebra
 
@@ -548,7 +551,6 @@ The dual basis of a basis under the trace form in a finite separable extension.
 noncomputable def Module.Basis.traceDual :
     Basis ι K L :=
   (traceForm K L).dualBasis (traceForm_nondegenerate K L) b
-
 
 theorem Module.Basis.traceDual_def :
     b.traceDual = (traceForm K L).dualBasis (traceForm_nondegenerate K L) b := rfl
@@ -577,11 +579,11 @@ variable (K L)
 
 theorem Module.Basis.traceDual_involutive :
     Function.Involutive (Basis.traceDual : Basis ι K L → Basis ι K L) :=
-  fun b ↦ traceDual_traceDual b
+  (traceForm K L).dualBasis_involutive _ (traceForm_isSymm K)
 
 theorem Module.Basis.traceDual_injective :
     Function.Injective (Basis.traceDual : Basis ι K L → Basis ι K L) :=
-  (traceDual_involutive K L).injective
+  (traceForm K L).dualBasis_injective _ (traceForm_isSymm K)
 
 variable {K L b}
 

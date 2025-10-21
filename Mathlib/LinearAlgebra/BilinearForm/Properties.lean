@@ -413,6 +413,16 @@ lemma dualBasis_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.Is
   convert dualBasis_dualBasis_flip _ hB.flip b
   rwa [eq_comm, ← isSymm_iff_flip]
 
+lemma dualBasis_involutive (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.IsSymm)
+    [FiniteDimensional K V] :
+    Function.Involutive (B.dualBasis hB : Basis ι K V → Basis ι K V) :=
+  fun b ↦ dualBasis_dualBasis B hB hB' b
+
+lemma dualBasis_injective (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.IsSymm)
+    [FiniteDimensional K V] :
+    Function.Injective (B.dualBasis hB : Basis ι K V → Basis ι K V) :=
+  (B.dualBasis_involutive hB hB').injective
+
 @[simp]
 theorem dualBasis_eq_iff {B : BilinForm K V} (hB : B.Nondegenerate) (b : Basis ι K V) (v : ι → V) :
     B.dualBasis hB b = v ↔ ∀ i j, B (v i) (b j) = if j = i then 1 else 0 :=
