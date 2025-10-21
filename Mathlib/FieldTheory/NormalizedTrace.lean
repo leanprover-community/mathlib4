@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Trace.Basic
 
 # Normalized trace
 
-This file defines *normalized trace* map, that is, an `F`-linear map from the algebraic closure
+This file defines the *normalized trace* map; that is, an `F`-linear map from the algebraic closure
 of `F` to `F` defined as the trace of an element from its adjoin extension divided by its degree.
 
 To avoid heavy imports, we define it here as a map from an arbitrary algebraic (equivalently
@@ -25,7 +25,7 @@ integral) extension of `F`.
 - `normalizedTrace_intermediateField`: for a tower `K / E / F` of algebraic extensions,
   `normalizedTrace F E` agrees with `normalizedTrace F K` on `E`.
 - `normalizedTrace_trans`: for a tower `K / E / F` of algebraic extensions, the normalized trace
-  from `K to `E` composed with the normalized trace from `E` to `F` equals the normalized trace
+  from `K` to `E` composed with the normalized trace from `E` to `F` equals the normalized trace
   from `K` to `F`.
 - `normalizedTrace_self`: `normalizedTrace F F` is the identity map.
 
@@ -60,7 +60,7 @@ private theorem normalizedTraceAux_intermediateField {E : IntermediateField F K}
 variable [CharZero F]
 
 variable {K} in
-private theorem normalizedTraceAux_eq_of_fininteDimensional [FiniteDimensional F K] (a : K) :
+private theorem normalizedTraceAux_eq_of_finiteDimensional [FiniteDimensional F K] (a : K) :
     normalizedTraceAux F K a = (Module.finrank F K : F)⁻¹ • trace F K a := by
   have h := (Nat.cast_ne_zero (R := F)).mpr <|
     Nat.pos_iff_ne_zero.mp <| Module.finrank_pos (R := F⟮a⟯) (M := K)
@@ -86,9 +86,9 @@ noncomputable def normalizedTrace : K →ₗ[F] F where
     rw [normalizedTraceAux_intermediateField F K a',
       normalizedTraceAux_intermediateField F K b',
       normalizedTraceAux_intermediateField F K ab',
-      normalizedTraceAux_eq_of_fininteDimensional F a',
-      normalizedTraceAux_eq_of_fininteDimensional F b',
-      normalizedTraceAux_eq_of_fininteDimensional F ab',
+      normalizedTraceAux_eq_of_finiteDimensional F a',
+      normalizedTraceAux_eq_of_finiteDimensional F b',
+      normalizedTraceAux_eq_of_finiteDimensional F ab',
       ← smul_add, ← map_add, AddMemClass.mk_add_mk]
   map_smul' m a := by
     dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply]
@@ -100,8 +100,8 @@ noncomputable def normalizedTrace : K →ₗ[F] F where
     let ma' : E := ⟨m • a, hma⟩
     rw [normalizedTraceAux_intermediateField F K a',
       normalizedTraceAux_intermediateField F K ma',
-      normalizedTraceAux_eq_of_fininteDimensional F a',
-      normalizedTraceAux_eq_of_fininteDimensional F ma',
+      normalizedTraceAux_eq_of_finiteDimensional F a',
+      normalizedTraceAux_eq_of_finiteDimensional F ma',
       smul_comm, ← map_smul _ m, SetLike.mk_smul_mk]
 
 theorem normalizedTrace_def (a : K) : normalizedTrace F K a =
@@ -119,7 +119,7 @@ theorem normalizedTrace_minpoly (a : K) :
 variable {F} in
 theorem normalizedTrace_self_apply (a : F) : normalizedTrace F F a = a := by
   dsimp [normalizedTrace]
-  rw [normalizedTraceAux_eq_of_fininteDimensional F a, Module.finrank_self F,
+  rw [normalizedTraceAux_eq_of_finiteDimensional F a, Module.finrank_self F,
     Nat.cast_one, inv_one, one_smul, trace_self_apply]
 
 @[simp]
@@ -127,13 +127,19 @@ theorem normalizedTrace_self : normalizedTrace F F = LinearMap.id :=
   LinearMap.ext normalizedTrace_self_apply
 
 variable {K} in
-theorem normalizedTrace_eq_of_fininteDimensional_apply [FiniteDimensional F K] (a : K) :
+theorem normalizedTrace_eq_of_finiteDimensional_apply [FiniteDimensional F K] (a : K) :
     normalizedTrace F K a = (Module.finrank F K : F)⁻¹ • trace F K a :=
-  normalizedTraceAux_eq_of_fininteDimensional F a
+  normalizedTraceAux_eq_of_finiteDimensional F a
 
-theorem normalizedTrace_eq_of_fininteDimensional [FiniteDimensional F K] :
+@[deprecated (since := "2025-10-21")]
+alias normalizedTrace_eq_of_fininteDimensional_apply := normalizedTrace_eq_of_finiteDimensional_apply
+
+theorem normalizedTrace_eq_of_finiteDimensional [FiniteDimensional F K] :
     normalizedTrace F K = (Module.finrank F K : F)⁻¹ • trace F K :=
-  LinearMap.ext <| normalizedTrace_eq_of_fininteDimensional_apply F
+  LinearMap.ext <| normalizedTrace_eq_of_finiteDimensional_apply F
+
+@[deprecated (since := "2025-10-21")]
+alias normalizedTrace_eq_of_fininteDimensional := normalizedTrace_eq_of_finiteDimensional
 
 /-- The normalized trace transfers via (injective) maps. -/
 @[simp]
@@ -184,7 +190,7 @@ private theorem normalizedTrace_trans_apply_aux [FiniteDimensional F E] [Algebra
   have : FiniteDimensional E E⟮a⟯ :=
     IntermediateField.adjoin.finiteDimensional (IsIntegral.isIntegral a)
   rw [normalizedTrace_def E K, inv_natCast_smul_eq (R := E) (S := F), map_smul,
-    normalizedTrace_eq_of_fininteDimensional F E, LinearMap.smul_apply, ← smul_assoc,
+    normalizedTrace_eq_of_finiteDimensional F E, LinearMap.smul_apply, ← smul_assoc,
     smul_eq_mul (a := _⁻¹), ← mul_inv, trace_trace, mul_comm,
     ← Nat.cast_mul, Module.finrank_mul_finrank, eq_comm]
   let E' := E⟮a⟯.restrictScalars F
@@ -193,7 +199,7 @@ private theorem normalizedTrace_trans_apply_aux [FiniteDimensional F E] [Algebra
   have h_trace_eq : trace F E⟮a⟯ (AdjoinSimple.gen E a) = trace F E' (AdjoinSimple.gen E a : E') :=
     rfl
   let a' : E' := AdjoinSimple.gen E a
-  rw [h_finrank_eq, h_trace_eq, ← normalizedTrace_eq_of_fininteDimensional_apply F,
+  rw [h_finrank_eq, h_trace_eq, ← normalizedTrace_eq_of_finiteDimensional_apply F,
     ← normalizedTrace_intermediateField F K a']
   congr
 
