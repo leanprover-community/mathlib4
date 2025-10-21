@@ -30,12 +30,14 @@ The neutral element is not contained in one of the startsWith sets.
 theorem startsWith.ne_one {w : α × Bool} (g : FreeGroup α) (h : g ∈ FreeGroup.startsWith w) :
     g ≠ 1 := fun h1 ↦ by simp [h1, startsWith, FreeGroup.toWord_one] at h
 
-theorem not_startsWith_of_ne {w w' : α × Bool} (hw : w ≠ w')
-    (g : FreeGroup α) (h : g ∈ FreeGroup.startsWith w) : ¬ g ∈ FreeGroup.startsWith w' := by
-  grind [startsWith]
+lemma startsWith.neq_disjoint {w w' : α × Bool} (hw : w ≠ w') :
+    Disjoint (startsWith w) (startsWith w') := by
+  simp only [startsWith, Set.disjoint_iff_inter_eq_empty, Set.ext_iff, Set.mem_inter_iff,
+    Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_and]
+  grind
 
 theorem startsWith_mk_mul {w : α × Bool} (g : FreeGroup α)
-    (h : ¬ g ∈ FreeGroup.startsWith (w.1, !w.2)) : mk [w] * g ∈ FreeGroup.startsWith w := by
+    (h : ¬ g ∈ startsWith (w.1, !w.2)) : mk [w] * g ∈ startsWith w := by
   by_cases hC : 0 < g.toWord.length
   · simp only [startsWith, Set.mem_setOf_eq, getElem?_pos, Option.some.injEq,
       Prod.eq_iff_fst_eq_snd_eq, not_and, Bool.not_eq_not, toWord_mul, toWord_mk, reduce.cons,
@@ -81,7 +83,8 @@ theorem Orbit.duplicate (x : X) (w : α × Bool) :
         mul_smul, inv_smul_smul]
       exact ⟨⟨mk (b :: l), by simp [startsWith, h1.2.reduce_eq]⟩, rfl⟩
   · rintro (⟨-, ⟨w', rfl⟩, -, ⟨hw, rfl⟩, ⟨g, hg⟩, rfl⟩ | rfl)
-    · exact ⟨mk [w] • g • x, ⟨⟨mk [w] * g, startsWith_mk_mul g (not_startsWith_of_ne hw g hg)⟩,
+    · exact ⟨mk [w] • g • x, ⟨⟨mk [w] * g, startsWith_mk_mul g
+        ((startsWith.neq_disjoint hw).notMem_of_mem_left hg)⟩,
         mul_smul (mk [w]) g x⟩, inv_smul_smul (mk [w]) (g • x)⟩
     · exact ⟨mk [w] • i, ⟨⟨mk [w], rfl⟩, rfl⟩, inv_smul_smul (mk [w]) i⟩
 
