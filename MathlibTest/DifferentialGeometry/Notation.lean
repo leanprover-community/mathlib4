@@ -931,6 +931,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 [Elab.DiffGeo.MDiff] ❌️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a `EuclideanHalfSpace`
 [Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not the complex upper half plane
