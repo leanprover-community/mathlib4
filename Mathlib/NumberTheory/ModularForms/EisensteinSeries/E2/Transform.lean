@@ -423,6 +423,21 @@ lemma E2_slash_action (γ : SL(2, ℤ)) : E2 ∣[(2 : ℤ)] γ = E2 - (1 / (2 * 
   ext z
   simp [E2, SL_smul_slash, G2_slash_action γ, mul_sub]
 
+lemma G2_differentiableOn : DifferentiableOn ℂ (↑ₕG2) upperHalfPlaneSet := by
+  have := G2_q_exp
+  apply DifferentiableOn.congr (f := fun z => 2 * riemannZeta 2 - 8 * ↑π ^ 2 * ∑' (n : ℕ+),
+    ↑((ArithmeticFunction.sigma 1) ↑n) * cexp (2 * ↑π * I * ↑z) ^ (n : ℤ))
+  --apply DifferentiableOn.add_const
+  --sorry
+  sorry
+  · intro z hz
+    have H := this ⟨z, hz⟩
+    convert H
+    simp
+    have := UpperHalfPlane.ofComplex_apply ⟨z, hz⟩
+    simp at this
+    rw [this]
+
 end transform
 
 end EisensteinSeries
