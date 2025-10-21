@@ -283,7 +283,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · obtain - | ⟨b, t⟩ := t'
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
             simp only [not_true, Ne, false_and] at helem
-          simp only [List.flatten, List.cons_append, List.cons_eq_cons] at hsum
+          simp only [List.flatten_cons, List.cons_append, List.cons_eq_cons] at hsum
           refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem
