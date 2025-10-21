@@ -553,6 +553,48 @@ theorem relIndex_eq_one : H.relIndex K = 1 ↔ K ≤ H :=
 theorem card_eq_one : Nat.card H = 1 ↔ H = ⊥ :=
   H.relIndex_bot_left ▸ relIndex_eq_one.trans le_bot_iff
 
+/-- A subgroup has index dividing 2 if and only if there exists `a` such that for all `b`, at least
+one of `b * a` and `b` belongs to `H`. -/
+@[to_additive /-- An additive subgroup has index dividing 2 if and only if there exists `a` such
+that for all `b`, at least one of `b + a` and `b` belongs to `H`. -/]
+theorem index_dvd_two_iff : H.index ∣ 2 ↔ ∃ a, ∀ b, (b * a ∈ H) ∨ (b ∈ H) where
+  mp hH := by
+    obtain (hH | hH) : H.index = 1 ∨ H.index = 2 := by
+      -- This is just showing that 2 is prime, but we do it "longhand" to avoid making any
+      -- dependence on number theory files.
+      have := Nat.le_succ_iff.mp (Nat.le_of_dvd two_pos hH)
+      rw [Nat.le_one_iff_eq_zero_or_eq_one, or_assoc] at this
+      exact this.resolve_left fun h ↦ (two_ne_zero <| Nat.zero_dvd.mp (h ▸ hH)).elim
+    · simp [index_eq_one.mp hH]
+    · exact match index_eq_two_iff.mp hH with | ⟨a, ha⟩ => ⟨a, fun b ↦ (ha b).or⟩
+  mpr := by
+    rintro ⟨a, ha⟩
+    by_cases ha' : a ∈ H
+    · suffices ∀ b, b ∈ H by simp [(eq_top_iff' _).mpr this]
+      exact fun b ↦ (ha b).elim (fun h ↦ by simpa using mul_mem h (inv_mem ha')) id
+    · refine dvd_of_eq (index_eq_two_iff.mpr
+        ⟨a, fun b ↦ (xor_iff_or_and_not_and _ _).mpr ⟨ha b, fun h ↦ ha' ?_⟩⟩)
+      simpa using mul_mem (inv_mem h.2) h.1
+
+/-- A subgroup has index dividing 2 if and only if there exists `a` such that for all `b`, at least
+one of `a * b` and `b` belongs to `H`. -/
+@[to_additive /-- An additive subgroup has index dividing 2 if and only if there exists `a` such
+that for all `b`, at least one of `a + b` and `b` belongs to `H`. -/]
+theorem index_dvd_two_iff' : H.index ∣ 2 ↔ ∃ a, ∀ b, (a * b ∈ H) ∨ (b ∈ H) := by
+  rw [index_dvd_two_iff, (Equiv.inv G).exists_congr]
+  refine fun a ↦ (Equiv.inv G).forall_congr fun b ↦ ?_
+  simp only [Equiv.inv_apply, inv_mem_iff, ← mul_inv_rev]
+
+/-- Relative version of `Subgroup.index_dvd_two_iff`. -/
+@[to_additive /-- Relative version of `AddSubgroup.index_dvd_two_iff`. -/]
+theorem relIndex_dvd_two_iff : H.relIndex K ∣ 2 ↔ ∃ a ∈ K, ∀ b ∈ K, (b * a ∈ H) ∨ (b ∈ H) := by
+  simp [Subgroup.relIndex, Subgroup.index_dvd_two_iff, mem_subgroupOf]
+
+/-- Relative version of `Subgroup.index_dvd_two_iff'`. -/
+@[to_additive /-- Relative version of `AddSubgroup.index_dvd_two_iff'`. -/]
+theorem relIindex_dvd_two_iff' : H.relIndex K ∣ 2 ↔ ∃ a ∈ K, ∀ b ∈ K, (a * b ∈ H) ∨ (b ∈ H) := by
+  simp [Subgroup.relIndex, Subgroup.index_dvd_two_iff', mem_subgroupOf]
+
 @[to_additive]
 lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
   card_eq_one.1 <| Nat.eq_one_of_dvd_coprimes h
