@@ -518,11 +518,16 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
 
 instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
     {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by
-  obtain (a|(a|a)) := t
+  obtain (a | (a | a)) := t
   · simp only [WidePushoutShape.hom_id, CategoryTheory.Functor.map_id]
     infer_instance
   · simpa
   · simpa
+
+-- Test that instances on locally directed colimits fire correctly.
+example {U X Y : Scheme.{u}} (f : U ⟶ X) (g : U ⟶ Y)
+    [IsOpenImmersion f] [IsOpenImmersion g] : HasPushout f g :=
+  inferInstance
 
 instance : CartesianMonoidalCategory Scheme := .ofHasFiniteProducts
 instance : BraidedCategory Scheme := .ofCartesianMonoidalCategory
