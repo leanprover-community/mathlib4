@@ -122,9 +122,8 @@ theorem isTree_coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
     cases (by grind [Sym2.eq_iff] : u'.val = v'.val ∨ s(u, v) = s(u'.val, v'.val))
     · grind [Reachable.refl]
     · exact Adj.reachable <| by assumption
-  · have : s(u, v) = s(w.val, p.snd.val) := p.adj_snd <| nil_iff_eq_nil.not.mpr hp.ne_nil
-    have : s(u, v) = s(p.penultimate.val, w.val) :=
-      p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
+  · have : _ = _ := p.adj_snd <| nil_iff_eq_nil.not.mpr hp.ne_nil
+    have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
     grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
 
 theorem isAcyclic_iff_forall_adj_isBridge :
