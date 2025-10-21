@@ -35,13 +35,13 @@ variable (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
 if it is cocomplete and admits a (small) family `G : ι → C` of `κ`-presentable
 objects such that any object identifies as a `κ`-filtered colimit of these objects. -/
 class IsCardinalLocallyPresentable : Prop
-  extends HasCardinalFilteredGenerators C κ, HasColimitsOfSize.{w, w} C where
+  extends HasCardinalFilteredGenerator C κ, HasColimitsOfSize.{w, w} C where
 
 /-- Given a regular cardinal `κ`, a category `C` is `κ`-accessible
 if it has `κ`-filtered colimits and admits a (small) family `G : ι → C` of `κ`-presentable
 objects such that any object identifies as a `κ`-filtered colimit of these objects. -/
 class IsCardinalAccessibleCategory : Prop
-  extends HasCardinalFilteredGenerators C κ, HasCardinalFilteredColimits.{w} C κ where
+  extends HasCardinalFilteredGenerator C κ, HasCardinalFilteredColimits.{w} C κ where
 
 instance [IsCardinalLocallyPresentable C κ] : IsCardinalAccessibleCategory C κ where
 
@@ -72,8 +72,10 @@ instance [IsLocallyPresentable.{w} C] : IsAccessibleCategory.{w} C where
 
 instance [IsAccessibleCategory.{w} C] (X : C) : IsPresentable.{w} X := by
   obtain ⟨κ, _, _⟩ := IsAccessibleCategory.exists_cardinal C
-  obtain ⟨ι, G, h⟩ := HasCardinalFilteredGenerators.exists_generators C κ
+  obtain ⟨_, _, h⟩ := HasCardinalFilteredGenerator.exists_generator C κ
   apply h.presentable
+
+example [IsLocallyPresentable.{w} C] (X : C) : IsPresentable.{w} X := inferInstance
 
 end
 

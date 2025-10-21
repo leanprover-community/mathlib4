@@ -49,7 +49,7 @@ include hc hF hK
 
 lemma surjective (x : c.pt.obj cX.pt) :
     ∃ (j : J) (x' : c.pt.obj (X.obj j)), x = (c.pt.mapCocone cX).ι.app j x' := by
-  have := isFiltered_of_isCardinalDirected J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   obtain ⟨y, hy⟩ := (Types.isLimitEquivSections (hc cX.pt)).symm.surjective x
   obtain ⟨j₀, z, hz⟩ : ∃ (j₀ : J) (z : (k : K) → (F.obj k).obj (X.obj j₀)),
       ∀ (k : K), y.1 k = (F.obj k).map (cX.ι.app j₀) (z k) := by
@@ -104,7 +104,7 @@ lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
     (h : c.pt.map (cX.ι.app j) x₁ = c.pt.map (cX.ι.app j) x₂) :
     ∃ (j' : J) (α : j ⟶ j'),
     c.pt.map (X.map α) x₁ = c.pt.map (X.map α) x₂ := by
-  have := isFiltered_of_isCardinalDirected J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   let y₁ := Types.isLimitEquivSections (hc (X.obj j)) x₁
   let y₂ := Types.isLimitEquivSections (hc (X.obj j)) x₂
   have hy₁ : (Types.isLimitEquivSections (hc (X.obj j))).symm y₁ = x₁ := by simp [y₁]
@@ -137,7 +137,7 @@ end isColimitMapCocone
 
 /-- Auxiliary definition for `isCardinalAccessible_of_isLimit`. -/
 noncomputable def isColimitMapCocone : IsColimit (c.pt.mapCocone cX) := by
-  have := isFiltered_of_isCardinalDirected J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   apply Types.FilteredColimit.isColimitOf'
   · exact isColimitMapCocone.surjective c hc κ hK cX hF
   · exact isColimitMapCocone.injective c hc κ hK cX hF
@@ -186,9 +186,9 @@ lemma isCardinalPresentable_of_isColimit [LocallySmall.{w} C]
   exact isCardinalPresentable_of_isColimit' _
     (isColimitOfPreserves e.functor hc) κ hK
 
-variable (C) {κ} in
+variable (C) in
 lemma isClosedUnderColimitsOfShape_isCardinalPresentable [LocallySmall.{w} C]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    {κ : Cardinal.{w}} [Fact κ.IsRegular]
     {J : Type u'} [Category.{v'} J] [HasLimitsOfShape Jᵒᵖ (Type w)]
     (hJ : HasCardinalLT (Arrow J) κ) :
     (isCardinalPresentable C κ).IsClosedUnderColimitsOfShape J where

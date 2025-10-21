@@ -40,22 +40,22 @@ instance {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
   exact preservesColimitsOfShape_of_natIso e.symm
 
 lemma isStrongGenerator
-    {A : Type u'} [Category.{v'} A] {S : Set A} (hS : IsStrongGenerator S)
+    {A : Type u'} [Category.{v'} A] {P : ObjectProperty A} (hP : P.IsStrongGenerator)
     [HasCoproducts.{w} A] [HasPullbacks A] (C : Type w) [SmallCategory C] :
-    IsStrongGenerator (ObjectProperty.ofObj (fun (T : C × S) ↦ freeYoneda T.1 T.2.1)) := by
-  rw [isStrongGenerator_iff] at hS ⊢
-  obtain ⟨hS₁, hS₂⟩ := hS
-  refine ⟨?_, fun P₁ P₂ i _ hi ↦ ?_⟩
-  · rw [ObjectProperty.ofObj_eq_setRange]
-    exact isSeparating C (by simpa using hS₁)
+    (ObjectProperty.ofObj (fun (T : C × (Subtype P)) ↦
+      freeYoneda T.1 T.2.1)).IsStrongGenerator := by
+  rw [ObjectProperty.isStrongGenerator_iff] at hP ⊢
+  obtain ⟨hP₁, hP₂⟩ := hP
+  refine ⟨Presheaf.isSeparating (C := C) (ι := Subtype P) (S := Subtype.val)
+    (by simpa using hP₁),
+    fun P₁ P₂ i _ hi ↦ ?_⟩
   · rw [NatTrans.isIso_iff_isIso_app]
     rintro ⟨X⟩
-    refine hS₂ _ (fun ⟨G, hG⟩ f ↦ ?_)
+    refine hP₂ _ (fun G hG f ↦ ?_)
     obtain ⟨y, rfl⟩ := freeYonedaHomEquiv.surjective f
-    obtain ⟨x, rfl⟩ := hi ⟨freeYoneda X G, by
-      change ObjectProperty.ofObj _ _
-      rw [ObjectProperty.ofObj_iff]
-      exact ⟨⟨X, G, hG⟩, rfl⟩⟩ y
+    obtain ⟨x, rfl⟩ := hi (freeYoneda X G)
+      (ObjectProperty.ofObj_apply (fun (T : C × (Subtype P)) ↦
+        freeYoneda T.1 T.2.1) ⟨X, G, hG⟩) y
     exact ⟨freeYonedaHomEquiv x, by simp [freeYonedaHomEquiv_comp]⟩
 
 instance {A : Type u'} [Category.{v'} A] [LocallySmall.{w} A] (C : Type w) [SmallCategory C] :
@@ -70,13 +70,11 @@ instance {A : Type u'} [Category.{v'} A] (κ : Cardinal.{w}) [Fact κ.IsRegular]
   have hA := (IsCardinalLocallyPresentable.iff_exists_isStrongGenerator A κ).1 inferInstance
   obtain ⟨P, _, hP₁, hP₂⟩ := hA
   rw [IsCardinalLocallyPresentable.iff_exists_isStrongGenerator]
-  refine ⟨_, ?_, isStrongGenerator hP₁ C, ?_⟩
-  · have : _root_.Small.{w} (↑(show Set A from P)) := by assumption
-    apply ObjectProperty.instSmallOfObjOfSmall
-  · rintro _ ⟨X, G, hG⟩
-    have := hP₂ _ hG
-    rw [isCardinalPresentable_iff] at this ⊢
-    infer_instance
+  refine ⟨_, inferInstance, isStrongGenerator hP₁ C, ?_⟩
+  rintro _ ⟨X, G, hG⟩
+  have := hP₂ _ hG
+  rw [isCardinalPresentable_iff] at this ⊢
+  infer_instance
 
 instance {A : Type u'} [Category.{v'} A] [IsLocallyPresentable.{w} A] [HasPullbacks A]
     (C : Type w) [SmallCategory C] :

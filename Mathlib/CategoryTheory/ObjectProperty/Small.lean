@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 import Mathlib.CategoryTheory.ObjectProperty.Equivalence
+import Mathlib.CategoryTheory.ObjectProperty.Opposite
 import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
@@ -15,13 +16,13 @@ In this file, given `P : ObjectProperty C`, we define
 
 -/
 
-universe w t v u
+universe w t v v' u u'
 
 namespace CategoryTheory.ObjectProperty
 
 open Opposite
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 /-- A property of objects is small relative to a universe `w`
 if the corresponding subtype is. -/
@@ -35,6 +36,22 @@ instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
 lemma Small.of_le {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] (h : P ≤ Q) :
     ObjectProperty.Small.{w} P :=
   small_of_injective (Subtype.map_injective h Function.injective_id)
+
+instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
+    ObjectProperty.Small.{w} P.op :=
+  small_of_injective P.subtypeOpEquiv.injective
+
+instance (P : ObjectProperty Cᵒᵖ) [ObjectProperty.Small.{w} P] :
+    ObjectProperty.Small.{w} P.unop := by
+  simpa only [← small_congr P.unop.subtypeOpEquiv]
+
+instance {ι : Type*} (X : ι → C) [Small.{w} ι] :
+    ObjectProperty.Small.{w} (ofObj X) :=
+  small_of_surjective (f := fun i ↦ ⟨X i, by simp⟩) (by rintro ⟨_, ⟨i⟩⟩;simp )
+
+instance (X Y : C) : ObjectProperty.Small.{w} (.pair X Y) := by
+  dsimp [pair]
+  infer_instance
 
 instance {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] :
     ObjectProperty.Small.{w} (P ⊓ Q) :=
@@ -108,9 +125,11 @@ instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
     ObjectProperty.EssentiallySmall.{w} P where
   exists_small_le' := ⟨P, inferInstance, le_isoClosure P⟩
 
-instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
+instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P] :
     ObjectProperty.EssentiallySmall.{w} P.isoClosure where
-  exists_small_le' := ⟨P, inferInstance, by rfl⟩
+  exists_small_le' := by
+    obtain ⟨Q, _, _, _⟩ := EssentiallySmall.exists_small_le.{w} P
+    exact ⟨Q, inferInstance, by rwa [isoClosure_le_iff]⟩
 
 lemma EssentiallySmall.exists_small (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms]
     [ObjectProperty.EssentiallySmall.{w} P] :
@@ -153,9 +172,9 @@ lemma essentiallySmall_op_iff (P : ObjectProperty C) :
       ObjectProperty.EssentiallySmall.{w} P := by
   refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
   · obtain ⟨Q, h₁, _, h₂⟩ := EssentiallySmall.exists_small_le P.op
-    exact ⟨Q.unop, inferInstance, by rwa [← isoClosure_unop, ← op_le_op_iff, op_unop]⟩
+    exact ⟨Q.unop, inferInstance, by rwa [← unop_isoClosure, ← op_monotone_iff, op_unop]⟩
   · obtain ⟨Q, h₁, _, h₂⟩ := EssentiallySmall.exists_small_le P
-    exact ⟨Q.op, inferInstance, by rwa [← isoClosure_op, op_le_op_iff]⟩
+    exact ⟨Q.op, inferInstance, by rwa [← op_isoClosure, op_monotone_iff]⟩
 
 @[simp]
 lemma essentiallySmall_unop_iff (P : ObjectProperty Cᵒᵖ) :
@@ -178,7 +197,21 @@ instance (P : ObjectProperty C) [LocallySmall.{w} C]
   rw [← essentiallySmall_congr (ιOfLE h₁).asEquivalence]
   exact essentiallySmall_of_small_of_locallySmall _
 
-instance {ι : Type t} [Small.{w} ι] (X : ι → C) : ObjectProperty.Small.{w} (ofObj X) :=
-  small_of_surjective (f := fun i ↦ ⟨X i, ⟨i⟩⟩) (by rintro ⟨_, ⟨i⟩⟩; exact ⟨i, rfl⟩)
+instance [EssentiallySmall.{w} C] :
+    ObjectProperty.EssentiallySmall.{w} (⊤ : ObjectProperty C) where
+  exists_small_le' :=
+    ⟨ofObj (equivSmallModel.{w} C).inverse.obj, inferInstance,
+      fun X _ ↦ ⟨_, ⟨_⟩, ⟨(equivSmallModel.{w} C).unitIso.app X⟩⟩⟩
+
+instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P]
+    (F : C ⥤ D) : ObjectProperty.Small.{w} (P.strictMap F) :=
+  small_of_surjective (f := fun (X : Subtype P) ↦ ⟨F.obj X.1, ⟨_, X.2⟩⟩) (by
+    rintro ⟨_, ⟨X, hX⟩⟩
+    exact ⟨⟨X, hX⟩, rfl⟩)
+
+instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P]
+    (F : C ⥤ D) : ObjectProperty.EssentiallySmall.{w} (P.map F) := by
+  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
+  exact ⟨Q.strictMap F, inferInstance, (map_monotone h₂ F).trans (by simp)⟩
 
 end CategoryTheory.ObjectProperty

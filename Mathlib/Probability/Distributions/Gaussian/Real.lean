@@ -537,6 +537,17 @@ lemma memLp_id_gaussianReal' (p : ℝ≥0∞) (hp : p ≠ ∞) : MemLp id p (gau
 
 end Moments
 
+/-- Two real Gaussian distributions are equal iff they have the same mean and variance. -/
+lemma gaussianReal_ext_iff {μ₁ μ₂ : ℝ} {v₁ v₂ : ℝ≥0} :
+    gaussianReal μ₁ v₁ = gaussianReal μ₂ v₂ ↔ μ₁ = μ₂ ∧ v₁ = v₂ := by
+  refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
+  rw [← integral_id_gaussianReal (μ := μ₁) (v := v₁),
+    ← integral_id_gaussianReal (μ := μ₂) (v := v₂), h]
+  simp only [integral_id_gaussianReal, true_and]
+  suffices (v₁ : ℝ) = v₂ by simpa
+  rw [← variance_id_gaussianReal (μ := μ₁) (v := v₁),
+    ← variance_id_gaussianReal (μ := μ₂) (v := v₂), h]
+
 section LinearMap
 
 variable {μ : ℝ} {v : ℝ≥0}

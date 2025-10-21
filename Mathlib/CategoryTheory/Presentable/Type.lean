@@ -28,14 +28,13 @@ instance : IsCardinalPresentable PUnit.{u + 1} κ where
     exact preservesColimitsOfShape_of_natIso e.symm
 
 lemma isStrongGenerator_punit :
-    IsStrongGenerator (ObjectProperty.singleton (PUnit.{u + 1})) := by
-  rw [isStrongGenerator_iff]
-  refine ⟨?_, fun _ _ i hi₁ hi₂ ↦ ?_⟩
-  · simpa only [ObjectProperty.singleton_eq_setSingleton] using isSeparator_punit
+    (ObjectProperty.singleton (PUnit.{u + 1})).IsStrongGenerator  := by
+  rw [ObjectProperty.isStrongGenerator_iff]
+  refine ⟨isSeparator_punit, fun _ _ i hi₁ hi₂ ↦ ?_⟩
   · rw [mono_iff_injective] at hi₁
     rw [isIso_iff_bijective]
     refine ⟨hi₁, fun y ↦ ?_⟩
-    obtain ⟨f, hf⟩ := hi₂ ⟨PUnit, ⟨.unit⟩⟩ (fun _ ↦ y)
+    obtain ⟨f, hf⟩ := hi₂ PUnit ⟨.unit⟩ (fun _ ↦ y)
     exact ⟨f .unit, congr_fun hf .unit⟩
 
 instance : IsCardinalLocallyPresentable (Type u) κ := by

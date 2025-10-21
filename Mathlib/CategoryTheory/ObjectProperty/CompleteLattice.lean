@@ -3,7 +3,8 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Opposite
+import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.Order.CompleteLattice.Basic
 
 /-!
@@ -11,11 +12,11 @@ import Mathlib.Order.CompleteLattice.Basic
 
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory.ObjectProperty
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 example : CompleteLattice (ObjectProperty C) := inferInstance
 
@@ -72,16 +73,14 @@ instance [∀ a, (P a).IsClosedUnderIsomorphisms] :
 
 end
 
-open Opposite
-
 @[simp]
-lemma op_le_op_iff {P Q : ObjectProperty C} :
-    P.op ≤ Q.op ↔ P ≤ Q :=
-  ⟨fun h X hX ↦ h (op X) hX, fun h X hX ↦ h X.unop hX⟩
-
-@[simp]
-lemma unop_le_unop_iff {P Q : ObjectProperty Cᵒᵖ} :
-    P.unop ≤ Q.unop ↔ P ≤ Q :=
-  op_le_op_iff.symm
+lemma ι_map_top (P : ObjectProperty C) :
+    (⊤ : ObjectProperty _).map P.ι = P.isoClosure := by
+  ext X
+  constructor
+  · rintro ⟨⟨Y, hY⟩, _, ⟨e⟩⟩
+    exact ⟨Y, hY, ⟨e.symm⟩⟩
+  · rintro ⟨Y, hY, ⟨e⟩⟩
+    exact ⟨⟨Y, hY⟩, by simp, ⟨e.symm⟩⟩
 
 end CategoryTheory.ObjectProperty
