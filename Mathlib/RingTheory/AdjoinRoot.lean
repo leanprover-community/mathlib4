@@ -48,6 +48,7 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 noncomputable section
 
+open Algebra (FinitePresentation FiniteType)
 open Ideal Module Polynomial
 
 universe u v w
@@ -63,7 +64,7 @@ namespace AdjoinRoot
 
 section CommRing
 
-variable [CommRing R] (f : R[X])
+variable [CommRing R] (f g : R[X])
 
 instance instCommRing : CommRing (AdjoinRoot f) :=
   Ideal.Quotient.commRing _
@@ -149,17 +150,18 @@ theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
     algebraMap S (AdjoinRoot f) = (of f).comp (algebraMap S R) :=
   rfl
 
-theorem finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
-  .of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
+instance finiteType [CommSemiring S] [Algebra S R] [FiniteType S R] :
+    FiniteType S (AdjoinRoot f) := by
+  unfold AdjoinRoot; infer_instance
 
-theorem finitePresentation : Algebra.FinitePresentation R (AdjoinRoot f) :=
-  (Algebra.FinitePresentation.polynomial R).quotient (Submodule.fg_span_singleton f)
+instance finitePresentation [CommRing S] [Algebra S R] [FinitePresentation S R] :
+    FinitePresentation S (AdjoinRoot f) := .quotient (Submodule.fg_span_singleton f)
 
 /-- The adjoined root. -/
 def root : AdjoinRoot f :=
   mk f X
 
-variable {f}
+variable {f g}
 
 instance hasCoeT : CoeTC R (AdjoinRoot f) :=
   ⟨of f⟩
@@ -338,26 +340,61 @@ theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f
 
 end Prime
 
-section
+/-- The canonical algebraic homomorphism from `AdjoinRoot f` to `AdjoinRoot g`, where
+the polynomial `g : K[X]` divides `f`. -/
+noncomputable def algHomOfDvd (f g : R[X]) (hgf : g ∣ f) : AdjoinRoot f →ₐ[R] AdjoinRoot g :=
+  liftHom f (root g) <| (aeval_eq _).trans <| by simp [mk_eq_zero, hgf]
 
-/-- If `f = g`, `R` adjoin a root of `f` is isomorphic to `R` adjoin a root of `g`. -/
-def algEquivOfEq {f g : R[X]} (hfg : f = g) : AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
-  .ofAlgHom
-    (liftHom f (root g) (by simp [hfg]))
-    (liftHom g (root f) (by simp [hfg]))
-    (by ext; simp)
-    (by ext; simp)
+lemma coe_algHomOfDvd (f g : R[X]) (hgf) :
+    ⇑(algHomOfDvd f g hgf) = liftHom f (root g) ((aeval_eq _).trans <| by simp [mk_eq_zero, hgf]) :=
+  rfl
 
-variable {f g : R[X]} (hfg : f = g)
+/-- `algHomOfDvd` sends `AdjoinRoot.root f` to `AdjoinRoot.root q`. -/
+@[simp] lemma algHomOfDvd_root (f g : R[X]) (hgf) : algHomOfDvd f g hgf (root f) = root g := by
+  rw [algHomOfDvd, liftHom_root]
 
-@[simp] lemma algEquivOfEq_root : algEquivOfEq hfg (root f) = root g := by
-  simp [algEquivOfEq]
+/-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot g`,
+where the two polynomials `f g : R[X]` are associated. -/
+noncomputable def algEquivOfAssociated (f g : R[X]) (hfg : Associated f g) :
+    AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
+  .ofAlgHom (algHomOfDvd f g hfg.symm.dvd) (algHomOfDvd g f hfg.dvd) (by ext; simp) (by ext; simp)
 
-@[simp] lemma algEquivOfEq_symm : (algEquivOfEq hfg).symm = algEquivOfEq hfg.symm := by
-  ext
-  simp [algEquivOfEq]
+lemma coe_algEquivOfAssociated (f g : R[X]) (hfg) :
+    ⇑(algEquivOfAssociated f g hfg) = algHomOfDvd f g hfg.symm.dvd := rfl
 
-end
+@[simp] lemma algEquivOfAssociated_symm (f g : R[X]) (hfg) :
+    (algEquivOfAssociated f g hfg).symm = algEquivOfAssociated g f hfg.symm := rfl
+
+lemma algEquivOfAssociated_toAlgHom (f g : R[X]) (hfg) :
+    (algEquivOfAssociated f g hfg).toAlgHom = algHomOfDvd f g hfg.symm.dvd := rfl
+
+/-- `algEquivOfAssociated` sends `AdjoinRoot.root f` to `AdjoinRoot.root g`. -/
+@[simp] lemma algEquivOfAssociated_root (f g : R[X]) (hfg) :
+    algEquivOfAssociated f g hfg (root f) = root g := by
+  rw [coe_algEquivOfAssociated, algHomOfDvd_root]
+
+/-- The canonical algebraic equivalence between `AdjoinRoot f` and `AdjoinRoot g`, where
+the two polynomials `f g : R[X]` are equal. -/
+noncomputable def algEquivOfEq (f g : R[X]) (hfg : f = g) : AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
+  algEquivOfAssociated f g (by rw [hfg])
+
+lemma coe_algEquivOfEq (f g : R[X]) (hfg) :
+    ⇑(algEquivOfEq f g hfg) = algHomOfDvd f g hfg.symm.dvd := rfl
+
+@[simp] lemma algEquivOfEq_symm (f g : R[X]) (hfg) :
+    (algEquivOfEq f g hfg).symm = algEquivOfEq g f hfg.symm := rfl
+
+lemma algEquivOfEq_toAlgHom (f g : R[X]) (hfg) :
+    (algEquivOfEq f g hfg).toAlgHom = algHomOfDvd f g hfg.symm.dvd := rfl
+
+/-- `algEquivOfEq` sends `AdjoinRoot.root f` to `AdjoinRoot.root g`. -/
+lemma algEquivOfEq_root (f g : R[X]) (hfg) : algEquivOfEq f g hfg (root f) = root g := by
+  rw [coe_algEquivOfEq, algHomOfDvd_root]
+
+@[deprecated (since := "2025-10-10")] alias algHomOfDvd_apply_root := algHomOfDvd_root
+@[deprecated (since := "2025-10-10")] alias algEquivOfEq_apply_root := algEquivOfEq_root
+@[deprecated (since := "2025-10-10")]
+alias algEquivOfAssociated_apply_root := algEquivOfAssociated_root
 
 end CommRing
 

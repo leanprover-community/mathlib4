@@ -28,7 +28,7 @@ under `ArchimedeanClass.closedBall K c`. The embeddings from these submodules ar
 `HahnEmbedding.Seed K M R`.
 
 By setting `K = ℚ` and `R = ℝ`, the condition can be trivially satisfied, leading
-to a proof of the classic Hahn embedding theorem. (TODO: implement this)
+to a proof of the classic Hahn embedding theorem. (See `hahnEmbedding_isOrderedAddMonoid`)
 
 ## Main theorem
 
