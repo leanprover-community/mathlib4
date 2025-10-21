@@ -382,13 +382,10 @@ theorem part_eq_source_part_iff_mem (x : X) (hx : x ∈ P.source) (part : Set X 
 theorem source_part_eq_target_part (x : X) (h : x ∈ P.source) :
     P.source_part x h = P.target_part ((P.source_part x h).2.1 • x) (mem_of_subset_of_mem
       (P.subset_target (P.source_part x h) (source_part_mem_parts P x h))
-          (source_part_decomp P x h)) := by
-  let s := P.source_part x h
-  have h_target : s.2.1 • x ∈ P.target := by
-    apply mem_of_subset_of_mem (P.subset_target s (source_part_mem_parts P x h))
-        (source_part_decomp P x h)
-  have eq_iff := P.part_eq_target_part_iff_mem _ h_target s (source_part_mem_parts P x h)
-  exact (eq_iff.mp (source_part_decomp P x h)).symm
+    (source_part_decomp P x h)) :=
+  P.part_eq_target_part_iff_mem _ (mem_of_subset_of_mem (P.subset_target (P.source_part x h)
+    (source_part_mem_parts P x h)) (source_part_decomp P x h)) (P.source_part x h)
+    (source_part_mem_parts P x h)|>.mp (source_part_decomp P x h)|>.symm
 
 theorem target_part_eq_source_part (x : X) (h : x ∈ P.target) :
     P.target_part x h = P.source_part ((P.target_part x h).2.1⁻¹ • x) (mem_of_subset_of_mem
@@ -458,11 +455,10 @@ noncomputable def target_witness (f : Equidecomp X G) {y : X} (h : y ∈ f.targe
 
 theorem target_witness_spec (f : Equidecomp X G) {y : X} (h : y ∈ f.target) :
   f.target_witness h ∈ f.witness ∧ y = f.target_witness h • (f.invFun y):= by
-  rw [target_witness, source_witness]
   have h1 := (f.isDecompOn (f.invFun y) (f.map_target' h)).choose_spec
   have h2 : f (f.invFun y) = y := by
     rw [f.right_inv' h]
-  grind
+  grind [target_witness, source_witness]
 
 open scoped Classical in
 /--
