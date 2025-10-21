@@ -27,16 +27,14 @@ theorem lt.elim {a b : ℤ} (h : a < b) {P : Prop} (h' : ∀ n : ℕ, a + ↑(Na
 alias ⟨lt_of_ofNat_lt_ofNat, ofNat_lt_ofNat_of_lt⟩ := ofNat_lt
 
 instance instLinearOrder : LinearOrder ℤ where
-  le := (· ≤ ·)
   le_refl := Int.le_refl
   le_trans := @Int.le_trans
   le_antisymm := @Int.le_antisymm
-  lt := (· < ·)
   lt_iff_le_not_ge := @Int.lt_iff_le_not_le
   le_total := Int.le_total
-  toDecidableEq := by infer_instance
-  toDecidableLE := by infer_instance
-  toDecidableLT := by infer_instance
+  toDecidableEq := instDecidableEq
+  toDecidableLE := decLe
+  toDecidableLT := decLt
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero {a b : ℤ} (h : a * b = 0) : a = 0 ∨ b = 0 :=
   Int.mul_eq_zero.mp h

@@ -80,8 +80,7 @@ instance Lex.partialOrder [PartialOrder N] : PartialOrder (Lex (α →₀ N)) wh
 
 /-- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
-  lt := (· < ·)
-  le := (· ≤ ·)
+  __ := Lex.partialOrder
   __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
 
 theorem Lex.single_strictAnti : StrictAnti (fun (a : α) ↦ toLex (single a 1)) := by

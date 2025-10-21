@@ -297,8 +297,6 @@ protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : 
   exact h _
 
 instance partialOrder : PartialOrder ℝ where
-  le := (· ≤ ·)
-  lt := (· < ·)
   lt_iff_le_not_ge a b := by
     induction a using Real.ind_mk
     induction b using Real.ind_mk
@@ -393,57 +391,54 @@ theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨
 theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=
   ofCauchy_inf _ _
 
-instance : DistribLattice ℝ :=
-  { Real.partialOrder with
-    sup := (· ⊔ ·)
-    le := (· ≤ ·)
-    le_sup_left := by
-      intro a b
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      dsimp only; rw [← mk_sup, mk_le]
-      exact CauSeq.le_sup_left
-    le_sup_right := by
-      intro a b
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      dsimp only; rw [← mk_sup, mk_le]
-      exact CauSeq.le_sup_right
-    sup_le := by
-      intro a b c
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      induction c using Real.ind_mk
-      simp_rw [← mk_sup, mk_le]
-      exact CauSeq.sup_le
-    inf := (· ⊓ ·)
-    inf_le_left := by
-      intro a b
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      dsimp only; rw [← mk_inf, mk_le]
-      exact CauSeq.inf_le_left
-    inf_le_right := by
-      intro a b
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      dsimp only; rw [← mk_inf, mk_le]
-      exact CauSeq.inf_le_right
-    le_inf := by
-      intro a b c
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      induction c using Real.ind_mk
-      simp_rw [← mk_inf, mk_le]
-      exact CauSeq.le_inf
-    le_sup_inf := by
-      intro a b c
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      induction c using Real.ind_mk
-      apply Eq.le
-      simp only [← mk_sup, ← mk_inf]
-      exact congr_arg mk (CauSeq.sup_inf_distrib_left ..).symm }
+instance : DistribLattice ℝ where
+  le_sup_left := by
+    intro a b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    dsimp only; rw [← mk_sup, mk_le]
+    exact CauSeq.le_sup_left
+  le_sup_right := by
+    intro a b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    dsimp only; rw [← mk_sup, mk_le]
+    exact CauSeq.le_sup_right
+  sup_le := by
+    intro a b c
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    induction c using Real.ind_mk
+    simp_rw [← mk_sup, mk_le]
+    exact CauSeq.sup_le
+  inf := (· ⊓ ·)
+  inf_le_left := by
+    intro a b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    dsimp only; rw [← mk_inf, mk_le]
+    exact CauSeq.inf_le_left
+  inf_le_right := by
+    intro a b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    dsimp only; rw [← mk_inf, mk_le]
+    exact CauSeq.inf_le_right
+  le_inf := by
+    intro a b c
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    induction c using Real.ind_mk
+    simp_rw [← mk_inf, mk_le]
+    exact CauSeq.le_inf
+  le_sup_inf := by
+    intro a b c
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    induction c using Real.ind_mk
+    apply Eq.le
+    simp only [← mk_sup, ← mk_inf]
+    exact congr_arg mk (CauSeq.sup_inf_distrib_left ..).symm
 
 -- Extra instances to short-circuit type class resolution
 instance lattice : Lattice ℝ :=

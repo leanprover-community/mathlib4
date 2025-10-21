@@ -157,7 +157,6 @@ theorem sInf_def (s : Set (Filtration ι m)) (i : ι) :
   rfl
 
 noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
-  le := (· ≤ ·)
   le_refl _ _ := le_rfl
   le_trans _ _ _ h_fg h_gh i := (h_fg i).trans (h_gh i)
   le_antisymm _ _ h_fg h_gf := Filtration.ext <| funext fun i => (h_fg i).antisymm (h_gf i)
