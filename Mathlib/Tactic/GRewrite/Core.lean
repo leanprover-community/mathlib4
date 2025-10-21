@@ -30,10 +30,10 @@ namespace Mathlib.Tactic
 
 /-- Given a proof of `a ~ b`, close a goal of the form `a ~' b` or `b ~' a`
 for some possibly different relation `~'`. -/
-def GRewrite.dischargeMain (hrel : Expr) (goal : MVarId) : MetaM Unit := do
-  try
-    goal.gcongrForward #[hrel]
-  catch _ =>
+def GRewrite.dischargeMain (hrel : Expr) (goal : MVarId) : MetaM Bool := do
+  if ← goal.gcongrForward #[hrel] then
+    return true
+  else
     throwTacticEx `grewrite goal m!"could not discharge {← goal.getType} using {← inferType hrel}"
 
 /-- The result returned by `Lean.MVarId.grewrite`. -/
@@ -116,12 +116,11 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         are rewritten, or specify what the rewritten expression should be and use 'gcongr'."
     let eNew ← if rhs.hasBinderNameHint then eNew.resolveBinderNameHint else pure eNew
     -- construct the implication proof using `gcongr`
-    let hole ← mkFreshExprMVar default
-    let template := eAbst.instantiate1 hole
+    let eAnn := eAbst.instantiate1 (GCongr.mkHoleAnnotation (← instantiateMVars lhs))
     let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
-    let imp := if forwardImp then mkImp e eNew else mkImp eNew e
+    let imp := if forwardImp then mkImp eAnn eNew else mkImp eNew eAnn
     let gcongrGoal ← mkFreshExprMVar imp
-    let (_, _, sideGoals) ← gcongrGoal.mvarId!.gcongr template [] (grewriteHole := hole.mvarId!)
+    let (_, _, sideGoals) ← gcongrGoal.mvarId!.gcongr forwardImp []
       (mainGoalDischarger := GRewrite.dischargeMain hrel)
     -- post-process the metavariables
     postprocessAppMVars `grewrite goal newMVars binderInfos
