@@ -316,5 +316,4 @@
  ["docBlame", "Mathlib.Meta.NormNum.evalLE.core.ratArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalLT.core.intArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalLT.core.nnratArm"],
- ["docBlame", "Mathlib.Meta.NormNum.evalLT.core.ratArm"],
- ["docBlame", "Mathlib.instToExprULift_mathlib.toExpr"]]
+ ["docBlame", "Mathlib.Meta.NormNum.evalLT.core.ratArm"]]

@@ -66,6 +66,7 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 namespace Iso
 
+set_option linter.style.commandStart false in -- false positive, calc blocks
 @[ext, grind ext]
 theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   suffices α.inv = β.inv by grind [Iso]
@@ -222,7 +223,10 @@ def homFromEquiv (α : X ≅ Y) {Z : C} : (X ⟶ Z) ≃ (Y ⟶ Z) where
 
 end Iso
 
-/-- `IsIso` typeclass expressing that a morphism is invertible. -/
+/-- The `IsIso` typeclass expresses that a morphism is invertible.
+
+Given a morphism `f` with `IsIso f`, one can view `f` as an isomorphism via `asIso f` and get
+the inverse using `inv f`. -/
 class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y

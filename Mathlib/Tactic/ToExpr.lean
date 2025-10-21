@@ -13,8 +13,6 @@ import Mathlib.Tactic.AdaptationNote
 namespace Mathlib
 open Lean
 
-#adaptation_note /-- 2025-10-06 https://github.com/leanprover/lean4/issues/10678
-  Added `docBlame` nolint for `Mathlib.instToExprULift_mathlib.toExpr` -/
 set_option autoImplicit true in
 deriving instance ToExpr for ULift
 

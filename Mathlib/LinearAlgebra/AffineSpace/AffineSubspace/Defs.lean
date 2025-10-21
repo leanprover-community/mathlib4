@@ -543,6 +543,14 @@ theorem eq_of_direction_eq_of_nonempty_of_le {s₁ s₂ : AffineSubspace k P}
   let ⟨p, hp⟩ := hn
   ext_of_direction_eq hd ⟨p, hp, hle hp⟩
 
+instance nonempty_sup_left (s₁ s₂ : AffineSubspace k P) [Nonempty s₁] :
+    Nonempty (s₁ ⊔ s₂ : AffineSubspace k P) :=
+  .map (Set.inclusion <| SetLike.le_def.1 le_sup_left) ‹_›
+
+instance nonempty_sup_right (s₁ s₂ : AffineSubspace k P) [Nonempty s₂] :
+    Nonempty (s₁ ⊔ s₂ : AffineSubspace k P) :=
+  .map (Set.inclusion <| SetLike.le_def.1 le_sup_right) ‹_›
+
 variable (k V)
 
 /-- The affine span is the `sInf` of subspaces containing the given points. -/

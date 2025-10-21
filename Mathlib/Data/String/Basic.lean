@@ -38,10 +38,10 @@ instance decidableLT' : DecidableLT String := by
 /-- Induction on `String.ltb`. -/
 def ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂ : Iterator)
     (ind : ∀ s₁ s₂ i₁ i₂, Iterator.hasNext ⟨s₂, i₂⟩ → Iterator.hasNext ⟨s₁, i₁⟩ →
-      get s₁ i₁ = get s₂ i₂ → motive (Iterator.next ⟨s₁, i₁⟩) (Iterator.next ⟨s₂, i₂⟩) →
+      i₁.get s₁ = i₂.get s₂ → motive (Iterator.next ⟨s₁, i₁⟩) (Iterator.next ⟨s₂, i₂⟩) →
       motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
     (eq : ∀ s₁ s₂ i₁ i₂, Iterator.hasNext ⟨s₂, i₂⟩ → Iterator.hasNext ⟨s₁, i₁⟩ →
-      ¬ get s₁ i₁ = get s₂ i₂ → motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
+      ¬ i₁.get s₁ = i₂.get s₂ → motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
     (base₁ : ∀ s₁ s₂ i₁ i₂, Iterator.hasNext ⟨s₂, i₂⟩ → ¬ Iterator.hasNext ⟨s₁, i₁⟩ →
       motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
     (base₂ : ∀ s₁ s₂ i₁ i₂, ¬ Iterator.hasNext ⟨s₂, i₂⟩ → motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩) :
@@ -60,8 +60,8 @@ theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Iterator) :
   | case1 s₁ s₂ h₁ h₂ h ih =>
     rw [ltb, Iterator.hasNext_cons_addChar, Iterator.hasNext_cons_addChar,
       if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_pos, ← ih]
-    · simp [Iterator.next, String.next, get_cons_addChar]
-      congr 2 <;> apply Pos.Raw.addChar_right_comm
+    · simp [Iterator.next, String.Pos.Raw.next, get_cons_addChar]
+      congr 2 <;> apply Pos.Raw.add_char_right_comm
     · simpa [Iterator.curr, get_cons_addChar] using h
   | case2 s₁ s₂ h₁ h₂ h =>
     rw [ltb, Iterator.hasNext_cons_addChar, Iterator.hasNext_cons_addChar,
@@ -97,8 +97,9 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
       · apply not_lt_of_gt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
       simp only [Iterator.hasNext, Pos.Raw.byteIdx_zero, endPos_asString, utf8Len_cons, add_pos_iff,
-        Char.utf8Size_pos, or_true, decide_true, ↓reduceIte, Iterator.curr, get, List.data_asString,
-        utf8GetAux, Iterator.next, next, Bool.ite_eq_true_distrib, decide_eq_true_eq]
+        Char.utf8Size_pos, or_true, decide_true, ↓reduceIte, Iterator.curr, Pos.Raw.get,
+        List.data_asString, Pos.Raw.utf8GetAux, Iterator.next, Pos.Raw.next,
+        Bool.ite_eq_true_distrib, decide_eq_true_eq]
       simp only [← String.mk_eq_asString]
       split_ifs with h
       · subst c₂
@@ -138,7 +139,7 @@ theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s
     obtain ⟨l, rfl⟩ := s.exists_eq_asString
     match l with
     | [] => simp at h
-    | c::cs => simp [head, mkIterator, Iterator.curr, get, utf8GetAux]
+    | c::cs => simp [head, mkIterator, Iterator.curr, Pos.Raw.get, Pos.Raw.utf8GetAux]
 
 @[simp]
 theorem head_empty : "".data.head! = default :=
