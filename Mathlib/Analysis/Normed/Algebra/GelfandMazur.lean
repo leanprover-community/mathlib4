@@ -26,8 +26,8 @@ We provide a formalization of proofs of the following versions of the *Gelfand-M
 
 The proof we use here is a variant of a proof for the complex case (any normed `ℂ`-algebra
 is isomorphic to `ℂ`) that is originally due to Ostrowski
-[(Section 7 in *Über einige Lösungen der Funktionalgleichung φ(x)⋅φ(y)=φ(xy)*,
-Acta Math. 41, 271-284 (1917))}(https://doi.org/10.1007/BF02422947).
+[A. Ostrowski, *Über einige Lösungen der Funktionalgleichung φ(x)⋅φ(y)=φ(xy)*
+  (Section 7)][ostrowski1916].
 See also the concise version provided by Peter Scholze on
 [Math Overflow](https://mathoverflow.net/questions/10535/ways-to-prove-the-fundamental-theorem-of-algebra/420803#420803).
 
