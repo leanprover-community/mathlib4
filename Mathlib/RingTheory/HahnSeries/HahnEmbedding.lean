@@ -69,19 +69,16 @@ theorem hahnEmbedding_isOrderedAddMonoid :
   `f₃` ↓+o(~)                                        ↓o~
       `Lex (HahnSeries (F-A-Class M) ℝ)`            `WithTop (F-A-Class M)`
   -/
-
   let f₁ := DivisibleHull.coeOrderAddMonoidHom M
   have hf₁ : Function.Injective f₁ := DivisibleHull.coe_injective
   have hf₁class (a : M) : mk a = (DivisibleHull.archimedeanClassOrderIso M).symm (mk (f₁ a)) := by
     simp [f₁]
-
   obtain ⟨f₂', hf₂', hf₂class'⟩ := hahnEmbedding_isOrderedModule_rat (DivisibleHull M)
   let f₂ := OrderAddMonoidHom.mk f₂'.toAddMonoidHom hf₂'.monotone
   have hf₂ : Function.Injective f₂ := hf₂'.injective
   have hf₂class (a : DivisibleHull M) :
       mk a = (FiniteArchimedeanClass.withTopOrderIso (DivisibleHull M)) (ofLex (f₂ a)).orderTop :=
     hf₂class' a
-
   let f₃ : Lex (HahnSeries (FiniteArchimedeanClass (DivisibleHull M)) ℝ) →+o
       Lex (HahnSeries (FiniteArchimedeanClass M) ℝ) :=
     HahnSeries.embDomainOrderAddMonoidHom
@@ -93,7 +90,6 @@ theorem hahnEmbedding_isOrderedAddMonoid :
       (ofLex (f₃ a)).orderTop := by
     rw [← OrderIso.symm_apply_eq]
     simp [f₃, ← OrderIso.withTopCongr_symm]
-
   refine ⟨f₃.comp (f₂.comp f₁), hf₃.comp (hf₂.comp hf₁), ?_⟩
   intro a
   simp_rw [hf₁class, hf₂class, hf₃class, OrderAddMonoidHom.comp_apply]
