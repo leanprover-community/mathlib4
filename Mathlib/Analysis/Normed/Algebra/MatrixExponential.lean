@@ -63,7 +63,7 @@ open scoped Matrix
 
 open NormedSpace -- For `exp`.
 
-variable (𝕂 : Type*) {m n : Type*} {n' : m → Type*} {𝔸 : Type*}
+variable {m n : Type*} {n' : m → Type*} {𝔸 : Type*}
 
 namespace Matrix
 
@@ -113,26 +113,24 @@ end Topological
 
 section Normed
 
-variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
-  [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
-include 𝕂
+variable [Fintype m] [DecidableEq m] [NormedRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
     exp (A + B) = exp A * exp B :=
-  open scoped Norms.Operator in exp_add_of_commute 𝕂 h
+  open scoped Norms.Operator in exp_add_of_commute h
 
 open scoped Function in -- required for scoped `on` notation
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp :=
-  open scoped Norms.Operator in exp_sum_of_commute 𝕂 s f h
+  open scoped Norms.Operator in exp_sum_of_commute s f h
 
 nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp (n • A) = exp A ^ n :=
-  open scoped Norms.Operator in exp_nsmul 𝕂 n A
+  open scoped Norms.Operator in exp_nsmul n A
 
 nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp A) :=
-  open scoped Norms.Operator in isUnit_exp 𝕂 A
+  open scoped Norms.Operator in isUnit_exp A
 
 -- TODO: without disabling this instance we get a timeout, see lean4#10414:
 -- https://github.com/leanprover/lean4/issues/10414
@@ -141,7 +139,7 @@ nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp A) :=
 attribute [-instance] Matrix.SpecialLinearGroup.hasCoeToGeneralLinearGroup in
 nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
     exp (U * A * U⁻¹) = U * exp A * U⁻¹ :=
-  open scoped Norms.Operator in exp_units_conj 𝕂 U A
+  open scoped Norms.Operator in exp_units_conj U A
 
 -- TODO: without disabling this instance we get a timeout, see lean4#10414:
 -- https://github.com/leanprover/lean4/issues/10414
@@ -150,35 +148,34 @@ nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
 attribute [-instance] Matrix.SpecialLinearGroup.hasCoeToGeneralLinearGroup in
 theorem exp_units_conj' (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
     exp (U⁻¹ * A * U) = U⁻¹ * exp A * U :=
-  exp_units_conj 𝕂 U⁻¹ A
+  exp_units_conj U⁻¹ A
 
 end Normed
 
 section NormedComm
 
-variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
-  [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
-include 𝕂
+variable [Fintype m] [DecidableEq m]
+  [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
 theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by
   rw [nonsing_inv_eq_ringInverse]
-  open scoped Norms.Operator in exact (Ring.inverse_exp 𝕂 A).symm
+  open scoped Norms.Operator in exact (Ring.inverse_exp A).symm
 
 theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp (z • A) = exp A ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · rw [zpow_natCast, natCast_zsmul, exp_nsmul 𝕂]
-  · have : IsUnit (exp A).det := (Matrix.isUnit_iff_isUnit_det _).mp (isUnit_exp 𝕂 _)
-    rw [Matrix.zpow_neg this, zpow_natCast, neg_smul, exp_neg 𝕂, natCast_zsmul, exp_nsmul 𝕂]
+  · rw [zpow_natCast, natCast_zsmul, exp_nsmul]
+  · have : IsUnit (exp A).det := (Matrix.isUnit_iff_isUnit_det _).mp (isUnit_exp _)
+    rw [Matrix.zpow_neg this, zpow_natCast, neg_smul, exp_neg, natCast_zsmul, exp_nsmul]
 
 theorem exp_conj (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
     exp (U * A * U⁻¹) = U * exp A * U⁻¹ :=
   let ⟨u, hu⟩ := hy
-  hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj 𝕂 u A
+  hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj u A
 
 theorem exp_conj' (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
     exp (U⁻¹ * A * U) = U⁻¹ * exp A * U :=
   let ⟨u, hu⟩ := hy
-  hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj' 𝕂 u A
+  hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj' u A
 
 end NormedComm
 

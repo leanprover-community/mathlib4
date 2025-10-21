@@ -30,7 +30,7 @@ namespace Quaternion
 
 @[simp, norm_cast]
 theorem exp_coe (r : ℝ) : exp (r : ℍ[ℝ]) = ↑(exp r) :=
-  (map_exp ℝ (algebraMap ℝ ℍ[ℝ]) (continuous_algebraMap _ _) _).symm
+  (map_exp (algebraMap ℝ ℍ[ℝ]) (continuous_algebraMap _ _) _).symm
 
 /-- The even terms of `expSeries` are real, and correspond to the series for $\cos ‖q‖$. -/
 theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ) :
@@ -101,7 +101,8 @@ theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
 /-- The closed form for the quaternion exponential on arbitrary quaternions. -/
 theorem exp_eq (q : Quaternion ℝ) :
     exp q = exp q.re • (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im) := by
-  rw [← exp_of_re_eq_zero q.im q.re_im, ← coe_mul_eq_smul, ← exp_coe, ← exp_add_of_commute ℝ,
+  have : NormedAlgebra ℚ ℍ := .restrictScalars ℚ ℝ ℍ
+  rw [← exp_of_re_eq_zero q.im q.re_im, ← coe_mul_eq_smul, ← exp_coe, ← exp_add_of_commute,
     re_add_im]
   exact Algebra.commutes q.re (_ : ℍ[ℝ])
 

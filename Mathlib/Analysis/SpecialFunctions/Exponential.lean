@@ -206,7 +206,7 @@ end DerivRCLike
 theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp := by
   refine funext fun x => ?_
   rw [Complex.exp, exp_eq_tsum_div]
-  exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable ℝ x).hasSum.tendsto_sum_nat
+  exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable x).hasSum.tendsto_sum_nat
 
 theorem Real.exp_eq_exp_ℝ : Real.exp = NormedSpace.exp := by
   ext x; exact mod_cast congr_fun Complex.exp_eq_exp_ℂ x
@@ -392,12 +392,11 @@ end exp_smul
 
 section tsum_tprod
 
-variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝔸 : Type*} [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
-include 𝕂 in
 /-- If `f` has sum `a`, then `NormedSpace.exp ∘ f` has product `NormedSpace.exp a`. -/
 lemma HasSum.exp {ι : Type*} {f : ι → 𝔸} {a : 𝔸} (h : HasSum f a) :
     HasProd (exp ∘ f) (exp a) :=
-  Tendsto.congr (fun s ↦ exp_sum 𝕂 s f) <| Tendsto.exp 𝕂 h
+  Tendsto.congr (fun s ↦ exp_sum s f) <| Tendsto.exp h
 
 end tsum_tprod

@@ -306,17 +306,16 @@ end Normed
 
 section
 
-variable [RCLike 𝕜] [NormedRing R] [NormedAddCommGroup M]
-variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Algebra ℚ R] [Module ℚ M]
+variable [NormedRing R] [NormedAddCommGroup M]
+variable [NormedAlgebra ℚ R] [NormedSpace ℚ M] [Algebra ℚ R] [Module ℚ M]
 variable [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
-variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
 variable [CompleteSpace R] [CompleteSpace M]
 
 -- Evidence that we have sufficient instances on `tsze R N`
 -- to make `NormedSpace.exp_add_of_commute` usable
 example (a b : tsze R M) (h : Commute a b) : exp (a + b) = exp a * exp b :=
-  exp_add_of_commute 𝕜 h
+  exp_add_of_commute h
 
 end
 

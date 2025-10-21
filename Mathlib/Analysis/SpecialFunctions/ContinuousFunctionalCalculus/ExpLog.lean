@@ -45,7 +45,7 @@ section general_exponential
 variable {𝕜 : Type*} {α : Type*} [RCLike 𝕜] [TopologicalSpace α] [CompactSpace α]
 
 lemma NormedSpace.exp_continuousMap_eq (f : C(α, 𝕜)) :
-    exp f = (⟨exp ∘ f, (exp_continuous 𝕜).comp f.continuous⟩ : C(α, 𝕜)) := by
+    exp f = (⟨exp ∘ f, exp_continuous.comp f.continuous⟩ : C(α, 𝕜)) := by
   ext a
   simp_rw [NormedSpace.exp_eq_expSeries_sum (𝔸 := C(α, 𝕜)) 𝕜, FormalMultilinearSeries.sum]
   have h_sum := NormedSpace.expSeries_summable (𝕂 := 𝕜) f
@@ -65,8 +65,9 @@ lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc (exp : 𝕜 → 𝕜) a = exp a := by
   conv_rhs => rw [← cfc_id 𝕜 a ha, cfc_apply id a ha]
   have h := (cfcHom_isClosedEmbedding (R := 𝕜) (show p a from ha)).continuous
-  have _ : ContinuousOn exp (spectrum 𝕜 a) := exp_continuous 𝕜 |>.continuousOn
-  simp_rw [← map_exp 𝕜 _ h, cfc_apply exp a ha]
+  have _ : ContinuousOn exp (spectrum 𝕜 a) := exp_continuous.continuousOn
+  have : Algebra ℚ A := RestrictScalars.algebra ℚ 𝕜 A
+  simp_rw [← map_exp _ h, cfc_apply exp a ha]
   congr 1
   ext
   simp [exp_continuousMap_eq]

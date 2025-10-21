@@ -31,8 +31,8 @@ section SinCos
 theorem Complex.hasSum_cos' (z : ℂ) :
     HasSum (fun n : ℕ => (z * Complex.I) ^ (2 * n) / ↑(2 * n)!) (Complex.cos z) := by
   rw [Complex.cos, Complex.exp_eq_exp_ℂ]
-  have := ((expSeries_div_hasSum_exp ℂ (z * Complex.I)).add
-    (expSeries_div_hasSum_exp ℂ (-z * Complex.I))).div_const 2
+  have := ((expSeries_div_hasSum_exp (z * Complex.I)).add
+    (expSeries_div_hasSum_exp (-z * Complex.I))).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
@@ -48,8 +48,8 @@ theorem Complex.hasSum_sin' (z : ℂ) :
     HasSum (fun n : ℕ => (z * Complex.I) ^ (2 * n + 1) / ↑(2 * n + 1)! / Complex.I)
       (Complex.sin z) := by
   rw [Complex.sin, Complex.exp_eq_exp_ℂ]
-  have := (((expSeries_div_hasSum_exp ℂ (-z * Complex.I)).sub
-    (expSeries_div_hasSum_exp ℂ (z * Complex.I))).mul_right Complex.I).div_const 2
+  have := (((expSeries_div_hasSum_exp (-z * Complex.I)).sub
+    (expSeries_div_hasSum_exp (z * Complex.I))).mul_right Complex.I).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this

@@ -31,8 +31,8 @@ open Complex
 over ℂ. -/
 @[simps]
 noncomputable def selfAdjoint.expUnitary (a : selfAdjoint A) : unitary A :=
-  ⟨exp ((I • a.val) : A),
-      exp_mem_unitary_of_mem_skewAdjoint ℂ (a.prop.smul_mem_skewAdjoint conj_I)⟩
+  have : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
+  ⟨exp ((I • a.val) : A), exp_mem_unitary_of_mem_skewAdjoint (a.prop.smul_mem_skewAdjoint conj_I)⟩
 
 open selfAdjoint
 
@@ -49,11 +49,12 @@ lemma selfAdjoint.continuous_expUnitary : Continuous (expUnitary : selfAdjoint A
 
 theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
     expUnitary (a + b) = expUnitary a * expUnitary b := by
+  have : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
   ext
   have hcomm : Commute (I • (a : A)) (I • (b : A)) := by
     unfold Commute SemiconjBy
     simp only [h.eq, Algebra.smul_mul_assoc, Algebra.mul_smul_comm]
-  simpa only [expUnitary_coe, AddSubgroup.coe_add, smul_add] using exp_add_of_commute ℂ hcomm
+  simpa only [expUnitary_coe, AddSubgroup.coe_add, smul_add] using exp_add_of_commute hcomm
 
 theorem Commute.expUnitary {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
     Commute (expUnitary a) (expUnitary b) :=
