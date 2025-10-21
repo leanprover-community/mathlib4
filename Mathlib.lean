@@ -5577,10 +5577,7 @@ import Mathlib.RingTheory.Extension.Cotangent.Free
 import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
 import Mathlib.RingTheory.Extension.Generators
 import Mathlib.RingTheory.Extension.Presentation.Basic
-<<<<<<< HEAD
-=======
 import Mathlib.RingTheory.Extension.Presentation.Core
->>>>>>> upstream/master
 import Mathlib.RingTheory.Extension.Presentation.Submersive
 import Mathlib.RingTheory.FilteredAlgebra.Basic
 import Mathlib.RingTheory.Filtration
