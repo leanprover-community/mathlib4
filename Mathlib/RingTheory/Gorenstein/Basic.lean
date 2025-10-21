@@ -61,6 +61,22 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
+variable {R} in
+lemma IsLocalRing.ResidueField.map_injective [IsLocalRing R] {S : Type*} [CommRing S]
+    [IsLocalRing S] (f : R →+* S) [IsLocalHom f] :
+    Function.Injective (ResidueField.map f) := by
+  rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
+  intro x hx
+  simpa only [map_eq_zero] using hx
+
+variable {R} in
+lemma IsLocalRing.ResidueField.map_bijective_of_surjective [IsLocalRing R] {S : Type*} [CommRing S]
+    [IsLocalRing S] (f : R →+* S) (surj : Function.Surjective f) [IsLocalHom f] :
+    Function.Bijective (ResidueField.map f) := by
+  refine ⟨ResidueField.map_injective f, ?_⟩
+  apply Ideal.Quotient.lift_surjective_of_surjective
+  convert Function.Surjective.comp (Ideal.Quotient.mk_surjective (I := (maximalIdeal S))) surj
+
 lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := by
   have : (ringKrullDim R).unbot ringKrullDim_ne_bot ≠ ⊤ := by
     by_contra eq
@@ -491,9 +507,9 @@ end
 section injdim
 
 omit [IsLocalRing R] [IsNoetherianRing R] in
-lemma nontrivial_of_islocalizedModule (S : Submonoid R) {M MS : Type*} [AddCommGroup M] [Module R M]
-    [AddCommGroup MS] [Module R MS] (f : M →ₗ[R] MS) [IsLocalizedModule S f] (h : Nontrivial MS) :
-    Nontrivial M := by
+lemma nontrivial_of_islocalizedModule {S : Submonoid R} {M MS : Type*} [AddCommGroup M] [Module R M]
+    [AddCommGroup MS] [Module R MS] {f : M →ₗ[R] MS} (isl : IsLocalizedModule S f)
+    (h : Nontrivial MS) : Nontrivial M := by
   by_contra!
   absurd h
   exact not_nontrivial_iff_subsingleton.mpr
@@ -596,10 +612,47 @@ lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M]
   have ntr : Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R))) M
     q.length) := by
     let qq := q ⟨q.length, Nat.lt_succ.mpr (le_refl q.length)⟩
+    have qqeq : qq.1.1 = maximalIdeal R := tail_eq
     have ntr' : Nontrivial (Ext.{v} (ModuleCat.of (Localization qq.1.1.primeCompl)
       (Shrink.{v, u} qq.1.1.ResidueField)) (M.localizedModule qq.1.1.primeCompl) q.length) :=
       lem' q.length (le_refl _)
-    sorry
+    let _ : Module.Finite R (Shrink.{v} (R ⧸ maximalIdeal R)) :=
+      Module.Finite.equiv (Shrink.linearEquiv.{v} R (R ⧸ maximalIdeal R)).symm
+    let _ : IsScalarTower R (Localization qq.1.1.primeCompl) (Shrink.{v} qq.1.1.ResidueField) :=
+      Equiv.isScalarTower R (Localization qq.1.1.primeCompl) (equivShrink qq.1.1.ResidueField).symm
+    let _ : IsLocalization qq.1.1.primeCompl R :=
+      IsLocalization.at_units _ (fun x hx ↦ by simpa [qqeq] using hx)
+    have surj : Function.Surjective (algebraMap R (Localization qq.1.1.primeCompl)) :=
+      (IsLocalization.bijective qq.1.1.primeCompl
+        (algebraMap R (Localization qq.1.1.primeCompl)) rfl).2
+    let _ : IsLocalHom (algebraMap R (Localization qq.1.1.primeCompl)) :=
+      IsLocalHom.of_surjective _ surj
+    let e' : (R ⧸ maximalIdeal R) →ₗ[R] qq.1.1.ResidueField :=
+      { __ := ResidueField.map (algebraMap R (Localization qq.1.1.primeCompl))
+        map_smul' r x := by
+          simp only [RingHom.toMonoidHom_eq_coe, Algebra.smul_def, Ideal.Quotient.algebraMap_eq,
+            OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, map_mul,
+            RingHom.id_apply, mul_eq_mul_right_iff, map_eq_zero]
+          left
+          rw [IsScalarTower.algebraMap_eq R (Localization qq.1.1.primeCompl) qq.1.1.ResidueField,
+            ResidueField.algebraMap_eq, ← ResidueField.map_comp_residue]
+          rfl }
+    have bij : Function.Bijective e' :=
+      ResidueField.map_bijective_of_surjective _ surj
+    let e : (R ⧸ maximalIdeal R) ≃ₗ[R] qq.1.1.ResidueField :=
+      LinearEquiv.ofBijective e' bij
+    let f : ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R)) ≃ₗ[R]
+      (ModuleCat.of (Localization qq.1.1.primeCompl) (Shrink.{v, u} qq.1.1.ResidueField)) :=
+      ((Shrink.linearEquiv R (R ⧸ maximalIdeal R)).trans e).trans
+        (Shrink.linearEquiv R qq.1.1.ResidueField).symm
+    have isl1 : IsLocalizedModule qq.1.1.primeCompl f.toLinearMap := by
+      let _ := isLocalizedModule_id qq.1.1.primeCompl (Shrink.{v, u} (R ⧸ maximalIdeal R)) R
+      exact IsLocalizedModule.of_linearEquiv qq.1.1.primeCompl LinearMap.id f
+    have isl := Ext.isLocalizedModule'.{v, v, u, u, v, v} qq.1.1.primeCompl
+      (Localization qq.1.1.primeCompl) f.toLinearMap isl1
+      (M.localizedModule_mkLinearMap qq.1.1.primeCompl)
+      (M.localizedModule_isLocalizedModule qq.1.1.primeCompl) q.length
+    exact nontrivial_of_islocalizedModule isl ntr'
   simp only [← hq, injectiveDimension_eq_sInf.{v, u, v} M, le_sInf_iff, Set.mem_setOf_eq]
   intro b hb
   by_contra! lt
