@@ -78,6 +78,7 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.«tacticNext_=>_»,
     ``Lean.Parser.Tactic.tacticSeq1Indented,
     ``Lean.Parser.Tactic.tacticSeq,
+    `focus,
     ``Lean.Parser.Tactic.focus,
     -- re-ordering goals
     `Batteries.Tactic.tacticSwap,
