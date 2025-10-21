@@ -518,7 +518,7 @@ lemma eq_of_simplicialEvalδ_eq
       refine hrec hL₁.of_cons _ hL₂.of_cons (fun x hx => ?_) (by grind)
       have := h (x - 1) (by grind) -- helps grind
       have := Nat.lt_add_one_iff_lt_or_eq.mp hx -- helps grind
-      grind [simplicialEvalδ, simplicialEvalδ_eq_self_of_isAdmissible_cons,
+      grind (splits := 12) [simplicialEvalδ, simplicialEvalδ_eq_self_of_isAdmissible_cons,
           → IsAdmissible.head_lt']
 
 end NormalFormsP_δ
