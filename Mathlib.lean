@@ -6112,8 +6112,6 @@ import Mathlib.SetTheory.ZFC.Rank
 import Mathlib.SetTheory.ZFC.VonNeumann
 import Mathlib.Std.Data.HashMap
 import Mathlib.Tactic
-import Mathlib.Tactic
-import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Algebraize
