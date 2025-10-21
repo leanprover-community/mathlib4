@@ -515,13 +515,14 @@ instance isLocalization : IsLocalization.Away (X : R[X]) R[T;T⁻¹] :=
 theorem mk'_mul_T (p : R[X]) (n : ℕ) :
     IsLocalization.mk' R[T;T⁻¹] p (⟨X^n, n, rfl⟩ : Submonoid.powers (X : R[X])) * T n =
       toLaurent p := by
-  rw [←toLaurent_X_pow, ←algebraMap_eq_toLaurent, IsLocalization.mk'_spec, algebraMap_eq_toLaurent]
+  rw [← toLaurent_X_pow, ← algebraMap_eq_toLaurent, IsLocalization.mk'_spec,
+    algebraMap_eq_toLaurent]
 
 @[simp]
 theorem mk'_eq (p : R[X]) (n : ℕ) :
     IsLocalization.mk' R[T;T⁻¹] p (⟨X^n, n, rfl⟩ : Submonoid.powers (X : R[X])) =
       toLaurent p * T (-n) := by
-  rw [←IsUnit.mul_left_inj (isUnit_T n), mul_T_assoc, neg_add_cancel, T_zero, mul_one]
+  rw [← IsUnit.mul_left_inj (isUnit_T n), mul_T_assoc, neg_add_cancel, T_zero, mul_one]
   exact mk'_mul_T p n
 
 theorem mk'_one_X_pow (n : ℕ) :
@@ -544,15 +545,15 @@ def eval₂ : R[T;T⁻¹] →+* S :=
 @[simp]
 theorem eval₂_toLaurent (p : R[X]) : eval₂ f x (toLaurent p) = Polynomial.eval₂ f x p := by
   unfold eval₂
-  rw [←algebraMap_eq_toLaurent, IsLocalization.lift_eq, coe_eval₂RingHom]
+  rw [← algebraMap_eq_toLaurent, IsLocalization.lift_eq, coe_eval₂RingHom]
 
 theorem eval₂_T_n (n : ℕ) : eval₂ f x (T n) = x ^ n := by
-  rw [←Polynomial.toLaurent_X_pow, eval₂_toLaurent, eval₂_X_pow]
+  rw [← Polynomial.toLaurent_X_pow, eval₂_toLaurent, eval₂_X_pow]
 
 theorem eval₂_T_neg_n (n : ℕ) : eval₂ f x (T (-n)) = x⁻¹ ^ n := by
-  rw [←mk'_one_X_pow]
+  rw [← mk'_one_X_pow]
   unfold eval₂
-  rw [IsLocalization.lift_mk'_spec, map_one, coe_eval₂RingHom, eval₂_X_pow, ←mul_pow,
+  rw [IsLocalization.lift_mk'_spec, map_one, coe_eval₂RingHom, eval₂_X_pow, ← mul_pow,
     Units.mul_inv, one_pow]
 
 @[simp]
@@ -568,7 +569,7 @@ theorem eval₂_C (r : R) : eval₂ f x (C r) = f r := by
   rw [← toLaurent_C, eval₂_toLaurent, Polynomial.eval₂_C]
 
 theorem eval₂_C_mul_T_n (r : R) (n : ℕ) : eval₂ f x (C r * T n) = f r * x ^ n := by
-  rw [←Polynomial.toLaurent_C_mul_T, eval₂_toLaurent, eval₂_monomial]
+  rw [← Polynomial.toLaurent_C_mul_T, eval₂_toLaurent, eval₂_monomial]
 
 theorem eval₂_C_mul_T_neg_n (r : R) (n : ℕ) : eval₂ f x (C r * T (-n)) = f r * x⁻¹ ^ n := by
   rw [map_mul, eval₂_T_neg_n, eval₂_C]
