@@ -443,7 +443,7 @@ def smulLeftCLM (g : D → 𝕜) : 𝓢'(𝕜, D, E, V) →L[𝕜] 𝓢'(𝕜, D
 
 @[simp]
 theorem smulLeftCLM_apply_apply (g : D → 𝕜) (f : 𝓢'(𝕜, D, E, V)) (f' : 𝓢(D, E)) :
-    smulLeftCLM E V g f f' = f (SchwartzMap.smulLeftCLM _ g f') := by
+    smulLeftCLM E V g f f' = f (SchwartzMap.smulLeftCLM 𝕜 _ g f') := by
   rfl
 
 theorem mul_smulLeftCLM {g₁ g₂ : D → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
@@ -451,7 +451,7 @@ theorem mul_smulLeftCLM {g₁ g₂ : D → 𝕜} (hg₁ : g₁.HasTemperateGrowt
     smulLeftCLM E V g₂ ∘L smulLeftCLM E V g₁ = smulLeftCLM E V (g₁ * g₂) := by
   ext f f' y
   congr 1
-  have := DFunLike.congr_fun (smulLeftCLM_mul hg₁ hg₂ (E := E)) f'
+  have := DFunLike.congr_fun (smulLeftCLM_mul hg₁ hg₂ (𝕜 := 𝕜) (E := E)) f'
   simp only [coe_comp', Function.comp_apply] at this
   simp [this]
 
@@ -460,7 +460,7 @@ variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] {μ : Me
 
 theorem smulLeftCLM_toTemperedDistributionCLM_eq {g : D → 𝕜} (hg : g.HasTemperateGrowth)
     (f : 𝓢(D, E)) : smulLeftCLM (E →L[𝕜] V) V g (toTemperedDistributionCLM 𝕜 D E V μ f) =
-    toTemperedDistributionCLM 𝕜 D E V μ (SchwartzMap.smulLeftCLM E g f) := by
+    toTemperedDistributionCLM 𝕜 D E V μ (SchwartzMap.smulLeftCLM 𝕜 E g f) := by
   ext f' y
   simp [hg]
 
@@ -486,8 +486,9 @@ variable [NormedSpace ℝ V]
 /-- The distributional derivative and the classical derivative coincide on `𝓢(ℝ, F)`. -/
 theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
     derivCLM V (toTemperedDistributionCLM 𝕜 ℝ F V volume f) =
-    toTemperedDistributionCLM 𝕜 ℝ F V volume (SchwartzMap.derivCLM 𝕜 f) := by
-  ext
+    toTemperedDistributionCLM 𝕜 ℝ F V volume f.deriv := by
+  ext g y
+  simp
   simp [integral_clm_comp_deriv_right_eq_neg_left, integral_neg]
 
 end deriv
@@ -550,13 +551,13 @@ theorem fourierTransformInvCLM_apply (f : 𝓢'(𝕜, H, E, V)) :
 @[simp]
 theorem fourierTransformInv_apply (f : 𝓢'(𝕜, H, E, V)) (g : 𝓢(H, E)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
 
-@[simp]
-theorem fourier_inversion (f : 𝓢'(𝕜, H, E, V)) : 𝓕⁻ (𝓕 f) = f := by
-  ext; simp
+noncomputable
+instance instFourierPair : FourierPair 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V) where
+  inv_fourier f := by ext; simp
 
-@[simp]
-theorem fourier_inversion_inv (f : 𝓢'(𝕜, H, E, V)) : 𝓕 (𝓕⁻ f) = f := by
-  ext; simp
+noncomputable
+instance instFourierPairInv : FourierPairInv 𝓢'(𝕜, H, E, V) 𝓢'(𝕜, H, E, V) where
+  fourier_inv f := by ext; simp
 
 end FourierTransformInv
 
@@ -574,6 +575,13 @@ theorem fourierTransformCLM_toTemperedDistributionCLM_eq (f : 𝓢(H, E)) :
   simp only [fourierTransform_apply, toTemperedDistributionCLM_apply_apply,
     SchwartzMap.fourierTransform_apply]
   exact integral_bilin_fourierIntegral_eq_flip g f (.id ℂ _)
+
+theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(H, E)) :
+    𝓕⁻ (f : 𝓢'(ℂ, H, E →L[ℂ] V, V)) = 𝓕⁻ f := by
+  have := fourierTransformCLM_toTemperedDistributionCLM_eq (V := V) (𝓕⁻ f)
+  apply_fun 𝓕⁻ at this
+  simp only [FourierPair.inv_fourier, FourierPairInv.fourier_inv] at this
+  rw [this]
 
 example : 𝓕 (delta' 𝕜 E (0 : H)) = volume.toTemperedDistribution 𝕜 E := by
   ext f x

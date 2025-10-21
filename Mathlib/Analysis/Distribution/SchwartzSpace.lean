@@ -606,6 +606,33 @@ lemma _root_.Function.HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
   .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
 
+lemma _root_.Function.HasTemperateGrowth.id : Function.HasTemperateGrowth (fun (x : E) ↦ x) := by
+  apply Function.HasTemperateGrowth.of_fderiv (k := 1) (C := 1)
+  · convert Function.HasTemperateGrowth.const (ContinuousLinearMap.id ℝ E)
+    simp only [fderiv_id']
+  · apply differentiable_id
+  intro x
+  simp
+
+section SMul
+
+variable [NormedField 𝕜] [NormedRing R] [NormedSpace 𝕜 R] [NormedSpace ℝ R]
+
+theorem _root_.Function.HasTemperateGrowth.smul [SMulCommClass ℝ 𝕜 R] {f : E → R}
+    (hf : f.HasTemperateGrowth) (c : 𝕜) : (c • f).HasTemperateGrowth := by
+  constructor
+  · apply hf.1.const_smul
+  intro n
+  obtain ⟨k, C, h⟩ := hf.2 n
+  use k, C * ‖c‖
+  intro x
+  specialize h x
+  rw [iteratedFDeriv_const_smul_apply (hf.1.of_le (right_eq_inf.mp rfl)).contDiffAt, norm_smul]
+  grw [h]
+  grind
+
+end SMul
+
 section Mul
 
 variable [NormedField 𝕜] [NormedRing R] [NormedSpace 𝕜 R] [NormedAlgebra ℝ R]
@@ -643,6 +670,22 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
   · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
     simpa [this] using .const _
   · exact (f.le_opNorm x).trans (by simp [mul_add])
+
+section comp_clm
+
+variable [NormedAddCommGroup H] [NormedSpace ℝ H]
+
+theorem _root_.Function.HasTemperateGrowth.comp_clm_left {f : H → E} (hf : f.HasTemperateGrowth)
+    (g : E →L[ℝ] F) : (g ∘ f).HasTemperateGrowth := by
+  refine ⟨hf.1.continuousLinearMap_comp _, ?_⟩
+  intro n
+  obtain ⟨k, C, h⟩ := hf.2 n
+  use k, ‖g‖ * C
+  intro x
+  grw [ContinuousLinearMap.iteratedFDeriv_comp_left g hf.1.contDiffAt (right_eq_inf.mp rfl),
+    ContinuousLinearMap.norm_compContinuousMultilinearMap_le, h, mul_assoc]
+
+end comp_clm
 
 theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
   refine ⟨smooth f ⊤, fun n => ?_⟩
@@ -958,30 +1001,48 @@ theorem bilinLeftSchwartzCLM_apply (B : E →L[𝕜] F →L[𝕜] G) (g : 𝓢(D
     (f : 𝓢(D, E)) (x : D) : bilinLeftSchwartzCLM B g f x = B (f x) (g x) :=
   bilinLeftCLM_apply _ g.hasTemperateGrowth f x
 
-variable (E) in
-def smulLeftCLM (g : D → 𝕜) : 𝓢(D, E) →L[𝕜] 𝓢(D, E) :=
-    bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip g
+variable [NormedField R] [NormedAlgebra 𝕜 R] [NormedSpace R E]
+  [IsScalarTower 𝕜 R E]
+
+section defs
+
+variable [NormedSpace ℝ R]
+
+variable (𝕜 E) in
+def smulLeftCLM (g : D → R) : 𝓢(D, E) →L[𝕜] 𝓢(D, E) :=
+    bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 R).flip g
 
 @[simp]
-theorem smulLeftCLM_apply {g : D → 𝕜} (hg : g.HasTemperateGrowth)
-    (f : 𝓢(D, E)) (x : D) : smulLeftCLM E g f x = (g x) • f x :=
-  bilinLeftCLM_apply (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg f x
-
-variable [NonUnitalNormedRing R] [NormedSpace 𝕜 R] [NormedSpace ℝ R] [IsScalarTower 𝕜 R R]
-  [SMulCommClass 𝕜 R R]
+theorem smulLeftCLM_apply {g : D → R} (hg : g.HasTemperateGrowth)
+    (f : 𝓢(D, E)) (x : D) : smulLeftCLM 𝕜 E g f x = (g x) • f x :=
+  bilinLeftCLM_apply (ContinuousLinearMap.lsmul 𝕜 R).flip hg f x
 
 @[simp]
-theorem smulLeftCLM_mul {g₁ g₂ : D → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
-    (hg₂ : g₂.HasTemperateGrowth) :
-    smulLeftCLM E g₁ ∘L smulLeftCLM E g₂ = smulLeftCLM E (g₁ * g₂) := by
-  ext f x
-  simp [hg₁, hg₂, hg₁.mul hg₂, smul_smul]
+theorem smulLeftCLM_smul {g : D → R} (hg : g.HasTemperateGrowth) (c : 𝕜) (f : 𝓢(D, E)) :
+    smulLeftCLM 𝕜 E (c • g) f = c • smulLeftCLM 𝕜 E g f := by
+  ext x
+  simp [hg, hg.smul c]
 
 @[simp]
 theorem smulLeftCLM_const (c : 𝕜) :
-    smulLeftCLM E (fun (_ : D) ↦ c) = c • .id 𝕜 _ := by
+    smulLeftCLM 𝕜 E (fun (_ : D) ↦ c) = c • .id 𝕜 _ := by
   ext
   simp [Function.HasTemperateGrowth.const c (E := D)]
+
+end defs
+
+section Mul
+
+variable [NormedAlgebra ℝ R]
+
+@[simp]
+theorem smulLeftCLM_mul {g₁ g₂ : D → R} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM 𝕜 E g₁ ∘L smulLeftCLM 𝕜 E g₂ = smulLeftCLM 𝕜 E (g₁ * g₂) := by
+  ext f x
+  simp [hg₁, hg₂, hg₁.mul hg₂, smul_smul]
+
+end Mul
 
 end Multiplication
 
@@ -1124,8 +1185,13 @@ def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
         norm_iteratedFDeriv_eq_norm_iteratedDeriv, ← iteratedDeriv_succ'] using
         f.le_seminorm' 𝕜 k (n + 1) x⟩
 
+def deriv (f : 𝓢(ℝ, F)) : 𝓢(ℝ, F) := derivCLM ℝ f
+
 @[simp]
-theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 f x = deriv f x :=
+theorem derivCLM_apply (f : 𝓢(ℝ, F)) : derivCLM 𝕜 f = f.deriv  :=
+  rfl
+
+theorem deriv_apply (f : 𝓢(ℝ, F)) (x : ℝ) : f.deriv x = _root_.deriv f x :=
   rfl
 
 theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
@@ -1552,3 +1618,5 @@ theorem integral_mul_deriv_eq_neg_deriv_mul (f : 𝓢(ℝ, 𝕜)) (g : 𝓢(ℝ,
 end integration_by_parts
 
 end SchwartzMap
+
+set_option linter.style.longFile 1700

@@ -74,22 +74,6 @@ theorem Function.HasTemperateGrowth.add {f₁ f₂ : H → E}
     · apply le_add_of_nonneg_right (by positivity)
     exact k₁.le_max_right k₂
 
-section comp_clm
-
-variable [NormedAddCommGroup F] [NormedSpace ℝ F]
-
-theorem Function.HasTemperateGrowth.comp_clm_left {f : H → E} (hf : f.HasTemperateGrowth)
-    (g : E →L[ℝ] F) : (g ∘ f).HasTemperateGrowth := by
-  refine ⟨hf.1.continuousLinearMap_comp _, ?_⟩
-  intro n
-  obtain ⟨k, C, h⟩ := hf.2 n
-  use k, ‖g‖ * C
-  intro x
-  grw [ContinuousLinearMap.iteratedFDeriv_comp_left g hf.1.contDiffAt ENat.LEInfty.out,
-    ContinuousLinearMap.norm_compContinuousMultilinearMap_le, h, mul_assoc]
-
-end comp_clm
-
 theorem one_add_norm_inv : (fun (x : H) ↦ (1 + ‖x‖^2)⁻¹).HasTemperateGrowth := by
   constructor
   · have : ∀ (x : H), 1 + ‖x‖^2 ≠ 0 := by
@@ -191,7 +175,7 @@ theorem TemperedDistribution.fourierMultiplierCLM_eq (g : H → 𝕜) (f : 𝓢'
 
 theorem TemperedDistribution.fourierMultiplierCLM_apply (g : H → 𝕜) (f : 𝓢'(𝕜, H, E, V))
     (u : 𝓢(H, E)) : TemperedDistribution.fourierMultiplierCLM E V g f u =
-    f (𝓕 ((SchwartzMap.smulLeftCLM E g) (𝓕⁻ u))) := by
+    f (𝓕 ((SchwartzMap.smulLeftCLM 𝕜 E g) (𝓕⁻ u))) := by
   rfl
 
 @[simp]
@@ -238,14 +222,13 @@ variable [NormedSpace ℂ V] [CompleteSpace V]
 
 theorem memSobolev_iff_fourierTransform [CompleteSpace E] {g : H → ℂ} (f : 𝓢'(ℂ, H, E →L[ℂ] V, V))
     (hg : g.HasTemperateGrowth) : MemSobolev g f ↔ ∃ (f' : Lp E 2 (volume : Measure H)),
-    smulLeftCLM _ _ g (𝓕 f) = Lp.toTemperedDistribution ℂ V f' := by
+    _root_.smulLeftCLM _ _ g (𝓕 f) = Lp.toTemperedDistribution ℂ V f' := by
   rw [memSobolev_iff f hg]
   constructor
   · intro ⟨f', hf'⟩
     use 𝓕 f'
     apply_fun 𝓕 at hf'
-    rw [TemperedDistribution.fourierMultiplierCLM_eq,
-      TemperedDistribution.fourier_inversion_inv] at hf'
+    rw [TemperedDistribution.fourierMultiplierCLM_eq, FourierPairInv.fourier_inv] at hf'
     rw [hf', toTemperedDistribution_fourierTransform_eq V f']
   · intro ⟨f', hf'⟩
     use 𝓕⁻ f'
@@ -264,7 +247,7 @@ theorem memSobolev_one_iff_fourierTransform [CompleteSpace E]
   · intro ⟨f', hf'⟩
     use 𝓕⁻ f'
     apply_fun 𝓕⁻ at hf'
-    rw [TemperedDistribution.fourier_inversion] at hf'
+    simp only [FourierPair.inv_fourier] at hf'
     rw [hf', toTemperedDistribution_fourierTransformInv_eq]
 
 end inner
@@ -293,7 +276,7 @@ open Real
 noncomputable
 instance TemperedDistribution.instLaplacian [CompleteSpace E] :
     Laplacian 𝓢'(ℂ, H, E, V) 𝓢'(ℂ, H, E, V) where
-  laplacian := TemperedDistribution.fourierMultiplierCLM E V (fun x ↦ ‖x‖ ^ 2 : H → ℂ)
+  laplacian := (2 * π) ^ 2 • TemperedDistribution.fourierMultiplierCLM E V (fun x ↦ ‖x‖ ^ 2 : H → ℂ)
 
 theorem laplacian_mem_Sobolev_norm_sq {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf : MemSobolev (‖·‖ ^ 2) f) :
     MemSobolev 1 (Δ f) := by
@@ -302,12 +285,65 @@ theorem laplacian_mem_Sobolev_norm_sq {f : 𝓢'(ℂ, H, E →L[ℂ] V, V)} (hf 
   · convert (hasTemperateGrowth_norm_sq H).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
     simp
   obtain ⟨g, hg⟩ := hf
-  use g
-  have : Lp.toTemperedDistribution ℂ V ((2 * π) ^ 2 • g) =
-      (2 * π) ^ 2 • (Lp.toTemperedDistribution ℂ V g) := by
-    exact (Lp.toTemperedDistributionCLM ℂ E V volume 2).map_smul_of_tower ((2 * π) ^ 2) g
-  rw [← hg]
+  use (2 * π)^2 • g
+  have := (Lp.toTemperedDistributionCLM ℂ E V (volume : Measure H) 2).map_smul_of_tower
+    ((2 * π)^2) g
+  simp only [Lp.toTemperedDistributionCLM_apply] at this
+  rw [this, ← hg]
   rfl
+
+variable [CompleteSpace E]
+
+theorem laplacian_toTemperedDistribution_eq' (f : 𝓢(ℝ, E)) : Δ (f : 𝓢'(ℂ, ℝ, E →L[ℂ] V, V)) =
+    (2 * π) ^ 2 • ((𝓕⁻ (SchwartzMap.smulLeftCLM ℂ _ (fun x ↦ ‖x‖ ^ 2 : ℝ → ℂ) (𝓕 f)) : 𝓢(ℝ, E)) :
+      𝓢'(ℂ, ℝ, E →L[ℂ] V, V)) := by
+  change (2 * π) ^ 2 • 𝓕⁻ ((_root_.smulLeftCLM _ _ (fun x ↦ ‖x‖ ^ 2 : ℝ → ℂ))
+    (𝓕 (f : 𝓢'(ℂ, ℝ, E →L[ℂ] V, V)))) = _
+  have ht : Function.HasTemperateGrowth fun (x : ℝ) ↦ (‖x‖ ^ 2 : ℂ) := by
+    convert (hasTemperateGrowth_norm_sq _).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
+    simp only [RCLike.ofRealCLM_apply, Complex.coe_algebraMap,
+      Function.comp_apply, Complex.ofReal_pow]
+  congr 1
+  rw [TemperedDistribution.fourierTransformCLM_toTemperedDistributionCLM_eq,
+    smulLeftCLM_toTemperedDistributionCLM_eq ht,
+    TemperedDistribution.fourierTransformInv_toTemperedDistributionCLM_eq]
+
+/-- The Laplacian is equal to `-f.deriv.deriv` for `f : 𝓢(ℝ, E)`. -/
+theorem laplacian_toTemperedDistribution_eq (f : 𝓢(ℝ, E)) : Δ (f : 𝓢'(ℂ, ℝ, E →L[ℂ] V, V)) =
+    ((-f.deriv.deriv) : 𝓢'(ℂ, ℝ, E →L[ℂ] V, V)) := by
+  rw [laplacian_toTemperedDistribution_eq']
+  have ht : Function.HasTemperateGrowth (fun (x : ℝ) ↦ (x : ℂ)) := by
+    convert (Function.HasTemperateGrowth.id (E := ℝ)).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
+  have : (2 * π) ^ 2 • (𝓕⁻ (SchwartzMap.smulLeftCLM ℂ E (fun (x : ℝ) ↦ (‖x‖ ^ 2 : ℂ)) (𝓕 f))) =
+      -f.deriv.deriv := by
+    rw [← FourierPair.inv_fourier (F := 𝓢(ℝ, E)) f.deriv.deriv]
+    rw [fourierTransform_deriv f.deriv, fourierTransform_deriv f]
+    simp only [norm_eq_abs, map_smul]
+    have := DFunLike.congr_fun (smulLeftCLM_mul ht ht (𝕜 := ℂ) (E := E)) (𝓕 f)
+    simp only [coe_comp', Function.comp_apply] at this
+    rw [this]
+    have h₁ : ∀ (g : 𝓢(ℝ, E)), 𝓕⁻ (- g) = -𝓕⁻ g :=
+      (SchwartzMap.fourierTransformCLE ℂ (V := ℝ) (E := E)).symm.toLinearMap.map_neg
+    have h₂ : ∀ (a : ℝ) (g : 𝓢(ℝ, E)), 𝓕⁻ (a • g) = a • 𝓕⁻ g :=
+      (SchwartzMap.fourierTransformCLE ℂ (V := ℝ) (E := E)).symm.toLinearMap.map_smul_of_tower
+    rw [← h₁, ← h₂]
+    congr
+    rw [smul_smul, ← neg_smul]
+    rw [← smul_one_smul ℂ ((2 * π) ^ 2)]
+    congr
+    · move_mul [← Complex.I, ← Complex.I]
+      simp only [pow_two, Complex.real_smul, Complex.ofReal_mul, Complex.ofReal_ofNat, mul_one,
+        Complex.I_mul_I, neg_mul, one_mul, neg_neg]
+      ring
+    ext x
+    simp only [Pi.mul_apply]
+    norm_cast
+    simp only [sq_abs]
+    ring
+  apply_fun (toTemperedDistributionCLM ℂ ℝ E V volume) at this
+  convert this
+  · rw [ContinuousLinearMap.map_smul_of_tower]
+  · rw [ContinuousLinearMap.map_neg]
 
 end normed
 
@@ -336,7 +372,7 @@ theorem toTemperedDistribution_holder_eq (g : BoundedContinuousFunction H ℂ)
   apply integral_congr_ae
   filter_upwards [(ContinuousLinearMap.lsmul ℂ ℂ).coeFn_holder (r := 2) (g.memLp_top.toLp _) f,
     g.memLp_top.coeFn_toLp, u.coeFn_toLp (1 - 2⁻¹)⁻¹,
-    ((SchwartzMap.smulLeftCLM (E →L[ℂ] V) g) u).coeFn_toLp (1 - 2⁻¹)⁻¹] with x h_holder hg' hu h'
+    ((SchwartzMap.smulLeftCLM ℂ (E →L[ℂ] V) g) u).coeFn_toLp (1 - 2⁻¹)⁻¹] with x h_holder hg' hu h'
   simp [h_holder, hg', hu, h', hg]
 
 section quotient

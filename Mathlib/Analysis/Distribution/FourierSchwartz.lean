@@ -138,13 +138,13 @@ lemma fourierTransformInv_apply (f : 𝓢(V, E)) (x : V) :
 @[simp] lemma fourierTransformCLE_symm_apply (f : 𝓢(V, E)) :
     (fourierTransformCLE 𝕜).symm f = 𝓕⁻ f := rfl
 
-@[simp]
-theorem fourier_inversion (f : 𝓢(V, E)) : 𝓕⁻ (𝓕 f) = f :=
-  (fourierTransformCLE ℂ).left_inv f
+noncomputable
+instance instFourierPair : FourierPair 𝓢(V, E) 𝓢(V, E) where
+  inv_fourier := (fourierTransformCLE ℂ).left_inv
 
-@[simp]
-theorem fourier_inversion_inv (f : 𝓢(V, E)) : 𝓕 (𝓕⁻ f) = f :=
-  (fourierTransformCLE ℂ).right_inv f
+noncomputable
+instance instFourierPairInv : FourierPairInv 𝓢(V, E) 𝓢(V, E) where
+  fourier_inv := (fourierTransformCLE ℂ).right_inv
 
 end definition
 
@@ -196,5 +196,31 @@ theorem norm_fourierTransform_toL2_eq (f : 𝓢(V, H)) :
   simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourierTransform_toL2_eq]
 
 end toL2
+
+section deriv
+
+open Complex
+
+theorem fourierTransform_deriv (f : 𝓢(ℝ, E)) : 𝓕 f.deriv =
+    (2 * π * I) • smulLeftCLM ℂ E (fun (x : ℝ) ↦ (x : ℂ)) (𝓕 f) := by
+  have := fourierIntegral_deriv f.integrable f.differentiable f.deriv.integrable
+  ext x
+  convert congr_fun this x
+  have ht₂ : Function.HasTemperateGrowth (fun (x : ℝ) ↦ (x : ℂ)) := by
+    convert (Function.HasTemperateGrowth.id (E := ℝ)).comp_clm_left (RCLike.ofRealCLM (K := ℂ))
+  simp only [smul_apply, ht₂, smulLeftCLM_apply, fourierTransform_apply, Complex.coe_smul]
+  rw [← smul_one_smul ℂ x (𝓕 (f : ℝ → E) x), real_smul, smul_smul, mul_one]
+
+
+theorem fourierTransform_deriv' (f : 𝓢(ℝ, E)) : 𝓕 f.deriv =
+    smulLeftCLM ℂ E (fun (x : ℝ) ↦ 2 * π * I * (x : ℂ)) (𝓕 f) := by
+  have := fourierIntegral_deriv f.integrable f.differentiable f.deriv.integrable
+  ext x
+  convert congr_fun this x
+  rw [smulLeftCLM_apply]; swap
+  · sorry
+  rw [fourierTransform_apply]
+
+end deriv
 
 end SchwartzMap

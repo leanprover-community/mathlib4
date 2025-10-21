@@ -24,8 +24,6 @@ open SchwartzMap MeasureTheory FourierTransform
 
 variable [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
 
-variable (f : 𝓢(V, E)) (g : Lp (α := V) E 2 volume)
-
 variable (V E) in
 noncomputable
 def Lp.fourierTransformLI : (Lp (α := V) E 2) ≃ₗᵢ[ℂ] (Lp (α := V) E 2) :=
@@ -50,6 +48,14 @@ instance Lp.instFourierTransform : FourierTransform (Lp (α := V) E 2) (Lp (α :
 noncomputable
 instance Lp.instFourierTransformInv : FourierTransformInv (Lp (α := V) E 2) (Lp (α := V) E 2) where
   fourierTransformInv := (fourierTransformLI V E).symm
+
+noncomputable
+instance instFourierPair : FourierPair (Lp (α := V) E 2) (Lp (α := V) E 2) where
+  inv_fourier := (Lp.fourierTransformLI V E).symm_apply_apply
+
+noncomputable
+instance instFourierPairInv : FourierPairInv (Lp (α := V) E 2) (Lp (α := V) E 2) where
+  fourier_inv := (Lp.fourierTransformLI V E).apply_symm_apply
 
 @[simp]
 theorem toLp_fourierTransform_eq (f : 𝓢(V, E)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
@@ -108,7 +114,5 @@ theorem toTemperedDistribution_fourierTransformInv_eq (f : Lp (α := E) F 2) :
     𝓕⁻ (Lp.toTemperedDistribution ℂ V f) = (Lp.toTemperedDistribution ℂ V (𝓕⁻ f)) := by
   have := toTemperedDistribution_fourierTransform_eq V (𝓕⁻ f)
   apply_fun 𝓕⁻ at this
-  simp only [TemperedDistribution.fourier_inversion] at this
-  rw [this]
-  congr
-  apply ((Lp.fourierTransformLI E F).right_inv _).symm
+  simp only [FourierPair.inv_fourier, FourierPairInv.fourier_inv] at this
+  exact this.symm
