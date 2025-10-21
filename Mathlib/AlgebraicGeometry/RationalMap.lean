@@ -406,8 +406,8 @@ def RationalMap.fromFunctionField [IrreducibleSpace X] (f : X ⤏ Y) :
     Spec X.functionField ⟶ Y := by
   refine Quotient.lift PartialMap.fromFunctionField ?_ f
   intro f g ⟨W, hW, hWl, hWr, e⟩
-  have : f.restrict W hW hWl = g.restrict W hW hWr := by 
-    ext1 
+  have : f.restrict W hW hWl = g.restrict W hW hWr := by
+    ext1
     · rfl
     rw [e]; simp
   rw [← f.fromFunctionField_restrict hW hWl, this, g.fromFunctionField_restrict]
