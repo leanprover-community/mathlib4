@@ -86,7 +86,7 @@ def IsDetecting : Prop :=
   ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ (G : C) (_ : P G),
     ∀ (h : G ⟶ Y), ∃! h' : G ⟶ X, h' ≫ f = h) → IsIso f
 
-/-- We say that `P : ObjectProperty C` is a codetecting set if the functors `C(-, G)`
+/-- We say that `P : ObjectProperty C` is codetecting if the functors `C(-, G)`
 for `G : C` such that `P G` collectively reflect isomorphisms,
 i.e., if any `h` with codomain `G` such that `P G` uniquely factors through `f`,
 then `f` is an isomorphism. -/
