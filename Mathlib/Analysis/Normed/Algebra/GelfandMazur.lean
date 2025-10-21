@@ -58,8 +58,14 @@ Since irreducible polynomials over `ℝ` have degree at most `2`, it must be the
 that each element is annihilated by a monic polynomial of degree `2`.
 We fix `x : F` in the following.
 
-Because the space `ℝ²` of monic polynomials of degree `2` is complete and locally compact
-and `‖aeval x p‖` gets large when `p` has large coefficients (*), there will be some `p₀`
+The space `ℝ²` of monic polynomials of degree `2` is complete and locally compact
+and hence `‖aeval x p‖` gets large when `p` has large coefficients.
+This is actually slightly subtle. It is certainly true for `‖x - r • 1‖` with `r : ℝ`.
+If the minimum of this is zero, then the minimum for monic polynomials of degree `2`
+will also be zero (and is attained on a one-dimensional subset). Otherwise, one can
+indeed show that a bound on `‖x ^ 2 - a • x + b • 1‖` implies bounds on `|a|` and `|b|`.
+
+By the first sentence of the previous paragraph, there will be some `p₀`
 such that `‖aeval x p₀‖` attains a minimum (see `NormedAlgebra.Real.exists_min_norm_φ`).
 We assume that this is positive and derive a contradiction. Let `M := ‖aeval x p₀‖ > 0`
 be the minimal value.
@@ -67,11 +73,6 @@ Since every monic polynomial `f : ℝ[X]` of even degree can be written as a pro
 of monic polynomials of degree `2`
 (see `Polynomial.IsMonicOfDegree.eq_isMonicOfDegree_two_mul_isMonicOfDegree`),
 it follows that `‖aeval x f‖ ≥ M ^ (f.natDegree / 2)`.
-
-(*) This is actually slightly subtle. It is certainly true for `‖x - r • 1‖` with `r : ℝ`.
-If the minimum of this is zero, then the minimum for monic polynomials of degree `2`
-will also be zero (and is attained on a one-dimensional subset). Otherwise, one can
-indeed show that a bound on `‖x ^ 2 - a • x + b • 1‖` implies bounds on `|a|` and `|b|`.
 
 The goal is now to show that when `a` and `b` achieve the minimum `M` of `‖x ^ 2 - a • x + b • 1‖`,
 and `M > 0`, then we can find some neighborhood `U` of `(a, b)` in `ℝ × ℝ`
