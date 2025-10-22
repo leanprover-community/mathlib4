@@ -174,5 +174,3 @@ lemma effectiveEpi_of_faithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : Effectiv
 end Opposite
 
 end CommRingCat
-
-#min_imports
