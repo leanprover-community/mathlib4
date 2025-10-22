@@ -419,7 +419,7 @@ def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   isPrime := PowerSeries.span_X_isPrime
   ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
-open IsDedekindDomain.HeightOneSpectrum RatFunc
+open IsDedekindDomain.HeightOneSpectrum RatFunc WithZero
 
 variable {K}
 
@@ -430,8 +430,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
   by_cases hP : P = 0
   · rw [hP, Valuation.map_zero, Polynomial.coe_zero, Valuation.map_zero]
   rw [intValuation_if_neg _ hP, intValuation_if_neg _ <| (by simp [hP])]
-  simp only [idealX_span, ofAdd_neg, inv_inj, WithZero.coe_inj, EmbeddingLike.apply_eq_iff_eq,
-    Nat.cast_inj]
+  simp only [idealX_span, exp_neg, inv_inj, exp_inj, Nat.cast_inj]
   have span_ne_zero :
     (Ideal.span {P} : Ideal K[X]) ≠ 0 ∧ (Ideal.span {Polynomial.X} : Ideal K[X]) ≠ 0 := by
     simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, hP, Polynomial.X_ne_zero,
@@ -451,7 +450,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
 
 /-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤᵐ⁰`. -/
 @[simp]
-theorem intValuation_X : (idealX K).intValuation X = WithZero.exp (-1 : ℤ) := by
+theorem intValuation_X : (idealX K).intValuation X = exp (-1 : ℤ) := by
   rw [← Polynomial.coe_X, ← intValuation_eq_of_coe]
   apply intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
 
@@ -506,7 +505,7 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     n < d → coeff n f = 0 := by
   intro hnd
   apply (PowerSeries.X_pow_dvd_iff).mp _ n hnd
-  rwa [← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap, exp,
+  rwa [← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap,
     intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d, PowerSeries.idealX,
     Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd] at H
 
@@ -640,7 +639,7 @@ uniformity with which `K` is endowed). -/
 theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
     UniformContinuous fun f : K⸨X⸩ ↦ f.coeff d := by
   refine uniformContinuous_iff_eventually.mpr fun S hS ↦ eventually_iff_exists_mem.mpr ?_
-  let γ : (ℤᵐ⁰)ˣ := Units.mk0 (exp (-(d + 1))) WithZero.coe_ne_zero
+  let γ : (ℤᵐ⁰)ˣ := Units.mk0 (exp (-(d + 1))) coe_ne_zero
   use {P | Valued.v (P.snd - P.fst) < ↑γ}
   refine ⟨(Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (by tauto), fun P hP ↦ ?_⟩
   rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
@@ -671,7 +670,7 @@ result in full generality and deduce the case `Γ = ℤ` from that one. -/
 lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
   let entourage : Set (K⸨X⸩ × K⸨X⸩) := {P : K⸨X⸩ × K⸨X⸩ | Valued.v (P.snd - P.fst) < 1}
-  let ζ := Units.mk0 (G₀ := ℤᵐ⁰) _ (WithZero.coe_ne_zero (a := 1))
+  let ζ := Units.mk0 (G₀ := ℤᵐ⁰) _ (coe_ne_zero (a := 1))
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
     <| (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (i := ζ) (by tauto)
   obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_neBot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
@@ -771,9 +770,9 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
   suffices ∀ᶠ f in ℱ, f ∈ {y : K⸨X⸩ | Valued.v (y - limit hℱ) < ↑γ} by
     apply this.mono fun _ hf ↦ hU₁ hf
-  set D := -(WithZero.log γ - 1) with hD₀
-  have hD : WithZero.exp (-D) < γ := by
-    rw [← WithZero.lt_log_iff_exp_lt (by simp), hD₀]
+  set D := -(log γ - 1) with hD₀
+  have hD : exp (-D) < γ := by
+    rw [← lt_log_iff_exp_lt (by simp), hD₀]
     simp
   apply coeff_eventually_equal (D := D) hℱ |>.mono
   intro _ hf
@@ -871,16 +870,15 @@ end Dense
 
 section Comparison
 
-open RatFunc AbstractCompletion IsDedekindDomain.HeightOneSpectrum
+open RatFunc AbstractCompletion IsDedekindDomain.HeightOneSpectrum WithZero
 
 lemma exists_ratFunc_eq_v (x : K⸨X⸩) : ∃ f : RatFunc K, Valued.v f = Valued.v x := by
   by_cases hx : Valued.v x = 0
   · use 0
     simp [hx]
-  use RatFunc.X ^ (-WithZero.log (Valued.v x))
-  rw [zpow_neg, map_inv₀, map_zpow₀, v_def,
-    valuation_X_eq_neg_one, ← WithZero.exp_zsmul, ← WithZero.exp_neg]
-  simp [WithZero.exp_log, hx]
+  use RatFunc.X ^ (-log (Valued.v x))
+  rw [zpow_neg, map_inv₀, map_zpow₀, v_def, valuation_X_eq_neg_one, ← exp_zsmul, ← exp_neg]
+  simp [exp_log, hx]
 
 theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
   rw [isUniformInducing_iff, Filter.comap]
