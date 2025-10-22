@@ -261,7 +261,7 @@ theorem mahlerMeasure_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) : p.mahlerMe
   coefficient plus the sum of the `log`s of the absolute values of its roots lying outside the unit
   disk. -/
 theorem logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots (p : ℂ[X]) : p.logMahlerMeasure =
-    log ‖p.leadingCoeff‖ + ((p.roots).map (fun a ↦ log⁺ ‖a‖)).sum := by
+    log ‖p.leadingCoeff‖ + (p.roots.map (fun a ↦ log⁺ ‖a‖)).sum := by
   by_cases hp : p = 0
   · simp [hp]
   have : ∀ x ∈ Multiset.map (fun x ↦ max 1 ‖x‖) p.roots, x ≠ 0 := by grind [Multiset.mem_map]
@@ -273,7 +273,7 @@ theorem logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots (p : ℂ[X]) : p.
 /-- The Mahler measure of a polynomial is the the absolute value of its leading coefficient times
   the product of the absolute values of its roots lying outside the unit disk. -/
 theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeasure =
-    ‖p.leadingCoeff‖ * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
+    ‖p.leadingCoeff‖ * (p.roots.map (fun a ↦ max 1 ‖a‖)).prod := by
   by_cases hp : p = 0;
   · simp [hp]
   have := logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots p
