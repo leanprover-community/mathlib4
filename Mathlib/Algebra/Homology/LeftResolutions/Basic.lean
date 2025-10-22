@@ -36,11 +36,11 @@ structure LeftResolutions where
   F : A ⥤ C
   /-- the natural epimorphism -/
   π : F ⋙ ι ⟶ 𝟭 A
-  epi_π (X : A) : Epi (π.app X) := by infer_instance
+  epi_π_app (X : A) : Epi (π.app X) := by infer_instance
 
 namespace LeftResolutions
 
-attribute [instance] epi_π
+attribute [instance] epi_π_app
 
 variable {ι} (Λ : LeftResolutions ι) (X Y Z : A) (f : X ⟶ Y) (g : Y ⟶ Z)
 
