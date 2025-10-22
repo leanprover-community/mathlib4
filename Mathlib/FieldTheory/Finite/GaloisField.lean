@@ -6,7 +6,7 @@ Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van
 import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Galois fields
@@ -107,7 +107,7 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     simp only [coeff_X_pow, coeff_X_zero, sub_zero, _root_.map_eq_zero, ite_eq_right_iff,
       one_ne_zero, coeff_sub]
     intro hn
-    exact Nat.not_lt_zero 1 (pow_eq_zero hn.symm ▸ hp)
+    exact Nat.not_lt_zero 1 (eq_zero_of_pow_eq_zero hn.symm ▸ hp)
   · simp
   · simp only [aeval_X_pow, aeval_X, map_sub, add_pow_char_pow, sub_eq_zero]
     intro x y _ _ hx hy
@@ -154,7 +154,7 @@ theorem _root_.FiniteField.isSplittingField_of_card_eq (h : Fintype.card K = p ^
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) :=
   h ▸ FiniteField.isSplittingField_sub K (ZMod p)
 
-/-- Any finite field is (possibly non canonically) isomorphic to some Galois field. -/
+/-- Any finite field is (possibly noncanonically) isomorphic to some Galois field. -/
 def algEquivGaloisFieldOfFintype (h : Fintype.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
   haveI := FiniteField.isSplittingField_of_card_eq _ _ h
   IsSplittingField.algEquiv _ _
@@ -183,13 +183,13 @@ instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Alge
   cases nonempty_fintype K'
   obtain ⟨p, hp⟩ := CharP.exists K
   haveI : CharP K p := hp
-  haveI : CharP K' p := charP_of_injective_algebraMap' K K' p
+  haveI : CharP K' p := charP_of_injective_algebraMap' K p
   exact IsGalois.of_separable_splitting_field
     (galois_poly_separable p (Fintype.card K')
       (let ⟨n, _, hn⟩ := FiniteField.card K' p
       hn.symm ▸ dvd_pow_self p n.ne_zero))
 
-/-- Any finite field is (possibly non canonically) isomorphic to some Galois field. -/
+/-- Any finite field is (possibly noncanonically) isomorphic to some Galois field. -/
 def algEquivGaloisField (h : Nat.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
   haveI := FiniteField.isSplittingField_of_nat_card_eq _ _ h
   IsSplittingField.algEquiv _ _
@@ -241,7 +241,7 @@ end norm
 variable [Fintype K] [Fintype K']
 
 /-- Uniqueness of finite fields:
-  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic -/
+  Any two finite fields of the same cardinality are (possibly noncanonically) isomorphic -/
 def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Algebra (ZMod p) K']
     (hKK' : Fintype.card K = Fintype.card K') : K ≃ₐ[ZMod p] K' := by
   have : CharP K p := by rw [← Algebra.charP_iff (ZMod p) K p]; exact ZMod.charP p
@@ -255,7 +255,7 @@ def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Al
   exact AlgEquiv.trans hGalK hK'Gal
 
 /-- Uniqueness of finite fields:
-  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic -/
+  Any two finite fields of the same cardinality are (possibly noncanonically) isomorphic -/
 def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := by
   choose p _char_p_K using CharP.exists K
   choose p' _char_p'_K' using CharP.exists K'

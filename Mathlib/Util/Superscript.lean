@@ -121,7 +121,6 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     (many := true) : ParserFn := fun c s =>
   let start := s.pos
   satisfyTokensFn m.toNormal.contains errorMsg many c s (k := fun toks s => Id.run do
-    let input := c.input
     let mut newStr := ""
     -- This consists of a sorted array of `(from, to)` pairs, where indexes `from+i` in `newStr`
     -- such that `from+i < from'` for the next element of the array, are mapped to `to+i`.
@@ -129,11 +128,11 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     for (start, stopTk, stopWs) in toks do
       let mut pos := start
       while pos < stopTk do
-        let c := input.get pos
-        let c' := m.toNormal[c]!
-        newStr := newStr.push c'
-        pos := pos + c
-        if c.utf8Size != c'.utf8Size then
+        let ch := c.get pos
+        let ch' := m.toNormal[ch]!
+        newStr := newStr.push ch'
+        pos := pos + ch
+        if ch.utf8Size != ch'.utf8Size then
           aligns := aligns.push (newStr.endPos, pos)
       newStr := newStr.push ' '
       if stopWs.1 - stopTk.1 != 1 then
@@ -150,7 +149,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     let rec
     /-- Applies the alignment mapping to a `Substring`. -/
     alignSubstr : Substring → Substring
-      | ⟨_newStr, start, stop⟩ => ⟨input, align start, align stop⟩,
+      | ⟨_newStr, start, stop⟩ => c.substring (align start) (align stop),
     /-- Applies the alignment mapping to a `SourceInfo`. -/
     alignInfo : SourceInfo → SourceInfo
       | .original leading pos trailing endPos =>

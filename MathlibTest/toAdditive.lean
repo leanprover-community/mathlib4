@@ -304,7 +304,7 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 error: the permutation
 [[2, 3, 50]]
 provided by the `(reorder := ...)` option is out of bounds, the type
-  {α : Type u_1} → [Mul α] → α → α → α → α
+  {α : Type u_1} → [Add α] → α → α → α → α
 has only 5 arguments
 -/
 #guard_msgs in
@@ -570,8 +570,10 @@ run_cmd
   logInfo doc
 
 /--
-warning: String syntax for `to_additive` docstrings is deprecated:
-Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+warning: String syntax for `to_additive` docstrings is deprecated: Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+
+Update deprecated syntax to:
+  /-- (via `str` syntax) I am an additive docstring! -/
 -/
 #guard_msgs in
 @[to_additive "(via `str` syntax) I am an additive docstring!"]
@@ -755,7 +757,7 @@ instance : Mul (MonoidAlgebra' Nat G) where
 
 -- Unfortunately, `relevant_arg` information isn't passed to `*.casesOn`:
 /--
-error: @[to_additive] failed. Type mismatch in additive declaration. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration
+error: @[to_additive] failed. The translated value is not type correct. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration
 instAddAddMonoidAlgebra'Nat_1.match_1:
 Application type mismatch: The argument
   fun x => motive x x✝

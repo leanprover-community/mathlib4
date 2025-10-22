@@ -3,7 +3,7 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.Algebra.IsSimpleRing
 import Mathlib.Algebra.BigOperators.Balance
 import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Algebra.Order.Star.Basic
@@ -163,10 +163,10 @@ theorem ofReal_injective : Function.Injective ((↑) : ℝ → K) :=
 
 @[norm_cast]
 theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
-  algebraMap.coe_inj
+  algebraMap.coe_inj _ _
 
 theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 :=
-  algebraMap.lift_map_eq_zero_iff x
+  algebraMap.coe_eq_zero_iff _ _ _
 
 theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 :=
   ofReal_eq_zero.not
@@ -611,7 +611,7 @@ theorem ratCast_im (q : ℚ) : im (q : K) = 0 := by rw [← ofReal_ratCast, ofRe
 theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : K)‖ = r :=
   (norm_ofReal _).trans (abs_of_nonneg h)
 
-@[simp, rclike_simps, norm_cast]
+@[simp 1100, rclike_simps, norm_cast]
 theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
@@ -949,7 +949,7 @@ lemma instPosMulReflectLE : PosMulReflectLE K where
   elim a b c h := by
     obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
     rw [← sub_nonneg]
-    #adaptation_note /-- 2025-03-29 need beta reduce for lean4#7717 -/
+    #adaptation_note /-- 2025-03-29 need beta reduce for https://github.com/leanprover/lean4/issues/7717 -/
     beta_reduce at h
     rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
     rcases h with h | h

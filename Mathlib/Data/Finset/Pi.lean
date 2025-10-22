@@ -9,7 +9,7 @@ import Mathlib.Data.Multiset.Pi
 import Mathlib.Logic.Function.DependsOn
 
 /-!
-# The cartesian product of finsets
+# The Cartesian product of finsets
 
 ## Main definitions
 

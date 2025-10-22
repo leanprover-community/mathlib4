@@ -171,12 +171,12 @@ section
 
 variable {S : Type*} [TopologicalSpace R] [TopologicalSpace S]
 
-/-- The product topology on the cartesian product of two topological semirings
+/-- The product topology on the Cartesian product of two topological semirings
   makes the product into a topological semiring. -/
 instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [IsTopologicalSemiring R]
     [IsTopologicalSemiring S] : IsTopologicalSemiring (R × S) where
 
-/-- The product topology on the cartesian product of two topological rings
+/-- The product topology on the Cartesian product of two topological rings
   makes the product into a topological ring. -/
 instance [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [IsTopologicalRing R]
     [IsTopologicalRing S] : IsTopologicalRing (R × S) where
