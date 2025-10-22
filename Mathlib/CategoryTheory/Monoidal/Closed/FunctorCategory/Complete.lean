@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.Lifting.Right
-import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
+import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Discrete
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Monad.Comonadicity
