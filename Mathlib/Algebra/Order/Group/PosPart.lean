@@ -109,6 +109,9 @@ lemma leOnePart_le_one' : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 @[to_additive (attr := simp)] lemma leOnePart_inv (a : α) : a⁻¹⁻ᵐ = a⁺ᵐ := by
   simp [oneLePart, leOnePart]
 
+@[to_additive] lemma oneLePart_max (a b : α) : (max a b)⁺ᵐ = max a⁺ᵐ b⁺ᵐ := by
+  simp [oneLePart, sup_sup_distrib_right]
+
 section MulLeftMono
 variable [MulLeftMono α]
 
@@ -212,6 +215,19 @@ lemma div_mabs_eq_inv_leOnePart_sq (a : α) : a / |a|ₘ = (a⁻ᵐ ^ 2)⁻¹ :=
 
 end CommGroup
 end Lattice
+
+section DistribLattice
+variable [DistribLattice α] [Group α]
+
+@[to_additive] lemma oneLePart_min (a b : α) : (min a b)⁺ᵐ = min a⁺ᵐ b⁺ᵐ := by
+  simp [oneLePart, sup_inf_right]
+
+variable [MulLeftMono α] [MulRightMono α]
+
+@[to_additive] lemma leOnePart_max (a b : α) : (max a b)⁻ᵐ = min a⁻ᵐ b⁻ᵐ := by
+  simp [leOnePart, inv_sup, sup_inf_right]
+
+end DistribLattice
 
 section LinearOrder
 variable [LinearOrder α] [Group α] {a b : α}
