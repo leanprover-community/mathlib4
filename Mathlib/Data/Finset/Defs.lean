@@ -123,6 +123,10 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 instance : SetLike (Finset α) α :=
   ⟨({a | a ∈ ·}), fun s₁ s₂ h ↦ (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h⟩
 
+/-- Convert a finset to a set in the natural way. -/
+@[deprecated SetLike.coe (since := "2025-10-22")]
+abbrev toSet (s : Finset α) : Set α := s
+
 @[norm_cast, grind =]
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
   Iff.rfl
