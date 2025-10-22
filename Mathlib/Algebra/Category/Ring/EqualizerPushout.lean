@@ -3,9 +3,10 @@ Copyright (c) 2025 Yong-Gyu Choi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yong-Gyu Choi
 -/
+import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
+import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 import Mathlib.RingTheory.RingHom.FaithfullyFlat
 import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
-import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 
 /-!
 # Equalizer of inclusions to pushout in `CommRingCat`
@@ -173,3 +174,5 @@ lemma effectiveEpi_of_faithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : Effectiv
 end Opposite
 
 end CommRingCat
+
+#min_imports
