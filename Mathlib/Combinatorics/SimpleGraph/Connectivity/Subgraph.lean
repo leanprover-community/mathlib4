@@ -490,17 +490,27 @@ end Subgraph
 
 section induced_subgraphs
 
+lemma preconnected_induce_iff {s : Set V} :
+    (G.induce s).Preconnected ↔ ((⊤ : G.Subgraph).induce s).Preconnected := by
+  rw [induce_eq_coe_induce_top, Subgraph.preconnected_iff]
+
 lemma connected_induce_iff {s : Set V} :
     (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
-  rw [induce_eq_coe_induce_top, ← Subgraph.connected_iff']
+  rw [induce_eq_coe_induce_top, Subgraph.connected_iff']
 
+lemma induce_union_connected_of_nonempty_inter {s t : Set V}
+    (sconn : (G.induce s).Preconnected) (tconn : (G.induce t).Preconnected)
+    (sintert : (s ∩ t).Nonempty) :
+    (G.induce (s ∪ t)).Connected :=
+  connected_induce_iff.mpr <| Subgraph.induce_union_connected_of_nonempty_inf
+    (preconnected_induce_iff.mp sconn) (preconnected_induce_iff.mp tconn) sintert
+
+@[deprecated induce_union_connected_of_nonempty_inter (since := "2025-10-22")]
 lemma induce_union_connected {s t : Set V}
     (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
     (sintert : (s ∩ t).Nonempty) :
-    (G.induce (s ∪ t)).Connected := by
-  rw [connected_induce_iff] at sconn tconn ⊢
-  exact Subgraph.induce_union_connected_of_nonempty_inf
-    sconn.preconnected tconn.preconnected sintert
+    (G.induce (s ∪ t)).Connected :=
+  induce_union_connected_of_nonempty_inter sconn.preconnected tconn.preconnected sintert
 
 lemma induce_pair_connected_of_adj {u v : V} (huv : G.Adj u v) :
     (G.induce {u, v}).Connected := by
@@ -551,7 +561,8 @@ lemma induce_sUnion_connected_of_pairwise_not_disjoint {S : Set (Set V)} (Sn : S
   simp only [Set.mem_sUnion] at hw
   obtain ⟨t, tS, wt⟩ := hw
   refine ⟨s ∪ t, Set.union_subset (Set.subset_sUnion_of_mem sS) (Set.subset_sUnion_of_mem tS),
-          Or.inl vs, Or.inr wt, induce_union_connected (Sc sS) (Sc tS) (Snd sS tS) _ _⟩
+          .inl vs, .inr wt, induce_union_connected_of_nonempty_inter
+          (Sc sS).preconnected (Sc tS).preconnected (Snd sS tS) _ _⟩
 
 lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.Nonempty) :
     ∃ (t' : Finset V), t ⊆ t' ∧ (G.induce (t' : Set V)).Connected := by
