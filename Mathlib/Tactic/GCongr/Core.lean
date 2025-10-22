@@ -121,6 +121,14 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) :
   rel [h1, h2]
 ```
 The `rel` tactic is finishing-only: it fails if any main or side goals are not resolved.
+
+## Patterns
+
+When you provide a pattern, such as in `gcongr x ^ 2 * ?_ + 5`, this is elaborated with a mdata
+annotation at each `?_` hole, and then the result is unified with the LHS of the relation in the
+goal. As a result, the pattern becomes the same as the LHS, but with mdata annotations that
+pinpoint where the original `?_` holes were. The LHS is then replaces with this pattern so that
+`gcongr` can tell based on the LHS how far to continue recursively.
 -/
 
 namespace Mathlib.Tactic.GCongr
@@ -235,8 +243,8 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : Met
       let isEq ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2)
       if !isEq then
         -- verify that the "varying argument" pairs are free variables (after eta-reduction)
-        let .fvar e1 := e1.eta | fail "Not all arguments are free variables"
-        let .fvar e2 := e2.eta | fail "Not all arguments are free variables"
+        let .fvar e1 := e1.eta | fail "Not all varying arguments are free variables"
+        let .fvar e2 := e2.eta | fail "Not all varying arguments are free variables"
         -- add such a pair to the `pairs` array
         pairs := pairs.push (e1, e2)
         numVarying := numVarying + 1
@@ -489,6 +497,8 @@ partial def _root_.Lean.MVarId.gcongr
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
+  let lhs ← if relName == `_Implies then whnfR lhs else pure lhs
+  let rhs ← if relName == `_Implies then whnfR rhs else pure rhs
   if let some mdataLhs := mdataLhs? then
     let annotatedExpr := if mdataLhs then lhs else rhs
     -- B. If there is a template:
@@ -632,7 +642,7 @@ elab "gcongr" template:(ppSpace colGt term)?
   let g ← getMainGoal
   g.withContext do
   let type ← withReducible g.getType'
-  let some (_rel, _lhs, rhs) := getRel type
+  let some (_rel, lhs, _rhs) := getRel type
     | throwError "gcongr failed, not a relation"
   -- Get the names from the `with x y z` list
   let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
@@ -646,14 +656,14 @@ elab "gcongr" template:(ppSpace colGt term)?
       -- First, we replace occurrences of `?_` with `gcongrHole% ?_`
       let e ← e.raw.replaceM fun stx =>
         if stx.isOfKind ``Parser.Term.syntheticHole then `(gcongrHole% _%$stx) else pure none
-      let template ← Term.elabPattern ⟨e⟩ (← inferType rhs)
+      let template ← Term.elabPattern ⟨e⟩ (← inferType lhs)
       unless containsHoleAnnotation template do
         throwError "invalid template {template}, it doesn't contain any `?_`"
-      unless ← isDefEq template rhs do
-        throwError "invalid template {template}, it does not match the shape of {rhs}"
+      unless ← withReducible <| isDefEq template lhs do
+        throwError "invalid template {template}, it does not match the shape of {lhs}"
       let template ← instantiateMVars template
-      let g ← g.replaceTargetDefEq (updateRel type template false)
-      g.gcongr false names
+      let g ← g.replaceTargetDefEq (updateRel type template true)
+      g.gcongr true names
   if progress then
     replaceMainGoal unsolvedGoalStates.toList
   else
