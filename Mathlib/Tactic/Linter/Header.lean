@@ -60,12 +60,11 @@ It returns
 * `none`, if `stx` consists only of `import` statements,
 * the first non-`import` command in `stx`, otherwise.
 
-The intended use-case is to use the output of `testParseModule` as the input of
-`firstNonImport?`.
+The intended use-case is to use the output of `testParseModule` as the input of `firstNonImport?`.
 -/
 def firstNonImport? : Syntax → Option Syntax
   | .node _ ``Lean.Parser.Module.module #[_header, .node _ `null args] => args[0]?
-  | _=> some .missing  -- this is unreachable, if the input comes from `testParseModule`
+  | _ => some .missing  -- this is unreachable, if the input comes from `testParseModule`
 
 /-- `getImportIds s` takes as input `s : Syntax`.
 It returns the array of all `import` identifiers in `s`. -/
@@ -103,7 +102,8 @@ def parseUpToHere (pos : String.Pos) (post : String := "") : CommandElabM Syntax
   -- Append a further string after the content of `upToHere`.
   Parser.testParseModule (← getEnv) "linter.style.header" (upToHere.toString ++ post)
 
-/-- `toSyntax s pattern` converts the two input strings into a `Syntax`, assuming that `pattern`
+/--
+`toSyntax s pattern` converts the two input strings into a `Syntax`, assuming that `pattern`
 is a substring of `s`:
 the syntax is an atom with value `pattern` whose the range is the range of `pattern` in `s`. -/
 def toSyntax (s pattern : String) (offset : String.Pos := 0) : Syntax :=
@@ -111,7 +111,8 @@ def toSyntax (s pattern : String) (offset : String.Pos := 0) : Syntax :=
   let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos + offset
   mkAtomFrom (.ofRange ⟨beg, fin⟩) pattern
 
-/-- Return if `line` looks like a correct authors line in a copyright header.
+/--
+Return if `line` looks like a correct authors line in a copyright header.
 
 The `offset` input is used to shift the position information of the `Syntax` that the command
 produces.
@@ -138,7 +139,8 @@ def authorsLineChecks (line : String) (offset : String.Pos) : Array (Syntax × S
        s!"Please, do not end the authors' line with a period.")
   return stxs
 
-/-- The main function to validate the copyright string.
+/--
+The main function to validate the copyright string.
 The input is the copyright string, the output is an array of `Syntax × String` encoding:
 * the `Syntax` factors are atoms whose ranges are "best guesses" for where the changes should
   take place; the embedded string is the current text that the linter flagged;
@@ -221,7 +223,8 @@ def isInMathlib (modName : Name) : IO Bool := do
     return (res.imports.map (·.module == modName)).any (·)
   else return false
 
-/-- `inMathlibRef` is
+/--
+`inMathlibRef` is
 * `none` at initialization time;
 * `some true` if the `header` linter has already discovered that the current file
   is imported in `Mathlib.lean`;
@@ -243,6 +246,7 @@ import statements*
 module doc-string*
 remaining file
 ```
+
 It emits a warning if
 * the copyright statement is malformed;
 * `Mathlib.Tactic` is imported;
@@ -258,8 +262,10 @@ register_option linter.style.header : Bool := {
 
 namespace Style.header
 
-/-- Check the `Syntax` `imports` for broad imports:
-`Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`. -/
+/--
+`broadImportsCheck imports mainModule` checks  `imports` (an array of `Syntax`) for broad imports:
+`Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`.
+-/
 def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElabM Unit := do
   for i in imports do
     match i.getId with
@@ -277,12 +283,14 @@ def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElab
           please do not use it in mathlib."
     | modName =>
       if modName.getRoot == `Lake then
-      Linter.logLint linter.style.header i
-        "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
-        (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and \
-        make sure to benchmark it. If this is fine, feel free to silence this linter."
+        Linter.logLint linter.style.header i
+          "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
+          (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider \
+          carefully if this import is useful and make sure to benchmark it. If this is fine, feel \
+          free to silence this linter."
 
-/-- Check the syntax `imports` for syntactically duplicate imports.
+/--
+Check the syntax `imports` for syntactically duplicate imports.
 The output is an array of `Syntax` atoms whose ranges are the import statements,
 and the embedded strings are the error message of the linter.
 -/
