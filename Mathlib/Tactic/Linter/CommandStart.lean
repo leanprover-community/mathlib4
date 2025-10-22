@@ -110,11 +110,11 @@ and as `String.Pos`.
 -/
 def mkFormatError (ls ms : String) (msg : String) (length : Nat := 1) : FormatError where
   srcNat := ls.length
-  srcEndPos := ls.endPos
+  srcEndPos := ls.rawEndPos
   fmtPos := ms.length
   msg := msg
   length := length
-  srcStartPos := ls.endPos
+  srcStartPos := ls.rawEndPos
 
 /--
 Add a new `FormatError` `f` to the array `fs`, trying, as much as possible, to merge the new

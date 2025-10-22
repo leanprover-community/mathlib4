@@ -247,7 +247,7 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     let line := lines[idx]
     let pos := line.find (· == ';')
     -- Future: also lint for a semicolon *not* followed by a space or ⟩.
-    if pos != line.endPos && (pos.prev line).get line == ' ' then
+    if pos != line.rawEndPos && (pos.prev line).get line == ' ' then
       errors := errors.push (StyleError.semicolon, idx + 1)
       -- We spell the bad string pattern this way to avoid the linter firing on itself.
       fixedLines := fixedLines.set! idx (line.replace [' ', ';'].asString ";")
