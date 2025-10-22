@@ -114,7 +114,7 @@ end Submonoid
 
 namespace Localization
 
-/- Ensure that `@[to_additive]` uses the right namespace before the definition of `Locatization`. -/
+/- Ensure that `@[to_additive]` uses the right namespace before the definition of `Localization`. -/
 run_meta ToAdditive.insertTranslation `Localization `AddLocalization
 
 /-- The congruence relation on `M × S`, `M` a `CommMonoid` and `S` a submonoid of `M`, whose
