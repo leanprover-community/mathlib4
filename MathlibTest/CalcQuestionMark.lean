@@ -9,8 +9,8 @@ When used from the widget that appears in VSCode, they insert correctly-indented
 
 /--
 info: Create calc tactic:
-  [apply] calc
-    1 = 1 := by sorry
+  • calc
+        1 = 1 := by sorry
 ---
 warning: declaration uses 'sorry'
 -/
@@ -22,8 +22,8 @@ example : 1 = 1 := by
 
 /--
 info: Create calc tactic:
-  [apply] calc
-    a ≤ a := by sorry
+  • calc
+        a ≤ a := by sorry
 ---
 warning: declaration uses 'sorry'
 -/
@@ -35,8 +35,8 @@ example (a : Nat) : a ≤ a := by
 
 /--
 info: Create calc tactic:
-  [apply] calc
-    a ≤ a := by sorry
+  • calc
+          a ≤ a := by sorry
 ---
 warning: declaration uses 'sorry'
 -/
@@ -48,13 +48,18 @@ example (a : Nat) : a ≤ a := by
 -- a deliberately long line
 /--
 info: Create calc tactic:
-  [apply] calc
-    1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
-              1 +
-            1 +
-          1 =
-        8 + 8 + 8 + 8 :=
-      by sorry
+  • calc
+        1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
+                            1 +
+                          1 +
+                        1 +
+                      1 +
+                    1 +
+                  1 +
+                1 +
+              1 =
+            8 + 8 + 8 + 8 :=
+          by sorry
 ---
 warning: declaration uses 'sorry'
 -/
