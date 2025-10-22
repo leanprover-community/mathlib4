@@ -2181,6 +2181,11 @@ import Mathlib.CategoryTheory.Category.PartialFun
 import Mathlib.CategoryTheory.Category.Pointed
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.Quiv
+import Mathlib.CategoryTheory.Category.Quiv.AsFunctor.Defs
+import Mathlib.CategoryTheory.Category.Quiv.Colimits
+import Mathlib.CategoryTheory.Category.Quiv.Limits
+import Mathlib.CategoryTheory.Category.Quiv.Shapes
+import Mathlib.CategoryTheory.Category.Quiv.WalkingQuiver
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
@@ -2288,6 +2293,7 @@ import Mathlib.CategoryTheory.Filtered.CostructuredArrow
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Filtered.Flat
 import Mathlib.CategoryTheory.Filtered.Grothendieck
+import Mathlib.CategoryTheory.Filtered.Level
 import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Filtered.Small
 import Mathlib.CategoryTheory.FinCategory.AsType
@@ -2899,6 +2905,7 @@ import Mathlib.CategoryTheory.Sums.Basic
 import Mathlib.CategoryTheory.Sums.Products
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Topos.Classifier
+import Mathlib.CategoryTheory.Topos.Presheaf
 import Mathlib.CategoryTheory.Triangulated.Adjunction
 import Mathlib.CategoryTheory.Triangulated.Basic
 import Mathlib.CategoryTheory.Triangulated.Functor

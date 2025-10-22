@@ -716,8 +716,9 @@ alias Equivalence.ofFullSubcategory := ObjectProperty.fullSubcategoryCongr
 the right functor restricted to the essential image of the left functor. -/
 @[simps!]
 def essImageInclusionComp (F : C ⥤ D) (G : D ⥤ E) :
-    (F.essImageInclusion ⋙ G).EssImageSubcategory ≌ (F ⋙ G).EssImageSubcategory :=
-  ObjectProperty.fullSubcategoryCongr fun e ↦ by
+    (F.essImage.ι ⋙ G).EssImageSubcategory ≌ (F ⋙ G).EssImageSubcategory :=
+  ObjectProperty.fullSubcategoryCongr <| by
+    ext e
     constructor <;> intro h
     · use (Functor.essImage.witness h).2.choose
       exact ⟨G.mapIso (Functor.essImage.witness h).2.choose_spec.some |>.trans <|
@@ -733,18 +734,16 @@ noncomputable def Functor.EssImage.compEquivOfFullyFaithful
     (F : C ⥤ D) (G : D ⥤ E) [G.Full] [G.Faithful] :
     (F ⋙ G).EssImageSubcategory ≌ F.EssImageSubcategory :=
   letI inverse : F.EssImageSubcategory ⥤ (F ⋙ G).EssImageSubcategory :=
-    FullSubcategory.lift _ (F.essImageInclusion ⋙ G)
+    ObjectProperty.lift _ (F.essImage.ι ⋙ G)
       (⟨_, ⟨G.mapIso ·.property.choose_spec.some⟩⟩)
-  have : inverse.Full := inferInstanceAs (FullSubcategory.lift _ _ _).Full
-  have : inverse.Faithful := inferInstanceAs (FullSubcategory.lift _ _ _).Faithful
   have : inverse.EssSurj := by
     constructor
     rintro ⟨Y, ⟨X, ⟨ι⟩⟩⟩
     exact ⟨⟨F.obj X, ⟨X, ⟨Iso.refl _⟩⟩⟩, ⟨InducedCategory.isoMk ι⟩⟩
-  have : inverse.IsEquivalence := ⟨‹_›, ‹_›, ‹_›⟩
+  have : inverse.IsEquivalence := ⟨inferInstance, inferInstance, ‹_›⟩
   inverse.asEquivalence.symm
 
-end Equivalence
+-- end Equivalence
 
 namespace Iso
 
