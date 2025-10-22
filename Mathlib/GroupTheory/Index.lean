@@ -441,7 +441,7 @@ theorem relIndex_inf_le : (H ⊓ K).relIndex L ≤ H.relIndex L * K.relIndex L :
   · exact (le_of_eq (relIndex_eq_zero_of_le_left inf_le_left h)).trans (zero_le _)
   rw [← inf_relIndex_right, inf_assoc, ← relIndex_mul_relIndex _ _ L inf_le_right inf_le_right,
     inf_relIndex_right, inf_relIndex_right]
-  exact mul_le_mul_right' (relIndex_le_of_le_right inf_le_right h) (K.relIndex L)
+  grw [relIndex_le_of_le_right inf_le_right h]
 
 @[deprecated (since := "2025-08-12")] alias relindex_inf_le := relIndex_inf_le
 
@@ -564,7 +564,7 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     dsimp only [f] at he
     simpa [hle₁, hle₂, he] using hc'
   have := (fintypeOfIndexNeZero h).finite
-  have hcard := Finite.card_le_of_injective f hf
+  have hcard := Nat.card_le_card_of_injective f hf
   simp [← index_eq_card] at hcard
 
 @[to_additive]

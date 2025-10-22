@@ -22,7 +22,6 @@ irreducible factors over `L` have degree `1`.
 
 -/
 
-
 noncomputable section
 
 open Polynomial
@@ -93,7 +92,7 @@ theorem splits_mul {f g : K[X]} (hf : Splits i f) (hg : Splits i g) : Splits i (
   letI := Classical.decEq L
   if h : (f * g).map i = 0 then Or.inl h
   else
-    Or.inr @fun p hp hpf =>
+    Or.inr fun {p} hp hpf =>
       ((irreducible_iff_prime.1 hp).2.2 _ _
             (show p ∣ map i f * map i g by convert hpf; rw [Polynomial.map_mul])).elim
         (hf.resolve_left (fun hf => by simp [hf] at h) hp)
@@ -101,9 +100,9 @@ theorem splits_mul {f g : K[X]} (hf : Splits i f) (hg : Splits i g) : Splits i (
 
 theorem splits_of_splits_mul' {f g : K[X]} (hfg : (f * g).map i ≠ 0) (h : Splits i (f * g)) :
     Splits i f ∧ Splits i g :=
-  ⟨Or.inr @fun g hgi hg =>
+  ⟨Or.inr fun {g} hgi hg =>
       Or.resolve_left h hfg hgi (by rw [Polynomial.map_mul]; exact hg.trans (dvd_mul_right _ _)),
-    Or.inr @fun g hgi hg =>
+    Or.inr fun {g} hgi hg =>
       Or.resolve_left h hfg hgi (by rw [Polynomial.map_mul]; exact hg.trans (dvd_mul_left _ _))⟩
 
 theorem splits_map_iff {L : Type*} [CommRing L] (i : K →+* L) (j : L →+* F) {f : K[X]} :
@@ -466,7 +465,7 @@ theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
   letI := Classical.decEq K
   if hf0 : f = 0 then hf0.symm ▸ splits_zero i
   else
-    Or.inr @fun p hp hdp => by
+    Or.inr fun {p} hp hdp => by
       rw [irreducible_iff_prime] at hp
       rw [hs, ← Multiset.prod_toList] at hdp
       obtain hd | hd := hp.2.2 _ _ hdp
@@ -587,20 +586,27 @@ theorem eval_derivative_div_eval_of_ne_zero_of_splits {p : K[X]} {x : K}
   exact mul_div_cancel_left₀ _ hx
 
 /-- If `P` is a monic polynomial that splits, then `coeff P 0` equals the product of the roots. -/
-theorem prod_roots_eq_coeff_zero_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
+theorem coeff_zero_eq_prod_roots_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
     (hP : P.Splits (RingHom.id K)) : coeff P 0 = (-1) ^ P.natDegree * P.roots.prod := by
   nth_rw 1 [eq_prod_roots_of_monic_of_splits_id hmo hP]
   rw [coeff_zero_eq_eval_zero, eval_multiset_prod, Multiset.map_map]
   simp_rw [Function.comp_apply, eval_sub, eval_X, zero_sub, eval_C]
   simp only [splits_iff_card_roots.1 hP, Multiset.prod_map_neg]
 
-/-- If `P` is a monic polynomial that splits, then `P.nextCoeff` equals the sum of the roots. -/
-theorem sum_roots_eq_nextCoeff_of_monic_of_split {P : K[X]} (hmo : P.Monic)
+/-- If `P` is a monic polynomial that splits, then `P.nextCoeff` equals the negative of the sum
+of the roots. -/
+theorem nextCoeff_eq_neg_sum_roots_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
     (hP : P.Splits (RingHom.id K)) : P.nextCoeff = -P.roots.sum := by
   nth_rw 1 [eq_prod_roots_of_monic_of_splits_id hmo hP]
   rw [Monic.nextCoeff_multiset_prod _ _ fun a ha => _]
   · simp_rw [nextCoeff_X_sub_C, Multiset.sum_map_neg']
   · simp only [monic_X_sub_C, implies_true]
+
+@[deprecated (since := "2025-10-08")]
+alias prod_roots_eq_coeff_zero_of_monic_of_splits := coeff_zero_eq_prod_roots_of_monic_of_splits
+
+@[deprecated (since := "2025-10-08")]
+alias sum_roots_eq_nextCoeff_of_monic_of_split := nextCoeff_eq_neg_sum_roots_of_monic_of_splits
 
 end Splits
 
