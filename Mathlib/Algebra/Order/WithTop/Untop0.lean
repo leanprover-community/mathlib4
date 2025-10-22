@@ -101,12 +101,22 @@ theorem le_of_untop₀_le_untop₀ (ha : a ≠ ⊤) (h : a.untop₀ ≤ b.untop�
   lift b to α using hb
   simp_all
 
-@[simp, gcongr] theorem untop₀_le_untop₀_of_le (hb : b ≠ ⊤) (h : a ≤ b) : a.untop₀ ≤ b.untop₀ := by
+@[simp, gcongr] theorem untop₀_le_untop₀ (hb : b ≠ ⊤) (h : a ≤ b) : a.untop₀ ≤ b.untop₀ := by
   lift b to α using hb
   by_cases ha : a = ⊤
   · simp_all
   lift a to α using ha
   simp_all
+
+theorem untop₀_le_untop₀_iff :
+    a.untop₀ ≤ b.untop₀ ↔ (a = ⊤ ∧ 0 ≤ b) ∨ (a ≤ 0 ∧ b = ⊤) ∨ (a ≤ b ∧ a ≠ ⊤ ∧ b ≠ ⊤) := by
+  by_cases ha : a = ⊤
+  · simp_all
+  lift a to α using ha
+  by_cases hb : b = ⊤
+  · simp_all
+  lift b to α using hb
+  simp
 
 end OrderedAddCommGroup
 
