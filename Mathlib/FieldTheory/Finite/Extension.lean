@@ -108,10 +108,10 @@ noncomputable def Extension.frob :
 
 theorem Extension.frob_pow_surjective (g : Gal(Extension k p n/k)) :
     ∃ i < n, Extension.frob k p n ^ i = g := by
-  have := Fintype.ofFinite k
+  let := Fintype.ofFinite k
   obtain ⟨⟨i, hi⟩, rfl⟩ := (FiniteField.bijective_frobeniusAlgEquivOfAlgebraic_pow k
     (Extension k p n)).2 g
-  refine ⟨i, ?_, by ext; simp [frob]; congr; subsingleton⟩
+  refine ⟨i, ?_, by ext; simp [frob]⟩
   rwa [finrank_extension] at hi
 
 /-- Given any field extension `l/k` of degree `n`, we have a non-unique isomorphism between `l`
