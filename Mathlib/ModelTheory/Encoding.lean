@@ -109,7 +109,7 @@ theorem card_le : #(L.Term α) ≤ max ℵ₀ #(α ⊕ (Σ i, L.Functions i)) :=
 theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ i, L.Functions i)) := by
   refine le_antisymm ?_ ?_
   · rw [mk_sigma]
-    refine (sum_le_iSup_lift _).trans ?_
+    refine (sum_le_lift_mk_mul_iSup _).trans ?_
     rw [mk_nat, lift_aleph0, mul_eq_max_of_aleph0_le_left le_rfl, max_le_iff,
       ciSup_le_iff' (bddAbove_range _)]
     · refine ⟨le_max_left _ _, fun i => card_le.trans ?_⟩
