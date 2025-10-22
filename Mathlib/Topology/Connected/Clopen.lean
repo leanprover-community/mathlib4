@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 import Mathlib.Data.Set.Subset
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Topology.Clopen
+import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Connected.Basic
 
 /-!
@@ -696,3 +697,5 @@ theorem connectedSpace_iff_clopen :
     ConnectedSpace α ↔ Nonempty α ∧ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by
   rw [connectedSpace_iff_univ, IsConnected, ← preconnectedSpace_iff_univ,
     preconnectedSpace_iff_clopen, Set.nonempty_iff_univ_nonempty]
+
+instance [CompactSpace α] : CompactSpace <| ConnectedComponents α := Quotient.compactSpace

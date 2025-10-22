@@ -69,7 +69,7 @@ Instances for the following typeclasses are defined:
 
 * `IsTopologicalSemiring ℝ≥0`
 * `ContinuousSub ℝ≥0`
-* `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
+* `ContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
 * `ContinuousSMul ℝ≥0 α` (whenever `α` has a continuous `MulAction ℝ α`)
 
 Everything is inherited from the corresponding structures on the reals.
@@ -82,7 +82,7 @@ instance : IsTopologicalSemiring ℝ≥0 where
 instance : ContinuousSub ℝ≥0 :=
   ⟨((continuous_coe.fst'.sub continuous_coe.snd').max continuous_const).subtype_mk _⟩
 
-instance : HasContinuousInv₀ ℝ≥0 := inferInstance
+instance : ContinuousInv₀ ℝ≥0 := inferInstance
 
 variable {α : Type*}
 

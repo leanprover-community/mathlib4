@@ -158,8 +158,7 @@ theorem apply_mono (μ : FiniteMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s�
 theorem apply_union_le (μ : FiniteMeasure Ω) {s₁ s₂ : Set Ω} : μ (s₁ ∪ s₂) ≤ μ s₁ + μ s₂ := by
   have := measure_union_le (μ := (μ : Measure Ω)) s₁ s₂
   apply (ENNReal.toNNReal_mono (by finiteness) this).trans_eq
-  rw [ENNReal.toNNReal_add (by finiteness) (by finiteness)]
-  rfl
+  rw [ENNReal.toNNReal_add (by finiteness) (by finiteness), coeFn_def]
 
 /-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
 sets is the limit of the measures of the partial unions. -/
@@ -311,7 +310,7 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
   · simp_rw [← Set.univ_prod_univ, Measure.prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
   simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
-  intros _ _ Hu _ Hv Heq
+  intro _ _ Hu _ Hv Heq
   simp_rw [← Heq, Measure.prod_prod, Heval Hu Hv]
 
 lemma apply_iUnion_le {μ : FiniteMeasure Ω} {f : ℕ → Set Ω}

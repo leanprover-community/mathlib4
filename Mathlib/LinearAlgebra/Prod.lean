@@ -663,6 +663,36 @@ theorem snd_comp_prodAssoc :
 
 end prodAssoc
 
+section SkewSwap
+
+variable (R M N)
+variable [Semiring R]
+variable [AddCommGroup M] [AddCommGroup N]
+variable [Module R M] [Module R N]
+
+/-- The map `(x, y) ↦ (-y, x)` as a linear equivalence. -/
+protected def skewSwap : (M × N) ≃ₗ[R] (N × M) where
+  toFun x := (-x.2, x.1)
+  invFun x := (x.2, -x.1)
+  map_add' _ _ := by
+    simp [add_comm]
+  map_smul' _ _ := by
+    simp
+  left_inv _ := by
+    simp
+  right_inv _ := by
+    simp
+
+variable {R M N}
+
+@[simp]
+theorem skewSwap_apply (x : M × N) : LinearEquiv.skewSwap R M N x = (-x.2, x.1) := rfl
+
+@[simp]
+theorem skewSwap_symm_apply (x : N × M) : (LinearEquiv.skewSwap R M N).symm x = (x.2, -x.1) := rfl
+
+end SkewSwap
+
 section
 
 variable (R M M₂ M₃ M₄)
@@ -813,12 +843,12 @@ namespace LinearMap
 /-!
 ## Tunnels and tailings
 
-NOTE: The proof of strong rank condition for noetherian rings is changed.
+NOTE: The proof of strong rank condition for Noetherian rings is changed.
 `LinearMap.tunnel` and `LinearMap.tailing` are not used in mathlib anymore.
 These are marked as deprecated with no replacements.
 If you use them in external projects, please consider using other arguments instead.
 
-Some preliminary work for establishing the strong rank condition for noetherian rings.
+Some preliminary work for establishing the strong rank condition for Noetherian rings.
 
 Given a morphism `f : M × N →ₗ[R] M` which is `i : Injective f`,
 we can find an infinite decreasing `tunnel f i n` of copies of `M` inside `M`,
@@ -829,8 +859,8 @@ and `tailings f i n` for the supremum of the first `n + 1` copies:
 they are the pieces left behind, sitting inside the tunnel.
 
 By construction, each `tailing f i (n + 1)` is disjoint from `tailings f i n`;
-later, when we assume `M` is noetherian, this implies that `N` must be trivial,
-and establishes the strong rank condition for any left-noetherian ring.
+later, when we assume `M` is Noetherian, this implies that `N` must be trivial,
+and establishes the strong rank condition for any left-Noetherian ring.
 -/
 
 section Graph

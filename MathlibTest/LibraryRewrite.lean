@@ -17,6 +17,10 @@ Pattern a → b → c
 · p ∧ p → q
   and_imp
 
+Pattern ∀ (hp : p) (hq : q), r hp hq
+· p ∧ p → q
+  forall_and_index'
+
 Pattern ∀ (x : α), p x → b
 · (∃ x, p) → q
   exists_imp
@@ -78,8 +82,10 @@ Pattern ∀ (p : P), Q p
 info: Pattern n + 1
 · n.succ
   Nat.add_one
-· Std.PRange.UpwardEnumerable.succ n
+· Std.PRange.succ n
   Std.PRange.Nat.succ_eq
+· (*...=n).size
+  Std.PRange.Nat.size_Ric
 · (↑n + 1).toNat
   Int.toNat_natCast_add_one
 

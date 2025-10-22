@@ -38,9 +38,9 @@ namespace Polynomial
 
 /-- A sequence of polynomials such that the polynomial at index `i` has degree `i`. -/
 structure Sequence [Semiring R] where
-  /-- The `i`'th element in the sequence. Use `S i` instead, defined via `CoeFun`. -/
+  /-- The `i`-th element in the sequence. Use `S i` instead, defined via `CoeFun`. -/
   protected elems' : ℕ → R[X]
-  /-- The `i`'th element in the sequence has degree `i`. Use `S.degree_eq` instead. -/
+  /-- The `i`-th element in the sequence has degree `i`. Use `S.degree_eq` instead. -/
   protected degree_eq' (i : ℕ) : (elems' i).degree = i
 
 attribute [coe] Sequence.elems'
@@ -50,7 +50,7 @@ namespace Sequence
 variable {R}
 
 /-- Make `S i` mean `S.elems' i`. -/
-instance coeFun [Semiring R] : CoeFun (Sequence R) (fun _ ↦  ℕ → R[X]) := ⟨Sequence.elems'⟩
+instance coeFun [Semiring R] : CoeFun (Sequence R) (fun _ ↦ ℕ → R[X]) := ⟨Sequence.elems'⟩
 
 section Semiring
 
@@ -69,10 +69,10 @@ lemma natDegree_eq (i : ℕ) : (S i).natDegree = i := natDegree_eq_of_degree_eq_
 lemma ne_zero (i : ℕ) : S i ≠ 0 := degree_ne_bot.mp <| by simp [S.degree_eq i]
 
 /-- `S i` has strictly monotone degree. -/
-lemma degree_strictMono : StrictMono <| degree ∘ S := fun _ _  ↦ by simp
+lemma degree_strictMono : StrictMono <| degree ∘ S := fun _ _ ↦ by simp
 
 /-- `S i` has strictly monotone natural degree. -/
-lemma natDegree_strictMono : StrictMono <| natDegree ∘ S := fun _ _  ↦ by simp
+lemma natDegree_strictMono : StrictMono <| natDegree ∘ S := fun _ _ ↦ by simp
 
 end Semiring
 
@@ -132,7 +132,7 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
           mul_one, C_eq_zero, leadingCoeff_eq_zero]
       · apply head.ne_zero_of_degree_gt
         rw [← head_degree_eq]
-        exact natDegree_pos_iff_degree_pos.mp (by omega)
+        exact natDegree_pos_iff_degree_pos.mp (by cutsat)
     -- and that they have matching leading coefficients
     have hPhead : P.leadingCoeff = head.leadingCoeff := by
       rw [degree_eq_natDegree, head_degree_eq_natDegree] at head_degree_eq
@@ -174,15 +174,15 @@ variable (hCoeff : ∀ i, IsUnit (S i).leadingCoeff)
 noncomputable def basis : Basis ℕ R R[X] :=
   Basis.mk S.linearIndependent <| eq_top_iff.mp <| S.span hCoeff
 
-/-- The `i`'th basis vector is the `i`'th polynomial in the sequence. -/
+/-- The `i`-th basis vector is the `i`-th polynomial in the sequence. -/
 @[simp]
 lemma basis_eq_self (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
 
 /-- Basis elements have strictly monotone degree. -/
-lemma basis_degree_strictMono : StrictMono <| degree ∘ (S.basis hCoeff) := fun _ _  ↦ by simp
+lemma basis_degree_strictMono : StrictMono <| degree ∘ (S.basis hCoeff) := fun _ _ ↦ by simp
 
 /-- Basis elements have strictly monotone natural degree. -/
-lemma basis_natDegree_strictMono : StrictMono <| natDegree ∘ (S.basis hCoeff) := fun _ _  ↦ by simp
+lemma basis_natDegree_strictMono : StrictMono <| natDegree ∘ (S.basis hCoeff) := fun _ _ ↦ by simp
 
 end NoZeroDivisors
 

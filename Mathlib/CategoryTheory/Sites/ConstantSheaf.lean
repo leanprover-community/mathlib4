@@ -192,15 +192,9 @@ lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
   apply Sheaf.hom_ext
   rw [comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
   apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).cond
-  ext
-  simp? says simp only [comp_obj, const_obj_obj, sheafCompose_obj_val, id_obj,
-      constantSheafAdj_counit_app, comp_val,
-      sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift, comp_id,
-      toSheafify_sheafifyLift, NatTrans.comp_app, constComp_hom_app,
-      constantPresheafAdj_counit_app_app, Functor.comp_map, id_comp, flip_obj_obj,
-      sheafToPresheaf_obj, map_comp, sheafCompose_map_val, sheafComposeIso_hom_fac_assoc,
-      whiskerRight_app]
-  simp [← map_comp, ← NatTrans.comp_app]
+  ext x
+  simp [NatTrans.comp_app] -- simp [NatTrans.comp_app] to unfold some definitions
+  simp [← map_comp, ← NatTrans.comp_app] -- simp [← NatTrans.comp_app] to simplify some compositions
 
 lemma Sheaf.isConstant_of_forget [constantSheaf J D |>.Faithful] [constantSheaf J D |>.Full]
     [constantSheaf J B |>.Faithful] [constantSheaf J B |>.Full]

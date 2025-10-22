@@ -94,9 +94,9 @@ instance Bicone.category : Category (Bicone F) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
--- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
--- the `hom` field of a category, we need to write the `ext` lemma in terms of the categorical
--- morphism, rather than the underlying structure.
+/- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
+-- a category. So we need to write the `ext` lemma in terms of the categorical morphism, rather than
+the underlying structure. -/
 @[ext]
 theorem BiconeMorphism.ext {c c' : Bicone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
   cases f
@@ -348,7 +348,7 @@ class HasBiproductsOfShape : Prop where
 
 attribute [instance 100] HasBiproductsOfShape.has_biproduct
 
-/-- `HasFiniteBiproducts C` represents a choice of biproduct for every family of objects in `C`
+/-- A category `HasFiniteBiproducts` if it has a biproduct for every finite family of objects in `C`
 indexed by a finite type. -/
 class HasFiniteBiproducts : Prop where
   out : ∀ n, HasBiproductsOfShape (Fin n) C
@@ -431,7 +431,7 @@ theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J
     biproduct.ι f j ≫ biproduct.π f j' = if h : j = j' then eqToHom (congr_arg f h) else 0 := by
   convert (biproduct.bicone f).ι_π j j'
 
-@[reassoc] -- Porting note: both versions proven by simp
+@[reassoc] -- Not `simp` because `simp` can prove this
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
     biproduct.ι f j ≫ biproduct.π f j = 𝟙 _ := by simp
 
@@ -726,7 +726,7 @@ theorem biproduct.fromSubtype_eq_lift [DecidablePred p] :
       biproduct.lift fun j => if h : p j then biproduct.π (Subtype.restrict p f) ⟨j, h⟩ else 0 :=
   biproduct.hom_ext _ _ (by simp)
 
-@[reassoc] -- Porting note: both version solved using simp
+@[reassoc] -- Not `@[simp]` because `simp` can prove this
 theorem biproduct.fromSubtype_π_subtype (j : Subtype p) :
     biproduct.fromSubtype f p ≫ biproduct.π f j = biproduct.π (Subtype.restrict p f) j := by
   classical
@@ -947,7 +947,6 @@ theorem biproduct.matrix_π (m : ∀ j k, f j ⟶ g k) (k : K) :
 @[reassoc (attr := simp)]
 theorem biproduct.ι_matrix (m : ∀ j k, f j ⟶ g k) (j : J) :
     biproduct.ι f j ≫ biproduct.matrix m = biproduct.lift fun k => m j k := by
-  ext
   simp [biproduct.matrix]
 
 /-- Extract the matrix components from a morphism of biproducts. -/

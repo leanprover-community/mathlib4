@@ -48,10 +48,10 @@ and a monomial order `m : MonomialOrder σ`.
   `f` and `g`.
 
 * `m.degree_mul_of_mul_leadingCoeff_ne_zero` : if the product of the leading coefficients
-  is non zero, then the degree is the sum of the degrees.
+  is nonzero, then the degree is the sum of the degrees.
 
 * `m.leadingCoeff_mul_of_mul_leadingCoeff_ne_zero` : if the product of the leading coefficients
-  is non zero, then the leading coefficient is that product.
+  is nonzero, then the leading coefficient is that product.
 
 * `m.degree_mul_of_isRegular_left`, `m.degree_mul_of_isRegular_right` and `m.degree_mul`
   assert the  equality when the leading coefficient of `f` or `g` is regular,
@@ -61,10 +61,10 @@ and a monomial order `m : MonomialOrder σ`.
   and `m.leadingCoeff_mul` say that `m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g`
 
 * `m.degree_pow_of_pow_leadingCoeff_ne_zero` : is the `n`th power of the leading coefficient
-  of `f` is non zero, then the degree of `f ^ n` is `n • (m.degree f)`
+  of `f` is nonzero, then the degree of `f ^ n` is `n • (m.degree f)`
 
 * `m.leadingCoeff_pow_of_pow_leadingCoeff_ne_zero` : is the `n`th power of the leading coefficient
-  of `f` is non zero, then the leading coefficient of `f ^ n` is that power.
+  of `f` is nonzero, then the leading coefficient of `f ^ n` is that power.
 
 * `m.degree_prod_of_regular` : the degree of a product of polynomials whose leading coefficients
   are regular is the sum of their degrees.
@@ -126,6 +126,10 @@ theorem Monic.coeff_degree {f : MvPolynomial σ R} (hf : m.Monic f) : f.coeff (m
 @[simp]
 theorem degree_zero : m.degree (0 : MvPolynomial σ R) = 0 := by
   simp [degree]
+
+theorem ne_zero_of_degree_ne_zero {f : MvPolynomial σ R} (h : m.degree f ≠ 0) : f ≠ 0 := by
+  rintro rfl
+  exact h m.degree_zero
 
 @[simp, nontriviality]
 theorem degree_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
@@ -242,6 +246,9 @@ theorem coeff_degree_ne_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) ≠ 0 ↔ f ≠ 0 :=
   m.leadingCoeff_ne_zero_iff
 
+theorem degree_mem_support_iff (f : MvPolynomial σ R) : m.degree f ∈ f.support ↔ f ≠ 0 :=
+  mem_support_iff.trans coeff_degree_ne_zero_iff
+
 @[simp]
 theorem coeff_degree_eq_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) = 0 ↔ f = 0 :=
@@ -281,6 +288,10 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
     rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, EmbeddingLike.map_eq_zero_iff]
     exact ⟨bot_le, hd⟩
 
+theorem degree_eq_zero_iff {f : MvPolynomial σ R} :
+    m.degree f = 0 ↔ f = C (m.leadingCoeff f) :=
+  ⟨MonomialOrder.eq_C_of_degree_eq_zero, fun h => by rw [h, MonomialOrder.degree_C]⟩
+
 theorem degree_add_le {f g : MvPolynomial σ R} :
     m.toSyn (m.degree (f + g)) ≤ m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
   conv_rhs => rw [← m.toSyn.apply_symm_apply (_ ⊔ _)]
@@ -294,6 +305,14 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
     apply m.le_degree
     simp only [notMem_support_iff] at hf
     simpa only [mem_support_iff, coeff_add, hf, zero_add] using hb
+
+theorem degree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
+    (m.toSyn <| m.degree <| ∑ x ∈ s, f x) ≤ s.sup fun x ↦ (m.toSyn <| m.degree <| f x) := by
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s haA h =>
+    rw [Finset.sum_cons, Finset.sup_cons]
+    exact le_trans m.degree_add_le (max_le_max le_rfl h)
 
 theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.degree (f + g) = m.degree f := by
@@ -309,6 +328,11 @@ theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degr
     apply h
     simp only [degree_zero, map_zero]
     apply bot_le
+
+theorem degree_add_eq_right_of_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+    m.degree (f + g) = m.degree g := by
+  rw [add_comm]
+  exact degree_add_of_lt h
 
 theorem leadingCoeff_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.leadingCoeff (f + g) = m.leadingCoeff f := by
@@ -345,10 +369,8 @@ theorem degree_mul_le {f g : MvPolynomial σ R} :
       rw [m.coeff_eq_zero_of_lt this, mul_zero]
     simp only [not_lt] at hd
     apply lt_of_add_lt_add_left (a := m.toSyn d)
-    simp only [← map_add, hde]
-    apply lt_of_le_of_lt _ hc
-    simp only [map_add]
-    exact add_le_add_right hd _
+    grw [← map_add _ _ e, hd, ← map_add, hde]
+    exact hc
 
 /-- Multiplicativity of leading coefficients -/
 theorem coeff_mul_of_add_of_degree_le {f g : MvPolynomial σ R} {a b : σ →₀ ℕ}

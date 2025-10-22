@@ -106,8 +106,9 @@ theorem iteratedDerivWithin_zero : iteratedDerivWithin 0 f s = f := by
   simp [iteratedDerivWithin]
 
 @[simp]
-theorem iteratedDerivWithin_one {x : 𝕜} :
-    iteratedDerivWithin 1 f s x = derivWithin f s x := by
+theorem iteratedDerivWithin_one :
+    iteratedDerivWithin 1 f s = derivWithin f s := by
+  ext x
   by_cases hsx : AccPt x (𝓟 s)
   · simp only [iteratedDerivWithin, iteratedFDerivWithin_one_apply hsx.uniqueDiffWithinAt,
       derivWithin]
@@ -339,4 +340,4 @@ lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   left
   rw [div_eq_iff, mul_comm, h_fact_smul, ← iteratedDeriv_eq_iteratedFDeriv]
   norm_cast
-  exact Nat.factorial_ne_zero _
+  positivity
