@@ -264,11 +264,11 @@ theorem logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots (p : ℂ[X]) : p.
     log ‖p.leadingCoeff‖ + ((p.roots).map (fun a ↦ log⁺ ‖a‖)).sum := by
   by_cases hp : p = 0
   · simp [hp]
-  have : ∀ x ∈ p.roots, max 1 ‖x‖ ≠ 0 := by grind
+  have : ∀ x ∈ Multiset.map (fun x ↦ max 1 ‖x‖) p.roots, x ≠ 0 := by grind [Multiset.mem_map]
   nth_rw 1 [eq_prod_roots_of_splits_id (IsAlgClosed.splits p)]
   rw [logMahlerMeasure_mul_eq_add_logMahelerMeasure (by simp [hp, X_sub_C_ne_zero])]
   simp [posLog_eq_log_max_one, logMahlerMeasure_eq_log_MahlerMeasure,
-    prod_mahlerMeasure_eq_mahlerMeasure_prod, log_prod' this]
+    prod_mahlerMeasure_eq_mahlerMeasure_prod, log_multiset_prod this]
 
 /-- The Mahler measure of a polynomial is the the absolute value of its leading coefficient times
   the product of the absolute values of its roots lying outside the unit disk. -/
