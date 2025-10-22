@@ -168,6 +168,9 @@ lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
   rw [← mul_left_inj a⁻ᵐ⁻¹, inf_mul, one_mul, mul_inv_cancel, ← div_eq_mul_inv,
     oneLePart_div_leOnePart, leOnePart_eq_inv_inf_one, inv_inv]
 
+@[to_additive] lemma leOnePart_min (a b : α) : (min a b)⁻ᵐ = max a⁻ᵐ b⁻ᵐ := by
+  simp [leOnePart, inv_inf, sup_sup_distrib_right]
+
 end MulRightMono
 
 end MulLeftMono
