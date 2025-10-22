@@ -3,15 +3,12 @@ Copyright (c) 2025 Yoh Tanimioto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-module
-
+import Mathlib.Analysis.Normed.Module.WeakDual
+import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.Analysis.Normed.Module.WeakDual
 
--- #set_option pp.proofs True
 /-!
 # Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
 
@@ -31,7 +28,20 @@ reducing the statement to the `ℝ`-version of the theorem.
 
 -/
 
-@[expose] public section
+namespace CompactlySupportedContinuousMap
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CompactSpace α] [AddCommMonoid β]
+
+open ContinuousMap
+open scoped CompactlySupported
+
+@[simp] lemma liftCompactlySupported_zero : liftCompactlySupported (0 : C(α, β)) = 0 := rfl
+
+variable [ContinuousAdd β]
+
+@[simp] lemma liftCompactlySupported_add (f g : C(α, β)) :
+    liftCompactlySupported (f + g) = liftCompactlySupported f + liftCompactlySupported g := rfl
+
+end CompactlySupportedContinuousMap
 
 open scoped NNReal
 
@@ -106,7 +116,7 @@ theorem integralLinearMap_rieszMeasure :
 end integralLinearMap
 
 end NNRealRMK
-/-
+/-!
 S ⊆ P(X) is relatively compact iff tight.
 Let X be a compact metric space. P(X) is a compact metric space.
 -/
@@ -119,6 +129,8 @@ open MeasureTheory NormedSpace WeakDual CompactlySupported CompactlySupportedCon
 
 instance : PseudoMetricSpace (LevyProkhorov (ProbabilityMeasure X)) :=
   levyProkhorovDist_pseudoMetricSpace_probabilityMeasure
+
+open WeakDual
 
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let Φ := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1
@@ -154,9 +166,9 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   apply UniformSpace.compactSpace_iff_seqCompactSpace.mpr
   constructor
   let Λ (φ : Φ) : C_c(X, ℝ) →ₚ[ℝ] ℝ :=
-  { toFun    := fun f => φ.1 f.1
-    map_add' := by intro f g; rw [← φ.1.map_add]; rfl
-    map_smul' := by intro c f; rw [← φ.1.map_smul]; rfl
+  { toFun f := φ.1 f.1
+    map_add' := by simp
+    map_smul' := by simp
     monotone' := by
       intro f g hfb; simp;
       have hφ_nonneg : 0 ≤ φ.1 ↑(g - f) := φ.2.2.2 (g - f) <| sub_nonneg.2 hfb
@@ -177,18 +189,16 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
       _ = φ.1 ⟨fun x ↦ 1, continuous_const⟩ := by rfl
       _ = 1 := φ.2.2.1
   have hΛ (φ : Φ) : ∀ (f : CompactlySupportedContinuousMap X ℝ), 0 ≤ f → 0 ≤ Λ φ f := φ.2.2.2
-  let T : Φ → LevyProkhorov (ProbabilityMeasure X) := by--fun φ ↦ ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
-    intro φ;
-    use RealRMK.rieszMeasure (Λ φ)
-    exact IsPMeas φ
+  let T (φ : Φ) : LevyProkhorov (ProbabilityMeasure X) :=
+    (LevyProkhorov.equiv _).symm ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
   have : Set.univ = Set.range T := by
-    ext μ; simp only [T,Set.mem_univ, Set.mem_range, true_iff, Φ]
+    ext μ; simp only [T, Set.mem_univ, Set.mem_range, true_iff, Φ]
     let μprob : ProbabilityMeasure X := (LevyProkhorov.equiv (ProbabilityMeasure X)) μ
     let L : C_c(X, ℝ) →ₚ[ℝ] ℝ := integralPositiveLinearMap (μprob : Measure X)
-    let liftL (L : (X →C_c ℝ) →ₚ[ℝ] ℝ) : (C(X, ℝ) →ₚ[ℝ] ℝ) :=
-      { toFun := fun f => L (ContinuousMap.liftCompactlySupported.toFun f),
-        map_add' := fun f g ↦  L.map_add' (ContinuousMap.liftCompactlySupported.toFun f) (ContinuousMap.liftCompactlySupported.toFun g),
-        map_smul' := fun c f ↦ L.map_smul' c (ContinuousMap.liftCompactlySupported.toFun f),
+    let liftL (L : (X →C_c ℝ) →ₚ[ℝ] ℝ) : C(X, ℝ) →ₚ[ℝ] ℝ :=
+      { toFun := L ∘ ContinuousMap.liftCompactlySupported
+        map_add' := by simp
+        map_smul' := by simp
         monotone' := fun _ _ _ ↦ L.monotone' (by bound)}
     let W := ((liftL L).toLinearMap.mkContinuous 1 (by
       intro f;simp only [Equiv.toFun_as_coe, integralPositiveLinearMap_toFun,
@@ -234,8 +244,6 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   -- refine Continuous.subtype_map ..
   let f : ↑Φ → Measure X := fun φ => RealRMK.rieszMeasure (Λ φ)
   have hf : ∀ φ : ↑Φ, IsProbabilityMeasure (f φ) := IsPMeas
-  have : TopologicalSpace { p : Measure X // IsProbabilityMeasure p } :=
-    Preorder.topology { p // IsProbabilityMeasure p }
   --simp_rw [Subtype.mk]
   --let F : ↑Φ → {p : Measure X // IsProbabilityMeasure p} := fun φ => ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
   let f : ↑Φ → ProbabilityMeasure X := fun φ => ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
@@ -247,6 +255,7 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   --simp [Continuous.subtype_mk,Continuous.subtype_val,Continuous.subtype_coind,Continuous.subtype_map]
   --have hf : Continuous f := by apply?
   --have : TopologicalSpace (Measure X) := by sorry
+  rw [(ProbabilityMeasure.toFiniteMeasure_isEmbedding _).continuous_iff]
   refine Continuous.subtype_mk (X := Measure X) (Y := ↑Φ) (f := fun φ ↦ (RealRMK.rieszMeasure (Λ φ))) ?_ ?_
   --refine Continuous.subtype_map (X := {p : Measure X // IsProbabilityMeasure p}) (Y := ↑Φ) (f := fun φ ↦ RealRMK.rieszMeasure (Λ φ)) ?_ ?_ ?_
   -- have hfun_eq : (fun φ => ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩)
