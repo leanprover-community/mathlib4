@@ -21,7 +21,7 @@ This is better suited, for instance, to split files.
 open Lean Elab Command Linter
 
 /-!
-#  The "minImports" linter
+# The "minImports" linter
 
 The "minImports" linter tracks information about minimal imports over several commands.
 -/
