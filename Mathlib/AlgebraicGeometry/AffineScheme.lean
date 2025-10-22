@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.RingTheory.Localization.InvSubmonoid
 import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.Topology.Sheaves.CommRingCat
+import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Affine schemes
@@ -151,6 +152,29 @@ lemma ext_of_isAffine {X Y : Scheme} [IsAffine Y] {f g : X ⟶ Y} (e : f.appTop 
     f = g := by
   rw [← cancel_mono Y.toSpecΓ, Scheme.toSpecΓ_naturality, Scheme.toSpecΓ_naturality, e]
 
+/-- `Scheme.Γ.rightOp : Scheme ⥤ CommRingCatᵒᵖ` preserves limits of diagrams consisting of
+affine schemes. -/
+instance preservesLimit_rightOp_Γ.{v, w}
+    {I : Type w} [Category.{v} I] (D : I ⥤ Scheme.{u}) [∀ i, IsAffine (D.obj i)] :
+    PreservesLimit D Scheme.Γ.rightOp := by
+  let α : D ⟶ (D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
+  have (i : _) : IsIso (α.app i) := IsAffine.affine
+  have : IsIso α := NatIso.isIso_of_isIso_app α
+  suffices PreservesLimit ((D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec) Scheme.Γ.rightOp from
+    preservesLimit_of_iso_diagram _ (asIso α).symm
+  have := monadicCreatesLimits.{v, w} Scheme.Spec.{u}
+  suffices PreservesLimit (D ⋙ Scheme.Γ.rightOp) (Scheme.Spec ⋙ Scheme.Γ.rightOp) from
+    preservesLimit_comp_of_createsLimit _ _
+  exact preservesLimit_of_natIso _ (NatIso.op Scheme.SpecΓIdentity)
+
+/-- `Scheme.Γ : Schemeᵒᵖ ⥤ CommRingCat` preserves colimits of diagrams consisting of
+affine schemes. -/
+instance preservesColimit_Γ.{v, w}
+    {I : Type w} [Category.{v} I] (D : I ⥤ Scheme.{u}ᵒᵖ) [∀ i, IsAffine (D.obj i).unop] :
+    PreservesColimit D Scheme.Γ := by
+  have (i : _) : IsAffine (D.leftOp.obj i) := Functor.leftOp_obj D _ ▸ inferInstance
+  exact preservesColimit_of_rightOp D Scheme.Γ
+
 namespace AffineScheme
 
 /-- The `Spec` functor into the category of affine schemes. -/
@@ -210,6 +234,10 @@ noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetTo
       (Functor.isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
   infer_instance
+
+/-- The forgetful functor `AffineScheme ⥤ Scheme` creates small limits. -/
+instance createsLimitsForgetToScheme : CreatesLimits forgetToScheme.{u} :=
+  ⟨⟨createsLimitOfReflectsIsomorphismsOfPreserves⟩⟩
 
 end AffineScheme
 
@@ -546,7 +574,7 @@ theorem basicOpen :
 
 lemma Spec_basicOpen {R : CommRingCat} (f : R) :
     IsAffineOpen (X := Spec R) (PrimeSpectrum.basicOpen f) :=
-  basicOpen_eq_of_affine f ▸ (isAffineOpen_top Spec(R)).basicOpen _
+  basicOpen_eq_of_affine f ▸ (isAffineOpen_top (Spec <| .of R)).basicOpen _
 
 instance [IsAffine X] (r : Γ(X, ⊤)) : IsAffine (X.basicOpen r) :=
   (isAffineOpen_top X).basicOpen _
@@ -864,7 +892,7 @@ def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
   letI e₂ : Localization.Away (f.hom r) ≃ₐ[S] Γ(Spec S, basicOpen (f.hom r)) :=
     IsLocalization.algEquiv (Submonoid.powers (f.hom r)) _ _
   refine Arrow.isoMk ?_ ?_ ?_
-  · exact Spec(S).isoOfEq (comap_basicOpen _ _) ≪≫
+  · exact (Spec _).isoOfEq (comap_basicOpen _ _) ≪≫
       (IsAffineOpen.Spec_basicOpen (f.hom r)).isoSpec ≪≫ Scheme.Spec.mapIso e₂.toCommRingCatIso.op
   · exact (IsAffineOpen.Spec_basicOpen r).isoSpec ≪≫ Scheme.Spec.mapIso e₁.toCommRingCatIso.op
   · have := AlgebraicGeometry.IsOpenImmersion.of_isLocalization
@@ -1100,7 +1128,7 @@ variable {X : Scheme.{u}} {A : CommRingCat}
 this is the lift to `X ⟶ Spec (A ⧸ I)`. -/
 def Scheme.Hom.liftQuotient (f : X.Hom (Spec A)) (I : Ideal A)
     (hI : I ≤ RingHom.ker ((Scheme.ΓSpecIso A).inv ≫ f.appTop).hom) :
-    X ⟶ Spec(A ⧸ I) :=
+    X ⟶ Spec <| .of (A ⧸ I) :=
   X.toSpecΓ ≫ Spec.map (CommRingCat.ofHom
     (Ideal.Quotient.lift _ ((Scheme.ΓSpecIso _).inv ≫ f.appTop).hom hI))
 

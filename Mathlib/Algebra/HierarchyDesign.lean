@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
 import Mathlib.Init
-import Batteries.Util.LibraryNote
+import Mathlib.Tactic.Basic
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -18,7 +18,7 @@ TODO: Add sections about interactions with topological typeclasses, and order ty
 -/
 
 
-library_note "the algebraic hierarchy"/-- # The algebraic hierarchy
+library_note2 «the algebraic hierarchy» /-- # The algebraic hierarchy
 
 In any theorem proving environment,
 there are difficult decisions surrounding the design of the "algebraic hierarchy".
@@ -184,8 +184,7 @@ Hopefully this document makes it easy to assemble this list.
 Another alternative to a TODO list in the doc-strings is adding Github issues.
 -/
 
-
-library_note "reducible non-instances"/--
+library_note2 «reducible non-instances» /--
 Some definitions that define objects of a class cannot be instances, because they have an
 explicit argument that does not occur in the conclusion. An example is `Preorder.lift` that has a
 function `f : α → β` as an explicit argument to lift a preorder on `β` to a preorder on `α`.
@@ -202,7 +201,7 @@ sometimes comes from `Units.Preorder` and sometimes from `Units.PartialOrder`.
 Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
 -/
 
-library_note "implicit instance arguments"/--
+library_note2 «implicit instance arguments» /--
 There are places where typeclass arguments are specified with implicit `{}` brackets instead of
 the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
 arguments to the type of one of the other arguments. When they can be inferred from these other
@@ -213,7 +212,7 @@ and `β` are `Semiring`s as `{rα : Semiring α} {rβ : Semiring β}` rather tha
 `[Semiring α] [Semiring β]`.
 -/
 
-library_note "lower instance priority"/--
+library_note2 «lower instance priority» /--
 Certain instances always apply during type-class resolution. For example, the instance
 `AddCommGroup.toAddGroup {α} [AddCommGroup α] : AddGroup α` applies to all type-class
 resolution problems of the form `AddGroup _`, and type-class inference will then do an
@@ -230,7 +229,7 @@ Therefore, if we create an instance that always applies, we set the priority of 
 100 (or something similar, which is below the default value of 1000).
 -/
 
-library_note "instance argument order"/--
+library_note2 «instance argument order» /--
 When type class inference applies an instance, it attempts to solve the sub-goals from left to
 right (it used to be from right to left in lean 3). For example in
 ```

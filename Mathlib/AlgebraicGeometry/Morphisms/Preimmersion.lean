@@ -40,7 +40,7 @@ lemma isPreimmersion_eq_inf :
 
 namespace IsPreimmersion
 
-instance : IsLocalAtTarget @IsPreimmersion :=
+instance : IsZariskiLocalAtTarget @IsPreimmersion :=
   isPreimmersion_eq_inf ▸ inferInstance
 
 instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsPreimmersion f where

@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Separated
+import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 
 /-!
 
@@ -18,6 +19,9 @@ if and only if it can be factored into a closed immersion followed by an open im
 - `isImmersion_iff_exists`:
   A morphism is a (locally-closed) immersion if and only if it can be factored into
   a closed immersion followed by a (dominant) open immersion.
+- `isImmersion_iff_exists_of_quasiCompact`:
+  A quasicompact morphism is a (locally-closed) immersion if and only if it can be factored into
+  an open immersion followed by a closed immersion.
 
 -/
 
@@ -65,6 +69,18 @@ lemma Scheme.Hom.liftCoborder_ι (f : X.Hom Y) [IsImmersion f] :
     f.liftCoborder ≫ f.coborderRange.ι = f :=
   IsOpenImmersion.lift_fac _ _ _
 
+lemma Scheme.Hom.liftCoborder_preimage [IsImmersion f] (U : f.coborderRange.toScheme.Opens) :
+    f.liftCoborder ⁻¹ᵁ U = f ⁻¹ᵁ f.coborderRange.ι ''ᵁ U := by
+  conv_rhs => enter [1]; rw [← f.liftCoborder_ι]
+  rw [Scheme.preimage_comp, Scheme.Hom.preimage_image_eq]
+
+lemma liftCoborder_app [IsImmersion f] (U : f.coborderRange.toScheme.Opens) :
+    f.liftCoborder.app U = f.app (f.coborderRange.ι ''ᵁ U) ≫
+      X.presheaf.map (eqToHom <| f.liftCoborder_preimage U).op := by
+  rw [Scheme.congr_app (f.liftCoborder_ι).symm (f.coborderRange.ι ''ᵁ U)]
+  simp [Scheme.app_eq f.liftCoborder (f.coborderRange.ι.preimage_image_eq U),
+    ← Functor.map_comp_assoc, - Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
+
 instance [IsImmersion f] : IsClosedImmersion f.liftCoborder := by
   have : IsPreimmersion (f.liftCoborder ≫ f.coborderRange.ι) := by
     simp only [Scheme.Hom.liftCoborder_ι]; infer_instance
@@ -85,10 +101,11 @@ lemma isImmersion_eq_inf : @IsImmersion = (@IsPreimmersion ⊓
 
 namespace IsImmersion
 
-instance : IsLocalAtTarget @IsImmersion := by
-  suffices IsLocalAtTarget (topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f)) from
+instance : IsZariskiLocalAtTarget @IsImmersion := by
+  suffices IsZariskiLocalAtTarget
+      (topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f)) from
     isImmersion_eq_inf ▸ inferInstance
-  apply (config := { allowSynthFailures := true }) topologically_isLocalAtTarget'
+  apply (config := { allowSynthFailures := true }) topologically_isZariskiLocalAtTarget'
   · refine { precomp := ?_, postcomp := ?_ }
     · intro X Y Z i hi f hf
       change IsIso i at hi
@@ -180,6 +197,41 @@ instance : IsImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
 instance (f g : X ⟶ Y) : IsImmersion (equalizer.ι f g) :=
   MorphismProperty.of_isPullback (P := @IsImmersion)
     (isPullback_equalizer_prod f g).flip inferInstance
+
+instance [IsImmersion f] : IsImmersion f.toImage :=
+  have : IsImmersion (f.toImage ≫ f.imageι) := by simpa
+  IsImmersion.of_comp f.toImage f.imageι
+
+open Scheme in
+/--
+If `f : X ⟶ Y` is a quasi-compact immersion, then `X` is the pullback of the
+closed immersion `im f ⟶ Y` and an open immersion `U ⟶ Y`.
+-/
+lemma isPullback_toImage_liftCoborder [IsImmersion f] [QuasiCompact f] :
+    IsPullback f.toImage f.liftCoborder f.imageι f.coborderRange.ι := by
+  refine (isPullback_of_isClosedImmersion _ _ _ _ (by simp) ?_).flip
+  rw [Hom.imageι, IdealSheafData.ker_subschemeι]
+  ext U : 2
+  simp only [IdealSheafData.ideal_comap_of_isOpenImmersion, Opens.ι_appIso, Iso.refl_inv,
+    Hom.ker_apply, RingHom.comap_ker, ← CommRingCat.hom_comp, Opens.toScheme,
+    restrict_presheaf_obj, Category.id_comp]
+  rw [liftCoborder_app, CommRingCat.hom_comp, RingHom.ker_comp_of_injective]
+  rw [← ConcreteCategory.mono_iff_injective_of_preservesPullback]
+  infer_instance
+
+instance [IsImmersion f] [QuasiCompact f] : IsOpenImmersion f.toImage :=
+  MorphismProperty.of_isPullback (IsImmersion.isPullback_toImage_liftCoborder f).flip inferInstance
+
+variable {f} in
+/--
+A quasi-compact morphism is a (locally-closed) immersion if and only if it can be factored into
+an open immersion followed by a closed immersion.
+-/
+lemma isImmersion_iff_exists_of_quasiCompact [QuasiCompact f] :
+    IsImmersion f ↔ ∃ (Z : Scheme) (g₁ : X ⟶ Z) (g₂ : Z ⟶ Y),
+      IsOpenImmersion g₁ ∧ IsClosedImmersion g₂ ∧ g₁ ≫ g₂ = f :=
+  ⟨fun _ ↦ ⟨_, f.toImage, f.imageι, inferInstance, inferInstance, f.toImage_imageι⟩,
+    fun ⟨_, _, _, _, _, e⟩ ↦ e ▸ inferInstance⟩
 
 end IsImmersion
 

@@ -135,7 +135,7 @@ theorem is_one_preprimitive_iff :
       exact fun h ↦ by simp [h] at hs
 
 /-- The action of `stabilizer M a` is one-less preprimitive -/
-@[to_additive]
+@[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]
 theorem isMultiplyPreprimitive_ofStabilizer
     [IsPretransitive M α] {n : ℕ} {a : α} [IsMultiplyPreprimitive M α n.succ] :
     IsMultiplyPreprimitive (stabilizer M a) (SubMulAction.ofStabilizer M a) n := by
@@ -210,7 +210,7 @@ theorem ofFixingSubgroup.isMultiplyPreprimitive
     {m n : ℕ} [IsMultiplyPreprimitive M α n] {s : Set α} [Finite s] (hs : s.ncard + m = n) :
     IsMultiplyPreprimitive (fixingSubgroup M s) (SubMulAction.ofFixingSubgroup M s) m where
   isMultiplyPretransitive := by
-    apply ofFixingSubgroup.isMultiplyPretransitive s hs
+    apply ofFixingSubgroup.isMultiplyPretransitive _ s hs
   isPreprimitive_ofFixingSubgroup {t} ht := by
     let t' : Set α := Subtype.val '' t
     have htt' : t = Subtype.val ⁻¹' t' :=

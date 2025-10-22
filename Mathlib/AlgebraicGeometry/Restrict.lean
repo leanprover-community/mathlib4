@@ -438,7 +438,8 @@ lemma Scheme.Opens.isoOfLE_inv_ι {X : Scheme.{u}} {U V : X.Opens}
 
 /-- For `f : R`, `D(f)` as an open subscheme of `Spec R` is isomorphic to `Spec R[1/f]`. -/
 def basicOpenIsoSpecAway {R : CommRingCat.{u}} (f : R) :
-    Scheme.Opens.toScheme (X := Spec R) (PrimeSpectrum.basicOpen f) ≅ Spec(Localization.Away f) :=
+    Scheme.Opens.toScheme (X := Spec R) (PrimeSpectrum.basicOpen f) ≅
+      Spec (.of <| Localization.Away f) :=
   IsOpenImmersion.isoOfRangeEq (Scheme.Opens.ι _) (Spec.map (CommRingCat.ofHom (algebraMap _ _)))
     (by
       simp only [Scheme.Opens.range_ι]

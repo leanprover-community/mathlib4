@@ -64,6 +64,29 @@ variable {X Y : Scheme.{u}}
 theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
     IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) := IsOpenImmersion.iff_stalk_iso f
 
+theorem IsOpenImmersion.of_openCover_source (f : X ⟶ Y)
+    (𝒰 : X.OpenCover) (hf : Function.Injective f.base) (h𝒰 : ∀ i, IsOpenImmersion (𝒰.f i ≫ f)) :
+    IsOpenImmersion f := by
+  refine isOpenImmersion_iff_stalk.mpr ⟨.of_continuous_injective_isOpenMap f.continuous hf ?_, ?_⟩
+  · intro U hU
+    convert (⨆ i, ((𝒰.f i ≫ f) ''ᵁ (𝒰.f i ⁻¹ᵁ ⟨U, hU⟩))).2
+    ext x
+    exact ⟨fun ⟨x, _, _⟩ ↦ by have := 𝒰.exists_eq x; simp; grind, by simp; grind⟩
+  · intro x
+    obtain ⟨i, x, rfl⟩ := 𝒰.exists_eq x
+    rw [← (IsIso.comp_inv_eq _).mpr (Scheme.stalkMap_comp (𝒰.f i) f x)]
+    infer_instance
+
+lemma IsOpenImmersion.of_forall_source_exists (f : X ⟶ Y)
+    (hf : Function.Injective f.base)
+    (hX : ∀ x, ∃ (U : Scheme) (i : U ⟶ X) (_ : IsOpenImmersion i),
+      x ∈ i.opensRange ∧ IsOpenImmersion (i ≫ f)) :
+    IsOpenImmersion f := by
+  choose U i _ hxi hi using hX
+  let 𝒰 : X.OpenCover := ⟨⟨X, U, i⟩,
+    ⟨by simpa using show ∀ x, ∃ j y, (i j).base y = x from (⟨_, hxi ·⟩), by simpa⟩⟩
+  exact IsOpenImmersion.of_openCover_source f 𝒰 hf hi
+
 theorem isOpenImmersion_eq_inf :
     @IsOpenImmersion = (topologically IsOpenEmbedding) ⊓
       stalkwise (fun f ↦ Function.Bijective f) := by
@@ -71,14 +94,14 @@ theorem isOpenImmersion_eq_inf :
   exact isOpenImmersion_iff_stalk.trans
     (and_congr Iff.rfl (forall_congr' fun x ↦ ConcreteCategory.isIso_iff_bijective _))
 
-instance : IsLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
-  apply stalkwiseIsLocalAtTarget_of_respectsIso
+instance : IsZariskiLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
+  apply stalkwiseIsZariskiLocalAtTarget_of_respectsIso
   rw [RingHom.toMorphismProperty_respectsIso_iff]
   convert (inferInstanceAs (MorphismProperty.isomorphisms CommRingCat).RespectsIso)
   ext
   exact (ConcreteCategory.isIso_iff_bijective _).symm
 
-instance isOpenImmersion_isLocalAtTarget : IsLocalAtTarget @IsOpenImmersion :=
+instance isOpenImmersion_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsOpenImmersion :=
   isOpenImmersion_eq_inf ▸ inferInstance
 
 end AlgebraicGeometry

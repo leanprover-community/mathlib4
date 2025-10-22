@@ -187,10 +187,20 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- TODO: reduce this dependency by upstreaming `Data.String.Defs to batteries
   (`Mathlib.Util.FormatTable, `Mathlib.Data.String.Defs),
 
-  (`Mathlib.Lean, `Batteries.CodeAction),
   (`Mathlib.Lean, `Batteries.Tactic.Lint),
-  -- TODO: decide if this is acceptable or should be split in a more fine-grained way
-  (`Mathlib.Lean, `Batteries),
+  (`Mathlib.Lean, `Batteries.CodeAction),
+  -- TODO: should this be minimised further?
+  (`Mathlib.Lean.Meta.CongrTheorems, `Batteries),
+  -- These modules are transitively imported by `Batteries.CodeAction.
+  (`Mathlib.Lean, `Batteries.Classes.SatisfiesM),
+  (`Mathlib.Lean, `Batteries.Data.Array.Match),
+  (`Mathlib.Lean, `Batteries.Data.Fin),
+  (`Mathlib.Lean, `Batteries.Data.List),
+  (`Mathlib.Lean, `Batteries.Lean),
+  (`Mathlib.Lean, `Batteries.Control.ForInStep),
+  (`Mathlib.Lean, `Batteries.Tactic.Alias),
+  (`Mathlib.Lean, `Batteries.Util.ProofWanted),
+
   (`Mathlib.Lean.Expr, `Mathlib.Util),
   (`Mathlib.Lean.Meta.RefinedDiscrTree, `Mathlib.Util),
   -- Fine-grained exceptions: TODO decide if these are fine, or should be scoped more broadly.
@@ -210,6 +220,10 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Order.Defs),
   (`Mathlib.Lean.Meta.CongrTheorems, `Mathlib.Tactic),
 
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Util.ExtendedBinder),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Logic),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Tactic.Trans),
+  (`Mathlib.Lean.Expr.ExtraRecognizers, `Batteries.Tactic.Init),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Data),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Order),
   (`Mathlib.Lean.Expr.ExtraRecognizers, `Mathlib.Logic),
