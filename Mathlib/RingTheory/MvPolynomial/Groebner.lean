@@ -3,14 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Junyu Guo, Hao Shen
 -/
-import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.Data.List.TFAE
-import Mathlib.Data.Finset.Functor
-import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
