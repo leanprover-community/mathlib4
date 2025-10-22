@@ -104,9 +104,7 @@ noncomputable def Extension.frob :
 
 @[simp] lemma Extension.frob_apply {x : Extension k p n} :
     frob k p n x = x ^ Nat.card k := by
-  have := Fintype.ofFinite k
-  rw [← Fintype.card_eq_nat_card]
-  rfl
+  simp [frob, ← Nat.card_eq_fintype_card]
 
 theorem Extension.frob_pow_surjective (g : Gal(Extension k p n/k)) :
     ∃ i < n, Extension.frob k p n ^ i = g := by
