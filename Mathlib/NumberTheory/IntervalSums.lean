@@ -83,23 +83,13 @@ def IcoFilter : SummationFilter G where
 def IocFilter : SummationFilter G where
   filter := atTop.map (fun N ↦ Ioc (-N) N)
 
-lemma symCondInt_eq_map_Ioo :
-    symCondInt.filter = atTop.map (fun N ↦ Ioo (-N) N) := by
-  simp_rw [symmetricConditional, ← Nat.map_cast_int_atTop]
+lemma symCondInt_eq_map_Ioo : symCondInt.filter = atTop.map (fun N ↦ Ioo (-N) N) := by
   ext s
-  simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage]
-  constructor
-  · intro ⟨a, ha⟩
-    refine ⟨a + 1, fun b hb ↦ ?_⟩
-    convert ha (b - 1) (by grind) using 1
-    ext x
-    rw [mem_Ioo, mem_Icc]
-    grind
-  · intro ⟨a, ha⟩
-    refine ⟨a - 1, fun b hb ↦ ?_⟩
-    convert ha (b + 1) (by grind) using 1
-    ext x
-    rw [mem_Icc, mem_Ioo]
+  simp only [symmetricConditional, ← Nat.map_cast_int_atTop, Filter.mem_map, mem_atTop_sets, 
+    Set.mem_preimage]
+  refine ⟨fun ⟨a, ha⟩ ↦ ⟨a + 1, fun b hb ↦ ?_⟩, fun ⟨a, ha⟩ ↦ ⟨a - 1, fun b hb ↦ ?_⟩⟩ <;>
+  [ convert ha (b - 1) (by grind) using 1 ; convert ha (b + 1) (by grind) using 1 ] <;>
+  · simp only [Finset.ext_iff, mem_Ioo, mem_Icc]
     grind
 
 variable [(atTop : Filter G).NeBot]
