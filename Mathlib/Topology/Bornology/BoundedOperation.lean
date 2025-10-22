@@ -64,8 +64,24 @@ lemma boundedSub_of_lipschitzWith_sub [PseudoMetricSpace R] [Sub R] {K : NNReal}
     convert lip.isBounded_image bdd
     simp
 
-end bounded_sub
+open Bornology
 
+variable [Bornology R] [AddGroup R] [BoundedSub R]
+
+-- TODO:
+-- * make BoundedSub instance for SeminormedAddGroup
+-- * deprecate `Bornology.IsBounded.neg` in favor of the following
+lemma Bornology.IsBounded.neg' {s : Set R} (h : IsBounded s) : IsBounded (-s) := by
+  rw [show -s = {0} - s by simp]
+  exact isBounded_sub isBounded_singleton h
+
+@[simp]
+lemma isBounded_neg_iff {s : Set R} : IsBounded (-s) ↔ IsBounded s := by
+  refine ⟨fun H ↦ ?_, Bornology.IsBounded.neg'⟩
+  rw [← neg_neg s]
+  exact H.neg'
+
+end bounded_sub
 
 section bounded_mul
 /-!
@@ -143,6 +159,61 @@ instance [PseudoMetricSpace R] [Monoid R] [LipschitzMul R] : BoundedMul R where
       simpa [← eq_p] using Set.mul_mem_mul a_in_s b_in_t
 
 end bounded_mul
+
+section AddGroup
+
+open Filter Bornology Pointwise
+
+variable {R : Type*} [Bornology R] [AddGroup R] [BoundedSub R]
+
+instance : BoundedAdd R where
+  isBounded_add := by
+   intro s t hs ht
+   rw [← neg_neg t, ← sub_eq_add_neg]
+   exact isBounded_sub hs <| isBounded_neg_iff.mpr ht
+
+@[simp]
+lemma tendsto_neg_cobounded :
+    Tendsto (-·) (cobounded R) (cobounded R) := by
+  intro s hs
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
+  rw [← Set.preimage_compl]
+  exact hs.neg'
+
+@[simp]
+lemma tendsto_add_const_cobounded (x : R) :
+    Tendsto (· + x) (cobounded R) (cobounded R) := by
+  intro s hs
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
+  rw [← Set.preimage_compl]
+  convert isBounded_sub hs (t := {x}) isBounded_singleton using 1
+  ext y
+  simp [sub_eq_iff_eq_add]
+
+@[simp]
+lemma tendsto_const_add_cobounded (x : R) :
+    Tendsto (x + ·) (cobounded R) (cobounded R) := by
+  intro s hs
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
+  rw [← Set.preimage_compl]
+  convert isBounded_add isBounded_singleton (s := {-x}) hs using 1
+  ext y
+  simp
+
+@[simp]
+theorem tendsto_sub_const_cobounded (x : R) :
+    Tendsto (· - x) (cobounded R) (cobounded R) := by
+  simpa only [sub_eq_add_neg] using tendsto_add_const_cobounded (-x)
+
+@[simp]
+theorem tendsto_const_sub_cobounded (x : R) :
+    Tendsto (x - ·) (cobounded R) (cobounded R) := by
+  simpa only [sub_eq_add_neg] using (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
+
+end AddGroup
 
 section SeminormedAddCommGroup
 /-!

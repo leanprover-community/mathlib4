@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Analysis.Polynomial.Factorization
+import Mathlib.Analysis.Normed.Algebra.Basic
 
 /-!
 # A (new?) proof of the Gelfand-Mazur Theorem
@@ -127,16 +128,19 @@ private lemma aux {X E : Type*} [TopologicalSpace X] [PreconnectedSpace X]
     exact H u hw n hn
   exact tendsto_pow_atTop_nhds_zero_of_lt_one (by positivity) hu |>.const_add 1 |>.const_mul M
 
+open Filter Bornology in
 /-- In a normed algebra `F` over a normed field `𝕜` that is a proper space, the function
 `z : 𝕜 ↦ ‖x - z • 1‖` achieves a global minimum for every `x : F`. -/
 lemma exists_min_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜]
     [ProperSpace 𝕜] [SeminormedRing F] [NormedAlgebra 𝕜 F] [NormOneClass F] (x : F) :
-  ∃ z : 𝕜, ∀ z' : 𝕜, ‖x - z • 1‖ ≤ ‖x - z' • 1‖ := by
+  ∃ z : 𝕜, IsMinOn (‖x - · • 1‖) Set.univ z := by
+  have : Tendsto (‖x - · • 1‖) (cobounded 𝕜) atTop := by
+    simp only [← Algebra.algebraMap_eq_smul_one]
+    exact tendsto_norm_cobounded_atTop |>.comp <| tendsto_const_sub_cobounded x |>.comp <| by simp
   have hf : Continuous fun z : 𝕜 ↦ ‖x - z • 1‖ := by fun_prop
-  refine hf.exists_forall_le_of_isBounded 0 <|
-     (Metric.isBounded_iff_subset_closedBall 0).mpr ⟨2 * ‖x‖, fun z hz ↦ ?_⟩
-  rw [Set.mem_setOf, norm_sub_rev] at hz
-  simpa [← two_mul] using (norm_sub_norm_le ..).trans hz
+  simp only [isMinOn_univ_iff]
+  refine hf.exists_forall_le_of_isBounded 0 ?_
+  simpa [isBounded_def, Set.compl_setOf, Set.Ioi] using this (Ioi_mem_atTop (‖x - (0 : 𝕜) • 1‖))
 
 /-!
 ### The complex case
@@ -184,6 +188,7 @@ private lemma norm_sub_is_constant {x : F} {z : ℂ} (hz : ∀ z' : ℂ, ‖x - 
 lemma exists_norm_sub_smul_one_eq_zero (x : F) :
     ∃ z : ℂ, ‖x - z • 1‖ = 0 := by
   obtain ⟨z, hz⟩ := exists_min_norm_sub_smul ℂ x
+  rw [isMinOn_univ_iff] at hz
   set M := ‖x - z • 1‖ with hM
   rcases eq_or_lt_of_le (show 0 ≤ M from norm_nonneg _) with hM₀ | hM₀
   · exact ⟨z, hM₀.symm⟩
@@ -293,12 +298,14 @@ private lemma a_bound {x : F} {c : ℝ} (hc₀ : 0 < c) (hbd : ∀ r : ℝ, c �
       simpa only [← norm_pow, sub_add, norm_sub_rev (x ^ 2)] using norm_le_norm_add_norm_sub' ..
   _ ≤ _ := by rw [two_mul]; exact add_le_add_left h _
 
-private lemma exists_min_norm_φ (x : F) : ∃ z : ℝ × ℝ, ∀ w : ℝ × ℝ, ‖φ x z‖ ≤ ‖φ x w‖ := by
+private lemma exists_min_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) Set.univ z := by
   obtain ⟨u, hu⟩ := exists_min_norm_sub_smul ℝ x
+  rw [isMinOn_univ_iff] at hu
   rcases eq_or_lt_of_le (norm_nonneg (x - u • 1)) with hc₀ | hc₀
   · rw [eq_comm, norm_eq_zero, sub_eq_zero] at hc₀
     exact ⟨(u, 0), fun z' ↦ by simp [φ, hc₀, sq]⟩
   set c := ‖x - u • 1‖
+  simp only [isMinOn_univ_iff]
   refine (continuous_φ x).norm.exists_forall_le_of_isBounded (0, 0) ?_
   simp only [φ, zero_smul, sub_zero, add_zero, norm_pow]
   refine ((Metric.isBounded_of_abs_le (2 * ‖x‖ ^ 2 / c)).prod
@@ -322,6 +329,7 @@ with real coefficients. -/
 lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
     ∃ p : ℝ[X], IsMonicOfDegree p 2 ∧ aeval x p = 0 := by
   obtain ⟨z, h⟩ := exists_min_norm_φ x
+  rw [isMinOn_univ_iff] at h
   suffices φ x z = 0 from ⟨_, isMonicOfDegree_sub_add_two z.1 z.2, by rwa [aeval_eq_φ]⟩
   by_contra! H
   set M := ‖φ x z‖
