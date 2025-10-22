@@ -16,7 +16,7 @@ sets.
 ## Main definitions
 
 * `lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u}`
-  is the yoneda presheaf functor.
+  is the yoneda sheaf functor.
 
 -/
 
@@ -54,6 +54,9 @@ noncomputable def lightProfiniteToLightCondSetIsoTopCatToLightCondSet :
       hom f := { toFun := f.hom }
       inv f := TopCat.ofHom f }
 
+/--
+The functor from light profinite sets to condensed sets preserves countable limits.
+-/
 instance {J : Type} [SmallCategory J] [CountableCategory J] : PreservesLimitsOfShape J
     lightProfiniteToLightCondSet.{u} :=
   haveI : Functor.IsRightAdjoint topCatToLightCondSet.{u} :=
@@ -62,9 +65,16 @@ instance {J : Type} [SmallCategory J] [CountableCategory J] : PreservesLimitsOfS
     inferInstanceAs (PreservesLimitsOfShape J (lightToProfinite ⋙ Profinite.toTopCat))
   preservesLimitsOfShape_of_natIso lightProfiniteToLightCondSetIsoTopCatToLightCondSet.symm
 
+/--
+The functor from light profinite sets to condensed sets preserves finite limits.
+-/
 instance : PreservesFiniteLimits lightProfiniteToLightCondSet.{u} where
   preservesFiniteLimits _ := inferInstance
 
+/--
+The functor from light profinite sets to condensed sets is monoidal with respect to the cartesian
+monoidal structure.
+-/
 noncomputable instance : lightProfiniteToLightCondSet.Monoidal := by
   have : Nonempty lightProfiniteToLightCondSet.Monoidal := by
     rw [Functor.Monoidal.nonempty_monoidal_iff_preservesFiniteProducts]

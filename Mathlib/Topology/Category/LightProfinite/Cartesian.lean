@@ -7,11 +7,11 @@ import Mathlib.Topology.Category.CompHausLike.Cartesian
 import Mathlib.Topology.Category.LightProfinite.Basic
 
 /-!
-
 # Cartesian monoidal structure on `LightProfinite`
 
 This file defines the cartesian monoidal structure on `LightProfinite` given by the type-theoretic
 product.
+
 -/
 
 universe u
