@@ -57,7 +57,7 @@ theorem measure_compl_le_add_of_le_add [IsFiniteMeasure μ] (hs : MeasurableSet 
     tsub_le_iff_right]
   calc
     μ univ = μ univ - μ s + μ s := (tsub_add_cancel_of_le <| measure_mono s.subset_univ).symm
-    _ ≤ μ univ - μ s + (μ t + ε) := add_le_add_left h _
+    _ ≤ μ univ - μ s + (μ t + ε) := by gcongr
     _ = _ := by rw [add_right_comm, add_assoc]
 
 theorem measure_compl_le_add_iff [IsFiniteMeasure μ] (hs : MeasurableSet s) (ht : MeasurableSet t)
@@ -115,6 +115,16 @@ theorem Measure.isFiniteMeasure_map {m : MeasurableSpace α} (μ : Measure α) [
     exact measure_lt_top μ _
   · rw [map_of_not_aemeasurable hf]
     exact MeasureTheory.isFiniteMeasureZero
+
+theorem Measure.isFiniteMeasure_of_map {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) [IsFiniteMeasure (μ.map f)] : IsFiniteMeasure μ where
+  measure_univ_lt_top := by
+    rw [← Set.preimage_univ (f := f), ← map_apply_of_aemeasurable hf .univ]
+    exact IsFiniteMeasure.measure_univ_lt_top
+
+theorem Measure.isFiniteMeasure_map_iff {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) : IsFiniteMeasure (μ.map f) ↔ IsFiniteMeasure μ :=
+  ⟨fun _ ↦ isFiniteMeasure_of_map hf, fun _ ↦ isFiniteMeasure_map μ f⟩
 
 instance IsFiniteMeasure_comap (f : β → α) [IsFiniteMeasure μ] : IsFiniteMeasure (μ.comap f) where
   measure_univ_lt_top := by

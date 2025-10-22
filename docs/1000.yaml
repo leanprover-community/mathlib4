@@ -164,6 +164,9 @@ Q193882:
 
 Q193910:
   title: Euler's theorem
+  decl: Nat.ModEq.pow_totient
+  authors: Chris Hughes
+  date: 2020
 
 Q194919:
   title: Inverse eigenvalues theorem
@@ -747,6 +750,11 @@ Q721695:
 
 Q727102:
   title: Fermat's theorem (stationary points)
+  decls:
+    - IsLocalExtr.deriv_eq_zero
+    - IsLocalExtr.fderiv_eq_zero
+  authors: Yury G. Kudryashov
+  date: 2019
 
 Q729359:
   title: Hadamard three-circle theorem
@@ -1133,6 +1141,10 @@ Q999783:
 
 Q1008566:
   title: Gauss–Lucas theorem
+  decls:
+    - Polynomial.rootSet_derivative_subset_convexHull_rootSet
+    - Polynomial.eq_centerMass_of_eval_derivative_eq_zero
+  authors: Yury Kudryashov, Aristotle AI
 
 Q1032886:
   title: Hales–Jewett theorem
@@ -1260,6 +1272,9 @@ Q1076274:
 
 Q1077462:
   title: König's theorem (set theory)
+  authors: Mario Carneiro
+  date: 2018
+  decl: Cardinal.sum_lt_prod
 
 Q1077741:
   title: Hairy ball theorem
@@ -1309,6 +1324,9 @@ Q1134296:
 
 Q1134776:
   title: Dilworth's theorem
+  url: https://github.com/vlad902/misc-lean-proofs/blob/main/MiscLeanProofs/Dilworth.lean
+  authors: Vlad Tsyrklevich
+  date: 2025
 
 Q1135706:
   title: Harnack's theorem
@@ -1924,7 +1942,9 @@ Q2094241:
 
 Q2096184:
   title: Plancherel theorem
-  # also in undergrad.yml
+  decl: SchwartzMap.integral_inner_fourier_fourier
+  authors: Moritz Doll
+  date: 2025
 
 Q2109761:
   title: Uniformization theorem
@@ -2540,6 +2560,9 @@ Q4054114:
 
 Q4116459:
   title: Niven's theorem
+  decl: niven
+  authors: Alex Meiburg
+  date: 2025
 
 Q4171386:
   title: Soul theorem
@@ -3053,6 +3076,9 @@ Q5443005:
 
 Q5445112:
   title: Fernique's theorem
+  decl: ProbabilityTheory.IsGaussian.exists_integrable_exp_sq
+  authors: Rémy Degenne
+  date: 2025
 
 Q5445311:
   title: Ferrero–Washington theorem
@@ -3172,6 +3198,9 @@ Q5638112:
 
 Q5638886:
   title: Hahn embedding theorem
+  decl: hahnEmbedding_isOrderedAddMonoid
+  authors: Weiyi Wang
+  date: 2025
 
 Q5643485:
   title: Halpern–Läuchli theorem
@@ -3716,6 +3745,9 @@ Q7644264:
 
 Q7660749:
   title: Sylvester's determinant theorem
+  decl: Matrix.det_one_add_mul_comm
+  authors: Eric Wieser
+  date: 2022
 
 Q7661308:
   title: Symmetric hypergraph theorem

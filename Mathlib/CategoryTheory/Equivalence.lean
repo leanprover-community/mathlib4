@@ -49,7 +49,7 @@ if it is full, faithful and essentially surjective.
   a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
   and essentially surjective).
 
-## Notations
+## Notation
 
 We write `C ≌ D` (`\backcong`, not to be confused with `≅`/`\cong`) for a bundled equivalence.
 
@@ -323,7 +323,7 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
 @[reassoc]
 theorem adjointify_η_ε (X : C) :
     F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) := by
-  dsimp [adjointifyη,Trans.trans]
+  dsimp [adjointifyη, Trans.trans]
   simp only [comp_id, assoc, map_comp]
   have := ε.hom.naturality (F.map (η.inv.app X)); dsimp at this; rw [this]; clear this
   rw [← assoc _ _ (F.map _)]

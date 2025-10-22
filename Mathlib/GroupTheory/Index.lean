@@ -38,6 +38,18 @@ Several theorems proved in this file are known as Lagrange's theorem.
 
 assert_not_exists Field
 
+@[to_additive]
+lemma Subgroup.toSubmonoid_zpowers {G : Type*} [Group G] (g : G) :
+    (Subgroup.zpowers g).toSubmonoid = Submonoid.powers g ⊔ Submonoid.powers g⁻¹ := by
+  rw [zpowers_eq_closure, closure_toSubmonoid, Submonoid.closure_union, Submonoid.powers_eq_closure,
+    Submonoid.powers_eq_closure, Set.inv_singleton]
+
+@[to_additive]
+lemma Submonoid.powers_le_zpowers {G : Type*} [Group G] (g : G) :
+    Submonoid.powers g ≤ (Subgroup.zpowers g).toSubmonoid := by
+  rw [Subgroup.toSubmonoid_zpowers]
+  exact le_sup_left
+
 open scoped Pointwise
 
 namespace Subgroup
@@ -429,7 +441,7 @@ theorem relIndex_inf_le : (H ⊓ K).relIndex L ≤ H.relIndex L * K.relIndex L :
   · exact (le_of_eq (relIndex_eq_zero_of_le_left inf_le_left h)).trans (zero_le _)
   rw [← inf_relIndex_right, inf_assoc, ← relIndex_mul_relIndex _ _ L inf_le_right inf_le_right,
     inf_relIndex_right, inf_relIndex_right]
-  exact mul_le_mul_right' (relIndex_le_of_le_right inf_le_right h) (K.relIndex L)
+  grw [relIndex_le_of_le_right inf_le_right h]
 
 @[deprecated (since := "2025-08-12")] alias relindex_inf_le := relIndex_inf_le
 
@@ -531,12 +543,12 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     ∃ n, 0 < n ∧ n ≤ H.index ∧ a ^ n ∈ H := by
   suffices ∃ n₁ n₂, n₁ < n₂ ∧ n₂ ≤ H.index ∧ ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hlt, hle, he⟩
-    refine ⟨n₂ - n₁, by omega, by omega, ?_⟩
+    refine ⟨n₂ - n₁, by cutsat, by cutsat, ?_⟩
     rw [eq_comm, QuotientGroup.eq, ← zpow_natCast, ← zpow_natCast, ← zpow_neg, ← zpow_add,
         add_comm] at he
     rw [← zpow_natCast]
     convert he
-    omega
+    cutsat
   suffices ∃ n₁ n₂, n₁ ≠ n₂ ∧ n₁ ≤ H.index ∧ n₂ ≤ H.index ∧
       ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hne, hle₁, hle₂, he⟩
@@ -552,7 +564,7 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     dsimp only [f] at he
     simpa [hle₁, hle₂, he] using hc'
   have := (fintypeOfIndexNeZero h).finite
-  have hcard := Finite.card_le_of_injective f hf
+  have hcard := Nat.card_le_card_of_injective f hf
   simp [← index_eq_card] at hcard
 
 @[to_additive]

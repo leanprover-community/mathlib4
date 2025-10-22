@@ -7,6 +7,8 @@ import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
 import Batteries.Control.Nondet.Basic
 import Mathlib.Init
+import Mathlib.Lean.Elab.InfoTree
+import Mathlib.Tactic.Basic
 
 /-!
 # The `hint` tactic.
@@ -71,7 +73,7 @@ Construct a suggestion for a tactic.
 * Otherwise use the provided syntax.
 * Also, look for remaining goals and pretty print them after the suggestion.
 -/
-def suggestion (tac : TSyntax `tactic) (msgs : MessageLog := {}) : TacticM Suggestion := do
+def suggestion (tac : TSyntax `tactic) (trees : PersistentArray InfoTree) : TacticM Suggestion := do
   -- TODO `addExactSuggestion` has an option to construct `postInfo?`
   -- Factor that out so we can use it here instead of copying and pasting?
   let goals ← getGoals
@@ -81,28 +83,18 @@ def suggestion (tac : TSyntax `tactic) (msgs : MessageLog := {}) : TacticM Sugge
       let e ← PrettyPrinter.ppExpr (← instantiateMVars (← g.getType))
       str := str ++ Format.pretty ("\n⊢ " ++ e)
     pure (some str)
-  let style? := if goals.isEmpty then some .success else none
-  let msg? ← msgs.toList.findM? fun m => do pure <|
-    m.severity == MessageSeverity.information && (← m.data.toString).startsWith "Try this: "
-  let suggestion ← match msg? with
-  | some m => pure <| SuggestionText.string ((← m.data.toString).drop 10)
-  | none => pure <| SuggestionText.tsyntax tac
-  return { suggestion, postInfo?, style? }
-
-/-- Run a tactic, returning any new messages rather than adding them to the message log. -/
-def withMessageLog (t : TacticM Unit) : TacticM MessageLog := do
-  let initMsgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
-  t
-  modifyGetThe Core.State fun st => (st.messages, { st with messages := initMsgs })
-
-/--
-Run a tactic, but revert any changes to info trees.
-We use this to inhibit the creation of widgets by subsidiary tactics.
--/
-def withoutInfoTrees (t : TacticM Unit) : TacticM Unit := do
-  let trees := (← getInfoState).trees
-  t
-  modifyInfoState fun s => { s with trees }
+  /-
+  #adaptation_note 2025-08-27
+  Suggestion styling was deprecated in lean4#9966.
+  We use emojis for now instead.
+  -/
+  -- let style? := if goals.isEmpty then some .success else none
+  let preInfo? := if goals.isEmpty then some "🎉 " else none
+  let suggestions := collectTryThisSuggestions trees
+  let suggestion := match suggestions[0]? with
+  | some s => s.suggestion
+  | none => SuggestionText.tsyntax tac
+  return { preInfo?, suggestion, postInfo? }
 
 /--
 Run all tactics registered using `register_hint`.
@@ -117,11 +109,11 @@ def hint (stx : Syntax) : TacticM Unit := withMainContext do
   let tacs := (← getHints).toArray.qsort (·.1 > ·.1) |>.toList.map (·.2)
   let tacs := Nondet.ofList tacs
   let results := tacs.filterMapM fun t : TSyntax `tactic => do
-    if let some msgs ← observing? (withMessageLog (withoutInfoTrees (evalTactic t))) then
+    if let some { msgs, trees, .. } ← observing? (withResetServerInfo (evalTactic t)) then
       if msgs.hasErrors then
         return none
       else
-        return some (← getGoals, ← suggestion t msgs)
+        return some (← getGoals, ← suggestion t trees)
     else
       return none
   let results ← (results.toMLList.takeUpToFirst fun r => r.1.1.isEmpty).asArray

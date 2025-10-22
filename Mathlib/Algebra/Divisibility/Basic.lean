@@ -138,8 +138,8 @@ lemma pow_dvd_pow (a : α) (h : m ≤ n) : a ^ m ∣ a ^ n :=
   ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
 
 @[to_additive] lemma dvd_pow (hab : a ∣ b) : ∀ {n : ℕ} (_ : n ≠ 0), a ∣ b ^ n
-  | 0,     hn => (hn rfl).elim
-  | n + 1, _  => by rw [pow_succ']; exact hab.mul_right _
+  | 0, hn => (hn rfl).elim
+  | n + 1, _ => by rw [pow_succ']; exact hab.mul_right _
 
 @[to_additive] alias Dvd.dvd.pow := dvd_pow
 

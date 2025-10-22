@@ -165,6 +165,10 @@ Otherwise, i.e. if `x` is of infinite order, then `orderOf x` is `0` by conventi
 noncomputable def orderOf (x : G) : ℕ :=
   minimalPeriod (x * ·) 1
 
+@[to_additive (attr := nontriviality)]
+theorem Subsingleton.orderOf_eq [Subsingleton G] (x : G) : orderOf x = 1 := by
+  simp [orderOf, nontriviality]
+
 @[simp]
 theorem addOrderOf_ofMul_eq_orderOf (x : G) : addOrderOf (Additive.ofMul x) = orderOf x :=
   rfl
@@ -177,7 +181,7 @@ lemma orderOf_ofAdd_eq_addOrderOf {α : Type*} [AddMonoid α] (a : α) :
 protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
   minimalPeriod_pos_of_mem_periodicPts h
 
-@[to_additive addOrderOf_nsmul_eq_zero]
+@[to_additive (attr := simp) addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
   convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
   rw [orderOf, mul_left_iterate_apply_one]
@@ -351,6 +355,11 @@ theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf 
 @[to_additive (attr := norm_cast)]
 theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
   orderOf_injective (Units.coeHom G) Units.val_injective y
+
+@[to_additive]
+lemma IsUnit.orderOf_eq_one [Subsingleton Gˣ] {x : G} (h : IsUnit x) :
+    orderOf x = 1 := by
+  simp [isUnit_iff_eq_one.mp h]
 
 @[to_additive (attr := norm_cast)]
 theorem Units.isOfFinOrder_val {u : Gˣ} : IsOfFinOrder (u : G) ↔ IsOfFinOrder u :=
@@ -637,7 +646,7 @@ lemma zpow_mod_orderOf (x : G) (z : ℤ) : x ^ (z % (orderOf x : ℤ)) = x ^ z :
   calc
     x ^ (z % (orderOf x : ℤ)) = x ^ (z % orderOf x + orderOf x * (z / orderOf x) : ℤ) := by
         simp [zpow_add, zpow_mul, pow_orderOf_eq_one]
-    _ = x ^ z := by rw [Int.emod_add_ediv]
+    _ = x ^ z := by rw [Int.emod_add_mul_ediv]
 
 @[to_additive (attr := simp) zsmul_smul_addOrderOf]
 theorem zpow_pow_orderOf : (x ^ i) ^ orderOf x = 1 := by
@@ -958,25 +967,9 @@ open QuotientGroup
 
 @[to_additive addOrderOf_dvd_card]
 theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
-  classical
-    have ft_prod : Fintype ((G ⧸ zpowers x) × zpowers x) :=
-      Fintype.ofEquiv G groupEquivQuotientProdSubgroup
-    have ft_s : Fintype (zpowers x) := @Fintype.prodRight _ _ _ ft_prod _
-    have ft_cosets : Fintype (G ⧸ zpowers x) :=
-      @Fintype.prodLeft _ _ _ ft_prod ⟨⟨1, (zpowers x).one_mem⟩⟩
-    have eq₁ : Fintype.card G = @Fintype.card _ ft_cosets * @Fintype.card _ ft_s :=
-      calc
-        Fintype.card G = @Fintype.card _ ft_prod :=
-          @Fintype.card_congr _ _ _ ft_prod groupEquivQuotientProdSubgroup
-        _ = @Fintype.card _ (@instFintypeProd _ _ ft_cosets ft_s) :=
-          congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
-        _ = @Fintype.card _ ft_cosets * @Fintype.card _ ft_s :=
-          @Fintype.card_prod _ _ ft_cosets ft_s
-    have eq₂ : orderOf x = @Fintype.card _ ft_s :=
-      calc
-        orderOf x = _ := Fintype.card_zpowers.symm
-        _ = _ := congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
-    exact Dvd.intro (@Fintype.card (G ⧸ Subgroup.zpowers x) ft_cosets) (by rw [eq₁, eq₂, mul_comm])
+  use Fintype.card (G ⧸ zpowers x)
+  rw [← card_zpowers, mul_comm, ← Fintype.card_prod,
+    ← Fintype.card_congr groupEquivQuotientProdSubgroup]
 
 @[to_additive addOrderOf_dvd_natCard]
 theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.card G := by
@@ -1232,7 +1225,7 @@ lemma charP_of_ne_zero (hn : card R = p) (hR : ∀ i < p, (i : R) = 0 → i = 0)
       rw [← Nat.mod_add_div n p, Nat.cast_add, Nat.cast_mul, H, zero_mul, add_zero] at h
       rw [Nat.dvd_iff_mod_eq_zero]
       apply hR _ (Nat.mod_lt _ _) h
-      rw [← hn, gt_iff_lt, Fintype.card_pos_iff]
+      rw [← hn, Fintype.card_pos_iff]
       exact ⟨0⟩
     · rintro ⟨n, rfl⟩
       rw [Nat.cast_mul, H, zero_mul]

@@ -185,11 +185,11 @@ lemma CommAlgCat.mul_op_of_unop_hom {A : Type u} [CommRing A] [Bialgebra R A] :
     μ[op <| CommAlgCat.of R A].unop.hom = comulAlgHom R A := rfl
 
 instance {A : Type u} [CommRing A] [Bialgebra R A] [IsCocomm R A] :
-    IsCommMon (Opposite.op <| CommAlgCat.of R A) where
+    IsCommMonObj (Opposite.op <| CommAlgCat.of R A) where
   mul_comm := by ext; exact comm_comul R _
 
 instance {A B : Type u} [CommRing A] [Bialgebra R A] [CommRing B] [Bialgebra R B]
-    (f : A →ₐc[R] B) : IsMon_Hom (CommAlgCat.ofHom (f : A →ₐ[R] B)).op where
+    (f : A →ₐc[R] B) : IsMonHom (CommAlgCat.ofHom (f : A →ₐ[R] B)).op where
 
 instance (A : (CommAlgCat R)ᵒᵖ) [MonObj A] : Bialgebra R A.unop :=
   .ofAlgHom μ[A].unop.hom η[A].unop.hom
@@ -202,13 +202,13 @@ variable (R) in
 `R`-algebras. -/
 @[simps! functor_obj_unop_X inverse_obj unitIso_hom_app
   unitIso_inv_app counitIso_hom_app counitIso_inv_app]
-def commBialgCatEquivComonCommAlgCat : CommBialgCat R ≌ (Mon_ (CommAlgCat R)ᵒᵖ)ᵒᵖ where
+def commBialgCatEquivComonCommAlgCat : CommBialgCat R ≌ (Mon (CommAlgCat R)ᵒᵖ)ᵒᵖ where
   functor.obj A := .op <| .mk <| .op <| .of R A
   functor.map {A B} f := .op <| .mk' <| .op <| CommAlgCat.ofHom f.hom
   inverse.obj A := .of R A.unop.X.unop
   inverse.map {A B} f := CommBialgCat.ofHom <| .ofAlgHom f.unop.hom.unop.hom
-    congr(($(IsMon_Hom.one_hom (f := f.unop.hom))).unop.hom)
-    congr(($((IsMon_Hom.mul_hom (f := f.unop.hom)).symm)).unop.hom)
+    congr(($(IsMonHom.one_hom (f := f.unop.hom))).unop.hom)
+    congr(($((IsMonHom.mul_hom (f := f.unop.hom)).symm)).unop.hom)
   unitIso.hom := 𝟙 _
   unitIso.inv := 𝟙 _
   counitIso.hom := 𝟙 _
@@ -221,10 +221,10 @@ lemma commBialgCatEquivComonCommAlgCat_functor_map_unop_hom {A B : CommBialgCat 
 
 @[simp]
 lemma commBialgCatEquivComonCommAlgCat_inverse_map_unop_hom
-    {A B : (Mon_ (CommAlgCat R)ᵒᵖ)ᵒᵖ} (f : A ⟶ B) :
+    {A B : (Mon (CommAlgCat R)ᵒᵖ)ᵒᵖ} (f : A ⟶ B) :
   AlgHomClass.toAlgHom ((commBialgCatEquivComonCommAlgCat R).inverse.map f).hom =
     f.unop.hom.unop.hom := rfl
 
 instance {A : CommBialgCat.{u} R} [IsCocomm R A] :
-    IsCommMon ((commBialgCatEquivComonCommAlgCat R).functor.obj A).unop.X :=
-  inferInstanceAs <| IsCommMon <| op <| CommAlgCat.of R A
+    IsCommMonObj ((commBialgCatEquivComonCommAlgCat R).functor.obj A).unop.X :=
+  inferInstanceAs <| IsCommMonObj <| op <| CommAlgCat.of R A

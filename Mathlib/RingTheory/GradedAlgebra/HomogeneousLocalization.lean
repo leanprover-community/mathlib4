@@ -57,9 +57,9 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 * `HomogeneousLocalization.isLocalRing`: `HomogeneousLocalization 𝒜 x` is a local ring when `x` is
   the complement of some prime ideals.
 
-* `HomogeneousLocalization.map`: Let `A` and `B` be two graded rings and `g : A → B` a grading
-  preserving ring map. If `P ≤ A` and `Q ≤ B` are submonoids such that `P ≤ g⁻¹(Q)`, then `g`
-  induces a ring map between the homogeneous localization of `A` at `P` and the homogeneous
+* `HomogeneousLocalization.map`: Let `A` and `B` be two graded rings and `g : A → B` a
+  grading-preserving ring map. If `P ≤ A` and `Q ≤ B` are submonoids such that `P ≤ g⁻¹(Q)`, then
+  `g` induces a ring map between the homogeneous localization of `A` at `P` and the homogeneous
   localization of `B` at `Q`.
 
 ## References
@@ -229,8 +229,6 @@ theorem den_add (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 + c2).den : A) = c1.den * 
   rfl
 
 instance : CommMonoid (NumDenSameDeg 𝒜 x) where
-  one := 1
-  mul := (· * ·)
   mul_assoc _ _ _ := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
   one_mul _ := ext _ (zero_add _) (one_mul _) (one_mul _)
   mul_one _ := ext _ (add_zero _) (mul_one _) (mul_one _)

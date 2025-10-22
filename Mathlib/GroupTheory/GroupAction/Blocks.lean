@@ -78,7 +78,7 @@ theorem IsPartition.of_orbits :
   · intro x
     exact ⟨_, ⟨x, rfl⟩, mem_orbit_self x⟩
   · rintro ⟨a, ha : orbit G a = ∅⟩
-    exact (MulAction.orbit_nonempty a).ne_empty ha
+    exact (MulAction.nonempty_orbit a).ne_empty ha
 
 end orbits
 
@@ -721,7 +721,7 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     | inr h =>
       obtain ⟨a, ha⟩ := h; rw [ha]; exact Set.subsingleton_singleton
   cases Set.eq_empty_or_nonempty B with
-  | inl h => rw [h, Set.ncard_empty]; norm_num
+  | inl h => rw [h, Set.ncard_empty]; simp
   | inr h =>
     rw [← hB.ncard_block_mul_ncard_orbit_eq h, lt_iff_not_ge] at hB'
     rw [← not_le]
