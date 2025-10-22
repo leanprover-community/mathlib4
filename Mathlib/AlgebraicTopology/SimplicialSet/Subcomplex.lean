@@ -147,6 +147,38 @@ instance [Mono f] : IsIso (toRange f) :=
 
 end
 
+section
+
+variable (X)
+
+@[simps! inv_app_coe]
+def topIso : ((⊤ : X.Subcomplex) : SSet) ≅ X :=
+  NatIso.ofComponents (fun n ↦ (Equiv.Set.univ (X.obj n)).toIso)
+
+@[simp]
+lemma topIso_hom : (topIso X).hom = Subcomplex.ι _ := rfl
+
+@[reassoc (attr := simp)]
+lemma topIso_inv_ι : (topIso X).inv ≫ Subpresheaf.ι _ = 𝟙 _ := rfl
+
+end
+
+section
+
+variable (f : X ⟶ Y) {B : Y.Subcomplex} (hf : B.preimage f = ⊤)
+
+def lift : X ⟶ B :=
+  (topIso X).inv ≫ homOfLE (by simp [hf]) ≫ B.fromPreimage f
+
+@[reassoc (attr := simp)]
+lemma lift_ι : lift f hf ≫ B.ι = f := rfl
+
+@[simp]
+lemma lift_app_coe {n : SimplexCategoryᵒᵖ} (x : X.obj n) :
+    ((lift f hf).app _ x).1 = f.app _ x := rfl
+
+end
+
 end Subcomplex
 
 end SSet
