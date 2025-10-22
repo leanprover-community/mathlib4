@@ -211,8 +211,8 @@ theorem toAddSubmonoid_injective :
 
 lemma toNonUnitalSubsemiring_injective :
     Function.Injective (toNonUnitalSubsemiring : Subsemiring R → _) :=
-  fun S₁ S₂ h => SetLike.ext'_iff.2 (
-    show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
+  fun S₁ S₂ h => SetLike.ext'_iff.2
+    (show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
 
 @[simp]
 lemma toNonUnitalSubsemiring_inj {S₁ S₂ : Subsemiring R} :
@@ -355,7 +355,7 @@ instance : Top (Subsemiring R) :=
 theorem mem_top (x : R) : x ∈ (⊤ : Subsemiring R) :=
   Set.mem_univ x
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : ((⊤ : Subsemiring R) : Set R) = Set.univ :=
   rfl
 
@@ -368,7 +368,7 @@ instance : Min (Subsemiring R) :=
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubmonoid ⊓ t.toAddSubmonoid with carrier := s ∩ t }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_inf (p p' : Subsemiring R) : ((p ⊓ p' : Subsemiring R) : Set R) = (p : Set R) ∩ p' :=
   rfl
 
@@ -396,6 +396,9 @@ theorem restrict_apply (f : R →+* S) {s : σR} (x : s) : f.domRestrict s x = f
 /-- The subsemiring of elements `x : R` such that `f x = g x` -/
 def eqLocusS (f g : R →+* S) : Subsemiring R :=
   { (f : R →* S).eqLocusM g, (f : R →+ S).eqLocusM g with carrier := { x | f x = g x } }
+
+@[simp]
+theorem mem_eqLocusS {f g : R →+* S} {x : R} : x ∈ f.eqLocusS g ↔ f x = g x := Iff.rfl
 
 @[simp]
 theorem eqLocusS_same (f : R →+* S) : f.eqLocusS f = ⊤ :=

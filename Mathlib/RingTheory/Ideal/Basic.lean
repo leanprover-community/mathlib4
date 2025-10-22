@@ -88,7 +88,7 @@ theorem add_pow_mem_of_pow_mem_of_le_of_commute {m n k : ℕ}
   · rw [hab.pow_pow]
     exact I.mul_mem_left _ (I.pow_mem_of_pow_mem ha h)
   · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
-    omega
+    cutsat
 
 theorem add_pow_add_pred_mem_of_pow_mem_of_commute {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hab : Commute a b) :
@@ -164,7 +164,8 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     · exact subset_span ⟨_, hx, pow_zero _⟩
   rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs
   rcases hs with ⟨f, hf⟩
-  change (f.support.sum fun a => f a * a) = 1 at hf
+  simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,
+    LinearMap.id_coe, id_eq, smul_eq_mul] at hf
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
   rw [hf, one_pow] at this
   refine span_le.mpr ?_ this

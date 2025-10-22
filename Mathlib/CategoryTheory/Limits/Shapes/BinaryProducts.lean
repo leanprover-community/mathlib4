@@ -434,8 +434,8 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
     obtain ⟨l, hl, -⟩ := BinaryCofan.IsColimit.desc' H (𝟙 X) (h.to X)
     refine ⟨⟨l, hl, BinaryCofan.IsColimit.hom_ext H (?_) (h.hom_ext _ _)⟩⟩
     rw [Category.comp_id]
-    have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (·≫inl c) hl
-    rwa [Category.assoc,Category.id_comp] at e
+    have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (· ≫ inl c) hl
+    rwa [Category.assoc, Category.id_comp] at e
   · intro
     exact
       ⟨BinaryCofan.IsColimit.mk _ (fun f _ => inv c.inl ≫ f)
@@ -821,12 +821,14 @@ end CoprodLemmas
 
 variable (C)
 
-/-- `HasBinaryProducts` represents a choice of product for every pair of objects. -/
+/-- A category `HasBinaryProducts` if it has all limits of shape `Discrete WalkingPair`,
+i.e. if it has a product for every pair of objects. -/
 @[stacks 001T]
 abbrev HasBinaryProducts :=
   HasLimitsOfShape (Discrete WalkingPair) C
 
-/-- `HasBinaryCoproducts` represents a choice of coproduct for every pair of objects. -/
+/-- A category `HasBinaryCoproducts` if it has all colimit of shape `Discrete WalkingPair`,
+i.e. if it has a coproduct for every pair of objects. -/
 @[stacks 04AP]
 abbrev HasBinaryCoproducts :=
   HasColimitsOfShape (Discrete WalkingPair) C
@@ -1352,7 +1354,7 @@ variable {sXY : BinaryFan X Y} {sYZ : BinaryFan Y Z}
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `sXY.X Z`,
 if `sYZ` is a limit cone we can construct a binary fan over `X sYZ.X`.
 
-This is an ingredient of building the associator for a cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assoc (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) : BinaryFan X sYZ.pt :=
   mk (s.fst ≫ sXY.fst) (Q.lift (mk (s.fst ≫ sXY.snd) s.snd))
 
@@ -1367,7 +1369,7 @@ lemma BinaryFan.assoc_snd (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) :
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `X sYZ.X`,
 if `sYZ` is a limit cone we can construct a binary fan over `sXY.X Z`.
 
-This is an ingredient of building the associator for a cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assocInv (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) : BinaryFan sXY.pt Z :=
   BinaryFan.mk (P.lift (BinaryFan.mk s.fst (s.snd ≫ sYZ.fst))) (s.snd ≫ sYZ.snd)
 

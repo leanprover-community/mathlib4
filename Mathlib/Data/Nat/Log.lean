@@ -3,6 +3,7 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
+import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Tactic.Bound.Attribute
@@ -77,31 +78,40 @@ theorem log_one_right (b : ℕ) : log b 1 = 0 :=
 
 /-- `pow b` and `log b` (almost) form a Galois connection. See also `Nat.pow_le_of_le_log` and
 `Nat.le_log_of_pow_le` for individual implications under weaker assumptions. -/
-theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
-    b ^ x ≤ y ↔ x ≤ log b y := by
+theorem le_log_iff_pow_le {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
+    x ≤ log b y ↔ b ^ x ≤ y := by
   induction y using Nat.strong_induction_on generalizing x with | h y ih => ?_
   cases x with
-  | zero => dsimp; omega
+  | zero => dsimp; cutsat
   | succ x =>
     rw [log]; split_ifs with h
     · have b_pos : 0 < b := lt_of_succ_lt hb
-      rw [Nat.add_le_add_iff_right, ← ih (y / b) (div_lt_self
+      rw [Nat.add_le_add_iff_right, ih (y / b) (div_lt_self
         (Nat.pos_iff_ne_zero.2 hy) hb) (Nat.div_pos h.1 b_pos).ne', le_div_iff_mul_le b_pos,
         pow_succ', Nat.mul_comm]
-    · exact iff_of_false (fun hby => h ⟨(le_self_pow x.succ_ne_zero _).trans hby, hb⟩)
-        (not_succ_le_zero _)
+    · exact iff_of_false (not_succ_le_zero _)
+        (fun hby => h ⟨(le_self_pow x.succ_ne_zero _).trans hby, hb⟩)
 
+@[deprecated le_log_iff_pow_le (since := "2025-10-05")]
+theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
+    b ^ x ≤ y ↔ x ≤ log b y :=
+  (le_log_iff_pow_le hb hy).symm
+
+theorem log_lt_iff_lt_pow {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : log b y < x ↔ y < b ^ x :=
+  lt_iff_lt_of_le_iff_le (le_log_iff_pow_le hb hy)
+
+@[deprecated log_lt_iff_lt_pow (since := "2025-10-05")]
 theorem lt_pow_iff_log_lt {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : y < b ^ x ↔ log b y < x :=
-  lt_iff_lt_of_le_iff_le (pow_le_iff_le_log hb hy)
+  (log_lt_iff_lt_pow hb hy).symm
 
 theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ x ≤ y := by
-  refine (le_or_gt b 1).elim (fun hb => ?_) fun hb => (pow_le_iff_le_log hb hy).2 h
+  refine (le_or_gt b 1).elim (fun hb => ?_) fun hb => (le_log_iff_pow_le hb hy).1 h
   rw [log_of_left_le_one hb, Nat.le_zero] at h
   rwa [h, Nat.pow_zero, one_le_iff_ne_zero]
 
 theorem le_log_of_pow_le {b x y : ℕ} (hb : 1 < b) (h : b ^ x ≤ y) : x ≤ log b y := by
   rcases ne_or_eq y 0 with (hy | rfl)
-  exacts [(pow_le_iff_le_log hb hy).1 h, (h.not_gt (Nat.pow_pos (Nat.zero_lt_one.trans hb))).elim]
+  exacts [(le_log_iff_pow_le hb hy).2 h, (h.not_gt (Nat.pow_pos (Nat.zero_lt_one.trans hb))).elim]
 
 theorem pow_log_le_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : b ^ log b x ≤ x :=
   pow_le_of_le_log hx le_rfl
@@ -127,7 +137,7 @@ theorem lt_pow_succ_log_self {b : ℕ} (hb : 1 < b) (x : ℕ) : x < b ^ (log b x
 theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
     log b n = m ↔ b ^ m ≤ n ∧ n < b ^ (m + 1) := by
   rcases em (1 < b ∧ n ≠ 0) with (⟨hb, hn⟩ | hbn)
-  · rw [le_antisymm_iff, ← Nat.lt_succ_iff, ← pow_le_iff_le_log, ← lt_pow_iff_log_lt,
+  · rw [le_antisymm_iff, ← Nat.lt_succ_iff, le_log_iff_pow_le, log_lt_iff_lt_pow,
       and_comm] <;> assumption
   have hm : m ≠ 0 := h.resolve_right hbn
   rw [not_and_or, not_lt, Ne, not_not] at hbn
@@ -215,26 +225,34 @@ theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
   · rw [div_eq_of_lt h, log_of_lt h, log_zero_right]
   rw [log_of_one_lt_of_le hb h, Nat.add_sub_cancel_right]
 
+lemma log_div_base_pow (b n k : ℕ) : log b (n / b ^ k) = log b n - k := by
+  induction k with
+  | zero => grind
+  | succ k hk => rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, log_div_base, hk, sub_add_eq]
+
 @[simp]
 theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
   rcases le_or_gt b 1 with hb | hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb]
   rcases lt_or_ge n b with h | h
   · rw [div_eq_of_lt h, Nat.zero_mul, log_zero_right, log_of_lt h]
-  rw [log_mul_base hb (Nat.div_pos h (by omega)).ne', log_div_base,
+  rw [log_mul_base hb (Nat.div_pos h (by cutsat)).ne', log_div_base,
     Nat.sub_add_cancel (succ_le_iff.2 <| log_pos hb h)]
 
 theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / b < n := by
-  rw [div_lt_iff_lt_mul (by omega), ← succ_le_iff, ← pred_eq_sub_one,
-    succ_pred_eq_of_pos (by omega)]
+  rw [div_lt_iff_lt_mul (by cutsat), ← succ_le_iff, ← pred_eq_sub_one,
+    succ_pred_eq_of_pos (by cutsat)]
   exact Nat.add_le_mul hn hb
+
+lemma log_two_bit {b n} (hn : n ≠ 0) : Nat.log 2 (n.bit b) = Nat.log 2 n + 1 := by
+  rw [← log_div_mul_self, bit_div_two, log_mul_base Nat.one_lt_two hn]
 
 lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
   rcases eq_or_ne n 0 with rfl | hn
   · rw [log2_zero, log_zero_right]
   apply eq_of_forall_le_iff
   intro m
-  rw [Nat.le_log2 hn, ← Nat.pow_le_iff_le_log Nat.one_lt_two hn]
+  rw [Nat.le_log2 hn, Nat.le_log_iff_pow_le Nat.one_lt_two hn]
 
 /-! ### Ceil logarithm -/
 
@@ -280,47 +298,55 @@ theorem clog_eq_one {b n : ℕ} (hn : 2 ≤ n) (h : n ≤ b) : clog b n = 1 := b
   rw [← Nat.lt_succ_iff, Nat.div_lt_iff_lt_mul] <;> omega
 
 /-- `clog b` and `pow b` form a Galois connection. -/
-theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ clog b x ≤ y := by
+theorem clog_le_iff_le_pow {b : ℕ} (hb : 1 < b) {x y : ℕ} : clog b x ≤ y ↔ x ≤ b ^ y := by
   induction x using Nat.strong_induction_on generalizing y with | h x ih => ?_
   cases y
   · rw [Nat.pow_zero]
-    refine ⟨fun h => (clog_of_right_le_one h b).le, ?_⟩
+    refine ⟨?_, fun h => (clog_of_right_le_one h b).le⟩
     simp_rw [← not_lt]
     contrapose!
     exact clog_pos hb
   have b_pos : 0 < b := zero_lt_of_lt hb
   rw [clog]; split_ifs with h
-  · rw [Nat.add_le_add_iff_right, ← ih ((x + b - 1) / b) (add_pred_div_lt hb h.2),
+  · rw [Nat.add_le_add_iff_right, ih ((x + b - 1) / b) (add_pred_div_lt hb h.2),
       Nat.div_le_iff_le_mul_add_pred b_pos, Nat.mul_comm b, ← Nat.pow_succ,
       Nat.add_sub_assoc (Nat.succ_le_of_lt b_pos), Nat.add_le_add_iff_right]
-  · exact iff_of_true ((not_lt.1 (not_and.1 h hb)).trans <| succ_le_of_lt <| Nat.pow_pos b_pos)
-      (zero_le _)
+  · exact iff_of_true (zero_le _)
+      ((not_lt.1 (not_and.1 h hb)).trans <| succ_le_of_lt <| Nat.pow_pos b_pos)
 
+@[deprecated clog_le_iff_le_pow (since := "2025-10-05")]
+theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ clog b x ≤ y :=
+  (clog_le_iff_le_pow hb).symm
+
+theorem lt_clog_iff_pow_lt {b : ℕ} (hb : 1 < b) {x y : ℕ} : y < clog b x ↔ b ^ y < x :=
+  lt_iff_lt_of_le_iff_le (clog_le_iff_le_pow hb)
+
+@[deprecated lt_clog_iff_pow_lt (since := "2025-10-05")]
 theorem pow_lt_iff_lt_clog {b : ℕ} (hb : 1 < b) {x y : ℕ} : b ^ y < x ↔ y < clog b x :=
-  lt_iff_lt_of_le_iff_le (le_pow_iff_clog_le hb)
+  (lt_clog_iff_pow_lt hb).symm
 
 @[simp]
 theorem clog_pow (b x : ℕ) (hb : 1 < b) : clog b (b ^ x) = x :=
-  eq_of_forall_ge_iff fun z ↦ by rw [← le_pow_iff_clog_le hb, Nat.pow_le_pow_iff_right hb]
+  eq_of_forall_ge_iff fun z ↦ by rw [clog_le_iff_le_pow hb, Nat.pow_le_pow_iff_right hb]
 
 theorem pow_pred_clog_lt_self {b : ℕ} (hb : 1 < b) {x : ℕ} (hx : 1 < x) :
     b ^ (clog b x).pred < x := by
-  rw [← not_le, le_pow_iff_clog_le hb, not_le]
+  rw [← lt_clog_iff_pow_lt hb]
   exact pred_lt (clog_pos hb hx).ne'
 
 theorem le_pow_clog {b : ℕ} (hb : 1 < b) (x : ℕ) : x ≤ b ^ clog b x :=
-  (le_pow_iff_clog_le hb).2 le_rfl
+  (clog_le_iff_le_pow hb).1 le_rfl
 
 @[mono, gcongr]
 theorem clog_mono_right (b : ℕ) {n m : ℕ} (h : n ≤ m) : clog b n ≤ clog b m := by
   rcases le_or_gt b 1 with hb | hb
   · rw [clog_of_left_le_one hb]
     exact zero_le _
-  · rw [← le_pow_iff_clog_le hb]
+  · rw [clog_le_iff_le_pow hb]
     exact h.trans (le_pow_clog hb _)
 
 theorem clog_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : clog b n ≤ clog c n := by
-  rw [← le_pow_iff_clog_le (lt_of_lt_of_le hc hb)]
+  rw [clog_le_iff_le_pow (lt_of_lt_of_le hc hb)]
   calc
     n ≤ c ^ clog c n := le_pow_clog hc _
     _ ≤ b ^ clog c n := Nat.pow_le_pow_left hb _
@@ -353,8 +379,8 @@ theorem clog_lt_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
   refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
   · apply le_antisymm _ (le_pow_clog hb n)
     apply le_of_lt_succ
-    exact (pow_lt_iff_lt_clog hb).mpr H
-  · rw [← pow_lt_iff_lt_clog hb, H]
+    exact (lt_clog_iff_pow_lt hb).mp H
+  · rw [lt_clog_iff_pow_lt hb, H]
     exact n.lt_add_one
 
 theorem clog_eq_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
@@ -435,7 +461,7 @@ private lemma logC_step {m pw q e : ℕ} (hpw : 1 < pw) (hqe : logC.step m pw hp
       rw [Nat.pow_succ, Nat.mul_assoc, Nat.pow_mul, Nat.pow_two, Nat.mul_assoc]
       refine ⟨(ih hqe').1.trans' (Nat.mul_le_mul_left _ (Nat.mul_div_le _ _)),
         Nat.div_lt_of_lt_mul (ih hqe').2.1, (ih hqe').2.2.1.trans_le ?_,
-        fun _ => Nat.div_pos (le_of_not_gt hqpw) (by omega)⟩
+        fun _ => Nat.div_pos (le_of_not_gt hqpw) (by cutsat)⟩
       exact Nat.mul_le_mul_left _ (Nat.lt_mul_div_succ _ (zero_lt_of_lt hpw))
 
 private lemma logC_spec {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :

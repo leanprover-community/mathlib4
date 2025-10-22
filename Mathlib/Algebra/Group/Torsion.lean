@@ -39,6 +39,16 @@ lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injecti
 lemma IsMulTorsionFree.pow_eq_one_iff (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 :=
   ⟨fun h ↦ by rwa [← pow_left_inj hn, one_pow], fun h ↦ by rw [h, one_pow]⟩
 
+@[to_additive]
+lemma IsMulTorsionFree.pow_eq_one_iff' (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, pow_zero]⟩
+  by_contra h'
+  simpa [h] using (pow_left_injective h').ne ha
+
+/-- See `sq_eq_one_iff` for a version that holds in rings. -/
+@[to_additive two_nsmul_eq_zero]
+lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := IsMulTorsionFree.pow_eq_one_iff (by cutsat)
+
 end Monoid
 
 section Group
@@ -58,5 +68,10 @@ lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injec
 @[to_additive /-- Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'`
 and `zsmul_lt_zsmul_iff'`. -/]
 lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
+
+@[to_additive] lemma self_eq_inv : a = a⁻¹ ↔ a = 1 := by rw [← sq_eq_one, sq, mul_eq_one_iff_eq_inv]
+@[to_additive] lemma inv_eq_self : a⁻¹ = a ↔ a = 1 := by rw [eq_comm, self_eq_inv]
+@[to_additive] lemma self_ne_inv : a ≠ a⁻¹ ↔ a ≠ 1 := self_eq_inv.ne
+@[to_additive] lemma inv_ne_self : a⁻¹ ≠ a ↔ a ≠ 1 := inv_eq_self.ne
 
 end Group

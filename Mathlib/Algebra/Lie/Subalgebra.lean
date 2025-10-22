@@ -182,9 +182,7 @@ theorem mk_coe (S : Set L) (h₁ h₂ h₃ h₄) :
   rfl
 
 theorem toSubmodule_mk (p : Submodule R L) (h) :
-    (({ p with lie_mem' := h } : LieSubalgebra R L) : Submodule R L) = p := by
-  cases p
-  rfl
+    (({ p with lie_mem' := h } : LieSubalgebra R L) : Submodule R L) = p := rfl
 
 theorem coe_injective : Function.Injective ((↑) : LieSubalgebra R L → Set L) :=
   SetLike.coe_injective
