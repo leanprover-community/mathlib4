@@ -123,6 +123,8 @@ to learn about it as well!
   and attempts to merge the branch `lean-pr-testing-NNNN` into `master`.
   It will resolve conflicts in `lean-toolchain`, `lakefile.lean`, and `lake-manifest.json`.
   If there are more conflicts, it will bail.
+- `zulip_build_report.sh` is used to analyse the output from building the nightly-testing-green
+  branch with additional linting enabled, and posts a summary of its findings on zulip.
 
 **Managing downstream repos**
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
