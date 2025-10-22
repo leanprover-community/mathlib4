@@ -546,7 +546,7 @@ variable {ι : Type*} {U : ι → Set α} (hclopen : ∀ i, IsClopen (U i))
 include hclopen hdisj hunion in
 /-- A pairwise disjoint cover by clopens partitions the connected components. -/
 noncomputable def equivOfIsClopen : ConnectedComponents α ≃ Σ i, ConnectedComponents (U i) := by
-  have heq {x : α} {i} (hx : x ∈ U i) :
+  haveI heq {x : α} {i} (hx : x ∈ U i) :
       Subtype.val '' connectedComponent ⟨x, hx⟩ = connectedComponent x := by
     rw [← connectedComponentIn_eq_image hx, (hclopen i).connectedComponentIn_eq hx]
   refine .symm <| .ofBijective
