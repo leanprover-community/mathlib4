@@ -499,8 +499,8 @@ theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
   · apply (h.map_units 1).ne_zero
     rw [Subsingleton.eq_zero ((1 : nonZeroDivisors R) : R), map_zero]
 
-protected theorem nontrivial [Nontrivial R] : Nontrivial S := by
-  rwa [← h.nontrivial_iff_nontrivial]
+protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
+  h.nontrivial_iff_nontrivial.mp hR
 
 end IsFractionRing
 
