@@ -497,28 +497,28 @@ partial def _root_.Lean.MVarId.gcongr
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
-  let lhs ← if relName == `_Implies then whnfR lhs else pure lhs
-  let rhs ← if relName == `_Implies then whnfR rhs else pure rhs
   if let some mdataLhs := mdataLhs? then
-    let annotatedExpr := if mdataLhs then lhs else rhs
+    let mdataExpr := if mdataLhs then lhs else rhs
     -- B. If there is a template:
     -- (i) if the template is `?_`
     -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
     -- if this fails, stop and report the existing goal.
-    if hasHoleAnnotation annotatedExpr then
+    if hasHoleAnnotation mdataExpr then
       if ← mainGoalDischarger g then
         return (true, names, #[])
       else
-        let g ← g.replaceTargetDefEq (updateRel rel annotatedExpr.mdataExpr! mdataLhs)
+        let g ← g.replaceTargetDefEq (updateRel rel mdataExpr.mdataExpr! mdataLhs)
         return (false, names, #[g])
     -- B. If the template doesn't contain any `?_`, and the goal wasn't closed by `rfl`,
     -- we report that the provided pattern doesn't apply.
-    unless containsHoleAnnotation annotatedExpr do
+    unless containsHoleAnnotation mdataExpr do
       try withDefault g.applyRfl; return (true, names, #[])
       catch _ => throwTacticEx `gcongr g m!"\
         subgoal {← withReducible g.getType'} should not be considered according to the \
         provided pattern and is not closed by `rfl`"
 
+  let lhs ← if relName == `_Implies then whnfR lhs else pure lhs
+  let rhs ← if relName == `_Implies then whnfR rhs else pure rhs
   let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs
     | if mdataLhs?.isNone then return (false, names, #[g])
       throwTacticEx `gcongr g m!"the head of {lhs} is not a constant"
@@ -656,13 +656,14 @@ elab "gcongr" template:(ppSpace colGt term)?
       -- First, we replace occurrences of `?_` with `gcongrHole% ?_`
       let e ← e.raw.replaceM fun stx =>
         if stx.isOfKind ``Parser.Term.syntheticHole then `(gcongrHole% _%$stx) else pure none
-      let template ← Term.elabPattern ⟨e⟩ (← inferType lhs)
-      unless containsHoleAnnotation template do
-        throwError "invalid template {template}, it doesn't contain any `?_`"
-      unless ← withReducible <| isDefEq template lhs do
-        throwError "invalid template {template}, it does not match the shape of {lhs}"
-      let template ← instantiateMVars template
-      let g ← g.replaceTargetDefEq (updateRel type template true)
+      let patt ← withTheReader Term.Context ({ · with
+        ignoreTCFailures := true, errToSorry := false }) <| Term.elabTerm e (← inferType lhs)
+      unless containsHoleAnnotation patt do
+        throwError "invalid pattern {patt}, it doesn't contain any `?_`"
+      unless ← withReducible <| isDefEq patt lhs do
+        throwError "invalid pattern {patt}, it does not match with {lhs}"
+      let patt ← instantiateMVars patt
+      let g ← g.replaceTargetDefEq (updateRel type patt true)
       g.gcongr true names
   if progress then
     replaceMainGoal unsolvedGoalStates.toList
