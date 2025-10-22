@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 import Lean
 import Batteries.Lean.Except
 import Batteries.Tactic.Exact
-import Mathlib.Lean.Elab.Term
 import Mathlib.Tactic.GCongr.ForwardAttr
 import Mathlib.Order.Defs.Unbundled
 
@@ -215,6 +214,7 @@ def getRel (e : Expr) : Option (Name × Expr × Expr) :=
       none
   | _ => none
 
+/-- If `e` is of the form `r a b`, replace either `a` or `b` with `e`. -/
 def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
   match r with
   | .forallE _ d b _ => if isLhs then r.updateForallE! e b else r.updateForallE! d e
@@ -386,9 +386,11 @@ def gcongrForwardDischarger (goal : MVarId) : MetaM Bool := Elab.Term.TermElabM.
   -- run `Lean.MVarId.gcongrForward` on each one
   goal.gcongrForward hs
 
+/-- Annotate `e` with a `gcongrHole` mdata annotation. -/
 def mkHoleAnnotation (e : Expr) : Expr :=
   mkAnnotation `gcongrHole e
 
+/-- Check whether `e` has a `gcongrHole` mdata annotation. -/
 def hasHoleAnnotation (e : Expr) : Bool :=
   annotation? `gcongrHole e |>.isSome
 
