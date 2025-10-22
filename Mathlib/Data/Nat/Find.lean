@@ -173,7 +173,7 @@ lemma findGreatest_succ (n : ℕ) :
   | n + 1, h => by simp [Nat.findGreatest, h]
 
 @[simp]
-lemma findGreatest_of_not (h : ¬P (n + 1)) : findGreatest P (n + 1) = findGreatest P n := by
+lemma findGreatest_of_not (h : ¬ P (n + 1)) : findGreatest P (n + 1) = findGreatest P n := by
   simp [Nat.findGreatest, h]
 
 lemma findGreatest_eq_iff :

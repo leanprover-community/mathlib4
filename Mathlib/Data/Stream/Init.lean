@@ -12,8 +12,6 @@ import Mathlib.Tactic.Common
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
 -/
 
-set_option linter.style.commandStart false -- TEMPORARY, silence some false positives
-
 open Nat Function Option
 
 namespace Stream'

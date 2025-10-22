@@ -380,7 +380,7 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
 
 /-! ### `mod`, `dvd` -/
 
-lemma not_pos_pow_dvd {a n : ℕ} (ha : 1 < a) (hn : 1 < n) : ¬a ^ n ∣ a :=
+lemma not_pos_pow_dvd {a n : ℕ} (ha : 1 < a) (hn : 1 < n) : ¬ a ^ n ∣ a :=
   not_dvd_of_pos_of_lt (Nat.lt_trans Nat.zero_lt_one ha)
     (lt_of_eq_of_lt (Nat.pow_one a).symm ((Nat.pow_lt_pow_iff_right ha).2 hn))
 
