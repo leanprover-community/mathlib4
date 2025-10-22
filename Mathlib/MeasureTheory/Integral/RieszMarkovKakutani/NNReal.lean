@@ -120,12 +120,6 @@ open MeasureTheory NormedSpace WeakDual CompactlySupported CompactlySupportedCon
 instance : PseudoMetricSpace (LevyProkhorov (ProbabilityMeasure X)) :=
   levyProkhorovDist_pseudoMetricSpace_probabilityMeasure
 
-lemma integ {μ : ProbabilityMeasure X} {f : C(X, ℝ)} : ‖∫ (x : X), f x ∂μ‖ ≤ ‖f‖ :=
-  BoundedContinuousFunction.norm_integral_le_norm μ
-  (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)
-
-
---example {x y : ℝ} : x ≤ y * x := by
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let Φ := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1
     ∧ φ ⟨fun x ↦ 1, continuous_const⟩ = 1 ∧ ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f }
@@ -156,7 +150,6 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
         have : {φ | 0 ≤ φ ↑f} = evaluatef ⁻¹' Set.Ici 0 := by ext x; simp [evaluatef]
         simp only [this]; refine (IsClosed.preimage ?_ isClosed_Ici)
         · apply WeakDual.eval_continuous
-          --Why does this work? I can't change it to an exact or refine statement
     · exact fun _ h ↦ h.1.1
   apply UniformSpace.compactSpace_iff_seqCompactSpace.mpr
   constructor
@@ -189,7 +182,6 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     use RealRMK.rieszMeasure (Λ φ)
     exact IsPMeas φ
   have : Set.univ = Set.range T := by
-    --simp [T]
     ext μ; simp only [T,Set.mem_univ, Set.mem_range, true_iff, Φ]
     let μprob : ProbabilityMeasure X := (LevyProkhorov.equiv (ProbabilityMeasure X)) μ
     let L : C_c(X, ℝ) →ₚ[ℝ] ℝ := integralPositiveLinearMap (μprob : Measure X)
@@ -201,14 +193,17 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     let W := ((liftL L).toLinearMap.mkContinuous 1 (by
       intro f;simp only [Equiv.toFun_as_coe, integralPositiveLinearMap_toFun,
         ContinuousMap.liftCompactlySupported_apply_toFun, LinearMap.coe_mk, AddHom.coe_mk,
-        one_mul, L, liftL]; exact integ))
+        one_mul, L, liftL]; exact BoundedContinuousFunction.norm_integral_le_norm _ (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)))
     let φ_weak : WeakDual ℝ (C(X,ℝ)) := W
     have as_ball : φ_weak ∈ Φ := by
       simp [Φ]
       refine ⟨?_,?_,?_⟩
       · apply ContinuousLinearMap.opNorm_le_bound W (by linarith)
         intro f
-        simp [W, L, liftL, -Real.norm_eq_abs, integ]
+        simp only [Equiv.toFun_as_coe, integralPositiveLinearMap_toFun,
+          ContinuousMap.liftCompactlySupported_apply_toFun, LinearMap.mkContinuous_apply,
+          LinearMap.coe_mk, AddHom.coe_mk, one_mul, W, L, liftL]
+        exact BoundedContinuousFunction.norm_integral_le_norm μprob (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)
       · simp only [LinearMap.mkContinuous, Equiv.toFun_as_coe, integralPositiveLinearMap_toFun,
         ContinuousMap.liftCompactlySupported_apply_toFun, φ_weak, L, W, liftL]
         change (fun f ↦ ∫ (x : X), f x ∂↑μprob) (fun x ↦ 1) = 1
@@ -221,19 +216,51 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     let φ_fin : ↑Φ := by use φ_weak
     use φ_fin
     let μ' : ProbabilityMeasure X := μ
-    have g2 : IsProbabilityMeasure (RealRMK.rieszMeasure (Λ φ_fin)) := by exact IsPMeas φ_fin
+    have g2 : IsProbabilityMeasure (RealRMK.rieszMeasure (Λ φ_fin)) := IsPMeas φ_fin
     change ⟨RealRMK.rieszMeasure (Λ φ_fin), g2⟩ = μ'
     apply Subtype.ext
     simp [φ_fin, φ_weak, Λ]
     apply RealRMK.rieszMeasure_integralPositiveLinearMap
   simp only [this]
+
   have hΦ2 : SeqCompactSpace Φ := by --Jannette's Project I think?
     refine { isSeqCompact_univ := ?_ }
     obtain ⟨ds⟩ := hΦ1
     sorry
   apply IsSeqCompact.range
-  intro s L hL
-  simp [T]
-  sorry
+  refine Continuous.seqContinuous ?_
+  simp_rw [T]--, RealRMK.rieszMeasure,rieszContent,toNNRealLinear]
+  -- refine continuous_subtype_val ..
+  -- refine Continuous.subtype_map ..
+  let f : ↑Φ → Measure X := fun φ => RealRMK.rieszMeasure (Λ φ)
+  have hf : ∀ φ : ↑Φ, IsProbabilityMeasure (f φ) := IsPMeas
+  have : TopologicalSpace { p : Measure X // IsProbabilityMeasure p } :=
+    Preorder.topology { p // IsProbabilityMeasure p }
+  --simp_rw [Subtype.mk]
+  --let F : ↑Φ → {p : Measure X // IsProbabilityMeasure p} := fun φ => ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
+  let f : ↑Φ → ProbabilityMeasure X := fun φ => ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩
+  --have : Continuous (fun φ => (RealRMK.rieszMeasure (Λ φ) : Measure X)) := sorry
+  --exact Continuous.subtype_mk (f := fun φ => (RealRMK.rieszMeasure (Λ φ) : Measure X)) (hp := IsPMeas) (h := this)
+  --refine Continuous.subtype_mk (f := fun φ => (RealRMK.rieszMeasure (Λ φ) : Measure X)) (hp := fun φ => IsPMeas φ) ..
+  --refine Continuous.subtype_coind (X := {p : Measure X // IsProbabilityMeasure p}) (Y := ↑Φ) (f := fun φ ↦ RealRMK.rieszMeasure (Λ φ)) ..
+ -- refine Continuous.subtype_mk (X := {p : Measure X // IsProbabilityMeasure p}) (Y := ↑Φ) (f := f) ?_ ?_
+  --simp [Continuous.subtype_mk,Continuous.subtype_val,Continuous.subtype_coind,Continuous.subtype_map]
+  --have hf : Continuous f := by apply?
+  --have : TopologicalSpace (Measure X) := by sorry
+  refine Continuous.subtype_mk (X := Measure X) (Y := ↑Φ) (f := fun φ ↦ (RealRMK.rieszMeasure (Λ φ))) ?_ ?_
+  --refine Continuous.subtype_map (X := {p : Measure X // IsProbabilityMeasure p}) (Y := ↑Φ) (f := fun φ ↦ RealRMK.rieszMeasure (Λ φ)) ?_ ?_ ?_
+  -- have hfun_eq : (fun φ => ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩)
+  --           = (fun φ => (RealRMK.rieszMeasure (Λ φ) : ProbabilityMeasure X)) := by
+  -- change Continuous (fun φ => (RealRMK.rieszMeasure (Λ φ) : Measure X))
+  -- dsimp [ProbabilityMeasure.mk]
+  -- change Continuous (fun φ => (RealRMK.rieszMeasure (Λ φ) : Measure X))
+
+  -- simp_rw [ProbabilityMeasure.coe_mk]
+  -- --rw?-- [Subtype.coe_mk]
+  -- apply Continuous.
+  -- change Continuous (fun (φ : ↑Φ) ↦ (RealRMK.rieszMeasure (fun (f : X →C_c ℝ) ↦ (φ : WeakDual ℝ C(X, ℝ)) f.toContinuousMap)))
+
+
+
 
 end Arav
