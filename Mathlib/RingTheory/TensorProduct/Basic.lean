@@ -726,8 +726,7 @@ theorem rid_symm_apply (a : A) : (TensorProduct.rid R S A).symm a = a ⊗ₜ 1 :
 variable (T) in
 lemma rid_lTensor : (Algebra.linearMap S (S ⊗[R] B)).restrictScalars R ∘ₗ
     (TensorProduct.rid R R S).toLinearMap = (Algebra.linearMap R B).lTensor S := by
-  ext
-  simp
+  ext; simp
 
 section DistribBaseChange
 
@@ -743,15 +742,11 @@ lemma distribBaseChange_includeLeft_lTensor_tmul (a : A) (b : B) :
     (includeLeft (R := A) (S := R) (A := A ⊗[R] B) (B := A ⊗[R] C)) (a ⊗ₜ[R] b) := by
   simp [one_def]
 
-/-- The composition of `(id A) ⊗[R] includeLeft : A ⊗[R] B → A ⊗[R] (B ⊗[R] C)`
-with `AlgebraTensorModule.distribBaseChange : A ⊗[R] (B ⊗[R] C) ≃ (A ⊗[R] B) ⊗[R] (A ⊗[R] C)`
-can be written as `includeLeft : A ⊗[R] B → (A ⊗[R] B) ⊗ (A ⊗[R] C)`, as `R`-linear maps. -/
 lemma distribBaseChange_includeLeft_lTensor :
     ((AlgebraTensorModule.distribBaseChange R A B C).restrictScalars R) ∘ₗ
       ((includeLeft (R := R) (A := B) (B := C)).toLinearMap.lTensor A) =
     (includeLeft (R := A) (S := R) (A := A ⊗[R] B) (B := A ⊗[R] C)).toLinearMap := by
-  ext
-  simp [one_def]
+  ext; simp [one_def]
 
 lemma distribBaseChange_includeRight_lTensor_tmul (a : A) (c : C) :
     (AlgebraTensorModule.distribBaseChange R A B C)
@@ -761,9 +756,6 @@ lemma distribBaseChange_includeRight_lTensor_tmul (a : A) (c : C) :
     TensorProduct.AlgebraTensorModule.distribBaseChange_tmul, includeRight_apply, one_def]
   rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', smul_tmul, smul_tmul']
 
-/-- The composition of `(id A) ⊗[R] includeRight : A ⊗[R] C → A ⊗[R] (B ⊗[R] C)`
-with `AlgebraTensorModule.distribBaseChange : A ⊗[R] (B ⊗[R] C) ≃ (A ⊗[R] B) ⊗[R] (A ⊗[R] C)`
-can be written as `includeRight : A ⊗[R] C → (A ⊗[R] B) ⊗ (A ⊗[R] C)`, as `R`-linear maps. -/
 lemma distribBaseChange_includeRight_lTensor :
     ((AlgebraTensorModule.distribBaseChange R A B C).restrictScalars R) ∘ₗ
       ((includeRight (R := R) (A := B) (B := C)).toLinearMap.lTensor A) =
