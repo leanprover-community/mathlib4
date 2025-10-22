@@ -55,7 +55,7 @@ noncomputable def lightProfiniteToLightCondSetIsoTopCatToLightCondSet :
       inv f := TopCat.ofHom f }
 
 /--
-The functor from light profinite sets to condensed sets preserves countable limits.
+The functor from `LightProfinite` to `LightCondSet` preserves countable limits.
 -/
 instance {J : Type} [SmallCategory J] [CountableCategory J] : PreservesLimitsOfShape J
     lightProfiniteToLightCondSet.{u} :=
@@ -66,13 +66,13 @@ instance {J : Type} [SmallCategory J] [CountableCategory J] : PreservesLimitsOfS
   preservesLimitsOfShape_of_natIso lightProfiniteToLightCondSetIsoTopCatToLightCondSet.symm
 
 /--
-The functor from light profinite sets to condensed sets preserves finite limits.
+The functor from `LightProfinite` to `LightCondSet` preserves finite limits.
 -/
 instance : PreservesFiniteLimits lightProfiniteToLightCondSet.{u} where
   preservesFiniteLimits _ := inferInstance
 
 /--
-The functor from light profinite sets to condensed sets is monoidal with respect to the cartesian
+The functor from `LightProfinite` to `LightCondSet` is monoidal with respect to the cartesian
 monoidal structure.
 -/
 noncomputable instance : lightProfiniteToLightCondSet.Monoidal := by
