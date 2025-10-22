@@ -87,8 +87,8 @@ lemma symCondInt_eq_map_Ioo : symCondInt.filter = atTop.map (fun N ↦ Ioo (-N) 
   ext s
   simp only [symmetricConditional, ← Nat.map_cast_int_atTop, Filter.mem_map, mem_atTop_sets,
     Set.mem_preimage]
-  refine ⟨fun ⟨a, ha⟩ ↦ ⟨a + 1, fun b hb ↦ ?_⟩, fun ⟨a, ha⟩ ↦ ⟨a - 1, fun b hb ↦ ?_⟩⟩ <;>
-  [ convert ha (b - 1) (by grind) using 1 ; convert ha (b + 1) (by grind) using 1 ] <;>
+  refine ⟨fun ⟨a, ha⟩ ↦ ⟨a + 1, fun b hb ↦ ?_⟩, fun ⟨a, ha⟩ ↦ ⟨a - 1, fun b hb ↦ ?_⟩⟩<;>
+  [ convert ha (b - 1) (by grind) using 1 ; convert ha (b + 1) (by grind) using 1 ]<;>
   · simp only [Finset.ext_iff, mem_Ioo, mem_Icc]
     grind
 
