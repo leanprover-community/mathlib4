@@ -160,10 +160,7 @@ theorem im_mul (z w : ℤ√d) : (z * w).im = z.re * w.im + z.im * w.re :=
 
 instance addCommGroup : AddCommGroup (ℤ√d) := by
   refine
-  { add := (· + ·)
-    zero := (0 : ℤ√d)
-    sub := fun a b => a + -b
-    neg := Neg.neg
+  { sub := fun a b => a + -b
     nsmul := @nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩
     zsmul := @zsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩)
     add_assoc := ?_
@@ -190,13 +187,11 @@ theorem im_sub (z w : ℤ√d) : (z - w).im = z.im - w.im :=
 instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
   { Zsqrtd.addCommGroup with
     natCast := fun n => ofInt n
-    intCast := ofInt
-    one := 1 }
+    intCast := ofInt }
 
 instance commRing : CommRing (ℤ√d) := by
   refine
   { Zsqrtd.addGroupWithOne with
-    mul := (· * ·)
     npow := @npowRec (ℤ√d) ⟨1⟩ ⟨(· * ·)⟩,
     add_comm := ?_
     left_distrib := ?_
