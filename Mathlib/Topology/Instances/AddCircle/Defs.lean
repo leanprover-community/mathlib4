@@ -543,10 +543,7 @@ theorem finite_torsion {n : ℕ} (hn : 0 < n) : { u : AddCircle p | n • u = 0 
   obtain rfl | hp := eq_or_lt_of_not_gt hp
   · refine (Set.finite_singleton 0).subset fun u hu ↦ ?_
     obtain ⟨u, rfl⟩ := QuotientAddGroup.mk_surjective u
-    rw [Set.mem_setOf, ← coe_nsmul] at hu
-    rw [Set.mem_singleton_iff]
-    rw [QuotientAddGroup.eq_zero_iff, zmultiples_zero_eq_bot] at hu ⊢
-    exact (_root_.nsmul_eq_zero_iff hn.ne').mp hu
+    simpa [← coe_nsmul, -nsmul_eq_mul, -QuotientAddGroup.mk_nsmul, hn.ne'] using hu
   convert ← this (-p) (neg_pos.mpr hp) using 1
   · rw [AddCircle, zmultiples_neg]
   exact congr_arg_heq ({u : 𝕜 ⧸ · | n • u = 0}) zmultiples_neg
