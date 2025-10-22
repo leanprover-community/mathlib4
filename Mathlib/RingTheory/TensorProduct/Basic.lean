@@ -5,8 +5,8 @@ Authors: Kim Morrison, Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Star.TensorProduct
 import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Star.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
