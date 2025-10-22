@@ -62,10 +62,12 @@ def elabSetDefaultNumeralType : CommandElab := fun stx => do
     let α ← liftTermElabM do
       Term.elabType typ
 
-    -- Try to synthesize an OfNat instance for this type with a concrete numeral (1)
-    -- The instance type is: OfNat α 1
+    -- Try to synthesize an OfNat instance for this type
+    -- The instance type is: ∀ (n : Nat), OfNat α n
     let ofNatType ← liftTermElabM do
-      mkAppM ``OfNat #[α, mkNatLit 1]
+      withLocalDeclD `n (mkConst ``Nat) fun n => do
+        let body ← mkAppM ``OfNat #[α, n]
+        mkForallFVars #[n] body
 
     let inst ← liftTermElabM do
       try
