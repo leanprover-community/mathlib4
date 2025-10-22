@@ -121,6 +121,7 @@ lemma mem_span_set {s : Set E} : x ∈ span R s ↔
     exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc, fun y ↦ (c y).2, rfl⟩
   · rintro ⟨c, hc, hc₀, rfl⟩
     exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
+
 end Definitions
 
 section Maps
