@@ -533,19 +533,22 @@ lemma Walk.connected_induce_support {u v : V} (p : G.Walk u v) :
   rw [← p.verts_toSubgraph]
   exact p.toSubgraph_connected.induce_verts
 
+lemma connected_induce_union {u v : V} {s₁ s₂ : Set V}
+    (h₁ : (G.induce s₁).Preconnected) (h₂ : (G.induce s₂).Preconnected)
+    (hu : u ∈ s₁) (hv : v ∈ s₂) (huv : G.Adj u v) :
+    (G.induce (s₁ ∪ s₂)).Connected := by
+  refine connected_induce_iff.mpr <| Subgraph.connected_induce_top_sup
+    (preconnected_induce_iff.mp h₁) (preconnected_induce_iff.mp h₂) hu hv huv |>.mono ?_ ?_
+  · simp [hu, hv, huv, Subgraph.le_induce_union_left, Subgraph.le_induce_union_right,
+      ← Subgraph.subgraphOfAdj_eq_induce, subgraphOfAdj_le_of_adj]
+  · simp [hu, hv, Set.union_assoc, Set.insert_subset_iff]
+
+@[deprecated connected_induce_union (since := "2025-10-22")]
 lemma induce_connected_adj_union {v w : V} {s t : Set V}
     (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
     (hv : v ∈ s) (hw : w ∈ t) (ha : G.Adj v w) :
-    (G.induce (s ∪ t)).Connected := by
-  rw [connected_induce_iff] at sconn tconn ⊢
-  apply Subgraph.connected_induce_top_sup sconn.preconnected tconn.preconnected hv hw ha |>.mono
-  · simp only [sup_le_iff, Subgraph.le_induce_union_left,
-      Subgraph.le_induce_union_right, and_true, ← Subgraph.subgraphOfAdj_eq_induce ha]
-    apply subgraphOfAdj_le_of_adj
-    simp [hv, hw, ha]
-  · simp only [Subgraph.verts_sup, Subgraph.induce_verts]
-    rw [Set.union_assoc]
-    simp [Set.insert_subset_iff, Set.singleton_subset_iff, hv, hw]
+    (G.induce (s ∪ t)).Connected :=
+  connected_induce_union sconn.preconnected tconn.preconnected hv hw ha
 
 lemma induce_connected_of_patches {s : Set V} (u : V) (hu : u ∈ s)
     (patches : ∀ {v}, v ∈ s → ∃ s' ⊆ s, ∃ (hu' : u ∈ s') (hv' : v ∈ s'),
