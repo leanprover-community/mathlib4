@@ -221,9 +221,8 @@ theorem idealX_span : (idealX K).asIdeal = Ideal.span {X} := rfl
 @[simp]
 theorem valuation_X_eq_neg_one :
     (idealX K).valuation (RatFunc K) RatFunc.X = exp (-1 : ℤ) := by
-  rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton]
-  · exact Polynomial.X_ne_zero
-  · exact idealX_span K
+  rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton
+      _ (Polynomial.X_ne_zero) (idealX_span K)]
 
 theorem valuation_of_mk (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
     (Polynomial.idealX K).valuation _ (RatFunc.mk f g) =

@@ -91,7 +91,6 @@ theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
         (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ) :=
   if_neg hr
 
-
 /-- The `v`-adic valuation of `0 : R` equals 0. -/
 theorem intValuation.map_zero' : v.intValuationDef 0 = 0 :=
   v.intValuationDef_if_pos (Eq.refl 0)
@@ -99,8 +98,8 @@ theorem intValuation.map_zero' : v.intValuationDef 0 = 0 :=
 /-- The `v`-adic valuation of `1 : R` equals 1. -/
 theorem intValuation.map_one' : v.intValuationDef 1 = 1 := by
   classical
-  rw [v.intValuationDef_if_neg (zero_ne_one.symm : (1 : R) ≠ 0), Ideal.span_singleton_one, ←
-    Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
+  rw [v.intValuationDef_if_neg (zero_ne_one.symm : (1 : R) ≠ 0), Ideal.span_singleton_one, 
+      ← Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
     Associates.count_zero (by apply v.associates_irreducible), Int.ofNat_zero, neg_zero, exp_zero]
 
 /-- The `v`-adic valuation of a product equals the product of the valuations. -/
