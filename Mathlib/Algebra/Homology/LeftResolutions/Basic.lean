@@ -40,7 +40,7 @@ structure LeftResolutions where
 
 namespace LeftResolutions
 
-attribute [instance] epi_π
+attribute [instance] epi_π_app
 
 variable {ι} (Λ : LeftResolutions ι) (X Y Z : A) (f : X ⟶ Y) (g : Y ⟶ Z)
 
