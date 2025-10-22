@@ -117,23 +117,16 @@ theorem isRemainder_def' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R)) (
       ∀ b ∈ B, m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree p) ∧
       ∀ c ∈ r.support, ∀ g' ∈ B, g' ≠ 0 → ¬ (m.degree g' ≤ c) := by
   classical
-  unfold IsRemainder
   constructor
   · intro ⟨⟨g, h₁, h₂⟩, h₃⟩
     split_ands
-    · use {
-        support := g.support,
-        toFun := fun b => if hb : b ∈ B then g.toFun (⟨b, hb⟩) else 0,
-        mem_support_toFun := by intro; simp; rfl
-      }
+    · use g.mapDomain Subtype.val
       split_ands
-      · simp
+      · exact subset_trans (Finset.coe_subset.mpr Finsupp.mapDomain_support) (by simp)
       · simp [h₁]
-        congr 1
-        simp [Finsupp.linearCombination_apply, Finsupp.sum]
-        rfl
-      · simp_intro b hb
-        convert h₂ ⟨b, hb⟩
+      · intro b hb
+        rw [show b = ↑(Subtype.mk b hb) by rfl, Finsupp.mapDomain_apply (by simp)]
+        exact h₂ ⟨b, hb⟩
     · exact h₃
   · intro ⟨⟨g, hg, h₁, h₂⟩, h₃⟩
     split_ands
@@ -159,13 +152,14 @@ theorem isRemainder_def' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R)) (
 A variant of `IsRemainder` where `g : MvPolynomial σ R →₀ MvPolynomial σ R` is replaced with a
 function `g : MvPolynomial σ R → MvPolynomial σ R` without limitation on its support.
 -/
-theorem isRemainder_def'' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R)) (r : MvPolynomial σ R)
-  : m.IsRemainder p B r ↔
-  (∃ (g : MvPolynomial σ R → MvPolynomial σ R) (B' : Finset (MvPolynomial σ R)),
-      ↑B' ⊆ B ∧
-      p = B'.sum (fun x => g x * x) + r ∧
-      ∀ b' ∈ B', m.degree ((b' : MvPolynomial σ R) * (g b')) ≼[m] m.degree p) ∧
-      ∀ c ∈ r.support, ∀ b ∈ B, b ≠ 0 → ¬ (m.degree b ≤ c) := by
+theorem isRemainder_def'' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R))
+    (r : MvPolynomial σ R) :
+      m.IsRemainder p B r ↔
+        (∃ (g : MvPolynomial σ R → MvPolynomial σ R) (B' : Finset (MvPolynomial σ R)),
+          ↑B' ⊆ B ∧
+          p = B'.sum (fun x => g x * x) + r ∧
+          ∀ b' ∈ B', m.degree ((b' : MvPolynomial σ R) * (g b')) ≼[m] m.degree p) ∧
+        ∀ c ∈ r.support, ∀ b ∈ B, b ≠ 0 → ¬ (m.degree b ≤ c) := by
   classical
   rw [isRemainder_def']
   constructor
@@ -199,10 +193,10 @@ theorem isRemainder_def'' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R)) 
 A variant of `isRemainder_def'` where `B` is `Finset (MvPolynomial σ R)`.
 -/
 theorem isRemainder_finset (p : MvPolynomial σ R) (B' : Finset (MvPolynomial σ R))
-  (r : MvPolynomial σ R) : m.IsRemainder p B' r ↔
-  (∃ (g : MvPolynomial σ R → MvPolynomial σ R),
-      p = B'.sum (fun x => g x * x) + r ∧
-      ∀ b' ∈ B', m.degree ((b' : MvPolynomial σ R) * (g b')) ≼[m] m.degree p) ∧
+    (r : MvPolynomial σ R) : m.IsRemainder p B' r ↔
+      (∃ (g : MvPolynomial σ R → MvPolynomial σ R),
+        p = B'.sum (fun x => g x * x) + r ∧
+        ∀ b' ∈ B', m.degree ((b' : MvPolynomial σ R) * (g b')) ≼[m] m.degree p) ∧
       ∀ c ∈ r.support, ∀ b ∈ B', b ≠ 0 → ¬ (m.degree b ≤ c) := by
   classical
   constructor
@@ -232,11 +226,11 @@ theorem isRemainder_finset (p : MvPolynomial σ R) (B' : Finset (MvPolynomial σ
 Remainders are preserved on insertion of the zero polynomial into the set of divisors.
 -/
 theorem isRemainder_of_insert_zero_iff_isRemainder (p : MvPolynomial σ R)
-  (B : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
-  m.IsRemainder p (insert 0 B) r ↔ m.IsRemainder p B r := by
+    (B : Set (MvPolynomial σ R)) (r : MvPolynomial σ R) :
+    m.IsRemainder p (insert 0 B) r ↔ m.IsRemainder p B r := by
   classical
   constructor
-  · by_cases hB : 0 ∈ B;
+  · by_cases hB : 0 ∈ B
     · simp [hB]
     simp_rw [isRemainder_def'']
     intro ⟨⟨g, B', hB', h₁, h₂⟩, h₃⟩
@@ -282,8 +276,6 @@ theorem isRemainder_sdiff_singleton_zero_iff_isRemainder (p : MvPolynomial σ R)
 variable {m B} in
 theorem isRemainder_zero {r : MvPolynomial σ R} (hB : ∀ b ∈ B, IsRegular (m.leadingCoeff b))
     (h : m.IsRemainder 0 B r) : r = 0 := by
-  -- sorry
-  classical
   unfold IsRemainder at h
   obtain ⟨⟨g, h0sumg, hg⟩, hr⟩ := h
   conv at hg =>
@@ -307,18 +299,16 @@ theorem isRemainder_zero {r : MvPolynomial σ R} (hB : ∀ b ∈ B, IsRegular (m
   · rw [m.degree_eq_zero_iff.mp rdeg0]; simp [hr]
   contrapose! h0sumg
   simp at h0sumg
-  have (b : B) : g b * ↑b = 0 := by
-    apply show g b = 0 ∨ b.1 = 0 → g b * b.1 = 0 by by_cases h : g b = 0 <;> simp_intro h' [h]
-    rw [or_iff_not_imp_right]
-    intro hb
-    specialize hg b
-    specialize h0sumg b b.2 hb
-    contrapose! hg
-    rw [m.degree_mul_of_isRegular_right hg <| hB ↑b (by simp)]
-    simp [h0sumg]
-  simp [this]
-  exact ne_comm.mp hr
-
+  suffices ∀ b : B, g b * ↑b = 0 by simp [this, hr.symm]
+  intro b
+  suffices g b = 0 ∨ b.1 = 0 by by_cases h : g b = 0; simp [h]; simp [this.resolve_left h]
+  rw [or_iff_not_imp_right]
+  intro hb
+  specialize hg b
+  specialize h0sumg b b.2 hb
+  contrapose! hg
+  rw [m.degree_mul_of_isRegular_right hg <| hB ↑b (by simp)]
+  simp [h0sumg]
 
 variable {m B} in
 theorem isRemainder_zero₀ {r : MvPolynomial σ R}
@@ -602,7 +592,7 @@ theorem div_set {B : Set (MvPolynomial σ R)}
   obtain ⟨g, r, H⟩ := m.div (b := fun (p : B) ↦ p) (fun b ↦ hB b b.prop) f
   exact ⟨g, r, H.1, H.2.1, fun c hc b hb ↦ H.2.2 c hc ⟨b, hb⟩⟩
 
-/-- A variant of `div_set` using IsRemainder. -/
+/-- A variant of `div_set` using `IsRemainder`. -/
 theorem div_set' {B : Set (MvPolynomial σ R)}
     (hB : ∀ b ∈ B, IsUnit <| m.leadingCoeff b) (p : MvPolynomial σ R) :
     ∃ (r : MvPolynomial σ R), m.IsRemainder p B r := by
