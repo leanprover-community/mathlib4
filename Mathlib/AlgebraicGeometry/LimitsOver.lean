@@ -60,7 +60,7 @@ instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
   · simpa
   · simpa
 
-variable [IsLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
+variable [IsZariskiLocalAtSource P] {S : Scheme.{u}} {J : Type*} [Category J] (F : J ⥤ P.Over ⊤ S)
   [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f).left]
   [(F ⋙ MorphismProperty.Over.forget P ⊤ S ⋙ Over.forget S ⋙ Scheme.forget).IsLocallyDirected]
   [Quiver.IsThin J] [Small.{u} J]
@@ -86,7 +86,7 @@ noncomputable instance : CreatesColimit F (MorphismProperty.Over.forget P ⊤ S)
     preservesColimitIso (Over.forget S) _
   let 𝒰 : (colimit (F ⋙ MorphismProperty.Over.forget P ⊤ S)).left.OpenCover :=
     (Scheme.IsLocallyDirected.openCover _).pushforwardIso e.inv
-  rw [IsLocalAtSource.iff_of_openCover (P := P) 𝒰]
+  rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) 𝒰]
   intro i
   simpa [𝒰, e] using (F.obj i).prop
 
