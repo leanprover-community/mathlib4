@@ -43,11 +43,11 @@ theorem fold_sup_univ [SemilatticeSup α] [OrderTop α] (a : α) :
   @fold_inf_univ αᵒᵈ _ _ _ _
 
 lemma mem_inf [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α} :
-    a ∈ s.inf f ↔ ∀ i ∈ s, a ∈ f i := by induction' s using Finset.cons_induction <;> simp [*]
+    a ∈ s.inf f ↔ ∀ i ∈ s, a ∈ f i := by induction s using Finset.cons_induction <;> simp [*]
 
 end Finset
 
-open Finset Function
+open Finset
 
 theorem Finite.exists_max [Finite α] [Nonempty α] [LinearOrder β] (f : α → β) :
     ∃ x₀ : α, ∀ x, f x ≤ f x₀ := by

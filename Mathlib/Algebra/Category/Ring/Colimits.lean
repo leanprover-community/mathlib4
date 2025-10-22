@@ -39,7 +39,6 @@ on a collection of types indexed by the objects of `J`.
 inductive Prequotient
   -- There's always `of`
   | of : ∀ (j : J) (_ : F.obj j), Prequotient
-
   -- Then one generator for each operation
   | zero : Prequotient
   | one : Prequotient

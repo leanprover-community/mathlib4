@@ -14,13 +14,13 @@ This file contains basic results relevant to the triangularizability of linear e
 
 ## Main definitions / results
 
- * `Module.End.exists_eigenvalue`: in finite dimensions, over an algebraically closed field, every
-   linear endomorphism has an eigenvalue.
- * `Module.End.iSup_genEigenspace_eq_top`: in finite dimensions, over an algebraically
-   closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
- * `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
-   generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
-   its restriction to any invariant submodule.
+* `Module.End.exists_eigenvalue`: in finite dimensions, over an algebraically closed field, every
+  linear endomorphism has an eigenvalue.
+* `Module.End.iSup_genEigenspace_eq_top`: in finite dimensions, over an algebraically
+  closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
+* `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
+  generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
+  its restriction to any invariant submodule.
 
 ## References
 
@@ -41,7 +41,7 @@ eigenspace, eigenvector, eigenvalue, eigen
 open Set Function Module Module
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
-   {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+  {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Module.End
 
@@ -128,7 +128,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
     have h_disjoint : Disjoint ER ES := generalized_eigenvec_disjoint_range_ker f μ₀
     -- Since the dimensions of `ER` and `ES` add up to the dimension of `V`, it follows that the
     -- span of all generalized eigenvectors is all of `V`.
-    show ⨆ (μ : K), f.maxGenEigenspace μ = ⊤
+    change ⨆ (μ : K), f.maxGenEigenspace μ = ⊤
     rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add.ge h_disjoint]
     apply sup_le hER hES
 
@@ -149,7 +149,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     exact (mem_iSup_iff_exists_finsupp _ _).mpr ⟨m, fun μ ↦ mem_inf.mp ⟨this μ, hm₂ μ⟩, rfl⟩
   intro μ
   by_cases hμ : μ ∈ m.support; swap
-  · simp only [Finsupp.not_mem_support_iff.mp hμ, p.zero_mem]
+  · simp only [Finsupp.notMem_support_iff.mp hμ, p.zero_mem]
   have hm₂_aux := hm₂
   simp_rw [Module.End.mem_genEigenspace] at hm₂_aux
   choose l hlk hl using hm₂_aux
@@ -176,27 +176,25 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
       simpa only [Nat.cast_le] using Finset.le_sup hμ'
     have : _ = g := (m.support.erase μ).noncommProd_erase_mul (Finset.mem_erase.mpr ⟨hμμ', hμ'⟩)
       (fun μ ↦ (f - algebraMap K (End K V) μ) ^ l₀) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
-    rw [← this, LinearMap.mul_apply, hl₀, _root_.map_zero]
+    rw [← this, Module.End.mul_apply, hl₀, _root_.map_zero]
   have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K V ↦ MapsTo g' p p)
       (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' _ ↦ by
     suffices MapsTo (f - algebraMap K (End K V) μ') p p by
-      simp only [LinearMap.coe_pow]; exact this.iterate l₀
+      simp only [Module.End.coe_pow, this.iterate l₀]
     intro x hx
     rw [LinearMap.sub_apply, algebraMap_end_apply]
     exact p.sub_mem (h _ hx) (smul_mem p μ' hx)
   have hg₂ : MapsTo g ↑(f.genEigenspace μ k) ↑(f.genEigenspace μ k) :=
     f.mapsTo_genEigenspace_of_comm hfg μ k
   have hg₃ : InjOn g ↑(f.genEigenspace μ k) := by
-    apply LinearMap.injOn_of_disjoint_ker (subset_refl _)
+    apply LinearMap.injOn_of_disjoint_ker subset_rfl
     have this := f.independent_genEigenspace k
     have aux (μ') (_hμ' : μ' ∈ m.support.erase μ) :
         (f.genEigenspace μ') ↑l₀ ≤ (f.genEigenspace μ') k := by
       apply (f.genEigenspace μ').mono
-      rintro k rfl
-      simp only [ENat.some_eq_coe, Nat.cast_inj, exists_eq_left']
-      apply Finset.sup_le
-      intro i _hi
-      simpa using hlk i
+      obtain _ | k := k
+      · exact le_top
+      · exact Nat.cast_le.2 <| Finset.sup_le fun i _ ↦ Nat.cast_le.1 <| hlk i
     rw [LinearMap.ker_noncommProd_eq_of_supIndep_ker, ← Finset.sup_eq_iSup]
     · have := Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
       apply this.mono_right

@@ -3,14 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.ULift
 import Mathlib.Util.Delaborators
+import Mathlib.Util.AssertExists
 
 /-!
 # Cardinal Numbers
 
-We define cardinal numbers as a quotient of types under the equivalence relation of equinumerity.
+We define cardinal numbers as a quotient of types under the equivalence relation of equinumerosity
+(i.e., existence of a bijection).
 
 ## Main definitions
 
@@ -35,14 +36,6 @@ We define cardinal numbers as a quotient of types under the equivalence relation
   The operation `Cardinal.lift` lifts cardinal numbers to a higher level.
 * Cardinal arithmetic specifically for infinite cardinals (like `κ * κ = κ`) is in the file
   `Mathlib/SetTheory/Cardinal/Ordinal.lean`.
-* There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
-  the base and the exponent live in the same universe. As a workaround, you can add
-  ```
-    local infixr:80 " ^' " => @HPow.hPow Cardinal Cardinal Cardinal _
-  ```
-  to a file. This notation will work even if Lean doesn't know yet that the base and the exponent
-  live in the same universe (but no exponents in other types can be used).
-  (Porting note: This last point might need to be updated.)
 
 ## References
 
@@ -192,7 +185,7 @@ theorem lift_mk_eq {α : Type u} {β : Type v} :
       ⟨Equiv.ulift.trans <| f.trans Equiv.ulift.symm⟩⟩
 
 /-- A variant of `Cardinal.lift_mk_eq` with specialized universes.
-Because Lean often can not realize it should use this specialization itself,
+Because Lean often cannot realize it should use this specialization itself,
 we provide this statement separately so you don't have to solve the specialization problem either.
 -/
 theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=

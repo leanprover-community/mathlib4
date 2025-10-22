@@ -39,7 +39,7 @@ theorem PiToModule.fromMatrix_apply [DecidableEq ι] (A : Matrix ι ι R) (w : �
 theorem PiToModule.fromMatrix_apply_single_one [DecidableEq ι] (A : Matrix ι ι R) (j : ι) :
     PiToModule.fromMatrix R b A (Pi.single j 1) = ∑ i : ι, A i j • b i := by
   rw [PiToModule.fromMatrix_apply, Fintype.linearCombination_apply, Matrix.mulVec_single]
-  simp_rw [MulOpposite.op_one, one_smul, transpose_apply]
+  simp_rw [MulOpposite.op_one, one_smul, col_apply]
 
 /-- The endomorphisms of `M` acts on `(ι → R) →ₗ[R] M`, and takes the projection
 to a `(ι → R) →ₗ[R] M`. -/
@@ -208,14 +208,15 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
     · exact ⟨0, Polynomial.monic_of_subsingleton _, by simp⟩
     obtain ⟨s : Finset M, hs : Submodule.span R (s : Set M) = ⊤⟩ :=
       Module.Finite.fg_top (R := R) (M := M)
+    have : Submodule.span R (Set.range ((↑) : { x // x ∈ s } → M)) = ⊤ := by
+      rw [Subtype.range_coe_subtype, Finset.setOf_mem, hs]
     obtain ⟨A, rfl, h⟩ :=
-      Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M)
-        (by rw [Subtype.range_coe_subtype, Finset.setOf_mem, hs]) f I hI
+      Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M) this f I hI
     refine ⟨A.1.charpoly, A.1.charpoly_monic, ?_, ?_⟩
     · rw [A.1.charpoly_natDegree_eq_dim]
       exact coeff_charpoly_mem_ideal_pow h
     · rw [Polynomial.aeval_algHom_apply,
-        ← map_zero (Matrix.isRepresentation.toEnd R ((↑) : s → M) _)]
+        ← map_zero (Matrix.isRepresentation.toEnd R ((↑) : s → M) this)]
       congr 1
       ext1
       rw [Polynomial.aeval_subalgebra_coe, Matrix.aeval_self_charpoly, Subalgebra.coe_zero]

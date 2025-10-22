@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Integral.FinMeasAdditive
+import Mathlib.Analysis.Normed.Operator.Completeness
 
 /-!
 # Extension of a linear function from indicators to L1
@@ -14,9 +15,9 @@ with finite measure, then to integrable functions, which are limits of integrabl
 
 The main result is a continuous linear map `(α →₁[μ] E) →L[ℝ] F`.
 This extension process is used to define the Bochner integral
-in the `Mathlib.MeasureTheory.Integral.Bochner.Basic` file
+in the `Mathlib/MeasureTheory/Integral/Bochner/Basic.lean` file
 and the conditional expectation of an integrable function
-in `Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1`.
+in `Mathlib/MeasureTheory/Function/ConditionalExpectation/CondexpL1.lean`.
 
 ## Main definitions
 
@@ -42,7 +43,7 @@ Linearity:
 If `f` and `g` are integrable:
 - `setToFun_add : setToFun μ T hT (f + g) = setToFun μ T hT f + setToFun μ T hT g`
 - `setToFun_sub : setToFun μ T hT (f - g) = setToFun μ T hT f - setToFun μ T hT g`
-If `T` is verifies `∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x`:
+If `T` satisfies `∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x`:
 - `setToFun_smul : setToFun μ T hT (c • f) = c • setToFun μ T hT f`
 
 Other:
@@ -88,13 +89,12 @@ theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
   · intro x _
     by_cases hx0 : x = 0
     · rw [hx0]; simp
-    · exact
-        ENNReal.mul_ne_top ENNReal.coe_ne_top
-          (SimpleFunc.measure_preimage_lt_top_of_integrable _ (SimpleFunc.integrable f) hx0).ne
+    · have := SimpleFunc.measure_preimage_lt_top_of_integrable _ (SimpleFunc.integrable f) hx0
+      finiteness
 
 section SetToL1S
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E]
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 attribute [local instance] Lp.simpleFunc.module
 
@@ -188,7 +188,7 @@ theorem setToL1S_smul_real (T : Set α → E →L[ℝ] F)
   refine SimpleFunc.setToSimpleFunc_congr T h_zero h_add (SimpleFunc.integrable _) ?_
   exact smul_toSimpleFunc c f
 
-theorem setToL1S_smul {E} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+theorem setToL1S_smul
     [DistribSMul 𝕜 F] (T : Set α → E →L[ℝ] F) (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
     (f : α →₁ₛ[μ] E) : setToL1S T (c • f) = c • setToL1S T f := by
@@ -259,7 +259,7 @@ theorem setToL1S_mono (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
 
 end Order
 
-variable [NormedSpace 𝕜 F]
+variable [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
 variable (α E μ 𝕜)
 
 /-- Extend `Set α → E →L[ℝ] F` to `(α →₁ₛ[μ] E) →L[𝕜] F`. -/
@@ -384,8 +384,8 @@ attribute [local instance] Lp.simpleFunc.module
 
 attribute [local instance] Lp.simpleFunc.normedSpace
 
-variable (𝕜) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace F]
-  {T T' T'' : Set α → E →L[ℝ] F} {C C' C'' : ℝ}
+variable (𝕜) [NormedRing 𝕜] [Module 𝕜 E] [Module 𝕜 F] [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜 F]
+  [CompleteSpace F] {T T' T'' : Set α → E →L[ℝ] F} {C C' C'' : ℝ}
 
 /-- Extend `Set α → (E →L[ℝ] F)` to `(α →₁[μ] E) →L[𝕜] F`. -/
 def setToL1' (hT : DominatedFinMeasAdditive μ T C)
@@ -736,12 +736,13 @@ theorem setToFun_sub (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f �
     (hg : Integrable g μ) : setToFun μ T hT (f - g) = setToFun μ T hT f - setToFun μ T hT g := by
   rw [sub_eq_add_neg, sub_eq_add_neg, setToFun_add hT hf hg.neg, setToFun_neg hT g]
 
-theorem setToFun_smul [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+theorem setToFun_smul [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+    [Module 𝕜 F] [NormSMulClass 𝕜 F]
     (hT : DominatedFinMeasAdditive μ T C) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
     (f : α → E) : setToFun μ T hT (c • f) = c • setToFun μ T hT f := by
   by_cases hf : Integrable f μ
-  · rw [setToFun_eq hT hf, setToFun_eq hT, Integrable.toL1_smul',
-      L1.setToL1_smul hT h_smul c _]
+  · rw [setToFun_eq hT hf, setToFun_eq hT (hf.smul c), Integrable.toL1_smul' f hf,
+      L1.setToL1_smul hT h_smul c]
   · by_cases hr : c = 0
     · rw [hr]; simp
     · have hf' : ¬Integrable (c • f) μ := by rwa [integrable_smul_iff hr f]
@@ -970,14 +971,13 @@ theorem setToFun_congr_measure_of_add_left {μ' : Measure α}
     setToFun (μ + μ') T hT_add f = setToFun μ' T hT f := by
   refine setToFun_congr_measure_of_integrable 1 one_ne_top ?_ hT_add hT f hf
   rw [one_smul]
-  nth_rw 1 [← zero_add μ']
-  exact add_le_add_right bot_le μ'
+  exact Measure.le_add_left le_rfl
 
 theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
     setToFun (∞ • μ) T hT f = 0 := by
   refine setToFun_measure_zero' hT fun s _ hμs => ?_
   rw [lt_top_iff_ne_top] at hμs
-  simp only [true_and, Measure.smul_apply, ENNReal.mul_eq_top, eq_self_iff_true,
+  simp only [true_and, Measure.smul_apply, ENNReal.mul_eq_top,
     top_ne_zero, Ne, not_false_iff, not_or, Classical.not_not, smul_eq_mul] at hμs
   simp only [hμs.right, Measure.smul_apply, mul_zero, smul_eq_mul]
 

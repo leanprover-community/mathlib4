@@ -14,10 +14,10 @@ as a Noetherian integrally closed commutative ring (domain) of Krull dimension a
 
 ## Main definitions
 
- - `IsDedekindRing` defines a Dedekind ring as a commutative ring that is
-   Noetherian, integrally closed in its field of fractions and has Krull dimension at most one.
-   `isDedekindRing_iff` shows that this does not depend on the choice of field of fractions.
- - `IsDedekindDomain` defines a Dedekind domain as a Dedekind ring that is a domain.
+- `IsDedekindRing` defines a Dedekind ring as a commutative ring that is
+  Noetherian, integrally closed in its field of fractions and has Krull dimension at most one.
+  `isDedekindRing_iff` shows that this does not depend on the choice of field of fractions.
+- `IsDedekindDomain` defines a Dedekind domain as a Dedekind ring that is a domain.
 
 ## Implementation notes
 
@@ -154,3 +154,12 @@ instance (priority := 100) IsPrincipalIdealRing.isDedekindDomain
     IsDedekindDomain A :=
   { PrincipalIdealRing.isNoetherianRing, Ring.DimensionLEOne.principal_ideal_ring A,
     UniqueFactorizationMonoid.instIsIntegrallyClosed with }
+
+variable {R} in
+theorem IsLocalRing.primesOver_eq [IsLocalRing A] [IsDedekindDomain A] [Algebra R A]
+    [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    Ideal.primesOver p A = {IsLocalRing.maximalIdeal A} := by
+  refine Set.eq_singleton_iff_nonempty_unique_mem.mpr ⟨?_, fun P hP ↦ ?_⟩
+  · obtain ⟨w', hmax, hover⟩ := Ideal.exists_ideal_liesOver_maximal_of_isIntegral p A
+    exact ⟨w', hmax.isPrime, hover⟩
+  · exact IsLocalRing.eq_maximalIdeal <| hP.1.isMaximal (Ideal.ne_bot_of_mem_primesOver hp0 hP)

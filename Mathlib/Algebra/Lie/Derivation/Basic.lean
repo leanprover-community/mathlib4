@@ -291,7 +291,7 @@ variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
   bracket D1 D2 := LieDerivation.mk ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ (fun a b => by
     simp only [Ring.lie_def, apply_lie_eq_add, coeFn_coe,
-      LinearMap.sub_apply, LinearMap.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
+      LinearMap.sub_apply, Module.End.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
     abel)
 
 variable {D1 D2 : LieDerivation R L L}
@@ -309,9 +309,9 @@ instance : LieRing (LieDerivation R L L) where
   lie_add d e f := by
     ext a; simp only [commutator_apply, add_apply, map_add]; abel
   lie_self d := by
-    ext a; simp only [commutator_apply, add_apply, map_add, zero_apply]; abel
+    ext a; simp only [commutator_apply, zero_apply]; abel
   leibniz_lie d e f := by
-    ext a; simp only [commutator_apply, add_apply, sub_apply, map_sub]; abel
+    ext a; simp only [commutator_apply, add_apply, map_sub]; abel
 
 /-- The set of Lie derivations from a Lie algebra `L` to itself is a Lie algebra. -/
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
@@ -401,10 +401,10 @@ noncomputable def exp (h : IsNilpotent D.toLinearMap) :
     invFun x := IsNilpotent.exp (- D.toLinearMap) x
     left_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
-        ← LinearMap.mul_eq_comp, h.exp_neg_mul_exp_self, LinearMap.one_apply]
+        ← Module.End.mul_eq_comp, h.exp_neg_mul_exp_self, Module.End.one_apply]
     right_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
-        ← LinearMap.mul_eq_comp, h.exp_mul_exp_neg_self, LinearMap.one_apply] }
+        ← Module.End.mul_eq_comp, h.exp_mul_exp_neg_self, Module.End.one_apply] }
 
 lemma exp_apply (h : IsNilpotent D.toLinearMap) :
     exp D h = IsNilpotent.exp D.toLinearMap :=

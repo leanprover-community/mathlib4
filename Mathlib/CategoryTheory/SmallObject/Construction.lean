@@ -304,7 +304,7 @@ variable [HasPushouts C]
 
 /-- The functor `Arrow C ⥤ Arrow C` that is constructed in order to apply the small
 object argument to a family of morphisms `f i : A i ⟶ B i`, see the introduction
-of the file `Mathlib.CategoryTheory.SmallObject.Construction` -/
+of the file `Mathlib/CategoryTheory/SmallObject/Construction.lean` -/
 @[simps! obj map]
 noncomputable def functor : Arrow C ⥤ Arrow C where
   obj π := Arrow.mk (πFunctorObj f π.hom)
@@ -316,7 +316,7 @@ noncomputable def functor : Arrow C ⥤ Arrow C where
   map_comp {π₁ π₂ π₃} τ τ' := by
     ext
     · dsimp
-      simp [functorMap]
+      simp only [functorMap, Arrow.comp_left, Arrow.mk_left]
       ext ⟨i, t, b, w⟩
       · simp
       · simp [ι_functorMapTgt_assoc f τ i t b w _ rfl _ rfl,

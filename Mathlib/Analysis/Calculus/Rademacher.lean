@@ -25,17 +25,17 @@ There are many proofs of Rademacher's theorem. We follow the one by Morrey, whic
 elementary but maybe the most elegant once necessary prerequisites are set up.
 * Step 0: without loss of generality, one may assume that `f` is real-valued.
 * Step 1: Since a one-dimensional Lipschitz function has bounded variation, it is differentiable
-almost everywhere. With a Fubini argument, it follows that given any vector `v` then `f` is ae
-differentiable in the direction of `v`. See `LipschitzWith.ae_lineDifferentiableAt`.
+  almost everywhere. With a Fubini argument, it follows that given any vector `v` then `f` is ae
+  differentiable in the direction of `v`. See `LipschitzWith.ae_lineDifferentiableAt`.
 * Step 2: the line derivative `LineDeriv ℝ f x v` is ae linear in `v`. Morrey proves this by a
-duality argument, integrating against a smooth compactly supported function `g`, passing the
-derivative to `g` by integration by parts, and using the linearity of the derivative of `g`.
-See `LipschitzWith.ae_lineDeriv_sum_eq`.
+  duality argument, integrating against a smooth compactly supported function `g`, passing the
+  derivative to `g` by integration by parts, and using the linearity of the derivative of `g`.
+  See `LipschitzWith.ae_lineDeriv_sum_eq`.
 * Step 3: consider a countable dense set `s` of directions. Almost everywhere, the function `f`
-is line-differentiable in all these directions and the line derivative is linear. Approximating
-any direction by a direction in `s` and using the fact that `f` is Lipschitz to control the error,
-it follows that `f` is Fréchet-differentiable at these points.
-See `LipschitzWith.hasFDerivAt_of_hasLineDerivAt_of_closure`.
+  is line-differentiable in all these directions and the line derivative is linear. Approximating
+  any direction by a direction in `s` and using the fact that `f` is Lipschitz to control the error,
+  it follows that `f` is Fréchet-differentiable at these points.
+  See `LipschitzWith.hasFDerivAt_of_hasLineDerivAt_of_closure`.
 
 ## References
 
@@ -66,9 +66,6 @@ theorem memLp_lineDeriv (hf : LipschitzWith C f) (v : E) :
   memLp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
     (C * ‖v‖) (.of_forall fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf)
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_lineDeriv := memLp_lineDeriv
-
 variable [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
 
 theorem ae_lineDifferentiableAt
@@ -86,7 +83,7 @@ theorem ae_lineDifferentiableAt
   have : DifferentiableAt ℝ (fun t ↦ s + t) 0 := differentiableAt_id.const_add _
   simp only [LineDifferentiableAt]
   convert h's.comp 0 this with _ t
-  simp only [LineDifferentiableAt, add_assoc, Function.comp_apply, add_smul]
+  simp only [add_assoc, Function.comp_apply, add_smul]
 
 theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
     LocallyIntegrable (fun x ↦ lineDeriv ℝ f x v) μ :=
@@ -118,7 +115,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
       = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, ht.le]
     _ ≤ (t⁻¹ * (C * ‖(x + t • v) - x‖)) * ‖g x‖ := by
       gcongr; exact LipschitzWith.norm_sub_le hf (x + t • v) x
-    _ = (C * ‖v‖) *‖g x‖ := by field_simp [norm_smul, abs_of_nonneg ht.le]; ring
+    _ = (C * ‖v‖) *‖g x‖ := by simp [field, norm_smul, abs_of_nonneg ht.le]
   · exact hg.norm.const_mul _
   · filter_upwards [hf.ae_lineDifferentiableAt v] with x hx
     exact hx.hasLineDerivAt.tendsto_slope_zero_right.mul tendsto_const_nhds
@@ -145,18 +142,18 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
         = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, t_pos.le]
       _ ≤ (t⁻¹ * (C * ‖(x + t • v) - x‖)) * ‖g x‖ := by
         gcongr; exact LipschitzWith.norm_sub_le hf (x + t • v) x
-      _ = (C * ‖v‖) *‖g x‖ := by field_simp [norm_smul, abs_of_nonneg t_pos.le]; ring
+      _ = (C * ‖v‖) *‖g x‖ := by simp [field, norm_smul, abs_of_nonneg t_pos.le]
       _ = K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖) x := by rw [indicator_of_mem hx]
     · have A : f x = 0 := by
-        rw [← Function.nmem_support]
+        rw [← Function.notMem_support]
         contrapose! hx
         exact self_subset_cthickening _ (subset_tsupport _ hx)
       have B : f (x + t • v) = 0 := by
-        rw [← Function.nmem_support]
+        rw [← Function.notMem_support]
         contrapose! hx
         apply mem_cthickening_of_dist_le _ _ (‖v‖) (tsupport f) (subset_tsupport _ hx)
         simp only [dist_eq_norm, sub_add_cancel_left, norm_neg, norm_smul, Real.norm_eq_abs,
-          abs_of_nonneg t_pos.le, norm_pos_iff]
+          abs_of_nonneg t_pos.le]
         exact mul_le_of_le_one_left (norm_nonneg v) ht.2
       simp only [B, A, _root_.sub_self, smul_eq_mul, mul_zero, zero_mul, norm_zero]
       exact indicator_nonneg (fun y _hy ↦ by positivity) _
@@ -187,7 +184,7 @@ theorem integral_lineDeriv_mul_eq
     simp only [S1] at A; exact tendsto_nhds_unique A B
   intro t
   suffices S2 : ∫ x, (f (x + t • v) - f x) * g x ∂μ = ∫ x, f x * (g (x + t • (-v)) - g x) ∂μ by
-    simp only [smul_eq_mul, mul_assoc, integral_mul_left, S2, mul_neg, mul_comm (f _)]
+    simp only [smul_eq_mul, mul_assoc, integral_const_mul, S2, mul_comm (f _)]
   have S3 : ∫ x, f (x + t • v) * g x ∂μ = ∫ x, f x * g (x + t • (-v)) ∂μ := by
     rw [← integral_add_right_eq_self _ (t • (-v))]; simp
   simp_rw [_root_.sub_mul, _root_.mul_sub]
@@ -220,7 +217,7 @@ theorem ae_lineDeriv_sum_eq
   suffices S1 : ∫ x, lineDeriv ℝ f x (∑ i ∈ s, a i • v i) * g x ∂μ
       = ∑ i ∈ s, a i * ∫ x, lineDeriv ℝ f x (v i) * g x ∂μ by
     dsimp only [smul_eq_mul, Pi.smul_apply]
-    simp_rw [← mul_assoc, mul_comm _ (a _), mul_assoc, integral_mul_left, mul_comm (g _), S1]
+    simp_rw [← mul_assoc, mul_comm _ (a _), mul_assoc, integral_const_mul, mul_comm (g _), S1]
   suffices S2 : ∫ x, (∑ i ∈ s, a i * fderiv ℝ g x (v i)) * f x ∂μ =
                   ∑ i ∈ s, a i * ∫ x, fderiv ℝ g x (v i) * f x ∂μ by
     obtain ⟨D, g_lip⟩ : ∃ D, LipschitzWith D g :=
@@ -231,9 +228,9 @@ theorem ae_lineDeriv_sum_eq
     simp only [integral_neg, mul_neg, Finset.sum_neg_distrib, neg_inj]
     exact S2
   suffices B : ∀ i ∈ s, Integrable (fun x ↦ a i * (fderiv ℝ g x (v i) * f x)) μ by
-    simp_rw [Finset.sum_mul, mul_assoc, integral_finset_sum s B, integral_mul_left]
+    simp_rw [Finset.sum_mul, mul_assoc, integral_finset_sum s B, integral_const_mul]
   intro i _hi
-  let L : (E →L[ℝ] ℝ) → ℝ := fun f ↦ f (v i)
+  let L : StrongDual ℝ E → ℝ := fun f ↦ f (v i)
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
   refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
   · exact ((g_smooth.continuous_fderiv (mod_cast le_top)).clm_apply continuous_const).mul
@@ -246,7 +243,7 @@ theorem ae_lineDeriv_sum_eq
 
 theorem ae_exists_fderiv_of_countable
     (hf : LipschitzWith C f) {s : Set E} (hs : s.Countable) :
-    ∀ᵐ x ∂μ, ∃ (L : E →L[ℝ] ℝ), ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v := by
+    ∀ᵐ x ∂μ, ∃ (L : StrongDual ℝ E), ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v := by
   have B := Basis.ofVectorSpace ℝ E
   have I1 : ∀ᵐ (x : E) ∂μ, ∀ v ∈ s, lineDeriv ℝ f x (∑ i, (B.repr v i) • B i) =
                                   ∑ i, B.repr v i • lineDeriv ℝ f x (B i) :=
@@ -254,7 +251,7 @@ theorem ae_exists_fderiv_of_countable
   have I2 : ∀ᵐ (x : E) ∂μ, ∀ v ∈ s, LineDifferentiableAt ℝ f x v :=
     (ae_ball_iff hs).2 (fun v _ ↦ hf.ae_lineDifferentiableAt v)
   filter_upwards [I1, I2] with x hx h'x
-  let L : E →L[ℝ] ℝ :=
+  let L : StrongDual ℝ E :=
     LinearMap.toContinuousLinearMap (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i)))
   refine ⟨L, fun v hv ↦ ?_⟩
   have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]
@@ -286,7 +283,7 @@ theorem hasFDerivAt_of_hasLineDerivAt_of_closure
     rcases Metric.mem_nhds_iff.1 I with ⟨r, r_pos, hr⟩
     exact ⟨r, r_pos, fun t ht v hv ↦ hr (mem_ball_zero_iff.2 ht) v hv⟩
   apply Metric.mem_nhds_iff.2 ⟨r, r_pos, fun v hv ↦ ?_⟩
-  rcases eq_or_ne v 0 with rfl|v_ne
+  rcases eq_or_ne v 0 with rfl | v_ne
   · simp
   obtain ⟨w, ρ, w_mem, hvw, hρ⟩ : ∃ w ρ, w ∈ sphere 0 1 ∧ v = ρ • w ∧ ρ = ‖v‖ := by
     refine ⟨‖v‖⁻¹ • v, ‖v‖, by simp [norm_smul, inv_mul_cancel₀ (norm_ne_zero_iff.2 v_ne)], ?_, rfl⟩
@@ -314,9 +311,6 @@ theorem hasFDerivAt_of_hasLineDerivAt_of_closure
       simp only [add_sub_add_left_eq_sub, ← smul_sub, norm_smul, norm_rho]; gcongr
     _ = ((C + ‖L‖ + 1) * δ) * ρ := by ring
     _ = ε * ‖v‖ := by rw [hδ, hρ]
-
-@[deprecated (since := "2025-01-15")]
-alias hasFderivAt_of_hasLineDerivAt_of_closure := hasFDerivAt_of_hasLineDerivAt_of_closure
 
 /-- A real-valued function on a finite-dimensional space which is Lipschitz is
 differentiable almost everywere. Superseded by

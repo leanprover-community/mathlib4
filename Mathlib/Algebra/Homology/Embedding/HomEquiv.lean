@@ -63,9 +63,7 @@ lemma f_eq {i' : ι'} {i : ι} (hi : e.f i = i') :
   have hi' : ∃ k, e.f k = i' := ⟨i, hi⟩
   have : hi'.choose = i := e.injective_f (by rw [hi'.choose_spec, hi])
   dsimp [f]
-  rw [dif_pos ⟨i, hi⟩]
-  subst this
-  rfl
+  grind [f]
 
 @[reassoc (attr := simp)]
 lemma comm (hφ : e.HasLift φ) (i' j' : ι') :
@@ -168,7 +166,7 @@ lemma homRestrict_hasLift (ψ : K ⟶ L.extend e) :
     e.HasLift (e.homRestrict ψ) := by
   intro j hj i' hij'
   have : (L.extend e).d i' (e.f j) = 0 := by
-    apply (L.isZero_extend_X e i' (hj.not_mem hij')).eq_of_src
+    apply (L.isZero_extend_X e i' (hj.notMem hij')).eq_of_src
   dsimp [homRestrict]
   rw [homRestrict.f_eq ψ rfl, restrictionXIso, eqToIso_refl, Iso.refl_hom, id_comp,
     ← ψ.comm_assoc, this, zero_comp, comp_zero]

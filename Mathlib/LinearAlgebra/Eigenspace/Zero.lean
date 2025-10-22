@@ -134,7 +134,7 @@ lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
   simpa only [aux₁, aux₂] using this
 
 open Module.Free in
-lemma finrank_maxGenEigenspace (φ : Module.End K M) :
+lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
     finrank K (φ.maxGenEigenspace 0) = natTrailingDegree (φ.charpoly) := by
   set V := φ.maxGenEigenspace 0
   have hV : V = ⨆ (n : ℕ), ker (φ ^ n) := by
@@ -148,13 +148,13 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
       forall_exists_index]
     intro x n hx
     use n
-    rw [← LinearMap.mul_apply, ← pow_succ, pow_succ', LinearMap.mul_apply, hx, map_zero]
+    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply, hx, map_zero]
   have hφW : ∀ x ∈ W, φ x ∈ W := by
     simp only [W, Submodule.mem_iInf, mem_range]
     intro x H n
     obtain ⟨y, rfl⟩ := H n
     use φ y
-    rw [← LinearMap.mul_apply, ← pow_succ, pow_succ', LinearMap.mul_apply]
+    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply]
   let F := φ.restrict hφV
   let G := φ.restrict hφW
   let ψ := F.prodMap G
@@ -193,8 +193,23 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
   refine .trans ?_ hx
   generalize_proofs h'
   clear hx
-  induction n with
-  | zero => simp only [pow_zero, one_apply]
-  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, restrict_apply]
+  induction n <;> simp [pow_succ', *]
+
+@[deprecated (since := "2025-09-07")] alias finrank_maxGenEigenspace :=
+  finrank_maxGenEigenspace_zero_eq
+
+lemma finrank_maxGenEigenspace_eq (φ : Module.End K M) (μ : K) :
+    finrank K (φ.maxGenEigenspace μ) = φ.charpoly.rootMultiplicity μ := by
+  rw [φ.maxGenEigenspace_eq_maxGenEigenspace_zero, finrank_maxGenEigenspace_zero_eq,
+    Polynomial.rootMultiplicity_eq_natTrailingDegree, LinearMap.charpoly_sub_smul]
+
+lemma finrank_genEigenspace_le (φ : Module.End K M) (μ : K) (k : ℕ) :
+    finrank K (φ.genEigenspace μ k) ≤ φ.charpoly.rootMultiplicity μ := by
+  grw [Submodule.finrank_mono (φ.genEigenspace_le_maximal μ k), finrank_maxGenEigenspace_eq]
+
+/-- The geometric multiplicity of an eigenvalue is at most the algebraic multiplicity. -/
+lemma finrank_eigenspace_le (φ : Module.End K M) (μ : K) :
+    finrank K (φ.eigenspace μ) ≤ φ.charpoly.rootMultiplicity μ :=
+  finrank_genEigenspace_le ..
 
 end LinearMap

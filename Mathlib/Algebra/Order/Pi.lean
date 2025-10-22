@@ -23,8 +23,8 @@ namespace Pi
 
 /-- The product of a family of ordered commutative monoids is an ordered commutative monoid. -/
 @[to_additive
-      "The product of a family of ordered additive commutative monoids is
-an ordered additive commutative monoid."]
+      /-- The product of a family of ordered additive commutative monoids is
+an ordered additive commutative monoid. -/]
 instance isOrderedMonoid {ι : Type*} {Z : ι → Type*} [∀ i, CommMonoid (Z i)]
     [∀ i, PartialOrder (Z i)] [∀ i, IsOrderedMonoid (Z i)] :
     IsOrderedMonoid (∀ i, Z i) where
@@ -39,12 +39,13 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
 
 /-- The product of a family of canonically ordered monoids is a canonically ordered monoid. -/
 @[to_additive
-      "The product of a family of canonically ordered additive monoids is
-a canonically ordered additive monoid."]
+      /-- The product of a family of canonically ordered additive monoids is
+a canonically ordered additive monoid. -/]
 instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOrder (Z i)]
     [∀ i, CanonicallyOrderedMul (Z i)] :
     CanonicallyOrderedMul (∀ i, Z i) where
   __ := Pi.existsMulOfLe
+  le_mul_self _ _ := fun _ => le_mul_self
   le_self_mul _ _ := fun _ => le_self_mul
 
 @[to_additive]
@@ -110,7 +111,7 @@ variable {ι : Type*} {α : ι → Type*} [DecidableEq ι] [∀ i, One (α i)] [
 
 @[to_additive (attr := simp)]
 lemma mulSingle_le_mulSingle : mulSingle i a ≤ mulSingle i b ↔ a ≤ b := by
-  simp [mulSingle, update_le_update_iff]
+  simp [mulSingle]
 
 @[to_additive (attr := gcongr)] alias ⟨_, GCongr.mulSingle_mono⟩ := mulSingle_le_mulSingle
 

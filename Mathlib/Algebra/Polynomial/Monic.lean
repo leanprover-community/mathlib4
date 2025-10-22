@@ -49,11 +49,8 @@ theorem Monic.as_sum (hp : p.Monic) :
   suffices C (p.coeff p.natDegree) = 1 by rw [this, one_mul]
   exact congr_arg C hp
 
-theorem ne_zero_of_ne_zero_of_monic (hp : p ≠ 0) (hq : Monic q) : q ≠ 0 := by
-  rintro rfl
-  rw [Monic.def, leadingCoeff_zero] at hq
-  rw [← mul_one p, ← C_1, ← hq, C_0, mul_zero] at hp
-  exact hp rfl
+@[deprecated (since := "2025-08-14")] alias ne_zero_of_ne_zero_of_monic :=
+  Monic.ne_zero_of_polynomial_ne
 
 theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) := by
   unfold Monic
@@ -90,8 +87,8 @@ theorem monic_X_pow_add {n : ℕ} (H : degree p < n) : Monic (X ^ n + p) :=
 
 variable (a) in
 theorem monic_X_pow_add_C {n : ℕ} (h : n ≠ 0) : (X ^ n + C a).Monic :=
-   monic_X_pow_add <| (lt_of_le_of_lt degree_C_le
-     (by simp only [Nat.cast_pos, Nat.pos_iff_ne_zero, ne_eq, h, not_false_eq_true]))
+  monic_X_pow_add <| (lt_of_le_of_lt degree_C_le
+    (by simp only [Nat.cast_pos, Nat.pos_iff_ne_zero, ne_eq, h, not_false_eq_true]))
 
 theorem monic_X_add_C (x : R) : Monic (X + C x) :=
   pow_one (X : R[X]) ▸ monic_X_pow_add_C x one_ne_zero
@@ -187,7 +184,7 @@ theorem not_dvd_of_natDegree_lt (hp : Monic p) (h0 : q ≠ 0) (hl : natDegree q 
     ¬p ∣ q := by
   rintro ⟨r, rfl⟩
   rw [hp.natDegree_mul' <| right_ne_zero_of_mul h0] at hl
-  exact hl.not_le (Nat.le_add_right _ _)
+  exact hl.not_ge (Nat.le_add_right _ _)
 
 theorem not_dvd_of_degree_lt (hp : Monic p) (h0 : q ≠ 0) (hl : degree q < degree p) : ¬p ∣ q :=
   Monic.not_dvd_of_natDegree_lt hp h0 <| natDegree_lt_natDegree h0 hl
@@ -258,11 +255,20 @@ theorem monic_prod_of_monic (s : Finset ι) (f : ι → R[X]) (hs : ∀ i ∈ s,
     Monic (∏ i ∈ s, f i) :=
   monic_multiset_prod_of_monic s.1 f hs
 
+theorem monic_finprod_of_monic (α : Type*) (f : α → R[X])
+    (hf : ∀ i ∈ Function.mulSupport f, Monic (f i)) :
+    Monic (finprod f) := by
+  classical
+  rw [finprod_def]
+  split_ifs
+  · exact monic_prod_of_monic _ _ fun a ha => hf a ((Set.Finite.mem_toFinset _).mp ha)
+  · exact monic_one
+
 theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : ∀ i ∈ t, Monic (f i)) :
     nextCoeff (t.map f).prod = (t.map fun i => nextCoeff (f i)).sum := by
   revert h
   refine Multiset.induction_on t ?_ fun a t ih ht => ?_
-  · simp only [Multiset.not_mem_zero, forall_prop_of_true, forall_prop_of_false, Multiset.map_zero,
+  · simp only [Multiset.notMem_zero, forall_prop_of_true, forall_prop_of_false, Multiset.map_zero,
       Multiset.prod_zero, Multiset.sum_zero, not_false_iff, forall_true_iff]
     rw [← C_1]
     rw [nextCoeff_C_eq_zero]
@@ -309,8 +315,8 @@ lemma Monic.irreducible_iff_natDegree' (hp : p.Monic) : Irreducible p ↔ p ≠ 
   · simp_rw [hf.natDegree_mul hg, pos_iff_ne_zero] at h
     contrapose! h
     obtain hl | hl := le_total f.natDegree g.natDegree
-    · exact ⟨g, f, hg, hf, mul_comm g f, h.1, add_le_add_left hl _⟩
-    · exact ⟨f, g, hf, hg, rfl, h.2, add_le_add_right hl _⟩
+    · exact ⟨g, f, hg, hf, mul_comm g f, h.1, by gcongr⟩
+    · exact ⟨f, g, hf, hg, rfl, h.2, by gcongr⟩
 
 /-- Alternate phrasing of `Polynomial.Monic.irreducible_iff_natDegree'` where we only have to check
 one divisor at a time. -/
@@ -342,8 +348,7 @@ lemma Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : p.
       · rw [p.as_sum_range_C_mul_X_pow, hnd, Finset.sum_range_succ, Finset.sum_range_succ,
           Finset.sum_range_one, ← hnd, hm.coeff_natDegree, hnd, hmul, hadd, C_mul, C_add, C_1]
         ring
-      · rw [mem_Ioc, natDegree_X_add_C _]
-        simp
+      · simp
   · rintro rfl
     simp [natDegree_one] at hnd
 
@@ -363,13 +368,7 @@ theorem Monic.natDegree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Moni
 @[simp]
 theorem Monic.degree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Monic) (f : R →+* S) :
     (P.map f).degree = P.degree := by
-  by_cases hP : P = 0
-  · simp [hP]
-  · refine le_antisymm degree_map_le ?_
-    rw [degree_eq_natDegree hP]
-    refine le_degree_of_ne_zero ?_
-    rw [coeff_map, Monic.coeff_natDegree hmo, RingHom.map_one]
-    exact one_ne_zero
+  simp_all
 
 section Injective
 
@@ -544,9 +543,7 @@ theorem leadingCoeff_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S
 theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) :
     Monic (h.unit⁻¹ • p) := by
   rw [Monic.def, leadingCoeff_smul_of_smul_regular _ (isSMulRegular_of_group _), Units.smul_def]
-  obtain ⟨k, hk⟩ := h
-  simp only [← hk, smul_eq_mul, ← Units.val_mul, Units.val_eq_one, inv_mul_eq_iff_eq_mul]
-  simp [Units.ext_iff, IsUnit.unit_spec]
+  simp
 
 theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q : R[X]} :
     p * q = 0 ↔ q = 0 := by
@@ -571,7 +568,7 @@ theorem isUnit_leadingCoeff_mul_left_eq_zero_iff (h : IsUnit p.leadingCoeff) {q 
     simp only [zero_mul] at hp
     rwa [mul_assoc, Monic.mul_left_eq_zero_iff] at hp
     refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
-    simp [Units.mul_inv_eq_iff_eq_mul, IsUnit.unit_spec]
+    simp
   · rintro rfl
     rw [zero_mul]
 

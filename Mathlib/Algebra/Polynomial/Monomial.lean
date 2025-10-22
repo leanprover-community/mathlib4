@@ -37,9 +37,9 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
     refine ⟨n, f.coeff n, ?_⟩
     ext i
     by_cases hi : i = n
-    · simp [hi, coeff_monomial]
+    · simp [hi]
     · have : f.coeff i = 0 := by
-        rw [← not_mem_support_iff]
+        rw [← notMem_support_iff]
         exact fun hi' => hi (Finset.mem_singleton.1 (hn hi'))
       simp [this, Ne.symm hi, coeff_monomial]
   · rintro ⟨n, a, rfl⟩

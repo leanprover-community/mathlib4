@@ -164,6 +164,9 @@ Q193882:
 
 Q193910:
   title: Euler's theorem
+  decl: Nat.ModEq.pow_totient
+  authors: Chris Hughes
+  date: 2020
 
 Q194919:
   title: Inverse eigenvalues theorem
@@ -305,6 +308,10 @@ Q282331:
 
 Q282649:
   title: Pentagonal number theorem
+  url: https://github.com/wwylele/PentagonalNumberTheorem
+  authors: Weiyi Wang
+  comment: Formal power series only. Missing power series over complex numbers.
+  date: 2025-08-24
 
 Q283690:
   title: Arrival theorem
@@ -314,6 +321,9 @@ Q284960:
 
 Q285719:
   title: Thales's theorem
+  decl: EuclideanGeometry.Sphere.thales_theorem
+  authors: Li Jiale
+  date: 2025
 
 Q287347:
   title: Gradient theorem
@@ -383,8 +393,15 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
+  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  date: 2025
+  # TODO: cannot display several URLs nicely yet
+  # links   :
+  #  Prime Number Theorem : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
+  #  With Error Terms     : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
+  #  website              : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   comment: "Ongoing formalisation of various versions in https://github.com/AlexKontorovich/PrimeNumberTheoremAnd"
-  # also in 100.yaml
 
 Q388525:
   title: Bell's theorem
@@ -471,6 +488,8 @@ Q505798:
 
 Q510197:
   title: Tutte theorem
+  decl: SimpleGraph.tutte
+  authors: Pim Otte
 
 Q512897:
   title: Brooks's theorem
@@ -488,8 +507,8 @@ Q528987:
   title: Von Neumann bicommutant theorem
 
 Q530152:
-  title: Picard&ndash;Lindelöf theorem
-  decl: IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq
+  title: Picard–Lindelöf theorem
+  decl: IsPicardLindelof.exists_eq_forall_mem_Icc_hasDerivWithinAt
 
 Q535366:
   title: Montel's theorem
@@ -663,8 +682,18 @@ Q657903:
 
 Q660799:
   title: Darboux's theorem (analysis)
-  # "all derivatives have the intermediate value property"
-  # TODO should exist in mathlib, add decl!
+  decls:
+    - exists_hasDerivWithinAt_eq_of_gt_of_lt
+    - exists_hasDerivWithinAt_eq_of_lt_of_gt
+    - Set.OrdConnected.image_hasDerivWithinAt
+    - Set.OrdConnected.image_derivWithin
+    - Set.OrdConnected.image_deriv
+    - Convex.image_hasDerivWithinAt
+    - Convex.image_derivWithin
+    - Convex.image_deriv
+    - exists_hasDerivWithinAt_eq_of_ge_of_le
+    - exists_hasDerivWithinAt_eq_of_le_of_ge
+  authors: Yury Kudryashov
 
 Q670235:
   title: Fundamental theorem of arithmetic
@@ -721,6 +750,11 @@ Q721695:
 
 Q727102:
   title: Fermat's theorem (stationary points)
+  decls:
+    - IsLocalExtr.deriv_eq_zero
+    - IsLocalExtr.fderiv_eq_zero
+  authors: Yury G. Kudryashov
+  date: 2019
 
 Q729359:
   title: Hadamard three-circle theorem
@@ -793,10 +827,9 @@ Q766722:
   # theorem about Hamiltonian mechanics
 
 Q776578:
-  title: Artin–Wedderburn theorem
-  # using proof_wanted, in Mathlib/RingTheory/SimpleModule.lean
-  statement: isSemisimpleRing_iff_pi_matrix_divisionRing
-  # WIP formalisation, but not complete yet (January 1, 2025)
+  title: Wedderburn–Artin theorem
+  decl: IsSimpleRing.exists_algEquiv_matrix_divisionRing
+  decl: IsSemisimpleRing.exists_algEquiv_pi_matrix_divisionRing
 
 Q777924:
   title: Tijdeman's theorem
@@ -818,6 +851,11 @@ Q791258:
 
 Q791663:
   title: Beatty's theorem
+  decls:
+    - Irrational.beattySeq_symmDiff_beattySeq_pos
+    - compl_beattySeq
+  authors: Jason Yuen
+  date: 2023
 
 Q794269:
   title: Betti's theorem
@@ -934,6 +972,9 @@ Q867839:
 
 Q869647:
   title: Szpilrajn extension theorem
+  decl: extend_partialOrder
+  authors: Bhavik Mehta
+  date: 2021
 
 Q872088:
   title: Boolean prime ideal theorem
@@ -1100,6 +1141,10 @@ Q999783:
 
 Q1008566:
   title: Gauss–Lucas theorem
+  decls:
+    - Polynomial.rootSet_derivative_subset_convexHull_rootSet
+    - Polynomial.eq_centerMass_of_eval_derivative_eq_zero
+  authors: Yury Kudryashov, Aristotle AI
 
 Q1032886:
   title: Hales–Jewett theorem
@@ -1227,6 +1272,9 @@ Q1076274:
 
 Q1077462:
   title: König's theorem (set theory)
+  authors: Mario Carneiro
+  date: 2018
+  decl: Cardinal.sum_lt_prod
 
 Q1077741:
   title: Hairy ball theorem
@@ -1276,6 +1324,9 @@ Q1134296:
 
 Q1134776:
   title: Dilworth's theorem
+  url: https://github.com/vlad902/misc-lean-proofs/blob/main/MiscLeanProofs/Dilworth.lean
+  authors: Vlad Tsyrklevich
+  date: 2025
 
 Q1135706:
   title: Harnack's theorem
@@ -1437,9 +1488,20 @@ Q1227061:
 
 Q1227702:
   title: Dirichlet's unit theorem
+  decls:
+    - NumberField.Units.basisModTorsion
+    - NumberField.Units.exist_unique_eq_mul_prod
+  authors: Xavier Roblot
 
 Q1227703:
   title: Dirichlet's approximation theorem
+  decls:
+    - AddCircle.exists_norm_nsmul_le
+    - Real.exists_int_int_abs_mul_sub_le
+    - Real.exists_nat_abs_mul_sub_round_le
+    - Real.exists_rat_abs_sub_le_and_den_le
+  authors: Michael Geißer, Michael Stoll
+  date: 2022
 
 Q1242398:
   title: Doob decomposition theorem
@@ -1591,6 +1653,9 @@ Q1471282:
 
 Q1472120:
   title: Hellinger&ndash;Toeplitz theorem
+  decl: LinearMap.IsSymmetric.continuous
+  authors: Moritz Doll
+  date: 2022
 
 Q1477053:
   title: Arzelà–Ascoli theorem
@@ -1612,6 +1677,9 @@ Q1530275:
 
 Q1535225:
   title: Łoś' theorem
+  decl: FirstOrder.Language.Ultraproduct.sentence_realize
+  authors: Aaron Anderson
+  date: 2022-03-09
 
 Q1542114:
   title: Bézout's theorem
@@ -1874,7 +1942,9 @@ Q2094241:
 
 Q2096184:
   title: Plancherel theorem
-  # also in undergrad.yml
+  decl: SchwartzMap.integral_inner_fourier_fourier
+  authors: Moritz Doll
+  date: 2025
 
 Q2109761:
   title: Uniformization theorem
@@ -2035,7 +2105,12 @@ Q2379128:
 
 Q2379132:
   title: Going-up and going-down theorems
-  # TODO: does mathlib have these?
+  decls:
+    - Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain
+    - Ideal.exists_ideal_over_prime_of_isIntegral_of_isPrime
+    - Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap
+    - Algebra.HasGoingDown.of_specComap_localRingHom_surjective
+  date: 2025
 
 Q2394548:
   title: Hurewicz theorem
@@ -2391,6 +2466,9 @@ Q3527233:
 
 Q3527241:
   title: Krull's principal ideal theorem
+  decl: Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
+  authors: Andrew Yang
+  date: 2023
 
 Q3527245:
   title: Six exponentials theorem
@@ -2482,6 +2560,9 @@ Q4054114:
 
 Q4116459:
   title: Niven's theorem
+  decl: niven
+  authors: Alex Meiburg
+  date: 2025
 
 Q4171386:
   title: Soul theorem
@@ -2995,6 +3076,9 @@ Q5443005:
 
 Q5445112:
   title: Fernique's theorem
+  decl: ProbabilityTheory.IsGaussian.exists_integrable_exp_sq
+  authors: Rémy Degenne
+  date: 2025
 
 Q5445311:
   title: Ferrero–Washington theorem
@@ -3114,6 +3198,9 @@ Q5638112:
 
 Q5638886:
   title: Hahn embedding theorem
+  decl: hahnEmbedding_isOrderedAddMonoid
+  authors: Weiyi Wang
+  date: 2025
 
 Q5643485:
   title: Halpern–Läuchli theorem
@@ -3326,6 +3413,9 @@ Q6777133:
 
 Q6783821:
   title: Mason–Stothers theorem
+  decl: Polynomial.abc
+  authors: Jineon Baek, Seewoo Lee
+  date: 2024
 
 Q6795637:
   title: Maximal ergodic theorem
@@ -3655,6 +3745,9 @@ Q7644264:
 
 Q7660749:
   title: Sylvester's determinant theorem
+  decl: Matrix.det_one_add_mul_comm
+  authors: Eric Wieser
+  date: 2022
 
 Q7661308:
   title: Symmetric hypergraph theorem
@@ -3764,6 +3857,11 @@ Q7996769:
 
 Q7999144:
   title: Wiener–Ikehara theorem
+  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  date: 2024
+  # TODO: cannot display several URLs nicely yet
+  # link: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/655055549f8725b3fd4de577435259932129dc4c/PrimeNumberTheoremAnd/Wiener.lean#L2078
 
 Q7999797:
   title: Beer's theorem

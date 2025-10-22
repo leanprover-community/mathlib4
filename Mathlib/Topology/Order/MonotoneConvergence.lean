@@ -32,7 +32,7 @@ variable {α β : Type*}
 
 /-- We say that `α` is a `SupConvergenceClass` if the following holds. Let `f : ι → α` be a
 monotone function, let `a : α` be a least upper bound of `Set.range f`. Then `f x` tends to `𝓝 a`
- as `x → ∞` (formally, at the filter `Filter.atTop`). We require this for `ι = (s : Set α)`,
+as `x → ∞` (formally, at the filter `Filter.atTop`). We require this for `ι = (s : Set α)`,
 `f = (↑)` in the definition, then prove it for any `f` in `tendsto_atTop_isLUB`.
 
 This property holds for linear orders with order topology as well as their products. -/

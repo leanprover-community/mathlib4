@@ -7,7 +7,6 @@ import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.Directed
 import Mathlib.Order.Hom.Set
-import Mathlib.Tactic.MinImports
 
 /-!
 # Chains and flags
@@ -59,8 +58,6 @@ variable {r} {c c₁ c₂ s t : Set α} {a b x y : α}
 @[simp] lemma IsChain.empty : IsChain r ∅ := pairwise_empty _
 @[simp] lemma IsChain.singleton : IsChain r {a} := pairwise_singleton ..
 
-@[deprecated (since := "2024-11-25")] alias isChain_empty := IsChain.empty
-
 theorem Set.Subsingleton.isChain (hs : s.Subsingleton) : IsChain r s :=
   hs.pairwise _
 
@@ -95,6 +92,13 @@ theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α 
   fun _ ⟨_, ha₁, ha₂⟩ _ ⟨_, hb₁, hb₂⟩ =>
   ha₂ ▸ hb₂ ▸ fun hxy => (hrc ha₁ hb₁ <| ne_of_apply_ne f hxy).imp (h _ _) (h _ _)
 
+theorem IsChain.preimage (r : α → α → Prop) (s : β → β → Prop) (f : α → β)
+    (hf : Function.Injective f) (h : ∀ x y, s (f x) (f y) → r x y) {c : Set β} (hrc : IsChain s c) :
+    IsChain r (f ⁻¹' c) := by
+  intro _ ha _ hb hne
+  have := hrc ha hb (fun h ↦ hne (hf h))
+  grind
+
 lemma isChain_union {s t : Set α} :
     IsChain r (s ∪ t) ↔ IsChain r s ∧ IsChain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∨ r b a := by
   rw [IsChain, IsChain, IsChain, pairwise_union_of_symmetric fun _ _ ↦ Or.symm]
@@ -111,6 +115,66 @@ theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (h
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
   (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
+
+section Rel
+
+variable {r : α → α → Prop} {r' : β → β → Prop} {s : Set α}
+
+theorem IsChain.image_relEmbedding (hs : IsChain r s) (φ : r ↪r r') : IsChain r' (φ '' s) := by
+  intro b hb b' hb' h
+  rw [Set.mem_image] at hb hb'
+  obtain ⟨⟨a, has, rfl⟩, ⟨a', has', rfl⟩⟩ := hb, hb'
+  have := hs has has' (fun haa' => h (by rw [haa']))
+  grind [RelEmbedding.map_rel_iff]
+
+theorem IsChain.preimage_relEmbedding {t : Set β} (ht : IsChain r' t) (φ : r ↪r r') :
+    IsChain r (φ ⁻¹' t) := fun _ ha _s ha' hne => by
+  have := ht ha ha' (fun h => hne (φ.injective h))
+  grind [RelEmbedding.map_rel_iff]
+
+theorem IsChain.image_relIso (hs : IsChain r s) (φ : r ≃r r') : IsChain r' (φ '' s) :=
+  hs.image_relEmbedding φ.toRelEmbedding
+
+theorem IsChain.preimage_relIso {t : Set β} (hs : IsChain r' t) (φ : r ≃r r') :
+    IsChain r (φ ⁻¹' t) :=
+  hs.preimage_relEmbedding φ.toRelEmbedding
+
+theorem IsChain.image_relEmbedding_iff {φ : r ↪r r'} : IsChain r' (φ '' s) ↔ IsChain r s :=
+  ⟨fun h => (φ.injective.preimage_image s).subst (h.preimage_relEmbedding φ), fun h =>
+    h.image_relEmbedding φ⟩
+
+theorem IsChain.image_relIso_iff {φ : r ≃r r'} : IsChain r' (φ '' s) ↔ IsChain r s :=
+  @image_relEmbedding_iff _ _ _ _ _ (φ : r ↪r r')
+
+theorem IsChain.image_embedding [LE α] [LE β] (hs : IsChain (· ≤ ·) s) (φ : α ↪o β) :
+    IsChain (· ≤ ·) (φ '' s) :=
+  image_relEmbedding hs _
+
+theorem IsChain.preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsChain (· ≤ ·) t) (φ : α ↪o β) :
+    IsChain (· ≤ ·) (φ ⁻¹' t) :=
+  preimage_relEmbedding ht _
+
+theorem IsChain.image_embedding_iff [LE α] [LE β] {φ : α ↪o β} :
+    IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
+  image_relEmbedding_iff
+
+theorem IsChain.image_iso [LE α] [LE β] (hs : IsChain (· ≤ ·) s) (φ : α ≃o β) :
+    IsChain (· ≤ ·) (φ '' s) :=
+  image_relEmbedding hs _
+
+theorem IsChain.image_iso_iff [LE α] [LE β] {φ : α ≃o β} :
+    IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
+  image_relEmbedding_iff
+
+theorem IsChain.preimage_iso [LE α] [LE β] {t : Set β} (ht : IsChain (· ≤ ·) t) (φ : α ≃o β) :
+    IsChain (· ≤ ·) (φ ⁻¹' t) :=
+  preimage_relEmbedding ht _
+
+theorem IsChain.preimage_iso_iff [LE α] [LE β] {t : Set β} {φ : α ≃o β} :
+    IsChain (· ≤ ·) (φ ⁻¹' t) ↔ IsChain (· ≤ ·) t :=
+  ⟨fun h => (φ.image_preimage t).subst (h.image_iso φ), fun h => h.preimage_iso _⟩
+
+end Rel
 
 section Total
 
@@ -139,23 +203,27 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
 
 end Total
 
-lemma IsChain.le_of_not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
+lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
   cases hs.total hx hy with
   | inr h' => exact h'
-  | inl h' => simpa [lt_iff_le_not_le, h'] using h
+  | inl h' => simpa [lt_iff_le_not_ge, h'] using h
+
+@[deprecated (since := "2025-05-11")] alias IsChain.le_of_not_lt := IsChain.le_of_not_gt
 
 lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x < y ↔ y ≤ x :=
-  ⟨(hs.le_of_not_lt hx hy ·), fun h h' ↦ h'.not_le h⟩
+  ⟨(hs.le_of_not_gt hx hy ·), fun h h' ↦ h'.not_ge h⟩
 
-lemma IsChain.lt_of_not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
+lemma IsChain.lt_of_not_ge [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x ≤ y) : y < x :=
-  (hs.total hx hy).elim (h · |>.elim) (lt_of_le_not_le · h)
+  (hs.total hx hy).elim (h · |>.elim) (lt_of_le_not_ge · h)
+
+@[deprecated (since := "2025-05-11")] alias IsChain.lt_of_not_le := IsChain.lt_of_not_ge
 
 lemma IsChain.not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x ≤ y ↔ y < x :=
-  ⟨(hs.lt_of_not_le hx hy ·), fun h h' ↦ h'.not_lt h⟩
+  ⟨(hs.lt_of_not_ge hx hy ·), fun h h' ↦ h'.not_gt h⟩
 
 theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
   h.1
@@ -197,7 +265,7 @@ theorem IsChain.succ (hs : IsChain r s) : IsChain r (SuccChain r s) :=
 
 theorem IsChain.superChain_succChain (hs₁ : IsChain r s) (hs₂ : ¬IsMaxChain r s) :
     SuperChain r s (SuccChain r s) := by
-  simp only [IsMaxChain, _root_.not_and, not_forall, exists_prop, exists_and_left] at hs₂
+  simp only [IsMaxChain, _root_.not_and, not_forall, exists_prop] at hs₂
   obtain ⟨t, ht, hst⟩ := hs₂ hs₁
   exact succChain_spec ⟨t, hs₁, ht, ssubset_iff_subset_ne.2 hst⟩
 
@@ -205,8 +273,7 @@ open Classical in
 theorem subset_succChain : s ⊆ SuccChain r s :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
   else by
-    rw [exists_and_left] at h
-    simp [SuccChain, dif_neg, h, Subset.rfl]
+    simp [SuccChain, h]
 
 end Chain
 
@@ -289,7 +356,7 @@ instance [BoundedOrder α] (s : Flag α) : BoundedOrder s :=
 lemma mem_iff_forall_le_or_ge : a ∈ s ↔ ∀ ⦃b⦄, b ∈ s → a ≤ b ∨ b ≤ a :=
   ⟨fun ha b => s.le_or_le ha, fun hb =>
     of_not_not fun ha =>
-      Set.ne_insert_of_not_mem _ ‹_› <|
+      Set.ne_insert_of_notMem _ ‹_› <|
         s.maxChain.2 (s.chain_le.insert fun c hc _ => hb hc) <| Set.subset_insert _ _⟩
 
 /-- Flags are preserved under order isomorphisms. -/

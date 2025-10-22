@@ -22,7 +22,7 @@ Finally, we use this to show unique factorization domains are integrally closed.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Rational_root_theorem
+* https://en.wikipedia.org/wiki/Rational_root_theorem
 -/
 
 
@@ -38,7 +38,6 @@ open Finsupp IsFractionRing IsLocalization Polynomial
 theorem scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero {p : A[X]} {r : A} {s : M}
     (hr : aeval (mk' S r s) p = 0) : aeval (algebraMap A S r) (scaleRoots p s) = 0 := by
   convert scaleRoots_eval₂_eq_zero (algebraMap A S) hr
-  -- Porting note: added
   funext
   rw [aeval_def, mk'_spec' _ r s]
 

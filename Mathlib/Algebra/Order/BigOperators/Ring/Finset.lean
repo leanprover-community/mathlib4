@@ -65,7 +65,7 @@ lemma prod_lt_prod (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i ≤ g i)
     ∏ i ∈ s, f i < ∏ i ∈ s, g i := by
   classical
   obtain ⟨i, hi, hilt⟩ := hlt
-  rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
+  rw [← insert_erase hi, prod_insert (notMem_erase _ _), prod_insert (notMem_erase _ _)]
   have := posMulStrictMono_iff_mulPosStrictMono.1 ‹PosMulStrictMono R›
   refine mul_lt_mul_of_pos_of_nonneg' hilt ?_ ?_ ?_
   · exact prod_le_prod (fun j hj => le_of_lt (hf j (mem_of_mem_erase hj)))
@@ -115,6 +115,24 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
     simp only [and_imp, mem_sdiff, mem_singleton]
     exact fun j hj hji ↦ le_trans (hg j hj) (hgf j hj hji)
 
+theorem le_prod_of_submultiplicative_on_pred_of_nonneg {M : Type*} [CommMonoid M] (f : M → R)
+    (p : M → Prop) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 ≤ 1)
+    (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
+    (s : Finset ι) (g : ι → M) (hps : ∀ a, a ∈ s → p (g a)) :
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) := by
+  apply le_trans (Multiset.le_prod_of_submultiplicative_on_pred_of_nonneg f p h_nonneg h_one
+    h_mul hp_mul _ ?_) (by simp [Multiset.map_map])
+  intro _ ha
+  obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp ha
+  exact hps i hi
+
+theorem le_prod_of_submultiplicative_of_nonneg {M : Type*} [CommMonoid M]
+    (f : M → R) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 ≤ 1)
+    (h_mul : ∀ x y : M, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
+  le_trans (Multiset.le_prod_of_submultiplicative_of_nonneg f h_nonneg h_one h_mul _)
+    (by simp [Multiset.map_map])
+
 end OrderedCommSemiring
 
 theorem sum_mul_self_eq_zero_iff [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
@@ -148,8 +166,7 @@ lemma prod_add_prod_le' (hi : i ∈ s) (h2i : g i + h i ≤ f i) (hgf : ∀ j �
     (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) : ((∏ i ∈ s, g i) + ∏ i ∈ s, h i) ≤ ∏ i ∈ s, f i := by
   classical
   simp_rw [prod_eq_mul_prod_diff_singleton hi]
-  refine le_trans ?_ (mul_le_mul_right' h2i _)
-  rw [right_distrib]
+  grw [← h2i, right_distrib]
   gcongr with j hj j hj <;> simp_all
 
 end CanonicallyOrderedAdd
@@ -165,7 +182,7 @@ lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [CommSemiring R] [LinearOrder R] [IsStr
     [ExistsAddOfLE R]
     (s : Finset ι) {r f g : ι → R} (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i)
     (ht : ∀ i ∈ s, r i ^ 2 = f i * g i) : (∑ i ∈ s, r i) ^ 2 ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i := by
-  obtain h | h := (sum_nonneg hg).eq_or_gt
+  obtain h | h := (sum_nonneg hg).eq_or_lt'
   · have ht' : ∑ i ∈ s, r i = 0 := sum_eq_zero fun i hi ↦ by
       simpa [(sum_eq_zero_iff_of_nonneg hg).1 h i hi] using ht i hi
     rw [h, ht']
@@ -178,9 +195,7 @@ lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [CommSemiring R] [LinearOrder R] [IsStr
       _ ≤ ∑ i ∈ s, (f i * (∑ j ∈ s, g j) ^ 2 + g i * (∑ j ∈ s, r j) ^ 2) := by
           gcongr with i hi
           have ht : (r i * (∑ j ∈ s, g j) * (∑ j ∈ s, r j)) ^ 2 =
-              (f i * (∑ j ∈ s, g j) ^ 2) * (g i * (∑ j ∈ s, r j) ^ 2) := by
-            conv_rhs => rw [mul_mul_mul_comm, ← ht i hi]
-            ring
+              (f i * (∑ j ∈ s, g j) ^ 2) * (g i * (∑ j ∈ s, r j) ^ 2) := by grind
           refine le_of_eq_of_le ?_ (two_mul_le_add_of_sq_eq_mul
             (mul_nonneg (hf i hi) (sq_nonneg _)) (mul_nonneg (hg i hi) (sq_nonneg _)) ht)
           repeat rw [mul_assoc]
@@ -263,11 +278,11 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     have body : Q($α) := Expr.betaRev f #[i]
     let rbody ← core zα pα body
     let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
-
     -- Try to show that the product is positive
     let p_pos : Option Q(0 < $e) := ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
-      -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
+      -- TODO(https://github.com/leanprover-community/quote4/issues/38):
+      -- We must name the following, else `assertInstancesCommute` loops.
       let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
       let .some _instαposmul ← trySynthInstanceQ q(PosMulStrictMono $α) | pure none
       let .some _instαnontriv ← trySynthInstanceQ q(Nontrivial $α) | pure none
@@ -275,23 +290,23 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
       return some q(prod_pos fun i _ ↦ $pr i)
     if let some p_pos := p_pos then return .positive p_pos
-
     -- Try to show that the product is nonnegative
     let p_nonneg : Option Q(0 ≤ $e) := ← do
-      let .some pbody := rbody.toNonneg
+      let some pbody := rbody.toNonneg
         | return none -- Fail if the body is not provably nonnegative
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
-      -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
+      -- TODO(https://github.com/leanprover-community/quote4/issues/38):
+      -- We must name the following, else `assertInstancesCommute` loops.
       let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
       let .some _instαposmul ← trySynthInstanceQ q(PosMulMono $α) | pure none
       assertInstancesCommute
       return some q(prod_nonneg fun i _ ↦ $pr i)
     if let some p_nonneg := p_nonneg then return .nonnegative p_nonneg
-
     -- Fall back to showing that the product is nonzero
     let pbody ← rbody.toNonzero
     let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
-    -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
+    -- TODO(https://github.com/leanprover-community/quote4/issues/38):
+    -- We must name the following, else `assertInstancesCommute` loops.
     let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
     let _instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
     assertInstancesCommute

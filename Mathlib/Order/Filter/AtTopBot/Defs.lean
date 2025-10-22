@@ -46,7 +46,7 @@ theorem Ici_mem_atTop [Preorder α] (a : α) : Ici a ∈ (atTop : Filter α) :=
 theorem Ioi_mem_atTop [Preorder α] [NoTopOrder α] (x : α) : Ioi x ∈ (atTop : Filter α) :=
   let ⟨z, hz⟩ := exists_not_le x
   mem_of_superset (inter_mem (mem_atTop x) (mem_atTop z))
-    fun _ ⟨hxy, hzy⟩ => lt_of_le_not_le hxy fun hyx => hz (hzy.trans hyx)
+    fun _ ⟨hxy, hzy⟩ => lt_of_le_not_ge hxy fun hyx => hz (hzy.trans hyx)
 
 theorem mem_atBot [Preorder α] (a : α) : { b : α | b ≤ a } ∈ @atBot α _ :=
   mem_iInf_of_mem a <| Subset.refl _
@@ -57,7 +57,7 @@ theorem Iic_mem_atBot [Preorder α] (a : α) : Iic a ∈ (atBot : Filter α) :=
 theorem Iio_mem_atBot [Preorder α] [NoBotOrder α] (x : α) : Iio x ∈ (atBot : Filter α) :=
   let ⟨z, hz⟩ := exists_not_ge x
   mem_of_superset (inter_mem (mem_atBot x) (mem_atBot z))
-    fun _ ⟨hyx, hyz⟩ => lt_of_le_not_le hyx fun hxy => hz (hxy.trans hyz)
+    fun _ ⟨hyx, hyz⟩ => lt_of_le_not_ge hyx fun hxy => hz (hxy.trans hyz)
 
 theorem eventually_ge_atTop [Preorder α] (a : α) : ∀ᶠ x in atTop, a ≤ x :=
   mem_atTop a
@@ -128,8 +128,8 @@ theorem Monotone.piecewise_eventually_eq_iUnion {β : α → Type*} [Preorder ι
   · refine (eventually_ge_atTop i).mono fun j hij ↦ ?_
     simp only [Set.piecewise_eq_of_mem, hs hij hi, subset_iUnion _ _ hi]
   · filter_upwards with i
-    simp only [Set.piecewise_eq_of_not_mem, not_exists.1 ha i, mt mem_iUnion.1 ha,
-      not_false_eq_true, exists_false]
+    simp only [Set.piecewise_eq_of_notMem, not_exists.1 ha i, mt mem_iUnion.1 ha,
+      not_false_eq_true]
 
 theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι] {s : ι → Set α}
     [∀ i, DecidablePred (· ∈ s i)] [DecidablePred (· ∈ ⋂ i, s i)]

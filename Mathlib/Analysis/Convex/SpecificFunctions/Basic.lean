@@ -24,11 +24,11 @@ path to Hölder's and Minkowski's inequalities and after that to Lp spaces and m
 theory.
 
 (Strict) concavity of `fun x ↦ x ^ p` for `0 < p < 1` (`0 ≤ p ≤ 1`) can be found in
-`Mathlib.Analysis.Convex.SpecificFunctions.Pow`.
+`Mathlib/Analysis/Convex/SpecificFunctions/Pow.lean`.
 
 ## See also
 
-`Mathlib.Analysis.Convex.Mul` for convexity of `x ↦ x ^ n`
+`Mathlib/Analysis/Convex/Mul.lean` for convexity of `x ↦ x ^ n`
 -/
 
 open Real Set NNReal
@@ -97,7 +97,7 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
   rcases eq_or_lt_of_le hs with rfl | hs
   · rwa [add_neg_cancel, zero_rpow hp'.ne', mul_neg_one, add_neg_lt_iff_lt_add, zero_add]
   have hs1 : 0 < 1 + s := neg_lt_iff_pos_add'.mp hs
-  rcases le_or_lt (1 + p * s) 0 with hs2 | hs2
+  rcases le_or_gt (1 + p * s) 0 with hs2 | hs2
   · exact hs2.trans_lt (rpow_pos_of_pos hs1 _)
   have hs3 : 1 + s ≠ 1 := hs' ∘ add_eq_left.mp
   have hs4 : 1 + p * s ≠ 1 := by
@@ -109,12 +109,14 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
     convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
-    · apply add_lt_add_left (mul_lt_of_one_lt_left hs' hp)
+    · gcongr
+      exact mul_lt_of_one_lt_left hs' hp
   · rw [← div_lt_iff₀ hp', ← div_lt_div_iff_of_pos_right hs']
     convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · rw [add_sub_cancel_left, log_one, sub_zero]
-    · apply add_lt_add_left (lt_mul_of_one_lt_left hs' hp)
+    · gcongr
+      exact lt_mul_of_one_lt_left hs' hp
 
 /-- **Bernoulli's inequality** for real exponents, non-strict version: for `1 ≤ p` and `-1 ≤ s`
 we have `1 + p * s ≤ (1 + s) ^ p`. -/
@@ -148,12 +150,14 @@ theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
     convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · rw [add_sub_cancel_left, log_one, sub_zero]
-    · apply add_lt_add_left (lt_mul_of_lt_one_left hs' hp2)
+    · gcongr
+      exact lt_mul_of_lt_one_left hs' hp2
   · rw [← lt_div_iff₀ hp1, ← div_lt_div_iff_of_pos_right hs']
     convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
-    · apply add_lt_add_left (mul_lt_of_lt_one_left hs' hp2)
+    · gcongr
+      exact mul_lt_of_lt_one_left hs' hp2
 
 /-- **Bernoulli's inequality** for real exponents, non-strict version: for `0 ≤ p ≤ 1` and `-1 ≤ s`
 we have `(1 + s) ^ p ≤ 1 + p * s`. -/

@@ -27,6 +27,9 @@ This file contains some alternative statements of Nakayama's Lemma as found in
 * `Submodule.smul_le_of_le_smul_of_le_jacobson_bot` - Statement (4) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
+* `Submodule.le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot` - Statement (8) in
+  [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
+
 Note that a version of Statement (1) in
 [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV) can be found in
 `RingTheory.Finiteness` under the name
@@ -149,8 +152,7 @@ theorem smul_le_of_le_smul_of_le_jacobson_bot {I : Ideal R} {N N' : Submodule R 
     (hIJ : I ≤ jacobson ⊥) (hNN : N' ≤ N ⊔ I • N') : I • N' ≤ N :=
   smul_le_right.trans (le_of_le_smul_of_le_jacobson_bot hN' hIJ hNN)
 
-open Pointwise
-
+open Pointwise in
 @[stacks 00DV "(3) see `Submodule.localized₀_le_localized₀_of_smul_le` for the second conclusion."]
 lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
     {N N' P : Submodule R M} (hN' : N'.FG) (hN'le : N' ≤ P) (hNN' : P ≤ N ⊔ I • N') :
@@ -170,11 +172,26 @@ lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
   obtain ⟨r, hmem, hr⟩ := exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I _
     (h1 ▸ hN'.map _) hle
   refine ⟨r, hmem, fun x hx ↦ ?_⟩
-  induction' hx using Submodule.smul_inductionOn_pointwise with p hp _ _ _ h _ _ _ _ hx hy
-  · rw [← Submodule.Quotient.mk_eq_zero, Quotient.mk_smul]
+  induction hx using Submodule.smul_inductionOn_pointwise with
+  | smul₀ p hp =>
+    rw [← Submodule.Quotient.mk_eq_zero, Quotient.mk_smul]
     exact hr _ ⟨p, hp, rfl⟩
-  · exact N.smul_mem _ h
-  · exact N.add_mem hx hy
-  · exact N.zero_mem
+  | smul₁ _ _ _ h => exact N.smul_mem _ h
+  | add _ _ _ _ hx hy => exact N.add_mem hx hy
+  | zero => exact N.zero_mem
+
+/-- **Nakayama's Lemma** - Statement (8) in
+[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV). -/
+@[stacks 00DV "(8)"]
+theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
+    {I : Ideal R} {N : Submodule R M} {t : Set M}
+    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (htspan : map (I • N).mkQ N ≤ map (I • N).mkQ (span R t)) :
+    N ≤ span R t := by
+  apply le_of_le_smul_of_le_jacobson_bot hN hIjac
+  apply_fun comap (I • N).mkQ at htspan
+  on_goal 2 => apply Submodule.comap_mono
+  simp only [comap_map_mkQ] at htspan
+  grw [sup_comm, ← htspan]
+  simp only [le_sup_right]
 
 end Submodule

@@ -5,7 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Basic
-import Mathlib.Algebra.Module.End
+import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
@@ -74,7 +74,7 @@ section Ring
 variable [Ring S] [Module ℚ S]
 
 variable (R) in
-/-- `nnqsmul` is equal to any other module structure via a cast. -/
+/-- `qsmul` is equal to any other module structure via a cast. -/
 lemma cast_smul_eq_qsmul [Module R S] (q : ℚ) (a : S) : (q : R) • a = q • a := by
   refine MulAction.injective₀ (G₀ := ℚ) (Nat.cast_ne_zero.2 q.den_pos.ne') ?_
   dsimp
@@ -95,6 +95,10 @@ instance _root_.DivisionRing.toRatAlgebra : Algebra ℚ R where
 instance _root_.RingHomClass.toLinearMapClassRat [FunLike F R S] [RingHomClass F R S] :
     LinearMapClass F ℚ R S where
   map_smulₛₗ f q a := by simp [smul_def, cast_id]
+
+instance _root_.RingEquivClass.toLinearEquivClassRat [EquivLike F R S] [RingEquivClass F R S] :
+    LinearEquivClass F ℚ R S where
+  map_smulₛₗ f c x := by simp [Algebra.smul_def]
 
 variable [SMul R S]
 

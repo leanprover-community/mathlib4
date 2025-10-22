@@ -29,7 +29,7 @@ instance instWfDvdMonoid : WfDvdMonoid ℕ where
       revert h
       simp [DvdNotUnit]
     cases b
-    · simpa [succ_ne_zero] using ENat.coe_lt_top (a + 1)
+    · simp
     obtain ⟨h1, h2⟩ := dvd_and_not_dvd_iff.2 h
     simp only [succ_ne_zero, cast_lt, if_false]
     refine lt_of_le_of_ne (Nat.le_of_dvd (Nat.succ_pos _) h1) fun con => h2 ?_

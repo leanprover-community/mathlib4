@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhangir Azerbayev, Adam Topaz, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.LinearAlgebra.Alternating.Basic
+import Mathlib.LinearAlgebra.Alternating.Curry
 
 /-!
 # Exterior Algebras
@@ -111,7 +111,7 @@ theorem lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (x) :
     lift R ⟨f, cond⟩ (ι R x) = f x :=
   CliffordAlgebra.lift_ι_apply f _ x
 
-@[simp]
+-- removing `@[simp]` because the LHS is not in simp normal form
 theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (g : ExteriorAlgebra R M →ₐ[R] A) :
     g.toLinearMap.comp (ι R) = f ↔ g = lift R ⟨f, cond⟩ :=
   CliffordAlgebra.lift_unique f _ _
@@ -268,7 +268,7 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
       dsimp [F]
       clear F
       wlog h : x < y
-      · exact this R n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)
+      · exact this R n f y x hfxy.symm hxy.symm (hxy.lt_or_gt.resolve_left h)
       clear hxy
       induction n with
       | zero => exact x.elim0
@@ -303,11 +303,9 @@ theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
   simp [ιMulti, Matrix.vecTail]
 
 theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
-    (ιMulti R n.succ).curryLeft m = (LinearMap.mulLeft R (ι R m)).compAlternatingMap (ιMulti R n) :=
-  AlternatingMap.ext fun v =>
-    (ιMulti_succ_apply _).trans <| by
-      simp_rw [Matrix.tail_cons]
-      rfl
+    (ιMulti R n.succ).curryLeft m =
+      (LinearMap.mulLeft R (ι R m)).compAlternatingMap (ιMulti R n) := by
+  ext; simp
 
 variable (R)
 

@@ -441,37 +441,36 @@ theorem tendsto_add_atTop_iff_nat {f : ℕ → α} {l : Filter α} (k : ℕ) :
 
 theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop = atTop :=
   map_atTop_eq_of_gc (fun b => k * b + (k - 1)) 1 (fun _ _ h => Nat.div_le_div_right h)
-    -- Porting note: there was a parse error in `calc`, use `simp` instead
     (fun a b _ => by rw [Nat.div_le_iff_le_mul_add_pred hk])
-    fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, Nat.add_zero]; omega
+    fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, Nat.add_zero]; cutsat
 
-section IsDirected
-variable [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {f : α → β}
+section NeBot
+variable [Preorder β] {l : Filter α} [NeBot l] {f : α → β}
 
-theorem unbounded_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto f atTop atTop) :
+theorem not_bddAbove_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto f l atTop) :
     ¬BddAbove (range f) := by
   rintro ⟨M, hM⟩
-  obtain ⟨a, ha⟩ := mem_atTop_sets.mp (h <| Ioi_mem_atTop M)
-  apply lt_irrefl M
-  calc
-    M < f a := ha a le_rfl
-    _ ≤ M := hM (Set.mem_range_self a)
+  have : ∀ x, f x ≤ M := by aesop
+  have : ∅ = f ⁻¹' Ioi M := by aesop (add forward safe not_le_of_gt)
+  apply Filter.empty_notMem l
+  aesop (add safe Ioi_mem_atTop)
 
-theorem unbounded_of_tendsto_atBot [NoMinOrder β] (h : Tendsto f atTop atBot) :
-    ¬BddBelow (range f) := unbounded_of_tendsto_atTop (β := βᵒᵈ) h
+theorem not_bddBelow_of_tendsto_atBot [NoMinOrder β] (h : Tendsto f l atBot) :
+    ¬BddBelow (range f) := not_bddAbove_of_tendsto_atTop (β := βᵒᵈ) h
 
-end IsDirected
+@[deprecated (since := "2025-04-28")]
+alias unbounded_of_tendsto_atTop := not_bddAbove_of_tendsto_atTop
 
-section IsCodirected
-variable [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] [Preorder β] {f : α → β}
+@[deprecated (since := "2025-04-28")]
+alias unbounded_of_tendsto_atBot := not_bddBelow_of_tendsto_atBot
 
-theorem unbounded_of_tendsto_atTop' [NoMaxOrder β] (h : Tendsto f atBot atTop) :
-    ¬BddAbove (range f) := unbounded_of_tendsto_atTop (α := αᵒᵈ) h
+@[deprecated (since := "2025-04-28")]
+alias unbounded_of_tendsto_atTop' := not_bddAbove_of_tendsto_atTop
 
-theorem unbounded_of_tendsto_atBot' [NoMinOrder β] (h : Tendsto f atBot atBot) :
-    ¬BddBelow (range f) := unbounded_of_tendsto_atTop (α := αᵒᵈ) (β := βᵒᵈ) h
+@[deprecated (since := "2025-04-28")]
+alias unbounded_of_tendsto_atBot' := not_bddBelow_of_tendsto_atBot
 
-end IsCodirected
+end NeBot
 
 theorem HasAntitoneBasis.eventually_subset [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hl : l.HasAntitoneBasis s) {t : Set α} (ht : t ∈ l) : ∀ᶠ i in atTop, s i ⊆ t :=

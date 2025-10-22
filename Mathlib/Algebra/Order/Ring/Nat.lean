@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Set.Basic
+import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # The natural numbers form an ordered semiring
@@ -30,6 +30,8 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℕ where
   exists_pair_ne := ⟨0, 1, ne_of_lt Nat.zero_lt_one⟩
 
 instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ where
+  bot := 0
+  bot_le := zero_le
   zero_le_one := zero_le_one
   mul_le_mul_left _ _ h c := Nat.mul_le_mul_left c h
 

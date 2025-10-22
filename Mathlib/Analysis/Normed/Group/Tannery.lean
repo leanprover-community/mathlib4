@@ -49,10 +49,10 @@ lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
   have h_g_le (k : β) : ‖g k‖ ≤ bound k :=
     le_of_tendsto (tendsto_norm.comp (hab k)) <| h_bound.mono (fun n h => h k)
   have h_sumg : Summable (‖g ·‖) :=
-    h_sum.of_norm_bounded _ (fun k ↦ (norm_norm (g k)).symm ▸ h_g_le k)
+    h_sum.of_norm_bounded (fun k ↦ (norm_norm (g k)).symm ▸ h_g_le k)
   have h_suma : ∀ᶠ n in 𝓕, Summable (‖f n ·‖) := by
     filter_upwards [h_bound] with n h
-    exact h_sum.of_norm_bounded _ <| by simpa only [norm_norm] using h
+    exact h_sum.of_norm_bounded <| by simpa only [norm_norm] using h
   -- Now main proof, by an `ε / 3` argument
   rw [Metric.tendsto_nhds]
   intro ε hε

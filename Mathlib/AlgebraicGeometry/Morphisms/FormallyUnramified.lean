@@ -34,7 +34,7 @@ instance Algebra.FormallyUnramified.isOpenImmersion_SpecMap_lmul {R S : Type u} 
   rw [isOpenImmersion_SpecMap_iff_of_surjective _ (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)]
   apply (Ideal.isIdempotentElem_iff_of_fg _ (KaehlerDifferential.ideal_fg R S)).mp
   apply (Ideal.cotangent_subsingleton_iff _).mp
-  exact inferInstanceAs <| Subsingleton (Ω[S⁄R])
+  exact inferInstanceAs <| Subsingleton Ω[S⁄R]
 
 namespace AlgebraicGeometry
 
@@ -64,16 +64,16 @@ In particular, monomorphisms (e.g. immersions) are formally unramified.
 The converse is true if `f` is locally of finite type. -/
 instance (priority := 900) [IsOpenImmersion (pullback.diagonal f)] : FormallyUnramified f := by
   wlog hY : ∃ R, Y = Spec R
-  · rw [IsLocalAtTarget.iff_of_openCover (P := @FormallyUnramified) Y.affineCover]
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @FormallyUnramified) Y.affineCover]
     intro i
-    have inst : IsOpenImmersion (pullback.diagonal (pullback.snd f (Y.affineCover.map i))) :=
+    have inst : IsOpenImmersion (pullback.diagonal (pullback.snd f (Y.affineCover.f i))) :=
       MorphismProperty.pullback_snd (P := .diagonal @IsOpenImmersion) _ _ ‹_›
     exact this (pullback.snd _ _) ⟨_, rfl⟩
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S generalizing X
-  · rw [IsLocalAtSource.iff_of_openCover (P := @FormallyUnramified) X.affineCover]
+  · rw [IsZariskiLocalAtSource.iff_of_openCover (P := @FormallyUnramified) X.affineCover]
     intro i
-    have inst : IsOpenImmersion (pullback.diagonal (X.affineCover.map i ≫ f)) :=
+    have inst : IsOpenImmersion (pullback.diagonal (X.affineCover.f i ≫ f)) :=
       MorphismProperty.comp_mem (.diagonal @IsOpenImmersion) _ _
         (inferInstanceAs (IsOpenImmersion _)) ‹_›
     exact this (_ ≫ _) ⟨_, rfl⟩
@@ -85,7 +85,7 @@ instance (priority := 900) [IsOpenImmersion (pullback.diagonal f)] : FormallyUnr
   have hF : Function.Surjective F := fun x ↦ ⟨.mk _ _ _ x 1, by simp [F]⟩
   have : IsOpenImmersion (Spec.map (CommRingCat.ofHom F)) := by
     rwa [← MorphismProperty.cancel_right_of_respectsIso (P := @IsOpenImmersion) _
-      (pullbackSpecIso R S S).inv, ← AlgebraicGeometry.diagonal_Spec_map R S]
+      (pullbackSpecIso R S S).inv, ← AlgebraicGeometry.diagonal_SpecMap R S]
   obtain ⟨e, he, he'⟩ := (isOpenImmersion_SpecMap_iff_of_surjective _ hF).mp this
   refine ⟨subsingleton_of_forall_eq 0 fun x ↦ ?_⟩
   obtain ⟨⟨x, hx⟩, rfl⟩ := Ideal.toCotangent_surjective _ x
@@ -108,20 +108,20 @@ instance : MorphismProperty.IsStableUnderBaseChange @FormallyUnramified :=
 
 open MorphismProperty in
 /-- The diagonal of a formally unramified morphism of finite type is an open immersion. -/
-lemma AlgebraicGeometry.FormallyUnramified.isOpenImmersion_diagonal {X Y : Scheme.{u}} (f : X ⟶ Y)
-    [FormallyUnramified f] [LocallyOfFiniteType f] : IsOpenImmersion (pullback.diagonal f) := by
+instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f] :
+    IsOpenImmersion (pullback.diagonal f) := by
   wlog hX : (∃ S, X = Spec S) ∧ ∃ R, Y = Spec R
   · let 𝒰Y := Y.affineCover
-    let 𝒰X (j : (Y.affineCover.pullbackCover f).J) :
-        ((Y.affineCover.pullbackCover f).obj j).OpenCover := Scheme.affineCover _
-    apply IsLocalAtTarget.of_range_subset_iSup _
+    let 𝒰X (j : (Y.affineCover.pullback₁ f).I₀) :
+        ((Y.affineCover.pullback₁ f).X j).OpenCover := Scheme.affineCover _
+    apply IsZariskiLocalAtTarget.of_range_subset_iSup _
       (Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange f 𝒰Y 𝒰X)
     intro ⟨i, j⟩
     rw [arrow_mk_iso_iff (P := @IsOpenImmersion)
       (Scheme.Pullback.diagonalRestrictIsoDiagonal f 𝒰Y 𝒰X i j)]
-    have hu : FormallyUnramified ((𝒰X i).map j ≫ pullback.snd f (𝒰Y.map i)) :=
+    have hu : FormallyUnramified ((𝒰X i).f j ≫ pullback.snd f (𝒰Y.f i)) :=
       comp_mem _ _ _ inferInstance (pullback_snd _ _ inferInstance)
-    have hfin : LocallyOfFiniteType ((𝒰X i).map j ≫ pullback.snd f (𝒰Y.map i)) :=
+    have hfin : LocallyOfFiniteType ((𝒰X i).f j ≫ pullback.snd f (𝒰Y.f i)) :=
       comp_mem _ _ _ inferInstance (pullback_snd _ _ inferInstance)
     exact this _ ⟨⟨_, rfl⟩, ⟨_, rfl⟩⟩
   obtain ⟨⟨S, rfl⟩, R, rfl⟩ := hX
@@ -129,9 +129,12 @@ lemma AlgebraicGeometry.FormallyUnramified.isOpenImmersion_diagonal {X Y : Schem
   rw [HasRingHomProperty.Spec_iff (P := @FormallyUnramified),
     HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)] at *
   algebraize [f.hom]
-  rw [show f = CommRingCat.ofHom (algebraMap R S) from rfl, diagonal_Spec_map R S,
+  rw [show f = CommRingCat.ofHom (algebraMap R S) from rfl, diagonal_SpecMap R S,
     cancel_right_of_respectsIso (P := @IsOpenImmersion)]
   infer_instance
+
+@[deprecated (since := "2025-05-03")]
+alias AlgebraicGeometry.FormallyUnramified.isOpenImmersion_diagonal := isOpenImmersion_diagonal
 
 end FormallyUnramified
 

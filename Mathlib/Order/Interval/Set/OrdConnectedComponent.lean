@@ -54,7 +54,7 @@ theorem ordConnectedComponent_eq_empty : ordConnectedComponent s x = ∅ ↔ x �
 
 @[simp]
 theorem ordConnectedComponent_empty : ordConnectedComponent ∅ x = ∅ :=
-  ordConnectedComponent_eq_empty.2 (not_mem_empty x)
+  ordConnectedComponent_eq_empty.2 (notMem_empty x)
 
 @[simp]
 theorem ordConnectedComponent_univ : ordConnectedComponent univ x = univ := by
@@ -118,7 +118,7 @@ def ordConnectedSection (s : Set α) : Set α :=
 theorem dual_ordConnectedSection (s : Set α) :
     ordConnectedSection (ofDual ⁻¹' s) = ofDual ⁻¹' ordConnectedSection s := by
   simp only [ordConnectedSection]
-  simp (config := { unfoldPartialApp := true }) only [ordConnectedProj]
+  simp +unfoldPartialApp only [ordConnectedProj]
   ext x
   simp only [mem_range, Subtype.exists, mem_preimage, OrderDual.exists, dual_ordConnectedComponent,
     ofDual_toDual]
@@ -160,7 +160,7 @@ theorem dual_ordSeparatingSet :
     dual_ordConnectedComponent, ← preimage_compl, preimage_inter, preimage_iUnion]
 
 /-- An auxiliary neighborhood that will be used in the proof of
-    `OrderTopology.CompletelyNormalSpace`. -/
+`OrderTopology.CompletelyNormalSpace`. -/
 def ordT5Nhd (s t : Set α) : Set α :=
   ⋃ x ∈ s, ordConnectedComponent (tᶜ ∩ (ordConnectedSection <| ordSeparatingSet s t)ᶜ) x
 
@@ -173,7 +173,7 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
   clear hx₂
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
   wlog hab : a ≤ b with H
-  · exact H b hbt hb a has ha (le_of_not_le hab)
+  · exact H b hbt hb a has ha (le_of_not_ge hab)
   obtain ⟨ha, ha'⟩ := ha
   obtain ⟨hb, hb'⟩ := hb
   have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := by

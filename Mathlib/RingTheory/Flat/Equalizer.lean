@@ -194,10 +194,10 @@ private local instance : AddHomClass (A →ₐ[R] B) A B := inferInstance
 private lemma AlgHom.coe_tensorEqualizerAux (x : T ⊗[R] AlgHom.equalizer f g) :
     (AlgHom.tensorEqualizerAux S T f g x : T ⊗[R] A) =
       Algebra.TensorProduct.map (AlgHom.id S T) (AlgHom.equalizer f g).val x := by
-  induction' x with x y x y hx hy
-  · rfl
-  · rfl
-  · simp [hx, hy]
+  induction x with
+  | zero => rfl
+  | tmul => rfl
+  | add x y hx hy => simp [hx, hy]
 
 private lemma AlgHom.tensorEqualizerAux_mul (x y : T ⊗[R] AlgHom.equalizer f g) :
     AlgHom.tensorEqualizerAux S T f g (x * y) =

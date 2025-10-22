@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Algebraic order homomorphism classes
@@ -44,16 +45,17 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 Finitary versions of the current lemmas.
 -/
 
+assert_not_exists Field
 
-library_note "out-param inheritance"/--
+library_note2 «out-param inheritance» /--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
- * there are three classes `Top`, `Middle`, `Bottom`
- * all of these classes have a parameter `(α : outParam _)`
- * all of these classes have an instance parameter `[Root α]` that depends on this `outParam`
- * the `Root` class has two child classes: `Left` and `Right`, these are siblings in the hierarchy
- * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
- * the instance `Middle.toTop` takes a `[Right α]` parameter
- * there is a `Leaf` class that inherits from both `Left` and `Right`.
+* there are three classes `Top`, `Middle`, `Bottom`
+* all of these classes have a parameter `(α : outParam _)`
+* all of these classes have an instance parameter `[Root α]` that depends on this `outParam`
+* the `Root` class has two child classes: `Left` and `Right`, these are siblings in the hierarchy
+* the instance `Bottom.toMiddle` takes a `[Left α]` parameter
+* the instance `Middle.toTop` takes a `[Right α]` parameter
+* there is a `Leaf` class that inherits from both `Left` and `Right`.
 In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
 even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
 
@@ -74,7 +76,7 @@ variable {ι F α β γ δ : Type*}
 
 /-- `NonnegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
 class NonnegHomClass (F : Type*) (α β : outParam Type*) [Zero β] [LE β] [FunLike F α β] : Prop where
-  /-- the image of any element is non negative. -/
+  /-- the image of any element is nonnegative. -/
   apply_nonneg (f : F) : ∀ a, 0 ≤ f a
 
 /-- `SubadditiveHomClass F α β` states that `F` is a type of subadditive morphisms. -/
@@ -137,20 +139,6 @@ theorem le_map_div_add_map_div [Group α] [Add β] [LE β] [MulLEAddHomClass F �
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel] using map_mul_le_add f (a / b) (b / c)
 
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq Function
-
-/-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
-@[positivity DFunLike.coe _ _]
-def evalMap : PositivityExt where eval {_ β} _ _ e := do
-  let .app (.app _ f) a ← whnfR e
-    | throwError "not ↑f · where f is of NonnegHomClass"
-  let pa ← mkAppOptM ``apply_nonneg #[none, none, β, none, none, none, none, f, a]
-  pure (.nonnegative pa)
-
-end Mathlib.Meta.Positivity
-
 /-! ### Group (semi)norms -/
 
 
@@ -171,7 +159,7 @@ class AddGroupSeminormClass (F : Type*) (α β : outParam Type*)
 You should extend this class when you extend `GroupSeminorm`. -/
 @[to_additive]
 class GroupSeminormClass (F : Type*) (α β : outParam Type*)
-    [Group α] [AddCommMonoid β] [PartialOrder β]  [FunLike F α β] : Prop
+    [Group α] [AddCommMonoid β] [PartialOrder β] [FunLike F α β] : Prop
   extends MulLEAddHomClass F α β where
   /-- The image of one is zero. -/
   map_one_eq_zero (f : F) : f 1 = 0
@@ -206,13 +194,7 @@ export AddGroupNormClass (eq_zero_of_map_eq_zero)
 
 export GroupNormClass (eq_one_of_map_eq_zero)
 
-attribute [simp] map_one_eq_zero
-
-attribute [simp] map_neg_eq_map
-
-attribute [simp] map_inv_eq_map
-
-attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
+attribute [simp] map_one_eq_zero map_neg_eq_map map_inv_eq_map
 
 -- See note [lower instance priority]
 instance (priority := 100) AddGroupSeminormClass.toZeroHomClass [AddGroup α]

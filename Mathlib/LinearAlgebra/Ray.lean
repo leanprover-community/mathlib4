@@ -22,7 +22,7 @@ This file defines rays in modules.
   coefficient.
 
 * `Module.Ray` is a type for the equivalence class of nonzero vectors in a module with some
-common positive multiple.
+  common positive multiple.
 -/
 
 
@@ -108,7 +108,7 @@ variable {S : Type*} [CommSemiring S] [PartialOrder S]
 
 /-- A vector is in the same ray as a nonnegative multiple of itself. -/
 lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) := by
-  obtain h | h := (algebraMap_nonneg R h).eq_or_gt
+  obtain h | h := (algebraMap_nonneg R h).eq_or_lt'
   · rw [← algebraMap_smul R a v, h, zero_smul]
     exact zero_right _
   · refine Or.inr <| Or.inr ⟨algebraMap S R a, 1, h, by nontriviality R; exact zero_lt_one, ?_⟩
@@ -205,7 +205,7 @@ instance RayVector.Setoid : Setoid (RayVector R M) where
   r x y := SameRay R (x : M) y
   iseqv :=
     ⟨fun _ => SameRay.refl _, fun h => h.symm, by
-      intros x y z hxy hyz
+      intro x y z hxy hyz
       exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
 
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
@@ -377,7 +377,6 @@ theorem coe_neg {R : Type*} (v : RayVector R M) : ↑(-v) = -(v : M) :=
 
 /-- Negating a nonzero vector twice produces the original vector. -/
 instance {R : Type*} : InvolutiveNeg (RayVector R M) where
-  neg := Neg.neg
   neg_neg v := by rw [Subtype.ext_iff, coe_neg, coe_neg, neg_neg]
 
 /-- If two nonzero vectors are equivalent, so are their negations. -/
@@ -405,7 +404,6 @@ variable {R}
 
 /-- Negating a ray twice produces the original ray. -/
 instance : InvolutiveNeg (Module.Ray R M) where
-  neg := Neg.neg
   neg_neg x := by apply ind R (by simp) x
   -- Quotient.ind (fun a => congr_arg Quotient.mk' <| neg_neg _) x
 

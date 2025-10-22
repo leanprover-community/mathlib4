@@ -81,9 +81,7 @@ theorem quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s)
     a * (x * x) + b * x + c = 0 ↔ x = (-b + s) / (2 * a) ∨ x = (-b - s) / (2 * a) := by
   rw [quadratic_eq_zero_iff_discrim_eq_sq ha, h, sq, mul_self_eq_mul_self_iff]
   field_simp
-  apply or_congr
-  · constructor <;> intro h' <;> linear_combination -h'
-  · constructor <;> intro h' <;> linear_combination h'
+  grind
 
 /-- A quadratic has roots if its discriminant has square roots -/
 theorem exists_quadratic_eq_zero (ha : a ≠ 0) (h : ∃ s, discrim a b c = s * s) :
@@ -105,9 +103,7 @@ theorem discrim_eq_zero_of_existsUnique (ha : a ≠ 0) (h : ∃! x, a * (x * x) 
   generalize discrim a b c = d at h
   obtain ⟨x, rfl, hx⟩ := h
   specialize hx (-(x + b / a))
-  field_simp [ha] at hx
-  specialize hx (by ring)
-  linear_combination -(2 * a * x + b) * hx
+  grind
 
 theorem discrim_eq_zero_iff (ha : a ≠ 0) :
     discrim a b c = 0 ↔ (∃! x, a * (x * x) + b * x + c = 0) := by
@@ -130,7 +126,7 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim
         (tendsto_atBot_add_const_right _ b (tendsto_id.const_mul_atTop_of_neg ha)).atBot_mul_atTop₀
           tendsto_id
     rcases (this.eventually (eventually_lt_atBot 0)).exists with ⟨x, hx⟩
-    exact False.elim ((h x).not_lt <| by rwa [← mul_assoc, ← add_mul])
+    exact False.elim ((h x).not_gt <| by rwa [← mul_assoc, ← add_mul])
   -- if a = 0
   · rcases eq_or_ne b 0 with (rfl | hb)
     · simp

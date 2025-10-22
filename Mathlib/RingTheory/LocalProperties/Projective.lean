@@ -75,7 +75,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
     ∃ (g : _ →ₗ[Localization.AtPrime I] _),
       (LocalizedModule.map I.primeCompl f).comp g = LinearMap.id) :
     ∃ (g : N →ₗ[R] M), f.comp g = LinearMap.id := by
-  show LinearMap.id ∈ LinearMap.range (LinearMap.llcomp R N M N f)
+  change LinearMap.id ∈ LinearMap.range (LinearMap.llcomp R N M N f)
   refine Submodule.mem_of_localization_maximal _ (fun P _ ↦ LocalizedModule.map P.primeCompl) _ _
     fun I hI ↦ ?_
   rw [LocalizedModule.map_id]
@@ -88,7 +88,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
       obtain ⟨a, ha, c, rfl⟩ := hf
       obtain ⟨g, rfl⟩ := ha
       use IsLocalizedModule.mk' (LocalizedModule.map I.primeCompl) g c
-      apply ((Module.End_isUnit_iff _).mp <| IsLocalizedModule.map_units
+      apply ((Module.End.isUnit_iff _).mp <| IsLocalizedModule.map_units
         (LocalizedModule.map I.primeCompl) c).injective
       dsimp
       conv_rhs => rw [← Submonoid.smul_def]
@@ -104,9 +104,9 @@ theorem LinearMap.split_surjective_of_localization_maximal
     · rintro ⟨g, rfl⟩
       obtain ⟨⟨g, s⟩, rfl⟩ :=
         IsLocalizedModule.mk'_surjective I.primeCompl (LocalizedModule.map I.primeCompl) g
-      simp only [Function.uncurry_apply_pair, Submodule.restrictScalars_mem]
+      simp only [Function.uncurry_apply_pair]
       refine ⟨f.comp g, ⟨g, rfl⟩, s, ?_⟩
-      apply ((Module.End_isUnit_iff _).mp <| IsLocalizedModule.map_units
+      apply ((Module.End.isUnit_iff _).mp <| IsLocalizedModule.map_units
          (LocalizedModule.map I.primeCompl) s).injective
       simp only [Module.algebraMap_end_apply, ← Submonoid.smul_def, IsLocalizedModule.mk'_cancel',
         ← LinearMap.map_smul_of_tower]
@@ -158,15 +158,15 @@ theorem Module.projective_of_localization_maximal'
     (H : ∀ (I : Ideal R) (_ : I.IsMaximal), Module.Projective (Rₚ I) (Mₚ I))
     [Module.FinitePresentation R M] : Module.Projective R M := by
   apply Module.projective_of_localization_maximal
-  intros P hP
+  intro P hP
   refine Module.Projective.of_ringEquiv (M := Mₚ P)
     (IsLocalization.algEquiv P.primeCompl (Rₚ P) (Localization.AtPrime P)).toRingEquiv
     { __ := IsLocalizedModule.linearEquiv P.primeCompl (f P)
         (LocalizedModule.mkLinearMap P.primeCompl M)
       map_smul' := ?_ }
-  · intros r m
+  · intro r m
     obtain ⟨r, s, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl r
-    apply ((Module.End_isUnit_iff _).mp
+    apply ((Module.End.isUnit_iff _).mp
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
     dsimp
     simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,

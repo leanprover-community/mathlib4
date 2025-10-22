@@ -10,7 +10,7 @@ import Mathlib.Data.Num.Lemmas
 /-!
 # Properties of the `ZNum` representation of integers
 
-This file was split from `Mathlib.Data.Num.Lemmas` to keep the former under 1500 lines.
+This file was split from `Mathlib/Data/Num/Lemmas.lean` to keep the former under 1500 lines.
 -/
 
 open Int
@@ -117,7 +117,7 @@ theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = ((n : α)
       simp
     · dsimp only [Num.succ'] at ep
       subst p
-      have : (↑(-↑a : ℤ) : α) = -1 + ↑(-↑a + 1 : ℤ) := by simp [add_comm (- ↑a : ℤ) 1]
+      have : (↑(-↑a : ℤ) : α) = -1 + ↑(-↑a + 1 : ℤ) := by simp [add_comm (-↑a : ℤ) 1]
       simpa using this
 
 @[simp]
@@ -126,7 +126,7 @@ theorem cast_bitm1 [AddGroupWithOne α] (n : ZNum) : (n.bitm1 : α) = (n : α) +
     lhs
     rw [← zneg_zneg n]
   rw [← zneg_bit1, cast_zneg, cast_bit1]
-  have : ((-1 + n + n : ℤ) : α) = (n + n + -1 : ℤ) := by simp [add_comm, add_left_comm]
+  have : ((-1 + n + n : ℤ) : α) = (n + n + -1 : ℤ) := by simp [add_comm]
   simpa [sub_eq_add_neg] using this
 
 theorem add_zero (n : ZNum) : n + 0 = n := by cases n <;> rfl
@@ -156,11 +156,11 @@ theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m - n
   | a, 1 => by
     rw [sub'_one, Num.cast_toZNum, ← Num.cast_to_nat, pred'_to_nat, ← Nat.sub_one]
-    simp [PosNum.cast_pos]
+    simp
   | 1, b => by
     rw [one_sub', Num.cast_toZNumNeg, ← neg_sub, neg_inj, ← Num.cast_to_nat, pred'_to_nat,
         ← Nat.sub_one]
-    simp [PosNum.cast_pos]
+    simp
   | bit0 a, bit0 b => by
     rw [sub', ZNum.cast_bit0, cast_sub' a b]
     have : ((a + -b + (a + -b) : ℤ) : α) = a + a + (-b + -b) := by simp [add_left_comm]
@@ -308,7 +308,9 @@ theorem ofInt'_neg : ∀ n : ℤ, ofInt' (-n) = -ofInt' n
   | (n + 1 : ℕ) => show Num.toZNumNeg _ = -Num.toZNum _ by rw [Num.zneg_toZNum]
 
 theorem of_to_int' : ∀ n : ZNum, ZNum.ofInt' n = n
-  | 0 => by dsimp [ofInt', cast_zero]; erw [Num.ofNat'_zero, Num.toZNum]
+  | 0 => by
+    dsimp [ofInt', cast_zero]
+    simp only [Num.ofNat'_zero, Num.toZNum]
   | pos a => by rw [cast_pos, ← PosNum.cast_to_nat, ← Num.ofInt'_toZNum, PosNum.of_to_nat]; rfl
   | neg a => by
     rw [cast_neg, ofInt'_neg, ← PosNum.cast_to_nat, ← Num.ofInt'_toZNum, PosNum.of_to_nat]; rfl
@@ -320,10 +322,10 @@ theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n
   | 0, 0 => rfl
   | pos a, pos b => by
     have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]
-    cases PosNum.cmp a b <;> dsimp <;> [simp; exact congr_arg pos; simp [GT.gt]]
+    cases PosNum.cmp a b <;> [simp; exact congr_arg pos; simp]
   | neg a, neg b => by
     have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
-    cases PosNum.cmp b a <;> dsimp <;> [simp; simp +contextual; simp [GT.gt]]
+    cases PosNum.cmp b a <;> [simp; simp +contextual; simp]
   | pos _, 0 => PosNum.cast_pos _
   | pos _, neg _ => lt_trans (neg_lt_zero.2 <| PosNum.cast_pos _) (PosNum.cast_pos _)
   | 0, neg _ => neg_lt_zero.2 <| PosNum.cast_pos _
@@ -336,7 +338,7 @@ theorem lt_to_int {m n : ZNum} : (m : ℤ) < n ↔ m < n :=
   show (m : ℤ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_int m n with
     | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h, lt_irrefl]
+    | Ordering.eq, h => by simp only at h; simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 theorem le_to_int {m n : ZNum} : (m : ℤ) ≤ n ↔ m ≤ n := by
@@ -382,10 +384,10 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
 
 instance linearOrder : LinearOrder ZNum where
   lt := (· < ·)
-  lt_iff_le_not_le := by
+  lt_iff_le_not_ge := by
     intro a b
     transfer_rw
-    apply lt_iff_le_not_le
+    apply lt_iff_le_not_ge
   le := (· ≤ ·)
   le_refl := by transfer
   le_trans := by
@@ -407,9 +409,7 @@ instance linearOrder : LinearOrder ZNum where
   toDecidableLT := ZNum.decidableLT
 
 instance addMonoid : AddMonoid ZNum where
-  add := (· + ·)
   add_assoc := by transfer
-  zero := 0
   zero_add := zero_add
   add_zero := add_zero
   nsmul := nsmulRec
@@ -417,13 +417,11 @@ instance addMonoid : AddMonoid ZNum where
 instance addCommGroup : AddCommGroup ZNum :=
   { ZNum.addMonoid with
     add_comm := by transfer
-    neg := Neg.neg
     zsmul := zsmulRec
     neg_add_cancel := by transfer }
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
-    one := 1
     natCast := fun n => ZNum.ofInt' n
     natCast_zero := show (Num.ofNat' 0).toZNum = 0 by rw [Num.ofNat'_zero]; rfl
     natCast_succ := fun n =>
@@ -442,8 +440,7 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
 
 instance commRing : CommRing ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
-    mul := (· * ·)
-    mul_assoc a b c := show a * b * c = a * (b * c) by transfer
+    mul_assoc a b c := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
     one_mul := by transfer
@@ -484,7 +481,7 @@ theorem neg_of_int : ∀ n, ((-n : ℤ) : ZNum) = -n
 theorem ofInt'_eq : ∀ n : ℤ, ZNum.ofInt' n = n
   | (n : ℕ) => rfl
   | -[n+1] => by
-    show Num.toZNumNeg (n + 1 : ℕ) = -(n + 1 : ℕ)
+    change Num.toZNumNeg (n + 1 : ℕ) = -(n + 1 : ℕ)
     rw [← neg_inj, neg_neg, Nat.cast_succ, Num.add_one, Num.zneg_toZNumNeg, Num.toZNum_succ,
       Nat.cast_succ, ZNum.add_one]
     rfl
@@ -543,20 +540,22 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q
 theorem divMod_to_nat (d n : PosNum) :
     (n / d : ℕ) = (divMod d n).1 ∧ (n % d : ℕ) = (divMod d n).2 := by
   rw [Nat.div_mod_unique (PosNum.cast_pos _)]
-  induction' n with n IH n IH
-  · exact
-      divMod_to_nat_aux (by simp) (Nat.mul_le_mul_left 2 (PosNum.cast_pos d : (0 : ℕ) < d))
-  · unfold divMod
+  induction n with
+  | one =>
+    exact divMod_to_nat_aux (by simp) (Nat.mul_le_mul_left 2 (PosNum.cast_pos d : (0 : ℕ) < d))
+  | bit1 n IH =>
+    unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; obtain ⟨q, r⟩ := divMod d n; intro IH
-    simp only [divMod] at IH ⊢
+    simp only at IH ⊢
     apply divMod_to_nat_aux <;> simp only [Num.cast_bit1, cast_bit1]
     · rw [← two_mul, ← two_mul, add_right_comm, mul_left_comm, ← mul_add, IH.1]
     · omega
-  · unfold divMod
+  | bit0 n IH =>
+    unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; obtain ⟨q, r⟩ := divMod d n; intro IH
-    simp only [divMod] at IH ⊢
+    simp only at IH ⊢
     apply divMod_to_nat_aux
     · simp only [Num.cast_bit0, cast_bit0]
       rw [← two_mul, ← two_mul, mul_left_comm, ← mul_add, ← IH.1]
@@ -606,7 +605,7 @@ theorem gcd_to_nat_aux :
     ∀ {n} {a b : Num}, a ≤ b → (a * b).natSize ≤ n → (gcdAux n a b : ℕ) = Nat.gcd a b
   | 0, 0, _, _ab, _h => (Nat.gcd_zero_left _).symm
   | 0, pos _, 0, ab, _h => (not_lt_of_ge ab).elim rfl
-  | 0, pos _, pos _, _ab, h => (not_lt_of_le h).elim <| PosNum.natSize_pos _
+  | 0, pos _, pos _, _ab, h => (not_lt_of_ge h).elim <| PosNum.natSize_pos _
   | Nat.succ _, 0, _, _ab, _h => (Nat.gcd_zero_left _).symm
   | Nat.succ n, pos a, b, ab, h => by
     simp only [gcdAux, cast_pos]
@@ -619,12 +618,10 @@ theorem gcd_to_nat_aux :
     rw [pow_succ, ← Nat.mod_add_div b (pos a)] at h
     refine lt_of_mul_lt_mul_right (lt_of_le_of_lt ?_ h) (Nat.zero_le 2)
     rw [mul_two, mul_add]
-    refine
-      add_le_add_left
-        (Nat.mul_le_mul_left _ (le_trans (le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))) ?_)) _
-    suffices 1 ≤ _ by simpa using Nat.mul_le_mul_left (pos a) this
-    rw [Nat.le_div_iff_mul_le a.cast_pos, one_mul]
-    exact le_to_nat.2 ab
+    gcongr _ + _ * ?_
+    grw [Nat.mod_lt, ← le_to_nat.2 ab]
+    · simp
+    · exact PosNum.cast_pos _
 
 @[simp]
 theorem gcd_to_nat : ∀ a b, (gcd a b : ℕ) = Nat.gcd a b := by
@@ -638,7 +635,7 @@ theorem gcd_to_nat : ∀ a b, (gcd a b : ℕ) = Nat.gcd a b := by
   split_ifs with h
   · exact gcd_to_nat_aux h (this _ _)
   · rw [Nat.gcd_comm]
-    exact gcd_to_nat_aux (le_of_not_le h) (this _ _)
+    exact gcd_to_nat_aux (le_of_not_ge h) (this _ _)
 
 theorem dvd_iff_mod_eq_zero {m n : Num} : m ∣ n ↔ n % m = 0 := by
   rw [← dvd_to_nat, Nat.dvd_iff_mod_eq_zero, ← to_nat_inj, mod_to_nat]; rfl

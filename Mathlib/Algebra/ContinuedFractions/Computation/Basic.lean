@@ -126,7 +126,7 @@ fraction representation of `v` in `GenContFract.of`. More precisely, given a val
 recursively computes a stream of option `ℤ × K` pairs as follows:
 - `stream v 0 = some ⟨⌊v⌋, v - ⌊v⌋⟩`
 - `stream v (n + 1) = some ⟨⌊frₙ⁻¹⌋, frₙ⁻¹ - ⌊frₙ⁻¹⌋⟩`,
-    if `stream v n = some ⟨_, frₙ⟩` and `frₙ ≠ 0`
+  if `stream v n = some ⟨_, frₙ⟩` and `frₙ ≠ 0`
 - `stream v (n + 1) = none`, otherwise
 
 For example, let `(v : ℚ) := 3.4`. The process goes as follows:
@@ -155,7 +155,7 @@ extract it and put the tail of the stream in the sequence part.
 
 This is just an intermediate representation and users should not (need to) directly interact with
 it. The setup of rewriting/simplification lemmas that make the definitions easy to use is done in
-`Mathlib.Algebra.ContinuedFractions.Computation.Translations`.
+`Mathlib/Algebra/ContinuedFractions/Computation/Translations.lean`.
 -/
 protected def seq1 (v : K) : Stream'.Seq1 <| IntFractPair K :=
   ⟨IntFractPair.of v, -- the head
@@ -169,7 +169,7 @@ end IntFractPair
 
 /-- Returns the `GenContFract` of a value. In fact, the returned gcf is also a `ContFract` that
 terminates if and only if `v` is rational
-(see `Mathlib.Algebra.ContinuedFractions.Computation.TerminatesIffRat`).
+(see `Mathlib/Algebra/ContinuedFractions/Computation/TerminatesIffRat.lean`).
 
 The continued fraction representation of `v` is given by `[⌊v⌋; b₀, b₁, b₂,...]`, where
 `[b₀; b₁, b₂,...]` recursively is the continued fraction representation of `1 / (v - ⌊v⌋)`. This

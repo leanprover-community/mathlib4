@@ -127,7 +127,7 @@ instance : Mul (NonemptyInterval α) :=
 
 @[to_additive]
 instance : Mul (Interval α) :=
-  ⟨Option.map₂ (· * ·)⟩
+  ⟨WithBot.map₂ (· * ·)⟩
 
 namespace NonemptyInterval
 
@@ -161,11 +161,11 @@ variable (s t : Interval α)
 
 @[to_additive (attr := simp)]
 theorem bot_mul : ⊥ * t = ⊥ :=
-  rfl
+  WithBot.map₂_bot_left _ _
 
 @[to_additive]
 theorem mul_bot : s * ⊥ = ⊥ :=
-  Option.map₂_none_right _ _
+  WithBot.map₂_bot_right _ _
 
 -- simp can already prove `add_bot`
 attribute [simp] mul_bot
@@ -228,14 +228,12 @@ end NonemptyInterval
 @[to_additive]
 instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
     MulOneClass (Interval α) where
-  mul := (· * ·)
-  one := 1
   one_mul s :=
-    (Option.map₂_coe_left _ _ _).trans <| by
-      simp_rw [one_mul, ← Function.id_def, Option.map_id, id]
+    (WithBot.map₂_coe_left _ _ _).trans <| by
+      simp_rw [one_mul, ← Function.id_def, WithBot.map_id, id]
   mul_one s :=
-    (Option.map₂_coe_right _ _ _).trans <| by
-      simp_rw [mul_one, ← Function.id_def, Option.map_id, id]
+    (WithBot.map₂_coe_right _ _ _).trans <| by
+      simp_rw [mul_one, ← Function.id_def, WithBot.map_id, id]
 
 @[to_additive]
 instance Interval.commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
@@ -308,6 +306,8 @@ end NonemptyInterval
 
 Subtraction is defined more generally than division so that it applies to `ℕ` (and `OrderedDiv`
 is not a thing and probably should not become one).
+
+However, this means that we can't use `to_additive` in this section.
 -/
 
 
@@ -319,7 +319,7 @@ instance : Sub (NonemptyInterval α) :=
   ⟨fun s t => ⟨(s.fst - t.snd, s.snd - t.fst), tsub_le_tsub s.fst_le_snd t.fst_le_snd⟩⟩
 
 instance : Sub (Interval α) :=
-  ⟨Option.map₂ Sub.sub⟩
+  ⟨WithBot.map₂ Sub.sub⟩
 
 namespace NonemptyInterval
 
@@ -352,11 +352,11 @@ variable (s t : Interval α)
 
 @[simp]
 theorem bot_sub : ⊥ - t = ⊥ :=
-  rfl
+  WithBot.map₂_bot_left _ _
 
 @[simp]
 theorem sub_bot : s - ⊥ = ⊥ :=
-  Option.map₂_none_right _ _
+  WithBot.map₂_bot_right _ _
 
 end Interval
 
@@ -373,35 +373,32 @@ section Div
 
 variable [Preorder α] [CommGroup α] [MulLeftMono α]
 
-@[to_additive existing]
 instance : Div (NonemptyInterval α) :=
   ⟨fun s t => ⟨(s.fst / t.snd, s.snd / t.fst), div_le_div'' s.fst_le_snd t.fst_le_snd⟩⟩
 
-@[to_additive existing]
 instance : Div (Interval α) :=
-  ⟨Option.map₂ (· / ·)⟩
+  ⟨WithBot.map₂ (· / ·)⟩
 
 namespace NonemptyInterval
 
 variable (s t : NonemptyInterval α) (a b : α)
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem fst_div : (s / t).fst = s.fst / t.snd :=
   rfl
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem snd_div : (s / t).snd = s.snd / t.fst :=
   rfl
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem coe_div_interval : (↑(s / t) : Interval α) = s / t :=
   rfl
 
-@[to_additive existing]
 theorem div_mem_div (ha : a ∈ s) (hb : b ∈ t) : a / b ∈ s / t :=
   ⟨div_le_div'' ha.1 hb.2, div_le_div'' ha.2 hb.1⟩
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem pure_div_pure : pure a / pure b = pure (a / b) :=
   rfl
 
@@ -411,13 +408,13 @@ namespace Interval
 
 variable (s t : Interval α)
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem bot_div : ⊥ / t = ⊥ :=
-  rfl
+  WithBot.map₂_bot_left _ _
 
-@[to_additive existing (attr := simp)]
+@[simp]
 theorem div_bot : s / ⊥ = ⊥ :=
-  Option.map₂_none_right _ _
+  WithBot.map₂_bot_right _ _
 
 end Interval
 
@@ -436,7 +433,7 @@ instance : Inv (NonemptyInterval α) :=
 
 @[to_additive]
 instance : Inv (Interval α) :=
-  ⟨Option.map Inv.inv⟩
+  ⟨WithBot.map Inv.inv⟩
 
 namespace NonemptyInterval
 
@@ -489,8 +486,6 @@ instance subtractionCommMonoid {α : Type u}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.addCommMonoid with
-    neg := Neg.neg
-    sub := Sub.sub
     sub_eq_add_neg := fun s t => by
       refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact sub_eq_add_neg _ _
@@ -507,8 +502,6 @@ instance subtractionCommMonoid {α : Type u}
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.commMonoid with
-    inv := Inv.inv
-    div := (· / ·)
     div_eq_mul_inv := fun s t => by
       refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact div_eq_mul_inv _ _
@@ -540,34 +533,32 @@ instance subtractionCommMonoid {α : Type u}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (Interval α) :=
   { Interval.addCommMonoid with
-    neg := Neg.neg
-    sub := Sub.sub
     sub_eq_add_neg := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (sub_eq_add_neg _ _)
-    neg_neg := by rintro (_ | s) <;> first |rfl|exact congr_arg some (neg_neg _)
-    neg_add_rev := by rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (neg_add_rev _ _)
+      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (sub_eq_add_neg _ _)
+    neg_neg := by rintro (_ | s) <;> first |rfl|exact congr_arg WithBot.some (neg_neg _)
+    neg_add_rev := by
+      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (neg_add_rev _ _)
     neg_eq_of_add := by
       rintro (_ | s) (_ | t) h <;>
         first
           | cases h
-          | exact congr_arg some (neg_eq_of_add_eq_zero_right <| Option.some_injective _ h)
+          | exact congr_arg WithBot.some (neg_eq_of_add_eq_zero_right <| WithBot.coe_injective h)
     -- TODO: use a better defeq
     zsmul := zsmulRec }
 
 @[to_additive existing Interval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
   { Interval.commMonoid with
-    inv := Inv.inv
-    div := (· / ·)
     div_eq_mul_inv := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (div_eq_mul_inv _ _)
-    inv_inv := by rintro (_ | s) <;> first |rfl|exact congr_arg some (inv_inv _)
-    mul_inv_rev := by rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (mul_inv_rev _ _)
+      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (div_eq_mul_inv _ _)
+    inv_inv := by rintro (_ | s) <;> first |rfl|exact congr_arg WithBot.some (inv_inv _)
+    mul_inv_rev := by
+      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (mul_inv_rev _ _)
     inv_eq_of_mul := by
       rintro (_ | s) (_ | t) h <;>
         first
           | cases h
-          | exact congr_arg some (inv_eq_of_mul_eq_one_right <| Option.some_injective _ h) }
+          | exact congr_arg WithBot.some (inv_eq_of_mul_eq_one_right <| WithBot.coe_injective h) }
 
 end Interval
 

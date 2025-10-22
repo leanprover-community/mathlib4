@@ -25,7 +25,7 @@ namespace Subgroup
 
 section SchurZassenhausAbelian
 
-open MulOpposite MulAction Subgroup.leftTransversals MemLeftTransversals
+open MulOpposite MulAction Subgroup.leftTransversals
 
 variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteIndex H]
   (α β : H.LeftTransversal)
@@ -51,7 +51,7 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
           hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩
       map_one' := by rw [Subtype.ext_iff, coe_mk, coe_one, mul_one, inv_mul_cancel]
       map_mul' := fun h₁ h₂ => by
-        simp only [Subtype.ext_iff, coe_mk, coe_mul, mul_assoc, mul_inv_cancel_left] }
+        simp only [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left] }
   refine (Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun x ↦ ?_).trans (map_prod ϕ _ _).symm
   simp only [ϕ, smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, mul_inv_rev, mul_assoc,
     MonoidHom.id_apply, toPerm_symm_apply, MonoidHom.coe_mk, OneHom.coe_mk]
@@ -136,14 +136,14 @@ variable {G : Type u} [Group G] {N : Subgroup G} [Normal N]
 include h1 h3
 
 /-! We will arrive at a contradiction via the following steps:
- * step 0: `N` (the normal Hall subgroup) is nontrivial.
- * step 1: If `K` is a subgroup of `G` with `K ⊔ N = ⊤`, then `K = ⊤`.
- * step 2: `N` is a minimal normal subgroup, phrased in terms of subgroups of `G`.
- * step 3: `N` is a minimal normal subgroup, phrased in terms of subgroups of `N`.
- * step 4: `p` (`min_fact (Fintype.card N)`) is prime (follows from step0).
- * step 5: `P` (a Sylow `p`-subgroup of `N`) is nontrivial.
- * step 6: `N` is a `p`-group (applies step 1 to the normalizer of `P` in `G`).
- * step 7: `N` is abelian (applies step 3 to the center of `N`).
+* step 0: `N` (the normal Hall subgroup) is nontrivial.
+* step 1: If `K` is a subgroup of `G` with `K ⊔ N = ⊤`, then `K = ⊤`.
+* step 2: `N` is a minimal normal subgroup, phrased in terms of subgroups of `G`.
+* step 3: `N` is a minimal normal subgroup, phrased in terms of subgroups of `N`.
+* step 4: `p` (`min_fact (Fintype.card N)`) is prime (follows from step0).
+* step 5: `P` (a Sylow `p`-subgroup of `N`) is nontrivial.
+* step 6: `N` is a `p`-group (applies step 1 to the normalizer of `P` in `G`).
+* step 7: `N` is abelian (applies step 3 to the center of `N`).
 -/
 
 
@@ -159,8 +159,8 @@ include h2 in
 private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
   contrapose! h3
   have h4 : (N.comap K.subtype).index = N.index := by
-    rw [← N.relindex_top_right, ← hK]
-    exact (relindex_sup_right K N).symm
+    rw [← N.relIndex_top_right, ← hK]
+    exact (relIndex_sup_right K N).symm
   have h5 : Nat.card K < Nat.card G := by
     rw [← K.index_mul_card]
     exact lt_mul_of_one_lt_left Nat.card_pos (one_lt_index_of_ne_top h3)
@@ -169,9 +169,9 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
     exact h1.coprime_dvd_left (card_comap_dvd_of_injective N K.subtype Subtype.coe_injective)
   obtain ⟨H, hH⟩ := h2 K h5 h6
   replace hH : Nat.card (H.map K.subtype) = N.index := by
-    rw [← relindex_bot_left, ← relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
-      relindex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
-      range_subtype, ← relindex_sup_right, hK, relindex_top_right]
+    rw [← relIndex_bot_left, ← relIndex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
+      relIndex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
+      range_subtype, ← relIndex_sup_right, hK, relIndex_top_right]
   have h7 : Nat.card N * Nat.card (H.map K.subtype) = Nat.card G := by
     rw [hH, ← N.index_mul_card, mul_comm]
   have h8 : (Nat.card N).Coprime (Nat.card (H.map K.subtype)) := by

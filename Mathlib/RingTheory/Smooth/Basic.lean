@@ -28,7 +28,6 @@ localization at an element.
 
 -/
 
--- Porting note: added to make the syntax work below.
 open scoped TensorProduct
 
 universe u
@@ -275,9 +274,6 @@ variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 include M
 
--- Porting note: no longer supported
--- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
-
 theorem of_isLocalization : FormallySmooth R Rₘ := by
   constructor
   intro Q _ _ I e f
@@ -331,7 +327,8 @@ variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation. -/
 @[stacks 00T2 "In the stacks project, the definition of smooth is completely different, and tag
-<https://stacks.math.columbia.edu/tag/00TN> proves that their definition is equivalent to this."]
+<https://stacks.math.columbia.edu/tag/00TN> proves that their definition is equivalent to this.",
+mk_iff]
 class Smooth [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
   formallySmooth : FormallySmooth R A := by infer_instance
   finitePresentation : FinitePresentation R A := by infer_instance
