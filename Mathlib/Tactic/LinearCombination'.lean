@@ -20,7 +20,7 @@ This tactic works by creating a weighted sum of the given equations with the
 given coefficients.  Then, it subtracts the right side of the weighted sum
 from the left side so that the right side equals 0, and it does the same with
 the target.  Afterwards, it sets the goal to be the equality between the
-lefthand side of the new goal and the lefthand side of the new weighted sum.
+left-hand side of the new goal and the left-hand side of the new weighted sum.
 Lastly, calls a normalization tactic on this target.
 
 This file contains the `linear_combination'` tactic (note the '): the original
@@ -128,7 +128,7 @@ theorem eq_of_add [AddGroup α] (p : (a : α) = b) (H : (a' - b') - (a - b) = 0)
 
 theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a : α) = b)
     (H : (a' - b') ^ n - (a - b) = 0) : a' = b' := by
-  rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
+  rw [← sub_eq_zero] at p ⊢; apply eq_zero_of_pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
 /-- Implementation of `linear_combination'` and `linear_combination2`. -/
 def elabLinearCombination' (tk : Syntax)

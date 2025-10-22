@@ -54,7 +54,7 @@ variable {P α} [WellFoundedLT α] (f : P.RankFunction α)
 include f
 
 lemma wf_ancestralRel : WellFounded P.AncestralRel := by
-  rw [WellFounded.wellFounded_iff_no_descending_seq]
+  rw [wellFounded_iff_isEmpty_descending_chain]
   exact ⟨fun ⟨g, hg⟩ ↦ not_strictAnti_of_wellFoundedLT (f.rank ∘ g)
     (strictAnti_nat_of_succ_lt (fun n ↦ f.lt (hg n)))⟩
 
@@ -78,7 +78,7 @@ variable {P α} [WellFoundedLT α] [P.IsProper] (f : P.WeakRankFunction α)
 include f
 
 lemma wf_ancestralRel : WellFounded P.AncestralRel := by
-  rw [WellFounded.wellFounded_iff_no_descending_seq]
+  rw [wellFounded_iff_isEmpty_descending_chain]
   refine ⟨fun ⟨g, hg⟩ ↦ ?_⟩
   obtain ⟨n₀, hn₀⟩ :=
     (wellFoundedGT_iff_monotone_chain_condition (α := ℕᵒᵈ)).1

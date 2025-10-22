@@ -832,7 +832,7 @@ theorem approx_apply [TopologicalSpace β] [OrderClosedTopology β] [MeasurableS
   · exact hf measurableSet_Ici
 
 theorem monotone_approx (i : ℕ → β) (f : α → β) : Monotone (approx i f) := fun _ _ h =>
-  Finset.sup_mono <| Finset.range_subset.2 h
+  Finset.sup_mono <| Finset.range_subset_range.2 h
 
 theorem approx_comp [TopologicalSpace β] [OrderClosedTopology β] [MeasurableSpace β]
     [OpensMeasurableSpace β] [MeasurableSpace γ] {i : ℕ → β} {f : γ → β} {g : α → γ} {n : ℕ} (a : α)
@@ -983,7 +983,7 @@ theorem map_lintegral (g : β → ℝ≥0∞) (f : α →ₛ β) :
   rw [map_preimage_singleton, ← f.sum_measure_preimage_singleton, Finset.mul_sum]
   refine Finset.sum_congr ?_ ?_
   · congr
-  · grind [Finset.mem_filter]
+  · grind
 
 theorem add_lintegral (f g : α →ₛ ℝ≥0∞) : (f + g).lintegral μ = f.lintegral μ + g.lintegral μ :=
   calc

@@ -29,9 +29,9 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 * `PiTensorProduct.tmulEquiv` equivalence between a `TensorProduct` of `PiTensorProduct`s and
   a single `PiTensorProduct`.
 
-## Notations
+## Notation
 
-* `⨂[R] i, s i` is defined as localized notation in locale `TensorProduct`.
+* `⨂[R] i, s i` is defined as localized notation in scope `TensorProduct`.
 * `⨂ₜ[R] i, f i` with `f : ∀ i, s i` is defined globally as the tensor product of all the `f i`'s.
 
 ## Implementation notes
@@ -222,7 +222,6 @@ protected theorem smul_add (r : R₁) (x y : ⨂[R] i, s i) : r • (x + y) = r 
   AddMonoidHom.map_add _ _ _
 
 instance distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
-  smul := (· • ·)
   smul_add _ _ _ := AddMonoidHom.map_add _ _ _
   mul_smul r r' x :=
     PiTensorProduct.induction_on' x (fun {r'' f} ↦ by simp [smul_tprodCoeff', smul_smul])
@@ -327,7 +326,7 @@ lemma nonempty_lifts (x : ⨂[R] i, s i) : Set.Nonempty (lifts x) := by
 /-- The empty list lifts the element `0` of `⨂[R] i, s i`.
 -/
 lemma lifts_zero : 0 ∈ lifts (0 : ⨂[R] i, s i) := by
-  rw [mem_lifts_iff]; erw [List.map_nil]; rw [List.sum_nil]
+  rw [mem_lifts_iff, FreeAddMonoid.toList_zero, List.map_nil, List.sum_nil]
 
 /-- If elements `p,q` of `FreeAddMonoid (R × Π i, s i)` lift elements `x,y` of `⨂[R] i, s i`
 respectively, then `p + q` lifts `x + y`.
@@ -833,7 +832,7 @@ variable (N : ι ⊕ ι₂ → Type*) [∀ i, AddCommMonoid (N i)] [∀ i, Modul
 
 /-- Equivalence between a `TensorProduct` of `PiTensorProduct`s and a single
 `PiTensorProduct` indexed by a `Sum` type. If `N` is a constant family of
-modules, use the non-dependant version `PiTensorProduct.tmulEquiv` instead. -/
+modules, use the non-dependent version `PiTensorProduct.tmulEquiv` instead. -/
 def tmulEquivDep :
     (⨂[R] i₁, N (.inl i₁)) ⊗[R] (⨂[R] i₂, N (.inr i₂)) ≃ₗ[R] ⨂[R] i, N i :=
   LinearEquiv.ofLinear

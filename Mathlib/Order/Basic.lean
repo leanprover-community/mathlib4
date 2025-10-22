@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Subtype
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Notation
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Inhabit
@@ -741,6 +741,12 @@ instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
 instance instInf (α : Type*) [Max α] : Min αᵒᵈ :=
   ⟨((· ⊔ ·) : α → α → α)⟩
 
+instance instIsTransLE [LE α] [T : IsTrans α LE.le] : IsTrans αᵒᵈ LE.le where
+  trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
+
+instance instIsTransLT [LT α] [T : IsTrans α LT.lt] : IsTrans αᵒᵈ LT.lt where
+  trans := fun _ _ _ hab hbc ↦ T.trans _ _ _ hbc hab
+
 instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
@@ -796,6 +802,7 @@ instance Prop.hasCompl : HasCompl Prop :=
 instance Pi.hasCompl [∀ i, HasCompl (π i)] : HasCompl (∀ i, π i) :=
   ⟨fun x i ↦ (x i)ᶜ⟩
 
+@[push ←]
 theorem Pi.compl_def [∀ i, HasCompl (π i)] (x : ∀ i, π i) :
     xᶜ = fun i ↦ (x i)ᶜ :=
   rfl
@@ -811,10 +818,10 @@ instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
 instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 
-theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by ext; simp [compl]
-theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by ext; simp [compl]
-theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by ext; simp [compl]
-theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by ext; simp [compl]
+theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by simp [compl]
+theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by simp [compl]
+theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by simp [compl]
+theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by simp [compl]
 
 instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
   convert eq_isEquiv α
@@ -934,6 +941,7 @@ end Function
 instance Pi.sdiff [∀ i, SDiff (π i)] : SDiff (∀ i, π i) :=
   ⟨fun x y i ↦ x i \ y i⟩
 
+@[push ←]
 theorem Pi.sdiff_def [∀ i, SDiff (π i)] (x y : ∀ i, π i) :
     x \ y = fun i ↦ x i \ y i :=
   rfl
@@ -955,21 +963,76 @@ theorem const_lt_const : const β a < const β b ↔ a < b := by simpa [Pi.lt_de
 
 end Function
 
-/-! ### Lifts of order instances -/
+/-! ### Pullbacks of order instances -/
+
+/-- Pull back a `Preorder` instance along an injective function.
+
+See note [reducible non-instances]. -/
+abbrev Function.Injective.preorder [Preorder β] [LE α] [LT α] (f : α → β)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
+    Preorder α where
+  le_refl _ := le.1 <| le_refl _
+  le_trans _ _ _ h₁ h₂ := le.1 <| le_trans (le.2 h₁) (le.2 h₂)
+  lt_iff_le_not_ge _ _ := by
+    rw [← le, ← le, ← lt, lt_iff_le_not_ge]
+
+/-- Pull back a `PartialOrder` instance along an injective function.
+
+See note [reducible non-instances]. -/
+abbrev Function.Injective.partialOrder [PartialOrder β] [LE α] [LT α] (f : α → β)
+    (hf : Function.Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
+    PartialOrder α where
+  __ := Function.Injective.preorder f le lt
+  le_antisymm _ _ h₁ h₂ := hf <| le_antisymm (le.2 h₁) (le.2 h₂)
+
+/-- Pull back a `LinearOrder` instance along an injective function.
+
+See note [reducible non-instances]. -/
+abbrev Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] [Min α] [Ord α]
+    [DecidableEq α] [DecidableLE α] [DecidableLT α] (f : α → β)
+    (hf : Function.Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
+    (min : ∀ x y, f (x ⊓ y) = f x ⊓ f y) (max : ∀ x y, f (x ⊔ y) = f x ⊔ f y)
+    (compare : ∀ x y, compare (f x) (f y) = compare x y) :
+    LinearOrder α where
+  toPartialOrder := hf.partialOrder _ le lt
+  toDecidableLE := ‹_›
+  toDecidableEq := ‹_›
+  toDecidableLT := ‹_›
+  le_total _ _ := by simp only [← le, le_total]
+  min_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← min_def, min]
+  max_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← max_def, max]
+  compare_eq_compareOfLessAndEq _ _ := by
+    simp_rw [← compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, ← lt,
+      hf.eq_iff]
+
+/-!
+### Lifts of order instances
+
+Unlike the constructions above, these construct new data fields.
+They should be avoided if the types already define any order or decidability instances.
+-/
 
 /-- Transfer a `Preorder` on `β` to a `Preorder` on `α` using a function `f : α → β`.
+
+See also `Function.Injective.preorder` when only the proof fields need to be transferred.
+
 See note [reducible non-instances]. -/
-abbrev Preorder.lift [Preorder β] (f : α → β) : Preorder α where
-  le x y := f x ≤ f y
-  le_refl _ := le_rfl
-  le_trans _ _ _ := _root_.le_trans
-  lt x y := f x < f y
-  lt_iff_le_not_ge _ _ := _root_.lt_iff_le_not_ge
+abbrev Preorder.lift [Preorder β] (f : α → β) : Preorder α :=
+  letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
+  letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
+  Function.Injective.preorder f .rfl .rfl
 
 /-- Transfer a `PartialOrder` on `β` to a `PartialOrder` on `α` using an injective
-function `f : α → β`. See note [reducible non-instances]. -/
+function `f : α → β`.
+
+See also `Function.Injective.partialOrder` when only the proof fields need to be transferred.
+
+See note [reducible non-instances]. -/
 abbrev PartialOrder.lift [PartialOrder β] (f : α → β) (inj : Injective f) : PartialOrder α :=
-  { Preorder.lift f with le_antisymm := fun _ _ h₁ h₂ ↦ inj (h₁.antisymm h₂) }
+  letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
+  letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
+  Function.Injective.partialOrder f inj .rfl .rfl
 
 theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     [DecidableEq α] (f : α → β) (inj : Injective f)
@@ -987,33 +1050,21 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
 function `f : α → β`. This version takes `[Max α]` and `[Min α]` as arguments, then uses
 them for `max` and `min` fields. See `LinearOrder.lift'` for a version that autogenerates `min` and
 `max` fields, and `LinearOrder.liftWithOrd` for one that does not auto-generate `compare`
-fields. See note [reducible non-instances]. -/
+fields.
+
+See also `Function.Injective.linearOrder` when only the proof fields need to be transferred.
+
+See note [reducible non-instances]. -/
 abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
-  letI instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
-  letI decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-  letI decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
-  { PartialOrder.lift f inj, instOrdα with
-    le_total := fun x y ↦ le_total (f x) (f y)
-    toDecidableLE := decidableLE
-    toDecidableLT := decidableLT
-    toDecidableEq := decidableEq
-    min := (· ⊓ ·)
-    max := (· ⊔ ·)
-    min_def := by
-      intros x y
-      apply inj
-      rw [apply_ite f]
-      exact (hinf _ _).trans (min_def _ _)
-    max_def := by
-      intros x y
-      apply inj
-      rw [apply_ite f]
-      exact (hsup _ _).trans (max_def _ _)
-    compare_eq_compareOfLessAndEq := fun a b ↦
-      compare_of_injective_eq_compareOfLessAndEq a b f inj }
+  letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
+  letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
+  letI _instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
+  letI _decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  letI _decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  letI _decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  inj.linearOrder _ .rfl .rfl hinf hsup (fun _ _ => rfl)
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version autogenerates `min` and `max` fields. See `LinearOrder.lift`
@@ -1036,28 +1087,12 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
     (inj : Injective f) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
     (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=
-  letI decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-  letI decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
-  { PartialOrder.lift f inj with
-    le_total := fun x y ↦ le_total (f x) (f y)
-    toDecidableLE := decidableLE
-    toDecidableLT := decidableLT
-    toDecidableEq := decidableEq
-    min := (· ⊓ ·)
-    max := (· ⊔ ·)
-    min_def := by
-      intros x y
-      apply inj
-      rw [apply_ite f]
-      exact (hinf _ _).trans (min_def _ _)
-    max_def := by
-      intros x y
-      apply inj
-      rw [apply_ite f]
-      exact (hsup _ _).trans (max_def _ _)
-    compare_eq_compareOfLessAndEq := fun a b ↦
-      (compare_f a b).trans <| compare_of_injective_eq_compareOfLessAndEq a b f inj }
+  letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
+  letI _instLE : LT α := ⟨fun a b ↦ f a < f b⟩
+  letI _decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  letI _decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  letI _decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  inj.linearOrder _ .rfl .rfl hinf hsup (fun _ _ => (compare_f _ _).symm)
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version auto-generates `min` and `max` fields. It also takes `[Ord α]`
@@ -1077,12 +1112,6 @@ abbrev LinearOrder.liftWithOrd' [LinearOrder β] [Ord α] (f : α → β)
 
 
 namespace Subtype
-
-instance le [LE α] {p : α → Prop} : LE (Subtype p) :=
-  ⟨fun x y ↦ (x : α) ≤ y⟩
-
-instance lt [LT α] {p : α → Prop} : LT (Subtype p) :=
-  ⟨fun x y ↦ (x : α) < y⟩
 
 @[simp]
 theorem mk_le_mk [LE α] {p : α → Prop} {x y : α} {hx : p x} {hy : p y} :
@@ -1352,7 +1381,7 @@ end PUnit
 
 section «Prop»
 
-/-- Propositions form a complete boolean algebra, where the `≤` relation is given by implication. -/
+/-- Propositions form a complete Boolean algebra, where the `≤` relation is given by implication. -/
 instance Prop.le : LE Prop :=
   ⟨(· → ·)⟩
 

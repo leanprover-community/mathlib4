@@ -61,9 +61,7 @@ def eval [Add M] [Zero M] [SMul R M] (l : NF R M) : M := (l.map (fun (⟨r, x⟩
 
 @[simp] theorem eval_cons [AddMonoid M] [SMul R M] (p : R × M) (l : NF R M) :
     (p ::ᵣ l).eval = p.1 • p.2 + l.eval := by
-  unfold eval cons
-  rw [List.map_cons]
-  rw [List.sum_cons]
+  rfl
 
 theorem atom_eq_eval [AddMonoid M] (x : M) : x = NF.eval [(1, x)] := by simp [eval]
 
@@ -172,19 +170,16 @@ theorem smul_eq_eval {R₀ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] 
 theorem eq_cons_cons [AddMonoid M] [SMul R M] {r₁ r₂ : R} (m : M) {l₁ l₂ : NF R M} (h1 : r₁ = r₂)
     (h2 : l₁.eval = l₂.eval) :
     ((r₁, m) ::ᵣ l₁).eval = ((r₂, m) ::ᵣ l₂).eval := by
-  simp only [NF.eval, NF.cons] at *
   simp [h1, h2]
 
 theorem eq_cons_const [AddCommMonoid M] [Semiring R] [Module R M] {r : R} (m : M) {n : M}
     {l : NF R M} (h1 : r = 0) (h2 : l.eval = n) :
     ((r, m) ::ᵣ l).eval = n := by
-  simp only [NF.eval, NF.cons] at *
   simp [h1, h2]
 
 theorem eq_const_cons [AddCommMonoid M] [Semiring R] [Module R M] {r : R} (m : M) {n : M}
     {l : NF R M} (h1 : 0 = r) (h2 : n = l.eval) :
     n = ((r, m) ::ᵣ l).eval := by
-  simp only [NF.eval, NF.cons] at *
   simp [← h1, h2]
 
 theorem eq_of_eval_eq_eval {R₁ R₂ : Type*} [AddCommMonoid M] [Semiring R] [Module R M] [Semiring R₁]

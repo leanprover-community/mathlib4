@@ -6,10 +6,10 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 
 /-!
-# The partially ordered type of non degenerate simplices not in a subcomplex
+# The type of nondegenerate simplices not in a subcomplex
 
 In this file, given a subcomplex `A` of a simplicial set `X`,
-we introduce the type `A.N` of non degenerate simplices of `X`
+we introduce the type `A.N` of nondegenerate simplices of `X`
 that are not in `A`.
 
 -/
@@ -51,16 +51,13 @@ lemma mk_surjective (s : A.N) :
 
 lemma ext_iff (x y : A.N) :
     x = y ↔ x.toN = y.toN := by
-  cases x
-  cases y
-  aesop
+  grind [cases SSet.Subcomplex.N]
 
 instance : PartialOrder A.N :=
   PartialOrder.lift toN (fun _ _ ↦ by simp [ext_iff])
 
 lemma le_iff {x y : A.N} : x ≤ y ↔ x.toN ≤ y.toN :=
   Iff.rfl
-
 section
 
 variable (s : A.N) {d : ℕ} (hd : s.dim = d)
@@ -70,9 +67,7 @@ and `s : A.N` is such that `s.dim = d`, this is a term
 that is equal to `s`, but whose dimension if definitionally equal to `d`. -/
 abbrev cast : A.N where
   toN := s.toN.cast hd
-  notMem := by
-    subst hd
-    exact s.notMem
+  notMem := hd ▸ s.notMem
 
 lemma cast_eq_self : s.cast hd = s := by
   subst hd

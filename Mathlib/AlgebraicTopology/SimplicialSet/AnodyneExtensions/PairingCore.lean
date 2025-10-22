@@ -51,7 +51,7 @@ structure PairingCore where
 variable {A}
 
 /-- The `PairingCore` structure induced by a pairing. The opposite construction
-if `PairingCore.pairing`. -/
+is `PairingCore.pairing`. -/
 noncomputable def Pairing.pairingCore (P : A.Pairing) [P.IsProper] :
     A.PairingCore where
   ι := P.II
@@ -217,9 +217,9 @@ class IsRegular (h : A.PairingCore) extends h.IsProper where
 instance [h.IsRegular] : h.pairing.IsRegular where
   wf := by
     have := IsRegular.wf h
-    rw [WellFounded.wellFounded_iff_no_descending_seq, isEmpty_iff] at this ⊢
-    rintro ⟨f, hf⟩
-    exact this ⟨fun n ↦ h.equivII.symm (f n), fun n ↦ by simpa [ancestralRel_iff] using hf n⟩
+    rw [wellFounded_iff_isEmpty_descending_chain] at this ⊢
+    exact ⟨fun ⟨f, hf⟩ ↦ this.false
+      ⟨fun n ↦ h.equivII.symm (f n), fun n ↦ by simpa [ancestralRel_iff] using hf n⟩⟩
 
 end PairingCore
 

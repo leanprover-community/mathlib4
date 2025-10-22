@@ -48,7 +48,7 @@ This file defines the group law on nonsingular points `W⟮F⟯` in affine coord
 * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
   coordinates forms an abelian group under addition.
 
-## Notations
+## Notation
 
 * `W⟮K⟯`: the group of nonsingular points on `W` base changed to `K`.
 
@@ -85,17 +85,12 @@ namespace Affine
 
 /-! ## The affine coordinate ring -/
 
--- Porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
--- This generates a reducible instance of `comm_ring` for `coordinate_ring`. In certain
--- circumstances this might be extremely slow, because all instances in its definition are unified
--- exponentially many times. In this case, one solution is to manually add the local attribute
--- `local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
--- In Lean 4, this is no longer an issue and is now an `abbrev`. See Zulip thread:
--- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk
+variable (W') in
 /-- The affine coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of a Weierstrass curve `W`. -/
 abbrev CoordinateRing : Type r :=
   AdjoinRoot W'.polynomial
 
+variable (W') in
 /-- The function field `R(W) := Frac(R[W])` of a Weierstrass curve `W`. -/
 abbrev FunctionField : Type r :=
   FractionRing W'.CoordinateRing
@@ -277,6 +272,8 @@ lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolyn
   C_simp
   ring1
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
@@ -285,7 +282,7 @@ lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation
     · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
       rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
       simp [linePolynomial]
-    · field_simp [linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
+    · simp [field, linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
       ring1
   nth_rw 1 [hy₂]
   simp only [XYIdeal, XClass, YClass, linePolynomial]
@@ -385,9 +382,6 @@ lemma mk_XYIdeal'_neg_mul {x y : F} (h : W.Nonsingular x y) :
   exact (ClassGroup.mk_eq_one_of_coe_ideal <| (coeIdeal_mul ..).symm.trans <|
     FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero x, rfl⟩
 
-@[deprecated (since := "2025-02-01")] alias mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq :=
-  mk_XYIdeal'_neg_mul
-
 lemma mk_XYIdeal'_mul_mk_XYIdeal' [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     (h₂ : W.Nonsingular x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
@@ -415,7 +409,7 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     (Algebra.norm R[X] <| p • 1 + q • mk W' Y).degree = max (2 • p.degree) (2 • q.degree + 3) := by
   have hdp : (p ^ 2).degree = 2 • p.degree := degree_pow p 2
   have hdpq : (p * q * (C W'.a₁ * X + C W'.a₃)).degree ≤ p.degree + q.degree + 1 := by
-    simpa only [degree_mul] using add_le_add_left degree_linear_le (p.degree + q.degree)
+    grw [degree_mul, degree_mul, degree_linear_le]
   have hdq :
       (q ^ 2 * (X ^ 3 + C W'.a₂ * X ^ 2 + C W'.a₄ * X + C W'.a₆)).degree = 2 • q.degree + 3 := by
     rw [degree_mul, degree_pow, ← one_mul <| X ^ 3, ← C_1, degree_cubic <| one_ne_zero' R]
@@ -530,8 +524,9 @@ variable [DecidableEq F]
 instance : Add W.Point :=
   ⟨add⟩
 
-instance : AddZeroClass W.Point :=
-  ⟨by rintro (_ | _) <;> rfl, by rintro (_ | _) <;> rfl⟩
+instance : AddZeroClass W.Point where
+  zero_add := by rintro (_ | _) <;> rfl
+  add_zero := by rintro (_ | _) <;> rfl
 
 lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
   rfl
@@ -539,8 +534,6 @@ lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
 lemma add_some {x₁ x₂ y₁ y₂ : F} (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) {h₁ : W.Nonsingular x₁ y₁}
     {h₂ : W.Nonsingular x₂ y₂} : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ hxy) := by
   simp only [add_def, add, dif_neg hxy]
-
-@[deprecated (since := "2025-02-28")] alias add_of_imp := add_some
 
 @[simp]
 lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
@@ -601,8 +594,6 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
       exact (CoordinateRing.mk_XYIdeal'_neg_mul h₂).symm
     · simp only [add_some hxy]
       exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ hxy).symm
-
-@[deprecated (since := "2025-02-01")] alias toClassFun := toClass
 
 lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
@@ -669,8 +660,6 @@ noncomputable def map : W'⟮F⟯ →+ W'⟮K⟯ where
         add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
     · simp only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
       rw [add_some fun h => hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩]
-
-@[deprecated (since := "2025-02-01")] alias mapFun := map
 
 lemma map_zero : map f (0 : W'⟮F⟯) = 0 :=
   rfl

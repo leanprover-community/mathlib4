@@ -100,6 +100,10 @@ theorem singleton_nonempty (a : α) : ({a} : Finset α).Nonempty :=
 theorem singleton_ne_empty (a : α) : ({a} : Finset α) ≠ ∅ :=
   (singleton_nonempty a).ne_empty
 
+@[simp]
+theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Finset α) :=
+  (singleton_ne_empty a).symm
+
 theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 
@@ -166,6 +170,9 @@ theorem eq_empty_of_ssubset_singleton {s : Finset α} {x : α} (hs : s ⊂ {x}) 
 
 /-- A finset is nontrivial if it has at least two elements. -/
 protected abbrev Nontrivial (s : Finset α) : Prop := (s : Set α).Nontrivial
+
+@[grind =]
+theorem nontrivial_def {s : Finset α} : s.Nontrivial ↔ ∃ a, a ∈ s ∧ ∃ b, b ∈ s ∧ a ≠ b := Iff.rfl
 
 nonrec lemma Nontrivial.nonempty (hs : s.Nontrivial) : s.Nonempty := hs.nonempty
 
@@ -332,7 +339,7 @@ def consPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α}
   invFun := prodPiCons f has
   left_inv _ := by grind [prodPiCons, consPiProd]
   right_inv _ := by
-    -- I'm surprised `grind` next this `ext` step: it is just `Prod.ext` and `funext`.
+    -- I'm surprised `grind` needs this `ext` step: it is just `Prod.ext` and `funext`.
     ext _ hi <;> grind [prodPiCons, consPiProd]
 
 end Cons
@@ -384,7 +391,7 @@ alias eq_of_mem_insert_of_not_mem := eq_of_mem_insert_of_notMem
 /-- A version of `LawfulSingleton.insert_empty_eq` that works with `dsimp`. -/
 @[simp] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
 
-@[simp]
+@[simp, grind =]
 theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
   ext fun a => by simp
 
@@ -395,15 +402,14 @@ theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ i
   simp
 
 instance : LawfulSingleton α (Finset α) :=
-  ⟨fun a => by ext; simp⟩
+  ⟨fun a => by simp⟩
 
-@[simp]
+@[simp, grind =]
 theorem insert_eq_of_mem (h : a ∈ s) : insert a s = s :=
   eq_of_veq <| ndinsert_of_mem h
 
 @[simp]
-theorem insert_eq_self : insert a s = s ↔ a ∈ s :=
-  ⟨fun h => h ▸ mem_insert_self _ _, insert_eq_of_mem⟩
+theorem insert_eq_self : insert a s = s ↔ a ∈ s := by grind
 
 theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
   insert_eq_self.not
@@ -450,7 +456,7 @@ theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
 
 @[simp] theorem subset_insert (a : α) (s : Finset α) : s ⊆ insert a s := fun _b => mem_insert_of_mem
 
-@[gcongr]
+@[gcongr, simp]
 theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a s ⊆ insert a t := by
   grind
 

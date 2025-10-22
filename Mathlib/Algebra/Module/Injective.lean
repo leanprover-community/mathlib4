@@ -90,7 +90,6 @@ theorem ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain
       a.toLinearPMap ⟨x, ha⟩ = b.toLinearPMap ⟨x, hb⟩) :
     a = b := by
   rcases a with ⟨a, a_le, e1⟩
-  rcases b with ⟨b, b_le, e2⟩
   congr
   exact LinearPMap.ext domain_eq to_fun_eq
 
@@ -196,8 +195,8 @@ theorem extensionOfMax_is_max :
   fun _ ↦ (@zorn_le_nonempty (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
     ⟨ExtensionOf.max hchain hnonempty, ExtensionOf.le_max hchain hnonempty⟩).choose_spec.eq_of_ge
 
--- Porting note: helper function. Lean looks for an instance of `Sup (Type u)` when the
--- right hand side is substituted in directly
+-- Auxiliary definition: Lean looks for an instance of `Max (Type u)` if we would write
+-- `(x : (extensionOfMax i f).domain ⊔ (Submodule.span R {y}))`, so we encapsulate the cast instead.
 abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
   (extensionOfMax i f).domain ⊔ (Submodule.span R {y})
 

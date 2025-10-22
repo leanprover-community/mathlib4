@@ -16,7 +16,7 @@ lemmas (`Measurable.sup`, `AEMeasurable.sup` etc). For binary operations we defi
 
 and similarly for other binary operations. The reason for introducing these classes is that in case
 of topological space `α` equipped with the Borel `σ`-algebra, instances for `MeasurableSup₂`
-etc require `α` to have a second countable topology.
+etc. require `α` to have a second countable topology.
 
 For instances relating, e.g., `ContinuousSup` to `MeasurableSup` see file
 `MeasureTheory.BorelSpace`.
@@ -211,14 +211,14 @@ theorem Finset.measurable_sup' {ι : Type*} {s : Finset ι} (hs : s.Nonempty) {f
 
 @[measurability]
 theorem Finset.measurable_range_sup' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
-    Measurable ((range (n + 1)).sup' nonempty_range_succ f) := by
+    Measurable ((range (n + 1)).sup' nonempty_range_add_one f) := by
   simp_rw [← Nat.lt_succ_iff] at hf
   refine Finset.measurable_sup' _ ?_
   simpa [Finset.mem_range]
 
 @[measurability]
 theorem Finset.measurable_range_sup'' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
-    Measurable fun x => (range (n + 1)).sup' nonempty_range_succ fun k => f k x := by
+    Measurable fun x => (range (n + 1)).sup' nonempty_range_add_one fun k => f k x := by
   convert Finset.measurable_range_sup' hf using 1
   ext x
   simp
