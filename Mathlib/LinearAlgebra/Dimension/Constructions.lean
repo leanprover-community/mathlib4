@@ -55,9 +55,6 @@ theorem LinearIndependent.sumElim_of_quotient
   simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsuppSum, map_smul, mkQ_apply] at this
   rw [linearIndependent_iff.mp hg _ this, Finsupp.sum_zero_index]
 
-@[deprecated (since := "2025-02-21")]
-alias LinearIndependent.sum_elim_of_quotient := LinearIndependent.sumElim_of_quotient
-
 theorem LinearIndepOn.union_of_quotient {s t : Set ι} {f : ι → M} (hs : LinearIndepOn R f s)
     (ht : LinearIndepOn R (mkQ (span R (f '' s)) ∘ f) t) : LinearIndepOn R f (s ∪ t) := by
   apply hs.union ht.of_comp
@@ -71,9 +68,6 @@ theorem LinearIndepOn.union_id_of_quotient {M' : Submodule R M}
   hs'.union_of_quotient <| by
     rw [image_id]
     exact ht.of_comp ((span R s).mapQ M' (LinearMap.id) (span_le.2 hs))
-
-@[deprecated (since := "2025-02-16")] alias LinearIndependent.union_of_quotient :=
-  LinearIndepOn.union_id_of_quotient
 
 theorem linearIndepOn_union_iff_quotient {s t : Set ι} {f : ι → M} (hst : Disjoint s t) :
     LinearIndepOn R f (s ∪ t) ↔
@@ -256,7 +250,6 @@ theorem finrank_finsupp_self {ι : Type v} [Fintype ι] : finrank R (ι →₀ R
 theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (⨁ i, M i) = ∑ i, finrank R (M i) := by
-  letI := nontrivial_of_invariantBasisNumber R
   simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_directSum, ← mk_sigma,
     mk_toNat_eq_card, card_sigma]
 
@@ -301,7 +294,6 @@ theorem Module.finrank_pi_fintype
     {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (∀ i, M i) = ∑ i, finrank R (M i) := by
-  letI := nontrivial_of_invariantBasisNumber R
   simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_pi, ← mk_sigma,
     mk_toNat_eq_card, Fintype.card_sigma]
 

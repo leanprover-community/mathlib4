@@ -106,7 +106,7 @@ structure Word where
   /-- A reduced word does not contain `1` -/
   ne_one : ∀ l ∈ toList, Sigma.snd l ≠ 1
   /-- Adjacent letters are not from the same summand. -/
-  chain_ne : toList.Chain' fun l l' => Sigma.fst l ≠ Sigma.fst l'
+  chain_ne : toList.IsChain fun l l' => Sigma.fst l ≠ Sigma.fst l'
 
 variable {M}
 
@@ -122,8 +122,7 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
 variable {N : Type*} [Monoid N]
 
 /-- See note [partially-applied ext lemmas]. -/
--- Porting note: higher `ext` priority
-@[ext 1100]
+@[ext 1100] -- This needs a higher `ext` priority
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     FreeMonoid.hom_eq fun ⟨i, x⟩ => by
@@ -264,7 +263,7 @@ namespace Word
 def empty : Word M where
   toList := []
   ne_one := by simp
-  chain_ne := List.chain'_nil
+  chain_ne := List.isChain_nil
 
 instance : Inhabited (Word M) :=
   ⟨empty⟩
@@ -316,7 +315,7 @@ def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
       rintro l (rfl | hl)
       · exact h1
       · exact w.ne_one l hl
-    chain_ne := w.chain_ne.cons' (fstIdx_ne_iff.mp hmw) }
+    chain_ne := w.chain_ne.cons (fstIdx_ne_iff.mp hmw) }
 
 @[simp]
 theorem fstIdx_cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
@@ -356,7 +355,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
     exact h' rfl
   · have : m = m' ∧ w.toList = w'.toList := by
       simpa [cons, rcons, dif_neg hm, dif_neg hm', eq_self_iff_true, Subtype.mk_eq_mk,
-        heq_iff_eq, ← Subtype.ext_iff_val] using he
+        heq_iff_eq, ← Subtype.ext_iff] using he
     rcases this with ⟨rfl, h⟩
     congr
     exact Word.ext h
@@ -380,7 +379,7 @@ def consRecOn {motive : Word M → Sort*} (w : Word M) (empty : motive empty)
   | nil => exact empty
   | cons m w ih =>
     refine cons m.1 m.2 ⟨w, fun _ hl => h1 _ (List.mem_cons_of_mem _ hl), h2.tail⟩ ?_ ?_ (ih _ _)
-    · rw [List.chain'_cons'] at h2
+    · rw [List.isChain_cons] at h2
       simp only [fstIdx, ne_eq, Option.map_eq_some_iff,
         Sigma.exists, exists_and_right, exists_eq_right, not_exists]
       intro m' hm'
@@ -665,8 +664,8 @@ def toWord {i j} (w : NeWord M i j) : Word M where
       cases h <;> aesop
   chain_ne := by
     induction w
-    · exact List.chain'_singleton _
-    · refine List.Chain'.append (by assumption) (by assumption) ?_
+    · exact List.isChain_singleton _
+    · refine List.IsChain.append (by assumption) (by assumption) ?_
       intro x hx y hy
       rw [toList_getLast?, Option.mem_some_iff] at hx
       rw [toList_head?, Option.mem_some_iff] at hy
@@ -689,7 +688,7 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
     rcases l with - | ⟨y, l⟩
     · refine ⟨x.1, x.1, singleton x.2 hnot1.1, ?_⟩
       simp [toWord]
-    · rw [List.chain'_cons_cons] at hchain
+    · rw [List.isChain_cons_cons] at hchain
       specialize hi hnot1.2 hchain.2 (by rintro ⟨rfl⟩)
       obtain ⟨i, j, w', hw' : w'.toList = y::l⟩ := hi
       obtain rfl : y = ⟨i, w'.head⟩ := by simpa [hw'] using w'.toList_head?
@@ -759,9 +758,7 @@ theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
   | singleton => simp [replaceHead]
   | append _ _ _ w_ih_w₁ w_ih_w₂ =>
     specialize w_ih_w₁ _ hnotone
-    clear w_ih_w₂
-    simp? [replaceHead, ← mul_assoc] at * says
-      simp only [replaceHead, head, append_prod, ← mul_assoc] at *
+    simp only [replaceHead, append_prod, ← mul_assoc]
     congr 1
 
 section Group

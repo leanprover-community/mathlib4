@@ -41,7 +41,6 @@ structure MonCat : Type (u + 1) where
   [str : Monoid carrier]
 
 attribute [instance] AddMonCat.str MonCat.str
-attribute [to_additive existing] MonCat.carrier MonCat.str
 
 initialize_simps_projections AddMonCat (carrier → coe, -str)
 initialize_simps_projections MonCat (carrier → coe, -str)
@@ -223,7 +222,6 @@ structure CommMonCat : Type (u + 1) where
   [str : CommMonoid carrier]
 
 attribute [instance] AddCommMonCat.str CommMonCat.str
-attribute [to_additive existing] CommMonCat.carrier CommMonCat.str
 
 initialize_simps_projections AddCommMonCat (carrier → coe, -str)
 initialize_simps_projections CommMonCat (carrier → coe, -str)

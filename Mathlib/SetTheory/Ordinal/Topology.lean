@@ -5,6 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Enum
 import Mathlib.Tactic.TFAE
+import Mathlib.Topology.Order.IsNormal
 import Mathlib.Topology.Order.Monotone
 
 /-!
@@ -145,7 +146,7 @@ theorem isClosed_iff_bsup :
   rw [isClosed_iff_iSup]
   refine ⟨fun H o ho f hf => H (toType_nonempty_iff_ne_zero.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
   · exact fun i => hf _ _
-  · rw [← Ordinal.sup, ← bsup_eq_sup]
+  · rw [← bsup_eq_iSup]
     apply H (type_ne_zero_iff_nonempty.2 hι)
     exact fun i hi => hf _
 
@@ -163,27 +164,10 @@ theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := b
 @[deprecated (since := "2025-07-08")]
 alias isLimit_of_mem_frontier := isSuccLimit_of_mem_frontier
 
+@[deprecated Order.isNormal_iff_strictMono_and_continuous (since := "2025-08-21")]
 theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
-    IsNormal f ↔ StrictMono f ∧ Continuous f := by
-  refine ⟨fun h => ⟨h.strictMono, ?_⟩, ?_⟩
-  · rw [continuous_def]
-    intro s hs
-    rw [isOpen_iff] at *
-    intro o ho ho'
-    rcases hs _ ho (h.isSuccLimit ho') with ⟨a, ha, has⟩
-    rw [← IsNormal.bsup_eq.{u, u} h ho', lt_bsup] at ha
-    rcases ha with ⟨b, hb, hab⟩
-    exact
-      ⟨b, hb, fun c hc =>
-        Set.mem_preimage.2 (has ⟨hab.trans (h.strictMono hc.1), h.strictMono hc.2⟩)⟩
-  · rw [isNormal_iff_strictMono_limit]
-    rintro ⟨h, h'⟩
-    refine ⟨h, fun o ho a h => ?_⟩
-    suffices o ∈ f ⁻¹' Set.Iic a from Set.mem_preimage.1 this
-    rw [mem_iff_iSup_of_isClosed (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
-    exact
-      ⟨_, toType_nonempty_iff_ne_zero.2 ho.ne_bot, typein (· < ·), fun i => h _ (typein_lt_self i),
-        sup_typein_limit fun _ ↦ ho.succ_lt⟩
+    IsNormal f ↔ StrictMono f ∧ Continuous f :=
+  Order.isNormal_iff_strictMono_and_continuous
 
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by

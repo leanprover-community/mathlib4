@@ -73,8 +73,6 @@ private lemma pairMap_of_snd_notMem_fst {t : Finset σ × σ} (h : t.snd ∉ t.f
     pairMap σ t = (t.fst.cons t.snd h, t.snd) := by
   simp [pairMap, h]
 
-@[deprecated (since := "2025-05-24")] alias pairMap_of_snd_nmem_fst := pairMap_of_snd_notMem_fst
-
 @[simp]
 private theorem pairMap_involutive : (pairMap σ).Involutive := by
   intro t
@@ -260,7 +258,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) :
   have : {a ∈ antidiagonal k | a.fst < k ∧ ¬0 < a.fst} = {(0, k)} := by
     ext a
     rw [mem_filter, mem_antidiagonal, mem_singleton]
-    refine ⟨?_, by rintro rfl; omega⟩
+    refine ⟨?_, by rintro rfl; cutsat⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
     rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides

@@ -147,7 +147,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
   · norm_cast
     simp only [one_div, norm_smul, Real.norm_eq_abs, mul_pow, sq_abs, neg_mul, neg_inj,
       ← rpow_natCast, ← rpow_mul hc.le, mul_assoc]
-    norm_num
+    simp
 
 end Real
 

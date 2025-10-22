@@ -28,16 +28,12 @@ open Int
 namespace Rat
 
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
+variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
 
-protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
-  rw [Rat.floor]
-  split
-  · next h => simp [h]
-  · next => rfl
-
+@[deprecated Rat.le_floor_iff (since := "2025-09-02")]
 protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
   | ⟨n, d, h, c⟩ => by
-    simp only [Rat.floor_def']
+    simp only [Rat.floor_def]
     rw [mk'_eq_divInt]
     have h' := Int.ofNat_lt.2 (Nat.pos_of_ne_zero h)
     conv =>
@@ -46,18 +42,24 @@ protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z :
     exact Int.le_ediv_iff_mul_le h'
 
 instance : FloorRing ℚ :=
-  (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor.symm
+  (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor_iff.symm
 
-protected theorem floor_def {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_def' q
+/--
+This variant of `floor_def` uses the `Int.floor` (for any `FloorRing`) rather than `Rat.floor`.
+-/
+protected theorem floor_def' {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_def q
 
-protected theorem ceil_def (q : ℚ) : ⌈q⌉ = -(-q.num / ↑q.den) := by
+/--
+This variant of `ceil_def` uses the `Int.ceil` (for any `FloorRing`) rather than `Rat.ceil`.
+-/
+protected theorem ceil_def' (q : ℚ) : ⌈q⌉ = -(-q.num / ↑q.den) := by
   change -⌊-q⌋ = _
-  rw [Rat.floor_def, num_neg_eq_neg_num, den_neg_eq_den]
+  rw [Rat.floor_def', num_neg_eq_neg_num, den_neg_eq_den]
 
 
 @[norm_cast]
 theorem floor_intCast_div_natCast (n : ℤ) (d : ℕ) : ⌊(↑n / ↑d : ℚ)⌋ = n / (↑d : ℤ) := by
-  rw [Rat.floor_def]
+  rw [Rat.floor_def']
   obtain rfl | hd := eq_zero_or_pos (a := d)
   · simp
   set q := (n : ℚ) / d with q_eq
@@ -227,75 +229,61 @@ def evalIntCeil : NormNumExt where eval {u αZ} e := do
       return .isNegNat q(inferInstance) z q(isInt_intCeil_ofIsRat_neg $x $n $d $h)
   | _, _, _ => failure
 
-/-!
-### `norm_num` extension for `Int.fract`
--/
 
-theorem IsNat.intFract {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
-    (r : R) (m : ℕ) : IsNat r m → IsNat (Int.fract r) 0 := by
-  rintro ⟨rfl⟩
-  exact ⟨by simp⟩
 
-theorem IsInt.intFract {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
-    (r : R) (m : ℤ) : IsInt r m → IsNat (Int.fract r) 0 := by
-  rintro ⟨rfl⟩
-  exact ⟨by simp⟩
+theorem isNat_intFract_of_isNat (r : R) (m : ℕ) : IsNat r m → IsNat (Int.fract r) 0 := by
+  rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem IsNNRat.intFract {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    [FloorRing R] (r : R) (num den : ℕ) (hr : IsNNRat r num den) :
-    IsNNRat (Int.fract r) (num % den) den := by
-  rcases hr with ⟨hd, rfl⟩
-  use hd
-  simp [← div_eq_mul_inv, Int.fract_div_natCast_eq_div_natCast_mod]
+theorem isNat_intFract_of_isInt (r : R) (m : ℤ) : IsInt r m → IsNat (Int.fract r) 0 := by
+  rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem IsRat.intFract {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
-    (r : R) (n : ℤ) (d : ℕ) : IsRat r n d → IsRat (Int.fract r) (n % d) d := by
-  rintro ⟨hd, rfl⟩
-  use hd
-  simp [← div_eq_mul_inv, Int.fract_div_intCast_eq_div_intCast_mod]
+theorem isNNRat_intFract_of_isNNRat (r : α) (n d : ℕ) :
+    IsNNRat r n d → IsNNRat (Int.fract r) (n % d) d := by
+  rintro ⟨inv, rfl⟩
+  refine ⟨inv, ?_⟩
+  simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_natCast_eq_div_natCast_mod]
 
-open Lean in
-/-- `norm_num` extension for `Int.fract`.
+theorem isRat_intFract_of_isRat_negOfNat (r : α) (n d : ℕ) :
+    IsRat r (negOfNat n) d → IsRat (Int.fract r) (-n % d) d := by
+  rintro ⟨inv, rfl⟩
+  refine ⟨inv, ?_⟩
+  simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_intCast_eq_div_intCast_mod,
+    negOfNat_eq, ofNat_eq_coe]
 
-One can just unfold the definition instead,
-but that would make Lean normalize the argument twice. -/
+/-- `norm_num` extension for `Int.fract` -/
 @[norm_num (Int.fract _)]
-def evalIntFract : NormNumExt where eval {u R} e := do
+def evalIntFract : NormNumExt where eval {u α} e := do
   match e with
-  | ~q(@Int.fract _ $instR $instLO $instF $r) => do
-    match ← derive r with
-    | .isNat sr m pr =>
-      let instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $R))
-      let instFloorRing ← synthInstanceQ (q(FloorRing $R))
-      assertInstancesCommute
-      return .isNat sr q(nat_lit 0) q(IsNat.intFract $r $m $pr)
-    | .isNegNat sr m pr =>
-      let instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $R))
-      let instFloorRing ← synthInstanceQ (q(FloorRing $R))
-      assertInstancesCommute
-      return .isNat q(inferInstance) (mkRawNatLit 0) q(IsInt.intFract $r (.negOfNat $m) $pr)
-    | .isNNRat sr q nr dr pr =>
-      let instField ← synthInstanceQ (q(Field $R))
-      let instLinearOrder ← synthInstanceQ (q(LinearOrder $R))
-      let instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $R))
-      let instFloorRing ← synthInstanceQ (q(FloorRing $R))
-      let n : ℕ := q.num.toNat % q.den
-      have en : Q(ℕ) := mkRawNatLit n
-      have : $en =Q $nr % $dr := ⟨⟩
-      assertInstancesCommute
-      return .isNNRat sr (n / q.den) en dr q(IsNNRat.intFract $r $nr $dr $pr)
-    | .isNegNNRat ir q nr dr pr => do
-      let instField ← synthInstanceQ (q(Field $R))
-      let instLinearOrder ← synthInstanceQ (q(LinearOrder $R))
-      let instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $R))
-      let instFloorRing ← synthInstanceQ (q(FloorRing $R))
-      let n : ℤ := q.num % q.den
-      have en : Q(ℤ) := mkRawIntLit n
-      have : $en =Q (Int.negOfNat $nr) % $dr := ⟨⟩
-      assertInstancesCommute
-      return .isRat ir (n / q.den) en dr q(IsRat.intFract $r (Int.negOfNat $nr) $dr $pr)
+  | ~q(@Int.fract _ $instR $instO $instF $x) =>
+    match ← derive x with
     | .isBool .. => failure
-  | _ => failure
+    | .isNat _ _ pb => do
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      have z : Q(ℕ) := Lean.mkRawNatLit 0
+      letI : $z =Q 0 := ⟨⟩
+      return .isNat _ z q(isNat_intFract_of_isNat $x _ $pb)
+    | .isNegNat _ _ pb => do
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      have z : Q(ℕ) := Lean.mkRawNatLit 0
+      letI : $z =Q 0 := ⟨⟩
+      return .isNat _ z q(isNat_intFract_of_isInt _ _ $pb)
+    | .isNNRat _ q n d h => do
+      let _i ← synthInstanceQ q(Field $α)
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      have n' : Q(ℕ) := Lean.mkRawNatLit (q.num.natAbs % q.den)
+      letI : $n' =Q $n % $d := ⟨⟩
+      return .isNNRat _ (Int.fract q) n' d q(isNNRat_intFract_of_isNNRat _ $n $d $h)
+    | .isNegNNRat _ q n d h => do
+      let _i ← synthInstanceQ q(Field $α)
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assertInstancesCommute
+      have n' : Q(ℤ) := mkRawIntLit (q.num % q.den)
+      letI : $n' =Q -$n % $d := ⟨⟩
+      return .isRat _ (Int.fract q) n' d q(isRat_intFract_of_isRat_negOfNat _ $n $d $h)
+  | _, _, _ => failure
 
 /-!
 ### `norm_num` extesion for `round`
@@ -310,8 +298,10 @@ theorem isInt_round {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
 theorem IsRat.isInt_round {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
-    [FloorRing R] (r : R) (n : ℤ) (d : ℕ) : IsRat r n d → IsInt (round r) (round (n / d : ℚ)) := by
+    [FloorRing R] (r : R) (n : ℤ) (d : ℕ) (res : ℤ) (hres : round (n / d : ℚ) = res) :
+    IsRat r n d → IsInt (round r) res := by
   rintro ⟨inv, rfl⟩
+  subst res
   constructor
   rw [invOf_eq_inv, ← div_eq_mul_inv]
   norm_cast
@@ -324,30 +314,30 @@ def evalRound : NormNumExt where eval {u αZ} e := do
     match ← derive x with
     | .isBool .. => failure
     | .isNat sα nb pb => do
-      let _i ← synthInstanceQ (q(Ring $α) : Q(Type u_1))
-      let _i' ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
-      let _i'' ← synthInstanceQ (q(IsStrictOrderedRing $α))
-      let _i''' ← synthInstanceQ (q(FloorRing $α))
+      let _instRing ← synthInstanceQ (q(Ring $α) : Q(Type u_1))
+      let _instLinearOrder ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
+      let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      let _instFloorRing ← synthInstanceQ (q(FloorRing $α))
       assertInstancesCommute
       return .isNat q(inferInstance) nb q(isNat_round $x _ $pb)
     | .isNegNat sα nb pb => do
-      let _i ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
-      let _i' ← synthInstanceQ (q(IsStrictOrderedRing $α))
-      let _i'' ← synthInstanceQ (q(FloorRing $α))
+      let _instLinearOrder ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
+      let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      let _instFloorRing ← synthInstanceQ (q(FloorRing $α))
       assertInstancesCommute
       return .isNegNat q(inferInstance) nb q(isInt_round _ _ $pb)
     | .isNNRat _ q n d h => do
-      let _i ← synthInstanceQ (q(Field $α) : Q(Type u_1))
-      let _i' ← synthInstanceQ (q(IsStrictOrderedRing $α))
-      let _i'' ← synthInstanceQ (q(FloorRing $α))
+      let _instField ← synthInstanceQ (q(Field $α) : Q(Type u_1))
+      let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      let _instFloorRing ← synthInstanceQ (q(FloorRing $α))
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit (round q)
       letI : $z =Q round (Int.ofNat $n / $d : ℚ) := ⟨⟩
       return .isInt q(inferInstance) z (round q) q(IsRat.isInt_round _ $n $d <| IsNNRat.to_isRat $h)
     | .isNegNNRat _ q n d h => do
-      let _i ← synthInstanceQ (q(Field $α) : Q(Type u_1))
-      let _i' ← synthInstanceQ (q(IsStrictOrderedRing $α))
-      let _i'' ← synthInstanceQ (q(FloorRing $α))
+      let _instField ← synthInstanceQ (q(Field $α) : Q(Type u_1))
+      let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      let _instFloorRing ← synthInstanceQ (q(FloorRing $α))
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit (round q)
       letI : $z =Q round ((Int.negOfNat $n) / $d : ℚ) := ⟨⟩
@@ -359,7 +349,7 @@ end NormNum
 end Rat
 
 theorem Int.mod_nat_eq_sub_mul_floor_rat_div {n : ℤ} {d : ℕ} : n % d = n - d * ⌊(n : ℚ) / d⌋ := by
-  rw [eq_sub_of_add_eq <| Int.emod_add_ediv n d, Rat.floor_intCast_div_natCast]
+  rw [Int.emod_def, Rat.floor_intCast_div_natCast]
 
 theorem Nat.coprime_sub_mul_floor_rat_div_of_coprime {n d : ℕ} (n_coprime_d : n.Coprime d) :
     ((n : ℤ) - d * ⌊(n : ℚ) / d⌋).natAbs.Coprime d := by
@@ -397,10 +387,12 @@ theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).n
   -- we will work with the absolute value of the numerator, which is equal to the numerator
   have q_num_abs_eq_q_num : (q.num.natAbs : ℤ) = q.num := Int.natAbs_of_nonneg q_num_pos.le
   set q_inv : ℚ := q.den / q.num with q_inv_def
-  have q_inv_eq : q⁻¹ = q_inv := by rw [q_inv_def, inv_def', divInt_eq_div, Int.cast_natCast]
+  have q_inv_eq : q⁻¹ = q_inv := by rw [q_inv_def, inv_def, divInt_eq_div, Int.cast_natCast]
   suffices (q_inv - ⌊q_inv⌋).num < q.num by rwa [q_inv_eq]
   suffices ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num < q.num by
-    field_simp [q_inv, this, ne_of_gt q_num_pos]
+    simp only [gt_iff_lt, q_inv]
+    field_simp
+    simp [q_inv, this]
   suffices (q.den : ℤ) - q.num * ⌊q_inv⌋ < q.num by
     -- use that `q.num` and `q.den` are coprime to show that the numerator stays unreduced
     have : ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num = q.den - q.num * ⌊q_inv⌋ := by

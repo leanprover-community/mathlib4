@@ -47,8 +47,6 @@ theorem norm_qParam (z : ℂ) : ‖𝕢 h z‖ = Real.exp (-2 * π * im z / h) :
     mul_zero, sub_zero, I_re, mul_im, zero_mul, add_zero, I_im, mul_one, sub_self, zero_sub,
     neg_mul]
 
-@[deprecated (since := "2025-02-17")] alias abs_qParam := norm_qParam
-
 theorem im_invQParam (q : ℂ) : im (invQParam h q) = -h / (2 * π) * Real.log ‖q‖ := by
   simp only [invQParam, ← div_div, div_I, neg_mul, neg_im, mul_im, mul_re, div_ofReal_re,
     div_ofNat_re, ofReal_re, I_re, mul_zero, div_ofReal_im, div_ofNat_im, ofReal_im, zero_div, I_im,
@@ -77,15 +75,13 @@ lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
 
 @[fun_prop]
 lemma differentiable_qParam : Differentiable ℂ (𝕢 h) := by
-    unfold qParam
-    fun_prop
+  unfold qParam
+  fun_prop
 
 @[fun_prop]
 lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
-    unfold qParam
-    fun_prop
-
-@[deprecated (since := "2025-02-17")] alias abs_qParam_lt_iff := norm_qParam_lt_iff
+  unfold qParam
+  fun_prop
 
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_

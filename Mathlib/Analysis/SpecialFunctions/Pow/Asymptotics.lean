@@ -223,7 +223,7 @@ theorem IsBigOWith.rpow (h : IsBigOWith c l f g) (hc : 0 ≤ c) (hr : 0 ≤ r) (
   filter_upwards [hg, h.bound] with x hgx hx
   calc
     |f x ^ r| ≤ |f x| ^ r := abs_rpow_le_abs_rpow _ _
-    _ ≤ (c * |g x|) ^ r := rpow_le_rpow (abs_nonneg _) hx hr
+    _ ≤ (c * |g x|) ^ r := by gcongr; assumption
     _ = c ^ r * |g x ^ r| := by rw [mul_rpow hc (abs_nonneg _), abs_rpow_of_nonneg hgx]
 
 theorem IsBigO.rpow (hr : 0 ≤ r) (hg : 0 ≤ᶠ[l] g) (h : f =O[l] g) :
@@ -318,7 +318,7 @@ theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
     exact (ht.ne' h.1).elim
   · refine (tendsto_exp_mul_div_rpow_atTop (-b) a ha).inv_tendsto_atTop.congr' ?_
     refine (eventually_ge_atTop 0).mono fun t ht => ?_
-    field_simp [Real.exp_neg, rpow_neg ht]
+    simp [field, Real.exp_neg, rpow_neg ht]
 
 theorem isLittleO_log_rpow_atTop {r : ℝ} (hr : 0 < r) : log =o[atTop] fun x => x ^ r :=
   calc
