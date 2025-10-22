@@ -193,4 +193,22 @@ lemma Finset.Icc_succ_succ (m n : ℕ) :
   simp only [mem_Icc, union_insert, union_singleton, mem_insert]
   omega
 
+lemma Finset.Ico_succ_succ (m n : ℕ) :
+    Ico (-(m + 1) : ℤ) (n + 1) = Ico (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n : ℤ)} := by
+  ext
+  simp only [mem_Ico, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ioc_succ_succ (m n : ℕ) :
+    Ioc (-(m + 1) : ℤ) (n + 1) = Ioc (-m : ℤ) n ∪ {-(m : ℤ), (n + 1 : ℤ)} := by
+  ext
+  simp only [mem_Ioc, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ioo_succ_succ (m n : ℕ) :
+    Ioo (-(m + 1) : ℤ) (n + 1) = Ioo (-m : ℤ) n ∪ {-(m : ℤ), (n : ℤ)} := by
+  ext
+  simp only [mem_Ioo, union_insert, union_singleton, mem_insert]
+  omega
+
 end Nat
