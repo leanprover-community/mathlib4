@@ -842,8 +842,10 @@ variable {op : α → α → α} [ha : Std.Associative op]
 /-- Notation for `op a b`. -/
 local notation a " ⋆ " b => op a b
 
+-- Setting `priority := high` means that Lean will prefer this notation to the identical one
+-- for `Seq.seq`
 /-- Notation for `foldl op a l`. -/
-local notation (priority := high) l " <*> " a => foldl op a l
+local notation l " <*> " a => foldl op a l
 
 theorem foldl_op_eq_op_foldr_assoc :
     ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) ⋆ a₂) = a₁ ⋆ l.foldr (· ⋆ ·) a₂
