@@ -39,7 +39,7 @@ elab "Category*" ppSpace C:term : term => do
   let u ← mkFreshLevelMVar
   let v ← mkFreshLevelMVar
   let C ← instantiateExprMVars <| ← elabTermEnsuringType C (some <| .sort <| .succ u)
-  let instTp := .app (.const ``CategoryTheory.Category [v,u]) C
+  let instTp := .app (.const ``Category [v,u]) C
   let levelNames ← getLevelNames
   let ⟨mctx, vs, _, out⟩ :=
     (← getMCtx).levelMVarToParam (fun n => levelNames.elem n) (fun _ => false) instTp `v 1
