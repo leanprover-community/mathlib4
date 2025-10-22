@@ -262,7 +262,7 @@ example {Prime : ℕ → Prop} {a a' : ℕ} (h₁ : Prime (a + 1)) (h₂ : a = a
 /--
 error: Tactic `grewrite` failed: could not discharge b ≤ a using a ≤ b
 
-case h₁.h
+case h₂.h
 α : Type u_1
 inst✝² : CommRing α
 inst✝¹ : LinearOrder α

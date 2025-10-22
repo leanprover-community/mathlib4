@@ -514,8 +514,8 @@ partial def _root_.Lean.MVarId.gcongr
     unless containsHoleAnnotation mdataExpr do
       try withDefault g.applyRfl; return (true, names, #[])
       catch _ => throwTacticEx `gcongr g m!"\
-        subgoal {← withReducible g.getType'} should not be considered according to the \
-        provided pattern and is not closed by `rfl`"
+        subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
+        and is not closed by `rfl`"
 
   let lhs ← if relName == `_Implies then whnfR lhs else pure lhs
   let rhs ← if relName == `_Implies then whnfR rhs else pure rhs
