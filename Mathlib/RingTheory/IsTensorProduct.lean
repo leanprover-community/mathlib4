@@ -636,13 +636,13 @@ def IsPushout.cancelBaseChange : B ⊗[A] M ≃ₗ[S] S ⊗[R] M :=
     | tmul s' m => simp [Algebra.smul_def, TensorProduct.smul_tmul']
 
 @[simp]
-lemma IsPushout.cancelBaseChange_tmul [SMulCommClass A S B] (m : M) :
+lemma IsPushout.cancelBaseChange_tmul (m : M) :
     IsPushout.cancelBaseChange R S A B M (1 ⊗ₜ m) = 1 ⊗ₜ m := by
   change ((cancelBaseChangeAux R S A B M).symm).symm (1 ⊗ₜ[A] m) = 1 ⊗ₜ[R] m
   simp [cancelBaseChangeAux, TensorProduct.one_def]
 
 @[simp]
-lemma IsPushout.cancelBaseChange_symm_tmul [SMulCommClass A S B] (s : S) (m : M) :
+lemma IsPushout.cancelBaseChange_symm_tmul (s : S) (m : M) :
     (IsPushout.cancelBaseChange R S A B M).symm (s ⊗ₜ m) = algebraMap S B s ⊗ₜ m :=
   IsPushout.cancelBaseChangeAux_symm_tmul R S A B M s m
 
