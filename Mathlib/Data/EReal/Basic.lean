@@ -366,6 +366,10 @@ lemma toReal_nonpos {x : EReal} (hx : x ≤ 0) : x.toReal ≤ 0 := by
   · exact toReal_coe _ ▸ EReal.coe_nonpos.mp hx
   · simp
 
+lemma toReal_pos {x : EReal} (hx : 0 < x) (h'x : x ≠ ⊤) : 0 < x.toReal := by
+  lift x to ℝ using ⟨h'x, (ne_of_lt (bot_lt_zero.trans hx)).symm⟩
+  simpa using hx
+
 theorem toReal_le_toReal {x y : EReal} (h : x ≤ y) (hx : x ≠ ⊥) (hy : y ≠ ⊤) :
     x.toReal ≤ y.toReal := by
   lift x to ℝ using ⟨ne_top_of_le_ne_top hy h, hx⟩
