@@ -79,9 +79,6 @@ private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := b
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
-  zero := 0
-  one := 1
-  mul := (· * ·)
   inv := id
   mul_zero a := by cases a <;> rfl
   zero_mul a := by cases a <;> rfl

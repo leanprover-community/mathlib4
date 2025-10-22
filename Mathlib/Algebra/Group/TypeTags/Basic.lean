@@ -253,14 +253,10 @@ lemma toAdd_eq_zero {α : Type*} [Zero α] {x : Multiplicative α} :
   Iff.rfl
 
 instance Additive.addZeroClass [MulOneClass α] : AddZeroClass (Additive α) where
-  zero := 0
-  add := (· + ·)
   zero_add := @one_mul α _
   add_zero := @mul_one α _
 
 instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicative α) where
-  one := 1
-  mul := (· * ·)
   one_mul := @zero_add α _
   mul_one := @add_zero α _
 
