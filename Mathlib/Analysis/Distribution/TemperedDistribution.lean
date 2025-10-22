@@ -363,7 +363,6 @@ theorem eq_embeddings (f : 𝓢(E, F)) : ((f.toLp 2 μ) : 𝓢'(𝕜, E, F →L[
   filter_upwards [f.coeFn_toLp 2 μ, g.coeFn_toLp (1 - 2⁻¹)⁻¹ μ] with x hf hg
   rw [hf, hg]
 
-
 end Composition
 
 section Construction
@@ -410,6 +409,7 @@ theorem mkCompCLM_comp (A B : 𝓢(E, F) →L[𝕜] 𝓢(E, F)) :
   ext f g y
   simp only [coe_comp', Function.comp_apply, mkCompCLM_apply_apply]
 
+@[simp]
 theorem mkCompCLM_id : (mkCompCLM V (.id 𝕜 𝓢(E, F))) = .id _ _ := by
   ext f g y
   simp only [mkCompCLM_apply_apply, coe_id', id_eq]

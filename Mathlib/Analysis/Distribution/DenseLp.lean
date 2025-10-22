@@ -17,31 +17,24 @@ import Mathlib.MeasureTheory.Function.UniformIntegrable
 
 
 variable {𝕜 𝕜' D E F G R V : Type*}
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable [NormedAddCommGroup F]
-variable
-  [MeasurableSpace E]
-  [FiniteDimensional ℝ E]
+  [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [FiniteDimensional ℝ E]
+  [NormedAddCommGroup F]
 
 open scoped Nat NNReal ContDiff
-open SchwartzMap MeasureTheory
-open Pointwise
+open SchwartzMap MeasureTheory Pointwise ENNReal
 
 variable {μ : Measure E} [μ.IsAddHaarMeasure]
 
 variable [OpensMeasurableSpace E] in
-theorem HasCompactSupport.memLp_of_continuous {p : ENNReal} {f : E → F} (h₁ : HasCompactSupport f)
+theorem HasCompactSupport.memLp_of_continuous {p : ℝ≥0∞} {f : E → F} (h₁ : HasCompactSupport f)
     (h₂ : Continuous f) : MemLp f p μ := by
   obtain ⟨x₀, hx₀⟩ := h₂.norm.exists_forall_ge_of_hasCompactSupport h₁.norm
-  apply h₁.memLp_of_bound h₂.aestronglyMeasurable ‖f x₀‖
-  apply ae_of_all
-  exact hx₀
+  exact h₁.memLp_of_bound h₂.aestronglyMeasurable ‖f x₀‖ (ae_of_all _ hx₀)
 
-variable [CompleteSpace F] [BorelSpace E]
+variable [BorelSpace E]
+  [CompleteSpace F] [NormedSpace ℝ F]
 
-variable [NormedSpace ℝ F]
-
-theorem exist_eLpNorm₁ {p : ENNReal} (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
+theorem exist_eLpNorm₁ {p : ℝ≥0∞} (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
     (h₁ : HasCompactSupport f) (h₂ : Continuous f) (h₃ : MemLp f p μ) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
       g.support ⊆ Metric.cthickening 1 (tsupport f) ∧ ∀ x, dist (g x) (f x) ≤ ε := by
@@ -66,13 +59,13 @@ theorem exist_eLpNorm₁ {p : ENNReal} (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < �
   intro x₀ hx₀
   exact (h (lt_of_lt_of_le hx₀ inf_le_left)).le
 
-theorem exist_eLpNorm₂ {p : ENNReal} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
+theorem exist_eLpNorm₂ {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : ℝ} (hε : 0 < ε) {f : E → F}
     (h₁ : HasCompactSupport f) (h₂ : Continuous f) (h₃ : MemLp f p μ) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
     eLpNorm (g - f) p μ ≤ ENNReal.ofReal ε := by
   by_cases hf : f = 0
   · use 0
-    simp [hf, HasCompactSupport.zero]
+    simp only [HasCompactSupport.zero, hf, sub_self, eLpNorm_zero, zero_le, and_true, true_and]
     exact contDiff_const
   set s := Metric.cthickening 1 (tsupport f)
   have hs₁ : IsCompact s := h₁.cthickening
@@ -101,8 +94,7 @@ theorem exist_eLpNorm₂ {p : ENNReal} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : 
   refine ⟨g, hg₁, hg₂, ?_⟩
   have hs₃ : s.indicator (g - f) = g - f := by
     rw [Set.indicator_eq_self]
-    apply (Function.support_sub _ _).trans
-    apply Set.union_subset hg₃
+    apply (Function.support_sub _ _).trans (Set.union_subset hg₃ _)
     simp only [Function.support_subset_iff, ne_eq, Metric.mem_cthickening_iff, ENNReal.ofReal_one]
     intro x hx
     rw [EMetric.infEdist_zero_of_mem (subset_tsupport _ hx)]
@@ -110,7 +102,7 @@ theorem exist_eLpNorm₂ {p : ENNReal} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {ε : 
   grw [← hs₃]
   exact (eLpNorm_sub_le_of_dist_bdd μ hp hs₁.measurableSet hε'.le (fun x _ ↦ hg₄ x)).trans hε₂
 
-theorem exist_eLpNorm₃ {p : ENNReal} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {f : E → F} (hf : MemLp f p μ)
+theorem exist_eLpNorm₃ {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {f : E → F} (hf : MemLp f p μ)
     {ε : ℝ} (hε : 0 < ε) :
     ∃ g, eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε ∧ HasCompactSupport g ∧ ContDiff ℝ ∞ g := by
   have hε₂ : 0 < ε/2 := by positivity
@@ -124,25 +116,17 @@ theorem exist_eLpNorm₃ {p : ENNReal} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {f : E
     (hg'₄.aestronglyMeasurable.sub hg₄.aestronglyMeasurable) hp₂, hg₂, hg'₃]
   rw [← ENNReal.ofReal_add hε₂.le hε₂.le, add_halves]
 
-theorem SchwartzMap.denseRange_toLpCLM {p : ENNReal} (hp : p ≠ ⊤) [hp' : Fact (1 ≤ p)] :
+/-- Schwartz functions are dense in `Lp`. -/
+theorem SchwartzMap.denseRange_toLpCLM {p : ℝ≥0∞} (hp : p ≠ ⊤) [hp' : Fact (1 ≤ p)] :
     DenseRange (SchwartzMap.toLpCLM ℝ F p μ) := by
   intro f
-  refine (mem_closure_iff_nhds_basis EMetric.nhds_basis_closed_eball).2 fun ε hε ↦ ?_
-  by_cases hε' : ε ≠ ⊤
-  · obtain ⟨g, hg₁, hg₂, hg₃⟩ := exist_eLpNorm₃ hp hp'.out (Lp.memLp f)
-      (ENNReal.toReal_pos hε.ne' hε')
-    rw [ENNReal.ofReal_toReal hε'] at hg₁
-    use (hg₂.toSchwartzMap hg₃).toLp p μ
-    rw [EMetric.mem_closedBall']
-    simp only [Set.mem_range, toLpCLM_apply, exists_apply_eq_apply,
-      true_and]
-    rw [Lp.edist_def]
-    have : (f : E → F) - ((hg₂.toSchwartzMap hg₃).toLp p μ : E → F) =ᶠ[ae μ] (f : E → F) - g := by
-      filter_upwards [(hg₂.toSchwartzMap hg₃).coeFn_toLp p μ]
-      simp
-    rwa [eLpNorm_congr_ae this]
-  simp at hε'
-  rw [hε']
-  use (0 : 𝓢(E, F)).toLp p μ
-  simp only [Set.mem_range, toLpCLM_apply, EMetric.closedBall_top, Set.mem_univ, and_true]
-  use 0
+  refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedBall).2 fun ε hε ↦ ?_
+  obtain ⟨g, hg₁, hg₂, hg₃⟩ := exist_eLpNorm₃ hp hp'.out (Lp.memLp f) hε
+  use (hg₂.toSchwartzMap hg₃).toLp p μ
+  have : (f : E → F) - ((hg₂.toSchwartzMap hg₃).toLp p μ : E → F) =ᶠ[ae μ] (f : E → F) - g := by
+    filter_upwards [(hg₂.toSchwartzMap hg₃).coeFn_toLp p μ]
+    simp
+  simp only [Set.mem_range, toLpCLM_apply, exists_apply_eq_apply, Metric.mem_closedBall', true_and,
+    Lp.dist_def, eLpNorm_congr_ae this]
+  grw [hg₁, ENNReal.toReal_ofReal hε.le]
+  simp
