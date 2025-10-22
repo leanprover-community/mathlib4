@@ -356,7 +356,7 @@ private lemma exists_subset_mul_eq_mul_injOn (H : Subgroup G) (A : Finset G) :
   lift Z to Finset G using A.finite_toSet.subset hZA
   refine ⟨Z, mod_cast hZA, ?_, hZinj⟩
   simpa [-SetLike.mem_coe, Set.iUnion_op_smul_set] using congr(Set.sUnion $hHZA)
- 
+
 private lemma card_mul_eq_mul_card_of_injOn_opSMul {H : Subgroup G} [Fintype H]
     {Z : Finset G} (hZ : (Z : Set G).InjOn ((H : Set G) <• ·)) :
     Fintype.card H * #Z = #(Set.toFinset H * Z) := by

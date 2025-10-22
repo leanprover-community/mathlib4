@@ -558,7 +558,7 @@ section make_chains
 
 open Finset
 
-/-- 
+/--
 An explicit contiguous chain between `(a, b)` and `(c, d)` in `ℕ × ℕ`. We implement this as the
 union of two disjoint sets: the first is the chain from `(a, b)` to `(a, d)`, and the second is the
 chain from `(a, d)` to `(c, d)`.

@@ -267,7 +267,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
   -- goal is to see it as a family indexed by this countable set, because on the product indexed
   -- by this countable set we can build a measure. To do so we have to pull back our cylinders
   -- along the injection from `Π i : u, X i` to `Π i, X i`.
-  let u := ⋃ n, (s n).toSet 
+  let u := ⋃ n, (s n).toSet
   -- `tₙ` will be `sₙ` seen as a subset of `u`.
   let t n : Finset u := (s n).preimage Subtype.val Subtype.val_injective.injOn
   classical

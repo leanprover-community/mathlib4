@@ -327,7 +327,7 @@ private theorem average_density_near_total_density [Nonempty α]
     gcongr <;> [sz_positivity; norm_num]
   rw [sub_le_iff_le_add, ← sub_le_iff_le_add']
   apply density_sub_eps_le_sum_density_div_card hPα hPε hA hB
- 
+
 private theorem edgeDensity_chunk_aux [Nonempty α] (hP)
     (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPε : ↑100 ≤ ↑4 ^ #P.parts * ε ^ 5)
     (hU : U ∈ P.parts) (hV : V ∈ P.parts) :

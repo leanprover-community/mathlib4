@@ -26,7 +26,7 @@ variable {α β : Type*} [DecidableEq β]
 then the same is true for `(0 : Finset β)`. -/
 protected def smulZeroClass [Zero β] [SMulZeroClass α β] : SMulZeroClass α (Finset β) :=
   coe_injective.smulZeroClass ⟨toSet, coe_zero⟩ coe_smul_finset
- 
+
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Finset β → Finset β`. -/
 protected noncomputable def distribSMul [AddZeroClass β] [DistribSMul α β] :

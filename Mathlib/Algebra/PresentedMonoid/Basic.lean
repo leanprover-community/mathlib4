@@ -53,7 +53,7 @@ def mk (rels : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid α →* Pr
   toFun := Quotient.mk (conGen rels).toSetoid
   map_one' := rfl
   map_mul' := fun _ _ => rfl
- 
+
 /-- `of` is the canonical map from `α` to a presented monoid with generators `x : α`. The term `x`
 is mapped to the equivalence class of the image of `x` in `FreeMonoid α`. -/
 @[to_additive

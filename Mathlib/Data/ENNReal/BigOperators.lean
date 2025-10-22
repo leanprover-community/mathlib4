@@ -122,7 +122,7 @@ theorem exists_le_of_sum_le {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ�
 end Sum
 
 section Inv
- 
+
 lemma prod_inv_distrib {ι : Type*} {f : ι → ℝ≥0∞} {s : Finset ι}
     (hf : s.toSet.Pairwise fun i j ↦ f i ≠ 0 ∨ f j ≠ ∞) : (∏ i ∈ s, f i)⁻¹ = ∏ i ∈ s, (f i)⁻¹ := by
   induction s using Finset.cons_induction with

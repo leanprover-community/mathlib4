@@ -61,7 +61,7 @@ def toSet (C : BasicConstructibleSetData R) : Set (PrimeSpectrum R) :=
 @[simp]
 lemma toSet_map (φ : R →+* S) (C : BasicConstructibleSetData R) :
     (C.map φ).toSet = comap φ ⁻¹' C.toSet := by simp [toSet, map, ← Set.range_comp]
- 
+
 end BasicConstructibleSetData
 
 variable (R) in

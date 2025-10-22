@@ -84,7 +84,7 @@ theorem exists_union_disjoint_cardinal_eq_of_even (he : Even s.ncard) :
   obtain ⟨t, u, hutu, hdtu, hctu⟩ := Finset.exists_disjoint_union_of_even_card he
   use t.toSet, u.toSet
   simp [← Finset.coe_union, *]
- 
+
 theorem exists_union_disjoint_ncard_eq_of_even (he : Even s.ncard) :
     ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard := by
   obtain ⟨t, u, hutu, hdtu, hctu⟩ := exists_union_disjoint_cardinal_eq_of_even he

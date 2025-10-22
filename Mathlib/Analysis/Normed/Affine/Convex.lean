@@ -108,5 +108,5 @@ theorem Convex.exists_subset_interior_convexHull_finset_of_isCompact
     gcongr
     simpa
   · grw [hu₁, hs₁.convexHull_eq, hb₂, hV₂, hU₃]
- 
+
 end NormedAddCommGroup
