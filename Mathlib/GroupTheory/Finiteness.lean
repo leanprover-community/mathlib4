@@ -5,6 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
