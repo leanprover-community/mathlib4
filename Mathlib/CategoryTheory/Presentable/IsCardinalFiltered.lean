@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
+import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Comma.CardinalArrow
 import Mathlib.SetTheory.Cardinal.Cofinality
@@ -298,5 +298,32 @@ lemma IsCardinalFiltered.multicoequalizer
   obtain ⟨l, a, b, h⟩ := IsCardinalFiltered.wideSpan
     (fun i ↦ IsFiltered.coeqHom (f₁ i) (f₂ i)) hι
   exact ⟨l, b, fun i ↦ by rw [← h i, IsFiltered.coeq_condition_assoc]⟩
+
+lemma IsCardinalFiltered.of_final
+    {J₁ : Type u} [Category.{v} J₁] {J₂ : Type u'} [Category.{v'} J₂]
+    (F : J₁ ⥤ J₂) [F.Final] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalFiltered J₁ κ] :
+    IsCardinalFiltered J₂ κ := by
+  have := isFiltered_of_isCardinalFiltered J₁ κ
+  obtain ⟨h₁, h₂⟩ := (Functor.final_iff_of_isFiltered F).1 inferInstance
+  rw [isCardinalFiltered_iff]
+  refine ⟨fun ι j hι ↦ ?_, fun ι j k f hι ↦ ?_⟩
+  · choose a ha using fun i ↦ h₁ (j i)
+    exact ⟨F.obj (IsCardinalFiltered.max a hι),
+      fun i ↦ ⟨(ha i).some ≫ F.map (toMax a hι i)⟩⟩
+  · by_cases h : Nonempty ι
+    · obtain ⟨l, ⟨a⟩⟩ := h₁ k
+      choose m b hb using fun (i : ι × ι) ↦ h₂ (f i.1 ≫ a) (f i.2 ≫ a)
+      simp only [Category.assoc, Prod.forall] at hb
+      obtain ⟨n, c, d, hn⟩ := wideSpan b
+        (hasCardinalLT_prod (Cardinal.IsRegular.aleph0_le Fact.out) hι hι)
+      let i₀ : ι := Classical.arbitrary _
+      exact ⟨F.obj n, a ≫ F.map d, f i₀ ≫ a ≫ F.map d,
+        fun i ↦ by rw [← hn (i₀, i), Functor.map_comp, reassoc_of% (hb i₀ i)]⟩
+    · simp only [not_nonempty_iff] at h
+      obtain ⟨j', ⟨a⟩⟩ := h₁ j
+      obtain ⟨k', ⟨b⟩⟩ := h₁ k
+      exact ⟨F.obj (IsFiltered.max j' k'), b ≫ F.map (IsFiltered.rightToMax _ _),
+        a ≫ F.map (IsFiltered.leftToMax _ _), by simp⟩
 
 end CategoryTheory
