@@ -889,7 +889,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
       this.radical.symm ▸ (sInf_le ⟨hIm, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 
 theorem isRadical_bot_of_noZeroDivisors {R} [CommSemiring R] [NoZeroDivisors R] :
-    (⊥ : Ideal R).IsRadical := fun _ hx => hx.recOn fun _ hn => pow_eq_zero hn
+    (⊥ : Ideal R).IsRadical := fun _ hx => hx.recOn fun _ hn => eq_zero_of_pow_eq_zero hn
 
 @[simp]
 theorem radical_bot_of_noZeroDivisors {R : Type u} [CommSemiring R] [NoZeroDivisors R] :
