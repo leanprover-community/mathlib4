@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
-#  Distance function on ℕ
+# Distance function on ℕ
 
 This file defines a simple distance function on naturals from truncated subtraction.
 -/

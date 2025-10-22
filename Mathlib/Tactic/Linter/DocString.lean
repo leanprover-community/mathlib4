@@ -7,7 +7,7 @@ Authors: Michael Rothgang, Damiano Testa
 import Mathlib.Tactic.Linter.Header
 
 /-!
-#  The "DocString" style linter
+# The "DocString" style linter
 
 The "DocString" linter validates style conventions regarding doc-string formatting.
 -/

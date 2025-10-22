@@ -7,7 +7,7 @@ Authors: Damiano Testa
 import Mathlib.Tactic.Linter.Header
 
 /-!
-#  The `commandStart` linter
+# The `commandStart` linter
 
 The `commandStart` linter emits a warning if
 * either a command does not start at the beginning of a line;
