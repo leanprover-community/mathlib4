@@ -51,12 +51,22 @@ Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
   only depends on `t` at `x`.
 * `IsLocalFrameOn.eq_iff_coeff hs`: two sections `t` and `t'` are equal at `x` if and only if their
   coefficients at `x` w.r.t. `{sᵢ}` agree.
+* `IsLocalFrameOn.contMDiffOn_of_coeff hs`: a section `t` is `C^k` on `U` if each coefficient
+  `hs.coeff i t` is `C^k` on `U`
+* `IsLocalFrameOn.contMDiffAt_of_coeff hs`: a section `t` is `C^k` at `x ∈ U`
+  if all of its frame coefficients are
+* `IsLocalFrameOn.contMDiffOn_off_coeff hs`: a section `t` is `C^k` on an open set `t ⊆ U`
+  ff all of its frame coefficients are
+* `MDifferentiable` versions of the above three statements
+
+# TODO
 * `IsLocalFrameOn.contMDiffOn_coeff hs`: if `t` is a `C^k` section, each coefficient
   `hs.coeff i t` is `C^k` on `U`
 * `IsLocalFrameOn.contMDiffAt_iff_coeff hs`: a section `t` is `C^k` at `x ∈ U`
   iff all of its frame coefficients are
 * `IsLocalFrameOn.contMDiffOn_iff_coeff hs`: a section `t` is `C^k` on an open set `t ⊆ U`
   iff all of its frame coefficients are
+* a `MDifferentiable` version of each of these
 
 ## Implementation notes
 
