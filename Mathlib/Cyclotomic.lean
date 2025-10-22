@@ -84,6 +84,7 @@ example (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     inertiaDeg 𝒑 P = orderOf (p : ZMod m) ∧
       ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
   classical
+  have : IsAbelianGalois ℚ K := IsCyclotomicExtension.isAbelianGalois {n} ℚ K
   have : NeZero n := sorry
   have : NeZero m := sorry
   let ζ := zeta n ℚ K
@@ -109,20 +110,35 @@ example (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
   have h₂ := inertiaDeg_algebra_tower 𝒑 Pₘ P
   have h₃ : (𝒑.primesOver (𝓞 K)).ncard = (𝒑.primesOver (𝓞 Fₘ)).ncard *
       (Pₘ.primesOver (𝓞 K)).ncard := by
-    have := Fintype.sum_fiberwise (ι := 𝒑.primesOver (𝓞 K))
-      (κ := 𝒑.primesOver (𝓞 Fₘ)) (g := primesOverRestrict 𝒑 (𝓞 Fₘ) (𝓞 K))
-      (f := fun _ ↦ 1)
-    simp_rw [← Fintype.card_eq_sum_ones] at this
-    
+    rw [ncard_primesOver_eq_sum_ncard_primesOver ℤ (𝓞 Fₘ)]
+    have (P : (𝒑.primesOver (𝓞 Fₘ))) :
+        (P.1.primesOver (𝓞 K)).ncard = (Pₘ.primesOver (𝓞 K)).ncard := by
+      obtain ⟨σ, hσ⟩ := exists_map_eq_of_isGalois 𝒑 P.1 Pₘ ℚ Fₘ
+      let S := galLiftEquiv ℚ Fₘ Fₘ σ
+      let T := S.liftNormal K
+      let τ := galRestrict ℤ ℚ K (𝓞 K) T
+      refine Set.ncard_congr ?_ (fun Q ↦ ?_) ?_ ?_
+      · intro Q hQ
+        exact Q.map τ.toAlgHom
+      · intro ⟨hQ₁, hQ₂⟩
+        refine ⟨?_, ?_⟩
+        
 
-    have : (primesOverFinset 𝒑 (𝓞 K)).card =
-        ∑ Q ∈ primesOverFinset 𝒑 (𝓞 Fₘ), (primesOverFinset Q (𝓞 K)).card := by
-      rw [Finset.card_eq_sum_ones]
-      rw [← Finset.sum_fiberwise_of_maps_to _ (t := primesOverFinset 𝒑 (𝓞 Fₘ))
-        (g := fun Q ↦ comap (algebraMap (𝓞 Fₘ) (𝓞 K)) Q) (fun _ ↦ 1)]
 
-      sorry
-  have : IsAbelianGalois ℚ K := IsCyclotomicExtension.isAbelianGalois {n} ℚ K
+        sorry
+      · intro I J _ _ h
+        replace h := congr_arg (Ideal.map τ.symm.toAlgHom ·) h
+        simp_rw [Ideal.map_mapₐ] at h
+        simp_rw [AlgHom.coe_ideal_map] at h
+        simp only [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.symm_comp, AlgHom.id_toRingHom,
+          Ideal.map_id] at h
+        exact h
+      ·
+        sorry
+    simp_rw [this]
+    rw [Finset.sum_const, smul_eq_mul, Finset.card_univ]
+    rw [← Set.toFinset_card, ← Set.ncard_eq_toFinset_card']
+
   have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑) sorry (𝓞 K)
     ℚ K
   rw [finrank n K, hn, Nat.totient_mul, Nat.totient_prime_pow, add_tsub_cancel_right] at h_main
@@ -157,7 +173,16 @@ example (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     exact hm
 
 
+  rwa [mul_assoc _ (p ^ k), mul_comm (Pₘ.primesOver (𝓞 K)).ncard, mul_assoc, mul_assoc,
+    Nat.mul_eq_left, ← mul_assoc] at h_main
   sorry
+  sorry
+  sorry
+  exact hm
+  exact hp.out
+  exact Nat.zero_lt_succ k
+  sorry
+
 
 
 end general

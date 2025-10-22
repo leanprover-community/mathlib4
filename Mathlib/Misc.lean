@@ -1,5 +1,203 @@
 import Mathlib
 
+section Ideal.map
+
+theorem Ideal.map_algEquiv {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] (f : A ≃ₐ[R] B) (I : Ideal A) :
+    map f I = map (f : A ≃+* B) I := rfl
+
+theorem Ideal.comap_algEquiv {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] (f : B ≃ₐ[R] A) (I : Ideal A) :
+    comap f I = comap (f : B ≃+* A) I := rfl
+
+theorem Ideal.map_ringEquiv {R S : Type*} [Semiring R] [Semiring S] (f : R ≃+* S) (I : Ideal R) :
+    map f I = map (f : R →+* S) I := rfl
+
+theorem Ideal.comap_ringEquiv {R S : Type*} [Semiring R] [Semiring S] (f : S ≃+* R) (I : Ideal R) :
+    comap f I = comap (f : S →+* R) I := rfl
+
+theorem Ideal.map_eq_iff_eq_comap {R S : Type*} [Semiring R] [Semiring S] {I : Ideal R}
+    {J : Ideal S} {f : R ≃+* S} :
+    map f I = J ↔ I = comap f J :=
+  ⟨fun h ↦ by rw [← h, ← map_symm, ← map_coe f.symm, ← map_coe f, map_of_equiv],
+    fun h ↦ by
+      rw [h, ← comap_symm, ← comap_coe f.symm, ← comap_coe f]
+      exact (RingEquiv.symm_symm f) ▸ comap_of_equiv f.symm⟩
+
+theorem Ideal.map_injective_of_equiv {R S : Type*} [Semiring R] [Semiring S] (f : R ≃+* S) :
+    Function.Injective (map f) := by
+  intro _ _ h
+  rwa [map_eq_iff_eq_comap, comap_map_of_bijective _ f.bijective ] at h
+
+theorem Ideal.comap_injective_of_equiv {R S : Type*} [Semiring R] [Semiring S] (f : R ≃+* S) :
+    Function.Injective (comap f) := by
+  intro _ _ h
+  rw [← map_symm, ← map_symm] at h
+  exact Ideal.map_injective_of_equiv f.symm h
+
+theorem Ideal.map_comap_eq_self_of_equiv
+
+end Ideal.map
+
+section AlgHom.lift
+
+theorem AlgEquiv.liftNormal_trans {F : Type*} [Field F] {K : Type*} [Field K] [Algebra F K]
+    (χ ψ : K ≃ₐ[F] K)  (E : Type*) [Field E] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
+    [Normal F E] :
+    (χ.liftNormal E).trans (ψ.liftNormal E) = (χ.trans ψ).liftNormal E := by
+  ext
+  simp
+
+
+end AlgHom.lift
+
+noncomputable section AlgEquiv.restrictNormal'
+
+variable {A C₁ C₂ : Type*} (K B L M₁ M₂ : Type*) [CommRing A] [CommRing C₁] [Algebra A C₁]
+  [Field K]
+  [Field M₁] [CommRing C₂] [Algebra A C₂] [Field M₂] [Algebra A K] [IsFractionRing A K]
+  [Algebra K M₁] [Algebra K M₂] [Algebra A M₁] [Algebra A M₂]
+  [IsScalarTower A K M₁] [Algebra C₁ M₁] [IsScalarTower A C₁ M₁] [IsIntegralClosure C₁ A M₁]
+  [Algebra.IsAlgebraic K M₁]
+  [IsScalarTower A K M₂] [Algebra C₂ M₂] [IsScalarTower A C₂ M₂] [IsIntegralClosure C₂ A M₂]
+  [Algebra.IsAlgebraic K M₂]
+  [CommRing B] [Field L]
+  [Algebra B L] [Algebra A B] [Algebra K L] [Algebra L M₁] [Algebra L M₂]
+  [IsScalarTower K L M₁] [IsScalarTower K L M₂]
+  [Normal K L]
+  [Algebra A L] [IsScalarTower A K L] [IsScalarTower A B L] [IsIntegralClosure B A L]
+
+/-- Docstring. -/
+def AlgEquiv.restrictNormal' (σ : C₁ ≃ₐ[A] C₂) : B ≃ₐ[A] B :=
+  galRestrict A K L B ((galLiftEquiv K M₁ M₂ σ).restrictNormal L)
+
+variable [Algebra B C₁] [Algebra B C₂] [Algebra B M₁] [IsScalarTower B C₁ M₁] [Algebra B M₂]
+  [IsScalarTower B C₂ M₂] [IsScalarTower B L M₁] [IsScalarTower B L M₂]
+
+@[simp]
+theorem AlgEquiv.restrictNormal'_commutes (σ : C₁ ≃ₐ[A] C₂) (x : B) :
+    algebraMap B C₂ (σ.restrictNormal' K B L M₁ M₂ x) = σ (algebraMap B C₁ x) := by
+  unfold restrictNormal'
+  apply IsIntegralClosure.algebraMap_injective C₂ A M₂
+  rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply B L M₂,
+    algebraMap_galRestrict_apply, AlgEquiv.restrictNormal_commutes,
+    ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply B C₁ M₁,
+    galLiftEquiv_algebraMap_apply]
+
+end AlgEquiv.restrictNormal'
+
+noncomputable section AlgEquiv.liftNormal'
+
+variable {A B₁ B₂ : Type*} (K L₁ L₂ C M) [CommRing A] [CommRing B₁] [Algebra A B₁] [Field K]
+  [Field L₁]
+  [Algebra A K] [IsFractionRing A K] [Algebra K L₁] [Algebra A L₁] [IsScalarTower A K L₁]
+  [CommRing B₂] [Algebra A B₂] [Field L₂] [Algebra K L₂] [Algebra A L₂] [IsScalarTower A K L₂]
+  [CommRing C] [Algebra.IsAlgebraic K L₁] [Algebra.IsAlgebraic K L₂]
+  [Algebra B₁ L₁] [IsScalarTower A B₁ L₁] [IsIntegralClosure B₁ A L₁]
+  [Algebra B₂ L₂] [IsScalarTower A B₂ L₂] [IsIntegralClosure B₂ A L₂]
+  [Field M] [Algebra K M] [Algebra L₁ M] [Algebra L₂ M] [IsScalarTower K L₁ M]
+  [IsScalarTower K L₂ M] [Normal K M] [Algebra A C] [Algebra A M] [IsScalarTower A K M]
+  [Algebra C M] [IsScalarTower A C M] [IsIntegralClosure C A M]
+
+/-- Docstring. -/
+def AlgEquiv.liftNormal' (σ : B₁ ≃ₐ[A] B₂) : C ≃ₐ[A] C :=
+  galRestrict A K M C ((galLiftEquiv K L₁ L₂ σ).liftNormal M)
+
+variable [Algebra B₁ C] [Algebra B₂ C] [Algebra B₁ M] [IsScalarTower B₁ C M]
+  [IsScalarTower B₁ L₁ M] [Algebra B₂ M] [IsScalarTower B₂ C M] [IsScalarTower B₂ L₂ M]
+
+@[simp]
+theorem AlgEquiv.liftNormal'_commutes (σ : B₁ ≃ₐ[A] B₂) (x : B₁) :
+    (σ.liftNormal' K L₁ L₂ C M) (algebraMap B₁ C x) = algebraMap B₂ C (σ x) := by
+  unfold liftNormal'
+  apply IsIntegralClosure.algebraMap_injective C A M
+  rw [algebraMap_galRestrict_apply, ← IsScalarTower.algebraMap_apply,
+    ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply B₁ L₁ M,
+    AlgEquiv.liftNormal_commutes, galLiftEquiv_algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+
+@[simp]
+theorem AlgEquiv.restrict_liftNormal' [FaithfulSMul B₁ C] [Normal K L₁] (σ : B₁ ≃ₐ[A] B₁) :
+    (σ.liftNormal' K L₁ L₁ C M).restrictNormal' K B₁ L₁ M M = σ := by
+  ext
+  apply FaithfulSMul.algebraMap_injective B₁ C
+  rw [AlgEquiv.restrictNormal'_commutes, AlgEquiv.liftNormal'_commutes]
+
+end AlgEquiv.liftNormal'
+
+section primesOverGalois
+
+variable {A C₁ C₂ : Type*} [CommRing A]
+  [CommRing C₁] [IsIntegrallyClosed C₁] [Algebra A C₁] [Module.Finite A C₁]
+  [CommRing C₂] [IsIntegrallyClosed C₂] [Algebra A C₂] [Module.Finite A C₂]
+  {K L M₁ M₂ : Type*} [Field K] [Field M₁] [Field M₂] [Algebra A K] [IsFractionRing A K]
+  [Algebra C₁ M₁] [IsFractionRing C₁ M₁] [Algebra K M₁] [Algebra A M₁] [IsScalarTower A C₁ M₁]
+  [IsScalarTower A K M₁] [FiniteDimensional K M₁]
+  [Algebra C₂ M₂] [IsFractionRing C₂ M₂] [Algebra K M₂] [Algebra A M₂] [IsScalarTower A C₂ M₂]
+  [IsScalarTower A K M₂] [FiniteDimensional K M₂]
+  {B : Type*} [CommRing B] [Field L] [Algebra B L] [Algebra A B]
+  [Algebra K L] [Normal K L] [Algebra A L] [IsScalarTower A K L] [IsScalarTower A B L]
+  [IsIntegralClosure B A L]
+  [Algebra B C₁] [Algebra L M₁] [IsScalarTower K L M₁] [Algebra B M₁] [IsScalarTower B L M₁]
+  [IsScalarTower B C₁ M₁]
+  [Algebra B C₂] [Algebra L M₂] [IsScalarTower K L M₂] [Algebra B M₂] [IsScalarTower B L M₂]
+  [IsScalarTower B C₂ M₂]
+
+
+variable (K L M₁ M₂) in
+theorem Ideal.liesOver_iff_map_liesOver_map (P : Ideal B) (Q : Ideal C₁) (σ : C₁ ≃ₐ[A] C₂) :
+    (Q.map σ).LiesOver (P.map (σ.restrictNormal' K B L M₁ M₂)) ↔ Q.LiesOver P := by
+  rw [liesOver_iff, under_def, liesOver_iff, under_def, map_algEquiv, map_eq_iff_eq_comap,
+    comap_ringEquiv, comap_comap, map_algEquiv, ← comap_symm, comap_ringEquiv, comap_comap]
+  congr!
+  ext
+  simp [← AlgEquiv.symm_toRingEquiv]
+
+variable (K L M₁ M₂) in
+theorem Ideal.liesOver_iff_comap_liesOver_comap (P : Ideal B) (Q : Ideal C₁) (σ : C₁ ≃ₐ[A] C₁) :
+    (Q.comap σ).LiesOver (P.comap (σ.restrictNormal' K B L M₁ M₁)) ↔ Q.LiesOver P := by
+  rw [← liesOver_iff_map_liesOver_map K L M₁ M₁ _ _ σ, map_comap_eq_self_of_equiv,
+    map_comap_eq_self_of_equiv]
+
+variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B] [Module.Finite A B]
+  [IsFractionRing B L] [FiniteDimensional K L] [IsGalois K L] {C M : Type*} [CommRing C]
+  [IsIntegrallyClosed C] [Field M] [Algebra C M] [IsFractionRing C M] [Algebra A C] [Algebra B C]
+  [Algebra A M] [Algebra K M] [Algebra L M] [IsScalarTower K L M] [IsScalarTower A K M]
+  [IsScalarTower A C M] [IsIntegralClosure C A M] [Normal K M] [Module.Finite A C] [Algebra B M]
+  [IsScalarTower B C M] [FiniteDimensional K M] [IsScalarTower B L M] [FaithfulSMul B C]
+
+open Ideal in
+example (p : Ideal A) (P₁ P₂ : Ideal B) [P₁.IsPrime] [P₂.IsPrime] [P₁.LiesOver p] [P₂.LiesOver p] :
+    (P₁.primesOver C).ncard = (P₂.primesOver C).ncard := by
+  obtain ⟨σ, hσ⟩ := exists_map_eq_of_isGalois p P₁ P₂ K L
+  let τ := σ.liftNormal' K L L C M
+  refine Set.ncard_congr ?_ (fun Q ↦ ?_) ?_ ?_
+  · exact fun Q _ ↦ Q.map (σ.liftNormal' K L L C M)
+  · intro ⟨h₁, h₂⟩
+    refine ⟨map_isPrime_of_equiv _, ?_⟩
+    · rwa [← liesOver_iff_map_liesOver_map K L M M _ _ (σ.liftNormal' K L L C M),
+        AlgEquiv.restrict_liftNormal', hσ] at h₂
+  · exact fun _ _ _ _ h ↦ map_injective_of_equiv (AlgEquiv.liftNormal' K L L C M σ).toRingEquiv h
+  · intro Q ⟨hQ₁, hQ₂⟩
+    refine ⟨?_, ⟨?_, ?_⟩ , ?_⟩
+    · exact comap (AlgEquiv.liftNormal' K L L C M σ) Q
+    · exact comap_isPrime _ _
+    · have := liesOver_iff_comap_liesOver_comap (σ := σ.liftNormal' K L L C M)
+        (Q := Q) (P := P₂) (M₁ := M) (L := L) (K := K) ..
+      rwa [← this, AlgEquiv.restrict_liftNormal', ← hσ, comap_map_of_bijective] at hQ₂
+      exact σ.bijective
+    · rw [map_comap_eq_self_of_equiv]
+
+
+
+
+
+
+
+
+
+end primesOverGalois
+
+
 section primesOverRestrict
 
 @[simp]
