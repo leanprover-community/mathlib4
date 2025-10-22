@@ -36,6 +36,12 @@ lemma startsWith.disjoint_of_ne {w w' : α × Bool} (hw : w ≠ w') :
     Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_and]
   grind
 
+lemma startsWith.Injective : @startsWith α _|>.Injective := fun a b h ↦ by
+  simp only [startsWith, Set.ext_iff, Set.mem_setOf_eq] at *
+  specialize h (mk [a])
+  simp at h
+  assumption
+
 theorem startsWith_mk_mul {w : α × Bool} (g : FreeGroup α)
     (h : ¬ g ∈ startsWith (w.1, !w.2)) : mk [w] * g ∈ startsWith w := by
   by_cases hC : 0 < g.toWord.length
@@ -84,7 +90,7 @@ theorem Orbit.duplicate (x : X) (w : α × Bool) :
       exact ⟨⟨mk (b :: l), by simp [startsWith, h1.2.reduce_eq]⟩, rfl⟩
   · rintro (⟨-, ⟨w', rfl⟩, -, ⟨hw, rfl⟩, ⟨g, hg⟩, rfl⟩ | rfl)
     · exact ⟨mk [w] • g • x, ⟨⟨mk [w] * g, startsWith_mk_mul g
-        ((startsWith.neq_disjoint hw).notMem_of_mem_left hg)⟩,
+        ((startsWith.disjoint_of_ne hw).notMem_of_mem_left hg)⟩,
         mul_smul (mk [w]) g x⟩, inv_smul_smul (mk [w]) (g • x)⟩
     · exact ⟨mk [w] • i, ⟨⟨mk [w], rfl⟩, rfl⟩, inv_smul_smul (mk [w]) i⟩
 
