@@ -158,7 +158,6 @@ theorem constant_of_preserves_morphisms' [IsConnected J] {α : Type u₂} (F : J
     ∃ (a : α), ∀ (j : J), F j = a :=
   ⟨F (Classical.arbitrary _), fun _ ↦ constant_of_preserves_morphisms _ h _ _⟩
 
-
 /-- `J` is connected if: given any function `F : J → α` which is constant for any
 `j₁, j₂` for which there is a morphism `j₁ ⟶ j₂`, then `F` is constant.
 This can be thought of as a local-to-global property.
