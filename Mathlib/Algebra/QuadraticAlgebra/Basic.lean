@@ -182,9 +182,11 @@ section norm
 
 variable [CommRing R]
 
-/-- The norm of an element of `QuadraticAlgebra R a b`. -/
-def norm (z : QuadraticAlgebra R a b) : R :=
-  z.re * z.re + b * z.re * z.im - a * z.im * z.im
+/-- the norm in a quadratic algebra, as a `MonoidHom`. -/
+def norm : QuadraticAlgebra R a b →* R where
+  toFun z := z.re * z.re + b * z.re * z.im - a * z.im * z.im
+  map_mul' z w := by simp only [re_mul, im_mul]; ring
+  map_one' := by simp
 
 theorem norm_def (z : QuadraticAlgebra R a b) :
     z.norm = z.re * z.re + b * z.re * z.im - a * z.im * z.im :=
@@ -207,20 +209,6 @@ theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 :=
 theorem norm_intCast (n : ℤ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 :=
   by simp [norm_def, pow_two]
 
-@[simp]
-theorem norm_mul (z w : QuadraticAlgebra R a b) :
-    norm (z * w) = norm z * norm w := by
-  simp only [norm_def, re_mul, im_mul]; ring
-
-/-- `norm` as a `MonoidHom`. -/
-def normMonoidHom : QuadraticAlgebra R a b →* R where
-  toFun := norm
-  map_mul' := norm_mul
-  map_one' := norm_one
-
-theorem normMonoidHom_apply (r : QuadraticAlgebra R a b) :
-    normMonoidHom r = norm r := rfl
-
 theorem coe_norm_eq_mul_star (z : QuadraticAlgebra R a b) :
     ((norm z : R) : QuadraticAlgebra R a b) = z * star z := by
   ext <;> simp [norm, star, mul_comm] <;> ring
@@ -231,12 +219,14 @@ theorem norm_neg (x : QuadraticAlgebra R a b) : (-x).norm = x.norm := by
 
 @[simp]
 theorem norm_star (x : QuadraticAlgebra R a b) : (star x).norm = x.norm := by
-  simp only [norm, re_star, im_star, mul_neg, neg_mul, neg_neg, sub_left_inj]; ring
+  simp only [norm, MonoidHom.coe_mk, OneHom.coe_mk, re_star, im_star, mul_neg, neg_mul, neg_neg,
+    sub_left_inj]
+  ring
 
 theorem isUnit_iff_norm_isUnit {x : QuadraticAlgebra R a b} :
     IsUnit x ↔ IsUnit (x.norm) := by
   constructor
-  · exact IsUnit.map normMonoidHom
+  · exact IsUnit.map norm
   · simp only [isUnit_iff_exists]
     rintro ⟨r, hr, hr'⟩
     rw [← coe_inj (R := R) (a := a) (b := b), coe_mul,
@@ -255,7 +245,7 @@ alias ⟨mem_unitary, norm_eq_one⟩ := norm_eq_one_iff_mem_unitary
 /-- The kernel of the norm map on `QuadraticAlgebra R a b` equals
 the submonoid of unitary elements. -/
 theorem mker_norm_eq_unitary :
-    MonoidHom.mker (@normMonoidHom R a b _) = unitary (QuadraticAlgebra R a b) :=
+    MonoidHom.mker (@norm R a b _) = unitary (QuadraticAlgebra R a b) :=
   Submonoid.ext fun _ => norm_eq_one_iff_mem_unitary
 
 open nonZeroDivisors
