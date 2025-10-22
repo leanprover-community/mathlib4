@@ -83,7 +83,8 @@ theorem _root_.BoundedVariationOn.ae_differentiableAt_of_mem_uIcc {f : ℝ → V
   filter_upwards [h.locallyBoundedVariationOn.ae_differentiableWithinAt_of_mem, h₁, h₂]
     with x hx₁ hx₂ hx₃ hx₄
   rw [uIcc, mem_Icc] at hx₄
-  exact (hx₁ hx₄).differentiableAt (Icc_mem_nhds (by grind) (by grind))
+  exact (hx₁ hx₄).differentiableAt
+    (Icc_mem_nhds (lt_of_le_of_ne hx₄.left hx₂.symm) (lt_of_le_of_ne hx₄.right hx₃))
 
 /-- A real function into a finite-dimensional real vector space with bounded variation on a set
 is differentiable almost everywhere in this set. -/
