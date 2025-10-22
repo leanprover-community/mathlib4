@@ -20,7 +20,7 @@ cardinality as element of an `AddGroupWithOne`.
 * `Finset.cast_card_sdiff`: cardinality of `t \ s` is the difference of cardinalities if `s ⊆ t`.
 -/
 
-assert_not_exists MonoidWithZero OrderedCommMonoid
+assert_not_exists MonoidWithZero
 
 open Nat
 

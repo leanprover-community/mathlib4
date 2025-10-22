@@ -18,7 +18,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists OrderedAddCommMonoid Field
+assert_not_exists Field
 
 open Function
 open scoped Pointwise

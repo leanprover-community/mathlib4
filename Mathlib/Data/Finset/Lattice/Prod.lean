@@ -12,7 +12,7 @@ import Mathlib.Data.Finset.Prod
 This file is concerned with folding binary lattice operations over finsets.
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+assert_not_exists MonoidWithZero
 
 open Function Multiset OrderDual
 

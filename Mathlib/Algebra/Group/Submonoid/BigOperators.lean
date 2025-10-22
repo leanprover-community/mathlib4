@@ -23,7 +23,6 @@ submonoid, submonoids
 -/
 
 -- We don't need ordered structures to establish basic membership facts for submonoids
-assert_not_exists OrderedSemiring
 
 variable {M A B : Type*}
 

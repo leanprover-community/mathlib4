@@ -25,7 +25,7 @@ of `α`/`Set α` on `Set β`.
   instances reducible changes the behavior of `simp`.
 -/
 
-assert_not_exists MonoidWithZero OrderedAddCommMonoid
+assert_not_exists MonoidWithZero
 
 open Function MulOpposite
 open scoped Pointwise

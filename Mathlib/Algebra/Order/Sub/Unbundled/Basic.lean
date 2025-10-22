@@ -11,7 +11,6 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 -/
 
 -- These are about *unbundled* canonically ordered monoids
-assert_not_exists OrderedCommMonoid
 
 variable {α : Type*}
 
