@@ -687,6 +687,363 @@ theorem coplanar_insert_iff_of_mem_affineSpan {s : Set P} {p : P} (h : p ∈ aff
 
 end AffineSpace'
 
+/-!
+## Affine dimension and affine equivalences
+
+This section develops the theory of affine dimension and proves that affinely independent
+families of the same size can be mapped to each other by affine automorphisms.
+-/
+
+section AffineIndependenceAutomorphisms
+
+variable (k : Type*) {V : Type*} {P : Type*}
+variable [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
+
+/-- The affine dimension of a set in an affine space is the finite rank of the direction
+of its affine span. -/
+noncomputable def affineDim (s : Set P) : ℕ :=
+  Module.finrank k (affineSpan k s).direction
+
+/-- If the affine span of a set equals the whole space, then its affine dimension equals
+the dimension of the ambient vector space. This version doesn't require proving the set
+is nonempty, since that follows from the spanning condition when the space is nonempty. -/
+lemma affineDim_eq_finrank_of_affineSpan_eq_top
+    {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [_inst : FiniteDimensional k V]
+    [Nonempty P]
+    {s : Set P} (h : affineSpan k s = ⊤) :
+    affineDim k s = Module.finrank k V :=
+  calc affineDim k s
+      = Module.finrank k (affineSpan k s).direction := rfl
+    _ = Module.finrank k (⊤ : AffineSubspace k P).direction := by rw [h]
+    _ = Module.finrank k (⊤ : Submodule k V) := by rw [AffineSubspace.direction_top]
+    _ = Module.finrank k V := finrank_top k V
+
+/-- The affine span of a nonempty set equals the whole space if and only if its affine
+dimension equals the dimension of the ambient vector space. -/
+lemma affineSpan_eq_top_iff_affineDim_eq_finrank
+    {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
+    {s : Set P} (hs : s.Nonempty) :
+    affineSpan k s = ⊤ ↔ affineDim k s = Module.finrank k V := by
+  haveI : Nonempty P := hs.to_type
+  have h_span_nonempty : (affineSpan k s : Set P).Nonempty :=
+    hs.mono (subset_affineSpan k s)
+  constructor
+  · intro h_top
+    exact affineDim_eq_finrank_of_affineSpan_eq_top h_top
+  · intro h_dim
+    have h_dir_eq : (affineSpan k s).direction = ⊤ := by
+      apply Submodule.eq_top_of_finrank_eq
+      rw [← h_dim]
+      rfl
+    exact (AffineSubspace.direction_eq_top_iff_of_nonempty h_span_nonempty).mp h_dir_eq
+
+/-- Affine dimension is monotone: if `s ⊆ affineSpan k t`, then
+`affineDim k s ≤ affineDim k t`. -/
+theorem affineDim_le_of_subset_affineSpan
+    {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
+    {s t : Set P} (h : s ⊆ affineSpan k t) :
+    affineDim k s ≤ affineDim k t := by
+  calc affineDim k s
+      = Module.finrank k (affineSpan k s).direction := rfl
+    _ ≤ Module.finrank k (affineSpan k t).direction :=
+        Submodule.finrank_mono (AffineSubspace.direction_le (affineSpan_le_of_subset_coe h))
+    _ = affineDim k t := rfl
+
+/-- For an affinely independent family spanning the whole space, removing any base point
+leaves exactly `finrank` points.
+
+This follows from the fact that affinely independent spanning families have `finrank + 1`
+elements. -/
+lemma AffineIndependent.card_subtype_ne_eq_finrank_of_span_eq_top
+    {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {f : ι → P}
+    (hf : AffineIndependent k f)
+    (hf_span : affineSpan k (Set.range f) = ⊤)
+    (i₀ : ι) :
+    Fintype.card {i // i ≠ i₀} = Module.finrank k V := by
+  calc Fintype.card {i // i ≠ i₀}
+      = Fintype.card ι - 1 := Set.card_ne_eq i₀
+    _ = (Module.finrank k V + 1) - 1 := by
+          rw [hf.affineSpan_eq_top_iff_card_eq_finrank_add_one.mp hf_span]
+    _ = Module.finrank k V := by omega
+
+/-- Given an affinely independent family that spans the entire space, the differences from any
+base point form a linear basis of the ambient space.
+
+This is a key construction: affine bases correspond to linear bases via the difference map. -/
+lemma AffineIndependent.toBasis_of_span_eq_top
+    {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {f : ι → P}
+    (hf : AffineIndependent k f)
+    (hf_span : affineSpan k (Set.range f) = ⊤)
+    (i₀ : ι) :
+    ∃ (B : Module.Basis {i // i ≠ i₀} k V), ∀ i : {i // i ≠ i₀}, B i = f i -ᵥ f i₀ := by
+  let f_diff : {i // i ≠ i₀} → V := fun i => f i -ᵥ f i₀
+
+  have h_linear_indep : LinearIndependent k f_diff := by
+    have h := (affineIndependent_iff_linearIndependent_vsub k f i₀).mp hf
+    convert h using 2
+
+  have h_card : Fintype.card {i // i ≠ i₀} = Module.finrank k V :=
+    hf.card_subtype_ne_eq_finrank_of_span_eq_top hf_span i₀
+
+  have h_span : ⊤ ≤ Submodule.span k (Set.range f_diff) := by
+    exact (h_linear_indep.span_eq_top_of_card_eq_finrank' h_card).ge
+
+  let B : Module.Basis {i // i ≠ i₀} k V := Module.Basis.mk h_linear_indep h_span
+
+  use B
+  intro i
+  exact Module.Basis.mk_apply h_linear_indep h_span i
+
+/-- Two affinely independent families with the same index type that both span the entire
+space can be mapped to each other by an affine automorphism. -/
+theorem AffineIndependent.exists_affineEquiv_of_span_eq_top
+    {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
+    {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (f g : ι → P)
+    (hf : AffineIndependent k f)
+    (hg : AffineIndependent k g)
+    (hf_span : affineSpan k (Set.range f) = ⊤)
+    (hg_span : affineSpan k (Set.range g) = ⊤) :
+    ∃ (T : P ≃ᵃ[k] P), T ∘ f = g := by
+  obtain ⟨i₀⟩ := Nonempty.of_affineSpan_range_eq_top f hf_span
+
+  obtain ⟨B_f, hB_f⟩ := hf.toBasis_of_span_eq_top hf_span i₀
+  obtain ⟨B_g, hB_g⟩ := hg.toBasis_of_span_eq_top hg_span i₀
+
+  use AffineEquiv.ofLinearEquiv (B_f.equiv B_g (Equiv.refl _)) (f i₀) (g i₀)
+
+  ext i
+  by_cases hi : i = i₀
+  · simp [hi]
+  · simp only [AffineEquiv.ofLinearEquiv_apply, Function.comp_apply]
+    rw [← hB_f ⟨i, hi⟩, Module.Basis.equiv_apply, Equiv.refl_apply, hB_g, vsub_vadd]
+
+/-- An affinely independent family in a finite-dimensional space has cardinality at most
+`finrank + 1`. -/
+lemma AffineIndependent.card_le_finrank_add_one
+    {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
+    {ι : Type*} [Fintype ι] {f : ι → P} (hf : AffineIndependent k f) :
+    Fintype.card ι ≤ Module.finrank k V + 1 := by
+  calc Fintype.card ι
+      ≤ Module.finrank k (vectorSpan k (Set.range f)) + 1 := hf.card_le_finrank_succ
+    _ ≤ Module.finrank k V + 1 := by
+        apply Nat.add_le_add_right
+        exact Submodule.finrank_le _
+
+/-- If an affinely independent family has cardinality strictly less than `finrank + 1`,
+then its affine span is a proper subspace. -/
+lemma AffineIndependent.affineSpan_ne_top_of_card_lt_finrank_add_one
+    {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
+    {ι : Type*} [Fintype ι] {f : ι → P}
+    (hf : AffineIndependent k f)
+    (h_card : Fintype.card ι < Module.finrank k V + 1) :
+    affineSpan k (Set.range f) ≠ ⊤ := by
+  intro h_top
+  have h_card_eq := hf.affineSpan_eq_top_iff_card_eq_finrank_add_one.mp h_top
+  omega
+
+/-- Two affinely independent families spanning affine subspaces with
+equal affine dimension have the same cardinality. -/
+lemma affineIndependent_card_eq_of_affineDim_eq
+    {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
+    {ι₁ ι₂ : Type*} [Fintype ι₁] [Fintype ι₂] [Nonempty ι₁] [Nonempty ι₂]
+    {f₁ : ι₁ → P} {f₂ : ι₂ → P}
+    {M₁ M₂ : AffineSubspace k P}
+    (hf₁_span : affineSpan k (Set.range f₁) = M₁)
+    (hf₂_span : affineSpan k (Set.range f₂) = M₂)
+    (hf₁_indep : AffineIndependent k f₁)
+    (hf₂_indep : AffineIndependent k f₂)
+    (h_dim : affineDim k (M₁ : Set P) = affineDim k (M₂ : Set P)) :
+    Fintype.card ι₁ = Fintype.card ι₂ := by
+  have h₁ := hf₁_indep.finrank_vectorSpan_add_one
+  have h₂ := hf₂_indep.finrank_vectorSpan_add_one
+  have : vectorSpan k (Set.range f₁) = M₁.direction := by
+    rw [← direction_affineSpan, hf₁_span]
+  rw [this] at h₁
+  have : vectorSpan k (Set.range f₂) = M₂.direction := by
+    rw [← direction_affineSpan, hf₂_span]
+  rw [this] at h₂
+  have h_finrank_eq : Module.finrank k M₁.direction = Module.finrank k M₂.direction := by
+    unfold affineDim at h_dim
+    rwa [AffineSubspace.affineSpan_coe, AffineSubspace.affineSpan_coe] at h_dim
+  omega
+
+/-- Affinely independent families of the same size can be mapped to each other by an affine
+automorphism.
+
+This corresponds to Rockafellar's "Convex Analysis" (1970), Theorem 1.6.
+
+Given two affinely independent families `f, g : ι → P` with the same finite index type,
+there exists an affine automorphism `T : P ≃ᵃ[k] P` such that `T (f i) = g i` for all `i`. -/
+theorem AffineIndependent.exists_affineEquiv
+    {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
+    (ι : Type*) [Fintype ι] [DecidableEq ι]
+    (f g : ι → P)
+    (hf : AffineIndependent k f)
+    (hg : AffineIndependent k g) :
+    ∃ (T : P ≃ᵃ[k] P), T ∘ f = g := by
+  have h_card_bound : Fintype.card ι ≤ Module.finrank k V + 1 := hf.card_le_finrank_add_one
+  induction h : Module.finrank k V + 1 - Fintype.card ι generalizing ι f g with
+  | zero =>
+    have h_lower : Module.finrank k V + 1 ≤ Fintype.card ι := by
+      exact Nat.sub_eq_zero_iff_le.mp h
+    by_cases h_empty : IsEmpty ι
+    · use AffineEquiv.refl k P
+      ext i
+      exact IsEmpty.elim h_empty i
+    · rw [not_isEmpty_iff] at h_empty
+      have h_card_eq : Fintype.card ι = Module.finrank k V + 1 := by omega
+      have h_span_f : affineSpan k (Set.range f) = ⊤ := by
+        exact hf.affineSpan_eq_top_iff_card_eq_finrank_add_one.mpr h_card_eq
+      have h_span_g : affineSpan k (Set.range g) = ⊤ := by
+        exact hg.affineSpan_eq_top_iff_card_eq_finrank_add_one.mpr h_card_eq
+      exact AffineIndependent.exists_affineEquiv_of_span_eq_top f g hf hg h_span_f h_span_g
+
+  | succ n ih =>
+    by_cases h_empty : IsEmpty ι
+    · use AffineEquiv.refl k P
+      ext i
+      exact IsEmpty.elim h_empty i
+    · rw [not_isEmpty_iff] at h_empty
+      have h_card_lt : Fintype.card ι < Module.finrank k V + 1 := by omega
+      obtain ⟨p_f, hp_f⟩ := AffineSubspace.exists_not_mem_of_ne_top _
+        (hf.affineSpan_ne_top_of_card_lt_finrank_add_one h_card_lt)
+      obtain ⟨p_g, hp_g⟩ := AffineSubspace.exists_not_mem_of_ne_top _
+        (hg.affineSpan_ne_top_of_card_lt_finrank_add_one h_card_lt)
+      let f' : Option ι → P := fun o => o.elim p_f f
+      let g' : Option ι → P := fun o => o.elim p_g g
+      have hf' : AffineIndependent k f' := hf.option_extend hp_f
+      have hg' : AffineIndependent k g' := hg.option_extend hp_g
+      obtain ⟨T, hT⟩ := @ih (Option ι) _ _ f' g' hf' hg'
+        (by simp only [Fintype.card_option]; omega)
+        (by simp only [Fintype.card_option]; omega)
+      use T
+      ext i
+      exact congrFun hT (some i)
+
+/-!
+### Affine subspaces of equal dimension
+-/
+
+/-- Every affine subspace contains a finite affinely independent spanning set.
+
+Given an affine subspace M, we can find a finite set within M that affinely spans M
+and is affinely independent. -/
+lemma exists_affineIndependent_of_affineSubspace
+    {k : Type*} {V : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [FiniteDimensional k V]
+    (M : AffineSubspace k V) :
+    ∃ (s : Set V),
+      s.Finite ∧
+      s ⊆ M ∧
+      affineSpan k s = M ∧
+      AffineIndependent k (Subtype.val : s → V) := by
+  -- Apply exists_affineIndependent to the underlying set of M
+  obtain ⟨t, ht_sub, ht_span, ht_indep⟩ := exists_affineIndependent k V (M : Set V)
+
+  -- t is finite because it's affinely independent in a finite-dimensional space
+  have ht_finite : t.Finite := finite_set_of_fin_dim_affineIndependent k ht_indep
+
+  exact ⟨t, ht_finite, ht_sub, by rwa [AffineSubspace.affineSpan_coe] at ht_span, ht_indep⟩
+
+/-- Affine subspaces of the same dimension can be mapped to each other by an affine
+automorphism of the ambient space.
+
+This corresponds to Rockafellar's "Convex Analysis" (1970), Corollary 1.6.1.
+
+An m-dimensional affine set can be expressed as the affine hull of an affinely independent
+set of m+1 points. Since affine hulls are preserved by affine transformations, applying
+the main theorem gives the result. -/
+theorem AffineSubspace.exists_affineEquiv_of_affineDim_eq
+    {k : Type*} {V : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [FiniteDimensional k V]
+    (M₁ M₂ : AffineSubspace k V)
+    (h_nonempty₁ : (M₁ : Set V).Nonempty)
+    (h_nonempty₂ : (M₂ : Set V).Nonempty)
+    (h_dim : affineDim k (M₁ : Set V) = affineDim k (M₂ : Set V)) :
+    ∃ T : V ≃ᵃ[k] V, M₁.map T = M₂ := by
+  classical
+  obtain ⟨s₁, hs₁_finite, hs₁_sub, hs₁_span, hs₁_indep⟩ :=
+    exists_affineIndependent_of_affineSubspace M₁
+
+  obtain ⟨s₂, hs₂_finite, hs₂_sub, hs₂_span, hs₂_indep⟩ :=
+    exists_affineIndependent_of_affineSubspace M₂
+
+  haveI : Fintype s₁ := hs₁_finite.fintype
+  haveI : Fintype s₂ := hs₂_finite.fintype
+
+  let f₁ : s₁ → V := Subtype.val
+  let f₂ : s₂ → V := Subtype.val
+
+  have hf₁_span : affineSpan k (Set.range f₁) = M₁ := by
+    rw [Subtype.range_coe]; exact hs₁_span
+  have hf₂_span : affineSpan k (Set.range f₂) = M₂ := by
+    rw [Subtype.range_coe]; exact hs₂_span
+
+  haveI : Nonempty s₁ := Nonempty.of_affineSpan_range f₁ M₁ hf₁_span h_nonempty₁
+  haveI : Nonempty s₂ := Nonempty.of_affineSpan_range f₂ M₂ hf₂_span h_nonempty₂
+
+  have h_card_eq : Fintype.card s₁ = Fintype.card s₂ :=
+    affineIndependent_card_eq_of_affineDim_eq
+      hf₁_span hf₂_span hs₁_indep hs₂_indep h_dim
+
+  let e : s₁ ≃ s₂ := Fintype.equivOfCardEq h_card_eq
+  let g : s₁ → V := f₂ ∘ e
+
+  have hg_indep : AffineIndependent k g :=
+    hs₂_indep.comp_embedding e.toEmbedding
+
+  have h_range_e : Set.range (⇑e) = Set.univ := e.surjective.range_eq
+  have h_range_g : Set.range g = Set.range f₂ := by
+    unfold g
+    rw [Set.range_comp, h_range_e, Set.image_univ]
+  have hg_span : affineSpan k (Set.range g) = M₂ := by
+    rw [h_range_g, hf₂_span]
+
+  obtain ⟨T, hT⟩ := AffineIndependent.exists_affineEquiv s₁ f₁ g hs₁_indep hg_indep
+
+  use T
+  calc M₁.map T
+      = (affineSpan k (Set.range f₁)).map T := by
+          rw [← hf₁_span]
+    _ = affineSpan k (T '' Set.range f₁) := by
+          exact AffineSubspace.map_span T.toAffineMap (Set.range f₁)
+    _ = affineSpan k (Set.range g) := by
+          congr 1
+          ext x
+          simp only [Set.mem_image, Set.mem_range]
+          constructor
+          · intro ⟨y, ⟨i, hy⟩, hTy⟩
+            use i
+            rw [← hTy, ← hy]
+            show g i = T (f₁ i)
+            have := congrFun hT i
+            simp only [Function.comp_apply] at this
+            exact this.symm
+          · intro ⟨i, hx⟩
+            use f₁ i, ⟨i, rfl⟩
+            rw [← hx]
+            show T (f₁ i) = g i
+            have := congrFun hT i
+            simp only [Function.comp_apply] at this
+            exact this
+    _ = M₂ := by
+          rw [hg_span]
+
+end AffineIndependenceAutomorphisms
+
 section DivisionRing
 
 variable {k : Type*} {V : Type*} {P : Type*}

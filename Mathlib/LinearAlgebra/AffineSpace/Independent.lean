@@ -556,6 +556,71 @@ theorem affineCombination_mem_affineSpan_pair {p : ι → P} (h : AffineIndepend
   · simp only [Pi.sub_apply, sub_eq_iff_eq_add]
   · simp_all only [Pi.sub_apply, Finset.sum_sub_distrib, sub_self]
 
+/-!
+### Helper lemmas for affine span and nonemptiness
+-/
+
+/-- A proper affine subspace does not contain all points. -/
+lemma AffineSubspace.exists_not_mem_of_ne_top (S : AffineSubspace k P) (h : S ≠ ⊤) :
+    ∃ p : P, p ∉ S := by
+  have h_ne_univ : (S : Set P) ≠ Set.univ := by
+    intro h_eq
+    have h_top : S = ⊤ := SetLike.coe_injective h_eq
+    exact h h_top
+  exact (Set.ne_univ_iff_exists_notMem (S : Set P)).mp h_ne_univ
+
+/-- If the affine span of the range of a function is a nonempty affine subspace,
+then the index type must be nonempty. -/
+lemma Nonempty.of_affineSpan_range (f : ι → P) (M : AffineSubspace k P)
+    (h_span : affineSpan k (Set.range f) = M) (h_nonempty : (M : Set P).Nonempty) : Nonempty ι := by
+  by_contra h_empty
+  have h_range_empty : Set.range f = ∅ := Set.range_eq_empty_iff.mpr (not_nonempty_iff.mp h_empty)
+  rw [h_range_empty, AffineSubspace.span_empty] at h_span
+  have : (M : Set P) = ∅ := by simp [← h_span]
+  exact Set.not_nonempty_empty (this ▸ h_nonempty)
+
+/-- If the affine span of the range of a function equals the entire space, then the index type
+must be nonempty. -/
+lemma Nonempty.of_affineSpan_range_eq_top (f : ι → P) (h : affineSpan k (Set.range f) = ⊤) :
+    Nonempty ι :=
+  Nonempty.of_affineSpan_range f ⊤ h Set.univ_nonempty
+
+/-!
+### Extensionality lemmas for affine maps and equivalences based on spanning
+-/
+
+/-- If two affine maps agree on a set that spans the entire space, then they are equal.
+
+Affine maps are uniquely determined by their values on any spanning set. Affine independence
+is not required for uniqueness, only spanning. -/
+theorem AffineMap.ext_of_span_eq_top {V₁ V₂ P₁ P₂ : Type*}
+    [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
+    [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {ι : Type*} [Fintype ι] (p : ι → P₁)
+    (h_span : affineSpan k (Set.range p) = ⊤)
+    (f g : P₁ →ᵃ[k] P₂)
+    (h_agree : ∀ i, f (p i) = g (p i)) : f = g := by
+  ext x
+  have hx : x ∈ affineSpan k (Set.range p) := by
+    rw [h_span]
+    exact AffineSubspace.mem_top k V₁ x
+  obtain ⟨w, hw_sum, hw_eq⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hx
+  rw [hw_eq]
+  rw [Finset.map_affineCombination Finset.univ p w hw_sum f,
+      Finset.map_affineCombination Finset.univ p w hw_sum g]
+  have : (f ∘ p : ι → P₂) = (g ∘ p : ι → P₂) := funext h_agree
+  rw [this]
+
+/-- If two affine automorphisms agree on a set that spans the entire space, then they are equal.
+
+Specialization of `AffineMap.ext_of_span_eq_top` to affine automorphisms. -/
+theorem AffineEquiv.ext_of_span_eq_top {ι : Type*} [Fintype ι] (p : ι → P)
+    (h_span : affineSpan k (Set.range p) = ⊤)
+    (T₁ T₂ : P ≃ᵃ[k] P)
+    (h_agree : T₁ ∘ p = T₂ ∘ p) : T₁ = T₂ := by
+  rw [← AffineEquiv.toAffineMap_inj]
+  exact AffineMap.ext_of_span_eq_top p h_span T₁.toAffineMap T₂.toAffineMap (congrFun h_agree)
+
 end AffineIndependent
 
 section DivisionRing
@@ -750,6 +815,51 @@ theorem AffineIndependent.affineIndependent_update_of_notMem_affineSpan [Decidab
   have h₂ : p '' {x | x ≠ i} = f '' {x | x ≠ i} := Set.image_congr <| by simpa using congr_fun h₁
   replace ha : AffineIndependent k fun x : {x | x ≠ i} ↦ f x := h₁ ▸ AffineIndependent.subtype ha _
   exact AffineIndependent.affineIndependent_of_notMem_span ha <| by aesop
+
+/-!
+### Extending affinely independent families
+-/
+
+/-- Extending an affinely independent family with a point outside its affine span preserves
+affine independence.
+
+This uses `Option.elim` to extend `f : ι → P` to `Option ι → P` by designating `p` as the
+value at `none`. -/
+lemma AffineIndependent.option_extend
+    {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
+    {ι : Type*} [Nonempty ι]
+    {f : ι → P} (hf : AffineIndependent k f)
+    {p : P} (hp : p ∉ affineSpan k (Set.range f)) :
+    AffineIndependent k (fun o : Option ι => o.elim p f) := by
+  let f' : Option ι → P := fun o => o.elim p f
+
+  have h_comp_eq : (fun x : {y : Option ι // y ≠ none} => f' x) =
+      f ∘ (fun x => Option.get x.val (Option.ne_none_iff_isSome.mp x.prop)) := by
+    ext ⟨x, hx⟩
+    cases x with
+    | some i => rfl
+    | none => exact absurd rfl hx
+
+  have h_sub : AffineIndependent k (fun x : {y : Option ι // y ≠ none} => f' x) := by
+    rw [h_comp_eq]
+    let e : {y : Option ι // y ≠ none} ↪ ι :=
+      ⟨fun x => Option.get x.val (Option.ne_none_iff_isSome.mp x.prop),
+       fun ⟨x, hx⟩ ⟨y, hy⟩ h_eq => by
+         simp only [Subtype.mk.injEq]
+         cases x with
+         | some i =>
+           cases y with
+           | some j => simp_all
+           | none => exact absurd rfl hy
+         | none => exact absurd rfl hx⟩
+    exact hf.comp_embedding e
+
+  have h_not_mem : f' none ∉ affineSpan k (f' '' {x : Option ι | x ≠ none}) := by
+    rw [Option.elim_image_some_eq_range]
+    exact hp
+
+  exact AffineIndependent.affineIndependent_of_notMem_span h_sub h_not_mem
 
 end DivisionRing
 

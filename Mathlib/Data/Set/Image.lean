@@ -1251,6 +1251,23 @@ theorem injective_iff {α β} {f : Option α → β} :
 theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (range (f ∘ some)) :=
   Set.ext fun _ => Option.exists.trans <| eq_comm.or Iff.rfl
 
+theorem range_elim {α β} (b : β) (f : α → β) :
+    range (fun o : Option α => o.elim b f) = insert b (range f) := by
+  rw [range_eq]
+  simp [Function.comp_def]
+
+theorem elim_image_some_eq_range {α β} (f : α → β) (b : β) :
+    (fun o : Option α => o.elim b f) '' {x : Option α | x ≠ none} = range f := by
+  ext y
+  simp only [mem_range, mem_image, mem_setOf_eq]
+  constructor
+  · intro ⟨x, hx_ne, hx_eq⟩
+    cases x with
+    | none => contradiction
+    | some i => exact ⟨i, hx_eq⟩
+  · intro ⟨i, hi⟩
+    exact ⟨some i, some_ne_none i, hi⟩
+
 end Option
 
 namespace Set
