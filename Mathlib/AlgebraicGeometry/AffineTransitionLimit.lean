@@ -49,15 +49,14 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
     let 𝒰 := (D.obj i).affineCover.finiteSubcover
     have (i' : _) : IsAffine (𝒰.X i') := inferInstanceAs (IsAffine (Spec _))
     obtain ⟨j, H⟩ :
-        ∃ j : 𝒰.I₀, ∀ {i'} (f : i' ⟶ i), Nonempty ((𝒰.pullbackCover (D.map f)).X j) := by
-      simp_rw [← not_isEmpty_iff]
+        ∃ j : 𝒰.I₀, ∀ {i'} (f : i' ⟶ i), Nonempty ((𝒰.pullback₁ (D.map f)).X j) := by
       by_contra! H
       choose i' f hf using H
       let g (j) := IsCofiltered.infTo (insert i (Finset.univ.image i'))
         (Finset.univ.image fun j : 𝒰.I₀ ↦ ⟨_, _, by simp, by simp, f j⟩) (X := j)
-      have (j : 𝒰.I₀) : IsEmpty ((𝒰.pullbackCover (D.map (g i (by simp)))).X j) := by
-        let F : (𝒰.pullbackCover (D.map (g i (by simp)))).X j ⟶
-            (𝒰.pullbackCover (D.map (f j))).X j :=
+      have (j : 𝒰.I₀) : IsEmpty ((𝒰.pullback₁ (D.map (g i (by simp)))).X j) := by
+        let F : (𝒰.pullback₁ (D.map (g i (by simp)))).X j ⟶
+            (𝒰.pullback₁ (D.map (f j))).X j :=
           pullback.map _ _ _ _ (D.map (g _ (by simp))) (𝟙 _) (𝟙 _) (by
             rw [← D.map_comp, IsCofiltered.infTo_commutes]
             · simp [g]
@@ -65,7 +64,7 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
             · exact Finset.mem_image_of_mem _ (Finset.mem_univ _)) (by simp)
         exact Function.isEmpty F.base
       obtain ⟨x, -⟩ :=
-        (𝒰.pullbackCover (D.map (g i (by simp)))).covers (Nonempty.some inferInstance)
+        Cover.covers (𝒰.pullback₁ (D.map (g i (by simp)))) (Nonempty.some inferInstance)
       exact (this _).elim x
     let F := Over.post D ⋙ Over.pullback (𝒰.f j) ⋙ Over.forget _
     have (i' : _) : IsAffine (F.obj i') :=
@@ -270,7 +269,7 @@ structure ExistsHomHomCompEqCompAux where
   𝒰S : Scheme.OpenCover.{u} S
   [h𝒰S : ∀ i, IsAffine (𝒰S.X i)]
   /-- (Implementation) A family of open covers refining `𝒰S`. See the section docstring. -/
-  𝒰X (i : (Scheme.Cover.pullbackCover 𝒰S f).I₀) : Scheme.OpenCover.{u} ((𝒰S.pullbackCover f).X i)
+  𝒰X (i : (𝒰S.pullback₁ f).I₀) : Scheme.OpenCover.{u} ((𝒰S.pullback₁ f).X i)
   [h𝒰X : ∀ i j, IsAffine ((𝒰X i).X j)]
 
 attribute [instance] ExistsHomHomCompEqCompAux.h𝒰S ExistsHomHomCompEqCompAux.h𝒰X
@@ -299,7 +298,7 @@ lemma exists_index : ∃ (i' : I) (hii' : i' ⟶ A.i),
   use (A.c.π.app A.i ≫ A.a).base s
   have H : A.c.π.app A.i ≫ A.a ≫ pullback.diagonal f =
       A.c.π.app A.i ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb) := by ext <;> simp [hab]
-  simp [← Scheme.comp_base_apply, - Scheme.comp_coeBase, H]
+  simp [← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base, H]
 
 /-- (Implementation)
 The index `i'` such that `a` and `b` restricted onto `i'` maps into the diagonal components.
@@ -325,7 +324,7 @@ The covering of `D(i')` by the pullback of the diagonal components of `X ×ₛ X
 See the section docstring. -/
 noncomputable def 𝒰D₀ : Scheme.OpenCover.{u} (D.obj A.i') :=
   Scheme.Cover.mkOfCovers (Σ i : A.𝒰S.I₀, (A.𝒰X i).I₀) _
-    (fun i ↦ ((Scheme.Pullback.diagonalCover f A.𝒰S A.𝒰X).pullbackCover A.g).f ⟨i.1, i.2, i.2⟩)
+    (fun i ↦ ((Scheme.Pullback.diagonalCover f A.𝒰S A.𝒰X).pullback₁ A.g).f ⟨i.1, i.2, i.2⟩)
     (fun x ↦ by simpa [← Set.mem_range, Scheme.Pullback.range_fst,
         Scheme.Pullback.diagonalCoverDiagonalRange] using A.range_g_subset ⟨x, rfl⟩)
 
@@ -354,8 +353,8 @@ def hc' (j : A.𝒰D.I₀) : IsLimit (A.c' j) :=
 variable [∀ i, IsAffineHom (A.c.π.app i)]
 
 lemma exists_eq (j : A.𝒰D.I₀) : ∃ (k : I) (hki' : k ⟶ A.i'),
-    (A.𝒰D.pullbackCover (D.map hki')).f j ≫ D.map (hki' ≫ A.hii') ≫ A.a =
-      (A.𝒰D.pullbackCover (D.map hki')).f j ≫ D.map (hki' ≫ A.hii') ≫ A.b := by
+    (A.𝒰D.pullback₁ (D.map hki')).f j ≫ D.map (hki' ≫ A.hii') ≫ A.a =
+      (A.𝒰D.pullback₁ (D.map hki')).f j ≫ D.map (hki' ≫ A.hii') ≫ A.b := by
   have : IsAffine (A.𝒰D.X j) := by dsimp [𝒰D]; infer_instance
   have (i : _) : IsAffine ((Over.post D ⋙ Over.pullback (A.𝒰D.f j) ⋙ Over.forget _).obj i) := by
     dsimp; infer_instance
@@ -369,7 +368,7 @@ lemma exists_eq (j : A.𝒰D.I₀) : ∃ (k : I) (hki' : k ⟶ A.i'),
   have H₂ := congr($(pullback.condition (f := A.g) (g := (Scheme.Pullback.diagonalCover f
     A.𝒰S A.𝒰X).f ⟨j.1.1, (j.1.2, j.1.2)⟩)) ≫ pullback.snd _ _)
   simp only [Scheme.Pullback.openCoverOfBase_I₀, Scheme.Pullback.openCoverOfBase_X,
-    Scheme.Cover.pullbackCover_X, Scheme.Cover.pullbackHom, Scheme.Pullback.openCoverOfLeftRight_I₀,
+    Scheme.Cover.pullbackHom, Scheme.Pullback.openCoverOfLeftRight_I₀,
     g, Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
     Scheme.Pullback.diagonalCover_map] at H₁ H₂
   obtain ⟨k, hik, hjk, H⟩ := Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOfFiniteType
@@ -459,7 +458,7 @@ lemma Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType
     · exact hl2 _ _ (Finset.mem_image_of_mem _ (Finset.mem_univ _))
     · exact .symm <| hl2 _ _ (Finset.mem_image_of_mem _ (by simp))
   refine ⟨l, hl1 ho ≫ hki' _ ≫ A.hii', hl1 ho ≫ hki' _ ≫ A.hii', ?_⟩
-  apply (𝒰Df.pullbackCover (D.map <| hl1 ho ≫ hki' _)).hom_ext
+  apply Cover.hom_ext (𝒰Df.pullback₁ (D.map <| hl1 ho ≫ hki' _))
   intro u
   let F : pullback (D.map (hl1 ho ≫ hki' (A.𝒰D.idx o.1))) (𝒰Df.f u) ⟶
       pullback (D.map (hki' <| A.𝒰D.idx u.1)) (A.𝒰D.f <| A.𝒰D.idx u.1) :=
@@ -467,7 +466,9 @@ lemma Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType
       (𝟙 _) (𝟙 _) (by rw [Category.comp_id, ← D.map_comp, this]) rfl
   have hF : F ≫ pullback.fst (D.map (hki' _)) (A.𝒰D.f _) =
       pullback.fst _ _ ≫ D.map (hl1 (by simp [O])) := by simp [F]
-  simp only [Cover.pullbackCover_f, Functor.map_comp, Category.assoc, Set.top_eq_univ] at heq ⊢
+  simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
+    PreZeroHypercover.pullback₁_X, PreZeroHypercover.pullback₁_f, Functor.map_comp, Category.assoc]
+    at heq ⊢
   simp_rw [← D.map_comp_assoc, reassoc_of% this o u, D.map_comp_assoc]
   rw [← reassoc_of% hF, ← reassoc_of% hF, heq]
 

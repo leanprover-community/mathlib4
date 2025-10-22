@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.AlgebraicGeometry.Cover.Over
-import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+import Mathlib.AlgebraicGeometry.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 import Mathlib.CategoryTheory.Sites.Over
 
@@ -36,17 +36,20 @@ open CategoryTheory Limits
 namespace AlgebraicGeometry.Scheme
 
 variable {P Q : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
+  [P.IsStableUnderBaseChange]
 
 /-- The presieve defined by a `P`-cover of `S`-schemes. -/
-def Cover.toPresieveOver {X : Over S} (𝒰 : Cover.{u} P X.left) [𝒰.Over S] : Presieve X :=
+def Cover.toPresieveOver {X : Over S} (𝒰 : Cover.{u} (precoverage P) X.left) [𝒰.Over S] :
+    Presieve X :=
   Presieve.ofArrows (fun i ↦ (𝒰.X i).asOver S) (fun i ↦ (𝒰.f i).asOver S)
 
 /-- The presieve defined by a `P`-cover of `S`-schemes with `Q`. -/
-def Cover.toPresieveOverProp {X : Q.Over ⊤ S} (𝒰 : Cover.{u} P X.left) [𝒰.Over S]
+def Cover.toPresieveOverProp {X : Q.Over ⊤ S} (𝒰 : Cover.{u} (precoverage P) X.left) [𝒰.Over S]
     (h : ∀ j, Q (𝒰.X j ↘ S)) : Presieve X :=
   Presieve.ofArrows (fun i ↦ (𝒰.X i).asOverProp S (h i)) (fun i ↦ (𝒰.f i).asOverProp S)
 
-lemma Cover.overEquiv_generate_toPresieveOver_eq_ofArrows {X : Over S} (𝒰 : Cover.{u} P X.left)
+lemma Cover.overEquiv_generate_toPresieveOver_eq_ofArrows {X : Over S}
+    (𝒰 : Cover.{u} (precoverage P) X.left)
     [𝒰.Over S] : Sieve.overEquiv X (Sieve.generate 𝒰.toPresieveOver) =
       Sieve.ofArrows 𝒰.X 𝒰.f := by
   ext V f
@@ -60,22 +63,21 @@ lemma Cover.overEquiv_generate_toPresieveOver_eq_ofArrows {X : Over S} (𝒰 : C
     ext : 1
     simpa
 
-lemma Cover.toPresieveOver_le_arrows_iff {X : Over S} (R : Sieve X) (𝒰 : Cover.{u} P X.left)
-    [𝒰.Over S] :
+lemma Cover.toPresieveOver_le_arrows_iff {X : Over S} (R : Sieve X)
+    (𝒰 : Cover.{u} (precoverage P) X.left) [𝒰.Over S] :
     𝒰.toPresieveOver ≤ R.arrows ↔
       Presieve.ofArrows 𝒰.X 𝒰.f ≤ (Sieve.overEquiv X R).arrows := by
   simp_rw [← Sieve.giGenerate.gc.le_iff_le, ← Sieve.overEquiv_le_overEquiv_iff]
   rw [overEquiv_generate_toPresieveOver_eq_ofArrows]
 
 variable [P.IsMultiplicative] [P.RespectsIso]
-  [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
 
 variable (P Q S)
 
 /-- The pretopology on `Over S` induced by `P` where coverings are given by `P`-covers
 of `S`-schemes. -/
 def overPretopology : Pretopology (Over S) where
-  coverings Y R := ∃ (𝒰 : Cover.{u} P Y.left) (_ : 𝒰.Over S), R = 𝒰.toPresieveOver
+  coverings Y R := ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S), R = 𝒰.toPresieveOver
   has_isos {X Y} f _ := ⟨coverOfIsIso f.left, inferInstance, (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
     rintro Y X f _ ⟨𝒰, h, rfl⟩
@@ -99,9 +101,11 @@ abbrev overGrothendieckTopology : GrothendieckTopology (Over S) :=
 lemma overGrothendieckTopology_eq_toGrothendieck_overPretopology :
     S.overGrothendieckTopology P = (S.overPretopology P).toGrothendieck := by
   ext X R
-  rw [GrothendieckTopology.mem_over_iff, Pretopology.mem_toGrothendieck]
+  rw [GrothendieckTopology.mem_over_iff]
   constructor
-  · rintro ⟨T, ⟨𝒰, rfl⟩, hT⟩
+  · intro hR
+    obtain ⟨𝒰, hle⟩ := exists_cover_of_mem_grothendieckTopology hR
+    rw [mem_grothendieckTopology_iff] at hR
     letI (i : 𝒰.I₀) : (𝒰.X i).Over S := { hom := 𝒰.f i ≫ X.hom }
     letI : 𝒰.Over S :=
       { over := inferInstance
@@ -109,14 +113,14 @@ lemma overGrothendieckTopology_eq_toGrothendieck_overPretopology :
     use 𝒰.toPresieveOver, ⟨𝒰, inferInstance, rfl⟩
     rwa [Cover.toPresieveOver_le_arrows_iff]
   · rintro ⟨T, ⟨𝒰, h, rfl⟩, hT⟩
-    use Presieve.ofArrows 𝒰.X 𝒰.f, ⟨𝒰, rfl⟩
+    use Presieve.ofArrows 𝒰.X 𝒰.f, 𝒰.mem_pretopology
     rwa [Cover.toPresieveOver_le_arrows_iff] at hT
 
 variable {S}
 
 lemma mem_overGrothendieckTopology (X : Over S) (R : Sieve X) :
     R ∈ S.overGrothendieckTopology P X ↔
-      ∃ (𝒰 : Cover.{u} P X.left) (_ : 𝒰.Over S), 𝒰.toPresieveOver ≤ R.arrows := by
+      ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S), 𝒰.toPresieveOver ≤ R.arrows := by
   rw [overGrothendieckTopology_eq_toGrothendieck_overPretopology]
   constructor
   · rintro ⟨T, ⟨𝒰, h, rfl⟩, hle⟩
@@ -167,8 +171,9 @@ are given by `P`-coverings in `S`-schemes satisfying `Q`.
 The most common case is `P = Q`. In this case, this is simply surjective families
 in `S`-schemes with `P`. -/
 def smallPretopology : Pretopology (Q.Over ⊤ S) where
-  coverings Y R := ∃ (𝒰 : Cover.{u} P Y.left) (_ : 𝒰.Over S) (h : ∀ j : 𝒰.I₀, Q (𝒰.X j ↘ S)),
-    R = 𝒰.toPresieveOverProp h
+  coverings Y R :=
+    ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S) (h : ∀ j : 𝒰.I₀, Q (𝒰.X j ↘ S)),
+      R = 𝒰.toPresieveOverProp h
   has_isos {X Y} f := ⟨coverOfIsIso f.left, inferInstance, fun _ ↦ Y.prop,
     (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
@@ -181,7 +186,7 @@ def smallPretopology : Pretopology (Q.Over ⊤ S) where
   transitive := by
     rintro X _ T ⟨𝒰, h, p, rfl⟩ H
     choose V h pV hV using H
-    let 𝒱j (j : 𝒰.I₀) : (Cover P ((𝒰.X j).asOverProp S (p j)).left) :=
+    let 𝒱j (j : 𝒰.I₀) : (Cover (precoverage P) ((𝒰.X j).asOverProp S (p j)).left) :=
       V ((𝒰.f j).asOverProp S) ⟨j⟩
     refine ⟨𝒰.bind (fun j ↦ 𝒱j j), inferInstance, fun j ↦ pV _ _ _, ?_⟩
     convert Presieve.ofArrows_bind _ (fun j ↦ ((𝒰.f j).asOverProp S)) _
@@ -231,13 +236,13 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
       𝒰.map_prop _, hy⟩
     use 𝒰.idx x
   · choose Y f y hf hP hy using h
-    let 𝒰 : X.left.Cover P :=
+    let 𝒰 : X.left.Cover (precoverage P) :=
       { I₀ := X.left,
         X := fun i ↦ (Y i).left
         f := fun i ↦ (f i).left
-        map_prop := hP
-        idx := id
-        covers := fun i ↦ ⟨y i, hy i⟩ }
+        mem₀ := by
+          rw [presieve₀_mem_precoverage_iff]
+          refine ⟨fun x ↦ ⟨x, y x, hy x⟩, hP⟩ }
     letI : 𝒰.Over S :=
       { over := fun i ↦ inferInstance
         isOver_map := fun i ↦ inferInstance }
@@ -248,7 +253,7 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
 
 lemma mem_smallGrothendieckTopology [P.HasOfPostcompProperty P] (X : P.Over ⊤ S) (R : Sieve X) :
     R ∈ S.smallGrothendieckTopology P X ↔
-      ∃ (𝒰 : Cover.{u} P X.left) (_ : 𝒰.Over S) (h : ∀ j, P (𝒰.X j ↘ S)),
+      ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S) (h : ∀ j, P (𝒰.X j ↘ S)),
           𝒰.toPresieveOverProp h ≤ R.arrows := by
   rw [smallGrothendieckTopology_eq_toGrothendieck_smallPretopology]
   constructor
