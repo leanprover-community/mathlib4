@@ -252,6 +252,7 @@ alias lt_of_mul_lt_mul_of_nonneg_left := lt_of_mul_lt_mul_left
 alias lt_of_mul_lt_mul_of_nonneg_right := lt_of_mul_lt_mul_right
 alias le_of_mul_le_mul_of_pos_left := le_of_mul_le_mul_left
 alias le_of_mul_le_mul_of_pos_right := le_of_mul_le_mul_right
+
 /-- Pullback `PosMulMono`. -/
 lemma Function.Injective.posMulMono [PosMulMono α] {β : Type*} [Zero β] [Mul β] [Preorder β]
     (f : β → α) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y)
