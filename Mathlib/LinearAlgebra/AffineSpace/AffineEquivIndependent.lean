@@ -24,10 +24,10 @@ The file is organized into two sections:
 ## Main results
 
 ### General (any dimension)
-* `exists_point_not_mem_of_affineSubspace_ne_top`: A proper affine subspace does not contain
+* `AffineSubspace.exists_not_mem_of_ne_top`: A proper affine subspace does not contain
   all points
-* `nonempty_of_affineSpan_eq_top`: If affine span equals the entire space, index type is nonempty
-* `AffineMap.eq_of_eq_on_spanning`: Affine maps uniquely determined by values on spanning sets
+* `Nonempty.of_affineSpan_range_eq_top`: Index type is nonempty if affine span is top
+* `AffineMap.ext_of_span_eq_top`: Affine maps uniquely determined by values on spanning sets
 * `AffineEquiv.eq_of_eq_on_spanning`: Affine automorphisms uniquely determined on spanning sets
 * `affineIndependent_option_extend`: Extending affinely independent families preserves independence
 * `affineIndependent_card_eq_of_finrank_direction_eq`: Two affinely independent families
@@ -37,8 +37,10 @@ The file is organized into two sections:
 * `affineDim_le_of_subset_affineSpan`: Affine dimension is monotone with respect to affine span
 * `linearIndependent_card_eq_finrank_span_eq_top`: Linearly independent family with cardinality
   equal to ambient dimension spans the entire space
-* `linearBasis_of_affineIndependent_spanning`: Construct linear basis from affinely independent
+* `AffineIndependent.toBasis_of_span_eq_top`: Construct linear basis from affinely independent
   spanning family via the difference map
+* `affineEquivOfLinearEquiv`: Construct an affine equivalence from a linear equivalence
+  and two base points
 * `AffineIndependent.card_le_finrank_add_one`: Affinely independent families have cardinality
   at most `finrank + 1`
 * `affineIndependent_indexed`: Two affinely independent families that span the entire space
@@ -84,7 +86,7 @@ section General
 -/
 
 /-- A proper affine subspace does not contain all points. -/
-lemma exists_point_not_mem_of_affineSubspace_ne_top
+lemma AffineSubspace.exists_not_mem_of_ne_top
     (S : AffineSubspace ℝ E) (h : S ≠ ⊤) :
     ∃ p : E, p ∉ S := by
   -- Convert to set reasoning: S ≠ ⊤ as affine subspaces means (S : Set E) ≠ Set.univ
@@ -97,7 +99,7 @@ lemma exists_point_not_mem_of_affineSubspace_ne_top
 
 /-- If the affine span of the range of a function equals the entire space, then the index type
 must be nonempty. -/
-lemma nonempty_of_affineSpan_eq_top {ι : Type*} (f : ι → E)
+lemma Nonempty.of_affineSpan_range_eq_top {ι : Type*} (f : ι → E)
     (h : affineSpan ℝ (range f) = ⊤) : Nonempty ι := by
   -- Proof by contradiction
   by_contra h_empty
@@ -123,7 +125,7 @@ spans the entire space, then they are equal.
 
 Affine maps are uniquely determined by their values on any spanning set. Affine independence
 is not required for uniqueness, only spanning. -/
-theorem AffineMap.eq_of_eq_on_spanning
+theorem AffineMap.ext_of_span_eq_top
     {ι : Type*} [Fintype ι]
     {P₁ P₂ : Type*} [NormedAddCommGroup P₁] [InnerProductSpace ℝ P₁]
     [NormedAddCommGroup P₂] [InnerProductSpace ℝ P₂]
@@ -152,7 +154,7 @@ theorem AffineMap.eq_of_eq_on_spanning
 /-- **Uniqueness of affine automorphisms on spanning sets**: If two affine automorphisms
 agree on a set that spans the entire space, then they are equal.
 
-Specialization of `AffineMap.eq_of_eq_on_spanning` to affine automorphisms. -/
+Specialization of `AffineMap.ext_of_span_eq_top` to affine automorphisms. -/
 theorem AffineEquiv.eq_of_eq_on_spanning
     {ι : Type*} [Fintype ι]
     (p : ι → E)
@@ -163,7 +165,7 @@ theorem AffineEquiv.eq_of_eq_on_spanning
   -- Use AffineEquiv.toAffineMap_inj: affine equivalences are equal iff their affine maps are equal
   rw [← AffineEquiv.toAffineMap_inj]
   -- Apply the general theorem for affine maps
-  exact AffineMap.eq_of_eq_on_spanning p h_span T₁.toAffineMap T₂.toAffineMap h_agree
+  exact AffineMap.ext_of_span_eq_top p h_span T₁.toAffineMap T₂.toAffineMap h_agree
 
 /-!
 ### Extending affinely independent families
@@ -205,20 +207,21 @@ lemma affineIndependent_option_extend
 
     exact hf.comp_embedding e
 
+    -- The image equals range f
+  have h_image_eq : f' '' {x : Option ι | x ≠ none} = range f := by
+    ext y
+    simp only [mem_image, Set.mem_setOf_eq, mem_range]
+    constructor
+    · intro ⟨x, hx_ne, hx_eq⟩
+      cases x with
+      | none => contradiction
+      | some i => use i; rw [← h_some]; exact hx_eq
+    · intro ⟨i, hi⟩
+      use some i
+      exact ⟨Option.some_ne_none i, h_some i ▸ hi⟩
+
   -- Show f' none ∉ affineSpan ℝ (f' '' {x | x ≠ none})
   have h_not_mem : f' none ∉ affineSpan ℝ (f' '' {x : Option ι | x ≠ none}) := by
-    -- The image equals range f
-    have h_image_eq : f' '' {x : Option ι | x ≠ none} = range f := by
-      ext y
-      simp only [mem_image, Set.mem_setOf_eq, mem_range]
-      constructor
-      · intro ⟨x, hx_ne, hx_eq⟩
-        cases x with
-        | none => contradiction
-        | some i => use i; rw [← h_some]; exact hx_eq
-      · intro ⟨i, hi⟩
-        use some i
-        exact ⟨Option.some_ne_none i, h_some i ▸ hi⟩
     rw [h_image_eq, h_none]
     exact hp
 
@@ -287,6 +290,7 @@ section FiniteDimensional
 -/
 
 /-- Affine dimension is monotone: if `s ⊆ affineSpan ℝ t`, then `affineDim ℝ s ≤ affineDim ℝ t`. -/
+@[simp]
 theorem affineDim_le_of_subset_affineSpan {s t : Set E} (h : s ⊆ affineSpan ℝ t) :
     affineDim ℝ s ≤ affineDim ℝ t := by
   -- Use affineSpan_mono to get affineSpan ℝ s ≤ affineSpan ℝ (affineSpan ℝ t)
@@ -328,9 +332,8 @@ lemma linearIndependent_card_eq_finrank_span_eq_top
 base point form a linear basis of the ambient space.
 
 This is a key construction: affine bases correspond to linear bases via the difference map. -/
-lemma linearBasis_of_affineIndependent_spanning
-    {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (f : ι → E)
+lemma AffineIndependent.toBasis_of_span_eq_top
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {f : ι → E}
     (hf : AffineIndependent ℝ f)
     (hf_span : affineSpan ℝ (range f) = ⊤)
     (i₀ : ι) :
@@ -365,6 +368,31 @@ lemma linearBasis_of_affineIndependent_spanning
   intro i
   exact Module.Basis.mk_apply h_linear_indep h_span i
 
+/-- Construct an affine equivalence from a linear equivalence and two base points.
+
+Given a linear equivalence `A : E ≃ₗ[ℝ] E` and base points `f₀ g₀ : E`, this constructs
+the affine equivalence `T x = A x + (g₀ - A f₀)`. This is the standard way to convert
+a linear automorphism into an affine automorphism with specified base point mapping. -/
+def affineEquivOfLinearEquiv (A : E ≃ₗ[ℝ] E) (f₀ g₀ : E) : E ≃ᵃ[ℝ] E := {
+  toFun := fun x => A x + (g₀ - A f₀)
+  invFun := fun x => A.symm (x - (g₀ - A f₀))
+  left_inv := by
+    intro x
+    simp only [add_sub_cancel_right]
+    exact A.left_inv x
+  right_inv := by
+    intro x
+    simp only [LinearEquiv.apply_symm_apply]
+    exact sub_add_cancel x (g₀ - A f₀)
+  linear := A
+  map_vadd' := by
+    intro x v
+    simp only [vadd_eq_add]
+    change A (v + x) + (g₀ - A f₀) = A v + (A x + (g₀ - A f₀))
+    rw [A.map_add]
+    ac_rfl
+}
+
 /-- Two affinely independent families with the same index type that both span the entire
 space can be mapped to each other by an affine automorphism. -/
 theorem affineIndependent_indexed
@@ -383,45 +411,21 @@ theorem affineIndependent_indexed
   -- This ensures T(f₀) = g₀ and T(f i) = g i for all i
 
   -- Pick base points (ι is nonempty since the span equals ⊤)
-  let i₀ : ι := Classical.choice (nonempty_of_affineSpan_eq_top f hf_span)
+  let i₀ : ι := Classical.choice (Nonempty.of_affineSpan_range_eq_top f hf_span)
   let f₀ := f i₀
   let g₀ := g i₀
 
   -- Construct linear bases from the affine bases using the helper lemma
-  obtain ⟨B_f, hB_f⟩ := linearBasis_of_affineIndependent_spanning f hf hf_span i₀
-  obtain ⟨B_g, hB_g⟩ := linearBasis_of_affineIndependent_spanning g hg hg_span i₀
+  obtain ⟨B_f, hB_f⟩ := hf.toBasis_of_span_eq_top hf_span i₀
+  obtain ⟨B_g, hB_g⟩ := hg.toBasis_of_span_eq_top hg_span i₀
 
   -- Step 3: Construct linear automorphism A mapping B_f to B_g
   -- Use Basis.equiv to construct a linear equivalence that maps B_f i to B_g i
   -- This is automatically bijective since it's a LinearEquiv
   let A : E ≃ₗ[ℝ] E := B_f.equiv B_g (Equiv.refl _)
 
-  -- Step 4: Define affine automorphism T x := A x + (g₀ - A f₀)
-  let T : E ≃ᵃ[ℝ] E := {
-    toFun := fun x => A x + (g₀ - A f₀)
-    invFun := fun x => A.symm (x - (g₀ - A f₀))
-    left_inv := by
-      intro x
-      -- Need to show: A.symm (A x + (g₀ - A f₀) - (g₀ - A f₀)) = x
-      simp only [add_sub_cancel_right]
-      exact A.left_inv x
-    right_inv := by
-      intro x
-      -- Need to show: A (A.symm (x - (g₀ - A f₀))) + (g₀ - A f₀) = x
-      simp only [LinearEquiv.apply_symm_apply]
-      exact sub_add_cancel x (g₀ - A f₀)
-    linear := A
-    map_vadd' := by
-      intro x v
-      -- For an affine map, we need: toFun (p +ᵥ v) = toFun p +ᵥ linear v
-      -- The affine structure requires: (A (x + v) + (g₀ - A f₀)) = (A x + (g₀ - A f₀)) + A v
-      simp only [vadd_eq_add]
-      -- Unfold the toFun application and expand using linearity of A
-      change A (v + x) + (g₀ - A f₀) = A v + (A x + (g₀ - A f₀))
-      rw [A.map_add]
-      -- This is just associativity of addition
-      ac_rfl
-  }
+  -- Step 4: Define affine automorphism using the helper definition
+  let T : E ≃ᵃ[ℝ] E := affineEquivOfLinearEquiv A f₀ g₀
 
   use T
 
@@ -470,6 +474,8 @@ lemma AffineIndependent.card_le_finrank_add_one
 
 /-- **Main theorem**: Affinely independent families of the same size can be mapped to each
 other by an affine automorphism.
+
+This corresponds to Rockafellar's "Convex Analysis" (1970), Theorem 1.6.
 
 Given two affinely independent families `f, g : ι → E` with the same finite index type,
 there exists an affine automorphism `T : E ≃ᵃ[ℝ] E` such that `T (f i) = g i` for all `i`. -/
@@ -538,12 +544,12 @@ theorem affineIndependent_to_affineIndependent_automorphism
 
       -- Find points outside the affine spans
       have h_exists_f : ∃ p_f : E, p_f ∉ affineSpan ℝ (range f) :=
-        exists_point_not_mem_of_affineSubspace_ne_top _ h_span_f_ne_top
+        AffineSubspace.exists_not_mem_of_ne_top _ h_span_f_ne_top
 
       obtain ⟨p_f, hp_f⟩ := h_exists_f
 
       have h_exists_g : ∃ p_g : E, p_g ∉ affineSpan ℝ (range g) :=
-        exists_point_not_mem_of_affineSubspace_ne_top _ h_span_g_ne_top
+        AffineSubspace.exists_not_mem_of_ne_top _ h_span_g_ne_top
 
       obtain ⟨p_g, hp_g⟩ := h_exists_g
 
