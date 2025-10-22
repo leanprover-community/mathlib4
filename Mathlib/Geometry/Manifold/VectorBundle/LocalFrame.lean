@@ -157,7 +157,8 @@ def coeff (hs : IsLocalFrameOn I F n s u) (i : ι) : (Π x : M, V x) →ₗ[𝕜
 variable {x : M}
 
 @[simp]
-lemma coeff_apply_of_notMem (hs : IsLocalFrameOn I F n s u) (hx : x ∉ u) (t : Π x : M, V x) (i : ι) : hs.coeff i t x = 0 := by
+lemma coeff_apply_of_notMem (hs : IsLocalFrameOn I F n s u) (hx : x ∉ u) (t : Π x : M, V x)
+    (i : ι) : hs.coeff i t x = 0 := by
   simp [coeff, hx]
 
 @[simp]
@@ -177,8 +178,10 @@ lemma coeff_spec [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M,  V 
     ∀ᶠ x' in 𝓝 x, t x' = ∑ i, (hs.coeff i t x') • (s i x') :=
   eventually_of_mem hu'' fun _ hx ↦ hs.coeff_sum_eq _ hx
 
+variable {t t' : Π x : M, V x}
+
 /-- The coefficients of `t` in a local frame at `x` only depend on `t` at `x`. -/
-lemma coeff_congr (hs : IsLocalFrameOn I F n s u) {t t' : Π x : M, V x} (htt' : t x = t' x) (i : ι) :
+lemma coeff_congr (hs : IsLocalFrameOn I F n s u) (htt' : t x = t' x) (i : ι) :
     hs.coeff i t x = hs.coeff i t' x := by
   by_cases hxe : x ∈ u
   · simp [coeff, hxe]
@@ -187,7 +190,7 @@ lemma coeff_congr (hs : IsLocalFrameOn I F n s u) {t t' : Π x : M, V x} (htt' :
 
 /-- If `s` and `s'` are local frames which are equal at `x`,
 a section `t` has equal frame coefficients in them. -/
-lemma coeff_eq_of_eq (hs : IsLocalFrameOn I F n s u) (hs' : IsLocalFrameOn I F n s' u) {x}
+lemma coeff_eq_of_eq (hs : IsLocalFrameOn I F n s u) (hs' : IsLocalFrameOn I F n s' u)
     (hss' : ∀ i, s i x = s' i x) {t : Π x : M,  V x} (i : ι) :
     hs.coeff i t x = hs'.coeff i t x := by
   by_cases hxe : x ∈ u
@@ -197,16 +200,16 @@ lemma coeff_eq_of_eq (hs : IsLocalFrameOn I F n s u) (hs' : IsLocalFrameOn I F n
 
 /-- Two sections `s` and `t` are equal at `x` if and only if their coefficients w.r.t. some local
 frame at `x` agree. -/
-lemma eq_iff_coeff [Fintype ι] (hs : IsLocalFrameOn I F n s u) {t t' : Π x : M, V x} (hx : x ∈ u) :
+lemma eq_iff_coeff [Fintype ι] (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) :
     t x = t' x ↔ ∀ i, hs.coeff i t x = hs.coeff i t' x :=
   ⟨fun h i ↦ hs.coeff_congr h i, fun h ↦ by
     simp +contextual [h, hs.coeff_sum_eq t hx, hs.coeff_sum_eq t' hx]⟩
 
-lemma coeff_apply_zero_at (hs : IsLocalFrameOn I F n s u) {t : Π x : M, V x} (ht : t x = 0)
-    (i : ι) : hs.coeff i t x = 0 := by
+lemma coeff_apply_zero_at (hs : IsLocalFrameOn I F n s u) (ht : t x = 0) (i : ι) :
+    hs.coeff i t x = 0 := by
   simp [hs.coeff_congr (t' := 0) ht]
 
-variable (hs : IsLocalFrameOn I F n s u) {t : Π x : M, V x} [VectorBundle 𝕜 F V]
+variable (hs : IsLocalFrameOn I F n s u) [VectorBundle 𝕜 F V]
 
 /-- Given a local frame `s i ` on `u`, if a section `t` has `C^k` coefficients on `u` w.r.t. `s i`,
 then `t` is `C^n` on `u`. -/
@@ -232,8 +235,8 @@ lemma contMDiffAt_of_coeff [Fintype ι]
 
 /-- Given a local frame `s i` on an open set `u` containing `x`, if a section `t` has `C^k`
 coefficients at `x ∈ u` w.r.t. `s i`, then `t` is `C^n` at `x`. -/
-lemma contMDiffAt_of_coeff_aux [Fintype ι]
-    (h : ∀ i, CMDiffAt n (hs.coeff i t) x) (hu : IsOpen u) (hx : x ∈ u) : CMDiffAt n (T% t) x :=
+lemma contMDiffAt_of_coeff_aux [Fintype ι] (h : ∀ i, CMDiffAt n (hs.coeff i t) x)
+    (hu : IsOpen u) (hx : x ∈ u) : CMDiffAt n (T% t) x :=
   hs.contMDiffAt_of_coeff h (hu.mem_nhds hx)
 
 section
@@ -264,8 +267,8 @@ lemma mdifferentiableAt_of_coeff [Fintype ι]
 
 /-- Given a local frame `s i` on open set `u` containing `x`, if a section `t`
 has differentiable coefficients at `x ∈ u` w.r.t. `s i`, then `t` is differentiable at `x`. -/
-lemma mdifferentiableAt_of_coeff_aux [Fintype ι]
-    (h : ∀ i, MDiffAt (hs.coeff i t) x) (hu : IsOpen u) (hx : x ∈ u) : MDiffAt (T% t) x :=
+lemma mdifferentiableAt_of_coeff_aux [Fintype ι] (h : ∀ i, MDiffAt (hs.coeff i t) x)
+    (hu : IsOpen u) (hx : x ∈ u) : MDiffAt (T% t) x :=
   hs.mdifferentiableAt_of_coeff h (hu.mem_nhds hx)
 
 end
