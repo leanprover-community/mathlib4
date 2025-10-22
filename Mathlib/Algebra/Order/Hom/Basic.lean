@@ -47,7 +47,7 @@ Finitary versions of the current lemmas.
 
 assert_not_exists Field
 
-library_note "out-param inheritance"/--
+library_note2 «out-param inheritance» /--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
 * there are three classes `Top`, `Middle`, `Bottom`
 * all of these classes have a parameter `(α : outParam _)`
