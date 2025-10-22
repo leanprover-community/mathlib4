@@ -583,8 +583,8 @@ lemma toDigits_length (b n e : Nat) : 0 < e → n < b ^ e → (Nat.toDigits b n)
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string
 representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
-lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e := by
-  simpa [Nat.repr] using toDigits_length _ _ _
+lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length ≤ e :=
+  toDigits_length _ _ _
 
 /-! ### `norm_digits` tactic -/
 

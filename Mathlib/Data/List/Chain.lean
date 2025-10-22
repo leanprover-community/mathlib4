@@ -425,9 +425,9 @@ lemma isChain_flatten : ∀ {L : List (List α)}, [] ∉ L →
 | [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
     rw [mem_cons, not_or, ← Ne] at hL
-    rw [flatten_cons, isChain_append, isChain_flatten hL.2, forall_mem_cons, isChain_cons_cons]
+    rw [flatten, isChain_append, isChain_flatten hL.2, forall_mem_cons, isChain_cons_cons]
     rw [mem_cons, not_or, ← Ne] at hL
-    simp only [forall_mem_cons, and_assoc, flatten_cons, head?_append_of_ne_nil _ hL.2.1.symm]
+    simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
 @[deprecated (since := "2025-09-24")] alias chain'_flatten := isChain_flatten
@@ -485,7 +485,11 @@ That is, we can propagate the predicate down the chain.
 theorem IsChain.induction (p : α → Prop) (l : List α) (h : IsChain r l)
     (carries : ∀ ⦃x y : α⦄, r x y → p x → p y) (initial : (lne : l ≠ []) → p (l.head lne)) :
     ∀ i ∈ l, p i := by
-  induction l using twoStepInduction with grind
+  induction l using twoStepInduction with
+  | nil => grind [not_mem_nil]
+  | singleton => grind
+  | cons_cons a b l IH IH2 =>
+    grind
 
 @[deprecated (since := "2025-09-24")] alias Chain'.induction := IsChain.induction
 

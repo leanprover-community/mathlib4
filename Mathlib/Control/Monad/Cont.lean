@@ -8,6 +8,7 @@ import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Lawful
 import Batteries.Tactic.Congr
 import Batteries.Lean.Except
+import Batteries.Control.OptionT
 
 /-!
 # Continuation Monad
@@ -178,7 +179,8 @@ instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
   callCC_bind_left := by
     intros
     simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, bind_pure_comp, OptionT.run_bind,
-      OptionT.run_mk, Option.elimM_map, Option.elim_some, @callCC_bind_left m _]
+      OptionT.run_mk, Option.elimM_map, Option.elim_some, Function.comp_apply,
+      @callCC_bind_left m _]
     ext; rfl
   callCC_dummy := by intros; simp only [callCC, OptionT.callCC, @callCC_dummy m _]; ext; rfl
 

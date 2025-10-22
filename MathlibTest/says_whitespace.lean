@@ -1,5 +1,4 @@
-import Aesop
-import Mathlib.Tactic.Says
+import Mathlib.Tactic.Common
 
 set_option says.verify true
 

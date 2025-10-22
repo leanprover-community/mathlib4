@@ -138,7 +138,7 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
     simp [map_take, take_take, Nat.min_eq_left]
   simp only [this, take_sum_flatten, drop_sum_flatten,
-    drop_take_succ_eq_cons_getElem, h, flatten_nil, flatten_cons, append_nil]
+    drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
 
 end List
 

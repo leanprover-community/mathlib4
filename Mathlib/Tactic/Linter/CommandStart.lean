@@ -7,7 +7,7 @@ Authors: Damiano Testa
 import Mathlib.Tactic.Linter.Header
 
 /-!
-#  The `commandStart` linter
+# The `commandStart` linter
 
 The `commandStart` linter emits a warning if
 * either a command does not start at the beginning of a line;
@@ -50,7 +50,7 @@ formatting.
 This is every declaration until the type-specification, if there is one, or the value,
 as well as all `variable` commands.
 -/
-def CommandStart.endPos (stx : Syntax) : Option String.Pos.Raw :=
+def CommandStart.endPos (stx : Syntax) : Option String.Pos :=
   if let some cmd := stx.find? (#[``Parser.Command.declaration, `lemma].contains ·.getKind) then
     if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
       match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
@@ -78,7 +78,7 @@ structure FormatError where
   /-- The distance to the end of the source string, as number of characters -/
   srcNat : Nat
   /-- The distance to the end of the source string, as number of string positions -/
-  srcEndPos : String.Pos.Raw
+  srcEndPos : String.Pos
   /-- The distance to the end of the formatted string, as number of characters -/
   fmtPos : Nat
   /-- The kind of formatting error. For example: `extra space`, `remove line break` or
@@ -90,7 +90,7 @@ structure FormatError where
   /-- The length of the mismatch, as number of characters. -/
   length : Nat
   /-- The starting position of the mismatch, as a `String.pos`. -/
-  srcStartPos : String.Pos.Raw
+  srcStartPos : String.Pos
   deriving Inhabited
 
 instance : ToString FormatError where
@@ -167,7 +167,7 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
     parallelScanAux as newL newM else
   let ls := L.drop 1
   let ms := M.drop 1
-  match L.front, M.front with
+  match L.get 0, M.get 0 with
   | ' ', m =>
     if m.isWhitespace then
       parallelScanAux as ls ms.trimLeft
@@ -332,8 +332,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let docStringEnd := docStringEnd.getTailPos? |>.getD default
     let forbidden := getUnlintedRanges unlintedNodes ∅ stx
     for s in scan do
-      let center := origSubstring.stopPos.unoffsetBy s.srcEndPos
-      let rg : String.Range := ⟨center, center |>.offsetBy s.srcEndPos |>.unoffsetBy s.srcStartPos |>.increaseBy 1⟩
+      let center := origSubstring.stopPos - s.srcEndPos
+      let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
       if s.msg.startsWith "Oh no" then
         Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
           m!"This should not have happened: please report this issue!"
