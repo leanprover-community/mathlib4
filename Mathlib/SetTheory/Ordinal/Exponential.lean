@@ -149,7 +149,6 @@ theorem isSuccLimit_opow_left {a b : Ordinal} (l : IsSuccLimit a) (hb : b ≠ 0)
 @[deprecated (since := "2025-07-08")]
 alias isLimit_opow_left := isSuccLimit_opow_left
 
-@[gcongr]
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a ^ b ≤ a ^ c := by
   rcases (one_le_iff_pos.2 h₁).eq_or_lt' with h₁ | h₁
   · simp_all

@@ -151,7 +151,7 @@ def liftCompιOfLEIso (h : P ≤ Q) :
 @[deprecated "Use liftCompιOfLEIso" (since := "2025-03-04")]
 theorem FullSubcategory.lift_comp_map (h : P ≤ Q) :
     P.lift F hF ⋙ ιOfLE h =
-      Q.lift F (fun X ↦  h _ (hF X)) :=
+      Q.lift F (fun X ↦ h _ (hF X)) :=
   rfl
 
 end lift
