@@ -402,7 +402,6 @@ def cotangentRestrict {σ : Type*} {u : σ → ι} (hu : Function.Injective u) :
   Finsupp.lcomapDomain u hu ∘ₗ P.cotangentSpaceBasis.repr.toLinearMap ∘ₗ
     P.toExtension.cotangentComplex
 
-@[simp]
 lemma cotangentRestrict_mk {σ : Type*} {u : σ → ι} (hu : Function.Injective u) (x : P.ker) :
     cotangentRestrict P hu (Extension.Cotangent.mk x) =
       fun j ↦ (aeval P.val) <| pderiv (u j) x.val := by
@@ -442,9 +441,8 @@ lemma repr_CotangentSpaceMap (f : Hom P P') (i j) :
   rw [CotangentSpace.map_tmul, map_one]
   erw [cotangentSpaceBasis_repr_one_tmul, Hom.toAlgHom_X]
 
-@[simp]
 lemma toKaehler_tmul_D (i) :
-    P.toExtension.toKaehler (1 ⊗ₜ D _ _ (X i)) = D _ _ (P.val i) :=
+    P.toExtension.toKaehler (1 ⊗ₜ D R P.Ring (X i)) = D _ _ (P.val i) :=
   (KaehlerDifferential.mapBaseChange_tmul ..).trans (by simp)
 
 @[simp]
