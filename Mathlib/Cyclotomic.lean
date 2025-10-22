@@ -122,7 +122,7 @@ example (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
         exact Q.map τ.toAlgHom
       · intro ⟨hQ₁, hQ₂⟩
         refine ⟨?_, ?_⟩
-        
+
 
 
         sorry
