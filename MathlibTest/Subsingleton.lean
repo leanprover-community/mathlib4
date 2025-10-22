@@ -64,7 +64,7 @@ example (α : Type) (inst1 inst2 : BEq α) [@LawfulBEq α inst1] [@LawfulBEq α 
 -/
 /--
 info: Try this:
-  [apply] rfl
+  rfl
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
@@ -80,7 +80,7 @@ example : 1 + 1 = 2 := by
 
 /--
 info: Try this:
-  [apply] (intros; rfl)
+  (intros; rfl)
 -/
 #guard_msgs in
 example : ∀ (n : Nat), n = n := by

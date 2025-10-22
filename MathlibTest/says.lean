@@ -7,7 +7,7 @@ attribute [-simp] Nat.add_left_cancel_iff Nat.add_right_cancel_iff
 set_option autoImplicit true
 /--
 info: Try this:
-  [apply] (show_term exact 37) says exact 37
+  (show_term exact 37) says exact 37
 -/
 #guard_msgs in
 example : Nat := by
@@ -19,7 +19,7 @@ example : Nat := by
 
 /--
 info: Try this:
-  [apply] simp? says simp only [List.length_append]
+  simp? says simp only [List.length_append]
 -/
 #guard_msgs in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
@@ -28,15 +28,15 @@ example (x y : List α) : (x ++ y).length = x.length + y.length := by
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
   simp? says simp only [List.length_append]
 
-/-- error: Tactic `have := 0` did not produce a 'Try this:' suggestion. -/
+/--
+error: Tactic `have := 0` did not produce any messages.
+-/
 #guard_msgs in
 example : true := by
   have := 0 says
 
 /--
-error: Tactic `(run_tac
-    do
-      Lean.logInfo "hi!")` did not produce a 'Try this:' suggestion.
+error: Tactic output did not begin with 'Try this:': hi!
 -/
 #guard_msgs in
 example : true := by
@@ -64,7 +64,9 @@ example (x y : List α) : (x ++ y).length = x.length + y.length := by
 set_option linter.unreachableTactic false
 set_option linter.unusedTactic false in
 -- Now we check that `says` does not consume following tactics unless they are indented.
-/-- error: Tactic `simp` did not produce a 'Try this:' suggestion. -/
+/--
+error: Tactic `simp` did not produce any messages.
+-/
 #guard_msgs in
 example : True := by
   simp says
@@ -81,7 +83,9 @@ example : True := by
     trivial
 
 set_option says.verify true in
-/-- error: Tactic `simp` did not produce a 'Try this:' suggestion. -/
+/--
+error: Tactic `simp` did not produce any messages.
+-/
 #guard_msgs in
 example : True := by
   simp says
@@ -103,9 +107,9 @@ def very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ 
 def very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
 /--
 info: Try this:
-  [apply] aesop? says
-    simp_all only [very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,
-      very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
+  aesop? says
+      simp_all only [very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,
+        very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
 -/
 #guard_msgs in
 example : P := by

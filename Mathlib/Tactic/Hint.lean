@@ -7,8 +7,6 @@ import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
 import Batteries.Control.Nondet.Basic
 import Mathlib.Init
-import Mathlib.Lean.Elab.InfoTree
-import Mathlib.Tactic.Basic
 
 /-!
 # The `hint` tactic.
@@ -67,13 +65,27 @@ initialize
   Batteries.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
 
 /--
+Extracts the `MessageData` from the first clickable `Try This:` diff widget in the message.
+Preserves (only) contexts and tags.
+-/
+private def getFirstTryThisFromMessage? : MessageData → Option MessageData
+  | .ofWidget w msg => if w.id == ``Meta.Hint.tryThisDiffWidget then msg else none
+  | .nest _ msg
+  | .group msg => getFirstTryThisFromMessage? msg
+  | .compose msg₁ msg₂ => getFirstTryThisFromMessage? msg₁ <|> getFirstTryThisFromMessage? msg₂
+  | .withContext ctx msg => (getFirstTryThisFromMessage? msg).map <| .withContext ctx
+  | .withNamingContext ctx msg => (getFirstTryThisFromMessage? msg).map <| .withNamingContext ctx
+  | .tagged tag msg => (getFirstTryThisFromMessage? msg).map <| .tagged tag
+  | .ofFormatWithInfos _ | .ofGoal _ | .trace .. | .ofLazy .. => none
+
+/--
 Construct a suggestion for a tactic.
 * Check the passed `MessageLog` for an info message beginning with "Try this: ".
 * If found, use that as the suggestion.
 * Otherwise use the provided syntax.
 * Also, look for remaining goals and pretty print them after the suggestion.
 -/
-def suggestion (tac : TSyntax `tactic) (trees : PersistentArray InfoTree) : TacticM Suggestion := do
+def suggestion (tac : TSyntax `tactic) (msgs : MessageLog := {}) : TacticM Suggestion := do
   -- TODO `addExactSuggestion` has an option to construct `postInfo?`
   -- Factor that out so we can use it here instead of copying and pasting?
   let goals ← getGoals
@@ -90,11 +102,26 @@ def suggestion (tac : TSyntax `tactic) (trees : PersistentArray InfoTree) : Tact
   -/
   -- let style? := if goals.isEmpty then some .success else none
   let preInfo? := if goals.isEmpty then some "🎉 " else none
-  let suggestions := collectTryThisSuggestions trees
-  let suggestion := match suggestions[0]? with
-  | some s => s.suggestion
-  | none => SuggestionText.tsyntax tac
+  let msg? : Option MessageData := msgs.toList.firstM (getFirstTryThisFromMessage? ·.data)
+  let suggestion ← match msg? with
+  | some m => pure <| SuggestionText.string (← m.toString)
+  | none => pure <| SuggestionText.tsyntax tac
   return { preInfo?, suggestion, postInfo? }
+
+/-- Run a tactic, returning any new messages rather than adding them to the message log. -/
+def withMessageLog (t : TacticM Unit) : TacticM MessageLog := do
+  let initMsgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
+  t
+  modifyGetThe Core.State fun st => (st.messages, { st with messages := initMsgs })
+
+/--
+Run a tactic, but revert any changes to info trees.
+We use this to inhibit the creation of widgets by subsidiary tactics.
+-/
+def withoutInfoTrees (t : TacticM Unit) : TacticM Unit := do
+  let trees := (← getInfoState).trees
+  t
+  modifyInfoState fun s => { s with trees }
 
 /--
 Run all tactics registered using `register_hint`.
@@ -109,11 +136,11 @@ def hint (stx : Syntax) : TacticM Unit := withMainContext do
   let tacs := (← getHints).toArray.qsort (·.1 > ·.1) |>.toList.map (·.2)
   let tacs := Nondet.ofList tacs
   let results := tacs.filterMapM fun t : TSyntax `tactic => do
-    if let some { msgs, trees, .. } ← observing? (withResetServerInfo (evalTactic t)) then
+    if let some msgs ← observing? (withMessageLog (withoutInfoTrees (evalTactic t))) then
       if msgs.hasErrors then
         return none
       else
-        return some (← getGoals, ← suggestion t trees)
+        return some (← getGoals, ← suggestion t msgs)
     else
       return none
   let results ← (results.toMLList.takeUpToFirst fun r => r.1.1.isEmpty).asArray
