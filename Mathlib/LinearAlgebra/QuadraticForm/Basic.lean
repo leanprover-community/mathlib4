@@ -992,7 +992,7 @@ variable [CommSemiring S] [CommRing R] [AddCommGroup M] [Algebra S R] [Module R 
 variable [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower S R N]
 variable [Invertible (2 : Module.End R N)]
 
--- Note:  When possible, rather than writing lemmas about `associated`, write a lemma applying to
+-- Note: When possible, rather than writing lemmas about `associated`, write a lemma applying to
 -- the more general `associatedHom` and place it in the previous section.
 
 /-- `associated` is the linear map that sends a quadratic map over a commutative ring to its

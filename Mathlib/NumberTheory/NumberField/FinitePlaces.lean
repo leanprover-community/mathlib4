@@ -69,7 +69,7 @@ instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
   simpa using Valued.v.range_nontrivial
 
 -- TODO: make this inferred from `IsRankOneDiscrete`, or
--- develop the API for a  completion of a base `IsDVR` ring
+-- develop the API for a completion of a base `IsDVR` ring
 instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
   not_a_field' := by
     unfold HeightOneSpectrum.adicCompletionIntegers

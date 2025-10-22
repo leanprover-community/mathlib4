@@ -33,7 +33,7 @@ the bundled version, see `Rel`.
   rewrites.
 * `Relation.EqvGen`: Equivalence closure. `EqvGen r` relates everything `ReflTransGen r` relates,
   plus for all related pairs it relates them in the opposite order.
-* `Relation.Comp`:  Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
+* `Relation.Comp`: Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
   `s : β → γ → Prop`, `r ∘r s`relates `a : α` and `c : γ` iff there exists `b : β` that's related to
   both.
 * `Relation.Map`: Image of a relation under a pair of maps. For `r : α → β → Prop`, `f : α → γ`,

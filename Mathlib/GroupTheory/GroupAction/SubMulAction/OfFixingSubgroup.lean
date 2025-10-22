@@ -295,7 +295,7 @@ lemma mem_fixingSubgroup_union_iff {g : M} :
     g ∈ fixingSubgroup M (s ∪ t) ↔ g ∈ fixingSubgroup M s ∧ g ∈ fixingSubgroup M t := by
   simp [fixingSubgroup_union, Subgroup.mem_inf]
 
-/-- The group  morphism from `fixingSubgroup` of a union to the iterated `fixingSubgroup`. -/
+/-- The group morphism from `fixingSubgroup` of a union to the iterated `fixingSubgroup`. -/
 @[to_additive
 /-- The additive group morphism from `fixingAddSubgroup` of a union
 to the iterated `fixingAddSubgroup`. -/]

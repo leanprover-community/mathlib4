@@ -18,7 +18,7 @@ Taking or removing element from the tail end of a list
 - `rtake n`: take `n : ℕ` elements from the tail
 - `rdropWhile p`: remove all the elements from the tail of a list until it finds the first element
   for which `p : α → Bool` returns false. This element and everything before is returned.
-- `rtakeWhile p`:  Returns the longest terminal segment of a list for which `p : α → Bool` returns
+- `rtakeWhile p`: Returns the longest terminal segment of a list for which `p : α → Bool` returns
   true.
 
 ## Implementation detail
