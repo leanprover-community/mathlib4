@@ -184,7 +184,7 @@ variable (M) in
 /-- A finitely generated monoid has a minimal generating set. -/
 @[to_additive /-- A finitely generated monoid has a minimal generating set. -/]
 lemma Submonoid.exists_minimal_closure_eq_top [Monoid.FG M] :
-    ∃ S : Finset M, Minimal (fun S : Finset M ↦ Submonoid.closure (S : Set M) = ⊤) S :=
+    ∃ S : Finset M, Minimal (fun S ↦ Submonoid.closure (SetLike.coe S) = ⊤) S :=
   Monoid.FG.fg_top.exists_minimal_closure_eq
 
 theorem Monoid.fg_iff_add_fg : Monoid.FG M ↔ AddMonoid.FG (Additive M) where
