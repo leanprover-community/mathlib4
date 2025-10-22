@@ -11,6 +11,7 @@ import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Index of a Subgroup
