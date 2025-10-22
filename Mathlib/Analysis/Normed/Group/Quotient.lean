@@ -226,13 +226,13 @@ example [IsClosed (S : Set M)] :
     (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
 
 /-- An isometric version of `Subgroup.quotientEquivOfEq`. -/
-@[to_additive "An isometric version of `AddSubgroup.quotientEquivOfEq`."]
+@[to_additive /-- An isometric version of `AddSubgroup.quotientEquivOfEq`. -/]
 def _root_.Subgroup.quotientIsometryEquivOfEq (h : S = T) : M ⧸ S ≃ᵢ M ⧸ T where
   __ := Subgroup.quotientEquivOfEq h
   isometry_toFun := by subst h; rintro ⟨_⟩ ⟨_⟩; rfl
 
 /-- An isometric version of `QuotientGroup.quotientBot`. -/
-@[to_additive "An isometric version of `QuotientAddGroup.quotientBot`."]
+@[to_additive /-- An isometric version of `QuotientAddGroup.quotientBot`. -/]
 def quotientBotIsometryEquiv : M ⧸ (⊥ : Subgroup M) ≃ᵢ M where
   __ := quotientBot
   isometry_toFun : Isometry quotientBot := by
@@ -242,7 +242,7 @@ def quotientBotIsometryEquiv : M ⧸ (⊥ : Subgroup M) ≃ᵢ M where
     simp [norm_mk]
 
 /-- An isometric version of `QuotientGroup.quotientQuotientEquivQuotient`. -/
-@[to_additive "An isometric version of `QuotientAddGroup.quotientQuotientEquivQuotient`."]
+@[to_additive /-- An isometric version of `QuotientAddGroup.quotientQuotientEquivQuotient`. -/]
 def quotientQuotientIsometryEquivQuotient (h : S ≤ T) : (M ⧸ S) ⧸ T.map (mk' S) ≃ᵢ M ⧸ T where
   __ := quotientQuotientEquivQuotient S T h
   isometry_toFun : Isometry (quotientQuotientEquivQuotient S T h) := by
