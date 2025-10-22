@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Mathlib Contributors. All rights reserved.
+Copyright (c) 2025 LEAN FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Claude Code
 -/
@@ -83,8 +83,6 @@ def elabSetDefaultNumeralType : CommandElab := fun stx => do
     -- Add the default_instance attribute to this instance by running an attribute command
     let attrCmd ← `(command| attribute [default_instance] $(mkIdent instName))
     elabCommand attrCmd
-
-    logInfo m!"Set default numeral type to {α} using instance {instName}"
 
   | _ => throwUnsupportedSyntax
 
