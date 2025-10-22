@@ -592,10 +592,9 @@ section IsScalarTower
 
 attribute [local instance] liftAlgebra
 
-instance (B C : Type*) [CommRing B] [IsDomain B] [CommRing C] [IsDomain C] [Algebra A B]
-    [Algebra A C] [Algebra B C] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A C]
-    [NoZeroSMulDivisors B C] [IsScalarTower A B C] :
-    IsScalarTower (FractionRing A) (FractionRing B) (FractionRing C) where
+instance (k K : Type*) [Field k] [Field K] [Algebra A k] [Algebra A K] [Algebra k K]
+    [NoZeroSMulDivisors A k] [NoZeroSMulDivisors A K] [IsScalarTower A k K] :
+    IsScalarTower (FractionRing A) k K where
   smul_assoc a b c := a.ind fun ⟨a₁, a₂⟩ ↦ by
     rw [← smul_right_inj (nonZeroDivisors.coe_ne_zero a₂)]
     simp_rw [← smul_assoc, Localization.smul_mk, smul_eq_mul, Localization.mk_eq_mk',
