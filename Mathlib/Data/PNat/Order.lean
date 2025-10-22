@@ -19,7 +19,7 @@ instance instSuccOrder : SuccOrder ℕ+ :=
   SuccOrder.ofSuccLeIff (fun n ↦ n + 1) (by rfl)
 
 instance instSuccAddOrder : SuccAddOrder ℕ+ where
-  succ_eq_add_one _x := rfl
+  succ_eq_add_one _ := rfl
 
 instance instNoMaxOrder : NoMaxOrder ℕ+ where
   exists_gt n := ⟨n + 1, lt_succ_self n⟩
