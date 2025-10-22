@@ -44,8 +44,8 @@ Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
 * `IsLocalFrameOn.toBasisAt hs`: for each `x ∈ U`, the vectors `sᵢ x` form a basis of `F`
 * `IsLocalFrameOn.coeff hs` describes the coefficient of sections of `V` w.r.t. `{sᵢ}`.
   `hs.coeff i` is a linear map from sections of `V` to functions `M → 𝕜`.
-* `IsLocalFrameOn.coeff_spec hs`: for a local frame `{sᵢ}` near `x`, for each section `t` we have
-  `t = ∑ i, (hs.coeff i t) • sᵢ`.
+* `IsLocalFrameOn.eventually_eq_sum_coeff_smul hs`: for a local frame `{sᵢ}` near `x`,
+  for each section `t` we have `t = ∑ i, (hs.coeff i t) • sᵢ`.
 * `IsLocalFrameOn.coeff_sum_eq hs t hx` proves that `t x = ∑ i, (hs.coeff i t) x • sᵢ x`, provided
   that `hx : x ∈ U`.
 * `IsLocalFrameOn.coeff_congr hs`: the coefficient `hs.coeff i` of `t` in the local frame `{sᵢ}`
@@ -174,7 +174,8 @@ lemma coeff_sum_eq [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M,  
 
 /-- A local frame locally spans the space of sections for `V`: for each local frame `s i` on an open
 set `u` around `x`, we have `t = ∑ i, (hs.coeff i t) • (s i x)` near `x`. -/
-lemma coeff_spec [Fintype ι] (hs : IsLocalFrameOn I F n s u) (t : Π x : M,  V x) (hu'' : u ∈ 𝓝 x) :
+lemma eventually_eq_sum_coeff_smul [Fintype ι]
+    (hs : IsLocalFrameOn I F n s u) (t : Π x : M,  V x) (hu'' : u ∈ 𝓝 x) :
     ∀ᶠ x' in 𝓝 x, t x' = ∑ i, (hs.coeff i t x') • (s i x') :=
   eventually_of_mem hu'' fun _ hx ↦ hs.coeff_sum_eq _ hx
 
@@ -227,11 +228,10 @@ lemma contMDiffOn_of_coeff [Fintype ι] (h : ∀ i, CMDiff[u] n (hs.coeff i t)) 
 if a section `t` has `C^k` coefficients at `x` w.r.t. `s i`, then `t` is `C^n` at `x`. -/
 lemma contMDiffAt_of_coeff [Fintype ι]
     (h : ∀ i, CMDiffAt n (hs.coeff i t) x) (hu : u ∈ 𝓝 x) : CMDiffAt n (T% t) x := by
-  have this (i) : CMDiffAt n (T% (hs.coeff i t • s i)) x :=
-    (h i).smul_section <| (hs.contMDiffOn i).contMDiffAt hu
-  have almost : CMDiffAt n
-    (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) x := .sum_section (fun i _ ↦ this i)
-  exact almost.congr_of_eventuallyEq <| (hs.coeff_spec t hu).mono fun x h ↦ by simp [h]
+  have almost : CMDiffAt n (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) x :=
+    .sum_section (fun i _ ↦ (h i).smul_section <| (hs.contMDiffOn i).contMDiffAt hu)
+  exact almost.congr_of_eventuallyEq <|
+    (hs.eventually_eq_sum_coeff_smul t hu).mono fun x h ↦ by simp [h]
 
 /-- Given a local frame `s i` on an open set `u` containing `x`, if a section `t` has `C^k`
 coefficients at `x ∈ u` w.r.t. `s i`, then `t` is `C^n` at `x`. -/
@@ -263,7 +263,7 @@ lemma mdifferentiableAt_of_coeff [Fintype ι]
     (h i).smul_section <| ((hs.contMDiffOn i).mdifferentiableOn le_rfl).mdifferentiableAt hu
   have almost : MDiffAt
     (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) x := .sum_section (fun i ↦ this i)
-  exact almost.congr_of_eventuallyEq <| (hs.coeff_spec t hu).mono fun x h ↦ by simp [h]
+  exact almost.congr_of_eventuallyEq <| (hs.eventually_eq_sum_coeff_smul t hu).mono fun x h ↦ by simp [h]
 
 /-- Given a local frame `s i` on open set `u` containing `x`, if a section `t`
 has differentiable coefficients at `x ∈ u` w.r.t. `s i`, then `t` is differentiable at `x`. -/
