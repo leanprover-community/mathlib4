@@ -1188,7 +1188,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         calling @[{thisAttr}].\nThe preferred method is to use something like \
         `@[{thisAttr} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
-    warnAttr stx Lean.Meta.Ext.extExtension
+    warnAttr stx Lean.Elab.Tactic.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
     warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
     warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
