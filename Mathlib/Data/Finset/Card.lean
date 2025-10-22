@@ -451,7 +451,7 @@ theorem exists_ne_map_eq_of_card_image_lt [DecidableEq β] {f : α → β} (hc :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y :=
   exists_ne_map_eq_of_card_lt_of_maps_to hc (coe_image (β := β) ▸ Set.mapsTo_image f s)
 
-/-- a variant of `Finset.exists_ne_map_eq_of_card_image_lt` using `InjOn` -/
+/-- a variant of `Finset.exists_ne_map_eq_of_card_image_lt` using `Set.InjOn` -/
 theorem not_injOn_of_card_image_lt [DecidableEq β] {f : α → β} (hc : #(s.image f) < #s) :
     ¬ Set.InjOn f s :=
   mt card_image_of_injOn hc.ne
