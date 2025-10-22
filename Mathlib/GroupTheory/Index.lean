@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Prod
@@ -11,7 +12,6 @@ import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Basic
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Index of a Subgroup
