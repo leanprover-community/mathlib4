@@ -184,7 +184,7 @@ theorem factorial_mul_factorial_dvd_factorial {n k : ℕ} (hk : k ≤ n) : k ! *
   rw [← choose_mul_factorial_mul_factorial hk, Nat.mul_assoc]; exact Nat.dvd_mul_left _ _
 
 theorem factorial_mul_factorial_dvd_factorial_add (i j : ℕ) : i ! * j ! ∣ (i + j)! := by
-  suffices i ! * (i + j - i)! ∣ (i + j)! by
+  suffices i ! * (i + j - i)! ∣ (i + j) ! by
     rwa [Nat.add_sub_cancel_left i j] at this
   exact factorial_mul_factorial_dvd_factorial (Nat.le_add_right _ _)
 
