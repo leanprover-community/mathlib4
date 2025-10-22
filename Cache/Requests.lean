@@ -176,11 +176,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
                                   isDetachedAtNightlyTesting
 
     if shouldUseNightlyTesting then
-      -- Try to use nightly-testing remote
-      let repo ← getRepoFromRemote mathlibDepPath "nightly-testing"
-        s!"Branch '{branchName}' should use the nightly-testing remote, but it's not configured.\n\
-          Please add the nightly-testing remote pointing to the nightly testing repository:\n\
-          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git"
+      let repo := "leanprover-community/mathlib4-nightly-testing"
       let cacheService := if useFROCache then "Cloudflare" else "Azure"
       IO.println s!"Using cache ({cacheService}) from nightly-testing remote: {repo}"
       return {repo := repo, useFirst := true}

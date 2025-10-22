@@ -485,10 +485,35 @@ theorem toTopologicalSpace_inf {u v : UniformSpace α} :
 
 end UniformSpace
 
-theorem UniformContinuous.continuous [UniformSpace α] [UniformSpace β] {f : α → β}
-    (hf : UniformContinuous f) : Continuous f :=
+section
+
+variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] {f : α → β} {s t : Set α}
+
+theorem UniformContinuous.continuous (hf : UniformContinuous f) : Continuous f :=
   continuous_iff_le_induced.mpr <| UniformSpace.toTopologicalSpace_mono <|
     uniformContinuous_iff.1 hf
+
+lemma UniformContinuous.uniformContinuousOn (hf : UniformContinuous f) :
+    UniformContinuousOn f s :=
+  tendsto_inf_left hf
+
+lemma UniformContinuousOn.mono (hf : UniformContinuousOn f s) (ht : t ⊆ s) :
+    UniformContinuousOn f t :=
+  Tendsto.mono_left hf (inf_le_inf le_rfl (by simp [ht]))
+
+lemma UniformContinuousOn.comp {g : β → γ} {t : Set β} (hg : UniformContinuousOn g t)
+    (hf : UniformContinuousOn f s) (hst : MapsTo f s t) : UniformContinuousOn (g ∘ f) s := by
+  change Tendsto ((fun x ↦ (g x.1, g x.2)) ∘ (fun x ↦ (f x.1, f x.2))) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 γ)
+  apply Tendsto.comp hg
+  refine tendsto_inf.2 ⟨hf, tendsto_inf_right ?_⟩
+  simp only [tendsto_principal, mem_prod, eventually_principal, and_imp, Prod.forall]
+  exact fun a b ha hb ↦ ⟨hst ha, hst hb⟩
+
+lemma UniformContinuous.comp_uniformContinuousOn {g : β → γ}
+    (hg : UniformContinuous g) (hf : UniformContinuousOn f s) : UniformContinuousOn (g ∘ f) s :=
+  (hg.uniformContinuousOn (s := univ)).comp hf (mapsTo_univ _ _)
+
+end
 
 /-- Uniform space structure on `ULift α`. -/
 instance ULift.uniformSpace [UniformSpace α] : UniformSpace (ULift α) :=
@@ -600,6 +625,11 @@ theorem UniformContinuous.subtype_mk {p : α → Prop} [UniformSpace α] [Unifor
     (hf : UniformContinuous f) (h : ∀ x, p (f x)) :
     UniformContinuous (fun x => ⟨f x, h x⟩ : β → Subtype p) :=
   uniformContinuous_comap' hf
+
+theorem UniformContinuous.subtype_map [UniformSpace α] [UniformSpace β] {p : α → Prop}
+    {q : β → Prop} {f : α → β} (hf : UniformContinuous f) (h : ∀ x, p x → q (f x)) :
+    UniformContinuous (Subtype.map f h) :=
+  (hf.comp uniformContinuous_subtype_val).subtype_mk _
 
 theorem uniformContinuousOn_iff_restrict [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔ UniformContinuous (s.restrict f) := by
@@ -763,6 +793,10 @@ alias UniformContinuous.prod_mk_right := UniformContinuous.prodMk_right
 theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → δ}
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=
   (hf.comp uniformContinuous_fst).prodMk (hg.comp uniformContinuous_snd)
+
+lemma uniformContinuous_swap :
+    UniformContinuous (Prod.swap : α × β → β × α) :=
+  uniformContinuous_snd.prodMk uniformContinuous_fst
 
 theorem toTopologicalSpace_prod {α} {β} [u : UniformSpace α] [v : UniformSpace β] :
     @UniformSpace.toTopologicalSpace (α × β) instUniformSpaceProd =

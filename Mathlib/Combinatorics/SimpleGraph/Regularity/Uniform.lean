@@ -202,7 +202,7 @@ lemma mk_mem_sparsePairs (u v : Finset α) (ε : 𝕜) :
 
 omit [IsStrictOrderedRing 𝕜] in
 lemma sparsePairs_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.sparsePairs G ε ⊆ P.sparsePairs G ε' :=
-  monotone_filter_right _ fun _ ↦ h.trans_lt'
+  monotone_filter_right _ fun _ _ ↦ h.trans_lt'
 
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
@@ -215,7 +215,7 @@ omit [IsStrictOrderedRing 𝕜] in
   rw [nonUniforms, mem_filter, mem_offDiag, and_assoc, and_assoc]
 
 theorem nonUniforms_mono {ε ε' : 𝕜} (h : ε ≤ ε') : P.nonUniforms G ε' ⊆ P.nonUniforms G ε :=
-  monotone_filter_right _ fun _ => mt <| SimpleGraph.IsUniform.mono h
+  monotone_filter_right _ fun _ _ => mt <| SimpleGraph.IsUniform.mono h
 
 theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε = ∅ := by
   rw [eq_empty_iff_forall_notMem]
@@ -261,6 +261,9 @@ noncomputable def nonuniformWitnesses : Finset (Finset α) :=
   {t ∈ P.parts | s ≠ t ∧ ¬G.IsUniform ε s t}.image (G.nonuniformWitness ε s)
 
 variable {P G ε s} {t : Finset α}
+
+lemma card_nonuniformWitnesses_le :
+    #(P.nonuniformWitnesses G ε s) ≤ #{t ∈ P.parts | s ≠ t ∧ ¬G.IsUniform ε s t} := card_image_le
 
 theorem nonuniformWitness_mem_nonuniformWitnesses (h : ¬G.IsUniform ε s t) (ht : t ∈ P.parts)
     (hst : s ≠ t) : G.nonuniformWitness ε s t ∈ P.nonuniformWitnesses G ε s :=

@@ -84,18 +84,16 @@ def truncate : ∀ {n : ℕ}, CofixA F (n + 1) → CofixA F n
 
 theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) (h : Agree x y) :
     truncate y = x := by
-  induction n <;> cases x <;> cases y
-  · rfl
-  · -- cases' h with _ _ _ _ _ h₀ h₁
-    cases h
+  induction n with
+  | zero =>
+    cases x
+    cases y
+    rfl
+  | succ n n_ih =>
+    cases h with | intro f y h₁ =>
     simp only [truncate, Function.comp_def]
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext y`
-    rename_i n_ih a f y h₁
-    suffices (fun x => truncate (y x)) = f
-      by simp [this]
-    funext y
-    apply n_ih
-    apply h₁
+    congr with y
+    exact n_ih _ _ (h₁ y)
 
 variable {X : Type w}
 variable (f : X → F X)
@@ -109,11 +107,7 @@ def sCorec : X → ∀ n, CofixA F n
 theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
   induction n generalizing i with
   | zero => constructor
-  | succ n n_ih =>
-    obtain ⟨y, g⟩ := f i
-    constructor
-    introv
-    apply n_ih
+  | succ n n_ih => exact .intro _ _ fun _ => n_ih _
 
 /-- `Path F` provides indices to access internal nodes in `Corec F` -/
 def Path (F : PFunctor.{uA, uB}) :=
@@ -354,12 +348,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
 
 @[simp]
 theorem cases_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
-    PFunctor.M.cases f (M.mk x) = f x := by
-  dsimp only [M.mk, PFunctor.M.cases, dest, head, Approx.sMk, head']
-  cases x; dsimp only [Approx.sMk]
-  simp only [Eq.mpr]
-  apply congrFun
-  rfl
+    PFunctor.M.cases f (M.mk x) = f x := rfl
 
 @[simp]
 theorem casesOn_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :

@@ -167,10 +167,7 @@ def wRec {α : TypeVec n} {C : Type*}
 theorem wRec_eq {α : TypeVec n} {C : Type*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) (a : P.A)
     (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
-    P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := by
-  rw [wMk, wRec]; rw [wpRec_eq]
-  dsimp only [wPathDestLeft_wPathCasesOn, wPathDestRight_wPathCasesOn]
-  congr
+    P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := rfl
 
 /-- Induction principle for `W` -/
 theorem w_ind {α : TypeVec n} {C : P.W α → Prop}

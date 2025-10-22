@@ -42,34 +42,37 @@ variable {α : Type u} {α' : Type u'} {β : α → Type v} {β' : α' → Type 
 def keys : List (Sigma β) → List α :=
   map Sigma.fst
 
-@[simp]
+@[simp, grind =]
 theorem keys_nil : @keys α β [] = [] :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem keys_cons {s} {l : List (Sigma β)} : (s :: l).keys = s.1 :: l.keys :=
   rfl
+
+@[simp, grind =]
+theorem keys_append : (l₁ ++ l₂).keys = l₁.keys ++ l₂.keys := by
+  simp [keys]
 
 theorem mem_keys_of_mem {s : Sigma β} {l : List (Sigma β)} : s ∈ l → s.1 ∈ l.keys :=
   mem_map_of_mem
 
 theorem exists_of_mem_keys {a} {l : List (Sigma β)} (h : a ∈ l.keys) :
-    ∃ b : β a, Sigma.mk a b ∈ l :=
-  let ⟨⟨_, b'⟩, m, e⟩ := exists_of_mem_map h
-  Eq.recOn e (Exists.intro b' m)
+    ∃ b : β a, Sigma.mk a b ∈ l := by
+  have := exists_of_mem_map h
+  grind
 
+@[grind =]
 theorem mem_keys {a} {l : List (Sigma β)} : a ∈ l.keys ↔ ∃ b : β a, Sigma.mk a b ∈ l :=
   ⟨exists_of_mem_keys, fun ⟨_, h⟩ => mem_keys_of_mem h⟩
 
-theorem notMem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, Sigma.mk a b ∉ l :=
-  (not_congr mem_keys).trans not_exists
+theorem notMem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, Sigma.mk a b ∉ l := by
+  grind
 
 @[deprecated (since := "2025-05-23")] alias not_mem_keys := notMem_keys
 
-theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 :=
-  Iff.intro (fun h₁ s h₂ e => absurd (mem_keys_of_mem h₂) (by rwa [e] at h₁)) fun f h₁ =>
-    let ⟨_, h₂⟩ := exists_of_mem_keys h₁
-    f _ h₂ rfl
+theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 := by
+  grind
 
 @[deprecated (since := "2025-04-27")]
 alias not_eq_key := ne_key
@@ -78,6 +81,7 @@ alias not_eq_key := ne_key
 
 
 /-- Determines whether the store uses a key several times. -/
+@[grind]
 def NodupKeys (l : List (Sigma β)) : Prop :=
   l.keys.Nodup
 
@@ -96,9 +100,12 @@ theorem nodupKeys_nil : @NodupKeys α β [] :=
 theorem nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} :
     NodupKeys (s :: l) ↔ s.1 ∉ l.keys ∧ NodupKeys l := by simp [keys, NodupKeys]
 
+theorem nodupKeys_middle {s : Sigma β} :
+    (l₁ ++ s :: l₂).NodupKeys ↔ (s :: (l₁ ++ l₂)).NodupKeys := by
+  simp_all [NodupKeys, keys, nodup_middle]
+
 theorem notMem_keys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
-    s.1 ∉ l.keys :=
-  (nodupKeys_cons.1 h).1
+    s.1 ∉ l.keys := by grind
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_keys_of_nodupKeys_cons := notMem_keys_of_nodupKeys_cons
@@ -115,7 +122,7 @@ theorem NodupKeys.eq_of_fst_eq {l : List (Sigma β)} (nd : NodupKeys l) {s s' : 
 
 theorem NodupKeys.eq_of_mk_mem {a : α} {b b' : β a} {l : List (Sigma β)} (nd : NodupKeys l)
     (h : Sigma.mk a b ∈ l) (h' : Sigma.mk a b' ∈ l) : b = b' := by
-  cases nd.eq_of_fst_eq h h' rfl; rfl
+  grind [NodupKeys.eq_of_fst_eq]
 
 theorem nodupKeys_singleton (s : Sigma β) : NodupKeys [s] :=
   nodup_singleton _
@@ -123,6 +130,7 @@ theorem nodupKeys_singleton (s : Sigma β) : NodupKeys [s] :=
 theorem NodupKeys.sublist {l₁ l₂ : List (Sigma β)} (h : l₁ <+ l₂) : NodupKeys l₂ → NodupKeys l₁ :=
   Nodup.sublist <| h.map _
 
+@[grind →]
 protected theorem NodupKeys.nodup {l : List (Sigma β)} : NodupKeys l → Nodup l :=
   Nodup.of_map _
 
@@ -140,8 +148,7 @@ theorem nodup_zipIdx_map_snd (l : List α) : (l.zipIdx.map Prod.snd).Nodup := by
   simp [List.nodup_range']
 
 theorem mem_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.Nodup) (nd₁ : l₁.Nodup)
-    (h : ∀ x, x ∈ l₀ ↔ x ∈ l₁) : l₀ ~ l₁ :=
-  (perm_ext_iff_of_nodup nd₀ nd₁).2 h
+    (h : ∀ x, x ∈ l₀ ↔ x ∈ l₁) : l₀ ~ l₁ := by grind [perm_ext_iff_of_nodup]
 
 variable [DecidableEq α] [DecidableEq α']
 
@@ -153,38 +160,32 @@ def dlookup (a : α) : List (Sigma β) → Option (β a)
   | [] => none
   | ⟨a', b⟩ :: l => if h : a' = a then some (Eq.recOn h b) else dlookup a l
 
-@[simp]
+@[simp, grind =]
 theorem dlookup_nil (a : α) : dlookup a [] = @none (β a) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem dlookup_cons_eq (l) (a : α) (b : β a) : dlookup a (⟨a, b⟩ :: l) = some b :=
   dif_pos rfl
 
-@[simp]
+@[simp, grind =]
 theorem dlookup_cons_ne (l) {a} : ∀ s : Sigma β, a ≠ s.1 → dlookup a (s :: l) = dlookup a l
   | ⟨_, _⟩, h => dif_neg h.symm
 
-theorem dlookup_isSome {a : α} : ∀ {l : List (Sigma β)}, (dlookup a l).isSome ↔ a ∈ l.keys
-  | [] => by simp
-  | ⟨a', b⟩ :: l => by
-    by_cases h : a = a'
-    · subst a'
-      simp
-    · simp [h, dlookup_isSome]
+@[grind =]
+theorem dlookup_isSome {a : α} {l : List (Sigma β)} : (dlookup a l).isSome ↔ a ∈ l.keys := by
+  induction l with
+  | nil => simp
+  | cons s _ _ => by_cases a = s.fst <;> grind
 
 theorem dlookup_eq_none {a : α} {l : List (Sigma β)} : dlookup a l = none ↔ a ∉ l.keys := by
   simp [← dlookup_isSome, Option.isNone_iff_eq_none]
 
-theorem of_mem_dlookup {a : α} {b : β a} :
-    ∀ {l : List (Sigma β)}, b ∈ dlookup a l → Sigma.mk a b ∈ l
-  | ⟨a', b'⟩ :: l, H => by
-    by_cases h : a = a'
-    · subst a'
-      have : b' = b := by simpa using H
-      simp [this]
-    · simp only [ne_eq, h, not_false_iff, dlookup_cons_ne] at H
-      simp [of_mem_dlookup H]
+theorem of_mem_dlookup {a : α} {b : β a} {l : List (Sigma β)} :
+    b ∈ dlookup a l → Sigma.mk a b ∈ l := by
+  induction l with
+  | nil => grind
+  | cons s _ _ => by_cases a = s.fst <;> grind
 
 theorem mem_dlookup {a} {b : β a} {l : List (Sigma β)} (nd : l.NodupKeys) (h : Sigma.mk a b ∈ l) :
     b ∈ dlookup a l := by
@@ -192,14 +193,11 @@ theorem mem_dlookup {a} {b : β a} {l : List (Sigma β)} (nd : l.NodupKeys) (h :
   cases nd.eq_of_mk_mem h (of_mem_dlookup h')
   exact h'
 
-theorem map_dlookup_eq_find (a : α) :
-    ∀ l : List (Sigma β), (dlookup a l).map (Sigma.mk a) = find? (fun s => a = s.1) l
-  | [] => rfl
-  | ⟨a', b'⟩ :: l => by
-    by_cases h : a = a'
-    · subst a'
-      simp
-    · simpa [h] using map_dlookup_eq_find a l
+theorem map_dlookup_eq_find (a : α) (l : List (Sigma β)) :
+    (dlookup a l).map (Sigma.mk a) = find? (fun s => a = s.1) l := by
+  induction l with
+  | nil => grind
+  | cons s _ _ => by_cases s.fst = a <;> grind
 
 theorem mem_dlookup_iff {a : α} {b : β a} {l : List (Sigma β)} (nd : l.NodupKeys) :
     b ∈ dlookup a l ↔ Sigma.mk a b ∈ l :=
@@ -211,29 +209,57 @@ theorem perm_dlookup (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupK
   ext b; simp only [← Option.mem_def, mem_dlookup_iff nd₁, mem_dlookup_iff nd₂, p.mem_iff]
 
 theorem lookup_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.NodupKeys) (nd₁ : l₁.NodupKeys)
-    (h : ∀ x y, y ∈ l₀.dlookup x ↔ y ∈ l₁.dlookup x) : l₀ ~ l₁ :=
-  mem_ext nd₀.nodup nd₁.nodup fun ⟨a, b⟩ => by
-    rw [← mem_dlookup_iff, ← mem_dlookup_iff, h] <;> assumption
+    (h : ∀ x y, y ∈ l₀.dlookup x ↔ y ∈ l₁.dlookup x) : l₀ ~ l₁ := by
+  grind [_=_ mem_dlookup_iff, mem_ext]
 
 theorem dlookup_map (l : List (Sigma β))
     {f : α → α'} (hf : Function.Injective f) (g : ∀ a, β a → β' (f a)) (a : α) :
-    (l.map fun x => ⟨f x.1, g _ x.2⟩).dlookup (f a) = (l.dlookup a).map (g a) := by
+    (l.map (.map f g)).dlookup (f a) = (l.dlookup a).map (g a) := by
   induction l with
-  | nil => rw [map_nil, dlookup_nil, dlookup_nil, Option.map_none]
-  | cons b l IH =>
-    rw [map_cons]
-    obtain rfl | h := eq_or_ne a b.1
-    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.map_some]
-    · rw [dlookup_cons_ne _ _ h, dlookup_cons_ne _ _ (fun he => h <| hf he), IH]
+  | nil => grind
+  | cons s _ _ =>
+    have (h : a ≠ s.fst) : ¬ f a = (⟨f s.fst, g s.fst s.snd⟩ : Sigma β').fst := fun he => h <| hf he
+    by_cases a = s.fst <;> grind [Sigma.map]
 
 theorem dlookup_map₁ {β : Type v} (l : List (Σ _ : α, β))
     {f : α → α'} (hf : Function.Injective f) (a : α) :
-    (l.map fun x => ⟨f x.1, x.2⟩ : List (Σ _ : α', β)).dlookup (f a) = l.dlookup a := by
-  rw [dlookup_map (β' := fun _ => β) l hf (fun _ x => x) a, Option.map_id']
+    (l.map (.map f fun _ => id) : List (Σ _ : α', β)).dlookup (f a) = l.dlookup a := by
+  have := dlookup_map (β' := fun _ => β) (f := f) (g := fun _ => id)
+  grind [Option.map_id']
 
 theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a, γ a → δ a} (a : α) :
-    (l.map fun x => ⟨x.1, f _ x.2⟩ : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
+    (l.map (.map id f) : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
   dlookup_map l Function.injective_id _ _
+
+theorem NodupKeys.map₁ {β : Type v} (f : α → α') (hf : Function.Injective f) {l : List (Σ _ : α, β)}
+    (nd : l.NodupKeys) : (l.map (.map f fun _ => id) : List (Σ _ : α', β)).NodupKeys := by
+  induction l with
+  | nil => grind [nodupKeys_nil]
+  | cons hd tl =>
+    have := dlookup_map₁ tl hf hd.fst
+    grind [dlookup_isSome, → notMem_keys_of_nodupKeys_cons, nodupKeys_of_nodupKeys_cons,
+      nodupKeys_cons]
+
+omit [DecidableEq α] in
+theorem map₂_keys {β β' : α → Type*} (f : (a : α) → β a → β' a) (l : List (Σ a, β a)) :
+    (l.map (.map id f)).keys = l.keys := by
+  induction l <;> grind [Sigma.map]
+
+omit [DecidableEq α] in
+theorem NodupKeys.map₂ {β β' : α → Type*} (f : (a : α) → β a → β' a) (l : List (Σ a, β a))
+    (nd : l.NodupKeys) : (l.map (.map id f)).NodupKeys := by
+  simp_all [NodupKeys, map₂_keys]
+
+@[simp, grind =]
+theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
+    (l₁ ++ l₂).dlookup a = (l₁.dlookup a).or (l₂.dlookup a) := by
+  induction l₁ with
+  | nil => rfl
+  | cons s _ _ => by_cases a = s.fst <;> grind
+
+theorem sublist_dlookup {l₁ l₂ : List (Sigma β)} {a : α} {b : β a}
+    (nd₂ : l₂.NodupKeys) (s : l₁ <+ l₂) (mem : b ∈ l₁.dlookup a) : b ∈ l₂.dlookup a := by
+  grind [Option.mem_def, => perm_dlookup, → Sublist.exists_perm_append]
 
 /-! ### `lookupAll` -/
 
@@ -313,16 +339,6 @@ theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.Nodu
     (p : l₁ ~ l₂) : lookupAll a l₁ = lookupAll a l₂ := by
   have nd₂ := (perm_nodupKeys p).mp nd₁
   simp [lookupAll_eq_dlookup, nd₁, nd₂, perm_dlookup a nd₁ p]
-
-theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
-    (l₁ ++ l₂).dlookup a = (l₁.dlookup a).or (l₂.dlookup a) := by
-  induction l₁ with
-  | nil => rfl
-  | cons x l₁ IH =>
-    rw [cons_append]
-    obtain rfl | hb := Decidable.eq_or_ne a x.1
-    · rw [dlookup_cons_eq, dlookup_cons_eq, Option.or]
-    · rw [dlookup_cons_ne _ _ hb, dlookup_cons_ne _ _ hb, IH]
 
 /-! ### `kreplace` -/
 

@@ -176,13 +176,13 @@ If `x` generates `S` over `R` and is integral over `R`, then it defines a power 
 See `PowerBasis.ofAdjoinEqTop` for a version over a field.
 -/
 noncomputable def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x)
-  (hx' : adjoin R {x} = ⊤) :
+    (hx' : adjoin R {x} = ⊤) :
     PowerBasis R S :=
   (adjoin.powerBasis' hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
 
 example {x : S} (B : PowerBasis R S)
-   (hint : IsIntegral R x) (hx : B.gen ∈ Algebra.adjoin R {x}) :
-   PowerBasis R S := by
+    (hint : IsIntegral R x) (hx : B.gen ∈ Algebra.adjoin R {x}) :
+    PowerBasis R S := by
   apply PowerBasis.ofAdjoinEqTop' hint
   exact PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx
 

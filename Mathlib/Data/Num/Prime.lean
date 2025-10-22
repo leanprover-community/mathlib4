@@ -60,7 +60,7 @@ def minFac : PosNum → PosNum
 @[simp]
 theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
   obtain - | n := n
-  · rfl
+  · simp [minFac]
   · rw [minFac, Nat.minFac_eq, if_neg]
     swap
     · simp [← two_mul]

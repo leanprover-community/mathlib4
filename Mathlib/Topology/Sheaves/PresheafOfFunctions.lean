@@ -15,7 +15,7 @@ We construct some simple examples of presheaves of functions on a topological sp
 * `presheafToTop X T`, where `T : TopCat`,
   is the presheaf of continuous functions into a topological space `T`
 * `presheafToTopCommRing X R`, where `R : TopCommRingCat`
-  is the presheaf valued in `CommRing` of functions functions into a topological ring `R`
+  is the presheaf valued in `CommRing` of functions into a topological ring `R`
 * as an example of the previous construction,
   `presheafToTopCommRing X (TopCommRingCat.of ℂ)`
   is the presheaf of rings of continuous complex-valued functions on `X`.

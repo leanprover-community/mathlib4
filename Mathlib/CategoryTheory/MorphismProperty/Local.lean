@@ -43,9 +43,12 @@ variable (K : Precoverage C)
 
 /--
 A property of morphisms `P` in `C` is local at the target with respect to the precoverage `K` if
-it respects ismorphisms, and:
+it respects isomorphisms, and:
 `P` holds for `f : X ⟶ Y` if and only if it holds for the restrictions of `f` to `Uᵢ` for a
 `0`-hypercover `{Uᵢ}` of `Y` in the precoverage `K`.
+
+For a version of `of_zeroHypercover` that takes a `v`-small `0`-hypercover in an arbitrary
+universe, use `CategoryTheory.MorphismProperty.of_zeroHypercover_target`.
 -/
 class IsLocalAtTarget (P : MorphismProperty C) (K : Precoverage C) [K.HasPullbacks]
     extends RespectsIso P where
@@ -61,6 +64,13 @@ class IsLocalAtTarget (P : MorphismProperty C) (K : Precoverage C) [K.HasPullbac
 namespace IsLocalAtTarget
 
 variable {P : MorphismProperty C} {K L : Precoverage C} [K.HasPullbacks]
+
+lemma mk_of_iff [P.RespectsIso]
+    (H : ∀ {X Y : C} (f : X ⟶ Y) (𝒰 : Precoverage.ZeroHypercover.{v} K Y),
+      P f ↔ ∀ i, P (pullback.snd f (𝒰.f i))) :
+    P.IsLocalAtTarget K where
+  pullbackSnd 𝒰 i h := (H _ 𝒰).mp h i
+  of_zeroHypercover 𝒰 h := (H _ 𝒰).mpr h
 
 lemma mk_of_isStableUnderBaseChange [P.IsStableUnderBaseChange]
     (H : ∀ {X Y : C} (f : X ⟶ Y) (𝒰 : Precoverage.ZeroHypercover.{v} K Y),
@@ -96,14 +106,23 @@ instance inf (P Q : MorphismProperty C) [IsLocalAtTarget P K] [IsLocalAtTarget Q
 
 end IsLocalAtTarget
 
-alias of_zeroHypercover_target := IsLocalAtTarget.of_zeroHypercover
+lemma of_zeroHypercover_target {P : MorphismProperty C} {K : Precoverage C} [K.HasPullbacks]
+    [P.IsLocalAtTarget K] {X Y : C} {f : X ⟶ Y} (𝒰 : Precoverage.ZeroHypercover.{w} K Y)
+    [Precoverage.ZeroHypercover.Small.{v} 𝒰] (h : ∀ i, P (pullback.snd f (𝒰.f i))) :
+    P f := by
+  rw [IsLocalAtTarget.iff_of_zeroHypercover (P := P) 𝒰.restrictIndexOfSmall]
+  simp [h]
+
 alias iff_of_zeroHypercover_target := IsLocalAtTarget.iff_of_zeroHypercover
 
 /--
 A property of morphisms `P` in `C` is local at the source with respect to the precoverage `K` if
-it respects ismorphisms, and:
+it respects isomorphisms, and:
 `P` holds for `f : X ⟶ Y` if and only if it holds for the restrictions of `f` to `Uᵢ` for a
 `0`-hypercover `{Uᵢ}` of `X` in the precoverage `K`.
+
+For a version of `of_zeroHypercover` that takes a `v`-small `0`-hypercover in an arbitrary
+universe, use `CategoryTheory.MorphismProperty.of_zeroHypercover_source`.
 -/
 class IsLocalAtSource (P : MorphismProperty C) (K : Precoverage C) extends RespectsIso P where
   /-- If `P` holds for `f : X ⟶ Y`, it also holds for `𝒰.f i ≫ f` for any `K`-cover `𝒰` of `X`. -/
@@ -117,6 +136,13 @@ class IsLocalAtSource (P : MorphismProperty C) (K : Precoverage C) extends Respe
 namespace IsLocalAtSource
 
 variable {P : MorphismProperty C} {K L : Precoverage C}
+
+lemma mk_of_iff [P.RespectsIso]
+    (H : ∀ {X Y : C} (f : X ⟶ Y) (𝒰 : Precoverage.ZeroHypercover.{v} K X),
+      P f ↔ ∀ i, P (𝒰.f i ≫ f)) :
+    P.IsLocalAtSource K where
+  comp 𝒰 i h := (H _ 𝒰).mp h i
+  of_zeroHypercover 𝒰 h := (H _ 𝒰).mpr h
 
 lemma of_le [IsLocalAtSource P L] (hle : K ≤ L) : IsLocalAtSource P K where
   comp 𝒰 i hf := comp (𝒰.weaken hle) i hf
@@ -139,7 +165,13 @@ instance inf (P Q : MorphismProperty C) [IsLocalAtSource P K] [IsLocalAtSource Q
 
 end IsLocalAtSource
 
-alias of_zeroHypercover_source := IsLocalAtSource.of_zeroHypercover
+lemma of_zeroHypercover_source {P : MorphismProperty C} {K : Precoverage C}
+    [P.IsLocalAtSource K] {X Y : C} {f : X ⟶ Y} (𝒰 : Precoverage.ZeroHypercover.{w} K X)
+    [Precoverage.ZeroHypercover.Small.{v} 𝒰] (h : ∀ i, P (𝒰.f i ≫ f)) :
+    P f := by
+  rw [IsLocalAtSource.iff_of_zeroHypercover (P := P) 𝒰.restrictIndexOfSmall]
+  simp [h]
+
 alias iff_of_zeroHypercover_source := IsLocalAtSource.iff_of_zeroHypercover
 
 end MorphismProperty

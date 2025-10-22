@@ -164,12 +164,6 @@ lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
 instance commRing : CommRing ℝ where
   natCast n := ⟨n⟩
   intCast z := ⟨z⟩
-  zero := (0 : ℝ)
-  one := (1 : ℝ)
-  mul := (· * ·)
-  add := (· + ·)
-  neg := @Neg.neg ℝ _
-  sub := @Sub.sub ℝ _
   npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
   nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
   zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩)

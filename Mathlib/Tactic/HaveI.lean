@@ -8,7 +8,7 @@ import Mathlib.Init
 /-!
 # Variants of `haveI`/`letI` for use in do-notation.
 
-This files implements the `haveI'` and `letI'` macros which have the same semantics as
+This file implements the `haveI'` and `letI'` macros which have the same semantics as
 `haveI` and `letI`, but are `doElem`s and can be used inside do-notation.
 
 They need an apostrophe after their name for disambiguation with the term variants.

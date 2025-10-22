@@ -77,7 +77,7 @@ regard a `LieHom` as a `NonUnitalAlgHom`. -/
 def toNonUnitalAlgHom (f : L →ₗ⁅R⁆ L₂) : CommutatorRing L →ₙₐ[R] CommutatorRing L₂ :=
   { f with
     toFun := f
-    map_zero' := f.map_zero
+    map_zero' := f.toLinearMap.map_zero
     map_mul' := f.map_lie }
 
 theorem toNonUnitalAlgHom_injective :

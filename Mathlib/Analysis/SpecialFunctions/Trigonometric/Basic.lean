@@ -395,11 +395,7 @@ theorem cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
 
 theorem sin_pos_of_pos_of_lt_pi {x : ℝ} (h0x : 0 < x) (hxp : x < π) : 0 < sin x :=
   if hx2 : x ≤ 2 then sin_pos_of_pos_of_le_two h0x hx2
-  else
-    have : (2 : ℝ) + 2 = 4 := by norm_num
-    have : π - x ≤ 2 :=
-      sub_le_iff_le_add.2 (le_trans pi_le_four (this ▸ add_le_add_left (le_of_not_ge hx2) _))
-    sin_pi_sub x ▸ sin_pos_of_pos_of_le_two (sub_pos.2 hxp) this
+  else sin_pi_sub x ▸ sin_pos_of_pos_of_le_two (sub_pos.2 hxp) (by linarith [pi_le_four])
 
 theorem sin_pos_of_mem_Ioo {x : ℝ} (hx : x ∈ Ioo 0 π) : 0 < sin x :=
   sin_pos_of_pos_of_lt_pi hx.1 hx.2
@@ -659,12 +655,12 @@ theorem sqrtTwoAddSeries_succ (x : ℝ) :
   | 0 => rfl
   | n + 1 => by rw [sqrtTwoAddSeries, sqrtTwoAddSeries_succ _ _, sqrtTwoAddSeries]
 
+@[gcongr]
 theorem sqrtTwoAddSeries_monotone_left {x y : ℝ} (h : x ≤ y) :
     ∀ n : ℕ, sqrtTwoAddSeries x n ≤ sqrtTwoAddSeries y n
   | 0 => h
   | n + 1 => by
-    rw [sqrtTwoAddSeries, sqrtTwoAddSeries]
-    exact sqrt_le_sqrt (add_le_add_left (sqrtTwoAddSeries_monotone_left h _) _)
+    rw [sqrtTwoAddSeries, sqrtTwoAddSeries]; gcongr; exact sqrtTwoAddSeries_monotone_left h _
 
 @[simp]
 theorem cos_pi_over_two_pow : ∀ n : ℕ, cos (π / 2 ^ (n + 1)) = sqrtTwoAddSeries 0 n / 2
@@ -767,7 +763,7 @@ theorem cos_pi_div_three : cos (π / 3) = 1 / 2 := by
       ring
     linarith [cos_pi, cos_three_mul (π / 3)]
   rcases mul_eq_zero.mp h₁ with h | h
-  · linarith [pow_eq_zero h]
+  · linarith [eq_zero_of_pow_eq_zero h]
   · have : cos π < cos (π / 3) := by
       refine cos_lt_cos_of_nonneg_of_le_pi ?_ le_rfl ?_ <;> linarith [pi_pos]
     linarith [cos_pi]

@@ -23,8 +23,8 @@ the linear order `Fin (n + 1)` to `C`, in other words
 
 ## Projects
 
-* Prove that the 0-simplicies of `SimplicialNerve C` may be identified with the objects of `C`
-* Prove that the 1-simplicies of `SimplicialNerve C` may be identified with the morphisms of `C`
+* Prove that the 0-simplices of `SimplicialNerve C` may be identified with the objects of `C`
+* Prove that the 1-simplices of `SimplicialNerve C` may be identified with the morphisms of `C`
 * Prove that the simplicial nerve of a simplicial category `C`, such that `sHom X Y` is a Kan
   complex for every pair of objects `X Y : C`, is a quasicategory.
 * Define the quasicategory of anima as the simplicial nerve of the simplicial category of

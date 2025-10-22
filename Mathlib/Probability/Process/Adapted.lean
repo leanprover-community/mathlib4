@@ -39,29 +39,35 @@ open scoped MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
-variable {Ω β ι : Type*} {m : MeasurableSpace Ω} [TopologicalSpace β] [Preorder ι]
-  {u v : ι → Ω → β} {f : Filtration ι m}
+variable {Ω ι : Type*} {m : MeasurableSpace Ω} [Preorder ι] {f : Filtration ι m}
+
+section Adapted
+
+variable {β : ι → Type*} [∀ i, TopologicalSpace (β i)] {u v : (i : ι) → Ω → β i}
 
 /-- A sequence of functions `u` is adapted to a filtration `f` if for all `i`,
 `u i` is `f i`-measurable. -/
-def Adapted (f : Filtration ι m) (u : ι → Ω → β) : Prop :=
+def Adapted (f : Filtration ι m) (u : (i : ι) → Ω → β i) : Prop :=
   ∀ i : ι, StronglyMeasurable[f i] (u i)
 
 namespace Adapted
 
 @[to_additive]
-protected theorem mul [Mul β] [ContinuousMul β] (hu : Adapted f u) (hv : Adapted f v) :
+protected theorem mul [∀ i, Mul (β i)] [∀ i, ContinuousMul (β i)]
+    (hu : Adapted f u) (hv : Adapted f v) :
     Adapted f (u * v) := fun i => (hu i).mul (hv i)
 
 @[to_additive]
-protected theorem div [Div β] [ContinuousDiv β] (hu : Adapted f u) (hv : Adapted f v) :
+protected theorem div [∀ i, Div (β i)] [∀ i, ContinuousDiv (β i)]
+    (hu : Adapted f u) (hv : Adapted f v) :
     Adapted f (u / v) := fun i => (hu i).div (hv i)
 
 @[to_additive]
-protected theorem inv [Group β] [ContinuousInv β] (hu : Adapted f u) :
+protected theorem inv [∀ i, Group (β i)] [∀ i, ContinuousInv (β i)] (hu : Adapted f u) :
     Adapted f u⁻¹ := fun i => (hu i).inv
 
-protected theorem smul [SMul ℝ β] [ContinuousConstSMul ℝ β] (c : ℝ) (hu : Adapted f u) :
+protected theorem smul [∀ i, SMul ℝ (β i)] [∀ i, ContinuousConstSMul ℝ (β i)]
+    (c : ℝ) (hu : Adapted f u) :
     Adapted f (c • u) := fun i => (hu i).const_smul c
 
 protected theorem stronglyMeasurable {i : ι} (hf : Adapted f u) : StronglyMeasurable[m] (u i) :=
@@ -72,20 +78,32 @@ theorem stronglyMeasurable_le {i j : ι} (hf : Adapted f u) (hij : i ≤ j) :
 
 end Adapted
 
-theorem adapted_const (f : Filtration ι m) (x : β) : Adapted f fun _ _ => x := fun _ =>
-  stronglyMeasurable_const
+theorem adapted_const' (f : Filtration ι m) (x : (i : ι) → β i) : Adapted f fun i _ ↦ x i :=
+  fun _ ↦ stronglyMeasurable_const
+
+theorem adapted_const {β : Type*} [TopologicalSpace β] (f : Filtration ι m) (x : β) :
+    Adapted f fun _ _ ↦ x :=
+  adapted_const' _ _
 
 variable (β) in
-theorem adapted_zero [Zero β] (f : Filtration ι m) : Adapted f (0 : ι → Ω → β) := fun i =>
-  @stronglyMeasurable_zero Ω β (f i) _ _
+theorem adapted_zero' [∀ i, Zero (β i)] (f : Filtration ι m) : Adapted f (0 : (i : ι) → Ω → β i) :=
+  fun i ↦ @stronglyMeasurable_zero Ω (β i) (f i) _ _
 
-theorem Filtration.adapted_natural [MetrizableSpace β] [mβ : MeasurableSpace β] [BorelSpace β]
-    {u : ι → Ω → β} (hum : ∀ i, StronglyMeasurable[m] (u i)) :
+theorem adapted_zero (β : Type*) [TopologicalSpace β] [Zero β] (f : Filtration ι m) :
+    Adapted f (0 : ι → Ω → β) :=
+  fun i ↦ @stronglyMeasurable_zero Ω β (f i) _ _
+
+theorem Filtration.adapted_natural [∀ i, MetrizableSpace (β i)] [mβ : ∀ i, MeasurableSpace (β i)]
+    [∀ i, BorelSpace (β i)] (hum : ∀ i, StronglyMeasurable[m] (u i)) :
     Adapted (Filtration.natural u hum) u := by
   intro i
   refine StronglyMeasurable.mono ?_ (le_iSup₂_of_le i (le_refl i) le_rfl)
   rw [stronglyMeasurable_iff_measurable_separable]
   exact ⟨measurable_iff_comap_le.2 le_rfl, (hum i).isSeparable_range⟩
+
+end Adapted
+
+variable {β : Type*} [TopologicalSpace β] {u v : ι → Ω → β}
 
 /-- Progressively measurable process. A sequence of functions `u` is said to be progressively
 measurable with respect to a filtration `f` if at each point in time `i`, `u` restricted to

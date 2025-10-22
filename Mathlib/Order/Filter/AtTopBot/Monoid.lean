@@ -126,7 +126,7 @@ theorem Tendsto.atTop_of_isBoundedUnder_le_mul (hf : IsBoundedUnder (· ≤ ·) 
     (hfg : Tendsto (fun x => f x * g x) l atTop) : Tendsto g l atTop := by
   obtain ⟨C, hC⟩ := hf
   refine .atTop_of_const_mul C <| tendsto_atTop_mono' l ?_ hfg
-  exact (eventually_map.mp hC).mono fun _ ↦ (mul_le_mul_right' · _)
+  exact (eventually_map.mp hC).mono fun _ _ ↦ by dsimp; gcongr
 
 @[to_additive]
 theorem Tendsto.atBot_of_isBoundedUnder_ge_mul (hf : IsBoundedUnder (· ≥ ·) l f)
@@ -148,7 +148,7 @@ theorem Tendsto.atTop_of_mul_isBoundedUnder_le (hg : IsBoundedUnder (· ≤ ·) 
     (h : Tendsto (fun x => f x * g x) l atTop) : Tendsto f l atTop := by
   obtain ⟨C, hC⟩ := hg
   refine .atTop_of_mul_const C <| tendsto_atTop_mono' l ?_ h
-  exact (eventually_map.mp hC).mono fun _ ↦ (mul_le_mul_left' · _)
+  exact (eventually_map.mp hC).mono fun _ _ ↦ by dsimp; gcongr
 
 @[to_additive]
 theorem Tendsto.atBot_of_mul_isBoundedUnder_ge (hg : IsBoundedUnder (· ≥ ·) l g)

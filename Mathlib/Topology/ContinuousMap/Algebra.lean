@@ -363,20 +363,20 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
   /-- If an infinite sum of functions in `C(α, β)` converges to `g` (for the compact-open topology),
 then the pointwise sum converges to `g x` for all `x ∈ α`. -/]
 theorem hasProd_apply {γ : Type*} [CommMonoid β] [ContinuousMul β]
-    {f : γ → C(α, β)} {g : C(α, β)} (hf : HasProd f g) (x : α) :
-    HasProd (fun i : γ => f i x) (g x) := by
+    {f : γ → C(α, β)} {g : C(α, β)} {L : SummationFilter γ} (hf : HasProd f g L) (x : α) :
+    HasProd (fun i : γ => f i x) (g x) L := by
   let ev : C(α, β) →* β := (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
   exact hf.map ev (continuous_eval_const x)
 
 @[to_additive]
 theorem multipliable_apply [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Multipliable f) (x : α) : Multipliable fun i : γ => f i x :=
+    {L : SummationFilter γ} (hf : Multipliable f L) (x : α) : Multipliable (fun i : γ ↦ f i x) L :=
   (hasProd_apply hf.hasProd x).multipliable
 
 @[to_additive]
 theorem tprod_apply [T2Space β] [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Multipliable f) (x : α) :
-    ∏' i : γ, f i x = (∏' i : γ, f i) x :=
+    {L : SummationFilter γ} (hf : Multipliable f L) [L.NeBot] (x : α) :
+    ∏'[L] i : γ, f i x = (∏'[L] i : γ, f i) x :=
   (hasProd_apply hf.hasProd x).tprod_eq
 
 end ContinuousMap
@@ -819,7 +819,6 @@ lemma smul_apply' (f : C(α, R)) (g : C(α, M)) (x : α) :
 
 instance module' [IsTopologicalSemiring R] [ContinuousAdd M] :
     Module C(α, R) C(α, M) where
-  smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
   mul_smul c₁ c₂ f := by ext x; exact mul_smul (c₁ x) (c₂ x) (f x)

@@ -12,7 +12,8 @@ When `ι` is a topological space with the order topology, we also endow `WithTop
 topology. If `ι` is second countable, we prove that `WithTop ι` also is.
 -/
 
-open Set
+open Set Filter
+open scoped Topology
 
 namespace TopologicalSpace
 
@@ -174,3 +175,85 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
               grind
 
 end TopologicalSpace
+
+namespace WithTop
+
+variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
+
+section Coe
+
+lemma isEmbedding_coe : Topology.IsEmbedding ((↑) : ι → WithTop ι) := by
+  refine WithTop.coe_strictMono.isEmbedding_of_ordConnected (α := ι) ?_
+  rw [WithTop.range_coe]
+  exact Set.ordConnected_Iio
+
+lemma isOpenEmbedding_coe : Topology.IsOpenEmbedding ((↑) : ι → WithTop ι) :=
+  ⟨isEmbedding_coe, by rw [WithTop.range_coe]; exact isOpen_Iio⟩
+
+lemma nhds_coe {r : ι} : 𝓝 (r : WithTop ι) = (𝓝 r).map (↑) :=
+  (isOpenEmbedding_coe.map_nhds_eq r).symm
+
+@[fun_prop, continuity]
+lemma continuous_coe : Continuous ((↑) : ι → WithTop ι) := isEmbedding_coe.continuous
+
+end Coe
+
+section ContinuousUnTop
+
+lemma tendsto_untopD (d : ι) {a : WithTop ι} (ha : a ≠ ⊤) :
+    Tendsto (untopD d) (𝓝 a) (𝓝 (untopD d a)) := by
+  lift a to ι using ha
+  rw [nhds_coe, tendsto_map'_iff]
+  exact tendsto_id
+
+lemma continuousOn_untopD (d : ι) : ContinuousOn (untopD d) { a : WithTop ι | a ≠ ⊤ } :=
+  fun _a ha ↦ ContinuousAt.continuousWithinAt (tendsto_untopD d ha)
+
+lemma tendsto_untopA [Nonempty ι] {a : WithTop ι} (ha : a ≠ ⊤) :
+    Tendsto untopA (𝓝 a) (𝓝 a.untopA) := tendsto_untopD _ ha
+
+lemma continuousOn_untopA [Nonempty ι] : ContinuousOn untopA { a : WithTop ι | a ≠ ⊤ } :=
+  continuousOn_untopD _
+
+lemma tendsto_untop (a : {a : WithTop ι | a ≠ ⊤}) :
+    Tendsto (fun x ↦ untop x.1 x.2) (𝓝 a) (𝓝 (untop a.1 a.2)) := by
+  have : Nonempty ι := ⟨untop a.1 a.2⟩
+  simp only [← untopA_eq_untop, ne_eq, coe_setOf, mem_setOf_eq]
+  exact (tendsto_untopA a.2).comp <| tendsto_subtype_rng.mp tendsto_id
+
+lemma continuous_untop : Continuous (fun x : {a : WithTop ι | a ≠ ⊤} ↦ untop x.1 x.2) :=
+  continuous_iff_continuousAt.mpr tendsto_untop
+
+end ContinuousUnTop
+
+variable (ι) in
+/-- Homeomorphism between the non-top elements of `WithTop ι` and `ι`. -/
+noncomputable
+def neTopHomeomorph : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
+  toEquiv := Equiv.withTopSubtypeNe
+  continuous_toFun := continuous_untop
+  continuous_invFun := continuous_coe.subtype_mk _
+
+variable (ι) in
+/-- If `ι` has a top element, then `WithTop ι` is homeomorphic to `ι ⊕ Unit`. -/
+noncomputable
+def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
+  toFun x := if h : x = ⊤ then Sum.inr () else Sum.inl x.untopA
+  invFun x := match x with
+    | Sum.inl i => (i : WithTop ι)
+    | Sum.inr () => ⊤
+  left_inv x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+  continuous_toFun := by
+    have h_fr : frontier ({⊤} : Set (WithTop ι)) = ∅ := by
+      simp only [frontier, Set.finite_singleton, Set.Finite.isClosed, IsClosed.closure_eq]
+      suffices interior ({⊤} : Set (WithTop ι)) = {⊤} by simp [this]
+      rw [interior_eq_iff_isOpen]
+      have : {⊤} = Set.Ioi ((⊤ : ι) : WithTop ι) := by ext; simp
+      rw [this]
+      exact isOpen_Ioi
+    refine continuous_if' (by simp [h_fr]) (by simp [h_fr]) (by simp) ?_
+    exact Continuous.comp_continuousOn (by fun_prop) continuousOn_untopA
+  continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩
+
+end WithTop

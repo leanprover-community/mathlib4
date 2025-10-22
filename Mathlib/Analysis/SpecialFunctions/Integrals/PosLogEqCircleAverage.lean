@@ -57,9 +57,7 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
     have : ‖x * a‖ < 1 := by
       calc ‖x * a‖
       _ = ‖x‖ * ‖a‖ := by simp
-      _ ≤ ‖a‖ := by
-        by_cases ‖a‖ = 0
-        <;> aesop
+      _ ≤ ‖a‖ := mul_le_of_le_one_left (norm_nonneg _) (by aesop)
       _ < 1 := h
     apply AnalyticAt.harmonicAt_log_norm (by fun_prop)
     rw [sub_ne_zero]
@@ -225,18 +223,14 @@ theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0)
     rw [norm_mul, log_mul (norm_ne_zero_iff.2 (Complex.ofReal_ne_zero.mpr hR)) hz]
     simp
   _ = log R + log⁺ (|R|⁻¹ * ‖c - a‖) := by
-    have : (fun z ↦ log ‖R‖ + log ‖z + ↑R⁻¹ * (c - a)‖) =
-        (fun z ↦ log ‖R‖) + (fun z ↦ log ‖z + ↑R⁻¹ * (c - a)‖) := by
-      rfl
-    rw [this, circleAverage_add (circleIntegrable_const (log ‖R‖) 0 1)
+    rw [← Pi.add_def, circleAverage_add (circleIntegrable_const (log ‖R‖) 0 1)
       (circleIntegrable_log_norm_meromorphicOn (fun _ _ ↦ by fun_prop)), circleAverage_const]
     simp
   _ = log R + log⁺ (R⁻¹ * ‖c - a‖) := by
     congr 1
-    rcases lt_trichotomy 0 R with h | h | h
-    · rw [abs_of_pos h]
-    · tauto
+    rcases hR.lt_or_gt with h | h
     · simp [abs_of_neg h]
+    · rw [abs_of_pos h]
 
 /--
 Trivial corollary of

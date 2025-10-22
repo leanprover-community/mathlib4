@@ -6,7 +6,7 @@ Authors: Damiano Testa, Jujian Zhang
 import Mathlib.Algebra.Polynomial.DenomsClearable
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Data.Real.Irrational
+import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!

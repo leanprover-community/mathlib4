@@ -40,7 +40,7 @@ namespace ProfiniteGrp
 theorem exist_openNormalSubgroup_sub_open_nhds_of_one {G : Type*} [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [CompactSpace G] [TotallyDisconnectedSpace G] {U : Set G}
     (UOpen : IsOpen U) (einU : 1 ∈ U) : ∃ H : OpenNormalSubgroup G, (H : Set G) ⊆ U := by
-  rcases ((Filter.HasBasis.mem_iff' ((nhds_basis_clopen (1 : G))) U ).mp <|
+  rcases ((Filter.HasBasis.mem_iff' ((nhds_basis_clopen (1 : G))) U).mp <|
     mem_nhds_iff.mpr (by use U)) with ⟨W, hW, h⟩
   rcases IsTopologicalGroup.exist_openNormalSubgroup_sub_clopen_nhds_of_one hW.2 hW.1 with ⟨H, hH⟩
   exact ⟨H, fun _ a ↦ h (hH a)⟩

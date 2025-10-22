@@ -272,7 +272,7 @@ termination_by (a, b, c)
 @[simp]
 theorem nadd_zero (a : Ordinal) : a ♯ 0 = a := by
   rw [nadd, ciSup_of_empty fun _ : Iio 0 ↦ _, sup_bot_eq]
-  convert iSup_succ a
+  convert _root_.iSup_succ a
   rename_i x
   cases x
   exact nadd_zero _
@@ -339,14 +339,10 @@ instance : AddLeftMono NatOrdinal.{u} :=
   ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
 
 instance : AddLeftReflectLE NatOrdinal.{u} :=
-  ⟨fun a b c h => by
-    by_contra! h'
-    exact h.not_gt (add_lt_add_left h' a)⟩
+  ⟨fun a b c h => by by_contra! h'; exact h.not_gt (by gcongr)⟩
 
 instance : AddCommMonoid NatOrdinal :=
-  { add := (· + ·)
-    add_assoc := nadd_assoc
-    zero := 0
+  { add_assoc := nadd_assoc
     zero_add := zero_nadd
     add_zero := nadd_zero
     add_comm := nadd_comm
@@ -683,13 +679,11 @@ theorem nmul_nadd_le {a b a' b' : NatOrdinal} (ha : a' ≤ a) (hb : b' ≤ b) :
 
 instance : CommSemiring NatOrdinal :=
   { NatOrdinal.instAddCommMonoid with
-    mul := (· * ·)
     left_distrib := nmul_nadd
     right_distrib := nadd_nmul
     zero_mul := zero_nmul
     mul_zero := nmul_zero
     mul_assoc := nmul_assoc
-    one := 1
     one_mul := one_nmul
     mul_one := nmul_one
     mul_comm := nmul_comm }

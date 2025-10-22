@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
+import Mathlib.Data.Nat.Basic
 import Mathlib.Order.Basic
 
 /-!
@@ -101,8 +102,7 @@ theorem getElem_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n +
     (hk : n + k + 1 < (l.insertIdx n x).length := (by
       rwa [length_insertIdx_of_le_length (by cutsat), Nat.succ_lt_succ_iff])) :
     (l.insertIdx n x)[n + k + 1] = l[n + k] := by
-  rw [getElem_insertIdx_of_gt (by cutsat)]
-  simp only [Nat.add_one_sub_one]
+  grind
 
 theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (l.insertIdx n x).length := (by

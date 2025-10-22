@@ -416,11 +416,10 @@ def reindexRange : Basis (range b) R M :=
     .ofRepr (Module.subsingletonEquiv R M (range b))
 
 theorem reindexRange_self (i : ι) (h := Set.mem_range_self i) : b.reindexRange ⟨b i, h⟩ = b i := by
-  by_cases htr : Nontrivial R
-  · simp [htr, reindexRange, reindex_apply]
-  · push_neg at htr
-    letI := Module.subsingleton R M
+  cases subsingleton_or_nontrivial R
+  · let := Module.subsingleton R M
     simp [reindexRange, eq_iff_true_of_subsingleton]
+  · simp [*, reindexRange, reindex_apply]
 
 theorem reindexRange_repr_self (i : ι) :
     b.reindexRange.repr (b i) = Finsupp.single ⟨b i, mem_range_self i⟩ 1 :=

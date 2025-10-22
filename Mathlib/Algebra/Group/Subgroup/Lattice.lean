@@ -66,9 +66,17 @@ def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 
-/-- Additive subgroup of an additive group `Additive G` are isomorphic to subgroup of `G`. -/
+@[simp] lemma Additive.mem_toAddSubgroup (S : Subgroup G) (g : Additive G) :
+    g ∈ S.toAddSubgroup ↔ Additive.toMul g ∈ S :=
+  .rfl
+
+/-- Additive subgroups of an additive group `Additive G` are isomorphic to subgroups of `G`. -/
 abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
   Subgroup.toAddSubgroup.symm
+
+@[simp] lemma AddSubgroup.mem_toSubgroup' (S : AddSubgroup (Additive G)) (g : G) :
+    g ∈ toSubgroup' S ↔ Additive.ofMul g ∈ S :=
+  .rfl
 
 /-- Additive subgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
 -/
@@ -80,10 +88,18 @@ def AddSubgroup.toSubgroup : AddSubgroup A ≃o Subgroup (Multiplicative A) wher
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
 
+@[simp] lemma Multiplicative.mem_toSubgroup (S : AddSubgroup A) (a : Multiplicative A) :
+    a ∈ S.toSubgroup ↔ Multiplicative.toAdd a ∈ S :=
+  .rfl
+
 /-- Subgroups of an additive group `Multiplicative A` are isomorphic to additive subgroups of `A`.
 -/
 abbrev Subgroup.toAddSubgroup' : Subgroup (Multiplicative A) ≃o AddSubgroup A :=
   AddSubgroup.toSubgroup.symm
+
+@[simp] lemma Subgroup.mem_toAddSubgroup' (S : Subgroup (Multiplicative A)) (a : A) :
+    a ∈ toAddSubgroup' S ↔ Multiplicative.ofAdd a ∈ S :=
+  .rfl
 
 end mul_add
 
@@ -515,18 +531,45 @@ theorem _root_.AddSubgroup.toSubgroup'_closure (S : Set (Additive G)) :
   congr_arg AddSubgroup.toSubgroup' (toAddSubgroup'_closure _).symm
 
 @[to_additive]
+theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subgroup G} {i : ι} (hp : p i)
+    (hK : DirectedOn ((· ≤ ·) on K) {i | p i})
+    {x : G} : x ∈ (⨆ i, ⨆ (_h : p i), K i) ↔ ∃ i, p i ∧ x ∈ K i := by
+  -- Could use the `Submonoid` version, but we limit the imports here
+  refine ⟨?_, fun ⟨i, hi', hi⟩ ↦ ?_⟩
+  · suffices x ∈ closure (⋃ i, ⋃ (_ : p i), (K i : Set G)) → ∃ i, p i ∧ x ∈ K i by
+      simpa only [closure_iUnion, closure_eq (K _)] using this
+    refine fun hx ↦ closure_induction (fun _ ↦ ?_) ?_ ?_ ?_ hx
+    · simp
+    · exact ⟨i, hp, (K i).one_mem⟩
+    · rintro x y _ _ ⟨i, hip, hi⟩ ⟨j, hjp, hj⟩
+      rcases hK i hip j hjp with ⟨k, hk, hki, hkj⟩
+      exact ⟨k, hk, mul_mem (hki hi) (hkj hj)⟩
+    · rintro _ _ ⟨i, hi', hi⟩
+      exact ⟨i, hi', inv_mem hi⟩
+  · apply le_iSup (fun i ↦ ⨆ (_ : p i), K i) i
+    simp [hi, hi']
+
+@[to_additive]
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (hK : Directed (· ≤ ·) K)
     {x : G} : x ∈ (iSup K : Subgroup G) ↔ ∃ i, x ∈ K i := by
-  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup K i hi⟩
-  suffices x ∈ closure (⋃ i, (K i : Set G)) → ∃ i, x ∈ K i by
-    simpa only [closure_iUnion, closure_eq (K _)] using this
-  refine fun hx ↦ closure_induction (fun _ ↦ mem_iUnion.1) ?_ ?_ ?_ hx
-  · exact hι.elim fun i ↦ ⟨i, (K i).one_mem⟩
-  · rintro x y _ _ ⟨i, hi⟩ ⟨j, hj⟩
-    rcases hK i j with ⟨k, hki, hkj⟩
-    exact ⟨k, mul_mem (hki hi) (hkj hj)⟩
-  · rintro _ _ ⟨i, hi⟩
-    exact ⟨i, inv_mem hi⟩
+  have : iSup K = ⨆ i : PLift ι, ⨆ (_ : True), K i.down := by simp [iSup_plift_down]
+  rw [this, mem_biSup_of_directedOn trivial]
+  · simp
+  · simp only [setOf_true]
+    rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
+    -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
+    intro i
+    simp only [PLift.exists]
+    intro j
+    refine (hK i.down j.down).imp ?_
+    simp
+  · exact PLift.up hι.some
+
+@[to_additive (attr := simp)]
+theorem mem_iSup_prop {p : Prop} {K : p → Subgroup G} {x : G} :
+    x ∈ ⨆ (h : p), K h ↔ x = 1 ∨ ∃ (h : p), x ∈ K h := by
+  by_cases h : p <;>
+  simp +contextual [h]
 
 @[to_additive]
 theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Directed (· ≤ ·) S) :

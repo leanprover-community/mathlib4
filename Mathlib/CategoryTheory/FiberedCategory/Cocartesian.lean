@@ -81,21 +81,21 @@ variable {b' : 𝒳} (φ' : a ⟶ b') [IsHomLift p f φ']
 `φ' : a ⟶ b'` which also lifts `f`, then `IsCocartesian.map f φ φ'` is the morphism `b ⟶ b'` lying
 over `𝟙 S` obtained from the universal property of `φ`. -/
 protected noncomputable def map : b ⟶ b' :=
-  Classical.choose <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ'
+  Classical.choose <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ'
 
 instance map_isHomLift : IsHomLift p (𝟙 S) (IsCocartesian.map p f φ φ') :=
-  (Classical.choose_spec <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.1
+  (Classical.choose_spec <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ').1.1
 
 @[reassoc (attr := simp)]
 lemma fac : φ ≫ IsCocartesian.map p f φ φ' = φ' :=
-  (Classical.choose_spec <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.2
+  (Classical.choose_spec <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ').1.2
 
 /-- Given a co-Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
 `φ' : a ⟶ b'` which also lifts `f`. Then any morphism `ψ : b ⟶ b'` lifting `𝟙 S` such that
 `g ≫ ψ = φ'` must equal the map induced by the universal property of `φ`. -/
 lemma map_uniq (ψ : b ⟶ b') [IsHomLift p (𝟙 S) ψ] (hψ : φ ≫ ψ = φ') :
     ψ = IsCocartesian.map p f φ φ' :=
-  (Classical.choose_spec <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').2
+  (Classical.choose_spec <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ').2
     ψ ⟨inferInstance, hψ⟩
 
 end
