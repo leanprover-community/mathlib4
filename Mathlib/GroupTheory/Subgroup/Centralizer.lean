@@ -96,8 +96,8 @@ variable (H)
 @[to_additive]
 theorem le_centralizer [h : IsMulCommutative H] : H ≤ centralizer H :=
   le_centralizer_iff_isMulCommutative.mpr h
-variable {H} in
 
+variable {H} in
 @[to_additive]
 lemma closure_le_centralizer_centralizer (s : Set G) :
     closure s ≤ centralizer (centralizer s) :=
