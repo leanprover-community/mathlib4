@@ -15,6 +15,22 @@ This file proves theorems about the interaction between affine equivalences (aut
 and affinely independent families. The main result is that affinely independent families
 of the same size can be mapped to each other by affine automorphisms.
 
+All theorems are formulated for affine spaces over arbitrary division rings, making them
+applicable to real, complex, and p-adic spaces, among others. The affine spaces are modeled
+as `AddTorsor V P` where `V` is a module over a division ring `𝕜` and `P` is the point space.
+
+## Main results
+
+* `affineIndependent_to_affineIndependent_automorphism`: Two affinely independent families
+  `f, g : ι → P` with the same finite index type can be mapped to each other by an affine
+  automorphism `T : P ≃ᵃ[𝕜] P`. This is Rockafellar's Theorem 1.6.
+
+* `affineSubspace_automorphism_of_eq_dim`: Affine subspaces of the same dimension can be
+  mapped to each other by an affine automorphism. This is Rockafellar's Corollary 1.6.1.
+
+* `AffineIndependent.toBasis_of_span_eq_top`: An affinely independent family spanning the
+  entire space gives rise to a linear basis via the difference map from any base point.
+
 The file is organized into two sections:
 1. **General Results**: Theorems that hold for any affine space (no finite-dimensionality required)
 2. **Finite-Dimensional Results**: Theorems specific to finite-dimensional spaces
