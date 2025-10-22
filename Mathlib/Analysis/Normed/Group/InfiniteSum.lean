@@ -101,7 +101,7 @@ theorem hasSum_iff_tendsto_nat_of_summable_norm {f : ℕ → E} {a : E} (hf : Su
     HasSum f a ↔ Tendsto (fun n : ℕ => ∑ i ∈ range n, f i) atTop (𝓝 a) :=
   ⟨fun h => h.tendsto_sum_nat, fun h => hasSum_of_subseq_of_summable hf tendsto_finset_range h⟩
 
-/-- The direct comparison test for series: if the norm of `f` is bounded by a real function `g`
+/-- The direct comparison test for series:  if the norm of `f` is bounded by a real function `g`
 which is summable, then `f` is summable. -/
 theorem Summable.of_norm_bounded [CompleteSpace E] {f : ι → E} {g : ι → ℝ} (hg : Summable g)
     (h : ∀ i, ‖f i‖ ≤ g i) : Summable f := by
@@ -116,7 +116,7 @@ theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : �
     (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b := by
   exact le_of_tendsto_of_tendsto' hf.norm hg fun _s ↦ norm_sum_le_of_le _ fun i _hi ↦ h i
 
-/-- Quantitative result associated to the direct comparison test for series: If, for all `i`,
+/-- Quantitative result associated to the direct comparison test for series:  If, for all `i`,
 `‖f i‖ₑ ≤ g i`, then `‖∑' i, f i‖ₑ ≤ ∑' i, g i`. Note that we do not assume that `∑' i, f i` is
 summable, and it might not be the case if `α` is not a complete space. -/
 theorem tsum_of_enorm_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ℝ≥0∞} (hg : HasSum g a)
@@ -129,7 +129,7 @@ theorem enorm_tsum_le_tsum_enorm {f : ι → ε} :
     ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ :=
   tsum_of_enorm_bounded ENNReal.summable.hasSum fun _i => le_rfl
 
-/-- Quantitative result associated to the direct comparison test for series: If `∑' i, g i` is
+/-- Quantitative result associated to the direct comparison test for series:  If `∑' i, g i` is
 summable, and for all `i`, `‖f i‖ ≤ g i`, then `‖∑' i, f i‖ ≤ ∑' i, g i`. Note that we do not
 assume that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete space. -/
 theorem tsum_of_norm_bounded {f : ι → E} {g : ι → ℝ} {a : ℝ} (hg : HasSum g a)
@@ -162,13 +162,13 @@ theorem nnnorm_tsum_le {f : ι → E} (hf : Summable fun i => ‖f i‖₊) : �
 
 variable [CompleteSpace E]
 
-/-- Variant of the direct comparison test for series: if the norm of `f` is eventually bounded by a
+/-- Variant of the direct comparison test for series:  if the norm of `f` is eventually bounded by a
 real function `g` which is summable, then `f` is summable. -/
 theorem Summable.of_norm_bounded_eventually {f : ι → E} {g : ι → ℝ} (hg : Summable g)
     (h : ∀ᶠ i in cofinite, ‖f i‖ ≤ g i) : Summable f :=
   summable_iff_cauchySeq_finset.2 <| cauchySeq_finset_of_norm_bounded_eventually hg h
 
-/-- Variant of the direct comparison test for series: if the norm of `f` is eventually bounded by a
+/-- Variant of the direct comparison test for series:  if the norm of `f` is eventually bounded by a
 real function `g` which is summable, then `f` is summable. -/
 theorem Summable.of_norm_bounded_eventually_nat {f : ℕ → E} {g : ℕ → ℝ} (hg : Summable g)
     (h : ∀ᶠ i in atTop, ‖f i‖ ≤ g i) : Summable f :=

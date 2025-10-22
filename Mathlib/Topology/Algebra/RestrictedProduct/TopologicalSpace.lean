@@ -70,7 +70,7 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
   continuous. In particular, if each `M i` is a topological `R`-module and each `A i` is an open
   sub-`R`-module of `M i`, then `Πʳ i, [M i, A i]` is a topological `R`-module.
 
-* `RestrictedProduct.weaklyLocallyCompactSpace_of_cofinite`: if each `R i` is weakly locally
+* `RestrictedProduct.weaklyLocallyCompactSpace_of_cofinite`:  if each `R i` is weakly locally
   compact, each `A i` is open, and all but finitely many `A i`s are also compact, then the
   restricted product `Πʳ i, [R i, A i]` is weakly locally compact.
 * `RestrictedProduct.locallyCompactSpace_of_group`: assume that each `R i` is a locally compact

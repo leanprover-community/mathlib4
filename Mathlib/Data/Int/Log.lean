@@ -43,7 +43,7 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 * For `Int.clog`:
   * `Int.zpow_pred_clog_lt_self`, `Int.self_le_zpow_clog`: the bounds formed by `Int.clog`,
     `(b : R) ^ (clog b r - 1) < r ≤ (b : R) ^ clog b r`.
-  * `Int.clog_zpow_gi`: the Galois insertion between `Int.clog` and `zpow`.
+  * `Int.clog_zpow_gi`:  the Galois insertion between `Int.clog` and `zpow`.
 * `Int.neg_log_inv_eq_clog`, `Int.neg_clog_inv_eq_log`: the link between the two definitions.
 -/
 

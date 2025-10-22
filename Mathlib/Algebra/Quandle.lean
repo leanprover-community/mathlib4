@@ -487,7 +487,7 @@ Since we just want a 1-category, the last step is to quotient
 group `EnvelGroup`.
 
 For a homomorphism `f : R →◃ Conj G`, how does
-`EnvelGroup.map f : EnvelGroup R →* G` work? Let's think of `G` as
+`EnvelGroup.map f : EnvelGroup R →* G` work?  Let's think of `G` as
 being a 2-category with one object, a 1-morphism per element of `G`,
 and a single 2-morphism called `Eq.refl` for each 1-morphism.  We
 define the map using a "higher `Quotient.lift`" -- not only do we

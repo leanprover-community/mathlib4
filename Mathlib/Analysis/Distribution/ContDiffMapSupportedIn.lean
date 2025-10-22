@@ -45,9 +45,9 @@ TODO:
 
 ## Notation
 
-- `𝓓^{n}_{K}(E, F)`: the space of `n`-times continuously differentiable functions `E → F`
+- `𝓓^{n}_{K}(E, F)`:  the space of `n`-times continuously differentiable functions `E → F`
   which vanish outside of `K`.
-- `𝓓_{K}(E, F)`: the space of smooth (infinitely differentiable) functions `E → F`
+- `𝓓_{K}(E, F)`:  the space of smooth (infinitely differentiable) functions `E → F`
   which vanish outside of `K`, i.e. `𝓓^{⊤}_{K}(E, F)`.
 
 ## Implementation details
@@ -181,7 +181,7 @@ instance : Add 𝓓^{n}_{K}(E, F) where
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
--- TODO: can this and the next lemma be auto-generated,
+-- TODO:  can this and the next lemma be auto-generated,
 -- e.g. by making `add` a definition tagged with the `simps` attribute?
 -- Investigate the same question for `zero` above and `sub` , `neg` and `smul` below.
 @[simp]

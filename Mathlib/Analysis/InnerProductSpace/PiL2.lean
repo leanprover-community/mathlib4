@@ -1075,7 +1075,7 @@ open Module
 /-- Let `S` be a subspace of a finite-dimensional complex inner product space `V`.  A linear
 isometry mapping `S` into `V` can be extended to a full isometry of `V`.
 
-TODO: The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`. -/
+TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`. -/
 noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[𝕜] V := by
   -- Build an isometry from Sᗮ to L(S)ᗮ through `EuclideanSpace`
   let d := finrank 𝕜 Sᗮ
