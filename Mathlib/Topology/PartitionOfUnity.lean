@@ -544,8 +544,7 @@ theorem exists_finset_toPOUFun_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι
   exact hf.mem_toFinset.2 ⟨y, ⟨hj, hyU⟩⟩
 
 theorem continuous_toPOUFun (i : ι) : Continuous (f.toPOUFun i) := by
-  refine (f i).continuous.mul <|
-    continuous_finprod_cond (fun j _ => continuous_const.sub (f j).continuous) ?_
+  refine (map_continuous <| f i).mul <| continuous_finprod_cond (fun j _ => by fun_prop) ?_
   simp only [mulSupport_one_sub]
   exact f.locallyFinite
 

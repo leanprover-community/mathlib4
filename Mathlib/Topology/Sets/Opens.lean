@@ -359,7 +359,7 @@ theorem isCompactElement_iff (s : Opens α) :
 
 /-- The preimage of an open set, as an open set. -/
 def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
-  toFun s := ⟨f ⁻¹' s, s.2.preimage f.continuous⟩
+  toFun s := ⟨f ⁻¹' s, s.2.preimage <| map_continuous f⟩
   map_sSup' s := ext <| by simp only [coe_sSup, preimage_iUnion, biUnion_image, coe_mk]
   map_inf' _ _ := rfl
   map_top' := rfl
