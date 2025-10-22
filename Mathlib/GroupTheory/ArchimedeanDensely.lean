@@ -100,9 +100,8 @@ instance : Unique (ℤ ≃+o ℤᵒᵈ) where
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
-@[to_additive LinearOrderedAddCommGroup.closure_equiv_closure /-- In two linearly ordered additive
-groups, the closure of an element of one group is isomorphic (and order-isomorphic) to the closure
-of an element in the other group. -/]
+@[to_additive /-- In two linearly ordered additive groups, the closure of an element of one group is
+isomorphic (and order-isomorphic) to the closure of an element in the other group. -/]
 noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
     [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
     [CommGroup G'] [LinearOrder G'] [IsOrderedMonoid G'] (x : G) (y : G') (hxy : x = 1 ↔ y = 1) :
