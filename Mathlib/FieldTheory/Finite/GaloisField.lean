@@ -321,7 +321,7 @@ theorem nonempty_algHom_of_finrank_dvd {F K L : Type*} [Field F]
   exact Module.finrank_pos
 
 theorem nonempty_algHom_iff_finrank_dvd {F K L : Type*} [Field F]
-    [Field K] [Finite K] [Algebra F K] [Field L] [Finite L] [Algebra F L] :
+    [Field K] [Algebra F K] [Field L] [Finite L] [Algebra F L] :
     Nonempty (K →ₐ[F] L) ↔ Module.finrank F K ∣ Module.finrank F L := by
   refine ⟨fun ⟨f⟩ ↦ ?_, nonempty_algHom_of_finrank_dvd⟩
   algebraize [f.toRingHom]
