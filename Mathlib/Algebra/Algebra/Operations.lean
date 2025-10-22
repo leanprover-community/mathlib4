@@ -716,7 +716,7 @@ theorem ker_spanSingleton :
   ext; simp_rw [Submonoid.mem_map, IsUnit.mem_submonoid_iff, IsUnit, existsAndEq, true_and, eq_comm]
   exact span_singleton_eq_one_iff
 
-/-- The exactness at Aˣ of the exact sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A`.
+/-- The exactness of the exact sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Aˣ`.
 See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
 theorem ker_unitsMap_spanSingleton :
     (Units.map (Submodule.spanSingleton R)).ker =

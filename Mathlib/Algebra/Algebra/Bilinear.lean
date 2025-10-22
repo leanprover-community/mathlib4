@@ -88,7 +88,6 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
   LinearMap.mk₂ R (· * ·) add_mul smul_mul_assoc mul_add mul_smul_comm
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
--- TODO: upgrade to A-linear map if A is a semiring.
 def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 
@@ -260,6 +259,13 @@ theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
 
 theorem toSpanSingleton_eq_algebra_linearMap : toSpanSingleton R A 1 = Algebra.linearMap R A := by
   ext; simp
+
+variable (R A) in
+/-- The multiplication map on an `R`-algebra, as an `A`-linear map from `A ⊗[R] A` to `A`. -/
+@[simps!] def mul'' : A ⊗[R] A →ₗ[A] A where
+  __ := mul' R A
+  map_smul' a x := x.induction_on (by simp) (by simp+contextual [mul', smul_tmul', mul_assoc])
+    (by simp+contextual [mul_add])
 
 end Semiring
 

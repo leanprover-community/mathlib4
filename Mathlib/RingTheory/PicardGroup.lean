@@ -5,15 +5,13 @@ Authors: Junyan Xu
 -/
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.CategoryTheory.Monoidal.Skeleton
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Submodule
-import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.LocalRing.Module
 
 /-!
@@ -64,11 +62,11 @@ open TensorProduct
 
 universe u v
 
-namespace Module
-
-variable (R : Type u) (M : Type v) (N P Q A : Type*) [CommSemiring R] [CommSemiring A]
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [Algebra R A]
+variable (R : Type u) (M : Type v) (N P Q A : Type*) [CommSemiring R]
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
+
+namespace Module
 
 /-- An `R`-module `M` is invertible if the canonical map `Mᵛ ⊗[R] M → R` is an isomorphism,
 where `Mᵛ` is the `R`-dual of `M`. -/
@@ -245,8 +243,8 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
 
 /- TODO: The ≤ direction holds for arbitrary invertible modules over any commutative **ring** by
 considering the localization at a prime (which is free of rank 1) using the strong rank condition.
-The ≥ direction fails in general but holds for domains and Noetherian rings without embedded
-components, see https://math.stackexchange.com/q/5089900. -/
+The ≥ direction fails in general but holds for domains and Noetherian rings,
+see https://math.stackexchange.com/q/5089900 and https://mathoverflow.net/a/499611. -/
 theorem finrank_eq_one [StrongRankCondition R] [Free R M] : finrank R M = 1 := by
   cases subsingleton_or_nontrivial R
   · rw [← rank_eq_one_iff_finrank_eq_one, rank_subsingleton]
@@ -328,7 +326,8 @@ end LinearEquiv
 section Algebra
 
 section algEquivOfRing
-variable (A : Type*) [Semiring A] [Algebra R A] [Module.Invertible R A]
+
+variable [Semiring A] [Algebra R A] [Module.Invertible R A]
 
 /-- If an `R`-algebra `A` is also an invertible `R`-module, then it is in fact isomorphic to the
 base ring `R`. The algebra structure gives us a map `A ⊗ A → A`, which after tensoring by `Aᵛ`
@@ -349,6 +348,10 @@ variable {A} in
 
 end algEquivOfRing
 
+section CommSemiring
+
+variable [CommSemiring A] [Algebra R A]
+
 instance : Module.Invertible A (A ⊗[R] M) :=
   .right (M := A ⊗[R] Dual R M) <| (AlgebraTensorModule.distribBaseChange ..).symm ≪≫ₗ
     AlgebraTensorModule.congr (.refl A A) (linearEquiv R M) ≪≫ₗ AlgebraTensorModule.rid ..
@@ -363,20 +366,7 @@ instance (L) [AddCommMonoid L] [Module R L] [Module A L] [IsScalarTower R A L]
     [Module.Invertible A L] : Module.Invertible A (L ⊗[R] M) :=
   .congr (AlgebraTensorModule.cancelBaseChange R A A L M)
 
-variable [FaithfulSMul R A] [Free A (A ⊗[R] M)]
-
-/-- An invertible `R`-module embeds into an `R`-algebra that `R` injects into,
-provided `A ⊗[R] M` is a free `A`-module. -/
-noncomputable def embAlgebra : M →ₗ[R] A :=
-  (free_iff_linearEquiv.mp ‹_›).some.restrictScalars R ∘ₗ
-    (Algebra.ofId R A).toLinearMap.rTensor M ∘ₗ (TensorProduct.lid R M).symm
-
-theorem embAlgebra_injective : Function.Injective (embAlgebra R M A) := by
-  simpa [embAlgebra] using
-    Flat.rTensor_preserves_injective_linearMap _ (FaithfulSMul.algebraMap_injective R A)
-
-/-- An invertible `R`-module as a `R`-submodule of an `R`-algebra. -/
-noncomputable def toSubmodule : Submodule R A := LinearMap.range (embAlgebra R M A)
+end CommSemiring
 
 end Algebra
 
@@ -387,8 +377,6 @@ end Module
 section PicardGroup
 
 open CategoryTheory Module
-
-variable (R : Type u) [CommSemiring R]
 
 instance (M : (Skeleton <| SemimoduleCat.{u} R)ˣ) : Module.Invertible R M :=
   .right (Quotient.eq.mp M.inv_mul).some.toLinearEquivₛ
@@ -536,11 +524,6 @@ noncomputable def relPic : Subgroup (Pic R) := (Pic.mapAlgebra R A).ker
 theorem relPic_eq_top [Subsingleton (Pic A)] : relPic R A = ⊤ :=
   top_unique fun _ _ ↦ Subsingleton.elim ..
 
-
--- TODO: invertible module / submodule that is a unit in an algebra   is free iff principal.
-/- Exercise 3.7 in https://sites.math.rutgers.edu/~weibel/Kbook/Kbook.I.pdf, attributed to Roberts
-and Singh. -/
-
 end CommRing
 
 end PicardGroup
@@ -549,7 +532,7 @@ namespace Submodule
 
 open Module Invertible
 
-variable {R A : Type*} [CommSemiring R]
+variable {R M A}
 
 section Semiring
 
@@ -560,6 +543,14 @@ theorem top_mul_eq_top_of_mul_eq_one {I J : Submodule R A} (h : I * J = 1) : ⊤
   top_unique <| by
     conv_lhs => rw [← mul_one ⊤, ← h, ← mul_assoc]
     exact smul_mono_left le_top
+
+theorem eq_span_singleton_of_surjective {M} [AddCommMonoid M] [Module R M] {N : Submodule R M}
+    {f : R →ₗ[R] N} (hf : Function.Surjective f) : N = span R {(f 1 : M)} := by
+  refine le_antisymm (fun x hx ↦ mem_span_singleton.mpr ?_)
+    (span_le.mpr <| by rintro _ rfl; exact (f 1).2)
+  obtain ⟨r, eq⟩ := hf ⟨x, hx⟩
+  use r
+  rw [← coe_smul, ← map_smul, smul_eq_mul, mul_one, eq]
 
 variable [FaithfulSMul R A]
 
@@ -606,14 +597,12 @@ variable (I J : (Submodule R A)ˣ)
 
 /-- Given two invertible `R`-submodules in an `R`-algebra `A`, the `R`-linear map from
 `I ⊗[R] J` to `I * J` induced by multiplication is an isomorphism. -/
-noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J :=
-  .ofBijective (mulMap' ..) ⟨by
-    have := (projective_unit_and_mul'_comp_lTensor_bijective J).2.1.comp
-      (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
-    rw [← LinearMap.coe_comp, show (.mul' R A ∘ₗ J.1.subtype.lTensor A) ∘ₗ I.1.subtype.rTensor _ =
-      (I * J).1.subtype ∘ₗ mulMap' I.1 J by ext; rfl, LinearMap.coe_comp] at this
-    exact this.of_comp,
-    mulMap'_surjective _ _⟩
+noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J := by
+  refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, mulMap'_surjective _ _⟩
+  convert (projective_unit_and_mul'_comp_lTensor_bijective J).2.1.comp
+    (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
+  simp_rw [← LinearMap.coe_comp]
+  congr 1; ext; rfl
 
 /-- Given an invertible `R`-submodule `I` in an `R`-algebra `A`, the `R`-linear map
 from `I ⊗[R] I⁻¹` to `R` induced by multiplication is an isomorphism. -/
@@ -623,23 +612,145 @@ noncomputable def tensorInvEquiv : I ⊗[R] ↑I⁻¹ ≃ₗ[R] R :=
 
 instance : Module.Invertible R I := .left (tensorInvEquiv I)
 
-end Semiring
-
-section CommSemiring
-
-variable [CommSemiring A] [Algebra R A] [FaithfulSMul R A]
-
 open CommRing Pic
 
 variable (R A) in
-/-- The group homomorphism from the invertible submodules
-in a faithful algebra over `R` to the Picard group of `R`. -/
+/-- The group homomorphism from the invertible submodules in a faithful algebra over `R` to
+the Picard group of `R`. See Lemma 2.2 in [RobertsSingh1993]. -/
 @[simps] noncomputable def unitsToPic : (Submodule R A)ˣ →* Pic R where
   toFun I := Pic.mk R I
   map_one' := mk_eq_one_iff.mpr
     ⟨.ofEq _ _ one_eq_range ≪≫ₗ .symm (.ofInjective _ (FaithfulSMul.algebraMap_injective R A))⟩
   map_mul' I J := by rw [← mk_tensor, mk_eq_mk_iff]; exact ⟨(tensorEquivMul I J).symm⟩
 
-end CommSemiring
+/-- The image of an invertible `R`-submodule `I ⊆ A` under `unitsToPic` is isomorphic to `I`. -/
+noncomputable def unitsToPicEquiv (I : (Submodule R A)ˣ) : unitsToPic R A I ≃ₗ[R] I :=
+  (mk_eq_iff.mp rfl).some.symm
+
+variable (R A) in
+/-- The exactness of the exact sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at
+`(Submodule R A)ˣ`. See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
+theorem ker_unitsToPic : (unitsToPic R A).ker = (Units.map (spanSingleton R)).range := by
+  ext I; constructor <;> intro h
+  · have e := (mk_eq_one_iff.mp h).some.symm
+    have e' := (mk_eq_one_iff.mp (inv_mem h)).some.symm
+    have h := eq_span_singleton_of_surjective e.surjective
+    have h' := eq_span_singleton_of_surjective e'.surjective
+    refine ⟨(isUnit_iff_exists_and_exists.mpr ⟨?_, ?_⟩).unit, Units.ext h.symm⟩
+    · have : span R {(e 1).1 * e' 1} = 1 := by simpa [span_mul_span] using congr($h * $h').symm
+      have ⟨r, hr⟩ := span_singleton_eq_one_iff.mp this
+      exact ⟨e' 1 * algebraMap R A r.inv, by simp [← mul_assoc, hr, ← map_mul]⟩
+    · have : span R {(e' 1).1 * e 1} = 1 := by simpa [span_mul_span] using congr($h' * $h).symm
+      have ⟨r, hr⟩ := span_singleton_eq_one_iff.mp this
+      exact ⟨algebraMap R A r.inv * e' 1, by simp [mul_assoc, hr, ← map_mul]⟩
+  · obtain ⟨x, rfl⟩ := h
+    exact mk_eq_one_iff.mpr ⟨.symm <| (.ofInjective (LinearMap.toSpanSingleton R A x) fun _ _ eq ↦
+      (faithfulSMul_iff_injective_smul_one R A).mp ‹_› <| by simpa using congr($eq * x.inv)) ≪≫ₗ
+      .ofEq _ _ (by ext; simp [mem_span_singleton])⟩
+
+end Semiring
 
 end Submodule
+
+namespace Module.Flat
+
+variable {R M A} [Semiring A] [Algebra R A] (e : A ⊗[R] M ≃ₗ[A] A)
+
+/-- If flat `R`-module becomes free of rank 1 after tensoring with a faithful `R`-algebra `A`,
+then it embeds into `A`. -/
+noncomputable def embAlgebra : M →ₗ[R] A :=
+  e.restrictScalars R ∘ₗ (Algebra.ofId R A).toLinearMap.rTensor M ∘ₗ (TensorProduct.lid R M).symm
+
+variable [Flat R M] [FaithfulSMul R A]
+
+theorem embAlgebra_injective : Function.Injective (embAlgebra e) := by
+  simpa [embAlgebra] using
+    Flat.rTensor_preserves_injective_linearMap _ (FaithfulSMul.algebraMap_injective R A)
+
+/-- An flat `R`-module as a `R`-submodule of a faithful `R`-algebra. -/
+noncomputable abbrev toSubmodule : Submodule R A := LinearMap.range (embAlgebra e)
+
+/-- An isomorphism between a flat `R`-module and its realization as a submodule in
+a faithful `R`-algebra. -/
+noncomputable def toSubmoduleEquiv : toSubmodule e ≃ₗ[R] M :=
+  .symm <| .ofInjective _ (embAlgebra_injective e)
+
+instance : Flat R (toSubmodule e) := .of_linearEquiv (toSubmoduleEquiv e)
+
+instance [Module.Invertible R M] : Module.Invertible R (toSubmodule e) :=
+  .congr (toSubmoduleEquiv e).symm
+
+/-- When a flat `R`-module `M` is embedded as a submodule of a faithful `R`-algebra `A`,
+the multiplication map induces an isomorphism `A ⊗[R] M ≃ₗ[A] A`. -/
+noncomputable def tensorToSubmoduleEquiv : A ⊗[R] toSubmodule e ≃ₗ[A] A :=
+  .ofBijective (.mul'' R A ∘ₗ AlgebraTensorModule.lTensor A A (Submodule.subtype _)) <| by
+    convert (AlgebraTensorModule.congr (.refl ..) (toSubmoduleEquiv e) ≪≫ₗ e).bijective
+    ext x
+    refine x.induction_on (by simp) ?_ (by simp+contextual)
+    intro a x
+    obtain ⟨m, rfl⟩ := (toSubmoduleEquiv e).symm.surjective x
+    suffices a * embAlgebra e m = e (a ⊗ₜ[R] m) by simpa using this
+    dsimp [embAlgebra]
+    rw [map_one, ← smul_eq_mul, ← map_smul, smul_tmul', smul_eq_mul, mul_one]
+
+theorem top_mul_toSubmodule : ⊤ * toSubmodule e = ⊤ := by
+  rw [← Submodule.mulMap_range]
+  convert (Submodule.topEquiv.rTensor _ ≪≫ₗ (tensorToSubmoduleEquiv e).restrictScalars R).range
+  ext; rfl
+
+/-- When a flat `R`-module `M` is embedded as a submodule of a faithful `R`-algebra `A`,
+we have `I ⊗[R] M ≃ I * M` for any `R`-submodule `I` of `A`. -/
+noncomputable def tensorToSubmoduleEquivMul (I : Submodule R A) :
+    I ⊗[R] toSubmodule e ≃ₗ[R] I * toSubmodule e := by
+  refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, Submodule.mulMap'_surjective _ _⟩
+  convert ((tensorToSubmoduleEquiv e).restrictScalars R).injective.comp
+    (Flat.rTensor_preserves_injective_linearMap _ I.subtype_injective)
+  simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.coe_comp]
+  congr 1; ext; rfl
+
+end Module.Flat
+
+namespace CommRing.Pic
+
+variable [CommSemiring A] [Algebra R A] [FaithfulSMul R A]
+
+open LinearMap Module.Flat Submodule
+
+/-- The exactness of the exact sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Pic R`.
+See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
+theorem ker_mapAlgebra : (mapAlgebra R A).ker = (unitsToPic R A).range := by
+  ext M; constructor <;> intro h
+  · have e := (mk_eq_one_iff.mp h).some
+    have e' := (mk_eq_one_iff.mp (inv_mem h)).some
+    refine ⟨(isUnit_of_mul_isUnit_left (x := toSubmodule e) (y := toSubmodule e') ?_).unit,
+      mk_eq_iff.mpr ⟨toSubmoduleEquiv e⟩⟩
+    obtain ⟨a, ha⟩ : ∃ x, toSubmodule e * toSubmodule e' = span R {x} :=
+      ⟨_, eq_span_singleton_of_surjective <| LinearEquiv.surjective <|
+        (congr (toSubmoduleEquiv e) (toSubmoduleEquiv e') ≪≫ₗ
+        (mk_eq_one_iff.mp <| by simp_rw [mk_tensor, mk_eq_self, mul_inv_cancel]).some).symm ≪≫ₗ
+        tensorToSubmoduleEquivMul e' (toSubmodule e)⟩
+    rw [ha]
+    apply_fun (⊤ * ·) at ha
+    simp_rw [← mul_assoc, top_mul_toSubmodule] at ha
+    obtain ⟨a', -, eq⟩ := mem_mul_span_singleton.mp (ha ▸ mem_top (x := 1))
+    exact (isUnit_of_mul_eq_one_right _ _ eq).map (spanSingleton R)
+  · obtain ⟨I, rfl⟩ := h
+    exact mk_eq_one_iff.mpr ⟨AlgebraTensorModule.congr (.refl ..) (unitsToPicEquiv I) ≪≫ₗ
+      .ofBijective ((Algebra.TensorProduct.lmul'' R).toLinearMap ∘ₗ AlgebraTensorModule.lTensor A A
+        I.1.subtype) (projective_unit_and_mul'_comp_lTensor_bijective I).2⟩
+
+open QuotientGroup in
+/-- If `A` is a faithful `R`-algebra, the relative Picard group Pic(A/R) is isomorphic to
+the quotient of the invertible `R`-submodules in `A` by the principal submodules. -/
+@[simps!] noncomputable def _root_.Submodule.unitsQuotEquivRelPic :
+    (Submodule R A)ˣ ⧸ (Units.map (spanSingleton R)).range ≃* relPic R A :=
+  (congr _ _ (.refl _) ((Subgroup.map_id _).trans (ker_unitsToPic R A).symm)).trans <|
+    (quotientKerEquivRange _).trans <| .subgroupCongr (ker_mapAlgebra R A).symm
+
+/-- The class group of a domain is isomorphic to its Picard group. -/
+@[simps!] noncomputable def classGroupEquiv (R) [CommRing R] [IsDomain R] :
+    ClassGroup R ≃* Pic R :=
+  (ClassGroup.mulEquivUnitsSubmoduleQuotRange R).trans <| .trans (unitsQuotEquivRelPic R _) <|
+    .trans (.subgroupCongr <| relPic_eq_top R _) Subgroup.topEquiv
+
+end CommRing.Pic
