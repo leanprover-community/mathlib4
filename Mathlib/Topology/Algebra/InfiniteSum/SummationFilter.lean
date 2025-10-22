@@ -62,7 +62,7 @@ lemma support_eq_limsInf (L : SummationFilter β) :
   simpa [support, limsInf, setOf_subset] using
     ⟨fun hL b hb x hx ↦ hL x <| hb.mp <| .of_forall fun c hc ↦ hc hx,
       fun hL x hx ↦ singleton_subset_iff.mp <| hL _ <| by simpa using hx⟩
-
+ 
 lemma support_eq_univ_iff {L : SummationFilter β} :
     L.support = univ ↔ L.filter ≤ atTop := by
   simp only [support, Set.eq_univ_iff_forall, Set.mem_setOf]

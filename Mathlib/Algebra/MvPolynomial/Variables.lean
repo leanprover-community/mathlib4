@@ -310,7 +310,7 @@ lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : q.vars.to
   rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
   refine Finset.sum_congr rfl fun u hu ↦ ?_
   rw [MvPolynomial.aeval_monomial, MvPolynomial.monomial_eq]
-  congr 1
+  congr 1 
   exact Finsupp.prod_congr (fun i hi ↦ by simp [hs ((MvPolynomial.mem_vars _).mpr ⟨u, hu, hi⟩)])
 
 end EvalVars

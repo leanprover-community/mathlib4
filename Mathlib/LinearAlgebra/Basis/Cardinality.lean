@@ -23,7 +23,7 @@ variable {R : Type u} {M : Type v}
 section Semiring
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
-
+ 
 lemma finite_of_span_finite_eq_top_finsupp [Nontrivial M] {ι : Type*} {s : Set (ι →₀ M)}
     (hs : s.Finite) (hsspan : span R s = ⊤) : Finite ι :=
   suffices ⋃ i ∈ s, i.support.toSet = .univ from

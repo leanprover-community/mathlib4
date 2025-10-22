@@ -81,7 +81,7 @@ lemma hull_inf (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     · exact inf_le_of_right_le h3
 
 variable [OrderTop α]
-
+ 
 /- Every relative-closed set of the form `T ↓∩ (↑(upperClosure F))` for `F` finite is a
 relative-closed set of the form `hull T a` where `a = ⨅ F`. -/
 open Finset in

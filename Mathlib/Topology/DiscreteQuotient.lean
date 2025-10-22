@@ -373,7 +373,7 @@ lemma comp_finsetClopens [CompactSpace X] :
 theorem finsetClopens_inj [CompactSpace X] :
     (finsetClopens X).Injective := by
   apply Function.Injective.of_comp (f := Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ Finset.toSet)
-  rw [comp_finsetClopens]
+  rw [comp_finsetClopens] 
   intro ⟨_, _⟩ ⟨_, _⟩ h
   congr
   rw [Setoid.classes_inj]

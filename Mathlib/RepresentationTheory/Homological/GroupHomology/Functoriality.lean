@@ -413,7 +413,7 @@ previous assumptions. -/
     obtain ⟨(h₁ : s _ = s _), (h₂ : _ * _ = _ * _)⟩ := Prod.ext_iff.1 hxy
     exact (mul_right_inj _).1 (h₁ ▸ h₂)
 /- Let `ve := ∑ v(g)·(s(π(g)), s(π(g))⁻¹g)`. -/
-  let ve : G × G →₀ A := mapDomain e v
+  let ve : G × G →₀ A := mapDomain e v 
   have hS : (v + d₂₁ _ ve).support.toSet ⊆ S := by
   /- We have `d(ve) = ∑ ρ(s(π(g))⁻¹)(v(g))·s(π(g))⁻¹g - ∑ v(g)·g + ∑ v(g)·s(π(g))`.
     The second sum is `v`, so cancels: -/

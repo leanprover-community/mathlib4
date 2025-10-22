@@ -169,7 +169,7 @@ variable {s t u : Finset ι}
 
 theorem _root_.Set.piCongrLeft_comp_restrict :
     (s.equivToSet.symm.piCongrLeft (fun i : s.toSet ↦ π i)) ∘ s.toSet.restrict = s.restrict := rfl
-
+ 
 theorem piCongrLeft_comp_restrict :
     (s.equivToSet.piCongrLeft (fun i : s ↦ π i)) ∘ s.restrict = s.toSet.restrict := rfl
 

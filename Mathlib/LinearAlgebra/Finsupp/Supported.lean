@@ -80,7 +80,7 @@ theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
   span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (·.support.toSet))
 
 variable (M)
-
+ 
 /-- Interpret `Finsupp.filter s` as a linear map from `α →₀ M` to `supported M R s`. -/
 def restrictDom (s : Set α) [DecidablePred (· ∈ s)] : (α →₀ M) →ₗ[R] supported M R s :=
   LinearMap.codRestrict _

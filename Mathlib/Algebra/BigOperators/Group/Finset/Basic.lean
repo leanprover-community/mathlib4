@@ -943,7 +943,7 @@ lemma sum_card_fiberwise_eq_card_filter {κ : Type*} [DecidableEq κ] (s : Finse
     (g : ι → κ) : ∑ j ∈ t, #{i ∈ s | g i = j} = #{i ∈ s | g i ∈ t} := by
   simpa only [card_eq_sum_ones] using sum_fiberwise_eq_sum_filter _ _ _ _
 
-@[simp]
+@[simp] 
 theorem card_disjiUnion (s : Finset ι) (t : ι → Finset M) (h) :
     #(s.disjiUnion t h) = ∑ a ∈ s, #(t a) :=
   Multiset.card_bind _ _

@@ -1083,7 +1083,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
 lemma _root_.Finset.exists_not_mem_of_card_lt_enatCard {s : Finset α} (hs : s.card < ENat.card α) :
     ∃ a, a ∉ s := by
   contrapose! hs; simp [← Set.encard_coe_eq_coe_finsetCard, Set.eq_univ_of_forall (s := s.toSet) hs]
-
+ 
 /-! ### Explicit description of a set from its cardinality -/
 
 @[simp] theorem ncard_eq_one : s.ncard = 1 ↔ ∃ a, s = {a} := by

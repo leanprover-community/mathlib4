@@ -460,7 +460,7 @@ instance KaehlerDifferential.finite [EssFiniteType R S] :
   rintro _ ⟨x, rfl⟩
   have : ∀ x ∈ adjoin R (EssFiniteType.finset R S).toSet,
       .D _ _ x ∈ Submodule.span S s.toSet := by
-    intro x hx
+    intro x hx 
     refine adjoin_induction ?_ ?_ ?_ ?_ hx
     · exact fun x hx ↦ Submodule.subset_span (Finset.mem_image_of_mem _ hx)
     · simp

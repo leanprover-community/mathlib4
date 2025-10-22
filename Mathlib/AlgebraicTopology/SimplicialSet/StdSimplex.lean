@@ -221,7 +221,7 @@ i.e. `face S` is isomorphic to `Δ[m]`, see `stdSimplex.isoOfRepresentableBy`. -
 def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
     (m : ℕ) (e : Fin (m + 1) ≃o S) :
     (face S : SSet.{u}).RepresentableBy ⦋m⦌ where
-  homEquiv {j} :=
+  homEquiv {j} := 
     { toFun f := ⟨objMk ((OrderHom.Subtype.val S.toSet).comp
           (e.toOrderEmbedding.toOrderHom.comp f.toOrderHom)), fun _ ↦ by aesop⟩
       invFun := fun ⟨x, hx⟩ ↦ SimplexCategory.Hom.mk
