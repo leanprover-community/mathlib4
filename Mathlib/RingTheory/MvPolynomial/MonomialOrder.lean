@@ -845,8 +845,7 @@ lemma degree_sPolynomial (f g : MvPolynomial σ R) :
       exact this (m.coeff_sPolynomial_sup_eq_zero _ _)
     exact lt_of_le_of_ne h1 h3
 
-lemma degree_sPolynomial_lt_sup_degree [NoZeroDivisors R] {f g : MvPolynomial σ R}
-    (h : m.sPolynomial f g ≠ 0) :
+lemma degree_sPolynomial_lt_sup_degree {f g : MvPolynomial σ R} (h : m.sPolynomial f g ≠ 0) :
     (m.degree <| m.sPolynomial f g) ≺[m] m.degree f ⊔ m.degree g :=
   (or_iff_left h).mp <| m.degree_sPolynomial f g
 
