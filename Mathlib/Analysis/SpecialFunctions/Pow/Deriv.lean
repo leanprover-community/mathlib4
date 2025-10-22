@@ -66,7 +66,7 @@ section fderiv
 
 open Complex
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f g : E → ℂ} {f' g' : E →L[ℂ] ℂ}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f g : E → ℂ} {f' g' : StrongDual ℂ E}
   {x : E} {s : Set E} {c : ℂ}
 
 theorem HasStrictFDerivAt.cpow (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x)
@@ -270,8 +270,6 @@ theorem hasDerivAt_ofReal_cpow_const' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r
     · exact hasDerivAt_id ((-x : ℝ) : ℂ)
     · simp [hx]
 
-@[deprecated (since := "2024-12-15")] alias hasDerivAt_ofReal_cpow := hasDerivAt_ofReal_cpow_const'
-
 /-- An alternate formulation of `hasDerivAt_ofReal_cpow_const'`. -/
 theorem hasDerivAt_ofReal_cpow_const {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ 0) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ r) (r * x ^ (r - 1)) x := by
@@ -329,7 +327,7 @@ theorem hasStrictFDerivAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.1) :
   have : (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) :=
     (continuousAt_fst.eventually (lt_mem_nhds hp)).mono fun p hp => rpow_def_of_pos hp _
   refine HasStrictFDerivAt.congr_of_eventuallyEq ?_ this.symm
-  convert ((hasStrictFDerivAt_fst.log hp.ne').mul hasStrictFDerivAt_snd).exp using 1
+  convert ((hasStrictFDerivAt_fst.log hp.ne').fun_mul hasStrictFDerivAt_snd).exp using 1
   rw [rpow_sub_one hp.ne', ← rpow_def_of_pos hp, smul_add, smul_smul, mul_div_left_comm,
     div_eq_mul_inv, smul_smul, smul_smul, mul_assoc, add_comm]
 
@@ -342,7 +340,7 @@ theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
   have : (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) * cos (x.2 * π) :=
     (continuousAt_fst.eventually (gt_mem_nhds hp)).mono fun p hp => rpow_def_of_neg hp _
   refine HasStrictFDerivAt.congr_of_eventuallyEq ?_ this.symm
-  convert ((hasStrictFDerivAt_fst.log hp.ne).mul hasStrictFDerivAt_snd).exp.mul
+  convert ((hasStrictFDerivAt_fst.log hp.ne).fun_mul hasStrictFDerivAt_snd).exp.fun_mul
     (hasStrictFDerivAt_snd.mul_const π).cos using 1
   simp_rw [rpow_sub_one hp.ne, smul_add, ← add_assoc, smul_smul, ← add_smul, ← mul_assoc,
     mul_comm (cos _), ← rpow_def_of_neg hp]
@@ -351,7 +349,7 @@ theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
 /-- The function `fun (x, y) => x ^ y` is infinitely smooth at `(x, y)` unless `x = 0`. -/
 theorem contDiffAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) {n : WithTop ℕ∞} :
     ContDiffAt ℝ n (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
-  rcases hp.lt_or_lt with hneg | hpos
+  rcases hp.lt_or_gt with hneg | hpos
   exacts
     [(((contDiffAt_fst.log hneg.ne).mul contDiffAt_snd).exp.mul
           (contDiffAt_snd.mul contDiffAt_const).cos).congr_of_eventuallyEq
@@ -368,11 +366,11 @@ theorem _root_.HasStrictDerivAt.rpow {f g : ℝ → ℝ} {f' g' : ℝ} (hf : Has
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) x := by
   convert (hasStrictFDerivAt_rpow_of_pos ((fun x => (f x, g x)) x) h).comp_hasStrictDerivAt x
     (hf.prodMk hg) using 1
-  simp [mul_assoc, mul_comm, mul_left_comm]
+  simp [mul_assoc, mul_comm]
 
 theorem hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x := by
-  rcases hx.lt_or_lt with hx | hx
+  rcases hx.lt_or_gt with hx | hx
   · have := (hasStrictFDerivAt_rpow_of_neg (x, p) hx).comp_hasStrictDerivAt x
       ((hasStrictDerivAt_id x).prodMk (hasStrictDerivAt_const x p))
     convert this using 1; simp
@@ -431,9 +429,10 @@ theorem contDiffAt_rpow_const_of_ne {x p : ℝ} {n : WithTop ℕ∞} (h : x ≠ 
 
 theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
     ContDiff ℝ n fun x : ℝ => x ^ p := by
-  induction' n with n ihn generalizing p
-  · exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
-  · have h1 : 1 ≤ p := le_trans (by simp) h
+  induction n generalizing p with
+  | zero => exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
+  | succ n ihn =>
+    have h1 : 1 ≤ p := le_trans (by simp) h
     rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
     rw [show ((n + 1 : ℕ) : WithTop ℕ∞) = n + 1 from rfl,
       contDiff_succ_iff_deriv, deriv_rpow_const' h1]
@@ -461,14 +460,13 @@ open Real
 
 section fderiv
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : E → ℝ} {f' g' : E →L[ℝ] ℝ}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : E → ℝ} {f' g' : StrongDual ℝ E}
   {x : E} {s : Set E} {c p : ℝ} {n : WithTop ℕ∞}
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  added `by exact` to deal with unification issues. -/
 theorem HasFDerivWithinAt.rpow (hf : HasFDerivWithinAt f f' s x) (hg : HasFDerivWithinAt g g' s x)
     (h : 0 < f x) : HasFDerivWithinAt (fun x => f x ^ g x)
       ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Real.log (f x)) • g') s x := by
+  -- `by exact` to deal with tricky unification.
   exact (hasStrictFDerivAt_rpow_of_pos (f x, g x) h).hasFDerivAt.comp_hasFDerivWithinAt x
     (hf.prodMk hg)
 
@@ -482,19 +480,17 @@ theorem HasStrictFDerivAt.rpow (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFD
       ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Real.log (f x)) • g') x :=
   (hasStrictFDerivAt_rpow_of_pos (f x, g x) h).comp x (hf.prodMk hg)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  added `by exact` to deal with unification issues. -/
 @[fun_prop]
 theorem DifferentiableWithinAt.rpow (hf : DifferentiableWithinAt ℝ f s x)
     (hg : DifferentiableWithinAt ℝ g s x) (h : f x ≠ 0) :
     DifferentiableWithinAt ℝ (fun x => f x ^ g x) s x := by
+  -- `by exact` to deal with tricky unification.
   exact (differentiableAt_rpow_of_ne (f x, g x) h).comp_differentiableWithinAt x (hf.prodMk hg)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  added `by exact` to deal with unification issues. -/
 @[fun_prop]
 theorem DifferentiableAt.rpow (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
     (h : f x ≠ 0) : DifferentiableAt ℝ (fun x => f x ^ g x) x := by
+  -- `by exact` to deal with tricky unification.
   exact (differentiableAt_rpow_of_ne (f x, g x) h).comp x (hf.prodMk hg)
 
 @[fun_prop]
@@ -550,18 +546,16 @@ theorem HasStrictFDerivAt.const_rpow (hf : HasStrictFDerivAt f f' x) (hc : 0 < c
     HasStrictFDerivAt (fun x => c ^ f x) ((c ^ f x * Real.log c) • f') x :=
   (hasStrictDerivAt_const_rpow hc (f x)).comp_hasStrictFDerivAt x hf
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  added `by exact` to deal with unification issues. -/
 @[fun_prop]
 theorem ContDiffWithinAt.rpow (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiffWithinAt ℝ n g s x)
     (h : f x ≠ 0) : ContDiffWithinAt ℝ n (fun x => f x ^ g x) s x := by
+  -- `by exact` to deal with tricky unification.
   exact (contDiffAt_rpow_of_ne (f x, g x) h).comp_contDiffWithinAt x (hf.prodMk hg)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  added `by exact` to deal with unification issues. -/
 @[fun_prop]
 theorem ContDiffAt.rpow (hf : ContDiffAt ℝ n f x) (hg : ContDiffAt ℝ n g x) (h : f x ≠ 0) :
     ContDiffAt ℝ n (fun x => f x ^ g x) x := by
+  -- `by exact` to deal with tricky unification.
   exact (contDiffAt_rpow_of_ne (f x, g x) h).comp x (hf.prodMk hg)
 
 @[fun_prop]
@@ -677,25 +671,3 @@ lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
 end deriv
 
 end Differentiability
-
-section Limits
-
-open Real Filter
-
-/-- The function `(1 + t/x) ^ x` tends to `exp t` at `+∞`. -/
-theorem tendsto_one_plus_div_rpow_exp (t : ℝ) :
-    Tendsto (fun x : ℝ => (1 + t / x) ^ x) atTop (𝓝 (exp t)) := by
-  apply ((Real.continuous_exp.tendsto _).comp (tendsto_mul_log_one_plus_div_atTop t)).congr' _
-  have h₁ : (1 : ℝ) / 2 < 1 := by norm_num
-  have h₂ : Tendsto (fun x : ℝ => 1 + t / x) atTop (𝓝 1) := by
-    simpa using (tendsto_inv_atTop_zero.const_mul t).const_add 1
-  refine (h₂.eventually_const_le h₁).mono fun x hx => ?_
-  have hx' : 0 < 1 + t / x := by linarith
-  simp [mul_comm x, exp_mul, exp_log hx']
-
-/-- The function `(1 + t/x) ^ x` tends to `exp t` at `+∞` for naturals `x`. -/
-theorem tendsto_one_plus_div_pow_exp (t : ℝ) :
-    Tendsto (fun x : ℕ => (1 + t / (x : ℝ)) ^ x) atTop (𝓝 (Real.exp t)) :=
-  ((tendsto_one_plus_div_rpow_exp t).comp tendsto_natCast_atTop_atTop).congr (by simp)
-
-end Limits

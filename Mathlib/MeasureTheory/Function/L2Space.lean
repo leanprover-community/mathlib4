@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 /-! # `L^2` space
 
 If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ`
-(defined in `Mathlib.MeasureTheory.Function.LpSpace`)
+(defined in `Mathlib/MeasureTheory/Function/LpSpace.lean`)
 is also an inner product space, with inner product defined as `inner f g := ∫ a, ⟪f a, g a⟫ ∂μ`.
 
 ### Main results
@@ -27,7 +27,7 @@ noncomputable section
 
 open TopologicalSpace MeasureTheory MeasureTheory.Lp Filter
 
-open scoped NNReal ENNReal MeasureTheory
+open scoped NNReal ENNReal MeasureTheory InnerProductSpace
 
 namespace MeasureTheory
 
@@ -38,9 +38,6 @@ variable {α F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCom
 theorem MemLp.integrable_sq {f : α → ℝ} (h : MemLp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
   simpa [← memLp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.ofNat_ne_top
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.integrable_sq := MemLp.integrable_sq
-
 theorem memLp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
     MemLp f 2 μ ↔ Integrable (fun x => ‖f x‖ ^ 2) μ := by
   rw [← memLp_one_iff_integrable]
@@ -48,16 +45,10 @@ theorem memLp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurab
   · simp
   · rw [div_eq_mul_inv, ENNReal.mul_inv_cancel two_ne_zero ENNReal.ofNat_ne_top]
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_two_iff_integrable_sq_norm := memLp_two_iff_integrable_sq_norm
-
 theorem memLp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
     MemLp f 2 μ ↔ Integrable (fun x => f x ^ 2) μ := by
   convert memLp_two_iff_integrable_sq_norm hf using 3
   simp
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp_two_iff_integrable_sq := memLp_two_iff_integrable_sq
 
 end
 
@@ -72,15 +63,9 @@ theorem MemLp.const_inner (c : E) {f : α → E} (hf : MemLp f p μ) : MemLp (fu
   hf.of_le_mul (AEStronglyMeasurable.inner aestronglyMeasurable_const hf.1)
     (Eventually.of_forall fun _ => norm_inner_le_norm _ _)
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.const_inner := MemLp.const_inner
-
 theorem MemLp.inner_const {f : α → E} (hf : MemLp f p μ) (c : E) : MemLp (fun a => ⟪f a, c⟫) p μ :=
   hf.of_le_mul (c := ‖c‖) (AEStronglyMeasurable.inner hf.1 aestronglyMeasurable_const)
     (Eventually.of_forall fun x => by rw [mul_comm]; exact norm_inner_le_norm _ _)
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.inner_const := MemLp.inner_const
 
 variable {f : α → E}
 
@@ -117,7 +102,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 theorem eLpNorm_rpow_two_norm_lt_top (f : Lp F 2 μ) :
     eLpNorm (fun x => ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
-  have h_two : ENNReal.ofReal (2 : ℝ) = 2 := by simp [zero_le_one]
+  have h_two : ENNReal.ofReal (2 : ℝ) = 2 := by simp
   rw [eLpNorm_norm_rpow f zero_lt_two, one_mul, h_two]
   exact ENNReal.rpow_lt_top_of_nonneg zero_le_two (Lp.eLpNorm_ne_top f)
 
@@ -210,7 +195,7 @@ end InnerProductSpace
 
 section IndicatorConstLp
 
-variable (𝕜) {s : Set α}
+variable (𝕜) {s t : Set α}
 
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the integral of the inner product over `s`: `∫ x in s, ⟪c, f x⟫ ∂μ`. -/
@@ -234,7 +219,7 @@ theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : Measur
         simp
       exact setIntegral_congr_ae hs.compl h_ae_eq
     have h_indicator : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp 2 hs hμs c x = 0 :=
-      indicatorConstLp_coeFn_nmem
+      indicatorConstLp_coeFn_notMem
     refine h_indicator.mono fun x hx hxs => ?_
     rw [hx hxs]
     exact inner_zero_left _
@@ -255,6 +240,31 @@ a real or complex function `f` is equal to the integral of `f` over `s`. -/
 theorem inner_indicatorConstLp_one (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (f : Lp 𝕜 2 μ) :
     ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), f⟫ = ∫ x in s, f x ∂μ := by
   rw [L2.inner_indicatorConstLp_eq_inner_setIntegral 𝕜 hs hμs (1 : 𝕜) f]; simp
+
+/-- The inner product in `L2` of two `indicatorConstLp`s, i.e. functions which are constant `a : E`
+and `b : E` on measurable `s t : Set α` with finite measure, respectively, is `⟪a, b⟫` times the
+measure of `s ∩ t`. -/
+lemma inner_indicatorConstLp_indicatorConstLp [CompleteSpace E]
+    (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞ := by finiteness)
+    (hμt : μ t ≠ ∞ := by finiteness) (a b : E) :
+    ⟪indicatorConstLp 2 hs hμs a, indicatorConstLp 2 ht hμt b⟫ = μ.real (s ∩ t) • ⟪a, b⟫ := by
+  let : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
+  rw [inner_indicatorConstLp_eq_inner_setIntegral, setIntegral_indicatorConstLp hs,
+    inner_smul_right_eq_smul, Set.inter_comm]
+
+/-- The inner product in `L2` of indicators of two sets with finite measure
+is the measure of the intersection. -/
+lemma inner_indicatorConstLp_one_indicatorConstLp_one
+    (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hμs : μ s ≠ ∞ := by finiteness) (hμt : μ t ≠ ∞ := by finiteness) :
+    ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), indicatorConstLp 2 ht hμt (1 : 𝕜)⟫ = μ.real (s ∩ t) := by
+  simp [inner_indicatorConstLp_indicatorConstLp, RCLike.ofReal_alg]
+
+lemma real_inner_indicatorConstLp_one_indicatorConstLp_one
+    (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hμs : μ s ≠ ∞ := by finiteness) (hμt : μ t ≠ ∞ := by finiteness) :
+    ⟪indicatorConstLp 2 hs hμs (1 : ℝ), indicatorConstLp 2 ht hμt (1 : ℝ)⟫_ℝ = μ.real (s ∩ t) := by
+  simp [inner_indicatorConstLp_indicatorConstLp]
 
 end IndicatorConstLp
 

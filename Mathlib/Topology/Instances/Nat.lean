@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Instances.Int
 import Mathlib.Data.Nat.Lattice
+import Mathlib.Topology.Instances.Int
 
 /-!
 # Topology on the natural numbers
@@ -44,9 +44,9 @@ theorem preimage_ball (x : ℕ) (r : ℝ) : (↑) ⁻¹' ball (x : ℝ) r = ball
 theorem preimage_closedBall (x : ℕ) (r : ℝ) : (↑) ⁻¹' closedBall (x : ℝ) r = closedBall x r := rfl
 
 theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r⌉₊ ⌊↑x + r⌋₊ := by
-  rcases le_or_lt 0 r with (hr | hr)
+  rcases le_or_gt 0 r with (hr | hr)
   · rw [← preimage_closedBall, Real.closedBall_eq_Icc, preimage_Icc]
-    exact add_nonneg (cast_nonneg x) hr
+    positivity
   · rw [closedBall_eq_empty.2 hr, Icc_eq_empty_of_lt]
     calc ⌊(x : ℝ) + r⌋₊ ≤ ⌊(x : ℝ)⌋₊ := floor_mono <| by linarith
     _ < ⌈↑x - r⌉₊ := by
@@ -58,7 +58,9 @@ instance : ProperSpace ℕ :=
     rw [closedBall_eq_Icc]
     exact (Set.finite_Icc _ _).isCompact⟩
 
+instance : IsOrderBornology ℕ := .of_isCompactIcc 0 (by simp) (by simp [Nat.closedBall_eq_Icc])
+
 instance : NoncompactSpace ℕ :=
-  noncompactSpace_of_neBot <| by simp [Filter.atTop_neBot]
+  noncompactSpace_of_neBot <| by simp only [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
 
 end Nat

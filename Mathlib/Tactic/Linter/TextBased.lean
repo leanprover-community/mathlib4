@@ -21,9 +21,12 @@ In practice, all such linters check for code style issues.
 Currently, this file contains linters checking
 - if the string "adaptation note" is used instead of the command #adaptation_note,
 - for lines with windows line endings,
-- for lines containing trailing whitespace.
+- for lines containing trailing whitespace,
+- for module names to be in upper camel case,
+- for module names to be valid Windows filenames, and containing no forbidden characters such as
+  `!`, `.` or spaces.
 
-For historic reasons, some further such check checks are written in a Python script `lint-style.py`:
+For historic reasons, some further such checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
 
 This linter has a file for style exceptions (to avoid false positives in the implementation),
@@ -32,7 +35,7 @@ or for downstream projects to allow a gradual adoption of this linter.
 An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
 
-open System
+open Lean.Linter System
 
 namespace Mathlib.Linter.TextBased
 
@@ -64,7 +67,7 @@ inductive ErrorFormat
   /-- Produce style error output aimed at humans: no error code, clickable file name -/
   | humanReadable : ErrorFormat
   /-- Produce an entry in the style-exceptions file: mention the error code, slightly uglier
-  than humand-readable output -/
+  than human-readable output -/
   | exceptionsFile : ErrorFormat
   /-- Produce output suitable for Github error annotations: in particular,
   duplicate the file path, line number and error code -/
@@ -137,7 +140,7 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
   let errorMessage := errctx.error.errorMessage
   match style with
   | ErrorFormat.github =>
-   -- We are outputting for github: duplicate file path, line number and error code,
+    -- We are outputting for github: duplicate file path, line number and error code,
     -- so that they are also visible in the plain text output.
     let path := errctx.path
     let nr := errctx.lineNumber
@@ -195,13 +198,19 @@ return an array of all style errors with line numbers. If possible,
 also return the collection of all lines, changed as needed to fix the linter errors.
 (Such automatic fixes are only possible for some kinds of `StyleError`s.)
 -/
-abbrev TextbasedLinter := Array String → Array (StyleError × ℕ) × (Option (Array String))
+abbrev TextbasedLinter := LinterOptions → Array String →
+  Array (StyleError × ℕ) × (Option (Array String))
 
 /-! Definitions of the actual text-based linters. -/
 section
 
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
-def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
+register_option linter.adaptationNote : Bool := { defValue := true }
+
+@[inherit_doc linter.adaptationNote]
+def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.adaptationNote opts do return (#[], none)
+
   let mut errors := Array.mkEmpty 0
   for h : idx in [:lines.size] do
     -- We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
@@ -209,9 +218,13 @@ def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
       errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
 
-
 /-- Lint a collection of input strings if one of them contains trailing whitespace. -/
-def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
+register_option linter.trailingWhitespace : Bool := { defValue := true }
+
+@[inherit_doc linter.trailingWhitespace]
+def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.trailingWhitespace opts do return (#[], none)
+
   let mut errors := Array.mkEmpty 0
   let mut fixedLines : Vector String lines.size := lines.toVector
   for h : idx in [:lines.size] do
@@ -221,9 +234,13 @@ def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
       fixedLines := fixedLines.set idx line.trimRight
   return (errors, if errors.size > 0 then some fixedLines.toArray else none)
 
-
 /-- Lint a collection of input strings for a semicolon preceded by a space. -/
-def semicolonLinter : TextbasedLinter := fun lines ↦ Id.run do
+register_option linter.whitespaceBeforeSemicolon : Bool := { defValue := true }
+
+@[inherit_doc linter.whitespaceBeforeSemicolon]
+def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.whitespaceBeforeSemicolon opts do return (#[], none)
+
   let mut errors := Array.mkEmpty 0
   let mut fixedLines := lines
   for h : idx in [:lines.size] do
@@ -234,7 +251,7 @@ def semicolonLinter : TextbasedLinter := fun lines ↦ Id.run do
       errors := errors.push (StyleError.semicolon, idx + 1)
       -- We spell the bad string pattern this way to avoid the linter firing on itself.
       fixedLines := fixedLines.set! idx (line.replace (⟨[' ', ';']⟩ : String) ";")
-   return (errors, if errors.size > 0 then some fixedLines else none)
+  return (errors, if errors.size > 0 then some fixedLines else none)
 
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
@@ -256,7 +273,7 @@ def allLinters : Array TextbasedLinter := #[
 Return a list of all unexpected errors, and, if some errors could be fixed automatically,
 the collection of all lines with every automatic fix applied.
 `exceptions` are any pre-existing style exceptions for this file. -/
-def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
+def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorContext) :
     IO (Array ErrorContext × Option (Array String)) := do
   let mut errors := #[]
   -- Whether any changes were made by auto-fixes.
@@ -280,7 +297,7 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
   let mut changed := lines
 
   for lint in allLinters do
-    let (err, changes) := lint changed
+    let (err, changes) := lint opts changed
     allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
     -- TODO: auto-fixes do not take style exceptions into account
     if let some c := changes then
@@ -291,16 +308,23 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return (errors, if changes_made then some changed else none)
 
+/-- Enables the old Python-based style linters. -/
+-- TODO: these linters assume they are being run in `./scripts` and do not work on
+-- downstream projects. Fix this before re-enabling them by default.
+-- Or better yet: port them to Lean 4.
+register_option linter.pythonStyle : Bool := { defValue := false }
+
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
 correct automatically fixable style errors if configured so.
 Return the number of files which had new style errors.
+`opts` contains the options defined in the Lakefile, determining which linters to enable.
 `nolints` is a list of style exceptions to take into account.
 `moduleNames` are the names of all the modules to lint,
 `mode` specifies what kind of output this script should produce,
 `fix` configures whether fixable errors should be corrected in-place. -/
-def lintModules (nolints : Array String) (moduleNames : Array Lean.Name) (style : ErrorFormat)
-    (fix : Bool) : IO UInt32 := do
+def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : Array Lean.Name)
+    (style : ErrorFormat) (fix : Bool) : IO UInt32 := do
   let styleExceptions := parseStyleExceptions nolints
   let mut numberErrorFiles : UInt32 := 0
   let mut allUnexpectedErrors := #[]
@@ -308,7 +332,7 @@ def lintModules (nolints : Array String) (moduleNames : Array Lean.Name) (style 
     -- Convert the module name to a file name, then lint that file.
     let path := mkFilePath (module.components.map toString)|>.addExtension "lean"
 
-    let (errors, changed) := ← lintFile path styleExceptions
+    let (errors, changed) := ← lintFile opts path styleExceptions
     if let some c := changed then
       if fix then
         let _ := ← IO.FS.writeFile path ("\n".intercalate c.toList)
@@ -316,27 +340,36 @@ def lintModules (nolints : Array String) (moduleNames : Array Lean.Name) (style 
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
 
-  -- Run the remaining python linters. It is easier to just run on all files.
-  -- If this poses an issue, I can either filter the output
-  -- or wait until lint-style.py is fully rewritten in Lean.
-  let args := if fix then #["--fix"] else #[]
-  let output ← IO.Process.output { cmd := "./scripts/print-style-errors.sh", args := args }
-  if output.exitCode != 0 then
-    numberErrorFiles := numberErrorFiles + 1
-    IO.eprintln s!"error: `print-style-error.sh` exited with code {output.exitCode}"
-    IO.eprint output.stderr
-  else if output.stdout != "" then
-    numberErrorFiles := numberErrorFiles + 1
-    IO.eprint output.stdout
+  -- Passing Lean options to Python files seems like a lot of work for something we want to
+  -- run entirely inside of Lean in the end anyway.
+  -- So for now, we enable/disable all of them with a single switch.
+  if getLinterValue linter.pythonStyle opts then
+    -- Run the remaining python linters. It is easier to just run on all files.
+    -- If this poses an issue, I can either filter the output
+    -- or wait until lint-style.py is fully rewritten in Lean.
+    let args := if fix then #["--fix"] else #[]
+    let output ← IO.Process.output { cmd := "./scripts/print-style-errors.sh", args := args }
+    if output.exitCode != 0 then
+      numberErrorFiles := numberErrorFiles + 1
+      IO.eprintln s!"error: `print-style-error.sh` exited with code {output.exitCode}"
+      IO.eprint output.stderr
+    else if output.stdout != "" then
+      numberErrorFiles := numberErrorFiles + 1
+      IO.eprint output.stdout
   formatErrors allUnexpectedErrors style
   if allUnexpectedErrors.size > 0 then
     IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)"
   return numberErrorFiles
 
+/-- Verify that all modules are named in `UpperCamelCase` -/
+register_option linter.modulesUpperCamelCase : Bool := { defValue := true }
+
 /-- Verifies that all modules in `modules` are named in `UpperCamelCase`
 (except for explicitly discussed exceptions, which are hard-coded here).
 Return the number of modules violating this. -/
-def modulesNotUpperCamelCase (modules : Array Lean.Name) : IO Nat := do
+def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
+  unless getLinterValue linter.modulesUpperCamelCase opts do return 0
+
   -- Exceptions to this list should be discussed on zulip!
   let exceptions := [
     `Mathlib.Analysis.CStarAlgebra.lpSpace,
@@ -354,5 +387,65 @@ def modulesNotUpperCamelCase (modules : Array Lean.Name) : IO Nat := do
     IO.eprintln
       s!"error: module name '{bad}' is not in 'UpperCamelCase': it should be '{good}' instead"
   return badNames.size
+
+/-- Verify that no module name is forbidden according to Windows' filename rules. -/
+register_option linter.modulesForbiddenWindows : Bool := { defValue := true }
+
+/-- Verifies that no module in `modules` contains CON, PRN, AUX, NUL, COM1, COM2, COM3, COM4, COM5,
+COM6, COM7, COM8, COM9, COM¹, COM², COM³, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9,
+LPT¹, LPT² or LPT³ in its filename, as these are forbidden on Windows.
+
+Also verify that module names contain no forbidden characters such as `*`, `?` (Windows),
+`!` (forbidden on Nix OS) or `.` (might result from confusion with a module name).
+
+Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
+Return the number of module names violating this rule. -/
+def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
+  unless getLinterValue linter.modulesUpperCamelCase opts do return 0
+  let forbiddenNames := [
+    "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
+    "COM9", "COM¹", "COM²", "COM³", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8",
+    "LPT9", "LPT¹", "LPT²", "LPT³"
+  ]
+  -- We also check for the exclamation mark (which is not forbidden on Windows, but e.g. on Nix OS),
+  -- but do so below (with a custom error message).
+  let forbiddenCharacters := [
+    '<', '>', '"', '/', '\\', '|', '?', '*',
+  ]
+  let mut badNamesNum := 0
+  for name in modules do
+    let mut isBad := false
+    let mut badComps : List String := []
+    let mut badChars : List String := []
+    for comp in name.componentsRev do
+      let .str .anonymous s := comp | continue
+      if forbiddenNames.contains s.toUpper then
+        badComps := s :: badComps
+      else
+        if s.contains '!' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains forbidden character '!'"
+        else if s.contains '.' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains forbidden character '.'"
+        else if s.contains ' ' || s.contains '\t' || s.contains '\n' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains a whitespace character"
+        for c in forbiddenCharacters do
+          if s.contains c then
+            badChars := c.toString :: badChars
+    if !badComps.isEmpty || !badChars.isEmpty then
+      isBad := true
+    if isBad then badNamesNum := badNamesNum + 1
+
+    if !badComps.isEmpty then
+      IO.eprintln s!"error: module name '{name}' contains \
+        component{if badComps.length > 1 then "s" else ""} '{badComps}', \
+        which {if badComps.length > 1 then "are" else "is"} forbidden in Windows filenames."
+    if !badChars.isEmpty then
+      IO.eprintln s!"error: module name '{name}' contains \
+        character{if badChars.length > 1 then "s" else ""} '{badChars}', \
+        which {if badChars.length > 1 then "are" else "is"} forbidden in Windows filenames."
+  return badNamesNum
 
 end Mathlib.Linter.TextBased

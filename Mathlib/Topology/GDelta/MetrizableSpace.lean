@@ -34,9 +34,9 @@ instance (priority := 100) [PseudoMetrizableSpace X] : NormalSpace X where
     refine ⟨g ⁻¹' (Ioi 0), g ⁻¹' (Iio 0), isOpen_Ioi.preimage hg, isOpen_Iio.preimage hg,
       fun x hx ↦ ?_, fun x hx ↦ ?_, Ioi_disjoint_Iio_same.preimage g⟩
     · simp [g, infDist_zero_of_mem hx,
-        (ht.not_mem_iff_infDist_pos hte).mp (hst.not_mem_of_mem_left hx)]
+        (ht.notMem_iff_infDist_pos hte).mp (hst.notMem_of_mem_left hx)]
     · simp [g, infDist_zero_of_mem hx,
-        (hs.not_mem_iff_infDist_pos hse).mp (hst.not_mem_of_mem_right hx)]
+        (hs.notMem_iff_infDist_pos hse).mp (hst.notMem_of_mem_right hx)]
 
 instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X where
   closed_gdelta s hs := by

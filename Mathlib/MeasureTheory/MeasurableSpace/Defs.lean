@@ -249,7 +249,7 @@ theorem measurableSet_insert {a : α} {s : Set α} :
   classical
   exact ⟨fun h =>
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
-    else insert_diff_self_of_not_mem ha ▸ h.diff (.singleton _),
+    else insert_diff_self_of_notMem ha ▸ h.diff (.singleton _),
     fun h => h.insert a⟩
 
 theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : MeasurableSet s :=

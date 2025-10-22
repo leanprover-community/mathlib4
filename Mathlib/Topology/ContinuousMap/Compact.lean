@@ -127,6 +127,18 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
   rw [← dist_mkOfCompact, dist_lt_iff_of_compact C0]
   simp only [mkOfCompact_apply]
 
+theorem dist_eq_iSup : dist f g = ⨆ x, dist (f x) (g x) := by
+  simp [← isometryEquivBoundedOfCompact α β |>.dist_eq f g,
+    BoundedContinuousFunction.dist_eq_iSup]
+
+theorem nndist_eq_iSup : nndist f g = ⨆ x, nndist (f x) (g x) := by
+  simp [← isometryEquivBoundedOfCompact α β |>.nndist_eq f g,
+    BoundedContinuousFunction.nndist_eq_iSup]
+
+theorem edist_eq_iSup : edist f g = ⨆ (x : α), edist (f x) (g x) := by
+  simp [← isometryEquivBoundedOfCompact α β |>.edist_eq f g,
+    BoundedContinuousFunction.edist_eq_iSup]
+
 instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [IsBoundedSMul R β] :
     IsBoundedSMul R C(α, β) where
   dist_smul_pair' r f g := by
@@ -171,7 +183,7 @@ section
 variable (f : C(α, E))
 
 -- The corresponding lemmas for `BoundedContinuousFunction` are stated with `{f}`,
--- and so can not be used in dot notation.
+-- and so cannot be used in dot notation.
 theorem norm_coe_le_norm (x : α) : ‖f x‖ ≤ ‖f‖ :=
   (mkOfCompact f).norm_coe_le_norm x
 
@@ -209,6 +221,9 @@ theorem nnnorm_eq_iSup_nnnorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
+
+theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ :=
+  (mkOfCompact f).enorm_eq_iSup_enorm
 
 -- A version with better keys
 instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :
@@ -371,34 +386,13 @@ end ContinuousMap
 
 section CompLeft
 
-variable (X : Type*) {𝕜 β γ : Type*} [TopologicalSpace X] [CompactSpace X]
-  [NontriviallyNormedField 𝕜]
+@[deprecated (since := "2025-05-18")]
+alias ContinuousLinearMap.compLeftContinuousCompact :=
+  ContinuousLinearMap.compLeftContinuous
 
-variable [SeminormedAddCommGroup β] [NormedSpace 𝕜 β] [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
-
-open ContinuousMap
-
-/-- Postcomposition of continuous functions into a normed module by a continuous linear map is a
-continuous linear map.
-Transferred version of `ContinuousLinearMap.compLeftContinuousBounded`,
-upgraded version of `ContinuousLinearMap.compLeftContinuous`,
-similar to `LinearMap.compLeft`. -/
-protected def ContinuousLinearMap.compLeftContinuousCompact (g : β →L[𝕜] γ) :
-    C(X, β) →L[𝕜] C(X, γ) :=
-  (linearIsometryBoundedOfCompact X γ 𝕜).symm.toLinearIsometry.toContinuousLinearMap.comp <|
-    (g.compLeftContinuousBounded X).comp <|
-      (linearIsometryBoundedOfCompact X β 𝕜).toLinearIsometry.toContinuousLinearMap
-
-@[simp]
-theorem ContinuousLinearMap.toLinear_compLeftContinuousCompact (g : β →L[𝕜] γ) :
-    (g.compLeftContinuousCompact X : C(X, β) →ₗ[𝕜] C(X, γ)) = g.compLeftContinuous 𝕜 X := by
-  ext f
-  rfl
-
-@[simp]
-theorem ContinuousLinearMap.compLeftContinuousCompact_apply (g : β →L[𝕜] γ) (f : C(X, β)) (x : X) :
-    g.compLeftContinuousCompact X f x = g (f x) :=
-  rfl
+@[deprecated (since := "2025-05-18")]
+alias ContinuousLinearMap.compLeftContinuousCompact_apply :=
+  ContinuousLinearMap.compLeftContinuous_apply
 
 end CompLeft
 

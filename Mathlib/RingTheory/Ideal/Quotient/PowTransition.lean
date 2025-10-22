@@ -25,11 +25,11 @@ to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 ## Main results
 -/
 
---Since `Mathlib.LinearAlgebra.Quotient.Basic` and `Mathlib.RingTheory.Ideal.Quotient.Defs`
---do not import each other, and the first file that imports both of them is
---`Mathlib.RingTheory.Ideal.Quotient.Operations`, which has already established
---the first isomophism theorem and Chinese remainder theorem, we put these pure technical lemmas
---that involves both `Submodule.mapQ` and `Ideal.Quotient.factor` in this file.
+/- Since `Mathlib/LinearAlgebra/Quotient/Basic.lean` and
+`Mathlib/RingTheory/Ideal/Quotient/Defs.lean` do not import each other, and the first file that
+imports both of them is `Mathlib/RingTheory/Ideal/Quotient/Operations.lean`, which has already
+established the first isomorphism theorem and Chinese remainder theorem, we put these pure technical
+lemmas that involves both `Submodule.mapQ` and `Ideal.Quotient.factor` in this file. -/
 
 open Ideal Quotient
 
@@ -125,7 +125,7 @@ end Ideal
 variable {R : Type*} [CommRing R] (I : Ideal R)
 
 lemma Ideal.map_mk_comap_factorPow {a b : ℕ} (apos : 0 < a) (le : a ≤ b) :
-    (I.map (mk (I ^ a))).comap (factorPow I le) = I.map (mk (I ^ b))  := by
+    (I.map (mk (I ^ a))).comap (factorPow I le) = I.map (mk (I ^ b)) := by
   apply Ideal.map_mk_comap_factor
   exact pow_le_self (Nat.ne_zero_of_lt apos)
 

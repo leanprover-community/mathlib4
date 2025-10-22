@@ -17,7 +17,7 @@ import Mathlib.Tactic.Tauto
 # Basic facts for ordered rings and semirings
 
 This file develops the basics of ordered (semi)rings in an unbundled fashion for later use with
-the bundled classes from `Mathlib.Algebra.Order.Ring.Defs`.
+the bundled classes from `Mathlib/Algebra/Order/Ring/Defs.lean`.
 
 The set of typeclass variables here comprises
 * an algebraic class (`Semiring`, `CommSemiring`, `Ring`, `CommRing`)
@@ -108,7 +108,7 @@ immediate predecessors and what conditions are added to each of them.
 Each section is labelled with a corresponding bundled ordered ring typeclass in mind. Mixins for
 relating the order structures and ring structures are added as needed.
 
-TODO: the mixin assumptiosn can be relaxed in most cases
+TODO: the mixin assumptions can be relaxed in most cases
 
 -/
 
@@ -127,7 +127,7 @@ variable {R : Type u} {α : Type*}
 theorem add_one_le_two_mul [LE R] [NonAssocSemiring R] [AddLeftMono R] {a : R}
     (a1 : 1 ≤ a) : a + 1 ≤ 2 * a :=
   calc
-    a + 1 ≤ a + a := add_le_add_left a1 a
+    a + 1 ≤ a + a := by gcongr
     _ = 2 * a := (two_mul _).symm
 
 section OrderedSemiring
@@ -137,8 +137,8 @@ variable [Semiring R] [Preorder R] {a b c d : R}
 theorem add_le_mul_two_add [ZeroLEOneClass R] [MulPosMono R] [AddLeftMono R]
     (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (2 + b) :=
   calc
-    a + (2 + b) ≤ a + (a + a * b) :=
-      add_le_add_left (add_le_add a2 <| le_mul_of_one_le_left b0 <| one_le_two.trans a2) a
+    a + (2 + b) ≤ a + (a + a * b) := by
+      gcongr; exact le_mul_of_one_le_left b0 <| one_le_two.trans a2
     _ ≤ a * (2 + b) := by rw [mul_add, mul_two, add_assoc]
 
 theorem mul_le_mul_of_nonpos_left [ExistsAddOfLE R] [PosMulMono R]
@@ -148,7 +148,7 @@ theorem mul_le_mul_of_nonpos_left [ExistsAddOfLE R] [PosMulMono R]
   refine le_of_add_le_add_right (a := d * b + d * a) ?_
   calc
     _ = d * b := by rw [add_left_comm, ← add_mul, ← hcd, zero_mul, add_zero]
-    _ ≤ d * a := mul_le_mul_of_nonneg_left h <| hcd.trans_le <| add_le_of_nonpos_left hc
+    _ ≤ d * a := by gcongr; exact hcd.trans_le <| add_le_of_nonpos_left hc
     _ = _ := by rw [← add_assoc, ← add_mul, ← hcd, zero_mul, zero_add]
 
 theorem mul_le_mul_of_nonpos_right [ExistsAddOfLE R] [MulPosMono R]
@@ -158,7 +158,7 @@ theorem mul_le_mul_of_nonpos_right [ExistsAddOfLE R] [MulPosMono R]
   refine le_of_add_le_add_right (a := b * d + a * d) ?_
   calc
     _ = b * d := by rw [add_left_comm, ← mul_add, ← hcd, mul_zero, add_zero]
-    _ ≤ a * d := mul_le_mul_of_nonneg_right h <| hcd.trans_le <| add_le_of_nonpos_left hc
+    _ ≤ a * d := by gcongr; exact hcd.trans_le <| add_le_of_nonpos_left hc
     _ = _ := by rw [← add_assoc, ← mul_add, ← hcd, mul_zero, zero_add]
 
 theorem mul_nonneg_of_nonpos_of_nonpos [ExistsAddOfLE R] [MulPosMono R]
@@ -169,7 +169,7 @@ theorem mul_nonneg_of_nonpos_of_nonpos [ExistsAddOfLE R] [MulPosMono R]
 theorem mul_le_mul_of_nonneg_of_nonpos [ExistsAddOfLE R] [MulPosMono R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
     (hca : c ≤ a) (hbd : b ≤ d) (hc : 0 ≤ c) (hb : b ≤ 0) : a * b ≤ c * d :=
-  (mul_le_mul_of_nonpos_right hca hb).trans <| mul_le_mul_of_nonneg_left hbd hc
+  (mul_le_mul_of_nonpos_right hca hb).trans <| by gcongr; assumption
 
 theorem mul_le_mul_of_nonneg_of_nonpos' [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
@@ -373,10 +373,10 @@ end Monotone
 lemma mul_add_mul_le_mul_add_mul [ExistsAddOfLE R] [MulPosMono R]
     [AddLeftMono R] [AddLeftReflectLE R]
     (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
-  obtain ⟨b, rfl⟩ := exists_add_of_le hab
   obtain ⟨d, hd, rfl⟩ := exists_nonneg_add_of_le hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
-  exact add_le_add_left (mul_le_mul_of_nonneg_right hab hd) _
+  gcongr
+  assumption
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_le_mul_add_mul' [ExistsAddOfLE R] [MulPosMono R]
@@ -390,10 +390,10 @@ variable [AddLeftReflectLT R]
 lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddLeftStrictMono R]
     (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
-  obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, hd, rfl⟩ := exists_pos_add_of_lt' hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
-  exact add_lt_add_left (mul_lt_mul_of_pos_right hab hd) _
+  gcongr
+  exact hd
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE R] [MulPosStrictMono R]
@@ -412,7 +412,7 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
     [MulPosStrictMono R] [PosMulStrictMono R]
     (hab : 0 ≤ a * b) : 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   refine Decidable.or_iff_not_not_and_not.2 ?_
-  simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
+  simp only [not_and, not_le]; intro ab nab; apply not_lt_of_ge hab _
   rcases lt_trichotomy 0 a with (ha | rfl | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
   · exact ((ab le_rfl).asymm (nab le_rfl)).elim
@@ -420,30 +420,30 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
 
 theorem nonneg_of_mul_nonneg_left [MulPosStrictMono R]
     (h : 0 ≤ a * b) (hb : 0 < b) : 0 ≤ a :=
-  le_of_not_gt fun ha => (mul_neg_of_neg_of_pos ha hb).not_le h
+  le_of_not_gt fun ha => (mul_neg_of_neg_of_pos ha hb).not_ge h
 
 theorem nonneg_of_mul_nonneg_right [PosMulStrictMono R]
     (h : 0 ≤ a * b) (ha : 0 < a) : 0 ≤ b :=
-  le_of_not_gt fun hb => (mul_neg_of_pos_of_neg ha hb).not_le h
+  le_of_not_gt fun hb => (mul_neg_of_pos_of_neg ha hb).not_ge h
 
 theorem nonpos_of_mul_nonpos_left [PosMulStrictMono R]
     (h : a * b ≤ 0) (hb : 0 < b) : a ≤ 0 :=
-  le_of_not_gt fun ha : a > 0 => (mul_pos ha hb).not_le h
+  le_of_not_gt fun ha : a > 0 => (mul_pos ha hb).not_ge h
 
 theorem nonpos_of_mul_nonpos_right [PosMulStrictMono R]
     (h : a * b ≤ 0) (ha : 0 < a) : b ≤ 0 :=
-  le_of_not_gt fun hb : b > 0 => (mul_pos ha hb).not_le h
+  le_of_not_gt fun hb : b > 0 => (mul_pos ha hb).not_ge h
 
 @[simp]
 theorem mul_nonneg_iff_of_pos_left [PosMulStrictMono R]
     (h : 0 < c) : 0 ≤ c * b ↔ 0 ≤ b := by
-  convert mul_le_mul_left h
+  convert mul_le_mul_iff_right₀ h
   simp
 
 @[simp]
 theorem mul_nonneg_iff_of_pos_right [MulPosStrictMono R]
     (h : 0 < c) : 0 ≤ b * c ↔ 0 ≤ b := by
-  simpa using (mul_le_mul_right h : 0 * c ≤ b * c ↔ 0 ≤ b)
+  simpa using (mul_le_mul_iff_left₀ h : 0 * c ≤ b * c ↔ 0 ≤ b)
 
 theorem add_le_mul_of_left_le_right [ZeroLEOneClass R] [NeZero (1 : R)]
     [MulPosStrictMono R] [AddLeftMono R]
@@ -454,9 +454,9 @@ theorem add_le_mul_of_left_le_right [ZeroLEOneClass R] [NeZero (1 : R)]
       _ ≤ a := a2
       _ ≤ b := ab
   calc
-    a + b ≤ b + b := add_le_add_right ab b
+    a + b ≤ b + b := by gcongr
     _ = 2 * b := (two_mul b).symm
-    _ ≤ a * b := (mul_le_mul_right this).mpr a2
+    _ ≤ a * b := (mul_le_mul_iff_left₀ this).mpr a2
 
 theorem add_le_mul_of_right_le_left [ZeroLEOneClass R] [NeZero (1 : R)]
     [AddLeftMono R] [PosMulStrictMono R]
@@ -467,15 +467,15 @@ theorem add_le_mul_of_right_le_left [ZeroLEOneClass R] [NeZero (1 : R)]
       _ ≤ b := b2
       _ ≤ a := ba
   calc
-    a + b ≤ a + a := add_le_add_left ba a
+    a + b ≤ a + a := by gcongr
     _ = a * 2 := (mul_two a).symm
-    _ ≤ a * b := (mul_le_mul_left this).mpr b2
+    _ ≤ a * b := (mul_le_mul_iff_right₀ this).mpr b2
 
 theorem add_le_mul [ZeroLEOneClass R] [NeZero (1 : R)]
     [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
     (a2 : 2 ≤ a) (b2 : 2 ≤ b) : a + b ≤ a * b :=
   if hab : a ≤ b then add_le_mul_of_left_le_right a2 hab
-  else add_le_mul_of_right_le_left b2 (le_of_not_le hab)
+  else add_le_mul_of_right_le_left b2 (le_of_not_ge hab)
 
 theorem add_le_mul' [ZeroLEOneClass R] [NeZero (1 : R)]
     [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
@@ -492,11 +492,11 @@ theorem mul_nonneg_iff_left_nonneg_of_pos [PosMulStrictMono R] [MulPosStrictMono
 
 theorem nonpos_of_mul_nonneg_left [PosMulStrictMono R]
     (h : 0 ≤ a * b) (hb : b < 0) : a ≤ 0 :=
-  le_of_not_gt fun ha => absurd h (mul_neg_of_pos_of_neg ha hb).not_le
+  le_of_not_gt fun ha => absurd h (mul_neg_of_pos_of_neg ha hb).not_ge
 
 theorem nonpos_of_mul_nonneg_right [MulPosStrictMono R]
     (h : 0 ≤ a * b) (ha : a < 0) : b ≤ 0 :=
-  le_of_not_gt fun hb => absurd h (mul_neg_of_neg_of_pos ha hb).not_le
+  le_of_not_gt fun hb => absurd h (mul_neg_of_neg_of_pos ha hb).not_ge
 
 @[simp]
 theorem Units.inv_pos
@@ -545,7 +545,7 @@ theorem le_of_mul_le_of_one_le
 
 theorem nonneg_le_nonneg_of_sq_le_sq [PosMulStrictMono R] [MulPosMono R]
     {a b : R} (hb : 0 ≤ b) (h : a * a ≤ b * b) : a ≤ b :=
-  le_of_not_gt fun hab => (mul_self_lt_mul_self hb hab).not_le h
+  le_of_not_gt fun hab => (mul_self_lt_mul_self hb hab).not_ge h
 
 theorem mul_self_le_mul_self_iff [PosMulStrictMono R] [MulPosMono R]
     {a b : R} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a ≤ b ↔ a * a ≤ b * b :=
@@ -562,7 +562,7 @@ theorem mul_self_inj [PosMulStrictMono R] [MulPosMono R]
 lemma sign_cases_of_C_mul_pow_nonneg [PosMulStrictMono R]
     (h : ∀ n, 0 ≤ a * b ^ n) : a = 0 ∨ 0 < a ∧ 0 ≤ b := by
   have : 0 ≤ a := by simpa only [pow_zero, mul_one] using h 0
-  refine this.eq_or_gt.imp_right fun ha ↦ ⟨ha, nonneg_of_mul_nonneg_right ?_ ha⟩
+  refine this.eq_or_lt'.imp_right fun ha ↦ ⟨ha, nonneg_of_mul_nonneg_right ?_ ha⟩
   simpa only [pow_one] using h 1
 
 theorem mul_pos_iff [ExistsAddOfLE R] [PosMulStrictMono R] [MulPosStrictMono R]
@@ -572,7 +572,7 @@ theorem mul_pos_iff [ExistsAddOfLE R] [PosMulStrictMono R] [MulPosStrictMono R]
     h.elim (and_imp.2 mul_pos) (and_imp.2 mul_pos_of_neg_of_neg)⟩
 
 theorem mul_nonneg_iff [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
-    [AddLeftReflectLE R] [AddLeftMono R]:
+    [AddLeftReflectLE R] [AddLeftMono R] :
     0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 :=
   ⟨nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg, fun h =>
     h.elim (and_imp.2 mul_nonneg) (and_imp.2 mul_nonneg_of_nonpos_of_nonpos)⟩
@@ -600,25 +600,25 @@ lemma mul_nonneg_iff_pos_imp_nonneg [ExistsAddOfLE R] [PosMulStrictMono R] [MulP
 theorem mul_le_mul_left_of_neg [ExistsAddOfLE R] [PosMulStrictMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b c : R} (h : c < 0) : c * a ≤ c * b ↔ b ≤ a :=
-  (strictAnti_mul_left h).le_iff_le
+  (strictAnti_mul_left h).le_iff_ge
 
 @[simp]
 theorem mul_le_mul_right_of_neg [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b c : R} (h : c < 0) : a * c ≤ b * c ↔ b ≤ a :=
-  (strictAnti_mul_right h).le_iff_le
+  (strictAnti_mul_right h).le_iff_ge
 
 @[simp]
 theorem mul_lt_mul_left_of_neg [ExistsAddOfLE R] [PosMulStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
     {a b c : R} (h : c < 0) : c * a < c * b ↔ b < a :=
-  (strictAnti_mul_left h).lt_iff_lt
+  (strictAnti_mul_left h).lt_iff_gt
 
 @[simp]
 theorem mul_lt_mul_right_of_neg [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightStrictMono R] [AddRightReflectLT R]
     {a b c : R} (h : c < 0) : a * c < b * c ↔ b < a :=
-  (strictAnti_mul_right h).lt_iff_lt
+  (strictAnti_mul_right h).lt_iff_gt
 
 theorem lt_of_mul_lt_mul_of_nonpos_left [ExistsAddOfLE R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
@@ -649,28 +649,28 @@ theorem mul_self_pos [ExistsAddOfLE R] [PosMulStrictMono R] [MulPosStrictMono R]
     rw [mul_zero] at h
     exact h.false
   · intro h
-    rcases h.lt_or_lt with h | h
+    rcases h.lt_or_gt with h | h
     exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
 
 theorem nonneg_of_mul_nonpos_left [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b ≤ 0) (hb : b < 0) : 0 ≤ a :=
-  le_of_not_gt fun ha => absurd h (mul_pos_of_neg_of_neg ha hb).not_le
+  le_of_not_gt fun ha => absurd h (mul_pos_of_neg_of_neg ha hb).not_ge
 
 theorem nonneg_of_mul_nonpos_right [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b ≤ 0) (ha : a < 0) : 0 ≤ b :=
-  le_of_not_gt fun hb => absurd h (mul_pos_of_neg_of_neg ha hb).not_le
+  le_of_not_gt fun hb => absurd h (mul_pos_of_neg_of_neg ha hb).not_ge
 
 theorem pos_of_mul_neg_left [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b < 0) (hb : b ≤ 0) : 0 < a :=
-  lt_of_not_ge fun ha => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
+  lt_of_not_ge fun ha => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_gt
 
 theorem pos_of_mul_neg_right [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b < 0) (ha : a ≤ 0) : 0 < b :=
-  lt_of_not_ge fun hb => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
+  lt_of_not_ge fun hb => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_gt
 
 theorem neg_iff_pos_of_mul_neg [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
@@ -682,23 +682,21 @@ theorem pos_iff_neg_of_mul_neg [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     (hab : a * b < 0) : 0 < a ↔ b < 0 :=
   ⟨neg_of_mul_neg_right hab ∘ le_of_lt, pos_of_mul_neg_left hab ∘ le_of_lt⟩
 
-lemma sq_nonneg [IsRightCancelAdd R]
-    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+lemma sq_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (a : R) : 0 ≤ a ^ 2 := by
-  obtain ha | ha := le_total 0 a
-  · exact pow_nonneg ha _
-  obtain ⟨b, hab⟩ := exists_add_of_le ha
+  obtain ha | ha := le_or_gt 0 a
+  · exact pow_succ_nonneg ha _
+  obtain ⟨b, hab⟩ := exists_add_of_le ha.le
+  have hb : 0 < b := not_le.1 fun hb ↦ (add_neg_of_neg_of_nonpos ha hb).ne' hab
   calc
-    0 ≤ b ^ 2 := pow_nonneg (not_lt.1 fun hb ↦ hab.not_gt <| add_neg_of_nonpos_of_neg ha hb) _
-    _ = a ^ 2 := add_left_injective (a * b) ?_
-  calc
-    b ^ 2 + a * b = (a + b) * b := by rw [add_comm, sq, add_mul]
-    _ = a * (a + b) := by simp [← hab]
-    _ = a ^ 2 + a * b := by rw [sq, mul_add]
+    0 ≤ b ^ 2 := pow_succ_nonneg hb.le _
+    _ = b ^ 2 + a * (a + b) := by rw [← hab, mul_zero, add_zero]
+    _ = a ^ 2 + (a + b) * b := by rw [add_mul, mul_add, sq, sq, add_comm, add_assoc]
+    _ = a ^ 2 := by rw [← hab, zero_mul, add_zero]
 
 @[simp]
-lemma sq_nonpos_iff [IsRightCancelAdd R] [ZeroLEOneClass R] [ExistsAddOfLE R]
-    [PosMulMono R] [AddLeftStrictMono R] [NoZeroDivisors R] (r : R) :
+lemma sq_nonpos_iff [ExistsAddOfLE R]
+    [PosMulMono R] [AddLeftMono R] [NoZeroDivisors R] (r : R) :
     r ^ 2 ≤ 0 ↔ r = 0 := by
   trans r ^ 2 = 0
   · rw [le_antisymm_iff, and_iff_left (sq_nonneg r)]
@@ -706,21 +704,18 @@ lemma sq_nonpos_iff [IsRightCancelAdd R] [ZeroLEOneClass R] [ExistsAddOfLE R]
 
 alias pow_two_nonneg := sq_nonneg
 
-lemma mul_self_nonneg [IsRightCancelAdd R]
-    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+lemma mul_self_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (a : R) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
 
 /-- The sum of two squares is zero iff both elements are zero. -/
-lemma mul_self_add_mul_self_eq_zero [IsRightCancelAdd R] [NoZeroDivisors R]
-    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R]
-    [AddLeftMono R] [AddLeftStrictMono R] :
+lemma mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
+    [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
     a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
   rw [add_eq_zero_iff_of_nonneg, mul_self_eq_zero (M₀ := R), mul_self_eq_zero (M₀ := R)] <;>
     apply mul_self_nonneg
 
-lemma eq_zero_of_mul_self_add_mul_self_eq_zero [IsRightCancelAdd R] [NoZeroDivisors R]
-    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R]
-    [AddLeftMono R] [AddLeftStrictMono R]
+lemma eq_zero_of_mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
+    [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (h : a * a + b * b = 0) : a = 0 :=
   (mul_self_add_mul_self_eq_zero.mp h).left
 
@@ -732,8 +727,9 @@ variable [CommSemiring R] [LinearOrder R] {a d : R}
 
 lemma max_mul_mul_le_max_mul_max [PosMulMono R] [MulPosMono R] (b c : R) (ha : 0 ≤ a) (hd : 0 ≤ d) :
     max (a * b) (d * c) ≤ max a c * max d b :=
-  have ba : b * a ≤ max d b * max c a :=
-    mul_le_mul (le_max_right d b) (le_max_right c a) ha (le_trans hd (le_max_left d b))
+  have ba : b * a ≤ max d b * max c a := by
+    gcongr
+    exacts [ha, hd.trans <| le_max_left d b, le_max_right d b, le_max_right c a]
   have cd : c * d ≤ max a c * max b d :=
     mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)
@@ -828,7 +824,7 @@ lemma sub_mul_sub_nonneg_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftM
     and_iff_right_of_imp h.trans, and_iff_left_of_imp h.trans', or_comm]
 
 lemma sub_mul_sub_nonpos_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
-    (x : R) (h : a ≤ b) :  (x - a) * (x - b) ≤ 0 ↔ a ≤ x ∧ x ≤ b := by
+    (x : R) (h : a ≤ b) : (x - a) * (x - b) ≤ 0 ↔ a ≤ x ∧ x ≤ b := by
   rw [mul_nonpos_iff, sub_nonneg, sub_nonneg, sub_nonpos, sub_nonpos, or_iff_left_iff_imp, and_comm]
   exact And.imp h.trans h.trans'
 

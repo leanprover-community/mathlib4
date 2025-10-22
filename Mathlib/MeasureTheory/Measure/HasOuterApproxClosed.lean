@@ -155,7 +155,7 @@ lemma indicator_le_apprSeq (n : ℕ) :
   intro x
   by_cases hxF : x ∈ F
   · simp only [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n, le_refl]
-  · simp only [hxF, not_false_eq_true, indicator_of_not_mem, zero_le]
+  · simp only [hxF, not_false_eq_true, indicator_of_notMem, zero_le]
 
 /-- The measure of a closed set is at most the integral of any function in a decreasing
 approximating sequence to the indicator of the set. -/
@@ -168,7 +168,7 @@ theorem measure_le_lintegral [MeasurableSpace X] [OpensMeasurableSpace X] (μ : 
     intro x
     by_cases hxF : x ∈ F
     · simp only [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n hxF, ENNReal.coe_one, le_refl]
-    · simp only [hxF, not_false_eq_true, indicator_of_not_mem, zero_le]
+    · simp only [hxF, not_false_eq_true, indicator_of_notMem, zero_le]
 
 /-- The integrals along a decreasing approximating sequence to the indicator of a closed set
 tend to the measure of the closed set. -/

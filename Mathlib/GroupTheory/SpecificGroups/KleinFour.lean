@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!
 # Klein Four Group
@@ -18,7 +17,7 @@ produces the third one.
 * `IsKleinFour` : A mixin class which states that the group has order four and exponent two.
 * `mulEquiv'` : An equivalence between a Klein four-group and a group of exponent two which
   preserves the identity is in fact an isomorphism.
-* `mulEquiv`: Any two Klein four-groups are isomorphic via any identity preserving equivalence.
+* `mulEquiv`: Any two Klein four-groups are isomorphic via any identity-preserving equivalence.
 
 ## References
 
@@ -60,10 +59,6 @@ instance : IsAddKleinFour (ZMod 2 × ZMod 2) where
   card_four := by simp
   exponent_two := by simp [AddMonoid.exponent_prod]
 
-instance : IsKleinFour (DihedralGroup 2) where
-  card_four := by simp only [Nat.card_eq_fintype_card]; rfl
-  exponent_two := by simp [DihedralGroup.exponent]
-
 instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G) where
   card_four := by rw [← IsKleinFour.card_four (G := G)]; congr!
   exponent_two := by simp
@@ -78,7 +73,7 @@ namespace IsKleinFour
 potentially *a lot* slower). -/
 @[to_additive]
 scoped instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
-  Nat.finite_of_card_ne_zero <| by norm_num [IsKleinFour.card_four]
+  Nat.finite_of_card_ne_zero <| by simp [IsKleinFour.card_four]
 
 @[to_additive (attr := simp)]
 lemma card_four' {G : Type*} [Group G] [Fintype G] [IsKleinFour G] :
@@ -111,8 +106,8 @@ lemma eq_finset_univ [Fintype G] [DecidableEq G]
     {x y : G} (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : {x * y, x, y, (1 : G)} = Finset.univ := by
   apply Finset.eq_univ_of_card
   rw [card_four']
-  repeat rw [card_insert_of_not_mem]
-  on_goal 4 => simpa using mul_not_mem_of_exponent_two (by simp) hx hy hxy
+  repeat rw [card_insert_of_notMem]
+  on_goal 4 => simpa using mul_notMem_of_exponent_two (by simp) hx hy hxy
   all_goals simp_all
 
 @[to_additive]
@@ -120,15 +115,15 @@ lemma eq_mul_of_ne_all {x y z : G} (hx : x ≠ 1)
     (hy : y ≠ 1) (hxy : x ≠ y) (hz : z ≠ 1) (hzx : z ≠ x) (hzy : z ≠ y) : z = x * y := by
   classical
   let _ := Fintype.ofFinite G
-  apply eq_of_mem_insert_of_not_mem <| (eq_finset_univ hx hy hxy).symm ▸ mem_univ _
+  apply eq_of_mem_insert_of_notMem <| (eq_finset_univ hx hy hxy).symm ▸ mem_univ _
   simpa only [mem_singleton, mem_insert, not_or] using ⟨hzx, hzy, hz⟩
 
 variable {G₁ G₂ : Type*} [Group G₁] [Group G₂] [IsKleinFour G₁]
 
 /-- An equivalence between an `IsKleinFour` group `G₁` and a group `G₂` of exponent two which sends
 `1 : G₁` to `1 : G₂` is in fact an isomorphism. -/
-@[to_additive "An equivalence between an `IsAddKleinFour` group `G₁` and a group `G₂` of exponent
-two which sends `0 : G₁` to `0 : G₂` is in fact an isomorphism."]
+@[to_additive /-- An equivalence between an `IsAddKleinFour` group `G₁` and a group `G₂` of exponent
+two which sends `0 : G₁` to `0 : G₂` is in fact an isomorphism. -/]
 def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) : G₁ ≃* G₂ where
   toEquiv := e
   map_mul' := by
@@ -146,18 +141,18 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
       rw [← Ne, ← e.injective.ne_iff] at hx hy hxy
       rw [he] at hx hy
       symm
-      apply eq_of_mem_insert_of_not_mem <| univ₂.symm ▸ mem_univ _
-      simpa using mul_not_mem_of_exponent_two h hx hy hxy
+      apply eq_of_mem_insert_of_notMem <| univ₂.symm ▸ mem_univ _
+      simpa using mul_notMem_of_exponent_two h hx hy hxy
 
 /-- Any two `IsKleinFour` groups are isomorphic via any equivalence which sends the identity of one
 group to the identity of the other. -/
-@[to_additive "Any two `IsAddKleinFour` groups are isomorphic via any
-equivalence which sends the identity of one group to the identity of the other."]
+@[to_additive /-- Any two `IsAddKleinFour` groups are isomorphic via any
+equivalence which sends the identity of one group to the identity of the other. -/]
 abbrev mulEquiv [IsKleinFour G₂] (e : G₁ ≃ G₂) (he : e 1 = 1) : G₁ ≃* G₂ :=
   mulEquiv' e he exponent_two
 
 /-- Any two `IsKleinFour` groups are isomorphic. -/
-@[to_additive "Any two `IsAddKleinFour` groups are isomorphic."]
+@[to_additive /-- Any two `IsAddKleinFour` groups are isomorphic. -/]
 lemma nonempty_mulEquiv [IsKleinFour G₂] : Nonempty (G₁ ≃* G₂) := by
   classical
   let _inst₁ := Fintype.ofFinite G₁

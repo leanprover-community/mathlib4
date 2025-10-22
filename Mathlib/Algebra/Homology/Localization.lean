@@ -183,7 +183,7 @@ the homology functor on `HomotopyCategory C c`. -/
 noncomputable def homologyFunctorFactorsh (i : ι) :
     Qh ⋙ homologyFunctor C c i ≅ HomotopyCategory.homologyFunctor C c i :=
   Quotient.natIsoLift _ ((Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (quotientCompQhIso C c) _ ≪≫
+    Functor.isoWhiskerRight (quotientCompQhIso C c) _ ≪≫
     homologyFunctorFactors C c i  ≪≫ (HomotopyCategory.homologyFunctorFactors C c i).symm)
 
 section
@@ -193,7 +193,7 @@ variable [(HomotopyCategory.quotient C c).IsLocalization
 
 /-- The category `HomologicalComplexUpToQuasiIso C c` which was defined as a localization of
 `HomologicalComplex C c` with respect to quasi-isomorphisms also identify to a localization
-of the homotopy category with respect ot quasi-isomorphisms. -/
+of the homotopy category with respect to quasi-isomorphisms. -/
 instance : HomologicalComplexUpToQuasiIso.Qh.IsLocalization (HomotopyCategory.quasiIso C c) :=
   Functor.IsLocalization.of_comp (HomotopyCategory.quotient C c)
     Qh (HomologicalComplex.homotopyEquivalences C c)

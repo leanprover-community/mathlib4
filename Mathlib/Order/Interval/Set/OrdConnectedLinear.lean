@@ -53,7 +53,7 @@ lemma Set.ordConnected_iff_disjoint_Ioo_empty [LinearOrder α] [LocallyFiniteOrd
   refine ⟨fun h' x hx y hy hxy ↦ ?_, fun h' ↦ ordConnected_of_Ioo fun x hx y hy hxy z hz ↦ ?_⟩
   · suffices ∀ z, x < z → y ≤ z by ext z; simpa using this z
     intro z hz
-    suffices z ∉ Ioo x y by aesop
+    suffices z ∉ Ioo x y by simp_all
     exact fun contra ↦ hxy contra <| h'.out hx hy <| mem_Icc_of_Ioo contra
   · by_contra hz'
     obtain ⟨x', hx', hx''⟩ :=
@@ -66,7 +66,7 @@ lemma Set.ordConnected_iff_disjoint_Ioo_empty [LinearOrder α] [LocallyFiniteOrd
     have h₄ : Ico z y' ⊆ Iᶜ := fun t ht ht' ↦ hy''.not_lt (⟨ht', ht.1, le_trans ht.2.le hy'⟩) ht.2
     have h₅ : Ioo x' y' ⊆ Iᶜ := by
       simp only [← Ioc_union_Ico_eq_Ioo hxz hzy, union_subset_iff, and_true, h₃, h₄]
-    exact eq_empty_iff_forall_not_mem.1 (h' x' hx''.prop.1 y' hy''.prop.1 h₅) z ⟨hxz, hzy⟩
+    exact eq_empty_iff_forall_notMem.1 (h' x' hx''.prop.1 y' hy''.prop.1 h₅) z ⟨hxz, hzy⟩
 
 lemma Set.Nonempty.eq_Icc_iff_nat {I : Set ℕ}
     (h₀ : I.Nonempty) (h₂ : BddAbove I) :

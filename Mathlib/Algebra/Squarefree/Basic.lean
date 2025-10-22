@@ -3,6 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
@@ -48,7 +49,7 @@ theorem squarefree_one [CommMonoid R] : Squarefree (1 : R) :=
 
 @[simp]
 theorem not_squarefree_zero [MonoidWithZero R] [Nontrivial R] : ¬Squarefree (0 : R) := by
-  erw [not_forall]
+  rw [Squarefree, not_forall]
   exact ⟨0, by simp⟩
 
 theorem Squarefree.ne_zero [MonoidWithZero R] [Nontrivial R] {m : R} (hm : Squarefree (m : R)) :
@@ -110,9 +111,6 @@ theorem squarefree_iff_emultiplicity_le_one [CommMonoid R] (r : R) :
   norm_cast
   rw [← one_add_one_eq_two]
   exact Order.add_one_le_iff_of_not_isMax (by simp)
-
-@[deprecated (since := "2024-11-30")]
-alias multiplicity.squarefree_iff_emultiplicity_le_one := squarefree_iff_emultiplicity_le_one
 
 section Irreducible
 
@@ -213,6 +211,19 @@ theorem squarefree_mul_iff : Squarefree (x * y) ↔ IsRelPrime x y ∧ Squarefre
     fun ⟨hp, sqx, sqy⟩ _ dvd ↦ hp (sqy.dvd_of_squarefree_of_mul_dvd_mul_left dvd)
       (sqx.dvd_of_squarefree_of_mul_dvd_mul_right dvd)⟩
 
+open scoped Function in
+theorem Finset.squarefree_prod_of_pairwise_isCoprime {ι : Type*} {s : Finset ι}
+    {f : ι → R} (hs : Set.Pairwise s.toSet (IsRelPrime on f)) (hs' : ∀ i ∈ s, Squarefree (f i)) :
+    Squarefree (∏ i ∈ s, f i) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih =>
+    rw [Finset.prod_cons, squarefree_mul_iff]
+    rw [Finset.coe_cons, Set.pairwise_insert] at hs
+    refine ⟨.prod_right fun i hi ↦ ?_, hs' a (by simp), ?_⟩
+    · exact (hs.right i (by simp [hi]) fun h ↦ ha (h ▸ hi)).left
+    · exact ih hs.left fun i hi ↦ hs' i <| Finset.mem_cons_of_mem hi
+
 theorem isRadical_iff_squarefree_or_zero : IsRadical x ↔ Squarefree x ∨ x = 0 :=
   ⟨fun hx ↦ (em <| x = 0).elim .inr fun h ↦ .inl <| hx.squarefree h,
     Or.rec Squarefree.isRadical <| by
@@ -259,7 +270,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
         assumption_mod_cast
       · have := ha.1
         contradiction
-    · simp [Multiset.count_eq_zero_of_not_mem hmem]
+    · simp [Multiset.count_eq_zero_of_notMem hmem]
   · rw [or_iff_not_imp_right]
     intro hu
     rcases eq_or_ne a 0 with rfl | h0

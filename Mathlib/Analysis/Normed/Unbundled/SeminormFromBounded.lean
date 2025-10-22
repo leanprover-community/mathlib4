@@ -87,14 +87,14 @@ theorem seminormFromBounded_zero (f_zero : f 0 = 0) : seminormFromBounded' f (0 
 
 theorem seminormFromBounded_aux (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) : 0 ≤ c * f x := by
-  rcases (f_nonneg x).eq_or_gt with hx | hx
+  rcases (f_nonneg x).eq_or_lt' with hx | hx
   · simp [hx]
   · change 0 < f x at hx
     have hc : 0 ≤ c := by
       specialize f_mul x 1
       rw [mul_one, show c * f x * f 1 = c * f 1 * f x by ring, le_mul_iff_one_le_left hx] at f_mul
       replace f_nonneg : 0 ≤ f 1 := f_nonneg 1
-      rcases f_nonneg.eq_or_gt with h1 | h1
+      rcases f_nonneg.eq_or_lt' with h1 | h1
       · linarith [show (1 : ℝ) ≤ 0 by simpa [h1] using f_mul]
       · rw [← div_le_iff₀ h1] at f_mul
         linarith [one_div_pos.mpr h1]
@@ -107,7 +107,7 @@ theorem seminormFromBounded_bddAbove_range (f_nonneg : 0 ≤ f)
     BddAbove (Set.range fun y ↦ f (x * y) / f y) := by
   use c * f x
   rintro r ⟨y, rfl⟩
-  rcases (f_nonneg y).eq_or_gt with hy0 | hy0
+  rcases (f_nonneg y).eq_or_lt' with hy0 | hy0
   · simpa [hy0] using seminormFromBounded_aux f_nonneg f_mul x
   · simpa [div_le_iff₀ hy0] using f_mul x y
 
@@ -117,7 +117,7 @@ theorem seminormFromBounded_le (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) (x : R) :
     seminormFromBounded' f x ≤ c * f x := by
   refine ciSup_le (fun y ↦ ?_)
-  rcases (f_nonneg y).eq_or_gt with hy | hy
+  rcases (f_nonneg y).eq_or_lt' with hy | hy
   · simpa [hy] using seminormFromBounded_aux f_nonneg f_mul x
   · rw [div_le_iff₀ hy]
     apply f_mul
@@ -240,8 +240,8 @@ theorem seminormFromBounded_add (f_nonneg : 0 ≤ f)
       (le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul x) z (le_refl _))
       (le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul y) z (le_refl _)))
   by_cases hz : f z = 0
-  · simp only [hz, div_zero, zero_add, le_refl, or_self_iff]
-  · rw [div_add_div_same, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
+  · simp only [hz, div_zero, zero_add, le_refl]
+  · rw [← add_div, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
     exact f_add _ _
 
 /-- `seminormFromBounded'` is a ring seminorm on `R`. -/

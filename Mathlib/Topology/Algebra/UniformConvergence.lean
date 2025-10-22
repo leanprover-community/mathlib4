@@ -22,7 +22,7 @@ space of continuous linear maps between two topological vector spaces.
 
 ## Implementation notes
 
-Like in `Mathlib.Topology.UniformSpace.UniformConvergenceTopology`, we use the type aliases
+Like in `Mathlib/Topology/UniformSpace/UniformConvergenceTopology.lean`, we use the type aliases
 `UniformFun` (denoted `α →ᵤ β`) and `UniformOnFun` (denoted `α →ᵤ[𝔖] β`) for functions from `α`
 to `β` endowed with the structures of uniform convergence and `𝔖`-convergence.
 
@@ -210,8 +210,8 @@ section Group
 variable {α G ι : Type*} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [IsUniformGroup G]
 
 /-- If `G` is a uniform group, then `α →ᵤ G` is a uniform group as well. -/
-@[to_additive "If `G` is a uniform additive group,
-then `α →ᵤ G` is a uniform additive group as well."]
+@[to_additive /-- If `G` is a uniform additive group,
+then `α →ᵤ G` is a uniform additive group as well. -/]
 instance : IsUniformGroup (α →ᵤ G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformFun.postcomp_uniformContinuous` tells us that
@@ -236,8 +236,8 @@ protected theorem UniformFun.hasBasis_nhds_one :
 
 /-- Let `𝔖 : Set (Set α)`. If `G` is a uniform group, then `α →ᵤ[𝔖] G` is a uniform group as
 well. -/
-@[to_additive "Let `𝔖 : Set (Set α)`. If `G` is a uniform additive group,
-then `α →ᵤ[𝔖] G` is a uniform additive group as well."]
+@[to_additive /-- Let `𝔖 : Set (Set α)`. If `G` is a uniform additive group,
+then `α →ᵤ[𝔖] G` is a uniform additive group as well. -/]
 instance : IsUniformGroup (α →ᵤ[𝔖] G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformOnFun.postcomp_uniformContinuous` tells us that

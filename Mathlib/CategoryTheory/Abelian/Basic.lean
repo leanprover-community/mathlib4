@@ -109,8 +109,9 @@ class Abelian extends Preadditive C, IsNormalMonoCategory C, IsNormalEpiCategory
   [has_kernels : HasKernels C]
   [has_cokernels : HasCokernels C]
 
+-- These instances should have a lower priority, or typeclass search times out.
 attribute [instance 100] Abelian.has_finite_products
-attribute [instance 90] Abelian.has_kernels Abelian.has_cokernels
+attribute [instance 100] Abelian.has_kernels Abelian.has_cokernels
 
 end CategoryTheory
 
@@ -144,7 +145,7 @@ theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
   ext
-  simp only [Abelian.coimageImageComparison, imageMonoFactorisation_e, Category.assoc,
+  simp only [Abelian.coimageImageComparison, Category.assoc,
     cokernel.π_desc_assoc]
 
 /-- If the coimage-image comparison morphism for a morphism `f` is an isomorphism,
@@ -253,12 +254,12 @@ namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
--- Porting note: the below porting note is from mathlib3!
 -- Porting note: this should be an instance,
 -- but triggers https://github.com/leanprover/lean4/issues/2055
+-- (this is still the case despite that issue being closed now).
 -- We set it as a local instance instead.
 -- instance (priority := 100)
--- Turning it into a global instance breaks `Mathlib.Algebra.Category.ModuleCat.Sheaf.Free`.
+-- Turning it into a global instance breaks `Mathlib/Algebra/Category/ModuleCat/Sheaf/Free.lean`.
 /-- An abelian category has finite biproducts. -/
 theorem hasFiniteBiproducts : HasFiniteBiproducts C :=
   Limits.HasFiniteBiproducts.of_hasFiniteProducts
@@ -311,10 +312,8 @@ section
 theorem mono_of_kernel_ι_eq_zero (h : kernel.ι f = 0) : Mono f :=
   mono_of_kernel_zero h
 
-theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f := by
-  apply NormalMonoCategory.epi_of_zero_cokernel _ (cokernel f)
-  simp_rw [← h]
-  exact IsColimit.ofIsoColimit (colimit.isColimit (parallelPair f 0)) (isoOfπ _)
+theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f :=
+  epi_of_cokernel_zero h
 
 end
 
@@ -402,6 +401,32 @@ theorem factorThruImage_comp_coimageIsoImage'_inv :
   simp only [IsImage.isoExt_inv, image.isImage_lift, image.fac_lift,
     coimageStrongEpiMonoFactorisation_e]
 
+variable {Z : C} (g : Y ⟶ Z)
+
+@[simp] lemma image.ι_comp_eq_zero : image.ι f ≫ g = 0 ↔ f ≫ g = 0 := by
+  simp [← cancel_epi (Abelian.factorThruImage _)]
+
+@[simp] lemma coimage.comp_π_eq_zero : f ≫ coimage.π g = 0 ↔ f ≫ g = 0 := by
+  simp [← cancel_mono (Abelian.factorThruCoimage _)]
+
+/-- `Abelian.image` as a functor from the arrow category. -/
+@[simps]
+def imageFunctor : Arrow C ⥤ C where
+  obj f := Abelian.image f.hom
+  map {f g} u := kernel.lift _ (Abelian.image.ι f.hom ≫ u.right) <| by simp [← Arrow.w_assoc u]
+
+/-- `Abelian.coimage` as a functor from the arrow category. -/
+@[simps]
+def coimageFunctor : Arrow C ⥤ C where
+  obj f := Abelian.coimage f.hom
+  map {f g} u := cokernel.desc _ (u.left ≫ Abelian.coimage.π g.hom) <| by
+    simp [← Category.assoc, coimage.comp_π_eq_zero]; simp
+
+/-- The image and coimage of an arrow are naturally isomorphic. -/
+@[simps!]
+def coimageFunctorIsoImageFunctor : coimageFunctor (C := C) ≅ imageFunctor :=
+  NatIso.ofComponents fun _ ↦ Abelian.coimageIsoImage _
+
 /-- There is a canonical isomorphism between the abelian image and the categorical image of a
     morphism. -/
 abbrev imageIsoImage : Abelian.image f ≅ image f :=
@@ -483,7 +508,7 @@ noncomputable def isLimitMapConeOfKernelForkOfι
   change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
   rw [Category.comp_id, Category.id_comp]
 
-/-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphisms
+/-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphism
 admitting a kernel such that `F` preserves this kernel and `F.map p` is an epi,
 then `F.map Y` identifies to the cokernel of `F.map (kernel.ι p)`. -/
 noncomputable def isColimitMapCoconeOfCokernelCoforkOfπ

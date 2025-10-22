@@ -58,7 +58,7 @@ lemma as an `apply` rule, tag it with `@[bound]`.  It will be automatically conv
 Score `0` lemmas turn into `norm apply` rules, and score `0 < s` lemmas turn into `safe apply s`
 rules.  The score is roughly lexicographic ordering on the counts of the three type (guessing,
 general, involving-zero), and tries to minimize the complexity of hypotheses we have to prove.
-See `Mathlib.Tactic.Bound.Attribute` for the full algorithm.
+See `Mathlib/Tactic/Bound/Attribute.lean` for the full algorithm.
 
 To register a lemma as a `forward` rule, tag it with `@[bound_forward]`.  The most important
 builtin forward rule is `le_of_lt`, so that strict inequalities can be used to prove weak
@@ -99,14 +99,6 @@ Once Aesop can do general terms directly, we can remove these:
   https://github.com/leanprover-community/aesop/issues/107
 -/
 
-lemma mul_lt_mul_left_of_pos_of_lt {α : Type} {a b c : α} [Mul α] [Zero α] [Preorder α]
-    [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) : b < c → a * b < a * c :=
-  (mul_lt_mul_left a0).mpr
-
-lemma mul_lt_mul_right_of_pos_of_lt {α : Type} {a b c : α} [Mul α] [Zero α] [Preorder α]
-    [MulPosStrictMono α] [MulPosReflectLT α] (c0 : 0 < c) : a < b → a * c < b * c :=
-  (mul_lt_mul_right c0).mpr
-
 lemma Nat.cast_pos_of_pos {R : Type} [Semiring R] [PartialOrder R] [IsOrderedRing R] [Nontrivial R]
     {n : ℕ} : 0 < n → 0 < (n : R) :=
   Nat.cast_pos.mpr
@@ -141,7 +133,7 @@ attribute [bound] le_abs_self neg_abs_le neg_le_neg tsub_le_tsub_right mul_le_mu
 
 -- <
 attribute [bound] Nat.cast_pos_of_pos neg_lt_neg sub_lt_sub_left sub_lt_sub_right add_lt_add_left
-  add_lt_add_right mul_lt_mul_left_of_pos_of_lt mul_lt_mul_right_of_pos_of_lt
+  add_lt_add_right mul_lt_mul_of_pos_left mul_lt_mul_of_pos_right
 
 -- min and max
 attribute [bound] min_le_right min_le_left le_max_left le_max_right le_min max_le lt_min max_lt

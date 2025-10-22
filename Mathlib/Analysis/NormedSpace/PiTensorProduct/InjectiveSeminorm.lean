@@ -239,18 +239,16 @@ induced by `PiTensorProduct.lift`, for every normed space `F`.
 -/
 @[simps]
 noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F where
-  toFun f := LinearMap.mkContinuous (lift f.toMultilinearMap) ‖f‖
-    (fun x ↦ norm_eval_le_injectiveSeminorm f x)
+  toFun f := LinearMap.mkContinuous (lift f.toMultilinearMap) ‖f‖ fun x ↦
+    norm_eval_le_injectiveSeminorm f x
   map_add' f g := by ext _; simp only [ContinuousMultilinearMap.toMultilinearMap_add, map_add,
     LinearMap.mkContinuous_apply, LinearMap.add_apply, ContinuousLinearMap.add_apply]
   map_smul' a f := by ext _; simp only [ContinuousMultilinearMap.toMultilinearMap_smul, map_smul,
     LinearMap.mkContinuous_apply, LinearMap.smul_apply, RingHom.id_apply,
     ContinuousLinearMap.coe_smul', Pi.smul_apply]
-  invFun l := MultilinearMap.mkContinuous (lift.symm l.toLinearMap) ‖l‖ (fun x ↦ by
+  invFun l := MultilinearMap.mkContinuous (lift.symm l.toLinearMap) ‖l‖ fun x ↦ by
     simp only [lift_symm, LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe]
-    refine le_trans (ContinuousLinearMap.le_opNorm _ _) (mul_le_mul_of_nonneg_left ?_
-      (norm_nonneg l))
-    exact injectiveSeminorm_tprod_le x)
+    exact ContinuousLinearMap.le_opNorm_of_le _ (injectiveSeminorm_tprod_le x)
   left_inv f := by ext x; simp only [LinearMap.mkContinuous_coe, LinearEquiv.symm_apply_apply,
       MultilinearMap.coe_mkContinuous, ContinuousMultilinearMap.coe_coe]
   right_inv l := by
@@ -299,11 +297,7 @@ theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
 @[simp]
 theorem liftIsometry_symm_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
     (liftIsometry 𝕜 E F).symm l = l.compContinuousMultilinearMap (tprodL 𝕜) := by
-  ext m
-  change (liftEquiv 𝕜 E F).symm l m = _
-  simp only [liftEquiv_symm_apply, lift_symm, MultilinearMap.coe_mkContinuous,
-    LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe,
-    ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, tprodL_toFun]
+  rfl
 
 @[simp]
 theorem liftIsometry_tprodL :
@@ -339,12 +333,7 @@ theorem mapL_coe : (mapL f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := b
 
 @[simp]
 theorem mapL_apply (x : ⨂[𝕜] i, E i) : mapL f x = map (fun i ↦ (f i).toLinearMap) x := by
-  induction x using PiTensorProduct.induction_on with
-  | smul_tprod =>
-    simp only [mapL, map_smul, liftIsometry_apply_apply, lift.tprod,
-    ContinuousMultilinearMap.coe_coe, ContinuousMultilinearMap.compContinuousLinearMap_apply,
-    tprodL_toFun, map_tprod, ContinuousLinearMap.coe_coe]
-  | add _ _ hx hy => simp only [map_add, hx, hy]
+  rfl
 
 /-- Given submodules `pᵢ ⊆ Eᵢ`, this is the natural map: `⨂[𝕜] i, pᵢ → ⨂[𝕜] i, Eᵢ`.
 This is the continuous version of `PiTensorProduct.mapIncl`.
@@ -392,7 +381,7 @@ noncomputable def mapLMonoidHom : (Π i, E i →L[𝕜] E i) →* ((⨂[𝕜] i,
 
 @[simp]
 protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
-    mapL (f ^ n) = mapL f ^ n := MonoidHom.map_pow mapLMonoidHom _ _
+    mapL (f ^ n) = mapL f ^ n := MonoidHom.map_pow mapLMonoidHom f n
 
 -- We redeclare `ι` here, and later dependent arguments,
 -- to avoid the `[Fintype ι]` assumption present throughout the rest of the file.
@@ -406,9 +395,7 @@ private theorem mapL_add_smul_aux {ι : Type uι}
       update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by
   symm
   rw [update_eq_iff]
-  constructor
-  · simp only [update_self]
-  · exact fun _ h ↦ by simp only [ne_eq, h, not_false_eq_true, update_of_ne]
+  grind [Function.update_of_ne, Function.update_self]
 
 open Function in
 protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i) :

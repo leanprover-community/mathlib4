@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 /-!
@@ -13,7 +12,7 @@ import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 This file proves the zero and limit cases of the ordinal induction used in the proof of
 Nöbeling's theorem. See the section docstrings for more information.
 
-For the overall proof outline see `Mathlib.Topology.Category.Profinite.Nobeling.Basic`.
+For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/Basic.lean`.
 
 ## References
 
@@ -45,7 +44,7 @@ theorem GoodProducts.linearIndependentEmpty {I} [LinearOrder I] :
     LinearIndependent ℤ (eval (∅ : Set (I → Bool))) := linearIndependent_empty_type
 
 /-- The empty list as a `Products` -/
-def Products.nil : Products I := ⟨[], by simp only [List.chain'_nil]⟩
+def Products.nil : Products I := ⟨[], by simp only [List.isChain_nil]⟩
 
 theorem Products.lt_nil_empty {I} [LinearOrder I] : { m : Products I | m < Products.nil } = ∅ := by
   ext ⟨m, hm⟩
@@ -84,7 +83,7 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     apply hll
     have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩} := by
       simpa only [Products.nil, Products.lt_iff_lex_lt, Set.singleton_subset_iff, Set.mem_setOf_eq]
-    apply Submodule.span_mono (Set.image_subset _ he)
+    grw [← he]
     rw [Products.span_nil_eq_top]
     exact Submodule.mem_top
 
@@ -192,14 +191,14 @@ theorem smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ 
   refine ⟨?_, ?_⟩
   · use ⟨l, Products.isGood_mono C h gl⟩
     ext x
-    rw [eval, ← Products.eval_πs' _ h (Products.prop_of_isGood  C _ gl), eval]
+    rw [eval, ← Products.eval_πs' _ h (Products.prop_of_isGood C _ gl), eval]
   · rw [← LocallyConstant.coe_inj, coe_πs C o₂, ← LocallyConstant.toFun_eq_coe, coe_πs',
       Function.comp_assoc, projRestricts_comp_projRestrict C _, coe_πs]
     rfl
 
 end GoodProducts
 
-variable {o : Ordinal} (ho : o.IsLimit)
+variable {o : Ordinal} (ho : Order.IsSuccLimit o)
 include ho
 
 theorem Products.limitOrdinal (l : Products I) : l.isGood (π C (ord I · < o)) ↔
@@ -207,7 +206,7 @@ theorem Products.limitOrdinal (l : Products I) : l.isGood (π C (ord I · < o)) 
   refine ⟨fun h ↦ ?_, fun ⟨o', ⟨ho', hl⟩⟩ ↦ isGood_mono C (le_of_lt ho') hl⟩
   use Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a))
   have hslt : Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) < o := by
-    simp only [Finset.sup_lt_iff ho.pos, List.mem_toFinset]
+    simp only [Finset.sup_lt_iff ho.bot_lt, List.mem_toFinset]
     exact fun b hb ↦ ho.succ_lt (prop_of_isGood C (ord I · < o) h b hb)
   refine ⟨hslt, fun he ↦ h ?_⟩
   have hlt : ∀ i ∈ l.val, ord I i < Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) := by
@@ -228,7 +227,7 @@ theorem GoodProducts.union : range C = ⋃ (e : {o' // o' < o}), (smaller C e.va
     rw [contained_eq_proj C o hsC, Products.limitOrdinal C ho] at hl
     obtain ⟨o', ho'⟩ := hl
     refine ⟨o', ho'.1, eval (π C (ord I · < o')) ⟨l, ho'.2⟩, ⟨l, ho'.2, rfl⟩, ?_⟩
-    exact Products.eval_πs C (Products.prop_of_isGood  C _ ho'.2)
+    exact Products.eval_πs C (Products.prop_of_isGood C _ ho'.2)
   · obtain ⟨o', h, _, ⟨l, hl, rfl⟩, rfl⟩ := hp
     refine ⟨l, ?_, (Products.eval_πs C (Products.prop_of_isGood  C _ hl)).symm⟩
     rw [contained_eq_proj C o hsC]

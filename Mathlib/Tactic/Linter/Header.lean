@@ -8,7 +8,7 @@ import Lean.Elab.ParseImportsFast
 import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
-#  The "header" linter
+# The "header" linter
 
 The "header" style linter checks that a file starts with
 ```
@@ -48,7 +48,7 @@ could arise from this part and also flag that the file should contain a module d
 the `import` statements.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -303,9 +303,10 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       inMathlibRef.set (some val)
       return val
   -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
-  -- It is however active in the test file `MathlibTest.Header` for the linter itself.
-  unless inMathlib? || mainModule == `MathlibTest.Header do return
-  unless Linter.getLinterValue linter.style.header (← getOptions) do
+  -- It is however active in the test files for the linter itself.
+  unless inMathlib? ||
+    mainModule == `MathlibTest.Header || mainModule == `MathlibTest.DirectoryDependencyLinter.Test do return
+  unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
@@ -326,15 +327,18 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- In that case, we parse until the end of the imports and add an extra `section` afterwards,
     -- so we trigger a "no module doc-string" warning.
     let fil ← getFileName
-    let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
+    let (stx, _) ← Parser.parseHeader { inputString := fm.source, fileName := fil, fileMap := fm }
     parseUpToHere (stx.raw.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
   -- Report on broad or duplicate imports.
   broadImportsCheck importIds mainModule
   duplicateImportsCheck importIds
-  if let some msg ← directoryDependencyCheck mainModule then
-    Linter.logLint linter.directoryDependency stx msg
-
+  let errors ← directoryDependencyCheck mainModule
+  if errors.size > 0 then
+    let mut msgs := ""
+    for msg in errors do
+      msgs := msgs ++ "\n\n" ++ (← msg.toString)
+    Linter.logLint linter.directoryDependency stx msgs.trimLeft
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with

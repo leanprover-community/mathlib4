@@ -3,7 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.LocalProperties.Submodule
@@ -200,6 +200,29 @@ theorem RingHom.ofLocalizationSpanTarget_iff_finite :
     obtain ⟨s', h₁, h₂⟩ := (Ideal.span_eq_top_iff_finite s).mp hs
     exact h s' h₂ fun x => hs' ⟨_, h₁ x.prop⟩
 
+open TensorProduct
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+lemma RingHom.OfLocalizationSpan.mk (hP : RingHom.RespectsIso P)
+    (H : ∀ {R S : Type u} [CommRing R] [CommRing S] [Algebra R S] (s : Set R),
+      Ideal.span s = ⊤ →
+      (∀ r ∈ s, P (algebraMap (Localization.Away r) (Localization.Away r ⊗[R] S))) →
+      P (algebraMap R S)) :
+    OfLocalizationSpan P := by
+  introv R hs hf
+  algebraize [f]
+  let _ := fun r : R => (Localization.awayMap (algebraMap R S) r).toAlgebra
+  refine H s hs (fun r hr ↦ ?_)
+  have : algebraMap (Localization.Away r) (Localization.Away r ⊗[R] S) =
+      ((IsLocalization.Away.tensorRightEquiv S r (Localization.Away r)).symm : _ →+* _).comp
+        (algebraMap (Localization.Away r) (Localization.Away (algebraMap R S r))) := by
+    apply IsLocalization.ringHom_ext (Submonoid.powers r)
+    ext
+    simp [RingHom.algebraMap_toAlgebra, Localization.awayMap, IsLocalization.Away.map,
+      Algebra.TensorProduct.tmul_one_eq_one_tmul, RingHom.algebraMap_toAlgebra]
+  rw [this]
+  exact hP.1 _ _ (hf ⟨r, hr⟩)
+
 theorem RingHom.HoldsForLocalizationAway.of_bijective
     (H : RingHom.HoldsForLocalizationAway P) (hf : Function.Bijective f) :
     P f := by
@@ -271,7 +294,7 @@ theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
 -- Almost all arguments are implicit since this is not intended to use mid-proof.
 theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) :
     RingHom.LocalizationAwayPreserves P := by
-  intros R S _ _ f r R' S' _ _ _ _ _ _ hf
+  intro R S _ _ f r R' S' _ _ _ _ _ _ hf
   have : IsLocalization ((Submonoid.powers r).map f) S' := by rw [Submonoid.map_powers]; assumption
   exact H f (Submonoid.powers r) R' S' hf
 
@@ -345,7 +368,7 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     (hT : ∀ r : s, ∃ (T : Type u) (_ : CommRing T) (_ : Algebra S T)
       (_ : IsLocalization.Away (r : S) T), P ((algebraMap S T).comp f)) : P f := by
   apply hP _ s hs
-  intros r
+  intro r
   obtain ⟨T, _, _, _, hT⟩ := hT r
   convert hP'.1 _
     (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT

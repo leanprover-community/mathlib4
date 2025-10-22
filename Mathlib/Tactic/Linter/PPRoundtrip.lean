@@ -8,12 +8,12 @@ import Lean.Elab.Command
 import Mathlib.Init
 
 /-!
-#  The "ppRoundtrip" linter
+# The "ppRoundtrip" linter
 
 The "ppRoundtrip" linter emits a warning when the syntax of a command differs substantially
 from the pretty-printed version of itself.
 -/
-open Lean Elab Command
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -115,7 +115,7 @@ namespace PPRoundtrip
 
 @[inherit_doc Mathlib.Linter.linter.ppRoundtrip]
 def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.ppRoundtrip (← getOptions) do
+    unless getLinterValue linter.ppRoundtrip (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return

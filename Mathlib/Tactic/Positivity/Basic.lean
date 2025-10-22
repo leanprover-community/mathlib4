@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.NNRat.Defs
@@ -89,13 +90,13 @@ variable {R : Type*} [LinearOrder R] {a b c : R}
 private lemma le_min_of_lt_of_le (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
 private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
 private lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c := by
-  rw [min_def]; split_ifs <;> assumption
+  grind
 
 private lemma min_ne_of_ne_of_lt (ha : a ≠ c) (hb : c < b) : min a b ≠ c := min_ne ha hb.ne'
 private lemma min_ne_of_lt_of_ne (ha : c < a) (hb : b ≠ c) : min a b ≠ c := min_ne ha.ne' hb
 
 private lemma max_ne (ha : a ≠ c) (hb : b ≠ c) : max a b ≠ c := by
-  rw [max_def]; split_ifs <;> assumption
+  grind
 
 end LinearOrder
 
@@ -162,35 +163,15 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     let _a ← synthInstanceQ q(AddLeftStrictMono $α)
     pure (.positive q(add_pos $pa $pb))
   | .positive pa, .nonnegative pb =>
-    let _a ← synthInstanceQ q(AddRightStrictMono $α)
-    pure (.positive q(lt_add_of_pos_of_le $pa $pb))
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
   | .nonnegative pa, .positive pb =>
-    let _a ← synthInstanceQ q(AddLeftStrictMono $α)
-    pure (.positive q(lt_add_of_le_of_pos $pa $pb))
+    let _a ← synthInstanceQ q(AddRightMono $α)
+    pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
   | .nonnegative pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
     pure (.nonnegative q(add_nonneg $pa $pb))
   | _, _ => failure
-
-private theorem mul_nonneg_of_pos_of_nonneg [Semiring α] [PartialOrder α] [IsOrderedRing α]
-    {a b : α}
-    (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b :=
-  mul_nonneg ha.le hb
-
-private theorem mul_nonneg_of_nonneg_of_pos [Semiring α] [PartialOrder α] [IsOrderedRing α]
-    {a b : α}
-    (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b :=
-  mul_nonneg ha hb.le
-
-private theorem mul_ne_zero_of_ne_zero_of_pos [Semiring α] [PartialOrder α] [IsOrderedRing α]
-    [NoZeroDivisors α]
-    {a b : α} (ha : a ≠ 0) (hb : 0 < b) : a * b ≠ 0 :=
-  mul_ne_zero ha (ne_of_gt hb)
-
-private theorem mul_ne_zero_of_pos_of_ne_zero [Semiring α] [PartialOrder α] [IsOrderedRing α]
-    [NoZeroDivisors α]
-    {a b : α} (ha : 0 < a) (hb : b ≠ 0) : a * b ≠ 0 :=
-  mul_ne_zero (ne_of_gt ha) hb
 
 /-- The `positivity` extension which identifies expressions of the form `a * b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
@@ -198,28 +179,36 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not *"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ q(Semiring $α)
-  let _a ← synthInstanceQ q(PartialOrder $α)
-  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-  assumeInstancesCommute
+  let _a ← synthInstanceQ q(Mul $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HMul.hMul)
   let ra ← core zα pα a; let rb ← core zα pα b
-  match ra, rb with
-  | .positive pa, .positive pb => pure (.positive q(mul_pos $pa $pb))
-  | .positive pa, .nonnegative pb => pure (.nonnegative q(mul_nonneg_of_pos_of_nonneg $pa $pb))
-  | .nonnegative pa, .positive pb => pure (.nonnegative q(mul_nonneg_of_nonneg_of_pos $pa $pb))
-  | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(mul_nonneg $pa $pb))
-  | .positive pa, .nonzero pb =>
-    let _a ← synthInstanceQ q(NoZeroDivisors $α)
-    pure (.nonzero q(mul_ne_zero_of_pos_of_ne_zero $pa $pb))
-  | .nonzero pa, .positive pb =>
-    let _a ← synthInstanceQ q(NoZeroDivisors $α)
-    pure (.nonzero q(mul_ne_zero_of_ne_zero_of_pos $pa $pb))
-  | .nonzero pa, .nonzero pb =>
+  let tryProveNonzero (pa? : Option Q($a ≠ 0)) (pb? : Option Q($b ≠ 0)) :
+      MetaM (Strictness zα pα e) := do
+    let pa ← liftOption pa?
+    let pb ← liftOption pb?
     let _a ← synthInstanceQ q(NoZeroDivisors $α)
     pure (.nonzero q(mul_ne_zero $pa $pb))
-  | _, _ => pure .none
-
+  let tryProveNonneg (pa? : Option Q(0 ≤ $a)) (pb? : Option Q(0 ≤ $b)) :
+      MetaM (Strictness zα pα e) := do
+    let pa ← liftOption pa?
+    let pb ← liftOption pb?
+    let _a ← synthInstanceQ q(MulZeroClass $α)
+    let _a ← synthInstanceQ q(PosMulMono $α)
+    assumeInstancesCommute
+    pure (.nonnegative q(mul_nonneg $pa $pb))
+  let tryProvePositive (pa? : Option Q(0 < $a)) (pb? : Option Q(0 < $b)) :
+      MetaM (Strictness zα pα e) := do
+    let pa ← liftOption pa?
+    let pb ← liftOption pb?
+    let _a ← synthInstanceQ q(MulZeroClass $α)
+    let _a ← synthInstanceQ q(PosMulStrictMono $α)
+    assumeInstancesCommute
+    pure (.positive q(mul_pos $pa $pb))
+  let mut result := .none
+  result ← orElse result (tryProvePositive ra.toPositive rb.toPositive)
+  result ← orElse result (tryProveNonneg ra.toNonneg rb.toNonneg)
+  result ← orElse result (tryProveNonzero ra.toNonzero rb.toNonzero)
+  return result
 
 private lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by
   rw [Int.ediv_self ha.ne']; exact zero_lt_one
@@ -285,8 +274,8 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     let _a ← synthInstanceQ q(Ring $α)
     let _a ← synthInstanceQ q(LinearOrder $α)
     let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-    haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute
+    haveI' : $e =Q $a ^ $b := ⟨⟩
     pure (.nonnegative q((even_two_mul $m).pow_nonneg $a))
   orElse result do
     let ra ← core zα pα a
@@ -306,8 +295,8 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
       try
         let _a ← synthInstanceQ q(Semiring $α)
         let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-        haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
+        haveI' : $e =Q $a ^ $b := ⟨⟩
         pure (.positive q(pow_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
@@ -378,15 +367,16 @@ def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
   let ~q(@Nat.cast _ (_) ($a : ℕ)) := e | throwError "not Nat.cast"
   let zα' : Q(Zero Nat) := q(inferInstance)
   let pα' : Q(PartialOrder Nat) := q(inferInstance)
-  let (_rα : Q(Semiring $α)) ← synthInstanceQ q(Semiring $α)
-  let (_oα : Q(IsOrderedRing $α)) ← synthInstanceQ q(IsOrderedRing $α)
+  let (_i1 : Q(AddMonoidWithOne $α)) ← synthInstanceQ q(AddMonoidWithOne $α)
+  let (_i2 : Q(AddLeftMono $α)) ← synthInstanceQ q(AddLeftMono $α)
+  let (_i3 : Q(ZeroLEOneClass $α)) ← synthInstanceQ q(ZeroLEOneClass $α)
   assumeInstancesCommute
   match ← core zα' pα' a with
   | .positive pa =>
-    let _nt ← synthInstanceQ q(Nontrivial $α)
-    pure (.positive q(Nat.cast_pos.mpr $pa))
+    let _nz ← synthInstanceQ q(NeZero (1 : $α))
+    pure (.positive q(Nat.cast_pos'.2 $pa))
   | _ =>
-    pure (.nonnegative q(Nat.cast_nonneg _))
+    pure (.nonnegative q(Nat.cast_nonneg' _))
 
 /-- Extension for the `positivity` tactic: `Int.cast` is positive (resp. non-negative)
 if its input is. -/
@@ -452,6 +442,82 @@ def evalAscFactorial : PositivityExt where eval {u α} _ _ e := do
     assertInstancesCommute
     pure (.positive q(Nat.ascFactorial_pos $n $k))
   | _, _, _ => throwError "failed to match Nat.ascFactorial"
+
+/-- Extension for `Nat.gcd`.
+Uses positivity of the left term, if available, then tries the right term.
+
+The implementation relies on the fact that `Positivity.core` on `ℕ` never returns `nonzero`. -/
+@[positivity Nat.gcd _ _]
+def evalNatGCD : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.gcd $a $b) =>
+    assertInstancesCommute
+    match ← core z p a with
+    | .positive pa => return .positive q(Nat.gcd_pos_of_pos_left $b $pa)
+    | _ =>
+      match ← core z p b with
+      | .positive pb => return .positive q(Nat.gcd_pos_of_pos_right $a $pb)
+      | _ => failure
+  | _, _, _ => throwError "not Nat.gcd"
+
+/-- Extension for `Nat.lcm`. -/
+@[positivity Nat.lcm _ _]
+def evalNatLCM : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.lcm $a $b) =>
+    assertInstancesCommute
+    match ← core z p a with
+    | .positive pa =>
+      match ← core z p b with
+      | .positive pb =>
+        return .positive q(Nat.lcm_pos $pa $pb)
+      | _ => failure
+    | _ => failure
+  | _, _, _ => throwError "not Nat.lcm"
+
+/-- Extension for `Nat.sqrt`. -/
+@[positivity Nat.sqrt _]
+def evalNatSqrt : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.sqrt $n) =>
+    assumeInstancesCommute
+    match ← core z p n with
+    | .positive pa => return .positive q(Nat.sqrt_pos.mpr $pa)
+    | _ => failure
+  | _, _, _ => throwError "not Nat.sqrt"
+
+/-- Extension for `Int.gcd`.
+Uses positivity of the left term, if available, then tries the right term. -/
+@[positivity Int.gcd _ _]
+def evalIntGCD : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Int.gcd $a $b) =>
+    let z ← synthInstanceQ (q(Zero ℤ) : Q(Type))
+    let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
+    assertInstancesCommute
+    match (← catchNone (core z p a)).toNonzero with
+    | some na => return .positive q(Int.gcd_pos_of_ne_zero_left $b $na)
+    | none =>
+      match (← core z p b).toNonzero with
+      | some nb => return .positive q(Int.gcd_pos_of_ne_zero_right $a $nb)
+      | none => failure
+  | _, _, _ => throwError "not Int.gcd"
+
+/-- Extension for `Int.lcm`. -/
+@[positivity Int.lcm _ _]
+def evalIntLCM : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Int.lcm $a $b) =>
+    let z ← synthInstanceQ (q(Zero ℤ) : Q(Type))
+    let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
+    assertInstancesCommute
+    match (← core z p a).toNonzero with
+    | some na =>
+      match (← core z p b).toNonzero with
+      | some nb => return .positive q(Int.lcm_pos $na $nb)
+      | _ => failure
+    | _ => failure
+  | _, _, _ => throwError "not Int.lcm"
 
 section NNRat
 open NNRat
@@ -522,7 +588,7 @@ def evalRatDen : PositivityExt where eval {u α} _ _ e := do
     pure <| .positive q(den_pos $a)
   | _, _ => throwError "not Rat.num"
 
-/-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/
+/-- Extension for `posPart`. `a⁺` is always nonnegative, and positive if `a` is. -/
 @[positivity _⁺]
 def evalPosPart : PositivityExt where eval {u α} zα pα e := do
   match e with
@@ -531,13 +597,14 @@ def evalPosPart : PositivityExt where eval {u α} zα pα e := do
     let _instαgrp ← synthInstanceQ q(AddGroup $α)
     assertInstancesCommute
     -- FIXME: There seems to be a bug in `Positivity.core` that makes it fail (instead of returning
-    -- `.none`) here sometimes. See eg the first test for `posPart`. This is why we need `catchNone`
+    -- `.none`) here sometimes. See e.g. the first test for `posPart`. This is why we need
+    -- `catchNone`
     match ← catchNone (core zα pα a) with
     | .positive pf => return .positive q(posPart_pos $pf)
     | _ => return .nonnegative q(posPart_nonneg $a)
   | _ => throwError "not `posPart`"
 
-/-- Extension for `negPart`. `a⁻` is always nonegative. -/
+/-- Extension for `negPart`. `a⁻` is always nonnegative. -/
 @[positivity _⁻]
 def evalNegPart : PositivityExt where eval {u α} _ _ e := do
   match e with
@@ -547,6 +614,14 @@ def evalNegPart : PositivityExt where eval {u α} _ _ e := do
     assertInstancesCommute
     return .nonnegative q(negPart_nonneg $a)
   | _ => throwError "not `negPart`"
+
+/-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
+@[positivity DFunLike.coe _ _]
+def evalMap : PositivityExt where eval {_ β} _ _ e := do
+  let .app (.app _ f) a ← whnfR e
+    | throwError "not ↑f · where f is of NonnegHomClass"
+  let pa ← mkAppOptM ``apply_nonneg #[none, none, β, none, none, none, none, f, a]
+  pure (.nonnegative pa)
 
 end Positivity
 

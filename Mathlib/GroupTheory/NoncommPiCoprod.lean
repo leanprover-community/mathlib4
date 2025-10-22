@@ -47,16 +47,17 @@ variable {G : Type*} [Group G]
 
 /-- `Finset.noncommProd` is “injective” in `f` if `f` maps into independent subgroups.  This
 generalizes (one direction of) `Subgroup.disjoint_iff_mul_eq_one`. -/
-@[to_additive "`Finset.noncommSum` is “injective” in `f` if `f` maps into independent subgroups.
-This generalizes (one direction of) `AddSubgroup.disjoint_iff_add_eq_zero`. "]
+@[to_additive /-- `Finset.noncommSum` is “injective” in `f` if `f` maps into independent subgroups.
+This generalizes (one direction of) `AddSubgroup.disjoint_iff_add_eq_zero`. -/]
 theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (f : ι → G) (comm)
     (K : ι → Subgroup G) (hind : iSupIndep K) (hmem : ∀ x ∈ s, f x ∈ K x)
     (heq1 : s.noncommProd f comm = 1) : ∀ i ∈ s, f i = 1 := by
   classical
     revert heq1
-    induction' s using Finset.induction_on with i s hnmem ih
-    · simp
-    · have hcomm := comm.mono (Finset.coe_subset.2 <| Finset.subset_insert _ _)
+    induction s using Finset.induction_on with
+    | empty => simp
+    | insert i s hnotMem ih =>
+      have hcomm := comm.mono (Finset.coe_subset.2 <| Finset.subset_insert _ _)
       simp only [Finset.forall_mem_insert] at hmem
       have hmem_bsupr : s.noncommProd f hcomm ∈ ⨆ i ∈ (s : Set ι), K i := by
         refine Subgroup.noncommProd_mem _ _ ?_
@@ -64,18 +65,15 @@ theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (
         have : K x ≤ ⨆ i ∈ (s : Set ι), K i := le_iSup₂ (f := fun i _ => K i) x hx
         exact this (hmem.2 x hx)
       intro heq1
-      rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hnmem] at heq1
-      have hnmem' : i ∉ (s : Set ι) := by simpa
+      rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hnotMem] at heq1
+      have hnotMem' : i ∉ (s : Set ι) := by simpa
       obtain ⟨heq1i : f i = 1, heq1S : s.noncommProd f _ = 1⟩ :=
-        Subgroup.disjoint_iff_mul_eq_one.mp (hind.disjoint_biSup hnmem') hmem.1 hmem_bsupr heq1
+        Subgroup.disjoint_iff_mul_eq_one.mp (hind.disjoint_biSup hnotMem') hmem.1 hmem_bsupr heq1
       intro i h
       simp only [Finset.mem_insert] at h
       rcases h with (rfl | h)
       · exact heq1i
       · refine ih hcomm hmem.2 heq1S _ h
-
-@[deprecated (since := "2024-11-24")]
-alias eq_one_of_noncommProd_eq_one_of_independent := eq_one_of_noncommProd_eq_one_of_iSupIndep
 
 end Subgroup
 
@@ -97,8 +95,8 @@ variable (hcomm : Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y))
 namespace MonoidHom
 
 /-- The canonical homomorphism from a family of monoids. -/
-@[to_additive "The canonical homomorphism from a family of additive monoids. See also
-`LinearMap.lsum` for a linear version without the commutativity assumption."]
+@[to_additive /-- The canonical homomorphism from a family of additive monoids. See also
+`LinearMap.lsum` for a linear version without the commutativity assumption. -/]
 def noncommPiCoprod : (∀ i : ι, N i) →* M where
   toFun f := Finset.univ.noncommProd (fun i => ϕ i (f i)) fun _ _ _ _ h => hcomm h _ _
   map_one' := by
@@ -119,7 +117,7 @@ theorem noncommPiCoprod_mulSingle [DecidableEq ι] (i : ι) (y : N i) :
   change Finset.univ.noncommProd (fun j => ϕ j (Pi.mulSingle i y j)) (fun _ _ _ _ h => hcomm h _ _)
     = ϕ i y
   rw [← Finset.insert_erase (Finset.mem_univ i)]
-  rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ (Finset.not_mem_erase i _)]
+  rw [Finset.noncommProd_insert_of_notMem _ _ _ _ (Finset.notMem_erase i _)]
   rw [Pi.mulSingle_eq_same]
   rw [Finset.noncommProd_eq_pow_card]
   · rw [one_pow]
@@ -134,11 +132,11 @@ The universal property of `MonoidHom.noncommPiCoprod`
 Given monoid morphisms `φᵢ : Nᵢ → M` whose images pairwise commute,
 there exists a unique monoid morphism `φ : Πᵢ Nᵢ → M` that induces the `φᵢ`,
 and it is given by `MonoidHom.noncommPiCoprod`. -/
-@[to_additive "The universal property of `MonoidHom.noncommPiCoprod`
+@[to_additive /-- The universal property of `MonoidHom.noncommPiCoprod`
 
 Given monoid morphisms `φᵢ : Nᵢ → M` whose images pairwise commute,
 there exists a unique monoid morphism `φ : Πᵢ Nᵢ → M` that induces the `φᵢ`,
-and it is given by `AddMonoidHom.noncommPiCoprod`."]
+and it is given by `AddMonoidHom.noncommPiCoprod`. -/]
 def noncommPiCoprodEquiv [DecidableEq ι] :
     { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃
       ((∀ i, N i) →* M) where
@@ -241,9 +239,6 @@ theorem injective_noncommPiCoprod_of_iSupIndep [Fintype ι]
     apply hinj
     simp [this i (Finset.mem_univ i)]
 
-@[deprecated (since := "2024-11-24")]
-alias injective_noncommPiCoprod_of_independent := injective_noncommPiCoprod_of_iSupIndep
-
 @[to_additive]
 theorem independent_range_of_coprime_order
     (hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y))
@@ -316,15 +311,15 @@ variable [Fintype ι]
 
 /-- The canonical homomorphism from a family of subgroups where elements from different subgroups
 commute -/
-@[to_additive "The canonical homomorphism from a family of additive subgroups where elements from
-different subgroups commute"]
+@[to_additive /-- The canonical homomorphism from a family of additive subgroups where elements from
+different subgroups commute -/]
 def noncommPiCoprod (hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y) :
     (∀ i : ι, H i) →* G :=
   MonoidHom.noncommPiCoprod (fun i => (H i).subtype) (commute_subtype_of_commute hcomm)
 
 @[to_additive (attr := simp)]
 theorem noncommPiCoprod_mulSingle [DecidableEq ι]
-    {hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y}(i : ι) (y : H i) :
+    {hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y} (i : ι) (y : H i) :
     noncommPiCoprod hcomm (Pi.mulSingle i y) = y := by apply MonoidHom.noncommPiCoprod_mulSingle
 
 @[to_additive]

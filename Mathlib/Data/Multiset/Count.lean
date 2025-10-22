@@ -166,8 +166,10 @@ theorem one_le_count_iff_mem {a : α} {s : Multiset α} : 1 ≤ count a s ↔ a 
   rw [succ_le_iff, count_pos]
 
 @[simp]
-theorem count_eq_zero_of_not_mem {a : α} {s : Multiset α} (h : a ∉ s) : count a s = 0 :=
+theorem count_eq_zero_of_notMem {a : α} {s : Multiset α} (h : a ∉ s) : count a s = 0 :=
   by_contradiction fun h' => h <| count_pos.1 (Nat.pos_of_ne_zero h')
+
+@[deprecated (since := "2025-05-23")] alias count_eq_zero_of_not_mem := count_eq_zero_of_notMem
 
 lemma count_ne_zero {a : α} : count a s ≠ 0 ↔ a ∈ s := Nat.pos_iff_ne_zero.symm.trans count_pos
 
@@ -178,7 +180,7 @@ theorem count_eq_card {a : α} {s} : count a s = card s ↔ ∀ x ∈ s, a = x :
 
 theorem ext {s t : Multiset α} : s = t ↔ ∀ a, count a s = count a t :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => Quotient.eq.trans <| by
-    simp only [quot_mk_to_coe, mem_coe, coe_count, decide_eq_true_eq]
+    simp only [quot_mk_to_coe, coe_count]
     apply perm_iff_count
 
 @[ext]
@@ -206,7 +208,7 @@ theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t
   | cons y s ih =>
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]
-    simp only [decide_eq_true_eq, Nat.add_right_inj]
+    simp only [Nat.add_right_inj]
     exact (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
 
 end Rel
@@ -217,7 +219,7 @@ variable {s : Multiset α} {a : α}
 
 theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ ∀ a, count a s ≤ 1 :=
   Quot.induction_on s fun _l => by
-    simp only [quot_mk_to_coe'', coe_nodup, mem_coe, coe_count]
+    simp only [quot_mk_to_coe'', coe_nodup, coe_count]
     exact List.nodup_iff_count_le_one
 
 theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup s ↔ ∀ a ∈ s, count a s = 1 :=
@@ -232,7 +234,7 @@ theorem count_eq_of_nodup [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup
     count a s = if a ∈ s then 1 else 0 := by
   split_ifs with h
   · exact count_eq_one_of_mem d h
-  · exact count_eq_zero_of_not_mem h
+  · exact count_eq_zero_of_notMem h
 
 end Nodup
 

@@ -49,8 +49,10 @@ theorem piecewise_eq_of_mem {i : α} (hi : i ∈ s) : s.piecewise f g i = f i :=
   if_pos hi
 
 @[simp]
-theorem piecewise_eq_of_not_mem {i : α} (hi : i ∉ s) : s.piecewise f g i = g i :=
+theorem piecewise_eq_of_notMem {i : α} (hi : i ∉ s) : s.piecewise f g i = g i :=
   if_neg hi
+
+@[deprecated (since := "2025-05-23")] alias piecewise_eq_of_not_mem := piecewise_eq_of_notMem
 
 theorem piecewise_singleton (x : α) [∀ y, Decidable (y ∈ ({x} : Set α))] [DecidableEq α]
     (f g : α → β) : piecewise {x} f g = Function.update g x (f x) := by
@@ -64,7 +66,7 @@ theorem piecewise_eqOn (f g : α → β) : EqOn (s.piecewise f g) f s := fun _ =
   piecewise_eq_of_mem _ _ _
 
 theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g sᶜ := fun _ =>
-  piecewise_eq_of_not_mem _ _ _
+  piecewise_eq_of_notMem _ _ _
 
 theorem piecewise_le {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ i ∉ s, f₂ i ≤ g i) :
@@ -96,9 +98,7 @@ theorem piecewise_range_comp {ι : Sort*} (f : ι → α) [∀ j, Decidable (j �
 
 lemma piecewise_comp (f g : α → γ) (h : β → α) :
     letI : DecidablePred (· ∈ h ⁻¹' s) := @instDecidablePredComp _ (· ∈ s) _ h _;
-    (s.piecewise f g) ∘ h = (h⁻¹' s).piecewise (f ∘ h) (g ∘ h) := by
-  ext x
-  by_cases hx : h x ∈ s <;> simp [hx]
+    (s.piecewise f g) ∘ h = (h ⁻¹' s).piecewise (f ∘ h) (g ∘ h) := rfl
 
 theorem MapsTo.piecewise_ite {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {f₁ f₂ : α → β}
     [∀ i, Decidable (i ∈ s)] (h₁ : MapsTo f₁ (s₁ ∩ s) (t₁ ∩ t))
@@ -160,7 +160,7 @@ theorem injective_piecewise_iff {f g : α → β} :
   rw [injective_iff_injOn_univ, ← union_compl_self s, injOn_union (@disjoint_compl_right _ _ s),
     (piecewise_eqOn s f g).injOn_iff, (piecewise_eqOn_compl s f g).injOn_iff]
   refine and_congr Iff.rfl (and_congr Iff.rfl <| forall₄_congr fun x hx y hy => ?_)
-  rw [piecewise_eq_of_mem s f g hx, piecewise_eq_of_not_mem s f g hy]
+  rw [piecewise_eq_of_mem s f g hx, piecewise_eq_of_notMem s f g hy]
 
 theorem piecewise_mem_pi {δ : α → Type*} {t : Set α} {t' : ∀ i, Set (δ i)} {f g} (hf : f ∈ pi t t')
     (hg : g ∈ pi t t') : s.piecewise f g ∈ pi t t' := by

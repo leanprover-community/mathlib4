@@ -29,10 +29,10 @@ variable {α β γ σ : Type u}
 
 theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α) (y : F σ) :
     f <$> x <*> g <$> y = ((· ∘ g) ∘ f) <$> x <*> y := by
-  simp [flip, functor_norm, Function.comp_def]
+  simp [functor_norm, Function.comp_def]
 
 theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) := by
-  ext; simp [functor_norm]
+  simp [functor_norm]
 
 theorem Applicative.ext {F} :
     ∀ {A1 : Applicative F} {A2 : Applicative F} [@LawfulApplicative F A1] [@LawfulApplicative F A2],
@@ -83,14 +83,14 @@ theorem map_pure (f : α → β) (x : α) : (f <$> pure x : Comp F G β) = pure 
   Comp.ext <| by simp
 
 theorem seq_pure (f : Comp F G (α → β)) (x : α) : f <*> pure x = (fun g : α → β => g x) <$> f :=
-  Comp.ext <| by simp [comp_def, functor_norm]
+  Comp.ext <| by simp [functor_norm]
 
 theorem seq_assoc (x : Comp F G α) (f : Comp F G (α → β)) (g : Comp F G (β → γ)) :
     g <*> (f <*> x) = @Function.comp α β γ <$> g <*> f <*> x :=
   Comp.ext <| by simp [comp_def, functor_norm]
 
 theorem pure_seq_eq_map (f : α → β) (x : Comp F G α) : pure f <*> x = f <$> x :=
-  Comp.ext <| by simp [Applicative.pure_seq_eq_map', functor_norm]
+  Comp.ext <| by simp [functor_norm]
 
 -- TODO: the first two results were handled by `control_laws_tac` in mathlib3
 instance instLawfulApplicativeComp : LawfulApplicative (Comp F G) where
@@ -147,11 +147,11 @@ instance {α} [One α] [Mul α] : Applicative (Const α) where
 
 instance {α} [Monoid α] : LawfulApplicative (Const α) where
   map_pure _ _ := rfl
-  seq_pure _ _ := by simp only [Seq.seq, pure, mul_one]; rfl
-  pure_seq _ _ := by simp only [Seq.seq, pure, one_mul]; rfl
-  seqLeft_eq _ _ := by simp only [Seq.seq]; rfl
-  seqRight_eq _ _ := by simp only [Seq.seq]; rfl
-  seq_assoc _ _ _ := by simp only [Seq.seq, mul_assoc]; rfl
+  seq_pure _ _ := by simp [Const.map, map, Seq.seq, pure, mul_one]
+  pure_seq _ _ := by simp [Const.map, map, Seq.seq, pure, one_mul]
+  seqLeft_eq _ _ := by simp [Seq.seq, SeqLeft.seqLeft]
+  seqRight_eq _ _ := by simp [Seq.seq, SeqRight.seqRight]
+  seq_assoc _ _ _ := by simp [Const.map, map, Seq.seq, mul_assoc]
 
 instance {α} [Zero α] [Add α] : Applicative (AddConst α) where
   pure _ := (0 : α)
@@ -159,8 +159,8 @@ instance {α} [Zero α] [Add α] : Applicative (AddConst α) where
 
 instance {α} [AddMonoid α] : LawfulApplicative (AddConst α) where
   map_pure _ _ := rfl
-  seq_pure _ _ := by simp only [Seq.seq, pure, add_zero]; rfl
-  pure_seq _ _ := by simp only [Seq.seq, pure, zero_add]; rfl
-  seqLeft_eq _ _ := by simp only [Seq.seq]; rfl
-  seqRight_eq _ _ := by simp only [Seq.seq]; rfl
-  seq_assoc _ _ _ := by simp only [Seq.seq, add_assoc]; rfl
+  seq_pure _ _ := by simp [Const.map, map, Seq.seq, pure, add_zero]
+  pure_seq _ _ := by simp [Const.map, map, Seq.seq, pure, zero_add]
+  seqLeft_eq _ _ := by simp [Seq.seq, SeqLeft.seqLeft]
+  seqRight_eq _ _ := by simp [Seq.seq, SeqRight.seqRight]
+  seq_assoc _ _ _ := by simp [Const.map, map, Seq.seq, add_assoc]

@@ -8,6 +8,7 @@ import Batteries.Tactic.Init
 import Mathlib.Init
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Notation
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.AssertExists
@@ -30,8 +31,8 @@ upstreamed to Batteries or the Lean standard library easily.
 See note [foundational algebra order theory].
 -/
 
-library_note "foundational algebra order theory"/--
-Batteries has a home-baked development of the algebraic and order theoretic theory of `ℕ` and `ℤ
+library_note2 «foundational algebra order theory» /--
+Batteries has a home-baked development of the algebraic and order-theoretic theory of `ℕ` and `ℤ
 which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
 finsets, powers in groups, ...).
@@ -39,16 +40,16 @@ finsets, powers in groups, ...).
 Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated development.
 
 The relevant files are:
-* `Mathlib.Data.Nat.Basic` for the continuation of the home-baked development on `ℕ`
-* `Mathlib.Data.Int.Init` for the continuation of the home-baked development on `ℤ`
-* `Mathlib.Algebra.Group.Nat` for the monoid instances on `ℕ`
-* `Mathlib.Algebra.Group.Int` for the group instance on `ℤ`
-* `Mathlib.Algebra.Ring.Nat` for the semiring instance on `ℕ`
-* `Mathlib.Algebra.Ring.Int` for the ring instance on `ℤ`
-* `Mathlib.Algebra.Order.Group.Nat` for the ordered monoid instance on `ℕ`
-* `Mathlib.Algebra.Order.Group.Int` for the ordered group instance on `ℤ`
-* `Mathlib.Algebra.Order.Ring.Nat` for the ordered semiring instance on `ℕ`
-* `Mathlib.Algebra.Order.Ring.Int` for the ordered ring instance on `ℤ`
+* `Mathlib/Data/Nat/Basic.lean` for the continuation of the home-baked development on `ℕ`
+* `Mathlib/Data/Int/Init.lean` for the continuation of the home-baked development on `ℤ`
+* `Mathlib/Algebra/Group/Nat.lean` for the monoid instances on `ℕ`
+* `Mathlib/Algebra/Group/Int.lean` for the group instance on `ℤ`
+* `Mathlib/Algebra/Ring/Nat.lean` for the semiring instance on `ℕ`
+* `Mathlib/Algebra/Ring/Int.lean` for the ring instance on `ℤ`
+* `Mathlib/Algebra/Order/Group/Nat.lean` for the ordered monoid instance on `ℕ`
+* `Mathlib/Algebra/Order/Group/Int.lean` for the ordered group instance on `ℤ`
+* `Mathlib/Algebra/Order/Ring/Nat.lean` for the ordered semiring instance on `ℕ`
+* `Mathlib/Algebra/Order/Ring/Int.lean` for the ordered ring instance on `ℤ`
 -/
 
 /- We don't want to import the algebraic hierarchy in this file. -/
@@ -67,13 +68,9 @@ alias _root_.LT.lt.nat_succ_le := succ_le_of_lt
 
 alias ⟨of_le_succ, _⟩ := le_succ_iff
 
-lemma forall_lt_succ : (∀ m < n + 1, p m) ↔ (∀ m < n, p m) ∧ p n := by
-  simp only [Nat.lt_succ_iff, Nat.le_iff_lt_or_eq, or_comm, forall_eq_or_imp, and_comm]
+@[deprecated (since := "2025-08-21")] alias forall_lt_succ := forall_lt_succ_right
 
-lemma exists_lt_succ : (∃ m < n + 1, p m) ↔ (∃ m < n, p m) ∨ p n := by
-  classical
-  rw [← Decidable.not_iff_not]
-  simpa [not_exists, not_or] using forall_lt_succ
+@[deprecated (since := "2025-08-15")] alias exists_lt_succ := exists_lt_succ_right
 
 lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
@@ -98,11 +95,9 @@ lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 :=
   mt (congrArg (· % 2))
     (by rw [Nat.add_comm, add_mul_mod_self_left, mul_mod_right, mod_eq_of_lt] <;> simp)
 
--- TODO: Deprecate
-lemma mul_right_eq_self_iff (ha : 0 < a) : a * b = a ↔ b = 1 := mul_eq_left <| ne_of_gt ha
-lemma mul_left_eq_self_iff (hb : 0 < b) : a * b = b ↔ a = 1 := mul_eq_right <| ne_of_gt hb
-
-lemma eq_zero_of_double_le (h : 2 * n ≤ n) : n = 0 := eq_zero_of_two_mul_le h
+@[deprecated (since := "2025-06-05")] alias mul_right_eq_self_iff := mul_eq_left
+@[deprecated (since := "2025-06-05")] alias mul_left_eq_self_iff := mul_eq_right
+@[deprecated (since := "2025-06-05")] alias eq_zero_of_double_le := eq_zero_of_two_mul_le
 
 /-! ### `div` -/
 
@@ -113,26 +108,16 @@ lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ 
 lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
   Nat.div_lt_self (Nat.succ_pos _) (Nat.succ_lt_succ (Nat.succ_pos _))
 
-@[deprecated le_div_iff_mul_le (since := "2024-11-06")]
-lemma le_div_iff_mul_le' (hb : 0 < b) : a ≤ c / b ↔ a * b ≤ c := le_div_iff_mul_le hb
-
-@[deprecated div_lt_iff_lt_mul (since := "2024-11-06")]
-lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := div_lt_iff_lt_mul hb
-
 @[deprecated (since := "2025-04-15")] alias sub_mul_div' := sub_mul_div
 
-lemma eq_zero_of_le_half (h : n ≤ n / 2) : n = 0 := eq_zero_of_le_div_two h
-
-lemma le_half_of_half_lt_sub (h : a / 2 < a - b) : b ≤ a / 2 := le_div_two_of_div_two_lt_sub h
-
-lemma half_le_of_sub_le_half (h : a - b ≤ a / 2) : a / 2 ≤ b := div_two_le_of_sub_le_div_two h
-
-protected lemma div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n := Nat.div_le_of_le_mul h
-
-protected lemma div_le_self' (m n : ℕ) : m / n ≤ m := Nat.div_le_self m n
+@[deprecated (since := "2025-06-05")] alias eq_zero_of_le_half := eq_zero_of_le_div_two
+@[deprecated (since := "2025-06-05")] alias le_half_of_half_lt_sub := le_div_two_of_div_two_lt_sub
+@[deprecated (since := "2025-06-05")] alias half_le_of_sub_le_half := div_two_le_of_sub_le_div_two
+@[deprecated (since := "2025-06-05")] protected alias div_le_of_le_mul' := Nat.div_le_of_le_mul
+@[deprecated (since := "2025-06-05")] protected alias div_le_self' := Nat.div_le_self
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
-  conv => rhs; rw [← Nat.mod_add_div n 2, hn, Nat.add_sub_cancel_left]
+  cutsat
 
 /-! ### `pow` -/
 
@@ -334,11 +319,12 @@ lemma decreasingInduction_trans {motive : (m : ℕ) → m ≤ k → Sort*} (hmn 
   | step hnk ih =>
       rw [decreasingInduction_succ _ _ (Nat.le_trans hmn hnk), ih, decreasingInduction_succ]
 
-lemma decreasingInduction_succ_left  {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self)
+lemma decreasingInduction_succ_left {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self)
     (smn : m + 1 ≤ n) (mn : m ≤ n) :
     decreasingInduction (motive := motive) of_succ self mn =
       of_succ m smn (decreasingInduction of_succ self smn) := by
-  rw [Subsingleton.elim mn (Nat.le_trans (le_succ m) smn), decreasingInduction_trans,
+  rw [Subsingleton.elim mn (Nat.le_trans (le_succ m) smn),
+    decreasingInduction_trans (n := m + 1) (Nat.le_succ m),
     decreasingInduction_succ']
 
 /-- Given `P : ℕ → ℕ → Sort*`, if for all `m n : ℕ` we can extend `P` from the rectangle
@@ -386,11 +372,9 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
   | a + 1, b + 1, h => by
     apply hd _ _ (Nat.add_lt_add_iff_right.1 h)
     · have this : a + 1 = b ∨ a + 1 < b := by omega
-      have wf : (a + 1) + b < (a + 1) + (b + 1) := by simp
       rcases this with (rfl | h)
       · exact ha _
       apply diag_induction P ha hb hd (a + 1) b h
-    have _ : a + (b + 1) < (a + 1) + (b + 1) := by simp
     apply diag_induction P ha hb hd a (b + 1)
     apply Nat.lt_of_le_of_lt (Nat.le_succ _) h
 
@@ -401,12 +385,12 @@ lemma not_pos_pow_dvd {a n : ℕ} (ha : 1 < a) (hn : 1 < n) : ¬ a ^ n ∣ a :=
     (lt_of_eq_of_lt (Nat.pow_one a).symm ((Nat.pow_lt_pow_iff_right ha).2 hn))
 
 /-- `m` is not divisible by `n` if it is between `n * k` and `n * (k + 1)` for some `k`. -/
-theorem not_dvd_of_between_consec_multiples (h1 : n * k < m) (h2 : m < n * (k + 1)) : ¬n ∣ m :=
-  not_dvd_of_lt_of_lt_mul_succ h1 h2
+@[deprecated (since := "2025-06-05")] alias not_dvd_of_between_consec_multiples :=
+  not_dvd_of_lt_of_lt_mul_succ
 
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
-  omega
+  cutsat
 
 /-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_left : m ∣ m + n ↔ m ∣ n := Nat.dvd_add_right (Nat.dvd_refl m)
@@ -415,9 +399,8 @@ protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
 @[simp] protected lemma dvd_add_self_right : m ∣ n + m ↔ m ∣ n := Nat.dvd_add_left (Nat.dvd_refl m)
 
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
-lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
-    ¬ a ∣ n ↔ (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) :=
-  not_dvd_iff_lt_mul_succ n ha
+@[deprecated (since := "2025-06-05")] alias not_dvd_iff_between_consec_multiples :=
+  not_dvd_iff_lt_mul_succ
 
 /-- Two natural numbers are equal if and only if they have the same multiples. -/
 lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=
@@ -443,5 +426,38 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
+
+/-! ### `Nat.AtLeastTwo` -/
+
+/-- A type class for natural numbers which are greater than or equal to `2`.
+
+`NeZero` and `AtLeastTwo` are used for numeric literals, and also for groups of related lemmas
+sharing a common value of `n` that needs to be nonzero, or at least `2`, and where it is
+convenient to pass this information implicitly. Instances for these classes cover some of the
+cases where it is most structurally obvious from the syntactic form of `n` that it satisfies the
+required conditions, such as `m + 1`. Less widely used cases may be defined as lemmas rather than
+global instances and then made into instances locally where needed. If implicit arguments,
+appearing before other explicit arguments, are allowed to be `autoParam`s in a future version of
+Lean, such an `autoParam` that is proved `by cutsat` might be a more general replacement for the
+use of typeclass inference for this purpose. -/
+class AtLeastTwo (n : ℕ) : Prop where
+  prop : 2 ≤ n
+
+instance (n : ℕ) [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; cutsat⟩
+
+namespace AtLeastTwo
+
+variable {n : ℕ} [n.AtLeastTwo]
+
+lemma one_lt : 1 < n := prop
+lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
+
+instance (priority := 100) toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
+  ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
+
+variable (n) in
+lemma neZero_sub_one : NeZero (n - 1) := ⟨by have := prop (n := n); cutsat⟩
+
+end AtLeastTwo
 
 end Nat

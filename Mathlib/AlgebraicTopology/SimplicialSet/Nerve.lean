@@ -54,11 +54,18 @@ def nerveEquiv (C : Type u) [Category.{v} C] : nerve C _⦋0⦌ ≃ C where
   toFun f := f.obj ⟨0, by omega⟩
   invFun f := (Functor.const _).obj f
   left_inv f := ComposableArrows.ext₀ rfl
-  right_inv f := rfl
 
 namespace nerve
 
 variable {C : Type*} [Category C] {n : ℕ}
+
+lemma δ_obj {n : ℕ} (i : Fin (n + 2)) (x : (nerve C) _⦋n + 1⦌) (j : Fin (n + 1)) :
+    ((nerve C).δ i x).obj j = x.obj (i.succAbove j) :=
+  rfl
+
+lemma σ_obj {n : ℕ} (i : Fin (n + 1)) (x : (nerve C) _⦋n⦌) (j : Fin (n + 2)) :
+    ((nerve C).σ i x).obj j = x.obj (i.predAbove j) :=
+  rfl
 
 lemma δ₀_eq {x : nerve C _⦋n + 1⦌} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ₀ := rfl
 
@@ -79,6 +86,12 @@ theorem δ₁_mk₂_eq : (nerve C).δ 1 (ComposableArrows.mk₂ f g) = Composabl
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 
 end
+
+@[ext]
+lemma ext_of_isThin [Quiver.IsThin C] {n : SimplexCategoryᵒᵖ} {x y : (nerve C).obj n}
+    (h : x.obj = y.obj) :
+    x = y :=
+  ComposableArrows.ext (by simp [h]) (by subsingleton)
 
 end nerve
 

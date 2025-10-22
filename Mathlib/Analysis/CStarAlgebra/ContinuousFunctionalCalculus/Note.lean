@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Init
-import Batteries.Util.LibraryNote
+import Mathlib.Tactic.Basic
 
 /-!
 # Documentation concerning the continuous functional calculus
@@ -14,7 +14,7 @@ as the organizational structure within Mathlib.
 -/
 
 
-library_note "continuous functional calculus" /--
+library_note2 «continuous functional calculus» /--
 # The continuous functional calculus
 
 In Mathlib, there are two classes --- `NonUnitalContinuousFunctionalCalculus` and
@@ -166,11 +166,11 @@ require manual intervention.
 
 The criterion for determining where to place files about general theory of functions pertaining to
 the continuous functional calculus is whether the import
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic` is needed, which contains the
-instances of the continuous functional calculus for `CStarAlgebra`, and therefore pulls in many
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean` is needed, which contains
+the instances of the continuous functional calculus for `CStarAlgebra`, and therefore pulls in many
 imports. If this import is not needed, then the file should be placed in the directory
-`Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus`. If this import is needed, then
-the appropriate location is `Mathlib.Analysis.CStarAlgebra.SpecialFunctions`. If, as is often the
-case, some results need the import and others do not, there should be two files, one in each
-location.
+`Mathlib/Analysis/SpecialFunctions/ContinuousFunctionalCalculus.lean`. If this import is needed
+then the appropriate location is `Mathlib/Analysis/CStarAlgebra/SpecialFunctions.lean`.
+If, as is often thecase, some results need the import and others do not, there should be two files,
+one in each location.
 -/

@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 # The natural monoidal structure on any category with finite (co)products.
 
 A category with a monoidal structure provided in this way
-is sometimes called a (co)cartesian category,
+is sometimes called a (co-)Cartesian category,
 although this is also sometimes used to mean a finitely complete category.
 (See <https://ncatlab.org/nlab/show/cartesian+category>.)
 
@@ -78,7 +78,7 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
   rfl
 
 @[simp]
-theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.prod.map f g :=
+theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ₘ g = Limits.prod.map f g :=
   rfl
 
 @[simp]
@@ -106,7 +106,7 @@ theorem rightUnitor_inv (X : C) : (ρ_ X).inv = prod.lift (𝟙 _) (terminal.fro
   rfl
 
 -- We don't mark this as a simp lemma, even though in many particular
--- categories the right hand side will simplify significantly further.
+-- categories the right-hand side will simplify significantly further.
 -- For now, we'll plan to create specialised simp lemmas in each particular category.
 theorem associator_hom (X Y Z : C) :
     (α_ X Y Z).hom =
@@ -154,7 +154,7 @@ def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : Symmetr
   braiding_naturality_right X _ _ f := by simp
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_hom]; simp
   hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteProducts.associator_inv]; simp
-  symmetry X Y := by dsimp; simp
+  symmetry X Y := by simp
 
 end
 
@@ -192,7 +192,7 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨿ Y) :=
   rfl
 
 @[simp]
-theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.coprod.map f g :=
+theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ₘ g = Limits.coprod.map f g :=
   rfl
 
 @[simp]
@@ -220,7 +220,7 @@ theorem rightUnitor_inv (X : C) : (ρ_ X).inv = Limits.coprod.inl :=
   rfl
 
 -- We don't mark this as a simp lemma, even though in many particular
--- categories the right hand side will simplify significantly further.
+-- categories the right-hand side will simplify significantly further.
 -- For now, we'll plan to create specialised simp lemmas in each particular category.
 theorem associator_hom (X Y Z : C) :
     (α_ X Y Z).hom =
@@ -250,7 +250,7 @@ def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
   braiding_naturality_right f g := by simp
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp
   hexagon_reverse X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_inv]; simp
-  symmetry X Y := by dsimp; simp
+  symmetry X Y := by simp
 
 end
 
@@ -265,11 +265,11 @@ variable {D : Type*} [Category D] (F : C ⥤ D)
 
 attribute [local simp] associator_hom_fst
 instance : F.OplaxMonoidal where
-  η' := terminalComparison F
-  δ' X Y := prodComparison F X Y
-  δ'_natural_left _ _ := by simp [prodComparison_natural]
-  δ'_natural_right _ _ := by simp [prodComparison_natural]
-  oplax_associativity' _ _ _ := by
+  η := terminalComparison F
+  δ X Y := prodComparison F X Y
+  δ_natural_left _ _ := by simp [prodComparison_natural]
+  δ_natural_right _ _ := by simp [prodComparison_natural]
+  oplax_associativity _ _ _ := by
     dsimp
     ext
     · dsimp
@@ -287,8 +287,8 @@ instance : F.OplaxMonoidal where
         Functor.map_comp]
       erw [associator_hom_snd_snd, associator_hom_snd_snd]
       simp
-  oplax_left_unitality' _ := by ext; simp [← Functor.map_comp]
-  oplax_right_unitality' _ := by ext; simp [← Functor.map_comp]
+  oplax_left_unitality _ := by ext; simp [← Functor.map_comp]
+  oplax_right_unitality _ := by ext; simp [← Functor.map_comp]
 
 open Functor.OplaxMonoidal
 
@@ -301,7 +301,7 @@ variable [PreservesLimit (Functor.empty.{0} C) F]
 instance : IsIso (η F) := by dsimp [η_eq]; infer_instance
 instance (X Y : C) : IsIso (δ F X Y) := by dsimp [δ_eq]; infer_instance
 
-/-- Promote a finite products preserving functor to a monoidal functor between
+/-- Promote a functor that preserves finite products to a monoidal functor between
 categories equipped with the monoidal category structure given by finite products. -/
 instance : F.Monoidal := .ofOplaxMonoidal F
 

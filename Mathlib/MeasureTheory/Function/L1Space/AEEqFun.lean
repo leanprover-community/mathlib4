@@ -29,8 +29,9 @@ noncomputable section
 
 open EMetric ENNReal Filter MeasureTheory NNReal Set
 
-variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
-variable [NormedAddCommGroup β]
+variable {α β ε ε' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
+variable [NormedAddCommGroup β] [TopologicalSpace ε] [ContinuousENorm ε]
+  [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 namespace MeasureTheory
 
@@ -40,20 +41,20 @@ section
 
 /-- A class of almost everywhere equal functions is `Integrable` if its function representative
 is integrable. -/
-def Integrable (f : α →ₘ[μ] β) : Prop :=
+def Integrable (f : α →ₘ[μ] ε) : Prop :=
   MeasureTheory.Integrable f μ
 
-theorem integrable_mk {f : α → β} (hf : AEStronglyMeasurable f μ) :
-    Integrable (mk f hf : α →ₘ[μ] β) ↔ MeasureTheory.Integrable f μ := by
+theorem integrable_mk {f : α → ε} (hf : AEStronglyMeasurable f μ) :
+    Integrable (mk f hf : α →ₘ[μ] ε) ↔ MeasureTheory.Integrable f μ := by
   simp only [Integrable]
   apply integrable_congr
   exact coeFn_mk f hf
 
-theorem integrable_coeFn {f : α →ₘ[μ] β} : MeasureTheory.Integrable f μ ↔ Integrable f := by
-  rw [← integrable_mk, mk_coeFn]
+theorem integrable_coeFn {f : α →ₘ[μ] ε} : MeasureTheory.Integrable f μ ↔ Integrable f := by
+  rw [← integrable_mk f.aestronglyMeasurable, mk_coeFn]
 
-theorem integrable_zero : Integrable (0 : α →ₘ[μ] β) :=
-  (MeasureTheory.integrable_zero α β μ).congr (coeFn_mk _ _).symm
+theorem integrable_zero : Integrable (0 : α →ₘ[μ] ε') :=
+  (MeasureTheory.integrable_zero α ε' μ).congr (coeFn_mk _ _).symm
 
 end
 
@@ -67,6 +68,7 @@ section
 theorem integrable_iff_mem_L1 {f : α →ₘ[μ] β} : Integrable f ↔ f ∈ (α →₁[μ] β) := by
   rw [← integrable_coeFn, ← memLp_one_iff_integrable, Lp.mem_Lp_iff_memLp]
 
+-- TODO: generalise these lemmas to `ENormedSpace` or similar
 theorem Integrable.add {f g : α →ₘ[μ] β} : Integrable f → Integrable g → Integrable (f + g) := by
   refine induction_on₂ f g fun f hf g hg hfi hgi => ?_
   simp only [integrable_mk, mk_add_mk] at hfi hgi ⊢
@@ -201,9 +203,7 @@ theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
 
 theorem enorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ = ∫⁻ a, ‖f a‖ₑ ∂μ := by
   simp only [Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
-  simp [Integrable.toL1, eLpNorm, eLpNorm', enorm]
-
-@[deprecated (since := "2025-01-20")] alias nnnorm_toL1 := enorm_toL1
+  simp [eLpNorm, eLpNorm']
 
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by

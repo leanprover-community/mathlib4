@@ -18,7 +18,7 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 
 ## Main definitions and results
 
-* `FractionalIdeal.absNorm`: the norm as a zero preserving morphism with values in `ℚ`.
+* `FractionalIdeal.absNorm`: the norm as a zero-preserving morphism with values in `ℚ`.
 * `FractionalIdeal.absNorm_eq'`: the value of the norm does not depend on the choice of
   `I.num` and `I.den`.
 * `FractionalIdeal.abs_det_basis_change`: the norm is given by the determinant
@@ -27,10 +27,10 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
   norm of its generator
 -/
 
-namespace FractionalIdeal
-
+open Module
 open scoped Pointwise nonZeroDivisors
 
+namespace FractionalIdeal
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
@@ -88,7 +88,7 @@ theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert abs
 
 theorem absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by
-  refine ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
+  refine ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq, div_eq_zero_iff] at h
   refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
   simp [Algebra.norm_eq_zero_iff]
