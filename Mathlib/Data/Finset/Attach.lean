@@ -46,7 +46,7 @@ def attach (s : Finset α) : Finset { x // x ∈ s } :=
 theorem attach_val (s : Finset α) : s.attach.1 = s.1.attach :=
   rfl
 
-@[simp, grind]
+@[simp, grind ←]
 theorem mem_attach (s : Finset α) : ∀ x, x ∈ s.attach :=
   Multiset.mem_attach _
 
