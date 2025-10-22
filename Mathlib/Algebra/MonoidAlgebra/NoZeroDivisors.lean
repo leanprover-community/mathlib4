@@ -27,7 +27,7 @@ that if `R` is a field and `A` is a left-ordered group, then `R[A]` contains no 
 zero-divisors.
 The actual assumptions on `R` are weaker.
 
-##  Main results
+## Main results
 
 * `MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul` and
   `AddMonoidAlgebra.mul_apply_add_eq_mul_of_uniqueAdd`

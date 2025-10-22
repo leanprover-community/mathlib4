@@ -9,7 +9,7 @@ import Lean.Elab.Command
 import Mathlib.Tactic.Linter.Header
 
 /-!
-#  The "multiGoal" linter
+# The "multiGoal" linter
 
 The "multiGoal" linter emits a warning where there is more than a single goal in scope.
 There is an exception: a tactic that closes *all* remaining goals is allowed.
