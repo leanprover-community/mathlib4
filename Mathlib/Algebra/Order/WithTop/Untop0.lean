@@ -108,13 +108,9 @@ theorem le_of_untop₀_le_untop₀ (ha : a ≠ ⊤) (h : a.untop₀ ≤ b.untop�
   lift a to α using ha
   simp_all
 
-theorem untop₀_le_untop₀_iff :
-    a.untop₀ ≤ b.untop₀ ↔ (a = ⊤ ∧ 0 ≤ b) ∨ (a ≤ 0 ∧ b = ⊤) ∨ (a ≤ b ∧ a ≠ ⊤ ∧ b ≠ ⊤) := by
-  by_cases ha : a = ⊤
-  · simp_all
+theorem untop₀_le_untop₀_iff (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+    a.untop₀ ≤ b.untop₀ ↔ a ≤ b := by
   lift a to α using ha
-  by_cases hb : b = ⊤
-  · simp_all
   lift b to α using hb
   simp
 
