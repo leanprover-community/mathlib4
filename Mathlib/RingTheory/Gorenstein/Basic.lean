@@ -534,8 +534,6 @@ lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M] 
     Nontrivial (Ext.{w} (ModuleCat.of (Localization q.1.primeCompl)
       (Shrink.{v} q.1.ResidueField)) (M.localizedModule q.1.primeCompl) (i + 1)) := by
   by_contra! sub
-  /-let _ : Module.Finite (Localization q.asIdeal.primeCompl) M :=
-    Module.Finite.equiv (Shrink.linearEquiv (Localization q.1.primeCompl) _).symm-/
   let _ : Module.Finite (Localization q.1.primeCompl) (M.localizedModule q.1.primeCompl) :=
     Module.Finite.equiv (Shrink.linearEquiv (Localization q.1.primeCompl) _).symm
   let f := (algebraMap R (Localization q.1.primeCompl))
@@ -563,8 +561,51 @@ lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M] 
     rw [← IsLocalization.map_comap q.1.primeCompl _ r, ceq,
       Localization.AtPrime.map_eq_maximalIdeal]
     exact sub
-
-  sorry
+  let Rq := (Localization q.1.primeCompl)
+  let Rp := (Localization p.1.primeCompl)
+  have le' : q.1.primeCompl ≤ p.1.primeCompl := by simpa [Ideal.primeCompl] using le_of_lt lt
+  let _ : Algebra Rq Rp := IsLocalization.localizationAlgebraOfSubmonoidLe Rq Rp _ _ le'
+  let _ := IsLocalization.localization_isScalarTower_of_submonoid_le Rq Rp _ _ le'
+  have isl0 : IsLocalization.AtPrime Rp (p.1.map f) := by
+    have : IsLocalization.AtPrime (Localization.AtPrime (p.1.map f)) p.1 := by
+      convert IsLocalization.isLocalization_atPrime_localization_atPrime q.1.primeCompl (p.1.map f)
+      rw [IsLocalization.comap_map_of_isPrime_disjoint q.1.primeCompl Rq p.1 p.2 disj]
+    let e := IsLocalization.algEquiv p.1.primeCompl Rp (Localization.AtPrime (p.1.map f))
+    exact IsLocalization.isLocalization_of_algEquiv (p.1.map f).primeCompl (AlgEquiv.ofLinearEquiv
+      (e.toLinearEquiv.extendScalarsOfIsLocalization q.1.primeCompl Rq) (by simp) (by simp)).symm
+  let _ : IsLocalizedModule.AtPrime (p.1.map f) (Algebra.linearMap Rq Rp) :=
+    (isLocalizedModule_iff_isLocalization' _ _).mpr isl0
+  let _ : IsScalarTower Rq Rp (Shrink.{v, u} p.asIdeal.ResidueField) :=
+    Equiv.isScalarTower Rq Rp (equivShrink p.asIdeal.ResidueField).symm
+  let f1' := Submodule.toLocalizedQuotient' Rp (p.1.map f).primeCompl (Algebra.linearMap Rq Rp)
+    (p.1.map f)
+  have eqm : Submodule.localized' Rp (p.1.map f).primeCompl (Algebra.linearMap Rq Rp)
+    (p.1.map f) = maximalIdeal Rp := by
+    rw [Ideal.localized'_eq_map, Ideal.map_map, ← IsScalarTower.algebraMap_eq,
+      Localization.AtPrime.map_eq_maximalIdeal]
+  let e := ((Submodule.quotEquivOfEq _ _ eqm).restrictScalars Rq).trans
+    (Shrink.linearEquiv.{v} Rq _).symm
+  let f1 : (ModuleCat.of Rq (Shrink.{v} (Rq ⧸ p.1.map f))) →ₗ[Rq]
+      (ModuleCat.of Rp (Shrink.{v, u} p.asIdeal.ResidueField)) :=
+      e.toLinearMap.comp (f1'.comp (Shrink.linearEquiv.{v} Rq _).toLinearMap)
+  have isl1 : IsLocalizedModule (p.1.map f).primeCompl f1 :=
+    let _ := IsLocalizedModule.of_linearEquiv_right (p.1.map f).primeCompl f1'
+      (Shrink.linearEquiv.{v} Rq _)
+    IsLocalizedModule.of_linearEquiv (p.1.map f).primeCompl
+      (f1'.comp (Shrink.linearEquiv.{v} Rq _).toLinearMap) e
+  let _ : Module Rq (M.localizedModule p.asIdeal.primeCompl) :=
+    ModuleCat.Algebra.instModuleCarrier
+  let _ : IsScalarTower Rq Rp (M.localizedModule p.asIdeal.primeCompl) :=
+    ModuleCat.Algebra.instIsScalarTowerCarrier
+  let f2 : (M.localizedModule q.1.primeCompl) →ₗ[Rq] (M.localizedModule p.asIdeal.primeCompl) :=
+    sorry
+  have isl2 : IsLocalizedModule (p.1.map f).primeCompl f2 :=
+    sorry
+  let _ : Module.Finite Rq (Shrink.{v} (Rq ⧸ Ideal.map f p.asIdeal)) :=
+    Module.Finite.equiv (Shrink.linearEquiv Rq _).symm
+  have isl := Ext.isLocalizedModule'.{v, v, u, u, w, w} (p.1.map f).primeCompl Rp f1 isl1 f2 isl2 i
+  absurd nontrivial_of_islocalizedModule isl ntr
+  exact not_nontrivial_iff_subsingleton.mpr sub'
 
 end
 
