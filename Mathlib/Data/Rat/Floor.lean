@@ -330,16 +330,17 @@ def evalRound : NormNumExt where eval {u αZ} e := do
       let _instFloorRing ← synthInstanceQ (q(FloorRing $α))
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit (round q)
-      letI : $z =Q round (Int.ofNat $n / $d : ℚ) := ⟨⟩
-      return .isInt q(inferInstance) z (round q) q(IsRat.isInt_round _ $n $d <| IsNNRat.to_isRat $h)
+      haveI : $z =Q round (Int.ofNat $n / $d : ℚ) := ⟨⟩
+      return .isInt q(inferInstance) z (round q)
+        q(IsRat.isInt_round $x $n $d $z rfl (IsNNRat.to_isRat $h))
     | .isNegNNRat _ q n d h => do
       let _instField ← synthInstanceQ (q(Field $α) : Q(Type u_1))
       let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
       let _instFloorRing ← synthInstanceQ (q(FloorRing $α))
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit (round q)
-      letI : $z =Q round ((Int.negOfNat $n) / $d : ℚ) := ⟨⟩
-      return .isInt q(inferInstance) z (round q) q(IsRat.isInt_round _ (.negOfNat $n) $d $h)
+      haveI : $z =Q round ((Int.negOfNat $n) / $d : ℚ) := ⟨⟩
+      return .isInt q(inferInstance) z (round q) q(IsRat.isInt_round $x (.negOfNat $n) $d $z rfl $h)
   | _, _, _ => failure
 
 end NormNum
