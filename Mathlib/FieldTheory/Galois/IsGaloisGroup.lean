@@ -14,15 +14,24 @@ Given an action of a group `G` on an extension of fields `L/K`, we introduce a p
 we do not assume that `L` is an algebraic extension of `K`.
 -/
 
-variable (G H K L : Type*) [Group G] [Group H] [Field K] [Field L] [Algebra K L]
-  [MulSemiringAction G L] [MulSemiringAction H L]
+section CommRing
+
+variable (G A B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
+  [MulSemiringAction G B]
 
 /-- `G` is a Galois group for `L/K` if the action on `L` is faithful with fixed field `K`.
 In particular, we do not assume that `L` is an algebraic extension of `K`. -/
 class IsGaloisGroup where
-  faithful : FaithfulSMul G L
-  commutes : SMulCommClass G K L
-  isInvariant : Algebra.IsInvariant K L G
+  faithful : FaithfulSMul G B
+  commutes : SMulCommClass G A B
+  isInvariant : Algebra.IsInvariant A B G
+
+attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
+
+end CommRing
+
+variable (G H K L : Type*) [Group G] [Group H] [Field K] [Field L] [Algebra K L]
+  [MulSemiringAction G L] [MulSemiringAction H L]
 
 namespace IsGaloisGroup
 
