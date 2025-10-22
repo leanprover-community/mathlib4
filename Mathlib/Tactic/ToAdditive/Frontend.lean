@@ -315,7 +315,7 @@ In this case `to_additive` adds all structure fields to its mapping.
   run_meta ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
   ```
   Later uses of `@[to_additive]` on declarations in the `QuotientGroup`
-  namespace will be created in the `QuotientAddGroup` namespaces.
+  namespace will be created in the `QuotientAddGroup` namespace.
   This is not necessary if there is already a declaration with name `QuotientGroup`.
 
 * If `@[to_additive]` is called with a `name` argument `new_name`
