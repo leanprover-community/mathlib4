@@ -28,7 +28,7 @@ to the corresponding element of the opposite ring. -/
 def opRingEquiv (R : Type*) [Semiring R] : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X] :=
   ((toFinsuppIso R).op.trans AddMonoidAlgebra.opRingEquiv).trans (toFinsuppIso _).symm
 
-/-! Lemmas to get started, using `opRingEquiv R` on the various expressions of
+/-!  Lemmas to get started, using `opRingEquiv R` on the various expressions of
 `Finsupp.single`: `monomial`, `C a`, `X`, `C a * X ^ n`. -/
 
 
@@ -51,7 +51,7 @@ theorem opRingEquiv_op_C_mul_X_pow (r : R) (n : ℕ) :
     opRingEquiv R (op (C r * X ^ n : R[X])) = C (op r) * X ^ n := by
   simp only [X_pow_mul, op_mul, op_pow, map_mul, map_pow, opRingEquiv_op_X, opRingEquiv_op_C]
 
-/-! Lemmas to get started, using `(opRingEquiv R).symm` on the various expressions of
+/-!  Lemmas to get started, using `(opRingEquiv R).symm` on the various expressions of
 `Finsupp.single`: `monomial`, `C a`, `X`, `C a * X ^ n`. -/
 
 
@@ -72,7 +72,7 @@ theorem opRingEquiv_symm_C_mul_X_pow (r : Rᵐᵒᵖ) (n : ℕ) :
     (opRingEquiv R).symm (C r * X ^ n : Rᵐᵒᵖ[X]) = op (C (unop r) * X ^ n) := by
   rw [C_mul_X_pow_eq_monomial, opRingEquiv_symm_monomial, C_mul_X_pow_eq_monomial]
 
-/-! Lemmas about more global properties of polynomials and opposites. -/
+/-!  Lemmas about more global properties of polynomials and opposites. -/
 
 
 @[simp]

@@ -127,7 +127,7 @@ section Covariants
 
 variable [LinearOrder ι] [∀ i, AddMonoid (α i)] [∀ i, LinearOrder (α i)]
 
-/-! We are about to sneak in a hypothesis that might appear to be too strong.
+/-!  We are about to sneak in a hypothesis that might appear to be too strong.
 We assume `AddLeftStrictMono` (covariant with *strict* inequality `<`) also when proving the one
 with the *weak* inequality `≤`. This is actually necessary: addition on `Lex (Π₀ i, α i)` may fail
 to be monotone, when it is "just" monotone on `α i`. -/
