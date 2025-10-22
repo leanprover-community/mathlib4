@@ -110,6 +110,7 @@ theorem Continuous.comp {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
 theorem Continuous.comp' {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) := hg.comp hf
 
+@[fun_prop]
 theorem Continuous.iterate {f : X → X} (h : Continuous f) (n : ℕ) : Continuous f^[n] :=
   Nat.recOn n continuous_id fun _ ihn => ihn.comp h
 

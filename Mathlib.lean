@@ -11,6 +11,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Field
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.Algebra.Hom.Rat
+import Mathlib.Algebra.Algebra.IsSimpleRing
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Operations
@@ -982,6 +983,7 @@ import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Algebra.Order.Ring.Synonym
 import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+import Mathlib.Algebra.Order.Ring.Units
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Round
 import Mathlib.Algebra.Order.Star.Basic
@@ -1164,6 +1166,7 @@ import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+import Mathlib.Algebra.SkewMonoidAlgebra.Lift
 import Mathlib.Algebra.SkewMonoidAlgebra.Single
 import Mathlib.Algebra.SkewMonoidAlgebra.Support
 import Mathlib.Algebra.Squarefree.Basic
@@ -1373,6 +1376,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
+import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
 import Mathlib.AlgebraicTopology.SimplicialSet.Op
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
@@ -1972,6 +1976,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
@@ -2019,6 +2024,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Integral
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Analysis.SpecialFunctions.Pow.NthRootLemmas
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Sigmoid
 import Mathlib.Analysis.SpecialFunctions.SmoothTransition
@@ -2403,6 +2409,7 @@ import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Final.ParallelPair
+import Mathlib.CategoryTheory.Limits.Final.Type
 import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.FormalCoproducts
@@ -2568,6 +2575,8 @@ import Mathlib.CategoryTheory.Localization.Linear
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.Localization.LocallySmall
 import Mathlib.CategoryTheory.Localization.Monoidal
+import Mathlib.CategoryTheory.Localization.Monoidal.Basic
+import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Preadditive
@@ -2702,6 +2711,7 @@ import Mathlib.CategoryTheory.ObjectProperty.Extensions
 import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.ObjectProperty.Ind
 import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+import Mathlib.CategoryTheory.ObjectProperty.Local
 import Mathlib.CategoryTheory.ObjectProperty.Opposite
 import Mathlib.CategoryTheory.ObjectProperty.Retract
 import Mathlib.CategoryTheory.ObjectProperty.Shift
@@ -3561,6 +3571,7 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Nat.Nth
+import Mathlib.Data.Nat.NthRoot.Defs
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Pairing
@@ -3837,6 +3848,7 @@ import Mathlib.FieldTheory.Finite.Polynomial
 import Mathlib.FieldTheory.Finite.Trace
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Fixed
+import Mathlib.FieldTheory.Galois.Abelian
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.Galois.GaloisClosure
 import Mathlib.FieldTheory.Galois.Infinite
@@ -4973,6 +4985,7 @@ import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Completion
 import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
 import Mathlib.NumberTheory.NumberField.DedekindZeta
@@ -5891,6 +5904,7 @@ import Mathlib.RingTheory.Regular.Depth
 import Mathlib.RingTheory.Regular.Flat
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Regular.RegularSequence
+import Mathlib.RingTheory.RingHom.Bijective
 import Mathlib.RingTheory.RingHom.Etale
 import Mathlib.RingTheory.RingHom.FaithfullyFlat
 import Mathlib.RingTheory.RingHom.Finite
@@ -6250,12 +6264,14 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Linter
+import Mathlib.Tactic.Linter.CommandRanges
 import Mathlib.Tactic.Linter.CommandStart
 import Mathlib.Tactic.Linter.DeprecatedModule
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DirectoryDependency
 import Mathlib.Tactic.Linter.DocPrime
 import Mathlib.Tactic.Linter.DocString
+import Mathlib.Tactic.Linter.FindDeprecations
 import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
@@ -6518,6 +6534,7 @@ import Mathlib.Topology.Algebra.Order.Support
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.PontryaginDual
+import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 import Mathlib.Topology.Algebra.ProperAction.Basic
 import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 import Mathlib.Topology.Algebra.ProperConstSMul
