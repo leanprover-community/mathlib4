@@ -162,7 +162,9 @@ end bounded_mul
 
 section AddGroup
 
-open Filter Bornology Pointwise
+namespace Bornology
+
+open Filter Pointwise
 
 variable {R : Type*} [Bornology R] [AddGroup R] [BoundedSub R]
 
@@ -212,6 +214,8 @@ theorem tendsto_sub_const_cobounded (x : R) :
 theorem tendsto_const_sub_cobounded (x : R) :
     Tendsto (x - ·) (cobounded R) (cobounded R) := by
   simpa only [sub_eq_add_neg] using (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
+
+end Bornology
 
 end AddGroup
 
