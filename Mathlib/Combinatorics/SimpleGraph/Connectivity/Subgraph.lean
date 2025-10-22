@@ -446,13 +446,18 @@ lemma _root_.SimpleGraph.Walk.toSubgraph_connected {u v : V} (p : G.Walk u v) :
     refine Subgraph.connected_sup (subgraphOfAdj_connected h).preconnected ih.preconnected ⟨w, ?_⟩
     simp
 
+lemma induce_union_connected_of_nonempty_inf {H : G.Subgraph} {s t : Set V}
+    (sconn : (H.induce s).Preconnected) (tconn : (H.induce t).Preconnected)
+    (sintert : (s ⊓ t).Nonempty) :
+    (H.induce (s ∪ t)).Connected :=
+  (Subgraph.connected_sup sconn tconn sintert).mono le_induce_union <| by simp
+
+@[deprecated induce_union_connected_of_nonempty_inf (since := "2025-10-22")]
 lemma induce_union_connected {H : G.Subgraph} {s t : Set V}
     (sconn : (H.induce s).Connected) (tconn : (H.induce t).Connected)
     (sintert : (s ⊓ t).Nonempty) :
-    (H.induce (s ∪ t)).Connected := by
-  refine (Subgraph.connected_sup sconn.preconnected tconn.preconnected sintert).mono ?_ ?_
-  · apply le_induce_union
-  · simp
+    (H.induce (s ∪ t)).Connected :=
+  induce_union_connected_of_nonempty_inf sconn.preconnected tconn.preconnected sintert
 
 lemma Connected.adj_union {H K : G.Subgraph}
     (Hconn : H.Connected) (Kconn : K.Connected) {u v : V} (uH : u ∈ H.verts) (vK : v ∈ K.verts)
@@ -494,7 +499,8 @@ lemma induce_union_connected {s t : Set V}
     (sintert : (s ∩ t).Nonempty) :
     (G.induce (s ∪ t)).Connected := by
   rw [connected_induce_iff] at sconn tconn ⊢
-  exact Subgraph.induce_union_connected sconn tconn sintert
+  exact Subgraph.induce_union_connected_of_nonempty_inf
+    sconn.preconnected tconn.preconnected sintert
 
 lemma induce_pair_connected_of_adj {u v : V} (huv : G.Adj u v) :
     (G.induce {u, v}).Connected := by
