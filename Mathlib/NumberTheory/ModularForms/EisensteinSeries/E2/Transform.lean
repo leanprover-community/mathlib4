@@ -423,13 +423,52 @@ lemma E2_slash_action (γ : SL(2, ℤ)) : E2 ∣[(2 : ℤ)] γ = E2 - (1 / (2 * 
   ext z
   simp [E2, SL_smul_slash, G2_slash_action γ, mul_sub]
 
+open ArithmeticFunction in
+lemma sigma_isBigO (k : ℕ) : (fun n => ((sigma k n) : ℂ)) =O[atTop]
+  (fun (n : ℕ) => (n : ℝ) ^ (k + 1)) := by
+    have h_sigma_le : ∀ n : ℕ, (sigma k n : ℝ) ≤ (n : ℝ) ^ k * (Nat.divisors n).card := by
+      intro n
+      simp [ ArithmeticFunction.sigma ]
+      have : n ^ k * (Nat.divisors n).card  = ∑ i ∈ Nat.divisors n, n ^ k * 1 := by simp; ring
+      norm_cast
+      rw [this]
+      apply sum_le_sum
+      intro j hj
+      simp only [mul_one]
+      apply Nat.pow_le_pow_left (Nat.divisor_le hj)
+    have h_sigma_le_final : ∀ n : ℕ, (sigma k n : ℝ) ≤ (n : ℝ) ^ (k + 1) := by
+      intro n; rw [ pow_succ ] ; exact le_trans ( h_sigma_le n )
+        (by gcongr; apply Nat.card_divisors_le_self)
+    exact Asymptotics.isBigO_iff.mpr ⟨1, Filter.eventually_atTop.mpr
+      ⟨ 1, fun n hn => by simpa using h_sigma_le_final n⟩⟩
+
+
+open ArithmeticFunction in
+lemma sigma_isBigO_add_one (k : ℕ) : (fun n : ℕ => ((sigma k (n + 1)) : ℂ)) =O[atTop]
+  (fun (n : ℕ) => (n + 1 : ℝ) ^ (k + 1)) := by
+  have := (sigma_isBigO k).comp_tendsto (k := fun n => n + 1) (l' := atTop) (l := atTop) ?_
+  simp at this
+  apply this.congr
+  simp
+  simp
+  exact tendsto_add_atTop_nat 1
+
 lemma G2_differentiableOn : DifferentiableOn ℂ (↑ₕG2) upperHalfPlaneSet := by
   have := G2_q_exp
   apply DifferentiableOn.congr (f := fun z => 2 * riemannZeta 2 - 8 * ↑π ^ 2 * ∑' (n : ℕ+),
-    ↑((ArithmeticFunction.sigma 1) ↑n) * cexp (2 * ↑π * I * ↑z) ^ (n : ℤ))
-  --apply DifferentiableOn.add_const
-  --sorry
+    ↑((ArithmeticFunction.sigma 1) ↑n) * cexp (2 * ↑π * I * ↑z) ^ (n : ℕ))
+  simp only [zpow_natCast, differentiableOn_const, DifferentiableOn.fun_sub_iff_right]
+  apply DifferentiableOn.const_mul
+  apply SummableLocallyUniformlyOn.differentiableOn  (by exact isOpen_upperHalfPlaneSet)
+  have := summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp 0 2 (p := 1) (by simp)
+    (sigma_isBigO 1)
+  simp at this
+
   sorry
+  intro i z hz
+  fun_prop
+
+  --sorry
   · intro z hz
     have H := this ⟨z, hz⟩
     convert H
