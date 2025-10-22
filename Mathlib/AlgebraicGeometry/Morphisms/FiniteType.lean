@@ -19,7 +19,6 @@ We show that these properties are local, and are stable under compositions and b
 
 -/
 
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
@@ -76,7 +75,14 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType f] :
     LocallyOfFiniteType (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g inferInstance
 
-instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace Spec(R) :=
+instance (f : X ⟶ Y) (V : Y.Opens) [LocallyOfFiniteType f] : LocallyOfFiniteType (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [LocallyOfFiniteType f] :
+    LocallyOfFiniteType (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
+
+instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace <| Spec <| .of R :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
 instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
@@ -85,14 +91,14 @@ instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
 nonrec lemma LocallyOfFiniteType.jacobsonSpace
     (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
   wlog hY : ∃ S, Y = Spec S
-  · rw [(Scheme.OpenCover.isOpenCover_opensRange (Y.affineCover.pullbackCover f)).jacobsonSpace_iff]
+  · rw [(Scheme.OpenCover.isOpenCover_opensRange (Y.affineCover.pullback₁ f)).jacobsonSpace_iff]
     intro i
     have inst : LocallyOfFiniteType (Y.affineCover.pullbackHom f i) :=
       MorphismProperty.pullback_snd _ _ inferInstance
     have inst : JacobsonSpace Y := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
     have inst : JacobsonSpace (Y.affineCover.X i) :=
       .of_isOpenEmbedding (Y.affineCover.f i).isOpenEmbedding
-    let e := ((Y.affineCover.pullbackCover f).f i).isOpenEmbedding.isEmbedding.toHomeomorph
+    let e := ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding.isEmbedding.toHomeomorph
     have := this (Y.affineCover.pullbackHom f i) ⟨_, rfl⟩
     exact .of_isClosedEmbedding e.symm.isClosedEmbedding
   obtain ⟨R, rfl⟩ := hY
