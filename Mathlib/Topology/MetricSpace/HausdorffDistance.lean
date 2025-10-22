@@ -13,13 +13,13 @@ import Mathlib.Tactic.Finiteness
 The Hausdorff distance on subsets of a metric (or emetric) space.
 
 Given two subsets `s` and `t` of a metric space, their Hausdorff distance is the smallest `d`
-such that any point `s` is within `d` of a point in `t`, and conversely. This quantity
+such that any point of `s` is within `d` of a point in `t`, and conversely. This quantity
 is often infinite (think of `s` bounded and `t` unbounded), and therefore better
 expressed in the setting of emetric spaces.
 
 ## Main definitions
 
-This files introduces:
+This file introduces:
 * `EMetric.infEdist x s`, the infimum edistance of a point `x` to a set `s` in an emetric space
 * `EMetric.hausdorffEdist s t`, the Hausdorff edistance of two sets in an emetric space
 * Versions of these notions on metric spaces, called respectively `Metric.infDist`
