@@ -46,6 +46,7 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DefEqTransformations
+import Mathlib.Tactic.DefaultNumeralType
 import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.ErwQuestion
 import Mathlib.Tactic.Eqns
