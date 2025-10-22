@@ -14,7 +14,7 @@ that `R⟦X⟧` is an integral domain when `R` is.
 
 We then state various results about `R⟦X⟧` with `R` an integral domain.
 
-##  Instance
+## Instance
 
 If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
 

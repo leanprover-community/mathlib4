@@ -10,7 +10,7 @@ import Mathlib.Tactic.Lemma
 import Std.Time.Format
 
 /-!
-#  `deprecate to` -- a deprecation tool
+# `deprecate to` -- a deprecation tool
 
 Writing
 ```lean
