@@ -158,16 +158,16 @@ theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
 variable {S : Type*} [CommRing S] [Algebra R S]
 
 /-- If `P` lies over `p`, `p` is a minimal prime over `I` and the image of `P` is
-a minimal prime over the image of `K` in `S ⧸ p S`, then `P` is a minimal prime
-over `I S ⊔ P`. -/
+a minimal prime over the image of `J` in `S ⧸ p S`, then `P` is a minimal prime
+over `I S ⊔ J`. -/
 lemma Ideal.map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes
     {I p : Ideal R} {P : Ideal S} [P.IsPrime] [P.LiesOver p]
-    (hI : p ∈ I.minimalPrimes) {K : Ideal S} (hKP : K ≤ P)
-    (hK : P.map (Ideal.Quotient.mk _) ∈
-      (K.map (Ideal.Quotient.mk (p.map (algebraMap R S)))).minimalPrimes) :
-    P ∈ (I.map (algebraMap R S) ⊔ K).minimalPrimes := by
+    (hI : p ∈ I.minimalPrimes) {J : Ideal S} (hJP : J ≤ P)
+    (hJ : P.map (Ideal.Quotient.mk _) ∈
+      (J.map (Ideal.Quotient.mk (p.map (algebraMap R S)))).minimalPrimes) :
+    P ∈ (I.map (algebraMap R S) ⊔ J).minimalPrimes := by
   refine ⟨⟨inferInstance, sup_le_iff.mpr ?_⟩, fun q ⟨_, hleq⟩ hqle ↦ ?_⟩
-  · refine ⟨?_, hKP⟩
+  · refine ⟨?_, hJP⟩
     rw [Ideal.map_le_iff_le_comap, ← Ideal.under_def, ← Ideal.over_def P p]
     exact hI.1.2
   · simp only [sup_le_iff] at hleq
@@ -178,7 +178,7 @@ lemma Ideal.map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes
       exact Ideal.LiesOver.over
     have h2 : P.map (Ideal.Quotient.mk (p.map (algebraMap R S))) ≤
         q.map (Ideal.Quotient.mk (p.map (algebraMap R S))) :=
-      hK.2 ⟨Ideal.isPrime_map_quotientMk_of_isPrime h1, Ideal.map_mono hleq.2⟩
+      hJ.2 ⟨Ideal.isPrime_map_quotientMk_of_isPrime h1, Ideal.map_mono hleq.2⟩
         (Ideal.map_mono hqle)
     simpa [h1] using Ideal.comap_mono (f := Ideal.Quotient.mk (p.map (algebraMap R S))) h2
 

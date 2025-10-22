@@ -213,12 +213,18 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimal_primes
       refine hspan.trans <| radical_mono ?_
       rw [← Set.union_singleton, span_union]
 
-lemma Ideal.height_le_card_of_mem_minimalPrimes_span {p : Ideal R} {s : Finset R}
+lemma Ideal.height_le_card_of_mem_minimalPrimes_span_finset {p : Ideal R} {s : Finset R}
     (hI : p ∈ (Ideal.span s).minimalPrimes) :
     p.height ≤ s.card := by
   trans (Cardinal.toENat (Submodule.spanRank (Ideal.span (s : Set R))))
   · exact Ideal.height_le_spanRank_toENat_of_mem_minimal_primes _ _ hI
   · simpa using Submodule.spanRank_span_le_card (s : Set R)
+
+lemma Ideal.height_le_card_of_mem_minimalPrimes_span {p : Ideal R} {s : Set R}
+    (hs : s.Finite) (hI : p ∈ (Ideal.span s).minimalPrimes) :
+    p.height ≤ s.ncard := by
+  rw [s.ncard_eq_toFinset_card hs]
+  exact Ideal.height_le_card_of_mem_minimalPrimes_span_finset (by simpa)
 
 /-- In a commutative Noetherian ring `R`, the height of a (finitely-generated) ideal is smaller
 than or equal to the minimum number of generators for this ideal. -/
@@ -305,7 +311,7 @@ variable {S : Type*} [CommRing S] [Algebra R S]
 /--
 If `P` lies over `p`, the height of `P` is bounded by the height of `p` plus
 the height of the image of `P` in `S ⧸ p S`.
-Equality holds if `S` satisfies going-down as an `R`-algebra.
+TODO(@chrisflav): Equality holds if `S` satisfies going-down as an `R`-algebra.
 -/
 lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) [p.IsPrime]
       (P : Ideal S) [P.IsPrime] [P.LiesOver p] :
@@ -331,7 +337,7 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
     norm_cast
     refine le_trans (Finset.card_union_le _ _) (add_le_add Finset.card_image_le ?_)
     rw [← himgo, Finset.card_image_of_injOn hinj]
-  refine Ideal.height_le_card_of_mem_minimalPrimes_span ?_
+  refine Ideal.height_le_card_of_mem_minimalPrimes_span_finset ?_
   have : Ideal.span t = Ideal.map (algebraMap R S) (.span s) ⊔ .span o := by
     simp [t, Ideal.span_union, Ideal.map_span]
   refine this ▸ map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes hp (span_le.mpr ho) ?_
