@@ -15,6 +15,10 @@ A polynomial `f : R[X]` factors if it is a product of constant and monic linear 
 * `Polynomial.Factors f`: A predicate on a polynomial `f` saying that `f` is a product of
   constant and monic linear polynomials.
 
+## TODO
+
+- Redefine `Splits` in terms of `Factors` and then deprecate `Splits`.
+
 -/
 
 variable {R : Type*}
@@ -83,6 +87,10 @@ theorem factors_of_natDegree_eq_zero {f : R[X]} (hf : natDegree f = 0) :
     Factors f :=
   (natDegree_eq_zero.mp hf).choose_spec ▸ by aesop
 
+theorem factors_of_degree_le_zero {f : R[X]} (hf : degree f ≤ 0) :
+    Factors f :=
+  factors_of_natDegree_eq_zero (natDegree_eq_zero_iff_degree_le_zero.mpr hf)
+
 end Semiring
 
 section CommSemiring
@@ -103,7 +111,7 @@ theorem factors_iff_exists_multiset' {f : R[X]} :
     Factors f ↔ ∃ m : Multiset R, f = C f.leadingCoeff * (m.map (X + C ·)).prod := by
   refine ⟨fun hf ↦ ?_, ?_⟩
   · let S : Submonoid R[X] := MonoidHom.mrange C
-    have hS : S = {C a | a : R} := rfl
+    have hS : S = {C a | a : R} := MonoidHom.coe_mrange C
     rw [Factors, Submonoid.closure_union, ← hS, Submonoid.closure_eq, Submonoid.mem_sup] at hf
     obtain ⟨-, ⟨a, rfl⟩, g, hg, rfl⟩ := hf
     obtain ⟨mg, hmg, rfl⟩ := Submonoid.exists_multiset_of_mem_closure hg
@@ -232,7 +240,7 @@ theorem Factors.of_dvd (hg : Factors g) (hg₀ : g ≠ 0) (hfg : f ∣ g) : Fact
   obtain ⟨g, rfl⟩ := hfg
   exact ((factors_mul_iff (by aesop) (by aesop)).mp hg).1
 
-/-- Todo: Remove or fix name once `Splits` is gone. -/
+-- Todo: Remove or fix name once `Splits` is gone.
 theorem Factors.splits (hf : Factors f) :
     f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g ≤ 1 :=
   or_iff_not_imp_left.mpr fun hf0 _ hg hgf ↦ degree_le_of_natDegree_le <|
@@ -267,7 +275,7 @@ section Field
 variable [Field R]
 
 open UniqueFactorizationMonoid in
-/-- Todo: Remove or fix name once `Splits` is gone. -/
+-- Todo: Remove or fix name once `Splits` is gone.
 theorem factors_iff_splits {f : R[X]} :
     Factors f ↔ f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g = 1 := by
   refine ⟨fun hf ↦ hf.splits.imp_right (forall₃_imp fun g hg hgf ↦
