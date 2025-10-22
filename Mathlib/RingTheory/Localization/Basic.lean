@@ -567,6 +567,9 @@ theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)
   have : IsLocalization (M.map (algebraMap R S)) Sₘ := i
   IsLocalization.map_injective_of_injective _ _ _ hRS
 
+instance : IsLocalization (Algebra.algebraMapSubmonoid R M) Rₘ := by
+  simpa
+
 end Algebra
 
 end CommSemiring
