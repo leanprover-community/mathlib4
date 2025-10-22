@@ -54,7 +54,7 @@ theorem aeconst_of_dense_setOf_preimage_smul_ae (hsm : NullMeasurableSet s μ)
   refine aeconst_of_forall_preimage_smul_ae_eq M hsm ?_
   rwa [dense_iff_closure_eq, IsClosed.closure_eq, eq_univ_iff_forall] at hd
   let f : C(M × X, X) := ⟨(· • ·).uncurry, continuous_smul⟩
-  exact isClosed_setOf_preimage_ae_eq f.curry.continuous (measurePreserving_smul · μ) _ hsm
+  exact isClosed_setOf_preimage_ae_eq (map_continuous f.curry) (measurePreserving_smul · μ) _ hsm
     (measure_ne_top _ _)
 
 @[to_additive]

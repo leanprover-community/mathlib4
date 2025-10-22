@@ -460,7 +460,7 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
   have h : ℝ ≃o Ioo (-1 : ℝ) 1 := orderIsoIooNegOneOne ℝ
   let F : X →ᵇ ℝ :=
     { toFun := (↑) ∘ h ∘ f
-      continuous_toFun := continuous_subtype_val.comp (h.continuous.comp f.continuous)
+      continuous_toFun := by fun_prop
       map_bounded' := isBounded_range_iff.1
         ((isBounded_Ioo (-1 : ℝ) 1).subset <| range_subset_iff.2 fun x => (h (f x)).2) }
   let t' : Set ℝ := (↑) ∘ h '' t
