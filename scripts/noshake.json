@@ -101,6 +101,7 @@
   "Mathlib.Tactic.FailIfNoProgress",
   "Mathlib.Tactic.FastInstance",
   "Mathlib.Tactic.FieldSimp",
+  "Mathlib.Tactic.Field",
   "Mathlib.Tactic.FinCases",
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.Finiteness",

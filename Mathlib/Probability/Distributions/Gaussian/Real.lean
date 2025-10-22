@@ -94,7 +94,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
       false_or]
     rw [mul_comm]
     left
-    field_simp
+    field
   exact Integrable.comp_sub_right hg μ
 
 /-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
@@ -140,7 +140,7 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
   · simp (disch := positivity) only [Real.sqrt_mul, mul_inv_rev, field]
     rw [Real.sqrt_sq_eq_abs]
   · congr 1
-    field_simp
+    field
 
 lemma gaussianPDFReal_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPDFReal μ v (c * x)

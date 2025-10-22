@@ -288,7 +288,7 @@ theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : x ∈ closure s) :
         simp only [c, norm_smul, norm_pow, pow_succ, norm_mul, d, ← dist_eq_norm']
         gcongr
         exacts [hm_le n, (hvu n).le]
-      _ = ‖r‖ * u n := by field_simp
+      _ = ‖r‖ * u n := by field
   refine squeeze_zero_norm Hle ?_
   simpa using tendsto_const_nhds.mul u_lim
 

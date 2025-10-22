@@ -593,6 +593,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
     |exp 1 - expNear n 1 a₁| ≤ |1| ^ n / n.factorial * b₁ := by
   subst er
   refine exp_approx_succ _ en _ _ ?_ h
+  simp
   field_simp [show (m : ℝ) ≠ 0 by norm_cast; cutsat]
   simp
 

@@ -919,9 +919,9 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         (a i : ℝ) + ⌊(x i - a i) * n⌋₊ / n ≤ (a i : ℝ) + (x i - a i) * n / n := by
           gcongr
           exact Nat.floor_le (mul_nonneg (sub_nonneg.2 (hx i).1.le) npos.le)
-        _ = x i := by field_simp; ring
+        _ = x i := by field
     · calc
-        x i = (a i : ℝ) + (x i - a i) * n / n := by field_simp; ring
+        x i = (a i : ℝ) + (x i - a i) * n / n := by field
         _ ≤ (a i : ℝ) + (⌊(x i - a i) * n⌋₊ + 1) / n := by
           gcongr
           exact (Nat.lt_floor_add_one _).le

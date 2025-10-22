@@ -7,7 +7,7 @@ import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Reindex
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 
 /-!
 # Transvections
@@ -477,8 +477,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       have : ¬n.succ ≤ i := by simp only [← hni, n.lt_succ_self, not_le]
       simp only [h, mul_transvection_apply_same, if_false,
         mul_listTransvecRow_last_col_take _ _ hnr.le, hni.le, this, if_true, IH hnr.le]
-      field_simp
-      ring
+      field
     · have hni : n ≠ i := by
         rintro rfl
         cases i

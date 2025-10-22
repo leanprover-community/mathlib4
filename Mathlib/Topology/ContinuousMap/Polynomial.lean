@@ -184,8 +184,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
       · ext
         simp only [iccHomeoI_symm_apply_coe]
         replace h : b - a ≠ 0 := sub_ne_zero_of_ne h.ne.symm
-        field_simp
-        ring
+        field
       · change _ + _ ∈ I
         rw [mul_comm (b - a)⁻¹, ← neg_mul, ← add_mul, ← sub_eq_add_neg]
         have w₁ : 0 < (b - a)⁻¹ := inv_pos.mpr (sub_pos.mpr h)

@@ -1045,7 +1045,7 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
     simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, ← add_smul, eq_vadd_iff_vsub_eq,
       smul_add]
     convert (one_smul R (y -ᵥ x)).symm
-    field_simp
+    field
 
 /-- If `T` is an affine independent family of points,
 then any 3 distinct points form a triangle. -/

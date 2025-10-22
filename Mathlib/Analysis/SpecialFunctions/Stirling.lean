@@ -80,8 +80,8 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
     dsimp only [f]
     rw [← pow_mul, pow_add]
     push_cast
-    field_simp
-  · have h (x) (hx : x ≠ (0 : ℝ)) : 1 + x⁻¹ = (x + 1) / x := by field_simp
+    field
+  · have h (x) (hx : x ≠ (0 : ℝ)) : 1 + x⁻¹ = (x + 1) / x := by field
     simp (disch := positivity) only [log_stirlingSeq_formula, log_div, log_mul, log_exp,
       factorial_succ, cast_mul, cast_succ, range_one, sum_singleton, h]
     ring
@@ -134,7 +134,7 @@ theorem log_stirlingSeq_bounded_aux :
   let log_stirlingSeq' : ℕ → ℝ := fun k => log (stirlingSeq (k + 1))
   intro n
   have h₁ k : log_stirlingSeq' k - log_stirlingSeq' (k + 1) ≤ 1 / 4 * (1 / (↑(k + 1) : ℝ) ^ 2) := by
-    convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field_simp
+    convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field
   have h₂ : (∑ k ∈ range n, 1 / (↑(k + 1) : ℝ) ^ 2) ≤ d := by
     have := (summable_nat_add_iff 1).mpr <| Real.summable_one_div_nat_pow.mpr one_lt_two
     exact this.sum_le_tsum (range n) (fun k _ => by positivity)
