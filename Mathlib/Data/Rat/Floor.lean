@@ -229,8 +229,6 @@ def evalIntCeil : NormNumExt where eval {u αZ} e := do
       return .isNegNat q(inferInstance) z q(isInt_intCeil_ofIsRat_neg $x $n $d $h)
   | _, _, _ => failure
 
-
-
 theorem isNat_intFract_of_isNat (r : R) (m : ℕ) : IsNat r m → IsNat (Int.fract r) 0 := by
   rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
