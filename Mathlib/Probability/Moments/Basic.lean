@@ -372,7 +372,7 @@ theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
     cgf (∑ i ∈ s, X i) μ t = ∑ i ∈ s, cgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   simp_rw [cgf]
-  rw [← log_prod _ _ fun j hj => ?_]
+  rw [← log_prod fun j hj => ?_]
   · rw [h_indep.mgf_sum h_meas]
   · exact (mgf_pos (h_int j hj)).ne'
 
