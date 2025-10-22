@@ -1447,8 +1447,10 @@ lemma LinearMap.mulRight_tmul (a : A) (b : B) :
     mulRight R (a ⊗ₜ[R] b) = map (mulRight R a) (mulRight R b) := by
   ext; simp
 
-noncomputable instance [StarRing R] [StarRing A] [StarRing B] [StarModule R A] [StarModule R B] :
-    StarMul (A ⊗[R] B) where
+namespace TensorProduct
+variable [StarRing R] [StarRing A] [StarRing B] [StarModule R A] [StarModule R B]
+
+noncomputable instance : StarMul (A ⊗[R] B) where
   star_mul x y :=
     x.induction_on (by simp) (fun _ _ ↦
       y.induction_on (by simp)
@@ -1456,6 +1458,7 @@ noncomputable instance [StarRing R] [StarRing A] [StarRing B] [StarModule R A] [
       fun _ _ h₁ h₂ ↦ by simp [add_mul, mul_add, h₁, h₂])
     fun _ _ h₁ h₂ ↦ by simp [add_mul, mul_add, h₁, h₂]
 
-noncomputable instance [StarRing R] [StarRing A] [StarRing B] [StarModule R A] [StarModule R B] :
-    StarRing (A ⊗[R] B) where
+noncomputable instance : StarRing (A ⊗[R] B) where
   star_add := by simp
+
+end TensorProduct
