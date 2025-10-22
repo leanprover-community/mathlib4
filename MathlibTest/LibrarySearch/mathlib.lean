@@ -5,7 +5,7 @@ import Mathlib
 
 /--
 info: Try this:
-  [apply] exact Nat.one_pos
+  exact Nat.one_pos
 -/
 #guard_msgs in
 example : 0 < 1 := by exact?

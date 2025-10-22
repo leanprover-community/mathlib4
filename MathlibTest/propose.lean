@@ -14,10 +14,10 @@ theorem foo (L M : List α) (w : L.Disjoint M) (m : a ∈ L) : a ∉ M := fun h 
 
 /--
 info: Try this:
-  [apply] have : M.Disjoint L := List.disjoint_symm w
+  have : M.Disjoint L := List.disjoint_symm w
 ---
 info: Try this:
-  [apply] have : K.Disjoint M := List.disjoint_of_subset_left m w
+  have : K.Disjoint M := List.disjoint_of_subset_left m w
 -/
 #guard_msgs in
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
@@ -28,10 +28,10 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
 
 /--
 info: Try this:
-  [apply] have : K.Disjoint M := List.disjoint_of_subset_left m w
+  have : K.Disjoint M := List.disjoint_of_subset_left m w
 ---
 info: Try this:
-  [apply] have : K.Disjoint M := List.disjoint_of_subset_left m w
+  have : K.Disjoint M := List.disjoint_of_subset_left m w
 -/
 #guard_msgs in
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
@@ -49,10 +49,10 @@ def bar (n : Nat) (x : String) : Nat × String := (n + x.length, x)
 
 /--
 info: Try this:
-  [apply] let a : ℕ × String := bar p.1 p.2
+  let a : ℕ × String := bar p.1 p.2
 ---
 info: Try this:
-  [apply] let _ : ℕ × String := bar p.1 p.2
+  let _ : ℕ × String := bar p.1 p.2
 -/
 #guard_msgs in
 set_option maxHeartbeats 400000 in
@@ -64,10 +64,10 @@ example (p : Nat × String) : True := by
 
 /--
 info: Try this:
-  [apply] have : M.Disjoint L := List.disjoint_symm w
+  have : M.Disjoint L := List.disjoint_symm w
 ---
 info: Try this:
-  [apply] have : a ∉ M := foo L M w m
+  have : a ∉ M := foo L M w m
 -/
 #guard_msgs in
 example (_K L M : List α) (w : L.Disjoint M) (m : a ∈ L) : True := by
@@ -78,28 +78,28 @@ example (_K L M : List α) (w : L.Disjoint M) (m : a ∈ L) : True := by
 
 /--
 info: Try this:
-  [apply] have : IsUnit p := isUnit_of_dvd_one h
+  have : IsUnit p := isUnit_of_dvd_one h
 ---
 info: Try this:
-  [apply] have : ¬IsUnit p := not_unit hp
+  have : ¬IsUnit p := not_unit hp
 ---
 info: Try this:
-  [apply] have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := Prime.dvd_mul hp
+  have : p ∣ p * p ↔ p ∣ p ∨ p ∣ p := Prime.dvd_mul hp
 ---
 info: Try this:
-  [apply] have : p ∣ p ∨ p ∣ p := dvd_or_dvd hp (Exists.intro p (Eq.refl (p * p)))
+  have : p ∣ p ∨ p ∣ p := dvd_or_dvd hp (Exists.intro p (Eq.refl (p * p)))
 ---
 info: Try this:
-  [apply] have : ¬p ∣ 1 := not_dvd_one hp
+  have : ¬p ∣ 1 := not_dvd_one hp
 ---
 info: Try this:
-  [apply] have : IsPrimal p := isPrimal hp
+  have : IsPrimal p := isPrimal hp
 ---
 info: Try this:
-  [apply] have : p ≠ 0 := ne_zero hp
+  have : p ≠ 0 := ne_zero hp
 ---
 info: Try this:
-  [apply] have : p ≠ 1 := ne_one hp
+  have : p ≠ 1 := ne_one hp
 -/
 #guard_msgs in
 -- From Mathlib.Algebra.Associated:

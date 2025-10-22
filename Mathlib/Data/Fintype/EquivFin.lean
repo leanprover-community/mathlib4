@@ -479,7 +479,10 @@ instance [Nonempty α] : Infinite (List α) :=
   Infinite.of_surjective ((↑) : List α → Multiset α) Quot.mk_surjective
 
 instance String.infinite : Infinite String :=
-  Infinite.of_injective List.asString (fun _ _ => List.asString_injective)
+  Infinite.of_injective (String.mk) <| by
+    intro _ _ h
+    cases h with
+    | refl => rfl
 
 instance Infinite.set [Infinite α] : Infinite (Set α) :=
   Infinite.of_injective singleton Set.singleton_injective

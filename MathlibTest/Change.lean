@@ -6,13 +6,13 @@ set_option autoImplicit true
 
 /--
 info: Try this:
-  [apply] change 0 = 1
+  change 0 = 1
 ---
 info: Try this:
-  [apply] change (fun x ↦ x) 0 = 1
+  change (fun x ↦ x) 0 = 1
 ---
 info: Try this:
-  [apply] change (fun x ↦ x) 0 = 1
+  change (fun x ↦ x) 0 = 1
 ---
 error: The term
   1 = 0
