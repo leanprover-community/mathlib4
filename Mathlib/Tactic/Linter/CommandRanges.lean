@@ -7,7 +7,7 @@ Authors: Damiano Testa
 import Mathlib.Init -- `import Lean.Elab.Command` is enough
 
 /-!
-#  The "commandRanges" linter
+# The "commandRanges" linter
 
 The "commandRanges" linter simply logs the `getRange?` and the `getRangeWithTrailing?`
 for each command.

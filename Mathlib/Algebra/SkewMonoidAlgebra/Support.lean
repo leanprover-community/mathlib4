@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 
 /-!
-#  Lemmas about the support of an element of a skew monoid algebra
+# Lemmas about the support of an element of a skew monoid algebra
 
 For `f : SkewMonoidAlgebra k G`, `f.support` is the set of all `a ∈ G` such that `f.coeff a ≠ 0`.
 -/

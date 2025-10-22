@@ -46,7 +46,7 @@ convenient.
 I made a *heavy* use of `simp` lemmas, aiming to bring Laurent polynomials to the form `C a * T n`.
 Any comments or suggestions for improvements is greatly appreciated!
 
-##  Future work
+## Future work
 Lots is missing!
 -- (Riccardo) add inclusion into Laurent series.
 -- A "better" definition of `trunc` would be as an `R`-linear map.  This works:

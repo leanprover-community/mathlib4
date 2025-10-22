@@ -9,7 +9,7 @@ import Mathlib.Order.Defs.LinearOrder
 
 /-!
 
-#  `move_add` a tactic for moving summands in expressions
+# `move_add` a tactic for moving summands in expressions
 
 The tactic `move_add` rearranges summands in expressions.
 
@@ -125,7 +125,7 @@ section reorder
 variable {α : Type*} [BEq α]
 
 /-!
-##  Reordering the variables
+## Reordering the variables
 
 This section produces the permutations of the variables for `move_add`.
 

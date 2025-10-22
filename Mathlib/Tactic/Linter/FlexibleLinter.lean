@@ -7,7 +7,7 @@ import Lean.Elab.Command
 import Mathlib.Tactic.Linter.Header
 
 /-!
-#  The "flexible" linter
+# The "flexible" linter
 
 The "flexible" linter makes sure that a "rigid" tactic (such as `rw`) does not act on the
 output of a "flexible" tactic (such as `simp`).
@@ -117,7 +117,7 @@ section goals_heuristic
 namespace Lean.Elab.TacticInfo
 
 /-!
-###  Heuristics for determining goals that a tactic modifies and what they become
+### Heuristics for determining goals that a tactic modifies and what they become
 
 The two definitions `goalsTargetedBy`, `goalsCreatedBy` extract a list of
 `MVarId`s attempting to determine on which goals the tactic `t` is acting and what are the
