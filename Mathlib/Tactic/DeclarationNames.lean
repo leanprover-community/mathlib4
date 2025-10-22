@@ -21,7 +21,7 @@ namespace Mathlib.Linter
 If `pos` is a `String.Pos`, then `getNamesFrom pos` returns the array of identifiers
 for the names of the declarations whose syntax begins in position at least `pos`.
 -/
-def getNamesFrom {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos.Raw) :
+def getNamesFrom {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos) :
     m (Array Syntax) := do
   -- declarations from parallelism branches should not be interesting here, so use `local`
   let drs := declRangeExt.toPersistentEnvExtension.getState (asyncMode := .local) (← getEnv)

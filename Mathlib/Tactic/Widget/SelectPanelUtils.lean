@@ -74,7 +74,7 @@ We also make sure `mkCmdStr` is executed in the right context.
 -/
 def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
     (mkCmdStr : (pos : Array GoalsLocation) → (goalType : Expr) → Params →
-    MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)))
+    MetaM (String × String × Option (String.Pos × String.Pos)))
     (helpMsg : String) (title : String) (onlyGoal := true) (onlyOne := false) :
     (params : Params) → RequestM (RequestTask Html) :=
   fun params ↦ RequestM.asTask do
