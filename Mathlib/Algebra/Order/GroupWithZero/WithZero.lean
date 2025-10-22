@@ -27,7 +27,7 @@ theory. These instances enable lemmas such as `mul_pos` to fire on `ℤᵐ⁰`.
 
 assert_not_exists Ring
 
--- this makes `mul_lt_mul_left`, `mul_pos` etc. work on `ℤᵐ⁰`
+-- this makes `mul_lt_mul_iff_right₀`, `mul_pos` etc. work on `ℤᵐ⁰`
 instance {α : Type*} [Mul α] [Preorder α] [MulLeftStrictMono α] :
     PosMulStrictMono (WithZero α) where
   elim := @fun
@@ -36,7 +36,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulLeftStrictMono α] :
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
         dsimp only at h ⊢
         norm_cast at h ⊢
-        exact mul_lt_mul_left' h x
+        gcongr
 
 open Function in
 instance {α : Type*} [Mul α] [Preorder α] [MulRightStrictMono α] :
@@ -47,7 +47,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightStrictMono α] :
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
         dsimp only at h ⊢
         norm_cast at h ⊢
-        exact mul_lt_mul_right' h x
+        gcongr
 
 instance {α : Type*} [Mul α] [Preorder α] [MulLeftMono α] :
     PosMulMono (WithZero α) where
@@ -61,7 +61,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulLeftMono α] :
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
         dsimp only at h ⊢
         norm_cast at h ⊢
-        exact mul_le_mul_left' h x
+        gcongr
 
 -- This makes `lt_mul_of_le_of_one_lt'` work on `ℤᵐ⁰`
 open Function in
@@ -77,7 +77,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
     | ⟨(x : α), hx⟩, (a : α), (b : α), h => by
         dsimp only at h ⊢
         norm_cast at h ⊢
-        exact mul_le_mul_right' h x
+        gcongr
 
 section Units
 

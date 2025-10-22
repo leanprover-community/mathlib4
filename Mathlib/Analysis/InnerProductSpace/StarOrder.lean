@@ -58,8 +58,8 @@ lemma instStarOrderedRingRCLike
     constructor
     · intro h
       rw [le_def] at h
-      obtain ⟨p, hp₁, -, hp₃⟩ :=
-        CFC.exists_sqrt_of_isSelfAdjoint_of_spectrumRestricts h.1 h.spectrumRestricts
+      obtain ⟨p, hp₁, -, hp₃⟩ := CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts
+        h.isSelfAdjoint h.spectrumRestricts
       refine ⟨p ^ 2, ?_, by symm; rwa [add_comm, ← eq_sub_iff_add_eq]⟩
       exact AddSubmonoid.subset_closure ⟨p, by simp only [hp₁.star_eq, sq]⟩
     · rintro ⟨p, hp, rfl⟩

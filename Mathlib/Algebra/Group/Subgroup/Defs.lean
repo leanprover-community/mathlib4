@@ -85,6 +85,22 @@ class HasMemOrInvMem {S G : Type*} [Inv G] [SetLike S G] (s : S) : Prop where
 export HasMemOrNegMem (mem_or_neg_mem)
 export HasMemOrInvMem (mem_or_inv_mem)
 
+namespace HasMemOrInvMem
+
+variable {S G : Type*} [Inv G] [SetLike S G] (s : S) [HasMemOrInvMem s]
+
+@[to_additive (attr := aesop unsafe 70% apply)]
+theorem inv_mem_of_notMem (x : G) (h : x ∉ s) : x⁻¹ ∈ s := by
+  have := mem_or_inv_mem s x
+  simp_all
+
+@[to_additive (attr := aesop unsafe 70% apply)]
+theorem mem_of_inv_notMem (x : G) (h : x⁻¹ ∉ s) : x ∈ s := by
+  have := mem_or_inv_mem s x
+  simp_all
+
+end HasMemOrInvMem
+
 /-- `SubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are subgroups of `G`. -/
 class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G] : Prop
     extends SubmonoidClass S G, InvMemClass S G
@@ -219,11 +235,6 @@ lemma subtype_injective :
 @[to_additive (attr := simp)]
 theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-@[deprecated (since := "2025-02-18")]
-alias _root_.AddSubgroupClass.coeSubtype := _root_.AddSubgroupClass.coe_subtype
 
 variable {H}
 
@@ -563,11 +574,6 @@ lemma subtype_injective (s : Subgroup G) :
 @[to_additive (attr := simp)]
 theorem coe_subtype : ⇑H.subtype = ((↑) : H → G) :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-@[deprecated (since := "2025-02-18")]
-alias _root_.AddSubgroup.coeSubtype := AddSubgroup.coe_subtype
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive

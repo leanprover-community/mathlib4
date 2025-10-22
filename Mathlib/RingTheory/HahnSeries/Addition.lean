@@ -169,7 +169,7 @@ lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ Rᵃᵒᵖ) :
   · simp
   simp only [ne_eq, AddOpposite.unop_eq_zero_iff, EmbeddingLike.map_eq_zero_iff, hx,
     not_false_eq_true, leadingCoeff_of_ne_zero, addOppositeEquiv_orderTop]
-  rfl
+  simp [addOppositeEquiv]
 
 @[simp]
 lemma addOppositeEquiv_symm_leadingCoeff (x : (HahnSeries Γ R)ᵃᵒᵖ) :
@@ -427,7 +427,6 @@ section DistribMulAction
 variable [PartialOrder Γ] {V : Type*} [Monoid R] [AddMonoid V] [DistribMulAction R V]
 
 instance : DistribMulAction R (HahnSeries Γ V) where
-  smul := (· • ·)
   one_smul _ := by
     ext
     simp
