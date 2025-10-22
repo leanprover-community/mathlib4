@@ -113,7 +113,7 @@ theorem IsInt.natCeil {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing 
 
 theorem IsNNRat.natCeil {R : Type*} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
     [FloorSemiring R] (r : R) (n d : ℕ) (h : IsNNRat r n d) (res : ℕ)
-    (hres : ⌈(n / d : Rat)⌉₊ = res) : IsNat ⌈r⌉₊ res := by
+    (hres : ⌈(n / d : ℚ≥0)⌉₊ = res) : IsNat ⌈r⌉₊ res := by
   constructor
   rw [← hres, h.to_eq rfl rfl, ← @NNRat.ceil_cast R]
   simp
