@@ -507,7 +507,7 @@ def factorialBinarySplitting (n : ℕ) : ℕ :=
 
 /-- This function was used in the definition of `factorialBinarysplitting`
 before it was migrated to `ascFactorialBinary`. -/
-@[deprecated ascFactorialBinary (since := "2025-10-21")]
+@[deprecated ascFactorialBinary (since := "2025-10-21"), nolint unusedArguments]
 def factorialBinarySplitting.prodRange (lo hi : ℕ) (_ : lo < hi := by grind) : ℕ :=
   ascFactorialBinary lo (hi - lo)
 
