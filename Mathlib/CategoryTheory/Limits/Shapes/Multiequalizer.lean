@@ -184,31 +184,6 @@ lemma Hom.id_eq_id (X : WalkingMultispan J) : Hom.id X = 𝟙 X := rfl
 lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan J}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
-variable (J) in
-/-- The bijection `WalkingMultispan J ≃ J.L ⊕ J.R`. -/
-def equiv : WalkingMultispan J ≃ J.L ⊕ J.R where
-  toFun x := match x with
-    | left a => Sum.inl a
-    | right b => Sum.inr b
-  invFun := Sum.elim left right
-  left_inv := by rintro (_ | _) <;> rfl
-  right_inv := by rintro (_ | _) <;> rfl
-
-variable (J) in
-/-- The bijection `Arrow (WalkingMultispan J) ≃ WalkingMultispan J ⊕ J.R ⊕ J.R`. -/
-def arrowEquiv :
-    Arrow (WalkingMultispan J) ≃ WalkingMultispan J ⊕ J.L ⊕ J.L where
-  toFun f := match f.hom with
-    | .id x => Sum.inl x
-    | .fst a => Sum.inr (Sum.inl a)
-    | .snd a => Sum.inr (Sum.inr a)
-  invFun :=
-    Sum.elim (fun X ↦ Arrow.mk (𝟙 X))
-      (Sum.elim (fun a ↦ Arrow.mk (Hom.fst a : left _ ⟶ right _))
-        (fun a ↦ Arrow.mk (Hom.snd a : left _ ⟶ right _)))
-  left_inv := by rintro ⟨_, _, (_ | _ | _)⟩ <;> rfl
-  right_inv := by rintro (_ | _ | _) <;> rfl
-
 end WalkingMultispan
 
 /-- This is a structure encapsulating the data necessary to define a `Multicospan`. -/
