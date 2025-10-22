@@ -21,37 +21,6 @@ The file is organized into two sections:
 1. **General Results**: Theorems that hold for any affine space (no finite-dimensionality required)
 2. **Finite-Dimensional Results**: Theorems specific to finite-dimensional spaces
 
-## Main results
-
-### General (any dimension)
-* `AffineSubspace.exists_not_mem_of_ne_top`: A proper affine subspace does not contain
-  all points
-* `Nonempty.of_affineSpan_range_eq_top`: Index type is nonempty if affine span is top
-* `AffineMap.ext_of_span_eq_top`: Affine maps uniquely determined by values on spanning sets
-* `AffineEquiv.eq_of_eq_on_spanning`: Affine automorphisms uniquely determined on spanning sets
-* `affineIndependent_option_extend`: Extending affinely independent families preserves independence
-* `affineIndependent_card_eq_of_finrank_direction_eq`: Two affinely independent families
-  spanning affine subspaces with equal direction finrank have the same cardinality
-
-### Finite-dimensional
-* `affineDim_le_of_subset_affineSpan`: Affine dimension is monotone with respect to affine span
-* `linearIndependent_card_eq_finrank_span_eq_top`: Linearly independent family with cardinality
-  equal to ambient dimension spans the entire space
-* `AffineIndependent.toBasis_of_span_eq_top`: Construct linear basis from affinely independent
-  spanning family via the difference map
-* `affineEquivOfLinearEquiv`: Construct an affine equivalence from a linear equivalence
-  and two base points
-* `AffineIndependent.card_le_finrank_add_one`: Affinely independent families have cardinality
-  at most `finrank + 1`
-* `affineIndependent_indexed`: Two affinely independent families that span the entire space
-  can be mapped by an affine automorphism
-* `affineIndependent_to_affineIndependent_automorphism`: Main theorem - affinely independent
-  families of the same size can be mapped by affine automorphisms
-* `exists_affineIndependent_of_affineSubspace`: Every nonempty affine subspace contains an
-  affinely independent spanning family
-* `affineSubspace_automorphism_of_eq_dim`: Affine subspaces of the same dimension can be
-  mapped by affine automorphisms
-
 ## References
 
 * Rockafellar, "Convex Analysis" (1970), Theorem 1.6 and Corollary 1.6.1
@@ -116,12 +85,7 @@ lemma Nonempty.of_affineSpan_range_eq_top {ι : Type*} (f : ι → E)
   -- This gives us ⊥ = ⊤, which contradicts bot_ne_top
   exact absurd h (bot_ne_top (α := AffineSubspace ℝ E))
 
-/-!
-### Uniqueness of affine maps on spanning sets
--/
-
-/-- **Uniqueness of affine maps on spanning sets**: If two affine maps agree on a set that
-spans the entire space, then they are equal.
+/-- If two affine maps agree on a set that spans the entire space, then they are equal.
 
 Affine maps are uniquely determined by their values on any spanning set. Affine independence
 is not required for uniqueness, only spanning. -/
@@ -151,11 +115,10 @@ theorem AffineMap.ext_of_span_eq_top
   have : (f ∘ p : ι → P₂) = (g ∘ p : ι → P₂) := funext h_agree
   rw [this]
 
-/-- **Uniqueness of affine automorphisms on spanning sets**: If two affine automorphisms
-agree on a set that spans the entire space, then they are equal.
+/-- If two affine automorphisms agree on a set that spans the entire space, then they are equal.
 
 Specialization of `AffineMap.ext_of_span_eq_top` to affine automorphisms. -/
-theorem AffineEquiv.eq_of_eq_on_spanning
+theorem AffineEquiv.ext_of_span_eq_top
     {ι : Type*} [Fintype ι]
     (p : ι → E)
     (h_span : affineSpan ℝ (range p) = ⊤)
@@ -172,15 +135,18 @@ theorem AffineEquiv.eq_of_eq_on_spanning
 -/
 
 /-- Extending an affinely independent family with a point outside its affine span preserves
-affine independence. -/
-lemma affineIndependent_option_extend
+affine independence.
+
+This uses `Option.elim` to extend `f : ι → E` to `Option ι → E` by designating `p` as the
+value at `none`. -/
+lemma AffineIndependent.option_extend
     {ι : Type*} [Fintype ι] [DecidableEq ι] [Nonempty ι]
     {f : ι → E} (hf : AffineIndependent ℝ f)
-    {p : E} (hp : p ∉ affineSpan ℝ (range f))
-    (f' : Option ι → E)
-    (h_some : ∀ i : ι, f' (some i) = f i)
-    (h_none : f' none = p) :
-    AffineIndependent ℝ f' := by
+    {p : E} (hp : p ∉ affineSpan ℝ (range f)) :
+    AffineIndependent ℝ (fun o : Option ι => o.elim p f) := by
+  -- Define the extended function
+  let f' : Option ι → E := fun o => o.elim p f
+
   -- Show the subfamily excluding `none` is affinely independent
   have h_sub : AffineIndependent ℝ (fun x : {y : Option ι // y ≠ none} => f' x) := by
     -- The restricted function equals f composed with Option.get
@@ -188,7 +154,7 @@ lemma affineIndependent_option_extend
            f ∘ (fun x => Option.get x.val (Option.ne_none_iff_isSome.mp x.prop)) := by
       ext ⟨x, hx⟩
       cases x with
-      | some i => exact h_some i
+      | some i => rfl
       | none => exact absurd rfl hx
 
     rw [this]
@@ -215,20 +181,20 @@ lemma affineIndependent_option_extend
     · intro ⟨x, hx_ne, hx_eq⟩
       cases x with
       | none => contradiction
-      | some i => use i; rw [← h_some]; exact hx_eq
+      | some i => use i; exact hx_eq
     · intro ⟨i, hi⟩
       use some i
-      exact ⟨Option.some_ne_none i, h_some i ▸ hi⟩
+      exact ⟨Option.some_ne_none i, hi⟩
 
   -- Show f' none ∉ affineSpan ℝ (f' '' {x | x ≠ none})
   have h_not_mem : f' none ∉ affineSpan ℝ (f' '' {x : Option ι | x ≠ none}) := by
-    rw [h_image_eq, h_none]
+    rw [h_image_eq]
     exact hp
 
   -- Apply the main theorem
   exact AffineIndependent.affineIndependent_of_notMem_span h_sub h_not_mem
 
-/-- **Helper lemma**: Two affinely independent families spanning affine subspaces with
+/-- Two affinely independent families spanning affine subspaces with
 equal direction finrank have the same cardinality.
 
 This lemma does not require finite-dimensionality of the ambient space, only that
@@ -285,10 +251,6 @@ variable [FiniteDimensional ℝ E]
 
 section FiniteDimensional
 
-/-!
-### Affine dimension properties
--/
-
 /-- Affine dimension is monotone: if `s ⊆ affineSpan ℝ t`, then `affineDim ℝ s ≤ affineDim ℝ t`. -/
 @[simp]
 theorem affineDim_le_of_subset_affineSpan {s t : Set E} (h : s ⊆ affineSpan ℝ t) :
@@ -306,10 +268,6 @@ theorem affineDim_le_of_subset_affineSpan {s t : Set E} (h : s ⊆ affineSpan �
   -- affineDim is defined as Module.finrank of the direction
   simp only [affineDim]
   exact_mod_cast Submodule.finrank_mono h4
-
-/-!
-### Main theorem: affinely independent families and automorphisms
--/
 
 /-- A linearly independent family whose cardinality equals the ambient dimension
 spans the entire space. -/
@@ -403,12 +361,6 @@ theorem affineIndependent_indexed
     (hf_span : affineSpan ℝ (range f) = ⊤)
     (hg_span : affineSpan ℝ (range g) = ⊤) :
     ∃ (T : E ≃ᵃ[ℝ] E), ∀ i, T (f i) = g i := by
-  -- Strategy: Reduce to linear algebra
-  -- 1. Pick base points f₀ and g₀
-  -- 2. Form linear bases B_f = {f i - f₀ | i ≠ 0} and B_g = {g i - g₀ | i ≠ 0}
-  -- 3. Construct linear automorphism A mapping B_f to B_g
-  -- 4. Define affine map T x := A x + (g₀ - A f₀)
-  -- This ensures T(f₀) = g₀ and T(f i) = g i for all i
 
   -- Pick base points (ι is nonempty since the span equals ⊤)
   let i₀ : ι := Classical.choice (Nonempty.of_affineSpan_range_eq_top f hf_span)
@@ -553,21 +505,14 @@ theorem affineIndependent_to_affineIndependent_automorphism
 
       obtain ⟨p_g, hp_g⟩ := h_exists_g
 
-      -- Extend f and g to Option ι
-      let f' : Option ι → E := fun o => match o with
-        | none => p_f
-        | some i => f i
-
-      let g' : Option ι → E := fun o => match o with
-        | none => p_g
-        | some i => g i
+      -- Extend f and g to Option ι using Option.elim
+      let f' : Option ι → E := fun o => o.elim p_f f
+      let g' : Option ι → E := fun o => o.elim p_g g
 
       -- Show that f' and g' are affinely independent using the helper lemma
-      have hf' : AffineIndependent ℝ f' :=
-        affineIndependent_option_extend hf hp_f f' (fun i => rfl) rfl
+      have hf' : AffineIndependent ℝ f' := hf.option_extend hp_f
 
-      have hg' : AffineIndependent ℝ g' :=
-        affineIndependent_option_extend hg hp_g g' (fun i => rfl) rfl
+      have hg' : AffineIndependent ℝ g' := hg.option_extend hp_g
 
       -- The dimension gap for Option ι
       have h_card_option : Fintype.card (Option ι) = Fintype.card ι + 1 := by
