@@ -459,12 +459,18 @@ lemma induce_union_connected {H : G.Subgraph} {s t : Set V}
     (H.induce (s ∪ t)).Connected :=
   induce_union_connected_of_nonempty_inf sconn.preconnected tconn.preconnected sintert
 
+lemma connected_induce_top_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.Preconnected) (h₂ : G₂.Preconnected)
+    {u v : V} (hu : u ∈ G₁.verts) (hv : v ∈ G₂.verts) (huv : G.Adj u v) :
+    (⊤ : G.Subgraph).induce {u, v} ⊔ G₁ ⊔ G₂ |>.Connected :=
+  Subgraph.connected_sup (Subgraph.connected_sup (top_induce_pair_connected_of_adj huv).preconnected
+    h₁ ⟨u, by simp [hu]⟩).preconnected h₂ ⟨v, by simp [hv]⟩
+
+@[deprecated connected_induce_top_sup (since := "2025-10-22")]
 lemma Connected.adj_union {H K : G.Subgraph}
     (Hconn : H.Connected) (Kconn : K.Connected) {u v : V} (uH : u ∈ H.verts) (vK : v ∈ K.verts)
     (huv : G.Adj u v) :
     ((⊤ : G.Subgraph).induce {u, v} ⊔ H ⊔ K).Connected :=
-  Subgraph.connected_sup (Subgraph.connected_sup (top_induce_pair_connected_of_adj huv).preconnected
-    Hconn.preconnected ⟨u, by simp [uH]⟩).preconnected Kconn.preconnected ⟨v, by simp [vK]⟩
+  connected_induce_top_sup Hconn.preconnected Kconn.preconnected uH vK huv
 
 lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
     H.Preconnected ↔ ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
@@ -532,7 +538,7 @@ lemma induce_connected_adj_union {v w : V} {s t : Set V}
     (hv : v ∈ s) (hw : w ∈ t) (ha : G.Adj v w) :
     (G.induce (s ∪ t)).Connected := by
   rw [connected_induce_iff] at sconn tconn ⊢
-  apply (sconn.adj_union tconn hv hw ha).mono
+  apply Subgraph.connected_induce_top_sup sconn.preconnected tconn.preconnected hv hw ha |>.mono
   · simp only [sup_le_iff, Subgraph.le_induce_union_left,
       Subgraph.le_induce_union_right, and_true, ← Subgraph.subgraphOfAdj_eq_induce ha]
     apply subgraphOfAdj_le_of_adj
