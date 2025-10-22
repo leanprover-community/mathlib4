@@ -68,9 +68,7 @@ lemma untop₀_add [AddZeroClass α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b
 @[simp]
 lemma untop₀_neg [AddCommGroup α] : ∀ a : WithTop α, (-a).untop₀ = -a.untop₀
   | ⊤ => by simp
-  | (a : α) => by
-    rw [← LinearOrderedAddCommGroup.coe_neg, untop₀_coe]
-    simp
+  | (a : α) => rfl
 
 /-!
 ## Simplifying Lemmas in cases where α is a MulZeroClass
