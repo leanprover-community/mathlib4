@@ -441,8 +441,8 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
       not_false_eq_true, true_and, (idealX K).3]
   classical
-  rw [count_associates_factors_eq  (span_ne_zero).1
-    (Ideal.span_singleton_prime Polynomial.X_ne_zero|>.mpr prime_X) (span_ne_zero).2,
+  rw [count_associates_factors_eq (span_ne_zero).1
+    (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr prime_X) (span_ne_zero).2,
     count_associates_factors_eq]
   on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
   exacts [count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
@@ -675,7 +675,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
     <| (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (i := ζ) (by tauto)
   obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_neBot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
-  obtain ⟨N, hN⟩ :  ∃ N : ℤ, ∀ g : K⸨X⸩,
+  obtain ⟨N, hN⟩ : ∃ N : ℤ, ∀ g : K⸨X⸩,
     Valued.v (g - f) ≤ 1 → ∀ n < N, g.coeff n = 0 := by
     by_cases hf : f = 0
     · refine ⟨0, fun x hg ↦ ?_⟩
@@ -808,7 +808,7 @@ theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤᵐ⁰ˣ) :
       apply (intValuation_le_iff_coeff_lt_eq_zero K _).mpr
       simpa only [map_sub, sub_eq_zero, Polynomial.coeff_coe, coeff_trunc] using
         fun _ h ↦ (if_pos h).symm
-    rw [ neg_add, ofAdd_add, ← hd, ofAdd_toAdd, WithZero.coe_mul, coe_unzero,
+    rw [neg_add, ofAdd_add, ← hd, ofAdd_toAdd, WithZero.coe_mul, coe_unzero,
       ← coe_algebraMap] at this
     rw [← valuation_of_algebraMap (K := K⸨X⸩) (PowerSeries.idealX K) (F - F.trunc (d + 1))]
     apply lt_of_le_of_lt this
