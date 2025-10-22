@@ -1,0 +1,123 @@
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.CategoryTheory.Functor.Category
+
+open CategoryTheory
+
+section
+
+variable (C : Type*) [Category* C]
+
+universe u
+variable (D : Type u) [Category* D]
+
+variable (E : Type 3) [Category* E]
+
+def fooC := C ⥤ C
+def fooD := D ⥤ D
+def fooE := E ⥤ E
+
+/--
+info: fooC.{v_1, u_1} (C : Type u_1) [Category.{v_1, u_1} C] : Type (max v_1 u_1)
+-/
+#guard_msgs (info) in
+#check fooC
+
+/--
+info: fooD.{v_2, u} (D : Type u) [Category.{v_2, u} D] : Type (max v_2 u)
+-/
+#guard_msgs (info) in
+#check fooD
+
+/--
+info: fooE.{v_3} (E : Type 3) [Category.{v_3, 3} E] : Type (max v_3 3)
+-/
+#guard_msgs (info) in
+#check fooE
+
+end
+
+section
+
+variable (C D : Type*) [Category* (C × D)]
+
+def foo := (C × D) ⥤ (C × D)
+
+/--
+info: foo.{v_1, u_1, u_2} (C : Type u_1) (D : Type u_2) [Category.{v_1, max u_2 u_1} (C × D)] : Type (max v_1 u_2 u_1)
+-/
+#guard_msgs (info) in
+#check foo
+
+
+
+universe u₁ u₂
+
+variable (E : Sort (imax (u₁ + 1) (u₂ + 1))) [Category* E]
+variable (F : Sort (max (u₁ + 1) (u₂ + 1))) [Category* F]
+
+def barE := E ⥤ E
+def barF := F ⥤ F
+
+/--
+info: barE.{v_2, u₁, u₂} (E : Type (max u₁ u₂)) [Category.{v_2, max u₁ u₂} E] : Type (max v_2 u₁ u₂)
+-/
+#guard_msgs (info) in
+#check barE
+
+/--
+info: barF.{v_3, u₁, u₂} (F : Type (max u₁ u₂)) [Category.{v_3, max u₁ u₂} F] : Type (max v_3 u₁ u₂)
+-/
+#guard_msgs (info) in
+#check barF
+
+end
+
+section
+
+variable (C1 : Type*) [Category* C1] (C2 : Type*) [Category* C2]
+
+universe a b
+
+variable [Category* (Type a)] [Category (Type b)]
+
+universe c
+
+variable [Category* (Type c)]
+
+def Big := Type a ⥤ Type b ⥤ C1 ⥤ C2 ⥤ Type c
+
+/--
+info: Big.{v_3, a, b, v_4, c, v_1, u_1, v_2, u_2, u_3} (C1 : Type u_1) [Category.{v_1, u_1} C1] (C2 : Type u_2)
+  [Category.{v_2, u_2} C2] [Category.{v_3, a + 1} (Type a)] [Category.{u_3, b + 1} (Type b)]
+  [Category.{v_4, c + 1} (Type c)] :
+  Type
+    (max v_3 (max (max (max (b + 1) u_1) u_2) v_4) (a + 1)
+        (max (max (max (max (max (max (max (max (c + 1) u_2) v_4) v_2) u_1) u_2 v_4) v_1) (b + 1)) (max u_1 u_2) v_4)
+        u_3)
+-/
+#guard_msgs (info) in
+#check Big
+
+end
+
+section
+
+/--
+error: The term
+  Type ?u.660
+has level mvars
+-/
+#guard_msgs (error) in
+variable [Category* (Type _)]
+
+/--
+error: The type
+  Type ?u.663
+of
+  C
+has level mvars
+-/
+#guard_msgs (error) in
+variable (C : Type _) [Category* C]
+
+end
