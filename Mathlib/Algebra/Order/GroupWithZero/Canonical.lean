@@ -252,54 +252,77 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 
 end Bot
 
-section Preorder
+section LE
+variable [LE α] {x y : WithZero α} {a b : α}
 
-variable [Preorder α] [Preorder β] {x y : WithZero α} {a b : α}
+instance (priority := 10) le : LE (WithZero α) := WithBot.instLE
 
-instance (priority := 10) le : LE (WithZero α) :=
-  ⟨fun o₁ o₂ => ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b⟩
+lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := WithBot.le_iff_forall
 
-lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := .rfl
+@[simp, norm_cast] lemma coe_le_coe : (a : WithZero α) ≤ b ↔ a ≤ b := WithBot.coe_le_coe
 
-@[simp, norm_cast] lemma coe_le_coe : (a : WithZero α) ≤ b ↔ a ≤ b := by simp [le_def]
-@[simp] lemma zero_le (a : WithZero α) : 0 ≤ a := by simp [le_def]
-@[simp] lemma not_coe_le_zero : ¬ a ≤ (0 : WithZero α) := by simp [le_def]
+lemma not_coe_le_zero (a : α) : ¬(a : WithZero α) ≤ 0 := WithBot.not_coe_le_bot _
 
-instance (priority := 10) lt : LT (WithZero α) :=
-  ⟨fun o₁ o₂ : WithZero α => ∃ b : α, o₂ = ↑b ∧ ∀ a : α, o₁ = ↑a → a < b⟩
+instance instOrderBot : OrderBot (WithZero α) := WithBot.instOrderBot
 
-lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := .rfl
+instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) := WithBot.instBoundedOrder
+
+@[simp] lemma zero_le (a : WithZero α) : 0 ≤ a := bot_le (a := a)
+
+/-- There is a general version `le_zero_iff`, but this lemma does not require a `PartialOrder`. -/
+@[simp]
+protected lemma nonpos_iff_eq_zero : x ≤ 0 ↔ x = 0 := WithBot.le_bot_iff
+
+lemma coe_le_iff : a ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b := WithBot.coe_le_iff
+lemma le_coe_iff : x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b := WithBot.le_coe_iff
+
+protected lemma _root_.IsMax.withZero (h : IsMax a) : IsMax (a : WithZero α) := h.withBot
+
+lemma le_unzero_iff (hy : y ≠ 0) : a ≤ unzero hy ↔ a ≤ y := WithBot.le_unbot_iff _
+lemma unbot_le_iff (hx : x ≠ 0) : unzero hx ≤ b ↔ x ≤ b := WithBot.unbot_le_iff _
+
+@[simp, norm_cast] lemma one_le_coe [One α] : 1 ≤ (a : WithZero α) ↔ 1 ≤ a := coe_le_coe
+@[simp, norm_cast] lemma coe_le_one [One α] : (a : WithZero α) ≤ 1 ↔ a ≤ 1 := coe_le_coe
+
+@[simp] lemma unzero_le_unzero (hx : x ≠ 0) (hy : y ≠ 0) : unzero hx ≤ unzero hy ↔ x ≤ y :=
+  WithBot.unbot_le_unbot ..
+
+end LE
+
+section LT
+
+variable [LT α] {x y : WithZero α} {a b : α}
+
+/-- The order on `WithZero α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`. -/
+instance (priority := 10) instLT : LT (WithZero α) := WithBot.instLT
+
+lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := WithBot.lt_def
 
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithZero α) < b ↔ a < b := by simp [lt_def]
 @[simp] lemma zero_lt_coe (a : α) : 0 < (a : WithZero α) := by simp [lt_def]
 @[simp] protected lemma not_lt_zero (a : WithZero α) : ¬a < 0 := by simp [lt_def]
 
-instance instPreorder [Preorder α] : Preorder (WithZero α) where
-  lt_iff_le_not_ge x y := by cases x <;> cases y <;> simp [lt_iff_le_not_ge]
-  le_refl x := by cases x <;> simp [le_def]
-  le_trans x y z := by cases x <;> cases y <;> cases z <;> simp [le_def]; simpa using le_trans
+lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, y = b ∧ x < b := WithBot.lt_iff_exists_coe
 
-instance instOrderBot : OrderBot (WithZero α) where
-  bot_le := by simp [le_def]
+lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_def]
+
+/-- A version of `pos_iff_ne_zero` for `WithZero` that only requires `LT α`,
+not `PartialOrder α`. -/
+protected lemma pos_iff_ne_zero : 0 < x ↔ x ≠ 0 := WithBot.bot_lt_iff_ne_bot
+
+lemma lt_unzero_iff (hy : y ≠ 0) : a < unzero hy ↔ a < y := WithBot.lt_unbot_iff _
+lemma unzero_lt_iff (hx : x ≠ 0) : unzero hx < b ↔ x < b := WithBot.unbot_lt_iff _
 
 @[simp, norm_cast] lemma one_lt_coe [One α] : 1 < (a : WithZero α) ↔ 1 < a := coe_lt_coe
-
-@[simp, norm_cast] lemma one_le_coe [One α] : 1 ≤ (a : WithZero α) ↔ 1 ≤ a := coe_le_coe
-
 @[simp, norm_cast] lemma coe_lt_one [One α] : (a : WithZero α) < 1 ↔ a < 1 := coe_lt_coe
 
-@[simp, norm_cast] lemma coe_le_one [One α] : (a : WithZero α) ≤ 1 ↔ a ≤ 1 := coe_le_coe
+end LT
 
-theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b := by
-  simp [le_def]
+section Preorder
 
-@[simp] lemma unzero_le_unzero {a b : WithZero α} (ha hb) :
-    unzero (x := a) ha ≤ unzero (x := b) hb ↔ a ≤ b := by
-  -- TODO: Fix `lift` so that it doesn't try to clear the hypotheses I give it when it is
-  -- impossible to do so. See https://github.com/leanprover-community/mathlib4/issues/19160
-  lift a to α using id ha
-  lift b to α using id hb
-  simp
+variable [Preorder α] [Preorder β] {x y : WithZero α} {a b : α}
+
+instance instPreorder : Preorder (WithZero α) := WithBot.instPreorder
 
 instance instMulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by
@@ -325,15 +348,15 @@ protected lemma addLeftMono [AddZeroClass α] [AddLeftMono α]
     rw [← coe_add, ← coe_add _ c, coe_le_coe]
     exact add_le_add_left hbc' _
 
-instance instExistsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero α) :=
-  ⟨fun {a b} => by
+instance instExistsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero α) where
+  exists_add_of_le {a b} := by
     induction a
-    · exact fun _ => ⟨b, (zero_add b).symm⟩
+    · simp
     induction b
-    · exact fun h => (not_coe_le_zero h).elim
+    · simp
     intro h
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
-    exact ⟨c, rfl⟩⟩
+    exact ⟨c, rfl⟩
 
 lemma map'_mono [MulOneClass α] [MulOneClass β] {f : α →* β} (hf : Monotone f) :
     Monotone (map' f) := by simpa [Monotone, WithZero.forall]
@@ -388,7 +411,7 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α]
 
-instance instPartialOrder : PartialOrder (WithZero α) := WithBot.partialOrder
+instance instPartialOrder : PartialOrder (WithZero α) := WithBot.instPartialOrder
 
 instance instMulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
     MulLeftReflectLT (WithZero α) := by

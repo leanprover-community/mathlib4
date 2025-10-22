@@ -459,8 +459,7 @@ theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
         nndist I.lower I.upper / nndist (I.lower i) (I.upper i) * nndist (I.lower i) (I.upper i) :=
       (div_mul_cancel₀ _ <| mt nndist_eq_zero.1 (I.lower_lt_upper i).ne).symm
     _ ≤ I.distortion * nndist (I.lower i) (I.upper i) := by
-      apply mul_le_mul_right'
-      apply Finset.le_sup (Finset.mem_univ i)
+      grw [distortion, ← Finset.le_sup (Finset.mem_univ i)]
 
 theorem dist_le_distortion_mul (I : Box ι) (i : ι) :
     dist I.lower I.upper ≤ I.distortion * (I.upper i - I.lower i) := by

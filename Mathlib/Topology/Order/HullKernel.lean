@@ -169,9 +169,7 @@ subsets of `T` and `α`. -/
 open OrderDual in
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
     (fun S => toDual (kernel S)) (fun a => hull T (ofDual a)) := fun S a => by
-  simp only [toDual_sInf, sSup_le_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,
-    exists_eq_right, ← ofDual_le_ofDual, forall_exists_index, OrderDual.forall, ofDual_toDual]
-  exact ⟨fun h b hbS => h _ (Subtype.coe_prop b) hbS, fun h b _ hbS => h hbS⟩
+  simp [Set.subset_def]
 
 lemma gc_closureOperator (S : Set T) : gc.closureOperator S = hull T (kernel S) := by
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
@@ -192,11 +190,11 @@ def gi (hG : OrderGenerates T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (OrderDual.toDual ∘ kernel)
     (hull T ∘ OrderDual.ofDual) :=
   gc.toGaloisInsertion fun a ↦ by
-    rw [OrderDual.le_toDual]
-    obtain ⟨S, hS⟩ := hG a
-    exact le_of_le_of_eq (sInf_le_sInf (image_val_mono (fun c hcS => mem_preimage.mpr (mem_Ici.mpr
-      (by rw [hS]; exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS))))))
-      hS.symm
+    obtain ⟨S, rfl⟩ := hG a
+    rw [OrderDual.le_toDual, kernel, kernel]
+    exact sInf_le_sInf <| image_val_mono fun c hcS => by
+      rw [hull, mem_preimage, mem_Ici]
+      exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS)
 
 lemma kernel_hull (hG : OrderGenerates T) (a : α) : kernel (hull T a) = a := by
   conv_rhs => rw [← OrderDual.ofDual_toDual a, ← (gi hG).l_u_eq a]
