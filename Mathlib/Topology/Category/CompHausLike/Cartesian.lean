@@ -6,6 +6,14 @@ Authors: Dagur Asgeirsson
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.Topology.Category.CompHausLike.Limits
 
+/-!
+
+# Cartesian monoidal structure on `CompHausLike`
+
+If the predicate `P` is preserved under taking type-theoretic products and `PUnit` satisfies it,
+then `CompHausLike P` is a cartesian monoidal category.
+-/
+
 universe u
 
 open CategoryTheory Limits
