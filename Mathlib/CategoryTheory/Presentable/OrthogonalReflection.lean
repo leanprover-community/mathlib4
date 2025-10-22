@@ -31,8 +31,8 @@ open Limits Localization
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 
-lemma MorphismProperty.isClosedUnderColimitsOfShape_rightOrthogonal
-    (J : Type u) [Category.{v} J] [EssentiallySmall.{w} J]
+lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
+    (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
     W.isLocal.IsClosedUnderColimitsOfShape J where
