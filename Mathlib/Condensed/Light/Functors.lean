@@ -3,8 +3,8 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Light.TopCatAdjunction
 import Mathlib.Condensed.Light.CartesianClosed
+import Mathlib.Condensed.Light.TopCatAdjunction
 import Mathlib.Topology.Category.LightProfinite.Cartesian
 
 /-!
