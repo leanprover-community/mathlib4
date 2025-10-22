@@ -35,7 +35,8 @@ open Limits Opposite
 
 /-- A category `J` is `κ`-filtered (for a regular cardinal `κ`) if
 any functor `F : A ⥤ J` from a category `A` such that `HasCardinalLT (Arrow A) κ`
-admits a cocone. -/
+admits a cocone. See `isCardinalFiltered_iff` for a more
+concrete characterization of `κ`-filtered categories. -/
 class IsCardinalFiltered (J : Type u) [Category.{v} J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
   nonempty_cocone {A : Type w} [SmallCategory A] (F : A ⥤ J)
@@ -123,6 +124,14 @@ lemma coeq_condition (k : K) : f k ≫ coeqHom f hK = toCoeq f hK :=
     (.line k)
 
 end coeq
+
+/-- Variant of `IsFiltered.span` for `κ`-filtered categories. -/
+lemma wideSpan {ι : Type v'} {j : J} {k : ι → J}
+    (f : ∀ i, j ⟶ k i) (hι : HasCardinalLT ι κ) :
+    ∃ (m : J) (a : ∀ i, k i ⟶ m) (b : j ⟶ m), ∀ i, f i ≫ a i = b := by
+  let φ (i : ι) := f i ≫ toMax k hι i
+  exact ⟨coeq φ hι, fun i ↦ toMax k hι i ≫ coeqHom φ hι,
+    toCoeq φ hι, by simpa [φ] using coeq_condition φ hι⟩
 
 end IsCardinalFiltered
 
@@ -225,5 +234,69 @@ instance isCardinalFiltered_pi {ι : Type u'} (J : ι → Type u) [∀ i, Catego
         ι.naturality {X Y} f := by
           ext i
           simpa using (c i).ι.naturality f }⟩
+
+section
+
+variable {J : Type u} [Category.{v} J] {κ : Cardinal.{w}} [Fact κ.IsRegular]
+  (h₁ : (∀ ⦃ι : Type w⦄ (j : ι → J) (_ : HasCardinalLT ι κ),
+          ∃ (k : J), ∀ (i : ι), Nonempty (j i ⟶ k)))
+  (h₂ : ∀ ⦃ι : Type w⦄ ⦃j k : J⦄ (f : ι → (j ⟶ k)) (_ : HasCardinalLT ι κ),
+      ∃ (l : J) (a : k ⟶ l) (b : j ⟶ l), ∀ (i : ι), f i ≫ a = b)
+
+include h₁ h₂ in
+omit [Fact κ.IsRegular] in
+lemma isCardinalFiltered_iff_aux₁ {ι : Type w} {j : J} {k : ι → J}
+    (f : ∀ i, j ⟶ k i) (hι : HasCardinalLT ι κ) :
+    ∃ (m : J) (a : ∀ i, k i ⟶ m) (b : j ⟶ m), ∀ i, f i ≫ a i = b := by
+  obtain ⟨l, hl⟩ := h₁ k hι
+  let a (i : ι) := (hl i).some
+  obtain ⟨m, b, c, hm⟩ := h₂ (fun i ↦ f i ≫ a i) hι
+  exact ⟨m, fun i ↦ a i ≫ b, c, by simpa using hm⟩
+
+include h₁ h₂ in
+lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
+    (f₁ f₂ : ∀ i, j i ⟶ k) (hι : HasCardinalLT ι κ) :
+    ∃ (l : J) (a : k ⟶ l), ∀ i, f₁ i ≫ a = f₂ i ≫ a := by
+  have (i : ι) : ∃ (l : J) (p : k ⟶ l), f₁ i ≫ p = f₂ i ≫ p := by
+    obtain ⟨l, a, b, hl⟩ := h₂ (Sum.elim (fun (_ : PUnit.{w + 1}) ↦ f₁ i)
+      (fun (_ : PUnit.{w + 1}) ↦ f₂ i))
+        (hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out))
+    exact ⟨l, a, (hl (Sum.inl .unit)).trans (hl (Sum.inr .unit)).symm⟩
+  choose l p hp using this
+  obtain ⟨l, a, b, h⟩ := isCardinalFiltered_iff_aux₁ h₁ h₂ p hι
+  exact ⟨l, b, fun i ↦ by simp only [← h i, reassoc_of% hp]⟩
+
+variable (J κ) in
+lemma isCardinalFiltered_iff :
+    IsCardinalFiltered J κ ↔
+      (∀ ⦃ι : Type w⦄ (j : ι → J) (_ : HasCardinalLT ι κ),
+        ∃ (k : J), ∀ (i : ι), Nonempty (j i ⟶ k)) ∧
+      ∀ ⦃ι : Type w⦄ ⦃j k : J⦄ (f : ι → (j ⟶ k)) (_ : HasCardinalLT ι κ),
+        ∃ (l : J) (a : k ⟶ l) (b : j ⟶ l), ∀ (i : ι), f i ≫ a = b := by
+  refine ⟨fun _ ↦ ⟨fun ι j hι ↦ ⟨_, fun i ↦ ⟨toMax j hι i⟩⟩,
+    fun ι j k f hι ↦ ⟨_, _, _, coeq_condition f hι⟩⟩,
+    fun ⟨h₁, h₂⟩ ↦ ⟨fun {A _} F hA ↦ ?_⟩⟩
+  obtain ⟨j, hj⟩ := h₁ F.obj (hasCardinalLT_of_hasCardinalLT_arrow hA)
+  let a (i : A) : F.obj i ⟶ j := (hj i).some
+  obtain ⟨l, b, hb⟩ := isCardinalFiltered_iff_aux₂ h₁ h₂
+    (fun (f : Arrow A) ↦ F.map f.hom ≫ a f.right)
+    (fun (f : Arrow A) ↦ a f.left) hA
+  exact ⟨{
+    pt := l
+    ι.app i := a i ≫ b
+    ι.naturality _ _ f := by simpa using hb (Arrow.mk f)
+  }⟩
+
+end
+
+lemma IsCardinalFiltered.multicoequalizer
+    {J : Type u} [Category.{v} J] {κ : Cardinal.{w}} [Fact κ.IsRegular]
+    [IsCardinalFiltered J κ] {ι : Type v'} {j : ι → J} {k : J}
+    (f₁ f₂ : ∀ i, j i ⟶ k) (hι : HasCardinalLT ι κ) :
+    ∃ (l : J) (a : k ⟶ l), ∀ i, f₁ i ≫ a = f₂ i ≫ a := by
+  have := isFiltered_of_isCardinalFiltered J κ
+  obtain ⟨l, a, b, h⟩ := IsCardinalFiltered.wideSpan
+    (fun i ↦ IsFiltered.coeqHom (f₁ i) (f₂ i)) hι
+  exact ⟨l, b, fun i ↦ by rw [← h i, IsFiltered.coeq_condition_assoc]⟩
 
 end CategoryTheory
