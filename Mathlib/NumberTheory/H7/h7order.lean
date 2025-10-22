@@ -573,9 +573,7 @@ lemma AnalyticOnEq (f g : ℂ → ℂ) (U : Set ℂ) :
       rw [Hinsert] at this ⊢
       intros y Hxy
       have := this Hxy
-      rwa [← Heq _ Hxy]
-
-      }
+      rwa [← Heq _ Hxy]}
 
 lemma AnalyticAtEq (f g : ℂ → ℂ) (U : Set ℂ) (z : ℂ) :
   (hU : U ∈ nhds z)  → z ∈ U →

@@ -60,6 +60,12 @@ theorem house_pow_le (α : K) (i : ℕ) : house (α^i) ≤ house α ^ i := by {
   simp only [map_pow]
   apply norm_pow_le ((canonicalEmbedding K) α)}
 
+theorem house_rpow_le (α : K) (i : ℕ) : house (α^(i)) ≤ house α ^ (i : ℝ) := by {
+  unfold house
+  simp only [map_pow]
+  simp only [Real.rpow_natCast]
+  apply norm_pow_le ((canonicalEmbedding K) α)}
+
 @[simp] theorem house_intCast (x : ℤ) : house (x : K) = |x| := by
   simp only [house, map_intCast, Pi.intCast_def, pi_norm_const, Complex.norm_intCast, Int.cast_abs]
 
