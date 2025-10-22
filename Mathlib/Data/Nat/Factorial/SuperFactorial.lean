@@ -73,11 +73,11 @@ theorem superFactorial_two_mul : ∀ n : ℕ,
     ring
 
 theorem superFactorial_four_mul (n : ℕ) :
-    sf (4 * n) = ((∏ i ∈ range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n)! :=
+    sf (4 * n) = ((∏ i ∈ range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! :=
   calc
-    sf (4 * n) = (∏ i ∈ range (2 * n), (2 * i + 1) !) ^ 2 * 2 ^ (2 * n) * (2 * n)! := by
+    sf (4 * n) = (∏ i ∈ range (2 * n), (2 * i + 1) !) ^ 2 * 2 ^ (2 * n) * (2 * n) ! := by
       rw [← superFactorial_two_mul, ← mul_assoc, Nat.mul_two]
-    _ = ((∏ i ∈ range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n)! := by
+    _ = ((∏ i ∈ range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! := by
       rw [pow_mul', mul_pow]
 
 end SuperFactorial
