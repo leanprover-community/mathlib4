@@ -207,6 +207,10 @@ theorem singleton_nonempty (a : α) : ({a} : Set α).Nonempty :=
 theorem singleton_ne_empty (a : α) : ({a} : Set α) ≠ ∅ :=
   (singleton_nonempty _).ne_empty
 
+@[simp]
+theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Set α) :=
+  (singleton_ne_empty a).symm
+
 theorem empty_ssubset_singleton : (∅ : Set α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 
@@ -292,7 +296,7 @@ theorem Nonempty.subset_singleton_iff (h : s.Nonempty) : s ⊆ {a} ↔ s = {a} :
 theorem ssubset_singleton_iff {s : Set α} {x : α} : s ⊂ {x} ↔ s = ∅ := by
   rw [ssubset_iff_subset_ne, subset_singleton_iff_eq, or_and_right, and_not_self_iff, or_false,
     and_iff_left_iff_imp]
-  exact fun h => h ▸ (singleton_ne_empty _).symm
+  exact fun h => h ▸ empty_ne_singleton _
 
 theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s = ∅ :=
   ssubset_singleton_iff.1 hs
