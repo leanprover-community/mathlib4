@@ -251,10 +251,10 @@ theorem relIndex_eq_two_iff : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor
 @[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff'`. -/]
 theorem relIindex_eq_two_iff' : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor' (a * b ∈ H) (b ∈ H) := by
   simp [Subgroup.relIndex, Subgroup.index_eq_two_iff', mem_subgroupOf]
-
+#where
 /-- Relative version of `Subgroup.index_eq_two_iff_exists_notMem_and`. -/
 @[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff_exists_notMem_and`. -/]
-lemma relIndex_eq_two_iff_exists_notMem_and {G : Type*} [Group G] {H K : Subgroup G} :
+lemma relIndex_eq_two_iff_exists_notMem_and :
     H.relIndex K = 2 ↔ ∃ a ∈ K, a ∉ H ∧ ∀ b ∈ K, (b * a ∈ H) ∨ (b ∈ H) := by
   rw [Subgroup.relIndex, Subgroup.index_eq_two_iff_exists_notMem_and]
   simp only [mem_subgroupOf, coe_mul, Subtype.forall, Subtype.exists, exists_and_left, exists_prop]
@@ -263,7 +263,7 @@ lemma relIndex_eq_two_iff_exists_notMem_and {G : Type*} [Group G] {H K : Subgrou
 
 /-- Relative version of `Subgroup.index_eq_two_iff_exists_notMem_and'`. -/
 @[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff_exists_notMem_and'`. -/]
-lemma relIndex_eq_two_iff_exists_notMem_and' {G : Type*} [Group G] {H K : Subgroup G} :
+lemma relIndex_eq_two_iff_exists_notMem_and' :
     H.relIndex K = 2 ↔ ∃ a ∈ K, a ∉ H ∧ ∀ b ∈ K, (a * b ∈ H) ∨ (b ∈ H) := by
   rw [Subgroup.relIndex, Subgroup.index_eq_two_iff_exists_notMem_and']
   simp only [mem_subgroupOf, coe_mul, Subtype.forall, Subtype.exists, exists_and_left, exists_prop]
