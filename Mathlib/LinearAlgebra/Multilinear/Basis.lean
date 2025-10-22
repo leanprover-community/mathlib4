@@ -3,9 +3,7 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Multilinear.Basic
-import Mathlib.LinearAlgebra.Multilinear.Pi
+import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 
 /-!
 # Multilinear maps in relation to bases.
@@ -38,34 +36,42 @@ theorem Module.Basis.ext_multilinear [Finite ι] {f g : MultilinearMap R M N} {�
 alias Basis.ext_multilinear_fin := Module.Basis.ext_multilinear
 
 
-
 section Basis
-variable {κ : ι → Type*} {ι' : Type*} {M : ι → Type*} {N : Type*}
 
+universe uι uκ uS uR uM uN
+variable {ι : Type uι} {κ : ι → Type uκ}
+variable {S : Type uS} {R : Type uR}
+variable {ι'} {M : ι → Type uM} {N : Type uN}
 variable [Fintype ι] [∀ i, Fintype (κ i)] [CommSemiring R]
 variable [∀ i, AddCommMonoid (M i)] [AddCommMonoid N]
 variable [∀ i, Module R (M i)] [Module R N]
 
-/-
-open Module in
-/-- The linear equivalence between families indexed by `p : Π i : ι, κ i` of multilinear maps
-on the `fun i ↦ M i (p i)` and the space of multilinear map on `fun i ↦ Π₀ j : κ i, M i j`. -/
-noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N) :
-    Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) :=
-  .ofEquivFun <| by
-    classical
-    -- switch to dfinsupp
-    let b := fun i => (b i).equivFun
-    let b' := b'.repr ≪≫ₗ (finsuppLequivDFinsupp R)
-    suffices
-        MultilinearMap R (fun i => Π₀ j : κ i, R) (Π₀ i : ι', R) ≃ₗ[R]
-          Π₀ (x : ((i : ι) → κ i) × ι'), R from
-      b'.congrRightMultilinear R ≪≫ₗ LinearEquiv.congrLeftMultilinear (b · |>.symm) ≪≫ₗ this
+variable [DecidableEq ι] [DecidableEq ι'] [∀ i, DecidableEq (κ i)]
+variable [DecidableEq R]
 
-    refine (fromDFinsuppEquiv _ _).symm ≪≫ₗ
-      LinearEquiv.piCongrRight (fun i => MultilinearMap.piRingEquiv.symm) ≪≫ₗ ?_
-    -- some annoying swap between Π and Π₀
-    sorry
--/
+open Module in
+/-- A basis for multilinear maps given a finite basis on each domain and a basis on the codomain. -/
+noncomputable def _root_.Basis.multilinearMap (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N) :
+    Basis ((Π i, κ i) × ι') R (MultilinearMap R M N) where
+  repr := LinearEquiv.multilinearMapCongrLeft (fun i => (b i).repr.symm) ≪≫ₗ
+    (b'.repr).multilinearMapCongrRight R ≪≫ₗ freeFinsuppEquiv.symm
+
+open Module in
+theorem _root_.Basis.multilinearMap_apply (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N)
+    (i : (Π i, κ i) × ι') :
+    Basis.multilinearMap b b' i =
+      ((LinearMap.id (M := R)).smulRight (b' i.2)).compMultilinearMap (
+        MultilinearMap.mkPiRing R ι 1 |>.compLinearMap fun i' => (b i').coord (i.1 i')
+      ) := by
+  ext _
+  simp [Basis.multilinearMap]
+
+open Module in
+/-- The elements of the basis are the maps which scale `b' ii.2` by the
+product of all the `ii.1 ·` coordinates along `b i`. -/
+theorem _root_.Basis.multilinearMap_apply_apply (b : ∀ i, Basis (κ i) R (M i)) (b' : Basis ι' R N)
+    (ii : (Π i, κ i) × ι') (v) :
+    Basis.multilinearMap b b' ii v = (∏ i, (b i).repr (v i) (ii.1 i)) • b' ii.2 := by
+  simp [Basis.multilinearMap_apply]
 
 end Basis
