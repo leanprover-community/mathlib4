@@ -77,7 +77,7 @@ lemma colimitTypePrecomp_ιColimitType (F : C ⥤ D) {P : D ⥤ Type w}
 lemma bijective_colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Final] :
     Function.Bijective (F.colimitTypePrecomp (P := P)) := by
   refine ⟨?_, fun x ↦ ?_⟩
-  · have h (Y : D) := constant_of_preserves_morphisms' (α := P.obj Y → (F ⋙ P).ColimitType)
+  · have h (Y : D) := constant_of_preserves_morphisms'
       (fun (Z : StructuredArrow Y F) ↦ (F ⋙ P).ιColimitType Z.right ∘ P.map Z.hom) (by
         intro Z₁ Z₂ f
         ext x
