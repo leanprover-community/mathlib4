@@ -40,7 +40,7 @@ lemma startsWith.Injective : @startsWith α _|>.Injective := fun a b h ↦ by
   simp only [startsWith, Set.ext_iff, Set.mem_setOf_eq] at *
   specialize h (mk [a])
   simp at h
-  assumption
+  exact h
 
 theorem startsWith_mk_mul {w : α × Bool} (g : FreeGroup α)
     (h : ¬ g ∈ startsWith (w.1, !w.2)) : mk [w] * g ∈ startsWith w := by
