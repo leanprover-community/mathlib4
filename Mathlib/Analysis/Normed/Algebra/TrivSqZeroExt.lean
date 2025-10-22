@@ -219,6 +219,8 @@ variable [Module R M] [IsBoundedSMul R M] [Module Rᵐᵒᵖ M] [IsBoundedSMul R
   [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1SeminormedRing : SeminormedRing (tsze R M) where
+  __ : Ring (tsze R M) := inferInstance
+  __ : SeminormedAddCommGroup (tsze R M) := inferInstance
   norm_mul_le
   | ⟨r₁, m₁⟩, ⟨r₂, m₂⟩ => by
     simp_rw [norm_def]
@@ -232,8 +234,6 @@ instance instL1SeminormedRing : SeminormedRing (tsze R M) where
       apply le_add_of_nonneg_right
       positivity
     _ = (‖r₁‖ + ‖m₁‖) * (‖r₂‖ + ‖m₂‖) := by ring
-  __ : SeminormedAddCommGroup (tsze R M) := inferInstance
-  __ : Ring (tsze R M) := inferInstance
 
 instance instL1IsBoundedSMul : IsBoundedSMul S (tsze R M) :=
   inferInstanceAs <| IsBoundedSMul S (WithLp 1 <| R × M)
@@ -269,8 +269,8 @@ instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
   inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)
 
 instance instL1NormedRing : NormedRing (tsze R M) where
-  __ : NormedAddCommGroup (tsze R M) := inferInstance
   __ : SeminormedRing (tsze R M) := inferInstance
+  __ : NormedAddCommGroup (tsze R M) := inferInstance
 
 end Ring
 

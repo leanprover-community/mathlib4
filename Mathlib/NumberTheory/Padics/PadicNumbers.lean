@@ -812,12 +812,11 @@ instance metricSpace : MetricSpace ℚ_[p] where
 instance : Norm ℚ_[p] :=
   ⟨fun x ↦ padicNormE x⟩
 
-instance normedField : NormedField ℚ_[p] :=
-  { Padic.field,
-    Padic.metricSpace p with
-    dist_eq := fun _ _ ↦ rfl
-    norm_mul := by simp [Norm.norm, map_mul]
-    norm := norm }
+instance normedField : NormedField ℚ_[p] where
+  __ := Padic.field
+  __ := Padic.metricSpace p
+  dist_eq := fun _ _ ↦ rfl
+  norm_mul := by simp [Norm.norm, map_mul]
 
 instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_nonneg' := norm_nonneg

@@ -99,8 +99,7 @@ variable (L) (Γ₀)
 
 /-- The normed field structure determined by a rank one valuation. -/
 def toNormedField : NormedField L :=
-  { (inferInstance : Field L) with
-    norm := norm
+  { ‹Field L› with
     dist := fun x y => norm (x - y)
     dist_self := fun x => by
       simp only [sub_self, norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
