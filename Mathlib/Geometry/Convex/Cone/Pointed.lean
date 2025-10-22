@@ -123,6 +123,7 @@ abbrev span (s : Set E) : PointedCone R E := Submodule.span R≥0 s
 
 lemma subset_span {s : Set E} : s ⊆ PointedCone.span R s := Submodule.subset_span
 
+/-- Elements of PointedCone.span R s are expressible as conical combination of elements from s. -/
 lemma mem_span_set {s : Set E} : x ∈ span R s ↔
       ∃ c : E →₀ R, ↑c.support ⊆ s ∧ (∀ y, 0 ≤ c y) ∧ c.sum (fun m r => r • m) = x := by
   rw [Submodule.mem_span_set]
