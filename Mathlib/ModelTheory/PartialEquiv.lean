@@ -351,11 +351,8 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
 
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
-    these two `simp` calls cannot be combined. -/
-    simp only [partialEquivLimit_comp_inclusion]
-    simp only [cod_partialEquivLimit, ← Embedding.comp_assoc,
-      subtype_comp_inclusion]⟩
+    grind [partialEquivLimit_comp_inclusion, cod_partialEquivLimit,
+      Embedding.comp_assoc, subtype_comp_inclusion]⟩
 
 end DirectLimit
 
