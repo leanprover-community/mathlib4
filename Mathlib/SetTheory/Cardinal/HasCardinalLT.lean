@@ -75,6 +75,21 @@ lemma hasCardinalLT_aleph0_iff (X : Type u) :
     HasCardinalLT X Cardinal.aleph0.{v} ↔ Finite X := by
   simpa [HasCardinalLT] using Cardinal.mk_lt_aleph0_iff
 
+lemma hasCardinalLT_of_finite
+    (X : Type*) [Finite X] (κ : Cardinal) (hκ : Cardinal.aleph0 ≤ κ) :
+    HasCardinalLT X κ :=
+  .of_le (by rwa [hasCardinalLT_aleph0_iff]) hκ
+
+@[simp]
+lemma hasCardinalLT_lift_iff (X : Type v) (κ : Cardinal.{w}) :
+    HasCardinalLT X (Cardinal.lift.{u} κ) ↔ HasCardinalLT X κ := by
+  simp [HasCardinalLT, ← (Cardinal.lift_strictMono.{max v w, max u}).lt_iff_lt]
+
+@[simp]
+lemma hasCardinalLT_ulift_iff (X : Type v) (κ : Cardinal.{w}) :
+    HasCardinalLT (ULift.{u} X) κ ↔ HasCardinalLT X κ :=
+  hasCardinalLT_iff_of_equiv Equiv.ulift κ
+
 lemma hasCardinalLT_sum_iff (X : Type u) (Y : Type u') (κ : Cardinal.{w})
     (hκ : Cardinal.aleph0 ≤ κ) :
     HasCardinalLT (X ⊕ Y) κ ↔ HasCardinalLT X κ ∧ HasCardinalLT Y κ := by
@@ -97,6 +112,84 @@ lemma hasCardinalLT_option_iff (X : Type u) (κ : Cardinal.{w})
   refine fun _ ↦ HasCardinalLT.of_le ?_ hκ
   rw [hasCardinalLT_aleph0_iff]
   infer_instance
+
+lemma hasCardinalLT_subtype_max
+    {X : Type*} {P₁ P₂ : X → Prop} {κ : Cardinal} (hκ : Cardinal.aleph0 ≤ κ)
+    (h₁ : HasCardinalLT (Subtype P₁) κ) (h₂ : HasCardinalLT (Subtype P₂) κ) :
+    HasCardinalLT (Subtype (P₁ ⊔ P₂)) κ := by
+  have : HasCardinalLT (Subtype P₁ ⊕ Subtype P₂) κ := by
+    rw [hasCardinalLT_sum_iff _ _ _ hκ]
+    exact ⟨h₁, h₂⟩
+  refine this.of_surjective (Sum.elim (fun x ↦ ⟨x.1, Or.inl x.2⟩)
+    (fun x ↦ ⟨x.1, Or.inr x.2⟩)) ?_
+  rintro ⟨x, hx | hx⟩
+  · exact ⟨Sum.inl ⟨x, hx⟩, rfl⟩
+  · exact ⟨Sum.inr ⟨x, hx⟩, rfl⟩
+
+lemma hasCardinalLT_union
+    {X : Type*} {S₁ S₂ : Set X} {κ : Cardinal} (hκ : Cardinal.aleph0 ≤ κ)
+    (h₁ : HasCardinalLT S₁ κ) (h₂ : HasCardinalLT S₂ κ) :
+    HasCardinalLT (S₁ ∪ S₂ : Set _) κ :=
+  hasCardinalLT_subtype_max hκ h₁ h₂
+
+/-- The particular case of `hasCardinatLT_sigma` when all the inputs are in the
+same universe `w`. It is used to prove the general case. -/
+lemma hasCardinalLT_sigma' {ι : Type w} (α : ι → Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
+    HasCardinalLT (Σ i, α i) κ := by
+  simp only [hasCardinalLT_iff_cardinal_mk_lt] at hι hα ⊢
+  rw [Cardinal.mk_sigma]
+  exact Cardinal.sum_lt_lift_of_isRegular.{w, w} Fact.out (by simpa) hα
+
+lemma hasCardinalLT_sigma {ι : Type u} (α : ι → Type v) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (hι : HasCardinalLT ι κ) (hα : ∀ i, HasCardinalLT (α i) κ) :
+    HasCardinalLT (Σ i, α i) κ := by
+  have : Fact (Cardinal.lift.{max u v} κ).IsRegular := ⟨Cardinal.IsRegular.lift Fact.out⟩
+  have := hasCardinalLT_sigma'
+    (fun (i : ULift.{max v w} ι) ↦ ULift.{max u w} (α (ULift.down i)))
+    (Cardinal.lift.{max u v} κ) (by simpa)
+    (fun i ↦ by simpa using hα (ULift.down i))
+  rw [hasCardinalLT_lift_iff] at this
+  exact this.of_surjective (fun ⟨i, a⟩ ↦ ⟨ULift.down i, ULift.down a⟩)
+    (fun ⟨i, a⟩ ↦ ⟨⟨ULift.up i, ULift.up a⟩, rfl⟩)
+
+lemma hasCardinalLT_subtype_iSup
+    {ι : Type*} {X : Type*} (P : ι → X → Prop) {κ : Cardinal} [Fact κ.IsRegular]
+    (hι : HasCardinalLT ι κ) (hP : ∀ i, HasCardinalLT (Subtype (P i)) κ) :
+    HasCardinalLT (Subtype (⨆ i, P i)) κ :=
+  (hasCardinalLT_sigma (fun i ↦ Subtype (P i)) κ hι hP).of_surjective
+    (fun ⟨i, x, hx⟩ ↦ ⟨x, by simp only [iSup_apply, iSup_Prop_eq]; exact ⟨i, hx⟩⟩) (by
+    rintro ⟨_, h⟩
+    simp only [iSup_apply, iSup_Prop_eq] at h
+    obtain ⟨i, hi⟩ := h
+    exact ⟨⟨i, _, hi⟩, rfl⟩)
+
+lemma hasCardinalLT_iUnion
+    {ι : Type*} {X : Type*} (S : ι → Set X) {κ : Cardinal} [Fact κ.IsRegular]
+    (hι : HasCardinalLT ι κ) (hS : ∀ i, HasCardinalLT (S i) κ) :
+    HasCardinalLT (⋃ i, S i) κ := by
+  convert hasCardinalLT_subtype_iSup S hι hS using 2
+  ext x
+  change _ ↔ ((⨆ i, S i) : X → Prop) x
+  aesop
+
+/-- The particular case of `hasCardinatLT_prod` when all the inputs are in the
+same universe `w`. It is used to prove the general case. -/
+lemma hasCardinalLT_prod' {T₁ T₂ : Type w} {κ : Cardinal.{w}} (hκ : Cardinal.aleph0 ≤ κ)
+    (h₁ : HasCardinalLT T₁ κ) (h₂ : HasCardinalLT T₂ κ) :
+    HasCardinalLT (T₁ × T₂) κ := by
+  rw [hasCardinalLT_iff_cardinal_mk_lt] at h₁ h₂ ⊢
+  simpa using Cardinal.mul_lt_of_lt hκ h₁ h₂
+
+lemma hasCardinalLT_prod {T₁ : Type u} {T₂ : Type u'}
+    {κ : Cardinal.{w}} (hκ : Cardinal.aleph0 ≤ κ)
+    (h₁ : HasCardinalLT T₁ κ) (h₂ : HasCardinalLT T₂ κ) :
+    HasCardinalLT (T₁ × T₂) κ := by
+  have := hasCardinalLT_prod' (T₁ := ULift.{max u' w} T₁) (T₂ := ULift.{max u w} T₂)
+    (κ := Cardinal.lift.{max u u'} κ) (by simpa) (by simpa) (by simpa)
+  simp only [hasCardinalLT_lift_iff] at this
+  exact this.of_surjective (fun ⟨x₁, x₂⟩ ↦ ⟨ULift.down x₁, ULift.down x₂⟩) (fun ⟨x₁, x₂⟩ ↦
+    ⟨⟨ULift.up x₁, ULift.up x₂⟩, rfl⟩)
 
 namespace HasCardinalLT
 
