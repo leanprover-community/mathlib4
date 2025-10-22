@@ -14,12 +14,11 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 
 universe v u
 
-open CategoryTheory HomotopicalAlgebra Simplicial
+open CategoryTheory HomotopicalAlgebra Simplicial Limits
 
 namespace SSet.Subcomplex.Pairing
 
 variable {X : SSet.{u}} {A : X.Subcomplex} {P : A.Pairing}
-
 
 namespace RankFunction
 
@@ -112,12 +111,11 @@ lemma iSup_filtration :
 variable [OrderBot ι] [SuccOrder ι] [WellFoundedLT ι]
 
 noncomputable def relativeCellComplex : RelativeCellComplex f.basicCell A.ι where
-  F := f.monotone_filtration.functor ⋙ by
-    sorry
-  isoBot := sorry
+  F := f.monotone_filtration.functor ⋙ Subcomplex.toSSetFunctor
+  isoBot := Subcomplex.isoOfEq (filtration_bot _)
   isColimit := sorry
   isWellOrderContinuous := sorry
-  incl := sorry
+  incl.app i := (f.filtration i).ι
   attachCells := sorry
 
 end RankFunction
