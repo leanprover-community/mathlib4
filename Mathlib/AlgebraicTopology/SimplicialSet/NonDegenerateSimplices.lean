@@ -51,9 +51,7 @@ lemma mk_surjective (x : X.N) :
 
 lemma ext_iff (x y : X.N) :
     x = y ↔ x.toS = y.toS := by
-  cases x
-  cases y
-  aesop
+  grind [cases SSet.N]
 
 instance : Preorder X.N := Preorder.lift toS
 
