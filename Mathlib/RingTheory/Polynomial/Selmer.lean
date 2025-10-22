@@ -26,6 +26,7 @@ This file shows that the Selmer polynomial `X ^ n - X - 1` is irreducible with G
 - `X_pow_sub_X_sub_one_gal`: The Selmer polynomial `X ^ n - X - 1` has Galois group `S_n`.
 -/
 
+-- PR #29688
 section GeneralGalois
 
 variable (G K L : Type*) [Group G] [Field K] [Field L] [Algebra K L] [MulSemiringAction G L]
@@ -162,10 +163,11 @@ variable {A : Type*} [CommRing A] [IsDedekindDomain A] {P : Ideal A} (hP : P ≠
   (Q : Ideal B) [Q.IsPrime] [hQ : Q.LiesOver P] [NoZeroSMulDivisors A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [IsGaloisGroup G A B]
 
+-- PR #30675
 include hP in
 theorem Ideal.card_inertiaSubgroup [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
     Nat.card (Q.toAddSubgroup.inertia G) =
-      Ideal.ramificationIdx (algebraMap A B) P Q := by
+      Ideal.ramificationIdxIn P B := by
   let K := FractionRing A
   let L := FractionRing B
   have : FaithfulSMul A L := by
@@ -198,7 +200,6 @@ theorem Ideal.card_inertiaSubgroup [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
   rw [← (Quotient.stabilizerHom Q P G).ker.card_mul_index, Subgroup.index_ker,
     MonoidHom.range_eq_top_of_surjective _ hf, Subgroup.card_top] at key
   rw [mul_left_inj' Nat.card_pos.ne'] at key
-  rw [ramificationIdxIn_eq_ramificationIdx P Q K L] at key
   rw [Subgroup.card_subtype, key]
 
 end inertiadef
@@ -211,6 +212,18 @@ theorem AddSubgroup.subgroupOf_inertia {M : Type*} [AddGroup M] (I : AddSubgroup
   rfl
 
 end inertia
+
+-- PR #30666
+section ram
+
+variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
+variable [IsIntegralClosure 𝒪 ℤ K]
+
+lemma NumberField.exists_not_isUramifiedAt_int (H : 1 < Module.finrank ℚ K) :
+    ∃ (P : Ideal 𝒪) (_ : P.IsMaximal), P ≠ ⊥ ∧ ¬ Algebra.IsUnramifiedAt ℤ P :=
+  sorry
+
+end ram
 
 section ram
 
@@ -250,31 +263,21 @@ theorem genthm₀ (K : Type*) [Field K] [NumberField K]
   replace h (m : MaximalSpectrum (𝓞 K)) :
     Ideal.ramificationIdx (algebraMap (𝓞 F) (𝓞 K)) (m.asIdeal.under (𝓞 F)) m.asIdeal =
       Ideal.ramificationIdx (algebraMap (𝓞 ℚ) (𝓞 K)) (m.asIdeal.under (𝓞 ℚ)) m.asIdeal := by
-    -- have : IsGalois ℚ K := IsGaloisGroup.isGalois G ℚ K
-    -- have : IsGalois F K := (IsGaloisGroup.to_subgroup G ℚ K H).isGalois
-    -- have : SMulCommClass (H) (𝓞 F) (𝓞 K) := sorry
-    -- have : Algebra.IsInvariant (𝓞 F) (𝓞 K) H := sorry
-    -- have : Algebra.IsInvariant ℤ (𝓞 K) G := sorry
+    have hm := (m.asIdeal.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
+    have : IsGalois ℚ K := IsGaloisGroup.isGalois G ℚ K
+    -- These sorrys can be removed with an `IsDedekindDomain` assumption on `card_inertiaSubgroup`.
     have : Algebra.IsSeparable (𝓞 F ⧸ Ideal.under (𝓞 F) m.asIdeal) (𝓞 K ⧸ m.asIdeal) := sorry
     have : Algebra.IsSeparable (𝓞 ℚ ⧸ Ideal.under (𝓞 ℚ) m.asIdeal) (𝓞 K ⧸ m.asIdeal) := sorry
     have key := @Ideal.card_inertiaSubgroup (𝓞 F) _ _ (m.asIdeal.under (𝓞 F)) ?_ _ (𝓞 K) _ _
       _ _ m.asIdeal _ _ _ H _ _ _ _ _
+    rw [← Ideal.ramificationIdxIn_eq_ramificationIdx (m.asIdeal.under (𝓞 F)) m.asIdeal F K]
+    rw [← Ideal.ramificationIdxIn_eq_ramificationIdx (m.asIdeal.under (𝓞 ℚ)) m.asIdeal ℚ K]
     rw [← @Ideal.card_inertiaSubgroup (𝓞 F) _ _ (m.asIdeal.under (𝓞 F)) ?_ _ (𝓞 K) _ _
       _ _ m.asIdeal _ _ _ H _ _ _ _ _]
     rw [← @Ideal.card_inertiaSubgroup (𝓞 ℚ) _ _ (m.asIdeal.under (𝓞 ℚ)) ?_ _ (𝓞 K) _ _
       _ _ m.asIdeal _ _ _ G _ _ _ _ _]
     apply h
-    · sorry
-    · have key := m.asIdeal.over_under (A := 𝓞 F)
-      intro h
-      rw [h] at key
-      exact (m.asIdeal.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
-        (m.asIdeal.eq_bot_of_liesOver_bot (A := 𝓞 F))
-    · have key := m.asIdeal.over_under (A := 𝓞 F)
-      intro h
-      rw [h] at key
-      exact (m.asIdeal.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'
-        (m.asIdeal.eq_bot_of_liesOver_bot (A := 𝓞 F))
+    all_goals intro h; exact hm (m.asIdeal.eq_bot_of_liesOver_bot (h := ⟨h.symm⟩))
   -- switch over from 𝓞 ℚ to ℤ at some point
   replace h (m : MaximalSpectrum (𝓞 F)) :
       Ideal.ramificationIdx (algebraMap ℤ (𝓞 F)) (m.asIdeal.under ℤ) m.asIdeal = 1 := by
@@ -286,22 +289,13 @@ theorem genthm₀ (K : Type*) [Field K] [NumberField K]
     rw [Algebra.isUnramifiedAt_iff_of_isDedekindDomain]
     · exact h m
     · exact (m.asIdeal.bot_lt_of_maximal (RingOfIntegers.not_isField F)).ne'
-  replace h (m : MaximalSpectrum (𝓞 F)) : ¬ m.asIdeal ∣ differentIdeal ℤ (𝓞 F) := by
-    rw [dvd_differentIdeal_iff, not_not]
-    exact h m
-  replace h : differentIdeal ℤ (𝓞 F) = ⊤ := by
-    simp only [Ideal.dvd_iff_le] at h
-    sorry
-  -- define intermediate ring of integers and compute inertia degrees
-  replace h : (discr ↥F).natAbs = 1 := by
-    rw [← NumberField.absNorm_differentIdeal (K := F) (𝒪 := 𝓞 F), h, Ideal.absNorm_top]
   suffices Module.finrank ℚ F ≤ 1 from
     IntermediateField.finrank_eq_one_iff.mp (le_antisymm this Module.finrank_pos)
   contrapose! h
-  replace h : 2 < |NumberField.discr F| := NumberField.abs_discr_gt_two h
-  contrapose! h
-  simp [Int.abs_eq_natAbs, h]
+  obtain ⟨p, h1, h2, h3⟩ := NumberField.exists_not_isUramifiedAt_int (𝒪 := 𝓞 F) h
+  exact ⟨⟨p, h1⟩, h3⟩
 
+-- generalize from `𝓞 K` to `IsIntegralClosure`.
 theorem genthm (K : Type*) [Field K] [NumberField K]
     (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K]
     (G : Type*) [Group G] [MulSemiringAction G K]
