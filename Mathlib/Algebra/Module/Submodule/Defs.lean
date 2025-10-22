@@ -66,7 +66,6 @@ def ofClass {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [SetLike
 
 /-- Construct a submodule from closure under two-element linear combinations.
 I.e., a nonempty set closed under two-element linear combinations is a submodule. -/
-@[simps]
 def ofLinearComb (C : Set M) (nonempty : C.Nonempty)
     (linearComb : ∀ x ∈ C, ∀ y ∈ C, ∀ a b : R, a • x + b • y ∈ C) :
     Submodule R M where
