@@ -169,10 +169,9 @@ open Filter Pointwise
 variable {R : Type*} [Bornology R] [AddGroup R] [BoundedSub R]
 
 instance : BoundedAdd R where
-  isBounded_add := by
-   intro s t hs ht
-   rw [← neg_neg t, ← sub_eq_add_neg]
-   exact isBounded_sub hs <| isBounded_neg_iff.mpr ht
+  isBounded_add := fun {s t} hs ht ↦ by
+    rw [← neg_neg t, ← sub_eq_add_neg]
+    exact isBounded_sub hs <| isBounded_neg_iff.mpr ht
 
 @[simp]
 lemma tendsto_neg_cobounded :
