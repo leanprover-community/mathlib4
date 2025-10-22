@@ -96,12 +96,32 @@ variable (H)
 @[to_additive]
 theorem le_centralizer [h : IsMulCommutative H] : H ≤ centralizer H :=
   le_centralizer_iff_isMulCommutative.mpr h
-
 variable {H} in
+
 @[to_additive]
 lemma closure_le_centralizer_centralizer (s : Set G) :
     closure s ≤ centralizer (centralizer s) :=
   closure_le _ |>.mpr Set.subset_centralizer_centralizer
+
+@[to_additive]
+theorem centralizer_closure (s : Set G) : centralizer (closure s) = centralizer s :=
+  le_antisymm (centralizer_le subset_closure)
+    (le_centralizer_iff.mp (closure_le_centralizer_centralizer s))
+
+@[to_additive]
+theorem centralizer_eq_iInf (s : Set G) : centralizer s = ⨅ g ∈ s, centralizer {g} :=
+  le_antisymm (le_iInf₂ fun g hg ↦ centralizer_le (Set.singleton_subset_iff.mpr hg)) fun x hx ↦ by
+    simpa only [mem_iInf, mem_centralizer_singleton_iff, eq_comm (a := x * _)] using hx
+
+@[to_additive]
+theorem center_eq_iInf {s : Set G} (hs : closure s = ⊤) :
+    center G = ⨅ g ∈ s, centralizer {g} := by
+  rw [← centralizer_univ, ← coe_top, ← hs, centralizer_closure, centralizer_eq_iInf]
+
+@[to_additive]
+theorem center_eq_infi' {s : Set G} (hs : closure s = ⊤) :
+    center G = ⨅ g : s, centralizer {(g : G)} := by
+  rw [center_eq_iInf hs, ← iInf_subtype'']
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
 @[to_additive

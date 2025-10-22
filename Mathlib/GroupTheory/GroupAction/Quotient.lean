@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
 import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts.Defs
 import Mathlib.GroupTheory.Commutator.Basic
@@ -12,6 +11,7 @@ import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Properties of group actions involving quotient groups
@@ -438,7 +438,7 @@ open QuotientGroup
 
 /-- Cosets of the centralizer of an element embed into the set of commutators. -/
 noncomputable def quotientCentralizerEmbedding (g : G) :
-    G ⧸ centralizer (zpowers (g : G)) ↪ commutatorSet G :=
+    G ⧸ centralizer {g} ↪ commutatorSet G :=
   ((MulAction.orbitEquivQuotientStabilizer (ConjAct G) g).trans
             (quotientEquivOfEq (ConjAct.stabilizer_eq_centralizer g))).symm.toEmbedding.trans
     ⟨fun x =>
@@ -455,7 +455,7 @@ theorem quotientCentralizerEmbedding_apply (g : G) (x : G) :
 of commutators. -/
 noncomputable def quotientCenterEmbedding {S : Set G} (hS : closure S = ⊤) :
     G ⧸ center G ↪ S → commutatorSet G :=
-  (quotientEquivOfEq (center_eq_infi' S hS)).toEmbedding.trans
+  (quotientEquivOfEq (center_eq_infi' hS)).toEmbedding.trans
     ((quotientiInfEmbedding _).trans
       (Function.Embedding.piCongrRight fun g => quotientCentralizerEmbedding (g : G)))
 
