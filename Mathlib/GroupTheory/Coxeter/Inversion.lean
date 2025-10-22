@@ -439,7 +439,7 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
     _ = π ((ω.eraseIdx j).eraseIdx (j' - 1)) :=
         cs.wordProd_mul_getD_rightInvSeq _ _
   have h₆ := calc
-    ω.length = ℓ (π ω) := (rω.symm)
+    ω.length = ℓ (π ω) := rω.symm
     _ = ℓ (π ((ω.eraseIdx j).eraseIdx (j' - 1))) := congrArg cs.length h₅
     _ ≤ ((ω.eraseIdx j).eraseIdx (j' - 1)).length := cs.length_wordProd_le _
   grind
