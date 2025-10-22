@@ -22,6 +22,7 @@ import statements*
 module doc-string*
 remaining file
 ```
+
 It emits a warning if
 * the copyright statement is malformed;
 * `Mathlib.Tactic` is imported;
@@ -31,6 +32,7 @@ It emits a warning if
 The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
 
 ## Implementation
+
 The strategy used by the linter is as follows.
 The linter computes the end position of the first module doc-string of the file,
 resorting to the end of the file, if there is no module doc-string.
