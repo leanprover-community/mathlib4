@@ -84,15 +84,14 @@ theorem IsReduced.append_flatten_replicate_append (n : ℕ) (hn : n ≠ 0) (L₁
     if h : L₂ = [] then simp_all else
     have h' : (replicate (n + 1) L₂).flatten ≠ [] := by simp [h]
     refine IsReduced.append_overlap ?_ ?_ (hn := h')
-    · rw [replicate_succ, flatten_cons, ←append_assoc]
+    · rw [replicate_succ, flatten_cons, ← append_assoc]
       refine IsReduced.append_overlap (h₂.infix ⟨[], L₃, by simp⟩) ?_ h
-      rw [←flatten_cons, ←replicate_succ]
+      rw [← flatten_cons, ← replicate_succ]
       exact (h₁.flatten_replicate _).isReduced
     · rw [replicate_succ', flatten_concat]
       refine IsReduced.append_overlap ?_ (h₂.infix ⟨L₁, [], by simp⟩) h
-      rw [←flatten_concat, ←replicate_succ']
+      rw [← flatten_concat, ← replicate_succ']
       exact (h₁.flatten_replicate _).isReduced
-
 
 /-- This function produces a subword of a word `w` by cancelling the first and last letters of `w`
 as long as possible. If `w` is reduced, the resulting word will be cyclically reduced. -/
@@ -175,19 +174,19 @@ theorem reduce_flatten_replicate_succ (n : ℕ) (L : List (α × Bool)) (h : IsR
     (List.replicate (n + 1) (reduceCyclically L)).flatten ++ invRev (conjugator L) := by
   induction n
   case zero =>
-    simpa [←append_assoc, conj_conjugator_reduceCyclically, ←isReduced_iff_reduce_eq]
+    simpa [← append_assoc, conj_conjugator_reduceCyclically, ← isReduced_iff_reduce_eq]
   case succ n ih =>
-    rw [replicate_succ, flatten_cons, ←reduce_append_reduce_reduce, ih, h.reduce_eq]
+    rw [replicate_succ, flatten_cons, ← reduce_append_reduce_reduce, ih, h.reduce_eq]
     nth_rewrite 1 [← conj_conjugator_reduceCyclically L]
     have {L₁ L₂ L₃ L₄ L₅ : List (α × Bool)} : reduce (L₁ ++ L₂ ++ invRev L₃ ++ (L₃ ++ L₄ ++ L₅)) =
         reduce (L₁ ++ (L₂ ++ L₄) ++ L₅) := by
       nth_rewrite 1 [append_assoc]
-      nth_rewrite 2 [←append_assoc, ←append_assoc]
-      nth_rewrite 1 [←reduce_append_reduce_reduce]
-      nth_rewrite 3 [←reduce_append_reduce_reduce]
-      nth_rewrite 4 [←reduce_append_reduce_reduce]
+      nth_rewrite 2 [← append_assoc, ← append_assoc]
+      nth_rewrite 1 [← reduce_append_reduce_reduce]
+      nth_rewrite 3 [← reduce_append_reduce_reduce]
+      nth_rewrite 4 [← reduce_append_reduce_reduce]
       simp [reduce_invRev_left_cancel, reduce_append_reduce_reduce]
-    rw [this, ←flatten_cons, ←replicate_succ, ←isReduced_iff_reduce_eq]
+    rw [this, ← flatten_cons, ← replicate_succ, ← isReduced_iff_reduce_eq]
     apply IsReduced.append_flatten_replicate_append _ (by simp) ..
     · apply isCyclicallyReduced _ h
     · rwa [conj_conjugator_reduceCyclically]
