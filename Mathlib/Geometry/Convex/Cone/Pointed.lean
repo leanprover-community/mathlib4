@@ -101,18 +101,7 @@ I.e., a nonempty set closed under two-element conical combinations is a pointed 
 def ofConeComb (C : Set E) (nonempty : C.Nonempty)
     (coneComb : ∀ x ∈ C, ∀ y ∈ C, ∀ a : R, 0 ≤ a → ∀ b : R, 0 ≤ b → a • x + b • y ∈ C) :
     PointedCone R E :=
-  { toAddSubmonoid := {
-      carrier := C
-      zero_mem' := by
-        obtain ⟨x, hx⟩ := nonempty
-        simpa [zero_smul, add_zero] using coneComb x hx x hx 0 (le_refl 0) 0 (le_refl 0)
-      add_mem' := by
-        intro x y hx hy
-        simpa [one_smul] using coneComb x hx y hy 1 zero_le_one 1 zero_le_one }
-    smul_mem' := by
-      intro c x hx
-      have := coneComb x hx x hx (c : R) c.property 0 (le_refl 0)
-      simp_all }
+  .ofLinearComb C nonempty fun x hx y hy ⟨a, ha⟩ ⟨b, hb⟩ => coneComb x hx y hy a ha b hb
 
 variable (R) in
 /-- The span of a set `s` is the smallest pointed cone that contains `s`.
