@@ -96,7 +96,7 @@ parsing the file linearly, it will only need to parse
 In conclusion, either the parsing is successful, and the linter can continue with its analysis,
 or the parsing is not successful and the linter will flag a missing module doc-string!
 -/
-def parseUpToHere (pos : String.Pos.Raw) (post : String := "") : CommandElabM Syntax := do
+def parseUpToHere (pos : String.Pos) (post : String := "") : CommandElabM Syntax := do
   let upToHere : Substring := { str := (← getFileMap).source, startPos := ⟨0⟩, stopPos := pos }
   -- Append a further string after the content of `upToHere`.
   Parser.testParseModule (← getEnv) "linter.style.header" (upToHere.toString ++ post)
@@ -116,7 +116,7 @@ produces.
 `authorsLineChecks` computes a position for its warning *relative to `line`*.
 The `offset` input passes on the starting position of `line` in the whole file.
 -/
-def authorsLineChecks (line : String) (offset : String.Pos.Raw) : Array (Syntax × String) :=
+def authorsLineChecks (line : String) (offset : String.Pos) : Array (Syntax × String) :=
   Id.run do
   -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
   -- the line starting wrongly, double spaces, using ' and ' between names,

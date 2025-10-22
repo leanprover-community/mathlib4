@@ -35,11 +35,11 @@ open String in
 
 E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
 `["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`. -/
-partial def _root_.String.splitCase (s : String) (i₀ : Pos.Raw := 0) (r : List String := []) :
+partial def _root_.String.splitCase (s : String) (i₀ : Pos := 0) (r : List String := []) :
     List String := Id.run do
   -- We test if we need to split between `i₀` and `i₁`.
-  let i₁ := i₀.next s
-  if i₁.atEnd s then
+  let i₁ := s.next i₀
+  if s.atEnd i₁ then
     -- If `i₀` is the last position, return the list.
     let r := s::r
     return r.reverse
@@ -63,15 +63,15 @@ partial def _root_.String.splitCase (s : String) (i₀ : Pos.Raw := 0) (r : List
   return splitCase s i₁ r
 
 /-- Helper for `capitalizeLike`. -/
-partial def capitalizeLikeAux (s : String) (i : String.Pos.Raw := 0) (p : String) : String :=
-  if i.atEnd p || i.atEnd s then
+partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : String :=
+  if p.atEnd i || s.atEnd i then
     p
   else
-    let j := i.next p
-    if (i.get s).isLower then
-      capitalizeLikeAux s j <| i.set p (i.get p |>.toLower)
-    else if (i.get s).isUpper then
-      capitalizeLikeAux s j <| i.set p (i.get p |>.toUpper)
+    let j := p.next i
+    if (s.get i).isLower then
+      capitalizeLikeAux s j <| p.set i (p.get i |>.toLower)
+    else if (s.get i).isUpper then
+      capitalizeLikeAux s j <| p.set i (p.get i |>.toUpper)
     else
       capitalizeLikeAux s j p
 
