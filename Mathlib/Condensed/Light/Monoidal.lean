@@ -68,8 +68,8 @@ variable {C D : Type*} [Category C] [Category D]
 def _root_.CategoryTheory.Sheaf.natIsoCancel : F ≅ G :=
   NatIso.ofComponents (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso (i.app _)) (by
     intro X Y f
-    apply (sheafToPresheaf _ _).map_injective
-    simpa [-sheafToPresheaf_map, -sheafToPresheaf_obj] using i.hom.naturality _)
+    apply Sheaf.hom_ext
+    simpa using i.hom.naturality _)
 
 end
 
@@ -96,7 +96,6 @@ def monoidalOfPostcomp {E : Type*} [Category E] [MonoidalCategory E] (F : E ⥤ 
   letI : (F ⋙ (equivSmall _).symm.inverse).Monoidal :=
     inferInstanceAs (F ⋙ (equivSmall _).functor).Monoidal
   (equivSmall (ModuleCat R)).symm.monoidalOfComp' F
-
 
 def monoidalOfPrecomp {E : Type*} [Category E] [MonoidalCategory E] (F : LightCondSet.{u} ⥤ E)
     [((equivSmall _).inverse ⋙ F).Monoidal] : F.Monoidal :=
@@ -160,8 +159,7 @@ instance : (free R).Monoidal := by
               Functor.leftUnitor _
         · intros
           ext
-          simp [Equivalence.sheafCongr, Equivalence.sheafCongr.functor,
-            Equivalence.sheafCongr.inverse]
+          simp [Equivalence.sheafCongr]
       · refine ?_ ≪≫ (Functor.associator _ _ _)
         refine (Functor.associator _ _ _).symm ≪≫ ?_
         refine (Functor.associator _ _ _).symm ≪≫ ?_
@@ -175,18 +173,7 @@ instance : (free R).Monoidal := by
           apply NatTrans.ext
           apply funext
           intro
-          simp only [Equivalence.sheafCongr, Equivalence.sheafCongr.functor,
-            Equivalence.sheafCongr.inverse, Equivalence.congrLeft_functor, Equivalence.op_inverse,
-            Functor.comp_obj, sheafToPresheaf_obj, whiskeringRight_obj_obj, whiskeringLeft_obj_obj,
-            Functor.op_obj, Functor.comp_map, sheafToPresheaf_map, whiskeringRight_obj_map,
-            whiskeringLeft_obj_map, Equivalence.op_functor, Equivalence.op_counitIso,
-            isoWhiskerRight_trans, isoWhiskerRight_twice, Iso.trans_assoc, Iso.trans_hom,
-            Iso.symm_hom, isoWhiskerRight_hom, NatIso.op_inv, NatTrans.comp_app,
-            Functor.whiskerLeft_app, Functor.whiskerRight_app,
-            Functor.associator_inv_app, Functor.associator_hom_app, Functor.id_obj, NatTrans.op_app,
-            Functor.leftUnitor_hom_app, CategoryTheory.Functor.map_id, Category.comp_id,
-            Category.id_comp, Category.assoc]
-          simp [← Functor.map_comp]
+          simp [Equivalence.sheafCongr, ← Functor.map_comp]
   exact Functor.Monoidal.transport i.symm
 
 end LightCondensed
