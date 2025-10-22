@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
 import Batteries.Tactic.Trans
+import Lean.Compiler.NoncomputableAttr
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Tactic.Symm
@@ -1187,7 +1188,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         calling @[{thisAttr}].\nThe preferred method is to use something like \
         `@[{thisAttr} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
-    warnAttr stx Lean.Elab.Tactic.Ext.extExtension
+    warnAttr stx Lean.Meta.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
     warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
     warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
