@@ -3,8 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-import Mathlib.Condensed.Light.Basic
+import Mathlib.Condensed.Light.TopCatAdjunction
+import Mathlib.Condensed.Light.CartesianClosed
+import Mathlib.Topology.Category.LightProfinite.Cartesian
 
 /-!
 # Functors from categories of topological spaces to light condensed sets
@@ -21,7 +22,7 @@ sets.
 
 universe u v
 
-open CategoryTheory Limits
+open CategoryTheory Limits Functor
 
 /-- The functor from `LightProfinite.{u}` to `LightCondSet.{u}` given by the Yoneda sheaf. -/
 def lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u} :=
@@ -41,3 +42,31 @@ instance : lightProfiniteToLightCondSet.Full :=
 
 instance : lightProfiniteToLightCondSet.Faithful :=
   inferInstanceAs ((coherentTopology LightProfinite).yoneda).Faithful
+
+/--
+The functor from `LightProfinite` to `LightCondSet` factors through `TopCat`.
+-/
+@[simps!]
+noncomputable def lightProfiniteToLightCondSetIsoTopCatToLightCondSet :
+    lightProfiniteToLightCondSet.{u} ≅ LightProfinite.toTopCat.{u} ⋙ topCatToLightCondSet.{u} :=
+  NatIso.ofComponents fun X ↦ FullyFaithful.preimageIso (fullyFaithfulSheafToPresheaf _ _) <|
+    NatIso.ofComponents fun S ↦ {
+      hom f := { toFun := f.hom }
+      inv f := TopCat.ofHom f }
+
+instance {J : Type} [SmallCategory J] [CountableCategory J] : PreservesLimitsOfShape J
+    lightProfiniteToLightCondSet.{u} :=
+  haveI : Functor.IsRightAdjoint topCatToLightCondSet.{u} :=
+    LightCondSet.topCatAdjunction.isRightAdjoint
+  haveI : PreservesLimitsOfShape J LightProfinite.toTopCat.{u} :=
+    inferInstanceAs (PreservesLimitsOfShape J (lightToProfinite ⋙ Profinite.toTopCat))
+  preservesLimitsOfShape_of_natIso lightProfiniteToLightCondSetIsoTopCatToLightCondSet.symm
+
+instance : PreservesFiniteLimits lightProfiniteToLightCondSet.{u} where
+  preservesFiniteLimits _ := inferInstance
+
+noncomputable instance : lightProfiniteToLightCondSet.Monoidal := by
+  have : Nonempty lightProfiniteToLightCondSet.Monoidal := by
+    rw [Functor.Monoidal.nonempty_monoidal_iff_preservesFiniteProducts]
+    infer_instance
+  exact this.some
