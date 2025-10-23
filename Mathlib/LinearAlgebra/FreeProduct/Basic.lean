@@ -27,14 +27,14 @@ general $R$-algebras.
 
 * `FreeProduct R A` is the free product of the `R`-algebras `A i`, defined as a quotient
   of the tensor algebra on the direct sum of the `A i`.
-* `FreeProduct_ofPowers R A` is the free product of the `R`-algebras `A i`, defined as a quotient
+* `FreeProduct.asPowers R A` is the free product of the `R`-algebras `A i`, defined as a quotient
   of the (infinite) direct sum of tensor powers of the `A i`.
 * `lift` is the universal property of the free product.
 
 ## Main results
 
-* `equivPowerAlgebra` establishes an equivalence between `FreeProduct R A` and
-  `FreeProduct_ofPowers R A`.
+* `equivAsPowers` establishes an equivalence between `FreeProduct R A` and
+  `FreeProduct.asPowers R A`.
 * `FreeProduct` is the coproduct in the category of `R`-algebras.
 
 ## TODO
@@ -107,6 +107,8 @@ variable {I : Type u} [DecidableEq I] {i : I} -- The type of the indexing set
 
 namespace LinearAlgebra.FreeProduct
 
+open scoped Function TensorProduct
+
 instance : Module R (⨁ i, A i) := by infer_instance
 
 /-- The free tensor algebra over a direct sum of `R`-algebras, before
@@ -116,6 +118,12 @@ abbrev FreeTensorAlgebra := TensorAlgebra R (⨁ i, A i)
 /-- The direct sum of tensor powers of a direct sum of `R`-algebras,
 before taking the quotient by the free product relation -/
 abbrev PowerAlgebra := ⨁ (n : ℕ), TensorPower R n (⨁ i, A i)
+
+/-- The canonical linear injection from the direct sum of the `A i` to the power algebra. -/
+@[simp] noncomputable def PowerAlgebra.ι : (⨁ i, A i) →ₗ[R] PowerAlgebra R A :=
+  DirectSum.lof R ℕ (⨂[R]^· (⨁ i, A i)) 1 ∘ₗ
+    (MultilinearMap.ofSubsingleton R (⨁ i, A i) _ (0 : Fin 1)
+      |>.symm (PiTensorProduct.tprod R))
 
 /-- The free tensor algebra and its representation as an infinite direct sum
 of tensor powers are (noncomputably) equivalent as `R`-algebras. -/
@@ -129,19 +137,62 @@ of tensor powers are (noncomputably) equivalent as `R`-algebras. -/
 /-- The generating equivalence relation for elements of the free tensor algebra
 that are identified in the free product -/
 inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
+  /-- `rel` relates the image of any `(1 : A i)` to `1`. -/
   | id  : ∀ {i : I}, rel (ι R <| lof R I A i 1) 1
+  /-- `rel` relates the product of the images of two terms from the same `A i` to the image of their
+  product in `A i`. -/
   | prod : ∀ {i : I} {a₁ a₂ : A i},
       rel
         (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))
         (ι R <| lof R I A i (a₁ * a₂))
 
-open scoped Function
+-- We reproduce `rel.id` and `.prod here to make `R, A, i...` explicit.
+@[inherit_doc rel.id]
+theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
+
+@[inherit_doc rel.prod]
+theorem rel_prod (i : I) (a₁ a₂ : A i) :
+    rel R A (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))
+      (ι R <| lof R I A i (a₁ * a₂)) := rel.prod
 
 /-- The generating equivalence relation for elements of the power algebra
 that are identified in the free product -/
 @[reducible, simp] def rel' := rel R A on ofDirectSum
 
-theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
+--`rel'` never had `.id` and `prod` to begin with
+@[inherit_doc rel.id]
+theorem rel'_id (i : I) : rel' R A (PowerAlgebra.ι R A <| lof R I A i 1) 1 := by
+  have := rel_id R A i; rw [lof_eq_of] at this
+  aesop (add simp [Function.onFun, lof_eq_of])
+
+@[inherit_doc rel.prod]
+theorem rel'_prod (i : I) (a₁ a₂ : A i) :
+    rel' R A (lof R ℕ _ 2  <| ⨂ₜ[R] b, (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂) b)
+      (PowerAlgebra.ι R A <| lof R I A i (a₁ * a₂)) := by
+  have := rel_prod R A i a₁ a₂; rw [lof_eq_of] at this
+  aesop (add simp [Function.onFun, lof_eq_of])
+
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+theorem rel'_cases {motive : ∀ {x y}, rel' R A x y → Prop} {x y} (h : rel' R A x y)
+    (id : ∀ {i : I}, motive (rel'_id R A i))
+    (prod : ∀ {i : I} {a₁ a₂ : A i}, motive (rel'_prod R A i a₁ a₂)) : motive h := by
+  unfold rel' Function.onFun at h
+  set x' := ofDirectSum x with ← x'_def
+  set y' := ofDirectSum y with ← y'_def
+  have inj : Function.Injective <| ofDirectSum (R := R) (M := ⨁ i, A i) := by
+    fapply Function.LeftInverse.injective (g := toDirectSum)
+    intro x; simp
+  match x', y', h with
+  | _, 1, rel.id =>
+      rename_i i; convert @id i
+      all_goals {
+        apply_fun ofDirectSum using inj
+        simp [x'_def, y'_def, PowerAlgebra.ι, lof_eq_of] }
+  | _, _, rel.prod =>
+      rename_i i a₁ a₂; convert @prod i a₁ a₂
+      all_goals {
+        apply_fun ofDirectSum using inj
+        simp [x'_def, y'_def, PowerAlgebra.ι, lof_eq_of] }
 
 
 /-- The free product of the collection of `R`-algebras `A i`, as a quotient of
@@ -214,6 +265,72 @@ irreducible_def ι (i : I) : A i →ₐ[R] FreeProduct R A :=
 /-- The family of canonical injection maps, with `i` left implicit -/
 irreducible_def of {i : I} : A i →ₐ[R] FreeProduct R A := ι R A i
 
+namespace asPowers
+-- Since `PiTensorProduct` has suppressed compilation, most ways of engaging with it
+-- requires also suppressing compilation.
+suppress_compilation
+
+/-- The canonical quotient map `PowerAlgebra R A →ₐ[R] FreeProduct.asPowers R A`,
+as an `R`-algebra homomorphism. -/
+abbrev mkAlgHom : PowerAlgebra R A →ₐ[R] FreeProduct.asPowers R A :=
+  RingQuot.mkAlgHom R (rel' R A)
+
+/-- The canonical linear map from the direct sum of the `A i` to the free product. -/
+abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct.asPowers R A :=
+  (mkAlgHom R A).toLinearMap ∘ₗ PowerAlgebra.ι R A
+
+theorem ι_apply (x : ⨁ i, A i) :
+    ⟨Quot.mk (Rel <| rel' R A) (PowerAlgebra.ι R A x)⟩ = ι' R A x := by
+  have ext {R : Type _} [Semiring R] (rel : R → R → Prop) {x y : RingQuot rel} :
+    x.toQuot = y.toQuot → x = y := by cases x; cases y; simp
+  apply ext
+  simp [ι', RingQuot.mkAlgHom, mkRingHom]
+
+/-- The injection into the free product of any `1 : A i` is the 1 of the free product. -/
+theorem ι'_one (i : I) : ι' R A (DirectSum.lof R I A i 1) = 1 := by
+  suffices ι' R A (DirectSum.lof R I A i 1) = mkAlgHom R A 1 by simpa
+  exact RingQuot.mkAlgHom_rel R <| rel'_id R A (i := i)
+
+/-- Multiplication in the free product of the injections of any two `aᵢ aᵢ': A i` for
+the same `i` is just the injection of multiplication `aᵢ * aᵢ'` in `A i`. -/
+theorem ι'_mul_ι' (a₁ a₂ : A i) :
+    ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
+      = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
+  convert RingQuot.mkAlgHom_rel R <| rel'_prod R A i a₁ a₂
+  simp_rw [lof_eq_of, ι', mkAlgHom, LinearMap.coe_comp, comp_apply, AlgHom.toLinearMap_apply,
+           ← _root_.map_mul]
+  congr
+  rw [← TensorAlgebra.toDirectSum_tensorPower_tprod]
+  simp [lof_eq_of]
+
+/-- The `i`th canonical injection, from `A i` to the free product, as
+a linear map. -/
+abbrev lof (i : I) : A i →ₗ[R] FreeProduct.asPowers R A :=
+  ι' R A ∘ₗ DirectSum.lof R I A i
+
+/-- `lof R A i 1 = 1` for all `i`. -/
+theorem lof_map_one (i : I) : lof R A i 1 = 1 := by
+  rw [lof]; dsimp [mkAlgHom]; exact identify_one R A i
+
+/-- The `i`th canonical injection, from `A i` to the free product. -/
+noncomputable irreducible_def ι (i : I) : A i →ₐ[R] FreeProduct.asPowers R A :=
+  AlgHom.ofLinearMap (ι' R A ∘ₗ DirectSum.lof R I A i)
+    (lof_map_one R A i) (mul_injections R A · · |>.symm)
+
+/-- The family of canonical injection maps, with `i` left implicit. -/
+abbrev of {i : I} : A i →ₐ[R] FreeProduct.asPowers R A := ι R A i
+
+end asPowers
+
+@[simp] theorem asPowersEquiv_ι (aᵢ) : asPowersEquiv R A (asPowers.ι R A i aᵢ) = ι R A i aᵢ := by
+  simp_rw [asPowersEquiv, asPowers.ι, ι, powerAlgebraEquivFreeTensorAlgebra, algEquivQuotAlgEquiv]
+  convert RingQuot.liftAlgHom_mkAlgHom_apply R _ _ _
+  aesop (add simp [Function.onFun, lof_eq_of])
+
+@[simp] theorem asPowersEquiv_symm_ι (aᵢ) :
+    (asPowersEquiv R A).symm (ι R A i aᵢ) = asPowers.ι R A i aᵢ := by
+  apply asPowersEquiv R A |>.injective
+  rw [asPowersEquiv_ι, AlgEquiv.apply_symm_apply]
 
 /-- Universal property of the free product of algebras:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
