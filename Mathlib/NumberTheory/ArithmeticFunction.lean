@@ -303,24 +303,22 @@ section Semiring
 
 variable [Semiring R]
 
-instance instMonoid : Monoid (ArithmeticFunction R) :=
-  { one := One.one
-    mul := Mul.mul
-    one_mul := one_smul'
-    mul_one := fun f => by
-      ext x
-      rw [mul_apply]
-      by_cases x0 : x = 0
-      · simp [x0]
-      have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
-      rw [← sum_subset h]
-      · simp
-      intro ⟨y₁, y₂⟩ ymem ynotMem
-      have y2ne : y₂ ≠ 1 := by
-        intro con
-        simp_all
-      simp [y2ne]
-    mul_assoc := mul_smul' }
+instance instMonoid : Monoid (ArithmeticFunction R) where
+  one_mul := one_smul'
+  mul_one := fun f => by
+    ext x
+    rw [mul_apply]
+    by_cases x0 : x = 0
+    · simp [x0]
+    have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
+    rw [← sum_subset h]
+    · simp
+    intro ⟨y₁, y₂⟩ ymem ynotMem
+    have y2ne : y₂ ≠ 1 := by
+      intro con
+      simp_all
+    simp [y2ne]
+  mul_assoc := mul_smul'
 
 instance instSemiring : Semiring (ArithmeticFunction R) :=
   { ArithmeticFunction.instAddMonoidWithOne,
