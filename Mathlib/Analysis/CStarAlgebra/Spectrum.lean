@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.Complex.Convex
-import Mathlib.Analysis.Normed.Algebra.Spectrum
+import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Algebra.Star.StarAlgHom
 
@@ -83,6 +83,10 @@ theorem unitary.spectrum_subset_circle (u : unitary E) :
 theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
     spectrum 𝕜 u ⊆ Metric.sphere 0 1 :=
   unitary.spectrum_subset_circle ⟨u, h⟩
+
+theorem spectrum.norm_eq_one_of_unitary {u : E} (hu : u ∈ unitary E)
+    ⦃z : 𝕜⦄ (hz : z ∈ spectrum 𝕜 u) : ‖z‖ = 1 := by
+  simpa using spectrum.subset_circle_of_unitary hu hz
 
 end UnitarySpectrum
 

@@ -90,7 +90,7 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 
 @[simp]
 theorem neg_modEq_neg : -a ≡ -b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
-  simp only [modEq_iff_dvd, (by omega : -b - -a = -(b - a)), Int.dvd_neg]
+  simp only [modEq_iff_dvd, (by cutsat : -b - -a = -(b - a)), Int.dvd_neg]
 
 @[simp]
 theorem modEq_neg : a ≡ b [ZMOD -n] ↔ a ≡ b [ZMOD n] := by simp [modEq_iff_dvd]
@@ -112,7 +112,7 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
-  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; omega
+  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; cutsat
 
 protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
   ModEq.rfl.add h
@@ -122,7 +122,7 @@ protected theorem add_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a + c ≡ b + c [
 
 protected theorem add_left_cancel (h₁ : a ≡ b [ZMOD n]) (h₂ : a + c ≡ b + d [ZMOD n]) :
     c ≡ d [ZMOD n] :=
-  have : d - c = b + d - (a + c) - (b - a) := by omega
+  have : d - c = b + d - (a + c) - (b - a) := by cutsat
   modEq_iff_dvd.2 <| by
     rw [this]
     exact Int.dvd_sub h₂.dvd h₁.dvd
@@ -163,9 +163,9 @@ protected theorem mul (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a * 
   (h₂.mul_left _).trans (h₁.mul_right _)
 
 @[gcongr] protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] := by
-  induction' m with d hd; · rfl
-  rw [pow_succ, pow_succ]
-  exact hd.mul h
+  induction m with
+  | zero => rfl
+  | succ d hd => rw [pow_succ, pow_succ]; exact hd.mul h
 
 lemma of_mul_left (m : ℤ) (h : a ≡ b [ZMOD m * n]) : a ≡ b [ZMOD n] := by
   rw [modEq_iff_dvd] at *; exact (dvd_mul_left n m).trans h
@@ -222,7 +222,7 @@ theorem dvd_iff (h : a ≡ b [ZMOD n]) : n ∣ a ↔ n ∣ b := by
 end ModEq
 
 @[simp]
-theorem self_modEq_zero : n ≡ 0 [ZMOD n] := by simp [ModEq]
+theorem modulus_modEq_zero : n ≡ 0 [ZMOD n] := by simp [ModEq]
 
 @[simp]
 theorem modEq_abs : a ≡ b [ZMOD |n|] ↔ a ≡ b [ZMOD n] := by simp [ModEq]
@@ -246,60 +246,68 @@ theorem right_modEq_add_iff : b ≡ a + b [ZMOD n] ↔ n ∣ a := by
   rw [modEq_comm, add_modEq_right_iff]
 
 @[simp]
-theorem add_self_modEq_iff : a + n ≡ b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+theorem add_modulus_modEq_iff : a + n ≡ b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem self_add_modEq_iff : n + a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
-  rw [add_comm, add_self_modEq_iff]
+theorem modulus_add_modEq_iff : n + a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  rw [add_comm, add_modulus_modEq_iff]
 
 @[simp]
-theorem modEq_add_self_iff : a ≡ b + n [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+theorem modEq_add_modulus_iff : a ≡ b + n [ZMOD n] ↔ a ≡ b [ZMOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem modEq_self_add_iff : a ≡ n + b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+theorem modEq_modulus_add_iff : a ≡ n + b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem add_mul_self_modEq_iff : a + b * n ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+theorem add_mul_modulus_modEq_iff : a + b * n ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem mul_self_add_modEq_iff : b * n + a ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
-  rw [add_comm, add_mul_self_modEq_iff]
+theorem mul_modulus_add_modEq_iff : b * n + a ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+  rw [add_comm, add_mul_modulus_modEq_iff]
 
 @[simp]
-theorem modEq_add_mul_self_iff : a ≡ b + c * n [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+theorem modEq_add_mul_modulus_iff : a ≡ b + c * n [ZMOD n] ↔ a ≡ b [ZMOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem modEq_mul_self_add_iff : a ≡ b * n + c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
-  rw [add_comm, modEq_add_mul_self_iff]
+theorem modEq_mul_modulus_add_iff : a ≡ b * n + c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+  rw [add_comm, modEq_add_mul_modulus_iff]
 
 @[simp]
-theorem add_self_mul_modEq_iff : a + n * b ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+theorem add_modulus_mul_modEq_iff : a + n * b ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem self_mul_add_modEq_iff : n * b + a ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
-  rw [add_comm, add_self_mul_modEq_iff]
+theorem modulus_mul_add_modEq_iff : n * b + a ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+  rw [add_comm, add_modulus_mul_modEq_iff]
 
 @[simp]
-theorem modEq_add_self_mul_iff : a ≡ b + n * c [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+theorem modEq_add_modulus_mul_iff : a ≡ b + n * c [ZMOD n] ↔ a ≡ b [ZMOD n] := by
   simp [ModEq]
 
 @[simp]
-theorem modEq_self_mul_add_iff : a ≡ n * b + c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
-  rw [add_comm, modEq_add_self_mul_iff]
+theorem modEq_modulus_mul_add_iff : a ≡ n * b + c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+  rw [add_comm, modEq_add_modulus_mul_iff]
 
 @[simp]
-theorem sub_self_modEq_iff : a - n ≡ b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
-  rw [← add_self_modEq_iff, sub_add_cancel]
+theorem sub_modulus_modEq_iff : a - n ≡ b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  rw [← add_modulus_modEq_iff, sub_add_cancel]
 
 @[simp]
-theorem modEq_sub_self_iff : a ≡ b - n [ZMOD n] ↔ a ≡ b [ZMOD n] := by
-  rw [← modEq_add_self_iff, sub_add_cancel]
+theorem sub_modulus_mul_modEq_iff : a - n * b ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+  rw [← add_modulus_mul_modEq_iff, sub_add_cancel]
+
+@[simp]
+theorem modEq_sub_modulus_iff : a ≡ b - n [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  rw [← modEq_add_modulus_iff, sub_add_cancel]
+
+@[simp]
+theorem modEq_sub_modulus_mul_iff : a ≡ b - n * c [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  rw [← modEq_add_modulus_mul_iff, sub_add_cancel]
 
 theorem modEq_one : a ≡ b [ZMOD 1] :=
   modEq_of_dvd (one_dvd _)
@@ -327,24 +335,21 @@ theorem gcd_a_modEq (a b : ℕ) : (a : ℤ) * Nat.gcdA a b ≡ Nat.gcd a b [ZMOD
   rw [← add_zero ((a : ℤ) * _), Nat.gcd_eq_gcd_ab]
   exact (dvd_mul_right _ _).zero_modEq_int.add_left _
 
-theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * c ≡ b [ZMOD n] :=
-  calc
-    a + n * c ≡ b + n * c [ZMOD n] := ha.add_right _
-    _ ≡ b + 0 [ZMOD n] := (dvd_mul_right _ _).modEq_zero_int.add_left _
-    _ ≡ b [ZMOD n] := by rw [add_zero]
+@[deprecated add_modulus_mul_modEq_iff (since := "2025-10-16")]
+theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * c ≡ b [ZMOD n] := by
+  simpa
 
+@[deprecated sub_modulus_mul_modEq_iff (since := "2025-10-16")]
 theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
-  convert Int.modEq_add_fac (-c) ha using 1; rw [Int.mul_neg, sub_eq_add_neg]
+  simpa
 
-theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] :=
-  modEq_add_fac _ ModEq.rfl
+theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] := by simp
 
 theorem mod_coprime {a b : ℕ} (hab : Nat.Coprime a b) : ∃ y : ℤ, a * y ≡ 1 [ZMOD b] :=
   ⟨Nat.gcdA a b,
     have hgcd : Nat.gcd a b = 1 := Nat.Coprime.gcd_eq_one hab
     calc
-      ↑a * Nat.gcdA a b ≡ ↑a * Nat.gcdA a b + ↑b * Nat.gcdB a b [ZMOD ↑b] :=
-        ModEq.symm <| modEq_add_fac _ <| ModEq.refl _
+      ↑a * Nat.gcdA a b ≡ ↑a * Nat.gcdA a b + ↑b * Nat.gcdB a b [ZMOD ↑b] := by simp
       _ ≡ 1 [ZMOD ↑b] := by rw [← Nat.gcd_eq_gcd_ab, hgcd]; rfl
       ⟩
 

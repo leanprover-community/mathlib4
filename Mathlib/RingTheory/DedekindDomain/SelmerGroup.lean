@@ -38,7 +38,7 @@ This file defines the Selmer group $K(S, n)$ and some basic facts.
 * TODO: proofs of exactness of the sequence.
 * TODO: proofs of finiteness for global fields.
 
-## Notations
+## Notation
 
 * `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
 
@@ -126,9 +126,6 @@ theorem valuation_of_unit_eq (x : Rˣ) :
     rw [not_lt, ← hx, ← mul_one <| v.valuation _ _, valuation_of_algebraMap]
     gcongr
     exact v.intValuation_le_one _
-
--- Porting note: invalid attribute 'semireducible', declaration is in an imported module
--- attribute [local semireducible] MulOpposite
 
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=

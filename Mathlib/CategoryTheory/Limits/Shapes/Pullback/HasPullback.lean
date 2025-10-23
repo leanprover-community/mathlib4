@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 /-!
 # HasPullback
 `HasPullback f g` and `pullback f g` provides API for `HasLimit` and `limit` in the case of
-pullacks.
+pullbacks.
 
 # Main definitions
 
@@ -21,13 +21,13 @@ pullacks.
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
 ```
-  pullback f g ---pullback.snd f g---> Y
+  pullback f g ---pullback.fst f g---> X
       |                                |
       |                                |
-pullback.snd f g                       g
+pullback.snd f g                       f
       |                                |
       v                                v
-      X --------------f--------------> Z
+      Y --------------g--------------> Z
 ```
 
 * `HasPushout f g`: this is an abbreviation for `HasColimit (span f g)`, and is a typeclass used to
@@ -39,10 +39,10 @@ pullback.snd f g                       g
 ```
       X --------------f--------------> Y
       |                                |
-      g                          pushout.inr f g
+      g                          pushout.inl f g
       |                                |
       v                                v
-      Z ---pushout.inl f g---> pushout f g
+      Z ---pushout.inr f g---> pushout f g
 ```
 
 # Main results & API
@@ -76,15 +76,13 @@ open WalkingSpan.Hom WalkingCospan.Hom WidePullbackShape.Hom WidePushoutShape.Ho
 
 variable {C : Type u} [Category.{v} C] {W X Y Z : C}
 
-/-- `HasPullback f g` represents a particular choice of limiting cone
-for the pair of morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`.
--/
+/-- Two morphisms `f : X ⟶ Z` and `g : Y ⟶ Z` have a pullback if the diagram `cospan f g` has a
+limit. -/
 abbrev HasPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :=
   HasLimit (cospan f g)
 
-/-- `HasPushout f g` represents a particular choice of colimiting cocone
-for the pair of morphisms `f : X ⟶ Y` and `g : X ⟶ Z`.
--/
+/-- Two morphisms `f : X ⟶ Y` and `g : X ⟶ Z` have a pushout if the diagram `span f g` has a
+colimit. -/
 abbrev HasPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :=
   HasColimit (span f g)
 
@@ -510,14 +508,24 @@ theorem inr_comp_pushoutSymmetry_inv [HasPushout f g] :
 
 end PushoutSymmetry
 
+/-- `HasPullbacksAlong f` states that pullbacks of all morphisms into `Y`
+along `f : X ⟶ Y` exist. -/
+abbrev HasPullbacksAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : W ⟶ Y), HasPullback h f
+
+/-- `HasPushoutsAlong f` states that pushouts of all morphisms out of `X`
+along `f : X ⟶ Y` exist. -/
+abbrev HasPushoutsAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : X ⟶ W), HasPushout h f
+
 variable (C)
 
-/-- `HasPullbacks` represents a choice of pullback for every pair of morphisms. -/
+/-- A category `HasPullbacks` if it has all limits of shape `WalkingCospan`, i.e. if it has a
+pullback for every pair of morphisms with the same codomain. -/
 @[stacks 001W]
 abbrev HasPullbacks :=
   HasLimitsOfShape WalkingCospan C
 
-/-- `HasPushouts` represents a choice of pushout for every pair of morphisms -/
+/-- A category `HasPushouts` if it has all colimits of shape `WalkingSpan`, i.e. if it has a
+pushout for every pair of morphisms with the same domain. -/
 abbrev HasPushouts :=
   HasColimitsOfShape WalkingSpan C
 

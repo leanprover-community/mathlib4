@@ -231,7 +231,7 @@ open scoped ContinuousMap
 def equivOfHomotopyEquiv (hequiv : X ≃ₕ Y) : πₓ X ≌ πₓ Y := by
   apply CategoryTheory.Equivalence.mk (πₘ (TopCat.ofHom hequiv.toFun) : πₓ X ⥤ πₓ Y)
     (πₘ (TopCat.ofHom hequiv.invFun) : πₓ Y ⥤ πₓ X) <;>
-    simp only [Grpd.id_to_functor]
+    simp only [← Grpd.id_eq_id]
   · convert (asIso (homotopicMapsNatIso hequiv.left_inv.some)).symm
     exacts [((π).map_id X).symm, ((π).map_comp _ _).symm]
   · convert asIso (homotopicMapsNatIso hequiv.right_inv.some)

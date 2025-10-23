@@ -24,7 +24,7 @@ The rank function `Matroid.eRk` satisfies three properties, often known as (R1),
 * `M.eRk X ≤ M.eRk Y` for all `X ⊆ Y`,
 * `M.eRk X + M.eRk Y ≥ M.eRk (X ∪ Y) + M.eRk (X ∩ Y)` for all `X, Y`.
 
-In fact, if `α` is finite, then any function `Set α → ℕ∞` satisfying these these properties
+In fact, if `α` is finite, then any function `Set α → ℕ∞` satisfying these properties
 is the rank function of a `Matroid α`; in other words, properties (R1) - (R3) give an alternative
 definition of finite matroids, and a finite matroid is determined by its rank function.
 Because of this, and the convenient quantitative language of these axioms,

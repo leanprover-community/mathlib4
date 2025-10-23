@@ -119,6 +119,9 @@ variable [Ring R]
 theorem coeff_mul_X_sub_C {p : R[X]} {r : R} {a : ℕ} :
     coeff (p * (X - C r)) (a + 1) = coeff p a - coeff p (a + 1) * r := by simp [mul_sub]
 
+theorem coeff_X_sub_C_mul {p : R[X]} {r : R} {a : ℕ} :
+    coeff ((X - C r) * p) (a + 1) = coeff p a - r * coeff p (a + 1) := by simp [sub_mul]
+
 end Ring
 
 section Semiring

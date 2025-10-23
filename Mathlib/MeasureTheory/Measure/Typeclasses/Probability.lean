@@ -88,9 +88,19 @@ instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
-theorem isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
+theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=
   ⟨by simp [map_apply_of_aemeasurable, hf]⟩
+
+theorem Measure.isProbabilityMeasure_of_map {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) [IsProbabilityMeasure (μ.map f)] : IsProbabilityMeasure μ where
+  measure_univ := by
+    rw [← Set.preimage_univ (f := f), ← map_apply_of_aemeasurable hf .univ]
+    exact IsProbabilityMeasure.measure_univ
+
+theorem Measure.isProbabilityMeasure_map_iff {μ : Measure α} {f : α → β}
+    (hf : AEMeasurable f μ) : IsProbabilityMeasure (μ.map f) ↔ IsProbabilityMeasure μ :=
+  ⟨fun _ ↦ isProbabilityMeasure_of_map hf, fun _ ↦ isProbabilityMeasure_map hf⟩
 
 instance IsProbabilityMeasure_comap_equiv (f : β ≃ᵐ α) : IsProbabilityMeasure (μ.comap f) := by
   rw [← MeasurableEquiv.map_symm]; exact isProbabilityMeasure_map f.symm.measurable.aemeasurable

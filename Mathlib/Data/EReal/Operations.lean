@@ -728,16 +728,7 @@ lemma mul_nonpos_iff {a b : EReal} : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a �
 lemma mul_eq_top (a b : EReal) :
     a * b = ⊤ ↔ (a = ⊥ ∧ b < 0) ∨ (a < 0 ∧ b = ⊥) ∨ (a = ⊤ ∧ 0 < b) ∨ (0 < a ∧ b = ⊤) := by
   induction a, b using EReal.induction₂_symm with
-  | symm h =>
-    rw [EReal.mul_comm, h]
-    refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩ <;>
-    cases H with
-      | inl h => exact Or.inr (Or.inl ⟨h.2, h.1⟩)
-      | inr h => cases h with
-        | inl h => exact Or.inl ⟨h.2, h.1⟩
-        | inr h => cases h with
-          | inl h => exact Or.inr (Or.inr (Or.inr ⟨h.2, h.1⟩))
-          | inr h => exact Or.inr (Or.inr (Or.inl ⟨h.2, h.1⟩))
+  | symm h => grind [EReal.mul_comm]
   | top_top => simp
   | top_pos _ hx => simp [EReal.top_mul_coe_of_pos hx, hx]
   | top_zero => simp
@@ -872,11 +863,11 @@ def evalERealMul : PositivityExt where eval {u α} zα pα e := do
       | _ => pure .none
     | .nonnegative pa =>
       match (← core zα pα b).toNonneg with
-      | .some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
-      | .none => pure .none
+      | some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
+      | none => pure .none
     | .nonzero pa =>
       match (← core zα pα b).toNonzero with
-      | .some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
+      | some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
       | none => pure .none
     | _ => pure .none
   | _, _, _ => throwError "not a product of 2 `EReal`s"

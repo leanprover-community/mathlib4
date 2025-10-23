@@ -269,7 +269,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
       nth_rw 1 [← rpow_one 2]
       rw [← division_def, ← rpow_sub zero_lt_two, norm_eq_abs,
         abs_of_pos (rpow_pos_of_pos zero_lt_two _), rpow_lt_one_iff zero_lt_two.le]
-      norm_num
+      simp
     · intro n
       positivity
     · intro m n hm hmn
@@ -377,14 +377,11 @@ theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
   · simp only [Ioc_self, sum_empty, sub_self, le_refl]
   intro n hn IH
   rw [sum_Ioc_succ_top hn]
-  apply (add_le_add IH le_rfl).trans
-  simp only [sub_eq_add_neg, add_assoc, Nat.cast_add, Nat.cast_one, le_add_neg_iff_add_le,
-    add_le_iff_nonpos_right, neg_add_le_iff_le_add, add_zero]
+  grw [IH]
+  push_cast
   have A : 0 < (n : α) := by simpa using hk.bot_lt.trans_le hn
   field_simp
-  rw [div_le_div_iff₀ _ A]
-  · linarith
-  · positivity
+  linarith
 
 theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i ∈ Ioo k n, (i ^ 2 : α)⁻¹) ≤ 2 / (k + 1) :=
   calc

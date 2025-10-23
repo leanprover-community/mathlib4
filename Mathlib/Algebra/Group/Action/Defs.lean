@@ -124,7 +124,7 @@ export AddAction (add_vadd)
 export SMulCommClass (smul_comm)
 export VAddCommClass (vadd_comm)
 
-library_note "bundled maps over different rings"/--
+library_note2 «bundled maps over different rings» /--
 Frequently, we find ourselves wanting to express a bilinear map `M →ₗ[R] N →ₗ[R] P` or an
 equivalence between maps `(M →ₗ[R] N) ≃ₗ[R] (M' →ₗ[R] N')` where the maps have an associated ring
 `R`. Unfortunately, using definitions like these requires that `R` satisfy `CommSemiring R`, and
@@ -570,3 +570,52 @@ lemma smul_mul' (a : M) (b₁ b₂ : N) : a • (b₁ * b₂) = a • b₁ * a �
   MulDistribMulAction.smul_mul ..
 
 end MulDistribMulAction
+
+section IsCancelSMul
+
+variable (G P : Type*)
+
+/-- A vector addition is left-cancellative if it is pointwise injective on the left. -/
+class IsLeftCancelVAdd [VAdd G P] : Prop where
+  protected left_cancel' : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
+
+/-- A scalar multiplication is left-cancellative if it is pointwise injective on the left. -/
+@[to_additive]
+class IsLeftCancelSMul [SMul G P] : Prop where
+  protected left_cancel' : ∀ (a : G) (b c : P), a • b = a • c → b = c
+
+@[to_additive]
+lemma IsLeftCancelSMul.left_cancel {G P} [SMul G P] [IsLeftCancelSMul G P] (a : G) (b c : P) :
+  a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
+
+@[to_additive]
+instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
+  left_cancel' := IsLeftCancelMul.mul_left_cancel
+
+/-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
+class IsCancelVAdd [VAdd G P] : Prop extends IsLeftCancelVAdd G P where
+  protected right_cancel' : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
+
+/-- A scalar multiplication is cancellative if it is pointwise injective on the left and right. -/
+@[to_additive]
+class IsCancelSMul [SMul G P] : Prop extends IsLeftCancelSMul G P where
+  protected right_cancel' : ∀ (a b : G) (c : P), a • c = b • c → a = b
+
+@[to_additive]
+lemma IsCancelSMul.left_cancel {G P} [SMul G P] [IsCancelSMul G P] (a : G) (b c : P) :
+  a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
+
+@[to_additive]
+lemma IsCancelSMul.right_cancel {G P} [SMul G P] [IsCancelSMul G P] (a b : G) (c : P) :
+  a • c = b • c → a = b := IsCancelSMul.right_cancel' a b c
+
+@[to_additive]
+instance [CancelMonoid G] : IsCancelSMul G G where
+  left_cancel' := IsLeftCancelMul.mul_left_cancel
+  right_cancel' _ _ _ := mul_right_cancel
+
+@[to_additive]
+instance [Group G] [MulAction G P] : IsLeftCancelSMul G P where
+  left_cancel' a b c h := by rw [← inv_smul_smul a b, h, inv_smul_smul]
+
+end IsCancelSMul

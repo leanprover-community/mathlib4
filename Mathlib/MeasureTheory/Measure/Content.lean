@@ -96,10 +96,6 @@ lemma mk_apply (toFun : Compacts G → ℝ≥0) (mono' sup_disjoint' sup_le') (K
 
 @[simp] lemma apply_ne_top {K : Compacts G} : μ K ≠ ∞ := coe_ne_top
 
-@[deprecated toFun_eq_toNNReal_apply (since := "2025-02-11")]
-theorem apply_eq_coe_toFun (K : Compacts G) : μ K = μ.toFun K :=
-  rfl
-
 theorem mono (K₁ K₂ : Compacts G) (h : (K₁ : Set G) ⊆ K₂) : μ K₁ ≤ μ K₂ := by
   simpa using μ.mono' _ _ h
 

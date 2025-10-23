@@ -305,14 +305,14 @@ theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := b
 theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
   rw [integral_deriv_eq_sub' fun x => -cos x]
   · ring
-  · norm_num
+  · simp
   · simp only [differentiableAt_fun_neg_iff, differentiableAt_cos, implies_true]
   · exact continuousOn_sin
 
 @[simp]
 theorem integral_cos : ∫ x in a..b, cos x = sin b - sin a := by
   rw [integral_deriv_eq_sub']
-  · norm_num
+  · simp
   · simp only [differentiableAt_sin, implies_true]
   · exact continuousOn_cos
 
@@ -443,17 +443,23 @@ theorem integral_sin_sq : ∫ x in a..b, sin x ^ 2 = (sin a * cos a - sin b * co
 
 theorem integral_sin_pow_odd :
     (∫ x in 0..π, sin x ^ (2 * n + 1)) = 2 * ∏ i ∈ range n, (2 * (i : ℝ) + 2) / (2 * i + 3) := by
-  induction' n with k ih; · norm_num
-  rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
-  norm_cast
-  simp [-cast_add, field_simps]
+  induction n with
+  | zero => norm_num
+  | succ k ih =>
+    rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
+    norm_cast
+    field_simp
+    simp
 
 theorem integral_sin_pow_even :
     (∫ x in 0..π, sin x ^ (2 * n)) = π * ∏ i ∈ range n, (2 * (i : ℝ) + 1) / (2 * i + 2) := by
-  induction' n with k ih; · simp
-  rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
-  norm_cast
-  simp [-cast_add, field_simps]
+  induction n with
+  | zero => simp
+  | succ k ih =>
+    rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
+    norm_cast
+    field_simp
+    simp
 
 theorem integral_sin_pow_pos : 0 < ∫ x in 0..π, sin x ^ n := by
   rcases even_or_odd' n with ⟨k, rfl | rfl⟩ <;>

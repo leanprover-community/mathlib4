@@ -96,7 +96,7 @@ lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u
 lemma IsCompleteMultipartite.colorable_of_cliqueFree {n : ℕ} (h : G.IsCompleteMultipartite)
     (hc : G.CliqueFree n) : G.Colorable (n - 1) :=
   (completeMultipartiteGraph.colorable_of_cliqueFree _ (fun _ ↦ ⟨_, h.setoid.refl _⟩) <|
-    hc.comap h.iso.symm.toEmbedding).of_embedding h.iso.toEmbedding
+    hc.comap h.iso.symm.toEmbedding).of_hom h.iso
 
 variable (G) in
 /--
@@ -114,12 +114,15 @@ namespace IsPathGraph3Compl
 
 variable {v w₁ w₂ : α}
 
+@[grind]
 lemma ne_fst (h2 : G.IsPathGraph3Compl v w₁ w₂) : v ≠ w₁ :=
   fun h ↦ h2.not_adj_snd (h.symm ▸ h2.adj)
 
+@[grind]
 lemma ne_snd (h2 : G.IsPathGraph3Compl v w₁ w₂) : v ≠ w₂ :=
   fun h ↦ h2.not_adj_fst (h ▸ h2.adj.symm)
 
+@[grind]
 lemma fst_ne_snd (h2 : G.IsPathGraph3Compl v w₁ w₂) : w₁ ≠ w₂ := h2.adj.ne
 
 @[symm] lemma symm (h : G.IsPathGraph3Compl v w₁ w₂) : G.IsPathGraph3Compl v w₂ w₁ := by
@@ -251,7 +254,7 @@ lemma completeEquipartiteGraph_eq_bot_iff :
   rw [← not_iff_not, not_or, ← ne_eq, ← edgeSet_nonempty, not_le, ← Nat.succ_le_iff,
     ← Fin.nontrivial_iff_two_le, ← ne_eq, ← Nat.pos_iff_ne_zero, Fin.pos_iff_nonempty]
   refine ⟨fun ⟨e, he⟩ ↦ ?_, fun ⟨⟨i₁, i₂, hv⟩, ⟨x⟩⟩ ↦ ?_⟩
-  · induction' e with v₁ v₂
+  · induction e with | _ v₁ v₂
     rw [mem_edgeSet, completeEquipartiteGraph_adj] at he
     exact ⟨⟨v₁.1, v₂.1, he⟩, ⟨v₁.2⟩⟩
   · use s((i₁, x), (i₂, x))

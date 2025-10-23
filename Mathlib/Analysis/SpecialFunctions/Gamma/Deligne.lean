@@ -29,7 +29,7 @@ formula which is an important input in functional equations of (un-completed) Di
 -/
 
 open Filter Topology Asymptotics Real Set MeasureTheory
-open Complex hiding abs_of_nonneg
+open Complex
 
 namespace Complex
 
@@ -78,7 +78,7 @@ lemma Gammaℝ_one : Gammaℝ 1 = 1 := by
 @[simp]
 lemma Gammaℂ_one : Gammaℂ 1 = 1 / π := by
   rw [Gammaℂ_def, cpow_neg_one, Complex.Gamma_one]
-  field_simp [pi_ne_zero]
+  field_simp
 
 section analyticity
 
@@ -193,7 +193,7 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
       Complex.cos_sub_pi_div_two]
   simp_rw [mul_div_assoc, mul_inv]
   generalize (Gammaℝ (s - 1))⁻¹ = A
-  field_simp [pi_ne_zero]
+  field_simp
 
 end reflection
 

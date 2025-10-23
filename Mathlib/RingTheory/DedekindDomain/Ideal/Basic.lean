@@ -306,10 +306,9 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
   rw [Polynomial.aeval_eq_sum_range]
   refine Submodule.sum_mem _ fun i hi => Submodule.smul_mem _ _ ?_
   clear hi
-  induction' i with i ih
-  · rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
-  · change x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
-    rw [pow_succ']; exact x_mul_mem _ ih
+  induction i with
+  | zero => rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
+  | succ i ih => rw [pow_succ']; exact x_mul_mem _ ih
 
 /-- Nonzero fractional ideals in a Dedekind domain are units.
 
@@ -402,7 +401,7 @@ noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A�
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `mul_left_cancel_of_ne_zero` field.
+#adaptation_note /-- 2025-03-29 for https://github.com/leanprover/lean4/issues/7717 had to add `mul_left_cancel_of_ne_zero` field.
 TODO(kmill) There is trouble calculating the type of the `IsLeftCancelMulZero` parent. -/
 /-- Fractional ideals have cancellative multiplication in a Dedekind domain.
 
@@ -451,6 +450,12 @@ theorem Ideal.dvd_iff_le {I J : Ideal A} : I ∣ J ↔ J ≤ I :=
     use H
     refine coeIdeal_injective (show (J : FractionalIdeal A⁰ (FractionRing A)) = ↑(I * H) from ?_)
     rw [coeIdeal_mul, hH, ← mul_assoc, mul_inv_cancel₀ hI', one_mul]⟩
+
+theorem Ideal.liesOver_iff_dvd_map [Algebra R A] {p : Ideal R} {P : Ideal A} (hP : P ≠ ⊤)
+    [p.IsMaximal] :
+    P.LiesOver p ↔ P ∣ Ideal.map (algebraMap R A) p := by
+  rw [liesOver_iff, dvd_iff_le, under_def, map_le_iff_le_comap,
+    IsCoatom.le_iff_eq (by rwa [← isMaximal_def]) (comap_ne_top _ hP), eq_comm]
 
 theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
   ⟨fun ⟨hI, H, hunit, hmul⟩ =>

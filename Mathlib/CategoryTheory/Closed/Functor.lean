@@ -8,10 +8,10 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
-# Cartesian closed functors
+# Cartesian-closed functors
 
 Define the exponential comparison morphisms for a functor which preserves binary products, and use
-them to define a cartesian closed functor: one which (naturally) preserves exponentials.
+them to define a Cartesian-closed functor: one which (naturally) preserves exponentials.
 
 Define the Frobenius morphism, and show it is an isomorphism iff the exponential comparison is an
 isomorphism.
@@ -25,7 +25,7 @@ https://ncatlab.org/nlab/show/cartesian+closed+functor
 https://ncatlab.org/nlab/show/Frobenius+reciprocity
 
 ## Tags
-Frobenius reciprocity, cartesian closed functor
+Frobenius reciprocity, Cartesian-closed functor
 
 -/
 
@@ -50,8 +50,8 @@ variable (F : C ⥤ D) {L : D ⥤ C}
 natural in `B`, where the first morphism is the product comparison and the latter uses the counit
 of the adjunction.
 
-We will show that if `C` and `D` are cartesian closed, then this morphism is an isomorphism for all
-`A` iff `F` is a cartesian closed functor, i.e. it preserves exponentials.
+We will show that if `C` and `D` are Cartesian closed, then this morphism is an isomorphism for all
+`A` iff `F` is a Cartesian-closed functor, i.e. it preserves exponentials.
 -/
 def frobeniusMorphism (h : L ⊣ F) (A : C) : TwoSquare (tensorLeft (F.obj A)) L L (tensorLeft A) :=
   prodComparisonNatTrans L (F.obj A) ≫
@@ -71,7 +71,7 @@ variable [CartesianClosed C] [CartesianClosed D]
 variable [Limits.PreservesLimitsOfShape (Discrete Limits.WalkingPair) F]
 
 /-- The exponential comparison map.
-`F` is a cartesian closed functor if this is an iso for all `A`.
+`F` is a Cartesian-closed functor if this is an iso for all `A`.
 -/
 def expComparison (A : C) : TwoSquare (exp A) F F (exp (F.obj A)) :=
   mateEquiv (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
@@ -118,7 +118,7 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
   rw [← prodComparison_inv_natural_whiskerRight F f]
   simp
 
-/-- The functor `F` is cartesian closed (i.e. preserves exponentials) if each natural transformation
+/-- The functor `F` is Cartesian closed (i.e. preserves exponentials) if each natural transformation
 `exp_comparison F A` is an isomorphism
 -/
 class CartesianClosedFunctor : Prop where
@@ -174,9 +174,9 @@ theorem expComparison_iso_of_frobeniusMorphism_iso (h : L ⊣ F) (A : C)
 
 open Limits in
 /-- If `F` is full and faithful, and has a left adjoint which preserves binary products, then it is
-cartesian closed.
+Cartesian closed.
 
-TODO: Show the converse, that if `F` is cartesian closed and its left adjoint preserves binary
+TODO: Show the converse, that if `F` is Cartesian closed and its left adjoint preserves binary
 products, then it is full and faithful.
 -/
 theorem cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts (h : L ⊣ F) [F.Full] [F.Faithful]
