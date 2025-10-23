@@ -26,6 +26,7 @@ namespace List
 ### The predicate `List.Sorted` (now deprecated).
 -/
 
+
 section Sorted
 
 variable {α : Type u} {r : α → α → Prop} {a : α} {l : List α}
@@ -34,35 +35,43 @@ variable {α : Type u} {r : α → α → Prop} {a : α} {l : List α}
 @[deprecated (since := "2025-10-11")]
 alias Sorted := Pairwise
 
-@[deprecated (since := "2025-10-11")]
-alias decidableSorted := List.instDecidablePairwise
+set_option linter.deprecated false
+
+@[deprecated List.decidableSorted (since := "2025-10-11")]
+def decidableSorted [DecidableRel r] (l : List α) : Decidable (Sorted r l) :=
+  List.instDecidablePairwise l
 
 @[deprecated Pairwise.nil (since := "2025-10-11")]
-theorem sorted_nil : Pairwise r [] := Pairwise.nil
+theorem sorted_nil : Sorted r [] := Pairwise.nil
 
-@[deprecated (since := "2025-10-11")]
-alias Sorted.of_cons := Pairwise.of_cons
+@[deprecated Pairwise.of_cons (since := "2025-10-11")]
+theorem Sorted.of_cons (p : Sorted r (a :: l)) :
+  Sorted r l := Pairwise.of_cons p
 
-@[deprecated (since := "2025-10-11")]
-alias Sorted.tail := Pairwise.tail
+@[deprecated Pairwise.tail (since := "2025-10-11")]
+theorem Sorted.tail (h : Sorted r l) : Sorted r l.tail := Pairwise.tail h
 
-@[deprecated (since := "2025-10-11")]
-alias rel_of_sorted_cons := rel_of_pairwise_cons
+@[deprecated rel_of_pairwise_cons (since := "2025-10-11")]
+theorem rel_of_sorted_cons (p : Sorted r (a :: l))
+  {a' : α} : a' ∈ l → r a a':= rel_of_pairwise_cons p
 
-@[deprecated (since := "2025-10-11")]
-alias sorted_cons := pairwise_cons
+@[deprecated pairwise_cons (since := "2025-10-11")]
+theorem sorted_cons : Sorted r (a :: l) ↔ (∀ a' ∈ l, r a a') ∧ Sorted r l := pairwise_cons
 
-@[deprecated (since := "2025-10-11")]
-alias Sorted.filter := Pairwise.filter
+@[deprecated Pairwise.filter (since := "2025-10-11")]
+theorem Sorted.filter (p : α → Bool) : Sorted r l →  Sorted r (filter p l) := Pairwise.filter p
 
-@[deprecated (since := "2025-10-11")]
-alias sorted_singleton := pairwise_singleton
+@[deprecated pairwise_singleton (since := "2025-10-11")]
+theorem sorted_singleton (r) (a : α) :  Sorted r [a] := pairwise_singleton r a
 
-@[deprecated (since := "2025-10-11")]
-alias Sorted.rel_of_mem_take_of_mem_drop := Pairwise.rel_of_mem_take_of_mem_drop
+@[deprecated Pairwise.rel_of_mem_take_of_mem_drop (since := "2025-10-11")]
+theorem Sorted.rel_of_mem_take_of_mem_drop {x y i} (h : Sorted r l)
+    (hx : x ∈ take i l) (hy : y ∈ drop i l) : r x y := Pairwise.rel_of_mem_take_of_mem_drop h hx hy
 
-@[deprecated (since := "2025-10-11")]
-alias Sorted.filterMap := Pairwise.filterMap
+@[deprecated Pairwise.filterMap (since := "2025-10-11")]
+theorem Sorted.filterMap (f) {s : α → α → Prop}
+    (H : ∀ (a a' : α), r a a' → ∀ (b : α), f a = some b → ∀ (b' : α), f a' = some b' → s b b') :
+  Sorted r l → Sorted s (filterMap f l) := Pairwise.filterMap f H
 
 end Sorted
 
@@ -474,7 +483,7 @@ alias ⟨SortedLT.isChain, IsChain.sortedLT⟩ := sortedLT_iff_isChain
 unseal SortedGT in theorem sortedGT_iff_isChain : SortedGT l ↔ IsChain (· > ·) l := Iff.rfl
 alias ⟨SortedGT.isChain, IsChain.sortedGT⟩ := sortedGT_iff_isChain
 
-attribute [grind] sortedLE_iff_isChain sortedGE_iff_isChain
+attribute [grind =] sortedLE_iff_isChain sortedGE_iff_isChain
   sortedLT_iff_isChain sortedGT_iff_isChain
 
 instance decidableSortedLE [DecidableLE α] : Decidable (l.SortedLE) :=
