@@ -53,4 +53,4 @@ elab "Category*" ppSpace C:term : term => commitIfNoEx <| withoutErrToSorry do
   | some idx => levelNames.insertIdx (idx + 1) v
   | none => v :: levelNames
   setMCtx mctx
-  Meta.mkAppM' out #[cExpr]
+  return .app out cExpr
