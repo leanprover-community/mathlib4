@@ -6,6 +6,7 @@ Authors: Adam Topaz
 import Lean.Util.CollectLevelParams
 import Lean.Elab.Term.TermElabM
 import Batteries.Data.Array.Basic
+import Mathlib.Init
 
 /-!
 # Support for `Category* C`.
