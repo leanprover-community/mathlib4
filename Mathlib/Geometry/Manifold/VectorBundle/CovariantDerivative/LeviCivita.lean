@@ -504,7 +504,7 @@ lemma leviCivitaRhs_smulY_const [CompleteSpace E] {a : ℝ}
   exact leviCivitaRhs_smulY_const_apply (hX x) (hY x) (hZ x)
 
 lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
-    (hf : MDiffAt f x) (hX : MDiffAt  (T% X) x) (hY : MDiffAt  (T% Y) x) (hZ : MDiffAt  (T% Z) x) :
+    (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I X (f • Y) Z x =
       f x • leviCivitaRhs' I X Y Z x + ((bar _).toFun <| mfderiv% f x (X x)) • 2 * ⟪Y, Z⟫ x := by
   simp only [leviCivitaRhs']
@@ -546,7 +546,7 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
   ring
 
 lemma leviCivitaRhs_smulY_apply [CompleteSpace E] {f : M → ℝ}
-    (hf : MDiffAt f x) (hX : MDiffAt  (T% X) x) (hY : MDiffAt  (T% Y) x) (hZ : MDiffAt  (T% Z) x) :
+    (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I X (f • Y) Z x =
       f x • leviCivitaRhs I X Y Z x + ((bar _).toFun <| mfderiv% f x (X x)) • ⟪Y, Z⟫ x := by
   simp only [leviCivitaRhs, Pi.smul_apply, leviCivitaRhs'_smulY_apply I hf hX hY hZ]
@@ -587,7 +587,7 @@ lemma leviCivitaRhs_addZ [CompleteSpace E]
   exact leviCivitaRhs_addZ_apply I (hX x) (hY x) (hZ x) (hZ' x)
 
 lemma leviCivitaRhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
-    (hf : MDiffAt f x) (hX : MDiffAt  (T% X) x) (hY : MDiffAt  (T% Y) x) (hZ : MDiffAt  (T% Z) x) :
+    (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I X Y (f • Z) x = f x • leviCivitaRhs' I X Y Z x := by
   simp only [leviCivitaRhs', rhs_aux_smulX, Pi.add_apply, Pi.sub_apply]
   rw [rhs_aux_smulY_apply _ _ hf hZ hX, rhs_aux_smulZ_apply _ _ hf hY hZ]
@@ -765,7 +765,7 @@ variable (X Y) in
 /-- The definition `lcCandidate` behaves well: for each compatible trivialisation `e`,
 the candidate definition using `e` agrees with `lcCandidate` on `e.baseSet`. -/
 lemma lcCandidate_eq_lcCandidateAux [FiniteDimensional ℝ E]
-    (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M)) [MemTrivializationAtlas e]
+    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
     {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} {x : M} (hx : x ∈ e.baseSet) :
     lcCandidate I M o X Y x = lcCandidateAux I e o X Y x := by
   by_cases hE : Subsingleton E
@@ -1006,7 +1006,7 @@ A covariant derivative on `U` is torsion-free on `U` iff for each `x ∈ U`,
 the Christoffel symbols `Γᵢⱼᵏ` w.r.t. `{s i}` are symmetric. -/
 lemma isTorsionFreeOn_iff_christoffelSymbols [CompleteSpace E] {ι : Type*} [Fintype ι]
     (hf : IsCovariantDerivativeOn E f U)
-    {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) -- (hx : x ∈ U)
+    {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U)
     (hs'' : ∀ i j, ∀ x : U, VectorField.mlieBracket I (s i) (s j) x = 0) :
     IsTorsionFreeOn f U ↔
       ∀ i j k, ∀ x ∈ U, ChristoffelSymbol I f hs i j k x = ChristoffelSymbol I f hs j i k x := by
@@ -1106,11 +1106,11 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
     have : LocallyFiniteOrderBot ι := sorry
     have : ∑ k', inner ℝ
       (leviCivitaRhs I (s i) (s j)
-            (b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k') x' •
+          (b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k') x' •
           b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k' x')
       (s k x') =
-       ∑ k', inner ℝ (
-        leviCivitaRhs I (s j) (s i)
+       ∑ k', inner ℝ
+        (leviCivitaRhs I (s j) (s i)
           (b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k') x' •
           b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k' x')
         (s k x') := by

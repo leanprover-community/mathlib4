@@ -36,6 +36,7 @@ variable (E) in
 /-- This is the bundle `Hom_ℝ(E, T)`, where `T` is the rank one trivial bundle over `B`. -/
 private def V : (b : B) → Type _ := (fun b ↦ E b →L[ℝ] Trivial B ℝ b)
 
+-- TODO: all of these instances are really slow, investigate and fix this!
 noncomputable instance : (x : B) → TopologicalSpace (V E x) := by
   unfold V
   infer_instance
@@ -135,8 +136,7 @@ lemma convex_condition1 (x : B) : Convex ℝ (condition1 E x) := by
 omit [TopologicalSpace B] in
 lemma convex_condition2 (x : B) : Convex ℝ (condition2 E x) := by
   unfold condition2
-  intro φ hφ ψ hψ s t hs ht hst
-  intro v hv
+  intro φ hφ ψ hψ s t hs ht hst v hv
   rw [Set.mem_setOf] at hφ hψ
   have aux := Convex.min_le_combo ((φ v) v) ((ψ v) v) hs ht hst
   have : 0 < min ((φ v) v) ((ψ v) v) := lt_min (hφ v hv) (hψ v hv)
