@@ -62,7 +62,8 @@ variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
 variable [Algebra R P]
 variable (S)
 
-/-- A submodule `I` is a fractional ideal if `a I ⊆ R` for some `a ≠ 0`. -/
+/-- A submodule `I` is a fractional ideal with respect to a submonoid `S`
+if `a I ⊆ R` for some `a ∈ S`. -/
 def IsFractional (I : Submodule R P) :=
   ∃ a ∈ S, ∀ b ∈ I, IsInteger R (a • b)
 
@@ -72,7 +73,7 @@ variable (P)
 
 More precisely, let `P` be a localization of `R` at some submonoid `S`,
 then a fractional ideal `I ⊆ P` is an `R`-submodule of `P`,
-such that there is a nonzero `a : R` with `a I ⊆ R`.
+such that there is an `a ∈ S` with `a I ⊆ R`.
 -/
 def FractionalIdeal :=
   { I : Submodule R P // IsFractional S I }
