@@ -14,7 +14,6 @@ example : (1/2 : ℝ) ^ (-3 : ℝ) = 8 := by norm_num1
 example : (2 : ℝ) ^ (-3 : ℝ) = 1/8 := by norm_num1
 example : (-2 : ℝ) ^ (-3 : ℝ) = -1/8 := by norm_num1
 
-
 example : (8 : ℝ) ^ (2 / 6 : ℝ) = 2 := by norm_num1
 example : (0 : ℝ) ^ (1 / 3 : ℝ) = 0 := by norm_num1
 example : (8 / 27 : ℝ) ^ (1 / 3 : ℝ) = 2 / 3 := by norm_num1

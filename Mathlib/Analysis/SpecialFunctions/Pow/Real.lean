@@ -1158,8 +1158,8 @@ def proveIsNatRPowIsNNRat
 Works if `a`, `b`, and `a ^ b` are in fact rational numbers,
 except for the case `a < 0`, `b` isn't integer.
 
-TODO: decide whether we want `norm_num` to simplify, e.g., `(-8 : ℝ) ^ (1 / 3 : ℝ)` to `-1`.
-If yes, then implement it. -/
+TODO: simplify terms like  `(-a : ℝ) ^ (b / 3 : ℝ)` and `(-a : ℝ) ^ (b / 2 : ℝ)` too,
+possibly after first considering changing the junk value. -/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
 def evalRPow : NormNumExt where eval {u αR} e := do
   match u, αR, e with
