@@ -753,8 +753,8 @@ theorem Adapted.measurable_upcrossingsBefore (hf : Adapted ℱ f) (hab : a < b) 
   rw [this]
   refine Finset.measurable_fun_sum _ fun i _ => Measurable.indicator measurable_const <|
     ℱ.le N _ ?_
-  have hu := (hf.isStoppingTime_upperCrossingTime (a := a) (b := b) (N := N) (n := i))
-  simpa only [ENat.some_eq_coe, Nat.cast_lt] using hu.measurableSet_lt_of_pred N
+  simpa only [ENat.some_eq_coe, Nat.cast_lt] using
+    hf.isStoppingTime_upperCrossingTime.measurableSet_lt_of_pred N
 
 theorem Adapted.integrable_upcrossingsBefore [IsFiniteMeasure μ] (hf : Adapted ℱ f) (hab : a < b) :
     Integrable (fun ω => (upcrossingsBefore a b f N ω : ℝ)) μ :=
