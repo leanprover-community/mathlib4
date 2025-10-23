@@ -417,6 +417,11 @@ lemma tsum_geometric_encode_lt_top {r : ℝ≥0∞} (hr : r < 1) {ι : Type*} [E
     ∑' i : ι, (r : ℝ≥0∞) ^ encode i < ∞ :=
   (ENNReal.tsum_comp_le_tsum_of_injective encode_injective _).trans_lt <| by simpa
 
+lemma ENNReal.sum_add_tsum_compl {ι : Type*} (s : Finset ι) (f : ι → ℝ≥0∞) :
+    ∑ i ∈ s, f i + ∑' i : ↑s.toSetᶜ, f i = ∑' i, f i := by
+  rw [_root_.tsum_subtype, sum_eq_tsum_indicator, ←ENNReal.tsum_add]
+  simp
+
 end Geometric
 
 /-!
