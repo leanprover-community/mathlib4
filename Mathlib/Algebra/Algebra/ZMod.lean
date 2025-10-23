@@ -43,4 +43,42 @@ See note [reducible non-instances]. -/
 abbrev algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
   algebra' R p dvd_rfl
 
+/-- Any semiring with a `ZMod p`-module structure can be upgraded to a `ZMod p`-algebra. Not an
+instance because this is usually not the default way, and this will cause typeclass search loop. -/
+def ZMod.algebraOfModule (n : ℕ) (R : Type*) [Semiring R]
+    [Module (ZMod n) R] : Algebra (ZMod n) R := by
+  refine Algebra.ofModule' ?_ ?_
+  · obtain _ | n := n
+    · let : Module ℤ R := inferInstanceAs (Module (ZMod 0) R)
+      let := Module.addCommMonoidToAddCommGroup ℤ (M := R)
+      intro r x
+      obtain ⟨r, rfl | rfl⟩ := r.eq_nat_or_neg
+      · rw [Nat.cast_smul_eq_nsmul, Nat.cast_smul_eq_nsmul, nsmul_one, nsmul_eq_mul]
+      · rw [neg_smul, Nat.cast_smul_eq_nsmul, neg_smul, Nat.cast_smul_eq_nsmul,
+          nsmul_one, nsmul_eq_mul, eq_neg_iff_add_eq_zero, ← add_mul, neg_add_cancel, zero_mul]
+    · intro r x
+      obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
+      rw [Nat.cast_smul_eq_nsmul, nsmul_eq_mul, mul_one, Nat.cast_smul_eq_nsmul, nsmul_eq_mul]
+  · obtain _ | n := n
+    · let : Module ℤ R := inferInstanceAs (Module (ZMod 0) R)
+      let := Module.addCommMonoidToAddCommGroup ℤ (M := R)
+      intro r x
+      obtain ⟨r, rfl | rfl⟩ := r.eq_nat_or_neg
+      · rw [Nat.cast_smul_eq_nsmul, Nat.cast_smul_eq_nsmul, nsmul_one, nsmul_eq_mul, Nat.cast_comm]
+      · rw [neg_smul, Nat.cast_smul_eq_nsmul, neg_smul, Nat.cast_smul_eq_nsmul, nsmul_one,
+          nsmul_eq_mul, eq_neg_iff_add_eq_zero, Nat.cast_comm, ← mul_add, neg_add_cancel, mul_zero]
+    · intro r x
+      obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
+      rw [Nat.cast_smul_eq_nsmul, nsmul_eq_mul, mul_one, Nat.cast_smul_eq_nsmul, nsmul_eq_mul,
+        Nat.cast_comm]
+
+instance ZMod.instIsScalarTower (n : ℕ) (R M : Type*) [Semiring R] [AddCommMonoid M]
+    [Module (ZMod n) R] [m₁ : Module (ZMod n) M] [Module R M] :
+    IsScalarTower (ZMod n) R M := by
+  let := ZMod.algebraOfModule
+  let m₂ := Module.compHom M (algebraMap (ZMod n) R)
+  have : m₁ = m₂ := by subsingleton
+  subst m₁
+  exact ⟨fun x y z ↦ by rw [Algebra.smul_def, mul_smul]; rfl⟩
+
 end ZMod
