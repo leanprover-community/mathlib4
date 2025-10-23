@@ -179,7 +179,7 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   have IsPMeas (φ : Φ) : IsProbabilityMeasure <| RealRMK.rieszMeasure (Λ φ) := by
     constructor
     apply (ENNReal.toReal_eq_one_iff (RealRMK.rieszMeasure (Λ φ) Set.univ)).mp
-    let c1 := CompactlySupportedContinuousMap.ContinuousMap.liftCompactlySupported
+    let c1 := CompactlySupportedContinuousMap.continuousMapEquiv
       ⟨(fun (x : X) => (1 : ℝ)), continuous_const⟩
     calc
       (RealRMK.rieszMeasure (Λ φ) Set.univ).toReal = (RealRMK.rieszMeasure (Λ φ)).real Set.univ := by simp [MeasureTheory.Measure.real_def]
@@ -195,27 +195,36 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     ext μ; simp only [T, Set.mem_univ, Set.mem_range, true_iff, Φ]
     let μprob : ProbabilityMeasure X := (LevyProkhorov.equiv (ProbabilityMeasure X)) μ
     let L : C_c(X, ℝ) →ₚ[ℝ] ℝ := integralPositiveLinearMap (μprob : Measure X)
-    let liftL (L : (X →C_c ℝ) →ₚ[ℝ] ℝ) : C(X, ℝ) →ₚ[ℝ] ℝ :=
-      { toFun := L ∘ ContinuousMap.liftCompactlySupported
-        map_add' := by simp
-        map_smul' := by simp
+    let liftL : C(X, ℝ) →ₚ[ℝ] ℝ :=-- Should it take this: (L : (X →C_c ℝ) →ₚ[ℝ] ℝ)
+      { toFun := L ∘ continuousMapEquiv
+        map_add' := by
+          intro f g
+          simp [L]
+          apply MeasureTheory.integral_add' _ _
+          simp [Integrable]
+          constructor
+          measurability
+          · let f' : BoundedContinuousFunction X ℝ := by use f; simp; sorry
+            
+
+            --Probably get that all continuous functions on X are bounded above by compactness
+          sorry
+        map_smul' := by simp [L]; exact fun a b ↦ integral_const_mul a b
         monotone' := fun _ _ _ ↦ L.monotone' (by bound)}
-    let W := ((liftL L).toLinearMap.mkContinuous 1 (by
-      intro f;simp only [Equiv.toFun_as_coe, integralPositiveLinearMap_toFun,
-        ContinuousMap.liftCompactlySupported_apply_toFun, LinearMap.coe_mk, AddHom.coe_mk,
-        one_mul, L, liftL]; exact BoundedContinuousFunction.norm_integral_le_norm _ (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)))
+    stop
+    let W := ((liftL).toLinearMap.mkContinuous 1 (by
+      intro f; simp [-Real.norm_eq_abs,integralPositiveLinearMap_toFun, LinearMap.coe_mk, AddHom.coe_mk,
+        one_mul, L, liftL]; exact BoundedContinuousFunction.norm_integral_le_norm _ (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f))) --ContinuousMap.liftCompactlySupported_apply_toFun Equiv.toFun_as_coe
     let φ_weak : WeakDual ℝ (C(X,ℝ)) := W
     have as_ball : φ_weak ∈ Φ := by
       simp [Φ]
       refine ⟨?_,?_,?_⟩
       · apply ContinuousLinearMap.opNorm_le_bound W (by linarith)
         intro f
-        simp only [Equiv.toFun_as_coe, integralPositiveLinearMap_toFun,
-          ContinuousMap.liftCompactlySupported_apply_toFun, LinearMap.mkContinuous_apply,
+        simp [integralPositiveLinearMap_toFun, LinearMap.mkContinuous_apply,
           LinearMap.coe_mk, AddHom.coe_mk, one_mul, W, L, liftL]
         exact BoundedContinuousFunction.norm_integral_le_norm μprob (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)
-      · simp only [LinearMap.mkContinuous, Equiv.toFun_as_coe, integralPositiveLinearMap_toFun,
-        ContinuousMap.liftCompactlySupported_apply_toFun, φ_weak, L, W, liftL]
+      · simp [LinearMap.mkContinuous, φ_weak, L, W, liftL]
         change (fun f ↦ ∫ (x : X), f x ∂↑μprob) (fun x ↦ 1) = 1
         simp
       · intro g hgpos
