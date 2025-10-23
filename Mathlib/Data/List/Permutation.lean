@@ -520,4 +520,29 @@ theorem nodup_permutations_iff {s : List α} : Nodup s.permutations ↔ Nodup s 
 
 -- TODO: `count s s.permutations = (zipWith count s s.tails).prod`
 
+theorem cons_perm_iff_perm_append [DecidableEq α] {a : α} {l₁ l₂ : List α} :
+  a :: l₁ ~ l₂ ↔
+    ∃ t₁ t₂,
+      a ∉ t₁ ∧
+      l₂ = t₁ ++ a :: t₂ ∧
+      l₁ ~ t₁ ++ t₂
+:=
+  calc a :: l₁ ~ l₂
+    _ ↔ a ∈ l₂ ∧ l₁ ~ l₂.erase a := by
+      apply cons_perm_iff_perm_erase
+    _ ↔ (∃ t₁ t₂, l₂ = t₁ ++ a :: t₂ ∧ a ∉ t₁) ∧ l₁ ~ l₂.erase a := by
+      apply and_congr_left; intro h; apply Iff.intro
+      · apply eq_append_cons_of_mem
+      · intro ⟨t₁, t₂, hl₂, _⟩; rw [hl₂]; apply mem_append_cons_self
+    _ ↔ ∃ t₁ t₂, a ∉ t₁ ∧ l₂ = t₁ ++ a :: t₂ ∧ l₁ ~ l₂.erase a := by
+      apply Iff.intro
+      · exact fun ⟨⟨t₁, t₂, hl₂, ha⟩, hperm⟩ => ⟨t₁, t₂, ha, hl₂, hperm⟩
+      · exact fun ⟨t₁, t₂, ha, hl₂, hperm⟩ => ⟨⟨t₁, t₂, hl₂, ha⟩, hperm⟩
+    _ ↔ ∃ t₁ t₂, a ∉ t₁ ∧ l₂ = t₁ ++ a :: t₂ ∧ l₁ ~ t₁ ++ t₂ := by
+      apply exists_congr; intro t₁
+      apply exists_congr; intro t₂
+      apply and_congr_right; intro ha
+      apply and_congr_right; intro hl₂
+      simp [hl₂, erase_append_right _ ha]
+
 end List
