@@ -122,6 +122,7 @@ alias mem_coverings_of_isIso := HasIsos.mem_coverings_of_isIso
 alias sup_mem_coverings := IsStableUnderSup.sup_mem_coverings
 alias hasPullbacks_of_mem := HasPullbacks.hasPullbacks_of_mem
 
+attribute [local simp] Presieve.ofArrows.obj_idx Presieve.ofArrows.hom_idx in
 lemma mem_coverings_of_isPullback {J : Precoverage C} [IsStableUnderBaseChange J]
     {ι : Type w} {S : C} {X : ι → C}
     (f : ∀ i, X i ⟶ S) (hR : Presieve.ofArrows X f ∈ J S) {Y : C} (g : Y ⟶ S)
@@ -141,6 +142,7 @@ lemma mem_coverings_of_isPullback {J : Precoverage C} [IsStableUnderBaseChange J
     refine le_antisymm (fun Z g ⟨i⟩ ↦ .mk _) fun Z g hg ↦ ?_
     exact .mk' (Sum.inl ⟨⟨_, _⟩, hg⟩) (by cat_disch) (by cat_disch)
 
+attribute [local simp] Presieve.ofArrows.obj_idx Presieve.ofArrows.hom_idx in
 lemma comp_mem_coverings {J : Precoverage C} [IsStableUnderComposition J] {ι : Type w}
     {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S) (hf : Presieve.ofArrows X f ∈ J S)
     {σ : ι → Type w'} {Y : ∀ (i : ι), σ i → C}
