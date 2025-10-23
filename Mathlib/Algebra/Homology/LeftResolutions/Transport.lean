@@ -35,10 +35,7 @@ def transport {ι : C ⥤ A} (Λ : LeftResolutions ι) {ι' : C' ⥤ A'}
       whiskerLeft Λ.F eC.counitIso.hom ≫ Λ.F.rightUnitor.hom)) _) _ ≫
         (whiskerRight ((associator _ _ _).hom ≫ whiskerLeft _ Λ.π ≫
           (rightUnitor _).hom) _) ≫ eA.unitIso.inv
-  hπ X := by
-    dsimp
-    simp only [Functor.map_id, comp_id, id_comp]
-    infer_instance
+  epi_π_app _ := by dsimp; infer_instance
 
 /-- If we have an isomorphism `e : G ⋙ ι' ≅ ι`, then any `Λ : LeftResolutions ι`
 induces `Λ.ofCompIso e : LeftResolutions ι'`. -/
@@ -47,7 +44,7 @@ def ofCompIso {ι : C ⥤ A} (Λ : LeftResolutions ι) {ι' : C' ⥤ A} {G : C �
     LeftResolutions ι' where
   F := Λ.F ⋙ G
   π := (associator _ _ _).hom ≫ whiskerLeft _ e.hom ≫ Λ.π
-  hπ X := by dsimp; infer_instance
+  epi_π_app _ := by dsimp; infer_instance
 
 end LeftResolutions
 

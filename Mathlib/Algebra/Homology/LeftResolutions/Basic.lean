@@ -36,11 +36,11 @@ structure LeftResolutions where
   F : A ⥤ C
   /-- the natural epimorphism -/
   π : F ⋙ ι ⟶ 𝟭 A
-  hπ (X : A) : Epi (π.app X) := by infer_instance
+  epi_π_app (X : A) : Epi (π.app X) := by infer_instance
 
 namespace LeftResolutions
 
-attribute [instance] hπ
+attribute [instance] epi_π_app
 
 variable {ι} (Λ : LeftResolutions ι) (X Y Z : A) (f : X ⟶ Y) (g : Y ⟶ Z)
 
@@ -84,8 +84,9 @@ lemma map_chainComplex_d (n : ℕ) :
     ι.map ((Λ.chainComplex X).d (n + 2) (n + 1)) =
     ι.map (Λ.chainComplexXIso X n).hom ≫ Λ.π.app (kernel (ι.map ((Λ.chainComplex X).d (n + 1) n))) ≫
       kernel.ι (ι.map ((Λ.chainComplex X).d (n + 1) n)) := by
-  erw [← ι.map_preimage (Λ.π.app _ ≫ kernel.ι (ι.map ((Λ.chainComplex X).d (n + 1) n)))]
-  rw [← Functor.map_comp]
+  have := ι.map_preimage (Λ.π.app _ ≫ kernel.ι (ι.map ((Λ.chainComplex X).d (n + 1) n)))
+  dsimp at this
+  rw [← this, ← Functor.map_comp]
   congr 1
   apply ChainComplex.mk'_d
 
@@ -168,11 +169,13 @@ lemma chainComplexMap_comp :
   induction n with
   | zero => simp
   | succ n hn =>
-      obtain _ | n := n
-      all_goals
-        simp [-Functor.map_comp, ← Λ.F.map_comp_assoc]
-        congr 1
-        simp [← cancel_mono (kernel.ι _), hn]
+    obtain _ | n := n
+    all_goals
+      dsimp
+      simp only [chainComplexMap_f_succ_succ, assoc, Iso.cancel_iso_hom_left,
+        Iso.inv_hom_id_assoc, ← Λ.F.map_comp_assoc, Iso.cancel_iso_inv_right_assoc]
+      congr 1
+      cat_disch
 
 /-- Given `ι : C ⥤ A`, `Λ : LeftResolutions ι`, this is a
 functor `A ⥤ ChainComplex C ℕ` which sends `X : A` to a resolution consisting

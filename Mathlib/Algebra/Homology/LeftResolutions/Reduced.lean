@@ -61,17 +61,18 @@ instance : (karoubi.F Λ).PreservesZeroMorphisms where
 def karoubi.π' : toKaroubi A ⋙ F Λ ⋙ (functorExtension₂ C A).obj ι ⟶ toKaroubi A where
   app X := ⟨Λ.π.app X, by simp⟩
 
-instance (X : A) : Epi ((karoubi.π' Λ).app X) := by
-  have h : RetractArrow ((karoubi.π' Λ).app X) ((toKaroubi _).map (Λ.π.app X)) :=
-    { i := Arrow.homMk ⟨ι.map ((karoubi.F' Λ).obj X).p, by simp [← Functor.map_comp]⟩
-            (𝟙 _) (by simp)
-      r := Arrow.homMk ⟨ι.map ((karoubi.F' Λ).obj X).p, by simp [← Functor.map_comp]⟩
-            (𝟙 _) (by simp)
-      retract := by
-        ext
-        · simp [← Functor.map_comp]
-        · simp }
-  exact of_retract (P := epimorphisms _) h (epimorphisms.infer_property _)
+def karoubi.retractArrow (X : A) :
+    RetractArrow ((karoubi.π' Λ).app X) ((toKaroubi _).map (Λ.π.app X)) where
+  i := Arrow.homMk ⟨ι.map ((karoubi.F' Λ).obj X).p, by simp [← Functor.map_comp]⟩ (𝟙 _)
+  r := Arrow.homMk ⟨ι.map ((karoubi.F' Λ).obj X).p, by simp [← Functor.map_comp]⟩ (𝟙 _)
+  retract := by
+    ext
+    · simp [← Functor.map_comp]
+    · simp
+
+instance (X : A) : Epi ((karoubi.π' Λ).app X) :=
+  of_retract (P := epimorphisms _) (karoubi.retractArrow Λ X)
+    (epimorphisms.infer_property _)
 
 /-- Auxiliary definition for `LeftResolutions.karoubi`. -/
 def karoubi.π : karoubi.F Λ ⋙ (functorExtension₂ C A).obj ι ⟶ 𝟭 (Karoubi A) :=
