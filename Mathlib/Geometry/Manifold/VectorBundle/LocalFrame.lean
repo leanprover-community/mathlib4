@@ -602,26 +602,36 @@ end MDifferentiable
 end
 
 -- local extension of a vector field in a trivialisation's base set
-section extendLocally
+section localExntensionOn
 
 variable {ι : Type*} [Fintype ι] {b : Basis ι 𝕜 F}
   {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
   [MemTrivializationAtlas e] {x : M}
 
 open scoped Classical in
--- TODO: add longer docs!
--- a starting point (not fully updated any more) is this:
-/- Extend a vector `v ∈ V x` to a section of the bundle `V`, whose value at `x` is `v`.
-The details of the extension are mostly unspecified: for covariant derivatives, the value of
-`s` at points other than `x` will not matter (except for shorter proofs).
-Thus, we choose `s` to be somewhat nice: our chosen construction is linear in `v`.
+
+/- Extend a vector `v ∈ V x` to a section `s` of the bundle `V` which is smooth near `x`,
+such that `s x = v` and this construction is linear in `v`.
+
+The details of this extension are unspecified (and could be subject to change).
+Currently, we construct this extension using a local frame induced by a choose of basis of the
+fibre `F` and a compatible trivialisation `e` of `V` around `x`.
+(Allowing any local frame near `x` would be easy to implement.)
+Our construction has constant coefficients on `e.baseSet` w.r.t. this local frame, and is zero
+otherwise. In particular, it is smooth on `e.baseSet`, and (globally) linear in `v`.
+
+We choose an extension with these particularly nice properties because this simplifies later
+constructions on covariant derivatives (and in this context, the value at `s` at points other than
+`x` does not matter, but constant frame coefficients are useful).
 -/
 
--- comment: need not be smooth (outside of e.baseSet), but this is a useful building block for
--- global smooth extensions of vector fields
--- the latter caps this with a smooth bump function, which need not exist if k=C
--- In contrast, this definition makes sense over any field
--- (for example, *locally* holomorphic sections always exist),
+-- Note that `localExtensionOn` need not be smooth globally;
+-- in turn, this definition makes sense over any field.
+-- In contrast, an extension to a global smooth vector field is more delicate for complex vector
+-- bundles (where *locally* holomorphic sections always exist).
+-- For real bundles, global extensions always exist and can be constructed by scalar multiplication
+-- of a local extension with a smooth bump function of sufficiently small support.
+
 
 /--
 Extend a vector `v ∈ V x` to a local section of `V`, w.r.t. a chosen local trivialisation.
@@ -695,4 +705,4 @@ lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace �
   intro y hy
   rw [localExtensionOn_localFrame_coeff b hx v i hy]
 
-end extendLocally
+end localExntensionOn
