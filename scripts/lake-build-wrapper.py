@@ -1,9 +1,38 @@
 #!/usr/bin/env python3
 """
-Wrapper script for build output that:
-1. Groups normal build output into collapsible log groups
-2. Highlights warnings and errors
-3. Extracts warnings/errors to JSON for step outputs
+Wrapper script for `lake build` output that:
+1. Groups only normal build output (✔ lines) into collapsible log groups
+2. Emits all non-✔ lines (including ℹ/⚠/✖ and summaries) outside groups
+3. Extracts infos/warnings/errors to JSON for step outputs without altering the stream
+
+cf. https://github.com/leanprover/lean4/blob/59573646c227d940962c08a1e77ce51177a024ea/src/lake/Lake/Build/Run.lean#L132
+where `lake build`'s log output is generated
+
+State machine overview:
+- States
+  - OUTSIDE: No open group; not collecting an issue.
+  - GROUP_OPEN: A ::group:: is open; only ✔ lines are printed inside the group.
+  - IN_WARNING: Collecting a warning block (⚠ line + following lines).
+  - IN_ERROR: Collecting an error block (✖ line + following lines).
+  - IN_INFO: Collecting an info block (ℹ line + following lines).
+
+- Events (derived per line)
+  - NORMAL: Line starts with ✔
+  - NEW_WARNING: Line starts with ⚠
+  - NEW_ERROR: Line starts with ✖
+  - NEW_INFO: Line starts with ℹ
+  - OTHER: Any other line (including end-of-build summary lines)
+
+- Transitions (action → next state)
+  - OUTSIDE + NORMAL → open_group; print → GROUP_OPEN
+  - OUTSIDE + NEW_* → start_issue; print → IN_*
+  - OUTSIDE + OTHER → print → OUTSIDE
+  - GROUP_OPEN + NORMAL → print → GROUP_OPEN
+  - GROUP_OPEN + NEW_*/OTHER → close_group; print; (start_issue if NEW_*) → IN_* or OUTSIDE
+  - IN_* + NORMAL → flush_issue; open_group; print → GROUP_OPEN
+  - IN_* + NEW_* → flush_issue; start_issue; print → IN_*
+  - IN_* + OTHER → if summary-line then flush_issue else append_issue; print → OUTSIDE or IN_*
+  - EOF → flush_issue; close_group
 """
 
 import sys
@@ -11,17 +40,30 @@ import subprocess
 import re
 import json
 from typing import Dict, Any
+from enum import Enum, auto
 
 class BuildOutputProcessor:
-    def __init__(self, group_size=1):
+    def __init__(self):
         self.warnings = []
         self.errors = []
-        self.current_group_lines = []
-        self.in_warning = False
-        self.in_error = False
+        self.infos = []
         self.current_issue = []
-        self.group_size = group_size  # Flush groups after this many lines
-        self.in_group = False
+        self.group_open = False
+        class _State(Enum):
+            OUTSIDE = auto()
+            GROUP_OPEN = auto()
+            IN_WARNING = auto()
+            IN_ERROR = auto()
+            IN_INFO = auto()
+        self.State = _State
+        self.state = self.State.OUTSIDE
+        class _Evt(Enum):
+            NORMAL = auto()
+            NEW_WARNING = auto()
+            NEW_ERROR = auto()
+            NEW_INFO = auto()
+            OTHER = auto()
+        self.Evt = _Evt
 
     def start_group(self, name: str):
         """Start a GitHub Actions log group"""
@@ -31,40 +73,26 @@ class BuildOutputProcessor:
         """End a GitHub Actions log group"""
         print("::endgroup::", flush=True)
 
-    def flush_normal_group(self, force=False):
-        """Flush accumulated normal output as a collapsed group"""
-        if not self.current_group_lines:
-            return
+    def close_group_if_open(self):
+        """Close the current group if one is open."""
+        if self.group_open:
+            self.end_group()
+            self.group_open = False
 
-        # Only flush if we have enough lines or forced
-        if not force and len(self.current_group_lines) < self.group_size:
-            return
-
-        # If not already in a group, start one
-        if not self.in_group:
-            first_line = self.current_group_lines[0].strip()
-            first_match = re.search(r'\[(\d+)/(\d+)\]', first_line)
-
+    def open_group_for_line(self, line: str):
+        """Open a group named by progress info from this line, if not already open."""
+        if not self.group_open:
+            stripped = line.strip()
+            first_match = re.search(r'\[(\d+)/(\d+)\]', stripped)
             if first_match:
                 group_name = f"Build progress [starting at {first_match.group(1)}/{first_match.group(2)}]"
             else:
                 group_name = "Build progress"
-
             self.start_group(group_name)
-            self.in_group = True
-
-        # Print accumulated lines
-        for line in self.current_group_lines:
-            print(line, end='', flush=True)
-        self.current_group_lines = []
-
-        # If forced (end of group), close the group
-        if force and self.in_group:
-            self.end_group()
-            self.in_group = False
+            self.group_open = True
 
     def is_normal_line(self, line: str) -> bool:
-        """Check if line is normal build output (checkmark)"""
+        """Check if line is normal build output (checkmark)."""
         return line.strip().startswith('✔')
 
     def is_warning_start(self, line: str) -> bool:
@@ -75,6 +103,10 @@ class BuildOutputProcessor:
         """Check if line starts an error"""
         return line.strip().startswith('✖')
 
+    def is_info_start(self, line: str) -> bool:
+        """Check if line starts an info block"""
+        return line.strip().startswith('ℹ')
+
     def is_build_summary(self, line: str) -> bool:
         """Check if line is a build summary (end of build output)"""
         stripped = line.strip()
@@ -84,83 +116,141 @@ class BuildOutputProcessor:
                 stripped.startswith('Error: Process completed with exit code'))
 
     def extract_file_info(self, line: str) -> Dict[str, Any]:
-        """Extract file information from build line"""
-        match = re.search(r'\[(\d+)/(\d+)\]\s+(?:Built|Building)\s+([\w.]+)', line)
-        if match:
-            return {
-                'current': int(match.group(1)),
-                'total': int(match.group(2)),
-                'file': match.group(3)
-            }
-        return {}
+        """Extract progress and target info from a build line.
+
+        Matches: "[N/M] <verb> <target>" where <verb> is any non-space token and
+        <target> is captured as a build target/module name.
+
+        Converts module-like targets to a Lean filename by replacing '.' with '/'
+        and appending ".lean" (e.g. Mathlib.Analysis.Foo → Mathlib/Analysis/Foo.lean).
+        If the target contains a colon (e.g. batteries:extraDep), it is treated
+        as a non-file target and no filename is generated.
+        """
+        match = re.search(r'\[(\d+)/(\d+)\]\s+(\S+)\s+([^\s]+)', line)
+        if not match:
+            return {}
+
+        target = match.group(4)
+        # Non-file targets contain a colon (e.g., "batteries:extraDep").
+        if ':' in target:
+            file_path = None
+        else:
+            # Single regex replacement: dots → slashes, then append .lean
+            file_path = re.sub(r'\.', '/', target) + '.lean'
+
+        return {
+            'current': int(match.group(1)),
+            'total': int(match.group(2)),
+            'target': target,
+            'file': file_path,
+        }
 
     def process_line(self, line: str):
-        """Process a single line of output"""
-        # Check for build summary lines - these end any current issue and print directly
-        if self.is_build_summary(line):
-            self.flush_issue()
-            self.flush_normal_group(force=True)
-            print(line, end='', flush=True)
-            return
+        """Process a single line of output via an explicit FSM, streaming output immediately."""
 
-        # Check if we're starting a warning or error
+        # Classify input line into an event
         if self.is_warning_start(line):
-            self.flush_issue()  # Flush any previous issue first
-            self.flush_normal_group(force=True)
-            self.in_warning = True
-            self.current_issue = [line]
-            return
-
-        if self.is_error_start(line):
-            self.flush_issue()  # Flush any previous issue first
-            self.flush_normal_group(force=True)
-            self.in_error = True
-            self.current_issue = [line]
-            return
-
-        # If we're in a warning or error, accumulate lines
-        if self.in_warning or self.in_error:
-            # Check if we've reached the end (next normal/warning/error line)
-            if self.is_normal_line(line) or self.is_warning_start(line) or self.is_error_start(line):
-                self.flush_issue()
-                # Process this line as a new item
-                if self.is_warning_start(line):
-                    self.in_warning = True
-                    self.current_issue = [line]
-                elif self.is_error_start(line):
-                    self.in_error = True
-                    self.current_issue = [line]
-                else:
-                    self.current_group_lines.append(line)
-                    self.flush_normal_group()  # Try to flush (will only flush if enough lines)
-            else:
-                self.current_issue.append(line)
-            return
-
-        # Normal output
-        if self.is_normal_line(line):
-            self.current_group_lines.append(line)
-            self.flush_normal_group()  # Try to flush (will only flush if enough lines)
+            evt = self.Evt.NEW_WARNING
+        elif self.is_error_start(line):
+            evt = self.Evt.NEW_ERROR
+        elif self.is_info_start(line):
+            evt = self.Evt.NEW_INFO
+        elif self.is_normal_line(line):
+            evt = self.Evt.NORMAL
         else:
-            # Non-build line (could be part of ongoing issue or standalone)
-            if self.current_group_lines or self.in_group:
-                self.current_group_lines.append(line)
-                self.flush_normal_group()  # Try to flush
-            else:
+            evt = self.Evt.OTHER
+
+        # State-driven behavior
+        if self.state == self.State.OUTSIDE:
+            if evt == self.Evt.NORMAL:
+                self.open_group_for_line(line)
                 print(line, end='', flush=True)
+                self.state = self.State.GROUP_OPEN
+            elif evt == self.Evt.NEW_WARNING:
+                self.current_issue = [line]
+                print(line, end='', flush=True)
+                self.state = self.State.IN_WARNING
+            elif evt == self.Evt.NEW_ERROR:
+                self.current_issue = [line]
+                print(line, end='', flush=True)
+                self.state = self.State.IN_ERROR
+            elif evt == self.Evt.NEW_INFO:
+                self.current_issue = [line]
+                print(line, end='', flush=True)
+                self.state = self.State.IN_INFO
+            elif evt == self.Evt.OTHER:
+                # Print outside any groups
+                self.close_group_if_open()
+                print(line, end='', flush=True)
+            return
+
+        if self.state == self.State.GROUP_OPEN:
+            if evt == self.Evt.NORMAL:
+                print(line, end='', flush=True)
+            else:
+                # Close group, then handle the event outside the group
+                self.close_group_if_open()
+                if evt == self.Evt.NEW_WARNING:
+                    self.current_issue = [line]
+                    print(line, end='', flush=True)
+                    self.state = self.State.IN_WARNING
+                elif evt == self.Evt.NEW_ERROR:
+                    self.current_issue = [line]
+                    print(line, end='', flush=True)
+                    self.state = self.State.IN_ERROR
+                elif evt == self.Evt.NEW_INFO:
+                    self.current_issue = [line]
+                    print(line, end='', flush=True)
+                    self.state = self.State.IN_INFO
+                else:
+                    print(line, end='', flush=True)
+                    self.state = self.State.OUTSIDE
+            return
+
+        if self.state in (self.State.IN_WARNING, self.State.IN_ERROR, self.State.IN_INFO):
+            if evt == self.Evt.NORMAL:
+                self.flush_issue()
+                self.open_group_for_line(line)
+                print(line, end='', flush=True)
+                self.state = self.State.GROUP_OPEN
+            elif evt == self.Evt.NEW_WARNING:
+                self.flush_issue()
+                self.current_issue = [line]
+                print(line, end='', flush=True)
+                self.state = self.State.IN_WARNING
+            elif evt == self.Evt.NEW_ERROR:
+                self.flush_issue()
+                self.current_issue = [line]
+                print(line, end='', flush=True)
+                self.state = self.State.IN_ERROR
+            elif evt == self.Evt.NEW_INFO:
+                self.flush_issue()
+                self.current_issue = [line]
+                print(line, end='', flush=True)
+                self.state = self.State.IN_INFO
+            else:  # OTHER → continuation or summary
+                if self.is_build_summary(line):
+                    self.flush_issue()
+                    print(line, end='', flush=True)
+                    self.state = self.State.OUTSIDE
+                else:
+                    self.current_issue.append(line)
+                    print(line, end='', flush=True)
+            return
 
     def flush_issue(self):
-        """Flush accumulated warning or error"""
+        """Record the current warning/error block for the summary."""
         if not self.current_issue:
             return
 
         issue_text = ''.join(self.current_issue)
         file_info = self.extract_file_info(self.current_issue[0])
 
-        # Extract actual warning/error messages
+        # Extract actual info/warning/error messages
         messages = []
         for line in self.current_issue:
-            if 'warning:' in line.lower() or 'error:' in line.lower():
+            low = line.lower()
+            if 'warning:' in low or 'error:' in low or 'info:' in low or 'trace:' in low:
                 messages.append(line.strip())
 
         issue_data = {
@@ -169,41 +259,40 @@ class BuildOutputProcessor:
             'full_output': issue_text
         }
 
-        if self.in_warning:
+        if self.state == self.State.IN_WARNING:
             self.warnings.append(issue_data)
-            self.in_warning = False
-        elif self.in_error:
+        elif self.state == self.State.IN_ERROR:
             self.errors.append(issue_data)
-            self.in_error = False
+        elif self.state == self.State.IN_INFO:
+            self.infos.append(issue_data)
 
-        # Print the issue outside of any group
-        print(issue_text, end='', flush=True)
+        # Do not print here; lines were already streamed as they arrived.
         self.current_issue = []
+        self.state = self.State.OUTSIDE
 
     def finalize(self):
         """Finalize processing"""
         self.flush_issue()
-        self.flush_normal_group(force=True)
+        self.close_group_if_open()
 
     def get_summary(self) -> Dict[str, Any]:
         """Get summary of warnings and errors"""
         return {
             'warnings': self.warnings,
             'errors': self.errors,
+            'infos': self.infos,
             'warning_count': len(self.warnings),
-            'error_count': len(self.errors)
+            'error_count': len(self.errors),
+            'info_count': len(self.infos),
         }
 
 def main():
     if len(sys.argv) < 2:
         print("Usage: wrapper.py <command> [args...]", file=sys.stderr)
-        print("Options: Set GROUP_SIZE env var to control grouping (default: 1)", file=sys.stderr)
         sys.exit(1)
 
-    # Allow customizing group size via environment variable
     import os
-    group_size = int(os.environ.get('GROUP_SIZE', '1'))
-    processor = BuildOutputProcessor(group_size=group_size)
+    processor = BuildOutputProcessor()
 
     # Run the command and process output line by line
     process = subprocess.Popen(
@@ -217,7 +306,7 @@ def main():
     try:
         if process.stdout is not None:
             for line in process.stdout:
-              processor.process_line(line)
+                processor.process_line(line)
         else:
             print("Process did not produce any stdout or an error occurred.")
             if process.stderr:
@@ -236,12 +325,14 @@ def main():
             with open(github_output, 'a') as f:
                 f.write(f"warning_count={summary['warning_count']}\n")
                 f.write(f"error_count={summary['error_count']}\n")
+                f.write(f"info_count={summary['info_count']}\n")
                 # For multiline output, use delimiter syntax
                 f.write(f"summary<<EOF\n{summary_json}\nEOF\n")
         else:
             print("Warning: GITHUB_OUTPUT environment variable not set", file=sys.stderr)
             print(f"warning_count={summary['warning_count']}", file=sys.stderr)
             print(f"error_count={summary['error_count']}", file=sys.stderr)
+            print(f"info_count={summary['info_count']}", file=sys.stderr)
             print(f"summary={summary_json}", file=sys.stderr)
 
         # Exit with the same code as the subprocess
