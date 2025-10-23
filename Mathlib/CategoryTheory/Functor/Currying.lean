@@ -14,7 +14,7 @@ and verify that they provide an equivalence of categories
 `currying : (C ⥤ (D ⥤ E)) ≌ ((C × D) ⥤ E)`.
 
 This is used in `CategoryTheory.Category.Cat.CartesianClosed` to equip the category of small
-categories `Cat.{u, u}` with a Cartesian-closed structure.
+categories `Cat.{u, u}` with a Cartesian closed structure.
 -/
 
 namespace CategoryTheory
