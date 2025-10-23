@@ -383,10 +383,9 @@ variable [ContMDiffVectorBundle 1 F V I]
 
 open scoped Classical in
 variable (I) in
-/-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i` -/
--- If x is outside of `e.baseSet`, this returns the junk value 0.
--- NB. We don't use simps here, as we prefer to have dedicated `_apply` lemmas for the separate
--- cases.
+/-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i`.
+
+If x is outside of `e.baseSet`, this returns the junk value 0. -/
 noncomputable def localFrame_coeff
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
