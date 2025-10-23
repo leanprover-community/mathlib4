@@ -120,8 +120,9 @@ end NNRealRMK
 S ⊆ P(X) is relatively compact iff tight.
 Let X be a compact metric space. P(X) is a compact metric space.
 -/
-variable {X : Type*} [EMetricSpace X] [MeasurableSpace X] [CompactSpace X] [BorelSpace X]
-
+variable {X : Type*} [MetricSpace X] [MeasurableSpace X] [CompactSpace X] [BorelSpace X]
+-- Need non EMetric for LevyProkhorov.continuous_equiv_symm_probabilityMeasure
+-- and T2 for RealRMK.rieszMeasure
 noncomputable section Arav
 
 open MeasureTheory NormedSpace WeakDual CompactlySupported CompactlySupportedContinuousMap
@@ -130,7 +131,7 @@ open MeasureTheory NormedSpace WeakDual CompactlySupported CompactlySupportedCon
 instance : PseudoMetricSpace (LevyProkhorov (ProbabilityMeasure X)) :=
   levyProkhorovDist_pseudoMetricSpace_probabilityMeasure
 
-open WeakDual
+open WeakDual TopologicalSpace
 
 omit [BorelSpace X] in
 lemma fin_integral_prob_meas {μprob : ProbabilityMeasure X} {f : C(X, ℝ)} :
@@ -266,8 +267,15 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
  -- refine Continuous.subtype_mk (X := {p : Measure X // IsProbabilityMeasure p}) (Y := ↑Φ) (f := f) ?_ ?_
   --simp [Continuous.subtype_mk,Continuous.subtype_val,Continuous.subtype_coind,Continuous.subtype_map]
   --have : TopologicalSpace (Measure X) := by sorry
-  rw [(ProbabilityMeasure.toFiniteMeasure_isEmbedding _).continuous_iff (f := fun φ ↦ (LevyProkhorov.equiv (ProbabilityMeasure X)).symm ⟨RealRMK.rieszMeasure (Λ φ), ⋯⟩)]
-  refine Continuous.subtype_mk (X := Measure X) (Y := ↑Φ) (f := fun φ ↦ (RealRMK.rieszMeasure (Λ φ))) ?_ ?_
+  --rw [← @Equiv.invFun_as_coe]
+  let tspac : TopologicalSpace { μ : Measure X // IsProbabilityMeasure μ } := Preorder.topology { μ // IsProbabilityMeasure μ}
+  refine Continuous.comp ?_ ?_
+  letI sep : SeparableSpace X := SecondCountableTopology.to_separableSpace
+  · refine LevyProkhorov.continuous_equiv_symm_probabilityMeasure (Ω := X) 
+
+
+  --rw [(ProbabilityMeasure.toFiniteMeasure_isEmbedding _).continuous_iff (f := fun φ ↦ (LevyProkhorov.equiv (ProbabilityMeasure X)).symm ⟨RealRMK.rieszMeasure (Λ φ), ⋯⟩)]
+  --refine Continuous.subtype_mk (X := Measure X) (Y := ↑Φ) (f := fun φ ↦ (RealRMK.rieszMeasure (Λ φ))) ?_ ?_
   --refine Continuous.subtype_map (X := {p : Measure X // IsProbabilityMeasure p}) (Y := ↑Φ) (f := fun φ ↦ RealRMK.rieszMeasure (Λ φ)) ?_ ?_ ?_
   -- have hfun_eq : (fun φ => ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩)
   --           = (fun φ => (RealRMK.rieszMeasure (Λ φ) : ProbabilityMeasure X)) := by
