@@ -77,12 +77,9 @@ theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
   have : Algebra.IsSeparable (FractionRing A) (FractionRing R₂) := by
     refine Algebra.IsSeparable.of_equiv_equiv (FractionRing.algEquiv A K).symm.toRingEquiv
           (FractionRing.algEquiv R₂ F₂).symm.toRingEquiv ?_
-    ext x
-    obtain ⟨r, s, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-    simp_rw [AlgEquiv.toRingEquiv_eq_coe, map_div₀, RingHom.coe_comp,
-      RingHom.coe_coe, Function.comp_apply, AlgEquiv.coe_ringEquiv,
-      ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A R₂ F₂,
-      AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
+    ext _
+    exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K).symm
+      (FractionRing.algEquiv R₂ ↥F₂).symm _
   rw [Ideal.dvd_iff_le, ← coeIdeal_le_coeIdeal L, coeIdeal_differentIdeal R₁ F₁ L B,
     ← extendedHomₐ_coeIdeal_eq_map L B (K := F₂), le_inv_comm _ (by simp), ← map_inv₀,
     coeIdeal_differentIdeal A K, inv_inv, ← coe_le_coe, coe_dual_one, coe_extendedHomₐ_eq_span,
