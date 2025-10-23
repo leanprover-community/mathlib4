@@ -317,15 +317,33 @@ theorem IsClosed.Icc_subset_of_forall_exists_gt {a b : α} {s : Set α} (hs : Is
     (ha : a ∈ s) (hgt : ∀ x ∈ s ∩ Ico a b, ∀ y ∈ Ioi x, (s ∩ Ioc x y).Nonempty) : Icc a b ⊆ s := by
   intro y hy
   have : IsClosed (s ∩ Icc a y) := by
-    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y by
-      rw [this]
-      exact IsClosed.inter hs isClosed_Icc
-    rw [inter_assoc]
-    congr
-    exact (inter_eq_self_of_subset_right <| Icc_subset_Icc_right hy.2).symm
-  exact
-    IsClosed.mem_of_ge_of_forall_exists_gt this ha hy.1 fun x hx =>
-      hgt x ⟨hx.1, Ico_subset_Ico_right hy.2 hx.2⟩ y hx.2.2
+    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y from this ▸ hs.inter isClosed_Icc
+    grind [inter_assoc, inter_eq_self_of_subset_right, Icc_subset_Icc_right]
+  exact IsClosed.mem_of_ge_of_forall_exists_gt this ha hy.1 fun x hx ↦
+    hgt x ⟨hx.1, Ico_subset_Ico_right hy.2 hx.2⟩ y hx.2.2
+
+/-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
+on a closed subset, contains `b`, and the set `s ∩ (a, b]` has no minimal point, then `a ∈ s`. -/
+theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
+    (hb : b ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ioc a b, (s ∩ Ico a x).Nonempty) : a ∈ s := by
+  suffices OrderDual.toDual a ∈ ofDual ⁻¹' s by aesop
+  have : IsClosed (OrderDual.ofDual ⁻¹' (s ∩ Icc a b)) := hs
+  rw [preimage_inter, ← Icc_toDual] at this
+  apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
+  rw [Ico_toDual, ← preimage_inter, preimage_equiv_eq_image_symm, mem_image] at hx
+  aesop
+
+/-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
+on a closed subset, contains `b`, and for any `a ≤ y < x ≤ b`, `x ∈ s`, the set `s ∩ [y, x)`
+is not empty, then `[a, b] ⊆ s`. -/
+theorem IsClosed.Icc_subset_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
+    (hb : b ∈ s) (hgt : ∀ x ∈ s ∩ Ioc a b, ∀ y ∈ Iio x, (s ∩ Ico y x).Nonempty) : Icc a b ⊆ s := by
+  intro y hy
+  have : IsClosed (s ∩ Icc y b) := by
+    suffices s ∩ Icc y b = s ∩ Icc a b ∩ Icc y b from this ▸ hs.inter isClosed_Icc
+    grind [Icc_subset_Icc_left, inter_eq_self_of_subset_right, inter_assoc]
+  exact IsClosed.mem_of_ge_of_forall_exists_lt this hb hy.2 fun x hx ↦
+    hgt x ⟨hx.1, Ioc_subset_Ioc_left hy.1 hx.2⟩ y hx.2.1
 
 variable [DenselyOrdered α] {a b : α}
 
@@ -642,7 +660,7 @@ theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → 
   by_cases ha : f a ≤ f ⊥
   · obtain ⟨u, hu⟩ := intermediate_value_Ioc le_top hf_c.continuousOn ⟨H.trans_le ha, hf⟩
     have : u = ⊥ := hf_i hu.2
-    aesop
+    simp_all
   · by_cases hb : f ⊥ < f b
     · obtain ⟨u, hu⟩ := intermediate_value_Ioo bot_le hf_c.continuousOn ⟨hb, H⟩
       rw [hf_i hu.2] at hu
@@ -651,7 +669,7 @@ theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → 
       replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
       obtain ⟨u, hu⟩ := intermediate_value_Ioo' hab.le hf_c.continuousOn ⟨hb, ha⟩
       have : u = ⊥ := hf_i hu.2
-      aesop
+      simp_all
 
 theorem Continuous.strictAnti_of_inj_boundedOrder [BoundedOrder α] {f : α → δ}
     (hf_c : Continuous f) (hf : f ⊤ ≤ f ⊥) (hf_i : Injective f) : StrictAnti f :=

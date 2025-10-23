@@ -683,7 +683,7 @@ theorem HasFPowerSeriesWithinOnBall.uniform_geometric_approx' {r' : ℝ≥0}
   calc
     ‖(p n) fun _ : Fin n => y‖
     _ ≤ ‖p n‖ * ∏ _i : Fin n, ‖y‖ := ContinuousMultilinearMap.le_opNorm _ _
-    _ = ‖p n‖ * (r' : ℝ) ^ n * (‖y‖ / r') ^ n := by field_simp [mul_right_comm]
+    _ = ‖p n‖ * (r' : ℝ) ^ n * (‖y‖ / r') ^ n := by simp [field, div_pow]
     _ ≤ C * a ^ n * (‖y‖ / r') ^ n := by gcongr ?_ * _; apply hp
     _ ≤ C * (a * (‖y‖ / r')) ^ n := by rw [mul_pow, mul_assoc]
 
@@ -798,8 +798,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
           · apply hp
           · apply hy'.le
         _ = B n := by
-          field_simp [B, pow_succ]
-          simp only [mul_assoc, mul_comm, mul_left_comm]
+          simp [field, B, pow_succ]
     have hBL : HasSum B (L y) := by
       apply HasSum.mul_left
       simp only [add_mul]

@@ -14,7 +14,7 @@ import Mathlib.Data.ZMod.Defs
 /-!
 # Freiman homomorphisms
 
-In this file, we define Freiman homomorphisms and isomorphism.
+In this file, we define Freiman homomorphisms and isomorphisms.
 
 An `n`-Freiman homomorphism from `A` to `B` is a function `f : α → β` such that `f '' A ⊆ B` and
 `f x₁ * ... * f xₙ = f y₁ * ... * f yₙ` for all `x₁, ..., xₙ, y₁, ..., yₙ ∈ A` such that
@@ -57,7 +57,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 
 * `MonoidHomClass.isMulFreimanHom` could be relaxed to `MulHom.toFreimanHom` by proving
   `(s.map f).prod = (t.map f).prod` directly by induction instead of going through `f s.prod`.
-* Affine maps are Freiman homs.
+* Affine maps are Freiman homomorphisms.
 -/
 
 assert_not_exists Field Ideal TwoSidedIdeal
@@ -209,11 +209,11 @@ lemma isMulFreimanHom_const {b : β} (hb : b ∈ B) : IsMulFreimanHom n A B fun 
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanHom_zero_iff : IsMulFreimanHom 0 A B f ↔ MapsTo f A B :=
-  ⟨fun h => h.mapsTo, fun h => ⟨h, by aesop⟩⟩
+  ⟨fun h => h.mapsTo, fun h => ⟨h, by simp_all⟩⟩
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanIso_zero_iff : IsMulFreimanIso 0 A B f ↔ BijOn f A B :=
-  ⟨fun h => h.bijOn, fun h => ⟨h, by aesop⟩⟩
+  ⟨fun h => h.bijOn, fun h => ⟨h, by simp_all⟩⟩
 
 @[to_additive (attr := simp) isAddFreimanHom_one_iff]
 lemma isMulFreimanHom_one_iff : IsMulFreimanHom 1 A B f ↔ MapsTo f A B :=

@@ -59,7 +59,7 @@ class EmbeddedG2 extends P.IsCrystallographic, P.IsReduced where
   long : ι
   /-- The distinguished short root of an embedded `𝔤₂` root pairing. -/
   short : ι
-  pairingIn_long_short : P.pairingIn ℤ long short = - 3
+  pairingIn_long_short : P.pairingIn ℤ long short = -3
 
 /-- A prop-valued typeclass characterising the `𝔤₂` root system. -/
 class IsG2 : Prop extends P.IsCrystallographic, P.IsReduced, P.IsIrreducible where
@@ -103,7 +103,7 @@ lemma not_isG2_iff_isNotG2 :
     have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
     aesop
   · specialize h i j
-    omega
+    cutsat
 
 lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ -P.root j) :
@@ -115,7 +115,7 @@ lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     have aux₂ := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i j h h'
     simp only [mem_insert_iff, mem_singleton_iff, Prod.mk_zero_zero, Prod.mk_eq_zero,
       Prod.mk_one_one, Prod.mk_eq_one, Prod.mk.injEq] at aux₂ ⊢
-    omega
+    cutsat
   obtain ⟨k, l, hkl⟩ := exists_pairingIn_neg_three (P := P)
   push_neg
   refine ⟨k, l, ?_⟩
@@ -159,7 +159,7 @@ lemma pairingIn_le_zero_of_root_add_mem [P.IsNotG2] (h : P.root i + P.root j ∈
   have aux₃ : 1 ≤ P.chainTopCoeff j i := by
     rwa [← root_add_nsmul_mem_range_iff_le_chainTopCoeff aux₁, one_smul]
   rw [← P.chainBotCoeff_sub_chainTopCoeff aux₁]
-  omega
+  cutsat
 
 lemma zero_le_pairingIn_of_root_sub_mem [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
     0 ≤ P.pairingIn ℤ i j := by
@@ -208,7 +208,7 @@ instance [P.IsIrreducible] : P.IsG2 where
   exists_pairingIn_neg_three := ⟨long P, short P, by simp⟩
 
 @[simp]
-lemma pairing_long_short : P.pairing (long P) (short P) = - 3 := by
+lemma pairing_long_short : P.pairing (long P) (short P) = -3 := by
   rw [← P.algebraMap_pairingIn ℤ, pairingIn_long_short]
   simp
 
@@ -262,14 +262,13 @@ variable [Finite ι] [CharZero R] [IsDomain R]
 
 @[simp]
 lemma pairingIn_short_long :
-    P.pairingIn ℤ (short P) (long P) = - 1 := by
+    P.pairingIn ℤ (short P) (long P) = -1 := by
   have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed (long P) (short P)
-  have := pairingIn_long_short (P := P)
   aesop
 
 @[simp]
 lemma pairing_short_long :
-    P.pairing (short P) (long P) = - 1 := by
+    P.pairing (short P) (long P) = -1 := by
   rw [← P.algebraMap_pairingIn ℤ, pairingIn_short_long]
   simp
 
@@ -420,7 +419,7 @@ variable (i : ι)
     _ = 2 * P.pairing i (short P) * B.form (shortRoot P) (shortRoot P) +
           P.pairing i (long P) * B.form (longRoot P) (longRoot P) := ?_
     _ = (2 * P.pairing i (short P) +
-          3 * P.pairing i (long P)) * B.form (twoShortAddLongRoot P) (twoShortAddLongRoot P) :=?_
+          3 * P.pairing i (long P)) * B.form (twoShortAddLongRoot P) (twoShortAddLongRoot P) := ?_
   · rw [B.two_mul_apply_root_root]
   · rw [twoShortAddLongRoot_eq, map_add, mul_add, map_smul, smul_eq_mul]
   · rw [B.two_mul_apply_root_root, B.two_mul_apply_root_root, mul_assoc]
@@ -575,8 +574,8 @@ lemma mem_allRoots (i : ι) :
     induction hx using Submodule.span_induction with
     | zero => simp
     | mem => aesop
-    | add => aesop
-    | smul => aesop
+    | add => simp_all
+    | smul => simp_all
   simpa using LinearMap.congr_fun key (P.root i)
 
 open scoped Classical in

@@ -256,11 +256,8 @@ lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) 
       integral_exp_tilted f, Pi.add_apply, exp_add]
     congr 1
     simp only [Pi.add_apply]
-    field_simp
-    ring_nf
-    congr 1
-    rw [mul_assoc, mul_inv_cancel₀, mul_one]
-    exact (integral_exp_pos hf).ne'
+    have := (integral_exp_pos hf).ne'
+    simp [field]
 
 lemma tilted_comm (hf : Integrable (fun x ↦ exp (f x)) μ) {g : α → ℝ}
     (hg : Integrable (fun x ↦ exp (g x)) μ) :
@@ -313,7 +310,7 @@ lemma integrable_tilted_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ 
 lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :
     μ.rnDeriv (ν.tilted f)
-      =ᵐ[ν] fun x ↦ ENNReal.ofReal (exp (- f x) * ∫ x, exp (f x) ∂ν) * μ.rnDeriv ν x := by
+      =ᵐ[ν] fun x ↦ ENNReal.ofReal (exp (-f x) * ∫ x, exp (f x) ∂ν) * μ.rnDeriv ν x := by
   cases eq_zero_or_neZero ν with
   | inl h => simp_rw [h, ae_zero, Filter.EventuallyEq]; exact Filter.eventually_bot
   | inr h0 =>
@@ -331,7 +328,7 @@ lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν
 lemma toReal_rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :
     (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
-      =ᵐ[ν] fun x ↦ exp (- f x) * (∫ x, exp (f x) ∂ν) * (μ.rnDeriv ν x).toReal := by
+      =ᵐ[ν] fun x ↦ exp (-f x) * (∫ x, exp (f x) ∂ν) * (μ.rnDeriv ν x).toReal := by
   filter_upwards [rnDeriv_tilted_right μ ν hf] with x hx
   rw [hx]
   simp only [ENNReal.toReal_mul, mul_eq_mul_right_iff, ENNReal.toReal_ofReal_eq_iff]

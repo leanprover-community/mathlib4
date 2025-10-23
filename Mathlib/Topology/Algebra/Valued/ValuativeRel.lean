@@ -3,7 +3,7 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.RingTheory.Valuation.ValuativeRel
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 import Mathlib.Topology.Algebra.WithZeroTopology
 
@@ -74,16 +74,33 @@ instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpa
   «v» := valuation R
   is_topological_valuation := mem_nhds_zero_iff
 
+lemma v_eq_valuation {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+    [IsUniformAddGroup R] [IsValuativeTopology R] :
+    Valued.v = valuation R := rfl
+
 theorem hasBasis_nhds (x : R) :
     (𝓝 x).HasBasis (fun _ => True)
       fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } := by
   simp [Filter.hasBasis_iff, mem_nhds_iff']
+
+/-- A variant of `hasBasis_nhds` where `· ≠ 0` is unbundled. -/
+lemma hasBasis_nhds' (x : R) :
+    (𝓝 x).HasBasis (· ≠ 0) ({ y | v (y - x) < · }) :=
+  (hasBasis_nhds x).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
+    fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
 
 variable (R) in
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True)
       fun γ : (ValueGroupWithZero R)ˣ => { x | v x < γ } := by
   convert hasBasis_nhds (0 : R); rw [sub_zero]
+
+variable (R) in
+/-- A variant of `hasBasis_nhds_zero` where `· ≠ 0` is unbundled. -/
+lemma hasBasis_nhds_zero' :
+    (𝓝 0).HasBasis (· ≠ 0) ({ x | v x < · }) :=
+  (hasBasis_nhds_zero R).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
+    fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero

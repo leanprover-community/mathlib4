@@ -66,7 +66,7 @@ lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
     _ = ↑(k % p) := by simp [this]
 
-lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a:R) = (b:R) ↔ a % p = b % p := by
+lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a : R) = (b : R) ↔ a % p = b % p := by
   wlog hle : a ≤ b
   · simpa only [eq_comm] using (this _ _ (lt_of_not_ge hle).le)
   obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le hle
@@ -181,6 +181,13 @@ lemma eq_zero [CharZero R] : ringChar R = 0 :=
   eq R 0
 
 lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
+
+@[simp]
+lemma ringChar_eq_one : ringChar R = 1 ↔ Subsingleton R := by
+  rw [← Nat.dvd_one, ← spec, eq_comm, Nat.cast_one, subsingleton_iff_zero_eq_one]
+
+@[nontriviality]
+lemma ringChar_subsingleton [Subsingleton R] : ringChar R = 1 := by simpa
 
 end ringChar
 

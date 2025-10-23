@@ -14,12 +14,12 @@ This file defines what it means for a set over a first-order structure to be def
 ## Main Definitions
 
 - `Set.Definable` is defined so that `A.Definable L s` indicates that the
-  set `s` of a finite cartesian power of `M` is definable with parameters in `A`.
+  set `s` of a finite Cartesian power of `M` is definable with parameters in `A`.
 - `Set.Definable₁` is defined so that `A.Definable₁ L s` indicates that
   `(s : Set M)` is definable with parameters in `A`.
 - `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
   `(s : Set (M × M))` is definable with parameters in `A`.
-- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the boolean
+- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the Boolean
   algebra of subsets of `α → M` defined by formulas with parameters in `A`.
 
 ## Main Results
@@ -126,15 +126,21 @@ theorem definable_finset_sup {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ 
     rw [Finset.sup_insert]
     exact (hf i).union h
 
-theorem definable_finset_biInter {ι : Type*} {f : ι → Set (α → M)}
+theorem definable_biInter_finset {ι : Type*} {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋂ i ∈ s, f i) := by
   rw [← Finset.inf_set_eq_iInter]
   exact definable_finset_inf hf s
 
-theorem definable_finset_biUnion {ι : Type*} {f : ι → Set (α → M)}
+@[deprecated (since := "2025-08-28")]
+alias definable_finset_biInter := definable_biInter_finset
+
+theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
   rw [← Finset.sup_set_eq_biUnion]
   exact definable_finset_sup hf s
+
+@[deprecated (since := "2025-08-28")]
+alias definable_finset_biUnion := definable_biUnion_finset
 
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
@@ -200,9 +206,6 @@ theorem Definable.image_comp_sumInl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M
   · rintro ⟨y, hy⟩
     exact ⟨Sum.elim x y, (congr rfl (funext finZeroElim)).mp hy, Sum.elim_comp_inl _ _⟩
 
-@[deprecated (since := "2025-02-21")] alias
-Definable.image_comp_sum_inl_fin := Definable.image_comp_sumInl_fin
-
 /-- Shows that definability is closed under finite projections. -/
 theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s) (f : α ↪ β)
     [Finite β] : A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
@@ -236,7 +239,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
         A.Definable L { x : α → M | x a = x (rangeSplitting f (rangeFactorization f a)) } := by
           refine fun a => ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext ?_⟩
           simp
-      refine (congr rfl (ext ?_)).mp (definable_finset_biInter h' Finset.univ)
+      refine (congr rfl (ext ?_)).mp (definable_biInter_finset h' Finset.univ)
       simp
     refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
     simp only [mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,

@@ -107,7 +107,7 @@ space is second-countable. -/
 theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : Set α} :
     { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ }.Countable := by
   /- This does not follow from `countable_setOf_isolated_right`, which gives the result when `s`
-  is the whole space, as one can not use it inside the subspace since it doesn't have the order
+  is the whole space, as one cannot use it inside the subspace since it doesn't have the order
   topology. Instead, we follow the main steps of its proof. -/
   let t := { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ ∧ ¬ IsTop x}
   suffices H : t.Countable by
@@ -226,7 +226,7 @@ theorem TFAE_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
       s ∈ 𝓝[Icc a b] a,
       s ∈ 𝓝[Ico a b] a,
       ∃ u ∈ Ioc a b, Ico a u ⊆ s,
-      ∃ u ∈ Ioi a , Ico a u ⊆ s] := by
+      ∃ u ∈ Ioi a, Ico a u ⊆ s] := by
   tfae_have 1 ↔ 2 := by
     rw [nhdsWithin_Icc_eq_nhdsGE hab]
   tfae_have 1 ↔ 3 := by

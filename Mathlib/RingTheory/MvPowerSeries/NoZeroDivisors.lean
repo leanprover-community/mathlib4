@@ -18,7 +18,7 @@ is itself not a zero divisor
 - `MvPowerSeries.order_mul` : multiplicativity of `MvPowerSeries.order`
   if the semiring `R` has no zero divisors
 
-##  Instance
+## Instance
 
 If `R` has `NoZeroDivisors`, then so does `MvPowerSeries σ R`.
 
@@ -30,7 +30,7 @@ If `R` has `NoZeroDivisors`, then so does `MvPowerSeries σ R`.
 ## Remark
 
 The analogue of `Polynomial.notMem_nonZeroDivisors_iff`
-(McCoy theorem) holds for power series over a noetherian ring,
+(McCoy theorem) holds for power series over a Noetherian ring,
 but not in general. See [Fields1971]
 -/
 
@@ -49,7 +49,7 @@ section Semiring
 variable [Semiring R]
 
 theorem mem_nonZeroDivisorsRight_of_constantCoeff {φ : MvPowerSeries σ R}
-    (hφ : constantCoeff σ R φ ∈ nonZeroDivisorsRight R) :
+    (hφ : constantCoeff φ ∈ nonZeroDivisorsRight R) :
     φ ∈ nonZeroDivisorsRight (MvPowerSeries σ R) := by
   classical
   intro x hx
@@ -57,7 +57,7 @@ theorem mem_nonZeroDivisorsRight_of_constantCoeff {φ : MvPowerSeries σ R}
   apply WellFoundedLT.induction d
   intro e he
   rw [map_zero, ← mul_right_mem_nonZeroDivisorsRight_eq_zero_iff hφ,
-    ← map_zero (f := coeff R e), ← hx]
+    ← map_zero (f := coeff e), ← hx]
   convert (coeff_mul e x φ).symm
   rw [Finset.sum_eq_single (e, 0), coeff_zero_eq_constantCoeff]
   · rintro ⟨u, _⟩ huv _
@@ -71,7 +71,7 @@ theorem mem_nonZeroDivisorsRight_of_constantCoeff {φ : MvPowerSeries σ R}
 
 -- TODO: derive from `mem_nonZeroDivisorsRight_of_constantCoeff` using `MulOpposite`
 theorem mem_nonZeroDivisorsLeft_of_constantCoeff {φ : MvPowerSeries σ R}
-    (hφ : constantCoeff σ R φ ∈ nonZeroDivisorsLeft R) :
+    (hφ : constantCoeff φ ∈ nonZeroDivisorsLeft R) :
     φ ∈ nonZeroDivisorsLeft (MvPowerSeries σ R) := by
   classical
   intro x hx
@@ -79,7 +79,7 @@ theorem mem_nonZeroDivisorsLeft_of_constantCoeff {φ : MvPowerSeries σ R}
   apply WellFoundedLT.induction d
   intro e he
   rw [map_zero, ← mul_left_mem_nonZeroDivisorsLeft_eq_zero_iff hφ,
-    ← map_zero (f := coeff R e), ← hx]
+    ← map_zero (f := coeff e), ← hx]
   convert (coeff_mul e φ x).symm
   rw [Finset.sum_eq_single (0, e), coeff_zero_eq_constantCoeff]
   · rintro ⟨_, u⟩ huv _
@@ -94,37 +94,37 @@ theorem mem_nonZeroDivisorsLeft_of_constantCoeff {φ : MvPowerSeries σ R}
 /-- A multivariate power series is not a zero divisor
   when its constant coefficient is not a zero divisor -/
 theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
-    (hφ : constantCoeff σ R φ ∈ R⁰) :
+    (hφ : constantCoeff φ ∈ R⁰) :
     φ ∈ (MvPowerSeries σ R)⁰ :=
   ⟨mem_nonZeroDivisorsLeft_of_constantCoeff hφ.1, mem_nonZeroDivisorsRight_of_constantCoeff hφ.2⟩
 
 lemma monomial_mem_nonzeroDivisorsLeft {n : σ →₀ ℕ} {r} :
-    monomial R n r ∈ nonZeroDivisorsLeft (MvPowerSeries σ R) ↔ r ∈ nonZeroDivisorsLeft R := by
+    monomial n r ∈ nonZeroDivisorsLeft (MvPowerSeries σ R) ↔ r ∈ nonZeroDivisorsLeft R := by
   constructor
   · intro H s hrs
-    have := H (C _ _ s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
-    simpa using congr(coeff _ 0 $(this))
+    have := H (C s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
+    simpa using congr(coeff 0 $(this))
   · intro H p hrp
     ext i
-    have := congr(coeff _ (i + n) $hrp)
+    have := congr(coeff (i + n) $hrp)
     rw [coeff_monomial_mul, if_pos le_add_self, add_tsub_cancel_right] at this
     simpa using H _ this
 
 -- TODO: reduce duplication
 lemma monomial_mem_nonzeroDivisorsRight {n : σ →₀ ℕ} {r} :
-    monomial R n r ∈ nonZeroDivisorsRight (MvPowerSeries σ R) ↔ r ∈ nonZeroDivisorsRight R := by
+    monomial n r ∈ nonZeroDivisorsRight (MvPowerSeries σ R) ↔ r ∈ nonZeroDivisorsRight R := by
   constructor
   · intro H s hrs
-    have := H (C _ _ s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
-    simpa using congr(coeff _ 0 $(this))
+    have := H (C s) (by rw [← monomial_zero_eq_C, monomial_mul_monomial]; ext; simp [hrs])
+    simpa using congr(coeff 0 $(this))
   · intro H p hrp
     ext i
-    have := congr(coeff _ (i + n) $hrp)
+    have := congr(coeff (i + n) $hrp)
     rw [coeff_mul_monomial, if_pos le_add_self, add_tsub_cancel_right] at this
     simpa using H _ this
 
 lemma monomial_mem_nonzeroDivisors {n : σ →₀ ℕ} {r} :
-    monomial R n r ∈ (MvPowerSeries σ R)⁰ ↔ r ∈ R⁰ :=
+    monomial n r ∈ (MvPowerSeries σ R)⁰ ↔ r ∈ R⁰ :=
   monomial_mem_nonzeroDivisorsLeft.and monomial_mem_nonzeroDivisorsRight
 
 lemma X_mem_nonzeroDivisors {i : σ} :
@@ -174,9 +174,20 @@ theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
   · rw [not_lt_top_iff] at hf
     simp [hf]
 
+theorem weightedOrder_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R]
+    {ι : Type*} (w : σ → ℕ) (f : ι → MvPowerSeries σ R) (s : Finset ι) :
+    (∏ i ∈ s, f i).weightedOrder w = ∑ i ∈ s, (f i).weightedOrder w:= by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih => rw [Finset.sum_cons ha, Finset.prod_cons ha, weightedOrder_mul, ih]
+
 theorem order_mul (f g : MvPowerSeries σ R) :
     (f * g).order = f.order + g.order :=
   weightedOrder_mul _ f g
+
+theorem order_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R]
+    {ι : Type*} (f : ι → MvPowerSeries σ R) (s : Finset ι) :
+    (∏ i ∈ s, f i).order = ∑ i ∈ s, (f i).order := weightedOrder_prod _ _ _
 
 end MvPowerSeries
 
