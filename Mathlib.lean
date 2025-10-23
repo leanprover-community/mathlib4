@@ -4270,6 +4270,7 @@ import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.Dimension.LinearMap
 import Mathlib.LinearAlgebra.Dimension.Localization
+import Mathlib.LinearAlgebra.Dimension.RankDecomposition
 import Mathlib.LinearAlgebra.Dimension.RankNullity
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.Dimension.Subsingleton
