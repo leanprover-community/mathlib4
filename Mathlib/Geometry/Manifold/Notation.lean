@@ -344,6 +344,9 @@ where
     match_expr e with
     | ContinuousLinearMap k S _ _ _σ _E _ _ _F _ _ _ _ =>
       trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
+      -- Note: if `S` were a copy of `k` with a non-standard topology, this check passes
+      -- (and inferring a model with corners will fail).
+      -- In practice, this should never occur: for now, assume it does not.
       if ← isDefEq k S then
         -- TODO: check if σ is actually the identity!
         let eK : Term ← Term.exprToSyntax k
@@ -361,6 +364,9 @@ where
     -- Note that `modelWithCornersEuclideanHalfSpace` is also not imported.
     match e with
     | mkApp4 (.const `Set.Icc _) α _ _x _y =>
+      -- Note: if `α` was a copy of `ℝ` with a non-standard topology, this check passes
+      -- (and inferring a model with corners will fail).
+      -- In practice, this should never occur: for now, assume it does not.
       if ← isDefEq α q(ℝ) then
         -- We need not check if `x < y` is a fact in the local context: Lean will verify this
         -- itself when trying to synthesize a ChartedSpace instance.
