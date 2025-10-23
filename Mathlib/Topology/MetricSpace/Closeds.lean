@@ -221,6 +221,15 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       apply mem_iUnion₂.2
       exact ⟨t, ‹t ∈ F›, this⟩⟩
 
+theorem Closeds.lipschitz_sup :
+    LipschitzWith 1 fun p : Closeds α × Closeds α => p.1 ⊔ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEdist_union_le
+
+@[fun_prop]
+theorem _root_.TopologicalSpace.Closeds.continuous_sup :
+    Continuous fun p : Closeds α × Closeds α => p.1 ⊔ p.2 :=
+  Closeds.lipschitz_sup.continuous
+
 namespace NonemptyCompacts
 
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
@@ -382,6 +391,15 @@ instance secondCountableTopology [SecondCountableTopology α] :
       -- we have proved that `d` is a good approximation of `t` as requested
       exact ⟨d, ‹d ∈ v›, Dtc⟩
   UniformSpace.secondCountable_of_separable (NonemptyCompacts α)
+
+theorem lipschitz_sup :
+    LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts α => p.1 ⊔ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEdist_union_le
+
+@[fun_prop]
+theorem _root_.TopologicalSpace.NonemptyCompacts.continuous_sup :
+    Continuous fun p : NonemptyCompacts α × NonemptyCompacts α => p.1 ⊔ p.2 :=
+  lipschitz_sup.continuous
 
 end NonemptyCompacts
 
