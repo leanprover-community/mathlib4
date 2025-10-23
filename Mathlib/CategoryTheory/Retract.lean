@@ -140,4 +140,13 @@ def retract {X Y : C} (e : X ≅ Y) : Retract X Y where
 
 end Iso
 
+/-- If `X` is a retract of `Y`, then for any natural transformation `τ`,
+the natural transformation `τ.app X` is a retract of `τ.app Y`. -/
+@[simps]
+def NatTrans.retractArrowApp {F G : C ⥤ D}
+    (τ : F ⟶ G) {X Y : C} (h : Retract X Y) : RetractArrow (τ.app X) (τ.app Y) where
+  i := Arrow.homMk (F.map h.i) (G.map h.i) (by simp)
+  r := Arrow.homMk (F.map h.r) (G.map h.r) (by simp)
+  retract := by ext <;> simp [← Functor.map_comp]
+
 end CategoryTheory
