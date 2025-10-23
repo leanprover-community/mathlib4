@@ -166,11 +166,10 @@ lemma fib_add_of_ne_zero {m n : ℕ} (hn : n ≠ 0) :
 lemma fib_add_sub_one {m n : ℕ} (hn : n ≠ 0) :
     fib (m + n - 1) = fib m * (fib n - fib (n - 1))
       + fib (m + 1) * fib (n - 1) := by
-  rw [fib_sub_one (by omega), fib_add, fib_add_of_ne_zero hn, Nat.sub_add_eq]
+  rw [fib_sub_one (by grind), fib_add, fib_add_of_ne_zero hn, sub_add_eq, Nat.mul_sub]
   nth_rw 3 [fib_sub_one hn]
-  simp [Nat.mul_sub]
-  rw [← Nat.sub_add_eq, tsub_add_tsub_comm
-    (Nat.mul_le_mul (le_refl _) (fib_mono (by omega)))
+  rw [Nat.mul_sub, ← sub_add_eq, tsub_add_tsub_comm
+    (Nat.mul_le_mul (le_refl _) (fib_mono <| by grind))
     (Nat.mul_le_mul (le_refl _) fib_le_fib_succ)]
 
 theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
