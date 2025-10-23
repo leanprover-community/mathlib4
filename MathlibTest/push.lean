@@ -56,6 +56,24 @@ info: DiscrTree branch for Or:
 
 end logic
 
+section lambda
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  push fun x ↦ _
+  with_reducible rfl
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  simp only [pushFun]
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  pull fun _ ↦ _
+  with_reducible rfl
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  simp only [pullFun]
+
+end lambda
+
 section membership
 
 example (x : Nat) (A : Set Nat) : x ∈ ∅ ∪ Set.univ ∩ ({a | a = 4} \ Aᶜ) := by
