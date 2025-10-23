@@ -53,7 +53,7 @@ lemma map_eq_one_of_forall_lt [MulArchimedean Γ₀] {v : Valuation K Γ₀} {r 
 theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgroup γ : AddSubgroup R) :=
   { inter _ _ :=
       ⟨_, le_inf
-        (ltAddSubgroup_mono _ (min_le_left _ _)) (ltAddSubgroup_mono _ (min_le_right _ _))⟩
+        (ltAddSubgroup_monotone _ (min_le_left _ _)) (ltAddSubgroup_monotone _ (min_le_right _ _))⟩
     mul := by
       rintro γ
       obtain ⟨γ₀, h⟩ := exists_square_le γ
@@ -71,14 +71,14 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
         rintro y
         simp [Hx]
       · use γx⁻¹ * γ
-        simp [subset_def, lt_inv_mul_iff₀, Hx]
+        simp [lt_inv_mul_iff₀, Hx]
     rightMul := by
       rintro x γ
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
       · use 1
         simp [subset_def, Hx]
       · use γx⁻¹ * γ
-        simp [subset_def, lt_mul_inv_iff₀, Hx, mul_comm] }
+        simp [lt_mul_inv_iff₀, Hx, mul_comm] }
 
 end Valuation
 
