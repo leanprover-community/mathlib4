@@ -79,10 +79,10 @@ section IndicatorConstLp
 
 open Set Function
 
-variable {s : Set α} {hs : MeasurableSet s} {hμs : μ s ≠ ∞} {c : E}
+variable {s : Set α} {hs : MeasurableSet s} {hμs : p = ∞ ∨ μ s ≠ ∞} {c : E}
 
 /-- Indicator of a set as an element of `Lp`. -/
-def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) : Lp E p μ :=
+def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : p = ∞ ∨ μ s ≠ ∞) (c : E) : Lp E p μ :=
   MemLp.toLp (s.indicator fun _ => c) (memLp_indicator_const p hs c (Or.inr hμs))
 
 /-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp` -/
@@ -118,7 +118,7 @@ theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     ENNReal.toReal_rpow, toReal_enorm]
 
 theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
-    ‖indicatorConstLp ∞ hs hμs c‖ = ‖c‖ := by
+    ‖indicatorConstLp (μ := μ) ∞ hs hμs c‖ = ‖c‖ := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
     eLpNorm_indicator_const' hs hμs_ne_zero ENNReal.top_ne_zero, ENNReal.toReal_top,
     _root_.div_zero, ENNReal.rpow_zero, mul_one, toReal_enorm]
@@ -126,9 +126,11 @@ theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
 theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   by_cases hp_top : p = ∞
-  · rw [hp_top, ENNReal.toReal_top, _root_.div_zero, Real.rpow_zero, mul_one]
-    exact norm_indicatorConstLp_top hμs_pos
+  · simp only [hp_top, ENNReal.toReal_top, div_zero, Real.rpow_zero, mul_one]
+    exact norm_indicatorConstLp_top (E := E) (c := c) (hs := hs) hμs_pos
   · exact norm_indicatorConstLp hp_pos hp_top
+
+#exit
 
 theorem norm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖ ≤ ‖c‖ * μ.real s ^ (1 / p.toReal) := by
