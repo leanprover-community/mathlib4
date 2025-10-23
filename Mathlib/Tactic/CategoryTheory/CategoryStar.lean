@@ -45,13 +45,12 @@ elab "Category*" ppSpace C:term : term => commitIfNoEx <| withoutErrToSorry do
   let cat := .const `CategoryTheory.Category [v, u]
   let levelNames ← getLevelNames
   let ⟨mctx, vs, _, out⟩ :=
-    (← getMCtx).levelMVarToParam (fun n => levelNames.elem n)
-    (fun id => id != v.mvarId!) cat `v 1
-  let v::[] := vs.toList
+    (← getMCtx).levelMVarToParam (fun n => levelNames.elem n) (· != v.mvarId!) cat `v 1
+  let [v] := vs.toList
     | throwError "Unexpected Error:{indentD out}\ndoesn't have exactly one new level parameter"
   let us := (collectLevelParams {} cExpr).params ++ (collectLevelParams {} tpCExpr).params
-  match (us.filterMap fun nm => levelNames.findIdx? fun x => x == nm).max? with
-  | some idx => setLevelNames <| levelNames.insertIdx (idx + 1) v
-  | none => setLevelNames <| v :: levelNames
+  setLevelNames <| match (us.filterMap fun nm => levelNames.findIdx? (· == nm)).max? with
+  | some idx => levelNames.insertIdx (idx + 1) v
+  | none => v :: levelNames
   setMCtx mctx
   Meta.mkAppM' out #[cExpr]
