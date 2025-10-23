@@ -70,12 +70,12 @@ theorem res_π (i : ι) : res F U ≫ limit.π _ ⟨i⟩ = F.map (Opens.leSupr U
 
 /-- Copy of `limit.hom_ext`, specialized to `piOpens` for use by the `ext` tactic. -/
 @[ext] theorem piOpens.hom_ext
-  {X : C} {f f' : X ⟶ piOpens F U} (w : ∀ j, f ≫ limit.π _ j = f' ≫ limit.π _ j) : f = f' :=
+    {X : C} {f f' : X ⟶ piOpens F U} (w : ∀ j, f ≫ limit.π _ j = f' ≫ limit.π _ j) : f = f' :=
   limit.hom_ext w
 
 /-- Copy of `limit.hom_ext`, specialized to `piInters` for use by the `ext` tactic. -/
 @[ext] theorem piInters.hom_ext
-  {X : C} {f f' : X ⟶ piInters F U} (w : ∀ j, f ≫ limit.π _ j = f' ≫ limit.π _ j) : f = f' :=
+    {X : C} {f f' : X ⟶ piInters F U} (w : ∀ j, f ≫ limit.π _ j = f' ≫ limit.π _ j) : f = f' :=
   limit.hom_ext w
 
 @[elementwise]

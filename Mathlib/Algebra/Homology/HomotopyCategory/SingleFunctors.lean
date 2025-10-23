@@ -100,6 +100,13 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp only [singleFunctor, singleFunctors, SingleFunctors.postcomp]
   infer_instance
 
+-- The object level definitional equality underlying `singleFunctorsPostcompQuotientIso`.
+@[simp] theorem quotient_obj_singleFunctors_obj (n : ℤ) (X : C) :
+    (HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj
+      ((CochainComplex.singleFunctor C n).obj X) =
+        (HomotopyCategory.singleFunctor C n).obj X :=
+  rfl
+
 instance (R : Type*) [Ring R] [Linear R C] (n : ℤ) :
     Functor.Linear R (HomotopyCategory.singleFunctor C n) :=
   inferInstanceAs (Functor.Linear R (CochainComplex.singleFunctor C n ⋙
