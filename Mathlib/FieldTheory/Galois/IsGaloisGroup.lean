@@ -45,35 +45,33 @@ theorem IsGaloisGroup.toIsFractionRing (K L : Type*) [Field K] [Field L] [Algebr
       ((IsFractionRing.fieldEquivOfAlgEquivHom K L).comp (MulSemiringAction.toAlgAut G A B))
   have hG (g : G) (b : B) : g • algebraMap B L b = algebraMap B L (g • b) :=
     IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L _ b
-  refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ ?_⟩, ⟨?_⟩⟩
+  refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ ?_⟩, ⟨fun x h ↦ ?_⟩⟩
   · have := hGAB.faithful
     exact eq_of_smul_eq_smul fun y ↦ by simpa [hG] using h (algebraMap B L y)
   · obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := A) x
     obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective (A := B) y
     simp only [Algebra.smul_def, smul_mul', smul_div₀', map_div₀, smul_algebraMap, hG,
       ← IsScalarTower.algebraMap_apply A K L, IsScalarTower.algebraMap_apply A B L]
-  · intro x h
+  · have := hGAB.isInvariant.isIntegral
     have : Nontrivial A := (IsFractionRing.nontrivial_iff_nontrivial A K).mpr inferInstance
     have : Nontrivial B := (IsFractionRing.nontrivial_iff_nontrivial B L).mpr inferInstance
-    have := Algebra.IsInvariant.isIntegral A B G
     obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B) x
-    have hy' : algebraMap B L y ≠ 0 := by
-      have : y ≠ 0 := fun h ↦ zero_notMem_nonZeroDivisors (h ▸ hy)
-      simpa
+    have hy' : y ≠ 0 := nonZeroDivisors.ne_zero hy
+    replace hy' : algebraMap B L y ≠ 0 := by simpa
     obtain ⟨b, a, ha, hb⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) y).exists_smul_eq_mul x hy
     rw [mul_comm, Algebra.smul_def, mul_comm] at hb
-    have ha' : (algebraMap B L) (algebraMap A B a) ≠ 0 := by
-      rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A K L]
-      simpa
+    replace ha : (algebraMap K L) (algebraMap A K a) ≠ 0 := by simpa
+    replace ha : (algebraMap B L) (algebraMap A B a) ≠ 0 := by
+      rwa [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A K L]
     have hxy : algebraMap B L x / algebraMap B L y =
         algebraMap B L b / algebraMap B L (algebraMap A B a) := by
-      rw [div_eq_div_iff hy' ha', ← map_mul, hb, map_mul]
-    simp only [hxy, smul_div₀', hG, smul_algebraMap, div_left_inj' ha', IsFractionRing.coe_inj] at h
+      rw [div_eq_div_iff hy' ha, ← map_mul, hb, map_mul]
+    simp only [hxy, smul_div₀', hG, smul_algebraMap, div_left_inj' ha, IsFractionRing.coe_inj] at h
     obtain ⟨b, rfl⟩ := hGAB.isInvariant.isInvariant b h
     use algebraMap A K b / algebraMap A K a
     simp only [map_div₀, ← IsScalarTower.algebraMap_apply A K L,
       IsScalarTower.algebraMap_apply A B L]
-    rw [div_eq_div_iff ha' hy', ← map_mul, ← map_mul, hb]
+    rw [div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
 
 end Field
 
