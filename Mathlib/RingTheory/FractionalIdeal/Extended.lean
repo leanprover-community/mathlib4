@@ -5,7 +5,6 @@ Authors: James Sundstrom
 -/
 import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.FractionalIdeal.Basic
-import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Extension of fractional ideals
@@ -107,9 +106,8 @@ theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
 theorem extended_le_one_of_le_one (hI : I ≤ 1) : extended L hf I ≤ 1 := by
   obtain ⟨J, rfl⟩ := le_one_iff_exists_coeIdeal.mp hI
   intro x hx
-  simp only [val_eq_coe, coe_one]
   simp only [val_eq_coe, mem_coe, mem_extended_iff, mem_span_image_iff_exists_fun,
-    Finset.univ_eq_attach] at hx
+    Finset.univ_eq_attach, coe_one] at hx ⊢
   obtain ⟨s, hs, c, rfl⟩ := hx
   refine Submodule.sum_smul_mem _ _ fun x h ↦ mem_one.mpr ?_
   obtain ⟨a, ha⟩ : ∃ a, (algebraMap A K) a = ↑x := by

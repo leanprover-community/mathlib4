@@ -68,7 +68,9 @@ variable [IsDomain A] [IsDedekindDomain B] [IsDedekindDomain R₁] [IsDedekindDo
     [IsFractionRing B L] [IsFractionRing R₁ F₁] [IsFractionRing R₂ F₂] [IsIntegrallyClosed A]
     [IsIntegralClosure B R₁ L] [NoZeroSMulDivisors R₁ B] [NoZeroSMulDivisors R₂ B]
 
-theorem FractionalIdeal.differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
+namespace FractionalIdeal
+
+theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
     [Module.Free A R₂] [IsLocalization (Algebra.algebraMapSubmonoid R₂ A⁰) F₂]
     (h₁ : F₁.LinearDisjoint F₂) (h₂ : F₁ ⊔ F₂ = ⊤) :
     differentIdeal R₁ B ∣ Ideal.map (algebraMap R₂ B) (differentIdeal A R₂) := by
@@ -94,24 +96,23 @@ variable [Algebra A B] [Module.Finite A B] [NoZeroSMulDivisors A B] [NoZeroSMulD
   [Module.Finite R₁ B] [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
   [IsScalarTower A R₁ B]
 
-theorem FractionalIdeal.map_differentIdeal_dvd_differentIdeal
+theorem map_differentIdeal_dvd_differentIdeal
     (h : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
       ((differentIdeal A R₂).map (algebraMap R₂ B))) :
-    Ideal.map (algebraMap R₂ B) (differentIdeal A R₂) ∣ differentIdeal R₁ B := by
+    Ideal.map (algebraMap R₂ B) (differentIdeal A R₂) ∣ differentIdeal R₁ B :=
   have := (differentIdeal_eq_differentIdeal_mul_differentIdeal A R₂ B).symm.trans
     (differentIdeal_eq_differentIdeal_mul_differentIdeal A R₁ B)
-  exact h.symm.dvd_of_dvd_mul_right (dvd_of_mul_left_eq _ this)
+  h.symm.dvd_of_dvd_mul_right (dvd_of_mul_left_eq _ this)
 
-theorem FractionalIdeal.differentIdeal_eq_map_differentIdeal [Module.Free A R₂]
-    (h₁ : F₁.LinearDisjoint F₂) (h₂ : F₁ ⊔ F₂ = ⊤)
-    (h₃ : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
+theorem differentIdeal_eq_map_differentIdeal [Module.Free A R₂] (h₁ : F₁.LinearDisjoint F₂)
+    (h₂ : F₁ ⊔ F₂ = ⊤) (h₃ : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
       ((differentIdeal A R₂).map (algebraMap R₂ B))) :
     differentIdeal R₁ B = Ideal.map (algebraMap R₂ B) (differentIdeal A R₂) := by
   apply dvd_antisymm
   · exact differentIdeal_dvd_map_differentIdeal A B R₁ R₂ h₁ h₂
   · exact map_differentIdeal_dvd_differentIdeal A B R₁ R₂ h₃
 
-theorem FractionalIdeal.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime
+theorem differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime
     [Module.Free A R₂] (h₁ : F₁.LinearDisjoint F₂) (h₂ : F₁ ⊔ F₂ = ⊤)
     (h₃ : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
       ((differentIdeal A R₂).map (algebraMap R₂ B))) :
@@ -119,3 +120,5 @@ theorem FractionalIdeal.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_i
   have := differentIdeal_eq_differentIdeal_mul_differentIdeal A R₂ B
   rwa [← differentIdeal_eq_map_differentIdeal A B R₁ R₂ h₁ h₂ h₃,
     mul_comm] at this
+
+end FractionalIdeal
