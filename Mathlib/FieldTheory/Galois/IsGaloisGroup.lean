@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.Invariant.Defs
+import Mathlib.RingTheory.Invariant.Basic
 
 /-!
 # Predicate for Galois Groups
@@ -32,14 +32,6 @@ end CommRing
 
 section Field
 
--- PR #30645
-theorem IsFractionRing.nontrivial' (R F : Type*) [CommSemiring R] [CommSemiring F] [Algebra R F]
-    [h : IsFractionRing R F] [Nontrivial F] : Nontrivial R := by
-  rw [← not_subsingleton_iff_nontrivial]
-  intro
-  apply (h.map_units 1).ne_zero
-  rw [Submonoid.coe_one, Subsingleton.elim (1 : R) (0 : R), map_zero]
-
 variable (G A B : Type*) [Group G] [Finite G] [CommRing A] [CommRing B] [Algebra A B]
   [MulSemiringAction G B]
 
@@ -61,8 +53,8 @@ theorem IsGaloisGroup.toIsFractionRing (K L : Type*) [Field K] [Field L] [Algebr
     simp only [Algebra.smul_def, smul_mul', smul_div₀', map_div₀, smul_algebraMap, hG,
       ← IsScalarTower.algebraMap_apply A K L, IsScalarTower.algebraMap_apply A B L]
   · intro x h
-    have : Nontrivial A := IsFractionRing.nontrivial' A K
-    have : Nontrivial B := IsFractionRing.nontrivial' B L
+    have : Nontrivial A := (IsFractionRing.nontrivial_iff_nontrivial A K).mpr inferInstance
+    have : Nontrivial B := (IsFractionRing.nontrivial_iff_nontrivial B L).mpr inferInstance
     have := Algebra.IsInvariant.isIntegral A B G
     obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := B) x
     have hy' : algebraMap B L y ≠ 0 := by
