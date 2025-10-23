@@ -474,12 +474,6 @@ lemma eq_of_forall_nnreal_le_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, ↑r ≤
 lemma eq_of_forall_le_nnreal_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, x ≤ r ↔ y ≤ r) → x = y :=
   WithTop.eq_of_forall_le_coe_iff
 
-lemma eq_of_forall_le_nnreal_iff : ∀ {x y : ℝ≥0∞}, (∀ r : ℝ≥0, x ≤ r ↔ y ≤ r) → x = y
-  | ⊤, ⊤, _ => rfl
-  | ⊤, (y : ℝ≥0), h => by simpa using h y
-  | (x : ℝ≥0), ⊤, h => by simpa using h x
-  | (x : ℝ≥0), (y : ℝ≥0), h => by simpa using eq_of_forall_ge_iff <| by simpa using h
-
 theorem le_of_forall_pos_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
   le_of_forall_nnreal_lt fun r hr =>
     (zero_le r).eq_or_lt.elim (fun h => h ▸ zero_le _) fun h0 => h r h0 hr
