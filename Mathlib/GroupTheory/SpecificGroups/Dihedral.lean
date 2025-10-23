@@ -109,14 +109,14 @@ theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
 @[simp]
-theorem r_pow (i : ZMod n) (k : ℕ) : (r i)^k = r (i * k : ZMod n) := by
+theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
   induction k with
   | zero => simp only [pow_zero, Nat.cast_zero, mul_zero, r_zero]
   | succ k IH =>
     rw [pow_add, pow_one, IH, r_mul_r, Nat.cast_add, Nat.cast_one, r.injEq, mul_add, mul_one]
 
 @[simp]
-theorem r_zpow (i : ZMod n) (k : ℤ) : (r i)^k = r (i * k : ZMod n) := by
+theorem r_zpow (i : ZMod n) (k : ℤ) : (r i) ^ k = r (i * k : ZMod n) := by
   cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
 
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where

@@ -748,27 +748,23 @@ theorem nonneg_mul {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a *
   | _, _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ⟨z, w, Or.inr <| Or.inr rfl⟩, ha, hb => by
     rw [calc
           (⟨-x, y⟩ * ⟨-z, w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
-          _ = ⟨x * z + d * y * w, -(x * w + y * z)⟩ := by simp [add_comm]
-          ]
+          _ = ⟨x * z + d * y * w, -(x * w + y * z)⟩ := by simp [add_comm]]
     exact nonnegg_pos_neg.2 (sqLe_mul.left (nonnegg_neg_pos.1 ha) (nonnegg_neg_pos.1 hb))
   | _, _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ⟨z, w, Or.inr <| Or.inl rfl⟩, ha, hb => by
     rw [calc
           (⟨-x, y⟩ * ⟨z, -w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
-          _ = ⟨-(x * z + d * y * w), x * w + y * z⟩ := by simp [add_comm]
-          ]
+          _ = ⟨-(x * z + d * y * w), x * w + y * z⟩ := by simp [add_comm]]
     exact nonnegg_neg_pos.2 (sqLe_mul.right.left (nonnegg_neg_pos.1 ha) (nonnegg_pos_neg.1 hb))
   | _, _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inr rfl⟩, ha, hb => by
     rw [calc
           (⟨x, -y⟩ * ⟨-z, w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
-          _ = ⟨-(x * z + d * y * w), x * w + y * z⟩ := by simp [add_comm]
-          ]
+          _ = ⟨-(x * z + d * y * w), x * w + y * z⟩ := by simp [add_comm]]
     exact
         nonnegg_neg_pos.2 (sqLe_mul.right.right.left (nonnegg_pos_neg.1 ha) (nonnegg_neg_pos.1 hb))
   | _, _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ⟨z, w, Or.inr <| Or.inl rfl⟩, ha, hb => by
     rw [calc
           (⟨x, -y⟩ * ⟨z, -w⟩ : ℤ√d) = ⟨_, _⟩ := rfl
-          _ = ⟨x * z + d * y * w, -(x * w + y * z)⟩ := by simp [add_comm]
-          ]
+          _ = ⟨x * z + d * y * w, -(x * w + y * z)⟩ := by simp [add_comm]]
     exact
         nonnegg_pos_neg.2
           (sqLe_mul.right.right.right (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))

@@ -80,7 +80,7 @@ noncomputable def equiv_GL_linearindependent :
 
 /-- The cardinal of the general linear group over a finite field. -/
 theorem card_GL_field :
-    Nat.card (GL (Fin n) 𝔽) = ∏ i : (Fin n), (q ^ n - q ^ ( i : ℕ )) := by
+    Nat.card (GL (Fin n) 𝔽) = ∏ i : (Fin n), (q ^ n - q ^ (i : ℕ)) := by
   rw [Nat.card_congr (equiv_GL_linearindependent n), card_linearIndependent,
     Module.finrank_fintype_fun_eq_card, Fintype.card_fin]
   simp only [Module.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]

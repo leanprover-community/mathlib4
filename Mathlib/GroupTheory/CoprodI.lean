@@ -501,7 +501,7 @@ theorem smul_eq_of_smul {i} (m : M i) (w : Word M) :
 theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔
       (¬i = j ∧ ⟨i, m₁⟩ ∈ w.toList)
-      ∨ (m₁ ≠ 1 ∧ ∃ (hij : i = j),(⟨i, m₁⟩ ∈ w.toList.tail) ∨
+      ∨ (m₁ ≠ 1 ∧ ∃ (hij : i = j), (⟨i, m₁⟩ ∈ w.toList.tail) ∨
         (∃ m', ⟨j, m'⟩ ∈ w.toList.head? ∧ m₁ = hij ▸ (m₂ * m')) ∨
         (w.fstIdx ≠ some j ∧ m₁ = hij ▸ m₂)) := by
   rw [of_smul_def, mem_rcons_iff, mem_equivPair_tail_iff, equivPair_head, or_assoc]

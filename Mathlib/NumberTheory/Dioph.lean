@@ -605,7 +605,7 @@ theorem modEq_dioph {h : (α → ℕ) → ℕ} (dh : DiophFn h) : Dioph fun v =>
   df D% dh D= dg D% dh
 
 @[inherit_doc]
-scoped notation " D≡ " => Dioph.modEq_dioph
+scoped notation "D≡ " => Dioph.modEq_dioph
 
 /-- Diophantine functions are closed under integer division. -/
 theorem div_dioph : DiophFn fun v => f v / g v :=

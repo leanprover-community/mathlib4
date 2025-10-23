@@ -43,7 +43,7 @@ theorem ae_eq_trim_iff_of_aestronglyMeasurable {α β} [TopologicalSpace β] [Me
     {m m0 : MeasurableSpace α} {μ : Measure α} {f g : α → β} (hm : m ≤ m0)
     (hfm : AEStronglyMeasurable[m] f μ) (hgm : AEStronglyMeasurable[m] g μ) :
     hfm.mk f =ᵐ[μ.trim hm] hgm.mk g ↔ f =ᵐ[μ] g :=
-  (hfm.stronglyMeasurable_mk.ae_eq_trim_iff hm  hgm.stronglyMeasurable_mk).trans
+  (hfm.stronglyMeasurable_mk.ae_eq_trim_iff hm hgm.stronglyMeasurable_mk).trans
     ⟨fun h => hfm.ae_eq_mk.trans (h.trans hgm.ae_eq_mk.symm), fun h =>
       hfm.ae_eq_mk.symm.trans (h.trans hgm.ae_eq_mk)⟩
 

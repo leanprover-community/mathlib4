@@ -86,7 +86,7 @@ protected def baseChange (B : BilinMap R M₂ N₂) : BilinMap A (A ⊗[R] M₂)
 @[simp]
 theorem baseChange_tmul (B₂ : BilinMap R M₂ N₂) (a : A) (m₂ : M₂)
     (a' : A) (m₂' : M₂) :
-    B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (a * a') ⊗ₜ (B₂ m₂ m₂')  :=
+    B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (a * a') ⊗ₜ (B₂ m₂ m₂') :=
   rfl
 
 lemma baseChange_isSymm {B₂ : BilinMap R M₂ N₂} (hB₂ : ∀ x y, B₂ x y = B₂ y x) (x y : A ⊗[R] M₂) :
