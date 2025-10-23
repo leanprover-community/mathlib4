@@ -57,35 +57,6 @@ local instance : MonoidalClosed
 instance : MonoidalClosed (LightCondMod.{u} R) :=
   inferInstanceAs (MonoidalClosed (Transported (equivSmall (ModuleCat R)).symm))
 
-section
-
-variable {C D E : Type*} [Category C] [Category D] [Category E] (e : C ≌ D)
-    [MonoidalCategory C] [MonoidalCategory D] [MonoidalCategory E]
-    (F : D ⥤ E) (G : E ⥤ D) [e.functor.Monoidal] [e.inverse.Monoidal]
-    (H : C ⥤ E) (I : E ⥤ C)
-
-def _root_.CategoryTheory.Equivalence.monoidalOfPrecompFunctor
-    [(e.functor ⋙ F).Monoidal] : F.Monoidal :=
-  Monoidal.transport (e.invFunIdAssoc F)
-
-def _root_.CategoryTheory.Equivalence.monoidalOfPrecompInverse
-    [(e.inverse ⋙ H).Monoidal] : H.Monoidal :=
-  letI : (e.symm.functor ⋙ H).Monoidal := inferInstanceAs (e.inverse ⋙ H).Monoidal
-  e.symm.monoidalOfPrecompFunctor _
-
-def _root_.CategoryTheory.Equivalence.monoidalOfPostcompInverse [(G ⋙ e.inverse).Monoidal] :
-    G.Monoidal :=
-  letI : (G ⋙ e.inverse ⋙ e.functor).Monoidal :=
-    inferInstanceAs ((G ⋙ e.inverse) ⋙ e.functor).Monoidal
-  Monoidal.transport (isoWhiskerLeft G e.counitIso ≪≫ G.rightUnitor)
-
-def _root_.CategoryTheory.Equivalence.monoidalOfPostcompFunctor
-    [(I ⋙ e.functor).Monoidal] : I.Monoidal :=
-  letI : (I ⋙ e.symm.inverse).Monoidal := inferInstanceAs (I ⋙ e.functor).Monoidal
-  e.symm.monoidalOfPostcompInverse _
-
-end
-
 instance : (equivSmall (ModuleCat R)).functor.Monoidal :=
   inferInstanceAs (equivalenceTransported (equivSmall (ModuleCat R)).symm).inverse.Monoidal
 
