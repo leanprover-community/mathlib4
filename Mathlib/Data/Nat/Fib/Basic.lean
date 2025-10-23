@@ -87,10 +87,9 @@ theorem fib_le_fib_succ {n : ℕ} : fib n ≤ fib (n + 1) := by cases n <;> simp
 theorem fib_mono : Monotone fib :=
   monotone_nat_of_le_succ fun _ => fib_le_fib_succ
 
-
 lemma fib_succ_sub_fib_pred {n : ℕ} (hn : n ≠ 0) :
     fib (n + 1) - fib (n - 1) = fib n :=
-  (Nat.sub_eq_iff_eq_add (fib_mono (by omega))).mpr (add_comm (fib n) _ ▸ (fib_add_one hn))
+  Nat.sub_eq_iff_eq_add' (fib_mono <| by grind) |>.mpr <| fib_add_one ha
 
 lemma fib_sub_one {n : ℕ} (hn : n ≠ 0) :
     fib (n - 1) = fib (n + 1) - fib n := by
@@ -159,7 +158,7 @@ theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fi
     simp only [fib_add_two, ih]
     ring
 
-lemma fib_add_ne_zero {m n : ℕ} (hn : n ≠ 0) :
+lemma fib_add_of_ne_zero {m n : ℕ} (hn : n ≠ 0) :
     fib (m + n) = fib m * fib (n - 1) + fib (m + 1) * fib n := by
   obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
   simp [← add_assoc, fib_add]
@@ -167,7 +166,7 @@ lemma fib_add_ne_zero {m n : ℕ} (hn : n ≠ 0) :
 lemma fib_add_sub_one {m n : ℕ} (hn : n ≠ 0) :
     fib (m + n - 1) = fib m * (fib n - fib (n - 1))
       + fib (m + 1) * fib (n - 1) := by
-  rw [fib_sub_one (by omega), fib_add, fib_add_ne_zero hn, Nat.sub_add_eq]
+  rw [fib_sub_one (by omega), fib_add, fib_add_of_ne_zero hn, Nat.sub_add_eq]
   nth_rw 3 [fib_sub_one hn]
   simp [Nat.mul_sub]
   rw [← Nat.sub_add_eq, tsub_add_tsub_comm
