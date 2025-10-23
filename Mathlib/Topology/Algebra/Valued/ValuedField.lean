@@ -456,7 +456,7 @@ lemma isClosedEmbedding_algebraMap_integer :
 
 lemma discreteTopology_valuationRing_iff_discreteTopology :
     DiscreteTopology 𝒪[K] ↔ DiscreteTopology K := by
-  refine ⟨fun _ ↦ singletons_open_iff_discrete.mp fun x ↦ ?_, fun _ ↦ inferInstance⟩
+  refine ⟨fun _ ↦ discreteTopology_iff_isOpen_singleton.mpr fun x ↦ ?_, fun _ ↦ inferInstance⟩
   have hk : IsOpen (𝒪[K] : Set K) := isOpen_integer K
   rcases le_total (Valued.v x) 1 with hx | hx
   · simpa using hk.isOpenMap_subtype_val _ (isOpen_discrete {⟨x, hx⟩})
