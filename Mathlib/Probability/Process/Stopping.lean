@@ -826,13 +826,7 @@ theorem ProgMeasurable.stronglyMeasurable_stoppedProcess [PseudoMetrizableSpace 
 
 theorem stronglyMeasurable_stoppedValue_of_le (h : ProgMeasurable f u) (hτ : IsStoppingTime f τ)
     {n : ι} (hτ_le : ∀ ω, τ ω ≤ n) : StronglyMeasurable[f n] (stoppedValue u τ) := by
-  have hτ_le' ω : (τ ω).untopA ≤ n := by
-    specialize hτ_le ω
-    simp only [WithTop.untopA]
-    have : τ ω ≠ ⊤ := ne_top_of_le_ne_top (by simp) hτ_le
-    lift τ ω to ι using this with t ht
-    simp only [WithTop.untopD_coe, ge_iff_le]
-    exact mod_cast hτ_le
+  have hτ_le' ω : (τ ω).untopA ≤ n := WithTop.untopA_le (hτ_le ω)
   have : stoppedValue u τ =
       (fun p : Set.Iic n × Ω => u (↑p.fst) p.snd) ∘ fun ω => (⟨(τ ω).untopA, hτ_le' ω⟩, ω) := by
     ext1 ω; simp only [stoppedValue, Function.comp_apply]
