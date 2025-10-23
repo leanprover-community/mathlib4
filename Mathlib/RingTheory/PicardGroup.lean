@@ -508,11 +508,6 @@ open AlgebraTensorModule in
     refine ⟨congr (.refl ..) (.symm (mk_eq_iff.mp ?_).some) ≪≫ₗ distribBaseChange R A ..⟩
     simp_rw [mk_tensor, mk_eq_self]
 
-variable {R A}
-noncomputable def mapRingHom (f : R →+* A) : Pic R →* Pic A :=
-  letI := f.toAlgebra
-  mapAlgebra R A
-
 end Pic
 
 variable (A : Type*) [CommSemiring A] [Algebra R A]
@@ -658,7 +653,7 @@ variable {R M A} [Semiring A] [Algebra R A] (e : A ⊗[R] M ≃ₗ[A] A)
 
 /-- If flat `R`-module becomes free of rank 1 after tensoring with a faithful `R`-algebra `A`,
 then it embeds into `A`. -/
-noncomputable def embAlgebra : M →ₗ[R] A :=
+noncomputable def toAlgebra : M →ₗ[R] A :=
   e.restrictScalars R ∘ₗ (Algebra.ofId R A).toLinearMap.rTensor M ∘ₗ (TensorProduct.lid R M).symm
 
 variable [Flat R M] [FaithfulSMul R A]
@@ -677,8 +672,8 @@ noncomputable def submoduleAlgebraEquiv : submoduleAlgebra e ≃ₗ[R] M :=
 
 instance : Flat R (submoduleAlgebra e) := .of_linearEquiv (submoduleAlgebraEquiv e)
 
-instance [Module.Invertible R M] : Module.Invertible R (toSubmodule e) :=
-  .congr (toSubmoduleEquiv e).symm
+instance [Module.Invertible R M] : Module.Invertible R (submoduleAlgebra e) :=
+  .congr (submoduleAlgebraEquiv e).symm
 
 /-- When a flat `R`-module `M` is embedded as a submodule of a faithful `R`-algebra `A`,
 the multiplication map induces an isomorphism `A ⊗[R] M ≃ₗ[A] A`. -/
@@ -752,4 +747,24 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
   (mulEquivUnitsSubmoduleQuotRange R).trans <| .trans (unitsQuotEquivRelPic R _) <|
     .trans (.subgroupCongr <| relPic_eq_top R _) Subgroup.topEquiv
 
-end CommRing.Pic
+end PicardGroup
+
+open CommRing Pic
+
+/-- If `FractionRing R` has trivial Picard group,
+every invertible `R`-module is isomorphic to an ideal. -/
+theorem Module.Invertible.exists_linearEquiv_ideal (R M) [CommRing R] [AddCommGroup M] [Module R M]
+    [Subsingleton (Pic (FractionRing R))] [Module.Invertible R M] :
+    ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
+  have : Pic.mk R M ∈ relPic R (FractionRing R) := Subsingleton.elim ..
+  have ⟨I, eq⟩ := range_unitsToPic R (FractionRing R) ▸ this
+  have ⟨e⟩ := mk_eq_mk_iff.mp eq.symm
+  ⟨_, ⟨e ≪≫ₗ FractionalIdeal.equivNumOfIsLocalization
+    ⟨_, I.submodule_isFractional (S := nonZeroDivisors R)⟩⟩⟩
+
+/- Every invertible module over a domain is isomorphic to an ideal.
+TODO: show this is also true for Noetherian `R`, by showing that `FractionRing R` is semilocal
+and semilocal rings have trivial Picard groups. -/
+example (R M) [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.Invertible R M] :
+    ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
+  Module.Invertible.exists_linearEquiv_ideal R M
