@@ -343,9 +343,10 @@ instance [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y] :
 Taking the positive part of a function with locally finite support commutes with
 scalar multiplication by a natural number.
 -/
+@[simp]
 theorem nsmul_posPart [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
     (f : locallyFinsuppWithin U Y) (n : ℕ) :
-    n • f⁺ = (n • f)⁺ := by
+    (n • f)⁺ = n • f⁺ := by
   unfold instPosPart
   ext x
   simp only [coe_nsmul, Pi.smul_apply, max_apply, coe_zero, Pi.zero_apply]
@@ -357,9 +358,10 @@ theorem nsmul_posPart [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
 Taking the negative part of a function with locally finite support commutes with
 scalar multiplication by a natural number.
 -/
+@[simp]
 theorem nsmul_negPart [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
     (f : locallyFinsuppWithin U Y) (n : ℕ) :
-    n • f⁻ = (n • f)⁻ := by
+    (n • f)⁻ = n • f⁻ := by
   unfold instNegPart
   ext x
   simp only [coe_nsmul, Pi.smul_apply, max_apply, coe_neg, Pi.neg_apply, coe_zero, Pi.zero_apply]
