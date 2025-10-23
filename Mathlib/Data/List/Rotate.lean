@@ -224,6 +224,8 @@ theorem get_rotate_one (l : List α) (k : Fin (l.rotate 1).length) :
     (l.rotate 1).get k = l.get ⟨(k + 1) % l.length, mod_lt _ (length_rotate l 1 ▸ k.pos)⟩ :=
   get_rotate l 1 k
 
+-- Allow `l[a]'b` to have a line break between `[a]'` and `b`.
+set_option linter.style.commandStart false in
 /-- A version of `List.getElem_rotate` that represents `l[k]` in terms of
 `(List.rotate l n)[⋯]`, not vice versa. Can be used instead of rewriting `List.getElem_rotate`
 from right to left. -/

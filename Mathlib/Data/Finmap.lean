@@ -72,6 +72,8 @@ structure Finmap (β : α → Type v) : Type max u v where
 def AList.toFinmap (s : AList β) : Finmap β :=
   ⟨s.entries, s.nodupKeys⟩
 
+-- Setting `priority := high` means that Lean will prefer this notation to the identical one
+-- for `Quotient.mk`
 local notation:arg "⟦" a "⟧" => AList.toFinmap a
 
 theorem AList.toFinmap_eq {s₁ s₂ : AList β} :
