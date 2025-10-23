@@ -517,6 +517,79 @@ lemma nontrivial_of_islocalizedModule {S : Submonoid R} {M MS : Type*} [AddCommG
 
 section
 
+omit [IsLocalRing R]
+
+omit [IsNoetherianRing R] in
+noncomputable def isLocalization_map_of_disjoint_map (S : Submonoid R) (A : Type*) [CommRing A]
+    [Algebra R A] [IsLocalization S A] (p : Ideal A) [p.IsPrime] {M : Type*} [AddCommGroup M]
+    [Module R M] {MS : Type*} [AddCommGroup MS] [Module R MS] (f : M →ₗ[R] MS)
+    [IsLocalizedModule S f] [Module A MS] [IsScalarTower R A MS] {Mp : Type*} [AddCommGroup Mp]
+    [Module R Mp] (g : M →ₗ[R] Mp) [IsLocalizedModule.AtPrime (p.comap (algebraMap R A)) g]
+    [Module A Mp] [IsScalarTower R A Mp] : MS →ₗ[A] Mp :=
+  have (s : S) : IsUnit ((algebraMap R (Module.End R Mp)) s.1) :=
+    have : s.1 ∈ (p.comap (algebraMap R A)).primeCompl :=
+      ((IsLocalization.disjoint_comap_iff S A p).mpr Ideal.IsPrime.ne_top').le_compl_right s.2
+    IsLocalizedModule.map_units g ⟨s.1, this⟩
+  (IsLocalizedModule.lift S f g this).extendScalarsOfIsLocalization S A
+
+omit [IsNoetherianRing R] in
+lemma isLocalization_map_of_disjoint (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
+    [IsLocalization S A] (p : Ideal A) [p.IsPrime] {M : Type*} [AddCommGroup M] [Module R M]
+    {MS : Type*} [AddCommGroup MS] [Module R MS] (f : M →ₗ[R] MS) [IsLocalizedModule S f]
+    [Module A MS] [IsScalarTower R A MS] {Mp : Type*} [AddCommGroup Mp] [Module R Mp]
+    (g : M →ₗ[R] Mp) [IsLocalizedModule.AtPrime (p.comap (algebraMap R A)) g]
+    [Module A Mp] [IsScalarTower R A Mp] :
+    IsLocalizedModule.AtPrime p (isLocalization_map_of_disjoint_map S A p f g) where
+  map_units x := by
+    rcases IsLocalization.mk'_surjective S x.1 with ⟨r, s, hrs⟩
+    rw [← hrs, IsLocalization.mk'_eq_mul_mk'_one, map_mul, ← IsScalarTower.algebraMap_apply]
+    apply IsUnit.mul _ ((isUnit_of_invertible (IsLocalization.mk' A 1 s)).map _)
+    have nmem : r ∈ (p.comap (algebraMap R A)).primeCompl := by
+      by_contra mem
+      simp only [Ideal.mem_primeCompl_iff, Ideal.mem_comap, not_not,
+        ← IsLocalization.mk'_mem_iff (y := s), hrs] at mem
+      exact x.2 mem
+    rcases (IsLocalizedModule.map_units g ⟨r, nmem⟩).exists_right_inv with ⟨r', hr'⟩
+    rw [isUnit_iff_exists]
+    use r'.extendScalarsOfIsLocalization S A
+    constructor
+    · ext y
+      simpa using LinearMap.congr_fun hr' y
+    · ext y
+      simpa using LinearMap.congr_fun hr' y
+  surj y := by
+    rcases IsLocalizedModule.surj (p.comap (algebraMap R A)).primeCompl g y with ⟨⟨m, r⟩, hmr⟩
+    have mem : (algebraMap R A) r ∈ p.primeCompl := by
+      simpa [← Ideal.mem_comap] using Ideal.mem_primeCompl_iff.mp r.2
+    use ⟨f m, ⟨(algebraMap R A) r, mem⟩⟩
+    simpa [isLocalization_map_of_disjoint_map] using hmr
+  exists_of_eq {z1 z2} eq := by
+    rcases IsLocalizedModule.surj S f z1 with ⟨⟨m1, r1⟩, hmr1⟩
+    rcases IsLocalizedModule.surj S f z2 with ⟨⟨m2, r2⟩, hmr2⟩
+    have eq' : (isLocalization_map_of_disjoint_map S A p f g) (r2 • r1 • z1) =
+      (isLocalization_map_of_disjoint_map S A p f g) (r1 • r2 • z2) := by
+      simp [smul_smul, mul_comm r1 r2, eq]
+    simp only [isLocalization_map_of_disjoint_map, hmr1, LinearMap.map_smul_of_tower,
+      LinearMap.extendScalarsOfIsLocalization_apply', IsLocalizedModule.lift_apply, hmr2] at eq'
+    rw [← LinearMap.map_smul_of_tower, ← LinearMap.map_smul_of_tower] at eq'
+    rcases IsLocalizedModule.exists_of_eq (S := (p.comap (algebraMap R A)).primeCompl) eq' with
+      ⟨r3, hr3⟩
+    have : (algebraMap R A) (r3 * (r2 * r1).1) ∈ p.primeCompl := by
+      rw [map_mul]
+      apply mul_mem
+      · simpa [← Ideal.mem_comap] using Ideal.mem_primeCompl_iff.mp r3.2
+      · simp only [Ideal.mem_primeCompl_iff]
+        by_contra mem
+        absurd Ideal.eq_top_of_isUnit_mem _ mem (IsLocalization.map_units A (r2 * r1))
+        exact Ideal.IsPrime.ne_top'
+    use ⟨(algebraMap R A) (r3 * (r2 * r1)), this⟩
+    simp only [map_mul, Submonoid.mk_smul]
+    nth_rw 2 [mul_comm ((algebraMap R A) r2)]
+    simp only [← smul_smul, algebraMap_smul]
+    change r3.1 • r2.1 • r1 • z1 = r3.1 • r1.1 • r2 • z2
+    rw [hmr1, hmr2, ← map_smul, ← map_smul, ← map_smul, ← map_smul]
+    exact LinearMap.congr_arg hr3
+
 universe w
 
 variable [Small.{v} R] [UnivLE.{v, w}]
@@ -527,6 +600,12 @@ instance (S : Submonoid R) : Small.{v} (Localization S) :=
 instance (p : Ideal R) [p.IsPrime] : Small.{v} p.ResidueField :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
+noncomputable local instance [Small.{v} R] (M : ModuleCat.{v} R) (S : Submonoid R) :
+    Module R (M.localizedModule S) :=
+  inferInstanceAs (Module R (Shrink.{v} (LocalizedModule S M)))
+
+set_option maxHeartbeats 250000 in
+--the application of base change is too complicated
 lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M]
     {p q : PrimeSpectrum R} (lt : p < q) (eq_of_le : ∀ r : PrimeSpectrum R, p < r → r ≤ q → r = q)
     (i : ℕ) (ntr : Nontrivial (Ext.{w} (ModuleCat.of (Localization p.1.primeCompl)
@@ -537,13 +616,19 @@ lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M] 
   let _ : Module.Finite (Localization q.1.primeCompl) (M.localizedModule q.1.primeCompl) :=
     Module.Finite.equiv (Shrink.linearEquiv (Localization q.1.primeCompl) _).symm
   let f := (algebraMap R (Localization q.1.primeCompl))
-  have disj : Disjoint (q.asIdeal.primeCompl : Set R) p.asIdeal := by
+  let Rq := (Localization q.1.primeCompl)
+  let Rp := (Localization p.1.primeCompl)
+  have disj : Disjoint (q.1.primeCompl : Set R) p.asIdeal := by
     rw [← le_compl_iff_disjoint_left]
     intro r hr
     simpa using le_of_lt lt hr
   let _ : (p.1.map f).IsPrime :=
     IsLocalization.isPrime_of_isPrime_disjoint q.1.primeCompl _ _ p.2 disj
-  have ne : p.1.map f ≠ maximalIdeal (Localization q.1.primeCompl) := sorry
+  have ne : p.1.map f ≠ maximalIdeal (Localization q.1.primeCompl) := by
+    by_contra eq
+    absurd ne_of_lt lt
+    rw [PrimeSpectrum.ext_iff, ← IsLocalization.comap_map_of_isPrime_disjoint q.1.primeCompl Rq
+      p.1 p.2 disj, eq, Localization.AtPrime.comap_maximalIdeal]
   have sub' : Subsingleton (Ext (ModuleCat.of (Localization q.1.primeCompl) (Shrink.{v}
     (Localization q.1.primeCompl ⧸ (p.1.map f)))) (M.localizedModule q.1.primeCompl) i) := by
     apply ext_subsingleton_of_all_gt (M.localizedModule q.1.primeCompl) i (p.1.map f) ne
@@ -561,8 +646,6 @@ lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M] 
     rw [← IsLocalization.map_comap q.1.primeCompl _ r, ceq,
       Localization.AtPrime.map_eq_maximalIdeal]
     exact sub
-  let Rq := (Localization q.1.primeCompl)
-  let Rp := (Localization p.1.primeCompl)
   have le' : q.1.primeCompl ≤ p.1.primeCompl := by simpa [Ideal.primeCompl] using le_of_lt lt
   let _ : Algebra Rq Rp := IsLocalization.localizationAlgebraOfSubmonoidLe Rq Rp _ _ le'
   let _ := IsLocalization.localization_isScalarTower_of_submonoid_le Rq Rp _ _ le'
@@ -586,21 +669,32 @@ lemma ext_succ_nontrivial_of_eq_of_le (M : ModuleCat.{v} R) [Module.Finite R M] 
   let e := ((Submodule.quotEquivOfEq _ _ eqm).restrictScalars Rq).trans
     (Shrink.linearEquiv.{v} Rq _).symm
   let f1 : (ModuleCat.of Rq (Shrink.{v} (Rq ⧸ p.1.map f))) →ₗ[Rq]
-      (ModuleCat.of Rp (Shrink.{v, u} p.asIdeal.ResidueField)) :=
+      (ModuleCat.of Rp (Shrink.{v} p.1.ResidueField)) :=
       e.toLinearMap.comp (f1'.comp (Shrink.linearEquiv.{v} Rq _).toLinearMap)
   have isl1 : IsLocalizedModule (p.1.map f).primeCompl f1 :=
     let _ := IsLocalizedModule.of_linearEquiv_right (p.1.map f).primeCompl f1'
       (Shrink.linearEquiv.{v} Rq _)
     IsLocalizedModule.of_linearEquiv (p.1.map f).primeCompl
       (f1'.comp (Shrink.linearEquiv.{v} Rq _).toLinearMap) e
-  let _ : Module Rq (M.localizedModule p.asIdeal.primeCompl) :=
+  let _ : Module Rq (M.localizedModule p.1.primeCompl) :=
     ModuleCat.Algebra.instModuleCarrier
   let _ : IsScalarTower Rq Rp (M.localizedModule p.asIdeal.primeCompl) :=
     ModuleCat.Algebra.instIsScalarTowerCarrier
+  let _ : IsLocalizedModule.AtPrime ((p.1.map f).comap f)
+    (M.localizedModule_mkLinearMap p.1.primeCompl) := by
+    convert M.localizedModule_isLocalizedModule p.1.primeCompl
+    exact IsLocalization.comap_map_of_isPrime_disjoint q.1.primeCompl Rq p.1 p.2 disj
+  let _ : IsScalarTower R Rq (M.localizedModule p.1.primeCompl) := {
+    smul_assoc r s z := by
+      nth_rw 2 [← algebraMap_smul Rp r]
+      rw [← algebraMap_smul Rp s, smul_smul, Algebra.smul_def, ← algebraMap_smul Rp, map_mul,
+        ← IsScalarTower.algebraMap_apply] }
   let f2 : (M.localizedModule q.1.primeCompl) →ₗ[Rq] (M.localizedModule p.asIdeal.primeCompl) :=
-    sorry
+    isLocalization_map_of_disjoint_map q.1.primeCompl Rq (p.1.map f)
+    (M.localizedModule_mkLinearMap q.1.primeCompl) (M.localizedModule_mkLinearMap p.1.primeCompl)
   have isl2 : IsLocalizedModule (p.1.map f).primeCompl f2 :=
-    sorry
+    isLocalization_map_of_disjoint q.1.primeCompl Rq (p.1.map f)
+    (M.localizedModule_mkLinearMap q.1.primeCompl) (M.localizedModule_mkLinearMap p.1.primeCompl)
   let _ : Module.Finite Rq (Shrink.{v} (Rq ⧸ Ideal.map f p.asIdeal)) :=
     Module.Finite.equiv (Shrink.linearEquiv Rq _).symm
   have isl := Ext.isLocalizedModule'.{v, v, u, u, w, w} (p.1.map f).primeCompl Rp f1 isl1 f2 isl2 i
