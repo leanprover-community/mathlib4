@@ -31,12 +31,11 @@ universe u
 noncomputable section
 
 open CategoryTheory Monoidal Sheaf MonoidalCategory MonoidalClosed MonoidalClosed.FunctorCategory
+  Functor
 
 namespace LightCondensed
 
 attribute [local instance] monoidalCategory symmetricCategory
-
-variable (R : Type (u + 1)) [CommRing R]
 
 variable (R : Type u) [CommRing R]
 
@@ -60,120 +59,48 @@ instance : MonoidalClosed (LightCondMod.{u} R) :=
 
 section
 
-variable {C D : Type*} [Category C] [Category D]
-    {J : GrothendieckTopology C}
-    {A : Type*} [Category A]
-    {F G : D ⥤ Sheaf J A} (i : F ⋙ sheafToPresheaf _ _ ≅ G ⋙ sheafToPresheaf _ _)
+variable {C D E : Type*} [Category C] [Category D] [Category E] (e : C ≌ D)
+    [MonoidalCategory C] [MonoidalCategory D] [MonoidalCategory E]
+    (F : D ⥤ E) (G : E ⥤ D) [e.functor.Monoidal] [e.inverse.Monoidal]
+    (H : C ⥤ E) (I : E ⥤ C)
 
-def _root_.CategoryTheory.Sheaf.natIsoCancel : F ≅ G :=
-  NatIso.ofComponents (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso (i.app _)) (by
-    intro X Y f
-    apply Sheaf.hom_ext
-    simpa using i.hom.naturality _)
+def _root_.CategoryTheory.Equivalence.monoidalOfPrecompFunctor
+    [(e.functor ⋙ F).Monoidal] : F.Monoidal :=
+  Monoidal.transport (e.invFunIdAssoc F)
 
-end
+def _root_.CategoryTheory.Equivalence.monoidalOfPrecompInverse
+    [(e.inverse ⋙ H).Monoidal] : H.Monoidal :=
+  letI : (e.symm.functor ⋙ H).Monoidal := inferInstanceAs (e.inverse ⋙ H).Monoidal
+  e.symm.monoidalOfPrecompFunctor _
 
-section
+def _root_.CategoryTheory.Equivalence.monoidalOfPostcompInverse [(G ⋙ e.inverse).Monoidal] :
+    G.Monoidal :=
+  letI : (G ⋙ e.inverse ⋙ e.functor).Monoidal :=
+    inferInstanceAs ((G ⋙ e.inverse) ⋙ e.functor).Monoidal
+  Monoidal.transport (isoWhiskerLeft G e.counitIso ≪≫ G.rightUnitor)
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
-    (e : C ≌ D) [MonoidalCategory C] [MonoidalCategory E] (F : Transported e ⥤ E)
-    (G : E ⥤ Transported e)
-
-def _root_.CategoryTheory.Equivalence.monoidalOfComp [(e.functor ⋙ F).Monoidal] : F.Monoidal :=
-  Functor.Monoidal.transport (e.invFunIdAssoc F)
-
-def _root_.CategoryTheory.Equivalence.monoidalOfComp' [(G ⋙ e.inverse).Monoidal] : G.Monoidal :=
-  letI : (G ⋙ (equivalenceTransported e).inverse ⋙ (equivalenceTransported e).functor).Monoidal :=
-    inferInstanceAs
-      ((G ⋙ (equivalenceTransported e).inverse) ⋙ (equivalenceTransported e).functor).Monoidal
-  Functor.Monoidal.transport (Functor.isoWhiskerLeft G e.counitIso ≪≫ G.rightUnitor)
+def _root_.CategoryTheory.Equivalence.monoidalOfPostcompFunctor
+    [(I ⋙ e.functor).Monoidal] : I.Monoidal :=
+  letI : (I ⋙ e.symm.inverse).Monoidal := inferInstanceAs (I ⋙ e.functor).Monoidal
+  e.symm.monoidalOfPostcompInverse _
 
 end
 
-attribute [local instance] monoidalCategory in
-def monoidalOfPostcomp {E : Type*} [Category E] [MonoidalCategory E] (F : E ⥤ LightCondMod.{u} R)
-    [(F ⋙ (equivSmall _).functor).Monoidal] : F.Monoidal :=
-  letI : (F ⋙ (equivSmall _).symm.inverse).Monoidal :=
-    inferInstanceAs (F ⋙ (equivSmall _).functor).Monoidal
-  (equivSmall (ModuleCat R)).symm.monoidalOfComp' F
+instance : (equivSmall (ModuleCat R)).functor.Monoidal :=
+  inferInstanceAs (equivalenceTransported (equivSmall (ModuleCat R)).symm).inverse.Monoidal
 
-def monoidalOfPrecomp {E : Type*} [Category E] [MonoidalCategory E] (F : LightCondSet.{u} ⥤ E)
-    [((equivSmall _).inverse ⋙ F).Monoidal] : F.Monoidal :=
-  letI : ((equivSmall _).symm.functor ⋙ F).Monoidal :=
-    inferInstanceAs ((equivSmall _).inverse ⋙ F).Monoidal
-  letI : (equivSmall (Type u)).symm.inverse.Monoidal :=
-    ((Functor.Monoidal.nonempty_monoidal_iff_preservesFiniteProducts
-      (equivSmall (Type u)).symm.inverse).mpr inferInstance).some
-  Functor.Monoidal.transport ((equivSmall _).symm.invFunIdAssoc F)
+instance : (equivSmall (ModuleCat R)).inverse.Monoidal :=
+  inferInstanceAs (equivalenceTransported (equivSmall (ModuleCat R)).symm).functor.Monoidal
 
-open Functor
+instance : (equivSmall (Type u)).functor.Monoidal :=
+  ((Monoidal.nonempty_monoidal_iff_preservesFiniteProducts _).mpr inferInstance).some
+
+instance : (equivSmall (Type u)).inverse.Monoidal :=
+  ((Monoidal.nonempty_monoidal_iff_preservesFiniteProducts _).mpr inferInstance).some
 
 instance : (free R).Monoidal := by
-  letI : MonoidalCategory (Sheaf
-      ((equivSmallModel _).inverse.inducedTopology (coherentTopology LightProfinite.{u}))
-      (ModuleCat.{u} R)) := monoidalCategory _ _
-  apply (config := {allowSynthFailures := true}) monoidalOfPostcomp
-  apply (config := {allowSynthFailures := true}) monoidalOfPrecomp
-  let i : (equivSmall (Type u)).inverse ⋙ free R ⋙ (equivSmall (ModuleCat R)).functor ≅
-      Sheaf.composeAndSheafify _ (ModuleCat.free R) := by
-    refine natIsoCancel ?_
-    let j := (((equivSmallModel LightProfinite.{u}).transportSheafificationAdjunction
-            (coherentTopology LightProfinite.{u})
-            ((equivSmallModel _).inverse.inducedTopology (coherentTopology LightProfinite.{u}))
-            (ModuleCat.{u} R)).leftAdjointUniq
-            (sheafificationAdjunction (coherentTopology LightProfinite.{u}) _)).symm
-    calc _ ≅ ((equivSmall (Type u)).inverse ⋙
-      (sheafToPresheaf (coherentTopology LightProfinite.{u}) (Type u) ⋙
-        (whiskeringRight LightProfinite.{u}ᵒᵖ (Type u) (ModuleCat.{u} R)).obj (ModuleCat.free R) ⋙
-          (Equivalence.transportAndSheafify (coherentTopology LightProfinite)
-            ((equivSmallModel LightProfinite).inverse.inducedTopology
-              (coherentTopology LightProfinite))
-            (equivSmallModel LightProfinite) (ModuleCat R))) ⋙
-            (equivSmall (ModuleCat.{u} R)).functor) ⋙
-              sheafToPresheaf ((equivSmallModel LightProfinite.{u}).inverse.inducedTopology
-                (coherentTopology LightProfinite.{u})) (ModuleCat.{u} R) := ?_
-      _ ≅ _ := ?_
-    · exact isoWhiskerRight (isoWhiskerLeft _ (isoWhiskerRight (isoWhiskerLeft _
-        (isoWhiskerLeft _ j)) _)) _
-    · refine Functor.associator _ _ _ ≪≫ ?_
-      refine isoWhiskerLeft _ (Functor.associator _ _ _) ≪≫ ?_
-      refine isoWhiskerLeft _ (Functor.associator _ _ _) ≪≫ ?_
-      refine isoWhiskerLeft _ (isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫ ?_
-      refine isoWhiskerLeft _ (isoWhiskerLeft _ (isoWhiskerLeft _ (Functor.associator _ _ _))) ≪≫ ?_
-      refine isoWhiskerLeft _ (isoWhiskerLeft _ (isoWhiskerLeft _
-        (isoWhiskerLeft _ (Functor.associator _ _ _)))) ≪≫ ?_
-      refine ?_ ≪≫ (Functor.associator _ _ _).symm
-      refine ?_ ≪≫ isoWhiskerLeft _ (Functor.associator _ _ _).symm
-      refine isoWhiskerLeft (equivSmall (Type u)).inverse
-        (isoWhiskerLeft (sheafToPresheaf (coherentTopology LightProfinite) (Type u)) (isoWhiskerLeft
-          ((whiskeringRight LightProfiniteᵒᵖ (Type u) (ModuleCat R)).obj (ModuleCat.free R))
-            (isoWhiskerLeft (equivSmallModel LightProfinite).op.congrLeft.functor
-              (isoWhiskerLeft (H := sheafToPresheaf
-                ((equivSmallModel LightProfinite.{u}).inverse.inducedTopology
-                  (coherentTopology LightProfinite.{u})) (ModuleCat.{u} R)) (presheafToSheaf
-                    ((equivSmallModel LightProfinite.{u}).inverse.inducedTopology
-                      (coherentTopology LightProfinite.{u}))
-                        (ModuleCat.{u} R)) ?_)))) ≪≫ ?_
-      · refine NatIso.ofComponents (fun X ↦ ?_) ?_
-        · exact isoWhiskerRight (equivSmallModel LightProfinite.{u}).op.counitIso X.val ≪≫
-              Functor.leftUnitor _
-        · intros
-          ext
-          simp [Equivalence.sheafCongr]
-      · refine ?_ ≪≫ (Functor.associator _ _ _)
-        refine (Functor.associator _ _ _).symm ≪≫ ?_
-        refine (Functor.associator _ _ _).symm ≪≫ ?_
-        refine (Functor.associator _ _ _).symm ≪≫ ?_
-        refine isoWhiskerRight ?_ _
-        refine NatIso.ofComponents (fun X ↦ ?_) ?_
-        · exact (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight
-            (isoWhiskerRight (equivSmallModel LightProfinite.{u}).op.counitIso X.val ≪≫
-              Functor.leftUnitor _) (ModuleCat.free R)
-        · intros
-          apply NatTrans.ext
-          apply funext
-          intro
-          simp [Equivalence.sheafCongr, ← Functor.map_comp]
-  exact Functor.Monoidal.transport i.symm
+  apply (config := {allowSynthFailures := true}) (equivSmall _).symm.monoidalOfPostcompInverse
+  apply (config := {allowSynthFailures := true}) (equivSmall _).symm.monoidalOfPrecompFunctor
+  exact Monoidal.transport (equivSmallFreeIso R).symm
 
 end LightCondensed
