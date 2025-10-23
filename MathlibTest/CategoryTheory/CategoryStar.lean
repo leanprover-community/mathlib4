@@ -120,4 +120,38 @@ has level mvars
 #guard_msgs (error) in
 variable (C : Type _) [Category* C]
 
+/--
+error: Type mismatch
+  D
+has type
+  Sort u_1
+of sort `Type u_1` but is expected to have type
+  Type ?u.672
+of sort `Type (?u.672 + 1)`
+-/
+#guard_msgs (error) in
+variable (D : Sort*) [Category* D]
+
+/--
+error: stuck at solving universe constraint
+  max u_1 (u_2+1) =?= ?u.835+1
+while trying to unify
+  Sort (max u_1 (u_2 + 1)) : Type (max u_1 (u_2 + 1))
+with
+  Type ?u.835 : Type (?u.835 + 1)
+-/
+#guard_msgs (error) in
+variable (E : Sort*) (F : Type*) [Category* (E → F)]
+
+/--
+error: stuck at solving universe constraint
+  imax (u_2+1) u_1 =?= ?u.848+1
+while trying to unify
+  Sort (imax (u_2 + 1) u_1) : Type (imax (u_2 + 1) u_1)
+with
+  Type ?u.848 : Type (?u.848 + 1)
+-/
+#guard_msgs (error) in
+variable (E : Sort*) (F : Type*) [Category* (F → E)]
+
 end
