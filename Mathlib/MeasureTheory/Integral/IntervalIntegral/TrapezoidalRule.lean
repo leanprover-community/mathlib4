@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: P. Michael Kielstra
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Tactic.Field
 
 /-!
 # The trapezoidal rule
@@ -187,7 +188,7 @@ private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ
   have h0 : ∀ k : ℕ, ak (k + 1) - ak k = h := by simp [ak, ← sub_mul]
   have hab : 0 < b - a := sub_pos.mpr a_lt_b
   have hpos : 0 < h := by positivity
-  have hb : b = a + N * h := by unfold h; field_simp
+  have hb : b = a + N * h := by unfold h; field
   rw [hb, ← sum_trapezoidal_error_adjacent_intervals N_nonzero
     (hb ▸ h_df.continuousOn.intervalIntegrable_of_Icc a_lt_b.le)]
   grw [abs_sum_le_sum_abs]
@@ -196,7 +197,7 @@ private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ
     calc
       _ ≤ ∑ k ∈ range N, ζ / 12 * h ^ 3 := sum_le_sum this
       _ = N * (ζ / 12 * h ^ 3)          := by simp [sum_const]
-      _ = _                             := by unfold h; field_simp; ring
+      _ = _                             := by unfold h; push_cast; field
   intro k hk
   rw [Finset.mem_range] at hk
   have h1 : a ≤ ak k := by simp only [ak, le_add_iff_nonneg_right]; positivity
@@ -222,7 +223,7 @@ private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ
   refine (trapezoidal_error_le_of_lt' (ζ := ζ) h4 (h_df.mono h3) ?_ ?_ h7).trans_eq ?_
   · refine h_ddf.congr_mono (fun x hx ↦ ?_) h3
     exact derivWithin_subset h3 (uniqueDiffOn_Icc h4 x hx) (h_df x (h3 hx))
-  · exact (h_ddf_integrable.mono_set (by rwa [Set.uIcc_of_lt h4, Set.uIcc_of_lt a_lt_b])).congr'
+  · exact (h_ddf_integrable.mono_set (by rwa [Set.uIcc_of_lt h4, Set.uIcc_of_lt a_lt_b])).congr
       (h6.mono (Set.uIoc_subset_uIcc.trans_eq (Set.uIcc_of_lt h4)))
   · rw [h0, mul_div_assoc, mul_comm]
 
@@ -260,7 +261,7 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
   have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_neq)
   have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 one_le_two
   have h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]] := by
-    rw [(funext₂ fun _ _ ↦ iteratedDerivWithin_one.symm : derivWithin f = iteratedDerivWithin 1 f)]
+    rw [← iteratedDerivWithin_one]
     exact ContDiffOn.differentiableOn_iteratedDerivWithin h_f_c2 (by norm_cast) ud
   have h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f [[a, b]]) volume a b :=
     (ContDiffOn.continuousOn_iteratedDerivWithin h_f_c2 (le_refl 2) ud).intervalIntegrable
