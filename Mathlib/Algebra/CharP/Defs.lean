@@ -6,6 +6,7 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Order.Lattice
 
 /-!
@@ -15,8 +16,8 @@ import Mathlib.Order.Lattice
 * `CharP R p` expresses that the ring (additive monoid with one) `R` has characteristic `p`
 * `ringChar`: the characteristic of a ring
 * `ExpChar R p` expresses that the ring (additive monoid with one) `R` has
-    exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
-    prime characteristic `p`)
+  exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
+  prime characteristic `p`)
 -/
 
 assert_not_exists Field Finset OrderHom
@@ -57,6 +58,25 @@ lemma congr {q : ℕ} (h : p = q) : CharP R q := h ▸ ‹CharP R p›
 
 @[simp] lemma cast_eq_zero : (p : R) = 0 := (cast_eq_zero_iff R p p).2 dvd_rfl
 
+lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) :=
+  have (a : ℕ) : ((p * a : ℕ) : R) = 0 := by
+    rw [CharP.cast_eq_zero_iff R p]
+    exact Nat.dvd_mul_right p a
+  calc
+    (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
+    _ = ↑(k % p) := by simp [this]
+
+lemma cast_eq_iff_mod_eq [IsLeftCancelAdd R] : (a : R) = (b : R) ↔ a % p = b % p := by
+  wlog hle : a ≤ b
+  · simpa only [eq_comm] using (this _ _ (lt_of_not_ge hle).le)
+  obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le hle
+  rw [Nat.cast_add, left_eq_add, CharP.cast_eq_zero_iff R p]
+  constructor
+  · simp +contextual [Nat.add_mod, Nat.dvd_iff_mod_eq_zero]
+  intro h
+  have := Nat.sub_mod_eq_zero_of_mod_eq h.symm
+  simpa [Nat.dvd_iff_mod_eq_zero] using this
+
 -- TODO: This lemma needs to be `@[simp]` for confluence in the presence of `CharP.cast_eq_zero` and
 -- `Nat.cast_ofNat`, but with `no_index` on its entire LHS, it matches literally every expression so
 -- is too expensive. If https://github.com/leanprover/lean4/issues/2867 is fixed in a performant way, this can be made `@[simp]`.
@@ -81,7 +101,7 @@ lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   · rw [← neg_eq_zero, ← Int.cast_neg, ← Int.dvd_neg]
     lift -a to ℕ using Int.neg_nonneg.mpr (le_of_lt h) with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-  · simp only [Int.cast_zero, eq_self_iff_true, Int.dvd_zero]
+  · simp only [Int.cast_zero, Int.dvd_zero]
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
 
@@ -126,8 +146,6 @@ lemma existsUnique : ∃! p, CharP R p :=
   let ⟨c, H⟩ := CharP.exists R
   ⟨c, H, fun _y H2 => CharP.eq R H2 H⟩
 
-@[deprecated (since := "2024-12-17")] alias exists_unique := existsUnique
-
 end NonAssocSemiring
 end CharP
 
@@ -164,24 +182,26 @@ lemma eq_zero [CharZero R] : ringChar R = 0 :=
 
 lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 
+@[simp]
+lemma ringChar_eq_one : ringChar R = 1 ↔ Subsingleton R := by
+  rw [← Nat.dvd_one, ← spec, eq_comm, Nat.cast_one, subsingleton_iff_zero_eq_one]
+
+@[nontriviality]
+lemma ringChar_subsingleton [Subsingleton R] : ringChar R = 1 := by simpa
+
 end ringChar
 
 lemma CharP.neg_one_ne_one [AddGroupWithOne R] (p : ℕ) [CharP R p] [Fact (2 < p)] :
     (-1 : R) ≠ (1 : R) := by
   rw [ne_comm, ← sub_ne_zero, sub_neg_eq_add, one_add_one_eq_two, ← Nat.cast_two, Ne,
     CharP.cast_eq_zero_iff R p 2]
-  exact fun h ↦ (Fact.out : 2 < p).not_le <| Nat.le_of_dvd Nat.zero_lt_two h
+  exact fun h ↦ (Fact.out : 2 < p).not_ge <| Nat.le_of_dvd Nat.zero_lt_two h
 
 namespace CharP
 
 section
 
 variable [NonAssocRing R]
-
-lemma cast_eq_mod (p : ℕ) [CharP R p] (k : ℕ) : (k : R) = (k % p : ℕ) :=
-  calc
-    (k : R) = ↑(k % p + p * (k / p)) := by rw [Nat.mod_add_div]
-    _ = ↑(k % p) := by simp [cast_eq_zero]
 
 lemma ringChar_zero_iff_CharZero : ringChar R = 0 ↔ CharZero R := by
   rw [ringChar.eq_iff, charP_zero_iff_charZero]
@@ -214,8 +234,8 @@ lemma char_is_prime_of_two_le (p : ℕ) [CharP R p] (hp : 2 ≤ p) : Nat.Prime p
     have : p ∣ e := (cast_eq_zero_iff R p e).mp he
     have : e ∣ p := dvd_of_mul_left_eq d (Eq.symm hmul)
     have : e = p := ‹e ∣ p›.antisymm ‹p ∣ e›
-    have h₀ : 0 < p := by omega
-    have : d * p = 1 * p := by rw [‹e = p›] at hmul; rw [one_mul]; exact Eq.symm hmul
+    have h₀ : 0 < p := by grind
+    have : d * p = 1 * p := by grind
     show d = 1 ∨ d = p from Or.inl (mul_right_cancel₀ h₀.ne' this)
 
 section Nontrivial

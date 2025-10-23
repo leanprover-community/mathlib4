@@ -217,7 +217,7 @@ in Lean 4 core.
 * `guard_expr` and `guard_target` for asserting that certain expressions are equal to others.
   (Batteries)
 
-* `unreachable!`, which is the same as the `unreachable!` tactic. (Batteriess)
+* `unreachable!`, which is the same as the `unreachable!` tactic. (Batteries)
 
 * `run_tac doSeq` evaluates a monadic value and runs it as a tactic using `tactic'`. (Mathlib)
 

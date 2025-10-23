@@ -5,7 +5,10 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.RingTheory.Finiteness.Nilpotent
+import Mathlib.Data.Int.Interval
+import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Chains of roots and weights
@@ -116,7 +119,7 @@ lemma genWeightSpaceChain_neg :
     genWeightSpaceChain M (-χ₁) χ₂ (-q) (-p) = genWeightSpaceChain M χ₁ χ₂ p q := by
   let e : ℤ ≃ ℤ := neg_involutive.toPerm
   simp_rw [genWeightSpaceChain, ← e.biSup_comp (Ioo p q)]
-  simp [e, -mem_Ioo, neg_mem_Ioo_iff]
+  simp [e, -mem_Ioo]
 
 lemma genWeightSpace_le_genWeightSpaceChain {k : ℤ} (hk : k ∈ Ioo p q) :
     genWeightSpace M (k • χ₁ + χ₂) ≤ genWeightSpaceChain M χ₁ χ₂ p q :=
@@ -189,7 +192,7 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
       ext
       rw [toEnd_apply_apply, LieSubmodule.coe_bracket, LieSubalgebra.coe_bracket_of_module, ← hyz]
       simp only [lie_lie, LieHom.lie_apply, LinearMap.coe_mk, AddHom.coe_mk, Module.End.lie_apply,
-      AddSubgroupClass.coe_sub, f, g]
+        AddSubgroupClass.coe_sub, f, g]
     simp [hfg]
   | zero => simp
   | add => simp_all
@@ -227,13 +230,15 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     ← LieSubmodule.toEnd_restrict_eq_toEnd]
   -- The lines below illustrate the cost of treating `LieSubmodule` as both a
   -- `Submodule` and a `LieSubmodule` simultaneously.
+  #adaptation_note /-- 2025-06-18 (https://github.com/leanprover/lean4/issues/8804).
+    The `erw` causes a kernel timeout if there is no `subst`. -/
+  subst a b N
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
-  simp_rw [N, LieSubmodule.toEnd_restrict_eq_toEnd]
-  dsimp [N]
+  simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
   convert_to _ =
     ∑ k ∈ Finset.Ioo p q, (LinearMap.trace R { x // x ∈ (genWeightSpace M (k • α + χ)) })
       ((toEnd R { x // x ∈ H } { x // x ∈ genWeightSpace M (k • α + χ) }) x)
-  simp_rw [a, b, trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add,
+  simp_rw [trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add,
     ← smul_assoc, Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
 
 end IsCartanSubalgebra

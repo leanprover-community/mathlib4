@@ -31,7 +31,7 @@ section PoissonPMF
 
 /-- The pmf of the Poisson distribution depending on its rate, as a function to ℝ -/
 noncomputable
-def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (- r) * r ^ n / n !
+def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (-r) * r ^ n / n !
 
 lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 := by
   let r := r.toReal
@@ -64,7 +64,7 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
 
 /-- The Poisson pmf is measurable. -/
 @[fun_prop, measurability]
-lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by measurability
+lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by fun_prop
 
 @[fun_prop, measurability]
 lemma stronglyMeasurable_poissonPMFReal (r : ℝ≥0) : StronglyMeasurable (poissonPMFReal r) :=

@@ -53,6 +53,9 @@ theorem measure_mono (h : s ⊆ t) : μ s ≤ μ t :=
 theorem measure_mono_null (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
   eq_bot_mono (measure_mono h) ht
 
+lemma pos_mono ⦃s t : Set α⦄ (h : s ⊆ t) (hs : 0 < μ s) :
+    0 < μ t := hs.trans_le <| measure_mono h
+
 lemma measure_eq_top_mono (h : s ⊆ t) (hs : μ s = ∞) : μ t = ∞ := eq_top_mono (measure_mono h) hs
 lemma measure_lt_top_mono (h : s ⊆ t) (ht : μ t < ∞) : μ s < ∞ := (measure_mono h).trans_lt ht
 
@@ -180,10 +183,10 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   have h' : Monotone s := @monotone_nat_of_le_succ (Set α) _ _ h_mono
   simp only [diff_subset_iff, iUnion_subset_iff]
   intro i x hx
-  have : ∃i, x ∈ s i := by exists i
+  have : ∃ i, x ∈ s i := by exists i
   rcases Nat.findX this with ⟨j, hj, hlt⟩
   clear hx i
-  rcases le_or_lt j n with hjn | hnj
+  rcases le_or_gt j n with hjn | hnj
   · exact Or.inl (h' hjn hj)
   have : j - (n + 1) + n + 1 = j := by omega
   refine Or.inr (mem_iUnion.2 ⟨j - (n + 1), ?_, hlt _ ?_⟩)

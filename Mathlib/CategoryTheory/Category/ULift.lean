@@ -42,6 +42,8 @@ universe w₁ v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
+attribute [local instance] uliftCategory
+
 variable {C : Type u₁} [Category.{v₁} C]
 
 /-- The functorial version of `ULift.up`. -/
@@ -73,7 +75,7 @@ section ULiftHom
 /-- `ULiftHom.{w} C` is an alias for `C`, which is endowed with a category instance
   whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 -/
-def ULiftHom.{w,u} (C : Type u) : Type u :=
+def ULiftHom.{w, u} (C : Type u) : Type u :=
   let _ := ULift.{w} C
   C
 

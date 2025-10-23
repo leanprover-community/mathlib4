@@ -70,7 +70,7 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
   /- Since g ([tₙ, tₙ₊₁] × {a}) is contained in the domain of some local homeomorphism `q e` and
     g lifts f, f ([tₙ, tₙ₊₁] × {a}) is contained in the codomain (`target`) of `q e`. -/
   obtain ⟨e, h_sub⟩ := t_sub n
-  have : Set.Icc (t n) (t (n+1)) ×ˢ {a} ⊆ f ⁻¹' (q e).target := by
+  have : Set.Icc (t n) (t (n + 1)) ×ˢ {a} ⊆ f ⁻¹' (q e).target := by
     rintro ⟨t0, a'⟩ ⟨ht, ha⟩
     rw [Set.mem_singleton_iff] at ha; dsimp only at ha
     rw [← g_lifts, hpq e, ha]
@@ -147,7 +147,7 @@ theorem continuous_lift (f : C(I × A, X)) {g : I × A → E} (g_lifts : p ∘ g
 theorem monodromy_theorem {γ₀ γ₁ : C(I, X)} (γ : γ₀.HomotopyRel γ₁ {0,1}) (Γ : I → C(I, E))
     (Γ_lifts : ∀ t s, p (Γ t s) = γ (t, s)) (Γ_0 : ∀ t, Γ t 0 = Γ 0 0) (t : I) :
     Γ t 1 = Γ 0 1 := by
-  have := homeo.continuous_lift sep (γ.comp .prodSwap) (g := fun st ↦ Γ st.2 st.1) ?_ ?_ ?_
+  have := homeo.continuous_lift sep (.comp γ .prodSwap) (g := fun st ↦ Γ st.2 st.1) ?_ ?_ ?_
   · apply sep.const_of_comp homeo.isLocallyInjective (this.comp (.prodMk_right 1))
     intro t t'; change p (Γ _ _) = p (Γ _ _); simp_rw [Γ_lifts, γ.eq_fst _ (.inr rfl)]
   · ext; apply Γ_lifts
@@ -208,16 +208,17 @@ variable (γ : C(I, X)) (e : E) (γ_0 : γ 0 = p e)
 include γ_0
 
 /-- The path lifting property (existence) for covering maps. -/
-theorem exists_path_lifts : ∃ Γ : C(I,E), p ∘ Γ = γ ∧ Γ 0 = e := by
-  choose _ q mem_base using cov
+theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
+  let U x := (cov x).2.choose
+  choose mem_base U_open _ H _ using fun x ↦ (cov x).2.choose_spec
   obtain ⟨t, t_0, t_mono, ⟨n_max, h_max⟩, t_sub⟩ :=
     exists_monotone_Icc_subset_open_cover_unitInterval
-    (fun x ↦ (q x).open_baseSet.preimage γ.continuous) fun t _ ↦ Set.mem_iUnion.2 ⟨γ t, mem_base _⟩
+    (fun x ↦ (U_open x).preimage γ.continuous) fun t _ ↦ Set.mem_iUnion.2 ⟨γ t, mem_base _⟩
   suffices ∀ n, ∃ Γ : I → E, ContinuousOn Γ (Set.Icc 0 (t n)) ∧
       (Set.Icc 0 (t n)).EqOn (p ∘ Γ) γ ∧ Γ 0 = e by
     obtain ⟨Γ, cont, eqOn, Γ_0⟩ := this n_max
     rw [h_max _ le_rfl] at cont eqOn
-    exact ⟨⟨Γ, continuous_iff_continuousOn_univ.mpr
+    exact ⟨⟨Γ, continuousOn_univ.mp
       (by convert cont; rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩)⟩,
       funext fun _ ↦ eqOn ⟨bot_le, le_top⟩, Γ_0⟩
   intro n
@@ -228,24 +229,27 @@ theorem exists_path_lifts : ∃ Γ : C(I,E), p ∘ Γ = γ ∧ Γ 0 = e := by
   | succ n ih => ?_
   obtain ⟨Γ, cont, eqOn, Γ_0⟩ := ih
   obtain ⟨x, t_sub⟩ := t_sub n
-  refine ⟨fun s ↦ if s ≤ t n then Γ s else (q x).invFun (γ s, (q x (Γ (t n))).2),
+  have pΓtn : p (Γ (t n)) = γ (t n) := eqOn ⟨t_0 ▸ t_mono n.zero_le, le_rfl⟩
+  have : Nonempty (p ⁻¹' {x}) :=
+    ⟨(H x ⟨Γ (t n), Set.mem_preimage.mpr (pΓtn ▸ t_sub ⟨le_rfl, t_mono n.le_succ⟩)⟩).2⟩
+  let q := (cov x).toTrivialization
+  refine ⟨fun s ↦ if s ≤ t n then Γ s else q.invFun (γ s, (q (Γ (t n))).2),
     .if (fun s hs ↦ ?_) (cont.mono fun _ h ↦ ?_) ?_, fun s hs ↦ ?_, ?_⟩
-  · have pΓtn : p (Γ (t n)) = γ (t n) := eqOn ⟨t_0 ▸ t_mono n.zero_le, le_rfl⟩
-    cases frontier_Iic_subset _ hs.2
+  · cases frontier_Iic_subset _ hs.2
     rw [← pΓtn]
-    refine ((q x).symm_apply_mk_proj ?_).symm
-    rw [(q x).mem_source, pΓtn]
+    refine (q.symm_apply_mk_proj ?_).symm
+    rw [q.mem_source, pΓtn]
     exact t_sub ⟨le_rfl, t_mono n.le_succ⟩
   · rw [closure_le_eq continuous_id' continuous_const] at h; exact ⟨h.1.1, h.2⟩
-  · apply (q x).continuousOn_invFun.comp ((Continuous.prodMk_left _).comp γ.2).continuousOn
-    simp_rw [not_le, (q x).target_eq]; intro s h
+  · apply q.continuousOn_invFun.comp ((Continuous.prodMk_left _).comp γ.2).continuousOn
+    simp_rw [not_le, q.target_eq]; intro s h
     exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtype_val h.2, h.1.2⟩, ⟨⟩⟩
   · rw [Function.comp_apply]; split_ifs with h
-    exacts [eqOn ⟨hs.1, h⟩, (q x).proj_symm_apply' (t_sub ⟨le_of_not_le h, hs.2⟩)]
+    exacts [eqOn ⟨hs.1, h⟩, q.proj_symm_apply' (t_sub ⟨le_of_not_ge h, hs.2⟩)]
   · dsimp only; rwa [if_pos (t_0 ▸ t_mono n.zero_le)]
 
 /-- The lift of a path to a covering space given a lift of the left endpoint. -/
-noncomputable def liftPath : C(I,E) := (cov.exists_path_lifts γ e γ_0).choose
+noncomputable def liftPath : C(I, E) := (cov.exists_path_lifts γ e γ_0).choose
 
 lemma liftPath_lifts : p ∘ cov.liftPath γ e γ_0 = γ := (cov.exists_path_lifts γ e γ_0).choose_spec.1
 lemma liftPath_zero : cov.liftPath γ e γ_0 0 = e := (cov.exists_path_lifts γ e γ_0).choose_spec.2
@@ -258,7 +262,7 @@ lemma eq_liftPath_iff {Γ : I → E} : Γ = cov.liftPath γ e γ_0 ↔ Continuou
     Γ_cont (cov.liftPath γ e γ_0).continuous (Γ_lifts ▸ lifts.symm) 0 (Γ_0 ▸ zero.symm)⟩
 
 /-- Unique characterization of the lifted path. -/
-lemma eq_liftPath_iff' {Γ : C(I,E)} : Γ = cov.liftPath γ e γ_0 ↔ p ∘ Γ = γ ∧ Γ 0 = e := by
+lemma eq_liftPath_iff' {Γ : C(I, E)} : Γ = cov.liftPath γ e γ_0 ↔ p ∘ Γ = γ ∧ Γ 0 = e := by
   simp_rw [← DFunLike.coe_fn_eq, eq_liftPath_iff, and_iff_right (ContinuousMap.continuous _)]
 
 end path_lifting

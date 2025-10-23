@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
 import Mathlib.Analysis.Meromorphic.Divisor
+import Mathlib.Analysis.Meromorphic.IsolatedZeros
 import Mathlib.Analysis.Meromorphic.NormalForm
+import Mathlib.Analysis.Meromorphic.TrailingCoefficient
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
@@ -31,7 +33,7 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {U : Set 𝕜}
 
-open Filter Real Set
+open Filter Function Real Set
 
 namespace Function.FactorizedRational
 
@@ -49,7 +51,7 @@ lemma mulSupport (d : 𝕜 → ℤ) :
   constructor <;> intro h
   · simp_all only [mem_mulSupport, ne_eq, mem_support]
     by_contra hCon
-    simp_all [hCon, zpow_zero]
+    simp_all [zpow_zero]
   · simp_all only [mem_mulSupport, ne_eq, ne_iff]
     use u
     simp_all [zero_zpow_eq_one₀]
@@ -178,6 +180,92 @@ theorem divisor {U : Set 𝕜} {D : locallyFinsuppWithin U ℤ} (hD : D.support.
   by_cases hz : z ∈ U
   <;> simp [(meromorphicNFOn D U).meromorphicOn, hz, meromorphicOrderAt_eq D hD]
 
+open Classical in
+private lemma mulSupport_update {d : 𝕜 → ℤ} {x : 𝕜}
+    (h : d.support.Finite) :
+    (fun u ↦ (x - u) ^ Function.update d x 0 u).mulSupport ⊆ h.toFinset := by
+  intro u
+  contrapose
+  simp only [mem_mulSupport, ne_eq, Decidable.not_not]
+  by_cases h₁ : u = x
+  · rw [h₁]
+    simp
+  · simp_all
+
+open Classical in
+/--
+Compute the trailing coefficient of the factorized rational function associated with `d : 𝕜 → ℤ`.
+-/
+
+/-
+Low-priority TODO: Using that non-trivially normed fields contain infinitely many elements that are
+no roots of unity, it might be possible to drop assumption `h` here and in some of the theorems
+below.
+-/
+theorem meromorphicTrailingCoeffAt_factorizedRational {d : 𝕜 → ℤ} {x : 𝕜} (h : d.support.Finite) :
+    meromorphicTrailingCoeffAt (∏ᶠ u, (· - u) ^ d u) x = ∏ᶠ u, (x - u) ^ update d x 0 u := by
+  have : (fun u ↦ (· - u) ^ d u).mulSupport ⊆ h.toFinset := by
+    simp [Function.FactorizedRational.mulSupport]
+  rw [finprod_eq_prod_of_mulSupport_subset _ this, meromorphicTrailingCoeffAt_prod
+      (fun _ ↦ by fun_prop), finprod_eq_prod_of_mulSupport_subset _ (mulSupport_update h)]
+  apply Finset.prod_congr rfl
+  intro y hy
+  rw [MeromorphicAt.meromorphicTrailingCoeffAt_zpow (by fun_prop)]
+  by_cases hxy : x = y
+  · rw [hxy, meromorphicTrailingCoeffAt_id_sub_const]
+    simp_all
+  · grind [Function.update_of_ne, meromorphicTrailingCoeffAt_id_sub_const]
+
+/--
+Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute the trailing coefficient of the
+factorized rational function associated with `d : 𝕜 → ℤ` at points outside the support of `d`.
+-/
+theorem meromorphicTrailingCoeffAt_factorizedRational_off_support {d : 𝕜 → ℤ} {x : 𝕜}
+    (h₁ : d.support.Finite) (h₂ : x ∉ d.support) :
+    meromorphicTrailingCoeffAt (∏ᶠ u, (· - u) ^ d u) x = ∏ᶠ u, (x - u) ^ d u := by
+  classical
+  rw [meromorphicTrailingCoeffAt_factorizedRational h₁,
+    finprod_eq_prod_of_mulSupport_subset _ (mulSupport_update h₁)]
+  have : (fun u ↦ (x - u) ^ d u).mulSupport ⊆ h₁.toFinset := by
+    intro u
+    contrapose
+    simp_all
+  rw [finprod_eq_prod_of_mulSupport_subset _ this, Finset.prod_congr rfl]
+  intro y hy
+  congr
+  apply Function.update_of_ne
+  by_contra hCon
+  simp_all
+
+/--
+Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute log of the norm of the trailing
+coefficient.  The convention that `log 0 = 0` gives a closed formula easier than the one in
+`meromorphicTrailingCoeffAt_factorizedRational`.
+-/
+theorem log_norm_meromorphicTrailingCoeffAt {d : 𝕜 → ℤ} {x : 𝕜} (h : d.support.Finite) :
+    log ‖meromorphicTrailingCoeffAt (∏ᶠ u, (· - u) ^ d u) x‖ = ∑ᶠ u, (d u) * log ‖x - u‖ := by
+  classical
+  rw [meromorphicTrailingCoeffAt_factorizedRational h,
+    finprod_eq_prod_of_mulSupport_subset _ (mulSupport_update h)]
+  have : ∀ y ∈ h.toFinset, ‖(x - y) ^ update d x 0 y‖ ≠ 0 := by
+    intro y _
+    by_cases h : x = y
+    · rw [h]
+      simp_all
+    · simp_all [zpow_ne_zero, sub_ne_zero]
+  rw [norm_prod, log_prod this]
+  have : (fun u ↦ (d u) * log ‖x - u‖).support ⊆ h.toFinset := by
+    intro u
+    contrapose
+    simp_all
+  rw [finsum_eq_sum_of_support_subset _ this]
+  apply Finset.sum_congr rfl
+  intro y hy
+  rw [norm_zpow, Real.log_zpow]
+  by_cases h : x = y
+  · simp [h]
+  · rw [Function.update_of_ne (by tauto)]
+
 end Function.FactorizedRational
 
 open Function.FactorizedRational
@@ -190,7 +278,9 @@ modulo equality on codiscrete sets, to the product of a factorized rational func
 function without zeros.
 
 We provide analogous results for functions of the form `log ‖meromorphic‖`.
+-/
 
+/-
 TODO: Identify some of the terms that appear in the decomposition.
 -/
 
@@ -223,7 +313,7 @@ theorem MeromorphicOn.extract_zeros_poles {f : 𝕜 → E} (h₁f : MeromorphicO
         (toMeromorphicNFOn_eq_self_on_nhdsNE (hφ.inv.smul h₁f) hu).symm,
       meromorphicOrderAt_smul (hφ u hu).inv (h₁f u hu), meromorphicOrderAt_inv,
       meromorphicOrderAt_eq _ h₃f]
-    simp only [Pi.neg_apply, h₁f, hu, divisor_apply, WithTop.LinearOrderedAddCommGroup.coe_neg]
+    simp only [h₁f, hu, divisor_apply]
     lift meromorphicOrderAt f u to ℤ using (h₂f ⟨u, hu⟩) with n hn
     rw [WithTop.untop₀_coe, ← WithTop.LinearOrderedAddCommGroup.coe_neg, ← WithTop.coe_add]
     simp
@@ -249,7 +339,7 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
   have t₁ : (fun u ↦ (D u * log ‖· - u‖)).support = D.support := by
     ext u
     rw [← not_iff_not]
-    simp only [Function.mem_mulSupport, ne_eq, not_not, Function.mem_support, Decidable.not_not]
+    simp only [ne_eq, not_not, Function.mem_support]
     constructor <;> intro hx
     · obtain ⟨y, hy⟩ := NormedField.exists_one_lt_norm 𝕜
       have := congrFun hx (y + u)
@@ -267,14 +357,15 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
   by_cases h₃f : D.support.Finite
   case neg =>
     rw [finsum_of_infinite_support (by simpa [t₁] using h₃f)]
-    rw [finprod_of_infinite_mulSupport (by simpa [mulSupport] using h₃f)] at h
+    rw [finprod_of_infinite_mulSupport (by simpa [FactorizedRational.mulSupport] using h₃f)] at h
     filter_upwards [h] with x hx
     simp [hx]
   -- General case
   filter_upwards [h, D.eq_zero_codiscreteWithin, self_mem_codiscreteWithin U] with z hz h₂z h₃z
   rw [Pi.zero_apply] at h₂z
   rw [hz, finprod_eq_prod_of_mulSupport_subset (s := h₃f.toFinset) _
-    (by simp_all [mulSupport]), finsum_eq_sum_of_support_subset (s := h₃f.toFinset) _ (by simp_all)]
+      (by simp_all [FactorizedRational.mulSupport]),
+    finsum_eq_sum_of_support_subset (s := h₃f.toFinset) _ (by simp_all)]
   have : ∀ x ∈ h₃f.toFinset, ‖z - x‖ ^ D x ≠ 0 := by
     intro x hx
     rw [Finite.mem_toFinset, Function.mem_support] at hx
@@ -282,5 +373,45 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
     apply ne_of_apply_ne D
     rwa [h₂z]
   simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply, norm_smul, norm_prod, norm_zpow]
-  rw [log_mul (Finset.prod_ne_zero_iff.2 this) (by simp [hg ⟨z, h₃z⟩]), log_prod _ _ this]
+  rw [log_mul (Finset.prod_ne_zero_iff.2 this) (by simp [hg ⟨z, h₃z⟩]), log_prod this]
   simp [log_zpow]
+
+open Classical in
+/--
+In the setting of `MeromorphicOn.extract_zeros_poles`, compute the trailing
+coefficient of `f` in terms of `divisor f U` and `g x`.
+-/
+theorem MeromorphicOn.meromorphicTrailingCoeffAt_extract_zeros_poles
+    {x : 𝕜} {f g : 𝕜 → E} {D : 𝕜 → ℤ} (hD : D.support.Finite) (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U))
+    (hf : MeromorphicAt f x) (h₁g : AnalyticAt 𝕜 g x) (h₂g : g x ≠ 0)
+    (h : f =ᶠ[codiscreteWithin U] (∏ᶠ u, (· - u) ^ D u) • g) :
+    meromorphicTrailingCoeffAt f x = (∏ᶠ u, (x - u) ^ Function.update D x 0 u) • g x := by
+  have t₀ : MeromorphicAt (∏ᶠ u, (· - u) ^ D u) x :=
+    (FactorizedRational.meromorphicNFOn D U).meromorphicOn x h₁x
+  rw [meromorphicTrailingCoeffAt_congr_nhdsNE
+      (hf.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (by fun_prop) h₁x h₂x h),
+    t₀.meromorphicTrailingCoeffAt_smul h₁g.meromorphicAt,
+    h₁g.meromorphicTrailingCoeffAt_of_ne_zero h₂g]
+  simp [meromorphicTrailingCoeffAt_factorizedRational hD]
+
+/--
+In the setting of `MeromorphicOn.extract_zeros_poles`, compute the log of the
+norm of the trailing coefficient of `f` in terms of `divisor f U` and `g x`.
+-/
+theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt_extract_zeros_poles
+    {x : 𝕜} {f g : 𝕜 → E} {D : 𝕜 → ℤ} (hD : D.support.Finite) (h₁x : x ∈ U) (h₂x : AccPt x (𝓟 U))
+    (hf : MeromorphicAt f x) (h₁g : AnalyticAt 𝕜 g x) (h₂g : g x ≠ 0)
+    (h : f =ᶠ[codiscreteWithin U] (∏ᶠ u, (· - u) ^ D u) • g) :
+    log ‖meromorphicTrailingCoeffAt f x‖ = ∑ᶠ u, (D u) * log ‖x - u‖ + log ‖g x‖ := by
+  rw [meromorphicTrailingCoeffAt_congr_nhdsNE
+      (hf.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin
+        (((FactorizedRational.meromorphicNFOn D U).meromorphicOn x h₁x).smul h₁g.meromorphicAt)
+          h₁x h₂x h),
+    ((FactorizedRational.meromorphicNFOn D U).meromorphicOn x h₁x).meromorphicTrailingCoeffAt_smul
+      h₁g.meromorphicAt, h₁g.meromorphicTrailingCoeffAt_of_ne_zero h₂g,
+    norm_smul, log_mul, log_norm_meromorphicTrailingCoeffAt hD]
+  · simp only [ne_eq, norm_eq_zero]
+    apply MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero
+      ((FactorizedRational.meromorphicNFOn D U).meromorphicOn x h₁x)
+    apply FactorizedRational.meromorphicOrderAt_ne_top
+  · simp_all

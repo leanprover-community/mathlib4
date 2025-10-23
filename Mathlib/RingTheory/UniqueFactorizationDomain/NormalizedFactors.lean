@@ -51,9 +51,6 @@ theorem prod_normalizedFactors {a : α} (ane0 : a ≠ 0) :
   ext
   rw [Function.comp_apply, Associates.mk_normalize]
 
-@[deprecated (since := "2024-12-04")]
-alias normalizedFactors_prod := prod_normalizedFactors
-
 theorem prod_normalizedFactors_eq {a : α} (ane0 : a ≠ 0) :
     (normalizedFactors a).prod = normalize a := by
   trans normalize (normalizedFactors a).prod
@@ -78,11 +75,6 @@ theorem normalize_normalized_factor {a : α} :
   intro x hx
   obtain ⟨y, _, rfl⟩ := Multiset.mem_map.1 hx
   apply normalize_idem
-
-theorem dvd_of_normalized_factor {a x : α} (hx : x ∈ normalizedFactors a) :
-    x ∣ a := by
-  obtain ⟨y, hy, rfl⟩ := Multiset.mem_map.mp hx
-  exact normalize_dvd_iff.mpr <| dvd_of_mem_factors hy
 
 theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
     normalizedFactors a = {normalize a} := by
@@ -167,11 +159,12 @@ theorem normalizedFactors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
 @[simp]
 theorem normalizedFactors_pow {x : α} (n : ℕ) :
     normalizedFactors (x ^ n) = n • normalizedFactors x := by
-  induction' n with n ih
-  · simp [zero_nsmul]
-  by_cases h0 : x = 0
-  · simp [h0, zero_pow n.succ_ne_zero, nsmul_zero]
-  rw [pow_succ', succ_nsmul', normalizedFactors_mul h0 (pow_ne_zero _ h0), ih]
+  induction n with
+  | zero => simp [zero_nsmul]
+  | succ n ih =>
+    by_cases h0 : x = 0
+    · simp [h0, zero_pow n.succ_ne_zero, nsmul_zero]
+    rw [pow_succ', succ_nsmul', normalizedFactors_mul h0 (pow_ne_zero _ h0), ih]
 
 theorem _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (k : ℕ) :
     normalizedFactors (p ^ k) = Multiset.replicate k (normalize p) := by
@@ -180,9 +173,10 @@ theorem _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (
 
 theorem normalizedFactors_prod_eq (s : Multiset α) (hs : ∀ a ∈ s, Irreducible a) :
     normalizedFactors s.prod = s.map normalize := by
-  induction' s using Multiset.induction with a s ih
-  · rw [Multiset.prod_zero, normalizedFactors_one, Multiset.map_zero]
-  · have ia := hs a (Multiset.mem_cons_self a _)
+  induction s using Multiset.induction with
+  | empty => rw [Multiset.prod_zero, normalizedFactors_one, Multiset.map_zero]
+  | cons a s ih =>
+    have ia := hs a (Multiset.mem_cons_self a _)
     have ib := fun b h => hs b (Multiset.mem_cons_of_mem h)
     obtain rfl | ⟨b, hb⟩ := s.empty_or_exists_mem
     · rw [Multiset.cons_zero, Multiset.prod_singleton, Multiset.map_singleton,
@@ -228,6 +222,8 @@ theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) 
   · rw [hcases]
     exact dvd_zero p
   · exact dvd_trans (Multiset.dvd_prod H) (Associated.dvd (prod_normalizedFactors hcases))
+@[deprecated (since := "2025-08-26")]
+alias dvd_of_normalized_factor := dvd_of_mem_normalizedFactors
 
 theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) :
     p ∈ normalizedFactors x ↔ Prime p ∧ p ∣ x := by
@@ -242,7 +238,7 @@ theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) 
 theorem mem_normalizedFactors_iff' {p x : α} (h : x ≠ 0) :
     p ∈ normalizedFactors x ↔ Irreducible p ∧ normalize p = p ∧ p ∣ x := by
   refine ⟨fun h ↦ ⟨irreducible_of_normalized_factor p h, normalize_normalized_factor p h,
-    dvd_of_normalized_factor h⟩, fun ⟨h₁, h₂, h₃⟩ ↦ ?_⟩
+    dvd_of_mem_normalizedFactors h⟩, fun ⟨h₁, h₂, h₃⟩ ↦ ?_⟩
   obtain ⟨y, hy₁, hy₂⟩ := exists_mem_factors_of_dvd h h₁ h₃
   exact Multiset.mem_map.mpr ⟨y, hy₁, by
     rwa [← h₂, normalize_eq_normalize_iff_associated, Associated.comm]⟩
@@ -321,7 +317,7 @@ theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x
     exact
       dvdNotUnit_of_dvd_of_not_dvd
         ((dvd_iff_normalizedFactors_le_normalizedFactors hx hy).mpr h.le)
-        (mt (dvd_iff_normalizedFactors_le_normalizedFactors hy hx).mp h.not_le)
+        (mt (dvd_iff_normalizedFactors_le_normalizedFactors hy hx).mp h.not_ge)
 
 theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     normalizedFactors (s.prod) = (s.map normalizedFactors).sum := by
@@ -347,22 +343,22 @@ variable {β : Type*} [CancelCommMonoidWithZero β] [NormalizationMonoid β]
 If the monoid equiv `f : α ≃* β` commutes with `normalize` then, for `a : α`, it yields a
 bijection between the `normalizedFactors` of `a` and of `f a`.
 -/
-def normalizedFactorsEquiv [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x)) (a : α) :
+def normalizedFactorsEquiv (he : ∀ x, normalize (f x) = f (normalize x)) (a : α) :
     {x // x ∈ normalizedFactors a} ≃ {y // y ∈ normalizedFactors (f a)} :=
-  Equiv.subtypeEquiv f fun x ↦
-    if ha : a = 0 then by simp [ha] else by
-      simp [mem_normalizedFactors_iff' ha,
+  Equiv.subtypeEquiv f fun x ↦ by
+    rcases eq_or_ne a 0 with rfl | ha
+    · simp
+    · simp [mem_normalizedFactors_iff' ha,
         mem_normalizedFactors_iff' (EmbeddingLike.map_ne_zero_iff.mpr ha), map_dvd_iff_dvd_symm,
         MulEquiv.irreducible_iff, he]
 
 @[simp]
-theorem normalizedFactorsEquiv_apply [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x))
+theorem normalizedFactorsEquiv_apply (he : ∀ x, normalize (f x) = f (normalize x))
     {a p : α} (hp : p ∈ normalizedFactors a) :
     normalizedFactorsEquiv he a ⟨p, hp⟩ = f p := rfl
 
 @[simp]
-theorem normalizedFactorsEquiv_symm_apply [DecidableEq α]
-    (he : ∀ x, normalize (f x) = f (normalize x))
+theorem normalizedFactorsEquiv_symm_apply (he : ∀ x, normalize (f x) = f (normalize x))
     {a : α} {q : β} (hq : q ∈ normalizedFactors (f a)) :
     (normalizedFactorsEquiv he a).symm ⟨q, hq⟩ = (MulEquivClass.toMulEquiv f).symm q := rfl
 

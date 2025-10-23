@@ -16,12 +16,12 @@ This file contains basics about the relative rank of subfields and intermediate 
 - `Subfield.relrank A B`, `IntermediateField.relrank A B`:
   defined to be `[B : A ⊓ B]` as a `Cardinal`.
   In particular, when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
-  This is similar to `Subgroup.relindex` but it is `Cardinal` valued.
+  This is similar to `Subgroup.relIndex` but it is `Cardinal` valued.
 
 - `Subfield.relfinrank A B`, `IntermediateField.relfinrank A B`:
   the `Nat` version of `Subfield.relrank A B` and `IntermediateField.relrank A B`, respectively.
   If `B / A ⊓ B` is an infinite extension, then it is zero.
-  This is similar to `Subgroup.relindex`.
+  This is similar to `Subgroup.relIndex`.
 
 -/
 
@@ -37,7 +37,7 @@ variable (A B C : Subfield E)
 
 /-- `Subfield.relrank A B` is defined to be `[B : A ⊓ B]` as a `Cardinal`, in particular,
 when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
-This is similar to `Subgroup.relindex` but it is `Cardinal` valued. -/
+This is similar to `Subgroup.relIndex` but it is `Cardinal` valued. -/
 noncomputable def relrank := Module.rank ↥(A ⊓ B) (extendScalars (inf_le_right : A ⊓ B ≤ B))
 
 /-- The `Nat` version of `Subfield.relrank`.
@@ -279,7 +279,7 @@ variable (A B C : IntermediateField F E)
 
 /-- `IntermediateField.relrank A B` is defined to be `[B : A ⊓ B]` as a `Cardinal`, in particular,
 when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
-This is similar to `Subgroup.relindex` but it is `Cardinal` valued. -/
+This is similar to `Subgroup.relIndex` but it is `Cardinal` valued. -/
 noncomputable def relrank := A.toSubfield.relrank B.toSubfield
 
 /-- The `Nat` version of `IntermediateField.relrank`.

@@ -38,7 +38,7 @@ theorem WCovBy.le (h : a ⩿ b) : a ≤ b :=
   h.1
 
 theorem WCovBy.refl (a : α) : a ⩿ a :=
-  ⟨le_rfl, fun _ hc => hc.not_lt⟩
+  ⟨le_rfl, fun _ hc => hc.not_gt⟩
 
 @[simp] lemma WCovBy.rfl : a ⩿ a := WCovBy.refl a
 
@@ -46,7 +46,7 @@ protected theorem Eq.wcovBy (h : a = b) : a ⩿ b :=
   h ▸ WCovBy.rfl
 
 theorem wcovBy_of_le_of_le (h1 : a ≤ b) (h2 : b ≤ a) : a ⩿ b :=
-  ⟨h1, fun _ hac hcb => (hac.trans hcb).not_le h2⟩
+  ⟨h1, fun _ hac hcb => (hac.trans hcb).not_ge h2⟩
 
 alias LE.le.wcovBy_of_le := wcovBy_of_le_of_le
 
@@ -179,7 +179,7 @@ section SemilatticeInf
 variable [SemilatticeInf α] {a b c : α}
 
 theorem WCovBy.inf_eq (hca : c ⩿ a) (hcb : c ⩿ b) (hab : a ≠ b) : a ⊓ b = c :=
-  (le_inf hca.le hcb.le).eq_of_not_gt fun h => hab.inf_lt_or_inf_lt.elim (hca.2 h) (hcb.2 h)
+  (le_inf hca.le hcb.le).eq_of_not_lt' fun h => hab.inf_lt_or_inf_lt.elim (hca.2 h) (hcb.2 h)
 
 end SemilatticeInf
 
@@ -240,7 +240,7 @@ protected theorem CovBy.wcovBy (h : a ⋖ b) : a ⩿ b :=
   ⟨h.le, h.2⟩
 
 theorem WCovBy.covBy_of_not_le (h : a ⩿ b) (h2 : ¬b ≤ a) : a ⋖ b :=
-  ⟨h.le.lt_of_not_le h2, h.2⟩
+  ⟨h.le.lt_of_not_ge h2, h.2⟩
 
 theorem WCovBy.covBy_of_lt (h : a ⩿ b) (h2 : a < b) : a ⋖ b :=
   ⟨h2, h.2⟩
@@ -258,7 +258,7 @@ theorem covBy_iff_wcovBy_and_lt : a ⋖ b ↔ a ⩿ b ∧ a < b :=
   ⟨fun h => ⟨h.wcovBy, h.lt⟩, fun h => h.1.covBy_of_lt h.2⟩
 
 theorem covBy_iff_wcovBy_and_not_le : a ⋖ b ↔ a ⩿ b ∧ ¬b ≤ a :=
-  ⟨fun h => ⟨h.wcovBy, h.lt.not_le⟩, fun h => h.1.covBy_of_not_le h.2⟩
+  ⟨fun h => ⟨h.wcovBy, h.lt.not_ge⟩, fun h => h.1.covBy_of_not_le h.2⟩
 
 theorem wcovBy_iff_covBy_or_le_and_le : a ⩿ b ↔ a ⋖ b ∨ a ≤ b ∧ b ≤ a :=
   ⟨fun h => or_iff_not_imp_right.mpr fun h' => h.covBy_of_not_le fun hba => h' ⟨h.le, hba⟩,
@@ -393,11 +393,11 @@ theorem CovBy.unique_right (hb : a ⋖ b) (hc : a ⋖ c) : b = c :=
 /-- If `a`, `b`, `c` are consecutive and `a < x < c` then `x = b`. -/
 theorem CovBy.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < x) (hxc : x < c) :
     x = b :=
-  le_antisymm (le_of_not_lt fun h => hbc.2 h hxc) (le_of_not_lt <| hab.2 hax)
+  le_antisymm (le_of_not_gt fun h => hbc.2 h hxc) (le_of_not_gt <| hab.2 hax)
 
 theorem covBy_iff_lt_iff_le_left {x y : α} : x ⋖ y ↔ ∀ {z}, z < y ↔ z ≤ x where
   mp := fun hx _z ↦ ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
-  mpr := fun H ↦ ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_lt hx⟩
+  mpr := fun H ↦ ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_gt hx⟩
 
 theorem covBy_iff_le_iff_lt_left {x y : α} : x ⋖ y ↔ ∀ {z}, z ≤ x ↔ z < y := by
   simp_rw [covBy_iff_lt_iff_le_left, iff_comm]
@@ -466,7 +466,7 @@ lemma _root_.CovBy.exists_set_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t
   let ⟨a, ha, hst⟩ := ssubset_iff_insert.1 h.lt
   ⟨a, ha, (hst.eq_of_not_ssuperset <| h.2 <| ssubset_insert ha).symm⟩
 
-lemma _root_.CovBy.exists_set_sdiff_singleton (h : s ⋖ t) : ∃ a ∈ t, t \ {a} =  s :=
+lemma _root_.CovBy.exists_set_sdiff_singleton (h : s ⋖ t) : ∃ a ∈ t, t \ {a} = s :=
   let ⟨a, ha, hst⟩ := ssubset_iff_sdiff_singleton.1 h.lt
   ⟨a, ha, (hst.eq_of_not_ssubset fun h' ↦ h.2 h' <|
     sdiff_lt (singleton_subset_iff.2 ha) <| singleton_ne_empty _).symm⟩
@@ -483,15 +483,15 @@ section Relation
 
 open Relation
 
-lemma wcovBy_eq_reflGen_covBy [PartialOrder α] : ((· : α) ⩿ ·) = ReflGen (· ⋖ ·) := by
+lemma wcovBy_eq_reflGen_covBy [PartialOrder α] : (· ⩿ · : α → α → Prop) = ReflGen (· ⋖ ·) := by
   ext x y; simp_rw [wcovBy_iff_eq_or_covBy, @eq_comm _ x, reflGen_iff]
 
 lemma transGen_wcovBy_eq_reflTransGen_covBy [PartialOrder α] :
-    TransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+    TransGen (· ⩿ · : α → α → Prop) = ReflTransGen (· ⋖ ·) := by
   rw [wcovBy_eq_reflGen_covBy, transGen_reflGen]
 
 lemma reflTransGen_wcovBy_eq_reflTransGen_covBy [PartialOrder α] :
-    ReflTransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+    ReflTransGen (· ⩿ · : α → α → Prop) = ReflTransGen (· ⋖ ·) := by
   rw [wcovBy_eq_reflGen_covBy, reflTransGen_reflGen]
 
 end Relation
@@ -516,10 +516,10 @@ theorem fst_eq_or_snd_eq_of_wcovBy : x ⩿ y → x.1 = y.1 ∨ x.2 = y.2 := by
       (mk_lt_mk.2 <| Or.inr ⟨le_rfl, hab.2.lt_of_le h.1.2⟩)
 
 theorem _root_.WCovBy.fst (h : x ⩿ y) : x.1 ⩿ y.1 :=
-  ⟨h.1.1, fun _ h₁ h₂ => h.2 (mk_lt_mk_iff_left.2 h₁) ⟨⟨h₂.le, h.1.2⟩, fun hc => h₂.not_le hc.1⟩⟩
+  ⟨h.1.1, fun _ h₁ h₂ => h.2 (mk_lt_mk_iff_left.2 h₁) ⟨⟨h₂.le, h.1.2⟩, fun hc => h₂.not_ge hc.1⟩⟩
 
 theorem _root_.WCovBy.snd (h : x ⩿ y) : x.2 ⩿ y.2 :=
-  ⟨h.1.2, fun _ h₁ h₂ => h.2 (mk_lt_mk_iff_right.2 h₁) ⟨⟨h.1.1, h₂.le⟩, fun hc => h₂.not_le hc.2⟩⟩
+  ⟨h.1.2, fun _ h₁ h₂ => h.2 (mk_lt_mk_iff_right.2 h₁) ⟨⟨h.1.1, h₂.le⟩, fun hc => h₂.not_ge hc.2⟩⟩
 
 theorem mk_wcovBy_mk_iff_left : (a₁, b) ⩿ (a₂, b) ↔ a₁ ⩿ a₂ := by
   refine ⟨WCovBy.fst, (And.imp mk_le_mk_iff_left.2) fun h c h₁ h₂ => ?_⟩
@@ -576,8 +576,8 @@ lemma _root_.WCovBy.eval (h : a ⩿ b) (i : ι) : a i ⩿ b i := by
   classical
   refine ⟨h.1 i, fun ci h₁ h₂ ↦ ?_⟩
   have hcb : Function.update a i ci ≤ b := by simpa [update_le_iff, h₂.le] using fun j hj ↦ h.1 j
-  refine h.2 (by simpa) (lt_of_le_not_le hcb ?_)
-  simp [le_update_iff, h₂.not_le]
+  refine h.2 (by simpa) (lt_of_le_not_ge hcb ?_)
+  simp [le_update_iff, h₂.not_ge]
 
 lemma exists_forall_antisymmRel_of_covBy (h : a ⋖ b) :
     ∃ i, ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
@@ -588,7 +588,7 @@ lemma exists_forall_antisymmRel_of_covBy (h : a ⋖ b) :
   let c : (i : ι) → α i := Function.update a i (b i)
   have h₁ : c ≤ b := by simpa [update_le_iff, c] using fun k hk ↦ hab k
   have h₂ : ¬ c j < b j := h (by simp [c, hi.le]) i (by simpa [c]) h₁ j
-  exact ⟨hab j, by simpa [lt_iff_le_not_le, hab j, c, hj] using h₂⟩
+  exact ⟨hab j, by simpa [lt_iff_le_not_ge, hab j, c, hj] using h₂⟩
 
 lemma exists_forall_antisymmRel_of_wcovBy [Nonempty ι] (h : a ⩿ b) :
     ∃ i, ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
@@ -613,11 +613,11 @@ lemma wcovBy_iff_antisymmRel [Nonempty ι] :
   have haci : a i < c i := by
     obtain ⟨hac, j, hj⟩ := Pi.lt_def.1 hac
     exact (eq_or_ne j i).elim (· ▸ hj) fun hj' ↦
-      ((lt_of_antisymmRel_of_lt (h j hj').symm hj).not_le (hcb.le j)).elim
+      ((lt_of_antisymmRel_of_lt (h j hj').symm hj).not_ge (hcb.le j)).elim
   have hcbi : c i < b i := by
     obtain ⟨hcb, j, hj⟩ := Pi.lt_def.1 hcb
     exact (eq_or_ne j i).elim (· ▸ hj) fun hj' ↦
-      ((lt_of_lt_of_antisymmRel hj (h j hj').symm).not_le (hac.le j)).elim
+      ((lt_of_lt_of_antisymmRel hj (h j hj').symm).not_ge (hac.le j)).elim
   exact hab.2 haci hcbi
 
 /--
@@ -631,7 +631,7 @@ lemma covBy_iff_antisymmRel :
     obtain ⟨j, hj⟩ := (Pi.lt_def.1 h.1).2
     have : Nonempty ι := ⟨j⟩
     obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_wcovBy h.wcovBy
-    obtain rfl : i = j := by_contra fun this ↦ (hi j (Ne.symm this)).2.not_lt hj
+    obtain rfl : i = j := by_contra fun this ↦ (hi j (Ne.symm this)).2.not_gt hj
     exact ⟨i, covBy_iff_wcovBy_and_lt.2 ⟨h.wcovBy.eval i, hj⟩, hi⟩
   rintro ⟨i, hi, h⟩
   have : Nonempty ι := ⟨i⟩
@@ -703,11 +703,11 @@ namespace WithTop
 variable [Preorder α] {a b : α}
 
 @[simp, norm_cast] lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b :=
-  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withTopCoe <| by
+  Set.OrdConnected.apply_wcovBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
 @[simp, norm_cast] lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b :=
-  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withTopCoe <| by
+  Set.OrdConnected.apply_covBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
 @[simp] lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
@@ -724,11 +724,11 @@ namespace WithBot
 variable [Preorder α] {a b : α}
 
 @[simp, norm_cast] lemma coe_wcovBy_coe : (a : WithBot α) ⩿ b ↔ a ⩿ b :=
-  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withBotCoe <| by
+  Set.OrdConnected.apply_wcovBy_apply_iff WithBot.coeOrderHom <| by
     simp [WithBot.range_coe, ordConnected_Ioi]
 
 @[simp, norm_cast] lemma coe_covBy_coe : (a : WithBot α) ⋖ b ↔ a ⋖ b :=
-  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withBotCoe <| by
+  Set.OrdConnected.apply_covBy_apply_iff WithBot.coeOrderHom <| by
     simp [WithBot.range_coe, ordConnected_Ioi]
 
 @[simp] lemma bot_covBy_coe : ⊥ ⋖ (a : WithBot α) ↔ IsMin a := by

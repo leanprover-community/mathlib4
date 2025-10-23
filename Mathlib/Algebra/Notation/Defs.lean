@@ -16,6 +16,9 @@ Notation typeclass for `Inv`, the multiplicative analogue of `Neg`.
 We also introduce notation classes `SMul` and `VAdd` for multiplicative and additive
 actions.
 
+We introduce the notation typeclass `Star` for algebraic structures with a star operation. Note: to
+accommodate diverse notational preferences, no default notation is provided for `Star.star`.
+
 `SMul` is typically, but not exclusively, used for scalar multiplication-like operators.
 See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` (vector addition).
 
@@ -28,7 +31,7 @@ Note `Zero` has already been defined in core Lean.
 
 -/
 
-assert_not_exists Function.Injective
+assert_not_exists Function.Bijective
 
 universe u v w
 
@@ -42,9 +45,9 @@ class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   The meaning of this notation is type-dependent. -/
   hVAdd : α → β → γ
 
-attribute [notation_class  smul Simps.copySecond] HSMul
-attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
-attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
+attribute [notation_class smul Simps.copySecond] HSMul
+attribute [notation_class nsmul Simps.nsmulArgs] HSMul
+attribute [notation_class zsmul Simps.zsmulArgs] HSMul
 
 /-- Type class for the `+ᵥ` notation. -/
 class VAdd (G : Type u) (P : Type v) where
@@ -81,6 +84,21 @@ variable {G : Type*}
 
 attribute [to_additive, notation_class] Inv
 
+section Star
+
+/-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
+-/
+class Star (R : Type u) where
+  star : R → R
+
+export Star (star)
+
+/-- A star operation (e.g. complex conjugate).
+-/
+add_decl_doc star
+
+end Star
+
 section ite
 variable {α : Type*} (P : Prop) [Decidable P]
 
@@ -88,14 +106,14 @@ section Mul
 variable [Mul α]
 
 @[to_additive]
-lemma mul_dite (a : α) (b : P → α) (c : ¬ P → α) :
+lemma mul_dite (a : α) (b : P → α) (c : ¬P → α) :
     (a * if h : P then b h else c h) = if h : P then a * b h else a * c h := by split <;> rfl
 
 @[to_additive]
 lemma mul_ite (a b c : α) : (a * if P then b else c) = if P then a * b else a * c := mul_dite ..
 
 @[to_additive]
-lemma dite_mul (a : P → α) (b : ¬ P → α) (c : α) :
+lemma dite_mul (a : P → α) (b : ¬P → α) (c : α) :
     (if h : P then a h else b h) * c = if h : P then a h * c else b h * c := by split <;> rfl
 
 @[to_additive]
@@ -109,7 +127,7 @@ lemma ite_mul (a b c : α) : (if P then a else b) * c = if P then a * c else b *
 attribute [simp] mul_dite dite_mul mul_ite ite_mul
 
 @[to_additive]
-lemma dite_mul_dite (a : P → α) (b : ¬ P → α) (c : P → α) (d : ¬ P → α) :
+lemma dite_mul_dite (a : P → α) (b : ¬P → α) (c : P → α) (d : ¬P → α) :
     ((if h : P then a h else b h) * if h : P then c h else d h) =
       if h : P then a h * c h else b h * d h := by split <;> rfl
 
@@ -123,21 +141,21 @@ section Div
 variable [Div α]
 
 @[to_additive]
-lemma div_dite (a : α) (b : P → α) (c : ¬ P → α) :
+lemma div_dite (a : α) (b : P → α) (c : ¬P → α) :
     (a / if h : P then b h else c h) = if h : P then a / b h else a / c h := by split <;> rfl
 
 @[to_additive]
 lemma div_ite (a b c : α) : (a / if P then b else c) = if P then a / b else a / c := div_dite ..
 
 @[to_additive]
-lemma dite_div (a : P → α) (b : ¬ P → α) (c : α) :
+lemma dite_div (a : P → α) (b : ¬P → α) (c : α) :
     (if h : P then a h else b h) / c = if h : P then a h / c else b h / c := by split <;> rfl
 
 @[to_additive]
 lemma ite_div (a b c : α) : (if P then a else b) / c = if P then a / c else b / c := dite_div ..
 
 @[to_additive]
-lemma dite_div_dite (a : P → α) (b : ¬ P → α) (c : P → α) (d : ¬ P → α) :
+lemma dite_div_dite (a : P → α) (b : ¬P → α) (c : P → α) (d : ¬P → α) :
     ((if h : P then a h else b h) / if h : P then c h else d h) =
       if h : P then a h / c h else b h / d h := by split <;> rfl
 
