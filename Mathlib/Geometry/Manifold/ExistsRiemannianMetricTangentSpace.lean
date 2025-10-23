@@ -319,6 +319,81 @@ lemma g_global_symm (f : SmoothPartitionOfUnity B IB B)
       simp_rw [g_symm]
     exact this
 
+noncomputable
+def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
+    W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p := ∑ᶠ (j : B), (f j) p • g_bilinear j p
+
+lemma smul_bilinear_toFun (f : SmoothPartitionOfUnity B IB B) {b : B} (j : B) (v w : TangentSpace IB b) :
+  (((f j b) • g_bilinear j b).toFun v).toFun w = (f j b) * g j b v w := rfl
+
+#check DFunLike.ext
+#check finsum_congr
+#check ContinuousLinearMap.smul_apply
+
+lemma foo (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b) :
+ ((g_global_bilinear f b).toFun v).toFun w = ((g_global_bilinear f b).toFun w).toFun v := by
+    unfold g_global_bilinear
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
+
+    have : ((∑ᶠ (j : B), (f j) b • g_bilinear j b).toFun v).toFun w =
+           ((∑ᶠ (j : B), (f j) b • g_bilinear j b).toFun w).toFun v := by
+      have h1 : ∀ (j : B), (((f j b) • g_bilinear j b).toFun v).toFun w = (f j b) * g j b v w :=
+        fun _ => rfl
+      have h2 : ∀ (j : B), g j b v w = g j b w v := fun j => g_symm j b v w
+      have h3 : ∀ (j : B), (f j b) * g j b v w = (f j b) * g j b w v :=
+        fun j ↦ congrArg (HMul.hMul ((f j) b)) (h2 j)
+      have h4 : ∀ (j : B), (((f j b) • g_bilinear j b).toFun v).toFun w =
+                           (((f j b) • g_bilinear j b).toFun w).toFun v := fun j ↦ h3 j
+      have h5 :  ∑ᶠ (x : B), (((((f x) b • g_bilinear x b)).toFun v)).toFun w =
+              ∑ᶠ (x : B), (((((f x) b • g_bilinear x b)).toFun w)).toFun v := finsum_congr h4
+
+      have h6 : ∑ᶠ (j : B), (((((f j) b • g_bilinear j b)).toFun v)).toFun w =
+        ((∑ᶠ (j : B), (f j) b • g_bilinear j b).toFun v).toFun w := by
+        have h_fin : (Function.support fun j ↦ ((f j) b • (g_bilinear j b) :
+                      W (TangentSpace IB) b)).Finite := by
+          apply (f.locallyFinite'.point_finite b).subset
+          intro i hi
+          simp only [Function.mem_support, ne_eq, smul_eq_zero, not_or] at hi
+          simp only [Set.mem_setOf_eq, Function.mem_support, ne_eq]
+          exact hi.1
+        have h6a : (∑ᶠ (j : B), (f j) b • g_bilinear j b) =
+                     ∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b := finsum_eq_sum _ h_fin
+        rw [h6a]
+        have h_sum_v : ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b).toFun v) =
+                       ∑ j ∈ h_fin.toFinset, ((f j) b • g_bilinear j b).toFun v :=
+          ContinuousLinearMap.sum_apply h_fin.toFinset (fun j ↦ (f j) b • g_bilinear j b) v
+        rw [h_sum_v]
+        have h_sum_w :
+          ((∑ j ∈ h_fin.toFinset, ((f j) b • g_bilinear j b).toFun v).toFun w) =
+           ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilinear j b).toFun v).toFun w :=
+          ContinuousLinearMap.sum_apply h_fin.toFinset
+            (fun j ↦ ((f j) b • g_bilinear j b).toFun v) w
+        rw [h_sum_w]
+
+        have h_fun :
+         (Function.support fun j ↦ (((((f j) b • g_bilinear j b)).toFun v)).toFun w).Finite := by
+            exact sorry
+
+        have h6b : ∑ᶠ (j : B), (((((f j) b • g_bilinear j b)).toFun v)).toFun w =
+                   ∑ j ∈ h_fun.toFinset, (((((f j) b • g_bilinear j b)).toFun v)).toFun w := by
+          exact finsum_eq_sum _ h_fun
+        have h_eq : h_fun.toFinset = h_fin.toFinset := by exact sorry
+        rw [<-h_eq]
+        exact h6b
+
+      have h7 : ∑ᶠ (j : B), (((((f j) b • g_bilinear j b)).toFun w)).toFun v =
+                ((∑ᶠ (j : B), (f j) b • g_bilinear j b).toFun w).toFun v := sorry
+      rw [h6, h7] at h5
+      exact h5
+
+    exact this
+
+#check Finset.sum_apply'
+#check ContinuousLinearMap.sum_apply
+#check finsum_congr
+#check ContinuousLinearMap.mk
+#check LinearMap.mk
+
 lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
   (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
   (p : B) (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p) :
@@ -350,36 +425,14 @@ lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
   have h4 : 0 < ∑ᶠ i, h i := finsum_pos' h1 h2 h3
   exact h4
 
-lemma g_global_cont (f : SmoothPartitionOfUnity B IB B) (p : B) (v : TangentSpace IB p) :
-  Continuous (fun w ↦ g_global f p v w) := sorry
-
-noncomputable
-def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
-    W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p :=
-  ContinuousLinearMap.mk
-    { toFun := fun v ↦
-        ContinuousLinearMap.mk
-          { toFun := fun w ↦ g_global f p v w
-            map_add' := fun x y ↦ g_global_add' f p x y v
-            map_smul' := fun m x ↦ g_global_smul' f p x v m }
-          (g_global_cont f p v)
-      map_add' := sorry
-      map_smul' := sorry }
-    sorry
-
 lemma g_global_bilinear_eq_sum (f : SmoothPartitionOfUnity B IB B) (p : B) :
-  g_global_bilinear f p = ∑ᶠ (j : B), (f j) p • g_bilinear j p := by
-  unfold W at *
-  simp only [g_global_bilinear, g_global]
-  ext v
-  simp only [ContinuousLinearMap.coe_mk']
-  exact sorry
+  g_global_bilinear f p = ∑ᶠ (j : B), (f j) p • g_bilinear j p := rfl
 
 lemma bar (f : SmoothPartitionOfUnity B IB B)
         (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
   ContMDiff IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞ fun x ↦
     TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x
-                   ((∑ᶠ (j : B), (f j) x • g_bilinear j x :  W (TangentSpace IB) x)) := by
+                   (∑ᶠ (j : B), (f j) x • g_bilinear j x :  W (TangentSpace IB) x) := by
       have h := contMDiff_totalSpace_weighted_sum_of_local_sections
         (E := EB) (I := IB) (M := B)
         (V := fun b => TangentSpace IB b →L[ℝ] (TangentSpace IB b →L[ℝ] Trivial B ℝ b))
@@ -414,6 +467,9 @@ def g_global_smooth_section
   { toFun := g_global_bilinear f
     contMDiff_toFun := g_global_bilinear_smooth f h_sub}
 
+lemma baz (f : SmoothPartitionOfUnity B IB B) (b : B) (v : TangentSpace IB b) :
+  v ≠ 0 → 0 < ((g_global_bilinear f b).toFun v).toFun v := sorry
+
 noncomputable
 def riemannian_metric_exists
     (f : SmoothPartitionOfUnity B IB B)
@@ -422,8 +478,8 @@ def riemannian_metric_exists
     ContMDiffRiemannianMetric (IB := IB) (n := ∞) (F := EB)
      (E := @TangentSpace ℝ _ _ _ _ _ _ IB B _ _) :=
   { inner := g_global_bilinear f
-    symm := g_global_symm f
-    pos := g_global_pos f (by simpa only [extChartAt_source] using hf)
+    symm := foo f
+    pos := baz f
     isVonNBounded := sorry
     contMDiff := (g_global_smooth_section f h_sub).contMDiff_toFun
      }
