@@ -34,22 +34,20 @@ lemma apply_ker_component_eq_zero (y : V) : f (f.prodEquivOfkerComplement.symm y
   rw [map_add, mem_ker.mp (f.isCompl_ker_kerComplement.symm.projection_apply_mem y), add_zero]
   rfl
 
-/-- 通过线性映射f的直和分解构造V的基。
-
-    当V被分解为ker f ⊕ kerComplement f时，该基由核空间和补空间的基通过直和分解等价映射得到。
-    具体来说：
-    - 索引集是`kerComplement f`的基索引与`ker f`的基索引的直和（Sum类型）
-    - 基向量通过`f.prodEquivOfkerComplement`等价关系从子空间基组合而成
-
-    这一定义体现了第一同构定理的几何实质：V ≃ ker f × (range f)，且kerComplement f ≃ range f。
+/-- When `V` decomposes as `ker f ⊕ kerComplement f`, the basis is obtained by transporting the
+product of bases on the kernel and on its complement along `f.prodEquivOfkerComplement`.
+More precisely:
+* the index set is the disjoint sum of the index sets of bases on `kerComplement f` and on `ker f`;
+* the basis vectors are the images, under `f.prodEquivOfkerComplement`, of the corresponding
+  basis vectors coming from those subspaces.
 -/
-def decomposition_basis :
-    Basis ((ofVectorSpaceIndex K f.kerComplement) ⊕ (ofVectorSpaceIndex K (LinearMap.ker f))) K V :=
+def decomposition_basis : Basis ((ofVectorSpaceIndex K f.kerComplement) ⊕
+    (ofVectorSpaceIndex K (ker f))) K V :=
   .map (.prod (ofVectorSpace K _) (ofVectorSpace K _)) (f.prodEquivOfkerComplement)
 
 /-- 线性映射 `f` 在核补空间上的限制，即将核补空间嵌入到 `V` 后应用 `f` -/
 def ker_complement_restriction : f.kerComplement →ₗ[K] W :=
-    f.comp f.kerComplement.subtype
+  f.comp f.kerComplement.subtype
 
 /-- 线性映射 `f` 在其核补空间上的限制是单射。
 
@@ -58,6 +56,10 @@ def ker_complement_restriction : f.kerComplement →ₗ[K] W :=
 lemma ker_complement_restriction_injective : ker f.ker_complement_restriction = ⊥ := by
   simpa [ker_complement_restriction, ker_comp, ← disjoint_iff_comap_eq_bot]
     using f.isCompl_ker_kerComplement.disjoint
+
+lemma test : Function.Injective f.ker_complement_restriction := by
+
+  sorry
 
 /-- 通过核补空间的基和限制映射 `f ∘ Submodule.subtype (kerComplement f)` 构造的映射，
     将基索引映射到 `W` 中的向量 -/
@@ -122,10 +124,9 @@ lemma finrank_kerComplement_eq_rank {r : ℕ} (hr : rank f = r) :
     `finrank K V = finrank K (range f) + finrank K (ker f)`，
     因此 `finrank K (ker f) = finrank K V - rank f`。
 -/
-lemma finrank_ker_eq
-  [FiniteDimensional K V] {r n: ℕ}
-  (hr : rank f = r) (hn : finrank K V = n) : finrank K (ker f) = n - r := by
-  simp [← hn, ← finrank_range_add_finrank_ker f, (finrank_eq_of_rank_eq hr).symm]
+lemma finrank_ker_eq [FiniteDimensional K V] {r n: ℕ} (hr : rank f = r) (hn : finrank K V = n) :
+    finrank K (ker f) = n - r := by
+  rw [← hn, ← finrank_range_add_finrank_ker f, ← finrank_eq_of_rank_eq hr, add_tsub_cancel_left]
 
 lemma card_cokernel_basis_index_eq  {m r : ℕ} [FiniteDimensional K V]
     [FiniteDimensional K W]
@@ -174,7 +175,7 @@ noncomputable def basisIndexEquivFin {ι r K V} [DivisionRing K]
 
 section
 
-variable {R : Type} [Field R] {m n r: ℕ}  {M₁ : Type} {M₂ : Type}
+variable {R : Type} [Field R] {m n r: ℕ} {M₁ : Type} {M₂ : Type}
   [AddCommGroup M₁] [AddCommGroup M₂]
   [Module R M₁] [Module R M₂]
   [FiniteDimensional R M₁]
@@ -230,21 +231,19 @@ theorem exists_basis_for_normal_form (hn : finrank R M₁ = n) (hm : finrank R M
     apply basisIndexEquivFin (finrank_kerComplement_eq_rank f hr) (ofVectorSpace R _)
     apply indexEquivOfCardinalEq
     simp [card_cokernel_basis_index_eq f hm hr]
-  let u₂ : Basis (Fin r ⊕ Fin (m - r)) R M₂ :=  v₂.reindex hu₂
+  let u₂ : Basis (Fin r ⊕ Fin (m - r)) R M₂ := v₂.reindex hu₂
   use u₁, u₂
-  calc (LinearMap.toMatrix u₁ u₂) f
-    _ = ((LinearMap.toMatrix v₁ v₂) f).reindex hu₂ hu₁ := by
-      simp [u₁, u₂]
+  calc
+    f.toMatrix u₁ u₂ = (f.toMatrix v₁ v₂).reindex hu₂ hu₁ := by
       funext i j
-      simp [LinearMap.toMatrix_apply]
+      simp [u₁, u₂, toMatrix_apply]
     _ = (fromBlocks 1 0 0 0).reindex hu₂ hu₁ := by rw [hvf]
     _ = _ := by
-      simp [hu₁, hu₂, Equiv.sumCongr]
       funext i j
       match i, j with
-      | Sum.inl i', Sum.inl j' => simp [Matrix.one_apply]
-      | Sum.inr i', Sum.inr j' => simp
-      | Sum.inl i', Sum.inr j' => simp
-      | Sum.inr i', Sum.inl j' => simp
+      | Sum.inl i', Sum.inl j' => simp [hu₂, hu₁, Matrix.one_apply]
+      | Sum.inr i', Sum.inr j' => simp [hu₂, hu₁]
+      | Sum.inl i', Sum.inr j' => simp [hu₂, hu₁]
+      | Sum.inr i', Sum.inl j' => simp [hu₂, hu₁]
 
 end
