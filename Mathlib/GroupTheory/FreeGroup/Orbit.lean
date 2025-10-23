@@ -30,11 +30,12 @@ The neutral element is not contained in one of the startsWith sets.
 theorem startsWith.ne_one {w : α × Bool} (g : FreeGroup α) (h : g ∈ FreeGroup.startsWith w) :
     g ≠ 1 := fun h1 ↦ by simp [h1, startsWith, FreeGroup.toWord_one] at h
 
+@[simp]
 lemma startsWith.disjoint_of_ne {w w' : α × Bool} :
-    w ≠ w' ↔ Disjoint (startsWith w) (startsWith w') := by
+    Disjoint (startsWith w) (startsWith w') ↔ w ≠ w'  := by
   simp_all only [ne_eq, startsWith, Set.disjoint_iff_inter_eq_empty, Set.ext_iff, Set.mem_inter_iff,
     Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_and, Option.some.injEq]
-  exact Iff.intro (by grind) (fun h ↦ h (mk [w]) (by simp))
+  exact Iff.intro (fun h ↦ h (mk [w]) (by simp)) (by grind)
 
 lemma startsWith.Injective : @startsWith α _|>.Injective := fun a b h ↦ by
   simp only [startsWith, Set.ext_iff, Set.mem_setOf_eq] at *
@@ -90,7 +91,7 @@ theorem Orbit.duplicate (x : X) (w : α × Bool) :
       exact ⟨⟨mk (b :: l), by simp [startsWith, h1.2.reduce_eq]⟩, rfl⟩
   · rintro (⟨-, ⟨w', rfl⟩, -, ⟨hw, rfl⟩, ⟨g, hg⟩, rfl⟩ | rfl)
     · exact ⟨mk [w] • g • x, ⟨⟨mk [w] * g, startsWith_mk_mul g
-        ((startsWith.disjoint_of_ne.mp hw).notMem_of_mem_left hg)⟩,
+        ((startsWith.disjoint_of_ne.mpr hw).notMem_of_mem_left hg)⟩,
         mul_smul (mk [w]) g x⟩, inv_smul_smul (mk [w]) (g • x)⟩
     · exact ⟨mk [w] • i, ⟨⟨mk [w], rfl⟩, rfl⟩, inv_smul_smul (mk [w]) i⟩
 
