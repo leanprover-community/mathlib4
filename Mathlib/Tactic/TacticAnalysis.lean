@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 
-import Batteries.Data.Array.Merge
-import Lean.Elab.Tactic.Meta
 import Lean.Util.Heartbeats
 import Lean.Server.InfoUtils
 import Mathlib.Lean.ContextInfo
+import Mathlib.Lean.Elab.Tactic.Meta
 
 /-! # Tactic analysis framework
 
@@ -89,13 +88,19 @@ instance : Ord Entry where
 
 /-- Environment extensions for `tacticAnalysis` declarations -/
 initialize tacticAnalysisExt : PersistentEnvExtension Entry (Entry × Pass)
-    (Array (Entry × Pass)) ←
+    -- Like `SimplePersistentEnvExtension`, store the locally declared entries separately from all
+    -- of the passes. Otherwise we end up re-exporting the entries and spending a lot of time
+    -- deduplicating them downstream.
+    (List Entry × Array Pass) ←
   registerPersistentEnvExtension {
-    mkInitial := pure #[]
-    addImportedFn s := s.flatten.sortDedup.mapM fun e => do
-      return (e, ← e.import)
-    addEntryFn := Array.push
-    exportEntriesFn s := s.map (· |>.1)
+    mkInitial := pure ([], #[])
+    addImportedFn s := do
+      let localEntries := []
+      let allPasses ← s.flatten.mapM fun e => e.import
+      return (localEntries, allPasses)
+    addEntryFn := fun (localEntries, allPasses) (entry, pass) =>
+      (entry :: localEntries, allPasses.push pass)
+    exportEntriesFn := fun (localEntries, _) => localEntries.reverse.toArray
   }
 
 /-- Attribute adding a tactic analysis pass from a `Config` structure. -/
@@ -210,7 +215,7 @@ def tacticAnalysis : Linter where run := withSetOptionIn fun stx => do
   if (← get).messages.hasErrors then
     return
   let env ← getEnv
-  let configs := (tacticAnalysisExt.getState env).map (· |>.snd)
+  let configs := (tacticAnalysisExt.getState env).2
   let trees ← getInfoTrees
   runPasses configs stx trees
 
@@ -269,25 +274,29 @@ structure ComplexConfig where
   /-- Code to run in the context of the tactic, for example an alternative tactic. -/
   test (context : ctx) (goal : MVarId) : MetaM out
   /-- Decides what to report to the user. -/
-  tell (stx : Syntax) (original : List MVarId × Nat) (new : out × Nat) : Option MessageData
+  tell (stx : Syntax) (originalSubgoals : List MVarId) (originalHeartbeats : Nat)
+    (new : out) (newHeartbeats : Nat) : CommandElabM (Option MessageData)
 
 /-- Test the `config` against a sequence of tactics, using the context info and tactic info
 from the start of the sequence. -/
 def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
     (ctxI : ContextInfo) (i : TacticInfo) (ctx : config.ctx) :
     CommandElabM Unit := do
-  let stx ← `(tactic| $(tacticSeq);*)
-  -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
-  if let [goal] := i.goalsBefore then
-    let old ← withHeartbeats <| ctxI.runTactic i goal fun goal => do
-      try
-        Lean.Elab.runTactic goal stx
-      catch e =>
-        logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
-        return ([goal], {})
-    let new ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
-    if let some msg := config.tell stx (old.1.1, old.2) new then
-      logWarningAt stx msg
+  /- Syntax quotations use the current ref's position info even for nodes which do not usually
+  carry position info. We set the ref here to ensure we log messages on the correct range. -/
+  withRef (mkNullNode tacticSeq) do
+    let stx ← `(tactic| $tacticSeq;*)
+    -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
+    if let [goal] := i.goalsBefore then
+      let (oldGoals, oldHeartbeats) ← withHeartbeats <|
+        try
+          ctxI.runTacticCode i goal stx
+        catch e =>
+          logWarning m!"original tactic '{stx}' failed: {e.toMessageData}"
+          return [goal]
+      let (new, newHeartbeats) ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
+      if let some msg ← config.tell stx oldGoals oldHeartbeats new newHeartbeats  then
+        logWarning msg
 
 /-- Run the `config` against a sequence of tactics, using the `trigger` to determine which
 subsequences should be `test`ed. -/

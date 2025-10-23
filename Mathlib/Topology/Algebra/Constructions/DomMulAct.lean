@@ -28,7 +28,7 @@ variable {M : Type*} [TopologicalSpace M]
 
 /-- Put the same topological space structure on `Mᵈᵐᵃ` as on the original space. -/
 @[to_additive /-- Put the same topological space structure on `Mᵈᵃᵃ` as on the original space. -/]
-instance instTopologicalSpace : TopologicalSpace Mᵈᵐᵃ := .induced mk.symm  ‹_›
+instance instTopologicalSpace : TopologicalSpace Mᵈᵐᵃ := .induced mk.symm ‹_›
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_mk : Continuous (@mk M) := continuous_induced_rng.2 continuous_id
@@ -40,6 +40,8 @@ theorem continuous_mk_symm : Continuous (@mk M).symm := continuous_induced_dom
 @[to_additive (attr := simps toEquiv) /-- `DomAddAct.mk` as a homeomorphism. -/]
 def mkHomeomorph : M ≃ₜ Mᵈᵐᵃ where
   toEquiv := mk
+  continuous_toFun := by dsimp; fun_prop
+  continuous_invFun := by dsimp; fun_prop
 
 @[to_additive (attr := simp)] theorem coe_mkHomeomorph : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ) = mk := rfl
 

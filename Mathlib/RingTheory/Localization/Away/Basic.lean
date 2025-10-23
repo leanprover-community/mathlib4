@@ -101,11 +101,11 @@ lemma mk (r : R) (map_unit : IsUnit (algebraMap R S r))
     (surj : ∀ s, ∃ (n : ℕ) (a : R), s * algebraMap R S r ^ n = algebraMap R S a)
     (exists_of_eq : ∀ a b, algebraMap R S a = algebraMap R S b → ∃ (n : ℕ), r ^ n * a = r ^ n * b) :
     IsLocalization.Away r S where
-  map_units' := by
+  map_units := by
     rintro ⟨-, n, rfl⟩
     simp only [map_pow]
     exact IsUnit.pow _ map_unit
-  surj' z := by
+  surj z := by
     obtain ⟨n, a, hn⟩ := surj z
     use ⟨a, ⟨r ^ n, n, rfl⟩⟩
     simpa using hn
@@ -194,6 +194,10 @@ variable (Bₚ : Type*) [CommSemiring Bₚ] [Algebra B Bₚ] [Algebra R Bₚ] [I
 instance {f : A →+* B} (a : A) [Away (f a) Bₚ] : IsLocalization (.map f (.powers a)) Bₚ := by
   simpa
 
+instance (x : R) [IsLocalization.Away (algebraMap R A x) Aₚ] :
+    IsLocalization (Algebra.algebraMapSubmonoid A (.powers x)) Aₚ := by
+  simpa
+
 /-- Given a algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
 `Aₐ →ₐ[R] Bₐ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
@@ -274,12 +278,9 @@ lemma commutes {R : Type*} [CommSemiring R] (S₁ S₂ T : Type*) [CommSemiring 
     [IsLocalization.Away x S₁] [IsLocalization.Away y S₂]
     [IsLocalization.Away (algebraMap R S₂ x) T] :
     IsLocalization.Away (algebraMap R S₁ y) T := by
-  haveI : IsLocalization (Algebra.algebraMapSubmonoid S₂ (Submonoid.powers x)) T := by
-    simp only [Algebra.algebraMapSubmonoid, Submonoid.map_powers]
-    infer_instance
   convert IsLocalization.commutes S₁ S₂ T (Submonoid.powers x) (Submonoid.powers y)
   ext x
-  simp [Algebra.algebraMapSubmonoid]
+  simp
 
 end Away
 
@@ -303,10 +304,10 @@ noncomputable def atOne [IsLocalization.Away (1 : R) S] : R ≃ₐ[R] S :=
 theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S]
     [Algebra R S] {r : R} (hr : IsUnit r) (H : Function.Bijective (algebraMap R S)) :
     IsLocalization.Away r S :=
-  { map_units' := by
+  { map_units := by
       rintro ⟨_, n, rfl⟩
       exact (algebraMap R S).isUnit_map (hr.pow _)
-    surj' := fun z => by
+    surj := fun z => by
       obtain ⟨z', rfl⟩ := H.2 z
       exact ⟨⟨z', 1⟩, by simp⟩
     exists_of_eq := fun {x y} => by
@@ -323,10 +324,10 @@ lemma away_of_isIdempotentElem_of_mul {R S} [CommSemiring R] [CommSemiring S] [A
     (H : ∀ x y, algebraMap R S x = algebraMap R S y ↔ e * x = e * y)
     (H' : Function.Surjective (algebraMap R S)) :
     IsLocalization.Away e S where
-  map_units' r := by
+  map_units r := by
     obtain ⟨r, n, rfl⟩ := r
     simp [show algebraMap R S e = 1 by rw [← (algebraMap R S).map_one, H, mul_one, he]]
-  surj' z := by
+  surj z := by
     obtain ⟨z, rfl⟩ := H' z
     exact ⟨⟨z, 1⟩, by simp⟩
   exists_of_eq {x y} h := ⟨⟨e, Submonoid.mem_powers e⟩, (H x y).mp h⟩
