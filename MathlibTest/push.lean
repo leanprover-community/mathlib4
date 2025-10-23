@@ -56,6 +56,24 @@ info: DiscrTree branch for Or:
 
 end logic
 
+section lambda
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  push fun x ↦ _
+  with_reducible rfl
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  simp only [pushFun]
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  pull fun _ ↦ _
+  with_reducible rfl
+
+example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
+  simp only [pullFun]
+
+end lambda
+
 section log
 
 example (a b : ℝ) (ha : 0 < a) (hb : 0 < b) : Real.log (a * b) = Real.log a + Real.log b := by

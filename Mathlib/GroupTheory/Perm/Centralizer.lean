@@ -398,7 +398,7 @@ theorem ofPermHom_mem_centralizer :
 we define a right inverse of `Equiv.Perm.OnCycleFactors.toPermHom`,
 on `range_toPermHom' g` -/
 noncomputable def toCentralizer :
-    range_toPermHom' g →* centralizer {g}  where
+    range_toPermHom' g →* centralizer {g} where
   toFun τ := ⟨ofPermHom a τ, ofPermHom_mem_centralizer a τ⟩
   map_one' := by simp only [map_one, mk_eq_one]
   map_mul' σ τ := by simp only [map_mul, MulMemClass.mk_mul_mk]
@@ -487,7 +487,7 @@ def kerParam : (Perm (Function.fixedPoints g)) ×
 
 theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
     {v : (c : g.cycleFactorsFinset) → Subgroup.zpowers c.val} {x : α} :
-    kerParam g (u,v) x =
+    kerParam g (u, v) x =
     if hx : g.cycleOf x ∈ g.cycleFactorsFinset
     then (v ⟨g.cycleOf x, hx⟩ : Perm α) x
     else ofSubtype u x := by
@@ -612,7 +612,8 @@ theorem cycleType_kerParam_apply_apply :
     apply cycleFactorsFinset_pairwise_disjoint g c.prop d.prop
     exact Subtype.coe_ne_coe.mpr h
   rw [kerParam, MonoidHom.noncommCoprod_apply, ← Prod.fst_mul_snd ⟨k, v⟩, Prod.mk_mul_mk, mul_one,
-    one_mul, Finset.univ_eq_attach, Disjoint.cycleType (disjoint_ofSubtype_noncommPiCoprod g k v),
+    one_mul, Finset.univ_eq_attach,
+    Disjoint.cycleType_mul (disjoint_ofSubtype_noncommPiCoprod g k v),
     Subgroup.noncommPiCoprod_apply, Disjoint.cycleType_noncommProd hU, Finset.univ_eq_attach]
   exact congr_arg₂ _ cycleType_ofSubtype rfl
 
@@ -681,8 +682,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     simp_rw [Set.coe_setOf, Nat.card_eq_fintype_card, ← Fintype.card_coe, Finset.mem_filter,
       Finset.mem_univ, true_and, ← isConj_iff_cycleType_eq, isConj_comm (g := g)]
   · -- empty case
-    convert MulZeroClass.zero_mul _
-    exact (card_of_cycleType_eq_zero_iff α).mpr hm
+    rw [(card_of_cycleType_eq_zero_iff α).mpr hm, zero_mul]
 
 /-- Cardinality of the `Finset` of `Equiv.Perm α` of given `cycleType` -/
 theorem card_of_cycleType (m : Multiset ℕ) :
