@@ -322,9 +322,7 @@ lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
   norm_num
 
 lemma inv_sqrt_two_sub_one : (√2 - 1)⁻¹ = √2 + 1 := by
-  rw [← one_div, div_eq_iff (sub_ne_zero_of_ne (by simp))]
-  ring_nf
-  norm_num
+  grind
 
 @[simp]
 theorem sqrt_mul {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by
