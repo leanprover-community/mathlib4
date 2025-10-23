@@ -37,7 +37,7 @@ open CategoryTheory
 The syntax `Category* C` creates a new distinct implicit universe parameter `v`, placed
 just before any parameters appearing in `C` and its type, and elaborates to `Category.{v} C`.
 -/
-elab "Category*" ppSpace C:term : term => commitIfNoEx do
+elab "Category*" ppSpace C:term : term => commitIfNoEx <| withoutErrToSorry do
   let u ← mkFreshLevelMVar
   let cExpr ← instantiateExprMVars <| ← elabTermEnsuringType C (some <| .sort <| .succ u)
   if cExpr.hasLevelMVar then
@@ -47,8 +47,13 @@ elab "Category*" ppSpace C:term : term => commitIfNoEx do
     throwError "The type{indentD tpCExpr}\nof{indentD cExpr}\nhas level mvars"
   let instTp ← instantiateMVars <| .app (.const ``Category [← mkFreshLevelMVar, u]) cExpr
   let levelNames ← getLevelNames
+  -- We must ensure that `u` is still uninstantiated at this point, otherwise the next
+  -- line will panic.
+  unless u.isMVar do
+    throwError "Unexpected Error:{u} is not a level mvar."
   let ⟨mctx, vs, _, out⟩ :=
-    (← getMCtx).levelMVarToParam (fun n => levelNames.elem n) (fun _ => false) instTp `v 1
+    (← getMCtx).levelMVarToParam (fun n => levelNames.elem n)
+    (fun id => id == u.mvarId!) instTp `v 1
   let v::[] := vs.toList
     | throwError "Unexpected Error:{indentD out}\ndoesn't have exactly one new level parameter"
   let us := (collectLevelParams {} cExpr).params ++ (collectLevelParams {} tpCExpr).params
