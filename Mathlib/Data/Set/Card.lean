@@ -21,7 +21,7 @@ one is concerned with the cardinalities of sets that may or may not be infinite.
 
 `Set.ncard` has a nicer codomain, but when using it, `Set.Finite` hypotheses are normally needed to
 make sure its values are meaningful.  More generally, `Set.ncard` is intended to be used over the
-obvious alternative `Finset.card` when finiteness is 'propositional' rather than  'structural'.
+obvious alternative `Finset.card` when finiteness is 'propositional' rather than 'structural'.
 When working with sets that are finite by virtue of their definition, then `Finset.card` probably
 makes more sense. One setting where `Set.ncard` works nicely is in a type `α` with `[Finite α]`,
 where every set is automatically finite. In this setting, we use default arguments and a simple

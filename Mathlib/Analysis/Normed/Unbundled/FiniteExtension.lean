@@ -216,7 +216,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
   have hf_1 : f 1 ≤ 1 := seminormFromBounded_one_le hg_nonneg hg_bdd
   have hf_ext : ∀ (x : K), f ((algebraMap K L) x) = ‖x‖ :=
     fun k ↦ hg_ext k ▸ seminormFromBounded_of_mul_apply hg_nonneg hg_bdd (hg_mul k)
-  -- Using BGR Prop. 1.3.2/1, we obtain from f  a power multiplicative K-algebra norm on L
+  -- Using BGR Prop. 1.3.2/1, we obtain from f a power multiplicative K-algebra norm on L
   -- extending the norm on K.
   set F' := smoothingSeminorm f hf_1 hf_na with hF'
   have hF'_ext : ∀ k : K, F' ((algebraMap K L) k) = ‖k‖ := by
