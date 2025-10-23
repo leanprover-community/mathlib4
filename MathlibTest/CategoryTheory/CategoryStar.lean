@@ -127,27 +127,23 @@ of sort `Type (?u.772 + 1)`
 variable (D : Sort*) [Category* D]
 
 /--
-error: Application type mismatch: The argument
-  E → F
-has type
-  Sort (max u_1 (u_2 + 1))
-of sort `Type (max u_1 (u_2 + 1))` but is expected to have type
-  Type ?u.948
-of sort `Type (?u.948 + 1)` in the application
-  Category.{v_3, ?u.948} (E → F)
+error: stuck at solving universe constraint
+  max u_1 (u_2+1) =?= ?u.948+1
+while trying to unify
+  Sort (max u_1 (u_2 + 1)) : Type (max u_1 (u_2 + 1))
+with
+  Type ?u.948 : Type (?u.948 + 1)
 -/
 #guard_msgs (error) in
 variable (E : Sort*) (F : Type*) [Category* (E → F)]
 
 /--
-error: Application type mismatch: The argument
-  F → E
-has type
-  Sort (imax (u_2 + 1) u_1)
-of sort `Type (imax (u_2 + 1) u_1)` but is expected to have type
-  Type ?u.973
-of sort `Type (?u.973 + 1)` in the application
-  Category.{v_3, ?u.973} (F → E)
+error: stuck at solving universe constraint
+  imax (u_2+1) u_1 =?= ?u.973+1
+while trying to unify
+  Sort (imax (u_2 + 1) u_1) : Type (imax (u_2 + 1) u_1)
+with
+  Type ?u.973 : Type (?u.973 + 1)
 -/
 #guard_msgs (error) in
 variable (E : Sort*) (F : Type*) [Category* (F → E)]
