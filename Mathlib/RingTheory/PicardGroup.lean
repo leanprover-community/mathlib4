@@ -27,12 +27,17 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
   To show that `M` is invertible, it suffices to provide an arbitrary `R`-module `N`
   and an isomorphism `N ⊗[R] M ≃ₗ[R] R`, see `Module.Invertible.right`.
 
+- `ClassGroup.equivPic`: the class group of a domain is isomorphic to the Picard group.
+
 ## Main results
 
 - An invertible module is finite and projective (provided as instances).
 
 - `Module.Invertible.free_iff_linearEquiv`: an invertible module is free iff it is isomorphic to
   the ring, i.e. its class is trivial in the Picard group.
+
+- `Submodule.ker_unitsToPic`, `Submodule.range_unitsToPic`: exactness of the sequence
+  `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at the last two spots.
 
 ## References
 
@@ -45,7 +50,6 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 ## TODO
 
 Show:
-- The Picard group of a commutative domain is isomorphic to its ideal class group.
 - All commutative semi-local rings, in particular Artinian rings, have trivial Picard group.
 - All unique factorization domains have trivial Picard group.
 - Invertible modules over a commutative ring have the same cardinality as the ring.
@@ -623,7 +627,7 @@ noncomputable def unitsToPicEquiv (I : (Submodule R A)ˣ) : unitsToPic R A I ≃
   (mk_eq_iff.mp rfl).some.symm
 
 variable (R A) in
-/-- The exactness of the exact sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at
+/-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at
 `(Submodule R A)ˣ`. See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
 theorem ker_unitsToPic : (unitsToPic R A).ker = (Units.map (spanSingleton R)).range := by
   ext I; constructor <;> intro h
@@ -709,11 +713,11 @@ section PicardGroup
 
 variable [CommSemiring A] [Algebra R A] [FaithfulSMul R A]
 
-open CommRing Pic LinearMap Module.Flat Submodule
+open CommRing Pic LinearMap Module.Flat
 
-/-- The exactness of the exact sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Pic R`.
+/-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Pic R`.
 See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
-theorem CommRing.range_unitsToPic : (unitsToPic R A).range = relPic R A := by
+theorem Submodule.range_unitsToPic : (unitsToPic R A).range = relPic R A := by
   ext M; constructor <;> intro h
   · obtain ⟨I, rfl⟩ := h
     exact mk_eq_one_iff.mpr ⟨AlgebraTensorModule.congr (.refl ..) (unitsToPicEquiv I) ≪≫ₗ
@@ -744,7 +748,7 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
 /-- The class group of a domain is isomorphic to the Picard group. -/
 @[simps!] noncomputable def ClassGroup.equivPic (R) [CommRing R] [IsDomain R] :
     ClassGroup R ≃* Pic R :=
-  (mulEquivUnitsSubmoduleQuotRange R).trans <| .trans (unitsQuotEquivRelPic R _) <|
+  (mulEquivUnitsSubmoduleQuotRange R).trans <| .trans (Submodule.unitsQuotEquivRelPic R _) <|
     .trans (.subgroupCongr <| relPic_eq_top R _) Subgroup.topEquiv
 
 end PicardGroup
@@ -757,7 +761,7 @@ theorem Module.Invertible.exists_linearEquiv_ideal (R M) [CommRing R] [AddCommGr
     [Subsingleton (Pic (FractionRing R))] [Module.Invertible R M] :
     ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
   have : Pic.mk R M ∈ relPic R (FractionRing R) := Subsingleton.elim ..
-  have ⟨I, eq⟩ := range_unitsToPic R (FractionRing R) ▸ this
+  have ⟨I, eq⟩ := Submodule.range_unitsToPic R (FractionRing R) ▸ this
   have ⟨e⟩ := mk_eq_mk_iff.mp eq.symm
   ⟨_, ⟨e ≪≫ₗ FractionalIdeal.equivNumOfIsLocalization
     ⟨_, I.submodule_isFractional (S := nonZeroDivisors R)⟩⟩⟩
