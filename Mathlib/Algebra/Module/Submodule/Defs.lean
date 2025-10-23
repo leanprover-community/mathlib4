@@ -273,14 +273,6 @@ variable (p)
 instance addCommMonoid : AddCommMonoid p := fast_instance%
   { p.toAddSubmonoid.toAddCommMonoid with }
 
-instance isLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd p :=
-  p.toAddSubmonoid.isLeftCancelAdd
-
-instance isRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd p :=
-  p.toAddSubmonoid.isRightCancelAdd
-
-instance isCancelAdd [IsCancelAdd M] : IsCancelAdd p where
-
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with

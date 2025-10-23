@@ -35,7 +35,7 @@ the roots of the minimal polynomial of `s` over `R`.
   algebraically closed field
 * `traceForm_nondegenerate`: the trace form over a separable extension is a nondegenerate
   bilinear form
-* `Module.Basis.traceDual_powerBasis_eq`: The dual basis of a powerbasis `{1, x, x²...}` under the
+* `Module.Basis.traceDual_powerBasis_eq`: The dual basis of a power basis `{1, x, x²...}` under the
   trace form is `aᵢ / f'(x)`, with `f` being the minpoly of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 
 ## References
@@ -86,9 +86,8 @@ theorem PowerBasis.trace_gen_eq_sum_roots [Nontrivial S] (pb : PowerBasis K S)
     (hf : (minpoly K pb.gen).Splits (algebraMap K F)) :
     algebraMap K F (trace K S pb.gen) = ((minpoly K pb.gen).aroots F).sum := by
   rw [PowerBasis.trace_gen_eq_nextCoeff_minpoly, RingHom.map_neg, ←
-    nextCoeff_map (algebraMap K F).injective,
-    sum_roots_eq_nextCoeff_of_monic_of_split ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _)
-      ((splits_id_iff_splits _).2 hf),
+    nextCoeff_map (algebraMap K F).injective, nextCoeff_eq_neg_sum_roots_of_monic_of_splits
+      ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _) ((splits_id_iff_splits _).2 hf),
     neg_neg]
 
 namespace IntermediateField.AdjoinSimple
@@ -184,7 +183,6 @@ lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [C
     letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
     rw [Algebra.trace_eq_matrix_trace b,
       Algebra.trace_eq_matrix_trace (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he]))]
-    change e.toAddMonoidHom _ = _
     rw [AddMonoidHom.map_trace]
     congr
     ext i j
@@ -237,16 +235,14 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
-  letI : ∀ f : L →ₐ[K] E, Fintype (haveI := f.toRingHom.toAlgebra; AlgHom L F E) := ?_
-  · rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen, ←
-      Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
-    · refine Finset.sum_congr rfl fun σ _ => ?_
-      letI : Algebra L E := σ.toRingHom.toAlgebra
-      simp only [Finset.sum_const, Finset.card_univ, ← AlgHom.card L F E]
-      congr!
-    · intro σ
-      simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
-        IsScalarTower.coe_toAlgHom']
+  rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
+    ← Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
+  · refine Finset.sum_congr rfl fun σ _ => ?_
+    letI : Algebra L E := σ.toRingHom.toAlgebra
+    simp_rw [Finset.sum_const, Finset.card_univ, ← AlgHom.card L F E]
+  · intro σ
+    simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
+      IsScalarTower.coe_toAlgHom']
 
 theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L] {x : L} :
     algebraMap K E (Algebra.trace K L x) = ∑ σ : L →ₐ[K] E, σ x := by
@@ -260,7 +256,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
     exact Algebra.IsSeparable.isSeparable K _
 
 theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :
-    algebraMap K L (Algebra.trace K L x) = ∑ σ : L ≃ₐ[K] L, σ x := by
+    algebraMap K L (Algebra.trace K L x) = ∑ σ : Gal(L/K), σ x := by
   apply FaithfulSMul.algebraMap_injective L (AlgebraicClosure L)
   rw [_root_.map_sum (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.sum_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
@@ -531,9 +527,12 @@ section isNilpotent
 namespace Algebra
 
 /-- The trace of a nilpotent element is nilpotent. -/
-lemma trace_isNilpotent_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
+lemma isNilpotent_trace_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (trace R S x) :=
   LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
+
+@[deprecated (since := "2025-10-21")] alias trace_isNilpotent_of_isNilpotent :=
+  isNilpotent_trace_of_isNilpotent
 
 end Algebra
 
@@ -553,7 +552,6 @@ noncomputable def Module.Basis.traceDual :
     Basis ι K L :=
   (traceForm K L).dualBasis (traceForm_nondegenerate K L) b
 
-
 theorem Module.Basis.traceDual_def :
     b.traceDual = (traceForm K L).dualBasis (traceForm_nondegenerate K L) b := rfl
 
@@ -569,8 +567,8 @@ theorem Module.Basis.trace_traceDual_mul (i j : ι) :
 
 @[simp]
 theorem Module.Basis.trace_mul_traceDual (i j : ι) :
-    trace K L ((b i) * (b.traceDual j)) = if i = j then 1 else 0 := by
-  refine (traceForm K L).apply_dualBasis_right _ (traceForm_isSymm K) _ i j
+    trace K L ((b i) * (b.traceDual j)) = if i = j then 1 else 0 :=
+  (traceForm K L).apply_dualBasis_right _ (traceForm_isSymm K) _ i j
 
 @[simp]
 theorem Module.Basis.traceDual_traceDual :
@@ -581,20 +579,21 @@ variable (K L)
 
 theorem Module.Basis.traceDual_involutive :
     Function.Involutive (Basis.traceDual : Basis ι K L → Basis ι K L) :=
-  fun b ↦ traceDual_traceDual b
+  (traceForm K L).dualBasis_involutive _ (traceForm_isSymm K)
 
 theorem Module.Basis.traceDual_injective :
     Function.Injective (Basis.traceDual : Basis ι K L → Basis ι K L) :=
-  (traceDual_involutive K L).injective
+  (traceForm K L).dualBasis_injective _ (traceForm_isSymm K)
 
 variable {K L b}
 
+@[simp]
 theorem Module.Basis.traceDual_inj {b' : Basis ι K L} :
     b.traceDual = b'.traceDual ↔ b = b' :=
   (traceDual_injective K L).eq_iff
 
 /--
-A family of vectors `v` is the dual for the trace of the basis `b` iff
+A family of vectors `v` is the dual for the trace of the basis `b` if and only if
 `∀ i j, Tr(v i * b j) = δ_ij`.
 -/
 @[simp]

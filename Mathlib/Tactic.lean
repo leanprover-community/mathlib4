@@ -87,7 +87,9 @@ import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.FieldSimp.Attr
 import Mathlib.Tactic.FieldSimp.Discharger
 import Mathlib.Tactic.FieldSimp.Lemmas
 import Mathlib.Tactic.FinCases
@@ -148,12 +150,14 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Linter
+import Mathlib.Tactic.Linter.CommandRanges
 import Mathlib.Tactic.Linter.CommandStart
 import Mathlib.Tactic.Linter.DeprecatedModule
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DirectoryDependency
 import Mathlib.Tactic.Linter.DocPrime
 import Mathlib.Tactic.Linter.DocString
+import Mathlib.Tactic.Linter.FindDeprecations
 import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
@@ -184,6 +188,7 @@ import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum.Abs
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.Core
@@ -228,6 +233,7 @@ import Mathlib.Tactic.ProdAssoc
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
 import Mathlib.Tactic.Push
+import Mathlib.Tactic.Push.Attr
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recall

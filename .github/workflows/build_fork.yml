@@ -604,13 +604,13 @@ jobs:
       - name: verify that everything was available in the cache
         run: |
           echo "::group::{verify Mathlib cache}"
-          lake build --no-build -v Mathlib
+          lake build --no-build --rehash -v Mathlib
           echo "::endgroup::"
           echo "::group::{verify Archive cache}"
-          lake build --no-build -v Archive
+          lake build --no-build --rehash -v Archive
           echo "::endgroup::"
           echo "::group::{verify Counterexamples cache}"
-          lake build --no-build -v Counterexamples
+          lake build --no-build --rehash -v Counterexamples
           echo "::endgroup::"
 
       - name: check declarations in db files
@@ -638,6 +638,12 @@ jobs:
         # make sure everything is available for test/import_all.lean
         run: |
           lake build Batteries Qq Aesop ProofWidgets Plausible
+
+      - name: build AesopTest (nightly-testing only)
+        # Only run on the mathlib4-nightly-testing repository
+        if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
+        run: |
+          lake build AesopTest
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `lean4checker.yml`.
@@ -678,16 +684,6 @@ jobs:
           mode: check
           lint-bib-file: true
           ref: ${{ github.event.pull_request.head.sha }}
-
-  build_and_lint:
-    name: CI Success
-    if: github.event.pull_request.head.repo.fork
-    needs: [style_lint, post_steps]
-    runs-on: ubuntu-latest
-    steps:
-      - name: succeed
-        run: |
-          echo "Success: Required build and lint checks completed!"
 
   final:
     name: Post-CI job (fork)

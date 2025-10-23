@@ -35,7 +35,7 @@ set_option mathlib.tactic.category.grind true
 
 universe v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 namespace CategoryTheory
 
 open Category
@@ -66,6 +66,7 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 namespace Iso
 
+set_option linter.style.commandStart false in -- false positive, calc blocks
 @[ext, grind ext]
 theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   suffices α.inv = β.inv by grind [Iso]
@@ -107,12 +108,10 @@ theorem nonempty_iso_symm (X Y : C) : Nonempty (X ≅ Y) ↔ Nonempty (Y ≅ X) 
   ⟨fun h => ⟨h.some.symm⟩, fun h => ⟨h.some.symm⟩⟩
 
 /-- Identity isomorphism. -/
-@[refl, simps]
+@[refl, simps (attr := grind =)]
 def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
-
-attribute [grind =] refl_hom refl_inv
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
 
@@ -122,12 +121,10 @@ theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 
 /-- Composition of two isomorphisms -/
-@[simps]
+@[simps (attr := grind =)]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
-
-attribute [grind =] trans_hom trans_inv
 
 @[simps]
 instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
@@ -226,7 +223,10 @@ def homFromEquiv (α : X ≅ Y) {Z : C} : (X ⟶ Z) ≃ (Y ⟶ Z) where
 
 end Iso
 
-/-- `IsIso` typeclass expressing that a morphism is invertible. -/
+/-- The `IsIso` typeclass expresses that a morphism is invertible.
+
+Given a morphism `f` with `IsIso f`, one can view `f` as an isomorphism via `asIso f` and get
+the inverse using `inv f`. -/
 class IsIso (f : X ⟶ Y) : Prop where
   /-- The existence of an inverse morphism. -/
   out : ∃ inv : Y ⟶ X, f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y

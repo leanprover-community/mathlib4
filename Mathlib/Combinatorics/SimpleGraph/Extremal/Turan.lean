@@ -87,8 +87,7 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
 
 theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1) := by
   rw [cliqueFree_iff]
-  by_contra h
-  rw [not_isEmpty_iff] at h
+  by_contra! h
   obtain ⟨f, ha⟩ := h
   simp only [turanGraph, top_adj] at ha
   obtain ⟨x, y, d, c⟩ := Fintype.exists_ne_map_eq_of_card_lt (fun x ↦
@@ -114,7 +113,7 @@ lemma exists_isTuranMaximal (hr : 0 < r) :
   let c := {H : SimpleGraph V | H.CliqueFree (r + 1)}
   have cn : c.toFinset.Nonempty := ⟨⊥, by
     rw [Set.toFinset_setOf, mem_filter_univ]
-    exact cliqueFree_bot (by omega)⟩
+    exact cliqueFree_bot (by cutsat)⟩
   obtain ⟨S, Sm, Sl⟩ := exists_max_image c.toFinset (#·.edgeFinset) cn
   use S, inferInstance
   rw [Set.mem_toFinset] at Sm
@@ -140,7 +139,7 @@ lemma degree_eq_of_not_adj (h : G.IsTuranMaximal r) (hn : ¬G.Adj s t) :
   classical
   use G.replaceVertex s t, inferInstance, cf.replaceVertex s t
   have := G.card_edgeFinset_replaceVertex_of_not_adj hn
-  omega
+  cutsat
 
 /-- In a Turán-maximal graph, non-adjacency is transitive. -/
 lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj s u) :
@@ -169,7 +168,7 @@ lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj 
     simp only [mem_neighborFinset, mem_sdiff, mem_singleton, replaceVertex]
     split_ifs <;> simp_all [adj_comm]
   have l3 : 0 < G.degree u := by rw [G.degree_pos_iff_exists_adj u]; use t, h.symm
-  omega
+  cutsat
 
 variable (h : G.IsTuranMaximal r)
 include h
@@ -229,7 +228,7 @@ theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
   rw [G.card_edgeFinset_replaceVertex_of_adj ha,
     degree_eq_card_sub_part_card h, small_eq, degree_eq_card_sub_part_card h, large_eq]
   have : #large ≤ Fintype.card V := by simpa using card_le_card large.subset_univ
-  omega
+  cutsat
 
 lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
   by_contra! l
@@ -328,7 +327,7 @@ private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
     rwa [Nat.mod_eq_of_lt mw.1, Nat.mod_eq_of_lt mx.1] at this
   · rw [one_le_card]; use ((r - 1) * n + c) % r
     simp only [mem_filter, mem_range]; refine ⟨Nat.mod_lt _ hr, ?_⟩
-    rw [Nat.add_mod_mod, ← add_assoc, ← one_add_mul, show 1 + (r - 1) = r by omega,
+    rw [Nat.add_mod_mod, ← add_assoc, ← one_add_mul, show 1 + (r - 1) = r by cutsat,
       Nat.mul_add_mod_self_left]
 
 lemma card_edgeFinset_turanGraph_add :
@@ -392,15 +391,15 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
 `turanGraph n r`. -/
 theorem mul_card_edgeFinset_turanGraph_le :
     2 * r * #(turanGraph n r).edgeFinset ≤ (r - 1) * n ^ 2 := by
-  rw [card_edgeFinset_turanGraph, mul_add]
-  apply (Nat.add_le_add_right (Nat.mul_div_le ..) _).trans
+  grw [card_edgeFinset_turanGraph, mul_add, Nat.mul_div_le]
   rw [tsub_mul, ← Nat.sub_add_comm]; swap
-  · exact mul_le_mul_right' (pow_le_pow_left' (Nat.mod_le ..) _) _
+  · grw [Nat.mod_le]
+    exact Nat.zero_le _
   rw [Nat.sub_le_iff_le_add, mul_comm, Nat.add_le_add_iff_left, Nat.choose_two_right,
     ← Nat.mul_div_assoc _ (Nat.even_mul_pred_self _).two_dvd, mul_assoc,
     mul_div_cancel_left₀ _ two_ne_zero, ← mul_assoc, ← mul_rotate, sq, ← mul_rotate (r - 1)]
-  refine mul_le_mul_right' ?_ _
-  rcases r.eq_zero_or_pos with rfl | hr; · omega
+  gcongr ?_ * _
+  rcases r.eq_zero_or_pos with rfl | hr; · cutsat
   rw [Nat.sub_one_mul, Nat.sub_one_mul, mul_comm]
   exact Nat.sub_le_sub_left (Nat.mod_lt _ hr).le _
 

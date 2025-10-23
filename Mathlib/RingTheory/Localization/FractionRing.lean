@@ -123,9 +123,9 @@ instance (priority := 100) : FaithfulSMul R K :=
 variable {R K}
 
 open algebraMap in
-@[norm_cast, simp]
+@[norm_cast]
 theorem coe_inj {a b : R} : (↑a : K) = ↑b ↔ a = b :=
-  (IsFractionRing.injective R K).eq_iff
+  algebraMap.coe_inj _ _
 
 protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] {x : R}
     (hx : x ∈ nonZeroDivisors R) : algebraMap R K x ≠ 0 :=
@@ -220,6 +220,27 @@ theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x 
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors y.property
   rw [IsFractionRing.mk'_eq_div, div_eq_one_iff_eq hy] at hxy
   exact IsFractionRing.injective A K hxy
+
+section commutes
+
+variable [Algebra A B] {K₁ K₂ : Type*} [Field K₁] [Field K₂] [Algebra A K₁] [Algebra A K₂]
+  [IsFractionRing A K₁] {L₁ L₂ : Type*} [Field L₁] [Field L₂] [Algebra B L₁] [Algebra B L₂]
+  [Algebra K₁ L₁] [Algebra K₂ L₂] [Algebra A L₁] [Algebra A L₂] [IsScalarTower A K₁ L₁]
+  [IsScalarTower A K₂ L₂] [IsScalarTower A B L₁] [IsScalarTower A B L₂]
+
+omit [IsDomain B]
+
+theorem algHom_commutes (e : K₁ →ₐ[A] K₂) (f : L₁ →ₐ[B] L₂) (x : K₁) :
+    algebraMap K₂ L₂ (e x) = f (algebraMap K₁ L₁ x) := by
+  obtain ⟨r, s, hs, rfl⟩ := IsFractionRing.div_surjective (A := A) x
+  simp_rw [map_div₀, AlgHom.commutes, ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply A B L₁, AlgHom.commutes, ← IsScalarTower.algebraMap_apply]
+
+theorem algEquiv_commutes (e : K₁ ≃ₐ[A] K₂) (f : L₁ ≃ₐ[B] L₂) (x : K₁) :
+    algebraMap K₂ L₂ (e x) = f (algebraMap K₁ L₁ x) := by
+  exact algHom_commutes e.toAlgHom f.toAlgHom _
+
+end commutes
 
 section Subfield
 
@@ -468,14 +489,18 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
   convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
   exact (MulEquivClass.map_nonZeroDivisors h).symm
 
-protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
-    [IsFractionRing R S] : Nontrivial S := by
-  apply nontrivial_of_ne
-  · intro h
-    apply @zero_ne_one R
-    exact
-      IsLocalization.injective S (le_of_eq rfl)
-        (((algebraMap R S).map_zero.trans h).trans (algebraMap R S).map_one.symm)
+variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]
+
+theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
+  by_contra! h'
+  rcases h' with ⟨_, _⟩ | ⟨_, _⟩
+  · obtain ⟨c, hc⟩ := h.exists_of_eq (x := 1) (y := 0) (Subsingleton.elim _ _)
+    simp at hc
+  · apply (h.map_units 1).ne_zero
+    rw [Subsingleton.eq_zero ((1 : nonZeroDivisors R) : R), map_zero]
+
+protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
+  h.nontrivial_iff_nontrivial.mp hR
 
 end IsFractionRing
 
