@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 """
+Usage: lake-build-wrapper.py <output_file.json> <command> [args...]
+
 Wrapper script for `lake build` to be used in GitHub actions that:
 1. Groups only normal build output (✔ lines) into collapsible log groups
 2. Emits all non-✔ lines (including ℹ/⚠/✖ and summaries) outside groups
-3. Extracts infos/warnings/errors to JSON for step outputs without altering the stream
-
-Written to GITHUB_OUTPUT:
-- `warning_count`, `error_count`, `info_count`: integers counting the number of build targets with
-  warnings, errors and info / trace messages.
-- `summary`: full summary JSON described below.
+3. Extracts infos/warnings/errors to JSON output file
 
 Summary JSON format:
 - Top-level object with keys:
@@ -311,16 +308,15 @@ class BuildOutputProcessor:
         }
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: wrapper.py <command> [args...]", file=sys.stderr)
+    if len(sys.argv) < 3:
+        print("Usage: lake-build-wrapper.py <output_file.json> <command> [args...]", file=sys.stderr)
         sys.exit(1)
 
-    import os
     processor = BuildOutputProcessor()
 
     # Run the command and process output line by line
     process = subprocess.Popen(
-        sys.argv[1:],
+        sys.argv[2:],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -339,25 +335,11 @@ def main():
         process.wait()
         processor.finalize()
 
-        # Get summary and output as JSON string for step output
+        # Write summary as JSON string
         summary = processor.get_summary()
-        summary_json = json.dumps(summary)
-
-        # Set GitHub Actions outputs using GITHUB_OUTPUT
-        github_output = os.environ.get('GITHUB_OUTPUT')
-        if github_output:
-            with open(github_output, 'a') as f:
-                f.write(f"warning_count={summary['warning_count']}\n")
-                f.write(f"error_count={summary['error_count']}\n")
-                f.write(f"info_count={summary['info_count']}\n")
-                # For multiline output, use delimiter syntax
-                f.write(f"summary<<EOF\n{summary_json}\nEOF\n")
-        else:
-            print("Warning: GITHUB_OUTPUT environment variable not set", file=sys.stderr)
-            print(f"warning_count={summary['warning_count']}", file=sys.stderr)
-            print(f"error_count={summary['error_count']}", file=sys.stderr)
-            print(f"info_count={summary['info_count']}", file=sys.stderr)
-            print(f"summary={summary_json}", file=sys.stderr)
+        summary_file = sys.argv[1]
+        with open(summary_file, 'w') as f:
+            json.dump(summary, f)
 
         # Exit with the same code as the subprocess
         sys.exit(process.returncode)
