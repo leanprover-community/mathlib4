@@ -769,14 +769,12 @@ lemma memLp_indicator_iff_restrict {f : α → ε} (hs : MeasurableSet s) :
   simp [MemLp, aestronglyMeasurable_indicator_iff hs, eLpNorm_indicator_eq_eLpNorm_restrict hs]
 
 lemma memLp_indicator_const (p : ℝ≥0∞) (hs : MeasurableSet s) (c : E)
-    (hμsc : c = 0 ∨ p = ∞ ∨ μ s ≠ ∞) : MemLp (s.indicator fun _ => c) p μ := by
+    (hμsc : p = ∞ ∨ μ s ≠ ∞) : MemLp (s.indicator fun _ => c) p μ := by
   rw [memLp_indicator_iff_restrict hs]
-  obtain rfl | hμi | hμs := hμsc
-  · exact MemLp.zero
-  · rw [hμi]
-    apply memLp_const
+  obtain rfl | hμs := hμsc
+  · exact memLp_const _
   · have := Fact.mk hμs.lt_top
-    apply memLp_const
+    exact memLp_const _
 
 lemma eLpNormEssSup_piecewise (f g : α → ε) [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
     eLpNormEssSup (Set.piecewise s f g) μ
