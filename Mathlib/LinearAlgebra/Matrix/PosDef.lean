@@ -205,6 +205,12 @@ theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R)
     PosSemidef (A * Aᴴ) := by
   simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
+theorem posSemidef_sum {ι : Type*} [AddLeftMono R]
+    {x : ι → Matrix n n R} (s : Finset ι) (h : ∀ i ∈ s, PosSemidef (x i)) :
+    PosSemidef (∑ i ∈ s, x i) := by
+  refine ⟨isSelfAdjoint_sum s fun _ hi => h _ hi |>.1, fun y => ?_⟩
+  simp [sum_mulVec, dotProduct_sum, Finset.sum_nonneg fun _ hi => (h _ hi).2 _]
+
 section trace
 -- TODO: move these results to an earlier file
 
@@ -255,7 +261,7 @@ variable [DecidableEq n] {U x : Matrix n n R}
 /-- For an invertible matrix `U`, `star U * x * U` is positive semi-definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.conjugate_nonneg_iff'` for  a similar statement for star-ordered rings. -/
+See `IsUnit.conjugate_nonneg_iff'` for a similar statement for star-ordered rings. -/
 theorem IsUnit.posSemidef_conjugate_iff' (hU : IsUnit U) :
     PosSemidef (star U * x * U) ↔ x.PosSemidef := by
   simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, hU.isSelfAdjoint_conjugate_iff',
@@ -268,7 +274,7 @@ open Matrix in
 /-- For an invertible matrix `U`, `U * x * star U` is positive semi-definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.conjugate_nonneg_iff` for  a similar statement for star-ordered rings. -/
+See `IsUnit.conjugate_nonneg_iff` for a similar statement for star-ordered rings. -/
 theorem IsUnit.posSemidef_conjugate_iff (hU : IsUnit U) :
     PosSemidef (U * x * star U) ↔ x.PosSemidef := by simpa using hU.star.posSemidef_conjugate_iff'
 
@@ -391,6 +397,18 @@ protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
   hA.add_posSemidef hB.posSemidef
 
+theorem _root_.Matrix.posDef_sum {ι : Type*} [AddLeftMono R] {A : ι → Matrix m m R}
+    {s : Finset ι} (hs : s.Nonempty) (hA : ∀ i ∈ s, (A i).PosDef) : (∑ i ∈ s, A i).PosDef := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp at hs
+  | insert i hi hins H =>
+      rw [Finset.sum_insert hins]
+      by_cases h : ¬ hi.Nonempty
+      · simp_all
+      · exact PosDef.add (hA _ <| Finset.mem_insert_self i hi) <|
+          H (not_not.mp h) fun _ _hi => hA _ (Finset.mem_insert_of_mem _hi)
+
 protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α]
     [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulStrictMono α R]
     {x : Matrix n n R} (hx : x.PosDef) {a : α} (ha : 0 < a) : (a • x).PosDef := by
@@ -501,7 +519,7 @@ variable [DecidableEq n] {x U : Matrix n n R}
 /-- For an invertible matrix `U`, `star U * x * U` is positive definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.isStrictlyPositive_conjugate_iff'` for  a similar statement for star-ordered rings.
+See `IsUnit.isStrictlyPositive_conjugate_iff'` for a similar statement for star-ordered rings.
 For matrices, positive definiteness is equivalent to strict positivity when the underlying field is
 `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
 theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' (hU : IsUnit U) :
@@ -518,7 +536,7 @@ open Matrix in
 /-- For an invertible matrix `U`, `U * x * star U` is positive definite iff `x` is.
 This works on any ⋆-ring with a partial order.
 
-See `IsUnit.isStrictlyPositive_conjugate_iff` for  a similar statement for star-ordered rings.
+See `IsUnit.isStrictlyPositive_conjugate_iff` for a similar statement for star-ordered rings.
 For matrices, positive definiteness is equivalent to strict positivity when the underlying field is
 `ℝ` or `ℂ` (see `Matrix.isStrictlyPositive_iff_posDef`). -/
 theorem _root_.Matrix.IsUnit.posDef_conjugate_iff (hU : IsUnit U) :
