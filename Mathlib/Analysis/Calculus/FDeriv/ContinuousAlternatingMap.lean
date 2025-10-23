@@ -8,6 +8,11 @@ import Mathlib.Analysis.NormedSpace.Alternating.Basic
 
 /-!
 # Derivatives of operations on continuous alternating maps
+
+In this file we prove formulas for the derivatives of
+
+- `ContinuousAlternatingMap.compContinuousLinearMap`;
+- application of a `ContinuousAlternatingMap`.
 -/
 
 variable {𝕜 ι E F G H : Type*}

@@ -35,7 +35,7 @@ We use the following type variables in this file:
 /-- Applying a continuous alternating map to a vector is continuous
 in the pair (map, vector).
 
-Continuity in in the vector holds by definition
+Continuity in the vector holds by definition
 and continuity in the map holds if both the domain and the codomain are topological vector spaces.
 However, continuity in the pair (map, vector) needs the domain to be a locally bounded TVS.
 We have no typeclass for a locally bounded TVS,

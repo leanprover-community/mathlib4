@@ -103,3 +103,13 @@ theorem DifferentiableAt.continuousMultilinearMapCompContinuousLinearMap
   classical
   exact hf.hasFDerivAt.continuousMultilinearMapCompContinuousLinearMap
     (fun i ↦ (hg i).hasFDerivAt) |>.differentiableAt
+
+theorem DifferentiableOn.continuousMultilinearMapCompContinuousLinearMap
+    (hf : DifferentiableOn 𝕜 f s) (hg : ∀ i, DifferentiableOn 𝕜 (g i) s) :
+    DifferentiableOn 𝕜 (fun x ↦ (f x).compContinuousLinearMap (g · x)) s := fun x hx ↦
+  (hf x hx).continuousMultilinearMapCompContinuousLinearMap (hg · x hx)
+
+theorem Differentiable.continuousMultilinearMapCompContinuousLinearMap
+    (hf : Differentiable 𝕜 f) (hg : ∀ i, Differentiable 𝕜 (g i)) :
+    Differentiable 𝕜 (fun x ↦ (f x).compContinuousLinearMap (g · x)) := fun x ↦
+  (hf x).continuousMultilinearMapCompContinuousLinearMap (hg · x)
