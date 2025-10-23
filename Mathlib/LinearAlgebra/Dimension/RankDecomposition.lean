@@ -6,6 +6,7 @@ Authors: __________________
 import Mathlib.LinearAlgebra.Dimension.LinearMap
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Order.CompletePartialOrder
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Rank decomposition and bases adapted to a linear map
