@@ -70,16 +70,16 @@ theorem tensorUnit : 𝟙_ C = ⊤_ C := rfl
 theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
   rfl
 
-@[deprecated CartesianMonoidalCategory.leftUnitor_hom (since := "2025-10-19"), simp, reassoc]
+@[deprecated CartesianMonoidalCategory.leftUnitor_hom (since := "2025-10-19"), simp]
 theorem leftUnitor_hom (X : C) : (λ_ X).hom = Limits.prod.snd :=
   rfl
 
-@[deprecated CartesianMonoidalCategory.rightUnitor_hom (since := "2025-10-19"), simp, reassoc]
+@[deprecated CartesianMonoidalCategory.rightUnitor_hom (since := "2025-10-19"), simp]
 theorem rightUnitor_hom (X : C) : (ρ_ X).hom = Limits.prod.fst :=
   rfl
 
 @[deprecated "Use the `CartesianMonoidalCategory.associator_hom_...` lemmas"
-  (since := "2025-10-19"), simp, reassoc]
+  (since := "2025-10-19"), simp]
 theorem associator_hom (X Y Z : C) :
     (α_ X Y Z).hom =
       prod.lift (Limits.prod.fst ≫ Limits.prod.fst)
@@ -87,39 +87,39 @@ theorem associator_hom (X Y Z : C) :
   rfl
 
 @[deprecated "Use the `CartesianMonoidalCategory.associator_inv_...` lemmas"
-  (since := "2025-10-19"), reassoc]
+  (since := "2025-10-19")]
 theorem associator_inv (X Y Z : C) :
     (α_ X Y Z).inv =
       prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd) :=
   rfl
 
 set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_hom_fst (since := "2025-10-19"), reassoc]
+@[deprecated CartesianMonoidalCategory.associator_hom_fst (since := "2025-10-19")]
 theorem associator_hom_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.fst = prod.fst ≫ prod.fst := by simp [associator_hom]
 
 set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_hom_snd_fst (since := "2025-10-19"), reassoc]
+@[deprecated CartesianMonoidalCategory.associator_hom_snd_fst (since := "2025-10-19")]
 theorem associator_hom_snd_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.snd ≫ prod.fst = prod.fst ≫ prod.snd := by simp [associator_hom]
 
 set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_hom_snd_snd (since := "2025-10-19"), reassoc]
+@[deprecated CartesianMonoidalCategory.associator_hom_snd_snd (since := "2025-10-19")]
 theorem associator_hom_snd_snd (X Y Z : C) :
     (α_ X Y Z).hom ≫ prod.snd ≫ prod.snd = prod.snd := by simp [associator_hom]
 
 set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_inv_fst_fst (since := "2025-10-19"), reassoc]
+@[deprecated CartesianMonoidalCategory.associator_inv_fst_fst (since := "2025-10-19")]
 theorem associator_inv_fst_fst (X Y Z : C) :
     (α_ X Y Z).inv ≫ prod.fst ≫ prod.fst = prod.fst := by simp [associator_inv]
 
 set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_inv_fst_snd (since := "2025-10-19"), reassoc]
+@[deprecated CartesianMonoidalCategory.associator_inv_fst_snd (since := "2025-10-19")]
 theorem associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ prod.fst ≫ prod.snd = prod.snd ≫ prod.fst := by simp [associator_inv]
 
 set_option linter.deprecated false in
-@[deprecated CartesianMonoidalCategory.associator_inv_snd (since := "2025-10-19"), reassoc]
+@[deprecated CartesianMonoidalCategory.associator_inv_snd (since := "2025-10-19")]
 theorem associator_inv_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ prod.snd = prod.snd ≫ prod.snd := by simp [associator_inv]
 
