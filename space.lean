@@ -1,26 +1,33 @@
-import Mathlib
+/-
+Copyright (c) 2025 __________________. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: __________________
+-/
+import Mathlib.LinearAlgebra.Dimension.LinearMap
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.Order.CompletePartialOrder
+import Mathlib.RingTheory.HopkinsLevitzki
 
-open LinearMap Submodule Basis Module
+open Submodule Module Basis
 
 noncomputable section
 
 variable {K : Type*} [DivisionRing K] {V W : Type*}
-    [AddCommGroup V] [Module K V]
-    [AddCommGroup W] [Module K W]
-    (f : V →ₗ[K] W)
+variable [AddCommGroup V] [Module K V]
+variable [AddCommGroup W] [Module K W] (f : V →ₗ[K] W)
+
+namespace LinearMap
 
 /-- 选择与核空间互补的子空间 -/
-def LinearMap.kerComplement : Submodule K V :=
-  (Submodule.exists_isCompl <| ker f).choose
+def kerComplement : Submodule K V :=
+  (ker f).exists_isCompl.choose
 
 /-- 核空间与其补空间构成互补子空间 -/
-lemma LinearMap.isCompl_ker_kerComplement :
-    IsCompl f.kerComplement (ker f) :=
-  (Submodule.exists_isCompl (ker f)).choose_spec.symm
+lemma isCompl_ker_kerComplement : IsCompl f.kerComplement (ker f) :=
+  (ker f).exists_isCompl.choose_spec.symm
 
 /-- 核空间与其补空间的直和等价于整个空间 -/
-def LinearMap.directSumDecomposition :
-    (f.kerComplement × (ker f)) ≃ₗ[K] V :=
+def directSumDecomposition : (f.kerComplement × (ker f)) ≃ₗ[K] V :=
   prodEquivOfIsCompl _ _ f.isCompl_ker_kerComplement
 
 /-- 直和分解的核分量在映射 `f` 下为零，因此不影响像。
@@ -29,9 +36,12 @@ def LinearMap.directSumDecomposition :
     则有 `f y_ker = 0`，因此 `f y = f y_comp`。
     而 `(directSumDecomposition.symm y).1` 对应的是核分量 `y_ker`。 -/
 lemma apply_ker_component_eq_zero (y : V) : f (f.directSumDecomposition.symm y).1 = f y := by
-  nth_rw 2 [← linear_proj_add_linearProjOfIsCompl_eq_self f.isCompl_ker_kerComplement y]
-  simp only [map_add, map_coe_ker, add_zero]
-  rfl
+  nth_rw 2 [← Submodule.IsCompl.projection_add_projection_eq_self f.isCompl_ker_kerComplement y]
+  refine sub_mem_ker_iff.mp ?_
+  #check map_coe_ker
+  sorry
+  -- simp only [map_add, , add_zero]
+  -- rfl
 
 /-- 通过线性映射f的直和分解构造V的基。
 
@@ -42,36 +52,36 @@ lemma apply_ker_component_eq_zero (y : V) : f (f.directSumDecomposition.symm y).
 
     这一定义体现了第一同构定理的几何实质：V ≃ ker f × (range f)，且kerComplement f ≃ range f。
 -/
-def LinearMap.decomposition_basis :
+def decomposition_basis :
     Basis ((ofVectorSpaceIndex K f.kerComplement) ⊕ (ofVectorSpaceIndex K (LinearMap.ker f))) K V :=
   .map (.prod (ofVectorSpace K _) (ofVectorSpace K _)) (f.directSumDecomposition)
 
 /-- 线性映射 `f` 在核补空间上的限制，即将核补空间嵌入到 `V` 后应用 `f` -/
-def LinearMap.ker_complement_restriction : f.kerComplement →ₗ[K] W :=
+def ker_complement_restriction : f.kerComplement →ₗ[K] W :=
     f.comp f.kerComplement.subtype
 
 /-- 线性映射 `f` 在其核补空间上的限制是单射。
 
 这是因为核空间 `ker f` 与补空间 `kerComplement f` 是互补子空间（由 `isCompl_ker_kerComplement` 保证），
 它们的交集仅为零子空间，因此 `f` 在补空间上的限制具有平凡核。 -/
-lemma LinearMap.ker_complement_restriction_injective : ker f.ker_complement_restriction = ⊥ := by
+lemma ker_complement_restriction_injective : ker f.ker_complement_restriction = ⊥ := by
   simpa [ker_complement_restriction, ker_comp, ← disjoint_iff_comap_eq_bot]
     using f.isCompl_ker_kerComplement.disjoint
 
 /-- 通过核补空间的基和限制映射 `f ∘ Submodule.subtype (kerComplement f)` 构造的映射，
     将基索引映射到 `W` 中的向量 -/
-def LinearMap.ker_complement_basis_image :
+def ker_complement_basis_image :
     ofVectorSpaceIndex K f.kerComplement → W :=
   f.ker_complement_restriction ∘ (ofVectorSpace K f.kerComplement)
 
 /-- `ker_complement_basis_image f` 是线性无关的，因为 `f` 在核补空间上是单射 -/
-lemma LinearMap.linear_independent_ker_complement_basis_image :
+lemma linear_independent_ker_complement_basis_image :
     LinearIndependent K f.ker_complement_basis_image :=
   LinearIndependent.map' (ofVectorSpace K f.kerComplement).linearIndependent _
     f.ker_complement_restriction_injective
 
 /-- 通过将核补空间的基像（对应 `range f`）与余核的基扩展组合，构造 `W` 的基 -/
-def LinearMap.range_decomposition_basis :
+def range_decomposition_basis :
     Basis ((ofVectorSpaceIndex K f.kerComplement) ⊕
       (sumExtendIndex f.linear_independent_ker_complement_basis_image)) K W :=
   Basis.sumExtend f.linear_independent_ker_complement_basis_image
@@ -88,7 +98,7 @@ instance : DecidableEq (ofVectorSpaceIndex K f.kerComplement) := Classical.typeD
 instance : DecidableEq (ofVectorSpaceIndex K (ker f)) := Classical.typeDecidableEq _
 
 /-- 核空间的补空间线性同构于像空间 -/
-def LinearMap.kerComplementEquivRange :
+def kerComplementEquivRange :
     f.kerComplement ≃ₗ[K] (range f) := by
   let g : f.kerComplement →ₗ[K] range f :=
     codRestrict (range f) f.ker_complement_restriction
@@ -111,7 +121,7 @@ def LinearMap.kerComplementEquivRange :
     这是第一同构定理的推论：由于 `kerComplement f ≃ₗ[K] range f`，
     所以 `finrank K (kerComplement f) = finrank K (range f) = rank f`。
 -/
-lemma LinearMap.finrank_kerComplement_eq_rank [FiniteDimensional K V] {r : ℕ} (hr : rank f = r) :
+lemma finrank_kerComplement_eq_rank {r : ℕ} (hr : rank f = r) :
     finrank K f.kerComplement = r := by
   simp [(finrank_eq_of_rank_eq hr).symm, LinearEquiv.finrank_eq f.kerComplementEquivRange]
 
@@ -121,7 +131,7 @@ lemma LinearMap.finrank_kerComplement_eq_rank [FiniteDimensional K V] {r : ℕ} 
     `finrank K V = finrank K (range f) + finrank K (ker f)`，
     因此 `finrank K (ker f) = finrank K V - rank f`。
 -/
-lemma LinearMap.finrank_ker_eq
+lemma finrank_ker_eq
   [FiniteDimensional K V] {r n: ℕ}
   (hr : rank f = r) (hn : finrank K V = n) : finrank K (ker f) = n - r := by
   simp [← hn, ← finrank_range_add_finrank_ker f, (finrank_eq_of_rank_eq hr).symm]
@@ -136,14 +146,14 @@ lemma card_cokernel_basis_index_eq  {m r : ℕ} [FiniteDimensional K V]
   simp [← finrank_eq_card_basis (ofVectorSpace K f.kerComplement),
     f.finrank_kerComplement_eq_rank hr]
 
-lemma LinearMap.apply_kerComplement_basis_eq_range_basis (j) : (f (f.decomposition_basis (Sum.inl j))) = (f.range_decomposition_basis (Sum.inl j)) := by
+lemma apply_kerComplement_basis_eq_range_basis (j) : (f (f.decomposition_basis (Sum.inl j))) = (f.range_decomposition_basis (Sum.inl j)) := by
     simp [LinearMap.decomposition_basis, directSumDecomposition,range_decomposition_basis, sumExtend, Equiv.sumCongr,
       ker_complement_basis_image, ker_complement_restriction]
 
 
-end
+end LinearMap
 
-open Basis  Module Matrix
+end
 
 /-- 当索引类型 `ι` 的基数等于自然数 `r` 时，非构造性地获得 `ι` 与 `Fin r` 之间的等价关系。
 
@@ -181,6 +191,9 @@ variable  {R : Type} [Field R] {m n r: ℕ}  {M₁ : Type} {M₂ : Type}
   [FiniteDimensional R M₁]
   [FiniteDimensional R M₂]
   (f : M₁ →ₗ[R] M₂)
+
+open Matrix LinearMap
+
 /-- 线性映射的标准形存在性定理（抽象索引版本）。
 
 对于任意线性映射 `f : M₁ →ₗ[R] M₂`，存在适当的基使得 `f` 的矩阵表示为分块对角形式：`[I_r  0; 0 0 ]`
