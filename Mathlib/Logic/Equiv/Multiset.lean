@@ -89,7 +89,7 @@ theorem raise_sorted (l n) : List.SortedLE (raise l n) := (isChain_raise _ _).so
 in `Multiset.encodable`. -/
 instance multiset : Denumerable (Multiset α) :=
   mk'
-    ⟨fun s : Multiset α => encode <| lower ((s.map encode).sort (· ≤ ·)) 0,
+    ⟨fun s : Multiset α => encode <| lower (s.map encode).sort 0,
      fun n =>
       Multiset.map (ofNat α) (raise (ofNat (List ℕ) n) 0),
      fun s => by
