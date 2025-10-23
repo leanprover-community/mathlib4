@@ -550,7 +550,7 @@ theorem comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤 α) 
   have : symmetrizeRel w ⊆ w := symmetrizeRel_subset_self w
   calc symmetrizeRel w ○ symmetrizeRel w
     _ ⊆ w ○ w := by gcongr
-    _ ⊆ s     := w_sub
+    _ ⊆ s := w_sub
 
 theorem subset_comp_self_of_mem_uniformity {s : Set (α × α)} (h : s ∈ 𝓤 α) : s ⊆ s ○ s :=
   subset_comp_self (refl_le_uniformity h)
