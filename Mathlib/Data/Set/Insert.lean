@@ -37,8 +37,15 @@ variable {α : Type u} {s t : Set α} {a b : α}
 theorem insert_def (x : α) (s : Set α) : insert x s = { y | y = x ∨ y ∈ s } :=
   rfl
 
-@[simp, grind]
+@[simp]
 theorem subset_insert (x : α) (s : Set α) : s ⊆ insert x s := fun _ => Or.inr
+
+-- This is a fairly aggressive pattern; it might be safer to use
+-- `s ⊆ insert x s` or `_ ⊆ insert x s` instead.
+-- Currently Cslib relies on this.
+-- See `MathlibTest/grind/set.lean` for a test case illustrating the reasoning
+-- that Cslib is relying on.
+grind_pattern subset_insert => insert x s
 
 theorem mem_insert (x : α) (s : Set α) : x ∈ insert x s :=
   Or.inl rfl
@@ -200,6 +207,10 @@ theorem singleton_nonempty (a : α) : ({a} : Set α).Nonempty :=
 theorem singleton_ne_empty (a : α) : ({a} : Set α) ≠ ∅ :=
   (singleton_nonempty _).ne_empty
 
+@[simp]
+theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Set α) :=
+  (singleton_ne_empty a).symm
+
 theorem empty_ssubset_singleton : (∅ : Set α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 
@@ -285,7 +296,7 @@ theorem Nonempty.subset_singleton_iff (h : s.Nonempty) : s ⊆ {a} ↔ s = {a} :
 theorem ssubset_singleton_iff {s : Set α} {x : α} : s ⊂ {x} ↔ s = ∅ := by
   rw [ssubset_iff_subset_ne, subset_singleton_iff_eq, or_and_right, and_not_self_iff, or_false,
     and_iff_left_iff_imp]
-  exact fun h => h ▸ (singleton_ne_empty _).symm
+  exact fun h => h ▸ empty_ne_singleton _
 
 theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s = ∅ :=
   ssubset_singleton_iff.1 hs

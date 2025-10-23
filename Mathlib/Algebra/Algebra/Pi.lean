@@ -34,6 +34,7 @@ instance algebra : Algebra R (Π i, A i) where
   commutes' := fun a f ↦ by ext; simp [Algebra.commutes]
   smul_def' := fun a f ↦ by ext; simp [Algebra.smul_def]
 
+@[push ←]
 theorem algebraMap_def (a : R) : algebraMap R (Π i, A i) a = fun i ↦ algebraMap R (A i) a :=
   rfl
 
