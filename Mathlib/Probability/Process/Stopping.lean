@@ -409,9 +409,7 @@ theorem measurableSet_inter_eq_iff (hτ : IsStoppingTime f τ) (s : Set Ω) (i :
     intro hxi
     rw [hxi]
   constructor <;> intro h
-  · have h' := h.2
-    specialize h' i
-    simpa only [Set.inter_assoc, this, le_refl, Set.setOf_true, Set.inter_univ] using h'
+  · simpa [Set.inter_assoc, this] using h.2 i
   · refine ⟨f.le i _ h, fun j ↦ ?_⟩
     rw [Set.inter_assoc, this]
     by_cases hij : i ≤ j
@@ -885,10 +883,9 @@ theorem measurable_stoppedValue [PseudoMetrizableSpace β] [MeasurableSpace β] 
       intro h
       simp [h]
     rw [this]
-    refine MeasurableSet.inter ?_ hτ.measurableSet_eq_top
-    refine ht.preimage ?_
-    have h_ada := hf_prog.adapted (Classical.arbitrary ι)
-    exact h_ada.measurable.mono (f.le (Classical.arbitrary ι)) le_rfl
+    refine MeasurableSet.inter (ht.preimage ?_) hτ.measurableSet_eq_top
+    exact (hf_prog.adapted (Classical.arbitrary ι)).measurable.mono
+      (f.le (Classical.arbitrary ι)) le_rfl
 
 end ProgMeasurable
 
