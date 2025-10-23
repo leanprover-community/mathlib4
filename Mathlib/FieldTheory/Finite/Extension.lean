@@ -99,7 +99,7 @@ theorem card_gal_extension : Fintype.card Gal(Extension k p n / k) = n :=
 
 /-- The Frobenius automorphism `x ↦ x ^ Nat.card k` that fixes `k`. -/
 noncomputable def Extension.frob :
-    Extension k p n ≃ₐ[k] Extension k p n :=
+    Gal(Extension k p n / k) :=
   haveI := Fintype.ofFinite k
   FiniteField.frobeniusAlgEquivOfAlgebraic _ _
 
