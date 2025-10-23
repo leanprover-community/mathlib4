@@ -38,13 +38,14 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 
 - `Submodule.ker_unitsToPic`, `Submodule.range_unitsToPic`: exactness of the sequence
   `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at the last two spots.
+  See Theorem 2.4 in [RobertsSingh1993] or Exercise I.3.7(iv) and Proposition I.3.5 in [Weibel2013].
 
 ## References
 
 - https://qchu.wordpress.com/2014/10/19/the-picard-groups/
 - https://mathoverflow.net/questions/13768/what-is-the-right-definition-of-the-picard-group-of-a-commutative-ring
 - https://mathoverflow.net/questions/375725/picard-group-vs-class-group
-- [Weibel2013], https://sites.math.rutgers.edu/~weibel/Kbook/Kbook.I.pdf, Proposition 3.5.
+- [Weibel2013], https://sites.math.rutgers.edu/~weibel/Kbook/Kbook.I.pdf
 - [Stacks: Picard groups of rings](https://stacks.math.columbia.edu/tag/0AFW)
 
 ## TODO
@@ -611,8 +612,8 @@ noncomputable def unitsToPicEquiv (I : (Submodule R A)ˣ) : unitsToPic R A I ≃
   (mk_eq_iff.mp rfl).some.symm
 
 variable (R A) in
-/-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at
-`(Submodule R A)ˣ`. See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
+/-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A`
+at `(Submodule R A)ˣ`. -/
 theorem ker_unitsToPic : (unitsToPic R A).ker = (Units.map (spanSingleton R)).range := by
   ext I; constructor <;> intro h
   · have e := (mk_eq_one_iff.mp h).some.symm
@@ -699,8 +700,7 @@ variable [CommSemiring A] [Algebra R A] [FaithfulSMul R A]
 
 open CommRing Pic LinearMap Module.Flat
 
-/-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Pic R`.
-See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
+/-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Pic R`. -/
 theorem Submodule.range_unitsToPic : (unitsToPic R A).range = relPic R A := by
   ext M; constructor <;> intro h
   · obtain ⟨I, rfl⟩ := h
