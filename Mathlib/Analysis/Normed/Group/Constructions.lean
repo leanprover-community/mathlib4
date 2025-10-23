@@ -377,17 +377,21 @@ end SeminormedGroup
 /-- Finite product of seminormed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.seminormedCommGroup [∀ i, SeminormedCommGroup (G i)] : SeminormedCommGroup (∀ i, G i) :=
-  fast_instance% { Pi.seminormedGroup with mul_comm }
+  fast_instance% { Pi.seminormedGroup with
+    mul_comm := mul_comm }
 
 /-- Finite product of normed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.normedGroup [∀ i, NormedGroup (G i)] : NormedGroup (∀ i, G i) :=
-  fast_instance% { Pi.seminormedGroup with eq_of_dist_eq_zero }
+  fast_instance% { Pi.seminormedGroup with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- Finite product of normed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.normedCommGroup [∀ i, NormedCommGroup (G i)] : NormedCommGroup (∀ i, G i) :=
-  fast_instance% { Pi.seminormedGroup with mul_comm, eq_of_dist_eq_zero }
+  fast_instance% { Pi.seminormedGroup with
+    mul_comm := mul_comm
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖₊ = ‖y‖₊ := by
