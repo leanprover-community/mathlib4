@@ -842,6 +842,8 @@ variable {op : α → α → α} [ha : Std.Associative op]
 /-- Notation for `op a b`. -/
 local notation a " ⋆ " b => op a b
 
+-- Setting `priority := high` means that Lean will prefer this notation to the identical one
+-- for `Seq.seq`
 /-- Notation for `foldl op a l`. -/
 local notation l " <*> " a => foldl op a l
 
