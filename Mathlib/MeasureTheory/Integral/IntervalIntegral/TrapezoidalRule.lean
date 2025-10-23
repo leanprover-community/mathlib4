@@ -110,7 +110,7 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
     · exact Set.mem_uIcc_of_le (le_add_of_nonneg_right (by positivity)) (by grw [hk])
 
 /-- The most basic case possible: two ordered points, with N = 1. This lemma is used in the proof of
-the general error bound later on. Using it directly is not recommended. -/
+the general error bound later on. -/
 private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
     (h_df : DifferentiableOn ℝ f (Icc a b))
     (h_ddf : DifferentiableOn ℝ (derivWithin f (Icc a b)) (Icc a b))
@@ -174,7 +174,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
 
 /-- The hard part of the trapezoidal rule error bound: proving it in the case of a non-empty closed
 interval with ordered endpoints. This lemma is used in the proof of the general error bound later
-on; using it directly is not recommended. -/
+on. -/
 private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
     (h_df : DifferentiableOn ℝ f (Icc a b))
     (h_ddf : DifferentiableOn ℝ (derivWithin f (Icc a b)) (Icc a b))
