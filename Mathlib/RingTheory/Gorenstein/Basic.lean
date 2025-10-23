@@ -320,6 +320,10 @@ def quotSMulTop_linearEquiv (x : R) {M N : Type*} [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (f : M ≃ₗ[R] N) : (QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop x N) :=
   sorry
 
+open Pointwise
+
+set_option maxHeartbeats 300000 in
+--This iso is to complicated
 noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [Nontrivial M]
     [Module.Finite R M] (rs : List R) (reg : IsRegular R rs) :
     (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M rs.length) ≃ₗ[R]
@@ -332,33 +336,57 @@ noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [No
     exact ((Ext.linearEquiv₀.trans (ModuleCat.homLinearEquiv.trans (e₀.congrLeft M R))).trans
       (LinearMap.ringLmapEquivSelf R R M)).trans (Submodule.quotEquivOfEqBot ⊥ rfl).symm
   · rename_i n hn
-    --need refactor by considering element in the tail instead of the head
-    /-
-    match rs with
-    | [] => simp at len
-    | x :: rs' =>
-      simp only [List.length_cons, Nat.add_right_cancel_iff] at len
-      let e2 := Submodule.quotOfListConsSMulTopEquivQuotSMulTopOuter M x rs'
-      let eih := quotSMulTop_linearEquiv x (hn rs' len)
-      let e : (Shrink.{v, u} (R ⧸ Ideal.ofList (x :: rs'))) ≃ₗ[R]
-        (QuotSMulTop x (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))) :=
-        sorry
-      let e1' : Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList (x :: rs')))) M (n + 1) ≃ₗ[R]
-        Ext (ModuleCat.of R (QuotSMulTop x (Shrink.{v, u} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
-          __ := (((extFunctor.{w} (n + 1)).mapIso e.toModuleIso.op).app
-            M).addCommGroupIsoToAddEquiv.symm
-          map_smul' := sorry }
-      let S := (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))).smulShortComplex x
-      have reg : IsSMulRegular x (Shrink.{v, u} (R ⧸ Ideal.ofList rs')) := sorry
-      have S_exact : S.ShortExact := reg.smulShortComplex_shortExact
-      let e1 : Ext (ModuleCat.of R (QuotSMulTop x (Shrink.{v, u} (R ⧸ Ideal.ofList rs')))) M (n + 1)
-        ≃ₗ[R] QuotSMulTop x (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))) M n) :=
+    let a := rs[n]
+    let rs' := rs.take n
+    have rs'reg : RingTheory.Sequence.IsRegular R rs' := by
+
+      sorry
+    have eqapp : rs = rs' ++ [a] := sorry
+    have reg' : IsSMulRegular (R ⧸ Ideal.ofList rs' • (⊤ : Submodule R R)) a :=
+      reg.1.1 n (lt_of_lt_of_eq (lt_add_one n) len.symm)
+    have reg'' : IsSMulRegular (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))) a :=
+      sorry
+    let e1' : QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')) ≃ₗ[R]
+      (Shrink.{v} (R ⧸ Ideal.ofList rs)) := sorry
+    let e1 : Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M (n + 1) ≃ₗ[R]
+      Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
+      __ := (((extFunctor.{w} (n + 1)).mapIso e1'.toModuleIso.op).app M).addCommGroupIsoToAddEquiv
+      map_smul' r x := by simp [Iso.addCommGroupIsoToAddEquiv] }
+    let S := (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))).smulShortComplex a
+    have S_exact : S.ShortExact := reg''.smulShortComplex_shortExact
+    let f2 : Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) M n →ₗ[R]
+      Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
+        toFun := S_exact.extClass.precomp M (add_comm 1 n)
+        map_add' := by simp
+        map_smul' := by simp }
+    have surj2 : Function.Surjective f2 := by
+      have exac := Ext.contravariant_sequence_exact₃' S_exact M n (n + 1) (add_comm 1 n)
+      have : Subsingleton (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))) M
+        (n + 1)) := by
 
         sorry
-      exact ((e1'.trans e1).trans eih).trans e2.symm
-      -/
-    sorry
-
+      exact (AddCommGrpCat.epi_iff_surjective _).mp
+        (exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _))
+    have ker2 : LinearMap.ker f2 = a • (⊤ : Submodule R _) := by
+      have exac := Ext.contravariant_sequence_exact₁' S_exact M n (n + 1) (add_comm 1 n)
+      have exac' : Function.Exact (a • LinearMap.id (R := R)
+        (M := (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))) M n))) f2 := by
+        convert (ShortComplex.ab_exact_iff_function_exact _).mp exac
+        have : S.f = a • 𝟙 _ := by
+          ext
+          simp [S]
+        ext x
+        simp [this, Ext.mk₀_smul]
+      rw [LinearMap.exact_iff.mp exac']
+      ext y
+      simp [Submodule.mem_smul_pointwise_iff_exists]
+    let e2 : QuotSMulTop a (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) M n) ≃ₗ[R]
+      Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) :=
+      sorry
+    let e3 : QuotSMulTop a (M ⧸ Ideal.ofList rs' • (⊤ : Submodule R M)) ≃ₗ[R]
+      M ⧸ Ideal.ofList rs • (⊤ : Submodule R M) := sorry
+    exact ((e1.trans e2.symm).trans
+      (quotSMulTop_linearEquiv a (hn rs' rs'reg (by simp [rs', len])))).trans e3
 
 omit [IsLocalRing R] in
 lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.Finite R N] (n : ℕ)
@@ -397,7 +425,6 @@ lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.
       ((@AddCommGrpCat.isZero_of_subsingleton _ (h1 h2.1)).eq_zero_of_tgt _)
     exact AddCommGrpCat.subsingleton_of_isZero this
 
-open Pointwise in
 lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ)
     (p : Ideal R) [p.IsPrime] (ne : p ≠ maximalIdeal R) (h : ∀ q > p, q.IsPrime →
       Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ q))) M (n + 1))) :
