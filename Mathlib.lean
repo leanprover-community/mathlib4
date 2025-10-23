@@ -1040,6 +1040,7 @@ import Mathlib.Algebra.Polynomial.Eval.Irreducible
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Algebra.Polynomial.Eval.Subring
 import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Factors
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.Algebra.Polynomial.HasseDeriv
@@ -4691,6 +4692,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.TrapezoidalRule
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Integral.Lebesgue.Add
