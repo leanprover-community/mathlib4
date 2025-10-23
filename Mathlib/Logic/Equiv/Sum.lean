@@ -327,7 +327,7 @@ def sigmaSumDistrib {ι} (α β : ι → Type*) :
     Sum.elim (Sigma.map id fun _ => Sum.inl) (Sigma.map id fun _ => Sum.inr), fun p => by
     rcases p with ⟨i, a | b⟩ <;> rfl, fun p => by rcases p with (⟨i, a⟩ | ⟨i, b⟩) <;> rfl⟩
 
-/-- A type indexed by  disjoint sums of types is equivalent to the sum of the sums. Compare with
+/-- A type indexed by disjoint sums of types is equivalent to the sum of the sums. Compare with
 `Equiv.sigmaSumDistrib` which has the sums as the output type. -/
 @[simps]
 def sumSigmaDistrib {α β} (t : α ⊕ β → Type*) :

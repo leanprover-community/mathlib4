@@ -293,7 +293,7 @@ lemma isInvariantBlock_iff_isFixedBlock : IsInvariantBlock G B ↔ IsFixedBlock 
 @[to_additive /-- An invariant block of a group action is a fixed block. -/]
 alias ⟨IsInvariantBlock.isFixedBlock, _⟩ := isInvariantBlock_iff_isFixedBlock
 
-/-- An invariant block  of a group action is a block. -/
+/-- An invariant block of a group action is a block. -/
 @[to_additive /-- An invariant block of a group action is a block. -/]
 lemma IsInvariantBlock.isBlock (hB : IsInvariantBlock G B) : IsBlock G B := hB.isFixedBlock.isBlock
 

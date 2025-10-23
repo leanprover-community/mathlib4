@@ -34,7 +34,7 @@ coinduction functor and hence that the coinduction functor preserves limits.
   `G`-representation morphisms `k[H] ⟶ A`, with `H`-action given by
   `(h • f) (r • h₁) := r • f(h₁ * h)` for `f : k[H] ⟶ A`, `h, h₁ : H`, `r : k`.
 * `Rep.resCoindAdjunction k φ`: given a monoid homomorphism `φ : G →* H`, this is the adjunction
-  between the restriction functor `Rep k H ⥤ Rep k G` along `φ` and  the coinduction functor
+  between the restriction functor `Rep k H ⥤ Rep k G` along `φ` and the coinduction functor
   along `φ`.
 
 -/

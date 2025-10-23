@@ -276,7 +276,7 @@ theorem lieBracketWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
   lieBracketWithin_congr_set' x <| h.filter_mono inf_le_left
 
 /-- Variant of `lieBracketWithin_eventually_congr_set` where one requires the sets to coincide only
-in  the complement of a point. -/
+in the complement of a point. -/
 theorem lieBracketWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     lieBracketWithin 𝕜 V W s =ᶠ[𝓝 x] lieBracketWithin 𝕜 V W t :=
   (eventually_nhds_nhdsWithin.2 h).mono fun _ => lieBracketWithin_congr_set' y
