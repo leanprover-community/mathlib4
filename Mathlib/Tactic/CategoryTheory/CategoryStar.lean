@@ -39,18 +39,20 @@ just before any parameters appearing in `C` and its type, and elaborates to `Cat
 -/
 elab "Category*" ppSpace C:term : term => commitIfNoEx <| withoutErrToSorry do
   let u ← mkFreshLevelMVar
-  let cat := .const `CategoryTheory.Category [← mkFreshLevelMVar, u]
+  let v ← mkFreshLevelMVar
+  let cExpr ← instantiateMVars <| ← elabTermEnsuringType C (some <| .sort <| .succ u)
+  let tpCExpr ← instantiateMVars <| ← Meta.inferType cExpr
+  let cat := .const `CategoryTheory.Category [v, u]
   let levelNames ← getLevelNames
   let ⟨mctx, vs, _, out⟩ :=
     (← getMCtx).levelMVarToParam (fun n => levelNames.elem n)
-    (fun id => id == u.mvarId!) cat `v 1
+    (fun id => id != v.mvarId!) cat `v 1
   let v::[] := vs.toList
     | throwError "Unexpected Error:{indentD out}\ndoesn't have exactly one new level parameter"
-  let cExpr ← instantiateMVars <| ← elabTermEnsuringType C (some <| .sort <| .succ u)
-  let tpCExpr ← instantiateMVars <| ← Meta.inferType cExpr
   let us := (collectLevelParams {} cExpr).params ++ (collectLevelParams {} tpCExpr).params
   match (us.filterMap fun nm => levelNames.findIdx? fun x => x == nm).max? with
   | some idx => setLevelNames <| levelNames.insertIdx (idx + 1) v
   | none => setLevelNames <| v :: levelNames
   setMCtx mctx
-  return .app out cExpr
+  Meta.mkAppM' out #[cExpr]
+  --return .app out cExpr
