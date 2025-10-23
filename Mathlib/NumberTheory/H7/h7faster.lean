@@ -4070,28 +4070,24 @@ lemma q_frac : ((↑q + ↑(h7.r q hq0 h2mq)) / ↑q : ℝ ) = (1 + ↑(h7.r q h
   simp_all only [lt_self_iff_false]
 
 
-lemma bound_circle : (↑h7.m * (1 + ↑(h7.r q hq0 h2mq) / ↑q)) ≤ ↑(h7.r q hq0 h2mq : ℝ) + (↑q : ℝ) := by
-  calc _ = (h7.m : ℝ) * ((↑q + ↑(h7.r q hq0 h2mq)) / ↑q : ℝ ) := ?_
-       _ ≤ (h7.m : ℝ) * ((2*h7.m* (h7.n q) + ↑(h7.r q hq0 h2mq)) / q : ℝ ) := ?_
-       _ = ↑h7.m * ↑q + ↑(h7.r q hq0 h2mq) := ?_
-  · rw [q_frac]
-  · apply mul_le_mul
-    · simp only [le_refl]
-    · refine (div_le_div_iff₀ ?_ ?_).mpr ?_
-      · simp only [Nat.cast_pos]
-        exact hq0
-      · simp only [Nat.cast_pos]
-        exact hq0
-      · apply mul_le_mul
-        · sorry
-        · sorry
-        · sorry
-        · sorry
-    · sorry
-    · sorry
-  · rw [mul_div]
-    sorry
+lemma bound_circle : ((1 + ↑(h7.r q hq0 h2mq) / ↑q)) ≤ ↑(h7.r q hq0 h2mq : ℝ) + (↑q : ℝ) := by
+  calc _ =  ((↑q + ↑(h7.r q hq0 h2mq)) / ↑q : ℝ ) := ?_
+       _ ≤  ((2*h7.m* (h7.n q) + ↑(h7.r q hq0 h2mq)) / q : ℝ ) := ?_
+       _ ≤ ((2*h7.m* ↑(h7.r q hq0 h2mq) + ↑(h7.r q hq0 h2mq)) / q : ℝ ) := ?_
+       _ = ((2*h7.m + 1) * ↑(h7.r q hq0 h2mq) / q : ℝ ) := ?_
+       _ = ((2*h7.m + 1)/ q * ↑(h7.r q hq0 h2mq) / q : ℝ ) := ?_
+       _ ≤ ((2*h7.m + 1)/ q * ↑(h7.r q hq0 h2mq) / q : ℝ ) := ?_
 
+       _ ≤ ↑(h7.r q hq0 h2mq : ℝ) + (↑q : ℝ) := ?_
+  · rw [q_frac]
+  · rw [div_le_div_right (Nat.cast_pos.mpr hq0)]
+    simp only [add_le_add_iff_right]
+    sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
 
 
 
