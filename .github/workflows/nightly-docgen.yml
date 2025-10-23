@@ -57,7 +57,7 @@ jobs:
           [[require]]
           scope = "leanprover"
           name = "doc-gen4"
-          rev = "main"
+          rev = "nightly-testing"
           EOF
 
           # Initialise docbuild as a Lean project

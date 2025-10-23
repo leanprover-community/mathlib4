@@ -244,6 +244,12 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
     by_cases h₉ : ((X - C η) * P).nextCoeff = 0
     · suffices ((X - C η) * P).eraseLead = ((X - C η) * P.eraseLead).eraseLead by
         have := coeffList_eraseLead (mul_ne_zero (X_sub_C_ne_zero η) h₃)
+        #adaptation_note
+        /--
+        Moving from `nightly-2025-10-13` to `nightly-2025-10-19`
+        we now need to provide an intermediate step.
+        -/
+        have : ((X - C η) * P).natDegree - ((X - C η) * P).eraseLead.degree.succ = n + 1 := by grind
         grind [leadingCoeff_mul, leadingCoeff_X_sub_C]
       suffices C η * monomial P.natDegree P.leadingCoeff = monomial P.natDegree P.nextCoeff by
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff]
