@@ -321,8 +321,8 @@ lemma Monic.irreducible_iff_natDegree' (hp : p.Monic) : Irreducible p ↔ p ≠ 
   · simp_rw [hf.natDegree_mul hg, pos_iff_ne_zero] at h
     contrapose! h
     obtain hl | hl := le_total f.natDegree g.natDegree
-    · exact ⟨g, f, hg, hf, mul_comm g f, h.1, add_le_add_left hl _⟩
-    · exact ⟨f, g, hf, hg, rfl, h.2, add_le_add_right hl _⟩
+    · exact ⟨g, f, hg, hf, mul_comm g f, h.1, by gcongr⟩
+    · exact ⟨f, g, hf, hg, rfl, h.2, by gcongr⟩
 
 /-- Alternate phrasing of `Polynomial.Monic.irreducible_iff_natDegree'` where we only have to check
 one divisor at a time. -/

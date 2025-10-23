@@ -55,10 +55,10 @@ theorem splits_C (a : K) : Splits i (C a) := by
   simp [Splits]
 
 theorem splits_of_map_degree_eq_one {f : K[X]} (hf : degree (f.map i) = 1) : Splits i f :=
-  factors_of_degree_eq_one hf
+  Factors.of_degree_eq_one hf
 
 theorem splits_of_degree_le_one {f : K[X]} (hf : degree f ≤ 1) : Splits i f :=
-  factors_of_degree_le_one (degree_map_le.trans hf)
+  Factors.of_degree_le_one (degree_map_le.trans hf)
 
 theorem splits_of_degree_eq_one {f : K[X]} (hf : degree f = 1) : Splits i f :=
   splits_of_degree_le_one i hf.le
@@ -74,8 +74,8 @@ theorem splits_mul {f g : K[X]} (hf : Splits i f) (hg : Splits i g) : Splits i (
 
 theorem splits_of_splits_mul' {f g : K[X]} (hfg : (f * g).map i ≠ 0) (h : Splits i (f * g)) :
     Splits i f ∧ Splits i g := by
-  simp only [Splits, Polynomial.map_mul] at hfg h
-  exact (factors_mul_iff hfg).mp h
+  simp only [Splits, Polynomial.map_mul, mul_ne_zero_iff] at hfg h
+  exact (factors_mul_iff hfg.1 hfg.2).mp h
 
 theorem splits_map_iff {L : Type*} [CommRing L] (i : K →+* L) (j : L →+* F) {f : K[X]} :
     Splits j (f.map i) ↔ Splits (j.comp i) f := by
@@ -181,11 +181,11 @@ variable (i)
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
     ∃ x, eval₂ i x f = 0 := by
-  simpa only [eval_map] using exists_root_of_factors hs hf0
+  simpa only [eval_map] using hs.exists_eval_eq_zero hf0
 
 theorem roots_ne_zero_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : natDegree (f.map i) ≠ 0) :
     (f.map i).roots ≠ 0 :=
-  roots_ne_zero_of_factors hs hf0
+  hs.roots_ne_zero hf0
 
 /-- Pick a root of a polynomial that splits. See `rootOfSplits` for polynomials over a field
 which has simpler assumptions. -/
