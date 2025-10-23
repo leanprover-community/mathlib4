@@ -103,7 +103,7 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
       throwTacticEx `grewrite goal
         m!"did not find instance of the pattern in the target expression{indentExpr lhs}"
     -- construct `eNew` by instantiating `eAbst` with `rhs`.
-    let eNew := eAbst.instantiate1 rhs
+    let eNew := eAbst.instantiate1 (GCongr.mkHoleAnnotation rhs)
     let eNew ← instantiateMVars eNew
     -- check that `eNew` is well typed
     try
@@ -116,11 +116,10 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         are rewritten, or specify what the rewritten expression should be and use 'gcongr'."
     let eNew ← if rhs.hasBinderNameHint then eNew.resolveBinderNameHint else pure eNew
     -- construct the implication proof using `gcongr`
-    let eAnn := eAbst.instantiate1 (GCongr.mkHoleAnnotation (← instantiateMVars lhs))
     let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
-    let imp := if forwardImp then mkImp eAnn eNew else mkImp eNew eAnn
+    let imp := if forwardImp then mkImp e eNew else mkImp eNew e
     let gcongrGoal ← mkFreshExprMVar imp
-    let (_, _, sideGoals) ← gcongrGoal.mvarId!.gcongr forwardImp []
+    let (_, _, sideGoals) ← gcongrGoal.mvarId!.gcongr (!forwardImp) []
       (mainGoalDischarger := GRewrite.dischargeMain hrel)
     -- post-process the metavariables
     postprocessAppMVars `grewrite goal newMVars binderInfos
