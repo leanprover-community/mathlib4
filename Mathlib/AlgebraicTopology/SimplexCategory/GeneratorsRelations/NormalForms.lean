@@ -56,7 +56,6 @@ inductive IsAdmissible : (m : ℕ) → (L : List ℕ) → Prop
       (ha : a ≤ m) : IsAdmissible m (a :: b :: L')
 
 attribute [simp, grind ←] IsAdmissible.nil
-attribute [grind →] IsAdmissible.singleton
 attribute [grind →] IsAdmissible.cons_cons
 
 section IsAdmissible
@@ -283,7 +282,7 @@ lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : 
         convert σ_comp_σ_nat (n := m) a j (by grind) (by grind) (by grind) <;> grind
       grind [standardσ_cons]
 
-attribute [local grind! .] simplicialInsert_length simplicialInsert_isAdmissible in
+attribute [local grind] simplicialInsert_length simplicialInsert_isAdmissible in
 /-- Using `standardσ_simplicialInsert`, we can prove that every morphism satisfying `P_σ` is equal
 to some `standardσ` for some admissible list of indices. -/
 theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf : P_σ f) :
@@ -312,12 +311,10 @@ theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf 
 
 section MemIsAdmissible
 
+@[grind]
 lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
     {k : ℕ} {hk : k < L.length} : simplicialEvalσ L L[k] = simplicialEvalσ L (L[k] + 1) := by
-  induction L generalizing m k <;> grind
-
-local grind_pattern IsAdmissible.simplicialEvalσ_succ_getElem =>
-  IsAdmissible m L, simplicialEvalσ L L[k]
+  induction L generalizing m k <;> grind [→ IsAdmissible.singleton]
 
 lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
     (j : ℕ) (hj₁ : j < m + L.length) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :

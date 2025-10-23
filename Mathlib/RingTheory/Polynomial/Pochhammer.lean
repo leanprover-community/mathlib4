@@ -98,7 +98,7 @@ end
 theorem ascPochhammer_eval_cast (n k : ℕ) :
     (((ascPochhammer ℕ n).eval k : ℕ) : S) = ((ascPochhammer S n).eval k : S) := by
   rw [← ascPochhammer_map (algebraMap ℕ S), eval_map, ← eq_natCast (algebraMap ℕ S),
-      eval₂_at_natCast,Nat.cast_id]
+      eval₂_at_natCast, Nat.cast_id]
 
 theorem ascPochhammer_eval_zero {n : ℕ} : (ascPochhammer S n).eval 0 = if n = 0 then 1 else 0 := by
   cases n
@@ -384,15 +384,15 @@ theorem descPochhammer_mul (n m : ℕ) :
       ← add_assoc, descPochhammer_succ_right, Nat.cast_add, sub_add_eq_sub_sub]
 
 theorem ascPochhammer_eval_neg_eq_descPochhammer (r : R) : ∀ (k : ℕ),
-    (ascPochhammer R k).eval (-r) = (-1)^k * (descPochhammer R k).eval r
+    (ascPochhammer R k).eval (-r) = (-1) ^ k * (descPochhammer R k).eval r
   | 0 => by
     rw [ascPochhammer_zero, descPochhammer_zero]
     simp only [eval_one, pow_zero, mul_one]
-  | (k+1) => by
+  | (k + 1) => by
     rw [ascPochhammer_succ_right, mul_add, eval_add, eval_mul_X, ← Nat.cast_comm, eval_natCast_mul,
       Nat.cast_comm, ← mul_add, ascPochhammer_eval_neg_eq_descPochhammer r k, mul_assoc,
       descPochhammer_succ_right, mul_sub, eval_sub, eval_mul_X, ← Nat.cast_comm, eval_natCast_mul,
-      pow_add, pow_one, mul_assoc ((-1)^k) (-1), mul_sub, neg_one_mul, neg_mul_eq_mul_neg,
+      pow_add, pow_one, mul_assoc ((-1) ^ k) (-1), mul_sub, neg_one_mul, neg_mul_eq_mul_neg,
       Nat.cast_comm, sub_eq_add_neg, neg_one_mul, neg_neg, ← mul_add]
 
 theorem descPochhammer_eval_eq_descFactorial (n k : ℕ) :
@@ -482,7 +482,7 @@ theorem descPochhammer_nonneg {n : ℕ} {s : S} (h : n - 1 ≤ s) :
 
 /-- `descPochhammer S n` is at least `(s-n+1)^n` on `[n-1, ∞)`. -/
 theorem pow_le_descPochhammer_eval {n : ℕ} {s : S} (h : n - 1 ≤ s) :
-    (s - n + 1)^n ≤ (descPochhammer S n).eval s := by
+    (s - n + 1) ^ n ≤ (descPochhammer S n).eval s := by
   induction n with
   | zero => simp
   | succ n ih =>
