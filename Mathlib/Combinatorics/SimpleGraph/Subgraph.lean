@@ -167,7 +167,7 @@ protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
   loopless v hv := G.loopless v (G'.adj_sub hv)
 
 @[simp]
-lemma spanningCoe_coe_eq_spanningCoe (G' : G.Subgraph) : G'.coe.spanningCoe = G'.spanningCoe := by
+lemma spanningCoe_coe (G' : G.Subgraph) : G'.coe.spanningCoe = G'.spanningCoe := by
   ext
   simp only [map_adj, Function.Embedding.subtype_apply, Subtype.exists]
   grind [spanningCoe_adj, coe_adj, edge_vert, adj_symm]
@@ -1121,8 +1121,7 @@ theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
 
 lemma _root_.SimpleGraph.spanningCoe_induce_adj_eq_induce_top_adj (s : Set V) :
     (G.induce s).spanningCoe.Adj = ((⊤ : G.Subgraph).induce s).Adj := by
-  grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe_eq_spanningCoe,
-    Subgraph.spanningCoe_adj]
+  grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe, Subgraph.spanningCoe_adj]
 
 section Induce
 

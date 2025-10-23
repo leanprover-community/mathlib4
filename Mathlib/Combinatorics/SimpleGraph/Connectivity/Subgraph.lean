@@ -130,15 +130,15 @@ abbrev toSubgraph : G.Subgraph :=
   .induce ⊤ C.supp
 
 @[simp]
-lemma coe_toSubgraph_eq_toSimpleGraph : C.toSubgraph.coe = C.toSimpleGraph :=
+lemma coe_toSubgraph : C.toSubgraph.coe = C.toSimpleGraph :=
   induce_eq_coe_induce_top C.supp |>.symm
 
 lemma spanningCoe_toSimpleGraph_adj_eq_toSubgraph_adj :
     C.toSimpleGraph.spanningCoe.Adj = C.toSubgraph.Adj :=
   spanningCoe_induce_adj_eq_induce_top_adj _
 
-lemma toSubgraph_connected : C.toSubgraph.Connected :=
-  ⟨C.coe_toSubgraph_eq_toSimpleGraph ▸ C.connected_toSimpleGraph⟩
+lemma connected_toSubgraph : C.toSubgraph.Connected :=
+  ⟨C.coe_toSubgraph ▸ C.connected_toSimpleGraph⟩
 
 end ConnectedComponent
 
