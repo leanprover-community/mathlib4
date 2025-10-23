@@ -45,8 +45,7 @@ abbrev algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
 
 /-- Any semiring with a `ZMod p`-module structure can be upgraded to a `ZMod p`-algebra. Not an
 instance because this is usually not the default way, and this will cause typeclass search loop. -/
-def ZMod.algebraOfModule (n : ℕ) (R : Type*) [Semiring R]
-    [Module (ZMod n) R] : Algebra (ZMod n) R := by
+def algebraOfModule (n : ℕ) (R : Type*) [Semiring R] [Module (ZMod n) R] : Algebra (ZMod n) R := by
   refine Algebra.ofModule' ?_ ?_
   · obtain _ | n := n
     · let : Module ℤ R := inferInstanceAs (Module (ZMod 0) R)
@@ -72,7 +71,7 @@ def ZMod.algebraOfModule (n : ℕ) (R : Type*) [Semiring R]
       rw [Nat.cast_smul_eq_nsmul, nsmul_eq_mul, mul_one, Nat.cast_smul_eq_nsmul, nsmul_eq_mul,
         Nat.cast_comm]
 
-instance ZMod.instIsScalarTower (n : ℕ) (R M : Type*) [Semiring R] [AddCommMonoid M]
+instance instIsScalarTower (n : ℕ) (R M : Type*) [Semiring R] [AddCommMonoid M]
     [Module (ZMod n) R] [m₁ : Module (ZMod n) M] [Module R M] :
     IsScalarTower (ZMod n) R M := by
   let := ZMod.algebraOfModule
