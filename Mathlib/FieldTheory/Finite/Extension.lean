@@ -41,6 +41,7 @@ namespace FiniteField
 of any given degree `n > 0`. -/
 noncomputable def Extension : Type :=
   GaloisField p (Module.finrank (ZMod p) k * n)
+  deriving Field, Finite, Algebra (ZMod p), FiniteDimensional (ZMod p)
 
 noncomputable instance : Field (Extension k p n) :=
   inferInstanceAs (Field (GaloisField _ _))
