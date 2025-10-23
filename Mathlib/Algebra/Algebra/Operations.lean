@@ -291,6 +291,11 @@ instance : NonUnitalSemiring (Submodule R A) where
 instance : Pow (Submodule R A) ℕ where
   pow s n := npowRec n s
 
+theorem mul_top_eq_top_of_mul_eq_one (h : N * P = 1) : N * ⊤ = ⊤ :=
+  top_unique <| by
+    conv_lhs => rw [← Submodule.one_mul ⊤, ← h, mul_assoc]
+    exact smul_mono le_rfl le_top
+
 theorem pow_eq_npowRec {n : ℕ} : M ^ n = npowRec n M := rfl
 
 protected theorem pow_zero : M ^ 0 = 1 := rfl
@@ -574,6 +579,11 @@ theorem span_pow (s : Set A) : ∀ n : ℕ, span R s ^ n = span R (s ^ n)
 
 theorem pow_eq_span_pow_set (n : ℕ) : M ^ n = span R ((M : Set A) ^ n) := by
   rw [← span_pow, span_eq]
+
+theorem top_mul_eq_top_of_mul_eq_one (h : N * P = 1) : ⊤ * P = ⊤ :=
+  top_unique <| by
+    conv_lhs => rw [← mul_one ⊤, ← h, ← mul_assoc]
+    exact smul_mono_left le_top
 
 /-- Dependent version of `Submodule.pow_induction_on_left`. -/
 @[elab_as_elim]

@@ -535,23 +535,7 @@ variable {R M A}
 
 section Semiring
 
-variable [Semiring A] [Algebra R A]
-
-/- move this to Algebra.Operations -/
-theorem top_mul_eq_top_of_mul_eq_one {I J : Submodule R A} (h : I * J = 1) : ⊤ * J = ⊤ :=
-  top_unique <| by
-    conv_lhs => rw [← mul_one ⊤, ← h, ← mul_assoc]
-    exact smul_mono_left le_top
-
-theorem eq_span_singleton_of_surjective {M} [AddCommMonoid M] [Module R M] {N : Submodule R M}
-    {f : R →ₗ[R] N} (hf : Function.Surjective f) : N = span R {(f 1 : M)} := by
-  refine le_antisymm (fun x hx ↦ mem_span_singleton.mpr ?_)
-    (span_le.mpr <| by rintro _ rfl; exact (f 1).2)
-  obtain ⟨r, eq⟩ := hf ⟨x, hx⟩
-  use r
-  rw [← coe_smul, ← map_smul, smul_eq_mul, mul_one, eq]
-
-variable [FaithfulSMul R A]
+variable [Semiring A] [Algebra R A] [FaithfulSMul R A]
 
 open LinearMap in
 private theorem projective_unit_and_mul'_comp_lTensor_bijective (I : (Submodule R A)ˣ) :
