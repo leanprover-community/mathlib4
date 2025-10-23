@@ -63,7 +63,7 @@ def Karoubi.retract (X : Karoubi C) : Retract X ((toKaroubi C).obj X.X) where
 
 /-- The precomposition of functors with `toKaroubi C` is fully faithful. -/
 def whiskeringLeftObjToKaroubiFullyFaithful :
-    ((whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)).FullyFaithful where
+    ((Functor.whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)).FullyFaithful where
   preimage {F G} τ :=
     { app P := F.map P.decompId_i ≫ τ.app P.X ≫ G.map P.decompId_p
       naturality X Y f := by
@@ -172,7 +172,7 @@ section
 
 variable [IsIdempotentComplete A] [IsIdempotentComplete C]
 
-/-- Given an additive functor `ι : C ⥤ A` between idempotent complete,
+/-- Given an additive functor `ι : C ⥤ A` between idempotent complete categories,
 any `Λ : LeftResolutions ι` induces a term `Λ.reduced : LeftResolutions ι`
 such that `Λ.reduced.F` preserves zero morphisms. -/
 noncomputable def reduced : LeftResolutions ι :=

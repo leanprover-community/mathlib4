@@ -170,7 +170,7 @@ lemma chainComplexMap_comp :
   | succ n hn =>
       obtain _ | n := n
       all_goals
-        simp [-Functor.map_comp, ← Λ.F.map_comp_assoc, ← ι.map_comp]
+        simp [-Functor.map_comp, ← Λ.F.map_comp_assoc]
         congr 1
         simp [← cancel_mono (kernel.ι _), hn]
 
