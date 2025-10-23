@@ -45,7 +45,7 @@ open scoped Pointwise
 
 variable {α : Type*}
 
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
+/- Ensure that `@[to_additive]` uses the right namespace. -/
 run_meta ToAdditive.insertTranslation ToAdditive.toAdditiveBundle `QuotientGroup `QuotientAddGroup
 
 namespace QuotientGroup

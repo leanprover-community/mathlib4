@@ -57,7 +57,7 @@ variable {α : Type u}
 
 attribute [local simp] List.append_eq_has_append
 
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
+/- Ensure that `@[to_additive]` uses the right namespace before the definition of `FreeGroup`. -/
 run_meta ToAdditive.insertTranslation ToAdditive.toAdditiveBundle `FreeGroup `FreeAddGroup
 
 /-- Reduction step for the additive free group relation: `w + x + (-x) + v ~> w + v` -/
@@ -595,9 +595,6 @@ theorem red_invRev_iff : Red (invRev L₁) (invRev L₂) ↔ Red L₁ L₂ :=
 
 @[to_additive]
 instance : Group (FreeGroup α) where
-  mul := (· * ·)
-  one := 1
-  inv := Inv.inv
   mul_assoc := by rintro ⟨L₁⟩ ⟨L₂⟩ ⟨L₃⟩; simp
   one_mul := by rintro ⟨L⟩; rfl
   mul_one := by rintro ⟨L⟩; simp [one_eq_mk]
