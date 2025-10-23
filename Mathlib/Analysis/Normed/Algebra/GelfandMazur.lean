@@ -327,6 +327,7 @@ private lemma a_bound {x : F} {c : ℝ} (hc₀ : 0 < c) (hbd : ∀ r : ℝ, c �
       simpa only [← norm_pow, sub_add, norm_sub_rev (x ^ 2)] using norm_le_norm_add_norm_sub' ..
   _ ≤ _ := by rw [two_mul]; exact add_le_add_left h _
 
+open Bornology Filter in
 private lemma exists_min_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) Set.univ z := by
   obtain ⟨u, hu⟩ := exists_min_norm_sub_smul ℝ x
   rw [isMinOn_univ_iff] at hu
@@ -336,20 +337,8 @@ private lemma exists_min_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x 
   set c := ‖x - u • 1‖
   simp only [isMinOn_univ_iff]
   refine (continuous_φ x).norm.exists_forall_le_of_isBounded (0, 0) ?_
-  simp only [φ, zero_smul, sub_zero, add_zero, norm_pow]
-  refine ((Metric.isBounded_of_abs_le (2 * ‖x‖ ^ 2 / c)).prod
-    (Metric.isBounded_of_abs_le (2 * ‖x‖ ^ 2 + 2 * ‖x‖ ^ 3 / c))).subset fun (a, b) hab ↦ ?_
-  simp only [Set.mem_prod, Set.mem_setOf] at hab ⊢
-  have ha : |a| ≤ 2 * ‖x‖ ^ 2 / c := a_bound hc₀ hu hab
-  refine ⟨ha, ?_⟩
-  rw [two_mul, add_assoc, ← sub_le_iff_le_add, ← sub_sub]
-  calc |b| - ‖x‖ ^ 2 - 2 * ‖x‖ ^ 3 / c
-  _ = |b| - ‖x‖ ^ 2 - 2 * ‖x‖ ^ 2 / c * ‖x‖ := by ring
-  _ ≤ |b| - ‖x‖ ^ 2 - |a| * ‖x‖ := by gcongr
-  _ = ‖b • (1 : F)‖ - ‖a • x‖ - ‖x ^ 2‖ := by rw [sub_right_comm, norm_smul a]; simp
-  _ ≤ ‖b • 1 - a • x‖ - ‖x ^ 2‖ := by gcongr; exact norm_sub_norm_le ..
-  _ ≤ ‖x ^ 2 - a • x + b • 1‖ := by rw [sub_add_comm]; exact norm_sub_le_norm_add ..
-  _ ≤ ‖x‖ ^ 2 := hab
+  simpa [isBounded_def, Set.compl_setOf, Set.Ioi] using
+    tendsto_norm_cobounded_atTop.comp (tendsto_φ_cobounded hc₀ hu) (Ioi_mem_atTop (‖φ x (0, 0)‖))
 
 open Algebra in
 /-- If `F` is a normed `ℝ`-algebra with a multiplicative norm (and such that `‖1‖ = 1`),
