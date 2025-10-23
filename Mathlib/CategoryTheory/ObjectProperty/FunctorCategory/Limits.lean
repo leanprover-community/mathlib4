@@ -6,6 +6,11 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
+/-!
+# Functors which preserves limits
+
+-/
+
 universe v₀ u₀ v v' u u'
 
 namespace CategoryTheory
@@ -35,6 +40,25 @@ def preservesColimitsOfShape : ObjectProperty (C ⥤ D) :=
 lemma preservesColimitsOfShape_iff (G : C ⥤ D) :
     preservesColimitsOfShape C D J G ↔ PreservesColimitsOfShape J G := by
   simp only [preservesColimitsOfShape, iInf_apply, preservesColimit_iff, iInf_Prop_eq]
+  exact ⟨fun _ ↦ ⟨inferInstance⟩, fun _ ↦ inferInstance⟩
+
+variable (D) in
+/-- The property of objects in `C ⥤ D` which preserves the limit
+of a functor `F : J ⥤ C`. -/
+abbrev preservesLimit (F : J ⥤ C) : ObjectProperty (C ⥤ D) := PreservesLimit F
+
+@[simp]
+lemma preservesLimit_iff (F : J ⥤ C) (G : C ⥤ D) :
+    preservesLimit D F G ↔ PreservesLimit F G := Iff.rfl
+
+variable (C D J) in
+def preservesLimitsOfShape : ObjectProperty (C ⥤ D) :=
+  ⨅ (F : J ⥤ C), preservesLimit D F
+
+@[simp]
+lemma preservesLimitsOfShape_iff (G : C ⥤ D) :
+    preservesLimitsOfShape C D J G ↔ PreservesLimitsOfShape J G := by
+  simp only [preservesLimitsOfShape, iInf_apply, preservesLimit_iff, iInf_Prop_eq]
   exact ⟨fun _ ↦ ⟨inferInstance⟩, fun _ ↦ inferInstance⟩
 
 end Functor
