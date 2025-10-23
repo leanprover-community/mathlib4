@@ -1,4 +1,5 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
+import Mathlib.Tactic.AdaptationNote
 
 section terminalReplacement
 
@@ -51,6 +52,11 @@ warning: 'have : 1 + 1 < 3 := by omega; grind' can be replaced with 'grind'
 #guard_msgs in
 example : 1 + 1 = 2 := by
   have : 1 + 1 < 3 := by omega
+  grind
+
+-- `#adaptation_note` is ignored
+example : 1 + 1 = 2 := by
+  #adaptation_note /-- -/
   grind
 
 end mergeWithGrind
