@@ -55,7 +55,7 @@ lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
   · exact fun h ↦ h.exists
 
 lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg _ := by
-  suffices e 1 = 1 ∨ - e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
+  suffices e 1 = 1 ∨ -e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
   have he : ¬IsOfFinAddOrder (e 1) :=
     not_isOfFinAddOrder_of_isAddTorsionFree ((AddEquiv.map_ne_zero_iff e).mpr Int.one_ne_zero)
   rw [← AddSubgroup.zmultiples_eq_zmultiples_iff he]

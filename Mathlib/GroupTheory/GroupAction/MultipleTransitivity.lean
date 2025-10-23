@@ -256,7 +256,7 @@ variable (G α) in
 @[to_additive
 /-- The natural equivariant map from `n ↪ α` to `m ↪ α` given by an embedding `e : m ↪ n`. -/]
 def _root_.MulActionHom.embMap {m n : Type*} (e : m ↪ n) :
-    (n ↪ α) →[G]  (m ↪ α) where
+    (n ↪ α) →[G] (m ↪ α) where
   toFun i := e.trans i
   map_smul' _ _ := rfl
 
@@ -493,7 +493,7 @@ variable {α : Type*}
 variable (α) in
 /-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
 theorem isMultiplyPretransitive (n : ℕ) :
-    IsMultiplyPretransitive (Perm  α) α n := by
+    IsMultiplyPretransitive (Perm α) α n := by
   rw [isMultiplyPretransitive_iff]
   classical
   intro x y
