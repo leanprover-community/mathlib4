@@ -1,12 +1,32 @@
 #!/usr/bin/env python3
 """
-Wrapper script for `lake build` output that:
+Wrapper script for `lake build` to be used in GitHub actions that:
 1. Groups only normal build output (✔ lines) into collapsible log groups
 2. Emits all non-✔ lines (including ℹ/⚠/✖ and summaries) outside groups
 3. Extracts infos/warnings/errors to JSON for step outputs without altering the stream
 
-cf. https://github.com/leanprover/lean4/blob/59573646c227d940962c08a1e77ce51177a024ea/src/lake/Lake/Build/Run.lean#L132
-where `lake build`'s log output is generated
+Written to GITHUB_OUTPUT:
+- `warning_count`, `error_count`, `info_count`: integers counting the number of warnings, errors and
+  info / trace messages.
+- `summary`: full summary JSON described below.
+
+Summary JSON format:
+- Top-level object with keys:
+  - warnings: list of issue objects (warning blocks)
+  - errors: list of issue objects (error blocks)
+  - infos: list of issue objects (info blocks)
+  - warning_count: integer
+  - error_count: integer
+  - info_count: integer
+
+- Each issue object contains:
+  - file_info: object with parsed progress/target info, if available
+    - current: integer (N in "[N/M]")
+    - total: integer (M in "[N/M]")
+    - target: string (module/target token from the log)
+    - file: string or null (converted Lean filename; null for non-file targets containing ':')
+  - messages: list of strings (subset of lines in the block that include typical markers like "warning:", "error:", or "info:")
+  - full_output: string (the entire contiguous block captured for the issue)
 
 State machine overview:
 - States
@@ -33,6 +53,10 @@ State machine overview:
   - IN_* + NEW_* → flush_issue; start_issue; print → IN_*
   - IN_* + OTHER → if summary-line then flush_issue else append_issue; print → OUTSIDE or IN_*
   - EOF → flush_issue; close_group
+
+Relevant parts of `lake`:
+- `lake build`'s log output is generated [here](https://github.com/leanprover/lean4/blob/59573646c227d940962c08a1e77ce51177a024ea/src/lake/Lake/Build/Run.lean#L132)
+- icons (other than ✔) are defined [here](https://github.com/leanprover/lean4/blob/59573646c227d940962c08a1e77ce51177a024ea/src/lake/Lake/Util/Log.lean#L87)
 """
 
 import sys
