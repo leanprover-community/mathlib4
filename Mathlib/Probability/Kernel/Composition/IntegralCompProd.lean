@@ -34,7 +34,7 @@ prove the same equality for the Bochner integral.
 
 This file is to a large extent a copy of part of `Mathlib/MeasureTheory/Integral/Prod.lean`.
 The product of two measures is a particular case of composition-product of kernels and
-it turns out that once the measurablity of the Lebesgue integral of a kernel is proved,
+it turns out that once the measurability of the Lebesgue integral of a kernel is proved,
 almost all proofs about integrals against products of measures extend with minimal modifications
 to the composition-product of two kernels.
 
@@ -145,10 +145,6 @@ theorem _root_.MeasureTheory.Integrable.ae_of_compProd ⦃f : β × γ → E⦄
     (hf : Integrable f ((κ ⊗ₖ η) a)) : ∀ᵐ x ∂κ a, Integrable (fun y => f (x, y)) (η (a, x)) :=
   ((integrable_compProd_iff hf.aestronglyMeasurable).mp hf).1
 
-@[deprecated (since := "2025-02-28")]
-alias _root_.MeasureTheory.Integrable.compProd_mk_left_ae :=
-  _root_.MeasureTheory.Integrable.ae_of_compProd
-
 theorem _root_.MeasureTheory.Integrable.integral_norm_compProd ⦃f : β × γ → E⦄
     (hf : Integrable f ((κ ⊗ₖ η) a)) : Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) :=
   ((integrable_compProd_iff hf.aestronglyMeasurable).mp hf).2
@@ -218,11 +214,8 @@ theorem Kernel.integral_integral_sub' ⦃f g : β × γ → E⦄ (hf : Integrabl
       ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a - ∫ x, ∫ y, g (x, y) ∂η (a, x) ∂κ a :=
   Kernel.integral_integral_sub hf hg
 
--- Porting note: couldn't get the `→₁[]` syntax to work
 theorem Kernel.continuous_integral_integral :
-    -- Continuous fun f : α × β →₁[(κ ⊗ₖ η) a] E => ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
-    Continuous fun f : (MeasureTheory.Lp (α := β × γ) E 1 (((κ ⊗ₖ η) a) : Measure (β × γ))) =>
-        ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
+    Continuous fun f : β × γ →₁[(κ ⊗ₖ η) a] E => ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
   rw [continuous_iff_continuousAt]; intro g
   refine
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_compProd
@@ -481,7 +474,7 @@ lemma integral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
 lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     {s : Set α} (hs : MeasurableSet s) {t : Set β} (ht : MeasurableSet t)
-    {f : α × β → E} (hf : IntegrableOn f (s ×ˢ t) (μ ⊗ₘ κ))  :
+    {f : α × β → E} (hf : IntegrableOn f (s ×ˢ t) (μ ⊗ₘ κ)) :
     ∫ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫ a in s, ∫ b in t, f (a, b) ∂(κ a) ∂μ := by
   rw [Measure.compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
   simp

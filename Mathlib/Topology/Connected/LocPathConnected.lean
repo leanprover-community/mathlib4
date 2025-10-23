@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Ben Eltschig
 -/
 import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.AlexandrovDiscrete
 
 /-!
 # Locally path-connected spaces
@@ -217,5 +218,26 @@ instance Sigma.locPathConnectedSpace {X : ι → Type*}
     · exact (image_mono pathComponentIn_subset).trans (u.image_preimage_subset _)
   · exact isOpenMap_sigmaMk _ <| (hu.preimage continuous_sigmaMk).pathComponentIn _
   · exact ⟨x.2, mem_pathComponentIn_self hxu, rfl⟩
+
+instance AlexandrovDiscrete.locPathConnectedSpace [AlexandrovDiscrete X] :
+    LocPathConnectedSpace X := by
+  apply LocPathConnectedSpace.of_bases nhds_basis_nhdsKer_singleton
+  simp only [forall_const, IsPathConnected, mem_nhdsKer_singleton]
+  intro x
+  exists x, specializes_rfl
+  intro y hy
+  symm
+  apply hy.joinedIn <;> rewrite [mem_nhdsKer_singleton] <;> [assumption; rfl]
+
+/-- If a space is locally path-connected, the topology of its path components is discrete. -/
+instance : DiscreteTopology <| ZerothHomotopy X := by
+  refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_
+  obtain ⟨x, rfl⟩ := Quotient.mk_surjective c
+  rw [← isQuotientMap_quotient_mk'.isOpen_preimage]
+  grind [ZerothHomotopy.preimage_singleton_eq_pathComponent, IsOpen.pathComponent]
+
+/-- A locally path-connected compact space has finitely many path components. -/
+instance [CompactSpace X] : Finite <| ZerothHomotopy X :=
+  finite_of_compact_of_discrete
 
 end LocPathConnectedSpace

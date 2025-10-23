@@ -126,7 +126,7 @@ theorem directSumRight_symm_lof_tmul (x : M₁') (i : ι₂) (y : M₂ i) :
       x ⊗ₜ[R] DirectSum.lof R _ _ i y := by
   rw [LinearEquiv.symm_apply_eq, directSumRight_tmul_lof]
 
-lemma directSumRight_comp_rTensor (f : M₁' →ₗ[R] M₂'):
+lemma directSumRight_comp_rTensor (f : M₁' →ₗ[R] M₂') :
     (directSumRight R M₂' M₁).toLinearMap ∘ₗ f.rTensor _ =
       (lmap fun _ ↦ f.rTensor _) ∘ₗ directSumRight R M₁' M₁ := by
   ext; simp

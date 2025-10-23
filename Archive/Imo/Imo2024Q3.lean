@@ -55,11 +55,11 @@ lemma one_le_M (a : ℕ → ℕ) (N : ℕ) : 1 ≤ M a N :=
   Nat.lt_iff_add_one_le.1 (M_pos a N)
 
 lemma apply_lt_M_of_le_N (a : ℕ → ℕ) {N i : ℕ} (h : i ≤ N) : a i < M a N :=
-  Nat.lt_add_one_iff.2 (Finset.le_sup (Finset.mem_range_succ_iff.2 h))
+  Nat.lt_add_one_iff.2 (Finset.le_sup (by grind))
 
 lemma N_lt_of_M_le_apply {a : ℕ → ℕ} {N i : ℕ} (h : M a N ≤ a i) : N < i := by
   by_contra! hi
-  exact Nat.not_succ_le_self _ (h.trans (Finset.le_sup (Finset.mem_range_succ_iff.2 hi)))
+  exact Nat.not_succ_le_self _ (h.trans (Finset.le_sup (by grind)))
 
 lemma ne_zero_of_M_le_apply {a : ℕ → ℕ} {N i : ℕ} (h : M a N ≤ a i) : i ≠ 0 :=
   Nat.ne_zero_of_lt (N_lt_of_M_le_apply h)
@@ -216,9 +216,7 @@ lemma empty_consecutive_apply_ge_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1)}
   have htM : ∀ j ∈ t, a j < M a N := by
     intro j hj
     simp only [t, Finset.mem_filter, Finset.mem_range] at hj
-    obtain ⟨hj, hji⟩ := hj
-    by_contra! hjM
-    exact (lt_self_iff_false _).mp ((hji ▸ hi j hj hjM).trans_le hi1)
+    grind
   have N_le_i : N ≤ i := by
     unfold M at hi1
     by_contra! HH
@@ -730,10 +728,7 @@ lemma exists_apply_sub_two_eq_of_apply_eq {i j : ℕ} (hi : N' a N + 2 < i) (hij
       _ ≤ #{u ∈ Finset.range j | a u = x} :=
         Finset.card_le_card (Finset.filter_subset_filter _ (by simp [hijlt.le]))
   have hi1j1 : a (i - 1) + 1 ≤ a (j - 1) := by
-    calc a (i - 1) + 1 ≤ #{u ∈ Finset.range i | a u = a (j - 2)} + 1 := by
-          gcongr
-          simp only [Finset.mem_filter, I] at hjI
-          exact hjI.2
+    calc a (i - 1) + 1 ≤ #{u ∈ Finset.range i | a u = a (j - 2)} + 1 := by grind
       _ ≤ #{u ∈ Finset.range i | a u = a (j - 2)} + #{u ∈ Finset.Ico i j | a u = a (j - 2)} := by
           gcongr
           simp only [Finset.one_le_card]
@@ -876,7 +871,7 @@ lemma p_le_two_mul_k {n : ℕ} (hn : N' a N + 2 < n) (hs : Small a (a n)) : p a 
     convert Finset.exists_ne_map_eq_of_card_lt_of_maps_to (t := Finset.Icc 1 (k a)) ?_ ?_
     · simp
     · rintro i -
-      simp [Finset.mem_Icc]
+      simp only [Finset.coe_Icc, Set.mem_Icc]
       rw [← Small, hc.small_apply_add_two_mul_iff_small i (by omega)]
       simp [hs, hc.one_le_apply]
   have hs' : Small a (a (n + 2 * x)) := by rwa [hc.small_apply_add_two_mul_iff_small x (by omega)]

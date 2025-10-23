@@ -110,7 +110,7 @@ Any pseudometric space is a topological space and a uniform space (see `Topologi
 `UniformSpace`), where the topology and uniformity come from the metric.
 Note that a T1 pseudometric space is just a metric space.
 
-We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
+We make the uniformity/topology part of the data instead of deriving it from the metric. This e.g.
 ensures that we do not get a diamond when doing
 `[PseudoMetricSpace α] [PseudoMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
@@ -122,7 +122,7 @@ class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   /-- Extended distance between two points -/
   edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal ⟨dist x y, dist_nonneg' _ ‹_› ‹_› ‹_›⟩
   edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) := by
-    intros x y; exact ENNReal.coe_nnreal_eq _
+    intro x y; exact ENNReal.coe_nnreal_eq _
   toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
   uniformity_dist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | dist p.1 p.2 < ε } := by intros; rfl
   toBornology : Bornology α := Bornology.ofDist dist dist_comm dist_triangle
@@ -223,7 +223,7 @@ theorem abs_dist_sub_le (x y z : α) : |dist x z - dist y z| ≤ dist x y :=
   abs_sub_le_iff.2
     ⟨sub_le_iff_le_add.2 (dist_triangle _ _ _), sub_le_iff_le_add.2 (dist_triangle_left _ _ _)⟩
 
-@[bound]
+@[simp, bound]
 theorem dist_nonneg {x y : α} : 0 ≤ dist x y :=
   dist_nonneg' dist dist_self dist_comm dist_triangle
 
@@ -442,9 +442,11 @@ theorem nonempty_closedBall : (closedBall x ε).Nonempty ↔ 0 ≤ ε :=
 theorem closedBall_eq_empty : closedBall x ε = ∅ ↔ ε < 0 := by
   rw [← not_nonempty_iff_eq_empty, nonempty_closedBall, not_le]
 
+@[simp] alias ⟨_, closedBall_of_neg⟩ := closedBall_eq_empty
+
 /-- Closed balls and spheres coincide when the radius is non-positive -/
 theorem closedBall_eq_sphere_of_nonpos (hε : ε ≤ 0) : closedBall x ε = sphere x ε :=
-  Set.ext fun _ => (hε.trans dist_nonneg).le_iff_eq
+  Set.ext fun _ => (hε.trans dist_nonneg).ge_iff_eq'
 
 theorem ball_subset_closedBall : ball x ε ⊆ closedBall x ε := fun _y hy =>
   mem_closedBall.2 (le_of_lt hy)
@@ -505,7 +507,7 @@ theorem closedBall_eq_bInter_ball : closedBall x ε = ⋂ δ > ε, ball x δ := 
 theorem ball_subset_ball' (h : ε₁ + dist x y ≤ ε₂) : ball x ε₁ ⊆ ball y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
-    _ < ε₁ + dist x y := add_lt_add_right (mem_ball.1 hz) _
+    _ < ε₁ + dist x y := by gcongr; exact hz
     _ ≤ ε₂ := h
 
 @[gcongr]
@@ -516,7 +518,7 @@ theorem closedBall_subset_closedBall' (h : ε₁ + dist x y ≤ ε₂) :
     closedBall x ε₁ ⊆ closedBall y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
-    _ ≤ ε₁ + dist x y := add_le_add_right (mem_closedBall.1 hz) _
+    _ ≤ ε₁ + dist x y := by gcongr; exact hz
     _ ≤ ε₂ := h
 
 theorem closedBall_subset_ball (h : ε₁ < ε₂) : closedBall x ε₁ ⊆ ball x ε₂ :=
@@ -526,7 +528,7 @@ theorem closedBall_subset_ball' (h : ε₁ + dist x y < ε₂) :
     closedBall x ε₁ ⊆ ball y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
-    _ ≤ ε₁ + dist x y := add_le_add_right (mem_closedBall.1 hz) _
+    _ ≤ ε₁ + dist x y := by gcongr; exact hz
     _ < ε₂ := h
 
 theorem dist_le_add_of_nonempty_closedBall_inter_closedBall

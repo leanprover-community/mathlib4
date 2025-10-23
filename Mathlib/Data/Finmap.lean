@@ -125,8 +125,7 @@ def liftOn₂ {γ} (s₁ s₂ : Finmap β) (f : AList β → AList β → γ)
 
 @[simp]
 theorem liftOn₂_toFinmap {γ} (s₁ s₂ : AList β) (f : AList β → AList β → γ) (H) :
-    liftOn₂ ⟦s₁⟧ ⟦s₂⟧ f H = f s₁ s₂ := by
-      cases s₁; cases s₂; rfl
+    liftOn₂ ⟦s₁⟧ ⟦s₂⟧ f H = f s₁ s₂ := rfl
 
 /-! ### Induction -/
 
@@ -435,8 +434,6 @@ theorem entries_insert_of_notMem {a : α} {b : β a} {s : Finmap β} :
 
 @[deprecated (since := "2025-05-23")] alias entries_insert_of_not_mem := entries_insert_of_notMem
 
-@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
-
 @[simp]
 theorem mem_insert {a a' : α} {b' : β a'} {s : Finmap β} : a ∈ insert a' b' s ↔ a = a' ∨ a ∈ s :=
   induction_on s AList.mem_insert
@@ -466,13 +463,14 @@ theorem toFinmap_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 
 theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
     a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
-  induction' xs with x xs
-  · simp only [toFinmap_nil, notMem_empty, not_mem_nil, exists_false]
-  obtain ⟨fst_i, snd_i⟩ := x
-  simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
-  refine (or_congr_left <| and_iff_left_of_imp ?_).symm
-  rintro rfl
-  simp only [exists_eq, heq_iff_eq]
+  induction xs with
+  | nil => simp only [toFinmap_nil, notMem_empty, not_mem_nil, exists_false]
+  | cons x xs =>
+    obtain ⟨fst_i, snd_i⟩ := x
+    simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
+    refine (or_congr_left <| and_iff_left_of_imp ?_).symm
+    rintro rfl
+    simp only [exists_eq, heq_iff_eq]
 
 @[simp]
 theorem insert_singleton_eq {a : α} {b b' : β a} : insert a b (singleton a b') = singleton a b := by

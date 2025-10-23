@@ -51,7 +51,7 @@ namespace TwoSquare
 abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
 
 variable {T} {L} {R} {B} in
-/-- The natural transfomration associated to a 2-square. -/
+/-- The natural transformation associated to a 2-square. -/
 abbrev natTrans (w : TwoSquare T L R B) : T ⋙ R ⟶ L ⋙ B := w
 
 /-- The type of 2-squares on functors `T`, `L`, `R`, and `B` is trivially equivalent to
@@ -75,7 +75,7 @@ lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.natTrans.app X = w'.
     w = w' :=
   NatTrans.ext (funext h)
 
-/-- The hoizontal identity 2-square. -/
+/-- The horizontal identity 2-square. -/
 @[simps!]
 def hId (L : C₁ ⥤ C₃) : TwoSquare (𝟭 _) L L (𝟭 _) :=
   𝟙 _
@@ -132,8 +132,8 @@ scoped infixr:80 " ≫ₕ " => hComp -- type as \gg\_h
 @[simps!]
 def vComp (w : TwoSquare T L R B) (w' : TwoSquare B L' R'' B'') :
     TwoSquare T (L ⋙ L') (R ⋙ R'') B'' :=
-  .mk _ _ _ _ <| (associator _ _ _).hom ≫ (whiskerRight w.natTrans R'') ≫
-    (associator _ _ _).inv ≫ (whiskerLeft L w'.natTrans) ≫ (associator _ _ _).hom
+  .mk _ _ _ _ <| (associator _ _ _).inv ≫ whiskerRight w.natTrans R'' ≫
+    (associator _ _ _).hom ≫ whiskerLeft L w'.natTrans ≫ (associator _ _ _).inv
 
 /-- Notation for the vertical composition of 2-squares. -/
 scoped infixr:80 " ≫ᵥ " => vComp -- type as \gg\_v
@@ -142,7 +142,7 @@ section Interchange
 
 variable {C₉ : Type u₉} [Category.{v₉} C₉] {R₃ : C₆ ⥤ C₉} {B₃ : C₈ ⥤ C₉}
 
-/-- When composing 2-squares which form a diagram of grid, compositing horionzall first yields the
+/-- When composing 2-squares which form a diagram of grid, composing horizontally first yields the
 same result as composing vertically first. -/
 lemma hCompVCompHComp (w₁ : TwoSquare T L R B) (w₂ : TwoSquare T' R R' B')
     (w₃ : TwoSquare B L' R'' B'') (w₄ : TwoSquare B' R'' R₃ B₃) :

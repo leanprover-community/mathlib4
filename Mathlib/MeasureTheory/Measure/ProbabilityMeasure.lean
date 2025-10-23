@@ -143,8 +143,19 @@ lemma mk_apply (μ : Measure Ω) (hμ) (s : Set Ω) :
 theorem coeFn_univ (ν : ProbabilityMeasure Ω) : ν univ = 1 :=
   congr_arg ENNReal.toNNReal ν.prop.measure_univ
 
+@[simp]
+theorem coeFn_empty (ν : ProbabilityMeasure Ω) : ν ∅ = 0 := by simp [coeFn_def]
+
 theorem coeFn_univ_ne_zero (ν : ProbabilityMeasure Ω) : ν univ ≠ 0 := by
   simp only [coeFn_univ, Ne, one_ne_zero, not_false_iff]
+
+@[simp] theorem measureReal_eq_coe_coeFn (ν : ProbabilityMeasure Ω) (s : Set Ω) :
+    (ν : Measure Ω).real s = ν s := by
+  simp [coeFn_def, Measure.real, ENNReal.toReal]
+
+theorem toNNReal_measureReal_eq_coeFn (ν : ProbabilityMeasure Ω) (s : Set Ω) :
+    ((ν : Measure Ω).real s).toNNReal = ν s := by
+  simp
 
 /-- A probability measure can be interpreted as a finite measure. -/
 def toFiniteMeasure (μ : ProbabilityMeasure Ω) : FiniteMeasure Ω := ⟨μ, inferInstance⟩
@@ -179,7 +190,11 @@ theorem null_iff_toMeasure_null (ν : ProbabilityMeasure Ω) (s : Set Ω) :
 
 theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ := by
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
-  exact MeasureTheory.FiniteMeasure.apply_mono _ h
+  exact FiniteMeasure.apply_mono _ h
+
+theorem apply_union_le (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} : μ (s₁ ∪ s₂) ≤ μ s₁ + μ s₂ := by
+  rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
+  exact FiniteMeasure.apply_union_le _
 
 /-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
 sets is the limit of the measures of the partial unions. -/
@@ -232,17 +247,22 @@ lemma measurableSet_isProbabilityMeasure :
 /-- The monoidal product is a measurable function from the product of probability spaces over
 `α` and `β` into the type of probability spaces over `α × β`. Lemma 4.1 of [A synthetic approach to
 Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]. -/
-theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
   apply Measurable.measure_of_isPiSystem_of_isProbabilityMeasure generateFrom_prod.symm
     isPiSystem_prod _
   simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
-  intros _ u Hu v Hv Heq
+  intro _ u Hu v Hv Heq
   simp_rw [← Heq, Measure.prod_prod]
   apply Measurable.mul
   · exact (Measure.measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst)
   · exact (Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd)
+
+lemma apply_iUnion_le {μ : ProbabilityMeasure Ω} {f : ℕ → Set Ω}
+    (hf : Summable fun n ↦ μ (f n)) :
+    μ (⋃ n, f n) ≤ ∑' n, μ (f n) := by
+  simpa [← ENNReal.coe_le_coe, ENNReal.coe_tsum hf] using MeasureTheory.measure_iUnion_le f
 
 section convergence_in_distribution
 
@@ -290,9 +310,6 @@ theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [Topologic
     IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
   eq_induced := rfl
   injective _μ _ν h := Subtype.eq <| congr_arg FiniteMeasure.toMeasure h
-
-@[deprecated (since := "2024-10-26")]
-alias toFiniteMeasure_embedding := toFiniteMeasure_isEmbedding
 
 theorem tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds {δ : Type*} (F : Filter δ)
     {μs : δ → ProbabilityMeasure Ω} {μ₀ : ProbabilityMeasure Ω} :
@@ -377,10 +394,10 @@ total mass. -/
 def normalize : ProbabilityMeasure Ω :=
   if zero : μ.mass = 0 then ⟨Measure.dirac ‹Nonempty Ω›.some, Measure.dirac.isProbabilityMeasure⟩
   else
-    { val := ↑(μ.mass⁻¹ • μ)
+    { val := μ.mass⁻¹ • (μ : Measure Ω)
       property := by
         refine ⟨?_⟩
-        simp only [toMeasure_smul, Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply,
+        simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply,
           ENNReal.coe_inv zero, ennreal_mass]
         rw [← Ne, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
         exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
@@ -391,7 +408,7 @@ theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize 
   · simp
   have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_nonzero_iff]
   simp only [normalize, dif_neg mass_nonzero]
-  simp [toMeasure_smul, mul_inv_cancel_left₀ mass_nonzero, coeFn_def]
+  simp [mul_inv_cancel_left₀ mass_nonzero, coeFn_def]
 
 theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasure := by
   apply eq_of_forall_apply_eq

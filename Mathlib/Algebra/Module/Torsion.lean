@@ -5,6 +5,7 @@ Authors: Pierre-Alexandre Bazin
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Module.ZMod
+import Mathlib.Algebra.Regular.Opposite
 import Mathlib.GroupTheory.Torsion
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Coprime.Ideal
@@ -42,7 +43,7 @@ import Mathlib.RingTheory.SimpleModule.Basic
   Similar lemmas for `torsion'` and `torsion`.
 * `Submodule.torsionBy_isInternal` : a `∏ i, p i`-torsion module is the internal direct sum of its
   `p i`-torsion submodules when the `p i` are pairwise coprime. A more general version with coprime
-  ideals is `Submodule.torsionBySet_is_internal`.
+  ideals is `Submodule.torsionBySet_isInternal`.
 * `Submodule.noZeroSMulDivisors_iff_torsion_bot` : a module over a domain has
   `NoZeroSMulDivisors` (that is, there is no non-zero `a`, `x` such that `a • x = 0`)
   iff its torsion submodule is trivial.
@@ -57,10 +58,51 @@ import Mathlib.RingTheory.SimpleModule.Basic
 * The letters `a`, `b`, ... are used for scalars (in `R`), while `x`, `y`, ... are used for vectors
   (in `M`).
 
+## TODO
+
+* Move the advanced material to a new file `RingTheory.Torsion`.
+* Replace `NoZeroSMulDivisors` with `Module.IsTorsionFree`
+
 ## Tags
 
 Torsion, submodule, module, quotient
 -/
+
+/-! ### Torsion-free modules -/
+
+namespace Module
+variable {R M : Type*} [Semiring R]
+
+section AddCommMonoid
+variable [AddCommMonoid M] [Module R M]
+
+variable (R M) in
+/-- A `R`-module `M` is torsion-free if scalar multiplication by an element `r : R` is injective if
+multiplication (on `R`) by `r` is.
+
+For domains, this is equivalent to the usual condition of `r • m = 0 → r = 0 ∨ m = 0`.
+TODO: Prove it. -/
+class IsTorsionFree where
+  isSMulRegular ⦃r : R⦄ : IsRegular r → IsSMulRegular M r
+
+instance : IsTorsionFree R R where isSMulRegular _r hr := hr.1
+instance : IsTorsionFree Rᵐᵒᵖ R where isSMulRegular _r hr := hr.unop.2
+
+instance [IsAddTorsionFree M] : IsTorsionFree ℕ M where
+  isSMulRegular n hn := nsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
+
+end AddCommMonoid
+
+section AddCommGroup
+variable [AddCommGroup M]
+
+instance [IsAddTorsionFree M] : IsTorsionFree ℤ M where
+  isSMulRegular n hn := zsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
+
+end AddCommGroup
+end Module
+
+/-! ### Torsion -/
 
 namespace Ideal
 
@@ -116,9 +158,6 @@ theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
     simp
   rw [← Submodule.mem_bot R, ← h_ne_zero i]
   simpa using this
-
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.Independent.linear_independent' := iSupIndep.linearIndependent'
 
 end TorsionOf
 
@@ -634,7 +673,7 @@ instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy
     (Module.isTorsionBySet_span_singleton_iff a).mpr <| torsionBy_isTorsionBy a
 
 instance (a : R) : Module (R ⧸ Ideal.span {a}) (torsionBy R M a) :=
-   inferInstanceAs <| Module (R ⧸ R ∙ a) (torsionBy R M a)
+  inferInstanceAs <| Module (R ⧸ R ∙ a) (torsionBy R M a)
 
 @[simp]
 theorem torsionBy.mk_ideal_smul (a b : R) (x : torsionBy R M a) :
@@ -936,7 +975,7 @@ lemma torsionBy.nsmul_iff {x : A} :
     x ∈ A[n] ↔ n • x = 0 :=
   Nat.cast_smul_eq_nsmul ℤ n x ▸ Submodule.mem_torsionBy_iff ..
 
-lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n])  :
+lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n]) :
     s • x = (s % n) • x :=
   nsmul_eq_mod_nsmul s (torsionBy.nsmul x)
 

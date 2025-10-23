@@ -140,7 +140,7 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
     rw [← binEntropy_one_sub]
     exact this hp.ne hp
   obtain hp₀ | hp₀ := le_or_gt p 0
-  · exact (binEntropy_nonpos_of_nonpos hp₀).trans_lt <| log_pos <| by norm_num
+  · exact (binEntropy_nonpos_of_nonpos hp₀).trans_lt <| log_pos <| by simp
   have hp₁ : 0 < 1 - p := sub_pos.2 <| hp.trans <| by norm_num
   calc
   _ < log (p * p⁻¹ + (1 - p) * (1 - p)⁻¹) :=
@@ -154,7 +154,7 @@ lemma binEntropy_le_log_two : binEntropy p ≤ log 2 := by
   · exact (binEntropy_lt_log_two.2 hp).le
 
 lemma binEntropy_eq_log_two : binEntropy p = log 2 ↔ p = 2⁻¹ := by
-  rw [binEntropy_le_log_two.eq_iff_not_lt, binEntropy_lt_log_two, not_ne_iff]
+  rw [← binEntropy_le_log_two.not_lt_iff_eq, binEntropy_lt_log_two, not_ne_iff]
 
 /-- Binary entropy is continuous everywhere.
 This is due to definition of `Real.log` for negative numbers. -/
@@ -213,8 +213,7 @@ This is a generalization of the binary entropy function `binEntropy`. -/
 
 lemma qaryEntropy_pos (hp₀ : 0 < p) (hp₁ : p < 1) : 0 < qaryEntropy q p := by
   unfold qaryEntropy
-  have := binEntropy_pos hp₀ hp₁
-  positivity
+  positivity [binEntropy_pos hp₀ hp₁]
 
 lemma qaryEntropy_nonneg (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) : 0 ≤ qaryEntropy q p := by
   obtain rfl | hp₀ := hp₀.eq_or_lt
@@ -263,7 +262,7 @@ open Filter Topology Set
 private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[>] 0) atTop := by
   apply Filter.tendsto_atTop_add_left_of_le' (𝓝[>] 0) (log (1/2) : ℝ)
-  · have h₁ : (0 : ℝ) < 1 / 2 := by norm_num
+  · have h₁ : (0 : ℝ) < 1 / 2 := by simp
     filter_upwards [Ioc_mem_nhdsGT h₁] with p hx
     gcongr
     linarith [hx.2]
@@ -337,7 +336,7 @@ lemma deriv2_qaryEntropy :
         · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
           have d_oneminus (p : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) p = -1 := by
             rw [deriv_const_sub 1, deriv_id'']
-          field_simp [sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
+          simp [field, sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
           ring
       · apply DifferentiableAt.add
         simp only [differentiableAt_const]
@@ -376,13 +375,13 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
       linarith
     simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]
-    · field_simp
+    · simp only [sub_pos, gt_iff_lt]
       rw [← log_mul (by linarith) (by linarith)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr hp.1)
       · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left, show 0 < (q : ℝ) - 1 by linarith]
       · have qpos : 0 < (q : ℝ) := by positivity
         have : q * p < q - 1 := by
-          convert (mul_lt_mul_left qpos).2 hp.2 using 1
+          convert mul_lt_mul_of_pos_left hp.2 qpos using 1
           simp only [mul_sub, mul_one, isUnit_iff_ne_zero, ne_eq, ne_of_gt qpos, not_false_eq_true,
             IsUnit.mul_inv_cancel]
         linarith
@@ -400,7 +399,7 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
     have zero_lt_1_sub_p : 0 < 1 - p := by simp_all only [sub_pos, interior_Icc, mem_Ioo]
     simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]
-    · field_simp
+    · simp only [sub_neg, gt_iff_lt]
       rw [← log_mul (by linarith) (by linarith)]
       apply Real.strictMonoOn_log (mem_Ioi.mpr (show 0 < (↑q - 1) * (1 - p) by nlinarith))
       · simp_all only [mem_Ioi]
@@ -409,14 +408,11 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
         ring_nf
         simp only [add_lt_iff_neg_right, neg_add_lt_iff_lt_add, add_zero, gt_iff_lt]
         have : (q : ℝ) - 1 < p * q := by
-          have tmp := mul_lt_mul_of_pos_right hp.1 qpos
-          simp at tmp
-          have : (q : ℝ) ≠ 0 := (ne_of_lt qpos).symm
-          have asdfasfd : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
+          have h1 := mul_lt_mul_of_pos_right hp.1 qpos
+          have h2 : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
             _ = q - (q : ℝ)⁻¹ * (q : ℝ) := by ring
-            _ = q - 1 := by simp_all only [ne_eq, isUnit_iff_ne_zero,
-              not_false_eq_true, IsUnit.inv_mul_cancel]
-          rwa [asdfasfd] at tmp
+            _ = q - 1 := by simp [qpos.ne']
+          rwa [h2] at h1
         nlinarith
     exact (ne_of_gt (lt_add_neg_iff_lt.mp zero_lt_1_sub_p : p < 1)).symm
 

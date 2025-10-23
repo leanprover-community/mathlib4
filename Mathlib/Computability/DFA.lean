@@ -123,10 +123,9 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
           b ≠ [] ∧ M.evalFrom s a = q ∧ M.evalFrom q b = q ∧ M.evalFrom q c = t := by
   obtain ⟨n, m, hneq, heq⟩ :=
     Fintype.exists_ne_map_eq_of_card_lt
-      (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by norm_num)
+      (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by simp)
   wlog hle : (n : ℕ) ≤ m generalizing n m
   · exact this m n hneq.symm heq.symm (le_of_not_ge hle)
-  have hm : (m : ℕ) ≤ Fintype.card σ := Fin.is_le m
   refine
     ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n,
                     x.drop m, ?_, ?_, ?_, by rfl, ?_⟩
@@ -136,11 +135,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   · intro h
     have hlen' := congr_arg List.length h
     simp only [List.length_drop, List.length, List.length_take] at hlen'
-    rw [min_eq_left, tsub_eq_zero_iff_le] at hlen'
-    · apply hneq
-      apply le_antisymm
-      assumption'
-    exact hm.trans hlen
+    omega
   have hq : M.evalFrom (M.evalFrom s ((x.take m).take n)) ((x.take m).drop n) =
       M.evalFrom s ((x.take m).take n) := by
     rw [List.take_take, min_eq_left hle, ← evalFrom_of_append, heq, ← min_eq_left hle, ←
@@ -158,7 +153,7 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
   | cons a S ih =>
     have ha := hS a List.mem_cons_self
     rw [Set.mem_singleton_iff] at ha
-    rw [List.flatten, evalFrom_of_append, ha, hx]
+    rw [List.flatten_cons, evalFrom_of_append, ha, hx]
     apply ih
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)

@@ -46,16 +46,16 @@ class LaxLeftLinear
     [MonoidalLeftAction C D] [MonoidalLeftAction C D'] where
   /-- The "μₗ" morphism. -/
   μₗ (F) (c : C) (d : D) : c ⊙ₗ F.obj d ⟶ F.obj (c ⊙ₗ d)
-  μₗ_naturality_left (F) {c c': C} (f : c ⟶ c') (d : D) :
-    f ⊵ₗ F.obj d ≫ μₗ c' d = μₗ c d ≫ F.map (f ⊵ₗ d) := by aesop_cat
+  μₗ_naturality_left (F) {c c' : C} (f : c ⟶ c') (d : D) :
+    f ⊵ₗ F.obj d ≫ μₗ c' d = μₗ c d ≫ F.map (f ⊵ₗ d) := by cat_disch
   μₗ_naturality_right (F) (c : C) {d d' : D} (f : d ⟶ d') :
-    c ⊴ₗ F.map f ≫ μₗ c d' = μₗ c d ≫ F.map (c ⊴ₗ f) := by aesop_cat
+    c ⊴ₗ F.map f ≫ μₗ c d' = μₗ c d ≫ F.map (c ⊴ₗ f) := by cat_disch
   μₗ_associativity (F) (c c' : C) (d : D) :
     μₗ (c ⊗ c') d ≫ F.map (αₗ _ _ _).hom =
     (αₗ c c' (F.obj d)).hom ≫ c ⊴ₗ μₗ c' d ≫
-      μₗ c (c' ⊙ₗ d) := by aesop_cat
+      μₗ c (c' ⊙ₗ d) := by cat_disch
   μₗ_unitality (F) (d : D) :
-    (λₗ (F.obj d)).hom = μₗ (𝟙_ C) d ≫ F.map (λₗ d).hom := by aesop_cat
+    (λₗ (F.obj d)).hom = μₗ (𝟙_ C) d ≫ F.map (λₗ d).hom := by cat_disch
 
 namespace LaxLeftLinear
 
@@ -97,21 +97,21 @@ of `C` on `D` and `D'`. -/
 class OplaxLeftLinear
     (F : D ⥤ D') (C : Type*) [Category C] [MonoidalCategory C]
     [MonoidalLeftAction C D] [MonoidalLeftAction C D'] where
-  /-- The oplax lineator morphism morphism. -/
+  /-- The oplax lineator morphism. -/
   δₗ (F) (c : C) (d : D) : F.obj (c ⊙ₗ d) ⟶ c ⊙ₗ F.obj d
-  δₗ_naturality_left (F) {c c': C} (f : c ⟶ c') (d : D) :
+  δₗ_naturality_left (F) {c c' : C} (f : c ⟶ c') (d : D) :
     F.map (f ⊵ₗ d) ≫ δₗ c' d =
-    δₗ c d ≫ f ⊵ₗ F.obj d := by aesop_cat
+    δₗ c d ≫ f ⊵ₗ F.obj d := by cat_disch
   δₗ_naturality_right (F) (c : C) {d d' : D} (f : d ⟶ d') :
     F.map (c ⊴ₗ f) ≫ δₗ c d' =
-    δₗ c d ≫ c ⊴ₗ F.map f := by aesop_cat
+    δₗ c d ≫ c ⊴ₗ F.map f := by cat_disch
   δₗ_associativity (F) (c c' : C) (d : D) :
     δₗ (c ⊗ c') d ≫ (αₗ _ _ _).hom =
     F.map (αₗ _ _ _).hom ≫ δₗ c (c' ⊙ₗ d) ≫
-      c ⊴ₗ δₗ c' d := by aesop_cat
+      c ⊴ₗ δₗ c' d := by cat_disch
   δₗ_unitality_inv (F) (d : D) :
     (λₗ (F.obj d)).inv =
-    F.map (λₗ d).inv ≫ δₗ (𝟙_ C) d := by aesop_cat
+    F.map (λₗ d).inv ≫ δₗ (𝟙_ C) d := by cat_disch
 
 namespace OplaxLeftLinear
 
@@ -208,16 +208,16 @@ class LaxRightLinear
     [MonoidalRightAction C D] [MonoidalRightAction C D'] where
   /-- The "μᵣ" morphism. -/
   μᵣ (F) (d : D) (c : C) : F.obj d ⊙ᵣ c ⟶ F.obj (d ⊙ᵣ c)
-  μᵣ_naturality_right (F) (d : D) {c c': C} (f : c ⟶ c') :
-    F.obj d ⊴ᵣ f ≫ μᵣ d c' = μᵣ d c ≫ F.map (d ⊴ᵣ f) := by aesop_cat
+  μᵣ_naturality_right (F) (d : D) {c c' : C} (f : c ⟶ c') :
+    F.obj d ⊴ᵣ f ≫ μᵣ d c' = μᵣ d c ≫ F.map (d ⊴ᵣ f) := by cat_disch
   μᵣ_naturality_left (F) {d d' : D} (f : d ⟶ d') (c : C) :
-    F.map f ⊵ᵣ c ≫ μᵣ d' c = μᵣ d c ≫ F.map (f ⊵ᵣ c) := by aesop_cat
+    F.map f ⊵ᵣ c ≫ μᵣ d' c = μᵣ d c ≫ F.map (f ⊵ᵣ c) := by cat_disch
   μᵣ_associativity (F) (d : D) (c c' : C) :
     μᵣ d (c ⊗ c') ≫ F.map (αᵣ _ _ _).hom =
     (αᵣ (F.obj d) c c').hom ≫ (μᵣ d c) ⊵ᵣ c' ≫
-      μᵣ (d ⊙ᵣ c) c' := by aesop_cat
+      μᵣ (d ⊙ᵣ c) c' := by cat_disch
   μᵣ_unitality (F) (d : D) :
-    (ρᵣ (F.obj d)).hom = μᵣ d (𝟙_ C) ≫ F.map (ρᵣ d).hom := by aesop_cat
+    (ρᵣ (F.obj d)).hom = μᵣ d (𝟙_ C) ≫ F.map (ρᵣ d).hom := by cat_disch
 
 namespace LaxRightLinear
 
@@ -236,7 +236,7 @@ variable
 @[reassoc (attr := simp)]
 lemma μᵣ_associativity_inv (d : D) (c c' : C) :
     μᵣ F d c ⊵ᵣ c' ≫ μᵣ F (d ⊙ᵣ c) c' ≫ F.map (αᵣ _ _ _).inv =
-    (αᵣ (F.obj d) c c' ).inv ≫ μᵣ F d (c ⊗ c') := by
+    (αᵣ (F.obj d) c c').inv ≫ μᵣ F d (c ⊗ c') := by
   simpa [-μᵣ_associativity, -μᵣ_associativity_assoc] using
     (αᵣ _ _ _).inv ≫=
       (μᵣ_associativity F d c c').symm =≫
@@ -259,21 +259,21 @@ of `C` on `D` and `D'`. -/
 class OplaxRightLinear
     (F : D ⥤ D') (C : Type*) [Category C] [MonoidalCategory C]
     [MonoidalRightAction C D] [MonoidalRightAction C D'] where
-  /-- The oplax lineator morphism morphism. -/
+  /-- The oplax lineator morphism. -/
   δᵣ (F) (d : D) (c : C) : F.obj (d ⊙ᵣ c) ⟶ (F.obj d) ⊙ᵣ c
-  δᵣ_naturality_right (F) (d : D) {c c': C} (f : c ⟶ c') :
+  δᵣ_naturality_right (F) (d : D) {c c' : C} (f : c ⟶ c') :
     F.map (d ⊴ᵣ f) ≫ δᵣ d c' =
-    δᵣ d c ≫ F.obj d ⊴ᵣ f := by aesop_cat
+    δᵣ d c ≫ F.obj d ⊴ᵣ f := by cat_disch
   δᵣ_naturality_left (F) {d d' : D} (f : d ⟶ d') (c : C) :
     F.map (f ⊵ᵣ c) ≫ δᵣ d' c =
-    δᵣ d c ≫ F.map f ⊵ᵣ c := by aesop_cat
+    δᵣ d c ≫ F.map f ⊵ᵣ c := by cat_disch
   δᵣ_associativity (F) (d : D) (c c' : C) :
     δᵣ d (c ⊗ c') ≫ (αᵣ _ _ _).hom =
     F.map (αᵣ _ _ _).hom ≫ δᵣ (d ⊙ᵣ c) c' ≫
-      δᵣ d c ⊵ᵣ c' := by aesop_cat
+      δᵣ d c ⊵ᵣ c' := by cat_disch
   δᵣ_unitality_inv (F) (d : D) :
     (ρᵣ (F.obj d)).inv =
-    F.map (ρᵣ d).inv ≫ δᵣ d (𝟙_ C) := by aesop_cat
+    F.map (ρᵣ d).inv ≫ δᵣ d (𝟙_ C) := by cat_disch
 
 namespace OplaxRightLinear
 

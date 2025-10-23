@@ -3,6 +3,7 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Data.Finite.Card
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
@@ -331,7 +332,7 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
 
 @[simp] lemma range_extendLeft_zero (c : OrderedFinpartition n) :
     range (c.extendLeft.emb 0) = {0} := by
-  simp [extendLeft]
+  simp only [extendLeft, cases_zero]
   apply @range_const _ _ (by simp; infer_instance)
 
 /-- Extend an ordered partition of `n` entries, by adding to the `i`-th part a new point to the
@@ -417,7 +418,7 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
       rcases eq_or_ne (c.index i) k with rfl | hi
       · have A : update c.partSize (c.index i) (c.partSize (c.index i) + 1) (c.index i) =
           c.partSize (c.index i) + 1 := by simp
-        exact ⟨c.index i, (succ (c.invEmbedding i)).cast A.symm , by simp⟩
+        exact ⟨c.index i, (succ (c.invEmbedding i)).cast A.symm, by simp⟩
       · have A : update c.partSize k (c.partSize k + 1) (c.index i) = c.partSize (c.index i) := by
           simp [hi]
         exact ⟨c.index i, (c.invEmbedding i).cast A.symm, by simp [hi]⟩
@@ -438,7 +439,7 @@ lemma range_emb_extendMiddle_ne_singleton_zero (c : OrderedFinpartition n) (i j 
       simp only [Nat.succ_eq_add_one, mem_range]
       have A : (c.extendMiddle j).partSize j = c.partSize j + 1 := by simp [extendMiddle]
       refine ⟨Fin.cast A.symm (succ 0), ?_⟩
-      simp only [extendMiddle, ↓reduceDIte, comp_apply, cast_trans, cast_eq_self, cases_succ]
+      simp only [extendMiddle, ↓reduceDIte, comp_apply, Fin.cast_cast, cast_eq_self, cases_succ]
     simp only [mem_singleton_iff] at this
     exact Fin.succ_ne_zero _ this
   · have : (c.extendMiddle i).emb j 0 ∈ range ((c.extendMiddle i).emb j) :=
@@ -664,7 +665,6 @@ def extendEquiv (n : ℕ) :
       ext
       · exact A
       · refine (Fin.heq_fun_iff A).mpr (fun i ↦ ?_)
-        simp
         induction i using Fin.induction with
         | zero => change 1 = c.partSize 0; simp [c.partSize_eq_one_of_range_emb_eq_singleton h]
         | succ i => simp only [cons_succ, val_succ]; rfl
@@ -720,7 +720,7 @@ def applyOrderedFinpartition (p : ∀ (i : Fin c.length), E [×c.partSize i]→L
 
 lemma applyOrderedFinpartition_apply (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F)
     (v : Fin n → E) :
-  c.applyOrderedFinpartition p v = (fun m ↦ p m (v ∘ c.emb m)) := rfl
+    c.applyOrderedFinpartition p v = (fun m ↦ p m (v ∘ c.emb m)) := rfl
 
 theorem norm_applyOrderedFinpartition_le (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F)
     (v : Fin n → E) (m : Fin c.length) :
@@ -747,7 +747,7 @@ theorem applyOrderedFinpartition_update_right
     · exact (c.emb_strictMono (c.index j)).injective
   · simp only [applyOrderedFinpartition, ne_eq, h, not_false_eq_true,
       update_of_ne]
-    congr
+    congr 1
     apply Function.update_comp_eq_of_notMem_range
     have A : Disjoint (range (c.emb m)) (range (c.emb (c.index j))) :=
       c.disjoint (mem_univ m) (mem_univ (c.index j)) h
@@ -785,7 +785,7 @@ def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E 
     fun_prop
 
 @[simp] lemma compAlongOrderFinpartition_apply (f : F [×c.length]→L[𝕜] G)
-    (p : ∀ i, E[×c.partSize i]→L[𝕜] F) (v : Fin n → E) :
+    (p : ∀ i, E [×c.partSize i]→L[𝕜] F) (v : Fin n → E) :
     c.compAlongOrderedFinpartition f p v = f (c.applyOrderedFinpartition p v) := rfl
 
 theorem norm_compAlongOrderedFinpartition_le (f : F [×c.length]→L[𝕜] G)
@@ -824,7 +824,7 @@ noncomputable def compAlongOrderedFinpartitionL :
   apply norm_compAlongOrderedFinpartition_le
 
 @[simp] lemma compAlongOrderedFinpartitionL_apply (f : F [×c.length]→L[𝕜] G)
-    (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F) :
+    (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F) :
     c.compAlongOrderedFinpartitionL 𝕜 E F G f p = c.compAlongOrderedFinpartition f p := rfl
 
 theorem norm_compAlongOrderedFinpartitionL_le :

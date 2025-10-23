@@ -8,6 +8,7 @@ import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Sym.Sym2
+import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Simple graphs
@@ -92,7 +93,7 @@ structure SimpleGraph (V : Type u) where
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
-/-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
+/-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
     {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where
@@ -388,13 +389,13 @@ end Order
 
 /-- `G.support` is the set of vertices that form edges in `G`. -/
 def support : Set V :=
-  Rel.dom G.Adj
+  SetRel.dom {(u, v) : V × V | G.Adj u v}
 
 theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
   Iff.rfl
 
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
-  Rel.dom_mono h
+  SetRel.dom_mono fun _uv huv ↦ h huv
 
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
@@ -787,7 +788,7 @@ theorem incidence_other_prop {v : V} {e : Sym2 V} (h : e ∈ G.incidenceSet v) :
   obtain ⟨he, hv⟩ := h
   rwa [← Sym2.other_spec' hv, mem_edgeSet] at he
 
--- Porting note: as a simp lemma this does not apply even to itself
+@[simp]
 theorem incidence_other_neighbor_edge {v w : V} (h : w ∈ G.neighborSet v) :
     G.otherVertexOfIncident (G.mem_incidence_iff_neighbor.mpr h) = w :=
   Sym2.congr_right.mp (Sym2.other_spec' (G.mem_incidence_iff_neighbor.mpr h).right)

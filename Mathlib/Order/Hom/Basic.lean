@@ -54,7 +54,7 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.dual`: reinterpret a monotone map `α →o β` as a monotone map `αᵒᵈ →o βᵒᵈ`;
 * `OrderHom.dualIso`: order isomorphism between `α →o β` and `(αᵒᵈ →o βᵒᵈ)ᵒᵈ`;
 * `OrderHom.compl`: order isomorphism `α ≃o αᵒᵈ` given by taking complements in a
-  boolean algebra;
+  Boolean algebra;
 
 We also define two functions to convert other bundled maps to `α →o β`:
 
@@ -260,6 +260,10 @@ theorem coe_copy (f : α →o β) (f' : α → β) (h : f' = f) : (f.copy f' h) 
 
 theorem copy_eq (f : α →o β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
+
+instance {α : Type*} (β : Type*) [PartialOrder α] [PartialOrder β] [DecidableEq (α → β)] :
+    DecidableEq (α →o β) := fun a b =>
+  decidable_of_iff (a.toFun = b.toFun) OrderHom.ext_iff.symm
 
 /-- The identity function as bundled monotone function. -/
 @[simps -fullyApplied]
@@ -516,7 +520,6 @@ def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
   { f with
     map_rel_iff' := by
-      intros
       simp [le_iff_lt_or_eq, f.map_rel_iff, f.injective.eq_iff] }
 
 @[simp]
@@ -531,7 +534,7 @@ variable [Preorder α] [Preorder β] (f : α ↪o β)
 
 /-- `<` is preserved by order embeddings of preorders. -/
 def ltEmbedding : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop) :=
-  { f with map_rel_iff' := by intros; simp [lt_iff_le_not_ge, f.map_rel_iff] }
+  { f with map_rel_iff' := by simp [lt_iff_le_not_ge, f.map_rel_iff] }
 
 @[simp]
 theorem ltEmbedding_apply (x : α) : f.ltEmbedding x = f x :=
@@ -975,7 +978,7 @@ theorem toRelIsoLT_ofRelIsoLT {α β} [PartialOrder α] [PartialOrder β]
   simp
 
 /-- To show that `f : α → β`, `g : β → α` make up an order isomorphism of linear orders,
-    it suffices to prove `cmp a (g b) = cmp (f a) b`. -/
+it suffices to prove `cmp a (g b) = cmp (f a) b`. -/
 def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β → α)
     (h : ∀ (a : α) (b : β), cmp a (g b) = cmp (f a) b) : α ≃o β :=
   have gf : ∀ a : α, a = g (f a) := by
@@ -986,13 +989,14 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
       intro
       rw [← cmp_eq_eq_iff, ← h, cmp_self_eq_eq],
     map_rel_iff' := by
-      intros a b
+      intro a b
       apply le_iff_le_of_cmp_eq_cmp
       convert (h a (f b)).symm
       apply gf }
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show
 that `g` is the inverse of `f`. -/
+@[simps! apply]
 def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
     [OrderHomClass G β α] (f : F) (g : G)
     (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
@@ -1008,6 +1012,13 @@ def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G 
       rwa [Equiv.coe_fn_mk, show g (f a) = (g : β →o α).comp (f : α →o β) a from rfl,
         show g (f b) = (g : β →o α).comp (f : α →o β) b from rfl, h₂] at h,
       fun h => (f : α →o β).monotone h⟩
+
+@[simp]
+theorem ofHomInv_symm_apply {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
+    [OrderHomClass G β α] (f : F) (g : G)
+    (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
+    (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) (a : β) :
+    (ofHomInv f g h₁ h₂).symm a = g a := rfl
 
 /-- Order isomorphism between `α → β` and `β`, where `α` has a unique element. -/
 @[simps! toEquiv apply]
@@ -1176,6 +1187,14 @@ instance (priority := 90) OrderIsoClass.toOrderIsoClassOrderDual [LE α] [LE β]
 
 section DenselyOrdered
 
+-- could live in a more upstream file, but hard to find a good place
+lemma StrictMono.denselyOrdered_range {X Y : Type*} [LinearOrder X] [DenselyOrdered X] [Preorder Y]
+    {f : X → Y} (hf : StrictMono f) :
+    DenselyOrdered (Set.range f) := by
+  constructor
+  simpa [← exists_and_left, ← exists_and_right, exists_comm, hf.lt_iff_lt]
+    using fun _ _ ↦ exists_between
+
 lemma denselyOrdered_iff_of_orderIsoClass {X Y F : Type*} [Preorder X] [Preorder Y]
     [EquivLike F X Y] [OrderIsoClass F X Y] (f : F) :
     DenselyOrdered X ↔ DenselyOrdered Y := by
@@ -1189,4 +1208,22 @@ lemma denselyOrdered_iff_of_orderIsoClass {X Y F : Type*} [Preorder X] [Preorder
     obtain ⟨c, hc⟩ := exists_between ((map_lt_map_iff f).mpr h)
     exact ⟨EquivLike.inv f c, by simpa using hc⟩
 
+lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder Y]
+    [EquivLike F X Y] (f : F) (hf : StrictAnti f) :
+    DenselyOrdered X ↔ DenselyOrdered Y := by
+  rw [← denselyOrdered_orderDual]
+  let e : Xᵒᵈ ≃o Y := ⟨OrderDual.ofDual.trans (f : X ≃ Y), ?_⟩
+  · exact denselyOrdered_iff_of_orderIsoClass e
+  · simp only [Equiv.trans_apply, EquivLike.coe_coe, OrderDual.forall, OrderDual.ofDual_toDual,
+      OrderDual.toDual_le_toDual]
+    intro a b
+    rw [hf.le_iff_ge]
+
 end DenselyOrdered
+
+universe v u in
+/-- The bijection `ULift.{v} α ≃ α` as an isomorphism of orders. -/
+@[pp_with_univ, simps!]
+def ULift.orderIso {α : Type u} [Preorder α] :
+    ULift.{v} α ≃o α :=
+  Equiv.ulift.toOrderIso (fun _ _ ↦ id) (fun _ _ ↦ id)

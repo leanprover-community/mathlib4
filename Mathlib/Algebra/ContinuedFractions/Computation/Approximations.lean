@@ -177,8 +177,8 @@ theorem GenContFract.of_isSimpContFract :
   of_partNum_eq_one nth_partNum_eq
 
 /-- Creates the simple continued fraction of a value. -/
-nonrec def SimpContFract.of : SimpContFract K :=
-  ⟨of v, GenContFract.of_isSimpContFract v⟩
+def SimpContFract.of : SimpContFract K :=
+  ⟨GenContFract.of v, GenContFract.of_isSimpContFract v⟩
 
 theorem SimpContFract.of_isContFract :
     (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>
@@ -237,9 +237,7 @@ theorem fib_le_of_contsAux_b :
         have one_le_gp_b : (1 : K) ≤ gp.b :=
           of_one_le_get?_partDen (partDen_eq_s_b s_ppred_nth_eq)
         gcongr
-        apply IH
-        · simp
-        · tauto)
+        grind)
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
 that is `Nat.fib (n + 1) ≤ Bₙ`. -/
@@ -384,15 +382,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
     have : 0 < ifp.fr :=
       ifp_fr_ne_zero.lt_of_le' <| IntFractPair.nth_stream_fr_nonneg stream_nth_eq
     have : pB + ifp.fr⁻¹ * B ≠ 0 := by positivity
-    -- finally, let's do the rewriting
-    calc
-      (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B) - A / B =
-          ((pA + ifp.fr⁻¹ * A) * B - (pB + ifp.fr⁻¹ * B) * A) / ((pB + ifp.fr⁻¹ * B) * B) := by
-        rw [div_sub_div _ _ this zero_lt_B.ne']
-      _ = (pA * B + ifp.fr⁻¹ * A * B - (pB * A + ifp.fr⁻¹ * B * A)) / _ := by repeat' rw [add_mul]
-      _ = (pA * B - pB * A) / ((pB + ifp.fr⁻¹ * B) * B) := by ring
-      _ = (-1) ^ n / ((pB + ifp.fr⁻¹ * B) * B) := by rw [determinant_eq]
-      _ = (-1) ^ n / (B * (ifp.fr⁻¹ * B + pB)) := by ac_rfl
+    grind
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`. -/
 theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
@@ -412,7 +402,6 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     simp [nextConts, contsAux_recurrence s_nth_eq pred_conts_eq conts_eq, gp_a_eq_one,
       pred_conts_eq.symm, conts_eq.symm, add_comm]
   let den := conts.b * (pred_conts.b + gp.b * conts.b)
-  suffices |v - g.convs n| ≤ 1 / den by rw [nextConts_b_eq]; congr 1
   obtain ⟨ifp_succ_n, succ_nth_stream_eq, ifp_succ_n_b_eq_gp_b⟩ :
       ∃ ifp_succ_n, IntFractPair.stream v (n + 1) = some ifp_succ_n ∧ (ifp_succ_n.b : K) = gp.b :=
     IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some s_nth_eq
@@ -422,14 +411,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
   let den' := conts.b * (pred_conts.b + ifp_n.fr⁻¹ * conts.b)
   -- now we can use `sub_convs_eq` to simplify our goal
-  suffices |(-1) ^ n / den'| ≤ 1 / den by
-    have : v - g.convs n = (-1) ^ n / den' := by
-      -- apply `sub_convs_eq` and simplify the result
-      have tmp := sub_convs_eq stream_nth_eq
-      simp only [stream_nth_fr_ne_zero, if_false] at tmp
-      rw [tmp]
-      ring
-    rwa [this]
+  suffices |(-1) ^ n / den'| ≤ 1 / den by grind [sub_convs_eq]
   -- derive some tedious inequalities that we need to rewrite our goal
   have nextConts_b_ineq : (fib (n + 2) : K) ≤ pred_conts.b + gp.b * conts.b := by
     have : (fib (n + 2) : K) ≤ nextConts.b :=
@@ -483,7 +465,7 @@ theorem abs_sub_convergents_le' {b : K}
   refine (abs_sub_convs_le not_terminatedAt_n).trans ?_
   -- One can show that `0 < (GenContFract.of v).dens n` but it's easier
   -- to consider the case `(GenContFract.of v).dens n = 0`.
-  rcases (zero_le_of_den (K := K)).eq_or_gt with
+  rcases (zero_le_of_den (K := K)).eq_or_lt' with
     ((hB : (GenContFract.of v).dens n = 0) | hB)
   · simp only [hB, mul_zero, zero_mul, div_zero, le_refl]
   · apply one_div_le_one_div_of_le

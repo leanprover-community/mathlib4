@@ -3,13 +3,13 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 import Mathlib.Order.BooleanAlgebra.Basic
 
 /-!
 # Boolean algebra of sets
 
-This file proves that `Set α` is a boolean algebra, and proves results about set difference and
+This file proves that `Set α` is a Boolean algebra, and proves results about set difference and
 complement.
 
 ## Notation
@@ -160,6 +160,28 @@ theorem inter_subset (a b c : Set α) : a ∩ b ⊆ c ↔ a ⊆ bᶜ ∪ c :=
 theorem inter_compl_nonempty_iff {s t : Set α} : (s ∩ tᶜ).Nonempty ↔ ¬s ⊆ t :=
   (not_subset.trans <| exists_congr fun x => by simp).symm
 
+lemma subset_compl_iff_disjoint_left : s ⊆ tᶜ ↔ Disjoint t s := le_compl_iff_disjoint_left
+lemma subset_compl_iff_disjoint_right : s ⊆ tᶜ ↔ Disjoint s t := le_compl_iff_disjoint_right
+lemma disjoint_compl_left_iff_subset : Disjoint sᶜ t ↔ t ⊆ s := disjoint_compl_left_iff
+lemma disjoint_compl_right_iff_subset : Disjoint s tᶜ ↔ s ⊆ t := disjoint_compl_right_iff
+
+alias ⟨_, _root_.Disjoint.subset_compl_right⟩ := subset_compl_iff_disjoint_right
+alias ⟨_, _root_.Disjoint.subset_compl_left⟩ := subset_compl_iff_disjoint_left
+alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_left_iff_subset
+alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
+
+@[simp] lemma nonempty_compl_of_nontrivial [Nontrivial α] (x : α) : Set.Nonempty {x}ᶜ := exists_ne x
+
+lemma mem_compl_singleton_iff : a ∈ ({b} : Set α)ᶜ ↔ a ≠ b := .rfl
+
+lemma compl_singleton_eq (a : α) : {a}ᶜ = {x | x ≠ a} := rfl
+
+@[simp]
+lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl _
+
+@[simp]
+lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm.trans singleton_subset_iff
+
 /-! ### Lemmas about set difference -/
 
 theorem notMem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
@@ -224,15 +246,25 @@ theorem diff_union_inter (s t : Set α) : s \ t ∪ s ∩ t = s := by
 theorem inter_union_compl (s t : Set α) : s ∩ t ∪ s ∩ tᶜ = s :=
   inter_union_diff _ _
 
+theorem subset_inter_union_compl_left (s t : Set α) : t ⊆ s ∩ t ∪ sᶜ := by
+  simp [inter_union_distrib_right]
+
+theorem subset_inter_union_compl_right (s t : Set α) : s ⊆ s ∩ t ∪ tᶜ := by
+  simp [inter_union_distrib_right]
+
+theorem union_inter_compl_left_subset (s t : Set α) : (s ∪ t) ∩ sᶜ ⊆ t := by
+  simp [union_inter_distrib_right]
+
+theorem union_inter_compl_right_subset (s t : Set α) : (s ∪ t) ∩ tᶜ ⊆ s := by
+  simp [union_inter_distrib_right]
+
 @[gcongr]
 theorem diff_subset_diff {s₁ s₂ t₁ t₂ : Set α} : s₁ ⊆ s₂ → t₂ ⊆ t₁ → s₁ \ t₁ ⊆ s₂ \ t₂ :=
   show s₁ ≤ s₂ → t₂ ≤ t₁ → s₁ \ t₁ ≤ s₂ \ t₂ from sdiff_le_sdiff
 
-@[gcongr]
 theorem diff_subset_diff_left {s₁ s₂ t : Set α} (h : s₁ ⊆ s₂) : s₁ \ t ⊆ s₂ \ t :=
   sdiff_le_sdiff_right ‹s₁ ≤ s₂›
 
-@[gcongr]
 theorem diff_subset_diff_right {s t u : Set α} (h : t ⊆ u) : s \ u ⊆ s \ t :=
   sdiff_le_sdiff_left ‹t ≤ u›
 
@@ -333,6 +365,106 @@ theorem union_eq_diff_union_diff_union_inter (s t : Set α) : s ∪ t = s \ t �
 @[simp] lemma sdiff_sep_self (s : Set α) (p : α → Prop) : s \ {a ∈ s | p a} = {a ∈ s | ¬ p a} :=
   diff_self_inter
 
+lemma disjoint_sdiff_left : Disjoint (t \ s) s := disjoint_sdiff_self_left
+
+lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
+
+-- TODO: prove this in terms of a Boolean algebra lemma
+lemma disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
+  disjoint_of_subset_right inter_subset_right disjoint_sdiff_left
+
+lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
+
+lemma disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) : Disjoint s t ↔ s = ∅ :=
+  disjoint_of_le_iff_left_eq_bot h
+
+@[simp]
+lemma diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
+  sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
+
+lemma _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
+    t \ s ⊂ t := by
+  simpa [inter_eq_self_of_subset_right hst]
+
+lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
+  simp [ssubset_iff_insert, subset_diff, insert_subset_iff]; aesop
+
+@[simp]
+lemma diff_singleton_subset_iff : s \ {a} ⊆ t ↔ s ⊆ insert a t := by
+  rw [← union_singleton, union_comm]
+  apply diff_subset_iff
+
+lemma subset_diff_singleton (h : s ⊆ t) (ha : a ∉ s) : s ⊆ t \ {a} :=
+  subset_inter h <| subset_compl_comm.1 <| singleton_subset_iff.2 ha
+
+lemma subset_insert_diff_singleton (x : α) (s : Set α) : s ⊆ insert x (s \ {x}) := by
+  rw [← diff_singleton_subset_iff]
+
+lemma diff_insert_of_notMem (h : a ∉ s) : s \ insert a t = s \ t := by
+  grind
+
+@[deprecated (since := "2025-05-23")] alias diff_insert_of_not_mem := diff_insert_of_notMem
+
+@[simp]
+lemma insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
+  grind
+
+lemma insert_diff_of_notMem (s) (h : a ∉ t) : insert a s \ t = insert a (s \ t) := by
+  grind
+
+@[deprecated (since := "2025-05-23")] alias insert_diff_of_not_mem := insert_diff_of_notMem
+
+lemma insert_diff_self_of_notMem (h : a ∉ s) : insert a s \ {a} = s := by
+  ext x; simp [and_iff_left_of_imp (ne_of_mem_of_not_mem · h)]
+
+@[deprecated (since := "2025-05-23")]
+alias insert_diff_self_of_not_mem := insert_diff_self_of_notMem
+
+@[simp] lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
+  ext; simp +contextual [or_and_left, em, ha]
+
+lemma insert_diff_subset : insert a s \ t ⊆ insert a (s \ t) := by
+  rintro b ⟨rfl | hbs, hbt⟩ <;> simp [*]
+
+lemma insert_erase_invOn :
+    InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
+  ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_notMem⟩
+
+@[simp]
+lemma diff_singleton_eq_self (h : a ∉ s) : s \ {a} = s :=
+  sdiff_eq_self_iff_disjoint.2 <| by simp [h]
+
+lemma diff_singleton_ssubset : s \ {a} ⊂ s ↔ a ∈ s := by simp
+
+@[deprecated (since := "2025-03-20")] alias diff_singleton_sSubset := diff_singleton_ssubset
+
+@[simp]
+lemma insert_diff_singleton : insert a (s \ {a}) = insert a s := by
+  simp [insert_eq, union_diff_self, -union_singleton, -singleton_union]
+
+lemma insert_diff_singleton_comm (hab : a ≠ b) (s : Set α) :
+    insert a (s \ {b}) = insert a s \ {b} := by
+  simp_rw [← union_singleton, union_diff_distrib,
+    diff_singleton_eq_self (mem_singleton_iff.not.2 hab.symm)]
+
+@[simp]
+lemma insert_diff_insert : insert a (s \ insert a t) = insert a (s \ t) := by
+  rw [← union_singleton (s := t), ← diff_diff, insert_diff_singleton]
+
+lemma mem_diff_singleton : a ∈ s \ {b} ↔ a ∈ s ∧ a ≠ b := .rfl
+
+lemma mem_diff_singleton_empty {t : Set (Set α)} : s ∈ t \ {∅} ↔ s ∈ t ∧ s.Nonempty :=
+  mem_diff_singleton.trans <| and_congr_right' nonempty_iff_ne_empty.symm
+
+lemma subset_insert_iff : s ⊆ insert a t ↔ s ⊆ t ∨ (a ∈ s ∧ s \ {a} ⊆ t) := by
+  grind
+
+lemma pair_diff_left (hab : a ≠ b) : ({a, b} : Set α) \ {a} = {b} := by
+  rw [insert_diff_of_mem _ (mem_singleton a), diff_singleton_eq_self (by simpa)]
+
+lemma pair_diff_right (hab : a ≠ b) : ({a, b} : Set α) \ {b} = {a} := by
+  rw [pair_comm, pair_diff_left hab.symm]
+
 /-! ### If-then-else for sets -/
 
 /-- `ite` for sets: `Set.ite t s s' ∩ t = s ∩ t`, `Set.ite t s s' ∩ tᶜ = s' ∩ tᶜ`.
@@ -416,4 +548,3 @@ theorem ite_eq_of_subset_right (t : Set α) {s₁ s₂ : Set α} (h : s₂ ⊆ s
   by_cases hx : x ∈ t <;> simp [*, Set.ite, or_iff_left_of_imp (@h x)]
 
 end Set
-

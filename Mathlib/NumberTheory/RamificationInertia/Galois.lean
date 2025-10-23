@@ -84,7 +84,7 @@ variable (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [A
   [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [IsIntegralClosure B A L] [FiniteDimensional K L]
 
-noncomputable instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
+noncomputable instance : MulAction Gal(L/K) (primesOver p B) where
   smul σ Q := primesOver.mk p (map (galRestrict A K L B σ) Q.1)
   one_smul Q := by
     apply Subtype.val_inj.mp
@@ -96,11 +96,11 @@ noncomputable instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
     rw [map_mul]
     exact (Q.1.map_map ((galRestrict A K L B) τ).toRingHom ((galRestrict A K L B) σ).toRingHom).symm
 
-theorem coe_smul_primesOver_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : primesOver p B):
+theorem coe_smul_primesOver_eq_map_galRestrict (σ : Gal(L/K)) (P : primesOver p B) :
     (σ • P).1 = map (galRestrict A K L B σ) P :=
   rfl
 
-theorem coe_smul_primesOver_mk_eq_map_galRestrict (σ : L ≃ₐ[K] L) (P : Ideal B) [P.IsPrime]
+theorem coe_smul_primesOver_mk_eq_map_galRestrict (σ : Gal(L/K)) (P : Ideal B) [P.IsPrime]
     [P.LiesOver p] : (σ • primesOver.mk p P).1 = map (galRestrict A K L B σ) P :=
   rfl
 
@@ -133,7 +133,7 @@ theorem isPretransitive_of_isGalois [IsGalois K L] :
     rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
     exact ⟨σ, Subtype.val_inj.mp hs⟩
 
-instance [IsGalois K L] : MulAction.IsPretransitive (L ≃ₐ[K] L) (primesOver p B) where
+instance [IsGalois K L] : MulAction.IsPretransitive Gal(L/K) (primesOver p B) where
   exists_smul_eq := by
     intro ⟨P, _, _⟩ ⟨Q, _, _⟩
     rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
@@ -162,6 +162,12 @@ theorem ramificationIdxIn_eq_ramificationIdx [IsGalois K L] :
   rw [ramificationIdxIn, dif_pos h]
   exact ramificationIdx_eq_of_isGalois p h.choose P K L
 
+theorem ramificationIdxIn_ne_zero [IsDedekindDomain B] {p : Ideal A} [p.IsPrime] (hp : p ≠ ⊥)
+    [IsGalois K L] [NoZeroSMulDivisors A B] : p.ramificationIdxIn B ≠ 0 := by
+  obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
+  rw [ramificationIdxIn_eq_ramificationIdx p P K L]
+  exact IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver P.1 hp
+
 /-- The `inertiaDegIn` is equal to any ramification index over the same ideal. -/
 theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] [IsGalois K L] :
     inertiaDegIn p B = inertiaDeg p P := by
@@ -169,6 +175,12 @@ theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] [IsGalois K L] :
   obtain ⟨_, _⟩ := h.choose_spec
   rw [inertiaDegIn, dif_pos h]
   exact inertiaDeg_eq_of_isGalois p h.choose P K L
+
+theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [IsGalois K L] [NoZeroSMulDivisors A B] :
+    inertiaDegIn p B ≠ 0 := by
+  obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
+  rw [inertiaDegIn_eq_inertiaDeg p P K L]
+  exact inertiaDeg_ne_zero _ _
 
 end RamificationInertia
 
@@ -185,8 +197,8 @@ include hpb in
 theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Module.finrank K L := by
   have : FaithfulSMul A B := FaithfulSMul.of_field_isFractionRing A B K L
-  rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_Finset, ← Finset.sum_const]
-  rw [← sum_ramification_inertia B p K L hpb]
+  rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
+  rw [← sum_ramification_inertia B K L hpb]
   apply Finset.sum_congr rfl
   intro P hp
   rw [← Finset.mem_coe, coe_primesOverFinset hpb B] at hp

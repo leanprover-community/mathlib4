@@ -52,6 +52,7 @@ theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} 
 
 namespace MeromorphicAt
 
+@[fun_prop]
 lemma id (x : 𝕜) : MeromorphicAt id x := analyticAt_id.meromorphicAt
 
 @[fun_prop]
@@ -70,7 +71,7 @@ lemma add {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
       Nat.sub_add_cancel (Nat.le_max_right _ _), Pi.add_apply, smul_add]
   rw [this]
   exact (((analyticAt_id.sub analyticAt_const).pow _).smul hf).add
-   (((analyticAt_id.sub analyticAt_const).pow _).smul hg)
+    (((analyticAt_id.sub analyticAt_const).pow _).smul hg)
 
 @[fun_prop]
 lemma fun_add {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
@@ -182,6 +183,16 @@ lemma meromorphicAt_congr {f g : 𝕜 → E} {x : 𝕜} (h : f =ᶠ[𝓝[≠] x]
     MeromorphicAt f x ↔ MeromorphicAt g x :=
   ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
 
+@[simp]
+lemma update_iff [DecidableEq 𝕜] {f : 𝕜 → E} {z w : 𝕜} {e : E} :
+    MeromorphicAt (Function.update f w e) z ↔ MeromorphicAt f z :=
+  meromorphicAt_congr (Function.update_eventuallyEq_nhdsNE f w z e)
+
+@[fun_prop]
+lemma update [DecidableEq 𝕜] {f : 𝕜 → E} {z} (hf : MeromorphicAt f z) (w e) :
+    MeromorphicAt (Function.update f w e) z :=
+  update_iff.mpr hf
+
 @[fun_prop]
 lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x := by
   rcases hf with ⟨m, hf⟩
@@ -206,9 +217,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
         have : (z - x) ^ n * g z ≠ 0 := mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz_ne)) hg_ne'
         rw [← hfg, mul_ne_zero_iff] at this
         exact this.2
-      field_simp [sub_ne_zero.mpr hz_ne]
-      rw [pow_succ', mul_assoc, hfg]
-      ring
+      simp [field, pow_succ', mul_assoc, hfg]
 
 @[fun_prop]
 lemma fun_inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (fun z ↦ (f z)⁻¹) x :=
@@ -297,7 +306,7 @@ lemma iff_eventuallyEq_zpow_smul_analyticAt {f : 𝕜 → E} {x : 𝕜} : Meromo
   refine ⟨fun ⟨n, hn⟩ ↦ ⟨-n, _, ⟨hn, eventually_nhdsWithin_iff.mpr ?_⟩⟩, ?_⟩
   · filter_upwards with z hz
     match_scalars
-    field_simp [sub_ne_zero.mpr hz]
+    simp [sub_ne_zero.mpr hz]
   · refine fun ⟨n, g, hg_an, hg_eq⟩ ↦ MeromorphicAt.congr ?_ (EventuallyEq.symm hg_eq)
     exact (((MeromorphicAt.id x).sub (.const _ x)).zpow _).smul hg_an.meromorphicAt
 

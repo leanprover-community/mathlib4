@@ -20,14 +20,13 @@ complement of `s` is primitive.
 
 * `MulAction.is_one_preprimitive_iff` : an action is 1-primitive if and only if it is primitive
 
-* `MulAction.isMultiplyPreprimitive_ofStabilizer`: if an action
-is `n + 1`-primitive, then the action of `stabilizer G a` on
-the complement of `{a}` is `n`-primitive.
+* `MulAction.isMultiplyPreprimitive_ofStabilizer`: if an action is `n + 1`-primitive,
+  then the action of `stabilizer G a` on the complement of `{a}` is `n`-primitive.
 
 * `MulAction.isMultiplyPreprimitive_succ_iff_ofStabilizer` :
-for `1 ≤ n`, an action is `n + 1`-primitive, then the action
-of `stabilizer G a` on the complement of `{a}` is `n`-primitive.
-ofFixingSubgroup.isMultiplyPreprimitive
+  for `1 ≤ n`, an action is `n + 1`-primitive, then the action
+  of `stabilizer G a` on the complement of `{a}` is `n`-primitive.
+  ofFixingSubgroup.isMultiplyPreprimitive
 
 * `MulAction.ofFixingSubgroup.isMultiplyPreprimitive`:
 If an action is `s.ncard + m`-primitive, then
@@ -44,16 +43,24 @@ open SubMulAction
 
 section Preprimitive
 
-variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
+variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 -- Rewriting lemmas for transitivity or primitivity
+@[to_additive]
+theorem isPreprimitive_of_fixingSubgroup_empty_iff :
+    IsPreprimitive ↥(fixingSubgroup G (∅ : Set α))
+    ↥(ofFixingSubgroup G (∅ : Set α)) ↔ IsPreprimitive G α :=
+  isPreprimitive_congr
+    of_fixingSubgroupEmpty_mapScalars_surjective
+    ofFixingSubgroupEmpty_equivariantMap_bijective
+
 @[to_additive]
 theorem isPreprimitive_ofFixingSubgroup_conj_iff {s : Set α} {g : G} :
     IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s) ↔
       IsPreprimitive (fixingSubgroup G (g • s)) (ofFixingSubgroup G (g • s)) :=
   isPreprimitive_congr
-    (fixingSubgroupEquivFixingSubgroup G α rfl).surjective
-    (conjMap_ofFixingSubgroup_bijective G α rfl)
+    (fixingSubgroupEquivFixingSubgroup rfl).surjective
+    conjMap_ofFixingSubgroup_bijective
 
 @[to_additive]
 theorem isPreprimitive_fixingSubgroup_insert_iff {a : α} {t : Set (ofStabilizer G a)} :
@@ -61,12 +68,12 @@ theorem isPreprimitive_fixingSubgroup_insert_iff {a : α} {t : Set (ofStabilizer
       ↥(ofFixingSubgroup G (insert a (Subtype.val '' t))) ↔
       IsPreprimitive (fixingSubgroup (stabilizer G a) t)
         (ofFixingSubgroup (stabilizer G a) t) :=
-  isPreprimitive_congr (fixingSubgroupInsertEquiv G a t).surjective
-    (ofFixingSubgroup_insert_map_bijective G a t)
+  isPreprimitive_congr (fixingSubgroupInsertEquiv a t).surjective
+    ofFixingSubgroup_insert_map_bijective
 
 end Preprimitive
 
-/-- An additive action is `n`-multiply preprimitive  if is is `n`-multiply transitive
+/-- An additive action is `n`-multiply preprimitive if it is `n`-multiply transitive
   and if, when `n ≥ 1`, for every set `s` of cardinality `n - 1`,
   the action of `fixingAddSubgroup M s` on the complement of `s` is preprimitive. -/
 @[mk_iff]
@@ -79,7 +86,7 @@ class _root_.AddAction.IsMultiplyPreprimitive
   isPreprimitive_ofFixingAddSubgroup (M n) {s : Set α} (hs : s.encard + 1 = n) :
     AddAction.IsPreprimitive (fixingAddSubgroup M s) (SubAddAction.ofFixingAddSubgroup M s)
 
-/-- A group action is `n`-multiply preprimitive  if is is `n`-multiply
+/-- A group action is `n`-multiply preprimitive if it is `n`-multiply
 transitive and if, when `n ≥ 1`, for every set `s` of cardinality
 n - 1, the action of `fixingSubgroup M s` on the complement of `s`
 is preprimitive. -/
@@ -109,12 +116,9 @@ theorem is_zero_preprimitive : IsMultiplyPreprimitive M α 0 where
 @[to_additive]
 theorem is_one_preprimitive_iff :
     IsMultiplyPreprimitive M α 1 ↔ IsPreprimitive M α := by
-  have H := (isPreprimitive_congr
-      (of_fixingSubgroupEmpty_mapScalars_surjective M α)
-      (ofFixingSubgroupEmpty_equivariantMap_bijective M α))
   constructor
   · intro H1
-    rw [← H]
+    rw [← isPreprimitive_of_fixingSubgroup_empty_iff]
     apply H1.isPreprimitive_ofFixingSubgroup (by simp)
   · intro h
     rw [isMultiplyPreprimitive_iff]
@@ -122,8 +126,7 @@ theorem is_one_preprimitive_iff :
     · exact is_one_pretransitive_iff.mpr h.toIsPretransitive
     · intro s hs
       suffices s = ∅ by
-        rw [this]
-        exact H.mpr h
+        rwa [this, isPreprimitive_of_fixingSubgroup_empty_iff]
       rw [← Set.encard_eq_zero]
       suffices s.encard ≠ (⊤ : ℕ∞) by
         obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp this
@@ -132,7 +135,7 @@ theorem is_one_preprimitive_iff :
       exact fun h ↦ by simp [h] at hs
 
 /-- The action of `stabilizer M a` is one-less preprimitive -/
-@[to_additive]
+@[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]
 theorem isMultiplyPreprimitive_ofStabilizer
     [IsPretransitive M α] {n : ℕ} {a : α} [IsMultiplyPreprimitive M α n.succ] :
     IsMultiplyPreprimitive (stabilizer M a) (SubMulAction.ofStabilizer M a) n := by
@@ -150,9 +153,9 @@ theorem isMultiplyPreprimitive_ofStabilizer
       apply IsMultiplyPreprimitive.isPreprimitive_ofFixingSubgroup M n.succ
       rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, hs, Nat.cast_succ]
       aesop
-    exact IsPreprimitive.of_surjective (ofFixingSubgroup_insert_map_bijective M a s).surjective
+    exact IsPreprimitive.of_surjective ofFixingSubgroup_insert_map_bijective.surjective
 
-/-- A pretransitive action is `n.succ-`preprimitive  iff
+/-- A pretransitive action is `n.succ-`preprimitive iff
   the action of stabilizers is `n`-preprimitive. -/
 @[to_additive]
 theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
@@ -195,7 +198,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
       simp only
       rw [← Nat.cast_one, ← Nat.cast_add, ← hs]
       apply congr_arg₂ _ _ rfl
-      rw [show s = g⁻¹ • s' from by ext; simp [hs'],
+      rw [show s = g⁻¹ • s' from by simp [hs'],
         ← Set.image_smul, (MulAction.injective g⁻¹).encard_image, hst]
       rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, ENat.coe_one]
       exact notMem_val_image M t
@@ -204,18 +207,17 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
 acts `n-d`-primitively on the remaining (`d ≤ n`) -/
 @[to_additive]
 theorem ofFixingSubgroup.isMultiplyPreprimitive
-    {m n : ℕ} [IsMultiplyPreprimitive M α n]
-    {s : Set α} [Finite s] (hs : s.ncard + m = n) :
+    {m n : ℕ} [IsMultiplyPreprimitive M α n] {s : Set α} [Finite s] (hs : s.ncard + m = n) :
     IsMultiplyPreprimitive (fixingSubgroup M s) (SubMulAction.ofFixingSubgroup M s) m where
   isMultiplyPretransitive := by
-    apply ofFixingSubgroup.isMultiplyPretransitive s hs
+    apply ofFixingSubgroup.isMultiplyPretransitive _ s hs
   isPreprimitive_ofFixingSubgroup {t} ht := by
     let t' : Set α := Subtype.val '' t
     have htt' : t = Subtype.val ⁻¹' t' :=
       (Set.preimage_image_eq _ Subtype.coe_injective).symm
     rw [htt']
     suffices IsPreprimitive (fixingSubgroup M (s ∪ t')) (ofFixingSubgroup M (s ∪ t')) by
-      apply IsPreprimitive.of_surjective (map_ofFixingSubgroupUnion_bijective M s t').surjective
+      apply IsPreprimitive.of_surjective map_ofFixingSubgroupUnion_bijective.surjective
     apply IsMultiplyPreprimitive.isPreprimitive_ofFixingSubgroup _ n
     rw [Set.encard_union_eq _]
     · rw [Subtype.coe_injective.encard_image, add_assoc, ht,
@@ -224,7 +226,7 @@ theorem ofFixingSubgroup.isMultiplyPreprimitive
     · apply disjoint_val_image
 
 /-- `n.succ`-pretransitivity implies `n`-preprimitivity. -/
-@[to_additive "`n.succ`-pretransitivity implies `n`-preprimitivity."]
+@[to_additive /-- `n.succ`-pretransitivity implies `n`-preprimitivity. -/]
 theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     (hα : ↑n.succ ≤ ENat.card α) [IsMultiplyPretransitive M α n.succ] :
     IsMultiplyPreprimitive M α n := by
@@ -245,7 +247,7 @@ theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     simp [Set.ncard, hs', hm, add_comm 1]
 
 /-- An `n`-preprimitive action is `m`-preprimitive for `m ≤ n`. -/
-@[to_additive "An `n`-preprimitive action is `m`-preprimitive for `m ≤ n`."]
+@[to_additive /-- An `n`-preprimitive action is `m`-preprimitive for `m ≤ n`. -/]
 theorem isMultiplyPreprimitive_of_le
     {n : ℕ} (hn : IsMultiplyPreprimitive M α n)
     {m : ℕ} (hmn : m ≤ n) (hα : ↑n ≤ ENat.card α) :
@@ -314,7 +316,7 @@ theorem isMultiplyPreprimitive_congr
   · intro s hs
     let t := f '' s
     let ψ : fixingSubgroup M s → fixingSubgroup N t := fun ⟨g, hg⟩ ↦ ⟨φ g, by
-      simp [mem_fixingSubgroup_iff] at hg ⊢
+      simp only [mem_fixingSubgroup_iff] at hg ⊢
       intro y hy
       suffices ∃ x ∈ s, y = f x by
         obtain ⟨x, hx, rfl⟩ := this
@@ -348,6 +350,6 @@ theorem isMultiplyPreprimitive_congr
         suffices y ∈ ofFixingSubgroup M s by
           exact ⟨⟨y, this⟩, rfl⟩
         simp only [mem_ofFixingSubgroup_iff, Set.mem_image, not_exists, not_and, t] at hx ⊢
-        exact fun  hy ↦ hx y hy rfl
+        exact fun hy ↦ hx y hy rfl
 
 end MulAction

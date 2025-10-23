@@ -9,7 +9,6 @@ import Mathlib.Algebra.Polynomial.Identities
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Nilpotency in polynomial rings.
@@ -32,7 +31,7 @@ variable [Semiring R] {P : R[X]}
 
 lemma isNilpotent_C_mul_pow_X_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
     IsNilpotent ((C r) * X ^ n) := by
-  refine Commute.isNilpotent_mul_left (commute_X_pow _ _).symm ?_
+  refine Commute.isNilpotent_mul_right (commute_X_pow _ _).symm ?_
   obtain ⟨m, hm⟩ := hnil
   refine ⟨m, ?_⟩
   rw [← C_pow, hm, C_0]
@@ -53,7 +52,7 @@ lemma isNilpotent_pow_X_mul_C_of_isNilpotent (n : ℕ) (hnil : IsNilpotent r) :
 @[simp] lemma isNilpotent_X_mul_iff :
     IsNilpotent (X * P) ↔ IsNilpotent P := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · rwa [Commute.isNilpotent_mul_right_iff (commute_X P) (by simp)] at h
+  · rwa [Commute.isNilpotent_mul_left_iff (commute_X P) (by simp)] at h
   · rintro ⟨k, hk⟩
     exact ⟨k, by simp [(commute_X P).mul_pow, hk]⟩
 
@@ -107,10 +106,10 @@ nilpotent, then `P` is a unit.
 See also `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`. -/
 theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     (hnil : ∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) : IsUnit P := by
-  induction' h : P.natDegree using Nat.strong_induction_on with k hind generalizing P
+  induction h : P.natDegree using Nat.strong_induction_on generalizing P with | _ k hind
   by_cases hdeg : P.natDegree = 0
-  { rw [eq_C_of_natDegree_eq_zero hdeg]
-    exact hunit.map C }
+  · rw [eq_C_of_natDegree_eq_zero hdeg]
+    exact hunit.map C
   set P₁ := P.eraseLead with hP₁
   suffices IsUnit P₁ by
     rw [← eraseLead_add_monomial_natDegree_leadingCoeff P, ← C_mul_X_pow_eq_monomial, ← hP₁]
@@ -136,9 +135,9 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
   · refine isUnit_of_mul_eq_one _ (Q.coeff 0) ?_
     have h := (mul_coeff_zero P Q).symm
     rwa [hQ, coeff_one_zero] at h
-  · intros n hn
+  · intro n hn
     rw [nilpotent_iff_mem_prime]
-    intros I hI
+    intro I hI
     let f := mapRingHom (Ideal.Quotient.mk I)
     have hPQ : degree (f P) = 0 ∧ degree (f Q) = 0 := by
       rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← map_mul, hQ, map_one, degree_one]
@@ -195,7 +194,7 @@ lemma isNilpotent_aeval_sub_of_isNilpotent_sub (h : IsNilpotent (a - b)) :
     IsNilpotent (aeval a P - aeval b P) := by
   simp only [← eval_map_algebraMap]
   have ⟨c, hc⟩ := evalSubFactor (map (algebraMap R S) P) a b
-  exact hc ▸ (Commute.all _ _).isNilpotent_mul_right h
+  exact hc ▸ (Commute.all _ _).isNilpotent_mul_left h
 
 variable {P}
 

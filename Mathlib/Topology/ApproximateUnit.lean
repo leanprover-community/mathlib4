@@ -43,7 +43,6 @@ lemma pure_one : IsApproximateUnit (pure (1 : α))  where
   tendsto_mul_left m := by simpa using tendsto_pure_nhds (m * ·) (1 : α)
   tendsto_mul_right m := by simpa using tendsto_pure_nhds (· * m) (1 : α)
 
-set_option linter.unusedVariables false in
 /-- If `l` is an approximate unit and `⊥ < l' ≤ l`, then `l'` is also an approximate unit. -/
 lemma mono {l l' : Filter α} (hl : l.IsApproximateUnit) (hle : l' ≤ l) [hl' : l'.NeBot] :
     l'.IsApproximateUnit where

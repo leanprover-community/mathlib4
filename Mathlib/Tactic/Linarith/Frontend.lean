@@ -8,6 +8,7 @@ import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
 import Mathlib.Tactic.Ring.Basic
+import Mathlib.Util.ElabWithoutMVars
 
 /-!
 # `linarith`: solving linear arithmetic goals
@@ -28,7 +29,7 @@ When the inequalities are over a dense linear order, `linarith` is a decision pr
 prove `False` if and only if the inequalities are unsatisfiable. `linarith` will also run on some
 types like `ℤ` that are not dense orders, but it will fail to prove `False` on some unsatisfiable
 problems. It will run over concrete types like `ℕ`, `ℚ`, and `ℝ`, as well as abstract types that
-are instances of `LinearOrderedCommRing`.
+are instances of `CommRing`, `LinearOrder` and `IsStrictOrderedRing`.
 
 ## Algorithm sketch
 
@@ -68,7 +69,7 @@ There are two oracles that can be used in `linarith` so far.
   set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
   by counting how many copies of each original comparison appear in the history.
   This oracle was historically implemented earlier, and is sometimes faster on small states, but it
-  has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and can not handle
+  has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and cannot handle
   large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
 
 2. **Simplex Algorithm (default).**
@@ -200,7 +201,7 @@ def getContrLemma (e : Expr) : MetaM (Name × Expr) := do
 
 /--
 `applyContrLemma` inspects the target to see if it can be moved to a hypothesis by negation.
-For example, a goal `⊢ a ≤ b` can become `a > b ⊢ false`.
+For example, a goal `⊢ a ≤ b` can become `b < a ⊢ false`.
 If this is the case, it applies the appropriate lemma and introduces the new hypothesis.
 It returns the type of the terms in the comparison (e.g. the type of `a` and `b` above) and the
 newly introduced local constant.
@@ -374,7 +375,7 @@ Equivalently, it can prove a linear inequality by assuming its negation and prov
 In theory, `linarith` should prove any goal that is true in the theory of linear arithmetic over
 the rationals. While there is some special handling for non-dense orders like `Nat` and `Int`,
 this tactic is not complete for these theories and will not prove every true goal. It will solve
-goals over arbitrary types that instantiate `LinearOrderedCommRing`.
+goals over arbitrary types that instantiate `CommRing`, `LinearOrder` and `IsStrictOrderedRing`.
 
 An example:
 ```lean
@@ -417,7 +418,7 @@ optional arguments:
   (`true` by default.)
 * `restrict_type` (not yet implemented in mathlib4)
   will only use hypotheses that are inequalities over `tp`. This is useful
-  if you have e.g. both integer and rational valued inequalities in the local context, which can
+  if you have e.g. both integer- and rational-valued inequalities in the local context, which can
   sometimes confuse the tactic.
 
 A variant, `nlinarith`, does some basic preprocessing to handle some nonlinear goals.
@@ -446,13 +447,6 @@ syntax (name := nlinarith) "nlinarith" "!"? linarithArgsRest : tactic
 @[inherit_doc nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
   `(tactic| nlinarith ! $rest:linarithArgsRest)
 
-/-- Elaborate `t` in a way that is suitable for linarith. -/
-def elabLinarithArg (tactic : Name) (t : Term) : TacticM Expr := Term.withoutErrToSorry do
-  let (e, mvars) ← elabTermWithHoles t none tactic
-  unless mvars.isEmpty do
-    throwErrorAt t "Argument passed to {tactic} has metavariables:{indentD e}"
-  return e
-
 /--
 Allow elaboration of `LinarithConfig` arguments to tactics.
 -/
@@ -460,7 +454,7 @@ declare_config_elab elabLinarithConfig Linarith.LinarithConfig
 
 elab_rules : tactic
   | `(tactic| linarith $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) => withMainContext do
-    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTermWithoutNewMVars `linarith)
     let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
@@ -475,7 +469,7 @@ open Linarith
 
 elab_rules : tactic
   | `(tactic| nlinarith $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) => withMainContext do
-    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTermWithoutNewMVars `nlinarith)
     let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     let cfg := { cfg with
       preprocessors := cfg.preprocessors.concat nlinarithExtras }

@@ -30,9 +30,9 @@ object, when `C` has finite products. We call this `cechNerveTerminalFrom`. When
 -/
 
 
-open CategoryTheory
+open CategoryTheory Limits
 
-open CategoryTheory.Limits
+open scoped Simplicial
 
 noncomputable section
 
@@ -107,7 +107,7 @@ def equivalenceRightToLeft (X : SimplicialObject.Augmented C) (F : Arrow C)
   right := G.right
   w := by
     have := G.w
-    apply_fun fun e => e.app (Opposite.op <| SimplexCategory.mk 0) at this
+    apply_fun fun e => e.app (Opposite.op ⦋0⦌) at this
     simpa using this
 
 /-- A helper function used in defining the Čech adjunction. -/
@@ -133,11 +133,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
     (Augmented.toArrow.obj X ⟶ F) ≃ (X ⟶ F.augmentedCechNerve) where
   toFun := equivalenceLeftToRight _ _
   invFun := equivalenceRightToLeft _ _
-  left_inv := by
-    intro A
-    ext
-    · simp
-    · rfl
+  left_inv A := by ext <;> simp
   right_inv := by
     intro A
     ext x : 2
@@ -145,20 +141,20 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
       · simp
         rfl
       · simpa using congr_app A.w.symm x
-    · rfl
+    · simp
 
 /-- The augmented Čech nerve construction is right adjoint to the `toArrow` functor. -/
 abbrev cechNerveAdjunction : (Augmented.toArrow : _ ⥤ Arrow C) ⊣ augmentedCechNerve :=
   Adjunction.mkOfHomEquiv
     { homEquiv := cechNerveEquiv
-      homEquiv_naturality_left_symm := by dsimp [cechNerveEquiv]; aesop_cat
+      homEquiv_naturality_left_symm := by dsimp [cechNerveEquiv]; cat_disch
       homEquiv_naturality_right := by
         dsimp [cechNerveEquiv]
         -- The next three lines were not needed before https://github.com/leanprover/lean4/pull/2644
         intro X Y Y' f g
         change equivalenceLeftToRight X Y' (f ≫ g) =
           equivalenceLeftToRight X Y f ≫ augmentedCechNerve.map g
-        aesop_cat
+        cat_disch
     }
 
 end SimplicialObject
@@ -232,12 +228,12 @@ def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C where
 def equivalenceLeftToRight (F : Arrow C) (X : CosimplicialObject.Augmented C)
     (G : F.augmentedCechConerve ⟶ X) : F ⟶ Augmented.toArrow.obj X where
   left := G.left
-  right := (WidePushout.ι _ 0 ≫ G.right.app (SimplexCategory.mk 0) :)
+  right := (WidePushout.ι _ 0 ≫ G.right.app ⦋0⦌ :)
   w := by
     dsimp
     rw [@WidePushout.arrow_ι_assoc _ _ _ _ _ (fun (_ : Fin 1) => F.hom)
       (by dsimp; infer_instance)]
-    exact congr_app G.w (SimplexCategory.mk 0)
+    exact congr_app G.w ⦋0⦌
 
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps!]
@@ -251,7 +247,7 @@ def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
           (by
             rintro j
             rw [← Arrow.w_assoc G]
-            have t := X.hom.naturality (SimplexCategory.const (SimplexCategory.mk 0) x j)
+            have t := X.hom.naturality (SimplexCategory.const ⦋0⦌ x j)
             dsimp at t ⊢
             simp only [Category.id_comp] at t
             rw [← t])
@@ -302,7 +298,7 @@ abbrev cechConerveAdjunction : augmentedCechConerve ⊣ (Augmented.toArrow : _ �
 
 end CosimplicialObject
 
-/-- Given an object `X : C`, the natural simplicial object sending `[n]` to `Xⁿ⁺¹`. -/
+/-- Given an object `X : C`, the natural simplicial object sending `⦋n⦌` to `Xⁿ⁺¹`. -/
 def cechNerveTerminalFrom {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C) :
     SimplicialObject C where
   obj n := ∏ᶜ fun _ : Fin (n.unop.len + 1) => X

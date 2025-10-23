@@ -28,7 +28,7 @@ for general functions; for the specific case of Dirichlet characters see
   `LFunction Φ s` multiplied by an Archimedean Gamma-factor.
 
 Note that `ZMod.completedLFunction Φ s` is only mathematically well-defined if `Φ` is either even
-or odd. Here we extend it to all functions `Φ` by linearity  (but the functional equation only holds
+or odd. Here we extend it to all functions `Φ` by linearity (but the functional equation only holds
 if `Φ` is either even or odd).
 
 ## Main theorems
@@ -222,7 +222,7 @@ theorem LFunction_one_sub (Φ : ZMod N → ℂ) {s : ℂ}
       (cexp (π * I * s / 2) * LFunction (𝓕 Φ) s
        + cexp (-π * I * s / 2) * LFunction (𝓕 fun x ↦ Φ (-x)) s) := by
   rw [LFunction]
-  have (j : ZMod N) :  Φ j * hurwitzZeta (toAddCircle j) (1 - s) = Φ j *
+  have (j : ZMod N) : Φ j * hurwitzZeta (toAddCircle j) (1 - s) = Φ j *
       ((2 * π) ^ (-s) * Gamma s * (cexp (-π * I * s / 2) *
       expZeta (toAddCircle j) s + cexp (π * I * s / 2) * expZeta (-toAddCircle j) s)) := by
     rcases eq_or_ne j 0 with rfl | hj
@@ -250,7 +250,7 @@ lemma LFunction_def_even (hΦ : Φ.Even) (s : ℂ) :
     LFunction Φ s = N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZetaEven (toAddCircle j) s := by
   simp only [LFunction, hurwitzZeta, mul_add (Φ _), sum_add_distrib]
   congr 1
-  simp only [add_eq_left, ← neg_eq_self ℂ, ← sum_neg_distrib]
+  simp only [add_eq_left, ← neg_eq_self, ← sum_neg_distrib]
   refine Fintype.sum_equiv (.neg _) _ _ fun i ↦ ?_
   simp only [Equiv.neg_apply, hΦ i, map_neg, hurwitzZetaOdd_neg, mul_neg]
 
@@ -258,7 +258,7 @@ lemma LFunction_def_odd (hΦ : Φ.Odd) (s : ℂ) :
     LFunction Φ s = N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZetaOdd (toAddCircle j) s := by
   simp only [LFunction, hurwitzZeta, mul_add (Φ _), sum_add_distrib]
   congr 1
-  simp only [add_eq_right, ← neg_eq_self ℂ, ← sum_neg_distrib]
+  simp only [add_eq_right, ← neg_eq_self, ← sum_neg_distrib]
   refine Fintype.sum_equiv (.neg _) _ _ fun i ↦ ?_
   simp only [Equiv.neg_apply, hΦ i, map_neg, hurwitzZetaEven_neg, neg_mul]
 

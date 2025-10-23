@@ -95,7 +95,7 @@ instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R 
     LinearWeights R L M :=
   have aux : ∀ (χ : L → R), genWeightSpace M χ ≠ ⊥ → ∀ (x y : L), χ (x + y) = χ x + χ y := by
     have h : ∀ x y, Commute (toEnd R L M x) (toEnd R L M y) := fun x y ↦ by
-      rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
+      rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, map_zero]
     intro χ hχ x y
     simp_rw [Ne, ← LieSubmodule.toSubmodule_inj, genWeightSpace, genWeightSpaceOf,
       LieSubmodule.iInf_toSubmodule, LieSubmodule.bot_toSubmodule] at hχ
@@ -121,12 +121,7 @@ lemma trace_comp_toEnd_genWeightSpace_eq (χ : L → R) :
     LinearMap.trace R _ ∘ₗ (toEnd R L (genWeightSpace M χ)).toLinearMap =
     finrank R (genWeightSpace M χ) • χ := by
   ext x
-  let n := toEnd R L (genWeightSpace M χ) x - χ x • LinearMap.id
-  have h₁ : toEnd R L (genWeightSpace M χ) x = n + χ x • LinearMap.id := eq_add_of_sub_eq rfl
-  have h₂ : LinearMap.trace R _ n = 0 := IsReduced.eq_zero _ <|
-    LinearMap.isNilpotent_trace_of_isNilpotent <| isNilpotent_toEnd_sub_algebraMap M χ x
-  rw [LinearMap.comp_apply, LieHom.coe_toLinearMap, h₁, map_add, h₂]
-  simp [mul_comm (χ x)]
+  simp
 
 variable {R L M} in
 lemma zero_lt_finrank_genWeightSpace {χ : L → R} (hχ : genWeightSpace M χ ≠ ⊥) :
@@ -208,14 +203,7 @@ the spaces `genWeightSpace M χ` and `shiftedGenWeightSpace R L M χ` are equiva
 lemma toEnd_eq (x : L) :
     toEnd R L (shiftedGenWeightSpace R L M χ) x =
     (shift R L M χ).conj (toEnd R L (genWeightSpace M χ) x - χ x • LinearMap.id) := by
-  ext
-  simp only [toEnd_apply_apply, map_sub, LinearEquiv.conj_apply, map_smul, LinearMap.comp_id,
-    LinearEquiv.comp_coe, LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap,
-    LinearMap.sub_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    shift_symm_apply, shift_apply, LinearMap.smul_apply, LinearMap.id_coe, id_eq,
-    AddSubgroupClass.coe_sub, SetLike.val_smul]
-  rw [LieSubmodule.coe_bracket]
-  rfl
+  tauto
 
 /-- By Engel's theorem, if `M` is Noetherian, the shifted action `⁅x, m⁆ - χ x • m` makes the
 `χ`-weight space into a nilpotent Lie module. -/
@@ -248,8 +236,7 @@ lemma exists_nontrivial_weightSpace_of_isNilpotent [Field k] [LieAlgebra k L] [M
     [IsTriangularizable k L M] [Nontrivial M] :
     ∃ χ : Module.Dual k L, Nontrivial (weightSpace M χ) := by
   obtain ⟨χ⟩ : Nonempty (Weight k L M) := by
-    by_contra contra
-    rw [not_nonempty_iff] at contra
+    by_contra! contra
     simpa only [iSup_of_empty, bot_ne_top] using LieModule.iSup_genWeightSpace_eq_top' k L M
   obtain ⟨m, hm₀, hm⟩ := exists_forall_lie_eq_smul k L M χ
   simp only [LieSubmodule.nontrivial_iff_ne_bot, LieSubmodule.eq_bot_iff, ne_eq, not_forall]

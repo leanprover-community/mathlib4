@@ -27,11 +27,11 @@ variable {J : Type v} [SmallCategory J] {A : Cᵒᵖ ⥤ Type v} (F : J ⥤ Over
 -- We introduce some local notation to reduce visual noise in the following proof
 local notation "E" => Equivalence.functor (overEquivPresheafCostructuredArrow A)
 local notation "E.obj" =>
-  Prefunctor.obj (Functor.toPrefunctor (Equivalence.functor (overEquivPresheafCostructuredArrow A)))
+  Functor.obj (Equivalence.functor (overEquivPresheafCostructuredArrow A))
 
 /-- Naturally in `X`, we have `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`, where `Y` is the
-    "Yoneda embedding" `CostructuredArrow.toOver yoneda A`. This is a relative version of
-    `yonedaYonedaColimit`. -/
+"Yoneda embedding" `CostructuredArrow.toOver yoneda A`. This is a relative version of
+`yonedaYonedaColimit`. -/
 noncomputable def CostructuredArrow.toOverCompYonedaColimit :
     (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj (colimit F) ≅
     (CostructuredArrow.toOver yoneda A).op ⋙ colimit (F ⋙ yoneda) := calc
@@ -39,7 +39,7 @@ noncomputable def CostructuredArrow.toOverCompYonedaColimit :
     ≅ yoneda.op ⋙ yoneda.obj (E.obj (colimit F)) :=
         CostructuredArrow.toOverCompYoneda A _
   _ ≅ yoneda.op ⋙ yoneda.obj (colimit (F ⋙ E)) :=
-        Functor.isoWhiskerLeft yoneda.op (yoneda.mapIso (preservesColimitIso _ F))
+        Functor.isoWhiskerLeft yoneda.op (yoneda.mapIso (preservesColimitIso E F))
   _ ≅ yoneda.op ⋙ colimit ((F ⋙ E) ⋙ yoneda) :=
         yonedaYonedaColimit _
   _ ≅ yoneda.op ⋙ ((F ⋙ E) ⋙ yoneda).flip ⋙ colim :=

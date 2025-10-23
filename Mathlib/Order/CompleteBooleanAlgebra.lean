@@ -161,7 +161,7 @@ end MinimalAxioms
 /-- Construct a frame instance using the minimal amount of work needed.
 
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}` and `aᶜ := a ⇨ ⊥`. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Frame α where
   __ := minAx
   compl a := sSup {c | c ⊓ a ≤ ⊥}
@@ -200,7 +200,7 @@ end MinimalAxioms
 /-- Construct a coframe instance using the minimal amount of work needed.
 
 This sets `a \ b := sInf {c | a ≤ b ⊔ c}` and `￢a := ⊤ \ a`. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Coframe α where
   __ := minAx
   hnot a := sInf {c | ⊤ ≤ a ⊔ c}
@@ -233,7 +233,7 @@ end MinimalAxioms
 
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}`, `aᶜ := a ⇨ ⊥`, `a \ b := sInf {c | a ≤ b ⊔ c}` and
 `￢a := ⊤ \ a`. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : CompleteDistribLattice α where
   __ := Frame.ofMinimalAxioms minAx.toFrame
   __ := Coframe.ofMinimalAxioms minAx.toCoframe
@@ -308,7 +308,7 @@ end MinimalAxioms
 
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}`, `aᶜ := a ⇨ ⊥`, `a \ b := sInf {c | a ≤ b ⊔ c}` and
 `￢a := ⊤ \ a`. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : CompletelyDistribLattice α where
   __ := minAx
   __ := CompleteDistribLattice.ofMinimalAxioms minAx.toCompleteDistribLattice
@@ -629,7 +629,7 @@ open scoped symmDiff in
 theorem biSup_symmDiff_biSup_le {p : ι → Prop} {f g : (i : ι) → p i → α} :
     (⨆ i, ⨆ (h : p i), f i h) ∆ (⨆ i, ⨆ (h : p i), g i h) ≤
     ⨆ i, ⨆ (h : p i), ((f i h) ∆ (g i h)) :=
-  le_trans iSup_symmDiff_iSup_le <|iSup_mono fun _ ↦ iSup_symmDiff_iSup_le
+  le_trans iSup_symmDiff_iSup_le <| iSup_mono fun _ ↦ iSup_symmDiff_iSup_le
 
 end CompleteBooleanAlgebra
 

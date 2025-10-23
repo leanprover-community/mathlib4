@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Dependent functions with finite support
@@ -468,15 +469,15 @@ theorem single_zero (i) : (single i 0 : Π₀ i, β i) = 0 :=
 theorem single_eq_same {i b} : (single i b : Π₀ i, β i) i = b := by
   simp only [single_apply, dite_eq_ite, ite_true]
 
-theorem single_eq_of_ne {i i' b} (h : i ≠ i') : (single i b : Π₀ i, β i) i' = 0 := by
-  simp only [single_apply, dif_neg h]
+theorem single_eq_of_ne {i i' b} (h : i' ≠ i) : (single i b : Π₀ i, β i) i' = 0 := by
+  simp only [single_apply, @eq_comm _ i i', dif_neg h]
 
 theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, β i) := fun _ _ H =>
   Pi.single_injective i <| DFunLike.coe_injective.eq_iff.mpr H
 
 /-- Like `Finsupp.single_eq_single_iff`, but with a `HEq` due to dependent types -/
 theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
-    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ HEq xi xj ∨ xi = 0 ∧ xj = 0 := by
+    DFinsupp.single i xi = DFinsupp.single j xj ↔ i = j ∧ xi ≍ xj ∨ xi = 0 ∧ xj = 0 := by
   constructor
   · intro h
     by_cases hij : i = j
@@ -486,8 +487,8 @@ theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
       have hci := congr_fun h_coe i
       have hcj := congr_fun h_coe j
       rw [DFinsupp.single_eq_same] at hci hcj
-      rw [DFinsupp.single_eq_of_ne (Ne.symm hij)] at hci
-      rw [DFinsupp.single_eq_of_ne hij] at hcj
+      rw [DFinsupp.single_eq_of_ne hij] at hci
+      rw [DFinsupp.single_eq_of_ne (Ne.symm hij)] at hcj
       exact Or.inr ⟨hci, hcj.symm⟩
   · rintro (⟨rfl, hxi⟩ | ⟨hi, hj⟩)
     · rw [eq_of_heq hxi]
@@ -513,7 +514,7 @@ theorem filter_single (p : ι → Prop) [DecidablePred p] (i : ι) (x : β i) :
   have := apply_ite (fun x : Π₀ i, β i => x j) (p i) (single i x) 0
   dsimp at this
   rw [filter_apply, this]
-  obtain rfl | hij := Decidable.eq_or_ne i j
+  obtain rfl | hij := Decidable.eq_or_ne j i
   · rfl
   · rw [single_eq_of_ne hij, ite_self, ite_self]
 
@@ -533,10 +534,7 @@ theorem single_eq_of_sigma_eq {i j} {xi : β i} {xj : β j} (h : (⟨i, xi⟩ : 
 
 @[simp]
 theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
-    (@DFinsupp.equivFunOnFintype ι β _ _) (DFinsupp.single i m) = Pi.single i m := by
-  ext x
-  dsimp [Pi.single, Function.update]
-  simp [@eq_comm _ i]
+    (@DFinsupp.equivFunOnFintype ι β _ _) (DFinsupp.single i m) = Pi.single i m := rfl
 
 @[simp]
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
@@ -553,7 +551,7 @@ theorem zipWith_single_single (f : ∀ i, β₁ i → β₂ i → β i) (hf : �
     zipWith f hf (single i b₁) (single i b₂) = single i (f i b₁ b₂) := by
   ext j
   rw [zipWith_apply]
-  obtain rfl | hij := Decidable.eq_or_ne i j
+  obtain rfl | hij := Decidable.eq_or_ne j i
   · rw [single_eq_same, single_eq_same, single_eq_same]
   · rw [single_eq_of_ne hij, single_eq_of_ne hij, single_eq_of_ne hij, hf]
 
@@ -581,9 +579,9 @@ theorem piecewise_single_erase (x : Π₀ i, β i) (i : ι) :
 theorem erase_eq_sub_single {β : ι → Type*} [∀ i, AddGroup (β i)] (f : Π₀ i, β i) (i : ι) :
     f.erase i = f - single i (f i) := by
   ext j
-  rcases eq_or_ne i j with (rfl | h)
+  rcases eq_or_ne j i with (rfl | h)
   · simp
-  · simp [erase_ne h.symm, single_eq_of_ne h]
+  · simp [erase_ne h, single_eq_of_ne h]
 
 @[simp]
 theorem erase_zero (i : ι) : erase i (0 : Π₀ i, β i) = 0 :=
@@ -739,12 +737,14 @@ theorem erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f 
 protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (single i b + f)) : p f := by
   obtain ⟨f, s⟩ := f
-  induction' s using Trunc.induction_on with s
+  induction s using Trunc.induction_on with | _ s
   obtain ⟨s, H⟩ := s
-  induction' s using Multiset.induction_on with i s ih generalizing f
-  · have : f = 0 := funext fun i => (H i).resolve_left (Multiset.notMem_zero _)
+  induction s using Multiset.induction_on generalizing f with
+  | empty =>
+    have : f = 0 := funext fun i => (H i).resolve_left (Multiset.notMem_zero _)
     subst this
     exact h0
+  | cons i s ih => ?_
   have H2 : p (erase i ⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩) := by
     dsimp only [erase, Trunc.map, Trunc.bind, Trunc.liftOn, Trunc.lift_mk,
       Function.comp, Subtype.coe_mk]
@@ -838,7 +838,7 @@ theorem support_mk'_subset {f : ∀ i, β i} {s : Multiset ι} {h} :
 @[simp]
 theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 0 := by
   obtain ⟨f, s⟩ := f
-  induction' s using Trunc.induction_on with s
+  induction s using Trunc.induction_on with | _ s
   dsimp only [support, Trunc.lift_mk]
   rw [Finset.mem_filter, Multiset.mem_toFinset, coe_mk']
   exact and_iff_right_of_imp (s.prop i).resolve_right
@@ -982,11 +982,8 @@ theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase
 
 @[simp]
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
-  ext j
-  by_cases h1 : j = i
-  · simp only [h1, mem_support_toFun, erase_apply, ite_true, ne_eq, not_true,
-      Finset.mem_erase, false_and]
-  by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
+  ext
+  simp
 
 theorem support_update_ne_zero (f : Π₀ i, β i) (i : ι) {b : β i} (h : b ≠ 0) :
     support (f.update i b) = insert i f.support := by
@@ -1086,7 +1083,7 @@ theorem comapDomain_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i)
   rw [comapDomain_apply]
   obtain rfl | hik := Decidable.eq_or_ne i k
   · rw [single_eq_same, single_eq_same]
-  · rw [single_eq_of_ne hik.symm, single_eq_of_ne (hh.ne hik.symm)]
+  · rw [single_eq_of_ne hik, single_eq_of_ne (hh.ne hik)]
 
 /-- A computable version of comap_domain when an explicit left inverse is provided. -/
 def comapDomain' [∀ i, Zero (β i)] (h : κ → ι) {h' : ι → κ} (hh' : Function.LeftInverse h' h)
@@ -1123,7 +1120,7 @@ theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i
   rw [comapDomain'_apply]
   obtain rfl | hik := Decidable.eq_or_ne i k
   · rw [single_eq_same, single_eq_same]
-  · rw [single_eq_of_ne hik.symm, single_eq_of_ne (hh'.injective.ne hik.symm)]
+  · rw [single_eq_of_ne hik, single_eq_of_ne (hh'.injective.ne hik)]
 
 /-- Reindexing terms of a dfinsupp.
 
@@ -1188,9 +1185,9 @@ theorem extendWith_some [∀ i, Zero (α i)] (f : Π₀ i, α (some i)) (a : α 
 theorem extendWith_single_zero [DecidableEq ι] [∀ i, Zero (α i)] (i : ι) (x : α (some i)) :
     (single i x).extendWith 0 = single (some i) x := by
   ext (_ | j)
-  · rw [extendWith_none, single_eq_of_ne (Option.some_ne_none _)]
+  · rw [extendWith_none, single_eq_of_ne (Option.some_ne_none _).symm]
   · rw [extendWith_some]
-    obtain rfl | hij := Decidable.eq_or_ne i j
+    obtain rfl | hij := Decidable.eq_or_ne j i
     · rw [single_eq_same, single_eq_same]
     · rw [single_eq_of_ne hij, single_eq_of_ne ((Option.some_injective _).ne hij)]
 
@@ -1199,7 +1196,7 @@ theorem extendWith_zero [DecidableEq ι] [∀ i, Zero (α i)] (x : α none) :
     (0 : Π₀ i, α (some i)).extendWith x = single none x := by
   ext (_ | j)
   · rw [extendWith_none, single_eq_same]
-  · rw [extendWith_some, single_eq_of_ne (Option.some_ne_none _).symm, zero_apply]
+  · rw [extendWith_some, single_eq_of_ne (Option.some_ne_none _), zero_apply]
 
 /-- Bijection obtained by separating the term of index `none` of a dfinsupp over `Option ι`.
 

@@ -5,8 +5,10 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.RingTheory.Finiteness.Nilpotent
 import Mathlib.Data.Int.Interval
+import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Chains of roots and weights
@@ -190,7 +192,7 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
       ext
       rw [toEnd_apply_apply, LieSubmodule.coe_bracket, LieSubalgebra.coe_bracket_of_module, ← hyz]
       simp only [lie_lie, LieHom.lie_apply, LinearMap.coe_mk, AddHom.coe_mk, Module.End.lie_apply,
-      AddSubgroupClass.coe_sub, f, g]
+        AddSubgroupClass.coe_sub, f, g]
     simp [hfg]
   | zero => simp
   | add => simp_all
@@ -228,7 +230,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     ← LieSubmodule.toEnd_restrict_eq_toEnd]
   -- The lines below illustrate the cost of treating `LieSubmodule` as both a
   -- `Submodule` and a `LieSubmodule` simultaneously.
-  #adaptation_note /-- 2025-06-18 (lean4#8804).
+  #adaptation_note /-- 2025-06-18 (https://github.com/leanprover/lean4/issues/8804).
     The `erw` causes a kernel timeout if there is no `subst`. -/
   subst a b N
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]

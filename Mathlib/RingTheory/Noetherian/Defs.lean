@@ -17,7 +17,7 @@ A module satisfying these equivalent conditions is said to be a *Noetherian* R-m
 A ring is a *Noetherian ring* if it is Noetherian as a module over itself.
 
 (Note that we do not assume yet that our rings are commutative,
-so perhaps this should be called "left Noetherian".
+so perhaps this should be called "left-Noetherian".
 To avoid cumbersome names once we specialize to the commutative case,
 we don't make this explicit in the declaration names.)
 
@@ -54,7 +54,7 @@ open Set Pointwise
 /-- `IsNoetherian R M` is the proposition that `M` is a Noetherian `R`-module,
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.
 -/
--- Porting note: should this be renamed to `Noetherian`?
+-- TODO: should this be renamed to `Noetherian`?
 class IsNoetherian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
   noetherian : ∀ s : Submodule R M, s.FG
 
@@ -111,9 +111,7 @@ variable {R M P : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M
   [Module R N] [AddCommMonoid P] [Module R P]
 
 theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
-  have := (CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 0 3
-  -- Porting note: inlining this makes rw complain about it being a metavariable
-  rw [this]
+  refine .trans ?_ ((CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 0 3).symm
   exact
     ⟨fun ⟨h⟩ => fun k => (fg_iff_compact k).mp (h k), fun h =>
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩

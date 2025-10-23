@@ -145,14 +145,14 @@ match l with
 This is used to introduce assumptions about the first `n` values of `v` during reification. -/
 def Valuation.implies (v : Valuation) (p : Prop) : List Prop → Nat → Prop
   | [], _ => p
-  | a::as, n => (v n ↔ a) → v.implies p as (n+1)
+  | a::as, n => (v n ↔ a) → v.implies p as (n + 1)
 
 /-- `Valuation.mk [a, b, c]` is a valuation which is `a` at 0, `b` at 1 and `c` at 2, and false
 everywhere else. -/
 def Valuation.mk : List Prop → Valuation
   | [], _ => False
   | a::_, 0 => a
-  | _::as, n+1 => mk as n
+  | _::as, n + 1 => mk as n
 
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/
@@ -167,7 +167,7 @@ theorem Valuation.mk_implies {p} {as ps} (as₁) : as = List.reverseAux as₁ ps
       ∀ bs, mk (as₁.reverseAux bs) n' ↔ mk bs n from this 0 _ rfl (a::as)
     induction as₁ with
     | nil => simp
-    | cons b as₁ ih => simpa using fun n bs ↦ ih (n+1) _ (Nat.succ_add ..) _
+    | cons b as₁ ih => simpa using fun n bs ↦ ih (n + 1) _ (Nat.succ_add ..) _
 
 /-- Asserts that `¬⟦f⟧_v` implies `p`. -/
 structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
@@ -259,7 +259,7 @@ partial def buildConj (arr : Array (Array Int)) (start stop : Nat) : Expr :=
 /-- Constructs the proofs of `⊢ ctx.proof c` for each clause `c` in `ctx`.
 The proofs are stashed in a `HashMap` keyed on the clause ID. -/
 partial def buildClauses (arr : Array (Array Int)) (ctx : Expr) (start stop : Nat)
-  (f p : Expr) (accum : Nat × HashMap Nat Clause) : Nat × HashMap Nat Clause :=
+    (f p : Expr) (accum : Nat × HashMap Nat Clause) : Nat × HashMap Nat Clause :=
   match stop - start with
   | 0 => panic! "empty"
   | 1 =>
@@ -319,7 +319,7 @@ structure LClause where
      * If all clauses are falsified, then we are done: `hc v hv hx hy : False`.
 -/
 partial def buildProofStep (db : HashMap Nat Clause)
-  (ns pf : Array Int) (ctx clause : Expr) : Except String Expr := Id.run do
+    (ns pf : Array Int) (ctx clause : Expr) : Except String Expr := Id.run do
   let mut lams := #[]
   let mut args := #[]
   let mut gctx : HashMap Nat LClause := {}
@@ -394,7 +394,7 @@ inductive LRATStep
   * `steps`: The input LRAT proof trace
 -/
 partial def buildProof (arr : Array (Array Int)) (ctx ctx' : Expr)
-  (steps : Array LRATStep) : MetaM Expr := do
+    (steps : Array LRATStep) : MetaM Expr := do
   let p := mkApp (mkConst ``Sat.Fmla.subsumes_self) ctx
   let mut db := (buildClauses arr ctx 0 arr.size ctx' p default).2
   for step in steps do
@@ -441,7 +441,7 @@ partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := I
   let nil := mkApp (mkConst ``List.nil [levelZero]) (mkSort levelZero)
   let rec mkPS depth e
   | 0 => e
-  | n+1 => mkPS (depth+1) (mkApp2 cons (mkBVar depth) e) n
+  | n + 1 => mkPS (depth+1) (mkApp2 cons (mkBVar depth) e) n
   pr := mkApp5 (mkConst ``Sat.Fmla.refute) e (mkPS 0 nil nvars) ctx proof pr
   for _ in [0:nvars] do
     e := mkForall `a default (mkSort levelZero) e
