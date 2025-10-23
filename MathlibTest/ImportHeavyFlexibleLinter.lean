@@ -130,7 +130,7 @@ example {α : Type*} [MeasurableSpace α] {f : α → ℚ} (hf : Measurable f) :
   simp
   measurability
 
---  `ring` and `ring!` are allowed `simp`-followers.
+--  `ring`, `ring1`, `ring!` and `ring1!` are allowed `simp`-followers.
 #guard_msgs in
 example {a b : Nat} : a + b = b + a + 0 := by
   simp
@@ -140,6 +140,16 @@ example {a b : Nat} : a + b = b + a + 0 := by
 example {a b : Nat} : a + b = b + a + 0 := by
   simp
   ring!
+
+#guard_msgs in
+example {a b : Nat} : a + b = b + a + 0 := by
+  simp
+  ring1
+
+#guard_msgs in
+example {a b : Nat} : a + b = b + a + 0 := by
+  simp
+  ring1!
 
 -- Test that `linear_combination` is accepted as a follower of `simp`.
 example {a b : ℤ} (h : a + 1 = b) : a + 1 + 0 = b := by
@@ -205,7 +215,7 @@ example {K : Type*} [Field K] (x y : K) (h : x + y = x + (y + 1)) : x + y = y + 
   field
 
 --  `ring_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `ring_nf`.
--- So is `ring_nf!`.
+-- So are `ring_nf!`, `ring1_nf` and `ring1_nf!`.
 #guard_msgs in
 example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
   simp
@@ -216,4 +226,16 @@ example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
 example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
   simp
   ring_nf!
+  assumption
+
+#guard_msgs in
+example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
+  simp
+  ring1_nf
+  assumption
+
+#guard_msgs in
+example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
+  simp
+  ring1_nf!
   assumption
