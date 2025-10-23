@@ -7,16 +7,24 @@ import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Limits
 import Mathlib.CategoryTheory.ObjectProperty.Local
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Presheaves of types which preserves a limit
+
+Let `F : J ⥤ Cᵒᵖ` be a functor which has a limit (i.e. `F.leftOp : Jᵒᵖ ⥤ C` has a colimit).
+We show that a presheaf `P : Cᵒᵖ ⥤ Type w` preserves the limit of `F` iff
+`P` is a local object with respect to the obvious morphism from the
+colimit of the presheaves represented by `(F.obj j).unop` to the presheaf represented
+by the (opposite) of the limit of `F`.
+
 -/
 
-universe w w' v u
+universe w w' v v' u u'
 
 namespace CategoryTheory
 
-open Limits
+open Limits Opposite
 
 variable {C : Type u} [Category.{v} C]
 
@@ -39,37 +47,134 @@ noncomputable def shrinkMap {F G : C ⥤ Type w'} (τ : F ⟶ G) [FunctorToTypes
 
 end FunctorToTypes
 
-instance [LocallySmall.{w} C] (X : C) : FunctorToTypes.Small.{w} (yoneda.obj X) :=
+section
+
+variable [LocallySmall.{w} C]
+
+instance (X : C) : FunctorToTypes.Small.{w} (yoneda.obj X) :=
   fun _ ↦ by dsimp; infer_instance
 
-noncomputable def shrinkYoneda [LocallySmall.{w} C] :
+-- to be moved
+@[simps -isSimp obj map]
+noncomputable def shrinkYoneda :
     C ⥤ Cᵒᵖ ⥤ Type w where
   obj X := FunctorToTypes.shrink (yoneda.obj X)
   map f := FunctorToTypes.shrinkMap (yoneda.map f)
 
+noncomputable def shrinkYonedaObjObjEquiv {X : C} {Y : Cᵒᵖ} :
+    ((shrinkYoneda.{w}.obj X).obj Y) ≃ (Y.unop ⟶ X) :=
+  (equivShrink _).symm
+
+noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ Type w} :
+    (shrinkYoneda.{w}.obj X ⟶ P) ≃ P.obj (op X) where
+  toFun τ := τ.app _ (equivShrink.{w} _ (𝟙 X))
+  invFun x :=
+    { app Y f := P.map ((equivShrink.{w} _).symm f).op x
+      naturality Y Z g := by ext; simp [shrinkYoneda] }
+  left_inv τ := by
+    ext Y f
+    obtain ⟨f, rfl⟩ := (equivShrink _).surjective f
+    simpa [shrinkYoneda] using congr_fun (τ.naturality f.op).symm (equivShrink _ (𝟙 X))
+  right_inv x := by simp
+
+lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ Type w} (f : shrinkYoneda.obj X ⟶ P)
+    (g : Y ⟶ X) : P.map g.op (shrinkYonedaEquiv f) =
+      f.app (op Y) (shrinkYonedaObjObjEquiv.symm g) := by
+  simp [shrinkYonedaObjObjEquiv, shrinkYonedaEquiv, shrinkYoneda,
+    ← FunctorToTypes.naturality]
+
+lemma shrinkYonedaEquiv_shrinkYoneda_map {X Y : C} (f : X ⟶ Y) :
+    shrinkYonedaEquiv (shrinkYoneda.{w}.map f) = shrinkYonedaObjObjEquiv.symm f := by
+  simp [shrinkYonedaEquiv, shrinkYoneda, shrinkYonedaObjObjEquiv]
+
+lemma shrinkYonedaEquiv_comp {X : C} {P Q : Cᵒᵖ ⥤ Type w} (α : shrinkYoneda.obj X ⟶ P)
+    (β : P ⟶ Q) :
+    shrinkYonedaEquiv (α ≫ β) = β.app _ (shrinkYonedaEquiv α) := by
+  simp [shrinkYonedaEquiv]
+
+lemma shrinkYonedaEquiv_naturality {X Y : C} {P : Cᵒᵖ ⥤ Type w}
+    (f : shrinkYoneda.obj X ⟶ P) (g : Y ⟶ X) :
+    P.map g.op (shrinkYonedaEquiv f) = shrinkYonedaEquiv (shrinkYoneda.map g ≫ f) := by
+  simpa [shrinkYonedaEquiv, shrinkYoneda]
+    using congr_fun (f.naturality g.op).symm ((equivShrink _) (𝟙 _))
+
+@[reassoc]
+lemma shrinkYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {P : Cᵒᵖ ⥤ Type w} (t : P.obj X) :
+    shrinkYonedaEquiv.symm (P.map f t) =
+      shrinkYoneda.map f.unop ≫ shrinkYonedaEquiv.symm t :=
+  shrinkYonedaEquiv.injective (by
+    obtain ⟨t, rfl⟩ := shrinkYonedaEquiv.surjective t
+    rw [← shrinkYonedaEquiv_naturality]
+    simp)
+
+end
+
 namespace Presheaf
 
-variable {J : Type w} [SmallCategory J] [LocallySmall.{w} C]
-  {F : J ⥤ Cᵒᵖ} (c : Cone F)
+variable {J : Type u'} [Category.{v'} J] [LocallySmall.{w} C]
+  {F : J ⥤ Cᵒᵖ} (c : Cone F) {c' : Cocone (F.leftOp ⋙ shrinkYoneda.{w})}
+  (hc' : IsColimit c') (P : Cᵒᵖ ⥤ Type w)
 
-noncomputable def colimitToShrinkYoneda :
-    colimit (F.leftOp ⋙ shrinkYoneda) ⟶ shrinkYoneda.{w}.obj c.pt.unop :=
-  colimit.desc _ (shrinkYoneda.{w}.mapCocone (coconeLeftOpOfCone c))
+variable {P} in
+@[simps -isSimp symm_apply apply_coe]
+noncomputable def coconeCompShrinkYonedaHomEquiv :
+    (c'.pt ⟶ P) ≃ (F ⋙ P).sections where
+  toFun f :=
+    { val j := shrinkYonedaEquiv (c'.ι.app (op j) ≫ f)
+      property {X X'} g := by
+        have h₁ := c'.w g.op
+        dsimp at h₁ ⊢
+        rw [← h₁, Category.assoc]
+        conv_rhs => rw [shrinkYonedaEquiv_comp]
+        erw [map_shrinkYonedaEquiv]
+        rw [shrinkYonedaEquiv_shrinkYoneda_map]
+        rfl }
+  invFun s := hc'.desc (Cocone.mk _
+    { app j := shrinkYonedaEquiv.symm (s.val j.unop)
+      naturality j₁ j₂ f := by
+        rw [← s.property f.unop]
+        dsimp
+        rw [shrinkYonedaEquiv_symm_map, Category.comp_id] })
+  left_inv f := hc'.hom_ext (by simp)
+  right_inv u := by ext; simp
 
-variable (P : Cᵒᵖ ⥤ Type w)
+noncomputable def coconePtToShrinkYoneda :
+    c'.pt ⟶ shrinkYoneda.{w}.obj c.pt.unop :=
+  hc'.desc (shrinkYoneda.{w}.mapCocone (coconeLeftOpOfCone c))
+
+variable {P} in
+@[reassoc]
+lemma coconePtToShrinkYoneda_comp (x : P.obj c.pt) :
+    coconePtToShrinkYoneda c hc' ≫ shrinkYonedaEquiv.symm x =
+      (coconeCompShrinkYonedaHomEquiv hc').symm
+        (Types.sectionOfCone (P.mapCone c) x) := by
+  refine hc'.hom_ext (fun j ↦ ?_)
+  dsimp [coconePtToShrinkYoneda, coconeCompShrinkYonedaHomEquiv_symm_apply]
+  rw [hc'.fac_assoc, hc'.fac]
+  dsimp
+  rw [shrinkYonedaEquiv_symm_map]
 
 lemma nonempty_isLimit_mapCone_iff :
     Nonempty (IsLimit (P.mapCone c)) ↔
-      (MorphismProperty.single (colimitToShrinkYoneda c)).isLocal P := by
-  sorry
+      (MorphismProperty.single (coconePtToShrinkYoneda c hc')).isLocal P := by
+  -- this should be a separate lemma
+  have h : (MorphismProperty.single (coconePtToShrinkYoneda c hc')).isLocal P ↔
+      (Function.Bijective (fun (f : _ ⟶ P) ↦ coconePtToShrinkYoneda c hc' ≫ f)) :=
+    ⟨fun h ↦ h _ ⟨⟨⟩⟩, fun h ↦ by rintro _ _ _ ⟨_⟩; exact h⟩
+  rw [Types.isLimit_iff_bijective_sectionOfCone, h, ← Function.Bijective.of_comp_iff'
+    (coconeCompShrinkYonedaHomEquiv hc').symm.bijective,
+    ← Function.Bijective.of_comp_iff _ shrinkYonedaEquiv.bijective]
+  convert Iff.rfl using 2
+  ext : 1
+  simp [← coconePtToShrinkYoneda_comp]
 
 variable {c}
 
 lemma preservesLimit_eq_isLocal_single (hc : IsLimit c) :
     Functor.preservesLimit (Type w) F =
-      (MorphismProperty.single (colimitToShrinkYoneda c)).isLocal := by
+      (MorphismProperty.single (coconePtToShrinkYoneda c hc')).isLocal := by
   ext P
-  rw [← nonempty_isLimit_mapCone_iff c P]
+  rw [← nonempty_isLimit_mapCone_iff c hc' P]
   exact ⟨fun _ ↦ ⟨isLimitOfPreserves P hc⟩,
     fun ⟨h⟩ ↦ preservesLimit_of_preserves_limit_cone hc h⟩
 
