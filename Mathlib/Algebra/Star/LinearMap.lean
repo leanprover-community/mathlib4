@@ -28,7 +28,7 @@ variable {R E F : Type*} [Semiring R] [InvolutiveStar R]
 
 /-- The intrinsic star operation on linear maps `E →ₗ F` defined by
 `(star f) x = star (f (star x))`. -/
-abbrev intrinsicStar : Star (E →ₗ[R] F) where
+def intrinsicStar : Star (E →ₗ[R] F) where
   star f :=
   { toFun x := star (f (star x))
     map_add' _ _ := by simp
@@ -41,13 +41,13 @@ open scoped IntrinsicStar
 @[simp] theorem intrinsicStar_apply (f : E →ₗ[R] F) (x : E) : (star f) x = star (f (star x)) := rfl
 
 /-- The involutive intrinsic star structure on linear maps. -/
-abbrev intrinsicInvolutiveStar : InvolutiveStar (E →ₗ[R] F) where
+def intrinsicInvolutiveStar : InvolutiveStar (E →ₗ[R] F) where
   star_involutive x := by ext; simp
 
 scoped[IntrinsicStar] attribute [instance] LinearMap.intrinsicInvolutiveStar
 
 /-- The intrinsic star additive monoid structure on linear maps. -/
-abbrev intrinsicStarAddMonoid : StarAddMonoid (E →ₗ[R] F) where
+def intrinsicStarAddMonoid : StarAddMonoid (E →ₗ[R] F) where
   star_add x y := by ext; simp
 
 scoped[IntrinsicStar] attribute [instance] LinearMap.intrinsicStarAddMonoid
