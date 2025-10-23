@@ -18,14 +18,14 @@ variable [AddCommGroup W] [Module K W] (f : V →ₗ[K] W)
 
 namespace LinearMap
 
-/-- A subspace complementary to the `ker f`-/
+/-- A subspace complementary to the `ker f` -/
 def kerComplement : Submodule K V :=
   (ker f).exists_isCompl.choose
 
 lemma isCompl_ker_kerComplement : IsCompl f.kerComplement (ker f) :=
   (ker f).exists_isCompl.choose_spec.symm
 
-/-- `f.kerComplement × (ker f)` is isomorphic to the whole space-/
+/-- `f.kerComplement × (ker f)` is isomorphic to the whole space -/
 def prodEquivOfkerComplement : (f.kerComplement × (ker f)) ≃ₗ[K] V :=
   prodEquivOfIsCompl _ _ f.isCompl_ker_kerComplement
 
@@ -58,8 +58,7 @@ lemma ker_complement_restriction_injective : Function.Injective f.ker_complement
 
 /-- 通过核补空间的基和限制映射 `f ∘ Submodule.subtype (kerComplement f)` 构造的映射，
     将基索引映射到 `W` 中的向量 -/
-def ker_complement_basis_image :
-    ofVectorSpaceIndex K f.kerComplement → W :=
+def ker_complement_basis_image : ofVectorSpaceIndex K f.kerComplement → W :=
   f.ker_complement_restriction ∘ (ofVectorSpace K f.kerComplement)
 
 lemma linear_independent_ker_complement_basis_image :
@@ -79,7 +78,7 @@ instance : DecidableEq (ofVectorSpaceIndex K f.kerComplement) := Classical.typeD
 
 instance : DecidableEq (ofVectorSpaceIndex K (ker f)) := Classical.typeDecidableEq _
 
-/-- 核空间的补空间线性同构于像空间 -/
+/-- `f.kerComplement` is isomorphic to `range f` -/
 def kerComplementEquivRange : f.kerComplement ≃ₗ[K] (range f) := by
   let g : f.kerComplement →ₗ[K] range f :=
     codRestrict (range f) f.ker_complement_restriction (fun x ↦ ⟨f.kerComplement.subtype x, rfl⟩)
@@ -96,8 +95,7 @@ def kerComplementEquivRange : f.kerComplement ≃ₗ[K] (range f) := by
     这是第一同构定理的推论：由于 `kerComplement f ≃ₗ[K] range f`，
     所以 `finrank K (kerComplement f) = finrank K (range f) = rank f`。
 -/
-lemma finrank_kerComplement_eq_rank {r : ℕ} (hr : rank f = r) :
-    finrank K f.kerComplement = r := by
+lemma finrank_kerComplement_eq_rank {r : ℕ} (hr : rank f = r) : finrank K f.kerComplement = r := by
   simp [finrank_eq_of_rank_eq hr, LinearEquiv.finrank_eq f.kerComplementEquivRange]
 
 /-- 核空间的维数等于全空间维数减去线性映射的秩。
@@ -133,11 +131,10 @@ end
 - 前提条件 `h : Cardinal.mk ι = r` 保证了 `ι` 的势等于 `r`
 - 通过 `Cardinal.mk_eq_nat_iff` 将基数相等转化为类型等价
 - 使用选择公理 (`Classical.choice`) 从存在性证明中提取具体的等价关系 -/
-noncomputable def indexEquivOfCardinalEq {ι}{r : ℕ} (h : Cardinal.mk ι = r) : ι ≃ Fin r := by
-  apply Classical.choice
-  rwa [← Cardinal.mk_eq_nat_iff]
+noncomputable def indexEquivOfCardinalEq {ι}{r : ℕ} (h : Cardinal.mk ι = r) : ι ≃ Fin r :=
+  Classical.choice (Cardinal.mk_eq_nat_iff.mp h)
 
-/-- 对于有限维向量空间 `V` 的任意一组基 `b : Basis ι K V`，其索引集 `ι` 与 `Fin (finrank K V)` 等价。
+/- 对于有限维向量空间 `V` 的任意一组基 `b : Basis ι K V`，其索引集 `ι` 与 `Fin (finrank K V)` 等价。
 
 这个等价关系的数学基础是：
 1. 基的势等于向量空间的维数 (`Basis.mk_eq_rank''`)
