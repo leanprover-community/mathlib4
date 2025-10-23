@@ -12,7 +12,7 @@ import Mathlib.SetTheory.Cardinal.HasCardinalLT
 # `κ`-continuous functors
 
 Given categories `C`, `D` and a regular cardinal `κ : Cardinal.{w}`, we define
-`isCardinalContinuous C D κ : ObjectProperty C ⥤ D` as the property
+`isCardinalContinuous C D κ : ObjectProperty (C ⥤ D)` as the property
 of functors which preserves limits indexed by categories `J`
 such that `HasCardinalLT (Arrow J) κ`.
 
