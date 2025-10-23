@@ -4160,6 +4160,7 @@ import Mathlib.InformationTheory.KullbackLeibler.KLFun
 import Mathlib.Init
 import Mathlib.Lean.ContextInfo
 import Mathlib.Lean.CoreM
+import Mathlib.Lean.Elab.InfoTree
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.Elab.Tactic.Meta
 import Mathlib.Lean.Elab.Term
@@ -4692,6 +4693,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.TrapezoidalRule
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Integral.Lebesgue.Add
