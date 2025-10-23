@@ -55,4 +55,3 @@ elab "Category*" ppSpace C:term : term => commitIfNoEx <| withoutErrToSorry do
   | none => setLevelNames <| v :: levelNames
   setMCtx mctx
   Meta.mkAppM' out #[cExpr]
-  --return .app out cExpr
