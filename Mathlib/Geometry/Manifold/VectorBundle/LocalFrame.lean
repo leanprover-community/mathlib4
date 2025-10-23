@@ -127,7 +127,7 @@ lemma congr (hs : IsLocalFrameOn I F n s u) (hs' : ∀ i, ∀ x, x ∈ u → s i
     intro x hx
     have := hs.generating hx
     simp_all
-  contMDiffOn i := (hs.contMDiffOn i).congr fun y hy ↦ by simp [hs' i y hy]
+  contMDiffOn i := (hs.contMDiffOn i).congr (by simp +contextual [hs'])
 
 lemma mono (hs : IsLocalFrameOn I F n s u) (hu'u : u' ⊆ u) : IsLocalFrameOn I F n s u' where
   linearIndependent := by
@@ -239,8 +239,7 @@ lemma contMDiffAt_of_coeff [Fintype ι]
     (h : ∀ i, CMDiffAt n (hs.coeff i t) x) (hu : u ∈ 𝓝 x) : CMDiffAt n (T% t) x := by
   have almost : CMDiffAt n (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) x :=
     .sum_section (fun i _ ↦ (h i).smul_section <| (hs.contMDiffOn i).contMDiffAt hu)
-  exact almost.congr_of_eventuallyEq <|
-    (hs.eventually_eq_sum_coeff_smul t hu).mono fun x h ↦ by simp [h]
+  exact almost.congr_of_eventuallyEq <| (hs.eventually_eq_sum_coeff_smul t hu).mono (by simp)
 
 /-- Given a local frame `s i` on an open set `u` containing `x`, if a section `t` has `C^k`
 coefficients at `x ∈ u` w.r.t. `s i`, then `t` is `C^n` at `x`. -/
@@ -268,11 +267,10 @@ lemma mdifferentiableOn_of_coeff [Fintype ι] (h : ∀ i, MDiff[u] (hs.coeff i t
 coefficients at `x` w.r.t. `s i`, then `t` is differentiable at `x`. -/
 lemma mdifferentiableAt_of_coeff [Fintype ι]
     (h : ∀ i, MDiffAt (hs.coeff i t) x) (hu : u ∈ 𝓝 x) : MDiffAt (T% t) x := by
-  have this (i) : MDiffAt (T% (hs.coeff i t • s i)) x :=
-    (h i).smul_section <| ((hs.contMDiffOn i).mdifferentiableOn le_rfl).mdifferentiableAt hu
-  have almost : MDiffAt
-    (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) x := .sum_section (fun i ↦ this i)
-  exact almost.congr_of_eventuallyEq <| (hs.eventually_eq_sum_coeff_smul t hu).mono fun x h ↦ by simp [h]
+  have almost : MDiffAt (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) x :=
+    .sum_section (fun i ↦ (h i).smul_section <|
+      ((hs.contMDiffOn i).mdifferentiableOn le_rfl).mdifferentiableAt hu)
+  exact almost.congr_of_eventuallyEq <| (hs.eventually_eq_sum_coeff_smul t hu).mono (by simp)
 
 /-- Given a local frame `s i` on open set `u` containing `x`, if a section `t`
 has differentiable coefficients at `x ∈ u` w.r.t. `s i`, then `t` is differentiable at `x`. -/
