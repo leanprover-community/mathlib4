@@ -1178,6 +1178,7 @@ import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.CentroidHom
 import Mathlib.Algebra.Star.Conjneg
 import Mathlib.Algebra.Star.Free
+import Mathlib.Algebra.Star.LinearMap
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.MonoidHom
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
@@ -3723,6 +3724,7 @@ import Mathlib.Data.Set.Operations
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Order
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.Set.Pairwise.Chain
 import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Data.Set.Pairwise.List
 import Mathlib.Data.Set.Piecewise
