@@ -140,7 +140,7 @@ open Lean in
 @[norm_num ⌊_⌋₊]
 def evalNatFloor : NormNumExt where eval {u αZ} e := do
   match u, αZ, e with
-  | 0, ~q(ℕ), ~q(@Nat.floor $α $instR $instLO $instF $x) =>
+  | 0, ~q(ℕ), ~q(@Nat.floor $α $instSemiring $instPartialOrder $instFloorSemiring $x) =>
     match ← derive x with
     | .isBool .. => failure
     | .isNat sα nb pb => do
@@ -157,7 +157,6 @@ def evalNatFloor : NormNumExt where eval {u αZ} e := do
       let instSemifield ← synthInstanceQ q(Semifield $α)
       let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
       let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
-      let instFloorSemifing ← synthInstanceQ q(FloorSemiring $α)
       assertInstancesCommute
       have z : Q(ℕ) := mkRawNatLit (q.num.toNat / q.den)
       haveI : $z =Q $n / $d := ⟨⟩
@@ -166,7 +165,6 @@ def evalNatFloor : NormNumExt where eval {u αZ} e := do
       let instField ← synthInstanceQ q(Field $α)
       let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
       let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
-      let instFloorSemifing ← synthInstanceQ q(FloorSemiring $α)
       assertInstancesCommute
       return .isNat q(inferInstance) (mkRawNatLit 0) q(IsRat.natFloor $x $n $d $h)
   | _, _, _ => failure

@@ -308,26 +308,20 @@ theorem IsRat.isInt_round {R : Type*} [Field R] [LinearOrder R] [IsStrictOrdered
 @[norm_num round _]
 def evalRound : NormNumExt where eval {u αZ} e := do
   match u, αZ, e with
-  | 0, ~q(ℤ), ~q(@round $α $instR $instLO $instF $x) =>
+  | 0, ~q(ℤ), ~q(@round $α $instRing $instLinearOrder $instFloorRing $x) =>
     match ← derive x with
     | .isBool .. => failure
     | .isNat sα nb pb => do
-      let _instRing ← synthInstanceQ (q(Ring $α) : Q(Type u_1))
-      let _instLinearOrder ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
-      let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
-      let _instFloorRing ← synthInstanceQ (q(FloorRing $α))
+      let instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
       assertInstancesCommute
       return .isNat q(inferInstance) nb q(isNat_round $x _ $pb)
     | .isNegNat sα nb pb => do
-      let _instLinearOrder ← synthInstanceQ (q(LinearOrder $α) : Q(Type u_1))
       let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
-      let _instFloorRing ← synthInstanceQ (q(FloorRing $α))
       assertInstancesCommute
       return .isNegNat q(inferInstance) nb q(isInt_round _ _ $pb)
     | .isNNRat _ q n d h => do
       let _instField ← synthInstanceQ (q(Field $α) : Q(Type u_1))
       let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
-      let _instFloorRing ← synthInstanceQ (q(FloorRing $α))
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit (round q)
       haveI : $z =Q round (Int.ofNat $n / $d : ℚ) := ⟨⟩
@@ -336,7 +330,6 @@ def evalRound : NormNumExt where eval {u αZ} e := do
     | .isNegNNRat _ q n d h => do
       let _instField ← synthInstanceQ (q(Field $α) : Q(Type u_1))
       let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
-      let _instFloorRing ← synthInstanceQ (q(FloorRing $α))
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit (round q)
       haveI : $z =Q round ((Int.negOfNat $n) / $d : ℚ) := ⟨⟩
