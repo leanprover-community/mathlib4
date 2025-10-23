@@ -735,7 +735,7 @@ guaranteed to be identical to `g`. -/
 @[simps -fullyApplied]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
-  { AdjoinRoot.liftHom g pb.gen h₂ with
+  { AdjoinRoot.liftAlgHom g _ pb.gen h₂ with
     toFun := AdjoinRoot.liftAlgHom g _ pb.gen h₂
     invFun := pb.lift (root g) h₁
     left_inv x := AdjoinRoot.induction_on _ x fun x => by
@@ -964,7 +964,7 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
           (aeval pb.gen g) := by
   simp only [quotientEquivQuotientMinpolyMap, toRingEquiv_eq_coe, symm_trans_apply,
     quotEquivQuotMap_symm_apply_mk, symm_toRingEquiv]
-  simp [quotientEquivQuotientMinpolyMap, aeval_def]
+  rfl
 
 end PowerBasis
 

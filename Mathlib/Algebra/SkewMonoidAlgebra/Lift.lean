@@ -175,7 +175,6 @@ def domCongrAlg {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x)
     SkewMonoidAlgebra A G ≃ₐ[k] SkewMonoidAlgebra A H :=
   AlgEquiv.ofLinearEquiv
     (domLCongr e : SkewMonoidAlgebra A G ≃ₗ[k] SkewMonoidAlgebra A H)
-    ((equivMapDomain_eq_mapDomain _ _).trans <| mapDomain_one e)
     (fun f g ↦ (equivMapDomain_eq_mapDomain _ _).trans <| (mapDomain_mul f g he).trans <|
         congr_arg₂ _ (equivMapDomain_eq_mapDomain _ _).symm (equivMapDomain_eq_mapDomain _ _).symm)
 
