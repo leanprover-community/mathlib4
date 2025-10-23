@@ -73,20 +73,21 @@ end notDVD
 section general
 
 variable (n : ℕ) [NeZero n] {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {n} ℚ K]
-  (p k m : ℕ) [hp : Fact (p.Prime)] (P : Ideal (𝓞 K)) [P.IsPrime]
+  (p k m : ℕ) [hp : Fact (p.Prime)] (P : Ideal (𝓞 K)) [P.IsMaximal]
   [P.LiesOver (Ideal.span {(p : ℤ)})]
 
 local notation3 "𝒑" => (Ideal.span {(p : ℤ)})
 
 open NumberField RingOfIntegers Ideal IntermediateField
 
-example (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
+set_option maxHeartbeats 250000 in
+theorem IsCyclotomicExtension.Rat.inertiaDeg_ramificationIdx (hn : n = p ^ (k + 1) * m)
+    (hm : ¬ p ∣ m) :
     inertiaDeg 𝒑 P = orderOf (p : ZMod m) ∧
       ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
   classical
   have : IsAbelianGalois ℚ K := IsCyclotomicExtension.isAbelianGalois {n} ℚ K
-  have : NeZero n := sorry
-  have : NeZero m := sorry
+  have : NeZero m := ⟨fun h ↦ by simp [h] at hm⟩
   let ζ := zeta n ℚ K
   have hζ := zeta_spec n ℚ K
   -- Root of unity of order `m`
@@ -103,125 +104,66 @@ example (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     (isCyclotomicExtension_singleton_iff_eq_adjoin _ _ _ _ hζₚ).mpr rfl
   -- The prime ideal of `ℚ⟮ζₘ⟯` below `P`
   let Pₘ := comap (algebraMap (𝓞 Fₘ) (𝓞 K)) P
-  have : Pₘ.IsMaximal := sorry
+  have : Pₘ.IsMaximal := isMaximal_comap_of_isIntegral_of_isMaximal _
   -- The prime ideal of `ℚ⟮ζₚ⟯` below `P`
   let Pₚ := comap (algebraMap (𝓞 Fₚ) (𝓞 K)) P
-  have h₁ := ramificationIdx_algebra_tower (p := 𝒑) (P := Pₚ) (Q := P) sorry sorry sorry
+  have : Pₚ.IsMaximal := isMaximal_comap_of_isIntegral_of_isMaximal _
+  have h₁ := ramificationIdx_algebra_tower (p := 𝒑) (P := Pₚ) (Q := P)
+    (by
+      refine map_ne_bot_of_ne_bot ?_
+      apply Ring.ne_bot_of_isMaximal_of_not_isField inferInstance (not_isField Fₚ))
+    (by
+      apply map_ne_bot_of_ne_bot
+      simpa using hp.out.ne_zero)
+    (by
+      apply Ideal.map_comap_le)
   have h₂ := inertiaDeg_algebra_tower 𝒑 Pₘ P
   have h₃ : (𝒑.primesOver (𝓞 K)).ncard = (𝒑.primesOver (𝓞 Fₘ)).ncard *
       (Pₘ.primesOver (𝓞 K)).ncard := by
     rw [ncard_primesOver_eq_sum_ncard_primesOver ℤ (𝓞 Fₘ)]
-    have (P : (𝒑.primesOver (𝓞 Fₘ))) :
-        (P.1.primesOver (𝓞 K)).ncard = (Pₘ.primesOver (𝓞 K)).ncard := by
-      obtain ⟨σ, hσ⟩ := exists_map_eq_of_isGalois 𝒑 P.1 Pₘ ℚ Fₘ
-      let S := galLiftEquiv ℚ Fₘ Fₘ σ
-      let T := S.liftNormal K
-      let τ := galRestrict ℤ ℚ K (𝓞 K) T
-      refine Set.ncard_congr ?_ (fun Q ↦ ?_) ?_ ?_
-      · intro Q hQ
-        exact Q.map τ.toAlgHom
-      · intro ⟨hQ₁, hQ₂⟩
-        refine ⟨?_, ?_⟩
-
-
-
-        sorry
-      · intro I J _ _ h
-        replace h := congr_arg (Ideal.map τ.symm.toAlgHom ·) h
-        simp_rw [Ideal.map_mapₐ] at h
-        simp_rw [AlgHom.coe_ideal_map] at h
-        simp only [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.symm_comp, AlgHom.id_toRingHom,
-          Ideal.map_id] at h
-        exact h
-      ·
-        sorry
-    simp_rw [this]
+    conv_lhs =>
+      enter [2, P]
+      rw [ncard_primesOver_eq_ncard_primesOver ℚ Fₘ K 𝒑 P.val Pₘ]
     rw [Finset.sum_const, smul_eq_mul, Finset.card_univ]
     rw [← Set.toFinset_card, ← Set.ncard_eq_toFinset_card']
-
-  have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑) sorry (𝓞 K)
-    ℚ K
+  have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑)
+    (by simpa using hp.out.ne_zero) (𝓞 K) ℚ K
   rw [finrank n K, hn, Nat.totient_mul, Nat.totient_prime_pow, add_tsub_cancel_right] at h_main
-  -- , ← finrank m Fₘ, ← finrank (p ^ (k + 1)) Fₚ] at h_main
-  -- rw [← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑) sorry (𝓞 Fₘ)
-    -- ℚ Fₘ] at h_main
-  -- rw [← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑) sorry (𝓞 Fₚ)
-    -- ℚ Fₚ] at h_main
-  rw [ramificationIdxIn_eq_ramificationIdx 𝒑 P ℚ K] at h_main
-  rw [inertiaDegIn_eq_inertiaDeg 𝒑 P ℚ K] at h_main
-  rw [h₁, h₂, h₃] at h_main
-  rw [ramificationIdx_eq_of_prime_pow p k] at h_main
-  rw [← finrank m Fₘ] at h_main
-  rw [← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑) sorry (𝓞 Fₘ)
-    ℚ Fₘ] at h_main
-  rw [ramificationIdxIn_eq_ramificationIdx 𝒑 Pₘ ℚ Fₘ] at h_main
-  rw [inertiaDegIn_eq_inertiaDeg 𝒑 Pₘ ℚ Fₘ] at h_main
-  rw [ramificationIdx_of_not_dvd m, one_mul] at h_main
-  ring_nf at h_main
-  simp_rw [mul_assoc] at h_main
-  rw [Nat.mul_right_inj] at h_main
-  rw [mul_comm (𝒑.inertiaDeg Pₘ)] at h_main
-  simp_rw [← mul_assoc] at h_main
-  rw [Nat.mul_left_inj] at h_main
-  suffices (Pₘ.primesOver (𝓞 K)).ncard * ramificationIdx (algebraMap (𝓞 Fₚ) (𝓞 K)) Pₚ P *
-      Pₘ.inertiaDeg P = 1 by
-    rw [h₁, h₂]
-    rw [Nat.eq_one_of_mul_eq_one_left this]
-    rw [Nat.eq_one_of_mul_eq_one_left (Nat.eq_one_of_mul_eq_one_right this)]
-    rw [mul_one, mul_one, inertiaDeg_of_not_dvd m, ramificationIdx_eq_of_prime_pow p k]
-    exact Nat.pair_eq_pair.mp rfl
-    exact hm
-
-
-  rwa [mul_assoc _ (p ^ k), mul_comm (Pₘ.primesOver (𝓞 K)).ncard, mul_assoc, mul_assoc,
-    Nat.mul_eq_left, ← mul_assoc] at h_main
-  sorry
-  sorry
-  sorry
-  exact hm
-  exact hp.out
-  exact Nat.zero_lt_succ k
-  sorry
-
-
-
-end general
-
-#exit
-
-  rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff] at h
-  · rw [Polynomial.natDegree_of_dvd_cyclotomic_of_irreducible (p := p) (f := 1)]
-    · simp
-      exact (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
-    · simp
-    · simpa
-    · have := h.2.2
-      refine dvd_trans this ?_
-      rw [← Polynomial.map_cyclotomic_int]
-      rw [← Polynomial.cyclotomic_eq_minpoly' m (𝓞 K) _ (NeZero.pos _)]
-      exact IsPrimitiveRoot.toInteger_isPrimitiveRoot _
-    · exact h.1
-  · exact Polynomial.map_monic_ne_zero (minpoly.monic ζ.isIntegral)
-
-
-theorem ramificationIdx_of_not_dvd (hm : ¬ p ∣ m) :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
-  sorry
-
-end notDVD
-
-section general
-
-variable (n : ℕ) [NeZero n] {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {n} ℚ K]
-  (p : ℕ) [hp : Fact (p.Prime)] (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver (Ideal.span {(p : ℤ)})]
-
-local notation3 "𝒑" => (Ideal.span {(p : ℤ)})
-
-example {k m : ℕ} (hn : n = p ^ k * m) (hm : ¬ p ∣ m) :
-    inertiaDeg 𝒑 P = orderOf (p : ZMod m) ∧
-      ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
-
-  sorry
+  · rw [ramificationIdxIn_eq_ramificationIdx 𝒑 P ℚ K] at h_main
+    rw [inertiaDegIn_eq_inertiaDeg 𝒑 P ℚ K] at h_main
+    rw [h₁, h₂, h₃] at h_main
+    rw [ramificationIdx_eq_of_prime_pow p k] at h_main
+    rw [← finrank m Fₘ] at h_main
+    rw [← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑)
+      (by simpa using hp.out.ne_zero) (𝓞 Fₘ)
+      ℚ Fₘ] at h_main
+    rw [ramificationIdxIn_eq_ramificationIdx 𝒑 Pₘ ℚ Fₘ] at h_main
+    rw [inertiaDegIn_eq_inertiaDeg 𝒑 Pₘ ℚ Fₘ] at h_main
+    rw [ramificationIdx_of_not_dvd m, one_mul] at h_main
+    · ring_nf at h_main
+      simp_rw [mul_assoc] at h_main
+      rw [Nat.mul_right_inj] at h_main
+      · rw [mul_comm (𝒑.inertiaDeg Pₘ)] at h_main
+        simp_rw [← mul_assoc] at h_main
+        rw [Nat.mul_left_inj] at h_main
+        · suffices (Pₘ.primesOver (𝓞 K)).ncard * ramificationIdx (algebraMap (𝓞 Fₚ) (𝓞 K)) Pₚ P *
+              Pₘ.inertiaDeg P = 1 by
+            rw [h₁, h₂]
+            rw [Nat.eq_one_of_mul_eq_one_left this]
+            rw [Nat.eq_one_of_mul_eq_one_left (Nat.eq_one_of_mul_eq_one_right this)]
+            rw [mul_one, mul_one, inertiaDeg_of_not_dvd m, ramificationIdx_eq_of_prime_pow p k]
+            · exact Nat.pair_eq_pair.mp rfl
+            · exact hm
+          rwa [mul_assoc _ (p ^ k), mul_comm (Pₘ.primesOver (𝓞 K)).ncard, mul_assoc, mul_assoc,
+            Nat.mul_eq_left, ← mul_assoc] at h_main
+          · exact Nat.mul_ne_zero_iff.mpr ⟨NeZero.ne _, Nat.sub_ne_zero_iff_lt.mpr hp.out.one_lt⟩
+        · exact inertiaDeg_ne_zero _ _
+      · apply primesOver_ncard_ne_zero
+    · exact hm
+  · exact hp.out
+  · exact Nat.zero_lt_succ k
+  · refine Nat.Coprime.pow_left (k + 1) ?_
+    exact not_not.mp <| (Nat.Prime.dvd_iff_not_coprime hp.out).not.mp hm
 
 
 
@@ -335,74 +277,3 @@ theorem NumberField.Units.torsionOrder_eq_of_isCyclotomicExtension (n : ℕ) [Ne
     · rw [eq_comm, Nat.lcm_eq_left_iff_dvd]
       intro h
       exact Nat.not_even_iff_odd.mpr (Odd.of_dvd_nat hn h) (even_torsionOrder K)
-
-open Ideal
-
-variable (p k : ℕ) [hp : Fact (Nat.Prime p)] {K : Type*} [Field K] [NumberField K]
-    [hK : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
-    {ζ : K} (hζ : IsPrimitiveRoot ζ (p ^ (k + 1)))
-
-example (e : ℕ) (he : (hζ.toInteger - 1) ^ e ∣ p ∧ ¬ (hζ.toInteger - 1) ^ (e + 1) ∣ p) :
-    e = p ^ k * (p - 1) := by
-  obtain ⟨x, hx⟩ := he.1
-  have h_main := congr_arg (Int.natAbs ·) <| congr_arg (Algebra.norm ℤ ·) hx
-  dsimp at h_main
-  have : Algebra.norm ℤ (p : 𝓞 K) = p ^ Module.finrank ℚ K := sorry
-  rw [this] at h_main
-  by_cases hodd : p = 2
-  · sorry
-  rw [map_mul, map_pow, hζ.norm_toInteger_sub_one_of_prime_ne_two hodd] at h_main
-  have hx' : ¬ ↑p ∣ Algebra.norm ℤ x := by
-    by_contra!
-
-
-
-    sorry
-  have := congr_arg (Nat.factorization · p) h_main
-  dsimp at this
-  simp [Int.natAbs_mul, Int.natAbs_pow, Int.natAbs_cast, Nat.factorization_pow,
-    Finsupp.coe_smul, Nat.factorization_mul sorry sorry,
-    Pi.smul_apply, _root_.smul_eq_mul, Nat.Prime.factorization_self hp.out] at this
-  rw [Nat.factorization_eq_zero_of_not_dvd, add_zero] at this
-  rw [← this, IsCyclotomicExtension.Rat.finrank (p ^ (k + 1))]
-  rw [Nat.totient_prime_pow, Nat.add_sub_cancel_right]
-  exact hp.out
-  exact Nat.zero_lt_succ k
-  rwa [← Int.natCast_dvd]
-
-example (p k : ℕ) [hp : Fact (Nat.Prime p)] (hodd : p ≠ 2) {K : Type*} [Field K] [NumberField K]
-    [hK : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
-    {P : Ideal (𝓞 K)} [P.IsMaximal] [P.LiesOver (span {(p : ℤ)})] :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) (span {(p : ℤ)}) P = p ^ k * (p - 1) := by
-  let hζ := IsCyclotomicExtension.zeta_spec (p ^ (k + 1)) ℚ K
-  have t₀ := hζ.zeta_sub_one_prime
-  have t₁ := hζ.norm_toInteger_sub_one_of_prime_ne_two hodd
-  have : P = span {hζ.toInteger - 1} := sorry
-  rw [this]
-
-  have t₂ : FiniteMultiplicity (hζ.toInteger - 1) (algebraMap ℤ (𝓞 K) p) := by
-    apply?
-  have := t₂.multiplicity_eq_iff.mp rfl
-  obtain ⟨x, hx⟩ := this.1
-  have := congr_arg (Algebra.norm ℚ ·) <| congr_arg (algebraMap (𝓞 K) K ·) hx
-  set e := multiplicity (hζ.toInteger - 1) (algebraMap ℤ (𝓞 K) p)
-  dsimp only at this
-
-  rw [← Algebra.coe_norm_int] at this
-  rw? at this
-  rw [map_mul, map_pow, t₁] at this
-
-  rw [Ideal.IsDedekindDomain.ramificationIdx_eq_multiplicity]
-  simp [algebraMap_int_eq, map_span, eq_intCast, Set.image_singleton, Int.cast_natCast]
-  rw [FiniteMultiplicity.multiplicity_eq_iff]
-  simp_rw [span_singleton_pow, dvd_iff_le, Ideal.span_singleton_le_span_singleton]
-
-  obtain ⟨x, hx⟩ := IsPrimitiveRoot.toInteger_sub_one_dvd_prime hζ
-
-  apply Ideal.ramificationIdx_spec
-  · simp [algebraMap_int_eq, map_span, eq_intCast, Set.image_singleton, Int.cast_natCast,
-      span_singleton_pow, span_singleton_le_span_singleton]
-
-
-    sorry
-  · sorry

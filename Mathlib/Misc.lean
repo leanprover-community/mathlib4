@@ -35,21 +35,7 @@ theorem Ideal.comap_injective_of_equiv {R S : Type*} [Semiring R] [Semiring S] (
   rw [← map_symm, ← map_symm] at h
   exact Ideal.map_injective_of_equiv f.symm h
 
-theorem Ideal.map_comap_eq_self_of_equiv
-
 end Ideal.map
-
-section AlgHom.lift
-
-theorem AlgEquiv.liftNormal_trans {F : Type*} [Field F] {K : Type*} [Field K] [Algebra F K]
-    (χ ψ : K ≃ₐ[F] K)  (E : Type*) [Field E] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
-    [Normal F E] :
-    (χ.liftNormal E).trans (ψ.liftNormal E) = (χ.trans ψ).liftNormal E := by
-  ext
-  simp
-
-
-end AlgHom.lift
 
 noncomputable section AlgEquiv.restrictNormal'
 
@@ -142,7 +128,6 @@ variable {A C₁ C₂ : Type*} [CommRing A]
   [Algebra B C₂] [Algebra L M₂] [IsScalarTower K L M₂] [Algebra B M₂] [IsScalarTower B L M₂]
   [IsScalarTower B C₂ M₂]
 
-
 variable (K L M₁ M₂) in
 theorem Ideal.liesOver_iff_map_liesOver_map (P : Ideal B) (Q : Ideal C₁) (σ : C₁ ≃ₐ[A] C₂) :
     (Q.map σ).LiesOver (P.map (σ.restrictNormal' K B L M₁ M₂)) ↔ Q.LiesOver P := by
@@ -159,14 +144,18 @@ theorem Ideal.liesOver_iff_comap_liesOver_comap (P : Ideal B) (Q : Ideal C₁) (
     map_comap_eq_self_of_equiv]
 
 variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B] [Module.Finite A B]
-  [IsFractionRing B L] [FiniteDimensional K L] [IsGalois K L] {C M : Type*} [CommRing C]
+  [IsFractionRing B L] [FiniteDimensional K L] {C M : Type*} [CommRing C]
   [IsIntegrallyClosed C] [Field M] [Algebra C M] [IsFractionRing C M] [Algebra A C] [Algebra B C]
   [Algebra A M] [Algebra K M] [Algebra L M] [IsScalarTower K L M] [IsScalarTower A K M]
-  [IsScalarTower A C M] [IsIntegralClosure C A M] [Normal K M] [Module.Finite A C] [Algebra B M]
-  [IsScalarTower B C M] [FiniteDimensional K M] [IsScalarTower B L M] [FaithfulSMul B C]
+  [IsScalarTower A C M] [IsIntegralClosure C A M] [Module.Finite A C] [Algebra B M]
+  [IsScalarTower B C M] [FiniteDimensional K M] [IsScalarTower B L M]
+  [FaithfulSMul B C]
 
 open Ideal in
-example (p : Ideal A) (P₁ P₂ : Ideal B) [P₁.IsPrime] [P₂.IsPrime] [P₁.LiesOver p] [P₂.LiesOver p] :
+
+variable (K L M) in
+theorem Ideal.ncard_primesOver_eq_ncard_primesOver (p : Ideal A) (P₁ P₂ : Ideal B) [P₁.IsPrime]
+    [P₂.IsPrime] [P₁.LiesOver p] [P₂.LiesOver p] [IsGalois K L] [Normal K M] :
     (P₁.primesOver C).ncard = (P₂.primesOver C).ncard := by
   obtain ⟨σ, hσ⟩ := exists_map_eq_of_isGalois p P₁ P₂ K L
   let τ := σ.liftNormal' K L L C M
@@ -301,74 +290,6 @@ theorem Ideal.ncard_primesOver_eq_sum_ncard_primesOver (A B C : Type*) [CommRing
   simp_rw [← coe_primesOverFinset hp C, ← coe_primesOverFinset (this _) C, Set.ncard_coe_finset]
   rw [card_primesOverFinset_eq_sum_card_primesOverFinset A B C, Finset.sum_subtype]
   exact fun  _ ↦ by rw [mem_primesOverFinset_iff hp]
-
-
-#exit
-
-
-  classical
-  rw [Fintype.card_eq_sum_ones, ← Fintype.sum_fiberwise (primesOverRestrict p B C)]
-  refine Fintype.sum_congr _ _ fun P ↦ ?_
-  rw [← Fintype.card_eq_sum_ones]
-  have : Fintype (P.1.primesOver C) := sorry
-  rw [Set.ncard_eq_toFinset_card', Set.toFinset_card]
-  refine Fintype.card_congr ?_
-  refine Equiv.ofBijective ?_ ⟨?_, ?_⟩
-  · intro ⟨Q, hQ⟩
-    refine ⟨Q, ⟨inferInstance, ?_⟩⟩
-    rwa [primesOverRestrict_eq_iff] at hQ
-  · intro Q₁ Q₂ h
-    simpa [Subtype.ext_iff] using h
-  · intro Q
-    dsimp only
-    refine ⟨⟨⟨Q, ⟨?_, ?_⟩⟩, ?_⟩, rfl⟩
-    · infer_instance
-    · exact LiesOver.trans Q.1 P.1 p
-    · rw [primesOverRestrict_eq_iff]
-      infer_instance
-
-open Ideal in
-example (B C : Type*) [CommSemiring B] [Semiring C] [Algebra A B] [Algebra A C] [Algebra B C]
-    [IsScalarTower A B C] [Fintype (p.primesOver C)] [Fintype (p.primesOver B)] :
-    Fintype.card (p.primesOver C) = ∑ P : p.primesOver B, (P.1.primesOver C).ncard := by
-  classical
-  rw [Fintype.card_eq_sum_ones, ← Fintype.sum_fiberwise (primesOverRestrict p B C)]
-  refine Fintype.sum_congr _ _ fun P ↦ ?_
-  rw [← Fintype.card_eq_sum_ones]
-  have : Fintype (P.1.primesOver C) := sorry
-  rw [Set.ncard_eq_toFinset_card', Set.toFinset_card]
-  refine Fintype.card_congr ?_
-  refine Equiv.ofBijective ?_ ⟨?_, ?_⟩
-  · intro ⟨Q, hQ⟩
-    refine ⟨Q, ⟨inferInstance, ?_⟩⟩
-    rwa [primesOverRestrict_eq_iff] at hQ
-  · intro Q₁ Q₂ h
-    simpa [Subtype.ext_iff] using h
-  · intro Q
-    dsimp only
-    refine ⟨⟨⟨Q, ⟨?_, ?_⟩⟩, ?_⟩, rfl⟩
-    · infer_instance
-    · exact LiesOver.trans Q.1 P.1 p
-    · rw [primesOverRestrict_eq_iff]
-      infer_instance
-
-
-#exit
-  have : Fintype.card { Q // p.primesOverRestrict B C Q = P } =
-      Fintype.card (Subtype.val '' { Q | p.primesOverRestrict B C Q = P }) := by
-    sorry
-  rw [this]
-  rw [← Set.toFinset_card]
-  rw [eq_comm]
-  apply Fintype.card_of_finset'
-  intro Q
-  have := primesOverRestrict_eq_iff p B C
-
-
-
-
-
-
 
 end primesOverRestrict
 

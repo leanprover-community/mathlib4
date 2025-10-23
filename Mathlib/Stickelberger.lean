@@ -313,10 +313,10 @@ variable [hp : Fact (p.Prime)] [NumberField K] [IsCyclotomicExtension {p ^ f - 1
   (P : Ideal (𝓞 K)) [P.IsMaximal]
 
 theorem inertiaDeg_eq [P.LiesOver 𝒑] : 𝒑.inertiaDeg P = f := by
-  have : p.Coprime (p ^ f - 1) := by
-    rw [← Nat.coprime_pow_left_iff (NeZero.pos f), Nat.coprime_self_sub_right NeZero.one_le]
-    exact Nat.coprime_one_right _
-  rw [IsCyclotomicExtension.Rat.inertiaDeg_of_coprime (p ^ f - 1) p _ this,
+  have : ¬ p ∣ p ^ f - 1 := by
+    refine (Nat.dvd_sub_iff_right NeZero.one_le ?_).not.mpr hp.out.not_dvd_one
+    exact dvd_pow_self p (NeZero.ne f)
+  rw [IsCyclotomicExtension.Rat.inertiaDeg_of_not_dvd (p ^ f - 1) p _ this,
     ZMod.orderOf_mod_self_pow_sub_one (Nat.Prime.one_lt hp.out) (NeZero.pos f)]
 
 theorem absNorm_eq [P.LiesOver 𝒑] : absNorm P = p ^ f := by
