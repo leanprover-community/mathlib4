@@ -26,7 +26,7 @@ In this file, we also study the left Kan extensions of functors `A : C ⥤ ℰ`
 along the Yoneda embedding `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁ v₂`
 (when `Category.{v₂} ℰ` and `w` is an auxiliary universe). In particular,
 the definition `uliftYonedaAdjunction` shows that such a pointwise left Kan
-extension  (which exists when `ℰ` has colimits) is a left adjoint to the
+extension (which exists when `ℰ` has colimits) is a left adjoint to the
 functor `restrictedULiftYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₁ v₂)`.
 
 In the lemma `isLeftKanExtension_along_uliftYoneda_iff`, we show that

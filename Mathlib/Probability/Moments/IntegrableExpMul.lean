@@ -200,14 +200,14 @@ lemma integrable_exp_abs_mul_abs (ht_int_pos : Integrable (fun ω ↦ exp (t * X
 
 /-- Auxiliary lemma for `rpow_abs_le_mul_max_exp`. -/
 lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 0 < t) :
-    |x| ^ p ≤ (p / t) ^ p * max (exp (t * x)) (exp (- t * x)) := by
+    |x| ^ p ≤ (p / t) ^ p * max (exp (t * x)) (exp (-t * x)) := by
   by_cases hp_zero : p = 0
   · simp only [hp_zero, rpow_zero, zero_div, neg_mul, one_mul, le_sup_iff, one_le_exp_iff,
       Left.nonneg_neg_iff]
     exact le_total 0 (t * x)
   have h_x_le c (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := le_inv_mul_exp x hc
-  have h_neg_x_le c (hc : 0 < c) : -x ≤ c⁻¹ * exp (- c * x) := by simpa using le_inv_mul_exp (-x) hc
-  have h_abs_le c (hc : 0 < c) : |x| ≤ c⁻¹ * max (exp (c * x)) (exp (- c * x)) := by
+  have h_neg_x_le c (hc : 0 < c) : -x ≤ c⁻¹ * exp (-c * x) := by simpa using le_inv_mul_exp (-x) hc
+  have h_abs_le c (hc : 0 < c) : |x| ≤ c⁻¹ * max (exp (c * x)) (exp (-c * x)) := by
     refine abs_le.mpr ⟨?_, ?_⟩
     · rw [neg_le]
       refine (h_neg_x_le c hc).trans ?_
@@ -217,11 +217,11 @@ lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 
       gcongr
       exact le_max_left _ _
   calc |x| ^ p
-  _ ≤ ((t / p)⁻¹ * max (exp (t / p * x)) (exp (- t / p * x))) ^ p := by
+  _ ≤ ((t / p)⁻¹ * max (exp (t / p * x)) (exp (-t / p * x))) ^ p := by
     refine rpow_le_rpow (abs_nonneg _) ?_ hp
     convert h_abs_le (t / p) (div_pos ht (hp.lt_of_ne' hp_zero)) using 5
     rw [neg_div]
-  _ = (p / t) ^ p * max (exp (t * x)) (exp (- t * x)) := by
+  _ = (p / t) ^ p * max (exp (t * x)) (exp (-t * x)) := by
     rw [mul_rpow (by positivity) (by positivity)]
     congr
     · simp
@@ -230,7 +230,7 @@ lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 
       congr <;> rw [mul_assoc, mul_inv_cancel₀ hp_zero, mul_one]
 
 lemma rpow_abs_le_mul_max_exp (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : t ≠ 0) :
-    |x| ^ p ≤ (p / |t|) ^ p * max (exp (t * x)) (exp (- t * x)) := by
+    |x| ^ p ≤ (p / |t|) ^ p * max (exp (t * x)) (exp (-t * x)) := by
   rcases lt_or_gt_of_ne ht with ht_neg | ht_pos
   · rw [abs_of_nonpos ht_neg.le, sup_comm]
     convert rpow_abs_le_mul_max_exp_of_pos x hp (t := -t) (by simp [ht_neg])

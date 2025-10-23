@@ -22,7 +22,7 @@ Bi-Heyting algebras are Heyting algebras that are also co-Heyting algebras.
 From a logic standpoint, Heyting algebras precisely model intuitionistic logic, whereas Boolean
 algebras model classical logic.
 
-Heyting algebras are the order-theoretic equivalent of Cartesian-closed categories.
+Heyting algebras are the order-theoretic equivalent of Cartesian closed categories.
 
 ## Main declarations
 
@@ -1068,7 +1068,7 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u+1} :=
+instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u + 1} :=
   { PUnit.instLinearOrder.{u} with
     top := unit,
     bot := unit,

@@ -446,6 +446,57 @@ lemma infinitePi_cylinder {s : Finset ι} {S : Set (Π i : s, X i)} (mS : Measur
     infinitePi μ (cylinder s S) = Measure.pi (fun i : s ↦ μ i) S := by
   rw [cylinder, ← Measure.map_apply (measurable_restrict _) mS, infinitePi_map_restrict]
 
+section curry
+
+variable {ι : Type*} {κ : ι → Type*} {X : (i : ι) → κ i → Type*}
+  {mX : ∀ i, ∀ j, MeasurableSpace (X i j)} (μ : (i : ι) → (j : κ i) → Measure (X i j))
+  [hμ : ∀ i j, IsProbabilityMeasure (μ i j)]
+
+lemma infinitePi_map_piCurry_symm :
+    (infinitePi fun i : ι ↦ infinitePi fun j : κ i ↦ μ i j).map (piCurry X).symm =
+      infinitePi fun p : (i : ι) × κ i ↦ μ p.1 p.2 := by
+  apply eq_infinitePi
+  intro s t ht
+  classical
+  rw [map_apply (by fun_prop) (.pi (countable_toSet _) ht), ← Finset.sigma_image_fst_preimage_mk s,
+    coe_piCurry_symm, Finset.coe_sigma, Set.uncurry_preimage_sigma_pi, infinitePi_pi,
+    Finset.prod_sigma]
+  · apply Finset.prod_congr rfl
+    simp only [Finset.mem_image, Sigma.exists, exists_and_right, exists_eq_right,
+      forall_exists_index]
+    intro i j hij
+    rw [infinitePi_pi]
+    simpa using fun j hj ↦ ht _ hj
+  · simp only [mem_image, Sigma.exists, exists_and_right, exists_eq_right, forall_exists_index]
+    exact fun i j hij ↦ MeasurableSet.pi (countable_toSet _) fun k hk ↦ by simp_all
+
+lemma infinitePi_map_piCurry :
+    (infinitePi fun p : (i : ι) × κ i ↦ μ p.1 p.2).map (piCurry X) =
+      infinitePi fun i : ι ↦ infinitePi fun j : κ i ↦ μ i j := by
+  rw [MeasurableEquiv.map_apply_eq_iff_map_symm_apply_eq, infinitePi_map_piCurry_symm]
+
+variable {ι κ X : Type*} {mX : MeasurableSpace X} (μ : ι → κ → Measure X)
+  [hμ : ∀ i j, IsProbabilityMeasure (μ i j)]
+
+lemma infinitePi_map_curry_symm :
+    (infinitePi fun i : ι ↦ infinitePi fun j : κ ↦ μ i j).map (curry ι κ X).symm =
+      infinitePi fun p : ι × κ ↦ μ p.1 p.2 := by
+  rw [← (MeasurableEquiv.piCongrLeft (fun _ ↦ X)
+    (Equiv.sigmaEquivProd ι κ).symm).map_measurableEquiv_injective.eq_iff, map_map]
+  · have : (MeasurableEquiv.piCongrLeft (fun _ ↦ X) (Equiv.sigmaEquivProd ι κ).symm) ∘
+        (MeasurableEquiv.curry ι κ X).symm = ⇑(MeasurableEquiv.piCurry (fun _ _ ↦ X)).symm := by
+      ext; simp [piCongrLeft, Equiv.piCongrLeft, Sigma.uncurry]
+    rw [this, infinitePi_map_piCurry_symm]
+    convert infinitePi_map_piCongrLeft (fun p ↦ μ p.1 p.2) (Equiv.sigmaEquivProd ι κ).symm |>.symm
+  all_goals fun_prop
+
+lemma infinitePi_map_curry :
+    (infinitePi fun p : ι × κ ↦ μ p.1 p.2).map (curry ι κ X) =
+      infinitePi fun i : ι ↦ infinitePi fun j : κ ↦ μ i j := by
+  rw [MeasurableEquiv.map_apply_eq_iff_map_symm_apply_eq, infinitePi_map_curry_symm]
+
+end curry
+
 end Measure
 
 section Integral

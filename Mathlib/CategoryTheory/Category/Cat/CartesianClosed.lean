@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 
 /-!
-# Cartesian-closed structure on `Cat`
+# Cartesian closed structure on `Cat`
 
 The category of small categories is Cartesian closed, with the exponential at a category `C`
 defined by the functor category mapping out of `C`.

@@ -8,7 +8,7 @@ import Lean.Elab.Command
 import Mathlib.Init
 
 /-!
-#  The "ppRoundtrip" linter
+# The "ppRoundtrip" linter
 
 The "ppRoundtrip" linter emits a warning when the syntax of a command differs substantially
 from the pretty-printed version of itself.

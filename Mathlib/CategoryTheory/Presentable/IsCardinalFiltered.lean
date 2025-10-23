@@ -79,7 +79,7 @@ section max
 variable {K : Type u'} (S : K → J) (hS : HasCardinalLT K κ)
 
 /-- If `S : K → J` is a family of objects of cardinality `< κ` in a `κ`-filtered category,
-this is a  choice of objects in `J` which is the target of a map from any of
+this is a choice of objects in `J` which is the target of a map from any of
 the objects `S k`. -/
 noncomputable def max : J :=
   (cocone (Discrete.functor S) (by simpa using hS)).pt

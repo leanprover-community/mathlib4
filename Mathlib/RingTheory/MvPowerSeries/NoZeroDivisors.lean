@@ -18,7 +18,7 @@ is itself not a zero divisor
 - `MvPowerSeries.order_mul` : multiplicativity of `MvPowerSeries.order`
   if the semiring `R` has no zero divisors
 
-##  Instance
+## Instance
 
 If `R` has `NoZeroDivisors`, then so does `MvPowerSeries σ R`.
 
