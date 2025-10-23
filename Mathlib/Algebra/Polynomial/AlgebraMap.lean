@@ -24,7 +24,7 @@ We promote `eval₂` to an algebra hom in `aeval`.
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
 
 - `Polynomial.mapAlgHom` : given `φ : S →ₐ[R] S'`, `baseChange φ` aplies `φ` on the
-  coefficients of a polynomial in `S[X]`.
+coefficients of a polynomial in `S[X]`.
 
 -/
 
@@ -191,13 +191,12 @@ lemma coeff_mapAlgHom_apply (f : A →ₐ[R] B) (p : A[X]) (n : ℕ) :
   simp
 
 lemma lcoeff_comp_mapAlgHom_eq (f : A →ₐ[R] B) (n : ℕ) :
-    LinearMap.comp (AlgHom.toLinearMap f) ((lcoeff A n).restrictScalars R) =
-      LinearMap.comp ((lcoeff B n).restrictScalars R) (mapAlgHom f).toLinearMap := by
+    (lcoeff B n).restrictScalars R ∘ₗ (mapAlgHom f).toLinearMap =
+      f.toLinearMap ∘ₗ (lcoeff A n).restrictScalars R := by
   ext f; simp
 
 lemma mapAlgHom_monomial (f : A →ₐ[R] B) (n : ℕ) (a : A) :
-    (mapAlgHom f) ((Polynomial.monomial n) a) = (Polynomial.monomial n) (f a) := by
-  simp
+    mapAlgHom f (monomial n a) = monomial n (f a) := by simp
 
 /-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
 def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
@@ -555,7 +554,7 @@ theorem aevalTower_ofId : aevalTower (Algebra.ofId S A') = aeval := by
 end aevalTower
 
 open LinearMap TensorProduct in
-lemma X_pow_mul_rTensor_monomial [CommSemiring S] [Algebra R S] {N : Type*}
+lemma X_pow_smul_rTensor_monomial [CommSemiring S] [Algebra R S] {N : Type*}
     [AddCommMonoid N] [Module R N] (k : ℕ) (sn : S ⊗[R] N) :
       X (R := S) ^ k • (LinearMap.rTensor N ((monomial 0).restrictScalars R)) sn =
         (LinearMap.rTensor N ((monomial k).restrictScalars R)) sn := by
