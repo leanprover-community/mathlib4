@@ -103,7 +103,7 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
       throwTacticEx `grewrite goal
         m!"did not find instance of the pattern in the target expression{indentExpr lhs}"
     -- construct `eNew` by instantiating `eAbst` with `rhs`.
-    let eNew := eAbst.instantiate1 (GCongr.mkHoleAnnotation rhs)
+    let eNew := eAbst.instantiate1 rhs
     let eNew ← instantiateMVars eNew
     -- check that `eNew` is well typed
     try
@@ -117,7 +117,8 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
     let eNew ← if rhs.hasBinderNameHint then eNew.resolveBinderNameHint else pure eNew
     -- construct the implication proof using `gcongr`
     let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
-    let imp := if forwardImp then mkImp e eNew else mkImp eNew e
+    let eNew' := eAbst.instantiate1 (GCongr.mkHoleAnnotation rhs)
+    let imp := if forwardImp then mkImp e eNew' else mkImp eNew' e
     let gcongrGoal ← mkFreshExprMVar imp
     let (_, _, sideGoals) ← gcongrGoal.mvarId!.gcongr (!forwardImp) []
       (mainGoalDischarger := GRewrite.dischargeMain hrel)
