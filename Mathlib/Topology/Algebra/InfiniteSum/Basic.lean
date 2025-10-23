@@ -467,8 +467,9 @@ theorem tprod_tprod_eq_mulSingle
     _ = f b c := tprod_eq_mulSingle _ hfb
 
 @[to_additive (attr := simp)]
-theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : α) (L := unconditional β) [L.LeAtTop] :
-    ∏'[L] b', (if b' = b then a else 1) = a := by
+theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : β → α)
+    (L := unconditional β) [L.LeAtTop] :
+    ∏'[L] b', (if b' = b then a b' else 1) = a b := by
   rw [tprod_eq_mulSingle b]
   · simp
   · intro b' hb'; simp [hb']
