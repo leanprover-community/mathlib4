@@ -23,12 +23,12 @@ while true; do
   counter=$((counter + 1))
 
   echo "::group::{lake build: attempt $counter}"
-  bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI $TARGET_NAME"
+  bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 scripts/lake-build-wrapper.py lake build --wfail -KCI $TARGET_NAME"
   echo "::endgroup::"
 
   echo "::group::{lake build --no-build: attempt $counter}"
   set +e
-  lake build --no-build -v "$TARGET_NAME"
+  scripts/lake-build-wrapper.py lake build --no-build -v "$TARGET_NAME"
   result=$?
   set -e
   echo "::endgroup::"

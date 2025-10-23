@@ -6,8 +6,8 @@ Wrapper script for `lake build` to be used in GitHub actions that:
 3. Extracts infos/warnings/errors to JSON for step outputs without altering the stream
 
 Written to GITHUB_OUTPUT:
-- `warning_count`, `error_count`, `info_count`: integers counting the number of warnings, errors and
-  info / trace messages.
+- `warning_count`, `error_count`, `info_count`: integers counting the number of build targets with
+  warnings, errors and info / trace messages.
 - `summary`: full summary JSON described below.
 
 Summary JSON format:

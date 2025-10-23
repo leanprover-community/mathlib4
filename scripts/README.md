@@ -85,7 +85,7 @@ to learn about it as well!
 - `lake-build-wrapper.py`
   A wrapper script for `lake build` which collapses normal build into log groups and outputs a build summary
   to `GITHUB_OUTPUT`. Outputs:
-    - `warning_count`, `error_count`, `info_count`: integers giving the number of warnings, errors, info / trace messages.
+    - `warning_count`, `error_count`, `info_count`: integers giving the number of files / build targets with warnings, errors, info / trace messages.
     - `summary`: JSON object summarizing warnings, errors and info / trace messages. (see file for details)
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
