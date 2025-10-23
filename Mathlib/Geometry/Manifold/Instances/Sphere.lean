@@ -233,7 +233,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
   have h₁ : (ℝ ∙ v)ᗮ.orthogonalProjection v = 0 :=
     Submodule.orthogonalProjection_orthogonalComplement_singleton_eq_zero v
   have h₂ : ⟪v, w⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
-  have h₃ : ⟪v, v⟫ = 1 := by simp only [hv, inner_self_eq_one_of_norm_one]
+  have h₃ : ⟪v, v⟫ = 1 := by simp [hv]
   rw [h₁, h₂, h₃]
   match_scalars
   simp [field]
