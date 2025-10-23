@@ -181,7 +181,7 @@ lemma _root_.Units.submodule_isFractional [IsLocalization S P] (I : (Submodule R
 
 /-- If P is a localization of R, invertible R-submodules of P are all fractional
 (expressed as an isomorphism of groups). -/
-@[simps] def unitsMulEquivSubmodule [IsLocalization S P] :
+def unitsMulEquivSubmodule [IsLocalization S P] :
     (FractionalIdeal S P)ˣ ≃* (Submodule R P)ˣ where
   __ := Units.map (coeSubmoduleHom S P)
   invFun I := ⟨⟨I, I.submodule_isFractional⟩, ⟨↑I⁻¹, I⁻¹.submodule_isFractional⟩,

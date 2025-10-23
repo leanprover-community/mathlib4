@@ -93,7 +93,7 @@ noncomputable def ClassGroup.mulEquivUnitsSubmoduleQuotRange :
     ClassGroup R ≃*
     (Submodule R (FractionRing R))ˣ ⧸ (Units.map (Submodule.spanSingleton R)).range :=
   QuotientGroup.congr _ _ unitsMulEquivSubmodule <| by
-    simp_rw [MonoidHom.range_eq_map, Subgroup.map_map]; congr; ext; simp
+    simp_rw [MonoidHom.range_eq_map, Subgroup.map_map]; congr; ext; simp [unitsMulEquivSubmodule]
 
 variable {R}
 
