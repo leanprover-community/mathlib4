@@ -3,7 +3,6 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Basic
 import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
@@ -28,10 +27,15 @@ abbrev preservesColimit (F : J ⥤ C) : ObjectProperty (C ⥤ D) := PreservesCol
 lemma preservesColimit_iff (F : J ⥤ C) (G : C ⥤ D) :
     preservesColimit D F G ↔ PreservesColimit F G := Iff.rfl
 
-variable (J D) in
-def preservesColimitsOfShape : ObjectProperty (C ⥤ D) := by
-  refine ⨅ (j : J), ?_
-  sorry
+variable (C D J) in
+def preservesColimitsOfShape : ObjectProperty (C ⥤ D) :=
+  ⨅ (F : J ⥤ C), preservesColimit D F
+
+@[simp]
+lemma preservesColimitsOfShape_iff (G : C ⥤ D) :
+    preservesColimitsOfShape C D J G ↔ PreservesColimitsOfShape J G := by
+  simp only [preservesColimitsOfShape, iInf_apply, preservesColimit_iff, iInf_Prop_eq]
+  exact ⟨fun _ ↦ ⟨inferInstance⟩, fun _ ↦ inferInstance⟩
 
 end Functor
 
