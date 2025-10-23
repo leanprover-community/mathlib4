@@ -39,7 +39,6 @@ There are a few advantages of equipping this space with this metric structure.
   `α` is compact, `C(α, β)`, relative to their underlying bare functions.
 -/
 
-
 variable {α β γ : Type*} [PseudoEMetricSpace γ]
 open scoped UniformConvergence NNReal ENNReal
 open Filter Topology Uniformity
