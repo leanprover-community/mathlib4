@@ -242,6 +242,26 @@ lemma presieve₀_map : (E.map F).presieve₀ = E.presieve₀.map F :=
 
 end Functoriality
 
+/-- Pullback symmetry isomorphism. -/
+@[simps]
+noncomputable def pullbackIso {S T : C} (f : S ⟶ T) (E : PreZeroHypercover.{w} T)
+    [∀ (i : E.I₀), HasPullback f (E.f i)] [∀ (i : E.I₀), HasPullback (E.f i) f] :
+    E.pullback₁ f ≅ E.pullback₂ f where
+  hom.s₀ := id
+  hom.h₀ i := (pullbackSymmetry _ _).hom
+  inv.s₀ := id
+  inv.h₀ i := (pullbackSymmetry _ _).inv
+  hom_inv_id := by
+    apply Hom.ext (by rfl)
+    simp only [heq_eq_eq]
+    ext i
+    simp
+  inv_hom_id := by
+    apply Hom.ext (by rfl)
+    simp only [heq_eq_eq]
+    ext i
+    simp
+
 section
 
 variable (F : PreZeroHypercover.{w'} S) {G : PreZeroHypercover.{w''} S}
