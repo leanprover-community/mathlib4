@@ -17,7 +17,7 @@ of functors which preserves limits indexed by categories `J`
 such that `HasCardinalLT (Arrow J) κ`.
 
 When `C : Type w` is a small category, we show that `κ`-continuous
-functors `Cᵒᵖ ⥤ Type w` is exactly the property of objects that are local
+functors `Cᵒᵖ ⥤ Type w` are exactly the objects that are local
 to a suitable `w`-small family of morphisms.
 
 ## TODO (@joelriou)
