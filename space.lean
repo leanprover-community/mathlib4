@@ -8,6 +8,54 @@ import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.HopkinsLevitzki
 
+/-!
+# Rank decomposition and bases adapted to a linear map
+
+This file develops a small API around a linear map `f : V →ₗ[K] W` that chooses a complement
+of `ker f`, builds bases compatible with the direct-sum decomposition
+`V = ker f ⊕ kerComplement f`, and produces a rank-normal form for the matrix of `f`:
+after choosing suitable bases on domain and codomain, the matrix of `f` is a block matrix
+`fromBlocks 1 0 0 0` (an identity of size `rank f` in the top-left block and zeros elsewhere).
+
+## Main definitions
+
+* `LinearMap.kerComplement` :
+  a fixed choice of a subspace complementary to `ker f`.
+
+* `LinearMap.prodEquivOfkerComplement` :
+  a linear equivalence `(kerComplement f × ker f) ≃ₗ[K] V`
+  induced by the complementary decomposition.
+
+* `LinearMap.decomposition_basis` :
+  a basis of `V` obtained by transporting the product of the canonical bases on
+  `kerComplement f` and `ker f` along `prodEquivOfkerComplement`.
+
+* `LinearMap.ker_complement_restriction` :
+  the restriction of `f` to `kerComplement f` (include, then apply `f`).
+
+* `LinearMap.ker_complement_basis_image` :
+  the image in `W` of the canonical basis of `kerComplement f` under the restriction map.
+
+* `LinearMap.range_decomposition_basis` :
+  a basis of `W` built by extending the previous image (which spans `range f`)
+  via `Basis.sumExtend`.
+
+* `LinearMap.kerComplementEquivRange` :
+  a linear equivalence `kerComplement f ≃ₗ[K] range f`.
+
+## Main results
+
+* `LinearMap.exists_basis_for_normal_form_abstract` :
+  there exist bases `v₁` of `V` and `v₂` of `W` (indexed by disjoint sums of abstract
+  index types) such that `toMatrix v₁ v₂ f = fromBlocks 1 0 0 0`.
+
+* `LinearMap.exists_basis_for_normal_form` :
+  in the finite-dimensional case, after reindexing by `Fin r ⊕ Fin (n - r)` and
+  `Fin r ⊕ Fin (m - r)` (with `r = rank f`, `n = finrank K V`, `m = finrank K W`),
+  one gets the same block form `fromBlocks 1 0 0 0`.
+
+-/
+
 open Submodule Module Basis
 
 noncomputable section
@@ -35,12 +83,7 @@ lemma apply_ker_component_eq_zero (y : V) : f (f.prodEquivOfkerComplement.symm y
   rfl
 
 /-- When `V` decomposes as `ker f ⊕ kerComplement f`, the basis is obtained by transporting the
-product of bases on the kernel and on its complement along `f.prodEquivOfkerComplement`.
-More precisely:
-* the index set is the disjoint sum of the index sets of bases on `kerComplement f` and on `ker f`;
-* the basis vectors are the images, under `f.prodEquivOfkerComplement`, of the corresponding
-  basis vectors coming from those subspaces.
--/
+product of bases on the kernel and on its complement along `f.prodEquivOfkerComplement`. -/
 def decomposition_basis : Basis ((ofVectorSpaceIndex K f.kerComplement) ⊕
     (ofVectorSpaceIndex K (ker f))) K V :=
   .map (.prod (ofVectorSpace K _) (ofVectorSpace K _)) (f.prodEquivOfkerComplement)
@@ -56,8 +99,9 @@ lemma ker_complement_restriction_ker_eq_bot : ker f.ker_complement_restriction =
 lemma ker_complement_restriction_injective : Function.Injective f.ker_complement_restriction := by
   simpa [← ker_eq_bot] using (ker_complement_restriction_ker_eq_bot f)
 
-/-- 通过核补空间的基和限制映射 `f ∘ Submodule.subtype (kerComplement f)` 构造的映射，
-    将基索引映射到 `W` 中的向量 -/
+/-- Given the basis of `kerComplement f` and the restriction map
+`f ∘ Submodule.subtype (kerComplement f)`, define the function that sends the
+basis indices to vectors of `W`. -/
 def ker_complement_basis_image : ofVectorSpaceIndex K f.kerComplement → W :=
   f.ker_complement_restriction ∘ (ofVectorSpace K f.kerComplement)
 
@@ -65,7 +109,8 @@ lemma linear_independent_ker_complement_basis_image :
     LinearIndependent K f.ker_complement_basis_image :=
   (ofVectorSpace K f.kerComplement).linearIndependent.map' _ f.ker_complement_restriction_ker_eq_bot
 
-/-- 通过将核补空间的基像（对应 `range f`）与余核的基扩展组合，构造 `W` 的基 -/
+/-- A basis of `W` obtained by extending the image of the `kerComplement f` basis (which corresponds
+to `range f`) to a full basis via `Basis.sumExtend`. -/
 def range_decomposition_basis : Basis ((ofVectorSpaceIndex K f.kerComplement) ⊕
       (sumExtendIndex f.linear_independent_ker_complement_basis_image)) K W :=
   Basis.sumExtend f.linear_independent_ker_complement_basis_image
