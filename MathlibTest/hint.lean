@@ -20,65 +20,65 @@ import Mathlib.Tactic.TautoSet
 
 /--
 info: Try these:
-  [apply] 🎉 trivial
-  [apply] norm_num
-  Remaining subgoals:
-  ⊢ False
+  • 🎉 trivial
+  • norm_num
+    Remaining subgoals:
+    ⊢ False
 -/
 #guard_msgs in
 example (h : 1 < 0) : False := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 simp_all only [forall_const]
-  [apply] norm_num
-  Remaining subgoals:
-  ⊢ Q
-  [apply] group
-  Remaining subgoals:
-  ⊢ Q
+  • 🎉 simp_all only [forall_const]
+  • norm_num
+    Remaining subgoals:
+    ⊢ Q
+  • group
+    Remaining subgoals:
+    ⊢ Q
 -/
 #guard_msgs in
 example {P Q : Prop} (p : P) (f : P → Q) : Q := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 simp_all only [and_self]
-  [apply] norm_num
-  Remaining subgoals:
-  ⊢ Q ∧ P ∧ R
-  [apply] group
-  Remaining subgoals:
-  ⊢ Q ∧ P ∧ R
+  • 🎉 simp_all only [and_self]
+  • norm_num
+    Remaining subgoals:
+    ⊢ Q ∧ P ∧ R
+  • group
+    Remaining subgoals:
+    ⊢ Q ∧ P ∧ R
 -/
 #guard_msgs in
 example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 exact Std.not_gt_of_lt h
-  [apply] intro
-  Remaining subgoals:
-  ⊢ False
-  [apply] norm_num
-  Remaining subgoals:
-  ⊢ a ≤ b
-  [apply] group
-  Remaining subgoals:
-  ⊢ ¬b < a
-  [apply] simp_all only [not_lt]
-  Remaining subgoals:
-  ⊢ a ≤ b
+  • 🎉 exact Std.not_gt_of_lt h
+  • intro
+    Remaining subgoals:
+    ⊢ False
+  • norm_num
+    Remaining subgoals:
+    ⊢ a ≤ b
+  • group
+    Remaining subgoals:
+    ⊢ ¬b < a
+  • simp_all only [not_lt]
+    Remaining subgoals:
+    ⊢ a ≤ b
 -/
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 ring
-  [apply] noncomm_ring
-  Remaining subgoals:
-  ⊢ 1369 • 1 - 1225 • 1 = 72 • 2
+  • 🎉 ring
+  • noncomm_ring
+    Remaining subgoals:
+    ⊢ 1369 • 1 - 1225 • 1 = 72 • 2
 -/
 #guard_msgs in
 example : 37^2 - 35^2 = 72 * 2 := by hint
@@ -98,19 +98,20 @@ example : Nat.Prime 37 := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 grind
-  [apply] ring_nf
-  Remaining subgoals:
-  ⊢ ∃ x, P x ∧ 0 ≤ x
-  [apply] norm_num
-  Remaining subgoals:
-  ⊢ ∃ x, P x
-  [apply] group
-  Remaining subgoals:
-  ⊢ ∃ x, P x ∧ 0 ≤ x
-  [apply] simp_all only [zero_le, and_true]
-  Remaining subgoals:
-  ⊢ ∃ x, P x
+  • 🎉 grind
+  • ring_nf
+    Remaining subgoals:
+    ⊢ ∃ x, P x ∧ 0 ≤ x
+  • norm_num
+    Remaining subgoals:
+    ⊢ ∃ x, P x
+  • group
+    Remaining subgoals:
+    ⊢ ∃ x, P x ∧ 0 ≤ x
+  • simp_all only [zero_le,
+      and_true]
+    Remaining subgoals:
+    ⊢ ∃ x, P x
 -/
 #guard_msgs in
 example {P : Nat → Prop} (h : { x // P x }) : ∃ x, P x ∧ 0 ≤ x := by hint
@@ -160,21 +161,21 @@ example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A
 
 /--
 info: Try these:
-  [apply] aesop
-  Remaining subgoals:
-  ⊢ False
-  [apply] ring_nf
-  Remaining subgoals:
-  ⊢ 2 ≤ 1
-  [apply] norm_num
-  Remaining subgoals:
-  ⊢ False
-  [apply] group
-  Remaining subgoals:
-  ⊢ 2 ≤ 1
-  [apply] simp_all only [Nat.not_ofNat_le_one]
-  Remaining subgoals:
-  ⊢ False
+  • aesop
+    Remaining subgoals:
+    ⊢ False
+  • ring_nf
+    Remaining subgoals:
+    ⊢ 2 ≤ 1
+  • norm_num
+    Remaining subgoals:
+    ⊢ False
+  • group
+    Remaining subgoals:
+    ⊢ 2 ≤ 1
+  • simp_all only [Nat.not_ofNat_le_one]
+    Remaining subgoals:
+    ⊢ False
 ---
 warning: declaration uses 'sorry'
 -/
@@ -200,19 +201,20 @@ this test no longer reports `field_simp` amongst the successful tactics.
 
 /--
 info: Try these:
-  [apply] 🎉 exact Units.divp_add_divp_same a b u₁
-  [apply] ring_nf
-  Remaining subgoals:
-  ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
-  [apply] abel_nf
-  Remaining subgoals:
-  ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
-  [apply] norm_num
-  Remaining subgoals:
-  ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
-  [apply] group
-  Remaining subgoals:
-  ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  • 🎉 exact
+      Units.divp_add_divp_same a b u₁
+  • ring_nf
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  • abel_nf
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  • norm_num
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  • group
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
 -/
 #guard_msgs in
 example (R : Type) (a b : R) [CommRing R] (u₁ : Rˣ) : a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁ := by hint
