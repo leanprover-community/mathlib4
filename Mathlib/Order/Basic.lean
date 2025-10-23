@@ -800,6 +800,7 @@ instance Prop.hasCompl : HasCompl Prop :=
 instance Pi.hasCompl [∀ i, HasCompl (π i)] : HasCompl (∀ i, π i) :=
   ⟨fun x i ↦ (x i)ᶜ⟩
 
+@[push ←]
 theorem Pi.compl_def [∀ i, HasCompl (π i)] (x : ∀ i, π i) :
     xᶜ = fun i ↦ (x i)ᶜ :=
   rfl
@@ -938,6 +939,7 @@ end Function
 instance Pi.sdiff [∀ i, SDiff (π i)] : SDiff (∀ i, π i) :=
   ⟨fun x y i ↦ x i \ y i⟩
 
+@[push ←]
 theorem Pi.sdiff_def [∀ i, SDiff (π i)] (x y : ∀ i, π i) :
     x \ y = fun i ↦ x i \ y i :=
   rfl
