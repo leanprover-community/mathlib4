@@ -41,10 +41,10 @@ theorem sort_val : Multiset.sort s.val r  = sort s r :=
   rfl
 
 @[simp]
-theorem pairwise_sort : List.Pairwise r (sort r s) :=
+theorem pairwise_sort : List.Pairwise r (sort s r) :=
   Multiset.pairwise_sort _ _
 
-@[deprecated  (since := "2025-10-11")]
+@[deprecated (since := "2025-10-11")]
 alias sort_sorted := pairwise_sort
 
 @[simp]

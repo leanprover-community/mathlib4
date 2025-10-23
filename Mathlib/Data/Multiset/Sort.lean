@@ -42,10 +42,10 @@ theorem coe_sort : sort l r = mergeSort l (r · ·) :=
   rfl
 
 @[simp]
-theorem pairwise_sort : (sort r s).Pairwise r :=
+theorem pairwise_sort : (sort s r).Pairwise r :=
   Quot.inductionOn s (pairwise_mergeSort _)
 
-@[deprecated  (since := "2025-10-11")]
+@[deprecated (since := "2025-10-11")]
 alias sort_sorted := pairwise_sort
 
 @[simp]

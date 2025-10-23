@@ -231,7 +231,7 @@ theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
   simp only [Admissible]
   let S := sort (α := ℕ+) {p, q, r}
   have hS : S.SortedLE := (pairwise_sort _ _).sortedLE
-  have hpqr : ({p, q, r} : Multiset ℕ+) = S := (sort_eq LE.le {p, q, r}).symm
+  have hpqr : ({p, q, r} : Multiset ℕ+) = S := (sort_eq {p, q, r} LE.le).symm
   rw [hpqr]
   rw [hpqr] at H
   apply admissible_of_one_lt_sumInv_aux hS _ H

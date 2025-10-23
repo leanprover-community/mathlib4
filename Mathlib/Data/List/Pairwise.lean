@@ -102,10 +102,10 @@ theorem Pairwise.head!_le [Inhabited α] [IsRefl α R] (h : l.Pairwise R)
     | head => exact refl_of ..
     | tail => exact rel_of_pairwise_cons h (by assumption)
 
-@[deprecated  (since := "2025-10-11")]
+@[deprecated (since := "2025-10-11")]
 alias Sorted.head!_le := Pairwise.head!_le
 
-@[deprecated  (since := "2025-10-11")]
+@[deprecated (since := "2025-10-11")]
 alias Sorted.le_head! := Pairwise.head!_le
 
 theorem pairwise_replicate_of_refl {n} [IsRefl α R] : (replicate n a).Pairwise R :=
