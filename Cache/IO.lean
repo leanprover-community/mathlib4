@@ -37,7 +37,11 @@ def isPartOfMathlibCache (mod : Name) : Bool := #[
   `ProofWidgets,
   `Archive,
   `Counterexamples,
-  `MathlibTest ].contains mod.getRoot
+  `MathlibTest,
+  -- Allow PRs to upload oleans for Reap for testing.
+  `Requests,
+  `OpenAIClient,
+  `Reap,].contains mod.getRoot
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
