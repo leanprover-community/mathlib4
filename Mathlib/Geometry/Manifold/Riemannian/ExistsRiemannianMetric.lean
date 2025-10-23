@@ -30,6 +30,10 @@ variable
   [FiberBundle F E] [VectorBundle ℝ F E]
   [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
 
+-- This file is really slow, for reasons to be investigated, and not crucially required for
+-- studying Ehresman or the Levi-Civita connections. Thus, let us not compile it for now.
+#exit
+
 section
 
 variable (E) in
