@@ -12,11 +12,10 @@ import Mathlib.CategoryTheory.Limits.Types.Limits
 /-!
 # Presheaves of types which preserves a limit
 
-Let `F : J ⥤ Cᵒᵖ` be a functor which has a limit (i.e. `F.leftOp : Jᵒᵖ ⥤ C` has a colimit).
-We show that a presheaf `P : Cᵒᵖ ⥤ Type w` preserves the limit of `F` iff
-`P` is a local object with respect to the obvious morphism from the
-colimit of the presheaves represented by `(F.obj j).unop` to the presheaf represented
-by the (opposite) of the limit of `F`.
+Let `F : J ⥤ Cᵒᵖ` be a functor. We show that a presheaf `P : Cᵒᵖ ⥤ Type w`
+preserves the limit of `F` iff `P` is a local object with respect to a suitable
+family of morphisms in `Cᵒᵖ ⥤ Type w` (this family contains `1` or `0` morphism
+depending on whether the limit of `F` exists or not).
 
 -/
 
@@ -25,6 +24,8 @@ universe w w' v v' u u'
 namespace CategoryTheory
 
 open Limits Opposite
+
+section
 
 variable {C : Type u} [Category.{v} C]
 
@@ -109,11 +110,16 @@ lemma shrinkYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {P : Cᵒᵖ ⥤ 
 
 end
 
+end
+
 namespace Presheaf
 
-variable {J : Type u'} [Category.{v'} J] [LocallySmall.{w} C]
+section
+
+variable {C : Type u} [Category.{v} C]
+  {J : Type u'} [Category.{v'} J] [LocallySmall.{w} C]
   {F : J ⥤ Cᵒᵖ} (c : Cone F) {c' : Cocone (F.leftOp ⋙ shrinkYoneda.{w})}
-  (hc' : IsColimit c') (P : Cᵒᵖ ⥤ Type w)
+  (hc : IsLimit c) (hc' : IsColimit c') (P : Cᵒᵖ ⥤ Type w)
 
 variable {P} in
 @[simps -isSimp symm_apply apply_coe]
@@ -170,13 +176,50 @@ lemma nonempty_isLimit_mapCone_iff :
 
 variable {c}
 
-lemma preservesLimit_eq_isLocal_single (hc : IsLimit c) :
+include hc in
+lemma preservesLimit_eq_isLocal_single :
     Functor.preservesLimit (Type w) F =
       (MorphismProperty.single (coconePtToShrinkYoneda c hc')).isLocal := by
   ext P
   rw [← nonempty_isLimit_mapCone_iff c hc' P]
   exact ⟨fun _ ↦ ⟨isLimitOfPreserves P hc⟩,
     fun ⟨h⟩ ↦ preservesLimit_of_preserves_limit_cone hc h⟩
+
+variable (F)
+
+variable [Small.{w} J]
+noncomputable def preservesLimitHomFamilySrc :=
+  colimit (F.leftOp ⋙ shrinkYoneda)
+
+noncomputable def preservesLimitHomFamilyTgt (h : PLift (HasLimit F)) :=
+  letI := h.down
+  shrinkYoneda.obj (limit F).unop
+
+--coconePtToShrinkYoneda (limit.cone F) (colimit.isColimit _)
+noncomputable def preservesLimitHomFamily (h : PLift (HasLimit F)) :
+    preservesLimitHomFamilySrc F ⟶ preservesLimitHomFamilyTgt F h :=
+  letI := h.down
+  coconePtToShrinkYoneda (limit.cone F) (colimit.isColimit _)
+
+lemma preservesLimit_eq_isLocal :
+    Functor.preservesLimit (Type w) F =
+      (MorphismProperty.ofHoms (preservesLimitHomFamily F)).isLocal := by
+  ext G
+  by_cases hF : HasLimit F
+  · rw [preservesLimit_eq_isLocal_single (limit.isLimit F) (colimit.isColimit _)]
+    convert Iff.rfl
+    ext _ _ f
+    exact ⟨fun ⟨_⟩ ↦ ⟨⟨⟩⟩, fun ⟨_⟩ ↦ ⟨⟨hF⟩⟩⟩
+  · exact ⟨fun _ _ _ _ ⟨h⟩ ↦ (hF h.down).elim,
+      fun _ ↦ ⟨fun hc ↦ (hF ⟨_, hc⟩).elim⟩⟩
+
+lemma preservesLimitsOfShape_eq_isLocal :
+    Functor.preservesLimitsOfShape Cᵒᵖ (Type w) J =
+      (⨆ (F : J ⥤ Cᵒᵖ), MorphismProperty.ofHoms (preservesLimitHomFamily F)).isLocal := by
+  simp only [Functor.preservesLimitsOfShape,
+    MorphismProperty.isLocal_iSup, preservesLimit_eq_isLocal]
+
+end
 
 end Presheaf
 

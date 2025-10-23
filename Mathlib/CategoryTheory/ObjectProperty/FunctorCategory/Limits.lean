@@ -42,6 +42,14 @@ lemma preservesColimitsOfShape_iff (G : C ⥤ D) :
   simp only [preservesColimitsOfShape, iInf_apply, preservesColimit_iff, iInf_Prop_eq]
   exact ⟨fun _ ↦ ⟨inferInstance⟩, fun _ ↦ inferInstance⟩
 
+variable (C D) in
+lemma congr_preservesColimitsOfShape {J' : Type*} [Category J'] (e : J ≌ J') :
+    preservesColimitsOfShape C D J = preservesColimitsOfShape C D J' := by
+  ext G
+  simp only [preservesColimitsOfShape_iff]
+  exact ⟨fun _ ↦ preservesColimitsOfShape_of_equiv e _,
+    fun _ ↦ preservesColimitsOfShape_of_equiv e.symm _⟩
+
 variable (D) in
 /-- The property of objects in `C ⥤ D` which preserves the limit
 of a functor `F : J ⥤ C`. -/
@@ -60,6 +68,14 @@ lemma preservesLimitsOfShape_iff (G : C ⥤ D) :
     preservesLimitsOfShape C D J G ↔ PreservesLimitsOfShape J G := by
   simp only [preservesLimitsOfShape, iInf_apply, preservesLimit_iff, iInf_Prop_eq]
   exact ⟨fun _ ↦ ⟨inferInstance⟩, fun _ ↦ inferInstance⟩
+
+variable (C D) in
+lemma congr_preservesLimitsOfShape {J' : Type*} [Category J'] (e : J ≌ J') :
+    preservesLimitsOfShape C D J = preservesLimitsOfShape C D J' := by
+  ext G
+  simp only [preservesLimitsOfShape_iff]
+  exact ⟨fun _ ↦ preservesLimitsOfShape_of_equiv e _,
+    fun _ ↦ preservesLimitsOfShape_of_equiv e.symm _⟩
 
 end Functor
 

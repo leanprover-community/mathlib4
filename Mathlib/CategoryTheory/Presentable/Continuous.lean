@@ -3,7 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Limits
+import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Presheaf
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
@@ -15,10 +15,12 @@ namespace CategoryTheory
 
 open Limits
 
+namespace Functor
+
+section
+
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
   (κ : Cardinal.{w}) [Fact κ.IsRegular]
-
-namespace Functor
 
 variable (C D) in
 def isCardinalContinuous : ObjectProperty (C ⥤ D) :=
@@ -37,6 +39,13 @@ lemma isCardinalContinuous.preservesColimitsOfShape {F : C ⥤ D}
     (J : Type w) [SmallCategory.{w} J] (hκ : HasCardinalLT (Arrow J) κ) :
     PreservesLimitsOfShape J F :=
   (isCardinalContinuous_iff F κ).1 hF J hκ
+
+end
+
+variable {C : Type w} [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+
+--lemma isCardinalContinuous_eq_isLocal :
+--    isCardinalContinuous C (Type w) = sorry := sorry
 
 end Functor
 
