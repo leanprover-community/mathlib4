@@ -9,6 +9,7 @@ IFS=$'\n\t'
 
 TARGET_NAME="$1"
 MAX_TRIES="${2:-5}"
+SCRIPTS_DIR="$(dirname "$(realpath "$0")")"
 
 if [ -z "$TARGET_NAME" ]; then
   echo "Usage: $0 <target_name> [max_tries, default: 5]"
@@ -23,12 +24,12 @@ while true; do
   counter=$((counter + 1))
 
   echo "::group::{lake build: attempt $counter}"
-  bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 scripts/lake-build-wrapper.py lake build --wfail -KCI $TARGET_NAME"
+  bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 $SCRIPTS_DIR/lake-build-wrapper.py lake build --wfail -KCI $TARGET_NAME"
   echo "::endgroup::"
 
   echo "::group::{lake build --no-build: attempt $counter}"
   set +e
-  scripts/lake-build-wrapper.py lake build --no-build -v "$TARGET_NAME"
+  "$SCRIPTS_DIR/lake-build-wrapper.py" lake build --no-build -v "$TARGET_NAME"
   result=$?
   set -e
   echo "::endgroup::"
