@@ -787,34 +787,6 @@ theorem exists_retraction_subtype_of_isClosed {s : Set (∀ n, E n)} (hs : IsClo
   have A : ∀ x : range f, rangeFactorization f x = x := fun x ↦ Subtype.eq <| fs x x.2
   exact ⟨rangeFactorization f, A, fun x => ⟨x, A x⟩, f_cont.subtype_mk _⟩
 
-end PiNat
-
--- open ENNReal
-
--- lemma const_mul_pow (c x : ℝ≥0∞) (hx : x < 1) (hc : c ≠ ⊤) :
---     Tendsto (fun n ↦ c * (x : ℝ≥0∞) ^ n) atTop (𝓝 0) := by
---   have := ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one (r :=x) hx
---   rw [ENNReal.tendsto_atTop_zero] at ⊢ this
---   exact fun ε hε ↦ Exists.imp (fun N h n hn => ENNReal.mul_le_of_le_div' (h n hn)) (this (ε / c)
---      (by simp [hc]; exact pos_iff_ne_zero.mp hε))
-
--- lemma ENNReal.Tendsto.mul_const_zero (c : ℝ≥0∞) (f : ℕ → ℝ≥0∞) (h : Tendsto f atTop (𝓝 0))
---     (hc : c ≠ ⊤) : Tendsto (c * f ·) atTop (𝓝 0) := by
---   rw [ENNReal.tendsto_atTop_zero] at ⊢ h
---   exact fun ε hε ↦ Exists.imp (fun N p n hn => ENNReal.mul_le_of_le_div' (p n hn)) (h (ε / c)
---      (by simp [hc]; exact pos_iff_ne_zero.mp hε))
-
--- lemma Real.Tendsto.mul_const_zero (c : ℝ) (f : ℕ → ℝ) (h : Tendsto f atTop (𝓝 0)) :
---     Tendsto (c * f ·) atTop (𝓝 0) := by
---   by_cases hc : c = 0; · simp [hc]
---   rw [NormedAddCommGroup.tendsto_atTop'] at ⊢ h
---   intro ε hε
---   obtain ⟨N, h⟩ := h (ε / ‖c‖) (by simp [hε,hc])
---   use N
---   simp_all [sub_zero, norm_eq_abs, norm_mul, ←lt_div_iff₀' (abs_pos.mpr hc)]
-
-open PiNat
-
 /-- Any nonempty complete second countable metric space is the continuous image of the
 fundamental space `ℕ → ℕ`. For a version of this theorem in the context of Polish spaces, see
 `exists_nat_nat_continuous_surjective_of_polishSpace`. -/
@@ -1080,9 +1052,6 @@ attribute [scoped instance] PiCountable.pseudoMetricSpace
 
 section MetricSpace
 variable [∀ i, MetricSpace (F i)]
--- namespace ENNReal
--- lemma ofReal_dist {X : Type*} [PseudoMetricSpace X] (x y : X) :
---     .ofReal (dist x y) = edist x y := by simp [edist_dist]
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
@@ -1234,3 +1203,7 @@ lemma TopologicalSpace.MetrizableSpace.of_countable_separating (f : ∀ i, X →
   (Metric.PiNatEmbed.toPiNatHomeo X Y f continuous_f separating_f).isEmbedding.metrizableSpace
 
 end CompactSpace
+end MetricSpace
+end PiNatEmbed
+end Metric
+end PiNat
