@@ -107,7 +107,7 @@ noncomputable def Extension.frob :
     frob k p n x = x ^ Nat.card k := by
   simp [frob, ← Nat.card_eq_fintype_card]
 
-theorem Extension.frob_pow_surjective (g : Gal(Extension k p n/k)) :
+theorem Extension.exists_frob_pow_eq (g : Gal(Extension k p n/k)) :
     ∃ i < n, Extension.frob k p n ^ i = g := by
   let := Fintype.ofFinite k
   obtain ⟨⟨i, hi⟩, rfl⟩ := (FiniteField.bijective_frobeniusAlgEquivOfAlgebraic_pow k
@@ -115,7 +115,7 @@ theorem Extension.frob_pow_surjective (g : Gal(Extension k p n/k)) :
   refine ⟨i, ?_, by ext; simp [frob]⟩
   rwa [finrank_extension] at hi
 
-/-- Given any field extension `l/k` of degree `n`, we have a non-unique isomorphism between `l`
+/-- Given any field extension of finite fields `l/k` of degree `n`, we have a non-unique isomorphism between `l`
 and our chosen `Extension k p n`. -/
 noncomputable def algEquivExtension (l : Type*) [Field l] [Algebra k l]
     (h : Module.finrank k l = n) : l ≃ₐ[k] Extension k p n := by
