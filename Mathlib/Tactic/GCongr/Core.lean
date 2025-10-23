@@ -123,11 +123,12 @@ The `rel` tactic is finishing-only: it fails if any main or side goals are not r
 
 ## Patterns
 
-When you provide a pattern, such as in `gcongr x ^ 2 * ?_ + 5`, this is elaborated with a mdata
-annotation at each `?_` hole, and then the result is unified with the LHS of the relation in the
-goal. As a result, the pattern becomes the same as the LHS, but with mdata annotations that
-pinpoint where the original `?_` holes were. The LHS is then replaces with this pattern so that
-`gcongr` can tell based on the LHS how far to continue recursively.
+When you provide a pattern, such as in `gcongr x ^ 2 * ?_ + 5`, this is elaborated with a metadata
+annotation at each `?_` hole. This is then unified with the LHS of the relation in the goal.
+As a result, the pattern becomes the same as the LHS, but with mdata annotations that
+indicate where the original `?_` holes were. The LHS is then replaced with this expression so that
+`gcongr` can tell based on the LHS how far to continue recursively. We also keep track of when
+then LHS and RHS swap around, so that we know where to look for the metadata annotation.
 -/
 
 namespace Mathlib.Tactic.GCongr
@@ -233,7 +234,6 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : Met
     let some (head', rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
     unless head == head' && lhsArgs.size == rhsArgs.size do
       fail "LHS and RHS do not have the same head function and arity"
-    let mut numVarying := 0
     let mut pairs := #[]
     -- iterate through each pair of corresponding (LHS/RHS) inputs to the head function `head` in
     -- the conclusion of the lemma
@@ -247,7 +247,7 @@ def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : Met
         let .fvar e2 := e2.eta | fail "Not all varying arguments are free variables"
         -- add such a pair to the `pairs` array
         pairs := pairs.push (e1, e2)
-        numVarying := numVarying + 1
+    let numVarying := pairs.size
     if numVarying = 0 then
       fail "LHS and RHS are the same"
     let mut mainSubgoals := #[]
@@ -394,8 +394,8 @@ def mkHoleAnnotation (e : Expr) : Expr :=
 def hasHoleAnnotation (e : Expr) : Bool :=
   annotation? `gcongrHole e |>.isSome
 
-/-- Determine whether `e` contains a hole annotation in any subexpression.
-This tells `gcongr` where to continue applying `gcongr` lemmas. -/
+/-- Determine whether `e` contains a `gcongrHole` mdata annotation in any subexpression.
+This tells `gcongr` whether to continue applying `gcongr` lemmas. -/
 def containsHoleAnnotation (e : Expr) : Bool :=
   (e.find? hasHoleAnnotation).isSome
 
