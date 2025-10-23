@@ -283,6 +283,37 @@ private lemma is_const_norm_φ {x : F} {z : ℝ × ℝ} (h : ∀ w, ‖φ x z‖
 
 /- Existence of a minimizing monic polynomial of degree 2 -/
 
+open Filter Topology Bornology in
+private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c) (hbd : ∀ r : ℝ, c ≤ ‖x - r • 1‖) :
+    Tendsto (φ x ·) (cobounded (ℝ × ℝ)) (cobounded F) := by
+  simp_rw [φ, sub_add]
+  refine tendsto_const_sub_cobounded (x ^ 2) |>.comp ?_
+  rw [← tendsto_norm_atTop_iff_cobounded]
+  refine .cobounded_prod (fun s hs ↦ ?_) ?_
+  · obtain ⟨M, hM_pos, hM⟩ : ∃ M > 0, ∀ y ∈ s, ‖y‖ ≤ M := hs.exists_pos_norm_le
+    suffices Tendsto (fun y ↦ ‖algebraMap ℝ F y.2‖ - M * ‖x‖) (𝓟 s ×ˢ cobounded ℝ) atTop by
+      refine Filter.tendsto_atTop_mono' _ ?_ this
+      filter_upwards [prod_mem_prod (mem_principal_self s) univ_mem]
+      rintro x hx
+      rw [norm_sub_rev]
+      apply le_trans ?_ (norm_sub_norm_le ..)
+      simp only [norm_algebraMap', norm_smul, norm_one, mul_one]
+      gcongr
+      exact hM _ hx.1
+    simp only [norm_algebraMap', sub_eq_add_neg]
+    apply tendsto_atTop_add_const_right
+    rw [tendsto_norm_atTop_iff_cobounded]
+    exact tendsto_snd
+  · suffices Tendsto (fun y ↦ ‖y.1‖ * c) (cobounded ℝ ×ˢ ⊤) atTop by
+      refine Filter.tendsto_atTop_mono' _ ?_ this
+      filter_upwards [prod_mem_prod (isBounded_singleton (x := 0)) univ_mem] with y hy
+      calc ‖y.1‖ * c ≤ ‖y.1‖ * ‖x - (y.1⁻¹ * y.2) • 1‖ := by gcongr; exact hbd _
+        _ = ‖y.1 • x - y.2 • 1‖ := by
+          simp only [← norm_smul, smul_sub, smul_smul]
+          simp_all
+    rw [tendsto_mul_const_atTop_of_pos hc₀, tendsto_norm_atTop_iff_cobounded]
+    exact tendsto_fst
+
 private lemma a_bound {x : F} {c : ℝ} (hc₀ : 0 < c) (hbd : ∀ r : ℝ, c ≤ ‖x - r • 1‖) {a b : ℝ}
     (h : ‖x ^ 2 - a • x + b • 1‖ ≤ ‖x‖ ^ 2) :
     |a| ≤ 2 * ‖x‖ ^ 2 / c := by
