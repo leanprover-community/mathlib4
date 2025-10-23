@@ -289,8 +289,8 @@ lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M
   let ψ := Classical.choose <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
   let hψ :=
     Classical.choose_spec <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
-  apply ψ.contMDiff.contMDiffOn.smul_section_of_tsupport t.open_baseSet hψ.1
-  apply contMDiffOn_localExtensionOn _ hx
+  exact .smul_section_of_tsupport ψ.contMDiff.contMDiffOn t.open_baseSet hψ.1
+    (contMDiffOn_localExtensionOn _ hx _)
 
 lemma mdifferentiable_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M]
     [ContMDiffVectorBundle ∞ F V I] {x : M} (σ₀ : V x) :
