@@ -777,4 +777,3 @@ theorem merge_comm {m₁ m₂ : Finmap β} {f : {x : α} → β x → β x → �
     simp [flip]
 
 end Finmap
-
