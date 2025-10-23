@@ -714,11 +714,10 @@ private lemma exists_subgroup_isAtom (hK : K < 1) (hS : S.Nonempty) :
   · simpa only [← mem_coe, coe_smul_finset] using H.mem_carrier
   · simpa [Set.toFinset_smul_set, toFinset_coe, H] using IsAtom.smul_finset n⁻¹ hN
 
-/-- If `S` is such that there is `A` with `|S| ≤ |A|` such that `|A * S| ≤ (2 - ε) * |S|` for some
-`0 < ε ≤ 1`, then there is a finite subgroup `H` of `G` of size `|H| ≤ (2 / ε - 1) * |S|` such that
-`S` is covered by at most `2 / ε - 1` right cosets of `H`.
-In particular, for `A = S`, we get a characterisation of sets of doubling less than `2 - ε`. -/
-theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hS : S.Nonempty)
+/-- If `S` is nonempty such that there is `A` with `|S| ≤ |A|` such that `|A * S| ≤ (2 - ε) * |S|`
+for some `0 < ε ≤ 1`, then there is a finite subgroup `H` of `G` of size `|H| ≤ (2 / ε - 1) * |S|`
+such that `S` is covered by at most `2 / ε - 1` right cosets of `H`. -/
+theorem card_mul_finset_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hS : S.Nonempty)
     (hA : ∃ A : Finset G, #S ≤ #A ∧ #(A * S) ≤ (2 - ε) * #S) :
     ∃ (H : Subgroup G) (_ : Fintype H) (Z : Finset G),
       Fintype.card H ≤ (2 / ε - 1) * #S ∧ #Z ≤ 2 / ε - 1 ∧ (S : Set G) ⊆ H * Z := by
@@ -782,5 +781,12 @@ theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hS : S
         gcongr
         · linarith
         · simp only [Set.mem_toFinset, SetLike.mem_coe, H.one_mem, subset_mul_right]
+
+/-- Corollary of `card_mul_finset_lt_two` in the case `A = S`, giving characterisation of sets of
+doubling less than `2 - ε`. -/
+theorem doubling_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) (hA₀ : A.Nonempty)
+    (hA₁ : #(A * A) ≤ (2 - ε) * #A) : ∃ (H : Subgroup G) (_ : Fintype H) (Z : Finset G),
+      Fintype.card H ≤ (2 / ε - 1) * #A ∧ #Z ≤ 2 / ε - 1 ∧ (A : Set G) ⊆ H * Z :=
+  card_mul_finset_lt_two hε₀ hε₁ hA₀ ⟨A, by rfl, hA₁⟩
 
 end Finset
