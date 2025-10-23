@@ -889,10 +889,9 @@ theorem measurable_stoppedValue [PseudoMetrizableSpace β] [MeasurableSpace β] 
       intro h
       simp [h]
     rw [this]
-    refine MeasurableSet.inter ?_ hτ.measurableSet_eq_top
-    refine ht.preimage ?_
-    have h_ada := hf_prog.adapted (Classical.arbitrary ι)
-    exact h_ada.measurable.mono (f.le (Classical.arbitrary ι)) le_rfl
+    refine MeasurableSet.inter (ht.preimage ?_) hτ.measurableSet_eq_top
+    exact (hf_prog.adapted (Classical.arbitrary ι)).measurable.mono
+      (f.le (Classical.arbitrary ι)) le_rfl
 
 end ProgMeasurable
 
