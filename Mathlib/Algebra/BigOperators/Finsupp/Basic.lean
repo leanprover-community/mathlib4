@@ -282,7 +282,8 @@ theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f
 theorem sum_zero [Zero M] [AddCommMonoid N] {f : α →₀ M} : (f.sum fun _ _ => (0 : N)) = 0 :=
   Finset.sum_const_zero
 
-theorem sum_eq_one_iff (d : α →₀ ℕ) : sum d (fun _ n ↦ n) = 1 ↔ ∃ a, single a 1 = d := by
+theorem sum_eq_one_iff [Zero M] [One M] [NeZero 1] [AddCommMonoid M] (d : α →₀ ℕ) :
+    sum d (fun _ n ↦ n) = 1 ↔ ∃ a, d = single a 1 := by
   classical
   refine ⟨fun h1 ↦ ?_, ?_⟩
   · have hd0 : d ≠ 0 := fun h ↦ by simp [h] at h1
@@ -296,9 +297,9 @@ theorem sum_eq_one_iff (d : α →₀ ℕ) : sum d (fun _ n ↦ n) = 1 ↔ ∃ a
       ext b
       by_cases hb : b = a
       · rw [hb, single_eq_same, ha]
-      · rw [single_eq_of_ne hb, eq_comm]
+      · rw [single_eq_of_ne hb]
         simp only [mem_support_iff, and_imp] at ha'
-        simpa [erase_ne hb] using ha' b (hb)
+        simpa [erase_ne hb] using ha' b hb
   · rintro ⟨a, rfl⟩
     rw [sum_eq_single a ?_ (fun _ ↦ rfl), single_eq_same]
     exact fun _ _ hba ↦ single_eq_of_ne hba
