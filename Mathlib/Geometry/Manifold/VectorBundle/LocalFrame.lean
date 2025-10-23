@@ -304,12 +304,12 @@ end IsLocalFrame
 
 namespace Module.Basis
 
-variable {ι : Type*}
+variable {ι : Type*} {x : M}
 
 noncomputable def localFrame_toBasis_at
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) {x : M} (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
+    (b : Basis ι 𝕜 F) (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
   b.map (e.linearEquivAt (R := 𝕜) x hx).symm
 
 open scoped Classical in
@@ -356,28 +356,27 @@ lemma localFrame_isLocalFrameOn_baseSet
 omit [IsManifold I 0 M] in
 lemma _root_.contMDiffAt_localFrame_of_mem
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) {x : M} (hx : x ∈ e.baseSet) :
+    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) (hx : x ∈ e.baseSet) :
     CMDiffAt n (T% (b.localFrame e i)) x :=
   (b.localFrame_isLocalFrameOn_baseSet I n e).contMDiffAt e.open_baseSet hx _
 
 @[simp]
 lemma localFrame_apply_of_mem_baseSet
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) {i : ι} {x : M} (hx : x ∈ e.baseSet) :
+    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) {i : ι} (hx : x ∈ e.baseSet) :
     b.localFrame e i x = b.localFrame_toBasis_at e hx i := by
   simp [localFrame, hx]
 
 @[simp]
 lemma localFrame_apply_of_notMem
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) {i : ι} {x : M} (hx : x ∉ e.baseSet) :
+    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) {i : ι} (hx : x ∉ e.baseSet) :
     b.localFrame e i x = 0 := by
   simp [localFrame, hx]
 
 lemma localFrame_toBasis_at_coe
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
-    [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) {x : M} (i : ι) (hx : x ∈ e.baseSet) :
+    [MemTrivializationAtlas e] (b : Basis ι 𝕜 F) (i : ι) (hx : x ∈ e.baseSet) :
     b.localFrame_toBasis_at e hx i = b.localFrame e i x := by simp [hx]
 
 variable [ContMDiffVectorBundle 1 F V I]
@@ -425,8 +424,8 @@ variable (b) in
 omit [IsManifold I 0 M] in
 /-- A local frame locally spans the space of sections for `V`: for each local trivialisation `e`
   of `V` around `x`, we have `s = ∑ i, (b.localFrame_coeff e i s) • b.localFrame e i` -/
--- TODO: rename to match isLocalFrameOn analogue!
-lemma localFrame_coeff_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π x : M,  V x) :
+lemma localFrame_eventually_eq_sum_coeff_smul [Fintype ι]
+    (hxe : x ∈ e.baseSet) (s : Π x : M,  V x) :
     ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_coeff I e i s x') • b.localFrame e i x' :=
   eventually_nhds_iff.mpr ⟨e.baseSet, fun _ h ↦ localFrame_coeff_sum_eq s h, e.open_baseSet, hxe⟩
 
