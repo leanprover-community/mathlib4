@@ -224,36 +224,34 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
           exact fin_integral_prob_meas
         map_smul' := by simp [L]; exact fun a b ↦ integral_const_mul a b
         monotone' := fun _ _ _ ↦ L.monotone' (by bound)}
-    let W := ((liftL).toLinearMap.mkContinuous 1 (by
+    let φ_weak : WeakDual ℝ (C(X,ℝ)) := ((liftL).toLinearMap.mkContinuous 1 (by
       intro f; simp [-Real.norm_eq_abs,integralPositiveLinearMap_toFun, LinearMap.coe_mk, AddHom.coe_mk,
-        one_mul, L, liftL]; exact BoundedContinuousFunction.norm_integral_le_norm _ (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f))) --ContinuousMap.liftCompactlySupported_apply_toFun Equiv.toFun_as_coe
-    let φ_weak : WeakDual ℝ (C(X,ℝ)) := W
+        one_mul, L, liftL]; exact BoundedContinuousFunction.norm_integral_le_norm _ (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)))
     have as_ball : φ_weak ∈ Φ := by
       simp [Φ]
       refine ⟨?_,?_,?_⟩
-      · apply ContinuousLinearMap.opNorm_le_bound W (by linarith)
+      · apply ContinuousLinearMap.opNorm_le_bound φ_weak (by linarith)
         intro f
-        simp [integralPositiveLinearMap_toFun, LinearMap.mkContinuous_apply,
-          LinearMap.coe_mk, AddHom.coe_mk, one_mul, W, L, liftL]
+        simp only [LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk,
+          Function.comp_apply, integralPositiveLinearMap_toFun, continuousMapEquiv_apply_toFun,
+          one_mul, φ_weak, L, liftL]
         exact BoundedContinuousFunction.norm_integral_le_norm μprob (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)
-      · simp [LinearMap.mkContinuous, φ_weak, L, W, liftL]
+      · simp [LinearMap.mkContinuous, φ_weak, L, liftL]
         change (fun f ↦ ∫ (x : X), f x ∂↑μprob) (fun x ↦ 1) = 1
         simp
       · intro g hgpos
-        simp [φ_weak, L, W, liftL]
+        simp [φ_weak, L, liftL]
         change (0 ≤ (fun f ↦ ∫ (x : X), f x ∂↑μprob) g.toContinuousMap)
         simp only [coe_toContinuousMap]
         exact integral_nonneg hgpos
     let φ_fin : ↑Φ := by use φ_weak
     use φ_fin
-    have g2 : IsProbabilityMeasure (RealRMK.rieszMeasure (Λ φ_fin)) := IsPMeas φ_fin
     refine (Equiv.symm_apply_eq (LevyProkhorov.equiv (ProbabilityMeasure X))).mpr ?_
-    change ⟨RealRMK.rieszMeasure (Λ φ_fin), g2⟩ = (LevyProkhorov.equiv (ProbabilityMeasure X)) μ
     apply Subtype.ext
     simp [φ_fin, φ_weak, Λ]
     apply RealRMK.rieszMeasure_integralPositiveLinearMap
   simp only [this]
-  have hΦ2 : SeqCompactSpace Φ := by --Jannette's Project
+  have hΦ2 : SeqCompactSpace Φ := by --Jannette's Project (Seq. banach alaoglu thm)
     refine { isSeqCompact_univ := ?_ }
     obtain ⟨ds⟩ := hΦ1
     sorry
@@ -271,7 +269,7 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let tspac : TopologicalSpace { μ : Measure X // IsProbabilityMeasure μ } := Preorder.topology { μ // IsProbabilityMeasure μ}
   refine Continuous.comp ?_ ?_
   letI sep : SeparableSpace X := SecondCountableTopology.to_separableSpace
-  · refine LevyProkhorov.continuous_equiv_symm_probabilityMeasure (Ω := X) 
+  · refine LevyProkhorov.continuous_equiv_symm_probabilityMeasure (Ω := X) ..
 
 
   --rw [(ProbabilityMeasure.toFiniteMeasure_isEmbedding _).continuous_iff (f := fun φ ↦ (LevyProkhorov.equiv (ProbabilityMeasure X)).symm ⟨RealRMK.rieszMeasure (Λ φ), ⋯⟩)]
