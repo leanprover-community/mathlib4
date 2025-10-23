@@ -8,6 +8,7 @@ import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.MinImports
 import Lean.Elab.Tactic.Meta
 import Lean.Elab.Command
+import Aesop
 
 /-!
 # Tactic linters
@@ -286,6 +287,24 @@ register_option linter.tacticAnalysis.tryAtEachStepGrind : Bool := {
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrind,
    inherit_doc linter.tacticAnalysis.tryAtEachStepGrind]
 def tryAtEachStepGrind := tryAtEachStep (fun _ => `(tactic| grind))
+
+/-- Run `simp_all` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepSimpAll : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAll,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAll]
+def tryAtEachStepSimpAll := tryAtEachStep (fun _ => `(tactic| simp_all))
+
+/-- Run `aesop` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepAesop : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepAesop,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepAesop]
+def tryAtEachStepAesop := tryAtEachStep (fun _ => `(tactic| aesop))
 
 /-- Run `grind +premises` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepGrindPremises : Bool := {
