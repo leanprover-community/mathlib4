@@ -427,7 +427,7 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
   have : IsGalois ℚ K := by constructor
   let R := 𝓞 K
   let G := f.Gal
-  let _ : MulSemiringAction G R := IsIntegralClosure.MulSemiringAction ℤ ℚ K R
+  -- let _ : MulSemiringAction G R := IsIntegralClosure.MulSemiringAction ℤ ℚ K R
   suffices Function.Bijective (Gal.galActionHom f K) by
     rw [switchinglemma f ℂ K]
     exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
@@ -461,7 +461,7 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
   refine tada' (S := R) f₀ hf₀ ?_ G ?_ ?_
   · sorry
   · have : IsGaloisGroup G ℚ K := IsGaloisGroup.of_isGalois ℚ K
-    exact genthm K R G
+    exact genthm₀ K G
   · sorry
 
 end Moore
