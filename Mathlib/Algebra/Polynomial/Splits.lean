@@ -414,10 +414,8 @@ theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
     (hs : f.map i = C (i f.leadingCoeff) * (s.map fun a : L => X - C a).prod) : Splits i f :=
   factors_iff_exists_multiset.mpr ⟨s, leadingCoeff_map i ▸ hs⟩
 
-theorem splits_of_splits_id {f : K[X]} : Splits (RingHom.id K) f → Splits i f := by
-  simp only [Splits, factors_iff_exists_multiset]
-  rintro ⟨m, hm⟩
-  exact ⟨m.map i, by simpa [Polynomial.map_multiset_prod] using congr_arg (map i) hm⟩
+theorem splits_of_splits_id {f : K[X]} (h : Splits (RingHom.id K) f) : Splits i f := by
+  simpa using h.map i
 
 end UFD
 
