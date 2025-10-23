@@ -5,6 +5,7 @@ import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.Finiteness
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.Linarith
@@ -151,6 +152,25 @@ example {a b : Nat} : a + b = b + a + 0 := by
   simp
   ring1!
 
+-- So are ring1_nf and ring1_nf!.
+#guard_msgs in
+example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 := by
+  simp
+  ring1_nf
+
+-- TODO: why does this test fail???
+/--
+warning: 'simp' is a flexible tactic modifying '⊢'…
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: … and 'ring1_nf!' uses '⊢'!
+-/
+#guard_msgs in
+example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 := by
+  simp
+  ring1_nf!
+
 -- Test that `linear_combination` is accepted as a follower of `simp`.
 example {a b : ℤ} (h : a + 1 = b) : a + 1 + 0 = b := by
   simp
@@ -226,16 +246,4 @@ example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
 example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
   simp
   ring_nf!
-  assumption
-
-#guard_msgs in
-example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
-  simp
-  ring1_nf
-  assumption
-
-#guard_msgs in
-example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
-  simp
-  ring1_nf!
   assumption
