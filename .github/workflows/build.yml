@@ -607,13 +607,13 @@ jobs:
       - name: verify that everything was available in the cache
         run: |
           echo "::group::{verify Mathlib cache}"
-          lake build --no-build -v Mathlib
+          lake build --no-build --rehash -v Mathlib
           echo "::endgroup::"
           echo "::group::{verify Archive cache}"
-          lake build --no-build -v Archive
+          lake build --no-build --rehash -v Archive
           echo "::endgroup::"
           echo "::group::{verify Counterexamples cache}"
-          lake build --no-build -v Counterexamples
+          lake build --no-build --rehash -v Counterexamples
           echo "::endgroup::"
 
       - name: check declarations in db files
