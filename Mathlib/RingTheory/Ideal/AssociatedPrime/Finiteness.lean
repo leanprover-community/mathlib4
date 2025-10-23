@@ -5,8 +5,10 @@ Authors: Jinzhao Pan
 -/
 import Mathlib.Order.RelSeries
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Defs
+import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
 
@@ -155,3 +157,18 @@ theorem associatedPrimes.finite : (associatedPrimes A M).Finite := by
     simp [LinearEquiv.AssociatedPrimes.eq f, this]
   | exact N₁ N₂ N₃ f g hf _ hfg h₁ h₃ =>
     exact (h₁.union h₃).subset (associatedPrimes.subset_union_of_exact hf hfg)
+
+theorem MaximalSpectrum.finite_of_nonZeroDivisors_le_isUnit
+    (le : nonZeroDivisors A ≤ IsUnit.submonoid A) :
+    Finite (MaximalSpectrum A) :=
+  have fin := associatedPrimes.finite A A
+  (equivSubtype A).finite_iff.mpr <| Set.finite_coe_iff.mpr <| fin.subset fun I (hI : I.IsMaximal) ↦
+    have ⟨P, hP⟩ := (I.subset_union_prime_finite fin (f := id) 0 0 fun _ h _ _ ↦ h.isPrime).1 <| by
+      simp_rw [id, biUnion_associatedPrimes_eq_compl_nonZeroDivisors]
+      exact fun x hx h ↦ hI.ne_top (I.eq_top_of_isUnit_mem hx (le h))
+    hI.eq_of_le hP.1.isPrime.ne_top hP.2 ▸ hP.1
+
+/-- A commutative Noetherian total ring of fractions is semilocal. -/
+instance [IsFractionRing A A] : Finite (MaximalSpectrum A) :=
+  MaximalSpectrum.finite_of_nonZeroDivisors_le_isUnit _
+    (IsFractionRing.self_iff_nonZeroDivisors_le_isUnit.mp ‹_›)
