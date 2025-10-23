@@ -3994,6 +3994,7 @@ import Mathlib.Geometry.Manifold.Sheaf.Smooth
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
 import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 import Mathlib.Geometry.Manifold.VectorBundle.Hom
+import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 import Mathlib.Geometry.Manifold.VectorBundle.Pullback
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
@@ -4053,6 +4054,7 @@ import Mathlib.GroupTheory.FreeGroup.CyclicallyReduced
 import Mathlib.GroupTheory.FreeGroup.GeneratorEquiv
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
+import Mathlib.GroupTheory.FreeGroup.Orbit
 import Mathlib.GroupTheory.FreeGroup.Reduce
 import Mathlib.GroupTheory.Goursat
 import Mathlib.GroupTheory.GroupAction.Basic
@@ -4160,6 +4162,7 @@ import Mathlib.InformationTheory.KullbackLeibler.KLFun
 import Mathlib.Init
 import Mathlib.Lean.ContextInfo
 import Mathlib.Lean.CoreM
+import Mathlib.Lean.Elab.InfoTree
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.Elab.Tactic.Meta
 import Mathlib.Lean.Elab.Term
