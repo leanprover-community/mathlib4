@@ -31,7 +31,7 @@ def prodEquivOfkerComplement : (f.kerComplement × (ker f)) ≃ₗ[K] V :=
 
 lemma apply_ker_component_eq_zero (y : V) : f (f.prodEquivOfkerComplement.symm y).1 = f y := by
   nth_rw 2 [← Submodule.IsCompl.projection_add_projection_eq_self f.isCompl_ker_kerComplement y]
-  rw [map_add, mem_ker.mp (f.isCompl_ker_kerComplement.symm.projection_apply_mem y), add_zero]
+  rw [map_add, f.isCompl_ker_kerComplement.symm.projection_apply_mem y, add_zero]
   rfl
 
 /-- When `V` decomposes as `ker f ⊕ kerComplement f`, the basis is obtained by transporting the
@@ -49,17 +49,12 @@ def decomposition_basis : Basis ((ofVectorSpaceIndex K f.kerComplement) ⊕
 def ker_complement_restriction : f.kerComplement →ₗ[K] W :=
   f.comp f.kerComplement.subtype
 
-/-- 线性映射 `f` 在其核补空间上的限制是单射。
-
-这是因为核空间 `ker f` 与补空间 `kerComplement f` 是互补子空间（由 `isCompl_ker_kerComplement` 保证），
-它们的交集仅为零子空间，因此 `f` 在补空间上的限制具有平凡核。 -/
-lemma ker_complement_restriction_injective : ker f.ker_complement_restriction = ⊥ := by
+lemma ker_complement_restriction_ker_eq_bot : ker f.ker_complement_restriction = ⊥ := by
   simpa [ker_complement_restriction, ker_comp, ← disjoint_iff_comap_eq_bot]
     using f.isCompl_ker_kerComplement.disjoint
 
-lemma test : Function.Injective f.ker_complement_restriction := by
-
-  sorry
+lemma ker_complement_restriction_injective : Function.Injective f.ker_complement_restriction := by
+  simpa [← ker_eq_bot] using (ker_complement_restriction_ker_eq_bot f)
 
 /-- 通过核补空间的基和限制映射 `f ∘ Submodule.subtype (kerComplement f)` 构造的映射，
     将基索引映射到 `W` 中的向量 -/
@@ -71,7 +66,7 @@ def ker_complement_basis_image :
 lemma linear_independent_ker_complement_basis_image :
     LinearIndependent K f.ker_complement_basis_image :=
   LinearIndependent.map' (ofVectorSpace K f.kerComplement).linearIndependent _
-    f.ker_complement_restriction_injective
+    f.ker_complement_restriction_ker_eq_bot
 
 /-- 通过将核补空间的基像（对应 `range f`）与余核的基扩展组合，构造 `W` 的基 -/
 def range_decomposition_basis :
@@ -79,32 +74,23 @@ def range_decomposition_basis :
       (sumExtendIndex f.linear_independent_ker_complement_basis_image)) K W :=
   Basis.sumExtend f.linear_independent_ker_complement_basis_image
 
-open FiniteDimensional
 instance [FiniteDimensional K W] :
-  Fintype (sumExtendIndex f.linear_independent_ker_complement_basis_image) := by
-  have h1 := fintypeBasisIndex f.range_decomposition_basis
-  apply @Fintype.sumRight _ _ h1
+    Fintype (sumExtendIndex f.linear_independent_ker_complement_basis_image) :=
+  @Fintype.sumRight _ _ (FiniteDimensional.fintypeBasisIndex f.range_decomposition_basis)
 
-instance [FiniteDimensional K V]: Fintype (ofVectorSpaceIndex K f.kerComplement) := by infer_instance
-instance [FiniteDimensional K V]: Fintype (ofVectorSpaceIndex K (ker f)) := by infer_instance
 instance : DecidableEq (ofVectorSpaceIndex K f.kerComplement) := Classical.typeDecidableEq _
+
 instance : DecidableEq (ofVectorSpaceIndex K (ker f)) := Classical.typeDecidableEq _
 
 /-- 核空间的补空间线性同构于像空间 -/
-def kerComplementEquivRange :
-    f.kerComplement ≃ₗ[K] (range f) := by
+def kerComplementEquivRange : f.kerComplement ≃ₗ[K] (range f) := by
   let g : f.kerComplement →ₗ[K] range f :=
-    codRestrict (range f) f.ker_complement_restriction
-      (by
-        intro x
-        simp only [mem_range, LinearMap.mem_range, LinearMap.ker_complement_restriction, LinearMap.comp_apply]
-        exact ⟨(f.kerComplement.subtype x), rfl⟩
-      )
+    codRestrict (range f) f.ker_complement_restriction (fun x ↦ ⟨f.kerComplement.subtype x, rfl⟩)
   apply LinearEquiv.ofBijective g
   constructor
   · simpa [← ker_eq_bot, g, ker_codRestrict]
      using f.ker_complement_restriction_injective
-  intro ⟨x, y, hyx⟩
+  intro ⟨_, y, hyx⟩
   use (f.prodEquivOfkerComplement.2 y).1
   simp [g, codRestrict, ← hyx, ker_complement_restriction, apply_ker_component_eq_zero]
 
@@ -116,7 +102,7 @@ def kerComplementEquivRange :
 -/
 lemma finrank_kerComplement_eq_rank {r : ℕ} (hr : rank f = r) :
     finrank K f.kerComplement = r := by
-  simp [(finrank_eq_of_rank_eq hr).symm, LinearEquiv.finrank_eq f.kerComplementEquivRange]
+  simp [finrank_eq_of_rank_eq hr, LinearEquiv.finrank_eq f.kerComplementEquivRange]
 
 /-- 核空间的维数等于全空间维数减去线性映射的秩。
 
@@ -138,10 +124,10 @@ lemma card_cokernel_basis_index_eq  {m r : ℕ} [FiniteDimensional K V]
   simp [← finrank_eq_card_basis (ofVectorSpace K f.kerComplement),
     f.finrank_kerComplement_eq_rank hr]
 
-lemma apply_kerComplement_basis_eq_range_basis (j) : (f (f.decomposition_basis (Sum.inl j))) = (f.range_decomposition_basis (Sum.inl j)) := by
-    simp [LinearMap.decomposition_basis, prodEquivOfkerComplement,range_decomposition_basis, sumExtend, Equiv.sumCongr,
-      ker_complement_basis_image, ker_complement_restriction]
-
+lemma apply_kerComplement_basis_eq_range_basis (j) :
+    f (f.decomposition_basis (Sum.inl j)) = (f.range_decomposition_basis (Sum.inl j)) := by
+  simp [decomposition_basis, prodEquivOfkerComplement, range_decomposition_basis, sumExtend,
+    Equiv.sumCongr, ker_complement_basis_image, ker_complement_restriction]
 
 end LinearMap
 
@@ -175,12 +161,9 @@ noncomputable def basisIndexEquivFin {ι r K V} [DivisionRing K]
 
 section
 
-variable {R : Type} [Field R] {m n r: ℕ} {M₁ : Type} {M₂ : Type}
-  [AddCommGroup M₁] [AddCommGroup M₂]
-  [Module R M₁] [Module R M₂]
-  [FiniteDimensional R M₁]
-  [FiniteDimensional R M₂]
-  (f : M₁ →ₗ[R] M₂)
+variable {R : Type} [Field R] {m n r: ℕ} {M₁ M₂ : Type*}
+variable [AddCommGroup M₁] [Module R M₁] [FiniteDimensional R M₁]
+variable [AddCommGroup M₂] [Module R M₂] [FiniteDimensional R M₂] (f : M₁ →ₗ[R] M₂)
 
 open Matrix LinearMap
 
@@ -197,17 +180,12 @@ theorem exists_basis_for_normal_form_abstract :
     LinearMap.toMatrix v₁ v₂ f = fromBlocks 1 0 0 0 := by
   use f.decomposition_basis, f.range_decomposition_basis
   funext i j
-  simp [LinearMap.toMatrix_apply]
   match i, j with
-  | Sum.inl i', Sum.inl j' =>
-    simp [f.apply_kerComplement_basis_eq_range_basis j',
+  | Sum.inl i', Sum.inl j' => simp [toMatrix_apply, f.apply_kerComplement_basis_eq_range_basis j',
       Finsupp.single, Pi.single, Function.update, Matrix.one_apply]
-  | Sum.inr i', Sum.inr j' =>
-    simp [LinearMap.decomposition_basis, prodEquivOfkerComplement]
-  | Sum.inl i', Sum.inr j' =>
-    simp [LinearMap.decomposition_basis, prodEquivOfkerComplement]
-  | Sum.inr i', Sum.inl j' =>
-    simp [f.apply_kerComplement_basis_eq_range_basis j']
+  | Sum.inr i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis, prodEquivOfkerComplement]
+  | Sum.inl i', Sum.inr j' => simp [toMatrix_apply, decomposition_basis, prodEquivOfkerComplement]
+  | Sum.inr i', Sum.inl j' => simp [toMatrix_apply, f.apply_kerComplement_basis_eq_range_basis j']
 
 /-- 线性映射的标准形存在性定理（具体维数版本）。
 
@@ -217,16 +195,18 @@ theorem exists_basis_for_normal_form_abstract :
 
 这是秩-零化度定理的矩阵表现形式。 -/
 theorem exists_basis_for_normal_form (hn : finrank R M₁ = n) (hm : finrank R M₂ = m)
-  (hr : rank f = r) :
-  ∃ (v₁ : Basis (Fin r ⊕ Fin (n - r)) R M₁) (v₂ : Basis (Fin r ⊕ Fin (m - r)) R M₂)
-  , LinearMap.toMatrix v₁ v₂ f = fromBlocks 1 0 0 0:= by
+    (hr : rank f = r) :
+    ∃ (v₁ : Basis (Fin r ⊕ Fin (n - r)) R M₁) (v₂ : Basis (Fin r ⊕ Fin (m - r)) R M₂),
+    f.toMatrix v₁ v₂ = fromBlocks 1 0 0 0:= by
   have ⟨v₁, v₂, hvf⟩ := exists_basis_for_normal_form_abstract f
-  let hu₁ : (ofVectorSpaceIndex R f.kerComplement) ⊕ (ofVectorSpaceIndex R (ker f)) ≃ Fin r ⊕ Fin (n - r) := by
+  let hu₁ : (ofVectorSpaceIndex R f.kerComplement) ⊕ (ofVectorSpaceIndex R (ker f)) ≃
+      Fin r ⊕ Fin (n - r) := by
     refine Equiv.sumCongr ?_ ?_
     apply basisIndexEquivFin (finrank_kerComplement_eq_rank f hr) (ofVectorSpace R _)
     apply basisIndexEquivFin (f.finrank_ker_eq hr hn) (ofVectorSpace R _)
-  let u₁ : Basis (Fin r ⊕ Fin (n - r)) R M₁ :=  v₁.reindex hu₁
-  let hu₂ : (ofVectorSpaceIndex R f.kerComplement) ⊕ (sumExtendIndex f.linear_independent_ker_complement_basis_image) ≃ Fin r ⊕ Fin (m - r) := by
+  let u₁ : Basis (Fin r ⊕ Fin (n - r)) R M₁ := v₁.reindex hu₁
+  let hu₂ : (ofVectorSpaceIndex R f.kerComplement) ⊕
+      (sumExtendIndex f.linear_independent_ker_complement_basis_image) ≃ Fin r ⊕ Fin (m - r) := by
     refine Equiv.sumCongr ?_ ?_
     apply basisIndexEquivFin (finrank_kerComplement_eq_rank f hr) (ofVectorSpace R _)
     apply indexEquivOfCardinalEq
