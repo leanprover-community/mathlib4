@@ -81,7 +81,6 @@ theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 
 @[simp]
 instance [InvolutiveStar α] : InvolutiveStar (Set α) where
-  star := Star.star
   star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
 
 @[simp]

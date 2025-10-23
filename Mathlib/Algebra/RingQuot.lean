@@ -327,7 +327,6 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
     neg_add_cancel := by
       rintro ⟨⟨⟩⟩
       simp [neg_quot, add_quot, ← zero_quot]
-    sub := Sub.sub
     sub_eq_add_neg := by
       rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
       simp [neg_quot, sub_quot, add_quot, sub_eq_add_neg]

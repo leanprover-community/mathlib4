@@ -379,7 +379,6 @@ instance instAddZeroClass : AddZeroClass (ConvexCone R M) where
   add_zero _ := by ext; simp
 
 instance instAddCommSemigroup : AddCommSemigroup (ConvexCone R M) where
-  add := Add.add
   add_assoc _ _ _ := SetLike.coe_injective <| add_assoc _ _ _
   add_comm _ _ := SetLike.coe_injective <| add_comm _ _
 
