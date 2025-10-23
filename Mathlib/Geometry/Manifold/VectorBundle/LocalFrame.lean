@@ -634,11 +634,11 @@ end MDifferentiable
 end
 
 -- local extension of a vector field in a trivialisation's base set
-section localExntensionOn
+section localExtensionOn
 
 variable {ι : Type*} [Fintype ι] {b : Basis ι 𝕜 F}
   {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-  [MemTrivializationAtlas e] {x : M}
+  [MemTrivializationAtlas e] {x x' : M}
 
 open scoped Classical in
 
@@ -677,21 +677,20 @@ noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
     (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
     (x : M) (v : V x) : (x' : M) → V x' :=
   fun x' ↦ if hx : x ∈ e.baseSet then
-    letI bV := b.localFrame_toBasis_at e hx; ∑ i, bV.repr v i • b.localFrame e i x'
-    else 0
+    ∑ i, (b.localFrame_toBasis_at e hx).repr v i • b.localFrame e i x'
+  else 0
 
 variable (b e) in
 @[simp]
 lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
-    ((localExtensionOn b e x v) x) = v := by
+    (localExtensionOn b e x v) x = v := by
   simp [localExtensionOn, hx]
 
 omit [IsManifold I 0 M] in
+variable (b) in
 /-- A local extension has constant frame coefficients within its defining trivialisation. -/
-lemma localExtensionOn_localFrame_coeff (b : Basis ι 𝕜 F) [ContMDiffVectorBundle 1 F V I]
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
-    [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) (v : V x) (i : ι)
-    {x' : M} (hx' : x' ∈ e.baseSet) :
+lemma localExtensionOn_localFrame_coeff [ContMDiffVectorBundle 1 F V I]
+    (hx : x ∈ e.baseSet) (hx' : x' ∈ e.baseSet) (v : V x) (i : ι) :
     b.localFrame_coeff I e i (localExtensionOn b e x v) x' =
       b.localFrame_coeff I e i (localExtensionOn b e x v) x := by
   simp [localExtensionOn, hx, hx']
@@ -718,11 +717,10 @@ lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
   ext x'
   by_cases hx: x ∈ e.baseSet; swap
   · simp [hx, localExtensionOn]
-  · simp [hx, localExtensionOn, Finset.smul_sum]
-    set B := Basis.localFrame_toBasis_at e b hx
-    congr
-    ext i
-    rw [mul_smul a ((B.repr v) i)]
+  · simp only [localExtensionOn, hx, ↓reduceDIte, map_smul, Finsupp.coe_smul, Pi.smul_apply,
+      smul_eq_mul, Finset.smul_sum]
+    congr with i
+    rw [mul_smul a (((b.localFrame_toBasis_at e hx).repr v) i)]
 
 variable (F) in
 omit [IsManifold I 0 M] in
@@ -735,6 +733,6 @@ lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace �
   intro i
   apply (contMDiffOn_const (c := (b.localFrame_coeff I e i) (localExtensionOn b e x v) x)).congr
   intro y hy
-  rw [localExtensionOn_localFrame_coeff b hx v i hy]
+  rw [localExtensionOn_localFrame_coeff b hx hy v i]
 
-end localExntensionOn
+end localExtensionOn
