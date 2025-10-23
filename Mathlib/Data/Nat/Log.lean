@@ -200,7 +200,7 @@ theorem log_eq_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) :
     log b n = log b (n + 1) ↔ b ^ log b (n + 1) ≠ n + 1 := by
   rw [ne_eq, ← log_lt_log_succ_iff hb hn, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
-  exact fun  _ ↦ log_monotone (le_add_right n 1)
+  exact fun _ ↦ log_monotone (le_add_right n 1)
 
 theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ log c n := by
   rcases eq_or_ne n 0 with (rfl | hn); · rw [log_zero_right, log_zero_right]

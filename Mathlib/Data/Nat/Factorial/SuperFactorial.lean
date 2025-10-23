@@ -26,7 +26,7 @@ def superFactorial : ℕ → ℕ
   | succ n => factorial n.succ * superFactorial n
 
 /-- `sf` notation for superfactorial -/
-scoped notation "sf" n:60 => Nat.superFactorial n
+scoped notation "sf " n:60 => Nat.superFactorial n
 
 section SuperFactorial
 
