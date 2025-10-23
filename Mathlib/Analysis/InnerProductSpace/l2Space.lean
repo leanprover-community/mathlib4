@@ -212,7 +212,7 @@ protected theorem hasSum_linearIsometry (f : lp G 2) :
 @[simp]
 protected theorem linearIsometry_apply_single [DecidableEq ι] {i : ι} (x : G i) :
     hV.linearIsometry (lp.single 2 i x) = V i x := by
-  rw [hV.linearIsometry_apply, ← tsum_ite_eq i (V i x)]
+  rw [hV.linearIsometry_apply, ← tsum_ite_eq i (fun _ ↦ V i x)]
   congr
   ext j
   rw [lp.single_apply]
