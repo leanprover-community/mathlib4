@@ -707,10 +707,10 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
   rw [hframe.eq_iff_coeff hx]
   intro i
   have h₁ : ⟪X, real i⟫ x = (hframe.coeff i) X x := by
-    rw [hframe.repr_eq_inner' _ hx]
+    rw [hframe.coeff_eq_inner' _ hx]
     simp [real, real_inner_comm]
   have h₂ : ⟪X', real i⟫ x = (hframe.coeff i) X' x := by
-    rw [hframe.repr_eq_inner' _ hx]
+    rw [hframe.coeff_eq_inner' _ hx]
     simp [real, real_inner_comm]
   rw [← h₁, ← h₂, h (real i)]
 
@@ -822,7 +822,7 @@ lemma isCovariantDerivativeOn_lcCandidateAux_of_nonempty [FiniteDimensional ℝ 
       calc _
         _ = ∑ i, hZ.coeff i σ x • Z i x := by
           congr; ext i
-          rw [hZ.repr_eq_inner' σ hx i, product_swap]
+          rw [hZ.coeff_eq_inner' σ hx i, product_swap]
         _ = σ x := (hZ.toIsLocalFrameOn.coeff_sum_eq _ hx).symm
     trans ∑ i, leviCivitaRhs I X (g • σ) (Z i) x • (Z i) x
     · congr
@@ -929,7 +929,7 @@ lemma eq_product_apply [Fintype ι]
     choose r wo using exists_wellOrder _
     exact r
   have : LocallyFiniteOrderBot ι := by sorry
-  rw [ChristoffelSymbol, hs.repr_eq_inner' (f (s i) (s j)) hx k, real_inner_comm]
+  rw [ChristoffelSymbol, hs.coeff_eq_inner' (f (s i) (s j)) hx k, real_inner_comm]
 
 -- Lemma 4.3 in Lee, Chapter 5: first term still missing
 lemma foobar [Fintype ι] [FiniteDimensional ℝ E] (hf : IsCovariantDerivativeOn E f U)
