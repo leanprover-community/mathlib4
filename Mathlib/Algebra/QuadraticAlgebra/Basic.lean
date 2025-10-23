@@ -162,7 +162,7 @@ theorem im_star (z : QuadraticAlgebra R a b) :
     (star z).im = -z.im :=
   rfl
 
-theorem mul_star {x y : R} :
+theorem mul_star (x y : R) :
     (⟨x, y⟩ * star ⟨x, y⟩ : QuadraticAlgebra R a b) =
       x * x + b * x * y - a * y * y := by
   ext <;>
