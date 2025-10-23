@@ -29,8 +29,6 @@ Basic usage:
 ```lean
 variable (C : Type*) [Category* C]
 ```
-
-Note: `Category* C` expects both `C` and its type to *not involve* any level mvars.
 -/
 
 open Lean Meta Elab Term
@@ -41,27 +39,18 @@ just before any parameters appearing in `C` and its type, and elaborates to `Cat
 -/
 elab "Category*" ppSpace C:term : term => commitIfNoEx <| withoutErrToSorry do
   let u ← mkFreshLevelMVar
-  let cExpr ← instantiateExprMVars <| ← elabTermEnsuringType C (some <| .sort <| .succ u)
-  if cExpr.hasLevelMVar then
-    throwError "The term{indentD cExpr}\nhas level mvars"
-  let tpCExpr ← instantiateExprMVars <| ← Meta.inferType cExpr
-  if tpCExpr.hasLevelMVar then
-    throwError "The type{indentD tpCExpr}\nof{indentD cExpr}\nhas level mvars"
-  let instTp ← instantiateMVars <|
-    .app (.const `CategoryTheory.Category [← mkFreshLevelMVar, u]) cExpr
+  let cat := .const `CategoryTheory.Category [← mkFreshLevelMVar, u]
   let levelNames ← getLevelNames
-  -- We must ensure that `u` is still uninstantiated at this point, otherwise the next
-  -- line will panic.
-  unless u.isMVar do
-    throwError "Unexpected Error:{indentD u} is not a level mvar."
   let ⟨mctx, vs, _, out⟩ :=
     (← getMCtx).levelMVarToParam (fun n => levelNames.elem n)
-    (fun id => id == u.mvarId!) instTp `v 1
+    (fun id => id == u.mvarId!) cat `v 1
   let v::[] := vs.toList
     | throwError "Unexpected Error:{indentD out}\ndoesn't have exactly one new level parameter"
+  let cExpr ← instantiateMVars <| ← elabTermEnsuringType C (some <| .sort <| .succ u)
+  let tpCExpr ← instantiateMVars <| ← Meta.inferType cExpr
   let us := (collectLevelParams {} cExpr).params ++ (collectLevelParams {} tpCExpr).params
   match (us.filterMap fun nm => levelNames.findIdx? fun x => x == nm).max? with
   | some idx => setLevelNames <| levelNames.insertIdx (idx + 1) v
   | none => setLevelNames <| v :: levelNames
   setMCtx mctx
-  return out
+  return .app out cExpr

@@ -43,7 +43,7 @@ variable (C D : Type*) [Category* (C × D)]
 def foo := (C × D) ⥤ (C × D)
 
 /--
-info: foo.{v_1, u_1, u_2} (C : Type u_1) (D : Type u_2) [Category.{v_1, max u_2 u_1} (C × D)] : Type (max v_1 u_2 u_1)
+info: foo.{v_1, u_1, u_2} (C : Type u_1) (D : Type u_2) [Category.{v_1, max u_1 u_2} (C × D)] : Type (max v_1 u_2 u_1)
 -/
 #guard_msgs (info) in
 #check foo
@@ -102,22 +102,8 @@ end
 
 section
 
-/--
-error: The term
-  Type ?u.660
-has level mvars
--/
-#guard_msgs (error) in
 variable [Category* (Type _)]
 
-/--
-error: The type
-  Type ?u.663
-of
-  C
-has level mvars
--/
-#guard_msgs (error) in
 variable (C : Type _) [Category* C]
 
 /--
@@ -126,30 +112,30 @@ error: Type mismatch
 has type
   Sort u_1
 of sort `Type u_1` but is expected to have type
-  Type ?u.672
-of sort `Type (?u.672 + 1)`
+  Type ?u.691
+of sort `Type (?u.691 + 1)`
 -/
 #guard_msgs (error) in
 variable (D : Sort*) [Category* D]
 
 /--
 error: stuck at solving universe constraint
-  max u_1 (u_2+1) =?= ?u.835+1
+  max u_1 (u_2+1) =?= ?u.867+1
 while trying to unify
   Sort (max u_1 (u_2 + 1)) : Type (max u_1 (u_2 + 1))
 with
-  Type ?u.835 : Type (?u.835 + 1)
+  Type ?u.867 : Type (?u.867 + 1)
 -/
 #guard_msgs (error) in
 variable (E : Sort*) (F : Type*) [Category* (E → F)]
 
 /--
 error: stuck at solving universe constraint
-  imax (u_2+1) u_1 =?= ?u.848+1
+  imax (u_2+1) u_1 =?= ?u.892+1
 while trying to unify
   Sort (imax (u_2 + 1) u_1) : Type (imax (u_2 + 1) u_1)
 with
-  Type ?u.848 : Type (?u.848 + 1)
+  Type ?u.892 : Type (?u.892 + 1)
 -/
 #guard_msgs (error) in
 variable (E : Sort*) (F : Type*) [Category* (F → E)]
