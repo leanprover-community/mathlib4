@@ -3,6 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
+import Mathlib.Topology.Order.Bornology
 import Mathlib.Topology.Order.Compact
 import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.Cauchy
@@ -339,6 +340,16 @@ theorem isBounded_of_bddAbove_of_bddBelow {s : Set α} (h₁ : BddAbove s) (h₂
   let ⟨l, hl⟩ := h₂
   (isBounded_Icc l u).subset (fun _x hx => mem_Icc.mpr ⟨hl hx, hu hx⟩)
 
+open Metric in
+lemma _root_.IsOrderBornology.of_isCompactIcc (x : α)
+    (bddBelow_ball : ∀ r, BddBelow (closedBall x r))
+    (bddAbove_ball : ∀ r, BddAbove (closedBall x r)) : IsOrderBornology α where
+  isBounded_iff_bddBelow_bddAbove s := by
+    refine ⟨?_, fun hs ↦ Metric.isBounded_of_bddAbove_of_bddBelow hs.2 hs.1⟩
+    rw [Metric.isBounded_iff_subset_closedBall x]
+    rintro ⟨r, hr⟩
+    exact ⟨(bddBelow_ball _).mono hr, (bddAbove_ball _).mono hr⟩
+
 end CompactIccSpace
 
 section CompactIccSpace_abs
@@ -476,8 +487,7 @@ obviously true if `s ∪ t` is unbounded. -/
 theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
     diam (s ∪ t) ≤ diam s + dist x y + diam t := by
   simp only [diam, dist_edist]
-  refine (ENNReal.toReal_le_add' (EMetric.diam_union xs yt) ?_ ?_).trans
-    (add_le_add_right ENNReal.toReal_add_le _)
+  grw [ENNReal.toReal_le_add' (EMetric.diam_union xs yt), ENNReal.toReal_add_le]
   · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
     exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_left
   · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_right

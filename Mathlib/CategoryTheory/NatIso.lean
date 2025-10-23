@@ -46,13 +46,11 @@ namespace Iso
 
 /-- The application of a natural isomorphism to an object. We put this definition in a different
 namespace, so that we can use `α.app` -/
-@[simps]
+@[simps (attr := grind =)]
 def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     F.obj X ≅ G.obj X where
   hom := α.hom.app X
   inv := α.inv.app X
-
-attribute [grind =] app_hom app_inv
 
 @[reassoc (attr := simp), grind =]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
@@ -193,7 +191,7 @@ set_option mathlib.tactic.category.grind false in
 /-- Construct a natural isomorphism between functors by giving object level isomorphisms,
 and checking naturality only in the forward direction.
 -/
-@[simps]
+@[simps (attr := grind =)]
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y),
       F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f := by cat_disch) :
@@ -205,8 +203,6 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
         have h := congr_arg (fun f => (app X).inv ≫ f ≫ (app Y).inv) (naturality f).symm
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
-
-attribute [grind =] ofComponents_hom_app ofComponents_inv_app
 
 @[simp]
 theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X) :

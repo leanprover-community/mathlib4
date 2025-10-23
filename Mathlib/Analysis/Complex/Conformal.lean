@@ -9,8 +9,8 @@ import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+import Mathlib.LinearAlgebra.Complex.Module
 
 /-!
 # Conformal maps between complex vector spaces
@@ -75,7 +75,7 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
     nth_rw 1 [this]
     rw [LinearMap.coe_restrictScalars]
     simp only [map.coe_coe, map.map_smul, norm_smul, norm_inv, norm_norm]
-    field_simp only [one_mul]
+    field_simp
   · ext1
     simp [minor₁]
 

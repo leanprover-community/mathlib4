@@ -227,7 +227,7 @@ theorem convexBodyLT'_volume :
           (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))) *
             ((∏ x ∈ Finset.univ.erase w₀, ENNReal.ofReal (f x.val) ^ 2) *
               ↑pi ^ (nrComplexPlaces K - 1) * (4 * (f w₀) ^ 2)) := by
-      simp_rw [ofReal_mul (by norm_num : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
+      simp_rw [ofReal_mul (by simp : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
         Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ, ofReal_ofNat,
         ofReal_coe_nnreal, coe_ofNat]
     _ = convexBodyLT'Factor K * (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))

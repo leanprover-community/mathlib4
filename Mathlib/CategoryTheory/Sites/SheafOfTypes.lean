@@ -62,7 +62,7 @@ variable (J J₂ : GrothendieckTopology C)
 
 /-- A presheaf is separated for a topology if it is separated for every sieve in the topology. -/
 def IsSeparated (P : Cᵒᵖ ⥤ Type w) : Prop :=
-  ∀ {X} (S : Sieve X), S ∈ J X → IsSeparatedFor P (S : Presieve X)
+  ∀ ⦃X⦄ (S : Sieve X), S ∈ J X → IsSeparatedFor P (S : Presieve X)
 
 /-- A presheaf is a sheaf for a topology if it is a sheaf for every sieve in the topology.
 
@@ -79,8 +79,23 @@ theorem IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hp : IsSheaf J P) (R : Pres
 theorem isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
     J₁ ≤ J₂ → IsSheaf J₂ P → IsSheaf J₁ P := fun h t _ S hS => t S (h _ hS)
 
-theorem isSeparated_of_isSheaf (P : Cᵒᵖ ⥤ Type w) (h : IsSheaf J P) : IsSeparated J P :=
-  fun S hS => (h S hS).isSeparatedFor
+theorem isSeparated_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
+    J₁ ≤ J₂ → IsSeparated J₂ P → IsSeparated J₁ P :=
+  fun h hP _ S hS ↦ hP S <| h _ hS
+
+variable {J} in
+theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ Type w} (h : IsSheaf J P) : IsSeparated J P :=
+  fun _ S hS => (h S hS).isSeparatedFor
+
+@[deprecated (since := "2025-08-28")] alias isSeparated_of_isSheaf := IsSheaf.isSeparated
+
+variable {J} in
+/-- If `P` is separated and every compatible family of elements of `P` for a covering
+sieve has an amalgamation, `P` is a sheaf. -/
+theorem IsSeparated.isSheaf {P : Cᵒᵖ ⥤ Type w} (h : IsSeparated J P) (h' : ∀ X, ∀ S ∈ J X,
+      ∀ x : FamilyOfElements P S.arrows, x.Compatible → ∃ t, x.IsAmalgamation t) :
+    IsSheaf J P :=
+  fun _ S hS ↦ (h S hS).isSheafFor <| h' _ S hS
 
 section
 
@@ -110,6 +125,11 @@ end
 theorem isSheaf_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (h : IsSheaf J P) : IsSheaf J P' :=
   fun _ S hS => isSheafFor_iso i (h S hS)
 
+/-- The property of being separated is preserved under isomorphisms. -/
+theorem isSeparated_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSeparated J P) :
+    IsSeparated J P' :=
+  fun _ S hS ↦ isSeparatedFor_iso i (hP S hS)
+
 theorem isSheaf_of_yoneda {P : Cᵒᵖ ⥤ Type v}
     (h : ∀ {X} (S : Sieve X), S ∈ J X → YonedaSheafCondition P S) : IsSheaf J P := fun _ _ hS =>
   isSheafFor_iff_yonedaSheafCondition.2 (h _ hS)
@@ -118,7 +138,7 @@ theorem isSheaf_of_yoneda {P : Cᵒᵖ ⥤ Type v}
 presieves only.
 -/
 theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
-    IsSheaf (K.toGrothendieck C) P ↔ ∀ {X : C} (R : Presieve X), R ∈ K X → IsSheafFor P R := by
+    IsSheaf K.toGrothendieck P ↔ ∀ {X : C} (R : Presieve X), R ∈ K X → IsSheafFor P R := by
   constructor
   · intro PJ X R hR
     rw [isSheafFor_iff_generate]

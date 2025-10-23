@@ -151,7 +151,7 @@ theorem isLittleO_of_lt_radius (h : ↑r < p.radius) :
   refine ⟨_, rt, C, Or.inr zero_lt_one, fun n => ?_⟩
   calc
     |‖p n‖ * (r : ℝ) ^ n| = ‖p n‖ * (t : ℝ) ^ n * (r / t : ℝ) ^ n := by
-      field_simp [mul_right_comm, abs_mul]
+      simp [field, abs_mul, div_pow]
     _ ≤ C * (r / t : ℝ) ^ n := by gcongr; apply hC
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ = o(1)`. -/

@@ -184,7 +184,7 @@ private theorem Polynomial.flt_catalan_aux
         have hch2 : 2 ≤ ch := by omega
         rw [← add_le_add_iff_right 1, ← eq_d, eq_deg_a]
         grw [← hch2]
-        omega
+        cutsat
       · rw [eq_a, eq_b, eq_c, ← expand_C ch u, ← expand_C ch v, ← expand_C ch w] at heq
         simp_rw [← map_pow, ← map_mul, ← map_add] at heq
         rwa [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq
@@ -242,15 +242,10 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
   have hd : d ≠ 0 := gcd_ne_zero_of_left ha
   rw [eq_a, eq_b, mul_pow, mul_pow, ← mul_add] at heq
   have hdc : d ∣ c := by
+    -- TODO: This is basically reproving `IsIntegrallyClosed.pow_dvd_pow_iff`
     have hn : 0 < n := by omega
     have hdncn : d ^ n ∣ c ^ n := ⟨_, heq.symm⟩
-    rw [dvd_iff_normalizedFactors_le_normalizedFactors hd hc]
-    rw [dvd_iff_normalizedFactors_le_normalizedFactors
-          (pow_ne_zero n hd) (pow_ne_zero n hc),
-        normalizedFactors_pow, normalizedFactors_pow] at hdncn
-    simp_rw [Multiset.le_iff_count, Multiset.count_nsmul,
-      mul_le_mul_left hn] at hdncn ⊢
-    exact hdncn
+    simpa [dvd_iff_normalizedFactors_le_normalizedFactors, Multiset.le_iff_count, *] using hdncn
   obtain ⟨c', eq_c⟩ := hdc
   rw [eq_a, mul_ne_zero_iff] at ha
   rw [eq_b, mul_ne_zero_iff] at hb

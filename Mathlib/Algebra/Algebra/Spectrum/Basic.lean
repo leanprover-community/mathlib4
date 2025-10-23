@@ -33,7 +33,7 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 * `spectrum.scalar_eq`: in a nontrivial algebra over a field, the spectrum of a scalar is
   a singleton.
 
-## Notations
+## Notation
 
 * `σ a` : `spectrum R a` of `a : A`
 -/
@@ -100,7 +100,6 @@ theorem mem_iff {r : R} {a : A} : r ∈ σ a ↔ ¬IsUnit (↑ₐ r - a) :=
   Iff.rfl
 
 theorem notMem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
-  apply not_iff_not.mp
   simp [mem_iff]
 
 @[deprecated (since := "2025-05-23")] alias not_mem_iff := notMem_iff

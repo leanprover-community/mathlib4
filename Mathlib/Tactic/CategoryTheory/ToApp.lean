@@ -33,8 +33,11 @@ namespace CategoryTheory
 /-- Simplify an expression in `Cat` using basic properties of `NatTrans.app`. -/
 def catAppSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [
-    ``Cat.whiskerLeft_app, ``Cat.whiskerRight_app, ``Cat.id_app, ``Cat.comp_app,
-    ``Cat.eqToHom_app] e
+    ``Cat.comp_obj, ``Cat.whiskerLeft_app, ``Cat.whiskerRight_app, ``Cat.id_app, ``Cat.comp_app,
+    ``Cat.eqToHom_app, ``Cat.leftUnitor_hom_app, ``Cat.leftUnitor_inv_app,
+    ``Cat.rightUnitor_hom_app, ``Cat.rightUnitor_inv_app,
+    ``Cat.associator_hom_app, ``Cat.associator_inv_app, ``eqToHom_refl,
+    ``Category.comp_id, ``Category.id_comp] e
     (config := { decide := false })
 
 /--
@@ -64,7 +67,7 @@ def toCatExpr (e : Expr) : MetaM Expr := do
   -- Assign the right bicategory instance to `Cat.{v, u}`
   let some inst ← args.findM? fun x => do
       return (← inferType x).getAppFnArgs == (`CategoryTheory.Bicategory, #[B])
-    | throwError "Can not find the argument for the bicategory instance of the bicategory in which \
+    | throwError "Cannot find the argument for the bicategory instance of the bicategory in which \
       the equality is taking place."
   let _ ← isDefEq inst (.const ``CategoryTheory.Cat.bicategory [v, u])
   -- Construct the new expression
@@ -109,7 +112,7 @@ Note that if you want both the lemma and the new lemma to be `simp` lemmas, you 
 `@[to_app (attr := simp)]`. The variant `@[simp, to_app]` on a lemma `F` will tag `F` with
 `@[simp]`, but not `F_app` (this is sometimes useful).
 -/
-syntax (name := to_app) "to_app" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+syntax (name := to_app) "to_app" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `to_app

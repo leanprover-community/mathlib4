@@ -128,7 +128,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     intro x hx
     rw [mem_setOf_eq, and_assoc] at hx
     simp_rw [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
-    rcases (by omega : m < n ∨ n < m) with hc | hc
+    rcases (by cutsat : m < n ∨ n < m) with hc | hc
     · left
       exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
     · right; left
@@ -191,7 +191,9 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     ⟨div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN), hε'⟩
   -- Take a partition of the support of `f` into sets `E` by partitioning the range.
   obtain ⟨E, hE⟩ := range_cut_partition f a hε'.1 N <| by
-    field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀, hab.2]
+    dsimp [ε']
+    field_simp
+    simp [hab.2]
   -- Introduce notation for the partition of the range.
   let y : Fin N → ℝ := fun n ↦ a + ε' * (n + 1)
   -- The measure of each `E n` is finite.
@@ -305,7 +307,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     calc
       _ ≤ ∑ n, ∫ (x : X) in E n, f x ∂μ := Finset.sum_le_sum fun i a ↦ h i
       _ = ∫ x in (⋃ n, E n), f x ∂μ := by
-        refine Eq.symm <| integral_fintype_iUnion hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
+        refine Eq.symm <| integral_iUnion_fintype hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
         dsimp [μ, rieszMeasure]
         exact fun _ ↦
           Integrable.integrableOn <| Continuous.integrable_of_hasCompactSupport f.1.2 f.2
@@ -314,8 +316,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   · -- Rough bound of the sum
     have h : ∑ n : Fin N, y n ≤ N * b := by
       have (n : Fin N) := calc y n
-        _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; omega]
-        _ = b := by field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀]
+        _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; cutsat]
+        _ = b := by simp [field, ε']
       have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
       simp_all
     simp only [Finset.sum_add_distrib, Finset.sum_add_distrib,

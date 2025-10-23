@@ -3,9 +3,9 @@ Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
-import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.LinearAlgebra.Matrix.Kronecker
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
-import Mathlib.Data.Matrix.Kronecker
+import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Diagonal matrices
