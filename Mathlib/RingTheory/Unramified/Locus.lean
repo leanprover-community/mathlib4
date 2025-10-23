@@ -22,31 +22,50 @@ import Mathlib.RingTheory.Support
 
 universe u
 
-variable (R A : Type u) [CommRing R] [CommRing A] [Algebra R A]
-
 namespace Algebra
 
-variable {A} in
+section
+
+variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
+    [Algebra R B] [IsScalarTower R A B]
+
+variable (R) in
 /-- We say that an `R`-algebra `A` is unramified at a prime `q` of `A`
 if `A_q` is formally unramified over `R`.
 
 If `A` is of finite type over `R` and `q` is lying over `p`, then this is equivalent to
 `κ(q)/κ(p)` being separable and `pA_q = qA_q`.
 See `Algebra.isUnramifiedAt_iff_map_eq` in `RingTheory.Unramified.LocalRing` -/
-abbrev IsUnramifiedAt (R : Type*) {A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-    (q : Ideal A) [q.IsPrime] : Prop :=
+abbrev IsUnramifiedAt (q : Ideal A) [q.IsPrime] : Prop :=
   FormallyUnramified R (Localization.AtPrime q)
 
+variable (R A) in
 /-- `Algebra.unramifiedLocus R A` is the set of primes `p` of `A` that are unramified. -/
 def unramifiedLocus : Set (PrimeSpectrum A) :=
   { p | IsUnramifiedAt R p.asIdeal }
 
-variable {R A}
+lemma IsUnramifiedAt.comp
+    (p : Ideal A) (P : Ideal B) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
+    [IsUnramifiedAt R p] [IsUnramifiedAt A P] : IsUnramifiedAt R P := by
+  have : FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime P) :=
+    .of_comp A _ _
+  exact FormallyUnramified.comp R (Localization.AtPrime p) _
+
+variable (R) in
+lemma IsUnramifiedAt.of_restrictScalars (P : Ideal B) [P.IsPrime]
+    [IsUnramifiedAt R P] : IsUnramifiedAt A P :=
+  FormallyUnramified.of_comp R _ _
+
+end
+
+section
+
+variable {R A : Type u} [CommRing R] [CommRing A] [Algebra R A]
 
 lemma unramifiedLocus_eq_compl_support :
-    unramifiedLocus R A = (Module.support A (Ω[A⁄R]))ᶜ := by
+    unramifiedLocus R A = (Module.support A Ω[A⁄R])ᶜ := by
   ext p
-  simp only [Set.mem_compl_iff, Module.not_mem_support_iff]
+  simp only [Set.mem_compl_iff, Module.notMem_support_iff]
   have := IsLocalizedModule.iso p.asIdeal.primeCompl
     (KaehlerDifferential.map R R A (Localization.AtPrime p.asIdeal))
   exact (Algebra.formallyUnramified_iff _ _).trans this.subsingleton_congr.symm
@@ -68,5 +87,7 @@ lemma unramifiedLocus_eq_univ_iff :
 lemma isOpen_unramifiedLocus [EssFiniteType R A] : IsOpen (unramifiedLocus R A) := by
   rw [unramifiedLocus_eq_compl_support, Module.support_eq_zeroLocus]
   exact (PrimeSpectrum.isClosed_zeroLocus _).isOpen_compl
+
+end
 
 end Algebra

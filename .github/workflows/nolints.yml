@@ -9,61 +9,33 @@ jobs:
   build:
     name: Build, lint and update nolints and style exceptions
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     steps:
-      - name: cleanup
-        run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
-
-      # The Hoskinson runners may not have jq installed, so do that now.
-      - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@f0e10f46ff84f4d32178b4b76e1ef180b16f82c3 # v3.1.1
-
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          ## fetch the whole repository, as we want to push to it later
-          fetch-depth: 0
-
-      - name: prune ProofWidgets .lake
-        run: |
-          # The ProofWidgets release contains not just the `.js` (which we need in order to build)
-          # but also `.oleans`, which may have been built with the wrong toolchain.
-          # This removes them.
-          # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
-          rm -rf .lake/packages/proofwidgets/.lake/build/lib
-          rm -rf .lake/packages/proofwidgets/.lake/build/ir
 
       - name: Configure Lean
-        uses: leanprover/lean-action@e18f2df7f0d4f30d11a4b963bff9b1140999480c # 2025-04-22
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
         with:
           auto-config: false
           use-github-cache: false
           use-mathlib-cache: true
-
-      - name: build mathlib
-        id: build
-        uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
-        with:
-          linters: lean
-          run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: update nolints.json
         shell: bash
         run: |
           env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
 
-      - name: configure git setup
-        run: |
-          git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib4.git"
-          git config user.email "leanprover.community@gmail.com"
-          git config user.name "leanprover-community-bot"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
+          author: "leanprover-community-bot <leanprover.community@gmail.com>"
+          commit-message: "chore(scripts): update nolints.json"
+          branch: "nolints"
+          base: master
+          title: "chore(scripts): update nolints.json"
+          body: |
+            I am happy to remove some nolints for you!
 
-          # By default, github actions overrides the credentials used to access any
-          # github url so that it uses the github-actions[bot] user.  We want to access
-          # github using a different username.
-          git config --unset http.https://github.com/.extraheader
-
-      - name: file a new PR to update nolints.json
-        run: ./scripts/update_nolints_CI.sh
-        env:
-          DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
+            [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          labels: "auto-merge-after-CI"

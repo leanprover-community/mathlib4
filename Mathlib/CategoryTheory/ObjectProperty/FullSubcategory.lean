@@ -98,8 +98,7 @@ instance full_ιOfLE (h : P ≤ P') : (ιOfLE h).Full := (fullyFaithfulιOfLE h)
 instance faithful_ιOfLE (h : P ≤ P') : (ιOfLE h).Faithful := (fullyFaithfulιOfLE h).faithful
 
 @[deprecated "use ιOfLECompιIso" (since := "2025-03-04")]
-theorem FullSubcategory.map_inclusion (h : P ≤ P') :
-  ιOfLE h ⋙ P'.ι = P.ι := rfl
+theorem FullSubcategory.map_inclusion (h : P ≤ P') : ιOfLE h ⋙ P'.ι = P.ι := rfl
 
 /-- If `h : P ≤ P'` is an inequality of properties of objects,
 this is the obvious isomorphism `ιOfLE h ⋙ P'.ι ≅ P.ι`. -/
@@ -120,7 +119,7 @@ def lift : C ⥤ FullSubcategory P where
   map f := F.map f
 
 @[deprecated "use liftCompιIso" (since := "2025-03-04")]
-theorem FullSubcategory.lift_comp_inclusion_eq  :
+theorem FullSubcategory.lift_comp_inclusion_eq :
     P.lift F hF ⋙ P.ι = F :=
   rfl
 
@@ -142,12 +141,6 @@ instance [F.Faithful] : (P.lift F hF).Faithful :=
 instance [F.Full] : (P.lift F hF).Full :=
   Functor.Full.of_comp_faithful_iso (P.liftCompιIso F hF)
 
-instance [F.Faithful] : (P.lift F hF).Faithful :=
-  Functor.Faithful.of_comp_iso (P.liftCompιIso F hF)
-
-instance [F.Full] : (P.lift F hF).Full :=
-  Functor.Full.of_comp_faithful_iso (P.liftCompιIso F hF)
-
 variable {Q}
 
 /-- When `h : P ≤ Q`, this is the canonical isomorphism
@@ -158,7 +151,7 @@ def liftCompιOfLEIso (h : P ≤ Q) :
 @[deprecated "Use liftCompιOfLEIso" (since := "2025-03-04")]
 theorem FullSubcategory.lift_comp_map (h : P ≤ Q) :
     P.lift F hF ⋙ ιOfLE h =
-      Q.lift F (fun X ↦  h _ (hF X)) :=
+      Q.lift F (fun X ↦ h _ (hF X)) :=
   rfl
 
 end lift

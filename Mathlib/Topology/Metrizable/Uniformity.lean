@@ -124,7 +124,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   rcases eq_or_ne (d x y) 0 with hd₀ | hd₀
   · simp only [hd₀, zero_le]
   rsuffices ⟨z, z', hxz, hzz', hz'y⟩ : ∃ z z' : X, d x z ≤ L.sum ∧ d z z' ≤ L.sum ∧ d z' y ≤ L.sum
-  · exact (hd x z z' y).trans (mul_le_mul_left' (max_le hxz (max_le hzz' hz'y)) _)
+  · grw [hd x z z' y, max_le hxz (max_le hzz' hz'y)]
   set s : Set ℕ := { m : ℕ | 2 * (take m L).sum ≤ L.sum }
   have hs₀ : 0 ∈ s := by simp [s]
   have hsne : s.Nonempty := ⟨0, hs₀⟩
@@ -135,10 +135,10 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       intro hLm
       rw [mem_setOf_eq, take_of_length_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
           sum_eq_zero_iff, ← forall_iff_forall_mem, forall_zipWith,
-          ← chain_append_singleton_iff_forall₂]
+          ← isChain_cons_append_singleton_iff_forall₂]
           at hm <;>
         [skip; simp]
-      exact hd₀ (hm.rel (mem_append.2 <| Or.inr <| mem_singleton_self _))
+      exact hd₀ (hm.rel_cons (mem_append.2 <| Or.inr <| mem_singleton_self _))
     have hs_bdd : BddAbove s := ⟨length l, hs_ub⟩
     exact ⟨sSup s, csSup_le hsne hs_ub, ⟨Nat.sSup_mem hsne hs_bdd, fun k => le_csSup hs_bdd⟩⟩
   have hM_lt : M < length L := by rwa [hL_len, Nat.lt_succ_iff]
@@ -147,7 +147,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   refine ⟨(x::l)[M], (l ++ [y])[M], ?_, ?_, ?_⟩
   · cases M with
     | zero =>
-      simp [dist_self, List.get]
+      simp [dist_self]
     | succ M =>
       rw [Nat.succ_le_iff] at hMl
       have hMl' : length (take M l) = M := length_take.trans (min_eq_left hMl.le)
@@ -157,14 +157,14 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
-    · simp only [getElem_append_right le_rfl, sub_self, getElem_singleton, dist_self, zero_le]
+    · simp only [getElem_append_right le_rfl, getElem_singleton, dist_self, zero_le]
     rw [getElem_append_left hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop
     have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
     refine (ihn _ hlen_lt _ y _ hlen).trans ?_
     rw [cons_getElem_drop_succ]
     have hMs' : L.sum ≤ 2 * (L.take (M + 1)).sum :=
-      not_lt.1 fun h => (hMs.2 h.le).not_lt M.lt_succ_self
+      not_lt.1 fun h => (hMs.2 h.le).not_gt M.lt_succ_self
     rw [← sum_take_add_sum_drop L (M + 1), two_mul, add_le_add_iff_left, ← add_le_add_iff_right,
       sum_take_add_sum_drop, ← two_mul] at hMs'
     convert hMs'
@@ -202,8 +202,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     refine Iff.trans ?_ hB.inseparable_iff_uniformity.symm
     simp only [d, true_imp_iff]
     split_ifs with h
-    · rw [← not_forall] at h
-      simp [h, pow_eq_zero_iff']
+    · simp [h, pow_eq_zero_iff']
     · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff] using h
   have hd_symm : ∀ x y, d x y = d y x := by
     intro x y
@@ -215,10 +214,10 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     intro x y n
     dsimp only [d]
     split_ifs with h
-    · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_le, Nat.find_le_iff]
+    · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_ge, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
     · push_neg at h
-      simp only [h, not_true, (pow_pos hr.1 _).not_le]
+      simp only [h, not_true, (pow_pos hr.1 _).not_ge]
   have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y := by
     refine PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => ?_
     by_cases H : ∃ n, (x₁, x₄) ∉ U n
@@ -281,9 +280,19 @@ lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (�
   obtain ⟨t, _, htc, hts⟩ := EMetric.subset_countable_closure_of_almost_dense_set s h'
   exact ⟨t, htc, hts⟩
 
-open TopologicalSpace in
+variable {α : Type*}
+open TopologicalSpace
+
 instance (priority := 100) DiscreteTopology.metrizableSpace
-    {α} [TopologicalSpace α] [DiscreteTopology α] :
+    [TopologicalSpace α] [DiscreteTopology α] :
     MetrizableSpace α := by
   obtain rfl := DiscreteTopology.eq_bot (α := α)
   exact @UniformSpace.metrizableSpace α ⊥ (isCountablyGenerated_principal _) _
+
+instance (priority := 100) PseudoEMetricSpace.pseudoMetrizableSpace
+    [PseudoEMetricSpace α] : PseudoMetrizableSpace α :=
+  inferInstance
+
+instance (priority := 100) EMetricSpace.metrizableSpace
+    [EMetricSpace α] : MetrizableSpace α :=
+  inferInstance

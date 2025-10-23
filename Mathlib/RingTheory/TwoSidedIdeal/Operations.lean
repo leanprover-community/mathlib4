@@ -196,18 +196,18 @@ lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
     simp only [I, SetLike.mem_coe, mem_mk'] at hz
     induction hz using closure_induction with
     | mem x hx => exact hJ hx
-    | one => exact zero_mem _
-    | mul x y _ _ hx hy => exact J.add_mem hx hy
-    | inv x _ hx => exact J.neg_mem hx
+    | zero => exact zero_mem _
+    | add x y _ _ hx hy => exact J.add_mem hx hy
+    | neg x _ hx => exact J.neg_mem hx
 
 open Pointwise Set
 
-lemma set_mul_subset {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R):
+lemma set_mul_subset {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R) :
     t * s ⊆ I := by
   rintro - ⟨r, -, x, hx, rfl⟩
   exact mul_mem_left _ _ _ (h hx)
 
-lemma subset_mul_set {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R):
+lemma subset_mul_set {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R) :
     s * t ⊆ I := by
   rintro - ⟨x, hx, r, -, rfl⟩
   exact mul_mem_right _ _ _ (h hx)
@@ -337,6 +337,13 @@ lemma gc : GaloisConnection fromIdeal (asIdeal (R := R)) :=
 @[simp]
 lemma coe_asIdeal {I : TwoSidedIdeal R} : (asIdeal I : Set R) = I := rfl
 
+@[simp] lemma bot_asIdeal : (⊥ : TwoSidedIdeal R).asIdeal = ⊥ := rfl
+
+@[simp] lemma top_asIdeal : (⊤ : TwoSidedIdeal R).asIdeal = ⊤ := rfl
+
+instance (I : TwoSidedIdeal R) : I.asIdeal.IsTwoSided :=
+  ⟨fun _ ↦ by simpa using I.mul_mem_right _ _⟩
+
 /-- Every two-sided ideal is also a right ideal. -/
 def asIdealOpposite : TwoSidedIdeal R →o Ideal Rᵐᵒᵖ where
   toFun I := asIdeal ⟨I.ringCon.op⟩
@@ -376,29 +383,37 @@ namespace Ideal
 variable {R : Type*} [Ring R]
 
 /-- Bundle an `Ideal` that is already two-sided as a `TwoSidedIdeal`. -/
-def toTwoSided (I : Ideal R) (mul_mem_right : ∀ {x y}, x ∈ I → x * y ∈ I) : TwoSidedIdeal R :=
-  TwoSidedIdeal.mk' I I.zero_mem I.add_mem I.neg_mem (I.smul_mem _) mul_mem_right
+def toTwoSided (I : Ideal R) [I.IsTwoSided] : TwoSidedIdeal R :=
+  TwoSidedIdeal.mk' I I.zero_mem I.add_mem I.neg_mem (I.smul_mem _) (I.mul_mem_right _)
 
 @[simp]
-lemma mem_toTwoSided {I : Ideal R} {h} {x : R} :
-    x ∈ I.toTwoSided h ↔ x ∈ I := by
+lemma mem_toTwoSided {I : Ideal R} [I.IsTwoSided] {x : R} :
+    x ∈ I.toTwoSided ↔ x ∈ I := by
   simp [toTwoSided]
 
 @[simp]
-lemma coe_toTwoSided (I : Ideal R) (h) : (I.toTwoSided h : Set R) = I := by
+lemma coe_toTwoSided (I : Ideal R) [I.IsTwoSided] : (I.toTwoSided : Set R) = I := by
   simp [toTwoSided]
 
 @[simp]
-lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) (h) : (TwoSidedIdeal.asIdeal I).toTwoSided h = I :=
+lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) : I.asIdeal.toTwoSided = I :=
   by ext; simp
 
 @[simp]
-lemma asIdeal_toTwoSided (I : Ideal R) (h) : TwoSidedIdeal.asIdeal (I.toTwoSided h) = I := by
+lemma asIdeal_toTwoSided (I : Ideal R) [I.IsTwoSided] : I.toTwoSided.asIdeal = I := by
   ext
   simp
 
-instance : CanLift (Ideal R) (TwoSidedIdeal R) TwoSidedIdeal.asIdeal
-    (fun I => ∀ {x y}, x ∈ I → x * y ∈ I) where
-  prf I mul_mem_right := ⟨I.toTwoSided mul_mem_right, asIdeal_toTwoSided ..⟩
+instance : CanLift (Ideal R) (TwoSidedIdeal R) TwoSidedIdeal.asIdeal (·.IsTwoSided) where
+  prf I _ := ⟨I.toTwoSided, asIdeal_toTwoSided ..⟩
 
 end Ideal
+
+/-- A two-sided ideal is simply a left ideal that is two-sided. -/
+@[simps] def TwoSidedIdeal.orderIsoIsTwoSided {R : Type*} [Ring R] :
+    TwoSidedIdeal R ≃o {I : Ideal R // I.IsTwoSided} where
+  toFun I := ⟨I.asIdeal, inferInstance⟩
+  invFun I := have := I.2; I.1.toTwoSided
+  left_inv _ := by simp
+  right_inv I := by simp
+  map_rel_iff' {I I'} := by simp [SetLike.le_def]

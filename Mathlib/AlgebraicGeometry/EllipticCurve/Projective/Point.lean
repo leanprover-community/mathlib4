@@ -3,14 +3,14 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Group
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
 
 /-!
 # Nonsingular points and the group law in projective coordinates
 
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular projective points of `W` can be
-endowed with an group law, which is uniquely determined by the formulae in
+endowed with a group law, which is uniquely determined by the formulae in
 `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean` and follows from an equivalence
 with the nonsingular points `W⟮F⟯` in affine coordinates.
 
@@ -18,22 +18,22 @@ This file defines the group law on nonsingular projective points.
 
 ## Main definitions
 
- * `WeierstrassCurve.Projective.neg`: the negation of a point representative.
- * `WeierstrassCurve.Projective.negMap`: the negation of a point class.
- * `WeierstrassCurve.Projective.add`: the addition of two point representatives.
- * `WeierstrassCurve.Projective.addMap`: the addition of two point classes.
- * `WeierstrassCurve.Projective.Point`: a nonsingular projective point.
- * `WeierstrassCurve.Projective.Point.neg`: the negation of a nonsingular projective point.
- * `WeierstrassCurve.Projective.Point.add`: the addition of two nonsingular projective points.
- * `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the type of
-    nonsingular projective points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
+* `WeierstrassCurve.Projective.neg`: the negation of a point representative.
+* `WeierstrassCurve.Projective.negMap`: the negation of a point class.
+* `WeierstrassCurve.Projective.add`: the addition of two point representatives.
+* `WeierstrassCurve.Projective.addMap`: the addition of two point classes.
+* `WeierstrassCurve.Projective.Point`: a nonsingular projective point.
+* `WeierstrassCurve.Projective.Point.neg`: the negation of a nonsingular projective point.
+* `WeierstrassCurve.Projective.Point.add`: the addition of two nonsingular projective points.
+* `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the type of
+  nonsingular projective points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
 
 ## Main statements
 
- * `WeierstrassCurve.Projective.nonsingular_neg`: negation preserves the nonsingular condition.
- * `WeierstrassCurve.Projective.nonsingular_add`: addition preserves the nonsingular condition.
- * `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular projective points
-    forms an abelian group under addition.
+* `WeierstrassCurve.Projective.nonsingular_neg`: negation preserves the nonsingular condition.
+* `WeierstrassCurve.Projective.nonsingular_add`: addition preserves the nonsingular condition.
+* `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular projective points
+  forms an abelian group under addition.
 
 ## Implementation notes
 
@@ -42,8 +42,8 @@ the nonsingularity condition already implies `(x, y, z) ≠ (0, 0, 0)`, so a non
 point on `W` can be given by `[x : y : z]` and the nonsingular condition on any representative.
 
 A nonsingular projective point representative can be converted to a nonsingular point in affine
-coordinates using `WeiestrassCurve.Projective.Point.toAffine`, which lifts to a map on nonsingular
-projective points using `WeiestrassCurve.Projective.Point.toAffineLift`. Conversely, a nonsingular
+coordinates using `WeierstrassCurve.Projective.Point.toAffine`, which lifts to a map on nonsingular
+projective points using `WeierstrassCurve.Projective.Point.toAffineLift`. Conversely, a nonsingular
 point in affine coordinates can be converted to a nonsingular projective point using
 `WeierstrassCurve.Projective.Point.fromAffine` or `WeierstrassCurve.Affine.Point.toProjective`.
 
@@ -232,8 +232,8 @@ lemma add_of_Y_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (h
     W.add P Q = addU P Q • ![0, 1, 0] := by
   rw [add_of_not_equiv <| not_equiv_of_Y_ne hy, addXYZ_of_X_eq hP hQ hPz hQz hx]
 
-lemma add_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
+lemma add_of_Y_ne' [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
     W.add P Q = W.dblZ P •
       ![W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
@@ -242,16 +242,16 @@ lemma add_of_Y_ne' {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (
   rw [add_of_equiv <| equiv_of_X_eq_of_Y_eq hPz hQz hx <| Y_eq_of_Y_ne' hP hQ hPz hQz hx hy,
     dblXYZ_of_Z_ne_zero hP hQ hPz hQz hx hy]
 
-lemma add_of_X_ne {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.add P Q = W.addZ P Q •
+lemma add_of_X_ne [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.add P Q = W.addZ P Q •
       ![W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1] := by
   rw [add_of_not_equiv <| not_equiv_of_X_ne hx, addXYZ_of_Z_ne_zero hP hQ hPz hQz hx]
 
-private lemma nonsingular_add_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P)
-    (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+private lemma nonsingular_add_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F}
+    (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) : W.Nonsingular
       ![W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
@@ -277,7 +277,8 @@ lemma nonsingular_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsing
               isUnit_dblU_of_Y_eq hP hPz hQz hxy.left hy hxy.right, nonsingular_zero]
         · simp only [add_of_Y_ne hP.left hQ.left hPz hQz hxy.left hy,
             nonsingular_smul _ <| isUnit_addU_of_Y_ne hPz hQz hy, nonsingular_zero]
-      · have := nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy
+      · classical
+        have := nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy
         by_cases hx : P x * Q z = Q x * P z
         · simpa only [add_of_Y_ne' hP.left hQ.left hPz hQz hx <| not_and.mp hxy hx,
             nonsingular_smul _ <| isUnit_dblZ_of_Y_ne' hP.left hQ.left hPz hQz hx <|
@@ -327,8 +328,8 @@ lemma addMap_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Equation
   · rw [addMap_eq, add_of_Y_ne hP.left hQ hPz hQz hx hy,
       smul_eq _ <| isUnit_addU_of_Y_ne hPz hQz hy]
 
-lemma addMap_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) :
+lemma addMap_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) :
     W.addMap ⟦P⟧ ⟦Q⟧ =
       ⟦![W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
@@ -445,7 +446,7 @@ lemma toAffine_of_Z_ne_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z 
 
 lemma toAffine_some {X Y : F} (h : W.Nonsingular ![X, Y, 1]) :
     toAffine W ![X, Y, 1] = .some ((nonsingular_some ..).mp h) := by
-  simp only [toAffine_of_Z_ne_zero h one_ne_zero, fin3_def_ext, one_pow, div_one]
+  simp only [toAffine_of_Z_ne_zero h one_ne_zero, fin3_def_ext, div_one]
 
 lemma toAffine_smul (P : Fin 3 → F) {u : F} (hu : IsUnit u) :
     toAffine W (u • P) = toAffine W P := by
@@ -470,8 +471,8 @@ lemma toAffine_neg {P : Fin 3 → F} (hP : W.Nonsingular P) :
         (nonsingular_smul _ <| Ne.isUnit hPz).mp <| neg_of_Z_ne_zero hPz ▸ nonsingular_neg hP,
       toAffine_of_Z_ne_zero hP hPz, Affine.Point.neg_some]
 
-private lemma toAffine_add_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P)
-    (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
+private lemma toAffine_add_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F}
+    (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hxy : ¬(P x * Q z = Q x * P z ∧ P y * Q z = W.negY Q * P z)) : toAffine W
       ![W.toAffine.addX (P x / P z) (Q x / Q z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)),
@@ -482,7 +483,7 @@ private lemma toAffine_add_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Nonsingular 
     toAffine_of_Z_ne_zero hQ hQz,
     Affine.Point.add_some <| by rwa [← X_eq_iff hPz hQz, ← Y_eq_iff' hPz hQz]]
 
-lemma toAffine_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
+lemma toAffine_add [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
     toAffine W (W.add P Q) = toAffine W P + toAffine W Q := by
   by_cases hPz : P z = 0
   · rw [toAffine_of_Z_eq_zero hPz, zero_add]
@@ -541,7 +542,7 @@ lemma toAffineLift_neg (P : W.Point) : (-P).toAffineLift = -P.toAffineLift := by
   rcases P with @⟨⟨_⟩, hP⟩
   exact toAffine_neg hP
 
-lemma toAffineLift_add (P Q : W.Point) :
+lemma toAffineLift_add [DecidableEq F] (P Q : W.Point) :
     (P + Q).toAffineLift = P.toAffineLift + Q.toAffineLift := by
   rcases P, Q with ⟨@⟨⟨_⟩, hP⟩, @⟨⟨_⟩, hQ⟩⟩
   exact toAffine_add hP hQ
@@ -550,7 +551,7 @@ variable (W) in
 /-- The addition-preserving equivalence between the type of nonsingular projective points on a
 Weierstrass curve `W` and the type of nonsingular points `W⟮F⟯` in affine coordinates. -/
 @[simps]
-noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
+noncomputable def toAffineAddEquiv [DecidableEq F] : W.Point ≃+ W.toAffine.Point where
   toFun := toAffineLift
   invFun := fromAffine
   left_inv := by
@@ -569,14 +570,26 @@ noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
 noncomputable instance : AddCommGroup W.Point where
   nsmul := nsmulRec
   zsmul := zsmulRec
-  zero_add _ := (toAffineAddEquiv W).injective <| by
+  zero_add _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, zero_add]
-  add_zero _ := (toAffineAddEquiv W).injective <| by
+  add_zero _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, add_zero]
-  neg_add_cancel P := (toAffineAddEquiv W).injective <| by
+  neg_add_cancel P := by
+    classical
+    apply (toAffineAddEquiv W).injective
     simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, neg_add_cancel, toAffineLift_zero]
-  add_comm _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_comm]
-  add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
+  add_comm _ _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, add_comm]
+  add_assoc _ _ _ := by
+    classical
+    apply (toAffineAddEquiv W).injective
+    simp only [map_add, add_assoc]
 
 end Point
 

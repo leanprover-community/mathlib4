@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Tactic.Tauto
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
@@ -138,6 +139,11 @@ class IsStrictOrderedRing (R : Type*) [Semiring R] [PartialOrder R] extends
 attribute [instance 100] IsStrictOrderedRing.toZeroLEOneClass
 attribute [instance 100] IsStrictOrderedRing.toNontrivial
 
+instance [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] : Lean.Grind.OrderedRing R where
+  zero_lt_one := zero_lt_one
+  mul_lt_mul_of_pos_left := IsStrictOrderedRing.mul_lt_mul_of_pos_left _ _ _
+  mul_lt_mul_of_pos_right := IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _
+
 lemma IsOrderedRing.of_mul_nonneg [Ring R] [PartialOrder R] [IsOrderedAddMonoid R]
     [ZeroLEOneClass R] (mul_nonneg : ∀ a b : R, 0 ≤ a → 0 ≤ b → 0 ≤ a * b) :
     IsOrderedRing R where
@@ -167,8 +173,9 @@ instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono R where
 
 end IsOrderedRing
 
+-- see Note [lower instance priority]
 /-- Turn an ordered domain into a strict ordered ring. -/
-lemma IsOrderedRing.toIsStrictOrderedRing (R : Type*)
+instance (priority := 50) IsOrderedRing.toIsStrictOrderedRing (R : Type*)
     [Ring R] [PartialOrder R] [IsOrderedRing R] [NoZeroDivisors R] [Nontrivial R] :
     IsStrictOrderedRing R :=
   .of_mul_pos fun _ _ ap bp ↦ (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
@@ -190,11 +197,16 @@ instance (priority := 100) IsStrictOrderedRing.toIsOrderedRing : IsOrderedRing R
   mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
   mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_right
 
--- see Note [lower instance priority]
-instance (priority := 100) IsStrictOrderedRing.toCharZero :
-    CharZero R where
+/-- This is not an instance, as it would loop with `NeZero.charZero_one`. -/
+theorem AddMonoidWithOne.toCharZero {R}
+    [AddMonoidWithOne R] [PartialOrder R] [ZeroLEOneClass R]
+    [NeZero (1 : R)] [AddLeftStrictMono R] : CharZero R where
   cast_injective :=
     (strictMono_nat_of_lt_succ fun n ↦ by rw [Nat.cast_succ]; apply lt_add_one).injective
+
+-- see Note [lower instance priority]
+instance (priority := 100) IsStrictOrderedRing.toCharZero :
+    CharZero R := AddMonoidWithOne.toCharZero
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toNoMaxOrder : NoMaxOrder R :=
@@ -210,18 +222,18 @@ variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R]
 instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors R where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab := by
     contrapose! hab
-    obtain ha | ha := hab.1.lt_or_lt <;> obtain hb | hb := hab.2.lt_or_lt
+    obtain ha | ha := hab.1.lt_or_gt <;> obtain hb | hb := hab.2.lt_or_gt
     exacts [(mul_pos_of_neg_of_neg ha hb).ne', (mul_neg_of_neg_of_pos ha hb).ne,
       (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne']
 
 -- Note that we can't use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
 -- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.isDomain : IsDomain R where
-  mul_left_cancel_of_ne_zero {a b c} ha h := by
-    obtain ha | ha := ha.lt_or_lt
+  mul_left_cancel_of_ne_zero {a} ha _ _ h := by
+    obtain ha | ha := ha.lt_or_gt
     exacts [(strictAnti_mul_left ha).injective h, (strictMono_mul_left_of_pos ha).injective h]
-  mul_right_cancel_of_ne_zero {b a c} ha h := by
-    obtain ha | ha := ha.lt_or_lt
+  mul_right_cancel_of_ne_zero {a} ha _ _ h := by
+    obtain ha | ha := ha.lt_or_gt
     exacts [(strictAnti_mul_right ha).injective h, (strictMono_mul_right_of_pos ha).injective h]
 
 end LinearOrder

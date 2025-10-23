@@ -18,6 +18,8 @@ the product side.
 
 namespace CategoryTheory
 
+open Functor
+
 universe v u
 
 variable (A : Type*) [Category A] (A' : Type*) [Category A']
@@ -25,8 +27,7 @@ variable (A : Type*) [Category A] (A' : Type*) [Category A']
 
 namespace Sum
 
-/-- The equivalence between functors from a sum and the product of the
- functor categories. -/
+/-- The equivalence between functors from a sum and the product of the functor categories. -/
 @[simps]
 def functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   functor :=
@@ -62,15 +63,15 @@ lemma functorEquiv_unitIso_inv_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A') :
   rfl
 
 /-- Composing the forward direction of `functorEquiv` with the first projection is the same as
- precomposition with `inl_ A A'`. -/
+precomposition with `inl_ A A'`. -/
 @[simps!]
 def functorEquivFunctorCompFstIso :
     (functorEquiv A A' B).functor ⋙ Prod.fst (A ⥤ B) (A' ⥤ B) ≅
     (whiskeringLeft A (A ⊕ A') B).obj (inl_ A A') :=
- NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- Composing the forward direction of `functorEquiv` with the second projection is the same as
- precomposition with `inr_ A A'`. -/
+precomposition with `inr_ A A'`. -/
 @[simps!]
 def functorEquivFunctorCompSndIso :
     (functorEquiv A A' B).functor ⋙ Prod.snd (A ⥤ B) (A' ⥤ B) ≅
@@ -78,7 +79,7 @@ def functorEquivFunctorCompSndIso :
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- Composing the backward direction of `functorEquiv` with precomposition with `inl_ A A'`.
- is naturally isomorphic to the first projection. -/
+is naturally isomorphic to the first projection. -/
 @[simps!]
 def functorEquivInverseCompWhiskeringLeftInlIso :
     (functorEquiv A A' B).inverse ⋙ (whiskeringLeft A (A ⊕ A') B).obj (inl_ A A') ≅
@@ -86,7 +87,7 @@ def functorEquivInverseCompWhiskeringLeftInlIso :
   NatIso.ofComponents (fun _ ↦ Functor.inlCompSum' _ _)
 
 /-- Composing the backward direction of `functorEquiv` with the second projection is the same as
- precomposition with `inr_ A A'`. -/
+precomposition with `inr_ A A'`. -/
 @[simps!]
 def functorEquivInverseCompWhiskeringLeftInrIso :
     (functorEquiv A A' B).inverse ⋙ (whiskeringLeft A' (A ⊕ A') B).obj (inr_ A A') ≅
@@ -106,7 +107,7 @@ def natTransOfWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
 @[simp]
 lemma natTransOfWhiskerLeftInlInr_id {F : A ⊕ A' ⥤ B} :
     natTransOfWhiskerLeftInlInr (𝟙 (Sum.inl_ A A' ⋙ F)) (𝟙 (Sum.inr_ A A' ⋙ F)) = 𝟙 F := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
@@ -114,7 +115,7 @@ lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
     (ν₁ : Sum.inl_ A A' ⋙ G ⟶ Sum.inl_ A A' ⋙ H) (ν₂ : Sum.inr_ A A' ⋙ G ⟶ Sum.inr_ A A' ⋙ H) :
     natTransOfWhiskerLeftInlInr (η₁ ≫ ν₁) (η₂ ≫ ν₂) = natTransOfWhiskerLeftInlInr η₁ η₂ ≫
       natTransOfWhiskerLeftInlInr ν₁ ν₂ := by
-  aesop_cat
+  cat_disch
 
 /-- A consequence of `functorEquiv`: we can construct a natural isomorphism of functors
 `A ⊕ A' ⥤ B` from the data of natural isomorphisms of their whiskering with `inl_` and `inr_`. -/
@@ -131,7 +132,7 @@ lemma natIsoOfWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
     (Sum.functorEquiv A A' B).unitIso.app _ ≪≫
       (Sum.functorEquiv A A' B).inverse.mapIso (Iso.prod η₁ η₂) ≪≫
       (Sum.functorEquiv A A' B).unitIso.symm.app _ := by
-  aesop_cat
+  cat_disch
 
 namespace Swap
 
@@ -157,8 +158,8 @@ def associativityFunctorEquivNaturalityFunctorIso :
     ((sum.associativity A A' T).congrLeft.trans <| (Sum.functorEquiv A (A' ⊕ T) B).trans <|
       Equivalence.refl.prod <| Sum.functorEquiv _ _ B).functor ≅
         (Sum.functorEquiv (A ⊕ A') T B).trans
-          ((Sum.functorEquiv A A' B).prod Equivalence.refl)|>.trans
-            (prod.associativity _ _ _)|>.functor :=
+          ((Sum.functorEquiv A A' B).prod Equivalence.refl) |>.trans
+            (prod.associativity _ _ _) |>.functor :=
   NatIso.ofComponents (fun E ↦ Iso.prod
     ((Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight (sum.inlCompInverseAssociator A A' T) E ≪≫ Functor.associator _ _ _)

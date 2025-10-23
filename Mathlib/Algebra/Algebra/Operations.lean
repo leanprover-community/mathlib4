@@ -30,7 +30,7 @@ Let `R` be a commutative ring (or semiring) and let `A` be an `R`-algebra.
 
 It is proved that `Submodule R A` is a semiring, and also an algebra over `Set A`.
 
-Additionally, in the `Pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
+Additionally, in the `Pointwise` scope we promote `Submodule.pointwiseDistribMulAction` to a
 `MulSemiringAction` as `Submodule.pointwiseMulSemiringAction`.
 
 When `R` is not necessarily commutative, and `A` is merely a `R`-module with a ring structure
@@ -246,15 +246,11 @@ protected theorem one_mul : (1 : Submodule R A) * M = M :=
 
 variable {M}
 
-@[mono]
-theorem mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
-  smul_mono hmp hnq
+instance : MulLeftMono (Submodule R A) where
+  elim _M _N _P hNP := smul_mono_right _ hNP
 
-theorem mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P :=
-  smul_mono_left h
-
-theorem mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P :=
-  smul_mono_right _ h
+instance : MulRightMono (Submodule R A) where
+  elim _ _ _ := smul_mono_left
 
 theorem mul_comm_of_commute (h : ∀ m ∈ M, ∀ n ∈ N, Commute m n) : M * N = N * M :=
   toAddSubmonoid_injective <| AddSubmonoid.mul_comm_of_commute h
@@ -307,9 +303,14 @@ protected theorem pow_add {m n : ℕ} (h : n ≠ 0) : M ^ (m + n) = M ^ m * M ^ 
 protected theorem pow_one : M ^ 1 = M := by
   rw [Submodule.pow_succ, Submodule.pow_zero, Submodule.one_mul]
 
-/-- `Submodule.pow_succ` with the right hand side commuted. -/
+/-- `Submodule.pow_succ` with the right-hand side commuted. -/
 protected theorem pow_succ' {n : ℕ} (h : n ≠ 0) : M ^ (n + 1) = M * M ^ n := by
   rw [add_comm, M.pow_add h, Submodule.pow_one]
+
+@[simp]
+theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Submodule R A) ^ n = ⊥
+  | 1, _ => Submodule.pow_one _
+  | n + 2, _ => by rw [Submodule.pow_succ, bot_pow n.succ_ne_zero, bot_mul]
 
 theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
   induction n with
@@ -361,6 +362,9 @@ theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) := by
 @[simp]
 theorem mem_one {x : A} : x ∈ (1 : Submodule R A) ↔ ∃ y, algebraMap R A y = x := by
   simp [one_eq_range]
+
+theorem smul_one_eq_span (x : A) : x • (1 : Submodule R A) = span R {x} := by
+  rw [one_eq_span, smul_span, smul_set_singleton, smul_eq_mul, mul_one]
 
 protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (1 : Submodule R A) = 1 := by
@@ -437,7 +441,7 @@ theorem map_op_mul :
   · simp_rw [map_le_iff_le_comap]
     refine mul_le.2 fun m hm n hn => ?_
     rw [mem_comap, map_equiv_eq_comap_symm, map_equiv_eq_comap_symm]
-    show op n * op m ∈ _
+    change op n * op m ∈ _
     exact mul_mem_mul hn hm
   · refine mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => ?_)
     rw [Submodule.mem_map_equiv] at hm hn ⊢
@@ -538,25 +542,14 @@ lemma mem_smul_iff_inv_mul_mem {S} [DivisionSemiring S] [Algebra R S] {x : S} {p
   · rintro ⟨a, ha : a ∈ p, rfl⟩; simpa [inv_mul_cancel_left₀ hx]
   · exact fun h ↦ ⟨_, h, by simp [mul_inv_cancel_left₀ hx]⟩
 
-lemma mul_mem_smul_iff {S} [CommRing S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
+lemma mul_mem_smul_iff {S} [Ring S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
     (hx : x ∈ nonZeroDivisors S) :
     x * y ∈ x • p ↔ y ∈ p := by
   simp [mem_smul_pointwise_iff_exists, mul_cancel_left_mem_nonZeroDivisors hx]
 
 variable (M N) in
-theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M) * (y • N) := by
-  ext
-  refine ⟨?_, fun hx ↦ Submodule.mul_induction_on hx ?_ fun _ _ hx hy ↦ Submodule.add_mem _ hx hy⟩
-  · rintro ⟨_, hx, rfl⟩
-    rw [DistribMulAction.toLinearMap_apply]
-    refine Submodule.mul_induction_on hx (fun m hm n hn ↦ ?_) (fun _ _ hn hm ↦ ?_)
-    · rw [mul_smul_mul_comm]
-      exact mul_mem_mul (smul_mem_pointwise_smul m x M hm) (smul_mem_pointwise_smul n y N hn)
-    · rw [smul_add]
-      exact Submodule.add_mem _ hn hm
-  · rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩
-    simp_rw [DistribMulAction.toLinearMap_apply, smul_mul_smul_comm]
-    exact smul_mem_pointwise_smul _ _ _ (mul_mem_mul hm hn)
+theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M) * (y • N) :=
+  mul_smul_mul_comm x y M N
 
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
 instance idemSemiring : IdemSemiring (Submodule R A) where
@@ -564,6 +557,10 @@ instance idemSemiring : IdemSemiring (Submodule R A) where
   one_mul := Submodule.one_mul
   mul_one := Submodule.mul_one
   bot_le _ := bot_le
+
+instance : IsOrderedRing (Submodule R A) where
+  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_left' h _
+  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_right' h _
 
 variable (M)
 
@@ -684,7 +681,7 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 /-- `span` is a semiring homomorphism (recall multiplication is pointwise multiplication of subsets
 on either side). -/
 @[simps]
-def span.ringHom : SetSemiring A →+* Submodule R A where
+noncomputable def span.ringHom : SetSemiring A →+* Submodule R A where
   toFun s := Submodule.span R (SetSemiring.down s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
@@ -744,7 +741,7 @@ theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
 variable (R A)
 
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
-instance moduleSet : Module (SetSemiring A) (Submodule R A) where
+noncomputable instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   smul s P := span R (SetSemiring.down s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by
@@ -766,7 +763,7 @@ theorem setSemiring_smul_def (s : SetSemiring A) (P : Submodule R A) :
 theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
     (h₁ : SetSemiring.down (α := A) s ⊆ SetSemiring.down (α := A) t)
     (h₂ : M ≤ N) : s • M ≤ t • N :=
-  mul_le_mul (span_mono h₁) h₂
+  mul_le_mul' (span_mono h₁) h₂
 
 theorem singleton_smul (a : A) (M : Submodule R A) :
     Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
@@ -817,8 +814,7 @@ theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
   rw [← one_le, le_div_iff_mul_le, one_mul]
 
 theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
-  refine (mul_one I).symm.trans_le ?_
-  apply mul_le_mul_right (one_le_one_div.mpr hI)
+  simpa using mul_le_mul_left' (one_le_one_div.mpr hI) _
 
 theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
   rw [Submodule.mul_le]

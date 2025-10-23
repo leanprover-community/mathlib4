@@ -20,7 +20,7 @@ See `Algebra.RingQuot` for quotients of semirings.
 
 ## Main definitions
 
- - `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
+- `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
 
 -/
 
@@ -35,6 +35,12 @@ variable {R : Type u} [Ring R] (I J : Ideal R) {a b : R}
 variable {S : Type v}
 
 namespace Quotient
+
+@[simp]
+lemma mk_span_range {ι : Type*} (f : ι → R) [(span (range f)).IsTwoSided] (i : ι) :
+    mk (span (.range f)) (f i) = 0 := by
+  rw [Ideal.Quotient.eq_zero_iff_mem]
+  exact Ideal.subset_span ⟨i, rfl⟩
 
 variable {I} {x y : R}
 

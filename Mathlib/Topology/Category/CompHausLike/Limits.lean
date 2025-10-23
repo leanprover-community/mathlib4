@@ -111,9 +111,7 @@ lemma finiteCoproduct.ι_jointly_surjective (R : finiteCoproduct X) :
 
 lemma finiteCoproduct.ι_desc_apply {B : CompHausLike P} {π : (a : α) → X a ⟶ B} (a : α) :
     ∀ x, finiteCoproduct.desc X π (finiteCoproduct.ι X a x) = π a x := by
-  intro x
-  change (ι X a ≫ desc X π) _ = _
-  simp only [ι_desc]
+  tauto
 
 instance : HasCoproduct X where
   exists_colimit := ⟨finiteCoproduct.cofan X, finiteCoproduct.isColimit X⟩
@@ -343,7 +341,7 @@ theorem hasPullbacksOfInclusions
 noncomputable instance [HasExplicitPullbacksOfInclusions P] :
     PreservesPullbacksOfInclusions (compHausLikeToTop P) :=
   { preservesPullbackInl := by
-      intros X Y Z f
+      intro X Y Z f
       infer_instance }
 
 instance [HasExplicitPullbacksOfInclusions P] : FinitaryExtensive (CompHausLike P) :=
@@ -362,7 +360,7 @@ section Terminal
 variable {P : TopCat.{u} → Prop}
 
 /-- A one-element space is terminal in `CompHaus` -/
-def isTerminalPUnit [HasProp P PUnit.{u+1}] :
+def isTerminalPUnit [HasProp P PUnit.{u + 1}] :
     IsTerminal (CompHausLike.of P PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ CompHausLike.of P PUnit.{u + 1}) := fun _ ↦
     ⟨⟨ofHom _ ⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩

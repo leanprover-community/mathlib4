@@ -26,7 +26,7 @@ universe v u
 
 namespace CategoryTheory.Limits
 
-open CategoryTheory CategoryTheory.CostructuredArrow
+open CategoryTheory CategoryTheory.CostructuredArrow CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C]
 
@@ -53,8 +53,8 @@ local notation "𝒢" => Functor.op G ⋙ Functor.op (toOver yoneda (colimit F))
 variable {K : Type v} [SmallCategory K] (H : K ⥤ Over (colimit F))
 
 /-- (implementation) Pulling out a colimit out of a hom functor is one half of the key lemma. Note
-    that all of the heavy lifting actually happens in `CostructuredArrow.toOverCompYonedaColimit`
-    and `yonedaYonedaColimit`. -/
+that all of the heavy lifting actually happens in `CostructuredArrow.toOverCompYonedaColimit`
+and `yonedaYonedaColimit`. -/
 noncomputable def compYonedaColimitIsoColimitCompYoneda :
     𝒢 ⋙ yoneda.obj (colimit H) ≅ colimit (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj 𝒢) := calc
   𝒢 ⋙ yoneda.obj (colimit H) ≅ 𝒢 ⋙ colimit (H ⋙ yoneda) :=
@@ -91,13 +91,12 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   -- `J` finite there is some `X` such that the set
   -- `lim Hom_{CostructuredArrow yoneda (colimit F)}(G·, X)` is nonempty.
   refine IsFiltered.iff_nonempty_limit.mpr (fun {J _ _} G => ?_)
-
   -- We begin by remarking that `lim Hom_{Over (colimit F)}(yG·, 𝟙 (colimit F))` is nonempty,
   -- simply because `𝟙 (colimit F)` is the terminal object. Here `y` is the functor
   -- `CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` induced by `yoneda`.
-  have h₁ : Nonempty (limit (G.op ⋙ (toOver _ _).op ⋙ yoneda.obj (Over.mk (𝟙 (colimit F))))) :=
+  have h₁ : Nonempty (limit (G.op ⋙ (CostructuredArrow.toOver _ _).op ⋙
+      yoneda.obj (Over.mk (𝟙 (colimit F))))) :=
     ⟨Types.Limit.mk _ (fun j => Over.mkIdTerminal.from _) (by simp)⟩
-
   -- `𝟙 (colimit F)` is the colimit of the diagram in `Over (colimit F)` given by the arrows of
   -- the form `Fi ⟶ colimit F`. Thus, pulling the colimit out of the hom functor and commuting
   -- the finite limit with the filtered colimit, we obtain
@@ -106,7 +105,6 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   -- the limit is non-empty.
   obtain ⟨i, hi⟩ := exists_nonempty_limit_obj_of_isColimit F G _
     (colimit.isColimitToOver F) _ (Iso.refl _) h₁
-
   -- `F.obj i` is a small filtered colimit of representables, say of the functor `H : K ⥤ C`, so
   -- `𝟙 (F.obj i)` is the colimit of the arrows of the form `yHk ⟶ Fi` in `Over Fi`.
   -- Then `colimit.ι F i` is the colimit of the arrows of the form
@@ -114,17 +112,16 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   obtain ⟨⟨P⟩⟩ := hF i
   let hc : IsColimit ((Over.map (colimit.ι F i)).mapCocone P.cocone.toOver) :=
     isColimitOfPreserves (Over.map _) (Over.isColimitToOver P.coconeIsColimit)
-
   -- Again, we pull the colimit out of the hom functor and commute limit and colimit to obtain
   -- `lim_j Hom_{Over (colimit F)}(yGj, colimit.ι F i) ≅`
   --   `colim_k lim_j Hom_{Over (colimit F)}(yGj, yHk)`, and so we find `k` such that the limit
   -- is non-empty.
-  obtain ⟨k, hk⟩ : ∃ k, Nonempty (limit (G.op ⋙ (toOver yoneda (colimit F)).op ⋙
-      yoneda.obj ((toOver yoneda (colimit F)).obj <|
-        (pre P.F yoneda (colimit F)).obj <| (map (colimit.ι F i)).obj <| mk _))) :=
+  obtain ⟨k, hk⟩ : ∃ k, Nonempty (limit (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
+      yoneda.obj ((CostructuredArrow.toOver yoneda (colimit F)).obj <|
+        (CostructuredArrow.pre P.F yoneda (colimit F)).obj <|
+          (map (colimit.ι F i)).obj <| mk _))) :=
     exists_nonempty_limit_obj_of_isColimit F G _ hc _ (Iso.refl _) hi
-
-  have htO : (toOver yoneda (colimit F)).FullyFaithful := .ofFullyFaithful _
+  have htO : (CostructuredArrow.toOver yoneda (colimit F)).FullyFaithful := .ofFullyFaithful _
   -- Since the inclusion `y : CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` is fully
   -- faithful, `lim_j Hom_{Over (colimit F)}(yGj, yHk) ≅`
   --   `lim_j Hom_{CostructuredArrow yoneda (colimit F)}(Gj, Hk)` and so `Hk` is the object we're
@@ -140,7 +137,6 @@ theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
   have : IsFiltered (CostructuredArrow yoneda (colimit F)) :=
     IndizationClosedUnderFilteredColimitsAux.isFiltered F hF
   refine (isIndObject_iff _).mpr ⟨this, ?_⟩
-
   -- It remains to show that `CostructuredArrow yoneda (colimit F)` is finally small. Because we
   -- have already shown it is filtered, it suffices to exhibit a small weakly terminal set. For this
   -- we use that all the `CostructuredArrow yoneda (F.obj i)` have small weakly terminal sets.

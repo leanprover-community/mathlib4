@@ -14,7 +14,7 @@ This file contains lemmas on the units of `ℤ`.
 
 ## Main results
 
- * `Int.units_eq_one_or`: the invertible integers are 1 and -1.
+* `Int.units_eq_one_or`: the invertible integers are 1 and -1.
 
 See note [foundational algebra order theory].
 -/

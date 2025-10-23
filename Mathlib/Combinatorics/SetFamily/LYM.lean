@@ -75,7 +75,7 @@ theorem local_lubell_yamamoto_meshalkin_inequality_mul (h𝒜 : (𝒜 : Set (Fin
     rw [← mem_coe, h𝒜.empty_mem_iff, coe_eq_singleton]
     rintro rfl
     rw [shadow_singleton_empty] at hs
-    exact not_mem_empty s hs
+    exact notMem_empty s hs
   have h := exists_eq_insert_iff.2 ⟨ht.2, by
     rw [(sized_shadow_iff this).1 (Set.Sized.shadow h𝒜) ht.1, (Set.Sized.shadow h𝒜) hs]⟩
   rcases h with ⟨a, ha, rfl⟩
@@ -89,7 +89,7 @@ than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem local_lubell_yamamoto_meshalkin_inequality_div (hr : r ≠ 0)
     (h𝒜 : (𝒜 : Set (Finset α)).Sized r) : (#𝒜 : 𝕜) / (Fintype.card α).choose r
     ≤ #(∂ 𝒜) / (Fintype.card α).choose (r - 1) := by
-  obtain hr' | hr' := lt_or_le (Fintype.card α) r
+  obtain hr' | hr' := lt_or_ge (Fintype.card α) r
   · rw [choose_eq_zero_of_lt hr', cast_zero, div_zero]
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
   replace h𝒜 := local_lubell_yamamoto_meshalkin_inequality_mul h𝒜
@@ -150,9 +150,9 @@ theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜
   · rintro ⟨⟨t, ht, hst⟩, hs⟩
     by_cases h : s ∈ 𝒜
     · exact Or.inl ⟨h, hs⟩
-    obtain ⟨a, ha, hst⟩ := ssubset_iff.1 (ssubset_of_subset_of_ne hst (ht.ne_of_not_mem h).symm)
+    obtain ⟨a, ha, hst⟩ := ssubset_iff.1 (ssubset_of_subset_of_ne hst (ht.ne_of_notMem h).symm)
     refine Or.inr ⟨insert a s, ⟨⟨t, ht, hst⟩, ?_⟩, a, mem_insert_self _ _, erase_insert ha⟩
-    rw [card_insert_of_not_mem ha, hs]
+    rw [card_insert_of_notMem ha, hs]
 
 variable {𝒜 k}
 
@@ -165,7 +165,7 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
     obtain ⟨s, ⟨⟨t, ht, hst⟩, _⟩, a, ha, rfl⟩ := h₁
     refine h𝒜 (slice_subset h₂) ht ?_ ((erase_subset _ _).trans hst)
     rintro rfl
-    exact not_mem_erase _ _ (hst ha)
+    exact notMem_erase _ _ (hst ha)
 
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
@@ -176,7 +176,7 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
   induction k with
   | zero =>
     simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
-      zero_eq, zero_add, range_one, sum_singleton, nonpos_iff_eq_zero, tsub_zero,
+      zero_add, range_one, sum_singleton, tsub_zero,
       choose_self, cast_one, div_one, cast_le]
     exact card_le_card (slice_subset_falling _ _)
   | succ k ih =>
@@ -184,9 +184,8 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
       card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜),
       cast_add, _root_.add_div, add_comm]
     rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
-    exact add_le_add_left ((ih <| le_of_succ_le hk).trans <|
-      local_lubell_yamamoto_meshalkin_inequality_div
-        (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <| sized_falling _ _) _
+    grw [ih <| le_of_succ_le hk, local_lubell_yamamoto_meshalkin_inequality_div
+      (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <| sized_falling _ _]
 
 end Falling
 

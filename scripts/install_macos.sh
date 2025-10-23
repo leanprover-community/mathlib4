@@ -10,6 +10,9 @@ set -x
 # Install elan using the official script
 curl https://elan.lean-lang.org/elan-init.sh -sSf | sh
 
+# Load the new elan PATH
+source ~/.elan/env
+
 # Set the default Lean version to the latest stable release
 elan toolchain install stable
 elan default stable
@@ -27,6 +30,9 @@ if ! command -v code &> /dev/null; then
 # Add Visual Studio Code (code)
 export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 EOF
+
+    # Load the new VS Code PATH
+    source ~/.zprofile
 else
     echo "VS Code is already installed."
 fi

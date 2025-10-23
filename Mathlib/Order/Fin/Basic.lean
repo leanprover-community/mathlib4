@@ -3,6 +3,7 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
+import Mathlib.Data.Fin.Embedding
 import Mathlib.Data.Fin.Rev
 import Mathlib.Order.Hom.Basic
 
@@ -41,19 +42,8 @@ variable {m n : ℕ}
 
 /-! ### Instances -/
 
-instance instLinearOrder : LinearOrder (Fin n) :=
-  @LinearOrder.liftWithOrd (Fin n) _ _ ⟨fun x y => ⟨max x y, max_rec' (· < n) x.2 y.2⟩⟩
-    ⟨fun x y => ⟨min x y, min_rec' (· < n) x.2 y.2⟩⟩ _ Fin.val Fin.val_injective (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-
-instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
-  top := rev 0
-  le_top i := Nat.le_pred_of_lt i.is_lt
-  bot := 0
-  bot_le := Fin.zero_le'
-
-instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
-  LinearOrder.toBiheytingAlgebra
+instance : Max (Fin n) where max x y := ⟨max x y, max_rec' (· < n) x.2 y.2⟩
+instance : Min (Fin n) where min x y := ⟨min x y, min_rec' (· < n) x.2 y.2⟩
 
 @[simp, norm_cast]
 theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
@@ -61,8 +51,24 @@ theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
 @[simp, norm_cast]
 theorem coe_min (a b : Fin n) : ↑(min a b) = (min a b : ℕ) := rfl
 
+theorem compare_eq_compare_val (a b : Fin n) : compare a b = compare a.val b.val := rfl
+
 @[deprecated (since := "2025-03-01")] alias coe_sup := coe_max
 @[deprecated (since := "2025-03-01")] alias coe_inf := coe_min
+
+instance instLinearOrder : LinearOrder (Fin n) :=
+  Fin.val_injective.linearOrder _
+    Fin.le_iff_val_le_val Fin.lt_iff_val_lt_val coe_min coe_max compare_eq_compare_val
+
+instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
+  top := rev 0
+  le_top i := Nat.le_pred_of_lt i.is_lt
+  bot := 0
+  bot_le := Fin.zero_le
+
+instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
+  LinearOrder.toBiheytingAlgebra (Fin n)
+
 
 /- There is a slight asymmetry here, in the sense that `0` is of type `Fin n` when we have
 `[NeZero n]` whereas `last n` is of type `Fin (n + 1)`. To address this properly would
@@ -102,8 +108,8 @@ theorem val_top (n : ℕ) [NeZero n] : ((⊤ : Fin n) : ℕ) = n - 1 := rfl
 
 @[simp]
 theorem zero_eq_top {n : ℕ} [NeZero n] : (0 : Fin n) = ⊤ ↔ n = 1 := by
-  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one, LE.le.le_iff_eq]
-  exact pos_of_neZero n
+  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one,
+    le_one_iff_eq_zero_or_eq_one, or_iff_right (NeZero.ne n)]
 
 @[simp]
 theorem top_eq_zero {n : ℕ} [NeZero n] : (⊤ : Fin n) = 0 ↔ n = 1 :=
@@ -206,6 +212,10 @@ alias ⟨_, _root_.GCongr.Fin.succAbove_lt_succAbove⟩ := succAbove_lt_succAbov
 theorem natAdd_inj (m) {i j : Fin n} : natAdd m i = natAdd m j ↔ i = j :=
   (strictMono_natAdd _).injective.eq_iff
 
+theorem natAdd_injective (m n : ℕ) :
+    Function.Injective (Fin.natAdd n : Fin m → _) :=
+  (strictMono_natAdd _).injective
+
 @[simp]
 theorem natAdd_le_natAdd_iff (m) {i j : Fin n} : natAdd m i ≤ natAdd m j ↔ i ≤ j :=
   (strictMono_natAdd _).le_iff_le
@@ -261,33 +271,41 @@ lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H =
   · exact le_pred_of_lt ((not_lt.mp ha).trans_lt hb)
   · exact H
 
-@[gcongr]
-theorem _root_.GCongr.Fin.predAbove_le_predAbove_right (p : Fin n) {i j : Fin (n + 1)} (h : i ≤ j) :
-    p.predAbove i ≤ p.predAbove j :=
-  predAbove_right_monotone p h
-
 lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p i := fun a b H ↦ by
   dsimp [predAbove]
   split_ifs with ha hb hb
   · rfl
   · exact pred_le _
   · have : b < a := castSucc_lt_castSucc_iff.mpr (hb.trans_le (le_of_not_gt ha))
-    exact absurd H this.not_le
+    exact absurd H this.not_ge
   · rfl
 
 @[gcongr]
-lemma _root_.GCongr.predAbove_le_predAbove_left {p q : Fin n} (h : p ≤ q) (i : Fin (n + 1)) :
-    p.predAbove i ≤ q.predAbove i :=
-  predAbove_left_monotone i h
-
-@[gcongr]
 lemma predAbove_le_predAbove {p q : Fin n} (hpq : p ≤ q) {i j : Fin (n + 1)} (hij : i ≤ j) :
-    p.predAbove i ≤ q.predAbove j := by
-  trans p.predAbove j <;> gcongr
+    p.predAbove i ≤ q.predAbove j :=
+  (predAbove_right_monotone p hij).trans (predAbove_left_monotone j hpq)
 
 /-- `Fin.predAbove p` as an `OrderHom`. -/
 @[simps!] def predAboveOrderHom (p : Fin n) : Fin (n + 1) →o Fin n :=
   ⟨p.predAbove, p.predAbove_right_monotone⟩
+
+/-- `predAbove` is injective at the pivot -/
+lemma predAbove_left_injective : Injective (@predAbove n) := by
+  intro i j hij
+  obtain ⟨n, rfl⟩ := Nat.exists_add_one_eq.2 i.size_positive
+  wlog h : i < j generalizing i j
+  · simp only [not_lt] at h
+    obtain h | rfl := h.lt_or_eq
+    · exact (this hij.symm h).symm
+    · rfl
+  replace hij := congr_fun hij i.succ
+  rw [predAbove_succ_self, Fin.predAbove_of_le_castSucc _ _ (by simpa),
+    ← Fin.castSucc_inj, castSucc_castPred] at hij
+  exact (i.castSucc_lt_succ.ne hij).elim
+
+/-- `predAbove` is injective at the pivot -/
+@[simp] lemma predAbove_left_inj {x y : Fin n} : x.predAbove = y.predAbove ↔ x = y :=
+  predAbove_left_injective.eq_iff
 
 /-! #### Order isomorphisms -/
 
@@ -331,6 +349,14 @@ lemma rev_anti : Antitone (@rev n) := rev_strictAnti.antitone
 /-- The inclusion map `Fin n → ℕ` is an order embedding. -/
 @[simps! apply]
 def valOrderEmb (n) : Fin n ↪o ℕ := ⟨valEmbedding, Iff.rfl⟩
+
+namespace OrderEmbedding
+
+@[simps]
+instance : Inhabited (Fin n ↪o ℕ) where
+  default := Fin.valOrderEmb n
+
+end OrderEmbedding
 
 /-- The ordering on `Fin n` is a well order. -/
 instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := (valOrderEmb n).isWellOrder
@@ -386,7 +412,7 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
 @[simp] lemma coe_orderIso_apply (e : Fin n ≃o Fin m) (i : Fin n) : (e i : ℕ) = i := by
   rcases i with ⟨i, hi⟩
   dsimp only
-  induction' i using Nat.strong_induction_on with i h
+  induction i using Nat.strong_induction_on with | _ i h
   refine le_antisymm (forall_lt_iff_le.1 fun j hj => ?_) (forall_lt_iff_le.1 fun j hj => ?_)
   · have := e.symm.lt_symm_apply.1 (mk_lt_of_lt_val hj)
     specialize h _ this (e.symm _).is_lt

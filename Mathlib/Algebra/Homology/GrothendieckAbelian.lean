@@ -29,7 +29,7 @@ section HasZeroMorphisms
 
 variable [HasZeroMorphisms C]
 
-instance locallySmall [LocallySmall.{w} C] [Small.{w} ι]:
+instance locallySmall [LocallySmall.{w} C] [Small.{w} ι] :
     LocallySmall.{w} (HomologicalComplex C c) where
   hom_small K L := by
     let emb (f : K ⟶ L) (i : Shrink.{w} ι) := (equivShrink.{w} _) (f.f ((equivShrink _).symm i))
@@ -49,9 +49,9 @@ instance hasExactColimitsOfShape (J : Type w) [Category.{w'} J] [HasFiniteLimits
   preservesFiniteLimits :=
     ⟨fun K _ _ ↦ ⟨fun {F} ↦ ⟨fun hc ↦ ⟨isLimitOfEval _ _ (fun i ↦ by
       let e := preservesColimitNatIso (J := J) (eval C c i)
-      exact (IsLimit.postcomposeHomEquiv (isoWhiskerLeft F e) _).1
+      exact (IsLimit.postcomposeHomEquiv (Functor.isoWhiskerLeft F e) _).1
         (IsLimit.ofIsoLimit
-          (isLimitOfPreserves ((whiskeringRight J _ _).obj (eval C c i) ⋙ colim) hc)
+          (isLimitOfPreserves ((Functor.whiskeringRight J _ _).obj (eval C c i) ⋙ colim) hc)
           (Cones.ext (e.symm.app _) (fun k ↦ (NatIso.naturality_2 e.symm _).symm))))⟩⟩⟩⟩
 
 instance ab5OfSize [HasFilteredColimitsOfSize.{w', w} C] [HasFiniteLimits C]
@@ -65,7 +65,6 @@ instance isGrothendieckAbelian [Abelian C] [IsGrothendieckAbelian.{w} C]
     [c.HasNoLoop] [Small.{w} ι] :
     IsGrothendieckAbelian.{w} (HomologicalComplex C c) where
   hasSeparator := by
-    have := Classical.typeDecidableEq ι
     have : HasCoproductsOfShape ι C :=
       hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{w} ι)).symm
     infer_instance

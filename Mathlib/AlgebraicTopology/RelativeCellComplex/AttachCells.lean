@@ -21,7 +21,7 @@ there is a pushout diagram of the form
 In other words, the morphism `f` is a pushout of coproducts of morphisms
 of the form `g a : A a ⟶ B a`, see `nonempty_attachCells_iff`.
 
-See the file `Mathlib.AlgebraicTopology.RelativeCellComplex.Basic` for transfinite compositions
+See the file `Mathlib/AlgebraicTopology/RelativeCellComplex/Basic.lean` for transfinite compositions
 of morphisms `f` with `AttachCells g f` structures.
 
 -/
@@ -54,7 +54,7 @@ structure AttachCells where
   isColimit₂ : IsColimit cofan₂
   /-- the coproduct of the maps `g (π i) : A (π i) ⟶ B (π i)` for all `i : ι`. -/
   m : cofan₁.pt ⟶ cofan₂.pt
-  hm (i : ι) : cofan₁.inj i ≫ m = g (π i) ≫ cofan₂.inj i := by aesop_cat
+  hm (i : ι) : cofan₁.inj i ≫ m = g (π i) ≫ cofan₂.inj i := by cat_disch
   /-- the top morphism of the pushout square -/
   g₁ : cofan₁.pt ⟶ X₁
   /-- the bottom morphism of the pushout square -/

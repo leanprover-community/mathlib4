@@ -127,7 +127,8 @@ lemma smul_Icc (a b c : α) : a • Icc b c = Icc (a * b) (a * c) := by
   ext x
   constructor
   · rintro ⟨y, ⟨hby, hyc⟩, rfl⟩
-    exact ⟨mul_le_mul_left' hby _, mul_le_mul_left' hyc _⟩
+    dsimp
+    constructor <;> gcongr
   · rintro ⟨habx, hxac⟩
     obtain ⟨y, hy, rfl⟩ := exists_one_le_mul_of_le habx
     refine ⟨b * y, ⟨le_mul_of_one_le_right' hy, ?_⟩, (mul_assoc ..).symm⟩
@@ -167,15 +168,6 @@ lemma inv_Ioc (a b : α) : (Ioc a b)⁻¹ = Ico b⁻¹ a⁻¹ := by
 
 @[to_additive (attr := simp)]
 lemma inv_Ioo (a b : α) : (Ioo a b)⁻¹ = Ioo b⁻¹ a⁻¹ := by simp [← Ioi_inter_Iio, inter_comm]
-
-@[deprecated (since := "2024-11-23")] alias preimage_neg_Ici := neg_Ici
-@[deprecated (since := "2024-11-23")] alias preimage_neg_Iic := neg_Iic
-@[deprecated (since := "2024-11-23")] alias preimage_neg_Ioi := neg_Ioi
-@[deprecated (since := "2024-11-23")] alias preimage_neg_Iio := neg_Iio
-@[deprecated (since := "2024-11-23")] alias preimage_neg_Icc := neg_Icc
-@[deprecated (since := "2024-11-23")] alias preimage_neg_Ico := neg_Ico
-@[deprecated (since := "2024-11-23")] alias preimage_neg_Ioc := neg_Ioc
-@[deprecated (since := "2024-11-23")] alias preimage_neg_Ioo := neg_Ioo
 
 end OrderedCommGroup
 
@@ -483,10 +475,6 @@ theorem preimage_const_add_uIcc : (fun x => a + x) ⁻¹' [[b, c]] = [[b - a, c 
 @[simp]
 theorem preimage_add_const_uIcc : (fun x => x + a) ⁻¹' [[b, c]] = [[b - a, c - a]] := by
   simpa only [add_comm] using preimage_const_add_uIcc a b c
-
-@[deprecated neg_uIcc (since := "2024-11-23")]
-theorem preimage_neg_uIcc : -[[a, b]] = [[-a, -b]] := by
-  simp only [← Icc_min_max, neg_Icc, min_neg_neg, max_neg_neg]
 
 @[simp]
 theorem preimage_sub_const_uIcc : (fun x => x - a) ⁻¹' [[b, c]] = [[b + a, c + a]] := by

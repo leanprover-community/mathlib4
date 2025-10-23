@@ -45,7 +45,7 @@ namespace Matrix
 
 theorem charmatrix_apply_natDegree [Nontrivial R] (i j : n) :
     (charmatrix M i j).natDegree = ite (i = j) 1 0 := by
-  by_cases h : i = j <;> simp [h, ← degree_eq_iff_natDegree_eq_of_pos (Nat.succ_pos 0)]
+  by_cases h : i = j <;> simp [h]
 
 theorem charmatrix_apply_natDegree_le (i j : n) :
     (charmatrix M i j).natDegree ≤ ite (i = j) 1 0 := by
@@ -56,7 +56,7 @@ variable (M)
 theorem charpoly_sub_diagonal_degree_lt :
     (M.charpoly - ∏ i : n, (X - C (M i i))).degree < ↑(Fintype.card n - 1) := by
   rw [charpoly, det_apply', ← insert_erase (mem_univ (Equiv.refl n)),
-    sum_insert (not_mem_erase (Equiv.refl n) univ), add_comm]
+    sum_insert (notMem_erase (Equiv.refl n) univ), add_comm]
   simp only [charmatrix_apply_eq, one_mul, Equiv.Perm.sign_refl, id, Int.cast_one,
     Units.val_one, add_sub_cancel_right, Equiv.coe_refl]
   rw [← mem_degreeLT]
@@ -79,18 +79,15 @@ theorem charpoly_coeff_eq_prod_coeff_of_le {k : ℕ} (h : Fintype.card n - 1 ≤
   apply lt_of_lt_of_le (charpoly_sub_diagonal_degree_lt M) ?_
   rw [Nat.cast_le]; apply h
 
-theorem det_of_card_zero (h : Fintype.card n = 0) (M : Matrix n n R) : M.det = 1 := by
-  rw [Fintype.card_eq_zero_iff] at h
-  suffices M = 1 by simp [this]
-  ext i
-  exact h.elim i
+@[deprecated (since := "2025-08-14")] alias det_of_card_zero := det_eq_one_of_card_eq_zero
 
+@[simp]
 theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.degree = Fintype.card n := by
   by_cases h : Fintype.card n = 0
   · rw [h]
     unfold charpoly
-    rw [det_of_card_zero]
+    rw [det_eq_one_of_card_eq_zero]
     · simp
     · assumption
   rw [← sub_add_cancel M.charpoly (∏ i : n, (X - C (M i i)))]
@@ -106,9 +103,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  rw [← Nat.pred_eq_sub_one]
-  apply Nat.pred_lt
-  apply h
+  cutsat
 
 @[simp] theorem charpoly_natDegree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.natDegree = Fintype.card n :=
@@ -117,7 +112,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
 theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   nontriviality R
   by_cases h : Fintype.card n = 0
-  · rw [charpoly, det_of_card_zero h]
+  · rw [charpoly, det_eq_one_of_card_eq_zero h]
     apply monic_one
   have mon : (∏ i : n, (X - C (M i i))).Monic := by
     apply monic_prod_of_monic univ fun i : n => X - C (M i i)
@@ -130,9 +125,7 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   rw [degree_neg]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  rw [← Nat.pred_eq_sub_one]
-  apply Nat.pred_lt
-  apply h
+  cutsat
 
 /-- See also `Matrix.coeff_charpolyRev_eq_neg_trace`. -/
 theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
@@ -141,44 +134,16 @@ theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
     prod_X_sub_C_coeff_card_pred univ (fun i : n => M i i) Fintype.card_pos, neg_neg, trace]
   simp_rw [diag_apply]
 
-theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
-    (matPolyEquiv.symm M).map (eval r) = M.eval (scalar n r) := by
-  suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
-      (eval₂AlgHom' (AlgHom.id R _) (scalar n r)
-        fun x => (scalar_commute _ (Commute.all _) _).symm) from
-    DFunLike.congr_fun this M
-  ext : 1
-  · ext M : 1
-    simp [Function.comp_def]
-  · simp [smul_eq_diagonal_mul]
-
-theorem matPolyEquiv_eval_eq_map (M : Matrix n n R[X]) (r : R) :
-    (matPolyEquiv M).eval (scalar n r) = M.map (eval r) := by
-  simpa only [AlgEquiv.symm_apply_apply] using (matPolyEquiv_symm_map_eval (matPolyEquiv M) r).symm
-
--- I feel like this should use `Polynomial.algHom_eval₂_algebraMap`
-theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
-    (matPolyEquiv M).eval (scalar n r) i j = (M i j).eval r := by
-  rw [matPolyEquiv_eval_eq_map, map_apply]
-
-theorem eval_det (M : Matrix n n R[X]) (r : R) :
-    Polynomial.eval r M.det = (Polynomial.eval (scalar n r) (matPolyEquiv M)).det := by
-  rw [Polynomial.eval, ← coe_eval₂RingHom, RingHom.map_det]
-  apply congr_arg det
-  ext
-  symm
-  exact matPolyEquiv_eval _ _ _ _
+theorem trace_eq_neg_charpoly_nextCoeff (M : Matrix n n R) : M.trace = -M.charpoly.nextCoeff := by
+  cases isEmpty_or_nonempty n
+  · simp [nextCoeff]
+  nontriviality
+  simp [trace_eq_neg_charpoly_coeff, nextCoeff]
 
 theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
     M.det = (-1) ^ Fintype.card n * M.charpoly.coeff 0 := by
   rw [coeff_zero_eq_eval_zero, charpoly, eval_det, matPolyEquiv_charmatrix, ← det_smul]
   simp
-
-lemma eval_det_add_X_smul (A : Matrix n n R[X]) (M : Matrix n n R) :
-    (det (A + (X : R[X]) • M.map C)).eval 0 = (det A).eval 0 := by
-  simp only [eval_det, map_zero, map_add, eval_add, Algebra.smul_def, map_mul]
-  simp only [Algebra.algebraMap_eq_smul_one, matPolyEquiv_smul_one, map_X, X_mul, eval_mul_X,
-    mul_zero, add_zero]
 
 lemma derivative_det_one_add_X_smul_aux {n} (M : Matrix (Fin n) (Fin n) R) :
     (derivative <| det (1 + (X : R[X]) • M.map C)).eval 0 = trace M := by
@@ -231,15 +196,33 @@ lemma det_one_add_X_smul (M : Matrix n n R) :
   convert (divX_mul_X_add _).symm
   rw [coeff_zero_eq_eval_zero, eval_det_add_X_smul, det_one, eval_one]
 
-/-- The first two terms of the taylor expansion of `det (1 + r • M)` at `r = 0`. -/
+/-- The first two terms of the Taylor expansion of `det (1 + r • M)` at `r = 0`. -/
 lemma det_one_add_smul (r : R) (M : Matrix n n R) :
     det (1 + r • M) =
       1 + trace M * r + (det (1 + (X : R[X]) • M.map C)).divX.divX.eval r * r ^ 2 := by
   simpa [eval_det, ← smul_eq_mul_diagonal] using congr_arg (eval r) (Matrix.det_one_add_X_smul M)
 
-end Matrix
+lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
+    M.charpoly = X ^ 2 - C M.trace * X + C M.det := by
+  have : Nonempty n := by rw [← Fintype.card_pos_iff]; omega
+  ext i
+  by_cases hi : i ∈ Finset.range 3
+  · fin_cases hi
+    · simp [det_eq_sign_charpoly_coeff, hn]
+    · simp [trace_eq_neg_charpoly_coeff, hn]
+    · simpa [leadingCoeff, charpoly_natDegree_eq_dim, hn, coeff_X] using
+        M.charpoly_monic.leadingCoeff
+  · rw [Finset.mem_range, not_lt, Nat.succ_le] at hi
+    suffices M.charpoly.coeff i = 0 by
+      simpa [show i ≠ 2 by cutsat, show 1 ≠ i by cutsat, show i ≠ 0 by cutsat, coeff_X, coeff_C]
+    apply coeff_eq_zero_of_natDegree_lt
+    simpa [charpoly_natDegree_eq_dim, hn] using hi
 
-variable {p : ℕ} [Fact p.Prime]
+lemma charpoly_fin_two [Nontrivial R] (M : Matrix (Fin 2) (Fin 2) R) :
+    M.charpoly = X ^ 2 - C M.trace * X + C M.det :=
+  M.charpoly_of_card_eq_two <| Fintype.card_fin _
+
+end Matrix
 
 theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [CommRing K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
@@ -308,9 +291,9 @@ lemma reverse_charpoly (M : Matrix n n R) :
   let q : R[T;T⁻¹] := det (1 - scalar n t * M.map LaurentPolynomial.C)
   have ht : t_inv * t = 1 := by rw [← T_add, neg_add_cancel, T_zero]
   have hp : toLaurentAlg M.charpoly = p := by
-    simp [p, t, charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
+    simp [p, t, charpoly, charmatrix, AlgHom.map_det, map_sub]
   have hq : toLaurentAlg M.charpolyRev = q := by
-    simp [q, t, charpolyRev, AlgHom.map_det, map_sub, map_smul', smul_eq_diagonal_mul]
+    simp [q, t, charpolyRev, AlgHom.map_det, map_sub, smul_eq_diagonal_mul]
   suffices t_inv ^ Fintype.card n * p = invert q by
     apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
@@ -318,7 +301,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
       ← mul_one (Fintype.card n : ℤ), ← T_pow, map_pow, invert_T, mul_comm]
   rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
     diagonal_one, invert.map_det]
-  simp [t_inv, map_sub, map_one, map_mul, t, map_smul', smul_eq_diagonal_mul]
+  simp [t_inv, map_sub, map_one, map_mul, t, smul_eq_diagonal_mul]
 
 
 @[simp] lemma eval_charpolyRev :

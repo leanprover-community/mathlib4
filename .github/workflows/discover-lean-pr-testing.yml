@@ -10,12 +10,12 @@ on:
 jobs:
   discover-lean-pr-testing:
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
 
     steps:
     - name: Checkout mathlib4 repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
-        repository: leanprover-community/mathlib4
         ref: nightly-testing
         fetch-depth: 0  # Fetch all branches
 
@@ -25,7 +25,7 @@ jobs:
         git config --global user.email "github-actions@github.com"
 
     - name: Configure Lean
-      uses: leanprover/lean-action@e18f2df7f0d4f30d11a4b963bff9b1140999480c # 2025-04-22
+      uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
       with:
         auto-config: false
         use-github-cache: false
@@ -71,16 +71,39 @@ jobs:
         # Fetch the $OLD tag
         git fetch --depth=1 origin tag "$OLD" --no-tags
         # Fetch the $NEW tag.
-        # This will only fetch commits newer than previously fetched commits (ie $OLD)
+        # This will only fetch commits newer than previously fetched commits (i.e. $OLD)
         git fetch origin tag "$NEW" --no-tags
 
-        # Find all commits to lean4 between the $OLD and $NEW toolchains
-        # and extract the github PR numbers
-        # (drop anything that doesn't look like a PR number from the final result)
-        PRS=$(git log --oneline "$OLD..$NEW" | sed 's/.*(#\([0-9]\+\))$/\1/' | grep -E '^[0-9]+$')
+        # Get all commit SHAs between the $OLD and $NEW toolchains
+        COMMIT_SHAS=$(git log --format="%H" "$OLD..$NEW")
+
+        # Initialize an empty string to collect PR numbers
+        PRS=""
+
+        # For each commit, query the GitHub API to get associated PRs
+        for commit_sha in $COMMIT_SHAS; do
+          echo "Checking commit $commit_sha for associated PRs..."
+
+          # Query GitHub API for PRs associated with this commit
+          # Using jq to extract PR numbers from the response
+          pr_numbers=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/leanprover/lean4/commits/$commit_sha/pulls" | \
+            jq -r '.[] | select(.merged_at != null) | .number | tostring' 2>/dev/null || echo "")
+
+          # Add each PR number to our list (duplicates will be handled later)
+          for pr_num in $pr_numbers; do
+            if [[ "$pr_num" =~ ^[0-9]+$ ]]; then
+              PRS="$PRS $pr_num"
+              echo "Found PR #$pr_num associated with commit $commit_sha"
+            fi
+          done
+        done
+
+        # Remove duplicates and trim whitespace
+        PRS=$(echo "$PRS" | tr ' ' '\n' | sort -u | tr '\n' ' ' | xargs)
 
         # Output the PRs
-        echo "$PRS"
+        echo "Found PRs: $PRS"
         printf "prs<<EOF\n%s\nEOF" "$PRS" >> "$GITHUB_OUTPUT"
 
     - name: Use merged PRs information
@@ -146,13 +169,44 @@ jobs:
         for BRANCH in $BRANCHES; do
           # Extract PR number from branch name
           PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
-          GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$PR_NUMBER"
+
+          # Make sure we're on nightly-testing branch before doing fetch operations
+          git checkout nightly-testing
+
+          # Fetch all tags in the repository
+          git fetch --tags
+
+          # Fetch the PR branch
+          git fetch origin "$BRANCH"
+
+          # Find the most recent nightly-testing-YYYY-MM-DD tag that is an ancestor of the branch
+          # Temporarily checkout the branch
+          git checkout origin/"$BRANCH" || {
+            echo "Failed to checkout branch origin/$BRANCH, skipping"
+            continue
+          }
+
+          # Find tags that are ancestors of this branch with the right format
+          LATEST_TAG=$(git tag --merged HEAD | grep "nightly-testing-[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}" | sort -r | head -n 1)
+          echo "Latest tag found for $BRANCH: ${LATEST_TAG:-none}"
+
+          # Return to nightly-testing branch
+          git checkout nightly-testing
+
+          # Default to nightly-testing if no tag is found
+          if [ -z "$LATEST_TAG" ]; then
+            COMPARE_BASE="nightly-testing"
+          else
+            COMPARE_BASE="$LATEST_TAG"
+          fi
+
+          GITHUB_DIFF="https://github.com/${{ github.repository }}/compare/$COMPARE_BASE...lean-pr-testing-$PR_NUMBER"
 
           echo "Attempting to merge branch: $BRANCH (PR #$PR_NUMBER)"
+          echo "Using diff URL: $GITHUB_DIFF (comparing with $COMPARE_BASE)"
 
-          # Reset to a clean state
+          # Reset to a clean state before running merge script
           git reset --hard HEAD
-          git checkout nightly-testing
 
           # Run the merge script and capture exit code
           if ./scripts/merge-lean-testing-pr.sh "$PR_NUMBER"; then
@@ -184,31 +238,32 @@ jobs:
 
         # Report successful merges
         if [ -n "$SUCCESSFUL_MERGES" ]; then
-          MESSAGE+=$'### ✅ Successfully merged branches:\n\n'
+          MESSAGE+=$'### ✅ Successfully merged branches into \'nightly-testing\':\n\n'
           for MERGE_INFO in $SUCCESSFUL_MERGES; do
-            IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
-            MESSAGE+=$(printf -- '- lean#%s ([diff](%s))\n' "$PR_NUMBER" "$GITHUB_DIFF")
+            IFS='|' read -r PR_NUMBER GITHUB_DIFF _ <<< "$MERGE_INFO"
+            MESSAGE+=$(printf -- '- [lean-pr-testing-%s](%s) (adaptations for lean#%s)' "$PR_NUMBER" "$GITHUB_DIFF" "$PR_NUMBER")$'\n\n'
           done
           MESSAGE+=$'\n'
         else
-          MESSAGE+=$'No branches were successfully merged.\n\n'
+          MESSAGE+=$'No branches were successfully merged into \'nightly-testing\'. 🤷‍♂️\n\n'
         fi
 
         # Report failed merges
         if [ -n "$FAILED_MERGES" ]; then
-          MESSAGE+=$'### ❌ Failed merges:\n\nThe following branches need to be merged manually:\n\n```bash\n'
+          MESSAGE+=$'### ❌ Failed merges:\n\nThe following branches need to be merged manually into \'nightly-testing\':\n\n'
           for MERGE_INFO in $FAILED_MERGES; do
-            IFS='|' read -r PR_NUMBER GITHUB_DIFF BRANCH <<< "$MERGE_INFO"
-            MESSAGE+=$(printf '# Diff: %s\n' "$GITHUB_DIFF")
-            MESSAGE+=$(printf 'scripts/merge-lean-testing-pr.sh %s   # %s\n\n' "$PR_NUMBER" "$BRANCH")
+            IFS='|' read -r PR_NUMBER GITHUB_DIFF _ <<< "$MERGE_INFO"
+            MESSAGE+=$(printf '- [lean-pr-testing-%s](%s) (adaptations for lean#%s)' "$PR_NUMBER" "$GITHUB_DIFF" "$PR_NUMBER")$'\n\n'
+            MESSAGE+=$'```bash\n'
+            MESSAGE+=$(printf 'scripts/merge-lean-testing-pr.sh %s' "$PR_NUMBER")$'\n'
+            MESSAGE+=$'```\n\n'
           done
-          MESSAGE+=$'```\n'
         else
           MESSAGE+=$'All branches were successfully merged! 🎉\n'
         fi
 
         # Output the message using the correct GitHub Actions syntax
-        printf 'msg<<EOF\n%s\nEOF' "$MESSAGE" >> "$GITHUB_OUTPUT"
+        printf 'msg<<EOF\n%s\nEOF' "$MESSAGE" | tee "$GITHUB_OUTPUT"
 
     - name: Send message on Zulip
       if: env.branches_exist == 'true'

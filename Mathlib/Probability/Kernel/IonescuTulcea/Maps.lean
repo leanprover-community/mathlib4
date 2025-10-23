@@ -9,7 +9,7 @@ import Mathlib.Order.Restriction
 /-! # Auxiliary maps for Ionescu-Tulcea theorem
 
 This file contains auxiliary maps which are used to prove the Ionescu-Tulcea theorem.
- -/
+-/
 
 open Finset Preorder
 

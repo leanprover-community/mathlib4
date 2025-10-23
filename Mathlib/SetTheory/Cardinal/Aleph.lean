@@ -34,7 +34,7 @@ The following notations are scoped to the `Cardinal` namespace.
 
 - `ℵ_ o` is notation for `aleph o`. `ℵ₁` is notation for `ℵ_ 1`.
 - `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
-  `Mathlib.SetTheory.Cardinal.Continuum`.
+  `Mathlib/SetTheory/Cardinal/Continuum.lean`.
 -/
 
 assert_not_exists Field Finsupp Module Cardinal.mul_eq_self
@@ -68,6 +68,7 @@ theorem IsInitial.card_lt_card {a b : Ordinal} (hb : IsInitial b) : a.card < b.c
 theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
   rw [IsInitial, card_ord]
 
+@[simp]
 theorem isInitial_natCast (n : ℕ) : IsInitial n := by
   rw [IsInitial, card_nat, ord_nat]
 
@@ -80,11 +81,15 @@ theorem isInitial_one : IsInitial 1 := by
 theorem isInitial_omega0 : IsInitial ω := by
   rw [IsInitial, card_omega0, ord_aleph0]
 
+theorem isInitial_succ {o : Ordinal} : IsInitial (succ o) ↔ o < ω :=
+  ⟨Function.mtr fun hwo ↦ ne_of_lt <| by simp_all [ord_card_le],
+  fun how ↦ (Ordinal.lt_omega0.1 how).rec fun n h ↦ h ▸ isInitial_natCast (n + 1)⟩
+
 theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
   rintro ⟨a, ha⟩
   have := ha (isInitial_ord (succ a.card))
   rw [ord_le] at this
-  exact (lt_succ _).not_le this
+  exact (lt_succ _).not_ge this
 
 /-- Initial ordinals are order-isomorphic to the cardinals. -/
 @[simps!]
@@ -324,18 +329,23 @@ theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
     Ordinal.lift.{v} (preOmega o) = preOmega (Ordinal.lift.{v} o) := by
   rw [← ord_preAleph, lift_ord, lift_preAleph, ord_preAleph]
 
-theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
-    preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
-  ⟨fun h o' h' => (preAleph_le_preAleph.2 <| h'.le).trans h, fun h => by
-    rw [← preAleph.apply_symm_apply c, preAleph_le_preAleph, limit_le l]
-    intro x h'
-    rw [← preAleph_le_preAleph, preAleph.apply_symm_apply]
-    exact h _ h'⟩
+theorem isNormal_preAleph : Order.IsNormal preAleph :=
+  OrderIso.isNormal _
 
-theorem preAleph_limit {o : Ordinal} (ho : o.IsLimit) : preAleph o = ⨆ a : Iio o, preAleph a := by
-  refine le_antisymm ?_ (ciSup_le' fun i => preAleph_le_preAleph.2 i.2.le)
-  rw [preAleph_le_of_isLimit ho]
-  exact fun a ha => le_ciSup (bddAbove_of_small _) (⟨a, ha⟩ : Iio o)
+theorem preAleph_le_of_isSuccPrelimit {o : Ordinal} (l : IsSuccPrelimit o) {c} :
+    preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c := by
+  obtain rfl | ho := eq_or_ne o 0
+  · simp
+  · exact isNormal_preAleph.le_iff_forall_le ⟨by simpa, l⟩
+
+@[deprecated (since := "2025-07-08")]
+alias preAleph_le_of_isLimit := preAleph_le_of_isSuccPrelimit
+
+theorem preAleph_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
+    preAleph o = ⨆ a : Iio o, preAleph a := by
+  obtain rfl | h := eq_or_ne o 0
+  · simp
+  · exact isNormal_preAleph.apply_of_isSuccLimit ⟨by simpa, ho⟩
 
 theorem preAleph_le_of_strictMono {f : Ordinal → Cardinal} (hf : StrictMono f) (o : Ordinal) :
     preAleph o ≤ f o := by
@@ -394,14 +404,11 @@ theorem _root_.Ordinal.lift_omega (o : Ordinal.{u}) :
     Ordinal.lift.{v} (ω_ o) = ω_ (Ordinal.lift.{v} o) := by
   simp [omega_eq_preOmega]
 
-theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
-  rw [aleph_eq_preAleph, preAleph_limit (isLimit_add ω ho)]
-  apply le_antisymm <;>
-    apply ciSup_mono' (bddAbove_of_small _) <;>
-    intro i
-  · refine ⟨⟨_, sub_lt_of_lt_add i.2 ho.pos⟩, ?_⟩
-    simpa [aleph_eq_preAleph] using le_add_sub _ _
-  · exact ⟨⟨_, add_lt_add_left i.2 ω⟩, le_rfl⟩
+theorem isNormal_aleph : Order.IsNormal aleph :=
+  isNormal_preAleph.comp (isNormal_add_right _)
+
+theorem aleph_limit {o : Ordinal} (ho : IsSuccLimit o) : ℵ_ o = ⨆ a : Iio o, ℵ_ a :=
+  isNormal_aleph.apply_of_isSuccLimit ho
 
 theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
   rw [aleph_eq_preAleph, aleph0_le_preAleph]
@@ -418,9 +425,12 @@ theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
 theorem aleph_toENat (o : Ordinal) : toENat (ℵ_ o) = ⊤ :=
   (toENat_eq_top.2 (aleph0_le_aleph o))
 
-theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
+theorem isSuccLimit_omega (o : Ordinal) : IsSuccLimit (ω_ o) := by
   rw [← ord_aleph]
-  exact isLimit_ord (aleph0_le_aleph _)
+  exact isSuccLimit_ord (aleph0_le_aleph _)
+
+@[deprecated (since := "2025-07-08")]
+alias isLimit_omega := isSuccLimit_omega
 
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
@@ -503,6 +513,10 @@ theorem preBeth_le_preBeth {o₁ o₂ : Ordinal} : preBeth o₁ ≤ preBeth o₂
   preBeth_strictMono.le_iff_le
 
 @[simp]
+theorem preBeth_inj {o₁ o₂ : Ordinal} : preBeth o₁ = preBeth o₂ ↔ o₁ = o₂ :=
+  preBeth_strictMono.injective.eq_iff
+
+@[simp]
 theorem preBeth_zero : preBeth 0 = 0 := by
   rw [preBeth]
   simp
@@ -510,10 +524,7 @@ theorem preBeth_zero : preBeth 0 = 0 := by
 @[simp]
 theorem preBeth_succ (o : Ordinal) : preBeth (succ o) = 2 ^ preBeth o := by
   rw [preBeth, Iio_succ]
-  apply (le_ciSup (bddAbove_of_small _) (⟨o, le_refl o⟩ : Iic o)).antisymm'
-  rw [ciSup_le_iff' (bddAbove_of_small _)]
-  rintro ⟨a, h⟩
-  exact power_le_power_left two_ne_zero (preBeth_mono h)
+  exact ciSup_Iic o fun x y h ↦ power_le_power_left two_ne_zero (preBeth_mono h)
 
 theorem preBeth_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
     preBeth o = ⨆ a : Iio o, preBeth a := by
@@ -524,9 +535,14 @@ theorem preBeth_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
   rw [← preBeth_succ]
   exact le_ciSup (bddAbove_of_small _) (⟨_, ho.succ_lt a.2⟩ : Iio o)
 
+theorem isNormal_preBeth : Order.IsNormal preBeth := by
+  rw [isNormal_iff]
+  refine ⟨preBeth_strictMono, fun o ho ↦ ?_⟩
+  simp [preBeth_limit ho.isSuccPrelimit, ciSup_le_iff' (bddAbove_of_small _)]
+
 theorem preBeth_nat : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
- | 0 => by simp
- | (n + 1) => by
+  | 0 => by simp
+  | n + 1 => by
     rw [natCast_succ, preBeth_succ, Function.iterate_succ_apply', preBeth_nat]
     simp
 
@@ -537,7 +553,7 @@ theorem preBeth_one : preBeth 1 = 1 := by
 @[simp]
 theorem preBeth_omega : preBeth ω = ℵ₀ := by
   apply le_antisymm
-  · rw [preBeth_limit isLimit_omega0.isSuccPrelimit, ciSup_le_iff' (bddAbove_of_small _)]
+  · rw [preBeth_limit isSuccLimit_omega0.isSuccPrelimit, ciSup_le_iff' (bddAbove_of_small _)]
     rintro ⟨a, ha⟩
     obtain ⟨n, rfl⟩ := lt_omega0.1 ha
     rw [preBeth_nat]
@@ -548,11 +564,24 @@ theorem preBeth_omega : preBeth ω = ℵ₀ := by
 theorem preBeth_pos {o : Ordinal} : 0 < preBeth o ↔ 0 < o := by
   simpa using preBeth_lt_preBeth (o₁ := 0)
 
-theorem isNormal_preBeth : IsNormal (ord ∘ preBeth) := by
-  refine (isNormal_iff_strictMono_limit _).2
-    ⟨ord_strictMono.comp preBeth_strictMono, fun o ho a ha ↦ ?_⟩
-  rw [comp_apply, preBeth_limit ho.isSuccPrelimit, ord_le]
-  exact ciSup_le' fun b => ord_le.1 (ha _ b.2)
+@[simp]
+theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
+  simpa using preBeth_inj (o₂ := 0)
+
+theorem isStrongLimit_preBeth {o : Ordinal} : IsStrongLimit (preBeth o) ↔ IsSuccLimit o := by
+  by_cases H : IsSuccLimit o
+  · refine iff_of_true ⟨by simpa using H.ne_bot, fun a ha ↦ ?_⟩ H
+    rw [preBeth_limit H.isSuccPrelimit] at ha
+    rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
+    have := power_le_power_left two_ne_zero ha.le
+    rw [← preBeth_succ] at this
+    exact this.trans_lt (preBeth_strictMono (H.succ_lt hi))
+  · apply iff_of_false _ H
+    rw [not_isSuccLimit_iff, not_isSuccPrelimit_iff'] at H
+    obtain ho | ⟨a, rfl⟩ := H
+    · simp [ho.eq_bot]
+    · intro h
+      simpa using h.two_power_lt (preBeth_strictMono (lt_succ a))
 
 /-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
 a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
@@ -574,7 +603,7 @@ theorem preBeth_le_beth (o : Ordinal) : preBeth o ≤ ℶ_ o :=
   preBeth_le_preBeth.2 (Ordinal.le_add_left _ _)
 
 theorem beth_strictMono : StrictMono beth :=
-  preBeth_strictMono.comp fun _ _ h ↦ add_lt_add_left h _
+  preBeth_strictMono.comp fun _ _ h ↦ by gcongr
 
 theorem beth_mono : Monotone beth :=
   beth_strictMono.monotone
@@ -583,15 +612,9 @@ theorem beth_mono : Monotone beth :=
 theorem beth_lt_beth {o₁ o₂ : Ordinal} : ℶ_ o₁ < ℶ_ o₂ ↔ o₁ < o₂ :=
   beth_strictMono.lt_iff_lt
 
-@[deprecated beth_lt_beth (since := "2025-01-14")]
-alias beth_lt := beth_lt_beth
-
 @[simp]
 theorem beth_le_beth {o₁ o₂ : Ordinal} : ℶ_ o₁ ≤ ℶ_ o₂ ↔ o₁ ≤ o₂ :=
   beth_strictMono.le_iff_le
-
-@[deprecated beth_le_beth (since := "2025-01-14")]
-alias beth_le := beth_le_beth
 
 @[simp]
 theorem beth_zero : ℶ_ 0 = ℵ₀ := by
@@ -601,14 +624,11 @@ theorem beth_zero : ℶ_ 0 = ℵ₀ := by
 theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ ℶ_ o := by
   simp [beth, add_succ]
 
-theorem beth_limit {o : Ordinal} (ho : o.IsLimit) : ℶ_ o = ⨆ a : Iio o, ℶ_ a := by
-  rw [beth_eq_preBeth, preBeth_limit (isLimit_add ω ho).isSuccPrelimit]
-  apply le_antisymm <;>
-    apply ciSup_mono' (bddAbove_of_small _) <;>
-    intro i
-  · refine ⟨⟨_, sub_lt_of_lt_add i.2 ho.pos⟩, ?_⟩
-    simpa [beth_eq_preBeth] using le_add_sub _ _
-  · exact ⟨⟨_, add_lt_add_left i.2 ω⟩, le_rfl⟩
+theorem isNormal_beth : Order.IsNormal beth :=
+  isNormal_preBeth.comp (isNormal_add_right _)
+
+theorem beth_limit {o : Ordinal} (ho : IsSuccLimit o) : ℶ_ o = ⨆ a : Iio o, ℶ_ a :=
+  isNormal_beth.apply_of_isSuccLimit ho
 
 theorem aleph_le_beth (o : Ordinal) : ℵ_ o ≤ ℶ_ o :=
   preAleph_le_preBeth _
@@ -622,20 +642,7 @@ theorem beth_pos (o : Ordinal) : 0 < ℶ_ o :=
 theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
   (beth_pos o).ne'
 
-theorem isNormal_beth : IsNormal (ord ∘ beth) :=
-  isNormal_preBeth.trans (isNormal_add_right ω)
-
-theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
-  rcases eq_or_ne o 0 with (rfl | h)
-  · rw [beth_zero]
-    exact isStrongLimit_aleph0
-  · refine ⟨beth_ne_zero o, fun a ha ↦ ?_⟩
-    rw [beth_limit] at ha
-    · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
-      have := power_le_power_left two_ne_zero ha.le
-      rw [← beth_succ] at this
-      exact this.trans_lt (beth_strictMono (H.succ_lt hi))
-    · rw [isLimit_iff]
-      exact ⟨h, H⟩
+theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrelimit o := by
+  rw [beth_eq_preBeth, isStrongLimit_preBeth, isSuccLimit_add_iff_of_isSuccLimit isSuccLimit_omega0]
 
 end Cardinal

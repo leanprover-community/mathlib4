@@ -60,7 +60,7 @@ lemma IsLocalizedModule.rank_eq {N : Type uM} [AddCommGroup N] [Module R N] (f :
 
 lemma IsLocalization.rank_eq : Module.rank S N = Module.rank R N := by
   cases subsingleton_or_nontrivial R
-  · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton, lift_one]
+  · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton]
   have inj := IsLocalization.injective S hp
   apply le_antisymm <;> (rw [Module.rank]; apply ciSup_le'; intro ⟨s, hs⟩)
   · have := (faithfulSMul_iff_algebraMap_injective R S).mpr inj
@@ -121,8 +121,6 @@ theorem lift_rank_eq_of_le_nonZeroDivisors :
     lift_lift, ← lift_lift.{max uS uT uP, uM}]
   let _ : Algebra T ST := Algebra.TensorProduct.rightAlgebra
   set pT := Algebra.algebraMapSubmonoid T p
-  have : IsLocalization pT ST := isLocalizedModule_iff_isLocalization.mp
-    (IsLocalization.tensorProduct_isLocalizedModule ..)
   rw [← lift_lift.{max uS uT, max uM uN}, ← lift_umax.{uP},
     ← IsLocalizedModule.lift_rank_eq pT (mk T ST P 1) hpT,
     ← IsLocalization.rank_eq ST pT hpT, lift_id'.{uP, max uS uT},
@@ -163,7 +161,7 @@ theorem lift_rank_eq :
   have : IsLocalizedModule R⁰ (TensorProduct.mk R FR FT 1) := inferInstance
   let _ : Algebra FT (FR ⊗[R] FT) := Algebra.TensorProduct.rightAlgebra
   let _ := isLocalizedModule_iff_isLocalization.mp this |>.atUnits _ _ ?_ |>.symm.isField
-    _ (Field.toIsField FT) |>.toField
+    (Field.toIsField FT) |>.toField
   on_goal 2 => rintro _ ⟨_, mem, rfl⟩; exact (map_ne_zero_of_mem_nonZeroDivisors _ inj mem).isUnit
   have := bc.comp_iff.2 ((isLocalizedModule_iff_isBaseChange T⁰ FT g).1 inferInstance)
   rw [← lift_inj.{_, max uT uP}, lift_lift, lift_lift, ← lift_lift.{max uT uP, uM},
@@ -205,14 +203,14 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
       (by simp [← Fin.sum_univ_eq_sum_range, ← hg]) i i.prop
   intro g x hg i hin
   induction n generalizing g x i with
-  | zero => exact (hin.not_le (zero_le i)).elim
+  | zero => exact (hin.not_ge (zero_le i)).elim
   | succ n IH =>
     rw [Finset.sum_range_succ'] at hg
     by_cases hg0 : g 0 = 0
     · simp only [hg0, zero_smul, add_zero, add_assoc] at hg
       cases i; exacts [hg0, IH _ _ hg _ (Nat.succ_lt_succ_iff.mp hin)]
-    simp only [MulOpposite.smul_eq_mul_unop, zero_add, ← add_comm _ x, pow_add _ _ x,
-      ← mul_assoc, pow_succ, ← Finset.sum_mul, pow_zero, one_mul, smul_eq_mul] at hg
+    simp only [zero_add, pow_add _ _ x,
+      ← mul_assoc, pow_succ, ← Finset.sum_mul, smul_eq_mul] at hg
     rw [← neg_eq_iff_add_eq_zero, ← neg_mul, ← neg_mul] at hg
     have := mul_right_cancel₀ (mem_nonZeroDivisors_iff_ne_zero.mp (s ^ x).prop) hg
     exact (h _ ⟨(g 0), mem_nonZeroDivisors_iff_ne_zero.mpr (by simpa)⟩ this.symm).elim
@@ -220,9 +218,9 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
 -- TODO: Upgrade this to an iff. See [lam_1999] Exercise 10.21
 lemma nonempty_oreSet_of_strongRankCondition [StrongRankCondition R] :
     Nonempty (OreLocalization.OreSet R⁰) := by
-  by_contra h
-  have := aleph0_le_rank_of_isEmpty_oreSet (not_nonempty_iff.mp h)
+  by_contra! h
+  have := aleph0_le_rank_of_isEmpty_oreSet h
   rw [rank_self] at this
-  exact this.not_lt one_lt_aleph0
+  exact this.not_gt one_lt_aleph0
 
 end Ring

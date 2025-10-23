@@ -24,13 +24,13 @@ based on application: for any `s t : Set Ω`, we have `μ[t|s] = (μ s)⁻¹ * �
   to conditioning on their intersection.
 * `cond_eq_inv_mul_cond_mul`: Bayes' Theorem, `μ[t|s] = (μ s)⁻¹ * μ[s|t] * (μ t)`.
 
-## Notations
+## Notation
 
 This file uses the notation `μ[|s]` the measure of `μ` conditioned on `s`,
 and `μ[t|s]` for the probability of `t` given `s` under `μ` (equivalent to the
 application `μ[|s] t`).
 
-These notations are contained in the locale `ProbabilityTheory`.
+These notations are contained in the scope `ProbabilityTheory`.
 
 ## Implementation notes
 
@@ -92,7 +92,8 @@ def condUnexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- info: μ[|s] : Measure Ω -/
-#guard_msgs in #check μ[|s]
+#guard_msgs in
+#check μ[|s]
 
 /-- Delaborator for `μ[t|s]` notation. -/
 @[app_delab DFunLike.coe]
@@ -108,9 +109,11 @@ def delabCondApplied : Delab :=
       `($μ[$t|$s])
 
 /-- info: μ[t | s] : ℝ≥0∞ -/
-#guard_msgs in #check μ[t | s]
+#guard_msgs in
+#check μ[t | s]
 /-- info: μ[t | s] : ℝ≥0∞ -/
-#guard_msgs in #check μ[|s] t
+#guard_msgs in
+#check μ[|s] t
 
 end delaborators
 
@@ -181,6 +184,9 @@ lemma absolutelyContinuous_cond_univ [IsFiniteMeasure μ] : μ ≪ μ[|univ] := 
   refine absolutelyContinuous_smul ?_
   simp [measure_ne_top]
 
+lemma ae_cond_of_forall_mem (hs : MeasurableSet s) {p : Ω → Prop} (h : ∀ x ∈ s, p x) :
+    ∀ᵐ x ∂μ[|s], p x := ae_smul_measure (ae_restrict_of_forall_mem hs h) _
+
 lemma ae_cond_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ[|s], x ∈ s :=
   ae_smul_measure (ae_restrict_mem₀ hs) _
 
@@ -215,7 +221,8 @@ theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) (μ : Measure Ω) :
     μ[s ∩ t|s] = μ[t|s] := by
   rw [cond_apply hms, ← Set.inter_assoc, Set.inter_self, ← cond_apply hms]
 
-theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0) : 0 < μ (s ∩ t) := by
+theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t | s] ≠ 0) :
+    0 < μ (s ∩ t) := by
   refine pos_iff_ne_zero.mpr (right_ne_zero_of_mul (a := (μ s)⁻¹) ?_)
   convert hcst
   simp [hms, Set.inter_comm, cond]
@@ -229,14 +236,12 @@ lemma cond_pos_of_inter_ne_zero [IsFiniteMeasure μ] (hms : MeasurableSet s) (hc
 lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (hcs : μ s ≠ ∞) :
     μ[|s][|t] = μ[|s ∩ t] := by
   ext u
-  rw [cond_apply hmt, cond_apply hms, cond_apply hms, cond_apply (hms.inter hmt)]
   obtain hst | hst := eq_or_ne (μ (s ∩ t)) 0
   · have : μ (s ∩ t ∩ u) = 0 := measure_mono_null Set.inter_subset_left hst
-    simp [this, ← Set.inter_assoc]
-  · have hcs' : μ s ≠ 0 :=
-      (measure_pos_of_superset Set.inter_subset_left hst).ne'
-    simp [*, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, ENNReal.mul_inv_cancel,
-      mul_right_comm _ _ (μ s)⁻¹]
+    simp [cond_apply, *, ← Set.inter_assoc]
+  · have hs : μ s ≠ 0 := (measure_pos_of_superset Set.inter_subset_left hst).ne'
+    simp [*, hms.inter hmt, cond_apply, ← Set.inter_assoc, ENNReal.mul_inv, ← mul_assoc,
+      mul_comm _ (μ s)⁻¹, ENNReal.inv_mul_cancel]
 
 /-- Conditioning first on `s` and then on `t` results in the same measure as conditioning
 on `s ∩ t`. -/

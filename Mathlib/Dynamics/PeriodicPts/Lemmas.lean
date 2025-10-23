@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Set.Lattice.Image
@@ -22,13 +21,16 @@ variable {α : Type*} {f : α → α} {x y : α}
 
 open Function (Commute)
 
-theorem directed_ptsOfPeriod_pNat (f : α → α) : Directed (· ⊆ ·) fun n : ℕ+ => ptsOfPeriod f n :=
+theorem directed_ptsOfPeriod_pnat (f : α → α) : Directed (· ⊆ ·) fun n : ℕ+ => ptsOfPeriod f n :=
   fun m n => ⟨m * n, fun _ hx => hx.mul_const n, fun _ hx => hx.const_mul m⟩
+
+@[deprecated (since := "2025-04-27")]
+alias directed_ptsOfPeriod_pNat := directed_ptsOfPeriod_pnat
 
 variable (f) in
 theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
-  iUnion_pNat_ptsOfPeriod f ▸
-    bijOn_iUnion_of_directed (directed_ptsOfPeriod_pNat f) fun i => bijOn_ptsOfPeriod f i.pos
+  iUnion_pnat_ptsOfPeriod f ▸
+    bijOn_iUnion_of_directed (directed_ptsOfPeriod_pnat f) fun i => bijOn_ptsOfPeriod f i.pos
 
 theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
     minimalPeriod f x = p ↔ IsPeriodicPt f p x ∧ ¬IsFixedPt f x := by
@@ -68,48 +70,45 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Com
 
 section Fintype
 
-variable [Fintype α]
-
 open Fintype
 
-theorem minimalPeriod_le_card : minimalPeriod f x ≤ card α := by
+theorem minimalPeriod_le_card [Fintype α] : minimalPeriod f x ≤ card α := by
   rw [← periodicOrbit_length]
   exact List.Nodup.length_le_card nodup_periodicOrbit
 
-theorem isPeriodicPt_factorial_card_of_mem_periodicPts (h : x ∈ periodicPts f) :
+theorem isPeriodicPt_factorial_card_of_mem_periodicPts [Fintype α] (h : x ∈ periodicPts f) :
     IsPeriodicPt f (card α)! x :=
   isPeriodicPt_iff_minimalPeriod_dvd.mpr
     (Nat.dvd_factorial (minimalPeriod_pos_of_mem_periodicPts h) minimalPeriod_le_card)
 
-theorem mem_periodicPts_iff_isPeriodicPt_factorial_card :
+theorem mem_periodicPts_iff_isPeriodicPt_factorial_card [Fintype α] :
     x ∈ periodicPts f ↔ IsPeriodicPt f (card α)! x where
   mp := isPeriodicPt_factorial_card_of_mem_periodicPts
   mpr h := minimalPeriod_pos_iff_mem_periodicPts.mp
     (IsPeriodicPt.minimalPeriod_pos (Nat.factorial_pos _) h)
 
-open Finset in
-theorem mem_periodicPts_of_injective (h : Injective f) : x ∈ periodicPts f := by
-  have h₁ (a) (ha : a ∈ range (card α).succ) : f^[a] x ∈ Finset.univ := mem_univ _
-  rcases exists_ne_map_eq_of_card_lt_of_maps_to (by simp) h₁ with ⟨_, _, _, _, h₂, h₃⟩
-  rcases lt_or_gt_of_ne h₂ with h₂ | h₂
-  · exact mk_mem_periodicPts (by omega) (iterate_cancel h h₃.symm)
-  · exact mk_mem_periodicPts (by omega) (iterate_cancel h h₃)
+theorem Injective.mem_periodicPts [Finite α] (h : Injective f) (x : α) : x ∈ periodicPts f := by
+  obtain ⟨m, n, heq, hne⟩ : ∃ m n, f^[m] x = f^[n] x ∧ m ≠ n := by
+    simpa [Injective] using not_injective_infinite_finite (f^[·] x)
+  rcases lt_or_gt_of_ne hne with hlt | hlt
+  · exact mk_mem_periodicPts (by cutsat) (iterate_cancel h heq.symm)
+  · exact mk_mem_periodicPts (by cutsat) (iterate_cancel h heq)
 
-theorem injective_iff_forall_mem_periodicPts : Injective f ↔ periodicPts f = univ := by
-  constructor <;> intro h
-  · ext; simp only [mem_univ, mem_periodicPts_of_injective h]
-  · exact ((bijective_iff_injective_and_card f).mp
-      ((bijective_iff_surjective_and_card f).mpr ⟨Set.range_eq_univ.mp
-        (Subset.antisymm (subset_univ _) (h ▸ periodicPts_subset_image)), rfl⟩)).1
+@[deprecated (since := "2025-04-27")]
+alias mem_periodicPts_of_injective :=  Injective.mem_periodicPts
 
-theorem injective_iff_iterate_factorial_card_eq_id :
+theorem injective_iff_periodicPts_eq_univ [Finite α] : Injective f ↔ periodicPts f = univ := by
+  refine ⟨fun h ↦ eq_univ_iff_forall.mpr h.mem_periodicPts, fun h ↦ ?_⟩
+  rw [Finite.injective_iff_surjective, ← range_eq_univ, ← univ_subset_iff, ← h]
+  apply periodicPts_subset_range
+
+@[deprecated (since := "2025-04-27")]
+alias injective_iff_forall_mem_periodicPts := injective_iff_periodicPts_eq_univ
+
+theorem injective_iff_iterate_factorial_card_eq_id [Fintype α] :
     Injective f ↔ f^[(card α)!] = id := by
-  rw [injective_iff_forall_mem_periodicPts]
-  constructor <;> intro h
-  · simp_rw [← forall_isFixedPt_iff]
-    exact fun _ ↦ mem_periodicPts_iff_isPeriodicPt_factorial_card.mp (h ▸ mem_univ _)
-  · ext; simp only [mem_univ, iff_true, mem_periodicPts_iff_isPeriodicPt_factorial_card,
-      IsPeriodicPt, isFixedPt_id, h]
+  simp only [injective_iff_periodicPts_eq_univ, mem_periodicPts_iff_isPeriodicPt_factorial_card,
+    funext_iff, eq_univ_iff_forall, IsPeriodicPt, id, IsFixedPt]
 
 end Fintype
 
@@ -121,7 +120,7 @@ variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α}
 
 theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
     minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=
-  eq_of_forall_dvd <| by cases x; simp [← isPeriodicPt_iff_minimalPeriod_dvd, Nat.lcm_dvd_iff]
+  eq_of_forall_dvd <| by simp [← isPeriodicPt_iff_minimalPeriod_dvd, Nat.lcm_dvd_iff]
 
 @[deprecated (since := "2025-04-18")]
 alias minimalPeriod_prod_map := minimalPeriod_prodMap

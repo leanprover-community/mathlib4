@@ -31,10 +31,10 @@ There used to be a stronger definition `∀ α : Type max u v, Small.{v} α` tha
 its simplicity and transitivity.
 
 The strong definition easily implies the weaker definition (see below),
-but we can not prove the reverse implication.
+but we cannot prove the reverse implication.
 This is because in Lean's type theory, while `max u v` is at least at big as `u` and `v`,
 it could be bigger than both!
-See also `Mathlib.CategoryTheory.UnivLE` for the statement that the stronger definition is
+See also `Mathlib/CategoryTheory/UnivLE.lean` for the statement that the stronger definition is
 equivalent to `EssSurj (uliftFunctor : Type v ⥤ Type max u v)`.
 -/
 @[pp_with_univ, mk_iff]
@@ -74,9 +74,9 @@ example : UnivLE.{u, max u v} := inferInstance
 example : UnivLE.{u, u + 1} := inferInstance
 example : UnivLE.{2, 5} := inferInstance
 
-/- When `small_Pi` from `Mathlib.Logic.Small.Basic` is imported, we have : -/
+/- When `small_Pi` from `Mathlib/Logic/Small/Basic.lean` is imported, we have : -/
 -- example (α : Type u) (β : Type v) [UnivLE.{u, v}] : Small.{v} (α → β) := inferInstance
 
-example : ¬ UnivLE.{u+1, u} := by
+example : ¬UnivLE.{u + 1, u} := by
   simp only [univLE_iff, small_iff, not_forall, not_exists, not_nonempty_iff]
   exact ⟨Type u, fun α => ⟨fun f => Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩⟩

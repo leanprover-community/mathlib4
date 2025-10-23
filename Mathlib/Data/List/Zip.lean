@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
+import Mathlib.Data.Nat.Basic
 
 /-!
 # zip & unzip
@@ -41,7 +42,7 @@ theorem forall_zipWith {f : α → β → γ} {p : γ → Prop} :
       (Forall p (zipWith f l₁ l₂) ↔ Forall₂ (fun x y => p (f x y)) l₁ l₂)
   | [], [], _ => by simp
   | a :: l₁, b :: l₂, h => by
-    simp only [length_cons, succ_inj'] at h
+    simp only [length_cons, succ_inj] at h
     simp [forall_zipWith h]
 
 theorem unzip_swap (l : List (α × β)) : unzip (l.map Prod.swap) = (unzip l).swap := by
@@ -117,21 +118,17 @@ theorem reverse_revzip (l : List α) : reverse l.revzip = revzip l.reverse := by
 
 theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse := by simp [revzip]
 
-@[deprecated (since := "2025-02-14")] alias get?_zipWith' := getElem?_zipWith'
-@[deprecated (since := "2025-02-14")] alias get?_zipWith_eq_some := getElem?_zipWith_eq_some
-@[deprecated (since := "2025-02-14")] alias get?_zip_eq_some := getElem?_zip_eq_some
-
 theorem mem_zip_inits_tails {l : List α} {init tail : List α} :
     (init, tail) ∈ zip l.inits l.tails ↔ init ++ tail = l := by
-  induction' l with hd tl ih generalizing init tail <;> simp_rw [tails, inits, zip_cons_cons]
-  · simp
-  · constructor <;> rw [mem_cons, zip_map_left, mem_map, Prod.exists]
+  induction l generalizing init tail <;> simp_rw [tails, inits, zip_cons_cons]
+  case nil => simp
+  case cons hd tl ih =>
+    constructor <;> rw [mem_cons, zip_map_left, mem_map, Prod.exists]
     · rintro (⟨rfl, rfl⟩ | ⟨_, _, h, rfl, rfl⟩)
       · simp
       · simp [ih.mp h]
     · rcases init with - | ⟨hd', tl'⟩
-      · rintro rfl
-        simp
+      · simp
       · intro h
         right
         use tl', tail

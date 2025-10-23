@@ -111,7 +111,7 @@ variable (R) {𝒜 ℬ} in
 abbrev tmul (a : A) (b : B) : 𝒜 ᵍ⊗[R] ℬ := of R 𝒜 ℬ (a ⊗ₜ b)
 
 @[inherit_doc]
-notation:100 x " ᵍ⊗ₜ" y:100 => tmul _ x y
+notation:100 x " ᵍ⊗ₜ " y:100 => tmul _ x y
 
 @[inherit_doc]
 notation:100 x " ᵍ⊗ₜ[" R "] " y:100 => tmul R x y
@@ -181,7 +181,7 @@ instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
 /-- The characterization of this multiplication on partially homogeneous elements. -/
 theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (b₁ : B) * (a₂ : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) =
-      (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ᵍ⊗ₜ (b₁ * b₂ : B)) := by
+      (-1 : ℤˣ) ^ (j₁ * i₂) • ((a₁ * a₂ : A) ᵍ⊗ₜ (b₁ * b₂ : B)) := by
   dsimp only [mul_def, mulHom_apply, of_symm_of]
   dsimp [auxEquiv, tmul]
   rw [decompose_coe, decompose_coe]
@@ -296,7 +296,7 @@ variable {C} [Ring C] [Algebra R C]
 product can be assembled from maps on each component that (anti)commute on pure elements of the
 corresponding graded algebras. -/
 def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
-    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ)^(j * i) • (g b * f a)) :
+    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ) ^ (j * i) • (g b * f a)) :
     (𝒜 ᵍ⊗[R] ℬ) →ₐ[R] C :=
   AlgHom.ofLinearMap
     (LinearMap.mul' R C
@@ -372,7 +372,7 @@ lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
   LinearEquiv.eq_symm_apply _ |>.mp rfl
 
 @[simp] lemma comm_coe_tmul_coe {i j : ι} (a : 𝒜 i) (b : ℬ j) :
-    comm 𝒜 ℬ (a ᵍ⊗ₜ b) = (-1 : ℤˣ)^(j * i) • (b ᵍ⊗ₜ a : ℬ ᵍ⊗[R] 𝒜) :=
+    comm 𝒜 ℬ (a ᵍ⊗ₜ b) = (-1 : ℤˣ) ^ (j * i) • (b ᵍ⊗ₜ a : ℬ ᵍ⊗[R] 𝒜) :=
   (auxEquiv R ℬ 𝒜).injective <| by
     simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
       @Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R]

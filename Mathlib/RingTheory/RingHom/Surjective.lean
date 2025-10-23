@@ -38,11 +38,11 @@ theorem surjective_stableUnderComposition : StableUnderComposition surjective :=
 
 theorem surjective_respectsIso : RespectsIso surjective := by
   apply surjective_stableUnderComposition.respectsIso
-  intros _ _ _ _ e
+  intro _ _ _ _ e
   exact e.surjective
 
 theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective := by
-  refine IsStableUnderBaseChange.mk _ surjective_respectsIso ?_
+  refine IsStableUnderBaseChange.mk surjective_respectsIso ?_
   classical
   introv h x
   induction x with

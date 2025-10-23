@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.LinearAlgebra.Ray
-import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Analysis.Normed.Module.RCLike.Real
+import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Rays in a real normed vector space
@@ -37,7 +38,7 @@ theorem norm_sub (h : SameRay ℝ x y) : ‖x - y‖ = |‖x‖ - ‖y‖| := by
   wlog hab : b ≤ a generalizing a b with H
   · rw [SameRay.sameRay_comm] at h
     rw [norm_sub_rev, abs_sub_comm]
-    exact H b a hb ha h (le_of_not_le hab)
+    exact H b a hb ha h (le_of_not_ge hab)
   rw [← sub_nonneg] at hab
   rw [← sub_smul, norm_smul_of_nonneg hab, norm_smul_of_nonneg ha, norm_smul_of_nonneg hb, ←
     sub_mul, abs_of_nonneg (mul_nonneg hab (norm_nonneg _))]

@@ -37,7 +37,7 @@ instance (priority := 100) LinearOrderedCommGroup.toIsTopologicalGroup :
       rintro ⟨c, d⟩ ⟨hc, hd⟩
       calc
         |c * d / (a * b)|ₘ = |(c / a) * (d / b)|ₘ := by rw [div_mul_div_comm]
-        _ ≤ |c / a|ₘ * |d / b|ₘ := mabs_mul ..
+        _ ≤ |c / a|ₘ * |d / b|ₘ := mabs_mul_le ..
         _ < δ * (ε / δ) := mul_lt_mul_of_lt_of_lt hc hd
         _ = ε := mul_div_cancel ..
     · have (x : G) : ∀ᶠ y in 𝓝 x, y = x :=
@@ -101,8 +101,8 @@ alias tendsto_abs_nhdsWithin_zero := tendsto_abs_nhdsNE_zero
 
 /-- In a linearly ordered multiplicative group, the integer powers of an element are dense
 iff they are the whole group. -/
-@[to_additive "In a linearly ordered additive group, the integer multiples of an element are dense
-iff they are the whole group."]
+@[to_additive /-- In a linearly ordered additive group, the integer multiples of an element are
+dense iff they are the whole group. -/]
 theorem denseRange_zpow_iff_surjective {a : G} :
     DenseRange (a ^ · : ℤ → G) ↔ Surjective (a ^ · : ℤ → G) := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.denseRange⟩
@@ -122,8 +122,8 @@ theorem denseRange_zpow_iff_surjective {a : G} :
   suffices (Ioo (a ^ m) (a ^ (m + 1))).Nonempty by
     rcases h.exists_mem_open isOpen_Ioo this with ⟨l, hl⟩
     have : m < l ∧ l < m + 1 := by simpa [zpow_lt_zpow_iff_right ha₀] using hl
-    omega
-  rcases hne.lt_or_lt with hlt | hlt
+    cutsat
+  rcases hne.lt_or_gt with hlt | hlt
   · refine ⟨b * a * a, hm', ?_⟩
     simpa only [zpow_add, zpow_sub, zpow_one, ← div_eq_mul_inv, lt_div_iff_mul_lt,
       mul_lt_mul_iff_right] using hlt
@@ -134,8 +134,8 @@ theorem denseRange_zpow_iff_surjective {a : G} :
 
 /-- In a nontrivial densely linearly ordered commutative group,
 the integer powers of an element can't be dense. -/
-@[to_additive "In a nontrivial densely linearly ordered additive group,
-the integer multiples of an element can't be dense."]
+@[to_additive /-- In a nontrivial densely linearly ordered additive group,
+the integer multiples of an element can't be dense. -/]
 theorem not_denseRange_zpow [Nontrivial G] [DenselyOrdered G] {a : G} :
     ¬DenseRange (a ^ · : ℤ → G) :=
   denseRange_zpow_iff_surjective.not.mpr fun h ↦

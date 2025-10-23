@@ -78,7 +78,7 @@ operations on filters, without directly manipulating entourages.
 * `UniformContinuous f` is a predicate saying a function `f : α → β` between uniform spaces
   is uniformly continuous : `∀ r ∈ 𝓤 β, ∀ᶠ (x : α × α) in 𝓤 α, (f x.1, f x.2) ∈ r`
 
-## Notations
+## Notation
 
 Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`,
 and `○` for composition of relations, seen as terms with type `Set (X × X)`.
@@ -256,9 +256,29 @@ lemma IsSymmetricRel.sInter {s : Set (Set (α × α))} (h : ∀ i ∈ s, IsSymme
   rw [sInter_eq_iInter]
   exact IsSymmetricRel.iInter (by simpa)
 
+lemma isSymmetricRel_idRel : IsSymmetricRel (idRel : Set (α × α)) := by
+  simp [IsSymmetricRel, idRel, eq_comm]
+
+lemma isSymmetricRel_univ : IsSymmetricRel (Set.univ : Set (α × α)) := by
+  simp [IsSymmetricRel]
+
 lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
   Set.ext fun _ ↦ ht.mk_mem_comm
+
+lemma IsSymmetricRel.image_prodMap {U : Set (α × α)} (ht : IsSymmetricRel U) (f : α → β) :
+    IsSymmetricRel (Prod.map f f '' U) := by
+  rw [IsSymmetricRel, ← image_swap_eq_preimage_swap, ← image_comp, ← Prod.map_comp_swap, image_comp,
+      image_swap_eq_preimage_swap, ht]
+
+lemma IsSymmetricRel.prod_subset_comm {s : Set (α × α)} {t u : Set α} (hs : IsSymmetricRel s) :
+    t ×ˢ u ⊆ s ↔ u ×ˢ t ⊆ s := by
+  rw [← hs.eq, ← image_subset_iff, image_swap_prod, hs.eq]
+
+lemma IsSymmetricRel.mem_filter_prod_comm {s : Set (α × α)} {f g : Filter α}
+    (hs : IsSymmetricRel s) :
+    s ∈ f ×ˢ g ↔ s ∈ g ×ˢ f := by
+  rw [← hs.eq, ← mem_map, ← prod_comm, hs.eq]
 
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
@@ -474,10 +494,10 @@ theorem comp_symm_of_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
   let ⟨t', ht', ht'₁, ht'₂⟩ := symm_of_uniformity ht₁
   ⟨t', ht', ht'₁ _ _, Subset.trans (monotone_id.compRel monotone_id ht'₂) ht₂⟩
 
-theorem uniformity_le_symm : 𝓤 α ≤ @Prod.swap α α <$> 𝓤 α := by
+theorem uniformity_le_symm : 𝓤 α ≤ map Prod.swap (𝓤 α) := by
   rw [map_swap_eq_comap_swap]; exact tendsto_swap_uniformity.le_comap
 
-theorem uniformity_eq_symm : 𝓤 α = @Prod.swap α α <$> 𝓤 α :=
+theorem uniformity_eq_symm : 𝓤 α = map Prod.swap (𝓤 α) :=
   le_antisymm uniformity_le_symm symm_le_uniformity
 
 @[simp]
@@ -530,7 +550,7 @@ theorem comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤 α) 
   have : symmetrizeRel w ⊆ w := symmetrizeRel_subset_self w
   calc symmetrizeRel w ○ symmetrizeRel w
     _ ⊆ w ○ w := by gcongr
-    _ ⊆ s     := w_sub
+    _ ⊆ s := w_sub
 
 theorem subset_comp_self_of_mem_uniformity {s : Set (α × α)} (h : s ∈ 𝓤 α) : s ⊆ s ○ s :=
   subset_comp_self (refl_le_uniformity h)
@@ -541,13 +561,9 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
   rcases comp_symm_mem_uniformity_sets w_in with ⟨t, t_in, t_symm, t_sub⟩
   use t, t_in, t_symm
   have : t ⊆ t ○ t := subset_comp_self_of_mem_uniformity t_in
-  -- Porting note: Needed the following `have`s to make `mono` work
-  have ht := Subset.refl t
-  have hw := Subset.refl w
   calc
-    t ○ t ○ t ⊆ w ○ t := by mono
-    _ ⊆ w ○ (t ○ t) := by mono
-    _ ⊆ w ○ w := by mono
+    t ○ t ○ t ⊆ w ○ (t ○ t) := by gcongr
+    _ ⊆ w ○ w := by gcongr
     _ ⊆ s := w_sub
 
 /-!
@@ -630,7 +646,7 @@ theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
 theorem mem_nhds_uniformity_iff_left {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.2 = x → p.1 ∈ s } ∈ 𝓤 α := by
   rw [uniformity_eq_symm, mem_nhds_uniformity_iff_right]
-  simp only [map_def, mem_map, preimage_setOf_eq, Prod.snd_swap, Prod.fst_swap]
+  simp only [mem_map, preimage_setOf_eq, Prod.snd_swap, Prod.fst_swap]
 
 theorem nhdsWithin_eq_comap_uniformity_of_mem {x : α} {T : Set α} (hx : x ∈ T) (S : Set α) :
     𝓝[S] x = (𝓤 α ⊓ 𝓟 (T ×ˢ S)).comap (Prod.mk x) := by
@@ -775,7 +791,7 @@ theorem uniformContinuous_of_const [UniformSpace β] {c : α → β} (h : ∀ a 
     UniformContinuous c :=
   have : (fun x : α × α => (c x.fst, c x.snd)) ⁻¹' idRel = univ :=
     eq_univ_iff_forall.2 fun ⟨a, b⟩ => h a b
-  le_trans (map_le_iff_le_comap.2 <| by simp [comap_principal, this, univ_mem]) refl_le_uniformity
+  le_trans (map_le_iff_le_comap.2 <| by simp [comap_principal, this]) refl_le_uniformity
 
 theorem uniformContinuous_id : UniformContinuous (@id α) := tendsto_id
 

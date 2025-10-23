@@ -38,7 +38,7 @@ theorem exists_reduced_fraction (x : K) :
   obtain ⟨_, b'_nonzero⟩ := mul_mem_nonZeroDivisors.mp b_nonzero
   refine ⟨a', ⟨b', b'_nonzero⟩, no_factor, ?_⟩
   refine mul_left_cancel₀ (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors b_nonzero) ?_
-  simp only [Subtype.coe_mk, RingHom.map_mul, Algebra.smul_def] at *
+  simp only [RingHom.map_mul, Algebra.smul_def] at *
   rw [← hab, mul_assoc, mk'_spec' _ a' ⟨b', b'_nonzero⟩]
 
 /-- `f.num x` is the numerator of `x : f.codomain` as a reduced fraction. -/
@@ -52,7 +52,7 @@ noncomputable def den (x : K) : nonZeroDivisors A :=
 theorem num_den_reduced (x : K) : IsRelPrime (num A x) (den A x) :=
   (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).1
 
--- @[simp] -- Porting note: LHS reduces to give the simp lemma below
+-- `@[simp]` normal form is called `mk'_num_den'`.
 theorem mk'_num_den (x : K) : mk' K (num A x) (den A x) = x :=
   (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).2
 

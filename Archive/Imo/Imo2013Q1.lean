@@ -34,25 +34,23 @@ theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
       ∏ i ∈ Finset.range k, (1 + 1 / (m i : ℚ)) := by
   suffices ∀ i, i ∈ Finset.range k → (1 : ℚ) + 1 / ↑(if i < k then m i else nm) = 1 + 1 / m i from
     Finset.prod_congr rfl this
-  intro i hi
-  simp [Finset.mem_range.mp hi]
+  grind
 
 end Imo2013Q1
 
 open Imo2013Q1
 theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     ∃ m : ℕ → ℕ+, (1 : ℚ) + (2 ^ k - 1) / n = ∏ i ∈ Finset.range k, (1 + 1 / (m i : ℚ)) := by
-  revert n
-  induction' k with pk hpk
-  · intro n; use fun (_ : ℕ) => (1 : ℕ+); simp
-  -- For the base case, any m works.
-  intro n
+  induction k generalizing n with
+  | zero => use fun (_ : ℕ) => (1 : ℕ+); simp -- For the base case, any m works.
+  | succ pk hpk =>
   obtain ⟨t, ht : ↑n = t + t⟩ | ⟨t, ht : ↑n = 2 * t + 1⟩ := (n : ℕ).even_or_odd
   · -- even case
     rw [← two_mul] at ht
-    rcases t with - | t
     -- Eliminate the zero case to simplify later calculations.
-    · exfalso; rw [Nat.mul_zero] at ht; exact PNat.ne_zero n ht
+    obtain ⟨t, rfl⟩ := Nat.exists_eq_succ_of_ne_zero <| by
+      rintro (rfl : t = 0)
+      rw [Nat.mul_zero] at ht; exact PNat.ne_zero n ht
     -- Now we have ht : ↑n = 2 * (t + 1).
     let t_succ : ℕ+ := ⟨t + 1, t.succ_pos⟩
     obtain ⟨pm, hpm⟩ := hpk t_succ
@@ -64,7 +62,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
       ((1 : ℚ) + (2 ^ pk.succ - 1) / (n : ℚ) : ℚ)= 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
         rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 2 * 2 ^ pk)) * (1 + (2 ^ pk - 1) / (↑t + 1)) := by
-        field_simp
+        simp [field, -mul_eq_mul_right_iff]
         ring
       _ = (1 + 1 / (2 * t + 2 ^ pk.succ)) * (1 + (2 ^ pk - 1) / t_succ) := by
         simp [pow_succ', PNat.mk_coe, t_succ]
@@ -83,7 +81,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
       ((1 : ℚ) + (2 ^ pk.succ - 1) / ↑n : ℚ) = 1 + (2 * 2 ^ pk - 1) / (2 * t + 1 : ℕ) := by
         rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / (t + 1)) := by
-        field_simp
+        simp [field]
         ring
       _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / t_succ) := by norm_cast
       _ = (∏ i ∈ Finset.range pk, (1 + 1 / (m i : ℚ))) * (1 + 1 / ↑(m pk)) := by

@@ -30,40 +30,16 @@ open AffineEquiv AffineMap
 
 section OrderedRing
 
--- TODO: remove `[IsOrderedRing R]` and `@[nolint unusedArguments]`.
 /-- The segment of points weakly between `x` and `y`. When convexity is refactored to support
 abstract affine combination spaces, this will no longer need to be a separate definition from
 `segment`. However, lemmas involving `+ᵥ` or `-ᵥ` will still be relevant after such a
 refactoring, as distinct from versions involving `+` or `-` in a module. -/
-@[nolint unusedArguments]
-def affineSegment [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup V] [Module R V]
+def affineSegment [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V]
     [AddTorsor V P] (x y : P) :=
   lineMap x y '' Set.Icc (0 : R) 1
 
-variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
-
-theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y := by
-  rw [segment_eq_image_lineMap, affineSegment]
-
-theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x := by
-  refine Set.ext fun z => ?_
-  constructor <;>
-    · rintro ⟨t, ht, hxy⟩
-      refine ⟨1 - t, ?_, ?_⟩
-      · rwa [Set.sub_mem_Icc_iff_right, sub_self, sub_zero]
-      · rwa [lineMap_apply_one_sub]
-
-theorem left_mem_affineSegment (x y : P) : x ∈ affineSegment R x y :=
-  ⟨0, Set.left_mem_Icc.2 zero_le_one, lineMap_apply_zero _ _⟩
-
-theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
-  ⟨1, Set.right_mem_Icc.2 zero_le_one, lineMap_apply_one _ _⟩
-
-@[simp]
-theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
-  simp_rw [affineSegment, lineMap_same, AffineMap.coe_const, Function.const,
-    (Set.nonempty_Icc.mpr zero_le_one).image_const]
 
 variable {R} in
 @[simp]
@@ -116,6 +92,33 @@ theorem mem_vsub_const_affineSegment {x y z : P} (p : P) :
 
 variable (R)
 
+section OrderedRing
+variable [IsOrderedRing R]
+
+theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y := by
+  rw [segment_eq_image_lineMap, affineSegment]
+
+theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x := by
+  refine Set.ext fun z => ?_
+  constructor <;>
+    · rintro ⟨t, ht, hxy⟩
+      refine ⟨1 - t, ?_, ?_⟩
+      · rwa [Set.sub_mem_Icc_iff_right, sub_self, sub_zero]
+      · rwa [lineMap_apply_one_sub]
+
+theorem left_mem_affineSegment (x y : P) : x ∈ affineSegment R x y :=
+  ⟨0, Set.left_mem_Icc.2 zero_le_one, lineMap_apply_zero _ _⟩
+
+theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
+  ⟨1, Set.right_mem_Icc.2 zero_le_one, lineMap_apply_one _ _⟩
+
+@[simp]
+theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
+  simp_rw [affineSegment, lineMap_same, AffineMap.coe_const, Function.const,
+    (Set.nonempty_Icc.mpr zero_le_one).image_const]
+
+end OrderedRing
+
 /-- The point `y` is weakly between `x` and `z`. -/
 def Wbtw (x y z : P) : Prop :=
   y ∈ affineSegment R x z
@@ -126,6 +129,10 @@ def Sbtw (x y z : P) : Prop :=
 
 variable {R}
 
+section OrderedRing
+
+variable [IsOrderedRing R]
+
 lemma mem_segment_iff_wbtw {x y z : V} : y ∈ segment R x z ↔ Wbtw R x y z := by
   rw [Wbtw, affineSegment_eq_segment]
 
@@ -133,6 +140,18 @@ alias ⟨_, Wbtw.mem_segment⟩ := mem_segment_iff_wbtw
 
 lemma Convex.mem_of_wbtw {p₀ p₁ p₂ : V} {s : Set V} (hs : Convex R s) (h₀₁₂ : Wbtw R p₀ p₁ p₂)
     (h₀ : p₀ ∈ s) (h₂ : p₂ ∈ s) : p₁ ∈ s := hs.segment_subset h₀ h₂ h₀₁₂.mem_segment
+
+theorem wbtw_comm {x y z : P} : Wbtw R x y z ↔ Wbtw R z y x := by
+  rw [Wbtw, Wbtw, affineSegment_comm]
+
+alias ⟨Wbtw.symm, _⟩ := wbtw_comm
+
+theorem sbtw_comm {x y z : P} : Sbtw R x y z ↔ Sbtw R z y x := by
+  rw [Sbtw, Sbtw, wbtw_comm, ← and_assoc, ← and_assoc, and_right_comm]
+
+alias ⟨Sbtw.symm, _⟩ := sbtw_comm
+
+end OrderedRing
 
 lemma AffineSubspace.mem_of_wbtw {s : AffineSubspace R P} {x y z : P} (hxyz : Wbtw R x y z)
     (hx : x ∈ s) (hz : z ∈ s) : y ∈ s := by obtain ⟨ε, -, rfl⟩ := hxyz; exact lineMap_mem _ hx hz
@@ -169,20 +188,63 @@ theorem wbtw_const_vadd_iff {x y z : P} (v : V) :
     Wbtw R (v +ᵥ x) (v +ᵥ y) (v +ᵥ z) ↔ Wbtw R x y z :=
   mem_const_vadd_affineSegment _
 
+alias ⟨_, Wbtw.const_vadd⟩ := wbtw_const_vadd_iff
+
+@[simp]
+theorem wbtw_const_add_iff {x y z : V} (v : V) :
+    Wbtw R (v + x) (v + y) (v + z) ↔ Wbtw R x y z :=
+  wbtw_const_vadd_iff v
+
+alias ⟨_, Wbtw.const_add⟩ := wbtw_const_add_iff
+
 @[simp]
 theorem wbtw_vadd_const_iff {x y z : V} (p : P) :
     Wbtw R (x +ᵥ p) (y +ᵥ p) (z +ᵥ p) ↔ Wbtw R x y z :=
   mem_vadd_const_affineSegment _
+
+alias ⟨_, Wbtw.vadd_const⟩ := wbtw_vadd_const_iff
+
+@[simp]
+theorem wbtw_add_const_iff {x y z : V} (v : V) :
+    Wbtw R (x + v) (y + v) (z + v) ↔ Wbtw R x y z :=
+  wbtw_vadd_const_iff v
+
+alias ⟨_, Wbtw.add_const⟩ := wbtw_add_const_iff
 
 @[simp]
 theorem wbtw_const_vsub_iff {x y z : P} (p : P) :
     Wbtw R (p -ᵥ x) (p -ᵥ y) (p -ᵥ z) ↔ Wbtw R x y z :=
   mem_const_vsub_affineSegment _
 
+alias ⟨_, Wbtw.const_vsub⟩ := wbtw_const_vsub_iff
+
+@[simp]
+theorem wbtw_const_sub_iff {x y z : V} (v : V) :
+    Wbtw R (v - x) (v - y) (v - z) ↔ Wbtw R x y z :=
+  wbtw_const_vsub_iff v
+
+alias ⟨_, Wbtw.const_sub⟩ := wbtw_const_sub_iff
+
+@[simp]
+theorem wbtw_neg_iff {x y z : V} :
+    Wbtw R (-x) (-y) (-z) ↔ Wbtw R x y z := by
+  simp only [← zero_sub, wbtw_const_sub_iff]
+
+alias ⟨_, Wbtw.neg⟩ := wbtw_neg_iff
+
 @[simp]
 theorem wbtw_vsub_const_iff {x y z : P} (p : P) :
     Wbtw R (x -ᵥ p) (y -ᵥ p) (z -ᵥ p) ↔ Wbtw R x y z :=
   mem_vsub_const_affineSegment _
+
+alias ⟨_, Wbtw.vsub_const⟩ := wbtw_vsub_const_iff
+
+@[simp]
+theorem wbtw_sub_const_iff {x y z : V} (v : V) :
+    Wbtw R (x - v) (y - v) (z - v) ↔ Wbtw R x y z :=
+  wbtw_vsub_const_iff v
+
+alias ⟨_, Wbtw.sub_const⟩ := wbtw_sub_const_iff
 
 @[simp]
 theorem sbtw_const_vadd_iff {x y z : P} (v : V) :
@@ -190,11 +252,29 @@ theorem sbtw_const_vadd_iff {x y z : P} (v : V) :
   rw [Sbtw, Sbtw, wbtw_const_vadd_iff, (AddAction.injective v).ne_iff,
     (AddAction.injective v).ne_iff]
 
+alias ⟨_, Sbtw.const_vadd⟩ := sbtw_const_vadd_iff
+
+@[simp]
+theorem sbtw_const_add_iff {x y z : V} (v : V) :
+    Sbtw R (v + x) (v + y) (v + z) ↔ Sbtw R x y z :=
+  sbtw_const_vadd_iff v
+
+alias ⟨_, Sbtw.const_add⟩ := sbtw_const_add_iff
+
 @[simp]
 theorem sbtw_vadd_const_iff {x y z : V} (p : P) :
     Sbtw R (x +ᵥ p) (y +ᵥ p) (z +ᵥ p) ↔ Sbtw R x y z := by
   rw [Sbtw, Sbtw, wbtw_vadd_const_iff, (vadd_right_injective p).ne_iff,
     (vadd_right_injective p).ne_iff]
+
+alias ⟨_, Sbtw.vadd_const⟩ := sbtw_vadd_const_iff
+
+@[simp]
+theorem sbtw_add_const_iff {x y z : V} (v : V) :
+    Sbtw R (x + v) (y + v) (z + v) ↔ Sbtw R x y z :=
+  sbtw_vadd_const_iff v
+
+alias ⟨_, Sbtw.add_const⟩ := sbtw_add_const_iff
 
 @[simp]
 theorem sbtw_const_vsub_iff {x y z : P} (p : P) :
@@ -202,11 +282,36 @@ theorem sbtw_const_vsub_iff {x y z : P} (p : P) :
   rw [Sbtw, Sbtw, wbtw_const_vsub_iff, (vsub_right_injective p).ne_iff,
     (vsub_right_injective p).ne_iff]
 
+alias ⟨_, Sbtw.const_vsub⟩ := sbtw_const_vsub_iff
+
+@[simp]
+theorem sbtw_const_sub_iff {x y z : V} (v : V) :
+    Sbtw R (v - x) (v - y) (v - z) ↔ Sbtw R x y z :=
+  sbtw_const_vsub_iff v
+
+alias ⟨_, Sbtw.const_sub⟩ := sbtw_const_sub_iff
+
+@[simp]
+theorem sbtw_neg_iff {x y z : V} :
+    Sbtw R (-x) (-y) (-z) ↔ Sbtw R x y z := by
+  simp only [← zero_sub, sbtw_const_sub_iff]
+
+alias ⟨_, Sbtw.neg⟩ := sbtw_neg_iff
+
 @[simp]
 theorem sbtw_vsub_const_iff {x y z : P} (p : P) :
     Sbtw R (x -ᵥ p) (y -ᵥ p) (z -ᵥ p) ↔ Sbtw R x y z := by
   rw [Sbtw, Sbtw, wbtw_vsub_const_iff, (vsub_left_injective p).ne_iff,
     (vsub_left_injective p).ne_iff]
+
+alias ⟨_, Sbtw.vsub_const⟩ := sbtw_vsub_const_iff
+
+@[simp]
+theorem sbtw_sub_const_iff {x y z : V} (v : V) :
+    Sbtw R (x - v) (y - v) (z - v) ↔ Sbtw R x y z :=
+  sbtw_vsub_const_iff v
+
+alias ⟨_, Sbtw.sub_const⟩ := sbtw_sub_const_iff
 
 theorem Sbtw.wbtw {x y z : P} (h : Sbtw R x y z) : Wbtw R x y z :=
   h.1
@@ -237,17 +342,11 @@ theorem Wbtw.mem_affineSpan {x y z : P} (h : Wbtw R x y z) : y ∈ line[R, x, z]
   rcases h with ⟨r, ⟨-, rfl⟩⟩
   exact lineMap_mem_affineSpan_pair _ _ _
 
-theorem wbtw_comm {x y z : P} : Wbtw R x y z ↔ Wbtw R z y x := by
-  rw [Wbtw, Wbtw, affineSegment_comm]
-
-alias ⟨Wbtw.symm, _⟩ := wbtw_comm
-
-theorem sbtw_comm {x y z : P} : Sbtw R x y z ↔ Sbtw R z y x := by
-  rw [Sbtw, Sbtw, wbtw_comm, ← and_assoc, ← and_assoc, and_right_comm]
-
-alias ⟨Sbtw.symm, _⟩ := sbtw_comm
-
 variable (R)
+
+section OrderedRing
+
+variable [IsOrderedRing R]
 
 @[simp]
 theorem wbtw_self_left (x y : P) : Wbtw R x x y :=
@@ -264,6 +363,34 @@ theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
   · rw [h]
     exact wbtw_self_left R x x
 
+end OrderedRing
+
+section lift
+
+variable [ZeroLEOneClass R]
+variable (R' : Type*) [Ring R'] [PartialOrder R']
+variable [Module R' V] [Module R' R] [IsScalarTower R' R V] [SMulPosMono R' R]
+
+theorem affineSegment.lift (x y : P) : affineSegment R' x y ⊆ affineSegment R x y := by
+  rintro p ⟨a, ⟨⟨ha₀, ha₁⟩, rfl⟩⟩
+  refine ⟨a • 1, ⟨?_, ?_⟩, by simp [lineMap_apply]⟩
+  · rw [← zero_smul R' (1 : R)]
+    exact smul_le_smul_of_nonneg_right ha₀ zero_le_one
+  · nth_rw 2 [← one_smul R' 1]
+    exact smul_le_smul_of_nonneg_right ha₁ zero_le_one
+
+variable {R'} in
+/-- Lift a `Wbtw` predicate from one ring to another along a scalar tower. -/
+theorem Wbtw.lift {x y z : P} (h : Wbtw R' x y z) : Wbtw R x y z :=
+  affineSegment.lift R R' x z h
+
+variable {R'} in
+/-- Lift a `Sbtw` predicate from one ring to another along a scalar tower. -/
+theorem Sbtw.lift {x y z : P} (h : Sbtw R' x y z) : Sbtw R x y z :=
+  ⟨h.wbtw.lift R, h.2⟩
+
+end lift
+
 @[simp]
 theorem not_sbtw_self_left (x y : P) : ¬Sbtw R x x y :=
   fun h => h.ne_left rfl
@@ -273,6 +400,7 @@ theorem not_sbtw_self_right (x y : P) : ¬Sbtw R x y y :=
   fun h => h.ne_right rfl
 
 variable {R}
+variable [IsOrderedRing R]
 
 theorem Wbtw.left_ne_right_of_ne_left {x y z : P} (h : Wbtw R x y z) (hne : y ≠ x) : x ≠ z := by
   rintro rfl
@@ -294,7 +422,7 @@ theorem sbtw_iff_mem_image_Ioo_and_ne [NoZeroSMulDivisors R V] {x y z : P} :
   refine ⟨⟨t, Set.mem_Icc_of_Ioo ht, rfl⟩, ?_⟩
   rw [lineMap_apply, ← @vsub_ne_zero V, ← @vsub_ne_zero V _ _ _ _ z, vadd_vsub_assoc, vsub_self,
     vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev z x, ← @neg_one_smul R, ← add_smul, ← sub_eq_add_neg]
-  simp [smul_ne_zero, sub_eq_zero, ht.1.ne.symm, ht.2.ne, hxz.symm]
+  simp [sub_eq_zero, ht.1.ne.symm, ht.2.ne, hxz.symm]
 
 variable (R)
 
@@ -377,6 +505,7 @@ theorem sbtw_mul_sub_add_iff [NoZeroDivisors R] {x y r : R} :
     Sbtw R x (r * (y - x) + x) y ↔ x ≠ y ∧ r ∈ Set.Ioo (0 : R) 1 :=
   sbtw_lineMap_iff
 
+omit [IsOrderedRing R] in
 @[simp]
 theorem wbtw_zero_one_iff {x : R} : Wbtw R 0 x 1 ↔ x ∈ Set.Icc (0 : R) 1 := by
   rw [Wbtw, affineSegment, Set.mem_image]
@@ -387,6 +516,7 @@ theorem wbtw_zero_one_iff {x : R} : Wbtw R 0 x 1 ↔ x ∈ Set.Icc (0 : R) 1 := 
 theorem wbtw_one_zero_iff {x : R} : Wbtw R 1 x 0 ↔ x ∈ Set.Icc (0 : R) 1 := by
   rw [wbtw_comm, wbtw_zero_one_iff]
 
+omit [IsOrderedRing R] in
 @[simp]
 theorem sbtw_zero_one_iff {x : R} : Sbtw R 0 x 1 ↔ x ∈ Set.Ioo (0 : R) 1 := by
   rw [Sbtw, wbtw_zero_one_iff, Set.mem_Icc, Set.mem_Ioo]
@@ -468,6 +598,113 @@ theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZero
   refine hs.1 ?_
   have ha' := ha s (w₁ - w₂) hw₁w₂ hz i his
   rwa [Pi.sub_apply, sub_eq_zero] at ha'
+
+namespace Affine
+
+namespace Simplex
+
+/-- The closed interior of a 1-simplex is a segment between its vertices. -/
+lemma closedInterior_eq_affineSegment (s : Simplex R P 1) :
+    s.closedInterior = affineSegment R (s.points 0) (s.points 1) := by
+  ext p
+  constructor
+  · rintro ⟨w, hw, h01, rfl⟩
+    have h : w = Finset.affineCombinationLineMapWeights 0 1 (w 1) := by
+      rw [Fin.sum_univ_two] at hw
+      ext i
+      fin_cases i <;> simp [← hw]
+    rw [h, Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _)]
+    exact Set.mem_image_of_mem _ (h01 _)
+  · rintro ⟨r, ⟨h0, h1⟩, rfl⟩
+    rw [← Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _), affineCombination_mem_closedInterior_iff
+        (Finset.sum_affineCombinationLineMapWeights _ (Finset.mem_univ _) (Finset.mem_univ _) _)]
+    intro i
+    fin_cases i <;> simp [h0, h1]
+
+/-- A point lies in the closed interior of a 1-simplex if and only if it lies weakly between its
+vertices. -/
+lemma mem_closedInterior_iff_wbtw {s : Simplex R P 1} {p : P} :
+    p ∈ s.closedInterior ↔ Wbtw R (s.points 0) p (s.points 1) := by
+  rw [closedInterior_eq_affineSegment, Wbtw]
+
+/-- The closed interior of a 1-dimensional face of a simplex is a segment between its vertices. -/
+lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : Fin (n + 1)}
+    (h : i ≠ j) :
+    (s.face (Finset.card_pair h)).closedInterior = affineSegment R (s.points i) (s.points j) := by
+  have h' : affineSegment R (s.points i) (s.points j) =
+      affineSegment R (s.points (min i j)) (s.points (max i j)) := by
+    rcases h.lt_or_gt with hij | hji
+    · simp [min_eq_left hij.le, max_eq_right hij.le]
+    · nth_rw 2 [affineSegment_comm]
+      simp [max_eq_left hji.le, min_eq_right hji.le]
+  rw [h', (s.face (Finset.card_pair h)).closedInterior_eq_affineSegment, face_points, face_points]
+  congr 2
+  · convert Finset.orderEmbOfFin_zero _ _
+    · exact (Finset.min'_pair i j).symm
+    · omega
+  · convert Finset.orderEmbOfFin_last _ _
+    · exact (Finset.max'_pair i j).symm
+    · omega
+
+/-- A point lies in the closed interior of a 1-dimensional face of a simplex if and only if it lies
+weakly between its vertices. -/
+lemma mem_closedInterior_face_iff_wbtw {n : ℕ} (s : Simplex R P n) {p : P} {i j : Fin (n + 1)}
+    (h : i ≠ j) :
+    p ∈ (s.face (Finset.card_pair h)).closedInterior ↔ Wbtw R (s.points i) p (s.points j) := by
+  rw [s.closedInterior_face_eq_affineSegment h, Wbtw]
+
+/-- The interior of a 1-simplex is a segment between its vertices. -/
+lemma interior_eq_image_Ioo (s : Simplex R P 1) :
+    s.interior = AffineMap.lineMap (s.points 0) (s.points 1) '' Set.Ioo (0 : R) 1 := by
+  ext p
+  constructor
+  · rintro ⟨w, hw, h01, rfl⟩
+    have h : w = Finset.affineCombinationLineMapWeights 0 1 (w 1) := by
+      rw [Fin.sum_univ_two] at hw
+      ext i
+      fin_cases i <;> simp [← hw]
+    rw [h, Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _)]
+    exact Set.mem_image_of_mem _ (h01 _)
+  · rintro ⟨r, ⟨h0, h1⟩, rfl⟩
+    rw [← Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _), affineCombination_mem_interior_iff
+        (Finset.sum_affineCombinationLineMapWeights _ (Finset.mem_univ _) (Finset.mem_univ _) _)]
+    intro i
+    fin_cases i <;> simp [h0, h1]
+
+/-- A point lies in the interior of a 1-simplex if and only if it lies strictly between its
+vertices. -/
+lemma mem_interior_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {s : Simplex R P 1} {p : P} :
+    p ∈ s.interior ↔ Sbtw R (s.points 0) p (s.points 1) := by
+  rw [interior_eq_image_Ioo, sbtw_iff_mem_image_Ioo_and_ne]
+  simp [s.independent.injective.ne (by decide : (0 : Fin 2) ≠ 1)]
+
+/-- A point lies in the interior of a 1-dimensional face of a simplex if and only if it lies
+strictly between its vertices. -/
+lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : ℕ}
+    (s : Simplex R P n) {p : P} {i j : Fin (n + 1)} (h : i ≠ j) :
+    p ∈ (s.face (Finset.card_pair h)).interior ↔ Sbtw R (s.points i) p (s.points j) := by
+  have h' : Sbtw R (s.points i) p (s.points j) ↔
+      Sbtw R (s.points (min i j)) p (s.points (max i j)) := by
+    rcases h.lt_or_gt with hij | hji
+    · simp [min_eq_left hij.le, max_eq_right hij.le]
+    · nth_rw 2 [sbtw_comm]
+      simp [max_eq_left hji.le, min_eq_right hji.le]
+  rw [h', mem_interior_iff_sbtw, face_points, face_points]
+  congr! 4
+  · convert Finset.orderEmbOfFin_zero _ _
+    · exact (Finset.min'_pair i j).symm
+    · omega
+  · convert Finset.orderEmbOfFin_last _ _
+    · exact (Finset.max'_pair i j).symm
+    · omega
+
+end Simplex
+
+end Affine
 
 end OrderedRing
 
@@ -632,8 +869,7 @@ theorem sbtw_iff_left_ne_and_right_mem_image_Ioi {x y z : P} :
     rw [Set.mem_Ici] at hr
     rcases hr.lt_or_eq with (hrlt | rfl)
     · exact Set.mem_image_of_mem _ hrlt
-    · exfalso
-      simp at h
+    · simp at h
   · rcases h with ⟨hne, r, hr, rfl⟩
     rw [Set.mem_Ioi] at hr
     refine
@@ -675,6 +911,7 @@ theorem Sbtw.left_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
 theorem Sbtw.left_mem_affineSpan {x y z : P} (h : Sbtw R x y z) : x ∈ line[R, z, y] :=
   h.symm.right_mem_affineSpan
 
+omit [IsStrictOrderedRing R] in
 lemma AffineSubspace.right_mem_of_wbtw {s : AffineSubspace R P} (hxyz : Wbtw R x y z) (hx : x ∈ s)
     (hy : y ∈ s) (hxy : x ≠ y) : z ∈ s := by
   obtain ⟨ε, -, rfl⟩ := hxyz
@@ -753,6 +990,7 @@ theorem Sbtw.trans_right_left {w x y z : P} (h₁ : Sbtw R w x z) (h₂ : Sbtw R
     Sbtw R w x y :=
   ⟨h₁.wbtw.trans_right_left h₂.wbtw, h₁.ne_left, h₂.left_ne⟩
 
+omit [IsStrictOrderedRing R] in
 theorem Wbtw.collinear {x y z : P} (h : Wbtw R x y z) : Collinear R ({x, y, z} : Set P) := by
   rw [collinear_iff_exists_forall_eq_smul_vadd]
   refine ⟨x, z -ᵥ x, ?_⟩
@@ -807,8 +1045,7 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
     simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, ← add_smul, eq_vadd_iff_vsub_eq,
       smul_add]
     convert (one_smul R (y -ᵥ x)).symm
-    field_simp [(add_pos hr₁ hr₂).ne', hr₂.ne']
-    ring
+    field_simp
 
 /-- If `T` is an affine independent family of points,
 then any 3 distinct points form a triangle. -/
@@ -823,7 +1060,7 @@ theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
 variable (R)
 
 theorem wbtw_pointReflection (x y : P) : Wbtw R y x (pointReflection R x y) := by
-  refine ⟨2⁻¹, ⟨by norm_num, by norm_num⟩, ?_⟩
+  refine ⟨2⁻¹, ⟨by simp, by norm_num⟩, ?_⟩
   rw [lineMap_apply, pointReflection_apply, vadd_vsub_assoc, ← two_smul R (x -ᵥ y)]
   simp
 

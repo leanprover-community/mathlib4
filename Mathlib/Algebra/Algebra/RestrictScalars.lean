@@ -23,7 +23,7 @@ typeclass instead.
   between the restricted and original space (in fact, they are definitionally equal,
   but sometimes it is helpful to avoid using this fact, to keep instances from leaking).
 * `RestrictScalars.ringEquiv : RestrictScalars R S A ≃+* A`: the ring equivalence
-   between the restricted and original space when the module is an algebra.
+  between the restricted and original space when the module is an algebra.
 
 ## See also
 
@@ -200,7 +200,6 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
 instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) where
   algebraMap := (algebraMap S A).comp (algebraMap R S)
-  smul := (· • ·)
   commutes' := fun _ _ ↦ Algebra.commutes' (A := A) _ _
   smul_def' := fun _ _ ↦ Algebra.smul_def' (A := A) _ _
 
