@@ -18,43 +18,34 @@ variable [AddCommGroup W] [Module K W] (f : V →ₗ[K] W)
 
 namespace LinearMap
 
-/-- 选择与核空间互补的子空间 -/
+/-- A subspace complementary to the `ker f`-/
 def kerComplement : Submodule K V :=
   (ker f).exists_isCompl.choose
 
-/-- 核空间与其补空间构成互补子空间 -/
 lemma isCompl_ker_kerComplement : IsCompl f.kerComplement (ker f) :=
   (ker f).exists_isCompl.choose_spec.symm
 
-/-- 核空间与其补空间的直和等价于整个空间 -/
-def directSumDecomposition : (f.kerComplement × (ker f)) ≃ₗ[K] V :=
+/-- `f.kerComplement × (ker f)` is isomorphic to the whole space-/
+def prodEquivOfkerComplement : (f.kerComplement × (ker f)) ≃ₗ[K] V :=
   prodEquivOfIsCompl _ _ f.isCompl_ker_kerComplement
 
-/-- 直和分解的核分量在映射 `f` 下为零，因此不影响像。
-
-    具体来说，对于任意 `y ∈ V`，将其分解为 `y = y_ker + y_comp`（其中 `y_ker ∈ ker f`, `y_comp ∈ kerComplement f`），
-    则有 `f y_ker = 0`，因此 `f y = f y_comp`。
-    而 `(directSumDecomposition.symm y).1` 对应的是核分量 `y_ker`。 -/
-lemma apply_ker_component_eq_zero (y : V) : f (f.directSumDecomposition.symm y).1 = f y := by
+lemma apply_ker_component_eq_zero (y : V) : f (f.prodEquivOfkerComplement.symm y).1 = f y := by
   nth_rw 2 [← Submodule.IsCompl.projection_add_projection_eq_self f.isCompl_ker_kerComplement y]
-  refine sub_mem_ker_iff.mp ?_
-  #check map_coe_ker
-  sorry
-  -- simp only [map_add, , add_zero]
-  -- rfl
+  rw [map_add, mem_ker.mp (f.isCompl_ker_kerComplement.symm.projection_apply_mem y), add_zero]
+  rfl
 
 /-- 通过线性映射f的直和分解构造V的基。
 
     当V被分解为ker f ⊕ kerComplement f时，该基由核空间和补空间的基通过直和分解等价映射得到。
     具体来说：
     - 索引集是`kerComplement f`的基索引与`ker f`的基索引的直和（Sum类型）
-    - 基向量通过`f.directSumDecomposition`等价关系从子空间基组合而成
+    - 基向量通过`f.prodEquivOfkerComplement`等价关系从子空间基组合而成
 
     这一定义体现了第一同构定理的几何实质：V ≃ ker f × (range f)，且kerComplement f ≃ range f。
 -/
 def decomposition_basis :
     Basis ((ofVectorSpaceIndex K f.kerComplement) ⊕ (ofVectorSpaceIndex K (LinearMap.ker f))) K V :=
-  .map (.prod (ofVectorSpace K _) (ofVectorSpace K _)) (f.directSumDecomposition)
+  .map (.prod (ofVectorSpace K _) (ofVectorSpace K _)) (f.prodEquivOfkerComplement)
 
 /-- 线性映射 `f` 在核补空间上的限制，即将核补空间嵌入到 `V` 后应用 `f` -/
 def ker_complement_restriction : f.kerComplement →ₗ[K] W :=
@@ -112,7 +103,7 @@ def kerComplementEquivRange :
   · simpa [← ker_eq_bot, g, ker_codRestrict]
      using f.ker_complement_restriction_injective
   intro ⟨x, y, hyx⟩
-  use (f.directSumDecomposition.2 y).1
+  use (f.prodEquivOfkerComplement.2 y).1
   simp [g, codRestrict, ← hyx, ker_complement_restriction, apply_ker_component_eq_zero]
 
 
@@ -147,7 +138,7 @@ lemma card_cokernel_basis_index_eq  {m r : ℕ} [FiniteDimensional K V]
     f.finrank_kerComplement_eq_rank hr]
 
 lemma apply_kerComplement_basis_eq_range_basis (j) : (f (f.decomposition_basis (Sum.inl j))) = (f.range_decomposition_basis (Sum.inl j)) := by
-    simp [LinearMap.decomposition_basis, directSumDecomposition,range_decomposition_basis, sumExtend, Equiv.sumCongr,
+    simp [LinearMap.decomposition_basis, prodEquivOfkerComplement,range_decomposition_basis, sumExtend, Equiv.sumCongr,
       ker_complement_basis_image, ker_complement_restriction]
 
 
@@ -160,9 +151,7 @@ end
 这个等价关系存在是因为：
 - 前提条件 `h : Cardinal.mk ι = r` 保证了 `ι` 的势等于 `r`
 - 通过 `Cardinal.mk_eq_nat_iff` 将基数相等转化为类型等价
-- 使用选择公理 (`Classical.choice`) 从存在性证明中提取具体的等价关系
-
-注意：由于使用了选择公理，此定义是 `noncomputable` 的。 -/
+- 使用选择公理 (`Classical.choice`) 从存在性证明中提取具体的等价关系 -/
 noncomputable def indexEquivOfCardinalEq {ι}{r : ℕ} (h : Cardinal.mk ι = r) :
     ι ≃ Fin r := by
   apply Classical.choice
@@ -185,7 +174,7 @@ noncomputable def basisIndexEquivFin {ι r K V} [DivisionRing K]
 
 section
 
-variable  {R : Type} [Field R] {m n r: ℕ}  {M₁ : Type} {M₂ : Type}
+variable {R : Type} [Field R] {m n r: ℕ}  {M₁ : Type} {M₂ : Type}
   [AddCommGroup M₁] [AddCommGroup M₂]
   [Module R M₁] [Module R M₂]
   [FiniteDimensional R M₁]
@@ -201,7 +190,7 @@ open Matrix LinearMap
 
 这个版本使用抽象的基索引类型，保持最大的一般性。 -/
 theorem exists_basis_for_normal_form_abstract :
-  ∃ (v₁ : Basis ((ofVectorSpaceIndex R f.kerComplement) ⊕ (ofVectorSpaceIndex R (LinearMap.ker f))) R M₁)
+  ∃ (v₁ : Basis ((ofVectorSpaceIndex R f.kerComplement) ⊕ (ofVectorSpaceIndex R (ker f))) R M₁)
     (v₂ : Basis ((ofVectorSpaceIndex R f.kerComplement) ⊕
       (sumExtendIndex f.linear_independent_ker_complement_basis_image)) R M₂),
     LinearMap.toMatrix v₁ v₂ f = fromBlocks 1 0 0 0 := by
@@ -213,9 +202,9 @@ theorem exists_basis_for_normal_form_abstract :
     simp [f.apply_kerComplement_basis_eq_range_basis j',
       Finsupp.single, Pi.single, Function.update, Matrix.one_apply]
   | Sum.inr i', Sum.inr j' =>
-    simp [LinearMap.decomposition_basis, directSumDecomposition]
+    simp [LinearMap.decomposition_basis, prodEquivOfkerComplement]
   | Sum.inl i', Sum.inr j' =>
-    simp [LinearMap.decomposition_basis, directSumDecomposition]
+    simp [LinearMap.decomposition_basis, prodEquivOfkerComplement]
   | Sum.inr i', Sum.inl j' =>
     simp [f.apply_kerComplement_basis_eq_range_basis j']
 
@@ -253,7 +242,7 @@ theorem exists_basis_for_normal_form (hn : finrank R M₁ = n) (hm : finrank R M
       simp [hu₁, hu₂, Equiv.sumCongr]
       funext i j
       match i, j with
-      | Sum.inl i', Sum.inl j' => simp [basisIndexEquivFin, indexEquivOfCardinalEq, Matrix.one_apply]
+      | Sum.inl i', Sum.inl j' => simp [Matrix.one_apply]
       | Sum.inr i', Sum.inr j' => simp
       | Sum.inl i', Sum.inr j' => simp
       | Sum.inr i', Sum.inl j' => simp
