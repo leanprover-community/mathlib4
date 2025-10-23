@@ -513,7 +513,7 @@ theorem prod_cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set 
   simp [ReducedWord.prod, cons, mul_assoc]
 
 theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
-    (unitsSMul φ u w).prod φ = (t^(u : ℤ) * w.prod φ : HNNExtension G A B φ) := by
+    (unitsSMul φ u w).prod φ = (t ^ (u : ℤ) * w.prod φ : HNNExtension G A B φ) := by
   rw [unitsSMul]
   split_ifs with hcan
   · cases w using consRecOn

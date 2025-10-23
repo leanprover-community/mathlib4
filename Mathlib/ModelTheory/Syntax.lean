@@ -732,7 +732,7 @@ end LEquiv
 @[inherit_doc] scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
 -- input \==>
 
-@[inherit_doc] scoped[FirstOrder] prefix:110 "∀'" => FirstOrder.Language.BoundedFormula.all
+@[inherit_doc] scoped[FirstOrder] prefix:110 "∀' " => FirstOrder.Language.BoundedFormula.all
 
 @[inherit_doc] scoped[FirstOrder] prefix:arg "∼" => FirstOrder.Language.BoundedFormula.not
 -- input \~, the ASCII character ~ has too low precedence
@@ -740,7 +740,7 @@ end LEquiv
 @[inherit_doc] scoped[FirstOrder] infixl:61 " ⇔ " => FirstOrder.Language.BoundedFormula.iff
 -- input \<=>
 
-@[inherit_doc] scoped[FirstOrder] prefix:110 "∃'" => FirstOrder.Language.BoundedFormula.ex
+@[inherit_doc] scoped[FirstOrder] prefix:110 "∃' " => FirstOrder.Language.BoundedFormula.ex
 -- input \ex
 
 namespace Formula
@@ -820,27 +820,27 @@ variable (r : L.Relations 2)
 
 /-- The sentence indicating that a basic relation symbol is reflexive. -/
 protected def reflexive : L.Sentence :=
-  ∀'r.boundedFormula₂ (&0) &0
+  ∀' r.boundedFormula₂ (&0) &0
 
 /-- The sentence indicating that a basic relation symbol is irreflexive. -/
 protected def irreflexive : L.Sentence :=
-  ∀'∼(r.boundedFormula₂ (&0) &0)
+  ∀' ∼(r.boundedFormula₂ (&0) &0)
 
 /-- The sentence indicating that a basic relation symbol is symmetric. -/
 protected def symmetric : L.Sentence :=
-  ∀'∀'(r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &0)
+  ∀' ∀' (r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &0)
 
 /-- The sentence indicating that a basic relation symbol is antisymmetric. -/
 protected def antisymmetric : L.Sentence :=
-  ∀'∀'(r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &0 ⟹ Term.bdEqual (&0) &1)
+  ∀' ∀' (r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &0 ⟹ Term.bdEqual (&0) &1)
 
 /-- The sentence indicating that a basic relation symbol is transitive. -/
 protected def transitive : L.Sentence :=
-  ∀'∀'∀'(r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &2 ⟹ r.boundedFormula₂ (&0) &2)
+  ∀' ∀' ∀' (r.boundedFormula₂ (&0) &1 ⟹ r.boundedFormula₂ (&1) &2 ⟹ r.boundedFormula₂ (&0) &2)
 
 /-- The sentence indicating that a basic relation symbol is total. -/
 protected def total : L.Sentence :=
-  ∀'∀'(r.boundedFormula₂ (&0) &1 ⊔ r.boundedFormula₂ (&1) &0)
+  ∀' ∀' (r.boundedFormula₂ (&0) &1 ⊔ r.boundedFormula₂ (&1) &0)
 
 end Relations
 

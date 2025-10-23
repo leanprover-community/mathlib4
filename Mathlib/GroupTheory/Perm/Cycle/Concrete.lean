@@ -470,7 +470,7 @@ def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s
 -- mutes `'decide' tactic does nothing [linter.unusedTactic]`
 set_option linter.unusedTactic false in
 @[inherit_doc Cycle.formPerm]
-notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
+notation3 (prettyPrint := false) "c[" (l", "* => foldr (h t => List.cons h t) List.nil) "]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
 /-- Represents a permutation as product of disjoint cycles:

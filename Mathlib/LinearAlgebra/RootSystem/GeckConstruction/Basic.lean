@@ -120,7 +120,7 @@ def e (i : b.support) :
   open scoped Classical in
   letI := P.indexNeg
   .fromBlocks 0
-    (.of fun i' j ↦ if i' = i ∧ j = - i then 1 else 0)
+    (.of fun i' j ↦ if i' = i ∧ j = -i then 1 else 0)
     (.of fun i' j ↦ if i' = i then ↑|b.cartanMatrix i j| else 0)
     (.of fun i' j ↦ if P.root i' = P.root i + P.root j then P.chainBotCoeff i j + 1 else 0)
 
@@ -131,7 +131,7 @@ def f (i : b.support) :
   letI := P.indexNeg
   .fromBlocks 0
     (.of fun i' j ↦ if i' = i ∧ j = i then 1 else 0)
-    (.of fun i' j ↦ if i' = - i then ↑|b.cartanMatrix i j| else 0)
+    (.of fun i' j ↦ if i' = -i then ↑|b.cartanMatrix i j| else 0)
     (.of fun i' j ↦ if P.root i' = P.root j - P.root i then P.chainTopCoeff i j + 1 else 0)
 
 variable (b)
@@ -226,7 +226,7 @@ omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in
 
 omit [Finite ι] [IsDomain R] in
 lemma ω_mul_h [Fintype ι] (i : b.support) :
-    ω b * h i = - h i * ω b := by
+    ω b * h i = -h i * ω b := by
   classical
   ext (k | k) (l | l)
   · simp [ω, h]
@@ -244,7 +244,7 @@ lemma ω_mul_e [Fintype ι] (i : b.support) :
   · simp only [ω, e, f, mul_ite, mul_zero, Fintype.sum_sum_type, Matrix.mul_apply, Matrix.of_apply,
       Matrix.fromBlocks_apply₁₂, Matrix.fromBlocks_apply₂₂, Finset.sum_ite_eq']
     rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by simp_all)]
-    simp [← ite_and, and_comm, - indexNeg_neg, neg_eq_iff_eq_neg]
+    simp [← ite_and, and_comm, -indexNeg_neg, neg_eq_iff_eq_neg]
   · simp [ω, e, f]
   · simp only [ω, e, f, Matrix.mul_apply, Fintype.sum_sum_type, Matrix.fromBlocks_apply₂₁,
       Matrix.fromBlocks_apply₂₂, Matrix.of_apply, mul_ite, ← neg_eq_iff_eq_neg (a := k)]
@@ -259,7 +259,7 @@ lemma ω_mul_f [Fintype ι] (i : b.support) :
   simpa [mul_assoc, ω_mul_ω] using this.symm
 
 lemma lie_e_f_mul_ω [Fintype ι] (i j : b.support) :
-    ⁅e i, f j⁆ * ω b = - ω b * ⁅e j, f i⁆ := by
+    ⁅e i, f j⁆ * ω b = -ω b * ⁅e j, f i⁆ := by
   classical
   calc ⁅e i, f j⁆ * ω b = e i * f j * ω b - f j * e i * ω b := by rw [Ring.lie_def, sub_mul]
                       _ = e i * (f j * ω b) - f j * (e i * ω b) := by rw [mul_assoc, mul_assoc]
