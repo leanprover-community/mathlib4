@@ -312,24 +312,24 @@ def evalRound : NormNumExt where eval {u αZ} e := do
     match ← derive x with
     | .isBool .. => failure
     | .isNat sα nb pb => do
-      let instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) nb q(isNat_round $x _ $pb)
     | .isNegNat sα nb pb => do
-      let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      let _instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNegNat q(inferInstance) nb q(isInt_round _ _ $pb)
     | .isNNRat _ q n d h => do
-      let _instField ← synthInstanceQ (q(Field $α) : Q(Type u_1))
-      let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      let _instField ← synthInstanceQ q(Field $α)
+      let _instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit (round q)
       haveI : $z =Q round (Int.ofNat $n / $d : ℚ) := ⟨⟩
       return .isInt q(inferInstance) z (round q)
         q(IsRat.isInt_round $x $n $d $z rfl (IsNNRat.to_isRat $h))
     | .isNegNNRat _ q n d h => do
-      let _instField ← synthInstanceQ (q(Field $α) : Q(Type u_1))
-      let _instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $α))
+      let _instField ← synthInstanceQ q(Field $α)
+      let _instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit (round q)
       haveI : $z =Q round ((Int.negOfNat $n) / $d : ℚ) := ⟨⟩
