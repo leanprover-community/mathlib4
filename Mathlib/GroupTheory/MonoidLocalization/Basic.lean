@@ -114,8 +114,8 @@ end Submonoid
 
 namespace Localization
 
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
-run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `Localization `AddLocalization
+/- Ensure that `@[to_additive]` uses the right namespace before the definition of `Localization`. -/
+run_meta ToAdditive.insertTranslation `Localization `AddLocalization
 
 /-- The congruence relation on `M × S`, `M` a `CommMonoid` and `S` a submonoid of `M`, whose
 quotient is the localization of `M` at `S`, defined as the unique congruence relation on
