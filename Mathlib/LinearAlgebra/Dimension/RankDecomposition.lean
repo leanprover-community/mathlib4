@@ -46,8 +46,7 @@ after choosing suitable bases on domain and codomain, the matrix of `f` is a blo
 ## Main results
 
 * `LinearMap.exists_basis_for_normal_form_abstract` :
-  there exist bases `v₁` of `V` and `v₂` of `W` (indexed by disjoint sums of abstract
-  index types) such that `toMatrix v₁ v₂ f = fromBlocks 1 0 0 0`.
+  there exist bases `v₁` of `V` and `v₂` of `W` such that `toMatrix v₁ v₂ f = fromBlocks 1 0 0 0`.
 
 * `LinearMap.exists_basis_for_normal_form` :
   in the finite-dimensional case, after reindexing by `Fin r ⊕ Fin (n - r)` and
