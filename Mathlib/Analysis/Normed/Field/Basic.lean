@@ -33,7 +33,7 @@ open scoped Topology NNReal ENNReal
 
 /-- A normed division ring is a division ring endowed with a seminorm which satisfies the equality
 `‖x y‖ = ‖x‖ ‖y‖`. -/
-class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSpace α where
+class NormedDivisionRing (α : Type*) extends DivisionRing α, Norm α, MetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is multiplicative. -/
@@ -145,7 +145,7 @@ end NormedDivisionRing
 end NormedDivisionRing
 
 /-- A normed field is a field with a norm satisfying ‖x y‖ = ‖x‖ ‖y‖. -/
-class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
+class NormedField (α : Type*) extends Field α, Norm α, MetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is multiplicative. -/
@@ -291,9 +291,10 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
       exact (one_lt_inv₀ (norm_pos_iff.2 hx)).2 hlt
     · exact ⟨x, hlt⟩
 
-noncomputable instance Real.normedField : NormedField ℝ :=
-  { Real.normedAddCommGroup, Real.instField with
-    norm_mul := abs_mul }
+noncomputable instance Real.normedField : NormedField ℝ where
+  __ := Real.instField
+  __ := Real.normedAddCommGroup
+  norm_mul := abs_mul
 
 noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where
   lt_norm_lt _ _ h₀ hr :=

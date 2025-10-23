@@ -294,8 +294,8 @@ instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) := fast_instance%
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
 instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
-  __ := instSeminormedAddCommGroup
   __ := instNonUnitalRing
+  __ := instSeminormedAddCommGroup
   norm_mul_le f g := norm_ofNormedAddCommGroup_le _ (by positivity)
     (fun x ↦ (norm_mul_le _ _).trans <| mul_le_mul
       (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))

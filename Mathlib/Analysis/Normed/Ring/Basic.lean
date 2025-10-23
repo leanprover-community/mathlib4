@@ -29,7 +29,7 @@ open scoped Topology NNReal
 
 /-- A non-unital seminormed ring is a not-necessarily-unital ring
 endowed with a seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
+class NonUnitalSeminormedRing (α : Type*) extends NonUnitalRing α, Norm α,
   PseudoMetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
@@ -38,7 +38,7 @@ class NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
 
 /-- A seminormed ring is a ring endowed with a seminorm which satisfies the inequality
 `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class SeminormedRing (α : Type*) extends Norm α, Ring α, PseudoMetricSpace α where
+class SeminormedRing (α : Type*) extends Ring α, Norm α, PseudoMetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is submultiplicative. -/
@@ -52,7 +52,7 @@ instance (priority := 100) SeminormedRing.toNonUnitalSeminormedRing [β : Semino
 
 /-- A non-unital normed ring is a not-necessarily-unital ring
 endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NonUnitalNormedRing (α : Type*) extends Norm α, NonUnitalRing α, MetricSpace α where
+class NonUnitalNormedRing (α : Type*) extends NonUnitalRing α, Norm α, MetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is submultiplicative. -/
@@ -65,7 +65,7 @@ instance (priority := 100) NonUnitalNormedRing.toNonUnitalSeminormedRing
   { β with }
 
 /-- A normed ring is a ring endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NormedRing (α : Type*) extends Norm α, Ring α, MetricSpace α where
+class NormedRing (α : Type*) extends Ring α, Norm α, MetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is submultiplicative. -/
@@ -263,9 +263,10 @@ instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalNormedRing {S 𝕜 E
   { nonUnitalSeminormedRing s with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
-  { ULift.seminormedAddCommGroup, ULift.nonUnitalRing with
-    norm_mul_le x y := norm_mul_le x.down y.down }
+instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) where
+  __ := ULift.nonUnitalRing
+  __ := ULift.seminormedAddCommGroup
+  norm_mul_le x y := norm_mul_le x.down y.down
 
 /-- Non-unital seminormed ring structure on the product of two non-unital seminormed rings,
   using the sup norm. -/
@@ -416,12 +417,12 @@ theorem eventually_norm_pow_le (a : α) : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ �
   eventually_atTop.mpr ⟨1, fun _b h => norm_pow_le' a (Nat.succ_le_iff.mp h)⟩
 
 instance ULift.seminormedRing : SeminormedRing (ULift α) :=
-  { ULift.nonUnitalSeminormedRing, ULift.ring with }
+  { ULift.ring, ULift.nonUnitalSeminormedRing with }
 
 /-- Seminormed ring structure on the product of two seminormed rings,
   using the sup norm. -/
 instance Prod.seminormedRing [SeminormedRing β] : SeminormedRing (α × β) :=
-  { nonUnitalSeminormedRing, instRing with }
+  { instRing, nonUnitalSeminormedRing with }
 
 instance MulOpposite.instSeminormedRing : SeminormedRing αᵐᵒᵖ where
   __ := instRing
@@ -575,7 +576,7 @@ section SeminormedCommRing
 variable [SeminormedCommRing α]
 
 instance ULift.seminormedCommRing : SeminormedCommRing (ULift α) :=
-  { ULift.nonUnitalSeminormedRing, ULift.commRing with }
+  { ULift.commRing, ULift.nonUnitalSeminormedRing with }
 
 /-- Seminormed commutative ring structure on the product of two seminormed commutative rings,
   using the sup norm. -/
