@@ -51,7 +51,7 @@ variable (C D : Type*) [Category* (C × D)]
 def foo := (C × D) ⥤ (C × D)
 
 /--
-info: foo.{v_1, u_1, u_2} (C : Type u_1) (D : Type u_2) [Category.{v_1, max u_1 u_2} (C × D)] : Type (max v_1 u_2 u_1)
+info: foo.{v_1, u_1, u_2} (C : Type u_1) (D : Type u_2) [Category.{v_1, max u_2 u_1} (C × D)] : Type (max v_1 u_2 u_1)
 -/
 #guard_msgs (info) in
 #check foo
@@ -127,23 +127,27 @@ of sort `Type (?u.772 + 1)`
 variable (D : Sort*) [Category* D]
 
 /--
-error: stuck at solving universe constraint
-  max u_1 (u_2+1) =?= ?u.948+1
-while trying to unify
-  Sort (max u_1 (u_2 + 1)) : Type (max u_1 (u_2 + 1))
-with
-  Type ?u.948 : Type (?u.948 + 1)
+error: Application type mismatch: The argument
+  E → F
+has type
+  Sort (max u_1 (u_2 + 1))
+of sort `Type (max u_1 (u_2 + 1))` but is expected to have type
+  Type ?u.948
+of sort `Type (?u.948 + 1)` in the application
+  Category.{v_3, ?u.948} (E → F)
 -/
 #guard_msgs (error) in
 variable (E : Sort*) (F : Type*) [Category* (E → F)]
 
 /--
-error: stuck at solving universe constraint
-  imax (u_2+1) u_1 =?= ?u.973+1
-while trying to unify
-  Sort (imax (u_2 + 1) u_1) : Type (imax (u_2 + 1) u_1)
-with
-  Type ?u.973 : Type (?u.973 + 1)
+error: Application type mismatch: The argument
+  F → E
+has type
+  Sort (imax (u_2 + 1) u_1)
+of sort `Type (imax (u_2 + 1) u_1)` but is expected to have type
+  Type ?u.973
+of sort `Type (?u.973 + 1)` in the application
+  Category.{v_3, ?u.973} (F → E)
 -/
 #guard_msgs (error) in
 variable (E : Sort*) (F : Type*) [Category* (F → E)]
@@ -155,7 +159,7 @@ section
 variable [inst : Category* _]
 
 /--
-info: inst : Category.{v_1, ?u.985} ?_mvar.987
+info: inst : Category.{v_1, ?u.985} ?m.1
 -/
 #guard_msgs (info) in
 #check inst
@@ -163,7 +167,7 @@ info: inst : Category.{v_1, ?u.985} ?_mvar.987
 variable [inst2 : Category* (Type _)]
 
 /--
-info: inst2 : Category.{v_2, ?u.1005} (Type ?u.1007)
+info: inst2 : Category.{v_2, ?u.1007 + 1} (Type ?u.1007)
 -/
 #guard_msgs (info) in
 #check inst2
