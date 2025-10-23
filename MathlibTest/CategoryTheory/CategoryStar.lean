@@ -149,3 +149,23 @@ with
 variable (E : Sort*) (F : Type*) [Category* (F → E)]
 
 end
+
+section
+
+variable [inst : Category* _]
+
+/--
+info: inst : Category.{v_1, ?u.985} ?_mvar.987
+-/
+#guard_msgs (info) in
+#check inst
+
+variable [inst2 : Category* (Type _)]
+
+/--
+info: inst2 : Category.{v_2, ?u.1005} (Type ?u.1007)
+-/
+#guard_msgs (info) in
+#check inst2
+
+end
