@@ -45,7 +45,7 @@ def decomposition_basis : Basis ((ofVectorSpaceIndex K f.kerComplement) ⊕
     (ofVectorSpaceIndex K (ker f))) K V :=
   .map (.prod (ofVectorSpace K _) (ofVectorSpace K _)) (f.prodEquivOfkerComplement)
 
-/-- 线性映射 `f` 在核补空间上的限制，即将核补空间嵌入到 `V` 后应用 `f` -/
+/-- The restriction of `f` to the kernel complement -/
 def ker_complement_restriction : f.kerComplement →ₗ[K] W :=
   f.comp f.kerComplement.subtype
 
@@ -62,15 +62,12 @@ def ker_complement_basis_image :
     ofVectorSpaceIndex K f.kerComplement → W :=
   f.ker_complement_restriction ∘ (ofVectorSpace K f.kerComplement)
 
-/-- `ker_complement_basis_image f` 是线性无关的，因为 `f` 在核补空间上是单射 -/
 lemma linear_independent_ker_complement_basis_image :
     LinearIndependent K f.ker_complement_basis_image :=
-  LinearIndependent.map' (ofVectorSpace K f.kerComplement).linearIndependent _
-    f.ker_complement_restriction_ker_eq_bot
+  (ofVectorSpace K f.kerComplement).linearIndependent.map' _ f.ker_complement_restriction_ker_eq_bot
 
 /-- 通过将核补空间的基像（对应 `range f`）与余核的基扩展组合，构造 `W` 的基 -/
-def range_decomposition_basis :
-    Basis ((ofVectorSpaceIndex K f.kerComplement) ⊕
+def range_decomposition_basis : Basis ((ofVectorSpaceIndex K f.kerComplement) ⊕
       (sumExtendIndex f.linear_independent_ker_complement_basis_image)) K W :=
   Basis.sumExtend f.linear_independent_ker_complement_basis_image
 
@@ -88,8 +85,7 @@ def kerComplementEquivRange : f.kerComplement ≃ₗ[K] (range f) := by
     codRestrict (range f) f.ker_complement_restriction (fun x ↦ ⟨f.kerComplement.subtype x, rfl⟩)
   apply LinearEquiv.ofBijective g
   constructor
-  · simpa [← ker_eq_bot, g, ker_codRestrict]
-     using f.ker_complement_restriction_injective
+  · simpa [← ker_eq_bot, g, ker_codRestrict] using f.ker_complement_restriction_injective
   intro ⟨_, y, hyx⟩
   use (f.prodEquivOfkerComplement.2 y).1
   simp [g, codRestrict, ← hyx, ker_complement_restriction, apply_ker_component_eq_zero]
@@ -114,14 +110,12 @@ lemma finrank_ker_eq [FiniteDimensional K V] {r n: ℕ} (hr : rank f = r) (hn : 
     finrank K (ker f) = n - r := by
   rw [← hn, ← finrank_range_add_finrank_ker f, ← finrank_eq_of_rank_eq hr, add_tsub_cancel_left]
 
-lemma card_cokernel_basis_index_eq  {m r : ℕ} [FiniteDimensional K V]
-    [FiniteDimensional K W]
+lemma card_cokernel_basis_index_eq  {m r : ℕ} [FiniteDimensional K V] [FiniteDimensional K W]
     (hm : finrank K W = m) (hr : f.rank = r) :
-  Fintype.card (sumExtendIndex f.linear_independent_ker_complement_basis_image) = m - r := by
+    Fintype.card (sumExtendIndex f.linear_independent_ker_complement_basis_image) = m - r := by
   have := finrank_eq_card_basis f.range_decomposition_basis
   rw [Fintype.card_sum, hm] at this
-  rw [this]
-  simp [← finrank_eq_card_basis (ofVectorSpace K f.kerComplement),
+  simp [this, ← finrank_eq_card_basis (ofVectorSpace K f.kerComplement),
     f.finrank_kerComplement_eq_rank hr]
 
 lemma apply_kerComplement_basis_eq_range_basis (j) :
@@ -139,8 +133,7 @@ end
 - 前提条件 `h : Cardinal.mk ι = r` 保证了 `ι` 的势等于 `r`
 - 通过 `Cardinal.mk_eq_nat_iff` 将基数相等转化为类型等价
 - 使用选择公理 (`Classical.choice`) 从存在性证明中提取具体的等价关系 -/
-noncomputable def indexEquivOfCardinalEq {ι}{r : ℕ} (h : Cardinal.mk ι = r) :
-    ι ≃ Fin r := by
+noncomputable def indexEquivOfCardinalEq {ι}{r : ℕ} (h : Cardinal.mk ι = r) : ι ≃ Fin r := by
   apply Classical.choice
   rwa [← Cardinal.mk_eq_nat_iff]
 
@@ -152,12 +145,10 @@ noncomputable def indexEquivOfCardinalEq {ι}{r : ℕ} (h : Cardinal.mk ι = r) 
 3. 通过 `indexEquivOfCardinalEq` 将基数相等具体化为类型等价
 
 这表明虽然基的索引类型 `ι` 可能抽象不同，但它的本质大小由向量空间的维数唯一确定。 -/
-noncomputable def basisIndexEquivFin {ι r K V} [DivisionRing K]
-    [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-    (hr : finrank K V = r) (b : Basis ι K V) : ι ≃ Fin r := by
+noncomputable def basisIndexEquivFin {ι r K V} [DivisionRing K] [AddCommGroup V] [Module K V]
+    [FiniteDimensional K V] (hr : finrank K V = r) (b : Basis ι K V) : ι ≃ Fin r := by
   apply indexEquivOfCardinalEq
-  rw [Basis.mk_eq_rank'' b]
-  rw [← hr, finrank_eq_rank']
+  rw [b.mk_eq_rank'' , ← hr, finrank_eq_rank']
 
 section
 
@@ -197,18 +188,18 @@ theorem exists_basis_for_normal_form_abstract :
 theorem exists_basis_for_normal_form (hn : finrank R M₁ = n) (hm : finrank R M₂ = m)
     (hr : rank f = r) :
     ∃ (v₁ : Basis (Fin r ⊕ Fin (n - r)) R M₁) (v₂ : Basis (Fin r ⊕ Fin (m - r)) R M₂),
-    f.toMatrix v₁ v₂ = fromBlocks 1 0 0 0:= by
+    f.toMatrix v₁ v₂ = fromBlocks 1 0 0 0 := by
   have ⟨v₁, v₂, hvf⟩ := exists_basis_for_normal_form_abstract f
   let hu₁ : (ofVectorSpaceIndex R f.kerComplement) ⊕ (ofVectorSpaceIndex R (ker f)) ≃
       Fin r ⊕ Fin (n - r) := by
     refine Equiv.sumCongr ?_ ?_
-    apply basisIndexEquivFin (finrank_kerComplement_eq_rank f hr) (ofVectorSpace R _)
-    apply basisIndexEquivFin (f.finrank_ker_eq hr hn) (ofVectorSpace R _)
+    exact basisIndexEquivFin (finrank_kerComplement_eq_rank f hr) (ofVectorSpace R _)
+    exact basisIndexEquivFin (f.finrank_ker_eq hr hn) (ofVectorSpace R _)
   let u₁ : Basis (Fin r ⊕ Fin (n - r)) R M₁ := v₁.reindex hu₁
   let hu₂ : (ofVectorSpaceIndex R f.kerComplement) ⊕
       (sumExtendIndex f.linear_independent_ker_complement_basis_image) ≃ Fin r ⊕ Fin (m - r) := by
     refine Equiv.sumCongr ?_ ?_
-    apply basisIndexEquivFin (finrank_kerComplement_eq_rank f hr) (ofVectorSpace R _)
+    exact basisIndexEquivFin (finrank_kerComplement_eq_rank f hr) (ofVectorSpace R _)
     apply indexEquivOfCardinalEq
     simp [card_cokernel_basis_index_eq f hm hr]
   let u₂ : Basis (Fin r ⊕ Fin (m - r)) R M₂ := v₂.reindex hu₂
