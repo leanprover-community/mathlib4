@@ -136,11 +136,11 @@ def kerComplementEquivRange : f.kerComplement ≃ₗ[K] (range f) := by
 lemma finrank_kerComplement_eq_rank {r : ℕ} (hr : rank f = r) : finrank K f.kerComplement = r := by
   simp [finrank_eq_of_rank_eq hr, LinearEquiv.finrank_eq f.kerComplementEquivRange]
 
-lemma finrank_ker_eq [FiniteDimensional K V] {r n: ℕ} (hr : rank f = r) (hn : finrank K V = n) :
+lemma finrank_ker_eq [FiniteDimensional K V] {r n : ℕ} (hr : rank f = r) (hn : finrank K V = n) :
     finrank K (ker f) = n - r := by
   rw [← hn, ← finrank_range_add_finrank_ker f, ← finrank_eq_of_rank_eq hr, add_tsub_cancel_left]
 
-lemma card_cokernel_basis_index_eq  {m r : ℕ} [FiniteDimensional K V] [FiniteDimensional K W]
+lemma card_cokernel_basis_index_eq {m r : ℕ} [FiniteDimensional K V] [FiniteDimensional K W]
     (hm : finrank K W = m) (hr : f.rank = r) :
     Fintype.card (sumExtendIndex f.linear_independent_ker_complement_basis_image) = m - r := by
   have := finrank_eq_card_basis f.range_decomposition_basis
@@ -161,7 +161,7 @@ end
 
 section
 
-variable {R : Type} [Field R] {m n r: ℕ} {M₁ M₂ : Type*}
+variable {R : Type} [Field R] {m n r : ℕ} {M₁ M₂ : Type*}
 variable [AddCommGroup M₁] [Module R M₁] [FiniteDimensional R M₁]
 variable [AddCommGroup M₂] [Module R M₂] [FiniteDimensional R M₂] (f : M₁ →ₗ[R] M₂)
 
