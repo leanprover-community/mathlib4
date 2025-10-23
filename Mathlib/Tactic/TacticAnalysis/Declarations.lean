@@ -265,6 +265,37 @@ def terminalToGrind : TacticAnalysis.Config where
       if oldHeartbeats * 2 < newHeartbeats then
         logWarningAt stx m!"'grind' is slower than the original: {oldHeartbeats} -> {newHeartbeats}"
 
+open Elab.Command
+def tryAtEachStep (tac : MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
+  run seq := do
+    for (ctx, i) in seq do
+      if let [goal] := i.goalsBefore then
+        let tac ← tac goal
+        let goalsAfter ← try
+          ctx.runTacticCode i goal tac
+        catch _e =>
+          pure [goal]
+        if goalsAfter.isEmpty then
+          logInfoAt i.stx m!"`{i.stx}` can be replaced with `{tac}`"
+
+/-- Run `grind` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepGrind : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrind,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepGrind]
+def tryAtEachStepGrind := tryAtEachStep (fun _ => `(tactic| grind))
+
+/-- Run `grind +premises` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepGrindPremises : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindPremises,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepGrindPremises]
+def tryAtEachStepGrindPremises := tryAtEachStep (fun _ => `(tactic| grind +premises))
+
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
 register_option linter.tacticAnalysis.introMerge : Bool := {
