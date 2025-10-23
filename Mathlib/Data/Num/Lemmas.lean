@@ -384,17 +384,17 @@ instance linearOrder : LinearOrder Num :=
     -- See https://github.com/leanprover/lean4/issues/2343
     toDecidableEq := instDecidableEqNum }
 
-instance isStrictOrderedRing : IsStrictOrderedRing Num :=
-  { zero_le_one := by decide
-    mul_lt_mul_of_pos_left := by
-      intro a b c
-      transfer_rw
-      apply mul_lt_mul_of_pos_left
-    mul_lt_mul_of_pos_right := by
-      intro a b c
-      transfer_rw
-      apply mul_lt_mul_of_pos_right
-    exists_pair_ne := ⟨0, 1, by decide⟩ }
+instance isStrictOrderedRing : IsStrictOrderedRing Num where
+  zero_le_one := by decide
+  exists_pair_ne := ⟨0, 1, by decide⟩
+  mul_lt_mul_of_pos_left a ha b c := by
+    revert ha
+    transfer_rw
+    apply flip mul_lt_mul_of_pos_left
+  mul_lt_mul_of_pos_right a ha b c := by
+    revert ha
+    transfer_rw
+    apply flip mul_lt_mul_of_pos_right
 
 @[norm_cast]
 theorem add_of_nat (m n) : ((m + n : ℕ) : Num) = m + n :=
