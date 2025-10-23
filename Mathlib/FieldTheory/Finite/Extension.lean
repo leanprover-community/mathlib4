@@ -65,7 +65,7 @@ instance : Module.Finite k (Extension k p n) :=
   .of_finite
 
 instance [Algebra (ZMod p) k] : IsScalarTower (ZMod p) k (Extension k p n) :=
-  -- there is only at most one map from `𝔽_p` to any ring
+  -- there is at most one map from `𝔽_p` to any ring
   .of_algebraMap_eq' <| Subsingleton.elim _ _
 
 theorem natCard_extension : Nat.card (Extension k p n) = Nat.card k ^ n := by
@@ -120,8 +120,8 @@ noncomputable def algEquivExtension (l : Type*) [Field l] [Algebra k l]
   have : Finite l := Module.finite_of_finite k
   have : Fintype l := .ofFinite _
   have : IsSplittingField k l (X ^ Nat.card k ^ n - X) := by
-    convert FiniteField.isSplittingField_sub l k
-    rw [← h, ← Module.natCard_eq_pow_finrank, Fintype.card_eq_nat_card]
+    rw [← h, ← Module.natCard_eq_pow_finrank, ← Fintype.card_eq_nat_card]
+    exact FiniteField.isSplittingField_sub l k
   refine ⟨(IsSplittingField.algEquiv _ (X ^ (Nat.card k ^ n) - X)).trans ?_⟩
   exact (IsSplittingField.algEquiv _ (X ^ (Nat.card k ^ n) - X)).symm
 
