@@ -91,7 +91,7 @@ theorem natCard_algEquiv_extension : Nat.card Gal(Extension k p n / k) = n :=
   (IsGalois.card_aut_eq_finrank _ _).trans <| finrank_extension k p n
 
 theorem card_algEquiv_extension : Fintype.card Gal(Extension k p n / k) = n :=
-  Fintype.card_eq_nat_card.trans <| natCard_gal_extension k p n
+  Fintype.card_eq_nat_card.trans <| natCard_algEquiv_extension k p n
 
 /-- The Frobenius automorphism `x ↦ x ^ Nat.card k` that fixes `k`. -/
 noncomputable def Extension.frob :
