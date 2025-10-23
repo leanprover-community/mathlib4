@@ -50,7 +50,7 @@ elab "Category*" ppSpace C:term : term => commitIfNoEx <| withoutErrToSorry do
   -- We must ensure that `u` is still uninstantiated at this point, otherwise the next
   -- line will panic.
   unless u.isMVar do
-    throwError "Unexpected Error:{u} is not a level mvar."
+    throwError "Unexpected Error:{indentD u} is not a level mvar."
   let ⟨mctx, vs, _, out⟩ :=
     (← getMCtx).levelMVarToParam (fun n => levelNames.elem n)
     (fun id => id == u.mvarId!) instTp `v 1
