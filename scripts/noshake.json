@@ -50,7 +50,6 @@
   "Mathlib.Data.Sym.Sym2.Init",
   "Mathlib.Data.Vector.Basic",
   "Mathlib.FieldTheory.Galois.Notation",
-  "Mathlib.Geometry.Manifold.Notation",
   "Mathlib.Geometry.Manifold.Instances.Real",
   "Mathlib.Geometry.Manifold.Notation",
   "Mathlib.Init",
@@ -394,6 +393,8 @@
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.MeasureTheory.MeasurableSpace.Embedding": ["Mathlib.Tactic.FunProp"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
+  "Mathlib.MeasureTheory.Integral.IntervalIntegral.TrapezoidalRule":
+  ["Mathlib.Tactic.Field"],
   "Mathlib.Logic.Relation": ["Mathlib.Logic.Basic"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
