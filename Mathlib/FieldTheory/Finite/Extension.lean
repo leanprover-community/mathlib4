@@ -29,8 +29,10 @@ isomorphic to our chosen `FiniteField.Extension k p n`.
 
 -/
 
+noncomputable section
+
 variable (k : Type*) [Field k] [Finite k]
-variable (p : ℕ) [Fact p.Prime] [Algebra (ZMod p) k]
+variable (p : ℕ) [Fact p.Prime] [CharP k p]
 variable (n : ℕ) [NeZero n]
 
 open Polynomial
@@ -39,41 +41,35 @@ namespace FiniteField
 
 /-- Given a finite field `k` of characteristic `p`, we have a non-canoncailly chosen extension
 of any given degree `n > 0`. -/
-noncomputable def Extension : Type :=
+def Extension [CharP k p] : Type :=
+  letI := ZMod.algebra k p
   GaloisField p (Module.finrank (ZMod p) k * n)
   deriving Field, Finite, Algebra (ZMod p), FiniteDimensional (ZMod p)
 
-noncomputable instance : Field (Extension k p n) :=
-  inferInstanceAs (Field (GaloisField _ _))
+theorem finrank_zmod_extension [Algebra (ZMod p) k] :
+    Module.finrank (ZMod p) (Extension k p n) = Module.finrank (ZMod p) k * n := by
+  letI := ZMod.algebra k p
+  convert GaloisField.finrank p (n := Module.finrank (ZMod p) k * n) <|
+    mul_ne_zero Module.finrank_pos.ne' <| NeZero.ne n using 4
+  subsingleton
 
-noncomputable instance : Finite (Extension k p n) :=
-  inferInstanceAs (Finite (GaloisField _ _))
-
-noncomputable instance : Algebra (ZMod p) (Extension k p n) :=
-  inferInstanceAs (Algebra (ZMod p) (GaloisField _ _))
-
-noncomputable instance : Module.Finite (ZMod p) (Extension k p n) :=
-  .of_finite
-
-theorem finrank_zmod_extension :
-    Module.finrank (ZMod p) (Extension k p n) = Module.finrank (ZMod p) k * n :=
-  GaloisField.finrank _ <| mul_ne_zero Module.finrank_pos.ne' <| NeZero.ne n
-
-theorem nonempty_algHom_extension :
+theorem nonempty_algHom_extension [Algebra (ZMod p) k] :
     Nonempty (k →ₐ[ZMod p] Extension k p n) :=
   nonempty_algHom_of_finrank_dvd (finrank_zmod_extension k p n ▸ dvd_mul_right _ _)
 
 noncomputable instance : Algebra k (Extension k p n) :=
+  letI := ZMod.algebra k p
   (nonempty_algHom_extension k p n).some.toAlgebra
 
 instance : Module.Finite k (Extension k p n) :=
   .of_finite
 
-instance : IsScalarTower (ZMod p) k (Extension k p n) :=
+instance [Algebra (ZMod p) k] : IsScalarTower (ZMod p) k (Extension k p n) :=
   -- there is only at most one map from `𝔽_p` to any ring
   .of_algebraMap_eq' <| Subsingleton.elim _ _
 
 theorem natCard_extension : Nat.card (Extension k p n) = Nat.card k ^ n := by
+  letI := ZMod.algebra k p
   rw [← pow_finrank_eq_natCard p, ← pow_finrank_eq_natCard p, finrank_zmod_extension, pow_mul]
 
 theorem finrank_extension : Module.finrank k (Extension k p n) = n := by
@@ -115,8 +111,8 @@ theorem Extension.exists_frob_pow_eq (g : Gal(Extension k p n/k)) :
   refine ⟨i, ?_, by ext; simp [frob]⟩
   rwa [finrank_extension] at hi
 
-/-- Given any field extension of finite fields `l/k` of degree `n`, we have a non-unique isomorphism between `l`
-and our chosen `Extension k p n`. -/
+/-- Given any field extension of finite fields `l/k` of degree `n`, we have a non-unique
+isomorphism between `l` and our chosen `Extension k p n`. -/
 noncomputable def algEquivExtension (l : Type*) [Field l] [Algebra k l]
     (h : Module.finrank k l = n) : l ≃ₐ[k] Extension k p n := by
   refine Nonempty.some ?_
