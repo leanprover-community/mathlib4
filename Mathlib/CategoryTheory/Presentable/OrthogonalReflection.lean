@@ -33,7 +33,8 @@ namespace OrthogonalReflection
 
 variable (Z : C)
 
-/-- The index type parametrising the data of a morphism `f : X ⟶ Y` satisfying `W`
+/-- Given `W : MorphismProperty C` and `Z : C`, this is the index type
+parametrising the data of a morphism `f : X ⟶ Y` satisfying `W`
 and a morphism `X ⟶ Z`. -/
 def D₁ : Type _ := Σ (f : W.toSet), f.1.left ⟶ Z
 
@@ -58,14 +59,16 @@ noncomputable abbrev D₁.l : ∐ (obj₁ (W := W) (Z := Z)) ⟶ Z :=
 variable {W Z} in
 /-- The inclusion of a summand in `∐ obj₁`. -/
 noncomputable abbrev D₁.ιLeft {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
-    X ⟶ ∐ (obj₁ (W := W) (Z := Z)) :=
+    X ⟶ ∐ obj₁ (W := W) (Z := Z) :=
   Sigma.ι (obj₁ (W := W) (Z := Z)) ⟨⟨Arrow.mk f, hf⟩, g⟩
 
 variable {W Z} in
 @[reassoc]
 lemma D₁.ιLeft_comp_l {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
-    D₁.ιLeft f hf g ≫ D₁.l W Z = g := by
-  apply Sigma.ι_desc
+    D₁.ιLeft f hf g ≫ D₁.l W Z = g :=
+  Sigma.ι_desc _ _
+
+section
 
 variable [HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
 
@@ -173,7 +176,7 @@ lemma leftBousfieldW_isLocal_toSucc :
     LeftBousfield.W W.isLocal (toSucc W Z) := by
   refine fun T hT ↦ ⟨fun φ₁ φ₂ h ↦ ?_, fun g ↦ ?_⟩
   · ext ⟨⟩
-    simp at h
+    simp only [Category.assoc] at h
     dsimp
     ext d
     · apply (hT d.1.1.hom d.1.2).1
@@ -202,15 +205,18 @@ lemma isIso_toSucc_iff :
     ext d
     · simp only [Category.assoc] at hf
       simp only [Category.comp_id, ← Category.assoc]
-      apply D₂.condition _ d.1.2
-      simp
+      refine D₂.condition _ d.1.2 ?_
+      rw [Category.assoc, Category.assoc, Category.assoc]
       rw [← D₁.ι_comp_t_assoc, pushout.condition_assoc, reassoc_of% hf,
         ← D₁.ι_comp_t_assoc, pushout.condition]
     · simp [reassoc_of% hf]
 
+end
+
 open SmallObject
 
-variable [∀ Z, HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
+variable [HasPushouts C]
+  [∀ Z, HasCoproduct (D₁.obj₁ (W := W) (Z := Z))]
   [∀ Z, HasCoproduct (D₁.obj₂ (W := W) (Z := Z))]
   [∀ Z, HasMulticoequalizer (D₂.multispanIndex W Z)]
 
