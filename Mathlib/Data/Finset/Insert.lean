@@ -100,6 +100,10 @@ theorem singleton_nonempty (a : α) : ({a} : Finset α).Nonempty :=
 theorem singleton_ne_empty (a : α) : ({a} : Finset α) ≠ ∅ :=
   (singleton_nonempty a).ne_empty
 
+@[simp]
+theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Finset α) :=
+  (singleton_ne_empty a).symm
+
 theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset
 
@@ -173,10 +177,10 @@ theorem nontrivial_def {s : Finset α} : s.Nontrivial ↔ ∃ a, a ∈ s ∧ ∃
 nonrec lemma Nontrivial.nonempty (hs : s.Nontrivial) : s.Nonempty := hs.nonempty
 
 @[simp]
-theorem not_nontrivial_empty : ¬ (∅ : Finset α).Nontrivial := by simp [Finset.Nontrivial]
+theorem not_nontrivial_empty : ¬(∅ : Finset α).Nontrivial := by simp [Finset.Nontrivial]
 
 @[simp]
-theorem not_nontrivial_singleton : ¬ ({a} : Finset α).Nontrivial := by simp [Finset.Nontrivial]
+theorem not_nontrivial_singleton : ¬({a} : Finset α).Nontrivial := by simp [Finset.Nontrivial]
 
 theorem Nontrivial.ne_singleton (hs : s.Nontrivial) : s ≠ {a} := by
   rintro rfl; exact not_nontrivial_singleton hs
