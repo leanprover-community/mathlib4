@@ -16,7 +16,7 @@ import Mathlib.SetTheory.Cardinal.ENat
 
 * `Nat.card α` is the cardinality of `α` as a natural number.
   If `α` is infinite, `Nat.card α = 0`.
-* `ENat.card α` is the cardinality of `α` as an  extended natural number.
+* `ENat.card α` is the cardinality of `α` as an extended natural number.
   If `α` is infinite, `ENat.card α = ⊤`.
 -/
 

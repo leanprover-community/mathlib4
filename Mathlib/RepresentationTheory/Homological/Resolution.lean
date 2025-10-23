@@ -411,7 +411,7 @@ variable {k G} in
 lemma d_single (x : Gⁿ⁺¹) :
     (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
       Finset.univ.sum fun j : Fin (n + 1) =>
-        single (Fin.contractNth j (· * ·) x)  (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
+        single (Fin.contractNth j (· * ·) x) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
   simp [d]
 
 lemma d_comp_diagonalSuccIsoFree_inv_eq :

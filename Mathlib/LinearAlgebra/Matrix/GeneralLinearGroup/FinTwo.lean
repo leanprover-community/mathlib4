@@ -120,7 +120,7 @@ variable {R : Type*} [CommRing R] [Nontrivial R] [Preorder R]
 /-- A `2 × 2` matrix is *hyperbolic* if its discriminant is strictly positive. -/
 def IsHyperbolic : Prop := 0 < m.discr
 
-/-- A `2 × 2` matrix is *elliptic* if its  discriminant is strictly negative. -/
+/-- A `2 × 2` matrix is *elliptic* if its discriminant is strictly negative. -/
 def IsElliptic : Prop := m.discr < 0
 
 variable {m}
