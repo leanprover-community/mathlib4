@@ -37,6 +37,7 @@ alias Sorted := Pairwise
 
 set_option linter.deprecated false
 
+/-- Deprecated decidable instance for `Sorted`. -/
 @[deprecated List.decidableSorted (since := "2025-10-11")]
 def decidableSorted [DecidableRel r] (l : List α) : Decidable (Sorted r l) :=
   List.instDecidablePairwise l
