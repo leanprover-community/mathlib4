@@ -423,8 +423,8 @@ jobs:
           export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
 
           echo "Uploading Archive and Counterexamples cache to Azure..."
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Archive.lean
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Counterexamples.lean
+          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
+          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -439,8 +439,8 @@ jobs:
           export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
 
           echo "Uploading Archive and Counterexamples cache to Cloudflare..."
-          USE_FRO_CACHE=1 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Archive.lean
-          USE_FRO_CACHE=1 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Counterexamples.lean
+          USE_FRO_CACHE=1 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
+          USE_FRO_CACHE=1 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
         env:
           MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
