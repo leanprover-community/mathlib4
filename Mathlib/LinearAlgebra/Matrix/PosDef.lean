@@ -205,6 +205,12 @@ theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R)
     PosSemidef (A * Aᴴ) := by
   simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
+theorem posSemidef_sum {ι : Type*} [AddLeftMono R]
+    {x : ι → Matrix n n R} (s : Finset ι) (h : ∀ i ∈ s, PosSemidef (x i)) :
+    PosSemidef (∑ i ∈ s, x i) := by
+  refine ⟨isSelfAdjoint_sum s fun _ hi => h _ hi |>.1, fun y => ?_⟩
+  simp [sum_mulVec, dotProduct_sum, Finset.sum_nonneg fun _ hi => (h _ hi).2 _]
+
 section trace
 -- TODO: move these results to an earlier file
 
@@ -391,6 +397,18 @@ protected lemma posSemidef_add [AddLeftMono R]
 protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
   hA.add_posSemidef hB.posSemidef
+
+theorem _root_.Matrix.posDef_sum {ι : Type*} [AddLeftMono R] {A : ι → Matrix m m R}
+    {s : Finset ι} (hs : s.Nonempty) (hA : ∀ i ∈ s, (A i).PosDef) : (∑ i ∈ s, A i).PosDef := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp at hs
+  | insert i hi hins H =>
+      rw [Finset.sum_insert hins]
+      by_cases h : ¬ hi.Nonempty
+      · simp_all
+      · exact PosDef.add (hA _ <| Finset.mem_insert_self i hi) <|
+          H (not_not.mp h) fun _ _hi => hA _ (Finset.mem_insert_of_mem _hi)
 
 protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α]
     [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulStrictMono α R]
