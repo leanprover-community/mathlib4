@@ -8,6 +8,7 @@ import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.KummerPolynomial
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.RingTheory.Norm.Basic
+
 /-!
 # Kummer Extensions
 
@@ -186,8 +187,9 @@ variable (n)
 noncomputable
 def autAdjoinRootXPowSubCHom :
     rootsOfUnity n K →* (K[n√a] →ₐ[K] K[n√a]) where
-  toFun := fun η ↦ liftHom (X ^ n - C a) (((η : Kˣ) : K) • (root _) : K[n√a]) <| by
+  toFun η := liftAlgHom (X ^ n - C a) (Algebra.ofId _ _) (((η : Kˣ) : K) • (root _) : K[n√a]) <| by
     have := (mem_rootsOfUnity' _ _).mp η.prop
+    change aeval _ _ = _
     rw [map_sub, map_pow, aeval_C, aeval_X, Algebra.smul_def, mul_pow, root_X_pow_sub_C_pow,
       AdjoinRoot.algebraMap_eq, ← map_pow, this, map_one, one_mul, sub_self]
   map_one' := algHom_ext <| by simp
@@ -206,7 +208,7 @@ variable {n}
 lemma autAdjoinRootXPowSubC_root (η) :
     autAdjoinRootXPowSubC n a η (root _) = ((η : Kˣ) : K) • root _ := by
   dsimp [autAdjoinRootXPowSubC, autAdjoinRootXPowSubCHom, AlgEquiv.algHomUnitsEquiv]
-  apply liftHom_root
+  exact liftAlgHom_root _ (Algebra.ofId _ _) ..
 
 variable {a}
 
@@ -317,17 +319,17 @@ variable {α : L} (hα : α ^ n = algebraMap K L a)
 noncomputable
 def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducible (X ^ n - C a))
     (hα : α ^ n = algebraMap K L a) : K[n√a] ≃ₐ[K] L :=
-  AlgEquiv.ofBijective (AdjoinRoot.liftHom (X ^ n - C a) α (by simp [hα])) <| by
+  .ofBijective (AdjoinRoot.liftAlgHom (X ^ n - C a) (Algebra.ofId _ _) α (by simp [hα])) <| by
     haveI := Fact.mk H
     letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
-    refine ⟨(liftHom (X ^ n - C a) α _).injective, ?_⟩
+    refine ⟨(liftAlgHom (X ^ n - C a) _ α _).injective, ?_⟩
     rw [← AlgHom.range_eq_top, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
       eq_comm, adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]
     exact IsSplittingField.splits _ _
 
 lemma adjoinRootXPowSubCEquiv_root :
     adjoinRootXPowSubCEquiv hζ H hα (root _) = α := by
-  rw [adjoinRootXPowSubCEquiv, AlgEquiv.coe_ofBijective, liftHom_root]
+  rw [adjoinRootXPowSubCEquiv, AlgEquiv.coe_ofBijective, liftAlgHom_root]
 
 lemma adjoinRootXPowSubCEquiv_symm_eq_root :
     (adjoinRootXPowSubCEquiv hζ H hα).symm α = root _ := by
