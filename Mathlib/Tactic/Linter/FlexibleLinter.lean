@@ -309,6 +309,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.Ring.ring1,
     `Mathlib.Tactic.Ring.tacticRing1!,
     `Mathlib.Tactic.RingNF.ring1NF,
+    `Mathlib.Tactic.RingNF.tacticRing1_nf!_,
     `Mathlib.Tactic.RingNF.ring1NF!,
     `Mathlib.Tactic.Module.tacticModule,
     `Mathlib.Tactic.FieldSimp.fieldSimp,
