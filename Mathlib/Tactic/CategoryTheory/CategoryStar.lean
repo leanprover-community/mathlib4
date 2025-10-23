@@ -3,7 +3,9 @@ Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Category.Basic
+import Lean.Util.CollectLevelParams
+import Lean.Elab.Term.TermElabM
+import Batteries.Data.Array.Basic
 
 /-!
 # Support for `Category* C`.
@@ -31,7 +33,6 @@ Note: `Category* C` expects both `C` and its type to *not involve* any level mva
 -/
 
 open Lean Meta Elab Term
-open CategoryTheory
 
 /--
 The syntax `Category* C` creates a new distinct implicit universe parameter `v`, placed
@@ -45,7 +46,8 @@ elab "Category*" ppSpace C:term : term => commitIfNoEx <| withoutErrToSorry do
   let tpCExpr ← instantiateExprMVars <| ← Meta.inferType cExpr
   if tpCExpr.hasLevelMVar then
     throwError "The type{indentD tpCExpr}\nof{indentD cExpr}\nhas level mvars"
-  let instTp ← instantiateMVars <| .app (.const ``Category [← mkFreshLevelMVar, u]) cExpr
+  let instTp ← instantiateMVars <|
+    .app (.const `CategoryTheory.Category [← mkFreshLevelMVar, u]) cExpr
   let levelNames ← getLevelNames
   -- We must ensure that `u` is still uninstantiated at this point, otherwise the next
   -- line will panic.
