@@ -3,9 +3,9 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
 -/
+import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.Real.Irrational
 import Mathlib.Tactic.Basic
 
 /-!

@@ -53,15 +53,15 @@ namespace Hilbert90
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
 /-- Given `f : Aut_K(L) → Lˣ`, the sum `∑ f(φ) • φ` for `φ ∈ Aut_K(L)`, as a function `L → L`. -/
-noncomputable def aux (f : (L ≃ₐ[K] L) → Lˣ) : L → L :=
-  Finsupp.linearCombination L (fun φ : L ≃ₐ[K] L ↦ (φ : L → L))
+noncomputable def aux (f : Gal(L/K) → Lˣ) : L → L :=
+  Finsupp.linearCombination L (fun φ : Gal(L/K) ↦ (φ : L → L))
     (Finsupp.equivFunOnFinite.symm (fun φ => (f φ : L)))
 
-theorem aux_ne_zero (f : (L ≃ₐ[K] L) → Lˣ) : aux f ≠ 0 :=
+theorem aux_ne_zero (f : Gal(L/K) → Lˣ) : aux f ≠ 0 :=
 /- the set `Aut_K(L)` is linearly independent in the `L`-vector space `L → L`, by Dedekind's
 linear independence of characters -/
-  have : LinearIndependent L (fun (f : L ≃ₐ[K] L) => (f : L → L)) :=
-    LinearIndependent.comp (ι' := L ≃ₐ[K] L)
+  have : LinearIndependent L (fun (f : Gal(L/K)) => (f : L → L)) :=
+    LinearIndependent.comp (ι' := Gal(L/K))
       (linearIndependent_monoidHom L L) (fun f => f)
       (fun x y h => by ext; exact DFunLike.ext_iff.1 h _)
   have h := linearIndependent_iff.1 this
@@ -77,7 +77,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 function `f : Aut_K(L) → Lˣ` satisfying `f(gh) = g(f(h)) * f(g)` for all `g, h : Aut_K(L)`, there
 exists `β : Lˣ` such that `g(β)/β = f(g)` for all `g : Aut_K(L).` -/
 theorem isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units
-    (f : (L ≃ₐ[K] L) → Lˣ) (hf : IsMulCocycle₁ f) :
+    (f : Gal(L/K) → Lˣ) (hf : IsMulCocycle₁ f) :
     IsMulCoboundary₁ f := by
 /- Let `z : L` be such that `∑ f(h) * h(z) ≠ 0`, for `h ∈ Aut_K(L)` -/
   obtain ⟨z, hz⟩ : ∃ z, aux f z ≠ 0 :=
