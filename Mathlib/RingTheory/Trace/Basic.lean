@@ -35,7 +35,7 @@ the roots of the minimal polynomial of `s` over `R`.
   algebraically closed field
 * `traceForm_nondegenerate`: the trace form over a separable extension is a nondegenerate
   bilinear form
-* `Module.Basis.traceDual_powerBasis_eq`: The dual basis of a powerbasis `{1, x, x²...}` under the
+* `Module.Basis.traceDual_powerBasis_eq`: The dual basis of a power basis `{1, x, x²...}` under the
   trace form is `aᵢ / f'(x)`, with `f` being the minpoly of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 
 ## References
@@ -527,9 +527,12 @@ section isNilpotent
 namespace Algebra
 
 /-- The trace of a nilpotent element is nilpotent. -/
-lemma trace_isNilpotent_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
+lemma isNilpotent_trace_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (trace R S x) :=
   LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
+
+@[deprecated (since := "2025-10-21")] alias trace_isNilpotent_of_isNilpotent :=
+  isNilpotent_trace_of_isNilpotent
 
 end Algebra
 
@@ -549,7 +552,6 @@ noncomputable def Module.Basis.traceDual :
     Basis ι K L :=
   (traceForm K L).dualBasis (traceForm_nondegenerate K L) b
 
-
 theorem Module.Basis.traceDual_def :
     b.traceDual = (traceForm K L).dualBasis (traceForm_nondegenerate K L) b := rfl
 
@@ -565,8 +567,8 @@ theorem Module.Basis.trace_traceDual_mul (i j : ι) :
 
 @[simp]
 theorem Module.Basis.trace_mul_traceDual (i j : ι) :
-    trace K L ((b i) * (b.traceDual j)) = if i = j then 1 else 0 := by
-  refine (traceForm K L).apply_dualBasis_right _ (traceForm_isSymm K) _ i j
+    trace K L ((b i) * (b.traceDual j)) = if i = j then 1 else 0 :=
+  (traceForm K L).apply_dualBasis_right _ (traceForm_isSymm K) _ i j
 
 @[simp]
 theorem Module.Basis.traceDual_traceDual :
@@ -577,20 +579,21 @@ variable (K L)
 
 theorem Module.Basis.traceDual_involutive :
     Function.Involutive (Basis.traceDual : Basis ι K L → Basis ι K L) :=
-  fun b ↦ traceDual_traceDual b
+  (traceForm K L).dualBasis_involutive _ (traceForm_isSymm K)
 
 theorem Module.Basis.traceDual_injective :
     Function.Injective (Basis.traceDual : Basis ι K L → Basis ι K L) :=
-  (traceDual_involutive K L).injective
+  (traceForm K L).dualBasis_injective _ (traceForm_isSymm K)
 
 variable {K L b}
 
+@[simp]
 theorem Module.Basis.traceDual_inj {b' : Basis ι K L} :
     b.traceDual = b'.traceDual ↔ b = b' :=
   (traceDual_injective K L).eq_iff
 
 /--
-A family of vectors `v` is the dual for the trace of the basis `b` iff
+A family of vectors `v` is the dual for the trace of the basis `b` if and only if
 `∀ i j, Tr(v i * b j) = δ_ij`.
 -/
 @[simp]
@@ -602,7 +605,7 @@ theorem Module.Basis.traceDual_eq_iff {v : ι → L} :
 The dual basis of a powerbasis `{1, x, x²...}` under the trace form is `aᵢ / f'(x)`,
 with `f` being the minimal polynomial of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 -/
-lemma Module.Basis.traceDual_powerBasis_eq (pb : _root_.PowerBasis K L) (i) :
+lemma Module.Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
     pb.basis.traceDual i =
       (minpolyDiv K pb.gen).coeff i / aeval pb.gen (derivative <| minpoly K pb.gen) := by
   revert i

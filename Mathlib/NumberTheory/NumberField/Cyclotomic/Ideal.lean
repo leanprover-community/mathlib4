@@ -23,9 +23,7 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 
 * `IsCyclotomicExtension.Rat.ramificationIdx_eq_of_prime_pow`: the ramification index of the prime
   ideal above `p` in `ℚ(ζ_pᵏ)` is `p ^ (k - 1) * (p - 1)`.
-
 -/
-
 
 namespace IsCyclotomicExtension.Rat
 
@@ -46,12 +44,12 @@ instance isPrime_span_zeta_sub_one : IsPrime (span {hζ.toInteger - 1}) := by
 theorem associated_norm_zeta_sub_one : Associated (Algebra.norm ℤ (hζ.toInteger - 1)) (p : ℤ) := by
   by_cases h : p = 2
   · cases k with
-  | zero =>
-    rw [h, zero_add, pow_one] at hK hζ
-    rw [hζ.norm_toInteger_sub_one_of_eq_two, h, Int.ofNat_two, Associated.neg_left_iff]
-  | succ n =>
-    rw [h, add_assoc, show 1 + 1 = 2 by rfl] at hK hζ
-    rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
+    | zero =>
+      rw [h, zero_add, pow_one] at hK hζ
+      rw [hζ.norm_toInteger_sub_one_of_eq_two, h, Int.ofNat_two, Associated.neg_left_iff]
+    | succ n =>
+      rw [h, add_assoc, show 1 + 1 = 2 by rfl] at hK hζ
+      rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two h]
 
 theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
