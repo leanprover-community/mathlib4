@@ -87,12 +87,12 @@ theorem sort_perm_toList : sort s r ~ s.toList := by
   simp only [coe_toList, sort_eq]
 
 theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) :
-    sort r l.toFinset = l ↔ l.Pairwise r := by
-  refine ⟨?_, List.Perm.eq_of_pairwise ((sort_perm_toList r _).trans (List.toFinset_toList hl))
-    (pairwise_sort r _)⟩
+    sort l.toFinset r = l ↔ l.Pairwise r := by
+  refine ⟨?_, List.Perm.eq_of_pairwise ((sort_perm_toList _ r).trans (List.toFinset_toList hl))
+    (pairwise_sort _ _)⟩
   intro h
   rw [← h]
-  exact pairwise_sort r _
+  exact pairwise_sort _ r
 
 end
 
@@ -131,7 +131,7 @@ variable [LinearOrder α]
 theorem sort_sorted_lt (s : Finset α) : (sort s).SortedLT :=
   (pairwise_sort _ _).sortedLE.sortedLT (sort_nodup _ _)
 
-theorem sort_sorted_gt (s : Finset α) : (sort (· ≥ ·) s).SortedGT :=
+theorem sort_sorted_gt (s : Finset α) : (sort s (· ≥ ·)).SortedGT :=
   (pairwise_sort _ _).sortedGE.sortedGT (sort_nodup _ _)
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < s.sort.length) (H : s.Nonempty) :
