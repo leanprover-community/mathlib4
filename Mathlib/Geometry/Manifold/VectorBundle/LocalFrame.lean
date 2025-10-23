@@ -470,6 +470,7 @@ variable {ι : Type*} {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.Tot
     [MemTrivializationAtlas e] {b : Basis ι 𝕜 F} {x : M}
     [ContMDiffVectorBundle 1 F V I]
 
+-- TODO: can this be proven more generally, for any local frame?
 omit [IsManifold I 0 M] in
 /-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
 near `x` induced by `e` and `b` -/
@@ -517,7 +518,7 @@ lemma contMDiffOn_localFrame_coeff [FiniteDimensional 𝕜 F] [CompleteSpace �
   fun _ hx ↦ (contMDiffAt_localFrame_coeff (ht' hx) b
     (hs.contMDiffAt (ht.mem_nhds hx)) i).contMDiffWithinAt
 
-omit [IsManifold I 0 M] in -- [ContMDiffVectorBundle n F V I] in
+omit [IsManifold I 0 M] in
 /-- If `s` is `C^k` on `e.baseSet`, so is its coefficient `b.localFrame_coeff e i`
 in the local frame induced by `e` -/
 lemma contMDiffOn_baseSet_localFrame_coeff [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
