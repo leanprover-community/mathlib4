@@ -157,7 +157,7 @@ theorem cycleRange_of_le [NeZero n] (h : i ≤ j) :
     rfl
   · have hj1 : (i + 1).1 = i.1 + 1 := val_add_one_of_lt' (by cutsat)
     have hj2 : (i.castLT (by cutsat) + 1 : Fin (j + 1)).1 =
-      (i.castLT (by cutsat): Fin (j + 1)) + 1 := val_add_one_of_lt' (by simpa using by cutsat)
+      (i.castLT (by cutsat) : Fin (j + 1)) + 1 := val_add_one_of_lt' (by simpa using by cutsat)
     exact eq_of_val_eq (by simp [← this, hj1, hj2])
 
 theorem coe_cycleRange_of_le (h : i ≤ j) :
@@ -399,9 +399,9 @@ theorem cycleIcc_eq [NeZero n] : cycleIcc i i = 1 := by
   ext k
   simp only [Perm.coe_one, id_eq]
   rcases lt_trichotomy k i with ch | ch | ch
-  · simp [- cycleIcc_def_le, cycleIcc_of_lt, ch]
-  · simp [- cycleIcc_def_le, ch]
-  · simp [- cycleIcc_def_le, cycleIcc_of_gt, ch]
+  · simp [-cycleIcc_def_le, cycleIcc_of_lt, ch]
+  · simp [-cycleIcc_def_le, ch]
+  · simp [-cycleIcc_def_le, cycleIcc_of_gt, ch]
 
 @[simp]
 theorem cycleIcc_ge (hij : i ≤ j) [NeZero n] : cycleIcc j i = 1 := by
@@ -435,9 +435,9 @@ theorem cycleType_cycleIcc_of_ge (hij : i ≤ j) [NeZero n] : Perm.cycleType (cy
 theorem cycleIcc_zero_eq_cycleRange (i : Fin n) [NeZero n] : cycleIcc 0 i = cycleRange i := by
   ext x
   rcases lt_trichotomy x i with ch | ch | ch
-  · simp [- cycleIcc_def_le, cycleIcc_of_ge_of_lt (zero_le x) ch, cycleRange_of_lt ch]
-  · simp [- cycleIcc_def_le, ch]
-  · simp [- cycleIcc_def_le, cycleIcc_of_gt ch, cycleRange_of_gt ch]
+  · simp [-cycleIcc_def_le, cycleIcc_of_ge_of_lt (zero_le x) ch, cycleRange_of_lt ch]
+  · simp [-cycleIcc_def_le, ch]
+  · simp [-cycleIcc_def_le, cycleIcc_of_gt ch, cycleRange_of_gt ch]
 
 theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
     (cycleIcc i j) ∘ (cycleIcc j k) = (cycleIcc i k) := by

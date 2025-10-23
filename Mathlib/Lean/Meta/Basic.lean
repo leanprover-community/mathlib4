@@ -95,9 +95,27 @@ def Lean.Meta.withEnsuringLocalInstance {α : Type} (inst : MVarId) (k : MetaM (
       let e' := (← e.abstractM #[inst']).instantiate1 instE
       return (e', v)
 
-/-- Ensures that `e` is a function. Attempts to coerce `e` to a function if necessary. -/
+/-- Checks that `e` has type `expectedType` (i.e. that its type is defeq to `expectedType`
+at the current transparency). If not, coerces `e` to this type
+or fails with a descriptive error. -/
+def Lean.Meta.ensureHasType (e expectedType : Expr) : MetaM Expr := do
+  let ty ← inferType e
+  if ← withNewMCtxDepth (isDefEq ty expectedType) then return e else
+    (← coerceSimple? e expectedType).toOption.getDM <|
+      throwError "Expected{indentD e}\nto have type{indentD ty}\n or to be coercible to it"
+
+/-- Checks that `e` is a function (i.e. that its type is a `.forallE` after `instantiateMVars` and
+`whnf`). If not, coerces `e` to a function or fails with a descriptive error. -/
 def Lean.Meta.ensureIsFunction (e : Expr) : MetaM Expr := do
-  let ty ← whnf <|← instantiateMVars <|← inferType e
+  let ty ← whnf <| ← instantiateMVars <| ← inferType e
   if ty.isForall then return e else (← coerceToFunction? e).getDM <|
     throwError "Expected{indentD e}\nof type{indentD ty}\nto be a function, or to be coercible to \
       a function"
+
+/-- Checks that `e` is a type (i.e. that its type is a `Sort` after `instantiateMVars` and
+`whnf`). If not, coerces `e` to a Sort or fails with a descriptive error. -/
+def Lean.Meta.ensureIsSort (e : Expr) : MetaM Expr := do
+  let ty ← whnf <| ← instantiateMVars <| ← inferType e
+  if ty.isSort then return e else (← coerceToSort? e).getDM <|
+    throwError "Expected{indentD e}\nof type{indentD ty}\nto be a Sort, or to be coercible to \
+      a Sort"
