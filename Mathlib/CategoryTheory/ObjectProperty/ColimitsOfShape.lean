@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ObjectProperty.Small
+import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
@@ -25,6 +26,9 @@ is essentially small.
 By requiring `P.colimitsOfShape J ≤ P`, we introduce a typeclass
 `P.IsClosedUnderColimitsOfShape J`.
 
+We also show that `colimitsOfShape` in a category `C` is related
+to `limitsOfShape` in the opposite category `Cᵒᵖ` and vice versa.
+
 ## TODO
 
 * refactor `ObjectProperty.ind` by saying that it is the supremum
@@ -37,7 +41,7 @@ that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 
-universe w v' u' v u
+universe w v'' v' u'' u' v u
 
 namespace CategoryTheory.ObjectProperty
 
@@ -45,6 +49,7 @@ open Limits
 
 variable {C : Type*} [Category C] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
+  {J' : Type u''} [Category.{v''} J']
 
 /-- The property of objects that are *equal* to `colimit F` for some
 functor `F : J ⥤ C` where all `F.obj j` satisfy `P`. -/
@@ -91,6 +96,13 @@ def ofLE {X : C} (h : P.ColimitOfShape J X) {Q : ObjectProperty C} (hPQ : P ≤ 
     Q.ColimitOfShape J X where
   toColimitPresentation := h.toColimitPresentation
   prop_diag_obj j := hPQ _ (h.prop_diag_obj j)
+
+/-- Change the index category for `ObjectProperty.ColimitOfShape`. -/
+@[simps toColimitPresentation]
+noncomputable def reindex {X : C} (h : P.ColimitOfShape J X) (G : J' ⥤ J) [G.Final] :
+    P.ColimitOfShape J' X where
+  toColimitPresentation := h.toColimitPresentation.reindex G
+  prop_diag_obj _ := h.prop_diag_obj _
 
 end ColimitOfShape
 
@@ -179,6 +191,159 @@ lemma prop_of_isColimit {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
 lemma prop_colimit (F : J ⥤ C) [HasColimit F] (hF : ∀ (j : J), P (F.obj j)) :
     P (colimit F) :=
   P.prop_of_isColimit (colimit.isColimit F) hF
+
+end
+
+variable {J} in
+lemma colimitsOfShape_le_of_final (G : J ⥤ J') [G.Final] :
+    P.colimitsOfShape J' ≤ P.colimitsOfShape J :=
+  fun _h ⟨h⟩ ↦ ⟨h.reindex G⟩
+
+variable {J} in
+lemma colimitsOfShape_congr (e : J ≌ J') :
+    P.colimitsOfShape J = P.colimitsOfShape J' :=
+  le_antisymm (P.colimitsOfShape_le_of_final e.inverse)
+    (P.colimitsOfShape_le_of_final e.functor)
+
+variable {J} in
+lemma isClosedUnderColimitsOfShape_iff_of_equivalence (e : J ≌ J') :
+    P.IsClosedUnderColimitsOfShape J ↔
+      P.IsClosedUnderColimitsOfShape J' := by
+  simp only [isClosedUnderColimitsOfShape_iff, P.colimitsOfShape_congr e]
+
+variable {P J} in
+lemma IsClosedUnderColimitsOfShape.of_equivalence (e : J ≌ J')
+    [P.IsClosedUnderColimitsOfShape J] :
+    P.IsClosedUnderColimitsOfShape J' := by
+  rwa [← P.isClosedUnderColimitsOfShape_iff_of_equivalence e]
+
+lemma colimitsOfShape_eq_unop_limitsOfShape :
+    P.colimitsOfShape J = (P.op.limitsOfShape Jᵒᵖ).unop := by
+  ext X
+  constructor
+  · rintro ⟨h⟩
+    exact ⟨{
+      diag := h.diag.op
+      π := NatTrans.op h.ι
+      isLimit := isLimitOfUnop h.isColimit
+      prop_diag_obj _ := h.prop_diag_obj _
+    }⟩
+  · rintro ⟨h⟩
+    exact ⟨{
+      diag := h.diag.unop
+      ι := NatTrans.unop h.π
+      isColimit := isColimitOfOp h.isLimit
+      prop_diag_obj _ := h.prop_diag_obj _
+    }⟩
+
+lemma limitsOfShape_eq_unop_colimitsOfShape :
+    P.limitsOfShape J = (P.op.colimitsOfShape Jᵒᵖ).unop := by
+  ext X
+  constructor
+  · rintro ⟨h⟩
+    exact ⟨{
+      diag := h.diag.op
+      ι := NatTrans.op h.π
+      isColimit := isColimitOfUnop h.isLimit
+      prop_diag_obj _ := h.prop_diag_obj _
+    }⟩
+  · rintro ⟨h⟩
+    exact ⟨{
+      diag := h.diag.unop
+      π := NatTrans.unop h.ι
+      isLimit := isLimitOfOp h.isColimit
+      prop_diag_obj _ := h.prop_diag_obj _
+    }⟩
+
+lemma limitsOfShape_op :
+    P.op.limitsOfShape J = (P.colimitsOfShape Jᵒᵖ).op := by
+  rw [colimitsOfShape_eq_unop_limitsOfShape, op_unop,
+    P.op.limitsOfShape_congr (opOpEquivalence J)]
+
+lemma colimitsOfShape_op :
+    P.op.colimitsOfShape J = (P.limitsOfShape Jᵒᵖ).op := by
+  rw [limitsOfShape_eq_unop_colimitsOfShape, op_unop,
+    P.op.colimitsOfShape_congr (opOpEquivalence J)]
+
+lemma isClosedUnderColimitsOfShape_iff_op :
+    P.IsClosedUnderColimitsOfShape J ↔
+      P.op.IsClosedUnderLimitsOfShape Jᵒᵖ := by
+  rw [isClosedUnderColimitsOfShape_iff, isClosedUnderLimitsOfShape_iff,
+    colimitsOfShape_eq_unop_limitsOfShape, ← op_monotone_iff, op_unop]
+
+lemma isClosedUnderLimitsOfShape_iff_op :
+    P.IsClosedUnderLimitsOfShape J ↔
+      P.op.IsClosedUnderColimitsOfShape Jᵒᵖ := by
+  rw [isClosedUnderColimitsOfShape_iff, isClosedUnderLimitsOfShape_iff,
+    limitsOfShape_eq_unop_colimitsOfShape, ← op_monotone_iff, op_unop]
+
+lemma isClosedUnderColimitsOfShape_op_iff_op :
+    P.IsClosedUnderColimitsOfShape Jᵒᵖ ↔
+      P.op.IsClosedUnderLimitsOfShape J := by
+  rw [isClosedUnderColimitsOfShape_iff, isClosedUnderLimitsOfShape_iff,
+    limitsOfShape_op, op_monotone_iff]
+
+lemma isClosedUnderLimitsOfShape_op_iff_op :
+    P.IsClosedUnderLimitsOfShape Jᵒᵖ ↔
+      P.op.IsClosedUnderColimitsOfShape J := by
+  rw [isClosedUnderColimitsOfShape_iff, isClosedUnderLimitsOfShape_iff,
+    colimitsOfShape_op, op_monotone_iff]
+
+instance [P.IsClosedUnderColimitsOfShape J] :
+    P.op.IsClosedUnderLimitsOfShape Jᵒᵖ := by
+  rwa [← isClosedUnderColimitsOfShape_iff_op]
+
+instance [P.IsClosedUnderLimitsOfShape J] :
+    P.op.IsClosedUnderColimitsOfShape Jᵒᵖ := by
+  rwa [← isClosedUnderLimitsOfShape_iff_op]
+
+instance [P.IsClosedUnderColimitsOfShape Jᵒᵖ] :
+    P.op.IsClosedUnderLimitsOfShape J := by
+  rwa [← isClosedUnderColimitsOfShape_op_iff_op]
+
+instance [P.IsClosedUnderLimitsOfShape Jᵒᵖ] :
+    P.op.IsClosedUnderColimitsOfShape J := by
+  rwa [← isClosedUnderLimitsOfShape_op_iff_op]
+
+section
+
+variable (Q : ObjectProperty Cᵒᵖ)
+
+lemma isClosedUnderColimitsOfShape_iff_unop :
+    Q.IsClosedUnderColimitsOfShape J ↔
+      Q.unop.IsClosedUnderLimitsOfShape Jᵒᵖ :=
+  (Q.unop.isClosedUnderLimitsOfShape_op_iff_op J).symm
+
+lemma isClosedUnderLimitsOfShape_iff_unop :
+    Q.IsClosedUnderLimitsOfShape J ↔
+      Q.unop.IsClosedUnderColimitsOfShape Jᵒᵖ :=
+  (Q.unop.isClosedUnderColimitsOfShape_op_iff_op J).symm
+
+lemma isClosedUnderColimitsOfShape_op_iff_unop :
+    Q.IsClosedUnderColimitsOfShape Jᵒᵖ ↔
+      Q.unop.IsClosedUnderLimitsOfShape J :=
+  (Q.unop.isClosedUnderLimitsOfShape_iff_op J).symm
+
+lemma isClosedUnderLimitsOfShape_op_iff_unop :
+    Q.IsClosedUnderLimitsOfShape Jᵒᵖ ↔
+      Q.unop.IsClosedUnderColimitsOfShape J :=
+  (Q.unop.isClosedUnderColimitsOfShape_iff_op J).symm
+
+instance [Q.IsClosedUnderColimitsOfShape J] :
+    Q.unop.IsClosedUnderLimitsOfShape Jᵒᵖ := by
+  rwa [← isClosedUnderColimitsOfShape_iff_unop]
+
+instance [Q.IsClosedUnderLimitsOfShape J] :
+    Q.unop.IsClosedUnderColimitsOfShape Jᵒᵖ := by
+  rwa [← isClosedUnderLimitsOfShape_iff_unop]
+
+instance [Q.IsClosedUnderColimitsOfShape Jᵒᵖ] :
+    Q.unop.IsClosedUnderLimitsOfShape J := by
+  rwa [← isClosedUnderColimitsOfShape_op_iff_unop]
+
+instance [Q.IsClosedUnderLimitsOfShape Jᵒᵖ] :
+    Q.unop.IsClosedUnderColimitsOfShape J := by
+  rwa [← isClosedUnderLimitsOfShape_op_iff_unop]
 
 end
 
