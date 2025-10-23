@@ -55,7 +55,7 @@ macro_rules
     let mut stx : Term ← `(0)
     let mut fst : Bool := true
     for xi in x do
-      for xii in (← Elab.Term.expandMatchAlt xi) do
+      for xii in Elab.Term.expandMatchAlt xi do
         match xii with
         | `(matchAltExpr| | $pat => $val) =>
           if fst then

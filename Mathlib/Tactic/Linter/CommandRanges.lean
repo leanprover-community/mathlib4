@@ -50,7 +50,7 @@ def commandRangesLinter : Linter where run stx := do
     return
   let ranges :=
     if let some rg := stx.getRange? then #[rg.start, rg.stop] else #[]
-  let ranges : Array String.Pos :=
+  let ranges : Array String.Pos.Raw :=
     if let some rg := stx.getRangeWithTrailing? then ranges.push rg.stop else ranges
   logInfo m!"{ranges}"
 

@@ -53,7 +53,7 @@ theorem prod_concat : (l.concat a).prod = l.prod * a := by
 theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).prod := by
   induction l with
   | nil => simp
-  | cons head tail ih => simp only [*, List.flatten, map, prod_append, prod_cons]
+  | cons head tail ih => simp only [*, List.flatten_cons, map, prod_append, prod_cons]
 
 open scoped Relator in
 @[to_additive]
