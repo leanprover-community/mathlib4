@@ -1058,6 +1058,9 @@ def homNatIso {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D} (hF : F.FullyFai
     (fun Y => Equiv.toIso (Equiv.ulift.trans <| hF.homEquiv.symm.trans Equiv.ulift.symm))
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
+/- @[deprecated (since := "2025-10-20")] alias homNatIsoMaxRight :=
+  homNatIso -/
+
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps!]
 def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
@@ -1068,6 +1071,9 @@ def compUliftYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C
 
 @[deprecated (since := "2025-10-20")] alias compYonedaCompWhiskeringLeft :=
   compUliftYonedaCompWhiskeringLeft
+
+/- @[deprecated (since := "2025-10-20")] alias compYonedaCompWhiskeringLeftMaxRight :=
+  compUliftYonedaCompWhiskeringLeft -/
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism, using coyoneda. -/
 @[simps!]
