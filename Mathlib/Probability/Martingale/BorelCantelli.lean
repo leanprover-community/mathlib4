@@ -46,23 +46,19 @@ variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtrat
 -/
 
 /-- `leastGE f r` is the stopping time corresponding to the first time `f ≥ r`. -/
-noncomputable def leastGE (f : ℕ → Ω → ℝ) (r : ℝ)
-    [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] : Ω → ℕ∞ :=
+noncomputable def leastGE (f : ℕ → Ω → ℝ) (r : ℝ) : Ω → ℕ∞ :=
   hittingAfter f (Set.Ici r) 0
 
-theorem Adapted.isStoppingTime_leastGE (r : ℝ)
-    [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] (hf : Adapted ℱ f) :
+theorem Adapted.isStoppingTime_leastGE (r : ℝ) (hf : Adapted ℱ f) :
     IsStoppingTime ℱ (leastGE f r) :=
   hittingAfter_isStoppingTime hf measurableSet_Ici
 
 /-- The stopped process of `f` above `r` is the process that is equal to `f` until `leastGE f r`
 (the first time `f` passes above `r`), and then is constant afterwards. -/
-noncomputable def stoppedAbove (f : ℕ → Ω → ℝ) (r : ℝ)
-    [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] : ℕ → Ω → ℝ :=
+noncomputable def stoppedAbove (f : ℕ → Ω → ℝ) (r : ℝ) : ℕ → Ω → ℝ :=
   stoppedProcess f (leastGE f r)
 
-protected lemma Submartingale.stoppedAbove [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ)
-    [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] :
+protected lemma Submartingale.stoppedAbove [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ) :
     Submartingale (stoppedAbove f r) ℱ μ :=
   hf.stoppedProcess (hf.adapted.isStoppingTime_leastGE r)
 
@@ -71,8 +67,8 @@ protected lemma Submartingale.stoppedAbove [IsFiniteMeasure μ] (hf : Submarting
 
 variable {r : ℝ} {R : ℝ≥0}
 
-theorem stoppedAbove_le [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)]
-    (hr : 0 ≤ r) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
+theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
+    (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
     ∀ᵐ ω ∂μ, stoppedAbove f r i ω ≤ r + R := by
   filter_upwards [hbdd] with ω hbddω
   rw [stoppedAbove, stoppedProcess]
@@ -94,8 +90,7 @@ theorem stoppedAbove_le [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ic
 
 @[deprecated (since := "2025-09-08")] alias norm_stoppedValue_leastGE_le := stoppedAbove_le
 
-theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ]
-    [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] (hf : Submartingale f ℱ μ)
+theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hr : 0 ≤ r) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
     eLpNorm (stoppedAbove f r i) 1 μ ≤ 2 * μ Set.univ * ENNReal.ofReal (r + R) := by
   refine eLpNorm_one_le_of_le' ((hf.stoppedAbove r).integrable _) ?_
@@ -108,7 +103,6 @@ theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ]
   Submartingale.eLpNorm_stoppedAbove_le
 
 theorem Submartingale.eLpNorm_stoppedAbove_le' [IsFiniteMeasure μ]
-    [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)]
     (hf : Submartingale f ℱ μ) (hr : 0 ≤ r) (hf0 : f 0 = 0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
     eLpNorm (stoppedAbove f r i) 1 μ

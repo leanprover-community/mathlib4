@@ -52,11 +52,12 @@ noncomputable def hittingBtwn [Preorder ι] [InfSet ι] (u : ι → Ω → β)
 
 @[deprecated (since := "2025-09-08")] alias hitting := hittingBtwn
 
+open scoped Classical in
 /-- Hitting time: given a stochastic process `u` and a set `s`, `hittingAfter u s n` is
 the first time `u` is in `s` after time `n` (if `u` does not hit `s` after time `n` then the
 hitting time is `⊤`). -/
-noncomputable def hittingAfter [Preorder ι] [InfSet ι] (u : ι → Ω → β)
-    (s : Set β) (n : ι) [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)] : Ω → WithTop ι :=
+noncomputable def hittingAfter [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n : ι) :
+    Ω → WithTop ι :=
   fun x ↦ if ∃ j, n ≤ j ∧ u j x ∈ s then (sInf {i : ι | n ≤ i ∧ u i x ∈ s} : ι) else ⊤
 
 open scoped Classical in
@@ -67,8 +68,8 @@ theorem hittingBtwn_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Se
 
 @[deprecated (since := "2025-09-08")] alias hitting_def := hittingBtwn_def
 
-lemma hittingAfter_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n : ι)
-    [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)] :
+open scoped Classical in
+lemma hittingAfter_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n : ι) :
     hittingAfter u s n =
     fun x => if ∃ j, n ≤ j ∧ u j x ∈ s
       then ((sInf {i : ι | n ≤ i ∧ u i x ∈ s} : ι) : WithTop ι) else ⊤ := rfl
@@ -106,8 +107,7 @@ theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω)
 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_lt_hitting := notMem_of_lt_hittingBtwn
 
-theorem notMem_of_lt_hittingAfter [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)] {k : ι}
-    (hk₁ : k < hittingAfter u s n ω) (hk₂ : n ≤ k) :
+theorem notMem_of_lt_hittingAfter {k : ι} (hk₁ : k < hittingAfter u s n ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
   classical
   intro h
@@ -124,8 +124,7 @@ theorem hittingBtwn_eq_end_iff {m : ι} : hittingBtwn u s n m ω = m ↔
 
 @[deprecated (since := "2025-09-08")] alias hitting_eq_end_iff := hittingBtwn_eq_end_iff
 
-lemma hittingAfter_eq_top_iff [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)] :
-    hittingAfter u s n ω = ⊤ ↔ ∀ j, n ≤ j → u j ω ∉ s := by
+lemma hittingAfter_eq_top_iff : hittingAfter u s n ω = ⊤ ↔ ∀ j, n ≤ j → u j ω ∉ s := by
   simp [hittingAfter]
 
 theorem hittingBtwn_of_le {m : ι} (hmn : m ≤ n) : hittingBtwn u s n m ω = m := by
@@ -152,8 +151,7 @@ theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u 
 
 @[deprecated (since := "2025-09-08")] alias le_hitting := le_hittingBtwn
 
-lemma le_hittingAfter [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)] (ω : Ω) :
-    n ≤ hittingAfter u s n ω := by
+lemma le_hittingAfter (ω : Ω) : n ≤ hittingAfter u s n ω := by
   simp only [hittingAfter]
   split_ifs with h
   · norm_cast
@@ -189,8 +187,7 @@ theorem hittingBtwn_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Se
 
 @[deprecated (since := "2025-09-08")] alias hitting_mem_set := hittingBtwn_mem_set
 
-lemma hittingAfter_mem_set [WellFoundedLT ι] [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)]
-    (h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s) :
+lemma hittingAfter_mem_set [WellFoundedLT ι] (h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s) :
     u (hittingAfter u s n ω).untopA ω ∈ s := by
   simp_rw [hittingAfter, if_pos h_exists]
   have h_nonempty : {i : ι | n ≤ i ∧ u i ω ∈ s}.Nonempty := by
@@ -211,8 +208,7 @@ theorem hittingBtwn_mem_set_of_hittingBtwn_lt [WellFoundedLT ι] {m : ι}
 @[deprecated (since := "2025-09-08")] alias hitting_mem_set_of_hitting_lt :=
   hittingBtwn_mem_set_of_hittingBtwn_lt
 
-lemma hittingAfter_mem_set_of_ne_top [WellFoundedLT ι] [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)]
-    (hl : hittingAfter u s n ω ≠ ⊤) :
+lemma hittingAfter_mem_set_of_ne_top [WellFoundedLT ι] (hl : hittingAfter u s n ω ≠ ⊤) :
     u (hittingAfter u s n ω).untopA ω ∈ s := by
   simp only [ne_eq, hittingAfter_eq_top_iff, not_forall, not_not] at hl
   obtain ⟨j, hj₁, hj₂⟩ := hl
@@ -227,8 +223,7 @@ theorem hittingBtwn_le_of_mem {m : ι} (hin : n ≤ i) (him : i ≤ m) (his : u 
 
 @[deprecated (since := "2025-09-08")] alias hitting_le_of_mem := hittingBtwn_le_of_mem
 
-lemma hittingAfter_le_of_mem [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)] (hin : n ≤ i)
-    (his : u i ω ∈ s) :
+lemma hittingAfter_le_of_mem (hin : n ≤ i) (his : u i ω ∈ s) :
     hittingAfter u s n ω ≤ i := by
   have h_exists : ∃ k, n ≤ k ∧ u k ω ∈ s := ⟨i, hin, his⟩
   simp_rw [hittingAfter, if_pos h_exists]
@@ -253,7 +248,7 @@ theorem hittingBtwn_le_iff_of_exists [WellFoundedLT ι] {m : ι}
 @[deprecated (since := "2025-09-08")] alias hitting_le_iff_of_exists :=
   hittingBtwn_le_iff_of_exists
 
-lemma hittingAfter_le_iff [WellFoundedLT ι] [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)] :
+lemma hittingAfter_le_iff [WellFoundedLT ι] :
     hittingAfter u s n ω ≤ i ↔ ∃ j ∈ Set.Icc n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h_top : hittingAfter u s n ω ≠ ⊤ := fun h ↦ by simp [h] at h'
@@ -290,7 +285,7 @@ theorem hittingBtwn_lt_iff [WellFoundedLT ι] {m : ι} (i : ι) (hi : i ≤ m) :
 
 @[deprecated (since := "2025-09-08")] alias hitting_lt_iff := hittingBtwn_lt_iff
 
-lemma hittingAfter_lt_iff [WellFoundedLT ι] [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)] :
+lemma hittingAfter_lt_iff [WellFoundedLT ι] :
     hittingAfter u s n ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
   · have h_top : hittingAfter u s n ω ≠ ⊤ := fun h ↦ by simp [h] at h'
@@ -359,7 +354,7 @@ theorem hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFo
 theorem hittingAfter_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     [Countable ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n : ι}
-    [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)] (hu : Adapted f u) (hs : MeasurableSet s) :
+    (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (hittingAfter u s n) := by
   intro i
   have h_set_eq_Union : {ω | hittingAfter u s n ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
@@ -437,8 +432,7 @@ theorem hittingBtwn_eq_sInf (ω : Ω) : hittingBtwn u s ⊥ ⊤ ω = sInf {i : �
 
 @[deprecated (since := "2025-09-08")] alias hitting_eq_sInf := hittingBtwn_eq_sInf
 
-lemma hittingAfter_eq_sInf [∀ ω, Decidable (∃ j, ⊥ ≤ j ∧ u j ω ∈ s)]
-    [∀ ω, Decidable (∃ j, u j ω ∈ s)] (ω : Ω) :
+lemma hittingAfter_eq_sInf [∀ ω, Decidable (∃ j, u j ω ∈ s)] (ω : Ω) :
     hittingAfter u s ⊥ ω
       = if ∃ j, u j ω ∈ s then ((sInf {i : ι | u i ω ∈ s} : ι) : WithTop ι)
         else (⊤ : WithTop ι) := by
@@ -462,8 +456,7 @@ theorem hittingBtwn_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j
 
 @[deprecated (since := "2025-09-08")] alias hitting_bot_le_iff := hittingBtwn_bot_le_iff
 
-theorem hittingAfter_bot_le_iff {i : ι} [∀ ω, Decidable (∃ j, ⊥ ≤ j ∧ u j ω ∈ s)]
-    {ω : Ω} :
+theorem hittingAfter_bot_le_iff {i : ι} {ω : Ω} :
     hittingAfter u s ⊥ ω ≤ i ↔ ∃ j ≤ i, u j ω ∈ s := by
   simp [hittingAfter_le_iff]
 
