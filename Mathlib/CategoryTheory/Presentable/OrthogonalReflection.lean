@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Localization.Bousfield
 import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
