@@ -4075,35 +4075,21 @@ lemma bound_circle : ((1 + ↑(h7.r q hq0 h2mq) / ↑q)) ≤ ↑(h7.r q hq0 h2mq
        _ ≤  ((2*h7.m* (h7.n q) + ↑(h7.r q hq0 h2mq)) / q : ℝ ) := ?_
        _ ≤ ((2*h7.m* ↑(h7.r q hq0 h2mq) + ↑(h7.r q hq0 h2mq)) / q : ℝ ) := ?_
        _ = ((2*h7.m + 1) * ↑(h7.r q hq0 h2mq) / q : ℝ ) := ?_
-       _ = ((2*h7.m + 1)/ q * ↑(h7.r q hq0 h2mq) / q : ℝ ) := ?_
-       _ ≤ ((2*h7.m + 1)/ q * ↑(h7.r q hq0 h2mq) / q : ℝ ) := ?_
 
        _ ≤ ↑(h7.r q hq0 h2mq : ℝ) + (↑q : ℝ) := ?_
   · rw [q_frac]
-  · rw [div_le_div_right (Nat.cast_pos.mpr hq0)]
+  · rw [div_le_div_iff_of_pos_right (Nat.cast_pos.mpr hq0)]
     simp only [add_le_add_iff_right]
     sorry
+  · rw [div_le_div_iff_of_pos_right (Nat.cast_pos.mpr hq0)]
+    sorry
   · sorry
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-
-
-
-
-
-
-#exit
-
-
-
-
-
-
-
-
-
+  · refine (div_le_iff₀' ?_).mpr ?_
+    · exact (Nat.cast_pos.mpr hq0)
+    · rw [mul_add];rw [add_mul]
+      refine add_le_add ?_ ?_
+      · sorry
+      · sorry
 
 
 
