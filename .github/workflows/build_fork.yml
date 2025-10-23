@@ -42,7 +42,7 @@ permissions:
 
 jobs:
   build:
-    if: github.event.pull_request.head.repo.fork
+    if: github.event.pull_request.head.repo.fork && github.repository != 'leanprover-community/mathlib4-nightly-testing'
     name: Build (fork)
     runs-on: pr
     outputs:
@@ -547,7 +547,7 @@ jobs:
 
   post_steps:
     name: Post-Build Step (fork)
-    if: github.event.pull_request.head.repo.fork
+    if: github.event.pull_request.head.repo.fork && github.repository != 'leanprover-community/mathlib4-nightly-testing'
     needs: [build]
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
@@ -676,7 +676,7 @@ jobs:
 
   style_lint:
     name: Lint style (fork)
-    if: github.event.pull_request.head.repo.fork
+    if: github.event.pull_request.head.repo.fork && github.repository != 'leanprover-community/mathlib4-nightly-testing'
     runs-on: ubuntu-latest
     steps:
       - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
@@ -687,7 +687,7 @@ jobs:
 
   final:
     name: Post-CI job (fork)
-    if: github.event.pull_request.head.repo.fork
+    if: github.event.pull_request.head.repo.fork && github.repository != 'leanprover-community/mathlib4-nightly-testing'
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
