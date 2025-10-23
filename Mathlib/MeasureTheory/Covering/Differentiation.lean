@@ -252,10 +252,7 @@ theorem ae_tendsto_div : ∀ᵐ x ∂μ, ∃ c, Tendsto (fun a => ρ a / μ a) (
       exact ENNReal.mul_le_of_le_div ha.le
   have B : ∀ᵐ x ∂μ, ∀ c ∈ w, ∀ d ∈ w, c < d →
       ¬((∃ᶠ a in v.filterAt x, ρ a / μ a < c) ∧ ∃ᶠ a in v.filterAt x, d < ρ a / μ a) := by
-    #adaptation_note /-- 2024-04-23
-    The next two lines were previously just `simpa only [ae_ball_iff w_count, ae_all_iff]` -/
-    rw [ae_ball_iff w_count]; intro x hx; rw [ae_ball_iff w_count]; revert x
-    simpa only [ae_all_iff]
+    simpa only [ae_ball_iff w_count, ae_all_iff]
   filter_upwards [B]
   intro x hx
   exact tendsto_of_no_upcrossings w_dense hx
@@ -785,10 +782,7 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
       ∀ᵉ (n : ℕ) (c ∈ t),
         Tendsto (fun a => (∫⁻ y in a, ‖f y - (A.set n).indicator (fun _ => c) y‖ₑ ∂μ) / μ a)
           (v.filterAt x) (𝓝 ‖f x - (A.set n).indicator (fun _ => c) x‖ₑ) := by
-    #adaptation_note /-- 2024-04-23
-    The next two lines were previously just `simp_rw [ae_all_iff, ae_ball_iff t_count]`. -/
-    simp_rw [ae_all_iff]
-    intro x; rw [ae_ball_iff t_count]; revert x
+    simp_rw [ae_all_iff, ae_ball_iff t_count]
     intro n c _
     apply ae_tendsto_lintegral_div'
     · refine (h'f.sub ?_).enorm
