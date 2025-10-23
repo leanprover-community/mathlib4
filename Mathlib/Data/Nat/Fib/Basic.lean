@@ -89,7 +89,7 @@ theorem fib_mono : Monotone fib :=
 
 lemma fib_succ_sub_fib_pred {n : ℕ} (hn : n ≠ 0) :
     fib (n + 1) - fib (n - 1) = fib n :=
-  Nat.sub_eq_iff_eq_add' (fib_mono <| by grind) |>.mpr <| fib_add_one ha
+  Nat.sub_eq_iff_eq_add' (fib_mono <| by grind) |>.mpr <| fib_add_one hn
 
 lemma fib_sub_one {n : ℕ} (hn : n ≠ 0) :
     fib (n - 1) = fib (n + 1) - fib n := by
