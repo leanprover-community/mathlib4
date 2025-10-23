@@ -352,7 +352,7 @@ such that `H * Z = H * A` and the cosets `Hz` are disjoint as `z` runs over `Z`.
 private lemma exists_subset_mul_eq_mul_injOn (H : Subgroup G) (A : Finset G) :
     ∃ Z ⊆ A, (H : Set G) * Z = H * A ∧ (Z : Set G).InjOn ((H : Set G) <• ·) := by
   obtain ⟨Z, hZA, hZinj, hHZA⟩ :=
-    (A.toSet.surjOn_image ((H : Set G) <• ·)).exists_subset_injOn_image_eq
+    ((A : Set G).surjOn_image ((H : Set G) <• ·)).exists_subset_injOn_image_eq
   lift Z to Finset G using A.finite_toSet.subset hZA
   refine ⟨Z, mod_cast hZA, ?_, hZinj⟩
   simpa [-SetLike.mem_coe, Set.iUnion_op_smul_set] using congr(Set.sUnion $hHZA)

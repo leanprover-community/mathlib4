@@ -237,7 +237,7 @@ lemma iIndepSets.of_subsingleton [Subsingleton ι] {m : ι → Set (Set Ω)} {κ
     [IsMarkovKernel κ] : iIndepSets m κ μ := by
   rintro s f hf
   obtain rfl | ⟨i, rfl⟩ : s = ∅ ∨ ∃ i, s = {i} := by
-    simpa using (subsingleton_of_subsingleton (s := s.toSet)).eq_empty_or_singleton
+    simpa using (subsingleton_of_subsingleton (s := (s : Set ι))).eq_empty_or_singleton
   all_goals simp
 
 @[nontriviality, simp]
