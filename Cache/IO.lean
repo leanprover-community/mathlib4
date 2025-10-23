@@ -90,7 +90,7 @@ def getLeanTar : IO String := do
 /-- Bump this number to invalidate the cache, in case the existing hashing inputs are insufficient.
 It is not a global counter, and can be reset to 0 as long as the lean githash or lake manifest has
 changed since the last time this counter was touched. -/
-def rootHashGeneration : UInt64 := 0
+def rootHashGeneration : UInt64 := 4
 
 /--
 `CacheM` stores the following information:
@@ -311,10 +311,18 @@ def mkBuildPaths (mod : Name) : CacheM <| List (FilePath × Bool) := do
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
     (packageDir / LIBDIR / path.withExtension "trace", true),
+    -- Note: the `.olean`, `.olean.server`, `.olean.private` files must be consecutive,
+    -- and in this order. The corresponding `.hash` files can come afterwards, in any order.
     (packageDir / LIBDIR / path.withExtension "olean", true),
+    (packageDir / LIBDIR / path.withExtension "olean.server", false),
+    (packageDir / LIBDIR / path.withExtension "olean.private", false),
     (packageDir / LIBDIR / path.withExtension "olean.hash", true),
+    (packageDir / LIBDIR / path.withExtension "olean.server.hash", false),
+    (packageDir / LIBDIR / path.withExtension "olean.private.hash", false),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
     (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
+    (packageDir / LIBDIR / path.withExtension "ir", false),
+    (packageDir / LIBDIR / path.withExtension "ir.hash", false),
     (packageDir / IRDIR  / path.withExtension "c", true),
     (packageDir / IRDIR  / path.withExtension "c.hash", true),
     (packageDir / LIBDIR / path.withExtension "extra", false)]
