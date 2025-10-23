@@ -489,14 +489,18 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
   convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
   exact (MulEquivClass.map_nonZeroDivisors h).symm
 
-protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
-    [IsFractionRing R S] : Nontrivial S := by
-  apply nontrivial_of_ne
-  · intro h
-    apply @zero_ne_one R
-    exact
-      IsLocalization.injective S (le_of_eq rfl)
-        (((algebraMap R S).map_zero.trans h).trans (algebraMap R S).map_one.symm)
+variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]
+
+theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
+  by_contra! h'
+  rcases h' with ⟨_, _⟩ | ⟨_, _⟩
+  · obtain ⟨c, hc⟩ := h.exists_of_eq (x := 1) (y := 0) (Subsingleton.elim _ _)
+    simp at hc
+  · apply (h.map_units 1).ne_zero
+    rw [Subsingleton.eq_zero ((1 : nonZeroDivisors R) : R), map_zero]
+
+protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
+  h.nontrivial_iff_nontrivial.mp hR
 
 end IsFractionRing
 
