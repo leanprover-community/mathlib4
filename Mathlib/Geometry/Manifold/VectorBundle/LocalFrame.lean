@@ -400,7 +400,7 @@ variable {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V �
 omit [IsManifold I 0 M] in
 variable (e b) in
 @[simp]
-lemma localFrame_repr_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (s : Π x : M, V x) (i : ι) :
+lemma localFrame_coeff_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (s : Π x : M, V x) (i : ι) :
     b.localFrame_coeff I e i s x = 0 := by
   simpa [localFrame_coeff] using
     (localFrame_isLocalFrameOn_baseSet I 1 e b).coeff_apply_of_notMem hx s i
@@ -408,7 +408,7 @@ lemma localFrame_repr_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (s : Π x :
 omit [IsManifold I 0 M] in
 variable (e b) in
 @[simp]
-lemma localFrame_repr_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
+lemma localFrame_coeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
     b.localFrame_coeff I e i s x = (b.localFrame_toBasis_at e hx).repr (s x) i := by
   have ilf := b.localFrame_isLocalFrameOn_baseSet I 1 e
   rw [show localFrame_toBasis_at e b hx = ilf.toBasisAt hx by ext j; simp [localFrame, hx]]
@@ -416,7 +416,7 @@ lemma localFrame_repr_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M,
 
 -- TODO: better name?
 omit [IsManifold I 0 M] in
-lemma localFrame_repr_sum_eq [Fintype ι] (s : Π x : M,  V x) {x'} (hx : x' ∈ e.baseSet) :
+lemma localFrame_coeff_sum_eq [Fintype ι] (s : Π x : M,  V x) {x'} (hx : x' ∈ e.baseSet) :
     s x' = (∑ i, (b.localFrame_coeff I e i s x') • b.localFrame e i x') := by
   simp only [localFrame_coeff]
   exact (localFrame_isLocalFrameOn_baseSet I 1 e b).coeff_sum_eq s hx
@@ -424,14 +424,15 @@ lemma localFrame_repr_sum_eq [Fintype ι] (s : Π x : M,  V x) {x'} (hx : x' ∈
 variable (b) in
 omit [IsManifold I 0 M] in
 /-- A local frame locally spans the space of sections for `V`: for each local trivialisation `e`
-  of `V` around `x`, we have `s = ∑ i, (b.localFrame_repr e i s) • b.localFrame e i` -/
-lemma localFrame_repr_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π x : M,  V x) :
+  of `V` around `x`, we have `s = ∑ i, (b.localFrame_coeff e i s) • b.localFrame e i` -/
+-- TODO: rename to match isLocalFrameOn analogue!
+lemma localFrame_coeff_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π x : M,  V x) :
     ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.localFrame_coeff I e i s x') • b.localFrame e i x' :=
-  eventually_nhds_iff.mpr ⟨e.baseSet, fun _ h ↦ localFrame_repr_sum_eq s h, e.open_baseSet, hxe⟩
+  eventually_nhds_iff.mpr ⟨e.baseSet, fun _ h ↦ localFrame_coeff_sum_eq s h, e.open_baseSet, hxe⟩
 
 omit [IsManifold I 0 M] in
 /-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
-lemma localFrame_repr_congr (b : Basis ι 𝕜 F)
+lemma localFrame_coeff_congr (b : Basis ι 𝕜 F)
     {s s' : Π x : M,  V x} {i : ι} (hss' : s x = s' x) :
     b.localFrame_coeff I e i s x = b.localFrame_coeff I e i s' x := by
   by_cases hxe : x ∈ e.baseSet
@@ -440,7 +441,7 @@ lemma localFrame_repr_congr (b : Basis ι 𝕜 F)
   · simp [localFrame_coeff, hxe]
 
 omit [IsManifold I 0 M] in
-lemma localFrame_repr_apply_zero_at
+lemma localFrame_coeff_apply_zero_at
     (b : Basis ι 𝕜 F) {s : Π x : M, V x} (hs : s x = 0) (i : ι) :
     b.localFrame_coeff I e i s x = 0 := by
   simp only [localFrame_coeff]
@@ -452,10 +453,10 @@ omit [IsManifold I 0 M] in
 /-- Suppose `e` is a compatible trivialisation around `x ∈ M`, and `s` a bundle section.
 Then the coefficient of `s` w.r.t. the local frame induced by `b` and `e`
 equals the cofficient of "`s x` read in the trivialisation `e`" for `b i`. -/
-lemma localFrame_repr_eq_repr (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i : ι} {s : Π x : M, V x} :
+lemma localFrame_coeff_eq_coeff (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {i : ι} {s : Π x : M, V x} :
     b.localFrame_coeff I e i s x = b.repr (e (s x)).2 i := by
-  --simp only [localFrame_repr]
-  simp [b.localFrame_repr_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
+  --simp only [localFrame_coeff]
+  simp [b.localFrame_coeff_apply_of_mem_baseSet e hxe, Basis.localFrame_toBasis_at]
 
 end Module.Basis
 
@@ -471,9 +472,9 @@ variable {ι : Type*} {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.Tot
     [ContMDiffVectorBundle 1 F V I]
 
 omit [IsManifold I 0 M] in
-/-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_repr e i` in the local frame
+/-- If `s` is `C^k` at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
 near `x` induced by `e` and `b` -/
-lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+lemma contMDiffAt_localFrame_coeff [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} [ContMDiffVectorBundle k F V I]
     (hs : CMDiffAt k (T% s) x) (i : ι) :
@@ -487,7 +488,7 @@ lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
     apply this.congr_of_eventuallyEq ?_
     apply eventuallyEq_of_mem (s := e.baseSet) (by simp [e.open_baseSet.mem_nhds hxe])
     intro y hy
-    simp [aux, Basis.localFrame_repr_eq_repr hy]
+    simp [aux, Basis.localFrame_coeff_eq_coeff hy]
   simp only [aux]
 
   -- step 2: `s` read in trivialization `e` is `C^k`
@@ -508,68 +509,68 @@ lemma contMDiffAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜
   exact hbas.comp x h₁
 
 omit [IsManifold I 0 M] in
-/-- If `s` is `C^k` on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_repr e i`
+/-- If `s` is `C^k` on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_coeff e i`
 in the local frame induced by `e` -/
-lemma contMDiffOn_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
+lemma contMDiffOn_localFrame_coeff [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {k : WithTop ℕ∞} {t : Set M} [ContMDiffVectorBundle k F V I]
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet)
     (hs : CMDiff[t] k (T% s)) (i : ι) : CMDiff[t] k (b.localFrame_coeff I e i s) :=
-  fun _ hx ↦ (contMDiffAt_localFrame_repr (ht' hx) b
+  fun _ hx ↦ (contMDiffAt_localFrame_coeff (ht' hx) b
     (hs.contMDiffAt (ht.mem_nhds hx)) i).contMDiffWithinAt
 
 omit [IsManifold I 0 M] in -- [ContMDiffVectorBundle n F V I] in
-/-- If `s` is `C^k` on `e.baseSet`, so is its coefficient `b.localFrame_repr e i` in the local frame
-induced by `e` -/
-lemma contMDiffOn_baseSet_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+/-- If `s` is `C^k` on `e.baseSet`, so is its coefficient `b.localFrame_coeff e i`
+in the local frame induced by `e` -/
+lemma contMDiffOn_baseSet_localFrame_coeff [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} [ContMDiffVectorBundle k F V I]
     (hs : CMDiff[e.baseSet] k (T% s)) (i : ι) : CMDiff[e.baseSet] k (b.localFrame_coeff I e i s) :=
-  contMDiffOn_localFrame_repr b e.open_baseSet (subset_refl _) hs _
+  contMDiffOn_localFrame_coeff b e.open_baseSet (subset_refl _) hs _
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` at `x ∈ e.baseSet` iff each of its
-coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
-lemma contMDiffAt_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+coefficients `b.localFrame_coeff e i s` in a local frame near `x` is -/
+lemma contMDiffAt_iff_localFrame_coeff [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} [ContMDiffVectorBundle k F V I]
     {x' : M} (hx : x' ∈ e.baseSet) :
     CMDiffAt k (T% s) x' ↔ ∀ i, CMDiffAt k (b.localFrame_coeff I e i s) x' :=
-  ⟨fun h i ↦ contMDiffAt_localFrame_repr hx b h i,
+  ⟨fun h i ↦ contMDiffAt_localFrame_coeff hx b h i,
     fun hi ↦ (b.localFrame_isLocalFrameOn_baseSet I k e).contMDiffAt_of_coeff hi
     (e.open_baseSet.mem_nhds hx)⟩
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` on `t ⊆ e.baseSet` iff each of its
-coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
-lemma contMDiffOn_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+coefficients `b.localFrame_coeff e i s` in a local frame near `x` is -/
+lemma contMDiffOn_iff_localFrame_coeff [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} [ContMDiffVectorBundle k F V I]
     {t : Set M} (ht : IsOpen t) (ht' : t ⊆ e.baseSet) :
     CMDiff[t] k (T% s) ↔ ∀ i, CMDiff[t] k (b.localFrame_coeff I e i s) := by
-  refine ⟨fun h i ↦ contMDiffOn_localFrame_repr b ht ht' h i, fun hi ↦ ?_⟩
+  refine ⟨fun h i ↦ contMDiffOn_localFrame_coeff b ht ht' h i, fun hi ↦ ?_⟩
   -- TODO: golf this using the lemmas above
   -- intro x hx
-  -- let aux := (b.localFrame_isLocalFrameOn_baseSet I k e).contMDiffAt_of_repr (t := s) (x := x)
+  -- let aux := (b.localFrame_isLocalFrameOn_baseSet I k e).contMDiffAt_of_coeff (t := s) (x := x)
   have this (i) : CMDiff[t] k (T% ((b.localFrame_coeff I e i) s • b.localFrame e i)) :=
     (hi i).smul_section ((b.contMDiffOn_localFrame_baseSet k e i).mono ht')
   let rhs := fun x' ↦ ∑ i, (b.localFrame_coeff I e i) s x' • b.localFrame e i x'
   have almost : CMDiff[t] k (T% rhs) := .sum_section fun i _ ↦ this i
   apply almost.congr
   intro y hy
-  simpa using b.localFrame_repr_sum_eq s (ht' hy)
+  simpa using b.localFrame_coeff_sum_eq s (ht' hy)
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is `C^k` on a trivialisation domain `e.baseSet` iff each of its
-coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
-lemma contMDiffOn_baseSet_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+coefficients `b.localFrame_coeff e i s` in a local frame near `x` is -/
+lemma contMDiffOn_baseSet_iff_localFrame_coeff [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {k : WithTop ℕ∞} [ContMDiffVectorBundle k F V I] :
     CMDiff[e.baseSet] k (T% s) ↔ ∀ i, CMDiff[e.baseSet] k (b.localFrame_coeff I e i s) := by
-  rw [contMDiffOn_iff_localFrame_repr b e.open_baseSet (subset_refl _)]
+  rw [contMDiffOn_iff_localFrame_coeff b e.open_baseSet (subset_refl _)]
 
 -- Differentiability of a section can be checked in terms of its local frame coefficients
 section MDifferentiable
 
 omit [IsManifold I 0 M] in
-/-- If `s` is diffentiable at `x`, so is its coefficient `b.localFrame_repr e i` in the local frame
+/-- If `s` is diffentiable at `x`, so is its coefficient `b.localFrame_coeff e i` in the local frame
 near `x` induced by `e` and `b` -/
-lemma mdifferentiableAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+lemma mdifferentiableAt_localFrame_coeff [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (hxe : x ∈ e.baseSet) (b : Basis ι 𝕜 F) {s : Π x : M,  V x} (hs : MDiffAt (T% s) x) (i : ι) :
     MDiffAt (b.localFrame_coeff I e i s) x := by
   -- This boils down to computing the frame coefficients in a local trivialisation.
@@ -581,7 +582,7 @@ lemma mdifferentiableAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpac
     apply this.congr_of_eventuallyEq
     apply eventuallyEq_of_mem (s := e.baseSet) (by simp [e.open_baseSet.mem_nhds hxe])
     intro y hy
-    simp [aux, Basis.localFrame_repr_eq_repr hy]
+    simp [aux, Basis.localFrame_coeff_eq_coeff hy]
   simp only [aux]
 
   -- step 2: `s` read in trivialization `e` is differentiable
@@ -602,31 +603,31 @@ lemma mdifferentiableAt_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpac
   exact hbas.comp x h₁
 
 omit [IsManifold I 0 M] in
-/-- If `s` is differentiable on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_repr e i`
+/-- If `s` is differentiable on `t ⊆ e.baseSet`, so is its coefficient `b.localFrame_coeff e i`
 in the local frame induced by `e` -/
-lemma mdifferentiableOn_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
+lemma mdifferentiableOn_localFrame_coeff [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] (b : Basis ι 𝕜 F)
     {s : Π x : M,  V x} {t : Set M}
     (ht : IsOpen t) (ht' : t ⊆ e.baseSet) (hs : MDiff[t] (T% s)) (i : ι) :
     MDiff[t] (b.localFrame_coeff I e i s) :=
-  fun _ hx ↦ (mdifferentiableAt_localFrame_repr (ht' hx) b
+  fun _ hx ↦ (mdifferentiableAt_localFrame_coeff (ht' hx) b
     (hs.mdifferentiableAt (ht.mem_nhds hx)) i).mdifferentiableWithinAt
 
 omit [IsManifold I 0 M] in
-/-- If `s` is differentiable on `e.baseSet`, so is its coefficient `b.localFrame_repr e i` in the
+/-- If `s` is differentiable on `e.baseSet`, so is its coefficient `b.localFrame_coeff e i` in the
 local frame induced by `e` -/
-lemma mdifferentiableOn_baseSet_localFrame_repr [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+lemma mdifferentiableOn_baseSet_localFrame_coeff [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (b : Basis ι 𝕜 F) {s : Π x : M,  V x}
     (hs : MDiff[e.baseSet] (T% s)) (i : ι) :
     MDiff[e.baseSet] (b.localFrame_coeff I e i s) :=
-  mdifferentiableOn_localFrame_repr b e.open_baseSet (subset_refl _) hs _
+  mdifferentiableOn_localFrame_coeff b e.open_baseSet (subset_refl _) hs _
 
 omit [IsManifold I 0 M] in
 /-- A section `s` of `V` is differentiable at `x ∈ e.baseSet` iff each of its
-coefficients `b.localFrame_repr e i s` in a local frame near `x` is -/
-lemma mdifferentiableAt_iff_localFrame_repr [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+coefficients `b.localFrame_coeff e i s` in a local frame near `x` is -/
+lemma mdifferentiableAt_iff_localFrame_coeff [Fintype ι] [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     (b : Basis ι 𝕜 F) {s : Π x : M,  V x} {x' : M} (hx : x' ∈ e.baseSet) :
     MDiffAt (T% s) x' ↔ ∀ i, MDiffAt (b.localFrame_coeff I e i s) x' :=
-  ⟨fun h i ↦ mdifferentiableAt_localFrame_repr hx b h i, fun hi ↦
+  ⟨fun h i ↦ mdifferentiableAt_localFrame_coeff hx b h i, fun hi ↦
     (b.localFrame_isLocalFrameOn_baseSet I 1 e).mdifferentiableAt_of_coeff_aux hi e.open_baseSet hx⟩
 
 end MDifferentiable
