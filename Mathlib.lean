@@ -202,6 +202,7 @@ import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.Category.Ring.Epi
+import Mathlib.Algebra.Category.Ring.EqualizerPushout
 import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.Algebra.Category.Ring.FinitePresentation
 import Mathlib.Algebra.Category.Ring.Instances
@@ -5974,7 +5975,9 @@ import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.DirectLimitFG
 import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.RingTheory.TensorProduct.Free
+import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
 import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+import Mathlib.RingTheory.TensorProduct.Maps
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.RingTheory.TensorProduct.Nontrivial
 import Mathlib.RingTheory.TensorProduct.Pi
