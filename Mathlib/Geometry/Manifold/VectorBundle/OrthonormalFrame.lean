@@ -110,7 +110,7 @@ omit [VectorBundle ℝ F E] [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
   [IsContMDiffRiemannianBundle IB n F E] in
 variable (t) in
 lemma repr_eq_inner' (hs : IsOrthonormalFrameOn IB F n s u) (hx : x ∈ u) (i : ι) :
-    hs.repr i t x = ⟪s i x, t x⟫ := by
+    hs.coeff i t x = ⟪s i x, t x⟫ := by
   let b := VectorBundle.gramSchmidtOrthonormalBasis (hs.linearIndependent hx) (hs.generating hx)
   have beq (i : ι) : b i = s i x := by
     simp [b, VectorBundle.gramSchmidtNormed_apply_of_orthonormal (hs.orthonormal hx) i]
@@ -119,7 +119,7 @@ lemma repr_eq_inner' (hs : IsOrthonormalFrameOn IB F n s u) (hx : x ∈ u) (i : 
     simp [b, VectorBundle.gramSchmidtNormed_apply_of_orthonormal (hs.orthonormal hx) i]
   have aux := b.repr_apply_apply (t x) i
   rw [beq] at aux
-  simp [← aux, IsLocalFrameOn.repr, hx, ← heq']
+  simp [← aux, IsLocalFrameOn.coeff, hx, ← heq']
 
 -- This lemma would hold more generally for an *orthogonal frame*.
 -- variable (t) in
@@ -129,13 +129,13 @@ lemma repr_eq_inner' (hs : IsOrthonormalFrameOn IB F n s u) (hx : x ∈ u) (i : 
 
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
 lemma contMDiffWithinAt_repr (ht : CMDiffAt[u] n (T% t) x) (hx : x ∈ u) (i : ι) :
-    CMDiffAt[u] n (hs.repr i t) x :=
+    CMDiffAt[u] n (hs.coeff i t) x :=
   ((hs.contMDiffOn i x hx).inner_bundle ht).congr_of_mem (fun _ hy ↦ hs.repr_eq_inner' _ hy _) hx
 
 omit [IsManifold IB n B] [ContMDiffVectorBundle n F E IB] in
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
 lemma contMDiffAt_repr (hu : u ∈ 𝓝 x) (ht : CMDiffAt n (T% t) x) (i : ι) :
-    CMDiffAt n (hs.repr i t) x :=
+    CMDiffAt n (hs.coeff i t) x :=
   (((hs.contMDiffOn i).contMDiffAt hu).inner_bundle ht).congr_of_eventuallyEq <|
     Filter.eventually_of_mem hu fun _ hx ↦ hs.repr_eq_inner' _ hx _
 
@@ -148,19 +148,19 @@ lemma contMDiffAt_repr (hu : u ∈ 𝓝 x) (ht : CMDiffAt n (T% t) x) (i : ι) :
 
 /-- If `{s i}` is an orthogonal local frame on a neighbourhood `u` of `x` and `t` is `C^k` on `u`,
 so is its coefficient in the frame `{s i}`. -/
-lemma contMDiffOn_repr (ht : CMDiff[u] n (T% t)) (i : ι) : CMDiff[u] n (hs.repr i t) :=
+lemma contMDiffOn_repr (ht : CMDiff[u] n (T% t)) (i : ι) : CMDiff[u] n (hs.coeff i t) :=
   fun x' hx ↦ hs.contMDiffWithinAt_repr (ht x' hx) hx _
 
 /-- A section `s` of `V` is `C^k` at `x` iff each of its coefficients in an orthogonal
 local frame near `x` is. -/
 lemma contMDiffAt_iff_repr (hu : u ∈ 𝓝 x) :
-    CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (hs.repr i t) x :=
-  ⟨fun h i ↦ hs.contMDiffAt_repr hu h i, fun h ↦ hs.contMDiffAt_of_repr h hu⟩
+    CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (hs.coeff i t) x :=
+  ⟨fun h i ↦ hs.contMDiffAt_repr hu h i, fun h ↦ hs.contMDiffAt_of_coeff h hu⟩
 
 /-- If `{s i}` is an orthogonal local frame on `s`, a section `s` of `V` is `C^k` on `u` iff
 each of its coefficients `hs.repr i s` w.r.t. the local frame `{s i}` is. -/
-lemma contMDiffOn_iff_repr : CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (hs.repr i t) :=
-  ⟨fun h i ↦ hs.contMDiffOn_repr h i, fun hi ↦ hs.contMDiffOn_of_repr hi⟩
+lemma contMDiffOn_iff_repr : CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (hs.coeff i t) :=
+  ⟨fun h i ↦ hs.contMDiffOn_repr h i, fun hi ↦ hs.contMDiffOn_of_coeff hi⟩
 
 -- unused, just stating for convenience/nice API
 include hs in

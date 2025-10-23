@@ -86,25 +86,25 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
   let b := Basis.ofVectorSpace ℝ F
   let t := trivializationAt F V x
   let s := b.localFrame (trivializationAt F V x)
-  let c := Basis.localFrame_repr I t b
+  let c := Basis.localFrame_coeff I t b
   have hs (i) : MDiffAt (T% (s i)) x:=
     (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt le_rfl
   have hc {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) (i) :
       MDiffAt ((c i) σ) x :=
-    mdifferentiableAt_localFrame_repr x_mem b hσ i
+    mdifferentiableAt_localFrame_coeff x_mem b hσ i
   have hφ {σ : (x : M) → V x}
           (hσ : MDiffAt (T% σ) x) :
       φ σ x = φ (fun x' ↦ ∑ i, (c i) σ x' • s i x') x := by
     exact
       locality hσ
         (.sum_section fun i ↦ (hc hσ i).smul_section (hs i))
-        (Basis.localFrame_repr_spec b x_mem σ)
+        (Basis.localFrame_eventually_eq_sum_coeff_smul b x_mem σ)
   rw [hφ hσ, hφ hσ', sum_phi, sum_phi]
   · change ∑ i, φ ((c i σ) • (s i)) x = ∑ i, φ ((c i σ') • (s i)) x
     congr
     ext i
     rw [φ_smul _ _ (hc hσ i) (hs i), φ_smul _ _ (hc hσ' i) (hs i),
-        Basis.localFrame_repr_congr b hσσ']
+        Basis.localFrame_coeff_congr b hσσ']
   · exact fun i ↦ (hc hσ' i).smul_section (hs i)
   · exact fun i ↦ (hc hσ i).smul_section (hs i)
 
@@ -146,15 +146,15 @@ lemma tensoriality_criterion' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDi
   let b := Basis.ofVectorSpace ℝ F
   let t := trivializationAt F V x
   let s := b.localFrame (trivializationAt F V x)
-  let c := Basis.localFrame_repr (I := I) t b
-  rw [locality (b.localFrame_repr_spec (I := I) x_mem σ),
-    locality (b.localFrame_repr_spec (I := I) x_mem σ'), sum_phi, sum_phi]
+  let c := Basis.localFrame_coeff (I := I) t b
+  rw [locality (b.localFrame_eventually_eq_sum_coeff_smul (I := I) x_mem σ),
+    locality (b.localFrame_eventually_eq_sum_coeff_smul (I := I) x_mem σ'), sum_phi, sum_phi]
   change ∑ i, φ ((c i σ) • (s i)) x = ∑ i, φ ((c i σ') • (s i)) x
   congr
   ext i
   rw [φ_smul, φ_smul]
   congr
-  apply b.localFrame_repr_congr
+  apply b.localFrame_coeff_congr
   assumption
 
 include I in
@@ -250,14 +250,14 @@ lemma tensoriality_criterion'' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteD
   let b := Basis.ofVectorSpace ℝ F
   let t := trivializationAt F V x
   let s := b.localFrame (trivializationAt F V x)
-  let c := Basis.localFrame_repr t b
-  rw [locality (b.localFrame_repr_spec x_mem σ), locality (b.localFrame_repr_spec x_mem σ'),
-      sum_phi, sum_phi]
+  let c := Basis.localFrame_coeff t b
+  rw [locality (b.localFrame_eventually_eq_sum_coeff_smul x_mem σ),
+      locality (b.localFrame_eventually_eq_sum_coeff_smul x_mem σ'), sum_phi, sum_phi]
   change ∑ i, φ ((c i σ) • (s i)) x = ∑ i, φ ((c i σ') • (s i)) x
   congr
   ext i
   rw [φ_smul, φ_smul]
   congr
-  apply b.localFrame_repr_congr
+  apply b.localFrame_coeff_congr
   assumption
  -/

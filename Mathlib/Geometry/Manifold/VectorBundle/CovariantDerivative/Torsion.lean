@@ -246,15 +246,15 @@ lemma aux1 {ι : Type*} [Fintype ι]
     {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
     {U : Set M} {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
     (X Y : (x : M) → TangentSpace I x) :
-    torsion f X Y x = ∑ i, (hs.repr i) X x • torsion f (s i) Y x :=
+    torsion f X Y x = ∑ i, (hs.coeff i) X x • torsion f (s i) Y x :=
   have hU : U ∈ 𝓝 x := sorry
-  have aux := hs.repr_spec X hU
-  have hX : X x = ∑ i, (hs.repr i) X x • s i x := sorry
+  have aux := hs.eventually_eq_sum_coeff_smul X hU
+  have hX : X x = ∑ i, (hs.coeff i) X x • s i x := sorry
   calc torsion f X Y x
-    _ = torsion f (fun x ↦ ∑ i, (hs.repr i) X x • s i x) Y x := by
+    _ = torsion f (fun x ↦ ∑ i, (hs.coeff i) X x • s i x) Y x := by
       sorry -- tensoriality and [hX]
-    _ = ∑ i, (torsion f (fun x ↦ (hs.repr i) X x • s i x) Y x) := sorry
-    _ = ∑ i, (hs.repr i) X x • (torsion f (s i) Y x) := sorry
+    _ = ∑ i, (torsion f (fun x ↦ (hs.coeff i) X x • s i x) Y x) := sorry
+    _ = ∑ i, (hs.coeff i) X x • (torsion f (s i) Y x) := sorry
 
 -- Weaker hypotheses possible, e.g. local frame on U ∈ 𝓝 x, while a cov. derivative on s ∋ x
 variable {n} in
@@ -263,19 +263,19 @@ lemma aux2 {ι : Type*} [Fintype ι] [CompleteSpace E]
     {U : Set M} {s : ι → (x : M) → TangentSpace I x}
     (hf : IsCovariantDerivativeOn E f U) (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
     (X Y : (x : M) → TangentSpace I x) :
-    torsion f X Y x = ∑ i, (hs.repr i) Y x • torsion f X (s i) x :=
+    torsion f X Y x = ∑ i, (hs.coeff i) Y x • torsion f X (s i) x :=
   have hU : U ∈ 𝓝 x := sorry
-  have aux := hs.repr_spec Y hU
-  have hY : Y x = ∑ i, (hs.repr i) Y x • s i x := hs.repr_sum_eq Y hx
+  have aux := hs.eventually_eq_sum_coeff_smul Y hU
+  have hY : Y x = ∑ i, (hs.coeff i) Y x • s i x := hs.coeff_sum_eq Y hx
   calc torsion f X Y x
-    _ = torsion f X (fun x ↦ ∑ i, (hs.repr i) Y x • s i x) x := by
+    _ = torsion f X (fun x ↦ ∑ i, (hs.coeff i) Y x • s i x) x := by
       sorry -- tensoriality and [hY]
-    _ = ∑ i, (torsion f X (fun x ↦ (hs.repr i) Y x • s i x) x) := sorry
-    _ = ∑ i, (hs.repr i) Y x • (torsion f X (s i) x) := by
+    _ = ∑ i, (torsion f X (fun x ↦ (hs.coeff i) Y x • s i x) x) := sorry
+    _ = ∑ i, (hs.coeff i) Y x • (torsion f X (s i) x) := by
       congr with i
-      have hsi : MDiffAt (hs.repr i Y) x := sorry
+      have hsi : MDiffAt (hs.coeff i Y) x := sorry
       have hsi' : MDiffAt (T% (s i)) x := sorry
-      have := hf.torsion_smul_right_apply (X := X) (Y := s i) (f := (hs.repr i) Y) hx hsi hsi'
+      have := hf.torsion_smul_right_apply (X := X) (Y := s i) (f := (hs.coeff i) Y) hx hsi hsi'
       rw [← this]
       congr
 
@@ -291,10 +291,10 @@ lemma _root_.IsCovariantDerivativeOn.isTorsionFreeOn_iff_localFrame
   intro x hx X Y
   rw [aux1 hs hx]
   calc
-    _ = ∑ i, (hs.repr i) X x • ∑ j, (hs.repr j) Y x • torsion f (s i) (s j) x := by
+    _ = ∑ i, (hs.coeff i) X x • ∑ j, (hs.coeff j) Y x • torsion f (s i) (s j) x := by
       congr!
       rw [aux2 hf hs hx]
-    _ = ∑ i, (hs.repr i) X x • ∑ j, (hs.repr j) Y x • 0 := by
+    _ = ∑ i, (hs.coeff i) X x • ∑ j, (hs.coeff j) Y x • 0 := by
       congr! with i _ j _
       exact h i j x hx
     _ = 0 := by simp

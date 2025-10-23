@@ -251,7 +251,7 @@ noncomputable def extend [FiniteDimensional ℝ F] [T2Space M] {x : M} (v : V x)
   -- and return ψ • V₀ instead.
   letI ht := t.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)
   let ψ := Classical.choose <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
-  ψ.toFun • localExtensionOn b t x v
+  ψ.toFun • localExtensionOn b t v
 
 variable {I F}
 
@@ -1208,10 +1208,10 @@ lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I
   let e := trivializationAt E (TangentSpace I) x
   let Xi (i : Fin n) := b.localFrame e i
   -- Write X in coordinates: X = ∑ i, a i • Xi i near `x`.
-  let a := fun i ↦ b.localFrame_repr e i X
+  let a := fun i ↦ b.localFrame_coeff e i X
   have : x ∈ e.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-  have aux : ∀ᶠ (x' : M) in 𝓝 x, X x' = ∑ i, a i x' • Xi i x' := b.localFrame_repr_spec this X
-  have (i : Fin n) : a i x = 0 := b.localFrame_repr_apply_zero_at hX i
+  have aux : ∀ᶠ (x' : M) in 𝓝 x, X x' = ∑ i, a i x' • Xi i x' := b.localFrame_eventually_eq_sum_coeff_smul this X
+  have (i : Fin n) : a i x = 0 := b.localFrame_coeff_apply_zero_at hX i
   calc cov X σ x
     _ = cov (∑ i, a i • Xi i) σ x := cov.congr_X_of_eventuallyEq aux (by simp)
     _ = ∑ i, cov (a i • Xi i) σ x := by rw [cov.sum_X]; simp

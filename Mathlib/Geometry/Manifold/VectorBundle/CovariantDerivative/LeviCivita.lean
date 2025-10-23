@@ -704,12 +704,12 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
   -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
   let real := b.orthonormalFrame t
   have hframe := b.orthonormalFrame_isOrthonormalFrameOn t (F := E) (IB := I) (n := 1)
-  rw [hframe.eq_iff_repr hx]
+  rw [hframe.eq_iff_coeff hx]
   intro i
-  have h₁ : ⟪X, real i⟫ x = (hframe.repr i) X x := by
+  have h₁ : ⟪X, real i⟫ x = (hframe.coeff i) X x := by
     rw [hframe.repr_eq_inner' _ hx]
     simp [real, real_inner_comm]
-  have h₂ : ⟪X', real i⟫ x = (hframe.repr i) X' x := by
+  have h₂ : ⟪X', real i⟫ x = (hframe.coeff i) X' x := by
     rw [hframe.repr_eq_inner' _ hx]
     simp [real, real_inner_comm]
   rw [← h₁, ← h₂, h (real i)]
@@ -820,10 +820,10 @@ lemma isCovariantDerivativeOn_lcCandidateAux_of_nonempty [FiniteDimensional ℝ 
       (Basis.ofVectorSpace ℝ E).orthonormalFrame_isOrthonormalFrameOn e
     have hZ' : ∑ i, ⟪σ, Z i⟫ x • Z i x = σ x := by
       calc _
-        _ = ∑ i, hZ.repr i σ x • Z i x := by
+        _ = ∑ i, hZ.coeff i σ x • Z i x := by
           congr; ext i
           rw [hZ.repr_eq_inner' σ hx i, product_swap]
-        _ = σ x := (hZ.toIsLocalFrameOn.repr_sum_eq _ hx).symm
+        _ = σ x := (hZ.toIsLocalFrameOn.coeff_sum_eq _ hx).symm
     trans ∑ i, leviCivitaRhs I X (g • σ) (Z i) x • (Z i) x
     · congr
     have (i : (Basis.ofVectorSpaceIndex ℝ E)) : MDiffAt (T% (Z i)) x :=
@@ -903,7 +903,7 @@ noncomputable def ChristoffelSymbol
     (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
     {U : Set M} {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
     (hs : IsLocalFrameOn I E n s U) (i j k : ι) : M → ℝ :=
-  hs.repr k (f (s i) (s j))
+  hs.coeff k (f (s i) (s j))
 
 -- special case of `foobar` below; needed?
 lemma ChristoffelSymbol.sum_eq
@@ -912,7 +912,7 @@ lemma ChristoffelSymbol.sum_eq
     (hs : IsLocalFrameOn I E n s U) (i j : ι) (hx : x ∈ U) :
     f (s i) (s j) x = ∑ k, (ChristoffelSymbol I f hs i j k x) • (s k) x := by
   simp only [ChristoffelSymbol]
-  exact hs.repr_sum_eq _ hx
+  exact hs.coeff_sum_eq _ hx
 
 variable {U : Set M}
   {f g : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
@@ -935,15 +935,15 @@ lemma eq_product_apply [Fintype ι]
 lemma foobar [Fintype ι] [FiniteDimensional ℝ E] (hf : IsCovariantDerivativeOn E f U)
     (hs : IsLocalFrameOn I E 1 s U) {x : M} (hx : x ∈ U) :
     f X Y x = ∑ k,
-      letI S₁ := ∑ i, ∑ j, (hs.repr i X) * (hs.repr j Y) * (ChristoffelSymbol I f hs i j k)
+      letI S₁ := ∑ i, ∑ j, (hs.coeff i X) * (hs.coeff j Y) * (ChristoffelSymbol I f hs i j k)
       letI S₂ : M → ℝ := sorry -- first summand in Leibniz' rule!
       S₁ x • s k x := by
-  have hY := hs.repr_sum_eq Y hx
+  have hY := hs.coeff_sum_eq Y hx
   -- should this be a separate lemma also?
-  have : ∀ x ∈ U, Y x = ∑ i, (hs.repr i) Y x • s i x := by
+  have : ∀ x ∈ U, Y x = ∑ i, (hs.coeff i) Y x • s i x := by
     intro x hx
-    apply hs.repr_sum_eq Y hx
-  have : f X Y x = f X (fun x ↦ ∑ i, (hs.repr i) Y x • s i x) x := by
+    apply hs.coeff_sum_eq Y hx
+  have : f X Y x = f X (fun x ↦ ∑ i, (hs.coeff i) Y x • s i x) x := by
     -- apply `congr_σ_of_eventuallyEq` from Basic.lean (after restoring it)
     -- want U to be a neighbourhood of x to make this work
     sorry
@@ -965,7 +965,7 @@ lemma _root_.IsCovariantDerivativeOn.congr_of_christoffelSymbol_eq [Fintype ι]
     ∀ X Y : Π x : M, TangentSpace I x, ∀ x ∈ U, f X Y x = g X Y x := by
   have (i j : ι) : ∀ x ∈ U, f (s i) (s j) x = g (s i) (s j) x := by
     intro x hx
-    rw [hs.eq_iff_repr hx]
+    rw [hs.eq_iff_coeff hx]
     exact fun k ↦ hfg i j k x hx
   intro X Y x hx
   -- use linearity (=formula for f in terms of Christoffel symbols) now, another separate lemma!
@@ -978,7 +978,7 @@ lemma _root_.IsCovariantDerivativeOn.congr_iff_christoffelSymbol_eq [Fintype ι]
     (hs : IsLocalFrameOn I E n s U) :
     (∀ X Y : Π x : M, TangentSpace I x, ∀ x ∈ U, f X Y x = g X Y x) ↔
     ∀ i j k, ∀ x ∈ U, ChristoffelSymbol I f hs i j k x = ChristoffelSymbol I g hs i j k x :=
-  ⟨fun hfg _i _j _k _x hx ↦ hs.repr_congr (hfg _ _ _ hx ) ..,
+  ⟨fun hfg _i _j _k _x hx ↦ hs.coeff_congr (hfg _ _ _ hx ) ..,
     fun h X Y x hx ↦ hf.congr_of_christoffelSymbol_eq I hg hs h X Y x hx⟩
 
 -- TODO: global version for convenience, with an alias for the interesting direction!
@@ -1018,12 +1018,12 @@ lemma isTorsionFreeOn_iff_christoffelSymbols [CompleteSpace E] {ι : Type*} [Fin
   refine ⟨?_, ?_⟩
   · intro h k x hx
     simp only [ChristoffelSymbol]
-    apply hs.repr_congr
+    apply hs.coeff_congr
     specialize h x hx
     rw [this i j hx, sub_eq_zero] at h
     exact h
   · intro h x hx
-    rw [this i j hx, sub_eq_zero, hs.eq_iff_repr hx]
+    rw [this i j hx, sub_eq_zero, hs.eq_iff_coeff hx]
     exact fun k ↦ h k x hx
 
 -- Exercise 4.2(b) in Lee, Chapter 4
