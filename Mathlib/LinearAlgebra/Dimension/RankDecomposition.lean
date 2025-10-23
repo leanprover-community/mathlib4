@@ -1,11 +1,10 @@
 /-
-Copyright (c) 2025 __________________. All rights reserved.
+Copyright (c) 2025 Zichen Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: __________________
+Authors: Zichen Wang
 -/
 import Mathlib.LinearAlgebra.Dimension.LinearMap
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
