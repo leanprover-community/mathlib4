@@ -108,7 +108,7 @@ abbrev support (p : SkewPolynomial R) : Finset ℕ := SkewMonoidAlgebra.support 
 
 @[simp] lemma support_zero : (0 : SkewPolynomial R).support = ∅ := rfl
 
-@[simp] lemma support_eq_empty : p.support = ∅ ↔ p = 0 := by simp [support]
+lemma support_eq_empty : p.support = ∅ ↔ p = 0 := by simp [support]
 
 lemma card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 

@@ -3,9 +3,6 @@ Copyright (c) 2024 María Inés de Frutos Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.Algebra.Algebra.NonUnitalHom
 
