@@ -501,7 +501,7 @@ theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromorph
   let g := (fun z ↦ (z - x) ^ (n₁ - n)) • g₁ +  (fun z ↦ (z - x) ^ (n₂ - n)) • g₂
   have h₁g : AnalyticAt 𝕜 g x := by
     apply AnalyticAt.add
-    apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_left n₁ n₂))).smul h₁g₁
+    · apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_left n₁ n₂))).smul h₁g₁
     apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_right n₁ n₂))).smul h₁g₂
   have : f₁ + f₂ =ᶠ[𝓝[≠] x] ((· - x) ^ n) • g := by
     filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin]
