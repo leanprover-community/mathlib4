@@ -39,8 +39,6 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 instance center.isMulCommutative : IsMulCommutative (center G) :=
   ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
 
-@[deprecated (since := "2025-04-09")] alias center.isCommutative := Subgroup.center.isMulCommutative
-
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/
 @[to_additive (attr := simps!) /-- The center of isomorphic additive groups are isomorphic. -/]

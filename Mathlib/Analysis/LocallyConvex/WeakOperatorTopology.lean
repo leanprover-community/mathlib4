@@ -240,9 +240,6 @@ instance instUniformSpace : UniformSpace (E →SWOT[σ] F) := .comap (inducingFn
 
 instance instIsUniformAddGroup : IsUniformAddGroup (E →SWOT[σ] F) := .comap (inducingFn σ E F)
 
-@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
-  ContinuousLinearMapWOT.instIsUniformAddGroup
-
 end Topology
 
 /-! ### The WOT is induced by a family of seminorms -/

@@ -213,16 +213,10 @@ theorem abs_measureReal_sub_le_measureReal_symmDiff'
     union_comm t s]
   abel
 
-@[deprecated (since := "2025-04-18")] alias
-  abs_toReal_measure_sub_le_measure_symmDiff' := abs_measureReal_sub_le_measureReal_symmDiff'
-
 theorem abs_measureReal_sub_le_measureReal_symmDiff [IsFiniteMeasure μ]
     (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) :
     |μ.real s - μ.real t| ≤ μ.real (s ∆ t) :=
   abs_measureReal_sub_le_measureReal_symmDiff' hs ht (measure_ne_top μ s) (measure_ne_top μ t)
-
-@[deprecated (since := "2025-04-18")] alias
-  abs_toReal_measure_sub_le_measure_symmDiff := abs_measureReal_sub_le_measureReal_symmDiff
 
 instance {s : Finset ι} {μ : ι → Measure α} [∀ i, IsFiniteMeasure (μ i)] :
     IsFiniteMeasure (∑ i ∈ s, μ i) where measure_univ_lt_top := by simp [measure_lt_top]

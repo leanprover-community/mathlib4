@@ -11,7 +11,6 @@ import Mathlib.Order.LatticeIntervals
 
 -/
 assert_not_exists Ring
-assert_not_exists OrderedCommMonoid
 
 open Set
 

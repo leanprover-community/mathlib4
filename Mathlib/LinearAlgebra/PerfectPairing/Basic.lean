@@ -141,10 +141,6 @@ variable {R M N}
 
 namespace PerfectPairing
 
-@[deprecated (since := "2025-04-20")] alias toLin := toLinearMap
-@[deprecated (since := "2025-04-20")] alias bijectiveLeft := bijective_left
-@[deprecated (since := "2025-04-20")] alias bijectiveRight := bijective_right
-
 set_option linter.deprecated false in
 /-- If the coefficients are a field, and one of the spaces is finite-dimensional, it is sufficient
 to check only injectivity instead of bijectivity of the bilinear form. -/
@@ -186,8 +182,6 @@ instance instFunLike : FunLike (PerfectPairing R M N) M (N →ₗ[R] R) where
 set_option linter.deprecated false in
 @[deprecated "No replacement" (since := "2025-05-27")]
 lemma toLinearMap_apply (p : PerfectPairing R M N) (x : M) : p.toLinearMap x = p x := rfl
-
-@[deprecated (since := "2025-04-20")] alias toLin_apply := toLinearMap_apply
 
 set_option linter.deprecated false in
 @[deprecated "No replacement" (since := "2025-05-27")]

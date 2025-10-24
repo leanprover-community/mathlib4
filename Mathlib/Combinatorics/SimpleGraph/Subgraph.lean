@@ -718,8 +718,6 @@ protected def hom (x : Subgraph G) : x.coe →g G where
 theorem hom_injective {x : Subgraph G} : Function.Injective x.hom :=
   fun _ _ ↦ Subtype.ext
 
-@[deprecated (since := "2025-03-15")] alias hom.injective := hom_injective
-
 @[simp] lemma map_hom_top (G' : G.Subgraph) : Subgraph.map G'.hom ⊤ = G' := by
   aesop (add unfold safe Relation.Map, unsafe G'.edge_vert, unsafe Adj.symm)
 
@@ -732,8 +730,6 @@ def spanningHom (x : Subgraph G) : x.spanningCoe →g G where
 
 theorem spanningHom_injective {x : Subgraph G} : Function.Injective x.spanningHom :=
   fun _ _ ↦ id
-
-@[deprecated (since := "2025-03-15")] alias spanningHom.injective := spanningHom_injective
 
 theorem neighborSet_subset_of_subgraph {x y : Subgraph G} (h : x ≤ y) (v : V) :
     x.neighborSet v ⊆ y.neighborSet v :=

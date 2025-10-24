@@ -14,8 +14,6 @@ import Mathlib.Order.Hom.Basic
 
 -/
 
-assert_not_exists OrderedCommMonoid
-
 variable {α : Type*}
 
 namespace Nat

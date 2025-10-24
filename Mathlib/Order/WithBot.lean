@@ -155,8 +155,6 @@ lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x :=
 lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x :=
   Option.eq_none_iff_forall_some_ne
 
-@[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_bot := eq_bot_iff_forall_ne
-
 theorem forall_ne_bot {p : WithBot α → Prop} : (∀ x, x ≠ ⊥ → p x) ↔ ∀ x : α, p x := by
   simp [ne_bot_iff_exists]
 
@@ -410,9 +408,6 @@ lemma eq_bot_iff_forall_le [NoBotOrder α] : x = ⊥ ↔ ∀ b : α, x ≤ b := 
   refine ⟨by simp +contextual, fun h ↦ (x.eq_bot_iff_forall_ne).2 fun y => ?_⟩
   rintro rfl
   exact not_isBot y fun z => coe_le_coe.1 (h z)
-
-@[deprecated (since := "2025-03-19")] alias forall_lt_iff_eq_bot := eq_bot_iff_forall_lt
-@[deprecated (since := "2025-03-19")] alias forall_le_iff_eq_bot := eq_bot_iff_forall_le
 
 lemma forall_le_coe_iff_le [NoBotOrder α] : (∀ a : α, y ≤ a → x ≤ a) ↔ x ≤ y := by
   obtain _ | y := y
@@ -740,8 +735,6 @@ lemma ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x :=
 lemma eq_top_iff_forall_ne {x : WithTop α} : x = ⊤ ↔ ∀ a : α, ↑a ≠ x :=
   Option.eq_none_iff_forall_some_ne
 
-@[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_top := eq_top_iff_forall_ne
-
 theorem forall_ne_top {p : WithTop α → Prop} : (∀ x, x ≠ ⊤ → p x) ↔ ∀ x : α, p x := by
   simp [ne_top_iff_exists]
 
@@ -965,9 +958,6 @@ lemma eq_top_iff_forall_gt : y = ⊤ ↔ ∀ a : α, a < y := by
 
 lemma eq_top_iff_forall_ge [NoTopOrder α] : y = ⊤ ↔ ∀ a : α, a ≤ y :=
   WithBot.eq_bot_iff_forall_le (α := αᵒᵈ)
-
-@[deprecated (since := "2025-03-19")] alias forall_gt_iff_eq_top := eq_top_iff_forall_gt
-@[deprecated (since := "2025-03-19")] alias forall_ge_iff_eq_top := eq_top_iff_forall_ge
 
 lemma forall_coe_le_iff_le [NoTopOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y :=
   WithBot.forall_le_coe_iff_le (α := αᵒᵈ)

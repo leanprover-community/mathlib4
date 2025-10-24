@@ -25,7 +25,7 @@ of `α`/`Set α` on `Set β`.
   instances reducible changes the behavior of `simp`.
 -/
 
-assert_not_exists MonoidWithZero OrderedAddCommMonoid
+assert_not_exists MonoidWithZero
 
 open Function MulOpposite
 open scoped Pointwise
@@ -40,9 +40,6 @@ namespace Set
 lemma smul_set_prod {M α : Type*} [SMul M α] [SMul M β] (c : M) (s : Set α) (t : Set β) :
     c • (s ×ˢ t) = (c • s) ×ˢ (c • t) :=
   prodMap_image_prod (c • ·) (c • ·) s t
-
-@[deprecated (since := "2025-03-11")]
-alias vadd_set_sum := vadd_set_prod
 
 @[to_additive]
 lemma smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MulAction G (α i)]

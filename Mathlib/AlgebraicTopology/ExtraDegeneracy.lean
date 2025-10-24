@@ -161,9 +161,6 @@ def shiftFun {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) 
 theorem shiftFun_zero {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) : shiftFun f 0 = 0 :=
   rfl
 
-@[deprecated (since := "2025-04-19")]
-alias shiftFun_0 := shiftFun_zero
-
 @[simp]
 theorem shiftFun_succ {n : ℕ} {X : Type*} [Zero X] (f : Fin n → X) (i : Fin n) :
     shiftFun f i.succ = f i :=

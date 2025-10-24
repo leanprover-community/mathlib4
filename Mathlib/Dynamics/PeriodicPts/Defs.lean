@@ -511,9 +511,6 @@ theorem isFixedPt_prodMap (x : α × β) :
     IsFixedPt (Prod.map f g) x ↔ IsFixedPt f x.1 ∧ IsFixedPt g x.2 :=
   Prod.ext_iff
 
-@[deprecated (since := "2025-04-18")]
-alias isFixedPt_prod_map := isFixedPt_prodMap
-
 theorem IsFixedPt.prodMap (ha : IsFixedPt f a) (hb : IsFixedPt g b) :
     IsFixedPt (Prod.map f g) (a, b) :=
   (isFixedPt_prodMap _).mpr ⟨ha, hb⟩
@@ -522,9 +519,6 @@ theorem IsFixedPt.prodMap (ha : IsFixedPt f a) (hb : IsFixedPt g b) :
 theorem isPeriodicPt_prodMap (x : α × β) :
     IsPeriodicPt (Prod.map f g) n x ↔ IsPeriodicPt f n x.1 ∧ IsPeriodicPt g n x.2 := by
   simp [IsPeriodicPt]
-
-@[deprecated (since := "2025-04-18")]
-alias isPeriodicPt_prod_map := isPeriodicPt_prodMap
 
 theorem IsPeriodicPt.prodMap (ha : IsPeriodicPt f n a) (hb : IsPeriodicPt g n b) :
     IsPeriodicPt (Prod.map f g) n (a, b) :=

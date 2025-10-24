@@ -34,8 +34,6 @@ We show that this sheaf condition is equivalent to the `OpensLeCover` sheaf cond
 thereby also equivalent to the default sheaf condition.
 -/
 
-assert_not_exists OrderedCommMonoid
-
 noncomputable section
 
 universe w

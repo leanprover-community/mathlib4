@@ -773,22 +773,13 @@ theorem UniformContinuous.prodMk {f₁ : α → β} {f₂ : α → γ} (h₁ : U
   rw [UniformContinuous, uniformity_prod]
   exact tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
-@[deprecated (since := "2025-03-10")]
-alias UniformContinuous.prod_mk := UniformContinuous.prodMk
-
 theorem UniformContinuous.prodMk_left {f : α × β → γ} (h : UniformContinuous f) (b) :
     UniformContinuous fun a => f (a, b) :=
   h.comp (uniformContinuous_id.prodMk uniformContinuous_const)
 
-@[deprecated (since := "2025-03-10")]
-alias UniformContinuous.prod_mk_left := UniformContinuous.prodMk_left
-
 theorem UniformContinuous.prodMk_right {f : α × β → γ} (h : UniformContinuous f) (a) :
     UniformContinuous fun b => f (a, b) :=
   h.comp (uniformContinuous_const.prodMk uniformContinuous_id)
-
-@[deprecated (since := "2025-03-10")]
-alias UniformContinuous.prod_mk_right := UniformContinuous.prodMk_right
 
 theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → δ}
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=

@@ -27,7 +27,7 @@ to `Mathlib/Algebra/Group/Even.lean`.
 `Mathlib/Algebra/Group/Even.lean` for the definition of even elements.
 -/
 
-assert_not_exists DenselyOrdered OrderedRing
+assert_not_exists DenselyOrdered
 
 open MulOpposite
 

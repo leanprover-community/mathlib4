@@ -31,7 +31,6 @@ equal, this often confuses the elaborator. Similar problems arise when doing cas
 The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
 assert_not_exists GeneralizedHeytingAlgebra
-assert_not_exists OrderedCommMonoid
 -- TODO -- assert_not_exists PosMulMono
 assert_not_exists mem_upperBounds
 

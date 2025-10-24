@@ -44,7 +44,6 @@ See the documentation of `to_additive.attr` for more information.
 -- assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
-assert_not_exists OrderedCommMonoid
 
 variable {ι κ M N G α : Type*}
 
@@ -385,9 +384,6 @@ section ToList
 @[to_additive (attr := simp, grind =)]
 theorem prod_map_toList (s : Finset ι) (f : ι → M) : (s.toList.map f).prod = s.prod f := by
   rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.map_coe, Finset.coe_toList]
-
-@[deprecated (since := "2025-04-09")] alias prod_to_list := prod_map_toList
-@[deprecated (since := "2025-04-09")] alias sum_to_list := sum_map_toList
 
 @[to_additive (attr := simp, grind =)]
 theorem prod_toList {M : Type*} [CommMonoid M] (s : Finset M) :

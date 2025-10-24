@@ -316,8 +316,6 @@ theorem list_getElem?₁ : ∀ l : List α, Primrec (l[·]? : ℕ → Option α)
       (casesOn1 (encode a).succ <| dom_denumerable.1 <| list_getElem?₁ l).of_eq fun n => by
         cases n <;> simp
 
-@[deprecated (since := "2025-02-14")] alias list_get?₁ := list_getElem?₁
-
 end Primrec
 
 /-- `Primrec₂ f` means `f` is a binary primitive recursive function.
@@ -945,7 +943,6 @@ theorem list_getElem? : Primrec₂ ((·[·]? : List α → ℕ → Option α)) :
         induction l <;> simp_all
       · simpa using IH ..
 
-@[deprecated (since := "2025-02-14")] alias list_get? := list_getElem?
 theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
   simp only [List.getD_eq_getElem?_getD]
   exact option_getD.comp₂ list_getElem? (const _)

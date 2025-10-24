@@ -340,8 +340,6 @@ theorem cast_finsuppProd [CommSemiring R] (g : α → M → ℕ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   Nat.cast_prod _ _
 
-@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
-
 @[simp, norm_cast]
 theorem cast_finsupp_sum [AddCommMonoidWithOne R] (g : α → M → ℕ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
@@ -355,8 +353,6 @@ namespace Int
 theorem cast_finsuppProd [CommRing R] (g : α → M → ℤ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   Int.cast_prod _ _
-
-@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
 
 @[simp, norm_cast]
 theorem cast_finsupp_sum [AddCommGroupWithOne R] (g : α → M → ℤ) :
@@ -376,8 +372,6 @@ theorem cast_finsupp_sum [DivisionRing R] [CharZero R] (g : α → M → ℚ) :
 theorem cast_finsuppProd [Field R] [CharZero R] (g : α → M → ℚ) :
     (↑(f.prod g) : R) = f.prod fun a b => ↑(g a b) :=
   cast_prod _ _
-
-@[deprecated (since := "2025-04-06")] alias cast_finsupp_prod := cast_finsuppProd
 
 end Rat
 

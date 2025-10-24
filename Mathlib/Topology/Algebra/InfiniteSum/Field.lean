@@ -30,6 +30,4 @@ theorem Multipliable.norm (hf : Multipliable f) : Multipliable (‖f ·‖) :=
 protected theorem Multipliable.norm_tprod (hf : Multipliable f) : ‖∏' i, f i‖ = ∏' i, ‖f i‖ :=
   hf.hasProd.norm.tprod_eq.symm
 
-@[deprecated (since := "2025-04-12")] alias norm_tprod := Multipliable.norm_tprod
-
 end NormMulClass

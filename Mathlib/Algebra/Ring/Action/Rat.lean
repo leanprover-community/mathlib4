@@ -10,8 +10,6 @@ import Mathlib.Algebra.GroupWithZero.Action.Defs
 # Actions by nonnegative rational numbers
 -/
 
-assert_not_exists OrderedAddCommMonoid
-
 variable {R : Type*}
 
 /-! ### Scalar multiplication -/

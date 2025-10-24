@@ -17,7 +17,7 @@ import Mathlib.Data.Finite.Vector
 finite sets
 -/
 
-assert_not_exists OrderedRing MonoidWithZero
+assert_not_exists MonoidWithZero
 
 namespace List
 variable (α : Type*) [Finite α] (n : ℕ)

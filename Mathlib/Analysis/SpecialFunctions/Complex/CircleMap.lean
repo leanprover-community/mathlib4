@@ -86,8 +86,6 @@ lemma circleMap_zero_zpow (n : ℤ) (R θ : ℝ) :
     (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
   simp [circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc]
 
-@[deprecated (since := "2025-04-02")] alias circleMap_zero_int_mul := circleMap_zero_zpow
-
 lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
   simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]
 

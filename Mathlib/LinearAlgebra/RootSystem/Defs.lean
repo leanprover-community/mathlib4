@@ -123,9 +123,6 @@ variable (P : RootPairing ι R M N) (i j : ι)
 lemma toLinearMap_eq_toPerfectPairing (x : M) (y : N) :
     P.toLinearMap x y = P.toLinearMap x y := rfl
 
-@[deprecated (since := "2025-04-20"), nolint synTaut]
-alias toLin_toPerfectPairing := toLinearMap_eq_toPerfectPairing
-
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
 @[simps!, simps toLinearMap]
 protected def flip : RootPairing ι R N M where

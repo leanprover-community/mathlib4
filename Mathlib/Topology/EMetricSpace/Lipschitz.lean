@@ -239,20 +239,11 @@ protected theorem prodMk {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f
   rw [ENNReal.coe_mono.map_max, Prod.edist_eq, max_mul]
   exact max_le_max (hf x y) (hg x y)
 
-@[deprecated (since := "2025-03-10")]
-protected alias prod := LipschitzWith.prodMk
-
 protected theorem prodMk_left (a : α) : LipschitzWith 1 (Prod.mk a : β → α × β) := by
   simpa only [max_eq_right zero_le_one] using (LipschitzWith.const a).prodMk LipschitzWith.id
 
-@[deprecated (since := "2025-03-10")]
-protected alias prod_mk_left := LipschitzWith.prodMk_left
-
 protected theorem prodMk_right (b : β) : LipschitzWith 1 fun a : α => (a, b) := by
   simpa only [max_eq_left zero_le_one] using LipschitzWith.id.prodMk (LipschitzWith.const b)
-
-@[deprecated (since := "2025-03-10")]
-protected alias prod_mk_right := LipschitzWith.prodMk_right
 
 protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ b, LipschitzWith Kα fun a => f a b)
     (hβ : ∀ a, LipschitzWith Kβ (f a)) : LipschitzWith (Kα + Kβ) (Function.uncurry f) := by
@@ -326,9 +317,6 @@ protected theorem prodMk {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith
   rw [ENNReal.coe_mono.map_max, Prod.edist_eq, max_mul]
   exact max_le_max (hf hx hy) (hg hx hy)
 
-@[deprecated (since := "2025-03-10")]
-protected alias prod := LipschitzOnWith.prodMk
-
 theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α) (t : Set β)
     (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (f · b) s) (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) :
     EMetric.diam (Set.image2 f s t) ≤ ↑K₁ * EMetric.diam s + ↑K₂ * EMetric.diam t := by
@@ -385,20 +373,11 @@ protected lemma prodMk {f : α → β} (hf : LocallyLipschitz f) {g : α → γ}
   refine ⟨max Kf Kg, t₁ ∩ t₂, Filter.inter_mem h₁t h₂t, ?_⟩
   exact (hfL.mono inter_subset_left).prodMk (hgL.mono inter_subset_right)
 
-@[deprecated (since := "2025-03-10")]
-protected alias prod := LocallyLipschitz.prodMk
-
 protected theorem prodMk_left (a : α) : LocallyLipschitz (Prod.mk a : β → α × β) :=
   (LipschitzWith.prodMk_left a).locallyLipschitz
 
-@[deprecated (since := "2025-03-10")]
-protected alias prod_mk_left := LocallyLipschitz.prodMk_left
-
 protected theorem prodMk_right (b : β) : LocallyLipschitz (fun a : α => (a, b)) :=
   (LipschitzWith.prodMk_right b).locallyLipschitz
-
-@[deprecated (since := "2025-03-10")]
-protected alias prod_mk_right := LocallyLipschitz.prodMk_right
 
 protected theorem iterate {f : α → α} (hf : LocallyLipschitz f) : ∀ n, LocallyLipschitz f^[n]
   | 0 => by simpa only [pow_zero] using LocallyLipschitz.id

@@ -536,9 +536,6 @@ theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
     {u : AddCircle p | addOrderOf u = n}.Finite :=
   finite_coe_iff.mp <| Nat.finite_of_card_ne_zero <| by simp [hn.ne']
 
-@[deprecated (since := "2025-03-26")]
-alias finite_setOf_add_order_eq := finite_setOf_addOrderOf_eq
-
 theorem finite_torsion {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | n • u = 0 }.Finite := by
   convert Set.finite_range (fun m : Fin n ↦ (↑(↑m / ↑n * p) : AddCircle p))

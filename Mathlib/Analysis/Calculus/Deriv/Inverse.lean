@@ -99,9 +99,6 @@ theorem HasDerivAt.tendsto_nhdsNE (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ h.continuousAt.continuousWithinAt
     (h.eventually_ne hf')
 
-@[deprecated (since := "2025-03-02")]
-alias HasDerivAt.tendsto_punctured_nhds := HasDerivAt.tendsto_nhdsNE
-
 /-- If a function is equal to a constant at a set of points that accumulates to `x` in `s`,
 then its derivative within `s` at `x` equals zero,
 either because it has derivative zero or because it isn't differentiable at this point. -/

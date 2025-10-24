@@ -79,14 +79,8 @@ theorem IsBoundedSMul.of_enorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖
     IsBoundedSMul α β :=
   .of_norm_smul_le (by simpa [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using h)
 
-@[deprecated (since := "2025-03-10")]
-alias BoundedSMul.of_norm_smul_le := IsBoundedSMul.of_norm_smul_le
-
 theorem IsBoundedSMul.of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
     IsBoundedSMul α β := .of_norm_smul_le h
-
-@[deprecated (since := "2025-03-10")]
-alias BoundedSMul.of_nnnorm_smul_le := IsBoundedSMul.of_nnnorm_smul_le
 
 end SeminormedRing
 

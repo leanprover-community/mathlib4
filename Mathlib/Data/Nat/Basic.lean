@@ -111,8 +111,6 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 
 /-! ### `mod`, `dvd` -/
 
-@[deprecated (since := "2025-04-01")] alias dvd_sub' := dvd_sub
-
 /-- `dvd` is injective in the left argument -/
 lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>
   dvd_right_iff_eq.mp fun a => iff_of_eq (congr_fun h a)

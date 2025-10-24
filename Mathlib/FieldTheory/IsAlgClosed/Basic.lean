@@ -185,11 +185,6 @@ theorem ringHom_bijective_of_isIntegral {k K : Type*} [Field k] [CommRing K] [Is
   have : Algebra.IsIntegral k K := ⟨hf⟩
   algebraMap_bijective_of_isIntegral
 
-@[deprecated "ringHom_bijective_of_isIntegral" (since := "2025-04-16")]
-theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K] [IsDomain K]
-    [IsAlgClosed k] (f : k →+* K) (hf : f.IsIntegral) : Function.Surjective f :=
-  (ringHom_bijective_of_isIntegral f hf).surjective
-
 end IsAlgClosed
 
 /-- If `k` is algebraically closed, `K / k` is a field extension, `L / k` is an intermediate field

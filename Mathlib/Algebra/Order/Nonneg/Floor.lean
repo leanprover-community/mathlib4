@@ -19,7 +19,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 * `{x : α // 0 ≤ x}` is a `FloorSemiring` if `α` is.
 -/
 
-assert_not_exists Finset LinearOrderedField
+assert_not_exists Finset
 
 namespace Nonneg
 
