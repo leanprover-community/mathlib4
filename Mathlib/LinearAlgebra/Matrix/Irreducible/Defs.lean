@@ -24,7 +24,7 @@ existence of paths).
 
 *   `Matrix.toQuiver A`: The quiver associated with a matrix `A`, where an edge `i ⟶ j` exists if
     `0 < A i j`.
-*   `Matrix.Irreducible A`: A matrix `A` is defined as irreducible if it is entrywise nonnegative
+*   `Matrix.IsIrreducible A`: A matrix `A` is defined as irreducible if it is entrywise nonnegative
     and its associated quiver `toQuiver A` is strongly connected. The theorem
     `irreducible_iff_exists_pow_pos` proves this graph-theoretic definition is equivalent to the
     algebraic one in seneta2006 (Def 1.6, p.18): for every pair of indices `(i, j)`, there exists a
@@ -39,9 +39,9 @@ existence of paths).
 *   `irreducible_iff_exists_pow_pos`: Shows the equivalence between the graph-theoretic definition
     of irreducibility (strong connectivity) and the algebraic one (existence of a positive entry
     in some power).
-*   `IsPrimitive.to_Irreducible`: Proves that a primitive matrix is also irreducible, as stated in
+*   `IsPrimitive.to_IsIrreducible`: Proves that a primitive matrix is also irreducible, as stated in
     Seneta (p.14).
-*   `Irreducible.transpose`: Shows that the irreducibility property is preserved under
+*   `IsIrreducible.transpose`: Shows that the irreducibility property is preserved under
     transposition.
 
 ## Implementation notes
