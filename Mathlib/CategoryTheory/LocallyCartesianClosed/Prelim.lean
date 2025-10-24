@@ -171,7 +171,7 @@ lemma _root_.CommSq.of_cone_cospan {X Y Z : C} {f : Y ⟶ X} {g : Z ⟶ X} (s : 
   aesop
 
 /-- The second projection `π_ : Σ (Δ Y Z) ⟶ Y`. -/
-def reindexSnd (Y Z : Over X) [ChosenPullback Y.hom] : (Σ_ Y (Δ_ Y Z)) ⟶ Y :=
+def reindexSnd (Y Z : Over X) [ChosenPullback Y.hom] : Σ_ Y (Δ_ Y Z) ⟶ Y :=
   Over.homMk ((pullback Y.hom).obj Z).hom (by aesop)
 
 @[inherit_doc]
@@ -244,14 +244,14 @@ variable (Y Z : Over X)
 
 /-- The canonical pullback cone constructed by `π_` and `μ_`. -/
 def pullbackCone [ChosenPullback Y.hom] : PullbackCone Z.hom Y.hom :=
-  (isPullback Y Z).cone
+  isPullback Y Z |>.cone
 
 /-- The canonical pullback cone constructed by `π_` and `μ_` is a limit cone.
 Note: The source of noncomputability is the non-constructive implementation of `IsPullback`.
 Otherwise, `ChosenPullback.isPullback` is constructive.
 -/
 noncomputable def isLimitPullbackCone [ChosenPullback Y.hom] : IsLimit (pullbackCone Y Z) :=
-  (isPullback Y Z).isLimit
+  isPullback Y Z |>.isLimit
 
 abbrev binaryFanMkMapPullback [ChosenPullback Y.hom] : BinaryFan Z Y :=
   BinaryFan.mk (P := Σ_ Y (Δ_ Y Z)) (μ_ Y Z) (π_ Y Z)
@@ -287,7 +287,7 @@ noncomputable def mapPullackIsoProd' [HasPullbacks C] {W : C} (f : W ⟶ X)
 attribute [local instance] ofHasPullbacksAlong in
 @[reassoc (attr := simp)]
 lemma mapPullbackIsoProd_hom_comp_fst [HasPullbacks C] :
-    (mapPullbackIsoProd Y Z).hom ≫ (fst Z Y) = μ_ Y Z :=
+    (mapPullbackIsoProd Y Z).hom ≫ fst Z Y = μ_ Y Z :=
   IsLimit.conePointUniqueUpToIso_hom_comp
     (isBinaryProductPullbackMap Y Z)
     (pullback.isLimit _ _).pullbackConeEquivBinaryFanFunctor ⟨.left⟩
@@ -295,7 +295,7 @@ lemma mapPullbackIsoProd_hom_comp_fst [HasPullbacks C] :
 attribute [local instance] ofHasPullbacksAlong in
 @[reassoc (attr := simp)]
 lemma mapPullbackIsoProd_hom_comp_snd [HasPullbacks C] :
-    (mapPullbackIsoProd Y Z).hom ≫ (snd Z Y) = π_ Y Z :=
+    (mapPullbackIsoProd Y Z).hom ≫ snd Z Y = π_ Y Z :=
   IsLimit.conePointUniqueUpToIso_hom_comp
     (isBinaryProductPullbackMap Y Z)
     (pullback.isLimit _ _).pullbackConeEquivBinaryFanFunctor ⟨.right⟩
@@ -346,7 +346,7 @@ def Functor.toOverTerminal (X : C) (h : IsTerminal X) : C ⥤ Over X where
   map {X Y} f := Over.homMk f
 
 /-- The slice category over the terminal object is equivalent to the original category. -/
-def equivOverTerminal (X : C) (h : IsTerminal X) : Over (X) ≌ C where
+def equivOverTerminal (X : C) (h : IsTerminal X) : Over X ≌ C where
   functor := Over.forget _
   inverse := Functor.toOverTerminal X h
   unitIso := NatIso.ofComponents fun _ =>
@@ -358,7 +358,7 @@ namespace Over
 
 @[simp]
 lemma star_map [HasBinaryProducts C] {X : C} {Y Z : C} (f : Y ⟶ Z) :
-    (star X).map f = Over.homMk (prod.map (𝟙 X) f) (by aesop) := by
+    (star X).map f = Over.homMk (prod.map (𝟙 X) f) := by
   simp [star]
 
 variable (X : C)
