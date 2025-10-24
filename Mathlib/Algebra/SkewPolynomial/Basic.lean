@@ -50,7 +50,7 @@ $q$-th Frobenius endomorphism - so $\varphi(a) = a^q$.
 
 ## Reference
 
-The definition is inspired by [Papikian2023].
+The definition is inspired by Chapter 3 of [Papikian2023].
 
 ## Tags
 
@@ -59,6 +59,11 @@ Skew Polynomials, Twisted Polynomials.
 ## TODO :
   - Add algebra instance
   - Add `ext` lemma in terms of `Coeff`.
+
+Note that [ore33] proposes a more general definition of skew polynomial ring, where the
+multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `ϕ` is as above and
+`δ` is a derivation.
+
 -/
 
 noncomputable section
@@ -104,15 +109,18 @@ instance [Subsingleton R] : Unique (SkewPolynomial R) :=
 /--
 The set of all `n` such that `X^n` has a non-zero coefficient.
 -/
-abbrev support (p : SkewPolynomial R) : Finset ℕ := SkewMonoidAlgebra.support p
+def support (p : SkewPolynomial R) : Finset ℕ :=
+  Finset.map ⟨toAdd, fun ⦃_ _⦄ a ↦ Multiplicative.ext a⟩ (SkewMonoidAlgebra.support p)
 
 @[simp] lemma support_zero : (0 : SkewPolynomial R).support = ∅ := rfl
 
-lemma support_eq_empty : p.support = ∅ ↔ p = 0 := by simp [support]
+@[simp] lemma support_eq_empty : p.support = ∅ ↔ p = 0 := by simp [support]
 
 lemma card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 
-lemma support_add : (p + q).support ⊆ p.support ∪ q.support := SkewMonoidAlgebra.support_add
+lemma support_add : (p + q).support ⊆ p.support ∪ q.support := by
+  simp only [support, ← Finset.map_union, Finset.map_subset_map]
+  exact SkewMonoidAlgebra.support_add
 
 section phi
 
