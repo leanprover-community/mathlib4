@@ -81,7 +81,7 @@ lemma Scalene.dist_ne {s : Simplex R P n} (hs : s.Scalene) {i₁ i₂ i₃ i₄ 
        · simp⟩
   simp_rw [Scalene]
   convert (Injective.of_comp_iff' _ (Equiv.bijective f)).symm
-  simp only [reindex_apply, comp_apply, Equiv.coe_fn_mk, f]
+  simp only [reindex_points, comp_apply, Equiv.coe_fn_mk, f]
   split_ifs with h
   · simp
   · simp [dist_comm]

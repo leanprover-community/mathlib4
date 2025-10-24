@@ -587,7 +587,7 @@ lemma orthogonalProjectionSpan_eq_point (s : Simplex ℝ P 0) (p : P) :
 
 lemma orthogonalProjectionSpan_faceOpposite_eq_point_rev (s : Simplex ℝ P 1) (i : Fin 2)
     (p : P) : (s.faceOpposite i).orthogonalProjectionSpan p = s i.rev := by
-  simpa using faceOpposite_point_eq_point_rev s i
+  simp [faceOpposite_point_eq_point_rev]
 
 end Simplex
 

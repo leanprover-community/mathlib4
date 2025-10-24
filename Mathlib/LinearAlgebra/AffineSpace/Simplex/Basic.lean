@@ -46,7 +46,7 @@ structure Simplex (n : ℕ) where
 
   Do NOT use directly. Use the coercion instead. -/
   points : Fin (n + 1) → P
-  independent' : AffineIndependent k points
+  independent : AffineIndependent k points
 
 /-- A `Triangle k P` is a collection of three affinely independent points. -/
 abbrev Triangle :=
@@ -54,20 +54,8 @@ abbrev Triangle :=
 
 namespace Simplex
 
-instance {n : ℕ} : FunLike (Simplex k P n) (Fin (n + 1)) P where
-  coe s := s.points
-  coe_injective' | ⟨_, _⟩, ⟨_, _⟩, h => by simp_all
-
-@[simp]
-lemma coe_mk {n : ℕ} (points : Fin (n + 1) → P) (independent) :
-    (⟨points, independent⟩ : Simplex k P n) = points :=
-  rfl
-
-lemma independent {n : ℕ} (s : Simplex k P n) : AffineIndependent k ⇑s := independent' s
-
-def Simps.apply {n : ℕ} (s : Simplex k P n) : Fin (n + 1) → P := s
-
-initialize_simps_projections Simplex (points → apply)
+instance {n : ℕ} : CoeFun (Simplex k P n) (fun _ => Fin (n + 1) → P) where
+  coe := Simplex.points
 
 variable {P P₂ P₃}
 
@@ -139,7 +127,7 @@ lemma faceOpposite_point_eq_point_succAbove {n : ℕ} [NeZero n] (s : Simplex k 
     (i : Fin (n + 1)) (j : Fin (n - 1 + 1)) :
     (s.faceOpposite i) j =
       s (Fin.succAbove i (Fin.cast (Nat.sub_one_add_one (NeZero.ne _)) j)) := by
-  simp_rw [faceOpposite, face, coe_mk, comp_apply, Finset.orderEmbOfFin_compl_singleton_apply]
+  simp_rw [faceOpposite, face, comp_apply, Finset.orderEmbOfFin_compl_singleton_apply]
 
 lemma faceOpposite_point_eq_point_rev (s : Simplex k P 1) (i : Fin 2) (n : Fin 1) :
     (s.faceOpposite i) n = s i.rev := by
@@ -181,7 +169,7 @@ lemma mem_affineSpan_range_faceOpposite_points_iff [Nontrivial k] {n : ℕ} [NeZ
 def map {n : ℕ} (s : Simplex k P n) (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
     Simplex k P₂ n where
   points := f ∘ s
-  independent' := s.independent.map' f hf
+  independent := s.independent.map' f hf
 
 @[simp]
 theorem map_id {n : ℕ} (s : Simplex k P n) :
@@ -242,7 +230,7 @@ theorem reindex_symm_reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (n + 1) �
 @[simp]
 theorem reindex_range_points {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     Set.range (s.reindex e) = Set.range s := by
-  rw [reindex, coe_mk, Set.range_comp, Equiv.range_eq_univ, Set.image_univ]
+  rw [reindex, Set.range_comp, Equiv.range_eq_univ, Set.image_univ]
 
 theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1))
     (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
@@ -259,7 +247,7 @@ def restrict {n : ℕ} (s : Simplex k P n) (S : AffineSubspace k P)
     Simplex (V := S.direction) k S n :=
   letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   { points i := ⟨s i, hS <| mem_affineSpan _ <| Set.mem_range_self _⟩
-    independent' := AffineIndependent.of_comp S.subtype s.independent }
+    independent := AffineIndependent.of_comp S.subtype s.independent }
 
 /-- Restricting to `S₁` then mapping to a larger `S₂` is the same as restricting to `S₂`. -/
 @[simp]
