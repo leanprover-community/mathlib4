@@ -603,6 +603,7 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace 
 
 -- #check LieGroup 𝓘(𝕜, V →L[𝕜] V) 2 (V →L[𝕜] V)ˣ passes
 
+set_option trace.Elab.DiffGeo.MDiff true in
 /-- error: Could not find a model with corners for `(V →L[𝕜] V)ˣ` -/
 #guard_msgs in
 variable {f : (V →L[𝕜] V)ˣ → 𝕜} in

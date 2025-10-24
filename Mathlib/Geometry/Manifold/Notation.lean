@@ -446,7 +446,7 @@ where
               trace[Elab.DiffGeo.MDiff] "`{α}` is a normed algebra over `{k}` via `{inst}`"
               return some (k, R)
             else
-              trace[Elab.DiffGeo.MDiff] "found a normed `{k}`-algebra structure on `{R}`, which
+              trace[Elab.DiffGeo.MDiff] "found a normed `{k}`-algebra structure on `{R}`, which \
               is not reducibly definitionally equal to `{α}`: continue the search"
               return none
           | _ => return none
@@ -456,29 +456,36 @@ where
         let eR : Term ← Term.exprToSyntax R
         Term.elabTerm (← ``(𝓘($eK, $eR))) none
       else
-      -- If `α = V →L[𝕜] V` for a `𝕜`-normed space, we also have a normed algebra structure:
-      -- search for such cases as well.
-      trace[Elab.DiffGeo.MDiff] "second phase"
-      let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
-          trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
-          match_expr type with
-          | NormedSpace k R _ _ =>
-            trace[Elab.DiffGeo.MDiff] "match, normed space: k is `{k}`, R is `{R}`"
-            if ← withReducible (pureIsDefEq R α) then
-              trace[Elab.DiffGeo.MDiff] "`{α}` is a normed space over `{k}` via `{inst}`"
-              return some (k, R)
-            else return none
-          | _ => return none
-      match ← searchNormedSpace with
-        | some (k, R) =>
-          trace[Elab.DiffGeo.MDiff] "found a normed space: `{α}` is a normed space over `{k}`"
-          let eK : Term ← Term.exprToSyntax k
-          let eR : Term ← Term.exprToSyntax R
-          Term.elabTerm (← ``(𝓘($eK, $eR))) none
-        | _ => throwError  "Found neither a `NormedAlgebra` nor a `NormedSpace` structure on `{e}` \
-               among local instances\
-               Hint: if `{e}` is the group of units on a normed algebra, try making one of these \
-               instances available."
+        trace[Elab.DiffGeo.MDiff] "`{α}` is not a normed algebra on the nose: try via a space of \
+          continuous linear maps"
+        -- If `α = V →L[𝕜] V` for a `𝕜`-normed space, we also have a normed algebra structure:
+        -- search for such cases as well.
+        match ← isCLMReduciblyDefeqCoefficients α with
+        | none => throwError "`{α}` is not a space of continuous linear maps either"
+        | some (k, V, W) =>
+          -- TODO: think about the right transparency level!
+          if (← isDefEq V W) then
+            trace[Elab.DiffGeo.MDiff] "`{α}` is a space of continuous `{k}`-linear maps on `{V}`"
+            let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+              trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
+              match_expr type with
+              | NormedSpace k R _ _ =>
+                trace[Elab.DiffGeo.MDiff] "match, normed space: k is `{k}`, R is `{R}`"
+                if ← withReducible (pureIsDefEq R V) then
+                  trace[Elab.DiffGeo.MDiff] "`{V}` is a normed space over `{k}` via `{inst}`"
+                  return some (k, R)
+                else return none
+              | _ => return none
+            match ← searchNormedSpace with
+            | some (k, R) =>
+              trace[Elab.DiffGeo.MDiff] "found a normed space: `{V}` is a normed space over `{k}`"
+              let eK : Term ← Term.exprToSyntax k
+              let eR : Term ← Term.exprToSyntax R
+              Term.elabTerm (← ``(𝓘($eK, $eR))) none
+            | _ => throwError  "Found no `NormedSpace` structure on `{V}` among local instances"
+          else
+            throwError "{α}` is a space of continuous `{k}`-linear maps, but with domain `{V}` and \
+              co-domain `{W}` being not definitionally equal"
     | _ => throwError "`{e}` is not the set of units of a normed algebra"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
