@@ -10,12 +10,11 @@ import Mathlib.Algebra.Order.Ring.WithTop
 /-!
 # Conversion from WithTop to Base Type
 
-For types α that are instances of `Zero`, we provide a convenient conversion,
-`WithTop.untop₀`, that maps elements `a : WithTop α` to `α`, by mapping `⊤` to
-zero.
+For types α that are instances of `Zero`, we provide a convenient conversion, `WithTop.untop₀`, that
+maps elements `a : WithTop α` to `α`, by mapping `⊤` to zero.
 
-For settings where `α` has additional structure, we provide a large number of
-simplifier lemmas, akin to those that already exists for `ENat.toNat`.
+For settings where `α` has additional structure, we provide a large number of simplifier lemmas,
+akin to those that already exists for `ENat.toNat`.
 -/
 
 namespace WithTop
@@ -25,7 +24,7 @@ section Zero
 variable [Zero α]
 
 /-- Conversion from `WithTop α` to `α`, mapping `⊤` to zero. -/
-def untop₀ [Zero α] (a : WithTop α) : α := a.untopD 0
+def untop₀ (a : WithTop α) : α := a.untopD 0
 
 /-!
 ## Simplifying Lemmas in cases where α is an Instance of Zero
@@ -52,7 +51,7 @@ lemma coe_untop₀_of_ne_top {a : WithTop α} (ha : a ≠ ⊤) :
 end Zero
 
 /-!
-## Simplifying Lemmas in cases where α is an AddMonoid
+## Simplifying Lemmas involving addition and negation
 -/
 
 @[simp]
@@ -69,6 +68,11 @@ lemma untop₀_add [AddZeroClass α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b
 @[simp]
 lemma untop₀_natCast [AddMonoidWithOne α] (n : ℕ) : untop₀ (n : WithTop α) = n := rfl
 
+@[simp]
+lemma untop₀_neg [AddCommGroup α] : ∀ a : WithTop α, (-a).untop₀ = -a.untop₀
+  | ⊤ => by simp
+  | (a : α) => rfl
+
 /-!
 ## Simplifying Lemmas in cases where α is a MulZeroClass
 -/
@@ -81,27 +85,64 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
 ## Simplifying Lemmas in cases where α is a OrderedAddCommGroup
 -/
 
+section OrderedAddCommGroup
+
+variable [AddCommGroup α] [PartialOrder α] {a b : WithTop α}
+
 /--
 Elements of ordered additive commutative groups are nonnegative iff their untop₀ is nonnegative.
 -/
-@[simp]
-lemma untop₀_nonneg [AddCommGroup α] [PartialOrder α] {a : WithTop α} :
-    0 ≤ a.untop₀ ↔ 0 ≤ a := by
+@[simp] lemma untop₀_nonneg : 0 ≤ a.untop₀ ↔ 0 ≤ a := by
   cases a with
   | top => tauto
   | coe a => simp
+
+theorem le_of_untop₀_le_untop₀ (ha : a ≠ ⊤) (h : a.untop₀ ≤ b.untop₀) : a ≤ b := by
+  lift a to α using ha
+  by_cases hb : b = ⊤
+  · simp_all
+  lift b to α using hb
+  simp_all
+
+@[simp, gcongr] theorem untop₀_le_untop₀ (hb : b ≠ ⊤) (h : a ≤ b) : a.untop₀ ≤ b.untop₀ := by
+  lift b to α using hb
+  by_cases ha : a = ⊤
+  · simp_all
+  lift a to α using ha
+  simp_all
+
+theorem untop₀_le_untop₀_iff (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+    a.untop₀ ≤ b.untop₀ ↔ a ≤ b := by
+  lift a to α using ha
+  lift b to α using hb
+  simp
+
+end OrderedAddCommGroup
 
 /-!
 ## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
 -/
 
-@[simp]
-lemma untop₀_neg [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] (a : WithTop α) :
-    (-a).untop₀ = -a.untop₀ := by
-  cases a with
-  | top => simp
-  | coe a =>
-    rw [← LinearOrderedAddCommGroup.coe_neg, untop₀_coe]
-    simp
+section LinearOrderedAddCommGroup
+
+variable [AddCommGroup α] [LinearOrder α] {a b : WithTop α}
+
+@[simp] theorem untop₀_max (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+    (max a b).untop₀ = max a.untop₀ b.untop₀ := by
+  lift a to α using ha
+  lift b to α using hb
+  simp only [untop₀_coe]
+  by_cases h : a ≤ b
+  · simp [max_eq_right h, max_eq_right (coe_le_coe.mpr h)]
+  rw [not_le] at h
+  simp [max_eq_left h.le, max_eq_left (coe_lt_coe.mpr h).le]
+
+@[simp] theorem untop₀_min (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+    (min a b).untop₀ = min a.untop₀ b.untop₀ := by
+  lift a to α using ha
+  lift b to α using hb
+  norm_cast
+
+end LinearOrderedAddCommGroup
 
 end WithTop

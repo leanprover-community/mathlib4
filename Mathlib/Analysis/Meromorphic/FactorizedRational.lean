@@ -252,7 +252,7 @@ theorem log_norm_meromorphicTrailingCoeffAt {d : 𝕜 → ℤ} {x : 𝕜} (h : d
     · rw [h]
       simp_all
     · simp_all [zpow_ne_zero, sub_ne_zero]
-  rw [norm_prod, log_prod _ _ this]
+  rw [norm_prod, log_prod this]
   have : (fun u ↦ (d u) * log ‖x - u‖).support ⊆ h.toFinset := by
     intro u
     contrapose
@@ -372,7 +372,7 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
     apply ne_of_apply_ne D
     rwa [h₂z]
   simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply, norm_smul, norm_prod, norm_zpow]
-  rw [log_mul (Finset.prod_ne_zero_iff.2 this) (by simp [hg ⟨z, h₃z⟩]), log_prod _ _ this]
+  rw [log_mul (Finset.prod_ne_zero_iff.2 this) (by simp [hg ⟨z, h₃z⟩]), log_prod this]
   simp [log_zpow]
 
 open Classical in
