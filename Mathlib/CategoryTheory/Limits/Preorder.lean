@@ -23,11 +23,11 @@ open CategoryTheory Limits
 
 namespace Preorder
 
-variable (C : Type u)
+variable {C : Type u}
 
 section
 
-variable {C : Type u} [Preorder C]
+variable [Preorder C]
 variable {J : Type u'} [Category.{v} J]
 variable (F : J ⥤ C)
 
@@ -84,114 +84,106 @@ lemma hasColimit_iff_hasLUB :
 
 end
 
-noncomputable section HasTerminal
+noncomputable section
 
-variable [Preorder C] [HasTerminal C]
+variable [Preorder C]
+
+/-- A terminal object in a preorder `C` is top element for `C`. -/
+def _root_.CategoryTheory.Limits.IsTerminal.orderTop {X : C} (t : IsTerminal X) : OrderTop C where
+  top := X
+  le_top Y := leOfHom (t.from Y)
 
 /-- A preorder with a terminal object has a greatest element. -/
-def orderTopOfHasTerminal : OrderTop C where
-  top := ⊤_ C
-  le_top x := leOfHom (Limits.terminal.from x)
+def orderTopOfHasTerminal [HasTerminal C] : OrderTop C := IsTerminal.orderTop terminalIsTerminal
 
-end HasTerminal
+variable (C) in
+/-- If `C` is a preorder with top, then `⊤` is a terminal object. -/
+def isTerminalTop [OrderTop C] : IsTerminal (⊤ : C) := IsTerminal.ofUnique _
 
-section OrderTop
+instance (priority := low) [OrderTop C] : HasTerminal C := hasTerminal_of_unique ⊤
 
-variable [Preorder C] [OrderTop C]
-
-/-- The greatest element of a preordered type is terminal in the category
-associated to this preorder. -/
-def isTerminalTop : IsTerminal (⊤ : C) := IsTerminal.ofUnique _
-
-instance (priority := low) : HasTerminal C := hasTerminal_of_unique ⊤
-
-end OrderTop
-
-noncomputable section HasInitial
-
-variable [Preorder C] [HasInitial C]
+/-- An initial object in a preorder `C` is bottom element for `C`. -/
+def _root_.CategoryTheory.Limits.IsInitial.orderBot {X : C} (t : IsInitial X) : OrderBot C where
+  bot := X
+  bot_le Y := leOfHom (t.to Y)
 
 /-- A preorder with an initial object has a least element. -/
-def orderBotOfHasInitial : OrderBot C where
-  bot := ⊥_ C
-  bot_le x := leOfHom (Limits.initial.to x)
+def orderBotOfHasInitial [HasInitial C] : OrderBot C := IsInitial.orderBot initialIsInitial
 
-end HasInitial
+variable (C) in
+/-- If `C` is a preorder with bot, then `⊥` is an initial object. -/
+def isInitialBot [OrderBot C] : IsInitial (⊥ : C) := IsInitial.ofUnique _
 
-section OrderBot
+instance (priority := low) [OrderBot C] : HasInitial C := hasInitial_of_unique ⊥
 
-variable [Preorder C] [OrderBot C]
+end
 
-/-- The least element in a preordered type is initial in the category
-associated to this preorder. -/
-def isInitialBot : IsInitial (⊥ : C) := IsInitial.ofUnique _
+noncomputable section
 
-instance (priority := low) : HasInitial C := hasInitial_of_unique ⊥
+variable [PartialOrder C]
 
-end OrderBot
+/--
+A family of limiting binary fans on a partial order induces an inf-semilattice structure on it.
+-/
+def semilatticeInfOfIsLimitBinaryFan
+    (c : ∀ (X Y : C), BinaryFan X Y) (h : (X Y : C) → IsLimit (c X Y)) : SemilatticeInf C where
+  inf X Y := (c X Y).pt
+  inf_le_left X Y := leOfHom (c X Y).fst
+  inf_le_right X Y := leOfHom (c X Y).snd
+  le_inf _ _ _ le_fst le_snd := leOfHom <| (h _ _).lift (BinaryFan.mk le_fst.hom le_snd.hom)
 
-noncomputable section HasBinaryProducts
-
-variable [PartialOrder C] [HasBinaryProducts C]
-
+variable (C) in
 /-- If a partial order has binary products, then it is a inf-semilattice -/
-def semilatticeInfOfHasBinaryProducts : SemilatticeInf C where
-  inf X Y := X ⨯ Y
-  inf_le_left _ _ := leOfHom prod.fst
-  inf_le_right _ _ := leOfHom prod.snd
-  le_inf _ _ _ le_fst le_snd := leOfHom (prod.lift (homOfLE le_fst) (homOfLE le_snd))
+def semilatticeInfOfHasBinaryProducts [HasBinaryProducts C] : SemilatticeInf C :=
+  semilatticeInfOfIsLimitBinaryFan
+    (fun _ _ ↦ BinaryFan.mk prod.fst prod.snd) (fun X Y ↦ prodIsProd X Y)
 
-end HasBinaryProducts
+/--
+A family of colimiting binary cofans on a partial order induces a sup-semilattice structure on it.
+-/
+def semilatticeSupOfIsColimitBinaryCofan
+    (c : ∀ (X Y : C), BinaryCofan X Y) (h : (X Y : C) → IsColimit (c X Y)) : SemilatticeSup C where
+  sup X Y := (c X Y).pt
+  le_sup_left X Y := leOfHom (c X Y).inl
+  le_sup_right X Y := leOfHom (c X Y).inr
+  sup_le _ _ _ le_inl le_inr := leOfHom <| (h _ _).desc (BinaryCofan.mk le_inl.hom le_inr.hom)
 
-section SemilatticeInf
+variable (C) in
+/-- If a partial order has binary coproducts, then it is a sup-semilattice -/
+def semilatticeSupOfHasBinaryCoproducts [HasBinaryCoproducts C] : SemilatticeSup C :=
+  semilatticeSupOfIsColimitBinaryCofan
+    (fun _ _ ↦ BinaryCofan.mk coprod.inl coprod.inr) (fun X Y ↦ coprodIsCoprod X Y)
 
-variable {C} [SemilatticeInf C]
+end
+
+section
 
 /-- The infimum of two elements in a preordered type is a binary product in
 the category associated to this preorder. -/
-def isLimitBinaryFan (X Y : C) :
+def isLimitBinaryFan [SemilatticeInf C] (X Y : C) :
     IsLimit (BinaryFan.mk (P := X ⊓ Y) (homOfLE inf_le_left) (homOfLE inf_le_right)) :=
   BinaryFan.isLimitMk (fun s ↦ homOfLE (le_inf (leOfHom s.fst) (leOfHom s.snd)))
     (by intros; rfl) (by intros; rfl) (by intros; rfl)
 
-instance (priority := low) : HasBinaryProducts C where
+instance (priority := low) [SemilatticeInf C] : HasBinaryProducts C where
   has_limit F := by
     have : HasLimit (pair (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)) :=
       ⟨⟨⟨_, isLimitBinaryFan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩
     apply hasLimit_of_iso (diagramIsoPair F).symm
 
-end SemilatticeInf
-
-noncomputable section HasBinaryCoproducts
-
-variable [PartialOrder C] [HasBinaryCoproducts C]
-
-/-- If a partial order has binary coproducts, then it is a sup-semilattice -/
-def semilatticeSupOfHasBinaryCoproducts : SemilatticeSup C where
-  sup X Y := X ⨿ Y
-  le_sup_left _ _ := leOfHom coprod.inl
-  le_sup_right _ _ := leOfHom coprod.inr
-  sup_le _ _ _ le_inl le_inr := leOfHom (coprod.desc (homOfLE le_inl) (homOfLE le_inr))
-
-end HasBinaryCoproducts
-
-section SemilatticeSup
-
-variable {C} [SemilatticeSup C]
-
 /-- The supremum of two elements in a preordered type is a binary coproduct
 in the category associated to this preorder. -/
-def isColimitBinaryCofan (X Y : C) :
+def isColimitBinaryCofan [SemilatticeSup C] (X Y : C) :
     IsColimit (BinaryCofan.mk (P := X ⊔ Y) (homOfLE le_sup_left) (homOfLE le_sup_right)) :=
   BinaryCofan.isColimitMk (fun s ↦ homOfLE (sup_le (leOfHom s.inl) (leOfHom s.inr)))
     (by intros; rfl) (by intros; rfl) (by intros; rfl)
 
-instance (priority := low) : HasBinaryCoproducts C where
+instance (priority := low) [SemilatticeSup C] : HasBinaryCoproducts C where
   has_colimit F := by
     have : HasColimit (pair (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)) :=
       ⟨⟨⟨_, isColimitBinaryCofan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩
     apply hasColimit_of_iso (diagramIsoPair F)
 
-end SemilatticeSup
+end
 
 end Preorder
