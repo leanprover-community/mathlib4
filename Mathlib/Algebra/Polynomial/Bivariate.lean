@@ -259,6 +259,7 @@ section MvPolynomial
 variable {R : Type*} [CommSemiring R]
 
 variable (R) in
+/-- The equiv between `R[X][Y]` and `R[X, Y]`. -/
 noncomputable
 def equivMvPolynomial : R[X][Y] ≃ₐ[R] MvPolynomial (Fin 2) R :=
   .ofAlgHom (aevalAeval (.X 0) (.X 1)) (MvPolynomial.aeval ![.C X, X])

@@ -37,8 +37,10 @@ variable (R) in
 /-- A `StandardEtalePair R` is a pair `f g : R[X]` such that `f` is monic,
 and `f'` is invertible in `R[X][1/g]`. -/
 structure StandardEtalePair : Type _ where
+  /-- The monic polynomial to be quotiented out in a standard etale algebra. -/
   f : R[X]
   monic_f : f.Monic
+  /-- The polynomial to be localized away from in a standard etale algebra. -/
   g : R[X]
   cond : ∃ p₁ p₂ n, derivative f * p₁ + f * p₂ = g ^ n
 
