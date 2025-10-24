@@ -172,6 +172,16 @@ lemma hasLimitsOfSize : HasLimitsOfSize.{w, w} C :=
   Adjunction.has_limits_of_equivalence
     (IsCardinalLocallyPresentable.toCardinalContinuousEquivalence C κ).functor
 
+include κ in
+lemma hasFiniteLimits : HasFiniteLimits C := by
+  have := hasLimitsOfSize C κ
+  exact hasFiniteLimits_of_hasLimitsOfSize.{w, w} C
+
+instance (J : Type w) [SmallCategory J] :
+    IsCardinalLocallyPresentable (Jᵒᵖ ⥤ C) κ := by
+  have := IsCardinalLocallyPresentable.hasFiniteLimits C κ
+  infer_instance
+
 end IsCardinalLocallyPresentable
 
 namespace IsCardinalPresentable
@@ -180,6 +190,11 @@ instance (C : Type u) [Category.{v} C] [IsLocallyPresentable.{w} C] :
     HasLimitsOfSize.{w, w} C := by
   obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} C
   exact IsCardinalLocallyPresentable.hasLimitsOfSize C κ
+
+instance (C : Type u) [Category.{v} C] [IsLocallyPresentable.{w} C] :
+    HasFiniteLimits C := by
+  obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} C
+  exact IsCardinalLocallyPresentable.hasFiniteLimits C κ
 
 end IsCardinalPresentable
 
