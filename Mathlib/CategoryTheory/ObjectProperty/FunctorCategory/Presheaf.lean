@@ -108,6 +108,11 @@ lemma shrinkYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {P : Cᵒᵖ ⥤ 
     rw [← shrinkYonedaEquiv_naturality]
     simp)
 
+@[reassoc]
+lemma shrinkYonedaEquiv_symm_comp {X : Cᵒᵖ} {P Q : Cᵒᵖ ⥤ Type w} (x : P.obj X) (α : P ⟶ Q) :
+    shrinkYonedaEquiv.symm x ≫ α = shrinkYonedaEquiv.symm (α.app _ x) :=
+  shrinkYonedaEquiv.injective (by simp [shrinkYonedaEquiv])
+
 end
 
 end

@@ -4,8 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Presheaf
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 import Mathlib.CategoryTheory.SmallRepresentatives
+import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
+import Mathlib.CategoryTheory.Presentable.Presheaf
+import Mathlib.CategoryTheory.Presentable.Type
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
@@ -31,7 +35,7 @@ universe w v v' u u'
 
 namespace CategoryTheory
 
-open Limits
+open Limits Opposite
 
 namespace Functor
 
@@ -66,6 +70,8 @@ namespace Presheaf
 
 open Functor
 
+section Small
+
 variable (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 abbrev isCardinalContinuousMorphismProperty : MorphismProperty (Cᵒᵖ ⥤ Type w) :=
@@ -92,6 +98,53 @@ lemma isCardinalContinuous_eq_isLocal :
       rw [← congr_preservesLimitsOfShape _ _ e]
       apply iInf_le
   · simp [preservesLimitsOfShape_eq_isLocal]
+
+instance (X : C) : IsCardinalPresentable (shrinkYoneda.{w}.obj X) κ where
+  preservesColimitOfShape J _ := ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨by
+    have := isFiltered_of_isCardinalFiltered J κ
+    refine Types.FilteredColimit.isColimitOf' _ _ (fun f ↦ ?_) (fun j f₁ f₂ hf ↦ ?_)
+    · obtain ⟨x, rfl⟩ := shrinkYonedaEquiv.symm.surjective f
+      obtain ⟨j, y, rfl⟩ := Types.jointly_surjective_of_isColimit
+        (isColimitOfPreserves ((evaluation _ _).obj (op X)) hc) x
+      exact ⟨j, shrinkYonedaEquiv.symm y,
+        shrinkYonedaEquiv.injective (by simp [shrinkYonedaEquiv_comp])⟩
+    · obtain ⟨x₁, rfl⟩ := shrinkYonedaEquiv.symm.surjective f₁
+      obtain ⟨x₂, rfl⟩ := shrinkYonedaEquiv.symm.surjective f₂
+      dsimp at hf ⊢
+      rw [shrinkYonedaEquiv_symm_comp, shrinkYonedaEquiv_symm_comp] at hf
+      simp only [EmbeddingLike.apply_eq_iff_eq] at hf
+      obtain ⟨l, a, hl⟩ := (Types.FilteredColimit.isColimit_eq_iff'
+          (isColimitOfPreserves ((evaluation _ _).obj (op X)) hc) x₁ x₂).1 hf
+      dsimp at hl
+      refine ⟨l, a, ?_⟩
+      rw [shrinkYonedaEquiv_symm_comp, shrinkYonedaEquiv_symm_comp, hl]⟩⟩⟩
+
+instance (J : SmallCategoryCardinalLT κ)
+    (F : SmallCategoryCardinalLT.categoryFamily κ J ⥤ Cᵒᵖ) :
+    IsCardinalPresentable (preservesLimitHomFamilySrc F) κ := by
+  apply (config := { allowSynthFailures := true }) isCardinalPresentable_of_isColimit
+    _ (colimit.isColimit (F.leftOp ⋙ shrinkYoneda.{w}))
+  · simpa using J.prop
+  · intro
+    dsimp
+    infer_instance
+
+instance (J : SmallCategoryCardinalLT κ)
+    (F : SmallCategoryCardinalLT.categoryFamily κ J ⥤ Cᵒᵖ) (hF) :
+    IsCardinalPresentable (preservesLimitHomFamilyTgt F hF) κ := by
+  dsimp [preservesLimitHomFamilyTgt]
+  infer_instance
+
+instance : IsCardinalLocallyPresentable
+    (isCardinalContinuous Cᵒᵖ (Type w) κ).FullSubcategory κ := by
+  rw [isCardinalContinuous_eq_isLocal]
+  apply MorphismProperty.isLocallyPresentable_isLocal
+  intro _ _ f hf
+  simp only [isCardinalContinuousMorphismProperty, MorphismProperty.iSup_iff] at hf
+  obtain ⟨J, F, ⟨hF⟩⟩ := hf
+  constructor <;> infer_instance
+
+end Small
 
 end Presheaf
 
