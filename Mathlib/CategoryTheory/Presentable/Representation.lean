@@ -20,7 +20,7 @@ universe w v v' u u'
 
 namespace CategoryTheory
 
-open Limits
+open Limits Opposite
 
 namespace Functor
 
@@ -110,17 +110,54 @@ instance : (toCardinalContinuous C κ).Full := by
   have := Functor.Full.of_iso (toCardinalContinuousCompIso C κ).symm
   exact Functor.Full.of_comp_faithful _ (ObjectProperty.ι _)
 
+instance (X : C) [IsCardinalPresentable X κ] :
+    (shrinkYoneda.{w}.flip.obj (op X)).IsCardinalAccessible κ where
+  preservesColimitOfShape J _ _ := by
+    have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+    have := preservesColimitsOfShape_of_natIso (J := J)
+      (shrinkYonedaFlipObjCompUliftFunctorIso.{w} X).symm
+    exact preservesColimitsOfShape_of_reflects_of_preserves _ uliftFunctor.{v}
+
 instance : (toCardinalContinuous C κ).EssSurj where
   mem_essImage := by
     let P := (isCardinalPresentable C κ).FullSubcategory
     let cont := Functor.isCardinalContinuous Pᵒᵖ (Type w) κ
     intro (F : cont.FullSubcategory)
-    -- need to know that the presheaf `F.obj` is a `κ`-filtered colimit
-    -- of representable presheaves, and for this it suffices to
-    -- know that the "canonical" diagram is `κ`-filtered, and this
-    -- shall follow from the continuity of `F` and the
-    -- existence of `κ`-bounded colimits in `P`
-    sorry
+    obtain ⟨J, _, hJ, G, ι, ⟨h⟩⟩ :=
+      Presheaf.exists_presentation_of_isCardinalContinuous.{w} (fun J _ hJ ↦ by
+        have := isClosedUnderColimitsOfShape_isCardinalPresentable C hJ
+        infer_instance) F.2
+    let G₁ := (G ⋙ CostructuredArrow.proj _ _ ⋙ ObjectProperty.ι _)
+    let G₂ := G ⋙ CostructuredArrow.proj _ _ ⋙ shrinkYoneda.{w}
+    refine ⟨colimit G₁,
+      ⟨(ObjectProperty.fullyFaithfulι _).preimageIso ?_⟩⟩
+    dsimp [toCardinalContinuous, Presheaf.restrictedShrinkYoneda]
+    let c' : Cocone G₂ :=
+      { pt := (isCardinalPresentable C κ).ι.op ⋙ shrinkYoneda.{w, v, u}.obj (colimit G₁)
+        ι.app j :=
+          shrinkYonedaMap (F := (isCardinalPresentable C κ).ι) (G.obj j).left ≫
+            Functor.whiskerLeft _ (shrinkYoneda.{w}.map (colimit.ι G₁ j))
+        ι.naturality j j' f := by
+          ext
+          dsimp [shrinkYoneda]
+          simp only [Equiv.symm_apply_apply, EmbeddingLike.apply_eq_iff_eq]
+          rw [← colimit.w G₁ f, ← Category.assoc]
+          congr 1
+          simp [G₁, G₂, shrinkYoneda]
+          rfl }
+    have h' : IsColimit c' := evaluationJointlyReflectsColimits _ (fun ⟨X⟩ ↦ by
+      have := Functor.preservesColimitsOfShape_of_isCardinalAccessible
+        (shrinkYoneda.{w}.flip.obj (op X.1)) κ J
+      refine IsColimit.ofIsoColimit (isColimitOfPreserves
+        (shrinkYoneda.{w}.flip.obj (op X.1)) (colimit.isColimit G₁))
+        (Cocones.ext (Iso.refl _) (fun j ↦ ?_))
+      ext f
+      obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
+      simp [c']
+      apply congr_arg
+      erw [Equiv.symm_apply_apply]
+      rfl)
+    exact IsColimit.coconePointUniqueUpToIso h' h
 
 instance : (toCardinalContinuous C κ).IsEquivalence where
 

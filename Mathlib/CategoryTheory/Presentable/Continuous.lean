@@ -176,23 +176,47 @@ instance : HasLimitsOfSize.{w, w} (isCardinalContinuous Cᵒᵖ (Type w) κ).Ful
   rw [isCardinalContinuous_eq_isLocal]
   exact ⟨inferInstance⟩
 
+variable {C κ} in
+lemma isCardinalFiltered_costructuredArrow_yoneda
+    {P : Cᵒᵖ ⥤ Type w} (hP : isCardinalContinuous Cᵒᵖ (Type w) κ P)
+    (hC : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
+      HasColimitsOfShape J C) :
+    IsCardinalFiltered (CostructuredArrow yoneda P) κ where
+  nonempty_cocone {J _} F hJ := by
+    have := hC J hJ
+    have := hP.preservesColimitsOfShape Jᵒᵖ (by simpa)
+    let s : ((F ⋙ CostructuredArrow.proj _ _).op ⋙ P).sections :=
+      { val j := yonedaEquiv (F := P) (F.obj j.unop).hom
+        property {j j'} g := by
+          dsimp
+          rw [← CostructuredArrow.w (F.map g.unop), yonedaEquiv_naturality] }
+    obtain ⟨f, hf⟩ := ((Types.isLimit_iff_bijective_sectionOfCone _).1
+      ⟨isLimitOfPreserves P (colimit.isColimit _).op⟩).2 s
+    replace hf (j : J) := congr_fun (congr_arg Subtype.val hf) (op j)
+    dsimp [s] at hf
+    exact ⟨CostructuredArrow.mk (yonedaEquiv.symm f),
+      { app j := CostructuredArrow.homMk (colimit.ι (F ⋙ CostructuredArrow.proj _ _) j)
+            (yonedaEquiv.injective (by simp [← hf j, yonedaEquiv_apply]))
+        naturality j j' g := by
+          ext
+          simpa [-colimit.w] using colimit.w (F ⋙ CostructuredArrow.proj _ _) g }⟩
+
 end Small
 
-instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
-    IsCardinalLocallyPresentable
+section EssentiallySmall
+
+variable (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
+  (κ : Cardinal.{w}) [Fact κ.IsRegular]
+
+instance : IsCardinalLocallyPresentable
       (isCardinalContinuous C (Type w) κ).FullSubcategory κ :=
   (isCardinalContinuousCongrLeft ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans
     (opOpEquivalence C)) (Type w) κ).isCardinalLocallyPresentable κ
 
-instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
-    IsLocallyPresentable.{w} (isCardinalContinuous C (Type w) κ).FullSubcategory where
+instance : IsLocallyPresentable.{w} (isCardinalContinuous C (Type w) κ).FullSubcategory where
   exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
 
-instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
-    (isCardinalContinuous C (Type w) κ).ι.IsRightAdjoint := by
+instance : (isCardinalContinuous C (Type w) κ).ι.IsRightAdjoint := by
   let e := ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans (opOpEquivalence C))
   let e' := isCardinalContinuousCongrLeft e (Type w) κ
   let iso : (isCardinalContinuous C (Type w) κ).ι ≅
@@ -202,12 +226,79 @@ instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
       isoWhiskerLeft e'.inverse (Iso.refl _)
   exact Functor.isRightAdjoint_of_iso iso.symm
 
-instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+instance :
     HasLimitsOfSize.{w, w} (isCardinalContinuous C (Type w) κ).FullSubcategory :=
   Adjunction.has_limits_of_equivalence
     ((isCardinalContinuousCongrLeft ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans
       (opOpEquivalence C)) (Type w) κ).inverse)
+
+attribute [local simp] shrinkYoneda in
+@[simps!]
+noncomputable def _root_.CategoryTheory.Equivalence.shrinkYonedaIsoConjugateYoneda
+    {D : Type*} [Category.{w} D] (e : C ≌ D) :
+    shrinkYoneda.{w} ≅ e.functor ⋙ yoneda ⋙
+      (whiskeringLeft Cᵒᵖ Dᵒᵖ (Type w)).obj e.functor.op :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦
+    ((equivShrink _).symm.trans e.fullyFaithfulFunctor.homEquiv).toIso))
+
+variable {C κ} in
+lemma exists_presentation_of_isCardinalContinuous
+    (hC : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
+      HasColimitsOfShape J C)
+    {F : Cᵒᵖ ⥤ Type w}
+    (hF : isCardinalContinuous _ _ κ F) :
+    ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ)
+      (G : J ⥤ CostructuredArrow shrinkYoneda F)
+      (ι : G ⋙ CostructuredArrow.proj _ _ ⋙ shrinkYoneda.{w} ⟶ (Functor.const _).obj F),
+        Nonempty (IsColimit (Cocone.mk _ ι)) := by
+  let C' := SmallModel.{w} C
+  let e : C ≌ C' := equivSmallModel.{w} C
+  replace hF : isCardinalContinuous _ _ κ (e.inverse.op ⋙ F) := by simpa
+  replace hF := isCardinalFiltered_costructuredArrow_yoneda hF (fun J _ hJ ↦ by
+    have := hC J hJ
+    exact Adjunction.hasColimitsOfShape_of_equivalence e.inverse)
+  let iso' : e.inverse ⋙ shrinkYoneda.{w} ≅ yoneda ⋙
+    (whiskeringLeft Cᵒᵖ C'ᵒᵖ (Type w)).obj e.functor.op :=
+      isoWhiskerLeft e.inverse e.shrinkYonedaIsoConjugateYoneda ≪≫ (associator _ _ _).symm ≪≫
+        isoWhiskerRight e.counitIso _ ≪≫ leftUnitor _
+  let isoF := ((associator _ _ _).symm ≪≫ isoWhiskerRight e.op.unitIso.symm F
+    ≪≫ leftUnitor _)
+  let G : CostructuredArrow yoneda (e.inverse.op ⋙ F) ⥤
+      CostructuredArrow shrinkYoneda.{w} F :=
+    CostructuredArrow.map₂ (F := e.inverse) (G := (whiskeringLeft _ _ _).obj e.functor.op)
+      iso'.hom isoF.hom
+  let projIso : G ⋙ CostructuredArrow.proj _ _ ≅  CostructuredArrow.proj _ _ ⋙ e.inverse :=
+    Iso.refl _
+  refine ⟨CostructuredArrow yoneda (e.inverse.op ⋙ F), inferInstance, hF, G, ?_, ⟨?_⟩⟩
+  · refine
+      { app X := shrinkYonedaEquiv.symm (yonedaEquiv X.hom)
+        naturality X Y f := ?_ }
+    apply shrinkYonedaEquiv.injective
+    have := congr_fun (Y.hom.naturality f.left.op) (𝟙 _)
+    dsimp at this
+    simp only [Category.comp_id] at this
+    simp [← CostructuredArrow.w f,
+      -CommaMorphism.w, shrinkYoneda, yonedaEquiv, shrinkYonedaEquiv, G, this]
+  · have H := isColimitOfPreserves (e.op.congrLeft (E := Type w)).inverse
+      ((isColimitTautologicalCocone (e.inverse.op ⋙ F)))
+    refine (IsColimit.equivOfNatIsoOfIso
+      (associator _ _ _ ≪≫ isoWhiskerLeft _ iso'.symm ≪≫ (associator _ _ _).symm ≪≫
+        isoWhiskerRight projIso.symm _ ≪≫ associator _ _ _) _ _ ?_).1
+        (isColimitOfPreserves (e.op.congrLeft).inverse
+          ((isColimitTautologicalCocone (e.inverse.op ⋙ F))))
+    refine Cocones.ext isoF ?_
+    intro j
+    dsimp
+    obtain ⟨Y, f, rfl⟩ := j.mk_surjective
+    obtain ⟨y, rfl⟩ := yonedaEquiv.symm.surjective f
+    ext X x
+    dsimp at x
+    obtain ⟨x, rfl⟩ := (equivShrink _).surjective x
+    simp [iso', isoF, projIso, shrinkYonedaEquiv]
+    erw [Equiv.apply_symm_apply]
+    simp [yonedaEquiv, ← FunctorToTypes.map_comp_apply, ← op_comp]
+
+end EssentiallySmall
 
 end Presheaf
 

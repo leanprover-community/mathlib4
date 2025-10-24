@@ -66,6 +66,20 @@ noncomputable def shrinkYonedaObjObjEquiv {X : C} {Y : Cᵒᵖ} :
     ((shrinkYoneda.{w}.obj X).obj Y) ≃ (Y.unop ⟶ X) :=
   (equivShrink _).symm
 
+noncomputable def shrinkYonedaFlipObjCompUliftFunctorIso (X : C) :
+    shrinkYoneda.{w}.flip.obj (op X) ⋙ uliftFunctor.{v} ≅
+      coyoneda.obj (op X) ⋙ uliftFunctor.{w} :=
+  NatIso.ofComponents
+    (fun Y ↦ Equiv.toIso (Equiv.ulift.trans ((equivShrink _).symm.trans Equiv.ulift.symm)))
+    (fun _ ↦ by ext; simp [shrinkYoneda])
+
+@[simps!]
+noncomputable def shrinkYonedaMap
+    {D : Type u'} [Category.{v'} D] [LocallySmall.{w} D] (F : C ⥤ D) (X : C) :
+    shrinkYoneda.{w}.obj X ⟶ F.op ⋙ shrinkYoneda.{w}.obj (F.obj X) where
+  app X := equivShrink _ ∘ F.map ∘ (equivShrink _).symm
+  naturality _ _ _ := by ext; simp [shrinkYoneda]
+
 noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ Type w} :
     (shrinkYoneda.{w}.obj X ⟶ P) ≃ P.obj (op X) where
   toFun τ := τ.app _ (equivShrink.{w} _ (𝟙 X))
