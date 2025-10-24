@@ -171,6 +171,11 @@ instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
   (isCardinalContinuousCongrLeft ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans
     (opOpEquivalence C)) (Type w) κ).isCardinalLocallyPresentable κ
 
+instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsLocallyPresentable.{w} (isCardinalContinuous C (Type w) κ).FullSubcategory where
+  exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
+
 end Presheaf
 
 end CategoryTheory
