@@ -129,7 +129,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     (s : Simplex ℝ P (n + 2)) :
     s.mongePoint =
       (univ : Finset (PointsWithCircumcenterIndex (n + 2))).affineCombination ℝ
-        sWithCircumcenter (mongePointWeightsWithCircumcenter n) := by
+        s.pointsWithCircumcenter (mongePointWeightsWithCircumcenter n) := by
   rw [mongePoint_eq_smul_vsub_vadd_circumcenter,
     centroid_eq_affineCombination_of_pointsWithCircumcenter,
     circumcenter_eq_affineCombination_of_pointsWithCircumcenter, affineCombination_vsub,
@@ -185,7 +185,7 @@ n-dimensional face, in terms of `pointsWithCircumcenter`. -/
 theorem mongePoint_vsub_face_centroid_eq_weightedVSub_of_pointsWithCircumcenter {n : ℕ}
     (s : Simplex ℝ P (n + 2)) {i₁ i₂ : Fin (n + 3)} (h : i₁ ≠ i₂) :
     s.mongePoint -ᵥ ({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s =
-      (univ : Finset (PointsWithCircumcenterIndex (n + 2))).weightedVSub sWithCircumcenter
+      (univ : Finset (PointsWithCircumcenterIndex (n + 2))).weightedVSub s.pointsWithCircumcenter
         (mongePointVSubFaceCentroidWeightsWithCircumcenter i₁ i₂) := by
   simp_rw [mongePoint_eq_affineCombination_of_pointsWithCircumcenter,
     centroid_eq_affineCombination_of_pointsWithCircumcenter, affineCombination_vsub,
@@ -392,7 +392,7 @@ theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂
   rw [← mul_self_inj_of_nonneg dist_nonneg t.circumradius_nonneg,
     t.reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter h,
     t.orthocenter_eq_mongePoint, mongePoint_eq_affineCombination_of_pointsWithCircumcenter,
-    dist_affineCombination tWithCircumcenter (sum_mongePointWeightsWithCircumcenter _)
+    dist_affineCombination t.pointsWithCircumcenter (sum_mongePointWeightsWithCircumcenter _)
       (sum_reflectionCircumcenterWeightsWithCircumcenter h)]
   simp_rw [sum_pointsWithCircumcenter, Pi.sub_apply, mongePointWeightsWithCircumcenter,
     reflectionCircumcenterWeightsWithCircumcenter]

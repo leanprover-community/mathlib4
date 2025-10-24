@@ -435,14 +435,14 @@ def pointsWithCircumcenter {n : ℕ} (s : Simplex ℝ P n) : PointsWithCircumcen
 equals `points` applied to that value. -/
 @[simp]
 theorem pointsWithCircumcenter_point {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
-    sWithCircumcenter (pointIndex i) = s i :=
+    s.pointsWithCircumcenter (pointIndex i) = s i :=
   rfl
 
 /-- `pointsWithCircumcenter`, applied to `circumcenterIndex`, equals the
 circumcenter. -/
 @[simp]
 theorem pointsWithCircumcenter_eq_circumcenter {n : ℕ} (s : Simplex ℝ P n) :
-    sWithCircumcenter circumcenterIndex = s.circumcenter :=
+    s.pointsWithCircumcenter circumcenterIndex = s.circumcenter :=
   rfl
 
 /-- The weights for a single vertex of a simplex, in terms of
@@ -464,7 +464,7 @@ theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
 theorem point_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simplex ℝ P n)
     (i : Fin (n + 1)) :
     s i =
-      (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ sWithCircumcenter
+      (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ s.pointsWithCircumcenter
         (pointWeightsWithCircumcenter i) := by
   rw [← pointsWithCircumcenter_point]
   symm
@@ -496,7 +496,7 @@ theorem sum_centroidWeightsWithCircumcenter {n : ℕ} {fs : Finset (Fin (n + 1))
 theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simplex ℝ P n)
     (fs : Finset (Fin (n + 1))) :
     fs.centroid ℝ s =
-      (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ sWithCircumcenter
+      (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ s.pointsWithCircumcenter
         (centroidWeightsWithCircumcenter fs) := by
   simp_rw [centroid_def, affineCombination_apply, weightedVSubOfPoint_apply,
     sum_pointsWithCircumcenter, centroidWeightsWithCircumcenter,
@@ -524,7 +524,7 @@ theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
 /-- The circumcenter of a simplex, in terms of `pointsWithCircumcenter`. -/
 theorem circumcenter_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simplex ℝ P n) :
     s.circumcenter =
-      (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ sWithCircumcenter
+      (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ s.pointsWithCircumcenter
         (circumcenterWeightsWithCircumcenter n) := by
   rw [← pointsWithCircumcenter_eq_circumcenter]
   symm
@@ -553,7 +553,7 @@ terms of `pointsWithCircumcenter`. -/
 theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     (s : Simplex ℝ P n) {i₁ i₂ : Fin (n + 1)} (h : i₁ ≠ i₂) :
     reflection (affineSpan ℝ (s '' {i₁, i₂})) s.circumcenter =
-      (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ sWithCircumcenter
+      (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ s.pointsWithCircumcenter
         (reflectionCircumcenterWeightsWithCircumcenter i₁ i₂) := by
   have hc : #{i₁, i₂} = 2 := by simp [h]
   -- Making the next line a separate definition helps the elaborator:
