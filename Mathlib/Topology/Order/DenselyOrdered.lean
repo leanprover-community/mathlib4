@@ -339,18 +339,12 @@ instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := by
 We would prefer for this to be an instance but even at `(priority := 100)` this was problematic so
 we have deferred this issue. TODO Promote this to an `instance`! -/
 lemma DenselyOrdered.subsingleton_of_discreteTopology [DiscreteTopology α] : Subsingleton α := by
-  suffices ∀ a b : α, b ≤ a by
-    refine ⟨fun a b ↦ ?_⟩
-    rcases lt_trichotomy a b with h | rfl | h
-    · simpa using lt_of_le_of_lt (this a b) h
-    · rfl
-    · simpa using lt_of_le_of_lt (this b a) h
+  suffices ∀ a b : α, b ≤ a from ⟨fun a b ↦ le_antisymm (this b a) (this a b)⟩
   intro a b
   by_contra! contra
-  replace contra : b ∈ Ioo a b := by
-    rw [← (isClosed_discrete (Ioo a b)).closure_eq, closure_Ioo contra.ne]
-    simpa using contra.le
-  simp at contra
+  suffices b ∈ Ioo a b by grind
+  rw [← (isClosed_discrete (Ioo a b)).closure_eq, closure_Ioo contra.ne]
+  grind
 
 /-- Let `s` be a dense set in a nontrivial dense linear order `α`. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable
