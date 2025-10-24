@@ -52,8 +52,12 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 namespace Over
 
+/-- A choice of pullback functor `Over X ⥤ Over Y` along a morphism `f : Y ⟶ X` in `C`
+as a right adjoint to the functor `Over.map f`. -/
 class ChosenPullback {Y X : C} (f : Y ⟶ X) where
+  /-- The pullback functor along `f`. -/
   pullback : Over X ⥤ Over Y
+  /-- The adjunction between `Over.map f` and `pullback f`. -/
   mapPullbackAdj : Over.map f ⊣ pullback
 
 namespace ChosenPullback
@@ -62,17 +66,24 @@ instance ofOverMk {Y X : C} (f : Y ⟶ X) [ChosenPullback f] : ChosenPullback (O
   dsimp [Over.mk]
   infer_instance
 
+/-- Relating the existing noncomputable `HasPullbacksAlong` typeclass to `ChosenPullback`. -/
 @[simps]
 noncomputable def ofHasPullbacksAlong {Y X : C} (f : Y ⟶ X) [h : HasPullbacksAlong f] :
     ChosenPullback f where
   pullback := Over.pullback f
   mapPullbackAdj := Over.mapPullbackAdj f
 
-@[simps]
-noncomputable def ofHasPullbacks {Y X : C} (f : Y ⟶ X) [h : HasPullbacks C] :
-    ChosenPullback f where
-  pullback := Over.pullback f
-  mapPullbackAdj := Over.mapPullbackAdj f
+/-- The identity morphism has a chosen pullback. -/
+def id {X : C} : ChosenPullback (𝟙 X) where
+  pullback := 𝟭 _
+  mapPullbackAdj := Adjunction.ofNatIsoLeft  (Adjunction.id) (Over.mapId _).symm
+
+/-- The composition of morphisms with chosen pullbacks has a chosen pullback. -/
+def comp {Z Y X : C} (f : Y ⟶ X) (g : Z ⟶ Y)
+    [i₁ : ChosenPullback f] [i₂ : ChosenPullback g] : ChosenPullback (g ≫ f) where
+  pullback := i₁.pullback ⋙ i₂.pullback
+  mapPullbackAdj := Adjunction.ofNatIsoLeft  (i₂.mapPullbackAdj.comp i₁.mapPullbackAdj)
+    (Over.mapComp g f).symm
 
 /-- In cartesian monoidal categories, morphisms to the terminal object have a chosen pullback. -/
 def ofCartesianMonoidalCategory [CartesianMonoidalCategory C] {X : C} (f : X ⟶ 𝟙_ C) :
@@ -196,7 +207,7 @@ lemma reindexSnd_left {Y Z : Over X} [HasPullbacksAlong Y.hom] :
 ```
 -/
 @[simp]
-def isPullback (Y Z : Over X) [ChosenPullback Y.hom] :
+theorem isPullback (Y Z : Over X) [ChosenPullback Y.hom] :
     IsPullback (μ_ Y Z).left (π_ Y Z).left Z.hom Y.hom where
   w := by simp
   isLimit' := ⟨by
@@ -253,6 +264,7 @@ Otherwise, `ChosenPullback.isPullback` is constructive.
 noncomputable def isLimitPullbackCone [ChosenPullback Y.hom] : IsLimit (pullbackCone Y Z) :=
   isPullback Y Z |>.isLimit
 
+/-- The binary fan provided by `μ_` and `π_`. -/
 abbrev binaryFanMkMapPullback [ChosenPullback Y.hom] : BinaryFan Z Y :=
   BinaryFan.mk (P := Σ_ Y (Δ_ Y Z)) (μ_ Y Z) (π_ Y Z)
 
