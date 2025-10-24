@@ -5,51 +5,54 @@ Usage: lake-build-wrapper.py <output_file.json> <command> [args...]
 Wrapper script for `lake build` to be used in GitHub actions that:
 1. Groups only normal build output (✔ lines) into collapsible log groups
 2. Emits all non-✔ lines (including ℹ/⚠/✖ and summaries) outside groups
-3. Extracts infos/warnings/errors to JSON output file
+3. Extracts information about infos/warnings/errors to JSON output file
+
+Example `lake build` log output:
+```
+✔ [4000/9999] Built Mathlib.NumberTheory.LSeries.PrimesInAP
+✖ [5000/9999] Building MathlibTest.toAdditive (4.2s)
+trace: .> LEAN_PATH=...
+Error: error: MathlibTest/toAdditive.lean:168:105: Fields missing: `fileName`, `fileMap`
+Error: error: MathlibTest/toAdditive.lean:219:60: invalid {...} notation, structure type expected
+  Name
+error: Lean exited with code 1
+✔ [6000/9999] Built MathlibTest.MathlibTestExecutable (3.2s)
+✔ [7000/9999] Built Mathlib.Analysis.CStarAlgebra.Module.Defs
+⚠ [8000/9999] Built Mathlib.Algebra.Quandle (7.0s)
+warning: Mathlib/Algebra/Quandle.lean:122:0: This line exceeds the 100 character limit, please shorten it!
+
+Note: This linter can be disabled with `set_option linter.style.longLine false`
+✔ [9999/9999] Built Mathlib (111s)
+Build completed successfully (7401 jobs).
+```
+
+Notes:
+- a line beginning with ✔ is a "normal line" and contiguous sequences of these will be collapsed into log groups
+- build lines beginning with ℹ/⚠/✖ begin info/warning/error blocks;
+- blocks are ended by either a normal line ✔ or a build summary line like "Build completed" / "Some required targets logged failures:"
+- in the example above, there is one error block and one warning block
+- note that there can be more than one error or warning in a block
 
 Summary JSON format:
 - Top-level object with keys:
-  - warnings: list of issue objects (warning blocks)
-  - errors: list of issue objects (error blocks)
-  - infos: list of issue objects (info blocks)
-  - warning_count: integer
-  - error_count: integer
-  - info_count: integer
+  - warnings: list of block objects (see below)
+  - errors: list of block objects
+  - infos: list of block objects
+  - warning_count: integer (count of warning blocks)
+  - error_count: integer (count of error blocks)
+  - info_count: integer (count of info blocks)
 
-- Each issue object contains:
+- Each block object contains:
   - file_info: object with parsed progress/target info, if available
     - current: integer (N in "[N/M]")
     - total: integer (M in "[N/M]")
-    - target: string (module/target token from the log)
-    - file: string or null (converted Lean filename; null for non-file targets containing ':')
+    - target: string (module/target token from the log,
+      e.g. `Mathlib.Analysis.CStarAlgebra.Module.Defs` or `batteries:extraDep`)
+    - file: string or null (converted Lean filename,
+      e.g. `Mathlib/Analysis/CStarAlgebra/Module/Defs.lean`;
+      null for non-file targets containing ':')
   - messages: list of strings (subset of lines in the block that include typical markers like "warning:", "error:", or "info:")
-  - full_output: string (the entire contiguous block captured for the issue)
-
-State machine overview:
-- States
-  - OUTSIDE: No open group; not collecting an issue.
-  - GROUP_OPEN: A ::group:: is open; only ✔ lines are printed inside the group.
-  - IN_WARNING: Collecting a warning block (⚠ line + following lines).
-  - IN_ERROR: Collecting an error block (✖ line + following lines).
-  - IN_INFO: Collecting an info block (ℹ line + following lines).
-
-- Events (derived per line)
-  - NORMAL: Line starts with ✔
-  - NEW_WARNING: Line starts with ⚠
-  - NEW_ERROR: Line starts with ✖
-  - NEW_INFO: Line starts with ℹ
-  - OTHER: Any other line (including end-of-build summary lines)
-
-- Transitions (action → next state)
-  - OUTSIDE + NORMAL → open_group; print → GROUP_OPEN
-  - OUTSIDE + NEW_* → start_issue; print → IN_*
-  - OUTSIDE + OTHER → print → OUTSIDE
-  - GROUP_OPEN + NORMAL → print → GROUP_OPEN
-  - GROUP_OPEN + NEW_*/OTHER → close_group; print; (start_issue if NEW_*) → IN_* or OUTSIDE
-  - IN_* + NORMAL → flush_issue; open_group; print → GROUP_OPEN
-  - IN_* + NEW_* → flush_issue; start_issue; print → IN_*
-  - IN_* + OTHER → if summary-line then flush_issue else append_issue; print → OUTSIDE or IN_*
-  - EOF → flush_issue; close_group
+  - full_output: string (the entire contiguous block)
 
 Relevant parts of `lake`:
 - `lake build`'s log output is generated [here](https://github.com/leanprover/lean4/blob/59573646c227d940962c08a1e77ce51177a024ea/src/lake/Lake/Build/Run.lean#L132)
@@ -68,7 +71,7 @@ class BuildOutputProcessor:
         self.warnings = []
         self.errors = []
         self.infos = []
-        self.current_issue = []
+        self.current_block = []
         self.group_open = False
         class _State(Enum):
             OUTSIDE = auto()
@@ -167,7 +170,35 @@ class BuildOutputProcessor:
         }
 
     def process_line(self, line: str):
-        """Process a single line of output via an explicit FSM, streaming output immediately."""
+        """Process a single line of output via an explicit finite state machine, streaming output immediately.
+
+        (Implementation detail) State machine overview:
+        - States:
+            - OUTSIDE: No open group and not collecting lines into a block.
+            - GROUP_OPEN: A ::group:: is open; only ✔ lines are printed inside the group.
+            - IN_WARNING: Collecting a warning block (⚠ line + following lines).
+            - IN_ERROR: Collecting an error block (✖ line + following lines).
+            - IN_INFO: Collecting an info block (ℹ line + following lines).
+
+        - Events (one for each new output line)
+            - NORMAL: Line starts with ✔
+            - NEW_WARNING: Line starts with ⚠
+            - NEW_ERROR: Line starts with ✖
+            - NEW_INFO: Line starts with ℹ
+            - OTHER: Any other line (including end-of-build summary lines)
+            - EOF: End of build output
+
+        - Transitions (current state + event → sequence; of; actions → next state)
+            - OUTSIDE + NORMAL → open_group; print → GROUP_OPEN
+            - OUTSIDE + NEW_* → start_block; print → IN_*
+            - OUTSIDE + OTHER → print → OUTSIDE
+            - GROUP_OPEN + NORMAL → print → GROUP_OPEN
+            - GROUP_OPEN + NEW_*/OTHER → close_group; print; (start_block if NEW_*) → IN_* or OUTSIDE
+            - IN_* + NORMAL → flush_block; open_group; print → GROUP_OPEN
+            - IN_* + NEW_* → flush_block; start_block; print → IN_*
+            - IN_* + OTHER → if summary-line then flush_block else append_block; print → OUTSIDE or IN_*
+            - * + EOF → flush_block; close_group
+        """
 
         # Classify input line into an event
         if self.is_warning_start(line):
@@ -188,15 +219,15 @@ class BuildOutputProcessor:
                 print(line, end='', flush=True)
                 self.state = self.State.GROUP_OPEN
             elif evt == self.Evt.NEW_WARNING:
-                self.current_issue = [line]
+                self.current_block = [line]
                 print(line, end='', flush=True)
                 self.state = self.State.IN_WARNING
             elif evt == self.Evt.NEW_ERROR:
-                self.current_issue = [line]
+                self.current_block = [line]
                 print(line, end='', flush=True)
                 self.state = self.State.IN_ERROR
             elif evt == self.Evt.NEW_INFO:
-                self.current_issue = [line]
+                self.current_block = [line]
                 print(line, end='', flush=True)
                 self.state = self.State.IN_INFO
             elif evt == self.Evt.OTHER:
@@ -212,15 +243,15 @@ class BuildOutputProcessor:
                 # Close group, then handle the event outside the group
                 self.close_group_if_open()
                 if evt == self.Evt.NEW_WARNING:
-                    self.current_issue = [line]
+                    self.current_block = [line]
                     print(line, end='', flush=True)
                     self.state = self.State.IN_WARNING
                 elif evt == self.Evt.NEW_ERROR:
-                    self.current_issue = [line]
+                    self.current_block = [line]
                     print(line, end='', flush=True)
                     self.state = self.State.IN_ERROR
                 elif evt == self.Evt.NEW_INFO:
-                    self.current_issue = [line]
+                    self.current_block = [line]
                     print(line, end='', flush=True)
                     self.state = self.State.IN_INFO
                 else:
@@ -230,70 +261,70 @@ class BuildOutputProcessor:
 
         if self.state in (self.State.IN_WARNING, self.State.IN_ERROR, self.State.IN_INFO):
             if evt == self.Evt.NORMAL:
-                self.flush_issue()
+                self.flush_block()
                 self.open_group_for_line(line)
                 print(line, end='', flush=True)
                 self.state = self.State.GROUP_OPEN
             elif evt == self.Evt.NEW_WARNING:
-                self.flush_issue()
-                self.current_issue = [line]
+                self.flush_block()
+                self.current_block = [line]
                 print(line, end='', flush=True)
                 self.state = self.State.IN_WARNING
             elif evt == self.Evt.NEW_ERROR:
-                self.flush_issue()
-                self.current_issue = [line]
+                self.flush_block()
+                self.current_block = [line]
                 print(line, end='', flush=True)
                 self.state = self.State.IN_ERROR
             elif evt == self.Evt.NEW_INFO:
-                self.flush_issue()
-                self.current_issue = [line]
+                self.flush_block()
+                self.current_block = [line]
                 print(line, end='', flush=True)
                 self.state = self.State.IN_INFO
             else:  # OTHER → continuation or summary
                 if self.is_build_summary(line):
-                    self.flush_issue()
+                    self.flush_block()
                     print(line, end='', flush=True)
                     self.state = self.State.OUTSIDE
                 else:
-                    self.current_issue.append(line)
+                    self.current_block.append(line)
                     print(line, end='', flush=True)
             return
 
-    def flush_issue(self):
+    def flush_block(self):
         """Record the current warning/error block for the summary."""
-        if not self.current_issue:
+        if not self.current_block:
             return
 
-        issue_text = ''.join(self.current_issue)
-        file_info = self.extract_file_info(self.current_issue[0])
+        block_text = ''.join(self.current_block)
+        file_info = self.extract_file_info(self.current_block[0])
 
         # Extract actual info/warning/error messages
         messages = []
-        for line in self.current_issue:
+        for line in self.current_block:
             low = line.lower()
             if 'warning:' in low or 'error:' in low or 'info:' in low or 'trace:' in low:
                 messages.append(line.strip())
 
-        issue_data = {
+        block_data = {
             'file_info': file_info,
             'messages': messages,
-            'full_output': issue_text
+            'full_output': block_text
         }
 
         if self.state == self.State.IN_WARNING:
-            self.warnings.append(issue_data)
+            self.warnings.append(block_data)
         elif self.state == self.State.IN_ERROR:
-            self.errors.append(issue_data)
+            self.errors.append(block_data)
         elif self.state == self.State.IN_INFO:
-            self.infos.append(issue_data)
+            self.infos.append(block_data)
 
         # Do not print here; lines were already streamed as they arrived.
-        self.current_issue = []
+        self.current_block = []
         self.state = self.State.OUTSIDE
 
     def finalize(self):
         """Finalize processing"""
-        self.flush_issue()
+        self.flush_block()
         self.close_group_if_open()
 
     def get_summary(self) -> Dict[str, Any]:
