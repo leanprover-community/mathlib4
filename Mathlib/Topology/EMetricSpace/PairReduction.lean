@@ -444,10 +444,10 @@ lemma iSup_edist_pairSet {E : Type*} [PseudoEMetricSpace E] (ha : 1 < a) (f : T 
     simp [pairSetSeq, hJ, hsB]
   have htP : ((logSizeBallSeq J hJ a c l).point, t) ∈ pairSetSeq J a c l := by
     simp [pairSetSeq, hJ, htB]
-  have sup_bound {x y : T} (hxy : (x,y) ∈ pairSetSeq J a c l) :
-    edist (f x) (f y) ≤  ⨆ p : pairSet J a c, edist (f p.1.1) (f p.1.2) := by
+  have sup_bound {x y : T} (hxy : (x, y) ∈ pairSetSeq J a c l) :
+    edist (f x) (f y) ≤ ⨆ p : pairSet J a c, edist (f p.1.1) (f p.1.2) := by
     simp only [iSup_subtype]
-    apply le_iSup_of_le (i := (x,y))
+    apply le_iSup_of_le (i := (x, y))
     apply le_iSup_of_le
     · exact le_rfl
     refine Finset.mem_biUnion.mpr ⟨l, ?_, hxy⟩
