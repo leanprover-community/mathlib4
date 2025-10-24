@@ -239,7 +239,8 @@ the codomain of the continuous linear maps (otherwise none). -/
 def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × Expr × Expr := do
   match_expr e with
     | ContinuousLinearMap k S _ _ _σ E _ _ F _ _ _ _ =>
-      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
+      -- TODO: make the error below more understandable, by including something like this line!
+      -- trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
       if ← withReducible <| isDefEq k S then
         -- TODO: check if σ is actually the identity!
         return some (k, E, F)
