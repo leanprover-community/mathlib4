@@ -2776,6 +2776,7 @@ import Mathlib.CategoryTheory.Presentable.Limits
 import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 import Mathlib.CategoryTheory.Presentable.Presheaf
+import Mathlib.CategoryTheory.Presentable.Representation
 import Mathlib.CategoryTheory.Presentable.Retracts
 import Mathlib.CategoryTheory.Presentable.StrongGenerator
 import Mathlib.CategoryTheory.Presentable.Type

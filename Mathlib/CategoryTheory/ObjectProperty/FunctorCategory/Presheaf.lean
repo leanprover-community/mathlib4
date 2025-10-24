@@ -56,7 +56,7 @@ instance (X : C) : FunctorToTypes.Small.{w} (yoneda.obj X) :=
   fun _ ↦ by dsimp; infer_instance
 
 -- to be moved
-@[simps -isSimp obj map]
+@[pp_with_univ, simps -isSimp obj map]
 noncomputable def shrinkYoneda :
     C ⥤ Cᵒᵖ ⥤ Type w where
   obj X := FunctorToTypes.shrink (yoneda.obj X)
