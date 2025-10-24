@@ -521,28 +521,16 @@ where
           trace[Elab.DiffGeo.MDiff] "considering fact of kind `{a}`"
           return some a
         | _ => return none
-
       if let some R := (← searchRealNormedSpace) then
         -- We found a sphere in a real normed space: search for a `Fact (finrank R) = m`,
         -- then the sphere is m-1-dimensional, and modelEuclideanSpace m-1 is our model.
-        -- let some fact ← findSomeLocalInstanceOf? ``Fact fun inst type ↦ do
-        --     trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
-        --     throwError "TODO!"
-        --   | throwError ""
-        --     match_expr type with
-        --     | Fact a =>
-        --       trace[Elab.DiffGeo.MDiff] "considering fact of kind `{a}`"
+        let some a ← factFinder
+          | throwError "Found no fact `finrank {R} = n + 1` in the local context"
         --       -- match_expr a with
         --       -- | ``(``Module.finrank R = b) =>
         --       --   let sdf := bb
         --       -- | _ => return none
-        --       return none
-        --     | _ => return none
-        --   | throwError "no fact found!"
-
-        throwError "TODO complete this!"
-      -- match on that output, more later!
-      -- Do we need to check for the right Fact instance? Perhaps we can leave that to Lean :-)
+        throwError "TODO!"
       else throwError "found no real normed space instance on `{α}`"
     | _ => throwError "`{e}` is not a sphere in a real normed space"
   /-- Attempt to find a model with corners from a normed field.
@@ -552,7 +540,6 @@ where
     let iTerm : Term ← ``(𝓘($eT, $eT))
     Term.elabTerm iTerm none
 
-#exit
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
 
