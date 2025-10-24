@@ -360,7 +360,7 @@ Taking the negative part of a function with locally finite support commutes with
 scalar multiplication by a natural number.
 -/
 @[simp]
-theorem nsmul_negPart (f : locallyFinsuppWithin U Y) (n : ℕ) : (n • f)⁻ = n • f⁻ := by
+theorem nsmul_negPart (n : ℕ) (f : locallyFinsuppWithin U Y) : (n • f)⁻ = n • f⁻ := by
   ext x
   simp only [negPart, max_apply, coe_neg, coe_nsmul, Pi.neg_apply, Pi.smul_apply, coe_zero,
     Pi.zero_apply]
