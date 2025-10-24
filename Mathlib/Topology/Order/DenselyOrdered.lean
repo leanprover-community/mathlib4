@@ -338,7 +338,7 @@ instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := by
 
 We would prefer for this to be an instance but even at `(priority := 100)` this was problematic so
 we have deferred this issue. TODO Promote this to an `instance`! -/
-def DenselyOrdered.subsingleton_of_discreteTopology [DiscreteTopology α] : Subsingleton α := by
+lemma DenselyOrdered.subsingleton_of_discreteTopology [DiscreteTopology α] : Subsingleton α := by
   suffices ∀ a b : α, b ≤ a by
     refine ⟨fun a b ↦ ?_⟩
     rcases lt_trichotomy a b with h | rfl | h
