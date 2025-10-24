@@ -243,45 +243,76 @@ def RealCopy := ℝ
 
 noncomputable instance : NormedField RealCopy := inferInstanceAs (NormedField ℝ)
 
+noncomputable instance : NontriviallyNormedField RealCopy := inferInstanceAs (NontriviallyNormedField ℝ)
+
 variable {E'' E''' : Type*} [NormedAddCommGroup E''] [NormedAddCommGroup E''']
   [NormedSpace ℝ E''] [NormedSpace RealCopy E''']
 
+def id' : ℝ →+* RealCopy := RingHom.id ℝ
+
+set_option trace.Elab.DiffGeo.MDiff true in
+variable {f : M → E'' →SL[id'] E'''} in
 /--
-error: failed to synthesize
-  Module ℝ E'''
-
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: Could not find a model with corners for `E'' →SL[id'] E'''`
+---
+trace: [Elab.DiffGeo.MDiff] Finding a model for: M
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `M` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `M` is not a `TangentBundle`
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on `M` among local instances.
+[Elab.DiffGeo.MDiff] ✅️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
+  [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²²`
+  [Elab.DiffGeo.MDiff] Found model: `I`
+[Elab.DiffGeo.MDiff] Finding a model for: E'' →SL[id'] E'''
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[id'] E'''` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[id'] E'''` is not a `TangentBundle`
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on `E'' →SL[id'] E'''` among local instances.
+[Elab.DiffGeo.MDiff] ❌️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ChartedSpace` structure on `E'' →SL[id']
+        E'''` among local instances, and `E'' →SL[id']
+        E'''` is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] `E'' →SL[id'] E'''` is a space of continuous linear maps
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Coefficients `ℝ` and `RealCopy` of `E'' →SL[id'] E'''` are not reducibly definitionally equal
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[id'] E'''` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[id'] E'''` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ NormedField
+  [Elab.DiffGeo.MDiff] Failed with error:
+      failed to synthesize
+        NontriviallyNormedField (E'' →SL[id'] E''')
+      ⏎
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
-#guard_msgs in
-#synth Module ℝ E'''
-instance : Module ℝ  E''' := inferInstanceAs (Module RealCopy E''')
-
-/--
-error: failed to synthesize
-  NormedSpace 𝕜 (E'' →L[ℝ] E'')
-
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
--/
-#guard_msgs in
-#synth NormedSpace 𝕜 (E'' →L[ℝ] E'')
-
-/--
-error: failed to synthesize
-  NormedSpace ℝ (E'' →L[ℝ] E''')
-
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
--/
-#guard_msgs in
-#synth NormedSpace ℝ (E'' →L[ℝ] E''')
-
-
-variable {f : M → E'' →L[ℝ] E'''} in
-/-- error: Could not find a model with corners for `E'' →L[ℝ] E'''` -/
 #guard_msgs in
 #check MDiff f
 
-variable {f : M → E'' →L[ℝ] E'''} in
-/-- error: Could not find a model with corners for `E'' →L[ℝ] E'''` -/
+variable {f : (E'' →SL[id'] E''') → E''} in
+/-- error: Could not find a model with corners for `E'' →SL[id'] E'''` -/
+#guard_msgs in
+#check MDiff f
+
+variable {f : M → E'' →SL[id'] E'''} in
+/-- error: Could not find a model with corners for `E'' →SL[id'] E'''` -/
 #guard_msgs in
 #check CMDiff 2 f
 
@@ -389,8 +420,9 @@ variable (h : x ≤ y) in
 #guard_msgs in
 #check MDiffAt k ⟨x, by simp; linarith⟩
 
--- Test for the definitional equality check: for this type, `isDefEq` succeeds, but
--- `withReducible <| isDefEq` would not.
+-- Test for the definitional equality check: for this type, `isDefEq` would succeed, but
+-- `withReducible <| isDefEq` does not. We do not want to consider a type synonym the same,
+-- so inferring a model with corners in this case should fail.
 def RealCopy' := ℝ
 
 instance : Preorder RealCopy' := inferInstanceAs (Preorder ℝ)
@@ -403,15 +435,54 @@ variable {x y : RealCopy'} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k 
 noncomputable instance : ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y) :=
   instIccChartedSpace x y
 
-/-- info: MDifferentiableAt (𝓡∂ 1) J g : ↑(Set.Icc x y) → Prop -/
+set_option trace.Elab.DiffGeo.MDiff true in
+/--
+error: Could not find a model with corners for `↑(Set.Icc x y)`
+---
+trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not a `TangentBundle`
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on `↑(Set.Icc x y)` among local instances.
+[Elab.DiffGeo.MDiff] ❌️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H N`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ChartedSpace` structure on `↑(Set.Icc x
+          y)` among local instances, and `↑(Set.Icc x
+          y)` is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Set.Icc x y` is a closed interval of type `RealCopy'`, which is not reducibly definitionally equal to ℝ
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ NormedField
+  [Elab.DiffGeo.MDiff] Failed with error:
+      failed to synthesize
+        NontriviallyNormedField ↑(Set.Icc x y)
+      ⏎
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check MDiffAt g
-/-- info: MDifferentiable 𝓘(ℝ, E'') (𝓡∂ 1) h : Prop -/
+/-- error: Could not find a model with corners for `↑(Set.Icc x y)` -/
 #guard_msgs in
 #check MDiff h
-/-- info: ContMDiff (𝓡∂ 1) 𝓘(ℝ, ℝ) 2 k : Prop -/
+/-- error: Could not find a model with corners for `↑(Set.Icc x y)` -/
 #guard_msgs in
 #check CMDiff 2 k
+
+#exit
 
 end interval
 

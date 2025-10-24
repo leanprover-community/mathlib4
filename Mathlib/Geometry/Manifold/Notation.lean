@@ -344,17 +344,18 @@ where
     match_expr e with
     | ContinuousLinearMap k S _ _ _σ _E _ _ _F _ _ _ _ =>
       trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
-      -- Note: if `S` were a copy of `k` with a non-standard topology, this check passes
-      -- (and inferring a model with corners will fail).
-      -- In practice, this should never occur: for now, assume it does not.
-      if ← isDefEq k S then
+      -- If `S` were a copy of `k` with a non-standard topology or smooth structure
+      -- (such as, imposed deliberately through a type synonym), we do not want to infer
+      -- the standard model with corners.
+      -- Therefore, we only check definitional equality at reducible transparency.
+      if ← withReducible <| isDefEq k S then
         -- TODO: check if σ is actually the identity!
         let eK : Term ← Term.exprToSyntax k
         let eT : Term ← Term.exprToSyntax e
         let iTerm : Term ← ``(𝓘($eK, $eT))
         Term.elabTerm iTerm none
       else
-        throwError "Coefficients `{k}` and `{S}` of `{e}` are not definitionally equal"
+        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
     | _ => throwError "`{e}` is not a space of continuous linear maps"
   /-- Attempt to find a model with corners on a closed interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
@@ -364,15 +365,16 @@ where
     -- Note that `modelWithCornersEuclideanHalfSpace` is also not imported.
     match e with
     | mkApp4 (.const `Set.Icc _) α _ _x _y =>
-      -- Note: if `α` was a copy of `ℝ` with a non-standard topology, this check passes
-      -- (and inferring a model with corners will fail).
-      -- In practice, this should never occur: for now, assume it does not.
-      if ← isDefEq α q(ℝ) then
+      -- If `S` were a copy of `k` with a non-standard topology or smooth structure
+      -- (such as, imposed deliberately through a type synonym), we do not want to infer
+      -- the standard model with corners.
+      -- Therefore, we only check definitional equality at reducible transparency.
+      if ← withReducible <| isDefEq α q(ℝ) then
         -- We need not check if `x < y` is a fact in the local context: Lean will verify this
         -- itself when trying to synthesize a ChartedSpace instance.
         mkAppOptM `modelWithCornersEuclideanHalfSpace #[q(1 : ℕ), none]
       else throwError "`{e}` is a closed interval of type `{α}`, \
-        which is not definitionally equal to ℝ"
+        which is not reducibly definitionally equal to ℝ"
     | _ => throwError "`{e}` is not a closed real interval"
   /-- Attempt to find a model with corners on the upper half plane in complex space -/
   fromUpperHalfPlane : TermElabM Expr := do
