@@ -232,6 +232,21 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
     s.restore true
     return none
 
+/-- Check if an expression `e` is (after instantiating metavariables and performing `whnf`),
+a `ContinuousLinearMap` over an identity ring homomorphism and the coefficients of domain and
+codomain are reducibly definitionally equal. If so, we return the coefficient field, the domain and
+the codomain of the continuous linear maps (otherwise none). -/
+def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × Expr × Expr := do
+  match_expr e with
+    | ContinuousLinearMap k S _ _ _σ E _ _ F _ _ _ _ =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
+      if ← withReducible <| isDefEq k S then
+        -- TODO: check if σ is actually the identity!
+        return some (k, E, F)
+      else
+        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
+    | _ => return none
+
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
@@ -362,22 +377,16 @@ where
   -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
   -- corners as a normed space. Merely linear maps are not a normed space either.
   fromCLM : TermElabM Expr := do
-    match_expr e with
-    | ContinuousLinearMap k S _ _ _σ _E _ _ _F _ _ _ _ =>
-      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
-      -- If `S` were a copy of `k` with a non-standard topology or smooth structure
-      -- (such as, imposed deliberately through a type synonym), we do not want to infer
-      -- the standard model with corners.
-      -- Therefore, we only check definitional equality at reducible transparency.
-      if ← withReducible <| isDefEq k S then
-        -- TODO: check if σ is actually the identity!
-        let eK : Term ← Term.exprToSyntax k
-        let eT : Term ← Term.exprToSyntax e
-        let iTerm : Term ← ``(𝓘($eK, $eT))
-        Term.elabTerm iTerm none
-      else
-        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
-    | _ => throwError "`{e}` is not a space of continuous linear maps"
+    -- If the coefficients of the codomain were a copy of `k` with a non-standard topology or smooth
+    -- structure (such as, imposed deliberately through a type synonym), we do not want to infer
+    -- the standard model with corners.
+    -- Therefore, we only check definitional equality at reducible transparency.
+    let some (k, _E, _F) := ← isCLMReduciblyDefeqCoefficients e
+      | throwError "`{e}` is not a space of continuous linear maps"
+    let eK : Term ← Term.exprToSyntax k
+    let eT : Term ← Term.exprToSyntax e
+    let iTerm : Term ← ``(𝓘($eK, $eT))
+    Term.elabTerm iTerm none
   /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant -/
   fromEuclideanSpace : TermElabM Expr := do
     -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace`.
