@@ -915,9 +915,7 @@ theorem stoppedValue_eq' [Preorder ι] [LocallyFiniteOrderBot ι] [AddCommMonoid
   specialize hbdd ω
   have h_top : τ ω ≠ ⊤ := fun h_contra ↦ by simp [h_contra] at hbdd
   lift τ ω to ι using h_top with i hi
-  norm_cast at hbdd ⊢
-  have h' := Finset.mem_Iic.mpr hbdd
-  exact ⟨i, by simpa using h', rfl⟩
+  exact ⟨i, mod_cast hbdd, rfl⟩
 
 theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddCommMonoid E] {s : Finset ι} (n : ι)
     (hbdd : ∀ ω, τ ω < n → τ ω ∈ WithTop.some '' s) :
