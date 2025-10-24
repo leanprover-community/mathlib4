@@ -103,11 +103,13 @@ lemma partialLeftAdjointHomEquiv_map_comp {X X' : F.PartialLeftAdjointSource} {Y
   rw [partialLeftAdjointHomEquiv_comp, partialLeftAdjointHomEquiv_map, assoc,
     ← partialLeftAdjointHomEquiv_comp, id_comp]
 
+@[reassoc]
 lemma partialLeftAdjointHomEquiv_symm_comp {X : F.PartialLeftAdjointSource} {Y Y' : D}
     (f : X.obj ⟶ F.obj Y) (g : Y ⟶ Y') :
     F.partialLeftAdjointHomEquiv.symm f ≫ g = F.partialLeftAdjointHomEquiv.symm (f ≫ F.map g) :=
   CorepresentableBy.homEquiv_symm_comp ..
 
+@[reassoc]
 lemma partialLeftAdjointHomEquiv_comp_symm {X X' : F.PartialLeftAdjointSource} {Y : D}
     (f : X'.obj ⟶ F.obj Y) (g : X ⟶ X') :
     F.partialLeftAdjointMap g ≫ F.partialLeftAdjointHomEquiv.symm f =
