@@ -387,8 +387,7 @@ theorem isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOr
     ext x
     simp only [gt_iff_lt, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_setOf_eq, exists_prop,
       Set.mem_empty_iff_false, iff_false, not_exists, not_and, not_le]
-    intro m hm hτ
-    refine hm.trans_le <| le_hittingBtwn ?_ x
+    refine fun m hm hτ ↦ hm.trans_le <| le_hittingBtwn ?_ x
     specialize hτbdd x
     have h_top : τ x ≠ ⊤ := fun h => by simp [h] at hτbdd
     lift τ x to ι using h_top with t
