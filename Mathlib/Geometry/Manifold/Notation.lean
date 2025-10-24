@@ -441,6 +441,15 @@ where
               is not reducibly definitionally equal to `{α}`: continue the search"
               return none
           | _ => return none
+      if let some (k, R) := searchNormedAlgebra then
+        trace[Elab.DiffGeo.MDiff] "found a normed algebra: `{α}` is a normed `{k}`-algebra"
+        let eK : Term ← Term.exprToSyntax k
+        let eR : Term ← Term.exprToSyntax R
+        Term.elabTerm (← ``(𝓘($eK, $eR))) none
+      else
+      -- If `α = V →L[𝕜] V` for a `𝕜`-normed space, we also have a normed algebra structure:
+      -- search for such cases as well.
+      trace[Elab.DiffGeo.MDiff] "second phase"
       let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           match_expr type with
@@ -451,14 +460,7 @@ where
               return some (k, R)
             else return none
           | _ => return none
-      -- FIXME: is there a more elegant way to avoid the duplicate `some` branch?
-      match searchNormedAlgebra with
-      | some (k, R) =>
-        trace[Elab.DiffGeo.MDiff] "found a normed algebra: `{α}` is a normed `{k}`-algebra"
-        let eK : Term ← Term.exprToSyntax k
-        let eR : Term ← Term.exprToSyntax R
-        Term.elabTerm (← ``(𝓘($eK, $eR))) none
-      | _ => match ← searchNormedSpace with
+      match ← searchNormedSpace with
         | some (k, R) =>
           trace[Elab.DiffGeo.MDiff] "found a normed space: `{α}` is a normed space over `{k}`"
           let eK : Term ← Term.exprToSyntax k
