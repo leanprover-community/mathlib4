@@ -158,14 +158,6 @@ example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 := by
   simp
   ring1_nf
 
--- TODO: why does this test fail???
-/--
-warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
----
-info: … and 'ring1_nf!' uses '⊢'!
--/
 #guard_msgs in
 example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 := by
   simp
