@@ -491,6 +491,9 @@ where
     | _ => throwError "`{e}` is not the set of units of a normed algebra"
   /-- Attempt to find a model with corners on a metric sphere in a real normed space -/
   fromSphere : TermElabM Expr := do
+    let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
+      | throwError "`{e}` is not a coercion of a set to a type"
+    -- We don't use `match_expr` here to avoid importing `Metric.sphere`.
     match_expr e with
     | Metric.sphere α _ _x _r =>
       -- Attempt to find a real normed space instance on `α`.
@@ -513,8 +516,7 @@ where
                 normed space, continuing!"
               return none
           | _ => return none
-
-      let factFinder := findSomeLocalInstanceOf? ``Fact fun inst type ↦ do
+      let factFinder := findSomeLocalInstanceOf? ``Fact fun _inst type ↦ do
         trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
         match_expr type with
         | Fact a =>
@@ -524,7 +526,7 @@ where
       if let some R := (← searchRealNormedSpace) then
         -- We found a sphere in a real normed space: search for a `Fact (finrank R) = m`,
         -- then the sphere is m-1-dimensional, and modelEuclideanSpace m-1 is our model.
-        let some a ← factFinder
+        let some _a ← factFinder
           | throwError "Found no fact `finrank {R} = n + 1` in the local context"
         --       -- match_expr a with
         --       -- | ``(``Module.finrank R = b) =>
