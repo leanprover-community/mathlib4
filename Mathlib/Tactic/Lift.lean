@@ -165,7 +165,6 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   -- Clear the "using" hypothesis if it's a variable in the context
   if prf.isFVar && !keepUsing then
     let some hUsingStx := hUsing | throwError "lift tactic failed: unreachable code was reached"
-    evalTactic (← `(tactic| clear $hUsingStx))
     evalTactic (← `(tactic| try clear $hUsingStx))
   if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 
