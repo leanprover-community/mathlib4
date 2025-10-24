@@ -471,6 +471,8 @@ where
               trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
               match_expr type with
               | NormedSpace k R _ _ =>
+                -- We use reducible transparency to allow using a type synonym: this should not
+                -- be unfolded.
                 if ← withReducible (pureIsDefEq R V) then
                   trace[Elab.DiffGeo.MDiff] "`{V}` is a normed space over `{k}` via `{inst}`"
                   return some (k, R)
@@ -491,11 +493,13 @@ where
   fromSphere : TermElabM Expr := do
     match_expr e with
     | Metric.sphere α _ _x _r =>
-      -- Attempt to find a real normed space instance on α.
-      let searchNormedSpace := ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+      -- Attempt to find a real normed space instance on `α`.
+      let searchRealNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           match_expr type with
           | NormedSpace k R _ _ =>
+            -- We use reducible transparency to allow using a type synonym: this should not
+            -- be unfolded.
             if ← withReducible (pureIsDefEq k q(ℝ)) then
               if ← withReducible (pureIsDefEq R α) then
                 trace[Elab.DiffGeo.MDiff] "`{α}` is a real normed space via `{inst}`"
@@ -509,9 +513,25 @@ where
                 normed space, continuing!"
               return none
           | _ => return none
-      -- match on that output, more later!
-      -- Do we need to check for the right Fact instance? Perhaps we can leave that to Lean :-)
-      throwError "TODO!"
+
+      let factFinder := findSomeLocalInstanceOf? ``Fact fun inst type ↦ do
+        trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
+        match_expr type with
+        | Fact a =>
+          trace[Elab.DiffGeo.MDiff] "considering fact of kind `{a}`"
+          return some a
+        | _ => return none
+      if let some R := (← searchRealNormedSpace) then
+        -- We found a sphere in a real normed space: search for a `Fact (finrank R) = m`,
+        -- then the sphere is m-1-dimensional, and modelEuclideanSpace m-1 is our model.
+        let some a ← factFinder
+          | throwError "Found no fact `finrank {R} = n + 1` in the local context"
+        --       -- match_expr a with
+        --       -- | ``(``Module.finrank R = b) =>
+        --       --   let sdf := bb
+        --       -- | _ => return none
+        throwError "TODO!"
+      else throwError "found no real normed space instance on `{α}`"
     | _ => throwError "`{e}` is not a sphere in a real normed space"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
@@ -520,7 +540,6 @@ where
     let iTerm : Term ← ``(𝓘($eT, $eT))
     Term.elabTerm iTerm none
 
-#exit
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
 
