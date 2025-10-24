@@ -441,7 +441,6 @@ where
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           match_expr type with
           | NormedAlgebra k R _ _ =>
-            trace[Elab.DiffGeo.MDiff] "match, normed algebra: k is `{k}`, R is `{R}`"
             if ← withReducible (pureIsDefEq R α) then
               trace[Elab.DiffGeo.MDiff] "`{α}` is a normed algebra over `{k}` via `{inst}`"
               return some (k, R)
@@ -470,18 +469,17 @@ where
               trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
               match_expr type with
               | NormedSpace k R _ _ =>
-                trace[Elab.DiffGeo.MDiff] "match, normed space: k is `{k}`, R is `{R}`"
                 if ← withReducible (pureIsDefEq R V) then
                   trace[Elab.DiffGeo.MDiff] "`{V}` is a normed space over `{k}` via `{inst}`"
                   return some (k, R)
                 else return none
               | _ => return none
             match ← searchNormedSpace with
-            | some (k, R) =>
+            | some (k, _R) =>
               trace[Elab.DiffGeo.MDiff] "found a normed space: `{V}` is a normed space over `{k}`"
               let eK : Term ← Term.exprToSyntax k
-              let eR : Term ← Term.exprToSyntax R
-              Term.elabTerm (← ``(𝓘($eK, $eR))) none
+              let eα : Term ← Term.exprToSyntax α
+              Term.elabTerm (← ``(𝓘($eK, $eα))) none
             | _ => throwError  "Found no `NormedSpace` structure on `{V}` among local instances"
           else
             throwError "{α}` is a space of continuous `{k}`-linear maps, but with domain `{V}` and \
