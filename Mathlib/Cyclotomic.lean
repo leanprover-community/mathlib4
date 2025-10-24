@@ -3,72 +3,9 @@ import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
 import Mathlib.Misc
 
-open Polynomial in
-theorem Polynomial.cyclotomic_eq_minpoly' {n : ℕ} {R : Type*} [CommRing R] [IsDomain R]
-    [CharZero R] {μ : R} (h : IsPrimitiveRoot μ n) (hpos : 0 < n) :
-    cyclotomic n ℤ = minpoly ℤ μ := by
-  have h' : IsPrimitiveRoot (algebraMap R (FractionRing R) μ) n :=
-    h.map_of_injective <| FaithfulSMul.algebraMap_injective R _
-  apply map_injective (algebraMap ℤ ℚ) <| RingHom.injective_int _
-  rw [← @minpoly.isIntegrallyClosed_eq_field_fractions ℤ R _ _ _ _ ℚ (FractionRing R) _ _
-    _ _ _ _ _ _ ?_ _ _ _ μ (h.isIntegral hpos), ← cyclotomic_eq_minpoly_rat h' hpos, map_cyclotomic]
-  -- We need to do that because of the `zsmul` diamond, see the discussion
-  -- "Instance diamond in `OreLocalization`" on Zulip
-  convert AddCommGroup.intIsScalarTower (R := ℚ) (M := FractionRing R) using 1
-  ext n x
-  exact OreLocalization.zsmul_eq_zsmul n x
-
 namespace IsCyclotomicExtension.Rat
 
 open Ideal NumberField
-
-section notDVD
-
-variable (m : ℕ) [NeZero m] {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {m} ℚ K]
-  (p : ℕ) [hp : Fact (p.Prime)] (P : Ideal (𝓞 K)) [P.IsPrime] [P.LiesOver (Ideal.span {(p : ℤ)})]
-
-local notation3 "𝒑" => (Ideal.span {(p : ℤ)})
-
-open NumberField RingOfIntegers Ideal
-
-theorem inertiaDeg_of_not_dvd (hm : ¬ p ∣ m) :
-    inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
-  replace hm : p.Coprime m := not_not.mp <| (Nat.Prime.dvd_iff_not_coprime hp.out).not.mp hm
-  let ζ := (zeta_spec m ℚ K).toInteger
-  have h₁ : ¬ p ∣ exponent ζ := by
-    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top m K (zeta_spec m ℚ K)]
-    exact hp.out.not_dvd_one
-  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ ⟨P, ⟨inferInstance, inferInstance⟩⟩).2
-  have h₃ := inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' h₁ h₂
-  simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
-  rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
-    (Polynomial.map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
-  rw [h₃, Polynomial.natDegree_of_dvd_cyclotomic_of_irreducible (by simp) hm (f := 1) _ h₂.1]
-  · simpa using (orderOf_injective _ Units.coeHom_injective (ZMod.unitOfCoprime p hm)).symm
-  · refine dvd_trans h₂.2.2 ?_
-    rw [← Polynomial.map_cyclotomic_int, ← Polynomial.cyclotomic_eq_minpoly' _ (NeZero.pos m)]
-    exact (zeta_spec m ℚ K).toInteger_isPrimitiveRoot
-
-theorem ramificationIdx_of_not_dvd (hm : ¬ p ∣ m) :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
-  let ζ := (zeta_spec m ℚ K).toInteger
-  have h₁ : ¬ p ∣ exponent ζ := by
-    rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top m K (zeta_spec m ℚ K)]
-    exact hp.out.not_dvd_one
-  have h₂ := (primesOverSpanEquivMonicFactorsMod h₁ ⟨P, ⟨inferInstance, inferInstance⟩⟩).2
-  have h₃ := ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' h₁ h₂
-  simp only [Subtype.coe_eta, Equiv.symm_apply_apply] at h₃
-  rw [Multiset.mem_toFinset, Polynomial.mem_normalizedFactors_iff
-    (Polynomial.map_monic_ne_zero (minpoly.monic ζ.isIntegral))] at h₂
-  rw [h₃]
-  refine multiplicity_eq_of_emultiplicity_eq_some (le_antisymm ?_ ?_)
-  · apply Polynomial.emultiplicity_le_one_of_separable
-    · exact Polynomial.isUnit_iff_degree_eq_zero.not.mpr (Irreducible.degree_pos h₂.1).ne'
-    · exact (zeta_spec m ℚ K).toInteger_isPrimitiveRoot.separable_minpoly_mod hm
-  · rw [ENat.coe_one, Order.one_le_iff_pos]
-    exact emultiplicity_pos_of_dvd h₂.2.2
-
-end notDVD
 
 section general
 

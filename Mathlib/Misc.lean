@@ -1,5 +1,16 @@
 import Mathlib
 
+section NumberField
+
+open NumberField
+
+@[simp]
+theorem RingOfIntegers.minpoly_coe {K : Type*} [Field K] (x : 𝓞 K) :
+    minpoly ℤ (x : K) = minpoly ℤ x :=
+  minpoly.algebraMap_eq RingOfIntegers.coe_injective x
+
+end NumberField
+
 section Ideal.map
 
 theorem Ideal.map_algEquiv {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]

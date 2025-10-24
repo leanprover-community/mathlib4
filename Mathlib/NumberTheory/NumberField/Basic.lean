@@ -249,6 +249,11 @@ This is a convenient abbreviation for `map_ne_zero_iff` applied to
 lemma coe_ne_zero_iff {x : 𝓞 K} : algebraMap _ K x ≠ 0 ↔ x ≠ 0 :=
   map_ne_zero_iff _ coe_injective
 
+@[simp]
+theorem minpoly_coe (x : 𝓞 K) :
+    minpoly ℤ (x : K) = minpoly ℤ x :=
+  minpoly.algebraMap_eq RingOfIntegers.coe_injective x
+
 theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
   x.2
 
