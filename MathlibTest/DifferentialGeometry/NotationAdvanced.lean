@@ -558,6 +558,30 @@ variable {f : EuclideanSpace ℝ (Fin 37) → EuclideanQuadrant m'} in
 
 end EuclideanSpace
 
+section sphere
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] {n : ℕ}
+  [Fact (Module.finrank ℝ E = n + 1)]
+
+variable {f : (Metric.sphere (0 : E) 1) → E} in
+/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+#guard_msgs in
+#check CMDiff 2 f
+
+variable {g : ℝ → (Metric.sphere (0 : E) 1)} in
+/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+#guard_msgs in
+#check MDiffAt g 2
+
+--variable {g : ℝ → (Metric.sphere (0 : E) 1)} in
+--#check MDifferentiable 𝓘(ℝ) (𝓡 n) g
+
+#exit
+--    IsManifold (𝓡 n) ω (sphere (0 : E) 1) :=
+--  isManifold_of_contDiffOn (𝓡 n) ω (sphere (0 : E) 1)
+
+end sphere
+
 section UpperHalfPlane
 
 open scoped UpperHalfPlane
