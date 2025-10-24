@@ -39,8 +39,8 @@ existence of paths).
 *   `irreducible_iff_exists_pow_pos`: Shows the equivalence between the graph-theoretic definition
     of irreducibility (strong connectivity) and the algebraic one (existence of a positive entry
     in some power).
-*   `IsPrimitive.to_IsIrreducible`: Proves that a primitive matrix is also irreducible, as stated in
-    Seneta (p.14).
+*   `IsPrimitive.to_IsIrreducible`: Proves that a primitive matrix is also irreducible
+      (Seneta, p.14).
 *   `IsIrreducible.transpose`: Shows that the irreducibility property is preserved under
     transposition.
 
@@ -167,7 +167,7 @@ theorem pow_entry_pos_iff_exists_path
 /-- Irreducibility of a nonnegative matrix `A` is equivalent to entrywise positivity of some
 power: between any two indices `i, j` there exists a positive integer `k` such that the
 `(i, j)`-entry of `A ^ k` is strictly positive. -/
-theorem irreducible_iff_exists_pow_pos
+theorem IsIrreducible.iff_exists_pow_pos
     [IsOrderedRing R] [PosMulStrictMono R] [Nontrivial R] [DecidableEq n]
     (hA : ∀ i j, 0 ≤ A i j) :
     IsIrreducible A ↔ ∀ i j, ∃ k > 0, 0 < (A ^ k) i j := by
@@ -220,24 +220,6 @@ def transposeRev
       simpa [Matrix.transpose_apply] using e
     exact (@Quiver.Path.comp n (toQuiver Aᵀ) c b i (@Quiver.Hom.toPath n (toQuiver Aᵀ) c b eT) ih)
 
-/-- The reversal along transpose preserves the length of the path. -/
-@[simp]
-lemma transposeRev_length
-    {n R : Type*} [Ring R] [LinearOrder R] {A : Matrix n n R} {i j : n}
-    (p : @Quiver.Path n (toQuiver A) i j) :
-    (@Quiver.Path.length n (toQuiver Aᵀ) _ _ (transposeRev p)) =
-    @Quiver.Path.length n (toQuiver A) _ _ p := by
-  letI : Quiver n := toQuiver A
-  induction p with
-  | nil => rfl
-  | @cons b c q e ih =>
-    have eT : @Quiver.Hom n (toQuiver Aᵀ) c b := by
-      change 0 < (Aᵀ) c b
-      simpa [Matrix.transpose_apply] using e
-    letI : Quiver n := toQuiver Aᵀ
-    simp only [transposeRev, Quiver.Path.length_comp, Quiver.Path.length_toPath]
-    norm_num; ring_nf; simpa
-
 variable {n R : Type*} [Ring R] [LinearOrder R]
 variable {A : Matrix n n R}
 
@@ -250,13 +232,18 @@ theorem IsIrreducible.transpose
   intro i j
   letI : Quiver n := toQuiver A
   obtain ⟨p, hp_pos⟩ := hA.2 j i
-  let q := transposeRev (A := A) p
-  letI : Quiver n := toQuiver Aᵀ
-  have : 0 < q.length := by
-    simp only [transposeRev_length, q]; simp only [hp_pos]
-  exact ⟨q, this⟩
+  cases p with
+  | nil =>
+      exact False.elim ((lt_irrefl (0 : Nat)) (by simp [Quiver.Path.length] at hp_pos))
+  | @cons b _ q e =>
+      let qT := transposeRev (A := A) (q.cons e)
+      letI : Quiver n := toQuiver Aᵀ
+      have hqT_pos : 0 < qT.length := by
+        have : 0 < Nat.succ ((transposeRev (A := A) q).length) := Nat.succ_pos _
+        simp [qT, transposeRev, Quiver.Path.length_comp, Quiver.Path.length_toPath]
+      exact ⟨qT, hqT_pos⟩
 
-theorem irreducible_transpose_iff
+theorem IsIrreducible.transpose_iff
     (hA_nonneg : ∀ i j, 0 ≤ A i j) :
     IsIrreducible Aᵀ ↔ IsIrreducible A :=
   ⟨fun h ↦
