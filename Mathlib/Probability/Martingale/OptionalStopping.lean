@@ -232,8 +232,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       refine hsub.expected_stoppedValue_mono
         (hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici)
         (isStoppingTime_const _ _) (fun ω ↦ ?_) (fun _ => mod_cast le_rfl)
-      simp only [ENat.some_eq_coe, Nat.cast_le]
-      exact hittingBtwn_le ω
+      simp [hittingBtwn_le]
 
 end Maximal
 
