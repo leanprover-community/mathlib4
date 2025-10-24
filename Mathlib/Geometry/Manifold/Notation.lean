@@ -426,8 +426,41 @@ where
       -- If `α` is a normed `𝕜`-algebra for some `𝕜`, we know a model with corners.
       -- We need to gather `𝕜` from the context: try to find a `NormedAlgebra` or `NormedSpace`
       -- instance in the local context.
-      trace[Elab.DiffGeo.MDiff] "TODO: look for k now!"
-      throwError "TODO finish implementing!"
+      -- TODO: this feels somewhat brittle (can there be other instances in context?),
+      -- at least emit a nice error message here!
+      let searchNormedAlgebra := ← findSomeLocalInstanceOf? ``NormedAlgebra fun inst type ↦ do
+          trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
+          match_expr type with
+          | NormedAlgebra k R _ =>
+            if ← withReducible (pureIsDefEq R e) then
+              trace[Elab.DiffGeo.MDiff] "`{e}` is a normed algebra over `{k}` via `{inst}`"
+              return some (k, R)
+            else return none
+          | _ => return none
+      let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+          trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
+          match_expr type with
+          | NormedSpace k R _ _ =>
+            if ← withReducible (pureIsDefEq R e) then
+              trace[Elab.DiffGeo.MDiff] "`{e}` is a normed space over `{k}` via `{inst}`"
+              return some (k, R)
+            else return none
+          | _ => return none
+      -- FIXME: is there a more elegant way to avoid the duplicate `some` branch?
+      match searchNormedAlgebra with
+      | some (k, R) =>
+        let eK : Term ← Term.exprToSyntax k
+        let eR : Term ← Term.exprToSyntax R
+        Term.elabTerm (← ``(𝓘($eK, $eR))) none
+      | _ => match ← searchNormedSpace with
+        | some (k, R) =>
+          let eK : Term ← Term.exprToSyntax k
+          let eR : Term ← Term.exprToSyntax R
+          Term.elabTerm (← ``(𝓘($eK, $eR))) none
+        | _ => throwError  "Found neither a `NormedAlgebra` nor a `NormedSpace` structure on `{e}` \
+               among local instances\
+               Hint: if `{e}` is the group of units on a normed algebra, try making one of these \
+               instances available."
     | _ => throwError "`{e}` is not the set of units of a normed algebra"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
