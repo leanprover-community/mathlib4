@@ -1,5 +1,6 @@
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Geometry.Manifold.Instances.Real
+import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
@@ -303,6 +304,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
 [Elab.DiffGeo.MDiff] ❌️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `E'' →SL[id'] E'''` is not the set of units of a normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Sphere
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[id'] E'''` is not a sphere in a real normed space
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
@@ -479,6 +483,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
 [Elab.DiffGeo.MDiff] ❌️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not the set of units of a normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Sphere
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not a sphere in a real normed space
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
@@ -560,26 +567,54 @@ end EuclideanSpace
 
 section sphere
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] {n : ℕ}
-  [Fact (Module.finrank ℝ E = n + 1)]
+variable {E'' : Type*} [NormedAddCommGroup E''] [InnerProductSpace ℝ E''] {n : ℕ}
+  {f : (Metric.sphere (0 : E'') 1) → E''} {g : ℝ → (Metric.sphere (0 : E'') 1)}
 
-variable {f : (Metric.sphere (0 : E) 1) → E} in
-/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+section
+
+open ContDiff Metric Module
+
+variable [Fact (Module.finrank ℝ E'' = n + 1)]
+
+/-- error: Could not find a model with corners for `↑(sphere 0 1)` -/
 #guard_msgs in
 #check CMDiff 2 f
 
-variable {g : ℝ → (Metric.sphere (0 : E) 1)} in
-/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+/-- error: Could not find a model with corners for `↑(sphere 0 1)` -/
+#guard_msgs in
+#check CMDiff ω f
+
+/-- error: Could not find a model with corners for `↑(sphere 0 1)` -/
+#guard_msgs in
+#check CMDiff ∞ g
+
+/-- error: Could not find a model with corners for `↑(sphere 0 1)` -/
 #guard_msgs in
 #check MDiffAt g 2
+-- #check MDifferentiableAt 𝓘(ℝ) (𝓡 n) g 2
 
---variable {g : ℝ → (Metric.sphere (0 : E) 1)} in
---#check MDifferentiable 𝓘(ℝ) (𝓡 n) g
+end
+
+variable [Fact (Module.finrank ℝ E'' = 2 + 1)] in
+/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+#guard_msgs in
+#check MDiff f
+
+variable [Fact (Module.finrank ℝ E'' = 3)] in
+/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+#guard_msgs in
+#check MDiff f
+
+variable [Fact (Module.finrank ℝ E'' = 2 + 4)] in -- should be 5
+/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+#guard_msgs in
+#check MDiff f
+
+-- also fails, i.e. not due to our elaborators
+-- variable [Fact (Module.finrank ℝ E'' = 4 + 1)] in
+-- #check MDifferentiable 𝓘(ℝ) (𝓡 4) f
 
 #exit
---    IsManifold (𝓡 n) ω (sphere (0 : E) 1) :=
---  isManifold_of_contDiffOn (𝓡 n) ω (sphere (0 : E) 1)
-
 end sphere
 
 section UpperHalfPlane
