@@ -892,23 +892,22 @@ end Field
 /-- A field is a perfect field (which means that any irreducible polynomial is separable)
 if and only if every separable degree one polynomial splits. -/
 theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
-    PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → f.Splits (RingHom.id F) := by
-  refine ⟨fun ⟨h⟩ f hf ↦ or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_, fun h ↦ ?_⟩
-  · rw [Polynomial.map_id] at hn hd
-    have := natSepDegree_le_of_dvd g f hd hn
+    PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → Factors f := by
+  refine ⟨fun ⟨h⟩ f hf ↦ factors_iff_splits.2 <| or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_,
+      fun h ↦ ?_⟩
+  · have := natSepDegree_le_of_dvd g f hd hn
     rw [hf, (h hg).natSepDegree_eq_natDegree] at this
     exact (degree_eq_iff_natDegree_eq_of_pos one_pos).2 <| this.antisymm <|
       natDegree_pos_iff_degree_pos.2 (degree_pos_of_irreducible hg)
   obtain ⟨p, _⟩ := ExpChar.exists F
   haveI := PerfectRing.ofSurjective F p fun x ↦ by
-    obtain ⟨y, hy⟩ := exists_root_of_splits _
+    obtain ⟨y, hy⟩ := Factors.exists_eval_eq_zero
       (h _ (pow_one p ▸ natSepDegree_X_pow_char_pow_sub_C p 1 x))
       ((degree_X_pow_sub_C (expChar_pos F p) x).symm ▸ Nat.cast_pos.2 (expChar_pos F p)).ne'
-    exact ⟨y, by rwa [← eval, eval_sub, eval_X_pow, eval_C, sub_eq_zero] at hy⟩
+    exact ⟨y, by rwa [eval_sub, eval_X_pow, eval_C, sub_eq_zero] at hy⟩
   exact PerfectRing.toPerfectField F p
 
 variable {E K} in
 theorem PerfectField.splits_of_natSepDegree_eq_one [PerfectField K] {f : E[X]}
     (i : E →+* K) (hf : f.natSepDegree = 1) : f.Splits i :=
-  (splits_id_iff_splits _).mp <| (perfectField_iff_splits_of_natSepDegree_eq_one K).mp ‹_› _
-    (natSepDegree_map K f i ▸ hf)
+  (perfectField_iff_splits_of_natSepDegree_eq_one K).mp ‹_› _ (natSepDegree_map K f i ▸ hf)
