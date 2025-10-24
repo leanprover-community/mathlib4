@@ -294,7 +294,7 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c) (hbd : ∀ 
       refine tendsto_atTop_mono' _ ?_ this
       filter_upwards [prod_mem_prod (mem_principal_self s) univ_mem] with w hw
       rw [norm_sub_rev]
-      apply le_trans ?_ (norm_sub_norm_le ..)
+      refine le_trans ?_ (norm_sub_norm_le ..)
       simp only [norm_algebraMap', norm_smul, norm_one, mul_one]
       gcongr
       exact hM _ (Set.mem_prod.mp hw).1
@@ -311,31 +311,16 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c) (hbd : ∀ 
     rw [tendsto_mul_const_atTop_of_pos hc₀, tendsto_norm_atTop_iff_cobounded]
     exact tendsto_fst
 
-private lemma a_bound {x : F} {c : ℝ} (hc₀ : 0 < c) (hbd : ∀ r : ℝ, c ≤ ‖x - r • 1‖) {a b : ℝ}
-    (h : ‖x ^ 2 - a • x + b • 1‖ ≤ ‖x‖ ^ 2) :
-    |a| ≤ 2 * ‖x‖ ^ 2 / c := by
-  rcases eq_or_ne a 0 with rfl | ha
-  · simp only [abs_zero]
-    positivity
-  rw [le_div_iff₀ hc₀]
-  calc |a| * c
-  _ ≤ |a| * ‖x - (b / a) • 1‖ := by gcongr; exact hbd _
-  _ = ‖a • x - b • 1‖ := by
-      rw [← Real.norm_eq_abs, ← norm_smul, smul_sub, smul_smul, mul_div_cancel₀ _ ha]
-  _ ≤ ‖x‖ ^ 2 + ‖x ^ 2 - a • x + b • 1‖ := by
-      simpa only [← norm_pow, sub_add, norm_sub_rev (x ^ 2)] using norm_le_norm_add_norm_sub' ..
-  _ ≤ _ := by rw [two_mul]; exact add_le_add_left h _
-
 open Bornology Filter in
 private lemma exists_min_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) Set.univ z := by
   obtain ⟨u, hu⟩ := exists_min_norm_sub_smul ℝ x
-  rw [isMinOn_univ_iff] at hu
   rcases eq_or_lt_of_le (norm_nonneg (x - u • 1)) with hc₀ | hc₀
   · rw [eq_comm, norm_eq_zero, sub_eq_zero] at hc₀
     exact ⟨(u, 0), fun z' ↦ by simp [φ, hc₀, sq]⟩
   set c := ‖x - u • 1‖
   simp only [isMinOn_univ_iff]
   refine (continuous_φ x).norm.exists_forall_le_of_isBounded (0, 0) ?_
+  rw [isMinOn_univ_iff] at hu
   simpa [isBounded_def, Set.compl_setOf, Set.Ioi] using
     tendsto_norm_cobounded_atTop.comp (tendsto_φ_cobounded hc₀ hu) (Ioi_mem_atTop (‖φ x (0, 0)‖))
 
@@ -349,19 +334,14 @@ lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
   suffices φ x z = 0 from ⟨_, isMonicOfDegree_sub_add_two z.1 z.2, by rwa [aeval_eq_φ]⟩
   by_contra! H
   set M := ‖φ x z‖
-  have hM₀ : 0 ≤ M := norm_nonneg _
-  -- use that `f x t` is constant to produce an inequality that is false for `c` large enough
-  suffices |2 * (‖x‖ ^ 2 / √M + 1)| ≤ 2 * ‖x‖ ^ 2 / √M by
-    rw [abs_of_pos <| by positivity, mul_div_assoc] at this
-    linarith
-  refine a_bound (x := x) (c := √M) (by positivity) (fun r ↦ ?_) (b := 0) ?_
-  · rw [← sq_le_sq₀ (Real.sqrt_nonneg M) (norm_nonneg _), Real.sq_sqrt hM₀, ← norm_pow,
+  -- use that `‖φ x ·‖` is constant to produce a contradiction
+  have h' (r : ℝ) : √M ≤ ‖x - r • 1‖ := by
+    rw [← sq_le_sq₀ M.sqrt_nonneg (norm_nonneg _), Real.sq_sqrt (norm_nonneg _), ← norm_pow,
       Commute.sub_sq <| algebraMap_eq_smul_one (A := F) r ▸ commute_algebraMap_right r x]
-    rw [isMinOn_univ_iff] at h
-    convert h (2 * r, r ^ 2) using 4 <;> simp [two_mul, add_smul, _root_.smul_pow]
-  · nth_rewrite 2 [show ‖x‖ ^ 2 = ‖x ^ 2 - (0 : ℝ) • x + (0 : ℝ) • 1‖ by simp]
-    rw [is_const_norm_φ h (norm_ne_zero_iff.mpr H) (2 * (‖x‖ ^ 2 / √M + 1), 0)]
-    exact isMinOn_univ_iff.mp h (0, 0)
+    convert isMinOn_univ_iff.mp h (2 * r, r ^ 2) using 4 <;> simp [two_mul, add_smul, smul_pow]
+  have := tendsto_norm_atTop_iff_cobounded.mpr <| tendsto_φ_cobounded (by positivity) h'
+  simp only [is_const_norm_φ h (norm_ne_zero_iff.mpr H)] at this
+  exact Filter.not_tendsto_const_atTop _ _ this
 
 /-- A version of the **Gelfand-Mazur Theorem** over `ℝ`.
 
