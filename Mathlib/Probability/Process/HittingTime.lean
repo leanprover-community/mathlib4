@@ -109,13 +109,9 @@ theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω)
 
 theorem notMem_of_lt_hittingAfter {k : ι} (hk₁ : k < hittingAfter u s n ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
-  classical
-  intro h
-  have hexists : ∃ j, n ≤ j ∧ u j ω ∈ s := ⟨k, hk₂, h⟩
-  refine not_le.2 hk₁ ?_
-  simp_rw [hittingAfter, if_pos hexists]
-  norm_cast
-  exact csInf_le bddBelow_Ici.inter_of_left ⟨hk₂, h⟩
+  refine fun h ↦ not_le.2 hk₁ ?_
+  rw [hittingAfter, if_pos ⟨k, hk₂, h⟩]
+  exact_mod_cast csInf_le bddBelow_Ici.inter_of_left ⟨hk₂, h⟩
 
 theorem hittingBtwn_eq_end_iff {m : ι} : hittingBtwn u s n m ω = m ↔
     (∃ j ∈ Set.Icc n m, u j ω ∈ s) → sInf (Set.Icc n m ∩ {i : ι | u i ω ∈ s}) = m := by
