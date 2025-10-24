@@ -4,3 +4,7 @@
 .cache
 # `lake` stores its files here:
 .lake
+# Aristotle API key
+.aristotle.conf
+# temporary Python files
+__pycache__
