@@ -19,14 +19,20 @@ choice of pullback functor `Over X ⥤ Over Y` along `f` as a right adjoint to `
 
 - `Σ_ Y Z` : a convenient notation for `(Over.map Y.hom).obj Z` (dependent sum)
 - `Δ_ f Z` : a convenient notation for `(Over.pullback f).obj Z` (pullback/reindexing)
-- `π X Y` : a convenient notation for `Σ_ Y (Δ_ Y Z) ⟶ Y` (the first projection)
-- `μ X Y` : a convenient notation for `Σ_ Y (Δ_ Y Z) ⟶ Z` (the second projection)
+- `μ X Y` : a convenient notation for the first projection `Σ_ Y (Δ_ Y Z) ⟶ Z`
+- `π X Y` : a convenient notation for the second projection `Σ_ Y (Δ_ Y Z) ⟶ Y`
 
 
 ## Main results
 
+- We prove that `ChosenPullback` has good closure properties, e.g., isos have chosen pullbacks, and
+  composition of morphisms with chosen pullbacks have chosen pullbacks.
+
+- We prove that in cartesian monoidal categories, morphisms to the terminal object and the product
+  projections have chosen pullbacks.
+
 - `Over.ChosenPullback.isPullback` proves that the morphisms `μ_` and `π_`, defined from the
-the data `mapPullbackAdj` of adjunction `Over.map f ⊣ Over.pullback f`, form a pullback square.
+  adjunction `Over.map f ⊣ Over.pullback f`, form a pullback square.
 
 - `Over.mapPulbackNatIsoTensorLeft` constructs a natural isomorphism between the pull-push
   composition `(pullback Y.hom) ⋙ (map Y.hom)` and the left tensor product functor `tensorLeft Y`.
