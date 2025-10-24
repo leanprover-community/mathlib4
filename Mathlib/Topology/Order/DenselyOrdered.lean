@@ -334,6 +334,20 @@ instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := by
   obtain ⟨z, hz⟩ : ∃ z, a < z ∧ z < x := exists_between hy.1
   exact ⟨z, us ⟨hab ⟨hz.1, hz.2.trans hy.2⟩, hz.2.ne⟩⟩
 
+instance [DiscreteTopology α] : Subsingleton α := by
+  suffices ∀ a b : α, b ≤ a by
+    refine ⟨fun a b ↦ ?_⟩
+    rcases lt_trichotomy a b with h | rfl | h
+    · simpa using lt_of_le_of_lt (this a b) h
+    · rfl
+    · simpa using lt_of_le_of_lt (this b a) h
+  intro a b
+  by_contra! contra
+  replace contra : b ∈ Ioo a b := by
+    rw [← (isClosed_discrete (Ioo a b)).closure_eq, closure_Ioo contra.ne]
+    simpa using contra.le
+  simp at contra
+
 /-- Let `s` be a dense set in a nontrivial dense linear order `α`. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable
 dense subset `t ⊆ s` such that `t` does not contain bottom/top elements of `α`. -/
