@@ -29,7 +29,7 @@ Kleene star.
 
 ## Notation
 
-`a∗` is notation for `kstar a` in locale `Computability`.
+`a∗` is notation for `kstar a` in scope `Computability`.
 
 ## References
 
@@ -163,9 +163,10 @@ instance (priority := 100) IdemSemiring.toIsOrderedAddMonoid :
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd :
-    CanonicallyOrderedAdd α :=
-  { exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
-    le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
+    CanonicallyOrderedAdd α where
+  exists_add_of_le h := ⟨_, h.add_eq_right.symm⟩
+  le_add_self a b := add_eq_left_iff_le.1 <| by rw [add_assoc, add_idem]
+  le_self_add a b := add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem]
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toMulLeftMono : MulLeftMono α :=
@@ -197,11 +198,9 @@ theorem mul_kstar_le_self : b * a ≤ b → b * a∗ ≤ b :=
 theorem kstar_mul_le_self : a * b ≤ b → a∗ * b ≤ b :=
   KleeneAlgebra.kstar_mul_le_self _ _
 
-theorem mul_kstar_le (hb : b ≤ c) (ha : c * a ≤ c) : b * a∗ ≤ c :=
-  (mul_le_mul_right' hb _).trans <| mul_kstar_le_self ha
+theorem mul_kstar_le (hb : b ≤ c) (ha : c * a ≤ c) : b * a∗ ≤ c := by grw [hb, mul_kstar_le_self ha]
 
-theorem kstar_mul_le (hb : b ≤ c) (ha : a * c ≤ c) : a∗ * b ≤ c :=
-  (mul_le_mul_left' hb _).trans <| kstar_mul_le_self ha
+theorem kstar_mul_le (hb : b ≤ c) (ha : a * c ≤ c) : a∗ * b ≤ c := by grw [hb, kstar_mul_le_self ha]
 
 theorem kstar_le_of_mul_le_left (hb : 1 ≤ b) : b * a ≤ b → a∗ ≤ b := by
   simpa using mul_kstar_le hb
@@ -245,9 +244,7 @@ theorem kstar_idem (a : α) : a∗∗ = a∗ :=
 @[simp]
 theorem pow_le_kstar : ∀ {n : ℕ}, a ^ n ≤ a∗
   | 0 => (pow_zero _).trans_le one_le_kstar
-  | n + 1 => by
-    rw [pow_succ']
-    exact (mul_le_mul_left' pow_le_kstar _).trans mul_kstar_le_kstar
+  | n + 1 => by grw [pow_succ', pow_le_kstar, mul_kstar_le_kstar]
 
 end KleeneAlgebra
 
@@ -304,6 +301,7 @@ instance : KleeneAlgebra (∀ i, π i) :=
     mul_kstar_le_self := fun _ _ h _ ↦ mul_kstar_le_self <| h _
     kstar_mul_le_self := fun _ _ h _ ↦ kstar_mul_le_self <| h _ }
 
+@[push ←]
 theorem kstar_def (a : ∀ i, π i) : a∗ = fun i ↦ (a i)∗ :=
   rfl
 

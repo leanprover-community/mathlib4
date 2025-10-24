@@ -644,7 +644,7 @@ open OnePoint
 to the homeomorphism of their one point compactifications. -/
 @[simps]
 def onePointCongr (h : X ≃ₜ Y) : OnePoint X ≃ₜ OnePoint Y where
-  __ := h.toEquiv.optionCongr
+  __ := h.toEquiv.withTopCongr
   toFun := OnePoint.map h
   invFun := OnePoint.map h.symm
   continuous_toFun := continuous_map (map_continuous h) h.map_coclosedCompact.le

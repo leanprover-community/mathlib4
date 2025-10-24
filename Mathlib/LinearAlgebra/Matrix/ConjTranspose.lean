@@ -18,7 +18,7 @@ import Mathlib.Data.Matrix.Mul
 
 ## Notation
 
-The locale `Matrix` gives the following notation:
+The scope `Matrix` gives the following notation:
 
 * `ᴴ` for `Matrix.conjTranspose`
 

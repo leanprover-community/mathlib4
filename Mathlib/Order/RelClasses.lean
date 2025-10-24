@@ -127,7 +127,7 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
 /-! ### Inverse Image -/
 
 theorem InvImage.isTrichotomous [IsTrichotomous α r] {f : β → α} (h : Function.Injective f) :
-    IsTrichotomous β (InvImage r f)  where
+    IsTrichotomous β (InvImage r f) where
   trichotomous a b := trichotomous (f a) (f b) |>.imp3 id (h ·) id
 
 instance InvImage.isAsymm [IsAsymm α r] (f : β → α) : IsAsymm β (InvImage r f) where
@@ -227,11 +227,11 @@ instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsIrr
 instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
   ⟨i.wf.transGen⟩
 
-/-- A class for a well founded relation `<`. -/
+/-- A class for a well-founded relation `<`. -/
 abbrev WellFoundedLT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· < ·)
 
-/-- A class for a well founded relation `>`. -/
+/-- A class for a well-founded relation `>`. -/
 abbrev WellFoundedGT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· > ·)
 

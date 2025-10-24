@@ -27,7 +27,7 @@ This ensures `simp` works with entries only when (some) entries are already give
 In other words, this notation will only appear in the output of `simp` if it
 already appears in the input.
 
-## Notations
+## Notation
 
 This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 `Matrix.of ![![a, b], ![c, d]]`.
@@ -174,6 +174,10 @@ section DotProduct
 variable [AddCommMonoid α] [Mul α]
 
 @[simp]
+theorem dotProduct_of_isEmpty [Fintype n'] [IsEmpty n'] (v w : n' → α) : v ⬝ᵥ w = 0 :=
+  Finset.sum_of_isEmpty _
+
+@[deprecated "Use Matrix.dotProduct_of_isEmpty instead." (since := "2025-09-07")]
 theorem dotProduct_empty (v w : Fin 0 → α) : v ⬝ᵥ w = 0 :=
   Finset.sum_empty
 
@@ -462,6 +466,7 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
+set_option linter.style.commandStart false in -- Preserve the formatting of the matrices.
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :
     !![a₁₁, a₁₂, a₁₃;

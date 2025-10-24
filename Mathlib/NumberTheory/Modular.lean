@@ -27,7 +27,7 @@ The standard (closed) fundamental domain of the action of `SL(2,ℤ)` on `ℍ`, 
 The standard open fundamental domain of the action of `SL(2,ℤ)` on `ℍ`, denoted `𝒟ᵒ`:
 `fdo := {z | 1 < (z : ℂ).normSq ∧ |z.re| < (1 : ℝ) / 2}`
 
-These notations are localized in the `Modular` locale and can be enabled via `open scoped Modular`.
+These notations are localized in the `Modular` scope and can be enabled via `open scoped Modular`.
 
 ## Main results
 
@@ -60,7 +60,7 @@ those, to minimize `|(g•z).re|` (see `ModularGroup.exists_row_one_eq_and_min_r
 -/
 
 
-open Complex hiding abs_two
+open Complex
 
 open Matrix hiding mul_smul
 
@@ -451,7 +451,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
     rwa [sq_le_sq, abs_one] at this
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
-    · rw [hc]; norm_num
+    · rw [hc]; simp
     · refine (abs_lt_of_sq_lt_sq' ?_ (by simp)).2
       specialize this hc
       linarith
