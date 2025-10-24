@@ -1155,8 +1155,7 @@ theorem stoppedProcess_eq' (n : ℕ) : stoppedProcess u τ n = Set.indicator {a 
         | coe t =>
           simp only [Nat.cast_lt]
           norm_cast
-      rw [this]
-      simp_rw [Set.setOf_or]
+      rw [this, Set.setOf_or]
     · rintro ⟨h₁, h₂⟩
       rw [Set.mem_setOf] at h₁ h₂
       rw [h₁] at h₂
