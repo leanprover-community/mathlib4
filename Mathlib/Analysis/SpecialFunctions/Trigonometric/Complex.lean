@@ -158,10 +158,9 @@ theorem tan_sub' {x y : ℂ}
   tan_sub (Or.inl h)
 
 theorem tan_two_mul {z : ℂ} : tan (2 * z) = (2 : ℂ) * tan z / ((1 : ℂ) - tan z ^ 2) := by
-  by_cases h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2
+  by_cases! h : ∀ k : ℤ, z ≠ (2 * k + 1) * π / 2
   · rw [two_mul, two_mul, sq, tan_add (Or.inl ⟨h, h⟩)]
-  · rw [not_forall_not] at h
-    rw [two_mul, two_mul, sq, tan_add (Or.inr ⟨h, h⟩)]
+  · rw [two_mul, two_mul, sq, tan_add (Or.inr ⟨h, h⟩)]
 
 theorem tan_add_mul_I {x y : ℂ}
     (h :

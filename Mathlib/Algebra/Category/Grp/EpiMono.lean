@@ -285,10 +285,8 @@ theorem g_ne_h (x : B) (hx : x ∉ f.hom.range) : g ≠ h := by
 end SurjectiveOfEpiAuxs
 
 theorem surjective_of_epi [Epi f] : Function.Surjective f := by
-  by_contra r
-  dsimp [Function.Surjective] at r
-  push_neg at r
-  rcases r with ⟨b, hb⟩
+  dsimp [Function.Surjective]
+  by_contra! r; rcases r with ⟨b, hb⟩
   exact
     SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
       (congr_arg GrpCat.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))

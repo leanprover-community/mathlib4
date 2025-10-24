@@ -606,7 +606,7 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
   rsuffices ⟨q, hq, t, s, ht₁, ht₂, hs⟩ :
       ∃ q, q.Prime ∧ ∃ t s, t ≠ 0 ∧ n = q ^ t ∧ (p : ℤ) ∣ (q : ℤ) ^ s := by
     obtain hn | hn := lt_or_eq_of_le hn
-    · by_cases h : ∃ q, q.Prime ∧ ∃ t, q ^ t = n
+    · by_cases! h : ∃ q, q.Prime ∧ ∃ t, q ^ t = n
       · obtain ⟨q, hq, t, hn'⟩ := h
         have : Fact (Nat.Prime q) := ⟨hq⟩
         cases t with
@@ -626,8 +626,7 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
       · rw [IsPrimitiveRoot.norm_toInteger_sub_one_eq_one hμ hn, one_pow,
           Int.natCast_dvd_ofNat, Nat.dvd_one] at hp
         · exact (Nat.Prime.ne_one hF.out hp).elim
-        · simp only [not_exists, not_and] at h
-          exact fun {p} a k ↦ h p a k
+        · exact fun {p} a k ↦ h p a k
     · rw [← hn] at hμ hC ⊢
       refine ⟨2, Nat.prime_two, 1, Module.finrank ℚ⟮ζ⟯ K, one_ne_zero, by rw [pow_one], ?_⟩
       rwa [hμ.norm_toInteger_sub_one_of_eq_two, neg_eq_neg_one_mul, mul_pow, IsUnit.dvd_mul_left

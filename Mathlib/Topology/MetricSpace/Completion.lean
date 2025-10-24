@@ -100,9 +100,9 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
         exact isClosed_le continuous_const Completion.uniformContinuous_dist.continuous
       · intro x y
         rw [Completion.dist_eq]
-        by_cases h : ε ≤ dist x y
+        by_cases! h : ε ≤ dist x y
         · exact Or.inl h
-        · have Z := hε (not_le.1 h)
+        · have Z := hε h
           simp only [Set.mem_setOf_eq] at Z
           exact Or.inr Z
     simp only [not_le.mpr hxy, false_or] at this

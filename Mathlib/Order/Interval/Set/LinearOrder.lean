@@ -205,9 +205,9 @@ theorem Iio_union_Ioi : Iio a ∪ Ioi a = {a}ᶜ :=
 theorem Ioo_union_Ioi' (h₁ : c < b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
   ext1 x
   simp_rw [mem_union, mem_Ioo, mem_Ioi, min_lt_iff]
-  by_cases hc : c < x
+  by_cases! hc : c < x
   · tauto
-  · have hxb : x < b := (le_of_not_gt hc).trans_lt h₁
+  · have hxb : x < b := hc.trans_lt h₁
     tauto
 
 theorem Ioo_union_Ioi (h : c < max a b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
@@ -233,9 +233,9 @@ theorem Ico_union_Ici_eq_Ici (h : a ≤ b) : Ico a b ∪ Ici b = Ici a :=
 theorem Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := by
   ext1 x
   simp_rw [mem_union, mem_Ico, mem_Ici, min_le_iff]
-  by_cases hc : c ≤ x
+  by_cases! hc : c ≤ x
   · tauto
-  · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
+  · have hxb : x < b := hc.trans_le h₁
     tauto
 
 theorem Ico_union_Ici (h : c ≤ max a b) : Ico a b ∪ Ici c = Ici (min a c) := by
@@ -253,9 +253,9 @@ theorem Ioc_union_Ioi_eq_Ioi (h : a ≤ b) : Ioc a b ∪ Ioi b = Ioi a :=
 theorem Ioc_union_Ioi' (h₁ : c ≤ b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
   ext1 x
   simp_rw [mem_union, mem_Ioc, mem_Ioi, min_lt_iff]
-  by_cases hc : c < x
+  by_cases! hc : c < x
   · tauto
-  · have hxb : x ≤ b := (le_of_not_gt hc).trans h₁
+  · have hxb : x ≤ b := hc.trans h₁
     tauto
 
 theorem Ioc_union_Ioi (h : c ≤ max a b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
@@ -288,9 +288,9 @@ theorem Icc_union_Ici_eq_Ici (h : a ≤ b) : Icc a b ∪ Ici b = Ici a :=
 theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := by
   ext1 x
   simp_rw [mem_union, mem_Icc, mem_Ici, min_le_iff]
-  by_cases hc : c ≤ x
+  by_cases! hc : c ≤ x
   · tauto
-  · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
+  · have hxb : x ≤ b := hc.le.trans h₁
     tauto
 
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
@@ -322,9 +322,9 @@ theorem Iio_union_Ico_eq_Iio (h : a ≤ b) : Iio a ∪ Ico a b = Iio b :=
 theorem Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Iio, mem_Ico, lt_max_iff]
-  by_cases hc : c ≤ x
+  by_cases! hc : c ≤ x
   · tauto
-  · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
+  · have hxb : x < b := hc.trans_le h₁
     tauto
 
 theorem Iio_union_Ico (h : min c d ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
@@ -343,9 +343,9 @@ theorem Iic_union_Ioc_eq_Iic (h : a ≤ b) : Iic a ∪ Ioc a b = Iic b :=
 theorem Iic_union_Ioc' (h₁ : c < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Iic, mem_Ioc, le_max_iff]
-  by_cases hc : c < x
+  by_cases! hc : c < x
   · tauto
-  · have hxb : x ≤ b := (le_of_not_gt hc).trans h₁.le
+  · have hxb : x ≤ b := hc.trans h₁.le
     tauto
 
 theorem Iic_union_Ioc (h : min c d < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
@@ -387,9 +387,9 @@ theorem Iic_union_Icc_eq_Iic (h : a ≤ b) : Iic a ∪ Icc a b = Iic b :=
 theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Iic, mem_Icc, le_max_iff]
-  by_cases hc : c ≤ x
+  by_cases! hc : c ≤ x
   · tauto
-  · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
+  · have hxb : x ≤ b := hc.le.trans h₁
     tauto
 
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by

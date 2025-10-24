@@ -306,7 +306,7 @@ private theorem μ_bddBelow (s : ℕ → ℕ) {x : R} (ψ : ℕ → ℕ) :
 private theorem μ_bddAbove (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : ℕ, s n ≤ n) (x : R)
     (ψ : ℕ → ℕ) : BddAbove (Set.range fun n : ℕ => μ (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))) := by
   have hψ : ∀ n, 0 ≤ 1 / (ψ n : ℝ) := fun _ ↦ by simp only [one_div, inv_nonneg, cast_nonneg]
-  by_cases hx : μ x ≤ 1
+  by_cases! hx : μ x ≤ 1
   · use 1
     simp only [mem_upperBounds, Set.mem_range, forall_exists_index]
     rintro _ n rfl
@@ -319,7 +319,7 @@ private theorem μ_bddAbove (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : 
     apply le_trans (rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hμ1 _ _) (hψ n))
     rw [← rpow_natCast, ← rpow_mul (apply_nonneg _ _), mul_one_div]
     conv_rhs => rw [← rpow_one (μ x)]
-    rw [rpow_le_rpow_left_iff (not_le.mp hx)]
+    rw [rpow_le_rpow_left_iff hx]
     exact div_le_one_of_le₀ (cast_le.mpr (hs (ψ n))) (cast_nonneg _)
 
 private theorem μ_bddAbove' (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : ℕ, s n ≤ n) (x : R)

@@ -621,13 +621,13 @@ lemma traceForm_dualSubmodule_adjoin
   apply le_antisymm <;> rw [Submodule.span_le]
   · rintro _ ⟨i, rfl⟩; exact Submodule.subset_span ⟨i, rfl⟩
   · rintro _ ⟨i, rfl⟩
-    by_cases hi : i < pb.dim
+    by_cases! hi : i < pb.dim
     · exact Submodule.subset_span ⟨⟨i, hi⟩, rfl⟩
     · rw [Function.comp_apply, coeff_eq_zero_of_natDegree_lt, mul_zero]
       · exact zero_mem _
       rw [← pb.natDegree_minpoly, pbgen, ← natDegree_minpolyDiv_succ hKx,
         ← Nat.succ_eq_add_one] at hi
-      exact le_of_not_gt hi
+      exact hi
 
 end
 

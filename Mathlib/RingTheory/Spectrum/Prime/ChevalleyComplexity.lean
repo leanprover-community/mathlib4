@@ -195,16 +195,15 @@ private lemma induction_structure (n : ℕ)
     by_cases H : (∃ i, (e.1 i).Monic ∧ ∀ j, e.1 j ≠ 0 → (e.1 i).degree ≤ (e.1 j).degree)
     · obtain ⟨i, hi, i_min⟩ := H
       -- Case I.ii : `e j = 0` for all `j ≠ i`.
-      by_cases H' : ∀ j ≠ i, e.1 j = 0
+      by_cases! H' : ∀ j ≠ i, e.1 j = 0
       -- then `I = Ideal.span {e i}`
       · exact hP₂ R e i hi H'
       -- Case I.i : There is another `e j ≠ 0`
-      · simp only [ne_eq, not_forall] at H'
-        obtain ⟨j, hj, hj'⟩ := H'
+      · obtain ⟨j, hj, hj'⟩ := H'
         replace i_min := i_min j hj'
         -- then we can replace `e j` with `e j %ₘ (C h.unit⁻¹ * e i) `
         -- with `h : IsUnit (e i).leadingCoeff`.
-        apply hP₃ R e i j hi i_min (.symm hj) (H_IH _ ?_ _ rfl)
+        apply hP₃ R e i j hi i_min (hj.symm) (H_IH _ ?_ _ rfl)
         refine .left _ _ (lt_of_le_of_ne (b := (ofLex v).1) ?_ ?_)
         · intro k
           simp only [comp_apply, update_apply, hv]
@@ -433,10 +432,9 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
         trans f.coeff '' (Set.Iio (f.natDegree + 2))
         · refine ((Set.image_subset_range _ _).antisymm ?_).symm
           rintro _ ⟨i, rfl⟩
-          by_cases hi : i ≤ f.natDegree
+          by_cases! hi : i ≤ f.natDegree
           · exact ⟨i, hi.trans_lt (by simp), rfl⟩
-          · exact ⟨f.natDegree + 1, by simp,
-              by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_ge hi)]⟩
+          · exact ⟨f.natDegree + 1, by simp, by simp [f.coeff_eq_zero_of_natDegree_lt hi]⟩
         · ext; simp [eq_comm]
     · simp
   · intro R _ g i hi hi_min _ R₀ _ f

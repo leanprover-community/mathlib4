@@ -46,9 +46,8 @@ lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
     ∃ t : Finset (Ideal R), t ⊆ s ∧ t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
   induction s using Finset.eraseInduction with
   | H s IH =>
-    by_cases H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
+    by_cases! H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
     · exact ⟨s, Finset.Subset.rfl, hs, H⟩
-    push_neg at H
     obtain ⟨J, hJ, hJ'⟩ := H
     refine (IH _ hJ ?_).imp
       fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
