@@ -176,6 +176,10 @@ end LocallyFinite
 
 instance [Finite V] : Finite G.ConnectedComponent := Quot.finite _
 
+theorem ConnectedComponent.card_le_card_of_le [Finite V] {G G' : SimpleGraph V} (h : G ≤ G') :
+    Nat.card G'.ConnectedComponent ≤ Nat.card G.ConnectedComponent :=
+  Nat.card_le_card_of_surjective _ <| ConnectedComponent.surjective_map_ofLE h
+
 section Fintype
 
 variable [DecidableEq V] [Fintype V] [DecidableRel G.Adj]
@@ -214,11 +218,6 @@ instance Path.instFintype {u v : V} : Fintype (G.Path u v) where
 instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
-
-theorem ConnectedComponent.card_le_card_of_le {G G' : SimpleGraph V} [DecidableRel G.Adj]
-    [DecidableRel G'.Adj] (h : G ≤ G') :
-    Fintype.card G'.ConnectedComponent ≤ Fintype.card G.ConnectedComponent :=
-  Fintype.card_le_of_surjective _ <| ConnectedComponent.surjective_map_ofLE h
 
 variable {G} in
 lemma disjiUnion_supp_toFinset_eq_supp_toFinset {G' : SimpleGraph V} (h : G ≤ G')
