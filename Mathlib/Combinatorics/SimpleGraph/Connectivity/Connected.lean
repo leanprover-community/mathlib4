@@ -757,13 +757,13 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   · rwa [deleteEdges, Disjoint.sdiff_eq_left (by simpa)]
   refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
   obtain ⟨P, hP⟩ := hG.exists_isPath w x
-  obtain heP | heP := em' <| s(x,y) ∈ P.edges
-  · exact ⟨(P.toDeleteEdges {s(x,y)} (by aesop)).reverse⟩
+  obtain heP | heP := em' <| s(x, y) ∈ P.edges
+  · exact ⟨(P.toDeleteEdges {s(x, y)} (by aesop)).reverse⟩
   have hyP := P.snd_mem_support_of_mem_edges heP
   let P₁ := P.takeUntil y hyP
   have hxP₁ := Walk.endpoint_notMem_support_takeUntil hP hyP hxy.ne
-  have heP₁ : s(x,y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
-  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x,y)} (by aesop)⟩)
+  have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
+  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by aesop)⟩)
 
 end BridgeEdges
 

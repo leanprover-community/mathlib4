@@ -55,7 +55,8 @@ theorem Submonoid.fg_iff (P : Submonoid M) :
 /-- A finitely generated submonoid has a minimal generating set. -/
 @[to_additive /-- A finitely generated submonoid has a minimal generating set. -/]
 lemma Submonoid.FG.exists_minimal_closure_eq (hP : P.FG) :
-    ∃ S : Finset M, Minimal (closure ·.toSet = P) S := exists_minimal_of_wellFoundedLT _ hP
+    ∃ S : Finset M, Minimal (fun S : Finset M ↦ closure S = P) S :=
+  exists_minimal_of_wellFoundedLT _ hP
 
 theorem Submonoid.fg_iff_add_fg (P : Submonoid M) : P.FG ↔ P.toAddSubmonoid.FG :=
   ⟨fun h =>
@@ -183,7 +184,7 @@ variable (M) in
 /-- A finitely generated monoid has a minimal generating set. -/
 @[to_additive /-- A finitely generated monoid has a minimal generating set. -/]
 lemma Submonoid.exists_minimal_closure_eq_top [Monoid.FG M] :
-    ∃ S : Finset M, Minimal (Submonoid.closure ·.toSet = ⊤) S :=
+    ∃ S : Finset M, Minimal (fun S ↦ Submonoid.closure (SetLike.coe S) = ⊤) S :=
   Monoid.FG.fg_top.exists_minimal_closure_eq
 
 theorem Monoid.fg_iff_add_fg : Monoid.FG M ↔ AddMonoid.FG (Additive M) where
