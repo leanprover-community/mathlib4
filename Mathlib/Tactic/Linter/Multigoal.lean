@@ -78,6 +78,8 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.«tacticNext_=>_»,
     ``Lean.Parser.Tactic.tacticSeq1Indented,
     ``Lean.Parser.Tactic.tacticSeq,
+    `focus,
+    ``Lean.Parser.Tactic.focus,
     -- re-ordering goals
     `Batteries.Tactic.tacticSwap,
     ``Lean.Parser.Tactic.rotateLeft,
@@ -121,7 +123,6 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.tacticIterate____,
     ``Lean.Parser.Tactic.anyGoals,
     ``Lean.Parser.Tactic.allGoals,
-    ``Lean.Parser.Tactic.focus,
     ``Lean.Parser.Tactic.failIfSuccess,
     `Mathlib.Tactic.successIfFailWithMsg
   ]
