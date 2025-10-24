@@ -560,12 +560,12 @@ theorem AddSubmonoid.fg_of_subtractive {P : AddSubmonoid M} (hP : ∀ x ∈ P, �
     rcases exists_add_of_le hz₁.le with ⟨y, rfl⟩
     apply add_mem
     · exact ih _ hz₂ hz₃ hz₁.le hz₁.not_ge
-    · apply ih
-      · exact hP _ hz₂ _ hy₁
-      · exact (pos_of_lt_add_right hz₁).ne.symm
-      · exact le_add_self
-      · rw [add_le_iff_nonpos_left]
-        exact (pos_of_ne_zero hz₃).not_ge
+    apply ih
+    · exact hP _ hz₂ _ hy₁
+    · exact (pos_of_lt_add_right hz₁).ne.symm
+    · exact le_add_self
+    · rw [add_le_iff_nonpos_left]
+      exact (pos_of_ne_zero hz₃).not_ge
 
 /-- If `f` `g` are homomorphisms from a canonically ordered and well-quasi-ordered monoid `M` to a
 cancellative monoid `N`, the submonoid `eqLocusM f g` is finitely generated in `M`. When `M` and `N`
