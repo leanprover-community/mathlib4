@@ -25,8 +25,7 @@ import Mathlib.RingTheory.Trace.Quotient
     with `f` being the minimal polynomial of `x`.
 - `not_dvd_differentIdeal_iff`: A prime does not divide the different ideal iff it is unramified
   (in the sense of `Algebra.IsUnramifiedAt`).
-- `differentIdeal_eq_differentIdeal_mul_differentIdeal`:
-  Transitivity of the different ideal.
+- `differentIdeal_eq_differentIdeal_mul_differentIdeal`: Transitivity of the different ideal.
 
 ## TODO
 - Show properties of the different ideal
