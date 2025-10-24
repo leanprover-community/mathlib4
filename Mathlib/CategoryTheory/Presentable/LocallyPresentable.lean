@@ -83,6 +83,10 @@ instance [IsAccessibleCategory.{w} C] (X : C) : IsPresentable.{w} X := by
 
 example [IsLocallyPresentable.{w} C] (X : C) : IsPresentable.{w} X := inferInstance
 
+instance [IsLocallyPresentable.{w} C] : HasColimitsOfSize.{w, w} C := by
+  obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} C
+  infer_instance
+
 end
 
 end CategoryTheory

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.Presheaf
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 import Mathlib.CategoryTheory.Presentable.Presheaf
 import Mathlib.CategoryTheory.Presentable.Type
@@ -171,6 +172,10 @@ instance : (isCardinalContinuous Cᵒᵖ (Type w) κ).ι.IsRightAdjoint := by
   apply MorphismProperty.isRightAdjoint_ι_isLocal _ κ
   apply isCardinalPresentable_isCardinalContinuousMorphismProperty_src_tgt
 
+instance : HasLimitsOfSize.{w, w} (isCardinalContinuous Cᵒᵖ (Type w) κ).FullSubcategory := by
+  rw [isCardinalContinuous_eq_isLocal]
+  exact ⟨inferInstance⟩
+
 end Small
 
 instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
@@ -196,6 +201,13 @@ instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
     refine (leftUnitor _).symm ≪≫ isoWhiskerRight e'.counitIso.symm _ ≪≫ associator _ _ _ ≪≫
       isoWhiskerLeft e'.inverse (Iso.refl _)
   exact Functor.isRightAdjoint_of_iso iso.symm
+
+instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    HasLimitsOfSize.{w, w} (isCardinalContinuous C (Type w) κ).FullSubcategory :=
+  Adjunction.has_limits_of_equivalence
+    ((isCardinalContinuousCongrLeft ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans
+      (opOpEquivalence C)) (Type w) κ).inverse)
 
 end Presheaf
 

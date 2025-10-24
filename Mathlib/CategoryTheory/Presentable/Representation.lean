@@ -122,7 +122,6 @@ instance : (toCardinalContinuous C κ).EssSurj where
     -- existence of `κ`-bounded colimits in `P`
     sorry
 
-
 instance : (toCardinalContinuous C κ).IsEquivalence where
 
 @[simps! functor]
@@ -131,6 +130,20 @@ noncomputable def toCardinalContinuousEquivalence :
       (isCardinalPresentable C κ).FullSubcategoryᵒᵖ (Type w) κ).FullSubcategory :=
   (toCardinalContinuous C κ).asEquivalence
 
+include κ in
+lemma hasLimitsOfSize : HasLimitsOfSize.{w, w} C :=
+  Adjunction.has_limits_of_equivalence
+    (IsCardinalLocallyPresentable.toCardinalContinuousEquivalence C κ).functor
+
 end IsCardinalLocallyPresentable
+
+namespace IsCardinalPresentable
+
+instance (C : Type u) [Category.{v} C] [IsLocallyPresentable.{w} C] :
+    HasLimitsOfSize.{w, w} C := by
+  obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} C
+  exact IsCardinalLocallyPresentable.hasLimitsOfSize C κ
+
+end IsCardinalPresentable
 
 end CategoryTheory
