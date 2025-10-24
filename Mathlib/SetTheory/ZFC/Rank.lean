@@ -201,6 +201,15 @@ theorem rank_range {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
   · simpa [rank_le_iff, ← succ_le_iff] using Ordinal.le_iSup _
   · simp [rank_lt_of_mem]
 
+@[simp]
+theorem rank_iUnion {α} [Small.{u} α] (f : α → ZFSet.{u}) :
+    rank (⋃ i, f i) = ⨆ i, rank (f i) := by
+  apply le_antisymm
+  · simp_rw [rank_le_iff, mem_iUnion]
+    intro y ⟨i, hy⟩
+    exact (rank_lt_of_mem hy).trans_le (Ordinal.le_iSup _ _)
+  · exact Ordinal.iSup_le fun i => rank_mono (subset_iUnion f i)
+
 /-- `ZFSet.rank` is equal to the `IsWellFounded.rank` over `∈`. -/
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := ZFSet) (· ∈ ·) x := by
   induction x using inductionOn with | _ x ih
