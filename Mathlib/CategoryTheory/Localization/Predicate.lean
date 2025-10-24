@@ -459,7 +459,7 @@ lemma morphismProperty_eq_top [L.IsLocalization W] (P : MorphismProperty D) [P.R
   let P' : MorphismProperty W.Localization :=
     P.inverseImage (Construction.lift L Functor.IsLocalization.inverts)
   have hP' : P' = ⊤ := by
-    apply Construction.morphismProperty_is_top
+    apply Construction.morphismProperty_eq_top
     · intros
       simp only [MorphismProperty.inverseImage_iff, Construction.lift_obj, ← Functor.comp_map,
         Functor.congr_hom (Construction.fac L Functor.IsLocalization.inverts), Functor.comp_obj,
