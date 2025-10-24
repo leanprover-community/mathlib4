@@ -316,13 +316,75 @@ variable [Small.{v} R] [UnivLE.{v, w}]
 instance hasExt_of_small'' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
-def quotSMulTop_linearEquiv (x : R) {M N : Type*} [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] (f : M ≃ₗ[R] N) : (QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop x N) :=
-  sorry
+section
+
+variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+
+def QuotSMulTop_linearMap (x : R) (f : M →ₗ[R] N) : QuotSMulTop x M →ₗ[R] QuotSMulTop x N :=
+  Submodule.mapQ _ _ f (fun m hm ↦ by
+    rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp hm with ⟨m', _, hm'⟩
+    simpa [← hm'] using Submodule.smul_mem_pointwise_smul _ x ⊤ trivial)
+
+def quotSMulTop_linearEquiv (x : R) (e : M ≃ₗ[R] N) :
+    (QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop x N) where
+  __ := QuotSMulTop_linearMap x e.toLinearMap
+  invFun := QuotSMulTop_linearMap x e.symm.toLinearMap
+  left_inv y := by
+    induction y using Submodule.Quotient.induction_on
+    simp [QuotSMulTop_linearMap]
+  right_inv y := by
+    induction y using Submodule.Quotient.induction_on
+    simp [QuotSMulTop_linearMap]
+
+end
 
 open Pointwise
 
-set_option maxHeartbeats 300000 in
+lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs) :
+    projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) = rs.length := by
+  have mem_max : ∀ x ∈ rs, x ∈ maximalIdeal R := by
+    intro x hx
+    apply IsLocalRing.le_maximalIdeal reg.2.symm
+    simpa using (Ideal.mem_span x).mpr fun p a ↦ a hx
+  let e : (Shrink.{v} (R ⧸ Ideal.ofList rs)) ≃ₗ[R]
+    (Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)) := sorry
+  rw [projectiveDimension_eq_of_iso e.toModuleIso]
+  let _ : Module.Finite R (Shrink.{v} R) := sorry
+  rw [projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
+    (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max]
+
+  sorry
+
+noncomputable def quotSMulTop_ext_equiv_ext_quotSMulTop (M : ModuleCat.{v} R) (n : ℕ)
+    [HasProjectiveDimensionLE M n] (a : R) (reg : IsSMulRegular M a) (N : ModuleCat.{v} R) :
+    QuotSMulTop a (Ext.{w} M N n) ≃ₗ[R] Ext (ModuleCat.of R (QuotSMulTop a M)) N (n + 1) := by
+  let S := M.smulShortComplex a
+  have S_exact : S.ShortExact := reg.smulShortComplex_shortExact
+  let f : Ext M N n →ₗ[R] Ext (ModuleCat.of R (QuotSMulTop a M)) N (n + 1) := {
+    toFun := S_exact.extClass.precomp N (add_comm 1 n)
+    map_add' := by simp
+    map_smul' := by simp }
+  have surj : Function.Surjective f := by
+    have exac := Ext.contravariant_sequence_exact₃' S_exact N n (n + 1) (add_comm 1 n)
+    have : Subsingleton (Ext M N (n + 1)) :=
+      HasProjectiveDimensionLT.subsingleton M (n + 1) (n + 1) (le_refl _) N
+    exact (AddCommGrpCat.epi_iff_surjective _).mp
+      (exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _))
+  have ker : LinearMap.ker f = a • (⊤ : Submodule R _) := by
+    have exac := Ext.contravariant_sequence_exact₁' S_exact N n (n + 1) (add_comm 1 n)
+    have exac' : Function.Exact (a • LinearMap.id (R := R) (M := (Ext M N n))) f := by
+      convert (ShortComplex.ab_exact_iff_function_exact _).mp exac
+      have : S.f = a • 𝟙 _ := by
+        ext
+        simp [S]
+      ext x
+      simp [this, Ext.mk₀_smul]
+    rw [LinearMap.exact_iff.mp exac']
+    ext y
+    simp [Submodule.mem_smul_pointwise_iff_exists]
+  exact (Submodule.quotEquivOfEq _ _ ker.symm).trans (f.quotKerEquivOfSurjective surj)
+
+set_option maxHeartbeats 250000 in
 --This iso is to complicated
 noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [Nontrivial M]
     [Module.Finite R M] (rs : List R) (reg : IsRegular R rs) :
@@ -338,51 +400,38 @@ noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [No
   · rename_i n hn
     let a := rs[n]
     let rs' := rs.take n
+    have mem_max : ∀ x ∈ rs, x ∈ maximalIdeal R := by
+      intro x hx
+      apply IsLocalRing.le_maximalIdeal reg.2.symm
+      simpa using (Ideal.mem_span x).mpr fun p a ↦ a hx
+    have mem_max' : ∀ x ∈ rs', x ∈ maximalIdeal R := fun x hx ↦ mem_max x (List.mem_of_mem_take hx)
     have rs'reg : RingTheory.Sequence.IsRegular R rs' := by
-
-      sorry
+      refine ⟨⟨fun i hi ↦ ?_⟩, ?_⟩
+      · simp only [List.length_take, len, le_add_iff_nonneg_right, zero_le, inf_of_le_left,
+          List.getElem_take, rs'] at hi ⊢
+        rw [List.take_take, min_eq_left_of_lt hi]
+        exact reg.1.1 i (lt_of_lt_of_eq (Nat.lt_add_right 1 hi) len.symm)
+      · simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max')).symm
     have eqapp : rs = rs' ++ [a] := sorry
     have reg' : IsSMulRegular (R ⧸ Ideal.ofList rs' • (⊤ : Submodule R R)) a :=
       reg.1.1 n (lt_of_lt_of_eq (lt_add_one n) len.symm)
-    have reg'' : IsSMulRegular (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))) a :=
-      sorry
+    have reg'' : IsSMulRegular (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) a := by
+      rw [(Shrink.linearEquiv R _).isSMulRegular_congr, ← Ideal.mul_top (Ideal.ofList rs')]
+      simpa using reg'
     let e1' : QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')) ≃ₗ[R]
       (Shrink.{v} (R ⧸ Ideal.ofList rs)) := sorry
     let e1 : Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M (n + 1) ≃ₗ[R]
       Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
       __ := (((extFunctor.{w} (n + 1)).mapIso e1'.toModuleIso.op).app M).addCommGroupIsoToAddEquiv
       map_smul' r x := by simp [Iso.addCommGroupIsoToAddEquiv] }
-    let S := (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))).smulShortComplex a
-    have S_exact : S.ShortExact := reg''.smulShortComplex_shortExact
-    let f2 : Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) M n →ₗ[R]
-      Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
-        toFun := S_exact.extClass.precomp M (add_comm 1 n)
-        map_add' := by simp
-        map_smul' := by simp }
-    have surj2 : Function.Surjective f2 := by
-      have exac := Ext.contravariant_sequence_exact₃' S_exact M n (n + 1) (add_comm 1 n)
-      have : Subsingleton (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))) M
-        (n + 1)) := by
-
-        sorry
-      exact (AddCommGrpCat.epi_iff_surjective _).mp
-        (exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ this).eq_zero_of_tgt _))
-    have ker2 : LinearMap.ker f2 = a • (⊤ : Submodule R _) := by
-      have exac := Ext.contravariant_sequence_exact₁' S_exact M n (n + 1) (add_comm 1 n)
-      have exac' : Function.Exact (a • LinearMap.id (R := R)
-        (M := (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ Ideal.ofList rs'))) M n))) f2 := by
-        convert (ShortComplex.ab_exact_iff_function_exact _).mp exac
-        have : S.f = a • 𝟙 _ := by
-          ext
-          simp [S]
-        ext x
-        simp [this, Ext.mk₀_smul]
-      rw [LinearMap.exact_iff.mp exac']
-      ext y
-      simp [Submodule.mem_smul_pointwise_iff_exists]
+    let _ : HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) n :=
+      have : projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) = n := by
+        simp [projectiveDimension_quotient_eq_length rs' rs'reg, rs', len]
+      (projectiveDimension_le_iff _ n).mp (le_of_eq this)
     let e2 : QuotSMulTop a (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) M n) ≃ₗ[R]
       Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) :=
-      sorry
+      quotSMulTop_ext_equiv_ext_quotSMulTop (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs')))
+        n a reg'' M
     let e3 : QuotSMulTop a (M ⧸ Ideal.ofList rs' • (⊤ : Submodule R M)) ≃ₗ[R]
       M ⧸ Ideal.ofList rs • (⊤ : Submodule R M) := sorry
     exact ((e1.trans e2.symm).trans
