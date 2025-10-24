@@ -1,4 +1,8 @@
-import Mathlib
+import Mathlib.Analysis.Convex.Side
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Geometry.Euclidean.SignedDist
+import Mathlib.LinearAlgebra.AffineSpace.Ordered
 
 open Finset
 
@@ -324,3 +328,5 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset
   ring_nf
   field_simp
   norm_num
+
+#min_imports
