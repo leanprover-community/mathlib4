@@ -38,18 +38,6 @@ Several theorems proved in this file are known as Lagrange's theorem.
 
 assert_not_exists Field
 
-@[to_additive]
-lemma Subgroup.toSubmonoid_zpowers {G : Type*} [Group G] (g : G) :
-    (Subgroup.zpowers g).toSubmonoid = Submonoid.powers g ⊔ Submonoid.powers g⁻¹ := by
-  rw [zpowers_eq_closure, closure_toSubmonoid, Submonoid.closure_union, Submonoid.powers_eq_closure,
-    Submonoid.powers_eq_closure, Set.inv_singleton]
-
-@[to_additive]
-lemma Submonoid.powers_le_zpowers {G : Type*} [Group G] (g : G) :
-    Submonoid.powers g ≤ (Subgroup.zpowers g).toSubmonoid := by
-  rw [Subgroup.toSubmonoid_zpowers]
-  exact le_sup_left
-
 open scoped Pointwise
 
 namespace Subgroup
