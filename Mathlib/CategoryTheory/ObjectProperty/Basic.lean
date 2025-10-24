@@ -57,6 +57,11 @@ lemma prop_map_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
     P.map F (F.obj X) :=
   ⟨X, hX, ⟨Iso.refl _⟩⟩
 
+lemma map_monotone {P Q : ObjectProperty C} (h : P ≤ Q) (F : C ⥤ D) :
+    P.map F ≤ Q.map F := by
+  rintro X ⟨Y, hY, ⟨e⟩⟩
+  exact ⟨Y, h _ hY, ⟨e⟩⟩
+
 /-- The strict image of a property of objects by a functor. -/
 inductive strictMap (P : ObjectProperty C) (F : C ⥤ D) : ObjectProperty D
   | mk (X : C) (hX : P X) : strictMap P F (F.obj X)
@@ -68,6 +73,16 @@ lemma strictMap_iff (P : ObjectProperty C) (F : C ⥤ D) (Y : D) :
 lemma strictMap_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
     P.strictMap F (F.obj X) :=
   ⟨X, hX⟩
+
+lemma strictMap_monotone {P Q : ObjectProperty C} (h : P ≤ Q) (F : C ⥤ D) :
+    P.strictMap F ≤ Q.strictMap F := by
+  rintro _ ⟨X, hX⟩
+  exact ⟨X, h _ hX⟩
+
+lemma strictMap_le_map (P : ObjectProperty C) (F : C ⥤ D) :
+    P.strictMap F ≤ P.map F := by
+  rintro _ ⟨X, hX⟩
+  exact ⟨X, hX, ⟨Iso.refl _⟩⟩
 
 /-- The typeclass associated to `P : ObjectProperty C`. -/
 @[mk_iff]
@@ -108,6 +123,13 @@ lemma strictMap_ofObj (F : C ⥤ D) :
   simp [ofObj_iff, strictMap_iff]
 
 end
+
+@[simp]
+lemma ofObj_subtypeVal (P : ObjectProperty C) :
+    ofObj (Subtype.val : Subtype P → C) = P := by
+  ext X
+  exact ⟨by rintro ⟨X, hX⟩; exact hX,
+    fun hX ↦ ofObj_apply Subtype.val ⟨X, hX⟩⟩
 
 /-- The property of objects in a category that is satisfied by a single object `X : C`. -/
 abbrev singleton (X : C) : ObjectProperty C := ofObj (fun (_ : Unit) ↦ X)

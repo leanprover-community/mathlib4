@@ -28,13 +28,14 @@ generator (see `Functor.isStrongGenerator_of_isDense`).
 
 -/
 
-universe w v₁ v₂ u₁ u₂
+universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
 open Limits Opposite Presheaf
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
+  {C' : Type u₃} [Category.{v₃} C']
 
 namespace Functor
 
@@ -53,7 +54,28 @@ lemma isDense_iff_nonempty_isPointwiseLeftKanExtension (F : C ⥤ D) :
       Nonempty ((LeftExtension.mk _ (rightUnitor F).inv).IsPointwiseLeftKanExtension) :=
   ⟨fun _ ↦ ⟨fun _ ↦ F.denseAt _⟩, fun ⟨h⟩ ↦ ⟨fun _ ↦ ⟨h _⟩⟩⟩
 
+lemma IsDense.of_iso {F G : C ⥤ D} (e : F ≅ G) [F.IsDense] :
+    G.IsDense where
+  isDenseAt Y := by
+    rw [← Functor.congr_isDenseAt e]
+    exact ⟨F.denseAt Y⟩
+
+lemma IsDense.iff_of_iso {F G : C ⥤ D} (e : F ≅ G) :
+    F.IsDense ↔ G.IsDense :=
+  ⟨fun _ ↦ of_iso e, fun _ ↦ of_iso e.symm⟩
+
 variable (F : C ⥤ D)
+
+instance (G : C' ⥤ C) [F.IsDense] [G.IsEquivalence] :
+    (G ⋙ F).IsDense where
+  isDenseAt Y := ⟨(F.denseAt Y).precompEquivalence G⟩
+
+lemma IsDense.comp_left_iff_of_isEquivalence (G : C' ⥤ C) [G.IsEquivalence] :
+    (G ⋙ F).IsDense ↔ F.IsDense := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  let e : G.inv ⋙ G ⋙ F ≅ F := (associator _ _ _).symm ≪≫
+    isoWhiskerRight (G.asEquivalence.counitIso) _ ≪≫ F.leftUnitor
+  exact of_iso e
 
 instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
   map_injective h :=
