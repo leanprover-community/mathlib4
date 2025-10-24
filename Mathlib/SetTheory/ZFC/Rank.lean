@@ -202,7 +202,7 @@ theorem rank_range {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
   · simp [rank_lt_of_mem]
 
 @[simp]
-theorem rank_iUnion {α} [Small.{u} α] (f : α → ZFSet.{u}) :
+theorem rank_iUnion {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
     rank (⋃ i, f i) = ⨆ i, rank (f i) := by
   apply le_antisymm
   · simp_rw [rank_le_iff, mem_iUnion]

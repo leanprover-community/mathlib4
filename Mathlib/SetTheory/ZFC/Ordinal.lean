@@ -65,7 +65,7 @@ theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
   exact mem_sUnion_of_mem ((H w hw).mem_trans hz hw') hw
 
-protected theorem IsTransitive.iUnion {α} [Small.{u} α] {f : α → ZFSet.{u}}
+protected theorem IsTransitive.iUnion {α : Type*} [Small.{u} α] {f : α → ZFSet.{u}}
     (hf : ∀ i, (f i).IsTransitive) : (⋃ i, f i).IsTransitive :=
   sUnion' (by simpa)
 
