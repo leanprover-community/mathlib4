@@ -386,11 +386,9 @@ theorem measurableSpace_const (f : Filtration ι m) (i : ι) :
   change MeasurableSet[(isStoppingTime_const f i).measurableSpace] s ↔ MeasurableSet[f i] s
   rw [IsStoppingTime.measurableSet]
   constructor <;> intro h
-  · have h' := h.2
-    specialize h' i
+  · have h' := h.2 i
     simpa only [le_refl, Set.setOf_true, Set.inter_univ] using h'
-  · refine ⟨f.le i _ h, ?_⟩
-    intro j
+  · refine ⟨f.le i _ h, fun j ↦ ?_⟩
     by_cases hij : i ≤ j
     · norm_cast
       simp only [hij, Set.setOf_true, Set.inter_univ]
