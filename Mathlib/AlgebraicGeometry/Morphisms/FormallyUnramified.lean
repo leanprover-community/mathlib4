@@ -98,7 +98,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [FormallyUnramified (f ≫ g)] : FormallyUnramified f :=
   HasRingHomProperty.of_comp (fun {R S T _ _ _} f g H ↦ by
     algebraize [f, g, g.comp f]
-    exact Algebra.FormallyUnramified.of_comp R S T) ‹_›
+    exact Algebra.FormallyUnramified.of_restrictScalars R S T) ‹_›
 
 instance : MorphismProperty.IsMultiplicative @FormallyUnramified where
   id_mem _ := inferInstance
