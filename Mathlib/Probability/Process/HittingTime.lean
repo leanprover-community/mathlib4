@@ -202,8 +202,7 @@ lemma hittingAfter_mem_set_of_ne_top [WellFoundedLT ι] (hl : hittingAfter u s n
     u (hittingAfter u s n ω).untopA ω ∈ s := by
   simp only [ne_eq, hittingAfter_eq_top_iff, not_forall, not_not] at hl
   obtain ⟨j, hj₁, hj₂⟩ := hl
-  refine hittingAfter_mem_set ?_
-  exact ⟨j, hj₁, hj₂⟩
+  exact hittingAfter_mem_set ⟨j, hj₁, hj₂⟩
 
 theorem hittingBtwn_le_of_mem {m : ι} (hin : n ≤ i) (him : i ≤ m) (his : u i ω ∈ s) :
     hittingBtwn u s n m ω ≤ i := by
