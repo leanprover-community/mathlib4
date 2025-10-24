@@ -315,7 +315,7 @@ lemma linearIndepOn_iff_linearIndepOn_finset :
   mpr hv := by
     rw [LinearIndepOn, linearIndependent_iff_finset_linearIndependent]
     exact fun t ↦ (hv (t.map <| .subtype _) (by simp)).comp (ι' := t)
-      (fun x ↦ ⟨x, Finset.mem_map_of_mem _ x.2⟩) fun x ↦ by aesop
+      (fun x ↦ ⟨x, Finset.mem_map_of_mem (.subtype _) x.2⟩) fun x ↦ by aesop
 
 /-- If the image of a family of vectors under a linear map is linearly independent, then so is
 the original family. -/

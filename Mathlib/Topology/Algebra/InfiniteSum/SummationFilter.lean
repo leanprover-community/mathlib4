@@ -57,7 +57,7 @@ section support
 def support (L : SummationFilter β) : Set β := {b | ∀ᶠ s in L.filter, b ∈ s}
 
 lemma support_eq_limsInf (L : SummationFilter β) :
-    support L = limsInf (L.filter.map Finset.toSet) := by
+    support L = limsInf (L.filter.map (↑)) := by
   refine eq_of_forall_ge_iff fun c ↦ ?_
   simpa [support, limsInf, setOf_subset] using
     ⟨fun hL b hb x hx ↦ hL x <| hb.mp <| .of_forall fun c hc ↦ hc hx,

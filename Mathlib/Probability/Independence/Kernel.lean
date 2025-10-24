@@ -237,7 +237,7 @@ lemma iIndepSets.of_subsingleton [Subsingleton ι] {m : ι → Set (Set Ω)} {κ
     [IsMarkovKernel κ] : iIndepSets m κ μ := by
   rintro s f hf
   obtain rfl | ⟨i, rfl⟩ : s = ∅ ∨ ∃ i, s = {i} := by
-    simpa using (subsingleton_of_subsingleton (s := s.toSet)).eq_empty_or_singleton
+    simpa using (subsingleton_of_subsingleton (s := (s : Set ι))).eq_empty_or_singleton
   all_goals simp
 
 @[nontriviality, simp]
@@ -1119,7 +1119,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
     simp only [Set.mem_preimage, Set.mem_univ_pi, Set.mem_iInter]
     constructor <;> intro h
     · intro i hi; simp_rw [sets_t', dif_pos hi]; exact h ⟨i, hi⟩
-    · grind
+    · rintro ⟨i, hi⟩; specialize h i hi; simp_rw [sets_t', dif_pos hi] at h; exact h
   replace hf_Indep := hf_Indep.congr η_eq
   rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at hf_Indep
   have h_Inter_inter :

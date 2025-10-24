@@ -426,7 +426,7 @@ theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
   simp only [lift_lift, le_refl]
 
 theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) ≤ s.card := by
-  simpa using rank_span_le s.toSet
+  simpa using rank_span_le (s : Set M)
 
 theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
   (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
