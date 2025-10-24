@@ -530,3 +530,47 @@ instance : FG ℤ where
   out := ⟨{1}, by simp⟩
 
 end AddGroup
+
+section WellQuasiOrderedLE
+
+variable {M N : Type*} [AddCommMonoid M] [PartialOrder M] [WellQuasiOrderedLE M]
+  [IsOrderedCancelAddMonoid M] [CanonicallyOrderedAdd M]
+
+/-- In a canonically ordered and well-quasi-ordered monoid, any subtractive submonoid is finitely
+generated. -/
+theorem AddSubmonoid.fg_of_subtractive {P : AddSubmonoid M} (hP : ∀ x ∈ P, ∀ y, x + y ∈ P → y ∈ P) :
+    P.FG := by
+  have hpwo := Set.isPWO_of_wellQuasiOrderedLE { x | x ∈ P ∧ x ≠ 0 }
+  rw [fg_iff]
+  refine ⟨_, ?_, (setOf_minimal_antichain _).finite_of_partiallyWellOrderedOn
+    (hpwo.mono (setOf_minimal_subset _))⟩
+  ext x
+  constructor
+  · intro hx
+    rw [← P.closure_eq]
+    exact closure_mono ((setOf_minimal_subset _).trans fun _ => And.left) hx
+  · intro hx₁
+    by_cases hx₂ : x = 0
+    · simp [hx₂]
+    refine hpwo.wellFoundedOn.induction ⟨hx₁, hx₂⟩ fun y ⟨hy₁, hy₂⟩ ih => ?_
+    simp only [Set.mem_setOf_eq, and_imp] at ih
+    by_cases hy₃ : Minimal (· ∈ { x | x ∈ P ∧ x ≠ 0 }) y
+    · exact mem_closure_of_mem hy₃
+    rcases exists_lt_of_not_minimal ⟨hy₁, hy₂⟩ hy₃ with ⟨z, hz₁, hz₂, hz₃⟩
+    rcases exists_add_of_le hz₁.le with ⟨y, rfl⟩
+    apply add_mem
+    · exact ih _ hz₂ hz₃ hz₁.le hz₁.not_ge
+    · apply ih
+      · exact hP _ hz₂ _ hy₁
+      · exact (pos_of_lt_add_right hz₁).ne.symm
+      · exact le_add_self
+      · rw [add_le_iff_nonpos_left]
+        exact (pos_of_ne_zero hz₃).not_ge
+
+/-- If `f` `g` are homomorphisms from a canonically ordered and well-quasi-ordered monoid `M` to a
+cancellative monoid `N`, the submonoid `eqLocusM f g` is finitely generated in `M`. When `M` and `N`
+are `ℕ ^ k`, this is also known as a version of **Gordan's lemma**. -/
+theorem AddSubmonoid.fg_eqLocusM [AddMonoid N] [IsCancelAdd N] (f g : M →+ N) : (f.eqLocusM g).FG :=
+  fg_of_subtractive (by simp_all)
+
+end WellQuasiOrderedLE
