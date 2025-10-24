@@ -5,7 +5,6 @@ Authors: James Sundstrom
 -/
 import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.FractionalIdeal.Basic
-import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Extension of fractional ideals
