@@ -280,7 +280,6 @@ theorem exists_multiset_roots [DecidableEq R] :
         rw [count_zero, rootMultiplicity_eq_zero (not_exists.mp h a)]⟩
 termination_by p => natDegree p
 decreasing_by {
-  simp_wf
   apply (Nat.cast_lt (α := WithBot ℕ)).mp
   simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0] at wf
   assumption}
