@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Presentable.Continuous
-import Mathlib.CategoryTheory.Presentable.StrongGenerator
+import Mathlib.CategoryTheory.Presentable.Dense
 
 /-!
 # The representation theorem
