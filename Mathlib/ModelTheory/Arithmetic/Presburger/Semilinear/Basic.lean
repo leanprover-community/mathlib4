@@ -28,6 +28,8 @@ Note: these results can be further generalized to non-cancellative monoids; see
 
 ## Main Results
 
+- `isSemilinearSet_setOf_eq`: the set of solutions of a linear equation `a + f x = b + g y` is
+  semilinear.
 - `IsSemilinearSet.inter`, `IsSemilinearSet.diff`: semilinear sets (in a cancellative monoid) are
   closed under intersection and set difference.
 - `IsSemilinearSet.compl`: semilinear sets in a finitely generated cancellative monoid are closed
@@ -90,6 +92,7 @@ theorem IsSemilinearSet.exists_fg_eq_subtypeVal₂ {s₁ s₂ : Set M} (hs₁ : 
 
 /-! ### Semilinear sets in `ℕ ^ k` are closed under intersection -/
 
+/- The set of solutions of a linear equation `a + f x = b + g y` in `ℕ ^ k` is semilinear. -/
 private theorem Nat.isSemilinearSet_setOf_eq [Finite ι] [IsCancelAdd M] {F : Type*}
     [FunLike F (ι → ℕ) M] [AddMonoidHomClass F (ι → ℕ) M] (a b : M) (f g : F) :
     IsSemilinearSet { x | a + f x = b + g x } := by
@@ -621,7 +624,7 @@ private theorem Nat.isSemilinearSet_diff [Finite ι] {s₁ s₂ : Set (ι → �
 
 variable {s s₁ s₂ : Set M}
 
-/-- The set of solutions of a linear equation `a + f x = b + g y` in `ℕ ^ k` is semilinear. -/
+/-- The set of solutions of a linear equation `a + f x = b + g y` is semilinear. -/
 theorem isSemilinearSet_setOf_eq [AddMonoid.FG M] [IsCancelAdd N] {F : Type*} [FunLike F M N]
     [AddMonoidHomClass F M N] (a b : N) (f g : F) :
     IsSemilinearSet { x | a + f x = b + g x } := by
