@@ -1389,12 +1389,12 @@ protected def induce {u v : V} :
     ∀ (w : G.Walk u v) (hw : ∀ x ∈ w.support, x ∈ s),
       (G.induce s).Walk ⟨u, hw _ w.start_mem_support⟩ ⟨v, hw _ w.end_mem_support⟩
   | .nil, hw => .nil
-  | .cons (v := u') huu' w, hw => .cons (adj_induce.2 huu') <| w.induce <| by simp_all
+  | .cons (v := u') huu' w, hw => .cons (induce_adj.2 huu') <| w.induce <| by simp_all
 
 @[simp] lemma induce_nil (hw) : (.nil : G.Walk u u).induce s hw = .nil := rfl
 
 @[simp] lemma induce_cons (huu' : G.Adj u u') (w : G.Walk u' v) (hw) :
-    (w.cons huu').induce s hw = .cons (by exact huu') (w.induce s <| by simp_all) := rfl
+    (w.cons huu').induce s hw = .cons (induce_adj.2 huu') (w.induce s <| by simp_all) := rfl
 
 @[simp] lemma support_induce {u v : V} :
     ∀ (w : G.Walk u v) (hw), (w.induce s hw).support = w.support.attachWith _ hw
