@@ -399,6 +399,7 @@ theorem map_comp (C : G.ConnectedComponent) (φ : G →g G') (ψ : G' →g G'') 
     (C.map φ).map ψ = C.map (ψ.comp φ) :=
   C.ind (fun _ => rfl)
 
+@[simp]
 theorem surjective_map_ofLE {G' : SimpleGraph V} (h : G ≤ G') : (map <| Hom.ofLE h).Surjective :=
   Quot.ind fun v ↦ ⟨G.connectedComponentMk v, rfl⟩
 
