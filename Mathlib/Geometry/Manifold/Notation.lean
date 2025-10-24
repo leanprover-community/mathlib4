@@ -5,7 +5,7 @@ Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
-
+import Mathlib.Analysis.InnerProductSpace.Defs -- temporary
 /-!
 # Elaborators for differential geometry
 
@@ -500,34 +500,43 @@ where
       let searchIPSpace := findSomeLocalInstanceOf? `InnerProductSpace fun inst type ↦ do
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           -- We don't use `match_expr` here to avoid importing `InnerProductSpace`.
+          -- TODO do this!
           match_expr type with
           | InnerProductSpace k E _ _ =>
             -- We use reducible transparency to allow using a type synonym: this should not
             -- be unfolded.
             if ← withReducible (pureIsDefEq E α) then
-              trace[Elab.DiffGeo.MDiff] "`{α}` is an inner product space via `{inst}`"
+              trace[Elab.DiffGeo.MDiff] "`{α}` is a `{k}`-inner product space via `{inst}`"
               return some E
             else
               trace[Elab.DiffGeo.MDiff] "found an inner product space on `{E}`, which \
                 is not reducibly definitionally equal to `{α}`: continue the search"
               return none
           | _ => return none
+
       let factFinder := findSomeLocalInstanceOf? ``Fact fun _inst type ↦ do
         trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
         match_expr type with
         | Fact a =>
           trace[Elab.DiffGeo.MDiff] "considering fact of kind `{a}`"
+          -- match a with
+          -- | ``(Module.finrank Real $E) =>--q(finrank ℝ $E = 2) =>
+          --   return none
+          -- | _ => return none
           return some a
         | _ => return none
-      if let some R := (← searchIPSpace) then
+      if let some E := (← searchIPSpace) then
         -- We found a sphere in the inner product space E: search for a `Fact (finrank ℝ E) = m`,
         -- then the sphere is m-1-dimensional, and modelEuclideanSpace m-1 is our model.
+        let eE : Term ← Term.exprToSyntax E
+        -- let lhs := ``(Module.finrank ℝ $eE)
+        -- TODO: want to match on an expression $lhs = X, and then try to unify X with m + 1
+        -- match E with
+        -- | q(Eq $lhs s) =>
+        --   throwError ""
+        -- | _ => throwError "sd"
         let some _a ← factFinder
-          | throwError "Found no fact `finrank ℝ {R} = n + 1` in the local context"
-        --       -- match_expr a with
-        --       -- | ``(``Module.finrank R = b) =>
-        --       --   let sdf := bb
-        --       -- | _ => return none
+          | throwError "Found no fact `finrank ℝ {E} = n + 1` in the local context"
         throwError "TODO!"
       else throwError "found no real normed space instance on `{α}`"
     | _ => throwError "`{e}` is not a sphere in a real normed space"
