@@ -98,6 +98,7 @@ lemma aeval_comp_expand {A : Type*} [CommSemiring A] [Algebra R A] (f : σ → A
     (aeval f).comp (expand p) = aeval (R := R) (f ^ p) := by
   ext; simp
 
+@[simp]
 lemma aeval_expand {A : Type*} [CommSemiring A] [Algebra R A]
     (f : σ → A) (φ : MvPolynomial σ R) (p : ℕ) :
     aeval f (expand p φ) = aeval (f ^ p) φ :=
