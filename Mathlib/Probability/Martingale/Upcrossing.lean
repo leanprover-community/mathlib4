@@ -316,18 +316,14 @@ theorem Adapted.isStoppingTime_crossing (hf : Adapted ℱ f) :
     simp only [lowerCrossingTime_zero, Nat.bot_eq_zero]
     exact hittingBtwn_isStoppingTime hf measurableSet_Iic
   | succ k ih =>
-    obtain ⟨_, ih₂⟩ := ih
     have : IsStoppingTime ℱ (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) := by
       intro n
       simp_rw [upperCrossingTime_succ_eq]
-      refine isStoppingTime_hittingBtwn_isStoppingTime ih₂ ?_ measurableSet_Ici hf _
-      simp only [ENat.some_eq_coe, Nat.cast_le]
-      exact fun _ => lowerCrossingTime_le
-    refine ⟨this, ?_⟩
-    intro n
+      refine isStoppingTime_hittingBtwn_isStoppingTime ih.2 ?_ measurableSet_Ici hf _
+      simp [lowerCrossingTime_le]
+    refine ⟨this, fun n ↦ ?_⟩
     refine isStoppingTime_hittingBtwn_isStoppingTime this ?_ measurableSet_Iic hf _
-    simp only [ENat.some_eq_coe, Nat.cast_le]
-    exact fun _ => upperCrossingTime_le
+    simp [upperCrossingTime_le]
 
 theorem Adapted.isStoppingTime_upperCrossingTime (hf : Adapted ℱ f) :
     IsStoppingTime ℱ (fun ω ↦ (upperCrossingTime a b f N n ω : ℕ)) :=
@@ -377,9 +373,8 @@ theorem Adapted.upcrossingStrat_adapted (hf : Adapted ℱ f) :
   have hl := hf.isStoppingTime_lowerCrossingTime (a := a) (b := b) (N := N) (n := i) n
   have hu := hf.isStoppingTime_upperCrossingTime (a := a) (b := b) (N := N) (n := i + 1) n
   simp only [ENat.some_eq_coe, Nat.cast_le] at hl hu
-  refine hl.inter ?_
   simp_rw [← not_le]
-  exact hu.compl
+  exact hl.inter hu.compl
 
 theorem Submartingale.sum_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>

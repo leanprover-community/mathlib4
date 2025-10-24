@@ -947,8 +947,7 @@ theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddCommMonoid E] {s : 
       exact ⟨hbdd, mod_cast h⟩
     · intro b _ hneq
       rw [Set.indicator_of_notMem]
-      rw [Set.mem_setOf]
-      rw [← hi]
+      rw [Set.mem_setOf, ← hi]
       exact mod_cast hneq.symm
 
 theorem stoppedProcess_eq'' [LinearOrder ι] [LocallyFiniteOrderBot ι] [AddCommMonoid E] (n : ι) :
