@@ -249,16 +249,17 @@ section LE
 
 variable [LE α] {x y : WithBot α}
 
-/-- The order on `WithBot α`, defined by `⊥ ≤ ⊥`, `⊥ ≤ ↑a` and `a ≤ b → ↑a ≤ ↑b`.
-
-Equivalently, `x ≤ y` can be defined as `∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b`,
-see `le_if_forall`. The definition as an inductive predicate is preferred since it
-cannot be accidentally unfolded too far. -/
+/-- Auxiliary definition for the order on `WithBot`. -/
 @[mk_iff le_def_aux]
 protected inductive LE : WithBot α → WithBot α → Prop
   | protected bot_le (x : WithBot α) : WithBot.LE ⊥ x
   | protected coe_le_coe {a b : α} : a ≤ b → WithBot.LE a b
 
+/-- The order on `WithBot α`, defined by `⊥ ≤ y` and `a ≤ b → ↑a ≤ ↑b`.
+
+Equivalently, `x ≤ y` can be defined as `∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b`,
+see `le_iff_forall`. The definition as an inductive predicate is preferred since it
+cannot be accidentally unfolded too far. -/
 instance (priority := 10) instLE : LE (WithBot α) where le := WithBot.LE
 
 lemma le_def : x ≤ y ↔ x = ⊥ ∨ ∃ a b : α, a ≤ b ∧ x = a ∧ y = b := le_def_aux ..
@@ -305,20 +306,24 @@ section LT
 
 variable [LT α] {x y : WithBot α}
 
+/-- Auxiliary definition for the order on `WithBot`. -/
+@[mk_iff lt_def_aux]
+protected inductive LT : WithBot α → WithBot α → Prop
+  | protected bot_lt (b : α) : WithBot.LT ⊥ b
+  | protected coe_lt_coe {a b : α} : a < b → WithBot.LT a b
+
 /-- The order on `WithBot α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`.
 
-Equivalently, `x ≤ y` can be defined as `∀ b : α, y = ↑v → ∃ a : α, x = ↑a ∧ a ≤ b`,
-see `le_if_forall`. The definition as an inductive predicate is preferred since it
+Equivalently, `x < y` can be defined as `∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b`,
+see `lt_iff_exists`. The definition as an inductive predicate is preferred since it
 cannot be accidentally unfolded too far. -/
-instance (priority := 10) instLT : LT (WithBot α) where
-  lt
-  | ⊥, ⊥ => False
-  | (a : α), ⊥ => False
-  | ⊥, (b : α) => True
-  | (a : α), (b : α) => a < b
+instance (priority := 10) instLT : LT (WithBot α) where lt := WithBot.LT
 
-lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
-  cases x <;> cases y <;> simp [LT.lt]
+lemma lt_def : x < y ↔ (x = ⊥ ∧ ∃ b : α, y = b) ∨ ∃ a b : α, a < b ∧ x = a ∧ y = b :=
+  (lt_def_aux ..).trans <| by simp
+
+lemma lt_iff_exists : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
+  cases x <;> cases y <;> simp [lt_def]
 
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithBot α) < b ↔ a < b := by simp [lt_def]
 @[simp] lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]
@@ -326,7 +331,7 @@ lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b
 
 lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, y = b ∧ x < b := by cases y <;> simp
 
-lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_def]
+lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_iff_exists]
 
 /-- A version of `bot_lt_iff_ne_bot` for `WithBot` that only requires `LT α`, not
 `PartialOrder α`. -/
@@ -834,7 +839,11 @@ section LE
 
 variable [LE α] {x y : WithTop α}
 
-/-- The order on `WithTop α`, defined by `⊤ ≤ ⊤`, `↑a ≤ ⊤` and `a ≤ b → ↑a ≤ ↑b`. -/
+/-- The order on `WithTop α`, defined by `x ≤ ⊤` and `a ≤ b → ↑a ≤ ↑b`.
+
+Equivalently, `x ≤ y` can be defined as `∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a ≤ b`,
+see `le_iff_forall`. The definition as an inductive predicate is preferred since it
+cannot be accidentally unfolded too far. -/
 instance (priority := 10) instLE : LE (WithTop α) where le a b := WithBot.LE (α := αᵒᵈ) b a
 
 lemma le_def : x ≤ y ↔ y = ⊤ ∨ ∃ a b : α, a ≤ b ∧ x = a ∧ y = b :=
@@ -903,17 +912,19 @@ section LT
 
 variable [LT α] {x y : WithTop α}
 
-/-- The order on `WithTop α`, defined by `↑a < ⊤` and `a < b → ↑a < ↑b`. -/
-instance (priority := 10) instLT : LT (WithTop α) where
-  -- We match on `b, a` rather than `a, b` to keep the defeq with `WithBot.instLT (α := αᵒᵈ)`
-  lt a b := match b, a with
-  | ⊤, ⊤ => False
-  | (b : α), ⊤ => False
-  | ⊤, (a : α) => True
-  | (b : α), (a : α) => a < b
+/-- The order on `WithTop α`, defined by `↑a < ⊤` and `a < b → ↑a < ↑b`.
 
-lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b := by
-  cases x <;> cases y <;> simp [LT.lt]
+Equivalently, `x < y` can be defined as `∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b`,
+see `le_if_forall`. The definition as an inductive predicate is preferred since it
+cannot be accidentally unfolded too far. -/
+instance (priority := 10) instLT : LT (WithTop α) where lt a b := WithBot.LT (α := αᵒᵈ) b a
+
+lemma lt_def : x < y ↔ (∃ a : α, x = ↑a) ∧ y = ⊤ ∨ ∃ a b : α, a < b ∧ x = ↑a ∧ y = ↑b :=
+  WithBot.lt_def.trans <| or_congr and_comm <| exists_swap.trans <|
+    exists₂_congr fun _ _ ↦ and_congr_right' and_comm
+
+lemma lt_iff_exists : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b := by
+  cases x <;> cases y <;> simp [lt_def]
 
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithTop α) < b ↔ a < b := by simp [lt_def]
 @[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by simp [lt_def]
@@ -921,7 +932,7 @@ lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b
 
 lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, x = a ∧ a < y := by cases x <;> simp
 
-lemma coe_lt_iff : a < y ↔ ∀ b : α, y = b → a < b := by simp [lt_def]
+lemma coe_lt_iff : a < y ↔ ∀ b : α, y = b → a < b := by simp [lt_iff_exists]
 
 /-- A version of `lt_top_iff_ne_top` for `WithTop` that only requires `LT α`, not
 `PartialOrder α`. -/
