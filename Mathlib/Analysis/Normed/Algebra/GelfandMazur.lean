@@ -112,7 +112,7 @@ open Filter Topology in
 a positive minimum and condition `H` below is satisfied. -/
 private lemma aux {X E : Type*} [TopologicalSpace X] [PreconnectedSpace X]
     [SeminormedAddCommGroup E] {f : X → E} {M : ℝ} {x : X} (hM : 0 < M) (hx : ‖f x‖ = M)
-    (h : ∀ y, M ≤ ‖f y‖) (hf : Continuous f)
+    (h : IsMinOn (‖f ·‖) Set.univ x) (hf : Continuous f)
     (H : ∀ {y} z, ‖f y‖ = M → ∀ n > 0, ‖f z‖ ≤ M * (1 + (‖f z - f y‖ / M) ^ n)) (y : X) :
     ‖f y‖ = M := by
   suffices {y | ‖f y‖ = M} = Set.univ by simpa only [← this, hx] using Set.mem_univ y
@@ -121,7 +121,7 @@ private lemma aux {X E : Type*} [TopologicalSpace X] [PreconnectedSpace X]
   intro w hw
   filter_upwards [mem_map.mp <| hf.tendsto w (Metric.ball_mem_nhds (f w) hM)] with u hu
   simp only [Set.mem_preimage, Metric.mem_ball, dist_eq_norm, ← div_lt_one₀ hM] at hu
-  apply le_antisymm ?_ (h u)
+  apply le_antisymm ?_ (hx ▸ isMinOn_univ_iff.mp h u)
   suffices Tendsto (fun n : ℕ ↦ M * (1 + (‖f u - f w‖ / M) ^ n)) atTop (𝓝 (M * (1 + 0))) by
     refine ge_of_tendsto (by simpa) ?_
     filter_upwards [Filter.Ioi_mem_atTop 0] with n hn
@@ -163,7 +163,7 @@ private lemma le_aeval_of_isMonicOfDegree (x : F) {M : ℝ} (hM : 0 ≤ M)
     rw [H, aeval_mul, norm_mul, mul_comm, pow_succ, H', sub_add, ← sub_smul]
     exact mul_le_mul (ih hf₂) (h (c - r)) hM (norm_nonneg _)
 
-private lemma norm_sub_is_constant {x : F} {z : ℂ} (hz : ∀ z' : ℂ, ‖x - z • 1‖ ≤ ‖x - z' • 1‖)
+private lemma norm_sub_is_constant {x : F} {z : ℂ} (hz : IsMinOn (‖x - · • 1‖) Set.univ z)
     (H : ∀ z' : ℂ, ‖x - z' • 1‖ ≠ 0) (c : ℂ) :
     ‖x - c • 1‖ = ‖x - z • 1‖ := by
   set M := ‖x - z • 1‖ with hMdef
@@ -177,7 +177,7 @@ private lemma norm_sub_is_constant {x : F} {z : ℂ} (hz : ∀ z' : ℂ, ‖x - 
   obtain ⟨p, hp, hrel⟩ :=
     (isMonicOfDegree_X_pow ℂ n).of_dvd_sub (by grind)
       (isMonicOfDegree_X_sub_one (w - y)) (by compute_degree!) <| sub_dvd_pow_sub_pow X _ n
-  grw [le_aeval_of_isMonicOfDegree x hM₀.le hz hp y]
+  grw [le_aeval_of_isMonicOfDegree x hM₀.le (isMinOn_univ_iff.mp hz) hp y]
   rw [eq_comm, ← eq_sub_iff_add_eq, mul_comm] at hrel
   apply_fun (‖aeval (x - y • 1) ·‖) at hrel
   simp only [map_mul, map_sub, aeval_X, aeval_C, Algebra.algebraMap_eq_smul_one, norm_mul,
@@ -188,7 +188,6 @@ private lemma norm_sub_is_constant {x : F} {z : ℂ} (hz : ∀ z' : ℂ, ‖x - 
 lemma exists_norm_sub_smul_one_eq_zero (x : F) :
     ∃ z : ℂ, ‖x - z • 1‖ = 0 := by
   obtain ⟨z, hz⟩ := exists_min_norm_sub_smul ℂ x
-  rw [isMinOn_univ_iff] at hz
   set M := ‖x - z • 1‖ with hM
   rcases eq_or_lt_of_le (show 0 ≤ M from norm_nonneg _) with hM₀ | hM₀
   · exact ⟨z, hM₀.symm⟩
@@ -256,8 +255,8 @@ private lemma le_aeval_of_isMonicOfDegree {x : F} {M : ℝ} (hM : 0 ≤ M)
 /- The key step in the proof: if `a` and `b` are real numbers minimizing `‖x ^ 2 - a • x + b • 1‖`,
 and the minimal value is strictly positive, then the function `(s, t) ↦ ‖x ^ 2 - s • x + t • 1‖`
 is constant. -/
-private lemma is_const_norm_φ {x : F} {z : ℝ × ℝ} (h : ∀ w, ‖φ x z‖ ≤ ‖φ x w‖) (H : ‖φ x z‖ ≠ 0)
-    (w : ℝ × ℝ) :
+private lemma is_const_norm_φ {x : F} {z : ℝ × ℝ} (h : IsMinOn (‖φ x ·‖) Set.univ z)
+    (H : ‖φ x z‖ ≠ 0) (w : ℝ × ℝ) :
     ‖φ x w‖ = ‖φ x z‖ := by
   set M : ℝ := ‖φ x z‖ with hMdef
   have hM₀ : 0 < M := by positivity
@@ -274,7 +273,7 @@ private lemma is_const_norm_φ {x : F} {z : ℝ × ℝ} (h : ∀ w, ‖φ x z‖
   have H' : ((q w - q u) ^ n).natDegree < 2 * n := by rw [hsub]; compute_degree; grind
   obtain ⟨p, hp, hrel⟩ := ((hq w).pow n).of_dvd_sub (by grind) (hq u) H' hdvd; clear H' hdvd hsub
   rw [show 2 * n - 2 = 2 * (n - 1) by grind] at hp
-  grw [le_aeval_of_isMonicOfDegree hM₀.le h hp]
+  grw [le_aeval_of_isMonicOfDegree hM₀.le (isMinOn_univ_iff.mp h) hp]
   rw [← sub_eq_iff_eq_add, eq_comm, mul_comm] at hrel
   apply_fun (‖aeval x ·‖) at hrel
   rw [map_mul, norm_mul, map_sub, aeval_eq_φ x u] at hrel
@@ -347,7 +346,6 @@ with real coefficients. -/
 lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
     ∃ p : ℝ[X], IsMonicOfDegree p 2 ∧ aeval x p = 0 := by
   obtain ⟨z, h⟩ := exists_min_norm_φ x
-  rw [isMinOn_univ_iff] at h
   suffices φ x z = 0 from ⟨_, isMonicOfDegree_sub_add_two z.1 z.2, by rwa [aeval_eq_φ]⟩
   by_contra! H
   set M := ‖φ x z‖
@@ -359,10 +357,11 @@ lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
   refine a_bound (x := x) (c := √M) (by positivity) (fun r ↦ ?_) (b := 0) ?_
   · rw [← sq_le_sq₀ (Real.sqrt_nonneg M) (norm_nonneg _), Real.sq_sqrt hM₀, ← norm_pow,
       Commute.sub_sq <| algebraMap_eq_smul_one (A := F) r ▸ commute_algebraMap_right r x]
+    rw [isMinOn_univ_iff] at h
     convert h (2 * r, r ^ 2) using 4 <;> simp [two_mul, add_smul, _root_.smul_pow]
   · nth_rewrite 2 [show ‖x‖ ^ 2 = ‖x ^ 2 - (0 : ℝ) • x + (0 : ℝ) • 1‖ by simp]
     rw [is_const_norm_φ h (norm_ne_zero_iff.mpr H) (2 * (‖x‖ ^ 2 / √M + 1), 0)]
-    exact h (0, 0)
+    exact isMinOn_univ_iff.mp h (0, 0)
 
 /-- A version of the **Gelfand-Mazur Theorem** over `ℝ`.
 
