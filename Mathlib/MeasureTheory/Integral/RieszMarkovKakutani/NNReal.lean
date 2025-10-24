@@ -143,7 +143,8 @@ lemma fin_integral_prob_meas {μprob : ProbabilityMeasure X} {f : C(X, ℝ)} :
       forall_apply_eq_imp_iff] at hf'
   exact MeasureTheory.HasFiniteIntegral.of_bounded (C := c) <| Filter.Eventually.of_forall hf'
 
-
+/- ### This depends on PRs #30845, #28061 and the sequential Banach-Alaoglu theorem,
+   ### which is to be PRed. -/
 attribute [local irreducible] LevyProkhorov
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let Φ := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1
@@ -275,11 +276,6 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   rw [(ProbabilityMeasure.toFiniteMeasure_isEmbedding _).continuous_iff (f := fun φ ↦ (LevyProkhorov.equiv (ProbabilityMeasure X)).symm ⟨RealRMK.rieszMeasure (Λ φ), ⋯⟩)]
   refine Continuous.subtype_mk (X := Measure X) (Y := ↑Φ) (f := fun φ ↦ (RealRMK.rieszMeasure (Λ φ))) ?_ ?_
   --refine Continuous.subtype_map (X := {p : Measure X // IsProbabilityMeasure p}) (Y := ↑Φ) (f := fun φ ↦ RealRMK.rieszMeasure (Λ φ)) ?_ ?_ ?_
-  -- have hfun_eq : (fun φ => ⟨RealRMK.rieszMeasure (Λ φ), IsPMeas φ⟩)
-  --           = (fun φ => (RealRMK.rieszMeasure (Λ φ) : ProbabilityMeasure X)) := by
-  -- change Continuous (fun φ => (RealRMK.rieszMeasure (Λ φ) : Measure X))
-  -- change Continuous (fun (φ : ↑Φ) ↦ (RealRMK.rieszMeasure (fun (f : X →C_c ℝ) ↦ (φ : WeakDual ℝ C(X, ℝ)) f.toContinuousMap)))
-
 
 
 
