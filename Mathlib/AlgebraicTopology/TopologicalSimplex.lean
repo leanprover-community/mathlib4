@@ -116,7 +116,7 @@ def toTop₀ : SimplexCategory ⥤ TopCat.{0} where
     rw [← Finset.sum_biUnion]
     · apply Finset.sum_congr
       · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
-      · tauto
+      · grind
     · apply Set.pairwiseDisjoint_filter
 
 /-- The functor `SimplexCategory ⥤ TopCat.{u}`

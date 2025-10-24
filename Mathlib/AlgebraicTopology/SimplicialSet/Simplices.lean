@@ -117,7 +117,7 @@ lemma le_iff {s t : X.S} :
 lemma mk_map_le {n m : ℕ} (x : X _⦋n⦌) (f : ⦋m⦌ ⟶ ⦋n⦌) :
     S.mk (X.map f.op x) ≤ S.mk x := by
   rw [le_iff]
-  tauto
+  grind
 
 lemma mk_map_eq_iff_of_mono {n m : ℕ} (x : X _⦋n⦌)
     (f : ⦋m⦌ ⟶ ⦋n⦌) [Mono f] :

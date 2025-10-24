@@ -178,7 +178,7 @@ lemma homogenize_finsetProd {ι : Type*} {s : Finset ι} {p : ι → R[X]} {n : 
 lemma homogenize_dvd [NoZeroDivisors R] {p q : R[X]} (h : p ∣ q) :
     homogenize p p.natDegree ∣ homogenize q q.natDegree := by
   rcases h with ⟨r, rfl⟩
-  obtain rfl | rfl | ⟨hp₀, hr₀⟩ : p = 0 ∨ r = 0 ∨ p ≠ 0 ∧ r ≠ 0 := by tauto
+  obtain rfl | rfl | ⟨hp₀, hr₀⟩ : p = 0 ∨ r = 0 ∨ p ≠ 0 ∧ r ≠ 0 := by grind
   · simp
   · simp
   · rw [natDegree_mul hp₀ hr₀, homogenize_mul _ _ le_rfl le_rfl]
