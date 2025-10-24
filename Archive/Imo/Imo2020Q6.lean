@@ -4,6 +4,8 @@ import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Geometry.Euclidean.SignedDist
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 
+namespace IMO2020Q6
+
 open Finset
 
 theorem exists_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → ℝ) (n : Nat)
@@ -203,10 +205,14 @@ theorem card_le_of_separated_in_strip (eqv : P ≃ᵃⁱ[ℝ] EuclideanSpace ℝ
   · linear_combination xl + yr
   · linear_combination xr + yl
 
+end IMO2020Q6
 
-variable [Fact (Module.finrank ℝ V = 2)]
+open Finset Module IMO2020Q6
 
-theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset P}, #S = n →
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable [NormedAddTorsor V P] [Fact (Module.finrank ℝ V = 2)]
+
+theorem imo2020q6 : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset P}, #S = n →
     ((S : Set P).Pairwise fun x y ↦ 1 ≤ dist x y) →
     ∃ l : AffineSubspace ℝ P, finrank ℝ l.direction = 1 ∧
       (∃ p₁ p₂, p₁ ∈ S ∧ p₂ ∈ S ∧ l.SOppSide p₁ p₂) ∧
@@ -328,5 +334,3 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset
   ring_nf
   field_simp
   norm_num
-
-#min_imports
