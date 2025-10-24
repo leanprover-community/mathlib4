@@ -342,9 +342,7 @@ instance : AddLeftReflectLE NatOrdinal.{u} :=
   ⟨fun a b c h => by by_contra! h'; exact h.not_gt (by gcongr)⟩
 
 instance : AddCommMonoid NatOrdinal :=
-  { add := (· + ·)
-    add_assoc := nadd_assoc
-    zero := 0
+  { add_assoc := nadd_assoc
     zero_add := zero_nadd
     add_zero := nadd_zero
     add_comm := nadd_comm
@@ -681,20 +679,20 @@ theorem nmul_nadd_le {a b a' b' : NatOrdinal} (ha : a' ≤ a) (hb : b' ≤ b) :
 
 instance : CommSemiring NatOrdinal :=
   { NatOrdinal.instAddCommMonoid with
-    mul := (· * ·)
     left_distrib := nmul_nadd
     right_distrib := nadd_nmul
     zero_mul := zero_nmul
     mul_zero := nmul_zero
     mul_assoc := nmul_assoc
-    one := 1
     one_mul := one_nmul
     mul_one := nmul_one
     mul_comm := nmul_comm }
 
-instance : IsOrderedRing NatOrdinal :=
-  { mul_le_mul_of_nonneg_left := fun _ _ c h _ => nmul_le_nmul_left h c
-    mul_le_mul_of_nonneg_right := fun _ _ c h _ => nmul_le_nmul_right h c }
+instance : IsOrderedMonoid NatOrdinal where
+  mul_le_mul_left _a _b hab _c := nmul_le_nmul_left hab _
+  mul_le_mul_right _a _b hab _c := nmul_le_nmul_right hab _
+
+instance : IsOrderedRing NatOrdinal where
 
 end NatOrdinal
 

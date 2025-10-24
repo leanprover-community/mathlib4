@@ -25,7 +25,7 @@ variable {α β : Type*} [DecidableEq β]
 /-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
 then the same is true for `(0 : Finset β)`. -/
 protected def smulZeroClass [Zero β] [SMulZeroClass α β] : SMulZeroClass α (Finset β) :=
-  coe_injective.smulZeroClass ⟨toSet, coe_zero⟩ coe_smul_finset
+  coe_injective.smulZeroClass ⟨_, coe_zero⟩ coe_smul_finset
 
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Finset β → Finset β`. -/
@@ -48,16 +48,16 @@ scoped[Pointwise] attribute [instance] Finset.smulZeroClass Finset.distribSMul
   Finset.distribMulAction Finset.mulDistribMulAction
 
 instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) :=
-  Function.Injective.noZeroDivisors toSet coe_injective coe_zero coe_mul
+  Function.Injective.noZeroDivisors _ coe_injective coe_zero coe_mul
 
 instance noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Finset α) (Finset β) where
   eq_zero_or_eq_zero_of_smul_eq_zero {s t} := by
-    exact_mod_cast eq_zero_or_eq_zero_of_smul_eq_zero (c := s.toSet) (x := t.toSet)
+    exact_mod_cast eq_zero_or_eq_zero_of_smul_eq_zero (c := (s : Set α)) (x := (t : Set β))
 
 instance noZeroSMulDivisors_finset [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Finset β) :=
-  Function.Injective.noZeroSMulDivisors toSet coe_injective coe_zero coe_smul_finset
+  Function.Injective.noZeroSMulDivisors _ coe_injective coe_zero coe_smul_finset
 
 section SMulZeroClass
 variable [Zero β] [SMulZeroClass α β] {s : Finset α} {t : Finset β} {a : α}
