@@ -856,8 +856,8 @@ section
 variable {f g : X ⟶ Y} {Z : C} (h : Z ⟶ X)
 
 /--
-Given a fork `s` on morphisms `f, g : X ⟶ Y`, and a pullback cone `c` on `s.ι : s.pt ⟶ X` and
-`h : Z ⟶ X`, the projection `c.snd : c.pt ⟶ Z` induces a fork on `h ≫ f` and `h ≫ g`.
+Given a fork `s` on morphisms `f, g : X ⟶ Y` and a pullback cone `c` on `s.ι : s.pt ⟶ X` and a
+morphism `h : Z ⟶ X`, the projection `c.snd : c.pt ⟶ Z` induces a fork on `h ≫ f` and `h ≫ g`.
 -/
 def precompFork (s : Fork f g) (c : PullbackCone s.ι h) :
     Fork (h ≫ f) (h ≫ g) :=
