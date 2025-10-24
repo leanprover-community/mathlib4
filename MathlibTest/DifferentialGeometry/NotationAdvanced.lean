@@ -8,6 +8,7 @@ import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.BumpFunction
 import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 import Mathlib.Geometry.Manifold.VectorField.LieBracket
+
 /-!
 # Tests for the differential geometry elaborators which require stronger imports
 -/
