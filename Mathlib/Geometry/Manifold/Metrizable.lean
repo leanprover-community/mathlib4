@@ -11,14 +11,14 @@ import Mathlib.Topology.Metrizable.Urysohn
 /-!
 # Metrizability of a σ-compact manifold
 
-In this file we show that a σ-compact Hausdorff topological manifold over a finite dimensional real
+In this file we show that a σ-compact Hausdorff topological manifold over a finite-dimensional real
 vector space is metrizable.
 -/
 
 
 open TopologicalSpace
 
-/-- A σ-compact Hausdorff topological manifold over a finite dimensional real vector space is
+/-- A σ-compact Hausdorff topological manifold over a finite-dimensional real vector space is
 metrizable. -/
 theorem Manifold.metrizableSpace {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)

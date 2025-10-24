@@ -71,18 +71,13 @@ theorem _root_.PowerBasis.ofAdjoinEqTop_dim {x : S} (hx : IsIntegral K x)
     (hx' : adjoin K {x} = ⊤) :
     (PowerBasis.ofAdjoinEqTop hx hx').dim = (minpoly K x).natDegree := rfl
 
+@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
+  deprecated definition" (since := "2025-09-29")] alias PowerBasis.ofGenMemAdjoin :=
+  PowerBasis.ofAdjoinEqTop
+
 end Algebra
 
 open Algebra
-
-/-- The power basis given by `x` if `B.gen ∈ adjoin K {x}`. See `PowerBasis.ofGenMemAdjoin'`
-for a version over a more general base ring. -/
-@[simps!]
-noncomputable def PowerBasis.ofGenMemAdjoin {x : S} (B : PowerBasis K S) (hint : IsIntegral K x)
-    (hx : B.gen ∈ adjoin K ({x} : Set S)) : PowerBasis K S :=
-  (Algebra.adjoin.powerBasis hint).map <|
-    (Subalgebra.equivOfEq _ _ <| PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx).trans
-      Subalgebra.topEquiv
 
 section IsIntegral
 

@@ -71,7 +71,7 @@ protected theorem Adj.reachable {u v : V} (h : G.Adj u v) : G.Reachable u v :=
 @[refl]
 protected theorem Reachable.refl (u : V) : G.Reachable u u := ⟨Walk.nil⟩
 
-protected theorem Reachable.rfl {u : V} : G.Reachable u u := Reachable.refl _
+@[simp] protected theorem Reachable.rfl {u : V} : G.Reachable u u := Reachable.refl _
 
 @[symm]
 protected theorem Reachable.symm {u v : V} (huv : G.Reachable u v) : G.Reachable v u :=
@@ -142,6 +142,11 @@ theorem reachable_is_equivalence : Equivalence G.Reachable :=
 lemma reachable_bot {u v : V} : (⊥ : SimpleGraph V).Reachable u v ↔ u = v :=
   ⟨fun h ↦ h.elim fun p ↦ match p with | .nil => rfl, fun h ↦ h ▸ .rfl⟩
 
+@[simp] lemma reachable_top {u v : V} : (completeGraph V).Reachable u v := by
+  obtain rfl | huv := eq_or_ne u v
+  · simp
+  · exact ⟨.cons huv .nil⟩
+
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 
@@ -156,19 +161,25 @@ theorem Preconnected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H)
 protected lemma Preconnected.mono {G G' : SimpleGraph V} (h : G ≤ G') (hG : G.Preconnected) :
     G'.Preconnected := fun u v => (hG u v).mono h
 
-lemma bot_preconnected_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
+lemma preconnected_bot_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simpa [subsingleton_iff, ← reachable_bot] using h⟩
-  contrapose h
-  simp [nontrivial_iff.mp <| not_subsingleton_iff_nontrivial.mp h, Preconnected, reachable_bot]
+  contrapose! h
+  simp [nontrivial_iff.mp h, Preconnected, reachable_bot]
 
-lemma bot_preconnected [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
-  bot_preconnected_iff_subsingleton.mpr ‹_›
+lemma preconnected_bot [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
+  preconnected_bot_iff_subsingleton.mpr ‹_›
 
-lemma bot_not_preconnected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected :=
-  bot_preconnected_iff_subsingleton.not.mpr <| not_subsingleton_iff_nontrivial.mpr ‹_›
+lemma not_preconnected_bot [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected :=
+  preconnected_bot_iff_subsingleton.not.mpr <| not_subsingleton_iff_nontrivial.mpr ‹_›
 
-lemma top_preconnected : (⊤ : SimpleGraph V).Preconnected := fun x y => by
+@[simp] lemma preconnected_top : (⊤ : SimpleGraph V).Preconnected := fun x y => by
   if h : x = y then rw [h] else exact Adj.reachable h
+
+@[deprecated (since := "2025-09-23")] alias bot_preconnected := preconnected_bot
+@[deprecated (since := "2025-09-23")]
+alias bot_preconnected_iff_subsingleton := preconnected_bot_iff_subsingleton
+@[deprecated (since := "2025-09-23")] alias bot_not_preconnected := not_preconnected_bot
+@[deprecated (since := "2025-09-23")] alias top_preconnected := preconnected_top
 
 theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
     G.Preconnected ↔ H.Preconnected :=
@@ -268,11 +279,18 @@ theorem Connected.exists_isPath {G : SimpleGraph V} (h : G.Connected) (u v : V) 
     ∃ p : G.Walk u v, p.IsPath :=
   (h u v).exists_isPath
 
-lemma bot_not_connected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
-  simp [bot_not_preconnected, connected_iff]
+lemma connected_bot_iff : (⊥ : SimpleGraph V).Connected ↔ Subsingleton V ∧ Nonempty V := by
+  simp [preconnected_bot_iff_subsingleton, connected_iff]
 
-lemma top_connected [Nonempty V] : (⊤ : SimpleGraph V).Connected where
-  preconnected := top_preconnected
+lemma not_connected_bot [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
+  simp [not_preconnected_bot, connected_iff]
+
+lemma connected_top_iff : (completeGraph V).Connected ↔ Nonempty V := by simp [connected_iff]
+
+@[simp] lemma connected_top [Nonempty V] : (completeGraph V).Connected := by rwa [connected_top_iff]
+
+@[deprecated (since := "2025-09-23")] alias bot_not_connected := not_connected_bot
+@[deprecated (since := "2025-09-23")] alias top_connected := connected_top
 
 theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
     G.Connected ↔ H.Connected :=
@@ -295,8 +313,7 @@ instance inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
 
 instance isEmpty [IsEmpty V] : IsEmpty (ConnectedComponent G) := by
   by_contra! hc
-  rw [@not_isEmpty_iff] at hc
-  obtain ⟨v, _⟩ := (Classical.inhabited_of_nonempty hc).default.exists_rep
+  obtain ⟨v, _⟩ := hc.some.exists_rep
   exact IsEmpty.false v
 
 @[elab_as_elim]
@@ -512,11 +529,9 @@ lemma biUnion_supp_eq_supp {G G' : SimpleGraph V} (h : G ≤ G') (c' : Connected
 
 lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
     c.supp = (Set.univ : Set V) := by
-  have ⟨w, hw⟩ := c.exists_rep
+  obtain ⟨w, rfl⟩ := c.exists_rep
   ext v
-  simp only [Set.mem_univ, iff_true, mem_supp_iff, ← hw]
-  apply ConnectedComponent.sound
-  exact (@top_connected V (Nonempty.intro v)).preconnected v w
+  simpa [-ConnectedComponent.eq] using ConnectedComponent.sound (G := ⊤)
 
 lemma reachable_of_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C.supp) (hv : v ∈ C.supp) : G.Reachable u v := by
@@ -738,13 +753,13 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   · rwa [deleteEdges, Disjoint.sdiff_eq_left (by simpa)]
   refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
   obtain ⟨P, hP⟩ := hG.exists_isPath w x
-  obtain heP | heP := em' <| s(x,y) ∈ P.edges
-  · exact ⟨(P.toDeleteEdges {s(x,y)} (by aesop)).reverse⟩
+  obtain heP | heP := em' <| s(x, y) ∈ P.edges
+  · exact ⟨(P.toDeleteEdges {s(x, y)} (by aesop)).reverse⟩
   have hyP := P.snd_mem_support_of_mem_edges heP
   let P₁ := P.takeUntil y hyP
   have hxP₁ := Walk.endpoint_notMem_support_takeUntil hP hyP hxy.ne
-  have heP₁ : s(x,y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
-  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x,y)} (by aesop)⟩)
+  have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
+  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by aesop)⟩)
 
 end BridgeEdges
 

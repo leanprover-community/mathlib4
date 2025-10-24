@@ -295,7 +295,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   rw [if_pos]
   · gcongr
     exact (hi.2 _).1
-  rfl
+  simp [j]
 
 /-- There is a cube in the valley -/
 theorem nonempty_bcubes : (bcubes cs c).Nonempty :=
@@ -401,7 +401,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     suffices ∀ j : Fin n, ite (j = j') x' ((cs i).b j.succ) ∈ c.side j.succ by
       simpa [p', bottom, toSet, tail, side_tail]
     intro j₂
-    by_cases hj₂ : j₂ = j'; · simp [hj₂]; apply tail_sub h2i'; apply hx'.1
+    by_cases hj₂ : j₂ = j'; · simpa [hj₂] using tail_sub h2i' _ hx'.1
     simp only [if_false, hj₂]; apply tail_sub hi; apply b_mem_side
   rcases v.1 hp' with ⟨_, ⟨i'', rfl⟩, hi''⟩
   have h2i'' : i'' ∈ bcubes cs c := ⟨hi''.1.symm, v.2.1 i'' hi''.1.symm ⟨tail p', hi''.2, hp'.2⟩⟩

@@ -6,7 +6,7 @@ Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van
 import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Galois fields
@@ -24,6 +24,9 @@ It is a finite field with `p ^ n` elements.
 - `GaloisField.algEquivGaloisField`: Any finite field is isomorphic to some Galois field
 - `FiniteField.algEquivOfCardEq`: Uniqueness of finite fields : algebra isomorphism
 - `FiniteField.ringEquivOfCardEq`: Uniqueness of finite fields : ring isomorphism
+- `card_algHom_of_finrank_dvd`: if `[K:F] ∣ [L:F]` then `#(K →ₐ[F] L) = [K:F]`
+- `nonempty_algHom_iff_finrank_dvd`: `(K →ₐ[F] L)` is nonempty iff `[K:F] ∣ [L:F]`. This and the
+  above result helps to classify the category of finite fields.
 
 -/
 
@@ -107,7 +110,7 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     simp only [coeff_X_pow, coeff_X_zero, sub_zero, _root_.map_eq_zero, ite_eq_right_iff,
       one_ne_zero, coeff_sub]
     intro hn
-    exact Nat.not_lt_zero 1 (pow_eq_zero hn.symm ▸ hp)
+    exact Nat.not_lt_zero 1 (eq_zero_of_pow_eq_zero hn.symm ▸ hp)
   · simp
   · simp only [aeval_X_pow, aeval_X, map_sub, add_pow_char_pow, sub_eq_zero]
     intro x y _ _ hx hy
@@ -154,7 +157,7 @@ theorem _root_.FiniteField.isSplittingField_of_card_eq (h : Fintype.card K = p ^
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) :=
   h ▸ FiniteField.isSplittingField_sub K (ZMod p)
 
-/-- Any finite field is (possibly non canonically) isomorphic to some Galois field. -/
+/-- Any finite field is (possibly noncanonically) isomorphic to some Galois field. -/
 def algEquivGaloisFieldOfFintype (h : Fintype.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
   haveI := FiniteField.isSplittingField_of_card_eq _ _ h
   IsSplittingField.algEquiv _ _
@@ -183,13 +186,13 @@ instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Alge
   cases nonempty_fintype K'
   obtain ⟨p, hp⟩ := CharP.exists K
   haveI : CharP K p := hp
-  haveI : CharP K' p := charP_of_injective_algebraMap' K K' p
+  haveI : CharP K' p := charP_of_injective_algebraMap' K p
   exact IsGalois.of_separable_splitting_field
     (galois_poly_separable p (Fintype.card K')
       (let ⟨n, _, hn⟩ := FiniteField.card K' p
       hn.symm ▸ dvd_pow_self p n.ne_zero))
 
-/-- Any finite field is (possibly non canonically) isomorphic to some Galois field. -/
+/-- Any finite field is (possibly noncanonically) isomorphic to some Galois field. -/
 def algEquivGaloisField (h : Nat.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
   haveI := FiniteField.isSplittingField_of_nat_card_eq _ _ h
   IsSplittingField.algEquiv _ _
@@ -241,7 +244,7 @@ end norm
 variable [Fintype K] [Fintype K']
 
 /-- Uniqueness of finite fields:
-  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic -/
+  Any two finite fields of the same cardinality are (possibly noncanonically) isomorphic -/
 def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Algebra (ZMod p) K']
     (hKK' : Fintype.card K = Fintype.card K') : K ≃ₐ[ZMod p] K' := by
   have : CharP K p := by rw [← Algebra.charP_iff (ZMod p) K p]; exact ZMod.charP p
@@ -255,7 +258,7 @@ def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Al
   exact AlgEquiv.trans hGalK hK'Gal
 
 /-- Uniqueness of finite fields:
-  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic -/
+  Any two finite fields of the same cardinality are (possibly noncanonically) isomorphic -/
 def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := by
   choose p _char_p_K using CharP.exists K
   choose p' _char_p'_K' using CharP.exists K'
@@ -271,5 +274,54 @@ def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := 
   letI : Algebra (ZMod p) K := ZMod.algebra _ _
   letI : Algebra (ZMod p) K' := ZMod.algebra _ _
   exact ↑(algEquivOfCardEq p hKK')
+
+theorem pow_finrank_eq_natCard (p : ℕ) [Fact p.Prime]
+    (k : Type*) [AddCommGroup k] [Finite k] [Module (ZMod p) k] :
+    p ^ Module.finrank (ZMod p) k = Nat.card k := by
+  rw [Module.natCard_eq_pow_finrank (K := ZMod p), Nat.card_zmod]
+
+theorem pow_finrank_eq_card (p : ℕ) [Fact p.Prime]
+    (k : Type*) [AddCommGroup k] [Fintype k] [Module (ZMod p) k] :
+    p ^ Module.finrank (ZMod p) k = Fintype.card k := by
+  rw [pow_finrank_eq_natCard, Fintype.card_eq_nat_card]
+
+section
+variable {F K L : Type*} [Field F] [Field K] [Algebra F K] [Field L] [Algebra F L] [Finite L]
+
+theorem nonempty_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finrank F L) :
+    Nonempty (K →ₐ[F] L) := by
+  have := Finite.of_injective _ (algebraMap F L).injective
+  have := Fintype.ofFinite F
+  have := Module.finite_of_finrank_pos (Nat.pos_of_dvd_of_pos h Module.finrank_pos)
+  have := Module.finite_of_finite F (M := K)
+  have := Fintype.ofFinite K
+  have := Fintype.ofFinite L
+  refine ⟨Polynomial.IsSplittingField.lift _ (X ^ Fintype.card K - X) ?_⟩
+  refine Polynomial.splits_of_splits_of_dvd _ ?_
+    (FiniteField.isSplittingField_sub L F).splits ?_
+  · exact FiniteField.X_pow_card_sub_X_ne_zero _ Fintype.one_lt_card
+  · rw [Module.card_eq_pow_finrank (K := F), Module.card_eq_pow_finrank (K := F) (V := L)]
+    exact dvd_pow_pow_sub_self_of_dvd h
+
+theorem natCard_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finrank F L) :
+    Nat.card (K →ₐ[F] L) = Module.finrank F K := by
+  obtain ⟨f⟩ := nonempty_algHom_of_finrank_dvd h
+  algebraize [f.toRingHom]
+  have := Finite.of_injective _ (algebraMap K L).injective
+  rw [Nat.card_congr (Normal.algHomEquivAut F L K), IsGalois.card_aut_eq_finrank]
+
+theorem card_algHom_of_finrank_dvd [Finite K]
+    (h : Module.finrank F K ∣ Module.finrank F L) :
+    Fintype.card (K →ₐ[F] L) = Module.finrank F K := by
+  rw [Fintype.card_eq_nat_card, natCard_algHom_of_finrank_dvd h]
+
+theorem nonempty_algHom_iff_finrank_dvd :
+    Nonempty (K →ₐ[F] L) ↔ Module.finrank F K ∣ Module.finrank F L := by
+  refine ⟨fun ⟨f⟩ ↦ ?_, nonempty_algHom_of_finrank_dvd⟩
+  algebraize [f.toRingHom]
+  rw [← Module.finrank_mul_finrank F K L]
+  exact dvd_mul_right _ _
+
+end
 
 end FiniteField

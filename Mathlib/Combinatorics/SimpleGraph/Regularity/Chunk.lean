@@ -110,11 +110,8 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     split_ifs with h₁
     · convert card_parts_equitabilise_subset_le _ (card_aux₁ h₁) hB
     · convert card_parts_equitabilise_subset_le _ (card_aux₂ hP hU h₁) hB
-  rw [sum_const]
-  refine mul_le_mul_right' ?_ _
-  have t := card_filter_atomise_le_two_pow (s := U) hX
-  refine t.trans (pow_right_mono₀ (by simp) <| tsub_le_tsub_right ?_ _)
-  exact card_image_le.trans (card_le_card <| filter_subset _ _)
+  grw [sum_const, smul_eq_mul, card_filter_atomise_le_two_pow (s := U) hX,
+    Finpartition.card_nonuniformWitnesses_le, filter_subset] <;> simp
 
 private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ P.parts)
     (hUV : U ≠ V) (hunif : ¬G.IsUniform ε U V) (hPε : ↑100 ≤ ↑4 ^ #P.parts * ε ^ 5)
@@ -216,7 +213,7 @@ private theorem one_sub_le_m_div_m_add_one_sq [Nonempty α]
     rw [one_sub_div coe_m_add_one_pos.ne', add_sub_cancel_right]
   rw [this, sub_sq, one_pow, mul_one]
   refine le_trans ?_ (le_add_of_nonneg_right <| sq_nonneg _)
-  rw [sub_le_sub_iff_left, ← le_div_iff₀' (show (0 : ℝ) < 2 by norm_num), div_div,
+  rw [sub_le_sub_iff_left, ← le_div_iff₀' (show (0 : ℝ) < 2 by simp), div_div,
     one_div_le coe_m_add_one_pos, one_div_div]
   · refine le_trans ?_ (le_add_of_nonneg_right zero_le_one)
     norm_num
@@ -341,7 +338,7 @@ private theorem edgeDensity_chunk_aux [Nonempty α] (hP)
   · refine (sub_nonpos_of_le <| (sq_le ?_ ?_).trans <| hGε.trans ?_).trans (sq_nonneg _)
     · exact mod_cast G.edgeDensity_nonneg _ _
     · exact mod_cast G.edgeDensity_le_one _ _
-    · exact div_le_div_of_nonneg_left (by sz_positivity) (by norm_num) (by norm_num)
+    · exact div_le_div_of_nonneg_left (by sz_positivity) (by simp) (by norm_num)
   rw [← sub_nonneg] at hGε
   have : 0 ≤ ε := by sz_positivity
   calc
@@ -376,13 +373,13 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : #P.parts * 16 ^ #P.pa
     ↑4 / ↑5 * ε ≤ #(star hP G ε hU V) / ↑4 ^ #P.parts := by
   have hm : (0 : ℝ) ≤ 1 - (↑m)⁻¹ := sub_nonneg_of_le (inv_le_one_of_one_le₀ <| one_le_m_coe hPα)
   have hε : 0 ≤ 1 - ε / 10 :=
-    sub_nonneg_of_le (div_le_one_of_le₀ (hε₁.trans <| by norm_num) <| by norm_num)
+    sub_nonneg_of_le (div_le_one_of_le₀ (hε₁.trans <| by simp) <| by norm_num)
   have hε₀ : 0 < ε := by sz_positivity
   calc
     4 / 5 * ε = (1 - 1 / 10) * (1 - 9⁻¹) * ε := by norm_num
     _ ≤ (1 - ε / 10) * (1 - (↑m)⁻¹) * (#(G.nonuniformWitness ε U V) / #U) := by
         gcongr
-        exacts [mod_cast (show 9 ≤ 100 by norm_num).trans (hundred_le_m hPα hPε hε₁),
+        exacts [mod_cast (show 9 ≤ 100 by simp).trans (hundred_le_m hPα hPε hε₁),
           (le_div_iff₀' <| cast_pos.2 (P.nonempty_of_mem_parts hU).card_pos).2 <|
            G.le_card_nonuniformWitness hunif]
     _ = (1 - ε / 10) * #(G.nonuniformWitness ε U V) * ((1 - (↑m)⁻¹) / #U) := by
@@ -445,7 +442,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     norm_num at this
     exact this
   have hε' : ε ^ 5 ≤ ε := by
-    simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by norm_num)
+    simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by simp)
   rw [abs_sub_le_iff] at hrs hpr hqt
   rw [le_abs] at hst ⊢
   cases hst
@@ -464,7 +461,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
     ↑(G.edgeDensity U V) ^ 2 - ε ^ 5 / 25 + ε ^ 4 / ↑3 ≤ ↑(G.edgeDensity U V) ^ 2 - ε ^ 5 / ↑25 +
         #(star hP G ε hU V) * #(star hP G ε hV U) / ↑16 ^ #P.parts *
           (↑9 / ↑16) * ε ^ 2 := by
-      apply add_le_add_left
+      gcongr
       have Ul : 4 / 5 * ε ≤ #(star hP G ε hU V) / _ :=
         eps_le_card_star_div hPα hPε hε₁ hU hV hUVne hUV
       have Vl : 4 / 5 * ε ≤ #(star hP G ε hV U) / _ :=
@@ -501,7 +498,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
       · rw [sp, card_product]
         apply (edgeDensity_chunk_aux hP hPα hPε hU hV).trans
         · rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← mul_pow]
-          norm_num
+          simp
 
 /-- Lower bound on the edge densities between parts of `SzemerediRegularity.increment`. This is the
 blanket lower bound used the uniform parts. -/

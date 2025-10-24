@@ -72,6 +72,8 @@ instance instIsRightCancelMul [Mul α] [IsLeftCancelMul α] : IsRightCancelMul �
 instance instIsLeftCancelMul [Mul α] [IsRightCancelMul α] : IsLeftCancelMul αᵐᵒᵖ where
   mul_left_cancel _ _ _ h := unop_injective <| mul_right_cancel <| op_injective h
 
+@[to_additive] instance instIsCancelMul [Mul α] [IsCancelMul α] : IsCancelMul αᵐᵒᵖ where
+
 @[to_additive]
 instance instSemigroup [Semigroup α] : Semigroup αᵐᵒᵖ where
   mul_assoc x y z := unop_injective <| Eq.symm <| mul_assoc (unop z) (unop y) (unop x)
