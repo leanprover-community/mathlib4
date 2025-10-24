@@ -729,8 +729,8 @@ theorem stoppedProcess_eq_stoppedValue {u : ι → Ω → β} {τ : Ω → WithT
 
 theorem stoppedValue_stoppedProcess {u : ι → Ω → β} {τ σ : Ω → WithTop ι} :
     stoppedValue (stoppedProcess u τ) σ =
-    fun ω ↦ if σ ω ≠ ⊤ then stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) ω
-    else stoppedValue u (fun ω ↦ min (Classical.arbitrary ι) (τ ω)) ω := by
+      fun ω ↦ if σ ω ≠ ⊤ then stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) ω
+      else stoppedValue u (fun ω ↦ min (Classical.arbitrary ι) (τ ω)) ω := by
   ext ω
   simp only [stoppedValue, stoppedProcess, ne_eq, ite_not]
   cases σ ω <;> cases τ ω <;> simp
