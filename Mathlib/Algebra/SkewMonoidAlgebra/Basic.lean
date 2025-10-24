@@ -3,6 +3,9 @@ Copyright (c) 2024 María Inés de Frutos Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.Algebra.Algebra.NonUnitalHom
 
@@ -155,6 +158,12 @@ theorem support_zero : (0 : SkewMonoidAlgebra k G).support = ∅ := rfl
 theorem support_eq_empty {p} : p.support = ∅ ↔ (p : SkewMonoidAlgebra k G) = 0 := by
   rcases p
   simp only [support, Finsupp.support_eq_empty, ofFinsupp_eq_zero]
+
+lemma support_add [DecidableEq G] {p q : SkewMonoidAlgebra k G} :
+    (p + q).support ⊆ p.support ∪ q.support := by
+  simp only [support]
+  erw [toFinsupp_add p q]
+  exact Finsupp.support_add
 
 end Support
 

@@ -29,7 +29,7 @@ The endomorphism `φ` is implemented using some action of `Multiplicative ℕ` o
 From this action, `φ` is an `abbrev` denoting $(\text{ofAdd } 1) \cdot a := \varphi(a)$.
 
 Users that want to work with a specific map `φ` should introduce an an action of
-`Multiplicative ℕ` on `R`. Specifying that this action is a `MulSemiringAction` amount
+`Multiplicative ℕ` on `R`. Specifying that this action is a `MulSemiringAction` amounts
 to saying that `φ` is an endomorphism.
 
 Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_apply`.
@@ -39,12 +39,9 @@ Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_a
 The implementation uses `Muliplicative ℕ` instead of `ℕ` as some notion
 of `AddSkewMonoidAlgebra` like the current implementation of `Polynomials` in Mathlib.
 
-This decision was made for two reasons:
-  - To not have to create two essentially equivalent notions of
-    skew monoid algebras - one additive and one multiplicative
-  - Because we use the type class `MulSemiringAction` to specify the properties
-  the action needs to respects for associativity. There are no version of this that
-  uses an acting `AddMonoid M` and so we need to use `Multiplicative ℕ` for the action anyways.
+This decision was made because we use the type class `MulSemiringAction` to specify the properties
+the action needs to respect for associativity. There is no version of this in Mathlib that
+uses an acting `AddMonoid M` and so we need to use `Multiplicative ℕ` for the action.
 
 For associativity to hold, there should be an instance of
 `MulSemiringAction (Multiplicative ℕ) R` present in the context.
@@ -53,7 +50,7 @@ $q$-th Frobenius endomorphism - so $\varphi(a) = a^q$.
 
 ## Reference
 
-The definition is inspired of [Papikian2023].
+The definition is inspired by [Papikian2023].
 
 ## Tags
 
@@ -107,18 +104,15 @@ instance [Subsingleton R] : Unique (SkewPolynomial R) :=
 /--
 The set of all `n` such that `X^n` has a non-zero coefficient.
 -/
-def support (p : SkewPolynomial R) : Finset ℕ := SkewMonoidAlgebra.support p
+abbrev support (p : SkewPolynomial R) : Finset ℕ := SkewMonoidAlgebra.support p
 
 @[simp] lemma support_zero : (0 : SkewPolynomial R).support = ∅ := rfl
 
-@[simp] lemma support_eq_empty : p.support = ∅ ↔ p = 0 := by
-  simp [support]
+@[simp] lemma support_eq_empty : p.support = ∅ ↔ p = 0 := by simp [support]
 
-lemma card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by
-  simp
+lemma card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 
-lemma support_add : (p + q).support ⊆ p.support ∪ q.support := by
-  simp [support, ← support_toFinsupp, toFinsupp_add p q, Finsupp.support_add]
+lemma support_add : (p + q).support ⊆ p.support ∪ q.support := SkewMonoidAlgebra.support_add
 
 section phi
 
