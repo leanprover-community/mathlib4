@@ -14,11 +14,15 @@ subrings such that `Frac R₁ ⊔ Frac R₂ = Frac B`, `Frac R₁` and `Frac R�
 over `Frac A`, and that `𝓓(R₁/A)` and `𝓓(R₂/A)` are coprime where `𝓓` denotes the different ideal
 and `Frac R` denotes the fraction field of a domain `R`.
 
-# Main results
+# Main results and definitions
 
 * `FractionalIdeal.differentIdeal_eq_map_differentIdeal`: `𝓓(B/R₁) = 𝓓(R₂/A)`
 * `FractionalIdeal.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime`:
   `𝓓(B/A) = 𝓓(R₁/A) * 𝓓(R₂/A)`.
+* `Module.Basis.ofIsCoprimeDifferentIdeal`: Construct a `R₁`-basis of `B` by lifting an
+  `A`-basis of `R₂`.
+* `IsDedekindDomain.range_sup_range_eq_top_of_isCoprime_differentIdeal`: `B` is generated
+  (as an `A`-algebra) by `R₁` and `R₂`.
 
 -/
 
@@ -109,6 +113,13 @@ theorem differentIdeal_eq_map_differentIdeal [Module.Free A R₂] (h₁ : F₁.L
   · exact differentIdeal_dvd_map_differentIdeal A B R₁ R₂ h₁ h₂
   · exact map_differentIdeal_dvd_differentIdeal A B R₁ R₂ h₃
 
+/--
+Let `A ⊆ B` be a finite extension of Dedekind domains and assume that `A ⊆ R₁, R₂ ⊆ B` are two
+subrings such that `Frac R₁ ⊔ Frac R₂ = Frac B`, `Frac R₁` and `Frac R₂` are linearly disjoint
+over `Frac A`, and that `𝓓(R₁/A)` and `𝓓(R₂/A)` are coprime where `𝓓` denotes the different ideal
+and `Frac R` denotes the fraction field of a domain `R`.
+We have `𝓓(B/A) = 𝓓(R₁/A) * 𝓓(R₂/A)`.
+-/
 theorem differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime
     [Module.Free A R₂] (h₁ : F₁.LinearDisjoint F₂) (h₂ : F₁ ⊔ F₂ = ⊤)
     (h₃ : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
@@ -130,11 +141,8 @@ theorem Submodule.traceDual_eq_span_map_traceDual_of_linearDisjoint [Module.Free
     refine Algebra.IsSeparable.of_equiv_equiv (FractionRing.algEquiv A K).symm.toRingEquiv
           (FractionRing.algEquiv R₂ F₂).symm.toRingEquiv ?_
     ext x
-    obtain ⟨r, s, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-    simp_rw [AlgEquiv.toRingEquiv_eq_coe, map_div₀, RingHom.coe_comp,
-      RingHom.coe_coe, Function.comp_apply, AlgEquiv.coe_ringEquiv,
-      ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A R₂ F₂,
-      AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
+    exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K).symm
+      (FractionRing.algEquiv R₂ ↥F₂).symm _
   suffices span B (algebraMap F₂ L '' (traceDual A K (1 : Submodule R₂ F₂))) ≤
       traceDual R₁ F₁ (1 : Submodule B L) by
     apply le_antisymm
@@ -154,7 +162,7 @@ theorem Submodule.traceDual_eq_span_map_traceDual_of_linearDisjoint [Module.Free
 
 namespace Module.Basis
 
-theorem ofIsCoprimeDifferentIdeal_aux [Module.Free A R₂]
+private theorem ofIsCoprimeDifferentIdeal_aux [Module.Free A R₂]
     (h₁ : F₁.LinearDisjoint F₂) (h₂ : F₁.toSubalgebra ⊔ F₂.toSubalgebra = ⊤)
     (h₃ : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
       ((differentIdeal A R₂).map (algebraMap R₂ B))) {ι : Type*} (b : Basis ι K F₂)
@@ -182,6 +190,10 @@ theorem ofIsCoprimeDifferentIdeal_aux [Module.Free A R₂]
     ext; simp
 
 /--
+Let `A ⊆ B` be a finite extension of Dedekind domains and assume that `A ⊆ R₁, R₂ ⊆ B` are two
+subrings such that `Frac R₁ ⊔ Frac R₂ = Frac B`, `Frac R₁` and `Frac R₂` are linearly disjoint
+over `Frac A`, and that `𝓓(R₁/A)` and `𝓓(R₂/A)` are coprime where `𝓓` denotes the different ideal
+and `Frac R` denotes the fraction field of a domain `R`.
 Construct a `R₁`-basis of `B` by lifting an `A`-basis of `R₂`.
 -/
 noncomputable def ofIsCoprimeDifferentIdeal (h₁ : F₁.LinearDisjoint F₂)
@@ -225,6 +237,10 @@ end Module.Basis
 namespace IsDedekindDomain
 
 /--
+Let `A ⊆ B` be a finite extension of Dedekind domains and assume that `A ⊆ R₁, R₂ ⊆ B` are two
+subrings such that `Frac R₁ ⊔ Frac R₂ = Frac B`, `Frac R₁` and `Frac R₂` are linearly disjoint
+over `Frac A`, and that `𝓓(R₁/A)` and `𝓓(R₂/A)` are coprime where `𝓓` denotes the different ideal
+and `Frac R` denotes the fraction field of a domain `R`.
 `B` is generated (as an `A`-algebra) by `R₁` and `R₂`.
 -/
 theorem range_sup_range_eq_top_of_isCoprime_differentIdeal
