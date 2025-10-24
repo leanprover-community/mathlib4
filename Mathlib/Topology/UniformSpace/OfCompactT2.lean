@@ -24,7 +24,8 @@ loop.
 uniform space, uniform continuity, compact space
 -/
 
-open Uniformity Topology Filter UniformSpace Set
+open Topology Filter UniformSpace Set
+open scoped SetRel
 
 variable {γ : Type*}
 

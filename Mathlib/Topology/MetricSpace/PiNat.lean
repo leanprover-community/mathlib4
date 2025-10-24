@@ -387,7 +387,7 @@ protected def metricSpace : MetricSpace (∀ n, E n) :=
 where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest index where `x` and
 `y` differ. Not registered as a global instance by default. -/
 protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
-    (h : ∀ n, uniformity (E n) = 𝓟 idRel) : MetricSpace (∀ n, E n) :=
+    (h : ∀ n, uniformity (E n) = 𝓟 SetRel.id) : MetricSpace (∀ n, E n) :=
   haveI : ∀ n, DiscreteTopology (E n) := fun n => discreteTopology_of_discrete_uniformity (h n)
   { dist_triangle := PiNat.dist_triangle
     dist_comm := PiNat.dist_comm
@@ -395,7 +395,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
     eq_of_dist_eq_zero := PiNat.eq_of_dist_eq_zero _ _
     toUniformSpace := Pi.uniformSpace _
     uniformity_dist := by
-      simp only [Pi.uniformity, h, idRel, comap_principal, preimage_setOf_eq]
+      simp only [Pi.uniformity, h, SetRel.id, comap_principal, preimage_setOf_eq]
       apply le_antisymm
       · simp only [le_iInf_iff, le_principal_iff]
         intro ε εpos

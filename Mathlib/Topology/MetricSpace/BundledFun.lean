@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Topology.UniformSpace.Ultra.Basic
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Rel
 
 /-!
 # Pseudometrics as bundled functions
@@ -195,23 +196,32 @@ end IsUltra
 
 section ball
 
-lemma isSymmetricRel_ball [Add R] [Zero R] [Preorder R] (d : PseudoMetric X R) {ε : R} :
-    IsSymmetricRel {xy | d xy.1 xy.2 < ε} := by
-  simp [IsSymmetricRel, d.symm]
+instance isSymm_ball [Add R] [Zero R] [Preorder R] (d : PseudoMetric X R) {ε : R} :
+    SetRel.IsSymm {xy | d xy.1 xy.2 < ε} where
+  symm := by simp [d.symm]
 
-lemma isSymmetricRel_closedBall [Add R] [Zero R] [LE R] (d : PseudoMetric X R) {ε : R} :
-    IsSymmetricRel {xy | d xy.1 xy.2 ≤ ε} := by
-  simp [IsSymmetricRel, d.symm]
+@[deprecated (since := "2025-10-17")] alias isSymmetricRel_ball := isSymm_ball
 
-lemma IsUltra.isTransitiveRel_ball [Add R] [Zero R] [LinearOrder R] (d : PseudoMetric X R)
+instance isSymm_closedBall [Add R] [Zero R] [LE R] (d : PseudoMetric X R) {ε : R} :
+    SetRel.IsSymm {xy | d xy.1 xy.2 ≤ ε} where
+  symm := by simp [d.symm]
+
+@[deprecated (since := "2025-10-17")] alias isSymmetricRel_closedBall := isSymm_closedBall
+
+instance IsUltra.isTrans_ball [Add R] [Zero R] [LinearOrder R] (d : PseudoMetric X R)
     [d.IsUltra] {ε : R} :
-    IsTransitiveRel {xy | d xy.1 xy.2 < ε} :=
-  fun _ _ _ hxy hyz ↦ le_sup.trans_lt (max_lt hxy hyz)
+      SetRel.IsTrans {xy | d xy.1 xy.2 < ε} where
+    trans _ _ _ hxy hyz := le_sup.trans_lt (max_lt hxy hyz)
 
-lemma IsUltra.isTransitiveRel_closedBall [Add R] [Zero R] [SemilatticeSup R] (d : PseudoMetric X R)
+@[deprecated (since := "2025-10-17")] alias IsUltra.isTransitiveRel_ball := IsUltra.isTrans_ball
+
+instance IsUltra.isTrans_closedBall [Add R] [Zero R] [SemilatticeSup R] (d : PseudoMetric X R)
     [d.IsUltra] {ε : R} :
-    IsTransitiveRel {xy | d xy.1 xy.2 ≤ ε} :=
-  fun _ _ _ hxy hyz ↦ le_sup.trans (sup_le hxy hyz)
+    SetRel.IsTrans {xy | d xy.1 xy.2 ≤ ε} where
+  trans _ _ _ hxy hyz := le_sup.trans (sup_le hxy hyz)
+
+@[deprecated (since := "2025-10-17")]
+alias IsUltra.isTransitiveRel_closedBall := IsUltra.isTrans_closedBall
 
 end ball
 
