@@ -189,6 +189,7 @@ lemma uncenteredCovarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L�
 @[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin_of_not_memLp :=
   uncenteredCovarianceBilinDual_of_not_memLp
 
+@[simp]
 lemma uncenteredCovarianceBilinDual_zero : uncenteredCovarianceBilinDual (0 : Measure E) = 0 := by
   ext
   have : Subsingleton (Lp ℝ 2 (0 : Measure E)) := ⟨fun x y ↦ Lp.ext_iff.2 rfl⟩

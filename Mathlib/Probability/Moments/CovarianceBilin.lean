@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.MeasureTheory.SpecificCodomains.WithLp
 import Mathlib.Probability.Moments.CovarianceBilinDual
 
@@ -19,10 +20,12 @@ as the scalar product against some element of `E`. This motivates the definition
 `covarianceBilin`, which is a continuous bilinear form mapping `x y : E` to
 `cov[⟪x, ·⟫, ⟪y, ·⟫; μ]`.
 
-## Main definition
+## Main definitions
 
 * `covarianceBilin μ`: the continuous bilinear form over `E` representing the covariance of a
   measure over `E`.
+* `covarianceOperator μ`: the bounded operator over `E` such that
+  `⟪covarianceOperator μ x, y⟫ = ∫ z, ⟪x, z⟫ * ⟪y, z⟫ ∂μ`.
 
 ## Tags
 
@@ -30,6 +33,7 @@ covariance, Hilbert space, bilinear form
 -/
 
 open MeasureTheory InnerProductSpace NormedSpace WithLp EuclideanSpace
+open scoped RealInnerProductSpace
 
 namespace ProbabilityTheory
 
@@ -57,7 +61,7 @@ lemma covarianceBilin_of_not_memLp [IsFiniteMeasure μ] (h : ¬MemLp id 2 μ) :
   simp [covarianceBilin_eq_covarianceBilinDual, h]
 
 lemma covarianceBilin_apply [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id 2 μ) (x y : E) :
-    covarianceBilin μ x y = ∫ z, ⟪x, z - μ[id]⟫_ℝ * ⟪y, z - μ[id]⟫_ℝ ∂μ := by
+    covarianceBilin μ x y = ∫ z, ⟪x, z - μ[id]⟫ * ⟪y, z - μ[id]⟫ ∂μ := by
   simp_rw [covarianceBilin, ContinuousLinearMap.bilinearComp_apply, covarianceBilinDual_apply' h]
   simp only [LinearIsometry.coe_toContinuousLinearMap, id_eq, toDualMap_apply]
 
@@ -67,13 +71,13 @@ lemma covarianceBilin_comm [IsFiniteMeasure μ] (x y : E) :
     covarianceBilin_eq_covarianceBilinDual]
 
 lemma covarianceBilin_self [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id 2 μ) (x : E) :
-    covarianceBilin μ x x = Var[fun u ↦ ⟪x, u⟫_ℝ; μ] := by
+    covarianceBilin μ x x = Var[fun u ↦ ⟪x, u⟫; μ] := by
   rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_self_eq_variance h]
   rfl
 
 lemma covarianceBilin_apply_eq_cov [CompleteSpace E] [IsFiniteMeasure μ]
     (h : MemLp id 2 μ) (x y : E) :
-    covarianceBilin μ x y = cov[fun u ↦ ⟪x, u⟫_ℝ, fun u ↦ ⟪y, u⟫_ℝ; μ] := by
+    covarianceBilin μ x y = cov[fun u ↦ ⟪x, u⟫, fun u ↦ ⟪y, u⟫; μ] := by
   rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_eq_covariance h]
   rfl
 
@@ -155,5 +159,52 @@ lemma covarianceBilin_apply_pi {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpa
   any_goals exact Measurable.aestronglyMeasurable (by fun_prop)
   · fun_prop
   · exact (memLp_map_measure_iff aestronglyMeasurable_id (by fun_prop)).2 (MemLp.of_eval_piLp hX)
+
+section covarianceOperator
+
+variable [CompleteSpace E]
+
+/-- The covariance operator of the measure `μ`. -/
+noncomputable def covarianceOperator (μ : Measure E) : E →L[ℝ] E :=
+  continuousLinearMapOfBilin <| ContinuousLinearMap.bilinearComp (uncenteredCovarianceBilinDual μ)
+    (toDualMap ℝ E).toContinuousLinearMap (toDualMap ℝ E).toContinuousLinearMap
+
+@[simp]
+lemma covarianceOperator_zero : covarianceOperator (0 : Measure E) = 0 := by
+  simp [covarianceOperator]
+
+@[simp]
+lemma covarianceOperator_of_not_memLp (hμ : ¬MemLp id 2 μ) :
+    covarianceOperator μ = 0 := by
+  ext x
+  refine (unique_continuousLinearMapOfBilin _ fun y ↦ ?_).symm
+  simp [hμ, uncenteredCovarianceBilinDual_of_not_memLp]
+
+lemma covarianceOperator_inner (hμ : MemLp id 2 μ) (x y : E) :
+    ⟪covarianceOperator μ x, y⟫ = ∫ z, ⟪x, z⟫ * ⟪y, z⟫ ∂μ := by
+  simp only [covarianceOperator, continuousLinearMapOfBilin_apply,
+    ContinuousLinearMap.bilinearComp_apply, LinearIsometry.coe_toContinuousLinearMap]
+  rw [uncenteredCovarianceBilinDual_apply hμ]
+  simp_rw [toDualMap_apply]
+
+lemma covarianceOperator_apply (hμ : MemLp id 2 μ) (x : E) :
+    covarianceOperator μ x = ∫ y, ⟪x, y⟫ • y ∂μ := by
+  refine (unique_continuousLinearMapOfBilin _ fun y ↦ ?_).symm
+  rw [real_inner_comm, ← integral_inner]
+  · simp_rw [inner_smul_right, ← continuousLinearMapOfBilin_apply, ← covarianceOperator_inner hμ]
+    rfl
+  exact memLp_one_iff_integrable.1 <| hμ.smul (hμ.const_inner x)
+
+lemma isPositive_covarianceOperator : (covarianceOperator μ).toLinearMap.IsPositive := by
+  by_cases hμ : MemLp id 2 μ
+  swap; · simp [hμ]
+  refine ⟨fun x y ↦ ?_, fun x ↦ ?_⟩
+  · simp_rw [ContinuousLinearMap.coe_coe, real_inner_comm _ x, covarianceOperator_inner hμ,
+      mul_comm]
+  · simp only [ContinuousLinearMap.coe_coe, covarianceOperator_inner hμ, ← pow_two,
+      RCLike.re_to_real]
+    positivity
+
+end covarianceOperator
 
 end ProbabilityTheory
