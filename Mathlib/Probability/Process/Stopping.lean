@@ -365,8 +365,7 @@ protected theorem measurableSet (hτ : IsStoppingTime f τ) (s : Set Ω) :
 
 theorem measurableSpace_mono (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f π) (hle : τ ≤ π) :
     hτ.measurableSpace ≤ hπ.measurableSpace := by
-  intro s hs
-  refine ⟨hs.1, fun i ↦ ?_⟩
+  refine fun s hs ↦ ⟨hs.1, fun i ↦ ?_⟩
   rw [(_ : s ∩ {ω | π ω ≤ i} = s ∩ {ω | τ ω ≤ i} ∩ {ω | π ω ≤ i})]
   · exact (hs.2 i).inter (hπ i)
   · ext
