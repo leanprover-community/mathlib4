@@ -304,7 +304,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
       rw [comparisonAdjunction_counit_app]
       -- Porting note: passing instances through
       change IsIso (IsColimit.coconePointUniqueUpToIso _ ?_).hom
-      infer_instance
+      · infer_instance
       -- Porting note: passing instances through
       apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
       letI _ :
@@ -399,7 +399,7 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
       rw [comparisonAdjunction_counit_app]
       -- Porting note: passing instances through
       change IsIso (IsColimit.coconePointUniqueUpToIso _ ?_).hom
-      infer_instance
+      · infer_instance
       -- Porting note: passing instances through
       apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
       apply reflectsColimit_of_reflectsIsomorphisms

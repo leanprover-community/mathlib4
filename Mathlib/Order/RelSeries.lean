@@ -630,7 +630,7 @@ def inductionOn (motive : RelSeries r → Sort*)
     | zero =>
       convert singleton p.head
       ext n
-      exact heq
+      · exact heq
       simp [show n = 0 by cutsat, apply_zero]
     | succ d hd =>
       have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)

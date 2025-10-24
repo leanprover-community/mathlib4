@@ -374,15 +374,15 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
             refine Finset.mem_filter.mpr ?_
             exact ⟨Finset.mem_univ j, isNonZero_iff_ne_zero.mpr h⟩
         rcases (r₁ j) with h | h
-        have h₁ : ⁅x, x₁⁆ ∈ g := by
-          have h₂ := lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
-          rw [h, coe_zero, zero_add] at h₂
-          exact Set.mem_biUnion hi h₂
-        exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
+        · have h₁ : ⁅x, x₁⁆ ∈ g := by
+            have h₂ := lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
+            rw [h, coe_zero, zero_add] at h₂
+            exact Set.mem_biUnion hi h₂
+          exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
         rcases (Classical.em (⟨j, h⟩ ∈ Φ)) with h₁ | h₁
-        exact I.lie_mem
-          (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h₁ hx))
-          (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a hx₁)
+        · exact I.lie_mem
+            (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h₁ hx))
+            (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a hx₁)
         have : ⁅x, x₁⁆ = 0 := by
           rw [← neg_eq_zero, lie_skew x₁ x, (s₄ i ⟨j, h⟩ hi h₁ ⟨x₁, x₁_mem⟩ ⟨x, hx⟩)]
         rw [this]
