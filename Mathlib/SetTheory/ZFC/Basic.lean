@@ -662,13 +662,16 @@ theorem toSet_image (f : ZFSet → ZFSet) [Definable₁ f] (x : ZFSet) :
   ext
   simp
 
+section
+
+variable {α : Type*} [Small.{u} α]
+
 /-- The range of a type-indexed family of sets. -/
-noncomputable def range {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) : ZFSet.{u} :=
+noncomputable def range (f : α → ZFSet.{u}) : ZFSet.{u} :=
   ⟦⟨_, Quotient.out ∘ f ∘ (equivShrink α).symm⟩⟧
 
 @[simp]
-theorem mem_range {α : Type*} [Small.{u} α] {f : α → ZFSet.{u}} {x : ZFSet.{u}} :
-    x ∈ range f ↔ x ∈ Set.range f :=
+theorem mem_range {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ range f ↔ x ∈ Set.range f :=
   Quotient.inductionOn x fun y => by
     constructor
     · rintro ⟨z, hz⟩
@@ -678,34 +681,32 @@ theorem mem_range {α : Type*} [Small.{u} α] {f : α → ZFSet.{u}} {x : ZFSet.
       simpa [hz] using PSet.Equiv.symm (Quotient.mk_out y)
 
 @[simp]
-theorem toSet_range {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
-    (range f).toSet = Set.range f := by
+theorem toSet_range (f : α → ZFSet.{u}) : (range f).toSet = Set.range f := by
   ext
   simp
 
-theorem mem_range_self {α : Type*} [Small.{u} α] {f : α → ZFSet.{u}} (a : α) : f a ∈ range f := by
-  simp
+theorem mem_range_self {f : α → ZFSet.{u}} (a : α) : f a ∈ range f := by simp
 
 /-- Indexed union of a family of ZFC sets. Uses `⋃` notation, scoped under the `ZFSet` namespace. -/
-noncomputable def iUnion {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) : ZFSet.{u} :=
+noncomputable def iUnion (f : α → ZFSet.{u}) : ZFSet.{u} :=
   sUnion (range f)
 
 @[inherit_doc iUnion] scoped notation3 "⋃ " (...)", " r:60:(scoped f => iUnion f) => r
 
 @[simp]
-theorem mem_iUnion {α : Type*} [Small.{u} α] {f : α → ZFSet.{u}} {x : ZFSet.{u}} :
-    x ∈ ⋃ i, f i ↔ ∃ i, x ∈ f i := by
+theorem mem_iUnion {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ ⋃ i, f i ↔ ∃ i, x ∈ f i := by
   simp [iUnion]
 
 @[simp]
-theorem toSet_iUnion {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
-    (⋃ i, f i).toSet = ⋃ i, (f i).toSet := by
+theorem toSet_iUnion (f : α → ZFSet.{u}) : (⋃ i, f i).toSet = ⋃ i, (f i).toSet := by
   ext
   simp
 
-theorem subset_iUnion {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) (i : α) : f i ⊆ ⋃ i, f i := by
+theorem subset_iUnion (f : α → ZFSet.{u}) (i : α) : f i ⊆ ⋃ i, f i := by
   intro x hx
   simpa using ⟨i, hx⟩
+
+end
 
 /-- Kuratowski ordered pair -/
 def pair (x y : ZFSet.{u}) : ZFSet.{u} :=
