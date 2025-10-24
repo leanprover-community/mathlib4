@@ -54,6 +54,10 @@ abbrev Triangle :=
 
 namespace Simplex
 
+run_cmd Lean.Elab.Command.liftTermElabM do
+  Lean.Meta.registerCoercion ``points
+    (some { numArgs := 9, coercee := 8, type := .coeFun })
+
 instance {n : ℕ} : CoeFun (Simplex k P n) (fun _ => Fin (n + 1) → P) where
   coe := Simplex.points
 
