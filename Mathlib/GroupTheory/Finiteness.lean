@@ -536,8 +536,8 @@ section WellQuasiOrderedLE
 variable {M N : Type*} [AddCommMonoid M] [PartialOrder M] [WellQuasiOrderedLE M]
   [IsOrderedCancelAddMonoid M] [CanonicallyOrderedAdd M]
 
-/-- In a canonically ordered and well-quasi-ordered monoid, any subtractive submonoid is finitely
-generated. -/
+/-- In a canonically ordered and well-quasi-ordered monoid (typical example is `ℕ ^ k`), any
+subtractive submonoid is finitely generated. -/
 theorem AddSubmonoid.fg_of_subtractive {P : AddSubmonoid M} (hP : ∀ x ∈ P, ∀ y, x + y ∈ P → y ∈ P) :
     P.FG := by
   have hpwo := Set.isPWO_of_wellQuasiOrderedLE { x | x ∈ P ∧ x ≠ 0 }
@@ -568,8 +568,8 @@ theorem AddSubmonoid.fg_of_subtractive {P : AddSubmonoid M} (hP : ∀ x ∈ P, �
       exact (pos_of_ne_zero hz₃).not_ge
 
 /-- If `f` `g` are homomorphisms from a canonically ordered and well-quasi-ordered monoid `M` to a
-cancellative monoid `N`, the submonoid `eqLocusM f g` is finitely generated in `M`. When `M` and `N`
-are `ℕ ^ k`, this is also known as a version of **Gordan's lemma**. -/
+cancellative monoid `N`, the submonoid of `M` on which `f` and `g` agree is finitely generated. When
+`M` and `N` are `ℕ ^ k`, this is also known as a version of **Gordan's lemma**. -/
 theorem AddSubmonoid.fg_eqLocusM [AddMonoid N] [IsCancelAdd N] (f g : M →+ N) : (f.eqLocusM g).FG :=
   fg_of_subtractive (by simp_all)
 
