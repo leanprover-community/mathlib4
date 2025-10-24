@@ -16,7 +16,7 @@ directed iff each pair of elements has a shared upper bound.
 * `Directed r f`: Predicate stating that the indexed family `f` is `r`-directed.
 * `DirectedOn r s`: Predicate stating that the set `s` is `r`-directed.
 * `IsDirected α r`: Prop-valued mixin stating that `α` is `r`-directed. Follows the style of the
-  unbundled relation classes such as `IsTotal`.
+  unbundled relation classes such as `Std.Total`.
 
 ## TODO
 
@@ -121,6 +121,11 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S :=
   directedOn_of_sup_mem (α := αᵒᵈ) H
 
+theorem Std.Total.directed [Std.Total r] (f : ι → α) : Directed r f := fun i j =>
+  Or.casesOn (Total.total (r := r) (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
+
+set_option linter.deprecated false in
+@[deprecated Std.Total.directed (since := "2025-10-23")]
 theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i j =>
   Or.casesOn (total_of r (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
 
@@ -156,6 +161,12 @@ theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
     @directedOn_univ _ _⟩
 
 -- see Note [lower instance priority]
+instance (priority := 100) Std.Total.to_isDirected [Std.Total r] : IsDirected α r :=
+  directed_id_iff.1 <| Std.Total.directed _
+
+-- see Note [lower instance priority]
+set_option linter.deprecated false in
+@[deprecated Std.Total.to_isDirected (since := "2025-10-23")]
 instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r :=
   directed_id_iff.1 <| IsTotal.directed _
 

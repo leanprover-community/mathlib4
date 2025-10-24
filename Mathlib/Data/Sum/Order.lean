@@ -83,13 +83,13 @@ instance [IsTrans α r] [IsTrans β s] : IsTrans (α ⊕ β) (Lex r s) :=
 instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (α ⊕ β) (Lex r s) :=
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
 
-instance [IsTotal α r] [IsTotal β s] : IsTotal (α ⊕ β) (Lex r s) :=
+instance [Std.Total r] [Std.Total s] : Std.Total (Lex r s) :=
   ⟨fun a b =>
     match a, b with
-    | inl a, inl b => (total_of r a b).imp Lex.inl Lex.inl
+    | inl a, inl b => (Std.Total.total a b).imp Lex.inl Lex.inl
     | inl _, inr _ => Or.inl (Lex.sep _ _)
     | inr _, inl _ => Or.inr (Lex.sep _ _)
-    | inr a, inr b => (total_of s a b).imp Lex.inr Lex.inr⟩
+    | inr a, inr b => (Std.Total.total a b).imp Lex.inr Lex.inr⟩
 
 instance [IsTrichotomous α r] [IsTrichotomous β s] : IsTrichotomous (α ⊕ β) (Lex r s) :=
   ⟨fun a b =>
@@ -405,7 +405,7 @@ instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕
 
 instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) :=
   { Lex.partialOrder with
-    le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
+    le_total := Std.Total.total (r := Lex (· ≤ ·) (· ≤ ·)),
     toDecidableLE := instDecidableRelSumLex,
     toDecidableLT := instDecidableRelSumLex,
     toDecidableEq := instDecidableEqSum }

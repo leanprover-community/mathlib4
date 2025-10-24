@@ -279,10 +279,10 @@ instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) 
 instance [WellFoundedGT α] : WellFoundedGT (Antisymmetrization α (· ≤ ·)) :=
   wellFoundedGT_antisymmetrization_iff.mpr ‹_›
 
-instance [DecidableLE α] [DecidableLT α] [IsTotal α (· ≤ ·)] :
+instance [DecidableLE α] [DecidableLT α] [Std.Total (α := α) (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
-    le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
+    le_total := fun a b => Quotient.inductionOn₂' a b <| Std.Total.total (r := (· ≤ ·)),
     toDecidableLE := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance,
     toDecidableLT := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance }
 

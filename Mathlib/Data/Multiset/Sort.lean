@@ -23,19 +23,19 @@ section sort
 /-- `sort s` constructs a sorted list from the multiset `s`.
   (Uses merge sort algorithm.) -/
 def sort (s : Multiset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
-    [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r] : List α :=
+    [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [Std.Total r] : List α :=
   Quot.liftOn s (mergeSort · (r · ·)) fun _ _ h =>
     eq_of_perm_of_sorted ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm)
       (sorted_mergeSort IsTrans.trans
-        (fun a b => by simpa using IsTotal.total a b) _)
+        (fun a b => by simpa using Std.Total.total a b) _)
       (sorted_mergeSort IsTrans.trans
-        (fun a b => by simpa using IsTotal.total a b) _)
+        (fun a b => by simpa using Std.Total.total a b) _)
 
 section
 
 variable (a : α) (f : α → β) (l : List α) (s : Multiset α)
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
-variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [Std.Total r]
+variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [Std.Total r']
 
 @[simp]
 theorem coe_sort : sort l r = mergeSort l (r · ·) :=
@@ -75,7 +75,7 @@ end
 section
 
 variable {a : α} {s : Multiset α}
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [Std.Total r]
 
 @[simp]
 theorem mem_sort : a ∈ sort s r ↔ a ∈ s := by rw [← mem_coe, sort_eq]

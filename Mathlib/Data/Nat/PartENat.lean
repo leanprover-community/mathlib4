@@ -379,7 +379,7 @@ theorem pos_iff_one_le {x : PartENat} : 0 < x ↔ 1 ≤ x :=
       rw [← Nat.cast_zero, ← Nat.cast_one, PartENat.coe_lt_coe, PartENat.coe_le_coe]
       rfl
 
-instance isTotal : IsTotal PartENat (· ≤ ·) where
+instance inst_stdTotal_le : Std.Total (α := PartENat) (· ≤ ·) where
   total x y :=
     PartENat.casesOn (P := fun z => z ≤ y ∨ y ≤ z) x (Or.inr le_top)
       (PartENat.casesOn y (fun _ => Or.inl le_top) fun x y =>
@@ -387,7 +387,7 @@ instance isTotal : IsTotal PartENat (· ≤ ·) where
 
 noncomputable instance linearOrder : LinearOrder PartENat :=
   { PartENat.partialOrder with
-    le_total := IsTotal.total
+    le_total := Std.Total.total
     toDecidableLE := Classical.decRel _
     max := (· ⊔ ·)
     max_def a b := congr_fun₂ (@sup_eq_maxDefault PartENat _ (_) _) _ _ }

@@ -79,9 +79,10 @@ theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· 
   ext ⟨f⟩ ⟨g⟩
   exact coe_lt
 
-instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
+instance inst_stdTotal_le [LE β] [Std.Total (α := β) (· ≤ ·)] : Std.Total (α := β*) (· ≤ ·) :=
   ⟨fun f g =>
-    inductionOn₂ f g fun _f _g => eventually_or.1 <| Eventually.of_forall fun _x => total_of _ _ _⟩
+    inductionOn₂ f g fun _f _g => eventually_or.1 <|
+      Eventually.of_forall fun _x => Std.Total.total _ _⟩
 
 open Classical in
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/

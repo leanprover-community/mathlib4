@@ -473,8 +473,9 @@ instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
   | ⊥, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
-instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithBot α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
+instance inst_stdTotal_le [LE α] [Std.Total (α := α) (· ≤ ·)] :
+    Std.Total (α := WithBot α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
 
 section LinearOrder
 variable [LinearOrder α] {x y : WithBot α}
@@ -1026,8 +1027,9 @@ instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithTop α)
   | (a : α), ⊤ => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
-instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
+instance inst_stdTotal_le [LE α] [Std.Total (α := α) (· ≤ ·)] :
+    Std.Total (α := WithTop α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
 
 section LinearOrder
 variable [LinearOrder α] {x y : WithTop α}

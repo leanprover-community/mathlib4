@@ -345,14 +345,15 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
-instance le_total_ideal : IsTotal {S // A ≤ S} LE.le := by
+instance inst_stdTotal_le : Std.Total (α := {S // A ≤ S}) LE.le := by
   classical
-  let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
-  exact ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
+  let _ : Std.Total (α := PrimeSpectrum A) (· ≤ ·) := ⟨fun x y => by
+    simp_rw [← PrimeSpectrum.asIdeal_le_asIdeal]; exact Std.Total.total ..⟩
+  exact (primeSpectrumOrderEquiv A).symm.toRelEmbedding.stdTotal
 
 open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where
-  le_total := (le_total_ideal A).1
+  le_total := Std.Total.total
   max_def a b := congr_fun₂ sup_eq_maxDefault a b
   toDecidableLE := _
 

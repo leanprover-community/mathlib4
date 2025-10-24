@@ -38,6 +38,12 @@ theorem IsAntisymm.swap (r) [IsAntisymm α r] : IsAntisymm α (swap r) :=
 theorem IsAsymm.swap (r) [IsAsymm α r] : IsAsymm α (swap r) :=
   ⟨fun _ _ h₁ h₂ => asymm_of r h₂ h₁⟩
 
+variable (r) in
+theorem Std.Total.swap [Std.Total r] : Std.Total (swap r) :=
+  ⟨fun a b => (Std.Total.total a b).symm⟩
+
+set_option linter.deprecated false in
+@[deprecated Std.Total.swap (since := "2025-10-23")]
 theorem IsTotal.swap (r) [IsTotal α r] : IsTotal α (swap r) :=
   ⟨fun a b => (total_of r a b).symm⟩
 
@@ -449,6 +455,11 @@ instance instIsStrictWeakOrder [IsStrictWeakOrder α r] {f : β → α} :
 
 instance instIsEquiv [IsEquiv α r] {f : β → α} : IsEquiv β (f ⁻¹'o r) where
 
+instance inst_stdTotal [Std.Total r] {f : β → α} : Std.Total (f ⁻¹'o r) :=
+  ⟨fun _ _ => Std.Total.total (r := r) _ _⟩
+
+set_option linter.deprecated false in
+@[deprecated Order.Preimage.inst_stdTotal (since := "2025-10-23")]
 instance instIsTotal [IsTotal α r] {f : β → α} : IsTotal β (f ⁻¹'o r) :=
   ⟨fun _ _ => total_of r _ _⟩
 
@@ -720,11 +731,16 @@ instance [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
 
 instance [PartialOrder α] : IsPartialOrder α (· ≥ ·) where
 
-instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
+instance LinearOrder.inst_stdTotal_le [LinearOrder α] : Std.Total (α := α) (· ≤ ·) :=
   ⟨le_total⟩
 
-instance [LinearOrder α] : IsTotal α (· ≥ ·) :=
-  IsTotal.swap _
+set_option linter.deprecated false in
+@[deprecated LinearOrder.inst_stdTotal_le (since := "2025-10-23")]
+instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
+  inferInstance
+
+instance [LinearOrder α] : Std.Total (α := α) (· ≥ ·) :=
+  Std.Total.swap _
 
 instance [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
 
@@ -737,10 +753,10 @@ instance [LinearOrder α] : IsTrichotomous α (· > ·) :=
   IsTrichotomous.swap _
 
 instance [LinearOrder α] : IsTrichotomous α (· ≤ ·) :=
-  IsTotal.isTrichotomous _
+  Std.Total.isTrichotomous _
 
 instance [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
-  IsTotal.isTrichotomous _
+  Std.Total.isTrichotomous _
 
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
@@ -758,6 +774,12 @@ theorem transitive_ge [Preorder α] : Transitive (@GE.ge α _) :=
 theorem transitive_gt [Preorder α] : Transitive (@GT.gt α _) :=
   transitive_of_trans _
 
+instance OrderDual.inst_stdTotal_le [LE α] [h : Std.Total (α := α) (· ≤ ·)] :
+    Std.Total (α := αᵒᵈ) (· ≤ ·) :=
+  @Std.Total.swap α _ h
+
+set_option linter.deprecated false in
+@[deprecated OrderDual.inst_stdTotal_le (since := "2025-10-23")]
 instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
   @IsTotal.swap α _ h
 

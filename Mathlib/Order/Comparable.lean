@@ -84,6 +84,11 @@ theorem AntisymmRel.compRel (h : AntisymmRel r a b) : CompRel r a b :=
   Or.inl h.1
 
 @[simp]
+theorem Std.Total.compRel [Std.Total r] (a b : α) : CompRel r a b :=
+  Std.Total.total a b
+
+set_option linter.deprecated false in
+@[deprecated Std.Total.compRel (since := "2025-10-23"), simp]
 theorem IsTotal.compRel [IsTotal α r] (a b : α) : CompRel r a b :=
   IsTotal.total a b
 
@@ -226,6 +231,12 @@ theorem not_incompRel_iff : ¬ IncompRel r a b ↔ CompRel r a b := by
   rw [← not_compRel_iff, not_not]
 
 @[simp]
+theorem Std.Total.not_incompRel [Std.Total r] (a b : α) : ¬ IncompRel r a b := by
+  rw [not_incompRel_iff]
+  exact Std.Total.compRel a b
+
+set_option linter.deprecated false in
+@[deprecated Std.Total.not_incompRel (since := "2025-10-23"), simp]
 theorem IsTotal.not_incompRel [IsTotal α r] (a b : α) : ¬ IncompRel r a b := by
   rw [not_incompRel_iff]
   exact IsTotal.compRel a b

@@ -16,6 +16,8 @@ Defines classes for preorders, partial orders, and linear orders
 and proves some basic lemmas about them.
 -/
 
+-- TODO: documentation uses X for α
+
 /-! ### Unbundled classes -/
 
 /-- An empty relation does not relate any elements. -/
@@ -59,8 +61,14 @@ instance (priority := 100) {α : Sort*} {r : α → α → Prop} [Trans r r r] :
 
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
 `x y : X` we have `r x y` or `r y x`. -/
+@[deprecated Std.Total (since := "2025-10-23")]
 class IsTotal (α : Sort*) (r : α → α → Prop) : Prop where
   total : ∀ a b, r a b ∨ r b a
+
+set_option linter.deprecated false in
+@[deprecated Std.Total (since := "2025-10-23")]
+instance {α : Sort*} (r) [Std.Total r] : IsTotal α r where
+  total := Std.Total.total
 
 /-- `IsPreorder X r` means that the binary relation `r` on `X` is a pre-order, that is, reflexive
 and transitive. -/
@@ -71,8 +79,8 @@ class IsPreorder (α : Sort*) (r : α → α → Prop) : Prop extends IsRefl α 
 class IsPartialOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, IsAntisymm α r
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
-`IsPartialOrder X r` and `IsTotal X r`. -/
-class IsLinearOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPartialOrder α r, IsTotal α r
+`IsPartialOrder X r` and `Std.Total r`. -/
+class IsLinearOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPartialOrder α r, Std.Total r
 
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
 is, `IsPreorder X r` and `IsSymm X r`. -/
@@ -154,6 +162,12 @@ instance IsAsymm.decide [DecidableRel r] [IsAsymm α r] :
     IsAsymm α (fun a b => decide (r a b) = true) where
   asymm := fun a b => by simpa using asymm a b
 
+instance Std.Total.decide [DecidableRel r] [Std.Total r] :
+    Std.Total (fun a b => decide (r a b) = true) where
+  total := fun a b => by simpa using total a b
+
+set_option linter.deprecated false in
+@[deprecated Std.Total.decide (since := "2025-10-23")]
 instance IsTotal.decide [DecidableRel r] [IsTotal α r] :
     IsTotal α (fun a b => decide (r a b) = true) where
   total := fun a b => by simpa using total a b
@@ -170,7 +184,8 @@ variable (r)
 @[elab_without_expected_type] lemma symm_of [IsSymm α r] : a ≺ b → b ≺ a := symm
 @[elab_without_expected_type] lemma asymm_of [IsAsymm α r] : a ≺ b → ¬b ≺ a := asymm
 
-@[elab_without_expected_type]
+set_option linter.deprecated false in
+@[elab_without_expected_type, deprecated Std.Total.total (since := "2025-10-23")]
 lemma total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a := IsTotal.total _ _
 
 @[elab_without_expected_type]
@@ -365,10 +380,21 @@ protected theorem IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
 protected theorem IsAsymm.isIrrefl [IsAsymm α r] : IsIrrefl α r :=
   ⟨fun _ h => _root_.asymm h h⟩
 
+protected theorem Std.Total.isTrichotomous (r) [Std.Total r] : IsTrichotomous α r :=
+  ⟨fun a b => or_left_comm.1 (Or.inr <| Std.Total.total a b)⟩
+
+set_option linter.deprecated false in
+@[deprecated Std.Total.isTrichotomous (since := "2025-10-23")]
 protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
   ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
 
 -- see Note [lower instance priority]
+instance (priority := 100) Std.Total.to_isRefl (r) [Std.Total r] : IsRefl α r :=
+  ⟨fun a => or_self_iff.1 <| Std.Total.total a a⟩
+
+-- see Note [lower instance priority]
+set_option linter.deprecated false in
+@[deprecated Std.Total.to_isRefl (since := "2025-10-23")]
 instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
   ⟨fun a => or_self_iff.1 <| total_of r a a⟩
 
@@ -422,3 +448,7 @@ theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTricho
     {a b : α} (H : ∀ x, r x a ↔ r x b) : a = b :=
   ((@trichotomous _ r _ a b).resolve_left <| mt (H _).2 <| irrefl a).resolve_right <| mt (H _).1
     <| irrefl b
+
+instance Std.Total.inst_ge_of_le [LE α] [Std.Total (α := α) (· ≤ ·)] :
+    Std.Total (α := α) (· ≥ ·) where
+  total a b := Std.Total.total (r := (· ≤ ·)) b a

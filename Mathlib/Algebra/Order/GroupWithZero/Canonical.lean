@@ -470,8 +470,9 @@ instance decidableLT [Preorder α] [DecidableLT α] : DecidableLT (WithZero α)
   | 0, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
-instance isTotal_le [Preorder α] [IsTotal α (· ≤ ·)] : IsTotal (WithZero α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
+instance inst_stdTotal_le [Preorder α] [Std.Total (α := α) (· ≤ ·)] :
+    Std.Total (α := WithZero α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
 
 section LinearOrder
 variable [LinearOrder α] {a b c : α} {x y : WithZero α}

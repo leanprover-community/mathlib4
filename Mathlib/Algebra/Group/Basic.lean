@@ -1027,40 +1027,48 @@ end CommGroup
 
 section multiplicative
 
-variable [Monoid β] (p r : α → α → Prop) [IsTotal α r] (f : α → α → β)
+variable [Monoid β] (p r : α → α → Prop) [Std.Total r] (f : α → α → β)
 
-@[to_additive additive_of_symmetric_of_isTotal]
-lemma multiplicative_of_symmetric_of_isTotal
+@[to_additive additive_of_symmetric_of_stdTotal]
+lemma multiplicative_of_symmetric_of_stdTotal
     (hsymm : Symmetric p) (hf_swap : ∀ {a b}, p a b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a b → p b c → p a c → f a c = f a b * f b c)
     {a b c : α} (pab : p a b) (pbc : p b c) (pac : p a c) : f a c = f a b * f b c := by
   have hmul' : ∀ {b c}, r b c → p a b → p b c → p a c → f a c = f a b * f b c := by
     intro b c rbc pab pbc pac
-    obtain rab | rba := total_of r a b
+    obtain rab | rba := Std.Total.total (r := r) a b
     · exact hmul rab rbc pab pbc pac
     rw [← one_mul (f a c), ← hf_swap pab, mul_assoc]
-    obtain rac | rca := total_of r a c
+    obtain rac | rca := Std.Total.total (r := r) a c
     · rw [hmul rba rac (hsymm pab) pac pbc]
     · rw [hmul rbc rca pbc (hsymm pac) (hsymm pab), mul_assoc, hf_swap (hsymm pac), mul_one]
-  obtain rbc | rcb := total_of r b c
+  obtain rbc | rcb := Std.Total.total (r := r) b c
   · exact hmul' rbc pab pbc pac
   · rw [hmul' rcb pac (hsymm pbc) pab, mul_assoc, hf_swap (hsymm pbc), mul_one]
+
+@[to_additive (attr := deprecated additive_of_symmetric_of_stdTotal (since := "2025-10-24"))
+additive_of_symmetric_of_isTotal]
+alias multiplicative_of_symmetric_of_isTotal := multiplicative_of_symmetric_of_stdTotal
 
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
   (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied.
   We allow restricting to a subset specified by a predicate `p`. -/
-@[to_additive additive_of_isTotal /-- If a binary function from a type equipped with a total
+@[to_additive additive_of_stdTotal /-- If a binary function from a type equipped with a total
   relation `r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in
   order to show it is additive (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and
   `r b c` are satisfied. We allow restricting to a subset specified by a predicate `p`. -/]
-theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
+theorem multiplicative_of_stdTotal (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a → p b → p c → f a c = f a b * f b c) {a b c : α}
     (pa : p a) (pb : p b) (pc : p c) : f a c = f a b * f b c := by
-  apply multiplicative_of_symmetric_of_isTotal (fun a b => p a ∧ p b) r f fun _ _ => And.symm
+  apply multiplicative_of_symmetric_of_stdTotal (fun a b => p a ∧ p b) r f fun _ _ => And.symm
   · simp_rw [and_imp]; exact @hswap
   · exact fun rab rbc pab _pbc pac => hmul rab rbc pab.1 pab.2 pac.2
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
+
+@[to_additive (attr := deprecated additive_of_stdTotal (since := "2025-10-24"))
+additive_of_isTotal]
+alias multiplicative_of_isTotal := multiplicative_of_stdTotal
 
 end multiplicative
 
