@@ -47,6 +47,12 @@ instance : W.isLocal.IsClosedUnderIsomorphisms where
     convert (Iso.homToEquiv e).bijective.comp (hZ f hf) using 1
     aesop
 
+attribute [local simp] isLocal_iff in
+@[simp]
+lemma isLocal_iSup {ι : Sort*} (W : ι → MorphismProperty C) :
+    (⨆ (i : ι), W i).isLocal = ⨅ (i : ι), (W i).isLocal := by
+  aesop
+
 end MorphismProperty
 
 end CategoryTheory
