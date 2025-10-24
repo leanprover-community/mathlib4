@@ -331,8 +331,7 @@ theorem hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFo
       ext x
       rw [Set.mem_setOf_eq, hittingBtwn_le_iff_of_lt _ hi]
       simp only [Set.mem_Icc, exists_prop, Set.mem_iUnion, Set.mem_preimage]
-    simp only [WithTop.coe_le_coe]
-    rw [h_set_eq_Union]
+    simp_rw [WithTop.coe_le_coe, h_set_eq_Union]
     exact MeasurableSet.iUnion fun j =>
       MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
 
