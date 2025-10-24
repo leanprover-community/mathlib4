@@ -110,8 +110,16 @@ instance : (toCardinalContinuous C κ).Full := by
   have := Functor.Full.of_iso (toCardinalContinuousCompIso C κ).symm
   exact Functor.Full.of_comp_faithful _ (ObjectProperty.ι _)
 
-instance : (toCardinalContinuous C κ).EssSurj := by
-  sorry
+instance : (toCardinalContinuous C κ).EssSurj where
+  mem_essImage := by
+    let P := (isCardinalPresentable C κ).FullSubcategory
+    let cont := Functor.isCardinalContinuous Pᵒᵖ (Type w) κ
+    suffices ∀ (F : Pᵒᵖ ⥤ Type w),
+        (toCardinalContinuous C κ).essImage (cont.ι.leftAdjoint.obj F) from fun G ↦
+      ObjectProperty.prop_of_iso _
+        (asIso ((Adjunction.ofIsRightAdjoint cont.ι).counit.app G)) (this (cont.ι.obj G))
+    intro F
+    sorry
 
 instance : (toCardinalContinuous C κ).IsEquivalence where
 

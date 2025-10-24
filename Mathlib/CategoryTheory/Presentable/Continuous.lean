@@ -153,14 +153,23 @@ instance (J : SmallCategoryCardinalLT κ)
   dsimp [preservesLimitHomFamilyTgt]
   infer_instance
 
+lemma isCardinalPresentable_isCardinalContinuousMorphismProperty_src_tgt
+    ⦃X Y : Cᵒᵖ ⥤ Type w⦄ (f : X ⟶ Y) (hf : isCardinalContinuousMorphismProperty C κ f) :
+    IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ := by
+  simp only [isCardinalContinuousMorphismProperty, MorphismProperty.iSup_iff] at hf
+  obtain ⟨J, F, ⟨hF⟩⟩ := hf
+  constructor <;> infer_instance
+
 instance : IsCardinalLocallyPresentable
     (isCardinalContinuous Cᵒᵖ (Type w) κ).FullSubcategory κ := by
   rw [isCardinalContinuous_eq_isLocal]
   apply MorphismProperty.isLocallyPresentable_isLocal
-  intro _ _ f hf
-  simp only [isCardinalContinuousMorphismProperty, MorphismProperty.iSup_iff] at hf
-  obtain ⟨J, F, ⟨hF⟩⟩ := hf
-  constructor <;> infer_instance
+  apply isCardinalPresentable_isCardinalContinuousMorphismProperty_src_tgt
+
+instance : (isCardinalContinuous Cᵒᵖ (Type w) κ).ι.IsRightAdjoint := by
+  rw [isCardinalContinuous_eq_isLocal]
+  apply MorphismProperty.isRightAdjoint_ι_isLocal _ κ
+  apply isCardinalPresentable_isCardinalContinuousMorphismProperty_src_tgt
 
 end Small
 
@@ -175,6 +184,18 @@ instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     IsLocallyPresentable.{w} (isCardinalContinuous C (Type w) κ).FullSubcategory where
   exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
+
+instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    (isCardinalContinuous C (Type w) κ).ι.IsRightAdjoint := by
+  let e := ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans (opOpEquivalence C))
+  let e' := isCardinalContinuousCongrLeft e (Type w) κ
+  let iso : (isCardinalContinuous C (Type w) κ).ι ≅
+    e'.inverse ⋙
+      (isCardinalContinuous (SmallModel.{w} Cᵒᵖ)ᵒᵖ (Type w) κ).ι ⋙ e.congrLeft.functor := by
+    refine (leftUnitor _).symm ≪≫ isoWhiskerRight e'.counitIso.symm _ ≪≫ associator _ _ _ ≪≫
+      isoWhiskerLeft e'.inverse (Iso.refl _)
+  exact Functor.isRightAdjoint_of_iso iso.symm
 
 end Presheaf
 
