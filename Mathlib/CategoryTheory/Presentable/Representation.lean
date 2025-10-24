@@ -114,12 +114,14 @@ instance : (toCardinalContinuous C κ).EssSurj where
   mem_essImage := by
     let P := (isCardinalPresentable C κ).FullSubcategory
     let cont := Functor.isCardinalContinuous Pᵒᵖ (Type w) κ
-    suffices ∀ (F : Pᵒᵖ ⥤ Type w),
-        (toCardinalContinuous C κ).essImage (cont.ι.leftAdjoint.obj F) from fun G ↦
-      ObjectProperty.prop_of_iso _
-        (asIso ((Adjunction.ofIsRightAdjoint cont.ι).counit.app G)) (this (cont.ι.obj G))
-    intro F
+    intro (F : cont.FullSubcategory)
+    -- need to know that the presheaf `F.obj` is a `κ`-filtered colimit
+    -- of representable presheaves, and for this it suffices to
+    -- know that the "canonical" diagram is `κ`-filtered, and this
+    -- shall follow from the continuity of `F` and the
+    -- existence of `κ`-bounded colimits in `P`
     sorry
+
 
 instance : (toCardinalContinuous C κ).IsEquivalence where
 
