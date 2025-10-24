@@ -1103,7 +1103,7 @@ lemma mem_horiz_iff_exists (hcov : IsCovariantDerivativeOn F cov s) {x : M} {f :
       replace huv : v = 0 := by simpa using huv
       subst huv
       use fun x ↦ f
-      sorry --simpa [hcov.zeroX, mdifferentiableAt_section] using mdifferentiableAt_const
+      simp [hcov.zeroX, mdifferentiableAt_section,  mdifferentiableAt_const]
     rcases map_of_one_jet_spec u w (by tauto) with ⟨h, h', h''⟩
     use map_of_one_jet u w, ?_, h, h''
     · rw [hcov.eq_one_form]
