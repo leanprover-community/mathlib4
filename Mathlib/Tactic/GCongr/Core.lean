@@ -486,23 +486,20 @@ partial def _root_.Lean.MVarId.gcongr
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
   if mdataLhs?.isNone then
-    -- A. If there is no annotation, try to resolve the goal by the provided tactic
-    -- `mainGoalDischarger`, and continue on if this fails.
-    try withReducible g.applyRfl; return (true, names, #[])
-    catch _ =>
-      if ← mainGoalDischarger g then
-        return (true, names, #[])
-  match depth with
-  | 0 =>
-    return if ← mainGoalDischarger g then (true, names, #[]) else (false, names, #[g])
-  | depth + 1 =>
+    -- A. If there is no pattern annotation, try to resolve the goal by reflexivity, or
+    -- by the provided tactic `mainGoalDischarger`, and continue on if this fails.
+    let success ← try withReducible g.applyRfl; pure true catch _ => mainGoalDischarger g
+    if success then
+      return (true, names, #[])
+  -- If we have reached the depth limit, return the unsolved goal
+  let depth + 1 := depth | return (false, names, #[g])
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
   let some (relName, lhs, rhs) := getRel rel | throwTacticEx `gcongr g m!"{rel} is not a relation"
+  -- If there is a pattern annotation
   if let some mdataLhs := mdataLhs? then
     let mdataExpr := if mdataLhs then lhs else rhs
-    -- B. If there is a template:
-    -- (i) if the template is `?_`
+    -- if the annotation is at the head of the annotated expression,
     -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
     -- if this fails, stop and report the existing goal.
     if hasHoleAnnotation mdataExpr then
@@ -511,25 +508,26 @@ partial def _root_.Lean.MVarId.gcongr
       else
         let g ← g.replaceTargetDefEq (updateRel rel mdataExpr.mdataExpr! mdataLhs)
         return (false, names, #[g])
-    -- B. If the template doesn't contain any `?_`, and the goal wasn't closed by `rfl`,
+    -- If there are no annotations at all, we close the goal with `rfl`. Otherwise,
     -- we report that the provided pattern doesn't apply.
     unless containsHoleAnnotation mdataExpr do
       try withDefault g.applyRfl; return (true, names, #[])
       catch _ => throwTacticEx `gcongr g m!"\
         subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
         and is not closed by `rfl`"
+    -- If there are more annotations, then continue on.
 
   let lhs ← if relName == `_Implies then whnfR lhs else pure lhs
   let rhs ← if relName == `_Implies then whnfR rhs else pure rhs
-  let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs
-    | if mdataLhs?.isNone then return (false, names, #[g])
-      throwTacticEx `gcongr g m!"the head of {lhs} is not a constant"
-  let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs
-    | if mdataLhs?.isNone then return (false, names, #[g])
-      throwTacticEx `gcongr g m!"the head of {rhs} is not a constant"
+  let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs |
+    if mdataLhs?.isNone then return (false, names, #[g])
+    throwTacticEx `gcongr g m!"the head of {lhs} is not a constant"
+  let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs |
+    if mdataLhs?.isNone then return (false, names, #[g])
+    throwTacticEx `gcongr g m!"the head of {rhs} is not a constant"
   unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
-    -- (if not, stop and report the existing goal)
-    return (false, names, #[g])
+    if mdataLhs?.isNone then return (false, names, #[g])
+    throwTacticEx `gcongr g m!"{lhs} and {rhs} are not of the same shape"
   let s ← saveState
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal
@@ -541,46 +539,40 @@ partial def _root_.Lean.MVarId.gcongr
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
       let const ← mkConstWithFreshMVarLevels lem.declName
-      Except.ok <$> withReducible
-        (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
-    catch e => pure (Except.error e)
-    match gs with
-    | .error _ =>
-      -- If the `apply` fails, go on to try to apply the next matching lemma.
+      withReducible (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
+    catch _ =>
       s.restore
-    | .ok gs =>
-      let some e ← getExprMVarAssignment? g | panic! "unassigned?"
-      let args := e.getAppArgs
-      let mut subgoals := #[]
-      let mut names := names
-      -- If the `apply` succeeds, iterate over `i` belonging to the lemma's `mainSubgoal`
-      -- list: here `i` is an index in the lemma's array of antecedents.
-      for (i, numHyps, isContra) in lem.mainSubgoals do
-        -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
-        -- unification ...
-        let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
-        -- Introduce all variables and hypotheses in this subgoal.
-        let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names (maxIntros? := numHyps)
-        -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
-        -- appropriate template
-        let mdataLhs?' := if isContra then mdataLhs?.map not else mdataLhs?
-        let (_, names2, subgoals2) ←
-          mvarId.gcongr mdataLhs?' names2 depth mainGoalDischarger sideGoalDischarger
-        (names, subgoals) := (names2, subgoals ++ subgoals2)
-      let mut out := #[]
-      -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
-      -- by the `apply`.
-      for g in gs do
-        if !(← g.isAssigned) && !subgoals.contains g then
-          let s ← saveState
-          try
-            let (_, g') ← g.intros
-            sideGoalDischarger g'
-          catch _ =>
-            s.restore
-            out := out.push g
-      -- Return all unresolved subgoals, "main" or "side"
-      return (true, names, out ++ subgoals)
+      continue
+    let some e ← getExprMVarAssignment? g | panic! "unassigned?"
+    let args := e.getAppArgs
+    let mut subgoals := #[]
+    let mut names := names
+    -- If the `apply` succeeds, iterate over the lemma's `mainSubgoals` list.
+    for (i, numHyps, isContra) in lem.mainSubgoals do
+      -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
+      -- unification ...
+      let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
+      -- Introduce all variables and hypotheses in this subgoal.
+      let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names (maxIntros? := numHyps)
+      -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
+      -- appropriate template
+      let mdataLhs?' := mdataLhs?.map fun b => if isContra then !b else b
+      let (_, names2, subgoals2) ← mvarId.gcongr mdataLhs?' names2 depth mainGoalDischarger
+        sideGoalDischarger
+      (names, subgoals) := (names2, subgoals ++ subgoals2)
+    let mut out := #[]
+    -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
+    -- by the `apply`.
+    for g in gs do
+      if !(← g.isAssigned) && !subgoals.contains g then
+        let s ← saveState
+        try
+          sideGoalDischarger (← g.intros).2
+        catch _ =>
+          s.restore
+          out := out.push g
+    -- Return all unresolved subgoals, "main" or "side"
+    return (true, names, out ++ subgoals)
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
   -- report this goal back.
   if mdataLhs?.isNone then
