@@ -12,8 +12,8 @@ import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 The theory of multivariate polynomials and power series is built
 on the type `σ →₀ ℕ` which gives the exponents of the monomials.
 Many aspects of the theory (degree, order, graded ring structure)
-require to classify these exponents according to their total sum
-`∑  i, f i`, or variants, and this files provides some API for that.
+require classifying these exponents according to their total sum
+`∑ i, f i`, or variants, and this file provides some API for that.
 
 ## Weight
 
