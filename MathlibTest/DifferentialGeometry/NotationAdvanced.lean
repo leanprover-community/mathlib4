@@ -576,13 +576,10 @@ open ContDiff Metric Module
 
 variable [Fact (Module.finrank ℝ E'' = n + 1)]
 
--- issue: finds no normed space (but just an inner product space)...
-set_option trace.Elab.DiffGeo true in
 /-- error: Could not find a model with corners for `↑(sphere 0 1)` -/
 #guard_msgs in
 #check CMDiff 2 f
 
-#exit
 /-- error: Could not find a model with corners for `↑(sphere 0 1)` -/
 #guard_msgs in
 #check CMDiff ω f
