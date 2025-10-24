@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Presentable.Continuous
+import Mathlib.CategoryTheory.Presentable.StrongGenerator
 
 /-!
 # The representation theorem
@@ -74,5 +75,15 @@ instance : (restrictedShrinkYoneda.{w} F).Full := by
     ((Functor.whiskeringRight _ _ _).obj (uliftFunctor.{v', w}))
 
 end Presheaf
+
+namespace IsCardinalLocallyPresentable
+
+variable (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+  [IsCardinalLocallyPresentable C κ]
+
+#synth (isCardinalPresentable C κ).ι.IsDense
+#check Presheaf.restrictedShrinkYoneda.{w} (C := C)
+
+end IsCardinalLocallyPresentable
 
 end CategoryTheory
