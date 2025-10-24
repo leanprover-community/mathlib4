@@ -8,7 +8,7 @@ theorem exists_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → �
   -- make `n` defEq to `_ + 1`
   cases n with | zero => contradiction | succ n => _
   set n := n+1
-  -- separate the interval `(0,1)` into `n` equally spaced intervals
+  -- separate the interval `(0, 1)` into `n` equally spaced intervals
   let interval (i : Fin n) : Set ℝ :=
     Set.Ioo (AffineMap.lineMap a b ((i : ℝ) / n)) (AffineMap.lineMap a b (((i : ℝ) + 1) / n))
 
@@ -45,7 +45,7 @@ theorem exists_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → �
   have ineq₁: (i / n : ℝ) ≤ 1 - 1 / n := by grw [Fin.is_le]; field_simp [n]; simp [n]
   have : b - a > 0 := sub_pos.mpr hab
   -- check that the point is in between `a` and `b`
-  constructor; constructor
+  refine ⟨⟨?_, ?_⟩, ?_⟩
   · simp [AffineMap.lineMap_apply_ring']
     positivity
   · rw [AffineMap.lineMap_apply_ring']
@@ -85,78 +85,62 @@ open scoped RealInnerProductSpace
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P] (dim : Nat) [Fact (finrank ℝ V = dim + 1)]
 
-/-- Computes "how far along" the segment from `a` to `b` the point `p` lies. -/
-noncomputable def project (a b p : P) : ℝ := innerSL ℝ (a -ᵥ b) (a -ᵥ p) / ‖a -ᵥ b‖
-
-@[simp] theorem project_self_left {a b : P} : project a b a = 0 := by simp [project]
-@[simp] theorem project_self_right {a b : P} (h : a ≠ b) : project a b b = ‖a -ᵥ b‖ := by
-  simp [project]
-  rw [real_inner_self_eq_norm_sq, div_eq_iff, pow_two]
-  · rwa [norm_ne_zero_iff, vsub_ne_zero]
-
-
 theorem exists_affine_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → P) (n : ℝ)
     (a b : P) (i j : ℝ) (hi : 0 ≤ i) (hij : i < j) (hj : j ≤ dist a b)
-    (hS : #{p ∈ S | project a b (f p) ∈ Set.Ioo i j} ≤ n - 1)
+    (hS : #{p ∈ S | signedDist (b -ᵥ a) a (f p) ∈ Set.Ioo i j} ≤ n - 1)
     (hab : a ≠ b) :
     ∃ l : AffineSubspace ℝ P, finrank ℝ l.direction = dim ∧ l.SOppSide a b ∧
     ∀ p ∈ S, (j - i) / (2 * n) ≤ Metric.infDist (f p) l := by
+  rw [dist_eq_norm_vsub'] at hj
 
-  obtain ⟨x, x_ioo, hx⟩ := exists_between_and_separated S (project a b <| f ·) (⌊n-1⌋₊+1) i j hij
-    (by
+  obtain ⟨x, ⟨hix, x_lt⟩, hx⟩ :=
+    exists_between_and_separated S (signedDist (b -ᵥ a) a <| f ·) (⌊n-1⌋₊+1) i j hij <| by
       rw [← Nat.cast_lt (α := ℝ)]; push_cast
       grw [hS]
-      exact Nat.lt_floor_add_one (n - 1))
+      exact Nat.lt_floor_add_one (n - 1)
 
-  use .mk' (AffineMap.lineMap a b (x / dist a b)) (LinearMap.ker (innerₛₗ ℝ (a -ᵥ b)))
+  use .mk' (AffineMap.lineMap a b (x / ‖b -ᵥ a‖)) (LinearMap.ker (innerₛₗ ℝ (b -ᵥ a)))
 
   have : Nonempty (AffineSubspace.mk'
-      (AffineMap.lineMap a b (x / dist a b)) (LinearMap.ker (innerₛₗ ℝ (a -ᵥ b)))) := by
+      (AffineMap.lineMap a b (x / ‖b -ᵥ a‖)) (LinearMap.ker (innerₛₗ ℝ (b -ᵥ a)))) := by
     constructor
-    use (AffineMap.lineMap a b (x / dist a b))
+    use (AffineMap.lineMap a b (x / ‖b -ᵥ a‖))
     apply AffineSubspace.self_mem_mk'
 
   constructor
   · -- The subspace has the required dimension
-    have : LinearMap.ker ((innerₛₗ ℝ) (a -ᵥ b)) = (ℝ ∙ (a -ᵥ b))ᗮ := by
+    have : LinearMap.ker ((innerₛₗ ℝ) (b -ᵥ a)) = (ℝ ∙ (b -ᵥ a))ᗮ := by
       ext x
       rw [Submodule.mem_orthogonal_singleton_iff_inner_right]; rfl
     rw [AffineSubspace.direction_mk', this]
-    apply Submodule.finrank_orthogonal_span_singleton (by rwa [vsub_ne_zero])
-  have : 0 < ‖a -ᵥ b‖ := by
-    rwa [norm_pos_iff, vsub_ne_zero]
+    apply Submodule.finrank_orthogonal_span_singleton (by simpa using hab.symm)
+  have : 0 < ‖b -ᵥ a‖ := by simpa using hab.symm
   constructor
   · refine Sbtw.sOppSide_of_notMem_of_mem ?_ ?_ (AffineSubspace.self_mem_mk' _ _)
-    · simp [hab, lt_of_le_of_lt hi x_ioo.1, lt_of_lt_of_le x_ioo.2 hj, div_lt_one]
-    · simp [hab, (lt_of_le_of_lt hi x_ioo.1).ne.symm]
+    · simp [hab, hab.symm, hi.trans_lt hix, x_lt.trans_le hj, div_lt_one]
+    · rw [AffineSubspace.mem_mk', ← neg_vsub_eq_vsub_rev _ a, Submodule.neg_mem_iff]
+      simp [hab.symm, (hi.trans_lt hix).ne.symm]
 
   intro p hp
   -- we show that the distance between `p` and the plane corresponds to
   -- the distance between `project p` and `x`.
   specialize hx p hp
-  rw [project, sub_div' (by positivity), abs_div, le_div_iff₀' (by positivity),
-    abs_of_pos (by positivity)] at hx
+  push_cast at hx
+  grw [Nat.floor_le (by grw [← hS, ← Nat.cast_nonneg]), sub_add_cancel] at hx
+  on_goal 2 => linarith only [hij]
+  grw [hx]
   rw [Metric.infDist_eq_iInf]
   apply le_ciInf
-  simp [dist_eq_norm_vsub]
+  simp only [SetLike.coe_sort_coe, Subtype.forall]
   intro y hy
-  rw [← mul_le_mul_iff_right₀ this]
-  calc
-    _ ≤ ‖a -ᵥ b‖ * ((j - i) / (2 * ↑(⌊n - 1⌋₊ + 1))) := by
-      gcongr
-      · linarith only [hij]
-      · push_cast; rw [← le_sub_iff_add_le]
-        refine Nat.floor_le (by grw [← hS]; simp)
-    _ ≤ |x * ‖a -ᵥ b‖ - ⟪a -ᵥ b, a -ᵥ f p⟫| := hx
-    _ = |⟪a -ᵥ b, f p -ᵥ (AffineMap.lineMap a b) (x / ‖a -ᵥ b‖)⟫| := by
-      congr 1
-      rw [sub_eq_iff_eq_add', ← inner_add_right]
-      simp
-      rw [inner_smul_right, real_inner_self_eq_norm_sq]
-      field_simp
-    _ = |⟪a -ᵥ b, f p -ᵥ y⟫| := by congr 1; rw [← sub_eq_zero, ← inner_sub_right]; simp; exact hy
-    _ ≤ ‖a -ᵥ b‖ * ‖f p -ᵥ y‖ := abs_real_inner_le_norm ..
-
+  grw [← abs_signedDist_le_dist (b -ᵥ a)]
+  congr!
+  rw [AffineSubspace.mem_mk', LinearMap.mem_ker, innerₛₗ_apply] at hy
+  rw [AffineMap.lineMap_apply, vsub_vadd_eq_vsub_sub y, inner_sub_right, sub_eq_zero] at hy
+  rw [sub_eq_iff_eq_add', signedDist_triangle]
+  rw [signedDist_apply_apply, NormedSpace.normalize, real_inner_smul_left, hy]
+  rw [inner_smul_right, real_inner_self_eq_norm_sq]
+  field_simp
 
 theorem card_le_of_separated {ι : Type*} (S : Finset ι) (f : ι → ℝ) {ε a b : ℝ} (hε : 0 < ε)
     (hab : a ≤ b) (h_sep : (S : Set ι).Pairwise fun x y => ε ≤ dist (f x) (f y))
@@ -246,7 +230,6 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset
     grw [← h, ← hab]
     rw [neg_div, Real.rpow_neg (by positivity)]
     field_simp
-    rw [div_le_iff₀ (by positivity), div_mul_eq_mul_div₀, le_div_iff₀ (by positivity)]
     rw [← Real.rpow_add (by positivity)]
     norm_num; linarith only
 
@@ -297,11 +280,9 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset
       rw [eq_inv_smul_iff₀ (by positivity)] at hbasis₀
       rw [← hbasis₀, real_inner_smul_right]
       simp
-  have project_eq_eqv (p) : project a b p = eqv p 0 := by
-    simp [project, eqv]
-    rw [OrthonormalBasis.repr_apply_apply, hbasis₀, real_inner_smul_left]
-    rw [← neg_vsub_eq_vsub_rev b, ← neg_vsub_eq_vsub_rev p, inner_neg_neg, norm_neg]
-    ring
+  have project_eq_eqv (p) : signedDist (b -ᵥ a) a p = eqv p 0 := by
+    rw [signedDist_apply_apply, NormedSpace.normalize]
+    simp [eqv, OrthonormalBasis.repr_apply_apply, hbasis₀]
   -- Compute a bound for the points lying in a strip on the edge
   have strip_bound (x) (hx : x ∈ S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2))) :
       |eqv x 1| ≤ √(dist a b) := by
