@@ -7,7 +7,6 @@ Authors: Matteo Cipollina
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Path.Vertices
 import Mathlib.Data.Matrix.Mul
-import Mathlib.Order.Filter.Basic
 import Mathlib.Tactic.Ring.RingNF
 
 /-!
