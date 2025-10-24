@@ -264,14 +264,15 @@ This implementation is not maximally robust yet.
 -- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return m
-  if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return m
-  if let some m ← tryStrategy m!"NormedSpace"    fromNormedSpace    then return m
-  if let some m ← tryStrategy m!"Manifold"       fromManifold       then return m
+  if let some m ← tryStrategy m!"TotalSpace"       fromTotalSpace     then return m
+  if let some m ← tryStrategy m!"TangentBundle"    fromTangentBundle  then return m
+  if let some m ← tryStrategy m!"NormedSpace"      fromNormedSpace    then return m
+  if let some m ← tryStrategy m!"Manifold"         fromManifold       then return m
   if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return m
-  if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return m
-  if let some m ← tryStrategy m!"EuclideanSpace" fromEuclideanSpace then return m
-  if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return m
+  if let some m ← tryStrategy m!"RealInterval"     fromRealInterval   then return m
+  if let some m ← tryStrategy m!"EuclideanSpace"   fromEuclideanSpace then return m
+  if let some m ← tryStrategy m!"UpperHalfPlane"   fromUpperHalfPlane then return m
+  if let some m ← tryStrategy m!"Units of algebra" fromUnitsOfAlgebra then return m
   if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return m
   throwError "Could not find a model with corners for `{e}`"
 where
@@ -417,6 +418,17 @@ where
       let c ← Term.exprToSyntax (mkConst `Complex)
       Term.elabTerm (← `(𝓘($c))) none
     else throwError "`{e}` is not the complex upper half plane"
+  /-- TODO! -/
+  fromUnitsOfAlgebra : TermElabM Expr := do
+    match_expr e with
+    | Units α _ =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is the set of units on `{α}`"
+      -- If `α` is a normed `𝕜`-algebra for some `𝕜`, we know a model with corners.
+      -- We need to gather `𝕜` from the context: try to find a `NormedAlgebra` or `NormedSpace`
+      -- instance in the local context.
+      trace[Elab.DiffGeo.MDiff] "TODO: look for k now!"
+      throwError "TODO finish implementing!"
+    | _ => throwError "`{e}` is not the set of units of a normed algebra"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
   fromNormedField : TermElabM Expr := do
