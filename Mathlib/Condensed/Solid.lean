@@ -33,15 +33,15 @@ noncomputable section
 
 namespace Condensed
 
-/-- The free condensed abelian group on a finite set. -/
+/-- The free condensed `R`-module on a finite set. -/
 abbrev finFree : FintypeCat.{u} ⥤ CondensedMod.{u} R :=
   FintypeCat.toProfinite ⋙ profiniteToCondensed ⋙ free R
 
-/-- The free condensed abelian group on a profinite space. -/
+/-- The free condensed `R`-module on a profinite space. -/
 abbrev profiniteFree : Profinite.{u} ⥤ CondensedMod.{u} R :=
   profiniteToCondensed ⋙ free R
 
-/-- The functor sending a profinite space `S` to the condensed abelian group `R[S]^\solid`. -/
+/-- The functor sending a profinite space `S` to the condensed `R`-module `R[S]^\solid`. -/
 def profiniteSolid : Profinite.{u} ⥤ CondensedMod.{u} R :=
   Functor.rightKanExtension FintypeCat.toProfinite (finFree R)
 
@@ -68,7 +68,7 @@ def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
 
 end Condensed
 
-/-- The predicate on condensed abelian groups describing the property of being solid. -/
+/-- The predicate on condensed `R`-modules describing the property of being solid. -/
 class CondensedMod.IsSolid (A : CondensedMod.{u} R) : Prop where
   isIso_solidification_map : ∀ X : Profinite.{u}, IsIso ((yoneda.obj A).map
     ((profiniteSolidification R).app X).op)
