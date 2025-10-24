@@ -89,8 +89,8 @@ lemma le_prod_of_submultiplicative_on_pred (f : α → β)
   intro a s hs hpsa
   have hps : ∀ x, x ∈ s → p x := fun x hx => hpsa x (mem_cons_of_mem hx)
   have hp_prod : p s.prod := prod_induction p s hp_mul hp_one hps
-  rw [prod_cons, map_cons, prod_cons]
-  exact (h_mul a s.prod (hpsa a (mem_cons_self a s)) hp_prod).trans (mul_le_mul_left' (hs hps) _)
+  grw [prod_cons, map_cons, prod_cons, h_mul a s.prod (hpsa a (mem_cons_self a s)) hp_prod,
+    hs hps]
 
 @[to_additive le_sum_of_subadditive]
 lemma le_prod_of_submultiplicative (f : α → β) (h_one : f 1 = 1)
@@ -112,7 +112,7 @@ lemma le_prod_nonempty_of_submultiplicative_on_pred (f : α → β) (p : α → 
   have hsa_restrict : ∀ x, x ∈ s → p x := fun x hx => hsa_prop x (mem_cons_of_mem hx)
   have hp_sup : p s.prod := prod_induction_nonempty p hp_mul hs_empty hsa_restrict
   have hp_a : p a := hsa_prop a (mem_cons_self a s)
-  exact (h_mul a _ hp_a hp_sup).trans (mul_le_mul_left' (hs hs_empty hsa_restrict) _)
+  grw [h_mul a _ hp_a hp_sup, ← hs hs_empty hsa_restrict]
 
 @[to_additive le_sum_nonempty_of_subadditive]
 lemma le_prod_nonempty_of_submultiplicative (f : α → β) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Perm.Subperm
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Quot
 import Mathlib.Order.Monotone.Defs
 import Mathlib.Order.RelClasses

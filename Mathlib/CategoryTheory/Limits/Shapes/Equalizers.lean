@@ -171,6 +171,40 @@ theorem walkingParallelPairOpEquiv_counitIso_one :
     walkingParallelPairOpEquiv.counitIso.app (op one) = Iso.refl (op one) :=
   rfl
 
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_hom_app_zero :
+    walkingParallelPairOpEquiv.unitIso.hom.app zero = 𝟙 zero := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_hom_app_one :
+    walkingParallelPairOpEquiv.unitIso.hom.app one = 𝟙 one := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_inv_app_zero :
+    walkingParallelPairOpEquiv.unitIso.inv.app zero = 𝟙 zero := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_inv_app_one :
+    walkingParallelPairOpEquiv.unitIso.inv.app one = 𝟙 one := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_hom_app_op_zero :
+    walkingParallelPairOpEquiv.counitIso.hom.app (op zero) = 𝟙 (op zero) := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_hom_app_op_one :
+    walkingParallelPairOpEquiv.counitIso.hom.app (op one) = 𝟙 (op one) :=
+  rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_zero :
+    walkingParallelPairOpEquiv.counitIso.inv.app (op zero) = 𝟙 (op zero) := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_one :
+    walkingParallelPairOpEquiv.counitIso.inv.app (op one) = 𝟙 (op one) :=
+  rfl
+
 variable {C : Type u} [Category.{v} C]
 variable {X Y : C}
 
@@ -666,6 +700,11 @@ def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π
     s ≅ t where
   hom := Cofork.mkHom i.hom w
   inv := Cofork.mkHom i.inv (by rw [Iso.comp_inv_eq, w])
+
+/-- Two coforks of the form `ofπ` are isomorphic whenever their `π`'s are equal. -/
+def CoforkOfπ.ext {P : C} {π π' : Y ⟶ P} (w : f ≫ π = g ≫ π) (w' : f ≫ π' = g ≫ π') (h : π = π') :
+    Cofork.ofπ π w ≅ Cofork.ofπ π' w' :=
+  Cofork.ext (Iso.refl _) (by simp [h])
 
 /-- Every cofork is isomorphic to one of the form `Cofork.ofπ _ _`. -/
 def Cofork.isoCoforkOfπ (c : Cofork f g) : c ≅ Cofork.ofπ c.π c.condition :=

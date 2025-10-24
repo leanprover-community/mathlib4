@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.FieldTheory.SeparableClosure
+import Mathlib.FieldTheory.Galois.Abelian
 
 /-!
 # Cyclotomic extensions
@@ -598,6 +599,12 @@ theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   | inv x hx ihx =>
     rw [map_inv₀]
     exact inv_mem ihx
+
+/-- Cyclotomic extensions are abelian. -/
+theorem isAbelianGalois [IsCyclotomicExtension S K L] :
+    IsAbelianGalois K L where
+  __ := isGalois S K L
+  __ := isMulCommutative S K L
 
 /-- Any two `S`-cyclotomic extensions are isomorphic. -/
 noncomputable def algEquiv [IsCyclotomicExtension S K L]

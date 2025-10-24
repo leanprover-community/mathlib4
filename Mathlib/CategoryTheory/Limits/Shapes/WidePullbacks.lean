@@ -78,7 +78,7 @@ aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
-      (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _) ))
+      (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash
 
@@ -178,7 +178,7 @@ open Lean Elab Tactic
 def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
-      (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _) ))
+      (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash'
 

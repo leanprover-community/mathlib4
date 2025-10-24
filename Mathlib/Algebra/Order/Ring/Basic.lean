@@ -138,12 +138,13 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
       _ = 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * b + b ^ (n + 1) * a)) := by
           rw [mul_assoc, mul_add, add_mul, add_mul, ← pow_succ, ← pow_succ, add_comm _ (b ^ _),
             add_add_add_comm, add_comm (_ * a)]
-      _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) :=
-          mul_le_mul_of_nonneg_left (add_le_add_left ?_ _) <| pow_nonneg (zero_le_two (α := R)) _
+      _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) := by
+        gcongr _ * (_ + _ + ?_)
+        · exact pow_nonneg zero_le_two _
+        obtain hab | hba := le_total a b
+        · exact mul_add_mul_le_mul_add_mul (by gcongr; exact ha) hab
+        · exact mul_add_mul_le_mul_add_mul' (by gcongr; exact hb) hba
       _ = _ := by simp only [← pow_succ, ← two_mul, ← mul_assoc]; rfl
-    · obtain hab | hba := le_total a b
-      · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left₀ ha hab _) hab
-      · exact mul_add_mul_le_mul_add_mul' (pow_le_pow_left₀ hb hba _) hba
 
 protected lemma Even.add_pow_le (hn : Even n) :
     (a + b) ^ n ≤ 2 ^ (n - 1) * (a ^ n + b ^ n) := by

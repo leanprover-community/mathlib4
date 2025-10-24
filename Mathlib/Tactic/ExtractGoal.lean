@@ -11,7 +11,7 @@ import Batteries.Lean.Meta.Inaccessible
 import Mathlib.Tactic.MinImports
 
 /-!
-#  `extract_goal`: Format the current goal as a stand-alone example
+# `extract_goal`: Format the current goal as a stand-alone example
 
 Useful for testing tactics or creating
 [minimal working examples](https://leanprover-community.github.io/mwe.html).

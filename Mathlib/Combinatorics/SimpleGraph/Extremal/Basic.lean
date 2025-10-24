@@ -60,7 +60,7 @@ end IsExtremal
 section ExtremalNumber
 
 open Classical in
-/-- The extremal number of a natural number `n` and a simple graph `H` is the the maximum number of
+/-- The extremal number of a natural number `n` and a simple graph `H` is the maximum number of
 edges in a `H`-free simple graph on `n` vertices.
 
 If `H` is contained in all simple graphs on `n` vertices, then this is `0`. -/

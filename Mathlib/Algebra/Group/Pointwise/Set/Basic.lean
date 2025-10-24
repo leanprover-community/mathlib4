@@ -157,6 +157,10 @@ section Inv
 variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 
 @[to_additive (attr := simp)]
+theorem inv_setOf (p : α → Prop) : {x | p x}⁻¹ = {x | p x⁻¹} :=
+  rfl
+
+@[to_additive (attr := simp)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
   Iff.rfl
 
@@ -217,7 +221,6 @@ theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
 
 @[to_additive (attr := simp)]
 instance involutiveInv : InvolutiveInv (Set α) where
-  inv := Inv.inv
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
 
 @[to_additive (attr := simp)]

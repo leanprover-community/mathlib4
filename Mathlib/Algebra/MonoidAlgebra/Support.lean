@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Finsupp.Supported
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
-#  Lemmas about the support of a finitely supported function
+# Lemmas about the support of a finitely supported function
 -/
 
 open scoped Pointwise

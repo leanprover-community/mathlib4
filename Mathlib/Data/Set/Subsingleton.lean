@@ -305,7 +305,7 @@ theorem univ_set_of_isEmpty [IsEmpty α] : @univ (Set α) = {∅} :=
   subset_antisymm (fun S hS ↦ by simp [Set.eq_empty_of_isEmpty S]) (by simp)
 
 @[simp]
-theorem univ_set_eq_singleton_empty_iff : @Set.univ (Set α) = {∅} ↔ IsEmpty α  := by
+theorem univ_set_eq_singleton_empty_iff : @Set.univ (Set α) = {∅} ↔ IsEmpty α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ by simp⟩
   suffices @univ α ∈ univ by aesop
   simp

@@ -49,7 +49,7 @@ before and after and see if there is some change.
 ## TODO
 * The linter seems to be silenced by `set_option ... in`: maybe it should enter `in`s?
 
-##  Implementation notes
+## Implementation notes
 
 Yet another linter copied from the `unreachableTactic` linter!
 -/

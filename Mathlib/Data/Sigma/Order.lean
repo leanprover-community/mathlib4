@@ -118,7 +118,7 @@ instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdere
 
 namespace Lex
 /-- The notation `Σₗ i, α i` refers to a sigma type equipped with the lexicographic order. -/
-notation3 "Σₗ "(...)", "r:(scoped p => _root_.Lex (Sigma p)) => r
+notation3 "Σₗ " (...) ", " r:(scoped p => _root_.Lex (Sigma p)) => r
 
 /-- The lexicographical `≤` on a sigma type. -/
 protected instance LE [LT ι] [∀ i, LE (α i)] : LE (Σₗ i, α i) where

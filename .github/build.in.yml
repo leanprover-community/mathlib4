@@ -133,7 +133,7 @@ jobs:
         shell: bash
         run: |
           # Construct the LEAN_SRC_PATH using the toolchain directory
-          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake:.lake/packages/Cli:.lake/packages/batteries:.lake/packages/Qq:.lake/packages/aesop:.lake/packages/proofwidgets:.lake/packages/importGraph:.lake/packages/LeanSearchClient:.lake/packages/plausible"
+          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake:.lake/packages/Cli:.lake/packages/batteries:.lake/packages/Qq:.lake/packages/aesop:.lake/packages/proofwidgets:.lake/packages/importGraph:.lake/packages/LeanSearchClient:.lake/packages/plausible:.lake/packages/requests:.lake/packages/openAI_client:.lake/packages/reap"
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH"
 
           # Set it as an environment variable for subsequent steps
@@ -409,8 +409,8 @@ jobs:
           export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
 
           echo "Uploading Archive and Counterexamples cache to Azure..."
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Archive.lean
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Counterexamples.lean
+          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
+          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -425,8 +425,8 @@ jobs:
           export MATHLIB_CACHE_S3_TOKEN="${MATHLIB_CACHE_S3_TOKEN_RAW%"${MATHLIB_CACHE_S3_TOKEN_RAW##*[![:space:]]}"}"
 
           echo "Uploading Archive and Counterexamples cache to Cloudflare..."
-          USE_FRO_CACHE=1 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Archive.lean
-          USE_FRO_CACHE=1 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Counterexamples.lean
+          USE_FRO_CACHE=1 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
+          USE_FRO_CACHE=1 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
         env:
           MATHLIB_CACHE_S3_TOKEN_RAW: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
@@ -590,13 +590,13 @@ jobs:
       - name: verify that everything was available in the cache
         run: |
           echo "::group::{verify Mathlib cache}"
-          lake build --no-build -v Mathlib
+          lake build --no-build --rehash -v Mathlib
           echo "::endgroup::"
           echo "::group::{verify Archive cache}"
-          lake build --no-build -v Archive
+          lake build --no-build --rehash -v Archive
           echo "::endgroup::"
           echo "::group::{verify Counterexamples cache}"
-          lake build --no-build -v Counterexamples
+          lake build --no-build --rehash -v Counterexamples
           echo "::endgroup::"
 
       - name: check declarations in db files

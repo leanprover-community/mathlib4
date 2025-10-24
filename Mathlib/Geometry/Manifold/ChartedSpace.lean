@@ -710,7 +710,7 @@ theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
 
 /-- A charted space over a discrete space is discrete. -/
 theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M := by
-  apply singletons_open_iff_discrete.1 (fun x ↦ ?_)
+  apply discreteTopology_iff_isOpen_singleton.2 (fun x ↦ ?_)
   have : IsOpen ((chartAt H x).source ∩ (chartAt H x) ⁻¹' {chartAt H x x}) :=
     isOpen_inter_preimage _ (isOpen_discrete _)
   convert this

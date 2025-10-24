@@ -47,23 +47,18 @@ lemma IsAffineOpen.preimage {X Y : Scheme} {U : Y.Opens} (hU : IsAffineOpen U)
     IsAffineOpen (f ⁻¹ᵁ U) :=
   IsAffineHom.isAffine_preimage _ hU
 
-/-- The preimage of an affine open as an `Scheme.affine_opens`. -/
-@[simps]
-def affinePreimage {X Y : Scheme} (f : X ⟶ Y) [IsAffineHom f] (U : Y.affineOpens) :
-    X.affineOpens :=
-  ⟨f ⁻¹ᵁ U.1, IsAffineHom.isAffine_preimage _ U.prop⟩
+@[deprecated (since := "2025-10-07")] alias affinePreimage := IsAffineOpen.preimage
 
 instance (priority := 900) [IsIso f] : IsAffineHom f :=
   ⟨fun _ hU ↦ hU.preimage_of_isIso f⟩
 
 instance (priority := 900) [IsAffineHom f] : QuasiCompact f :=
-  (quasiCompact_iff_forall_affine f).mpr
-    (fun U hU ↦ (IsAffineHom.isAffine_preimage U hU).isCompact)
+  quasiCompact_iff_forall_isAffineOpen.mpr fun _ hU ↦ (hU.preimage f).isCompact
 
 instance [IsAffineHom f] [IsAffineHom g] : IsAffineHom (f ≫ g) := by
   constructor
   intro U hU
-  rw [Scheme.comp_base, Opens.map_comp_obj]
+  rw [Scheme.Hom.comp_base, Opens.map_comp_obj]
   apply IsAffineHom.isAffine_preimage
   apply IsAffineHom.isAffine_preimage
   exact hU
@@ -86,7 +81,7 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
 lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     QuasiSeparatedSpace X := by
-  rw [quasiSeparatedSpace_iff_affine]
+  rw [quasiSeparatedSpace_iff_forall_affineOpens]
   intro U V
   obtain ⟨s', hs', e⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
   rw [← Set.inter_univ (_ ∩ _), ← Opens.coe_top, ← iSup_basicOpen_of_span_eq_top _ _ e,
@@ -123,8 +118,7 @@ lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
   · simp only [Opens.map_top, morphismRestrict_app]
     refine IsIso.comp_isIso' ?_ inferInstance
     convert isIso_ΓSpec_adjunction_unit_app_basicOpen i.1 using 0
-    refine congr(IsIso ((ΓSpec.adjunction.unit.app X).app $(?_)))
-    rw [Opens.isOpenEmbedding_obj_top]
+    exact congr(IsIso ((ΓSpec.adjunction.unit.app X).app $(by simp)))
 
 /--
 If `s` is a spanning set of `Γ(X, U)`, such that each `X.basicOpen i` is affine, then `U` is also
@@ -207,9 +201,9 @@ lemma isAffineHom_of_isInducing
   by_cases hy : y ∈ Set.range f.base
   · obtain ⟨x, rfl⟩ := hy
     obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
-      (isBasis_affine_open Y).exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
+      Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
     obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
-      (isBasis_affine_open X).exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
+      X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
     obtain ⟨U', hU'U, rfl⟩ : ∃ U' : Y.Opens, U' ≤ U ∧ f ⁻¹ᵁ U' = V := by
       obtain ⟨U', hU', e⟩ := hf₁.isOpen_iff.mp V.2
       exact ⟨⟨U', hU'⟩ ⊓ U, inf_le_right, Opens.ext (by simpa [e] using hVU)⟩
@@ -219,7 +213,7 @@ lemma isAffineHom_of_isInducing
     simp only [Scheme.preimage_basicOpen, ← CommRingCat.comp_apply, f.naturality]
     simpa using ((Opens.map f.base).map (homOfLE hrU')).le
   · obtain ⟨_, ⟨U, hU, rfl⟩, hyU, hU'⟩ :=
-      (isBasis_affine_open Y).exists_subset_of_mem_open hy hf₂.isOpen_compl
+      Y.isBasis_affineOpens.exists_subset_of_mem_open hy hf₂.isOpen_compl
     rw [Set.subset_compl_iff_disjoint_right, ← Set.preimage_eq_empty_iff] at hU'
     refine ⟨U, hyU, hU, ?_⟩
     convert isAffineOpen_bot _

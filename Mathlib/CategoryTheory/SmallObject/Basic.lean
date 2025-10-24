@@ -106,7 +106,7 @@ instance : HasFunctorialFactorization I.rlp.llp I.rlp :=
   hasFunctorialFactorization I I.smallObjectκ
 
 /-- If `I : MorphismProperty C` permits the small object argument,
-then the class of morphism that have the left lifting property with respect to
+then the class of morphisms that have the left lifting property with respect to
 the maps that have the right lifting property with respect to `I` are
 exactly the retracts of transfinite compositions (indexed by `I.smallObjectκ.ord.toType`)
 of pushouts of coproducts of morphisms in `C`. -/
@@ -116,7 +116,7 @@ lemma llp_rlp_of_hasSmallObjectArgument' :
   llp_rlp_of_isCardinalForSmallObjectArgument' I I.smallObjectκ
 
 /-- If `I : MorphismProperty C` permits the small object argument,
-then the class of morphism that have the left lifting property with respect to
+then the class of morphisms that have the left lifting property with respect to
 the maps that have the right lifting property with respect to `I` are
 exactly the retracts of transfinite compositions
 of pushouts of coproducts of morphisms in `C`. -/

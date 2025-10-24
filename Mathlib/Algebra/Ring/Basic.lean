@@ -279,7 +279,7 @@ lemma div_neg_eq_neg_div (a b : R) : b / -a = -(b / a) :=
 lemma neg_div (a b : R) : -b / a = -(b / a) := by
   rw [neg_eq_neg_one_mul, mul_div_assoc, ← neg_eq_neg_one_mul]
 
-lemma neg_div' (a b : R) : -(b / a) = -b / a := by simp [neg_div]
+lemma neg_div' (a b : R) : -(b / a) = -b / a := by rw [neg_div]
 
 @[simp]
 lemma neg_div_neg_eq (a b : R) : -a / -b = a / b := by rw [div_neg_eq_neg_div, neg_div, neg_neg]
@@ -287,6 +287,8 @@ lemma neg_div_neg_eq (a b : R) : -a / -b = a / b := by rw [div_neg_eq_neg_div, n
 lemma neg_inv : -a⁻¹ = (-a)⁻¹ := by rw [inv_eq_one_div, inv_eq_one_div, div_neg_eq_neg_div]
 
 lemma div_neg (a : R) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
+
+lemma div_neg_eq_neg_div' (a : R) : a / -b = -a / b := neg_div b a ▸ div_neg _
 
 @[simp]
 lemma inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]

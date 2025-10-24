@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
+
 import Mathlib.CategoryTheory.Limits.Skeleton
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
@@ -494,6 +495,14 @@ theorem lower_comm (F : MonoOver Y ⥤ MonoOver X) :
     toThinSkeleton _ ⋙ lower F = F ⋙ toThinSkeleton _ :=
   rfl
 
+/--
+Applying `lower F` and then `representative` is isomorphic to first applying `representative`
+and then applying `F`.
+-/
+def lowerCompRepresentativeIso (F : MonoOver Y ⥤ MonoOver X) :
+    lower F ⋙ representative ≅ representative ⋙ F :=
+  ThinSkeleton.mapCompFromThinSkeletonIso _
+
 /-- An adjunction between `MonoOver A` and `MonoOver B` gives an adjunction
 between `Subobject A` and `Subobject B`. -/
 def lowerAdjunction {A : C} {B : D} {L : MonoOver A ⥤ MonoOver B} {R : MonoOver B ⥤ MonoOver A}
@@ -533,6 +542,15 @@ instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
   has_limits_of_shape _ _ := by infer_instance
 
 end Limits
+
+section Colimits
+
+variable [HasCoproducts C] [HasStrongEpiMonoFactorisations C]
+
+instance hasColimitsOfSize : HasColimitsOfSize.{w, w'} (Subobject X) := by
+  apply hasColimitsOfSize_thinSkeleton
+
+end Colimits
 
 section Pullback
 
@@ -713,6 +731,32 @@ left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
 -/
 def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   lowerAdjunction (MonoOver.existsPullbackAdj f)
+
+/--
+Taking representatives and then `MonoOver.exists` is isomorphic to taking `Subobject.exists`
+and then taking representatives.
+-/
+def existsCompRepresentativeIso (f : X ⟶ Y) :
+    «exists» f ⋙ representative ≅ representative ⋙ MonoOver.exists f :=
+  lowerCompRepresentativeIso _
+
+/-- `exists f` applied to a subobject `x` is isomorphic to the image of `x.arrow ≫ f`. -/
+def existsIsoImage (f : X ⟶ Y) (x : Subobject X) :
+    ((«exists» f).obj x : C) ≅ Limits.image (x.arrow ≫ f) :=
+  (MonoOver.forget Y ⋙ Over.forget Y).mapIso <| (existsCompRepresentativeIso f).app x
+
+/-- Given a subobject `x`, the `ImageFactorisation` of `x.arrow ≫ f` through `(exists f).obj x`. -/
+@[simps! F_I F_m]
+def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
+    ImageFactorisation (x.arrow ≫ f) :=
+  let :=
+    ImageFactorisation.ofIsoI
+      (Image.imageFactorisation (x.arrow ≫ f))
+      (existsIsoImage f x).symm
+  ImageFactorisation.copy this
+    ((«exists» f).obj x).arrow
+    this.F.e
+    (by simpa [this, -Over.w] using (Over.w ((existsCompRepresentativeIso f).app x).hom).symm)
 
 end Exists
 

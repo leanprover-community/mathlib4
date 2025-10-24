@@ -80,6 +80,8 @@ instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
 instance WithTop.instUncountable [Uncountable α] : Uncountable (WithTop α) := Option.instUncountable
 instance WithBot.instUncountable [Uncountable α] : Uncountable (WithBot α) := Option.instUncountable
 
+@[simp] lemma untopD_coe_enat (d n : ℕ) : WithTop.untopD d (n : ℕ∞) = n := rfl
+
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩

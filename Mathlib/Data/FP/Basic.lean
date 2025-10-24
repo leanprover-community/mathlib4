@@ -207,7 +207,7 @@ instance : Neg Float :=
 unsafe def add (mode : RMode) : Float → Float → Float
   | nan, _ => nan
   | _, nan => nan
-  | inf Bool.true, inf Bool.false=> nan
+  | inf Bool.true, inf Bool.false => nan
   | inf Bool.false, inf Bool.true => nan
   | inf s₁, _ => inf s₁
   | _, inf s₂ => inf s₂

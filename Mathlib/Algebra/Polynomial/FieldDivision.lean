@@ -694,6 +694,10 @@ theorem map_normalize [DecidableEq R] [Field S] [DecidableEq S] (f : R →+* S) 
   · simp [hp]
   · simp [normalize_apply, Polynomial.map_mul, normUnit, hp]
 
+theorem monic_mapAlg_iff [Semiring S] [Nontrivial S] [Algebra R S] {p : R[X]} :
+    (mapAlg R S p).Monic ↔ p.Monic := by
+  simp [mapAlg_eq_map, monic_map_iff]
+
 end Field
 
 end Polynomial

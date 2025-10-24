@@ -18,7 +18,7 @@ namespace AlgebraicGeometry
 lemma isomorphisms_eq_isOpenImmersion_inf_surjective :
     isomorphisms Scheme = (@IsOpenImmersion ⊓ @Surjective : MorphismProperty Scheme) := by
   ext
-  exact (isIso_iff_isOpenImmersion _).trans
+  exact (isIso_iff_isOpenImmersion_and_epi_base _).trans
     (and_congr Iff.rfl ((TopCat.epi_iff_surjective _).trans (surjective_iff _).symm))
 
 lemma isomorphisms_eq_stalkwise :

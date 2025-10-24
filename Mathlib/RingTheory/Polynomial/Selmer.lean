@@ -40,7 +40,7 @@ theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^
   rcases key with (key | key | key)
   · exact z_ne_zero (by rwa [key, right_eq_add] at h1)
   · exact one_ne_zero (by rwa [key, left_eq_add] at h1)
-  · exact z_ne_zero (pow_eq_zero (by rwa [key, add_self_eq_zero] at h2))
+  · exact z_ne_zero (eq_zero_of_pow_eq_zero (by rwa [key, add_self_eq_zero] at h2))
 
 theorem X_pow_sub_X_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X - 1 : ℤ[X]) := by
   by_cases hn0 : n = 0

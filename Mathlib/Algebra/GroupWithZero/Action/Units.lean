@@ -73,7 +73,6 @@ namespace Units
 /-! ### Action of the units of `M` on a type `α` -/
 
 instance instSMulZeroClass [Monoid M] [Zero α] [SMulZeroClass M α] : SMulZeroClass Mˣ α where
-  smul := (· • ·)
   smul_zero m := smul_zero (m : M)
 
 instance instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
@@ -96,7 +95,6 @@ instance instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M �
 instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
     [IsScalarTower G M M] : MulDistribMulAction G Mˣ :=
   { Units.mulAction' with
-    smul := (· • ·),
     smul_one := fun _ => Units.ext <| smul_one _,
     smul_mul := fun _ _ _ => Units.ext <| smul_mul' _ _ _ }
 

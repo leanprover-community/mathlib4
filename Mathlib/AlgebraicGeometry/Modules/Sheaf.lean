@@ -27,7 +27,7 @@ variable (X : Scheme.{u})
 abbrev Modules := SheafOfModules.{u} X.ringCatSheaf
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
-noncomputable instance : HasSheafify (Opens.grothendieckTopology X) AddCommGrp.{u} :=
+noncomputable instance : HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{u} :=
   inferInstance
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in

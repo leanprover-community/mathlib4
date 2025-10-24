@@ -73,7 +73,7 @@ theorem isPreprimitive_fixingSubgroup_insert_iff {a : α} {t : Set (ofStabilizer
 
 end Preprimitive
 
-/-- An additive action is `n`-multiply preprimitive  if is is `n`-multiply transitive
+/-- An additive action is `n`-multiply preprimitive if it is `n`-multiply transitive
   and if, when `n ≥ 1`, for every set `s` of cardinality `n - 1`,
   the action of `fixingAddSubgroup M s` on the complement of `s` is preprimitive. -/
 @[mk_iff]
@@ -86,7 +86,7 @@ class _root_.AddAction.IsMultiplyPreprimitive
   isPreprimitive_ofFixingAddSubgroup (M n) {s : Set α} (hs : s.encard + 1 = n) :
     AddAction.IsPreprimitive (fixingAddSubgroup M s) (SubAddAction.ofFixingAddSubgroup M s)
 
-/-- A group action is `n`-multiply preprimitive  if is is `n`-multiply
+/-- A group action is `n`-multiply preprimitive if it is `n`-multiply
 transitive and if, when `n ≥ 1`, for every set `s` of cardinality
 n - 1, the action of `fixingSubgroup M s` on the complement of `s`
 is preprimitive. -/
@@ -155,7 +155,7 @@ theorem isMultiplyPreprimitive_ofStabilizer
       aesop
     exact IsPreprimitive.of_surjective ofFixingSubgroup_insert_map_bijective.surjective
 
-/-- A pretransitive action is `n.succ-`preprimitive  iff
+/-- A pretransitive action is `n.succ-`preprimitive iff
   the action of stabilizers is `n`-preprimitive. -/
 @[to_additive]
 theorem isMultiplyPreprimitive_succ_iff_ofStabilizer

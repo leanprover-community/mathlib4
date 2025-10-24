@@ -76,11 +76,11 @@ lemma fib_greatestFib_le (n : ℕ) : fib (greatestFib n) ≤ n :=
   findGreatest_spec (P := (fun k ↦ fib k ≤ n)) (zero_le _) <| zero_le _
 
 lemma greatestFib_mono : Monotone greatestFib :=
-  fun _a _b hab ↦ findGreatest_mono (fun _k ↦ hab.trans') <| add_le_add_right hab _
+  fun _a _b hab ↦ findGreatest_mono (fun _k ↦ hab.trans') <| by gcongr
 
 @[simp] lemma le_greatestFib : m ≤ greatestFib n ↔ fib m ≤ n :=
   ⟨fun h ↦ (fib_mono h).trans <| fib_greatestFib_le _,
-    fun h ↦ le_findGreatest (m.le_fib_add_one.trans <| add_le_add_right h _) h⟩
+    fun h ↦ le_findGreatest (m.le_fib_add_one.trans <| by gcongr) h⟩
 
 @[simp] lemma greatestFib_lt : greatestFib m < n ↔ m < fib n :=
   lt_iff_lt_of_le_iff_le le_greatestFib
@@ -137,7 +137,7 @@ lemma isZeckendorfRep_zeckendorf : ∀ n, (zeckendorf n).IsZeckendorfRep
   | 0 => by simp only [zeckendorf_zero, IsZeckendorfRep_nil]
   | n + 1 => by
     rw [zeckendorf_succ, IsZeckendorfRep, List.cons_append]
-    refine (isZeckendorfRep_zeckendorf _).cons' (fun a ha ↦ ?_)
+    refine (isZeckendorfRep_zeckendorf _).cons (fun a ha ↦ ?_)
     obtain h | h := eq_zero_or_pos (n + 1 - fib (greatestFib (n + 1)))
     · simp only [h, zeckendorf_zero, nil_append, head?_cons, Option.mem_some_iff] at ha
       subst ha
