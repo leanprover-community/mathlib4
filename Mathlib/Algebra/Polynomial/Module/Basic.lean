@@ -119,6 +119,12 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     exact Finsupp.mapDomain_single
 
 @[simp]
+theorem monomial_smul_lsingle {R M : Type*}
+    [CommRing R] [AddCommGroup M] [Module R M] (i : ℕ) (r : R) (j : ℕ) (m : M) :
+    (monomial i) r • lsingle R j m = lsingle R (i + j) (r • m) :=
+  monomial_smul_single ..
+
+@[simp]
 theorem monomial_smul_apply (i : ℕ) (r : R) (g : PolynomialModule R M) (n : ℕ) :
     (monomial i r • g) n = ite (i ≤ n) (r • g (n - i)) 0 := by
   induction g using PolynomialModule.induction_linear with
