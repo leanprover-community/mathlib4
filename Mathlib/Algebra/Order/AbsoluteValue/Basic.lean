@@ -179,12 +179,13 @@ protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
 
 omit [Nontrivial R] in
 /-- An absolute value satisfies `f (n : R) ≤ n` for every `n : ℕ`. -/
-lemma apply_nat_le_self [IsOrderedRing S] : ∀ n : ℕ, abv n ≤ n
-  | 0 => by simp
-  | n + 1 => by
-    cases subsingleton_or_nontrivial R
-    · simp [-Nat.cast_add, Subsingleton.eq_zero (↑(n + 1) : R)]
-    · grw [Nat.cast_succ, Nat.cast_succ, abv.add_le, abv.map_one, apply_nat_le_self]
+lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+  cases subsingleton_or_nontrivial R
+  · simp [-Nat.cast_add, Subsingleton.eq_zero (↑(n + 1) : R)]
+  · grw [Nat.cast_succ, Nat.cast_succ, abv.add_le, abv.map_one, ih]
 
 end IsDomain
 
