@@ -394,6 +394,9 @@
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.MeasureTheory.MeasurableSpace.Embedding": ["Mathlib.Tactic.FunProp"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
+  "Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp":
+  ["Mathlib.Tactic.Finiteness"],
+  "Mathlib.ModelTheory.Definability": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Logic.Relation": ["Mathlib.Logic.Basic"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],

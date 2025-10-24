@@ -7,6 +7,7 @@ import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.ModelTheory.LanguageMap
 import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Basics on First-Order Syntax
@@ -37,6 +38,8 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
 - `FirstOrder.Language.Term.constantsVarsEquiv` and
   `FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
   constants in the language and having extra free variables indexed by the same type.
+- `Formula.subst_definitions` rewrites a formula into another language, given definitions of
+   functions and relations into the other language.
 
 ## Implementation Notes
 
@@ -296,6 +299,9 @@ def LEquiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
     rw [Function.leftInverse_iff_comp, ← LHom.comp_onTerm, φ.left_inv, LHom.id_onTerm]
   right_inv := by
     rw [Function.rightInverse_iff_comp, ← LHom.comp_onTerm, φ.right_inv, LHom.id_onTerm]
+
+theorem LEquiv.onTerm_symm (φ : L ≃ᴸ L') : (φ.onTerm.symm : L'.Term α ≃ L.Term α) = φ.symm.onTerm :=
+  rfl
 
 /-- Maps a term's symbols along a language equivalence. Deprecated in favor of `LEquiv.onTerm`. -/
 @[deprecated LEquiv.onTerm (since := "2025-03-31")] alias Lequiv.onTerm := LEquiv.onTerm
@@ -843,6 +849,81 @@ protected def total : L.Sentence :=
   ∀' ∀' (r.boundedFormula₂ (&0) &1 ⊔ r.boundedFormula₂ (&1) &0)
 
 end Relations
+
+section Definability
+--Notions of "substituting" one expression in another that are useful for definability of sets.
+
+/-- Given a term in language L, and a set of formulas that define L in terms of another language L'
+on a structure M, this produces a term in L' that will evaluate to the same value on that structure.
+It comes with a type `β` of extra variables to use, and a list of side conditions that must be
+fulfilled. This proof of that this evaluation is correct is `Term.subst_definitions_eq`. -/
+def Term.subst_definitions
+    (t : L.Term α) (Fs : ∀ {n} (_ : L.Functions n), L'.Formula (Fin n ⊕ Unit))
+    : (c : ℕ) × (L'.Term (α ⊕ Fin c)) × List (L'.Formula (α ⊕ Fin c)) :=
+  match t with
+  | var a => ⟨0, var (Sum.inl a), []⟩
+  | @func _ _ n f args =>
+      --Map all subexpressions
+      let subExprs := fun i ↦ subst_definitions (args i) Fs
+      --The side-type is the union of all the subexpression side-types, plus one new symbol
+      let cTot := ∑ i, (subExprs i).1
+      --The function that will re-map the subexpressions to the new side-type α ⊕ β
+      let remapper {i} : (α ⊕ Fin (subExprs i).1) → (α ⊕ Fin _) :=
+        Sum.map id fun βi ↦ finSumFinEquiv <| Sum.inl <| finSigmaFinEquiv ⟨i,βi⟩
+      --We represent the output of the function with the new symbol
+      let thisVar := var <| Sum.inr <| finSumFinEquiv <| Sum.inr 0
+      --We have our own side condition to express that we're the output of this function
+      let thisCond : L'.Formula (α ⊕ Fin (cTot + 1)) :=
+        (Fs f).subst <| Sum.elim (fun i ↦ (subExprs i).2.1.relabel remapper) (fun () ↦ thisVar)
+      --And we add all of the subexpressions' side conditions,
+      --appropriately re-indexed to use the new side-type β
+      let subConds := (List.finRange n).flatMap fun i ↦
+        (subExprs i).2.2.map (Formula.relabel remapper)
+      ⟨cTot + 1, thisVar, thisCond :: subConds⟩
+
+/-- Given a bounded formula in language L, and a set of formulas that define L in terms of another
+language L' on a structure M, this produces a term in L' that will evaluate to the same value on
+that structure. This proof of this evaluation is `BoundedFormula.subst_definitions_eq`. -/
+def BoundedFormula.subst_definitions {k : ℕ} (f : L.BoundedFormula α k)
+    (Fs : ∀ {n} (_ : L.Functions n), L'.Formula (Fin n ⊕ Unit))
+    (Rs : ∀ {n} (_ : L.Relations n), L'.Formula (Fin n))
+    : (L'.BoundedFormula α k) :=
+  match f with
+  | falsum => falsum
+  | equal t₁ t₂ =>
+    let t₁s := t₁.subst_definitions Fs
+    let t₂s := t₂.subst_definitions Fs
+    let relabel₁ := Sum.elim Sum.inl fun j ↦ Sum.inr <| finSumFinEquiv <| Sum.inl j
+    let relabel₂ := Sum.elim Sum.inl fun j ↦ Sum.inr <| finSumFinEquiv <| Sum.inr j
+    let t₁r := t₁s.2.1.relabel relabel₁
+    let t₂r := t₂s.2.1.relabel relabel₂
+    let feq := equal t₁r t₂r
+    let sideConds₁ := t₁s.2.2.map (relabel relabel₁)
+    let sideConds₂ := t₂s.2.2.map (relabel relabel₂)
+    let fullConds := (sideConds₁ ++ sideConds₂).foldr BoundedFormula.imp feq
+    BoundedFormula.relabel id fullConds.alls
+  | imp f₁ f₂ =>
+      imp (f₁.subst_definitions Fs Rs) (f₂.subst_definitions Fs Rs)
+  | all f =>
+      all (f.subst_definitions Fs Rs)
+  | rel R ts =>
+    let tss := fun i ↦ (ts i).subst_definitions Fs
+    let relabels := fun i ↦ Sum.elim Sum.inl fun j ↦ Sum.inr <| finSigmaFinEquiv ⟨i,j⟩
+    let tsr : (i : Fin _) → L'.Term ((α ⊕ Fin k) ⊕ Fin (∑ i, (tss i).1)) :=
+      fun i ↦ (tss i).2.1.relabel (relabels i)
+    let newRel := ((Rs R).subst tsr).relabel id
+    let sideConds := fun i ↦ (tss i).2.2.map (relabel (relabels i))
+    let fullConds := (List.ofFn sideConds).flatten.foldr BoundedFormula.imp newRel
+    BoundedFormula.relabel id fullConds.alls
+
+/-- See `BoundedFormula.subst_definitions`, but this is specialized to `Formula`. -/
+def Formula.subst_definitions (f : L.Formula α)
+    (Fs : ∀ {n} (_ : L.Functions n), L'.Formula (Fin n ⊕ Unit))
+    (Rs : ∀ {n} (_ : L.Relations n), L'.Formula (Fin n))
+    : (L'.Formula α) :=
+  BoundedFormula.subst_definitions f Fs Rs
+
+end Definability
 
 section Cardinality
 
