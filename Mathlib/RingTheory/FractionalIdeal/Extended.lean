@@ -106,9 +106,8 @@ theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
 theorem extended_le_one_of_le_one (hI : I ≤ 1) : extended L hf I ≤ 1 := by
   obtain ⟨J, rfl⟩ := le_one_iff_exists_coeIdeal.mp hI
   intro x hx
-  simp only [val_eq_coe, coe_one]
   simp only [val_eq_coe, mem_coe, mem_extended_iff, mem_span_image_iff_exists_fun,
-    Finset.univ_eq_attach] at hx
+    Finset.univ_eq_attach, coe_one] at hx ⊢
   obtain ⟨s, hs, c, rfl⟩ := hx
   refine Submodule.sum_smul_mem _ _ fun x h ↦ mem_one.mpr ?_
   obtain ⟨a, ha⟩ : ∃ a, (algebraMap A K) a = ↑x := by
@@ -202,7 +201,15 @@ theorem extendedHomₐ_coeIdeal_eq_map (I : Ideal A) :
       (I.map (algebraMap A B) : FractionalIdeal B⁰ L) := extended_coeIdeal_eq_map L _ I
 
 variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [IsDomain A]
-  [IsIntegrallyClosed A] [IsIntegrallyClosed B] [Algebra.IsIntegral A B]
+  [Algebra.IsIntegral A B]
+
+theorem coe_extendedHomₐ_eq_span (I : FractionalIdeal A⁰ K) :
+    extendedHomₐ L B I = span B (algebraMap K L '' I) := by
+  rw [extendedHom_apply, coe_extended_eq_span,
+    IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
+  rfl
+
+variable [IsIntegrallyClosed A] [IsIntegrallyClosed B]
 
 theorem le_one_of_extendedHomₐ_le_one (hI : extendedHomₐ L B I ≤ 1) : I ≤ 1 := by
   contrapose! hI
