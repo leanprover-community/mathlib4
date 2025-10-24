@@ -6721,6 +6721,7 @@ import Mathlib.Topology.ContinuousMap.Units
 import Mathlib.Topology.ContinuousMap.Weierstrass
 import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Convenient.GeneratedBy
 import Mathlib.Topology.Covering
 import Mathlib.Topology.Defs.Basic
 import Mathlib.Topology.Defs.Filter
