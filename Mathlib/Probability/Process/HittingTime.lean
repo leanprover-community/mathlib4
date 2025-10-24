@@ -215,9 +215,8 @@ theorem hittingBtwn_le_of_mem {m : ι} (hin : n ≤ i) (him : i ≤ m) (his : u 
 lemma hittingAfter_le_of_mem (hin : n ≤ i) (his : u i ω ∈ s) :
     hittingAfter u s n ω ≤ i := by
   have h_exists : ∃ k, n ≤ k ∧ u k ω ∈ s := ⟨i, hin, his⟩
-  simp_rw [hittingAfter, if_pos h_exists]
-  norm_cast
-  exact csInf_le (BddBelow.inter_of_left bddBelow_Ici) (Set.mem_inter hin his)
+  rw [hittingAfter, if_pos h_exists]
+  exact_mod_cast csInf_le (BddBelow.inter_of_left bddBelow_Ici) (Set.mem_inter hin his)
 
 theorem hittingBtwn_le_iff_of_exists [WellFoundedLT ι] {m : ι}
     (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
