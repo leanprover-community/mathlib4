@@ -150,11 +150,7 @@ theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u 
 lemma le_hittingAfter (ω : Ω) : n ≤ hittingAfter u s n ω := by
   simp only [hittingAfter]
   split_ifs with h
-  · norm_cast
-    refine le_csInf ?_ fun b hb => ?_
-    · obtain ⟨k, hk_Icc, hk_s⟩ := h
-      exact ⟨k, hk_Icc, hk_s⟩
-    · exact hb.1
+  · exact_mod_cast le_csInf h fun b hb => hb.1
   · simp
 
 theorem le_hittingBtwn_of_exists {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
