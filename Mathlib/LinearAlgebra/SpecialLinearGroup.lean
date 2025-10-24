@@ -1,4 +1,17 @@
+/-
+Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir
+-/
+
 import Mathlib.LinearAlgebra.Determinant
+
+/-!
+# The special linear group
+
+see also `Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup`
+
+-/
 
 variable {F V : Type*} [Field F] [AddCommGroup V] [Module F V]
 
