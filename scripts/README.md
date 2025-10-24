@@ -34,6 +34,12 @@ to learn about it as well!
 
   **Requirements:** `gh` (GitHub CLI) installed and authenticated (`gh auth login`).
 
+**Automated theorem proving**
+- `aristotle`
+  Integration with the Aristotle API for automated theorem proving. Contains Python scripts
+  and documentation for submitting Lean files to Aristotle's automated proof generation service.
+  See `scripts/aristotle/README.md` for detailed usage instructions and setup.
+
 **Tools for manual maintenance**
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
