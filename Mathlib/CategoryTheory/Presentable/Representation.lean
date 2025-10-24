@@ -3,6 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 import Mathlib.CategoryTheory.Presentable.Continuous
 import Mathlib.CategoryTheory.Presentable.Dense
 
@@ -18,6 +19,8 @@ the fullsubcategory of `κ`-presentable objects of `C`.
 universe w v v' u u'
 
 namespace CategoryTheory
+
+open Limits
 
 namespace Functor
 
@@ -81,8 +84,42 @@ namespace IsCardinalLocallyPresentable
 variable (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
   [IsCardinalLocallyPresentable C κ]
 
-#synth (isCardinalPresentable C κ).ι.IsDense
-#check Presheaf.restrictedShrinkYoneda.{w} (C := C)
+open Functor in
+noncomputable def toCardinalContinuous :
+    C ⥤ (Functor.isCardinalContinuous
+      (isCardinalPresentable C κ).FullSubcategoryᵒᵖ (Type w) κ).FullSubcategory :=
+  ObjectProperty.lift _ (Presheaf.restrictedShrinkYoneda.{w} (ObjectProperty.ι _)) (fun X ↦ by
+    rw [isCardinalContinuous_iff]
+    intro J _ _
+    dsimp [Presheaf.restrictedShrinkYoneda]
+    have : (isCardinalPresentable C κ).IsClosedUnderColimitsOfShape Jᵒᵖ :=
+      isClosedUnderColimitsOfShape_isCardinalPresentable _ (by simpa)
+    have : PreservesLimitsOfShape J (isCardinalPresentable C κ).ι.op :=
+      preservesLimitsOfShape_op _ _
+    infer_instance)
+
+noncomputable def toCardinalContinuousCompIso :
+    toCardinalContinuous C κ ⋙ ObjectProperty.ι _ ≅
+      Presheaf.restrictedShrinkYoneda.{w} (ObjectProperty.ι _) := Iso.refl _
+
+instance : (toCardinalContinuous C κ).Faithful := by
+  have := Functor.Faithful.of_iso (toCardinalContinuousCompIso C κ).symm
+  exact Functor.Faithful.of_comp _ (ObjectProperty.ι _)
+
+instance : (toCardinalContinuous C κ).Full := by
+  have := Functor.Full.of_iso (toCardinalContinuousCompIso C κ).symm
+  exact Functor.Full.of_comp_faithful _ (ObjectProperty.ι _)
+
+instance : (toCardinalContinuous C κ).EssSurj := by
+  sorry
+
+instance : (toCardinalContinuous C κ).IsEquivalence where
+
+@[simps! functor]
+noncomputable def toCardinalContinuousEquivalence :
+    C ≌ (Functor.isCardinalContinuous
+      (isCardinalPresentable C κ).FullSubcategoryᵒᵖ (Type w) κ).FullSubcategory :=
+  (toCardinalContinuous C κ).asEquivalence
 
 end IsCardinalLocallyPresentable
 

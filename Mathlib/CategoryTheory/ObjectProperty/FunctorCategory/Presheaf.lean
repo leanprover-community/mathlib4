@@ -113,6 +113,25 @@ lemma shrinkYonedaEquiv_symm_comp {X : Cᵒᵖ} {P Q : Cᵒᵖ ⥤ Type w} (x : 
     shrinkYonedaEquiv.symm x ≫ α = shrinkYonedaEquiv.symm (α.app _ x) :=
   shrinkYonedaEquiv.injective (by simp [shrinkYonedaEquiv])
 
+instance (X : C) (J : Type*) [Category J] :
+    PreservesLimitsOfShape J (shrinkYoneda.{w}.obj X) where
+  preservesLimit {F} := ⟨fun {c} hc ↦ by
+    rw [Types.isLimit_iff_bijective_sectionOfCone]
+    refine ⟨fun f₁ f₂ h ↦ ?_, fun s ↦ ?_⟩
+    · obtain ⟨f₁, rfl⟩ := (equivShrink _).surjective f₁
+      obtain ⟨f₂, rfl⟩ := (equivShrink _).surjective f₂
+      apply (equivShrink _).symm.injective
+      simp only [Equiv.symm_apply_apply]
+      apply Quiver.Hom.op_inj
+      refine hc.hom_ext (fun j ↦ Quiver.Hom.unop_inj ?_)
+      simpa [shrinkYoneda] using congr_fun (congr_arg Subtype.val h) j
+    · refine ⟨equivShrink _ ((hc.homEquiv.symm
+        { app j := ((equivShrink _).symm (s.1 j)).op
+          naturality _ _ f := Quiver.Hom.unop_inj
+            (by simp [-Functor.sections_property, shrinkYoneda, ← s.2 f])}).unop), ?_⟩
+      ext
+      apply (equivShrink _).symm.injective (Quiver.Hom.op_inj (by simp [shrinkYoneda]))⟩
+
 end
 
 end
