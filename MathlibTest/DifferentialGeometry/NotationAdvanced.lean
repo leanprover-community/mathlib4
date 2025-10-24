@@ -604,7 +604,96 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace 
 -- #check LieGroup 𝓘(𝕜, V →L[𝕜] V) 2 (V →L[𝕜] V)ˣ passes
 
 set_option trace.Elab.DiffGeo.MDiff true in
-/-- error: Could not find a model with corners for `(V →L[𝕜] V)ˣ` -/
+/--
+error: failed to synthesize
+  ChartedSpace V (V →L[𝕜] V)ˣ
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+---
+trace: [Elab.DiffGeo.MDiff] Finding a model for: (V →L[𝕜] V)ˣ
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(V →L[𝕜] V)ˣ` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(V →L[𝕜] V)ˣ` is not a `TangentBundle`
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on `(V →L[𝕜] V)ˣ` among local instances.
+[Elab.DiffGeo.MDiff] ❌️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ChartedSpace` structure on `(V →L[𝕜]
+          V)ˣ` among local instances, and `(V →L[𝕜]
+          V)ˣ` is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(V →L[𝕜] V)ˣ` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(V →L[𝕜] V)ˣ` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(V →L[𝕜] V)ˣ` is not a Euclidean space, half-space or quadrant
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(V →L[𝕜] V)ˣ` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ✅️ Units of algebra
+  [Elab.DiffGeo.MDiff] `(V →L[𝕜] V)ˣ` is the set of units on `V →L[𝕜] V`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedAlgebra 𝕜 R`
+  [Elab.DiffGeo.MDiff] match, normed algebra: k is `𝕜`, R is `R`
+  [Elab.DiffGeo.MDiff] found a normed `𝕜`-algebra structure on `R`, which is not reducibly definitionally equal to `V →L[𝕜]
+        V`: continue the search
+  [Elab.DiffGeo.MDiff] `V →L[𝕜] V` is not a normed algebra on the nose: try via a space of continuous linear maps
+  [Elab.DiffGeo.MDiff] `V →L[𝕜] V` is a space of continuous linear maps
+  [Elab.DiffGeo.MDiff] `V →L[𝕜] V` is a space of continuous `𝕜`-linear maps on `V`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedSpace 𝕜 E`
+  [Elab.DiffGeo.MDiff] match, normed space: k is `𝕜`, R is `E`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedSpace 𝕜 E'`
+  [Elab.DiffGeo.MDiff] match, normed space: k is `𝕜`, R is `E'`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedSpace 𝕜 F`
+  [Elab.DiffGeo.MDiff] match, normed space: k is `𝕜`, R is `F`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedSpace 𝕜 EM'`
+  [Elab.DiffGeo.MDiff] match, normed space: k is `𝕜`, R is `EM'`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedSpace 𝕜 V`
+  [Elab.DiffGeo.MDiff] match, normed space: k is `𝕜`, R is `V`
+  [Elab.DiffGeo.MDiff] `V` is a normed space over `𝕜` via `inst✝¹`
+  [Elab.DiffGeo.MDiff] found a normed space: `V` is a normed space over `𝕜`
+  [Elab.DiffGeo.MDiff] Found model: `𝓘(𝕜, V)`
+[Elab.DiffGeo.MDiff] Finding a model for: 𝕜
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `𝕜` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `𝕜` is not a `TangentBundle`
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on `𝕜` among local instances.
+[Elab.DiffGeo.MDiff] ❌️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ChartedSpace` structure on `𝕜` among local instances, and `𝕜` is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `𝕜` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `𝕜` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `𝕜` is not a Euclidean space, half-space or quadrant
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `𝕜` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `𝕜` is not the set of units of a normed algebra
+[Elab.DiffGeo.MDiff] ✅️ NormedField
+  [Elab.DiffGeo.MDiff] Found model: `𝓘(𝕜, 𝕜)`
+-/
 #guard_msgs in
 variable {f : (V →L[𝕜] V)ˣ → 𝕜} in
 #check MDiff f
