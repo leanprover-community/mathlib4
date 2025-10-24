@@ -70,7 +70,7 @@ lemma untop₀_natCast [AddMonoidWithOne α] (n : ℕ) : untop₀ (n : WithTop �
 
 @[simp]
 lemma untop₀_ofNat [AddMonoidWithOne α] (n : ℕ) [n.AtLeastTwo] :
-    untop₀ (ofNat(n) : WithTop α) = n := rfl
+    untop₀ (ofNat(n) : WithTop α) = ofNat(n) := rfl
 
 @[simp]
 lemma untop₀_neg [AddCommGroup α] : ∀ a : WithTop α, (-a).untop₀ = -a.untop₀
