@@ -414,7 +414,7 @@ previous assumptions. -/
     exact (mul_right_inj _).1 (h₁ ▸ h₂)
 /- Let `ve := ∑ v(g)·(s(π(g)), s(π(g))⁻¹g)`. -/
   let ve : G × G →₀ A := mapDomain e v
-  have hS : (v + d₂₁ _ ve).support.toSet ⊆ S := by
+  have hS : ((v + d₂₁ _ ve).support : Set G) ⊆ S := by
   /- We have `d(ve) = ∑ ρ(s(π(g))⁻¹)(v(g))·s(π(g))⁻¹g - ∑ v(g)·g + ∑ v(g)·s(π(g))`.
     The second sum is `v`, so cancels: -/
     simp only [d₂₁, ve, ModuleCat.hom_ofHom, coe_lsum, sum_mapDomain_index_inj he, sum_single,

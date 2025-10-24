@@ -77,7 +77,7 @@ theorem supported_eq_span_single (s : Set α) :
 
 theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
     span R s ≤ supported M R (⋃ x ∈ s, x.support) :=
-  span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (·.support.toSet))
+  span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (SetLike.coe ·.support))
 
 variable (M)
 
@@ -233,7 +233,7 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
     rw [Finsupp.sum_apply, Finsupp.sum_eq_single x, single_eq_same] at this
     · simpa
     · intro y hy xy
-      simp only [SetLike.mem_coe, mem_supported, subset_def, Finset.mem_coe, mem_support_iff] at h₁
+      simp only [SetLike.mem_coe, mem_supported, subset_def, mem_support_iff] at h₁
       simp [mt (H _ (h₁ _ hy) _ xs) xy]
     · simp +contextual
   · by_contra h

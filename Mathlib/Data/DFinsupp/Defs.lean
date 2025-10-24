@@ -863,7 +863,7 @@ def subtypeSupportEqEquiv (s : Finset ι) :
     simpa using Eq.symm
   right_inv f := by
     ext1
-    simp; rfl
+    simp
 
 /-- Equivalence between all dependent finitely supported functions `f : Π₀ i, β i` and type
 of pairs `⟨s : Finset ι, f : ∀ i : s, {x : β i // x ≠ 0}⟩`. -/

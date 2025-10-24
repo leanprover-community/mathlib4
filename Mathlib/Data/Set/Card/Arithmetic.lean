@@ -82,7 +82,7 @@ theorem exists_union_disjoint_cardinal_eq_of_even (he : Even s.ncard) :
   classical
   rw [ncard_eq_toFinset_card s hs] at he
   obtain ⟨t, u, hutu, hdtu, hctu⟩ := Finset.exists_disjoint_union_of_even_card he
-  use t.toSet, u.toSet
+  use t, u
   simp [← Finset.coe_union, *]
 
 theorem exists_union_disjoint_ncard_eq_of_even (he : Even s.ncard) :
