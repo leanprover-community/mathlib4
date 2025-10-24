@@ -75,6 +75,7 @@ theorem inertiaDeg_span_zeta_sub_one : inertiaDeg 𝒑 (span {hζ.toInteger - 1}
     absNorm_span_zeta_sub_one]
 
 attribute [local instance] FractionRing.liftAlgebra in
+attribute [-instance] SubNegMonoid.toZSMul in
 theorem map_eq_span_zeta_sub_one_pow :
     (map (algebraMap ℤ (𝓞 K)) 𝒑) = span {hζ.toInteger - 1} ^ Module.finrank ℚ K := by
   have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
