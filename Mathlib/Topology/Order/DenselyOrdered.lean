@@ -334,7 +334,11 @@ instance (x : α) [Nontrivial α] : NeBot (𝓝[≠] x) := by
   obtain ⟨z, hz⟩ : ∃ z, a < z ∧ z < x := exists_between hy.1
   exact ⟨z, us ⟨hab ⟨hz.1, hz.2.trans hy.2⟩, hz.2.ne⟩⟩
 
-instance [DiscreteTopology α] : Subsingleton α := by
+/-- If the order topology for a dense linear ordering is discrete, the space has at most one point.
+
+We would prefer for this to be an instance but even at `(priority := 100)` this was problematic so
+we have deferred this issue. TODO Promote this to an `instance`! -/
+def DenselyOrdered.subsingleton_of_discreteTopology [DiscreteTopology α] : Subsingleton α := by
   suffices ∀ a b : α, b ≤ a by
     refine ⟨fun a b ↦ ?_⟩
     rcases lt_trichotomy a b with h | rfl | h
