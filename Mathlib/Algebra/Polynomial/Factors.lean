@@ -192,11 +192,21 @@ theorem Factors.eq_prod_roots (hf : Factors f) :
     suffices hf : f.roots = m by rwa [hf]
     rw [hm, roots_C_mul _ hf0, roots_multiset_prod_X_sub_C]
 
+theorem Factors.eq_prod_roots_of_monic (hm : Monic f) (hf : Factors f) :
+    f = (f.roots.map (X - C ·)).prod := by
+  conv_lhs => rw [hf.eq_prod_roots, hm.leadingCoeff, C_1, one_mul]
+
 theorem Factors.natDegree_eq_card_roots (hf : Factors f) :
     f.natDegree = f.roots.card := by
   by_cases hf0 : f.leadingCoeff = 0
   · simp [leadingCoeff_eq_zero.mp hf0]
   · conv_lhs => rw [hf.eq_prod_roots, natDegree_C_mul hf0, natDegree_multiset_prod_X_sub_C_eq_card]
+
+/-- A polynomial factors if and only if it has as many roots as its degree. -/
+theorem factors_iff_card_roots :
+    Factors f ↔ f.roots.card = f.natDegree :=
+  ⟨fun h ↦ h.natDegree_eq_card_roots.symm, fun h ↦ factors_iff_exists_multiset.mpr
+    ⟨f.roots, (C_leadingCoeff_mul_prod_multiset_X_sub_C h).symm⟩⟩
 
 theorem Factors.roots_ne_zero (hf : Factors f) (hf0 : natDegree f ≠ 0) :
     f.roots ≠ 0 := by

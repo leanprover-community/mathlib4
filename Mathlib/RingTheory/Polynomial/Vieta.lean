@@ -120,10 +120,13 @@ theorem _root_.Polynomial.coeff_eq_esymm_roots_of_card [IsDomain R] {p : R[X]}
   convert p.roots.prod_X_sub_C_coeff this using 3 <;> rw [hroots]
 
 /-- Vieta's formula for split polynomials over a field. -/
-theorem _root_.Polynomial.coeff_eq_esymm_roots_of_splits {F} [Field F] {p : F[X]}
-    (hsplit : p.Splits (RingHom.id F)) {k : ℕ} (h : k ≤ p.natDegree) :
+theorem _root_.Polynomial.coeff_eq_esymm_roots_of_factors {F} [Field F] {p : F[X]}
+    (hsplit : p.Factors) {k : ℕ} (h : k ≤ p.natDegree) :
     p.coeff k = p.leadingCoeff * (-1) ^ (p.natDegree - k) * p.roots.esymm (p.natDegree - k) :=
-  Polynomial.coeff_eq_esymm_roots_of_card (splits_iff_card_roots.1 hsplit) h
+  Polynomial.coeff_eq_esymm_roots_of_card (factors_iff_card_roots.1 hsplit) h
+
+@[deprecated (since := "2025-10-24")]
+alias _root_.Polynomial.coeff_eq_esymm_roots_of_splits := coeff_eq_esymm_roots_of_factors
 
 end Ring
 

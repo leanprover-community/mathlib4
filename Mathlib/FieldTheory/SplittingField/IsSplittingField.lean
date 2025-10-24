@@ -82,10 +82,13 @@ theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
         rw [RingEquiv.toRingHom_trans]
         exact splits_comp_of_splits _ _ (splits L f)⟩
 
-theorem IsScalarTower.splits (f : F[X]) [IsSplittingField K L (mapAlg F K f)] :
-    Splits (RingHom.id L) (mapAlg F L f) := by
-  rw [mapAlg_comp K L f, mapAlg_eq_map, splits_id_iff_splits]
+theorem IsScalarTower.factors (f : F[X]) [IsSplittingField K L (mapAlg F K f)] :
+    Factors (mapAlg F L f) := by
+  rw [mapAlg_comp K L f, mapAlg_eq_map]
   apply IsSplittingField.splits
+
+@[deprecated (since := "2025-10-24")]
+alias IsScalarTower.splits := IsScalarTower.factors
 
 theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
     [IsSplittingField K L (g.map <| algebraMap F K)] : IsSplittingField F L (f * g) :=
