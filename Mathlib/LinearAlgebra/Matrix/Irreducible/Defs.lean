@@ -192,7 +192,7 @@ theorem irreducible_iff_exists_pow_pos
       exact ⟨p, hk_pos⟩
 
 /-- If a nonnegative square matrix `A` is primitive, then `A` is irreducible. -/
-theorem IsPrimitive.to_Irreducible
+theorem IsPrimitive.to_IsIrreducible
     [IsOrderedRing R] [PosMulStrictMono R] [Nontrivial R] [DecidableEq n]
     (h_prim : IsPrimitive A) : IsIrreducible A := by
   obtain ⟨h_nonneg, k, hk_pos, hk_all⟩ := h_prim
@@ -242,7 +242,7 @@ variable {n R : Type*} [Ring R] [LinearOrder R]
 variable {A : Matrix n n R}
 
 /-- Irreducibility is invariant under transpose. -/
-theorem Irreducible.transpose
+theorem IsIrreducible.transpose
     (hA_nonneg : ∀ i j, 0 ≤ A i j) (hA : IsIrreducible A) : IsIrreducible Aᵀ := by
   have hA_T_nonneg : ∀ i j, 0 ≤ (Aᵀ) i j := fun i j => by
     simpa [Matrix.transpose_apply] using hA_nonneg j i
@@ -262,7 +262,7 @@ theorem irreducible_transpose_iff
   ⟨fun h ↦
     let hA_T_nonneg : ∀ i j, 0 ≤ (Aᵀ) i j := fun i j => by
       simpa [Matrix.transpose_apply] using hA_nonneg j i
-    Irreducible.transpose hA_T_nonneg h,
-   fun h ↦ Irreducible.transpose hA_nonneg h⟩
+    IsIrreducible.transpose hA_T_nonneg h,
+   fun h ↦ IsIrreducible.transpose hA_nonneg h⟩
 
 end Matrix
