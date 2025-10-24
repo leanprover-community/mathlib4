@@ -181,13 +181,11 @@ theorem hittingBtwn_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Se
 
 lemma hittingAfter_mem_set [WellFoundedLT ι] (h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s) :
     u (hittingAfter u s n ω).untopA ω ∈ s := by
-  simp_rw [hittingAfter, if_pos h_exists]
+  rw [hittingAfter, if_pos h_exists]
   have h_nonempty : {i : ι | n ≤ i ∧ u i ω ∈ s}.Nonempty := by
     obtain ⟨k, hk₁, hk₂⟩ := h_exists
     exact ⟨k, Set.mem_inter hk₁ hk₂⟩
-  have h_mem := csInf_mem h_nonempty
-  simp only [Set.mem_setOf_eq] at h_mem
-  exact h_mem.2
+  exact (csInf_mem h_nonempty).2
 
 theorem hittingBtwn_mem_set_of_hittingBtwn_lt [WellFoundedLT ι] {m : ι}
     (hl : hittingBtwn u s n m ω < m) :
