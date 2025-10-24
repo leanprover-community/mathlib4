@@ -46,7 +46,7 @@ lemma mem_vonNeumann' : x ∈ V_ o ↔ ∃ a < o, x ⊆ V_ a := by rw [vonNeuman
 
 theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
   rw [vonNeumann]
-  exact IsTransitive.iUnion fun ⟨a, _⟩ => (isTransitive_vonNeumann a).powerset
+  exact .iUnion fun ⟨a, _⟩ => (isTransitive_vonNeumann a).powerset
 termination_by o
 
 @[gcongr] theorem vonNeumann_mem_of_lt (h : a < b) : V_ a ∈ V_ b := by
