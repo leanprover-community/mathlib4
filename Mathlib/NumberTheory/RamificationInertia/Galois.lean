@@ -225,12 +225,10 @@ lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
     (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
     (p.primesOver S).ncard * Nat.card (P.toAddSubgroup.inertia G) *
       Module.finrank (R ⧸ p) (S ⧸ P) = Nat.card G := by
-  classical
   trans (p.primesOver S).ncard * Nat.card (MulAction.stabilizer G P); swap
   · rw [← IsInvariant.orbit_eq_primesOver R S G p P]
     simpa using Nat.card_congr (MulAction.orbitProdStabilizerEquivGroup G P)
   rw [mul_assoc]
-  cases nonempty_fintype G
   have : IsGalois (R ⧸ p) (S ⧸ P) := { __ := Ideal.Quotient.normal (A := R) G p P }
   have := Ideal.Quotient.finite_of_isInvariant G p P
   congr 1
@@ -239,11 +237,7 @@ lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
       (Ideal.Quotient.stabilizerHom_surjective G p P)).toEquiv
   rw [← IsGalois.card_aut_eq_finrank, ← this]
   convert (Ideal.Quotient.stabilizerHom P p G).ker.card_mul_index using 2
-  have : (Ideal.Quotient.stabilizerHom P p G).ker = (P.toAddSubgroup.inertia G).subgroupOf _ := by
-    ext σ
-    simp [DFunLike.ext_iff, Ideal.Quotient.mk_surjective.forall, Ideal.Quotient.eq]
-    rfl
-  rw [this]
+  rw [Ideal.Quotient.ker_stabilizerHom]
   refine Nat.card_congr (Subgroup.subgroupOfEquivOfLe ?_).toEquiv.symm
   intro σ hσ
   ext x
@@ -264,9 +258,10 @@ lemma card_inertia_eq_ramificationIdxIn
   letI := IsGaloisGroup.isGalois G K L
   letI := IsGaloisGroup.finiteDimensional G K L
   have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
+  have := NoZeroSMulDivisors.trans_faithfulSMul R K L
+  have : NoZeroSMulDivisors R S := IsIntegralClosure.noZeroSMulDivisors R L
   have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
-  refine mul_right_injective₀ (a := (p.primesOver S).ncard) ?_ ?_
-  · intro e; simp [e, eq_comm, Nat.card_eq_zero, ‹Finite G›.not_infinite] at H
+  refine mul_right_injective₀ (primesOver_ncard_ne_zero p S) ?_
   refine mul_left_injective₀ (b := Module.finrank (R ⧸ p) (S ⧸ P)) ?_ ?_
   · intro e; simp [e, eq_comm, Nat.card_eq_zero, ‹Finite G›.not_infinite] at H
   dsimp only
