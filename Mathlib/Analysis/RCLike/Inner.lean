@@ -89,9 +89,9 @@ lemma wInner_smul_left {𝕝 : Type*} [CommSemiring 𝕝] [StarRing 𝕝] [Algeb
     smul_comm (w _)]
 
 lemma wInner_smul_right {𝕝 : Type*} [CommSemiring 𝕝] [StarRing 𝕝] [Algebra 𝕝 𝕜] [StarModule 𝕝 𝕜]
-    [SMulCommClass ℝ 𝕝 𝕜] [∀ i, Module 𝕝 (E i)] [∀ i, IsScalarTower 𝕝 𝕜 (E i)] (c : 𝕝)
+    [∀ i, Module 𝕝 (E i)] [∀ i, IsScalarTower 𝕝 𝕜 (E i)] (c : 𝕝)
     (w : ι → ℝ) (f g : ∀ i, E i) : ⟪f, c • g⟫_[𝕜, w] = c • ⟪f, g⟫_[𝕜, w] := by
-  simp_rw [wInner, Pi.smul_apply, inner_smul_right_eq_smul, smul_sum, smul_comm]
+  simp_rw [wInner, Pi.smul_apply, inner_smul_right_eq_smul, smul_sum, smul_comm c]
 
 lemma mul_wInner_left (c : 𝕜) (w : ι → ℝ) (f g : ∀ i, E i) :
     c * ⟪f, g⟫_[𝕜, w] = ⟪star c • f, g⟫_[𝕜, w] := by rw [wInner_smul_left, star_star, smul_eq_mul]
