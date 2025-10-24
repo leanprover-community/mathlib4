@@ -431,16 +431,21 @@ where
       let searchNormedAlgebra := ← findSomeLocalInstanceOf? ``NormedAlgebra fun inst type ↦ do
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           match_expr type with
-          | NormedAlgebra k R _ =>
+          | NormedAlgebra k R _ _ =>
+            trace[Elab.DiffGeo.MDiff] "match, normed algebra: k is `{k}`, R is `{R}`"
             if ← withReducible (pureIsDefEq R α) then
               trace[Elab.DiffGeo.MDiff] "`{α}` is a normed algebra over `{k}` via `{inst}`"
               return some (k, R)
-            else return none
+            else
+              trace[Elab.DiffGeo.MDiff] "found a normed `{k}`-algebra structure on `{R}`, which
+              is not reducibly definitionally equal to `{α}`: continue the search"
+              return none
           | _ => return none
       let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           match_expr type with
           | NormedSpace k R _ _ =>
+            trace[Elab.DiffGeo.MDiff] "match, normed space: k is `{k}`, R is `{R}`"
             if ← withReducible (pureIsDefEq R α) then
               trace[Elab.DiffGeo.MDiff] "`{α}` is a normed space over `{k}` via `{inst}`"
               return some (k, R)
@@ -449,11 +454,13 @@ where
       -- FIXME: is there a more elegant way to avoid the duplicate `some` branch?
       match searchNormedAlgebra with
       | some (k, R) =>
+        trace[Elab.DiffGeo.MDiff] "found a normed algebra: `{α}` is a normed `{k}`-algebra"
         let eK : Term ← Term.exprToSyntax k
         let eR : Term ← Term.exprToSyntax R
         Term.elabTerm (← ``(𝓘($eK, $eR))) none
       | _ => match ← searchNormedSpace with
         | some (k, R) =>
+          trace[Elab.DiffGeo.MDiff] "found a normed space: `{α}` is a normed space over `{k}`"
           let eK : Term ← Term.exprToSyntax k
           let eR : Term ← Term.exprToSyntax R
           Term.elabTerm (← ``(𝓘($eK, $eR))) none
