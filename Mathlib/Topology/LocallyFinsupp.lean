@@ -348,7 +348,7 @@ Taking the positive part of a function with locally finite support commutes with
 scalar multiplication by a natural number.
 -/
 @[simp]
-theorem nsmul_posPart (f : locallyFinsuppWithin U Y) (n : ℕ) : (n • f)⁺ = n • f⁺ := by
+theorem nsmul_posPart (n : ℕ) (f : locallyFinsuppWithin U Y) : (n • f)⁺ = n • f⁺ := by
   ext x
   simp only [posPart, max_apply, coe_nsmul, Pi.smul_apply, coe_zero, Pi.zero_apply]
   by_cases h : f x < 0
