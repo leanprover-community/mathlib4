@@ -974,12 +974,10 @@ theorem memLp_stoppedValue_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀
   rw [stoppedValue_eq_of_mem_finset hbdd]
   refine memLp_finset_sum' _ fun i _ => MemLp.indicator ?_ (hu i)
   refine ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq_of_countable_range ?_ i)
-  refine Set.Finite.countable ?_
   have : Set.range τ ⊆ WithTop.some '' s := by
-    intro x hx
-    obtain ⟨y, rfl⟩ := hx
+    rintro x ⟨y, rfl⟩
     exact hbdd y
-  exact ((Finset.finite_toSet s).image _).subset this
+  exact ((Finset.finite_toSet s).image _).subset this |>.countable
 
 theorem memLp_stoppedValue [LocallyFiniteOrderBot ι] (hτ : IsStoppingTime ℱ τ)
     (hu : ∀ n, MemLp (u n) p μ) {N : ι} (hbdd : ∀ ω, τ ω ≤ N) : MemLp (stoppedValue u τ) p μ := by
