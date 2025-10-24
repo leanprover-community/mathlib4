@@ -493,27 +493,23 @@ where
   fromSphere : TermElabM Expr := do
     let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
       | throwError "`{e}` is not a coercion of a set to a type"
-    -- We don't use `match_expr` here to avoid importing `Metric.sphere`.
     match_expr e with
     | Metric.sphere α _ _x _r =>
-      -- Attempt to find a real normed space instance on `α`.
-      let searchRealNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a metric sphere in `{α}`"
+      -- Attempt to find a real or complex inner product space instance on `α`.
+      let searchIPSpace := findSomeLocalInstanceOf? `InnerProductSpace fun inst type ↦ do
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
+          -- We don't use `match_expr` here to avoid importing `InnerProductSpace`.
           match_expr type with
-          | NormedSpace k R _ _ =>
+          | InnerProductSpace k E _ _ =>
             -- We use reducible transparency to allow using a type synonym: this should not
             -- be unfolded.
-            if ← withReducible (pureIsDefEq k q(ℝ)) then
-              if ← withReducible (pureIsDefEq R α) then
-                trace[Elab.DiffGeo.MDiff] "`{α}` is a real normed space via `{inst}`"
-                return some R
-              else
-                trace[Elab.DiffGeo.MDiff] "found a real normed space on `{R}`, which \
-                is not reducibly definitionally equal to `{α}`: continue the search"
-                return none
+            if ← withReducible (pureIsDefEq E α) then
+              trace[Elab.DiffGeo.MDiff] "`{α}` is an inner product space via `{inst}`"
+              return some E
             else
-              trace[Elab.DiffGeo.MDiff] "not a normed space on `{R}`, which is not a real \
-                normed space, continuing!"
+              trace[Elab.DiffGeo.MDiff] "found an inner product space on `{E}`, which \
+                is not reducibly definitionally equal to `{α}`: continue the search"
               return none
           | _ => return none
       let factFinder := findSomeLocalInstanceOf? ``Fact fun _inst type ↦ do
@@ -523,11 +519,11 @@ where
           trace[Elab.DiffGeo.MDiff] "considering fact of kind `{a}`"
           return some a
         | _ => return none
-      if let some R := (← searchRealNormedSpace) then
-        -- We found a sphere in a real normed space: search for a `Fact (finrank R) = m`,
+      if let some R := (← searchIPSpace) then
+        -- We found a sphere in the inner product space E: search for a `Fact (finrank ℝ E) = m`,
         -- then the sphere is m-1-dimensional, and modelEuclideanSpace m-1 is our model.
         let some _a ← factFinder
-          | throwError "Found no fact `finrank {R} = n + 1` in the local context"
+          | throwError "Found no fact `finrank ℝ {R} = n + 1` in the local context"
         --       -- match_expr a with
         --       -- | ``(``Module.finrank R = b) =>
         --       --   let sdf := bb
