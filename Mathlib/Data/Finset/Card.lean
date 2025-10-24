@@ -413,7 +413,7 @@ lemma card_le_card_of_injOn (f : α → β) (hf : Set.MapsTo f s t) (f_inj : (s 
   classical
   calc
     #s = #(s.image f) := (card_image_of_injOn f_inj).symm
-    _  ≤ #t           := card_le_card <| image_subset_iff.2 hf
+    _ ≤ #t := card_le_card <| image_subset_iff.2 hf
 
 lemma card_le_card_of_injective {f : s → t} (hf : f.Injective) : #s ≤ #t := by
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀⟩
@@ -630,7 +630,7 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #
   classical
   refine Nat.decreasingInduction' ?_ hnt ⟨t, by simp [hst]⟩
   intro k _ hnk ⟨u, hu₁, hu₂, hu₃⟩
-  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by rw [← card_pos]; grind
+  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by grind
   exact ⟨u.erase a, by grind⟩
 
 /-- We can shrink a set to any smaller size. -/
