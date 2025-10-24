@@ -47,7 +47,7 @@ lemma mem_of_mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h : a ∈ n • s) 
     rw [succ_nsmul, mem_add] at h
     exact h.elim ih id
 
-@[simp]
+@[simp, push]
 lemma mem_nsmul {a : α} {s : Multiset α} {n : ℕ} : a ∈ n • s ↔ n ≠ 0 ∧ a ∈ s := by
   refine ⟨fun ha ↦ ⟨?_, mem_of_mem_nsmul ha⟩, fun h ↦ ?_⟩
   · rintro rfl

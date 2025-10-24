@@ -49,7 +49,7 @@ theorem sort_sorted : Sorted r (sort s r) :=
 theorem sort_eq : ↑(sort s r) = s :=
   Quot.inductionOn s fun _ => Quot.sound <| mergeSort_perm _ _
 
-@[simp]
+@[simp, push]
 theorem sort_zero : sort 0 r = [] :=
   List.mergeSort_nil
 

@@ -103,10 +103,10 @@ theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
 
 -- If https://github.com/leanprover/lean4/issues/2678 is resolved-
 -- this can be changed back to an `Iff`, but for now we would like `dsimp` to use it.
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_val {a : α} {s : Finset α} : (a ∈ s.1) = (a ∈ s) := rfl
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_mk {a : α} {s nd} : a ∈ @Finset.mk α s nd ↔ a ∈ s :=
   Iff.rfl
 
@@ -126,7 +126,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 instance : CoeTC (Finset α) (Set α) :=
   ⟨toSet⟩
 
-@[simp, norm_cast, grind =]
+@[simp, norm_cast, grind =, push]
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
   Iff.rfl
 

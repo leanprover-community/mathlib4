@@ -58,7 +58,7 @@ open FinsetFamily
 
 variable {s t} {a b c : α}
 
-@[simp]
+@[simp, push]
 theorem mem_sups : c ∈ s ⊻ t ↔ ∃ a ∈ s, ∃ b ∈ t, a ⊔ b = c := by simp [(· ⊻ ·)]
 
 variable (s t)
@@ -202,7 +202,7 @@ open FinsetFamily
 
 variable {s t} {a b c : α}
 
-@[simp]
+@[simp, push]
 theorem mem_infs : c ∈ s ⊼ t ↔ ∃ a ∈ s, ∃ b ∈ t, a ⊓ b = c := by simp [(· ⊼ ·)]
 
 variable (s t)
@@ -398,7 +398,7 @@ scoped[FinsetFamily] infixl:74 " ○ " => Finset.disjSups
 
 variable {s t u} {a b c : α}
 
-@[simp]
+@[simp, push]
 theorem mem_disjSups : c ∈ s ○ t ↔ ∃ a ∈ s, ∃ b ∈ t, Disjoint a b ∧ a ⊔ b = c := by
   simp [disjSups, and_assoc]
 
@@ -508,7 +508,7 @@ scoped[FinsetFamily] infixl:74 " \\\\ " => Finset.diffs
 
 variable {s t} {a b c : α}
 
-@[simp] lemma mem_diffs : c ∈ s \\ t ↔ ∃ a ∈ s, ∃ b ∈ t, a \ b = c := by simp [(· \\ ·)]
+@[simp, push] lemma mem_diffs : c ∈ s \\ t ↔ ∃ a ∈ s, ∃ b ∈ t, a \ b = c := by simp [(· \\ ·)]
 
 variable (s t)
 
@@ -588,7 +588,7 @@ scoped[FinsetFamily] postfix:max "ᶜˢ" => Finset.compls
 
 variable {s t} {a : α}
 
-@[simp] lemma mem_compls : a ∈ sᶜˢ ↔ aᶜ ∈ s := by
+@[simp, push] lemma mem_compls : a ∈ sᶜˢ ↔ aᶜ ∈ s := by
   rw [Iff.comm, ← mem_map' ⟨compl, compl_injective⟩, Embedding.coeFn_mk, compl_compl, compls]
 
 variable (s t)

@@ -100,7 +100,7 @@ variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α
 @[simp]
 theorem sort_mk (h : m.Nodup) : sort ⟨m, h⟩ r = m.sort r := rfl
 
-@[simp]
+@[simp, push]
 theorem mem_sort {a : α} : a ∈ sort s r ↔ a ∈ s :=
   Multiset.mem_sort _
 

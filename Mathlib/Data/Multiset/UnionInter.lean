@@ -56,7 +56,7 @@ lemma union_le_union_right (h : s ≤ t) (u) : s ∪ u ≤ t ∪ u :=
 lemma union_le (h₁ : s ≤ u) (h₂ : t ≤ u) : s ∪ t ≤ u := by
   rw [← eq_union_left h₂]; exact union_le_union_right h₁ t
 
-@[simp]
+@[simp, push]
 lemma mem_union : a ∈ s ∪ t ↔ a ∈ s ∨ a ∈ t :=
   ⟨fun h => (mem_add.1 h).imp_left (mem_of_le <| Multiset.sub_le_self _ _),
     (Or.elim · (mem_of_le le_union_left) (mem_of_le le_union_right))⟩
@@ -121,7 +121,7 @@ lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
   · rw [cons_inter_of_neg _ h]
     exact IH ((le_cons_of_notMem <| mt (mem_of_le h₂) h).1 h₁) h₂
 
-@[simp]
+@[simp, push]
 lemma mem_inter : a ∈ s ∩ t ↔ a ∈ s ∧ a ∈ t :=
   ⟨fun h => ⟨mem_of_le inter_le_left h, mem_of_le inter_le_right h⟩, fun ⟨h₁, h₂⟩ => by
     rw [← cons_erase h₁, cons_inter_of_pos _ h₂]; apply mem_cons_self⟩
