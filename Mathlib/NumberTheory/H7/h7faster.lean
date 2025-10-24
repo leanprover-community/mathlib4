@@ -3685,28 +3685,23 @@ lemma S_eq_SR (l : Fin (h7.m)) (hl : l ≠ h7.l₀' q hq0 h2mq) :
       add_left_inj, Nat.cast_inj, not_false_eq_true]
     exact hz
 
-lemma S_eq_SR_on_circle :
-  ∀ (z : ℂ) (hz : z ∈ Metric.sphere 0
-    (h7.m * (1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ)))),
-  h7.S q hq0 h2mq z = h7.SR  q hq0 h2mq z := by {
-  intros z hz
-  sorry
-  }
-
+--SR_analytic_S.U follow this for srl0 too
 lemma SRl_is_analytic_at_ball_of_radius_one (l' : Fin (h7.m)) :
-  AnalyticOn ℂ (h7.SRl q hq0 h2mq l') (Metric.ball 0 1) := by {
-    refine AnalyticOnEq (h7.SR q hq0 h2mq) (h7.SRl q hq0 h2mq l') (Metric.ball 0 1) (fun z ↦ ?_) ?_
-    · intros Hz
-      have : l' ≠ h7.l₀' q hq0 h2mq := sorry
-      have HSU : z ∈ S.U h7 := sorry
-      have := h7.SR_eq_SRl q hq0 h2mq l' this HSU
-      exact this.symm
-    · have := SR_analytic_S.U h7 q hq0 h2mq
-      refine AnalyticOnSubset _ _  (S.U h7) ?_ this
-      unfold S.U ks
-      simp only [coe_image, coe_range]
-      sorry
-  }
+  AnalyticOn ℂ (h7.SRl q hq0 h2mq l') (Metric.ball (l'+1 ) 1) := by sorry
+
+  -- {
+  --   refine AnalyticOnEq (h7.SR q hq0 h2mq) (h7.SRl q hq0 h2mq l') (Metric.ball (l'+1) 1) (fun z ↦ ?_) ?_
+  --   · intros Hz
+  --     have : l' ≠ h7.l₀' q hq0 h2mq := sorry
+  --     have HSU : z ∈ S.U h7 := sorry
+  --     have := h7.SR_eq_SRl q hq0 h2mq l' this HSU
+  --     exact this.symm
+  --   · have := SR_analytic_S.U h7 q hq0 h2mq
+  --     refine AnalyticOnSubset _ _  (S.U h7) ?_ this
+  --     unfold S.U ks
+  --     simp only [coe_image, coe_range]
+  --     sorry
+  -- }
 
 lemma SRl_is_analytic_at_ball_of_radius_one' (l' : Fin (h7.m)) :
   AnalyticOn ℂ (h7.SRl q hq0 h2mq l') (Metric.ball 0 1) := by {
@@ -3714,18 +3709,20 @@ lemma SRl_is_analytic_at_ball_of_radius_one' (l' : Fin (h7.m)) :
   }
 
 lemma SRl0_is_analytic_at_ball_of_radius_one  :
-  AnalyticOn ℂ (h7.SRl0 q hq0 h2mq) (Metric.ball 0 1) := by {
-    refine AnalyticOnEq (h7.SR q hq0 h2mq) (h7.SRl0 q hq0 h2mq) (Metric.ball 0 1) (fun z ↦ ?_) ?_
-    · intros Hz
-      have HSU : z ∈ S.U h7 := sorry
-      have := h7.SR_eq_SRl0 q hq0 h2mq HSU
-      exact this.symm
-    · have := SR_analytic_S.U h7 q hq0 h2mq
-      refine AnalyticOnSubset _ _  (S.U h7) ?_ this
-      unfold S.U ks
-      simp only [coe_image, coe_range]
-      sorry
-  }
+  AnalyticOn ℂ (h7.SRl0 q hq0 h2mq) (Metric.ball (h7.l₀' q hq0 h2mq + 1) 1) := by sorry
+
+  -- {
+  --   refine AnalyticOnEq (h7.SR q hq0 h2mq) (h7.SRl0 q hq0 h2mq) (Metric.ball 0 1) (fun z ↦ ?_) ?_
+  --   · intros Hz
+  --     have HSU : z ∈ S.U h7 := sorry
+  --     have := h7.SR_eq_SRl0 q hq0 h2mq HSU
+  --     exact this.symm
+  --   · have := SR_analytic_S.U h7 q hq0 h2mq
+  --     refine AnalyticOnSubset _ _  (S.U h7) ?_ this
+  --     unfold S.U ks
+  --     simp only [coe_image, coe_range]
+  --     sorry
+  -- }
 
 
 -- #check AnalyticOnEquiv
@@ -3890,7 +3887,13 @@ def sys_coeff_foo_S : ρᵣ h7 q hq0 h2mq = Complex.log (h7.α) ^ (-(h7.r q hq0 
   sorry
 }
 
-
+lemma S_eq_SR_on_circle :
+  ∀ (z : ℂ) (hz : z ∈ Metric.sphere 0
+    (h7.m * (1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ)))),
+  h7.S q hq0 h2mq z = h7.SR  q hq0 h2mq z := by {
+  intros z hz
+  sorry
+  }
 
 
 
@@ -4090,8 +4093,6 @@ lemma bound_circle : ((1 + ↑(h7.r q hq0 h2mq) / ↑q)) ≤ ↑(h7.r q hq0 h2mq
       refine add_le_add ?_ ?_
       · sorry
       · sorry
-
-
 
 def c₉ : ℝ := Real.exp (2*h7.m * |1 + ‖h7.β‖| * |Real.log ‖h7.α‖| * (↑h7.m : ℝ))
 
@@ -4435,7 +4436,7 @@ lemma abs_denom : norm (((z - (h7.l₀' q hq0 h2mq : ℂ)) ^ (-(h7.r q hq0 h2mq 
 def c₁₂ : ℝ := sorry
 
 lemma S_norm_bound : ∀
-  (hz : z ∈ Metric.sphere 0 (h7.m * (1 + (h7.r q hq0 hq2m : ℝ) / (q : ℝ)))),
+  (hz : z ∈ Metric.sphere 0 (h7.m * (1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ)))),
   norm (h7.S q hq0 h2mq z) ≤ (c₁₂) ^ (h7.r q hq0 h2mq) * ((3 - h7.m) / 2 + 3 / 2) := by
   intros hz
   calc
@@ -4579,9 +4580,20 @@ lemma eq8 : norm (ρᵣ h7 q hq0 h2mq) ≤ (c₁₃ ^ (h7.r q hq0 h2mq)) *
 
 def c₁₄ : ℝ := sorry
 
+lemma fix_embeddings: ‖h7.σ (h7.rho q hq0 h2mq)‖ =
+  ‖(canonicalEmbedding h7.K) (h7.rho q hq0 h2mq)‖ := sorry
+
+lemma rho_norm_le_house_rho : ‖h7.ρᵣ q hq0 h2mq‖ ≤ house (rho h7 q hq0 h2mq) := by
+  unfold house
+  rw [← rho_eq_ρᵣ]
+  rw [fix_embeddings]
+
 lemma use6and8 :
   (Algebra.norm ℚ (rho h7 q hq0 h2mq)) ≤ (c₁₄)^(h7.r q hq0 h2mq) *
   (h7.r q hq0 h2mq)^((-(h7.r q hq0 h2mq) : ℤ)/2 + 3 * (h7.h)/2) := by
+
+  have eq6 := eq6 h7 q hq0 h2mq
+  have eq8 := eq8 h7 q hq0 h2mq
 
   have : (((h7.h - 1 : ℤ) * (h7.r q hq0 h2mq + 3/2 : ℤ) +
    (3 - h7.m) * (h7.r q hq0 h2mq) * 1/2 + 3/2)) =
@@ -4600,6 +4612,7 @@ lemma use6and8 :
     simp only [mul_assoc]
     sorry
 
+#exit
 
 def c₁₅ : ℝ := c₁₄ * h7.c₅ q hq0 h2mq
 
