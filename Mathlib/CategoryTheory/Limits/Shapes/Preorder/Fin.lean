@@ -3,6 +3,7 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Limits.Preorder
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 import Mathlib.Order.Fin.Basic
 
@@ -19,7 +20,7 @@ in the file `Limits.Shapes.IsTerminal`.
 
 universe v v' u u' w
 
-open CategoryTheory Limits
+open CategoryTheory Limits Preorder
 
 namespace Fin
 
