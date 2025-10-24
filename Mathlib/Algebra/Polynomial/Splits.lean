@@ -16,8 +16,7 @@ irreducible factors over `L` have degree `1`.
 ## Main definitions
 
 * `Polynomial.Splits i f`: A predicate on a homomorphism `i : K →+* L` from a commutative ring to a
-  field and a polynomial `f` saying that `f.map i` is zero or all of its irreducible factors over
-  `L` have degree `1`.
+  field and a polynomial `f` saying that `f.map i` factors in `L`.
 
 -/
 
@@ -38,7 +37,7 @@ section CommRing
 variable [CommRing K] [Field L] [Field F]
 variable (i : K →+* L)
 
-/-- A polynomial `Splits` iff it is zero or all of its irreducible factors have `degree` 1.
+/-- A polynomial `Splits` iff it `Factors` after mapping under a ring homomorphism.
 This will eventually be replaced by `Polynomial.Factors`. -/
 def Splits (f : K[X]) : Prop :=
   Factors (f.map i)
