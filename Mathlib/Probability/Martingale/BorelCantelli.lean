@@ -130,8 +130,7 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
     exact lt_of_le_of_lt ((mem_upperBounds.1 hωb.some_mem) _ ⟨n, rfl⟩) hi
   have heq : ∀ n, stoppedAbove f i n ω = f n ω := by
     intro n
-    simp [stoppedAbove, stoppedProcess, leastGE]
-    rw [hittingAfter_eq_top_iff.mpr]
+    rw [stoppedAbove, stoppedProcess, leastGE, hittingAfter_eq_top_iff.mpr]
     · simp only [le_top, inf_of_le_left]
       congr
     · simp [hib]
