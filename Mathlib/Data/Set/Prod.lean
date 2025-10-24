@@ -535,7 +535,7 @@ theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
 
 alias ⟨_, Nontrivial.offDiag_nonempty⟩ := offDiag_nonempty
 
-alias ⟨_, Subsingleton.offDiag_eq_empty⟩ := offDiag_nonempty
+alias ⟨_, Subsingleton.offDiag_eq_empty⟩ := offDiag_eq_empty
 
 variable (s t)
 
