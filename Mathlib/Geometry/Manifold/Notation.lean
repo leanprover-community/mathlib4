@@ -239,7 +239,8 @@ the codomain of the continuous linear maps (otherwise none). -/
 def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × Expr × Expr := do
   match_expr e with
     | ContinuousLinearMap k S _ _ _σ E _ _ F _ _ _ _ =>
-      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
+      -- TODO: make the error below more understandable, by including something like this line!
+      -- trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
       if ← withReducible <| isDefEq k S then
         -- TODO: check if σ is actually the identity!
         return some (k, E, F)
@@ -279,14 +280,15 @@ This implementation is not maximally robust yet.
 -- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return m
-  if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return m
-  if let some m ← tryStrategy m!"NormedSpace"    fromNormedSpace    then return m
-  if let some m ← tryStrategy m!"Manifold"       fromManifold       then return m
+  if let some m ← tryStrategy m!"TotalSpace"       fromTotalSpace     then return m
+  if let some m ← tryStrategy m!"TangentBundle"    fromTangentBundle  then return m
+  if let some m ← tryStrategy m!"NormedSpace"      fromNormedSpace    then return m
+  if let some m ← tryStrategy m!"Manifold"         fromManifold       then return m
   if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return m
-  if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return m
-  if let some m ← tryStrategy m!"EuclideanSpace" fromEuclideanSpace then return m
-  if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return m
+  if let some m ← tryStrategy m!"RealInterval"     fromRealInterval   then return m
+  if let some m ← tryStrategy m!"EuclideanSpace"   fromEuclideanSpace then return m
+  if let some m ← tryStrategy m!"UpperHalfPlane"   fromUpperHalfPlane then return m
+  if let some m ← tryStrategy m!"Units of algebra" fromUnitsOfAlgebra then return m
   if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return m
   throwError "Could not find a model with corners for `{e}`"
 where
@@ -426,6 +428,64 @@ where
       let c ← Term.exprToSyntax (mkConst `Complex)
       Term.elabTerm (← `(𝓘($c))) none
     else throwError "`{e}` is not the complex upper half plane"
+  /-- Attempt to find a model with corners on the units in a normed algebra -/
+  fromUnitsOfAlgebra : TermElabM Expr := do
+    match_expr e with
+    | Units α _ =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is the set of units on `{α}`"
+      -- If `α` is a normed `𝕜`-algebra for some `𝕜`, we know a model with corners.
+      -- We need to gather `𝕜` from the context: try to find a `NormedAlgebra` or `NormedSpace`
+      -- instance in the local context.
+      -- TODO: this feels somewhat brittle (can there be other instances in context?),
+      -- at least emit a nice error message if this fails
+      let searchNormedAlgebra := ← findSomeLocalInstanceOf? ``NormedAlgebra fun inst type ↦ do
+          trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
+          match_expr type with
+          | NormedAlgebra k R _ _ =>
+            if ← withReducible (pureIsDefEq R α) then
+              trace[Elab.DiffGeo.MDiff] "`{α}` is a normed algebra over `{k}` via `{inst}`"
+              return some (k, R)
+            else
+              trace[Elab.DiffGeo.MDiff] "found a normed `{k}`-algebra structure on `{R}`, which \
+              is not reducibly definitionally equal to `{α}`: continue the search"
+              return none
+          | _ => return none
+      if let some (k, R) := searchNormedAlgebra then
+        trace[Elab.DiffGeo.MDiff] "found a normed algebra: `{α}` is a normed `{k}`-algebra"
+        let eK : Term ← Term.exprToSyntax k
+        let eR : Term ← Term.exprToSyntax R
+        Term.elabTerm (← ``(𝓘($eK, $eR))) none
+      else
+        trace[Elab.DiffGeo.MDiff] "`{α}` is not a normed algebra on the nose: try via a space of \
+          continuous linear maps"
+        -- If `α = V →L[𝕜] V` for a `𝕜`-normed space, we also have a normed algebra structure:
+        -- search for such cases as well.
+        match ← isCLMReduciblyDefeqCoefficients α with
+        | none => throwError "`{α}` is not a space of continuous linear maps either"
+        | some (k, V, W) =>
+          -- TODO: think about the right transparency level!
+          if (← isDefEq V W) then
+            trace[Elab.DiffGeo.MDiff] "`{α}` is a space of continuous `{k}`-linear maps on `{V}`"
+            let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+              trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
+              match_expr type with
+              | NormedSpace k R _ _ =>
+                if ← withReducible (pureIsDefEq R V) then
+                  trace[Elab.DiffGeo.MDiff] "`{V}` is a normed space over `{k}` via `{inst}`"
+                  return some (k, R)
+                else return none
+              | _ => return none
+            match ← searchNormedSpace with
+            | some (k, _R) =>
+              trace[Elab.DiffGeo.MDiff] "found a normed space: `{V}` is a normed space over `{k}`"
+              let eK : Term ← Term.exprToSyntax k
+              let eα : Term ← Term.exprToSyntax α
+              Term.elabTerm (← ``(𝓘($eK, $eα))) none
+            | _ => throwError  "Found no `NormedSpace` structure on `{V}` among local instances"
+          else
+            throwError "{α}` is a space of continuous `{k}`-linear maps, but with domain `{V}` and \
+              co-domain `{W}` being not definitionally equal"
+    | _ => throwError "`{e}` is not the set of units of a normed algebra"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
   fromNormedField : TermElabM Expr := do
