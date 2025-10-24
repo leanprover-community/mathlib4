@@ -71,8 +71,7 @@ theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
     ∀ᵐ ω ∂μ, stoppedAbove f r i ω ≤ r + R := by
   filter_upwards [hbdd] with ω hbddω
-  rw [stoppedAbove, stoppedProcess]
-  simp only [ENat.some_eq_coe]
+  rw [stoppedAbove, stoppedProcess, ENat.some_eq_coe]
   by_cases h_zero : (min (i : ℕ∞) (leastGE f r ω)).untopA = 0
   · simp only [h_zero, hf0, Pi.zero_apply]
     positivity
