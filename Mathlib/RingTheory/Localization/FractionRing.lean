@@ -128,14 +128,16 @@ theorem nonZeroDivisors_eq_isUnit : K⁰ = IsUnit.submonoid K := by
   exact isUnit_of_mul_isUnit_left <| eq ▸ map_units K r'
 
 include R in
-/-- Taking fraction ring is idempotent: a fraction ring of a fraction ring of `R` is
-itself a fraction ring of `R`. -/
+/-- If `L` is a fraction ring of `K` which is a fraction ring of `R`,
+the `K`-algebra homomorphism from `K` to `L` is an isomorphism. -/
 noncomputable def algEquiv (L) [CommRing L] [Algebra K L] [IsFractionRing K L] : K ≃ₐ[K] L :=
   atUnits K _ (nonZeroDivisors_eq_isUnit R K).le
 
 include R in
 theorem idem : IsFractionRing K K := IsLocalization.self (nonZeroDivisors_eq_isUnit R K).le
 
+/-- Taking fraction ring is idempotent: a fraction ring of a fraction ring of `R` is
+itself a fraction ring of `R`. -/
 theorem trans (L) [CommRing L] [Algebra K L] [IsFractionRing K L] [Algebra R L]
     [IsScalarTower R K L] : IsFractionRing R L :=
   isLocalization_of_algEquiv _ <| (algEquiv R K L).restrictScalars R
