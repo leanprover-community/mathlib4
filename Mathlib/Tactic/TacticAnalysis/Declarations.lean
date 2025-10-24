@@ -266,12 +266,13 @@ def terminalToGrind : TacticAnalysis.Config where
       if oldHeartbeats * 2 < newHeartbeats then
         logWarningAt stx m!"'grind' is slower than the original: {oldHeartbeats} -> {newHeartbeats}"
 
-open Elab.Command
-def tryAtEachStep (tac : MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
+open Elab.Command in
+/-- Run a tactic at each proof step. -/
+def tryAtEachStep (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
   run seq := do
     for (ctx, i) in seq do
       if let [goal] := i.goalsBefore then
-        let tac ← tac goal
+        let tac ← tac i.stx goal
         let goalsAfter ← try
           ctx.runTacticCode i goal tac
         catch _e =>
@@ -286,7 +287,7 @@ register_option linter.tacticAnalysis.tryAtEachStepGrind : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrind,
    inherit_doc linter.tacticAnalysis.tryAtEachStepGrind]
-def tryAtEachStepGrind := tryAtEachStep (fun _ => `(tactic| grind))
+def tryAtEachStepGrind := tryAtEachStep (fun _ _ => `(tactic| grind))
 
 /-- Run `simp_all` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepSimpAll : Bool := {
@@ -295,7 +296,7 @@ register_option linter.tacticAnalysis.tryAtEachStepSimpAll : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAll,
    inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAll]
-def tryAtEachStepSimpAll := tryAtEachStep (fun _ => `(tactic| simp_all))
+def tryAtEachStepSimpAll := tryAtEachStep (fun _ _ => `(tactic| simp_all))
 
 /-- Run `aesop` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepAesop : Bool := {
@@ -304,7 +305,7 @@ register_option linter.tacticAnalysis.tryAtEachStepAesop : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepAesop,
    inherit_doc linter.tacticAnalysis.tryAtEachStepAesop]
-def tryAtEachStepAesop := tryAtEachStep (fun _ => `(tactic| aesop))
+def tryAtEachStepAesop := tryAtEachStep (fun _ _ => `(tactic| aesop))
 
 /-- Run `grind +premises` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepGrindPremises : Bool := {
@@ -313,7 +314,7 @@ register_option linter.tacticAnalysis.tryAtEachStepGrindPremises : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindPremises,
    inherit_doc linter.tacticAnalysis.tryAtEachStepGrindPremises]
-def tryAtEachStepGrindPremises := tryAtEachStep (fun _ => `(tactic| grind +premises))
+def tryAtEachStepGrindPremises := tryAtEachStep (fun _ _ => `(tactic| grind +premises))
 
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
