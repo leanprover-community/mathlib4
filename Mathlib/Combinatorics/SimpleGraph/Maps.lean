@@ -200,7 +200,7 @@ abbrev induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
   G.comap (Function.Embedding.subtype _)
 
 variable {G} in
-lemma adj_induce {s : Set V} {u v : s} : (G.induce s).Adj u v ↔ G.Adj u v := .rfl
+lemma induce_adj {s : Set V} {u v : s} : (G.induce s).Adj u v ↔ G.Adj u v := .rfl
 
 @[simp] lemma induce_top (s : Set V) : (completeGraph V).induce s = completeGraph s :=
   comap_top Subtype.val_injective
