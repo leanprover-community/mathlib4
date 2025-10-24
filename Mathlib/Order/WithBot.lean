@@ -876,6 +876,23 @@ lemma untopA_le_iff [Nonempty α] (hy : y ≠ ⊤) : y.untopA ≤ b ↔ y ≤ b 
 lemma le_untopA_iff [Nonempty α] (hy : y ≠ ⊤) : a ≤ y.untopA ↔ a ≤ y := by
   lift y to α using id hy; simp
 
+lemma untop_mono (hx : x ≠ ⊤) (hy : y ≠ ⊤) (h : x ≤ y) :
+    x.untop hx ≤ y.untop hy := by
+  lift x to α using id hx
+  lift y to α using id hy
+  simp only [untop_coe]
+  exact mod_cast h
+
+lemma untopD_mono (hy : y ≠ ⊤) (h : x ≤ y) :
+    x.untopD a ≤ y.untopD a := by
+  lift y to α using hy
+  cases x with
+  | top => simp at h
+  | coe a => simp only [WithTop.untopD_coe]; exact mod_cast h
+
+lemma untopA_mono [Nonempty α] (hy : y ≠ ⊤) (h : x ≤ y) :
+    x.untopA ≤ y.untopA := untopD_mono hy h
+
 end LE
 
 section LT

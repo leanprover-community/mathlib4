@@ -1106,13 +1106,7 @@ theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ �
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.Ico (τ ω).untopA (π ω).untopA, (u (i + 1) - u i)) ω := by
   ext ω
-  have h_le' : (τ ω).untopA ≤ (π ω).untopA := by
-    have hτ_top : τ ω ≠ ⊤ := ne_top_of_le_ne_top (mod_cast hπ ω) (hle ω)
-    specialize hle ω
-    lift τ ω to ℕ using hτ_top with t ht
-    simp only [ne_eq, ENat.toENNReal_eq_top] at hπ
-    lift π ω to ℕ using hπ ω with b hb
-    exact mod_cast hle
+  have h_le' : (τ ω).untopA ≤ (π ω).untopA := WithTop.untopA_mono (mod_cast hπ ω) (hle ω)
   rw [Finset.sum_Ico_eq_sub _ h_le', Finset.sum_range_sub, Finset.sum_range_sub]
   simp [stoppedValue]
 
