@@ -104,14 +104,18 @@ instance SMulCommClass.rat' [Monoid α] [AddCommGroup M] [DistribMulAction α M]
 
 end
 
--- see note [lower instance priority]
-instance (priority := 100) NNRatModule.to_isAddTorsionFree [AddCommMonoid M] [Module ℚ≥0 M] :
-    IsAddTorsionFree M where
-  nsmul_right_injective n hn m₁ m₂ hm := by
-    simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 n, *] using congr((n⁻¹ : ℚ≥0) • $hm)
+variable (M) in
+/-- A `ℚ≥0`-module is torsion-free as a group.
 
--- see note [lower instance priority]
-instance (priority := 100) RatModule.to_isAddTorsionFree [AddCommGroup M] [Module ℚ M] :
-    IsAddTorsionFree M where
-  nsmul_right_injective n hn m₁ m₂ hm := by
-    simpa [← Nat.cast_smul_eq_nsmul ℚ n, *] using congr((n⁻¹ : ℚ) • $hm)
+This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
+lemma IsAddTorsionFree.of_module_nnrat [AddCommMonoid M] [Module ℚ≥0 M] : IsAddTorsionFree M where
+  nsmul_right_injective n hn x y hxy := by
+    simpa [← Nat.cast_smul_eq_nsmul ℚ≥0 n, *] using congr((n⁻¹ : ℚ≥0) • $hxy)
+
+variable (M) in
+/-- A `ℚ≥0`-module is torsion-free as a group.
+
+This instance will fire for any monoid `M`, so is local unless needed elsewhere. -/
+lemma IsAddTorsionFree.of_module_rat [AddCommGroup M] [Module ℚ M] : IsAddTorsionFree M where
+  nsmul_right_injective n hn x y hxy := by
+    simpa [← Nat.cast_smul_eq_nsmul ℚ n, *] using congr((n⁻¹ : ℚ) • $hxy)
