@@ -3,11 +3,9 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Comma.Over.Pullback
--- import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
--- import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 import Mathlib.CategoryTheory.Adjunction.Unique
+import Mathlib.CategoryTheory.Comma.Over.Pullback
+import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 
 /-!
 # Preliminaries for the theory of locally cartesian closed categories
