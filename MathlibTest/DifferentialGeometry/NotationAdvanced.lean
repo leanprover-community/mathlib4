@@ -306,7 +306,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
       `E'' →SL[id'] E'''` is not the set of units of a normed algebra
 [Elab.DiffGeo.MDiff] ❌️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
-      `E'' →SL[id'] E'''` is not a sphere in a real normed space
+      `E'' →SL[id'] E'''` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
@@ -485,7 +485,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
       `↑(Set.Icc x y)` is not the set of units of a normed algebra
 [Elab.DiffGeo.MDiff] ❌️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
-      `↑(Set.Icc x y)` is not a sphere in a real normed space
+      `Set.Icc x y` is not a sphere in a real normed space
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
