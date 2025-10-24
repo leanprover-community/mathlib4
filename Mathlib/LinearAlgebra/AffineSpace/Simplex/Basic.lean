@@ -64,10 +64,14 @@ instance {n : ℕ} : CoeFun (Simplex k P n) (fun _ => Fin (n + 1) → P) where
 variable {P P₂ P₃}
 
 /-- Construct a 0-simplex from a point. -/
-@[simps]
 def mkOfPoint (p : P) : Simplex k P 0 :=
   have : Subsingleton (Fin 1) := inferInstance
   ⟨fun _ => p, affineIndependent_of_subsingleton k _⟩
+
+/-- The point in a simplex constructed with `mkOfPoint`. -/
+@[simp]
+theorem mkOfPoint_points (p : P) (i : Fin 1) : (mkOfPoint k p).points i = p :=
+  rfl
 
 instance [Inhabited P] : Inhabited (Simplex k P 0) :=
   ⟨mkOfPoint k default⟩
