@@ -265,21 +265,19 @@ lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toS
     u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
 
 /-- Map a walk to its own subgraph. -/
-def mapToSubgraph : ∀ {u v : V} (w : G.Walk u v), w.toSubgraph.coe.Walk
+def mapToSubgraph {u v : V} : ∀ w : G.Walk u v, w.toSubgraph.coe.Walk
     ⟨_, w.start_mem_verts_toSubgraph⟩ ⟨_, w.end_mem_verts_toSubgraph⟩
-  | _, _, nil => nil
-  | _, _, cons _ _ =>
+  | nil => nil
+  | cons .. =>
     let h : cons .. |>.toSubgraph.Adj .. := (le_sup_left : _ ≤ Walk.toSubgraph _).right rfl
     let h : cons .. |>.toSubgraph.coe.Adj ⟨_, h.fst_mem⟩ ⟨_, h.snd_mem⟩ := h
     cons h <| mapToSubgraph _ |>.map <| Subgraph.inclusion le_sup_right
 
-theorem map_mapToSubgraph_hom : ∀ {u v : V} (w : G.Walk u v),
-    w.mapToSubgraph.map w.toSubgraph.hom = w
-  | _, _, nil => rfl
-  | _, _, cons _ w => by
-    simp only [mapToSubgraph, Walk.map, map_map]
-    have := w.map_mapToSubgraph_hom
-    congr
+theorem map_mapToSubgraph_hom {u v : V} : ∀ w : G.Walk u v, w.mapToSubgraph.map w.toSubgraph.hom = w
+  | nil => rfl
+  | cons _ w => by
+    rw [mapToSubgraph, Walk.map, map_map, cons.injEq, heq_eq_eq]
+    exact ⟨rfl, w.map_mapToSubgraph_hom⟩
 
 namespace IsPath
 
