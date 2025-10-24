@@ -651,6 +651,63 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: (V →L[𝕜] V)ˣ
 variable {f : (V →L[𝕜] V)ˣ → 𝕜} in
 #check MDiff f
 
+variable {R : Type*} [NormedRing R] [CompleteSpace R] [NormedAlgebra 𝕜 R]
+
+variable {f : (R →L[𝕜] R)ˣ → 𝕜} in
+/--
+error: Could not find a model with corners for `(R →L[𝕜] R)ˣ`
+---
+trace: [Elab.DiffGeo.MDiff] Finding a model for: (R →L[𝕜] R)ˣ
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(R →L[𝕜] R)ˣ` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(R →L[𝕜] R)ˣ` is not a `TangentBundle`
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on `(R →L[𝕜] R)ˣ` among local instances.
+[Elab.DiffGeo.MDiff] ❌️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ChartedSpace` structure on `(R →L[𝕜]
+          R)ˣ` among local instances, and `(R →L[𝕜]
+          R)ˣ` is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(R →L[𝕜] R)ˣ` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(R →L[𝕜] R)ˣ` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(R →L[𝕜] R)ˣ` is not a Euclidean space, half-space or quadrant
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `(R →L[𝕜] R)ˣ` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+  [Elab.DiffGeo.MDiff] `(R →L[𝕜] R)ˣ` is the set of units on `R →L[𝕜] R`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedAlgebra 𝕜 R`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedSpace 𝕜 E`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedSpace 𝕜 E'`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedSpace 𝕜 F`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedSpace 𝕜 EM'`
+  [Elab.DiffGeo.MDiff] considering instance of type `NormedSpace 𝕜 V`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Found neither a `NormedAlgebra` nor a `NormedSpace` structure on `(R →L[𝕜]
+          R)ˣ` among local instancesHint: if `(R →L[𝕜]
+          R)ˣ` is the group of units on a normed algebra, try making one of these instances available.
+[Elab.DiffGeo.MDiff] ❌️ NormedField
+  [Elab.DiffGeo.MDiff] Failed with error:
+      failed to synthesize
+        NontriviallyNormedField (R →L[𝕜] R)ˣ
+      ⏎
+      Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDiff f
+
 #exit
 end units
 

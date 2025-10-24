@@ -432,8 +432,8 @@ where
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           match_expr type with
           | NormedAlgebra k R _ =>
-            if ← withReducible (pureIsDefEq R e) then
-              trace[Elab.DiffGeo.MDiff] "`{e}` is a normed algebra over `{k}` via `{inst}`"
+            if ← withReducible (pureIsDefEq R α) then
+              trace[Elab.DiffGeo.MDiff] "`{α}` is a normed algebra over `{k}` via `{inst}`"
               return some (k, R)
             else return none
           | _ => return none
@@ -441,8 +441,8 @@ where
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           match_expr type with
           | NormedSpace k R _ _ =>
-            if ← withReducible (pureIsDefEq R e) then
-              trace[Elab.DiffGeo.MDiff] "`{e}` is a normed space over `{k}` via `{inst}`"
+            if ← withReducible (pureIsDefEq R α) then
+              trace[Elab.DiffGeo.MDiff] "`{α}` is a normed space over `{k}` via `{inst}`"
               return some (k, R)
             else return none
           | _ => return none
