@@ -32,7 +32,6 @@ variable {A : Type uA} [Semiring A] [Algebra S A]
 namespace RingCon
 
 instance (c : RingCon A) : Algebra S c.Quotient where
-  smul := (· • ·)
   algebraMap := c.mk'.comp (algebraMap S A)
   commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
   smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
@@ -253,8 +252,6 @@ instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCom
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
 instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
-  add := (· + ·)
-  zero := 0
   add_assoc := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [add_quot, add_assoc]
@@ -327,11 +324,9 @@ private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : Ri
 
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
-    neg := Neg.neg
     neg_add_cancel := by
       rintro ⟨⟨⟩⟩
       simp [neg_quot, add_quot, ← zero_quot]
-    sub := Sub.sub
     sub_eq_add_neg := by
       rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
       simp [neg_quot, sub_quot, add_quot, sub_eq_add_neg]
@@ -366,7 +361,6 @@ instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
 
 instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
-  smul := (· • ·)
   algebraMap :=
   { toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
     map_one' := by simp [← one_quot]
