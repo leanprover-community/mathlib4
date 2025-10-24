@@ -45,7 +45,7 @@ theorem exists_finset_adjoin_eq_top_and_homogeneous_ne_zero :
   rintro i hi
   by_cases hi0 : n i = 0
   · exact Subalgebra.algebraMap_mem
-      (Algebra.adjoin (𝒜 0) (s.filter (n · ≠ 0)).toSet) ⟨i, hi0 ▸ hn i hi⟩
+      (Algebra.adjoin (𝒜 0) (s.filter (n · ≠ 0) : Set S)) ⟨i, hi0 ▸ hn i hi⟩
   · exact Algebra.subset_adjoin (by simpa [hi0] using hi)
 
 end GradedAlgebra

@@ -316,7 +316,7 @@ theorem IsCompact.elim_finite_subcover_image {b : Set ι} {c : ι → Set X} (hs
     ∃ b', b' ⊆ b ∧ Set.Finite b' ∧ s ⊆ ⋃ i ∈ b', c i := by
   simp only [Subtype.forall', biUnion_eq_iUnion] at hc₁ hc₂
   rcases hs.elim_finite_subcover (fun i => c i : b → Set X) hc₁ hc₂ with ⟨d, hd⟩
-  refine ⟨Subtype.val '' d.toSet, ?_, d.finite_toSet.image _, ?_⟩
+  refine ⟨Subtype.val '' (d : Set b), ?_, d.finite_toSet.image _, ?_⟩
   · simp
   · rwa [biUnion_image]
 
