@@ -78,7 +78,7 @@ def IsIrreducible (A : Matrix n n R) : Prop :=
 /-- A matrix `A` is primitive if it is entrywise nonnegative
 and some positive power has all entries strictly positive. -/
 def IsPrimitive [DecidableEq n] (A : Matrix n n R) : Prop :=
-  (∀ i j, 0 ≤ A i j) ∧ ∃ k, 0 < k ∧ ∀ i j, 0 < (A ^ k) i j
+  (∀ i j, 0 ≤ A i j) ∧ ∃ k > 0, ∀ i j, 0 < (A ^ k) i j
 
 variable {A : Matrix n n R}
 
