@@ -15,7 +15,7 @@ by an inequality `P ≤ Q` in `ObjectProperty C` is an equivalence iff
 
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory.ObjectProperty
 
@@ -35,3 +35,23 @@ lemma isEquivalence_ιOfLE_iff : (ιOfLE h).IsEquivalence ↔ Q ≤ P.isoClosure
 instance : (ιOfLE P.le_isoClosure).IsEquivalence := by rw [isEquivalence_ιOfLE_iff]
 
 end CategoryTheory.ObjectProperty
+
+namespace CategoryTheory.Equivalence
+
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+  {P : ObjectProperty C} {Q : ObjectProperty D} (e : C ≌ D)
+
+@[simps]
+def congrFullSubcategory [Q.IsClosedUnderIsomorphisms] (h : Q.inverseImage e.functor = P) :
+    P.FullSubcategory ≌ Q.FullSubcategory where
+  functor := Q.lift (P.ι ⋙ e.functor) (fun ⟨X, hX⟩ ↦ by rwa [← h] at hX)
+  inverse := P.lift (Q.ι ⋙ e.inverse) (fun ⟨Y, hY⟩ ↦ by
+    rw [← h]
+    exact Q.prop_of_iso (e.counitIso.app Y).symm hY)
+  unitIso := (P.fullyFaithfulι.whiskeringRight _).preimageIso
+    (P.ι.isoWhiskerLeft e.unitIso)
+  counitIso := (Q.fullyFaithfulι.whiskeringRight _).preimageIso
+    (Q.ι.isoWhiskerLeft e.counitIso)
+  functor_unitIso_comp X := e.functor_unit_comp X.obj
+
+end CategoryTheory.Equivalence

@@ -28,6 +28,9 @@ variable (D) in
 of a functor `F : J ⥤ C`. -/
 abbrev preservesColimit (F : J ⥤ C) : ObjectProperty (C ⥤ D) := PreservesColimit F
 
+instance (F : J ⥤ C) : (preservesColimit D F).IsClosedUnderIsomorphisms where
+  of_iso e _ := preservesColimit_of_natIso _ e
+
 @[simp]
 lemma preservesColimit_iff (F : J ⥤ C) (G : C ⥤ D) :
     preservesColimit D F G ↔ PreservesColimit F G := Iff.rfl
@@ -35,6 +38,10 @@ lemma preservesColimit_iff (F : J ⥤ C) (G : C ⥤ D) :
 variable (C D J) in
 def preservesColimitsOfShape : ObjectProperty (C ⥤ D) :=
   ⨅ (F : J ⥤ C), preservesColimit D F
+
+instance : (preservesColimitsOfShape C D J).IsClosedUnderIsomorphisms := by
+  dsimp [preservesColimitsOfShape]
+  infer_instance
 
 @[simp]
 lemma preservesColimitsOfShape_iff (G : C ⥤ D) :
@@ -55,6 +62,9 @@ variable (D) in
 of a functor `F : J ⥤ C`. -/
 abbrev preservesLimit (F : J ⥤ C) : ObjectProperty (C ⥤ D) := PreservesLimit F
 
+instance (F : J ⥤ C) : (preservesLimit D F).IsClosedUnderIsomorphisms where
+  of_iso e _ := preservesLimit_of_natIso _ e
+
 @[simp]
 lemma preservesLimit_iff (F : J ⥤ C) (G : C ⥤ D) :
     preservesLimit D F G ↔ PreservesLimit F G := Iff.rfl
@@ -62,6 +72,10 @@ lemma preservesLimit_iff (F : J ⥤ C) (G : C ⥤ D) :
 variable (C D J) in
 def preservesLimitsOfShape : ObjectProperty (C ⥤ D) :=
   ⨅ (F : J ⥤ C), preservesLimit D F
+
+instance : (preservesLimitsOfShape C D J).IsClosedUnderIsomorphisms := by
+  dsimp [preservesLimitsOfShape]
+  infer_instance
 
 @[simp]
 lemma preservesLimitsOfShape_iff (G : C ⥤ D) :
