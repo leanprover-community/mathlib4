@@ -614,10 +614,7 @@ theorem measurableSet_inter_le [TopologicalSpace ι] [SecondCountableTopology ι
     rw [← not_le]
     exact hτi
   simp_rw [h_eq]
-  constructor
-  · refine hs.1.inter ?_
-    exact measurableSet_le hτ.measurable' hπ.measurable'
-  intro i
+  refine ⟨hs.1.inter (measurableSet_le hτ.measurable' hπ.measurable'), fun i ↦ ?_⟩
   refine ((hs.2 i).inter ((hτ.min hπ) i)).inter ?_
   apply @measurableSet_le _ _ _ _ _ (Filtration.seq f i) _ _ _ _ _ ?_ ?_
   · exact (hτ.min_const i).measurable_of_le fun _ => min_le_right _ _
