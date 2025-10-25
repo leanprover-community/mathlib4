@@ -56,9 +56,10 @@ def single (a : α) (b : M) : α →₀ M where
       · simp [hb, Pi.single, update]
       simp [ha]
 
-theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
+theorem single_apply [Decidable (a' = a)] : single a b a' = if a' = a then b else 0 := by
   classical
-  simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
+  simp_rw [single, coe_mk, Pi.single_apply]
+  congr
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
@@ -66,7 +67,7 @@ theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α)
 theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
   classical
   ext
-  simp [single_apply, Set.indicator, @eq_comm _ a]
+  simp [single_apply, Set.indicator]
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
@@ -461,15 +462,10 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
       rw [← support_embDomain, h, support_single_ne_zero _ hb]
     have ha : a ∈ Finset.map f l.support := by simp only [h_map_support, Finset.mem_singleton]
     rcases Finset.mem_map.1 ha with ⟨c, _hc₁, hc₂⟩
-    use c
-    constructor
+    refine ⟨c, ?_, ?_⟩
     · ext d
       rw [← embDomain_apply f l, h]
-      by_cases h_cases : c = d
-      · simp only [Eq.symm h_cases, hc₂, single_eq_same]
-      · rw [single_apply, single_apply, if_neg, if_neg h_cases]
-        by_contra hfd
-        exact h_cases (f.injective (hc₂.trans hfd))
+      by_cases c = d <;> aesop
     · exact hc₂
 
 @[simp]
