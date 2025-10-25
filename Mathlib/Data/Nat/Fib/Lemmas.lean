@@ -10,9 +10,9 @@ import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 /-!
 # Cassini and Catalan identities for the Fibonacci numbers
 
-Cassini's identity states that for nonzero `n`, `fib (n + 1) * fib (n - 1) - fib n ^ 2` is equal
-to `(-1) ^ n`. And Catalan's identity states that for nonzero `x` and `a`, we get
-`fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ x * fib a ^ 2`.
+Cassini's identity states that for `n : ℕ`, `fib (n + 2) * fib n - fib (n + 1) ^ 2` is equal
+to `(-1) ^ (n + 1)`. And Catalan's identity states that for any naturals `x` and `a`, we get
+`fib (x + a + 2) ^ 2 - fib (x + 1) * fib (x + 2 * a + 3) = (-1) ^ (x + 1) * fib (a + 1) ^ 2`.
 -/
 
 namespace Nat
@@ -26,17 +26,17 @@ lemma fib_matrix_eq : ∀ {n : ℕ},
     rw [pow_succ, ← fib_matrix_eq]
     simp [fib_add_two, ← add_assoc, add_rotate, add_comm (fib n)]
 
-/-- **Cassini's identity**: for nonzero `n`, `fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n`. -/
+/-- **Cassini's identity**: `fib (n + 2) * fib n - fib (n + 1) ^ 2 = (-1) ^ (n + 1)`. -/
 lemma fib_add_two_mul_fib_sub_fib_succ_sq (n : ℕ) :
     (fib (n + 2) * fib n - fib (n + 1) ^ 2 : ℤ) = (-1) ^ (n + 1) :=
-  calc _ = (!![fib (n + 2), fib (n + 1); fib (n + 1), fib n] : Matrix _ _ ℤ).det := by
-        simp [pow_two]
+  calc
+    _ = (!![fib (n + 2), fib (n + 1); fib (n + 1), fib n] : Matrix _ _ ℤ).det := by simp [pow_two]
     _ = (!![fib (n + 2), fib (n + 1); fib (n + 1), fib n].map (castRingHom ℤ)).det := rfl
     _ = (!![1, 1; 1, 0].map (castRingHom ℤ) ^ (n + 1)).det := by rw [fib_matrix_eq, Matrix.map_pow]
     _ = (!![1, 1; 1, 0] ^ (n + 1)).det := by congr; simp [← Matrix.ext_iff]
     _ = (-1) ^ (n + 1) := by simp
 
-/-- Cassini's identity for nonzero even `n`: `fib (n + 1) * fib (n - 1) = fib n ^ 2 + 1.` -/
+/-- Cassini's identity for even `n`: `fib (n + 2) * fib n = fib (n + 1) ^ 2 - 1.` -/
 lemma fib_add_two_mul_fib_of_even {n : ℕ} (hn2 : Even n) :
     fib (n + 2) * fib n = fib (n + 1) ^ 2 - 1 := by
   obtain ⟨a, rfl⟩ := hn2
@@ -48,8 +48,8 @@ lemma fib_succ_mul_fib_pred_of_odd {n : ℕ} (hn : Odd n) :
   obtain ⟨a, rfl⟩ := hn
   grind [fib_add_two_mul_fib_sub_fib_succ_sq, pow_mul]
 
-/-- **Catalan's identity**: for nonzero `x` and `a`,
-`fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ x * fib a ^ 2`. -/
+/-- **Catalan's identity**:
+`fib (x + a + 2) ^ 2 - fib (x + 1) * fib (x + 2 * a + 3) = (-1) ^ (x + 1) * fib (a + 1) ^ 2`. -/
 lemma fib_add_add_two_sq_sub_fib_add_mul_fib_add_two_mul_add_three (x a : ℕ) :
     (fib (x + a + 2) ^ 2 - fib (x + 1) * fib (x + 2 * a + 3) : ℤ)
       = (-1) ^ (x + 1) * fib (a + 1) ^ 2 :=
