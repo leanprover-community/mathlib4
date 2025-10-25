@@ -6,6 +6,8 @@ Authors: Alexander Bentkamp
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Eigenspace.Matrix
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 /-!
@@ -142,3 +144,14 @@ instance Matrix.instFiniteSpectrum (A : Matrix n n R) : Finite (spectrum R A) :=
   Set.finite_coe_iff.mpr (Matrix.finite_spectrum A)
 
 end FiniteSpectrum
+
+namespace Matrix
+
+open Polynomial Module End
+
+variable {n : Type*} [Fintype n] [DecidableEq n] {K : Type*} [Field K] {A : Matrix n n K}
+
+theorem isRoot_minpoly_iff_mem_spectrum {r : K} : IsRoot (minpoly K A) r ↔ r ∈ spectrum K A := by
+  rw [← minpoly_toLin', ← hasEigenvalue_iff_isRoot, hasEigenvalue_iff_mem_spectrum, spectrum_toLin']
+
+end Matrix
