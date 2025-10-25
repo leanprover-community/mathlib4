@@ -63,9 +63,7 @@ lemma f_eq {i' : ι'} {i : ι} (hi : e.f i = i') :
   have hi' : ∃ k, e.f k = i' := ⟨i, hi⟩
   have : hi'.choose = i := e.injective_f (by rw [hi'.choose_spec, hi])
   dsimp [f]
-  rw [dif_pos ⟨i, hi⟩]
-  subst this
-  rfl
+  grind [f]
 
 @[reassoc (attr := simp)]
 lemma comm (hφ : e.HasLift φ) (i' j' : ι') :

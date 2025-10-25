@@ -107,12 +107,12 @@ private def delabCheckSuperscript : Delab := withOverApp 2 do
 
 universe u v
 
-/-- `α` can not be subscripted or superscripted. -/
+/-- `α` cannot be subscripted or superscripted. -/
 private def α {γ : Type u} {δ : Type v} : γ → δ → δ := fun _ ↦ id
 /-- `β` can be both subscripted and superscripted. -/
 private def β {γ : Type u} {δ : Type v} : γ → δ → δ := fun _ ↦ id
 
-/-- `d` can not be subscripted, so we create an alias for `id`. -/
+/-- `d` cannot be subscripted, so we create an alias for `id`. -/
 private abbrev ID {γ : Sort u} := @id γ
 
 variable (n : Nat)
@@ -198,7 +198,7 @@ set_option pp.mvars false in
 /-- info: checkSubscript ?_ : Unit -/
 #guard_msgs in #check checkSubscript ?_
 
-/- The delaborator should reject because `n` is shadowed and `✝` can not be
+/- The delaborator should reject because `n` is shadowed and `✝` cannot be
 subscripted. -/
 variable {x} (hx : x = testsub(ₙ)) (n : True) in
 /-- info: hx : x = checkSubscript n✝ -/
@@ -233,7 +233,7 @@ set_option pp.mvars false in
 /-- info: checkSuperscript ?_ : Unit -/
 #guard_msgs in #check checkSuperscript ?_
 
-/- The delaborator should reject because `n` is shadowed and `✝` can not be
+/- The delaborator should reject because `n` is shadowed and `✝` cannot be
 superscripted. -/
 variable {x} (hx : x = testsup(ⁿ)) (n : True) in
 /-- info: hx : x = checkSuperscript n✝ -/

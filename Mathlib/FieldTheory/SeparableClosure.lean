@@ -207,6 +207,9 @@ algebraic closure. It is indeed a separable closure (`IsSepClosure`) by
 or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSepClosed.lift`). -/
 abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
+instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=
+  (inferInstanceAs (IsSepClosure F (SeparableClosure F))).sep_closed
+
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
 theorem IntermediateField.isSeparable_adjoin_iff_isSeparable {S : Set E} :

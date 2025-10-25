@@ -13,8 +13,8 @@ Linear algebra:
     complementary subspaces: 'Submodule.exists_isCompl'
     linear independence: 'LinearIndependent'
     generating sets: 'Submodule.span'
-    bases: 'Basis'
-    existence of bases: 'Basis.ofVectorSpace'
+    bases: 'Module.Basis'
+    existence of bases: 'Module.Basis.ofVectorSpace'
     linear map: 'LinearMap'
     range of a linear map: 'LinearMap.range'
     kernel of a linear map: 'LinearMap.ker'
@@ -22,19 +22,19 @@ Linear algebra:
     general linear group: 'LinearMap.GeneralLinearGroup'
   Duality:
     dual vector space: 'Module.Dual'
-    dual basis: 'Basis.dualBasis'
+    dual basis: 'Module.Basis.dualBasis'
     transpose of a linear map: 'Module.Dual.transpose'
     orthogonality: 'https://en.wikipedia.org/wiki/Dual_space#Quotient_spaces_and_annihilators'
   Finite-dimensional vector spaces:
     finite-dimensionality : 'FiniteDimensional'
-    isomorphism with $K^n$: 'Basis.equivFun'
+    isomorphism with $K^n$: 'Module.Basis.equivFun'
     rank of a linear map: 'LinearMap.rank'
     rank of a set of vectors: 'Set.finrank'
     rank of a system of linear equations: 'https://www.math.tamu.edu/~fnarc/psfiles/rank2005.pdf'
     isomorphism with bidual: 'Module.evalEquiv'
   Multilinearity:
     multilinear map: 'MultilinearMap'
-    determinant of vectors: 'Basis.det'
+    determinant of vectors: 'Module.Basis.det'
     determinant of endomorphisms: 'LinearMap.det'
     special linear group: 'https://en.wikipedia.org/wiki/Special_linear_group'
     orientation of a $\R$-vector space: 'Orientation'
@@ -116,7 +116,7 @@ Group Theory:
     Fourier transform for finite abelian groups: 'https://en.wikipedia.org/wiki/Fourier_transform_on_finite_groups#Fourier_transform_for_finite_abelian_groups'
     convolution: 'https://en.wikipedia.org/wiki/Fourier_transform_on_finite_groups#Transform_of_a_convolution'
     class function over a group: 'https://en.wikipedia.org/wiki/Class_function'
-    characters of a finite dimensional representation: 'FDRep.character'
+    characters of a finite-dimensional representation: 'FDRep.character'
     orthonormal basis of irreducible characters: 'https://en.wikipedia.org/wiki/Character_theory#Orthogonality_relations'
     examples of groups with small cardinality: ''
 
@@ -148,14 +148,14 @@ Ring Theory:
     principal ideal domain: 'Submodule.IsPrincipal'
     Euclidean rings: 'EuclideanDomain'
     Euclid's' algorithm: 'Nat.xgcd'
-    $\Z$ is a euclidean ring: 'Int.euclideanDomain'
+    $\Z$ is a Euclidean ring: 'Int.euclideanDomain'
     congruence in $\Z$: 'Int.ModEq'
     prime numbers: 'Prime'
     Bézout's identity: 'exists_gcd_eq_mul_add_mul'
     $\Z/n\Z$ and its invertible elements: 'ZMod.unitOfCoprime'
     Euler's totient function ($\varphi$): 'Nat.totient'
   Polynomial rings:
-    $K[X]$ is a euclidean ring when $K$ is a field: 'Polynomial.instEuclideanDomain'
+    $K[X]$ is a Euclidean ring when $K$ is a field: 'Polynomial.instEuclideanDomain'
     irreducible polynomial: 'Irreducible'
     cyclotomic polynomials in $\Q[X]$: 'Polynomial.cyclotomic'
     Eisenstein's criterion: 'Polynomial.irreducible_of_eisenstein_criterion'
@@ -175,7 +175,7 @@ Ring Theory:
     Subfields: 'field_theory/subfield.html'
     Frobenius morphisms: 'frobenius'
     field $\Q$ of rational numbers: 'Rat.instField'
-    field $\R$ of real numbers: 'Real.field'
+    field $\R$ of real numbers: 'Real.instField'
     field $\C$ of complex numbers: 'Complex.instField'
     $\C$ is algebraically closed: 'Complex.exists_root'
     field of fractions of an integral domain: 'IsFractionRing'
@@ -209,11 +209,11 @@ Bilinear and Quadratic Forms Over a Vector Space:
     Sylvester's law of inertia: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
     real classification: 'https://en.wikipedia.org/wiki/Sylvester%27s_law_of_inertia'
     complex classification: ''
-    Gram-Schmidt orthogonalisation: 'gramSchmidt_orthogonal'
+    Gram-Schmidt orthogonalisation: 'InnerProductSpace.gramSchmidt_orthogonal'
   Euclidean and Hermitian spaces:
     Euclidean vector spaces: 'InnerProductSpace'
     Hermitian vector spaces: 'InnerProductSpace'
-    dual isomorphism in the euclidean case: 'InnerProductSpace.toDual'
+    dual isomorphism in the Euclidean case: 'InnerProductSpace.toDual'
     orthogonal complement: 'Submodule.orthogonal'
     Cauchy-Schwarz inequality: 'inner_mul_inner_self_le'
     norm: 'InnerProductSpace.Core.toNorm'
@@ -268,7 +268,7 @@ Affine and Euclidean Geometry:
     regular polygons: ''
     metric relations in the triangle: ''
     using complex numbers in plane geometry: ''
-  Application of quadratic forms to study proper conic sections of the affine euclidean plane:
+  Application of quadratic forms to study proper conic sections of the affine Euclidean plane:
     focus: ''
     eccentricity: ''
     quadric surfaces in 3-dimensional Euclidean affine spaces: ''
@@ -277,7 +277,7 @@ Affine and Euclidean Geometry:
 Single Variable Real Analysis:
   Real numbers:
     definition of $\R$: 'Real'
-    field structure: 'Real.field'
+    field structure: 'Real.instField'
     order: 'Real.linearOrder'
   Sequences of real numbers:
     convergence: 'Filter.Tendsto'
@@ -293,7 +293,7 @@ Single Variable Real Analysis:
     connected subsets of $\R$: 'setOf_isPreconnected_eq_of_ordered'
     additive subgroups of $\R$: 'AddSubgroup.dense_or_cyclic'
   Numerical series:
-    Convergence of real valued-series: 'https://en.wikipedia.org/wiki/Series_(mathematics)#Convergent_series'
+    Convergence of real-valued series: 'https://en.wikipedia.org/wiki/Series_(mathematics)#Convergent_series'
     Geometric series: 'tsum_geometric_of_norm_lt_one'
     convergence of $p$-series for $p>1$: 'Real.summable_one_div_nat_rpow'
     summation of comparison relations: 'http://braise.univ-rennes1.fr/donnees/ParamHTML/S%E9ries%20num%E9riques/Con/Sommation%20des%20relations%20de%20comparaison/cst.ps'
@@ -316,7 +316,7 @@ Single Variable Real Analysis:
     derivative of the inverse of a function: 'HasStrictDerivAt.of_local_left_inverse'
     Rolle's theorem: 'exists_deriv_eq_zero'
     mean value theorem: 'exists_ratio_deriv_eq_ratio_slope'
-    higher order derivatives of functions: 'iteratedDeriv'
+    higher-order derivatives of functions: 'iteratedDeriv'
     $C^k$ functions: 'ContDiff'
     piecewise $C^k$ functions: 'https://en.wikipedia.org/wiki/Piecewise#Continuity_and_differentiability_of_piecewise_functions'
     Leibniz formula: 'deriv_mul'
@@ -364,9 +364,9 @@ Single Variable Real Analysis:
 
 # 7.
 Single Variable Complex Analysis:
-  Complex Valued series:
+  Complex-valued series:
     radius of convergence: 'FormalMultilinearSeries.radius'
-#    properties of sums of complex valued series on their disks of convergence: (this is a heading?)
+#    properties of sums of complex-valued series on their disks of convergence: (this is a heading?)
     continuity: 'HasFPowerSeriesOnBall.continuousOn'
     differentiability with respect to the complex variable: 'HasFPowerSeriesOnBall.differentiableOn'
     antiderivative: ''
@@ -436,7 +436,7 @@ Topology:
   Hilbert spaces:
     Hilbert projection theorem: 'exists_norm_eq_iInf_of_complete_convex'
     orthogonal projection onto closed vector subspaces: 'Submodule.orthogonalProjection'
-    dual space: 'NormedSpace.Dual'
+    dual space: 'StrongDual'
     Riesz representation theorem: 'InnerProductSpace.toDual'
     inner product space $l^2$: 'lp.instInnerProductSpace'
     completeness of $l^2$: 'lp.completeSpace'
@@ -458,7 +458,7 @@ Multivariable calculus:
     Jacobian matrix: ''
     gradient vector: ''
     Hessian matrix: ''
-    chain rule: 'fderiv.comp'
+    chain rule: 'fderiv_comp'
     mean value theorem: 'exists_ratio_deriv_eq_ratio_slope'
     differentiable functions: 'Differentiable'
     $k$-times continuously differentiable functions: 'ContDiff'
@@ -472,7 +472,7 @@ Multivariable calculus:
     inverse function theorem: 'HasStrictDerivAt.to_localInverse'
     implicit function theorem: 'ImplicitFunctionData.implicitFunction'
   Differential equations:
-    Cauchy-Lipschitz Theorem: 'IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq'
+    Cauchy-Lipschitz Theorem: 'IsPicardLindelof.exists_eq_forall_mem_Icc_hasDerivWithinAt'
     maximal solutions: ''
     Grönwall lemma: 'norm_le_gronwallBound_of_norm_deriv_right_le'
     exit theorem of a compact subspace: ''
@@ -514,7 +514,7 @@ Measures and integral calculus:
     Fatou's lemma: 'MeasureTheory.lintegral_liminf_le'
     integrable functions: 'MeasureTheory.Integrable'
     dominated convergence theorem: 'MeasureTheory.tendsto_integral_of_dominated_convergence'
-    finite dimensional vector-valued integrable functions: 'MeasureTheory.Integrable'
+    finite-dimensional vector-valued integrable functions: 'MeasureTheory.Integrable'
     continuity of integrals with respect to parameters: 'intervalIntegral.continuous_of_dominated_interval'
     differentiability of integrals with respect to parameters: ''
     $\mathrm{L}^p$ spaces where $1 ≤ p ≤ ∞$: 'MeasureTheory.Lp'
@@ -536,7 +536,7 @@ Measures and integral calculus:
     Parseval theorem: 'tsum_sq_fourierCoeff'
     Fourier transform on $\mathrm{L}^1(\R^d)$: 'Real.fourierIntegral'
     Fourier transform on $\mathrm{L}^2(\R^d)$: ''
-    Plancherel’s theorem: ''
+    Plancherel’s theorem: 'SchwartzMap.integral_inner_fourier_fourier'
     Fourier inversion formula: 'Continuous.fourier_inversion'
 
 # 11.
@@ -577,8 +577,8 @@ Probability Theory:
     $\mathrm{L}^p$ convergence: 'MeasureTheory.Lp'
     almost surely convergence: 'MeasureTheory.ae'
     Markov inequality: 'MeasureTheory.mul_meas_ge_le_lintegral'
-    Chebychev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
-    Levy's theorem: ''
+    Chebyshev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
+    Lévy's theorem: ''
     weak law of large numbers: ''
     strong law of large numbers: 'ProbabilityTheory.strong_law_ae'
     central limit theorem: ''
@@ -606,7 +606,7 @@ Distribution calculus:
     Schwartz space of rapidly decreasing functions: 'SchwartzMap'
     stability by derivation: 'SchwartzMap.fderivCLM'
     stability by multiplication by a slowly growing smooth function: ''
-    gaussian functions: ''
+    Gaussian functions: ''
     Fourier transforms on $\mathcal{S}(\R^d)$: ''
     convolution of two functions of $\mathcal{S}(\R^d)$: ''
   Tempered distributions:
@@ -623,7 +623,7 @@ Distribution calculus:
     Fourier transform and convolution product: ''
   Applications:
     Poisson’s formula: ''
-    using convolution and Fourier-Laplace transform to solve one dimensional linear differential equations: ''
+    using convolution and Fourier-Laplace transform to solve one-dimensional linear differential equations: ''
     weak solution of partial derivative equation: ''
     fundamental solution of the Laplacian: ''
     solving the Laplace equations: ''
@@ -644,7 +644,7 @@ Numerical Analysis:
     spectral ray: ''
     singular value decomposition: ''
     example of discretisation matrix by finite differences of the laplacian in one dimension: ''
-  Iterative methods of solving systems of real and vector valued equations:
+  Iterative methods of solving systems of real and vector-valued equations:
     linear systems case: ''
     proper element search: ''
     brute force method: ''
@@ -658,7 +658,7 @@ Numerical Analysis:
   Numerical integration:
     Rectangle method: ''
     error estimation: ''
-    Monte-Carlo method: ''
+    Monte Carlo method: ''
     rate of convergence: ''
     application to the calculation of multiple integrals: ''
   Approximation of numerical functions:

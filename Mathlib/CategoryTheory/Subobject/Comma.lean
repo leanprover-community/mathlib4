@@ -97,7 +97,7 @@ def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : Structured
   invFun P := liftSubobject P.val P.prop.choose_spec
   left_inv _ := lift_projectSubobject _ _
   right_inv P := Subtype.ext (by simp only [liftSubobject, homMk_right, projectSubobject_mk,
-      Subobject.mk_arrow, Subtype.coe_eta])
+      Subobject.mk_arrow])
   map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg

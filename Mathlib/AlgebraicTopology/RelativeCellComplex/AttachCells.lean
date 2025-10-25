@@ -54,7 +54,7 @@ structure AttachCells where
   isColimit₂ : IsColimit cofan₂
   /-- the coproduct of the maps `g (π i) : A (π i) ⟶ B (π i)` for all `i : ι`. -/
   m : cofan₁.pt ⟶ cofan₂.pt
-  hm (i : ι) : cofan₁.inj i ≫ m = g (π i) ≫ cofan₂.inj i := by aesop_cat
+  hm (i : ι) : cofan₁.inj i ≫ m = g (π i) ≫ cofan₂.inj i := by cat_disch
   /-- the top morphism of the pushout square -/
   g₁ : cofan₁.pt ⟶ X₁
   /-- the bottom morphism of the pushout square -/

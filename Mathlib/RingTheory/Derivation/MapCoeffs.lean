@@ -45,16 +45,16 @@ def mapCoeffs : Derivation R A[X] (PolynomialModule A M) where
         refine Finsupp.ext fun i ↦ ?_
         dsimp [PolynomialModule.equivPolynomial, PolynomialModule.map]
         simp only [toFinsupp_mul, toFinsupp_monomial, AddMonoidAlgebra.single_mul_single]
-        show d _ = _ + _
+        change d _ = _ + _
         -- TODO: copy more `Finsupp` API to `PolynomialModule`.
         -- We have to do a bit of work to go through the identification
         -- `PolynomialModule A M = ℕ →₀ M`...
         dsimp only [PolynomialModule, Finsupp.mapRange.linearMap_apply, coeFn_coe]
         rw [Finsupp.mapRange_single, Finsupp.mapRange_single]
         -- ... and here we go back through the identification.
-        show _ = (_ • PolynomialModule.single A _ _) _ + (_ • PolynomialModule.single A _ _) i
+        change _ = (_ • PolynomialModule.single A _ _) _ + (_ • PolynomialModule.single A _ _) i
         simp only [PolynomialModule.monomial_smul_single, AddMonoidAlgebra.single_apply,
-          apply_ite d, leibniz, map_zero, coeFn_coe, PolynomialModule.single_apply, ite_add_zero,
+          apply_ite d, leibniz, map_zero, PolynomialModule.single_apply, ite_add_zero,
           add_comm m n]
 
 @[simp]
@@ -82,7 +82,7 @@ theorem apply_aeval_eq' (d' : Derivation R B M') (f : M →ₗ[A] M')
     d' (aeval x p) = PolynomialModule.eval x (PolynomialModule.map B f (d.mapCoeffs p)) +
       aeval x (derivative p) • d' x := by
   induction p using Polynomial.induction_on' with
-  | add => simp_all only [eval_add, map_add, add_smul]; abel
+  | add => simp_all only [map_add, add_smul]; abel
   | monomial =>
     simp only [aeval_monomial, leibniz, leibniz_pow, mapCoeffs_monomial,
       PolynomialModule.map_single, PolynomialModule.eval_single, derivative_monomial, map_mul,

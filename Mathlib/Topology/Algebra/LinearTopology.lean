@@ -58,10 +58,10 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
   (invariance by translation) would be enough. In fact, in presence of `IsLinearTopology R M`,
   invariance by translation implies that `M` is a topological additive group on which `R` acts
   by homeomorphisms. Similarly, `IsLinearTopology R R` and `ContinuousConstVAdd R R` imply that
-  `R` is a topological ring. All of this will follow from PR#18437.
+  `R` is a topological ring. All of this will follow from https://github.com/leanprover-community/mathlib4/issues/18437.
 
   Nevertheless, we don't plan on adding those facts as instances: one should use directly
-  results from PR#18437 to get `IsTopologicalAddGroup` and `IsTopologicalRing` instances.
+  results from https://github.com/leanprover-community/mathlib4/issues/18437 to get `IsTopologicalAddGroup` and `IsTopologicalRing` instances.
 
 * The main constructor for `IsLinearTopology`, `IsLinearTopology.mk_of_hasBasis`
   is formulated in terms of the subobject classes `AddSubmonoidClass` and `SMulMemClass`

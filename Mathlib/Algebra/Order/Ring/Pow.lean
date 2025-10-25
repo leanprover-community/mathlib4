@@ -26,7 +26,7 @@ lemma one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a)) (
       _ ≤ 1 + ↑(n + 2) * a + (n * (a * a * (2 + a)) + a * a) := le_add_of_nonneg_right this
       _ = (1 + a) * (1 + a) * (1 + n * a) := by
           simp only [Nat.cast_add, add_mul, mul_add, one_mul, mul_one, ← one_add_one_eq_two,
-            Nat.cast_one, add_assoc, add_right_inj]
+            Nat.cast_one, add_assoc]
           simp only [← add_assoc, add_comm _ (↑n * a)]
           simp only [add_assoc, (n.cast_commute (_ : R)).left_comm]
           simp only [add_comm, add_left_comm]
