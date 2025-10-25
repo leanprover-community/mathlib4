@@ -621,7 +621,7 @@ theorem exists_contMDiffSection_forall_mem_convex_of_local
   -- Prove that `s`, when viewed as a map to the total space, is smooth.
   have (j : M) : CMDiff n
       (fun x ↦ TotalSpace.mk' F_fiber x ((ρ j x) • (s_loc j x))) := by
-    refine .smul_section_of_tsupport ?_ isOpen_interior (hρU j)
+    refine ContMDiffOn.smul_section_of_tsupport ?_ isOpen_interior (hρU j)
       ((s_smooth j).mono interior_subset)
     exact ((ρ j).contMDiff).of_le (sup_eq_left.mp rfl) |>.contMDiffOn
   have hs : CMDiff n (T% s) := by
