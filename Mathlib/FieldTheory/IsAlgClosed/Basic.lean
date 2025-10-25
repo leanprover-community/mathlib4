@@ -136,7 +136,7 @@ theorem card_roots_map_eq_natDegree_of_injective {A B : Type*} [Semiring A] [Fie
 
 theorem card_roots_map_eq_natDegree_from_simpleRing {A B : Type*} [Ring A] [IsSimpleRing A]
     [Field B] [IsAlgClosed B] (f : A →+* B) (p : A[X]) : (p.map f).roots.card = p.natDegree :=
-  natDegree_map_eq_from_simpleRing f _ ▸ card_roots_eq_natDegree
+  natDegree_map f ▸ card_roots_eq_natDegree
 
 theorem card_aroots_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [CommRing A] [Field B]
     [IsAlgClosed B] [Algebra A B] {p : A[X]} (hf : algebraMap A B p.leadingCoeff ≠ 0) :

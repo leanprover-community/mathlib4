@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Eval.Degree
 import Mathlib.Algebra.Prime.Lemmas
-import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Theory of degrees of polynomials
@@ -311,24 +310,6 @@ theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDe
 end Degree
 
 end Semiring
-
-section SimpleRing
-
-variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] (f : R →+* S) (p : R[X])
-
-theorem degree_map_eq_from_simpleRing : (p.map f).degree = p.degree :=
-  degree_map_eq_of_injective f.injective _
-
-theorem natDegree_map_eq_from_simpleRing : (p.map f).natDegree = p.natDegree :=
-  natDegree_map_eq_of_injective f.injective _
-
-theorem leadingCoeff_map_eq_from_simpleRing : (p.map f).leadingCoeff = f p.leadingCoeff :=
-  leadingCoeff_map_eq_of_injective f.injective _
-
-theorem nextCoeff_map_eq_from_simpleRing : (p.map f).nextCoeff = f p.nextCoeff :=
-  nextCoeff_map_eq_of_injective f.injective _
-
-end SimpleRing
 
 section Ring
 
