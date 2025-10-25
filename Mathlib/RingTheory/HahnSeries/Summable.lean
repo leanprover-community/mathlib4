@@ -526,10 +526,9 @@ end SMul
 section Semiring
 
 variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ] [PartialOrder Γ']
-[AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Semiring R] [AddCommMonoid V] [Module R V]
+[AddAction Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Semiring R]
 
-instance : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
-  smul := (· • ·)
+instance [AddCommMonoid V] [Module R V] : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
   smul_zero _ := ext fun _ => by simp
   zero_smul _ := ext fun _ => by simp
   one_smul _ := ext fun _ => by rw [smul_apply, HahnModule.one_smul', Equiv.symm_apply_apply]

@@ -44,7 +44,7 @@ variable {R : Type*} [Semiring R] (r : R) (p : R[X]) {S : Type*} [AddCommMonoid 
   [MulActionWithZero R S] (x : S)
 
 /-- Scalar multiplication together with taking a natural number power. -/
-def smul_pow : ℕ → R → S := fun n r => r • x^n
+def smul_pow : ℕ → R → S := fun n r => r • x ^ n
 
 /-- Evaluate a polynomial `p` in the scalar semiring `R` at an element `x` in the target `S` using
 scalar multiple `R`-action. -/
@@ -148,7 +148,7 @@ variable (R : Type*) [Ring R] {S : Type*} [AddCommGroup S] [Pow S ℕ] [Module R
   (x : S)
 
 @[simp]
-theorem smeval_neg : (-p).smeval x = - p.smeval x := by
+theorem smeval_neg : (-p).smeval x = -p.smeval x := by
   rw [← add_eq_zero_iff_eq_neg, ← smeval_add, neg_add_cancel, smeval_zero]
 
 @[simp]
@@ -195,7 +195,7 @@ theorem smeval_at_natCast (q : ℕ[X]) : ∀ (n : ℕ), q.smeval (n : S) = q.sme
     intro n
     rw [smeval_monomial, smeval_monomial, nsmul_eq_mul, smul_eq_mul, Nat.cast_mul, Nat.cast_npow]
 
-theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
+theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S) := by
   induction p using Polynomial.induction_on' with
   | add p q ph qh => simp_all only [smeval_add, coeff_add, add_smul]
   | monomial n a =>
@@ -220,7 +220,7 @@ theorem smeval_X_pow_assoc (m n : ℕ) :
   | add p q ph qh => simp only [smeval_add, ph, qh, mul_add]
   | monomial n a => simp only [smeval_monomial, mul_smul_comm, npow_mul_assoc]
 
-theorem smeval_X_pow_mul : ∀ (n : ℕ), (X^n * p).smeval x = x^n * p.smeval x
+theorem smeval_X_pow_mul : ∀ (n : ℕ), (X ^ n * p).smeval x = x ^ n * p.smeval x
   | 0 => by
     simp [npow_zero, one_mul]
   | n + 1 => by
@@ -254,7 +254,7 @@ theorem smeval_assoc_X_pow (m n : ℕ) :
   | monomial n a =>
     rw [smeval_monomial, smul_mul_assoc, smul_mul_assoc, npow_mul_assoc, ← smul_mul_assoc]
 
-theorem smeval_mul_X_pow : ∀ (n : ℕ), (p * X^n).smeval x = p.smeval x * x^n
+theorem smeval_mul_X_pow : ∀ (n : ℕ), (p * X ^ n).smeval x = p.smeval x * x ^ n
   | 0 => by
     simp only [npow_zero, mul_one]
   | n + 1 => by
@@ -263,19 +263,19 @@ theorem smeval_mul_X_pow : ∀ (n : ℕ), (p * X^n).smeval x = p.smeval x * x^n
 
 variable [SMulCommClass R S S]
 
-theorem smeval_mul : (p * q).smeval x  = p.smeval x * q.smeval x := by
+theorem smeval_mul : (p * q).smeval x = p.smeval x * q.smeval x := by
   induction p using Polynomial.induction_on' with
   | add r s hr hs => simp only [hr, hs, smeval_add, add_mul]
   | monomial n a =>
     simp only [smeval_monomial, smeval_monomial_mul, smul_mul_assoc]
 
-theorem smeval_pow : ∀ (n : ℕ), (p^n).smeval x = (p.smeval x)^n
+theorem smeval_pow : ∀ (n : ℕ), (p ^ n).smeval x = (p.smeval x) ^ n
   | 0 => by
     simp only [npow_zero, smeval_one, one_smul]
   | n + 1 => by
     rw [npow_add, smeval_mul, smeval_pow n, pow_one, npow_add, npow_one]
 
-theorem smeval_comp : (p.comp q).smeval x  = p.smeval (q.smeval x) := by
+theorem smeval_comp : (p.comp q).smeval x = p.smeval (q.smeval x) := by
   induction p using Polynomial.induction_on' with
   | add r s hr hs => simp [add_comp, hr, hs, smeval_add]
   | monomial n a => simp [smeval_monomial, smeval_C_mul, smeval_pow]

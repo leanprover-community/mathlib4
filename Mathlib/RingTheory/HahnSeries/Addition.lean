@@ -467,7 +467,6 @@ section DistribMulAction
 variable [PartialOrder Γ] [Monoid R] [AddMonoid V] [DistribMulAction R V]
 
 instance : DistribMulAction R (HahnSeries Γ V) where
-  smul := (· • ·)
   one_smul _ := by
     ext
     simp
