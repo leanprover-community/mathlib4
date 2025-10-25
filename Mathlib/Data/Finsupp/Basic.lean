@@ -294,9 +294,7 @@ theorem equivMapDomain_trans' (f : α ≃ β) (g : β ≃ γ) :
 @[simp]
 theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
     equivMapDomain f (single a b) = single (f a) b := by
-  classical
-    ext x
-    simp only [single_apply, Equiv.apply_eq_iff_eq_symm_apply, equivMapDomain_apply]
+  classical aesop (add simp [single_apply])
 
 @[simp]
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
@@ -484,10 +482,10 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
     by_cases hax : a ∈ x.support
     · rw [← Finset.add_sum_erase _ _ hax, if_pos rfl]
       convert add_zero (x a)
-      refine Finset.sum_eq_zero fun i hi => if_neg ?_
+      refine Finset.sum_eq_zero fun i hi => if_neg <| Ne.symm ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
     · rw [notMem_support_iff.1 hax]
-      refine Finset.sum_eq_zero fun i hi => if_neg ?_
+      refine Finset.sum_eq_zero fun i hi => if_neg <| Ne.symm ?_
       exact hf.ne (hS hi) ha (ne_of_mem_of_not_mem hi hax)
 
 theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →₀ M)
