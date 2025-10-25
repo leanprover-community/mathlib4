@@ -12,10 +12,8 @@ import Mathlib.CategoryTheory.Bicategory.Functor.StrictlyUnitary
 In this file we introduce the notion of strict pseudofunctors, which are pseudofunctors such
 that `mapId` and `mapComp` are given by `eqToIso _`.
 
-We implement this notion as a typeclass, `Pseudofunctor.IsStrict`.
-
 To a strict pseudofunctor between strict bicategories we can associate a functor between the
-underlying categories, see `Pseudofunctor.toFunctor`.
+underlying categories, see `StrictPseudofunctor.toFunctor`.
 
 -/
 
@@ -33,6 +31,7 @@ variable (B C)
 
 /-- A strict pseudofunctor `F` between bicategories `B` and `C` is a
 pseudofunctor `F` from `B` to `C` such that `mapId` and `mapComp` are given by `eqToIso _`. -/
+@[kerodon 008H]
 structure StrictPseudofunctor extends StrictlyUnitaryPseudofunctor B C where
   map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), map (f ≫ g) = map f ≫ map g := by
     cat_disch
