@@ -239,7 +239,7 @@ instance : SDiff (Set α) := ⟨Set.diff⟩
 /-- `𝒫 s` is the set of all subsets of `s`. -/
 def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}
 
-@[inherit_doc] prefix:100 "𝒫" => powerset
+@[inherit_doc] prefix:100 "𝒫 " => powerset
 
 universe v in
 /-- The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that
