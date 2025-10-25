@@ -200,7 +200,7 @@ variable (I) in
 /-- The Riemannian extended distance between two points, in a manifold where the tangent spaces
 have an extended norm, defined as the infimum of the lengths of `C^1` paths between the points. -/
 noncomputable irreducible_def riemannianEDist (x y : M) : ℝ≥0∞ :=
-  ⨅ (γ : Path x y) (_ : ContMDiff (𝓡∂ 1) I 1 γ), ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ
+  ⨅ (γ : Path x y) (_ : CMDiff 1 γ), ∫⁻ x, ‖mfderiv% γ x 1‖ₑ
 
 /-- The Riemannian edistance is bounded above by the length of any `C^1` path from `x` to `y`.
 Here, we express this using a path defined on the whole real line, considered on
@@ -216,14 +216,14 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : CMDiff[Icc a b] 1 �
     · rw [← image_subset_iff, ContinuousAffineMap.coe_lineMap_eq, ← segment_eq_image_lineMap]
       simp [hab]
   let f : unitInterval → M := fun t ↦ (γ ∘ η) t
-  have hf : ContMDiff (𝓡∂ 1) I 1 f := by
+  have hf : CMDiff 1 f := by
     rw [← contMDiffOn_comp_projIcc_iff]
     apply hη.congr (fun t ht ↦ ?_)
     simp only [Function.comp_apply, f, projIcc_of_mem, ht]
   let g : Path x y := by
     refine ⟨⟨f, hf.continuous⟩, ?_, ?_⟩ <;>
     simp [f, η, ContinuousAffineMap.coe_lineMap_eq, ha, hb]
-  have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv (𝓡∂ 1) I g x 1‖ₑ := by
+  have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv% g x 1‖ₑ := by
     rw [riemannianEDist]; exact biInf_le _ hf
   apply A.trans_eq
   rw [lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
