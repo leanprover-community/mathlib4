@@ -63,7 +63,7 @@ section precedence
 /-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
 #guard_msgs in
 #check (T% σ) x
-/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+/-- info: σ x : V x -/
 #guard_msgs in
 #check T% σ x
 -- Nothing happening, as expected.
@@ -83,7 +83,7 @@ variable {s : ι → (x : M) → V x} in
 #check T% s
 
 /--
-info: (fun a ↦ TotalSpace.mk' (ι → (x : M) → V x) a (s a)) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x))
+info: fun a ↦ TotalSpace.mk' ((x : M) → V x) a (s i a) : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x))
 -/
 #guard_msgs in
 variable {s : ι → ι → (x : M) → V x} {i : ι} in
@@ -100,10 +100,40 @@ end precedence
 
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
--- Applying a section to an argument. TODO: beta-reduce instead!
+-- Applying a section to an argument.
+-- This application is not beta-reduced, because of the parentheses around the T%.
 /-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X) x
+
+-- This one is.
+/-- info: X x : TangentSpace I x -/
+#guard_msgs in
+#check (T% X x)
+
+-- TODO: should X be eta-reduced, so the following two become equivalent?
+set_option trace.Elab.DiffGeo.TotalSpaceMk true in
+/--
+info: fun x ↦ TotalSpace.mk' E x ((fun x ↦ X x) x) : M → TotalSpace E (TangentSpace I)
+---
+trace: [Elab.DiffGeo.TotalSpaceMk] `fun x ↦ X x` is a vector field on `M`
+-/
+#guard_msgs in
+#check (T% (fun x ↦ X x))
+
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% X)
+
+-- TODO: Would I like `f` to be eta-reduced?
+set_option trace.Elab.DiffGeo.TotalSpaceMk true in
+/--
+info: (fun x ↦ TotalSpace.mk' E x ((fun x ↦ X x) x)) x : TotalSpace E (TangentSpace I)
+---
+trace: [Elab.DiffGeo.TotalSpaceMk] `fun x ↦ X x` is a vector field on `M`
+-/
+#guard_msgs in
+#check (T% (fun x ↦ X x)) x
 
 -- Applying the same elaborator twice is fine (and idempotent).
 /-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
