@@ -4032,6 +4032,7 @@ import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.Congruence.BigOperators
 import Mathlib.GroupTheory.Congruence.Defs
 import Mathlib.GroupTheory.Congruence.Hom
+import Mathlib.GroupTheory.Congruence.Module
 import Mathlib.GroupTheory.Congruence.Opposite
 import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.CoprodI
