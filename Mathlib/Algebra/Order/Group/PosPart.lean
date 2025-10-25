@@ -99,8 +99,6 @@ lemma leOnePart_eq_one' : a⁻ᵐ = 1 ↔ a⁻¹ ≤ 1 := sup_eq_right
 @[to_additive /-- See also `negPart_nonpos`. -/]
 lemma leOnePart_le_one' : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 
-@[to_additive] lemma leOnePart_le_one : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
-
 @[to_additive (attr := simp) posPart_pos] lemma one_lt_oneLePart (ha : 1 < a) : 1 < a⁺ᵐ := by
   rwa [oneLePart_eq_self.2 ha.le]
 
@@ -108,6 +106,9 @@ lemma leOnePart_le_one' : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 
 @[to_additive (attr := simp)] lemma leOnePart_inv (a : α) : a⁻¹⁻ᵐ = a⁺ᵐ := by
   simp [oneLePart, leOnePart]
+
+@[to_additive] lemma oneLePart_max (a b : α) : (max a b)⁺ᵐ = max a⁺ᵐ b⁺ᵐ := by
+  simp [oneLePart, sup_sup_distrib_right]
 
 section MulLeftMono
 variable [MulLeftMono α]
@@ -119,6 +120,8 @@ lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
 
 @[to_additive (attr := simp)] alias ⟨_, leOnePart_of_le_one⟩ := leOnePart_eq_inv
 @[to_additive (attr := simp)] alias ⟨_, leOnePart_of_one_le⟩ := leOnePart_eq_one
+
+@[to_additive] lemma leOnePart_le_one : a⁻ᵐ ≤ 1 ↔ 1 ≤ a := by simp [leOnePart]
 
 @[to_additive (attr := simp) negPart_pos] lemma one_lt_ltOnePart (ha : a < 1) : 1 < a⁻ᵐ := by
   rwa [leOnePart_eq_inv.2 ha.le, one_lt_inv']
@@ -168,6 +171,9 @@ lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
   rw [← mul_left_inj a⁻ᵐ⁻¹, inf_mul, one_mul, mul_inv_cancel, ← div_eq_mul_inv,
     oneLePart_div_leOnePart, leOnePart_eq_inv_inf_one, inv_inv]
 
+@[to_additive] lemma leOnePart_min (a b : α) : (min a b)⁻ᵐ = max a⁻ᵐ b⁻ᵐ := by
+  simp [leOnePart, inv_inf, sup_sup_distrib_right]
+
 end MulRightMono
 
 end MulLeftMono
@@ -209,6 +215,19 @@ lemma div_mabs_eq_inv_leOnePart_sq (a : α) : a / |a|ₘ = (a⁻ᵐ ^ 2)⁻¹ :=
 
 end CommGroup
 end Lattice
+
+section DistribLattice
+variable [DistribLattice α] [Group α]
+
+@[to_additive] lemma oneLePart_min (a b : α) : (min a b)⁺ᵐ = min a⁺ᵐ b⁺ᵐ := by
+  simp [oneLePart, sup_inf_right]
+
+variable [MulLeftMono α] [MulRightMono α]
+
+@[to_additive] lemma leOnePart_max (a b : α) : (max a b)⁻ᵐ = min a⁻ᵐ b⁻ᵐ := by
+  simp [leOnePart, inv_sup, sup_inf_right]
+
+end DistribLattice
 
 section LinearOrder
 variable [LinearOrder α] [Group α] {a b : α}
