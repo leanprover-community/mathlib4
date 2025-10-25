@@ -49,8 +49,6 @@ theorem isConj_of_support_equiv
 
 end Conjugation
 
-
-
 theorem perm_symm_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x ∈ s, f x ∈ s) {y : α}
     (hy : y ∈ s) : f.symm y ∈ s := by
   have h0 : ∀ y ∈ s, ∃ (x : _) (hx : x ∈ s), y = (fun i (_ : i ∈ s) => f i) x hx :=
@@ -176,10 +174,9 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
   have hd1'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd1)
   have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
   refine isConj_of_support_equiv ?_ ?_
-  · refine
-        ((Equiv.setCongr hd1').trans (Equiv.Set.union hd1'')).trans
-          ((Equiv.sumCongr (subtypeEquiv f fun a => ?_) (subtypeEquiv g fun a => ?_)).trans
-            ((Equiv.setCongr hd2').trans (Equiv.Set.union hd2'')).symm) <;>
+  · refine ((Equiv.setCongr hd1').trans (Equiv.Set.union hd1'')).trans <|
+      (Equiv.sumCongr (subtypeEquiv f fun a => ?_) <| subtypeEquiv g fun a => ?_).trans
+        ((Equiv.setCongr hd2').trans (Equiv.Set.union hd2'')).symm <;>
       simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
         apply_eq_iff_eq]
   intro x hx
