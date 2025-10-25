@@ -644,6 +644,7 @@ theorem swap_self (a : α) : swap a a = Equiv.refl _ :=
 theorem swap_comm (a b : α) : swap a b = swap b a :=
   ext fun r => swapCore_comm r _ _
 
+@[aesop simp, grind =]
 theorem swap_apply_def (a b x : α) : swap a b x = if x = a then b else if x = b then a else x :=
   rfl
 
@@ -653,14 +654,13 @@ theorem swap_apply_left (a b : α) : swap a b a = b :=
 
 @[simp]
 theorem swap_apply_right (a b : α) : swap a b b = a := by
-  by_cases h : b = a <;> simp [swap_apply_def, h]
+  grind
 
 theorem swap_apply_of_ne_of_ne {a b x : α} : x ≠ a → x ≠ b → swap a b x = x := by
-  simp +contextual [swap_apply_def]
+  grind
 
 theorem eq_or_eq_of_swap_apply_ne_self {a b x : α} (h : swap a b x ≠ x) : x = a ∨ x = b := by
-  contrapose! h
-  exact swap_apply_of_ne_of_ne h.1 h.2
+  grind
 
 @[simp]
 theorem swap_swap (a b : α) : (swap a b).trans (swap a b) = Equiv.refl _ :=
@@ -680,20 +680,17 @@ theorem swap_comp_apply {a b x : α} (π : Perm α) :
   cases π
   rfl
 
-theorem swap_eq_update (i j : α) : (Equiv.swap i j : α → α) = update (update id j i) i j :=
-  funext fun x => by rw [update_apply _ i j, update_apply _ j i, Equiv.swap_apply_def, id]
+theorem swap_eq_update (i j : α) : (Equiv.swap i j : α → α) = update (update id j i) i j := by
+  aesop
 
 theorem comp_swap_eq_update (i j : α) (f : α → β) :
     f ∘ Equiv.swap i j = update (update f j (f i)) i (f j) := by
-  rw [swap_eq_update, comp_update, comp_update, comp_id]
+  aesop
 
 @[simp]
 theorem symm_trans_swap_trans [DecidableEq β] (a b : α) (e : α ≃ β) :
-    (e.symm.trans (swap a b)).trans e = swap (e a) (e b) :=
-  Equiv.ext fun x => by
-    have : ∀ a, e.symm x = a ↔ x = e a := fun a => by grind
-    simp only [trans_apply, swap_apply_def, this]
-    split_ifs <;> simp
+    (e.symm.trans (swap a b)).trans e = swap (e a) (e b) := by
+  grind
 
 @[simp]
 theorem trans_swap_trans_symm [DecidableEq β] (a b : β) (e : α ≃ β) :
@@ -707,45 +704,25 @@ theorem swap_apply_self (i j a : α) : swap i j (swap i j a) = a := by
 /-- A function is invariant to a swap if it is equal at both elements -/
 theorem apply_swap_eq_self {v : α → β} {i j : α} (hv : v i = v j) (k : α) :
     v (swap i j k) = v k := by
-  by_cases hi : k = i
-  · rw [hi, swap_apply_left, hv]
-  by_cases hj : k = j
-  · rw [hj, swap_apply_right, hv]
-  rw [swap_apply_of_ne_of_ne hi hj]
+  grind
 
 theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := by
   rw [apply_eq_iff_eq_symm_apply, symm_swap]
 
 theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (x = a ∨ x = b) := by
-  by_cases hab : a = b
-  · simp [hab]
-  by_cases hax : x = a
-  · simp [hax, eq_comm]
-  by_cases hbx : x = b
-  · simp [hbx]
-  simp [hab, hax, hbx, swap_apply_of_ne_of_ne]
+  grind
 
 namespace Perm
 
 @[simp]
 theorem sumCongr_swap_refl {α β : Sort _} [DecidableEq α] [DecidableEq β] (i j : α) :
     Equiv.Perm.sumCongr (Equiv.swap i j) (Equiv.refl β) = Equiv.swap (Sum.inl i) (Sum.inl j) := by
-  ext x
-  cases x
-  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp_id, Sum.elim_inl, comp_apply,
-      swap_apply_def, Sum.inl.injEq]
-    split_ifs <;> rfl
-  · simp [Sum.map, swap_apply_of_ne_of_ne]
+  aesop
 
 @[simp]
 theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i j : β) :
     Equiv.Perm.sumCongr (Equiv.refl α) (Equiv.swap i j) = Equiv.swap (Sum.inr i) (Sum.inr j) := by
-  ext x
-  cases x
-  · simp [Sum.map, swap_apply_of_ne_of_ne]
-  · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp_id, Sum.elim_inr, comp_apply,
-      swap_apply_def, Sum.inr.injEq]
-    split_ifs <;> rfl
+  aesop
 
 end Perm
 
@@ -805,11 +782,8 @@ section
 def piCongrLeft' (P : α → Sort*) (e : α ≃ β) : (∀ a, P a) ≃ ∀ b, P (e.symm b) where
   toFun f x := f (e.symm x)
   invFun f x := (e.symm_apply_apply x).ndrec (f (e x))
-  left_inv f := funext fun x =>
-    (by rintro _ rfl; rfl : ∀ {y} (h : y = x), h.ndrec (f y) = f x) (e.symm_apply_apply x)
-  right_inv f := funext fun x =>
-    (by rintro _ rfl; rfl : ∀ {y} (h : y = x), (congr_arg e.symm h).ndrec (f y) = f x)
-      (e.apply_symm_apply x)
+  left_inv f := by grind
+  right_inv f := by grind
 
 /-- Note: the "obvious" statement `(piCongrLeft' P e).symm g a = g (e a)` doesn't typecheck: the
 LHS would have type `P a` while the RHS would have type `P (e.symm (e a))`. For that reason,
@@ -881,14 +855,12 @@ lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
 theorem piCongrLeft_sumInl {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inl i)) = f i := by
-  simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
-    sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)), cast_cast, cast_eq]
+  aesop
 
 theorem piCongrLeft_sumInr {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (j : ι') :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inr j)) = g j := by
-  simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
-    sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)), cast_cast, cast_eq]
+  aesop
 
 end
 
