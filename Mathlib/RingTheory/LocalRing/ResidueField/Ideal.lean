@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.SurjectiveOnStalks
 
 /-!
 # The residue field of a prime ideal
@@ -104,6 +105,11 @@ lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaxima
     Function.Bijective (algebraMap (R ⧸ I) I.ResidueField) :=
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
     ((Quotient.maximal_ideal_iff_isField_quotient I).mp inferInstance)⟩
+
+lemma Ideal.surjectiveOnStalks_residueField (I : Ideal R) [I.IsPrime] :
+    (algebraMap R I.ResidueField).SurjectiveOnStalks :=
+  (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective).comp
+    (RingHom.surjectiveOnStalks_of_isLocalization I.primeCompl _)
 
 section LiesOver
 
