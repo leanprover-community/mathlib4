@@ -140,15 +140,15 @@ instance [IsGalois K L] : MulAction.IsPretransitive Gal(L/K) (primesOver p B) wh
     exact ⟨(galRestrict A K L B).symm σ, Subtype.val_inj.mp <|
       (congrFun (congrArg map ((galRestrict A K L B).apply_symm_apply σ)) P).trans hs⟩
 
-/-- All the `ramificationIdx` over a fixed maximal ideal are the same. -/
+/-- All the `ramificationIdx` over a fixed prime ideal are the same. -/
 theorem ramificationIdx_eq_of_isGalois [IsGalois K L] :
     ramificationIdx (algebraMap A B) p P = ramificationIdx (algebraMap A B) p Q := by
   rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
   rw [← hs]
   exact (ramificationIdx_map_eq p P σ).symm
 
-/-- All the `inertiaDeg` over a fixed maximal ideal are the same. -/
-theorem inertiaDeg_eq_of_isGalois [p.IsMaximal] [IsGalois K L] :
+/-- All the `inertiaDeg` over a fixed prime ideal are the same. -/
+theorem inertiaDeg_eq_of_isGalois [IsGalois K L] :
     inertiaDeg p P = inertiaDeg p Q := by
   rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
   rw [← hs]
@@ -169,7 +169,7 @@ theorem ramificationIdxIn_ne_zero [IsDedekindDomain B] {p : Ideal A} [p.IsPrime]
   exact IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver P.1 hp
 
 /-- The `inertiaDegIn` is equal to any ramification index over the same ideal. -/
-theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] [IsGalois K L] :
+theorem inertiaDegIn_eq_inertiaDeg [IsGalois K L] :
     inertiaDegIn p B = inertiaDeg p P := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
