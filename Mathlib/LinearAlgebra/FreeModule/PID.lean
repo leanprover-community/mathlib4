@@ -25,11 +25,7 @@ it would be equal to `finrank R M` if `R` is a field and `M` is a vector space.
 In this section, `M` is a free and finitely generated `R`-module, and
 `N` is a submodule of `M`.
 
-- `Submodule.inductionOnRank`: if `P` holds for `⊥ : Submodule R M` and if
-  `P N` follows from `P N'` for all `N'` that are of lower rank, then `P` holds
-  on all submodules
-
-- `Submodule.exists_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
+- `Submodule.nonempty_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
   free and finitely generated. This is the first part of the structure theorem
   for modules.
 
@@ -38,6 +34,13 @@ In this section, `M` is a free and finitely generated `R`-module, and
   Equivalently, a linear map `f : M →ₗ M` with `range f = N` can be written as
   a matrix in Smith normal form, a diagonal matrix with the coefficients `a i`
   along the diagonal.
+
+## TODO
+
+- `proof_wanted Submodule.free_of_free_of_pid` which does not require f.g.:
+  https://mathoverflow.net/questions/16953/are-submodules-of-free-modules-free#comment31868_16954
+- `Module.free_of_finite_type_torsion_free` is true iff `IsBezout`:
+  https://math.stackexchange.com/a/51922/315369
 
 ## Tags
 
@@ -395,6 +398,11 @@ instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Fi
 theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
     Module.Free R M ↔ NoZeroSMulDivisors R M :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+-- https://mathoverflow.net/questions/16953/are-submodules-of-free-modules-free#comment31868_16954
+proof_wanted Submodule.free_of_free_of_pid {R M : Type*} [CommRing R] [AddCommGroup M]
+    [IsPrincipalIdealRing R] [IsDomain R] [Module R M] [Module.Free R M] (N : Submodule R M) :
+    Module.Free R N
 
 end StrongRankCondition
 
