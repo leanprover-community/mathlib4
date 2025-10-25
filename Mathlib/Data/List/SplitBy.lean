@@ -183,6 +183,11 @@ theorem splitBy_of_isChain {r : α → α → Bool} {l : List α} (hn : l ≠ []
   | nil => contradiction
   | cons a l => rw [splitBy, ← append_nil l, splitByLoop_append] <;> simp [h]
 
+theorem splitBy_eq_singleton {r : α → α → Bool} {l : List α} :
+    splitBy r l = [l] ↔ l ≠ [] ∧ l.IsChain fun x y ↦ r x y := by
+  refine ⟨fun h ↦ ⟨fun _ ↦ ?_, ?_⟩, ?_⟩ <;>
+    simp_all [splitBy_of_isChain, @isChain_of_mem_splitBy _ l r l]
+
 private theorem splitBy_append_of_isChain {r : α → α → Bool} {l : List α} (hn : l ≠ [])
     (h : l.IsChain fun x y ↦ r x y) (ha : ∀ x ∈ m.head?, r (l.getLast hn) x = false) :
     (l ++ m).splitBy r = l :: m.splitBy r := by
@@ -248,6 +253,11 @@ theorem splitBy_append_cons {r : α → α → Bool} {l : List α} {a : α} (m :
     (l ++ a :: m).splitBy r = l.splitBy r ++ (a :: m).splitBy r := by
   apply splitBy_append
   simpa
+
+@[simp]
+theorem splitBy_beq_replicate {n : ℕ} (hn : n ≠ 0) (a : α) [DecidableEq α] :
+    splitBy (· == ·) (replicate n a) = [replicate n a] := by
+  simp [hn, splitBy_eq_singleton, isChain_replicate_of_rel]
 
 @[deprecated (since := "2025-09-24")]
 alias chain'_getLast_head_splitBy := isChain_getLast_head_splitBy
