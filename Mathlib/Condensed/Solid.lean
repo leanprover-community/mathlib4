@@ -68,7 +68,7 @@ def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
 
 end Condensed
 
-/-- 
+/--
 The predicate on condensed `R`-modules describing the property of being solid.
 
 TODO: This is not the correct definition of solid `R`-modules for a general `R`. The correct one is as
