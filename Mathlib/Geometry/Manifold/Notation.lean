@@ -224,7 +224,7 @@ private def tryStrategy' (α) (strategyDescr : MessageData) (x : TermElabM (Expr
         catch ex =>
           trace[Elab.DiffGeo.MDiff] "Failed with error:\n{ex.toMessageData}"
           throw ex
-      trace[Elab.DiffGeo.MDiff] "Found model: {e.1}"
+      trace[Elab.DiffGeo.MDiff] "Found model: `{e.1}`"
       return e
   catch _ =>
     -- Restore infotrees to prevent any stale hovers, code actions, etc.
