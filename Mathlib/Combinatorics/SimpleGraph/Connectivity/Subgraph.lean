@@ -276,8 +276,8 @@ def mapToSubgraph {u v : V} : ∀ w : G.Walk u v, w.toSubgraph.coe.Walk
 theorem map_mapToSubgraph_hom {u v : V} : ∀ w : G.Walk u v, w.mapToSubgraph.map w.toSubgraph.hom = w
   | nil => rfl
   | cons _ w => by
-    rw [mapToSubgraph, Walk.map, map_map, cons.injEq, heq_eq_eq]
-    exact ⟨rfl, w.map_mapToSubgraph_hom⟩
+    rw [mapToSubgraph, Walk.map, map_map]
+    exact congr_arg₂ _ rfl w.map_mapToSubgraph_hom
 
 namespace IsPath
 
