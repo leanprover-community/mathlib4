@@ -185,7 +185,7 @@ instance instPartialOrder : PartialOrder (Booleanisation α) where
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeSup : SemilatticeSup (Booleanisation α) where
-  sup x y := max x y
+  max x y := max x y
   le_sup_left
     | lift a, lift b => LE.lift le_sup_left
     | lift a, comp b => LE.sep disjoint_sdiff_self_right
@@ -206,7 +206,7 @@ instance instSemilatticeSup : SemilatticeSup (Booleanisation α) where
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeInf : SemilatticeInf (Booleanisation α) where
-  inf x y := min x y
+  min x y := min x y
   inf_le_left
     | lift a, lift b => LE.lift inf_le_left
     | lift a, comp b => LE.lift sdiff_le
@@ -225,7 +225,7 @@ instance instSemilatticeInf : SemilatticeInf (Booleanisation α) where
     | comp a, comp b, comp c, LE.comp hba, LE.comp hca => LE.comp <| sup_le hba hca
 
 instance instDistribLattice : DistribLattice (Booleanisation α) where
-  inf x y := x ⊓ y
+  min x y := x ⊓ y
   inf_le_left _ _ := inf_le_left
   inf_le_right _ _ := inf_le_right
   le_inf _ _ _ := le_inf

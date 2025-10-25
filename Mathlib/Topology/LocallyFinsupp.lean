@@ -313,11 +313,11 @@ instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
   le_antisymm D₁ D₂ h₁₂ h₂₁ := by
     ext x
     exact le_antisymm (h₁₂ x) (h₂₁ x)
-  sup := max
+  max := max
   le_sup_left D₁ D₂ := fun x ↦ by simp
   le_sup_right D₁ D₂ := fun x ↦ by simp
   sup_le D₁ D₂ D₃ h₁₃ h₂₃ := fun x ↦ by simp [h₁₃ x, h₂₃ x]
-  inf := min
+  min := min
   inf_le_left D₁ D₂ := fun x ↦ by simp
   inf_le_right D₁ D₂ := fun x ↦ by simp
   le_inf D₁ D₂ D₃ h₁₃ h₂₃ := fun x ↦ by simp [h₁₃ x, h₂₃ x]

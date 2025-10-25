@@ -267,7 +267,7 @@ lemma coe_iSup (f : ι → ClosedSubmodule R N) :
   simp [← SetLike.mem_coe]
 
 instance : SemilatticeSup (ClosedSubmodule R N) where
-  sup s t := s ⊔ t
+  max s t := s ⊔ t
   le_sup_left _ _ _ hx := subset_closure <| Submodule.mem_sup_left hx
   le_sup_right _ _ _ hx := subset_closure <| Submodule.mem_sup_right hx
   sup_le _ _ _ ha hb := Submodule.closure_le.mpr <| sup_le_iff.mpr ⟨ha, hb⟩

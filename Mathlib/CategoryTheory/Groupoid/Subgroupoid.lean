@@ -224,7 +224,7 @@ instance : CompleteLattice (Subgroupoid C) :=
     bot_le := fun _ => empty_subset _
     top := ⊤
     le_top := fun _ => subset_univ _
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     le_inf := fun _ _ _ RS RT _ pR => ⟨RS pR, RT pR⟩
     inf_le_left := fun _ _ _ => And.left
     inf_le_right := fun _ _ _ => And.right }

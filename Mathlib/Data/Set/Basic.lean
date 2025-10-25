@@ -71,8 +71,8 @@ instance instDistribLattice : DistribLattice (Set α) where
   __ : DistribLattice (α → Prop) := inferInstance
   le := (· ≤ ·)
   lt := fun s t => s ⊆ t ∧ ¬t ⊆ s
-  sup := (· ∪ ·)
-  inf := (· ∩ ·)
+  max := (· ∪ ·)
+  min := (· ∩ ·)
 
 instance instBoundedOrder : BoundedOrder (Set α) where
   __ : BoundedOrder (α → Prop) := inferInstance

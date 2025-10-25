@@ -216,7 +216,7 @@ instance : Min (SimplicialComplex 𝕜 E) :=
 
 instance : SemilatticeInf (SimplicialComplex 𝕜 E) :=
   { PartialOrder.lift faces (fun _ _ => SimplicialComplex.ext) with
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     inf_le_left := fun _ _ _ hs => hs.1
     inf_le_right := fun _ _ _ hs => hs.2
     le_inf := fun _ _ _ hKL hKM _ hs => ⟨hKL hs, hKM hs⟩ }
