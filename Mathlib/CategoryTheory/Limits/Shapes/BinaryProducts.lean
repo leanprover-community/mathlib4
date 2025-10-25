@@ -1080,8 +1080,9 @@ variable {F}
 
 /-- Naturality of the `prodComparison` morphism in a natural transformation. -/
 @[reassoc]
-theorem prodComparison_naturalInNatTrans {H : C ⥤ D} [HasBinaryProduct (H.obj A) (H.obj B)]
-    (α : F ⟶ H) : α.app (prod A B) ≫ prodComparison H A B =
+theorem prodComparison_natural_of_natTrans {H : C ⥤ D} [HasBinaryProduct (H.obj A) (H.obj B)]
+    (α : F ⟶ H) :
+    α.app (prod A B) ≫ prodComparison H A B =
       prodComparison F A B ≫ prod.map (α.app A) (α.app B) := by
   rw [prodComparison, prodComparison, prod.lift_map, prod.comp_lift, α.naturality, α.naturality]
 
