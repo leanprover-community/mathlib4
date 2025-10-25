@@ -196,9 +196,10 @@ open ComplexOrder in
 @[simp] theorem posSemidef_toMatrix_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
     {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
     (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
-  rw [← Matrix.isPositive_toEuclideanLin_iff, (by exact Matrix.toLin'_toMatrix' _ :
-    (A.toMatrix b.toBasis b.toBasis).toEuclideanLin =
-      b.repr.toLinearMap ∘ₗ A ∘ₗ b.repr.symm.toLinearMap), isPositive_linearIsometryEquiv_conj_iff]
+  rw [← Matrix.isPositive_toEuclideanLin_iff]
+  convert isPositive_linearIsometryEquiv_conj_iff b.repr
+  ext
+  simp [LinearMap.toMatrix]
 
 /-- A symmetric projection is positive. -/
 @[aesop 10% apply, grind →]
