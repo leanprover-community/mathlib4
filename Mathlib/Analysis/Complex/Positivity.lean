@@ -35,8 +35,7 @@ theorem nonneg_of_iteratedDeriv_nonneg {f : ℂ → ℂ} {c : ℂ} {r : ℝ}
   rw [← ofReal_natCast, ← ofReal_pow, ← ofReal_inv, eq_re_of_ofReal_le (h n), ← ofReal_mul,
     ← ofReal_mul]
   norm_cast at hz₁ ⊢
-  have := zero_re ▸ (Complex.le_def.mp (h n)).1
-  positivity
+  positivity [zero_re ▸ (Complex.le_def.mp (h n)).1]
 
 end DifferentiableOn
 
