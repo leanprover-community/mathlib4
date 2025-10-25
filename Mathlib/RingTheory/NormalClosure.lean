@@ -11,9 +11,9 @@ import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 We define the normal closure of an extension of domains `R ⊆ S` as a domain `T` such that
 `R ⊆ S ⊆ T` and the extension `Frac T / Frac R` is Galois, and prove several instances about it.
 
-Under the hood, it is defined as the `integralClosure` of `S` inside the
+Under the hood, `T` is defined as the `integralClosure` of `S` inside the
 `IntermediateField.normalClosure` of the extension `Frac S / Frac R` inside the `AlgebraicClosure`
-of `Frac S`.
+of `Frac S`. In particular, if `S` is a Dedekind domain, then `T` is also a Dedekind domain.
 
 # Technical notes
 * Many instances are proved about the `IntermediateField.normalClosure` of the extension
@@ -33,23 +33,24 @@ variable (R S : Type*) [CommRing R] [CommRing S] [IsDomain R] [IsDomain S]
   [Algebra R S] [NoZeroSMulDivisors R S]
 
 /--
-We register this specific instance as a scoped instance rather than making
+We register this specific instance as a local instance rather than making
 `FractionRing.listAlgebra` a local instance because the latter causes timeouts since
 it is too general.
 -/
-scoped instance : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra _ _
+local instance : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra _ _
 
 local notation3 "K" => FractionRing R
 local notation3 "L" => FractionRing S
 local notation3 "E" => IntermediateField.normalClosure (FractionRing R) (FractionRing S)
     (AlgebraicClosure (FractionRing S))
 
-/--
-This is a scoped instance since it is only used in this file to construct `Ring.normalClosure`.
--/
-scoped instance : Algebra S E := ((algebraMap L E).comp (algebraMap S L)).toAlgebra
 
-scoped instance : IsScalarTower S L E := IsScalarTower.of_algebraMap_eq' rfl
+/--
+This is a local instance since it is only used in this file to construct `Ring.normalClosure`.
+-/
+local instance : Algebra S E := ((algebraMap L E).comp (algebraMap S L)).toAlgebra
+
+local instance : IsScalarTower S L E := IsScalarTower.of_algebraMap_eq' rfl
 
 /--
 The normal closure of an extension of domains `R ⊆ S`. It is defined as a domain `T` such that
@@ -67,27 +68,26 @@ instance : Nontrivial T := inferInstanceAs (Nontrivial (integralClosure S E))
 instance : Algebra S T := inferInstanceAs (Algebra S (integralClosure S E))
 
 /--
-This is a scoped instance since it is only used in this file to prove some results
-about `Ring.normalClosure`.
+This is a local instance since it is only used in this file to construct `Ring.normalClosure`.
 -/
-scoped instance : Algebra T E := inferInstanceAs (Algebra (integralClosure S E) E)
+local instance : Algebra T E := inferInstanceAs (Algebra (integralClosure S E) E)
 
 instance : Algebra R T := ((algebraMap S T).comp (algebraMap R S)).toAlgebra
 
-scoped instance : IsScalarTower S T E :=
+local instance : IsScalarTower S T E :=
   inferInstanceAs (IsScalarTower S (integralClosure S E) E)
 
-scoped instance : IsIntegralClosure T S E := integralClosure.isIntegralClosure S E
+local instance : IsIntegralClosure T S E := integralClosure.isIntegralClosure S E
 
 instance : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq' rfl
 
-scoped instance : IsScalarTower R L E := IsScalarTower.to₁₃₄ R K L E
+local instance : IsScalarTower R L E := IsScalarTower.to₁₃₄ R K L E
 
-scoped instance : IsScalarTower R S E := IsScalarTower.to₁₂₄ R S L E
+local instance : IsScalarTower R S E := IsScalarTower.to₁₂₄ R S L E
 
-scoped instance : IsScalarTower R T E :=  IsScalarTower.to₁₃₄ R S T E
+local instance : IsScalarTower R T E :=  IsScalarTower.to₁₃₄ R S T E
 
-scoped instance : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|
+local instance : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|
       (FaithfulSMul.algebraMap_injective L E).comp (FaithfulSMul.algebraMap_injective S L)
 
 instance : NoZeroSMulDivisors S T := Subalgebra.noZeroSMulDivisors_bot (integralClosure S E)
@@ -98,9 +98,9 @@ instance : FaithfulSMul R T :=
 
 variable [Module.Finite R S]
 
-scoped instance : FiniteDimensional L E := Module.Finite.right K L E
+local instance : FiniteDimensional L E := Module.Finite.right K L E
 
-scoped instance : IsFractionRing T E :=
+local instance : IsFractionRing T E :=
   integralClosure.isFractionRing_of_finite_extension L E
 
 instance : IsIntegrallyClosed T :=

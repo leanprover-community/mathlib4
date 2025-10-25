@@ -36,6 +36,10 @@ namespace IsCyclotomicExtension.Rat
 
 variable [CharZero K]
 
+variable (k K) in
+theorem finrank [NeZero k] [IsCyclotomicExtension {k} ℚ K] : Module.finrank ℚ K = k.totient :=
+  IsCyclotomicExtension.finrank K <| Polynomial.cyclotomic.irreducible_rat (NeZero.pos _)
+
 /-- The discriminant of the power basis given by `ζ - 1`. -/
 theorem discr_prime_pow_ne_two' [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) (hk : p ^ (k + 1) ≠ 2) :
@@ -585,7 +589,7 @@ norm, relative to `ℤ`, of `ζ - 1` divides also `n`.
 -/
 theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
     [Field K] [NumberField K] {ζ : K} {p : ℕ} [hF : Fact (Nat.Prime p)] (hζ : IsPrimitiveRoot ζ n)
-    (hp : let _ : NeZero n := NeZero.of_gt hn; (p : ℤ) ∣ norm ℤ (hζ.toInteger - 1)) :
+    (hp : haveI : NeZero n := NeZero.of_gt hn; (p : ℤ) ∣ norm ℤ (hζ.toInteger - 1)) :
     p ∣ n := by
   have : NeZero n := NeZero.of_gt hn
   obtain ⟨μ, hC, hμ, h⟩ :
@@ -598,7 +602,6 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
       show ζ - 1 = algebraMap ℚ⟮ζ⟯ K (IntermediateField.AdjoinSimple.gen ℚ ζ - 1) by rfl,
       ← norm_norm (S := ℚ⟮ζ⟯), Algebra.norm_algebraMap, map_pow, map_pow, ← norm_localization ℤ
       (nonZeroDivisors ℤ) (Sₘ := ℚ⟮ζ⟯), map_sub (algebraMap _ _), RingOfIntegers.map_mk, map_one]
-  dsimp only at hp
   rw [h] at hp
   rsuffices ⟨q, hq, t, s, ht₁, ht₂, hs⟩ :
       ∃ q, q.Prime ∧ ∃ t s, t ≠ 0 ∧ n = q ^ t ∧ (p : ℤ) ∣ (q : ℤ) ^ s := by
