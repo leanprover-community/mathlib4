@@ -296,6 +296,9 @@ using the local context to infer the appropriate instance. This supports the fol
 
 Further cases can be added as necessary.
 
+This method intentionally handles **neither** sums (disjoint unions) nor products of spaces,
+nor an open subset of an existing manifold. These are handled in `findModel`.
+
 Return an expression describing the found model with corners.
 
 `baseInfo` is only used for the first case, a model with corners on the total space of the vector
@@ -640,13 +643,18 @@ This implementation is not maximally robust yet.
 -/
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
-def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
+partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   -- At first, try finding a model on the space itself.
   if let some (m, _) ← findModelInner e baseInfo then return m
   -- Otherwise, check if we have a binary product or a binary sum.
   -- TODO: also support higher order products and sums, by recursively calling this method on them
   -- Also support combinations of those!
   match_expr e with
+  | TopologicalSpace.Opens M =>
+    trace[Elab.DiffGeo.MDiff] "Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
+    -- This recursive call makes the definition partial, but that's fine in practice.
+    -- (In practice, `M` is not an `Opens`, as `Open X` is (currently?) not a topological space.
+    findModel M baseInfo
   | Prod E F =>
     trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a product, recursing into each factor"
     let prodHelp (E) := match_expr E with
