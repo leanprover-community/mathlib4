@@ -77,10 +77,11 @@ theorem factors_iff (f : K[X]) [IsSplittingField K L f] :
     obtain ⟨x : K, -, hxy : algebraMap K L x = y⟩ := hy
     rw [← hxy]
     exact SetLike.mem_coe.2 <| Subalgebra.algebraMap_mem _ _,
-    fun h => @RingEquiv.toRingHom_refl K _ ▸ RingEquiv.self_trans_symm
-      (RingEquiv.ofBijective _ <| Algebra.bijective_algebraMap_iff.2 h) ▸ by
-        rw [RingEquiv.toRingHom_trans]
-        exact splits_comp_of_splits _ _ (splits L f)⟩
+    fun h => by
+      rw [← Polynomial.map_id (p := f), ← RingEquiv.toRingHom_refl, ← RingEquiv.self_trans_symm
+        (RingEquiv.ofBijective _ <| Algebra.bijective_algebraMap_iff.2 h),
+        RingEquiv.toRingHom_trans, ← map_map]
+      apply (splits L f).map⟩
 
 @[deprecated (since := "2025-10-24")]
 alias splits_iff := factors_iff
