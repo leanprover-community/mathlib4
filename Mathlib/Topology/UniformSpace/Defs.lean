@@ -228,15 +228,15 @@ theorem symmetrizeRel_subset_self (V : SetRel α α) : symmetrizeRel V ⊆ V :=
   sep_subset _ _
 
 set_option linter.deprecated false in
+@[deprecated SetRel.symmetrize_mono (since := "2025-10-17")]
+theorem symmetrize_mono {V W : SetRel α α} (h : V ⊆ W) : symmetrizeRel V ⊆ symmetrizeRel W :=
+  inter_subset_inter h <| preimage_mono h
+
+set_option linter.deprecated false in
 @[deprecated SetRel.comm (since := "2025-10-17")]
 theorem IsSymmetricRel.mk_mem_comm {V : SetRel α α} (hV : IsSymmetricRel V) {x y : α} :
     (x, y) ∈ V ↔ (y, x) ∈ V :=
   Set.ext_iff.1 hV (y, x)
-
-set_option linter.deprecated false in
-@[deprecated SetRel.symmetrize_mono (since := "2025-10-17")]
-theorem symmetrize_mono {V W : SetRel α α} (h : V ⊆ W) : symmetrizeRel V ⊆ symmetrizeRel W :=
-  inter_subset_inter h <| preimage_mono h
 
 set_option linter.deprecated false in
 @[deprecated SetRel.inv_eq_self (since := "2025-10-17")]
