@@ -3,7 +3,7 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
