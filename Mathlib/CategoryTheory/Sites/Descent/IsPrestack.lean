@@ -20,6 +20,17 @@ are the type of morphisms `p^* M ⟶ p^* N`. We shall say that
 `F` satisfies the descent of morphisms for a Grothendieck topology `J`
 if these presheaves are all sheaves (typeclass `F.IsPrestack J`).
 
+## Terminological note
+
+In this file, we use the language of pseudofunctors to formalize prestacks.
+Similar notions could also be phrased in terms of fibered categories.
+In the mathematical literature, various uses of the words "prestacks" and
+"stacks" exists. Our definitions are consistent with Giraud's definition II 1.2.1
+in *Cohomologie non abélienne*: a prestack is defined by the descent of morphisms
+condition with respect to a Grothendieck topology, and a stack by the effectiveness
+of the descent. However, contrary to Laumon and Moret-Bailly in *Champs algébriques* 3.1,
+we do not require that target categories are groupoids.
+
 ## TODO
 
 * Relate this notion to the property that for any covering family `f i : X i ⟶ S`
@@ -27,6 +38,10 @@ for `J`, the functor `F.obj S` to the category of objects in `F.obj (X i)` for a
 equipped with a descent datum is fully faithful.
 * Define a typeclass `IsStack` (extending `IsPrestack`?)
 by saying that the functors mentionned above are essentially surjective.
+
+## References
+* [Jean Giraud, *Cohomologie non abélienne*][giraud1971]
+* [Gérard Laumon and Laurent Moret-Bailly, *Champs algébriques*][laumon-morel-bailly-2000]
 
 -/
 
@@ -131,7 +146,8 @@ end
 variable (F)
 
 /-- The property that a pseudofunctor `F : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat`
-satisfies the descent property for morphisms, i.e. is a prestack. -/
+satisfies the descent property for morphisms, i.e. is a prestack.
+(See the terminological note in the introduction of the file `Sites.Descent.IsPrestack`.) -/
 @[stacks 026F "(2)"]
 class IsPrestack (J : GrothendieckTopology C) : Prop where
   isSheaf {S : C} (M N : F.obj (.mk (op S))) :
