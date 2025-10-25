@@ -568,6 +568,10 @@ theorem AddSubmonoid.fg_of_subtractive {P : AddSubmonoid M} (hP : ∀ x ∈ P, �
     · rw [add_le_iff_nonpos_left]
       exact (pos_of_ne_zero hz₃).not_ge
 
+/-- A canonically ordered and well-quasi-ordered monoid must be finitely generated. -/
+theorem AddMonoid.fg_of_wellQuasiOrderedLE : AddMonoid.FG M where
+  fg_top := AddSubmonoid.fg_of_subtractive (by simp)
+
 /-- If `f` `g` are homomorphisms from a canonically ordered and well-quasi-ordered monoid `M` to a
 cancellative monoid `N`, the submonoid of `M` on which `f` and `g` agree is finitely generated. When
 `M` and `N` are `ℕ ^ k`, this is also known as a version of **Gordan's lemma**. -/
