@@ -139,6 +139,12 @@ lemma PreservesCoproduct.of_iso_comparison [i : IsIso (sigmaComparison G f)] :
   exact @IsColimit.ofPointIso _ _ _ _ _ _ _
     (colimit.isColimit (Discrete.functor fun j : J => G.obj (f j))) i
 
+@[reassoc (attr := simp)]
+lemma map_ι_comp_inv_sigmaComparison [IsIso (sigmaComparison G f)] (j : J) :
+    G.map (Sigma.ι _ j) ≫ inv (sigmaComparison G f) =
+      Sigma.ι (fun x ↦ (G.obj (f x))) j := by
+  simp [← cancel_mono (sigmaComparison G f)]
+
 variable [PreservesColimit (Discrete.functor f) G]
 
 /-- If `G` preserves colimits,
