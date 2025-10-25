@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang, Junyan Xu, Andrew Yang
 -/
 import Mathlib.RingTheory.Spectrum.Prime.RingHom
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # The fiber of a ring homomorphism at a prime ideal
@@ -43,11 +40,9 @@ lemma Ideal.ResidueField.exists_smul_eq_one_tensor
     (Algebra.TensorProduct.comm _ _ _ x)
   refine ⟨r, hr, s, by simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
 
-lemma Ideal.IsPrime.mul_mem_iff {R : Type*} [CommRing R] {I : Ideal R} [I.IsPrime]
-    {x y : R} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
-  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
-
 variable (R S) in
+/-- The fiber of a ring homomorphism `algebraMap R S : R →+* S` at a prime ideal
+`p : PrimeSpectrum R` is in bijection with the prime spectrum of `κ(p) ⊗[R] S`. -/
 @[simps]
 noncomputable def PrimeSpectrum.preimageEquivTensorResidueField (p : PrimeSpectrum R) :
     (algebraMap R S).specComap ⁻¹' {p} ≃
@@ -57,25 +52,19 @@ noncomputable def PrimeSpectrum.preimageEquivTensorResidueField (p : PrimeSpectr
           (IsScalarTower.toAlgHom _ _ _) (fun _ _ ↦ .all _ _)).toRingHom, RingHom.ker_isPrime _⟩
   invFun q := ⟨Algebra.TensorProduct.includeRight.toRingHom.specComap q, by
     simp only [AlgHom.toRingHom_eq_coe, Set.mem_preimage, ← specComap_comp_apply,
-      AlgHom.comp_algebraMap_of_tower, Set.mem_singleton_iff]
-    rw [IsScalarTower.algebraMap_eq R p.asIdeal.ResidueField, specComap_comp_apply,
-      Subsingleton.elim (α := PrimeSpectrum p.asIdeal.ResidueField) (RingHom.specComap _ q) ⊥]
-    ext
-    exact Ideal.algebraMap_residueField_eq_zero⟩
+      AlgHom.comp_algebraMap_of_tower]
+    exact (residueField_specComap _).le ⟨(algebraMap _ _).specComap q, rfl⟩⟩
   left_inv q := by ext x; simp
   right_inv q := by
     ext x
     obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_one_tensor _ x
     have := @PrimeSpectrum.isPrime -- times out if removed
-    rw [← Ideal.IsPrime.mul_mem_iff (x := algebraMap _ _ r), iff_comm,
-      ← Ideal.IsPrime.mul_mem_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e]
+    rw [← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), iff_comm,
+      ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e]
     · simp
     · rw [← Ideal.mem_comap, ← PrimeSpectrum.specComap_asIdeal]
       convert hr
-      rw [IsScalarTower.algebraMap_eq R p.asIdeal.ResidueField, specComap_comp_apply,
-        Subsingleton.elim (α := PrimeSpectrum p.asIdeal.ResidueField) (RingHom.specComap _ q) ⊥]
-      ext
-      exact Ideal.algebraMap_residueField_eq_zero
+      exact (residueField_specComap _).le ⟨(algebraMap _ _).specComap q, rfl⟩
     · simpa [-Algebra.algebraMap_self, -AlgHom.commutes, -AlgHom.map_algebraMap]
 
 variable (R S) in
@@ -94,7 +83,7 @@ noncomputable def PrimeSpectrum.preimageOrderIsoTensorResidueField (p : PrimeSpe
       simpa using Ideal.comap_mono
     · intro H x hx
       obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_one_tensor _ x
-      rw [← Ideal.IsPrime.mul_mem_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e] at hx ⊢
+      rw [← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e] at hx ⊢
       · replace hx : s ∈ q₁.1.asIdeal := by simpa using hx
         simpa using H hx
       · rw [← q₂.2] at hr; simpa [IsScalarTower.algebraMap_apply R S q₂.1.asIdeal.ResidueField]
