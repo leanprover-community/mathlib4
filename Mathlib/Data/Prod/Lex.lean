@@ -167,7 +167,7 @@ instance [Ord α] [Ord β] [Std.TransOrd α] [Std.TransOrd β] : Std.TransOrd (�
 /-- Dictionary / lexicographic linear order for pairs. -/
 instance instLinearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=
   { Prod.Lex.instPartialOrder α β with
-    le_total := total_of (Prod.Lex _ _)
+    le_total := Std.Total.total (r := Prod.Lex _ _)
     toDecidableLE := Prod.Lex.decidable _ _
     toDecidableLT := Prod.Lex.decidable _ _
     toDecidableEq := instDecidableEqLex _

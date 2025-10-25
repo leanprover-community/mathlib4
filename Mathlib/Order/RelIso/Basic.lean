@@ -309,6 +309,11 @@ protected theorem isAntisymm : ∀ (_ : r ↪r s) [IsAntisymm β s], IsAntisymm 
 protected theorem isTrans : ∀ (_ : r ↪r s) [IsTrans β s], IsTrans α r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ _ h₁ h₂ => o.1 (H _ _ _ (o.2 h₁) (o.2 h₂))⟩
 
+protected theorem stdTotal : ∀ (_ : r ↪r s) [Std.Total s], Std.Total r
+  | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o o).1 (H _ _)⟩
+
+set_option linter.deprecated false in
+@[deprecated RelEmbedding.stdTotal (since := "2025-10-23")]
 protected theorem isTotal : ∀ (_ : r ↪r s) [IsTotal β s], IsTotal α r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o o).1 (H _ _)⟩
 
@@ -319,7 +324,7 @@ protected theorem isPartialOrder : ∀ (_ : r ↪r s) [IsPartialOrder β s], IsP
   | f, _ => { f.isPreorder, f.isAntisymm with }
 
 protected theorem isLinearOrder : ∀ (_ : r ↪r s) [IsLinearOrder β s], IsLinearOrder α r
-  | f, _ => { f.isPartialOrder, f.isTotal with }
+  | f, _ => { f.isPartialOrder, f.stdTotal with }
 
 protected theorem isStrictOrder : ∀ (_ : r ↪r s) [IsStrictOrder β s], IsStrictOrder α r
   | f, _ => { f.isIrrefl, f.isTrans with }

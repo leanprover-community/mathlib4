@@ -137,7 +137,7 @@ instance : Preorder (MulArchimedeanOrder M) where
     exact ⟨1, by simpa using h⟩
 
 @[to_additive]
-instance : IsTotal (MulArchimedeanOrder M) (· ≤ ·) where
+instance : Std.Total (α := MulArchimedeanOrder M) (· ≤ ·) where
   total a b := by
     obtain hab | hab := le_total |a.val|ₘ |b.val|ₘ
     · exact .inr ⟨1, by simpa using hab⟩

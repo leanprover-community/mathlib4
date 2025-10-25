@@ -164,7 +164,7 @@ instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
 instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
     LinearOrder (Σₗ i, α i) :=
   { Lex.partialOrder with
-    le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
+    le_total := Std.Total.total (r := (Lex (· < ·)) fun _ => (· ≤ ·)),
     toDecidableEq := Sigma.instDecidableEqSigma
     toDecidableLE := Lex.decidable _ _
     toDecidableLT := Lex.decidable _ _ }
