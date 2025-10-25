@@ -34,8 +34,8 @@ equality `‖c • x‖ = ‖c‖ ‖x‖`. We require only `‖c • x‖ ≤ �
 `‖c • x‖ = ‖c‖ ‖x‖` in `norm_smul`.
 
 Note that since this requires `SeminormedAddCommGroup` and not `NormedAddCommGroup`, this
-typeclass can be used for "semi normed spaces" too, just as `Module` can be used for
-"semi modules". -/
+typeclass can be used for "seminormed spaces" too, just as `Module` can be used for
+"semimodules". -/
 @[ext]
 class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
     extends Module 𝕜 E where
