@@ -45,9 +45,10 @@ open Fin Function
 
 namespace ContinuousAlternatingMap
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {n : ℕ}
 
 /-- If `f` is a continuous `(n + 1)`-multilinear alternating map, `x` is an element of the domain,
@@ -161,6 +162,43 @@ theorem alternatizeUncurryFin_constOfIsEmptyLIE_comp (f : E →L[𝕜] F) :
   ext
   simp [alternatizeUncurryFin_apply]
 
+@[simp]
+lemma _root_.Fin.removeNth_fun_const {α : Type*} {n : ℕ} (i : Fin (n + 1)) (a : α) :
+    i.removeNth (fun _ ↦ a) = (fun _ ↦ a) :=
+  rfl
+
+/-- If `f` is a continuous bilinear map taking values in the space of continuous alternating maps,
+then evaluation of the twice uncurried `f` on a tuple of vectors `v`
+can be represented as a sum of
+
+$$
+f(v_i, v_j; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-) -
+f(v_j, v_i; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}-)
+$$
+
+over all `(i j : Fin (n + 2))`, `i < j`, taken with appropriate signs.
+Here $$\hat{v_i}$$ and $$\hat{v_j}$$ mean that these vectors are removed from the tuple.
+
+We use pairs of `i j : Fin (n + 1)`, `i ≤ j`,
+to encode pairs `(i.castSucc : Fin (n + 2), j.succ : Fin (n + 2))`,
+so the power of `-1` is off by one compared to the informal texts.
+
+In particular, if `f` is symmetric in the first two arguments,
+then the resulting alternating map is zero,
+see `alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_of_symmetric` below.
+-/
+theorem alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_apply
+    (f : E →L[𝕜] E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) (v : Fin (n + 2) → E) :
+    alternatizeUncurryFin (alternatizeUncurryFinCLM 𝕜 E F ∘L f) v =
+      ∑ (i : Fin (n + 1)), ∑ j ≥ i,
+        (-1 : ℤ) ^ (i + j : ℕ) •
+          (f (v i.castSucc) (v j.succ) (j.removeNth <| i.castSucc.removeNth v) -
+            f (v j.succ) (v i.castSucc) (j.removeNth <| i.castSucc.removeNth v)) := by
+  simpa [alternatizeUncurryFin_apply, AlternatingMap.alternatizeUncurryFin_apply]
+    using AlternatingMap.alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply
+      (R := 𝕜) (M := E) (N := F)
+      (f.toLinearMap₁₂.compr₂ (toAlternatingMapLinear (R := 𝕜))) v
+
 /-- If `f` is a symmetric continuous bilinear map
 taking values in the space of continuous alternating maps,
 then the twice uncurried `f` is zero. -/
@@ -168,14 +206,36 @@ theorem alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_of_symmetric
     {f : E →L[𝕜] E →L[𝕜] E [⋀^Fin n]→L[𝕜] F}
     (hf : ∀ x y, f x y = f y x) :
     alternatizeUncurryFin (alternatizeUncurryFinCLM 𝕜 E F ∘L f) = 0 := by
-  apply toAlternatingMap_injective
-  rw [toAlternatingMap_zero,
-    ← AlternatingMap.alternatizeUncurryFin_alternatizeUncurryFinLM_comp_of_symmetric
-      (f := f.toLinearMap₁₂.compr₂ toAlternatingMapLinear)
-      (fun x y ↦ congr($(hf x y) |>.toAlternatingMap))]
-  rw [toAlternatingMap_alternatizeUncurryFin]
-  congr 1
-  ext
-  simp [alternatizeUncurryFin_apply, AlternatingMap.alternatizeUncurryFin_apply]
+  ext v
+  simp [alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_apply, hf]
+
+/-- Derivative of `compContinuousLinearMap` can be represented
+in terms of `alternatizeUncurryFinCLM`. -/
+theorem fderivCompContinuousLinearMap_eq_alternatizeUncurryFin (f : F [⋀^Fin (n + 1)]→L[𝕜] G)
+    (g : E →L[𝕜] F) :
+    f.fderivCompContinuousLinearMap g = alternatizeUncurryFinCLM 𝕜 E G ∘L
+      ((compContinuousLinearMapCLM g ∘L f.curryLeft).postcomp E) := by
+  ext dg v
+  have (i j : Fin (n + 1)) :
+      i.insertNth (α := fun _ ↦ E →L[𝕜] F) dg (fun _ ↦ g) j (v j) =
+        i.insertNth (α := fun _ ↦ F) (dg (v i)) (g ∘ i.removeNth v) j := by
+    cases j using i.succAboveCases <;> simp [Fin.removeNth]
+  simp [alternatizeUncurryFin_apply, ← Fin.insertNth_removeNth, ← map_insertNth, this]
+
+/-- Alternatized uncurry of `fderivCompContinuousLinearMap f g`
+composed with a symmetric bilinear map is zero. -/
+theorem alternatizeUncurryFin_fderivCompContinuousLinearMap_eq_zero (f : F [⋀^Fin n]→L[𝕜] G)
+    (g : E →L[𝕜] F) {h : E →L[𝕜] E →L[𝕜] F} (hsymm : ∀ x y, h x y = h y x) :
+    alternatizeUncurryFin (f.fderivCompContinuousLinearMap g ∘L h) = 0 := by
+  cases n with
+  | zero =>
+    simp [fderivCompContinuousLinearMap_of_isEmpty, ← alternatizeUncurryFinCLM_apply]
+  | succ n =>
+    rw [fderivCompContinuousLinearMap_eq_alternatizeUncurryFin,
+      ContinuousLinearMap.comp_assoc,
+      alternatizeUncurryFin_alternatizeUncurryFinCLM_comp_of_symmetric]
+    intro x y
+    ext v
+    simp [hsymm]
 
 end ContinuousAlternatingMap
