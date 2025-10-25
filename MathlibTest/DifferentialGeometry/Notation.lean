@@ -1094,6 +1094,43 @@ Note: finding a model with corners on products of three or more spaces is not im
 
 end product
 
+section opens
+
+open TopologicalSpace
+
+variable {s : Opens M} {t : Opens E} {u : Opens M'}
+
+variable {f : s → M'} in
+/-- error: Could not find a model with corners for `↥s` -/
+#guard_msgs in
+#check MDiff f
+
+variable {f : s → u} in
+/-- error: Could not find a model with corners for `↥s` -/
+#guard_msgs in
+#check MDiff f
+
+variable {f : u → M × E} in
+/-- error: Could not find a model with corners for `↥u` -/
+#guard_msgs in
+#check MDiff f
+
+variable {s : Opens (M × E)} {f : s → M × E} in
+/-- error: Could not find a model with corners for `↥s` -/
+#guard_msgs in
+#check MDiff f
+
+-- too advanced: variable {s : Opens (M ⊕ M)} {f : s → (M × E) ⊕ (M × E)} in
+
+variable {s : Opens (M ⊕ M)} {f : s → 𝕜 × E}
+/-- error: Could not find a model with corners for `↥s` -/
+#guard_msgs in
+#check MDiff f
+
+#exit
+
+end opens
+
 -- TODO: add enough tests for the combination of sums and products!
 
 /-- error: Found no model with corners on first summand `M × E` -/
