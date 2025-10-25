@@ -47,25 +47,10 @@ variable {B : Type u} [Bicategory.{w, v} B]
 instance Hom (a b : Bᵒᵖ) : Quiver (a ⟶ b) where
   Hom f g := f.unop ⟶ g.unop
 
-/-- The 2-morphism in `Bᵒᵖ` corresponding to 2-morphism `η : f ⟶ g` in `B`. -/
-abbrev op2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : f.op ⟶ g.op := η
-
 @[simps]
 instance homCategory (a b : Bᵒᵖ) : Category.{w} (a ⟶ b) where
   id f := (𝟙 f.unop)
   comp η θ := η ≫ θ
-
--- @[simp]
--- theorem op2_id {a b : B} {f : a ⟶ b} : op2 (𝟙 f) = 𝟙 f.op :=
---   rfl
-
--- @[simp]
--- theorem unop2_id_op {a b : B} {f : a ⟶ b} : unop2 (𝟙 f.op) = 𝟙 f :=
---   rfl
-
--- @[simp]
--- theorem op2_id_unop {a b : Bᵒᵖ} {f : a ⟶ b} : op2 (𝟙 f.unop) = 𝟙 f :=
---   rfl
 
 /-- The natural functor from the hom-category `a ⟶ b` in `B` to its bicategorical opposite
 `bop b ⟶ bop a`. -/
