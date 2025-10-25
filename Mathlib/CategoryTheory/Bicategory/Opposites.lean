@@ -132,7 +132,7 @@ theorem bop2_id_unbop {a b : Bᴮᵒᵖ} {f : a ⟶ b} : bop2 (𝟙 f.unbop) = �
 
 /-- The natural functor from the hom-category `a ⟶ b` in `B` to its bicategorical opposite
 `bop b ⟶ bop a`. -/
-@[simps]
+@[simps?]
 def bopFunctor (a b : B) : (a ⟶ b) ⥤ (bop b ⟶ bop a) where
   obj f := f.bop1
   map η := bop2 η
@@ -196,7 +196,11 @@ instance bicategory : Bicategory.{w, v} Bᴮᵒᵖ where
   comp_whiskerRight η θ i := congrArg bop <| whiskerLeft_comp i.unbop (unbop η) (unbop θ)
   whiskerRight_id η := congrArg bop <| id_whiskerLeft (unbop η)
   whiskerRight_comp η g h := congrArg bop <| comp_whiskerLeft h.unbop g.unbop (unbop η)
-  whisker_assoc f g g' η i := by apply congrArg bop; simp
+  whisker_assoc f g g' η i := by apply congrArg bop; simp only [bop_unbop, Functor.mapIso_symm,
+    Iso.symm_hom, Functor.mapIso_inv, bopFunctor_map_unbop, whisker_assoc i.unbop η.unbop f.unbop,
+    Iso.symm_inv,
+    Functor.mapIso_hom, homCategory_comp_unbop, Category.assoc, Iso.inv_hom_id, Category.comp_id,
+    Iso.inv_hom_id_assoc]
   whisker_exchange η θ := congrArg bop <| (whisker_exchange _ _).symm
   pentagon f g h i := congrArg bop <| pentagon_inv _ _ _ _
   triangle f g := congrArg bop <| triangle_assoc_comp_right _ _
