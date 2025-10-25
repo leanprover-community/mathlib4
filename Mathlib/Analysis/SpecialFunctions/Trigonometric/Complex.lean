@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+import Mathlib.Tactic.Group
 
 /-!
 # Complex trigonometric functions
@@ -179,6 +180,51 @@ theorem tan_eq {z : ℂ}
     tan z = (tan z.re + tanh z.im * I) / (1 - tan z.re * tanh z.im * I) := by
   convert tan_add_mul_I h; exact (re_add_im z).symm
 
+lemma one_add_tan_sq_mul_cos_sq_eq_one {x : ℂ} (h : cos x ≠ 0) :
+    (1 + tan x ^ 2) * cos x ^ 2 = 1 := by
+  conv_rhs => rw [← sin_sq_add_cos_sq x, ← tan_mul_cos h]
+  ring
+
+lemma div_one_add_tan_sq_eq_mul_cos_sq {x y : ℂ} (h : cos x ≠ 0) :
+    y / (1 + tan x ^ 2) = y * cos x ^ 2 := by
+  rw [← mul_div_mul_right _ _ (pow_ne_zero 2 h), one_add_tan_sq_mul_cos_sq_eq_one h]
+  simp
+
+/-- `tan x` takes the junk value `0` when `cos x = 0` -/
+lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 := by
+  obtain ⟨k, hxk⟩ := cos_eq_zero_iff.mp h
+  exact tan_eq_zero_iff.mpr ⟨2 * k + 1, by simp [hxk]⟩
+
+-- tangent half-angle substitution formulas
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' (x : ℂ) (h : cos (x / 2) ≠ 0) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
+  conv_lhs => rw [show x = 2 * (x / 2) by group, cos_two_mul']
+  rw [div_one_add_tan_sq_eq_mul_cos_sq h, ← tan_mul_cos h]
+  ring
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'
+    (x : ℂ) (h : ∀ k : ℤ, x ≠ (2 * k + 1) * π) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
+  cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' x (by grind [cos_ne_zero_iff])
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (x : ℂ) (h : cos x ≠ -1) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
+  exact cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq' x (by grind [cos_eq_neg_one_iff])
+
+/-- `tan (x / 2)` takes the junk value `0` when `sin x = 0` so this always holds. -/
+theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq (x : ℂ) :
+    sin x = (2 * tan (x / 2)) / (1 + tan (x / 2) ^ 2) := by
+  conv_lhs => rw [show x = 2 * (x / 2) by group, sin_two_mul]
+  by_cases h : cos (x / 2) = 0
+  · simp [h, tan_eq_zero_of_cos_eq_zero]
+  · rw [div_one_add_tan_sq_eq_mul_cos_sq h, ← tan_mul_cos h]
+    group
+
+theorem tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq (x : ℂ) :
+    tan x = (2 * tan (x / 2)) / (1 - tan (x / 2) ^ 2) := by
+  conv_lhs => rw [show x = 2 * (x / 2) by group, tan_two_mul]
+
 open scoped Topology
 
 theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} :=
@@ -257,5 +303,41 @@ theorem tan_eq_zero_iff' {θ : ℝ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k 
 
 theorem tan_ne_zero_iff {θ : ℝ} : tan θ ≠ 0 ↔ ∀ k : ℤ, k * π / 2 ≠ θ :=
   mod_cast @Complex.tan_ne_zero_iff θ
+
+lemma one_add_tan_sq_mul_cos_sq_eq_one {x : ℝ} (h : cos x ≠ 0) :
+    (1 + tan x ^ 2) * cos x ^ 2 = 1 :=
+  mod_cast @Complex.one_add_tan_sq_mul_cos_sq_eq_one x (mod_cast h)
+
+lemma div_one_add_tan_sq_eq_mul_cos_sq {x y : ℝ} (h : cos x ≠ 0) :
+    y / (1 + tan x ^ 2) = y * cos x ^ 2 :=
+  mod_cast @Complex.div_one_add_tan_sq_eq_mul_cos_sq x y (mod_cast h)
+
+/-- `tan x` takes the junk value `0` when `cos x = 0` -/
+lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 :=
+  mod_cast @Complex.tan_eq_zero_of_cos_eq_zero x (mod_cast h)
+
+-- tangent half-angle substitution formulas
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' (x : ℝ) (h : cos (x / 2) ≠ 0) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
+  mod_cast @Complex.cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' x (mod_cast h)
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'
+    (x : ℝ) (h : ∀ k : ℤ, x ≠ (2 * k + 1) * π) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
+  mod_cast @Complex.cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq' x (mod_cast h)
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (x : ℝ) (h : cos x ≠ -1) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
+  mod_cast @Complex.cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq x (mod_cast h)
+
+/-- `tan (x / 2)` takes the junk value `0` when `sin x = 0` so this always holds. -/
+theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq (x : ℝ) :
+    sin x = (2 * tan (x / 2)) / (1 + tan (x / 2) ^ 2) :=
+  mod_cast @Complex.sin_eq_two_mul_tan_half_div_one_add_tan_half_sq x
+
+theorem tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq (x : ℝ) :
+    tan x = (2 * tan (x / 2)) / (1 - tan (x / 2) ^ 2) :=
+  mod_cast @Complex.tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq x
 
 end Real
