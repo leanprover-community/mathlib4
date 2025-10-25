@@ -330,8 +330,7 @@ structure ContMDiffSection where
   /-- the underlying function of this section -/
   protected toFun : ∀ x, V x
   /-- proof that this section is `C^n` -/
-  protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
-    TotalSpace.mk' F x (toFun x)
+  protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n (T% toFun)
 
 @[inherit_doc] scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
 
@@ -346,10 +345,7 @@ instance : DFunLike Cₛ^n⟮I; F, V⟯ M V where
 variable {s t : Cₛ^n⟮I; F, V⟯}
 
 @[simp]
-theorem coeFn_mk (s : ∀ x, V x)
-    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk x (s x)) :
-    (mk s hs : ∀ x, V x) = s :=
-  rfl
+theorem coeFn_mk (s : ∀ x, V x) (hs : CMDiff n (T% s)) : (mk s hs : ∀ x, V x) = s := rfl
 
 protected theorem contMDiff (s : Cₛ^n⟮I; F, V⟯) :
     ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk' F x (s x : V x) :=
