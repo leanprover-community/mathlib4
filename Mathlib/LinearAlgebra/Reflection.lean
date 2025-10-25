@@ -7,11 +7,12 @@ import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.Algebra.Module.Torsion
+import Mathlib.Algebra.Module.Torsion.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
 import Mathlib.RingTheory.Polynomial.Chebyshev
+import Mathlib.Tactic.Module
 
 /-!
 # Reflections in linear algebra
@@ -49,7 +50,7 @@ should connect (or unify) these definitions with `Module.reflection` defined her
 -/
 
 open Function Set
-open Module hiding Finite
+open Module
 open Submodule (span)
 
 noncomputable section
@@ -133,8 +134,8 @@ lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem (h : f x = 2)
   intro y hy
   simpa only [reflection_apply, p.sub_mem_iff_right hy] using p.smul_mem (f y) hx
 
-lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M]
-    (h : f x = 2) {p : Submodule R M} (hp : Disjoint p (R ∙ x)) :
+lemma _root_.Submodule.mem_invtSubmodule_reflection_iff [IsDomain R] [NeZero (2 : R)]
+    [Module.IsTorsionFree R M] (h : f x = 2) {p : Submodule R M} (hp : Disjoint p (R ∙ x)) :
     p ∈ End.invtSubmodule (reflection h) ↔ p ≤ LinearMap.ker f := by
   refine ⟨fun h' y hy ↦ ?_, fun h' y hy ↦ ?_⟩
   · have hx : x ≠ 0 := by rintro rfl; exact two_ne_zero (α := R) <| by simp [← h]
@@ -336,7 +337,7 @@ applies when `Φ` does not span.
 This rather technical-looking lemma exists because it is exactly what is needed to establish various
 uniqueness results for root data / systems. One might regard this lemma as lying at the boundary of
 linear algebra and combinatorics since the finiteness assumption is the key. -/
-lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
+lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [IsDomain R] [Module.IsTorsionFree R M]
     {x : M} {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
     (hg₁ : g x = 2) (hg₂ : MapsTo (preReflection x g) Φ Φ) :
@@ -370,7 +371,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
 /-- This rather technical-looking lemma exists because it is exactly what is needed to establish a
 uniqueness result for root data. See the doc string of `Module.Dual.eq_of_preReflection_mapsTo` for
 further remarks. -/
-lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
+lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [IsDomain R] [Module.IsTorsionFree R M]
     {x : M} {Φ : Set M} (hΦ₁ : Φ.Finite) (hx : x ∈ span R Φ) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
     (hg₁ : g x = 2) (hg₂ : MapsTo (preReflection x g) Φ Φ) :
@@ -412,13 +413,13 @@ lemma reflection_reflection_iterate
       map_nsmul, map_smul, smul_neg, hz, add_smul]
     abel
 
-lemma infinite_range_reflection_reflection_iterate_iff [NoZeroSMulDivisors ℤ M]
+lemma infinite_range_reflection_reflection_iterate_iff [IsAddTorsionFree M]
     (hfx : f x = 2) (hgy : g y = 2) (hgxfy : f y * g x = 4) :
     (range <| fun n ↦ ((reflection hgy).trans (reflection hfx))^[n] y).Infinite ↔
     f y • x ≠ (2 : R) • y := by
   simp only [reflection_reflection_iterate hfx hgy hgxfy, infinite_range_add_nsmul_iff, sub_ne_zero]
 
-lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (hΦ : Φ.Finite)
+lemma eq_of_mapsTo_reflection_of_mem [IsAddTorsionFree M] {Φ : Set M} (hΦ : Φ.Finite)
     (hfx : f x = 2) (hgy : g y = 2) (hgx : g x = 2) (hfy : f y = 2)
     (hxfΦ : MapsTo (preReflection x f) Φ Φ)
     (hygΦ : MapsTo (preReflection y g) Φ Φ)
@@ -437,7 +438,7 @@ lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (h�
     (bijOn_reflection_of_mapsTo hgy hygΦ)).image_eq n]
   exact mem_image_of_mem _ hyΦ
 
-lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [NoZeroSMulDivisors ℤ M]
+lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [IsAddTorsionFree M]
     {r : ι ↪ M} {c : ι → Dual R M} (hfin : (range r).Finite)
     (h_two : ∀ i, c i (r i) = 2)
     (h_mapsTo : ∀ i, MapsTo (preReflection (r i) (c i)) (range r) (range r)) :

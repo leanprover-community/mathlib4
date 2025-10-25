@@ -6,7 +6,6 @@ Authors: Oliver Nash
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
@@ -220,6 +219,8 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
 
 end CommSemiring
 
+@[deprecated "The assumptions `NoZeroSMulDivisors R M` and `Nontrivial M` imply `NoZeroDivisors R`,
+and TC inference already knows that this implies `IsReduced R`." (since := "2025-10-20")]
 lemma NoZeroSMulDivisors.isReduced (R M : Type*)
     [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
     IsReduced R := by

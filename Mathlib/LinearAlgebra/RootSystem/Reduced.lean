@@ -68,7 +68,7 @@ lemma IsReduced.linearIndependent_iff [Nontrivial R] [P.IsReduced] :
   · rw [h h']
     exact ⟨1, 1, by simp⟩
 
-lemma nsmul_notMem_range_root [CharZero R] [NoZeroSMulDivisors ℤ M] [P.IsReduced]
+lemma nsmul_notMem_range_root [CharZero R] [IsAddTorsionFree M] [P.IsReduced]
     {n : ℕ} [n.AtLeastTwo] {i : ι} :
     n • P.root i ∉ range P.root := by
   have : ¬ LinearIndependent R ![n • P.root i, P.root i] := by
@@ -91,7 +91,7 @@ lemma nsmul_notMem_range_root [CharZero R] [NoZeroSMulDivisors ℤ M] [P.IsReduc
 @[deprecated (since := "2025-05-24")] alias two_smul_nmem_range_root := two_smul_notMem_range_root
 
 lemma linearIndependent_of_add_mem_range_root
-    [CharZero R] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
+    [CharZero R] [IsAddTorsionFree M] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
   refine IsReduced.linearIndependent P (fun hij ↦ ?_) (fun hij ↦ P.zero_notMem_range_root ?_)
@@ -100,7 +100,7 @@ lemma linearIndependent_of_add_mem_range_root
   · rwa [hij, neg_add_cancel] at h
 
 lemma linearIndependent_of_sub_mem_range_root
-    [CharZero R] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
+    [CharZero R] [IsAddTorsionFree M] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
   suffices LinearIndependent R ![P.root i, P.root (P.reflectionPerm j j)] by simpa using this
@@ -111,17 +111,17 @@ lemma linearIndependent_of_add_mem_range_root' [CharZero R] [IsDomain R] [P.IsRe
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] :=
   have : IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
+  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
   P.linearIndependent_of_add_mem_range_root h
 
 lemma linearIndependent_of_sub_mem_range_root' [CharZero R] [IsDomain R] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] :=
   have : IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
+  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
   P.linearIndependent_of_sub_mem_range_root h
 
-lemma infinite_of_linearIndependent_coxeterWeight_four [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M]
+lemma infinite_of_linearIndependent_coxeterWeight_four [NeZero (2 : R)] [IsAddTorsionFree M]
     (hl : LinearIndependent R ![P.root i, P.root j]) (hc : P.coxeterWeight i j = 4) :
     Infinite ι := by
   refine (infinite_range_iff (Embedding.injective P.root)).mp (Infinite.mono ?_
@@ -140,7 +140,7 @@ lemma infinite_of_linearIndependent_coxeterWeight_four [NeZero (2 : R)] [NoZeroS
     rw [ne_eq, coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
     exact hl
 
-lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [NoZeroSMulDivisors R M]
+lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [Module.IsTorsionFree R M]
     (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
     P.pairing j i • P.root i = (2 : R) • P.root j := by
   rw [LinearIndependent.pair_iff] at h
@@ -164,19 +164,19 @@ section Finite
 
 variable [Finite ι]
 
-lemma coxeterWeight_ne_four_of_linearIndependent [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M]
+lemma coxeterWeight_ne_four_of_linearIndependent [NeZero (2 : R)] [IsAddTorsionFree M]
     (hl : LinearIndependent R ![P.root i, P.root j]) :
     P.coxeterWeight i j ≠ 4 := by
   intro contra
   have := P.infinite_of_linearIndependent_coxeterWeight_four hl contra
   exact not_finite ι
 
-variable [CharZero R] [NoZeroSMulDivisors R M]
+variable [CharZero R] [Module.IsTorsionFree R M]
 
 /-- See also `RootPairing.linearIndependent_iff_coxeterWeightIn_ne_four`. -/
 lemma linearIndependent_iff_coxeterWeight_ne_four :
     LinearIndependent R ![P.root i, P.root j] ↔ P.coxeterWeight i j ≠ 4 := by
-  have : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
+  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
   refine ⟨coxeterWeight_ne_four_of_linearIndependent P, fun h ↦ ?_⟩
   contrapose! h
   have h₁ := P.pairing_smul_root_eq_of_not_linearIndependent h
@@ -214,12 +214,12 @@ lemma pairing_neg_two_neg_two_iff :
   simpa [eq_comm (a := -P.root i), eq_comm (b := j)] using
     P.pairing_two_two_iff (P.reflectionPerm i i) j
 
-variable [NoZeroSMulDivisors R N]
+variable [Module.IsTorsionFree R N]
 
 lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
     P.pairing i j = 1 ∧ P.pairing j i = 4 ↔ P.root j = (2 : R) • P.root i := by
-  have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
-  have _i : NoZeroSMulDivisors ℤ N := NoZeroSMulDivisors.int_of_charZero R N
+  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree N := .of_noZeroSMulDivisors R N
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ?_, fun h ↦ ?_⟩
   · have : ¬ LinearIndependent R ![P.root i, P.root j] := by
       rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight, h₁, h₂]; simp
@@ -254,7 +254,7 @@ section IsValuedIn
 open FaithfulSMul
 
 variable [CommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
-omit [NoZeroSMulDivisors R N]
+omit [Module.IsTorsionFree R N]
 variable {i j}
 
 lemma linearIndependent_iff_coxeterWeightIn_ne_four :
@@ -285,7 +285,7 @@ lemma pairingIn_neg_two_neg_two_iff :
   simp only [← P.pairing_neg_two_neg_two_iff, ← P.algebraMap_pairingIn S,
     ← map_ofNat (algebraMap S R), (algebraMap_injective S R).eq_iff, ← map_neg]
 
-variable [NoZeroSMulDivisors R N]
+variable [Module.IsTorsionFree R N]
 
 lemma pairingIn_one_four_iff [IsDomain R] :
     P.pairingIn S i j = 1 ∧ P.pairingIn S j i = 4 ↔ P.root j = (2 : R) • P.root i := by

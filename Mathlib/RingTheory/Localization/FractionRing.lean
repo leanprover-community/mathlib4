@@ -198,7 +198,7 @@ theorem mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / 
 
 theorem div_surjective (z : K) :
     ∃ x y : A, y ∈ nonZeroDivisors A ∧ algebraMap _ _ x / algebraMap _ _ y = z :=
-  let ⟨x, ⟨y, hy⟩, h⟩ := mk'_surjective (nonZeroDivisors A) z
+  let ⟨x, ⟨y, hy⟩, h⟩ := exists_mk'_eq (nonZeroDivisors A) z
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 
 theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
@@ -597,8 +597,8 @@ section IsScalarTower
 attribute [local instance] liftAlgebra
 
 instance (B C : Type*) [CommRing B] [IsDomain B] [CommRing C] [IsDomain C] [Algebra A B]
-    [Algebra A C] [Algebra B C] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A C]
-    [NoZeroSMulDivisors B C] [IsScalarTower A B C] :
+    [Algebra A C] [Algebra B C] [Module.IsTorsionFree A B] [Module.IsTorsionFree A C]
+    [Module.IsTorsionFree B C] [IsScalarTower A B C] :
     IsScalarTower (FractionRing A) (FractionRing B) (FractionRing C) where
   smul_assoc a b c := a.ind fun ⟨a₁, a₂⟩ ↦ by
     rw [← smul_right_inj (nonZeroDivisors.coe_ne_zero a₂)]

@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Expect
 import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Module.Torsion.Field
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Algebra.Order.Module.Rat

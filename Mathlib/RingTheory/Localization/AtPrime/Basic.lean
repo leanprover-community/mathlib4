@@ -70,9 +70,9 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
       have : ∀ {r : R} {s : P.primeCompl}, mk' S r s ∈ nonunits S → r ∈ P := fun {r s} =>
         not_imp_comm.1 fun nr => isUnit_iff_exists_inv.2 ⟨mk' S ↑s (⟨r, nr⟩ : P.primeCompl),
           mk'_mul_mk'_eq_one' _ _ <| show r ∈ P.primeCompl from nr⟩
-      rcases mk'_surjective P.primeCompl x with ⟨rx, sx, hrx⟩
-      rcases mk'_surjective P.primeCompl y with ⟨ry, sy, hry⟩
-      rcases mk'_surjective P.primeCompl z with ⟨rz, sz, hrz⟩
+      rcases exists_mk'_eq P.primeCompl x with ⟨rx, sx, hrx⟩
+      rcases exists_mk'_eq P.primeCompl y with ⟨ry, sy, hry⟩
+      rcases exists_mk'_eq P.primeCompl z with ⟨rz, sz, hrz⟩
       rw [← hrx, ← hry, ← hrz, ← mk'_add, ← mk'_mul, ← mk'_self S P.primeCompl.one_mem] at hxyz
       rw [← hrx] at hx
       rw [← hry] at hy
@@ -86,6 +86,14 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
         P.mul_mem_left _ <| P.mul_mem_right _ <|
             P.add_mem (P.mul_mem_right _ <| this hx) <| P.mul_mem_right _ <| this hy)
 
+variable {A : Type*} [CommRing A] [IsDomain A]
+
+/-- The localization of an integral domain at the complement of a prime ideal is an integral domain.
+-/
+instance isDomain_of_local_atPrime {P : Ideal A} (_ : P.IsPrime) :
+    IsDomain (Localization.AtPrime P) :=
+  isDomain_localization P.primeCompl_le_nonZeroDivisors
+
 end IsLocalization
 
 namespace Localization
@@ -94,11 +102,11 @@ namespace Localization
 instance AtPrime.isLocalRing : IsLocalRing (Localization P.primeCompl) :=
   IsLocalization.AtPrime.isLocalRing (Localization P.primeCompl) P
 
-instance {R S : Type*} [CommRing R] [NoZeroDivisors R] {P : Ideal R} [CommRing S] [Algebra R S]
-    [NoZeroSMulDivisors R S] [IsDomain S] [P.IsPrime] :
-    NoZeroSMulDivisors (Localization.AtPrime P)
-    (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
-  NoZeroSMulDivisors_of_isLocalization R S _ _ P.primeCompl_le_nonZeroDivisors
+instance {R S : Type*} [CommRing R] [IsDomain R] {P : Ideal R} [CommRing S] [Algebra R S]
+    [Module.IsTorsionFree R S] [IsDomain S] [P.IsPrime] :
+    Module.IsTorsionFree (Localization.AtPrime P) <|
+      Localization <| Algebra.algebraMapSubmonoid S P.primeCompl :=
+  .of_isLocalization R S P.primeCompl_le_nonZeroDivisors
 
 theorem _root_.IsLocalization.AtPrime.faithfulSMul (R : Type*) [CommRing R] [NoZeroDivisors R]
     [Algebra R S] (P : Ideal R) [hp : P.IsPrime] [IsLocalization.AtPrime S P] :
@@ -116,12 +124,6 @@ end AtPrime
 namespace IsLocalization
 
 variable {A : Type*} [CommRing A] [IsDomain A]
-
-/-- The localization of an integral domain at the complement of a prime ideal is an integral domain.
--/
-instance isDomain_of_local_atPrime {P : Ideal A} (_ : P.IsPrime) :
-    IsDomain (Localization.AtPrime P) :=
-  isDomain_localization P.primeCompl_le_nonZeroDivisors
 
 /-- This is an `IsLocalization.AtPrime` version for `IsLocalization.isDomain_of_local_atPrime`. -/
 theorem isDomain_of_atPrime (S : Type*) [CommSemiring S] [Algebra A S]
@@ -240,7 +242,7 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
 theorem isLocalHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
     (hIJ : I = J.comap f) : IsLocalHom (localRingHom I J f hIJ) :=
   IsLocalHom.mk fun x hx => by
-    rcases IsLocalization.mk'_surjective I.primeCompl x with ⟨r, s, rfl⟩
+    rcases IsLocalization.exists_mk'_eq I.primeCompl x with ⟨r, s, rfl⟩
     rw [localRingHom_mk'] at hx
     rw [AtPrime.isUnit_mk'_iff] at hx ⊢
     exact fun hr => hx ((SetLike.ext_iff.mp hIJ r).mp hr)

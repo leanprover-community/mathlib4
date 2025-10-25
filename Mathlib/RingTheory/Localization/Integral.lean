@@ -342,7 +342,7 @@ variable (R S K)
 
 /-- `S` is algebraic over `R` iff a fraction ring of `S` is algebraic over `R` -/
 theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
-    [NoZeroSMulDivisors R K] [IsFractionRing S K] [IsScalarTower R S K] :
+    [Module.IsTorsionFree R K] [IsFractionRing S K] [IsScalarTower R S K] :
     Algebra.IsAlgebraic R S ↔ Algebra.IsAlgebraic R K := by
   simp only [Algebra.isAlgebraic_def]
   constructor
@@ -378,7 +378,7 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
     (Ideal.span ({algebraMap S L a} : Set L) : Set L) ⊆ Submodule.span K (algebraMap S L '' b) := by
   intro x hx
   obtain ⟨x', rfl⟩ := Ideal.mem_span_singleton.mp hx
-  obtain ⟨y', z', rfl⟩ := IsLocalization.mk'_surjective S⁰ x'
+  obtain ⟨y', z', rfl⟩ := IsLocalization.exists_mk'_eq S⁰ x'
   obtain ⟨y, z, hz0, yz_eq⟩ :=
     Algebra.IsAlgebraic.exists_smul_eq_mul R y' (nonZeroDivisors.coe_ne_zero z')
   have injRS : Function.Injective (algebraMap R S) := by
@@ -413,7 +413,7 @@ lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field
     [Algebra.IsIntegral R S] : Algebra.IsAlgebraic K L := by
   constructor
   intro x
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective S⁰ x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S⁰ x
   apply IsIntegral.isAlgebraic
   rw [IsLocalization.mk'_eq_mul_mk'_one]
   apply RingHom.IsIntegralElem.mul

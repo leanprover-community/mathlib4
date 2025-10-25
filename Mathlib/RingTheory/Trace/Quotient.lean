@@ -70,7 +70,7 @@ def equivQuotMaximalIdealOfIsLocalization : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal 
       Ideal.Quotient.algebraMap_eq, Ideal.mk_ker, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p]
   · intro x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl x
+    obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
     obtain ⟨s', hs⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p s)⁻¹
     simp only [IsScalarTower.algebraMap_eq R Rₚ (Rₚ ⧸ _),
       Ideal.Quotient.algebraMap_eq, RingHom.comp_apply]
@@ -140,7 +140,7 @@ def quotMapEquivQuotMapMaximalIdealOfIsLocalization : S ⧸ pS ≃+* Sₚ ⧸ pS
       comap_map_eq_map_of_isLocalization_algebraMapSubmonoid]
   · intro x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective
+    obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq
       (Algebra.algebraMapSubmonoid S p.primeCompl) x
     obtain ⟨α, hα : α ∉ p, e⟩ := s.prop
     obtain ⟨β, γ, hγ, hβ⟩ : ∃ β γ, γ ∈ p ∧ α * β = 1 + γ := by
@@ -186,7 +186,7 @@ lemma trace_quotient_eq_trace_localization_quotient (x) :
 open nonZeroDivisors in
 /-- The trace map on `B → A` coincides with the trace map on `B⧸pB → A⧸p`. -/
 lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [IsDomain S]
-    [NoZeroSMulDivisors R S] [Module.Finite R S] [IsIntegrallyClosed S] :
+    [Module.IsTorsionFree R S] [Module.Finite R S] [IsIntegrallyClosed S] :
     Algebra.trace (R ⧸ p) (S ⧸ pS) (Ideal.Quotient.mk pS x) =
       Ideal.Quotient.mk p (Algebra.intTrace R S x) := by
   let Rₚ := Localization.AtPrime p
@@ -201,8 +201,8 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
         (FaithfulSMul.algebraMap_injective _ _))
   haveI : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors _ e
-  haveI : NoZeroSMulDivisors Rₚ Sₚ := by
-    rw [NoZeroSMulDivisors.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
+  haveI : Module.IsTorsionFree Rₚ Sₚ := by
+    rw [Module.IsTorsionFree.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
       RingHom.ker_eq_bot_iff_eq_zero]
     simp
   haveI : Module.Finite Rₚ Sₚ := .of_isLocalization R S p.primeCompl
