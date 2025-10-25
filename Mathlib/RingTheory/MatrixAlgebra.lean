@@ -81,6 +81,26 @@ theorem kroneckerTMulLinearEquiv_mul [Module S A] [IsScalarTower R S A] :
     ext : 10
     simp [single_kroneckerTMul_single, mul_kroneckerTMul_mul]
 
+/-- `Matrix.kronecker` as a linear equivalence, when the two arguments are tensored. -/
+def kroneckerLinearEquiv :
+    Matrix l m R ⊗[R] Matrix n p R ≃ₗ[R] Matrix (l × n) (m × p) R where
+  toFun := (map · (Algebra.TensorProduct.lid R R).toRingHom) ∘
+    (kroneckerTMulLinearEquiv l m n p R R R R)
+  invFun := (kroneckerTMulLinearEquiv l m n p R R R R).symm ∘
+    (map · (Algebra.TensorProduct.lid R R).symm)
+  map_add' _ _ := by simp [Matrix.map_add]
+  map_smul' _ _ := by simp [Matrix.map_smul]
+  left_inv x := by simp [← AlgEquiv.coe_trans]
+  right_inv x := by simp [← AlgEquiv.coe_trans]
+
+variable {l m n p R}
+
+@[simp] theorem kroneckerLinearEquiv_tmul (x : Matrix l m R) (y : Matrix n p R) :
+    kroneckerLinearEquiv l m n p R (x ⊗ₜ y) = x ⊗ₖ y := rfl
+
+@[simp] theorem kroneckerLinearEquiv_symm_kronecker (x : Matrix l m R) (y : Matrix n p R) :
+    (kroneckerLinearEquiv l m n p R).symm (x ⊗ₖ y) = x ⊗ₜ y := by simp [LinearEquiv.symm_apply_eq]
+
 end Module
 
 
@@ -247,22 +267,21 @@ variable (m n) in
 /-- `Matrix.kronecker` as an algebra equivalence, when the two arguments are tensored. -/
 -- TODO: upgrade this to `≃⋆ₐ` for when `R` is a ⋆-ring (after #27290)
 noncomputable def kroneckerAlgEquiv :
-    (Matrix m m R ⊗[R] Matrix n n R) ≃ₐ[R] Matrix (m × n) (m × n) R where
-  toFun := (map · (Algebra.TensorProduct.lid R R).toRingHom) ∘ (kroneckerTMulAlgEquiv m n R R R R)
-  invFun := (kroneckerTMulAlgEquiv m n R R R R).symm ∘ (map · (Algebra.TensorProduct.lid R R).symm)
-  map_add' _ _ := by simp [Matrix.map_add]
-  commutes' _ := by
-    simp [Algebra.algebraMap_eq_smul_one, Algebra.TensorProduct.one_def, Matrix.map_smul]
-  left_inv x := by simp [← AlgEquiv.coe_trans]
-  right_inv x := by simp [← AlgEquiv.coe_trans]
-  map_mul' x y := by
-    dsimp only [Function.comp_apply]
-    rw [map_mul, Matrix.map_mul]
+    (Matrix m m R ⊗[R] Matrix n n R) ≃ₐ[R] Matrix (m × n) (m × n) R :=
+  .ofLinearEquiv (kroneckerLinearEquiv m m n n R)
+    (by simp [Algebra.TensorProduct.one_def])
+    fun x y ↦ by
+      dsimp only [kroneckerLinearEquiv, LinearEquiv.coe_mk, LinearMap.coe_mk,
+        AddHom.coe_mk, Function.comp_apply]
+      rw [kroneckerTMulLinearEquiv_mul, Matrix.map_mul]
 
-@[simp] theorem kroneckerAlgEquiv_tmul (x : Matrix m m R) (y : Matrix n n R) :
-    kroneckerAlgEquiv m n R (x ⊗ₜ y) = x ⊗ₖ y := rfl
+@[simp] theorem toLinearEquiv_kroneckerAlgEquiv :
+    (kroneckerAlgEquiv m n R).toLinearEquiv = kroneckerLinearEquiv m m n n R := rfl
 
-@[simp] theorem kroneckerAlgEquiv_symm_kronecker (x : Matrix m m R) (y : Matrix n n R) :
-    (kroneckerAlgEquiv m n R).symm (x ⊗ₖ y) = x ⊗ₜ y := by simp [AlgEquiv.symm_apply_eq]
+@[simp] theorem kroneckerAlgEquiv_apply (x : Matrix m m R ⊗ Matrix n n R) :
+    kroneckerAlgEquiv m n R x = kroneckerLinearEquiv m m n n R x := rfl
+
+@[simp] theorem kroneckerAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) R) :
+    (kroneckerAlgEquiv m n R).symm x = (kroneckerLinearEquiv m m n n R).symm x := rfl
 
 end Matrix
