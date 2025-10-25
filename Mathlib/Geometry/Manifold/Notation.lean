@@ -201,6 +201,38 @@ scoped elab:max "T% " t:term : term => do
 
 namespace Elab
 
+/-- Try a strategy `x : TermElabM` which either successfully produces some `Expr × α` or fails. On
+failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
+successfully returned.
+
+We run `x` with `errToSorry == false` to convert elaboration errors into
+exceptions, and under `withSynthesize` in order to force typeclass synthesis errors to appear and
+be caught.
+
+Trace messages produced during the execution of `x` are wrapped in a collapsible trace node titled
+with `strategyDescr` and an indicator of success. -/
+private def tryStrategy' (α) (strategyDescr : MessageData) (x : TermElabM (Expr × α)) :
+    TermElabM (Option (Expr × α)) := do
+  let s ← saveState
+  try
+    withTraceNode `Elab.DiffGeo.MDiff (fun e => pure m!"{e.emoji} {strategyDescr}") do
+      let e ←
+        try
+          Term.withoutErrToSorry <| Term.withSynthesize x
+        /- Catch the exception so that we can trace it, then throw it again to inform
+        `withTraceNode` of the result. -/
+        catch ex =>
+          trace[Elab.DiffGeo.MDiff] "Failed with error:\n{ex.toMessageData}"
+          throw ex
+      trace[Elab.DiffGeo.MDiff] "Found model: {e.1}"
+      return e
+  catch _ =>
+    -- Restore infotrees to prevent any stale hovers, code actions, etc.
+    -- Note that this does not break tracing, which saves each trace message's context.
+    s.restore true
+    return none
+
+-- TODO: deduplicate with tryStrategy', somehow!
 /-- Try a strategy `x : TermElabM` which either successfully produces some `Expr` or fails. On
 failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
 successfully returned.
@@ -280,20 +312,22 @@ This implementation is not maximally robust yet.
 -/
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
-def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
+def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
+    TermElabM (Expr × Option (Expr × Expr)) := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  if let some m ← tryStrategy m!"TotalSpace"       fromTotalSpace     then return m
-  if let some m ← tryStrategy m!"TangentBundle"    fromTangentBundle  then return m
-  if let some m ← tryStrategy m!"NormedSpace"      fromNormedSpace    then return m
-  if let some m ← tryStrategy m!"Manifold"         fromManifold       then return m
-  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM         then return m
-  if let some m ← tryStrategy m!"RealInterval"     fromRealInterval   then return m
-  if let some m ← tryStrategy m!"EuclideanSpace"   fromEuclideanSpace then return m
-  if let some m ← tryStrategy m!"UpperHalfPlane"   fromUpperHalfPlane then return m
-  if let some m ← tryStrategy m!"Units of algebra" fromUnitsOfAlgebra then return m
-  if let some m ← tryStrategy m!"Complex unit circle" fromCircle      then return m
-  if let some m ← tryStrategy m!"Sphere"           fromSphere         then return m
-  if let some m ← tryStrategy m!"NormedField"      fromNormedField    then return m
+  if let some m ← tryStrategy m!"TotalSpace"       fromTotalSpace     then return (m, none)
+  if let some m ← tryStrategy m!"TangentBundle"    fromTangentBundle  then return (m, none)
+  if let some (m, eK) ← tryStrategy' (Expr × Expr) m!"NormedSpace"   fromNormedSpace then
+    return (m, some eK)
+  if let some m ← tryStrategy m!"Manifold"         fromManifold       then return (m, none)
+  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM         then return (m, none)
+  if let some m ← tryStrategy m!"RealInterval"     fromRealInterval   then return (m, none)
+  if let some m ← tryStrategy m!"EuclideanSpace"   fromEuclideanSpace then return (m, none)
+  if let some m ← tryStrategy m!"UpperHalfPlane"   fromUpperHalfPlane then return (m, none)
+  if let some m ← tryStrategy m!"Units of algebra" fromUnitsOfAlgebra then return (m, none)
+  if let some m ← tryStrategy m!"Complex unit circle" fromCircle      then return (m, none)
+  if let some m ← tryStrategy m!"Sphere"           fromSphere         then return (m, none)
+  if let some m ← tryStrategy m!"NormedField"      fromNormedField    then return (m, none)
   throwError "Could not find a model with corners for `{e}`"
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
@@ -345,7 +379,7 @@ where
       Term.elabTerm resTerm none
     | _ => throwError "`{e}` is not a `TangentBundle`"
   /-- Attempt to find the trivial model on a normed space. -/
-  fromNormedSpace : TermElabM Expr := do
+  fromNormedSpace : TermElabM (Expr × (Expr × Expr)) := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
         | NormedSpace K E _ _ =>
@@ -354,7 +388,7 @@ where
         | _ => return none
       | throwError "Couldn't find a `NormedSpace` structure on `{e}` among local instances."
     trace[Elab.DiffGeo.MDiff] "`{e}` is a normed space over the field `{K}`"
-    mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
+    return (← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst], (K, e))
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
     -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
@@ -594,7 +628,7 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
       -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
       throwError "Term `{e}` is a dependent function, of type `{etype}`\nHint: you can use \
         the `T%` elaborator to convert a dependent function to a non-dependent one"
-    let srcI ← findModel src
+    let (srcI, _) ← findModel src
     if let some es := es then
       let estype ← inferType es
       /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and
@@ -603,7 +637,7 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
       if !(← isDefEq estype <| ← mkAppM ``Set #[src]) then
         throwError "The domain `{src}` of `{e}` is not definitionally equal to the carrier type of \
           the set `{es}` : `{estype}`"
-    let tgtI ← findModel tgt (src, srcI)
+    let (tgtI, _) ← findModel tgt (src, srcI)
     return (srcI, tgtI)
   | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
