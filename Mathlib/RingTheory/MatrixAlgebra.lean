@@ -269,7 +269,7 @@ noncomputable def kroneckerAlgEquiv :
     fun _ _ h1 h2 => by simp only [map_add, add_mul, h1, h2]
 
 @[simp] theorem kroneckerAlgEquiv_tmul (x : Matrix m m R) (y : Matrix n n R) :
-    kroneckerAlgEquiv m n R (x ⊗ₜ[R] y) = x ⊗ₖ y := rfl
+    kroneckerAlgEquiv m n R (x ⊗ₜ y) = x ⊗ₖ y := rfl
 
 @[simp] theorem kroneckerAlgEquiv_symm_kronecker (x : Matrix m m R) (y : Matrix n n R) :
     (kroneckerAlgEquiv m n R).symm (x ⊗ₖ y) = x ⊗ₜ y := by simp [AlgEquiv.symm_apply_eq]
