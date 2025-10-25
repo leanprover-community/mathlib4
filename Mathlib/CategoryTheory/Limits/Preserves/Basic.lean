@@ -709,7 +709,7 @@ lemma isIso_app_coconePt_of_preservesColimit
   apply (isColimitOfPreserves L hc).hom_ext fun j ↦ ?_
   simp only [Functor.comp_obj, Functor.mapCocone_pt, Functor.const_obj_obj, Functor.mapCocone_ι_app,
     NatTrans.naturality, IsColimit.coconePointsIsoOfNatIso_hom, asIso_hom, e]
-  refine ((((isColimitOfPreserves L hc)).ι_map (L'.mapCocone c) (whiskerLeft K α) j).trans ?_).symm
+  refine (((isColimitOfPreserves L hc).ι_map (L'.mapCocone c) (whiskerLeft K α) j).trans ?_).symm
   simp
 
 end
