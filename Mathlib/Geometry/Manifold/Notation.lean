@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
+import Mathlib.Geometry.Manifold.MFDeriv.Defs
 /-!
 # Elaborators for differential geometry
 
@@ -698,7 +699,7 @@ scoped elab:max "MDiffAt[" s:term "]" ppSpace f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← ensureIsFunction <| ← Term.elabTerm f none
   let (srcI, tgtI) ← findModels ef es
-  mkAppM `MDifferentiableWithinAt #[srcI, tgtI, ef, es]
+  mkAppM ``MDifferentiableWithinAt #[srcI, tgtI, ef, es]
 
 /-- `MDiffAt f x` elaborates to `MDifferentiableAt I J f x`,
 trying to determine `I` and `J` from the local context.
@@ -706,7 +707,7 @@ The argument `x` can be omitted. -/
 scoped elab:max "MDiffAt" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
-  mkAppM `MDifferentiableAt #[srcI, tgtI, e]
+  mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
 
 -- An alternate implementation for `MDiffAt`.
 -- /-- `MDiffAt2 f x` elaborates to `MDifferentiableAt I J f x`,
@@ -733,14 +734,14 @@ scoped elab:max "MDiff[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
   let et ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels et es
-  mkAppM `MDifferentiableOn #[srcI, tgtI, et, es]
+  mkAppM ``MDifferentiableOn #[srcI, tgtI, et, es]
 
 /-- `MDiff f` elaborates to `MDifferentiable I J f`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "MDiff" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
-  mkAppM `MDifferentiable #[srcI, tgtI, e]
+  mkAppM ``MDifferentiable #[srcI, tgtI, e]
 
 -- We ensure the type of `n` before checking `f` is a function to provide better error messages
 -- in case e.g. `f` and `n` are swapped.
@@ -793,14 +794,14 @@ scoped elab:max "mfderiv[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e es
-  mkAppM `mfderivWithin #[srcI, tgtI, e, es]
+  mkAppM ``mfderivWithin #[srcI, tgtI, e, es]
 
 /-- `mfderiv% f x` elaborates to `mfderiv I J f x`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "mfderiv%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, tgtI) ← findModels e none
-  mkAppM `mfderiv #[srcI, tgtI, e]
+  mkAppM ``mfderiv #[srcI, tgtI, e]
 
 /-- `HasMFDerivAt[s] f x f'` elaborates to `HasMFDerivWithinAt I J f s x f'`,
 trying to determine `I` and `J` from the local context. -/
@@ -811,7 +812,7 @@ scoped elab:max "HasMFDerivAt[" s:term "]" ppSpace
   let ex ← Term.elabTerm x none
   let ef' ← Term.elabTerm f' none
   let (srcI, tgtI) ← findModels ef es
-  mkAppM `HasMFDerivWithinAt #[srcI, tgtI, ef, es, ex, ef']
+  mkAppM ``HasMFDerivWithinAt #[srcI, tgtI, ef, es, ex, ef']
 
 /-- `HasMFDerivAt% f x f'` elaborates to `HasMFDerivAt I J f x f'`,
 trying to determine `I` and `J` from the local context. -/
@@ -821,7 +822,7 @@ scoped elab:max "HasMFDerivAt%" ppSpace
   let ex ← Term.elabTerm x none
   let ef' ← Term.elabTerm f' none
   let (srcI, tgtI) ← findModels ef none
-  mkAppM `HasMFDerivAt #[srcI, tgtI, ef, ex, ef']
+  mkAppM ``HasMFDerivAt #[srcI, tgtI, ef, ex, ef']
 
 end Manifold
 
