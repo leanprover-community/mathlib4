@@ -295,23 +295,21 @@ theorem degree_eq_card_roots {p : K[X]} {i : K →+* L} (p_ne_zero : p ≠ 0) (h
     p.degree = Multiset.card (p.map i).roots := by
   rw [degree_eq_natDegree p_ne_zero, natDegree_eq_card_roots hsplit]
 
-theorem roots_map {f : K[X]} (hf : f.Splits <| RingHom.id K) : (f.map i).roots = f.roots.map i :=
-  (roots_map_of_injective_of_card_eq_natDegree i.injective <| by
-      convert (natDegree_eq_card_roots hf).symm
-      rw [map_id]).symm
-
-theorem Splits.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0)
-    (hf : Splits (RingHom.id F) f) {x : K} (hx : (f.map F.subtype).IsRoot x) :
+theorem Factors.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0)
+    (hf : Factors f) {x : K} (hx : (f.map F.subtype).IsRoot x) :
     x ∈ F := by
   obtain ⟨x, _, rfl⟩ := Multiset.mem_map.mp
     (roots_map F.subtype hf ▸ mem_roots'.mpr ⟨Polynomial.map_ne_zero hnz, hx⟩)
   exact x.2
 
+@[deprecated (since := "2025-10-24")]
+alias Splits.mem_subfield_of_isRoot := Factors.mem_subfield_of_isRoot
+
 theorem image_rootSet [Algebra R K] [Algebra R L] {p : R[X]} (h : p.Splits (algebraMap R K))
     (f : K →ₐ[R] L) : f '' p.rootSet K = p.rootSet L := by
   classical
     rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← f.coe_toRingHom,
-      ← roots_map _ ((splits_id_iff_splits (algebraMap R K)).mpr h), map_map, f.comp_algebraMap,
+      ← roots_map _ h, map_map, f.comp_algebraMap,
       ← rootSet]
 
 theorem adjoin_rootSet_eq_range [Algebra R K] [Algebra R L] {p : R[X]}

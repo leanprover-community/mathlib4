@@ -730,16 +730,19 @@ theorem Subfield.roots_X_pow_char_sub_X_bot :
   conv_lhs => rw [← card_bot F p, ← Fintype.card_eq_nat_card]
   exact FiniteField.roots_X_pow_card_sub_X _
 
-theorem Subfield.splits_bot :
-    Splits (RingHom.id (⊥ : Subfield F)) (X ^ p - X) := by
+theorem Subfield.factors_bot :
+    Factors (X ^ p - X : (⊥ : Subfield F)[X]) := by
   let _ := Subfield.fintypeBot F p
-  rw [splits_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
+  rw [factors_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
     FiniteField.X_pow_card_sub_X_natDegree_eq _ (Fact.out (p := p.Prime)).one_lt,
     Fintype.card_eq_nat_card, card_bot F p]
 
+@[deprecated (since := "2025-10-24")]
+alias Subfield.splits_bot := Subfield.factors_bot
+
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
   have := roots_X_pow_char_sub_X_bot F p ▸
-      Polynomial.roots_map (Subfield.subtype _) (splits_bot F p) ▸ Multiset.mem_map (b := x)
+      Polynomial.roots_map (Subfield.subtype _) (factors_bot F p) ▸ Multiset.mem_map (b := x)
   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
 
 end prime_subfield
