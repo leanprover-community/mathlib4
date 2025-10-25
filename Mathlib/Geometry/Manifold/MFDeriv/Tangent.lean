@@ -59,7 +59,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
   exact ((chartAt H (TotalSpace.proj p)).right_inv h).symm
 
 lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
-    mfderiv I I (chartAt H y) x = tangentCoordChange I x y x := by
+    mfderiv% (chartAt H y) x = tangentCoordChange I x y x := by
   have := mdifferentiableAt_atlas (I := I) (ChartedSpace.chart_mem_atlas _) hsrc
   simp [mfderiv, if_pos this, Function.comp_assoc]
 
