@@ -699,7 +699,7 @@ section
 open Functor
 
 variable {C D J : Type*} [Category C] [Category D] [Category J]
-variable (K : J ⥤ C) (L L' : C ⥤ D) (α : L ⟶ L') [IsIso (whiskerLeft K α)]
+variable (K : J ⥤ C) {L L' : C ⥤ D} (α : L ⟶ L') [IsIso (whiskerLeft K α)]
 variable (c : Cocone K) (hc : IsColimit c) [PreservesColimit K L] [PreservesColimit K L']
 
 include hc in
