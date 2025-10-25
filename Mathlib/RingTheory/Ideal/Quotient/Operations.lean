@@ -641,6 +641,18 @@ def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
   { quotientEquiv I J (f : A ≃+* B) hIJ with
     commutes' r := by simp }
 
+@[simp]
+lemma quotientEquivAlg_symm (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
+    (quotientEquivAlg I J f hIJ).symm = quotientEquivAlg J I f.symm
+      (by simp only [← AlgEquiv.toAlgHom_toRingHom, hIJ, map_map, ← AlgHom.comp_toRingHom,
+        AlgEquiv.symm_comp, AlgHom.id_toRingHom, map_id]) :=
+  rfl
+
+@[simp]
+lemma quotientEquivAlg_mk (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) (x : A) :
+    Ideal.quotientEquivAlg I J f hIJ x = f x :=
+  rfl
+
 end
 
 /-- If `P` lies over `p`, then `R / p` has a canonical map to `A / P`. -/
