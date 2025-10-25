@@ -555,6 +555,13 @@ theorem Tape.write_mk' {Γ} [Inhabited Γ] (a b : Γ) (L R : ListBlank Γ) :
     (Tape.mk' L (R.cons a)).write b = Tape.mk' L (R.cons b) := by
   simp only [Tape.write, Tape.mk', ListBlank.head_cons, ListBlank.tail_cons]
 
+@[simp]
+theorem Tape.write_mk'_list {Γ} [Inhabited Γ] (a b : Γ) (L : ListBlank Γ) (R : List Γ) :
+    (Tape.mk' L (ListBlank.mk (a :: R))).write b = Tape.mk' L (ListBlank.mk (b :: R)) := by
+  rw [← ListBlank.cons_mk]
+  simp only [Tape.write_mk']
+  simp only [ListBlank.cons_mk]
+
 /-- Apply a pointed map to a tape to change the alphabet. -/
 def Tape.map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) : Tape Γ' :=
   ⟨f T.1, T.2.map f, T.3.map f⟩
