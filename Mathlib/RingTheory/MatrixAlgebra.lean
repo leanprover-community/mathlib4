@@ -243,30 +243,21 @@ theorem kroneckerTMulAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) (A ⊗[R]
       (kroneckerTMulLinearEquiv m m n n R S A B).symm x :=
   rfl
 
-private theorem lift_kroneckerBilinear_apply (x : Matrix m m R ⊗[R] Matrix n n R) :
-    lift kroneckerBilinear x = fun ij kl ↦ (matrixEquivTensor n R _).symm x ij.2 kl.2 ij.1 kl.1 :=
-  x.induction_on (by simp only [map_zero, zero_apply]; rfl)
-    fun x y => by ext; simp [Algebra.algebraMap_eq_smul_one, mul_comm (x _ _), kroneckerBilinear]
-    fun _ _ h1 h2 => by simp only [map_add, h1, h2, add_apply]; rfl
-
 variable (m n) in
 /-- `Matrix.kronecker` as an algebra equivalence, when the two arguments are tensored. -/
 -- TODO: upgrade this to `≃⋆ₐ` for when `R` is a ⋆-ring (after #27290)
 noncomputable def kroneckerAlgEquiv :
     (Matrix m m R ⊗[R] Matrix n n R) ≃ₐ[R] Matrix (m × n) (m × n) R where
-  toFun x := lift kroneckerBilinear x
-  invFun x := matrixEquivTensor n R (Matrix m m R) fun i j k l => x (k, i) (l, j)
-  map_add' _ _ := map_add _ _ _
+  toFun := (map · (Algebra.TensorProduct.lid R R).toRingHom) ∘ (kroneckerTMulAlgEquiv m n R R R R)
+  invFun := (kroneckerTMulAlgEquiv m n R R R R).symm ∘ (map · (Algebra.TensorProduct.lid R R).symm)
+  map_add' _ _ := by simp [Matrix.map_add]
   commutes' _ := by
-    simp [Algebra.algebraMap_eq_smul_one, Algebra.TensorProduct.one_def, kroneckerBilinear]
-  left_inv x := by simp [lift_kroneckerBilinear_apply]
-  right_inv x := by simp only [lift_kroneckerBilinear_apply, AlgEquiv.symm_apply_apply]
-  map_mul' x y :=
-    x.induction_on (by simp) (fun a b =>
-      y.induction_on (by simp)
-        fun c d => by simp [mul_kronecker_mul, kroneckerBilinear]
-      fun _ _ h1 h2 => by simp only [map_add, h1, h2, mul_add])
-    fun _ _ h1 h2 => by simp only [map_add, add_mul, h1, h2]
+    simp [Algebra.algebraMap_eq_smul_one, Algebra.TensorProduct.one_def, Matrix.map_smul]
+  left_inv x := by simp [← AlgEquiv.coe_trans]
+  right_inv x := by simp [← AlgEquiv.coe_trans]
+  map_mul' x y := by
+    dsimp only [Function.comp_apply]
+    rw [map_mul, Matrix.map_mul]
 
 @[simp] theorem kroneckerAlgEquiv_tmul (x : Matrix m m R) (y : Matrix n n R) :
     kroneckerAlgEquiv m n R (x ⊗ₜ y) = x ⊗ₖ y := rfl
