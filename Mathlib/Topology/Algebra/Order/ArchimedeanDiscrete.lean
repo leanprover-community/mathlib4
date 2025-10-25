@@ -3,8 +3,10 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.DiscreteSubset
 import Mathlib.Topology.Order.DenselyOrdered
@@ -49,28 +51,47 @@ instance instDiscreteTopologyZMultiples (g : G) : DiscreteTopology (zpowers g) :
     simp only [Subtype.ext_iff, show n = 0 by omega, zpow_zero, coe_one]
   · simp_all
 
-variable [MulArchimedean G] [DenselyOrdered G]
+variable [MulArchimedean G]
+
+instance [DiscreteTopology G] : IsCyclic G := by
+  nontriviality G
+  have : ¬DenselyOrdered G := fun contra ↦
+    haveI := contra.subsingleton_of_discreteTopology; false_of_nontrivial_of_subsingleton G
+  obtain ⟨e⟩ := (LinearOrderedCommGroup.discrete_iff_not_denselyOrdered G).mpr this
+  exact e.isCyclic.mpr inferInstance
 
 /-- In an Archimedean densely linearly ordered group (with the order topology), a subgroup is
 discrete iff it is cyclic. -/
-@[to_additive /-- In an Archimedean densely linearly ordered additive group (with the order
-topology), a subgroup is discrete iff it is cyclic. -/]
-lemma discrete_iff_cyclic {H : Subgroup G} :
-    IsCyclic H ↔ DiscreteTopology H := by
-  -- TODO: Is the `DenselyOrdered` hypothesis actually necessary here?
-  rcases subsingleton_or_nontrivial G
-  · simp [isCyclic_of_subsingleton, Subsingleton.discreteTopology]
+lemma discrete_iff_cyclic {H : Subgroup G} : IsCyclic H ↔ DiscreteTopology H := by
+  nontriviality G using isCyclic_of_subsingleton, Subsingleton.discreteTopology
   rw [Subgroup.isCyclic_iff_exists_zpowers_eq_top]
   constructor
   · rintro ⟨g, rfl⟩
     infer_instance
   · have := H.dense_or_cyclic
     simp only [← Subgroup.zpowers_eq_closure, Eq.comm (a := H)] at this
-    refine fun hA ↦ this.resolve_left fun h ↦ ?_
+    refine fun hA ↦ this.elim (fun h ↦ ?_) id
     -- remains to show a contradiction assuming `H` is both dense and discrete
-    obtain ⟨U, hU⟩ := discreteTopology_subtype_iff'.mp hA 1 (by simp)
-    obtain ⟨j, hj⟩ := mem_closure_iff.mp (h.diff_singleton 1 1) U hU.1
-      (by simpa only [← Set.singleton_subset_iff, ← hU.2] using Set.inter_subset_left)
-    grind
+    obtain rfl : H = ⊤ := by
+      rw [← coe_eq_univ, ← (dense_iff_closure_eq.mp h), H.isClosed_of_discrete.closure_eq]
+    have : DiscreteTopology G := by rwa [← (Homeomorph.Set.univ G).discreteTopology_iff]
+    exact isCyclic_iff_exists_zpowers_eq_top.mp inferInstance
 
 end Subgroup
+
+namespace AddSubgroup
+-- TODO: Currently it does not work to obtain these two declarations via `to_additive`, since
+-- the formulation of `LinearOrderedCommGroup.discrete_iff_not_denselyOrdered` seems to defeat
+-- the additivizer.
+
+variable {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [TopologicalSpace G]
+  [OrderTopology G] [Archimedean G]
+
+instance [DiscreteTopology G] : IsAddCyclic G := by
+  nontriviality G
+  have : ¬DenselyOrdered G := fun contra ↦
+    haveI := contra.subsingleton_of_discreteTopology; false_of_nontrivial_of_subsingleton G
+  obtain ⟨e⟩ := (LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered G).mpr this
+  exact e.isAddCyclic.mpr inferInstance
+
+end AddSubgroup
