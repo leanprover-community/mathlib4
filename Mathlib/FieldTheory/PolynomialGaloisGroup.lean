@@ -66,35 +66,38 @@ theorem ext {σ τ : p.Gal} (h : ∀ x ∈ p.rootSet p.SplittingField, σ x = τ
   rwa [eq_top_iff, ← SplittingField.adjoin_rootSet, Algebra.adjoin_le_iff]
 
 /-- If `p` splits in `F` then the `p.gal` is trivial. -/
-def uniqueGalOfSplits (h : p.Splits (RingHom.id F)) : Unique p.Gal where
+def uniqueGalOfFactors (h : p.Factors) : Unique p.Gal where
   default := 1
   uniq f :=
     AlgEquiv.ext fun x => by
       obtain ⟨y, rfl⟩ :=
         Algebra.mem_bot.mp
-          ((SetLike.ext_iff.mp ((IsSplittingField.splits_iff _ p).mp h) x).mp Algebra.mem_top)
+          ((SetLike.ext_iff.mp ((IsSplittingField.factors_iff _ p).mp h) x).mp Algebra.mem_top)
       rw [AlgEquiv.commutes, AlgEquiv.commutes]
 
-instance [h : Fact (p.Splits (RingHom.id F))] : Unique p.Gal :=
-  uniqueGalOfSplits _ h.1
+@[deprecated (since := "2025-10-24")]
+noncomputable alias uniqueGalOfSplits := uniqueGalOfFactors
+
+instance [h : Fact p.Factors] : Unique p.Gal :=
+  uniqueGalOfFactors _ h.1
 
 instance uniqueGalZero : Unique (0 : F[X]).Gal :=
-  uniqueGalOfSplits _ (splits_zero _)
+  uniqueGalOfFactors _ Factors.zero
 
 instance uniqueGalOne : Unique (1 : F[X]).Gal :=
-  uniqueGalOfSplits _ (splits_one _)
+  uniqueGalOfFactors _ Factors.one
 
 instance uniqueGalC (x : F) : Unique (C x).Gal :=
-  uniqueGalOfSplits _ (splits_C _ _)
+  uniqueGalOfFactors _ (Factors.C _)
 
 instance uniqueGalX : Unique (X : F[X]).Gal :=
-  uniqueGalOfSplits _ (splits_X _)
+  uniqueGalOfFactors _ Factors.X
 
 instance uniqueGalXSubC (x : F) : Unique (X - C x).Gal :=
-  uniqueGalOfSplits _ (splits_X_sub_C _)
+  uniqueGalOfFactors _ (Factors.X_sub_C _)
 
 instance uniqueGalXPow (n : ℕ) : Unique (X ^ n : F[X]).Gal :=
-  uniqueGalOfSplits _ (splits_X_pow _ _)
+  uniqueGalOfFactors _ (Factors.X_pow _)
 
 instance [h : Fact (p.Splits (algebraMap F E))] : Algebra p.SplittingField E :=
   (IsSplittingField.lift p.SplittingField p h.1).toRingHom.toAlgebra
@@ -132,7 +135,7 @@ theorem mapRoots_bijective [h : Fact (p.Splits (algebraMap F E))] :
     -- this is just an equality of two different ways to write the roots of `p` as an `E`-polynomial
     have key :=
       roots_map (IsScalarTower.toAlgHom F p.SplittingField E : p.SplittingField →+* E)
-        ((splits_id_iff_splits _).mpr (IsSplittingField.splits p.SplittingField p))
+        (IsSplittingField.splits p.SplittingField p)
     rw [map_map, AlgHom.comp_algebraMap] at key
     have hy := Subtype.mem y
     simp only [rootSet, Finset.mem_coe, Multiset.mem_toFinset, key, Multiset.mem_map] at hy

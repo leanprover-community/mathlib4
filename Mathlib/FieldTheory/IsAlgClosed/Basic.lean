@@ -79,6 +79,9 @@ namespace IsAlgClosed
 
 variable {k}
 
+theorem IsAlgClosed.factors [IsAlgClosed k] (p : k[X]) : p.Factors := by
+  sorry
+
 /--
 If `k` is algebraically closed, then every nonconstant polynomial has a root.
 -/
