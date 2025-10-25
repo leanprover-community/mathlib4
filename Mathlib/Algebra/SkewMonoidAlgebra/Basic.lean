@@ -156,6 +156,12 @@ theorem support_eq_empty {p} : p.support = ∅ ↔ (p : SkewMonoidAlgebra k G) =
   rcases p
   simp only [support, Finsupp.support_eq_empty, ofFinsupp_eq_zero]
 
+lemma support_add [DecidableEq G] {p q : SkewMonoidAlgebra k G} :
+    (p + q).support ⊆ p.support ∪ q.support := by
+  simp only [support]
+  erw [toFinsupp_add p q]
+  exact Finsupp.support_add
+
 end Support
 
 section Coeff
