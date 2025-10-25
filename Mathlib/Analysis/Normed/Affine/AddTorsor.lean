@@ -240,7 +240,7 @@ open Dilation
 variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
 variable [Module 𝕜 E] [NormSMulClass 𝕜 E] {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
--- TODO: define `ContinuousAffineEquiv` and reimplement this as one of those.
+-- TODO: reimplement this as a `ContinuousAffineEquiv`.
 /-- Scaling by an element `k` of the scalar ring as a `DilationEquiv` with ratio `‖k‖₊`, mapping
 from a normed space to a normed torsor over that space sending `0` to `c`. -/
 @[simps]

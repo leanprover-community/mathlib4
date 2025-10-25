@@ -50,6 +50,10 @@ example {α} [CommRing α] (a b c d e : α) :
   (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by ring
 example (a n s : ℕ) : a * (n - s) = (n - s) * a := by ring
 
+example {α} [CommRing α] (x : α) : (2 : ℕ) • x = x + x := by ring
+example {α} [CommRing α] (x : α) : (2 : ℤ) • x = x + x := by ring
+example {α} [CommRing α] (x : α) : (-2 : ℤ) • x = -x - x := by ring
+
 section Rat
 
 variable [Field α]
@@ -116,7 +120,7 @@ example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
 
 /--
 info: Try this:
-  ring_nf
+  [apply] ring_nf
   ⏎
   The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
     ⏎
@@ -136,7 +140,7 @@ example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
 
 /--
 info: Try this:
-  ring_nf
+  [apply] ring_nf
   ⏎
   The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
     ⏎

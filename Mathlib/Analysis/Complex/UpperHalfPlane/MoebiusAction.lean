@@ -104,6 +104,10 @@ lemma moebius_im (g : GL (Fin 2) ℝ) (z : ℂ) :
 noncomputable def σ (g : GL (Fin 2) ℝ) : ℂ →+* ℂ :=
   if 0 < g.det.val then RingHom.id ℂ else starRingEnd ℂ
 
+lemma σ_conj (g : GL (Fin 2) ℝ) (z : ℂ) : σ g (conj z) = conj (σ g z) := by
+  simp only [σ]
+  split_ifs <;> simp
+
 @[simp]
 lemma σ_ofReal (g : GL (Fin 2) ℝ) (y : ℝ) : σ g y = y := by
   simp only [σ]
