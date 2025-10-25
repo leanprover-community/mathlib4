@@ -309,6 +309,16 @@ lemma projectiveDimension_quotient_regular_sequence [Small.{v} R] (M : ModuleCat
 
 section
 
+omit [IsLocalRing R] [IsNoetherianRing R] in
+lemma projectiveDimension_eq_zero_of_projective (M : ModuleCat.{v} R) [Projective M]
+    [Nontrivial M] : projectiveDimension M = 0 := by
+  apply le_antisymm
+  · rw [← Nat.cast_zero, projectiveDimension_le_iff M 0]
+    infer_instance
+  · rw [← Nat.cast_zero, projectiveDimension_ge_iff M 0, hasProjectiveDimensionLT_zero_iff_isZero,
+      ModuleCat.isZero_iff_subsingleton, not_subsingleton_iff_nontrivial]
+    assumption
+
 universe w
 
 variable [Small.{v} R] [UnivLE.{v, w}]
@@ -349,11 +359,11 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
   let e : (Shrink.{v} (R ⧸ Ideal.ofList rs)) ≃ₗ[R]
     (Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)) := sorry
   rw [projectiveDimension_eq_of_iso e.toModuleIso]
-  let _ : Module.Finite R (Shrink.{v} R) := sorry
+  let _ : Module.Finite R (Shrink.{v} R) := Module.Finite.equiv (Shrink.linearEquiv R _).symm
+  let _ : Module.Free R (Shrink.{v} R) := Module.Free.of_equiv (Shrink.linearEquiv R _).symm
   rw [projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
     (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max]
-
-  sorry
+  rw [projectiveDimension_eq_zero_of_projective, zero_add]
 
 noncomputable def quotSMulTop_ext_equiv_ext_quotSMulTop (M : ModuleCat.{v} R) (n : ℕ)
     [HasProjectiveDimensionLE M n] (a : R) (reg : IsSMulRegular M a) (N : ModuleCat.{v} R) :
@@ -384,8 +394,6 @@ noncomputable def quotSMulTop_ext_equiv_ext_quotSMulTop (M : ModuleCat.{v} R) (n
     simp [Submodule.mem_smul_pointwise_iff_exists]
   exact (Submodule.quotEquivOfEq _ _ ker.symm).trans (f.quotKerEquivOfSurjective surj)
 
-set_option maxHeartbeats 250000 in
---This iso is to complicated
 noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [Nontrivial M]
     [Module.Finite R M] (rs : List R) (reg : IsRegular R rs) :
     (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M rs.length) ≃ₗ[R]
@@ -412,7 +420,7 @@ noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [No
         rw [List.take_take, min_eq_left_of_lt hi]
         exact reg.1.1 i (lt_of_lt_of_eq (Nat.lt_add_right 1 hi) len.symm)
       · simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max')).symm
-    have eqapp : rs = rs' ++ [a] := sorry
+    have eqapp : rs = rs' ++ [a] := by simp [rs', a, len]
     have reg' : IsSMulRegular (R ⧸ Ideal.ofList rs' • (⊤ : Submodule R R)) a :=
       reg.1.1 n (lt_of_lt_of_eq (lt_add_one n) len.symm)
     have reg'' : IsSMulRegular (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) a := by
