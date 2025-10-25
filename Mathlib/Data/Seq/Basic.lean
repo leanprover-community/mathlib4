@@ -15,6 +15,9 @@ This file provides some basic lemmas about possibly infinite lists represented b
 type `Stream'.Seq`.
 -/
 
+-- TODO: fix the errors in this file!
+set_option linter.flexible false
+
 universe u v w
 
 namespace Stream'
