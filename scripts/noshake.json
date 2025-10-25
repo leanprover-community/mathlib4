@@ -100,6 +100,7 @@
   "Mathlib.Tactic.FBinop",
   "Mathlib.Tactic.FailIfNoProgress",
   "Mathlib.Tactic.FastInstance",
+  "Mathlib.Tactic.Field",
   "Mathlib.Tactic.FieldSimp",
   "Mathlib.Tactic.FinCases",
   "Mathlib.Tactic.Find",
@@ -227,6 +228,7 @@
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.Use": ["Batteries.Logic", "Mathlib.Tactic.WithoutCDot"],
+  "Mathlib.Tactic.ToExpr": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Tactic.ToAdditive.Frontend": ["Lean.Meta.Tactic.TryThis"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TautoSet":
@@ -392,13 +394,12 @@
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.MeasureTheory.MeasurableSpace.Embedding": ["Mathlib.Tactic.FunProp"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
-  "Mathlib.MeasureTheory.Integral.IntervalIntegral.TrapezoidalRule":
-  ["Mathlib.Tactic.Field"],
   "Mathlib.Logic.Relation": ["Mathlib.Logic.Basic"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Logic.Equiv.Prod": ["Mathlib.Data.Prod.PProd"],
+  "Mathlib.Logic.Equiv.Fin.Basic": ["Batteries.Data.Fin.Lemmas"],
   "Mathlib.Logic.Equiv.Defs":
   ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
   "Mathlib.Logic.Basic":
@@ -426,7 +427,9 @@
   "Mathlib.Geometry.Manifold.Notation":
   ["Mathlib.Geometry.Manifold.ContMDiff.Defs",
    "Mathlib.Geometry.Manifold.MFDeriv.Defs"],
+  "Mathlib.FieldTheory.Normal.Defs": ["Mathlib.FieldTheory.Galois.Notation"],
   "Mathlib.FieldTheory.Galois.Notation": ["Mathlib.Algebra.Algebra.Equiv"],
+  "Mathlib.FieldTheory.Finite.Basic": ["Mathlib.FieldTheory.Galois.Notation"],
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
