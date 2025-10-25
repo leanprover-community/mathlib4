@@ -297,9 +297,7 @@ theorem Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) 
 theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :
     Function.update g i x = g / mulSingle i (g i) * mulSingle i x := by
   ext j
-  rcases eq_or_ne i j with (rfl | h)
-  · simp
-  · simp [Function.update_of_ne h.symm, h]
+  by_cases i = j <;> aesop
 
 @[to_additive]
 theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
@@ -313,22 +311,14 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     have hn := (congr_fun h n).symm
     simp only [mul_apply, mulSingle_apply] at hk hl hm hn
     rcases eq_or_ne k m with (rfl | hkm)
-    · refine Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv ?_).elim⟩
-      rcases eq_or_ne k l with (rfl | hkl)
-      · rwa [if_neg hln.symm, if_neg hln.symm, one_mul, one_mul] at hn
-      · rwa [if_neg hkl.symm, if_neg hln, one_mul, one_mul] at hl
+    · by_cases k = l <;> aesop
     · rcases eq_or_ne m n with (rfl | hmn)
       · rcases eq_or_ne k l with (rfl | hkl)
-        · rw [if_neg hkm.symm, if_neg hkm.symm, one_mul, if_pos rfl] at hm
-          exact Or.inr (Or.inr ⟨hm, rfl, rfl⟩)
-        · simp only [if_neg hkm, if_neg hkl, mul_one] at hk
-          dsimp at hk
-          contradiction
-      · rw [if_neg hkm.symm, if_neg hmn, one_mul, mul_one] at hm
-        obtain rfl := (ite_ne_right_iff.mp (ne_of_eq_of_ne hm.symm hu)).1
-        rw [if_neg hkm, if_neg hkm, one_mul, mul_one] at hk
-        obtain rfl := (ite_ne_right_iff.mp (ne_of_eq_of_ne hk.symm hu)).1
-        exact Or.inr (Or.inl ⟨hk.trans (if_pos rfl), rfl, rfl⟩)
+        · aesop
+        · rw [if_neg hkm.symm, if_neg hkl.symm, mul_one] at hk
+          aesop
+      · rw [if_neg hkm, if_neg hmn.symm, one_mul, mul_one] at hm
+        aesop
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩ | ⟨h, rfl, rfl⟩)
     · rfl
     · apply mul_comm
