@@ -23,8 +23,7 @@ variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace PolynomialModule
 
-/-- The `R[X]`-linear equivalence `(R[X] ⊗[R] M) ≃ₗ[R[X]] (PolynomialModule R M)`.
--/
+/-- The `R[X]`-linear equivalence `(R[X] ⊗[R] M) ≃ₗ[R[X]] (PolynomialModule R M)`. -/
 def polynomialTensorProductLEquivPolynomialModule :
   R[X] ⊗[R] M ≃ₗ[R[X]] PolynomialModule R M :=
   let e := liftBaseChange R[X] <| PolynomialModule.lsingle R (M := M) 0
