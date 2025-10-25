@@ -60,36 +60,6 @@ theorem Nat.isLinearSet_iff_exists_matrix {s : Set (ι → ℕ)} :
   refine exists₂_congr fun v n => ⟨fun ⟨f, hf⟩ => ⟨f.toNatLinearMap.toMatrix', ?_⟩, fun ⟨A, hA⟩ =>
     ⟨A.mulVecLin, ?_⟩⟩ <;> ext <;> simp [*, mem_vadd_set]
 
-theorem IsLinearSet.exists_fg_eq_subtypeVal {s : Set M} (hs : IsLinearSet s) :
-    ∃ (P : AddSubmonoid M) (s' : Set P), P.FG ∧ IsLinearSet s' ∧ s = Subtype.val '' s' := by
-  rcases hs with ⟨a, t, ht, rfl⟩
-  refine ⟨_, _, (fg_iff _).2 ⟨insert a t, rfl, ht.insert a⟩,
-    ⟨⟨_, mem_closure_of_mem (mem_insert a t)⟩, _, ht.preimage Subtype.val_injective.injOn, rfl⟩, ?_⟩
-  rw [← coe_subtype, image_vadd_distrib, subtype_apply, ← coe_map, AddMonoidHom.map_mclosure]
-  congr
-  ext x
-  simpa using mem_closure_of_mem ∘ mem_insert_of_mem a
-
-theorem IsSemilinearSet.exists_fg_eq_subtypeVal {s : Set M} (hs : IsSemilinearSet s) :
-    ∃ (P : AddSubmonoid M) (s' : Set P), P.FG ∧ IsSemilinearSet s' ∧ s = Subtype.val '' s' := by
-  rcases hs with ⟨S, hS, hS', rfl⟩
-  choose! P t hP ht ht' using fun s hs => (hS' s hs).exists_fg_eq_subtypeVal
-  haveI : Finite S := hS
-  refine ⟨⨆ s : S, P s, ⋃ (s : S), AddSubmonoid.inclusion (le_iSup _ s) '' t s.1,
-    .iSup _ fun s => hP s s.2, .iUnion fun s => (ht s s.2).isSemilinearSet.image _, ?_⟩
-  simp_rw [sUnion_eq_iUnion, image_iUnion, image_image, AddSubmonoid.coe_inclusion,
-    fun s : S => ht' s s.2]
-
-theorem IsSemilinearSet.exists_fg_eq_subtypeVal₂ {s₁ s₂ : Set M} (hs₁ : IsSemilinearSet s₁)
-    (hs₂ : IsSemilinearSet s₂) :
-    ∃ (P : AddSubmonoid M) (s₁' s₂' : Set P), P.FG ∧ IsSemilinearSet s₁' ∧ s₁ = Subtype.val '' s₁'
-      ∧ IsSemilinearSet s₂' ∧ s₂ = Subtype.val '' s₂' := by
-  rcases hs₁.exists_fg_eq_subtypeVal with ⟨P₁, s₁', hP₁, hs₁', rfl⟩
-  rcases hs₂.exists_fg_eq_subtypeVal with ⟨P₂, s₂', hP₂, hs₂', rfl⟩
-  refine ⟨P₁ ⊔ P₂, (AddSubmonoid.inclusion le_sup_left) '' s₁',
-    (AddSubmonoid.inclusion le_sup_right) '' s₂', hP₁.sup hP₂, hs₁'.image _, ?_, hs₂'.image _, ?_⟩
-    <;> simp_rw [image_image, AddSubmonoid.coe_inclusion]
-
 /-! ### Semilinear sets in `ℕ ^ k` are closed under intersection -/
 
 /- The set of solutions of a linear equation `a + f x = b + g y` in `ℕ ^ k` is semilinear. -/
@@ -623,6 +593,36 @@ private theorem Nat.isSemilinearSet_diff [Finite ι] {s₁ s₂ : Set (ι → �
 /-! ### Semilinear sets in cancellative monoids -/
 
 variable {s s₁ s₂ : Set M}
+
+lemma IsLinearSet.exists_fg_eq_subtypeVal (hs : IsLinearSet s) :
+    ∃ (P : AddSubmonoid M) (s' : Set P), P.FG ∧ IsLinearSet s' ∧ s = Subtype.val '' s' := by
+  rcases hs with ⟨a, t, ht, rfl⟩
+  refine ⟨_, _, (fg_iff _).2 ⟨insert a t, rfl, ht.insert a⟩,
+    ⟨⟨_, mem_closure_of_mem (mem_insert a t)⟩, _, ht.preimage Subtype.val_injective.injOn, rfl⟩, ?_⟩
+  rw [← coe_subtype, image_vadd_distrib, subtype_apply, ← coe_map, AddMonoidHom.map_mclosure]
+  congr
+  ext x
+  simpa using mem_closure_of_mem ∘ mem_insert_of_mem a
+
+lemma IsSemilinearSet.exists_fg_eq_subtypeVal (hs : IsSemilinearSet s) :
+    ∃ (P : AddSubmonoid M) (s' : Set P), P.FG ∧ IsSemilinearSet s' ∧ s = Subtype.val '' s' := by
+  rcases hs with ⟨S, hS, hS', rfl⟩
+  choose! P t hP ht ht' using fun s hs => (hS' s hs).exists_fg_eq_subtypeVal
+  haveI : Finite S := hS
+  refine ⟨⨆ s : S, P s, ⋃ (s : S), AddSubmonoid.inclusion (le_iSup _ s) '' t s.1,
+    .iSup _ fun s => hP s s.2, .iUnion fun s => (ht s s.2).isSemilinearSet.image _, ?_⟩
+  simp_rw [sUnion_eq_iUnion, image_iUnion, image_image, AddSubmonoid.coe_inclusion,
+    fun s : S => ht' s s.2]
+
+lemma IsSemilinearSet.exists_fg_eq_subtypeVal₂ (hs₁ : IsSemilinearSet s₁)
+    (hs₂ : IsSemilinearSet s₂) :
+    ∃ (P : AddSubmonoid M) (s₁' s₂' : Set P), P.FG ∧ IsSemilinearSet s₁' ∧ s₁ = Subtype.val '' s₁'
+      ∧ IsSemilinearSet s₂' ∧ s₂ = Subtype.val '' s₂' := by
+  rcases hs₁.exists_fg_eq_subtypeVal with ⟨P₁, s₁', hP₁, hs₁', rfl⟩
+  rcases hs₂.exists_fg_eq_subtypeVal with ⟨P₂, s₂', hP₂, hs₂', rfl⟩
+  refine ⟨P₁ ⊔ P₂, (AddSubmonoid.inclusion le_sup_left) '' s₁',
+    (AddSubmonoid.inclusion le_sup_right) '' s₂', hP₁.sup hP₂, hs₁'.image _, ?_, hs₂'.image _, ?_⟩
+    <;> simp_rw [image_image, AddSubmonoid.coe_inclusion]
 
 /-- The set of solutions of a linear equation `a + f x = b + g y` is semilinear. -/
 theorem isSemilinearSet_setOf_eq [AddMonoid.FG M] [IsCancelAdd N] {F : Type*} [FunLike F M N]
