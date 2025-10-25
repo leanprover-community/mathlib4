@@ -698,12 +698,11 @@ section
 
 open Functor
 
-variable {C D J : Type*} [Category C] [Category D] [Category J]
-variable (K : J ⥤ C) {L L' : C ⥤ D} (α : L ⟶ L') [IsIso (whiskerLeft K α)]
-variable (c : Cocone K) (hc : IsColimit c) [PreservesColimit K L] [PreservesColimit K L']
-
-include hc in
-lemma isIso_app_coconePt_of_preservesColimit : IsIso (α.app c.pt) := by
+lemma isIso_app_coconePt_of_preservesColimit
+    {C D J : Type*} [Category C] [Category D] [Category J] (K : J ⥤ C) {L L' : C ⥤ D}
+    (α : L ⟶ L') [IsIso (whiskerLeft K α)] (c : Cocone K) (hc : IsColimit c)
+    [PreservesColimit K L] [PreservesColimit K L'] :
+    IsIso (α.app c.pt) := by
   obtain ⟨hc₁⟩ := PreservesColimit.preserves (F := L) hc
   obtain ⟨hc₂⟩ := PreservesColimit.preserves (F := L') hc
   let e := IsColimit.coconePointsIsoOfNatIso hc₁ hc₂ (asIso (whiskerLeft K α))

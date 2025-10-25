@@ -527,7 +527,7 @@ instance nerveHoNerve.binaryProductIsIso (C D : Type v) [Category.{v} C] [Catego
   let iso : nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor ≅ nerveFunctor :=
     (nerveFunctor.associator hoFunctor nerveFunctor).symm ≪≫
       isoWhiskerRight nerveFunctorCompHoFunctorIso nerveFunctor ≪≫ nerveFunctor.leftUnitor
-  exact IsIso.of_isIso_fac_right (prodComparison_naturalInNatTrans iso.hom).symm
+  exact IsIso.of_isIso_fac_right (prodComparison_natural_of_natTrans iso.hom).symm
 
 instance hoFunctor.binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Category.{v} D] :
     IsIso (prodComparison hoFunctor (nerve C) (nerve D)) := by
@@ -558,7 +558,7 @@ lemma hoFunctor.binaryProductWithSimplexIsIso {D : SSet.{u}} (X : SSet.{u})
       (prodComparisonNatTrans hoFunctor D)) := by
     rw [NatTrans.isIso_iff_isIso_app]
     exact fun x ↦ H (x.left).len
-  exact isIso_of_colimit_of_natIso _ _ _ (prodComparisonNatTrans ..) _
+  exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans ..) _
     (Presheaf.isColimitTautologicalCocone' X)
 
 /-- The natural transformation `prodComparisonNatTrans hofunctor X` is a natural transformation
