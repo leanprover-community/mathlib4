@@ -233,7 +233,7 @@ theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α)
   dsimp
   rw [mul_add, exp_add]
 
-theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t *  exp (t * α) := by
+theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t * exp (t * α) := by
   simp only [add_comm, mgf_const_add, mul_comm]
 
 lemma mgf_add_measure {ν : Measure Ω}
