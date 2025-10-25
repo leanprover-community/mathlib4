@@ -821,8 +821,8 @@ theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
   have : Module.Finite (A ⧸ p) (B ⧸ Q) :=
     Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ Q)
   letI e : (B ⧸ p.map (algebraMap A B)) ≃ₐ[A ⧸ p] ((B ⧸ P) × B ⧸ Q) :=
-    { __ := (Ideal.quotEquivOfEq hP.symm).trans (Ideal.quotientMulEquivQuotientProd P Q hPQ),
-      commutes' := Quotient.ind fun _ ↦ rfl }
+    .ofCommutes ((Ideal.quotEquivOfEq hP.symm).trans (Ideal.quotientMulEquivQuotientProd P Q hPQ))
+      <| Quotient.ind fun _ ↦ rfl
   obtain ⟨x, hx⟩ : ∃ x, Algebra.trace (A ⧸ p) (B ⧸ P) x ≠ 0 := by
     simpa [LinearMap.ext_iff] using Algebra.trace_ne_zero (A ⧸ p) (B ⧸ P)
   obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (e.symm (x, 0))
@@ -899,8 +899,8 @@ lemma dvd_differentIdeal_of_not_isSeparable
   have := ((Ideal.prime_iff_isPrime hPbot).mpr inferInstance)
   rw [← this.irreducible.gcd_eq_one_iff, ← Ideal.isCoprime_iff_gcd] at hPa
   letI e : (B ⧸ p.map (algebraMap A B)) ≃ₐ[A ⧸ p] ((B ⧸ P) × B ⧸ a) :=
-    { __ := (Ideal.quotEquivOfEq ha).trans (Ideal.quotientMulEquivQuotientProd P a hPa),
-      commutes' := Quotient.ind fun _ ↦ rfl }
+    .ofCommutes ((Ideal.quotEquivOfEq ha).trans (Ideal.quotientMulEquivQuotientProd P a hPa))
+      <| Quotient.ind fun _ ↦ rfl
   have hx' : (e (Ideal.Quotient.mk _ x)).2 = 0 := by
     simpa [e, Ideal.Quotient.eq_zero_iff_mem]
   rw [← Algebra.trace_eq_of_algEquiv e, Algebra.trace_prod_apply,
