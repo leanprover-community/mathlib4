@@ -487,17 +487,17 @@ variable {I M}
 @[simp]
 theorem contMDiffWithinAt_transContinuousLinearEquiv_right {f : M' → M} {x s} :
     ContMDiffWithinAt I' (I.transContinuousLinearEquiv e) n f s x
-      ↔ ContMDiffWithinAt I' I n f s x :=
+      ↔ CMDiffAt[s] n f x :=
   (toTransContinuousLinearEquiv I M e).contMDiffWithinAt_diffeomorph_comp_iff le_rfl
 
 @[simp]
 theorem contMDiffAt_transContinuousLinearEquiv_right {f : M' → M} {x} :
-    ContMDiffAt I' (I.transContinuousLinearEquiv e) n f x ↔ ContMDiffAt I' I n f x :=
+    ContMDiffAt I' (I.transContinuousLinearEquiv e) n f x ↔ CMDiffAt n f x :=
   (toTransContinuousLinearEquiv I M e).contMDiffAt_diffeomorph_comp_iff le_rfl
 
 @[simp]
 theorem contMDiffOn_transContinuousLinearEquiv_right {f : M' → M} {s} :
-    ContMDiffOn I' (I.transContinuousLinearEquiv e) n f s ↔ ContMDiffOn I' I n f s :=
+    ContMDiffOn I' (I.transContinuousLinearEquiv e) n f s ↔ CMDiff[s] n f :=
   (toTransContinuousLinearEquiv I M e).contMDiffOn_diffeomorph_comp_iff le_rfl
 
 @[simp]
@@ -507,8 +507,7 @@ theorem contMDiff_transContinuousLinearEquiv_right {f : M' → M} :
 
 @[simp]
 theorem contMDiffWithinAt_transContinuousLinearEquiv_left {f : M → M'} {x s} :
-    ContMDiffWithinAt (I.transContinuousLinearEquiv e) I' n f s x
-      ↔ ContMDiffWithinAt I I' n f s x :=
+    ContMDiffWithinAt (I.transContinuousLinearEquiv e) I' n f s x ↔ CMDiffAt[s] n f x :=
   ((toTransContinuousLinearEquiv I M e).contMDiffWithinAt_comp_diffeomorph_iff le_rfl).symm
 
 @[simp]
