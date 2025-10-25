@@ -111,13 +111,7 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 #guard_msgs in
 #check (T% X x)
 
--- TODO: should X be eta-reduced, so the following two become equivalent?
-set_option trace.Elab.DiffGeo.TotalSpaceMk true in
-/--
-info: fun x ↦ TotalSpace.mk' E x ((fun x ↦ X x) x) : M → TotalSpace E (TangentSpace I)
----
-trace: [Elab.DiffGeo.TotalSpaceMk] `fun x ↦ X x` is a vector field on `M`
--/
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x))
 
@@ -125,15 +119,14 @@ trace: [Elab.DiffGeo.TotalSpaceMk] `fun x ↦ X x` is a vector field on `M`
 #guard_msgs in
 #check (T% X)
 
--- TODO: Would I like `f` to be eta-reduced?
-set_option trace.Elab.DiffGeo.TotalSpaceMk true in
-/--
-info: (fun x ↦ TotalSpace.mk' E x ((fun x ↦ X x) x)) x : TotalSpace E (TangentSpace I)
----
-trace: [Elab.DiffGeo.TotalSpaceMk] `fun x ↦ X x` is a vector field on `M`
--/
+-- No beta-reduction, because outside parentheses.
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x)) x
+
+/-- info: X x : TangentSpace I x -/
+#guard_msgs in
+#check (T% (fun x ↦ X x) x)
 
 -- Applying the same elaborator twice is fine (and idempotent).
 /-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
@@ -954,7 +947,8 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 /--
 info: fun a ↦ TotalSpace.mk' Unit a (f a) : Unit → TotalSpace Unit (Trivial Unit Unit)
 ---
-trace: [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
+trace: [Elab.DiffGeo.TotalSpaceMk] arguments passed to T% are `[]`
+[Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
 -/
 #guard_msgs in
 #check T% f
