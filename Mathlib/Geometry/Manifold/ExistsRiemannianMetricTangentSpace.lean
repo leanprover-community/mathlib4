@@ -323,20 +323,64 @@ noncomputable
 def g_global_bilinear (f : SmoothPartitionOfUnity B IB B) (p : B) :
     W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p := ∑ᶠ (j : B), (f j) p • g_bilinear j p
 
-lemma smul_bilinear_toFun (f : SmoothPartitionOfUnity B IB B) {b : B} (j : B) (v w : TangentSpace IB b) :
+lemma smul_bilinear_toFun (f : SmoothPartitionOfUnity B IB B) {b : B} (j : B)
+                          (v w : TangentSpace IB b) :
   (((f j b) • g_bilinear j b).toFun v).toFun w = (f j b) * g j b v w := rfl
 
-#check DFunLike.ext
-#check finsum_congr
-#check ContinuousLinearMap.smul_apply
+lemma finsum_image_eq_sum {B E F : Type*} [AddCommMonoid E] [AddCommMonoid F]
+ (φ : E →+ F) (f : B → E) (h_fin : Finset B)
+ (h1 : Function.support f ⊆ h_fin) :
+    ∑ᶠ j, φ (f j) = ∑ j ∈ h_fin, φ (f j) := by
+  apply finsum_eq_sum_of_support_subset
+  have : Function.support f ⊆ ↑h_fin := h1
+  intro j hj
+  simp only [Function.mem_support, ne_eq] at hj ⊢
+  have hf : f j ≠ 0 := by
+    contrapose! hj
+    simpa using (map_zero φ).symm ▸ congrArg φ hj
+  exact h1 hf
 
-lemma foo (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b) :
- ((g_global_bilinear f b).toFun v).toFun w = ((g_global_bilinear f b).toFun w).toFun v := by
-    unfold g_global_bilinear
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
+def evalAt (b : B) (v w : TangentSpace IB b) : W (TangentSpace IB) b →+ ℝ :=
+  {
+    toFun := fun f => (f.toFun v).toFun w
+    map_zero' := by
+      simp
+    map_add' := by
+      intro f g
+      exact rfl
+  }
 
-    have : ((∑ᶠ (j : B), (f j) b • g_bilinear j b).toFun v).toFun w =
-           ((∑ᶠ (j : B), (f j) b • g_bilinear j b).toFun w).toFun v := by
+lemma h_needed (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b)
+  (h_fin : (Function.support fun j ↦ ((f j) b • (g_bilinear j b) : W (TangentSpace IB) b)).Finite) :
+  ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b).toFun v).toFun w =
+  ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b).toFun w).toFun v := by
+
+    have ha : ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilinear j b).toFun v).toFun w =
+              ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b).toFun v).toFun w := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
+      rw [ContinuousLinearMap.sum_apply, ContinuousLinearMap.sum_apply]
+
+    have ha' : ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilinear j b).toFun w).toFun v =
+              ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b).toFun w).toFun v := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
+      rw [ContinuousLinearMap.sum_apply, ContinuousLinearMap.sum_apply]
+
+    let h : (j : B) → W ((@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) b :=
+      fun j ↦ (f j) b • g_bilinear j b
+
+    have h_inc : (Function.support h) ⊆ h_fin.toFinset :=
+      Set.Finite.toFinset_subset.mp fun ⦃a⦄ a ↦ a
+
+    have hb : ∑ᶠ (j : B), (((f j) b • g_bilinear j b).toFun v).toFun w =
+           ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilinear j b).toFun v).toFun w :=
+      finsum_image_eq_sum (evalAt b v w) h h_fin.toFinset h_inc
+
+    have hb' : ∑ᶠ (j : B), (((f j) b • g_bilinear j b).toFun w).toFun v =
+           ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilinear j b).toFun w).toFun v :=
+      finsum_image_eq_sum (evalAt b w v) h h_fin.toFinset h_inc
+
+    have h_gbilin_symm : ∑ᶠ (j : B), (((f j) b • g_bilinear j b).toFun v).toFun w =
+                         ∑ᶠ (j : B), (((f j) b • g_bilinear j b).toFun w).toFun v := by
       have h1 : ∀ (j : B), (((f j b) • g_bilinear j b).toFun v).toFun w = (f j b) * g j b v w :=
         fun _ => rfl
       have h2 : ∀ (j : B), g j b v w = g j b w v := fun j => g_symm j b v w
@@ -344,55 +388,35 @@ lemma foo (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b) 
         fun j ↦ congrArg (HMul.hMul ((f j) b)) (h2 j)
       have h4 : ∀ (j : B), (((f j b) • g_bilinear j b).toFun v).toFun w =
                            (((f j b) • g_bilinear j b).toFun w).toFun v := fun j ↦ h3 j
-      have h5 :  ∑ᶠ (x : B), (((((f x) b • g_bilinear x b)).toFun v)).toFun w =
-              ∑ᶠ (x : B), (((((f x) b • g_bilinear x b)).toFun w)).toFun v := finsum_congr h4
+      exact finsum_congr h4
 
-      have h6 : ∑ᶠ (j : B), (((((f j) b • g_bilinear j b)).toFun v)).toFun w =
-        ((∑ᶠ (j : B), (f j) b • g_bilinear j b).toFun v).toFun w := by
-        have h_fin : (Function.support fun j ↦ ((f j) b • (g_bilinear j b) :
+    calc
+        ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b).toFun v).toFun w
+          = ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilinear j b).toFun v).toFun w := ha.symm
+        _ = ∑ᶠ (j : B), (((f j) b • g_bilinear j b).toFun v).toFun w := hb.symm
+        _ = ∑ᶠ (j : B), (((f j) b • g_bilinear j b).toFun w).toFun v := h_gbilin_symm
+        _ = ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilinear j b).toFun w).toFun v := hb'
+        _ = ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b).toFun w).toFun v := ha'
+
+lemma foo (f : SmoothPartitionOfUnity B IB B) (b : B) (v w : TangentSpace IB b) :
+ ((g_global_bilinear f b).toFun v).toFun w = ((g_global_bilinear f b).toFun w).toFun v := by
+    unfold g_global_bilinear
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
+
+    have h_fin : (Function.support fun j ↦ ((f j) b • (g_bilinear j b) :
                       W (TangentSpace IB) b)).Finite := by
           apply (f.locallyFinite'.point_finite b).subset
           intro i hi
           simp only [Function.mem_support, ne_eq, smul_eq_zero, not_or] at hi
           simp only [Set.mem_setOf_eq, Function.mem_support, ne_eq]
           exact hi.1
-        have h6a : (∑ᶠ (j : B), (f j) b • g_bilinear j b) =
-                     ∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b := finsum_eq_sum _ h_fin
-        rw [h6a]
-        have h_sum_v : ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b).toFun v) =
-                       ∑ j ∈ h_fin.toFinset, ((f j) b • g_bilinear j b).toFun v :=
-          ContinuousLinearMap.sum_apply h_fin.toFinset (fun j ↦ (f j) b • g_bilinear j b) v
-        rw [h_sum_v]
-        have h_sum_w :
-          ((∑ j ∈ h_fin.toFinset, ((f j) b • g_bilinear j b).toFun v).toFun w) =
-           ∑ j ∈ h_fin.toFinset, (((f j) b • g_bilinear j b).toFun v).toFun w :=
-          ContinuousLinearMap.sum_apply h_fin.toFinset
-            (fun j ↦ ((f j) b • g_bilinear j b).toFun v) w
-        rw [h_sum_w]
-
-        have h_fun :
-         (Function.support fun j ↦ (((((f j) b • g_bilinear j b)).toFun v)).toFun w).Finite := by
-            exact sorry
-
-        have h6b : ∑ᶠ (j : B), (((((f j) b • g_bilinear j b)).toFun v)).toFun w =
-                   ∑ j ∈ h_fun.toFinset, (((((f j) b • g_bilinear j b)).toFun v)).toFun w := by
-          exact finsum_eq_sum _ h_fun
-        have h_eq : h_fun.toFinset = h_fin.toFinset := by exact sorry
-        rw [<-h_eq]
-        exact h6b
-
-      have h7 : ∑ᶠ (j : B), (((((f j) b • g_bilinear j b)).toFun w)).toFun v =
-                ((∑ᶠ (j : B), (f j) b • g_bilinear j b).toFun w).toFun v := sorry
-      rw [h6, h7] at h5
-      exact h5
-
+    have h6a : (∑ᶠ (j : B), (f j) b • g_bilinear j b) =
+                ∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b := finsum_eq_sum _ h_fin
+    rw [h6a]
+    have : ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b).toFun v).toFun w =
+           ((∑ j ∈ h_fin.toFinset, (f j) b • g_bilinear j b).toFun w).toFun v :=
+      h_needed f b v w h_fin
     exact this
-
-#check Finset.sum_apply'
-#check ContinuousLinearMap.sum_apply
-#check finsum_congr
-#check ContinuousLinearMap.mk
-#check LinearMap.mk
 
 lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
   (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source))
