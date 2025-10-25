@@ -221,7 +221,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
     (m : ℕ) (e : Fin (m + 1) ≃o S) :
     (face S : SSet.{u}).RepresentableBy ⦋m⦌ where
   homEquiv {j} :=
-    { toFun f := ⟨objMk ((OrderHom.Subtype.val S.toSet).comp
+    { toFun f := ⟨objMk ((OrderHom.Subtype.val (SetLike.coe S)).comp
           (e.toOrderEmbedding.toOrderHom.comp f.toOrderHom)), fun _ ↦ by aesop⟩
       invFun := fun ⟨x, hx⟩ ↦ SimplexCategory.Hom.mk
         { toFun i := e.symm ⟨(objEquiv x).toOrderHom i, hx (by aesop)⟩

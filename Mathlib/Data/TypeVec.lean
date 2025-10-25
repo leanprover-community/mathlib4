@@ -30,7 +30,7 @@ Since e.g. `append1 α.drop α.last` is propositionally equal to `α` but not de
 to it, we need support functions and lemmas to mediate between constructions.
 -/
 
-universe u v w
+universe u v w x
 
 /-- n-tuples of types, as a category -/
 @[pp_with_univ]
@@ -45,15 +45,18 @@ namespace TypeVec
 variable {n : ℕ}
 
 /-- arrow in the category of `TypeVec` -/
-def Arrow (α β : TypeVec n) :=
+def Arrow (α : TypeVec.{u} n) (β : TypeVec.{v} n) :=
   ∀ i : Fin2 n, α i → β i
 
 @[inherit_doc] scoped[MvFunctor] infixl:40 " ⟹ " => TypeVec.Arrow
 open MvFunctor
 
+variable {α : TypeVec.{u} n} {β : TypeVec.{v} n} {γ : TypeVec.{w} n} {δ : TypeVec.{x} n} in
+section
+
 /-- Extensionality for arrows -/
 @[ext]
-theorem Arrow.ext {α β : TypeVec n} (f g : α ⟹ β) :
+theorem Arrow.ext (f g : α ⟹ β) :
     (∀ i, f i = g i) → f = g := by
   intro h; funext i; apply h
 
@@ -63,22 +66,27 @@ instance Arrow.inhabited (α β : TypeVec n) [∀ i, Inhabited (β i)] : Inhabit
 /-- identity of arrow composition -/
 def id {α : TypeVec n} : α ⟹ α := fun _ x => x
 
+
 /-- arrow composition in the category of `TypeVec` -/
-def comp {α β γ : TypeVec n} (g : β ⟹ γ) (f : α ⟹ β) : α ⟹ γ := fun i x => g i (f i x)
+def comp (g : β ⟹ γ) (f : α ⟹ β)
+    : α ⟹ γ :=
+  fun i x => g i (f i x)
 
 @[inherit_doc] scoped[MvFunctor] infixr:80 " ⊚ " => TypeVec.comp -- type as \oo
 
 @[simp]
-theorem id_comp {α β : TypeVec n} (f : α ⟹ β) : id ⊚ f = f :=
+theorem id_comp (f : α ⟹ β) : id ⊚ f = f :=
   rfl
 
 @[simp]
-theorem comp_id {α β : TypeVec n} (f : α ⟹ β) : f ⊚ id = f :=
+theorem comp_id (f : α ⟹ β) : f ⊚ id = f :=
   rfl
 
-theorem comp_assoc {α β γ δ : TypeVec n} (h : γ ⟹ δ) (g : β ⟹ γ) (f : α ⟹ β) :
+theorem comp_assoc
+    (h : γ ⟹ δ) (g : β ⟹ γ) (f : α ⟹ β) :
     (h ⊚ g) ⊚ f = h ⊚ g ⊚ f :=
   rfl
+end
 
 /-- Support for extending a `TypeVec` by one element. -/
 def append1 (α : TypeVec n) (β : Type*) : TypeVec (n + 1)
@@ -334,13 +342,13 @@ section Liftp'
 open Nat
 
 /-- `repeat n t` is a `n-length` type vector that contains `n` occurrences of `t` -/
-def «repeat» : ∀ (n : ℕ), Sort _ → TypeVec n
+def «repeat» : ∀ (n : ℕ), Type u → TypeVec n
   | 0, _ => Fin2.elim0
   | Nat.succ i, t => append1 («repeat» i t) t
 
 /-- `prod α β` is the pointwise product of the components of `α` and `β` -/
 def prod : ∀ {n}, TypeVec.{u} n → TypeVec.{u} n → TypeVec n
-  | 0,     _, _ => Fin2.elim0
+  | 0, _, _ => Fin2.elim0
   | n + 1, α, β => (@prod n (drop α) (drop β)) ::: (last α × last β)
 
 @[inherit_doc] scoped[MvFunctor] infixl:45 " ⊗ " => TypeVec.prod
@@ -349,7 +357,7 @@ def prod : ∀ {n}, TypeVec.{u} n → TypeVec.{u} n → TypeVec n
 contains nothing but `x` -/
 protected def const {β} (x : β) : ∀ {n} (α : TypeVec n), α ⟹ «repeat» _ β
   | succ _, α, Fin2.fs _ => TypeVec.const x (drop α) _
-  | succ _, _, Fin2.fz   => fun _ => x
+  | succ _, _, Fin2.fz => fun _ => x
 
 open Function (uncurry)
 
@@ -402,11 +410,11 @@ instance Curry.inhabited (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β :
 /-- arrow to remove one element of a `repeat` vector -/
 def dropRepeat (α : Type*) : ∀ {n}, drop («repeat» (succ n) α) ⟹ «repeat» n α
   | succ _, Fin2.fs i => dropRepeat α i
-  | succ _, Fin2.fz   => fun (a : α) => a
+  | succ _, Fin2.fz => fun (a : α) => a
 
 /-- projection for a repeat vector -/
 def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
-  | _, Fin2.fz   => fun (a : α) => a
+  | _, Fin2.fz => fun (a : α) => a
   | _, Fin2.fs i => @ofRepeat _ _ i
 
 theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i x) ↔ p := by
@@ -417,8 +425,6 @@ theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i
     exact ih
 
 section
-variable {α β : TypeVec.{u} n}
-variable (p : α ⟹ «repeat» n Prop)
 
 /-- left projection of a `prod` vector -/
 def prod.fst : ∀ {n} {α β : TypeVec.{u} n}, α ⊗ β ⟹ α
@@ -438,7 +444,7 @@ def prod.diag : ∀ {n} {α : TypeVec.{u} n}, α ⟹ α ⊗ α
 /-- constructor for `prod` -/
 def prod.mk : ∀ {n} {α β : TypeVec.{u} n} (i : Fin2 n), α i → β i → (α ⊗ β) i
   | succ _, α, β, Fin2.fs i => mk (α := fun i => α i.fs) (β := fun i => β i.fs) i
-  | succ _, _, _, Fin2.fz   => Prod.mk
+  | succ _, _, _, Fin2.fz => Prod.mk
 
 end
 
@@ -521,7 +527,7 @@ into a subtype of vector -/
 def ofSubtype {n} {α : TypeVec.{u} n} (p : α ⟹ «repeat» n Prop) :
     Subtype_ p ⟹ fun i : Fin2 n => { x // ofRepeat <| p i x }
   | Fin2.fs i, x => ofSubtype _ i x
-  | Fin2.fz,   x => x
+  | Fin2.fz, x => x
 
 /-- similar to `toSubtype` adapted to relations (i.e. predicate on product) -/
 def toSubtype' {n} {α : TypeVec.{u} n} (p : α ⊗ α ⟹ «repeat» n Prop) :
