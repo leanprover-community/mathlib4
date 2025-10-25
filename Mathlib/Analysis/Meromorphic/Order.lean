@@ -359,6 +359,37 @@ protected theorem MeromorphicAt.analyticAt {f : 𝕜 → E} {x : 𝕜}
       filter_upwards [hg] with z hz using by simpa using hz.symm
     exact AnalyticAt.congr (by fun_prop) A
 
+/--
+The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
+-/
+theorem meromorphicOrderAt_const (z₀ : 𝕜) (e : E) [Decidable (e = 0)] :
+    meromorphicOrderAt (fun _ ↦ e) z₀ = if e = 0 then ⊤ else (0 : WithTop ℤ) := by
+  split_ifs with he
+  · simp [he, meromorphicOrderAt_eq_top_iff]
+  · exact (meromorphicOrderAt_eq_int_iff (.const e z₀)).2 ⟨fun _ ↦ e, by fun_prop, by simpa⟩
+
+/--
+The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
+-/
+theorem meromorphicOrderAt_const_intCast (z₀ : 𝕜) (n : ℤ) [Decidable ((n : 𝕜) = 0)] :
+    meromorphicOrderAt (n : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) :=
+  meromorphicOrderAt_const z₀ (n : 𝕜)
+
+/--
+The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
+-/
+theorem meromorphicOrderAt_const_natCast (z₀ : 𝕜) (n : ℕ) [Decidable ((n : 𝕜) = 0)] :
+    meromorphicOrderAt (n : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) :=
+  meromorphicOrderAt_const z₀ (n : 𝕜)
+
+/--
+The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
+-/
+@[simp] theorem meromorphicOrderAt_const_ofNat (z₀ : 𝕜) (n : ℕ) [Decidable ((n : 𝕜) = 0)] :
+    meromorphicOrderAt (ofNat(n) : 𝕜 → 𝕜) z₀ = if (n : 𝕜) = 0 then ⊤ else (0 : WithTop ℤ) := by
+  convert meromorphicOrderAt_const z₀ (n : 𝕜)
+  simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
+
 /-!
 ## Order at a Point: Behaviour under Ring Operations
 
