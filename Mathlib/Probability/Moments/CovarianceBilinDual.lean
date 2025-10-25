@@ -291,6 +291,13 @@ lemma covarianceBilinDual_self_eq_variance (h : MemLp id 2 μ) (L : StrongDual �
 @[deprecated (since := "2025-07-16")] alias covarianceBilin_same_eq_variance :=
   covarianceBilinDual_self_eq_variance
 
+@[simp]
+lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) : 0 ≤ covarianceBilinDual μ L L := by
+  by_cases h : MemLp id 2 μ
+  · rw [covarianceBilinDual_self_eq_variance h]
+    exact variance_nonneg ..
+  · simp [h]
+
 end Covariance
 
 end ProbabilityTheory
