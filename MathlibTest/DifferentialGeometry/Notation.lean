@@ -911,8 +911,81 @@ section
 variable {EM' : Type*} [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {f g : M → M'} {h : M → 𝕜} {h' : E → M'} {k : M × E → M'} {φ φ' : OpenPartialHomeomorph M H}
+  {f g : M → M'} {h h₂ : M → 𝕜} {h' : E → M'} {k k' : M × E → M'} {φ φ' : OpenPartialHomeomorph M H}
   {f' : E → M} {g' : EM' → M'} {h' k' : F → M'}
+
+section sum
+
+/-- info: MDifferentiable I I' (Sum.map f g) : Prop -/
+#guard_msgs in
+#check MDiff (Sum.map f g)
+
+/-- info: MDifferentiable I 𝓘(𝕜, 𝕜) (Sum.map h h₂) : Prop -/
+#guard_msgs in
+#check MDiff (Sum.map h h₂)
+
+/-- info: MDifferentiable 𝓘(𝕜, F) I' (Sum.map h' k') : Prop -/
+#guard_msgs in
+#check MDiff (Sum.map h' k')
+
+/-- info: ContMDiff I I 2 Sum.swap : Prop -/
+#guard_msgs in
+#check CMDiff 2 (@Sum.swap M M)
+
+/-- info: ContMDiff I I 2 Sum.inl : Prop -/
+#guard_msgs in
+#check CMDiff 2 (@Sum.inl M M)
+
+/-- info: ContMDiff I I 2 Sum.inr : Prop -/
+#guard_msgs in
+#check CMDiff 2 (@Sum.inr M M)
+
+-- Error messages about mismatched models.
+/--
+error: failed to synthesize
+  ChartedSpace H (M ⊕ F)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDiff (Sum.map f h')
+/--
+error: failed to synthesize
+  ChartedSpace H (M ⊕ F)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDifferentiable I I (Sum.map f h')
+
+-- Nested sums are not supported yet.
+/--
+error: Found no model with corners on first summand `M ⊕ M
+Note: finding a model with corners on direct sums of three or more spaces is not implemented yet`
+-/
+#guard_msgs in
+#check MDiff (Sum.map (Sum.map f f) f)
+
+/--
+error: Found no model with corners on first summand `M ⊕ M ⊕ M
+Note: finding a model with corners on direct sums of three or more spaces is not implemented yet`
+-/
+#guard_msgs in
+#check MDiff (Sum.map (Sum.map f (Sum.map g g)) f)
+
+-- Edge case: we don't care about the second factor.
+variable {f : M → M} in
+/-- info: MDifferentiable I I (Sum.map f Sum.inr) : Prop -/
+#guard_msgs in
+#check MDiff (Sum.map f (@Sum.inr M M))
+
+/-- info: MDifferentiable I I' (Sum.map f (Sum.map f (Sum.map g g))) : Prop -/
+#guard_msgs in
+#check MDiff (Sum.map f (Sum.map f (Sum.map g g)))
+
+end sum
+
+section product
 
 /-- info: MDifferentiable I I' f : Prop -/
 #guard_msgs in
@@ -1023,6 +1096,14 @@ Note: finding a model with corners on products of three or more spaces is not im
 #check MDiff (Prod.map f' (Prod.map g' (Prod.map h' k')))
 
 -- TODO: add many more tests!
+
+end product
+
+-- TODO: add enough tests for the combination of sums and products!
+
+/-- error: Found no model with corners on first summand `M × E` -/
+#guard_msgs in
+#check MDiff (Sum.map k k')
 
 end
 
