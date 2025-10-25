@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Ring.Regular
@@ -756,15 +755,6 @@ lemma not_isRoot_of_irreducible_natDegree_ne_one
 lemma isRoot_eq_bot_of_irreducible_natDegree_ne_one
     (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ :=
   le_bot_iff.mp fun _ ↦ not_isRoot_of_irreducible_natDegree_ne_one hi hdeg
-
-lemma aeval_ne_zero_of_irredicble_natDegree_ne_one
-    {A B : Type*} [CommRing A] [IsDomain A] [Ring B] [Algebra A B] [FaithfulSMul A B]
-    {p : A[X]} (hi : Irreducible p) (hdeg : p.natDegree ≠ 1)
-    {x : B} (hx : x ∈ (algebraMap A B).range) : p.aeval x ≠ 0 := by
-  obtain ⟨_, rfl⟩ := hx
-  rw [aeval_algebraMap_apply_eq_algebraMap_eval]
-  exact fun heq ↦ not_isRoot_of_irreducible_natDegree_ne_one hi hdeg <|
-    FaithfulSMul.algebraMap_injective _ _ <| map_zero (algebraMap A B) ▸ heq
 
 lemma subsingleton_isRoot_of_irreducible [IsLeftCancelMulZero R] [IsRightCancelAdd R]
     (hi : Irreducible p) : { x | p.IsRoot x }.Subsingleton :=
