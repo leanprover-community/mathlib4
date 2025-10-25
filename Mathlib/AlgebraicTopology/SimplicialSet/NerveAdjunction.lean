@@ -528,6 +528,8 @@ instance (C D : Type v) [Category.{v} C] [Category.{v} D] :
 
 namespace hoFunctor
 
+instance : hoFunctor.IsLeftAdjoint := nerveAdjunction.isLeftAdjoint
+
 instance (C D : Type v) [Category.{v} C] [Category.{v} D] :
     IsIso (prodComparison hoFunctor (nerve C) (nerve D)) := by
   have : IsIso (nerveFunctor.map (prodComparison hoFunctor (nerve C) (nerve D))) := by
@@ -548,11 +550,11 @@ lemma binaryProductWithSimplexIsIso {D : SSet.{u}} (X : SSet.{u})
     IsIso (prodComparison hoFunctor D X) := by
   have : (prod.functor.obj D).IsLeftAdjoint := by
     have : (MonoidalCategory.tensorLeft D).IsLeftAdjoint :=
-      (CategoryTheory.FunctorToTypes.adj D).isLeftAdjoint
+      (FunctorToTypes.adj D).isLeftAdjoint
     exact Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
   have : (prod.functor.obj (hoFunctor.obj D)).IsLeftAdjoint :=
     Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
-  have : hoFunctor.IsLeftAdjoint := nerveAdjunction.isLeftAdjoint
+  have : hoFunctor.IsLeftAdjoint := inferInstance
   have : IsIso (whiskerLeft (CostructuredArrow.proj uliftYoneda X ⋙ uliftYoneda)
       (prodComparisonNatTrans hoFunctor D)) := by
     rw [NatTrans.isIso_iff_isIso_app]
@@ -584,9 +586,13 @@ instance preservesBinaryProducts' :
 instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
   Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal _
 
+/-- A product preserving functor between cartesian closed categories is monoidal. -/
+noncomputable instance Monoidal : Monoidal hoFunctor :=
+  Monoidal.ofChosenFiniteProducts hoFunctor
+
 /-- A product preserving functor between cartesian closed categories is lax monoidal. -/
-noncomputable instance laxMonoidal : LaxMonoidal hoFunctor :=
-  (Monoidal.ofChosenFiniteProducts hoFunctor).toLaxMonoidal
+noncomputable instance laxMonoidal : LaxMonoidal hoFunctor := Monoidal.toLaxMonoidal
+
 
 end hoFunctor
 
