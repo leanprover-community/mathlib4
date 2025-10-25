@@ -126,7 +126,6 @@ instance Over.closedUnderLimitsOfShape_pullback [HasPullbacks T]
     rintro Y ⟨p⟩
     have h := IsPullback.of_isLimit_cone <|
         Limits.isLimitOfPreserves (CategoryTheory.Over.forget X) p.isLimit
-    dsimp at h
     rw [MorphismProperty.overObj_iff,
       show Y.hom = (p.π.app .left).left ≫ (p.diag.obj .left).hom by simp]
     apply P.comp_mem _ _ (P.of_isPullback h.flip ?_) (p.prop_diag_obj _)
