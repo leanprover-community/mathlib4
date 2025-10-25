@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Basic
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 ## Smoothness of standard maps associated to the product of manifolds
@@ -51,49 +52,47 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section ProdMk
 
-theorem ContMDiffWithinAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffWithinAt I I' n f s x)
-    (hg : ContMDiffWithinAt I J' n g s x) :
-    ContMDiffWithinAt I (I'.prod J') n (fun x => (f x, g x)) s x := by
+theorem ContMDiffWithinAt.prodMk {f : M → M'} {g : M → N'} (hf : CMDiffAt[s] n f x)
+    (hg : CMDiffAt[s] n g x) : CMDiffAt[s] n (fun x => (f x, g x)) x := by
   rw [contMDiffWithinAt_iff] at *
   exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 theorem ContMDiffWithinAt.prodMk_space {f : M → E'} {g : M → F'}
-    (hf : ContMDiffWithinAt I 𝓘(𝕜, E') n f s x) (hg : ContMDiffWithinAt I 𝓘(𝕜, F') n g s x) :
+    (hf : CMDiffAt[s] n f x) (hg : CMDiffAt[s] n g x) :
     ContMDiffWithinAt I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) s x := by
   rw [contMDiffWithinAt_iff] at *
   exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
-nonrec theorem ContMDiffAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffAt I I' n f x)
-    (hg : ContMDiffAt I J' n g x) : ContMDiffAt I (I'.prod J') n (fun x => (f x, g x)) x :=
+nonrec theorem ContMDiffAt.prodMk {f : M → M'} {g : M → N'} (hf : CMDiffAt n f x)
+    (hg : CMDiffAt n g x) : CMDiffAt n (fun x => (f x, g x)) x :=
   hf.prodMk hg
 
 nonrec theorem ContMDiffAt.prodMk_space {f : M → E'} {g : M → F'}
-    (hf : ContMDiffAt I 𝓘(𝕜, E') n f x) (hg : ContMDiffAt I 𝓘(𝕜, F') n g x) :
+    (hf : CMDiffAt n f x) (hg : CMDiffAt n g x) :
     ContMDiffAt I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) x :=
   hf.prodMk_space hg
 
-theorem ContMDiffOn.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffOn I I' n f s)
-    (hg : ContMDiffOn I J' n g s) : ContMDiffOn I (I'.prod J') n (fun x => (f x, g x)) s :=
+theorem ContMDiffOn.prodMk {f : M → M'} {g : M → N'} (hf : CMDiff[s] n f)
+    (hg : CMDiff[s] n g) : CMDiff[s] n (fun x => (f x, g x)) :=
   fun x hx => (hf x hx).prodMk (hg x hx)
 
-theorem ContMDiffOn.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiffOn I 𝓘(𝕜, E') n f s)
-    (hg : ContMDiffOn I 𝓘(𝕜, F') n g s) : ContMDiffOn I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) s :=
+theorem ContMDiffOn.prodMk_space {f : M → E'} {g : M → F'} (hf : CMDiff[s] n f)
+    (hg : CMDiff[s] n g) : ContMDiffOn I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) s :=
   fun x hx => (hf x hx).prodMk_space (hg x hx)
 
-nonrec theorem ContMDiff.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiff I I' n f)
-    (hg : ContMDiff I J' n g) : ContMDiff I (I'.prod J') n fun x => (f x, g x) := fun x =>
+nonrec theorem ContMDiff.prodMk {f : M → M'} {g : M → N'} (hf : CMDiff n f)
+    (hg : CMDiff n g) : CMDiff n fun x => (f x, g x) := fun x =>
   (hf x).prodMk (hg x)
 
-theorem ContMDiff.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiff I 𝓘(𝕜, E') n f)
-    (hg : ContMDiff I 𝓘(𝕜, F') n g) : ContMDiff I 𝓘(𝕜, E' × F') n fun x => (f x, g x) := fun x =>
+theorem ContMDiff.prodMk_space {f : M → E'} {g : M → F'} (hf : CMDiff n f) (hg : CMDiff n g) :
+    ContMDiff I 𝓘(𝕜, E' × F') n fun x => (f x, g x) := fun x =>
   (hf x).prodMk_space (hg x)
 
 end ProdMk
 
 section Projections
 
-theorem contMDiffWithinAt_fst {s : Set (M × N)} {p : M × N} :
-    ContMDiffWithinAt (I.prod J) I n Prod.fst s p := by
+theorem contMDiffWithinAt_fst {s : Set (M × N)} {p : M × N} : CMDiffAt[s] n (@Prod.fst M N) p := by
   /- porting note: `simp` fails to apply lemmas to `ModelProd`. Was
   rw [contMDiffWithinAt_iff']
   refine' ⟨continuousWithinAt_fst, _⟩
@@ -108,28 +107,26 @@ theorem contMDiffWithinAt_fst {s : Set (M × N)} {p : M × N} :
   · exact (extChartAt I p.1).right_inv <| (extChartAt I p.1).map_source (mem_extChartAt_source _)
 
 theorem ContMDiffWithinAt.fst {f : N → M × M'} {s : Set N} {x : N}
-    (hf : ContMDiffWithinAt J (I.prod I') n f s x) :
-    ContMDiffWithinAt J I n (fun x => (f x).1) s x :=
+    (hf : CMDiffAt[s] n f x) : CMDiffAt[s] n (fun x => (f x).1) x :=
   contMDiffWithinAt_fst.comp x hf (mapsTo_image f s)
 
-theorem contMDiffAt_fst {p : M × N} : ContMDiffAt (I.prod J) I n Prod.fst p :=
+theorem contMDiffAt_fst {p : M × N} : CMDiffAt n (@Prod.fst M N) p :=
   contMDiffWithinAt_fst
 
-theorem contMDiffOn_fst {s : Set (M × N)} : ContMDiffOn (I.prod J) I n Prod.fst s := fun _ _ =>
+theorem contMDiffOn_fst {s : Set (M × N)} : CMDiff[s] n (@Prod.fst M N) := fun _ _ =>
   contMDiffWithinAt_fst
 
-theorem contMDiff_fst : ContMDiff (I.prod J) I n (@Prod.fst M N) := fun _ => contMDiffAt_fst
+theorem contMDiff_fst : CMDiff n (@Prod.fst M N) := fun _ => contMDiffAt_fst
 
-theorem ContMDiffAt.fst {f : N → M × M'} {x : N} (hf : ContMDiffAt J (I.prod I') n f x) :
-    ContMDiffAt J I n (fun x => (f x).1) x :=
+theorem ContMDiffAt.fst {f : N → M × M'} {x : N} (hf : CMDiffAt n f x) :
+    CMDiffAt n (fun x => (f x).1) x :=
   contMDiffAt_fst.comp x hf
 
-theorem ContMDiff.fst {f : N → M × M'} (hf : ContMDiff J (I.prod I') n f) :
-    ContMDiff J I n fun x => (f x).1 :=
+theorem ContMDiff.fst {f : N → M × M'} (hf : CMDiff n f) : CMDiff n fun x => (f x).1 :=
   contMDiff_fst.comp hf
 
 theorem contMDiffWithinAt_snd {s : Set (M × N)} {p : M × N} :
-    ContMDiffWithinAt (I.prod J) J n Prod.snd s p := by
+    CMDiffAt[s] n (@Prod.snd M N) p := by
   /- porting note: `simp` fails to apply lemmas to `ModelProd`. Was
   rw [contMDiffWithinAt_iff']
   refine' ⟨continuousWithinAt_snd, _⟩
@@ -144,72 +141,68 @@ theorem contMDiffWithinAt_snd {s : Set (M × N)} {p : M × N} :
   · exact (extChartAt J p.2).right_inv <| (extChartAt J p.2).map_source (mem_extChartAt_source _)
 
 theorem ContMDiffWithinAt.snd {f : N → M × M'} {s : Set N} {x : N}
-    (hf : ContMDiffWithinAt J (I.prod I') n f s x) :
-    ContMDiffWithinAt J I' n (fun x => (f x).2) s x :=
+    (hf : CMDiffAt[s] n f x) : CMDiffAt[s] n (fun x => (f x).2) x :=
   contMDiffWithinAt_snd.comp x hf (mapsTo_image f s)
 
-theorem contMDiffAt_snd {p : M × N} : ContMDiffAt (I.prod J) J n Prod.snd p :=
+theorem contMDiffAt_snd {p : M × N} : CMDiffAt n (@Prod.snd M N) p :=
   contMDiffWithinAt_snd
 
-theorem contMDiffOn_snd {s : Set (M × N)} : ContMDiffOn (I.prod J) J n Prod.snd s := fun _ _ =>
+theorem contMDiffOn_snd {s : Set (M × N)} : CMDiff[s] n (@Prod.snd M N) := fun _ _ =>
   contMDiffWithinAt_snd
 
-theorem contMDiff_snd : ContMDiff (I.prod J) J n (@Prod.snd M N) := fun _ => contMDiffAt_snd
+theorem contMDiff_snd : CMDiff n (@Prod.snd M N) := fun _ => contMDiffAt_snd
 
-theorem ContMDiffAt.snd {f : N → M × M'} {x : N} (hf : ContMDiffAt J (I.prod I') n f x) :
-    ContMDiffAt J I' n (fun x => (f x).2) x :=
+theorem ContMDiffAt.snd {f : N → M × M'} {x : N} (hf : CMDiffAt n f x) :
+    CMDiffAt n (fun x => (f x).2) x :=
   contMDiffAt_snd.comp x hf
 
-theorem ContMDiff.snd {f : N → M × M'} (hf : ContMDiff J (I.prod I') n f) :
-    ContMDiff J I' n fun x => (f x).2 :=
+theorem ContMDiff.snd {f : N → M × M'} (hf : CMDiff n f) : CMDiff n fun x => (f x).2 :=
   contMDiff_snd.comp hf
 
 end Projections
 
 theorem contMDiffWithinAt_prod_iff (f : M → M' × N') :
-    ContMDiffWithinAt I (I'.prod J') n f s x ↔
-      ContMDiffWithinAt I I' n (Prod.fst ∘ f) s x ∧ ContMDiffWithinAt I J' n (Prod.snd ∘ f) s x :=
+    CMDiffAt[s] n f x ↔
+      CMDiffAt[s] n (Prod.fst ∘ f) x ∧ CMDiffAt[s] n (Prod.snd ∘ f) x :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prodMk h.2⟩
 
 theorem contMDiffWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiffWithinAt I 𝓘(𝕜, F₁ × F₂) n f s x ↔
-      ContMDiffWithinAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s x ∧
-      ContMDiffWithinAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s x := by
+      CMDiffAt[s] n (Prod.fst ∘ f) x ∧ CMDiffAt[s] n (Prod.snd ∘ f) x := by
   rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
   exact contMDiffWithinAt_prod_iff f
 
 theorem contMDiffAt_prod_iff (f : M → M' × N') :
-    ContMDiffAt I (I'.prod J') n f x ↔
-      ContMDiffAt I I' n (Prod.fst ∘ f) x ∧ ContMDiffAt I J' n (Prod.snd ∘ f) x := by
+    CMDiffAt n f x ↔
+      CMDiffAt n (Prod.fst ∘ f) x ∧ CMDiffAt n (Prod.snd ∘ f) x := by
   simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_prod_iff f
 
 theorem contMDiffAt_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiffAt I 𝓘(𝕜, F₁ × F₂) n f x ↔
-      ContMDiffAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) x ∧ ContMDiffAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) x := by
+      CMDiffAt n (Prod.fst ∘ f) x ∧ CMDiffAt n (Prod.snd ∘ f) x := by
   rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
   exact contMDiffAt_prod_iff f
 
 theorem contMDiffOn_prod_iff (f : M → M' × N') :
-    ContMDiffOn I (I'.prod J') n f s ↔
-      ContMDiffOn I I' n (Prod.fst ∘ f) s ∧ ContMDiffOn I J' n (Prod.snd ∘ f) s :=
+    CMDiff[s] n f ↔
+      CMDiff[s] n (Prod.fst ∘ f) ∧ CMDiff[s] n (Prod.snd ∘ f) :=
   ⟨fun h ↦ ⟨fun x hx ↦ ((contMDiffWithinAt_prod_iff f).1 (h x hx)).1,
       fun x hx ↦ ((contMDiffWithinAt_prod_iff f).1 (h x hx)).2⟩,
     fun h x hx ↦ (contMDiffWithinAt_prod_iff f).2 ⟨h.1 x hx, h.2 x hx⟩⟩
 
 theorem contMDiffOn_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiffOn I 𝓘(𝕜, F₁ × F₂) n f s ↔
-      ContMDiffOn I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s ∧ ContMDiffOn I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s := by
+      CMDiff[s] n (Prod.fst ∘ f) ∧ CMDiff[s] n (Prod.snd ∘ f) := by
   rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
   exact contMDiffOn_prod_iff f
 
 theorem contMDiff_prod_iff (f : M → M' × N') :
-    ContMDiff I (I'.prod J') n f ↔
-      ContMDiff I I' n (Prod.fst ∘ f) ∧ ContMDiff I J' n (Prod.snd ∘ f) :=
+    CMDiff n f ↔ CMDiff n (Prod.fst ∘ f) ∧ CMDiff n (Prod.snd ∘ f) :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prodMk h.2⟩
 
 theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiff I 𝓘(𝕜, F₁ × F₂) n f ↔
-      ContMDiff I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) ∧ ContMDiff I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) := by
+      CMDiff n (Prod.fst ∘ f) ∧ CMDiff n (Prod.snd ∘ f) := by
   rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
   exact contMDiff_prod_iff f
 
@@ -220,88 +213,82 @@ theorem contMDiff_prod_assoc :
 
 /-- `ContMDiffWithinAt.comp` for a function of two arguments. -/
 theorem ContMDiffWithinAt.comp₂ {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M}
-    {t : Set (M' × N')} (ha : ContMDiffWithinAt (I'.prod J') J n h t (f x, g x))
-    (fa : ContMDiffWithinAt I I' n f s x) (ga : ContMDiffWithinAt I J' n g s x)
+    {t : Set (M' × N')} (ha : CMDiffAt[t] n h (f x, g x))
+    (fa : CMDiffAt[s] n f x) (ga : CMDiffAt[s] n g x)
     (st : MapsTo (fun x ↦ (f x, g x)) s t) :
-    ContMDiffWithinAt I J n (fun x ↦ h (f x, g x)) s x :=
+    CMDiffAt[s] n (fun x ↦ h (f x, g x)) x :=
   ha.comp (f := fun x ↦ (f x, g x)) _ (fa.prodMk ga) st
 
 /-- `ContMDiffWithinAt.comp₂`, with a separate argument for point equality. -/
 theorem ContMDiffWithinAt.comp₂_of_eq {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M}
-    {y : M' × N'} {t : Set (M' × N')} (ha : ContMDiffWithinAt (I'.prod J') J n h t y)
-    (fa : ContMDiffWithinAt I I' n f s x) (ga : ContMDiffWithinAt I J' n g s x)
+    {y : M' × N'} {t : Set (M' × N')} (ha : CMDiffAt[t] n h y)
+    (fa : CMDiffAt[s] n f x) (ga : CMDiffAt[s] n g x)
     (e : (f x, g x) = y) (st : MapsTo (fun x ↦ (f x, g x)) s t) :
-    ContMDiffWithinAt I J n (fun x ↦ h (f x, g x)) s x := by
+    CMDiffAt[s] n (fun x ↦ h (f x, g x)) x := by
   rw [← e] at ha
   exact ha.comp₂ fa ga st
 
 /-- `ContMDiffAt.comp` for a function of two arguments. -/
 theorem ContMDiffAt.comp₂ {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M}
-    (ha : ContMDiffAt (I'.prod J') J n h (f x, g x)) (fa : ContMDiffAt I I' n f x)
-    (ga : ContMDiffAt I J' n g x) : ContMDiffAt I J n (fun x ↦ h (f x, g x)) x :=
+    (ha : CMDiffAt n h (f x, g x)) (fa : CMDiffAt n f x)
+    (ga : CMDiffAt n g x) : CMDiffAt n (fun x ↦ h (f x, g x)) x :=
   ha.comp (f := fun x ↦ (f x, g x)) _ (fa.prodMk ga)
 
 /-- `ContMDiffAt.comp₂`, with a separate argument for point equality. -/
 theorem ContMDiffAt.comp₂_of_eq {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M} {y : M' × N'}
-    (ha : ContMDiffAt (I'.prod J') J n h y) (fa : ContMDiffAt I I' n f x)
-    (ga : ContMDiffAt I J' n g x) (e : (f x, g x) = y) :
-    ContMDiffAt I J n (fun x ↦ h (f x, g x)) x := by
+    (ha : CMDiffAt n h y) (fa : CMDiffAt n f x) (ga : CMDiffAt n g x) (e : (f x, g x) = y) :
+    CMDiffAt n (fun x ↦ h (f x, g x)) x := by
   rw [← e] at ha
   exact ha.comp₂ fa ga
 
 /-- Curried `C^n` functions are `C^n` in the first coordinate. -/
 theorem ContMDiffWithinAt.curry_left {f : M → M' → N} {x : M} {y : M'} {s : Set (M × M')}
-    (fa : ContMDiffWithinAt (I.prod I') J n (uncurry f) s (x, y)) :
-    ContMDiffWithinAt I J n (fun x ↦ f x y) {x | (x, y) ∈ s} x :=
+    (fa : CMDiffAt[s] n (uncurry f) (x, y)) :
+    CMDiffAt[{x | (x, y) ∈ s}] n (fun x ↦ f x y) x :=
   fa.comp₂ contMDiffWithinAt_id contMDiffWithinAt_const (fun _ h ↦ h)
 alias ContMDiffWithinAt.along_fst := ContMDiffWithinAt.curry_left
 
 /-- Curried `C^n` functions are `C^n` in the second coordinate. -/
 theorem ContMDiffWithinAt.curry_right {f : M → M' → N} {x : M} {y : M'} {s : Set (M × M')}
-    (fa : ContMDiffWithinAt (I.prod I') J n (uncurry f) s (x, y)) :
-    ContMDiffWithinAt I' J n (fun y ↦ f x y) {y | (x, y) ∈ s} y :=
+    (fa : CMDiffAt[s] n (uncurry f) (x, y)) :
+    CMDiffAt[{y | (x, y) ∈ s}] n (fun y ↦ f x y) y :=
   fa.comp₂ contMDiffWithinAt_const contMDiffWithinAt_id (fun _ h ↦ h)
 alias ContMDiffWithinAt.along_snd := ContMDiffWithinAt.curry_right
 
 /-- Curried `C^n` functions are `C^n` in the first coordinate. -/
 theorem ContMDiffAt.curry_left {f : M → M' → N} {x : M} {y : M'}
-    (fa : ContMDiffAt (I.prod I') J n (uncurry f) (x, y)) :
-    ContMDiffAt I J n (fun x ↦ f x y) x :=
+    (fa : CMDiffAt n (uncurry f) (x, y)) : CMDiffAt n (fun x ↦ f x y) x :=
   fa.comp₂ contMDiffAt_id contMDiffAt_const
 alias ContMDiffAt.along_fst := ContMDiffAt.curry_left
 
 /-- Curried `C^n` functions are `C^n` in the second coordinate. -/
 theorem ContMDiffAt.curry_right {f : M → M' → N} {x : M} {y : M'}
-    (fa : ContMDiffAt (I.prod I') J n (uncurry f) (x, y)) :
-    ContMDiffAt I' J n (fun y ↦ f x y) y :=
+    (fa : CMDiffAt n (uncurry f) (x, y)) : CMDiffAt n (fun y ↦ f x y) y :=
   fa.comp₂ contMDiffAt_const contMDiffAt_id
 alias ContMDiffAt.along_snd := ContMDiffAt.curry_right
 
 /-- Curried `C^n` functions are `C^n` in the first coordinate. -/
 theorem ContMDiffOn.curry_left {f : M → M' → N} {s : Set (M × M')}
-    (fa : ContMDiffOn (I.prod I') J n (uncurry f) s) {y : M'} :
-    ContMDiffOn I J n (fun x ↦ f x y) {x | (x, y) ∈ s} :=
+    (fa : CMDiff[s] n (uncurry f)) {y : M'} :
+    CMDiff[{x | (x, y) ∈ s}] n (fun x ↦ f x y) :=
   fun x m ↦ (fa (x, y) m).along_fst
 alias ContMDiffOn.along_fst := ContMDiffOn.curry_left
 
 /-- Curried `C^n` functions are `C^n` in the second coordinate. -/
 theorem ContMDiffOn.curry_right {f : M → M' → N} {x : M} {s : Set (M × M')}
-    (fa : ContMDiffOn (I.prod I') J n (uncurry f) s) :
-    ContMDiffOn I' J n (fun y ↦ f x y) {y | (x, y) ∈ s} :=
+    (fa : CMDiff[s] n (uncurry f)) : CMDiff[{y | (x, y) ∈ s}] n (fun y ↦ f x y) :=
   fun y m ↦ (fa (x, y) m).along_snd
 alias ContMDiffOn.along_snd := ContMDiffOn.curry_right
 
 /-- Curried `C^n` functions are `C^n` in the first coordinate. -/
-theorem ContMDiff.curry_left {f : M → M' → N}
-    (fa : ContMDiff (I.prod I') J n (uncurry f)) {y : M'} :
-    ContMDiff I J n (fun x ↦ f x y) :=
+theorem ContMDiff.curry_left {f : M → M' → N} (fa : CMDiff n (uncurry f)) {y : M'} :
+    CMDiff n (fun x ↦ f x y) :=
   fun _ ↦ (fa _).along_fst
 alias ContMDiff.along_fst := ContMDiff.curry_left
 
 /-- Curried `C^n` functions are `C^n` in the second coordinate. -/
-theorem ContMDiff.curry_right {f : M → M' → N} {x : M}
-    (fa : ContMDiff (I.prod I') J n (uncurry f)) :
-    ContMDiff I' J n (fun y ↦ f x y) :=
+theorem ContMDiff.curry_right {f : M → M' → N} {x : M} (fa : CMDiff n (uncurry f)) :
+    CMDiff n (fun y ↦ f x y) :=
   fun _ ↦ (fa _).along_snd
 alias ContMDiff.along_snd := ContMDiff.curry_right
 
@@ -311,32 +298,30 @@ variable {g : N → N'} {r : Set N} {y : N}
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
-theorem ContMDiffWithinAt.prodMap' {p : M × N} (hf : ContMDiffWithinAt I I' n f s p.1)
-    (hg : ContMDiffWithinAt J J' n g r p.2) :
-    ContMDiffWithinAt (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) p :=
+theorem ContMDiffWithinAt.prodMap' {p : M × N}
+    (hf : CMDiffAt[s] n f p.1) (hg : CMDiffAt[r] n g p.2) :
+    CMDiffAt[s ×ˢ r] n (Prod.map f g) p :=
   (hf.comp p contMDiffWithinAt_fst mapsTo_fst_prod).prodMk <|
     hg.comp p contMDiffWithinAt_snd mapsTo_snd_prod
 
-theorem ContMDiffWithinAt.prodMap (hf : ContMDiffWithinAt I I' n f s x)
-    (hg : ContMDiffWithinAt J J' n g r y) :
-    ContMDiffWithinAt (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) (x, y) :=
+theorem ContMDiffWithinAt.prodMap (hf : CMDiffAt[s] n f x) (hg : CMDiffAt[r] n g y) :
+    CMDiffAt[s ×ˢ r] n (Prod.map f g) (x, y) :=
   ContMDiffWithinAt.prodMap' hf hg
 
-theorem ContMDiffAt.prodMap (hf : ContMDiffAt I I' n f x) (hg : ContMDiffAt J J' n g y) :
-    ContMDiffAt (I.prod J) (I'.prod J') n (Prod.map f g) (x, y) := by
+theorem ContMDiffAt.prodMap (hf : CMDiffAt n f x) (hg : CMDiffAt n g y) :
+    CMDiffAt n (Prod.map f g) (x, y) := by
   simp only [← contMDiffWithinAt_univ, ← univ_prod_univ] at *
   exact hf.prodMap hg
 
-theorem ContMDiffAt.prodMap' {p : M × N} (hf : ContMDiffAt I I' n f p.1)
-    (hg : ContMDiffAt J J' n g p.2) : ContMDiffAt (I.prod J) (I'.prod J') n (Prod.map f g) p :=
+theorem ContMDiffAt.prodMap' {p : M × N} (hf : CMDiffAt n f p.1)
+    (hg : CMDiffAt n g p.2) : CMDiffAt n (Prod.map f g) p :=
   hf.prodMap hg
 
-theorem ContMDiffOn.prodMap (hf : ContMDiffOn I I' n f s) (hg : ContMDiffOn J J' n g r) :
-    ContMDiffOn (I.prod J) (I'.prod J') n (Prod.map f g) (s ×ˢ r) :=
+theorem ContMDiffOn.prodMap (hf : CMDiff[s] n f) (hg : CMDiff[r] n g) :
+    CMDiff[s ×ˢ r] n (Prod.map f g) :=
   (hf.comp contMDiffOn_fst mapsTo_fst_prod).prodMk <| hg.comp contMDiffOn_snd mapsTo_snd_prod
 
-theorem ContMDiff.prodMap (hf : ContMDiff I I' n f) (hg : ContMDiff J J' n g) :
-    ContMDiff (I.prod J) (I'.prod J') n (Prod.map f g) := by
+theorem ContMDiff.prodMap (hf : CMDiff n f) (hg : CMDiff n g) : CMDiff n (Prod.map f g) := by
   intro p
   exact (hf p.1).prodMap' (hg p.2)
 
@@ -428,7 +413,7 @@ lemma extChartAt_inr_apply {x y : M'} :
     (extChartAt I (.inr x : M ⊕ M')) (Sum.inr y) = (extChartAt I x) y := by simp
 
 lemma ContMDiff.sumElim {f : M → N} {g : M' → N}
-    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := by
+    (hf : CMDiff n f) (hg : CMDiff n g) : ContMDiff I J n (Sum.elim f g) := by
   intro p
   rw [contMDiffAt_iff]
   refine ⟨(Continuous.sumElim hf.continuous hg.continuous).continuousAt, ?_⟩
@@ -465,11 +450,11 @@ lemma ContMDiff.sumElim {f : M → N} {g : M' → N}
       congr
 
 lemma ContMDiff.sumMap {f : M → N} {g : M' → N'}
-    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.map f g) :=
+    (hf : CMDiff n f) (hg : CMDiff n g) : ContMDiff I J n (Sum.map f g) :=
   ContMDiff.sumElim (ContMDiff.inl.comp hf) (ContMDiff.inr.comp hg)
 
 lemma contMDiff_of_contMDiff_inl {f : M → N}
-    (h : ContMDiff I J n ((@Sum.inl N N') ∘ f)) : ContMDiff I J n f := by
+    (h : ContMDiff I J n ((@Sum.inl N N') ∘ f)) : CMDiff n f := by
   nontriviality N
   inhabit N
   let aux : N ⊕ N' → N := Sum.elim (@id N) (fun _ ↦ inhabited_h.default)
@@ -482,7 +467,7 @@ lemma contMDiff_of_contMDiff_inl {f : M → N}
   use f x, trivial
 
 lemma contMDiff_of_contMDiff_inr {g : M' → N'}
-    (h : ContMDiff I J n ((@Sum.inr N N') ∘ g)) : ContMDiff I J n g := by
+    (h : ContMDiff I J n ((@Sum.inr N N') ∘ g)) : CMDiff n g := by
   nontriviality N'
   inhabit N'
   let aux : N ⊕ N' → N' := Sum.elim (fun _ ↦ inhabited_h.default) (@id N')
@@ -495,7 +480,7 @@ lemma contMDiff_of_contMDiff_inr {g : M' → N'}
   use g x, trivial
 
 lemma contMDiff_sum_map {f : M → N} {g : M' → N'} :
-    ContMDiff I J n (Sum.map f g) ↔ ContMDiff I J n f ∧ ContMDiff I J n g :=
+    ContMDiff I J n (Sum.map f g) ↔ CMDiff n f ∧ CMDiff n g :=
   ⟨fun h ↦ ⟨contMDiff_of_contMDiff_inl (h.comp ContMDiff.inl),
     contMDiff_of_contMDiff_inr (h.comp ContMDiff.inr)⟩,
    fun h ↦ ContMDiff.sumMap h.1 h.2⟩
