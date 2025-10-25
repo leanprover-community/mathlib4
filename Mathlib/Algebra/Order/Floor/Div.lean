@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Pi
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Order.GaloisConnection
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Finsupp.SMulWithZero
+import Mathlib.Order.Preorder.Finsupp
 
 /-!
 # Flooring, ceiling division
@@ -51,7 +52,8 @@ Note in both cases we only allow dividing by positive inputs. We enforce the fol
 variable {ι α β : Type*}
 
 section OrderedAddCommMonoid
-variable (α β) [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
+variable (α β) [AddCommMonoid α] [PartialOrder α] [AddCommMonoid β] [PartialOrder β]
+  [SMulZeroClass α β]
 
 /-- Typeclass for division rounded down. For each `a > 0`, this asserts the existence of a right
 adjoint to the map `b ↦ a • b : β → β`. -/
@@ -118,23 +120,23 @@ end CeilDiv
 end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
-variable [LinearOrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
+variable [AddCommMonoid α] [LinearOrder α] [AddCommMonoid β] [PartialOrder β] [SMulZeroClass α β]
   [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b : β}
 
 lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
-  obtain ha | ha := le_or_lt a 0
+  obtain ha | ha := le_or_gt a 0
   · simp [ha]
   · exact le_of_smul_le_smul_left ((smul_floorDiv_le ha).trans <| le_smul_ceilDiv ha) ha
 
 end LinearOrderedAddCommMonoid
 
 section OrderedSemiring
-variable [OrderedSemiring α] [OrderedAddCommMonoid β] [MulActionWithZero α β]
+variable [Semiring α] [PartialOrder α] [AddCommMonoid β] [PartialOrder β] [MulActionWithZero α β]
 
 section FloorDiv
 variable [FloorDiv α β] {a : α}
 
-@[simp] lemma floorDiv_one [Nontrivial α] (b : β) : b ⌊/⌋ (1 : α) = b :=
+@[simp] lemma floorDiv_one [IsOrderedRing α] [Nontrivial α] (b : β) : b ⌊/⌋ (1 : α) = b :=
   eq_of_forall_le_iff <| fun c ↦ by simp [zero_lt_one' α]
 
 @[simp] lemma smul_floorDiv [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) (b : β) :
@@ -146,7 +148,7 @@ end FloorDiv
 section CeilDiv
 variable [CeilDiv α β] {a : α}
 
-@[simp] lemma ceilDiv_one [Nontrivial α] (b : β) : b ⌈/⌉ (1 : α) = b :=
+@[simp] lemma ceilDiv_one [IsOrderedRing α] [Nontrivial α] (b : β) : b ⌈/⌉ (1 : α) = b :=
   eq_of_forall_ge_iff <| fun c ↦ by simp [zero_lt_one' α]
 
 @[simp] lemma smul_ceilDiv [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) (b : β) :
@@ -193,7 +195,8 @@ lemma ceilDiv_eq_add_pred_div (a b : ℕ) : a ⌈/⌉ b = (a + b - 1) / b := rfl
 end Nat
 
 namespace Pi
-variable {π : ι → Type*} [OrderedAddCommMonoid α] [∀ i, OrderedAddCommMonoid (π i)]
+variable {π : ι → Type*} [AddCommMonoid α] [PartialOrder α]
+  [∀ i, AddCommMonoid (π i)] [∀ i, PartialOrder (π i)]
   [∀ i, SMulZeroClass α (π i)]
 
 section FloorDiv
@@ -205,6 +208,7 @@ instance instFloorDiv : FloorDiv α (∀ i, π i) where
   floorDiv_nonpos a ha f := by ext i; exact floorDiv_of_nonpos ha _
   zero_floorDiv a := by ext i; exact zero_floorDiv a
 
+@[push ←]
 lemma floorDiv_def (f : ∀ i, π i) (a : α) : f ⌊/⌋ a = fun i ↦ f i ⌊/⌋ a := rfl
 @[simp] lemma floorDiv_apply (f : ∀ i, π i) (a : α) (i : ι) : (f ⌊/⌋ a) i = f i ⌊/⌋ a := rfl
 
@@ -226,7 +230,8 @@ end CeilDiv
 end Pi
 
 namespace Finsupp
-variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
+variable [AddCommMonoid α] [PartialOrder α]
+  [AddCommMonoid β] [PartialOrder β] [SMulZeroClass α β]
 
 section FloorDiv
 variable [FloorDiv α β] {f : ι →₀ β} {a : α}

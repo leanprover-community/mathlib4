@@ -30,7 +30,7 @@ instance : Neg αˣ :=
   ⟨fun u => ⟨-↑u, -↑u⁻¹, by simp, by simp⟩⟩
 
 /-- Representing an element of a ring's unit group as an element of the ring commutes with
-    mapping this element to its additive inverse. -/
+mapping this element to its additive inverse. -/
 @[simp, norm_cast]
 protected theorem val_neg (u : αˣ) : (↑(-u) : α) = -u :=
   rfl
@@ -39,41 +39,37 @@ protected theorem val_neg (u : αˣ) : (↑(-u) : α) = -u :=
 protected theorem coe_neg_one : ((-1 : αˣ) : α) = -1 :=
   rfl
 
-instance : HasDistribNeg αˣ :=
-  Units.ext.hasDistribNeg _ Units.val_neg Units.val_mul
+instance : HasDistribNeg αˣ := val_injective.hasDistribNeg _ Units.val_neg val_mul
 
-@[field_simps]
 theorem neg_divp (a : α) (u : αˣ) : -(a /ₚ u) = -a /ₚ u := by simp only [divp, neg_mul]
 
 end HasDistribNeg
+
+section Semiring
+
+variable [Semiring α]
+
+theorem divp_add_divp_same (a b : α) (u : αˣ) : a /ₚ u + b /ₚ u = (a + b) /ₚ u := by
+  simp only [divp, add_mul]
+
+theorem add_divp (a b : α) (u : αˣ) : a + b /ₚ u = (a * u + b) /ₚ u := by
+  simp only [divp, add_mul, Units.mul_inv_cancel_right]
+
+theorem divp_add (a b : α) (u : αˣ) : a /ₚ u + b = (a + b * u) /ₚ u := by
+  simp only [divp, add_mul, Units.mul_inv_cancel_right]
+
+end Semiring
 
 section Ring
 
 variable [Ring α]
 
--- Needs to have higher simp priority than divp_add_divp. 1000 is the default priority.
-@[field_simps 1010]
-theorem divp_add_divp_same (a b : α) (u : αˣ) : a /ₚ u + b /ₚ u = (a + b) /ₚ u := by
-  simp only [divp, add_mul]
-
--- Needs to have higher simp priority than divp_sub_divp. 1000 is the default priority.
-@[field_simps 1010]
 theorem divp_sub_divp_same (a b : α) (u : αˣ) : a /ₚ u - b /ₚ u = (a - b) /ₚ u := by
   rw [sub_eq_add_neg, sub_eq_add_neg, neg_divp, divp_add_divp_same]
 
-@[field_simps]
-theorem add_divp (a b : α) (u : αˣ) : a + b /ₚ u = (a * u + b) /ₚ u := by
-  simp only [divp, add_mul, Units.mul_inv_cancel_right]
-
-@[field_simps]
 theorem sub_divp (a b : α) (u : αˣ) : a - b /ₚ u = (a * u - b) /ₚ u := by
   simp only [divp, sub_mul, Units.mul_inv_cancel_right]
 
-@[field_simps]
-theorem divp_add (a b : α) (u : αˣ) : a /ₚ u + b = (a + b * u) /ₚ u := by
-  simp only [divp, add_mul, Units.mul_inv_cancel_right]
-
-@[field_simps]
 theorem divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
   simp only [divp, sub_mul, sub_right_inj]
   rw [mul_assoc, Units.mul_inv, mul_one]
@@ -105,8 +101,7 @@ theorem IsUnit.sub_iff [Ring α] {x y : α} : IsUnit (x - y) ↔ IsUnit (y - x) 
 
 namespace Units
 
-@[field_simps]
-theorem divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
+theorem divp_add_divp [CommSemiring α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ + b /ₚ u₂ = (a * u₂ + u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [divp, add_mul, mul_inv_rev, val_mul]
   rw [mul_comm (↑u₁ * b), mul_comm b]
@@ -114,7 +109,6 @@ theorem divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
     mul_one]
   -- Porting note: `assoc_rw` not ported: `assoc_rw [mul_inv, mul_inv, mul_one, mul_one]`
 
-@[field_simps]
 theorem divp_sub_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
     a /ₚ u₁ - b /ₚ u₂ = (a * u₂ - u₁ * b) /ₚ (u₁ * u₂) := by
   simp only [sub_eq_add_neg, neg_divp, divp_add_divp, mul_neg]

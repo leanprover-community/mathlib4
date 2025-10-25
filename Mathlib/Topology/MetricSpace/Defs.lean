@@ -25,6 +25,8 @@ for `PseudoMetricSpace`s in `PseudoMetric.lean`.
 metric, pseudo_metric, dist
 -/
 
+assert_not_exists Finset.sum
+
 open Set Filter Bornology
 open scoped NNReal Uniformity
 
@@ -33,8 +35,22 @@ universe u v w
 variable {α : Type u} {β : Type v} {X ι : Type*}
 variable [PseudoMetricSpace α]
 
-/-- We now define `MetricSpace`, extending `PseudoMetricSpace`. -/
-class MetricSpace (α : Type u) extends PseudoMetricSpace α : Type u where
+/-- A metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
+`dist x y = 0 ↔ x = y`, commutativity `dist x y = dist y x`, and the triangle inequality
+`dist x z ≤ dist x y + dist y z`.
+
+See pseudometric spaces (`PseudoMetricSpace`) for the similar class with the `dist x y = 0 ↔ x = y`
+assumption weakened to `dist x x = 0`.
+
+Any metric space is a T1 topological space and a uniform space (see `TopologicalSpace`, `T1Space`,
+`UniformSpace`), where the topology and uniformity come from the metric.
+
+We make the uniformity/topology part of the data instead of deriving it from the metric.
+This e.g. ensures that we do not get a diamond when doing
+`[MetricSpace α] [MetricSpace β] : TopologicalSpace (α × β)`:
+The product metric and product topology agree, but not definitionally so.
+See Note [forgetful inheritance]. -/
+class MetricSpace (α : Type u) : Type u extends PseudoMetricSpace α where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
 
 /-- Two metric space structures with the same distance coincide. -/
@@ -78,7 +94,7 @@ theorem dist_pos {x y : γ} : 0 < dist x y ↔ x ≠ y := by
   simpa only [not_le] using not_congr dist_le_zero
 
 theorem eq_of_forall_dist_le {x y : γ} (h : ∀ ε > 0, dist x y ≤ ε) : x = y :=
-  eq_of_dist_eq_zero (eq_of_le_of_forall_le_of_dense dist_nonneg h)
+  eq_of_dist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense dist_nonneg h)
 
 /-- Deduce the equality of points from the vanishing of the nonnegative distance -/
 theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
@@ -87,11 +103,11 @@ theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
 /-- Characterize the equality of points as the vanishing of the nonnegative distance -/
 @[simp]
 theorem nndist_eq_zero {x y : γ} : nndist x y = 0 ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
+  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, dist_eq_zero]
 
 @[simp]
 theorem zero_eq_nndist {x y : γ} : 0 = nndist x y ↔ x = y := by
-  simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, zero_eq_dist]
+  simp only [NNReal.eq_iff, ← dist_nndist, NNReal.coe_zero, zero_eq_dist]
 
 namespace Metric
 
@@ -203,21 +219,6 @@ instance : Dist (Multiplicative X) := ‹Dist X›
 
 end
 
-section
-
-variable [PseudoMetricSpace X]
-
-@[simp] theorem nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
-
-@[simp] theorem nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
-
-@[simp] theorem nndist_toMul (a b : Additive X) : nndist a.toMul b.toMul = nndist a b := rfl
-
-@[simp]
-theorem nndist_toAdd (a b : Multiplicative X) : nndist a.toAdd b.toAdd = nndist a b := rfl
-
-end
-
 instance [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
 instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
 
@@ -238,18 +239,6 @@ instance : Dist Xᵒᵈ := ‹Dist X›
 @[simp] theorem dist_toDual (a b : X) : dist (toDual a) (toDual b) = dist a b := rfl
 
 @[simp] theorem dist_ofDual (a b : Xᵒᵈ) : dist (ofDual a) (ofDual b) = dist a b := rfl
-
-end
-
-section
-
-variable [PseudoMetricSpace X]
-
-instance : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
-
-@[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
-
-@[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
 
 end
 

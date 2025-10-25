@@ -24,7 +24,17 @@ admits a `MulDistribMulAction G Mˣ` structure, again with the obvious definitio
 * `Algebra.GroupWithZero.Action.Prod`
 -/
 
-variable {G M α β : Type*}
+assert_not_exists Ring
+
+variable {G₀ G M α β : Type*}
+
+namespace Units
+variable [GroupWithZero G₀]
+
+@[simp]
+lemma smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a := rfl
+
+end Units
 
 section GroupWithZero
 variable [GroupWithZero α] [MulAction α β] {a : α}
@@ -62,11 +72,7 @@ namespace Units
 
 /-! ### Action of the units of `M` on a type `α` -/
 
-@[to_additive]
-instance [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
-
 instance instSMulZeroClass [Monoid M] [Zero α] [SMulZeroClass M α] : SMulZeroClass Mˣ α where
-  smul := (· • ·)
   smul_zero m := smul_zero (m : M)
 
 instance instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
@@ -89,7 +95,6 @@ instance instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M �
 instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
     [IsScalarTower G M M] : MulDistribMulAction G Mˣ :=
   { Units.mulAction' with
-    smul := (· • ·),
     smul_one := fun _ => Units.ext <| smul_one _,
     smul_mul := fun _ _ _ => Units.ext <| smul_mul' _ _ _ }
 

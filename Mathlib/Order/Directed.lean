@@ -82,7 +82,6 @@ theorem Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b
   let ⟨c, h₁, h₂⟩ := h a b
   ⟨c, H _ _ h₁, H _ _ h₂⟩
 
--- Porting note: due to some interaction with the local notation, `r` became explicit here in lean3
 theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Prop} {g : α → β} {f : ι → α}
     (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : Directed r f) : Directed rb (g ∘ f) :=
   directed_comp.2 <| hf.mono hg
@@ -90,6 +89,13 @@ theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Pro
 theorem DirectedOn.mono_comp {r : α → α → Prop} {rb : β → β → Prop} {g : α → β} {s : Set α}
     (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : DirectedOn r s) : DirectedOn rb (g '' s) :=
   directedOn_image.mpr (hf.mono hg)
+
+lemma directedOn_onFun_iff {r : α → α → Prop} {f : β → α} {s : Set β} :
+    DirectedOn (r on f) s ↔ DirectedOn r (f '' s) := by
+  refine ⟨DirectedOn.mono_comp (by simp), fun h x hx y hy ↦ ?_⟩
+  obtain ⟨_, ⟨z, hz, rfl⟩, hz'⟩ := h (f x) (Set.mem_image_of_mem f hx) (f y)
+    (Set.mem_image_of_mem f hy)
+  grind
 
 /-- A set stable by supremum is `≤`-directed. -/
 theorem directedOn_of_sup_mem [SemilatticeSup α] {S : Set α}

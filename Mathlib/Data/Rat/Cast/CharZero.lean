@@ -54,8 +54,6 @@ def castHom : ℚ →+* α where
 
 @[simp] lemma coe_castHom : ⇑(castHom α) = ((↑) : ℚ → α) := rfl
 
-@[deprecated (since := "2024-07-22")] alias coe_cast_hom := coe_castHom
-
 @[simp, norm_cast] lemma cast_inv (p : ℚ) : ↑(p⁻¹) = (p⁻¹ : α) := map_inv₀ (castHom α) _
 @[simp, norm_cast] lemma cast_div (p q : ℚ) : ↑(p / q) = (p / q : α) := map_div₀ (castHom α) ..
 
@@ -63,8 +61,10 @@ def castHom : ℚ →+* α where
 lemma cast_zpow (p : ℚ) (n : ℤ) : ↑(p ^ n) = (p ^ n : α) := map_zpow₀ (castHom α) ..
 
 @[norm_cast]
-theorem cast_mk (a b : ℤ) : (a /. b : α) = a / b := by
+theorem cast_divInt (a b : ℤ) : (a /. b : α) = a / b := by
   simp only [divInt_eq_div, cast_div, cast_intCast]
+
+@[deprecated (since := "2025-08-13")] alias cast_mk := cast_divInt
 
 end Rat
 

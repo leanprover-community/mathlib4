@@ -13,34 +13,34 @@ as the least fixpoint of a polynomial functor.
 
 ## Main definitions
 
- * `W_mk`     - constructor
- * `W_dest    - destructor
- * `W_rec`    - recursor: basis for defining functions by structural recursion on `P.W α`
- * `W_rec_eq` - defining equation for `W_rec`
- * `W_ind`    - induction principle for `P.W α`
+* `W_mk`     - constructor
+* `W_dest    - destructor
+* `W_rec`    - recursor: basis for defining functions by structural recursion on `P.W α`
+* `W_rec_eq` - defining equation for `W_rec`
+* `W_ind`    - induction principle for `P.W α`
 
 ## Implementation notes
 
 Three views of M-types:
 
- * `wp`: polynomial functor
- * `W`: data type inductively defined by a triple:
+* `wp`: polynomial functor
+* `W`: data type inductively defined by a triple:
      shape of the root, data in the root and children of the root
- * `W`: least fixed point of a polynomial functor
+* `W`: least fixed point of a polynomial functor
 
 Specifically, we define the polynomial functor `wp` as:
 
- * A := a tree-like structure without information in the nodes
- * B := given the tree-like structure `t`, `B t` is a valid path
-   (specified inductively by `W_path`) from the root of `t` to any given node.
+* A := a tree-like structure without information in the nodes
+* B := given the tree-like structure `t`, `B t` is a valid path
+  (specified inductively by `W_path`) from the root of `t` to any given node.
 
 As a result `wp α` is made of a dataless tree and a function from
 its valid paths to values of `α`
 
 ## Reference
 
- * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+* Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
+  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
 
@@ -102,13 +102,12 @@ theorem comp_wPathCasesOn {α β : TypeVec n} (h : α ⟹ β) {a : P.A} {f : P.l
 /-- Polynomial functor for the W-type of `P`. `A` is a data-less well-founded
 tree whereas, for a given `a : A`, `B a` is a valid path in tree `a` so
 that `Wp.obj α` is made of a tree and a function from its valid paths to
-the values it contains  -/
+the values it contains -/
 def wp : MvPFunctor n where
   A := P.last.W
   B := P.WPath
 
 /-- W-type of `P` -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): used to have @[nolint has_nonempty_instance]
 def W (α : TypeVec n) : Type _ :=
   P.wp α
 
@@ -146,7 +145,7 @@ Now think of W as defined inductively by the data ⟨a, f', f⟩ where
 - `a  : P.A` is the shape of the top node
 - `f' : P.drop.B a ⟹ α` is the contents of the top node
 - `f  : P.last.B a → P.last.W` are the subtrees
- -/
+-/
 
 
 /-- Constructor for `W` -/
@@ -168,17 +167,14 @@ def wRec {α : TypeVec n} {C : Type*}
 theorem wRec_eq {α : TypeVec n} {C : Type*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) (a : P.A)
     (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
-    P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := by
-  rw [wMk, wRec]; rw [wpRec_eq]
-  dsimp only [wPathDestLeft_wPathCasesOn, wPathDestRight_wPathCasesOn]
-  congr
+    P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := rfl
 
 /-- Induction principle for `W` -/
 theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
     ∀ x, C x := by
-  intro x; cases' x with a f
+  intro x; obtain ⟨a, f⟩ := x
   apply @wp_ind n P α fun a f => C ⟨a, f⟩
   intro a f f' ih'
   dsimp [wMk] at ih
@@ -200,7 +196,7 @@ theorem wMk_eq {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (g' : P.
 
 theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) : g <$$> P.wMk a f' f = P.wMk a (g ⊚ f') fun i => g <$$> f i := by
-  show _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
+  change _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
   have : MvFunctor.map g ∘ f = fun i => ⟨(f i).fst, g ⊚ (f i).snd⟩ := by
     ext i : 1
     dsimp [Function.comp_def]
@@ -250,6 +246,6 @@ theorem wDest'_wMk {α : TypeVec n} (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.la
     P.wDest' (P.wMk a f' f) = ⟨a, splitFun f' f⟩ := by rw [wDest', wRec_eq]
 
 theorem wDest'_wMk' {α : TypeVec n} (x : P (α.append1 (P.W α))) : P.wDest' (P.wMk' x) = x := by
-  cases' x with a f; rw [wMk', wDest'_wMk, split_dropFun_lastFun]
+  obtain ⟨a, f⟩ := x; rw [wMk', wDest'_wMk, split_dropFun_lastFun]
 
 end MvPFunctor

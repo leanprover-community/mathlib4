@@ -19,7 +19,6 @@ We show that these properties are local, and are stable under compositions and b
 
 -/
 
-
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
@@ -39,7 +38,7 @@ class LocallyOfFiniteType (f : X ⟶ Y) : Prop where
     ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).hom.FiniteType
 
 instance : HasRingHomProperty @LocallyOfFiniteType RingHom.FiniteType where
-  isLocal_ringHomProperty := RingHom.finiteType_is_local
+  isLocal_ringHomProperty := RingHom.finiteType_isLocal
   eq_affineLocally' := by
     ext X Y f
     rw [locallyOfFiniteType_iff, affineLocally_iff_affineOpens_le]
@@ -68,34 +67,47 @@ instance locallyOfFiniteType_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFiniteType :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finiteType_isStableUnderBaseChange
 
-instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace (Spec (.of R)) :=
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType g] :
+    LocallyOfFiniteType (pullback.fst f g) :=
+  MorphismProperty.pullback_fst f g inferInstance
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType f] :
+    LocallyOfFiniteType (pullback.snd f g) :=
+  MorphismProperty.pullback_snd f g inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [LocallyOfFiniteType f] : LocallyOfFiniteType (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [LocallyOfFiniteType f] :
+    LocallyOfFiniteType (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
+
+instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace <| Spec <| .of R :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
 instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
 nonrec lemma LocallyOfFiniteType.jacobsonSpace
-  (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
+    (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
   wlog hY : ∃ S, Y = Spec S
-  · rw [jacobsonSpace_iff_of_iSup_eq_top
-      (Scheme.OpenCover.iSup_opensRange (Y.affineCover.pullbackCover f))]
+  · rw [(Scheme.OpenCover.isOpenCover_opensRange (Y.affineCover.pullback₁ f)).jacobsonSpace_iff]
     intro i
     have inst : LocallyOfFiniteType (Y.affineCover.pullbackHom f i) :=
       MorphismProperty.pullback_snd _ _ inferInstance
     have inst : JacobsonSpace Y := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
-    have inst : JacobsonSpace (Y.affineCover.obj i) :=
-      .of_isOpenEmbedding (Y.affineCover.map i).isOpenEmbedding
-    let e := Homeomorph.ofIsEmbedding _
-      ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding.isEmbedding
+    have inst : JacobsonSpace (Y.affineCover.X i) :=
+      .of_isOpenEmbedding (Y.affineCover.f i).isOpenEmbedding
+    let e := ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding.isEmbedding.toHomeomorph
     have := this (Y.affineCover.pullbackHom f i) ⟨_, rfl⟩
     exact .of_isClosedEmbedding e.symm.isClosedEmbedding
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
   · have inst : JacobsonSpace (Spec R) := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
-    rw [jacobsonSpace_iff_of_iSup_eq_top (Scheme.OpenCover.iSup_opensRange X.affineCover)]
+    rw [X.affineCover.isOpenCover_opensRange.jacobsonSpace_iff]
     intro i
-    have := this _ (X.affineCover.map i ≫ f) ⟨_, rfl⟩
-    let e := Homeomorph.ofIsEmbedding _ (X.affineCover.map i).isOpenEmbedding.isEmbedding
+    have := this _ (X.affineCover.f i ≫ f) ⟨_, rfl⟩
+    let e := (X.affineCover.f i).isOpenEmbedding.isEmbedding.toHomeomorph
     exact .of_isClosedEmbedding e.symm.isClosedEmbedding
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl : Spec.map φ = f⟩ := Spec.homEquiv.symm.surjective f

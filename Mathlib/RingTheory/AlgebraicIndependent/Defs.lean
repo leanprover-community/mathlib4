@@ -41,16 +41,18 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-open scoped Classical
-
 variable {ι ι' : Type*} (R : Type*) {K A A' : Type*} (x : ι → A)
 variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 
 /-- `AlgebraicIndependent R x` states the family of elements `x`
   is algebraically independent over `R`, meaning that the canonical
   map out of the multivariable polynomial ring is injective. -/
-def AlgebraicIndependent : Prop :=
+@[stacks 030E "(1)"] def AlgebraicIndependent : Prop :=
   Injective (MvPolynomial.aeval x : MvPolynomial ι R →ₐ[R] A)
+
+/-- `AlgebraicIndepOn R v s` states that the elements in the family `v` that are indexed by the
+elements of `s` are algebraically independent over `R`. -/
+abbrev AlgebraicIndepOn (s : Set ι) : Prop := AlgebraicIndependent R fun i : s ↦ x i
 
 variable {R} {x}
 
@@ -126,7 +128,7 @@ def aevalEquiv : MvPolynomial ι R ≃ₐ[R] Algebra.adjoin R (range x) :=
   (AlgEquiv.ofInjective (aeval x) (algebraicIndependent_iff_injective_aeval.1 hx)).trans
     (Subalgebra.equivOfEq _ _ (Algebra.adjoin_range_eq_range_aeval R x).symm)
 
---@[simp] Porting note: removing simp because the linter complains about deterministic timeout
+@[simp]
 theorem algebraMap_aevalEquiv (p : MvPolynomial ι R) :
     algebraMap (Algebra.adjoin R (range x)) A (hx.aevalEquiv p) = aeval x p :=
   rfl
@@ -147,9 +149,32 @@ end repr
 
 end AlgebraicIndependent
 
-variable (R)
-
+variable (R) in
 /-- A family is a transcendence basis if it is a maximal algebraically independent subset. -/
-def IsTranscendenceBasis (x : ι → A) : Prop :=
+@[stacks 030E "(4)"] def IsTranscendenceBasis (x : ι → A) : Prop :=
   AlgebraicIndependent R x ∧
-    ∀ (s : Set A) (_ : AlgebraicIndependent R ((↑) : s → A)) (_ : range x ≤ s), range x = s
+    ∀ (s : Set A) (_ : AlgebraicIndepOn R id s) (_ : range x ⊆ s), range x = s
+
+theorem isTranscendenceBasis_iff_maximal {s : Set A} :
+    IsTranscendenceBasis R ((↑) : s → A) ↔ Maximal (AlgebraicIndepOn R id) s := by
+  rw [IsTranscendenceBasis, maximal_iff, Subtype.range_val]; rfl
+
+theorem isTranscendenceBasis_equiv (e : ι ≃ ι') {f : ι' → A} :
+    IsTranscendenceBasis R (f ∘ e) ↔ IsTranscendenceBasis R f := by
+  simp_rw [IsTranscendenceBasis, algebraicIndependent_equiv, EquivLike.range_comp]
+
+alias ⟨_, IsTranscendenceBasis.comp_equiv⟩ := isTranscendenceBasis_equiv
+
+theorem isTranscendenceBasis_equiv' (e : ι ≃ ι') {f : ι' → A} {g : ι → A} (h : f ∘ e = g) :
+    IsTranscendenceBasis R g ↔ IsTranscendenceBasis R f :=
+  h ▸ isTranscendenceBasis_equiv e
+
+theorem isTranscendenceBasis_subtype_range {ι} {f : ι → A} (hf : Injective f) :
+    IsTranscendenceBasis R ((↑) : range f → A) ↔ IsTranscendenceBasis R f :=
+  .symm <| isTranscendenceBasis_equiv' (Equiv.ofInjective f hf) rfl
+
+alias ⟨IsTranscendenceBasis.of_subtype_range, _⟩ := isTranscendenceBasis_subtype_range
+
+theorem isTranscendenceBasis_image {ι} {s : Set ι} {f : ι → A} (hf : Set.InjOn f s) :
+    IsTranscendenceBasis R (fun x : s ↦ f x) ↔ IsTranscendenceBasis R fun x : f '' s ↦ (x : A) :=
+  isTranscendenceBasis_equiv' (Equiv.Set.imageOfInjOn _ _ hf) rfl

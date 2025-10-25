@@ -3,6 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
@@ -82,9 +83,6 @@ theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 
 theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
--- this slow simp lemma causes a maxHeartbeats exception
-attribute [-simp] CostructuredArrow.right_eq_id in
-
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
@@ -142,6 +140,12 @@ instance RepresentablyCoflat.comp (G : D ⥤ E) [RepresentablyCoflat F] [Represe
     RepresentablyCoflat (F ⋙ G) :=
   (representablyFlat_op_iff _).1 <| inferInstanceAs <| RepresentablyFlat (F.op ⋙ G.op)
 
+lemma final_of_representablyFlat [h : RepresentablyFlat F] : F.Final where
+  out _ := IsCofiltered.isConnected _
+
+lemma initial_of_representablyCoflat [h : RepresentablyCoflat F] : F.Initial where
+  out _ := IsFiltered.isConnected _
+
 end RepresentablyFlat
 
 section HasLimit
@@ -153,10 +157,7 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
   ⟨fun X =>
     haveI : HasFiniteLimits (StructuredArrow X F) := by
       apply hasFiniteLimits_of_hasFiniteLimits_of_size.{v₁} (StructuredArrow X F)
-      intro J sJ fJ
-      constructor
-      -- Porting note: instance was inferred automatically in Lean 3
-      infer_instance
+      exact fun _ _ _ => HasLimitsOfShape.mk
     IsCofiltered.of_hasFiniteLimits _⟩
 
 theorem coflat_of_preservesFiniteColimits [HasFiniteColimits C] (F : C ⥤ D)
@@ -197,9 +198,11 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   let α₂ : (F.mapCone c).toStructuredArrow ⋙ map f₂ ⟶ s.toStructuredArrow :=
     { app := fun X => eqToHom (by simp [← h₂]) }
   let c₁ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
-    (Cones.postcompose (whiskerRight α₁ (pre s.pt K F) :)).obj (c.toStructuredArrowCone F f₁)
+    (Cones.postcompose (Functor.whiskerRight α₁ (pre s.pt K F) :)).obj
+      (c.toStructuredArrowCone F f₁)
   let c₂ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
-    (Cones.postcompose (whiskerRight α₂ (pre s.pt K F) :)).obj (c.toStructuredArrowCone F f₂)
+    (Cones.postcompose (Functor.whiskerRight α₂ (pre s.pt K F) :)).obj
+      (c.toStructuredArrowCone F f₂)
   -- The two cones can then be combined and we may obtain a cone over the two cones since
   -- `StructuredArrow s.pt F` is cofiltered.
   let c₀ := IsCofiltered.cone (biconeMk _ c₁ c₂)
@@ -220,18 +223,13 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   have : g₁.right = g₂.right := calc
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
-      -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
-      -- is increased, so we replace it by the output of `tidy?`
-      intro j; rfl
+      aesop
     _ = hc.lift (c.extend g₂.right) := by
       congr
     _ = g₂.right := by
       symm
       apply hc.uniq (c.extend _)
-      -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
-      -- is increased, so we replace it by the output of `tidy?`
-      intro _; rfl
-
+      aesop
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
     f₁ = 𝟙 _ ≫ f₁ := by simp
@@ -272,7 +270,7 @@ lemma preservesFiniteLimits_iff_flat [HasFiniteLimits C] (F : C ⥤ D) :
   ⟨fun _ ↦ preservesFiniteLimits_of_flat F, fun _ ↦ flat_of_preservesFiniteLimits F⟩
 
 /-- If `C` is finitely cocomplete, then `F : C ⥤ D` is representably coflat iff it preserves
-finite colmits. -/
+finite colimits. -/
 lemma preservesFiniteColimits_iff_coflat [HasFiniteColimits C] (F : C ⥤ D) :
     RepresentablyCoflat F ↔ PreservesFiniteColimits F :=
   ⟨fun _ => preservesFiniteColimits_of_coflat F, fun _ => coflat_of_preservesFiniteColimits F⟩
@@ -290,7 +288,7 @@ The evaluation of `F.lan` at `X` is the colimit over the costructured arrows ove
 noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     [∀ X : D, HasColimitsOfShape (CostructuredArrow F X) E] :
     F.lan ⋙ (evaluation D E).obj X ≅
-      (whiskeringLeft _ _ E).obj (CostructuredArrow.proj F X) ⋙ colim :=
+      (Functor.whiskeringLeft _ _ E).obj (CostructuredArrow.proj F X) ⋙ colim :=
   NatIso.ofComponents (fun G =>
     IsColimit.coconePointUniqueUpToIso
     (Functor.isPointwiseLeftKanExtensionLeftKanExtensionUnit F G X)
@@ -304,7 +302,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       simp only [Category.assoc] at h₁ ⊢
       simp only [Functor.lan, Functor.lanUnit] at h₂ ⊢
       rw [reassoc_of% h₁, NatTrans.naturality_assoc, ← reassoc_of% h₂, h₁,
-        ι_colimMap, whiskerLeft_app]
+        ι_colimMap, Functor.whiskerLeft_app]
       rfl)
 
 variable [HasForget.{u₁} E] [HasLimits E] [HasColimits E]

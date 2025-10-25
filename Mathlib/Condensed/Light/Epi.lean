@@ -21,18 +21,18 @@ universe v u w u' v'
 
 open CategoryTheory Sheaf Limits HasForget GrothendieckTopology
 
-attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
-
 namespace LightCondensed
 
-variable (A : Type u') [Category.{v'} A] [HasForget.{w} A]
+variable (A : Type u') [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type w}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA]
   [PreservesFiniteProducts (CategoryTheory.forget A)]
 
 variable {X Y : LightCondensed.{u} A} (f : X ⟶ Y)
 
 lemma isLocallySurjective_iff_locallySurjective_on_lightProfinite : IsLocallySurjective f ↔
-    ∀ (S : LightProfinite) (y : Y.val.obj ⟨S⟩),
-      (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
+    ∀ (S : LightProfinite) (y : ToType (Y.val.obj ⟨S⟩)),
+      (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ)
+        (x : ToType (X.val.obj ⟨S'⟩)),
         f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) := by
   rw [coherentTopology.isLocallySurjective_iff,
     regularTopology.isLocallySurjective_iff]
@@ -44,6 +44,7 @@ namespace LightCondSet
 
 variable {X Y : LightCondSet.{u}} (f : X ⟶ Y)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
     ∀ (S : LightProfinite) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
@@ -57,6 +58,7 @@ namespace LightCondMod
 
 variable (R : Type u) [Ring R] {X Y : LightCondMod.{u} R} (f : X ⟶ Y)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
     ∀ (S : LightProfinite) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
@@ -64,11 +66,13 @@ lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
   rw [← isLocallySurjective_iff_epi']
   exact LightCondensed.isLocallySurjective_iff_locallySurjective_on_lightProfinite _ f
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (LightCondensed.forget R).ReflectsEpimorphisms where
   reflects f hf := by
     rw [← Sheaf.isLocallySurjective_iff_epi'] at hf ⊢
     exact (Presheaf.isLocallySurjective_iff_whisker_forget _ f.val).mpr hf
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : (LightCondensed.forget R).PreservesEpimorphisms where
   preserves f hf := by
     rw [← Sheaf.isLocallySurjective_iff_epi'] at hf ⊢
@@ -82,13 +86,14 @@ variable (R : Type*) [Ring R]
 variable {F : ℕᵒᵖ ⥤ LightCondMod R} {c : Cone F} (hc : IsLimit c)
   (hF : ∀ n, Epi (F.map (homOfLE (Nat.le_succ n)).op))
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 include hc hF in
 lemma epi_π_app_zero_of_epi : Epi (c.π.app ⟨0⟩) := by
   apply Functor.epi_of_epi_map (forget R)
   change Epi (((forget R).mapCone c).π.app ⟨0⟩)
   apply coherentTopology.epi_π_app_zero_of_epi
   · simp only [LightProfinite.effectiveEpi_iff_surjective]
-    exact fun _ h ↦ Concrete.surjective_π_app_zero_of_surjective_map (limit.isLimit _) h
+    exact fun x h ↦ Concrete.surjective_π_app_zero_of_surjective_map (limit.isLimit x) h
   · have := (freeForgetAdjunction R).isRightAdjoint
     exact isLimitOfPreserves _ hc
   · exact fun _ ↦ (forget R).map_epi _
@@ -108,7 +113,7 @@ variable {R : Type u} [Ring R] {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M 
 instance : Epi (Limits.Pi.map f) := by
   have : Limits.Pi.map f = (cone f).π.app ⟨0⟩ := rfl
   rw [this]
-  exact epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by simp; infer_instance)
+  exact epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by simpa using by infer_instance)
 
 instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
   preserves f _ := by

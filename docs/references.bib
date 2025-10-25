@@ -2,6 +2,9 @@
 # To normalize:
 # bibtool --preserve.key.case=on --preserve.keys=on --pass.comments=on --print.use.tab=off -s -i docs/references.bib -o docs/references.bib
 
+# WARNING: Please only use alphanumeric characters, '-', '_', and ':' for the key of bibliography items!
+# Currently doc-gen does not support characters outside them and will silently errors, causing incomplete reference pages.
+
 # https://www.zbmath.org/ and https://mathscinet.ams.org/mathscinet
 # (or the free tool https://mathscinet.ams.org/mrlookup)
 # are good sources of complete bibtex entries for mathematics
@@ -19,6 +22,21 @@
   keywords      = {68-00,68Q55},
   zbmath        = {783754},
   zbl           = {0829.68111}
+}
+
+@Book{            Adamek_Rosicky_1994,
+  author        = {Adámek, Jiří and Rosický, Jiří},
+  title         = {Locally presentable and accessible categories},
+  series        = {London Mathematical Society Lecture Note Series},
+  volume        = {189},
+  publisher     = {Cambridge University Press, Cambridge},
+  year          = {1994},
+  pages         = {xiv+316},
+  isbn          = {0-521-42261-2},
+  mrclass       = {18Axx (18-02)},
+  mrnumber      = {1294136},
+  doi           = {10.1017/CBO9780511600579},
+  url           = {https://doi.org/10.1017/CBO9780511600579}
 }
 
 @Book{            Adamek_Rosicky_Vitale_2010,
@@ -120,6 +138,18 @@
   zbl           = {1042.46001}
 }
 
+@Article{         Alon_1999,
+  author        = {Alon, Noga},
+  title         = {Combinatorial Nullstellensatz},
+  volume        = {8},
+  journal       = {Combinatorics, Probability and Computing},
+  year          = {1999},
+  number        = {1–2},
+  pages         = {7–29},
+  issn          = {0963-5483},
+  doi           = {10.1017/S0963548398003411}
+}
+
 @Book{            altman2021term,
   title         = {A Term of Commutative Algebra},
   author        = {Altman, A. and Kleiman, S.},
@@ -137,6 +167,20 @@
   publisher     = {American Mathematical Society},
   edition       = {Reprinted with corrections by the American Mathematical
                   Society}
+}
+
+@Article{         andrasfaiErdosSos1974,
+  author        = {Andrasfái, B. and Erdős, P. and Sós, V. T.},
+  year          = {1974},
+  month         = {5},
+  pages         = {205--218},
+  title         = {On the connection between chromatic number, maximal
+                  clique, and minimal degree of a graph},
+  volume        = {8},
+  issue         = {3},
+  journal       = {Discrete Mathematics},
+  doi           = {10.1016/0012-365X(74)90133-2},
+  url           = {https://doi.org/10.1016/0012-365X(74)90133-2}
 }
 
 @Book{            atiyah-macdonald,
@@ -276,6 +320,17 @@
   zbl           = {0436.46013}
 }
 
+@Book{            bensonfarb1993,
+  author        = {Benson Farb, R. Keith Dennis},
+  series        = {Graduate Texts in Mathematics},
+  title         = {Noncommutative Algebra},
+  year          = {1993},
+  publisher     = {Springer},
+  language      = {English},
+  volume        = {144},
+  url           = {https://link.springer.com/book/10.1007/978-1-4612-0889-1}
+}
+
 @Article{         bergelson1985,
   author        = {Bergelson, Vitaly},
   title         = {Sets of Recurrence of Zm-Actions and Properties of Sets of
@@ -395,6 +450,15 @@
   year          = {1937},
   doi           = {10.1215/S0012-7094-37-00334-X},
   url           = {https://doi.org/10.1215/S0012-7094-37-00334-X}
+}
+
+@Book{            birkhoff1940,
+  author        = {Birkhoff, Garrett},
+  title         = {Lattice Theory},
+  edition       = {First},
+  publisher     = {American Mathematical Society},
+  year          = {1940},
+  volume        = {25}
 }
 
 @Article{         birkhoff1942,
@@ -674,6 +738,20 @@
   url           = {https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf}
 }
 
+@Article{         brandt2003,
+  author        = {Brandt, Stephan},
+  year          = {2003},
+  month         = {12},
+  pages         = {693--696},
+  title         = {Note: On the structure of graphs with bounded clique
+                  number},
+  volume        = {23},
+  issue         = {4},
+  journal       = {Combinatorica},
+  doi           = {10.1007/s00493-003-0042-z},
+  url           = {https://doi.org/10.1007/s00493-003-0042-z}
+}
+
 @Book{            brodmannsharp13,
   author        = {Brodmann, M. P. and Sharp, R. Y.},
   title         = {Local cohomology},
@@ -686,6 +764,22 @@
   pages         = {xxii+491},
   isbn          = {978-0-521-51363-0},
   mrclass       = {13D45 (13-01)}
+}
+
+@Article{         brown-1973,
+  author        = {Brown, Kenneth S.},
+  title         = {Abstract homotopy theory and generalized sheaf
+                  cohomology},
+  journal       = {Trans. Amer. Math. Soc.},
+  fjournal      = {Transactions of the American Mathematical Society},
+  volume        = {186},
+  year          = {1973},
+  pages         = {419--458},
+  issn          = {0002-9947,1088-6850},
+  mrclass       = {55B30 (18H99)},
+  mrnumber      = {341469},
+  doi           = {10.2307/1996573},
+  url           = {https://doi.org/10.2307/1996573}
 }
 
 @Article{         bruhnDiestelKriesselPendavinghWollan2013,
@@ -781,6 +875,16 @@
   bdsk-url-2    = {https://doi.org/10.1016/0022-4049(93)90035-R}
 }
 
+@Misc{            carlen2010,
+  author        = {Carlen, Eric A.},
+  title         = {Trace inequalities and quantum entropy: An introductory
+                  course},
+  journal       = {Entropy and the quantum},
+  year          = {2010},
+  volume        = {529},
+  pages         = {73--140}
+}
+
 @Article{         carneiro2015arithmetic,
   title         = {Arithmetic in Metamath, Case Study: Bertrand's Postulate},
   author        = {Carneiro, Mario},
@@ -815,6 +919,16 @@
   timestamp     = {Fri, 27 Sep 2019 15:57:06 +0200},
   biburl        = {https://dblp.org/rec/conf/itp/Carneiro19.bib},
   bibsource     = {dblp computer science bibliography, https://dblp.org}
+}
+
+@Book{            cartan-eilenberg-1956,
+  author        = {Cartan, Henri and Eilenberg, Samuel},
+  title         = {Homological algebra},
+  publisher     = {Princeton University Press, Princeton, NJ},
+  year          = {1956},
+  pages         = {xv+390},
+  mrclass       = {09.0X},
+  mrnumber      = {77480}
 }
 
 @Book{            carter2005,
@@ -889,6 +1003,40 @@
                   Association of America}
 }
 
+@Article{         chapoton_livernet_2001,
+  author        = {Chapoton, Fr{\'e}d{\'e}ric and Livernet, Muriel},
+  title         = {Pre-Lie algebras and the rooted trees operad},
+  fjournal      = {IMRN. International Mathematics Research Notices},
+  journal       = {Int. Math. Res. Not.},
+  issn          = {1073-7928},
+  volume        = {2001},
+  number        = {8},
+  pages         = {395--408},
+  year          = {2001},
+  language      = {English},
+  doi           = {10.1155/S1073792801000198},
+  keywords      = {17A30,17B60,18D50,55P65,81T15},
+  zbmath        = {1618753},
+  zbl           = {1053.17001}
+}
+
+@Article{         Chen_Glebov_2018,
+  author        = {Chen, Imin and Glebov, Gleb},
+  title         = {On {C}hudnovsky--{R}amanujan type formulae},
+  journal       = {Ramanujan J.},
+  fjournal      = {The Ramanujan Journal. An International Journal Devoted to
+                  the Areas of Mathematics Influenced by Ramanujan},
+  volume        = {46},
+  year          = {2018},
+  number        = {3},
+  pages         = {677--712},
+  issn          = {1382-4090},
+  mrclass       = {11F03 (11Y60 14H52 33C75)},
+  mrnumber      = {3830044},
+  doi           = {10.1007/s11139-017-9948-8},
+  url           = {https://doi.org/10.1007/s11139-017-9948-8}
+}
+
 @Misc{            chintala2020,
   title         = {Sorry, the Nilpotents Are in the Center},
   author        = {Chintala, Vineeth},
@@ -902,6 +1050,19 @@
   urldate       = {2023-12-13},
   archiveprefix = {arxiv},
   keywords      = {{16P10, 16U99},Mathematics - Rings and Algebras}
+}
+
+@Article{         cho_jacobs_2019,
+  title         = {Disintegration and Bayesian inversion via string
+                  diagrams},
+  author        = {Cho, Kenta and Jacobs, Bart},
+  journal       = {Mathematical Structures in Computer Science},
+  volume        = {29},
+  number        = {7},
+  pages         = {938--971},
+  year          = {2019},
+  publisher     = {Cambridge University Press},
+  doi           = {10.1017/S0960129518000488}
 }
 
 @InProceedings{   Chou1994,
@@ -978,6 +1139,47 @@
   url           = {http://alpha.math.uga.edu/~pete/geometryofnumbers.pdf}
 }
 
+@Article{         clifford1954,
+  author        = {Clifford, A. H.},
+  title         = {Note on {Hahn}'s theorem on ordered {Abelian} groups},
+  fjournal      = {Proceedings of the American Mathematical Society},
+  journal       = {Proc. Am. Math. Soc.},
+  issn          = {0002-9939},
+  volume        = {5},
+  pages         = {860--863},
+  year          = {1954},
+  language      = {English},
+  doi           = {10.2307/2032549},
+  zbmath        = {3090187},
+  zbl           = {0056.25503}
+}
+
+@Article{         cockett1993,
+  author        = {J.R.B. Cockett},
+  title         = {Introduction to Distributive Categories},
+  journal       = {Mathematical Structures in Computer Science},
+  volume        = {3},
+  number        = {3},
+  pages         = {277--307},
+  year          = {1993},
+  url           = {https://doi.org/10.1017/S0960129500000232},
+  biburl        = {https://dblp.org/rec/journals/mscs/Cockett93.bib},
+  bibsource     = {dblp computer science bibliography, https://dblp.org}
+}
+
+@Article{         cohen1950,
+  author        = {I. S. Cohen},
+  title         = {Commutative rings with restricted minimum condition},
+  volume        = {17},
+  journal       = {Duke Mathematical Journal},
+  number        = {1},
+  publisher     = {Duke University Press},
+  pages         = {27 -- 42},
+  year          = {1950},
+  doi           = {10.1215/S0012-7094-50-01704-2},
+  url           = {https://doi.org/10.1215/S0012-7094-50-01704-2}
+}
+
 @Article{         cohen2012,
   author        = {David A. Cohen and Martin C. Cooper and Páidí Creed and
                   Peter G. Jeavons and Stanislav Živný},
@@ -992,6 +1194,22 @@
   timestamp     = {Mon, 03 Aug 2020 17:29:56 +0200},
   biburl        = {https://dblp.org/rec/journals/corr/abs-1207-6692.bib},
   bibsource     = {dblp computer science bibliography, https://dblp.org}
+}
+
+@Book{            cohn2013measure,
+  address       = {New York, NY},
+  series        = {Birkhäuser {Advanced} {Texts} {Basler} {Lehrbücher}},
+  title         = {Measure {Theory}: {Second} {Edition}},
+  copyright     = {https://www.springernature.com/gp/researchers/text-and-data-mining},
+  isbn          = {9781461469551 9781461469568},
+  shorttitle    = {Measure {Theory}},
+  url           = {https://link.springer.com/10.1007/978-1-4614-6956-8},
+  language      = {en},
+  urldate       = {2025-02-15},
+  publisher     = {Springer New York},
+  author        = {Cohn, Donald L.},
+  year          = {2013},
+  doi           = {10.1007/978-1-4614-6956-8}
 }
 
 @Book{            cohn_1995,
@@ -1029,6 +1247,12 @@
   mrreviewer    = {J\"{o}rg\ Jahnel},
   doi           = {10.1007/b75857},
   url           = {https://doi.org/10.1007/b75857}
+}
+
+@Misc{            ConradLinearChar,
+  title         = {Linear Independence of Characters},
+  author        = {Conrad, K.},
+  eprint        = {https://kconrad.math.uconn.edu/blurbs/galoistheory/linearchar.pdf}
 }
 
 @Misc{            conradnumbfield,
@@ -1203,6 +1427,22 @@
   url           = {https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-213.pdf}
 }
 
+@Book{            diamondshurman2005,
+  author        = {Diamond, Fred and Shurman, Jerry},
+  title         = {A first course in modular forms},
+  fseries       = {Graduate Texts in Mathematics},
+  series        = {Grad. Texts Math.},
+  issn          = {0072-5285},
+  volume        = {228},
+  isbn          = {0-387-23229-X},
+  year          = {2005},
+  publisher     = {Berlin: Springer},
+  language      = {English},
+  keywords      = {11F11,11-01,11F25,11F80,11G18,11G40,11D41},
+  zbmath        = {2134201},
+  zbl           = {1062.11022}
+}
+
 @Article{         dieudonne1953,
   author        = {Dieudonn\'{e}, Jean},
   title         = {On semi-simple {L}ie algebras},
@@ -1329,6 +1569,16 @@
   isbn          = {978-1-4704-3441-0}
 }
 
+@Article{         eilenberg1969,
+  title         = {Rational sets in commutative monoids},
+  author        = {Eilenberg, Samuel and Sch{\"u}tzenberger, Marcel-Paul},
+  journal       = {J. Algebra},
+  volume        = {13},
+  number        = {2},
+  pages         = {173--191},
+  year          = {1969}
+}
+
 @Book{            EinsiedlerWard2017,
   author        = {Einsiedler, Manfred and Ward, Thomas},
   title         = {Functional Analysis, Spectral Theory, and Applications},
@@ -1403,6 +1653,23 @@
   url           = {https://www.renyi.hu/~p_erdos/1966-06.pdf}
 }
 
+@Article{         escardo-lawson-simpson-2004,
+  author        = {Escard\'o, Mart\'in and Lawson, Jimmie and Simpson, Alex},
+  title         = {Comparing {C}artesian closed categories of (core)
+                  compactly generated spaces},
+  journal       = {Topology Appl.},
+  fjournal      = {Topology and its Applications},
+  volume        = {143},
+  year          = {2004},
+  number        = {1-3},
+  pages         = {105--145},
+  issn          = {0166-8641,1879-3207},
+  mrclass       = {54D50 (18B30 54B30 54C35 54D55)},
+  mrnumber      = {2080286},
+  doi           = {10.1016/j.topol.2004.02.011},
+  url           = {https://doi.org/10.1016/j.topol.2004.02.011}
+}
+
 @Article{         etemadi_strong_law,
   author        = {Etemadi, Nasrollah},
   title         = {An elementary proof of the strong law of large numbers},
@@ -1444,6 +1711,15 @@
   doi           = {10.1142/S0218216592000203},
   keywords      = {57M25 (57N10)},
   mrnumber      = {1194995}
+}
+
+@Article{         fernique1970integrabilite,
+  author        = {Fernique, Xavier},
+  title         = {Int{\'e}grabilit{\'e} des vecteurs gaussiens},
+  journal       = {CR Acad. Sci. Paris S$\backslash$'$\{$e$\}$ r. AB},
+  volume        = {270},
+  pages         = {A1698--A1699},
+  year          = {1970}
 }
 
 @Article{         Fields1971,
@@ -1564,6 +1840,19 @@
   doi           = {10.1017/CBO9780511983948}
 }
 
+@Article{         fritz2020,
+  title         = {A synthetic approach to Markov kernels, conditional
+                  independence and theorems on sufficient statistics},
+  journal       = {Advances in Mathematics},
+  volume        = {370},
+  pages         = {107239},
+  year          = {2020},
+  issn          = {0001-8708},
+  doi           = {10.1016/j.aim.2020.107239},
+  url           = {https://www.sciencedirect.com/science/article/pii/S0001870820302656},
+  author        = {Fritz, Tobias}
+}
+
 @Book{            fuchs1963,
   author        = {Fuchs, L.},
   title         = {Partially ordered algebraic systems},
@@ -1661,6 +1950,23 @@
   url           = {https://ti.inf.ethz.ch/ew/lehre/ApproxSDP09/notes/conelp.pdf}
 }
 
+@Article{         Geck2017,
+  author        = {Geck, Meinolf},
+  title         = {On the construction of semisimple {L}ie algebras and
+                  {C}hevalley groups},
+  journal       = {Proc. Amer. Math. Soc.},
+  fjournal      = {Proceedings of the American Mathematical Society},
+  volume        = {145},
+  year          = {2017},
+  number        = {8},
+  pages         = {3233--3247},
+  issn          = {0002-9939},
+  mrclass       = {17B20 (17B22)},
+  mrnumber      = {3652779},
+  doi           = {10.1090/proc/13600},
+  url           = {https://doi.org/10.1090/proc/13600}
+}
+
 @Article{         ghys87:groupes,
   author        = {Étienne Ghys},
   title         = {Groupes d'homéomorphismes du cercle et cohomologie
@@ -1702,6 +2008,17 @@
   mrclass       = {06B30 (03G10 30G30 54H12)},
   mrnumber      = {614752},
   mrreviewer    = {James W. Lea, Jr.}
+}
+
+@Article{         ginsburg1964,
+  title         = {Bounded ALGOL-like languages},
+  author        = {Ginsburg, Seymour and Spanier, Edwin H},
+  journal       = {Transactions of the American Mathematical Society},
+  volume        = {113},
+  number        = {2},
+  pages         = {333--368},
+  year          = {1964},
+  publisher     = {JSTOR}
 }
 
 @Article{         gleason1958,
@@ -1757,6 +2074,23 @@
   mrnumber      = {1488696},
   doi           = {10.1007/978-3-642-59058-0},
   url           = {https://doi.org/10.1007/978-3-642-59058-0}
+}
+
+@Book{            Graetzer2003,
+  author        = {Gr{\"a}tzer, George},
+  title         = {General lattice theory. {With} appendices with {B}. {A}.
+                  {Davey}, {R}. {Freese}, {B}. {Ganter}, {M}. {Greferath},
+                  {P}. {Jipsen}, {H}. {A}. {Priestley}, {H}. {Rose}, {E}.
+                  {T}. {Schmidt}, {S}. {E}. {Schmidt}, {F}. {Wehrung} and
+                  {R}. {Wille}},
+  edition       = {Paperback reprint of the 1998 2nd edition},
+  isbn          = {978-3-7643-6996-5},
+  year          = {2003},
+  publisher     = {Basel: Birkh{\"a}user},
+  language      = {English},
+  keywords      = {06-02,06Bxx,06Cxx,06Dxx,06Exx},
+  zbmath        = {5488086},
+  zbl           = {1152.06300}
 }
 
 @InBook{          Graham1983,
@@ -1831,6 +2165,32 @@
   year          = {2016}
 }
 
+@Article{         grothendieck-1957,
+  author        = {Grothendieck, Alexander},
+  title         = {Sur quelques points d'alg\`ebre homologique},
+  journal       = {Tohoku Math. J. (2)},
+  fjournal      = {The Tohoku Mathematical Journal. Second Series},
+  volume        = {9},
+  year          = {1957},
+  pages         = {119--221},
+  issn          = {0040-8735,2186-585X},
+  mrclass       = {18.00},
+  mrnumber      = {102537},
+  doi           = {10.2748/tmj/1178244839},
+  url           = {https://doi.org/10.2748/tmj/1178244839}
+}
+
+@Article{         grothendieck-1971,
+  author        = {Grothendieck, Alexander and Dieudonn\'{e}, Jean},
+  title         = {\'{E}l\'{e}ments de g\'{e}om\'{e}trie alg\'{e}brique: I.
+                  Le langage des sch\'{e}mas},
+  journal       = {Grundlehren der Mathematischen Wissenschaften},
+  volume        = {166},
+  year          = {1971},
+  publisher     = {Springer-Verlag New York},
+  isbn          = {978-3-540-05113-8}
+}
+
 @Article{         Guitart1980,
   author        = {Guitart, Ren\'{e}},
   tilte         = {Relations et carr\'{e}s exacts},
@@ -1862,6 +2222,13 @@
   eprintclass   = {math.CO},
   eprinttype    = {arXiv},
   keywords      = {math.CO, cs.LO, 05-04 (Primary) 05C70, 68R05 (Secondary)}
+}
+
+@Article{         hairer2009introduction,
+  title         = {An introduction to stochastic PDEs},
+  author        = {Hairer, Martin},
+  journal       = {arXiv preprint arXiv:0907.4178},
+  year          = {2009}
 }
 
 @Article{         Hall1935,
@@ -1975,6 +2342,34 @@
   mrreviewer    = {F. Oort}
 }
 
+@Book{            hatcher02,
+  author        = {Hatcher, Allen},
+  title         = {Algebraic topology},
+  isbn          = {0-521-79540-0},
+  year          = {2002},
+  publisher     = {Cambridge: Cambridge University Press},
+  language      = {English},
+  keywords      = {55-01,55Nxx,55Pxx,55Qxx},
+  zbmath        = {2103273},
+  zbl           = {1044.55001}
+}
+
+@Article{         hausnerwendel1952,
+  author        = {Hausner, M. and Wendel, J. G.},
+  title         = {Ordered vector spaces},
+  journal       = {Proc. Amer. Math. Soc.},
+  fjournal      = {Proceedings of the American Mathematical Society},
+  volume        = {3},
+  year          = {1952},
+  pages         = {977--982},
+  issn          = {0002-9939},
+  mrclass       = {46.3X},
+  mrnumber      = {52045},
+  mrreviewer    = {I. Halperin},
+  doi           = {10.2307/2031746},
+  url           = {https://doi.org/10.2307/2031746}
+}
+
 @Article{         Haze09,
   title         = {Witt vectors. Part 1},
   isbn          = {9780444532572},
@@ -1986,6 +2381,35 @@
   author        = {Hazewinkel, Michiel},
   year          = {2009},
   pages         = {319–472}
+}
+
+@Misc{            heathbrown2002lecturessieves,
+  title         = {Lectures on sieves},
+  author        = {D. R. Heath-Brown},
+  year          = {2002},
+  eprint        = {math/0209360},
+  archiveprefix = {arXiv},
+  primaryclass  = {math.NT},
+  url           = {https://arxiv.org/abs/math/0209360}
+}
+
+@Article{         henriksen_et_al1997,
+  author        = {Henriksen, M. and Kopperman, R. and Mack, J. and Somerset,
+                  D. W. B.},
+  title         = {Joincompact spaces, continuous lattices and
+                  {{\(C^*\)}}-algebras},
+  fjournal      = {Algebra Universalis},
+  journal       = {Algebra Univers.},
+  issn          = {0002-5240},
+  volume        = {38},
+  number        = {3},
+  pages         = {289--323},
+  year          = {1997},
+  language      = {English},
+  doi           = {10.1007/s000120050056},
+  keywords      = {54A05,06B35,46L05,54C05,54D30,54E55},
+  zbmath        = {1407078},
+  zbl           = {0933.54002}
 }
 
 @Article{         Higman52,
@@ -2032,6 +2456,16 @@
   address       = "New York, NY",
   series        = "Penguin books",
   year          = "1979"
+}
+
+@Article{         hollom2025,
+  title         = {A resolution of the Aharoni-Korman conjecture},
+  author        = {Lawrence Hollom},
+  year          = {2025},
+  eprint        = {2411.16844},
+  archiveprefix = {arXiv},
+  primaryclass  = {math.CO},
+  url           = {https://arxiv.org/abs/2411.16844}
 }
 
 @Article{         hovey-2001,
@@ -2102,6 +2536,19 @@
   address       = "Berlin, Heidelberg",
   pages         = "57--265",
   isbn          = "978-3-540-37773-3"
+}
+
+@Book{            Hytonen_VanNeerven_Veraar_Wies_2016,
+  author        = {Hytönen, Tuomas and Van Neerven, Jan and Veraar, Mark and
+                  Weis, Lutz},
+  title         = {Analysis in Banach spaces},
+  series        = {A Series of Modern Surveys in Mathematics},
+  publisher     = {Springer Cham},
+  year          = {2016},
+  pages         = {xvii+614},
+  isbn          = {978-3-319-48520-1},
+  doi           = {10.1007/978-3-319-48520-1},
+  url           = {https://doi.org/10.1007/978-3-319-48520-1}
 }
 
 @Book{            iordanescu2003,
@@ -2240,6 +2687,47 @@
   mrreviewer    = {Hans-Peter A. K\"{u}nzi},
   doi           = {10.1007/978-1-4471-3994-2},
   url           = {https://doi.org/10.1007/978-1-4471-3994-2}
+}
+
+@Article{         JanelidzeKelly2001,
+  author        = {Janelidze, G. and Kelly, G.M.},
+  journal       = {Theory and Applications of Categories [electronic only]},
+  keywords      = {monad; enriched category; monoidal category},
+  language      = {eng},
+  pages         = {61-91},
+  publisher     = {Mount Allison University, Department of Mathematics and
+                  Computer Science, Sackville},
+  title         = {A note on actions of a monoidal category.},
+  url           = {http://eudml.org/doc/122510},
+  volume        = {9},
+  year          = {2001}
+}
+
+@Book{            Janich1984,
+  title         = {Topology},
+  author        = {J{\"a}nich, K. and Levy, S.},
+  isbn          = {9783540908920},
+  lccn          = {96206939},
+  series        = {Lecture notes in mathematics, 1060},
+  url           = {https://books.google.de/books?id=3eaFHAAACAAJ},
+  year          = {1984},
+  publisher     = {Springer-Verlag}
+}
+
+@Article{         jardine-1987,
+  author        = {Jardine, J. F.},
+  title         = {Simplicial presheaves},
+  journal       = {J. Pure Appl. Algebra},
+  fjournal      = {Journal of Pure and Applied Algebra},
+  volume        = {47},
+  year          = {1987},
+  number        = {1},
+  pages         = {35--87},
+  issn          = {0022-4049,1873-1376},
+  mrclass       = {18F10 (18B25 18F20 18F25 19D99)},
+  mrnumber      = {906403},
+  doi           = {10.1016/0022-4049(87)90100-9},
+  url           = {https://doi.org/10.1016/0022-4049(87)90100-9}
 }
 
 @Article{         Jordan1935,
@@ -2474,6 +2962,16 @@
   doi           = {10.2307/1990847}
 }
 
+@Article{         kelly2005,
+  author        = {Kelly, G. M.},
+  title         = {Basic concepts of enriched category theory},
+  journal       = {Repr. Theory Appl. Categ.},
+  volume        = {10},
+  pages         = {vi+137 pp.},
+  year          = {2005},
+  language      = {English}
+}
+
 @Article{         kleiman1979,
   author        = {Kleiman, Steven Lawrence},
   title         = {Misconceptions about {$K_X$}},
@@ -2535,6 +3033,25 @@
                   over Kleene algebras.}
 }
 
+@Article{         kratschmer_urusov2023,
+  author        = {Kr\"atschmer, Volker and Urusov, Mikhail},
+  title         = {A {K}olmogorov-{C}hentsov type theorem on general metric
+                  spaces with applications to limit theorems for
+                  {B}anach-valued processes},
+  journal       = {J. Theoret. Probab.},
+  fjournal      = {Journal of Theoretical Probability},
+  volume        = {36},
+  year          = {2023},
+  number        = {3},
+  pages         = {1454--1486},
+  issn          = {0894-9840,1572-9230},
+  mrclass       = {60G17 (60B12 60F05 60G60)},
+  mrnumber      = {4621071},
+  mrreviewer    = {Anatoliy\ Malyarenko},
+  doi           = {10.1007/s10959-022-01207-8},
+  url           = {https://doi.org/10.1007/s10959-022-01207-8}
+}
+
 @Book{            kung_rota_yan2009,
   author        = {Kung, Joseph P. S. and Rota, Gian-Carlo and Yan, Catherine
                   H.},
@@ -2571,6 +3088,17 @@
   publisher     = {Springer New York, NY},
   author        = {T. Y. Lam},
   year          = {1999}
+}
+
+@Article{         lam_reyes_2009,
+  title         = {Oka and Ako ideal families in commutative rings},
+  author        = {T. Y. Lam and Manuel L. Reyes},
+  year          = {2009},
+  month         = {01},
+  journal       = {Contemporary Mathematics},
+  volume        = {480},
+  pages         = {263--288},
+  publisher     = {American Mathematical Society}
 }
 
 @Article{         Lambek_1964,
@@ -2632,6 +3160,20 @@
   keywords      = {Hensel's lemma, Lean, formal proof, p-adic}
 }
 
+@Book{            Lorenz2008,
+  title         = {Algebra},
+  subtitle      = {Volume II: Fields with Structure, Algebras and Advanced
+                  Topics},
+  author        = {Falko Lorenz},
+  series        = {Universitext},
+  year          = {2008},
+  isbn          = {978-0-387-72488-1},
+  publisher     = {Springer New York, NY},
+  doi           = {10.1007/978-0-387-72488-1},
+  numpages      = {X, 340},
+  edition       = {1}
+}
+
 @Book{            LurieHTT,
   title         = {Higher Topos Theory},
   author        = {Jacob Lurie},
@@ -2644,6 +3186,41 @@
   author        = {Jacob Lurie},
   url           = {https://www.math.ias.edu/~lurie/papers/SAG-rootfile.pdf},
   year          = {last updated 2018}
+}
+
+@Article{         Maltsiniotis2007,
+  author        = {Maltsiniotis, Georges},
+  title         = {Le th\'eor\`eme de {Q}uillen, d'adjonction des foncteurs
+                  d\'eriv\'es, revisit\'e},
+  journal       = {C. R. Math. Acad. Sci. Paris},
+  fjournal      = {Comptes Rendus Math\'ematique. Acad\'emie des Sciences.
+                  Paris},
+  volume        = {344},
+  year          = {2007},
+  number        = {9},
+  pages         = {549--552},
+  issn          = {1631-073X,1778-3569},
+  mrclass       = {18G50 (55U35)},
+  mrnumber      = {2323740},
+  doi           = {10.1016/j.crma.2007.03.011},
+  url           = {https://doi.org/10.1016/j.crma.2007.03.011}
+}
+
+@InCollection{    manchon_2011,
+  author        = {Manchon, Dominique},
+  title         = {A short survey on pre-{Lie} algebras},
+  booktitle     = {Noncommutative geometry and physics: Renormalisation,
+                  motives, index theory. Based on the workshop ``Number
+                  theory and physics'', Vienna, Austria, March 2009. Edited
+                  with the assistance of Harald Grosse and Steve Rosenberg},
+  isbn          = {978-3-03719-008-1},
+  pages         = {89--102},
+  year          = {2011},
+  publisher     = {Z{\"u}rich: European Mathematical Society (EMS)},
+  language      = {English},
+  keywords      = {17A30,17D25},
+  zbmath        = {6010972},
+  zbl           = {1278.17001}
 }
 
 @Article{         manin1963,
@@ -2786,6 +3363,28 @@
   url           = {https://doi.org/10.1007/978-3-642-76724-1}
 }
 
+@Article{         Milla_2018,
+  author        = {Milla, Lorenz},
+  title         = {A detailed proof of the {C}hudnovsky formula with means of
+                  basic complex analysis},
+  year          = {2021},
+  eprint        = {1809.00533},
+  archiveprefix = {arXiv},
+  primaryclass  = {math.NT},
+  url           = {https://arxiv.org/abs/1809.00533}
+}
+
+@Article{         Miller_1976,
+  title         = {Normal functions and constructive ordinal notations},
+  volume        = {41},
+  doi           = {10.2307/2272243},
+  number        = {2},
+  journal       = {The Journal of Symbolic Logic},
+  author        = {Miller, Larry W.},
+  year          = {1976},
+  pages         = {439–459}
+}
+
 @Book{            miraglia2006introduction,
   title         = {An Introduction to Partially Ordered Structures and
                   Sheaves},
@@ -2796,12 +3395,41 @@
   publisher     = {Polimetrica}
 }
 
+@Article{         mitchell1981,
+  title         = {A quick proof of the Gabriel-Popesco theorem},
+  journal       = {Journal of Pure and Applied Algebra},
+  volume        = {20},
+  number        = {3},
+  pages         = {313-315},
+  year          = {1981},
+  issn          = {0022-4049},
+  doi           = {https://doi.org/10.1016/0022-4049(81)90065-7},
+  url           = {https://www.sciencedirect.com/science/article/pii/0022404981900657},
+  author        = {Barry Mitchell}
+}
+
 @Book{            MM92,
   title         = {Sheaves in geometry and logic: A first introduction to
                   topos theory},
   author        = {MacLane, Saunders and Moerdijk, Ieke},
   year          = {1992},
   publisher     = {Springer Science \& Business Media}
+}
+
+@Article{         morrison-penney-enriched,
+  author        = {Morrison, Kim and Penneys, David},
+  title         = {Monoidal Categories Enriched in Braided Monoidal
+                  Categories},
+  journal       = {International Mathematics Research Notices},
+  volume        = {2019},
+  number        = {11},
+  pages         = {3527-3579},
+  year          = {2017},
+  month         = {10},
+  issn          = {1073-7928},
+  doi           = {10.1093/imrn/rnx217},
+  url           = {https://doi.org/10.1093/imrn/rnx217},
+  eprint        = {https://academic.oup.com/imrn/article-pdf/2019/11/3527/28757603/rnx217.pdf}
 }
 
 @Article{         MR0236876,
@@ -2863,6 +3491,18 @@
   mrreviewer    = {S. D. Cohen}
 }
 
+@InProceedings{   MR1268290,
+  author        = {Hans-Joachim Baues and Mamuka Jibladze and Andrew Tonks},
+  title         = {Cohomology of Monoids in Monoidal Categories},
+  booktitle     = {Operads: Proceedings of Renaissance Conferences, 1995},
+  pages         = {137--165},
+  series        = {Contemp. Math.},
+  isbn          = {0-8218-0513-4},
+  year          = {1997},
+  volume        = {202},
+  publisher     = {American Mathematical Society}
+}
+
 @Article{         MR25465,
   author        = {van der Waerden, B. L.},
   title         = {Free products of groups},
@@ -2877,6 +3517,24 @@
   mrreviewer    = {P. Hall},
   doi           = {10.2307/2372196},
   url           = {https://doi.org/10.2307/2372196}
+}
+
+@Book{            MR3156076,
+  author        = {Noguchi, Junjiro and Winkelmann, J\"org},
+  title         = {Nevanlinna theory in several complex variables and
+                  {D}iophantine approximation},
+  series        = {Grundlehren der mathematischen Wissenschaften [Fundamental
+                  Principles of Mathematical Sciences]},
+  volume        = {350},
+  publisher     = {Springer, Tokyo},
+  year          = {2014},
+  pages         = {xiv+416},
+  isbn          = {978-4-431-54570-5; 978-4-431-54571-2},
+  mrclass       = {32-02 (11J25 11J97 32H30 32Q45)},
+  mrnumber      = {3156076},
+  mrreviewer    = {William\ A.\ Cherry},
+  doi           = {10.1007/978-4-431-54571-2},
+  url           = {https://doi.org/10.1007/978-4-431-54571-2}
 }
 
 @Article{         MR317916,
@@ -2927,6 +3585,22 @@
   url           = {https://doi.org/10.1103/PhysicsPhysiqueFizika.1.195}
 }
 
+@Book{            MR3971232,
+  author        = {Koukoulopoulos, Dimitris},
+  title         = {The distribution of prime numbers},
+  series        = {Graduate Studies in Mathematics},
+  volume        = {203},
+  publisher     = {American Mathematical Society, Providence, RI},
+  year          = {[2019] \copyright 2019},
+  pages         = {xii + 356},
+  isbn          = {978-1-4704-4754-0; 978-1-4704-6285-7},
+  mrclass       = {11N05 (11-01 11M06 11N35 11N60)},
+  mrnumber      = {3971232},
+  mrreviewer    = {Y.-F.\ S.\ P\'etermann},
+  doi           = {10.1090/gsm/203},
+  url           = {https://doi.org/10.1090/gsm/203}
+}
+
 @Article{         MR399081,
   author        = {Hiblot, Jean-Jacques},
   title         = {Des anneaux euclidiens dont le plus petit algorithme n'est
@@ -2942,6 +3616,20 @@
   mrclass       = {13F15 (12A20)},
   mrnumber      = {399081},
   mrreviewer    = {N. Sankaran}
+}
+
+@Book{            MR4446467,
+  author        = {Scholze, Peter and Weinstein, Jared},
+  title         = {Berkeley lectures on {$p$}-adic geometry},
+  series        = {Annals of Mathematics Studies},
+  volume        = {207},
+  publisher     = {Princeton University Press, Princeton, NJ},
+  year          = {2020},
+  pages         = {x+250},
+  isbn          = {978-0-691-20209-9; 978-0-691-20208-2; 978-0-691-20215-0},
+  mrclass       = {14G45 (14A15 14F30 14G22 14G35 14M15)},
+  mrnumber      = {4446467},
+  mrreviewer    = {Lance Edward Miller}
 }
 
 @InCollection{    MR541021,
@@ -2976,6 +3664,20 @@
   url           = {https://doi.org/10.1007/BF00417500}
 }
 
+@Book{            MR886677,
+  author        = {Lang, Serge},
+  title         = {Introduction to complex hyperbolic spaces},
+  publisher     = {Springer-Verlag, New York},
+  year          = {1987},
+  pages         = {viii+271},
+  isbn          = {0-387-96447-9},
+  mrclass       = {32H15 (11J99 30D35 32-02 32H20 32H25)},
+  mrnumber      = {886677},
+  mrreviewer    = {Hirotaka\ Fujimoto},
+  doi           = {10.1007/978-1-4757-1945-1},
+  url           = {https://doi.org/10.1007/978-1-4757-1945-1}
+}
+
 @Article{         Mulvey1986,
   author        = {Mulvey, Christopher J.},
   title         = {\&},
@@ -2990,6 +3692,26 @@
   keywords      = {46L60,46L05,81Q10},
   zbmath        = {4030272},
   zbl           = {0633.46065}
+}
+
+@Book{            Munkres2000,
+  author        = {Munkres, James R.},
+  title         = {Topology},
+  edition       = {Second},
+  publisher     = {Prentice Hall, Inc., Upper Saddle River, NJ},
+  year          = {2000},
+  pages         = {xvi+537},
+  isbn          = {0-13-181629-2}
+}
+
+@Article{         munthe-kaas_lundervold_2013,
+  author        = {Munthe-Kaas, Hans and Lundervold, Alexander},
+  journal       = {Foundations of Computational Mathematics},
+  volume        = {13},
+  number        = {4},
+  pages         = {583--613},
+  year          = {2013},
+  zbl           = {1327.17001}
 }
 
 @Unpublished{     Naor-2015,
@@ -3039,6 +3761,19 @@
   doi           = {10.1112/jlms/s1-29.2.236}
 }
 
+@Book{            odifreddi1989,
+  author        = {Piergiorgio Odifreddi},
+  title         = {Classical Recursion Theory: The Theory of Functions and
+                  Sets of Natural Numbers},
+  publisher     = {Elsevier Science Publishing Co., Inc.},
+  address       = {New York, N.Y., USA},
+  year          = {1989},
+  isbn          = {9780444872951},
+  note          = {Studies in Logic and the Foundations of Mathematics, Vol.
+                  125},
+  doi           = {10.2307/2274492}
+}
+
 @Book{            Okninski1991,
   place         = {New York},
   title         = {Semigroup algebras},
@@ -3076,6 +3811,20 @@
   mrreviewer    = {M.\ Teply},
   doi           = {10.2307/2316897},
   url           = {https://doi.org/10.2307/2316897}
+}
+
+@Article{         oudom_guin_2008,
+  author        = {Oudom, J.-M. and Guin, D.},
+  title         = {On the {Lie} enveloping algebra of a pre-{Lie} algebra},
+  fjournal      = {Journal of \(K\)-Theory},
+  journal       = {J. \(K\)-Theory},
+  volume        = {2},
+  number        = {1},
+  pages         = {147--167},
+  year          = {2008},
+  doi           = {10.1017/is008001011jkt037},
+  zbmath        = {5356716},
+  zbl           = {1178.17011}
 }
 
 @Book{            oxley2011,
@@ -3142,6 +3891,18 @@
   publisher     = {Birkhäuser Basel},
   doi           = {10.1007/978-3-0348-0154-6},
   isbn          = {9783034801539}
+}
+
+@Book{            picado2012,
+  author        = {Picado, Jorge and Pultr, Aleš},
+  year          = {2012},
+  month         = {01},
+  pages         = {},
+  title         = {Frames and Locales: Topology without points},
+  volume        = {2012},
+  isbn          = {978-3-0348-0153-9},
+  journal       = {Frontiers in Mathematics},
+  doi           = {10.1007/978-3-0348-0154-6}
 }
 
 @Misc{            poeschel2017siegelsternberg,
@@ -3239,6 +4000,15 @@
   pages         = {75--91}
 }
 
+@Article{         rooij1970,
+  title         = {Non-Archimedean uniformities},
+  author        = {van Rooij, A. C. M.},
+  year          = {1970},
+  journal       = {Kyungpook Math. J.},
+  volume        = {10},
+  pages         = {21--30}
+}
+
 @Article{         Rosenlicht_1972,
   author        = {Rosenlicht, Maxwell},
   title         = {Integration in finite terms},
@@ -3253,6 +4023,38 @@
   keywords      = {12H05},
   zbmath        = {3394287},
   zbl           = {0249.12106}
+}
+
+@Article{         Rote_2023,
+  title         = {The Generalized Combinatorial Lason-Alon-Zippel-Schwartz
+                  Nullstellensatz Lemma},
+  url           = {http://arxiv.org/abs/2305.10900},
+  doi           = {10.48550/arXiv.2305.10900},
+  abstractnote  = {We survey a few strengthenings and generalizations of the
+                  Combinatorial Nullstellensatz of Alon and the
+                  Schwartz-Zippel Lemma. These lemmas guarantee the existence
+                  of (a certain number of) nonzeros of a multivariate
+                  polynomial when the variables run independently through
+                  sufficiently large ranges.},
+  note          = {arXiv:2305.10900 [math]},
+  number        = {arXiv:2305.10900},
+  publisher     = {arXiv},
+  author        = {Rote, Günter},
+  year          = {2023},
+  month         = may
+}
+
+@Book{            rudin1991,
+  author        = {Rudin, Walter},
+  title         = {Functional analysis},
+  edition       = {2nd ed.},
+  isbn          = {0-07-054236-8},
+  year          = {1991},
+  publisher     = {New York, NY: McGraw-Hill},
+  language      = {English},
+  keywords      = {46-02,47-02,46Axx,46Bxx,46Exx,46Fxx,46Jxx,47B06,47D03,47H10,46L05,47B15},
+  zbmath        = {1022519},
+  zbl           = {0867.46001}
 }
 
 @Book{            rudin2006real,
@@ -3381,6 +4183,22 @@
   mrreviewer    = {W. S. Massey}
 }
 
+@Article{         serre1958,
+  author        = {Serre, Jean-Pierre},
+  title         = {Groupes d'homotopie et classes de groupes ab\'eliens},
+  journal       = {Ann. of Math. (2)},
+  fjournal      = {Annals of Mathematics. Second Series},
+  volume        = {58},
+  year          = {1953},
+  pages         = {258--294},
+  issn          = {0003-486X},
+  mrclass       = {56.0X},
+  mrnumber      = {59548},
+  mrreviewer    = {W.\ S.\ Massey},
+  doi           = {10.2307/1969789},
+  url           = {https://doi.org/10.2307/1969789}
+}
+
 @Book{            serre1965,
   author        = {Serre, Jean-Pierre},
   title         = {Complex semisimple {L}ie algebras},
@@ -3393,6 +4211,31 @@
   mrnumber      = {914496},
   doi           = {10.1007/978-1-4757-3910-7},
   url           = {https://doi.org/10.1007/978-1-4757-3910-7}
+}
+
+@InProceedings{   serre1967,
+  author        = {Serre, Jean-Pierre},
+  title         = {Local class field theory},
+  booktitle     = {Algebraic {N}umber {T}heory ({P}roc. {I}nstructional
+                  {C}onf., {B}righton, 1965)},
+  pages         = {128--161},
+  publisher     = {Thompson, Washington, D.C.},
+  year          = {1967},
+  mrclass       = {10.68},
+  mrreviewer    = {G. Whaples}
+}
+
+@Book{            serre1968,
+  author        = {Serre, Jean-Pierre},
+  title         = {Corps locaux},
+  series        = {Publications de l'Universit\'e{} de {N}ancago},
+  volume        = {No. VIII},
+  note          = {Deuxi\`eme \'edition},
+  publisher     = {Hermann, {P}aris},
+  year          = {1968},
+  pages         = {245},
+  mrclass       = {12BXX (14GXX)},
+  mrnumber      = {354618}
 }
 
 @Book{            silverman2009,
@@ -3491,6 +4334,13 @@
                   Regularity Lemma, Roth’s Theorem}
 }
 
+@Misc{            stacks-project,
+  title         = {Stacks Project},
+  author        = {The {Stacks Project Authors}},
+  year          = {2018},
+  url           = {https://stacks.math.columbia.edu}
+}
+
 @Book{            stanley2012,
   author        = {Stanley, Richard P.},
   title         = {Enumerative combinatorics},
@@ -3560,6 +4410,26 @@
   year          = {1980},
   publisher     = {Taylor & Francis},
   doi           = {10.1080/00927878008822456}
+}
+
+@Book{            talagrand2014,
+  author        = {Talagrand, Michel},
+  title         = {Upper and lower bounds for stochastic processes},
+  series        = {Ergebnisse der Mathematik und ihrer Grenzgebiete. 3.
+                  Folge. A Series of Modern Surveys in Mathematics [Results
+                  in Mathematics and Related Areas. 3rd Series. A Series of
+                  Modern Surveys in Mathematics]},
+  volume        = {60},
+  note          = {Modern methods and classical problems},
+  publisher     = {Springer, Heidelberg},
+  year          = {2014},
+  pages         = {xvi+626},
+  isbn          = {978-3-642-54074-5; 978-3-642-54075-2},
+  mrclass       = {60G17 (46B99 60B11 60G15 60G52)},
+  mrnumber      = {3184689},
+  mrreviewer    = {Sasha\ Sodin},
+  doi           = {10.1007/978-3-642-54075-2},
+  url           = {https://doi.org/10.1007/978-3-642-54075-2}
 }
 
 @Book{            tao-vu,
@@ -3694,6 +4564,18 @@
   mrnumber      = {1453167}
 }
 
+@Book{            vershynin2018high,
+  title         = {High-dimensional probability: An introduction with
+                  applications in data science},
+  author        = {Vershynin, Roman},
+  series        = {Cambridge Series in Statistical and Probabilistic
+                  Mathematics},
+  volume        = {47},
+  year          = {2018},
+  publisher     = {Cambridge university press},
+  isbn          = {9781108415194}
+}
+
 @Book{            Vickers1989,
   author        = {Vickers, Steven},
   title         = {Topology via Logic},
@@ -3711,6 +4593,22 @@
   howpublished  = {Preprint, {arXiv}:math/0412512 [math.{AG}] (2004)},
   url           = {https://arxiv.org/abs/math/0412512},
   arxiv         = {arXiv:math/0412512}
+}
+
+@Article{         vogt-1971,
+  author        = {Vogt, Rainer M.},
+  title         = {Convenient categories of topological spaces for homotopy
+                  theory},
+  journal       = {Arch. Math. (Basel)},
+  fjournal      = {Archiv der Mathematik},
+  volume        = {22},
+  year          = {1971},
+  pages         = {545--555},
+  issn          = {0003-889X,1420-8938},
+  mrclass       = {55D99 (54A99)},
+  mrnumber      = {300277},
+  doi           = {10.1007/BF01222616},
+  url           = {https://doi.org/10.1007/BF01222616}
 }
 
 @Book{            wall2018analytic,
@@ -3745,6 +4643,17 @@
   title         = {Adic Spaces},
   year          = {2019},
   eprint        = {arXiv:1910.05934}
+}
+
+@Book{            Weibel2013,
+  author        = {Weibel, Charles A.},
+  title         = {The {K}-book: an introduction to algebraic {K}-theory},
+  isbn          = {978-0-8218-9132-2},
+  series        = {Graduate Studies in Mathematics },
+  volume        = {145},
+  year          = {2013},
+  publisher     = {American Mathematical Society},
+  url           = {https://sites.math.rutgers.edu/~weibel/Kbook.html}
 }
 
 @Book{            weidmann_linear,
@@ -3791,6 +4700,17 @@
   mrreviewer    = {Karl\ Rubin},
   doi           = {10.2307/2118559},
   url           = {https://doi.org/10.2307/2118559}
+}
+
+@Article{         windisch2021,
+  title         = {Equivalent characterizations of non-Archimedean uniform
+                  spaces},
+  author        = {Daniel Windisch},
+  year          = {2021},
+  eprint        = {2111.09722},
+  archiveprefix = {arXiv},
+  primaryclass  = {math.GN},
+  url           = {https://arxiv.org/abs/2111.09722}
 }
 
 @TechReport{      zaanen1966,

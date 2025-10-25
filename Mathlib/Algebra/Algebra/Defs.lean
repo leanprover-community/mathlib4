@@ -10,14 +10,14 @@ import Mathlib.Algebra.Module.LinearMap.Defs
 
 In this file we define associative unital `Algebra`s over commutative (semi)rings.
 
-* algebra homomorphisms `AlgHom` are defined in `Mathlib.Algebra.Algebra.Hom`;
+* algebra homomorphisms `AlgHom` are defined in `Mathlib/Algebra/Algebra/Hom.lean`;
 
-* algebra equivalences `AlgEquiv` are defined in `Mathlib.Algebra.Algebra.Equiv`;
+* algebra equivalences `AlgEquiv` are defined in `Mathlib/Algebra/Algebra/Equiv.lean`;
 
-* `Subalgebra`s are defined in `Mathlib.Algebra.Algebra.Subalgebra`;
+* `Subalgebra`s are defined in `Mathlib/Algebra/Algebra/Subalgebra.lean`;
 
-* The category `AlgebraCat R` of `R`-algebras is defined in the file
-  `Mathlib.Algebra.Category.Algebra.Basic`.
+* The category `AlgCat R` of `R`-algebras is defined in the file
+  `Mathlib/Algebra/Category/Algebra/Basic.lean`.
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
 
@@ -86,19 +86,13 @@ universe u v w u₁ v₁
 
 section Prio
 
--- We set this priority to 0 later in this file
--- Porting note: unsupported set_option extends_priority 200
-
-/- control priority of
-`instance [Algebra R A] : SMul R A` -/
 /-- An associative unital `R`-algebra is a semiring `A` equipped with a map into its center `R → A`.
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): unsupported @[nolint has_nonempty_instance]
 class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A where
   /-- Embedding `R →+* A` given by `Algebra` structure.
-  Use `algebraMap` from the root namespace instead.-/
+  Use `algebraMap` from the root namespace instead. -/
   protected algebraMap : R →+* A
   commutes' : ∀ r x, algebraMap r * x = x * algebraMap r
   smul_def' : ∀ r x, r • x = algebraMap r * x
@@ -108,6 +102,10 @@ end Prio
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
 def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
   Algebra.algebraMap
+
+theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A]
+    [Subsingleton R] : Subsingleton A :=
+  (algebraMap R A).codomain_trivial
 
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
 @[coe, reducible]
@@ -167,8 +165,13 @@ end CommRingRing
 
 end algebraMap
 
-/-- Creating an algebra from a morphism to the center of a semiring. -/
-def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
+/-- Creating an algebra from a morphism to the center of a semiring.
+See note [reducible non-instances].
+
+*Warning:* In general this should not be used if `S` already has a `SMul R S`
+instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
+this will likely create a diamond. -/
+abbrev RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) : Algebra R S where
   smul c x := i c * x
   commutes' := h
@@ -188,9 +191,19 @@ theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R
     @algebraMap R S _ _ (i.toAlgebra' h) = i :=
   rfl
 
-/-- Creating an algebra from a morphism to a commutative semiring. -/
-def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
+/-- Creating an algebra from a morphism to a commutative semiring.
+See note [reducible non-instances].
+
+*Warning:* In general this should not be used if `S` already has a `SMul R S`
+instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
+this will likely create a diamond. -/
+abbrev RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
+
+theorem RingHom.smul_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S)
+    (r : R) (s : S) :
+    let _ := RingHom.toAlgebra i
+    r • s = i r * s := rfl
 
 theorem RingHom.algebraMap_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) :
     @algebraMap R S _ _ i.toAlgebra = i :=
@@ -232,8 +245,6 @@ section Semiring
 variable [CommSemiring R] [CommSemiring S]
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
--- Porting note: deleted a private lemma
-
 -- We'll later use this to show `Algebra ℤ M` is a subsingleton.
 /-- To prove two algebra structures on a fixed `[CommSemiring R] [Semiring A]` agree,
 it suffices to check the `algebraMap`s agree.
@@ -247,8 +258,13 @@ theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q :
     funext r a
     rw [P.smul_def', Q.smul_def', h]
   rcases P with @⟨⟨P⟩⟩
-  rcases Q with @⟨⟨Q⟩⟩
   congr
+
+/-- An auxiliary lemma used to prove theorems of the form
+`RingHom.X (algebraMap R S) ↔ Algebra.X R S`. -/
+lemma _root_.toAlgebra_algebraMap [Algebra R S] :
+    (algebraMap R S).toAlgebra = ‹_› :=
+  algebra_ext _ _ fun _ ↦ rfl
 
 -- see Note [lower instance priority]
 instance (priority := 200) toModule {R A} {_ : CommSemiring R} {_ : Semiring A} [Algebra R A] :
@@ -259,9 +275,6 @@ instance (priority := 200) toModule {R A} {_ : CommSemiring R} {_ : Semiring A} 
   smul_zero := by simp [smul_def']
   add_smul := by simp [smul_def', add_mul]
   zero_smul := by simp [smul_def']
-
--- Porting note: this caused deterministic timeouts later in mathlib3 but not in mathlib 4.
--- attribute [instance 0] Algebra.toSMul
 
 theorem smul_def (r : R) (x : A) : r • x = algebraMap R A r * x :=
   Algebra.smul_def' r x
@@ -321,10 +334,6 @@ theorem _root_.smul_algebraMap {α : Type*} [Monoid α] [MulDistribMulAction α 
     [SMulCommClass α R A] (a : α) (r : R) : a • algebraMap R A r = algebraMap R A r := by
   rw [algebraMap_eq_smul_one, smul_comm a r (1 : A), smul_one]
 
-section
-
-end
-
 section compHom
 
 variable (A) (f : S →+* R)
@@ -378,14 +387,20 @@ instance (priority := 1100) id : Algebra R R where
   toSMul := Mul.toSMul _
   __ := ({RingHom.id R with toFun x := x}).toAlgebra
 
+@[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
+
 variable {R A}
+
+@[simp] lemma algebraMap_self : algebraMap R R = .id _ := rfl
+lemma algebraMap_self_apply (x : R) : algebraMap R R x = x := rfl
 
 namespace id
 
-@[simp]
+@[deprecated algebraMap_self (since := "2025-07-17")]
 theorem map_eq_id : algebraMap R R = RingHom.id _ :=
   rfl
 
+@[deprecated algebraMap_self_apply (since := "2025-07-17")]
 theorem map_eq_self (x : R) : algebraMap R R x = x :=
   rfl
 

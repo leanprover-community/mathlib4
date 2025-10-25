@@ -1,11 +1,13 @@
-import Mathlib.Data.MLList.BestFirst
-import Mathlib.Data.Nat.Defs
+import Mathlib.Deprecated.MLList.BestFirst
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Testing best first search and beam search.
 
 We check that `bestFirstSearch` can find its way around a wall.
 -/
+
+set_option linter.deprecated false
 
 open Lean MLList Function
 

@@ -73,27 +73,34 @@ computeDiff () {
 # The script uses the fact that a line represents a technical debt if and only if the text before
 # the first `|` is a number.  This is then used for comparison and formatting.
 tdc () {
+# We perform word-splitting "by hand" in the "middle" entries.
+# See also the comment on the `read` line in the for-loop that follows the definition of this array.
 titlesPathsAndRegexes=(
   "porting notes"                  "*"      "Porting note"
   "backwards compatibility flags"  "*"      "set_option.*backward"
   "skipAssignedInstances flags"    "*"      "set_option tactic.skipAssignedInstances"
-  "adaptation notes"               "*"      "adaptation_note"
+  "adaptation notes"               ":^Mathlib/Tactic/AdaptationNote.lean :^Mathlib/Tactic/Linter"
+                                            "^[· ]*#adaptation_note"
   "disabled simpNF lints"          "*"      "nolint simpNF"
   "erw"                            "*"      "erw \["
-  "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
+  "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats.* [0-9][0-9]*"
+  "CommRing (Fin n) instances"     "*"      "^open Fin.CommRing "
+  "NatCast (Fin n) instances"      "*"      "^open Fin.NatCast "
 )
 
 for i in ${!titlesPathsAndRegexes[@]}; do
   # loop on every 3rd entry and name that entry and the following two
   if (( i % 3 == 0 )); then
     title="${titlesPathsAndRegexes[$i]}"
-    pathspec="${titlesPathsAndRegexes[$(( i + 1 ))]}"
+    # Here we perform word-splitting: `pathspec` is an array whose entries are the "words" in
+    # the string `"${titlesPathsAndRegexes[$(( i + 1 ))]}"`.
+    read -r -a pathspec <<< "${titlesPathsAndRegexes[$(( i + 1 ))]}"
     regex="${titlesPathsAndRegexes[$(( i + 2 ))]}"
     if [ "${title}" == "porting notes" ]
     then fl="-i"  # just for porting notes we ignore the case in the regex
     else fl="--"
     fi
-    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" -- "${pathspec}" | wc -l)" "${title}"
+    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" -- ":^scripts" "${pathspec[@]}" | wc -l)" "${title}"
   fi
 done
 
@@ -103,7 +110,7 @@ deprecs="$(git grep -c -- "set_option linter.deprecated false" -- ":^Mathlib/Dep
 
 # count the `linter.deprecated` exceptions that are themselves followed by `deprecated ...(since`
 # we subtract these from `deprecs`
-doubleDeprecs="$(git grep -A1 -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
+doubleDeprecs="$(git grep -A2 -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
   grep -c "deprecated .*(since")"
 
 printf '%s|disabled deprecation lints\n' "$(( deprecs - doubleDeprecs ))"
@@ -111,7 +118,6 @@ printf '%s|disabled deprecation lints\n' "$(( deprecs - doubleDeprecs ))"
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
 # We count the number of large files, making sure to avoid counting the test file `MathlibTest/Lint.lean`.
 printf '%s|%s\n' "$(git grep '^set_option linter.style.longFile [0-9]*' Mathlib | wc -l)" "large files"
-printf '%s|%s\n' "$(git grep "^open .*Classical" | grep -v " in$" -c)" "bare open (scoped) Classical"
 
 printf '%s|%s\n' "$(wc -l < scripts/nolints_prime_decls.txt)" "exceptions for the docPrime linter"
 

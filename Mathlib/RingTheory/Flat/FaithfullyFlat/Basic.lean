@@ -3,10 +3,8 @@ Copyright (c) 2024 Judith Ludwig, Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
-
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.RingTheory.Flat.Stability
-import Mathlib.RingTheory.Ideal.Quotient.Basic
 
 /-!
 # Faithfully flat modules
@@ -57,7 +55,7 @@ variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and,
 for all `R`-linear maps `f : N → N'` such that `id ⊗ f = 0`, we have `f = 0`.
 -/
-@[mk_iff] class FaithfullyFlat extends Module.Flat R M : Prop where
+@[mk_iff] class FaithfullyFlat : Prop extends Module.Flat R M where
   submodule_ne_top : ∀ ⦃m : Ideal R⦄ (_ : Ideal.IsMaximal m), m • (⊤ : Submodule R M) ≠ ⊤
 
 namespace FaithfullyFlat
@@ -86,7 +84,7 @@ end proper_ideal
 section faithful
 
 instance rTensor_nontrivial
-    [fl: FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
+    [fl : FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
     Nontrivial (N ⊗[R] M) := by
   obtain ⟨n, hn⟩ := nontrivial_iff_exists_ne (0 : N) |>.1 inferInstance
   let I := (Submodule.span R {n}).annihilator
@@ -117,8 +115,7 @@ instance lTensor_nontrivial
 lemma rTensor_reflects_triviality
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
     [h : Subsingleton (N ⊗[R] M)] : Subsingleton N := by
-  revert h; change _ → _; contrapose
-  simp only [not_subsingleton_iff_nontrivial]
+  revert h; change _ → _; contrapose!
   intro h
   infer_instance
 
@@ -208,7 +205,33 @@ end
 
 /-- Any free, nontrivial `R`-module is flat. -/
 instance [Nontrivial M] [Module.Free R M] : FaithfullyFlat R M :=
-  of_linearEquiv _ _ (Free.repr R M)
+  of_linearEquiv _ _ (Free.chooseBasis R M).repr
+
+section
+
+variable {N : Type*} [AddCommGroup N] [Module R N]
+
+@[simp]
+lemma subsingleton_tensorProduct_iff_right [Module.FaithfullyFlat R M] :
+    Subsingleton (M ⊗[R] N) ↔ Subsingleton N :=
+  ⟨fun _ ↦ lTensor_reflects_triviality R M N, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma subsingleton_tensorProduct_iff_left [Module.FaithfullyFlat R N] :
+    Subsingleton (M ⊗[R] N) ↔ Subsingleton M :=
+  ⟨fun _ ↦ rTensor_reflects_triviality R N M, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma nontrivial_tensorProduct_iff_right [Module.FaithfullyFlat R M] :
+    Nontrivial (M ⊗[R] N) ↔ Nontrivial N := by
+  simp [← not_iff_not, not_nontrivial_iff_subsingleton]
+
+@[simp]
+lemma nontrivial_tensorProduct_iff_left [Module.FaithfullyFlat R N] :
+    Nontrivial (M ⊗[R] N) ↔ Nontrivial M := by
+  simp [← not_iff_not, not_nontrivial_iff_subsingleton]
+
+end
 
 section exact
 
@@ -259,7 +282,6 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
   let E : Submodule R N3 := Submodule.span R {l23 (l12 n1)}
   have hE : Nontrivial E :=
     ⟨0, ⟨⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩, Subtype.coe_ne_coe.1 hn1.symm⟩⟩
-
   -- Since `N1 ⊗ M -> N2 ⊗ M -> N3 ⊗ M` is exact, we have `l23 (l12 n1) ⊗ₜ m = 0` for all `m : M`.
   have eq1 : ∀ (m : M), l23 (l12 n1) ⊗ₜ[R] m = 0 := fun m ↦
     ex.apply_apply_eq_zero (n1 ⊗ₜ[R] m)
@@ -269,7 +291,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     ext x
     simp only [Submodule.mem_top, Submodule.mem_bot, true_iff]
     have mem : x ∈ (⊤ : Submodule R _) := ⟨⟩
-    rw [← TensorProduct.span_tmul_eq_top, mem_span_set] at mem
+    rw [← TensorProduct.span_tmul_eq_top, Submodule.mem_span_set] at mem
     obtain ⟨c, hc, rfl⟩ := mem
     choose b a hy using hc
     let r :  ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>
@@ -287,7 +309,6 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
       smul_zero, map_zero]
   have : Subsingleton (E ⊗[R] M) := subsingleton_iff_forall_eq 0 |>.2 fun x =>
     show x ∈ (⊥ : Submodule R _) from eq0 ▸ ⟨⟩
-
   -- but `E ⊗ M = 0` implies `E = 0` because `M` is faithfully flat and this is a contradiction.
   exact not_subsingleton_iff_nontrivial.2 inferInstance <| fl.rTensor_reflects_triviality R M E
 
@@ -303,7 +324,6 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     rw [Submodule.subsingleton_quotient_iff_eq_top, Submodule.range_inclusion,
       Submodule.comap_subtype_eq_top] at triv_coh
     exact le_antisymm triv_coh complex
-
   -- Since `M` is faithfully flat, we need only to show that `H ⊗ M` is trivial.
   suffices Subsingleton (H ⊗[R] M) from rTensor_reflects_triviality R M H
   let e : H ⊗[R] M ≃ₗ[R] _ := TensorProduct.quotientTensorEquiv _ _
@@ -324,14 +344,12 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     have mem : x ⊗ₜ[R] m ∈ LinearMap.ker (l23.rTensor M) := by simp [hx]
     rw [LinearMap.exact_iff.1 ex] at mem
     obtain ⟨y, hy⟩ := mem
-
     refine ⟨LinearMap.rTensor M (LinearMap.rangeRestrict _ ∘ₗ LinearMap.rangeRestrict l12) y,
       Module.Flat.rTensor_preserves_injective_linearMap (LinearMap.ker l23).subtype
       Subtype.val_injective ?_⟩
     simp only [LinearMap.comp_codRestrict, LinearMap.rTensor_tmul, Submodule.coe_subtype, ← hy]
-    rw [← LinearMap.comp_apply]
-    erw [← LinearMap.rTensor_comp]
-    rw [← LinearMap.comp_apply, ← LinearMap.rTensor_comp, LinearMap.comp_assoc,
+    rw [← LinearMap.comp_apply, ← LinearMap.rTensor_def, ← LinearMap.rTensor_comp,
+      ← LinearMap.comp_apply, ← LinearMap.rTensor_comp, LinearMap.comp_assoc,
       LinearMap.subtype_comp_codRestrict, ← LinearMap.comp_assoc, Submodule.subtype_comp_inclusion,
       LinearMap.subtype_comp_codRestrict]
   | add x y hx hy =>
@@ -345,18 +363,41 @@ lemma lTensor_reflects_exact [fl : FaithfullyFlat R M]
     (e₁ := TensorProduct.comm _ _ _) (e₂ := TensorProduct.comm _ _ _)
     (e₃ := TensorProduct.comm _ _ _) (by ext; rfl) (by ext; rfl)
 
+@[simp]
+lemma rTensor_exact_iff_exact [FaithfullyFlat R M] :
+    Function.Exact (l12.rTensor M) (l23.rTensor M) ↔ Function.Exact l12 l23 :=
+  ⟨fun ex ↦ rTensor_reflects_exact R M l12 l23 ex, fun e ↦ Module.Flat.rTensor_exact _ e⟩
+
+@[simp]
+lemma lTensor_exact_iff_exact [FaithfullyFlat R M] :
+    Function.Exact (l12.lTensor M) (l23.lTensor M) ↔ Function.Exact l12 l23 :=
+  ⟨fun ex ↦ lTensor_reflects_exact R M l12 l23 ex, fun e ↦ Module.Flat.lTensor_exact _ e⟩
+
+section
+
+variable {N N' : Type*} [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+  (f : N →ₗ[R] N')
+
+@[simp]
+lemma lTensor_injective_iff_injective [Module.FaithfullyFlat R M] :
+    Function.Injective (f.lTensor M) ↔ Function.Injective f := by
+  rw [← LinearMap.exact_zero_iff_injective (M ⊗[R] Unit), ← LinearMap.exact_zero_iff_injective Unit]
+  conv_rhs => rw [← lTensor_exact_iff_exact R M]
+  simp
+
+@[simp]
+lemma lTensor_surjective_iff_surjective [Module.FaithfullyFlat R M] :
+    Function.Surjective (f.lTensor M) ↔ Function.Surjective f := by
+  rw [← LinearMap.exact_zero_iff_surjective (M ⊗[R] Unit),
+    ← LinearMap.exact_zero_iff_surjective Unit]
+  conv_rhs => rw [← lTensor_exact_iff_exact R M]
+  simp
+
+end
+
 end arbitrary_universe
 
 section fixed_universe
-
-lemma exact_iff_rTensor_exact [fl : FaithfullyFlat R M]
-    {N1 : Type max u v} [AddCommGroup N1] [Module R N1]
-    {N2 : Type max u v} [AddCommGroup N2] [Module R N2]
-    {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
-    (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3) :
-    Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M) :=
-  ⟨fun e => Module.Flat.iff_rTensor_exact.1 fl.toFlat e,
-    fun ex => rTensor_reflects_exact R M l12 l23 ex⟩
 
 lemma iff_exact_iff_rTensor_exact :
     FaithfullyFlat R M ↔
@@ -365,8 +406,9 @@ lemma iff_exact_iff_rTensor_exact :
       {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
       (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3),
         Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M)) :=
-  ⟨fun fl => exact_iff_rTensor_exact R M, fun iff_exact =>
-    iff_flat_and_rTensor_reflects_triviality _ _ |>.2 ⟨Flat.iff_rTensor_exact.2 <| by aesop,
+  ⟨fun fl _ _ _ _ _ _ _ _ _ l12 l23 => (rTensor_exact_iff_exact R M l12 l23).symm, fun iff_exact =>
+    iff_flat_and_rTensor_reflects_triviality _ _ |>.2
+      ⟨Flat.iff_rTensor_exact.2 <| fun _ _ _ => iff_exact .. |>.1,
     fun N _ _ h => subsingleton_iff_forall_eq 0 |>.2 <| fun y => by
       simpa [eq_comm] using (iff_exact (0 : PUnit →ₗ[R] N) (0 : N →ₗ[R] PUnit) |>.2 fun x => by
         simpa using Subsingleton.elim _ _) y⟩⟩
@@ -401,7 +443,7 @@ section arbitrary_universe
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `id ⊗ f = 0`, if and only
 if `f = 0`. -/
-lemma zero_iff_lTensor_zero [h: FaithfullyFlat R M]
+lemma zero_iff_lTensor_zero [h : FaithfullyFlat R M]
     {N : Type*} [AddCommGroup N] [Module R N]
     {N' : Type*} [AddCommGroup N'] [Module R N'] (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.lTensor M f = 0 :=
@@ -429,7 +471,7 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
 /-- If `A` is a faithfully flat `R`-algebra, and `m` is a term of an `R`-module `M`,
 then `1 ⊗ₜ[R] m = 0` if and only if `m = 0`. -/
 @[simp]
-theorem one_tmul_eq_zero_iff {A : Type*} [CommRing A] [Algebra R A] [FaithfullyFlat R A] (m : M) :
+theorem one_tmul_eq_zero_iff {A : Type*} [Ring A] [Algebra R A] [FaithfullyFlat R A] (m : M) :
     (1:A) ⊗ₜ[R] m = 0 ↔ m = 0 := by
   constructor; swap
   · rintro rfl; rw [tmul_zero]
@@ -503,10 +545,53 @@ theorem trans : FaithfullyFlat R M := by
   apply_fun AlgebraTensorModule.cancelBaseChange R S S M N' using LinearEquiv.injective _
   simpa using congr($aux (m ⊗ₜ[R] n))
 
-@[deprecated (since := "2024-11-08")] alias comp := trans
-
 end trans
 
+/-- Faithful flatness is preserved by arbitrary base change. -/
+instance (S : Type*) [CommRing S] [Algebra R S] [Module.FaithfullyFlat R M] :
+    Module.FaithfullyFlat S (S ⊗[R] M) := by
+  rw [Module.FaithfullyFlat.iff_flat_and_rTensor_reflects_triviality]
+  refine ⟨inferInstance, fun N _ _ hN ↦ ?_⟩
+  let _ : Module R N := Module.compHom N (algebraMap R S)
+  have : IsScalarTower R S N := IsScalarTower.of_algebraMap_smul fun r ↦ congrFun rfl
+  have := (AlgebraTensorModule.cancelBaseChange R S S N M).symm.subsingleton
+  exact FaithfullyFlat.rTensor_reflects_triviality R M N
+
+section IsBaseChange
+
+variable {S N : Type*} [CommRing S] [Algebra R S] [FaithfullyFlat R S]
+  [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N] {f : M →ₗ[R] N}
+
+theorem _root_.IsBaseChange.map_smul_top_ne_top_iff_of_faithfullyFlat (hf : IsBaseChange S f)
+    (I : Ideal R) :
+    I.map (algebraMap R S) • (⊤ : Submodule S N) ≠ ⊤ ↔ I • (⊤ : Submodule R M) ≠ ⊤ := by
+  simpa only [← Submodule.subsingleton_quotient_iff_eq_top.not] using not_congr <|
+    (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).symm ≪≫ₗ TensorProduct.comm S N _ ≪≫ₗ
+      hf.tensorEquiv _ ≪≫ₗ AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (.refl R M) ≪≫ₗ
+        AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
+          (tensorQuotEquivQuotSMul M I).baseChange R S _ _ |>.subsingleton_congr.trans <|
+            subsingleton_tensorProduct_iff_right R S
+
+end IsBaseChange
+
 end FaithfullyFlat
+
+/-- Flat descends along faithfully flat ring maps. -/
+lemma Flat.of_flat_tensorProduct (S : Type*) [CommRing S] [Algebra R S]
+    [Module.FaithfullyFlat R S] [Module.Flat S (S ⊗[R] M)] : Module.Flat R M := by
+  rw [Module.Flat.iff_lTensor_preserves_injective_linearMap]
+  intro N P _ _ _ _ f hf
+  have : Flat R (S ⊗[R] M) := Flat.trans _ S _
+  rw [← FaithfullyFlat.lTensor_injective_iff_injective R S]
+  have : LinearMap.lTensor S (LinearMap.lTensor M f) =
+      (TensorProduct.assoc _ _ _ _).toLinearMap ∘ₗ LinearMap.lTensor (S ⊗[R] M) f ∘ₗ
+        (TensorProduct.assoc _ _ _ _).symm.toLinearMap := by
+    ext
+    simp
+  simpa [this] using Flat.lTensor_preserves_injective_linearMap f hf
+
+lemma Flat.iff_flat_tensorProduct (S : Type*) [CommRing S] [Algebra R S]
+    [Module.FaithfullyFlat R S] : Module.Flat S (S ⊗[R] M) ↔ Module.Flat R M :=
+  ⟨fun _ ↦ .of_flat_tensorProduct R M S, fun _ ↦ inferInstance⟩
 
 end Module

@@ -9,13 +9,13 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 # Delta-generated topological spaces
 
 This file defines delta-generated spaces, as topological spaces whose topology is coinduced by all
-maps from euclidean spaces into them. This is the strongest topological property that holds for
+maps from Euclidean spaces into them. This is the strongest topological property that holds for
 all CW-complexes and is closed under quotients and disjoint unions; every delta-generated space is
 locally path-connected, sequential and in particular compactly generated.
 
 See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 
-Adapted from `Mathlib.Topology.Compactness.CompactlyGeneratedSpace`.
+Adapted from `Mathlib/Topology/Compactness/CompactlyGeneratedSpace.lean`.
 
 ## TODO
 * All locally path-connected first-countable spaces are delta-generated - in particular, all normed
@@ -73,7 +73,7 @@ class DeltaGeneratedSpace (X : Type*) [t : TopologicalSpace X] : Prop where
   le_deltaGenerated : t ≤ deltaGenerated X
 
 lemma eq_deltaGenerated [DeltaGeneratedSpace X] : tX = deltaGenerated X :=
-  eq_of_le_of_le DeltaGeneratedSpace.le_deltaGenerated deltaGenerated_le
+  eq_of_le_of_ge DeltaGeneratedSpace.le_deltaGenerated deltaGenerated_le
 
 /-- A subset of a delta-generated space is open iff its preimage is open for every
   continuous map from ℝⁿ to X. -/
@@ -87,10 +87,7 @@ lemma DeltaGeneratedSpace.continuous_iff [DeltaGeneratedSpace X] {f : X → Y} :
     Continuous f ↔ ∀ (n : ℕ) (p : C(((Fin n) → ℝ), X)), Continuous (f ∘ p) := by
   simp_rw [continuous_iff_coinduced_le]
   nth_rewrite 1 [eq_deltaGenerated (X := X), deltaGenerated]
-  simp [coinduced_compose]
-  constructor
-  · intro h n p; apply h ⟨n, p⟩
-  · rintro h ⟨n, p⟩; apply h n p
+  simp [coinduced_compose, Sigma.forall]
 
 /-- A map out of a delta-generated space is continuous iff it is continuous with respect
   to the delta-generated topology on the codomain. -/

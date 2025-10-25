@@ -3,9 +3,9 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Group.UniqueProds.Basic
-import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.ZMod.Basic
 
@@ -85,19 +85,18 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
     dsimp only; rw [Finset.sum_apply']
     refine (Finset.sum_eq_single 0 ?_ ?_).trans ?_
     · intro b hb b0
-      rw [single_pow, one_pow, single_eq_of_ne]
+      rw [single_pow, one_pow, single_eq_of_ne']
       exact nsmul_ne_zero_of_lt_addOrderOf b0 (Finset.mem_range.mp hb)
-    · simp only [(zero_lt_two.trans_le o2).ne', Finset.mem_range, not_lt, Nat.le_zero,
-        false_imp_iff]
+    · grind
     · rw [single_pow, one_pow, zero_smul, single_eq_same]
   · apply_fun fun x : R[A] => x 0
     refine sub_ne_zero.mpr (ne_of_eq_of_ne (?_ : (_ : R) = 0) ?_)
     · have a0 : a ≠ 0 :=
         ne_of_eq_of_ne (one_nsmul a).symm
           (nsmul_ne_zero_of_lt_addOrderOf one_ne_zero (Nat.succ_le_iff.mp o2))
-      simp only [a0, single_eq_of_ne, Ne, not_false_iff]
+      simp only [a0, single_eq_of_ne', Ne, not_false_iff]
     · simpa only [single_eq_same] using zero_ne_one
-  · convert Commute.geom_sum₂_mul (α := AddMonoidAlgebra R A) _ (addOrderOf a) using 3
+  · convert Commute.geom_sum₂_mul (R := AddMonoidAlgebra R A) _ (addOrderOf a) using 3
     · rw [single_zero_one, one_pow, mul_one]
     · rw [single_pow, one_pow, addOrderOf_nsmul_eq_zero, single_zero_one, one_pow, sub_self]
     · simp only [single_zero_one, Commute.one_right]
@@ -138,8 +137,8 @@ elab "guard_decl" na:ident mod:ident : command => do
   let dcl ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo na
   let mdn := mod.getId
   let env ← getEnv
-  let .some dcli := env.getModuleIdxFor? dcl | unreachable!
-  let .some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
+  let some dcli := env.getModuleIdxFor? dcl | unreachable!
+  let some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
   unless dcli = mdni do throwError "instance {na} is no longer in {mod}."
 
 guard_decl Finsupp.Lex.addLeftMono Mathlib.Data.Finsupp.Lex
@@ -176,7 +175,6 @@ instance : Add F where
 /-- `F` would be a `CommSemiring`, using `min` as multiplication.  Again, we do not need this. -/
 instance : AddCommMonoid F where
   add_assoc := by boom
-  zero := 0
   zero_add := by boom
   add_zero := by boom
   add_comm := by boom
@@ -226,8 +224,7 @@ example : ¬AddLeftMono (Lex (F →₀ F)) := by
   refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))
     (Finsupp.single 1 1) (Finsupp.single 0 1) ?_) ⟨1, ?_⟩
   · exact Or.inr ⟨0, by simp [(by boom : ∀ j : F, j < 0 ↔ False)]⟩
-  · simp only [(by boom : ∀ j : F, j < 1 ↔ j = 0), ofLex_add, coe_add, Pi.add_apply, forall_eq,
-      f010, f1, f110, add_zero, f011, f111, zero_add, and_self]
+  · simp [(by boom : ∀ j : F, j < 1 ↔ j = 0), ofLex_add, f010, f1, f110, f011, f111]
 
 example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
   zero_divisors_of_periodic (1 : F) le_rfl (by simp [two_smul]) z01.ne'
@@ -235,7 +232,7 @@ example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 
 example {α} [Zero α] :
     2 • (Finsupp.single 0 1 : α →₀ F) = (Finsupp.single 0 1 : α →₀ F)
       ∧ (Finsupp.single 0 1 : α →₀ F) ≠ 0 :=
-  ⟨smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero, z01.ne]⟩
+  ⟨Finsupp.smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero]⟩
 
 end F
 

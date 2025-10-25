@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Data.Nat.Defs
 
 /-!
 # The naturals form a linear ordered monoid
@@ -20,22 +19,17 @@ namespace Nat
 
 /-! ### Instances -/
 
-instance instLinearOrderedAddCommMonoid : LinearOrderedAddCommMonoid ℕ where
-  __ := instLinearOrder
+instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℕ where
   add_le_add_left := @Nat.add_le_add_left
 
-instance instCanonicallyOrderedAdd : CanonicallyOrderedAdd ℕ where
-  le_self_add := Nat.le_add_right
-  exists_add_of_le := Nat.exists_eq_add_of_le
-
-instance instLinearOrderedCommMonoid : LinearOrderedCommMonoid ℕ where
-  __ := instLinearOrder
-  mul_le_mul_left _ _ h _ := mul_le_mul_left _ h
-
-instance instLinearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid ℕ where
-  __ := instLinearOrder
+instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℕ where
   add_le_add_left := @Nat.add_le_add_left
   le_of_add_le_add_left := @Nat.le_of_add_le_add_left
+
+instance instCanonicallyOrderedAdd : CanonicallyOrderedAdd ℕ where
+  le_add_self := Nat.le_add_left
+  le_self_add := Nat.le_add_right
+  exists_add_of_le := Nat.exists_eq_add_of_le
 
 instance instOrderedSub : OrderedSub ℕ := by
   refine ⟨fun m n k ↦ ?_⟩

@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # The property of being of cardinality less than a cardinal
@@ -74,3 +74,47 @@ lemma hasCardinalLT_iff_of_equiv {X : Type u} {Y : Type u'} (e : X ≃ Y) (κ : 
 lemma hasCardinalLT_aleph0_iff (X : Type u) :
     HasCardinalLT X Cardinal.aleph0.{v} ↔ Finite X := by
   simpa [HasCardinalLT] using Cardinal.mk_lt_aleph0_iff
+
+lemma hasCardinalLT_sum_iff (X : Type u) (Y : Type u') (κ : Cardinal.{w})
+    (hκ : Cardinal.aleph0 ≤ κ) :
+    HasCardinalLT (X ⊕ Y) κ ↔ HasCardinalLT X κ ∧ HasCardinalLT Y κ := by
+  constructor
+  · intro h
+    exact ⟨h.of_injective _ Sum.inl_injective,
+      h.of_injective _ Sum.inr_injective⟩
+  · rintro ⟨hX, hY⟩
+    dsimp [HasCardinalLT] at hX hY ⊢
+    rw [← Cardinal.lift_lt.{_, u'}, Cardinal.lift_lift, Cardinal.lift_lift] at hX
+    rw [← Cardinal.lift_lt.{_, u}, Cardinal.lift_lift, Cardinal.lift_lift] at hY
+    simp only [Cardinal.mk_sum, Cardinal.lift_add, Cardinal.lift_lift]
+    exact Cardinal.add_lt_of_lt (by simpa using hκ) hX hY
+
+lemma hasCardinalLT_option_iff (X : Type u) (κ : Cardinal.{w})
+    (hκ : Cardinal.aleph0 ≤ κ) :
+    HasCardinalLT (Option X) κ ↔ HasCardinalLT X κ := by
+  rw [hasCardinalLT_iff_of_equiv (Equiv.optionEquivSumPUnit.{0} X),
+    hasCardinalLT_sum_iff _ _ _ hκ, and_iff_left_iff_imp]
+  refine fun _ ↦ HasCardinalLT.of_le ?_ hκ
+  rw [hasCardinalLT_aleph0_iff]
+  infer_instance
+
+namespace HasCardinalLT
+
+/-- For any `w`-small type `X`, there exists a regular cardinal `κ : Cardinal.{w}`
+such that `HasCardinalLT X κ`. -/
+lemma exists_regular_cardinal (X : Type u) [Small.{w} X] :
+    ∃ (κ : Cardinal.{w}), κ.IsRegular ∧ HasCardinalLT X κ :=
+  ⟨Order.succ (max (Cardinal.mk (Shrink.{w} X)) .aleph0),
+    Cardinal.isRegular_succ (le_max_right _ _), by
+      simp [hasCardinalLT_iff_of_equiv (equivShrink.{w} X),
+        hasCardinalLT_iff_cardinal_mk_lt]⟩
+
+/-- For any `w`-small family `X : ι → Type u` of `w`-small types, there exists
+a regular cardinal `κ : Cardinal.{w}` such that `HasCardinalLT (X i) κ` for all `i : ι`. -/
+lemma exists_regular_cardinal_forall {ι : Type v} (X : ι → Type u) [Small.{w} ι]
+    [∀ i, Small.{w} (X i)] :
+    ∃ (κ : Cardinal.{w}), κ.IsRegular ∧ ∀ (i : ι), HasCardinalLT (X i) κ := by
+  obtain ⟨κ, hκ, h⟩ := exists_regular_cardinal.{w} (Sigma X)
+  exact ⟨κ, hκ, fun i ↦ h.of_injective _ sigma_mk_injective⟩
+
+end HasCardinalLT

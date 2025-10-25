@@ -6,7 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.Order.SuccPred.Limit
 
 /-!
@@ -35,8 +35,7 @@ open Opposite
 
 namespace Functor
 
-variable {J : Type u} [LinearOrder J] [SuccOrder J]
-   (F : Jᵒᵖ ⥤ Type v)
+variable {J : Type u} [LinearOrder J] [SuccOrder J] (F : Jᵒᵖ ⥤ Type v)
 
 /-- Given a functor `F : Jᵒᵖ ⥤ Type v` where `J` is a well-ordered type, this data
 allows to construct a section of `F` from an element in `F.obj (op ⊥)`,
@@ -58,6 +57,22 @@ structure WellOrderInductionData where
         F.map (homOfLE hi.le).op (lift j hj x) = x.val (op ⟨i, hi⟩)
 
 namespace WellOrderInductionData
+
+variable {F} in
+/-- Given a functor `F : Jᵒᵖ ⥤ Type v` where `J` is a well-ordered type,
+this is a constructor for `F.WellOrderInductionData` which does not take
+data as inputs but proofs of the existence of certain elements. -/
+noncomputable def ofExists
+    (h₁ : ∀ (j : J) (_ : ¬IsMax j), Function.Surjective (F.map (homOfLE (Order.le_succ j)).op))
+    (h₂ : ∀ (j : J) (_ : Order.IsSuccLimit j)
+      (x : ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙ F).sections),
+      ∃ (y : F.obj (op j)), ∀ (i : J) (hi : i < j),
+        F.map (homOfLE hi.le).op y = x.val (op ⟨i, hi⟩)) :
+    F.WellOrderInductionData where
+  succ j hj x := (h₁ j hj x).choose
+  map_succ j hj x := (h₁ j hj x).choose_spec
+  lift j hj x := (h₂ j hj x).choose
+  map_lift j hj x := (h₂ j hj x).choose_spec
 
 variable {F} (d : F.WellOrderInductionData) [OrderBot J]
 
@@ -112,33 +127,32 @@ lemma val_injective {j : J} {e e' : d.Extension val₀ j} (h : e.val = e'.val) :
 
 instance [WellFoundedLT J] (j : J) : Subsingleton (d.Extension val₀ j) := by
   induction j using SuccOrder.limitRecOn with
-  | hm i hi =>
-      obtain rfl : i = ⊥ := by simpa using hi
-      refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
-      have h₁ := e₁.map_zero
-      have h₂ := e₂.map_zero
-      simp only [homOfLE_refl, op_id, FunctorToTypes.map_id_apply] at h₁ h₂
-      rw [h₁, h₂]
-  | hs i hi hi' =>
-      refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
-      have h₁ := e₁.map_succ i (Order.lt_succ_of_not_isMax hi)
-      have h₂ := e₂.map_succ i (Order.lt_succ_of_not_isMax hi)
-      simp only [homOfLE_refl, op_id, FunctorToTypes.map_id_apply, homOfLE_leOfHom] at h₁ h₂
-      rw [h₁, h₂]
-      congr
-      exact congr_arg val
-        (Subsingleton.elim (e₁.ofLE (Order.le_succ i)) (e₂.ofLE (Order.le_succ i)))
-  | hl i hi hi' =>
-      refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
-      have h₁ := e₁.map_limit i hi (by rfl)
-      have h₂ := e₂.map_limit i hi (by rfl)
-      simp only [homOfLE_refl, op_id, FunctorToTypes.map_id_apply, OrderHom.Subtype.val_coe,
-        comp_obj, op_obj, Monotone.functor_obj, homOfLE_leOfHom] at h₁ h₂
-      rw [h₁, h₂]
-      congr
-      ext ⟨⟨l, hl⟩⟩
-      have := hi' l hl
-      exact congr_arg val (Subsingleton.elim (e₁.ofLE hl.le) (e₂.ofLE hl.le))
+  | isMin i hi =>
+    obtain rfl : i = ⊥ := by simpa using hi
+    refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
+    have h₁ := e₁.map_zero
+    have h₂ := e₂.map_zero
+    simp only [homOfLE_refl, op_id, FunctorToTypes.map_id_apply] at h₁ h₂
+    rw [h₁, h₂]
+  | succ i hi hi' =>
+    refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
+    have h₁ := e₁.map_succ i (Order.lt_succ_of_not_isMax hi)
+    have h₂ := e₂.map_succ i (Order.lt_succ_of_not_isMax hi)
+    simp only [homOfLE_refl, op_id, FunctorToTypes.map_id_apply, homOfLE_leOfHom] at h₁ h₂
+    rw [h₁, h₂]
+    congr
+    exact congr_arg val (Subsingleton.elim (e₁.ofLE (Order.le_succ i)) (e₂.ofLE (Order.le_succ i)))
+  | isSuccLimit i hi hi' =>
+    refine Subsingleton.intro (fun e₁ e₂ ↦ val_injective ?_)
+    have h₁ := e₁.map_limit i hi (by rfl)
+    have h₂ := e₂.map_limit i hi (by rfl)
+    simp only [homOfLE_refl, op_id, FunctorToTypes.map_id_apply, OrderHom.Subtype.val_coe,
+      comp_obj, op_obj, Monotone.functor_obj, homOfLE_leOfHom] at h₁ h₂
+    rw [h₁, h₂]
+    congr
+    ext ⟨⟨l, hl⟩⟩
+    have := hi' l hl
+    exact congr_arg val (Subsingleton.elim (e₁.ofLE hl.le) (e₂.ofLE hl.le))
 
 lemma compatibility [WellFoundedLT J]
     {j : J} (e : d.Extension val₀ j) {i : J} (e' : d.Extension val₀ i) (h : i ≤ j) :
@@ -192,7 +206,7 @@ def succ {j : J} (e : d.Extension val₀ j) (hj : ¬IsMax j) :
 
 variable [WellFoundedLT J]
 
-/-- When `j` is a limit element, this is the exntesion to `d.Extension val₀ j`
+/-- When `j` is a limit element, this is the extension to `d.Extension val₀ j`
 of a family of elements in `d.Extension val₀ i` for all `i < j`. -/
 def limit (j : J) (hj : Order.IsSuccLimit j)
     (e : ∀ (i : J) (_ : i < j), d.Extension val₀ i) :
@@ -237,11 +251,11 @@ def limit (j : J) (hj : Order.IsSuccLimit j)
 
 instance (j : J) : Nonempty (d.Extension val₀ j) := by
   induction j using SuccOrder.limitRecOn with
-  | hm i hi =>
-      obtain rfl : i = ⊥ := by simpa using hi
-      exact ⟨zero d val₀⟩
-  | hs i hi hi' => exact ⟨hi'.some.succ hi⟩
-  | hl i hi hi' => exact ⟨limit i hi (fun l hl ↦ (hi' l hl).some)⟩
+  | isMin i hi =>
+    obtain rfl : i = ⊥ := by simpa using hi
+    exact ⟨zero d val₀⟩
+  | succ i hi hi' => exact ⟨hi'.some.succ hi⟩
+  | isSuccLimit i hi hi' => exact ⟨limit i hi (fun l hl ↦ (hi' l hl).some)⟩
 
 noncomputable instance (j : J) : Unique (d.Extension val₀ j) :=
   uniqueOfSubsingleton (Nonempty.some inferInstance)

@@ -5,7 +5,6 @@ Authors: Fox Thomson, Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.List.Flatten
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.DeriveFintype
 
@@ -14,10 +13,36 @@ import Mathlib.Tactic.DeriveFintype
 
 This file contains the definition and operations on formal languages over an alphabet.
 Note that "strings" are implemented as lists over the alphabet.
+
 Union and concatenation define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
 over the languages.
+
 In addition to that, we define a reversal of a language and prove that it behaves well
 with respect to other language operations.
+
+## Notation
+
+* `l + m`: union of languages `l` and `m`
+* `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
+* `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
+* `1`: language consisting of only the empty string. This is because it is the unit of the `*`
+  operator.
+* `l∗`: Kleene star – language of strings consisting of arbitrarily many members of `l`
+  concatenated together. Note that this notation uses the Unicode asterisk operator `∗`, as opposed
+  to the more common ASCII asterisk `*`.
+
+## Main definitions
+
+* `Language α`: a set of strings over the alphabet `α`
+* `l.map f`: transform a language `l` over `α` into a language over `β`
+  by translating through `f : α → β`
+
+## Main theorems
+
+* `Language.self_eq_mul_add_iff`: Arden's lemma – if a language `l` satisfies the equation
+  `l = m * l + n`, and `m` doesn't contain the empty string,
+  then `l` is the language `m∗ * n`
+
 -/
 
 
@@ -40,9 +65,6 @@ instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Langua
   Set.instCompleteAtomicBooleanAlgebra
 
 variable {l m : Language α} {a b x : List α}
-
--- Porting note: `reducible` attribute cannot be local.
--- attribute [local reducible] Language
 
 /-- Zero language has no elements. -/
 instance : Zero (Language α) :=
@@ -82,15 +104,15 @@ instance : KStar (Language α) := ⟨fun l ↦ {x | ∃ L : List (List α), x = 
 lemma kstar_def (l : Language α) : l∗ = {x | ∃ L : List (List α), x = L.flatten ∧ ∀ y ∈ L, y ∈ l} :=
   rfl
 
--- Porting note: `reducible` attribute cannot be local,
---               so this new theorem is required in place of `Set.ext`.
 @[ext]
 theorem ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l = m :=
   Set.ext h
 
 @[simp]
-theorem not_mem_zero (x : List α) : x ∉ (0 : Language α) :=
+theorem notMem_zero (x : List α) : x ∉ (0 : Language α) :=
   id
+
+@[deprecated (since := "2025-05-23")] alias not_mem_zero := notMem_zero
 
 @[simp]
 theorem mem_one (x : List α) : x ∈ (1 : Language α) ↔ x = [] := by rfl
@@ -117,22 +139,18 @@ theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
 
 instance instSemiring : Semiring (Language α) where
-  add := (· + ·)
   add_assoc := union_assoc
-  zero := 0
   zero_add := empty_union
   add_zero := union_empty
   add_comm := union_comm
-  mul := (· * ·)
   mul_assoc _ _ _ := image2_assoc append_assoc
   zero_mul _ := image2_empty_left
   mul_zero _ := image2_empty_right
-  one := 1
   one_mul l := by simp [mul_def, one_def]
   mul_one l := by simp [mul_def, one_def]
   natCast n := if n = 0 then 0 else 1
   natCast_zero := rfl
-  natCast_succ n := by cases n <;> simp [Nat.cast, add_def, zero_def]
+  natCast_succ n := by cases n <;> simp [add_def, zero_def]
   left_distrib _ _ _ := image2_union_right
   right_distrib _ _ _ := image2_union_left
   nsmul := nsmulRec
@@ -147,7 +165,7 @@ def map (f : α → β) : Language α →+* Language β where
   map_zero' := image_empty _
   map_one' := image_singleton
   map_add' := image_union _
-  map_mul' _ _ := image_image2_distrib <| map_append _
+  map_mul' _ _ := image_image2_distrib <| fun _ _ => map_append
 
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]
@@ -162,9 +180,7 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
   · rintro ⟨S, rfl, h⟩
     refine ⟨S.filter fun l ↦ !List.isEmpty l,
       by simp [List.flatten_filter_not_isEmpty], fun y hy ↦ ?_⟩
-    -- Porting note: The previous code was:
-    -- rw [mem_filter, empty_iff_eq_nil] at hy
-    rw [mem_filter, Bool.not_eq_true', ← Bool.bool_iff_false, List.isEmpty_iff] at hy
+    simp only [mem_filter, Bool.not_eq_eq_eq_not, Bool.not_true, isEmpty_eq_false_iff, ne_eq] at hy
     exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
@@ -178,7 +194,7 @@ theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
 
 theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
   intro h₁ h₂ x hx
-  simp only [mul_def, exists_and_left, mem_image2, image_prod] at hx ⊢
+  simp only [mul_def, mem_image2] at hx ⊢
   tauto
 
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
@@ -205,14 +221,10 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
-  induction' n with n ihn generalizing x
-  · simp only [mem_one, pow_zero, length_eq_zero]
-    constructor
-    · rintro rfl
-      exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
-    · rintro ⟨_, rfl, rfl, _⟩
-      rfl
-  · simp only [pow_succ', mem_mul, ihn]
+  induction n generalizing x with
+  | zero => simp
+  | succ n ihn =>
+    simp only [pow_succ', mem_mul, ihn]
     constructor
     · rintro ⟨a, ha, b, ⟨S, rfl, rfl, hS⟩, rfl⟩
       exact ⟨a :: S, rfl, rfl, forall_mem_cons.2 ⟨ha, hS⟩⟩
@@ -223,11 +235,7 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
 theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
   ext x
   simp only [mem_kstar, mem_iSup, mem_pow]
-  constructor
-  · rintro ⟨S, rfl, hS⟩
-    exact ⟨_, S, rfl, rfl, hS⟩
-  · rintro ⟨_, S, rfl, rfl, hS⟩
-    exact ⟨S, rfl, hS⟩
+  grind
 
 @[simp]
 theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
@@ -256,10 +264,11 @@ instance : KleeneAlgebra (Language α) :=
     kstar_mul_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, iSup_mul]
       refine iSup_le (fun n ↦ ?_)
-      induction' n with n ih
-      · simp
-      rw [pow_succ, mul_assoc (l^n) l m]
-      exact le_trans (le_mul_congr le_rfl h) ih,
+      induction n with
+      | zero => simp
+      | succ n ih =>
+        rw [pow_succ, mul_assoc (l^n) l m]
+        exact le_trans (le_mul_congr le_rfl h) ih,
     mul_kstar_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, mul_iSup]
       refine iSup_le (fun n ↦ ?_)
@@ -268,6 +277,34 @@ instance : KleeneAlgebra (Language α) :=
       | succ n ih =>
         rw [pow_succ, ← mul_assoc m (l^n) l]
         exact le_trans (le_mul_congr ih le_rfl) h }
+
+/-- **Arden's lemma** -/
+theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where
+  mp h := by
+    apply le_antisymm
+    · intro x hx
+      induction hlen : x.length using Nat.strong_induction_on generalizing x with | _ _ ih
+      subst hlen
+      rw [h] at hx
+      obtain hx | hx := hx
+      · obtain ⟨a, ha, b, hb, rfl⟩ := mem_mul.mp hx
+        rw [length_append] at ih
+        have hal : 0 < a.length := length_pos_iff.mpr <| ne_of_mem_of_not_mem ha hm
+        specialize ih b.length (Nat.lt_add_left_iff_pos.mpr hal) hb rfl
+        rw [← one_add_self_mul_kstar_eq_kstar, one_add_mul, mul_assoc]
+        right
+        exact ⟨_, ha, _, ih, rfl⟩
+      · exact ⟨[], nil_mem_kstar _, _, ⟨hx, nil_append _⟩⟩
+    · rw [kstar_eq_iSup_pow, iSup_mul, iSup_le_iff]
+      intro i
+      induction i with rw [h]
+      | zero =>
+        rw [pow_zero, one_mul, add_comm]
+        exact le_self_add
+      | succ _ ih =>
+        grw [add_comm, pow_add, pow_one, mul_assoc, ih]
+        exact le_self_add
+  mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
@@ -344,8 +381,8 @@ end Language
 /-- Symbols for use by all kinds of grammars. -/
 inductive Symbol (T N : Type*)
   /-- Terminal symbols (of the same type as the language) -/
-  | terminal    (t : T) : Symbol T N
-  /-- Nonterminal symbols (must not be present at the end of word being generated) -/
+  | terminal (t : T) : Symbol T N
+  /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
   | nonterminal (n : N) : Symbol T N
 deriving
   DecidableEq, Repr, Fintype

@@ -8,7 +8,7 @@ import Mathlib.Algebra.Lie.Killing
 import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
 /-!
-# Derivations of finite dimensional Killing Lie algebras
+# Derivations of finite-dimensional Killing Lie algebras
 
 This file establishes that all derivations of finite-dimensional Killing Lie algebras are inner.
 
@@ -78,8 +78,7 @@ variable [LieAlgebra.IsKilling R L]
 
 @[simp] lemma ad_apply_eq_zero_iff (x : L) : ad R L x = 0 ↔ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  rwa [← LieHom.mem_ker, ad_ker_eq_center, LieAlgebra.HasTrivialRadical.center_eq_bot,
-    LieSubmodule.mem_bot] at h
+  rwa [← LieHom.mem_ker, ad_ker_eq_center, LieAlgebra.center_eq_bot, LieSubmodule.mem_bot] at h
 
 instance instIsKilling_range_ad : LieAlgebra.IsKilling R 𝕀 :=
   (LieEquiv.ofInjective (ad R L) (injective_ad_of_center_eq_bot <| by simp)).isKilling

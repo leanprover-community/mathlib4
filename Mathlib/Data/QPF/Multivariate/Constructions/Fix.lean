@@ -16,13 +16,13 @@ and take a fixed point again.
 
 ## Main definitions
 
- * `Fix.mk`     - constructor
- * `Fix.dest`    - destructor
- * `Fix.rec`    - recursor: basis for defining functions by structural recursion on `Fix F α`
- * `Fix.drec`   - dependent recursor: generalization of `Fix.rec` where
+* `Fix.mk`     - constructor
+* `Fix.dest`    - destructor
+* `Fix.rec`    - recursor: basis for defining functions by structural recursion on `Fix F α`
+* `Fix.drec`   - dependent recursor: generalization of `Fix.rec` where
                   the result type of the function is allowed to depend on the `Fix F α` value
- * `Fix.rec_eq` - defining equation for `recursor`
- * `Fix.ind`    - induction principle for `Fix F α`
+* `Fix.rec_eq` - defining equation for `recursor`
+* `Fix.ind`    - induction principle for `Fix F α`
 
 ## Implementation notes
 
@@ -33,8 +33,8 @@ See [avigad-carneiro-hudon2019] for more details.
 
 ## Reference
 
- * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+* Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
+  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
 
@@ -84,14 +84,13 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
   apply q.P.w_cases _ x
   intro a₀ f'₀ f₀
   apply q.P.w_cases _ y
-  intro a₁ f'₁ f₁
-  intro h
+  intro a₁ f'₁ f₁ h
   -- Porting note: induction on h doesn't work.
   refine @WEquiv.recOn _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h ?_ ?_ ?_
-  · intros a f' f₀ f₁ _h ih; simp only [recF_eq, Function.comp]
-    congr; funext; congr; funext; apply ih
-  · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
-  · intros x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
+  · intro a f' f₀ f₁ _h ih; simp only [recF_eq]
+    congr 4; funext; apply ih
+  · intro a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
+  · intro x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
 
 theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
     (h : MvQPF.abs (q.P.wDest' x) = MvQPF.abs (q.P.wDest' y)) :
@@ -103,8 +102,7 @@ theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
   intro a₁ f'₁ f₁
   apply WEquiv.abs
 
-theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := by
-  apply q.P.w_cases _ x; intro a f' f; exact WEquiv.abs a f' f a f' f rfl
+theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := abs' x x rfl
 
 theorem wEquiv.symm {α : TypeVec n} (x y : q.P.W α) : WEquiv x y → WEquiv y x := by
   intro h; induction h with
@@ -136,7 +134,7 @@ theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
   | ind a f' f₀ f₁ h ih => rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.ind; exact ih
   | abs a₀ f'₀ f₀ a₁ f'₁ f₁ h =>
     rw [q.P.w_map_wMk, q.P.w_map_wMk]; apply WEquiv.abs
-    show
+    change
       abs (q.P.objAppend1 a₀ (g ⊚ f'₀) fun x => q.P.wMap g (f₀ x)) =
         abs (q.P.objAppend1 a₁ (g ⊚ f'₁) fun x => q.P.wMap g (f₁ x))
     rw [← q.P.map_objAppend1, ← q.P.map_objAppend1, abs_map, abs_map, h]
@@ -174,7 +172,7 @@ variable {α : TypeVec.{u} n}
 def Fix.rec {β : Type u} (g : F (α ::: β) → β) : Fix F α → β :=
   Quot.lift (recF g) (recF_eq_of_wEquiv α g)
 
-/-- Access W-type underlying `Fix F`  -/
+/-- Access W-type underlying `Fix F` -/
 def fixToW : Fix F α → q.P.W α :=
   Quotient.lift wrepr (recF_eq_of_wEquiv α fun x => q.P.wMk' (repr x))
 
@@ -198,7 +196,7 @@ theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 
     lhs
     rw [Fix.rec, Fix.mk]
     dsimp
-  cases' h : repr x with a f
+  rcases h : repr x with ⟨a, f⟩
   rw [MvPFunctor.map_eq, recF_eq', ← MvPFunctor.map_eq, MvPFunctor.wDest'_wMk']
   rw [← MvPFunctor.comp_map, abs_map, ← h, abs_repr, ← appendFun_comp, id_comp, this]
 
@@ -226,7 +224,7 @@ theorem Fix.ind_rec {β : Type u} (g₁ g₂ : Fix F α → β)
   intro x
   apply q.P.w_ind _ x
   intro a f' f ih
-  show g₁ ⟦q.P.wMk a f' f⟧ = g₂ ⟦q.P.wMk a f' f⟧
+  change g₁ ⟦q.P.wMk a f' f⟧ = g₂ ⟦q.P.wMk a f' f⟧
   rw [← Fix.ind_aux a f' f]
   apply h
   rw [← abs_map, ← abs_map, MvPFunctor.map_eq, MvPFunctor.map_eq]
@@ -250,7 +248,7 @@ theorem Fix.mk_dest (x : Fix F α) : Fix.mk (Fix.dest x) = x := by
   intro x; dsimp
   rw [Fix.dest, Fix.rec_eq, ← comp_map, ← appendFun_comp, id_comp]
   intro h; rw [h]
-  show Fix.mk (appendFun id id <$$> x) = Fix.mk x
+  change Fix.mk (appendFun id id <$$> x) = Fix.mk x
   rw [appendFun_id_id, MvFunctor.id_map]
 
 theorem Fix.dest_mk (x : F (append1 α (Fix F α))) : Fix.dest (Fix.mk x) = x := by
@@ -308,8 +306,7 @@ def Fix.drec {β : Fix F α → Type u}
     intro x' ih
     rw [Fix.rec_eq]
     dsimp
-    simp? [appendFun_id_id] at ih says
-      simp only [appendFun_id_id, MvFunctor.id_map, y] at ih
+    simp only [appendFun_id_id, MvFunctor.id_map] at ih
     congr
     conv =>
       rhs

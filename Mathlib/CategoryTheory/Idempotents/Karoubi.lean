@@ -31,7 +31,6 @@ variable (C : Type*) [Category C]
 
 namespace Idempotents
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- In a preadditive category `C`, when an object `X` decomposes as `X ≅ P ⨿ Q`, one may
 consider `P` as a direct factor of `X` and up to unique isomorphism, it is determined by the
 obvious idempotent `X ⟶ P ⟶ X` which is the projection onto `P` with kernel `Q`. More generally,
@@ -44,7 +43,7 @@ structure Karoubi where
   /-- an endomorphism of the object -/
   p : X ⟶ X
   /-- the condition that the given endomorphism is an idempotent -/
-  idem : p ≫ p = p := by aesop_cat
+  idem : p ≫ p = p := by cat_disch
 
 namespace Karoubi
 
@@ -70,23 +69,24 @@ structure Hom (P Q : Karoubi C) where
   /-- a morphism between the underlying objects -/
   f : P.X ⟶ Q.X
   /-- compatibility of the given morphism with the given idempotents -/
-  comm : f = P.p ≫ f ≫ Q.p := by aesop_cat
+  comm : P.p ≫ f ≫ Q.p = f := by cat_disch
 
 instance [Preadditive C] (P Q : Karoubi C) : Inhabited (Hom P Q) :=
   ⟨⟨0, by rw [zero_comp, comp_zero]⟩⟩
 
 @[reassoc (attr := simp)]
-theorem p_comp {P Q : Karoubi C} (f : Hom P Q) : P.p ≫ f.f = f.f := by rw [f.comm, ← assoc, P.idem]
+theorem p_comp {P Q : Karoubi C} (f : Hom P Q) : P.p ≫ f.f = f.f := by
+  rw [← f.comm, ← assoc, P.idem]
 
 @[reassoc (attr := simp)]
 theorem comp_p {P Q : Karoubi C} (f : Hom P Q) : f.f ≫ Q.p = f.f := by
-  rw [f.comm, assoc, assoc, Q.idem]
+  rw [← f.comm, assoc, assoc, Q.idem]
 
 @[reassoc]
 theorem p_comm {P Q : Karoubi C} (f : Hom P Q) : P.p ≫ f.f = f.f ≫ Q.p := by rw [p_comp, comp_p]
 
 theorem comp_proof {P Q R : Karoubi C} (g : Hom Q R) (f : Hom P Q) :
-    f.f ≫ g.f = P.p ≫ (f.f ≫ g.f) ≫ R.p := by rw [assoc, comp_p, ← assoc, p_comp]
+    P.p ≫ (f.f ≫ g.f) ≫ R.p = f.f ≫ g.f := by simp
 
 /-- The category structure on the karoubi envelope of a category. -/
 instance : Category (Karoubi C) where
@@ -111,16 +111,12 @@ theorem comp_f {P Q R : Karoubi C} (f : P ⟶ Q) (g : Q ⟶ R) : (f ≫ g).f = f
 @[simp]
 theorem id_f {P : Karoubi C} : Hom.f (𝟙 P) = P.p := rfl
 
-@[deprecated "No deprecation message was provided." (since := "2024-07-15")]
-theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := rfl
-
 /-- It is possible to coerce an object of `C` into an object of `Karoubi C`.
 See also the functor `toKaroubi`. -/
 instance coe : CoeTC C (Karoubi C) :=
   ⟨fun X => ⟨X, 𝟙 X, by rw [comp_id]⟩⟩
 
--- Porting note: removed @[simp] as the linter complains
-theorem coe_X (X : C) : (X : Karoubi C).X = X := rfl
+theorem coe_X (X : C) : (X : Karoubi C).X = X := by simp
 
 @[simp]
 theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := rfl
@@ -149,7 +145,7 @@ variable {C}
 
 @[simps add]
 instance instAdd [Preadditive C] {P Q : Karoubi C} : Add (P ⟶ Q) where
-  add f g := ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
+  add f g := ⟨f.f + g.f, by rw [add_comp, comp_add, f.comm, g.comm]⟩
 
 @[simps neg]
 instance instNeg [Preadditive C] {P Q : Karoubi C} : Neg (P ⟶ Q) where
@@ -158,10 +154,6 @@ instance instNeg [Preadditive C] {P Q : Karoubi C} : Neg (P ⟶ Q) where
 @[simps zero]
 instance instZero [Preadditive C] {P Q : Karoubi C} : Zero (P ⟶ Q) where
   zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
-
--- dsimp loops when applying this lemma to its LHS,
--- probably https://github.com/leanprover/lean4/pull/2867
-attribute [nolint simpNF] CategoryTheory.Idempotents.instZero_zero
 
 instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
   zero_add f := by
@@ -265,10 +257,10 @@ theorem decomp_p (P : Karoubi C) : (toKaroubi C).map P.p = decompId_p P ≫ deco
   ext
   simp only [comp_f, decompId_p_f, decompId_i_f, P.idem, toKaroubi_map_f]
 
-theorem decompId_i_toKaroubi (X : C) : decompId_i ((toKaroubi C).obj X) = 𝟙 _ := by
+theorem decompId_i_toKaroubi (X : C) : decompId_i ((toKaroubi C).obj X) = 𝟙 _ :=
   rfl
 
-theorem decompId_p_toKaroubi (X : C) : decompId_p ((toKaroubi C).obj X) = 𝟙 _ := by
+theorem decompId_p_toKaroubi (X : C) : decompId_p ((toKaroubi C).obj X) = 𝟙 _ :=
   rfl
 
 theorem decompId_i_naturality {P Q : Karoubi C} (f : P ⟶ Q) :

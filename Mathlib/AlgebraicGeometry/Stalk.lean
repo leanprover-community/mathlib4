@@ -45,7 +45,7 @@ open neighborhood of `x` we choose.
 theorem IsAffineOpen.fromSpecStalk_eq (x : X) (hxU : x ∈ U) (hxV : x ∈ V) :
     hU.fromSpecStalk hxU = hV.fromSpecStalk hxV := by
   obtain ⟨U', h₁, h₂, h₃ : U' ≤ U ⊓ V⟩ :=
-    Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X) (show x ∈ U ⊓ V from ⟨hxU, hxV⟩)
+    Opens.isBasis_iff_nbhd.mp X.isBasis_affineOpens (show x ∈ U ⊓ V from ⟨hxU, hxV⟩)
   transitivity fromSpecStalk h₁ h₂
   · delta fromSpecStalk
     rw [← hU.map_fromSpec h₁ (homOfLE <| h₃.trans inf_le_left).op]
@@ -63,12 +63,13 @@ If `x` is a point of `X`, this is the canonical morphism from `Spec(O_x)` to `X`
 -/
 noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
     Spec (X.presheaf.stalk x) ⟶ X :=
-  (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
+  (isAffineOpen_opensRange (X.affineCover.f (X.affineCover.idx x))).fromSpecStalk
+    (X.affineCover.covers x)
 
 @[simps over] noncomputable
 instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).Over X := ⟨X.fromSpecStalk x⟩
 
-@[simps! over] noncomputable
+noncomputable
 instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).CanonicallyOver X where
 
 @[simp]
@@ -90,15 +91,15 @@ instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecStalk x) :=
 
 lemma IsAffineOpen.fromSpecStalk_closedPoint {U : Opens X} (hU : IsAffineOpen U)
     {x : X} (hxU : x ∈ U) :
-    (hU.fromSpecStalk hxU).base (closedPoint (X.presheaf.stalk x)) = x := by
-  rw [IsAffineOpen.fromSpecStalk, Scheme.comp_base_apply]
+    hU.fromSpecStalk hxU (closedPoint (X.presheaf.stalk x)) = x := by
+  rw [IsAffineOpen.fromSpecStalk, Scheme.Hom.comp_apply]
   rw [← hU.primeIdealOf_eq_map_closedPoint ⟨x, hxU⟩, hU.fromSpec_primeIdealOf ⟨x, hxU⟩]
 
 namespace Scheme
 
 @[simp]
 lemma fromSpecStalk_closedPoint {x : X} :
-    (X.fromSpecStalk x).base (closedPoint (X.presheaf.stalk x)) = x :=
+    X.fromSpecStalk x (closedPoint (X.presheaf.stalk x)) = x :=
   IsAffineOpen.fromSpecStalk_closedPoint _ _
 
 lemma fromSpecStalk_app {x : X} (hxU : x ∈ U) :
@@ -106,9 +107,9 @@ lemma fromSpecStalk_app {x : X} (hxU : x ∈ U) :
       X.presheaf.germ U x hxU ≫
         (ΓSpecIso (X.presheaf.stalk x)).inv ≫
           (Spec (X.presheaf.stalk x)).presheaf.map (homOfLE le_top).op := by
-  obtain ⟨_, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := (isBasis_affine_open X).exists_subset_of_mem_open
+  obtain ⟨_, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
     hxU U.2
-  rw [← hV.fromSpecStalk_eq_fromSpecStalk hxV, IsAffineOpen.fromSpecStalk, Scheme.comp_app,
+  rw [← hV.fromSpecStalk_eq_fromSpecStalk hxV, IsAffineOpen.fromSpecStalk, Scheme.Hom.comp_app,
     hV.fromSpec_app_of_le _ hVU, ← X.presheaf.germ_res (homOfLE hVU) x hxV]
   simp [Category.assoc, ← ΓSpecIso_inv_naturality_assoc]
 
@@ -120,29 +121,39 @@ lemma fromSpecStalk_appTop {x : X} :
   fromSpecStalk_app ..
 
 @[reassoc (attr := simp)]
-lemma Spec_map_stalkSpecializes_fromSpecStalk {x y : X} (h : x ⤳ y) :
+lemma SpecMap_stalkSpecializes_fromSpecStalk {x y : X} (h : x ⤳ y) :
     Spec.map (X.presheaf.stalkSpecializes h) ≫ X.fromSpecStalk y = X.fromSpecStalk x := by
   obtain ⟨_, ⟨U, hU, rfl⟩, hyU, -⟩ :=
-    (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ y) isOpen_univ
+    X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ y) isOpen_univ
   have hxU : x ∈ U := h.mem_open U.2 hyU
   rw [← hU.fromSpecStalk_eq_fromSpecStalk hyU, ← hU.fromSpecStalk_eq_fromSpecStalk hxU,
     IsAffineOpen.fromSpecStalk, IsAffineOpen.fromSpecStalk, ← Category.assoc, ← Spec.map_comp,
     TopCat.Presheaf.germ_stalkSpecializes]
 
+@[deprecated (since := "2025-10-07")]
+alias Spec_map_stalkSpecializes_fromSpecStalk := SpecMap_stalkSpecializes_fromSpecStalk
+@[deprecated (since := "2025-10-07")]
+alias Spec_map_stalkSpecializes_fromSpecStalk_assoc := SpecMap_stalkSpecializes_fromSpecStalk_assoc
+
 instance {x y : X} (h : x ⤳ y) : (Spec.map (X.presheaf.stalkSpecializes h)).IsOver X where
 
 @[reassoc (attr := simp)]
-lemma Spec_map_stalkMap_fromSpecStalk {x} :
+lemma SpecMap_stalkMap_fromSpecStalk {x} :
     Spec.map (f.stalkMap x) ≫ Y.fromSpecStalk _ = X.fromSpecStalk x ≫ f := by
-  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := (isBasis_affine_open Y).exists_subset_of_mem_open
-    (Set.mem_univ (f.base x)) isOpen_univ
-  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := (isBasis_affine_open X).exists_subset_of_mem_open
+  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open
+    (Set.mem_univ (f x)) isOpen_univ
+  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
     hxU (f ⁻¹ᵁ U).2
   rw [← hU.fromSpecStalk_eq_fromSpecStalk hxU, ← hV.fromSpecStalk_eq_fromSpecStalk hxV,
-    IsAffineOpen.fromSpecStalk, ← Spec.map_comp_assoc, Scheme.stalkMap_germ f _ x hxU,
+    IsAffineOpen.fromSpecStalk, ← Spec.map_comp_assoc, Scheme.Hom.germ_stalkMap f _ x hxU,
     IsAffineOpen.fromSpecStalk, Spec.map_comp_assoc, ← X.presheaf.germ_res (homOfLE hVU) x hxV,
     Spec.map_comp_assoc, Category.assoc, ← Spec.map_comp_assoc (f.app _),
-      Hom.app_eq_appLE, Hom.appLE_map, IsAffineOpen.Spec_map_appLE_fromSpec]
+      Hom.app_eq_appLE, Hom.appLE_map, IsAffineOpen.SpecMap_appLE_fromSpec]
+
+@[deprecated (since := "2025-10-07")]
+alias Spec_map_stalkMap_fromSpecStalk := SpecMap_stalkMap_fromSpecStalk
+@[deprecated (since := "2025-10-07")]
+alias Spec_map_stalkMap_fromSpecStalk_assoc := SpecMap_stalkMap_fromSpecStalk_assoc
 
 instance [X.Over Y] {x} : Spec.map ((X ↘ Y).stalkMap x) |>.IsOver Y where
 
@@ -161,15 +172,15 @@ lemma Spec_fromSpecStalk' (R : CommRingCat) (x) :
 
 @[stacks 01J7]
 lemma range_fromSpecStalk {x : X} :
-    Set.range (X.fromSpecStalk x).base = { y | y ⤳ x } := by
+    Set.range (X.fromSpecStalk x) = { y | y ⤳ x } := by
   ext y
   constructor
   · rintro ⟨y, rfl⟩
-    exact ((IsLocalRing.specializes_closedPoint y).map (X.fromSpecStalk x).base.2).trans
+    exact ((IsLocalRing.specializes_closedPoint y).map (X.fromSpecStalk x).continuous).trans
       (specializes_of_eq fromSpecStalk_closedPoint)
   · rintro (hy : y ⤳ x)
     have := fromSpecStalk_closedPoint (x := y)
-    rw [← Spec_map_stalkSpecializes_fromSpecStalk hy] at this
+    rw [← SpecMap_stalkSpecializes_fromSpecStalk hy] at this
     exact ⟨_, this⟩
 
 /-- The canonical map `Spec 𝒪_{X, x} ⟶ U` given `x ∈ U ⊆ X`. -/
@@ -182,7 +193,7 @@ def Opens.fromSpecStalkOfMem {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : x ∈
 lemma Opens.fromSpecStalkOfMem_ι {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : x ∈ U) :
     U.fromSpecStalkOfMem x hxU ≫ U.ι = X.fromSpecStalk x := by
   simp only [Opens.fromSpecStalkOfMem, Spec.map_inv, Category.assoc, IsIso.inv_comp_eq]
-  exact (Scheme.Spec_map_stalkMap_fromSpecStalk U.ι (x := ⟨x, hxU⟩)).symm
+  exact (Scheme.SpecMap_stalkMap_fromSpecStalk U.ι (x := ⟨x, hxU⟩)).symm
 
 instance {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : x ∈ U) :
     (U.fromSpecStalkOfMem x hxU).IsOver X where
@@ -201,7 +212,7 @@ lemma Opens.fromSpecStalkOfMem_toSpecΓ {X : Scheme.{u}} (U : X.Opens) (x : X) (
     ← Spec.map_comp, ← Spec.map_comp]
   congr 1
   rw [IsIso.comp_inv_eq, Iso.inv_comp_eq]
-  erw [stalkMap_germ U.ι U ⟨x, hxU⟩]
+  erw [Hom.germ_stalkMap U.ι U ⟨x, hxU⟩]
   rw [Opens.ι_app, Opens.topIso_hom, ← Functor.map_comp_assoc]
   exact (U.toScheme.presheaf.germ_res (homOfLE le_top) ⟨x, hxU⟩ (U := U.ι ⁻¹ᵁ U) hxU).symm
 
@@ -258,7 +269,7 @@ This is inverse to `φ ↦ Spec.map φ ≫ X.fromSpecStalk (f 𝔪)`. See `SpecT
 -/
 noncomputable
 def stalkClosedPointTo :
-    X.presheaf.stalk (f.base (closedPoint R)) ⟶ R :=
+    X.presheaf.stalk (f (closedPoint R)) ⟶ R :=
   f.stalkMap (closedPoint R) ≫ (stalkClosedPointIso R).hom
 
 instance isLocalHom_stalkClosedPointTo :
@@ -275,31 +286,31 @@ instance isLocalHom_stalkClosedPointTo' {R : Type u} [CommRing R] [IsLocalRing R
   isLocalHom_stalkClosedPointTo f
 
 lemma preimage_eq_top_of_closedPoint_mem
-    {U : Opens X} (hU : f.base (closedPoint R) ∈ U) : f ⁻¹ᵁ U = ⊤ :=
+    {U : Opens X} (hU : f (closedPoint R) ∈ U) : f ⁻¹ᵁ U = ⊤ :=
   IsLocalRing.closed_point_mem_iff.mp hU
 
 lemma stalkClosedPointTo_comp (g : X ⟶ Y) :
     stalkClosedPointTo (f ≫ g) = g.stalkMap _ ≫ stalkClosedPointTo f := by
-  rw [stalkClosedPointTo, Scheme.stalkMap_comp]
+  rw [stalkClosedPointTo, Scheme.Hom.stalkMap_comp]
   exact Category.assoc _ _ _
 
-lemma germ_stalkClosedPointTo_Spec {R S : CommRingCat} [IsLocalRing S] (φ : R ⟶ S):
+lemma germ_stalkClosedPointTo_Spec {R S : CommRingCat} [IsLocalRing S] (φ : R ⟶ S) :
     (Spec R).presheaf.germ ⊤ _ trivial ≫ stalkClosedPointTo (Spec.map φ) =
       (ΓSpecIso R).hom ≫ φ := by
-  rw [stalkClosedPointTo, Scheme.stalkMap_germ_assoc, ← Iso.inv_comp_eq,
+  rw [stalkClosedPointTo, Scheme.Hom.germ_stalkMap_assoc, ← Iso.inv_comp_eq,
     ← ΓSpecIso_inv_naturality_assoc]
   simp_rw [Opens.map_top]
   rw [germ_stalkClosedPointIso_hom, Iso.inv_hom_id, Category.comp_id]
 
 @[reassoc]
-lemma germ_stalkClosedPointTo (U : Opens X) (hU : f.base (closedPoint R) ∈ U) :
+lemma germ_stalkClosedPointTo (U : Opens X) (hU : f (closedPoint R) ∈ U) :
     X.presheaf.germ U _ hU ≫ stalkClosedPointTo f = f.app U ≫
       ((Spec R).presheaf.mapIso (eqToIso (preimage_eq_top_of_closedPoint_mem f hU).symm).op ≪≫
         ΓSpecIso R).hom := by
-  rw [stalkClosedPointTo, Scheme.stalkMap_germ_assoc, Iso.trans_hom]
+  rw [stalkClosedPointTo, Scheme.Hom.germ_stalkMap_assoc, Iso.trans_hom]
   congr 1
   rw [← Iso.eq_comp_inv, Category.assoc, ΓSpecIso_hom_stalkClosedPointIso_inv]
-  simp only [TopCat.Presheaf.pushforward_obj_obj, Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
+  simp only [Functor.mapIso_hom, Iso.op_hom, eqToIso.hom,
     TopCat.Presheaf.germ_res]
 
 @[reassoc]
@@ -307,14 +318,12 @@ lemma germ_stalkClosedPointTo_Spec_fromSpecStalk
     {x : X} (f : X.presheaf.stalk x ⟶ R) [IsLocalHom f.hom] (U : Opens X) (hU) :
     X.presheaf.germ U _ hU ≫ stalkClosedPointTo (Spec.map f ≫ X.fromSpecStalk x) =
       X.presheaf.germ U x (by simpa using hU) ≫ f := by
-  have : (Spec.map f ≫ X.fromSpecStalk x).base (closedPoint R) = x := by
-    rw [comp_base_apply, Spec_closedPoint, fromSpecStalk_closedPoint]
+  have : (Spec.map f ≫ X.fromSpecStalk x) (closedPoint R) = x := by
+    rw [Hom.comp_apply, Spec_closedPoint, fromSpecStalk_closedPoint]
   have : x ∈ U := this ▸ hU
-  simp only [TopCat.Presheaf.stalkCongr_hom, TopCat.Presheaf.germ_stalkSpecializes_assoc,
-    germ_stalkClosedPointTo, comp_app,
-    fromSpecStalk_app (X := X) (x := x) this, Category.assoc, Iso.trans_hom,
-    Functor.mapIso_hom, Hom.naturality_assoc, ← Functor.map_comp_assoc,
-    (Spec.map f).app_eq_appLE, Hom.appLE_map_assoc, Hom.map_appLE_assoc]
+  simp only [germ_stalkClosedPointTo, Hom.comp_app,
+    fromSpecStalk_app (X := X) (x := x) this, Category.assoc, Iso.trans_hom, Functor.mapIso_hom,
+      (Spec.map f).app_eq_appLE, Hom.appLE_map_assoc, Hom.map_appLE_assoc]
   simp_rw [← Opens.map_top (Spec.map f).base]
   rw [← (Spec.map f).app_eq_appLE, ΓSpecIso_naturality, Iso.inv_hom_id_assoc]
 
@@ -322,16 +331,16 @@ lemma stalkClosedPointTo_fromSpecStalk (x : X) :
     stalkClosedPointTo (X.fromSpecStalk x) =
       (X.presheaf.stalkCongr (by rw [fromSpecStalk_closedPoint]; rfl)).hom := by
   refine TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ?_
-  simp only [TopCat.Presheaf.stalkCongr_hom, TopCat.Presheaf.germ_stalkSpecializes, id_eq]
+  simp only [TopCat.Presheaf.stalkCongr_hom, TopCat.Presheaf.germ_stalkSpecializes]
   have : X.fromSpecStalk x = Spec.map (𝟙 (X.presheaf.stalk x)) ≫ X.fromSpecStalk x := by simp
   convert germ_stalkClosedPointTo_Spec_fromSpecStalk (𝟙 (X.presheaf.stalk x)) U hxU
 
 @[reassoc]
 lemma Spec_stalkClosedPointTo_fromSpecStalk :
     Spec.map (stalkClosedPointTo f) ≫ X.fromSpecStalk _ = f := by
-  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := (isBasis_affine_open X).exists_subset_of_mem_open
-    (Set.mem_univ (f.base (closedPoint R))) isOpen_univ
-  have := IsAffineOpen.Spec_map_appLE_fromSpec f hU (isAffineOpen_top _)
+  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
+    (Set.mem_univ (f (closedPoint R))) isOpen_univ
+  have := IsAffineOpen.SpecMap_appLE_fromSpec f hU (isAffineOpen_top _)
     (preimage_eq_top_of_closedPoint_mem f hxU).ge
   rw [IsAffineOpen.fromSpec_top, Iso.eq_inv_comp, isoSpec_Spec_hom] at this
   rw [← hU.fromSpecStalk_eq_fromSpecStalk hxU, IsAffineOpen.fromSpecStalk, ← Spec.map_comp_assoc,
@@ -368,14 +377,14 @@ Given a local ring `R` and scheme `X`, morphisms `Spec R ⟶ X` corresponds to p
 noncomputable
 def SpecToEquivOfLocalRing :
     (Spec R ⟶ X) ≃ Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f.hom } where
-  toFun f := ⟨f.base (closedPoint R), Scheme.stalkClosedPointTo f, inferInstance⟩
+  toFun f := ⟨f (closedPoint R), Scheme.stalkClosedPointTo f, inferInstance⟩
   invFun xf := Spec.map xf.2.1 ≫ X.fromSpecStalk xf.1
   left_inv := Scheme.Spec_stalkClosedPointTo_fromSpecStalk
   right_inv xf := by
     obtain ⟨x, ⟨f, hf⟩⟩ := xf
     symm
     refine SpecToEquivOfLocalRing_eq_iff.mpr ⟨?_, ?_⟩
-    · simp only [Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply, Spec_closedPoint,
+    · simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply, Spec_closedPoint,
         Scheme.fromSpecStalk_closedPoint]
     · refine TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ?_
       simp only [Scheme.germ_stalkClosedPointTo_Spec_fromSpecStalk,

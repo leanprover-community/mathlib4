@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.NumberTheory.NumberField.Completion
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
 import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 
 /-!
@@ -15,19 +15,20 @@ finite product of completions over its infinite places and the adele ring of a n
 direct product of the infinite adele ring and the finite adele ring.
 
 ## Main definitions
- - `NumberField.InfiniteAdeleRing` of a number field `K` is defined as the product of
-   the completions of `K` over its infinite places.
- - `NumberField.InfiniteAdeleRing.ringEquiv_mixedSpace` is the ring isomorphism between
-   the infinite adele ring of `K` and `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of `K`.
- - `NumberField.AdeleRing K` is the adele ring of a number field `K`.
- - `NumberField.AdeleRing.principalSubgroup K` is the subgroup of principal adeles `(x)ᵥ`.
+
+- `NumberField.InfiniteAdeleRing` of a number field `K` is defined as the product of
+  the completions of `K` over its infinite places.
+- `NumberField.InfiniteAdeleRing.ringEquiv_mixedSpace` is the ring isomorphism between
+  the infinite adele ring of `K` and `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of `K`.
+- `NumberField.AdeleRing K` is the adele ring of a number field `K`.
+- `NumberField.AdeleRing.principalSubgroup K` is the subgroup of principal adeles `(x)ᵥ`.
 
 ## Main results
- - `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
-   locally compact space.
+- `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
+  locally compact space.
 
 ## References
- * [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 
 ## Tags
 infinite adele ring, adele ring, number field
@@ -37,9 +38,7 @@ noncomputable section
 
 namespace NumberField
 
-open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion DedekindDomain IsDedekindDomain
-
-open scoped Classical
+open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion IsDedekindDomain
 
 /-! ## The infinite adele ring
 
@@ -64,7 +63,7 @@ instance [NumberField K] : Nontrivial (InfiniteAdeleRing K) :=
 
 instance : TopologicalSpace (InfiniteAdeleRing K) := Pi.topologicalSpace
 
-instance : TopologicalRing (InfiniteAdeleRing K) := Pi.instTopologicalRing
+instance : IsTopologicalRing (InfiniteAdeleRing K) := Pi.instIsTopologicalRing
 
 instance : Algebra K (InfiniteAdeleRing K) := Pi.algebra _ _
 
@@ -76,6 +75,7 @@ theorem algebraMap_apply (x : K) (v : InfinitePlace K) :
 instance locallyCompactSpace [NumberField K] : LocallyCompactSpace (InfiniteAdeleRing K) :=
   Pi.locallyCompactSpace_of_finite
 
+open scoped Classical in
 /-- The ring isomorphism between the infinite adele ring of a number field and the
 space `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of the number field. -/
 abbrev ringEquiv_mixedSpace :
@@ -103,15 +103,15 @@ ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r
 theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
     mixedEmbedding K x = ringEquiv_mixedSpace K (algebraMap K _ x) := by
   ext v <;> simp only [ringEquiv_mixedSpace_apply, algebraMap_apply,
-    ringEquivRealOfIsReal, ringEquivComplexOfIsComplex, extensionEmbedding,
-    extensionEmbeddingOfIsReal, extensionEmbedding_of_comp, RingEquiv.coe_ofBijective,
+    extensionEmbedding,
+    extensionEmbeddingOfIsReal, extensionEmbedding_of_comp,
     RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, UniformSpace.Completion.extensionHom]
   · rw [UniformSpace.Completion.extension_coe
       (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_of_isReal v.2).uniformContinuous x]
-    exact mixedEmbedding.mixedEmbedding_apply_ofIsReal _ _ _
+    exact mixedEmbedding.mixedEmbedding_apply_isReal _ _ _
   · rw [UniformSpace.Completion.extension_coe
       (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_eq).uniformContinuous x]
-    exact mixedEmbedding.mixedEmbedding_apply_ofIsComplex _ _ _
+    exact mixedEmbedding.mixedEmbedding_apply_isComplex _ _ _
 
 end InfiniteAdeleRing
 
@@ -126,7 +126,7 @@ in practice are easier to work with than `AdeleRing (𝓞 ℚ) ℚ`.
 Note that this definition does not give the correct answer in the function field case.
 -/
 def AdeleRing (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
-  [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
+    [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
 
 namespace AdeleRing
 
@@ -139,7 +139,7 @@ instance : Inhabited (AdeleRing R K) := ⟨0⟩
 
 instance : TopologicalSpace (AdeleRing R K) := instTopologicalSpaceProd
 
-instance : TopologicalRing (AdeleRing R K) := instTopologicalRingProd
+instance : IsTopologicalRing (AdeleRing R K) := instIsTopologicalRingProd
 
 instance : Algebra K (AdeleRing R K) := Prod.algebra _ _ _
 

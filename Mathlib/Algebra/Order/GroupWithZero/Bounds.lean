@@ -3,7 +3,7 @@ Copyright (c) 2025 María Inés de Frutos-Fernández . All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.Image
 
@@ -18,14 +18,13 @@ open Set
 lemma BddAbove.range_comp_of_nonneg {α β γ : Type*} [Nonempty α] [Preorder β] [Zero β] [Preorder γ]
     {f : α → β} {g : β → γ} (hf : BddAbove (range f)) (hf0 : 0 ≤ f)
     (hg : MonotoneOn g {x : β | 0 ≤ x}) : BddAbove (range (fun x => g (f x))) := by
-  have hg' : BddAbove (g '' (range f)) := by
-    apply hg.map_bddAbove (by rintro x ⟨a, rfl⟩; exact hf0 a)
-    · obtain ⟨b, hb⟩ := hf
-      use b, hb
-      simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hb
-      exact le_trans (hf0 Classical.ofNonempty) (hb Classical.ofNonempty)
-  change BddAbove (range (g ∘ f))
-  simpa only [Set.range_comp] using hg'
+  suffices hg' : BddAbove (g '' range f) by
+    rwa [← Function.comp_def, Set.range_comp]
+  apply hg.map_bddAbove (by rintro x ⟨a, rfl⟩; exact hf0 a)
+  obtain ⟨b, hb⟩ := hf
+  use b, hb
+  simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hb
+  exact le_trans (hf0 Classical.ofNonempty) (hb Classical.ofNonempty)
 
 /-- If `u v : α → β` are nonnegative and bounded above, then `u * v` is bounded above. -/
 theorem bddAbove_range_mul {α β : Type*} [Nonempty α] {u v : α → β} [Preorder β] [Zero β] [Mul β]

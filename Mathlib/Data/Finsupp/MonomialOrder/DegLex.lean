@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
+import Mathlib.Algebra.Group.TransferInstance
 import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.Data.Finsupp.Weight
-import Mathlib.Algebra.Equiv.TransferInstance
 
 /-! Homogeneous lexicographic monomial ordering
 
@@ -24,21 +24,19 @@ and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the typ
 
 -/
 
-section degLex
-
 /-- A type synonym to equip a type with its lexicographic order sorted by degrees. -/
 def DegLex (α : Type*) := α
 
 variable {α : Type*}
 
-/-- `toDegLex` is the identity function to the `DegLex` of a type.  -/
+/-- `toDegLex` is the identity function to the `DegLex` of a type. -/
 @[match_pattern] def toDegLex : α ≃ DegLex α := Equiv.refl _
 
 theorem toDegLex_injective : Function.Injective (toDegLex (α := α)) := fun _ _ ↦ _root_.id
 
 theorem toDegLex_inj {a b : α} : toDegLex a = toDegLex b ↔ a = b := Iff.rfl
 
-/-- `ofDegLex` is the identity function from the `DegLex` of a type.  -/
+/-- `ofDegLex` is the identity function from the `DegLex` of a type. -/
 @[match_pattern] def ofDegLex : DegLex α ≃ α := Equiv.refl _
 
 theorem ofDegLex_injective : Function.Injective (ofDegLex (α := α)) := fun _ _ ↦ _root_.id
@@ -107,7 +105,7 @@ theorem lt_def [LT α] {a b : DegLex (α →₀ ℕ)} :
 theorem lt_iff [LT α] {a b : DegLex (α →₀ ℕ)} :
     a < b ↔ (ofDegLex a).degree < (ofDegLex b).degree ∨
     (((ofDegLex a).degree = (ofDegLex b).degree) ∧ toLex (ofDegLex a) < toLex (ofDegLex b)) := by
-  simp only [lt_def, Prod.Lex.lt_iff]
+  simp [lt_def, Prod.Lex.toLex_lt_toLex]
 
 variable [LinearOrder α]
 
@@ -140,7 +138,7 @@ theorem le_iff {x y : DegLex (α →₀ ℕ)} :
     · simp [k]
     · simp only [h, k, false_or]
 
-noncomputable instance : OrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) where
+instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
   le_of_add_le_add_left a b c h := by
     rw [le_iff] at h ⊢
     simpa only [ofDegLex_add, degree_add, add_lt_add_iff_left, add_right_inj, toLex_add,
@@ -148,13 +146,6 @@ noncomputable instance : OrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) whe
   add_le_add_left a b h c := by
     rw [le_iff] at h ⊢
     simpa [ofDegLex_add, degree_add] using h
-
-/-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
-noncomputable instance :
-    LinearOrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) where
-  le_total := instLinearOrderDegLexNat.le_total
-  decidableLE := instLinearOrderDegLexNat.decidableLE
-  compare_eq_compareOfLessAndEq := instLinearOrderDegLexNat.compare_eq_compareOfLessAndEq
 
 theorem single_strictAnti : StrictAnti (fun (a : α) ↦ toDegLex (single a 1)) := by
   intro _ _ h
@@ -166,11 +157,11 @@ theorem single_antitone : Antitone (fun (a : α) ↦ toDegLex (single a 1)) :=
 
 theorem single_lt_iff {a b : α} :
     toDegLex (Finsupp.single b 1) < toDegLex (Finsupp.single a 1) ↔ a < b :=
-  single_strictAnti.lt_iff_lt
+  single_strictAnti.lt_iff_gt
 
 theorem single_le_iff {a b : α} :
     toDegLex (Finsupp.single b 1) ≤ toDegLex (Finsupp.single a 1) ↔ a ≤ b :=
-  single_strictAnti.le_iff_le
+  single_strictAnti.le_iff_ge
 
 theorem monotone_degree :
     Monotone (fun (x : DegLex (α →₀ ℕ)) ↦ (ofDegLex x).degree) := by
@@ -180,18 +171,18 @@ theorem monotone_degree :
   · apply le_of_lt h
   · apply le_of_eq h.1
 
-instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
+noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
   bot := toDegLex (0 : α →₀ ℕ)
   bot_le x := by
     simp only [le_iff, ofDegLex_toDegLex, toLex_zero, degree_zero]
     rcases eq_zero_or_pos (ofDegLex x).degree with (h | h)
-    · simp only [h, lt_self_iff_false, true_and, false_or, ge_iff_le]
+    · simp only [h, lt_self_iff_false, true_and, false_or]
       exact bot_le
     · simp [h]
 
 instance wellFoundedLT [WellFoundedGT α] :
     WellFoundedLT (DegLex (α →₀ ℕ)) :=
-  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_lt⟩
+  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_gt⟩
 
 end DegLex
 
@@ -255,5 +246,3 @@ example : single (0 : Fin 2) 1 ≺[degLex] single 1 2 := by
   simp [degLex_lt_iff, lt_iff]
 
 end Examples
-
-end degLex

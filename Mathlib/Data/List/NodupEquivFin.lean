@@ -50,8 +50,8 @@ the set of elements of `l`. -/
 @[simps]
 def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } where
   toFun i := ⟨get l i, get_mem _ _⟩
-  invFun x := ⟨indexOf (↑x) l, indexOf_lt_length.2 x.2⟩
-  left_inv i := by simp only [List.get_indexOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
+  invFun x := ⟨idxOf (↑x) l, idxOf_lt_length_iff.2 x.2⟩
+  left_inv i := by simp only [List.get_idxOf, Fin.eta, H]
   right_inv x := by simp
 
 /-- If `l` lists all the elements of `α` without duplicates, then `List.get` defines
@@ -63,8 +63,8 @@ decidable equality. -/
 def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     Fin l.length ≃ α where
   toFun i := l.get i
-  invFun a := ⟨_, indexOf_lt_length.2 (h a)⟩
-  left_inv i := by simp [List.indexOf_getElem, nd]
+  invFun a := ⟨_, idxOf_lt_length_iff.2 (h a)⟩
+  left_inv i := by simp [List.idxOf_getElem, nd]
   right_inv a := by simp
 
 end Nodup
@@ -92,7 +92,7 @@ theorem coe_getIso_apply : (H.getIso l i : α) = get l i :=
   rfl
 
 @[simp]
-theorem coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = indexOf (↑x) l :=
+theorem coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = idxOf (↑x) l :=
   rfl
 
 end Sorted
@@ -103,12 +103,13 @@ section Sublist
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`,
 then `Sublist l l'`.
 -/
-theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
-    (hf : ∀ ix : ℕ, l.get? ix = l'.get? (f ix)) : l <+ l' := by
-  induction' l with hd tl IH generalizing l' f
-  · simp
-  have : some hd = _ := hf 0
-  rw [eq_comm, List.get?_eq_some_iff] at this
+theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ)
+    (hf : ∀ ix : ℕ, l[ix]? = l'[f ix]?) : l <+ l' := by
+  induction l generalizing l' f with
+  | nil => simp
+  | cons hd tl IH => ?_
+  have : some hd = l'[f 0]? := by simpa using hf 0
+  rw [eq_comm, List.getElem?_eq_some_iff] at this
   obtain ⟨w, h⟩ := this
   let f' : ℕ ↪o ℕ :=
     OrderEmbedding.ofMapLEIff (fun i => f (i + 1) - (f 0 + 1)) fun a b => by
@@ -116,12 +117,10 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
       rw [Nat.sub_le_sub_iff_right, OrderEmbedding.le_iff_le, Nat.succ_le_succ_iff]
       rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
       exact b.succ_pos
-  simp only [get_eq_getElem] at h
-  simp only [get?_eq_getElem?] at hf IH
   have : ∀ ix, tl[ix]? = (l'.drop (f 0 + 1))[f' ix]? := by
     intro ix
     rw [List.getElem?_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf]
-    simp only [getElem?_cons_succ]
+    · simp only [getElem?_cons_succ]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
@@ -133,8 +132,8 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
 -/
-theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
-    l <+ l' ↔ ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ, l.get? ix = l'.get? (f ix) := by
+theorem sublist_iff_exists_orderEmbedding_getElem?_eq {l l' : List α} :
+    l <+ l' ↔ ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ, l[ix]? = l'[f ix]? := by
   constructor
   · intro H
     induction H with
@@ -152,7 +151,7 @@ theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
         · simp
         · simpa using hf _
   · rintro ⟨f, hf⟩
-    exact sublist_of_orderEmbedding_get?_eq f hf
+    exact sublist_of_orderEmbedding_getElem?_eq f hf
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `Fin l.length` into `Fin l'.length` such that
@@ -162,13 +161,13 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
     l <+ l' ↔
       ∃ f : Fin l.length ↪o Fin l'.length,
         ∀ ix : Fin l.length, l.get ix = l'.get (f ix) := by
-  rw [sublist_iff_exists_orderEmbedding_get?_eq]
+  rw [sublist_iff_exists_orderEmbedding_getElem?_eq]
   constructor
   · rintro ⟨f, hf⟩
     have h : ∀ {i : ℕ}, i < l.length → f i < l'.length := by
       intro i hi
       specialize hf i
-      rw [get?_eq_get hi, eq_comm, get?_eq_some_iff] at hf
+      rw [getElem?_eq_getElem hi, eq_comm, getElem?_eq_some_iff] at hf
       obtain ⟨h, -⟩ := hf
       exact h
     refine ⟨OrderEmbedding.ofMapLEIff (fun ix => ⟨f ix, h ix.is_lt⟩) ?_, ?_⟩
@@ -185,14 +184,15 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       dsimp only
       split_ifs with hi hj hj
       · rwa [Fin.val_fin_lt, f.lt_iff_lt]
-      · omega
+      · cutsat
       · exact absurd (h.trans hj) hi
       · simpa using h
     · intro i
       simp only [OrderEmbedding.coe_ofStrictMono]
       split_ifs with hi
-      · rw [get?_eq_get hi, get?_eq_get, ← hf]
-      · rw [get?_eq_none_iff.mpr, get?_eq_none_iff.mpr]
+      · specialize hf ⟨i, hi⟩
+        simp_all
+      · rw [getElem?_eq_none_iff.mpr, getElem?_eq_none_iff.mpr]
         · simp
         · simpa using hi
 
@@ -204,7 +204,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       ∃ (n m : Fin l.length) (_ : n < m),
         x = l.get n ∧ x = l.get m := by
   classical
-    rw [duplicate_iff_two_le_count, le_count_iff_replicate_sublist,
+    rw [duplicate_iff_two_le_count, ← replicate_sublist_iff,
       sublist_iff_exists_fin_orderEmbedding_get_eq]
     constructor
     · rintro ⟨f, hf⟩

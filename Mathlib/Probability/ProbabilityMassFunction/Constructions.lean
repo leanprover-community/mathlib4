@@ -20,7 +20,7 @@ by allowing the "sum equals 1" constraint to be in terms of `Finset.sum` instead
 `normalize` constructs a `PMF α` by normalizing a function `f : α → ℝ≥0∞` by its sum,
 and `filter` uses this to filter the support of a `PMF` and re-normalize the new distribution.
 
-`bernoulli` represents the bernoulli distribution on `Bool`.
+`bernoulli` represents the Bernoulli distribution on `Bool`.
 
 -/
 
@@ -32,7 +32,6 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open scoped Classical
 open NNReal ENNReal Finset MeasureTheory
 
 section Map
@@ -45,6 +44,7 @@ variable (f : α → β) (p : PMF α) (b : β)
 
 theorem monad_map_eq_map {α β : Type u} (f : α → β) (p : PMF α) : f <$> p = p.map f := rfl
 
+open scoped Classical in
 @[simp]
 theorem map_apply : (map f p) b = ∑' a, if b = f a then p a else 0 := by simp [map]
 
@@ -82,14 +82,15 @@ variable (s : Set β)
 @[simp]
 theorem toOuterMeasure_map_apply : (p.map f).toOuterMeasure s = p.toOuterMeasure (f ⁻¹' s) := by
   simp [map, Set.indicator, toOuterMeasure_apply p (f ⁻¹' s)]
+  rfl
 
 variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 @[simp]
 theorem toMeasure_map_apply (hf : Measurable f)
     (hs : MeasurableSet s) : (p.map f).toMeasure s = p.toMeasure (f ⁻¹' s) := by
-  rw [toMeasure_apply_eq_toOuterMeasure_apply _ s hs,
-    toMeasure_apply_eq_toOuterMeasure_apply _ (f ⁻¹' s) (measurableSet_preimage hf hs)]
+  rw [toMeasure_apply_eq_toOuterMeasure_apply _ hs,
+    toMeasure_apply_eq_toOuterMeasure_apply _ (measurableSet_preimage hf hs)]
   exact toOuterMeasure_map_apply f p s
 
 @[simp]
@@ -110,6 +111,7 @@ variable (q : PMF (α → β)) (p : PMF α) (b : β)
 
 theorem monad_seq_eq_seq {α β : Type u} (q : PMF (α → β)) (p : PMF α) : q <*> p = q.seq p := rfl
 
+open scoped Classical in
 @[simp]
 theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 := by
   simp only [seq, mul_boole, bind_apply, pure_apply]
@@ -170,8 +172,10 @@ theorem support_ofFinset : (ofFinset f s h h').support = ↑s ∩ Function.suppo
 theorem mem_support_ofFinset_iff (a : α) : a ∈ (ofFinset f s h h').support ↔ a ∈ s ∧ f a ≠ 0 := by
   simp
 
-theorem ofFinset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofFinset f s h h' a = 0 :=
+theorem ofFinset_apply_of_notMem {a : α} (ha : a ∉ s) : ofFinset f s h h' a = 0 :=
   h' a ha
+
+@[deprecated (since := "2025-05-23")] alias ofFinset_apply_of_not_mem := ofFinset_apply_of_notMem
 
 section Measure
 
@@ -185,7 +189,7 @@ theorem toOuterMeasure_ofFinset_apply :
 @[simp]
 theorem toMeasure_ofFinset_apply [MeasurableSpace α] (ht : MeasurableSet t) :
     (ofFinset f s h h').toMeasure t = ∑' x, t.indicator f x :=
-  (toMeasure_apply_eq_toOuterMeasure_apply _ t ht).trans (toOuterMeasure_ofFinset_apply h h' t)
+  (toMeasure_apply_eq_toOuterMeasure_apply _ ht).trans (toOuterMeasure_ofFinset_apply h h' t)
 
 end Measure
 
@@ -207,6 +211,7 @@ theorem support_ofFintype : (ofFintype f h).support = Function.support f := rfl
 
 theorem mem_support_ofFintype_iff (a : α) : a ∈ (ofFintype f h).support ↔ f a ≠ 0 := Iff.rfl
 
+open scoped Classical in
 @[simp]
 lemma map_ofFintype [Fintype β] (f : α → ℝ≥0∞) (h : ∑ a, f a = 1) (g : α → β) :
     (ofFintype f h).map g = ofFintype (fun b ↦ ∑ a with g a = b, f a)
@@ -226,7 +231,7 @@ theorem toOuterMeasure_ofFintype_apply : (ofFintype f h).toOuterMeasure s = ∑'
 @[simp]
 theorem toMeasure_ofFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
     (ofFintype f h).toMeasure s = ∑' x, s.indicator f x :=
-  (toMeasure_apply_eq_toOuterMeasure_apply _ s hs).trans (toOuterMeasure_ofFintype_apply h s)
+  (toMeasure_apply_eq_toOuterMeasure_apply _ hs).trans (toOuterMeasure_ofFintype_apply h s)
 
 end Measure
 
@@ -266,8 +271,11 @@ theorem filter_apply (a : α) :
     (p.filter s h) a = s.indicator p a * (∑' a', (s.indicator p) a')⁻¹ := by
   rw [filter, normalize_apply]
 
-theorem filter_apply_eq_zero_of_not_mem {a : α} (ha : a ∉ s) : (p.filter s h) a = 0 := by
+theorem filter_apply_eq_zero_of_notMem {a : α} (ha : a ∉ s) : (p.filter s h) a = 0 := by
   rw [filter_apply, Set.indicator_apply_eq_zero.mpr fun ha' => absurd ha' ha, zero_mul]
+
+@[deprecated (since := "2025-05-23")]
+alias filter_apply_eq_zero_of_not_mem := filter_apply_eq_zero_of_notMem
 
 theorem mem_support_filter_iff {a : α} : a ∈ (p.filter s h).support ↔ a ∈ s ∧ a ∈ p.support :=
   (mem_support_normalize_iff _ _ _).trans Set.indicator_apply_ne_zero
@@ -287,21 +295,30 @@ end Filter
 section bernoulli
 
 /-- A `PMF` which assigns probability `p` to `true` and `1 - p` to `false`. -/
-def bernoulli (p : ℝ≥0∞) (h : p ≤ 1) : PMF Bool :=
+def bernoulli (p : ℝ≥0) (h : p ≤ 1) : PMF Bool :=
   ofFintype (fun b => cond b p (1 - p)) (by simp [h])
 
-variable {p : ℝ≥0∞} (h : p ≤ 1) (b : Bool)
+variable {p : ℝ≥0} (h : p ≤ 1) (b : Bool)
 
 @[simp]
-theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := rfl
+theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := by
+  simp only [bernoulli, ofFintype_apply]
+  exact Eq.symm (Bool.apply_cond ofNNReal)
 
 @[simp]
 theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } := by
   refine Set.ext fun b => ?_
   induction b
-  · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne, tsub_eq_zero_iff_le, not_le]
-    exact ⟨ne_of_lt, lt_of_le_of_ne h⟩
-  · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq]
+  · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne, ENNReal.coe_sub,
+      ENNReal.coe_one, Bool.cond_prop, Set.mem_setOf_eq, Bool.false_eq_true, ite_false, not_iff_not]
+    constructor
+    · intro h'
+      simp only [tsub_eq_zero_iff_le, one_le_coe_iff] at h'
+      exact eq_of_le_of_ge h h'
+    · intro h'
+      simp only [h', ENNReal.coe_one, tsub_self]
+  · simp only [mem_support_iff, bernoulli_apply, Bool.cond_true, Set.mem_setOf_eq, ne_eq,
+      ENNReal.coe_eq_zero]
 
 theorem mem_support_bernoulli_iff : b ∈ (bernoulli p h).support ↔ cond b (p ≠ 0) (p ≠ 1) := by simp
 

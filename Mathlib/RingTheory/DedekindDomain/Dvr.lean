@@ -10,18 +10,18 @@ import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
 # Dedekind domains
 
 This file defines an equivalent notion of a Dedekind domain (or Dedekind ring),
-namely a Noetherian integral domain where the localization at all nonzero prime ideals is a DVR.
+namely a Noetherian integral domain where the localization at every nonzero prime ideal is a DVR.
 
 ## Main definitions
 
- - `IsDedekindDomainDvr` alternatively defines a Dedekind domain as an integral domain that
-   is Noetherian, and the localization at every nonzero prime ideal is a DVR.
+- `IsDedekindDomainDvr` alternatively defines a Dedekind domain as an integral domain that
+  is Noetherian, and the localization at every nonzero prime ideal is a DVR.
 
 ## Main results
- - `IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain` shows that
-   `IsDedekindDomain` implies the localization at each nonzero prime ideal is a DVR.
- - `IsDedekindDomain.isDedekindDomainDvr` is one direction of the equivalence of definitions
-   of a Dedekind domain
+- `IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain` shows that
+  `IsDedekindDomain` implies the localization at each nonzero prime ideal is a DVR.
+- `IsDedekindDomain.isDedekindDomainDvr` is one direction of the equivalence of definitions
+  of a Dedekind domain
 
 ## Implementation notes
 
@@ -34,7 +34,7 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
@@ -52,7 +52,7 @@ localization at every nonzero prime is a discrete valuation ring.
 
 This is equivalent to `IsDedekindDomain`.
 -/
-class IsDedekindDomainDvr extends IsNoetherian A A : Prop where
+class IsDedekindDomainDvr : Prop extends IsNoetherian A A where
   is_dvr_at_nonzero_prime : ∀ P ≠ (⊥ : Ideal A), ∀ _ : P.IsPrime,
     IsDiscreteValuationRing (Localization.AtPrime P)
 

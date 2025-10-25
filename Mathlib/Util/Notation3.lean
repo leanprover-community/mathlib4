@@ -11,6 +11,7 @@ import Mathlib.Tactic.ScopedNS
 import Batteries.Linter.UnreachableTactic
 import Batteries.Util.ExtendedBinder
 import Batteries.Lean.Syntax
+import Lean.Elab.AuxDef
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.
@@ -51,7 +52,12 @@ macro_rules
     term.replaceM fun x' ↦ do
       unless x == x' do return none
       `(fun _%$ph : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
-  | `(expand_binders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
+  | `(expand_binders% ($x => $term) ($y:binderIdent $pred:binderPred) $binders*, $res) => do
+    let y ←
+      match y with
+      | `(binderIdent| $y:ident) => pure y
+      | `(binderIdent| _)        => Term.mkFreshIdent y
+      | _                        => Macro.throwUnsupported
     term.replaceM fun x' ↦ do
       unless x == x' do return none
       `(fun $y:ident ↦ expand_binders% ($x => $term) (h : satisfies_binder_pred% $y $pred)
@@ -177,7 +183,7 @@ def matchFVar (userName : Name) (matchTy : Matcher) : Matcher := fun s => do
 def matchTypeOf (matchTy : Matcher) : Matcher := fun s => do
   withType (matchTy s)
 
-/-- Matches raw nat lits. -/
+/-- Matches raw `Nat` literals. -/
 def natLitMatcher (n : Nat) : Matcher := fun s => do
   guard <| (← getExpr).rawNatLit? == n
   return s
@@ -217,6 +223,32 @@ def setupLCtx (lctx : LocalContext) (boundNames : Array Name) :
     boundFVars := boundFVars.insert fvarId name
   return (lctx, boundFVars)
 
+/--
+Like `Expr.isType`, but uses logic that normalizes the universe level.
+Mirrors the core `Sort` delaborator logic.
+-/
+def isType' : Expr → Bool
+  | .sort u => u.dec.isSome
+  | _       => false
+
+/--
+Represents a key to use when registering the `delab` attribute for a delaborator.
+We use this to handle overapplication.
+-/
+inductive DelabKey where
+  /-- The key `app.const` or `app` with a specific arity. -/
+  | app (const : Option Name) (arity : Nat)
+  | other (key : Name)
+  deriving Repr
+
+/--
+Turns the `DelabKey` into a key that the `delab` attribute accepts.
+-/
+def DelabKey.key : DelabKey → Name
+  | .app none     _ => `app
+  | .app (some n) _ => `app ++ n
+  | .other key      => key
+
 /-- Given an expression, generate a matcher for it.
 The `boundFVars` hash map records which state variables certain fvars correspond to.
 The `localFVars` hash map records which local variable the matcher should use for an exact
@@ -228,11 +260,26 @@ If it succeeds generating a matcher, returns
 2. a `Term` that represents a `Matcher` for the given expression `e`. -/
 partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
     (localFVars : Std.HashMap FVarId Term) (e : Expr) :
-    OptionT TermElabM (List Name × Term) := do
+    OptionT TermElabM (List DelabKey × Term) := do
   match e with
   | .mvar .. => return ([], ← `(pure))
-  | .const n _ => return ([`app ++ n], ← ``(matchExpr (Expr.isConstOf · $(quote n))))
-  | .sort .. => return ([`sort], ← ``(matchExpr Expr.isSort))
+  | .const n _ => return ([.app n 0], ← ``(matchExpr (Expr.isConstOf · $(quote n))))
+  | .sort u =>
+    /-
+    We should try being more accurate here.
+    Prop / Type / Type _ / Sort _ is at least an OK approximation.
+    We mimic the core Sort delaborator `Lean.PrettyPrinter.Delaborator.delabSort`.
+    -/
+    let matcher ←
+      if u.isZero then
+        ``(matchExpr Expr.isProp)
+      else if e.isType0 then
+        ``(matchExpr Expr.isType0)
+      else if u.dec.isSome then
+        ``(matchExpr isType')
+      else
+        ``(matchExpr Expr.isSort)
+    return ([.other `sort], matcher)
   | .fvar fvarId =>
     if let some n := boundFVars[fvarId]? then
       -- This fvar is a pattern variable.
@@ -245,14 +292,19 @@ partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
       if n.hasMacroScopes then
         -- Match by just the type; this is likely an unnamed instance for example
         let (_, m) ← exprToMatcher boundFVars localFVars (← instantiateMVars (← inferType e))
-        return ([`fvar], ← ``(matchTypeOf $m))
+        return ([.other `fvar], ← ``(matchTypeOf $m))
       else
         -- This is an fvar from a `variable`. Match by name and type.
         let (_, m) ← exprToMatcher boundFVars localFVars (← instantiateMVars (← inferType e))
-        return ([`fvar], ← ``(matchFVar $(quote n) $m))
+        return ([.other `fvar], ← ``(matchFVar $(quote n) $m))
   | .app .. =>
     e.withApp fun f args => do
-      let (keys, matchF) ← exprToMatcher boundFVars localFVars f
+      let (keys, matchF) ←
+        if let .const n _ := f then
+          pure ([.app n args.size], ← ``(matchExpr (Expr.isConstOf · $(quote n))))
+        else
+          let (_, matchF) ← exprToMatcher boundFVars localFVars f
+          pure ([.app none args.size], matchF)
       let mut fty ← inferType f
       let mut matcher := matchF
       for arg in args do
@@ -268,8 +320,8 @@ partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
         else
           let (_, matchArg) ← exprToMatcher boundFVars localFVars arg
           matcher ← ``(matchApp $matcher $matchArg)
-      return (if keys.isEmpty then [`app] else keys, matcher)
-  | .lit (.natVal n) => return ([`lit], ← ``(natLitMatcher $(quote n)))
+      return (keys, matcher)
+  | .lit (.natVal n) => return ([.other `lit], ← ``(natLitMatcher $(quote n)))
   | .forallE n t b bi =>
     let (_, matchDom) ← exprToMatcher boundFVars localFVars t
     withLocalDecl n bi t fun arg => withFreshMacroScope do
@@ -277,7 +329,7 @@ partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
       let body := b.instantiate1 arg
       let localFVars' := localFVars.insert arg.fvarId! n'
       let (_, matchBody) ← exprToMatcher boundFVars localFVars' body
-      return ([`forallE], ← ``(matchForall $matchDom (fun $n' => $matchBody)))
+      return ([.other `forallE], ← ``(matchForall $matchDom (fun $n' => $matchBody)))
   | .lam n t b bi =>
     let (_, matchDom) ← exprToMatcher boundFVars localFVars t
     withLocalDecl n bi t fun arg => withFreshMacroScope do
@@ -285,7 +337,7 @@ partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
       let body := b.instantiate1 arg
       let localFVars' := localFVars.insert arg.fvarId! n'
       let (_, matchBody) ← exprToMatcher boundFVars localFVars' body
-      return ([`lam], ← ``(matchLambda $matchDom (fun $n' => $matchBody)))
+      return ([.other `lam], ← ``(matchLambda $matchDom (fun $n' => $matchBody)))
   | _ =>
     trace[notation3] "can't generate matcher for {e}"
     failure
@@ -297,7 +349,7 @@ Fails in the `OptionT` sense if it comes across something it's unable to handle.
 Also returns constant names that could serve as a key for a delaborator.
 For example, if it's for a function `f`, then `app.f`. -/
 partial def mkExprMatcher (stx : Term) (boundNames : Array Name) :
-    OptionT TermElabM (List Name × Term) := do
+    OptionT TermElabM (List DelabKey × Term) := do
   let (lctx, boundFVars) ← setupLCtx (← getLCtx) boundNames
   withLCtx lctx (← getLocalInstances) do
     let patt ←
@@ -360,7 +412,7 @@ Fails in the `OptionT` sense if a matcher couldn't be constructed.
 Also returns a delaborator key like in `mkExprMatcher`.
 Reminder: `$lit:ident : (scoped $scopedId:ident => $scopedTerm:Term)` -/
 partial def mkScopedMatcher (lit scopeId : Name) (scopedTerm : Term) (boundNames : Array Name) :
-    OptionT TermElabM (List Name × Term) := do
+    OptionT TermElabM (List DelabKey × Term) := do
   -- Build the matcher for `scopedTerm` with `scopeId` as an additional variable
   let (keys, smatcher) ← mkExprMatcher scopedTerm (boundNames.push scopeId)
   return (keys, ← ``(matchScoped $(quote lit) $(quote scopeId) $smatcher))
@@ -389,7 +441,7 @@ partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
 /-- Create a `Term` that represents a matcher for `foldl` notation.
 Reminder: `( lit ","* => foldl (x y => scopedTerm) init)` -/
 partial def mkFoldlMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : Array Name) :
-    OptionT TermElabM (List Name × Term) := do
+    OptionT TermElabM (List DelabKey × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables
   let boundNames' := boundNames |>.push x |>.push y
   let (keys, smatcher) ← mkExprMatcher scopedTerm boundNames'
@@ -399,7 +451,7 @@ partial def mkFoldlMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames
 /-- Create a `Term` that represents a matcher for `foldr` notation.
 Reminder: `( lit ","* => foldr (x y => scopedTerm) init)` -/
 partial def mkFoldrMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames : Array Name) :
-    OptionT TermElabM (List Name × Term) := do
+    OptionT TermElabM (List DelabKey × Term) := do
   -- Build the `scopedTerm` matcher with `x` and `y` as additional variables
   let boundNames' := boundNames |>.push x |>.push y
   let (keys, smatcher) ← mkExprMatcher scopedTerm boundNames'
@@ -408,18 +460,6 @@ partial def mkFoldrMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames
   return (keys ++ keys', ← ``(matchFoldl $(quote lit) $(quote y) $(quote x) $smatcher $sinit))
 
 /-! ### The `notation3` command -/
-
-/-- Create a name that we can use for the `syntax` definition, using the
-algorithm from `notation`. -/
-def mkNameFromSyntax (name? : Option (TSyntax ``namedName))
-    (syntaxArgs : Array (TSyntax `stx)) (attrKind : TSyntax ``Term.attrKind) :
-    CommandElabM Name := do
-  if let some name := name? then
-    match name with
-    | `(namedName| (name := $n)) => return n.getId
-    | _ => pure ()
-  let name ← liftMacroM <| mkNameFromParserSyntax `term (mkNullNode syntaxArgs)
-  addMacroScopeIfLocal name attrKind
 
 /-- Used when processing different kinds of variables when building the
 final delaborator. -/
@@ -441,6 +481,24 @@ def getPrettyPrintOpt (opt? : Option (TSyntax ``prettyPrintOpt)) : Bool :=
     | _ => true
   else
     true
+
+/--
+If `pp.tagAppFns` is true and the head of the current expression is a constant,
+then delaborates the head and uses it for the ref.
+This causes tokens inside the syntax to refer to this constant.
+A consequence is that docgen will linkify the tokens.
+-/
+def withHeadRefIfTagAppFns (d : Delab) : Delab := do
+  let tagAppFns ← getPPOption getPPTagAppFns
+  if tagAppFns && (← getExpr).getAppFn.consumeMData.isConst then
+    -- Delaborate the head to register term info and get a syntax we can use for the ref.
+    -- The syntax `f` itself is thrown away.
+    let f ← withNaryFn <| withOptionAtCurrPos `pp.tagAppFns true delab
+    let stx ← withRef f d
+    -- Annotate to ensure that the full syntax still refers to the whole expression.
+    annotateTermInfo stx
+  else
+    d
 
 /--
 `notation3` declares notation using Lean-3-style syntax.
@@ -550,16 +608,11 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
     throwError "If there is a `scoped` item then there must be a `(...)` item for binders."
 
   -- 1. The `syntax` command
-  let name ← mkNameFromSyntax name? syntaxArgs attrKind
-  elabCommand <| ← `(command|
+  let fullName ← elabSyntax (← `(command|
     $[$doc]? $(attrs?)? $attrKind
-    syntax $(prec?)? (name := $(Lean.mkIdent name)) $(prio?)? $[$syntaxArgs]* : term)
+    syntax $(prec?)? $[$name?:namedName]? $(prio?)? $[$syntaxArgs]* : term))
 
   -- 2. The `macro_rules`
-  let currNamespace : Name ← getCurrNamespace
-  -- The `syntax` command puts definitions into the current namespace; we need this
-  -- to make the syntax `pat`.
-  let fullName := currNamespace ++ name
   trace[notation3] "syntax declaration has name {fullName}"
   let pat : Term := ⟨mkNode fullName pattArgs⟩
   let val' ← val.replaceM fun s => pure boundValues[s.getId]?
@@ -581,10 +634,9 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       liftTermElabM matchersM?
     if let some ms := matchers? then
       trace[notation3] "Matcher creation succeeded; assembling delaborator"
-      let delabName := name ++ `delab
       let matcher ← ms.foldrM (fun m t => `($(m.2) >=> $t)) (← `(pure))
       trace[notation3] "matcher:{indentD matcher}"
-      let mut result ← `(`($pat))
+      let mut result ← `(withHeadRefIfTagAppFns `($pat))
       for (name, id) in boundIdents.toArray do
         match boundType.getD name .normal with
         | .normal => result ← `(MatchState.delabVar s $(quote name) (some e) >>= fun $id => $result)
@@ -594,16 +646,19 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
           `(let $id := MatchState.getFoldArray s $(quote name); $result)
       if hasBindersItem then
         result ← `(`(extBinders| $$(MatchState.getBinders s)*) >>= fun binders => $result)
-      elabCommand <| ← `(command|
-        /-- Pretty printer defined by `notation3` command. -/
-        def $(Lean.mkIdent delabName) : Delab := whenPPOption getPPNotation <|
-          getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)
-      trace[notation3] "Defined delaborator {currNamespace ++ delabName}"
-      let delabKeys := ms.foldr (·.1 ++ ·) []
-      trace[notation3] "Adding `delab` attribute for keys {delabKeys}"
+      let delabKeys : List DelabKey := ms.foldr (·.1 ++ ·) []
       for key in delabKeys do
-        elabCommand <|
-          ← `(command| attribute [$attrKind delab $(mkIdent key)] $(Lean.mkIdent delabName))
+        trace[notation3] "Creating delaborator for key {repr key}"
+        let bodyCore ← `(getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)
+        let body ←
+          match key with
+          | .app _ arity => ``(withOverApp $(quote arity) $bodyCore)
+          | _            => pure bodyCore
+        elabCommand <| ← `(
+          /-- Pretty printer defined by `notation3` command. -/
+          @[$attrKind delab $(mkIdent key.key)]
+          public aux_def delab_app $(mkIdent fullName) : Delab :=
+            whenPPOption getPPNotation <| whenNotPPOption getPPExplicit <| $body)
     else
       logWarning s!"\
         Was not able to generate a pretty printer for this notation. \

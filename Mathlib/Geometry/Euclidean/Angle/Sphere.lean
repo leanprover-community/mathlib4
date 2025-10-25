@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
 import Mathlib.Geometry.Euclidean.Circumcenter
+import Mathlib.Geometry.Euclidean.Sphere.Tangent
 
 /-!
 # Angles in circles and sphere.
@@ -65,6 +66,78 @@ theorem two_zsmul_oangle_sub_eq_two_zsmul_oangle_sub_of_norm_eq {x₁ x₂ y z :
 end Orientation
 
 namespace EuclideanGeometry
+
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
+
+namespace Sphere
+
+open Real InnerProductSpace InnerProductGeometry
+
+/-- **Thales' theorem**: The angle inscribed in a semicircle is a right angle. -/
+theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter {p₁ p₂ p₃ : P} {s : Sphere P}
+    (hd : s.IsDiameter p₁ p₃) :
+    ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ s := by
+  rw [mem_sphere', EuclideanGeometry.angle,
+    ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
+  let o := s.center
+  have h_center : o = midpoint ℝ p₁ p₃ := hd.midpoint_eq_center.symm
+  rw [← vsub_add_vsub_cancel p₁ o p₂, ← vsub_add_vsub_cancel p₃ o p₂,
+    inner_add_left, inner_add_right, inner_add_right]
+  have h_opp : p₁ -ᵥ o = -(p₃ -ᵥ o) := by
+    rw [h_center, left_vsub_midpoint, right_vsub_midpoint, ← smul_neg, neg_vsub_eq_vsub_rev]
+  rw [h_opp, inner_neg_left, inner_neg_left, real_inner_comm (p₃ -ᵥ o) (o -ᵥ p₂)]
+  ring_nf
+  rw [neg_add_eq_zero, real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub,
+    real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub, sq_eq_sq₀ dist_nonneg dist_nonneg,
+    mem_sphere.mp hd.right_mem]
+  exact eq_comm
+
+/-- **Thales' theorem**: For three distinct points, the angle at the second point
+is a right angle if and only if the second point lies on the sphere having the first and third
+points as diameter endpoints. -/
+theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter {p₁ p₂ p₃ : P} :
+    ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ Sphere.ofDiameter p₁ p₃ :=
+  angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (Sphere.isDiameter_ofDiameter p₁ p₃)
+
+alias thales_theorem := angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter
+
+/-- For a tangent line to a sphere, the angle between the line and the radius at the tangent point
+equals `π / 2`. -/
+theorem IsTangentAt.angle_eq_pi_div_two {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
+    (h : s.IsTangentAt p as) (hq_mem : q ∈ as) :
+    ∠ q p s.center = π / 2 := by
+  have h1 := IsTangentAt.inner_left_eq_zero_of_mem h hq_mem
+  rw [inner_eq_zero_iff_angle_eq_pi_div_two] at h1
+  rw [angle, ← neg_vsub_eq_vsub_rev _ s.center, angle_neg_right, h1]
+  linarith
+
+/-- If the angle between the line `p q` and the radius at `p` equals `π / 2`, then the line `p q` is
+tangent to the sphere at `p`. -/
+theorem IsTangentAt_of_angle_eq_pi_div_two {s : Sphere P} {p q : P} (h : ∠ q p s.center = π / 2)
+    (hp : p ∈ s) :
+    s.IsTangentAt p line[ℝ, p, q] := by
+  have hp_mem := left_mem_affineSpan_pair ℝ p q
+  refine ⟨hp, hp_mem, ?_⟩
+  have h_ortho : ⟪q -ᵥ p, p -ᵥ s.center⟫ = 0 := by
+    rwa [angle, ← inner_eq_zero_iff_angle_eq_pi_div_two, ← neg_vsub_eq_vsub_rev p s.center,
+      inner_neg_right, neg_eq_zero] at h
+  have hq : q ∈ s.orthRadius p := by
+    simp [Sphere.mem_orthRadius_iff_inner_left, h_ortho]
+  rw [affineSpan_le]
+  have hp : p ∈ s.orthRadius p := by
+    simp [Sphere.self_mem_orthRadius]
+  simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff]
+  exact ⟨hp, hq⟩
+
+/-- A line through `p` is tangent to the sphere at `p` if and only if the angle between the line and
+the radius at `p` equals `π / 2`. -/
+theorem IsTangentAt_iff_angle_eq_pi_div_two {s : Sphere P} {p q : P} (hp : p ∈ s) :
+    s.IsTangentAt p line[ℝ, p, q] ↔ ∠ q p s.center = π / 2 := by
+  exact ⟨fun h ↦ IsTangentAt.angle_eq_pi_div_two h (right_mem_affineSpan_pair ℝ p q),
+    fun h ↦ IsTangentAt_of_angle_eq_pi_div_two h hp⟩
+
+end Sphere
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
@@ -185,12 +258,10 @@ theorem dist_div_cos_oangle_center_div_two_eq_radius {s : Sphere P} {p₁ p₂ :
     vadd_vsub_assoc, add_comm, o.oangle_add_right_smul_rotation_pi_div_two, Real.Angle.cos_coe,
     Real.cos_arctan]
   · norm_cast
-    rw [one_div, div_inv_eq_mul, ←
-      mul_self_inj (mul_nonneg (norm_nonneg _) (Real.sqrt_nonneg _)) (norm_nonneg _),
-      norm_add_sq_eq_norm_sq_add_norm_sq_real (o.inner_smul_rotation_pi_div_two_right _ _), ←
-      mul_assoc, mul_comm, mul_comm _ (√_), ← mul_assoc, ← mul_assoc,
-      Real.mul_self_sqrt (add_nonneg zero_le_one (sq_nonneg _)), norm_smul,
-      LinearIsometryEquiv.norm_map]
+    rw [one_div, div_inv_eq_mul, ← mul_self_inj (by positivity) (by positivity),
+      norm_add_sq_eq_norm_sq_add_norm_sq_real (o.inner_smul_rotation_pi_div_two_right _ _),
+      ← mul_assoc, mul_comm, mul_comm _ (√_), ← mul_assoc, ← mul_assoc,
+      Real.mul_self_sqrt (by positivity), norm_smul, LinearIsometryEquiv.norm_map]
     conv_rhs =>
       rw [← mul_assoc, mul_comm _ ‖Real.Angle.tan _‖, ← mul_assoc, Real.norm_eq_abs,
         abs_mul_abs_self]
@@ -214,7 +285,7 @@ theorem dist_div_sin_oangle_div_two_eq_radius {s : Sphere P} {p₁ p₂ p₃ : P
   convert dist_div_cos_oangle_center_div_two_eq_radius hp₁ hp₃ hp₁p₃
   rw [← Real.Angle.abs_cos_eq_abs_sin_of_two_zsmul_add_two_zsmul_eq_pi
     (two_zsmul_oangle_center_add_two_zsmul_oangle_eq_pi hp₁ hp₂ hp₃ hp₁p₂.symm hp₂p₃ hp₁p₃),
-    _root_.abs_of_nonneg (Real.Angle.cos_nonneg_iff_abs_toReal_le_pi_div_two.2 _)]
+    abs_of_nonneg (Real.Angle.cos_nonneg_iff_abs_toReal_le_pi_div_two.2 _)]
   exact (abs_oangle_center_right_toReal_lt_pi_div_two hp₁ hp₃).le
 
 /-- Given three points on a circle, twice the radius of that circle may be expressed explicitly as
@@ -295,7 +366,6 @@ theorem circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq {t₁ t�
     t₁.circumsphere = t₂.circumsphere := by
   rw [t₁.circumsphere_eq_of_dist_of_oangle h₁₂ h₁₃ h₂₃,
     t₂.circumsphere_eq_of_dist_of_oangle h₁₂ h₁₃ h₂₃,
-    -- Porting note: was `congrm ⟨((_ : ℝ)⁻¹ / 2) • _ +ᵥ _, _ / _ / 2⟩` and five more lines
     Real.Angle.tan_eq_of_two_zsmul_eq h₂, Real.Angle.abs_sin_eq_of_two_zsmul_eq h₂, h₁, h₃]
 
 /-- Given a triangle, and a fourth point such that twice the angle between two points of the

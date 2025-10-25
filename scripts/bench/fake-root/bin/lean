@@ -6,10 +6,12 @@ if [[ "$@" == "--print-prefix" ]]; then echo "$DIR/.."; exit; fi
 if [[ "$@" == "--githash" ]]; then exec lean "$@"; fi
 
 for arg in "$@"; do
-    if [[ "$arg" =~ .*\./\./(.*)\.lean ]]; then
-        mod=${BASH_REMATCH[1]//\//.}
+    # assume the module name is the filename part with capital letters
+    if [[ "$arg" =~ (/[.a-z][^/]*)+/(.*)\.lean ]]; then
+        mod=${BASH_REMATCH[2]//\//.}
     fi
 done
+[ -n "$mod" ] || (echo "module name not detected"; exit 1)
 
 # measure userspace instructions per file as almost-deterministic time-like metric
-perf stat -e instructions:u -x ';' lean --profile -Dprofiler.threshold=10000 "$@" |& sed -E "s/([0-9]+);;instructions:u;.*/~$mod| \\1s/"
+perf stat -e instructions:u -x ';' lean --profile -Dprofiler.threshold=10000 "$@" |& sed -E "s/([0-9]+);;instructions:u;.*/\\t~$mod| \\1s/"

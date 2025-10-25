@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.SMulWithZero
-import Mathlib.Data.Finsupp.Single
+import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
 # Scalar multiplication on `Finsupp`
@@ -62,25 +62,24 @@ instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R 
 variable (α M)
 
 instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) where
-  smul := (· • ·)
   smul_add _ _ _ := ext fun _ => smul_add _ _ _
   smul_zero _ := ext fun _ => smul_zero _
 
 instance isScalarTower [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMul R S]
-  [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
+    [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
   smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
 
 instance smulCommClass [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMulCommClass R S M] :
-  SMulCommClass R S (α →₀ M) where
+    SMulCommClass R S (α →₀ M) where
   smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
 
 instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ M] [IsCentralScalar R M] :
-  IsCentralScalar R (α →₀ M) where
+    IsCentralScalar R (α →₀ M) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
 variable {α M}
 
-theorem support_smul [AddMonoid M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
+theorem support_smul [Zero M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
     (b • g).support ⊆ g.support := fun a => by
   simp only [smul_apply, mem_support_iff, Ne]
   exact mt fun h => h.symm ▸ smul_zero _
@@ -90,13 +89,15 @@ theorem smul_single [Zero M] [SMulZeroClass R M] (c : R) (a : α) (b : M) :
     c • Finsupp.single a b = Finsupp.single a (c • b) :=
   mapRange_single
 
-theorem mapRange_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] [AddMonoid N]
-    [DistribMulAction R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
-    (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v := by
-  erw [← mapRange_comp]
-  · have : f ∘ (c • ·) = (c • ·) ∘ f := funext hsmul
-    simp_rw [this]
-    apply mapRange_comp
-  simp only [Function.comp_apply, smul_zero, hf]
+theorem mapRange_smul' [Zero M] [SMulZeroClass R M] [Zero N]
+    [SMulZeroClass S N] {f : M → N} {hf : f 0 = 0} (c : R) (d : S) (v : α →₀ M)
+    (hsmul : ∀ x, f (c • x) = d • f x) : mapRange f hf (c • v) = d • mapRange f hf v := by
+  ext
+  simp [hsmul]
+
+theorem mapRange_smul [Zero M] [SMulZeroClass R M] [Zero N]
+    [SMulZeroClass R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
+    (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v :=
+  mapRange_smul' c c v hsmul
 
 end Finsupp

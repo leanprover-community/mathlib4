@@ -73,8 +73,6 @@ lemma isUnit_iff_natAbs_eq : IsUnit u ↔ u.natAbs = 1 := by simp [natAbs_eq_iff
 
 alias ⟨IsUnit.natAbs_eq, _⟩ := isUnit_iff_natAbs_eq
 
--- Porting note: `rw` didn't work on `natAbs_ofNat`, so had to change to `simp`,
--- presumably because `(n : ℤ)` is `Nat.cast` and not just `ofNat`
 @[norm_cast]
 lemma ofNat_isUnit {n : ℕ} : IsUnit (n : ℤ) ↔ IsUnit n := by simp [isUnit_iff_natAbs_eq]
 
@@ -84,7 +82,7 @@ lemma isUnit_mul_self (hu : IsUnit u) : u * u = 1 :=
 lemma isUnit_add_isUnit_eq_isUnit_add_isUnit {a b c d : ℤ} (ha : IsUnit a) (hb : IsUnit b)
     (hc : IsUnit c) (hd : IsUnit d) : a + b = c + d ↔ a = c ∧ b = d ∨ a = d ∧ b = c := by
   rw [isUnit_iff] at ha hb hc hd
-  aesop
+  cutsat
 
 lemma eq_one_or_neg_one_of_mul_eq_neg_one (h : u * v = -1) : u = 1 ∨ u = -1 :=
   Or.elim (eq_one_or_neg_one_of_mul_eq_neg_one' h) (fun H => Or.inl H.1) fun H => Or.inr H.1

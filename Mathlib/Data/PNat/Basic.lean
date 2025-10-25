@@ -18,10 +18,13 @@ that `Data.PNat.Defs` can have very few imports.
 -/
 
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
-  LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat
+  Add, Mul, Distrib for PNat
 
 namespace PNat
 
+instance instCommMonoid : CommMonoid ℕ+ := Positive.commMonoid
+instance instIsOrderedCancelMonoid : IsOrderedCancelMonoid ℕ+ := Positive.isOrderedCancelMonoid
+instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
 instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
 
 @[simp]
@@ -97,9 +100,9 @@ namespace PNat
 open Nat
 
 /-- We now define a long list of structures on `ℕ+` induced by
- similar structures on `ℕ`. Most of these behave in a completely
- obvious way, but there are a few things to be said about
- subtraction, division and powers.
+similar structures on `ℕ`. Most of these behave in a completely
+obvious way, but there are a few things to be said about
+subtraction, division and powers.
 -/
 @[simp, norm_cast]
 theorem coe_inj {m n : ℕ+} : (m : ℕ) = n ↔ m = n :=
@@ -110,8 +113,9 @@ theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 
 /-- `coe` promoted to an `AddHom`, that is, a morphism which preserves addition. -/
+@[simps]
 def coeAddHom : AddHom ℕ+ ℕ where
-  toFun := Coe.coe
+  toFun := (↑)
   map_add' := add_coe
 
 instance addLeftMono : AddLeftMono ℕ+ :=
@@ -127,7 +131,7 @@ instance addLeftReflectLT : AddLeftReflectLT ℕ+ :=
   Positive.addLeftReflectLT
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
   map_rel_iff' := natPred_le_natPred
@@ -153,9 +157,9 @@ def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
     (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a := by
   apply strongInductionOn a
   rintro ⟨k, kprop⟩ hk
-  cases' k with k
+  rcases k with - | k
   · exact (lt_irrefl 0 kprop).elim
-  cases' k with k
+  rcases k with - | k
   · exact hz
   exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (Nat.lt_succ_iff.2 hm)
 
@@ -164,9 +168,10 @@ not only to `Prop`. -/
 @[elab_as_elim, induction_eliminator]
 def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
-  induction' n with n IH
-  · exact absurd h (by decide)
-  · cases' n with n
+  induction n with
+  | zero => exact absurd h (by decide)
+  | succ n IH =>
+    rcases n with - | n
     · exact one
     · exact succ _ (IH n.succ_pos)
 
@@ -177,7 +182,7 @@ theorem recOn_one {p} (one succ) : @PNat.recOn 1 p one succ = one :=
 @[simp]
 theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
     @PNat.recOn (n + 1) p one succ = succ n (@PNat.recOn n p one succ) := by
-  cases' n with n h
+  obtain ⟨n, h⟩ := n
   cases n <;> [exact absurd h (by decide); rfl]
 
 @[simp]
@@ -206,7 +211,7 @@ def coeMonoidHom : ℕ+ →* ℕ where
   map_mul' := mul_coe
 
 @[simp]
-theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = Coe.coe :=
+theorem coe_coeMonoidHom : (coeMonoidHom : ℕ+ → ℕ) = (↑) :=
   rfl
 
 @[simp]
@@ -253,7 +258,7 @@ theorem le_sub_one_of_lt {a b : ℕ+} (hab : a < b) : a ≤ b - (1 : ℕ+) := by
   rw [← coe_le_coe, sub_coe]
   split_ifs with h
   · exact Nat.le_pred_of_lt hab
-  · exact hab.le.trans (le_of_not_lt h)
+  · exact hab.le.trans (le_of_not_gt h)
 
 theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
   fun h =>
@@ -313,8 +318,6 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
     · rw [h₁, mul_zero] at hm
       exact (lt_irrefl _ hm).elim
     · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        -- Porting note: Specified type of `h₂` explicitly because `rw` could not unify
-        -- `succ 0` with `1`.
         Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
       rw [mul_one] at h₂
       exact ⟨h₂, le_refl (k : ℕ)⟩

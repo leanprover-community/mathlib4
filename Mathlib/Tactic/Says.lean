@@ -7,6 +7,8 @@ import Mathlib.Init
 import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
 import Qq.Match
+import Mathlib.Lean.Elab.InfoTree
+import Mathlib.Tactic.Basic
 
 /-!
 # The `says` tactic combinator.
@@ -30,12 +32,13 @@ open Lean.Meta.Tactic.TryThis
 
 namespace Mathlib.Tactic.Says
 
+/-- If this option is `true`, verify for `X says Y` that `X says` outputs `Y`. -/
 register_option says.verify : Bool :=
   { defValue := false
     group := "says"
-    descr := "For every appearance of the `X says Y` combinator, \
-      re-verify that running `X` produces `Try this: Y`." }
+    descr := "Verify the output" }
 
+/-- This option is only used in CI to negate `says.verify`. -/
 register_option says.no_verify_in_CI : Bool :=
   { defValue := false
     group := "says"
@@ -51,50 +54,35 @@ def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>"
   let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
   if s.hasError then
     Except.error (s.toErrorMsg ictx)
-  else if input.atEnd s.pos then
+  else if s.pos.atEnd input then
     Except.ok ⟨s.stxStack.back⟩
   else
     Except.error ((s.mkError "end of input").toErrorMsg ictx)
 
 /--
-Run `evalTactic`, capturing any new messages.
-The optional `only` argument allows selecting which messages should be captured,
-or left in the message log.
--/
-def evalTacticCapturingMessages (tac : TSyntax `tactic) (only : Message → Bool := fun _ => true) :
-    TacticM (List Message) := do
-  let mut msgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
-  try
-    evalTactic tac
-    let (capture, leave) := (← getThe Core.State).messages.toList.partition only
-    msgs := leave.foldl (·.add) msgs
-    return capture
-  catch e =>
-    msgs := msgs ++ (← getThe Core.State).messages
-    throw e
-  finally
-    modifyThe Core.State fun st => { st with messages := msgs }
-
-/--
-Run `evalTactic`, capturing any new info messages.
--/
-def evalTacticCapturingInfo (tac : TSyntax `tactic) : TacticM (List Message) :=
-  evalTacticCapturingMessages tac fun m => match m.severity with | .information => true | _ => false
-
-/--
 Run `evalTactic`, capturing a "Try this:" message and converting it back to syntax.
 -/
 def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tacticSeq) := do
-  let msg ← match ← evalTacticCapturingInfo tac with
-  | [] => throwError m!"Tactic `{tac}` did not produce any messages."
-  | [msg] => msg.toString
-  | _ => throwError m!"Tactic `{tac}` produced multiple messages."
-  let tryThis ← match msg.dropPrefix? "Try this:" with
-  | none => throwError m!"Tactic output did not begin with 'Try this:': {msg}"
-  | some S => pure S.toString.removeLeadingSpaces
-  match parseAsTacticSeq (← getEnv) tryThis with
-  | .ok stx => return stx
-  | .error err => throwError m!"Failed to parse tactic output: {tryThis}\n{err}"
+  let { trees, ..} ← withResetServerInfo <| evalTactic tac
+  let suggestions := collectTryThisSuggestions trees
+  let some s := suggestions[0]?
+    | throwError m!"Tactic `{tac}` did not produce a 'Try this:' suggestion."
+  let suggestion ← do
+    if let some msg := s.messageData? then
+      pure <| SuggestionText.string <| ← msg.toString
+    else
+      pure <| s.suggestion
+  match suggestion with
+  | .tsyntax (kind := ``tacticSeq) stx =>
+    return stx
+  | .tsyntax (kind := `tactic) stx =>
+    return ← `(tacticSeq| $stx:tactic)
+  | .tsyntax stx =>
+    throwError m!"Tactic `{tac}` produced a 'Try this:' suggestion with a non-tactic syntax: {stx}"
+  | .string s =>
+    match parseAsTacticSeq (← getEnv) s with
+    | .ok stx => return stx
+    | .error err => throwError m!"Failed to parse 'Try this:' suggestion: {s}\n{err}"
 
 /--
 If you write `X says`, where `X` is a tactic that produces a "Try this: Y" message,

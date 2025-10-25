@@ -14,7 +14,7 @@ and proves that it is right adjoint to the forgetful functor from topological sp
 ## Main declarations
 
 * `Locale.pt`: the *points* functor from the category of locales to the category of topological
-spaces.
+  spaces.
 
 * `Locale.adjunctionTopToLocalePT`: the adjunction between the functors `topToLocale` and `pt`.
 
@@ -41,7 +41,7 @@ open CategoryTheory Order Set Topology TopologicalSpace
 
 namespace Locale
 
-/-! ### Definition of the points functor `pt` --/
+/-! ### Definition of the points functor `pt` -/
 section pt_definition
 
 variable (L : Type*) [CompleteLattice L]
@@ -76,16 +76,15 @@ lemma isOpen_iff (U : Set (PT L)) : IsOpen U ↔ ∃ u : L, {x | x u} = U := Iff
 
 end PT
 
--- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] CategoryTheory.HasForget.instFunLike
-
 /-- The covariant functor `pt` from the category of locales to the category of
 topological spaces, which sends a locale `L` to the topological space `PT L` of homomorphisms
 from `L` to `Prop` and a locale homomorphism `f` to a continuous function between the spaces
 of points. -/
 def pt : Locale ⥤ TopCat where
-  obj L := ⟨PT L.unop, inferInstance⟩
-  map f := ⟨fun p ↦ p.comp f.unop, continuous_def.2 <| by rintro s ⟨u, rfl⟩; use f.unop u; rfl⟩
+  obj L := .of (PT L.unop)
+  map f := TopCat.ofHom ⟨fun p ↦ p.comp f.unop.hom,
+    continuous_def.2 <| by rintro s ⟨u, rfl⟩; use f.unop u; rfl⟩
+
 end pt_definition
 
 section locale_top_adjunction
@@ -110,9 +109,9 @@ def counitAppCont : FrameHom L (Opens <| PT L) where
 
 /-- The forgetful functor `topToLocale` is left adjoint to the functor `pt`. -/
 def adjunctionTopToLocalePT : topToLocale ⊣ pt where
-  unit := { app := fun X ↦ ⟨localePointOfSpacePoint X, continuous_def.2 <|
+  unit := { app := fun X ↦ TopCat.ofHom ⟨localePointOfSpacePoint X, continuous_def.2 <|
         by rintro _ ⟨u, rfl⟩; simpa using u.2⟩ }
-  counit := { app := fun L ↦ ⟨counitAppCont L⟩ }
+  counit := { app := fun L ↦ ⟨Frm.ofHom (counitAppCont L)⟩ }
 
 end locale_top_adjunction
 

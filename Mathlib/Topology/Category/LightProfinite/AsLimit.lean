@@ -20,8 +20,6 @@ noncomputable section
 
 open CategoryTheory Limits CompHausLike
 
-attribute [local instance] HasForget.instFunLike
-
 namespace LightProfinite
 
 universe u
@@ -79,7 +77,7 @@ abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n
 
 lemma lightToProfinite_map_proj_eq (n : ℕ) : lightToProfinite.map (S.proj n) =
     (lightToProfinite.obj S).asLimitCone.π.app _ := by
-  simp only [toCompHausLike_obj, Functor.comp_obj, toCompHausLike_map, coe_of]
+  simp only [Functor.comp_obj, toCompHausLike_map]
   let c : Cone (S.diagram ⋙ lightToProfinite) := S.toLightDiagram.cone
   let hc : IsLimit c := S.toLightDiagram.isLimit
   exact liftedLimitMapsToOriginal_inv_map_π hc _
@@ -93,7 +91,7 @@ lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
 abbrev component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
 
 /-- The transition map from `S_{n+1}` to `S_n` in `S.diagram`. -/
-abbrev transitionMap (n : ℕ) :  S.component (n+1) ⟶ S.component n :=
+abbrev transitionMap (n : ℕ) :  S.component (n + 1) ⟶ S.component n :=
   S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩
 
 /-- The transition map from `S_m` to `S_n` in `S.diagram`, when `m ≤ n`. -/

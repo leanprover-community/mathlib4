@@ -45,9 +45,6 @@ lemma primeFactors_mono (hmn : m ∣ n) (hn : n ≠ 0) : primeFactors m ⊆ prim
 lemma mem_primeFactors_iff_mem_primeFactorsList : p ∈ n.primeFactors ↔ p ∈ n.primeFactorsList := by
   simp only [primeFactors, List.mem_toFinset]
 
-@[deprecated (since := "2024-07-16")]
-alias mem_primeFactors_iff_mem_factors := mem_primeFactors_iff_mem_primeFactorsList
-
 lemma prime_of_mem_primeFactors (hp : p ∈ n.primeFactors) : p.Prime := (mem_primeFactors.1 hp).1
 lemma dvd_of_mem_primeFactors (hp : p ∈ n.primeFactors) : p ∣ n := (mem_primeFactors.1 hp).2.1
 
@@ -96,7 +93,7 @@ lemma primeFactors_gcd (ha : a ≠ 0) (hb : b ≠ 0) :
 
 @[simp] lemma disjoint_primeFactors (ha : a ≠ 0) (hb : b ≠ 0) :
     Disjoint a.primeFactors b.primeFactors ↔ Coprime a b := by
-  simp [disjoint_iff_inter_eq_empty, coprime_iff_gcd_eq_one, ← primeFactors_gcd, gcd_ne_zero_left,
+  simp [disjoint_iff_inter_eq_empty, coprime_iff_gcd_eq_one, ← primeFactors_gcd,
     ha, hb]
 
 protected lemma Coprime.disjoint_primeFactors (hab : Coprime a b) :
@@ -106,9 +103,9 @@ protected lemma Coprime.disjoint_primeFactors (hab : Coprime a b) :
 lemma primeFactors_pow_succ (n k : ℕ) : (n ^ (k + 1)).primeFactors = n.primeFactors := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
-  induction' k with k ih
-  · simp
-  · rw [pow_succ', primeFactors_mul hn (pow_ne_zero _ hn), ih, Finset.union_idempotent]
+  induction k with
+  | zero => simp
+  | succ k ih => rw [pow_succ', primeFactors_mul hn (pow_ne_zero _ hn), ih, Finset.union_idempotent]
 
 lemma primeFactors_pow (n : ℕ) (hk : k ≠ 0) : (n ^ k).primeFactors = n.primeFactors := by
   cases k

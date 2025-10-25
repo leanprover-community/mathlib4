@@ -13,10 +13,10 @@ import Mathlib.RingTheory.Ideal.Cotangent
 # Equivalent conditions for DVR
 
 In `IsDiscreteValuationRing.TFAE`, we show that the following are equivalent for a
-noetherian local domain that is not a field `(R, m, k)`:
+Noetherian local domain that is not a field `(R, m, k)`:
 - `R` is a discrete valuation ring
 - `R` is a valuation ring
-- `R` is a dedekind domain
+- `R` is a Dedekind domain
 - `R` is integrally closed with a unique prime ideal
 - `m` is principal
 - `dimₖ m/m² = 1`
@@ -36,7 +36,8 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRin
     (h' : (maximalIdeal R).IsPrincipal) (I : Ideal R) (hI : I ≠ ⊥) :
     ∃ n : ℕ, I = maximalIdeal R ^ n := by
   by_cases h : IsField R
-  · exact ⟨0, by simp [letI := h.toField; (eq_bot_or_eq_top I).resolve_left hI]⟩
+  · let _ := h.toField
+    exact ⟨0, by simp [(eq_bot_or_eq_top I).resolve_left hI]⟩
   classical
   obtain ⟨x, hx : _ = Ideal.span _⟩ := h'
   by_cases hI' : I = ⊤
@@ -55,8 +56,9 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRin
       intro b hb
       exact Irreducible.associated_of_dvd hx' (hf₁ b hb) ((H b).mp (hf₁ b hb).1)
     clear hr₁ hr₂ hf₁
-    induction' f using Multiset.induction with fa fs fh
-    · exact (hf₂ rfl).elim
+    induction f using Multiset.induction with
+    | empty => exact (hf₂ rfl).elim
+    | cons fa fs fh => ?_
     rcases eq_or_ne fs ∅ with (rfl | hf')
     · use 1
       rw [pow_one, Multiset.prod_cons, Multiset.empty_eq_zero, Multiset.prod_zero, mul_one]
@@ -104,11 +106,11 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
       rw [← Ideal.span_singleton_eq_bot, eq_bot_iff, ← e]; exact hI.1
   have : ∃ n, maximalIdeal R ^ n ≤ Ideal.span {a} := by
     rw [← this]; apply Ideal.exists_radical_pow_le_of_fg; exact IsNoetherian.noetherian _
-  cases' hn : Nat.find this with n
+  rcases hn : Nat.find this with - | n
   · have := Nat.find_spec this
     rw [hn, pow_zero, Ideal.one_eq_top] at this
     exact (Ideal.IsMaximal.ne_top inferInstance (eq_top_iff.mpr <| this.trans hle)).elim
-  obtain ⟨b, hb₁, hb₂⟩ : ∃ b ∈ maximalIdeal R ^ n, ¬b ∈ Ideal.span {a} := by
+  obtain ⟨b, hb₁, hb₂⟩ : ∃ b ∈ maximalIdeal R ^ n, b ∉ Ideal.span {a} := by
     by_contra! h'; rw [Nat.find_eq_iff] at hn; exact hn.2 n n.lt_succ_self fun x hx => h' x hx
   have hb₃ : ∀ m ∈ maximalIdeal R, ∃ k : R, k * a = b * m := by
     intro m hm; rw [← Ideal.mem_span_singleton']; apply Nat.find_spec this
@@ -147,11 +149,11 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
     · rwa [Submodule.span_le, Set.singleton_subset_iff]
 
 /--
-Let `(R, m, k)` be a noetherian local domain (possibly a field).
+Let `(R, m, k)` be a Noetherian local domain (possibly a field).
 The following are equivalent:
 0. `R` is a PID
 1. `R` is a valuation ring
-2. `R` is a dedekind domain
+2. `R` is a Dedekind domain
 3. `R` is integrally closed with at most one non-zero prime ideal
 4. `m` is principal
 5. `dimₖ m/m² ≤ 1`
@@ -166,7 +168,7 @@ theorem tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain
         IsIntegrallyClosed R ∧ ∀ P : Ideal R, P ≠ ⊥ → P.IsPrime → P = maximalIdeal R,
         (maximalIdeal R).IsPrincipal,
         finrank (ResidueField R) (CotangentSpace R) ≤ 1,
-        ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
+        ∀ I ≠ ⊥, ∃ n : ℕ, I = maximalIdeal R ^ n] := by
   tfae_have 1 → 2 := fun _ ↦ inferInstance
   tfae_have 2 → 1 := fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
   tfae_have 1 → 4
@@ -181,12 +183,6 @@ theorem tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain
     intro H
     constructor
     intro I J
-    -- `by_cases` should invoke `classical` by itself if it can't find a `Decidable` instance,
-    -- however the `tfae` hypotheses trigger a looping instance search.
-    -- See also:
-    -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/.60by_cases.60.20trying.20to.20find.20a.20weird.20instance
-    -- As a workaround, add the desired instance ourselves.
-    let _ := Classical.decEq (Ideal R)
     by_cases hI : I = ⊥; · subst hI; left; exact bot_le
     by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
     obtain ⟨n, rfl⟩ := H I hI
@@ -196,10 +192,10 @@ theorem tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain
 
 /--
 The following are equivalent for a
-noetherian local domain that is not a field `(R, m, k)`:
+Noetherian local domain that is not a field `(R, m, k)`:
 0. `R` is a discrete valuation ring
 1. `R` is a valuation ring
-2. `R` is a dedekind domain
+2. `R` is a Dedekind domain
 3. `R` is integrally closed with a unique non-zero prime ideal
 4. `m` is principal
 5. `dimₖ m/m² = 1`
@@ -234,17 +230,11 @@ lemma IsLocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [IsLoca
     exact fun h ↦ h.3 maximalIdeal_eq_bot
   · exact (IsDiscreteValuationRing.TFAE R hR).out 5 0
 
-@[deprecated (since := "2024-11-09")]
-alias LocalRing.finrank_CotangentSpace_eq_one_iff := IsLocalRing.finrank_CotangentSpace_eq_one_iff
-
 variable (R)
 
 lemma IsLocalRing.finrank_CotangentSpace_eq_one [IsDomain R] [IsDiscreteValuationRing R] :
     finrank (ResidueField R) (CotangentSpace R) = 1 :=
   finrank_CotangentSpace_eq_one_iff.mpr ‹_›
-
-@[deprecated (since := "2024-11-09")]
-alias LocalRing.finrank_CotangentSpace_eq_one := IsLocalRing.finrank_CotangentSpace_eq_one
 
 instance (priority := 100) IsDedekindDomain.isPrincipalIdealRing
     [IsLocalRing R] [IsDedekindDomain R] : IsPrincipalIdealRing R :=

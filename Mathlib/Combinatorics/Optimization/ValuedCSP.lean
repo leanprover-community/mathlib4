@@ -6,7 +6,7 @@ Authors: Martin Dvorak
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 
@@ -25,11 +25,11 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 * `Function.HasMaxCutProperty`: Can given binary function express the Max-Cut problem?
 * `FractionalOperation`: Multiset of operations on given domain of the same arity.
 * `FractionalOperation.IsSymmetricFractionalPolymorphismFor`: Is given fractional operation a
-   symmetric fractional polymorphism for given VCSP template?
+  symmetric fractional polymorphism for given VCSP template?
 
 ## References
 * [D. A. Cohen, M. C. Cooper, P. Creed, P. G. Jeavons, S. Živný,
-   *An Algebraic Theory of Complexity for Discrete Optimisation*][cohen2012]
+  *An Algebraic Theory of Complexity for Discrete Optimisation*][cohen2012]
 
 -/
 
@@ -37,10 +37,10 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 Regarding `C` we want to support `Bool`, `Nat`, `ENat`, `Int`, `Rat`, `NNRat`,
 `Real`, `NNReal`, `EReal`, `ENNReal`, and tuples made of any of those types. -/
 @[nolint unusedArguments]
-abbrev ValuedCSP (D C : Type*) [OrderedAddCommMonoid C] :=
+abbrev ValuedCSP (D C : Type*) [AddCommMonoid C] [PartialOrder C] [IsOrderedAddMonoid C] :=
   Set (Σ (n : ℕ), (Fin n → D) → C) -- Cost functions `D^n → C` for any `n`
 
-variable {D C : Type*} [OrderedAddCommMonoid C]
+variable {D C : Type*} [AddCommMonoid C] [PartialOrder C] [IsOrderedAddMonoid C]
 
 /-- A term in a valued CSP instance over the template `Γ`. -/
 structure ValuedCSP.Term (Γ : ValuedCSP D C) (ι : Type*) where
@@ -73,7 +73,7 @@ def ValuedCSP.Instance.IsOptimumSolution {Γ : ValuedCSP D C} {ι : Type*}
   ∀ y : ι → D, I.evalSolution x ≤ I.evalSolution y
 
 /-- Function `f` has Max-Cut property at labels `a` and `b` when `argmin f` is exactly
-`{ ![a, b] , ![b, a] }`. -/
+`{ ![a, b], ![b, a] }`. -/
 def Function.HasMaxCutPropertyAt (f : (Fin 2 → D) → C) (a b : D) : Prop :=
   f ![a, b] = f ![b, a] ∧
     ∀ x y : D, f ![a, b] ≤ f ![x, y] ∧ (f ![a, b] = f ![x, y] → a = x ∧ b = y ∨ a = y ∧ b = x)
@@ -125,9 +125,7 @@ def FractionalOperation.IsSymmetricFractionalPolymorphismFor
     (ω : FractionalOperation D m) (Γ : ValuedCSP D C) : Prop :=
   ω.IsFractionalPolymorphismFor Γ ∧ ω.IsSymmetric
 
-variable {C : Type*} [OrderedCancelAddCommMonoid C]
-
-lemma Function.HasMaxCutPropertyAt.rows_lt_aux
+lemma Function.HasMaxCutPropertyAt.rows_lt_aux {C : Type*} [PartialOrder C]
     {f : (Fin 2 → D) → C} {a b : D} (mcf : f.HasMaxCutPropertyAt a b) (hab : a ≠ b)
     {ω : FractionalOperation D 2} (symmega : ω.IsSymmetric)
     {r : Fin 2 → D} (rin : r ∈ (ω.tt ![![a, b], ![b, a]])) :
@@ -144,9 +142,11 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux
       exact hab.symm
   apply asymm
   obtain ⟨o, in_omega, rfl⟩ := rin
-  show o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
+  change o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
   convert symmega ![a, b] ![b, a] (by simp [List.Perm.swap]) o in_omega using 2 <;>
     simp [Matrix.const_fin1_eq]
+
+variable {C : Type*} [AddCommMonoid C] [PartialOrder C] [IsOrderedCancelAddMonoid C]
 
 lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
     {f : (Fin 2 → D) → C} (mcf : f.HasMaxCutProperty)

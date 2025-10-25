@@ -33,7 +33,7 @@ In other words, `f : α → β` is null measurable if it is measurable as a func
 ### Complete measures
 
 We say that a measure `μ` is complete w.r.t. the `MeasurableSpace α` σ-algebra (or the σ-algebra is
-complete w.r.t measure `μ`) if every set of measure zero is measurable. In this case all null
+complete w.r.t. measure `μ`) if every set of measure zero is measurable. In this case all null
 measurable sets and functions are measurable.
 
 For each measure `μ`, we define `MeasureTheory.Measure.completion μ` to be the same measure
@@ -81,7 +81,7 @@ instance NullMeasurableSpace.instSubsingleton [h : Subsingleton α] :
   h
 
 instance NullMeasurableSpace.instMeasurableSpace : MeasurableSpace (NullMeasurableSpace α μ) :=
-  @EventuallyMeasurableSpace α inferInstance (ae μ) _
+  @eventuallyMeasurableSpace α inferInstance (ae μ) _
 
 /-- A set is called `NullMeasurableSet` if it can be approximated by a measurable set up to
 a set of null measure. -/
@@ -168,6 +168,11 @@ protected theorem diff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t �
   MeasurableSet.diff hs ht
 
 @[simp]
+protected theorem symmDiff {s₁ s₂ : Set α} (h₁ : NullMeasurableSet s₁ μ)
+    (h₂ : NullMeasurableSet s₂ μ) : NullMeasurableSet (symmDiff s₁ s₂) μ :=
+  (h₁.diff h₂).union (h₂.diff h₁)
+
+@[simp]
 protected theorem disjointed {f : ℕ → Set α} (h : ∀ i, NullMeasurableSet (f i) μ) (n) :
     NullMeasurableSet (disjointed f n) μ :=
   MeasurableSet.disjointed h n
@@ -177,7 +182,7 @@ protected theorem const (p : Prop) : NullMeasurableSet { _a : α | p } μ :=
 
 instance instMeasurableSingletonClass [MeasurableSingletonClass α] :
     MeasurableSingletonClass (NullMeasurableSpace α μ) :=
-  EventuallyMeasurableSpace.measurableSingleton (m := m0)
+  eventuallyMeasurableSingleton (m := m0)
 
 protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
     (hs : NullMeasurableSet s μ) (a : α) : NullMeasurableSet (insert a s) μ :=

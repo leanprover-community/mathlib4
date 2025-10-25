@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Logic.IsEmpty
 import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.Push.Attr
 
 /-!
 # Types with a unique term
@@ -19,7 +20,7 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
 
 ## Main statements
 
-* `Unique.mk'`: an inhabited subsingleton type is `Unique`. This can not be an instance because it
+* `Unique.mk'`: an inhabited subsingleton type is `Unique`. This cannot be an instance because it
   would lead to loops in typeclass inference.
 
 * `Function.Surjective.unique`: if the domain of a surjective function is `Unique`, then its
@@ -41,6 +42,8 @@ for good definitional properties of the default term.
 
 universe u v w
 
+-- Don't generate injectivity lemmas, which the `simpNF` linter will complain about.
+set_option genInjectivity false in
 /-- `Unique α` expresses that `α` is a type with a unique term `default`.
 
 This is implemented as a type, rather than a `Prop`-valued predicate,
@@ -51,14 +54,10 @@ structure Unique (α : Sort u) extends Inhabited α where
   uniq : ∀ a : α, a = default
 
 attribute [class] Unique
--- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
-attribute [nolint simpNF] Unique.mk.injEq
 
 theorem unique_iff_existsUnique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default, trivial, fun a _ ↦ u.uniq a⟩,
    fun ⟨a, _, h⟩ ↦ ⟨⟨⟨a⟩, fun _ ↦ h _ trivial⟩⟩⟩
-
-@[deprecated (since := "2024-12-17")] alias unique_iff_exists_unique := unique_iff_existsUnique
 
 theorem unique_subtype_iff_existsUnique {α} (p : α → Prop) :
     Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
@@ -66,9 +65,6 @@ theorem unique_subtype_iff_existsUnique {α} (p : α → Prop) :
    fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
       congr
       exact he b hb⟩⟩⟩
-
-@[deprecated (since := "2024-12-17")]
-alias unique_subtype_iff_exists_unique := unique_subtype_iff_existsUnique
 
 /-- Given an explicit `a : α` with `Subsingleton α`, we can construct
 a `Unique α` instance. This is a def because the typeclass search cannot
@@ -84,11 +80,7 @@ instance PUnit.instUnique : Unique PUnit.{u} where
   default := PUnit.unit
   uniq x := subsingleton x _
 
--- Porting note:
--- This should not require a nolint,
--- but it is currently failing due to a problem in the linter discussed at
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60simpNF.60.20error.20.22unknown.20metavariable.22
-@[simp, nolint simpNF]
+@[simp]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
 
@@ -157,7 +149,7 @@ theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
 
 variable {α : Sort*}
 
-@[simp]
+@[simp, push ←]
 theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
     @default (∀ a, β a) _ = fun a : α ↦ @default (β a) _ :=
   rfl
@@ -182,7 +174,7 @@ theorem eq_const_of_unique {β : Sort*} [Unique α] (f : α → β) : f = Functi
   eq_const_of_subsingleton ..
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
-    HEq f (Function.const α (f default)) :=
+    f ≍ Function.const α (f default) :=
   (Function.hfunext rfl) fun i _ _ ↦ by rw [Subsingleton.elim i default]; rfl
 
 namespace Function

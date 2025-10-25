@@ -47,24 +47,6 @@ example (X : TopCat.{u₁}) (F : Presheaf CommRingCat.{u₁} X)
     F.IsSheaf :=
 (isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h
 
-/-- Deprecated: usage of this definition should be replaceable with `TopCat.Presheaf.restrictOpen`.
-
-Before, we had to specialze `restrictOpen` to `CommRingCat` because inferring `C := CommRingCat`
-was not reliable. Unification hints appear to solve that issue.
-
-The following still holds for `restrictOpen`: instead of unfolding the definition, rewrite with
-`restrictOpenCommRingCat_apply` to ensure the correct coercion to functions is taken.
-
-(The correct fix in the longer term is to redesign concrete categories so we don't use `forget`
-everywhere, but the correct `FunLike` instance for the morphisms of those categories.)
--/
-@[deprecated TopCat.Presheaf.restrictOpen (since := "2024-12-19")]
-abbrev restrictOpenCommRingCat {X : TopCat}
-    {F : Presheaf CommRingCat X} {V : Opens ↑X} (f : CommRingCat.carrier (F.obj (op V)))
-    (U : Opens ↑X) (e : U ≤ V := by restrict_tac) :
-    CommRingCat.carrier (F.obj (op U)) :=
-  TopCat.Presheaf.restrictOpen f U e
-
 open AlgebraicGeometry in
 /-- Unfold `restrictOpen` in the category of commutative rings (with the correct carrier type).
 
@@ -77,26 +59,16 @@ lemma restrictOpenCommRingCat_apply {X : TopCat}
     f |_ U = F.map (homOfLE e).op f :=
   rfl
 
-open AlgebraicGeometry in
-@[deprecated TopCat.Presheaf.restrict_restrict (since := "2024-12-19")]
-lemma _root_.CommRingCat.presheaf_restrict_restrict (X : TopCat)
-    {F : TopCat.Presheaf CommRingCat X}
-    {U V W : Opens ↑X} (e₁ : U ≤ V := by restrict_tac) (e₂ : V ≤ W := by restrict_tac)
-    (f : CommRingCat.carrier (F.obj (op W))) :
-    f |_ V |_ U = f |_ U :=
-  TopCat.Presheaf.restrict_restrict e₁ e₂ f
-
 section SubmonoidPresheaf
 
 open scoped nonZeroDivisors
 
-variable {X : TopCat.{w}} {C : Type u} [Category.{v} C] [HasForget C]
+variable {X : TopCat.{w}} {C : Type u} [Category.{v} C]
 
-attribute [local instance 1000] HasForget.hasCoeToSort HasForget.instFunLike
-
--- note: this was specialized to `CommRingCat` in #19757
+-- note: this was specialized to `CommRingCat` in https://github.com/leanprover-community/mathlib4/issues/19757
 /-- A subpresheaf with a submonoid structure on each of the components. -/
 structure SubmonoidPresheaf (F : X.Presheaf CommRingCat) where
+  /-- The submonoid structure for each component -/
   obj : ∀ U, Submonoid (F.obj U)
   map : ∀ {U V : (Opens X)ᵒᵖ} (i : U ⟶ V), obj U ≤ (obj V).comap (F.map i).hom
 
@@ -109,8 +81,7 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
   map_id U := by
     simp_rw [F.map_id]
     ext x
-    -- Porting note: `M` and `S` needs to be specified manually
-    exact IsLocalization.map_id (M := G.obj U) (S := Localization (G.obj U)) x
+    exact IsLocalization.map_id x
   map_comp {U V W} i j := by
     delta CommRingCat.ofHom CommRingCat.of Bundled.of
     simp_rw [F.map_comp]
@@ -118,11 +89,9 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
     dsimp
     rw [IsLocalization.map_comp_map]
 
--- Porting note: this instance can't be synthesized
 instance (U) : Algebra (F.obj U) (G.localizationPresheaf.obj U) :=
   show Algebra _ (Localization (G.obj U)) from inferInstance
 
--- Porting note: this instance can't be synthesized
 instance (U) : IsLocalization (G.obj U) (G.localizationPresheaf.obj U) :=
   show IsLocalization (G.obj U) (Localization (G.obj U)) from inferInstance
 
@@ -161,31 +130,23 @@ noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
 /-- The map into the presheaf of total quotient rings -/
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
-
--- Porting note: deriving `Epi` failed
-instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
+deriving Epi
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
-  -- Porting note: was an `apply (config := { instances := false })`
-  -- See https://github.com/leanprover/lean4/issues/2273
-  suffices ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U) from
-    NatTrans.mono_of_mono_app _
+  apply (config := { allowSynthFailures := true }) NatTrans.mono_of_mono_app
   intro U
   apply ConcreteCategory.mono_of_injective
-  dsimp [toTotalQuotientPresheaf, CommRingCat.ofHom]
-  -- Porting note: this is a hack to make the `refine` below works
+  dsimp [toTotalQuotientPresheaf]
+  -- Porting note: `M` and `S` need to be specified manually, so used a hack to save some typing
   set m := _
   change Function.Injective (algebraMap _ (Localization m))
-  change Function.Injective (algebraMap (F.presheaf.obj U) _)
-  haveI : IsLocalization _ (Localization m) := Localization.isLocalization
-  -- Porting note: `M` and `S` need to be specified manually, so used a hack to save some typing
   refine IsLocalization.injective (M := m) (S := Localization m) ?_
+  rw [← nonZeroDivisorsRight_eq_nonZeroDivisors]
   intro s hs t e
   apply section_ext F (unop U)
   intro x hx
-  show (F.presheaf.germ (unop U) x hx) t = (F.presheaf.germ (unop U) x hx) 0
   rw [RingHom.map_zero]
-  apply Submonoid.mem_iInf.mp hs ⟨x, hx⟩
+  apply (Submonoid.mem_iInf.mp hs ⟨x, hx⟩).2
   rw [← map_mul, e, map_zero]
 
 end SubmonoidPresheaf
@@ -196,22 +157,53 @@ section ContinuousFunctions
 
 namespace TopCat
 
-variable (X : TopCat.{v})
+variable (X : TopCat.{v}) (R : TopCommRingCat.{v})
+
+instance : NatCast (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
+  natCast n := ofHom n
+
+instance : IntCast (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
+  intCast n := ofHom n
+
+instance : Zero (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
+  zero := ofHom 0
+
+instance : One (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
+  one := ofHom 1
+
+instance : Neg (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
+  neg f := ofHom (-f.hom)
+
+instance : Sub (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
+  sub f g := ofHom (f.hom - g.hom)
+
+instance : Add (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
+  add f g := ofHom (f.hom + g.hom)
+
+instance : Mul (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
+  mul f g := ofHom (f.hom * g.hom)
+
+instance : SMul ℕ (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
+  smul n f := ofHom (n • f.hom)
+
+instance : SMul ℤ (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) where
+  smul n f := ofHom (n • f.hom)
+
+instance : Pow (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) ℕ where
+  pow f n := ofHom (f.hom ^ n)
+
+instance : CommRing (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) :=
+  Function.Injective.commRing _ ConcreteCategory.hom_injective
+    rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
 -- TODO upgrade the result to TopCommRing?
 /-- The (bundled) commutative ring of continuous functions from a topological space
 to a topological commutative ring, with pointwise multiplication. -/
 def continuousFunctions (X : TopCat.{v}ᵒᵖ) (R : TopCommRingCat.{v}) : CommRingCat.{v} :=
-  -- Porting note: Lean did not see through that `X.unop ⟶ R` is just continuous functions
-  -- hence forms a ring
-  @CommRingCat.of (X.unop ⟶ (forget₂ TopCommRingCat TopCat).obj R) <|
-    inferInstanceAs (CommRing (ContinuousMap _ _))
+  CommRingCat.of (X.unop ⟶ (forget₂ TopCommRingCat TopCat).obj R)
 
 namespace continuousFunctions
-
-instance (X : TopCat.{v}ᵒᵖ) (R : TopCommRingCat.{v}) :
-    CommRing (unop X ⟶ (forget₂ TopCommRingCat TopCat).obj R) :=
-  inferInstanceAs (CommRing (ContinuousMap _ _))
 
 /-- Pulling back functions into a topological ring along a continuous map is a ring homomorphism. -/
 def pullback {X Y : TopCatᵒᵖ} (f : X ⟶ Y) (R : TopCommRingCat) :
@@ -219,20 +211,18 @@ def pullback {X Y : TopCatᵒᵖ} (f : X ⟶ Y) (R : TopCommRingCat) :
   { toFun g := f.unop ≫ g
     map_one' := rfl
     map_zero' := rfl
-    map_add' := by aesop_cat
-    map_mul' := by aesop_cat }
+    map_add' := by cat_disch
+    map_mul' := by cat_disch }
 
 /-- A homomorphism of topological rings can be postcomposed with functions from a source space `X`;
 this is a ring homomorphism (with respect to the pointwise ring operations on functions). -/
 def map (X : TopCat.{u}ᵒᵖ) {R S : TopCommRingCat.{u}} (φ : R ⟶ S) :
     continuousFunctions X R ⟶ continuousFunctions X S := CommRingCat.ofHom
   { toFun g := g ≫ (forget₂ TopCommRingCat TopCat).map φ
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` tactic does not work, since Lean can't see through `R ⟶ S` is just
-    -- continuous ring homomorphism
-    map_one' := ContinuousMap.ext fun _ => φ.1.map_one
-    map_zero' := ContinuousMap.ext fun _ => φ.1.map_zero
-    map_add' := fun _ _ => ContinuousMap.ext fun _ => φ.1.map_add _ _
-    map_mul' := fun _ _ => ContinuousMap.ext fun _ => φ.1.map_mul _ _ }
+    map_one' := by ext; exact φ.1.map_one
+    map_zero' := by ext; exact φ.1.map_zero
+    map_add' _ _ := by ext; exact φ.1.map_add _ _
+    map_mul' _ _ := by ext; exact φ.1.map_mul _ _ }
 
 end continuousFunctions
 
@@ -258,7 +248,7 @@ def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u}
 /-- The presheaf (of commutative rings), consisting of functions on an open set `U ⊆ X` with
 values in some topological commutative ring `T`.
 
-For example, we could construct the presheaf of continuous complex valued functions of `X` as
+For example, we could construct the presheaf of continuous complex-valued functions of `X` as
 ```
 presheafToTopCommRing X (TopCommRingCat.of ℂ)
 ```
@@ -353,26 +343,19 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
   constructor
   · rintro rfl
     rw [← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-    -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` https://github.com/leanprover-community/mathlib4/pull/8386
-    repeat rw [← CommRingCat.comp_apply]
-    simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp, and_self]
+    simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
+      homOfLE_comp, and_self]
   · rintro ⟨e₁, e₂⟩
     refine F.eq_of_locally_eq₂
       (homOfLE (inf_le_right : U ⊓ W ≤ W)) (homOfLE (inf_le_right : V ⊓ W ≤ W)) ?_ _ _ ?_ ?_
     · rw [← inf_sup_right]
       exact le_inf e le_rfl
-    · change (F.val.map _)
-        ((F.val.map (homOfLE e).op).hom ((F.objSupIsoProdEqLocus U V).inv.hom x)) = (F.val.map _) y
-      rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
-      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` https://github.com/leanprover-community/mathlib4/pull/8386
-      repeat rw [← CommRingCat.comp_apply]
-      simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
-    · show (F.val.map _)
-        ((F.val.map (homOfLE e).op).hom ((F.objSupIsoProdEqLocus U V).inv.hom x)) = (F.val.map _) y
-      rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` https://github.com/leanprover-community/mathlib4/pull/8386
-      repeat rw [← CommRingCat.comp_apply]
-      simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
+    · rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
+      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
+        homOfLE_comp]
+    · rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
+      simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp,
+        homOfLE_comp]
 
 end TopCat.Sheaf
 

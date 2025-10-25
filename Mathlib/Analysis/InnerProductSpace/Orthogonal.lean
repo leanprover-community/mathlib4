@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 import Mathlib.Analysis.InnerProductSpace.Subspace
-import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 /-!
 # Orthogonal complements of submodules
@@ -27,13 +27,13 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace Submodule
 
 variable (K : Submodule 𝕜 E)
 
-/-- The subspace of vectors orthogonal to a given subspace. -/
+/-- The subspace of vectors orthogonal to a given subspace, denoted `Kᗮ`. -/
 def orthogonal : Submodule 𝕜 E where
   carrier := { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
   zero_mem' _ _ := inner_zero_right _
@@ -113,7 +113,7 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v :
 theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
   convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
-  simp only [iInf_coe]
+  simp only [coe_iInf]
 
 /-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/
 instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
@@ -182,6 +182,12 @@ theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
   have : K ⊓ Kᗮ = ⊥ := K.orthogonal_disjoint.eq_bot
   rwa [h, inf_comm, top_inf_eq] at this
 
+/-- The closure of a submodule has the same orthogonal complement and the submodule itself. -/
+@[simp]
+lemma orthogonal_closure (K : Submodule 𝕜 E) : K.topologicalClosureᗮ = Kᗮ :=
+  le_antisymm (orthogonal_le <| le_topologicalClosure _)
+    fun x hx y hy ↦ closure_minimal hx (isClosed_eq (by fun_prop) (by fun_prop)) hy
+
 theorem orthogonalFamily_self :
     OrthogonalFamily 𝕜 (fun b => ↥(cond b K Kᗮ)) fun b => (cond b K Kᗮ).subtypeₗᵢ
   | true, true => absurd rfl
@@ -199,7 +205,7 @@ theorem bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProduct
 /-!
 ### Orthogonality of submodules
 
-In this section we define `Submodule.IsOrtho U V`, with notation `U ⟂ V`.
+In this section we define `Submodule.IsOrtho U V`, denoted as `U ⟂ V`.
 
 The API roughly matches that of `Disjoint`.
 -/
@@ -207,7 +213,7 @@ The API roughly matches that of `Disjoint`.
 
 namespace Submodule
 
-/-- The proposition that two submodules are orthogonal. Has notation `U ⟂ V`. -/
+/-- The proposition that two submodules are orthogonal, denoted as `U ⟂ V`. -/
 def IsOrtho (U V : Submodule 𝕜 E) : Prop :=
   U ≤ Vᗮ
 

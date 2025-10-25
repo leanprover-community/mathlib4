@@ -3,9 +3,9 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
-import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Quadratic form structures related to `Module.Dual`
@@ -37,7 +37,7 @@ def dualProd : LinearMap.BilinForm R (Module.Dual R M × M) :=
     (applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M) +
       ((applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M)).flip
 
-theorem isSymm_dualProd : (dualProd R M).IsSymm := fun _x _y => add_comm _ _
+theorem isSymm_dualProd : (dualProd R M).IsSymm := ⟨fun _x _y => add_comm _ _⟩
 
 end Semiring
 
@@ -84,12 +84,10 @@ variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Modu
 def dualProd : QuadraticForm R (Module.Dual R M × M) where
   toFun p := p.1 p.2
   toFun_smul a p := by
-    dsimp only  -- Porting note: added
     rw [Prod.smul_fst, Prod.smul_snd, LinearMap.smul_apply, LinearMap.map_smul, smul_eq_mul,
       smul_eq_mul, smul_eq_mul, mul_assoc]
   exists_companion' :=
     ⟨LinearMap.dualProd R M, fun p q => by
-      dsimp only  -- Porting note: added
       rw [LinearMap.dualProd_apply_apply, Prod.fst_add, Prod.snd_add, LinearMap.add_apply, map_add,
         map_add, add_right_comm _ (q.1 q.2), add_comm (q.1 p.2) (p.1 q.2), ← add_assoc, ←
         add_assoc]⟩
@@ -104,7 +102,7 @@ variable {R M N}
 /-- Any module isomorphism induces a quadratic isomorphism between the corresponding `dual_prod.` -/
 @[simps!]
 def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualProd R N) where
-  toLinearEquiv := f.dualMap.symm.prod f
+  toLinearEquiv := f.dualMap.symm.prodCongr f
   map_app' x := DFunLike.congr_arg x.fst <| f.symm_apply_apply _
 
 /-- `QuadraticForm.dualProd` commutes (isometrically) with `QuadraticForm.prod`. -/
@@ -112,7 +110,7 @@ def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualPro
 def dualProdProdIsometry :
     (dualProd R (M × N)).IsometryEquiv ((dualProd R M).prod (dualProd R N)) where
   toLinearEquiv :=
-    (Module.dualProdDualEquivDual R M N).symm.prod (LinearEquiv.refl R (M × N)) ≪≫ₗ
+    (Module.dualProdDualEquivDual R M N).symm.prodCongr (LinearEquiv.refl R (M × N)) ≪≫ₗ
       LinearEquiv.prodProdProdComm R _ _ M N
   map_app' m :=
     (m.fst.map_add _ _).symm.trans <| DFunLike.congr_arg m.fst <| Prod.ext (add_zero _) (zero_add _)
@@ -142,9 +140,9 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
       LinearMap.coe_comp, Function.comp_apply, LinearMap.fst_apply, LinearMap.snd_apply,
       LinearMap.sub_apply, dualProd_apply, polarBilin_apply_apply, prod_apply, neg_apply]
     simp only [polar_sub_right, polar_self, nsmul_eq_mul, Nat.cast_ofNat, polar_comm _ x.1 x.2,
-      smul_sub, LinearMap.smul_def, sub_add_sub_cancel, ← sub_eq_add_neg (Q x.1) (Q x.2)]
-    rw [← LinearMap.map_sub (⅟ 2 : Module.End R R), ← mul_sub, ← LinearMap.smul_def]
-    simp only [LinearMap.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul,
+      smul_sub, Module.End.smul_def, sub_add_sub_cancel, ← sub_eq_add_neg (Q x.1) (Q x.2)]
+    rw [← LinearMap.map_sub (⅟2 : Module.End R R), ← mul_sub, ← Module.End.smul_def]
+    simp only [Module.End.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul,
       invOf_mul_cancel_left']
 
 /-!

@@ -3,8 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Defs
-
+import Mathlib.Tactic.TypeStar
 /-!
 # Nonempty types
 
@@ -28,10 +27,14 @@ theorem Nonempty.forall {α} {p : Nonempty α → Prop} : (∀ h : Nonempty α, 
 theorem Nonempty.exists {α} {p : Nonempty α → Prop} : (∃ h : Nonempty α, p h) ↔ ∃ a, p ⟨a⟩ :=
   Iff.intro (fun ⟨⟨a⟩, h⟩ ↦ ⟨a, h⟩) fun ⟨a, h⟩ ↦ ⟨⟨a⟩, h⟩
 
+-- Note: we set low priority here, to ensure it is not applied before `exists_prop`
+-- and `exists_const`.
+@[simp low]
+theorem exists_const_iff {α : Sort*} {P : Prop} : (∃ _ : α, P) ↔ Nonempty α ∧ P :=
+  Iff.intro (fun ⟨a, h⟩ ↦ ⟨⟨a⟩, h⟩) fun ⟨⟨a⟩, h⟩ ↦ ⟨a, h⟩
+
 theorem exists_true_iff_nonempty {α : Sort*} : (∃ _ : α, True) ↔ Nonempty α :=
   Iff.intro (fun ⟨a, _⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨a, trivial⟩
-
-@[deprecated (since := "2024-08-30")] alias nonempty_Prop := nonempty_prop
 
 theorem Nonempty.imp {α} {p : Prop} : (Nonempty α → p) ↔ (α → p) :=
   Nonempty.forall
@@ -68,9 +71,8 @@ theorem nonempty_plift {α} : Nonempty (PLift α) ↔ Nonempty α :=
   Iff.intro (fun ⟨⟨a⟩⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨⟨a⟩⟩
 
 /-- Using `Classical.choice`, lifts a (`Prop`-valued) `Nonempty` instance to a (`Type`-valued)
-  `Inhabited` instance. `Classical.inhabited_of_nonempty` already exists, in
-  `Init/Classical.lean`, but the assumption is not a type class argument,
-  which makes it unsuitable for some applications. -/
+`Inhabited` instance. `Classical.inhabited_of_nonempty` already exists, in `Init/Classical.lean`,
+but the assumption is not a type class argument, which makes it unsuitable for some applications. -/
 noncomputable def Classical.inhabited_of_nonempty' {α} [h : Nonempty α] : Inhabited α :=
   ⟨Classical.choice h⟩
 
@@ -83,7 +85,7 @@ protected noncomputable abbrev Classical.arbitrary (α) [h : Nonempty α] : α :
   Classical.choice h
 
 /-- Given `f : α → β`, if `α` is nonempty then `β` is also nonempty.
-  `Nonempty` cannot be a `functor`, because `Functor` is restricted to `Type`. -/
+`Nonempty` cannot be a `functor`, because `Functor` is restricted to `Type`. -/
 theorem Nonempty.map {α β} (f : α → β) : Nonempty α → Nonempty β
   | ⟨h⟩ => ⟨f h⟩
 
@@ -116,7 +118,7 @@ section
 variable {α β : Type*} {γ : α → Type*}
 
 @[simp]
-theorem nonempty_sigma : Nonempty (Σa : α, γ a) ↔ ∃ a : α, Nonempty (γ a) :=
+theorem nonempty_sigma : Nonempty (Σ a : α, γ a) ↔ ∃ a : α, Nonempty (γ a) :=
   Iff.intro (fun ⟨⟨a, c⟩⟩ ↦ ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ ↦ ⟨⟨a, c⟩⟩
 
 @[simp]

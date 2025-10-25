@@ -3,8 +3,9 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Order.Hom.Set
+import Mathlib.Data.Fin.Embedding
+import Mathlib.Data.Fin.Rev
+import Mathlib.Order.Hom.Basic
 
 /-!
 # `Fin n` forms a bounded linear order
@@ -41,16 +42,33 @@ variable {m n : ℕ}
 
 /-! ### Instances -/
 
+instance : Max (Fin n) where max x y := ⟨max x y, max_rec' (· < n) x.2 y.2⟩
+instance : Min (Fin n) where min x y := ⟨min x y, min_rec' (· < n) x.2 y.2⟩
+
+@[simp, norm_cast]
+theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
+
+@[simp, norm_cast]
+theorem coe_min (a b : Fin n) : ↑(min a b) = (min a b : ℕ) := rfl
+
+theorem compare_eq_compare_val (a b : Fin n) : compare a b = compare a.val b.val := rfl
+
+@[deprecated (since := "2025-03-01")] alias coe_sup := coe_max
+@[deprecated (since := "2025-03-01")] alias coe_inf := coe_min
+
 instance instLinearOrder : LinearOrder (Fin n) :=
-  @LinearOrder.liftWithOrd (Fin n) _ _ ⟨fun x y => ⟨max x y, max_rec' (· < n) x.2 y.2⟩⟩
-    ⟨fun x y => ⟨min x y, min_rec' (· < n) x.2 y.2⟩⟩ _ Fin.val Fin.val_injective (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Fin.val_injective.linearOrder _
+    Fin.le_iff_val_le_val Fin.lt_iff_val_lt_val coe_min coe_max compare_eq_compare_val
 
 instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   top := rev 0
   le_top i := Nat.le_pred_of_lt i.is_lt
   bot := 0
-  bot_le := Fin.zero_le'
+  bot_le := Fin.zero_le
+
+instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
+  LinearOrder.toBiheytingAlgebra (Fin n)
+
 
 /- There is a slight asymmetry here, in the sense that `0` is of type `Fin n` when we have
 `[NeZero n]` whereas `last n` is of type `Fin (n + 1)`. To address this properly would
@@ -65,19 +83,41 @@ These also prevent non-computable instances being used to construct these instan
 -/
 
 instance instPartialOrder : PartialOrder (Fin n) := inferInstance
-instance instLattice      : Lattice (Fin n)      := inferInstance
+instance instLattice : Lattice (Fin n) := inferInstance
+instance instHeytingAlgebra [NeZero n] : HeytingAlgebra (Fin n) := inferInstance
+instance instCoheytingAlgebra [NeZero n] : CoheytingAlgebra (Fin n) := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 
 lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
 
-lemma bot_eq_zero (n : ℕ) : ⊥ = (0 : Fin (n + 1)) := rfl
+lemma bot_eq_zero (n : ℕ) [NeZero n] : ⊥ = (0 : Fin n) := rfl
 
 @[simp] theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
 @[simp] theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _
 
 theorem rev_zero_eq_top (n : ℕ) [NeZero n] : rev (0 : Fin n) = ⊤ := rfl
 theorem rev_last_eq_bot (n : ℕ) : rev (last n) = ⊥ := by rw [rev_last, bot_eq_zero]
+
+@[simp]
+theorem succ_top (n : ℕ) [NeZero n] : (⊤ : Fin n).succ = ⊤ := by
+  rw [← rev_zero_eq_top, ← rev_zero_eq_top, ← rev_castSucc, castSucc_zero']
+
+@[simp]
+theorem val_top (n : ℕ) [NeZero n] : ((⊤ : Fin n) : ℕ) = n - 1 := rfl
+
+@[simp]
+theorem zero_eq_top {n : ℕ} [NeZero n] : (0 : Fin n) = ⊤ ↔ n = 1 := by
+  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one,
+    le_one_iff_eq_zero_or_eq_one, or_iff_right (NeZero.ne n)]
+
+@[simp]
+theorem top_eq_zero {n : ℕ} [NeZero n] : (⊤ : Fin n) = 0 ↔ n = 1 :=
+  eq_comm.trans zero_eq_top
+
+@[simp]
+theorem cast_top {m n : ℕ} [NeZero m] [NeZero n] (h : m = n) : (⊤ : Fin m).cast h = ⊤ := by
+  simp [← val_inj, h]
 
 section ToFin
 variable {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
@@ -117,6 +157,16 @@ lemma strictAnti_iff_succ_lt : StrictAnti f ↔ ∀ i : Fin n, f i.succ < f (cas
 lemma antitone_iff_succ_le : Antitone f ↔ ∀ i : Fin n, f i.succ ≤ f (castSucc i) :=
   antitone_iff_forall_lt.trans <| liftFun_iff_succ (· ≥ ·)
 
+lemma orderHom_injective_iff {α : Type*} [PartialOrder α] {n : ℕ} (f : Fin (n + 1) →o α) :
+    Function.Injective f ↔ ∀ (i : Fin n), f i.castSucc ≠ f i.succ := by
+  constructor
+  · intro hf i hi
+    have := hf hi
+    simp [Fin.ext_iff] at this
+  · intro hf
+    refine (strictMono_iff_lt_succ (f := f).2 fun i ↦ ?_).injective
+    exact lt_of_le_of_ne (f.monotone (Fin.castSucc_le_succ i)) (hf i)
+
 end FromFin
 
 /-! #### Monotonicity -/
@@ -140,11 +190,75 @@ lemma strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
 
 variable {p : Fin (n + 1)} {i j : Fin n}
 
+@[simp]
+lemma succAbove_inj : succAbove p i = succAbove p j ↔ i = j :=
+  (strictMono_succAbove p).injective.eq_iff
+
+@[simp]
+lemma succAbove_le_succAbove_iff : succAbove p i ≤ succAbove p j ↔ i ≤ j :=
+  (strictMono_succAbove p).le_iff_le
+
+@[gcongr]
+alias ⟨_, _root_.GCongr.Fin.succAbove_le_succAbove⟩ := succAbove_le_succAbove_iff
+
+@[simp]
 lemma succAbove_lt_succAbove_iff : succAbove p i < succAbove p j ↔ i < j :=
   (strictMono_succAbove p).lt_iff_lt
 
-lemma succAbove_le_succAbove_iff : succAbove p i ≤ succAbove p j ↔ i ≤ j :=
-  (strictMono_succAbove p).le_iff_le
+@[gcongr]
+alias ⟨_, _root_.GCongr.Fin.succAbove_lt_succAbove⟩ := succAbove_lt_succAbove_iff
+
+@[simp]
+theorem natAdd_inj (m) {i j : Fin n} : natAdd m i = natAdd m j ↔ i = j :=
+  (strictMono_natAdd _).injective.eq_iff
+
+theorem natAdd_injective (m n : ℕ) :
+    Function.Injective (Fin.natAdd n : Fin m → _) :=
+  (strictMono_natAdd _).injective
+
+@[simp]
+theorem natAdd_le_natAdd_iff (m) {i j : Fin n} : natAdd m i ≤ natAdd m j ↔ i ≤ j :=
+  (strictMono_natAdd _).le_iff_le
+
+@[gcongr]
+alias ⟨_, _root_.GCongr.Fin.natAdd_le_natAdd⟩ := natAdd_le_natAdd_iff
+
+@[simp]
+theorem natAdd_lt_natAdd_iff (m) {i j : Fin n} : natAdd m i < natAdd m j ↔ i < j :=
+  (strictMono_natAdd _).lt_iff_lt
+
+@[gcongr]
+alias ⟨_, _root_.GCongr.Fin.natAdd_lt_natAdd⟩ := natAdd_lt_natAdd_iff
+
+@[simp]
+theorem addNat_inj (m) {i j : Fin n} : i.addNat m = j.addNat m ↔ i = j :=
+  (strictMono_addNat _).injective.eq_iff
+
+@[simp]
+theorem addNat_le_addNat_iff (m) {i j : Fin n} : i.addNat m ≤ j.addNat m ↔ i ≤ j :=
+  (strictMono_addNat _).le_iff_le
+
+@[gcongr]
+alias ⟨_, _root_.GCongr.Fin.addNat_le_addNat⟩ := addNat_le_addNat_iff
+
+@[simp]
+theorem addNat_lt_addNat_iff (m) {i j : Fin n} : i.addNat m < j.addNat m ↔ i < j :=
+  (strictMono_addNat _).lt_iff_lt
+
+@[gcongr]
+alias ⟨_, _root_.GCongr.Fin.addNat_lt_addNat⟩ := addNat_lt_addNat_iff
+
+@[simp]
+theorem castLE_le_castLE_iff {i j : Fin n} (h : n ≤ m) : i.castLE h ≤ j.castLE h ↔ i ≤ j := .rfl
+
+@[gcongr]
+alias ⟨_, _root_.GCongr.Fin.castLE_le_castLE⟩ := castLE_le_castLE_iff
+
+@[simp]
+theorem castLE_lt_castLE_iff {i j : Fin n} (h : n ≤ m) : i.castLE h < j.castLE h ↔ i < j := .rfl
+
+@[gcongr]
+alias ⟨_, _root_.GCongr.Fin.castLE_lt_castLE⟩ := castLE_lt_castLE_iff
 
 lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
   dsimp [predAbove]
@@ -163,12 +277,35 @@ lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p
   · rfl
   · exact pred_le _
   · have : b < a := castSucc_lt_castSucc_iff.mpr (hb.trans_le (le_of_not_gt ha))
-    exact absurd H this.not_le
+    exact absurd H this.not_ge
   · rfl
 
-/--  `Fin.predAbove p` as an `OrderHom`. -/
+@[gcongr]
+lemma predAbove_le_predAbove {p q : Fin n} (hpq : p ≤ q) {i j : Fin (n + 1)} (hij : i ≤ j) :
+    p.predAbove i ≤ q.predAbove j :=
+  (predAbove_right_monotone p hij).trans (predAbove_left_monotone j hpq)
+
+/-- `Fin.predAbove p` as an `OrderHom`. -/
 @[simps!] def predAboveOrderHom (p : Fin n) : Fin (n + 1) →o Fin n :=
   ⟨p.predAbove, p.predAbove_right_monotone⟩
+
+/-- `predAbove` is injective at the pivot -/
+lemma predAbove_left_injective : Injective (@predAbove n) := by
+  intro i j hij
+  obtain ⟨n, rfl⟩ := Nat.exists_add_one_eq.2 i.size_positive
+  wlog h : i < j generalizing i j
+  · simp only [not_lt] at h
+    obtain h | rfl := h.lt_or_eq
+    · exact (this hij.symm h).symm
+    · rfl
+  replace hij := congr_fun hij i.succ
+  rw [predAbove_succ_self, Fin.predAbove_of_le_castSucc _ _ (by simpa),
+    ← Fin.castSucc_inj, castSucc_castPred] at hij
+  exact (i.castSucc_lt_succ.ne hij).elim
+
+/-- `predAbove` is injective at the pivot -/
+@[simp] lemma predAbove_left_inj {x y : Fin n} : x.predAbove = y.predAbove ↔ x = y :=
+  predAbove_left_injective.eq_iff
 
 /-! #### Order isomorphisms -/
 
@@ -185,24 +322,16 @@ def castOrderIso (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨Fin.cast eq, Fin.cast eq.symm, leftInverse_cast eq, rightInverse_cast eq⟩
   map_rel_iff' := cast_le_cast eq
 
-@[deprecated (since := "2024-05-23")] alias castIso := castOrderIso
-
 @[simp]
 lemma symm_castOrderIso (h : n = m) : (castOrderIso h).symm = castOrderIso h.symm := by subst h; rfl
 
-@[deprecated (since := "2024-05-23")] alias symm_castIso := symm_castOrderIso
-
 @[simp]
 lemma castOrderIso_refl (h : n = n := rfl) : castOrderIso h = OrderIso.refl (Fin n) := by ext; simp
-
-@[deprecated (since := "2024-05-23")] alias castIso_refl := castOrderIso_refl
 
 /-- While in many cases `Fin.castOrderIso` is better than `Equiv.cast`/`cast`, sometimes we want to
 apply a generic lemma about `cast`. -/
 lemma castOrderIso_toEquiv (h : n = m) : (castOrderIso h).toEquiv = Equiv.cast (h ▸ rfl) := by
   subst h; rfl
-
-@[deprecated (since := "2024-05-23")] alias castIso_to_equiv := castOrderIso_toEquiv
 
 /-- `Fin.rev n` as an order-reversing isomorphism. -/
 @[simps! apply toEquiv]
@@ -211,11 +340,23 @@ def revOrderIso : (Fin n)ᵒᵈ ≃o Fin n := ⟨OrderDual.ofDual.trans revPerm,
 @[simp]
 lemma revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (rev i) := rfl
 
+lemma rev_strictAnti : StrictAnti (@rev n) := fun _ _ ↦ rev_lt_rev.mpr
+
+lemma rev_anti : Antitone (@rev n) := rev_strictAnti.antitone
+
 /-! #### Order embeddings -/
 
 /-- The inclusion map `Fin n → ℕ` is an order embedding. -/
 @[simps! apply]
 def valOrderEmb (n) : Fin n ↪o ℕ := ⟨valEmbedding, Iff.rfl⟩
+
+namespace OrderEmbedding
+
+@[simps]
+instance : Inhabited (Fin n ↪o ℕ) where
+  default := Fin.valOrderEmb n
+
+end OrderEmbedding
 
 /-- The ordering on `Fin n` is a well order. -/
 instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := (valOrderEmb n).isWellOrder
@@ -224,6 +365,8 @@ instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := (valOrderEmb n).i
 def succOrderEmb (n : ℕ) : Fin n ↪o Fin (n + 1) := .ofStrictMono succ strictMono_succ
 
 @[simp, norm_cast] lemma coe_succOrderEmb : ⇑(succOrderEmb n) = Fin.succ := rfl
+
+@[simp] lemma succOrderEmb_toEmbedding : (succOrderEmb n).toEmbedding = succEmb n := rfl
 
 /-- `Fin.castLE` as an `OrderEmbedding`.
 
@@ -255,7 +398,7 @@ def addNatOrderEmb (m) : Fin n ↪o Fin (n + m) := .ofStrictMono (addNat · m) (
 @[simps! apply toEmbedding]
 def natAddOrderEmb (n) : Fin m ↪o Fin (n + m) := .ofStrictMono (natAdd n) (strictMono_natAdd n)
 
-/--  `Fin.succAbove p` as an `OrderEmbedding`. -/
+/-- `Fin.succAbove p` as an `OrderEmbedding`. -/
 @[simps! apply toEmbedding]
 def succAboveOrderEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)
@@ -269,26 +412,12 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
 @[simp] lemma coe_orderIso_apply (e : Fin n ≃o Fin m) (i : Fin n) : (e i : ℕ) = i := by
   rcases i with ⟨i, hi⟩
   dsimp only
-  induction' i using Nat.strong_induction_on with i h
+  induction i using Nat.strong_induction_on with | _ i h
   refine le_antisymm (forall_lt_iff_le.1 fun j hj => ?_) (forall_lt_iff_le.1 fun j hj => ?_)
-  · have := e.symm.lt_iff_lt.2 (mk_lt_of_lt_val hj)
-    rw [e.symm_apply_apply] at this
-    -- Porting note: convert was abusing definitional equality
-    have : _ < i := this
-    convert this
-    simpa using h _ this (e.symm _).is_lt
+  · have := e.symm.lt_symm_apply.1 (mk_lt_of_lt_val hj)
+    specialize h _ this (e.symm _).is_lt
+    simp only [Fin.eta, OrderIso.apply_symm_apply] at h
+    rwa [h]
   · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
-
-/-- Two strictly monotone functions from `Fin n` are equal provided that their ranges
-are equal. -/
-@[deprecated StrictMono.range_inj (since := "2024-09-17")]
-lemma strictMono_unique {f g : Fin n → α} (hf : StrictMono f) (hg : StrictMono g)
-    (h : range f = range g) : f = g :=
-  (hf.range_inj hg).1 h
-
-/-- Two order embeddings of `Fin n` are equal provided that their ranges are equal. -/
-@[deprecated OrderEmbedding.range_inj (since := "2024-09-17")]
-lemma orderEmbedding_eq {f g : Fin n ↪o α} (h : range f = range g) : f = g :=
-  OrderEmbedding.range_inj.1 h
 
 end Fin

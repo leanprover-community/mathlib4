@@ -22,7 +22,7 @@ original set.
 * `ruzsaSzemerediNumberNat n`: Maximum number of edges a graph on `n` vertices can have such that
   each edge belongs to exactly one triangle.
 * `ruzsaSzemerediNumberNat_asymptotic_lower_bound`: There exists a graph with `n` vertices and
-  `Ω((n ^ 2 * exp (-4 * sqrt (log n))))` edges such that each edge belongs to exactly one triangle.
+  `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that each edge belongs to exactly one triangle.
 -/
 
 open Finset Nat Real SimpleGraph Sum3 SimpleGraph.TripartiteFromTriangles
@@ -59,7 +59,7 @@ lemma ruzsaSzemerediNumber_spec :
       #(G.cliqueFinset 3) = m ∧ G.LocallyLinear) _ _ (Nat.zero_le _)
     ⟨⊥, inferInstance, by simp, locallyLinear_bot⟩
 
-variable {n : ℕ}
+variable {m n : ℕ}
 
 lemma SimpleGraph.LocallyLinear.le_ruzsaSzemerediNumber [DecidableRel G.Adj]
     (hG : G.LocallyLinear) : #(G.cliqueFinset 3) ≤ ruzsaSzemerediNumber α := by
@@ -88,8 +88,13 @@ noncomputable def ruzsaSzemerediNumberNat (n : ℕ) : ℕ := ruzsaSzemerediNumbe
 lemma ruzsaSzemerediNumberNat_card : ruzsaSzemerediNumberNat (card α) = ruzsaSzemerediNumber α :=
   ruzsaSzemerediNumber_congr (Fintype.equivFin _).symm
 
-lemma ruzsaSzemerediNumberNat_mono : Monotone ruzsaSzemerediNumberNat := fun _m _n h =>
-  ruzsaSzemerediNumber_mono (Fin.castLEEmb h)
+-- TODO: Remove once #28339 lands?
+@[gcongr] lemma ruzsaSzemerediNumberNat_le_ruzsaSzemerediNumberNat (hmn : m ≤ n) :
+    ruzsaSzemerediNumberNat m ≤ ruzsaSzemerediNumberNat n :=
+  ruzsaSzemerediNumber_mono (Fin.castLEEmb hmn)
+
+lemma ruzsaSzemerediNumberNat_mono : Monotone ruzsaSzemerediNumberNat :=
+  fun _m _n => ruzsaSzemerediNumberNat_le_ruzsaSzemerediNumberNat
 
 lemma ruzsaSzemerediNumberNat_le : ruzsaSzemerediNumberNat n ≤ n.choose 3 :=
   ruzsaSzemerediNumber_le.trans_eq <| by rw [Fintype.card_fin]
@@ -126,12 +131,12 @@ private lemma mem_triangleIndices :
 
 @[simp]
 private lemma card_triangleIndices : #(triangleIndices s) = card α * #s := by
-  simp [triangleIndices, card_univ]
+  simp [triangleIndices]
 
 private lemma noAccidental (hs : ThreeAPFree (s : Set α)) :
     NoAccidental (triangleIndices s : Finset (α × α × α)) where
   eq_or_eq_or_eq := by
-    simp only [mem_triangleIndices, Prod.mk.inj_iff, exists_prop, forall_exists_index, and_imp]
+    simp only [mem_triangleIndices, Prod.mk_inj, forall_exists_index, and_imp]
     rintro _ _ _ _ _ _ d a ha rfl rfl rfl b' b hb rfl rfl h₁ d' c hc rfl h₂ rfl
     have : a + c = b + b := by linear_combination h₁.symm - h₂.symm
     obtain rfl := hs ha hb hc this
@@ -141,15 +146,15 @@ variable [Fact <| IsUnit (2 : α)]
 
 private instance : ExplicitDisjoint (triangleIndices s : Finset (α × α × α)) where
   inj₀ := by
-    simp only [mem_triangleIndices, Prod.mk.inj_iff, exists_prop, forall_exists_index, and_imp]
+    simp only [mem_triangleIndices, Prod.mk_inj, forall_exists_index, and_imp]
     rintro _ _ _ _ x a ha rfl rfl rfl y b hb rfl h₁ h₂
     linear_combination 2 * h₁.symm - h₂.symm
   inj₁ := by
-    simp only [mem_triangleIndices, Prod.mk.inj_iff, exists_prop, forall_exists_index, and_imp]
+    simp only [mem_triangleIndices, Prod.mk_inj, forall_exists_index, and_imp]
     rintro _ _ _ _ x a ha rfl rfl rfl y b hb rfl rfl h
     simpa [(Fact.out (p := IsUnit (2 : α))).mul_right_inj, eq_comm] using h
   inj₂ := by
-    simp only [mem_triangleIndices, Prod.mk.inj_iff, exists_prop, forall_exists_index, and_imp]
+    simp only [mem_triangleIndices, Prod.mk_inj, forall_exists_index, and_imp]
     rintro _ _ _ _ x a ha rfl rfl rfl y b hb rfl h rfl
     simpa [(Fact.out (p := IsUnit (2 : α))).mul_right_inj, eq_comm] using h
 
@@ -178,6 +183,7 @@ lemma rothNumberNat_le_ruzsaSzemerediNumberNat (n : ℕ) :
   let α := Fin (2 * n + 1)
   have : Nat.Coprime 2 (2 * n + 1) := by simp
   haveI : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa using (ZMod.unitOfCoprime 2 this).isUnit⟩
+  open scoped Fin.CommRing in
   calc
     (2 * n + 1) * rothNumberNat n
     _ = Fintype.card α * addRothNumber (Iio (n : α)) := by
@@ -204,25 +210,24 @@ theorem rothNumberNat_le_ruzsaSzemerediNumberNat' :
       _ ≤ (↑(2 * (n / 6) + 1) : ℝ) * rothNumberNat (n / 6) :=
         mul_le_mul_of_nonneg_right ?_ (Nat.cast_nonneg _)
       _ ≤ (ruzsaSzemerediNumberNat (6 * (n / 6) + 3) : ℝ) := ?_
-      _ ≤ _ :=
-        Nat.cast_le.2 (ruzsaSzemerediNumberNat_mono <| add_le_add_right (Nat.mul_div_le _ _) _)
+      _ ≤ _ := by grw [Nat.mul_div_le]
     · norm_num
       rw [← div_add_one (three_ne_zero' ℝ), ← le_sub_iff_add_le, div_le_iff₀ (zero_lt_three' ℝ),
         add_assoc, add_sub_assoc, add_mul, mul_right_comm]
       norm_num
       norm_cast
       rw [← mul_add_one]
-      exact (Nat.lt_mul_div_succ _ <| by norm_num).le
+      exact (Nat.lt_mul_div_succ _ <| by simp).le
     · norm_cast
       exact rothNumberNat_le_ruzsaSzemerediNumberNat _
 
 /-- Explicit lower bound on the **Ruzsa-Szemerédi problem**.
 
 There exists a graph with `n` vertices and
-`(n / 3 - 2) * (n - 3) / 6 * exp (-4 * sqrt (log ((n - 3) / 6)))` edges such that each edge belongs
+`(n / 3 - 2) * (n - 3) / 6 * exp (-4 * √(log ((n - 3) / 6)))` edges such that each edge belongs
 to exactly one triangle. -/
 theorem ruzsaSzemerediNumberNat_lower_bound (n : ℕ) :
-    (n / 3 - 2 : ℝ) * ↑((n - 3) / 6) * exp (-4 * sqrt (log ↑((n - 3) / 6))) ≤
+    (n / 3 - 2 : ℝ) * ↑((n - 3) / 6) * exp (-4 * √(log ↑((n - 3) / 6))) ≤
       ruzsaSzemerediNumberNat n := by
   rw [mul_assoc]
   obtain hn | hn := le_total (n / 3 - 2 : ℝ) 0
@@ -235,33 +240,33 @@ open Asymptotics Filter
 
 /-- Asymptotic lower bound on the **Ruzsa-Szemerédi problem**.
 
-There exists a graph with `n` vertices and `Ω((n ^ 2 * exp (-4 * sqrt (log n))))` edges such that
+There exists a graph with `n` vertices and `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that
 each edge belongs to exactly one triangle. -/
 theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
-   (fun n ↦ n ^ 2 * exp (-4 * sqrt (log n)) : ℕ → ℝ) =O[atTop]
+    (fun n ↦ n ^ 2 * exp (-4 * √(log n)) : ℕ → ℝ) =O[atTop]
      fun n ↦ (ruzsaSzemerediNumberNat n : ℝ) := by
-  trans fun n ↦ (n / 3 - 2) * ↑((n - 3) / 6) * exp (-4 * sqrt (log ↑((n - 3) / 6)))
+  trans fun n ↦ (n / 3 - 2) * ↑((n - 3) / 6) * exp (-4 * √(log ↑((n - 3) / 6)))
   · simp_rw [sq]
     refine (IsBigO.mul ?_ ?_).mul ?_
     · trans fun n ↦ n / 3
       · simp_rw [div_eq_inv_mul]
-        exact (isBigO_refl ..).const_mul_right (by norm_num)
+        exact (isBigO_refl ..).const_mul_right (by simp)
       refine IsLittleO.right_isBigO_sub ?_
       simpa [div_eq_inv_mul, Function.comp_def] using
-        .atTop_of_const_mul zero_lt_three (by simp [tendsto_natCast_atTop_atTop])
+        .atTop_of_const_mul₀ zero_lt_three (by simp [tendsto_natCast_atTop_atTop])
     · rw [IsBigO_def]
       refine ⟨12, ?_⟩
       simp only [IsBigOWith, norm_natCast, eventually_atTop]
-      exact ⟨15, fun x hx ↦ by norm_cast; omega⟩
+      exact ⟨15, fun x hx ↦ by norm_cast; cutsat⟩
     · rw [isBigO_exp_comp_exp_comp]
       refine ⟨0, ?_⟩
       simp only [neg_mul, eventually_map, Pi.sub_apply, sub_neg_eq_add, neg_add_le_iff_le_add,
-        add_zero, ofNat_pos, _root_.mul_le_mul_left, eventually_atTop]
+        add_zero, ofNat_pos, mul_le_mul_iff_right₀, eventually_atTop]
       refine ⟨9, fun x hx ↦ ?_⟩
       gcongr
       · simp
-        omega
-      · omega
+        cutsat
+      · cutsat
   · refine .of_norm_eventuallyLE ?_
     filter_upwards [eventually_ge_atTop 6] with n hn
     have : (0 : ℝ) ≤ n / 3 - 2 := by rify at hn; linarith

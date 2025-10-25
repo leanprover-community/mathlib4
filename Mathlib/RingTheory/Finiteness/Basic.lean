@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Quotient.Defs
 import Mathlib.RingTheory.Finiteness.Defs
@@ -15,7 +16,7 @@ This file contains the basic results on `Submodule.FG` and `Module.Finite` that 
 further imports.
 -/
 
-assert_not_exists Basis Ideal.radical Matrix Subalgebra
+assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
 open Finsupp
@@ -52,8 +53,21 @@ theorem fg_iSup {ι : Sort*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, 
   cases nonempty_fintype (PLift ι)
   simpa [iSup_plift_down] using fg_biSup Finset.univ (N ∘ PLift.down) fun i _ => h i.down
 
-variable {P : Type*} [AddCommMonoid P] [Module R P]
-variable (f : M →ₗ[R] P)
+instance : SemilatticeSup {P : Submodule R M // P.FG} where
+  sup := fun P Q ↦ ⟨P.val ⊔ Q.val, Submodule.FG.sup P.property Q.property⟩
+  le_sup_left := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_left
+  le_sup_right := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_right
+  sup_le := fun P Q R hPR hQR ↦ by
+    rw [← Subtype.coe_le_coe] at hPR hQR ⊢
+    exact sup_le hPR hQR
+
+instance : Inhabited {P : Submodule R M // P.FG} where
+  default := ⟨⊥, fg_bot⟩
+
+section
+
+variable {S P : Type*} [Semiring S] [AddCommMonoid P] [Module S P]
+variable {σ : R →+* S} [RingHomSurjective σ] (f : M →ₛₗ[σ] P)
 
 theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid (M i)]
     [∀ i, Module R (M i)] {p : ∀ i, Submodule R (M i)} (hsb : ∀ i, (p i).FG) :
@@ -70,17 +84,20 @@ theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
   let ⟨t, ht⟩ := fg_def.1 hs
   fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
 
-variable {f}
-
-theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {N : Submodule R M}
+theorem fg_of_fg_map_injective (hf : Function.Injective f) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
   let ⟨t, ht⟩ := hfn
   ⟨t.preimage f fun _ _ _ _ h => hf h,
     Submodule.map_injective_of_injective hf <| by
       rw [map_span, Finset.coe_preimage, Set.image_preimage_eq_inter_range,
         Set.inter_eq_self_of_subset_left, ht]
-      rw [← LinearMap.range_coe, ← span_le, ht, ← map_top]
+      rw [← LinearMap.coe_range, ← span_le, ht, ← map_top]
       exact map_mono le_top⟩
+
+end
+
+variable {P : Type*} [AddCommMonoid P] [Module R P]
+variable {f : M →ₗ[R] P}
 
 theorem fg_of_fg_map {R M P : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup P]
     [Module R P] (f : M →ₗ[R] P)
@@ -104,24 +121,24 @@ theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
     | empty =>
       rw [Finset.coe_empty, Submodule.span_empty, ← Submodule.span_zero_singleton]
       exact h₁ _
-    | insert _ ih =>
+    | insert _ _ _ ih =>
       rw [Finset.coe_insert, Submodule.span_insert]
       exact h₂ _ _ (h₁ _) ih
 
 theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
-    [AddCommGroup M] [Module S M] [Module R M] [IsScalarTower R S M] (N : Submodule S M)
+    [AddCommMonoid M] [Module S M] [Module R M] [IsScalarTower R S M] (N : Submodule S M)
     (hfin : N.FG) (h : Function.Surjective (algebraMap R S)) :
     (Submodule.restrictScalars R N).FG := by
   obtain ⟨X, rfl⟩ := hfin
   use X
   exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
 
-lemma FG.of_restrictScalars (R) {A M} [CommSemiring R] [Semiring A] [AddCommMonoid M]
-    [Algebra R A] [Module R M] [Module A M] [IsScalarTower R A M] (S : Submodule A M)
+lemma FG.of_restrictScalars (R) {A M} [Semiring R] [Semiring A] [AddCommMonoid M]
+    [SMul R A] [Module R M] [Module A M] [IsScalarTower R A M] (S : Submodule A M)
     (hS : (S.restrictScalars R).FG) : S.FG := by
   obtain ⟨s, e⟩ := hS
   refine ⟨s, Submodule.restrictScalars_injective R _ _ (le_antisymm ?_ ?_)⟩
-  · show Submodule.span A s ≤ S
+  · change Submodule.span A s ≤ S
     have := Submodule.span_le.mp e.le
     rwa [Submodule.span_le]
   · rw [← e]
@@ -188,16 +205,32 @@ open Submodule Set
 
 variable {R M N}
 
+instance [Module.Finite R M] : IsCoatomic (Submodule R M) :=
+  CompleteLattice.coatomic_of_top_compact <| by rwa [← fg_iff_compact, ← finite_def]
+
 -- See note [lower instance priority]
 instance (priority := 100) of_finite [Finite M] : Module.Finite R M := by
   cases nonempty_fintype M
   exact ⟨⟨Finset.univ, by rw [Finset.coe_univ]; exact Submodule.span_univ⟩⟩
 
-theorem of_surjective [hM : Module.Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) :
-    Module.Finite R N :=
+section
+
+variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P]
+  {σ : R →+* S} [RingHomSurjective σ]
+
+-- TODO: remove RingHomSurjective
+theorem of_surjective [hM : Module.Finite R M] (f : M →ₛₗ[σ] P) (hf : Surjective f) :
+    Module.Finite S P :=
   ⟨by
     rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
     exact hM.1.map f⟩
+
+theorem _root_.LinearMap.finite_iff_of_bijective (f : M →ₛₗ[σ] P) (hf : Function.Bijective f) :
+    Module.Finite R M ↔ Module.Finite S P :=
+  ⟨fun _ ↦ of_surjective f hf.surjective, fun _ ↦ ⟨fg_of_fg_map_injective f hf.injective <| by
+    rwa [Submodule.map_top, LinearMap.range_eq_top.2 hf.surjective, ← Module.finite_def]⟩⟩
+
+end
 
 instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
     [SMul R A] [IsScalarTower R A M] [Module.Finite R M]
@@ -221,6 +254,14 @@ instance pi {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMo
     rw [← Submodule.pi_top]
     exact Submodule.fg_pi fun i => (h i).1⟩
 
+theorem of_pi {ι : Type*} (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+    [Module.Finite R (∀ i, M i)] (i : ι) : Module.Finite R (M i) :=
+  Module.Finite.of_surjective _ <| LinearMap.proj_surjective i
+
+theorem pi_iff {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMonoid (M i)]
+    [∀ i, Module R (M i)] : Module.Finite R (∀ i, M i) ↔ ∀ i, Module.Finite R (M i) :=
+  ⟨fun _ i => of_pi M i, fun _ => inferInstance⟩
+
 variable (R)
 
 instance self : Module.Finite R R :=
@@ -228,15 +269,14 @@ instance self : Module.Finite R R :=
 
 variable (M)
 
-theorem of_restrictScalars_finite (R A M : Type*) [CommSemiring R] [Semiring A] [AddCommMonoid M]
-    [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M] [hM : Module.Finite R M] :
+theorem of_restrictScalars_finite (R A M : Type*) [Semiring R] [Semiring A] [AddCommMonoid M]
+    [Module R M] [Module A M] [SMul R A] [IsScalarTower R A M] [hM : Module.Finite R M] :
     Module.Finite A M := by
   rw [finite_def, Submodule.fg_def] at hM ⊢
   obtain ⟨S, hSfin, hSgen⟩ := hM
   refine ⟨S, hSfin, eq_top_iff.2 ?_⟩
   have := Submodule.span_le_restrictScalars R A S
-  rw [hSgen] at this
-  exact this
+  rwa [hSgen] at this
 
 variable {R M}
 
@@ -245,6 +285,8 @@ theorem equiv [Module.Finite R M] (e : M ≃ₗ[R] N) : Module.Finite R N :=
 
 theorem equiv_iff (e : M ≃ₗ[R] N) : Module.Finite R M ↔ Module.Finite R N :=
   ⟨fun _ ↦ equiv e, fun _ ↦ equiv e.symm⟩
+
+instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.opLinearEquiv R)
 
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
@@ -282,11 +324,12 @@ theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
     ⟨Submodule.fg_def.2
         ⟨Set.image2 (· • ·) (↑s : Set A) (↑t : Set M),
           Set.Finite.image2 _ s.finite_toSet t.finite_toSet, by
-          erw [Set.image2_smul, Submodule.span_smul_of_span_eq_top hs (↑t : Set M), ht,
+          rw [Set.image2_smul, Submodule.span_smul_of_span_eq_top hs (↑t : Set M), ht,
             Submodule.restrictScalars_top]⟩⟩
 
-lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [CommRing B₁]
-    [CommRing A₂] [CommRing B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemiring B₁]
+    [CommSemiring A₂] [Semiring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂)
+    (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
     [Module.Finite A₁ B₁] : Module.Finite A₂ B₂ := by
   letI := e₁.toRingHom.toAlgebra
@@ -320,7 +363,7 @@ instance finite_sup (S₁ S₂ : Submodule R V) [h₁ : Module.Finite R S₁]
   rw [finite_def] at *
   exact (fg_top _).2 (((fg_top S₁).1 h₁).sup ((fg_top S₂).1 h₂))
 
-/-- The submodule generated by a finite supremum of finite dimensional submodules is
+/-- The submodule generated by a finite supremum of finite-dimensional submodules is
 finite-dimensional.
 
 Note that strictly this only needs `∀ i ∈ s, FiniteDimensional K (S i)`, but that doesn't
@@ -341,12 +384,9 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 namespace Finite
 
-variable (A)
-
+variable (A) in
 theorem id : Finite (RingHom.id A) :=
   Module.Finite.self A
-
-variable {A}
 
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   letI := f.toAlgebra
@@ -391,3 +431,23 @@ theorem of_comp_finite {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).F
 end Finite
 
 end AlgHom
+
+section Ring
+variable {R E : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
+
+local notation3 "R≥0" => {c : R // 0 ≤ c}
+
+private instance instModuleFiniteAux : Module.Finite R≥0 R := by
+  simp_rw [Module.finite_def, Submodule.fg_def, Submodule.eq_top_iff']
+  refine ⟨{1, -1}, by simp, fun x ↦ ?_⟩
+  obtain hx | hx := le_total 0 x
+  · simpa using Submodule.smul_mem (M := R) (.span R≥0 {1, -1}) ⟨x, hx⟩ (x := 1)
+      (Submodule.subset_span <| by simp)
+  · simpa using Submodule.smul_mem (M := R) (.span R≥0 {1, -1}) ⟨-x, neg_nonneg.2 hx⟩ (x := -1)
+      (Submodule.subset_span <| by simp)
+
+/-- If a module is finite over a linearly ordered ring, then it is also finite over the non-negative
+scalars. -/
+instance instModuleFinite [Module.Finite R E] : Module.Finite R≥0 E := .trans R E
+
+end Ring

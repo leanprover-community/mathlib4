@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Least upper bound and the greatest lower bound in linear ordered additive commutative groups
@@ -12,7 +13,7 @@ import Mathlib.Algebra.Order.Group.Defs
 
 section LinearOrderedAddCommGroup
 
-variable {α : Type*} [LinearOrderedAddCommGroup α] {s : Set α} {a ε : α}
+variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] {s : Set α} {a ε : α}
 
 theorem IsGLB.exists_between_self_add (h : IsGLB s a) (hε : 0 < ε) : ∃ b ∈ s, a ≤ b ∧ b < a + ε :=
   h.exists_between <| lt_add_of_pos_right _ hε

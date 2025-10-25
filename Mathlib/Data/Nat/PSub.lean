@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Partial predecessor and partial subtraction on the natural numbers
@@ -57,9 +58,6 @@ theorem ppred_eq_some {m : ℕ} : ∀ {n}, ppred n = some m ↔ succ m = n
   | 0 => by constructor <;> intro h <;> contradiction
   | n + 1 => by constructor <;> intro h <;> injection h <;> subst m <;> rfl
 
--- Porting note: `contradiction` required an `intro` for the goals
--- `ppred (n + 1) = none → n + 1 = 0` and `n + 1 = 0 → ppred (n + 1) = none`
-
 @[simp]
 theorem ppred_eq_none : ∀ {n : ℕ}, ppred n = none ↔ n = 0
   | 0 => by simp
@@ -68,17 +66,17 @@ theorem ppred_eq_none : ∀ {n : ℕ}, ppred n = none ↔ n = 0
 theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
   | 0, k => by simp [eq_comm]
   | n + 1, k => by
-    apply Option.bind_eq_some.trans
+    apply Option.bind_eq_some_iff.trans
     simp only [psub_eq_some, ppred_eq_some]
     simp [add_comm, add_left_comm]
 
 theorem psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by
-  rcases s : psub m n <;> simp [eq_comm]
-  · refine lt_of_not_ge fun h => ?_
+  rcases s : psub m n
+  · simp only [true_iff]
+    refine lt_of_not_ge fun h => ?_
     obtain ⟨k, e⟩ := le.dest h
     injection s.symm.trans (psub_eq_some.2 <| (add_comm _ _).trans e)
-  · rw [← psub_eq_some.1 s]
-    apply Nat.le_add_left
+  · grind [psub_eq_some]
 
 theorem ppred_eq_pred {n} (h : 0 < n) : ppred n = some (pred n) :=
   ppred_eq_some.2 <| succ_pred_eq_of_pos h
@@ -86,11 +84,10 @@ theorem ppred_eq_pred {n} (h : 0 < n) : ppred n = some (pred n) :=
 theorem psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
   psub_eq_some.2 <| Nat.sub_add_cancel h
 
--- Porting note: we only have the simp lemma `Option.bind_some` which uses `Option.bind` not `>>=`
 theorem psub_add (m n k) :
     psub m (n + k) = (do psub (← psub m n) k) := by
     induction k with
-    | zero => simp only [zero_eq, add_zero, psub_zero, Option.bind_eq_bind, Option.bind_some]
+    | zero => simp
     | succ n ih => simp only [ih, add_succ, psub_succ, bind_assoc]
 
 /-- Same as `psub`, but with a more efficient implementation. -/

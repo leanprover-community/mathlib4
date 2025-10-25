@@ -36,21 +36,17 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace Functor
 
-/-- A functor `F : C ⥤ D` is full if for each `X Y : C`, `F.map` is surjective.
-
-See <https://stacks.math.columbia.edu/tag/001C>.
--/
+/-- A functor `F : C ⥤ D` is full if for each `X Y : C`, `F.map` is surjective. -/
+@[stacks 001C]
 class Full (F : C ⥤ D) : Prop where
   map_surjective {X Y : C} : Function.Surjective (F.map (X := X) (Y := Y))
 
-/-- A functor `F : C ⥤ D` is faithful if for each `X Y : C`, `F.map` is injective.
-
-See <https://stacks.math.columbia.edu/tag/001C>.
--/
+/-- A functor `F : C ⥤ D` is faithful if for each `X Y : C`, `F.map` is injective. -/
+@[stacks 001C]
 class Faithful (F : C ⥤ D) : Prop where
   /-- `F.map` is injective for each `X Y : C`. -/
   map_injective : ∀ {X Y : C}, Function.Injective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) := by
-    aesop_cat
+    cat_disch
 
 variable {X Y : C}
 
@@ -63,7 +59,7 @@ lemma map_injective_iff (F : C ⥤ D) [Faithful F] {X Y : C} (f g : X ⟶ Y) :
   ⟨fun h => F.map_injective h, fun h => by rw [h]⟩
 
 theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
-    Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y))  := fun _ _ h =>
+    Function.Injective <| (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y)) := fun _ _ h =>
   Iso.ext (map_injective F (congr_arg Iso.hom h :))
 
 theorem map_surjective (F : C ⥤ D) [Full F] :
@@ -121,8 +117,8 @@ in order to express that `F` is a fully faithful functor. -/
 structure FullyFaithful where
   /-- The inverse map `(F.obj X ⟶ F.obj Y) ⟶ (X ⟶ Y)` of `F.map`. -/
   preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : X ⟶ Y
-  map_preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : F.map (preimage f) = f := by aesop_cat
-  preimage_map {X Y : C} (f : X ⟶ Y) : preimage (F.map f) = f := by aesop_cat
+  map_preimage {X Y : C} (f : F.obj X ⟶ F.obj Y) : F.map (preimage f) = f := by cat_disch
+  preimage_map {X Y : C} (f : X ⟶ Y) : preimage (F.map f) = f := by cat_disch
 
 namespace FullyFaithful
 
@@ -165,6 +161,16 @@ lemma map_bijective (X Y : C) :
     Function.Bijective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   hF.homEquiv.bijective
 
+@[simp]
+lemma preimage_id {X : C} :
+    hF.preimage (𝟙 (F.obj X)) = 𝟙 X :=
+  hF.map_injective (by simp)
+
+@[simp, reassoc]
+lemma preimage_comp {X Y Z : C} (f : F.obj X ⟶ F.obj Y) (g : F.obj Y ⟶ F.obj Z) :
+    hF.preimage (f ≫ g) = hF.preimage f ≫ hF.preimage g :=
+  hF.map_injective (by simp)
+
 lemma full : F.Full where
   map_surjective := hF.map_surjective
 
@@ -198,8 +204,8 @@ lemma isIso_of_isIso_map {X Y : C} (f : X ⟶ Y) [IsIso (F.map f)] :
 def isoEquiv {X Y : C} : (X ≅ Y) ≃ (F.obj X ≅ F.obj Y) where
   toFun := F.mapIso
   invFun := hF.preimageIso
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- Fully faithful functors are stable by composition. -/
 @[simps]
@@ -248,8 +254,8 @@ instance Faithful.id : Functor.Faithful (𝟭 C) := { }
 variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
 variable (F F' : C ⥤ D) (G : D ⥤ E)
 
-instance Faithful.comp [F.Faithful] [G.Faithful] :
-    (F ⋙ G).Faithful where map_injective p := F.map_injective (G.map_injective p)
+instance Faithful.comp [F.Faithful] [G.Faithful] : (F ⋙ G).Faithful where
+  map_injective p := F.map_injective (G.map_injective p)
 
 theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
   -- Porting note: (F ⋙ G).map_injective.of_comp has the incorrect type
@@ -290,21 +296,20 @@ variable (F G)
 /-- “Divide” a functor by a faithful functor. -/
 protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C → D)
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
-    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq (G.map (map f)) (F.map f)) : C ⥤ D :=
+    (h_map : ∀ {X Y} {f : X ⟶ Y}, G.map (map f) ≍ F.map f) : C ⥤ D :=
   { obj, map := @map,
     map_id := by
-      intros X
+      intro X
       apply G.map_injective
       apply eq_of_heq
       trans F.map (𝟙 X)
       · exact h_map
       · rw [F.map_id, G.map_id, h_obj X]
     map_comp := by
-      intros X Y Z f g
+      intro X Y Z f g
       refine G.map_injective <| eq_of_heq <| h_map.trans ?_
       simp only [Functor.map_comp]
-      convert HEq.refl (F.map f ≫ F.map g)
-      all_goals { first | apply h_obj | apply h_map } }
+      grind }
 
 -- This follows immediately from `Functor.hext` (`Functor.hext h_obj @h_map`),
 -- but importing `CategoryTheory.EqToHom` causes an import loop:
@@ -312,14 +317,10 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C →
 -- CategoryTheory.Equivalence → CategoryTheory.FullyFaithful
 theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] (obj : C → D)
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
-    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq (G.map (map f)) (F.map f)) :
+    (h_map : ∀ {X Y} {f : X ⟶ Y}, G.map (map f) ≍ F.map f) :
     Faithful.div F G obj @h_obj @map @h_map ⋙ G = F := by
-  -- Porting note: Have to unfold the structure twice because the first one recovers only the
-  -- prefunctor `F_pre`
-  cases' F with F_pre _ _; cases' G with G_pre _ _
-  cases' F_pre with F_obj _; cases' G_pre with G_obj _
+  obtain ⟨F_obj, _, _, _⟩ := F; obtain ⟨G_obj, _, _, _⟩ := G
   unfold Faithful.div Functor.comp
-  -- Porting note: unable to find the lean4 analogue to `unfold_projs`, works without it
   have : F_obj = G_obj ∘ obj := (funext h_obj).symm
   subst this
   congr
@@ -329,7 +330,7 @@ theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] 
 
 theorem Faithful.div_faithful (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] (obj : C → D)
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
-    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq (G.map (map f)) (F.map f)) :
+    (h_map : ∀ {X Y} {f : X ⟶ Y}, G.map (map f) ≍ F.map f) :
     Functor.Faithful (Faithful.div F G obj @h_obj @map @h_map) :=
   (Faithful.div_comp F G _ h_obj _ @h_map).faithful_of_comp
 
@@ -367,34 +368,4 @@ theorem fullyFaithfulCancelRight_inv_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] 
   rfl
 
 end Functor
-
-@[deprecated (since := "2024-04-06")] alias Full := Functor.Full
-@[deprecated (since := "2024-04-06")] alias Faithful := Functor.Faithful
-@[deprecated (since := "2024-04-06")] alias preimage_id := Functor.preimage_id
-@[deprecated (since := "2024-04-06")] alias preimage_comp := Functor.preimage_comp
-@[deprecated (since := "2024-04-06")] alias preimage_map := Functor.preimage_map
-@[deprecated (since := "2024-04-06")] alias Faithful.of_comp := Functor.Faithful.of_comp
-@[deprecated (since := "2024-04-06")] alias Full.ofIso := Functor.Full.of_iso
-@[deprecated (since := "2024-04-06")] alias Faithful.of_iso := Functor.Faithful.of_iso
-@[deprecated (since := "2024-04-06")] alias Faithful.of_comp_iso := Functor.Faithful.of_comp_iso
-@[deprecated (since := "2024-04-06")] alias Faithful.of_comp_eq := Functor.Faithful.of_comp_eq
-@[deprecated (since := "2024-04-06")] alias Faithful.div := Functor.Faithful.div
-@[deprecated (since := "2024-04-06")] alias Faithful.div_comp := Functor.Faithful.div_comp
-@[deprecated (since := "2024-04-06")] alias Faithful.div_faithful := Functor.Faithful.div_faithful
-@[deprecated (since := "2024-04-06")] alias Full.ofCompFaithful := Functor.Full.of_comp_faithful
-
-@[deprecated (since := "2024-04-06")]
-alias Full.ofCompFaithfulIso := Functor.Full.of_comp_faithful_iso
-
-@[deprecated (since := "2024-04-06")]
-alias fullyFaithfulCancelRight := Functor.fullyFaithfulCancelRight
-
-@[deprecated (since := "2024-04-06")]
-alias fullyFaithfulCancelRight_hom_app := Functor.fullyFaithfulCancelRight_hom_app
-
-@[deprecated (since := "2024-04-06")]
-alias fullyFaithfulCancelRight_inv_app := Functor.fullyFaithfulCancelRight_inv_app
-
-@[deprecated (since := "2024-04-26")] alias Functor.image_preimage := Functor.map_preimage
-
 end CategoryTheory

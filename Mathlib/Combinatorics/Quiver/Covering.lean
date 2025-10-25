@@ -6,7 +6,8 @@ Authors: Antoine Labelle, Rémi Bottinelli
 import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Data.Sum.Basic
+import Mathlib.Logic.Equiv.Sum
 import Mathlib.Tactic.Common
 
 /-!
@@ -135,8 +136,7 @@ theorem Prefunctor.symmetrifyStar (u : U) :
     φ.symmetrify.star u =
       (Quiver.symmetrifyStar _).symm ∘ Sum.map (φ.star u) (φ.costar u) ∘
         Quiver.symmetrifyStar u := by
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [Equiv.eq_symm_comp]
+  rw [Equiv.eq_symm_comp (e := Quiver.symmetrifyStar (φ.obj u))]
   ext ⟨v, f | g⟩ <;>
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [Quiver.symmetrifyStar]`
     simp only [Quiver.symmetrifyStar, Function.comp_apply] <;>
@@ -147,8 +147,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
     φ.symmetrify.costar u =
       (Quiver.symmetrifyCostar _).symm ∘
         Sum.map (φ.costar u) (φ.star u) ∘ Quiver.symmetrifyCostar u := by
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [Equiv.eq_symm_comp]
+  rw [Equiv.eq_symm_comp (e := Quiver.symmetrifyCostar (φ.obj u))]
   ext ⟨v, f | g⟩ <;>
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [Quiver.symmetrifyCostar]`
     simp only [Quiver.symmetrifyCostar, Function.comp_apply] <;>
@@ -158,11 +157,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
 protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
     φ.symmetrify.IsCovering := by
   refine ⟨fun u => ?_, fun u => ?_⟩ <;>
-    -- Porting note: was
-    -- simp [φ.symmetrifyStar, φ.symmetrifyCostar, hφ.star_bijective u, hφ.costar_bijective u]
-    simp only [φ.symmetrifyStar, φ.symmetrifyCostar] <;>
-    erw [EquivLike.comp_bijective, EquivLike.bijective_comp] <;>
-    simp [hφ.star_bijective u, hφ.costar_bijective u]
+  simp [φ.symmetrifyStar, φ.symmetrifyCostar, hφ.star_bijective u, hφ.costar_bijective u]
 
 /-- The path star at a vertex `u` is the type of all paths starting at `u`.
 The type `Quiver.PathStar u` is defined to be `Σ v : U, Path u v`. -/
@@ -184,43 +179,55 @@ theorem Prefunctor.pathStar_apply {u v : U} (p : Path u v) :
 
 theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.star u)) (u : U) :
     Injective (φ.pathStar u) := by
-  dsimp (config := { unfoldPartialApp := true }) [Prefunctor.pathStar, Quiver.PathStar.mk]
+  dsimp +unfoldPartialApp [Prefunctor.pathStar, Quiver.PathStar.mk]
   rintro ⟨v₁, p₁⟩
-  induction' p₁ with x₁ y₁ p₁ e₁ ih <;>
-    rintro ⟨y₂, p₂⟩ <;>
-    cases' p₂ with x₂ _ p₂ e₂ <;>
-    intro h <;>
-    simp at h
-  · rfl
-  · exfalso
-    cases' h with h h'
-    rw [← Path.eq_cast_iff_heq rfl h.symm, Path.cast_cons] at h'
-    exact (Path.nil_ne_cons _ _) h'
-  · exfalso
-    cases' h with h h'
-    rw [← Path.cast_eq_iff_heq rfl h, Path.cast_cons] at h'
-    exact (Path.cons_ne_nil _ _) h'
-  · cases' h with hφy h'
-    rw [← Path.cast_eq_iff_heq rfl hφy, Path.cast_cons, Path.cast_rfl_rfl] at h'
-    have hφx := Path.obj_eq_of_cons_eq_cons h'
-    have hφp := Path.heq_of_cons_eq_cons h'
-    have hφe := HEq.trans (Hom.cast_heq rfl hφy _).symm (Path.hom_heq_of_cons_eq_cons h')
-    have h_path_star : φ.pathStar u ⟨x₁, p₁⟩ = φ.pathStar u ⟨x₂, p₂⟩ := by
-      simp only [Prefunctor.pathStar_apply, Sigma.mk.inj_iff]; exact ⟨hφx, hφp⟩
-    cases ih h_path_star
-    have h_star : φ.star x₁ ⟨y₁, e₁⟩ = φ.star x₁ ⟨y₂, e₂⟩ := by
-      simp only [Prefunctor.star_apply, Sigma.mk.inj_iff]; exact ⟨hφy, hφe⟩
-    cases hφ x₁ h_star
-    rfl
+  induction p₁ with
+  | nil =>
+    rintro ⟨y₂, p₂⟩
+    rcases p₂ with - | ⟨p₂, e₂⟩
+    · intro; rfl -- Porting note: goal not present in lean3.
+    · intro h
+      simp only [mapPath_cons, Sigma.mk.inj_iff] at h
+      exfalso
+      obtain ⟨h, h'⟩ := h
+      rw [← Path.eq_cast_iff_heq rfl h.symm, Path.cast_cons] at h'
+      exact (Path.nil_ne_cons _ _) h'
+  | cons p₁ e₁ ih =>
+    rename_i x₁ y₁
+    rintro ⟨y₂, p₂⟩
+    rcases p₂ with - | ⟨p₂, e₂⟩
+    · intro h
+      simp only [mapPath_cons, Sigma.mk.inj_iff] at h
+      exfalso
+      obtain ⟨h, h'⟩ := h
+      rw [← Path.cast_eq_iff_heq rfl h, Path.cast_cons] at h'
+      exact (Path.cons_ne_nil _ _) h'
+    · rename_i x₂
+      intro h
+      simp only [mapPath_cons, Sigma.mk.inj_iff] at h
+      obtain ⟨hφy, h'⟩ := h
+      rw [← Path.cast_eq_iff_heq rfl hφy, Path.cast_cons, Path.cast_rfl_rfl] at h'
+      have hφx := Path.obj_eq_of_cons_eq_cons h'
+      have hφp := Path.heq_of_cons_eq_cons h'
+      have hφe := HEq.trans (Hom.cast_heq rfl hφy _).symm (Path.hom_heq_of_cons_eq_cons h')
+      have h_path_star : φ.pathStar u ⟨x₁, p₁⟩ = φ.pathStar u ⟨x₂, p₂⟩ := by
+        simp only [Prefunctor.pathStar_apply, Sigma.mk.inj_iff]; exact ⟨hφx, hφp⟩
+      cases ih h_path_star
+      have h_star : φ.star x₁ ⟨y₁, e₁⟩ = φ.star x₁ ⟨y₂, e₂⟩ := by
+        simp only [Prefunctor.star_apply, Sigma.mk.inj_iff]; exact ⟨hφy, hφe⟩
+      cases hφ x₁ h_star
+      rfl
 
 theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u : U) :
     Surjective (φ.pathStar u) := by
-  dsimp (config := { unfoldPartialApp := true }) [Prefunctor.pathStar, Quiver.PathStar.mk]
+  dsimp +unfoldPartialApp [Prefunctor.pathStar, Quiver.PathStar.mk]
   rintro ⟨v, p⟩
-  induction' p with v' v'' p' ev ih
-  · use ⟨u, Path.nil⟩
-    simp only [Prefunctor.mapPath_nil, eq_self_iff_true, heq_iff_eq, and_self_iff]
-  · obtain ⟨⟨u', q'⟩, h⟩ := ih
+  induction p with
+  | nil =>
+    use ⟨u, Path.nil⟩
+    simp only [Prefunctor.mapPath_nil]
+  | cons p' ev ih =>
+    obtain ⟨⟨u', q'⟩, h⟩ := ih
     simp only at h
     obtain ⟨rfl, rfl⟩ := h
     obtain ⟨⟨u'', eu⟩, k⟩ := hφ u' ⟨_, ev⟩
@@ -230,7 +237,7 @@ theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u 
     simp only [heq_eq_eq] at k
     subst k
     use ⟨_, q'.cons eu⟩
-    simp only [Prefunctor.mapPath_cons, eq_self_iff_true, heq_iff_eq, and_self_iff]
+    simp only [Prefunctor.mapPath_cons]
 
 theorem Prefunctor.pathStar_bijective (hφ : ∀ u, Bijective (φ.star u)) (u : U) :
     Bijective (φ.pathStar u) :=
@@ -255,8 +262,8 @@ This map is induced by `Quiver.reverse`. -/
 def Quiver.starEquivCostar (u : U) : Quiver.Star u ≃ Quiver.Costar u where
   toFun e := ⟨e.1, reverse e.2⟩
   invFun e := ⟨e.1, reverse e.2⟩
-  left_inv e := by simp [Sigma.ext_iff]
-  right_inv e := by simp [Sigma.ext_iff]
+  left_inv e := by simp
+  right_inv e := by simp
 
 @[simp]
 theorem Quiver.starEquivCostar_apply {u v : U} (e : u ⟶ v) :

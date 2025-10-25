@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.CPolynomialDef
 
 /-!
 # Linear functions are analytic
@@ -11,8 +12,8 @@ import Mathlib.Analysis.Analytic.Basic
 In this file we prove that a `ContinuousLinearMap` defines an analytic function with
 the formal power series `f x = f a + f (x - a)`. We also prove similar results for bilinear maps.
 
-TODO: port to use `CPolynomial`, and prove the stronger result that continuous linear maps are
-continuously polynomial
+We deduce this fact from the stronger result that continuous linear maps are continuously
+polynomial, i.e., they admit a finite power series.
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -30,19 +31,37 @@ namespace ContinuousLinearMap
 theorem fpowerSeries_radius (f : E →L[𝕜] F) (x : E) : (f.fpowerSeries x).radius = ∞ :=
   (f.fpowerSeries x).radius_eq_top_of_forall_image_add_eq_zero 2 fun _ => rfl
 
+protected theorem hasFiniteFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
+    HasFiniteFPowerSeriesOnBall f (f.fpowerSeries x) x 2 ∞ where
+  r_le := by simp
+  r_pos := ENNReal.coe_lt_top
+  hasSum := fun _ => (hasSum_nat_add_iff' 2).1 <| by
+    simp [Finset.sum_range_succ, hasSum_zero, fpowerSeries]
+  finite := by
+    intro m hm
+    match m with
+    | 0 | 1 => linarith
+    | n + 2 => simp [fpowerSeries]
+
 protected theorem hasFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
     HasFPowerSeriesOnBall f (f.fpowerSeries x) x ∞ :=
-  { r_le := by simp
-    r_pos := ENNReal.coe_lt_top
-    hasSum := fun _ => (hasSum_nat_add_iff' 2).1 <| by
-      simp [Finset.sum_range_succ, ← sub_sub, hasSum_zero, fpowerSeries] }
+  (f.hasFiniteFPowerSeriesOnBall x).toHasFPowerSeriesOnBall
 
 protected theorem hasFPowerSeriesAt (f : E →L[𝕜] F) (x : E) :
     HasFPowerSeriesAt f (f.fpowerSeries x) x :=
   ⟨∞, f.hasFPowerSeriesOnBall x⟩
 
+protected theorem cpolynomialAt (f : E →L[𝕜] F) (x : E) : CPolynomialAt 𝕜 f x :=
+  (f.hasFiniteFPowerSeriesOnBall x).cpolynomialAt
+
 protected theorem analyticAt (f : E →L[𝕜] F) (x : E) : AnalyticAt 𝕜 f x :=
   (f.hasFPowerSeriesAt x).analyticAt
+
+protected theorem cpolynomialOn (f : E →L[𝕜] F) (s : Set E) : CPolynomialOn 𝕜 f s :=
+  fun x _ ↦ f.cpolynomialAt x
+
+@[deprecated (since := "2025-03-22")]
+protected alias colynomialOn := ContinuousLinearMap.cpolynomialOn
 
 protected theorem analyticOnNhd (f : E →L[𝕜] F) (s : Set E) : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x
@@ -52,9 +71,6 @@ protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : An
 
 protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
   fun x _ ↦ f.analyticWithinAt _ x
-
-@[deprecated (since := "2024-09-26")]
-alias analyticWithinOn := ContinuousLinearMap.analyticOn
 
 /-- Reinterpret a bilinear map `f : E →L[𝕜] F →L[𝕜] G` as a multilinear map
 `(E × F) [×2]→L[𝕜] G`. This multilinear map is the second term in the formal
@@ -108,8 +124,7 @@ protected theorem hasFPowerSeriesOnBall_bilinear (f : E →L[𝕜] F →L[𝕜] 
     r_pos := ENNReal.coe_lt_top
     hasSum := fun _ =>
       (hasSum_nat_add_iff' 3).1 <| by
-        simp only [Finset.sum_range_succ, Finset.sum_range_one, Prod.fst_add, Prod.snd_add,
-          f.map_add_add]
+        simp only [Finset.sum_range_succ, Prod.fst_add, Prod.snd_add, f.map_add_add]
         simp [fpowerSeriesBilinear, hasSum_zero] }
 
 protected theorem hasFPowerSeriesAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
@@ -136,6 +151,7 @@ end ContinuousLinearMap
 
 variable {s : Set E} {z : E} {t : Set (E × F)} {p : E × F}
 
+@[fun_prop]
 lemma analyticAt_id : AnalyticAt 𝕜 (id : E → E) z :=
   (ContinuousLinearMap.id 𝕜 E).analyticAt z
 
@@ -149,14 +165,11 @@ theorem analyticOnNhd_id : AnalyticOnNhd 𝕜 (fun x : E ↦ x) s :=
 theorem analyticOn_id : AnalyticOn 𝕜 (fun x : E ↦ x) s :=
   fun _ _ ↦ analyticWithinAt_id
 
-@[deprecated (since := "2024-09-26")]
-alias analyticWithinOn_id := analyticOn_id
-
 /-- `fst` is analytic -/
-theorem analyticAt_fst  : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
+theorem analyticAt_fst : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
   (ContinuousLinearMap.fst 𝕜 E F).analyticAt p
 
-theorem analyticWithinAt_fst  : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.fst) t p :=
+theorem analyticWithinAt_fst : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.fst) t p :=
   analyticAt_fst.analyticWithinAt
 
 /-- `snd` is analytic -/
@@ -173,18 +186,12 @@ theorem analyticOnNhd_fst : AnalyticOnNhd 𝕜 (fun p : E × F ↦ p.fst) t :=
 theorem analyticOn_fst : AnalyticOn 𝕜 (fun p : E × F ↦ p.fst) t :=
   fun _ _ ↦ analyticWithinAt_fst
 
-@[deprecated (since := "2024-09-26")]
-alias analyticWithinOn_fst := analyticOn_fst
-
 /-- `snd` is entire -/
 theorem analyticOnNhd_snd : AnalyticOnNhd 𝕜 (fun p : E × F ↦ p.snd) t :=
   fun _ _ ↦ analyticAt_snd
 
 theorem analyticOn_snd : AnalyticOn 𝕜 (fun p : E × F ↦ p.snd) t :=
   fun _ _ ↦ analyticWithinAt_snd
-
-@[deprecated (since := "2024-09-26")]
-alias analyticWithinOn_snd := analyticOn_snd
 
 namespace ContinuousLinearEquiv
 
@@ -196,14 +203,11 @@ protected theorem analyticAt : AnalyticAt 𝕜 f x :=
 protected theorem analyticOnNhd : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x
 
-protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
+protected theorem analyticWithinAt : AnalyticWithinAt 𝕜 f s x :=
   (f.analyticAt x).analyticWithinAt
 
-protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
+protected theorem analyticOn : AnalyticOn 𝕜 f s :=
   fun x _ ↦ f.analyticWithinAt _ x
-
-@[deprecated (since := "2024-09-26")]
-alias analyticWithinOn := ContinuousLinearEquiv.analyticOn
 
 end ContinuousLinearEquiv
 
@@ -217,13 +221,10 @@ protected theorem analyticAt : AnalyticAt 𝕜 f x :=
 protected theorem analyticOnNhd : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x
 
-protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
+protected theorem analyticWithinAt : AnalyticWithinAt 𝕜 f s x :=
   (f.analyticAt x).analyticWithinAt
 
-protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
+protected theorem analyticOn : AnalyticOn 𝕜 f s :=
   fun x _ ↦ f.analyticWithinAt _ x
-
-@[deprecated (since := "2024-09-26")]
-alias analyticWithinOn := LinearIsometryEquiv.analyticOn
 
 end LinearIsometryEquiv

@@ -94,8 +94,8 @@ lemma lieCharpoly_map_eval (r : R) :
   have aux : (fun i ↦ (b.repr y) i * r + (b.repr x) i) = b.repr (r • y + x) := by
     ext i; simp [mul_comm r]
   simp_rw [← coe_aeval_eq_evalRingHom, ← AlgHom.comp_toRingHom, MvPolynomial.comp_aeval,
-    map_add, map_mul, aeval_C, Algebra.id.map_eq_id, RingHom.id_apply, aeval_X, aux,
-    MvPolynomial.coe_aeval_eq_eval, polyCharpoly_map_eq_charpoly, LieHom.coe_toLinearMap]
+    map_add, map_mul, aeval_C, Algebra.algebraMap_self, RingHom.id_apply, aeval_X, aux,
+    MvPolynomial.coe_aeval_eq_eval, polyCharpoly_map_eq_charpoly, LieHom.coe_toLinearMap, map_add]
 
 lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly R M x y).coeff i).natDegree ≤ j := by
@@ -119,8 +119,6 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L
 
 open Module LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
-#adaptation_note /-- otherwise there is a spurious warning on `contrapose!` below. -/
-set_option linter.unusedVariables false in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
 Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
@@ -143,7 +141,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   { engel K x with
     lie_mem := by rintro ⟨u, hu⟩ y hy; exact (engel K x).lie_mem (hUle hu) hy }
   -- We may and do assume that `x ≠ 0`, since otherwise the statement is trivial.
-  obtain rfl|hx₀ := eq_or_ne x 0
+  obtain rfl | hx₀ := eq_or_ne x 0
   · simpa [Ex, Ey] using hmin Ey
   -- We denote by `Q` the quotient `L / E`, and by `r` the dimension of `E`.
   let Q := L ⧸ E
@@ -188,7 +186,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- Let us consider the `i`-th coefficient of `χ`, for `i < r`.
   intro i hi
   -- We separately consider the case `i = 0`.
-  obtain rfl|hi0 := eq_or_ne i 0
+  obtain rfl | hi0 := eq_or_ne i 0
   · -- `The polynomial `coeff χ 0` is zero if it evaluates to zero on all elements of `K`,
     -- provided that its degree is stictly less than `#K`.
     apply eq_zero_of_forall_eval_zero_of_natDegree_lt_card _ _ ?deg
@@ -212,11 +210,11 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
       · exact Subtype.coe_ne_coe.mp hx₀
       · dsimp only [z] at hz₀
-        simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
+        simp only [hz₀, map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
     refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
     · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
-    · show ⁅z, _⁆ = (0 : E)
+    · change ⁅z, _⁆ = (0 : E)
       ext
       exact lie_self z.1
   -- We are left with the case `i ≠ 0`, and want to show `coeff χ i = 0`.
@@ -246,12 +244,11 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- From this we deduce that there exists an `n` such that `⁅x, _⁆ ^ n` vanishes on `⁅x, z⁆`.
     -- On the other hand, our goal is to show `z = 0` in `Q`,
     -- which is equivalent to showing that `⁅x, _⁆ ^ n` vanishes on `z`, for some `n`.
-    simp only [coe_bracket_of_module, LieSubmodule.mem_mk_iff', LieSubalgebra.mem_toSubmodule,
-      mem_engel_iff, LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q]
-      at this ⊢
+    simp only [LieSubmodule.mem_mk_iff', LieSubalgebra.mem_toSubmodule, mem_engel_iff,
+      LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q] at this ⊢
     -- Hence we win.
     obtain ⟨n, hn⟩ := this
-    use n+1
+    use n + 1
     rwa [pow_succ]
   -- Now we find a subset `s` of `K` of size `≥ r`
   -- such that `constantCoeff ψ` takes non-zero values on all of `s`.
@@ -275,7 +272,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     use s \ t
     refine ⟨?_, ?_⟩
     · refine le_trans ?_ (Finset.le_card_sdiff _ _)
-      omega
+      cutsat
     · intro α hα
       simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and, t] at hα
       exact hα.2 hψ
@@ -286,7 +283,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- Which follows from our assumptions `i < r` and `r ≤ s.card`
     -- and the fact that the degree of `coeff χ i` is less than or equal to `r - i`.
     apply lt_of_le_of_lt (lieCharpoly_coeff_natDegree _ _ _ _ i (r - i) _)
-    · omega
+    · cutsat
     · dsimp only [r] at hi ⊢
       rw [Nat.add_sub_cancel' hi.le]
   -- We need to show that for all `α ∈ s`, the polynomial `coeff χ i` evaluates to zero at `α`.
@@ -307,7 +304,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- Fix an element `z` in the Engel subalgebra of `y`.
   intro z hz
   -- We need to show that `z` is in `E`, or alternatively that `z = 0` in `Q`.
-  show z ∈ E
+  change z ∈ E
   rw [← LieSubmodule.Quotient.mk_eq_zero]
   -- We denote the image of `z` in `Q` by `z'`.
   set z' : Q := LieSubmodule.Quotient.mk' E z
@@ -317,19 +314,19 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     obtain ⟨n, hn⟩ := hz
     use n
     apply_fun LieSubmodule.Quotient.mk' E at hn
-    rw [LieModuleHom.map_zero] at hn
+    rw [map_zero] at hn
     rw [← hn]
     clear hn
     induction n with
-    | zero => simp only [z', pow_zero, LinearMap.one_apply]
-    | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
+    | zero => simp only [z', pow_zero, Module.End.one_apply]
+    | succ n ih => rw [pow_succ', pow_succ', Module.End.mul_apply, ih]; rfl
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
   set n := Nat.find hz' with _hn
   have hn : (toEnd K U Q v ^ n) z' = 0 := Nat.find_spec hz'
   -- If `n = 0`, then we are done.
   obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
-  · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
+  · simpa only [hn₀, pow_zero, Module.End.one_apply] using hn
   -- If `n = k + 1`, then we can write `⁅v, _⁆ ^ n = ⁅v, _⁆ ∘ ⁅v, _⁆ ^ k`.
   -- Recall that `constantCoeff ψ` is non-zero on `α`, and `v = α • u + x`.
   specialize hsψ α hα
@@ -342,8 +339,8 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   use (toEnd K U Q v ^ k) z'
   refine ⟨?_, ?_⟩
   · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
-    apply Nat.find_min hz'; omega
-  · rw [← hn, hk, pow_succ', LinearMap.mul_apply]
+    apply Nat.find_min hz'; cutsat
+  · rw [← hn, hk, pow_succ', Module.End.mul_apply]
 
 variable (K L)
 

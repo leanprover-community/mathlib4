@@ -7,7 +7,6 @@ import Mathlib.Algebra.Module.Submodule.IterateMapComap
 import Mathlib.Order.PartialSups
 import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.OrzechProperty
-import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Noetherian rings have the Orzech property
@@ -63,13 +62,13 @@ theorem IsNoetherian.bijective_of_surjective_endomorphism (f : M →ₗ[R] M)
     (s : Surjective f) : Bijective f :=
   ⟨IsNoetherian.injective_of_surjective_endomorphism f s, s⟩
 
-/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial. -/
+/-- If `M ⊕ N` embeds into `M`, for `M` Noetherian over `R`, then `N` is trivial. -/
 theorem IsNoetherian.subsingleton_of_prod_injective (f : M × N →ₗ[R] M)
     (i : Injective f) : Subsingleton N := .intro fun x y ↦ by
   have h := IsNoetherian.injective_of_surjective_of_injective f _ i LinearMap.fst_surjective
   simpa using h (show LinearMap.fst R M N (0, x) = LinearMap.fst R M N (0, y) from rfl)
 
-/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial. -/
+/-- If `M ⊕ N` embeds into `M`, for `M` Noetherian over `R`, then `N` is trivial. -/
 @[simps!]
 def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M)
     (i : Injective f) : N ≃ₗ[R] PUnit.{w + 1} :=

@@ -25,10 +25,10 @@ This file introduces the Scott topology on a preorder.
 
 - `Topology.IsScott.isUpperSet_of_isOpen`: Scott open sets are upper.
 - `Topology.IsScott.isLowerSet_of_isClosed`: Scott closed sets are lower.
-- `Topology.IsScott.monotone_of_continuous`: Functions continuous wrt the Scott topology are
+- `Topology.IsScott.monotone_of_continuous`: Functions continuous w.r.t. the Scott topology are
   monotone.
-- `Topology.IsScott.scottContinuous_iff_continuous` - a function is Scott continuous (preserves
-  least upper bounds of directed sets) if and only if it is continuous wrt the Scott topology.
+- `Topology.IsScott.scottContinuousOn_iff_continuous` - a function is Scott continuous (preserves
+  least upper bounds of directed sets) if and only if it is continuous w.r.t. the Scott topology.
 - `Topology.IsScott.instT0Space` - the Scott topology on a partial order is T₀.
 
 ## Implementation notes
@@ -169,7 +169,7 @@ instance : @IsScottHausdorff α D _ (scottHausdorff α D) :=
   @IsScottHausdorff.mk _ _ _ (scottHausdorff α D) rfl
 
 namespace IsScottHausdorff
-variable  {s : Set α}
+variable {s : Set α}
 
 lemma topology_eq [IsScottHausdorff α D] : ‹_› = scottHausdorff α D := topology_eq_scottHausdorff
 
@@ -220,7 +220,7 @@ def scott (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α :=
 
 lemma upperSet_le_scott [Preorder α] : upperSet α ≤ scott α univ := le_sup_left
 
-lemma scottHausdorff_le_scott [Preorder α] : scottHausdorff α univ ≤ scott α univ:= le_sup_right
+lemma scottHausdorff_le_scott [Preorder α] : scottHausdorff α univ ≤ scott α univ := le_sup_right
 
 variable (α) (D) [Preorder α] [TopologicalSpace α]
 
@@ -273,8 +273,11 @@ lemma lowerClosure_subset_closure [IsScott α univ] : ↑(lowerClosure s) ⊆ cl
     infer_instance
   · exact topology_eq α univ
 
-lemma isClosed_Iic [IsScott α univ] : IsClosed (Iic a) :=
-  isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosed_Iic _⟩
+instance [IsScott α univ] : ClosedIicTopology α where
+  isClosed_Iic _ :=
+    isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosed_Iic _⟩
+
+@[deprecated (since := "2025-07-02")] protected alias isClosed_Iic := isClosed_Iic
 
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
@@ -292,7 +295,7 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
   simpa only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true]
     using isUpperSet_of_isOpen (D := D) ((isOpen_compl_iff.2 isClosed_Iic).preimage hf) hab h
 
-@[simp] lemma scottContinuous_iff_continuous {D : Set (Set α)} [Topology.IsScott α D]
+@[simp] lemma scottContinuousOn_iff_continuous {D : Set (Set α)} [Topology.IsScott α D]
     (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D) : ScottContinuousOn D f ↔ Continuous f := by
   refine ⟨fun h ↦ continuous_def.2 fun u hu ↦ ?_, ?_⟩
   · rw [isOpen_iff_isUpperSet_and_dirSupInaccOn (D := D)]
@@ -305,12 +308,15 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
       fun b hb ↦ ?_⟩
     by_contra h
     let u := (Iic b)ᶜ
-    have hu : IsOpen (f ⁻¹' u) := (isOpen_compl_iff.2 Topology.IsScott.isClosed_Iic).preimage hf
+    have hu : IsOpen (f ⁻¹' u) := isClosed_Iic.isOpen_compl.preimage hf
     rw [isOpen_iff_isUpperSet_and_dirSupInaccOn (D := D)] at hu
     obtain ⟨c, hcd, hfcb⟩ := hu.2 h₀ d₁ d₂ d₃ h
     simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
       mem_setOf] at hb
     exact hfcb <| hb _ hcd
+
+@[deprecated (since := "2025-07-02")]
+alias scottContinuous_iff_continuous := scottContinuousOn_iff_continuous
 
 end Preorder
 
@@ -367,7 +373,7 @@ end CompleteLinearOrder
 
 lemma isOpen_iff_scottContinuous_mem [Preorder α] {s : Set α} [TopologicalSpace α]
     [IsScott α univ] : IsOpen s ↔ ScottContinuous fun x ↦ x ∈ s := by
-  rw [← scottContinuousOn_univ, scottContinuous_iff_continuous (fun _ _ _ ↦ by trivial)]
+  rw [← scottContinuousOn_univ, scottContinuousOn_iff_continuous (fun _ _ _ ↦ by trivial)]
   exact isOpen_iff_continuous_mem
 
 end IsScott
@@ -424,7 +430,7 @@ variable [TopologicalSpace α]
 /-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
 -/
 def IsScott.withScottHomeomorph [IsScott α univ] : WithScott α ≃ₜ α :=
-  WithScott.ofScott.toHomeomorphOfIsInducing ⟨by erw [IsScott.topology_eq α univ, induced_id]; rfl⟩
+  WithScott.ofScott.toHomeomorphOfIsInducing ⟨IsScott.topology_eq α univ ▸ induced_id.symm⟩
 
 lemma IsScott.scottHausdorff_le [IsScott α univ] :
     scottHausdorff α univ ≤ ‹TopologicalSpace α› := by

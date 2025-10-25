@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Hom
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Lean.Elab.Tactic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Additively-graded multiplicative structures
@@ -51,7 +51,7 @@ of that file.
 ## Dependent graded products
 
 This also introduces `List.dProd`, which takes the (possibly non-commutative) product of a list
-of graded elements of type `A i`. This definition primarily exist to allow `GradedMonoid.mk`
+of graded elements of type `A i`. This definition primarily exists to allow `GradedMonoid.mk`
 and `DirectSum.of` to be pulled outside a product, such as in `GradedMonoid.mk_list_dProd` and
 `DirectSum.of_list_dProd`.
 
@@ -80,7 +80,7 @@ in `Algebra.DirectSum.Internal`.
 
 This file also defines:
 
-* `SetLike.isHomogeneous A` (which says that `a` is homogeneous iff `a ∈ A i` for some `i : ι`)
+* `SetLike.IsHomogeneousElem A` (which says that `a` is homogeneous iff `a ∈ A i` for some `i : ι`)
 * `SetLike.homogeneousSubmonoid A`, which is, as the name suggests, the submonoid consisting of
   all the homogeneous elements.
 
@@ -231,8 +231,6 @@ class GMonoid [AddMonoid ι] extends GMul A, GOne A where
 
 /-- `GMonoid` implies a `Monoid (GradedMonoid A)`. -/
 instance GMonoid.toMonoid [AddMonoid ι] [GMonoid A] : Monoid (GradedMonoid A) where
-  one := 1
-  mul := (· * ·)
   npow n a := GradedMonoid.mk _ (GMonoid.gnpow n a.snd)
   npow_zero a := GMonoid.gnpow_zero' a
   npow_succ n a := GMonoid.gnpow_succ' n a
@@ -317,13 +315,10 @@ variable [AddMonoid ι] [GMonoid A]
 instance : NatPow (A 0) where
   pow x n := @Eq.rec ι (n • (0 : ι)) (fun a _ => A a) (GMonoid.gnpow n x) 0 (nsmul_zero n)
 
-variable {A}
-
+variable {A} in
 @[simp]
 theorem mk_zero_pow (a : A 0) (n : ℕ) : mk _ (a ^ n) = mk _ a ^ n :=
   Sigma.ext (nsmul_zero n).symm <| eqRec_heq _ _
-
-variable (A)
 
 /-- The `Monoid` structure derived from `GMonoid A`. -/
 instance GradeZero.monoid : Monoid (A 0) :=
@@ -396,7 +391,7 @@ This is a dependent version of `(l.map fA).prod`.
 For a list `l : List α`, this computes the product of `fA a` over `a`, where each `fA` is of type
 `A (fι a)`. -/
 def List.dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) : A (l.dProdIndex fι) :=
-  l.foldrRecOn _ _ GradedMonoid.GOne.one fun _ x a _ => GradedMonoid.GMul.mul (fA a) x
+  l.foldrRecOn _ GradedMonoid.GOne.one fun _ x a _ => GradedMonoid.GMul.mul (fA a) x
 
 @[simp]
 theorem List.dProd_nil (fι : α → ι) (fA : ∀ a, A (fι a)) :
@@ -449,7 +444,6 @@ structure. -/
 instance Monoid.gMonoid [AddMonoid ι] [Monoid R] : GradedMonoid.GMonoid fun _ : ι => R :=
   -- { Mul.gMul ι, One.gOne ι with
   { One.gOne ι with
-    mul := fun x y => x * y
     one_mul := fun _ => Sigma.ext (zero_add _) (heq_of_eq (one_mul _))
     mul_one := fun _ => Sigma.ext (add_zero _) (heq_of_eq (mul_one _))
     mul_assoc := fun _ _ _ => Sigma.ext (add_assoc _ _ _) (heq_of_eq (mul_assoc _ _ _))
@@ -523,8 +517,8 @@ theorem SetLike.coe_gMul {S : Type*} [SetLike S R] [Mul R] [Add ι] (A : ι → 
   rfl
 
 /-- A version of `GradedMonoid.GMonoid` for internally graded objects. -/
-class SetLike.GradedMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S) extends
-  SetLike.GradedOne A, SetLike.GradedMul A : Prop
+class SetLike.GradedMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (A : ι → S) : Prop
+    extends SetLike.GradedOne A, SetLike.GradedMul A
 
 namespace SetLike
 
@@ -533,7 +527,6 @@ variable {A : ι → S} [SetLike.GradedMonoid A]
 
 namespace GradeZero
 variable (A) in
-
 /-- The submonoid `A 0` of `R`. -/
 @[simps]
 def submonoid : Submonoid R where
@@ -566,7 +559,7 @@ theorem pow_mem_graded (n : ℕ) {r : R} {i : ι} (h : r ∈ A i) : r ^ n ∈ A 
   | 0 =>
     rw [pow_zero, zero_nsmul]
     exact one_mem_graded _
-  | n+1 =>
+  | n + 1 =>
     rw [pow_succ', succ_nsmul']
     exact mul_mem_graded h (pow_mem_graded n h)
 
@@ -579,7 +572,7 @@ theorem list_prod_map_mem_graded {ι'} (l : List ι') (i : ι' → ι) (r : ι' 
   | head::tail =>
     rw [List.map_cons, List.map_cons, List.prod_cons, List.sum_cons]
     exact
-      mul_mem_graded (h _ <| List.mem_cons_self _ _)
+      mul_mem_graded (h _ List.mem_cons_self)
         (list_prod_map_mem_graded tail _ _ fun j hj => h _ <| List.mem_cons_of_mem _ hj)
 
 theorem list_prod_ofFn_mem_graded {n} (i : Fin n → ι) (r : Fin n → R) (h : ∀ j, r j ∈ A (i j)) :
@@ -649,27 +642,29 @@ section HomogeneousElements
 variable {R S : Type*} [SetLike S R]
 
 /-- An element `a : R` is said to be homogeneous if there is some `i : ι` such that `a ∈ A i`. -/
-def SetLike.Homogeneous (A : ι → S) (a : R) : Prop :=
+def SetLike.IsHomogeneousElem (A : ι → S) (a : R) : Prop :=
   ∃ i, a ∈ A i
 
 @[simp]
-theorem SetLike.homogeneous_coe {A : ι → S} {i} (x : A i) : SetLike.Homogeneous A (x : R) :=
+theorem SetLike.isHomogeneousElem_coe {A : ι → S} {i} (x : A i) :
+    SetLike.IsHomogeneousElem A (x : R) :=
   ⟨i, x.prop⟩
 
-theorem SetLike.homogeneous_one [Zero ι] [One R] (A : ι → S) [SetLike.GradedOne A] :
-    SetLike.Homogeneous A (1 : R) :=
+theorem SetLike.isHomogeneousElem_one [Zero ι] [One R] (A : ι → S) [SetLike.GradedOne A] :
+    SetLike.IsHomogeneousElem A (1 : R) :=
   ⟨0, SetLike.one_mem_graded _⟩
 
-theorem SetLike.homogeneous_mul [Add ι] [Mul R] {A : ι → S} [SetLike.GradedMul A] {a b : R} :
-    SetLike.Homogeneous A a → SetLike.Homogeneous A b → SetLike.Homogeneous A (a * b)
+theorem SetLike.IsHomogeneousElem.mul [Add ι] [Mul R] {A : ι → S} [SetLike.GradedMul A] {a b : R} :
+    SetLike.IsHomogeneousElem A a → SetLike.IsHomogeneousElem A b →
+    SetLike.IsHomogeneousElem A (a * b)
   | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i + j, SetLike.mul_mem_graded hi hj⟩
 
 /-- When `A` is a `SetLike.GradedMonoid A`, then the homogeneous elements forms a submonoid. -/
 def SetLike.homogeneousSubmonoid [AddMonoid ι] [Monoid R] (A : ι → S) [SetLike.GradedMonoid A] :
     Submonoid R where
-  carrier := { a | SetLike.Homogeneous A a }
-  one_mem' := SetLike.homogeneous_one A
-  mul_mem' a b := SetLike.homogeneous_mul a b
+  carrier := { a | SetLike.IsHomogeneousElem A a }
+  one_mem' := SetLike.isHomogeneousElem_one A
+  mul_mem' a b := SetLike.IsHomogeneousElem.mul a b
 
 end HomogeneousElements
 
@@ -688,11 +683,8 @@ theorem prod_mem_graded (hF : ∀ k ∈ F, g k ∈ A (i k)) : ∏ k ∈ F, g k �
   · simp [GradedOne.one_mem]
   · case insert j F' hF2 h3 =>
     rw [Finset.prod_insert hF2, Finset.sum_insert hF2]
-    apply SetLike.mul_mem_graded (hF j <| Finset.mem_insert_self j F')
-    apply h3
-    intro k hk
-    apply hF k
-    exact Finset.mem_insert_of_mem hk
+    apply SetLike.mul_mem_graded (by grind)
+    grind
 
 theorem prod_pow_mem_graded (n : κ → ℕ) (hF : ∀ k ∈ F, g k ∈ A (i k)) :
     ∏ k ∈ F, g k ^ n k ∈ A (∑ k ∈ F, n k • i k) :=

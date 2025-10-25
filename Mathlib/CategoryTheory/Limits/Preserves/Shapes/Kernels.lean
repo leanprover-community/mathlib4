@@ -51,7 +51,7 @@ def isLimitMapConeEquiv :
     IsLimit (G.mapCone c) ≃ IsLimit (c.map G) := by
   refine (IsLimit.postcomposeHomEquiv ?_ _).symm.trans (IsLimit.equivIsoLimit ?_)
   refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
-  exact Cones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
+  exact Cones.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
 
 /-- A limit kernel fork is mapped to a limit kernel fork by a functor `G` when this functor
 preserves the corresponding limit. -/
@@ -128,6 +128,12 @@ an isomorphism.
 def PreservesKernel.iso : G.obj (kernel f) ≅ kernel (G.map f) :=
   IsLimit.conePointUniqueUpToIso (isLimitOfHasKernelOfPreservesLimit G f) (limit.isLimit _)
 
+@[reassoc (attr := simp)]
+theorem PreservesKernel.iso_inv_ι :
+    (PreservesKernel.iso G f).inv ≫ G.map (kernel.ι f) = kernel.ι (G.map f) :=
+  IsLimit.conePointUniqueUpToIso_inv_comp (isLimitOfHasKernelOfPreservesLimit G f)
+    (limit.isLimit _) (WalkingParallelPair.zero)
+
 @[simp]
 theorem PreservesKernel.iso_hom : (PreservesKernel.iso G f).hom = kernelComparison f G := by
   rw [← cancel_mono (kernel.ι _)]
@@ -172,7 +178,7 @@ def isColimitMapCoconeEquiv :
     IsColimit (G.mapCocone c) ≃ IsColimit (c.map G) := by
   refine (IsColimit.precomposeHomEquiv ?_ _).symm.trans (IsColimit.equivIsoColimit ?_)
   refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
-  exact Cocones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
+  exact Cocones.ext (Iso.refl _) (by rintro (_ | _) <;> cat_disch)
 
 /-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
 when this functor preserves the corresponding colimit. -/
@@ -250,6 +256,11 @@ an isomorphism.
 def PreservesCokernel.iso : G.obj (cokernel f) ≅ cokernel (G.map f) :=
   IsColimit.coconePointUniqueUpToIso (isColimitOfHasCokernelOfPreservesColimit G f)
     (colimit.isColimit _)
+
+@[reassoc (attr := simp)]
+theorem PreservesCokernel.π_iso_hom : G.map (cokernel.π f) ≫ (iso G f).hom = cokernel.π (G.map f) :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom (isColimitOfHasCokernelOfPreservesColimit G f)
+    (colimit.isColimit _) (WalkingParallelPair.one)
 
 @[simp]
 theorem PreservesCokernel.iso_inv : (PreservesCokernel.iso G f).inv = cokernelComparison f G := by

@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Algebra.Ring.Pi
 
 /-!
-# `star` on pi types
+# Basic Results about Star on Pi Types
 
-We put a `Star` structure on pi types that operates elementwise, such that it describes the
-complex conjugation of vectors.
+This file provides basic results about the star on product types defined in
+`Mathlib/Algebra/Notation/Pi/Defs.lean`.
 -/
 
 
@@ -23,15 +24,6 @@ variable {f : I → Type v}
 
 -- The family of types already equipped with instances
 namespace Pi
-
-instance [∀ i, Star (f i)] : Star (∀ i, f i) where star x i := star (x i)
-
-@[simp]
-theorem star_apply [∀ i, Star (f i)] (x : ∀ i, f i) (i : I) : star x i = star (x i) :=
-  rfl
-
-theorem star_def [∀ i, Star (f i)] (x : ∀ i, f i) : star x = fun i => star (x i) :=
-  rfl
 
 instance [∀ i, Star (f i)] [∀ i, TrivialStar (f i)] : TrivialStar (∀ i, f i) where
   star_trivial _ := funext fun _ => star_trivial _
@@ -70,7 +62,7 @@ theorem update_star [∀ i, Star (f i)] [DecidableEq I] (h : ∀ i : I, f i) (i 
     Function.update (star h) i (star a) = star (Function.update h i a) :=
   funext fun j => (apply_update (fun _ => star) h i a j).symm
 
-theorem star_sum_elim {I J α : Type*} (x : I → α) (y : J → α) [Star α] :
+theorem star_sumElim {I J α : Type*} (x : I → α) (y : J → α) [Star α] :
     star (Sum.elim x y) = Sum.elim (star x) (star y) := by
   ext x; cases x <;> simp only [Pi.star_apply, Sum.elim_inl, Sum.elim_inr]
 

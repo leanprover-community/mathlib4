@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
-# Ring-theoretic results in terms of categorical languages
+# Ring-theoretic results in terms of categorical language
 -/
 
 universe u
@@ -26,8 +26,7 @@ instance localization_unit_isIso' (R : CommRingCat) :
 
 theorem IsLocalization.epi {R : Type*} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
     [Algebra R S] [IsLocalization M S] : Epi (CommRingCat.ofHom <| algebraMap R S) :=
-  ⟨fun {T} _ _ h => CommRingCat.hom_ext <|
-    @IsLocalization.ringHom_ext R _ M S _ _ T _ _ _ _ (congrArg CommRingCat.Hom.hom h)⟩
+  ⟨fun _ _ h => CommRingCat.hom_ext <| ringHom_ext M congr(($h).hom)⟩
 
 instance Localization.epi {R : Type*} [CommRing R] (M : Submonoid R) :
     Epi (CommRingCat.ofHom <| algebraMap R <| Localization M) :=
@@ -43,22 +42,13 @@ theorem CommRingCat.isLocalHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S �
     [IsLocalHom g.hom] [IsLocalHom f.hom] : IsLocalHom (f ≫ g).hom :=
   RingHom.isLocalHom_comp _ _
 
-@[deprecated (since := "2024-10-10")]
-alias CommRingCat.isLocalRingHom_comp := CommRingCat.isLocalHom_comp
-
 theorem isLocalHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalHom f.hom.hom :=
   { map_nonunit := fun a ha => by
       convert f.inv.hom.isUnit_map ha
       simp }
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_iso := isLocalHom_of_iso
 
 -- see Note [lower instance priority]
 @[instance 100]
 theorem isLocalHom_of_isIso {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
     IsLocalHom f.hom :=
   isLocalHom_of_iso (asIso f)
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_isIso := isLocalHom_of_isIso

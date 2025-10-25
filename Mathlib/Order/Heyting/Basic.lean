@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.PropInstances
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Heyting algebras
@@ -18,10 +19,10 @@ such that `a \ b ≤ c ↔ a ≤ b ⊔ c` and `￢a = ⊤ \ a`.
 
 Bi-Heyting algebras are Heyting algebras that are also co-Heyting algebras.
 
-From a logic standpoint, Heyting algebras precisely model intuitionistic logic, whereas boolean
+From a logic standpoint, Heyting algebras precisely model intuitionistic logic, whereas Boolean
 algebras model classical logic.
 
-Heyting algebras are the order theoretic equivalent of cartesian-closed categories.
+Heyting algebras are the order-theoretic equivalent of Cartesian closed categories.
 
 ## Main declarations
 
@@ -29,7 +30,7 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 * `GeneralizedCoheytingAlgebra`: Co-Heyting algebra without a bottom element (nor complement).
 * `HeytingAlgebra`: Heyting algebra.
 * `CoheytingAlgebra`: Co-Heyting algebra.
-* `BiheytingAlgebra`: bi-Heyting algebra.
+* `BiheytingAlgebra`: Bi-Heyting algebra.
 
 ## References
 
@@ -39,6 +40,8 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 
 Heyting, Brouwer, algebra, implication, negation, intuitionistic
 -/
+
+assert_not_exists RelIso
 
 open Function OrderDual
 
@@ -107,9 +110,11 @@ instance [∀ i, HImp (π i)] : HImp (∀ i, π i) :=
 instance [∀ i, HNot (π i)] : HNot (∀ i, π i) :=
   ⟨fun a i => ￢a i⟩
 
+@[push ←]
 theorem himp_def [∀ i, HImp (π i)] (a b : ∀ i, π i) : a ⇨ b = fun i => a i ⇨ b i :=
   rfl
 
+@[push ←]
 theorem hnot_def [∀ i, HNot (π i)] (a : ∀ i, π i) : ￢a = fun i => ￢a i :=
   rfl
 
@@ -126,17 +131,17 @@ end Pi
 /-- A generalized Heyting algebra is a lattice with an additional binary operation `⇨` called
 Heyting implication such that `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)`.
 
- This generalizes `HeytingAlgebra` by not requiring a bottom element. -/
+This generalizes `HeytingAlgebra` by not requiring a bottom element. -/
 class GeneralizedHeytingAlgebra (α : Type*) extends Lattice α, OrderTop α, HImp α where
   /-- `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)` -/
   le_himp_iff (a b c : α) : a ≤ b ⇨ c ↔ a ⊓ b ≤ c
 
 /-- A generalized co-Heyting algebra is a lattice with an additional binary
-difference operation `\` such that `(· \ a)` is right adjoint to `(· ⊔ a)`.
+difference operation `\` such that `(· \ a)` is left adjoint to `(· ⊔ a)`.
 
 This generalizes `CoheytingAlgebra` by not requiring a top element. -/
 class GeneralizedCoheytingAlgebra (α : Type*) extends Lattice α, OrderBot α, SDiff α where
-  /-- `(· \ a)` is right adjoint to `(· ⊔ a)` -/
+  /-- `(· \ a)` is left adjoint to `(· ⊔ a)` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
 
 /-- A Heyting algebra is a bounded lattice with an additional binary operation `⇨` called Heyting
@@ -146,14 +151,14 @@ class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 
 /-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
-such that `(· \ a)` is right adjoint to `(· ⊔ a)`. -/
+such that `(· \ a)` is left adjoint to `(· ⊔ a)`. -/
 class CoheytingAlgebra (α : Type*) extends GeneralizedCoheytingAlgebra α, OrderTop α, HNot α where
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
 
 /-- A bi-Heyting algebra is a Heyting algebra that is also a co-Heyting algebra. -/
 class BiheytingAlgebra (α : Type*) extends HeytingAlgebra α, SDiff α, HNot α where
-  /-- `(· \ a)` is right adjoint to `(· ⊔ a)` -/
+  /-- `(· \ a)` is left adjoint to `(· ⊔ a)` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
@@ -350,6 +355,9 @@ theorem himp_triangle (a b c : α) : (a ⇨ b) ⊓ (b ⇨ c) ≤ a ⇨ c := by
 theorem himp_inf_himp_cancel (hba : b ≤ a) (hcb : c ≤ b) : (a ⇨ b) ⊓ (b ⇨ c) = a ⇨ c :=
   (himp_triangle _ _ _).antisymm <| le_inf (himp_le_himp_left hcb) (himp_le_himp_right hba)
 
+theorem gc_inf_himp : GaloisConnection (a ⊓ ·) (a ⇨ ·) :=
+  fun _ _ ↦ Iff.symm le_himp_iff'
+
 -- See note [lower instance priority]
 instance (priority := 100) GeneralizedHeytingAlgebra.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
@@ -497,11 +505,9 @@ theorem sup_sdiff_right_self : (a ⊔ b) \ b = a \ b := by rw [sup_sdiff, sdiff_
 @[simp]
 theorem sup_sdiff_left_self : (a ⊔ b) \ a = b \ a := by rw [sup_comm, sup_sdiff_right_self]
 
-@[gcongr]
 theorem sdiff_le_sdiff_right (h : a ≤ b) : a \ c ≤ b \ c :=
   sdiff_le_iff.2 <| h.trans <| le_sup_sdiff
 
-@[gcongr]
 theorem sdiff_le_sdiff_left (h : a ≤ b) : c \ b ≤ c \ a :=
   sdiff_le_iff.2 <| le_sup_sdiff.trans <| sup_le_sup_right h _
 
@@ -551,6 +557,13 @@ theorem sdiff_triangle (a b c : α) : a \ c ≤ a \ b ⊔ b \ c := by
 theorem sdiff_sup_sdiff_cancel (hba : b ≤ a) (hcb : c ≤ b) : a \ b ⊔ b \ c = a \ c :=
   (sdiff_triangle _ _ _).antisymm' <| sup_le (sdiff_le_sdiff_left hcb) (sdiff_le_sdiff_right hba)
 
+/-- a version of `sdiff_sup_sdiff_cancel` with more general hypotheses. -/
+theorem sdiff_sup_sdiff_cancel' (hinf : a ⊓ c ≤ b) (hsup : b ≤ a ⊔ c) :
+    a \ b ⊔ b \ c = a \ c := by
+  refine (sdiff_triangle ..).antisymm' <| sup_le ?_ <| by simpa [sup_comm]
+  rw [← sdiff_inf_self_left (b := c)]
+  exact sdiff_le_sdiff_left hinf
+
 theorem sdiff_le_sdiff_of_sup_le_sup_left (h : c ⊔ a ≤ c ⊔ b) : a \ c ≤ b \ c := by
   rw [← sup_sdiff_left_self, ← @sup_sdiff_left_self _ _ _ b]
   exact sdiff_le_sdiff_right h
@@ -566,6 +579,9 @@ theorem inf_sdiff_sup_left : a \ c ⊓ (a ⊔ b) = a \ c :=
 @[simp]
 theorem inf_sdiff_sup_right : a \ c ⊓ (b ⊔ a) = a \ c :=
   inf_of_le_left <| sdiff_le.trans le_sup_right
+
+theorem gc_sdiff_sup : GaloisConnection (· \ a) (a ⊔ ·) :=
+  fun _ _ ↦ sdiff_le_iff
 
 -- See note [lower instance priority]
 instance (priority := 100) GeneralizedCoheytingAlgebra.toDistribLattice : DistribLattice α :=
@@ -930,6 +946,7 @@ theorem himp_iff_imp (p q : Prop) : p ⇨ q ↔ p → q :=
 theorem compl_iff_not (p : Prop) : pᶜ ↔ ¬p :=
   Iff.rfl
 
+variable (α) in
 -- See note [reducible non-instances]
 /-- A bounded linear order is a bi-Heyting algebra by setting
 * `a ⇨ b = ⊤` if `a ≤ b` and `a ⇨ b = b` otherwise.
@@ -939,14 +956,12 @@ abbrev LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : Bihey
     himp := fun a b => if a ≤ b then ⊤ else b,
     compl := fun a => if a = ⊥ then ⊤ else ⊥,
     le_himp_iff := fun a b c => by
-      change _ ≤ ite _ _ _ ↔ _
       split_ifs with h
       · exact iff_of_true le_top (inf_le_of_right_le h)
       · rw [inf_le_iff, or_iff_left h],
     himp_bot := fun _ => if_congr le_bot_iff rfl rfl, sdiff := fun a b => if a ≤ b then ⊥ else a,
     hnot := fun a => if a = ⊤ then ⊥ else ⊤,
     sdiff_le_iff := fun a b c => by
-      change ite _ _ _ ≤ _ ↔ _
       split_ifs with h
       · exact iff_of_true bot_le (le_sup_of_le_left h)
       · rw [le_sup_iff, or_iff_right h],
@@ -1053,7 +1068,7 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u+1} :=
+instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u + 1} :=
   { PUnit.instLinearOrder.{u} with
     top := unit,
     bot := unit,

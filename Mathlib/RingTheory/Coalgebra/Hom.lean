@@ -15,9 +15,9 @@ This file defines bundled homomorphisms of `R`-coalgebras. We largely mimic
 
 * `CoalgHom R A B`: the type of `R`-coalgebra morphisms from `A` to `B`.
 * `Coalgebra.counitCoalgHom R A : A →ₗc[R] R`: the counit of a coalgebra as a coalgebra
-homomorphism.
+  homomorphism.
 
-## Notations
+## Notation
 
 * `A →ₗc[R] B` : `R`-coalgebra homomorphism from `A` to `B`.
 
@@ -46,8 +46,8 @@ notation:25 A " →ₗc[" R "] " B => CoalgHom R A B
 from `A` to `B`. -/
 class CoalgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
-    extends SemilinearMapClass F (RingHom.id R) A B : Prop where
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
+    extends SemilinearMapClass F (RingHom.id R) A B where
   counit_comp : ∀ f : F, counit ∘ₗ (f : A →ₗ[R] B) = counit
   map_comp_comul : ∀ f : F, TensorProduct.map (f : A →ₗ[R] B)
     (f : A →ₗ[R] B) ∘ₗ comul = comul ∘ₗ (f : A →ₗ[R] B)
@@ -79,7 +79,7 @@ theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
 
 @[simp]
 theorem map_comp_comul_apply (f : F) (x : A) :
-    TensorProduct.map f f (comul x) = comul (R := R) (f x) :=
+    TensorProduct.map f f (σ₁₂ := .id _) (comul x) = comul (R := R) (f x) :=
   LinearMap.congr_fun (map_comp_comul f) _
 
 end CoalgHomClass
@@ -238,7 +238,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₗc[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
@@ -266,7 +266,7 @@ variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Modu
 variable [Coalgebra R A] [Coalgebra R B]
 
 /-- The counit of a coalgebra as a `CoalgHom`. -/
-def counitCoalgHom : A →ₗc[R] R :=
+noncomputable def counitCoalgHom : A →ₗc[R] R :=
   { counit with
     counit_comp := by ext; simp
     map_comp_comul := by
@@ -288,8 +288,7 @@ instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
   ⟨fun f g => CoalgHom.ext fun x => by
     have hf := CoalgHomClass.counit_comp_apply f x
     have hg := CoalgHomClass.counit_comp_apply g x
-    simp_all only [CoalgHom.toLinearMap_eq_coe, LinearMap.coe_comp, CoalgHom.coe_toLinearMap,
-      Function.comp_apply, CommSemiring.counit_apply]⟩
+    simp_all only [CommSemiring.counit_apply]⟩
 
 @[ext high]
 theorem ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _

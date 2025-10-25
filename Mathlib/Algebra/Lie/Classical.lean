@@ -96,30 +96,59 @@ theorem sl_bracket [Fintype n] (A B : sl n R) : ⁅A, B⁆.val = A.val * B.val -
 
 section ElementaryBasis
 
-variable {n} [Fintype n] (i j : n)
+variable {n R} [Fintype n] (i j k : n)
 
-/-- When j ≠ i, the elementary matrices are elements of sl n R, in fact they are part of a natural
-basis of `sl n R`. -/
-def Eb (h : j ≠ i) : sl n R :=
-  ⟨Matrix.stdBasisMatrix i j (1 : R),
-    show Matrix.stdBasisMatrix i j (1 : R) ∈ LinearMap.ker (Matrix.traceLinearMap n R R) from
-      Matrix.StdBasisMatrix.trace_zero i j (1 : R) h⟩
+/-- When `i ≠ j`, the single-element matrices are elements of `sl n R`.
+
+Along with some elements produced by `singleSubSingle`, these form a natural basis of `sl n R`. -/
+def single (h : i ≠ j) : R →ₗ[R] sl n R :=
+  Matrix.singleLinearMap R i j |>.codRestrict _ fun r => Matrix.trace_single_eq_of_ne i j r h
+
+@[deprecated (since := "2025-05-06")] alias Eb := single
 
 @[simp]
-theorem eb_val (h : j ≠ i) : (Eb R i j h).val = Matrix.stdBasisMatrix i j 1 :=
+theorem val_single (h : i ≠ j) (r : R) : (single i j h r).val = Matrix.single i j r :=
   rfl
+
+@[deprecated (since := "2025-05-06")] alias eb_val := val_single
+
+/-- The matrices with matching positive and negative elements on the diagonal are elements of
+`sl n R`. Along with `single`, a subset of these form a basis for `sl n R`. -/
+def singleSubSingle : R →ₗ[R] sl n R :=
+  LinearMap.codRestrict _ (Matrix.singleLinearMap R i i - Matrix.singleLinearMap R j j) fun r =>
+    LinearMap.sub_mem_ker_iff.mpr <| by simp
+
+@[simp]
+theorem val_singleSubSingle (r : R) :
+    (singleSubSingle i j r).val = Matrix.single i i r - Matrix.single j j r :=
+  rfl
+
+@[simp]
+theorem singleSubSingle_add_singleSubSingle (r : R) :
+    singleSubSingle i j r + singleSubSingle j k r = singleSubSingle i k r := by
+  ext : 1; simp
+
+@[simp]
+theorem singleSubSingle_sub_singleSubSingle (r : R) :
+    singleSubSingle i k r - singleSubSingle i j r = singleSubSingle j k r := by
+  ext : 1; simp
+
+@[simp]
+theorem singleSubSingle_sub_singleSubSingle' (r : R) :
+    singleSubSingle i k r - singleSubSingle j k r = singleSubSingle i j r := by
+  ext : 1; simp
 
 end ElementaryBasis
 
 theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
     ¬IsLieAbelian (sl n R) := by
-  rcases Fintype.exists_pair_of_one_lt_card h with ⟨j, i, hij⟩
-  let A := Eb R i j hij
-  let B := Eb R j i hij.symm
+  rcases Fintype.exists_pair_of_one_lt_card h with ⟨i, j, hij⟩
+  let A := single i j hij (1 : R)
+  let B := single j i hij.symm (1 : R)
   intro c
   have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
-  simpa [A, B, stdBasisMatrix, Matrix.mul_apply, hij] using congr_fun (congr_fun c' i) i
+  simpa [A, B, Matrix.single, Matrix.mul_apply, hij.symm] using congr_fun (congr_fun c' i) i
 
 end SpecialLinear
 
@@ -164,14 +193,14 @@ theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := 
   ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h, one_apply]
+    simp [Pso, h, one_apply]
   · -- x : p, y : q
-    simp [Pso, indefiniteDiagonal]
+    simp [Pso]
   · -- x : q, y : p
-    simp [Pso, indefiniteDiagonal]
+    simp [Pso]
   · -- x y : q
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h, hi, one_apply]
+    simp [Pso, h, hi, one_apply]
 
 /-- There is a constructive inverse of `Pso p q R i`. -/
 def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
@@ -247,7 +276,7 @@ theorem jd_transform [Fintype l] : (PD l R)ᵀ * JD l R * PD l R = (2 : R) • S
   rw [h, PD, s_as_blocks, Matrix.fromBlocks_multiply, Matrix.fromBlocks_smul]
   simp [two_smul]
 
-theorem pd_inv [Fintype l] [Invertible (2 : R)] : PD l R * ⅟ (2 : R) • (PD l R)ᵀ = 1 := by
+theorem pd_inv [Fintype l] [Invertible (2 : R)] : PD l R * ⅟(2 : R) • (PD l R)ᵀ = 1 := by
   rw [PD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_smul,
     Matrix.fromBlocks_multiply]
   simp
@@ -306,7 +335,7 @@ def PB :=
 
 variable [Fintype l]
 
-theorem pb_inv [Invertible (2 : R)] : PB l R * Matrix.fromBlocks 1 0 0 (⅟ (PD l R)) = 1 := by
+theorem pb_inv [Invertible (2 : R)] : PB l R * Matrix.fromBlocks 1 0 0 (⅟(PD l R)) = 1 := by
   rw [PB, Matrix.fromBlocks_multiply, mul_invOf_self]
   simp only [Matrix.mul_zero, Matrix.mul_one, Matrix.zero_mul, zero_add, add_zero,
     Matrix.fromBlocks_one]
@@ -323,13 +352,12 @@ theorem indefiniteDiagonal_assoc :
       Matrix.reindexLieEquiv (Equiv.sumAssoc Unit l l).symm
         (Matrix.fromBlocks 1 0 0 (indefiniteDiagonal l l R)) := by
   ext ⟨⟨i₁ | i₂⟩ | i₃⟩ ⟨⟨j₁ | j₂⟩ | j₃⟩ <;>
-  -- Porting note: added `Sum.inl_injective.eq_iff`, `Sum.inr_injective.eq_iff`
     simp only [indefiniteDiagonal, Matrix.diagonal_apply, Equiv.sumAssoc_apply_inl_inl,
       Matrix.reindexLieEquiv_apply, Matrix.submatrix_apply, Equiv.symm_symm, Matrix.reindex_apply,
-      Sum.elim_inl, if_true, eq_self_iff_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,
-      DMatrix.zero_apply, Equiv.sumAssoc_apply_inl_inr, if_false, Matrix.fromBlocks_apply₁₂,
-      Matrix.fromBlocks_apply₂₁, Matrix.fromBlocks_apply₂₂, Equiv.sumAssoc_apply_inr,
-      Sum.elim_inr, Sum.inl_injective.eq_iff, Sum.inr_injective.eq_iff, reduceCtorEq] <;>
+      Sum.elim_inl, if_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,
+      Equiv.sumAssoc_apply_inl_inr, if_false, Matrix.fromBlocks_apply₁₂, Matrix.fromBlocks_apply₂₁,
+      Matrix.fromBlocks_apply₂₂, Equiv.sumAssoc_apply_inr, Sum.elim_inr, Sum.inl_injective.eq_iff,
+      Sum.inr_injective.eq_iff, reduceCtorEq] <;>
     congr 1
 
 /-- An equivalence between two possible definitions of the classical Lie algebra of type B. -/

@@ -29,12 +29,6 @@ theorem Nat.noZeroSMulDivisors
     NoZeroSMulDivisors ℕ M where
   eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by rw [← Nat.cast_smul_eq_nsmul R, smul_eq_zero]; simp
 
-theorem two_nsmul_eq_zero
-    (R) (M) [Semiring R] [CharZero R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M]
-    {v : M} : 2 • v = 0 ↔ v = 0 := by
-  haveI := Nat.noZeroSMulDivisors R M
-  simp [smul_eq_zero]
-
 end Nat
 
 variable [Semiring R]
@@ -55,44 +49,16 @@ variable [Semiring R] [AddCommGroup M] [Module R M]
 
 section SMulInjective
 
-variable (M)
-
+variable (M) in
 theorem smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
     Function.Injective (c • · : M → M) :=
   (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
-
-variable {M}
 
 theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M} :
     c • x = c • y ↔ x = y :=
   (smul_right_injective M hc).eq_iff
 
 end SMulInjective
-
-section Nat
-
-theorem self_eq_neg
-    (R) (M) [Semiring R] [CharZero R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
-    {v : M} : v = -v ↔ v = 0 := by
-  rw [← two_nsmul_eq_zero R M, two_smul, add_eq_zero_iff_eq_neg]
-
-theorem neg_eq_self
-    (R) (M) [Semiring R] [CharZero R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
-    {v : M} : -v = v ↔ v = 0 := by
-  rw [eq_comm, self_eq_neg R M]
-
-theorem self_ne_neg
-    (R) (M) [Semiring R] [CharZero R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
-    {v : M} : v ≠ -v ↔ v ≠ 0 :=
-  (self_eq_neg R M).not
-
-theorem neg_ne_self
-    (R) (M) [Semiring R] [CharZero R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
-    {v : M} : -v ≠ v ↔ v ≠ 0 :=
-  (neg_eq_self R M).not
-
-end Nat
-
 end AddCommGroup
 
 section Module

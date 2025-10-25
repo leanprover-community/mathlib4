@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Group.Instances
-import Mathlib.Logic.Function.Iterate
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -24,7 +22,7 @@ for bundled maps satisfying `f (x + a) = f x + b`.
 We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
 
 - maps between circles of different lengths;
-- self-maps $f\colon S^1\to  S^1$ of degree other than one,
+- self-maps $f\colon S^1\to S^1$ of degree other than one,
   including orientation-reversing maps.
 -/
 
@@ -32,7 +30,8 @@ assert_not_exists Finset
 
 open Function Set
 
-/-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`.
+/-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`,
+denoted as `f: G →+c[a, b] H`.
 
 One can think about `f` as a lift to `G` of a map between two `AddCircle`s. -/
 structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
@@ -129,7 +128,7 @@ theorem map_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F 
     f ofNat(n) = f 0 + ofNat(n) := map_nat f n
 
 @[scoped simp]
-theorem map_const_add [AddCommSemigroup G] [Add H] [AddConstMapClass F G H a b]
+theorem map_const_add [AddCommMagma G] [Add H] [AddConstMapClass F G H a b]
     (f : F) (x : G) : f (a + x) = f x + b := by
   rw [add_comm, map_add_const]
 
@@ -229,14 +228,16 @@ theorem map_int_add' [AddCommGroupWithOne G] [AddGroup H] [AddConstMapClass F G 
 theorem map_int_add [AddCommGroupWithOne G] [AddGroupWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℤ) (x : G) : f (↑n + x) = f x + n := by simp
 
-theorem map_fract {R : Type*} [LinearOrderedRing R] [FloorRing R] [AddGroup H]
+theorem map_fract {R : Type*} [Ring R] [LinearOrder R] [FloorRing R] [AddGroup H]
     [FunLike F R H] [AddConstMapClass F R H 1 b] (f : F) (x : R) :
     f (Int.fract x) = f x - ⌊x⌋ • b :=
   map_sub_int' ..
 
+open scoped Relator in
 /-- Auxiliary lemmas for the "monotonicity on a fundamental interval implies monotonicity" lemmas.
 We formulate it for any relation so that the proof works both for `Monotone` and `StrictMono`. -/
-protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [AddGroup H]
+protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
+    [Archimedean G] [AddGroup H]
     [AddConstMapClass F G H a b] {f : F} {R : H → H → Prop} [IsTrans H R]
     [hR : CovariantClass H H (fun x y ↦ y + x) R] (ha : 0 < a) {l : G}
     (hf : ∀ x ∈ Icc l (l + a), ∀ y ∈ Icc l (l + a), x < y → R (f x) (f y)) :
@@ -252,11 +253,11 @@ protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [
     rcases existsUnique_sub_zsmul_mem_Ioc ha y l with ⟨n, hny, -⟩
     rcases lt_trichotomy n 0 with hn | rfl | hn
     · -- Since `l ≤ x ≤ y`, the case `n < 0` is impossible
-      refine absurd ?_ hxy.not_le
+      refine absurd ?_ hxy.not_ge
       calc
         y ≤ l + a + n • a := sub_le_iff_le_add.1 hny.2
         _ = l + (n + 1) • a := by rw [add_comm n, add_smul, one_smul, add_assoc]
-        _ ≤ l + 0 • a := add_le_add_left (zsmul_le_zsmul_left ha.le (by omega)) _
+        _ ≤ l + (0 : ℤ) • a := by gcongr; cutsat
         _ ≤ x := by simpa using hx.1
     · -- If `n = 0`, then `l < y ≤ l + a`, hence we can apply the assumption
       exact hf x (Ico_subset_Icc_self hx) y (by simpa using Ioc_subset_Icc_self hny) hxy
@@ -264,8 +265,7 @@ protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [
       -- If `R = (· < ·)`, then the proof looks like
       -- `f x < f (l + a) ≤ f (l + n • a) < f y`
       trans f (l + (1 : ℤ) • a)
-      · rw [one_zsmul]
-        exact hf x (Ico_subset_Icc_self hx) (l + a) (by simpa) hx.2
+      · grind
       have hy : R (f (l + n • a)) (f y) := by
         rw [← sub_add_cancel y (n • a), map_add_zsmul, map_add_zsmul]
         refine hR _ <| hf _ ?_ _ (Ioc_subset_Icc_self hny) hny.1; simpa
@@ -277,23 +277,27 @@ protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [
         refine hR (k • b) (hf _ ?_ _ ?_ ?_) <;> simpa
       · assumption
 
-theorem monotone_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+theorem monotone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     Monotone f ↔ MonotoneOn f (Icc l (l + a)) :=
   ⟨(Monotone.monotoneOn · _), fun hf ↦ monotone_iff_forall_lt.2 <|
     AddConstMapClass.rel_map_of_Icc ha fun _x hx _y hy hxy ↦ hf hx hy hxy.le⟩
 
-theorem antitone_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+theorem antitone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     Antitone f ↔ AntitoneOn f (Icc l (l + a)) :=
   monotone_iff_Icc (H := Hᵒᵈ) ha l
 
-theorem strictMono_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+theorem strictMono_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     StrictMono f ↔ StrictMonoOn f (Icc l (l + a)) :=
   ⟨(StrictMono.strictMonoOn · _), AddConstMapClass.rel_map_of_Icc ha⟩
 
-theorem strictAnti_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+theorem strictAnti_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     StrictAnti f ↔ StrictAntiOn f (Icc l (l + a)) :=
   strictMono_iff_Icc (H := Hᵒᵈ) ha l
@@ -333,13 +337,13 @@ initialize_simps_projections AddConstMap (toFun → coe, as_prefix coe)
 -/
 
 /-- The identity map as `G →+c[a, a] G`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def id : G →+c[a, a] G := ⟨id, fun _ ↦ rfl⟩
 
 instance : Inhabited (G →+c[a, a] G) := ⟨.id⟩
 
 /-- Composition of two `AddConstMap`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def comp {K : Type*} [Add K] {c : K} (g : H →+c[b, c] K) (f : G →+c[a, b] H) :
     G →+c[a, c] K :=
   ⟨g ∘ f, by simp⟩
@@ -348,7 +352,7 @@ def comp {K : Type*} [Add K] {c : K} (g : H →+c[b, c] K) (f : G →+c[a, b] H)
 @[simp] theorem id_comp (f : G →+c[a, b] H) : .comp .id f = f := rfl
 
 /-- Change constants `a` and `b` in `(f : G →+c[a, b] H)` to improve definitional equalities. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def replaceConsts (f : G →+c[a, b] H) (a' b') (ha : a = a') (hb : b = b') :
     G →+c[a', b'] H where
   toFun := f
@@ -395,7 +399,7 @@ theorem one_def : (1 : G →+c[a, a] G) = .id := rfl
 theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
 
 /-- Coercion to functions as a monoid homomorphism to `Function.End G`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def toEnd : (G →+c[a, a] G) →* Function.End G where
   toFun := DFunLike.coe
   map_mul' _ _ := rfl
@@ -418,7 +422,7 @@ but we don't do this at the moment because we don't need this.
 -/
 
 /-- Pointwise scalar multiplication of `f : G →+c[a, b] H` as a map `G →+c[a, c • b] H`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def smul [DistribSMul K H] (c : K) (f : G →+c[a, b] H) : G →+c[a, c • b] H where
   toFun := c • ⇑f
   map_add_const' x := by simp [smul_add]
@@ -431,7 +435,7 @@ variable {G : Type*} [AddMonoid G] {a : G}
 
 /-- The map that sends `c` to a translation by `c`
 as a monoid homomorphism from `Multiplicative G` to `G →+c[a, a] G`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def addLeftHom : Multiplicative G →* (G →+c[a, a] G) where
   toFun c := c.toAdd +ᵥ .id
   map_one' := by ext; apply zero_add
@@ -455,7 +459,8 @@ end AddCommGroup
 
 section FloorRing
 
-variable {R G : Type*} [LinearOrderedRing R] [FloorRing R] [AddGroup G] (a : G)
+variable {R G : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] [AddGroup G]
+  (a : G)
 
 /-- A map `f : R →+c[1, a] G` is defined by its values on `Set.Ico 0 1`. -/
 def mkFract : (Ico (0 : R) 1 → G) ≃ (R →+c[1, a] G) where

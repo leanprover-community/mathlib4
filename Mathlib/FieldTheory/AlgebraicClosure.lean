@@ -3,7 +3,7 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Jiedong Jiang
 -/
-import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 
@@ -38,8 +38,8 @@ def algebraicClosure : IntermediateField F E :=
 
 variable {F E}
 
-theorem algebraicClosure_toSubalgebra :
-  (algebraicClosure F E).toSubalgebra = integralClosure F E := rfl
+theorem algebraicClosure_toSubalgebra : (algebraicClosure F E).toSubalgebra = integralClosure F E :=
+  rfl
 
 /-- An element is contained in the algebraic closure of `F` in `E` if and only if
 it is an integral element. -/
@@ -113,7 +113,7 @@ end algebraicClosure
 
 protected theorem Transcendental.algebraicClosure {a : E} (ha : Transcendental F a) :
     Transcendental (algebraicClosure F E) a :=
-  ha.extendScalars Subtype.val_injective
+  ha.extendScalars _
 
 variable (F E K)
 
@@ -122,7 +122,7 @@ if all of its elements are algebraic over `F`. -/
 theorem le_algebraicClosure' {L : IntermediateField F E} (hs : ∀ x : L, IsAlgebraic F x) :
     L ≤ algebraicClosure F E := fun x h ↦ by
   simpa only [mem_algebraicClosure_iff, IsAlgebraic, ne_eq, ← aeval_algebraMap_eq_zero_iff E,
-    Algebra.id.map_eq_id, RingHom.id_apply, IntermediateField.algebraMap_apply] using hs ⟨x, h⟩
+    Algebra.algebraMap_self, RingHom.id_apply, IntermediateField.algebraMap_apply] using hs ⟨x, h⟩
 
 /-- An intermediate field of `E / F` is contained in the algebraic closure of `F` in `E`
 if it is algebraic over `F`. -/
@@ -135,7 +135,7 @@ theorem le_algebraicClosure_iff (L : IntermediateField F E) :
     L ≤ algebraicClosure F E ↔ Algebra.IsAlgebraic F L :=
   ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsAlgebraic, ne_eq, ← aeval_algebraMap_eq_zero_iff E,
     IntermediateField.algebraMap_apply,
-    Algebra.id.map_eq_id, RingHomCompTriple.comp_apply, mem_algebraicClosure_iff] using h x.2⟩,
+    Algebra.algebraMap_self, RingHomCompTriple.comp_apply, mem_algebraicClosure_iff] using h x.2⟩,
     fun _ ↦ le_algebraicClosure _ _ _⟩
 
 namespace algebraicClosure

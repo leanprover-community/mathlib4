@@ -49,12 +49,11 @@ and unitors from lean expressions. This operation is performed using the `Tactic
 function.
 
 A monoidal category can be viewed as a bicategory with a single object. The program in this
-file can also be used to display the string diagram for general bicategories (see the wip
-PR https://github.com/leanprover-community/mathlib4/pull/12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
-categories as 1-morphisms and 2-morphisms respectively, borrowing the terminology of bicategories.
-Note that the relation between monoidal categories and bicategories is formalized in
-`Mathlib.CategoryTheory.Bicategory.SingleObj`, although the string diagram widget does not use
-it directly.
+file can also be used to display the string diagram for general bicategories. With this in mind we
+will sometimes refer to objects and morphisms in monoidal categories as 1-morphisms and 2-morphisms
+respectively, borrowing the terminology of bicategories. Note that the relation between monoidal
+categories and bicategories is formalized in `Mathlib/CategoryTheory/Bicategory/SingleObj.lean`,
+although the string diagram widget does not use it directly.
 
 -/
 
@@ -186,12 +185,12 @@ variable {ρ : Type} [MonadMor₁ (CoherenceM ρ)]
 
 /-- The list of nodes at the top of a string diagram. -/
 def topNodes (η : WhiskerLeft) : CoherenceM ρ (List Node) := do
-  return (← η.srcM).toList.enum.map (fun (i, f) => .id ⟨0, i, i, f⟩)
+  return (← η.srcM).toList.mapIdx fun i f => .id ⟨0, i, i, f⟩
 
 /-- The list of nodes at the top of a string diagram. The position is counted from the
 specified natural number. -/
 def NormalExpr.nodesAux (v : ℕ) : NormalExpr → CoherenceM ρ (List (List Node))
-  | NormalExpr.nil _ α => return [(← α.srcM).toList.enum.map (fun (i, f) => .id ⟨v, i, i, f⟩)]
+  | NormalExpr.nil _ α => return [(← α.srcM).toList.mapIdx fun i f => .id ⟨v, i, i, f⟩]
   | NormalExpr.cons _ _ η ηs => do
     let s₁ := η.nodes v 0 0
     let s₂ ← ηs.nodesAux (v + 1)
@@ -216,7 +215,7 @@ def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := 
     -- sanity check
     if xs.length ≠ ys.length then
       throwError "The number of the start and end points of a string does not match."
-    (xs.zip ys).enum.mapM fun (k, (n₁, f₁), (n₂, _)) => do
+    (xs.zip ys).mapIdxM fun k ((n₁, f₁), (n₂, _)) => do
       return ⟨n₁.hPosTar + k, n₁, n₂, f₁⟩
 
 end BicategoryLike
@@ -276,8 +275,8 @@ def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
       addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
   /- Add constraints. -/
   for (l₁, l₂) in pairs nodes do
-    if let .some x₁ := l₁.head? then
-      if let .some x₂ := l₂.head? then
+    if let some x₁ := l₁.head? then
+      if let some x₂ := l₂.head? then
         addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"
   /- Add 1-morphisms as strings. -/
   for l in strands do
@@ -313,12 +312,12 @@ def mkKind (e : Expr) : MetaM Kind := do
     | none => return e)
   let ctx? ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e
   match ctx? with
-  | .some _ => return .bicategory
-  | .none =>
+  | some _ => return .bicategory
+  | none =>
     let ctx? ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e
     match ctx? with
-    | .some _ => return .monoidal
-    | .none => return .none
+    | some _ => return .monoidal
+    | none => return .none
 
 open scoped Jsx in
 /-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
@@ -327,19 +326,19 @@ def stringM? (e : Expr) : MetaM (Option Html) := do
   let k ← mkKind e
   let x : Option (List (List Node) × List (List Strand)) ← (match k with
     | .monoidal => do
-      let .some ctx ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e | return .none
+      let some ctx ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e | return none
       CoherenceM.run (ctx := ctx) do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
-        return .some (← e'.nodes, ← e'.strands)
+        return some (← e'.nodes, ← e'.strands)
     | .bicategory => do
-      let .some ctx ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e | return .none
+      let some ctx ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e | return none
       CoherenceM.run (ctx := ctx) do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
-        return .some (← e'.nodes, ← e'.strands)
-    | .none => return .none)
+        return some (← e'.nodes, ← e'.strands)
+    | .none => return none)
   match x with
-  | .none => return none
-  | .some (nodes, strands) => do
+  | none => return none
+  | some (nodes, strands) => do
     DiagramBuilderM.run do
       mkStringDiagram nodes strands
       trace[string_diagram] "Penrose substance: \n{(← get).sub}"
@@ -366,7 +365,7 @@ def mkEqHtml (lhs rhs : Html) : Html :=
 /-- Given an equality between 2-morphisms, return a string diagram of the LHS and RHS.
 Otherwise `none`. -/
 def stringEqM? (e : Expr) : MetaM (Option Html) := do
-  let e ← instantiateMVars e
+  let e ← whnfR <| ← instantiateMVars e
   let some (_, lhs, rhs) := e.eq? | return none
   let some lhs ← stringM? lhs | return none
   let some rhs ← stringM? rhs | return none
@@ -375,7 +374,7 @@ def stringEqM? (e : Expr) : MetaM (Option Html) := do
 /-- Given an 2-morphism or equality between 2-morphisms, return a string diagram.
 Otherwise `none`. -/
 def stringMorOrEqM? (e : Expr) : MetaM (Option Html) := do
-  forallTelescopeReducing (← inferType e) fun xs a => do
+  forallTelescopeReducing (← whnfR <| ← inferType e) fun xs a => do
     if let some html ← stringM? (mkAppN e xs) then
       return some html
     else if let some html ← stringEqM? a then
@@ -443,8 +442,8 @@ def elabStringDiagramCmd : CommandElab := fun
       let e ← try mkConstWithFreshMVarLevels (← realizeGlobalConstNoOverloadWithInfo t)
         catch _ => Term.levelMVarToParam (← instantiateMVars (← Term.elabTerm t none))
       match ← StringDiagram.stringMorOrEqM? e with
-      | .some html => return html
-      | .none => throwError "could not find a morphism or equality: {e}"
+      | some html => return html
+      | none => throwError "could not find a morphism or equality: {e}"
     liftCoreM <| Widget.savePanelWidgetInfo
       (hash HtmlDisplay.javascript)
       (return json% { html: $(← Server.RpcEncodable.rpcEncode html) })

@@ -10,13 +10,7 @@ import Mathlib.Tactic.NormNum.Basic
 ## `norm_num` plugin for `^`.
 -/
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
+assert_not_exists RelIso
 
 namespace Mathlib
 open Lean
@@ -65,24 +59,25 @@ so we use an additional trick to do binary subdivision on `log2 b`. As a result 
 a proof of depth `log (log b)` which will essentially never overflow before the numbers involved
 themselves exceed memory limits.
 -/
-partial def evalNatPow (a b : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.pow $a $b = $c) :=
+partial def evalNatPow (a b : Q(ℕ)) : OptionT CoreM ((c : Q(ℕ)) × Q(Nat.pow $a $b = $c)) := do
   if b.natLit! = 0 then
     haveI : $b =Q 0 := ⟨⟩
-    ⟨q(nat_lit 1), q(natPow_zero)⟩
+    return ⟨q(nat_lit 1), q(natPow_zero)⟩
   else if a.natLit! = 0 then
     haveI : $a =Q 0 := ⟨⟩
     have b' : Q(ℕ) := mkRawNatLit (b.natLit! - 1)
     haveI : $b =Q Nat.succ $b' := ⟨⟩
-    ⟨q(nat_lit 0), q(zero_natPow)⟩
+    return ⟨q(nat_lit 0), q(zero_natPow)⟩
   else if a.natLit! = 1 then
     haveI : $a =Q 1 := ⟨⟩
-    ⟨q(nat_lit 1), q(one_natPow)⟩
+    return ⟨q(nat_lit 1), q(one_natPow)⟩
   else if b.natLit! = 1 then
     haveI : $b =Q 1 := ⟨⟩
-    ⟨a, q(natPow_one)⟩
+    return ⟨a, q(natPow_one)⟩
   else
-    let ⟨c, p⟩ := go b.natLit!.log2 a (mkRawNatLit 1) a b _ .rfl
-    ⟨c, q(($p).run)⟩
+    guard <| ← Lean.checkExponent b.natLit!
+    let ⟨c, p⟩ := go b.natLit!.log2 a q(nat_lit 1) a b _ .rfl
+    return ⟨c, q(($p).run)⟩
 where
   /-- Invariants: `a ^ b₀ = c₀`, `depth > 0`, `b >>> depth = b₀`, `p := Nat.pow $a $b₀ = $c₀` -/
   go (depth : Nat) (a b₀ c₀ b : Q(ℕ)) (p : Q(Prop)) (hp : $p =Q (Nat.pow $a $b₀ = $c₀)) :
@@ -123,31 +118,32 @@ theorem intPow_negOfNat_bit1 {b' c' : ℕ} (h1 : Nat.pow a b' = c')
     Int.pow (Int.negOfNat a) b = Int.negOfNat c := by
   rw [← hb, Int.negOfNat_eq, Int.negOfNat_eq, Int.pow_eq, pow_succ, pow_mul, neg_pow_two, ← pow_mul,
     two_mul, pow_add, ← hc, ← h1]
-  simp [mul_assoc, mul_comm, mul_left_comm]
+  simp [mul_comm, mul_left_comm]
 
 /-- Evaluates `Int.pow a b = c` where `a` and `b` are raw integer literals. -/
-partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) : ℤ × (c : Q(ℤ)) × Q(Int.pow $a $b = $c) :=
+partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) :
+    OptionT CoreM (ℤ × (c : Q(ℤ)) × Q(Int.pow $a $b = $c)) := do
   have a' : Q(ℕ) := a.appArg!
   if 0 ≤ za then
-    haveI : $a =Q .ofNat $a' := ⟨⟩
-    let ⟨c, p⟩ := evalNatPow a' b
-    ⟨c.natLit!, q(.ofNat $c), q(intPow_ofNat $p)⟩
+    have : $a =Q .ofNat $a' := ⟨⟩
+    let ⟨c, p⟩ ← evalNatPow a' b
+    return ⟨c.natLit!, q(.ofNat $c), q(intPow_ofNat $p)⟩
   else
-    haveI : $a =Q .negOfNat $a' := ⟨⟩
+    have : $a =Q .negOfNat $a' := ⟨⟩
     let b' := b.natLit!
     have b₀ : Q(ℕ) := mkRawNatLit (b' >>> 1)
-    let ⟨c₀, p⟩ := evalNatPow a' b₀
+    let ⟨c₀, p⟩ := ← evalNatPow a' b₀
     let c' := c₀.natLit!
     if b' &&& 1 == 0 then
       have c : Q(ℕ) := mkRawNatLit (c' * c')
       have pc : Q($c₀ * $c₀ = $c) := (q(Eq.refl $c) : Expr)
       have pb : Q(2 * $b₀ = $b) := (q(Eq.refl $b) : Expr)
-      ⟨c.natLit!, q(.ofNat $c), q(intPow_negOfNat_bit0 $p $pb $pc)⟩
+      return ⟨c.natLit!, q(.ofNat $c), q(intPow_negOfNat_bit0 $p $pb $pc)⟩
     else
       have c : Q(ℕ) := mkRawNatLit (c' * (c' * a'.natLit!))
       have pc : Q($c₀ * ($c₀ * $a') = $c) := (q(Eq.refl $c) : Expr)
       have pb : Q(2 * $b₀ + 1 = $b) := (q(Eq.refl $b) : Expr)
-      ⟨-c.natLit!, q(.negOfNat $c), q(intPow_negOfNat_bit1 $p $pb $pc)⟩
+      return ⟨-c.natLit!, q(.negOfNat $c), q(intPow_negOfNat_bit1 $p $pb $pc)⟩
 
 -- see note [norm_num lemma function equality]
 theorem isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} {b a' b' c : ℕ},
@@ -169,6 +165,45 @@ theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} 
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow]
 
+theorem isNNRat_pow {α} [Semiring α] {f : α → ℕ → α} {a : α} {an cn : ℕ} {ad b b' cd : ℕ} :
+    f = HPow.hPow → IsNNRat a an ad → IsNat b b' →
+    Nat.pow an b' = cn → Nat.pow ad b' = cd →
+    IsNNRat (f a b) cn cd := by
+  rintro rfl ⟨_, rfl⟩ ⟨rfl⟩ (rfl : an ^ b = _) (rfl : ad ^ b = _)
+  have := invertiblePow (ad:α) b
+  rw [← Nat.cast_pow] at this
+  use this; simp [invOf_pow, Commute.mul_pow, Nat.cast_commute]
+
+/-- Main part of `evalPow`. -/
+def evalPow.core {u : Level} {α : Q(Type u)} (e : Q(«$α»)) (f : Q(«$α» → ℕ → «$α»)) (a : Q(«$α»))
+    (b nb : Q(ℕ)) (pb : Q(IsNat «$b» «$nb»)) (sα : Q(Semiring «$α»)) (ra : Result a) :
+    OptionT CoreM (Result e) := do
+  haveI' : $e =Q $a ^ $b := ⟨⟩
+  haveI' : $f =Q HPow.hPow := ⟨⟩
+  match ra with
+  | .isBool .. => failure
+  | .isNat sα na pa =>
+    assumeInstancesCommute
+    let ⟨c, r⟩ ← evalNatPow na nb
+    return .isNat sα c q(isNat_pow (f := $f) (.refl $f) $pa $pb $r)
+  | .isNegNat rα .. =>
+    assumeInstancesCommute
+    let ⟨za, na, pa⟩ ← OptionT.mk <| pure (ra.toInt rα)
+    let ⟨zc, c, r⟩ ← evalIntPow za na nb
+    return .isInt rα c zc q(isInt_pow (f := $f) (.refl $f) $pa $pb $r)
+  | .isNNRat dα _qa na da pa =>
+    assumeInstancesCommute
+    let ⟨nc, r1⟩ ← evalNatPow na nb
+    let ⟨dc, r2⟩ ← evalNatPow da nb
+    let qc := mkRat nc.natLit! dc.natLit!
+    return .isNNRat dα qc nc dc q(isNNRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
+  | .isNegNNRat dα qa na da pa =>
+    assumeInstancesCommute
+    let ⟨zc, nc, r1⟩ ← evalIntPow qa.num q(Int.negOfNat $na) nb
+    let ⟨dc, r2⟩ ← evalNatPow da nb
+    let qc := mkRat zc dc.natLit!
+    return .isRat dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
+
 attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
@@ -181,27 +216,9 @@ def evalPow : NormNumExt where eval {u α} e := do
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
   haveI' : $e =Q $a ^ $b := ⟨⟩
   haveI' : $f =Q HPow.hPow := ⟨⟩
-  let rec
-  /-- Main part of `evalPow`. -/
-  core : Option (Result e) := do
-    match ra with
-    | .isBool .. => failure
-    | .isNat sα na pa =>
-      assumeInstancesCommute
-      have ⟨c, r⟩ := evalNatPow na nb
-      return .isNat sα c q(isNat_pow (f := $f) (.refl $f) $pa $pb $r)
-    | .isNegNat rα .. =>
-      assumeInstancesCommute
-      let ⟨za, na, pa⟩ ← ra.toInt rα
-      have ⟨zc, c, r⟩ := evalIntPow za na nb
-      return .isInt rα c zc q(isInt_pow (f := $f) (.refl $f) $pa $pb $r)
-    | .isRat dα qa na da pa =>
-      assumeInstancesCommute
-      have ⟨zc, nc, r1⟩ := evalIntPow qa.num na nb
-      have ⟨dc, r2⟩ := evalNatPow da nb
-      let qc := mkRat zc dc.natLit!
-      return .isRat' dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
-  core
+  let .some r ←
+    liftM <| OptionT.run (evalPow.core q($e) q($f) q($a) q($b) q($nb) q($pb) q($sα) ra) | failure
+  return r
 
 theorem isNat_zpow_pos {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb ne : ℕ}
     (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
@@ -223,22 +240,32 @@ theorem isInt_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb ne 
     IsInt (a ^ b) (Int.negOfNat ne) := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
+theorem isNNRat_zpow_pos {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb : ℕ}
+    {num : ℕ} {den : ℕ}
+    (pb : IsNat b nb) (pe' : IsNNRat (a ^ nb) num den) :
+    IsNNRat (a^b) num den := by
+  rwa [pb.out, zpow_natCast]
+
+theorem isNNRat_zpow_neg {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb : ℕ}
+    {num : ℕ} {den : ℕ}
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNNRat ((a ^ nb)⁻¹) num den) :
+    IsNNRat (a^b) num den := by
+  rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
+
 theorem isRat_zpow_pos {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
-    (pb : IsNat b nb) (pe' : IsRat (a^nb) num den) :
-    IsRat (a^b) num den := by
+    (pb : IsNat b nb) (pe' : IsRat (a ^ nb) num den) :
+    IsRat (a ^ b) num den := by
   rwa [pb.out, zpow_natCast]
 
 theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat ((a^nb)⁻¹) num den) :
-    IsRat (a^b) num den := by
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat ((a ^ nb)⁻¹) num den) :
+    IsRat (a ^ b) num den := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
-#adaptation_note
-/--
-Prior to https://github.com/leanprover/lean4/pull/4096,
-the repeated
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4096
+the two
 ```
 have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
 h.check
@@ -253,45 +280,44 @@ def evalZPow : NormNumExt where eval {u α} e := do
   let _c ← synthInstanceQ q(DivisionSemiring $α)
   let rb ← derive (α := q(ℤ)) b
   match rb with
-  | .isBool .. | .isRat _ .. => failure
+  | .isBool .. | .isNNRat _ .. | .isNegNNRat _ .. => failure
   | .isNat sβ nb pb =>
+    have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+    h.check
     match ← derive q($a ^ $nb) with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_zpow_pos $pb $pe')
     | .isNegNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       let _c ← synthInstanceQ q(DivisionRing $α)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_zpow_pos $pb $pe')
-    | .isRat sα' qe' nume' dene' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
+    | .isNNRat dsα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      return .isRat sα' qe' nume' dene' q(isRat_zpow_pos $pb $pe')
+      return .isNNRat dsα' qe' nume' dene' q(isNNRat_zpow_pos $pb $pe')
+    | .isNegNNRat dα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      let proof := q(isRat_zpow_pos $pb $pe')
+      return .isRat dα' qe' nume' dene' proof
   | .isNegNat sβ nb pb =>
+    have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+    h.check
     match ← derive q(($a ^ $nb)⁻¹) with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_zpow_neg $pb $pe')
     | .isNegNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       let _c ← synthInstanceQ q(DivisionRing $α)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_zpow_neg $pb $pe')
-    | .isRat sα' qe' nume' dene' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
+    | .isNNRat dsα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      return .isRat sα' qe' nume' dene' q(isRat_zpow_neg $pb $pe')
+      return .isNNRat dsα' qe' nume' dene' q(isNNRat_zpow_neg $pb $pe')
+    | .isNegNNRat dα' qe' nume' dene' pe' =>
+      assumeInstancesCommute
+      return .isRat dα' qe' q(.negOfNat $nume') dene' q(isRat_zpow_neg $pb $pe')
 
 end NormNum
 

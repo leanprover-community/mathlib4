@@ -22,6 +22,7 @@
   "Batteries.Tactic.Relation.Rfl",
   "Batteries.Tactic.Relation.Symm",
   "Batteries.Tactic.Replace",
+  "Batteries.Tactic.SeqFocus",
   "Batteries.Tactic.Simpa",
   "Batteries.Tactic.SolveByElim",
   "Batteries.Tactic.SolveByElim.Backtrack",
@@ -37,26 +38,29 @@
   "Mathlib.AlgebraicGeometry.Restrict",
   "Mathlib.AlgebraicTopology.DoldKan.Notations",
   "Mathlib.CategoryTheory.Category.Init",
+  "Mathlib.Combinatorics.Matroid.Init",
   "Mathlib.Combinatorics.SimpleGraph.Init",
   "Mathlib.Control.Traversable.Lemmas",
   "Mathlib.Data.Finsupp.Notation",
   "Mathlib.Data.Int.Defs",
   "Mathlib.Data.Int.Notation",
-  "Mathlib.Data.Matrix.Notation",
-  "Mathlib.Data.Matroid.Init",
   "Mathlib.Data.Nat.Notation",
   "Mathlib.Data.Rat.Init",
   "Mathlib.Data.Set.Notation",
   "Mathlib.Data.Sym.Sym2.Init",
   "Mathlib.Data.Vector.Basic",
+  "Mathlib.FieldTheory.Galois.Notation",
   "Mathlib.Geometry.Manifold.Instances.Real",
+  "Mathlib.Geometry.Manifold.Notation",
   "Mathlib.Init",
   "Mathlib.LinearAlgebra.AffineSpace.Basic",
+  "Mathlib.LinearAlgebra.Matrix.Notation",
   "Mathlib.Mathport.Attributes",
   "Mathlib.Mathport.Notation",
   "Mathlib.Mathport.Rename",
   "Mathlib.Probability.Notation",
   "Mathlib.Tactic.Abel",
+  "Mathlib.Tactic.Algebraize",
   "Mathlib.Tactic.ApplyCongr",
   "Mathlib.Tactic.ApplyFun",
   "Mathlib.Tactic.ApplyWith",
@@ -67,7 +71,6 @@
   "Mathlib.Tactic.ByContra",
   "Mathlib.Tactic.CC",
   "Mathlib.Tactic.CancelDenoms",
-  "Mathlib.Tactic.Cases",
   "Mathlib.Tactic.CasesM",
   "Mathlib.Tactic.CategoryTheory.Coherence",
   "Mathlib.Tactic.CategoryTheory.Elementwise",
@@ -96,11 +99,14 @@
   "Mathlib.Tactic.ExtractGoal",
   "Mathlib.Tactic.FBinop",
   "Mathlib.Tactic.FailIfNoProgress",
+  "Mathlib.Tactic.FastInstance",
+  "Mathlib.Tactic.Field",
   "Mathlib.Tactic.FieldSimp",
   "Mathlib.Tactic.FinCases",
   "Mathlib.Tactic.Find",
+  "Mathlib.Tactic.Finiteness",
   "Mathlib.Tactic.GCongr",
-  "Mathlib.Tactic.GCongr.CoreAttrs",
+  "Mathlib.Tactic.GRewrite",
   "Mathlib.Tactic.Generalize",
   "Mathlib.Tactic.GeneralizeProofs",
   "Mathlib.Tactic.Group",
@@ -114,12 +120,12 @@
   "Mathlib.Tactic.Lemma",
   "Mathlib.Tactic.LibrarySearch",
   "Mathlib.Tactic.Lift",
-  "Mathlib.Tactic.LiftLets",
   "Mathlib.Tactic.Linarith",
   "Mathlib.Tactic.Linarith.Frontend",
   "Mathlib.Tactic.Linarith.Lemmas",
   "Mathlib.Tactic.LinearCombination",
   "Mathlib.Tactic.Linter",
+  "Mathlib.Tactic.Linter.DeprecatedModule",
   "Mathlib.Tactic.Linter.Header",
   "Mathlib.Tactic.Measurability",
   "Mathlib.Tactic.MinImports",
@@ -135,14 +141,14 @@
   "Mathlib.Tactic.NormNum.Eq",
   "Mathlib.Tactic.NormNum.Ineq",
   "Mathlib.Tactic.NthRewrite",
+  "Mathlib.Tactic.Order",
   "Mathlib.Tactic.PPWithUniv",
   "Mathlib.Tactic.Peel",
-  "Mathlib.Tactic.Polyrith",
   "Mathlib.Tactic.Positivity",
   "Mathlib.Tactic.Positivity.Basic",
   "Mathlib.Tactic.Positivity.Finset",
-  "Mathlib.Tactic.ProjectionNotation",
-  "Mathlib.Tactic.PushNeg",
+  "Mathlib.Tactic.Push",
+  "Mathlib.Tactic.Push.Attr",
   "Mathlib.Tactic.Qify",
   "Mathlib.Tactic.RSuffices",
   "Mathlib.Tactic.Recover",
@@ -192,19 +198,28 @@
   "Mathlib.Util.WithWeakNamespace",
   "Qq"],
  "ignoreAll":
- ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax", "Mathlib.Tactic.Linter"],
+ ["Batteries.Tactic.Basic",
+  "Mathlib.Mathport.Syntax",
+  "Mathlib.Tactic.Linter",
+  "Mathlib.Init"],
  "ignore":
- {"Mathlib.Util.Notation3": ["Lean.Elab.BuiltinCommand"],
-  "Mathlib.Topology.UniformSpace.Basic": ["Mathlib.Tactic.Monotonicity.Basic"],
+ {"Mathlib.Util.Notation3": ["Lean.Elab.AuxDef", "Lean.Elab.BuiltinCommand"],
+  "Mathlib.Topology.UniformSpace.Defs": ["Mathlib.Tactic.Monotonicity.Basic"],
+  "Mathlib.Topology.Sober": ["Mathlib.Algebra.HierarchyDesign"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
   "Mathlib.Topology.Sheaves.CommRingCat":
   ["Mathlib.Algebra.Category.Ring.Limits"],
+  "Mathlib.Topology.Separation.GDelta":
+  ["Mathlib.Topology.Connected.TotallyDisconnected"],
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
-  "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
+  "Mathlib.Topology.Instances.ENNReal.Lemmas": ["Mathlib.Tactic.Bound"],
+  "Mathlib.Topology.DiscreteSubset": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
+  "Mathlib.Topology.Algebra.RestrictedProduct.Basic":
+  ["Mathlib.Order.Filter.Cofinite"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
   ["Mathlib.Topology.Algebra.UniformRing"],
   "Mathlib.Tactic.Widget.StringDiagram":
@@ -212,18 +227,22 @@
   "Mathlib.Tactic.Widget.SelectPanelUtils":
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
-  "Mathlib.Tactic.Use": ["Batteries.Logic"],
+  "Mathlib.Tactic.Use": ["Batteries.Logic", "Mathlib.Tactic.WithoutCDot"],
+  "Mathlib.Tactic.ToExpr": ["Mathlib.Tactic.AdaptationNote"],
+  "Mathlib.Tactic.ToAdditive.Frontend": ["Lean.Meta.Tactic.TryThis"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
-  "Mathlib.Tactic.TautoSet": ["Mathlib.Data.Set.SymmDiff"],
+  "Mathlib.Tactic.TautoSet":
+  ["Mathlib.Data.Set.Disjoint", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE", "Mathlib.Tactic.Have"],
   "Mathlib.Tactic.Subsingleton": ["Mathlib.Logic.Basic", "Std.Logic"],
   "Mathlib.Tactic.Simps.Basic": ["Batteries.Data.String.Basic"],
   "Mathlib.Tactic.Says": ["Batteries.Data.String.Basic"],
+  "Mathlib.Tactic.Ring.NamePolyVars": ["Mathlib.Algebra.MvPolynomial.Basic"],
   "Mathlib.Tactic.ReduceModChar":
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
+  "Mathlib.Tactic.Qify": ["Mathlib.Data.NNRat.Defs"],
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
-  "Mathlib.Tactic.ProjectionNotation": ["Lean.Elab.AuxDef"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.Positivity.Finset":
   ["Mathlib.Algebra.Order.BigOperators.Group.Finset",
@@ -231,10 +250,16 @@
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
+   "Mathlib.Algebra.Order.Hom.Basic",
    "Mathlib.Algebra.Order.Ring.Basic",
    "Mathlib.Data.Int.CharZero",
    "Mathlib.Data.Nat.Factorial.Basic",
    "Mathlib.Data.PNat.Defs"],
+  "Mathlib.Tactic.Order.CollectFacts":
+  ["Mathlib.Order.BoundedOrder.Basic", "Mathlib.Order.Lattice"],
+  "Mathlib.Tactic.NormNum.Parity": ["Mathlib.Algebra.Ring.Int.Parity"],
+  "Mathlib.Tactic.NormNum.ModEq":
+  ["Mathlib.Data.Int.ModEq", "Mathlib.Tactic.NormNum.DivMod"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":
@@ -243,10 +268,13 @@
   "Mathlib.Tactic.Nontriviality.Core": ["Mathlib.Logic.Nontrivial.Basic"],
   "Mathlib.Tactic.NoncommRing": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Tactic.MoveAdd":
-  ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
+  ["Mathlib.Algebra.Group.Basic",
+   "Mathlib.Init.Order.LinearOrder",
+   "Mathlib.Order.Defs.LinearOrder"],
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
-  "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
+  "Mathlib.Tactic.Linter.UnusedTactic":
+  ["Batteries.Tactic.Unreachable", "Lean.Parser.Syntax"],
   "Mathlib.Tactic.LinearCombination":
   ["Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
@@ -254,10 +282,9 @@
   ["Mathlib.Data.Subtype", "Mathlib.Util.TermReduce"],
   "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
-  "Mathlib.Tactic.GCongr.Core":
-  ["Mathlib.Order.Defs", "Mathlib.Order.Defs.PartialOrder"],
+  "Mathlib.Tactic.GCongr.CoreAttrs": ["Mathlib.Tactic.GCongr.Core"],
+  "Mathlib.Tactic.GCongr.Core": ["Mathlib.Order.Defs"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
-  "Mathlib.Tactic.FunProp.Mor": ["Mathlib.Data.FunLike.Basic"],
   "Mathlib.Tactic.FunProp.Differentiable":
   ["Mathlib.Analysis.Calculus.Deriv.Inv",
    "Mathlib.Analysis.Calculus.FDeriv.Add",
@@ -278,6 +305,8 @@
    "Mathlib.Tactic.Finiteness.Attr",
    "Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FinCases": ["Mathlib.Data.Fintype.Basic"],
+  "Mathlib.Tactic.FieldSimp.Lemmas": ["Mathlib.Algebra.Field.Power"],
+  "Mathlib.Tactic.FieldSimp": ["Mathlib.Tactic.FieldSimp.Attr"],
   "Mathlib.Tactic.Eval": ["Qq.Macro"],
   "Mathlib.Tactic.DeriveFintype":
   ["Mathlib.Data.Fintype.Basic",
@@ -286,6 +315,7 @@
    "Mathlib.Tactic.ProxyType"],
   "Mathlib.Tactic.ContinuousFunctionalCalculus": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Tactic.Continuity": ["Mathlib.Tactic.Continuity.Init"],
+  "Mathlib.Tactic.CongrM": ["Mathlib.Tactic.WithoutCDot"],
   "Mathlib.Tactic.CongrExclamation": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Choose": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Tactic.CategoryTheory.ToApp":
@@ -299,49 +329,60 @@
   "Mathlib.Tactic.CategoryTheory.Coherence":
   ["Mathlib.CategoryTheory.Monoidal.Free.Coherence",
    "Mathlib.Tactic.CategoryTheory.MonoidalComp"],
+  "Mathlib.Tactic.CategoryTheory.CheckCompositions":
+  ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.CategoryTheory.BicategoryCoherence":
   ["Mathlib.CategoryTheory.Bicategory.Coherence",
    "Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
-  "Mathlib.Tactic.CC.MkProof":
-  ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
+  "Mathlib.Tactic.CC.MkProof": ["Mathlib.Tactic.CC.Lemmas"],
+  "Mathlib.Tactic.CC.Datatypes":
+  ["Mathlib.Lean.Meta.CongrTheorems", "Mathlib.Lean.Meta.Datatypes"],
   "Mathlib.Tactic.ByContra": ["Batteries.Tactic.Init"],
   "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
   "Mathlib.Tactic.Bound.Attribute":
   ["Mathlib.Algebra.Group.ZeroOne", "Mathlib.Tactic.Bound.Init"],
   "Mathlib.Tactic.Bound":
   ["Mathlib.Algebra.Order.AbsoluteValue",
-   "Mathlib.Algebra.Order.Floor",
    "Mathlib.Analysis.Analytic.Basic",
    "Mathlib.Tactic.Bound.Init"],
-  "Mathlib.Tactic.Basic": ["Mathlib.Tactic.Linter.OldObtain"],
+  "Mathlib.Tactic.Basic":
+  ["Mathlib.Tactic.Linter.OldObtain", "Mathlib.Tactic.Simproc.ExistsAndEq"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
+  "Mathlib.Std.Data.HashMap": ["Std.Data.HashMap.AdditionalOperations"],
+  "Mathlib.RingTheory.SimpleModule.Basic": ["Mathlib.Data.Matrix.Mul"],
+  "Mathlib.RingTheory.PowerSeries.Restricted": ["Mathlib.Tactic.Bound"],
+  "Mathlib.RingTheory.PowerSeries.Evaluation":
+  ["Mathlib.RingTheory.PowerSeries.PiTopology"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
-  "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.RingTheory.MvPowerSeries.Basic":
   ["Mathlib.Algebra.MvPolynomial.Eval"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
   "Mathlib.RingTheory.KrullDimension.Basic":
   ["Mathlib.Algebra.MvPolynomial.CommRing", "Mathlib.Algebra.Polynomial.Basic"],
-  "Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs":
-  ["Mathlib.Tactic.Algebraize"],
-  "Mathlib.RingTheory.Finiteness.Defs":
-  ["Mathlib.Data.Finsupp.Defs", "Mathlib.Tactic.Algebraize"],
-  "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
+  "Mathlib.RingTheory.Ideal.Norm.AbsNorm":
+  ["Mathlib.LinearAlgebra.FreeModule.IdealQuotient"],
+  "Mathlib.RingTheory.Finiteness.Defs": ["Mathlib.Data.Finsupp.Defs"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.RepresentationTheory.FDRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.Probability.Notation":
-  ["Mathlib.MeasureTheory.Decomposition.Lebesgue",
-   "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
+  ["Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic",
+   "Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue"],
+  "Mathlib.Probability.Kernel.Proper":
+  ["Mathlib.Probability.Kernel.Composition.CompNotation"],
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
+  "Mathlib.Order.Interval.Finset.Nat":
+  ["Mathlib.Order.Interval.Finset.SuccPred"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.Order.Filter.Bases.Basic": ["Mathlib.Tactic.Subsingleton"],
+  "Mathlib.Order.Filter.AtTopBot.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Order.Defs.PartialOrder": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.BoundedOrder.Basic": ["Mathlib.Tactic.Finiteness.Attr"],
@@ -351,18 +392,29 @@
   "Mathlib.NumberTheory.Harmonic.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.NumberTheory.Cyclotomic.Basic": ["Mathlib.Init.Core"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
+  "Mathlib.MeasureTheory.MeasurableSpace.Embedding": ["Mathlib.Tactic.FunProp"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
+  "Mathlib.Logic.Relation": ["Mathlib.Logic.Basic"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
-  "Mathlib.Logic.Equiv.Defs": ["Mathlib.Data.Bool.Basic"],
-  "Mathlib.Logic.Basic": ["Batteries.Tactic.Trans"],
+  "Mathlib.Logic.Equiv.Prod": ["Mathlib.Data.Prod.PProd"],
+  "Mathlib.Logic.Equiv.Fin.Basic": ["Batteries.Data.Fin.Lemmas"],
+  "Mathlib.Logic.Equiv.Defs":
+  ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
+  "Mathlib.Logic.Basic":
+  ["Batteries.Tactic.Trans", "Mathlib.Tactic.AdaptationNote"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.LinearAlgebra.Basic": ["Mathlib.Algebra.BigOperators.Group.Finset"],
   "Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional": ["Mathlib.Init.Core"],
-  "Mathlib.LinearAlgebra.AffineSpace.Basic": ["Mathlib.Algebra.AddTorsor"],
-  "Mathlib.Lean.Meta.RefinedDiscrTree.Pi": ["Mathlib.Algebra.Group.Pi.Basic"],
+  "Mathlib.LinearAlgebra.AffineSpace.Defs": ["Mathlib.Algebra.AddTorsor.Defs"],
+  "Mathlib.LinearAlgebra.AffineSpace.Basic":
+  ["Mathlib.Algebra.AddTorsor", "Mathlib.Algebra.AddTorsor.Defs"],
+  "Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs":
+  ["Mathlib.LinearAlgebra.AffineSpace.Defs"],
+  "Mathlib.LinearAlgebra.AffineSpace.AffineMap":
+  ["Mathlib.LinearAlgebra.AffineSpace.Defs"],
   "Mathlib.Lean.Meta": ["Batteries.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
@@ -372,37 +424,58 @@
   "Mathlib.Geometry.Manifold.PoincareConjecture":
   ["Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected",
    "Mathlib.Util.Superscript"],
+  "Mathlib.Geometry.Manifold.Notation":
+  ["Mathlib.Geometry.Manifold.ContMDiff.Defs",
+   "Mathlib.Geometry.Manifold.MFDeriv.Defs"],
+  "Mathlib.FieldTheory.Normal.Defs": ["Mathlib.FieldTheory.Galois.Notation"],
+  "Mathlib.FieldTheory.Galois.Notation": ["Mathlib.Algebra.Algebra.Equiv"],
+  "Mathlib.FieldTheory.Finite.Basic": ["Mathlib.FieldTheory.Galois.Notation"],
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
+  "Mathlib.Deprecated.Cardinal.Finite": ["Mathlib.Data.Finite.Card"],
   "Mathlib.Deprecated.ByteArray": ["Batteries.Data.ByteSubarray"],
+  "Mathlib.Data.ZMod.Defs": ["Mathlib.Algebra.Ring.GrindInstances"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
+  "Mathlib.Data.String.Basic":
+  ["Mathlib.Algebra.Order.Group.Nat",
+   "Mathlib.Data.Char",
+   "Mathlib.Data.List.Lex"],
   "Mathlib.Data.Set.Image":
   ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
+  "Mathlib.Data.Rat.NatSqrt.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
+  "Mathlib.Data.Part": ["Mathlib.Algebra.Notation.Defs"],
   "Mathlib.Data.PEquiv": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.Option.NAry":
   ["Batteries.Tactic.Init", "Mathlib.Logic.Function.Defs"],
+  "Mathlib.Data.Nat.Init": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
+  "Mathlib.Data.Nat.Basic": ["Mathlib.Tactic.GCongr.Core"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
+  "Mathlib.Data.List.Sigma": ["Batteries.Tactic.Congr"],
+  "Mathlib.Data.List.Rotate": ["Mathlib.Data.Quot"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
   "Mathlib.Data.List.ProdSigma":
   ["Batteries.Data.Nat.Lemmas", "Mathlib.Data.List.Basic"],
   "Mathlib.Data.List.Permutation":
   ["Mathlib.Data.List.Flatten", "Mathlib.Data.List.Lemmas"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertIdx"],
+  "Mathlib.Data.List.Flatten": ["Mathlib.Tactic.GCongr.Core"],
   "Mathlib.Data.List.Defs": ["Batteries.Data.RBMap.Basic"],
   "Mathlib.Data.List.Basic":
   ["Mathlib.Control.Basic", "Mathlib.Data.Option.Basic"],
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
-  "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order"],
+  "Mathlib.Data.Int.Init": ["Batteries.Tactic.Init"],
+  "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order", "Mathlib.Tactic.OfNat"],
   "Mathlib.Data.Int.ConditionallyCompleteOrder":
   ["Mathlib.Order.ConditionallyCompleteLattice.Basic"],
+  "Mathlib.Data.Int.Basic": ["Mathlib.Tactic.OfNat"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finsupp.Notation": ["Mathlib.Data.Finsupp.Single"],
   "Mathlib.Data.Finset.Insert": ["Mathlib.Data.Finset.Attr"],
-  "Mathlib.Data.ENat.Lattice": ["Mathlib.Algebra.Group.Action.Defs"],
+  "Mathlib.Data.Finset.Image": ["Mathlib.Data.Finset.Lattice.Lemmas"],
   "Mathlib.Data.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Bool.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
@@ -413,27 +486,43 @@
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
+  "Mathlib.Combinatorics.Matroid.Rank.ENat": ["Mathlib.Tactic.TautoSet"],
+  "Mathlib.Combinatorics.Matroid.Minor.Contract": ["Mathlib.Tactic.TautoSet"],
+  "Mathlib.Combinatorics.Matroid.Minor.Basic": ["Mathlib.Tactic.TautoSet"],
+  "Mathlib.Combinatorics.Graph.Basic": ["Mathlib.Data.Set.Basic"],
   "Mathlib.Combinatorics.Additive.ApproximateSubgroup":
   ["Mathlib.Tactic.Bound"],
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono"],
   "Mathlib.CategoryTheory.Preadditive.Basic": ["Mathlib.Algebra.Module.End"],
+  "Mathlib.CategoryTheory.NatTrans": ["Mathlib.Tactic.CategoryTheory.Reassoc"],
   "Mathlib.CategoryTheory.Monoidal.Rigid.Basic":
   ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
+  "Mathlib.CategoryTheory.Monoidal.Mon_":
+  ["Mathlib.CategoryTheory.Monoidal.Attr"],
   "Mathlib.CategoryTheory.Monoidal.Braided.Basic":
   ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
+  "Mathlib.CategoryTheory.Monoidal.Attr": ["Lean.LabelAttribute"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
+  "Mathlib.CategoryTheory.Iso": ["Mathlib.Tactic.CategoryTheory.Reassoc"],
+  "Mathlib.CategoryTheory.Functor.Basic":
+  ["Mathlib.Tactic.CategoryTheory.CheckCompositions"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Lax":
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
-  "Mathlib.CategoryTheory.Bicategory.Adjunction":
+  "Mathlib.CategoryTheory.Bicategory.Adjunction.Basic":
   ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
+  "Mathlib.Analysis.Real.Pi.Chudnovsky":
+  ["Batteries.Data.Rat.Float",
+   "Mathlib.Analysis.SpecialFunctions.Integrals.Basic"],
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Analysis.Normed.Group.AddCircle":
+  ["Mathlib.Topology.Instances.AddCircle.Real"],
   "Mathlib.Analysis.InnerProductSpace.PiL2": ["Mathlib.Util.Superscript"],
   "Mathlib.Analysis.InnerProductSpace.Defs": ["Mathlib.Data.Complex.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
@@ -442,16 +531,30 @@
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital":
   ["Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital"],
+  "Mathlib.AlgebraicTopology.SimplexCategory.Defs":
+  ["Mathlib.Util.Superscript"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
-  "Mathlib.Algebra.ZeroOne.Lemmas": ["Batteries.Tactic.Init"],
+  "Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic":
+  ["Mathlib.Tactic.Ring.NamePolyVars"],
+  "Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic":
+  ["Mathlib.Tactic.Ring.NamePolyVars"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
+  "Mathlib.Algebra.Ring.Int.Defs": ["Mathlib.Algebra.Ring.GrindInstances"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
+  "Mathlib.Algebra.Regular.Defs": ["Mathlib.Algebra.Notation.Defs"],
+  "Mathlib.Algebra.Order.Ring.Nat": ["Mathlib.Algebra.Order.Group.Nat"],
   "Mathlib.Algebra.Order.Quantale": ["Mathlib.Tactic.Variable"],
-  "Mathlib.Algebra.Order.Pi": ["Mathlib.Algebra.ZeroOne.Lemmas"],
+  "Mathlib.Algebra.Order.Pi": ["Mathlib.Algebra.Notation.Lemmas"],
+  "Mathlib.Algebra.Order.Nonneg.Field": ["Mathlib.Algebra.Order.Field.InjSurj"],
+  "Mathlib.Algebra.Order.Field.Subfield":
+  ["Mathlib.Algebra.Order.Field.InjSurj"],
   "Mathlib.Algebra.Order.CauSeq.Basic": ["Mathlib.Data.Setoid.Basic"],
+  "Mathlib.Algebra.Notation.Lemmas": ["Batteries.Tactic.Init"],
   "Mathlib.Algebra.MonoidAlgebra.Basic":
   ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
+  "Mathlib.Algebra.Module.Submodule.Order":
+  ["Mathlib.Algebra.Order.Group.InjSurj"],
   "Mathlib.Algebra.Module.LinearMap.Star":
   ["Mathlib.Algebra.Module.Equiv",
    "Mathlib.Algebra.Module.Equiv.Defs",
@@ -459,23 +562,31 @@
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Module.Equiv": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
-  "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
+  "Mathlib.Algebra.GroupWithZero.Units.Basic": ["Mathlib.Data.Int.Basic"],
   "Mathlib.Algebra.Group.Units.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
+  "Mathlib.Algebra.Group.Pointwise.Set.Scalar":
+  ["Mathlib.Algebra.Group.Pointwise.Set.Basic"],
+  "Mathlib.Algebra.Group.Pointwise.Finset.Scalar":
+  ["Mathlib.Algebra.Group.Pointwise.Finset.Basic"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
-  "Mathlib.Algebra.Group.Defs": ["Mathlib.Tactic.OfNat"],
+  "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
+  "Mathlib.Algebra.Group.Even": ["Mathlib.Data.Set.Operations"],
+  "Mathlib.Algebra.Group.Defs":
+  ["Mathlib.Algebra.Notation.Defs",
+   "Mathlib.Logic.Function.Defs",
+   "Mathlib.Tactic.OfNat"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
   "Mathlib.Algebra.Category.MonCat.Basic":
   ["Mathlib.Algebra.Ring.Action.Group"],
+  "Mathlib.Algebra.BigOperators.Pi": ["Mathlib.Data.Finset.Lattice.Fold"],
   "Mathlib.Algebra.BigOperators.Group.List.Lemmas":
   ["Mathlib.Data.List.ProdSigma"],
   "Mathlib.Algebra.BigOperators.Group.List": ["Mathlib.Data.List.ProdSigma"],
   "Mathlib.Algebra.Algebra.Subalgebra.Order":
   ["Mathlib.Algebra.Module.Submodule.Order"],
-  "Mathlib.Algebra.Order.Ring.Nat":
-  ["Mathlib.Algebra.Order.Group.Nat"],
   "Batteries.Tactic.OpenPrivate": ["Lean.Parser.Module"],
   "Batteries.Tactic.Omega.OmegaM": ["Batteries.Tactic.Omega.Int"],
   "Batteries.Tactic.Omega.Frontend": ["Batteries.Tactic.Omega.Logic"],

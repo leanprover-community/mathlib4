@@ -63,9 +63,7 @@ theorem projectSubobject_factors [HasFiniteLimits C] [PreservesFiniteLimits T]
     {A : StructuredArrow S T} :
     ∀ P : Subobject A, ∃ q, q ≫ T.map (projectSubobject P).arrow = A.hom :=
   Subobject.ind _ fun P f hf =>
-    ⟨P.hom ≫ T.map (Subobject.underlyingIso _).inv, by
-      dsimp
-      simp [← T.map_comp]⟩
+    ⟨P.hom ≫ T.map (Subobject.underlyingIso _).inv, by simp [← T.map_comp]⟩
 
 /-- A subobject of the underlying object of a structured arrow can be lifted to a subobject of
     the structured arrow, provided that there is a morphism making the subobject into a structured
@@ -88,19 +86,18 @@ theorem lift_projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T]
       · fapply isoMk
         · exact Subobject.underlyingIso _
         · exact (cancel_mono (T.map f.right)).1 (by dsimp; simpa [← T.map_comp] using hq)
-      · exact ext _ _ (by dsimp; simp))
+      · exact ext _ _ (by simp))
 
 /-- If `A : S → T.obj B` is a structured arrow for `S : D` and `T : C ⥤ D`, then we can explicitly
     describe the subobjects of `A` as the subobjects `P` of `B` in `C` for which `A.hom` factors
     through the image of `P` under `T`. -/
-@[simps!]
 def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : StructuredArrow S T) :
     Subobject A ≃o { P : Subobject A.right // ∃ q, q ≫ T.map P.arrow = A.hom } where
   toFun P := ⟨projectSubobject P, projectSubobject_factors P⟩
   invFun P := liftSubobject P.val P.prop.choose_spec
   left_inv _ := lift_projectSubobject _ _
   right_inv P := Subtype.ext (by simp only [liftSubobject, homMk_right, projectSubobject_mk,
-      Subobject.mk_arrow, Subtype.coe_eta])
+      Subobject.mk_arrow])
   map_rel_iff' := by
     apply Subobject.ind₂
     intro P Q f g hf hg
@@ -110,10 +107,6 @@ def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : Structured
     · simp
     · refine Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right ?_
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] CategoryTheory.StructuredArrow.subobjectEquiv_symm_apply
-  CategoryTheory.StructuredArrow.subobjectEquiv_apply_coe
 
 /-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
     well-powered. -/

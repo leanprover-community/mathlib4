@@ -21,8 +21,7 @@ to the whole tensor algebra in an `R`-linear way.
 
 The main result of this file is the universal property of the free product,
 which establishes the free product as the coproduct in the category of
-general $R$-algebras. (In the category of commutative $R$-algebras, the coproduct
-is just `PiTensorProduct`.)
+general $R$-algebras.
 
 ## Main definitions
 
@@ -47,17 +46,17 @@ universe u v w w'
 namespace DirectSum
 open scoped DirectSum
 
-/--A variant of `DirectSum.induction_on` that uses `DirectSum.lof` instead of `.of`-/
-theorem induction_lon {R : Type*} [Semiring R] {ι: Type*} [DecidableEq ι]
-    {M : ι → Type*} [(i: ι) → AddCommMonoid <| M i] [(i : ι) → Module R (M i)]
-    {C: (⨁ i, M i) → Prop} (x : ⨁ i, M i)
-    (H_zero : C 0)
-    (H_basic : ∀ i (x : M i), C (lof R ι M i x))
-    (H_plus : ∀ (x y : ⨁ i, M i), C x → C y → C (x + y)) : C x := by
+/-- A variant of `DirectSum.induction_on` that uses `DirectSum.lof` instead of `.of` -/
+theorem induction_lon {R : Type*} [Semiring R] {ι : Type*} [DecidableEq ι]
+    {M : ι → Type*} [(i : ι) → AddCommMonoid <| M i] [(i : ι) → Module R (M i)]
+    {motive : (⨁ i, M i) → Prop} (x : ⨁ i, M i)
+    (zero : motive 0)
+    (lof : ∀ i (x : M i), motive (lof R ι M i x))
+    (add : ∀ (x y : ⨁ i, M i), motive x → motive y → motive (x + y)) : motive x := by
   induction x using DirectSum.induction_on with
-  | H_zero => exact H_zero
-  | H_basic => exact H_basic _ _
-  | H_plus x y hx hy => exact H_plus x y hx hy
+  | zero => exact zero
+  | of => exact lof _ _
+  | add x y hx hy => exact add x y hx hy
 
 end DirectSum
 
@@ -66,10 +65,10 @@ universe uS uA uB
 
 open scoped Function -- required for scoped `on` notation
 
-/--If two `R`-algebras are `R`-equivalent and their quotients by a relation `rel` are defined,
+/-- If two `R`-algebras are `R`-equivalent and their quotients by a relation `rel` are defined,
 then their quotients are also `R`-equivalent.
 
-(Special case of the third isomorphism theorem.)-/
+(Special case of the third isomorphism theorem.) -/
 def algEquivQuotAlgEquiv
     {R : Type u} [CommSemiring R] {A B : Type v} [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A ≃ₐ[R] B) (rel : A → A → Prop) :
@@ -85,20 +84,16 @@ def algEquivQuotAlgEquiv
       fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
     (by ext b; simp) (by ext a; simp)
 
-@[deprecated (since := "2024-12-07")] alias algEquiv_quot_algEquiv := algEquivQuotAlgEquiv
-
-/--If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
+/-- If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
 then their quotients are also equivalent.
 
 (Special case of `algEquiv_quot_algEquiv` when `R = ℕ`, which in turn is a special
-case of the third isomorphism theorem.)-/
+case of the third isomorphism theorem.) -/
 def equivQuotEquiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel : A → A → Prop) :
     RingQuot rel ≃+* RingQuot (rel on f.symm) :=
   let f_alg : A ≃ₐ[ℕ] B :=
     AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
   algEquivQuotAlgEquiv f_alg rel |>.toRingEquiv
-
-@[deprecated (since := "2024-12-07")] alias equiv_quot_equiv := equivQuotEquiv
 
 end RingQuot
 
@@ -114,53 +109,60 @@ namespace LinearAlgebra.FreeProduct
 
 instance : Module R (⨁ i, A i) := by infer_instance
 
-/--The free tensor algebra over a direct sum of `R`-algebras, before
-taking the quotient by the free product relation.-/
+/-- The free tensor algebra over a direct sum of `R`-algebras, before
+taking the quotient by the free product relation -/
 abbrev FreeTensorAlgebra := TensorAlgebra R (⨁ i, A i)
 
-/--The direct sum of tensor powers of a direct sum of `R`-algebras,
-before taking the quotient by the free product relation.-/
+/-- The direct sum of tensor powers of a direct sum of `R`-algebras,
+before taking the quotient by the free product relation -/
 abbrev PowerAlgebra := ⨁ (n : ℕ), TensorPower R n (⨁ i, A i)
 
-/--The free tensor algebra and its representation as an infinite direct sum
-of tensor powers are (noncomputably) equivalent as `R`-algebras.-/
-@[reducible] noncomputable def powerAlgebra_equiv_freeAlgebra :
+/-- The free tensor algebra and its representation as an infinite direct sum
+of tensor powers are (noncomputably) equivalent as `R`-algebras. -/
+@[reducible] noncomputable def powerAlgebraEquivFreeTensorAlgebra :
     PowerAlgebra R A ≃ₐ[R] FreeTensorAlgebra R A :=
   TensorAlgebra.equivDirectSum.symm
 
-/--The generating equivalence relation for elements of the free tensor algebra
-that are identified in the free product.-/
+@[deprecated (since := "2025-05-05")] alias powerAlgebra_equiv_freeAlgebra :=
+  powerAlgebraEquivFreeTensorAlgebra
+
+/-- The generating equivalence relation for elements of the free tensor algebra
+that are identified in the free product -/
 inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
-  | id  : ∀ {i : I}, rel (ι R <| lof R I A i 1) 1
+  | id : ∀ {i : I}, rel (ι R <| lof R I A i 1) 1
   | prod : ∀ {i : I} {a₁ a₂ : A i},
       rel
         (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))
         (ι R <| lof R I A i (a₁ * a₂))
 
-open scoped Function -- required for scoped `on` notation
+open scoped Function
 
-/--The generating equivalence relation for elements of the power algebra
-that are identified in the free product. -/
+/-- The generating equivalence relation for elements of the power algebra
+that are identified in the free product -/
 @[reducible, simp] def rel' := rel R A on ofDirectSum
 
 theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
 
 
-/--The free product of the collection of `R`-algebras `A i`, as a quotient of
-`FreeTensorAlgebra R A`.-/
+/-- The free product of the collection of `R`-algebras `A i`, as a quotient of
+`FreeTensorAlgebra R A` -/
 @[reducible] def _root_.LinearAlgebra.FreeProduct := RingQuot <| FreeProduct.rel R A
 
-/--The free product of the collection of `R`-algebras `A i`, as a quotient of `PowerAlgebra R A`-/
-@[reducible] def _root_.LinearAlgebra.FreeProductOfPowers := RingQuot <| FreeProduct.rel' R A
+/-- The free product of the collection of `R`-algebras `A i`,
+as a quotient of `PowerAlgebra R A` -/
+@[reducible] def asPowers := RingQuot <| FreeProduct.rel' R A
 
-@[deprecated (since := "2024-12-07")]
-alias _root_.LinearAlgebra.FreeProduct_ofPowers := LinearAlgebra.FreeProductOfPowers
+@[deprecated (since := "2025-05-01")]
+alias _root_.LinearAlgebra.FreeProductOfPowers := asPowers
 
-/--The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct_ofPowers`-/
-noncomputable def equivPowerAlgebra : FreeProductOfPowers R A ≃ₐ[R] FreeProduct R A :=
+/-- The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct.asPowers`. -/
+noncomputable def asPowersEquiv : asPowers R A ≃ₐ[R] FreeProduct R A :=
   RingQuot.algEquivQuotAlgEquiv
-    (FreeProduct.powerAlgebra_equiv_freeAlgebra R A |>.symm) (FreeProduct.rel R A)
+    (powerAlgebraEquivFreeTensorAlgebra R A |>.symm) (FreeProduct.rel R A)
   |>.symm
+
+@[deprecated (since := "2025-05-01")]
+alias equivPowerAlgebra := asPowersEquiv
 
 open RingQuot Function
 
@@ -169,53 +171,53 @@ local infixr:60 " ∘ₐ " => AlgHom.comp
 instance instSemiring : Semiring (FreeProduct R A) := by infer_instance
 instance instAlgebra : Algebra R (FreeProduct R A) := by infer_instance
 
-/--The canonical quotient map `FreeTensorAlgebra R A →ₐ[R] FreeProduct R A`,
-as an `R`-algebra homomorphism.-/
+/-- The canonical quotient map `FreeTensorAlgebra R A →ₐ[R] FreeProduct R A`,
+as an `R`-algebra homomorphism -/
 abbrev mkAlgHom : FreeTensorAlgebra R A →ₐ[R] FreeProduct R A :=
   RingQuot.mkAlgHom R (rel R A)
 
-/--The canonical linear map from the direct sum of the `A i` to the free product.-/
+/-- The canonical linear map from the direct sum of the `A i` to the free product -/
 abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct R A :=
   (mkAlgHom R A).toLinearMap ∘ₗ TensorAlgebra.ι R (M := ⨁ i, A i)
 
 @[simp] theorem ι_apply (x : ⨁ i, A i) :
-  ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
+    ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
     aesop (add simp [ι', mkAlgHom, RingQuot.mkAlgHom, mkRingHom])
 
-/--The injection into the free product of any `1 : A i` is the 1 of the free product.-/
+/-- The injection into the free product of any `1 : A i` is the 1 of the free product. -/
 theorem identify_one (i : I) : ι' R A (DirectSum.lof R I A i 1) = 1 := by
   suffices ι' R A (DirectSum.lof R I A i 1) = mkAlgHom R A 1 by simpa
   exact RingQuot.mkAlgHom_rel R <| rel_id R A (i := i)
 
-/--Multiplication in the free product of the injections of any two `aᵢ aᵢ': A i` for
-the same `i` is just the injection of multiplication `aᵢ * aᵢ'` in `A i`.-/
+/-- Multiplication in the free product of the injections of any two `aᵢ aᵢ': A i` for
+the same `i` is just the injection of multiplication `aᵢ * aᵢ'` in `A i`. -/
 theorem mul_injections (a₁ a₂ : A i) :
     ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
   convert RingQuot.mkAlgHom_rel R <| rel.prod
   simp
 
-/--The `i`th canonical injection, from `A i` to the free product, as
-a linear map.-/
+/-- The `i`th canonical injection, from `A i` to the free product, as
+a linear map -/
 abbrev lof (i : I) : A i →ₗ[R] FreeProduct R A :=
   ι' R A ∘ₗ DirectSum.lof R I A i
 
-/--`lof R A i 1 = 1` for all `i`.-/
+/-- `lof R A i 1 = 1` for all `i`. -/
 theorem lof_map_one (i : I) : lof R A i 1 = 1 := by
   rw [lof]; dsimp [mkAlgHom]; exact identify_one R A i
 
-/--The `i`th canonical injection, from `A i` to the free product.-/
+/-- The `i`th canonical injection, from `A i` to the free product -/
 irreducible_def ι (i : I) : A i →ₐ[R] FreeProduct R A :=
   AlgHom.ofLinearMap (ι' R A ∘ₗ DirectSum.lof R I A i)
     (lof_map_one R A i) (mul_injections R A · · |>.symm)
 
-/--The family of canonical injection maps, with `i` left implicit.-/
+/-- The family of canonical injection maps, with `i` left implicit -/
 irreducible_def of {i : I} : A i →ₐ[R] FreeProduct R A := ι R A i
 
 
-/--Universal property of the free product of algebras:
+/-- Universal property of the free product of algebras:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
-to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.-/
+to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`. -/
 @[simps] def lift : ({i : I} → A i →ₐ[R] B) ≃ (FreeProduct R A →ₐ[R] B) where
   toFun maps :=
     RingQuot.liftAlgHom R ⟨
@@ -234,12 +236,15 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
     ext i a
     aesop (add simp [ι, ι'])
 
-/--Universal property of the free product of algebras, property:
+/-- Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
-to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.-/
-theorem lift_comp_ι : (lift R A maps) ∘ₐ (ι R A i) = maps := by
+to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`. -/
+@[simp↓] theorem lift_comp_ι : lift R A maps ∘ₐ ι R A i = maps := by
   ext a
   simp [lift_apply, ι]
+
+@[simp↓] theorem lift_algebraMap (r : R) : lift R A maps (algebraMap R _ r) = algebraMap R _ r := by
+  rw [lift_apply, AlgHom.commutes]
 
 @[aesop safe destruct] theorem lift_unique
     (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps) :

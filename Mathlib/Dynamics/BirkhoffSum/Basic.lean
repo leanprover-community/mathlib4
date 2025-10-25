@@ -3,8 +3,8 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Birkhoff sums
@@ -52,6 +52,10 @@ theorem birkhoffSum_add (f : α → α) (g : α → M) (m n : ℕ) (x : α) :
     birkhoffSum f g (m + n) x = birkhoffSum f g m x + birkhoffSum f g n (f^[m] x) := by
   simp_rw [birkhoffSum, sum_range_add, add_comm m, iterate_add_apply]
 
+theorem birkhoffSum_add' (f : α → α) (g g' : α → M) (n : ℕ) (x : α) :
+    birkhoffSum f (g + g') n x = birkhoffSum f g n x + birkhoffSum f g' n x := by
+  simpa [birkhoffSum] using sum_add_distrib
+
 theorem Function.IsFixedPt.birkhoffSum_eq {f : α → α} {x : α} (h : IsFixedPt f x) (g : α → M)
     (n : ℕ) : birkhoffSum f g n x = n • g x := by
   simp [birkhoffSum, (h.iterate _).eq]
@@ -61,11 +65,28 @@ theorem map_birkhoffSum {F N : Type*} [AddCommMonoid N] [FunLike F M N] [AddMono
     g' (birkhoffSum f g n x) = birkhoffSum f (g' ∘ g) n x :=
   map_sum g' _ _
 
+/-- If a function `φ` is invariant under a function `f` (i.e., `φ ∘ f = φ`), then the Birkhoff sum
+of `φ` over `f` for `n` iterations is equal to `n • φ`. -/
+theorem birkhoffSum_of_comp_eq {f : α → α} {φ : α → M} (h : φ ∘ f = φ) (n : ℕ) :
+    birkhoffSum f φ n = n • φ := by
+  funext x
+  suffices ∀ k, φ (f^[k] x) = φ x by simp [birkhoffSum, this]
+  intro k
+  exact congrFun (iterate_invariant h k) x
+
 end AddCommMonoid
 
 section AddCommGroup
 
 variable {α G : Type*} [AddCommGroup G]
+
+theorem birkhoffSum_neg (f : α → α) (g : α → G) (n : ℕ) (x : α) :
+    birkhoffSum f (-g) n x = -birkhoffSum f g n x := by
+  simp [birkhoffSum]
+
+theorem birkhoffSum_sub (f : α → α) (g g' : α → G) (n : ℕ) (x : α) :
+    birkhoffSum f (g - g') n x = birkhoffSum f g n x - birkhoffSum f g' n x := by
+  simp [birkhoffSum]
 
 /-- Birkhoff sum is "almost invariant" under `f`:
 the difference between `birkhoffSum f g n (f x)` and `birkhoffSum f g n x`

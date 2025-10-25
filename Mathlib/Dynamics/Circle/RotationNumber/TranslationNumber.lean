@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.SemiconjSup
@@ -25,8 +24,8 @@ translation number of `f : CircleDeg1Lift`, prove some estimates relating `f^n(x
 case of a continuous map `f` we also prove that `f` admits a point `x` such that `f^n(x)=x+m` if and
 only if `τ(f)=m/n`.
 
-Maps of this type naturally appear as lifts of orientation preserving circle homeomorphisms. More
-precisely, let `f` be an orientation preserving homeomorphism of the circle $S^1=ℝ/ℤ$, and
+Maps of this type naturally appear as lifts of orientation-preserving circle homeomorphisms. More
+precisely, let `f` be an orientation-preserving homeomorphism of the circle $S^1=ℝ/ℤ$, and
 consider a real number `a` such that
 `⟦a⟧ = f 0`, where `⟦⟧` means the natural projection `ℝ → ℝ/ℤ`. Then there exists a unique
 continuous function `F : ℝ → ℝ` such that `F 0 = a` and `⟦F x⟧ = f ⟦x⟧` for all `x` (this fact is
@@ -124,7 +123,7 @@ open Function hiding Commute
 -/
 
 /-- A lift of a monotone degree one map `S¹ → S¹`. -/
-structure CircleDeg1Lift extends ℝ →o ℝ : Type where
+structure CircleDeg1Lift : Type extends ℝ →o ℝ where
   map_add_one' : ∀ x, toFun (x + 1) = toFun x + 1
 
 namespace CircleDeg1Lift
@@ -234,7 +233,6 @@ theorem isUnit_iff_bijective {f : CircleDeg1Lift} : IsUnit f ↔ Bijective f :=
 theorem coe_pow : ∀ n : ℕ, ⇑(f ^ n) = f^[n]
   | 0 => rfl
   | n + 1 => by
-    ext x
     simp [coe_pow n, pow_succ]
 
 theorem semiconjBy_iff_semiconj {f g₁ g₂ : CircleDeg1Lift} :
@@ -253,11 +251,9 @@ theorem commute_iff_commute {f g : CircleDeg1Lift} : Commute f g ↔ Function.Co
 `Multiplicative ℝ` to `CircleDeg1Liftˣ`, so the translation by `x` is
 `translation (Multiplicative.ofAdd x)`. -/
 def translate : Multiplicative ℝ →* CircleDeg1Liftˣ := MonoidHom.toHomUnits <|
-  { toFun := fun x =>
-      ⟨⟨fun y => x.toAdd + y, fun _ _ h => add_le_add_left h _⟩, fun _ =>
-        (add_assoc _ _ _).symm⟩
-    map_one' := ext <| zero_add
-    map_mul' := fun _ _ => ext <| add_assoc _ _ }
+  { toFun x := ⟨⟨fun y => x.toAdd + y, add_right_mono⟩, fun _ => (add_assoc ..).symm⟩
+    map_one' := ext zero_add
+    map_mul' _ _ := ext <| add_assoc _ _ }
 
 @[simp]
 theorem translate_apply (x y : ℝ) : translate (Multiplicative.ofAdd x) y = x + y :=
@@ -409,17 +405,17 @@ theorem map_map_zero_le : f (g 0) ≤ f 0 + ⌈g 0⌉ :=
 theorem floor_map_map_zero_le : ⌊f (g 0)⌋ ≤ ⌊f 0⌋ + ⌈g 0⌉ :=
   calc
     ⌊f (g 0)⌋ ≤ ⌊f 0 + ⌈g 0⌉⌋ := floor_mono <| f.map_map_zero_le g
-    _ = ⌊f 0⌋ + ⌈g 0⌉ := floor_add_int _ _
+    _ = ⌊f 0⌋ + ⌈g 0⌉ := floor_add_intCast _ _
 
 theorem ceil_map_map_zero_le : ⌈f (g 0)⌉ ≤ ⌈f 0⌉ + ⌈g 0⌉ :=
   calc
     ⌈f (g 0)⌉ ≤ ⌈f 0 + ⌈g 0⌉⌉ := ceil_mono <| f.map_map_zero_le g
-    _ = ⌈f 0⌉ + ⌈g 0⌉ := ceil_add_int _ _
+    _ = ⌈f 0⌉ + ⌈g 0⌉ := ceil_add_intCast _ _
 
 theorem map_map_zero_lt : f (g 0) < f 0 + g 0 + 1 :=
   calc
     f (g 0) ≤ f 0 + ⌈g 0⌉ := f.map_map_zero_le g
-    _ < f 0 + (g 0 + 1) := add_lt_add_left (ceil_lt_add_one _) _
+    _ < f 0 + (g 0 + 1) := by gcongr; exact ceil_lt_add_one _
     _ = f 0 + g 0 + 1 := (add_assoc _ _ _).symm
 
 theorem le_map_of_map_zero (x : ℝ) : f 0 + ⌊x⌋ ≤ f x :=
@@ -432,18 +428,18 @@ theorem le_map_map_zero : f 0 + ⌊g 0⌋ ≤ f (g 0) :=
 
 theorem le_floor_map_map_zero : ⌊f 0⌋ + ⌊g 0⌋ ≤ ⌊f (g 0)⌋ :=
   calc
-    ⌊f 0⌋ + ⌊g 0⌋ = ⌊f 0 + ⌊g 0⌋⌋ := (floor_add_int _ _).symm
+    ⌊f 0⌋ + ⌊g 0⌋ = ⌊f 0 + ⌊g 0⌋⌋ := (floor_add_intCast _ _).symm
     _ ≤ ⌊f (g 0)⌋ := floor_mono <| f.le_map_map_zero g
 
 theorem le_ceil_map_map_zero : ⌈f 0⌉ + ⌊g 0⌋ ≤ ⌈(f * g) 0⌉ :=
   calc
-    ⌈f 0⌉ + ⌊g 0⌋ = ⌈f 0 + ⌊g 0⌋⌉ := (ceil_add_int _ _).symm
+    ⌈f 0⌉ + ⌊g 0⌋ = ⌈f 0 + ⌊g 0⌋⌉ := (ceil_add_intCast _ _).symm
     _ ≤ ⌈f (g 0)⌉ := ceil_mono <| f.le_map_map_zero g
 
 theorem lt_map_map_zero : f 0 + g 0 - 1 < f (g 0) :=
   calc
     f 0 + g 0 - 1 = f 0 + (g 0 - 1) := add_sub_assoc _ _ _
-    _ < f 0 + ⌊g 0⌋ := add_lt_add_left (sub_one_lt_floor _) _
+    _ < f 0 + ⌊g 0⌋ := by gcongr; exact sub_one_lt_floor _
     _ ≤ f (g 0) := f.le_map_map_zero g
 
 theorem dist_map_map_zero_lt : dist (f 0 + g 0) (f (g 0)) < 1 := by
@@ -613,7 +609,7 @@ theorem translationNumber_eq_of_dist_bounded {f g : CircleDeg1Lift} (C : ℝ)
 
 @[simp]
 theorem translationNumber_one : τ 1 = 0 :=
-  translationNumber_eq_of_tendsto₀ _ <| by simp [tendsto_const_nhds]
+  translationNumber_eq_of_tendsto₀ _ <| by simp
 
 theorem translationNumber_eq_of_semiconjBy {f g₁ g₂ : CircleDeg1Lift} (H : SemiconjBy f g₁ g₂) :
     τ g₁ = τ g₂ :=
@@ -673,7 +669,7 @@ theorem tendsto_translation_number₀' :
         ((tendsto_const_div_atTop_nhds_zero_nat 1).comp (tendsto_add_atTop_nat 1))
   dsimp
   have : (0 : ℝ) < n + 1 := n.cast_add_one_pos
-  rw [Real.dist_eq, div_sub' _ _ _ (ne_of_gt this), abs_div, ← Real.dist_eq, abs_of_pos this,
+  rw [Real.dist_eq, div_sub' (ne_of_gt this), abs_div, ← Real.dist_eq, abs_of_pos this,
     Nat.cast_add_one, div_le_div_iff_of_pos_right this, ← Nat.cast_add_one]
   apply dist_pow_map_zero_mul_translationNumber_le
 
@@ -823,7 +819,7 @@ theorem translationNumber_eq_rat_iff (hf : Continuous f) {m : ℤ} {n : ℕ} (hn
   exact (f ^ n).translationNumber_eq_int_iff (f.continuous_pow hf n)
 
 /-- Consider two actions `f₁ f₂ : G →* CircleDeg1Lift` of a group on the real line by lifts of
-orientation preserving circle homeomorphisms. Suppose that for each `g : G` the homeomorphisms
+orientation-preserving circle homeomorphisms. Suppose that for each `g : G` the homeomorphisms
 `f₁ g` and `f₂ g` have equal rotation numbers. Then there exists `F : CircleDeg1Lift` such that
 `F * f₁ g = f₂ g * F` for all `g : G`.
 
@@ -844,8 +840,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
       f₂ g⁻¹ (f₁ g x) ≤ f₂ g⁻¹ (x + τ (f₁ g) + 1) :=
         mono _ (map_lt_add_translationNumber_add_one _ _).le
       _ = f₂ g⁻¹ (x + τ (f₂ g)) + 1 := by rw [h, map_add_one]
-      _ ≤ x + τ (f₂ g) + τ (f₂ g⁻¹) + 1 + 1 :=
-        add_le_add_right (map_lt_add_translationNumber_add_one _ _).le _
+      _ ≤ x + τ (f₂ g) + τ (f₂ g⁻¹) + 1 + 1 := by grw [map_lt_add_translationNumber_add_one]
       _ = x + 2 := by simp [this, add_assoc, one_add_one_eq_two]
   -- We have a theorem about actions by `OrderIso`, so we introduce auxiliary maps
   -- to `ℝ ≃o ℝ`.
@@ -855,7 +850,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
   have hF₂ : ∀ g, ⇑(F₂ g) = f₂ g := fun _ => rfl
   -- Now we apply `csSup_div_semiconj` and go back to `f₁` and `f₂`.
   refine ⟨⟨⟨fun x ↦ ⨆ g', (F₂ g')⁻¹ (F₁ g' x), fun x y hxy => ?_⟩, fun x => ?_⟩,
-    csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv, coe_mk]
+    csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv]
   · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
     exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)

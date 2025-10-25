@@ -36,6 +36,34 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 def ShortComplex.toComposableArrows (S : ShortComplex C) : ComposableArrows C 2 :=
   ComposableArrows.mk₂ S.f S.g
 
+/-- A map of short complexes induces a map of composable arrows with the same data. -/
+def ShortComplex.mapToComposableArrows {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    S₁.toComposableArrows ⟶ S₂.toComposableArrows :=
+  ComposableArrows.homMk₂ φ.τ₁ φ.τ₂ φ.τ₃ φ.comm₁₂.symm φ.comm₂₃.symm
+
+@[simp]
+theorem ShortComplex.mapToComposableArrows_app_0 {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    (ShortComplex.mapToComposableArrows φ).app 0 = φ.τ₁ := rfl
+
+@[simp]
+theorem ShortComplex.mapToComposableArrows_app_1 {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    (ShortComplex.mapToComposableArrows φ).app 1 = φ.τ₂ := rfl
+
+@[simp]
+theorem ShortComplex.mapToComposableArrows_app_2 {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂) :
+    (ShortComplex.mapToComposableArrows φ).app 2 = φ.τ₃ := rfl
+
+@[simp]
+theorem ShortComplex.mapToComposableArrows_id {S₁ : ShortComplex C} :
+    (ShortComplex.mapToComposableArrows (𝟙 S₁)) = 𝟙 S₁.toComposableArrows := by
+  cat_disch
+
+@[simp]
+theorem ShortComplex.mapToComposableArrows_comp {S₁ S₂ S₃ : ShortComplex C} (φ : S₁ ⟶ S₂)
+    (ψ : S₂ ⟶ S₃) : ShortComplex.mapToComposableArrows (φ ≫ ψ) =
+      ShortComplex.mapToComposableArrows φ ≫ ShortComplex.mapToComposableArrows ψ := by
+  cat_disch
+
 namespace ComposableArrows
 
 variable {n : ℕ} (S : ComposableArrows C n)
@@ -70,9 +98,7 @@ lemma isComplex_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂
   ⟨isComplex_of_iso e, isComplex_of_iso e.symm⟩
 
 lemma isComplex₀ (S : ComposableArrows C 0) : S.IsComplex where
-  -- See https://github.com/leanprover/lean4/issues/2862
-  -- Without `decide := true`, simp gets stuck at `hi : autoParam False _auto✝`
-  zero i hi := by simp +decide at hi
+  zero i hi := by simp at hi
 
 lemma isComplex₁ (S : ComposableArrows C 1) : S.IsComplex where
   zero i hi := by omega
@@ -94,7 +120,7 @@ abbrev sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by omega) :
 
 /-- `F : ComposableArrows C n` is exact if it is a complex and that all short
 complexes consisting of two consecutive arrows are exact. -/
-structure Exact extends S.IsComplex : Prop where
+structure Exact : Prop extends S.IsComplex where
   exact (i : ℕ) (hi : i + 2 ≤ n := by omega) : (S.sc toIsComplex i).Exact
 
 variable {S}
@@ -131,8 +157,8 @@ def sc'MapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂)
     S₁.sc' h₁ i j k ≅ S₂.sc' h₂ i j k where
   hom := sc'Map e.hom h₁ h₂ i j k
   inv := sc'Map e.inv h₂ h₁ i j k
-  hom_inv_id := by ext <;> dsimp <;> simp
-  inv_hom_id := by ext <;> dsimp <;> simp
+  hom_inv_id := by ext <;> simp
+  inv_hom_id := by ext <;> simp
 
 /-- The isomorphism `S₁.sc _ i ≅ S₂.sc _ i` induced by an isomorphism `S₁ ≅ S₂`
 in `ComposableArrows C n`. -/
@@ -143,8 +169,8 @@ def scMapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂)
     S₁.sc h₁ i ≅ S₂.sc h₂ i where
   hom := scMap e.hom h₁ h₂ i
   inv := scMap e.inv h₂ h₁ i
-  hom_inv_id := by ext <;> dsimp <;> simp
-  inv_hom_id := by ext <;> dsimp <;> simp
+  hom_inv_id := by ext <;> simp
+  inv_hom_id := by ext <;> simp
 
 lemma exact_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) (h₁ : S₁.Exact) :
     S₂.Exact where
@@ -158,7 +184,6 @@ lemma exact_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) :
 
 lemma exact₀ (S : ComposableArrows C 0) : S.Exact where
   toIsComplex := S.isComplex₀
-  -- See https://github.com/leanprover/lean4/issues/2862
   exact i hi := by simp at hi
 
 lemma exact₁ (S : ComposableArrows C 1) : S.Exact where
@@ -169,34 +194,29 @@ lemma isComplex₂_iff (S : ComposableArrows C 2) :
     S.IsComplex ↔ S.map' 0 1 ≫ S.map' 1 2 = 0 := by
   constructor
   · intro h
-    exact h.zero 0 (by omega)
+    exact h.zero 0 (by cutsat)
   · intro h
     refine IsComplex.mk (fun i hi => ?_)
-    obtain rfl : i = 0 := by omega
+    obtain rfl : i = 0 := by cutsat
     exact h
 
 lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 = 0) :
     S.IsComplex :=
   S.isComplex₂_iff.2 w
 
-#adaptation_note /-- nightly-2024-03-11
-We turn off simprocs here.
-Ideally someone will investigate whether `simp` lemmas can be rearranged
-so that this works without the `set_option`,
-*or* come up with a proposal regarding finer control of disabling simprocs. -/
-set_option simprocs false in
 lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
     S.toComposableArrows.IsComplex :=
-  isComplex₂_mk _ (by simp)
+  -- Disable `Fin.reduceFinMk` because otherwise `Precompose.map_one_succ` does not apply. (https://github.com/leanprover-community/mathlib4/issues/27382)
+  isComplex₂_mk _ (by simp [-Fin.reduceFinMk])
 
 lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :
     S.Exact ↔ (S.sc' hS 0 1 2).Exact := by
   constructor
   · intro h
-    exact h.exact 0 (by omega)
+    exact h.exact 0 (by cutsat)
   · intro h
     refine Exact.mk hS (fun i hi => ?_)
-    obtain rfl : i = 0 := by omega
+    obtain rfl : i = 0 := by cutsat
     exact h
 
 lemma exact₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 = 0)
@@ -221,7 +241,7 @@ lemma exact_iff_δ₀ (S : ComposableArrows C (n + 2)) :
     · rw [exact₂_iff]; swap
       · rw [isComplex₂_iff]
         exact h.toIsComplex.zero 0
-      exact h.exact 0 (by omega)
+      exact h.exact 0 (by cutsat)
     · exact Exact.mk (IsComplex.mk (fun i hi => h.toIsComplex.zero (i + 1)))
         (fun i hi => h.exact (i + 1))
   · rintro ⟨h, h₀⟩
@@ -257,7 +277,7 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
     · rw [exact₂_iff]; swap
       · rw [isComplex₂_iff]
         exact h.toIsComplex.zero n
-      exact h.exact n (by omega)
+      exact h.exact n (by cutsat)
   · rintro ⟨h, h'⟩
     refine Exact.mk (IsComplex.mk (fun i hi => ?_)) (fun i hi => ?_)
     · simp only [Nat.add_le_add_iff_right] at hi
@@ -279,6 +299,14 @@ lemma exact_of_δlast {n : ℕ} (S : ComposableArrows C (n + 2))
     S.Exact := by
   rw [exact_iff_δlast]
   constructor <;> assumption
+
+lemma Exact.isIso_map' {C : Type*} [Category C] [Preadditive C]
+    [Balanced C] {n : ℕ} {S : ComposableArrows C n} (hS : S.Exact) (k : ℕ) (hk : k + 3 ≤ n)
+    (h₀ : S.map' k (k + 1) = 0) (h₁ : S.map' (k + 2) (k + 3) = 0) :
+    IsIso (S.map' (k + 1) (k + 2)) := by
+  have := (hS.exact k).mono_g h₀
+  have := (hS.exact (k + 1)).epi_f h₁
+  apply isIso_of_mono_of_epi
 
 end ComposableArrows
 

@@ -57,7 +57,7 @@ instance [Faithful F] : Faithful F.mapTriangle where
 
 instance [Full F] [Faithful F] : Full F.mapTriangle where
   map_surjective {X Y} f :=
-   ⟨{ hom₁ := F.preimage f.hom₁
+    ⟨{hom₁ := F.preimage f.hom₁
       hom₂ := F.preimage f.hom₂
       hom₃ := F.preimage f.hom₃
       comm₁ := F.map_injective
@@ -67,7 +67,7 @@ instance [Full F] [Faithful F] : Full F.mapTriangle where
       comm₃ := F.map_injective (by
         rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app Y.obj₁)]
         simpa only [mapTriangle_obj, map_comp, assoc, commShiftIso_hom_naturality,
-          map_preimage, Triangle.mk_mor₃] using f.comm₃) }, by aesop_cat⟩
+          map_preimage, Triangle.mk_mor₃] using f.comm₃) }, by cat_disch⟩
 
 section Additive
 
@@ -84,7 +84,7 @@ noncomputable def mapTriangleCommShiftIso (n : ℤ) :
         Linear.comp_units_smul, ← F.commShiftIso_hom_naturality_assoc]
       rw [F.map_shiftFunctorComm_hom_app T.obj₁ 1 n]
       simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
-        ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by aesop_cat)
+        ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by cat_disch)
 
 attribute [simps!] mapTriangleCommShiftIso
 
@@ -92,12 +92,19 @@ attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   commShiftIso_zero commShiftIso_add commShiftIso_comp_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
-set_option maxHeartbeats 400000 in
+-- Split out from the following instance for faster elaboration.
+private theorem mapTriangleCommShiftIso_add
+    [∀ (n : ℤ), (shiftFunctor C n).Additive]
+    [∀ (n : ℤ), (shiftFunctor D n).Additive] (n m : ℤ) :
+    F.mapTriangleCommShiftIso (n + m) =
+      CommShift.isoAdd (a := n) (b := m)
+        (F.mapTriangleCommShiftIso n) (F.mapTriangleCommShiftIso m) := by
+  ext <;> simp
+
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   iso := F.mapTriangleCommShiftIso
-  zero := by ext <;> simp -- the `aesop_cat` autoparam solves this but it's slower
-  add _ _ := by ext <;> simp -- the `aesop_cat` autoparam solves this but it's slower
+  add _ _ := mapTriangleCommShiftIso_add ..
 
 /-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]
@@ -107,7 +114,7 @@ def mapTriangleRotateIso :
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
       ((F.commShiftIso (1 : ℤ)).symm.app _)
-      (by simp) (by simp) (by simp)) (by aesop_cat)
+      (by simp) (by simp) (by simp)) (by cat_disch)
 
 /-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
 @[simps!]
@@ -116,7 +123,7 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
       Pretriangulated.invRotate C ⋙ F.mapTriangle :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
-      (by simp) (by simp) (by simp)) (by aesop_cat)
+      (by simp) (by simp) (by simp)) (by cat_disch)
 
 
 variable (C) in
@@ -140,7 +147,7 @@ def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ
     Triangle.isoMk _ _ (e.app _) (e.app _) (e.app _) (by simp) (by simp) (by
       dsimp
       simp only [assoc, NatTrans.shift_app_comm e.hom (1 : ℤ) T.obj₁,
-        NatTrans.naturality_assoc])) (by aesop_cat)
+        NatTrans.naturality_assoc])) (by cat_disch)
 
 end Additive
 

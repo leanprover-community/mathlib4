@@ -31,24 +31,22 @@ For the Flypitch project:
 
 -/
 
-
 universe u v u' v' w w'
 
 namespace FirstOrder
-
 
 namespace Language
 
 open Structure Cardinal
 
-open Cardinal
-
 variable (L : Language.{u, v}) (L' : Language.{u', v'}) {M : Type w} [L.Structure M]
 
 /-- A language homomorphism maps the symbols of one language to symbols of another. -/
 structure LHom where
+  /-- The mapping of functions -/
   onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n := by
     exact fun {n} => isEmptyElim
+  /-- The mapping of relations -/
   onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=by
     exact fun {n} => isEmptyElim
 
@@ -96,8 +94,8 @@ variable {L L'} {L'' : Language}
 @[ext]
 protected theorem funext {F G : L →ᴸ L'} (h_fun : F.onFunction = G.onFunction)
     (h_rel : F.onRelation = G.onRelation) : F = G := by
-  cases' F with Ff Fr
-  cases' G with Gf Gr
+  obtain ⟨Ff, Fr⟩ := F
+  obtain ⟨Gf, Gr⟩ := G
   simp only [mk.injEq]
   exact And.intro h_fun h_rel
 
@@ -109,7 +107,7 @@ instance [L.IsAlgebraic] [L.IsRelational] : Unique (L →ᴸ L') :=
 def comp (g : L' →ᴸ L'') (f : L →ᴸ L') : L →ᴸ L'' :=
   ⟨fun _n F => g.1 (f.1 F), fun _ R => g.2 (f.2 R)⟩
 
--- Porting note: added ᴸ to avoid clash with function composition
+-- added ᴸ to avoid clash with function composition
 @[inherit_doc]
 local infixl:60 " ∘ᴸ " => LHom.comp
 
@@ -273,7 +271,9 @@ end LHom
 
 /-- A language equivalence maps the symbols of one language to symbols of another bijectively. -/
 structure LEquiv (L L' : Language) where
+  /-- The forward language homomorphism -/
   toLHom : L →ᴸ L'
+  /-- The inverse language homomorphism -/
   invLHom : L' →ᴸ L
   left_inv : invLHom.comp toLHom = LHom.id L
   right_inv : toLHom.comp invLHom = LHom.id L'
@@ -283,14 +283,11 @@ structure LEquiv (L L' : Language) where
 -- \^L
 namespace LEquiv
 
-variable (L)
-
+variable (L) in
 /-- The identity equivalence from a first-order language to itself. -/
 @[simps]
 protected def refl : L ≃ᴸ L :=
   ⟨LHom.id L, LHom.id L, LHom.comp_id _, LHom.comp_id _⟩
-
-variable {L}
 
 instance : Inhabited (L ≃ᴸ L) :=
   ⟨LEquiv.refl L⟩
@@ -426,12 +423,12 @@ def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
 variable {α} {β : Type*}
 
 @[simp]
-theorem withConstants_funMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
+theorem withConstants_funMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {f : L.Functions n} {x : Fin n → M} : @funMap (L[[α]]) M _ n (Sum.inl f) x = funMap f x :=
   (lhomWithConstants L α).map_onFunction f x
 
 @[simp]
-theorem withConstants_relMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
+theorem withConstants_relMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
 
@@ -477,7 +474,7 @@ instance addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ 
   LHom.sumMap_isExpansionOn _ _ M
 
 @[simp]
-theorem withConstants_funMap_sum_inr {a : α} {x : Fin 0 → M} :
+theorem withConstants_funMap_sumInr {a : α} {x : Fin 0 → M} :
     @funMap (L[[α]]) M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
   rw [Unique.eq_default x]
   exact (LHom.sumInr : constantsOn α →ᴸ L.sum _).map_onFunction _ _

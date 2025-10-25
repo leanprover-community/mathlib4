@@ -12,7 +12,7 @@ import Mathlib.NumberTheory.LSeries.Positivity
 /-!
 # The L-function of a Dirichlet character does not vanish on Re(s) ≥ 1
 
-The main result in this file is `DirichletCharacter.Lfunction_ne_zero_of_one_le_re`:
+The main result in this file is `DirichletCharacter.LFunction_ne_zero_of_one_le_re`:
 if `χ` is a Dirichlet character, `s ∈ ℂ` with `1 ≤ s.re`, and either `χ` is nontrivial or `s ≠ 1`,
 then the L-function of `χ` does not vanish at `s`.
 
@@ -79,7 +79,7 @@ lemma LSeriesSummable_zetaMul (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 
     LSeriesSummable χ.zetaMul s := by
   refine ArithmeticFunction.LSeriesSummable_mul (LSeriesSummable_zeta_iff.mpr hs) <|
     LSeriesSummable_of_bounded_of_one_lt_re (m := 1) (fun n hn ↦ ?_) hs
-  simpa only [toArithmeticFunction, coe_mk, hn, ↓reduceIte, ← Complex.norm_eq_abs]
+  simpa only [toArithmeticFunction, coe_mk, hn, ↓reduceIte]
   using norm_le_one χ _
 
 lemma zetaMul_prime_pow_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) {p : ℕ}
@@ -150,7 +150,7 @@ private lemma F_eq_LSeries (B : BadChar N) {s : ℂ} (hs : 1 < s.re) :
     simp only [ne_eq, hs', not_false_eq_true, Function.update_of_ne, B.χ.LFunction_eq_LSeries hs]
     congr 1
     · simp_rw [← LSeries_zeta_eq_riemannZeta hs, ← natCoe_apply]
-    · exact LSeries_congr s B.χ.apply_eq_toArithmeticFunction_apply
+    · exact LSeries_congr B.χ.apply_eq_toArithmeticFunction_apply s
   -- summability side goals from `LSeries_convolution'`
   · exact LSeriesSummable_zeta_iff.mpr hs
   · exact (LSeriesSummable_congr _ fun h ↦ (B.χ.apply_eq_toArithmeticFunction_apply h).symm).mpr <|
@@ -181,11 +181,11 @@ private lemma F_differentiable (B : BadChar N) : Differentiable ℂ B.F := by
   · exact (B.χ.differentiableAt_LFunction 1 (.inr B.χ_ne)).hasDerivAt.continuousAt_div
 
 /-- The trivial zero at `s = -2` of the zeta function gives that `F (-2) = 0`.
-This is used later to obtain a contradction. -/
+This is used later to obtain a contradiction. -/
 private lemma F_neg_two (B : BadChar N) : B.F (-2 : ℝ) = 0 := by
   have := riemannZeta_neg_two_mul_nat_add_one 0
   rw [Nat.cast_zero, zero_add, mul_one] at this
-  rw [F, ofReal_neg, ofReal_ofNat, Function.update_of_ne (mod_cast (by omega : (-2 : ℤ) ≠ 1)),
+  rw [F, ofReal_neg, ofReal_ofNat, Function.update_of_ne (mod_cast (by cutsat : (-2 : ℤ) ≠ 1)),
     this, zero_mul]
 
 end BadChar
@@ -216,7 +216,7 @@ variable (χ : DirichletCharacter ℂ N)
 private lemma re_log_comb_nonneg' {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z : ℂ} (hz : ‖z‖ = 1) :
       0 ≤ 3 * (-log (1 - a)).re + 4 * (-log (1 - a * z)).re + (-log (1 - a * z ^ 2)).re := by
   have hac₀ : ‖(a : ℂ)‖ < 1 := by
-    simp only [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg ha₀, ha₁]
+    simp only [Complex.norm_of_nonneg ha₀, ha₁]
   have hac₁ : ‖a * z‖ < 1 := by rwa [norm_mul, hz, mul_one]
   have hac₂ : ‖a * z ^ 2‖ < 1 := by rwa [norm_mul, norm_pow, hz, one_pow, mul_one]
   rw [← ((hasSum_re <| hasSum_taylorSeries_neg_log hac₀).mul_left 3).add
@@ -229,8 +229,7 @@ private lemma re_log_comb_nonneg' {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z
   · simp only [pow_zero, Nat.cast_zero, div_zero, mul_zero, one_re, mul_one, add_zero, le_refl]
   · simp only [← mul_div_assoc, ← add_div]
     refine div_nonneg ?_ n.cast_nonneg
-    rw [← pow_mul, pow_mul', sq, mul_re, ← sq, ← sq, ← sq_abs_sub_sq_re, ← norm_eq_abs, norm_pow,
-      hz]
+    rw [← pow_mul, pow_mul', sq, mul_re, ← sq, ← sq, ← sq_norm_sub_sq_re, norm_pow, hz]
     convert (show 0 ≤ 2 * a ^ n * ((z ^ n).re + 1) ^ 2 by positivity) using 1
     ring
 
@@ -246,16 +245,16 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
       exact .inr <| Real.one_lt_rpow (mod_cast one_lt_two.trans_le hn) <| zero_lt_one.trans hx
     have hz : ‖χ n * (n : ℂ) ^ (-(I * y))‖ = 1 := by
       rw [norm_mul, ← hn'.unit_spec, DirichletCharacter.unit_norm_eq_one χ hn'.unit,
-        norm_eq_abs, ← ofReal_natCast, abs_cpow_eq_rpow_re_of_pos (mod_cast by omega)]
+        ← ofReal_natCast, norm_cpow_eq_rpow_re_of_pos (mod_cast by cutsat)]
       simp only [neg_re, mul_re, I_re, ofReal_re, zero_mul, I_im, ofReal_im, mul_zero, sub_self,
         neg_zero, Real.rpow_zero, one_mul]
     rw [MulChar.one_apply hn', one_mul]
     convert re_log_comb_nonneg' ha₀ ha₁ hz using 6
     · simp only [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg]
     · congr 2
-      rw [neg_add, cpow_add _ _ <| mod_cast by omega, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
+      rw [neg_add, cpow_add _ _ <| mod_cast by cutsat, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
         ofReal_natCast, mul_left_comm]
-    · rw [neg_add, cpow_add _ _ <| mod_cast by omega, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
+    · rw [neg_add, cpow_add _ _ <| mod_cast by cutsat, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
         ofReal_natCast, show -(2 * I * y) = (2 : ℕ) * -(I * y) by ring, cpow_nat_mul, mul_pow,
         mul_left_comm]
   · simp only [MulChar.map_nonunit _ hn', zero_mul, sub_zero, log_one, neg_zero, zero_re, mul_zero,
@@ -291,10 +290,10 @@ lemma norm_LSeries_product_ge_one {x : ℝ} (hx : 0 < x) (y : ℝ) :
   have hsum₂ := (hasSum_re H₂.hasSum).summable
   rw [← LSeries_eulerProduct_exp_log _ h₀, ← LSeries_eulerProduct_exp_log χ h₁,
     ← LSeries_eulerProduct_exp_log _ h₂]
-  simp only [← exp_nat_mul, Nat.cast_ofNat, ← exp_add, norm_eq_abs, abs_exp, add_re, mul_re,
+  simp only [← exp_nat_mul, Nat.cast_ofNat, ← exp_add, norm_exp, add_re, mul_re,
     re_ofNat, im_ofNat, zero_mul, sub_zero, Real.one_le_exp_iff]
   rw [re_tsum H₀, re_tsum H₁, re_tsum H₂, ← tsum_mul_left, ← tsum_mul_left,
-    ← tsum_add hsum₀ hsum₁, ← tsum_add (hsum₀.add hsum₁) hsum₂]
+    ← hsum₀.tsum_add hsum₁, ← (hsum₀.add hsum₁).tsum_add hsum₂]
   simpa only [neg_add_rev, neg_re, mul_neg, χ.pow_apply' two_ne_zero, ge_iff_le, add_re, one_re,
     ofReal_re, ofReal_add, ofReal_one] using
       tsum_nonneg fun (p : Nat.Primes) ↦ χ.re_log_comb_nonneg p.prop.two_le h₀ y
@@ -324,8 +323,8 @@ lemma LFunctionTrivChar_isBigO_near_one_horizontal :
 
 omit [NeZero N] in
 private lemma one_add_I_mul_ne_one_or {y : ℝ} (hy : y ≠ 0 ∨ χ ≠ 1) :
-    1 + I * y ≠ 1 ∨ χ ≠ 1:= by
-  simpa only [ne_eq, add_right_eq_self, _root_.mul_eq_zero, I_ne_zero, ofReal_eq_zero, false_or]
+    1 + I * y ≠ 1 ∨ χ ≠ 1 := by
+  simpa only [ne_eq, add_eq_left, _root_.mul_eq_zero, I_ne_zero, ofReal_eq_zero, false_or]
     using hy
 
 lemma LFunction_isBigO_horizontal {y : ℝ} (hy : y ≠ 0 ∨ χ ≠ 1) :
@@ -357,7 +356,7 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
     h.symm.imp_left <| mul_ne_zero two_ne_zero
   have help (x : ℝ) : ((1 / x) ^ 3 * x ^ 4 * 1 : ℂ) = x := by
     rcases eq_or_ne x 0 with rfl | h
-    · rw [ofReal_zero, zero_pow (by omega), mul_zero, mul_one]
+    · rw [ofReal_zero, zero_pow (by cutsat), mul_zero, mul_one]
     · rw [one_div, inv_pow, pow_succ _ 3, ← mul_assoc,
         inv_mul_cancel₀ <| pow_ne_zero 3 (ofReal_ne_zero.mpr h), one_mul, mul_one]
   -- put together the various `IsBigO` statements and `norm_LFunction_product_ge_one`
@@ -373,14 +372,9 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
   simp only [ofReal_mul, ofReal_ofNat, mul_left_comm I, ← mul_assoc, help] at H
   -- go via absolute value to translate into a statement over `ℝ`
   replace H := (H₀.trans H).norm_right
-  simp only [norm_eq_abs, abs_ofReal] at H
-  #adaptation_note
-  /--
-  After https://github.com/leanprover/lean4/pull/6024
-  we needed to add `(F' := ℝ)` to `H.of_norm_right`.
-  -/
+  simp only [norm_real] at H
   exact isLittleO_irrefl (.of_forall (fun _ ↦ one_ne_zero)) <|
-    (H.of_norm_right (F' := ℝ)).trans_isLittleO <| isLittleO_id_one.mono nhdsWithin_le_nhds
+    H.of_norm_right.trans_isLittleO <| isLittleO_id_one.mono nhdsWithin_le_nhds
 
 /-- If `χ` is a Dirichlet character, then `L(χ, s)` does not vanish when `s.re = 1`
 except when `χ` is trivial and `s = 1` (then `L(χ, s)` has a simple pole at `s = 1`). -/
@@ -390,7 +384,7 @@ theorem LFunction_ne_zero_of_re_eq_one {s : ℂ} (hs : s.re = 1) (hχs : χ ≠ 
   · exact h.2 ▸ LFunction_apply_one_ne_zero_of_quadratic h.1 <| hχs.neg_resolve_right h.2
   · have hs' : s = 1 + I * s.im := by
       conv_lhs => rw [← re_add_im s, hs, ofReal_one, mul_comm]
-    rw [not_and_or, ← ne_eq, ← ne_eq, hs', add_right_ne_self] at h
+    rw [not_and_or, ← ne_eq, ← ne_eq, hs', add_ne_left] at h
     replace h : χ ^ 2 ≠ 1 ∨ s.im ≠ 0 :=
       h.imp_right (fun H ↦ by exact_mod_cast right_ne_zero_of_mul H)
     exact hs'.symm ▸ χ.LFunction_ne_zero_of_not_quadratic_or_ne_one h

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.Set.Prod
+
 /-!
 # Finite products of types
 
@@ -39,17 +41,12 @@ variable {ι : Type u} {α : ι → Type v} {i j : ι} {l : List ι}
 
 namespace List
 
-variable (α)
-
+variable (α) in
 /-- The product of a family of types over a list. -/
 abbrev TProd (l : List ι) : Type v :=
   l.foldr (fun i β => α i × β) PUnit
 
-variable {α}
-
 namespace TProd
-
-open List
 
 /-- Turning a function `f : ∀ i, α i` into an element of the iterated product `TProd α l`. -/
 protected def mk : ∀ (l : List ι) (_f : ∀ i, α i), TProd α l
@@ -65,7 +62,7 @@ theorem fst_mk (i : ι) (l : List ι) (f : ∀ i, α i) : (TProd.mk (i :: l) f).
 
 @[simp]
 theorem snd_mk (i : ι) (l : List ι) (f : ∀ i, α i) :
-    (TProd.mk.{u,v} (i :: l) f).2 = TProd.mk.{u,v} l f :=
+    (TProd.mk.{u, v} (i :: l) f).2 = TProd.mk.{u, v} l f :=
   rfl
 
 variable [DecidableEq ι]
@@ -80,7 +77,7 @@ protected def elim : ∀ {l : List ι} (_ : TProd α l) {i : ι} (_ : i ∈ l), 
     else TProd.elim v.2 ((List.mem_cons.mp hj).resolve_left hji)
 
 @[simp]
-theorem elim_self (v : TProd α (i :: l)) : v.elim (l.mem_cons_self i) = v.1 := by simp [TProd.elim]
+theorem elim_self (v : TProd α (i :: l)) : v.elim mem_cons_self = v.1 := by simp [TProd.elim]
 
 @[simp]
 theorem elim_of_ne (hj : j ∈ i :: l) (hji : j ≠ i) (v : TProd α (i :: l)) :
@@ -91,7 +88,7 @@ theorem elim_of_mem (hl : (i :: l).Nodup) (hj : j ∈ l) (v : TProd α (i :: l))
     v.elim (mem_cons_of_mem _ hj) = TProd.elim v.2 hj := by
   apply elim_of_ne
   rintro rfl
-  exact hl.not_mem hj
+  exact hl.notMem hj
 
 theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (TProd.mk l f).elim hi = f i
   | i :: is, f, j, hj => by
@@ -130,8 +127,6 @@ end List
 
 namespace Set
 
-open List
-
 /-- A product of sets in `TProd α l`. -/
 @[simp]
 protected def tprod : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α l)
@@ -146,9 +141,8 @@ theorem mk_preimage_tprod :
     have h : TProd.mk l f ∈ Set.tprod l t ↔ ∀ i : ι, i ∈ l → f i ∈ t i := by
       change f ∈ TProd.mk l ⁻¹' Set.tprod l t ↔ f ∈ { x | x ∈ l }.pi t
       rw [mk_preimage_tprod l t]
-
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
-    rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
+    rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prodMk_mem_set_prod_eq]
     simp_rw [mem_setOf_eq, mem_cons]
     rw [forall_eq_or_imp, and_congr_right_iff]
     exact fun _ => h

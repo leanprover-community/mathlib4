@@ -3,8 +3,8 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+import Mathlib.Algebra.Module.Shrink
 import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Logic.Small.Basic
 import Mathlib.RingTheory.Ideal.Defs
 
@@ -58,7 +58,7 @@ map to `Q`, i.e. in the following diagram, if `f` is injective then there is an 
     ∃ h : Y →ₗ[R] Q, ∀ x, h (f x) = g x
 
 /-- An `R`-module `Q` satisfies Baer's criterion if any `R`-linear map from an `Ideal R` extends to
-an `R`-linear map `R ⟶ Q`-/
+an `R`-linear map `R ⟶ Q` -/
 def Module.Baer : Prop :=
   ∀ (I : Ideal R) (g : I →ₗ[R] Q), ∃ g' : R →ₗ[R] Q, ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩
 
@@ -86,26 +86,31 @@ variable {i f}
 
 @[ext (iff := false)]
 theorem ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain)
-    (to_fun_eq :
-      ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄, (x : N) = y → a.toLinearPMap x = b.toLinearPMap y) :
+    (to_fun_eq : ∀ ⦃x : N⦄ ⦃ha : x ∈ a.domain⦄ ⦃hb : x ∈ b.domain⦄,
+      a.toLinearPMap ⟨x, ha⟩ = b.toLinearPMap ⟨x, hb⟩) :
     a = b := by
   rcases a with ⟨a, a_le, e1⟩
-  rcases b with ⟨b, b_le, e2⟩
   congr
   exact LinearPMap.ext domain_eq to_fun_eq
 
-theorem ExtensionOf.ext_iff {a b : ExtensionOf i f} :
+/-- A dependent version of `ExtensionOf.ext` -/
+theorem ExtensionOf.dExt {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain)
+    (to_fun_eq :
+      ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄, (x : N) = y → a.toLinearPMap x = b.toLinearPMap y) :
+    a = b :=
+  ext domain_eq fun _ _ _ ↦ to_fun_eq rfl
+
+theorem ExtensionOf.dExt_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
   ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
-    ExtensionOf.ext h1 h2⟩
+    ExtensionOf.dExt h1 h2⟩
 
 end Ext
 
 instance : Min (ExtensionOf i f) where
   min X1 X2 :=
-    { X1.toLinearPMap ⊓
-        X2.toLinearPMap with
+    { X1.toLinearPMap ⊓ X2.toLinearPMap with
       le := fun x hx =>
         (by
           rcases hx with ⟨x, rfl⟩
@@ -116,19 +121,12 @@ instance : Min (ExtensionOf i f) where
 
 instance : SemilatticeInf (ExtensionOf i f) :=
   Function.Injective.semilatticeInf ExtensionOf.toLinearPMap
-    (fun X Y h =>
-      ExtensionOf.ext (by rw [h]) fun x y h' => by
-        -- Porting note: induction didn't handle dependent rw like in Lean 3
-        have : {x y : N} → (h'' : x = y) → (hx : x ∈ X.toLinearPMap.domain) →
-          (hy : y ∈ Y.toLinearPMap.domain) → X.toLinearPMap ⟨x,hx⟩ = Y.toLinearPMap ⟨y,hy⟩ := by
-            rw [h]
-            intro _ _ h _ _
-            congr
-        apply this h' _ _)
-    fun X Y =>
-    LinearPMap.ext rfl fun x y h => by
-      congr
-      exact mod_cast h
+    (fun X Y h ↦
+      ExtensionOf.ext (by rw [h]) <| by
+        rw [h]
+        intros
+        rfl)
+    fun X Y ↦ LinearPMap.ext rfl fun x y h => by congr
 
 variable {i f}
 
@@ -142,9 +140,7 @@ theorem chain_linearPMap_of_chain_extensionOf {c : Set (ExtensionOf i f)}
 def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) : ExtensionOf i f :=
   { LinearPMap.sSup _
-      (IsChain.directedOn <|
-        chain_linearPMap_of_chain_extensionOf
-          hchain) with
+      (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) with
     le := by
       refine le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
@@ -152,7 +148,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     is_extension := fun m => by
       refine Eq.trans (hnonempty.some.is_extension m) ?_
       symm
-      generalize_proofs _ h1
+      generalize_proofs _ _ h1
       exact
         LinearPMap.sSup_apply (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
           ((Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩) ⟨i m, h1⟩ }
@@ -199,8 +195,8 @@ theorem extensionOfMax_is_max :
   fun _ ↦ (@zorn_le_nonempty (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
     ⟨ExtensionOf.max hchain hnonempty, ExtensionOf.le_max hchain hnonempty⟩).choose_spec.eq_of_ge
 
--- Porting note: helper function. Lean looks for an instance of `Sup (Type u)` when the
--- right hand side is substituted in directly
+-- Auxiliary definition: Lean looks for an instance of `Max (Type u)` if we would write
+-- `(x : (extensionOfMax i f).domain ⊔ (Submodule.span R {y}))`, so we encapsulate the cast instead.
 abbrev supExtensionOfMaxSingleton (y : N) : Submodule R N :=
   (extensionOfMax i f).domain ⊔ (Submodule.span R {y})
 
@@ -231,7 +227,7 @@ theorem ExtensionOfMaxAdjoin.eqn {y : N} (x : supExtensionOfMaxSingleton i f y) 
 variable (f)
 
 -- TODO: refactor to use colon ideals?
-/-- The ideal `I = {r | r • y ∈ N}`-/
+/-- The ideal `I = {r | r • y ∈ N}` -/
 def ExtensionOfMaxAdjoin.ideal (y : N) : Ideal R :=
   (extensionOfMax i f).domain.comap ((LinearMap.id : R →ₗ[R] R).smulRight y)
 
@@ -239,18 +235,16 @@ def ExtensionOfMaxAdjoin.ideal (y : N) : Ideal R :=
 def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →ₗ[R] Q where
   toFun (z : { x // x ∈ ideal i f y }) := (extensionOfMax i f).toLinearPMap ⟨(↑z : R) • y, z.prop⟩
   map_add' (z1 z2 : { x // x ∈ ideal i f y }) := by
-    -- Porting note: a single simp took care of the goal before reenableeta
     simp_rw [← (extensionOfMax i f).toLinearPMap.map_add]
     congr
     apply add_smul
   map_smul' z1 (z2 : {x // x ∈ ideal i f y}) := by
-    -- Porting note: a single simp took care of the goal before reenableeta
     simp_rw [← (extensionOfMax i f).toLinearPMap.map_smul]
     congr 2
     apply mul_smul
 
 /-- Since we assumed `Q` being Baer, the linear map `x ↦ f' (x • y) : I ⟶ Q` extends to `R ⟶ Q`,
-call this extended map `φ`-/
+call this extended map `φ` -/
 def ExtensionOfMaxAdjoin.extendIdealTo (h : Module.Baer R Q) (y : N) : R →ₗ[R] Q :=
   (h (ExtensionOfMaxAdjoin.ideal i f y) (ExtensionOfMaxAdjoin.idealTo i f y)).choose
 
@@ -267,8 +261,7 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd' (h : Module.Baer R Q) {y : N} (r 
     apply Submodule.zero_mem _
   rw [ExtensionOfMaxAdjoin.extendIdealTo_is_extension i f h y r this]
   dsimp [ExtensionOfMaxAdjoin.idealTo]
-  simp only [LinearMap.coe_mk, eq1, Subtype.coe_mk, ← ZeroMemClass.zero_def,
-    (extensionOfMax i f).toLinearPMap.map_zero]
+  simp only [eq1, ← ZeroMemClass.zero_def, (extensionOfMax i f).toLinearPMap.map_zero]
 
 theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r' : R)
     (eq1 : r • y = r' • y) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
@@ -280,9 +273,8 @@ theorem ExtensionOfMaxAdjoin.extendIdealTo_wd (h : Module.Baer R Q) {y : N} (r r
 theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r : R)
     (hr : r • y ∈ (extensionOfMax i f).domain) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     (extensionOfMax i f).toLinearPMap ⟨r • y, hr⟩ := by
-    -- Porting note: in mathlib3 `AddHom.coe_mk` was not needed
   simp only [ExtensionOfMaxAdjoin.extendIdealTo_is_extension i f h _ _ hr,
-    ExtensionOfMaxAdjoin.idealTo, LinearMap.coe_mk, Subtype.coe_mk, AddHom.coe_mk]
+    ExtensionOfMaxAdjoin.idealTo, LinearMap.coe_mk, AddHom.coe_mk]
 
 /-- We can finally define a linear map `M ⊔ ⟨y⟩ ⟶ Q` by `x + r • y ↦ f x + φ r`
 -/
@@ -296,7 +288,7 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
     (r : R) (eq1 : ↑x = ↑a + r • y) :
     ExtensionOfMaxAdjoin.extensionToFun i f h x =
       (extensionOfMax i f).toLinearPMap a + ExtensionOfMaxAdjoin.extendIdealTo i f h y r := by
-  cases' a with a ha
+  obtain ⟨a, ha⟩ := a
   have eq2 :
     (ExtensionOfMaxAdjoin.fst i x - a : N) = (r - ExtensionOfMaxAdjoin.snd i x) • y := by
     change x = a + r • y at eq1
@@ -314,7 +306,7 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
   rw [Subtype.coe_mk, add_sub, ← eq1]
   exact eq_sub_of_add_eq (ExtensionOfMaxAdjoin.eqn i x).symm
 
-/-- The linear map `M ⊔ ⟨y⟩ ⟶ Q` by `x + r • y ↦ f x + φ r` is an extension of `f`-/
+/-- The linear map `M ⊔ ⟨y⟩ ⟶ Q` by `x + r • y ↦ f x + φ r` is an extension of `f` -/
 def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
   domain := supExtensionOfMaxSingleton i f y -- (extensionOfMax i f).domain ⊔ Submodule.span R {y}
   le := le_trans (extensionOfMax i f).le le_sup_left
@@ -387,7 +379,7 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
 
 protected theorem of_injective [Small.{v} R] (inj : Module.Injective R Q) : Module.Baer R Q := by
   intro I g
-  let eI := Shrink.linearEquiv I R
+  let eI := Shrink.linearEquiv R I
   let eR := Shrink.linearEquiv R R
   obtain ⟨g', hg'⟩ := Module.Injective.out (eR.symm.toLinearMap ∘ₗ I.subtype ∘ₗ eI.toLinearMap)
     (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective) (g ∘ₗ eI.toLinearMap)

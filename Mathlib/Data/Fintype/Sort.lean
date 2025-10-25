@@ -36,7 +36,7 @@ def finSumEquivOfFinset (hm : #s = m) (hn : #sᶜ = n) : Fin m ⊕ Fin n ≃ α 
   calc
     Fin m ⊕ Fin n ≃ (s : Set α) ⊕ (sᶜ : Set α) :=
       Equiv.sumCongr (s.orderIsoOfFin hm).toEquiv <|
-        (sᶜ.orderIsoOfFin hn).toEquiv.trans <| Equiv.Set.ofEq s.coe_compl
+        (sᶜ.orderIsoOfFin hn).toEquiv.trans <| Equiv.setCongr s.coe_compl
     _ ≃ α := Equiv.Set.sumCompl _
 
 @[simp]

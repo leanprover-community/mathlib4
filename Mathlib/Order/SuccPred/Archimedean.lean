@@ -55,18 +55,20 @@ theorem exists_succ_iterate_iff_le : (∃ n, succ^[n] a = b) ↔ a ≤ b := by
 
 /-- Induction principle on a type with a `SuccOrder` for all elements above a given element `m`. -/
 @[elab_as_elim]
-theorem Succ.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, m ≤ n → P n → P (succ n)) ⦃n : α⦄
-    (hmn : m ≤ n) : P n := by
-  obtain ⟨n, rfl⟩ := hmn.exists_succ_iterate; clear hmn
-  induction' n with n ih
-  · exact h0
-  · rw [Function.iterate_succ_apply']
-    exact h1 _ (id_le_iterate_of_id_le le_succ n m) ih
+theorem Succ.rec {m : α} {P : ∀ n, m ≤ n → Prop} (rfl : P m le_rfl)
+    (succ : ∀ n (hmn : m ≤ n), P n hmn → P (succ n) (hmn.trans <| le_succ _)) ⦃n : α⦄
+    (hmn : m ≤ n) : P n hmn := by
+  obtain ⟨n, rfl⟩ := hmn.exists_succ_iterate
+  induction n with
+  | zero => exact rfl
+  | succ n ih =>
+    simp_rw [Function.iterate_succ_apply']
+    exact succ _ (id_le_iterate_of_id_le le_succ n m) (ih _)
 
 theorem Succ.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) {a b : α} (h : a ≤ b) :
     p a ↔ p b := by
   obtain ⟨n, rfl⟩ := h.exists_succ_iterate
-  exact Iterate.rec (fun b => p a ↔ p b) (fun c hc => hc.trans (hsucc _)) Iff.rfl n
+  exact Iterate.rec (fun b => p a ↔ p b) Iff.rfl (fun c hc => hc.trans (hsucc _)) n
 
 lemma le_total_of_codirected {r v₁ v₂ : α} (h₁ : r ≤ v₁) (h₂ : r ≤ v₂) : v₁ ≤ v₂ ∨ v₂ ≤ v₁ := by
   obtain ⟨n, rfl⟩ := h₁.exists_succ_iterate
@@ -98,9 +100,10 @@ theorem exists_pred_iterate_iff_le : (∃ n, pred^[n] b = a) ↔ a ≤ b :=
 
 /-- Induction principle on a type with a `PredOrder` for all elements below a given element `m`. -/
 @[elab_as_elim]
-theorem Pred.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, n ≤ m → P n → P (pred n)) ⦃n : α⦄
-    (hmn : n ≤ m) : P n :=
-  Succ.rec (α := αᵒᵈ) (P := P) h0 h1 hmn
+theorem Pred.rec {m : α} {P : ∀ n, n ≤ m → Prop} (rfl : P m le_rfl)
+    (pred : ∀ n (hnm : n ≤ m), P n hnm → P (pred n) ((pred_le _).trans hnm)) ⦃n : α⦄
+    (hnm : n ≤ m) : P n hnm :=
+  Succ.rec (α := αᵒᵈ) (P := P) rfl pred hnm
 
 theorem Pred.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (pred a)) {a b : α} (h : a ≤ b) :
     p a ↔ p b :=
@@ -128,16 +131,16 @@ lemma lt_or_le_of_codirected [SuccOrder α] [IsSuccArchimedean α] {r v₁ v₂ 
 /--
 This isn't an instance due to a loop with `LinearOrder`.
 -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
-     [DecidableEq α] [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)]
+     [DecidableEq α] [DecidableLE α] [DecidableLT α]
      [IsDirected α (· ≥ ·)] : LinearOrder α where
   le_total a b :=
     have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
     le_total_of_codirected ha hb
-  decidableEq := inferInstance
-  decidableLE := inferInstance
-  decidableLT := inferInstance
+  toDecidableEq := inferInstance
+  toDecidableLE := inferInstance
+  toDecidableLT := inferInstance
 
 lemma lt_or_le_of_directed [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : α} (h₁ : v₁ ≤ r)
     (h₂ : v₂ ≤ r) : v₁ < v₂ ∨ v₂ ≤ v₁ := by
@@ -150,9 +153,9 @@ lemma lt_or_le_of_directed [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : 
 /--
 This isn't an instance due to a loop with `LinearOrder`.
 -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
-     [DecidableEq α] [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)]
+     [DecidableEq α] [DecidableLE α] [DecidableLT α]
      [IsDirected α (· ≤ ·)] : LinearOrder α :=
   letI : LinearOrder αᵒᵈ := IsSuccArchimedean.linearOrder
   inferInstanceAs (LinearOrder αᵒᵈᵒᵈ)
@@ -207,36 +210,24 @@ lemma StrictMono.not_bddAbove_range_of_isSuccArchimedean [NoMaxOrder α] [SuccOr
   obtain ⟨a₀⟩ := ‹Nonempty α›
   suffices ∀ b, f a₀ ≤ b → ∃ a, b < f a by
     obtain ⟨a, ha⟩ : ∃ a, m < f a := this m (hm' a₀)
-    exact ha.not_le (hm' a)
+    exact ha.not_ge (hm' a)
   have h : ∀ a, ∃ a', f a < f a' := fun a ↦ (exists_gt a).imp (fun a' h ↦ hf h)
   apply Succ.rec
   · exact h a₀
   rintro b _ ⟨a, hba⟩
   exact (h a).imp (fun a' ↦ (succ_le_of_lt hba).trans_lt)
 
-@[deprecated StrictMono.not_bddAbove_range_of_isSuccArchimedean (since := "2024-09-21")]
-alias StrictMono.not_bddAbove_range := StrictMono.not_bddAbove_range_of_isSuccArchimedean
-
 lemma StrictMono.not_bddBelow_range_of_isPredArchimedean [NoMinOrder α] [PredOrder β]
     [IsPredArchimedean β] (hf : StrictMono f) : ¬ BddBelow (Set.range f) :=
   hf.dual.not_bddAbove_range_of_isSuccArchimedean
-
-@[deprecated StrictMono.not_bddBelow_range_of_isPredArchimedean (since := "2024-09-21")]
-alias StrictMono.not_bddBelow_range := StrictMono.not_bddBelow_range_of_isPredArchimedean
 
 lemma StrictAnti.not_bddBelow_range_of_isSuccArchimedean [NoMinOrder α] [SuccOrder β]
     [IsSuccArchimedean β] (hf : StrictAnti f) : ¬ BddAbove (Set.range f) :=
   hf.dual_right.not_bddBelow_range_of_isPredArchimedean
 
-@[deprecated StrictAnti.not_bddBelow_range_of_isSuccArchimedean (since := "2024-09-21")]
-alias StrictAnti.not_bddAbove_range := StrictAnti.not_bddBelow_range_of_isSuccArchimedean
-
 lemma StrictAnti.not_bddBelow_range_of_isPredArchimedean [NoMaxOrder α] [PredOrder β]
     [IsPredArchimedean β] (hf : StrictAnti f) : ¬ BddBelow (Set.range f) :=
   hf.dual_right.not_bddAbove_range_of_isSuccArchimedean
-
-@[deprecated StrictAnti.not_bddBelow_range_of_isPredArchimedean (since := "2024-09-21")]
-alias StrictAnti.not_bddBelow_range := StrictAnti.not_bddBelow_range_of_isPredArchimedean
 
 end bdd_range
 
@@ -249,7 +240,7 @@ instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT 
   ⟨fun {a b} => by
     refine WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
       h.wf ?_ b
-    intros b ih hab
+    intro b ih hab
     replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
     · exact ⟨0, rfl⟩
@@ -309,7 +300,7 @@ lemma BddAbove.exists_isGreatest_of_nonempty {X : Type*} [LinearOrder X] [SuccOr
   have hn' := hm hn
   revert hn hm hm'
   refine Succ.rec ?_ ?_ hn'
-  · simp (config := {contextual := true})
+  · simp +contextual
   intro m _ IH hm hn hm'
   rw [mem_upperBounds] at IH hm
   simp_rw [Order.le_succ_iff_eq_or_le] at hm
@@ -408,14 +399,15 @@ lemma monotoneOn_of_le_succ (hs : s.OrdConnected)
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le hab
   clear hab
-  induction' n with n hn
-  · simp
-  rw [Function.iterate_succ_apply'] at hb ⊢
-  have : succ^[n] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
-  by_cases hb' : IsMax (succ^[n] a)
-  · rw [succ_eq_iff_isMax.2 hb']
-    exact hn this
-  · exact (hn this).trans (hf _ hb' this hb)
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [Function.iterate_succ_apply'] at hb ⊢
+    have : succ^[n] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
+    by_cases hb' : IsMax (succ^[n] a)
+    · rw [succ_eq_iff_isMax.2 hb']
+      exact hn this
+    · exact (hn this).trans (hf _ hb' this hb)
 
 lemma antitoneOn_of_succ_le (hs : s.OrdConnected)
     (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f (succ a) ≤ f a) : AntitoneOn f s :=
@@ -428,14 +420,15 @@ lemma strictMonoOn_of_lt_succ (hs : s.OrdConnected)
   obtain _ | n := n
   · simp at hab
   apply not_isMax_of_lt at hab
-  induction' n with n hn
-  · simpa using hf _ hab ha hb
-  rw [Function.iterate_succ_apply'] at hb ⊢
-  have : succ^[n + 1] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
-  by_cases hb' : IsMax (succ^[n + 1] a)
-  · rw [succ_eq_iff_isMax.2 hb']
-    exact hn this
-  · exact (hn this).trans (hf _ hb' this hb)
+  induction n with
+  | zero => simpa using hf _ hab ha hb
+  | succ n hn =>
+    rw [Function.iterate_succ_apply'] at hb ⊢
+    have : succ^[n + 1] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
+    by_cases hb' : IsMax (succ^[n + 1] a)
+    · rw [succ_eq_iff_isMax.2 hb']
+      exact hn this
+    · exact (hn this).trans (hf _ hb' this hb)
 
 lemma strictAntiOn_of_succ_lt (hs : s.OrdConnected)
     (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f (succ a) < f a) : StrictAntiOn f s :=
@@ -463,14 +456,15 @@ lemma monotoneOn_of_pred_le (hs : s.OrdConnected)
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_pred_iterate_of_le hab
   clear hab
-  induction' n with n hn
-  · simp
-  rw [Function.iterate_succ_apply'] at ha ⊢
-  have : pred^[n] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
-  by_cases ha' : IsMin (pred^[n] b)
-  · rw [pred_eq_iff_isMin.2 ha']
-    exact hn this
-  · exact (hn this).trans' (hf _ ha' this ha)
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [Function.iterate_succ_apply'] at ha ⊢
+    have : pred^[n] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
+    by_cases ha' : IsMin (pred^[n] b)
+    · rw [pred_eq_iff_isMin.2 ha']
+      exact hn this
+    · exact (hn this).trans' (hf _ ha' this ha)
 
 lemma antitoneOn_of_le_pred (hs : s.OrdConnected)
     (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f a ≤ f (pred a)) : AntitoneOn f s :=
@@ -483,14 +477,15 @@ lemma strictMonoOn_of_pred_lt (hs : s.OrdConnected)
   obtain _ | n := n
   · simp at hab
   apply not_isMin_of_lt at hab
-  induction' n with n hn
-  · simpa using hf _ hab hb ha
-  rw [Function.iterate_succ_apply'] at ha ⊢
-  have : pred^[n + 1] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
-  by_cases ha' : IsMin (pred^[n + 1] b)
-  · rw [pred_eq_iff_isMin.2 ha']
-    exact hn this
-  · exact (hn this).trans' (hf _ ha' this ha)
+  induction n with
+  | zero => simpa using hf _ hab hb ha
+  | succ n hn =>
+    rw [Function.iterate_succ_apply'] at ha ⊢
+    have : pred^[n + 1] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
+    by_cases ha' : IsMin (pred^[n + 1] b)
+    · rw [pred_eq_iff_isMin.2 ha']
+      exact hn this
+    · exact (hn this).trans' (hf _ ha' this ha)
 
 lemma strictAntiOn_of_lt_pred (hs : s.OrdConnected)
     (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f a < f (pred a)) : StrictAntiOn f s :=

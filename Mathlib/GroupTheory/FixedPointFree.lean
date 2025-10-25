@@ -15,7 +15,7 @@ An automorphism `φ` of a group `G` is fixed-point-free if `1 : G` is the only f
 
 namespace MonoidHom
 
-variable {G : Type*}
+variable {F G : Type*}
 
 section Definitions
 
@@ -33,9 +33,7 @@ def commutatorMap [Div G] (g : G) := g / φ g
 end Definitions
 
 namespace FixedPointFree
-
--- todo: refactor Mathlib/Algebra/GroupPower/IterateHom to generalize φ to MonoidHomClass
-variable [Group G] {φ : G →* G}
+variable [Group G] [FunLike F G G] [MonoidHomClass F G G] {φ : F}
 
 theorem commutatorMap_injective (hφ : FixedPointFree φ) : Function.Injective (commutatorMap φ) := by
   refine fun x y h ↦ inv_mul_eq_one.mp <| hφ _ ?_
@@ -61,7 +59,7 @@ section Involutive
 
 theorem coe_eq_inv_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) :
     ⇑φ = (·⁻¹) :=
-  coe_eq_inv_of_sq_eq_one hφ  (funext h2)
+  coe_eq_inv_of_sq_eq_one hφ (funext h2)
 
 theorem commute_all_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) (g h : G) :
     Commute g h := by
@@ -69,7 +67,7 @@ theorem commute_all_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Invol
   rwa [hφ.coe_eq_inv_of_involutive h2, inv_eq_iff_eq_inv, mul_inv_rev, inv_inv, inv_inv] at key
 
 /-- If a finite group admits a fixed-point-free involution, then it is commutative. -/
-def commGroupOfInvolutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ):
+def commGroupOfInvolutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) :
     CommGroup G := .mk (hφ.commute_all_of_involutive h2)
 
 theorem orderOf_ne_two_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involutive φ) (g : G) :

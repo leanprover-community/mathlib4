@@ -42,21 +42,30 @@ theorem ker_modByMonicHom {q : R[X]} (hq : q.Monic) :
     LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
   Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
 
+@[simp]
+lemma ker_constantCoeff : RingHom.ker constantCoeff = .span {(X : R[X])} := by
+  refine le_antisymm (fun p hp ↦ ?_) (by simp [Ideal.span_le])
+  simp only [RingHom.mem_ker, constantCoeff_apply, ← Polynomial.X_dvd_iff] at hp
+  rwa [Ideal.mem_span_singleton]
+
 open Algebra in
-lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
     (x : S) (I : Ideal R) {y : adjoin R ({x} : Set S)} :
     y ∈ I.map (algebraMap R (adjoin R ({x} : Set S))) ↔
       ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := by
   constructor
   · intro H
-    induction' H using Submodule.span_induction with a ha a b ha hb ha' hb' a b hb hb'
-    · obtain ⟨a, ha, rfl⟩ := ha
+    induction H using Submodule.span_induction with
+    | mem a ha =>
+      obtain ⟨a, ha, rfl⟩ := ha
       exact ⟨C a, fun i ↦ by rw [coeff_C]; aesop, aeval_C _ _⟩
-    · exact ⟨0, by simp, aeval_zero _⟩
-    · obtain ⟨a, ha, ha'⟩ := ha'
+    | zero => exact ⟨0, by simp, aeval_zero _⟩
+    | add a b ha hb ha' hb' =>
+      obtain ⟨a, ha, ha'⟩ := ha'
       obtain ⟨b, hb, hb'⟩ := hb'
       exact ⟨a + b, fun i ↦ by simpa using add_mem (ha i) (hb i), by simp [ha', hb']⟩
-    · obtain ⟨b', hb, hb'⟩ := hb'
+    | smul a b hb hb' =>
+      obtain ⟨b', hb, hb'⟩ := hb'
       obtain ⟨a, ha⟩ := a
       rw [Algebra.adjoin_singleton_eq_range_aeval] at ha
       obtain ⟨p, hp : aeval x p = a⟩ := ha
@@ -64,8 +73,8 @@ lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommRing R] [CommRing S
       rw [coeff_mul]
       exact sum_mem fun i hi ↦ Ideal.mul_mem_left _ _ (hb _)
   · rintro ⟨p, hp, hp'⟩
-    have : y = ∑ i in p.support, p.coeff i • ⟨_, (X ^ i).aeval_mem_adjoin_singleton _ x⟩ := by
-      trans ∑ i in p.support, ⟨_, (C (p.coeff i) * X ^ i).aeval_mem_adjoin_singleton _ x⟩
+    have : y = ∑ i ∈ p.support, p.coeff i • ⟨_, (X ^ i).aeval_mem_adjoin_singleton _ x⟩ := by
+      trans ∑ i ∈ p.support, ⟨_, (C (p.coeff i) * X ^ i).aeval_mem_adjoin_singleton _ x⟩
       · ext1
         simp only [AddSubmonoidClass.coe_finset_sum, ← map_sum, ← hp', ← as_sum_support_C_mul_X_pow]
       · congr with i

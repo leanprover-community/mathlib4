@@ -14,10 +14,10 @@ The category of delta-generated spaces.
 
 See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 
-Adapted from `Mathlib.Topology.Category.CompactlyGenerated`.
+Adapted from `Mathlib/Topology/Category/CompactlyGenerated.lean`.
 
 ## TODO
-* `DeltaGenerated` is cartesian-closed.
+* `DeltaGenerated` is Cartesian closed.
 -/
 
 universe u
@@ -41,11 +41,11 @@ attribute [instance] deltaGenerated
 instance : LargeCategory.{u} DeltaGenerated.{u} :=
   InducedCategory.category toTop
 
-instance : HasForget.{u} DeltaGenerated.{u} :=
-  InducedCategory.hasForget _
+instance : ConcreteCategory.{u} DeltaGenerated.{u} (C(·, ·)) :=
+  InducedCategory.concreteCategory toTop
 
 /-- Constructor for objects of the category `DeltaGenerated` -/
-def of (X : Type u) [TopologicalSpace X] [DeltaGeneratedSpace X] : DeltaGenerated.{u} where
+abbrev of (X : Type u) [TopologicalSpace X] [DeltaGeneratedSpace X] : DeltaGenerated.{u} where
   toTop := TopCat.of X
   deltaGenerated := ‹_›
 
@@ -67,19 +67,19 @@ instance : deltaGeneratedToTop.{u}.Faithful := fullyFaithfulDeltaGeneratedToTop.
 @[simps!]
 def topToDeltaGenerated : TopCat.{u} ⥤ DeltaGenerated.{u} where
   obj X := of (DeltaGeneratedSpace.of X)
-  map {_ Y} f := ⟨f, (continuous_to_deltaGenerated (Y := Y)).mpr <|
-    continuous_le_dom deltaGenerated_le f.continuous⟩
+  map {_ Y} f := TopCat.ofHom ⟨f, (continuous_to_deltaGenerated (Y := Y)).mpr <|
+    continuous_le_dom deltaGenerated_le f.hom.continuous⟩
 
 instance : topToDeltaGenerated.{u}.Faithful :=
-  ⟨fun h ↦ by ext x; exact congrFun (congrArg ContinuousMap.toFun h) x⟩
+  ⟨fun h ↦ by ext x; exact CategoryTheory.congr_fun h x⟩
 
 /-- The adjunction between the forgetful functor `DeltaGenerated ⥤ TopCat` and its coreflector. -/
 def coreflectorAdjunction : deltaGeneratedToTop ⊣ topToDeltaGenerated :=
   Adjunction.mkOfUnitCounit {
     unit := {
-      app X := ⟨id, continuous_iff_coinduced_le.mpr (eq_deltaGenerated (X := X)).le⟩ }
+      app X := TopCat.ofHom ⟨id, continuous_iff_coinduced_le.mpr (eq_deltaGenerated (X := X)).le⟩ }
     counit := {
-      app X := ⟨DeltaGeneratedSpace.counit, DeltaGeneratedSpace.continuous_counit⟩ }}
+      app X := TopCat.ofHom ⟨DeltaGeneratedSpace.counit, DeltaGeneratedSpace.continuous_counit⟩ }}
 
 /-- The category of delta-generated spaces is coreflective in the category of topological spaces. -/
 instance deltaGeneratedToTop.coreflective : Coreflective deltaGeneratedToTop where

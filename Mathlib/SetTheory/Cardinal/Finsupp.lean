@@ -30,9 +30,8 @@ theorem mk_finsupp_lift_of_infinite (α : Type u) (β : Type v) [Infinite α] [Z
       _ = #(α × β) := mk_finset_of_infinite _
       _ = max (lift.{v} #α) (lift.{u} #β) := by
         rw [mk_prod, mul_eq_max_of_aleph0_le_left] <;> simp
-
   · apply max_le <;> rw [← lift_id #(α →₀ β), ← lift_umax]
-    · cases' exists_ne (0 : β) with b hb
+    · obtain ⟨b, hb⟩ := exists_ne (0 : β)
       exact lift_mk_le.{v}.2 ⟨⟨_, Finsupp.single_left_injective hb⟩⟩
     · inhabit α
       exact lift_mk_le.{u}.2 ⟨⟨_, Finsupp.single_injective default⟩⟩
@@ -65,8 +64,6 @@ theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = m
 
 theorem mk_multiset_of_infinite (α : Type u) [Infinite α] : #(Multiset α) = #α := by simp
 
-theorem mk_multiset_of_countable (α : Type u) [Countable α] [Nonempty α] : #(Multiset α) = ℵ₀ := by
-  classical
-  exact Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
+@[deprecated (since := "2025-10-06")] alias mk_multiset_of_countable := mk_eq_aleph0
 
 end Cardinal

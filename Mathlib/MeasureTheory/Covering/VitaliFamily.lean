@@ -21,28 +21,28 @@ differentiations of measure that apply in both contexts.
 This file gives the basic definition of Vitali families. More interesting developments of this
 notion are deferred to other files:
 * constructions of specific Vitali families are provided by the Besicovitch covering theorem, in
-`Besicovitch.vitaliFamily`, and by the Vitali covering theorem, in `Vitali.vitaliFamily`.
+  `Besicovitch.vitaliFamily`, and by the Vitali covering theorem, in `Vitali.vitaliFamily`.
 * The main theorem on differentiation of measures along a Vitali family is proved in
-`VitaliFamily.ae_tendsto_rnDeriv`.
+  `VitaliFamily.ae_tendsto_rnDeriv`.
 
 ## Main definitions
 
 * `VitaliFamily μ` is a structure made, for each `x : X`, of a family of sets around `x`, such that
-one can extract an almost everywhere disjoint covering from any subfamily containing sets of
-arbitrarily small diameters.
+  one can extract an almost everywhere disjoint covering from any subfamily containing sets of
+  arbitrarily small diameters.
 
 Let `v` be such a Vitali family.
 * `v.FineSubfamilyOn` describes the subfamilies of `v` from which one can extract almost
-everywhere disjoint coverings. This property, called
-`v.FineSubfamilyOn.exists_disjoint_covering_ae`, is essentially a restatement of the definition
-of a Vitali family. We also provide an API to use efficiently such a disjoint covering.
+  everywhere disjoint coverings. This property, called
+  `v.FineSubfamilyOn.exists_disjoint_covering_ae`, is essentially a restatement of the definition
+  of a Vitali family. We also provide an API to use efficiently such a disjoint covering.
 * `v.filterAt x` is a filter on sets of `X`, such that convergence with respect to this filter
-means convergence when sets in the Vitali family shrink towards `x`.
+  means convergence when sets in the Vitali family shrink towards `x`.
 
 ## References
 
-* [Herbert Federer, Geometric Measure Theory, Chapter 2.8][Federer1996] (Vitali families are called
-Vitali relations there)
+* [Herbert Federer, Geometric Measure Theory, Chapter 2.8][Federer1996]
+  (Vitali families are called Vitali relations there)
 -/
 
 
@@ -61,8 +61,6 @@ Vitali families are provided by covering theorems such as the Besicovitch coveri
 Vitali covering theorem. They make it possible to formulate general versions of theorems on
 differentiations of measure that apply in both contexts.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure VitaliFamily {m : MeasurableSpace X} (μ : Measure X) where
   /-- Sets of the family "centered" at a given point. -/
   setsAt :  X → Set (Set X)
@@ -118,7 +116,6 @@ covering of almost every `s`. -/
 protected def index : Set (X × Set X) :=
   h.exists_disjoint_covering_ae.choose
 
--- Porting note: Needed to add `(_h : FineSubfamilyOn v f s)`
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.covering p` is a set in the family,
 for `p ∈ h.index`, such that these sets form a disjoint covering of almost every `s`. -/
 @[nolint unusedArguments]

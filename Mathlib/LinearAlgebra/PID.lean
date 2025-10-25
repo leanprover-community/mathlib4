@@ -17,7 +17,7 @@ This file is a location for such results and exists to avoid making large parts 
 algebra import hierarchy have to depend on the theory of PIDs.
 
 ## Main results:
- * `LinearMap.trace_restrict_eq_of_forall_mem`
+* `LinearMap.trace_restrict_eq_of_forall_mem`
 
 -/
 
@@ -33,14 +33,14 @@ lemma trace_restrict_eq_of_forall_mem [IsDomain R] [IsPrincipalIdealRing R]
     (hf : ∀ x, f x ∈ p) (hf' : ∀ x ∈ p, f x ∈ p := fun x _ ↦ hf x) :
     trace R p (f.restrict hf') = trace R M f := by
   let ι := Module.Free.ChooseBasisIndex R M
-  obtain ⟨n, snf : Basis.SmithNormalForm p ι n⟩ := p.smithNormalForm (Module.Free.chooseBasis R M)
+  obtain ⟨n, snf⟩ := p.smithNormalForm (Module.Free.chooseBasis R M)
   rw [trace_eq_matrix_trace R snf.bM, trace_eq_matrix_trace R snf.bN]
   set A : Matrix (Fin n) (Fin n) R := toMatrix snf.bN snf.bN (f.restrict hf')
   set B : Matrix ι ι R := toMatrix snf.bM snf.bM f
   have aux : ∀ i, B i i ≠ 0 → i ∈ Set.range snf.f := fun i hi ↦ by
-    contrapose! hi; exact snf.repr_eq_zero_of_nmem_range ⟨_, (hf _)⟩ hi
+    contrapose! hi; exact snf.repr_eq_zero_of_notMem_range ⟨_, (hf _)⟩ hi
   change ∑ i, A i i = ∑ i, B i i
   rw [← Finset.sum_filter_of_ne (p := fun j ↦ j ∈ Set.range snf.f) (by simpa using aux)]
-  simp [A, B]
+  simp [A, B, hf]
 
 end LinearMap

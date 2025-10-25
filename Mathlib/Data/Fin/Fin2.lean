@@ -3,8 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Finset.Image
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.Nat.Notation
-import Mathlib.Data.Fintype.Basic
 import Mathlib.Logic.Function.Basic
 
 /-!
@@ -115,17 +116,17 @@ def ofNat' : ∀ {n} (m) [IsLT m n], Fin2 n
 
 /-- `castSucc i` embeds `i : Fin2 n` in `Fin2 (n+1)`. -/
 def castSucc {n} : Fin2 n → Fin2 (n + 1)
-  | fz   => fz
+  | fz => fz
   | fs k => fs <| castSucc k
 
 /-- The greatest value of `Fin2 (n+1)`. -/
-def last : {n : Nat} → Fin2 (n+1)
+def last : {n : Nat} → Fin2 (n + 1)
   | 0   => fz
-  | n+1 => fs (@last n)
+  | n + 1 => fs (@last n)
 
 /-- Maps `0` to `n-1`, `1` to `n-2`, ..., `n-1` to `0`. -/
 def rev {n : Nat} : Fin2 n → Fin2 n
-  | .fz   => last
+  | .fz => last
   | .fs i => i.rev.castSucc
 
 @[simp] lemma rev_last {n} : rev (@last n) = fz := by
@@ -146,9 +147,49 @@ instance : Inhabited (Fin2 1) :=
 
 instance instFintype : ∀ n, Fintype (Fin2 n)
   | 0   => ⟨∅, Fin2.elim0⟩
-  | n+1 =>
+  | n + 1 =>
     let ⟨elems, compl⟩ := instFintype n
     { elems    := elems.map ⟨Fin2.fs, @fs.inj _⟩ |>.cons .fz (by simp)
-      complete := by rintro (_|i) <;> simp [compl] }
+      complete := by rintro (_ | i) <;> simp [compl] }
+
+/-- Converts a `Fin2` into a `Fin`. -/
+def toFin {n : Nat} (i : Fin2 n) : Fin n :=
+  match i with
+  | fz => 0
+  | fs i => i.toFin.succ
+
+@[simp]
+theorem toFin_fz (n : Nat) : toFin (@fz n) = 0 := rfl
+
+@[simp]
+theorem toFin_fs {n : Nat} (i : Fin2 n) : toFin (fs i) = (toFin i).succ := rfl
+
+/-- Converts a `Fin` into a `Fin2`. -/
+def ofFin {n : Nat} (i : Fin n) : Fin2 n :=
+  i.succRec (fun _ => fz) (fun _ _ => fs)
+
+@[simp]
+theorem ofFin_zero (n : Nat) : ofFin 0 = @fz n := rfl
+
+@[simp]
+theorem ofFin_succ {n : Nat} (i : Fin n) : ofFin i.succ = fs (ofFin i) := rfl
+
+@[simp]
+theorem toFin_ofFin {n : Nat} (i : Fin n) : toFin (ofFin i) = i :=
+  i.succRec (fun _ => rfl) (fun _ _ ih => congrArg Fin.succ ih)
+
+@[simp]
+theorem ofFin_toFin {n : Nat} (i : Fin2 n) : ofFin (toFin i) = i := by
+  induction i with
+  | fz => rfl
+  | fs _ ih => exact congrArg fs ih
+
+/-- `Fin2` is equivalent to the usual encoding of `Fin` as a subtype of `ℕ`. -/
+@[simps]
+def equivFin (n : Nat) : Fin2 n ≃ Fin n where
+  toFun := toFin
+  invFun := ofFin
+  left_inv := ofFin_toFin
+  right_inv := toFin_ofFin
 
 end Fin2

@@ -11,7 +11,6 @@ import Mathlib.Tactic.Bound
 ## Tests for the `bound` tactic
 -/
 
-open Complex (abs)
 open scoped NNReal
 
 -- Tests that work with `bound`, but not `positivity`, `gcongr`, or `norm_num`
@@ -29,14 +28,14 @@ example {α : Type} {s : Finset α} {f g : α → ℂ} :  -- An example that req
 end bound_only
 
 -- Calc example: A weak lower bound for `z ← z^2 + c`
-example {c z : ℂ} (cz : Complex.abs c ≤ Complex.abs z) (z3 : 3 ≤ Complex.abs z) :
-    2 * Complex.abs z ≤ Complex.abs (z^2 + c) := by
-  calc Complex.abs (z^2 + c)
-    _ ≥ Complex.abs (z^2) - Complex.abs c := by bound
-    _ ≥ Complex.abs (z^2) - Complex.abs z := by bound  -- gcongr works here, not for the other two
-    _ ≥ (Complex.abs z - 1) * Complex.abs z := by
-      rw [mul_comm, mul_sub_one, ← pow_two, ← Complex.abs.map_pow]
-    _ ≥ 2 * Complex.abs z := by bound
+example {c z : ℝ} (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
+    2 * ‖z‖ ≤ ‖z^2 + c‖ := by
+  calc ‖z^2 + c‖
+    _ ≥ ‖z^2‖ - ‖c‖ := by bound
+    _ ≥ ‖z^2‖ - ‖z‖ := by  bound  -- gcongr works here, not for the other two
+    _ ≥ (‖z‖ - 1) * ‖z‖ := by
+      rw [mul_comm, mul_sub_one, ← pow_two, ← norm_pow]
+    _ ≥ 2 * ‖z‖ := by bound
 
 -- Testing branching functionality. None of these tests work with `positivity` or `bound`.
 section guess_tests
@@ -74,8 +73,8 @@ end positive_tests
 
 section nonneg_tests
 variable {n : ℕ} {x y : ℝ} {u : ℝ≥0} {z : ℂ}
-example : 0 ≤ abs z := by bound
-example : abs z ≥ 0 := by bound
+example : 0 ≤ ‖z‖ := by bound
+example : ‖z‖ ≥ 0 := by bound
 example : x^2 ≥ 0 := by bound
 example (p : x ≥ 0) (q : y ≥ 0) : x * y ≥ 0 := by bound
 example (p : x ≥ 0) (q : y ≥ 0) : x / y ≥ 0 := by bound
@@ -99,7 +98,7 @@ example (n : x ≥ 0) (h : x ≤ y) : y^2 ≥ x^2 := by bound
 example (n : a ≥ 0) (h : x ≤ y) : a * x ≤ a * y := by bound
 example (n : a ≥ 0) (h : x ≤ y) : x * a ≤ y * a := by bound
 example (bp : b ≥ 0) (xp : x ≥ 0) (ab : a ≤ b) (xy : x ≤ y) : a * x ≤ b * y := by bound
-example (h : x ≤ y) : abs z * x ≤ abs z * y := by bound
+example (h : x ≤ y) : ‖z‖ * x ≤ ‖z‖ * y := by bound
 example (h : x ≤ y) : a + x ≤ a + y := by bound
 example (h : x ≤ y) : x + a ≤ y + a := by bound
 example (ab : a ≤ b) (xy : x ≤ y) : a + x ≤ b + y := by bound
@@ -124,12 +123,12 @@ example {s : Set ℂ} (o : IsOpen s) (z) (h : z ∈ s) : ∃ r : ℝ, r > 0 := b
 
 -- Test various elaboration issues
 example {f : ℂ → ℂ} {z w : ℂ} {s r c e : ℝ}
-      (sc : ∀ {w}, abs (w - z) < s → abs (f w - f z) < e) (wz : abs (w - z) < s) (wr : abs w < r)
-      (h : ∀ z : ℂ, abs z < r → abs (f z) ≤ c * abs z) :
-      abs (f z) ≤ c * abs w + e := by
-  calc abs (f z) = abs (f w - (f w - f z)) := by ring_nf
-    _ ≤ abs (f w) + abs (f w - f z) := by bound
-    _ ≤ c * abs w + e := by bound [h w wr, sc wz]
+      (sc : ∀ {w}, ‖w - z‖ < s → ‖f w - f z‖ < e) (wz : ‖w - z‖ < s) (wr : ‖w‖ < r)
+      (h : ∀ z : ℂ, ‖z‖ < r → ‖f z‖ ≤ c * ‖z‖) :
+      ‖f z‖ ≤ c * ‖w‖ + e := by
+  calc ‖f z‖ = ‖f w - (f w - f z)‖ := by ring_nf
+    _ ≤ ‖f w‖ + ‖f w - f z‖ := by bound
+    _ ≤ c * ‖w‖+ e := by bound [h w wr, sc wz]
 
 -- A test that requires reduction to weak head normal form to work (surfaced by `Hartogs.lean`)
 example (x y : ℝ) (h : x < y ∧ True) : x ≤ y := by

@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Prod
 # The derivative of bounded bilinear maps
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 bounded bilinear maps.
@@ -36,7 +36,7 @@ variable {b : E × F → G} {u : Set (E × F)}
 
 open NormedField
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: rewrite/golf using analytic functions?
+-- TODO: rewrite/golf using analytic functions?
 @[fun_prop]
 theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasStrictFDerivAt b (h.deriv p) p := by
@@ -60,7 +60,7 @@ theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b)
         simpa only [mul_one, isLittleO_norm_right] using this
       refine (isBigO_refl _ _).mul_isLittleO ((isLittleO_one_iff _).2 ?_)
       -- TODO: `continuity` fails
-      exact (continuous_snd.fst.prod_mk continuous_fst.snd).norm.tendsto' _ _ (by simp)
+      exact (continuous_snd.fst.prodMk continuous_fst.snd).norm.tendsto' _ _ (by simp)
     _ = _ := by simp [T, Function.comp_def]
 
 @[fun_prop]
@@ -103,23 +103,21 @@ theorem IsBoundedBilinearMap.differentiableOn (h : IsBoundedBilinearMap 𝕜 b) 
 
 variable (B : E →L[𝕜] F →L[𝕜] G)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  need `by exact` to deal with tricky unification -/
 @[fun_prop]
 theorem ContinuousLinearMap.hasFDerivWithinAt_of_bilinear {f : G' → E} {g : G' → F}
     {f' : G' →L[𝕜] E} {g' : G' →L[𝕜] F} {x : G'} {s : Set G'} (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt (fun y => B (f y) (g y))
       (B.precompR G' (f x) g' + B.precompL G' f' (g x)) s x := by
-  exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
+  -- need `by exact` to deal with tricky unification
+  exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prodMk hg)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  need `by exact` to deal with tricky unification -/
 @[fun_prop]
 theorem ContinuousLinearMap.hasFDerivAt_of_bilinear {f : G' → E} {g : G' → F} {f' : G' →L[𝕜] E}
     {g' : G' →L[𝕜] F} {x : G'} (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
     HasFDerivAt (fun y => B (f y) (g y)) (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x := by
-  exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp x (hf.prod hg)
+  -- need `by exact` to deal with tricky unification
+  exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp x (hf.prodMk hg)
 
 @[fun_prop]
 theorem ContinuousLinearMap.hasStrictFDerivAt_of_bilinear
@@ -127,7 +125,7 @@ theorem ContinuousLinearMap.hasStrictFDerivAt_of_bilinear
     {g' : G' →L[𝕜] F} {x : G'} (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
     HasStrictFDerivAt (fun y => B (f y) (g y))
       (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x :=
-  (B.isBoundedBilinearMap.hasStrictFDerivAt (f x, g x)).comp x (hf.prod hg)
+  (B.isBoundedBilinearMap.hasStrictFDerivAt (f x, g x)).comp x (hf.prodMk hg)
 
 theorem ContinuousLinearMap.fderivWithin_of_bilinear {f : G' → E} {g : G' → F} {x : G'} {s : Set G'}
     (hf : DifferentiableWithinAt 𝕜 f s x) (hg : DifferentiableWithinAt 𝕜 g s x)

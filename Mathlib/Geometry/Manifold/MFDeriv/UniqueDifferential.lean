@@ -11,7 +11,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 In this file, we prove various properties of unique derivative sets in manifolds.
 * `image_denseRange`: suppose `f` is differentiable on `s` and its derivative at every point of `s`
-has dense range. If `s` has the unique differential property, then so does `f '' s`.
+  has dense range. If `s` has the unique differential property, then so does `f '' s`.
 * `uniqueMDiffOn_preimage`: the unique differential property is preserved by local diffeomorphisms
 * `uniqueDiffOn_target_inter`: the unique differential property is preserved by
   pullbacks of extended charts
@@ -38,7 +38,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 section
 
-/-- If `s` has the unique differential property at `x`, `f` is differentiable within `s` at x` and
+/-- If `s` has the unique differential property at `x`, `f` is differentiable within `s` at `x` and
 its derivative has dense range, then `f '' s` has the unique differential property at `f x`. -/
 theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffWithinAt I s x)
     {f : M → M'} {f' : E →L[𝕜] E'} (hf : HasMFDerivWithinAt I I' f s x f')
@@ -68,21 +68,25 @@ theorem UniqueMDiffOn.image_denseRange (hs : UniqueMDiffOn I s) {f : M → M'}
     UniqueMDiffOn I' (f '' s) :=
   hs.image_denseRange' (fun x hx ↦ (hf x hx).hasMFDerivWithinAt) hd
 
-protected theorem UniqueMDiffWithinAt.preimage_partialHomeomorph (hs : UniqueMDiffWithinAt I s x)
-    {e : PartialHomeomorph M M'} (he : e.MDifferentiable I I') (hx : x ∈ e.source) :
-    UniqueMDiffWithinAt I' (e.target ∩ e.symm ⁻¹' s) (e x) := by
+protected theorem UniqueMDiffWithinAt.preimage_openPartialHomeomorph
+    (hs : UniqueMDiffWithinAt I s x) {e : OpenPartialHomeomorph M M'} (he : e.MDifferentiable I I')
+    (hx : x ∈ e.source) : UniqueMDiffWithinAt I' (e.target ∩ e.symm ⁻¹' s) (e x) := by
   rw [← e.image_source_inter_eq', inter_comm]
   exact (hs.inter (e.open_source.mem_nhds hx)).image_denseRange
     (he.mdifferentiableAt hx).hasMFDerivAt.hasMFDerivWithinAt
     (he.mfderiv_surjective hx).denseRange
 
+@[deprecated (since := "2025-08-29")] alias
+UniqueMDiffWithinAt.preimage_PartialHomeomorph := UniqueMDiffWithinAt.preimage_openPartialHomeomorph
+
 /-- If a set has the unique differential property, then its image under a local
 diffeomorphism also has the unique differential property. -/
-theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s) {e : PartialHomeomorph M M'}
-    (he : e.MDifferentiable I I') : UniqueMDiffOn I' (e.target ∩ e.symm ⁻¹' s) := fun _x hx ↦
-  e.right_inv hx.1 ▸ (hs _ hx.2).preimage_partialHomeomorph he (e.map_target hx.1)
+theorem UniqueMDiffOn.uniqueMDiffOn_preimage (hs : UniqueMDiffOn I s)
+    {e : OpenPartialHomeomorph M M'} (he : e.MDifferentiable I I') :
+    UniqueMDiffOn I' (e.target ∩ e.symm ⁻¹' s) := fun _x hx ↦
+  e.right_inv hx.1 ▸ (hs _ hx.2).preimage_openPartialHomeomorph he (e.map_target hx.1)
 
-variable [IsManifold I 1 M]  in
+variable [IsManifold I 1 M] in
 /-- If a set in a manifold has the unique derivative property, then its pullback by any extended
 chart, in the vector space, also has the unique derivative property. -/
 theorem UniqueMDiffOn.uniqueMDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M) :
@@ -145,15 +149,15 @@ private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
   rcases p with ⟨x, v⟩
   dsimp
   rintro ⟨z, w⟩ ⟨hz, -⟩
-  simp only [ModelWithCorners.target_eq, mem_inter_iff, mem_preimage, Function.comp_apply,
+  simp only [mem_inter_iff, mem_preimage, Function.comp_apply,
     mem_range] at hz
-  simp only [FiberBundle.chartedSpace_chartAt, PartialHomeomorph.coe_trans_symm, mem_inter_iff,
+  simp only [FiberBundle.chartedSpace_chartAt, OpenPartialHomeomorph.coe_trans_symm, mem_inter_iff,
     mem_preimage, Function.comp_apply, mem_range]
   constructor
   · rw [PartialEquiv.prod_symm, PartialEquiv.refl_symm, PartialEquiv.prod_coe,
       ModelWithCorners.toPartialEquiv_coe_symm, PartialEquiv.refl_coe,
-      PartialHomeomorph.prod_symm, PartialHomeomorph.refl_symm, PartialHomeomorph.prod_apply,
-      PartialHomeomorph.refl_apply]
+      OpenPartialHomeomorph.prod_symm, OpenPartialHomeomorph.refl_symm,
+      OpenPartialHomeomorph.prod_apply, OpenPartialHomeomorph.refl_apply]
     convert hz.1
     apply Trivialization.proj_symm_apply'
     exact h's hz.1
@@ -171,9 +175,6 @@ theorem UniqueMDiffWithinAt.bundle_preimage {p : TotalSpace F Z}
   exact IsOpen.mem_nhds (trivializationAt F Z p.proj).open_baseSet
     (FiberBundle.mem_baseSet_trivializationAt' p.proj)
 
-@[deprecated (since := "2024-12-02")]
-alias UniqueMDiffWithinAt.smooth_bundle_preimage := UniqueMDiffWithinAt.bundle_preimage
-
 variable (Z)
 
 /-- In a fiber bundle, the preimage under the projection of a set with unique differentials
@@ -182,19 +183,13 @@ theorem UniqueMDiffWithinAt.bundle_preimage' {b : M} (hs : UniqueMDiffWithinAt I
     (x : Z b) : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) ⟨b, x⟩ :=
   hs.bundle_preimage (p := ⟨b, x⟩)
 
-@[deprecated (since := "2024-12-02")]
-alias UniqueMDiffWithinAt.smooth_bundle_preimage' := UniqueMDiffWithinAt.bundle_preimage'
-
 /-- In a fiber bundle, the preimage under the projection of a set with unique differentials
 in the base has unique differentials in the bundle. -/
 theorem UniqueMDiffOn.bundle_preimage (hs : UniqueMDiffOn I s) :
     UniqueMDiffOn (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) := fun _p hp ↦
   (hs _ hp).bundle_preimage
 
-@[deprecated (since := "2024-12-02")]
-alias UniqueMDiffOn.smooth_bundle_preimage := UniqueMDiffOn.bundle_preimage
-
-/- TODO: move me to `Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable` once #19636 is in. -/
+-- TODO: move me to `Mathlib/Geometry/Manifold/VectorBundle/MDifferentiable.lean`
 variable [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
 
 theorem Trivialization.mdifferentiable [ContMDiffVectorBundle 1 F Z I]

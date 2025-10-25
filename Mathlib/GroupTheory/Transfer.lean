@@ -38,7 +38,7 @@ open scoped Pointwise
 variable (R S T : H.LeftTransversal) [FiniteIndex H]
 
 /-- The difference of two left transversals -/
-@[to_additive "The difference of two left transversals"]
+@[to_additive /-- The difference of two left transversals -/]
 noncomputable def diff : A :=
   let α := S.2.leftQuotientEquiv
   let β := T.2.leftQuotientEquiv
@@ -58,7 +58,7 @@ theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
 
 @[to_additive]
 theorem diff_self : diff ϕ T T = 1 :=
-  mul_right_eq_self.mp (diff_mul_diff ϕ T T T)
+  mul_eq_left.mp (diff_mul_diff ϕ T T T)
 
 @[to_additive]
 theorem diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=
@@ -73,7 +73,7 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
 
 end leftTransversals
 
-open Equiv Function MemLeftTransversals MulAction ZMod
+open Equiv Function MulAction ZMod
 
 variable (g : G)
 
@@ -138,15 +138,13 @@ open MulAction Subgroup Subgroup.leftTransversals
 
 /-- Given `ϕ : H →* A` from `H : Subgroup G` to a commutative group `A`,
 the transfer homomorphism is `transfer ϕ : G →* A`. -/
-@[to_additive "Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
-the transfer homomorphism is `transfer ϕ : G →+ A`."]
+@[to_additive /-- Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
+the transfer homomorphism is `transfer ϕ : G →+ A`. -/]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : H.LeftTransversal := default
   { toFun := fun g => diff ϕ T (g • T)
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
-    map_one' := by beta_reduce; rw [one_smul, diff_self]
-    -- Porting note: added `simp only` (not just beta reduction)
-    map_mul' := fun g h => by simp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
+    map_one' := by rw [one_smul, diff_self]
+    map_mul' := fun g h => by rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 
 variable (T : H.LeftTransversal)
 
@@ -207,15 +205,15 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
   classical
     letI := H.fintypeQuotientOfFiniteIndex
     change ∀ (k g₀) (hk : g₀⁻¹ * g ^ k * g₀ ∈ H), ↑(⟨g₀⁻¹ * g ^ k * g₀, hk⟩ : H) = g ^ k at key
-    rw [transfer_eq_prod_quotient_orbitRel_zpowers_quot, ← Finset.prod_to_list]
-    refine (List.prod_map_hom _ _ _).trans ?_ -- Porting note: this used to be in the `rw`
+    rw [transfer_eq_prod_quotient_orbitRel_zpowers_quot, ← Finset.prod_map_toList,
+      ← Function.comp_def ϕ, List.prod_map_hom]
     refine congrArg ϕ (Subtype.coe_injective ?_)
-    simp only -- Porting note: added `simp only`
+    dsimp only
     rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow, index_eq_card,
       Nat.card_eq_fintype_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
-      Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_to_list]
+      Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_map_toList]
     simp only [Subgroup.val_list_prod, List.map_map, ← minimalPeriod_eq_card]
-    congr
+    congr 2
     funext
     apply key
 
@@ -224,15 +222,12 @@ theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
   transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, ← hk.comm,
     mul_inv_cancel_right]
 
-variable (G)
-
+variable (G) in
 /-- The transfer homomorphism `G →* center G`. -/
 noncomputable def transferCenterPow [FiniteIndex (center G)] : G →* center G where
   toFun g := ⟨g ^ (center G).index, (center G).pow_index_mem g⟩
   map_one' := Subtype.ext (one_pow (center G).index)
   map_mul' a b := by simp_rw [← show ∀ _, (_ : center G) = _ from transfer_center_eq_pow, map_mul]
-
-variable {G}
 
 @[simp]
 theorem transferCenterPow_apply [FiniteIndex (center G)] (g : G) :
@@ -247,16 +242,15 @@ include hP
 /-- The homomorphism `G →* P` in Burnside's transfer theorem. -/
 noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Subgroup G) :=
   @transfer G _ P P
-    (@Subgroup.IsCommutative.commGroup G _ P
-      ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩)
-    (MonoidHom.id P) _
+    (@CommGroup.ofIsMulCommutative P _ ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩)
+      (MonoidHom.id P) _
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
 
 /-- Auxiliary lemma in order to state `transferSylow_eq_pow`. -/
 theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
     (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k := by
-  haveI : (P : Subgroup G).IsCommutative :=
+  haveI : IsMulCommutative (P : Subgroup G) :=
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   replace hg := (P : Subgroup G).pow_mem hg k
   obtain ⟨n, hn, h⟩ := P.conj_eq_normalizer_conj_of_mem (g ^ k) g₀ hg h
@@ -267,9 +261,8 @@ variable [FiniteIndex (P : Subgroup G)]
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
       ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
-  @transfer_eq_pow G _ P P (@Subgroup.IsCommutative.commGroup G _ P
-    ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩) _ _ g
-      (transferSylow_eq_pow_aux P hP g hg) -- Porting note: apply used to do this automatically
+  haveI : IsMulCommutative P := ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
+  transfer_eq_pow _ _ <| transferSylow_eq_pow_aux P hP g hg
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
     (fun x : P => x ^ (P : Subgroup G).index) :=
@@ -317,25 +310,22 @@ theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centraliz
     rw [Subsingleton.elim P.normalizer (centralizer P)]
   have := Fact.mk (Nat.minFac_prime hn)
   have key := card_dvd_of_injective _ (QuotientGroup.kerLift_injective P.normalizerMonoidHom)
-  rw [normalizerMonoidHom_ker, ← index, ← relindex] at key
-  refine relindex_eq_one.mp (Nat.eq_one_of_dvd_coprimes ?_ dvd_rfl key)
+  rw [normalizerMonoidHom_ker, ← index, ← relIndex] at key
+  refine relIndex_eq_one.mp (Nat.eq_one_of_dvd_coprimes ?_ dvd_rfl key)
   obtain ⟨k, hk⟩ := P.2.exists_card_eq
   rcases eq_zero_or_pos k with h0 | h0
   · rw [hP.card_mulAut, hk, h0, pow_zero, Nat.totient_one]
     apply Nat.coprime_one_right
   rw [hP.card_mulAut, hk, Nat.totient_prime_pow Fact.out h0]
   refine (Nat.Coprime.pow_right _ ?_).mul_right ?_
-  · replace key : P.IsCommutative := by
-      let h := hP.commGroup
-      exact ⟨⟨CommGroup.mul_comm⟩⟩
-    apply Nat.Coprime.coprime_dvd_left (relindex_dvd_of_le_left P.normalizer P.le_centralizer)
-    apply Nat.Coprime.coprime_dvd_left (relindex_dvd_index_of_le P.le_normalizer)
+  · apply Nat.Coprime.coprime_dvd_left (relIndex_dvd_of_le_left P.normalizer P.le_centralizer)
+    apply Nat.Coprime.coprime_dvd_left (relIndex_dvd_index_of_le P.le_normalizer)
     rw [Nat.coprime_comm, Nat.Prime.coprime_iff_not_dvd Fact.out]
     exact P.not_dvd_index
-  · apply Nat.Coprime.coprime_dvd_left (relindex_dvd_card (centralizer P) P.normalizer)
+  · apply Nat.Coprime.coprime_dvd_left (relIndex_dvd_card (centralizer P) P.normalizer)
     apply Nat.Coprime.coprime_dvd_left (card_subgroup_dvd_card P.normalizer)
     have h1 := Nat.gcd_dvd_left (Nat.card G) ((Nat.card G).minFac - 1)
-    have h2 := Nat.gcd_le_right (m := Nat.card G) ((Nat.card G).minFac - 1)
+    have h2 := Nat.gcd_le_right (n := (Nat.card G).minFac - 1) (Nat.card G)
       (tsub_pos_iff_lt.mpr (Nat.minFac_prime hn).one_lt)
     contrapose! h2
     refine Nat.sub_one_lt_of_le (Nat.card G).minFac_pos (Nat.minFac_le_of_dvd ?_ h1)

@@ -3,13 +3,12 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.PNat.Notation
-import Mathlib.Data.One.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift
-import Mathlib.Data.Int.Order.Basic
 
 /-!
 # The positive natural numbers
@@ -88,17 +87,13 @@ namespace PNat
 open Nat
 
 /-- We now define a long list of structures on ℕ+ induced by
- similar structures on ℕ. Most of these behave in a completely
- obvious way, but there are a few things to be said about
- subtraction, division and powers.
+similar structures on ℕ. Most of these behave in a completely
+obvious way, but there are a few things to be said about
+subtraction, division and powers.
 -/
--- Porting note: no `simp`  because simp can prove it
-theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k :=
-  Iff.rfl
+theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k := by simp
 
--- Porting note: no `simp`  because simp can prove it
-theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k :=
-  Iff.rfl
+theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k := by simp
 
 @[simp, norm_cast]
 theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
@@ -138,7 +133,7 @@ theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
 
 @[simp]
 theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
-  not_lt_of_le n.one_le
+  not_lt_of_ge n.one_le
 
 instance : Inhabited ℕ+ :=
   ⟨1⟩

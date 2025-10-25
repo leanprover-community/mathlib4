@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.AddConstMap.Basic
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Equivalences conjugating `(· + a)` to `(· + b)`
@@ -20,7 +19,8 @@ assert_not_exists Finset
 open Function
 open scoped AddConstMap
 
-/-- An equivalence between `G` and `H` conjugating `(· + a)` to `(· + b)`. -/
+/-- An equivalence between `G` and `H` conjugating `(· + a)` to `(· + b)`,
+denoted as `G ≃+c[a, b] H`. -/
 structure AddConstEquiv (G H : Type*) [Add G] [Add H] (a : G) (b : H)
   extends G ≃ H, G →+c[a, b] H
 
@@ -31,7 +31,7 @@ add_decl_doc AddConstEquiv.toEquiv
 add_decl_doc AddConstEquiv.toAddConstMap
 
 @[inherit_doc]
-scoped [AddConstMap] notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
+scoped[AddConstMap] notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
 
 namespace AddConstEquiv
 
@@ -81,7 +81,7 @@ def refl (a : G) : G ≃+c[a, a] G where
 @[simp] lemma symm_refl (a : G) : (refl a).symm = refl a := rfl
 
 /-- Composition of `AddConstEquiv`s, as an `AddConstEquiv`. -/
-@[simps! (config := { simpRhs := true }) toEquiv apply]
+@[simps! +simpRhs toEquiv apply]
 def trans (e₁ : G ≃+c[a, b] H) (e₂ : H ≃+c[b, c] K) : G ≃+c[a, c] K where
   toEquiv := e₁.toEquiv.trans e₂.toEquiv
   map_add_const' := (AddConstMapClass.semiconj e₁).trans (AddConstMapClass.semiconj e₂)
@@ -96,6 +96,16 @@ lemma self_trans_symm (e : G ≃+c[a, b] H) : e.trans e.symm = .refl a :=
 @[simp]
 lemma symm_trans_self (e : G ≃+c[a, b] H) : e.symm.trans e = .refl b :=
   toEquiv_injective e.toEquiv.symm_trans_self
+
+@[simp]
+lemma coe_symm_toEquiv (e : G ≃+c[a, b] H) : ⇑e.toEquiv.symm = e.symm := rfl
+
+@[simp]
+lemma toEquiv_symm (e : G ≃+c[a, b] H) : e.symm.toEquiv = e.toEquiv.symm := rfl
+
+@[simp]
+lemma toEquiv_trans (e₁ : G ≃+c[a, b] H) (e₂ : H ≃+c[b, c] K) :
+    (e₁.trans e₂).toEquiv = e₁.toEquiv.trans e₂.toEquiv := rfl
 
 instance instOne : One (G ≃+c[a, a] G) := ⟨.refl _⟩
 instance instMul : Mul (G ≃+c[a, a] G) := ⟨fun f g ↦ g.trans f⟩
@@ -134,8 +144,6 @@ def equivUnits : (G ≃+c[a, a] G) ≃* (G →+c[a, a] G)ˣ where
   invFun u :=
     { toEquiv := Equiv.Perm.equivUnitsEnd.symm <| Units.map AddConstMap.toEnd u
       map_add_const' := u.1.2 }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 end AddConstEquiv

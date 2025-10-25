@@ -3,7 +3,7 @@ Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Data.Set.Function
 
 /-!
@@ -59,7 +59,7 @@ lemma sum_Ico_le_integral_of_le
   ∑ i ∈ Finset.Ico a b, f i
   _ = ∑ i ∈ Finset.Ico a b, (∫ x in (i : ℝ)..(i + 1 : ℕ), f i) := by simp
   _ ≤ ∑ i ∈ Finset.Ico a b, (∫ x in (i : ℝ)..(i + 1 : ℕ), g x) := by
-    apply Finset.sum_le_sum (fun i hi ↦ ?_)
+    gcongr with i hi
     apply intervalIntegral.integral_mono_on_of_le_Ioo (by simp) (by simp) (A _ hi) (fun x hx ↦ ?_)
     exact h _ (by simpa using hi) _ (Ioo_subset_Ico_self hx)
   _ = ∫ x in a..b, g x := by
@@ -206,7 +206,7 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
       omega
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
-      exact ⟨by norm_cast; omega, I0⟩
+      exact ⟨by norm_cast; cutsat, I0⟩
     have I2 : x ∈ Icc (a : ℝ) b := by
       refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
       norm_cast
@@ -221,7 +221,7 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
       · simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
         refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
         norm_cast
-        omega
+        cutsat
       · exact I1
       · simpa [sub_le_iff_le_add] using hx.2.le
     · apply gpos.trans
@@ -232,7 +232,7 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
   · apply Integrable.mono_measure _ (Measure.restrict_mono_set _ Ico_subset_Icc_self)
     apply Integrable.mul_of_top_left
     · exact hf.integrableOn_isCompact isCompact_Icc
-    · apply AntitoneOn.memℒp_isCompact isCompact_Icc
+    · apply AntitoneOn.memLp_isCompact isCompact_Icc
       intro x hx y hy hxy
       apply hg
       · simpa using hx
@@ -252,7 +252,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
       omega
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
-      exact ⟨by norm_cast; omega, I0⟩
+      exact ⟨by norm_cast; cutsat, I0⟩
     have I2 : x ∈ Icc (a : ℝ) b := by
       refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
       norm_cast
@@ -267,7 +267,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
       · simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
         refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
         norm_cast
-        omega
+        cutsat
       · exact I1
       · simpa [sub_le_iff_le_add] using hx.2.le
     · apply gpos.trans
@@ -277,7 +277,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
   · apply Integrable.mono_measure _ (Measure.restrict_mono_set _ Ico_subset_Icc_self)
     apply Integrable.mul_of_top_left
     · exact hf.integrableOn_isCompact isCompact_Icc
-    · apply MonotoneOn.memℒp_isCompact isCompact_Icc
+    · apply MonotoneOn.memLp_isCompact isCompact_Icc
       intro x hx y hy hxy
       apply hg
       · simpa using hx

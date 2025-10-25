@@ -25,7 +25,7 @@ namespace Subgroup
 theorem range_zpowersHom (g : G) : (zpowersHom G g).range = zpowers g := rfl
 
 @[to_additive]
-instance (a : G) : Countable (zpowers a) := Set.surjective_onto_range.countable
+instance (a : G) : Countable (zpowers a) := Set.rangeFactorization_surjective.countable
 
 end Subgroup
 
@@ -35,8 +35,6 @@ namespace AddSubgroup
 theorem range_zmultiplesHom (a : A) : (zmultiplesHom A a).range = zmultiples a :=
   rfl
 
-attribute [to_additive existing (attr := simp)] Subgroup.range_zpowersHom
-
 section Ring
 
 variable {R : Type*} [Ring R] (r : R) (k : ℤ)
@@ -45,15 +43,9 @@ variable {R : Type*} [Ring R] (r : R) (k : ℤ)
 theorem intCast_mul_mem_zmultiples : ↑(k : ℤ) * r ∈ zmultiples r := by
   simpa only [← zsmul_eq_mul] using zsmul_mem_zmultiples r k
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_mul_mem_zmultiples := intCast_mul_mem_zmultiples
-
 @[simp]
 theorem intCast_mem_zmultiples_one : ↑(k : ℤ) ∈ zmultiples (1 : R) :=
   mem_zmultiples_iff.mp ⟨k, by simp⟩
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_mem_zmultiples_one := intCast_mem_zmultiples_one
 
 end Ring
 

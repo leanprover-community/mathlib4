@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Topology.Continuous
 import Mathlib.Topology.Defs.Induced
-import Mathlib.Topology.Basic
 
 /-!
 # Ordering on topologies and (co)induced topologies
@@ -218,7 +218,7 @@ theorem IsClosed.mono (hs : IsClosed[t₂] s) (h : t₁ ≤ t₂) : IsClosed[t�
   (@isOpen_compl_iff α s t₁).mp <| hs.isOpen_compl.mono h
 
 theorem closure.mono (h : t₁ ≤ t₂) : closure[t₁] s ⊆ closure[t₂] s :=
-  @closure_minimal _ s (@closure _ t₂ s) t₁ subset_closure (IsClosed.mono isClosed_closure h)
+  @closure_minimal _ t₁ s (@closure _ t₂ s) subset_closure (IsClosed.mono isClosed_closure h)
 
 theorem isOpen_implies_isOpen_iff : (∀ s, IsOpen[t₁] s → IsOpen[t₂] s) ↔ t₂ ≤ t₁ :=
   Iff.rfl
@@ -253,7 +253,7 @@ theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α 
 
 @[simp] theorem isClosed_discrete (s : Set α) : IsClosed s := ⟨isOpen_discrete _⟩
 
-@[simp] theorem closure_discrete (s : Set α) : closure s = s := (isClosed_discrete _).closure_eq
+theorem closure_discrete (s : Set α) : closure s = s := (isClosed_discrete _).closure_eq
 
 @[simp] theorem dense_discrete {s : Set α} : Dense s ↔ s = univ := by simp [dense_iff_closure_eq]
 
@@ -283,24 +283,34 @@ theorem mem_nhds_discrete {x : α} {s : Set α} :
 end DiscreteTopology
 
 theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t₁ ≤ t₂ := fun s => by
-  rw [@isOpen_iff_mem_nhds _ _ t₁, @isOpen_iff_mem_nhds α _ t₂]
+  rw [@isOpen_iff_mem_nhds _ t₁, @isOpen_iff_mem_nhds _ t₂]
   exact fun hs a ha => h _ (hs _ ha)
 
 theorem eq_bot_of_singletons_open {t : TopologicalSpace α} (h : ∀ x, IsOpen[t] {x}) : t = ⊥ :=
   bot_unique fun s _ => biUnion_of_singleton s ▸ isOpen_biUnion fun x _ => h x
 
+theorem discreteTopology_iff_forall_isOpen [TopologicalSpace α] :
+    DiscreteTopology α ↔ ∀ s : Set α, IsOpen s :=
+  ⟨@isOpen_discrete _ _, fun h ↦ ⟨eq_bot_of_singletons_open fun _ ↦ h _⟩⟩
+
+@[deprecated discreteTopology_iff_forall_isOpen (since := "2025-10-10")]
 theorem forall_open_iff_discrete {X : Type*} [TopologicalSpace X] :
     (∀ s : Set X, IsOpen s) ↔ DiscreteTopology X :=
-  ⟨fun h => ⟨eq_bot_of_singletons_open fun _ => h _⟩, @isOpen_discrete _ _⟩
+  discreteTopology_iff_forall_isOpen.symm
 
 theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ s : Set α, IsClosed s :=
-  forall_open_iff_discrete.symm.trans <| compl_surjective.forall.trans <| forall_congr' fun _ ↦
+  discreteTopology_iff_forall_isOpen.trans <| compl_surjective.forall.trans <| forall_congr' fun _ ↦
     isOpen_compl_iff
 
+theorem discreteTopology_iff_isOpen_singleton [TopologicalSpace α] :
+    DiscreteTopology α ↔ (∀ a : α, IsOpen ({a} : Set α)):=
+  ⟨fun _ _ ↦ isOpen_discrete _, fun h ↦ ⟨eq_bot_of_singletons_open h⟩⟩
+
+@[deprecated discreteTopology_iff_isOpen_singleton (since := "2025-10-10")]
 theorem singletons_open_iff_discrete {X : Type*} [TopologicalSpace X] :
     (∀ a : X, IsOpen ({a} : Set X)) ↔ DiscreteTopology X :=
-  ⟨fun h => ⟨eq_bot_of_singletons_open h⟩, fun a _ => @isOpen_discrete _ _ a _⟩
+  discreteTopology_iff_isOpen_singleton.symm
 
 theorem DiscreteTopology.of_finite_of_isClosed_singleton [TopologicalSpace α] [Finite α]
     (h : ∀ a : α, IsClosed {a}) : DiscreteTopology α :=
@@ -309,13 +319,14 @@ theorem DiscreteTopology.of_finite_of_isClosed_singleton [TopologicalSpace α] [
 
 theorem discreteTopology_iff_singleton_mem_nhds [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, {x} ∈ 𝓝 x := by
-  simp only [← singletons_open_iff_discrete, isOpen_iff_mem_nhds, mem_singleton_iff, forall_eq]
+  simp only [discreteTopology_iff_isOpen_singleton,
+    isOpen_iff_mem_nhds, mem_singleton_iff, forall_eq]
 
 /-- This lemma characterizes discrete topological spaces as those whose singletons are
 neighbourhoods. -/
 theorem discreteTopology_iff_nhds [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, 𝓝 x = pure x := by
-  simp [discreteTopology_iff_singleton_mem_nhds, le_pure_iff]
+  simp only [discreteTopology_iff_singleton_mem_nhds]
   apply forall_congr' (fun x ↦ ?_)
   simp [le_antisymm_iff, pure_le_nhds x]
 
@@ -330,7 +341,8 @@ See also `Embedding.discreteTopology` for an important special case. -/
 theorem DiscreteTopology.of_continuous_injective
     {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β] {f : α → β}
     (hc : Continuous f) (hinj : Injective f) : DiscreteTopology α :=
-  forall_open_iff_discrete.1 fun s ↦ hinj.preimage_image s ▸ (isOpen_discrete _).preimage hc
+  discreteTopology_iff_forall_isOpen.2 fun s ↦
+    hinj.preimage_image s ▸ (isOpen_discrete _).preimage hc
 
 end Lattice
 
@@ -378,9 +390,11 @@ theorem gc_coinduced_induced (f : α → β) :
     GaloisConnection (TopologicalSpace.coinduced f) (TopologicalSpace.induced f) := fun _ _ =>
   coinduced_le_iff_le_induced
 
+@[gcongr]
 theorem induced_mono (h : t₁ ≤ t₂) : t₁.induced g ≤ t₂.induced g :=
   (gc_coinduced_induced g).monotone_u h
 
+@[gcongr]
 theorem coinduced_mono (h : t₁ ≤ t₂) : t₁.coinduced f ≤ t₂.coinduced f :=
   (gc_coinduced_induced f).monotone_l h
 
@@ -495,9 +509,18 @@ instance : DiscreteTopology ℤ := ⟨rfl⟩
 instance {n} : TopologicalSpace (Fin n) := ⊥
 instance {n} : DiscreteTopology (Fin n) := ⟨rfl⟩
 
+lemma Nat.cast_continuous {R : Type*} [NatCast R] [TopologicalSpace R] :
+    Continuous (Nat.cast (R := R)) :=
+  continuous_of_discreteTopology
+
+lemma Int.cast_continuous {R : Type*} [IntCast R] [TopologicalSpace R] :
+    Continuous (Int.cast (R := R)) :=
+  continuous_of_discreteTopology
+
 instance sierpinskiSpace : TopologicalSpace Prop :=
   generateFrom {{True}}
 
+/-- See also `continuous_of_discreteTopology`, which works for `IsEmpty α`. -/
 theorem continuous_empty_function [TopologicalSpace α] [TopologicalSpace β] [IsEmpty β]
     (f : α → β) : Continuous f :=
   letI := Function.isEmpty f
@@ -581,7 +604,7 @@ theorem nhds_nhdsAdjoint [DecidableEq α] (a : α) (f : Filter α) :
 theorem le_nhdsAdjoint_iff' {a : α} {f : Filter α} {t : TopologicalSpace α} :
     t ≤ nhdsAdjoint a f ↔ @nhds α t a ≤ pure a ⊔ f ∧ ∀ b ≠ a, @nhds α t b = pure b := by
   classical
-  simp_rw [le_iff_nhds, nhds_nhdsAdjoint, forall_update_iff, (pure_le_nhds _).le_iff_eq]
+  simp_rw [le_iff_nhds, nhds_nhdsAdjoint, forall_update_iff, (pure_le_nhds _).ge_iff_eq']
 
 theorem le_nhdsAdjoint_iff {α : Type*} (a : α) (f : Filter α) (t : TopologicalSpace α) :
     t ≤ nhdsAdjoint a f ↔ @nhds α t a ≤ pure a ⊔ f ∧ ∀ b ≠ a, IsOpen[t] {b} := by
@@ -595,7 +618,7 @@ theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
     @nhds α (sInf s) a = ⨅ t ∈ s, @nhds α t a :=
   (gc_nhds a).u_sInf
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: timeouts without `b₁ := t₁`
+-- Porting note: type error without `b₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
   (gc_nhds a).u_inf (b₁ := t₁)
@@ -606,6 +629,21 @@ theorem nhds_top {a : α} : @nhds α ⊤ a = ⊤ :=
 theorem isOpen_sup {t₁ t₂ : TopologicalSpace α} {s : Set α} :
     IsOpen[t₁ ⊔ t₂] s ↔ IsOpen[t₁] s ∧ IsOpen[t₂] s :=
   Iff.rfl
+
+/-- In the trivial topology no points are separable.
+
+The corresponding `bot` lemma is handled more generally by `inseparable_iff_eq`. -/
+@[simp]
+theorem inseparable_top (x y : α) : @Inseparable α ⊤ x y := nhds_top.trans nhds_top.symm
+
+theorem TopologicalSpace.eq_top_iff_forall_inseparable {t : TopologicalSpace α} :
+    t = ⊤ ↔ (∀ x y : α, Inseparable x y) where
+  mp h := h ▸ inseparable_top
+  mpr h := ext_nhds fun x => nhds_top ▸ top_unique fun _ hs a => mem_of_mem_nhds <| h x a ▸ hs
+
+theorem TopologicalSpace.ne_top_iff_exists_not_inseparable {t : TopologicalSpace α} :
+    t ≠ ⊤ ↔ ∃ x y : α, ¬Inseparable x y := by
+  simpa using eq_top_iff_forall_inseparable.not
 
 open TopologicalSpace
 
@@ -779,12 +817,10 @@ theorem map_nhds_induced_of_mem {a : α} (h : range f ∈ 𝓝 (f a)) :
 
 theorem closure_induced {f : α → β} {a : α} {s : Set α} :
     a ∈ @closure α (t.induced f) s ↔ f a ∈ closure (f '' s) := by
-  letI := t.induced f
   simp only [mem_closure_iff_frequently, nhds_induced, frequently_comap, mem_image, and_comm]
 
 theorem isClosed_induced_iff' {f : α → β} {s : Set α} :
     IsClosed[t.induced f] s ↔ ∀ a, f a ∈ closure (f '' s) → a ∈ s := by
-  letI := t.induced f
   simp only [← closure_subset_iff_isClosed, subset_def, closure_induced]
 
 end Induced
@@ -803,7 +839,7 @@ theorem nhds_true : 𝓝 True = pure True :=
 
 @[simp]
 theorem nhds_false : 𝓝 False = ⊤ :=
-  TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _), iInter_and]
+  TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _)]
 
 theorem tendsto_nhds_true {l : Filter α} {p : α → Prop} :
     Tendsto p l (𝓝 True) ↔ ∀ᶠ x in l, p x := by simp

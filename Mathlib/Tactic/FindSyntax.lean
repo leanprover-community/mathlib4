@@ -8,7 +8,7 @@ import Lean.Elab.Command
 import Mathlib.Init
 
 /-!
-#  The `#find_syntax` command
+# The `#find_syntax` command
 
 The `#find_syntax` command takes as input a string `str` and retrieves from the environment
 all the candidates for `syntax` terms that contain the string `str`.
@@ -74,20 +74,24 @@ elab "#find_syntax " id:str d:(&" approx")? : command => do
       let ls := extractSymbols cinfo.value!
       if !declName.isInternal && !ls.isEmpty then symbs := symbs.insert (declName, ls)
   -- From among the parsers in `symbs`, we extract the ones whose `symbols` contain the input `str`
-  let mut msgs := #[]
+  let mut match_results : NameMap (Array (Name × String)) := {}
   for (nm, ar) in symbs.toList do
     let rem : String := " _ ".intercalate (ar.map litToString).toList
     -- If either the name of the parser or the regenerated syntax stub contains the input string,
     -- then we include an entry into the final message.
     if 2 ≤ (nm.toString.splitOn id.getString).length || 2 ≤ (rem.splitOn id.getString).length then
-      msgs := msgs.push <| .ofConstName nm ++ m!":\n  '{rem.trim}'\n"
+      let mod := (← findModuleOf? nm).getD (← getMainModule)
+      match_results := match_results.insert mod <| (match_results.getD mod #[]).push (nm, rem.trim)
   -- We sort the messages to produce a more stable output.
-  let msgsToString ← msgs.mapM (·.toString)
-  msgs := (msgs.zip msgsToString).qsort (·.2 < ·.2) |>.map (·.1)
-  let uses := msgs.size
+  let sorted_results := match_results.toArray.qsort (·.1.lt ·.1)
+  let sorted_results := sorted_results.map fun (mod, msgs) => (mod, msgs.qsort (·.1.lt ·.1))
+  let mods := (sorted_results.toList).map fun (mod, msgs) =>
+    m!"In `{mod}`:" ++ (MessageData.nest 2 <|
+      m!"".joinSep <| msgs.toList.map fun (decl, patt) =>
+        m!"\n{MessageData.ofConstName decl}: '{patt}'")
+  let uses := (sorted_results.toList.map fun (_, msgs) => msgs.size).sum
   let numSymbs := if d.isSome then s!"over {(symbs.size / 100) * 100}" else s!"{symbs.size}"
   let head := m!"Found {uses} use{if uses == 1 then "" else "s"} \
                 among {numSymbs} syntax declarations"
-  logInfo <| .joinSep (head::(msgs.push "").toList) "\n---\n\n"
-
+  logInfo <| head ++ m!"\n" ++ m!"\n\n".joinSep mods
 end Mathlib.FindSyntax

@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Data.DFinsupp.Lex
-import Mathlib.Order.GameAdd
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.GameAdd
+import Mathlib.SetTheory.Cardinal.Order
 import Mathlib.Tactic.AdaptationNote
-import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `DFinsupp` and `Pi`
@@ -114,19 +114,21 @@ theorem Lex.acc_of_single (hbot : ∀ ⦃i a⦄, ¬s i a 0) [DecidableEq ι]
     (∀ i ∈ x.support, Acc (DFinsupp.Lex r s) <| single i (x i)) → Acc (DFinsupp.Lex r s) x := by
   generalize ht : x.support = t; revert x
   classical
-    induction' t using Finset.induction with b t hb ih
-    · intro x ht
+    induction t using Finset.induction with
+    | empty =>
+      intro x ht
       rw [support_eq_empty.1 ht]
       exact fun _ => Lex.acc_zero hbot
-    refine fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) ?_
-    refine ih _ (by rw [support_erase, ht, Finset.erase_insert hb]) fun a ha => ?_
-    rw [erase_ne (ha.ne_of_not_mem hb)]
-    exact h a (Finset.mem_insert_of_mem ha)
+    | insert b t hb ih =>
+      refine fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) ?_
+      refine ih _ (by rw [support_erase, ht, Finset.erase_insert hb]) fun a ha => ?_
+      rw [erase_ne (ha.ne_of_notMem hb)]
+      exact h a (Finset.mem_insert_of_mem ha)
 
 theorem Lex.acc_single (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounded (s i))
     [DecidableEq ι] {i : ι} (hi : Acc (rᶜ ⊓ (· ≠ ·)) i) :
     ∀ a, Acc (DFinsupp.Lex r s) (single i a) := by
-  induction' hi with i _ ih
+  induction hi with | _ i _ ih
   refine fun a => WellFounded.induction (hs i)
     (C := fun x ↦ Acc (DFinsupp.Lex r s) (single i x)) a fun a ha ↦ ?_
   refine Acc.intro _ fun x ↦ ?_
@@ -138,12 +140,12 @@ theorem Lex.acc_single (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounde
   subst hik
   classical
     refine Lex.acc_of_single hbot x fun j hj ↦ ?_
-    obtain rfl | hij := eq_or_ne i j
+    obtain rfl | hij := eq_or_ne j i
     · exact ha _ hs
     by_cases h : r j i
     · rw [hr j h, single_eq_of_ne hij, single_zero]
       exact Lex.acc_zero hbot
-    · exact ih _ ⟨h, hij.symm⟩ _
+    · exact ih _ ⟨h, hij⟩ _
 
 theorem Lex.acc (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounded (s i))
     [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] (x : Π₀ i, α i)
@@ -158,7 +160,7 @@ theorem Lex.wellFounded' (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFoun
     [IsTrichotomous ι r] (hr : WellFounded (Function.swap r)) :
     WellFounded (DFinsupp.Lex r s) :=
   Lex.wellFounded hbot hs <| Subrelation.wf
-   (fun {i j} h => ((@IsTrichotomous.trichotomous ι r _ i j).resolve_left h.1).resolve_left h.2) hr
+    (fun {i j} h => ((@IsTrichotomous.trichotomous ι r _ i j).resolve_left h.1).resolve_left h.2) hr
 
 end Zero
 
@@ -166,7 +168,7 @@ instance Lex.wellFoundedLT [LT ι] [IsTrichotomous ι (· < ·)] [hι : WellFoun
     [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
     [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Lex (Π₀ i, α i)) :=
-  ⟨Lex.wellFounded' (fun _ a => (zero_le a).not_lt) (fun i => (hα i).wf) hι.wf⟩
+  ⟨Lex.wellFounded' (fun _ a => (zero_le a).not_gt) (fun i => (hα i).wf) hι.wf⟩
 
 end DFinsupp
 
@@ -212,9 +214,7 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
       refine Lex.wellFounded' ?_ (fun i ↦ IsWellFounded.wf) ?_
       · rintro i ⟨a⟩
         apply hbot
-      · #adaptation_note /-- nightly-2024-03-16: simp was
-        simp (config := { unfoldPartialApp := true }) only [Function.swap] -/
-        simp only [Function.swap_def]
+      · simp +unfoldPartialApp only [Function.swap]
         exact IsWellFounded.wf
     refine Subrelation.wf (fun h => ?_) <| InvImage.wf (mapRange e fun _ ↦ rfl) this
     have := IsStrictOrder.swap (@WellOrderingRel ι)
@@ -224,7 +224,7 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
 instance DFinsupp.wellFoundedLT'
     [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Π₀ i, α i) :=
-  DFinsupp.wellFoundedLT fun _i a => (zero_le a).not_lt
+  DFinsupp.wellFoundedLT fun _i a => (zero_le a).not_gt
 
 instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (∀ i, α i) :=

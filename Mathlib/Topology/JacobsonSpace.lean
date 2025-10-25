@@ -12,10 +12,10 @@ import Mathlib.Tactic.StacksAttribute
 # Jacobson spaces
 
 ## Main results
-- `JacobsonSpace`: The class of jacobson spaces, i.e.
+- `JacobsonSpace`: The class of Jacobson spaces, i.e.
   spaces such that the set of closed points are dense in every closed subspace.
 - `jacobsonSpace_iff_locallyClosed`:
-  `X` is a jacobson space iff every locally closed subset contains a closed point of `X`.
+  `X` is a Jacobson space iff every locally closed subset contains a closed point of `X`.
 - `JacobsonSpace.discreteTopology`:
   If `X` only has finitely many closed points, then the topology on `X` is discrete.
 
@@ -24,7 +24,7 @@ import Mathlib.Tactic.StacksAttribute
 
 -/
 
-open Topology
+open Topology TopologicalSpace
 
 variable (X) {Y} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 
@@ -40,7 +40,7 @@ lemma mem_closedPoints_iff {x} : x ∈ closedPoints X ↔ IsClosed {x} := Iff.rf
 
 lemma preimage_closedPoints_subset (hf : Function.Injective f) (hf' : Continuous f) :
     f ⁻¹' closedPoints Y ⊆ closedPoints X := by
-  intros x hx
+  intro x hx
   rw [mem_closedPoints_iff]
   convert continuous_iff_isClosed.mp hf' _ hx
   rw [← Set.image_singleton, Set.preimage_image_eq _ hf]
@@ -56,7 +56,7 @@ lemma closedPoints_eq_univ [T1Space X] :
 
 end closedPoints
 
-/-- The class of jacobson spaces, i.e.
+/-- The class of Jacobson spaces, i.e.
 spaces such that the set of closed points are dense in every closed subspace. -/
 @[mk_iff, stacks 005U]
 class JacobsonSpace : Prop where
@@ -75,7 +75,7 @@ lemma jacobsonSpace_iff_locallyClosed :
   constructor
   · simp_rw [isLocallyClosed_iff_isOpen_coborder, coborder, isOpen_compl_iff,
       Set.nonempty_iff_ne_empty]
-    intros H Z hZ hZ' e
+    intro H Z hZ hZ' e
     have : Z ⊆ closure Z \ Z := by
       refine subset_closure.trans ?_
       nth_rw 1 [← H isClosed_closure]
@@ -107,7 +107,7 @@ lemma isClosed_singleton_of_isLocallyClosed_singleton [JacobsonSpace X] {x : X}
 lemma Topology.IsOpenEmbedding.preimage_closedPoints (hf : IsOpenEmbedding f) [JacobsonSpace Y] :
     f ⁻¹' closedPoints Y = closedPoints X := by
   apply subset_antisymm (preimage_closedPoints_subset hf.injective hf.continuous)
-  intros x hx
+  intro x hx
   apply isClosed_singleton_of_isLocallyClosed_singleton
   rw [← Set.image_singleton]
   exact (hx.isLocallyClosed.image hf.isInducing hf.isOpen_range.isLocallyClosed)
@@ -115,7 +115,7 @@ lemma Topology.IsOpenEmbedding.preimage_closedPoints (hf : IsOpenEmbedding f) [J
 lemma JacobsonSpace.of_isOpenEmbedding [JacobsonSpace Y] (hf : IsOpenEmbedding f) :
     JacobsonSpace X := by
   rw [jacobsonSpace_iff_locallyClosed, ← hf.preimage_closedPoints]
-  intros Z hZ hZ'
+  intro Z hZ hZ'
   obtain ⟨_, ⟨x, hx, rfl⟩, hx'⟩ := nonempty_inter_closedPoints
     (hZ.image f) (hZ'.image hf.isInducing hf.isOpen_range.isLocallyClosed)
   exact ⟨_, hx, hx'⟩
@@ -123,7 +123,7 @@ lemma JacobsonSpace.of_isOpenEmbedding [JacobsonSpace Y] (hf : IsOpenEmbedding f
 lemma JacobsonSpace.of_isClosedEmbedding [JacobsonSpace Y] (hf : IsClosedEmbedding f) :
     JacobsonSpace X := by
   rw [jacobsonSpace_iff_locallyClosed, ← hf.preimage_closedPoints]
-  intros Z hZ hZ'
+  intro Z hZ hZ'
   obtain ⟨_, ⟨x, hx, rfl⟩, hx'⟩ := nonempty_inter_closedPoints
     (hZ.image f) (hZ'.image hf.isInducing hf.isClosed_range.isLocallyClosed)
   exact ⟨_, hx, hx'⟩
@@ -135,7 +135,7 @@ lemma JacobsonSpace.discreteTopology [JacobsonSpace X]
       closure_subset_iff_isClosed, ← (closedPoints X).biUnion_of_singleton]
     exact h.isClosed_biUnion fun _ ↦ id
   have inst : Finite X := Set.finite_univ_iff.mp (this ▸ h)
-  rw [← forall_open_iff_discrete]
+  rw [discreteTopology_iff_forall_isOpen]
   intro s
   rw [← isClosed_compl_iff, ← sᶜ.biUnion_of_singleton]
   refine sᶜ.toFinite.isClosed_biUnion fun x _ ↦ ?_
@@ -148,30 +148,26 @@ instance (priority := 100) [Finite X] [JacobsonSpace X] : DiscreteTopology X :=
 instance (priority := 100) [T1Space X] : JacobsonSpace X :=
   ⟨by simp [closedPoints_eq_univ, closure_eq_iff_isClosed]⟩
 
-open TopologicalSpace in
-lemma jacobsonSpace_iff_of_iSup_eq_top {ι : Type*} {U : ι → Opens X} (hU : iSup U = ⊤) :
-    JacobsonSpace X ↔ ∀ i, JacobsonSpace (U i) := by
+lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Opens X}
+    (hU : IsOpenCover U) : JacobsonSpace X ↔ ∀ i, JacobsonSpace (U i) := by
   refine ⟨fun H i ↦ .of_isOpenEmbedding (U i).2.isOpenEmbedding_subtypeVal, fun H ↦ ?_⟩
   rw [jacobsonSpace_iff_locallyClosed]
-  intros Z hZ hZ'
-  have : (⋃ i, (U i : Set X)) = Set.univ := by rw [← Opens.coe_iSup]; injection hU
-  have : (⋃ i, Z ∩ U i) = Z := by rw [← Set.inter_iUnion, this, Set.inter_univ]
-  rw [← this, Set.nonempty_iUnion] at hZ
+  intro Z hZ hZ'
+  rw [← hU.iUnion_inter Z, Set.nonempty_iUnion] at hZ
   obtain ⟨i, x, hx, hx'⟩ := hZ
-  obtain ⟨y, hy, hy'⟩ := (jacobsonSpace_iff_locallyClosed.mp (H i)) (Subtype.val ⁻¹' Z)
-    ⟨⟨x, hx'⟩, hx⟩ (hZ'.preimage continuous_subtype_val)
-  refine ⟨y, hy, (isClosed_iff_coe_preimage_of_iSup_eq_top hU _).mpr fun j ↦ ?_⟩
+  obtain ⟨y, hy, hy'⟩ := (jacobsonSpace_iff_locallyClosed.mp (H i)) _ ⟨⟨x, hx'⟩, hx⟩
+    (hZ'.preimage continuous_subtype_val)
+  refine ⟨y, hy, hU.isClosed_iff_coe_preimage.mpr fun j ↦ ?_⟩
   by_cases h : (y : X) ∈ U j
   · convert_to IsClosed {(⟨y, h⟩ : U j)}
-    · ext z; exact @Subtype.coe_inj _ _ z ⟨y, h⟩
+    · ext; simp [← Subtype.coe_inj]
     apply isClosed_singleton_of_isLocallyClosed_singleton
     convert (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.isInducing
       (U i).2.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
       continuous_subtype_val
-    rw [Set.image_singleton]
-    ext z
-    exact (@Subtype.coe_inj _ _ z ⟨y, h⟩).symm
+    ext
+    simp [← Subtype.coe_inj]
   · convert isClosed_empty
-    rw [Set.eq_empty_iff_forall_not_mem]
+    rw [Set.eq_empty_iff_forall_notMem]
     intro z (hz : z.1 = y.1)
     exact h (hz ▸ z.2)

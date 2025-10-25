@@ -50,7 +50,7 @@ theorem lcm_def : s.lcm f = (s.1.map f).lcm :=
 
 @[simp]
 theorem lcm_empty : (∅ : Finset β).lcm f = 1 :=
-  fold_empty
+  rfl
 
 @[simp]
 theorem lcm_dvd_iff {a : α} : s.lcm f ∣ a ↔ ∀ b ∈ s, f b ∣ a := by
@@ -76,8 +76,7 @@ theorem lcm_insert [DecidableEq β] {b : β} :
 theorem lcm_singleton {b : β} : ({b} : Finset β).lcm f = normalize (f b) :=
   Multiset.lcm_singleton
 
--- Porting note: Priority changed for `simpNF`
-@[simp 1100]
+@[local simp] -- This will later be provable by other `simp` lemmas.
 theorem normalize_lcm : normalize (s.lcm f) = s.lcm f := by simp [lcm_def]
 
 theorem lcm_union [DecidableEq β] : (s₁ ∪ s₂).lcm f = GCDMonoid.lcm (s₁.lcm f) (s₂.lcm f) :=
@@ -102,9 +101,12 @@ theorem lcm_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
 theorem lcm_eq_lcm_image [DecidableEq α] : s.lcm f = (s.image f).lcm id :=
   Eq.symm <| lcm_image _
 
-theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ 0 ∈ f '' s := by
-  simp only [Multiset.mem_map, lcm_def, Multiset.lcm_eq_zero_iff, Set.mem_image, mem_coe, ←
-    Finset.mem_def]
+@[simp]
+theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ ∃ x ∈ s, f x = 0 := by
+  simp only [lcm_def, Multiset.lcm_eq_zero_iff, Multiset.mem_map, mem_val]
+
+theorem lcm_ne_zero_iff [Nontrivial α] : s.lcm f ≠ 0 ↔ ∀ x ∈ s, f x ≠ 0 := by
+  simp [lcm_eq_zero_iff]
 
 end lcm
 
@@ -124,7 +126,7 @@ theorem gcd_def : s.gcd f = (s.1.map f).gcd :=
 
 @[simp]
 theorem gcd_empty : (∅ : Finset β).gcd f = 0 :=
-  fold_empty
+  rfl
 
 theorem dvd_gcd_iff {a : α} : a ∣ s.gcd f ↔ ∀ b ∈ s, a ∣ f b := by
   apply Iff.trans Multiset.dvd_gcd
@@ -149,8 +151,7 @@ theorem gcd_insert [DecidableEq β] {b : β} :
 theorem gcd_singleton {b : β} : ({b} : Finset β).gcd f = normalize (f b) :=
   Multiset.gcd_singleton
 
--- Porting note: Priority changed for `simpNF`
-@[simp 1100]
+@[local simp] -- This will later be provable by other `simp` lemmas.
 theorem normalize_gcd : normalize (s.gcd f) = s.gcd f := by simp [gcd_def]
 
 theorem gcd_union [DecidableEq β] : (s₁ ∪ s₂).gcd f = GCDMonoid.gcd (s₁.gcd f) (s₂.gcd f) :=
@@ -175,29 +176,30 @@ theorem gcd_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
 theorem gcd_eq_gcd_image [DecidableEq α] : s.gcd f = (s.image f).gcd id :=
   Eq.symm <| gcd_image _
 
-theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x : β, x ∈ s → f x = 0 := by
+theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x ∈ s, f x = 0 := by
   rw [gcd_def, Multiset.gcd_eq_zero_iff]
   constructor <;> intro h
   · intro b bs
     apply h (f b)
-    simp only [Multiset.mem_map, mem_def.1 bs]
+    simp only [Multiset.mem_map]
     use b
-    simp only [mem_def.1 bs, eq_self_iff_true, and_self]
+    simp only [mem_def.1 bs, and_self]
   · intro a as
     rw [Multiset.mem_map] at as
     rcases as with ⟨b, ⟨bs, rfl⟩⟩
     apply h b (mem_def.1 bs)
 
-/- Porting note: The change from `p : α → Prop` to `p : α → Bool` made this slightly less nice with
-all the `decide`s around. -/
+theorem gcd_ne_zero_iff : s.gcd f ≠ 0 ↔ ∃ x ∈ s, f x ≠ 0 := by
+  simp [gcd_eq_zero_iff]
+
 theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
-    s.gcd f = (s.filter fun x ↦ f x ≠ 0).gcd f := by
+    s.gcd f = {x ∈ s | f x ≠ 0}.gcd f := by
   classical
-    trans ((s.filter fun x ↦ f x = 0) ∪ s.filter fun x ↦ (f x ≠ 0)).gcd f
+    trans ({x ∈ s | f x = 0} ∪ {x ∈ s | f x ≠ 0}).gcd f
     · rw [filter_union_filter_neg_eq]
     rw [gcd_union]
     refine Eq.trans (?_ : _ = GCDMonoid.gcd (0 : α) ?_) (?_ : GCDMonoid.gcd (0 : α) _ = _)
-    · exact (gcd (filter (fun x => (f x ≠ 0)) s) f)
+    · exact gcd {x ∈ s | f x ≠ 0} f
     · refine congr (congr rfl <| s.induction_on ?_ ?_) (by simp)
       · simp
       · intro a s _ h

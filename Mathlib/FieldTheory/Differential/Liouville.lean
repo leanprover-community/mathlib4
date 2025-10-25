@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
 import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.FieldTheory.Differential.Basic
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
@@ -22,7 +23,7 @@ literature, and we introduce it as part of the formalization of Liouville's theo
 
 ## Main declarations
 - `IsLiouville`: A field extension being Liouville
-- `isLiouville_of_finiteDimensional`: all finite dimensional field extensions
+- `isLiouville_of_finiteDimensional`: all finite-dimensional field extensions
   (of a field with characteristic 0) are Liouville.
 
 -/
@@ -55,7 +56,7 @@ lemma IsLiouville.trans {A : Type*} [Field A] [Algebra K A] [Algebra F A]
       (u : ι → A) (v : A) (h : a = ∑ x, c x * logDeriv (u x) + v′) := by
     obtain ⟨ι₀, _, c₀, hc₀, u₀, v₀, h₀⟩ := inst2.isLiouville (a : K) ι
         ((↑) ∘ c)
-        (fun _ ↦ by simp only [Function.comp_apply, ← coe_deriv, lift_map_eq_zero_iff, hc])
+        (fun _ ↦ by simp only [Function.comp_apply, ← coe_deriv, coe_eq_zero_iff, hc])
         ((↑) ∘ u) v (by simpa only [Function.comp_apply, ← IsScalarTower.algebraMap_apply])
     have hc (x : ι₀) := mem_range_of_deriv_eq_zero F (hc₀ x)
     choose c₀ hc using hc
@@ -64,9 +65,9 @@ lemma IsLiouville.trans {A : Type*} [Field A] [Algebra K A] [Algebra F A]
       simp [hc]
     · intro
       apply_fun ((↑) : F → K)
-      · simp only [Function.comp_apply, coe_deriv, hc, algebraMap.coe_zero]
+      · simp only [coe_deriv, hc, algebraMap.coe_zero]
         apply hc₀
-      · apply NoZeroSMulDivisors.algebraMap_injective
+      · apply FaithfulSMul.algebraMap_injective
 
 section Algebraic
 /-
@@ -76,7 +77,7 @@ The case of Liouville's theorem for algebraic extensions.
 variable {F K} [CharZero F]
 
 /--
-If `K` is a Liouville extension of `F` and `B` is a finite dimensional intermediate
+If `K` is a Liouville extension of `F` and `B` is a finite-dimensional intermediate
 field `K / B / F`, then it's also a Liouville extension of `F`.
 -/
 instance (B : IntermediateField F K)
@@ -112,15 +113,15 @@ lemma IsLiouville.equiv {K' : Type*} [Field K'] [Differential K'] [Algebra F K']
     simpa [AlgEquiv.commutes, map_add, map_sum, map_mul, logDeriv, algEquiv_deriv'] using h
 
 /--
-A finite dimensional Galois extension of `F` is a Liouville extension.
-This is private because it's generalized by all finite dimensional extensions being Liouville.
+A finite-dimensional Galois extension of `F` is a Liouville extension.
+This is private because it's generalized by all finite-dimensional extensions being Liouville.
 -/
 private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensional F K]
     [IsGalois F K] : IsLiouville F K where
   isLiouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
       (u : ι → K) (v : K) (h : a = ∑ x, c x * logDeriv (u x) + v′) := by
     haveI : CharZero K := charZero_of_injective_algebraMap
-      (NoZeroSMulDivisors.algebraMap_injective F K)
+      (FaithfulSMul.algebraMap_injective F K)
     -- We sum `e x` over all isomorphisms `e : K ≃ₐ[F] K`.
     -- Because this is a Galois extension each of the relevant values will be in `F`.
     -- We need to divide by `Fintype.card (K ≃ₐ[F] K)` to get the original answer.
@@ -153,13 +154,13 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
     exists ι, inferInstance, c₀, ?_, u₀, v₀
     · -- We need to prove that all `c₀` are constants.
       -- This is true because they are the division of a constant by
-      -- a natural nubmer (which is also constant)
+      -- a natural number (which is also constant)
       intro x
       simp [c₀, Derivation.leibniz_div, hc]
     · -- Proving that this works is mostly straightforward algebraic manipulation,
       apply_fun (algebraMap F K)
       case inj =>
-        exact NoZeroSMulDivisors.algebraMap_injective F K
+        exact FaithfulSMul.algebraMap_injective F K
       simp only [map_add, map_sum, map_mul, ← logDeriv_algebraMap, hu₀, ← deriv_algebraMap, hv₀]
       unfold u₁ v₁ c₀
       clear c₀ u₁ u₀ hu₀ v₁ v₀ hv₀
@@ -174,7 +175,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
         enter [2, 1, 2, i, 2]
         equals ∑ x : K ≃ₐ[F] K, logDeriv (x (u i)) =>
           by_cases h : u i = 0 <;>
-          simp [logDeriv_prod_of_eq_zero, logDeriv_prod, h]
+          simp [logDeriv_prod, h]
       simp_rw [mul_sum]
       rw [sum_comm, ← sum_add_distrib]
       trans ∑ _ : (K ≃ₐ[F] K), a

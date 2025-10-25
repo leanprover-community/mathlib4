@@ -16,7 +16,7 @@ If `F : C ⥤ D` is a functor between categories equipped with shifts by `B`, we
 a type synonym `PullbackShift.functor F φ` for `F`. When `F` has a `CommShift` structure
 by `B`, we define a pulled back `CommShift` structure by `A` on `PullbackShift.functor F φ`.
 
-Similarly,if `τ` is a natural transformation between functors `F,G : C ⥤ D`, we define
+Similarly, if `τ` is a natural transformation between functors `F,G : C ⥤ D`, we define
 a type synonym
 `PullbackShift.natTrans τ φ : PullbackShift.functor F φ ⟶ PullbackShift.functor G φ`.
 When `τ` has a `CommShift` structure by `B` (i.e. is compatible with `CommShift` structures
@@ -24,7 +24,7 @@ on `F` and `G`), we define a pulled back `CommShift` structure by `A` on
 `PullbackShift.natTrans τ φ`.
 
 Finally, if we have an adjunction `F ⊣ G` (with `G : D ⥤ C`), we define a type synonym
-`PullbackShift.adjunction adj φ :  PullbackShift.functor F φ ⊣ PullbackShift.functor G φ`
+`PullbackShift.adjunction adj φ : PullbackShift.functor F φ ⊣ PullbackShift.functor G φ`
 and we show that, if `adj` compatible with `CommShift` structures
 on `F` and `G`, then `PullbackShift.adjunction adj φ` iis also compatible with the pulled back
 `CommShift` structures.
@@ -113,7 +113,7 @@ lemma pullbackShiftFunctorAdd'_inv_app :
         (pullbackShiftIso C φ a₃ b₃ h₃).inv.app X := by
   subst h₁ h₂ h
   obtain rfl : b₃ = φ a₁ + φ a₂ := by rw [h₃, φ.map_add]
-  simp
+  simp only [Functor.comp_obj, NatTrans.naturality_assoc]
   erw [Functor.map_id, id_comp, id_comp, shiftFunctorAdd'_eq_shiftFunctorAdd,
     shiftFunctorAdd'_eq_shiftFunctorAdd]
   change _ ≫ _ = _
@@ -267,7 +267,7 @@ end NatTrans
 The adjunction `adj`, seen as an adjunction between `PullbackShift.functor F φ`
 and `PullbackShift.functor G φ`.
 -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def PullbackShift.adjunction {F} {G : D ⥤ C} (adj : F ⊣ G) :
     PullbackShift.functor φ F ⊣ PullbackShift.functor φ G where
   unit := (NatTrans.PullbackShift.natIsoId C φ).hom ≫

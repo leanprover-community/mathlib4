@@ -3,12 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Finset.Fin
-import Mathlib.Data.Int.Order.Units
+import Mathlib.Data.Finite.Sum
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fintype
-import Mathlib.Data.Finite.Sum
 
 /-!
 # Permutations on `Fintype`s
@@ -24,8 +22,9 @@ open Equiv Function Fintype Finset
 variable {α : Type u} {β : Type v}
 
 -- An example on how to determine the order of an element of a finite group.
-example : orderOf (-1 : ℤˣ) = 2 :=
-  orderOf_eq_prime (Int.units_sq _) (by decide)
+-- import Mathlib.Data.Int.Order.Units
+-- example : orderOf (-1 : ℤˣ) = 2 :=
+--   orderOf_eq_prime (Int.units_sq _) (by decide)
 
 namespace Equiv.Perm
 
@@ -77,18 +76,16 @@ theorem perm_inv_mapsTo_iff_mapsTo {f : Perm α} {s : Set α} [Finite s] :
   ⟨perm_inv_mapsTo_of_mapsTo f⁻¹, perm_inv_mapsTo_of_mapsTo f⟩
 
 theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { x // p x }]
-    (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f⁻¹ x) :=
-  -- Porting note: relies heavily on the definitions of `Subtype` and `setOf` unfolding to their
-  -- underlying predicate.
-  have : Finite { x | p x } := ‹_›
-  perm_inv_mapsTo_of_mapsTo (s := {x | p x}) f h hx
+    (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f⁻¹ x) := by
+  have : Finite { x | p x } := by simpa
+  simpa using perm_inv_mapsTo_of_mapsTo (s := {x | p x}) f h hx
 
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
   on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for
   `Equiv.Perm.subtypePerm`. -/
 abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
-  f.subtypePerm fun x => ⟨h x, fun h₂ => f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂⟩
+  f.subtypePerm fun x => ⟨fun h₂ => f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂, h x⟩
 
 @[simp]
 theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Finite { x // p x }]
@@ -107,7 +104,7 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
       classical
         rw [← perm_inv_mapsTo_iff_mapsTo] at h
         intro x
-        cases' hx : σ x with l r)
+        rcases hx : σ x with l | r)
   · rintro ⟨a, rfl⟩
     obtain ⟨y, hy⟩ := h ⟨l, rfl⟩
     rw [← hx, σ.inv_apply_self] at hy
@@ -141,16 +138,16 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
     use σ₁, σ₂
     rw [Perm.sumCongrHom_apply]
     ext x
-    cases' x with a b
+    rcases x with a | b
     · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inl_injective]
       rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [subtypePerm_apply]
+      dsimp [Set.range]
+      rw [subtypePerm_apply]
     · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
-        apply_ofInjective_symm Sum.inr_injective]
-      erw [subtypePerm_apply]
-      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
+        apply_ofInjective_symm Sum.inr_injective, ofInjective_apply]
+      dsimp [Set.range]
+      rw [subtypePerm_apply]
 
 nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
     orderOf (σ * τ) = Nat.lcm (orderOf σ) (orderOf τ) :=
@@ -184,16 +181,16 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
     have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
     refine isConj_of_support_equiv ?_ ?_
     · refine
-          ((Equiv.Set.ofEq hd1').trans (Equiv.Set.union hd1'')).trans
+          ((Equiv.setCongr hd1').trans (Equiv.Set.union hd1'')).trans
             ((Equiv.sumCongr (subtypeEquiv f fun a => ?_) (subtypeEquiv g fun a => ?_)).trans
-              ((Equiv.Set.ofEq hd2').trans (Equiv.Set.union hd2'')).symm) <;>
+              ((Equiv.setCongr hd2').trans (Equiv.Set.union hd2'')).symm) <;>
       · simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
           apply_eq_iff_eq]
     · intro x hx
-      simp only [trans_apply, symm_trans_apply, Equiv.Set.ofEq_apply, Equiv.Set.ofEq_symm_apply,
+      simp only [trans_apply, symm_trans_apply, Equiv.setCongr_apply, Equiv.setCongr_symm_apply,
         Equiv.sumCongr_apply]
       rw [hd1', Set.mem_union] at hx
-      cases' hx with hxσ hxτ
+      rcases hx with hxσ | hxτ
       · rw [mem_coe, mem_support] at hxσ
         rw [Set.union_apply_left, Set.union_apply_left]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
@@ -208,7 +205,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
       · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
         rw [Set.union_apply_right, Set.union_apply_right]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
-            Set.union_symm_apply_right, Subtype.coe_mk, apply_eq_iff_eq]
+            Set.union_symm_apply_right, Subtype.coe_mk]
           have h := (hd2 (g (τ x))).resolve_right ?_
           · rw [mul_apply, mul_apply] at h
             rw [inv_apply_self, h, (hd1 (τ x)).resolve_right hxτ]
@@ -217,12 +214,16 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
         · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
             mem_coe, mem_support]
 
-theorem mem_fixedPoints_iff_apply_mem_of_mem_centralizer {g p : Perm α}
+theorem apply_mem_fixedPoints_iff_mem_of_mem_centralizer {g p : Perm α}
     (hp : p ∈ Subgroup.centralizer {g}) {x : α} :
-    x ∈ Function.fixedPoints g ↔ p x ∈ Function.fixedPoints g :=  by
+    p x ∈ Function.fixedPoints g ↔ x ∈ Function.fixedPoints g := by
   simp only [Subgroup.mem_centralizer_singleton_iff] at hp
   simp only [Function.mem_fixedPoints_iff]
   rw [← mul_apply, ← hp, mul_apply, EmbeddingLike.apply_eq_iff_eq]
+
+@[deprecated (since := "2025-05-19")]
+alias mem_fixedPoints_iff_apply_mem_of_mem_centralizer :=
+  apply_mem_fixedPoints_iff_mem_of_mem_centralizer
 
 
 
@@ -247,6 +248,51 @@ theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf
   exact
     le_antisymm (support_pow_le σ n)
       (le_trans (ge_of_eq (congr_arg support hm)) (support_pow_le (σ ^ n) m))
+
+lemma ofSubtype_support_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints σ)) :
+    _root_.Disjoint x.ofSubtype.support σ.support := by
+  rw [Finset.disjoint_iff_ne]
+  rintro a ha b hb rfl
+  rw [mem_support] at ha hb
+  exact ha (ofSubtype_apply_of_not_mem x (mt Function.mem_fixedPoints_iff.mp hb))
+
+open Subgroup
+
+lemma disjoint_of_disjoint_support {H K : Subgroup (Perm α)}
+    (h : ∀ a ∈ H, ∀ b ∈ K, _root_.Disjoint a.support b.support) :
+    _root_.Disjoint H K := by
+  rw [disjoint_iff_inf_le]
+  intro x ⟨hx1, hx2⟩
+  specialize h x hx1 x hx2
+  rwa [disjoint_self, Finset.bot_eq_empty, support_eq_empty_iff] at h
+
+lemma support_closure_subset_union (S : Set (Perm α)) :
+    ∀ a ∈ closure S, (a.support : Set α) ⊆ ⋃ b ∈ S, b.support := by
+  apply closure_induction
+  · exact fun x hx ↦ Set.subset_iUnion₂_of_subset x hx subset_rfl
+  · simp only [support_one, Finset.coe_empty, Set.empty_subset]
+  · intro a b ha hb hc hd
+    refine (Finset.coe_subset.mpr (support_mul_le a b)).trans ?_
+    rw [Finset.sup_eq_union, Finset.coe_union, Set.union_subset_iff]
+    exact ⟨hc, hd⟩
+  · simp only [support_inv, imp_self, implies_true]
+
+lemma disjoint_support_closure_of_disjoint_support {S T : Set (Perm α)}
+    (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
+    ∀ a ∈ closure S, ∀ b ∈ closure T, _root_.Disjoint a.support b.support := by
+  intro a ha b hb
+  have key1 := support_closure_subset_union S a ha
+  have key2 := support_closure_subset_union T b hb
+  have key := Set.disjoint_of_subset key1 key2
+  simp_rw [Set.disjoint_iUnion_left, Set.disjoint_iUnion_right, Finset.disjoint_coe] at key
+  exact key h
+
+lemma disjoint_closure_of_disjoint_support {S T : Set (Perm α)}
+    (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
+    _root_.Disjoint (closure S) (closure T) := by
+  apply disjoint_of_disjoint_support
+  apply disjoint_support_closure_of_disjoint_support
+  exact h
 
 end Fintype
 

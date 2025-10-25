@@ -12,7 +12,7 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # Transvections
 
-Transvections are matrices of the form `1 + stdBasisMatrix i j c`, where `stdBasisMatrix i j c`
+Transvections are matrices of the form `1 + single i j c`, where `single i j c`
 is the basic matrix with a `c` at position `(i, j)`. Multiplying by such a transvection on the left
 (resp. on the right) amounts to adding `c` times the `j`-th row to the `i`-th row
 (resp `c` times the `i`-th column to the `j`-th column). Therefore, they are useful to present
@@ -27,7 +27,7 @@ form by operations on its rows and columns, a variant of Gauss' pivot algorithm.
 
 ## Main definitions and results
 
-* `transvection i j c` is the matrix equal to `1 + stdBasisMatrix i j c`.
+* `transvection i j c` is the matrix equal to `1 + single i j c`.
 * `TransvectionStruct n R` is a structure containing the data of `i, j, c` and a proof that
   `i ≠ j`. These are often easier to manipulate than straight matrices, especially in inductive
   arguments.
@@ -76,7 +76,7 @@ variable {R n} (i j : n)
 `c` times the `j`-th row of `M` to its `i`-th row. Multiplying by it on the right corresponds
 to adding `c` times the `i`-th column to the `j`-th column. -/
 def transvection (c : R) : Matrix n n R :=
-  1 + Matrix.stdBasisMatrix i j c
+  1 + Matrix.single i j c
 
 @[simp]
 theorem transvection_zero : transvection i j (0 : R) = 1 := by simp [transvection]
@@ -93,20 +93,20 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
   by_cases ha : i = a
   · by_cases hb : j = b
     · simp only [ha, updateRow_self, Pi.add_apply, one_apply, Pi.smul_apply, hb, ↓reduceIte,
-        smul_eq_mul, mul_one, transvection, add_apply, StdBasisMatrix.apply_same]
+        smul_eq_mul, mul_one, transvection, add_apply, single_apply_same]
     · simp only [ha, updateRow_self, Pi.add_apply, one_apply, Pi.smul_apply, hb, ↓reduceIte,
         smul_eq_mul, mul_zero, add_zero, transvection, add_apply, and_false, not_false_eq_true,
-        StdBasisMatrix.apply_of_ne]
-  · simp only [updateRow_ne, transvection, ha, Ne.symm ha, StdBasisMatrix.apply_of_ne, add_zero,
-      Algebra.id.smul_eq_mul, Ne, not_false_iff, DMatrix.add_apply, Pi.smul_apply,
-      mul_zero, false_and, add_apply]
+        single_apply_of_ne]
+  · simp only [updateRow_ne, transvection, ha, Ne.symm ha, single_apply_of_ne, add_zero,
+      Ne, not_false_iff,
+      false_and, add_apply]
 
 variable [Fintype n]
 
 theorem transvection_mul_transvection_same (h : i ≠ j) (c d : R) :
     transvection i j c * transvection i j d = transvection i j (c + d) := by
-  simp [transvection, Matrix.add_mul, Matrix.mul_add, h, h.symm, add_smul, add_assoc,
-    stdBasisMatrix_add]
+  simp [transvection, Matrix.add_mul, Matrix.mul_add, h.symm, add_assoc,
+    single_add]
 
 @[simp]
 theorem transvection_mul_apply_same (b : n) (c : R) (M : Matrix n n R) :
@@ -136,7 +136,6 @@ variable (R n)
 /-- A structure containing all the information from which one can build a nontrivial transvection.
 This structure is easier to manipulate than transvections as one has a direct access to all the
 relevant fields. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 structure TransvectionStruct where
   (i j : n)
   hij : i ≠ j
@@ -166,9 +165,9 @@ protected theorem det [Fintype n] (t : TransvectionStruct n R) : det t.toMatrix 
 @[simp]
 theorem det_toMatrix_prod [Fintype n] (L : List (TransvectionStruct n 𝕜)) :
     det (L.map toMatrix).prod = 1 := by
-  induction' L with t L IH
-  · simp
-  · simp [IH]
+  induction L with
+  | nil => simp
+  | cons _ _ IH => simp [IH]
 
 /-- The inverse of a `TransvectionStruct`, designed so that `t.inv.toMatrix` is the inverse of
 `t.toMatrix`. -/
@@ -193,9 +192,10 @@ theorem mul_inv (t : TransvectionStruct n R) : t.toMatrix * t.inv.toMatrix = 1 :
 
 theorem reverse_inv_prod_mul_prod (L : List (TransvectionStruct n R)) :
     (L.reverse.map (toMatrix ∘ TransvectionStruct.inv)).prod * (L.map toMatrix).prod = 1 := by
-  induction' L with t L IH
-  · simp
-  · suffices
+  induction L with
+  | nil => simp
+  | cons t L IH =>
+    suffices
       (L.reverse.map (toMatrix ∘ TransvectionStruct.inv)).prod * (t.inv.toMatrix * t.toMatrix) *
           (L.map toMatrix).prod = 1
       by simpa [Matrix.mul_assoc]
@@ -203,9 +203,10 @@ theorem reverse_inv_prod_mul_prod (L : List (TransvectionStruct n R)) :
 
 theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
     (L.map toMatrix).prod * (L.reverse.map (toMatrix ∘ TransvectionStruct.inv)).prod = 1 := by
-  induction' L with t L IH
-  · simp
-  · suffices
+  induction L with
+  | nil => simp
+  | cons t L IH =>
+    suffices
       t.toMatrix *
             ((L.map toMatrix).prod * (L.reverse.map (toMatrix ∘ TransvectionStruct.inv)).prod) *
           t.inv.toMatrix = 1
@@ -216,17 +217,17 @@ theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
 theorem _root_.Matrix.mem_range_scalar_of_commute_transvectionStruct {M : Matrix n n R}
     (hM : ∀ t : TransvectionStruct n R, Commute t.toMatrix M) :
     M ∈ Set.range (Matrix.scalar n) := by
-  refine mem_range_scalar_of_commute_stdBasisMatrix ?_
+  refine mem_range_scalar_of_commute_single ?_
   intro i j hij
   simpa [transvection, mul_add, add_mul] using (hM ⟨i, j, hij, 1⟩).eq
 
 theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matrix n n R} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ t : TransvectionStruct n R, Commute t.toMatrix M := by
   refine ⟨fun h t => ?_, mem_range_scalar_of_commute_transvectionStruct⟩
-  rw [mem_range_scalar_iff_commute_stdBasisMatrix] at h
+  rw [mem_range_scalar_iff_commute_single] at h
   refine (Commute.one_left M).add_left ?_
   convert (h _ _ t.hij).smul_left t.c using 1
-  rw [smul_stdBasisMatrix, smul_eq_mul, mul_one]
+  rw [smul_single, smul_eq_mul, mul_one]
 
 end
 
@@ -244,8 +245,8 @@ theorem toMatrix_sumInl (t : TransvectionStruct n R) :
     (t.sumInl p).toMatrix = fromBlocks t.toMatrix 0 0 1 := by
   cases t
   ext a b
-  cases' a with a a <;> cases' b with b b
-  · by_cases h : a = b <;> simp [TransvectionStruct.sumInl, transvection, h, stdBasisMatrix]
+  rcases a with a | a <;> rcases b with b | b
+  · by_cases h : a = b <;> simp [TransvectionStruct.sumInl, transvection, h, single]
   · simp [TransvectionStruct.sumInl, transvection]
   · simp [TransvectionStruct.sumInl, transvection]
   · by_cases h : a = b <;> simp [TransvectionStruct.sumInl, transvection, h]
@@ -255,18 +256,18 @@ theorem sumInl_toMatrix_prod_mul [Fintype n] [Fintype p] (M : Matrix n n R)
     (L : List (TransvectionStruct n R)) (N : Matrix p p R) :
     (L.map (toMatrix ∘ sumInl p)).prod * fromBlocks M 0 0 N =
       fromBlocks ((L.map toMatrix).prod * M) 0 0 N := by
-  induction' L with t L IH
-  · simp
-  · simp [Matrix.mul_assoc, IH, toMatrix_sumInl, fromBlocks_multiply]
+  induction L with
+  | nil => simp
+  | cons t L IH => simp [Matrix.mul_assoc, IH, toMatrix_sumInl, fromBlocks_multiply]
 
 @[simp]
 theorem mul_sumInl_toMatrix_prod [Fintype n] [Fintype p] (M : Matrix n n R)
     (L : List (TransvectionStruct n R)) (N : Matrix p p R) :
     fromBlocks M 0 0 N * (L.map (toMatrix ∘ sumInl p)).prod =
       fromBlocks (M * (L.map toMatrix).prod) 0 0 N := by
-  induction' L with t L IH generalizing M N
-  · simp
-  · simp [IH, toMatrix_sumInl, fromBlocks_multiply]
+  induction L generalizing M N with
+  | nil => simp
+  | cons t L IH => simp [IH, toMatrix_sumInl, fromBlocks_multiply]
 
 variable {p}
 
@@ -284,16 +285,17 @@ theorem toMatrix_reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) :
     (t.reindexEquiv e).toMatrix = reindexAlgEquiv R _ e t.toMatrix := by
   rcases t with ⟨t_i, t_j, _⟩
   ext a b
-  simp only [reindexEquiv, transvection, mul_boole, Algebra.id.smul_eq_mul, toMatrix_mk,
-    submatrix_apply, reindex_apply, DMatrix.add_apply, Pi.smul_apply, reindexAlgEquiv_apply]
+  simp only [reindexEquiv, transvection, toMatrix_mk,
+    submatrix_apply, reindex_apply, reindexAlgEquiv_apply]
   by_cases ha : e t_i = a <;> by_cases hb : e t_j = b <;> by_cases hab : a = b <;>
-    simp [ha, hb, hab, ← e.apply_eq_iff_eq_symm_apply, stdBasisMatrix]
+    simp [ha, hb, hab, ← e.apply_eq_iff_eq_symm_apply, single]
 
 theorem toMatrix_reindexEquiv_prod (e : n ≃ p) (L : List (TransvectionStruct n R)) :
     (L.map (toMatrix ∘ reindexEquiv e)).prod = reindexAlgEquiv R _ e (L.map toMatrix).prod := by
-  induction' L with t L IH
-  · simp
-  · simp only [toMatrix_reindexEquiv, IH, Function.comp_apply, List.prod_cons,
+  induction L with
+  | nil => simp
+  | cons t L IH =>
+    simp only [toMatrix_reindexEquiv, IH, Function.comp_apply, List.prod_cons,
       reindexAlgEquiv_apply, List.map]
     exact (reindexAlgEquiv_mul R _ _ _ _).symm
 
@@ -344,13 +346,6 @@ theorem listTransvecCol_getElem {i : ℕ} (h : i < (listTransvecCol M).length) :
       transvection (inl i') (inr unit) <| -M (inl i') (inr unit) / M (inr unit) (inr unit) := by
   simp [listTransvecCol]
 
-@[deprecated listTransvecCol_getElem (since := "2024-08-03")]
-theorem listTransvecCol_get (i : Fin (listTransvecCol M).length) :
-    (listTransvecCol M).get i =
-      letI i' := Fin.cast (length_listTransvecCol M) i
-      transvection (inl i') (inr unit) <| -M (inl i') (inr unit) / M (inr unit) (inr unit) :=
-  listTransvecCol_getElem _ i.isLt
-
 @[simp]
 theorem length_listTransvecRow : (listTransvecRow M).length = r := by simp [listTransvecRow]
 
@@ -358,14 +353,7 @@ theorem listTransvecRow_getElem {i : ℕ} (h : i < (listTransvecRow M).length) :
     (listTransvecRow M)[i] =
       letI i' : Fin r := ⟨i, length_listTransvecRow M ▸ h⟩
       transvection (inr unit) (inl i') <| -M (inr unit) (inl i') / M (inr unit) (inr unit) := by
-  simp [listTransvecRow, Fin.cast]
-
-@[deprecated listTransvecRow_getElem (since := "2024-08-03")]
-theorem listTransvecRow_get (i : Fin (listTransvecRow M).length) :
-    (listTransvecRow M).get i =
-      letI i' := Fin.cast (length_listTransvecRow M) i
-      transvection (inr unit) (inl i') <| -M (inr unit) (inl i') / M (inr unit) (inr unit) :=
-  listTransvecRow_getElem _ i.isLt
+  simp [listTransvecRow]
 
 /-- Multiplying by some of the matrices in `listTransvecCol M` does not change the last row. -/
 theorem listTransvecCol_mul_last_row_drop (i : Fin r ⊕ Unit) {k : ℕ} (hk : k ≤ r) :
@@ -412,14 +400,14 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         simp [h]
       simp only [h, transvection_mul_apply_same, IH, ← hni, add_le_iff_nonpos_right,
           listTransvecCol_mul_last_row_drop _ _ hn]
-      field_simp [hM]
+      simp [field]
     · have hni : n ≠ i := by
         rintro rfl
         cases i
         simp [n'] at h
       simp only [ne_eq, inl.injEq, Ne.symm h, not_false_eq_true, transvection_mul_apply_of_ne]
       rw [IH]
-      rcases le_or_lt (n + 1) i with (hi | hi)
+      rcases le_or_gt (n + 1) i with (hi | hi)
       · simp only [hi, n.le_succ.trans hi, if_true]
       · rw [if_neg, if_neg]
         · simpa only [hni.symm, not_le, or_false] using Nat.lt_succ_iff_lt_or_eq.1 hi
@@ -433,15 +421,16 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
 /-- Multiplying by some of the matrices in `listTransvecRow M` does not change the last column. -/
 theorem mul_listTransvecRow_last_col_take (i : Fin r ⊕ Unit) {k : ℕ} (hk : k ≤ r) :
     (M * ((listTransvecRow M).take k).prod) i (inr unit) = M i (inr unit) := by
-  induction' k with k IH
-  · simp only [Matrix.mul_one, List.take_zero, List.prod_nil, List.take, Matrix.mul_one]
-  · have hkr : k < r := hk
+  induction k with
+  | zero => simp only [Matrix.mul_one, List.prod_nil, List.take, Matrix.mul_one]
+  | succ k IH =>
+    have hkr : k < r := hk
     let k' : Fin r := ⟨k, hkr⟩
     have :
       (listTransvecRow M)[k]? =
         ↑(transvection (inr Unit.unit) (inl k')
             (-M (inr Unit.unit) (inl k') / M (inr Unit.unit) (inr Unit.unit))) := by
-      simp only [k', listTransvecRow, List.ofFnNthVal, hkr, dif_pos, List.getElem?_ofFn]
+      simp only [k', listTransvecRow, hkr, dif_pos, List.getElem?_ofFn]
     simp only [List.take_succ, ← Matrix.mul_assoc, this, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     rw [mul_transvection_apply_of_ne, IH hkr.le]
@@ -451,7 +440,7 @@ theorem mul_listTransvecRow_last_col_take (i : Fin r ⊕ Unit) {k : ℕ} (hk : k
 theorem mul_listTransvecRow_last_col (i : Fin r ⊕ Unit) :
     (M * (listTransvecRow M).prod) i (inr unit) = M i (inr unit) := by
   have A : (listTransvecRow M).length = r := by simp [listTransvecRow]
-  rw [← List.take_length (listTransvecRow M), A]
+  rw [← List.take_length (l := listTransvecRow M), A]
   simpa using mul_listTransvecRow_last_col_take M i le_rfl
 
 /-- Multiplying by all the matrices in `listTransvecRow M` kills all the coefficients in the
@@ -464,19 +453,20 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         (M * ((listTransvecRow M).take k).prod) (inr unit) (inl i) =
           if k ≤ i then M (inr unit) (inl i) else 0 by
     have A : (listTransvecRow M).length = r := by simp [listTransvecRow]
-    rw [← List.take_length (listTransvecRow M), A]
+    rw [← List.take_length (l := listTransvecRow M), A]
     have : ¬r ≤ i := by simp
     simpa only [this, ite_eq_right_iff] using H r le_rfl
   intro k hk
-  induction' k with n IH
-  · simp only [if_true, Matrix.mul_one, List.take_zero, zero_le', List.prod_nil]
-  · have hnr : n < r := hk
+  induction k with
+  | zero => simp only [if_true, Matrix.mul_one, List.take_zero, zero_le', List.prod_nil]
+  | succ n IH =>
+    have hnr : n < r := hk
     let n' : Fin r := ⟨n, hnr⟩
     have A :
       (listTransvecRow M)[n]? =
         ↑(transvection (inr unit) (inl n')
         (-M (inr unit) (inl n') / M (inr unit) (inr unit))) := by
-      simp only [n', listTransvecRow, List.ofFnNthVal, hnr, dif_pos, List.getElem?_ofFn]
+      simp only [n', listTransvecRow, hnr, dif_pos, List.getElem?_ofFn]
     simp only [List.take_succ, A, ← Matrix.mul_assoc, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     by_cases h : n' = i
@@ -485,17 +475,18 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         simp only [n', Fin.mk_eq_mk] at h
         simp only [h]
       have : ¬n.succ ≤ i := by simp only [← hni, n.lt_succ_self, not_le]
-      simp only [h, mul_transvection_apply_same, List.take, if_false,
+      simp only [h, mul_transvection_apply_same, if_false,
         mul_listTransvecRow_last_col_take _ _ hnr.le, hni.le, this, if_true, IH hnr.le]
-      field_simp [hM]
+      field_simp
+      ring
     · have hni : n ≠ i := by
         rintro rfl
         cases i
         tauto
       simp only [IH hnr.le, Ne, mul_transvection_apply_of_ne, Ne.symm h, inl.injEq,
         not_false_eq_true]
-      rcases le_or_lt (n + 1) i with (hi | hi)
-      · simp [hi, n.le_succ.trans hi, if_true]
+      rcases le_or_gt (n + 1) i with (hi | hi)
+      · simp [hi, n.le_succ.trans hi]
       · rw [if_neg, if_neg]
         · simpa only [not_le] using hi
         · simpa only [hni.symm, not_le, or_false] using Nat.lt_succ_iff_lt_or_eq.1 hi
@@ -529,10 +520,10 @@ theorem isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow
     IsTwoBlockDiagonal ((listTransvecCol M).prod * M * (listTransvecRow M).prod) := by
   constructor
   · ext i j
-    have : j = unit := by simp only [eq_iff_true_of_subsingleton]
+    have : j = unit := by simp only
     simp [toBlocks₁₂, this, listTransvecCol_mul_mul_listTransvecRow_last_row M hM]
   · ext i j
-    have : i = unit := by simp only [eq_iff_true_of_subsingleton]
+    have : i = unit := by simp only
     simp [toBlocks₂₁, this, listTransvecCol_mul_mul_listTransvecRow_last_col M hM]
 
 /-- There exist two lists of `TransvectionStruct` such that multiplying by them on the left and
@@ -569,7 +560,7 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
   push_neg at hM
   simp only [not_and_or, IsTwoBlockDiagonal, toBlocks₁₂, toBlocks₂₁, ← Matrix.ext_iff] at H
   have : ∃ i : Fin r, M (inl i) (inr unit) ≠ 0 ∨ M (inr unit) (inl i) ≠ 0 := by
-    cases' H with H H
+    rcases H with H | H
     · contrapose! H
       rintro i ⟨⟩
       exact (H i).1
@@ -615,7 +606,6 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
       diagonal (Sum.elim D₀ fun _ => c) by
     simpa [M', c, Matrix.mul_assoc]
   have : M' = fromBlocks M'' 0 0 (diagonal fun _ => c) := by
-    -- Porting note: simplified proof, because `congr` didn't work anymore
     rw [← fromBlocks_toBlocks M', hM.1, hM.2]
     rfl
   rw [this]
@@ -650,12 +640,18 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_aux (n : Type) [F
     [DecidableEq n] (M : Matrix n n 𝕜) :
     ∃ (L L' : List (TransvectionStruct n 𝕜)) (D : n → 𝕜),
       (L.map toMatrix).prod * M * (L'.map toMatrix).prod = diagonal D := by
-  induction' hn : Fintype.card n with r IH generalizing n M
-  · refine ⟨List.nil, List.nil, fun _ => 1, ?_⟩
+  suffices ∀ cn, Fintype.card n = cn →
+      ∃ (L L' : List (TransvectionStruct n 𝕜)) (D : n → 𝕜),
+      (L.map toMatrix).prod * M * (L'.map toMatrix).prod = diagonal D by exact this _ rfl
+  intro cn hn
+  induction cn generalizing n M with
+  | zero =>
+    refine ⟨List.nil, List.nil, fun _ => 1, ?_⟩
     ext i j
     rw [Fintype.card_eq_zero_iff] at hn
     exact hn.elim' i
-  · have e : n ≃ Fin r ⊕ Unit := by
+  | succ r IH =>
+    have e : n ≃ Fin r ⊕ Unit := by
       refine Fintype.equivOfCardEq ?_
       rw [hn]
       rw [@Fintype.card_sum (Fin r) Unit _ _]
@@ -713,14 +709,17 @@ theorem diagonal_transvection_induction (P : Matrix n n 𝕜 → Prop) (M : Matr
     apply H L L'
     exact PD
   intro L₁ L₂ E PE
-  induction' L₁ with t L₁ IH
-  · simp only [Matrix.one_mul, List.prod_nil, List.map]
-    induction' L₂ with t L₂ IH generalizing E
-    · simpa
-    · simp only [← Matrix.mul_assoc, List.prod_cons, List.map]
+  induction L₁ with
+  | nil =>
+    simp only [Matrix.one_mul, List.prod_nil, List.map]
+    induction L₂ generalizing E with
+    | nil => simpa
+    | cons t L₂ IH =>
+      simp only [← Matrix.mul_assoc, List.prod_cons, List.map]
       apply IH
       exact hmul _ _ PE (htransvec _)
-  · simp only [Matrix.mul_assoc, List.prod_cons, List.map] at IH ⊢
+  | cons t L₁ IH =>
+    simp only [Matrix.mul_assoc, List.prod_cons, List.map] at IH ⊢
     exact hmul _ _ (htransvec _) IH
 
 /-- Induction principle for invertible matrices based on transvections: if a property is true for
@@ -734,11 +733,7 @@ theorem diagonal_transvection_induction_of_det_ne_zero (P : Matrix n n 𝕜 → 
   let Q : Matrix n n 𝕜 → Prop := fun N => det N ≠ 0 ∧ P N
   have : Q M := by
     apply diagonal_transvection_induction Q M
-    · intro D hD
-      have detD : det (diagonal D) ≠ 0 := by
-        rw [hD]
-        exact hMdet
-      exact ⟨detD, hdiag _ detD⟩
+    · grind
     · intro t
       exact ⟨by simp, htransvec t⟩
     · intro A B QA QB

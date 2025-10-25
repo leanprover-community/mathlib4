@@ -57,8 +57,9 @@ Upgrade a Witt vector `A` whose first entry `A.coeff 0` is a unit to be, itself,
 def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
   Units.mkOfMulEqOne A (@WittVector.mk' p _ (inverseCoeff a A)) (by
     ext n
-    induction' n with n _
-    · simp [WittVector.mul_coeff_zero, inverseCoeff, hA]
+    induction n with
+    | zero => simp [WittVector.mul_coeff_zero, inverseCoeff, hA]
+    | succ n => ?_
     let H_coeff := A.coeff (n + 1) * ↑(a⁻¹ ^ p ^ (n + 1)) +
       nthRemainder p n (truncateFun (n + 1) A) fun i : Fin (n + 1) => inverseCoeff a A i
     have H := Units.mul_inv (a ^ p ^ (n + 1))
@@ -97,7 +98,7 @@ theorem irreducible : Irreducible (p : 𝕎 k) := by
   obtain ⟨m, a, ha, rfl⟩ := verschiebung_nonzero ha0
   obtain ⟨n, b, hb, rfl⟩ := verschiebung_nonzero hb0
   cases m; · exact Or.inl (isUnit_of_coeff_zero_ne_zero a ha)
-  cases' n with n; · exact Or.inr (isUnit_of_coeff_zero_ne_zero b hb)
+  rcases n with - | n; · exact Or.inr (isUnit_of_coeff_zero_ne_zero b hb)
   rw [iterate_verschiebung_mul] at hab
   apply_fun fun x => coeff x 1 at hab
   simp only [coeff_p_one, Nat.add_succ, add_comm _ n, Function.iterate_succ', Function.comp_apply,
@@ -139,15 +140,9 @@ theorem exists_eq_pow_p_mul' (a : 𝕎 k) (ha : a ≠ 0) :
   have hb₀ : b.coeff 0 = b₀ := rfl
   exact ⟨m, mkUnit hb₀, h₂⟩
 
-/-
-Note: The following lemma should be an instance, but it seems to cause some
-exponential blowups in certain typeclass resolution problems.
-See the following Lean4 issue as well as the zulip discussion linked there:
-https://github.com/leanprover/lean4/issues/1102
--/
 /-- The ring of Witt Vectors of a perfect field of positive characteristic is a DVR.
 -/
-theorem isDiscreteValuationRing : IsDiscreteValuationRing (𝕎 k) :=
+instance isDiscreteValuationRing : IsDiscreteValuationRing (𝕎 k) :=
   IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization (by
     refine ⟨p, irreducible p, fun {x} hx => ?_⟩
     obtain ⟨n, b, hb⟩ := exists_eq_pow_p_mul' x hx

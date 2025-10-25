@@ -6,17 +6,15 @@ Authors: Jz Pan
 import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
 import Mathlib.Algebra.Algebra.Subalgebra.Rank
 import Mathlib.Algebra.Polynomial.Basis
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.LinearDisjoint
 import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
 import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.TensorProduct.Nontrivial
+import Mathlib.RingTheory.Trace.Defs
 
 /-!
 
@@ -131,6 +129,7 @@ linearly disjoint, linearly independent, tensor product
 
 -/
 
+open Module
 open scoped TensorProduct
 
 noncomputable section
@@ -243,6 +242,71 @@ protected def mulMap :=
 @[simp]
 theorem val_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
 
+/--
+If `A` and `B` are linearly disjoint subalgebras in a commutative algebra `S` over `R`
+such that `A ⊔ B = S`, then this is the natural isomorphism
+`A ⊗[R] B ≃ₐ[A] S` induced by multiplication in `S`.
+-/
+noncomputable def mulMapLeftOfSupEqTop (H' : A ⊔ B = ⊤) :
+    A ⊗[R] B ≃ₐ[A] S :=
+  (AlgEquiv.ofInjective (Algebra.TensorProduct.productLeftAlgHom
+    (Algebra.ofId A S) B.val) H.injective).trans ((Subalgebra.equivOfEq _ _ (by
+      apply Subalgebra.restrictScalars_injective R
+      rw [restrictScalars_top, ← H']
+      exact mulMap_range A B)).trans Subalgebra.topEquiv)
+
+@[simp]
+theorem mulMapLeftOfSupEqTop_tmul (H' : A ⊔ B = ⊤) (a : A) (b : B) :
+    H.mulMapLeftOfSupEqTop H' (a ⊗ₜ[R] b) = (a : S) * (b : S) := rfl
+
+/--
+If `A` and `B` are linearly disjoint subalgebras in a commutative algebra `S` over `R`
+such that `A ⊔ B = S`, then any `R`-basis of `B` is also an `A`-basis of `S`.
+-/
+noncomputable def basisOfBasisRight (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B) :
+    Basis ι A S :=
+  (b.baseChange A).map (H.mulMapLeftOfSupEqTop H').toLinearEquiv
+
+@[simp]
+theorem algebraMap_basisOfBasisRight_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B) (i : ι) :
+    H.basisOfBasisRight H' b i = algebraMap B S (b i) := by
+  simp [basisOfBasisRight]
+
+@[simp]
+theorem mulMapLeftOfSupEqTop_symm_apply (H' : A ⊔ B = ⊤) (x : B) :
+    (H.mulMapLeftOfSupEqTop H').symm x = 1 ⊗ₜ[R] x :=
+  (H.mulMapLeftOfSupEqTop H').symm_apply_eq.mpr (by simp)
+
+theorem algebraMap_basisOfBasisRight_repr_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B)
+    (x : B) (i : ι) :
+    algebraMap A S ((H.basisOfBasisRight H' b).repr x i) = algebraMap R S (b.repr x i) := by
+  simp [basisOfBasisRight, Algebra.algebraMap_eq_smul_one]
+
+theorem leftMulMatrix_basisOfBasisRight_algebraMap (H' : A ⊔ B = ⊤) {ι : Type*} [Fintype ι]
+    [DecidableEq ι] (b : Basis ι R B) (x : B) :
+    Algebra.leftMulMatrix (H.basisOfBasisRight H' b) (algebraMap B S x) =
+      RingHom.mapMatrix (algebraMap R A) (Algebra.leftMulMatrix b x) := by
+  ext
+  simp [Algebra.leftMulMatrix_eq_repr_mul, ← H.algebraMap_basisOfBasisRight_repr_apply H']
+
+/--
+If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
+linearly disjoint and such that `A ⊔ B = S`, then any `R`-basis of `A` is also a `B`-basis of `S`.
+-/
+noncomputable def basisOfBasisLeft (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R A) :
+    Basis ι B S :=
+  (b.baseChange B).map (H.symm.mulMapLeftOfSupEqTop (by rwa [sup_comm])).toLinearEquiv
+
+@[simp]
+theorem basisOfBasisLeft_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R A) (i : ι) :
+    H.basisOfBasisLeft H' b i = algebraMap A S (b i) :=
+  H.symm.algebraMap_basisOfBasisRight_apply (by rwa [sup_comm]) b i
+
+theorem basisOfBasisLeft_repr_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R A)
+    (x : A) (i : ι) :
+    algebraMap B S ((H.basisOfBasisLeft H' b).repr x i) = algebraMap R S (b.repr x i) :=
+  H.symm.algebraMap_basisOfBasisRight_repr_apply (by rwa [sup_comm]) b x i
+
 include H in
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint, and if they are free `R`-modules, then `A ⊔ B` is also a free `R`-module. -/
@@ -278,7 +342,6 @@ variable [CommRing R] [Ring S] [Algebra R S]
 
 variable (A B : Subalgebra R S)
 
-set_option maxSynthPendingDepth 2 in
 lemma mulLeftMap_ker_eq_bot_iff_linearIndependent_op {ι : Type*} (a : ι → A) :
     LinearMap.ker (Submodule.mulLeftMap (M := toSubmodule A) (toSubmodule B) a) = ⊥ ↔
     LinearIndependent B.op (MulOpposite.op ∘ A.val ∘ a) := by
@@ -317,7 +380,6 @@ theorem of_basis_left_op {ι : Type*} (a : Basis ι R A)
   rw [← mulLeftMap_ker_eq_bot_iff_linearIndependent_op] at H
   exact Submodule.LinearDisjoint.of_basis_left _ _ a H
 
-set_option maxSynthPendingDepth 2 in
 lemma mulRightMap_ker_eq_bot_iff_linearIndependent {ι : Type*} (b : ι → B) :
     LinearMap.ker (Submodule.mulRightMap (toSubmodule A) (N := toSubmodule B) b) = ⊥ ↔
     LinearIndependent A (B.val ∘ b) := by
@@ -464,9 +526,31 @@ namespace LinearDisjoint
 
 variable [CommRing R] [CommRing S] [Algebra R S]
 
-variable (A B : Subalgebra R S)
+variable {A B : Subalgebra R S}
 
-variable {A B} in
+/--
+If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
+linearly disjoint and such that `A ⊔ B = S`, then `trace` and `algebraMap` commutes.
+-/
+theorem trace_algebraMap (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) [Module.Free R B]
+    [Module.Finite R B] (x : B) :
+    Algebra.trace A S (algebraMap B S x) = algebraMap R A (Algebra.trace R B x) := by
+  simp_rw [Algebra.trace_eq_matrix_trace (Module.Free.chooseBasis R B),
+    Algebra.trace_eq_matrix_trace (H.basisOfBasisRight H' (Module.Free.chooseBasis R B)),
+    Matrix.trace, map_sum, leftMulMatrix_basisOfBasisRight_algebraMap, RingHom.mapMatrix_apply,
+    Matrix.diag_apply, Matrix.map_apply]
+
+/--
+If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
+linearly disjoint and such that `A ⊔ B = S`, then `norm` and `algebraMap` commutes.
+-/
+theorem norm_algebraMap (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) [Module.Free R B]
+    [Module.Finite R B] (x : B) :
+    Algebra.norm A (algebraMap B S x) = algebraMap R A (Algebra.norm R x) := by
+  simp_rw [Algebra.norm_eq_matrix_det (Module.Free.chooseBasis R B),
+    Algebra.norm_eq_matrix_det (H.basisOfBasisRight H' (Module.Free.chooseBasis R B)),
+    leftMulMatrix_basisOfBasisRight_algebraMap, RingHom.map_det]
+
 /-- In a commutative ring, if `A` and `B` are linearly disjoint, if `B` is a flat `R`-module,
 then for any family of `R`-linearly independent elements of `A`,
 they are also `B`-linearly independent. -/
@@ -474,13 +558,12 @@ theorem linearIndependent_left_of_flat (H : A.LinearDisjoint B) [Module.Flat R B
     {ι : Type*} {a : ι → A} (ha : LinearIndependent R a) : LinearIndependent B (A.val ∘ a) :=
   H.linearIndependent_left_of_flat_of_commute ha fun _ _ ↦ mul_comm _ _
 
+variable (A B) in
 /-- In a commutative ring, if a basis of `A` is also `B`-linearly independent,
 then `A` and `B` are linearly disjoint. -/
 theorem of_basis_left {ι : Type*} (a : Basis ι R A)
     (H : LinearIndependent B (A.val ∘ a)) : A.LinearDisjoint B :=
   of_basis_left_of_commute A B a H fun _ _ ↦ mul_comm _ _
-
-variable {A B}
 
 variable (R) in
 /-- If `A` and `B` are flat algebras over `R`, such that `A ⊗[R] B` is a domain, and such that
@@ -513,13 +596,13 @@ theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
 
 /-- If `A ⊗[R] B` is a field, then for any `R`-algebra `S`
 and injections of `A` and `B` into `S`, their images are linearly disjoint. -/
-theorem of_isField' {A : Type v} [CommRing A] {B : Type w} [CommRing B]
+theorem of_isField' {A : Type v} [Ring A] {B : Type w} [Ring B]
     [Algebra R A] [Algebra R B] (H : IsField (A ⊗[R] B))
     (fa : A →ₐ[R] S) (fb : B →ₐ[R] S) (hfa : Function.Injective fa) (hfb : Function.Injective fb) :
     fa.range.LinearDisjoint fb.range := by
   apply of_isField
   exact Algebra.TensorProduct.congr (AlgEquiv.ofInjective fa hfa)
-    (AlgEquiv.ofInjective fb hfb) |>.symm.toMulEquiv.isField _ H
+    (AlgEquiv.ofInjective fb hfb) |>.symm.toMulEquiv.isField H
 
 -- need to be in this file since it uses linearly disjoint
 open Cardinal Polynomial in
@@ -571,7 +654,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
       ((Subalgebra.inclusion_injective key2).comp (AlgEquiv.injective _))
   have := lift_uzero.{u} _ ▸ (basisMonomials R).mk_eq_rank.symm
   simp only [this, mk_eq_aleph0, lift_aleph0, aleph0_le_lift] at key3
-  exact (key3.trans key1).not_lt one_lt_aleph0
+  exact (key3.trans key1).not_gt one_lt_aleph0
 
 variable (R) in
 /-- If `A` and `B` are flat `R`-algebras, such that `A ⊗[R] B` is a field, then one of `A` and `B`
@@ -694,7 +777,7 @@ theorem of_linearDisjoint_finite_left [Algebra.IsIntegral R A]
   rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
   intro x y hxy
   obtain ⟨M', hM, hf, h⟩ :=
-    TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
+    TensorProduct.exists_finite_submodule_left_of_setFinite' {x, y} (Set.toFinite _)
   obtain ⟨s, hs⟩ := Module.Finite.iff_fg.1 hf
   have hs' : (s : Set S) ⊆ A := by rwa [← hs, Submodule.span_le] at hM
   let A' := Algebra.adjoin R (s : Set S)

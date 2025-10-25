@@ -58,7 +58,7 @@ class HundredTheorem:
     # like |decl|, but a list of declarations (if one theorem is split into multiple declarations) (optional)
     decls: Optional[List[str]] = None
     # name(s) of the author(s) of this formalization (optional)
-    author: Optional[str] = None
+    authors: Optional[str] = None
     # Date of the formalization, in the form `YYYY`, `YYYY-MM` or `YYYY-MM-DD` (optional)
     date: Optional[str] = None
     links: Optional[Mapping[str, str]] = None
@@ -87,7 +87,7 @@ class ThousandPlusTheorem:
     # like |decl|, but a list of declarations (if one theorem is split into multiple declarations) (optional)
     decls: Optional[List[str]] = None
     # name(s) of the author(s) of this formalization (optional)
-    author: Optional[str] = None
+    authors: Optional[str] = None
     # Date of the formalization, in the form `YYYY`, `YYYY-MM` or `YYYY-MM-DD` (optional)
     date: Optional[str] = None
     # for external projects, an URL referring to the result
@@ -170,13 +170,15 @@ for index, entry in thousand.items():
             print(f"For key {index} ({title}): did you mean `decl` instead of `decls`?")
             errors += 1
         thousand_decls = thousand_decls + [(f"{index} {title}", d) for d in entry["decls"]]
+    elif "statement" in entry:
+        thousand_decls.append((f"{index} {title}", entry["statement"]))
 
 overview_decls = tiered_extract(overview)
-assert all(len(n) == 3 for n, _ in overview_decls)
+assert all(len(n) >= 3 for n, _ in overview_decls), "Expected more nesting"
 overview_decls = flatten_names(overview_decls)
 
 undergrad_decls = tiered_extract(undergrad)
-assert all(len(n) >= 3 for n, _ in undergrad_decls)
+assert all(len(n) >= 3 for n, _ in undergrad_decls), "Expected more nesting"
 undergrad_decls = flatten_names(undergrad_decls)
 
 with open("100.json", "w", encoding="utf8") as f:

@@ -66,25 +66,22 @@ def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff
 
 namespace mapFun
 
--- Porting note: switched the proof to tactic mode. I think that `ext` was the issue.
-theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
-  intros _ _ h
-  ext p
-  exact hf (congr_arg (fun x => coeff x p) h :)
+theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) :=
+  fun _ _ h => ext fun n => hf (congr_arg (fun x => coeff x n) h :)
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
 
 /-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
--- porting note: a very crude port.
 macro "map_fun_tac" : tactic => `(tactic| (
+  -- TODO: the Lean 3 version of this tactic was more functional
   ext n
   simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
-    -- Porting note: the lemmas on the next line do not have the `simp` tag in mathlib4
+    -- the lemmas on the next line do not have the `simp` tag in mathlib4
     add_coeff, sub_coeff, mul_coeff, neg_coeff, nsmul_coeff, zsmul_coeff, pow_coeff,
     peval, map_aeval, algebraMap_int_eq, coe_eval₂Hom] <;>
-  try { cases n <;> simp <;> done } <;>  -- Porting note: this line solves `one`
+  try { cases n <;> simp <;> done } <;> -- this line solves `one`
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl <;>
   ext ⟨i, k⟩ <;>
     fin_cases i <;> rfl))
@@ -117,15 +114,9 @@ theorem natCast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.unaryCast = (n : WittVector p S) by
     induction n <;> simp [*, Nat.unaryCast, add, one, zero] <;> rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast := natCast
-
 theorem intCast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.castDef = (n : WittVector p S) by
-    cases n <;> simp [*, Int.castDef, add, one, neg, zero, natCast] <;> rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast := intCast
+    cases n <;> simp [*, Int.castDef, neg, natCast] <;> rfl
 
 end mapFun
 
@@ -144,14 +135,14 @@ section Tactic
 open Lean Elab Tactic
 
 /-- An auxiliary tactic for proving that `ghostFun` respects the ring operations. -/
-elab "ghost_fun_tac" φ:term "," fn:term : tactic => do
+elab "ghost_fun_tac " φ:term ", " fn:term : tactic => do
   evalTactic (← `(tactic| (
   ext n
   have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $φ n)) $fn
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,
-    HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul,HPow.hPow, Pow.pow,
+    HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul, HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
-  simpa (config := { unfoldPartialApp := true }) [WittVector.ghostFun, aeval_rename, aeval_bind₁,
+  simpa +unfoldPartialApp [WittVector.ghostFun, aeval_rename, aeval_bind₁,
     comp, uncurry, peval, eval] using this
   )))
 
@@ -180,11 +171,7 @@ private theorem ghostFun_add : ghostFun (x + y) = ghostFun x + ghostFun y := by
 
 private theorem ghostFun_natCast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.unaryCast = _ by
-    induction i <;>
-      simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add, -Pi.natCast_def]
-
-@[deprecated (since := "2024-04-17")]
-alias ghostFun_nat_cast := ghostFun_natCast
+    induction i <;> simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add]
 
 private theorem ghostFun_sub : ghostFun (x - y) = ghostFun x - ghostFun y := by
   ghost_fun_tac X 0 - X 1, ![x.coeff, y.coeff]
@@ -196,11 +183,7 @@ private theorem ghostFun_neg : ghostFun (-x) = -ghostFun x := by ghost_fun_tac -
 
 private theorem ghostFun_intCast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
-    cases i <;> simp [*, Int.castDef, ghostFun_natCast, ghostFun_neg, -Pi.natCast_def,
-      -Pi.intCast_def]
-
-@[deprecated (since := "2024-04-17")]
-alias ghostFun_int_cast := ghostFun_intCast
+    cases i <;> simp [*, Int.castDef, ghostFun_natCast, ghostFun_neg]
 
 private lemma ghostFun_nsmul (m : ℕ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
   ghost_fun_tac m • (X 0), ![x.coeff]
@@ -225,7 +208,7 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
     ext n
     have := bind₁_wittPolynomial_xInTermsOfW p R n
     apply_fun aeval x.coeff at this
-    simpa (config := { unfoldPartialApp := true }) only [aeval_bind₁, aeval_X, ghostFun,
+    simpa +unfoldPartialApp only [aeval_bind₁, aeval_X, ghostFun,
       aeval_wittPolynomial]
   right_inv := by
     intro x

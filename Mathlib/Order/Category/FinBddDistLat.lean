@@ -20,77 +20,165 @@ universe u
 open CategoryTheory
 
 /-- The category of finite distributive lattices with bounded lattice morphisms. -/
-structure FinBddDistLat where
-  toBddDistLat : BddDistLat
-  [isFintype : Fintype toBddDistLat]
+structure FinBddDistLat extends BddDistLat where
+  [isFintype : Fintype carrier]
 
 namespace FinBddDistLat
 
 instance : CoeSort FinBddDistLat Type* :=
-  ⟨fun X => X.toBddDistLat⟩
+  ⟨fun X => X.carrier⟩
 
 instance (X : FinBddDistLat) : DistribLattice X :=
-  X.toBddDistLat.toDistLat.str
+  X.str
 
 instance (X : FinBddDistLat) : BoundedOrder X :=
-  X.toBddDistLat.isBoundedOrder
+  X.isBoundedOrder
 
 attribute [instance] FinBddDistLat.isFintype
 
-/-- Construct a bundled `FinBddDistLat` from a `Nonempty` `BoundedOrder` `DistribLattice`. -/
-def of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLat :=
-  -- Porting note: was `⟨⟨⟨α⟩⟩⟩`
-  -- see https://github.com/leanprover-community/mathlib4/issues/4998
-  ⟨⟨{α := α}⟩⟩
+/-- Construct a bundled `FinBddDistLat` from a `Fintype` `BoundedOrder` `DistribLattice`. -/
+abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLat where
+  carrier := α
 
-/-- Construct a bundled `FinBddDistLat` from a `Nonempty` `BoundedOrder` `DistribLattice`. -/
-def of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLat :=
-  haveI := Fintype.toBoundedOrder α
-  -- Porting note: was `⟨⟨⟨α⟩⟩⟩`
-  -- see https://github.com/leanprover-community/mathlib4/issues/4998
-  ⟨⟨{α := α}⟩⟩
+/-- Construct a bundled `FinBddDistLat` from a `Nonempty` `Fintype` `DistribLattice`. -/
+abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLat where
+  carrier := α
+  isBoundedOrder := Fintype.toBoundedOrder α
+
+/-- The type of morphisms in `FinBddDistLat R`. -/
+@[ext]
+structure Hom (X Y : FinBddDistLat.{u}) where
+  private mk ::
+  /-- The underlying `BoundedLatticeHom`. -/
+  hom' : BoundedLatticeHom X Y
+
+instance : Category FinBddDistLat.{u} where
+  Hom X Y := Hom X Y
+  id X := ⟨BoundedLatticeHom.id X⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
+
+instance : ConcreteCategory FinBddDistLat (BoundedLatticeHom · ·) where
+  hom := Hom.hom'
+  ofHom := Hom.mk
+
+/-- Turn a morphism in `FinBddDistLat` back into a `BoundedLatticeHom`. -/
+abbrev Hom.hom {X Y : FinBddDistLat.{u}} (f : Hom X Y) :=
+  ConcreteCategory.hom (C := FinBddDistLat) f
+
+/-- Typecheck a `BoundedLatticeHom` as a morphism in `FinBddDistLat`. -/
+abbrev ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] [DistribLattice Y]
+    [BoundedOrder Y] [Fintype Y]
+    (f : BoundedLatticeHom X Y) :
+    of X ⟶ of Y :=
+  ConcreteCategory.ofHom (C := FinBddDistLat) f
+
+variable {R} in
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (X Y : FinBddDistLat.{u}) (f : Hom X Y) :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
+
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
+
+@[simp]
+lemma coe_id {X : FinBddDistLat} : (𝟙 X : X → X) = id := rfl
+
+@[simp]
+lemma coe_comp {X Y Z : FinBddDistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
+
+@[simp]
+lemma forget_map {X Y : FinBddDistLat} (f : X ⟶ Y) :
+    (forget FinBddDistLat).map f = f := rfl
+
+@[ext]
+lemma ext {X Y : FinBddDistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
+  ConcreteCategory.hom_ext _ _ w
+
+@[simp]
+lemma hom_id {X : FinBddDistLat} : (𝟙 X : X ⟶ X).hom = BoundedLatticeHom.id _ := rfl
+
+/- Provided for rewriting. -/
+lemma id_apply (X : FinBddDistLat) (x : X) :
+    (𝟙 X : X ⟶ X) x = x := by simp
+
+@[simp]
+lemma hom_comp {X Y Z : FinBddDistLat} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
+
+/- Provided for rewriting. -/
+lemma comp_apply {X Y Z : FinBddDistLat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g) x = g (f x) := by simp
+
+@[ext]
+lemma hom_ext {X Y : FinBddDistLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
+  Hom.ext hf
+
+@[simp]
+lemma hom_ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] [DistribLattice Y]
+    [BoundedOrder Y] [Fintype Y] (f : BoundedLatticeHom X Y) : (ofHom f).hom = f := rfl
+
+@[simp]
+lemma ofHom_hom {X Y : FinBddDistLat} (f : X ⟶ Y) :
+    ofHom (Hom.hom f) = f := rfl
+
+@[simp]
+lemma ofHom_id {X : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] :
+    ofHom (BoundedLatticeHom.id _) = 𝟙 (of X) := rfl
+
+@[simp]
+lemma ofHom_comp {X Y Z : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] [DistribLattice Y]
+    [BoundedOrder Y] [Fintype Y] [DistribLattice Z] [BoundedOrder Z] [Fintype Z]
+    (f : BoundedLatticeHom X Y) (g : BoundedLatticeHom Y Z) :
+    ofHom (g.comp f) = ofHom f ≫ ofHom g :=
+  rfl
+
+lemma ofHom_apply {X Y : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] [DistribLattice Y]
+    [BoundedOrder Y] [Fintype Y]
+    (f : BoundedLatticeHom X Y) (x : X) :
+    (ofHom f) x = f x := rfl
+
+lemma inv_hom_apply {X Y : FinBddDistLat} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
+  simp
+
+lemma hom_inv_apply {X Y : FinBddDistLat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
+  simp
 
 instance : Inhabited FinBddDistLat :=
   ⟨of PUnit⟩
 
-instance largeCategory : LargeCategory FinBddDistLat :=
-  InducedCategory.category toBddDistLat
-
-instance hasForget : HasForget FinBddDistLat :=
-  InducedCategory.hasForget toBddDistLat
-
-instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat :=
-  InducedCategory.hasForget₂ FinBddDistLat.toBddDistLat
+instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat where
+  forget₂.obj X := .of X
+  forget₂.map f := BddDistLat.ofHom f.hom
 
 instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
-  forget₂.obj X := FinPartOrd.of X
-  forget₂.map {X Y} f := (show BoundedLatticeHom X Y from f : X →o Y)
+  forget₂.obj X := .of X
+  forget₂.map f := PartOrd.ofHom (OrderHomClass.toOrderHom f.hom)
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism
 between them. -/
 @[simps]
-def Iso.mk {α β : FinBddDistLat.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : BoundedLatticeHom α β)
-  inv := (e.symm : BoundedLatticeHom β α)
+def Iso.mk {α β : FinBddDistLat.{u}} (e : α.carrier ≃o β.carrier) : α ≅ β where
+  hom := ofHom e
+  inv := ofHom e.symm
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
-example {X Y : FinBddDistLat} : (X ⟶ Y) = BoundedLatticeHom X Y :=
-  rfl
-
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : FinBddDistLat ⥤ FinBddDistLat where
   obj X := of Xᵒᵈ
-  map {_ _} := BoundedLatticeHom.dual
+  map f := ofHom f.hom.dual
 
 /-- The equivalence between `FinBddDistLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
 def dualEquiv : FinBddDistLat ≌ FinBddDistLat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  unitIso := NatIso.ofComponents (fun X => Iso.mk (α := X) <| OrderIso.dualDual X)
+  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X)
 
 end FinBddDistLat
 

@@ -19,7 +19,7 @@ is either even or odd.
 
 The most familiar case is when `Φ` is a Dirichlet character, but the results here are valid
 for general functions; for the specific case of Dirichlet characters see
-`Mathlib.NumberTheory.LSeries.DirichletContinuation`.
+`Mathlib/NumberTheory/LSeries/DirichletContinuation.lean`.
 
 ## Main definitions
 
@@ -28,7 +28,7 @@ for general functions; for the specific case of Dirichlet characters see
   `LFunction Φ s` multiplied by an Archimedean Gamma-factor.
 
 Note that `ZMod.completedLFunction Φ s` is only mathematically well-defined if `Φ` is either even
-or odd. Here we extend it to all functions `Φ` by linearity  (but the functional equation only holds
+or odd. Here we extend it to all functions `Φ` by linearity (but the functional equation only holds
 if `Φ` is either even or odd).
 
 ## Main theorems
@@ -55,7 +55,7 @@ Results for completed L-functions:
   the functional equation relating `completedLFunction Φ (1 - s)` to `completedLFunction (𝓕 Φ) s`.
 -/
 
-open HurwitzZeta Complex ZMod Finset Classical Topology Filter Set
+open HurwitzZeta Complex ZMod Finset Topology Filter Set
 
 open scoped Real
 
@@ -66,7 +66,7 @@ variable {N : ℕ} [NeZero N]
 /-- If `Φ` is a periodic function, then the L-series of `Φ` converges for `1 < re s`. -/
 lemma LSeriesSummable_of_one_lt_re (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LSeriesSummable (Φ ·) s := by
-  let c := max' _ <| univ_nonempty.image (Complex.abs ∘ Φ)
+  let c := max' _ <| univ_nonempty.image (norm ∘ Φ)
   refine LSeriesSummable_of_bounded_of_one_lt_re (fun n _ ↦ le_max' _ _ ?_) (m := c) hs
   exact mem_image_of_mem _ (mem_univ _)
 
@@ -76,7 +76,7 @@ latter is convergent. This is constructed as a linear combination of Hurwitz zet
 
 Note that this is not the same as `LSeries Φ`: they agree in the convergence range, but
 `LSeries Φ s` is defined to be `0` if `re s ≤ 1`.
- -/
+-/
 noncomputable def LFunction (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
   N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZeta (toAddCircle j) s
 
@@ -120,8 +120,8 @@ lemma differentiableAt_LFunction (Φ : ZMod N → ℂ) (s : ℂ) (hs : s ≠ 1 �
     DifferentiableAt ℂ (LFunction Φ) s := by
   refine .mul (by fun_prop) ?_
   rcases ne_or_eq s 1 with hs' | rfl
-  · exact .sum fun j _ ↦ (differentiableAt_hurwitzZeta _ hs').const_mul _
-  · have := DifferentiableAt.sum (u := univ) fun j _ ↦
+  · exact .fun_sum fun j _ ↦ (differentiableAt_hurwitzZeta _ hs').const_mul _
+  · have := DifferentiableAt.fun_sum (u := univ) fun j _ ↦
       (differentiableAt_hurwitzZeta_sub_one_div (toAddCircle j)).const_mul (Φ j)
     simpa only [mul_sub, sum_sub_distrib, ← sum_mul, hs.neg_resolve_left rfl, zero_mul, sub_zero]
 
@@ -132,7 +132,7 @@ lemma differentiable_LFunction_of_sum_zero {Φ : ZMod N → ℂ} (hΦ : ∑ j, �
 /-- The L-function of `Φ` has a residue at `s = 1` equal to the average value of `Φ`. -/
 lemma LFunction_residue_one (Φ : ZMod N → ℂ) :
     Tendsto (fun s ↦ (s - 1) * LFunction Φ s) (𝓝[≠] 1) (𝓝 (∑ j, Φ j / N)) := by
-  simp only [sum_div, LFunction, mul_sum]
+  simp only [LFunction, mul_sum]
   refine tendsto_finset_sum _ fun j _ ↦ ?_
   rw [(by ring : Φ j / N = Φ j * (1 / N * 1)), one_div, ← cpow_neg_one]
   simp only [show ∀ a b c d : ℂ, a * (b * (c * d)) = c * (b * (a * d)) by intros; ring]
@@ -181,7 +181,7 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
     refine DifferentiableOn.analyticOnNhd (fun u hu ↦ ?_) hUo
     refine (differentiableAt_LFunction _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
     simp only [mul_comm j, AddChar.sum_mulShift _ (isPrimitive_stdAddChar _), h,
-      ↓reduceIte, CharP.cast_eq_zero, or_true]
+      ↓reduceIte, CharP.cast_eq_zero]
   have hg : AnalyticOnNhd ℂ g U := by
     refine DifferentiableOn.analyticOnNhd (fun u hu ↦ ?_) hUo
     refine (differentiableAt_expZeta _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
@@ -210,7 +210,7 @@ lemma LFunction_dft (Φ : ZMod N → ℂ) {s : ℂ} (hs : Φ 0 = 0 ∨ s ≠ 1) 
       rw [h.1, show Φ 0 = 0 by tauto, zero_mul, zero_mul]
   simp only [LFunction, ← this, mul_sum]
   rw [dft_def, sum_comm]
-  simp only [sum_mul, mul_sum, Circle.smul_def, smul_eq_mul, stdAddChar_apply, ← mul_assoc]
+  simp only [sum_mul, mul_sum, smul_eq_mul, stdAddChar_apply, ← mul_assoc]
   congr 1 with j
   congr 1 with k
   rw [mul_assoc (Φ _), mul_comm (Φ _), neg_mul]
@@ -222,7 +222,7 @@ theorem LFunction_one_sub (Φ : ZMod N → ℂ) {s : ℂ}
       (cexp (π * I * s / 2) * LFunction (𝓕 Φ) s
        + cexp (-π * I * s / 2) * LFunction (𝓕 fun x ↦ Φ (-x)) s) := by
   rw [LFunction]
-  have (j : ZMod N) :  Φ j * hurwitzZeta (toAddCircle j) (1 - s) = Φ j *
+  have (j : ZMod N) : Φ j * hurwitzZeta (toAddCircle j) (1 - s) = Φ j *
       ((2 * π) ^ (-s) * Gamma s * (cexp (-π * I * s / 2) *
       expZeta (toAddCircle j) s + cexp (π * I * s / 2) * expZeta (-toAddCircle j) s)) := by
     rcases eq_or_ne j 0 with rfl | hj
@@ -250,7 +250,7 @@ lemma LFunction_def_even (hΦ : Φ.Even) (s : ℂ) :
     LFunction Φ s = N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZetaEven (toAddCircle j) s := by
   simp only [LFunction, hurwitzZeta, mul_add (Φ _), sum_add_distrib]
   congr 1
-  simp only [add_right_eq_self, ← neg_eq_self ℂ, ← sum_neg_distrib]
+  simp only [add_eq_left, ← neg_eq_self, ← sum_neg_distrib]
   refine Fintype.sum_equiv (.neg _) _ _ fun i ↦ ?_
   simp only [Equiv.neg_apply, hΦ i, map_neg, hurwitzZetaOdd_neg, mul_neg]
 
@@ -258,7 +258,7 @@ lemma LFunction_def_odd (hΦ : Φ.Odd) (s : ℂ) :
     LFunction Φ s = N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZetaOdd (toAddCircle j) s := by
   simp only [LFunction, hurwitzZeta, mul_add (Φ _), sum_add_distrib]
   congr 1
-  simp only [add_left_eq_self, ← neg_eq_self ℂ, ← sum_neg_distrib]
+  simp only [add_eq_right, ← neg_eq_self, ← sum_neg_distrib]
   refine Fintype.sum_equiv (.neg _) _ _ fun i ↦ ?_
   simp only [Equiv.neg_apply, hΦ i, map_neg, hurwitzZetaEven_neg, neg_mul]
 
@@ -335,7 +335,7 @@ noncomputable def completedLFunction₀ (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
 lemma differentiable_completedLFunction₀ (Φ : ZMod N → ℂ) :
     Differentiable ℂ (completedLFunction₀ Φ) := by
   refine .add ?_ ?_ <;>
-  refine .mul (by fun_prop) (.sum fun i _ ↦ .const_mul ?_ _)
+  refine .mul (by fun_prop) (.fun_sum fun i _ ↦ .const_mul ?_ _)
   exacts [differentiable_completedHurwitzZetaEven₀ _, differentiable_completedHurwitzZetaOdd _]
 
 lemma completedLFunction_eq (Φ : ZMod N → ℂ) (s : ℂ) :

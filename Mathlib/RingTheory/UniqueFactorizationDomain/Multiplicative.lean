@@ -15,6 +15,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   primes `p`, and `f` is multiplicative on coprime elements, then `f` is multiplicative everywhere.
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -54,14 +55,15 @@ theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → �
     (hcp : ∀ {x y}, IsRelPrime x y → P x → P y → P (x * y)) :
     P (∏ p ∈ s, p ^ i p) := by
   letI := Classical.decEq α
-  induction' s using Finset.induction_on with p f' hpf' ih
-  · simpa using h1 isUnit_one
-  rw [Finset.prod_insert hpf']
-  exact
-    hcp (prime_pow_coprime_prod_of_coprime_insert i p hpf' is_prime is_coprime)
-      (hpr (i p) (is_prime _ (Finset.mem_insert_self _ _)))
-      (ih (fun q hq => is_prime _ (Finset.mem_insert_of_mem hq)) fun q hq q' hq' =>
-        is_coprime _ (Finset.mem_insert_of_mem hq) _ (Finset.mem_insert_of_mem hq'))
+  induction s using Finset.induction_on with
+  | empty => simpa using h1 isUnit_one
+  | insert p f' hpf' ih =>
+    rw [Finset.prod_insert hpf']
+    exact
+      hcp (prime_pow_coprime_prod_of_coprime_insert i p hpf' is_prime is_coprime)
+        (hpr (i p) (is_prime _ (Finset.mem_insert_self _ _)))
+        (ih (fun q hq => is_prime _ (Finset.mem_insert_of_mem hq)) fun q hq q' hq' =>
+          is_coprime _ (Finset.mem_insert_of_mem hq) _ (Finset.mem_insert_of_mem hq'))
 
 /-- If `P` holds for `0`, units and powers of primes,
 and `P x ∧ P y` for coprime `x, y` implies `P (x * y)`,
@@ -93,16 +95,17 @@ theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α →
     (hcp : ∀ {x y}, IsRelPrime x y → f (x * y) = f x * f y) :
     f (∏ p ∈ s, p ^ (i p + j p)) = f (∏ p ∈ s, p ^ i p) * f (∏ p ∈ s, p ^ j p) := by
   letI := Classical.decEq α
-  induction' s using Finset.induction_on with p s hps ih
-  · simpa using h1 isUnit_one
-  have hpr_p := is_prime _ (Finset.mem_insert_self _ _)
-  have hpr_s : ∀ p ∈ s, Prime p := fun p hp => is_prime _ (Finset.mem_insert_of_mem hp)
-  have hcp_p := fun i => prime_pow_coprime_prod_of_coprime_insert i p hps is_prime is_coprime
-  have hcp_s : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q := fun p hp q hq =>
-    is_coprime p (Finset.mem_insert_of_mem hp) q (Finset.mem_insert_of_mem hq)
-  rw [Finset.prod_insert hps, Finset.prod_insert hps, Finset.prod_insert hps, hcp (hcp_p _),
-    hpr _ hpr_p, hcp (hcp_p _), hpr _ hpr_p, hcp (hcp_p (fun p => i p + j p)), hpr _ hpr_p,
-    ih hpr_s hcp_s, pow_add, mul_assoc, mul_left_comm (f p ^ j p), mul_assoc]
+  induction s using Finset.induction_on with
+  | empty => simpa using h1 isUnit_one
+  | insert p s hps ih =>
+    have hpr_p := is_prime _ (Finset.mem_insert_self _ _)
+    have hpr_s : ∀ p ∈ s, Prime p := fun p hp => is_prime _ (Finset.mem_insert_of_mem hp)
+    have hcp_p := fun i => prime_pow_coprime_prod_of_coprime_insert i p hps is_prime is_coprime
+    have hcp_s : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q := fun p hp q hq =>
+      is_coprime p (Finset.mem_insert_of_mem hp) q (Finset.mem_insert_of_mem hq)
+    rw [Finset.prod_insert hps, Finset.prod_insert hps, Finset.prod_insert hps, hcp (hcp_p _),
+      hpr _ hpr_p, hcp (hcp_p _), hpr _ hpr_p, hcp (hcp_p (fun p => i p + j p)), hpr _ hpr_p,
+      ih hpr_s hcp_s, pow_add, mul_assoc, mul_left_comm (f p ^ j p), mul_assoc]
 
 /-- If `f` maps `p ^ i` to `(f p) ^ i` for primes `p`, and `f`
 is multiplicative on coprime elements, then `f` is multiplicative everywhere. -/

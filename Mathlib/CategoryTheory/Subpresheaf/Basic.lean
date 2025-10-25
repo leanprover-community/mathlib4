@@ -1,19 +1,16 @@
 /-
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
+Authors: Andrew Yang, Joël Riou
 -/
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Sites.IsSheafFor
-
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 
 # Subpresheaf of types
 
-We define the subpresheaf of a type valued presheaf.
+We define the subpresheaf of a type-valued presheaf.
 
 ## Main results
 
@@ -36,28 +33,110 @@ compatible with the restriction maps `F.map i`. -/
 @[ext]
 structure Subpresheaf (F : Cᵒᵖ ⥤ Type w) where
   /-- If `G` is a sub-presheaf of `F`, then the sections of `G` on `U` forms a subset of sections of
-    `F` on `U`. -/
+  `F` on `U`. -/
   obj : ∀ U, Set (F.obj U)
   /-- If `G` is a sub-presheaf of `F` and `i : U ⟶ V`, then for each `G`-sections on `U` `x`,
-    `F i x` is in `F(V)`. -/
+  `F i x` is in `F(V)`. -/
   map : ∀ {U V : Cᵒᵖ} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
-
-@[deprecated (since := "2025-01-08")] alias GrothendieckTopology.Subpresheaf := Subpresheaf
 
 variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 
 instance : PartialOrder (Subpresheaf F) :=
   PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
 
-instance : Top (Subpresheaf F) :=
-  ⟨⟨fun _ => ⊤, @fun U _ _ x _ => by simp⟩⟩
+instance : CompleteLattice (Subpresheaf F) where
+  sup F G :=
+    { obj U := F.obj U ⊔ G.obj U
+      map _ _ := by
+        rintro (h|h)
+        · exact Or.inl (F.map _ h)
+        · exact Or.inr (G.map _ h) }
+  le_sup_left _ _ _ := by simp
+  le_sup_right _ _ _ := by simp
+  sup_le F G H h₁ h₂ U := by
+    rintro x (h|h)
+    · exact h₁ _ h
+    · exact h₂ _ h
+  inf S T :=
+    { obj U := S.obj U ⊓ T.obj U
+      map _ _ h := ⟨S.map _ h.1, T.map _ h.2⟩}
+  inf_le_left _ _ _ _ h := h.1
+  inf_le_right _ _ _ _ h := h.2
+  le_inf _ _ _ h₁ h₂ _ _ h := ⟨h₁ _ h, h₂ _ h⟩
+  sSup S :=
+    { obj U := sSup (Set.image (fun T ↦ T.obj U) S)
+      map f x hx := by
+        obtain ⟨_, ⟨F, h, rfl⟩, h'⟩ := hx
+        simp only [Set.sSup_eq_sUnion, Set.sUnion_image, Set.preimage_iUnion,
+          Set.mem_iUnion, Set.mem_preimage, exists_prop]
+        exact ⟨_, h, F.map f h'⟩ }
+  le_sSup _ _ _ _ _ := by aesop
+  sSup_le _ _ _ _ _ := by aesop
+  sInf S :=
+    { obj U := sInf (Set.image (fun T ↦ T.obj U) S)
+      map f x hx := by
+        rintro _ ⟨F, h, rfl⟩
+        exact F.map f (hx _ ⟨_, h, rfl⟩) }
+  sInf_le _ _ _ _ _ := by aesop
+  le_sInf _ _ _ _ _ := by aesop
+  bot :=
+    { obj U := ⊥
+      map := by simp }
+  bot_le _ _ := bot_le
+  top :=
+    { obj U := ⊤
+      map := by simp }
+  le_top _ _ := le_top
+
+namespace Subpresheaf
+
+lemma le_def (S T : Subpresheaf F) : S ≤ T ↔ ∀ U, S.obj U ≤ T.obj U := Iff.rfl
+
+variable (F)
+
+@[simp] lemma top_obj (i : Cᵒᵖ) : (⊤ : Subpresheaf F).obj i = ⊤ := rfl
+@[simp] lemma bot_obj (i : Cᵒᵖ) : (⊥ : Subpresheaf F).obj i = ⊥ := rfl
+
+variable {F}
+
+lemma sSup_obj (S : Set (Subpresheaf F)) (U : Cᵒᵖ) :
+    (sSup S).obj U = sSup (Set.image (fun T ↦ T.obj U) S) := rfl
+
+lemma sInf_obj (S : Set (Subpresheaf F)) (U : Cᵒᵖ) :
+    (sInf S).obj U = sInf (Set.image (fun T ↦ T.obj U) S) := rfl
+
+@[simp]
+lemma iSup_obj {ι : Type*} (S : ι → Subpresheaf F) (U : Cᵒᵖ) :
+    (⨆ i, S i).obj U = ⋃ i, (S i).obj U := by
+  simp [iSup, sSup_obj]
+
+@[simp]
+lemma iInf_obj {ι : Type*} (S : ι → Subpresheaf F) (U : Cᵒᵖ) :
+    (⨅ i, S i).obj U = ⋂ i, (S i).obj U := by
+  simp [iInf, sInf_obj]
+
+@[simp]
+lemma max_obj (S T : Subpresheaf F) (i : Cᵒᵖ) :
+    (S ⊔ T).obj i = S.obj i ∪ T.obj i := rfl
+
+@[simp]
+lemma min_obj (S T : Subpresheaf F) (i : Cᵒᵖ) :
+    (S ⊓ T).obj i = S.obj i ∩ T.obj i := rfl
+
+lemma max_min (S₁ S₂ T : Subpresheaf F) :
+    (S₁ ⊔ S₂) ⊓ T = (S₁ ⊓ T) ⊔ (S₂ ⊓ T) := by
+  aesop
+
+lemma iSup_min {ι : Type*} (S : ι → Subpresheaf F) (T : Subpresheaf F) :
+    (⨆ i, S i) ⊓ T = ⨆ i, S i ⊓ T := by
+  aesop
 
 instance : Nonempty (Subpresheaf F) :=
   inferInstance
 
 /-- The subpresheaf as a presheaf. -/
 @[simps!]
-def Subpresheaf.toPresheaf : Cᵒᵖ ⥤ Type w where
+def toPresheaf : Cᵒᵖ ⥤ Type w where
   obj U := G.obj U
   map := @fun _ _ i x => ⟨F.map i x, G.map i x.prop⟩
   map_id X := by
@@ -74,7 +153,7 @@ instance {U} : CoeHead (G.toPresheaf.obj U) (F.obj U) where
 
 /-- The inclusion of a subpresheaf to the original presheaf. -/
 @[simps]
-def Subpresheaf.ι : G.toPresheaf ⟶ F where app _ x := x
+def ι : G.toPresheaf ⟶ F where app _ x := x
 
 instance : Mono G.ι :=
   ⟨@fun _ _ _ e =>
@@ -83,7 +162,7 @@ instance : Mono G.ι :=
 
 /-- The inclusion of a subpresheaf to a larger subpresheaf -/
 @[simps]
-def Subpresheaf.homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf where
+def homOfLe {G G' : Subpresheaf F} (h : G ≤ G') : G.toPresheaf ⟶ G'.toPresheaf where
   app U x := ⟨x, h U x.prop⟩
 
 instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
@@ -94,7 +173,7 @@ instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
           Subtype.ext <| (congr_arg Subtype.val <| (congr_fun (congr_app e U) x :) :)⟩
 
 @[reassoc (attr := simp)]
-theorem Subpresheaf.homOfLe_ι {G G' : Subpresheaf F} (h : G ≤ G') :
+theorem homOfLe_ι {G G' : Subpresheaf F} (h : G ≤ G') :
     Subpresheaf.homOfLe h ≫ G'.ι = G.ι := by
   ext
   rfl
@@ -105,7 +184,8 @@ instance : IsIso (Subpresheaf.ι (⊤ : Subpresheaf F)) := by
   rw [isIso_iff_bijective]
   exact ⟨Subtype.coe_injective, fun x => ⟨⟨x, _root_.trivial⟩, rfl⟩⟩
 
-theorem Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
   constructor
   · rintro rfl
     infer_instance
@@ -115,94 +195,10 @@ theorem Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
     rw [← IsIso.inv_hom_id_apply (G.ι.app U) x]
     exact ((inv (G.ι.app U)) x).2
 
-/-- If the image of a morphism falls in a subpresheaf, then the morphism factors through it. -/
-@[simps!]
-def Subpresheaf.lift (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : F' ⟶ G.toPresheaf where
-  app U x := ⟨f.app U x, hf U x⟩
-  naturality := by
-    have := elementwise_of% f.naturality
-    intros
-    refine funext fun x => Subtype.ext ?_
-    simp only [toPresheaf_obj, types_comp_apply]
-    exact this _ _
-
-@[reassoc (attr := simp)]
-theorem Subpresheaf.lift_ι (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) :
-    G.lift f hf ≫ G.ι = f := by
-  ext
-  rfl
-
-/-- Given a subpresheaf `G` of `F`, an `F`-section `s` on `U`, we may define a sieve of `U`
-consisting of all `f : V ⟶ U` such that the restriction of `s` along `f` is in `G`. -/
-@[simps]
-def Subpresheaf.sieveOfSection {U : Cᵒᵖ} (s : F.obj U) : Sieve (unop U) where
-  arrows V f := F.map f.op s ∈ G.obj (op V)
-  downward_closed := @fun V W i hi j => by
-    simp only [op_unop, op_comp, FunctorToTypes.map_comp_apply]
-    exact G.map _ hi
-
-/-- Given an `F`-section `s` on `U` and a subpresheaf `G`, we may define a family of elements in
-`G` consisting of the restrictions of `s` -/
-def Subpresheaf.familyOfElementsOfSection {U : Cᵒᵖ} (s : F.obj U) :
-    (G.sieveOfSection s).1.FamilyOfElements G.toPresheaf := fun _ i hi => ⟨F.map i.op s, hi⟩
-
-theorem Subpresheaf.family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
-    (G.familyOfElementsOfSection s).Compatible := by
-  intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ e
-  refine Subtype.ext ?_ -- Porting note: `ext1` does not work here
-  change F.map g₁.op (F.map f₁.op s) = F.map g₂.op (F.map f₂.op s)
-  rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp, e]
-
-theorem Subpresheaf.nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : Cᵒᵖ} (i : U ⟶ V)
+theorem nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : Cᵒᵖ} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congr_arg Subtype.val (FunctorToTypes.naturality _ _ f i x)
 
-section Image
-
-/-- The image presheaf of a morphism, whose components are the set-theoretic images. -/
-@[simps]
-def imagePresheaf (f : F' ⟶ F) : Subpresheaf F where
-  obj U := Set.range (f.app U)
-  map := by
-    rintro U V i _ ⟨x, rfl⟩
-    have := elementwise_of% f.naturality
-    exact ⟨_, this i x⟩
-
-@[simp]
-theorem top_subpresheaf_obj (U) : (⊤ : Subpresheaf F).obj U = ⊤ :=
-  rfl
-
-@[simp]
-theorem imagePresheaf_id : imagePresheaf (𝟙 F) = ⊤ := by
-  ext
-  simp
-
-/-- A morphism factors through the image presheaf. -/
-@[simps!]
-def toImagePresheaf (f : F' ⟶ F) : F' ⟶ (imagePresheaf f).toPresheaf :=
-  (imagePresheaf f).lift f fun _ _ => Set.mem_range_self _
-
-@[reassoc (attr := simp)]
-theorem toImagePresheaf_ι (f : F' ⟶ F) : toImagePresheaf f ≫ (imagePresheaf f).ι = f :=
-  (imagePresheaf f).lift_ι _ _
-
-theorem imagePresheaf_comp_le (f₁ : F ⟶ F') (f₂ : F' ⟶ F'') :
-    imagePresheaf (f₁ ≫ f₂) ≤ imagePresheaf f₂ := fun U _ hx => ⟨f₁.app U hx.choose, hx.choose_spec⟩
-
-instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ Type w} (f : F ⟶ F') [hf : Mono f] :
-  IsIso (toImagePresheaf f) := by
-  have : ∀ (X : Cᵒᵖ), IsIso ((toImagePresheaf f).app X) := by
-    intro X
-    rw [isIso_iff_bijective]
-    constructor
-    · intro x y e
-      have := (NatTrans.mono_iff_mono_app f).mp hf X
-      rw [mono_iff_injective] at this
-      exact this (congr_arg Subtype.val e :)
-    · rintro ⟨_, ⟨x, rfl⟩⟩
-      exact ⟨x, rfl⟩
-  apply NatIso.isIso_of_isIso_app
-
-end Image
+end Subpresheaf
 
 end CategoryTheory

@@ -3,7 +3,6 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.Basic
@@ -21,7 +20,7 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 * `RingHom`: (Semi)ring homomorphisms. Monoid homomorphisms which are also additive monoid
   homomorphism.
 
-## Notations
+## Notation
 
 * `→ₙ+*`: Non-unital (semi)ring homs
 * `→+*`: (Semi)ring homs
@@ -42,7 +41,7 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 `RingHom`, `SemiringHom`
 -/
 
-assert_not_exists Function.Injective.mulZeroClass semigroupDvd Units.map Set.range
+assert_not_exists Function.Injective.mulZeroClass semigroupDvd Units.map
 
 open Function
 
@@ -74,8 +73,8 @@ section NonUnitalRingHomClass
 /-- `NonUnitalRingHomClass F α β` states that `F` is a type of non-unital (semi)ring
 homomorphisms. You should extend this class when you extend `NonUnitalRingHom`. -/
 class NonUnitalRingHomClass (F : Type*) (α β : outParam Type*) [NonUnitalNonAssocSemiring α]
-  [NonUnitalNonAssocSemiring β] [FunLike F α β]
-  extends MulHomClass F α β, AddMonoidHomClass F α β : Prop
+  [NonUnitalNonAssocSemiring β] [FunLike F α β] : Prop
+  extends MulHomClass F α β, AddMonoidHomClass F α β
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [FunLike F α β]
 variable [NonUnitalRingHomClass F α β]
@@ -112,8 +111,6 @@ instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
   map_add := NonUnitalRingHom.map_add'
   map_zero := NonUnitalRingHom.map_zero'
   map_mul f := f.map_mul'
-
--- Porting note: removed due to new `coe` in Lean4
 
 initialize_simps_projections NonUnitalRingHom (toFun → apply)
 
@@ -256,7 +253,6 @@ instance : MonoidWithZero (α →ₙ+* α) where
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc _ _ _ := comp_assoc _ _ _
-  zero := 0
   mul_zero := comp_zero
   zero_mul := zero_comp
 
@@ -321,8 +317,8 @@ This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though
 `MonoidWithZeroHomClass` already extends `MonoidHomClass`. -/
 class RingHomClass (F : Type*) (α β : outParam Type*)
-    [NonAssocSemiring α] [NonAssocSemiring β] [FunLike F α β]
-  extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β : Prop
+    [NonAssocSemiring α] [NonAssocSemiring β] [FunLike F α β] : Prop
+  extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β
 
 variable [FunLike F α β]
 
@@ -372,11 +368,6 @@ instance instRingHomClass : RingHomClass (α →+* β) α β where
 
 initialize_simps_projections RingHom (toFun → apply)
 
--- Porting note: is this lemma still needed in Lean4?
--- Porting note: because `f.toFun` really means `f.toMonoidHom.toOneHom.toFun` and
--- `toMonoidHom_eq_coe` wants to simplify `f.toMonoidHom` to `(↑f : M →* N)`, this can't
--- be a simp lemma anymore
--- @[simp]
 theorem toFun_eq_coe (f : α →+* β) : f.toFun = f :=
   rfl
 
@@ -394,22 +385,16 @@ attribute [coe] RingHom.toMonoidHom
 instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
   ⟨RingHom.toMonoidHom⟩
 
--- Porting note: `dsimp only` can prove this
-
 @[simp]
 theorem toMonoidHom_eq_coe (f : α →+* β) : f.toMonoidHom = f :=
   rfl
 
--- Porting note: this can't be a simp lemma anymore
--- @[simp]
 theorem toMonoidWithZeroHom_eq_coe (f : α →+* β) : (f.toMonoidWithZeroHom : α → β) = f := by
   rfl
 
 @[simp]
 theorem coe_monoidHom_mk (f : α →* β) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : α →+* β) : α →* β) = f :=
   rfl
-
--- Porting note: `dsimp only` can prove this
 
 @[simp]
 theorem toAddMonoidHom_eq_coe (f : α →+* β) : f.toAddMonoidHom = f :=
@@ -476,18 +461,6 @@ protected theorem map_add (f : α →+* β) : ∀ a b, f (a + b) = f a + f b :=
 /-- Ring homomorphisms preserve multiplication. -/
 protected theorem map_mul (f : α →+* β) : ∀ a b, f (a * b) = f a * f b :=
   map_mul f
-
-@[simp]
-theorem map_ite_zero_one {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F)
-    (p : Prop) [Decidable p] :
-    f (ite p 0 1) = ite p 0 1 := by
-  split_ifs with h <;> simp [h]
-
-@[simp]
-theorem map_ite_one_zero {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F)
-    (p : Prop) [Decidable p] :
-    f (ite p 1 0) = ite p 1 0 := by
-  split_ifs with h <;> simp [h]
 
 /-- `f : α →+* β` has a trivial codomain iff `f 1 = 0`. -/
 theorem codomain_trivial_iff_map_one_eq_zero : (0 : β) = 1 ↔ f 1 = 0 := by rw [map_one, eq_comm]
@@ -624,9 +597,6 @@ namespace AddMonoidHom
 
 variable [CommRing α] [IsDomain α] [CommRing β] (f : β →+ α)
 
--- Porting note: there's some disagreement over the naming scheme here.
--- This could perhaps be `mkRingHom_of_mul_self_of_two_ne_zero`.
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/naming.20conventions/near/315558410
 /-- Make a ring homomorphism from an additive group homomorphism from a commutative ring to an
 integral domain that commutes with self multiplication, assumes that two is nonzero and `1` is sent
 to `1`. -/

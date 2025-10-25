@@ -10,7 +10,7 @@ import Mathlib.Algebra.Module.Defs
 # Symmetrized algebra
 
 A commutative multiplication on a real or complex space can be constructed from any multiplication
-by "symmetrization" i.e
+by "symmetrization" i.e.
 $$
 a \circ b = \frac{1}{2}(ab + ba)
 $$
@@ -22,6 +22,10 @@ We provide the symmetrized version of a type `α` as `SymAlg α`, with notation 
 The approach taken here is inspired by `Mathlib/Algebra/Opposites.lean`. We use Oxford Spellings
 (IETF en-GB-oxendict).
 
+## Note
+
+See `SymmetricAlgebra` instead if you are looking for the symmetric algebra of a module.
+
 ## References
 
 * [Hanche-Olsen and Størmer, Jordan Operator Algebras][hancheolsenstormer1984]
@@ -30,8 +34,8 @@ The approach taken here is inspired by `Mathlib/Algebra/Opposites.lean`. We use 
 
 open Function
 
-/-- The symmetrized algebra has the same underlying space as the original algebra.
--/
+/-- The symmetrized algebra (denoted as `αˢʸᵐ`)
+has the same underlying space as the original algebra `α`. -/
 def SymAlg (α : Type*) : Type _ :=
   α
 
@@ -47,8 +51,7 @@ def sym : α ≃ αˢʸᵐ :=
   Equiv.refl _
 
 /-- The element of `α` represented by `x : αˢʸᵐ`. -/
--- Porting note (kmill): `pp_nodot` has no affect here
--- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
+-- We add `@[pp_nodot]` in case RFC https://github.com/leanprover/lean4/issues/6178 happens.
 @[pp_nodot]
 def unsym : αˢʸᵐ ≃ α :=
   Equiv.refl _
@@ -127,7 +130,7 @@ instance [Neg α] : Neg αˢʸᵐ where neg a := sym (-unsym a)
 
 -- Introduce the symmetrized multiplication
 instance [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] : Mul αˢʸᵐ where
-  mul a b := sym (⅟ 2 * (unsym a * unsym b + unsym b * unsym a))
+  mul a b := sym (⅟2 * (unsym a * unsym b + unsym b * unsym a))
 
 @[to_additive existing]
 instance [Inv α] : Inv αˢʸᵐ where inv a := sym <| (unsym a)⁻¹
@@ -167,13 +170,13 @@ theorem unsym_neg [Neg α] (a : αˢʸᵐ) : unsym (-a) = -unsym a :=
   rfl
 
 theorem mul_def [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : αˢʸᵐ) :
-    a * b = sym (⅟ 2 * (unsym a * unsym b + unsym b * unsym a)) := rfl
+    a * b = sym (⅟2 * (unsym a * unsym b + unsym b * unsym a)) := rfl
 
 theorem unsym_mul [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : αˢʸᵐ) :
-    unsym (a * b) = ⅟ 2 * (unsym a * unsym b + unsym b * unsym a) := rfl
+    unsym (a * b) = ⅟2 * (unsym a * unsym b + unsym b * unsym a) := rfl
 
 theorem sym_mul_sym [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : α) :
-    sym a * sym b = sym (⅟ 2 * (a * b + b * a)) :=
+    sym a * sym b = sym (⅟2 * (a * b + b * a)) :=
   rfl
 
 set_option linter.existingAttributeWarning false in
@@ -231,7 +234,7 @@ instance {R : Type*} [Semiring R] [AddCommMonoid α] [Module R α] : Module R α
 
 instance [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) [Invertible a] :
     Invertible (sym a) where
-  invOf := sym (⅟ a)
+  invOf := sym (⅟a)
   invOf_mul_self := by
     rw [sym_mul_sym, mul_invOf_self, invOf_mul_self, one_add_one_eq_two, invOf_mul_self, sym_one]
   mul_invOf_self := by
@@ -239,13 +242,11 @@ instance [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) [Invertib
 
 @[simp]
 theorem invOf_sym [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) [Invertible a] :
-    ⅟ (sym a) = sym (⅟ a) :=
+    ⅟(sym a) = sym (⅟a) :=
   rfl
 
 instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring αˢʸᵐ :=
   { SymAlg.addCommMonoid with
-    one := 1
-    mul := (· * ·)
     zero_mul := fun _ => by
       rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
         mul_zero, sym_zero]
@@ -257,13 +258,11 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
     one_mul := fun _ => by
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_cancel_left, sym_unsym]
     left_distrib := fun a b c => by
-      -- Porting note: rewrote previous proof which used `match` in a way that seems unsupported.
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]
       abel
     right_distrib := fun a b c => by
-      -- Porting note: rewrote previous proof which used `match` in a way that seems unsupported.
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]
@@ -293,37 +292,31 @@ instance [Ring α] [Invertible (2 : α)] : CommMagma αˢʸᵐ where
 instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
   lmul_comm_rmul_rmul a b := by
     have commute_half_left := fun a : α => by
-      -- Porting note: mathlib3 used `bit0_left`
       have := (Commute.one_left a).add_left (Commute.one_left a)
       rw [one_add_one_eq_two] at this
       exact this.invOf_left.eq
-
-    -- Porting note: introduced `calc` block to make more robust
     calc a * b * (a * a)
       _ = sym (⅟2 * ⅟2 * (unsym a * unsym b * unsym (a * a) +
           unsym b * unsym a * unsym (a * a) +
           unsym (a * a) * unsym a * unsym b +
           unsym (a * a) * unsym b * unsym a)) := ?_
-      _ = sym (⅟ 2 * (unsym a *
-          unsym (sym (⅟ 2 * (unsym b * unsym (a * a) + unsym (a * a) * unsym b))) +
-          unsym (sym (⅟ 2 * (unsym b * unsym (a * a) + unsym (a * a) * unsym b))) * unsym a)) := ?_
+      _ = sym (⅟2 * (unsym a *
+          unsym (sym (⅟2 * (unsym b * unsym (a * a) + unsym (a * a) * unsym b))) +
+          unsym (sym (⅟2 * (unsym b * unsym (a * a) + unsym (a * a) * unsym b))) * unsym a)) := ?_
       _ = a * (b * (a * a)) := ?_
-
     -- Rearrange LHS
     · rw [mul_def, mul_def a b, unsym_sym, ← mul_assoc, ← commute_half_left (unsym (a * a)),
         mul_assoc, mul_assoc, ← mul_add, ← mul_assoc, add_mul, mul_add (unsym (a * a)),
         ← add_assoc, ← mul_assoc, ← mul_assoc]
-
-    · rw [unsym_sym, sym_inj, ← mul_assoc, ← commute_half_left (unsym a), mul_assoc (⅟ 2) (unsym a),
-        mul_assoc (⅟ 2) _ (unsym a), ← mul_add, ← mul_assoc]
+    · rw [unsym_sym, sym_inj, ← mul_assoc, ← commute_half_left (unsym a), mul_assoc (⅟2) (unsym a),
+        mul_assoc (⅟2) _ (unsym a), ← mul_add, ← mul_assoc]
       conv_rhs => rw [mul_add (unsym a)]
       rw [add_mul, ← add_assoc, ← mul_assoc, ← mul_assoc]
       rw [unsym_mul_self]
       rw [← mul_assoc, ← mul_assoc, ← mul_assoc, ← mul_assoc, ← sub_eq_zero, ← mul_sub]
-      convert mul_zero (⅟ (2 : α) * ⅟ (2 : α))
+      convert mul_zero (⅟(2 : α) * ⅟(2 : α))
       rw [add_sub_add_right_eq_sub, add_assoc, add_assoc, add_sub_add_left_eq_sub, add_comm,
         add_sub_add_right_eq_sub, sub_eq_zero]
-
     -- Rearrange RHS
     · rw [← mul_def, ← mul_def]
 

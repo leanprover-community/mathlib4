@@ -25,8 +25,6 @@ universe w w' v u
 
 open CategoryTheory Opposite Limits regularTopology ContinuousMap Topology
 
-attribute [local instance] HasForget.instFunLike
-
 variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{w})
   (X : Type w') [TopologicalSpace X]
 
@@ -79,7 +77,7 @@ theorem equalizerCondition_yonedaPresheaf
       MapToEqualizer, Set.mem_setOf_eq, Subtype.mk.injEq]
     simp only [yonedaPresheaf, unop_op] at a
     refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), ?_⟩
-    congr
+    congr 1
     exact DFunLike.ext'_iff.mp ((hq Z B π).lift_comp a (factorsThrough_of_pullbackCondition G X ha))
 
 /--
@@ -113,7 +111,7 @@ def TopCat.toSheafCompHausLike :
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
       (CompHausLike.compHausLikeToTop.{u} P) X
     intro Z B π he
-    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.continuous
+    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.hom.continuous
 
 /--
 `TopCat.toSheafCompHausLike` yields a functor from `TopCat.{max u w}` to
@@ -124,7 +122,7 @@ noncomputable def topCatToSheafCompHausLike :
     have := CompHausLike.preregular hs
     TopCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
   obj X := X.toSheafCompHausLike P hs
-  map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩
+  map f := ⟨⟨fun _ g ↦ f.hom.comp g, by aesop⟩⟩
 
 end
 
@@ -132,7 +130,7 @@ end
 Associate to a `(u+1)`-small topological space the corresponding condensed set, given by
 `yonedaPresheaf`.
 -/
-noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
+noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u + 1}) : CondensedSet.{u} :=
   toSheafCompHausLike.{u+1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /--
