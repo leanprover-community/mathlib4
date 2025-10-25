@@ -93,6 +93,22 @@ theorem iff_comp_injective :
       apply RingHom.kerLift_injective (TensorProduct.lmul' R (S := A)).kerSquareLift.toRingHom
       simpa using DFunLike.congr_fun (f₁.2.trans f₂.2.symm) x
 
+/-- A variant where the universes matches those of `FormallyEtale.iff_comp_bijective`. -/
+theorem iff_comp_injective' :
+    FormallyUnramified R A ↔
+      ∀ ⦃B : Type max u v⦄ [CommRing B],
+        ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
+          Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
+  constructor
+  · intros; exact comp_injective _ ‹_›
+  · intro H
+    refine iff_comp_injective.mpr fun B _ _ I hI f g e ↦ ?_
+    have := H (B := ULift B) (I.comap ULift.ringEquiv)
+      (by rw [← Ideal.map_symm, ← Ideal.map_pow, hI]; simp)
+      (a₁ := ULift.algEquiv.symm.toAlgHom.comp f) (a₂ := ULift.algEquiv.symm.toAlgHom.comp g)
+      (by simpa [DFunLike.ext_iff, Ideal.Quotient.mk_eq_mk_iff_sub_mem, ← map_sub] using e)
+    simpa [DFunLike.ext_iff] using this
+
 theorem lift_unique
     [FormallyUnramified R A] (I : Ideal B) (hI : IsNilpotent I) (g₁ g₂ : A →ₐ[R] B)
     (h : (Ideal.Quotient.mkₐ R I).comp g₁ = (Ideal.Quotient.mkₐ R I).comp g₂) : g₁ = g₂ := by

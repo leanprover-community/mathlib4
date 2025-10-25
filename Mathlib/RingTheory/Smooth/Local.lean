@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.RingTheory.Smooth.Kaehler
+import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
@@ -22,8 +22,8 @@ and `I` is finitely generated.
 Then `S` is formally smooth iff `k ⊗ₛ I/I² → k ⊗ₚ Ω[P/R]` is injective,
 where `k` is the residue field of `S`.
 -/
-theorem Algebra.FormallySmooth.iff_injective_lTensor_residueField {R S} [CommRing R]
-    [CommRing S] [IsLocalRing S] [Algebra R S] (P : Algebra.Extension R S)
+theorem Algebra.FormallySmooth.iff_injective_lTensor_residueField.{u} {R S : Type*} [CommRing R]
+    [CommRing S] [IsLocalRing S] [Algebra R S] (P : Algebra.Extension.{u} R S)
     [FormallySmooth R P.Ring]
     [Module.Free P.Ring Ω[P.Ring⁄R]] [Module.Finite P.Ring Ω[P.Ring⁄R]]
     (h' : P.ker.FG) :

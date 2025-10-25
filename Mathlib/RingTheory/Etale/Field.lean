@@ -32,7 +32,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 universe u
 
-variable (K L A : Type u) [Field K] [Field L] [CommRing A] [Algebra K L] [Algebra K A]
+variable (K L : Type*) (A : Type u) [Field K] [Field L] [CommRing A] [Algebra K L] [Algebra K A]
 
 open Algebra Polynomial
 
@@ -52,10 +52,9 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
   -- IsSeparable + EssFiniteType => FormallyUnramified + Finite
   have := FormallyUnramified.of_isSeparable K L
   have := FormallyUnramified.finite_of_free (R := K) (S := L)
-  constructor
   -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`
-  intro B _ _ I h
-  refine ⟨FormallyUnramified.iff_comp_injective.mp (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
+  refine FormallyEtale.iff_comp_bijective.mpr fun B _ _ I h ↦ ?_
+  refine ⟨FormallyUnramified.iff_comp_injective'.mp (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
   intro f
   -- By separability and finiteness, we may assume `L = K(α)` with `p` the minpoly of `α`.
   let pb := Field.powerBasisOfFiniteOfSeparable K L
@@ -89,12 +88,11 @@ theorem of_isSeparable_aux [Algebra.IsSeparable K L] [EssFiniteType K L] :
 
 open scoped IntermediateField in
 lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
-  constructor
-  intro B _ _ I h
   -- We shall show that any `f : L → B/I` can be lifted to `L → B` if `I^2 = ⊥`.
+  refine FormallyEtale.iff_comp_bijective.mpr fun B _ _ I h ↦ ?_
   -- But we already know that there exists a unique lift for every finite subfield of `L`
   -- by `of_isSeparable_aux`, so we can glue them all together.
-  refine ⟨FormallyUnramified.iff_comp_injective.mp (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
+  refine ⟨FormallyUnramified.iff_comp_injective'.mp (FormallyUnramified.of_isSeparable K L) I h, ?_⟩
   intro f
   have : ∀ k : L, ∃! g : K⟮k⟯ →ₐ[K] B,
       (Ideal.Quotient.mkₐ K I).comp g = f.comp (IsScalarTower.toAlgHom K _ L) := by
