@@ -175,6 +175,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
+import Mathlib.Algebra.Category.ModuleCat.Semi
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
@@ -4032,6 +4033,7 @@ import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.Congruence.BigOperators
 import Mathlib.GroupTheory.Congruence.Defs
 import Mathlib.GroupTheory.Congruence.Hom
+import Mathlib.GroupTheory.Congruence.Module
 import Mathlib.GroupTheory.Congruence.Opposite
 import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.CoprodI

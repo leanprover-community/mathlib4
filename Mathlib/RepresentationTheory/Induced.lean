@@ -184,8 +184,7 @@ noncomputable def coinvariantsTensorIndHom :
       fun s => by ext; simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff]
         using Coinvariants.sub_mem_ker s _)
       fun _ => by
-        simp only [MonoidalCategory.curriedTensor_obj_obj, Action.tensorObj_V,
-          tensorObj_def, tensorObj]
+        simp only [MonoidalCategory.curriedTensor_obj_obj, Action.tensorObj_V, tensorObj_carrier]
         ext
         simp
 
@@ -193,8 +192,7 @@ variable {A B} in
 lemma coinvariantsTensorIndHom_mk_tmul_indVMk (h : H) (x : A) (y : B) :
     coinvariantsTensorIndHom φ A B (coinvariantsTensorMk _ _ (IndV.mk φ _ h x) y) =
       coinvariantsTensorMk _ _ x (B.ρ h y) := by
-  simp [tensorObj_def, ModuleCat.MonoidalCategory.tensorObj, coinvariantsTensorIndHom,
-    coinvariantsTensorMk]
+  simp [tensorObj_carrier, coinvariantsTensorIndHom, coinvariantsTensorMk]
 
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
 `(A ⊗ Res(φ)(B))_G ⟶ (Ind(φ)(A) ⊗ B))_H` sending `⟦a ⊗ₜ b⟧` to `⟦1 ⊗ₜ a⟧ ⊗ₜ b` for all
@@ -205,8 +203,7 @@ noncomputable def coinvariantsTensorIndInv :
   ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <|
       (coinvariantsTensorMk (ind φ A) B) ∘ₗ IndV.mk _ _ 1)
     fun s => by
-      simp only [MonoidalCategory.curriedTensor_obj_obj, tensorObj_def,
-        tensorObj, Action.tensorObj_V]
+      simp only [MonoidalCategory.curriedTensor_obj_obj, tensorObj_carrier, Action.tensorObj_V]
       ext x y
       simpa [Coinvariants.mk_eq_iff, coinvariantsTensorMk] using
         Coinvariants.mem_ker_of_eq (φ s) (IndV.mk φ A.ρ (1 : H) x ⊗ₜ[k] y) _
@@ -217,7 +214,7 @@ lemma coinvariantsTensorIndInv_mk_tmul_indMk (x : A) (y : B) :
     coinvariantsTensorIndInv φ A B (Coinvariants.mk
       (A.ρ.tprod (Rep.ρ ((Action.res _ φ).obj B))) <| x ⊗ₜ y) =
       coinvariantsTensorMk _ _ (IndV.mk φ _ 1 x) y := by
-  simp [tensorObj_def, tensorObj, coinvariantsTensorIndInv, coinvariantsTensorMk]
+  simp [tensorObj_carrier, coinvariantsTensorIndInv, coinvariantsTensorMk]
 
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear
 isomorphism `(Ind(φ)(A) ⊗ B))_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧`
@@ -230,12 +227,12 @@ noncomputable def coinvariantsTensorIndIso :
   inv := coinvariantsTensorIndInv φ A B
   hom_inv_id := by
     ext h a b
-    simpa [tensorObj_def, tensorObj, coinvariantsTensorIndInv, coinvariantsTensorMk,
+    simpa [tensorObj_carrier, coinvariantsTensorIndInv, coinvariantsTensorMk,
       coinvariantsTensorIndHom, Coinvariants.mk_eq_iff] using
         Coinvariants.mem_ker_of_eq h (IndV.mk φ _ h a ⊗ₜ[k] b) _ <| by simp
   inv_hom_id := by
     ext
-    simp [tensorObj_def, tensorObj, coinvariantsTensorIndInv, coinvariantsTensorMk,
+    simp [tensorObj_carrier, coinvariantsTensorIndInv, coinvariantsTensorMk,
       coinvariantsTensorIndHom]
 
 /-- Given a group hom `φ : G →* H` and `A : Rep k G`, the functor `Rep k H ⥤ ModuleCat k` sending
@@ -245,8 +242,8 @@ noncomputable def coinvariantsTensorIndNatIso :
     (coinvariantsTensor k H).obj (ind φ A) ≅ Action.res _ φ ⋙ (coinvariantsTensor k G).obj A :=
   NatIso.ofComponents (fun B => coinvariantsTensorIndIso φ A B) fun {X Y} f => by
     ext
-    simp [tensorObj_def, tensorObj, coinvariantsTensorIndHom, coinvariantsTensorMk,
-      whiskerLeft_def, ModuleCat.MonoidalCategory.whiskerLeft, hom_comm_apply]
+    simp [tensorObj_carrier, coinvariantsTensorIndHom, coinvariantsTensorMk,
+      whiskerLeft_def, hom_comm_apply]
 
 end
 end Rep
