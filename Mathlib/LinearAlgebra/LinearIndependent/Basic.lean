@@ -140,23 +140,14 @@ theorem LinearIndepOn.comp_of_image {s : Set ι'} {f : ι' → ι} (h : LinearIn
     (hf : InjOn f s) : LinearIndepOn R (v ∘ f) s :=
   LinearIndependent.comp h _ (Equiv.Set.imageOfInjOn _ _ hf).injective
 
-@[deprecated (since := "2025-02-14")] alias
-  LinearIndependent.comp_of_image := LinearIndepOn.comp_of_image
-
 theorem LinearIndepOn.image_of_comp (f : ι → ι') (g : ι' → M) (hs : LinearIndepOn R (g ∘ f) s) :
     LinearIndepOn R g (f '' s) := by
   nontriviality R
   have : InjOn f s := injOn_iff_injective.2 hs.injective.of_comp
   exact (linearIndependent_equiv' (Equiv.Set.imageOfInjOn f s this) rfl).1 hs
 
-@[deprecated (since := "2025-02-14")] alias
-  LinearIndependent.image_of_comp := LinearIndepOn.image_of_comp
-
 theorem LinearIndepOn.id_image (hs : LinearIndepOn R v s) : LinearIndepOn R id (v '' s) :=
   LinearIndepOn.image_of_comp v id hs
-
-@[deprecated (since := "2025-02-14")] alias
-  LinearIndependent.image := LinearIndepOn.id_image
 
 theorem LinearIndepOn_iff_linearIndepOn_image_injOn [Nontrivial R] :
     LinearIndepOn R v s ↔ LinearIndepOn R id (v '' s) ∧ InjOn v s :=
@@ -218,19 +209,15 @@ theorem linearIndependent_span (hs : LinearIndependent R v) :
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
     (li : LinearIndependent R ((↑) : s → M)) (t : Finset s) :
     LinearIndependent R ((↑) : Finset.map (Embedding.subtype s) t → M) :=
-  li.comp (fun _ ↦ ⟨_, _⟩) <| by intro; aesop
+  li.comp (fun _ ↦ ⟨_, by aesop⟩) <| by intro; simp
 
 section Indexed
-
-@[deprecated (since := "2025-02-15")] alias LinearIndependent.mono := LinearIndepOn.mono
 
 theorem linearIndepOn_of_finite (s : Set ι) (H : ∀ t ⊆ s, Set.Finite t → LinearIndepOn R v t) :
     LinearIndepOn R v s :=
   linearIndepOn_iffₛ.2 fun f hf g hg eq ↦
     linearIndepOn_iffₛ.1 (H _ (union_subset hf hg) <| (Finset.finite_toSet _).union <|
       Finset.finite_toSet _) f Set.subset_union_left g Set.subset_union_right eq
-
-@[deprecated (since := "2025-02-15")] alias linearIndependent_of_finite := linearIndepOn_of_finite
 
 end Indexed
 
@@ -325,15 +312,12 @@ theorem eq_of_linearIndepOn_id_of_span_subtype [Nontrivial R] {s t : Set M}
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
     convert hst <;> simp [f, comp_def]
-  show s = t
+  change s = t
   apply Subset.antisymm _ h
   intro x hx
   rcases h_surj ⟨x, hx⟩ with ⟨y, hy⟩
   convert y.mem
   rw [← Subtype.mk.inj hy]
-
-@[deprecated (since := "2025-02-15")] alias
-  eq_of_linearIndependent_of_span_subtype := eq_of_linearIndepOn_id_of_span_subtype
 
 theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndepOn R id u)
     (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
@@ -452,7 +436,7 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
     -- Porting note: `g` must be specified.
     rw [Finset.sum_preimage' (g := fun x => g x • v x),
       Finset.sum_preimage' (g := fun x => g x • v x), ← Finset.sum_union, ← Finset.filter_or]
-    · simpa only [← mem_union, range_inl_union_range_inr, mem_univ, Finset.filter_True]
+    · simpa only [← mem_union, range_inl_union_range_inr, mem_univ, Finset.filter_true]
     · exact Finset.disjoint_filter.2 fun x _ hx =>
         disjoint_left.1 isCompl_range_inl_range_inr.disjoint hx
   rw [← eq_neg_iff_add_eq_zero] at this
@@ -500,8 +484,6 @@ theorem linearIndepOn_id_union_iff {s t : Set M} (hdj : Disjoint s t) :
     LinearIndepOn R id s ∧ LinearIndepOn R id t ∧ Disjoint (span R s) (span R t) := by
   rw [linearIndepOn_union_iff hdj, image_id, image_id]
 
-@[deprecated (since := "2025-02-14")] alias LinearIndependent.union := LinearIndepOn.union
-
 open LinearMap
 
 theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
@@ -509,16 +491,12 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
     LinearIndepOn R id (f '' s) :=
   hs.id_imageₛ <| LinearMap.injOn_of_disjoint_ker le_rfl hf_inj
 
-@[deprecated (since := "2025-02-15")] alias LinearIndependent.image_subtype :=
-  LinearIndepOn.image
-
--- See, for example, Keith Conrad's note
+-- See, for example, Keith Conrad's note [ConradLinearChar]
 --  <https://kconrad.math.uconn.edu/blurbs/galoistheory/linearchar.pdf>
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]
 theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
     [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
-  -- Porting note: Some casts are required.
   letI := Classical.decEq (G →* L)
   letI : MulAction L L := DistribMulAction.toMulAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
@@ -536,14 +514,14 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
   -- We now make the key calculation:
   -- For any character `i` in the original `Finset`, we have `g i • i = g i • a` as functions
   -- on the monoid `G`.
-  have h1 (i) (his : i ∈ s) : (g i • (i : G → L)) = g i • (a : G → L) := by
+  have h1 (i) (his : i ∈ s) : (g i • i : G → L) = g i • a := by
     ext x
     rw [← sub_eq_zero]
     apply ih (fun j => g j * j x - g j * a x) _ i his
     ext y
     -- After that, it's just a chase scene.
     calc
-      (∑ i ∈ s, ((g i * i x - g i * a x) • (i : G → L))) y =
+      (∑ i ∈ s, (g i * i x - g i * a x) • i : G → L) y =
           (∑ i ∈ s, g i * i x * i y) - ∑ i ∈ s, g i * a x * i y := by simp [sub_mul]
       _ = (∑ i ∈ insert a s, g i * i x * i y) -
             ∑ i ∈ insert a s, g i * a x * i y := by simp [Finset.sum_insert has]
@@ -552,7 +530,7 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
         congrm ∑ i ∈ insert a s, ?_ - ∑ i ∈ insert a s, ?_
         · rw [mul_assoc]
         · rw [mul_assoc, mul_left_comm]
-      _ = (∑ i ∈ insert a s, (g i • (i : G → L))) (x * y) -
+      _ = (∑ i ∈ insert a s, g i • i : G → L) (x * y) -
             a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y := by simp [Finset.mul_sum]
       _ = 0 := by rw [hg]; simp
   -- On the other hand, since `a` is not already in `s`, for any character `i ∈ s`
@@ -572,8 +550,8 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
   have h4 : g a = 0 :=
     calc
       g a = g a * 1 := (mul_one _).symm
-      _ = (g a • (a : G → L)) 1 := by rw [← a.map_one]; rfl
-      _ = (∑ i ∈ insert a s, (g i • (i : G → L))) 1 := by
+      _ = (g a • a : G → L) 1 := by rw [← a.map_one]; rfl
+      _ = (∑ i ∈ insert a s, g i • i : G → L) 1 := by
         rw [Finset.sum_insert has, Finset.sum_eq_zero, add_zero]
         simp +contextual [h3]
       _ = 0 := by rw [hg]; rfl
@@ -608,9 +586,6 @@ alias ⟨_, LinearIndepOn.singleton⟩ := linearIndepOn_singleton_iff
 variable (R) in
 theorem LinearIndepOn.id_singleton {x : M} (hx : x ≠ 0) : LinearIndepOn R id {x} :=
   linearIndependent_unique Subtype.val hx
-
-@[deprecated (since := "2025-02-15")] alias
-    linearIndependent_singleton := LinearIndepOn.id_singleton
 
 @[simp]
 theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M) :

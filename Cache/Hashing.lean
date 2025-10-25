@@ -91,9 +91,6 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lake-manifest.json`
 
 and the hash of `Lean.githash`.
-
-(We hash `Lean.githash` in case the toolchain changes even though `lean-toolchain` hasn't.
-This happens with the `lean-pr-testing-NNNN` toolchains when Lean 4 PRs are updated.)
 -/
 def getRootHash : CacheM UInt64 := do
   let mathlibDepPath := (← read).mathlibDepPath
@@ -103,7 +100,7 @@ def getRootHash : CacheM UInt64 := do
     mathlibDepPath / "lake-manifest.json"]
   let hashes ← rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile path
-  return hash (rootHashGeneration :: hash Lean.githash :: hashes)
+  return hash (rootHashGeneration :: hashes)
 
 /--
 Computes the hash of a file, which mixes:

@@ -245,10 +245,10 @@ end LE
 section LE
 variable {ι : Sort*} {α : Type*} [LE α] {P : ι → Prop} {f : ι → α} {i j : ι}
 
-/-- `Minimal P i` means that `i` is an element with minimal image along `f` satisfying `P`. -/
+/-- `MinimalFor P f i` means that `f i` is minimal over all `i` satisfying `P`. -/
 def MinimalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f j ≤ f i → f i ≤ f j
 
-/-- `Maximal P i` means that `i` is an element with maximal image along `f` satisfying `P`. -/
+/-- `MaximalFor P f i` means that `f i` is maximal over all `i` satisfying `P`. -/
 def MaximalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f i ≤ f j → f j ≤ f i
 
 lemma MinimalFor.prop (h : MinimalFor P f i) : P i := h.1

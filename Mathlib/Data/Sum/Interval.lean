@@ -196,7 +196,7 @@ lemma sumLexLift_nonempty :
 end SumLexLift
 end Finset
 
-open Finset Function
+open Finset
 
 namespace Sum
 
@@ -207,6 +207,7 @@ variable {α β : Type*}
 
 section Disjoint
 
+section LocallyFiniteOrder
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder (α ⊕ β) where
@@ -246,7 +247,7 @@ theorem Ioc_inl_inr : Ioc (inl a₁) (inr b₂) = ∅ :=
   rfl
 
 @[simp]
-theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ := by
+theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ :=
   rfl
 
 @[simp]
@@ -262,7 +263,7 @@ theorem Ioc_inr_inl : Ioc (inr b₁) (inl a₂) = ∅ :=
   rfl
 
 @[simp]
-theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ := by
+theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ :=
   rfl
 
 theorem Icc_inr_inr : Icc (inr b₁ : α ⊕ β) (inr b₂) = (Icc b₁ b₂).map Embedding.inr :=
@@ -277,19 +278,53 @@ theorem Ioc_inr_inr : Ioc (inr b₁ : α ⊕ β) (inr b₂) = (Ioc b₁ b₂).ma
 theorem Ioo_inr_inr : Ioo (inr b₁ : α ⊕ β) (inr b₂) = (Ioo b₁ b₂).map Embedding.inr :=
   rfl
 
+end LocallyFiniteOrder
+
+section LocallyFiniteOrderBot
+variable [Preorder α] [Preorder β] [LocallyFiniteOrderBot α] [LocallyFiniteOrderBot β]
+
+instance : LocallyFiniteOrderBot (α ⊕ β) where
+  finsetIic := Sum.elim (Iic · |>.map .inl) (Iic · |>.map .inr)
+  finsetIio := Sum.elim (Iio · |>.map .inl) (Iio · |>.map .inr)
+  finset_mem_Iic := by simp
+  finset_mem_Iio := by simp
+
+variable (a : α) (b : β)
+
+theorem Iic_inl : Iic (inl a : α ⊕ β) = (Iic a).map Embedding.inl := rfl
+theorem Iic_inr : Iic (inr b : α ⊕ β) = (Iic b).map Embedding.inr := rfl
+theorem Iio_inl : Iio (inl a : α ⊕ β) = (Iio a).map Embedding.inl := rfl
+theorem Iio_inr : Iio (inr b : α ⊕ β) = (Iio b).map Embedding.inr := rfl
+
+end LocallyFiniteOrderBot
+
+section LocallyFiniteOrderTop
+variable [Preorder α] [Preorder β] [LocallyFiniteOrderTop α] [LocallyFiniteOrderTop β]
+
+instance : LocallyFiniteOrderTop (α ⊕ β) where
+  finsetIci := Sum.elim (Ici · |>.map .inl) (Ici · |>.map .inr)
+  finsetIoi := Sum.elim (Ioi · |>.map .inl) (Ioi · |>.map .inr)
+  finset_mem_Ici := by simp
+  finset_mem_Ioi := by simp
+
+variable (a : α) (b : β)
+
+theorem Ici_inl : Ici (inl a : α ⊕ β) = (Ici a).map Embedding.inl := rfl
+theorem Ici_inr : Ici (inr b : α ⊕ β) = (Ici b).map Embedding.inr := rfl
+theorem Ioi_inl : Ioi (inl a : α ⊕ β) = (Ioi a).map Embedding.inl := rfl
+theorem Ioi_inr : Ioi (inr b : α ⊕ β) = (Ioi b).map Embedding.inr := rfl
+
+end LocallyFiniteOrderTop
+
 end Disjoint
 
 /-! ### Lexicographical sum of orders -/
 
 namespace Lex
-variable [Preorder α] [Preorder β] [OrderTop α] [OrderBot β] [LocallyFiniteOrder α]
-  [LocallyFiniteOrder β]
 
-/-- Throwaway tactic. -/
-local elab "simp_lex" : tactic => do
-  Lean.Elab.Tactic.evalTactic <| ← `(tactic|
-    refine toLex.surjective.forall₃.2 ?_;
-    rintro (a | a) (b | b) (c | c) <;> simp)
+section LocallyFiniteOrder
+variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
+variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot β]
 
 instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
   finsetIcc a b :=
@@ -300,10 +335,10 @@ instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
     (sumLexLift Ioc Ioc (fun a _ => Ioi a) (fun _ => Iic) (ofLex a) (ofLex b)).map toLex.toEmbedding
   finsetIoo a b :=
     (sumLexLift Ioo Ioo (fun a _ => Ioi a) (fun _ => Iio) (ofLex a) (ofLex b)).map toLex.toEmbedding
-  finset_mem_Icc := by simp_lex
-  finset_mem_Ico := by simp_lex
-  finset_mem_Ioc := by simp_lex
-  finset_mem_Ioo := by simp_lex
+  finset_mem_Icc := by simp
+  finset_mem_Ico := by simp
+  finset_mem_Ioc := by simp
+  finset_mem_Ioo := by simp
 
 variable (a a₁ a₂ : α) (b b₁ b₂ : β)
 
@@ -362,6 +397,63 @@ lemma Ioc_inr_inr :
 lemma Ioo_inr_inr :
     Ioo (inrₗ b₁ : α ⊕ₗ β) (inrₗ b₂) = (Ioo b₁ b₂).map (Embedding.inr.trans toLex.toEmbedding) := by
   rw [← Finset.map_map]; rfl
+
+end LocallyFiniteOrder
+
+section LocallyFiniteOrderBot
+variable [Preorder α] [Preorder β] [Fintype α] [LocallyFiniteOrderBot α] [LocallyFiniteOrderBot β]
+
+instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (α ⊕ₗ β) where
+  finsetIic := Sum.elim
+    (Iic · |>.map (.trans .inl toLex.toEmbedding))
+    (fun x => Finset.univ.disjSum (Iic x) |>.map toLex.toEmbedding) ∘ ofLex
+  finsetIio := Sum.elim
+    (Iio · |>.map (.trans .inl toLex.toEmbedding))
+    (fun x => Finset.univ.disjSum (Iio x) |>.map toLex.toEmbedding) ∘ ofLex
+  finset_mem_Iic := by simp
+  finset_mem_Iio := by simp
+
+variable (a : α) (b : β)
+
+lemma Iic_inl : Iic (inlₗ a : α ⊕ₗ β) = (Iic a).map (Embedding.inl.trans toLex.toEmbedding) := rfl
+lemma Iic_inr : Iic (inrₗ b : α ⊕ₗ β) = (Finset.univ.disjSum (Iic b)).map toLex.toEmbedding := rfl
+
+lemma Iio_inl : Iio (inlₗ a : α ⊕ₗ β) = (Iio a).map (Embedding.inl.trans toLex.toEmbedding) := rfl
+lemma Iio_inr : Iio (inrₗ b : α ⊕ₗ β) = (Finset.univ.disjSum (Iio b)).map toLex.toEmbedding := rfl
+
+end LocallyFiniteOrderBot
+
+/-- TODO: `LocallyFiniteOrder.toLocallyFiniteOrderBot` is probably a bad instance, as it forms
+a diamond with this instance, and constructs data from data. We should consider removing it. -/
+example [Fintype α] [Preorder α] [Preorder β] [OrderBot α] [OrderBot β] [OrderTop α]
+    [LocallyFiniteOrder α] [LocallyFiniteOrder β] :
+    LocallyFiniteOrder.toLocallyFiniteOrderBot = instLocallyFiniteOrderBot (α := α) (β := β) := by
+  try with_reducible_and_instances rfl -- fails
+  try rfl -- fails
+  exact Subsingleton.elim _ _
+
+section LocallyFiniteOrderTop
+variable [Preorder α] [Preorder β] [LocallyFiniteOrderTop α] [Fintype β] [LocallyFiniteOrderTop β]
+
+instance instLocallyFiniteOrderTop : LocallyFiniteOrderTop (α ⊕ₗ β) where
+  finsetIci := Sum.elim
+    (fun x => (Ici x).disjSum Finset.univ |>.map toLex.toEmbedding)
+    (Ici · |>.map (.trans .inr toLex.toEmbedding)) ∘ ofLex
+  finsetIoi := Sum.elim
+    (fun x => (Ioi x).disjSum Finset.univ |>.map toLex.toEmbedding)
+    (Ioi · |>.map (.trans .inr toLex.toEmbedding)) ∘ ofLex
+  finset_mem_Ici := by simp
+  finset_mem_Ioi := by simp
+
+variable (a : α) (b : β)
+
+lemma Ici_inl : Ici (inlₗ a : α ⊕ₗ β) = ((Ici a).disjSum Finset.univ).map toLex.toEmbedding := rfl
+lemma Ici_inr : Ici (inrₗ b : α ⊕ₗ β) = (Ici b).map (Embedding.inr.trans toLex.toEmbedding) := rfl
+
+lemma Ioi_inl : Ioi (inlₗ a : α ⊕ₗ β) = ((Ioi a).disjSum Finset.univ).map toLex.toEmbedding := rfl
+lemma Ioi_inr : Ioi (inrₗ b : α ⊕ₗ β) = (Ioi b).map (Embedding.inr.trans toLex.toEmbedding) := rfl
+
+end LocallyFiniteOrderTop
 
 end Lex
 end Sum

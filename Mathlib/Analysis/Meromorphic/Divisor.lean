@@ -47,8 +47,7 @@ noncomputable def divisor (f : 𝕜 → E) (U : Set 𝕜) :
       simp only [Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_left, exists_prop,
         exists_eq_right_right, Pi.ofNat_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero, and_imp]
       tauto
-    · simp only [hf, false_and, ↓reduceDIte]
-      exact (Eq.eventuallyEq rfl)
+    · simp [hf, Pi.zero_def]
 
 open Classical in
 /-- Definition of the divisor -/
@@ -62,7 +61,7 @@ Simplifier lemma: on `U`, the divisor of a function `f` that is meromorphic on `
 -/
 @[simp]
 lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
-    divisor f U z = (meromorphicOrderAt f z).untop₀ := by simp_all [MeromorphicOn.divisor_def, hz]
+    divisor f U z = (meromorphicOrderAt f z).untop₀ := by simp_all [MeromorphicOn.divisor_def]
 
 /-!
 ## Congruence Lemmas
@@ -105,7 +104,7 @@ theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : Meromor
       apply mem_nhdsWithin.mpr
       use U, h₂, hx, Set.inter_subset_left
     filter_upwards [this, h₁ x hx] with a h₁a h₂a
-    simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, Decidable.not_not] at h₂a
+    simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and] at h₂a
     tauto
   · simp [hx]
 

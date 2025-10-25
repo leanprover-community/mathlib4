@@ -121,17 +121,11 @@ lemma Topology.IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
         _ = f ⁻¹' (f '' s) ∩ s := by rw [hcov]
         _ = s := inter_eq_right.mpr (subset_preimage_image _ _)
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isSigmaCompact_iff := IsInducing.isSigmaCompact_iff
-
 /-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is σ-compact
 if and only `s` is σ-compact. -/
 lemma Topology.IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
     (hf : IsEmbedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
   hf.isInducing.isSigmaCompact_iff
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isSigmaCompact_iff := IsEmbedding.isSigmaCompact_iff
 
 /-- Sets of subtype are σ-compact iff the image under a coercion is. -/
 lemma Subtype.isSigmaCompact_iff {p : X → Prop} {s : Set { a // p a }} :
@@ -181,10 +175,6 @@ lemma isSigmaCompact_iff_sigmaCompactSpace {s : Set X} :
 instance (priority := 200) CompactSpace.sigmaCompact [CompactSpace X] : SigmaCompactSpace X :=
   ⟨⟨fun _ => univ, fun _ => isCompact_univ, iUnion_const _⟩⟩
 
--- The `alias` command creates a definition, triggering the defLemma linter.
-@[nolint defLemma, deprecated (since := "2024-11-13")] alias
-CompactSpace.sigma_compact := CompactSpace.sigmaCompact
-
 theorem SigmaCompactSpace.of_countable (S : Set (Set X)) (Hc : S.Countable)
     (Hcomp : ∀ s ∈ S, IsCompact s) (HU : ⋃₀ S = univ) : SigmaCompactSpace X :=
   ⟨(exists_seq_cover_iff_countable ⟨_, isCompact_empty⟩).2 ⟨S, Hc, Hcomp, HU⟩⟩
@@ -196,11 +186,6 @@ instance (priority := 100) sigmaCompactSpace_of_locallyCompact_secondCountable
   rcases countable_cover_nhds hxK with ⟨s, hsc, hsU⟩
   refine SigmaCompactSpace.of_countable _ (hsc.image K) (forall_mem_image.2 fun x _ => hKc x) ?_
   rwa [sUnion_image]
-
--- The `alias` command creates a definition, triggering the defLemma linter.
-@[nolint defLemma, deprecated (since := "2024-11-13")]
-alias sigmaCompactSpace_of_locally_compact_second_countable :=
-  sigmaCompactSpace_of_locallyCompact_secondCountable
 
 section
 
@@ -254,7 +239,7 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (X ⊕ Y) :=
         range_inl_union_range_inr]⟩⟩
 
 instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
-    [∀ i, SigmaCompactSpace (X i)] : SigmaCompactSpace (Σi, X i) := by
+    [∀ i, SigmaCompactSpace (X i)] : SigmaCompactSpace (Σ i, X i) := by
   cases isEmpty_or_nonempty ι
   · infer_instance
   · rcases exists_surjective_nat ι with ⟨f, hf⟩
@@ -310,9 +295,6 @@ theorem countable_cover_nhdsWithin_of_sigmaCompact {f : X → Set X} {s : Set X}
   rcases mem_iUnion₂.1 (hsub n ⟨hn, hx⟩) with ⟨y, hyt : y ∈ t n, hyf : x ∈ s → x ∈ f y⟩
   exact ⟨y, mem_iUnion.2 ⟨n, hyt⟩, hyf hx⟩
 
-@[deprecated (since := "2024-11-13")] alias
-countable_cover_nhdsWithin_of_sigma_compact := countable_cover_nhdsWithin_of_sigmaCompact
-
 /-- In a topological space with sigma compact topology, if `f` is a function that sends each
 point `x` to a neighborhood of `x`, then for some countable set `s`, the neighborhoods `f x`,
 `x ∈ s`, cover the whole space. -/
@@ -323,10 +305,6 @@ theorem countable_cover_nhds_of_sigmaCompact {f : X → Set X} (hf : ∀ x, f x 
     ⟨s, -, hsc, hsU⟩
   exact ⟨s, hsc, univ_subset_iff.1 hsU⟩
 end
-
-@[deprecated (since := "2024-11-13")] alias
-countable_cover_nhds_of_sigma_compact := countable_cover_nhds_of_sigmaCompact
-
 
 /-- An [exhaustion by compact sets](https://en.wikipedia.org/wiki/Exhaustion_by_compact_sets) of a
 topological space is a sequence of compact sets `K n` such that `K n ⊆ interior (K (n + 1))` and
@@ -341,7 +319,7 @@ structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
   /-- The sets in the compact exhaustion are in fact compact. -/
   isCompact' : ∀ n, IsCompact (toFun n)
   /-- The sets in the compact exhaustion form a sequence:
-    each set is contained in the interior of the next. -/
+  each set is contained in the interior of the next. -/
   subset_interior_succ' : ∀ n, toFun n ⊆ interior (toFun (n + 1))
   /-- The union of all sets in a compact exhaustion equals the entire space. -/
   iUnion_eq' : ⋃ n, toFun n = univ

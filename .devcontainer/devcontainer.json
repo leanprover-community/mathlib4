@@ -1,9 +1,7 @@
 {
   "name": "Mathlib4 dev container",
 
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
+  "image": "ghcr.io/leanprover-community/mathlib4/gitpod",
 
   "onCreateCommand": "lake exe cache get!",
 

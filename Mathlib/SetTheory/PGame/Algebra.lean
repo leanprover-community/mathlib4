@@ -5,6 +5,12 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zh
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.SetTheory.PGame.Order
+import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.IGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Algebraic structure on pregames
@@ -67,7 +73,7 @@ theorem neg_ofLists (L R : List PGame) :
     · simp
     · rintro ⟨⟨a, ha⟩⟩ ⟨⟨b, hb⟩⟩ h
       have :
-        ∀ {m n} (_ : m = n) {b : ULift (Fin m)} {c : ULift (Fin n)} (_ : HEq b c),
+        ∀ {m n} (_ : m = n) {b : ULift (Fin m)} {c : ULift (Fin n)} (_ : b ≍ c),
           (b.down : ℕ) = ↑c.down := by
         rintro m n rfl b c
         simp only [heq_eq_eq]
@@ -84,7 +90,7 @@ theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
     · apply exists_congr
       intro
       rw [neg_eq_iff_eq_neg]
-      rfl
+      simp only [neg_def, moveRight_mk, moveLeft_mk]
 
 @[simp]
 theorem isOption_neg_neg {x y : PGame} : IsOption (-x) (-y) ↔ IsOption x y := by
@@ -118,9 +124,6 @@ theorem moveLeft_neg {x : PGame} (i) :
   cases x
   rfl
 
-@[deprecated moveLeft_neg (since := "2024-10-30")]
-alias moveLeft_neg' := moveLeft_neg
-
 theorem moveLeft_neg_toLeftMovesNeg {x : PGame} (i) :
     (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by simp
 
@@ -130,27 +133,8 @@ theorem moveRight_neg {x : PGame} (i) :
   cases x
   rfl
 
-@[deprecated moveRight_neg (since := "2024-10-30")]
-alias moveRight_neg' := moveRight_neg
-
 theorem moveRight_neg_toRightMovesNeg {x : PGame} (i) :
     (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by simp
-
-@[deprecated moveRight_neg (since := "2024-10-30")]
-theorem moveLeft_neg_symm {x : PGame} (i) :
-    x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
-
-@[deprecated moveRight_neg (since := "2024-10-30")]
-theorem moveLeft_neg_symm' {x : PGame} (i) :
-    x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
-
-@[deprecated moveLeft_neg (since := "2024-10-30")]
-theorem moveRight_neg_symm {x : PGame} (i) :
-    x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
-
-@[deprecated moveLeft_neg (since := "2024-10-30")]
-theorem moveRight_neg_symm' {x : PGame} (i) :
-    x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 
 @[simp]
 theorem forall_leftMoves_neg {x : PGame} {p : (-x).LeftMoves → Prop} :
@@ -238,7 +222,7 @@ theorem neg_identical_neg {x y : PGame} : -x ≡ -y ↔ x ≡ y :=
 
 @[simp]
 theorem neg_equiv_neg_iff {x y : PGame} : -x ≈ -y ↔ x ≈ y := by
-  show Equiv (-x) (-y) ↔ Equiv x y
+  change Equiv (-x) (-y) ↔ Equiv x y
   rw [Equiv, Equiv, neg_le_neg_iff, neg_le_neg_iff, and_comm]
 
 @[simp]
@@ -707,7 +691,7 @@ instance addRightMono : AddRightMono PGame :=
   ⟨fun _ _ _ => add_le_add_right'⟩
 
 instance addLeftMono : AddLeftMono PGame :=
-  ⟨fun x _ _ h => (add_comm_le.trans (add_le_add_right h x)).trans add_comm_le⟩
+  ⟨fun x _ _ h => (add_comm_le.trans (by gcongr)).trans add_comm_le⟩
 
 theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
   suffices z + x ≤ y + x → z ≤ y by
@@ -716,11 +700,11 @@ theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
   fun w =>
   calc
     z ≤ z + 0 := (PGame.add_zero _).symm.le
-    _ ≤ z + (x + -x) := add_le_add_left (zero_le_add_neg_cancel x) _
+    _ ≤ z + (x + -x) := by grw [zero_le_add_neg_cancel]
     _ ≤ z + x + -x := (PGame.add_assoc _ _ _).symm.le
-    _ ≤ y + x + -x := add_le_add_right w _
+    _ ≤ y + x + -x := by gcongr
     _ ≤ y + (x + -x) := (PGame.add_assoc _ _ _).le
-    _ ≤ y + 0 := add_le_add_left (add_neg_cancel_le_zero x) _
+    _ ≤ y + 0 := by grw [add_neg_cancel_le_zero]
     _ ≤ y := (PGame.add_zero _).le
 
 theorem add_lf_add_left {y z : PGame} (h : y ⧏ z) (x) : x + y ⧏ x + z := by
@@ -740,8 +724,7 @@ theorem add_lf_add_of_le_of_lf {w x y z : PGame} (hwx : w ≤ x) (hyz : y ⧏ z)
   lf_of_le_of_lf (add_le_add_right hwx y) (add_lf_add_left hyz x)
 
 theorem add_congr {w x y z : PGame} (h₁ : w ≈ x) (h₂ : y ≈ z) : w + y ≈ x + z :=
-  ⟨(add_le_add_left h₂.1 w).trans (add_le_add_right h₁.1 z),
-    (add_le_add_left h₂.2 x).trans (add_le_add_right h₁.2 y)⟩
+  ⟨add_le_add h₁.1 h₂.1, add_le_add h₁.2 h₂.2⟩
 
 theorem add_congr_left {x y z : PGame} (h : x ≈ y) : x + z ≈ y + z :=
   add_congr h equiv_rfl
@@ -762,7 +745,7 @@ theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
   ⟨fun h => (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (PGame.zero_add x).symm.le
-      _ ≤ y - x + x := add_le_add_right h _
+      _ ≤ y - x + x := by gcongr
       _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
       _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
       _ ≤ y := (PGame.add_zero y).le
@@ -784,7 +767,7 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
       x ≤ 0 + x := (PGame.zero_add x).symm.le
       _ < y - x + x := add_lt_add_right h _
       _ ≤ y + (-x + x) := (PGame.add_assoc _ _ _).le
-      _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
+      _ ≤ y + 0 := by gcongr; exact neg_add_cancel_le_zero x
       _ ≤ y := (PGame.add_zero y).le
       ⟩
 

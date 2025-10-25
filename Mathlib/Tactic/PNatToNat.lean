@@ -21,7 +21,7 @@ namespace Mathlib.Tactic.PNatToNat
 
 open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
 
-open Lean Meta Elab Tactic Qq Mathlib.Tactic
+open Lean Meta Elab Tactic Qq
 
 /-- For each `x : PNat` in the context, add the hypothesis `0 < (↑x : ℕ)`. -/
 elab "pnat_positivity" : tactic => withMainContext do
@@ -32,9 +32,9 @@ elab "pnat_positivity" : tactic => withMainContext do
     let ctx ← getLCtx
     let alreadyDeclared := Option.isSome <| ← ctx.findDeclM? fun ldecl => do
       if ← isDefEq ldecl.type q(0 < PNat.val $declExpr) then
-        pure <| .some ()
+        pure <| some ()
       else
-        pure .none
+        pure none
     if alreadyDeclared then
       return g
     let (_, mvarIdNew) ← (← g.assert .anonymous q(0 < PNat.val $declExpr) pf).intro1P

@@ -15,7 +15,7 @@ function on `ℕ`.
 assert_not_exists Monoid Multiset.sort
 
 open List
-open Nat List
+open Nat
 
 namespace Equiv
 
@@ -136,7 +136,7 @@ theorem denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encode
       ⟨a, h₁, h₂⟩
     rw [Option.mem_def] at h₁
     use ofNat α v₁ :: a
-    simp [decodeList, e, h₂, h₁, encodeList, pair_unpair' e]
+    simp [decodeList, e, h₂, h₁, encodeList, pair_eq_of_unpair_eq e]
 
 /-- If `α` is denumerable, then so is `List α`. -/
 instance denumerableList : Denumerable (List α) :=
@@ -168,11 +168,6 @@ def listUniqueEquiv (α : Type*) [Unique α] : List α ≃ ℕ where
   invFun n := List.replicate n default
   left_inv u := List.length_injective (by simp)
   right_inv n := List.length_replicate
-
-/-- The type lists on unit is canonically equivalent to the natural numbers. -/
-@[deprecated listUniqueEquiv (since := "2025-02-17")]
-def listUnitEquiv : List Unit ≃ ℕ :=
-  listUniqueEquiv _
 
 /-- `List ℕ` is equivalent to `ℕ`. -/
 def listNatEquivNat : List ℕ ≃ ℕ :=

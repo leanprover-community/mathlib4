@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz, Johan Commelin, Joël Riou
 -/
+import Mathlib.Algebra.Group.TransferInstance
+import Mathlib.Algebra.Module.Equiv.Defs
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # If `C` is preadditive, `Cᵒᵖ` has a natural preadditive structure.
@@ -79,11 +81,11 @@ theorem op_sum (X Y : C) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
 @[simps]
 def Preadditive.homSelfLinearEquivEndMulOpposite (G : C) : (G ⟶ G) ≃ₗ[(End G)ᵐᵒᵖ] (End G)ᵐᵒᵖ where
   toFun f := ⟨f⟩
-  map_add' := by aesop_cat
-  map_smul' := by aesop_cat
+  map_add' := by cat_disch
+  map_smul' := by cat_disch
   invFun := fun ⟨f⟩ => f
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 variable {D : Type*} [Category D] [Preadditive D]
 

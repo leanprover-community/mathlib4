@@ -74,7 +74,7 @@ theorem mem_εClosure_iff_exists : s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.
       solve_by_elim [εClosure.step]
   mpr := by
     intro ⟨t, _, h⟩
-    induction' h <;> subst_vars <;> solve_by_elim [εClosure.step]
+    induction h <;> subst_vars <;> solve_by_elim [εClosure.step]
 
 /-- `M.stepSet S a` is the union of the ε-closure of `M.step s a` for all `s ∈ S`. -/
 def stepSet (S : Set σ) (a : α) : Set σ :=
@@ -112,15 +112,16 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
 
 @[simp]
 theorem evalFrom_empty (x : List α) : M.evalFrom ∅ x = ∅ := by
-  induction' x using List.reverseRecOn with x a ih
-  · rw [evalFrom_nil, εClosure_empty]
-  · rw [evalFrom_append_singleton, ih, stepSet_empty]
+  induction x using List.reverseRecOn with
+  | nil => rw [evalFrom_nil, εClosure_empty]
+  | append_singleton x a ih => rw [evalFrom_append_singleton, ih, stepSet_empty]
 
 theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
     s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
-  induction' x using List.reverseRecOn with _ _ ih generalizing s
-  · apply mem_εClosure_iff_exists
-  · simp_rw [evalFrom_append_singleton, mem_stepSet_iff, ih]
+  induction x using List.reverseRecOn generalizing s with
+  | nil => apply mem_εClosure_iff_exists
+  | append_singleton _ _ ih =>
+    simp_rw [evalFrom_append_singleton, mem_stepSet_iff, ih]
     tauto
 
 /-- `M.eval x` computes all possible paths through `M` with input `x` starting at an element of
@@ -171,10 +172,12 @@ alias ⟨_, IsPath.singleton⟩ := isPath_singleton
 theorem isPath_append {x y : List (Option α)} :
     M.IsPath s u (x ++ y) ↔ ∃ t, M.IsPath s t x ∧ M.IsPath t u y where
   mp := by
-    induction' x with x a ih generalizing s
-    · rw [List.nil_append]
+    induction x generalizing s with
+    | nil =>
+      rw [List.nil_append]
       tauto
-    · rintro (_ | ⟨t, _, _, _, _, _, h⟩)
+    | cons x a ih =>
+      rintro (_ | ⟨t, _, _, _, _, _, h⟩)
       apply ih at h
       tauto
   mpr := by
@@ -206,8 +209,9 @@ theorem mem_εClosure_iff_exists_path {s₁ s₂ : σ} :
 
 theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
     s₂ ∈ M.evalFrom {s₁} x ↔ ∃ x', x'.reduceOption = x ∧ M.IsPath s₁ s₂ x' := by
-  induction' x using List.reverseRecOn with x a ih generalizing s₂
-  · rw [evalFrom_nil, mem_εClosure_iff_exists_path]
+  induction x using List.reverseRecOn generalizing s₂ with
+  | nil =>
+    rw [evalFrom_nil, mem_εClosure_iff_exists_path]
     constructor
     · intro ⟨n, _⟩
       use List.replicate n none
@@ -216,7 +220,8 @@ theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
     · simp_rw [List.reduceOption_eq_nil_iff]
       intro ⟨_, ⟨n, rfl⟩, h⟩
       exact ⟨n, h⟩
-  · rw [evalFrom_append_singleton, mem_stepSet_iff]
+  | append_singleton x a ih =>
+    rw [evalFrom_append_singleton, mem_stepSet_iff]
     constructor
     · intro ⟨t, ht, h⟩
       obtain ⟨x', _, _⟩ := ih.mp ht

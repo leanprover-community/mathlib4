@@ -66,7 +66,7 @@ lemma meromorphicOrderAt_eq_top_iff :
   · simp only [hf, not_false_eq_true, meromorphicOrderAt_of_not_meromorphicAt, WithTop.zero_ne_top,
       false_iff]
     contrapose! hf
-    exact (MeromorphicAt.const 0 x).congr  (EventuallyEq.symm hf)
+    exact (MeromorphicAt.const 0 x).congr (EventuallyEq.symm hf)
   simp only [meromorphicOrderAt, hf, ↓reduceDIte, sub_eq_top_iff, ENat.map_eq_top_iff,
     WithTop.natCast_ne_top, or_false]
   by_cases h : analyticOrderAt (fun z ↦ (z - x) ^ hf.choose • f z) x = ⊤
@@ -229,9 +229,9 @@ lemma tendsto_nhds_of_meromorphicOrderAt_nonneg
 /-- A meromorphic function converges to infinity iff its order is negative. -/
 lemma tendsto_cobounded_iff_meromorphicOrderAt_neg (hf : MeromorphicAt f x) :
     Tendsto f (𝓝[≠] x) (Bornology.cobounded E) ↔ meromorphicOrderAt f x < 0 := by
-  rcases lt_or_le (meromorphicOrderAt f x) 0 with ho | ho
+  rcases lt_or_ge (meromorphicOrderAt f x) 0 with ho | ho
   · simp [ho, tendsto_cobounded_of_meromorphicOrderAt_neg]
-  · simp only [lt_iff_not_le, ho, not_true_eq_false, iff_false, ← tendsto_norm_atTop_iff_cobounded]
+  · simp only [lt_iff_not_ge, ho, not_true_eq_false, iff_false, ← tendsto_norm_atTop_iff_cobounded]
     obtain ⟨c, hc⟩ := tendsto_nhds_of_meromorphicOrderAt_nonneg hf ho
     exact not_tendsto_atTop_of_tendsto_nhds hc.norm
 
@@ -241,7 +241,7 @@ lemma tendsto_cobounded_iff_meromorphicOrderAt_neg (hf : MeromorphicAt f x) :
 /-- A meromorphic function converges to a limit iff its order is nonnegative. -/
 lemma tendsto_nhds_iff_meromorphicOrderAt_nonneg (hf : MeromorphicAt f x) :
     (∃ c, Tendsto f (𝓝[≠] x) (𝓝 c)) ↔ 0 ≤ meromorphicOrderAt f x := by
-  rcases lt_or_le (meromorphicOrderAt f x) 0 with ho | ho
+  rcases lt_or_ge (meromorphicOrderAt f x) 0 with ho | ho
   · simp only [← not_lt, ho, not_true_eq_false, iff_false, not_exists]
     intro c hc
     apply not_tendsto_atTop_of_tendsto_nhds hc.norm
@@ -259,7 +259,7 @@ lemma tendsto_ne_zero_iff_meromorphicOrderAt_eq_zero (hf : MeromorphicAt f x) :
   · simp [ho, tendsto_ne_zero_of_meromorphicOrderAt_eq_zero hf ho]
   simp only [ne_eq, ho, iff_false, not_exists, not_and]
   intro c c_ne hc
-  rcases ho.lt_or_lt with ho | ho
+  rcases ho.lt_or_gt with ho | ho
   · apply not_tendsto_atTop_of_tendsto_nhds hc.norm
     rw [tendsto_norm_atTop_iff_cobounded]
     exact tendsto_cobounded_of_meromorphicOrderAt_neg ho
@@ -272,7 +272,7 @@ lemma tendsto_ne_zero_iff_meromorphicOrderAt_eq_zero (hf : MeromorphicAt f x) :
 /-- A meromorphic function converges to zero iff its order is positive. -/
 lemma tendsto_zero_iff_meromorphicOrderAt_pos (hf : MeromorphicAt f x) :
     (Tendsto f (𝓝[≠] x) (𝓝 0)) ↔ 0 < meromorphicOrderAt f x := by
-  rcases lt_or_le 0 (meromorphicOrderAt f x) with ho | ho
+  rcases lt_or_ge 0 (meromorphicOrderAt f x) with ho | ho
   · simp [ho, tendsto_zero_of_meromorphicOrderAt_pos ho]
   simp only [← not_le, ho, not_true_eq_false, iff_false]
   intro hc
@@ -501,7 +501,7 @@ theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromorph
   let g := (fun z ↦ (z - x) ^ (n₁ - n)) • g₁ +  (fun z ↦ (z - x) ^ (n₂ - n)) • g₂
   have h₁g : AnalyticAt 𝕜 g x := by
     apply AnalyticAt.add
-    apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_left n₁ n₂))).smul h₁g₁
+    · apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_left n₁ n₂))).smul h₁g₁
     apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_right n₁ n₂))).smul h₁g₂
   have : f₁ + f₂ =ᶠ[𝓝[≠] x] ((· - x) ^ n) • g := by
     filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin]
@@ -712,7 +712,7 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
   rcases (hf x hx).eventually_eq_zero_or_eventually_ne_zero with h₁f | h₁f
   · filter_upwards [eventually_eventually_nhdsWithin.2 h₁f] with a h₁a
     suffices ∀ᶠ (z : 𝕜) in 𝓝[≠] a, f z = 0 by
-      simp +contextual [meromorphicOrderAt_eq_top_iff, h₁a, this]
+      simp +contextual [meromorphicOrderAt_eq_top_iff, this]
     obtain rfl | hax := eq_or_ne a x
     · exact h₁a
     rw [eventually_nhdsWithin_iff, eventually_nhds_iff] at h₁a ⊢
@@ -730,3 +730,21 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
 alias codiscrete_setOf_order_eq_zero_or_top := codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top
 
 end MeromorphicOn
+
+lemma MeromorphicAt.comp_analyticAt {g : 𝕜 → 𝕜}
+    (hf : MeromorphicAt f (g x)) (hg : AnalyticAt 𝕜 g x) : MeromorphicAt (f ∘ g) x := by
+  obtain ⟨r, hr⟩ := hf
+  by_cases hg' : analyticOrderAt (g · - g x) x = ⊤
+  · -- trivial case: `g` is locally constant near `x`
+    refine .congr (.const (f (g x)) x) ?_
+    filter_upwards [nhdsWithin_le_nhds <| analyticOrderAt_eq_top.mp hg'] with z hz
+    grind
+  · -- interesting case: `g z - g x` looks like `(z - x) ^ n` times a non-vanishing function
+    obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.mp hg'
+    obtain ⟨h, han, hne, heq⟩ := (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast.mp hn.symm
+    set j := fun z ↦ (z - g x) ^ r • f z
+    have : AnalyticAt 𝕜 (fun z ↦ (h z)⁻¹ ^ r • j (g z)) x := by fun_prop (disch := assumption)
+    refine ⟨n * r, this.congr ?_⟩
+    filter_upwards [heq, han.continuousAt.tendsto.eventually_ne hne] with z hz hzne
+    simp only [inv_pow, Function.comp_apply, inv_smul_eq_iff₀ (pow_ne_zero r hzne)]
+    rw [← mul_smul (h z ^ r), mul_comm, pow_mul, ← mul_pow, ← smul_eq_mul, ← hz]

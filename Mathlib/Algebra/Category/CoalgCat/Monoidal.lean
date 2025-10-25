@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 
+import Mathlib.Algebra.Category.CoalgCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.RingTheory.Coalgebra.TensorProduct
 
 /-!
@@ -36,9 +39,9 @@ noncomputable instance instMonoidalCategoryStruct :
   whiskerRight f X := ofHom (f.1.rTensor X)
   tensorHom f g := ofHom (Coalgebra.TensorProduct.map f.1 g.1)
   tensorUnit := CoalgCat.of R R
-  associator X Y Z := (Coalgebra.TensorProduct.assoc R X Y Z).toCoalgIso
+  associator X Y Z := (Coalgebra.TensorProduct.assoc R R X Y Z).toCoalgIso
   leftUnitor X := (Coalgebra.TensorProduct.lid R X).toCoalgIso
-  rightUnitor X := (Coalgebra.TensorProduct.rid R X).toCoalgIso
+  rightUnitor X := (Coalgebra.TensorProduct.rid R R X).toCoalgIso
 
 /-- The data needed to induce a `MonoidalCategory` structure via
 `CoalgCat.instMonoidalCategoryStruct` and the forgetful functor to modules. -/

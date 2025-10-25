@@ -27,25 +27,21 @@ and permit to manipulate them in a relatively smooth way.
 * `SubMulAction.ofStabilizer a` : the action of `stabilizer G a` on `{a}ᶜ`
 
 * `SubMulAction.Enat_card_ofStabilizer_eq_add_one`, `SubMulAction.nat_card_ofStabilizer_eq`
-compute the cardinality of the `carrier` of that action.
+  compute the cardinality of the `carrier` of that action.
 
 Consider `a b : α` and `g : G` such that `hg : g • b = a`.
 
 * `SubMulAction.conjMap hg` is the equivariant map
-from `SubMulAction.ofStabilizer G a` to `SubMulAction.ofStabilizer G b`.
-
+  from `SubMulAction.ofStabilizer G a` to `SubMulAction.ofStabilizer G b`.
 * `SubMulAction.ofStabilizer.isPretransitive_iff_conj hg` shows
-that this actions are equivalently pretransitive or
-
+  that this actions are equivalently pretransitive or
 * `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff_conj hg` shows
-that this actions are equivalently `n`-pretransitive for all `n : ℕ`.
-
+  that this actions are equivalently `n`-pretransitive for all `n : ℕ`.
 * `SubMulAction.ofStabilizer.append` : given `x : Fin n ↪ ofStabilizer G a`,
-append `a` to obtain `y : Fin n.succ ↪ α`
-
+  append `a` to obtain `y : Fin n.succ ↪ α`
 * `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : is the action of `G` on `α`
-is pretransitive, then it is `n.succ` pretransitive if and only if
-the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
+  is pretransitive, then it is `n.succ` pretransitive if and only if
+  the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
 
 -/
 
@@ -58,7 +54,7 @@ namespace SubMulAction
 variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
 
 /-- Action of the stabilizer of a point on the complement. -/
-@[to_additive "Action of the stabilizer of a point on the complement."]
+@[to_additive /-- Action of the stabilizer of a point on the complement. -/]
 def ofStabilizer (a : α) : SubMulAction (stabilizer G a) α where
   carrier := {a}ᶜ
   smul_mem' g x := by
@@ -78,25 +74,42 @@ theorem mem_ofStabilizer_iff (a : α) {x : α} : x ∈ ofStabilizer G a ↔ x �
   Iff.rfl
 
 @[to_additive]
+theorem notMem_val_image {a : α} (t : Set (ofStabilizer G a)) :
+    a ∉ Subtype.val '' t := by
+  rintro ⟨b, hb⟩
+  exact b.prop (by simp [hb])
+
+@[to_additive]
 theorem neq_of_mem_ofStabilizer (a : α) {x : ofStabilizer G a} : ↑x ≠ a :=
   x.prop
 
 @[to_additive]
-lemma Enat_card_ofStabilizer_eq_add_one (a : α) :
+lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
     ENat.card (ofStabilizer G a) + 1 = ENat.card α := by
   dsimp only [ENat.card]
   rw [← Cardinal.mk_sum_compl {a}, map_add, add_comm, eq_comm]
   congr
   simp
 
+@[deprecated (since := "2025-07-15")]
+alias Enat_card_ofStabilizer_eq_add_one := ENat_card_ofStabilizer_add_one_eq
+
 @[to_additive]
-lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
-    Nat.card (ofStabilizer G a) = Nat.card α - 1 := by
+lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
+    Nat.card (ofStabilizer G a) + 1 = Nat.card α := by
   dsimp only [Nat.card]
   rw [← Cardinal.mk_sum_compl {a},
     Cardinal.toNat_add Cardinal.mk_lt_aleph0 Cardinal.mk_lt_aleph0]
-  simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_tsub_cancel_left]
+  simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_comm]
   congr
+
+@[deprecated  (since := "2025-10-03")]
+alias nat_card_ofStabilizer_eq_add_one := nat_card_ofStabilizer_add_one_eq
+
+@[to_additive]
+lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
+    Nat.card (ofStabilizer G a) = Nat.card α - 1 :=
+  Nat.eq_sub_of_add_eq (nat_card_ofStabilizer_add_one_eq G a)
 
 variable {G}
 
@@ -120,7 +133,7 @@ def ofStabilizer.conjMap {g : G} {a b : α} (hg : b = g • a) :
   map_smul' := fun ⟨k, hk⟩ ↦ by
     simp [← SetLike.coe_eq_coe, subgroup_smul_def, stabilizerEquivStabilizer, ← smul_assoc]
 
-variable {g  h k: G} {a b c: α}
+variable {g h k : G} {a b c : α}
 variable (hg : b = g • a) (hh : c = h • b) (hk : c = k • a)
 
 @[to_additive]
@@ -134,7 +147,7 @@ theorem _root_.AddAction.stabilizerEquivStabilizer_compTriple
       (AddAction.stabilizerEquivStabilizer hh) (AddAction.stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
-    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.inv_def, AddAut.conj, ← add_assoc]
+    simp [AddAction.stabilizerEquivStabilizer, H, AddAut.conj, ← add_assoc]
 
 variable {hg hh hk} in
 @[to_additive existing]
@@ -143,7 +156,7 @@ theorem _root_.MulAction.stabilizerEquivStabilizer_compTriple (H : k = h * g) :
       (stabilizerEquivStabilizer hh) (stabilizerEquivStabilizer hk) where
   comp_eq := by
     ext
-    simp [stabilizerEquivStabilizer, H, MulAut.inv_def, MulAut.conj, ← mul_assoc]
+    simp [stabilizerEquivStabilizer, H, MulAut.conj, ← mul_assoc]
 
 variable {hg hh hk} in
 @[to_additive]
@@ -179,7 +192,7 @@ theorem ofStabilizer.conjMap_bijective : Function.Bijective (conjMap hg) := by
 
 /-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α`. -/
 @[to_additive
-  "Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α`."]
+  /-- Append `a` to `x : Fin n ↪ ofStabilizer G a`  to get an element of `Fin n.succ ↪ α`. -/]
 def ofStabilizer.snoc {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
     Fin n.succ ↪ α :=
   Fin.Embedding.snoc (x.trans (subtype _)) (a := a) (by
@@ -202,7 +215,7 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
     ∃ (g : G) (y : Fin n ↪ ofStabilizer G a), g • x = ofStabilizer.snoc y := by
   obtain ⟨g, hgx⟩ := exists_smul_eq G (x (Fin.last n)) a
   have H : ∀ i, Fin.Embedding.init (g • x) i ∈ ofStabilizer G a := fun i ↦ by
-    simp only [SetLike.mem_coe, mem_ofStabilizer_iff,
+    simp only [mem_ofStabilizer_iff,
       Nat.succ_eq_add_one, ← hgx, ← smul_apply, ne_eq]
     suffices Fin.Embedding.init (g • x) i = (g • x) i.castSucc by
       simp [this]

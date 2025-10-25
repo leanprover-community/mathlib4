@@ -19,9 +19,8 @@ This file defines some basic utilities for tactic writing, and also
 - the `introv` tactic, which allows the user to automatically introduce the variables of a theorem
 and explicitly name the non-dependent hypotheses,
 - an `assumption` macro, calling the `assumption` tactic on all goals
-- the tactics `match_target`, `clear_aux_decl` (clearing all auxiliary declarations from the
-context) and `clear_value` (which clears the bodies of given local definitions,
-changing them into regular hypotheses).
+- the tactics `match_target` and `clear_aux_decl` (clearing all auxiliary declarations from the
+context).
 -/
 
 namespace Mathlib.Tactic
@@ -124,39 +123,69 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
       g ← g.tryClear ldec.fvarId
   replaceMainGoal [g]
 
-/-- Clears the value of the local definition `fvarId`. Ensures that the resulting goal state
-is still type correct. Throws an error if it is a local hypothesis without a value. -/
-def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MVarId := do
-  mvarId.checkNotAssigned `clear_value
-  let tag ← mvarId.getTag
-  let (_, mvarId) ← mvarId.withReverted #[fvarId] fun mvarId' fvars => mvarId'.withContext do
-    let tgt ← mvarId'.getType
-    unless tgt.isLet do
-      mvarId.withContext <|
-        throwTacticEx `clear_value mvarId m!"{Expr.fvar fvarId} is not a local definition"
-    let tgt' := Expr.forallE tgt.letName! tgt.letType! tgt.letBody! .default
-    unless ← isTypeCorrect tgt' do
-      mvarId.withContext <|
-        throwTacticEx `clear_value mvarId
-          m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
-    let mvarId'' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
-    mvarId'.assign <| .app mvarId'' tgt.letValue!
-    return ((), fvars.map .some, mvarId''.mvarId!)
-  return mvarId
-
-/-- `clear_value n₁ n₂ ...` clears the bodies of the local definitions `n₁, n₂ ...`, changing them
-into regular hypotheses. A hypothesis `n : α := t` is changed to `n : α`.
-
-The order of `n₁ n₂ ...` does not matter, and values will be cleared in reverse order of
-where they appear in the context. -/
-elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic => do
-  let fvarIds ← getFVarIds hs
-  let fvarIds ← withMainContext <| sortFVarIds fvarIds
-  for fvarId in fvarIds.reverse do
-    withMainContext do
-      let mvarId ← (← getMainGoal).clearValue fvarId
-      replaceMainGoal [mvarId]
-
 attribute [pp_with_univ] ULift PUnit PEmpty
 
+/-- Result of `withResetServerInfo`. -/
+structure withResetServerInfo.Result (α : Type) where
+  /-- Return value of the executed tactic. -/
+  result? : Option α
+  /-- Messages produced by the executed tactic. -/
+  msgs    : MessageLog
+  /-- Info trees produced by the executed tactic, wrapped in `CommandContextInfo.save`. -/
+  trees   : PersistentArray InfoTree
+
+/--
+Runs a tactic, returning any new messages and info trees rather than adding them to the state.
+-/
+def withResetServerInfo {α : Type} (t : TacticM α) :
+    TacticM (withResetServerInfo.Result α) := do
+  let (savedMsgs, savedTrees) ← modifyGetThe Core.State fun st =>
+    ((st.messages, st.infoState.trees), { st with messages := {}, infoState.trees := {} })
+  Prod.snd <$> MonadFinally.tryFinally' t fun result? => do
+    let msgs  ← Core.getMessageLog
+    let ist   ← getInfoState
+    let trees ← ist.trees.mapM fun tree => do
+      let tree := tree.substitute ist.assignment
+      let ctx := .commandCtx <| ← CommandContextInfo.save
+      return InfoTree.context ctx tree
+    modifyThe Core.State fun st =>
+      { st with messages := savedMsgs, infoState.trees := savedTrees }
+    return { result?, msgs, trees }
+
 end Mathlib.Tactic
+
+/-- A mathlib library note: the note's content should be contained in its doc-string. -/
+def LibraryNote := Unit
+
+open Lean in
+/-- `library_note2 «my note» /-- documentation -/` creates a library note named `my note`
+in the `Mathlib.LibraryNote` namespace, whose content is `/-- documentation -/`.
+You can access this note using, for example, `#print Mathlib.LibraryNote.«my note»`.
+-/
+macro "library_note2 " name:ident ppSpace dc:docComment : command =>
+  `($dc:docComment def $(mkIdent (Name.append `Mathlib.LibraryNote name.getId)) : LibraryNote := ())
+
+open Lean Elab Command in
+/-- Support the old `library_note "foo"` syntax, with a deprecation warning. -/
+elab "library_note2 " name:str ppSpace dc:docComment : command => do
+  logWarningAt name <|
+    "deprecation warning: library_note2 now takes an identifier instead of a string.\n" ++
+    "Hint: replace the double quotes with «french quotes»."
+  let name := Name.mkSimple name.getString
+  let stx ← `(library_note2 $(mkIdent name):ident $dc:docComment)
+  elabCommandTopLevel stx
+
+library_note2 «partially-applied ext lemmas»
+/--
+When possible, `ext` lemmas are stated without a full set of arguments. As an example, for bundled
+homs `f`, `g`, and `of`, `f.comp of = g.comp of → f = g` is a better `ext` lemma than
+`(∀ x, f (of x) = g (of x)) → f = g`, as the former allows a second type-specific extensionality
+lemmas to be applied to `f.comp of = g.comp of`.
+If the domain of `of` is `ℕ` or `ℤ` and `of` is a `RingHom`, such a lemma could then make the goal
+`f (of 1) = g (of 1)`.
+
+For bundled morphisms, there is a `ext` lemma that always applies of the form
+`(∀ x, ⇑f x = ⇑g x) → f = g`. When adding type-specific `ext` lemmas like the one above, we want
+these to be tried first. This happens automatically since the type-specific lemmas are inevitably
+defined later.
+-/

@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Int.Sum
+import Mathlib.Algebra.Order.Ring.Int
 
 /-!
 # IMO 2015 Q6
@@ -127,7 +129,7 @@ include ha hbN
 lemma b_pos : 0 < b := by
   by_contra! h; rw [nonpos_iff_eq_zero] at h; subst h
   replace hbN : ∀ t, #(pool a t) = 0 := fun t ↦ by
-    obtain h | h := le_or_lt t N
+    obtain h | h := le_or_gt t N
     · have : #(pool a t) ≤ #(pool a N) := monotone_card_pool ha h
       rwa [hbN _ le_rfl, nonpos_iff_eq_zero] at this
     · exact hbN _ h.le
@@ -179,7 +181,7 @@ theorem result (ha : Condition a) :
     ∃ b > 0, ∃ N, ∀ m ≥ N, ∀ n > m, |∑ j ∈ Ico m n, (a j - b)| ≤ 1007 ^ 2 := by
   obtain ⟨b, N, hbN⟩ := exists_max_card_pool ha
   have bp := b_pos ha hbN
-  use b, Int.ofNat_pos.mpr bp, N; intro m hm n hn; rw [sum_telescope ha hbN hm hn]
+  use b, Int.natCast_pos.mpr bp, N; intro m hm n hn; rw [sum_telescope ha hbN hm hn]
   calc
     _ ≤ ∑ i ∈ range (b - 1), (2014 - i : ℤ) - ∑ i ∈ range b, (i : ℤ) :=
       abs_sub_le_of_le_of_le (le_sum_pool ha hbN (hm.trans hn.le))
@@ -191,7 +193,7 @@ theorem result (ha : Condition a) :
         rw [mem_range] at mx; omega
       rw [sum_congr rfl sc, sum_const, card_range, nsmul_eq_mul, Nat.cast_pred bp]
     _ ≤ _ := by
-      rw [← mul_le_mul_left zero_lt_four, ← mul_assoc,
+      rw [← mul_le_mul_iff_right₀ zero_lt_four, ← mul_assoc,
         show 4 * 1007 ^ 2 = ((b - 1 : ℤ) + (2015 - b)) ^ 2 by simp]
       exact four_mul_le_sq_add ..
 

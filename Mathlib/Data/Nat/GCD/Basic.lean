@@ -3,7 +3,6 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Nat
@@ -43,7 +42,7 @@ theorem pow_sub_one_mod_pow_sub_one (a b c : ℕ) : (a ^ c - 1) % (a ^ b - 1) = 
   · simp
   rcases eq_zero_or_pos b with rfl | hb0
   · simp
-  rcases lt_or_le c b with h | h
+  rcases lt_or_ge c b with h | h
   · rw [mod_eq_of_lt, mod_eq_of_lt h]
     rwa [Nat.sub_lt_sub_iff_right (one_le_pow c a ha0), Nat.pow_lt_pow_iff_right ha1]
   · suffices a ^ (c - b + b) - 1 = a ^ (c - b) * (a ^ b - 1) + (a ^ (c - b) - 1) by
@@ -59,6 +58,24 @@ theorem pow_sub_one_gcd_pow_sub_one (a b c : ℕ) :
   · simp
   replace hb : c % b < b := mod_lt c hb
   rw [gcd_rec, pow_sub_one_mod_pow_sub_one, pow_sub_one_gcd_pow_sub_one, ← gcd_rec]
+
+/-! ### `lcm` and divisibility -/
+
+theorem dvd_lcm_of_dvd_left (h : a ∣ b) (c : ℕ) : a ∣ lcm b c :=
+  h.trans (dvd_lcm_left b c)
+
+alias Dvd.dvd.nat_lcm_right := dvd_lcm_of_dvd_left
+
+theorem dvd_of_lcm_right_dvd {a b c : ℕ} (h : lcm a b ∣ c) : a ∣ c :=
+  (dvd_lcm_left a b).trans h
+
+theorem dvd_lcm_of_dvd_right {a b : ℕ} (h : a ∣ b) (c : ℕ) : a ∣ lcm c b :=
+  h.trans (dvd_lcm_right c b)
+
+alias Dvd.dvd.nat_lcm_left := dvd_lcm_of_dvd_right
+
+theorem dvd_of_lcm_left_dvd {a b c : ℕ} (h : lcm a b ∣ c) : b ∣ c :=
+  (dvd_lcm_right a b).trans h
 
 /-!
 ### `Coprime`
@@ -220,12 +237,34 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
   refine mul_ne_zero hb.2 ha.2 (eq_zero_of_mul_eq_self_left (ne_of_gt (add_le_add ha.1 hb.1)) ?_)
   rw [← mul_assoc, ← h, Nat.add_mul, Nat.add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
 
-variable {x n m : ℕ}
+variable {x n m k : ℕ}
 
 theorem gcd_mul_gcd_eq_iff_dvd_mul_of_coprime (hcop : Coprime n m) :
     gcd x n * gcd x m = x ↔ x ∣ n * m := by
   refine ⟨fun h ↦ ?_, (dvd_antisymm ?_ <| dvd_gcd_mul_gcd_iff_dvd_mul.mpr ·)⟩
   refine h ▸ Nat.mul_dvd_mul ?_ ?_ <;> exact x.gcd_dvd_right _
   refine (hcop.gcd_both x x).mul_dvd_of_dvd_of_dvd ?_ ?_ <;> exact x.gcd_dvd_left _
+
+lemma div_mul_div (hkm : m ∣ k) (hkn : n ∣ m) : (k / m) * (m / n) = k / n := by
+  rcases n.eq_zero_or_pos with hn | hn
+  · simp [hn]
+  refine (Nat.div_eq_of_eq_mul_left hn ?_).symm
+  rw [mul_assoc, Nat.div_mul_cancel hkn, Nat.div_mul_cancel hkm]
+
+lemma div_dvd_div_left (hkm : m ∣ k) (hkn : n ∣ m) : k / m ∣ k / n :=
+  ⟨_, (div_mul_div hkm hkn).symm⟩
+
+lemma div_lcm_eq_div_gcd (hkm : m ∣ k) (hkn : n ∣ k) : (k / m).lcm (k / n) = k / (m.gcd n) := by
+  rw [Nat.lcm_eq_iff]
+  refine ⟨div_dvd_div_left hkm (Nat.gcd_dvd_left m n),
+        div_dvd_div_left hkn (Nat.gcd_dvd_right m n), fun c hmc hnc ↦ ?_⟩
+  rcases m.eq_zero_or_pos with hm | hm
+  · simp_all
+  rcases n.eq_zero_or_pos with hn | hn
+  · simp_all
+  rw [Nat.div_dvd_iff_dvd_mul hkm hm] at hmc
+  rw [Nat.div_dvd_iff_dvd_mul hkn hn] at hnc
+  simpa [Nat.div_dvd_iff_dvd_mul (Nat.dvd_trans (Nat.gcd_dvd_left m n) hkm)
+    (gcd_pos_of_pos_left n hm), Nat.gcd_mul_right m c n] using (Nat.dvd_gcd hmc hnc)
 
 end Nat

@@ -3,15 +3,19 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.IGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Combinatorial pregames
 
 This is the first in a series of files developing the basic theory of combinatorial games,
-following Conway's book `On Numbers and Games`:
+following Conway's book "On Numbers and Games":
 
 * this file defines _pregames_ and elementary operations on them (relabelling, option insertion)
 * `Mathlib/SetTheory/PGame/Order.lean` defines an ordering on pregames
@@ -60,7 +64,7 @@ The material here is all drawn from
 
 An interested reader may like to formalise some of the material from
 * [Andreas Blass, *A game semantics for linear logic*][MR1167694]
-* [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1997]
+* [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1977]
 -/
 
 namespace SetTheory
@@ -72,7 +76,7 @@ open Function Relation
 universe u
 
 /-- The type of pre-games, before we have quotiented
-  by equivalence (`PGame.Setoid`). In ZFC, a combinatorial game is constructed from
+  by equivalence (`PGame.setoid`). In ZFC, a combinatorial game is constructed from
   two sets of combinatorial games that have been constructed at an earlier
   stage. To do this in type theory, we say that a pre-game is built
   inductively from two families of pre-games indexed over any type
@@ -117,8 +121,8 @@ theorem moveRight_mk {xl xr xL xR} : (⟨xl, xr, xL, xR⟩ : PGame).moveRight = 
   rfl
 
 lemma ext {x y : PGame} (hl : x.LeftMoves = y.LeftMoves) (hr : x.RightMoves = y.RightMoves)
-    (hL : ∀ i j, HEq i j → x.moveLeft i = y.moveLeft j)
-    (hR : ∀ i j, HEq i j → x.moveRight i = y.moveRight j) :
+    (hL : ∀ i j, i ≍ j → x.moveLeft i = y.moveLeft j)
+    (hR : ∀ i j, i ≍ j → x.moveRight i = y.moveRight j) :
     x = y := by
   cases x
   cases y
@@ -242,7 +246,7 @@ macro "pgame_wf_tac" : tactic =>
   `(tactic| solve_by_elim (config := { maxDepth := 8 })
     [Prod.Lex.left, Prod.Lex.right, PSigma.Lex.left, PSigma.Lex.right,
     Subsequent.moveLeft, Subsequent.moveRight, Subsequent.mk_left, Subsequent.mk_right,
-    Subsequent.trans] )
+    Subsequent.trans])
 
 -- Register some consequences of pgame_wf_tac as simp-lemmas for convenience
 -- (which are applied by default for WF goals)

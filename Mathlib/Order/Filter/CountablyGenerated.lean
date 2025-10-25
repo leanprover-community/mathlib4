@@ -91,7 +91,7 @@ section IsCountablyGenerated
 
 protected theorem HasAntitoneBasis.mem_iff [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hs : l.HasAntitoneBasis s) {t : Set α} : t ∈ l ↔ ∃ i, s i ⊆ t :=
-  hs.toHasBasis.mem_iff.trans <| by simp only [exists_prop, true_and]
+  hs.toHasBasis.mem_iff.trans <| by simp only [true_and]
 
 protected theorem HasAntitoneBasis.mem [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hs : l.HasAntitoneBasis s) (i : ι) : s i ∈ l :=

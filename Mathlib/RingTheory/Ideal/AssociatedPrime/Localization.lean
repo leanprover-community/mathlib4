@@ -5,13 +5,13 @@ Authors: Nailin Guan
 -/
 import Mathlib.Algebra.Module.LocalizedModule.Basic
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 
-# Assocaited primes of localized module
+# Associated primes of localized module
 
-This file mainly proof the relation between `Ass(S⁻¹M)` and `Ass(M)`
+This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
 
 # Main Results
 
@@ -20,13 +20,13 @@ This file mainly proof the relation between `Ass(S⁻¹M)` and `Ass(M)`
   `p ∈ Ass (S⁻¹M)`.
 
 TODO: prove the reverse when `p` is finitely generated and
-      get `Ass (S⁻¹M) = Ass(M) ∩ Spec(S⁻¹R)` when `R` noetherian.
+      get `Ass (S⁻¹M) = Ass(M) ∩ Spec(S⁻¹R)` when `R` Noetherian.
 
 TODO: deduce from the above that every minimal element in support is in `Ass(M)`.
 
 -/
 
-variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*)  [CommRing R'] [Algebra R R']
+variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*) [CommRing R'] [Algebra R R']
   [IsLocalization S R']
 
 variable {M M' : Type*} [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
@@ -43,7 +43,7 @@ lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
     p ∈ associatedPrimes R' M' := by
   rcases ass with ⟨hp, x, hx⟩
   constructor
-  · /- use the following to  remove `p.IsPrime`
+  · /- use the following to remove `p.IsPrime`
       exact (IsLocalization.isPrime_iff_isPrime_disjoint S _ _).mpr
       ⟨hp, (IsLocalization.disjoint_comap_iff S R' p).mpr (p ≠ ⊤)⟩ -/
     assumption

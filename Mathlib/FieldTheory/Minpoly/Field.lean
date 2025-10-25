@@ -53,7 +53,7 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
   have hx : IsIntegral A x := ⟨p, pmonic, hp⟩
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
-  apply degree_le_of_ne_zero A x hnz (by simp [hp]) |>.not_lt
+  apply degree_le_of_ne_zero A x hnz (by simp [hp]) |>.not_gt
   apply degree_sub_lt _ (minpoly.ne_zero hx)
   · rw [(monic hx).leadingCoeff, pmonic.leadingCoeff]
   · exact le_antisymm (min A x pmonic hp) (pmin (minpoly A x) (monic hx) (aeval A x))
@@ -68,7 +68,7 @@ theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   rw [← modByMonic_eq_zero_iff_dvd (monic hx)]
   by_contra hnz
   apply degree_le_of_ne_zero A x hnz
-    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp) |>.not_lt
+    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp) |>.not_gt
   exact degree_modByMonic_lt _ (monic hx)
 
 variable {A x} in
@@ -195,6 +195,17 @@ theorem neg {B : Type*} [Ring B] [Algebra A B] (x : B) :
     · simp only [natDegree_zero, pow_zero, mul_zero]
     · exact IsIntegral.neg_iff.not.mpr hx
 
+theorem map_eq_of_equiv_equiv {R S T : Type*} [CommRing R] [IsDomain R] [Ring S] [Ring T]
+    [IsDomain S] [IsDomain T] [Algebra R S] [Algebra A T] [Algebra.IsIntegral R S]
+    {f : R ≃+* A} {g : S ≃+* T}
+    (hcomp : (algebraMap A T).comp f = (g : S →+* T).comp (algebraMap R S)) (x : S) :
+    map f (minpoly R x) = minpoly A (g x) := by
+  refine minpoly.eq_of_irreducible_of_monic ?_ ?_ ?_
+  · rw [← mapEquiv_apply, MulEquiv.irreducible_iff]
+    exact minpoly.irreducible (Algebra.IsIntegral.isIntegral x)
+  · simpa using (map_aeval_eq_aeval_map hcomp (minpoly R x) x).symm
+  · exact (monic (Algebra.IsIntegral.isIntegral x)).map _
+
 section AlgHomFintype
 
 open scoped Classical in
@@ -303,13 +314,12 @@ section AlgHom
 
 variable {K L} [Field K] [CommRing L] [IsDomain L] [Algebra K L]
 
-/-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
+/-- The minimal polynomial (over `K`) of `σ : L ≃ₐ[K] L` is `X ^ (orderOf σ) - 1`. -/
 lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
   refine (minpoly.unique _ _ (monic_X_pow_sub_C _ hσ.orderOf_pos.ne.symm) ?_ ?_).symm
-  · rw [map_sub]
-    simp [← AlgEquiv.pow_toLinearMap, pow_orderOf_eq_one]
-  · intros q hq hs
+  · simp [← AlgEquiv.pow_toLinearMap, pow_orderOf_eq_one]
+  · intro q hq hs
     rw [degree_eq_natDegree hq.ne_zero, degree_X_pow_sub_C hσ.orderOf_pos, Nat.cast_le, ← not_lt]
     intro H
     rw [aeval_eq_sum_range' H, ← Fin.sum_univ_eq_sum_range] at hs

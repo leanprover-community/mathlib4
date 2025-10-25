@@ -31,7 +31,10 @@ Some examples of EDSs include
 * `IsEllDivSequence`: a sequence indexed by integers is an EDS.
 * `preNormEDS'`: the auxiliary sequence for a normalised EDS indexed by `ℕ`.
 * `preNormEDS`: the auxiliary sequence for a normalised EDS indexed by `ℤ`.
+* `complEDS₂`: the 2-complement sequence for a normalised EDS indexed by `ℕ`.
 * `normEDS`: the canonical example of a normalised EDS indexed by `ℤ`.
+* `complEDS'`: the complement sequence for a normalised EDS indexed by `ℕ`.
+* `complEDS`: the complement sequence for a normalised EDS indexed by `ℤ`.
 
 ## Main statements
 
@@ -124,8 +127,8 @@ def preNormEDS' : ℕ → R
       preNormEDS' (m + 4) * preNormEDS' (m + 2) ^ 3 * (if Even m then b else 1) -
         preNormEDS' (m + 1) * preNormEDS' (m + 3) ^ 3 * (if Even m then 1 else b)
     else
-      have : m + 5 < n + 5 :=
-        add_lt_add_right (Nat.div_lt_self (Nat.not_even_iff_odd.mp hn).pos one_lt_two) 5
+      have : m + 5 < n + 5 := by
+        gcongr; exact Nat.div_lt_self (Nat.not_even_iff_odd.mp hn).pos one_lt_two
       preNormEDS' (m + 2) ^ 2 * preNormEDS' (m + 3) * preNormEDS' (m + 5) -
         preNormEDS' (m + 1) * preNormEDS' (m + 3) * preNormEDS' (m + 4) ^ 2
 
@@ -235,6 +238,45 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
 
 @[deprecated (since := "2025-05-15")] alias preNormEDS_odd_ofNat := preNormEDS_odd
 
+/-- The 2-complement sequence `Wᶜ₂ : ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
+`W(k) ∣ W(2 * k)`. In other words, `W(k) * Wᶜ₂(k) = W(2 * k)` for any `k ∈ ℤ`.
+
+This is defined in terms of `preNormEDS`. -/
+def complEDS₂ (k : ℤ) : R :=
+  (preNormEDS (b ^ 4) c d (k - 1) ^ 2 * preNormEDS (b ^ 4) c d (k + 2) -
+    preNormEDS (b ^ 4) c d (k - 2) * preNormEDS (b ^ 4) c d (k + 1) ^ 2) * if Even k then 1 else b
+
+@[simp]
+lemma complEDS₂_zero : complEDS₂ b c d 0 = 2 := by
+  simp [complEDS₂, one_add_one_eq_two]
+
+@[simp]
+lemma complEDS₂_one : complEDS₂ b c d 1 = b := by
+  simp [complEDS₂]
+
+@[simp]
+lemma complEDS₂_two : complEDS₂ b c d 2 = d := by
+  simp [complEDS₂]
+
+@[simp]
+lemma complEDS₂_three : complEDS₂ b c d 3 = preNormEDS (b ^ 4) c d 5 * b - d ^ 2 * b := by
+  simp [complEDS₂, if_neg (by decide : ¬Even (3 : ℤ)), sub_mul]
+
+@[simp]
+lemma complEDS₂_four : complEDS₂ b c d 4 =
+    c ^ 2 * preNormEDS (b ^ 4) c d 6 - preNormEDS (b ^ 4) c d 5 ^ 2 := by
+  simp [complEDS₂, if_pos (by decide : Even (4 : ℤ))]
+
+@[simp]
+lemma complEDS₂_neg (k : ℤ) : complEDS₂ b c d (-k) = complEDS₂ b c d k := by
+  simp_rw [complEDS₂, ← neg_add', ← sub_neg_eq_add, ← neg_sub', preNormEDS_neg, even_neg]
+  ring1
+
+lemma preNormEDS_mul_complEDS₂ (k : ℤ) : preNormEDS (b ^ 4) c d k * complEDS₂ b c d k =
+    preNormEDS (b ^ 4) c d (2 * k) * if Even k then 1 else b := by
+  rw [complEDS₂, preNormEDS_even]
+  ring1
+
 end PreNormEDS
 
 section NormEDS
@@ -275,12 +317,31 @@ lemma normEDS_four : normEDS b c d 4 = d * b := by
 lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
   simp_rw [normEDS, preNormEDS_neg, even_neg, neg_mul]
 
+lemma normEDS_mul_complEDS₂ (k : ℤ) :
+    normEDS b c d k * complEDS₂ b c d k = normEDS b c d (2 * k) := by
+  simp_rw [normEDS, mul_right_comm, preNormEDS_mul_complEDS₂, mul_assoc, apply_ite₂, one_mul,
+    mul_one, ite_self, if_pos <| even_two_mul k]
+
+lemma normEDS_dvd_normEDS_two_mul (k : ℤ) : normEDS b c d k ∣ normEDS b c d (2 * k) :=
+  ⟨complEDS₂ .., (normEDS_mul_complEDS₂ ..).symm⟩
+
+lemma complEDS₂_mul_b (k : ℤ) : complEDS₂ b c d k * b =
+    normEDS b c d (k - 1) ^ 2 * normEDS b c d (k + 2) -
+      normEDS b c d (k - 2) * normEDS b c d (k + 1) ^ 2 := by
+  induction k using Int.negInduction with
+  | nat k =>
+    simp_rw [complEDS₂, normEDS, Int.even_add, Int.even_sub, even_two, iff_true, Int.not_even_one,
+      iff_false]
+    split_ifs <;> ring1
+  | neg ih =>
+    simp_rw [complEDS₂_neg, ← sub_neg_eq_add, ← neg_sub', ← neg_add', normEDS_neg, ih]
+    ring1
+
 lemma normEDS_even (m : ℤ) : normEDS b c d (2 * m) * b =
     normEDS b c d (m - 1) ^ 2 * normEDS b c d m * normEDS b c d (m + 2) -
       normEDS b c d (m - 2) * normEDS b c d m * normEDS b c d (m + 1) ^ 2 := by
-  simp_rw [normEDS, preNormEDS_even, if_pos <| even_two_mul m, Int.even_add, Int.even_sub, even_two,
-    iff_true, Int.not_even_one, iff_false]
-  split_ifs <;> ring1
+  rw [← normEDS_mul_complEDS₂, mul_assoc, complEDS₂_mul_b]
+  ring1
 
 @[deprecated (since := "2025-05-15")] alias normEDS_even_ofNat := normEDS_even
 
@@ -293,11 +354,13 @@ lemma normEDS_odd (m : ℤ) : normEDS b c d (2 * m + 1) =
 
 @[deprecated (since := "2025-05-15")] alias normEDS_odd_ofNat := normEDS_odd
 
-/-- Strong recursion principle for a normalised EDS: if we have
+/--
+Strong recursion principle for a normalised EDS: if we have
 * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
-then we have `P n` for all `n : ℕ`. -/
+  then we have `P n` for all `n : ℕ`.
+-/
 @[elab_as_elim]
 noncomputable def normEDSRec' {P : ℕ → Sort u}
     (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
@@ -324,6 +387,125 @@ noncomputable def normEDSRec {P : ℕ → Sort u}
 
 end NormEDS
 
+section ComplEDS
+
+variable (k : ℤ)
+
+/-- The complement sequence `Wᶜ : ℤ × ℕ → R` for a normalised EDS `W : ℤ → R` that witnesses
+`W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for any `k, n ∈ ℤ`.
+
+This is defined in terms of `normEDS` and agrees with `complEDS₂` when `n = 2`. -/
+def complEDS' : ℕ → R
+  | 0 => 0
+  | 1 => 1
+  | (n + 2) => let m := n / 2 + 1
+    if hn : Even n then complEDS' m * complEDS₂ b c d (m * k) else
+      have : m + 1 < n + 2 :=
+        add_lt_add_right (Nat.div_lt_self (Nat.not_even_iff_odd.mp hn).pos one_lt_two) 2
+      complEDS' m ^ 2 * normEDS b c d ((m + 1) * k + 1) * normEDS b c d ((m + 1) * k - 1) -
+        complEDS' (m + 1) ^ 2 * normEDS b c d (m * k + 1) * normEDS b c d (m * k - 1)
+
+@[simp]
+lemma complEDS'_zero : complEDS' b c d k 0 = 0 := by
+  rw [complEDS']
+
+@[simp]
+lemma complEDS'_one : complEDS' b c d k 1 = 1 := by
+  rw [complEDS']
+
+lemma complEDS'_even (m : ℕ) : complEDS' b c d k (2 * (m + 1)) =
+    complEDS' b c d k (m + 1) * complEDS₂ b c d ((m + 1) * k) := by
+  rw [show 2 * (m + 1) = 2 * m + 2 by rfl, complEDS', dif_pos <| even_two_mul m,
+    m.mul_div_cancel_left two_pos, Nat.cast_succ]
+
+lemma complEDS'_odd (m : ℕ) : complEDS' b c d k (2 * (m + 1) + 1) =
+    complEDS' b c d k (m + 1) ^ 2
+        * normEDS b c d ((m + 2) * k + 1) * normEDS b c d ((m + 2) * k - 1) -
+      complEDS' b c d k (m + 2) ^ 2
+          * normEDS b c d ((m + 1) * k + 1) * normEDS b c d ((m + 1) * k - 1) := by
+  rw [show 2 * (m + 1) + 1 = 2 * m + 3 by rfl, complEDS', dif_neg m.not_even_two_mul_add_one]
+  simpa only [Nat.mul_add_div two_pos] using by rfl
+
+/-- The complement sequence `Wᶜ : ℤ × ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
+`W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for any `k, n ∈ ℤ`.
+
+This extends `complEDS'` by defining its values at negative integers. -/
+def complEDS (n : ℤ) : R :=
+  n.sign * complEDS' b c d k n.natAbs
+
+@[simp]
+lemma complEDS_ofNat (n : ℕ) : complEDS b c d k n = complEDS' b c d k n := by
+  by_cases hn : n = 0
+  · simp [hn, complEDS]
+  · simp [complEDS, Int.sign_natCast_of_ne_zero hn]
+
+@[simp]
+lemma complEDS_zero : complEDS b c d k 0 = 0 := by
+  simp [complEDS]
+
+@[simp]
+lemma complEDS_one : complEDS b c d k 1 = 1 := by
+  simp [complEDS]
+
+@[simp]
+lemma complEDS_neg (n : ℤ) : complEDS b c d k (-n) = -complEDS b c d k n := by
+  simp [complEDS]
+
+lemma complEDS_even (m : ℤ) :
+    complEDS b c d k (2 * m) = complEDS b c d k m * complEDS₂ b c d (m * k) := by
+  induction m using Int.negInduction with
+  | nat m =>
+    rcases m with _ | _
+    · simp
+    norm_cast
+    simpa only [complEDS_ofNat] using complEDS'_even ..
+  | neg ih => simp_rw [mul_neg, complEDS_neg, ih, neg_mul, complEDS₂_neg]
+
+lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
+    complEDS b c d k m ^ 2 * normEDS b c d ((m + 1) * k + 1) * normEDS b c d ((m + 1) * k - 1) -
+      complEDS b c d k (m + 1) ^ 2 * normEDS b c d (m * k + 1) * normEDS b c d (m * k - 1) := by
+  induction m using Int.negInduction with
+  | nat m =>
+    rcases m with _ | _
+    · simp
+    norm_cast
+    simpa only [complEDS_ofNat] using complEDS'_odd ..
+  | neg ih m =>
+    rcases m with _ | m
+    · simp
+    simp_rw [Nat.cast_succ, show 2 * -(m + 1 : ℤ) + 1 = -(2 * m + 1) by rfl,
+      show (-(m + 1 : ℤ) + 1) = -m by ring1, neg_mul, ← sub_neg_eq_add, ← neg_sub', sub_neg_eq_add,
+      ← neg_add', complEDS_neg, normEDS_neg, ih]
+    ring1
+
+/-- Strong recursion principle for the complement sequence for a normalised EDS: if we have
+* `P 0`, `P 1`,
+* for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
+* for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
+then we have `P n` for all `n : ℕ`. -/
+@[elab_as_elim]
+noncomputable def complEDSRec' {P : ℕ → Sort u} (zero : P 0) (one : P 1)
+    (even : ∀ m : ℕ, (∀ k < 2 * (m + 1), P k) → P (2 * (m + 1)))
+    (odd : ∀ m : ℕ, (∀ k < 2 * (m + 1) + 1, P k) → P (2 * (m + 1) + 1)) (n : ℕ) : P n :=
+  n.evenOddStrongRec (by rintro (_ | _) h; exacts [zero, even _ h])
+    (by rintro (_ | _) h; exacts [one, odd _ h])
+
+/-- Recursion principle for the complement sequence for a normalised EDS: if we have
+* `P 0`, `P 1`,
+* for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
+  `P (m + 4)`, and `P (m + 5)`, and
+* for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
+  and `P (m + 4)`,
+then we have `P n` for all `n : ℕ`. -/
+@[elab_as_elim]
+noncomputable def complEDSRec {P : ℕ → Sort u} (zero : P 0) (one : P 1)
+    (even : ∀ m : ℕ, P (m + 1) → P (2 * (m + 1)))
+    (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (2 * (m + 1) + 1)) (n : ℕ) : P n :=
+  complEDSRec' zero one (fun _ ih => even _ <| ih _ <| by linarith only)
+    (fun _ ih => odd _ (ih _ <| by linarith only) <| ih _ <| by linarith only) n
+
+end ComplEDS
+
 section Map
 
 variable {S : Type v} [CommRing S] (f : R →+* S)
@@ -345,7 +527,25 @@ lemma map_preNormEDS (n : ℤ) : f (preNormEDS b c d n) = preNormEDS (f b) (f c)
   simp [preNormEDS]
 
 @[simp]
+lemma map_complEDS₂ (n : ℤ) : f (complEDS₂ b c d n) = complEDS₂ (f b) (f c) (f d) n := by
+  simp [complEDS₂, apply_ite f]
+
+@[simp]
 lemma map_normEDS (n : ℤ) : f (normEDS b c d n) = normEDS (f b) (f c) (f d) n := by
   simp [normEDS, apply_ite f]
+
+@[simp]
+lemma map_complEDS' (k : ℤ) (n : ℕ) :
+    f (complEDS' b c d k n) = complEDS' (f b) (f c) (f d) k n := by
+  induction n using complEDSRec' with
+  | zero => simp
+  | one => simp
+  | _ _ ih =>
+    simp only [complEDS'_even, complEDS'_odd, map_normEDS, map_complEDS₂, map_pow, map_mul, map_sub]
+    repeat rw [ih _ <| by linarith only]
+
+@[simp]
+lemma map_complEDS (k n : ℤ) : f (complEDS b c d k n) = complEDS (f b) (f c) (f d) k n := by
+  simp [complEDS]
 
 end Map

@@ -199,7 +199,7 @@ private lemma induction_structure (n : ℕ)
       -- then `I = Ideal.span {e i}`
       · exact hP₂ R e i hi H'
       -- Case I.i : There is another `e j ≠ 0`
-      · simp only [ne_eq, not_forall, Classical.not_imp] at H'
+      · simp only [ne_eq, not_forall] at H'
         obtain ⟨j, hj, hj'⟩ := H'
         replace i_min := i_min j hj'
         -- then we can replace `e j` with `e j %ₘ (C h.unit⁻¹ * e i) `
@@ -207,14 +207,13 @@ private lemma induction_structure (n : ℕ)
         apply hP₃ R e i j hi i_min (.symm hj) (H_IH _ ?_ _ rfl)
         refine .left _ _ (lt_of_le_of_ne (b := (ofLex v).1) ?_ ?_)
         · intro k
-          simp only [comp_apply, update_apply, hv, ne_eq, not_exists, not_and,
-            not_forall, Classical.not_imp, not_le, ofLex_toLex]
+          simp only [comp_apply, update_apply, hv]
           split_ifs with hjk
           · rw [hjk]
             exact (degree_modByMonic_le _ hi).trans i_min
           · exact le_rfl
-        · simp only [hv, ne_eq, not_exists, not_and, not_forall, not_le, funext_iff,
-            comp_apply, exists_prop, ofLex_toLex]
+        · simp only [hv, ne_eq, not_forall, funext_iff,
+            comp_apply]
           use j
           simp only [update_self]
           refine ((degree_modByMonic_lt _ hi).trans_le i_min).ne
@@ -238,12 +237,12 @@ private lemma induction_structure (n : ℕ)
           comp_apply, smul_eq_mul]
         refine ((degree_mul_le _ _).trans (add_le_add degree_C_le degree_map_le)).trans ?_
         simp
-      rw [lt_iff_le_not_le]
+      rw [lt_iff_le_not_ge]
       simp only [coe_mapRingHom, funext_iff, InductionObj.ofLex_degree_fst, Pi.smul_apply,
         comp_apply, smul_eq_mul, show (ofLex e.degree).2 from H,
         le_Prop_eq, implies_true, true_implies, true_and]
       simp only [InductionObj.ofLex_degree_snd, Pi.smul_apply, comp_apply, smul_eq_mul,
-        ne_eq, not_exists, not_and, not_forall, Classical.not_imp, not_le, not_lt]
+        ne_eq, not_exists, not_and, not_forall, not_le, not_lt]
       intro h_eq
       refine ⟨i, ?_, ?_⟩
       · rw [Monic.def, ← coeff_natDegree (p := _ * _), natDegree_eq_of_degree_eq (h_eq i),
@@ -253,16 +252,13 @@ private lemma induction_structure (n : ℕ)
     · rw [hv]
       refine .left _ _ (lt_of_le_of_ne ?_ ?_)
       · intro j; simpa using degree_map_le
-      simp only [coe_mapRingHom, comp_apply, ne_eq, hv, ofLex_toLex,
-        not_exists, not_and, not_forall, Classical.not_imp, not_le, H, not_false_eq_true]
+      simp only [coe_mapRingHom, ne_eq]
       intro h_eq
       replace h_eq := congr_fun h_eq i
       simp only [Ideal.Quotient.algebraMap_eq, comp_apply, degree_map_eq_iff,
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
-set_option maxHeartbeats 400000 in
--- Requires more heartbeats after nightly-2025-03-25.
 open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
@@ -311,9 +307,9 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
     simp [Set.image_insert_eq, Set.smul_set_insert, Set.image_iUnion, Set.smul_set_iUnion, q₁, e₁]
     congr! with i
     change _ = IsLocalization.Away.invSelf c • _
-    simp [← Set.range_comp, Set.smul_set_range, funext fun _ ↦ coeff_C_mul _]
+    simp [← Set.range_comp, Set.smul_set_range]
     ext
-    simp [q₁]
+    simp
   replace hT₁span x hx i :=
     smul_mem_pointwise_smul _ (q₁ c ^ e₁.powBound) _ (hT₁span x hx i)
   simp only [he₁span, smul_invOf_smul, smul_eq_mul] at hT₁span
@@ -344,7 +340,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
             RingHom.algebraMap_toAlgebra]; exact Set.union_compl_self _) _
       _ = (⋃ C ∈ S₁, C.toSet) ∪ ⋃ C ∈ S₂, C.toSet := ?_
       _ = ⋃ C ∈ S₁ ∪ S₂, C.toSet := by
-        simpa using (Set.biUnion_union S₁.toSet S₂.toSet _).symm
+        simpa using (Set.biUnion_union (SetLike.coe S₁) S₂ _).symm
     congr 1
     · convert congr(comap q₁.toRingHom '' $hT₁)
       · dsimp only [e₁]
@@ -384,7 +380,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           simp only [AlgHom.toRingHom_eq_coe, Ideal.Quotient.mkₐ_ker, zeroLocus_span, q₂]
           exact Set.diff_subset.trans (zeroLocus_anti_mono (by simp))
         · exact Set.image_subset_range _ _
-        · simp only [AlgHom.toLinearMap_apply, RingHom.toIntAlgHom_coe] at hq₂g₂
+        · simp only [AlgHom.toLinearMap_apply] at hq₂g₂
           have : q₂ c = 0 := by simp [q₂]
           simp only [BasicConstructibleSetData.toSet, Set.preimage_diff, preimage_comap_zeroLocus,
             preimage_comap_zeroLocus,
@@ -409,13 +405,13 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           gcongr
           · exact one_le_coeffSubmodule
           · exact Set.subset_union_right
-          · omega
+          · cutsat
     · exact le_self_pow one_le_coeffSubmodule powBound_ne_zero <| subset_span <| .inr <| by
         simpa using ⟨_, _, hi.symm⟩
     · unfold powBound
       gcongr
       · exact one_le_coeffSubmodule
-      · omega
+      · cutsat
 
 /-- The main induction in the proof of Chevalley's theorem for `R →+* R[X]`.
 See the docstring of `induction_structure` for the overview. -/
@@ -440,10 +436,10 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           by_cases hi : i ≤ f.natDegree
           · exact ⟨i, hi.trans_lt (by simp), rfl⟩
           · exact ⟨f.natDegree + 1, by simp,
-              by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_le hi)]⟩
+              by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_ge hi)]⟩
         · ext; simp [eq_comm]
     · simp
-  · intros R _ g i hi hi_min _ R₀ _ f
+  · intro R _ g i hi hi_min _ R₀ _ f
     let M := R[X] ⧸ Ideal.span {g.1 i}
     have : Module.Free R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
     have : Module.Finite R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
@@ -478,7 +474,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           · subst hkj; exact (degree_modByMonic_le _ hi).trans hle
           · rfl
       refine ⟨(hS' C hC).1.trans deg_bound₁, fun k ↦ SetLike.le_def.mp ?_ ((hS' C hC).2 k)⟩
-      show c'.coeffSubmodule R₀ ^ c'.powBound ≤ _
+      change c'.coeffSubmodule R₀ ^ c'.powBound ≤ _
       delta powBound
       suffices hij : c'.coeffSubmodule R₀ ≤ c.coeffSubmodule R₀ ^ (c.val j).degree.succ by
         by_cases hi' : c.val i = 1
@@ -557,7 +553,7 @@ lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM :
   · simp only [BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.image_iUnion,
       Finset.set_biUnion_biUnion, hf₁]
   · simp only [Finset.mem_biUnion, forall_exists_index, and_imp]
-    intros x y hy hx
+    intro x y hy hx
     have H : degBound ⟨y.g⟩ ≤ S.degBound :=
       Finset.le_sup (f := fun e ↦ ∑ i, (e.g i).degree.succ) hy
     refine ⟨(hf₂ y x hx).trans H, fun i ↦ SetLike.le_def.mp ?_ (hf₃ y x hx i)⟩
@@ -618,7 +614,7 @@ lemma degBound_casesOn_succ (k₀ k : ℕ) (D : ℕ → ℕ) :
 
 lemma numBound_casesOn_succ (k₀ k : ℕ) (D : ℕ → ℕ) :
     ∀ n, numBound k₀ (Nat.casesOn · k D) (n + 1) = numBound (k₀ * k) ((k₀ * k) ^ (k₀ * k) • D) n
-  | 0 => by simp [mul_comm k]
+  | 0 => by simp
   | n + 1 => by
     rw [numBound_succ (n := n + 1), numBound_casesOn_succ k₀ k D n, numBound_succ,
       degBound_casesOn_succ]
@@ -665,20 +661,22 @@ lemma chevalley_mvPolynomialC
     (hSn : ∀ C ∈ S, C.n ≤ k)
     (hS : ∀ C ∈ S, ∀ j, C.g j ∈ coeffsIn _ M ⊓ (degreesLE _ _ d).restrictScalars _) :
     ∃ T : ConstructibleSetData R,
-      comap MvPolynomial.C '' S.toSet = T.toSet ∧ ∀ C ∈ T,
-        C.n ≤ numBound k (fun i ↦ 1 + (d.map Fin.val).count i) n ∧
+      comap MvPolynomial.C '' S.toSet = T.toSet ∧
+      ∀ C ∈ T, C.n ≤ numBound k (fun i ↦ 1 + (d.map Fin.val).count i) n ∧
       ∀ i, C.g i ∈ M ^ (degBound k (fun i ↦ 1 + (d.map Fin.val).count i) n) := by
   classical
-  induction' n with n IH generalizing k M
-  · refine ⟨(S.map (isEmptyRingEquiv _ _).toRingHom), ?_, ?_⟩
+  induction n generalizing k M with
+  | zero =>
+    refine ⟨(S.map (isEmptyRingEquiv _ _).toRingHom), ?_, ?_⟩
     · rw [ConstructibleSetData.toSet_map]
-      show _ = (comapEquiv (isEmptyRingEquiv _ _)).symm ⁻¹' _
-      rw [← Equiv.image_eq_preimage]
+      change _ = (comapEquiv (isEmptyRingEquiv _ _)).symm ⁻¹' _
+      rw [← OrderIso.image_eq_preimage]
       rfl
     · simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe, Finset.mem_image, comp_apply,
         BasicConstructibleSetData.map, RingHom.coe_coe, isEmptyRingEquiv_eq_coeff_zero, pow_one,
         numBound_zero, degBound_zero, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       exact fun a haS ↦ ⟨hSn a haS, fun i ↦ (hS a haS i).1 0⟩
+  | succ n IH => ?_
   let e : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] (MvPolynomial (Fin n) R)[X] := finSuccEquiv R n
   let S' := S.map e.toRingHom
   have hS' : S'.degBound ≤ k * (1 + d.count 0) := by
@@ -714,10 +712,9 @@ lemma chevalley_mvPolynomialC
           mem_degreesLE]
         constructor
         · intro d
-          simp only [finSuccEquiv_coeff_coeff, e]
+          simp only [finSuccEquiv_coeff_coeff]
           exact (hS _ hxS _).1 _
-        · simp only [totalDegree, Finset.sup_le_iff, MvPolynomial.mem_support_iff, B,
-            finSuccEquiv_coeff_coeff, ne_eq, e]
+        · simp only [B]
           replace hS := (hS _ hxS j).2
           simp only [Submodule.coe_restrictScalars, SetLike.mem_coe, mem_degreesLE,
             Multiset.le_iff_count, Finsupp.count_toMultiset, Finsupp.comapDomain_apply,
@@ -739,16 +736,16 @@ lemma chevalley_mvPolynomialC
     (SetLike.le_def.mp (le_self_pow h1M Nat.pow_self_pos.ne') hM) _ _ T
     (fun C hCT ↦ (hT₂ C hCT).1)
     (fun C hCT k ↦ this C hCT k)
-  simp only [Multiset.map_nsmul, smul_comm _ (_ ^ _), Multiset.count_nsmul, ← pow_mul, N] at hU₂
+  simp only [Multiset.map_nsmul, Multiset.count_nsmul, ← pow_mul, N] at hU₂
   have : ∀ i < n + 1, i.casesOn (1 + d.count 0) (1 + (B.map Fin.val).count ·) ≤
       1 + (d.map Fin.val).count i := by
     intro t ht
-    show _ ≤ 1 + (d.map Fin.val).count (Fin.mk t ht).val
+    change _ ≤ 1 + (d.map Fin.val).count (Fin.mk t ht).val
     rw [Multiset.count_map_eq_count' _ _ Fin.val_injective]
     obtain - | t := t
     · exact le_rfl
     · simp only [add_lt_add_iff_right] at ht
-      show 1 + (B.map Fin.val).count (Fin.mk t ht).val ≤ _
+      change 1 + (B.map Fin.val).count (Fin.mk t ht).val ≤ _
       rw [Multiset.count_map_eq_count' _ _ Fin.val_injective]
       simp [B]
   refine ⟨U, ?_, fun C hCU ↦ ⟨(hU₂ C hCU).1.trans ?_,
@@ -756,8 +753,8 @@ lemma chevalley_mvPolynomialC
   · unfold S' at hT₁
     rw [← hU₁, ← hT₁, ← Set.image_comp, ← ContinuousMap.coe_comp, ← comap_comp,
       ConstructibleSetData.toSet_map]
-    show _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
-    rw [← Equiv.image_eq_preimage, Set.image_image]
+    change _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
+    rw [← OrderIso.image_eq_preimage, Set.image_image]
     simp only [comapEquiv_apply, ← comap_apply, ← comap_comp_apply]
     congr!
     exact e.symm.toAlgHom.comp_algebraMap.symm
@@ -868,8 +865,8 @@ lemma chevalley_mvPolynomial_mvPolynomial
     (Finset.forall_mem_image.mpr fun x hx ↦ by
       intro j
       obtain ⟨j, rfl⟩ := finSumFinEquiv.surjective j
-      simp only [Equiv.symm_apply_apply, Submodule.mem_inf, mem_coeffsIn, implies_true,
-        Submodule.restrictScalars_mem, mem_degreesLE, true_and]
+      simp only [Equiv.symm_apply_apply, Submodule.mem_inf, mem_coeffsIn,
+        Submodule.restrictScalars_mem, mem_degreesLE]
       constructor
       · intro i
         obtain j | j := j

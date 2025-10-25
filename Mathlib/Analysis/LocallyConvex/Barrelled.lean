@@ -10,9 +10,9 @@ import Mathlib.Topology.Baire.Lemmas
 /-!
 # Barrelled spaces and the Banach-Steinhaus theorem / Uniform Boundedness Principle
 
-This files defines barrelled spaces over a `NontriviallyNormedField`, and proves the
+This file defines barrelled spaces over a `NontriviallyNormedField`, and proves the
 Banach-Steinhaus theorem for maps from a barrelled space to a space equipped with a family
-of seminorms generating the topology (i.e `WithSeminorms q` for some family of seminorms `q`).
+of seminorms generating the topology (i.e. `WithSeminorms q` for some family of seminorms `q`).
 
 The more standard Banach-Steinhaus theorem for normed spaces is then deduced from that in
 `Mathlib/Analysis/Normed/Operator/BanachSteinhaus.lean`.
@@ -106,7 +106,7 @@ end defs
 
 section TVS_anyField
 
-variable {α ι κ 𝕜₁ 𝕜₂ E F : Type*} [Nonempty κ] [NontriviallyNormedField 𝕜₁]
+variable {α ι κ 𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁]
     [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ₁₂]
     [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F]
 

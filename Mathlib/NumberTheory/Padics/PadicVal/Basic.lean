@@ -20,7 +20,7 @@ assumptions on `p`. The `p`-adic valuations on `ℕ` and `ℤ` agree with that o
 
 The valuation induces a norm on `ℚ`. This norm is defined in padicNorm.lean.
 
-## Notations
+## Notation
 
 This file uses the local notation `/.` for `Rat.mk`.
 
@@ -45,8 +45,8 @@ by taking `[Fact p.Prime]` as a type class argument.
   the same result but stated in the language of prime multiplicity.
 
 * `sub_one_mul_padicValNat_choose_eq_sub_sum_digits`: Kummer's Theorem. Taking (`p - 1`) times the
-`p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum of
-the digits of `n - k` minus the sum of digits of `n`, all base `p`.
+  `p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum
+  of the digits of `n - k` minus the sum of digits of `n`, all base `p`.
 
 ## References
 
@@ -72,21 +72,21 @@ variable {p : ℕ}
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValNat p p` is `1`. -/
 @[simp]
 theorem self (hp : 1 < p) : padicValNat p p = 1 := by
-  simp [padicValNat_def', zero_lt_one.trans hp, hp.ne']
+  simp [padicValNat_def', ne_zero_of_lt hp, hp.ne']
 
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h
 
 open Nat.maxPowDiv
 
-theorem maxPowDiv_eq_emultiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
+theorem maxPowDiv_eq_emultiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
     p.maxPowDiv n = emultiplicity p n := by
   apply (emultiplicity_eq_of_dvd_of_not_dvd (pow_dvd p n) _).symm
   intro h
   apply Nat.not_lt.mpr <| le_of_dvd hp hn h
   simp
 
-theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h : FiniteMultiplicity p n) :
+theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) (h : FiniteMultiplicity p n) :
     p.maxPowDiv n = multiplicity p n := by
   exact_mod_cast h.emultiplicity_eq_multiplicity ▸ maxPowDiv_eq_emultiplicity hp hn
 
@@ -95,9 +95,9 @@ theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h : Fin
 theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   ext p n
   by_cases h : 1 < p ∧ 0 < n
-  · rw [padicValNat_def' h.1.ne' h.2, maxPowDiv_eq_multiplicity h.1 h.2]
+  · rw [padicValNat_def' h.1.ne' h.2.ne', maxPowDiv_eq_multiplicity h.1 h.2.ne']
     exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
-  · simp only [not_and_or,not_gt_eq,Nat.le_zero] at h
+  · simp only [not_and_or, not_gt_eq, Nat.le_zero] at h
     apply h.elim
     · intro h
       interval_cases p
@@ -119,8 +119,8 @@ namespace padicValInt
 variable {p : ℕ}
 
 theorem of_ne_one_ne_zero {z : ℤ} (hp : p ≠ 1) (hz : z ≠ 0) :
-    padicValInt p z = multiplicity (p : ℤ) z:= by
-  rw [padicValInt, padicValNat_def' hp (Int.natAbs_pos.mpr hz)]
+    padicValInt p z = multiplicity (p : ℤ) z := by
+  rw [padicValInt, padicValNat_def' hp (Int.natAbs_ne_zero.mpr hz)]
   apply Int.multiplicity_natAbs
 
 /-- `padicValInt p 0` is `0` for any `p`. -/
@@ -138,10 +138,12 @@ theorem of_nat {n : ℕ} : padicValInt p n = padicValNat p n := by simp [padicVa
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValInt p p` is `1`. -/
 theorem self (hp : 1 < p) : padicValInt p p = 1 := by simp [padicValNat.self hp]
 
+@[simp]
+theorem eq_zero_iff {z : ℤ} : padicValInt p z = 0 ↔ p = 1 ∨ z = 0 ∨ ¬(p : ℤ) ∣ z := by
+  rw [padicValInt, padicValNat.eq_zero_iff, Int.natAbs_eq_zero, ← Int.ofNat_dvd_left]
+
 theorem eq_zero_of_not_dvd {z : ℤ} (h : ¬(p : ℤ) ∣ z) : padicValInt p z = 0 := by
-  rw [padicValInt, padicValNat.eq_zero_iff]
-  right; right
-  rwa [← Int.ofNat_dvd_left]
+  simp [h]
 
 end padicValInt
 
@@ -183,7 +185,7 @@ theorem of_int_multiplicity {z : ℤ} (hp : p ≠ 1) (hz : z ≠ 0) :
 theorem multiplicity_sub_multiplicity {q : ℚ} (hp : p ≠ 1) (hq : q ≠ 0) :
     padicValRat p q = multiplicity (p : ℤ) q.num - multiplicity p q.den := by
   rw [padicValRat, padicValInt.of_ne_one_ne_zero hp (Rat.num_ne_zero.2 hq),
-    padicValNat_def' hp q.pos]
+    padicValNat_def' hp q.den_ne_zero]
 
 /-- The `p`-adic value of an integer `z ≠ 0` is its `p`-adic value as a rational. -/
 @[simp]
@@ -206,17 +208,17 @@ theorem padicValRat_of_nat (n : ℕ) : ↑(padicValNat p n) = padicValRat p n :=
 
 @[simp]
 theorem padicValNat_self [Fact p.Prime] : padicValNat p p = 1 := by
-  rw [padicValNat_def (@Fact.out p.Prime).pos]
+  rw [padicValNat_def (@Fact.out p.Prime).ne_zero]
   simp
 
-theorem one_le_padicValNat_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : 0 < n) (div : p ∣ n) :
+theorem one_le_padicValNat_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) (div : p ∣ n) :
     1 ≤ padicValNat p n := by
   rwa [← WithTop.coe_le_coe, ENat.some_eq_coe, padicValNat_eq_emultiplicity hn,
     ← pow_dvd_iff_le_emultiplicity, pow_one]
 
 theorem dvd_iff_padicValNat_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
     p ∣ n ↔ padicValNat p n ≠ 0 :=
-  ⟨fun h => one_le_iff_ne_zero.mp (one_le_padicValNat_of_dvd hn0.bot_lt h), fun h =>
+  ⟨fun h => one_le_iff_ne_zero.mp (one_le_padicValNat_of_dvd hn0 h), fun h =>
     Classical.not_not.1 (mt padicValNat.eq_zero_of_not_dvd h)⟩
 
 end padicValNat
@@ -236,7 +238,7 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
   have hd : d ≠ 0 := Rat.mk_denom_ne_zero_of_ne_zero hqz qdf
   let ⟨c, hc1, hc2⟩ := Rat.num_den_mk hd qdf
   rw [padicValRat.multiplicity_sub_multiplicity hp.1.ne_one hqz]
-  simp only [Nat.isUnit_iff, hc1, hc2]
+  simp only [hc1, hc2]
   rw [multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1),
     multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1)]
   · rw [Nat.cast_add, Nat.cast_add]
@@ -291,7 +293,7 @@ theorem padicValRat_le_padicValRat_iff {n₁ n₂ d₁ d₂ : ℤ} (hn₁ : n₁
     lhs
     rw [padicValRat.defn p (Rat.divInt_ne_zero_of_ne_zero hn₁ hd₁) rfl,
       padicValRat.defn p (Rat.divInt_ne_zero_of_ne_zero hn₂ hd₂) rfl, sub_le_iff_le_add', ←
-      add_sub_assoc, _root_.le_sub_iff_add_le]
+      add_sub_assoc, le_sub_iff_add_le]
     norm_cast
     rw [← multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1) hf1, add_comm,
         ← multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1) hf2,
@@ -318,15 +320,11 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
       rw [← q.num_divInt_den, ← r.num_divInt_den, padicValRat_le_padicValRat_iff hqn hrn hqd hrd, ←
         emultiplicity_le_emultiplicity_iff] at h
       calc
-        _ ≤
-            min (emultiplicity (↑p) (q.num * r.den * q.den))
-              (emultiplicity (↑p) (↑q.den * r.num * ↑q.den)) :=
+        _ ≤ min (emultiplicity ↑p (q.num * r.den * q.den))
+                (emultiplicity ↑p (q.den * r.num * q.den)) :=
           le_min
             (by rw [emultiplicity_mul (a :=_ * _) (Nat.prime_iff_prime_int.1 hp.1), add_comm])
-            (by
-              rw [mul_assoc,
-                  emultiplicity_mul (b := _ * _) (Nat.prime_iff_prime_int.1 hp.1)]
-              exact add_le_add_left h _)
+            (by grw [mul_assoc, emultiplicity_mul (b := _ * _) (Nat.prime_iff_prime_int.1 hp.1), h])
         _ ≤ _ := min_le_emultiplicity_add
 
 /-- The minimum of the valuations of `q` and `r` is at most the valuation of `q + r`. -/
@@ -443,14 +441,14 @@ theorem dvd_of_one_le_padicValNat {n : ℕ} (hp : 1 ≤ padicValNat p n) : p ∣
   exact lt_irrefl 0 (lt_of_lt_of_le zero_lt_one hp)
 
 theorem pow_padicValNat_dvd {n : ℕ} : p ^ padicValNat p n ∣ n := by
-  rcases n.eq_zero_or_pos with (rfl | hn); · simp
+  rcases eq_or_ne n 0 with (rfl | hn); · simp
   rcases eq_or_ne p 1 with (rfl | hp); · simp
   apply pow_dvd_of_le_multiplicity
   rw [padicValNat_def'] <;> assumption
 
 theorem padicValNat_dvd_iff_le [hp : Fact p.Prime] {a n : ℕ} (ha : a ≠ 0) :
     p ^ n ∣ a ↔ n ≤ padicValNat p a := by
-  rw [pow_dvd_iff_le_emultiplicity, ← padicValNat_eq_emultiplicity (Nat.pos_of_ne_zero ha),
+  rw [pow_dvd_iff_le_emultiplicity, ← padicValNat_eq_emultiplicity ha,
     Nat.cast_le]
 
 theorem padicValNat_dvd_iff (n : ℕ) [hp : Fact p.Prime] (a : ℕ) :
@@ -483,7 +481,7 @@ theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Pri
   rw [mul_comm (p^n) (q^m)]
   exact padicValNat_mul_pow_left m n neq
 
-/-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`. -/
+/-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t. `p`. -/
 lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
   rcases n with _ | n
   · simp
@@ -492,46 +490,48 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
   · simp
   exact Nat.le_log_of_pow_le p.one_lt_succ_succ (le_of_dvd n.succ_pos pow_padicValNat_dvd)
 
-/-- The p-adic valuation of `n` is equal to the logarithm w.r.t `p` iff
-    `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
-lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n) :
+/-- The p-adic valuation of `n` is equal to the logarithm w.r.t. `p` iff
+`n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
+lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : n ≠ 0) :
     Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
-  rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by omega⟩), and_iff_right_iff_imp]
-  exact fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd
+  rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by cutsat⟩), and_iff_right_iff_imp]
+  exact fun _ => Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr hn) pow_padicValNat_dvd
 
+/-- This is false for prime numbers other than 2:
+for `p = 3`, `n = 1`, one has `log 3 1 = padicValNat 3 2 = 0`. -/
 lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
   rw [Ne, log_eq_iff (by simp [hn])]
   rintro ⟨h1, h2⟩
   rw [← Nat.lt_add_one_iff, ← mul_one (2 ^ _)] at h1
   rw [← add_one_le_iff, Nat.pow_succ] at h2
-  refine not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 ?_) pow_padicValNat_dvd
+  refine not_dvd_of_lt_of_lt_mul_succ h1 (lt_of_le_of_ne' h2 ?_) pow_padicValNat_dvd
   -- TODO(kmill): Why is this `p := 2` necessary?
   exact pow_succ_padicValNat_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq
 
-lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
-    max (log 2 n) (padicValNat 2 (n + 1)) = log 2 (n + 1) := by
-  apply le_antisymm (max_le (le_log_of_pow_le one_lt_two (pow_log_le_add_one 2 n))
+lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) [hp : Fact p.Prime] :
+    max (log p n) (padicValNat p (n + 1)) = log p (n + 1) := by
+  apply le_antisymm (max_le (le_log_of_pow_le hp.out.one_lt (pow_log_le_add_one p n))
     (padicValNat_le_nat_log (n + 1)))
   rw [le_max_iff, or_iff_not_imp_left, not_le]
   intro h
-  replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt one_lt_two h))
-    (pow_log_le_self 2 n.succ_ne_zero)
+  replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt hp.out.one_lt h))
+    (pow_log_le_self p n.succ_ne_zero)
   rw [h, padicValNat.prime_pow, ← h]
 
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
     (Finset.range (padicValNat p n + 1)).image (p ^ ·) ⊆ n.divisors := by
   intro t ht
-  simp only [exists_prop, Finset.mem_image, Finset.mem_range] at ht
+  simp only [Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Nat.mem_divisors]
-  exact ⟨(pow_dvd_pow p <| by omega).trans pow_padicValNat_dvd, hn⟩
+  exact ⟨(pow_dvd_pow p <| by cutsat).trans pow_padicValNat_dvd, hn⟩
 
 theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
     ((Finset.range (padicValNat p n)).image fun t => p ^ (t + 1)) ⊆ n.divisors.erase 1 := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   intro t ht
-  simp only [exists_prop, Finset.mem_image, Finset.mem_range] at ht
+  simp only [Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Finset.mem_erase, Nat.mem_divisors]
   refine ⟨?_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
@@ -541,15 +541,15 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
 theorem padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime] :
     padicValNat p (p * n) ! = padicValNat p n ! + n := by
   apply Nat.cast_injective (R := ℕ∞)
-  rw [padicValNat_eq_emultiplicity <| factorial_pos (p * n), Nat.cast_add,
-      padicValNat_eq_emultiplicity <| factorial_pos n]
+  rw [padicValNat_eq_emultiplicity <| factorial_ne_zero (p * n), Nat.cast_add,
+      padicValNat_eq_emultiplicity <| factorial_ne_zero n]
   exact Prime.emultiplicity_factorial_mul hp.out
 
 /-- The `p`-adic valuation of `m` equals zero if it is between `p * k` and `p * (k + 1)` for
 some `k`. -/
 theorem padicValNat_eq_zero_of_mem_Ioo {m k : ℕ}
     (hm : m ∈ Set.Ioo (p * k) (p * (k + 1))) : padicValNat p m = 0 :=
-  padicValNat.eq_zero_of_not_dvd <| not_dvd_of_between_consec_multiples hm.1 hm.2
+  padicValNat.eq_zero_of_not_dvd <| not_dvd_of_lt_of_lt_mul_succ hm.1 hm.2
 
 theorem padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
     padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
@@ -576,7 +576,7 @@ The `p`-adic valuation of `n!` is the sum of the quotients `n / p ^ i`. This sum
 over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
 theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b) :
     padicValNat p (n !) = ∑ i ∈ Finset.Ico 1 b, n / p ^ i := by
-  exact_mod_cast ((padicValNat_eq_emultiplicity (p := p) <| factorial_pos _) ▸
+  exact_mod_cast ((padicValNat_eq_emultiplicity (p := p) <| factorial_ne_zero _) ▸
       Prime.emultiplicity_factorial hp.out hnb)
 
 /-- **Legendre's Theorem**
@@ -590,6 +590,30 @@ theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ) :
   rw [Nat.succ_eq_add_one, ← Finset.sum_Ico_add' _ 0 _ 1,
     Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits, Nat.succ_eq_add_one]
 
+variable (p)
+
+theorem sub_one_mul_padicValNat_factorial_lt_of_ne_zero [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
+    (p - 1) * padicValNat p n.factorial < n := by
+  rw [sub_one_mul_padicValNat_factorial n]
+  refine Nat.sub_lt_self ?_ (digit_sum_le p n)
+  have hnil : p.digits n ≠ [] := Nat.digits_ne_nil_iff_ne_zero.mpr hn
+  exact Nat.sum_pos_iff_exists_pos.mpr
+    ⟨_, List.getLast_mem hnil, Nat.pos_of_ne_zero (Nat.getLast_digit_ne_zero p hn)⟩
+
+theorem padicValNat_factorial_lt_of_ne_zero [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
+    padicValNat p n.factorial < n := by
+  apply lt_of_le_of_lt _ (sub_one_mul_padicValNat_factorial_lt_of_ne_zero p hn)
+  conv_lhs => rw [← one_mul (padicValNat p n !)]
+  gcongr
+  exact le_sub_one_of_lt (Nat.Prime.one_lt hp.elim)
+
+theorem padicValNat_factorial_le [hp : Fact p.Prime] (n : ℕ) : padicValNat p n.factorial ≤ n := by
+  by_cases hn : n = 0
+  · simp [hn]
+  · exact le_of_lt (padicValNat_factorial_lt_of_ne_zero p hn)
+
+variable {p}
+
 /-- **Kummer's Theorem**
 
 The `p`-adic valuation of `n.choose k` is the number of carries when `k` and `n - k` are added
@@ -597,7 +621,7 @@ in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bo
 `log p n`. -/
 theorem padicValNat_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
     padicValNat p (choose n k) = #{i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
-  exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| choose_pos hkn) ▸
+  exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| (choose_ne_zero hkn)) ▸
     Prime.emultiplicity_choose hp.out hkn hnb
 
 /-- **Kummer's Theorem**
@@ -607,7 +631,7 @@ in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bo
 `log p (n + k)`. -/
 theorem padicValNat_choose' {n k b : ℕ} [hp : Fact p.Prime] (hnb : log p (n + k) < b) :
     padicValNat p (choose (n + k) k) = #{i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} := by
-  exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| choose_pos <|
+  exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| choose_ne_zero <|
     Nat.le_add_left k n)▸ Prime.emultiplicity_choose' hp.out hnb
 
 /-- **Kummer's Theorem**
@@ -635,7 +659,7 @@ theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits {k n : ℕ} [hp : Fact 
     (h : k ≤ n) : (p - 1) * padicValNat p (choose n k) =
     (p.digits k).sum + (p.digits (n - k)).sum - (p.digits n).sum := by
   convert @sub_one_mul_padicValNat_choose_eq_sub_sum_digits' _ _ _ ‹_›
-  all_goals omega
+  all_goals cutsat
 
 end padicValNat
 
@@ -661,6 +685,6 @@ theorem padicValInt.mul {a b : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) :
 theorem padicValInt_mul_eq_succ (a : ℤ) (ha : a ≠ 0) :
     padicValInt p (a * p) = padicValInt p a + 1 := by
   rw [padicValInt.mul ha (Int.natCast_ne_zero.mpr hp.out.ne_zero)]
-  simp only [eq_self_iff_true, padicValInt.of_nat, padicValNat_self]
+  simp only [padicValInt.of_nat, padicValNat_self]
 
 end padicValInt

@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Adjunction.Mates
 /-!
 # Functoriality of the symmetry of equivalences
 
-Using the calculus of mates in `CategoryTheory.Adjunction.Mates`, we prove that passing
+Using the calculus of mates in `Mathlib.CategoryTheory.Adjunction.Mates`, we prove that passing
 to the symmetric equivalence defines an equivalence between `C ≌ D` and `(D ≌ C)ᵒᵖ`,
 and provides the definition of the functor that takes an equivalence to its inverse.
 
@@ -36,7 +36,7 @@ variable (C : Type*) [Category C] (D : Type*) [Category D]
 def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
   obj e := Opposite.op e.symm
   map {e f} α := (mkHom <| conjugateEquiv f.toAdjunction e.toAdjunction <| asNatTrans α).op
-  map_comp _ _ := Quiver.Hom.unop_inj (by aesop_cat)
+  map_comp _ _ := Quiver.Hom.unop_inj (by cat_disch)
 
 /-- The inverse functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps!]
@@ -45,7 +45,7 @@ def symmEquivInverse : (D ≌ C)ᵒᵖ ⥤ (C ≌ D) :=
     { obj e := Opposite.op e.symm
       map {e f} α := Quiver.Hom.op <| mkHom <|
         conjugateEquiv e.symm.toAdjunction f.symm.toAdjunction |>.invFun <| asNatTrans α
-      map_comp _ _ := Quiver.Hom.unop_inj (by aesop_cat) }
+      map_comp _ _ := Quiver.Hom.unop_inj (by cat_disch) }
 
 /-- Taking the symmetric of an equivalence induces an equivalence of categories
 `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
@@ -78,10 +78,10 @@ def inverseFunctorObjIso (e : C ≌ D) :
 /-- We can compare the way we obtain a natural isomorphism `e.inverse ≅ f.inverse` from
 an isomorphism `e ≌ f` via `inverseFunctor` with the way we get one through
 `Iso.isoInverseOfIsoFunctor`. -/
-lemma inverseFunctorMapIso_symm_eq_isoInverseOfIsoFunctor {e f: C ≌ D} (α : e ≅ f) :
+lemma inverseFunctorMapIso_symm_eq_isoInverseOfIsoFunctor {e f : C ≌ D} (α : e ≅ f) :
     Iso.unop ((inverseFunctor C D).mapIso α.symm) =
     Iso.isoInverseOfIsoFunctor ((functorFunctor _ _).mapIso α) := by
-  aesop_cat
+  cat_disch
 
 /-- An "unopped" version of the equivalence `inverseFunctorObj'. -/
 @[simps!]
