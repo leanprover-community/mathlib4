@@ -320,8 +320,8 @@ variable [Field R]
 /-- The rank of a diagonal matrix is the count of non-zero elements on its main diagonal -/
 theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) :
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
-  rw [Matrix.rank, ← Matrix.toLin'_apply', Module.finrank, ← LinearMap.rank,
-    LinearMap.rank_diagonal, Cardinal.toNat_natCast]
+  rw [Matrix.rank, Module.finrank, ← LinearMap.rank, LinearMap.rank_diagonal,
+    Cardinal.toNat_natCast]
 
 theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).cRank = lift.{uR} #{i // (w i) ≠ 0} := by
