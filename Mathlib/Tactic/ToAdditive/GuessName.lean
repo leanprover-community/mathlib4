@@ -134,6 +134,12 @@ def nameDict : String → List String
   | "mconv"         => ["conv"]
   | "irreducible"   => ["add", "Irreducible"]
   | "mlconvolution" => ["lconvolution"]
+  | "tensor"        => ["add"]
+  | "tensoring"     => ["adding"]
+  | "whisker"       => ["add", "Whisker"]
+  | "associator"    => ["add", "Associator"]
+  | "unitor"        => ["add", "Unitor"]
+  | "monoidal"      => ["add", "Monoidal"]
   | x               => [x]
 
 /--
@@ -236,6 +242,46 @@ def fixAbbreviation : List String → List String
   | "sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "subNegZeroMonoid" :: fixAbbreviation s
   | "modular" :: "Character" :: s => "addModularCharacter" :: fixAbbreviation s
   | "Modular" :: "Character" :: s => "AddModularCharacter" :: fixAbbreviation s
+  /-
+  This is a bit aggressive, but
+  - `hom_neg` doesn't appear in any `to_additive` context
+  - Changing `neg_hom` to `inv_hom` actually _fixes_ the naming of a few lemmas, e.g.
+     `AddGrp.neg_hom_apply`, without breaking anything else.
+  - We don't need to add any special cases for e.g. `pentagon_hom_hom_inv_hom_hom`
+
+  If desired, can just replace these with the special cases
+
+  Note that to deal with e.g. `pentagon_hom_inv_inv_inv_inv` I just special case `hom` followed by
+  up to four `neg`s, as well as `neg_hom_neg` and `neg_hom_neg_neg`. More robust handling would
+  just transform a string of negs before and after a `hom` into invs.
+  -/
+  | "neg" :: "_" :: "hom" :: "_" :: "neg" :: "_" :: "neg" :: s
+    => "inv" :: "_" :: "hom" :: "_" :: "inv" :: "_" :: "inv" :: fixAbbreviation s
+  -- | "neg" :: "_" :: "hom" :: "_" :: "neg" :: s
+  --   => "inv" :: "_" :: "hom" :: "_" :: "inv" :: fixAbbreviation s
+  | "hom" :: "_" :: "neg" :: "_" :: "neg" :: "_" :: "neg" :: "_" :: "neg" :: s
+    => "hom" :: "_" :: "inv" :: "_" :: "inv" :: "_" :: "inv" :: "_" :: "inv" :: fixAbbreviation s
+  | "hom" :: "_" :: "neg" :: "_" :: "neg" :: "_" :: "neg" :: s
+    => "hom" :: "_" :: "inv" :: "_" :: "inv" :: "_" :: "inv" :: fixAbbreviation s
+  | "hom" :: "_" :: "neg" :: "_" :: "neg" :: s
+     => "hom" :: "_" :: "inv" :: "_" :: "inv" :: fixAbbreviation s
+  | "hom" :: "_" :: "neg" :: s          => "hom" :: "_" :: "inv" :: fixAbbreviation s
+  | "neg" :: "_" :: "hom" :: s          => "inv" :: "_" :: "hom" :: fixAbbreviation s
+  -- Fixes both `leftAddUnitor_neg` and `rightAddUnitor_neg`
+  | "Add" :: "Unitor" :: "_" :: "neg" :: s => "AddUnitor" :: "_" :: "inv" :: fixAbbreviation s
+  -- Fixes both `neg_addWhiskerLeft` and `neg_addWhiskerRight`
+  | "neg" :: "_" :: "add" :: "Whisker" :: s => "inv" :: "_" :: "addWhisker" :: fixAbbreviation s
+  -- Fixes both `leftAddUnitor_add_neg` and `rightAddUnitor_add_neg`
+  | "Add" :: "Unitor" :: "_" :: "add" :: "_" :: "neg" :: s
+    => "AddUnitor" :: "_" :: "add" :: "_" :: "inv" :: fixAbbreviation s
+  | "add" :: "Whisker" :: "Left" :: "_" :: "neg" :: s => "addWhiskerLeft_inv" :: fixAbbreviation s
+  | "add" :: "Whisker" :: "Right" :: "_" :: "neg" :: s => "addWhiskerRight_inv" :: fixAbbreviation s
+  | "add" :: "Associator" :: "_" :: "neg" :: s => "addAssociator_inv" :: fixAbbreviation s
+  | "pentagon" :: "_" :: "neg" :: s => "pentagon_inv" :: fixAbbreviation s
+  | "triangle" :: "_" :: "assoc" :: "_" :: "comp" :: "_" :: "left" :: "_" :: "neg" :: s
+    => "triangle_assoc_comp_left_inv" :: fixAbbreviation s
+  | "triangle" :: "_" :: "assoc" :: "_" :: "comp" :: "_" :: "right" :: "_" :: "neg" :: s
+    => "triangle_assoc_comp_right_inv" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 
