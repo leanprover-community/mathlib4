@@ -236,8 +236,13 @@ def fixAbbreviation : List String → List String
   | "sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "subNegZeroMonoid" :: fixAbbreviation s
   | "modular" :: "Character" :: s => "addModularCharacter" :: fixAbbreviation s
   | "Modular" :: "Character" :: s => "AddModularCharacter" :: fixAbbreviation s
+  | "Add" :: "Shift" :: s              => "Shift" :: fixAbbreviation s
+  | "add" :: "Shift" :: s              => "shift" :: fixAbbreviation s
+  | "Add" :: "Subshift" :: s           => "Subshift" :: fixAbbreviation s
+  | "add" :: "Subshift" :: s           => "subshift" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
+
 
 /--
 Autogenerate additive name.
