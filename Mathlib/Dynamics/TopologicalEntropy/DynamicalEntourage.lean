@@ -120,6 +120,9 @@ lemma dynEntourage_monotone (T : X → X) (n : ℕ) :
     Monotone (fun U : SetRel X X ↦ dynEntourage T U n) :=
   fun _ _ h ↦ iInter₂_mono fun _ _ ↦ preimage_mono h
 
+@[gcongr] lemma dynEntourage_mono (hUV : U ⊆ V) : dynEntourage T U n ⊆ dynEntourage T V n :=
+  dynEntourage_monotone _ _ hUV
+
 lemma dynEntourage_antitone (T : X → X) (U : SetRel X X) :
     Antitone (fun n : ℕ ↦ dynEntourage T U n) :=
   fun m n m_n ↦ iInter₂_mono' fun k k_m ↦ by use k, lt_of_lt_of_le k_m m_n
