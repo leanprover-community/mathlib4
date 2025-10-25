@@ -253,7 +253,7 @@ using the local context to infer the appropriate instance. This supports the fol
 - the model with corners on the total space of a vector bundle
 - the model with corners on the tangent space of a manifold
 - a model with corners on a manifold, or on its underlying model space
-- a closed interval of real numbers,
+- a closed interval of real numbers (including the unit interval)
 - Euclidean space, Euclidean half-space and Euclidean quadrants
 - a metric sphere in a real or complex inner product space
 - the units of a normed algebra
@@ -405,13 +405,17 @@ where
     | mkApp (.const `EuclideanQuadrant _) n =>
       mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
     | _ => throwError "`{e}` is not a Euclidean space, half-space or quadrant"
-  /-- Attempt to find a model with corners on a closed interval of real numbers -/
+  /-- Attempt to find a model with corners on a closed interval of real numbers,
+  or on the unit interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
     let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
       | throwError "`{e}` is not a coercion of a set to a type"
     -- We don't use `match_expr` here to avoid importing `Set.Icc`.
     -- Note that `modelWithCornersEuclideanHalfSpace` is also not imported.
     match e with
+    | Expr.const ``unitInterval [] =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is the real unit interval"
+      mkAppOptM `modelWithCornersEuclideanHalfSpace #[q(1 : ℕ), none]
     | mkApp4 (.const `Set.Icc _) α _ _x _y =>
       -- If `S` were a copy of `k` with a non-standard topology or smooth structure
       -- (such as, imposed deliberately through a type synonym), we do not want to infer

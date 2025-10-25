@@ -332,13 +332,28 @@ end
 end
 
 /-! Inferring a model with corners on a real interval -/
-section interval
+section RealInterval
 
 -- Make a new real manifold N with model J.
 -- TODO: change this line to modify M and E instead (thus testing if everything
 -- still works in the presence of two instances over different fields).
 variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : ModelWithCorners ℝ E'' H}
   {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
+
+variable {g : unitInterval → M} in
+/-- info: MDifferentiable (𝓡∂ 1) J g : Prop -/
+#guard_msgs in
+#check MDiff g
+
+variable {h : E'' → unitInterval} in
+/-- info: MDifferentiable 𝓘(ℝ, E'') (𝓡∂ 1) h : Prop -/
+#guard_msgs in
+#check MDiff h
+
+variable {k : unitInterval → ℝ} in
+/-- info: MDifferentiable (𝓡∂ 1) 𝓘(ℝ, ℝ) k : Prop -/
+#guard_msgs in
+#check MDiff k
 
 -- Types match, but no fact x < y can be inferred: mostly testing error messages.
 variable {x y : ℝ} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
@@ -502,7 +517,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
 #guard_msgs in
 #check CMDiff 2 k
 
-end interval
+end RealInterval
 
 /-! Tests for inferring a model with corners on Euclidean space, half-spaces and quadrants -/
 section EuclideanSpace
