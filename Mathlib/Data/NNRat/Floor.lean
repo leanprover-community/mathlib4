@@ -112,9 +112,10 @@ theorem IsInt.natCeil {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing 
   exact ⟨by simp⟩
 
 theorem IsNNRat.natCeil {R : Type*} [Semifield R] [LinearOrder R] [IsStrictOrderedRing R]
-    [FloorSemiring R] (r : R) (n d : ℕ) (h : IsNNRat r n d) : IsNat ⌈r⌉₊ (⌈(n / d : NNRat)⌉₊) := by
+    [FloorSemiring R] (r : R) (n d : ℕ) (h : IsNNRat r n d) (res : ℕ)
+    (hres : ⌈(n / d : ℚ≥0)⌉₊ = res) : IsNat ⌈r⌉₊ res := by
   constructor
-  rw [h.to_eq rfl rfl, ← @NNRat.ceil_cast R]
+  rw [← hres, h.to_eq rfl rfl, ← @NNRat.ceil_cast R]
   simp
 
 theorem IsRat.natCeil {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
@@ -127,7 +128,7 @@ open Lean in
 @[norm_num ⌈_⌉₊]
 def evalNatCeil : NormNumExt where eval {u αZ} e := do
   match u, αZ, e with
-  | 0, ~q(ℕ), ~q(@Nat.ceil $α $instR $instLO $instF $x) =>
+  | 0, ~q(ℕ), ~q(@Nat.ceil $α $instSemiring $instPartialOrder $instFloorSemiring $x) =>
     match ← derive x with
     | .isBool .. => failure
     | .isNat sα nb pb => do
@@ -144,11 +145,10 @@ def evalNatCeil : NormNumExt where eval {u αZ} e := do
       let instSemifield ← synthInstanceQ q(Semifield $α)
       let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
       let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
-      let instFloorSemiring ← synthInstanceQ q(FloorSemiring $α)
       assertInstancesCommute
       have z : Q(ℕ) := mkRawNatLit (⌈q⌉₊)
       letI : $z =Q ⌈($n / $d : NNRat)⌉₊ := ⟨⟩
-      return .isNat q(inferInstance) z q(IsNNRat.natCeil _ $n $d $h)
+      return .isNat q(inferInstance) z q(IsNNRat.natCeil _ $n $d $h $z rfl)
     | .isNegNNRat _ q n d h => do
       let instField ← synthInstanceQ q(Field $α)
       let instLinearOrder ← synthInstanceQ q(LinearOrder $α)

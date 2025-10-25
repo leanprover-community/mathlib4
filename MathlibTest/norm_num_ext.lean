@@ -14,6 +14,7 @@ import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Data.NNRat.Floor
 import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
@@ -443,7 +444,7 @@ example : ⌈(2 : R)⌉ = 2 := by norm_num1
 example : ⌊(-2 : R)⌋₊ = 0 := by norm_num1
 example : ⌈(-3 : R)⌉₊ = 0 := by norm_num1
 example : round (1 : R) = 1 := by norm_num1
-example : Int.fract (1 : R) = 0 := by norm_num1
+example : Int.fract (2 : R) = 0 := by norm_num1
 example : round (-3 : R) = -3 := by norm_num1
 example : Int.fract (-3 : R) = 0 := by norm_num1
 
@@ -463,21 +464,19 @@ section Field
 
 variable (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
-example : ⌊(15 / 16 : K)⌋ + 1 = 1 := by norm_num
-example : ⌊(-15 / 16 : K)⌋ + 1 = 0 := by norm_num
-example : ⌈(15 / 16 : K)⌉ + 1 = 2 := by norm_num
-example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num
+example : ⌊(15 / 16 : K)⌋ + 1 = 1 := by norm_num1
+example : ⌊(-15 / 16 : K)⌋ + 1 = 0 := by norm_num1
+example : ⌈(15 / 16 : K)⌉ + 1 = 2 := by norm_num1
+example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num1
 example : ⌊(-35 / 16 : K)⌋₊ = 0 := by norm_num1
 example : ⌈(-35 / 16 : K)⌉₊ = 0 := by norm_num1
 example : round (-35 / 16 : K) = -2 := by norm_num1
+example : Int.fract (16 / 15 : K) = 1 / 15 := by norm_num
 example : Int.fract (-35 / 16 : K) = 13 / 16 := by norm_num1
+example : Int.fract (3.7 : ℚ) = 0.7 := by norm_num1
+example : Int.fract (-3.7 : ℚ) = 0.3 := by norm_num1
 
 end Field
-
-example : Int.fract (2 : R) = 0 := by norm_num
-example : Int.fract (16 / 15 : K) = 1 / 15 := by norm_num
-example : Int.fract (3.7 : ℚ) = 0.7 := by norm_num
-example : Int.fract (-3.7 : ℚ) = 0.3 := by norm_num
 
 end floor
 
