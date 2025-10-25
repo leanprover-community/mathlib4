@@ -222,7 +222,8 @@ lemma exists_eq_ofArrows (R : Presieve X) :
 
 /-- If `g : Y ⟶ S` is in the presieve given by the indexed family `fᵢ`, this is a choice
 of index such that `g = fᵢ` modulo `eqToHom`.
-Note: This should generally not be used! If possible, use the induction principle instead. -/
+Note: This should generally not be used! If possible, use the induction principle
+for the type `Presieve.ofArrows` instead (using e.g., `rintro / obtain`). -/
 noncomputable
 def ofArrows.idx {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S} {Y : C} {g : Y ⟶ S}
     (hf : Presieve.ofArrows X f g) : ι :=
