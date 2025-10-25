@@ -50,7 +50,7 @@ noncomputable def hittingBtwn [Preorder ι] [InfSet ι] (u : ι → Ω → β)
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s
     then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
 
-@[deprecated (since := "2025-09-08")] alias hitting := hittingBtwn
+@[deprecated (since := "2025-10-25")] alias hitting := hittingBtwn
 
 open scoped Classical in
 /-- Hitting time: given a stochastic process `u` and a set `s`, `hittingAfter u s n` is
@@ -66,7 +66,7 @@ theorem hittingBtwn_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Se
     fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=
   rfl
 
-@[deprecated (since := "2025-09-08")] alias hitting_def := hittingBtwn_def
+@[deprecated (since := "2025-10-25")] alias hitting_def := hittingBtwn_def
 
 open scoped Classical in
 lemma hittingAfter_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n : ι) :
@@ -82,7 +82,7 @@ variable [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} {s : Set �
 theorem hittingBtwn_of_lt {m : ι} (h : m < n) : hittingBtwn u s n m ω = m := by
   grind [hittingBtwn, not_le, Set.Icc_eq_empty]
 
-@[deprecated (since := "2025-09-08")] alias hitting_of_lt := hittingBtwn_of_lt
+@[deprecated (since := "2025-10-25")] alias hitting_of_lt := hittingBtwn_of_lt
 
 theorem hittingBtwn_le {m : ι} (ω : Ω) : hittingBtwn u s n m ω ≤ m := by
   simp only [hittingBtwn]
@@ -92,7 +92,7 @@ theorem hittingBtwn_le {m : ι} (ω : Ω) : hittingBtwn u s n m ω ≤ m := by
     exact (csInf_le (BddBelow.inter_of_left bddBelow_Icc) (Set.mem_inter hj₁ hj₂)).trans hj₁.2
   · exact le_rfl
 
-@[deprecated (since := "2025-09-08")] alias hitting_le := hittingBtwn_le
+@[deprecated (since := "2025-10-25")] alias hitting_le := hittingBtwn_le
 
 theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
@@ -103,7 +103,7 @@ theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω)
   simp_rw [hittingBtwn, if_pos hexists]
   exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hk₂, le_trans hk₁.le <| hittingBtwn_le _⟩, h⟩
 
-@[deprecated (since := "2025-09-08")] alias notMem_of_lt_hitting := notMem_of_lt_hittingBtwn
+@[deprecated (since := "2025-10-25")] alias notMem_of_lt_hitting := notMem_of_lt_hittingBtwn
 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_lt_hitting := notMem_of_lt_hittingBtwn
 
@@ -118,7 +118,7 @@ theorem hittingBtwn_eq_end_iff {m : ι} : hittingBtwn u s n m ω = m ↔
   classical
   rw [hittingBtwn, ite_eq_right_iff]
 
-@[deprecated (since := "2025-09-08")] alias hitting_eq_end_iff := hittingBtwn_eq_end_iff
+@[deprecated (since := "2025-10-25")] alias hitting_eq_end_iff := hittingBtwn_eq_end_iff
 
 lemma hittingAfter_eq_top_iff : hittingAfter u s n ω = ⊤ ↔ ∀ j, n ≤ j → u j ω ∉ s := by
   simp [hittingAfter]
@@ -133,7 +133,7 @@ theorem hittingBtwn_of_le {m : ι} (hmn : m ≤ n) : hittingBtwn u s n m ω = m 
     exact Set.singleton_subset_iff.2 (le_antisymm hi₂ hi₁ ▸ hi)
   · exact hittingBtwn_of_lt h
 
-@[deprecated (since := "2025-09-08")] alias hitting_of_le := hittingBtwn_of_le
+@[deprecated (since := "2025-10-25")] alias hitting_of_le := hittingBtwn_of_le
 
 theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u s n m ω := by
   simp only [hittingBtwn]
@@ -145,7 +145,7 @@ theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u 
       exact hb.1.1
   · exact hnm
 
-@[deprecated (since := "2025-09-08")] alias le_hitting := le_hittingBtwn
+@[deprecated (since := "2025-10-25")] alias le_hitting := le_hittingBtwn
 
 lemma le_hittingAfter (ω : Ω) : n ≤ hittingAfter u s n ω := by
   simp only [hittingAfter]
@@ -160,12 +160,12 @@ theorem le_hittingBtwn_of_exists {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j
   rw [Set.Icc_eq_empty_of_lt (not_le.mp h)] at h_exists
   simp at h_exists
 
-@[deprecated (since := "2025-09-08")] alias le_hitting_of_exists := le_hittingBtwn_of_exists
+@[deprecated (since := "2025-10-25")] alias le_hitting_of_exists := le_hittingBtwn_of_exists
 
 theorem hittingBtwn_mem_Icc {m : ι} (hnm : n ≤ m) (ω : Ω) : hittingBtwn u s n m ω ∈ Set.Icc n m :=
   ⟨le_hittingBtwn hnm ω, hittingBtwn_le ω⟩
 
-@[deprecated (since := "2025-09-08")] alias hitting_mem_Icc := hittingBtwn_mem_Icc
+@[deprecated (since := "2025-10-25")] alias hitting_mem_Icc := hittingBtwn_mem_Icc
 
 theorem hittingBtwn_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     u (hittingBtwn u s n m ω) ω ∈ s := by
@@ -177,7 +177,7 @@ theorem hittingBtwn_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Se
   rw [Set.mem_inter_iff] at h_mem
   exact h_mem.2
 
-@[deprecated (since := "2025-09-08")] alias hitting_mem_set := hittingBtwn_mem_set
+@[deprecated (since := "2025-10-25")] alias hitting_mem_set := hittingBtwn_mem_set
 
 lemma hittingAfter_mem_set [WellFoundedLT ι] (h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s) :
     u (hittingAfter u s n ω).untopA ω ∈ s := by
@@ -195,7 +195,7 @@ theorem hittingBtwn_mem_set_of_hittingBtwn_lt [WellFoundedLT ι] {m : ι}
   · simp_rw [hittingBtwn, if_neg h] at hl
     exact False.elim (hl.ne rfl)
 
-@[deprecated (since := "2025-09-08")] alias hitting_mem_set_of_hitting_lt :=
+@[deprecated (since := "2025-10-25")] alias hitting_mem_set_of_hitting_lt :=
   hittingBtwn_mem_set_of_hittingBtwn_lt
 
 lemma hittingAfter_mem_set_of_ne_top [WellFoundedLT ι] (hl : hittingAfter u s n ω ≠ ⊤) :
@@ -210,7 +210,7 @@ theorem hittingBtwn_le_of_mem {m : ι} (hin : n ≤ i) (him : i ≤ m) (his : u 
   simp_rw [hittingBtwn, if_pos h_exists]
   exact csInf_le (BddBelow.inter_of_left bddBelow_Icc) (Set.mem_inter ⟨hin, him⟩ his)
 
-@[deprecated (since := "2025-09-08")] alias hitting_le_of_mem := hittingBtwn_le_of_mem
+@[deprecated (since := "2025-10-25")] alias hitting_le_of_mem := hittingBtwn_le_of_mem
 
 lemma hittingAfter_le_of_mem (hin : n ≤ i) (his : u i ω ∈ s) :
     hittingAfter u s n ω ≤ i := by
@@ -233,7 +233,7 @@ theorem hittingBtwn_le_iff_of_exists [WellFoundedLT ι] {m : ι}
     refine le_trans ?_ (hk₁.2.trans (min_le_right _ _))
     exact hittingBtwn_le_of_mem hk₁.1 (hk₁.2.trans (min_le_left _ _)) hk₂
 
-@[deprecated (since := "2025-09-08")] alias hitting_le_iff_of_exists :=
+@[deprecated (since := "2025-10-25")] alias hitting_le_iff_of_exists :=
   hittingBtwn_le_iff_of_exists
 
 lemma hittingAfter_le_iff [WellFoundedLT ι] :
@@ -257,7 +257,7 @@ theorem hittingBtwn_le_iff_of_lt [WellFoundedLT ι] {m : ι} (i : ι) (hi : i < 
     simp only [not_le.mpr hi, Set.mem_Icc, false_iff, not_exists, not_and, and_imp]
     exact fun k hkn hki => h_exists k ⟨hkn, hki.trans hi.le⟩
 
-@[deprecated (since := "2025-09-08")] alias hitting_le_iff_of_lt := hittingBtwn_le_iff_of_lt
+@[deprecated (since := "2025-10-25")] alias hitting_le_iff_of_lt := hittingBtwn_le_iff_of_lt
 
 theorem hittingBtwn_lt_iff [WellFoundedLT ι] {m : ι} (i : ι) (hi : i ≤ m) :
     hittingBtwn u s n m ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
@@ -271,7 +271,7 @@ theorem hittingBtwn_lt_iff [WellFoundedLT ι] {m : ι} (i : ι) (hi : i ≤ m) :
     refine lt_of_le_of_lt ?_ hk₁.2
     exact hittingBtwn_le_of_mem hk₁.1 (hk₁.2.le.trans hi) hk₂
 
-@[deprecated (since := "2025-09-08")] alias hitting_lt_iff := hittingBtwn_lt_iff
+@[deprecated (since := "2025-10-25")] alias hitting_lt_iff := hittingBtwn_lt_iff
 
 lemma hittingAfter_lt_iff [WellFoundedLT ι] :
     hittingAfter u s n ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
@@ -298,7 +298,7 @@ theorem hittingBtwn_eq_hittingBtwn_of_exists {m₁ m₂ : ι} (h : m₁ ≤ m₂
       exact ((csInf_le bddBelow_Icc.inter_of_left ⟨hj₁, hj₂⟩).trans hj₁.2).trans (le_of_not_ge hi')
   exact ⟨j, ⟨hj₁.1, hj₁.2.trans h⟩, hj₂⟩
 
-@[deprecated (since := "2025-09-08")] alias hitting_eq_hitting_of_exists :=
+@[deprecated (since := "2025-10-25")] alias hitting_eq_hitting_of_exists :=
   hittingBtwn_eq_hittingBtwn_of_exists
 
 theorem hittingBtwn_mono {m₁ m₂ : ι} (hm : m₁ ≤ m₂) :
@@ -314,7 +314,7 @@ theorem hittingBtwn_mono {m₁ m₂ : ι} (hm : m₁ ≤ m₂) :
       exact h ⟨i, ⟨hi₁.1.1, hi₂.le⟩, hi₁.2⟩
     · exact hm
 
-@[deprecated (since := "2025-09-08")] alias hitting_mono := hittingBtwn_mono
+@[deprecated (since := "2025-10-25")] alias hitting_mono := hittingBtwn_mono
 
 end Inequalities
 
@@ -335,7 +335,7 @@ theorem hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFo
     exact MeasurableSet.iUnion fun j =>
       MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
 
-@[deprecated (since := "2025-09-08")] alias hitting_isStoppingTime := hittingBtwn_isStoppingTime
+@[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime := hittingBtwn_isStoppingTime
 
 /-- A discrete hitting time is a stopping time. -/
 theorem hittingAfter_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
@@ -361,7 +361,7 @@ theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [Well
     csInf_mem (Set.nonempty_of_mem ⟨hj₁, hj₂⟩)
   exact this.2
 
-@[deprecated (since := "2025-09-08")] alias stoppedValue_hitting_mem := stoppedValue_hittingBtwn_mem
+@[deprecated (since := "2025-10-25")] alias stoppedValue_hitting_mem := stoppedValue_hittingBtwn_mem
 
 /-- The hitting time of a discrete process with the starting time indexed by a stopping time
 is a stopping time. -/
@@ -400,7 +400,7 @@ theorem isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOr
   have h := hittingBtwn_isStoppingTime (n := i) (n' := N) hf hs n
   simpa only [WithTop.coe_le_coe] using h
 
-@[deprecated (since := "2025-09-08")] alias isStoppingTime_hitting_isStoppingTime :=
+@[deprecated (since := "2025-10-25")] alias isStoppingTime_hitting_isStoppingTime :=
   isStoppingTime_hittingBtwn_isStoppingTime
 
 section CompleteLattice
@@ -416,7 +416,7 @@ theorem hittingBtwn_eq_sInf (ω : Ω) : hittingBtwn u s ⊥ ⊤ ω = sInf {i : �
   simp only [Set.mem_univ, true_and] at h_notMem_s
   exact fun i hi_mem_s => absurd hi_mem_s (h_notMem_s i)
 
-@[deprecated (since := "2025-09-08")] alias hitting_eq_sInf := hittingBtwn_eq_sInf
+@[deprecated (since := "2025-10-25")] alias hitting_eq_sInf := hittingBtwn_eq_sInf
 
 lemma hittingAfter_eq_sInf [∀ ω, Decidable (∃ j, u j ω ∈ s)] (ω : Ω) :
     hittingAfter u s ⊥ ω
@@ -440,7 +440,7 @@ theorem hittingBtwn_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j
     obtain ⟨j, hj₁, hj₂⟩ := hx
     exact ⟨j, hj₁.trans hi, hj₂⟩
 
-@[deprecated (since := "2025-09-08")] alias hitting_bot_le_iff := hittingBtwn_bot_le_iff
+@[deprecated (since := "2025-10-25")] alias hitting_bot_le_iff := hittingBtwn_bot_le_iff
 
 theorem hittingAfter_bot_le_iff {i : ι} {ω : Ω} :
     hittingAfter u s ⊥ ω ≤ i ↔ ∃ j ≤ i, u j ω ∈ s := by
