@@ -81,12 +81,14 @@ instance isRefl_dynEntourage [U.IsRefl] : (dynEntourage T U n).IsRefl := by
 instance isSymm_dynEntourage [U.IsSymm] : (dynEntourage T U n).IsSymm := by
   simp [dynEntourage]; infer_instance
 
+set_option linter.deprecated false in
 @[deprecated isRefl_dynEntourage (since := "2025-10-17")]
 lemma idRel_subset_dynEntourage (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
     idRel ⊆ (dynEntourage T U n) := by
   simp only [dynEntourage, map_iterate, subset_iInter_iff, idRel_subset, mem_preimage, map_apply]
   exact fun _ _ _ ↦ h rfl
 
+set_option linter.deprecated false in
 @[deprecated isSymm_dynEntourage (since := "2025-10-17")]
 lemma _root_.IsSymmetricRel.dynEntourage (T : X → X) {U : Set (X × X)}
     (h : IsSymmetricRel U) (n : ℕ) :
