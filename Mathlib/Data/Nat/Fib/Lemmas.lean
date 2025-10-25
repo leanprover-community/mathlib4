@@ -59,7 +59,7 @@ lemma fib_add_add_two_sq_sub_fib_add_mul_fib_add_two_mul_add_three (x a : ℕ) :
             * (fib (a + 1) * fib ((a + 1) + 1) + fib ((a + 1) - 1) * fib (a + 1))) := by
         congr 2
         · rw [(by ring : x + a + 2 = x + (a + 1) + 1)]
-          simp [fib_add]
+          simp only [fib_add, fib_one, mul_one, reduceAdd, fib_two, cast_add, cast_mul]
           ring
         · rw [show x + 2 * a + 3 = (x + 1) + 2 * (a + 1) by ring]
           set b := a + 1
