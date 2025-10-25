@@ -68,7 +68,7 @@ instance : Nontrivial T := inferInstanceAs (Nontrivial (integralClosure S E))
 instance : Algebra S T := inferInstanceAs (Algebra S (integralClosure S E))
 
 /--
-This is a scoped instance since it is only used in this file to construct `Ring.normalClosure`.
+This is a local instance since it is only used in this file to construct `Ring.normalClosure`.
 -/
 local instance : Algebra T E := inferInstanceAs (Algebra (integralClosure S E) E)
 
