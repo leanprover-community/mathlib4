@@ -39,9 +39,13 @@ structure StrictPseudofunctor extends StrictlyUnitaryPseudofunctor B C where
     mapComp f g = eqToIso (map_comp f g) := by cat_disch
 
 /-- A helper structure that bundles the necessary data to
-construct a `StrictPseudofunctor` without specifying the redundant
-fields `mapId` and `mapComp`. -/
-structure StrictPseudofunctorCore extends PrelaxFunctor B C where
+construct a `StrictPseudofunctor`.
+
+`StrictPseudofunctorPreCore` does not construct a Pseudofunctor in general,
+since it does not include the compatibility conditoins on the associator
+and unitors. However, when the underlying bicategories are strict, a
+`StrictPseudofunctorPreCore` does induce a `StrictPseudofunctor`. -/
+structure StrictPseudofunctorPreCore extends PrelaxFunctor B C where
   map_id (X : B) : map (𝟙 X) = 𝟙 (obj X)
   map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), map (f ≫ g) = map f ≫ map g := by
     cat_disch
@@ -53,6 +57,11 @@ structure StrictPseudofunctorCore extends PrelaxFunctor B C where
       ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
         map₂ (η ▷ g) = eqToHom (map_comp f g) ≫
           map₂ η ▷ map g ≫ eqToHom (map_comp f' g).symm := by cat_disch
+
+/-- A helper structure that bundles the necessary data to
+construct a `StrictPseudofunctor` without specifying the redundant
+fields `mapId` and `mapComp`. -/
+structure StrictPseudofunctorCore extends StrictPseudofunctorPreCore B C where
   map₂_left_unitor :
       ∀ {a b : B} (f : a ⟶ b),
         map₂ (λ_ f).hom =
@@ -76,8 +85,8 @@ namespace StrictPseudofunctor
 variable {B C}
 
 /-- An alternate constructor for strictly unitary lax functors that does not
-require the `mapId` fields, and that adapts the `map₂_leftUnitor` and
-`map₂_rightUnitor` to the fact that the functor is strictly unitary. -/
+require the `mapId` or `mapComp` fields, and that adapts the compatability conditions
+to the fact that the pseudofunctor is strict -/
 @[simps]
 def mk' (S : StrictPseudofunctorCore B C) : StrictPseudofunctor B C where
   obj := S.obj
@@ -129,6 +138,27 @@ end
 section
 
 variable [Strict B] [Strict C]
+
+attribute [local simp] Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso
+  Strict.associator_eqToIso PrelaxFunctor.map₂_eqToHom in
+/-- An alternate constructor for strict pseudofunctors between strict bicategories, that
+only requires the data bundled in `StrictPseudofunctorPreCore`. -/
+@[simps]
+def mk'' (S : StrictPseudofunctorPreCore B C) : StrictPseudofunctor B C where
+  obj := S.obj
+  map := S.map
+  map_id := S.map_id
+  mapId x := eqToIso (S.map_id x)
+  mapId_eq_eqToIso x := rfl
+  map₂ := S.map₂
+  map₂_id := S.map₂_id
+  map₂_comp := S.map₂_comp
+  map_comp := S.map_comp
+  mapComp f g := eqToIso <| S.map_comp f g
+  map₂_whisker_left f _ _ η := by
+    simpa using S.map₂_whisker_left f η
+  map₂_whisker_right η f := by
+    simpa using S.map₂_whisker_right η f
 
 /-- A strict pseudofunctor between strict bicategories induces a functor on the underlying
 categories. -/
