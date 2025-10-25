@@ -38,6 +38,7 @@ end Finsupp
 
 section Fin2
 
+variable (M) in
 /-- The space of finitely supported functions `Fin 2 →₀ α` is equivalent to `α × α`.
 See also `finTwoArrowEquiv`. -/
 @[simps! apply symm_apply]
@@ -45,7 +46,7 @@ noncomputable def finTwoArrowEquiv' [Zero M] : (Fin 2 →₀ M) ≃ M × M :=
   Finsupp.equivFunOnFinite.trans (finTwoArrowEquiv M)
 
 theorem finTwoArrowEquiv'_sum_eq {d : M × M} [AddCommMonoid M] :
-    ((finTwoArrowEquiv'.symm d).sum fun _ n ↦ n) = d.1 + d.2 := by
+    (((finTwoArrowEquiv' M).symm d).sum fun _ n ↦ n) = d.1 + d.2 := by
   apply (Finsupp.equivFunOnFinite_symm_sum _).trans
   simp
 
