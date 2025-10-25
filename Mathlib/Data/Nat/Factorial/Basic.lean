@@ -44,30 +44,12 @@ section Factorial
 
 variable {m n : ℕ}
 
-/-- Tail-recursive version of `Nat.factorial`. -/
-def factorialTR (n : ℕ) : ℕ :=
-  go 1 n where
-  /-- Auxiliary definition for `Nat.factorialTR`.
-  A tail-recursive version of `Nat.factorialTR.go a n = a * n !`. -/
-  go
-  | a, 0 => a
-  | a, n + 1 => go (a * (n + 1)) n
-
-theorem factorialTR.go_apply (a n : ℕ) : go a n = a * n ! := by
-  induction n generalizing a with
-  | zero => simp only [go, factorial, Nat.mul_one]
-  | succ n ihn => simp only [go, ihn, Nat.mul_assoc, factorial, Nat.succ_eq_add_one]
-
-@[csimp]
-theorem factorial_eq_factorialTR : factorial = factorialTR := by
-  ext n
-  rw [factorialTR, factorialTR.go_apply, Nat.one_mul]
-
 @[simp] theorem factorial_zero : 0! = 1 :=
   rfl
 
 theorem factorial_succ (n : ℕ) : (n + 1)! = (n + 1) * n ! :=
   rfl
+
 
 @[simp] theorem factorial_one : 1! = 1 :=
   rfl
@@ -213,26 +195,6 @@ def ascFactorial (n : ℕ) : ℕ → ℕ
   | 0 => 1
   | k + 1 => (n + k) * ascFactorial n k
 
-/-- Tail-recursive version of `Nat.ascFactorial`. -/
-def ascFactorialTR (n k : ℕ) : ℕ :=
-  go 1 k where
-  /-- Auxiliary function for `Nat.ascFactorialTR`.
-  A tail-recursive version of `Nat.ascFactorialTR.go n a k = a * Nat.ascFactorialTR n k`. -/
-  go
-  | a, 0 => a
-  | a, k + 1 => go (a * (n + k)) k
-
-theorem ascFactorialTR.go_apply (n a k : ℕ) : go n a k = a * Nat.ascFactorial n k := by
-  induction k generalizing a with
-  | zero => simp [go, ascFactorial]
-  | succ k ihk =>
-    rw [go, ihk, ascFactorial, Nat.mul_assoc]
-
-@[csimp]
-theorem ascFactorial_eq_ascFactorialTR : ascFactorial = ascFactorialTR := by
-  ext
-  rw [ascFactorialTR, ascFactorialTR.go_apply, Nat.one_mul]
-
 @[simp]
 theorem ascFactorial_zero (n : ℕ) : n.ascFactorial 0 = 1 :=
   rfl
@@ -345,25 +307,6 @@ related to `descPochhammer`, but much less general. -/
 def descFactorial (n : ℕ) : ℕ → ℕ
   | 0 => 1
   | k + 1 => (n - k) * descFactorial n k
-
-/-- Tail-recursive version of `Nat.descFactorial`. -/
-def descFactorialTR (n : ℕ) (k : ℕ) : ℕ :=
-  go 1 k where
-  /-- Auxiliary function for `Nat.descFactorialTR`.
-  A tail-recursive version of `Nat.descFactorialTR.go n a k = a * Nat.descFactorialTR n k`. -/
-  go
-  | a, 0 => a
-  | a, k + 1 => go (a * (n - k)) k
-
-theorem descFactorialTR.go_apply (n a k : ℕ) : go n a k = a * Nat.descFactorial n k := by
-  induction k generalizing a with
-  | zero => simp [go, descFactorial]
-  | succ k ihk => simp only [go, ihk, descFactorial, Nat.mul_assoc]
-
-@[csimp]
-theorem descFactorial_eq_descFactorialTR : descFactorial = descFactorialTR := by
-  ext
-  rw [descFactorialTR, descFactorialTR.go_apply, Nat.one_mul]
 
 @[simp]
 theorem descFactorial_zero (n : ℕ) : n.descFactorial 0 = 1 :=
@@ -537,41 +480,65 @@ We could implement a tail-recursive version (or just use `Nat.fold`),
 but instead let's jump straight to binary splitting.
 -/
 
+/-- `ascFactorial` implemented using binary splitting.
+
+While this still performs the same number of multiplications,
+the big-integer operands to each are much smaller. -/
+def ascFactorialBinary (n k : ℕ) : ℕ :=
+  match k with
+  | 0 => 1
+  | 1 => n
+  | k@(_ + 2) => ascFactorialBinary n (k / 2) * ascFactorialBinary (n + k / 2) ((k + 1) / 2)
+
+@[csimp]
+lemma ascFactorial_eq_ascFactorialBinary : ascFactorial = ascFactorialBinary := by
+  ext n k
+  fun_induction ascFactorialBinary with
+  | case1 => simp
+  | case2 => simp [ascFactorial]
+  | case3 n k ih₁ ih₂ => grind [ascFactorial_mul_ascFactorial]
+
 /-- Factorial implemented using binary splitting.
 
 While this still performs the same number of multiplications,
 the big-integer operands to each are much smaller. -/
-def factorialBinarySplitting (n : Nat) : Nat :=
-  if _ : n = 0 then 1 else prodRange 1 (n + 1)
-where
-  /--
-  `prodRange lo hi` is the product of the range `lo` to `hi` (exclusive),
-  computed by binary splitting.
-  -/
-  prodRange (lo hi : Nat) (h : lo < hi := by grind) : Nat :=
-    if _ : hi = lo + 1 then lo
-    else
-      let mid := (lo + hi) / 2
-      prodRange lo mid * prodRange mid hi
+def factorialBinarySplitting (n : ℕ) : ℕ :=
+  ascFactorialBinary 1 n
 
+/-- This function was used in the definition of `factorialBinarysplitting`
+before it was migrated to `ascFactorialBinary`. -/
+@[deprecated ascFactorialBinary (since := "2025-10-21"), nolint unusedArguments]
+def factorialBinarySplitting.prodRange (lo hi : ℕ) (_ : lo < hi := by grind) : ℕ :=
+  ascFactorialBinary lo (hi - lo)
+
+set_option linter.deprecated false in
+@[deprecated factorial_mul_ascFactorial (since := "2025-10-21")]
 theorem factorialBinarySplitting.factorial_mul_prodRange (lo hi : Nat) (h : lo < hi) :
     lo ! * prodRange (lo + 1) (hi + 1) = hi ! := by
-  rw [prodRange]
-  split
-  · grind [factorial_succ]
-  · dsimp only
-    rw [← Nat.mul_assoc]
-    simp_rw [show (lo + 1 + (hi + 1)) / 2 = (lo + hi) / 2 + 1 by grind]
-    rw [factorial_mul_prodRange, factorial_mul_prodRange]
-    all_goals grind
+  rw [prodRange, ← ascFactorial_eq_ascFactorialBinary, factorial_mul_ascFactorial]
+  grind
 
 @[csimp]
-theorem factorialBinarySplitting_eq_factorial : @factorial = @factorialBinarySplitting := by
+theorem factorial_eq_factorialBinarySplitting : @factorial = @factorialBinarySplitting := by
   ext n
-  by_cases h : n = 0
-  · simp [h, factorialBinarySplitting]
-  · rw [factorialBinarySplitting, ← factorialBinarySplitting.factorial_mul_prodRange 0 n (by grind)]
-    simp [h]
+  simp [factorialBinarySplitting, ← ascFactorial_eq_ascFactorialBinary]
+
+@[deprecated (since := "2025-10-21")]
+alias factorialBinarySplitting_eq_factorial := factorial_eq_factorialBinarySplitting
+
+/-- `descFactorial` implemented using binary splitting. -/
+def descFactorialBinary (n k : ℕ) : ℕ :=
+  if n < k then 0
+  else ascFactorialBinary (n - k + 1) k
+
+@[csimp]
+theorem descFactorial_eq_descFactorialBinary : descFactorial = descFactorialBinary := by
+  ext n k
+  rw [descFactorialBinary]
+  split_ifs with h
+  · rw [descFactorial_of_lt h]
+  · rw [← ascFactorial_eq_ascFactorialBinary, ← add_descFactorial_eq_ascFactorial']
+    grind
 
 /-!
 We are now limited by time, not stack space,
