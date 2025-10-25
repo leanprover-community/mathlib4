@@ -98,7 +98,7 @@ protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
 lemma listSum_le [AddLeftMono S] (l : List R) : abv l.sum ≤ (l.map abv).sum := by
   induction l with
   | nil => simp
-  | cons head tail ih => exact (abv.add_le ..).trans <| add_le_add_left ih (abv head)
+  | cons head tail ih => exact (abv.add_le ..).trans <| add_le_add_right ih (abv head)
 
 @[simp]
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
@@ -180,16 +180,12 @@ protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
 omit [Nontrivial R] in
 /-- An absolute value satisfies `f (n : R) ≤ n` for every `n : ℕ`. -/
 lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
-  cases subsingleton_or_nontrivial R
-  · simp [Subsingleton.eq_zero (n : R)]
   induction n with
   | zero => simp
-  | succ n hn =>
-    simp only [Nat.cast_succ]
-    calc
-      abv (n + 1) ≤ abv n + abv 1 := abv.add_le ..
-      _ = abv n + 1 := congrArg (abv n + ·) abv.map_one
-      _ ≤ n + 1 := add_le_add_right hn 1
+  | succ n ih =>
+  cases subsingleton_or_nontrivial R
+  · simp [-Nat.cast_add, Subsingleton.eq_zero (↑(n + 1) : R)]
+  · grw [Nat.cast_succ, Nat.cast_succ, abv.add_le, abv.map_one, ih]
 
 end IsDomain
 
