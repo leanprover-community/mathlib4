@@ -82,7 +82,7 @@ theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
     _ = conj (P.roots.map fun x ↦ 1 / (z - x)).sum := by
       simp only [Finset.sum_multiset_map_count, P.count_roots, s]
     _ = 0 := by
-      rw [← eval_derivative_div_eval_of_ne_zero_of_splits (IsAlgClosed.splits _) hzP]
+      rw [← eval_derivative_div_eval_of_ne_zero_of_factors (IsAlgClosed.factors _) hzP]
       simp [hz]
 
 /-- *Gauss-Lucas Theorem*: if $P$ is a nonconstant polynomial with complex coefficients,
