@@ -339,6 +339,16 @@ def sumSigmaDistrib {α β} (t : α ⊕ β → Type*) :
   by rintro ⟨x|x,y⟩ <;> simp,
   by rintro (⟨x,y⟩|⟨x,y⟩) <;> simp⟩
 
+/-- A subtype of a sigma which pins down the base of the sigma is equivalent to
+the respective fiber. -/
+@[simps]
+def sigmaSubtype {α : Type*} {β : α → Type*} (a : α) :
+    {s : Sigma β // s.1 = a} ≃ β a where
+  toFun := fun ⟨⟨_, b⟩, h⟩ => h ▸ b
+  invFun b := ⟨⟨a, b⟩, rfl⟩
+  left_inv := fun ⟨a, h⟩ ↦ by cases h; simp
+  right_inv b := by simp
+
 end
 
 end Equiv

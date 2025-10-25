@@ -433,17 +433,6 @@ def sigmaAssocProd {α β : Type*} {γ : α → β → Type*} :
     (ab : α × β) × γ ab.1 ab.2 ≃ (a : α) × (b : β) × γ a b :=
   sigmaCongrLeft' (sigmaEquivProd _ _).symm |>.trans <| sigmaAssoc γ
 
-/-- A subtype of a sigma which pins down the base of the sigma is equivalent to
-the respective fiber. -/
-@[simps]
-def sigmaSubtype {α : Type*} {β : α → Type*} (a : α) :
-    {s : Sigma β // s.1 = a} ≃ β a where
-  toFun := fun ⟨⟨_, b⟩, h⟩ => h ▸ b
-  invFun b := ⟨⟨a, b⟩, rfl⟩
-  left_inv := fun ⟨a, h⟩ ↦ by cases h; simp
-  right_inv b := by simp
-
-
 section
 attribute [local simp] Trans.trans sigmaAssoc subtypeSigmaEquiv uniqueSigma eqRec_eq_cast
 
@@ -489,7 +478,6 @@ lemma sigmaSigmaSubtypeEq_symm_apply {α β : Type*} {γ : α → β → Type*} 
   simp [sigmaSigmaSubtypeEq]
 
 end
-
 end
 
 section subtypeEquivCodomain

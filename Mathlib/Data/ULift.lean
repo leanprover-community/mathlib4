@@ -138,4 +138,34 @@ lemma rec_update {β : ULift α → Type*} [DecidableEq α]
   Function.rec_update up_injective (ULift.rec ·) (fun _ _ => rfl) (fun
     | _, _, .up _, h => (h _ rfl).elim) _ _ _
 
+def conj {α β : Type*} (f : ULift α → ULift β) : α → β := fun x => (f ⟨x⟩).down
+
+@[simp]
+lemma map_conj {α β : Type*} (f : ULift α → ULift β) : ULift.map (conj f) = f := by
+  ext ⟨x⟩; rfl
+
+@[simp]
+lemma conj_map {α β : Type*} (f : α → β) : conj (ULift.map f) = f := by
+  ext x; rfl
+
+lemma down_heq_inj {α β : Type u} (x : ULift.{u'} α) (y : ULift.{u'} β)
+    (h : HEq x.down y.down) : HEq x y := by
+  cases x; cases y; cases h; rfl
+
+@[simp]
+lemma down_heq_inj_iff {α β : Type u} (h : α = β)
+    (x : ULift.{u'} α) (y : ULift.{u'} β) : HEq x y ↔ HEq x.down y.down := by
+  refine ⟨fun h' => ?_, ULift.down_heq_inj x y⟩
+  cases h; cases h'; rfl
+
+@[simp]
+lemma cast_up_comm {α β} {a : α} (h : α = β) (h' : ULift α = ULift β := congrArg ULift h)
+    : (cast h' ⟨a⟩) = ⟨cast h a⟩ := by
+  cases h; cases h'; rfl
+
+@[simp]
+lemma cast_down_comm {α β} {a : α} (h : α = β) (h' : ULift α = ULift β := congrArg ULift h)
+    : (cast h' ⟨a⟩).down = cast h a := by
+  cases h; cases h'; rfl
+
 end ULift

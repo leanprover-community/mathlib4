@@ -120,6 +120,23 @@ instance limitSubobjectProduct_mono [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Mono (limitSubobjectProduct F) :=
   mono_comp _ _
 
+@[reassoc (attr := simp)]
+lemma limitSubobjectProduct_π {J : Type w} [Category.{w} J] {C : Type u} [Category.{v} C]
+    [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) (j : J) :
+    limitSubobjectProduct F ≫ Pi.π F.obj j = limit.π F j := by
+  simp only [limitSubobjectProduct, limit.cone_x, Category.assoc]
+  rw [← Iso.eq_inv_comp]
+  simp [limitConeOfEqualizerAndProduct]
+
+/-- `limitSubobjectProduct` is indeed the canonical map from the limit to the product. -/
+@[simp]
+lemma limitSubobjectProduct_eq_lift {J : Type w} [Category.{w} J] {C : Type u} [Category.{v} C]
+    [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
+    limitSubobjectProduct F = Pi.lift (limit.π F) := by
+  apply limit.hom_ext
+  intro ⟨j⟩
+  simp
+
 /-- Any category with products and equalizers has all limits. -/
 @[stacks 002N]
 theorem has_limits_of_hasEqualizers_and_products [HasProducts.{w} C] [HasEqualizers C] :
@@ -385,6 +402,23 @@ noncomputable def colimitQuotientCoproduct [HasColimitsOfSize.{w, w} C] (F : J �
 instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Epi (colimitQuotientCoproduct F) :=
   epi_comp _ _
+
+@[reassoc (attr := simp)]
+lemma colimitQuotientCoproduct_ι {J : Type w} [Category.{w} J] {C : Type u} [Category.{v} C]
+    [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) (j : J) :
+    Sigma.ι F.obj j ≫ colimitQuotientCoproduct F = colimit.ι F j := by
+  simp only [colimitQuotientCoproduct, colimit.cocone_x, ← Category.assoc]
+  rw [Iso.comp_inv_eq]
+  simp [colimitCoconeOfCoequalizerAndCoproduct]
+
+/-- `colimitQuotientCoproduct` is indeed the canonical map from the coproduct to the colimit. -/
+@[simp]
+lemma colimitQuotientCoproduct_eq_desc {J : Type w} [Category.{w} J] {C : Type u} [Category.{v} C]
+    [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) :
+    colimitQuotientCoproduct F = Sigma.desc (colimit.ι F) := by
+  apply colimit.hom_ext
+  intro ⟨j⟩
+  simp
 
 /-- Any category with coproducts and coequalizers has all colimits. -/
 @[stacks 002P]

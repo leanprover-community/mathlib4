@@ -343,6 +343,18 @@ theorem dcongr_arg {ι : Type*} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j 
   subst h
   simp
 
+/-- An `Equiv.cast` that operates only on the source of a hom can be written
+as precomposition with an `eqToHom`. -/
+lemma Equiv.cast_eq_eqToHom_comp {C : Type*} [Category C] {X₁ X₂ Y : C} (h : X₁ = X₂) (f : X₁ ⟶ Y) :
+    Equiv.cast (congrArg (· ⟶ Y) h) f = eqToHom h.symm ≫ f := by
+  cases h; simp
+
+/-- An `Equiv.cast` that operates only on the target of a hom can be written
+as postcomposition with an `eqToHom`. -/
+lemma Equiv.cast_eq_comp_eqToHom {C : Type*} [Category C] {X Y₁ Y₂ : C} (h : Y₁ = Y₂) (f : X ⟶ Y₁) :
+    Equiv.cast (congrArg (X ⟶ ·) h) f = f ≫ eqToHom h := by
+  cases h; simp
+
 /-- If `T ≃ D` is a bijection and `D` is a category, then
 `InducedCategory D e` is equivalent to `D`. -/
 @[simps]
