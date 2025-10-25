@@ -94,7 +94,7 @@ jobs:
           path: pr-branch
 
       - name: Prepare DownstreamTest directory
-        shell: bash
+        shell: bash -euo pipefail
         run: |
           echo "Copying lean-toolchain to DownstreamTest..."
           cd pr-branch
@@ -106,7 +106,7 @@ jobs:
 
       # Create empty directories so landrun doesn't complain
       - name: Create empty directories
-        shell: bash # We need to run this outside landrun, as it is a prerequisite for landrun!
+        shell: bash -euo pipefail # We need to run this outside landrun, as it is a prerequisite for landrun!
         run: |
           mkdir -p pr-branch/.lake/
           mkdir -p .cache/mathlib/
@@ -115,16 +115,15 @@ jobs:
       # NOTE: if you copy this, consider using `leanprover/lean-action` instead.
       # We install manually, to avoid running lean outside landrun.
       - name: install elan
-        shell: bash
+        shell: bash -euo pipefail
         run: |
-          set -o pipefail
           curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
           chmod +x elan-init.sh
           ./elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - name: set toolchain directory
-        shell: bash
+        shell: bash -euo pipefail
         run: |
           cd pr-branch
           # Get the lake binary path from elan and extract toolchain directory
@@ -140,7 +139,7 @@ jobs:
           echo "TOOLCHAIN_DIR=$TOOLCHAIN_DIR" >> "$GITHUB_ENV"
 
       - name: set LEAN_SRC_PATH
-        shell: bash
+        shell: bash -euo pipefail
         run: |
           # Construct the LEAN_SRC_PATH using the toolchain directory
           LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake:.lake/packages/Cli:.lake/packages/batteries:.lake/packages/Qq:.lake/packages/aesop:.lake/packages/proofwidgets:.lake/packages/importGraph:.lake/packages/LeanSearchClient:.lake/packages/plausible:.lake/packages/requests:.lake/packages/openAI_client:.lake/packages/reap"
@@ -150,7 +149,8 @@ jobs:
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
 
       - name: build master-branch tools
-        shell: bash # We're only building the `master` branch version of the tools, so don't need to run inside landrun.
+        # We're only building the `master` branch version of the tools, so don't need to run inside landrun.
+        shell: bash -euo pipefail
         run: |
           cd master-branch
           lake build cache check-yaml graph
@@ -161,7 +161,7 @@ jobs:
       - name: cleanup .cache/mathlib
         # This needs write access to .cache/mathlib, so can't be run inside landrun.
         # However it is only using the `master` version of `cache`, so is safe to run outside landrun.
-        shell: bash
+        shell: bash -euo pipefail
         run: |
           # Define the cache directory path
           CACHE_DIR="$HOME/.cache/mathlib"
@@ -225,7 +225,8 @@ jobs:
 
       - name: get cache (1/3 - setup and initial fetch)
         id: get_cache_part1_setup
-        shell: bash # only runs `cache get` from `master-branch`, so doesn't need to be inside landrun
+        # only runs `cache get` from `master-branch`, so doesn't need to be inside landrun
+        shell: bash -euo pipefail
         run: |
           cd pr-branch
           echo "Removing old Mathlib build directories prior to cache fetch..."
@@ -247,7 +248,8 @@ jobs:
 
       - name: get cache (3/3 - finalize cache operation)
         id: get
-        shell: bash # only runs `cache get` from `master-branch`, so doesn't need to be inside landrun
+        # only runs `cache get` from `master-branch`, so doesn't need to be inside landrun
+        shell: bash -euo pipefail
         run: |
           cd pr-branch
           if [[ "${{ steps.get_cache_part2_test.outcome }}" == "success" ]]; then
@@ -319,7 +321,7 @@ jobs:
         # but not if any earlier step failed or was cancelled.
         # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
         if: ${{ always() && steps.get.outcome == 'success' }}
-        shell: bash
+        shell: bash -euo pipefail
         run: |
           cd pr-branch
 
@@ -343,7 +345,7 @@ jobs:
         id: cloudflare-upload-mathlib
         if: ${{ always() && steps.get.outcome == 'success' }}
         continue-on-error: true
-        shell: bash
+        shell: bash -euo pipefail
         run: |
           cd pr-branch
 
@@ -378,7 +380,7 @@ jobs:
       # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
 
       - name: fetch archive and counterexamples cache
-        shell: bash
+        shell: bash -euo pipefail
         run: |
           cd pr-branch
           ../master-branch/.lake/build/bin/cache get Archive.lean
@@ -411,7 +413,7 @@ jobs:
 
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: Upload Archive and Counterexamples cache to Azure
-        shell: bash
+        shell: bash -euo pipefail
         run: |
           cd pr-branch
 
@@ -427,7 +429,7 @@ jobs:
       - name: Upload Archive and Counterexamples cache to Cloudflare
         id: cloudflare-upload-archive
         continue-on-error: true
-        shell: bash
+        shell: bash -euo pipefail
         run: |
           cd pr-branch
 
@@ -614,6 +616,17 @@ jobs:
           python3 scripts/yaml_check.py docs/100.yaml docs/1000.yaml docs/overview.yaml docs/undergrad.yaml
           lake exe check-yaml
 
+      - name: check the PR title format
+        if: github.event.pull_request.draft == false && github.event.pull_request.base == 'master'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -euo pipefail
+          echo "$TITLE"
+          label_names=$(echo "${{ toJson(github.event.pull_request.labels) }}" | jq -r '.[].name')
+          echo "$label_names"
+          lake exe check-title-labels --labels "$label_names" "$TITLE"
+
       - name: generate our import graph
         run: |
           lake exe graph
@@ -648,7 +661,7 @@ jobs:
 
       - name: checkout lean4checker
         if: ${{ (always() && needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
-        shell: bash
+        shell: bash -euo pipefail
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
@@ -701,7 +714,7 @@ jobs:
       # Note that if we fall back to github.event.pull_request data, the list of labels is generated when this workflow is triggered
       # and not updated afterwards!
       - id: PR
-        shell: bash
+        shell: bash -euo pipefail
         run: |
           echo "number=${{ steps.PR_from_push.outputs.number || github.event.pull_request.number }}" | tee -a "$GITHUB_OUTPUT"
           echo "pr_labels=${{ steps.PR_from_push.outputs.pr_labels || join(github.event.pull_request.labels.*.name, ',') }}" | tee -a "$GITHUB_OUTPUT"
