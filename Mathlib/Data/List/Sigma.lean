@@ -748,6 +748,21 @@ theorem dlookup_kunion_eq_some {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
       dlookup a l₁ = some b ∨ a ∉ l₁.keys ∧ dlookup a l₂ = some b :=
   mem_dlookup_kunion
 
+@[simp]
+theorem dlookup_kunion_eq_none {a} {l₁ l₂ : List (Sigma β)} :
+  dlookup a (kunion l₁ l₂) = none ↔ dlookup a l₁ = none ∧ dlookup a l₂ = none := by
+  induction l₁ generalizing l₂ with
+  | nil => simp
+  | cons s _ ih =>
+    let ⟨a', b'⟩ := s
+    by_cases h₁ : a = a'
+    · subst h₁
+      simp
+    · let h₂ := @ih (kerase a' l₂)
+      simp? [h₁] at h₂ says
+        simp only [ne_eq, h₁, not_false_eq_true, dlookup_kerase_ne] at h₂
+      simp [h₁, h₂]
+
 theorem mem_dlookup_kunion_middle {a} {b : β a} {l₁ l₂ l₃ : List (Sigma β)}
     (h₁ : b ∈ dlookup a (kunion l₁ l₃)) (h₂ : a ∉ keys l₂) :
     b ∈ dlookup a (kunion (kunion l₁ l₂) l₃) :=
