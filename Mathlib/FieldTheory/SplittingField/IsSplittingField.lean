@@ -66,8 +66,8 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
         eq_top_iff, ← adjoin_rootSet L f, Algebra.adjoin_le_iff]
       exact fun x hx => @Algebra.subset_adjoin K _ _ _ _ _ _ hx⟩
 
-theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
-    Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
+theorem factors_iff (f : K[X]) [IsSplittingField K L f] :
+    Factors f ↔ (⊤ : Subalgebra K L) = ⊥ :=
   ⟨fun h => by
     rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
       Algebra.adjoin_le_iff]
@@ -81,6 +81,9 @@ theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
       (RingEquiv.ofBijective _ <| Algebra.bijective_algebraMap_iff.2 h) ▸ by
         rw [RingEquiv.toRingHom_trans]
         exact splits_comp_of_splits _ _ (splits L f)⟩
+
+@[deprecated (since := "2025-10-24")]
+alias splits_iff := factors_iff
 
 theorem IsScalarTower.factors (f : F[X]) [IsSplittingField K L (mapAlg F K f)] :
     Factors (mapAlg F L f) := by
@@ -99,7 +102,7 @@ theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
     rw [rootSet, aroots_mul (mul_ne_zero hf hg),
       Multiset.toFinset_add, Finset.coe_union, Algebra.adjoin_union_eq_adjoin_adjoin,
       aroots_def, aroots_def, IsScalarTower.algebraMap_eq F K L, ← map_map,
-      roots_map (algebraMap K L) ((splits_id_iff_splits <| algebraMap F K).2 <| splits K f),
+      roots_map (algebraMap K L) (splits K f),
       Multiset.toFinset_map, Finset.coe_image, Algebra.adjoin_algebraMap, ← rootSet, adjoin_rootSet,
       Algebra.map_top, IsScalarTower.adjoin_range_toAlgHom, ← map_map, ← rootSet, adjoin_rootSet,
       Subalgebra.restrictScalars_top]⟩
@@ -113,7 +116,7 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
   if hf0 : f = 0 then
     (Algebra.ofId K F).comp <|
       (Algebra.botEquiv K L : (⊥ : Subalgebra K L) →ₐ[K] K).comp <| by
-        rw [← (splits_iff L f).1 (show f.Splits (RingHom.id K) from hf0.symm ▸ splits_zero _)]
+        rw [← (factors_iff L f).1 (show f.Factors from hf0.symm ▸ Factors.zero)]
         exact Algebra.toTop
   else AlgHom.comp (by
     rw [← adjoin_rootSet L f]
