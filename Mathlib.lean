@@ -1057,6 +1057,8 @@ import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Polynomial.Monomial
 import Mathlib.Algebra.Polynomial.OfFn
 import Mathlib.Algebra.Polynomial.PartialFractions
+import Mathlib.Algebra.Polynomial.Resultant.Basic
+import Mathlib.Algebra.Polynomial.Resultant.MvPolynomial
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Polynomial.Roots
@@ -5857,6 +5859,7 @@ import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.RingTheory.Polynomial.DegreeLT
 import Mathlib.RingTheory.Polynomial.Dickson
+import Mathlib.RingTheory.Polynomial.Discriminant
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
 import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
