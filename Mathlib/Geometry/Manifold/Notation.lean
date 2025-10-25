@@ -310,21 +310,21 @@ This implementation is not maximally robust yet.
 -/
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
-def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
-    TermElabM (Expr × Option (Expr × Expr)) := do
+def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
+    TermElabM <| Option <| Expr × Option (Expr × Expr) := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  if let some m ← tryStrategy m!"TotalSpace"       fromTotalSpace     then return (m, none)
-  if let some m ← tryStrategy m!"TangentBundle"    fromTangentBundle  then return (m, none)
+  if let some m ← tryStrategy m!"TotalSpace"       fromTotalSpace     then return some (m, none)
+  if let some m ← tryStrategy m!"TangentBundle"    fromTangentBundle  then return some (m, none)
   if let some (m, eK) ← tryStrategy' (Expr × Expr) m!"NormedSpace"   fromNormedSpace then
-    return (m, some eK)
-  if let some m ← tryStrategy m!"Manifold"         fromManifold       then return (m, none)
-  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM         then return (m, none)
-  if let some m ← tryStrategy m!"RealInterval"     fromRealInterval   then return (m, none)
-  if let some m ← tryStrategy m!"EuclideanSpace"   fromEuclideanSpace then return (m, none)
-  if let some m ← tryStrategy m!"UpperHalfPlane"   fromUpperHalfPlane then return (m, none)
-  if let some m ← tryStrategy m!"Units of algebra" fromUnitsOfAlgebra then return (m, none)
-  if let some m ← tryStrategy m!"Sphere"           fromSphere         then return (m, none)
-  if let some m ← tryStrategy m!"NormedField"      fromNormedField    then return (m, none)
+    return some (m, some eK)
+  if let some m ← tryStrategy m!"Manifold"         fromManifold       then return some (m, none)
+  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM         then return some (m, none)
+  if let some m ← tryStrategy m!"RealInterval"     fromRealInterval   then return some (m, none)
+  if let some m ← tryStrategy m!"EuclideanSpace"   fromEuclideanSpace then return some (m, none)
+  if let some m ← tryStrategy m!"UpperHalfPlane"   fromUpperHalfPlane then return some (m, none)
+  if let some m ← tryStrategy m!"Units of algebra" fromUnitsOfAlgebra then return some (m, none)
+  if let some m ← tryStrategy m!"Sphere"           fromSphere         then return some (m, none)
+  if let some m ← tryStrategy m!"NormedField"      fromNormedField    then return some (m, none)
   throwError "Could not find a model with corners for `{e}`"
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
@@ -581,6 +581,41 @@ where
     let iTerm : Term ← ``(𝓘($eT, $eT))
     Term.elabTerm iTerm none
 
+/-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
+using the local context to infer the appropriate instance. This supports the following cases:
+- the model with corners on the total space of a vector bundle
+- the model with corners on the tangent space of a manifold
+- a model with corners on a manifold, or on its underlying model space
+- a closed interval of real numbers
+- the complex upper half plane
+- the trivial model `𝓘(𝕜, E)` on a normed space
+- if the above are not found, try to find a `NontriviallyNormedField` instance on the type of `e`,
+  and if successful, return `𝓘(𝕜)`.
+
+Further cases can be added as necessary.
+
+Return an expression describing the found model with corners.
+
+`baseInfo` is only used for the first case, a model with corners on the total space of the vector
+bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
+and the model with corners on the base: these are required to construct the right model with
+corners.
+
+Note that the matching on `e` does not see through reducibility (e.g. we distinguish the `abbrev`
+`TangentBundle` from its definition), so `whnfR` should not be run on `e` prior to calling
+`findModel` on it.
+
+This implementation is not maximally robust yet.
+-/
+-- TODO: better error messages when all strategies fail
+-- TODO: consider lowering monad to `MetaM`
+def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
+  trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
+  match ← findModelInner e baseInfo with
+  | some (m, _eK) => return m
+  | none => throwError "Could not find a model with corners for {e}"
+
+
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
 
@@ -595,7 +630,7 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
       -- TODO: try `T%` here, and if it works, add an interactive suggestion to use it
       throwError "Term `{e}` is a dependent function, of type `{etype}`\nHint: you can use \
         the `T%` elaborator to convert a dependent function to a non-dependent one"
-    let (srcI, _) ← findModel src
+    let srcI ← findModel src
     if let some es := es then
       let estype ← inferType es
       /- Note: we use `isDefEq` here since persistent metavariable assignments in `src` and
@@ -604,7 +639,7 @@ def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
       if !(← isDefEq estype <| ← mkAppM ``Set #[src]) then
         throwError "The domain `{src}` of `{e}` is not definitionally equal to the carrier type of \
           the set `{es}` : `{estype}`"
-    let (tgtI, _) ← findModel tgt (src, srcI)
+    let tgtI ← findModel tgt (src, srcI)
     return (srcI, tgtI)
   | _ => throwError "Expected{indentD e}\nof type{indentD etype}\nto be a function"
 
