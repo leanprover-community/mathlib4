@@ -428,7 +428,7 @@ theorem ofAlgebraic [Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
   an algebraic extension of `R` -/
 noncomputable def equivOfAlgebraic' [Nontrivial S] [Module.IsTorsionFree R S]
     [Algebra.IsAlgebraic R L] : L ≃ₐ[R] M := by
-  have : Module.IsTorsionFree R L := Module.IsTorsionFree.trans_faithfulSMul R S L
+  have : Module.IsTorsionFree R L := .trans_faithfulSMul R S L
   have : IsAlgClosure R L :=
     { isAlgClosed := IsAlgClosure.isAlgClosed S
       isAlgebraic := ‹_› }

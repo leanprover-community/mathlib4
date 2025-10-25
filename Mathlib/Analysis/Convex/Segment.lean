@@ -10,6 +10,8 @@ public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Ray
 
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+
 /-!
 # Segments in vector spaces
 
@@ -308,8 +310,7 @@ theorem sameRay_of_mem_segment [CommRing 𝕜] [PartialOrder 𝕜] [IsStrictOrde
     (SameRay.sameRay_nonneg_smul_left (z - y) hθ₀).nonneg_smul_right (sub_nonneg.2 hθ₁)
 
 lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
-    [CommRing 𝕜] [IsDomain 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [NoZeroDivisors 𝕜]
-    [AddCommGroup E] [Module 𝕜 E]
+    [CommRing 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [IsDomain 𝕜] [AddCommGroup E] [Module 𝕜 E]
     {x y : E} (h : LinearIndependent 𝕜 ![x, y]) {s t : 𝕜} (hs : s ≠ t) (c : E) :
     [c + x -[𝕜] c + t • y] ∩ [c + x -[𝕜] c + s • y] = {c + x} := by
   apply segment_inter_eq_endpoint_of_linearIndependent_sub

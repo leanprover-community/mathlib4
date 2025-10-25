@@ -140,10 +140,10 @@ lemma isCompl_range_lmapDomain_span {α β : Type*}
 end Semiring
 
 section Ring
-variable {R M ι : Type*} [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M]
+variable {R M ι : Type*} [Ring R] [AddCommGroup M]
 
-lemma linearIndependent_single_of_ne_zero {v : ι → M} (hv : ∀ i, v i ≠ 0) :
-    LinearIndependent R fun i : ι ↦ single i (v i) := by
+lemma linearIndependent_single_of_ne_zero [IsDomain R] [Module R M] [IsTorsionFree R M] {v : ι → M}
+    (hv : ∀ i, v i ≠ 0) : LinearIndependent R fun i : ι ↦ single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
   exact linearIndependent_single (f := fun i (_ : Unit) ↦ v i) <| by simp +contextual [hv]
 

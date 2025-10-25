@@ -63,7 +63,7 @@ theorem IsIntegralClosure.isLocalization [IsDomain A] [Algebra.IsAlgebraic K L] 
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
   haveI : IsDomain C :=
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
-  haveI : Module.IsTorsionFree A L := Module.IsTorsionFree.trans_faithfulSMul A K L
+  haveI : Module.IsTorsionFree A L := .trans_faithfulSMul A K L
   haveI : Module.IsTorsionFree A C := IsIntegralClosure.noZeroSMulDivisors A L
   refine ⟨?_, fun z => ?_, fun {x y} h => ⟨1, ?_⟩⟩
   · rintro ⟨_, x, hx, rfl⟩

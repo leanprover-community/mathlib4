@@ -483,7 +483,7 @@ instance (P : RootPairing ι R M N) : Group (RootPairing.Equiv P P) where
 
 /-- For finite roots systems in characteristic zero, a linear equivalence preserving roots, also
 preserves coroots, and is thus an equivalence of root systems. -/
-def mk' [CharZero R] [Module.IsTorsionFree R M₂] [Finite ι₂]
+def mk' [CharZero R] [IsDomain R] [Module.IsTorsionFree R M₂] [Finite ι₂]
     (P : RootSystem ι R M N) (Q : RootSystem ι₂ R M₂ N₂)
     (f : M ≃ₗ[R] M₂) (e : ι ≃ ι₂) (hf : ∀ i, f (P.root i) = Q.root (e i)) :
     P.Equiv Q.toRootPairing where

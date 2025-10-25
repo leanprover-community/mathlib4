@@ -6,15 +6,17 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Module.Prod
-public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.Algebra.Module.Submodule.Equiv
-public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Order.CompactlyGenerated.Basic
 public import Mathlib.Order.OmegaCompletePartialOrder
+
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Module.Submodule.EqLocus
+import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # The span of a set of vectors, as a submodule
