@@ -682,7 +682,7 @@ theorem mateEquiv_conjugateEquiv_vcomp
     _ = 𝟙 _ ⊗≫
           rightAdjointSquare.vcomp
             (mateEquiv adj₁ adj₂ α)
-            (mateEquiv adj₂ adj₃ ((λ_ l₃).hom ≫ β ≫ (ρ_ l₂).inv)) ⊗≫ 𝟙 _  := by
+            (mateEquiv adj₂ adj₃ ((λ_ l₃).hom ≫ β ≫ (ρ_ l₂).inv)) ⊗≫ 𝟙 _ := by
       dsimp only [conjugateEquiv_apply, rightAdjointSquareConjugate.vcomp,
         rightAdjointSquare.vcomp]
       bicategory

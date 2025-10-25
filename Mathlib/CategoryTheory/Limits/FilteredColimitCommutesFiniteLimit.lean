@@ -110,7 +110,7 @@ theorem colimitLimitToLimitColimit_injective :
             simp only [true_and, Finset.mem_univ,
               Finset.mem_image]
             refine ⟨j, ?_⟩
-            simp only ))
+            simp only))
     have gH :
       ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>

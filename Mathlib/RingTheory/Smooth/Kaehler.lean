@@ -343,7 +343,7 @@ def retractionKerCotangentToTensorEquivSection :
   let e₂ : S ⊗[P'] Ω[P'⁄R] ≃ₗ[P] S ⊗[P] Ω[P⁄R] :=
     (tensorKaehlerQuotKerSqEquiv R P S).restrictScalars P
   have H : kerCotangentToTensor R P S =
-      e₂.toLinearMap ∘ₗ (kerToTensor R P' S ).restrictScalars P ∘ₗ e₁.toLinearMap := by
+      e₂.toLinearMap ∘ₗ (kerToTensor R P' S).restrictScalars P ∘ₗ e₁.toLinearMap := by
     ext x
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
     exact (tensorKaehlerQuotKerSqEquiv_tmul_D 1 x.1).symm

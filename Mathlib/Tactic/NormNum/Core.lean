@@ -128,6 +128,7 @@ def deriveBool (p : Q(Prop)) : MetaM ((b : Bool) × BoolResult p b) := do
   let .isBool b prf ← derive q($p) | failure
   pure ⟨b, prf⟩
 
+set_option linter.style.commandStart false in -- TODO decide about this!
 /-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
 and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
 def deriveBoolOfIff (p p' : Q(Prop)) (hp : Q($p ↔ $p')) :

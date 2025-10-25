@@ -512,7 +512,7 @@ namespace Equiv
 endomorphisms. -/
 def toEndUnit (P : RootPairing ι R M N) : Aut P ≃* (End P)ˣ where
   toFun f :=
-  { val :=  f.toHom
+  { val := f.toHom
     inv := (Equiv.symm P P f).toHom
     val_inv := by ext <;> simp
     inv_val := by ext <;> simp }

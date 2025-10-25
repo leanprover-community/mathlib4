@@ -1158,7 +1158,7 @@ theorem UniformContinuousOn.comp_tendstoUniformly_eventually
   classical
   obtain ⟨s', hs', hs⟩ := eventually_iff_exists_mem.mp hF
   let F' : ι → α → β := fun i x => if i ∈ s' then F i x else f x
-  have hF : F =ᶠ[p] F' :=  by
+  have hF : F =ᶠ[p] F' := by
     rw [eventuallyEq_iff_exists_mem]
     refine ⟨s', hs', fun y hy => by aesop⟩
   have h' : TendstoUniformly F' f p := by

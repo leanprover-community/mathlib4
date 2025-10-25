@@ -167,7 +167,7 @@ theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
       obtain ⟨v, hv, b, hb⟩ := hdy
       refine ⟨u * v, by simp [hu, hv], a * b, ?_⟩
       simpa [map_mul, Units.val_mul, ← hb, ← ha] using mul_mul_mul_comm ..
-    | inv c hc hcy  =>
+    | inv c hc hcy =>
       obtain ⟨u, hu, a, ha⟩ := hcy
       exact ⟨a, by simp [← ha, hu], u, by simp [← ha]⟩
   · have hv : f x ≠ 0 := by

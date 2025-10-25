@@ -74,7 +74,7 @@ theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι
   obtain ⟨R, hR₁, hR₂⟩ := IsBounded.subset_ball_lt h 0 0
   let C : ℕ := ⌈R⌉₊
   have hC := Nat.ceil_pos.mpr hR₁
-  let I : Box ι := Box.mk (fun _ ↦ - C) (fun _ ↦ C )
+  let I : Box ι := Box.mk (fun _ ↦ - C) (fun _ ↦ C)
     (fun _ ↦ by simp [C, neg_lt_self_iff, Nat.cast_pos, hC])
   refine ⟨I, ⟨fun _ ↦ - C, fun _ ↦ C, fun i ↦ (Int.cast_neg_natCast C).symm, fun _ ↦ rfl⟩,
     le_trans hR₂ ?_⟩

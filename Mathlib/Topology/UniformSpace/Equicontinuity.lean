@@ -532,7 +532,7 @@ theorem uniformEquicontinuousOn_iff_uniformContinuousOn {F : ι → β → α} {
 
 theorem equicontinuousWithinAt_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
     {S : Set X} {x₀ : X} : EquicontinuousWithinAt (uα :=  ⨅ k, u k) F S x₀ ↔
-      ∀ k, EquicontinuousWithinAt (uα :=  u k) F S x₀ := by
+      ∀ k, EquicontinuousWithinAt (uα := u k) F S x₀ := by
   simp only [equicontinuousWithinAt_iff_continuousWithinAt (uα := _), topologicalSpace]
   unfold ContinuousWithinAt
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, nhds_iInf, tendsto_iInf]

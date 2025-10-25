@@ -535,7 +535,7 @@ def eval (nm : Name) (e : Mor₂) : CoherenceM ρ Eval.Result := do
         traceProof nm result
         return ⟨← NormalExpr.ofAtomM η, result⟩
       | _ => throwError "not implemented. try dsimp first."
-    | .id _ _ f  =>
+    | .id _ _ f =>
       let α ← MonadMor₂Iso.id₂M f
       return  ⟨← nilM <| .structuralAtom α, ← mkEqRefl e.e⟩
     | .comp _ _ _ _ _ η θ => withTraceNode nm (fun _ => return m!"comp") do

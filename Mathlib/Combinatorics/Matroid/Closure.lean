@@ -489,7 +489,7 @@ lemma Indep.closure_sInter_eq_biInter_closure_of_forall_subset {Js : Set (Set α
   have hIb : M.IsBasis I (insert e I) := by
     rw [hI.insert_isBasis_iff_mem_closure]
     exact (M.closure_subset_closure (hIs _ hne.some_mem)) (he _ hne.some_mem)
-  obtain ⟨f, hfIJ, hfb⟩ :=  hJI.exchange hIb ⟨heJ (mem_insert e _), heEI.2⟩
+  obtain ⟨f, hfIJ, hfb⟩ := hJI.exchange hIb ⟨heJ (mem_insert e _), heEI.2⟩
   obtain rfl := hI.eq_of_isBasis (hfb.isBasis_subset (insert_subset hfIJ.1
     (by (rw [diff_subset_iff, singleton_union]; exact hJI.subset))) (subset_insert _ _))
   refine hfIJ.2 (heJ (mem_insert_of_mem _ fun X hX' ↦ by_contra fun hfX ↦ ?_))

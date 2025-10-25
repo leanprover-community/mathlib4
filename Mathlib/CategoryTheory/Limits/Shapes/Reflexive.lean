@@ -565,7 +565,7 @@ lemma hasReflexiveCoequalizer_iff_hasCoequalizer :
 
 instance reflexivePair_hasColimit_of_hasCoequalizer
     [h : HasCoequalizer (F.map left) (F.map right)] : HasColimit F :=
-  hasReflexiveCoequalizer_iff_hasCoequalizer _|>.mpr h
+  hasReflexiveCoequalizer_iff_hasCoequalizer _ |>.mpr h
 
 /-- A reflexive cofork is a colimit cocone if and only if the underlying cofork is. -/
 def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
@@ -605,7 +605,7 @@ variable {A B : C} {f g : A ⟶ B} [IsReflexivePair f g] [h : HasCoequalizer f g
 
 instance ofIsReflexivePair_hasColimit_of_hasCoequalizer :
     HasColimit (ofIsReflexivePair f g) :=
-  hasReflexiveCoequalizer_iff_hasCoequalizer _|>.mpr h
+  hasReflexiveCoequalizer_iff_hasCoequalizer _ |>.mpr h
 
 /-- The coequalizer of a reflexive pair can be promoted to the colimit of a diagram out of the
 walking reflexive pair -/

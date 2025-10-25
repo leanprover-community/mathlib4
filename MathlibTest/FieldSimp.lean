@@ -692,7 +692,7 @@ end
 
 example (x y : ℚ≥0) (n : ℕ) (hx : x ≠ 0) : y * ((y / x) ^ n * x) = (y / x) ^ (n + 1) * x * x := by
   field_simp
-  guard_target =  y * (y / x) ^ n = x * (y / x) ^ (n + 1)
+  guard_target = y * (y / x) ^ n = x * (y / x) ^ (n + 1)
   exact test_sorry
 
 example (x y : ℚ≥0) (n : ℕ) (hx : x ≠ 0) : y * ((y / x) ^ n * x) = (y / x) ^ (n + 1) * x * x := by

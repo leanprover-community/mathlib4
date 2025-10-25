@@ -29,7 +29,7 @@ def maxPowDiv (p n : ℕ) : ℕ :=
   go 0 p n
 where go (k p n : ℕ) : ℕ :=
   if 1 < p ∧ 0 < n ∧ n % p = 0 then
-    go (k+1) p (n / p)
+    go (k + 1) p (n / p)
   else
     k
   termination_by n
@@ -41,7 +41,7 @@ end Nat
 
 namespace Nat.maxPowDiv
 
-theorem go_succ {k p n : ℕ} : go (k+1) p n = go k p n + 1 := by
+theorem go_succ {k p n : ℕ} : go (k + 1) p n = go k p n + 1 := by
   fun_induction go
   case case1 h ih =>
     conv_lhs => unfold go
@@ -63,7 +63,7 @@ theorem zero {p : ℕ} : maxPowDiv p 0 = 0 := by
   simp
 
 theorem base_mul_eq_succ {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
-    p.maxPowDiv (p*n) = p.maxPowDiv n + 1 := by
+    p.maxPowDiv (p * n) = p.maxPowDiv n + 1 := by
   have : 0 < p := lt_trans (b := 1) (by simp) hp
   dsimp [maxPowDiv]
   rw [maxPowDiv.go, if_pos, mul_div_right _ this]
@@ -101,7 +101,7 @@ theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : n ≠ 0) (h : p ^ pow ∣ n
   have : 0 < c := by
     apply Nat.pos_of_ne_zero
     intro h'
-    rw [h',mul_zero] at hc
+    rw [h', mul_zero] at hc
     omega
   simp [hc, base_pow_mul hp this]
 

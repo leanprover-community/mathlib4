@@ -370,7 +370,7 @@ lemma eq_of_zag (X) {a b : Discrete X} (h : Zag a b) : a.as = b.as :=
 lemma eq_of_zigzag (X) {a b : Discrete X} (h : Zigzag a b) : a.as = b.as := by
   induction h with
   | refl => rfl
-  | tail _ h eq  => exact eq.trans (eq_of_zag _ h)
+  | tail _ h eq => exact eq.trans (eq_of_zag _ h)
 
 -- TODO: figure out the right way to generalise this to `Zigzag`.
 theorem zag_of_zag_obj (F : J ⥤ K) [F.Full] {j₁ j₂ : J} (h : Zag (F.obj j₁) (F.obj j₂)) :
@@ -400,7 +400,7 @@ theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPrec
   | refl => rfl
   | tail _ hj ih =>
     rw [ih]
-    rcases hj with (⟨⟨hj⟩⟩|⟨⟨hj⟩⟩)
+    rcases hj with (⟨⟨hj⟩⟩ | ⟨⟨hj⟩⟩)
     exacts [hF hj, (hF hj).symm]
 
 /-- If any two objects in a nonempty category are related by `Zigzag`, the category is connected.

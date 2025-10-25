@@ -120,7 +120,7 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
   rw [h, add_comm]
   simp only [neg_mul, Int.cast_neg, Int.cast_mul, Int.cast_natCast]
   have hnn : (0 : ℝ) < (N : ℝ) := by norm_cast at *
-  have h2 : z.re + -(N * n) =  z.re - n * N := by ring
+  have h2 : z.re + -(N * n) = z.re - n * N := by ring
   rw [h2, abs_eq_self.2 (Int.sub_floor_div_mul_nonneg (z.re : ℝ) hnn)]
   apply (Int.sub_floor_div_mul_lt (z.re : ℝ) hnn).le
 

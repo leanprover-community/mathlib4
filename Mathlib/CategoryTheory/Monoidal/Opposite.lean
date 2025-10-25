@@ -185,7 +185,7 @@ section OppositeLemmas
 @[simp] lemma op_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
     (X ◁ f).op = op X ◁ f.op := rfl
 @[simp] lemma unop_whiskerLeft (X : Cᵒᵖ) {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
-    (X ◁ f).unop =  unop X ◁ f.unop := rfl
+    (X ◁ f).unop = unop X ◁ f.unop := rfl
 
 @[simp] lemma op_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
     (f ▷ Z).op = f.op ▷ op Z := rfl

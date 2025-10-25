@@ -34,7 +34,7 @@ def isTerminalOfUniqueOfIsDiscrete {T : Type u} [Category.{v} T] [Unique T] [IsD
 
 instance : HasTerminal Cat.{v, u} := by
   have : IsDiscrete (ShrinkHoms.{u} PUnit.{u + 1}) := {
-    subsingleton _ _ := { allEq _ _ :=  eq_of_comp_right_eq (congrFun rfl) }
+    subsingleton _ _ := { allEq _ _ := eq_of_comp_right_eq (congrFun rfl) }
     eq_of_hom _ := rfl
   }
   exact IsTerminal.hasTerminal (X := Cat.of (ShrinkHoms PUnit)) isTerminalOfUniqueOfIsDiscrete

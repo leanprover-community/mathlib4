@@ -69,6 +69,7 @@ theorem isPrimePow_nat_iff (n : ℕ) : IsPrimePow n ↔ ∃ p k : ℕ, Nat.Prime
 theorem Nat.Prime.isPrimePow {p : ℕ} (hp : p.Prime) : IsPrimePow p :=
   _root_.Prime.isPrimePow (prime_iff.mp hp)
 
+set_option linter.style.commandStart false in -- TODO decide about this!
 theorem isPrimePow_nat_iff_bounded (n : ℕ) :
     IsPrimePow n ↔ ∃ p : ℕ, p ≤ n ∧ ∃ k : ℕ, k ≤ n ∧ p.Prime ∧ 0 < k ∧ p ^ k = n := by
   rw [isPrimePow_nat_iff]

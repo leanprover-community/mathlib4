@@ -130,7 +130,7 @@ theorem generateFrom_generateSetAlgebra_eq :
     | base u u_mem => exact measurableSet_generateFrom u_mem
     | empty => exact @MeasurableSet.empty _ (generateFrom 𝒜)
     | compl u _ mu => exact mu.compl
-    | union u v _ _ mu mv  => exact MeasurableSet.union mu mv
+    | union u v _ _ mu mv => exact MeasurableSet.union mu mv
   | empty => exact MeasurableSpace.measurableSet_empty _
   | compl t _ ht => exact ht.compl
   | iUnion t _ ht => exact .iUnion ht

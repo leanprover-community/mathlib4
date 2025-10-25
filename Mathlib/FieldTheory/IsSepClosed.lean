@@ -258,7 +258,7 @@ instance isSeparable [Algebra k K] [IsSepClosure k K] : Algebra.IsSeparable k K 
 
 instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
   to_isSeparable := IsSepClosure.separable
-  to_normal.toIsAlgebraic :=  inferInstance
+  to_normal.toIsAlgebraic := inferInstance
   to_normal.splits' x := (IsSepClosure.sep_closed k).splits_codomain _
     (Algebra.IsSeparable.isSeparable k x)
 

@@ -104,7 +104,7 @@ instance carrier.instCompleteLattice : CompleteLattice S where
 
 instance carrier.instHeytingAlgebra : HeytingAlgebra S where
   le_himp_iff a b c := by simp [← Subtype.coe_le_coe, ← @Sublocale.coe_inf, himp]
-  compl a :=  a ⇨ ⊥
+  compl a := a ⇨ ⊥
   himp_bot _ := rfl
 
 instance carrier.instFrame : Order.Frame S where

@@ -190,7 +190,7 @@ instance colim_preservesLimitsOfShape_pempty_of_isSifted :
 
 /-- If `C` is sifted, the `colim` functor `(C ⥤ Type) ⥤ Type` preserves finite products. -/
 instance colim_preservesFiniteProducts_of_isSifted :
-    PreservesFiniteProducts (colim : (C ⥤ _) ⥤ Type u ) :=
+    PreservesFiniteProducts (colim : (C ⥤ _) ⥤ Type u) :=
   PreservesFiniteProducts.of_preserves_binary_and_terminal colim
 
 end
