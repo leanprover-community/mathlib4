@@ -416,6 +416,18 @@ theorem empty_or_nonempty_of_hausdorffEdist_ne_top (fin : hausdorffEdist s t ≠
       exact Or.inr ⟨nonempty_of_hausdorffEdist_ne_top ht fin, ht⟩
   · exact Or.inr ⟨hs, nonempty_of_hausdorffEdist_ne_top hs fin⟩
 
+theorem hausdorffEdist_iUnion_le {ι : Sort*} {s t : ι → Set α} :
+    hausdorffEdist (⋃ i, s i) (⋃ i, t i) ≤ ⨆ i, hausdorffEdist (s i) (t i) := by
+  simp_rw [hausdorffEdist, max_le_iff, iSup_iUnion, iSup_le_iff, infEdist_iUnion]
+  constructor <;> refine fun i x hx => (iInf_le _ i).trans <| le_iSup_of_le i ?_
+  · exact le_max_of_le_left <| le_iSup₂_of_le x hx le_rfl
+  · exact le_max_of_le_right <| le_iSup₂_of_le x hx le_rfl
+
+theorem hausdorffEdist_union_le {s₁ s₂ t₁ t₂ : Set α} :
+    hausdorffEdist (s₁ ∪ s₂) (t₁ ∪ t₂) ≤ max (hausdorffEdist s₁ t₁) (hausdorffEdist s₂ t₂) := by
+  simp_rw [union_eq_iUnion, sup_eq_iSup]
+  convert hausdorffEdist_iUnion_le with (_ | _)
+
 end HausdorffEdist
 
 -- section
