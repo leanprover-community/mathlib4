@@ -63,7 +63,7 @@ section precedence
 /-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
 #guard_msgs in
 #check (T% σ) x
-/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+/-- info: σ x : V x -/
 #guard_msgs in
 #check T% σ x
 -- Nothing happening, as expected.
@@ -83,7 +83,7 @@ variable {s : ι → (x : M) → V x} in
 #check T% s
 
 /--
-info: (fun a ↦ TotalSpace.mk' (ι → (x : M) → V x) a (s a)) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x))
+info: fun a ↦ TotalSpace.mk' ((x : M) → V x) a (s i a) : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x))
 -/
 #guard_msgs in
 variable {s : ι → ι → (x : M) → V x} {i : ι} in
@@ -100,10 +100,38 @@ end precedence
 
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
--- Applying a section to an argument. TODO: beta-reduce instead!
+-- Applying a section to an argument.
+-- This application is not beta-reduced, because of the parentheses around the T%.
 /-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X) x
+
+-- This one is. Also test the tracing messages.
+set_option trace.Elab.DiffGeo true in
+/--
+info: X x : TangentSpace I x
+---
+trace: [Elab.DiffGeo.TotalSpaceMk] argument(s) passed to `T%` is/are `[x]`
+-/
+#guard_msgs in
+#check (T% X x)
+
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% (fun x ↦ X x))
+
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% X)
+
+-- No beta-reduction, because outside parentheses.
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% (fun x ↦ X x)) x
+
+/-- info: X x : TangentSpace I x -/
+#guard_msgs in
+#check (T% (fun x ↦ X x) x)
 
 -- Applying the same elaborator twice is fine (and idempotent).
 /-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
@@ -877,6 +905,245 @@ open ContDiff in -- for the ∞ notation
 
 end
 
+/-! Products of models with corners: TODO, add lots of further tests -/
+section
+
+variable {EM' : Type*} [NormedAddCommGroup EM']
+  [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {f g : M → M'} {h h₂ : M → 𝕜} {h' : E → M'} {k k' : M × E → M'} {φ φ' : OpenPartialHomeomorph M H}
+  {f' : E → M} {g' : EM' → M'} {h' k' : F → M'}
+
+section sum
+
+/-- info: MDifferentiable I I' (Sum.map f g) : Prop -/
+#guard_msgs in
+#check MDiff (Sum.map f g)
+
+/-- info: MDifferentiable I 𝓘(𝕜, 𝕜) (Sum.map h h₂) : Prop -/
+#guard_msgs in
+#check MDiff (Sum.map h h₂)
+
+/-- info: MDifferentiable 𝓘(𝕜, F) I' (Sum.map h' k') : Prop -/
+#guard_msgs in
+#check MDiff (Sum.map h' k')
+
+/-- info: ContMDiff I I 2 Sum.swap : Prop -/
+#guard_msgs in
+#check CMDiff 2 (@Sum.swap M M)
+
+/-- info: ContMDiff I I 2 Sum.inl : Prop -/
+#guard_msgs in
+#check CMDiff 2 (@Sum.inl M M)
+
+/-- info: ContMDiff I I 2 Sum.inr : Prop -/
+#guard_msgs in
+#check CMDiff 2 (@Sum.inr M M)
+
+-- Error messages about mismatched models.
+/--
+error: failed to synthesize
+  ChartedSpace H (M ⊕ F)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDiff (Sum.map f h')
+/--
+error: failed to synthesize
+  ChartedSpace H (M ⊕ F)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDifferentiable I I (Sum.map f h')
+
+-- Nested sums are not supported yet.
+/--
+error: Found no model with corners on first summand `M ⊕ M
+Note: finding a model with corners on direct sums of three or more spaces is not implemented yet`
+-/
+#guard_msgs in
+#check MDiff (Sum.map (Sum.map f f) f)
+
+/--
+error: Found no model with corners on first summand `M ⊕ M ⊕ M
+Note: finding a model with corners on direct sums of three or more spaces is not implemented yet`
+-/
+#guard_msgs in
+#check MDiff (Sum.map (Sum.map f (Sum.map g g)) f)
+
+-- Edge case: we don't care about the second factor.
+variable {f : M → M} in
+/-- info: MDifferentiable I I (Sum.map f Sum.inr) : Prop -/
+#guard_msgs in
+#check MDiff (Sum.map f (@Sum.inr M M))
+
+/-- info: MDifferentiable I I' (Sum.map f (Sum.map f (Sum.map g g))) : Prop -/
+#guard_msgs in
+#check MDiff (Sum.map f (Sum.map f (Sum.map g g)))
+
+end sum
+
+section product
+
+/-- info: MDifferentiable I I' f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+/-- info: MDifferentiable (I.prod I) (I'.prod I') (Prod.map f g) : Prop -/
+#guard_msgs in
+#check MDiff (Prod.map f g)
+
+/-- info: MDifferentiable (I.prod I) (I'.prod 𝓘(𝕜, 𝕜)) (Prod.map f h) : Prop -/
+#guard_msgs in
+#check MDiff (Prod.map f h)
+
+/-- info: MDifferentiable (I.prod I) (I'.prod I) (Prod.map f ↑φ) : Prop -/
+#guard_msgs in
+#check MDiff (Prod.map f φ)
+
+/-- info: MDifferentiable I (I'.prod I') fun x ↦ (f x, g x) : Prop -/
+#guard_msgs in
+#check MDiff (fun x ↦ (f x, g x))
+
+/-- info: MDifferentiable (I.prod 𝓘(𝕜, E)) I' k : Prop -/
+#guard_msgs in
+#check MDiff k
+
+/--
+error: `E × E` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
+-/
+#guard_msgs in
+#check CMDiff 2 (Prod.map f' f')
+
+/-- info: MDifferentiable (I.prod I) (I.prod I) (Prod.map ↑φ ↑φ') : Prop -/
+#guard_msgs in
+#check MDiff (Prod.map φ φ')
+
+-- Currently, higher-order products are not implemented.
+-- XXX: double-check these could work, by trying out the equivalent
+-- MDifferentiable/ContMDiff incantation
+/--
+error: Found no model with corners on second factor `M × M`
+Note: finding a model with corners on products of three or more spaces is not implemented yet
+-/
+#guard_msgs in
+#check MDiff (Prod.map f (Prod.map h g))
+
+/--
+error: Found no model with corners on first factor `M × M`
+Note: finding a model with corners on products of three or more spaces is not implemented yet
+-/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f g) h)
+
+/--
+error: Found no model with corners on first factor `M × M`
+Note: finding a model with corners on products of three or more spaces is not implemented yet
+-/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f g) (Prod.map h k))
+
+/--
+error: Found no model with corners on first factor `(M × M) × M`
+Note: finding a model with corners on products of three or more spaces is not implemented yet
+-/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map (Prod.map f g) h) k)
+
+/--
+error: Found no model with corners on second factor `M × M × M × E`
+Note: finding a model with corners on products of three or more spaces is not implemented yet
+-/
+#guard_msgs in
+#check MDiff (Prod.map f (Prod.map g (Prod.map h k)))
+
+/--
+error: Found no model with corners on second factor `EM' × F`
+Note: finding a model with corners on products of three or more spaces is not implemented yet
+-/
+#guard_msgs in
+#check CMDiff 2 (Prod.map f' (Prod.map g' h'))
+
+/--
+error: Found no model with corners on first factor `E × EM'`
+Note: finding a model with corners on products of three or more spaces is not implemented yet
+-/
+#guard_msgs in
+#check CMDiff 2 (Prod.map (Prod.map f' g') h')
+
+/--
+error: Found no model with corners on first factor `(E × EM') × F`
+Note: finding a model with corners on products of three or more spaces is not implemented yet
+-/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map (Prod.map f' g') h') k')
+
+/--
+error: Found no model with corners on first factor `E × EM'`
+Note: finding a model with corners on products of three or more spaces is not implemented yet
+-/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f' g') (Prod.map h' k'))
+
+/--
+error: Found no model with corners on second factor `EM' × F × F`
+Note: finding a model with corners on products of three or more spaces is not implemented yet
+-/
+#guard_msgs in
+#check MDiff (Prod.map f' (Prod.map g' (Prod.map h' k')))
+
+-- TODO: add many more tests!
+
+end product
+
+section opens
+
+open TopologicalSpace
+
+variable {s : Opens M} {t : Opens E} {u : Opens M'}
+
+variable {f : s → M'} in
+/-- error: Could not find a model with corners for `↥s` -/
+#guard_msgs in
+#check MDiff f
+
+variable {f : s → u} in
+/-- error: Could not find a model with corners for `↥s` -/
+#guard_msgs in
+#check MDiff f
+
+variable {f : u → M × E} in
+/-- error: Could not find a model with corners for `↥u` -/
+#guard_msgs in
+#check MDiff f
+
+variable {s : Opens (M × E)} {f : s → M × E} in
+/-- error: Could not find a model with corners for `↥s` -/
+#guard_msgs in
+#check MDiff f
+
+-- too advanced: variable {s : Opens (M ⊕ M)} {f : s → (M × E) ⊕ (M × E)} in
+
+variable {s : Opens (M ⊕ M)} {f : s → 𝕜 × E}
+/-- error: Could not find a model with corners for `↥s` -/
+#guard_msgs in
+#check MDiff f
+
+#exit
+
+end opens
+
+-- TODO: add enough tests for the combination of sums and products!
+
+/-- error: Found no model with corners on first summand `M × E` -/
+#guard_msgs in
+#check MDiff (Sum.map k k')
+
+end
+
 section trace
 
 /- Test that basic tracing works. -/
@@ -901,7 +1168,25 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 [Elab.DiffGeo.MDiff] ❌️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `ChartedSpace` structure on Unit among local instances, and Unit is not the charted space of some type in the local context either.
+      Couldn't find a `ChartedSpace` structure on `Unit` among local instances, and `Unit` is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a Euclidean space, half-space or quadrant
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not the set of units of a normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Sphere
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
@@ -915,7 +1200,8 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 /--
 info: fun a ↦ TotalSpace.mk' Unit a (f a) : Unit → TotalSpace Unit (Trivial Unit Unit)
 ---
-trace: [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
+trace: [Elab.DiffGeo.TotalSpaceMk] argument(s) passed to `T%` is/are `[]`
+[Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
 -/
 #guard_msgs in
 #check T% f
