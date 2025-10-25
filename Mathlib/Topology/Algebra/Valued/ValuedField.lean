@@ -181,15 +181,7 @@ instance (priority := 100) completable : CompletableTopField K :=
             simp at x_in₀
           exact (Valuation.ne_zero_iff _).mp this
         · refine lt_of_lt_of_le H₁ ?_
-          rw [Units.min_val]
-          apply min_le_min _ x_in₀
-          rw [mul_assoc]
-          have : ((γ₀ * γ₀ : Γ₀ˣ) : Γ₀) ≤ v x * v x :=
-            calc
-              ↑γ₀ * ↑γ₀ ≤ ↑γ₀ * v x := mul_le_mul_left' x_in₀ ↑γ₀
-              _ ≤ _ := mul_le_mul_right' x_in₀ (v x)
-          rw [Units.val_mul]
-          exact mul_le_mul_left' this γ }
+          grw [Units.min_val, mul_assoc, Units.val_mul, Units.val_mul, x_in₀] }
 
 open WithZeroTopology
 

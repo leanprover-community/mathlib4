@@ -70,7 +70,7 @@ instance : LE SignType :=
   ⟨SignType.LE⟩
 
 instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
-  cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
+  cases a <;> cases b <;> first | exact isTrue (by constructor) | exact isFalse (by rintro ⟨_⟩)
 
 private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
 private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := by
@@ -79,9 +79,6 @@ private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := b
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
-  zero := 0
-  one := 1
-  mul := (· * ·)
   inv := id
   mul_zero a := by cases a <;> rfl
   zero_mul a := by cases a <;> rfl
