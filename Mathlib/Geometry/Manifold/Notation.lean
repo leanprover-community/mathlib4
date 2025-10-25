@@ -328,7 +328,7 @@ def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
   if let some m ← tryStrategy m!"Complex unit circle" fromCircle      then return some (m, none)
   if let some m ← tryStrategy m!"Sphere"           fromSphere         then return some (m, none)
   if let some m ← tryStrategy m!"NormedField"      fromNormedField    then return some (m, none)
-  throwError "Could not find a model with corners for `{e}`"
+  return none
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
@@ -667,8 +667,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
     let fTerm : Term ← Term.exprToSyntax srcF
     let iTerm : Term ← ``(ModelWithCorners.prod $eTerm $fTerm)
     Term.elabTerm iTerm none
-  | _ => throwError "Could not find a model with corners for {e}"
-
+  | _ => throwError "Could not find a model with corners for `{e}`"
 
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
