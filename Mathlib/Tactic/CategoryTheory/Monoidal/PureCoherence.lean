@@ -31,33 +31,41 @@ local infixr:81 " ◁ " => MonoidalCategory.whiskerLeftIso
 local infixl:81 " ▷ " => MonoidalCategory.whiskerRightIso
 
 /-- The composition of the normalizing isomorphisms `η_f : p ⊗ f ≅ pf` and `η_g : pf ⊗ g ≅ pfg`. -/
+@[to_additive normalizeIsoComp_add
+/-- The composition of the normalizing isomorphisms `η_f : p ⊕ f ≅ pf` and `η_g : pf ⊕ g ≅ pfg`. -/]
 abbrev normalizeIsoComp {p f g pf pfg : C} (η_f : p ⊗ f ≅ pf) (η_g : pf ⊗ g ≅ pfg) :=
   (α_ _ _ _).symm ≪≫ whiskerRightIso η_f g ≪≫ η_g
 
+@[to_additive]
 theorem naturality_associator {p f g h pf pfg pfgh : C}
     (η_f : p ⊗ f ≅ pf) (η_g : pf ⊗ g ≅ pfg) (η_h : pfg ⊗ h ≅ pfgh) :
     p ◁ (α_ f g h) ≪≫ normalizeIsoComp η_f (normalizeIsoComp η_g η_h) =
     normalizeIsoComp (normalizeIsoComp η_f η_g) η_h :=
   Iso.ext (by simp)
 
+@[to_additive]
 theorem naturality_leftUnitor {p f pf : C} (η_f : p ⊗ f ≅ pf) :
     p ◁ (λ_ f) ≪≫ η_f = normalizeIsoComp (ρ_ p) η_f :=
   Iso.ext (by simp)
 
+@[to_additive]
 theorem naturality_rightUnitor {p f pf : C} (η_f : p ⊗ f ≅ pf) :
     p ◁ (ρ_ f) ≪≫ η_f = normalizeIsoComp η_f (ρ_ pf) :=
   Iso.ext (by simp)
 
+@[to_additive naturality_add_id]
 theorem naturality_id {p f pf : C} (η_f : p ⊗ f ≅ pf) :
     p ◁ Iso.refl f ≪≫ η_f = η_f := by
   simp
 
+@[to_additive naturality_add_comp]
 theorem naturality_comp {p f g h pf : C} {η : f ≅ g} {θ : g ≅ h}
     (η_f : p ⊗ f ≅ pf) (η_g : p ⊗ g ≅ pf) (η_h : p ⊗ h ≅ pf)
     (ih_η : p ◁ η ≪≫ η_g = η_f) (ih_θ : p ◁ θ ≪≫ η_h = η_g) :
     p ◁ (η ≪≫ θ) ≪≫ η_h = η_f := by
   simp_all
 
+@[to_additive]
 theorem naturality_whiskerLeft {p f g h pf pfg : C} {η : g ≅ h}
     (η_f : p ⊗ f ≅ pf) (η_fg : pf ⊗ g ≅ pfg) (η_fh : (pf ⊗ h) ≅ pfg)
     (ih_η : pf ◁ η ≪≫ η_fh = η_fg) :
@@ -66,6 +74,7 @@ theorem naturality_whiskerLeft {p f g h pf pfg : C} {η : g ≅ h}
   apply Iso.ext
   simp [← whisker_exchange_assoc]
 
+@[to_additive]
 theorem naturality_whiskerRight {p f g h pf pfh : C} {η : f ≅ g}
     (η_f : p ⊗ f ≅ pf) (η_g : p ⊗ g ≅ pf) (η_fh : (pf ⊗ h) ≅ pfh)
     (ih_η : p ◁ η ≪≫ η_g = η_f) :
@@ -74,6 +83,7 @@ theorem naturality_whiskerRight {p f g h pf pfh : C} {η : f ≅ g}
   apply Iso.ext
   simp
 
+@[to_additive]
 theorem naturality_tensorHom {p f₁ g₁ f₂ g₂ pf₁ pf₁f₂ : C} {η : f₁ ≅ g₁} {θ : f₂ ≅ g₂}
     (η_f₁ : p ⊗ f₁ ≅ pf₁) (η_g₁ : p ⊗ g₁ ≅ pf₁) (η_f₂ : pf₁ ⊗ f₂ ≅ pf₁f₂) (η_g₂ : pf₁ ⊗ g₂ ≅ pf₁f₂)
     (ih_η : p ◁ η ≪≫ η_g₁ = η_f₁)
@@ -84,6 +94,7 @@ theorem naturality_tensorHom {p f₁ g₁ f₂ g₂ pf₁ pf₁f₂ : C} {η : f
   · apply naturality_whiskerRight _ _ _ ih_η
   · apply naturality_whiskerLeft _ _ _ ih_θ
 
+@[to_additive naturality_add_inv]
 theorem naturality_inv {p f g pf : C} {η : f ≅ g}
     (η_f : p ⊗ f ≅ pf) (η_g : p ⊗ g ≅ pf) (ih : p ◁ η ≪≫ η_g = η_f) :
     p ◁ η.symm ≪≫ η_f = η_g := by
@@ -208,6 +219,7 @@ instance : MonadNormalizeNaturality MonoidalM where
     have ih : Q($p ◁ $η ≪≫ $η_g = $η_f) := ih
     return q(naturality_inv $η_f $η_g $ih)
 
+@[to_additive of_normalize_eq_add]
 theorem of_normalize_eq {f g f' : C} {η θ : f ≅ g} (η_f : 𝟙_ C ⊗ f ≅ f') (η_g : 𝟙_ C ⊗ g ≅ f')
     (h_η : 𝟙_ C ◁ η ≪≫ η_g = η_f)
     (h_θ : 𝟙_ C ◁ θ ≪≫ η_g = η_f) : η = θ := by
@@ -218,6 +230,7 @@ theorem of_normalize_eq {f g f' : C} {η θ : f ≅ g} (η_f : 𝟙_ C ⊗ f ≅
     _ = θ.hom := by
       simp [← reassoc_of% (congrArg Iso.hom h_θ)]
 
+@[to_additive mk_eq_of_naturality_add]
 theorem mk_eq_of_naturality {f g f' : C} {η θ : f ⟶ g} {η' θ' : f ≅ g}
     (η_f : 𝟙_ C ⊗ f ≅ f') (η_g : 𝟙_ C ⊗ g ≅ f')
     (η_hom : η'.hom = η) (Θ_hom : θ'.hom = θ)
