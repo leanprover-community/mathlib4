@@ -14,8 +14,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 /-!
 # Adjunctions related to the over category
 
-In a category with pullbacks, for any morphism `f : X ⟶ Y`, the functor
-`Over.map f : Over X ⥤ Over Y` has a right adjoint `Over.pullback f`.
+If pullbacks along a morphism `f : X ⟶ Y` exist,
+the functor `Over.map f : Over X ⥤ Over Y` has a right adjoint `Over.pullback f`.
 
 In a category with binary products, for any object `X` the functor
 `Over.forget X : Over X ⥤ C` has a right adjoint `Over.star X`.
