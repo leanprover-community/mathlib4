@@ -405,12 +405,20 @@ theorem univ_sum_single_apply' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
   classical rw [Finset.sum_pi_single]
   simp
 
-
 theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
-    equivFunOnFinite.symm f = ∑ a, Finsupp.single a (f a) := by
+    equivFunOnFinite.symm f = ∑ a, single a (f a) := by
   rw [← univ_sum_single (equivFunOnFinite.symm f)]
   ext
   simp
+
+@[simp]
+theorem coe_univ_sum_single [Fintype α] [AddCommMonoid M] (f : α → M) :
+    ⇑(∑ a : α, single a (f a)) = f :=
+  congrArg _ (equivFunOnFinite_symm_eq_sum f).symm
+
+theorem equivFunOnFinite_symm_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
+    ((equivFunOnFinite.symm f).sum fun _ n ↦ n) = ∑ a, f a := by
+  rw [equivFunOnFinite_symm_eq_sum, sum_fintype _ _ fun _ ↦ rfl, coe_univ_sum_single]
 
 theorem liftAddHom_apply_single [AddZeroClass M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
     (b : M) : (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
