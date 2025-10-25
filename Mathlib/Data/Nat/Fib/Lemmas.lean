@@ -19,61 +19,65 @@ namespace Nat
 
 /-- For any nonzero `n`, the matrix `[fib (n + 1), fib n; fib n, fib (n - 1)]` is equal to
 `[1, 1; 1, 0] ^ n`. -/
-lemma fib_matrix_eq : ∀ {n : ℕ}, n ≠ 0 →
-    !![fib (n + 1), fib n; fib n, fib (n - 1)] = !![1, 1; 1, 0] ^ n
-  | 1, _ => by simp
-  | n + 2, _ => by
-    rw [pow_succ, ← fib_matrix_eq (add_one_ne_zero n)]
+lemma fib_matrix_eq : ∀ {n : ℕ},
+    !![fib (n + 2), fib (n + 1); fib (n + 1), fib n] = !![1, 1; 1, 0] ^ (n + 1)
+  | 0 => by simp
+  | n + 1 => by
+    rw [pow_succ, ← fib_matrix_eq]
     simp [fib_add_two, ← add_assoc, add_rotate, add_comm (fib n)]
 
 /-- **Cassini's identity**: for nonzero `n`, `fib (n + 1) * fib (n - 1) - fib n ^ 2 = (-1) ^ n`. -/
-lemma fib_succ_mul_fib_pred_sub_fib_sq {n : ℕ} (hn : n ≠ 0) :
-    (fib (n + 1) * fib (n - 1) - fib n ^ 2 : ℤ) = (-1) ^ n :=
-  calc _ = (!![fib (n + 1), fib n; fib n, fib (n - 1)] : Matrix _ _ ℤ).det := by simp [pow_two]
-    _ = (!![fib (n + 1), fib n; fib n, fib (n - 1)].map (castRingHom ℤ)).det := rfl
-    _ = (!![1, 1; 1, 0].map (castRingHom ℤ) ^ n).det := by rw [fib_matrix_eq hn, Matrix.map_pow]
-    _ = (!![1, 1; 1, 0] ^ n).det := by congr; simp [← Matrix.ext_iff]
-    _ = (-1) ^ n := by simp
+lemma fib_add_two_mul_fib_sub_fib_succ_sq (n : ℕ) :
+    (fib (n + 2) * fib n - fib (n + 1) ^ 2 : ℤ) = (-1) ^ (n + 1) :=
+  calc _ = (!![fib (n + 2), fib (n + 1); fib (n + 1), fib n] : Matrix _ _ ℤ).det := by
+        simp [pow_two]
+    _ = (!![fib (n + 2), fib (n + 1); fib (n + 1), fib n].map (castRingHom ℤ)).det := rfl
+    _ = (!![1, 1; 1, 0].map (castRingHom ℤ) ^ (n + 1)).det := by rw [fib_matrix_eq, Matrix.map_pow]
+    _ = (!![1, 1; 1, 0] ^ (n + 1)).det := by congr; simp [← Matrix.ext_iff]
+    _ = (-1) ^ (n + 1) := by simp
 
 /-- Cassini's identity for nonzero even `n`: `fib (n + 1) * fib (n - 1) = fib n ^ 2 + 1.` -/
-lemma fib_succ_mul_fib_pred_of_ne_zero_even {n : ℕ} (hn : n ≠ 0) (hn2 : Even n) :
-    fib (n + 1) * fib (n - 1) = fib n ^ 2 + 1 := by
+lemma fib_add_two_mul_fib_of_even {n : ℕ} (hn2 : Even n) :
+    fib (n + 2) * fib n = fib (n + 1) ^ 2 - 1 := by
   obtain ⟨a, rfl⟩ := hn2
-  grind [fib_succ_mul_fib_pred_sub_fib_sq, pow_mul]
+  grind [fib_add_two_mul_fib_sub_fib_succ_sq, pow_mul]
 
 /-- Cassini's identity for odd `n`: `fib (n + 1) * fib (n - 1) = fib n ^ 2 - 1.` -/
 lemma fib_succ_mul_fib_pred_of_odd {n : ℕ} (hn : Odd n) :
     fib (n + 1) * fib (n - 1) = fib n ^ 2 - 1 := by
   obtain ⟨a, rfl⟩ := hn
-  grind [fib_succ_mul_fib_pred_sub_fib_sq, pow_mul]
+  grind [fib_add_two_mul_fib_sub_fib_succ_sq, pow_mul]
 
 /-- **Catalan's identity**: for nonzero `x` and `a`,
 `fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ x * fib a ^ 2`. -/
-lemma fib_add_sq_sub_fib_mul_fib_add_two_mul {x a : ℕ} (hx : x ≠ 0) (ha : a ≠ 0) :
-    (fib (x + a) ^ 2 - fib x * fib (x + 2 * a) : ℤ) = (-1) ^ x * fib a ^ 2 :=
-  calc (fib (x + a) ^ 2 - fib x * fib (x + 2 * a) : ℤ)
-      = (fib x * fib (a + 1) + fib (x - 1) * fib a) ^ 2 - fib x * (fib x * (fib (a + 1) ^ 2 +
-          fib a ^ 2) + fib (x - 1) * (fib a * fib (a + 1) + fib (a - 1) * fib a)) := by
+lemma fib_add_add_two_sq_sub_fib_add_mul_fib_add_two_mul_add_three (x a : ℕ) :
+    (fib (x + a + 2) ^ 2 - fib (x + 1) * fib (x + 2 * a + 3) : ℤ)
+      = (-1) ^ (x + 1) * fib (a + 1) ^ 2 :=
+  calc (fib (x + a + 2) ^ 2 - fib (x + 1) * fib (x + 2 * a + 3) : ℤ)
+      = (fib (x + 1) * fib (a + 2) + fib x * fib (a + 1)) ^ 2 - fib (x + 1) *
+          (fib (x + 1) * (fib ((a + 1) + 1) ^ 2 + fib (a + 1) ^ 2) + fib ((x + 1) - 1)
+            * (fib (a + 1) * fib ((a + 1) + 1) + fib ((a + 1) - 1) * fib (a + 1))) := by
         congr 2
-        · rw [add_comm, fib_add_of_ne_zero hx]
-          simp only [cast_add, cast_mul, add_comm, mul_comm]
-        · rw [add_comm x, fib_add_of_ne_zero hx]
-          simp_rw [two_mul, fib_add, fib_add_of_ne_zero (m := a) (n := a) ha]
+        · rw [(by ring : x + a + 2 = x + (a + 1) + 1)]
+          simp [fib_add]
+          ring
+        · rw [show x + 2 * a + 3 = (x + 1) + 2 * (a + 1) by ring]
+          set b := a + 1
+          set c := x + 1
+          have {m n : ℕ} (hn : n ≠ 0) :
+              fib (m + n) = fib m * fib (n - 1) + fib (m + 1) * fib n := by
+            obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
+            simp [← add_assoc, fib_add]
+          rw [add_comm c, this (by grind)]
+          simp_rw [two_mul, fib_add, this (m := b) (n := b) (by grind)]
           simp only [cast_add, cast_mul, sq, add_comm, mul_comm]
-    _ = fib x * fib (x - 1) * fib a * (fib (a + 1) - fib (a - 1)) +
-      fib a ^ 2 * (fib (x - 1) ^ 2 - fib x ^ 2) := by ring
-    _ = fib a ^ 2 * (fib (x - 1) ^ 2 + fib x * fib (x - 1) - fib x ^ 2) := by
-        rw [← Int.natCast_sub (fib_mono (by grind)), fib_succ_sub_fib_pred ha]
+    _ = fib (x + 1) * fib x * fib (a + 1) * (fib (a + 2) - fib a) +
+      fib (a + 1) ^ 2 * (fib x ^ 2 - fib (x + 1) ^ 2) := by simp only [add_tsub_cancel_right]; ring
+    _ = fib (a + 1) ^ 2 * (fib x ^ 2 + fib (x + 1) * fib x - fib (x + 1) ^ 2) := by
+        simp only [fib_add_two, cast_add, add_sub_cancel_left]
         ring
     _ = _ := by
-        rw [← fib_succ_mul_fib_pred_sub_fib_sq hx, fib_add_one hx, Int.natCast_add, add_mul]
+        rw [← fib_add_two_mul_fib_sub_fib_succ_sq, sub_mul, fib_add_two, cast_add]
         ring
-
-/-- Another version of **Catalan's identity**.
-Also see `fib_add_sub_fib_add_two_mul_mul_fib`. -/
-theorem fib_sq_sub_fib_sub_mul_fub_add {n r : ℕ} (hr : r ≠ 0) (hrn : r < n) :
-    (fib n ^ 2 - fib (n - r) * fib (n + r) : ℤ) = (-1) ^ (n - r) * fib r ^ 2 := by
-  have := fib_add_sq_sub_fib_mul_fib_add_two_mul (Nat.sub_ne_zero_iff_lt.mpr hrn) hr
-  grind
 
 end Nat
