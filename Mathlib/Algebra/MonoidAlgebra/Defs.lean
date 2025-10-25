@@ -21,7 +21,7 @@ conditions at all. In this case the construction yields a not-necessarily-unital
 not-necessarily-associative algebra but it is still adjoint to the forgetful functor from such
 algebras to magmas, and we prove this as `MonoidAlgebra.liftMagma`.
 
-In this file we define `MonoidAlgebra R M := M →₀ R`, and `AddMonoidAlgebra R M`
+In this file we define `R[M] := M →₀ R`, and `AddMonoidAlgebra R M`
 in the same way, and then define the convolution product on these.
 
 When the domain is additive, this is used to define polynomials:
@@ -77,38 +77,44 @@ def unexpander : Lean.PrettyPrinter.Unexpander
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
-section Semiring
-variable [Semiring R] {x y : MonoidAlgebra R M} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
 
-@[to_additive] instance inhabited : Inhabited (MonoidAlgebra R M) :=
+@[inherit_doc MonoidAlgebra]
+scoped syntax:max (priority := high) term noWs "[" term "]" : term
+
+macro_rules | `($R[$M]) => `(MonoidAlgebra $R $M)
+
+section Semiring
+variable [Semiring R] {x y : R[M]} {r r₁ r₂ : R} {m m' m₁ m₂ : M}
+
+@[to_additive] instance inhabited : Inhabited R[M] :=
   inferInstanceAs <| Inhabited <| M →₀ R
 
-@[to_additive] instance nontrivial [Nontrivial R] [Nonempty M] : Nontrivial (MonoidAlgebra R M) :=
+@[to_additive] instance nontrivial [Nontrivial R] [Nonempty M] : Nontrivial R[M] :=
   inferInstanceAs <| Nontrivial <| M →₀ R
 
-@[to_additive] instance unique [Subsingleton R] : Unique (MonoidAlgebra R M) :=
+@[to_additive] instance unique [Subsingleton R] : Unique R[M] :=
   inferInstanceAs <| Unique <| M →₀ R
 
-@[to_additive] instance addCommMonoid : AddCommMonoid (MonoidAlgebra R M) :=
+@[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
   inferInstanceAs <| AddCommMonoid <| M →₀ R
 
-@[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd (MonoidAlgebra R M) :=
+@[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
-@[to_additive] instance instCoeFun : CoeFun (MonoidAlgebra R M) fun _ ↦ M → R :=
+@[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
   inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
 
 /-- A copy of `Finsupp.ext` for `MonoidAlgebra`. -/
 @[to_additive (attr := ext) /-- A copy of `Finsupp.ext` for `AddMonoidAlgebra`. -/]
-lemma ext ⦃f g : MonoidAlgebra R M⦄ (hfg : ∀ m, f m = g m) : f = g := Finsupp.ext hfg
+lemma ext ⦃f g : R[M]⦄ (hfg : ∀ m, f m = g m) : f = g := Finsupp.ext hfg
 
 -- TODO: This definition is very leaky, and we later have frequent problems conflating the two
 -- versions of `single`. Perhaps someone wants to try making this a `def` rather than an `abbrev`?
 -- In Mathlib 3 this was locally reducible.
-/-- `MonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : MonoidAlgebra R M`. -/
+/-- `MonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/
 @[to_additive
 /-- `AddMonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/]
-abbrev single (m : M) (r : R) : MonoidAlgebra R M := Finsupp.single m r
+abbrev single (m : M) (r : R) : R[M] := Finsupp.single m r
 
 section SMul
 
@@ -123,11 +129,11 @@ Further results on scalar multiplication can be found in
 variable {A : Type*} [SMulZeroClass A R]
 
 @[to_additive (dont_translate := A) smulZeroClass]
-instance smulZeroClass : SMulZeroClass A (MonoidAlgebra R M) :=
+instance smulZeroClass : SMulZeroClass A R[M] :=
   Finsupp.smulZeroClass
 
 @[to_additive (attr := simp) (dont_translate := A) coeff_smul]
-lemma smul_apply (a : A) (x : MonoidAlgebra R M) (m : M) : (a • x) m = a • x m := rfl
+lemma smul_apply (a : A) (x : R[M]) (m : M) : (a • x) m = a • x m := rfl
 
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by
@@ -137,22 +143,22 @@ lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
 
 @[to_additive (dont_translate := N) distribSMul]
-instance distribSMul [DistribSMul N R] : DistribSMul N (MonoidAlgebra R M) :=
+instance distribSMul [DistribSMul N R] : DistribSMul N R[M] :=
   Finsupp.distribSMul _ _
 
 @[to_additive (dont_translate := N) isScalarTower]
 instance isScalarTower [SMulZeroClass N R] [SMulZeroClass O R] [SMul N O] [IsScalarTower N O R] :
-    IsScalarTower N O (MonoidAlgebra R M) :=
+    IsScalarTower N O R[M] :=
   Finsupp.isScalarTower ..
 
 @[to_additive (dont_translate := N) smulCommClass]
 instance smulCommClass [SMulZeroClass N R] [SMulZeroClass O R] [SMulCommClass N O R] :
-    SMulCommClass N O (MonoidAlgebra R M) :=
+    SMulCommClass N O R[M] :=
   Finsupp.smulCommClass ..
 
 @[to_additive (dont_translate := N) isCentralScalar]
 instance isCentralScalar [SMulZeroClass N R] [SMulZeroClass Nᵐᵒᵖ R] [IsCentralScalar N R] :
-    IsCentralScalar N (MonoidAlgebra R M) :=
+    IsCentralScalar N R[M] :=
   Finsupp.isCentralScalar ..
 
 end SMul
@@ -161,7 +167,7 @@ end SMul
 lemma coe_add (f g : MonoidAlgebra R G) : ⇑(f + g) = f + g := rfl
 
 @[to_additive]
-lemma single_zero (m : M) : (single m 0 : MonoidAlgebra R M) = 0 := by simp [single]
+lemma single_zero (m : M) : (single m 0 : R[M]) = 0 := by simp [single]
 
 @[to_additive]
 lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r₁ + single m r₂ := by
@@ -174,12 +180,12 @@ TODO: Rename to `singleAddMonoidHom`. -/
 /-- `AddMonoidAlgebra.single` as an `AddMonoidHom`.
 
 TODO: Rename to `singleAddMonoidHom`. -/]
-def singleAddHom (m : M) : R →+ MonoidAlgebra R M where
+def singleAddHom (m : M) : R →+ R[M] where
   toFun := single m
   map_zero' := single_zero _
   map_add' := single_add _
 
-/-- If two additive homomorphisms from `MonoidAlgebra R M` are equal on each `single r m`,
+/-- If two additive homomorphisms from `R[M]` are equal on each `single r m`,
 then they are equal.
 
 We formulate this using equality of `AddMonoidHom`s so that `ext` tactic can apply a type-specific
@@ -195,7 +201,7 @@ extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, 
 verify `f (single a 1) = g (single a 1)`.
 
 TODO: Rename to `addMonoidHom_ext'`. -/]
-lemma addHom_ext' {N : Type*} [AddZeroClass N] ⦃f g : MonoidAlgebra R M →+ N⦄
+lemma addHom_ext' {N : Type*} [AddZeroClass N] ⦃f g : R[M] →+ N⦄
     (hfg : ∀ m, f.comp (singleAddHom m) = g.comp (singleAddHom m)) : f = g :=
   Finsupp.addHom_ext' hfg
 
@@ -205,7 +211,7 @@ lemma sum_single_index [AddCommMonoid N] {m : M} {r : R} {h : M → R → N} (h_
   simp [h_zero]
 
 @[to_additive (attr := simp)]
-lemma sum_single (x : MonoidAlgebra R M) : x.sum single = x := Finsupp.sum_single _
+lemma sum_single (x : R[M]) : x.sum single = x := Finsupp.sum_single _
 
 @[to_additive]
 theorem single_apply {a a' : M} {b : R} [Decidable (a = a')] :
@@ -218,8 +224,8 @@ lemma single_eq_zero : single m r = 0 ↔ r = 0 := Finsupp.single_eq_zero
 @[to_additive] lemma single_ne_zero : single m r ≠ 0 ↔ r ≠ 0 := by simp [single]
 
 @[to_additive (attr := elab_as_elim)]
-lemma induction_linear {p : MonoidAlgebra R M → Prop} (x : MonoidAlgebra R M) (zero : p 0)
-    (add : ∀ x y : MonoidAlgebra R M, p x → p y → p (x + y)) (single : ∀ m r, p (single m r)) :
+lemma induction_linear {p : R[M] → Prop} (x : R[M]) (zero : p 0)
+    (add : ∀ x y : R[M], p x → p y → p (x + y)) (single : ∀ m r, p (single m r)) :
     p x :=
   Finsupp.induction_linear x zero (fun _ _ ↦ add _ _) (fun _ _ ↦ single _ _)
 
@@ -231,10 +237,10 @@ i.e. the function that is `1` at `1` and `0` elsewhere. -/
 @[to_additive (dont_translate := R)
 /-- The unit of the multiplication is `single 1 1`,
 i.e. the function that is `1` at `1` and `0` elsewhere. -/]
-instance one : One (MonoidAlgebra R M) where one := single 1 1
+instance one : One R[M] where one := single 1 1
 
 @[to_additive (dont_translate := R) one_def]
-lemma one_def : (1 : MonoidAlgebra R M) = single 1 1 := rfl
+lemma one_def : (1 : R[M]) = single 1 1 := rfl
 
 end One
 
@@ -244,7 +250,7 @@ variable [Mul M]
 /-- The multiplication in a monoid algebra.
 
 We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[irreducible] def mul' (x y : MonoidAlgebra R M) : MonoidAlgebra R M :=
+@[irreducible] def mul' (x y : R[M]) : R[M] :=
   x.sum fun m₁ r₁ ↦ y.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂)
 
 /-- The product of `f g : k[G]` is the finitely supported function
@@ -254,20 +260,20 @@ polynomials where `α` is the additive monoid of monomial exponents.) -/
 instance _root_.AddMonoidAlgebra.instMul [Add M] : Mul (AddMonoidAlgebra R M) where
   mul f g := MonoidAlgebra.mul' (M := Multiplicative M) f g
 
-/-- The product of `x y : MonoidAlgebra R M` is the finitely supported function whose value at `m`
+/-- The product of `x y : R[M]` is the finitely supported function whose value at `m`
 is the sum of `x m₁ * y m₂` over all pairs `m₁, m₂` such that `m₁ * m₂ = m`.
 
 (Think of the group ring of a group.) -/
 @[to_additive existing instMul]
-instance instMul : Mul (MonoidAlgebra R M) where mul := mul'
+instance instMul : Mul R[M] where mul := mul'
 
 @[to_additive (dont_translate := R) mul_def]
-lemma mul_def (x y : MonoidAlgebra R M) :
+lemma mul_def (x y : R[M]) :
     x * y = x.sum fun m₁ r₁ ↦ y.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂) := by
   with_unfolding_all rfl
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra R M) where
+instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring R[M] where
   zero_mul := by simp [mul_def]
   mul_zero := by simp [mul_def]
   -- Porting note: `refine` & `exact` are required because `simp` behaves differently.
@@ -283,7 +289,7 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra R 
       simp only [add_mul, zero_mul, single_zero, single_add, forall_true_iff, sum_zero, sum_add]
 
 @[to_additive (dont_translate := R) mul_apply]
-lemma mul_apply [DecidableEq M] (x y : MonoidAlgebra R M) (m : M) :
+lemma mul_apply [DecidableEq M] (x y : R[M]) (m : M) :
     (x * y) m = x.sum fun m₁ r₁ ↦ y.sum fun m₂ r₂ ↦ if m₁ * m₂ = m then r₁ * r₂ else 0 := by
   -- Porting note: `reducible` cannot be `local` so proof gets long.
   rw [mul_def, Finsupp.sum_apply]; congr; ext
@@ -292,7 +298,7 @@ lemma mul_apply [DecidableEq M] (x y : MonoidAlgebra R M) (m : M) :
 
 open Finset in
 @[to_additive (dont_translate := R) mul_apply_antidiagonal]
-lemma mul_apply_antidiagonal (x y : MonoidAlgebra R M) (m : M) (s : Finset (M × M))
+lemma mul_apply_antidiagonal (x y : R[M]) (m : M) (s : Finset (M × M))
     (hs : ∀ {p}, p ∈ s ↔ p.1 * p.2 = m) : (x * y) m = ∑ p ∈ s, x p.1 * y p.2 := by
   classical
   let F (p : M × M) : R := if p.1 * p.2 = m then x p.1 * y p.2 else 0
@@ -318,7 +324,7 @@ lemma single_commute_single (hm : Commute m₁ m₂) (hr : Commute r₁ r₂) :
     Commute (single m₁ r₁) (single m₂ r₂) := by simp [Commute, SemiconjBy, hm.eq, hr.eq]
 
 @[to_additive (attr := simp) (dont_translate := R) single_commute]
-lemma single_commute (hm : ∀ m', Commute m m') (hr : ∀ r', Commute r r') (x : MonoidAlgebra R M) :
+lemma single_commute (hm : ∀ m', Commute m m') (hr : ∀ r', Commute r r') (x : R[M]) :
     Commute (single m r) x := by
   have : AddMonoidHom.mulLeft (single m r) = AddMonoidHom.mulRight (single m r) := by
     ext m' r' : 2; exact single_commute_single (hm m') (hr r')
@@ -347,17 +353,17 @@ lemma single_mul_apply_aux (H : ∀ m' ∈ x.support, m * m' = m₁ ↔ m' = m�
     _ = r * x m₂ := by simp +contextual [Finsupp.sum_eq_single m₂]
 
 @[to_additive (attr := simp) (dont_translate := R) mul_single_apply_of_not_exists_add]
-lemma mul_single_apply_of_not_exists_mul (r : R) (x : MonoidAlgebra R M) (h : ¬ ∃ d, m' = d * m) :
+lemma mul_single_apply_of_not_exists_mul (r : R) (x : R[M]) (h : ¬ ∃ d, m' = d * m) :
     (x * single m r) m' = 0 := by classical simp_all [mul_apply, eq_comm]
 
 @[to_additive (attr := simp) (dont_translate := R) single_mul_apply_of_not_exists_add]
-lemma single_mul_apply_of_not_exists_mul (r : R) (x : MonoidAlgebra R M) (h : ¬ ∃ d, m' = m * d) :
+lemma single_mul_apply_of_not_exists_mul (r : R) (x : R[M]) (h : ¬ ∃ d, m' = m * d) :
     (single m r * x) m' = 0 := by classical simp_all [mul_apply, eq_comm]
 
 variable (R M : Type*) [Semiring R] [Mul M] in
 /-- The embedding of a magma into its magma algebra. -/
 @[simps]
-def ofMagma : M →ₙ* MonoidAlgebra R M where
+def ofMagma : M →ₙ* R[M] where
   toFun a := single a 1
   map_mul' a b := by simp only [mul_def, mul_one, sum_single_index, single_eq_zero, mul_zero]
 
@@ -367,7 +373,7 @@ section Semigroup
 variable [Semigroup M]
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalSemiring : NonUnitalSemiring (MonoidAlgebra R M) where
+instance nonUnitalSemiring : NonUnitalSemiring R[M] where
   mul_assoc f g h := by
     -- Porting note: `reducible` cannot be `local` so proof gets long.
     simp only [mul_def]
@@ -384,7 +390,7 @@ section MulOneClass
 variable [MulOneClass M]
 
 @[to_additive (dont_translate := R)]
-instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra R M) where
+instance nonAssocSemiring : NonAssocSemiring R[M] where
   natCast n := single 1 n
   natCast_zero := by simp
   natCast_succ := by simp [one_def]
@@ -392,22 +398,22 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra R M) where
   mul_one := by simp [mul_def, one_def]
 
 @[to_additive (dont_translate := R)]
-lemma natCast_def (n : ℕ) : (n : MonoidAlgebra R M) = single (1 : M) (n : R) := rfl
+lemma natCast_def (n : ℕ) : (n : R[M]) = single (1 : M) (n : R) := rfl
 
 @[to_additive (dont_translate := R) mul_single_zero_apply]
-lemma mul_single_one_apply (x : MonoidAlgebra R M) (r : R) (m : M) :
-    (x * single 1 r : MonoidAlgebra R M) m = x m * r :=
+lemma mul_single_one_apply (x : R[M]) (r : R) (m : M) :
+    (x * single 1 r : R[M]) m = x m * r :=
   x.mul_single_apply_aux (by simp)
 
 @[to_additive (dont_translate := R) single_zero_mul_apply]
-lemma single_one_mul_apply (x : MonoidAlgebra R M) (r : R) (m : M) :
-    (single 1 r * x : MonoidAlgebra R M) m = r * x m :=
+lemma single_one_mul_apply (x : R[M]) (r : R) (m : M) :
+    (single 1 r * x : R[M]) m = r * x m :=
   x.single_mul_apply_aux (by simp)
 
 variable (R M : Type*) [Semiring R] [MulOneClass M] in
 /-- The embedding of a unital magma into its magma algebra. -/
 @[simps]
-def of : M →* MonoidAlgebra R M where
+def of : M →* R[M] where
   __ := ofMagma R M
   toFun m := single m 1
   map_one' := rfl
@@ -415,7 +421,7 @@ def of : M →* MonoidAlgebra R M where
 lemma of_injective [Nontrivial R] : Function.Injective (of R M) := fun a b h ↦ by
   simpa using (single_eq_single_iff _ _ _ _).mp h
 
-lemma of_commute (h : ∀ m', Commute m m') (f : MonoidAlgebra R M) : Commute (of R M m) f :=
+lemma of_commute (h : ∀ m', Commute m m') (f : R[M]) : Commute (of R M m) f :=
   single_commute h .one_left f
 
 /-- `MonoidAlgebra.single` as a `MonoidHom` from the product type into the monoid algebra.
@@ -423,7 +429,7 @@ lemma of_commute (h : ∀ m', Commute m m') (f : MonoidAlgebra R M) : Commute (o
 Note the order of the elements of the product are reversed compared to the arguments of
 `MonoidAlgebra.single`. -/
 @[simps]
-def singleHom : R × M →* MonoidAlgebra R M where
+def singleHom : R × M →* R[M] where
   toFun a := single a.2 a.1
   map_one' := rfl
   map_mul' _a _b := by simp
@@ -431,32 +437,32 @@ def singleHom : R × M →* MonoidAlgebra R M where
 /-- `MonoidAlgebra.single 1` as a `RingHom` -/
 @[to_additive (attr := simps) (dont_translate := R)
 /-- `AddMonoidAlgebra.single 1` as a `RingHom` -/]
-def singleOneRingHom : R →+* MonoidAlgebra R M :=
+def singleOneRingHom : R →+* R[M] :=
   { singleAddHom 1 with
     toFun := single 1
     map_one' := rfl
     map_mul' := fun x y => by simp }
 
-/-- If two ring homomorphisms from `MonoidAlgebra R M` are equal on all `single m 1` and
+/-- If two ring homomorphisms from `R[M]` are equal on all `single m 1` and
 `single 1 r`, then they are equal. -/
 @[to_additive (dont_translate := R S)
 /-- If two ring homomorphisms from `R[M]` are equal on all `single m 1` and `single 0 r`,
 then they are equal. -/]
-lemma ringHom_ext [Semiring S] {f g : MonoidAlgebra R M →+* S}
+lemma ringHom_ext [Semiring S] {f g : R[M] →+* S}
     (h₁ : ∀ r, f (single 1 r) = g (single 1 r)) (h_of : ∀ m, f (single m 1) = g (single m 1)) :
     f = g :=
   RingHom.coe_addMonoidHom_injective <| addHom_ext fun m r ↦ by
     simpa [← map_mul] using congr($(h₁ r) * $(h_of m))
 
-/-- If two ring homomorphisms from `MonoidAlgebra R M` are equal on all `single m 1`
+/-- If two ring homomorphisms from `R[M]` are equal on all `single m 1`
 and `single 1 r`, then they are equal.
 
 See note [partially-applied ext lemmas]. -/
 @[ext high]
-lemma ringHom_ext' [Semiring S] {f g : MonoidAlgebra R M →+* S}
+lemma ringHom_ext' [Semiring S] {f g : R[M] →+* S}
     (h₁ : f.comp singleOneRingHom = g.comp singleOneRingHom)
-    (h_of : (f : MonoidAlgebra R M →* S).comp (of R M) =
-      (g : MonoidAlgebra R M →* S).comp (of R M)) : f = g :=
+    (h_of : (f : R[M] →* S).comp (of R M) =
+      (g : R[M] →* S).comp (of R M)) : f = g :=
   ringHom_ext (by simpa [DFunLike.ext_iff] using h₁) (by simpa [DFunLike.ext_iff] using h_of)
 
 end MulOneClass
@@ -465,15 +471,15 @@ section Monoid
 variable [Monoid M]
 
 @[to_additive]
-instance semiring : Semiring (MonoidAlgebra R M) where
+instance semiring : Semiring R[M] where
 
 @[to_additive (attr := simp) (dont_translate := R) single_pow]
 lemma single_pow (m : M) (r : R) : ∀ n : ℕ, single m r ^ n = single (m ^ n) (r ^ n)
   | 0 => by simp [one_def]
   | n + 1 => by simp [pow_succ, single_pow _ _ n]
 
-lemma induction_on {p : MonoidAlgebra R M → Prop} (x : MonoidAlgebra R M)
-    (hM : ∀ m, p (of R M m)) (hadd : ∀ x y : MonoidAlgebra R M, p x → p y → p (x + y))
+lemma induction_on {p : R[M] → Prop} (x : R[M])
+    (hM : ∀ m, p (of R M m)) (hadd : ∀ x y : R[M], p x → p y → p (x + y))
     (hsmul : ∀ (r : R) (x), p x → p (r • x)) : p x :=
   Finsupp.induction_linear x (by simpa using hsmul 0 (of R M 1) (hM 1))
     (fun x y hf hg => hadd x y hf hg) fun m r ↦ by simpa using hsmul r (of R M m) (hM m)
@@ -530,11 +536,11 @@ section CommSemiring
 variable [CommSemiring R]
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalCommSemiring [CommSemigroup M] : NonUnitalCommSemiring (MonoidAlgebra R M) where
+instance nonUnitalCommSemiring [CommSemigroup M] : NonUnitalCommSemiring R[M] where
   mul_comm f g := by simp [mul_def, Finsupp.sum, mul_comm, f.support.sum_comm]
 
 @[to_additive (dont_translate := R)]
-lemma single_one_comm [MulOneClass M] (r : R) (f : MonoidAlgebra R M) :
+lemma single_one_comm [MulOneClass M] (r : R) (f : R[M]) :
     single (1 : M) r * f = f * single (1 : M) r :=
   single_commute .one_left (.all _) f
 
@@ -542,7 +548,7 @@ section CommMonoid
 variable [CommMonoid M]
 
 @[to_additive (dont_translate := R)]
-instance commSemiring : CommSemiring (MonoidAlgebra R M) where
+instance commSemiring : CommSemiring R[M] where
 
 open Finset in
 @[to_additive (dont_translate := R) prod_single]
@@ -558,32 +564,32 @@ section Ring
 variable [Ring R]
 
 @[to_additive (dont_translate := R)]
-instance addCommGroup : AddCommGroup (MonoidAlgebra R M) :=
+instance addCommGroup : AddCommGroup R[M] :=
   inferInstanceAs <| AddCommGroup <| M →₀ R
 
 @[to_additive (attr := simp) (dont_translate := R)]
-lemma neg_apply (m : M) (x : MonoidAlgebra R M) : (-x) m = -x m := rfl
+lemma neg_apply (m : M) (x : R[M]) : (-x) m = -x m := rfl
 
 @[to_additive (dont_translate := R)]
 lemma single_neg (m : M) (r : R) : single m (-r) = -single m r := by simp [single]
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalNonAssocRing [Mul M] : NonUnitalNonAssocRing (MonoidAlgebra R M) where
+instance nonUnitalNonAssocRing [Mul M] : NonUnitalNonAssocRing R[M] where
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalRing [Semigroup M] : NonUnitalRing (MonoidAlgebra R M) where
+instance nonUnitalRing [Semigroup M] : NonUnitalRing R[M] where
 
 @[to_additive (dont_translate := R)]
-instance nonAssocRing [MulOneClass M] : NonAssocRing (MonoidAlgebra R M) where
+instance nonAssocRing [MulOneClass M] : NonAssocRing R[M] where
   intCast z := single 1 z
   intCast_ofNat n := by simp [natCast_def]
   intCast_negSucc n := by simp [natCast_def, one_def]
 
 @[to_additive (dont_translate := R)]
-lemma intCast_def [MulOneClass M] (z : ℤ) : (z : MonoidAlgebra R M) = single 1 (z : R) := rfl
+lemma intCast_def [MulOneClass M] (z : ℤ) : (z : R[M]) = single 1 (z : R) := rfl
 
 @[to_additive (dont_translate := R)]
-instance ring [Monoid M] : Ring (MonoidAlgebra R M) where
+instance ring [Monoid M] : Ring R[M] where
 
 end Ring
 
@@ -591,10 +597,10 @@ section CommRing
 variable [CommRing R]
 
 @[to_additive (dont_translate := R)]
-instance nonUnitalCommRing [CommSemigroup M] : NonUnitalCommRing (MonoidAlgebra R M) where
+instance nonUnitalCommRing [CommSemigroup M] : NonUnitalCommRing R[M] where
 
 @[to_additive (dont_translate := R)]
-instance commRing [CommMonoid M] : CommRing (MonoidAlgebra R M) where
+instance commRing [CommMonoid M] : CommRing R[M] where
 
 end CommRing
 end MonoidAlgebra
@@ -654,7 +660,7 @@ def singleHom [AddZeroClass M] : R × Multiplicative M →* R[M] where
   map_mul' _a _b := (single_mul_single ..).symm
 
 theorem induction_on [AddMonoid M] {p : R[M] → Prop} (x : R[M])
-    (hM : ∀ m, p (of R M <| .ofAdd m)) (hadd : ∀ x y : MonoidAlgebra R M, p x → p y → p (x + y))
+    (hM : ∀ m, p (of R M <| .ofAdd m)) (hadd : ∀ x y : R[M], p x → p y → p (x + y))
     (hsmul : ∀ (r : R) (x), p x → p (r • x)) : p x :=
   Finsupp.induction_linear x (by simpa using hsmul 0 (of R M 1) (hM 0))
     (fun x y hf hg ↦ hadd x y hf hg) fun m r ↦ by simpa using hsmul r (of R M m) (hM m)

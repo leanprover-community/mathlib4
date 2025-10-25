@@ -13,7 +13,7 @@ This file defines `liftNC`. For the definition of `MonoidAlgebra.lift`, see
 
 ## Main results
 * `MonoidAlgebra.liftNC`, `AddMonoidAlgebra.liftNC`: lift a homomorphism `f : k →+ R` and a
-  function `g : G → R` to a homomorphism `MonoidAlgebra k G →+ R`.
+  function `g : G → R` to a homomorphism `k[G] →+ R`.
 -/
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
@@ -38,11 +38,11 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 
 /-- A non-commutative version of `MonoidAlgebra.lift`: given an additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
-`MonoidAlgebra k G` such that `liftNC f g (single a b) = f b * g a`. If `f` is a ring homomorphism
+`k[G]` such that `liftNC f g (single a b) = f b * g a`. If `f` is a ring homomorphism
 and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism.  If
 `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra homomorphism called
 `MonoidAlgebra.lift`. -/
-def liftNC (f : k →+ R) (g : G → R) : MonoidAlgebra k G →+ R :=
+def liftNC (f : k →+ R) (g : G → R) : k[G] →+ R :=
   liftAddHom fun x : G => (AddMonoidHom.mulRight (g x)).comp f
 
 @[simp]
@@ -57,7 +57,7 @@ section Mul
 variable [Semiring k] [Mul G] [Semiring R]
 
 theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom G R]
-    (f : k →+* R) (g : g_hom) (a b : MonoidAlgebra k G)
+    (f : k →+* R) (g : g_hom) (a b : k[G])
     (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g y)) :
     liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
   conv_rhs => rw [← sum_single a, ← sum_single b]
@@ -84,8 +84,7 @@ section Semiring
 variable [Semiring k] [Monoid G] [Semiring R] [Semiring S] [Semiring T] [Monoid M]
 
 /-- `liftNC` as a `RingHom`, for when `f x` and `g y` commute -/
-def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
-    MonoidAlgebra k G →+* R :=
+def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) : k[G] →+* R :=
   { liftNC (f : k →+ R) g with
     map_one' := liftNC_one _ _
     map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
@@ -97,11 +96,11 @@ lemma liftNCRingHom_single (f : k →+* R) (g : G →* R) (h_comm) (a : G) (b : 
 
 variable (M) in
 /-- The ring homomorphism of monoid algebras induced by a homomorphism of the base rings. -/
-noncomputable def mapRangeRingHom (f : R →+* S) : MonoidAlgebra R M →+* MonoidAlgebra S M :=
+noncomputable def mapRangeRingHom (f : R →+* S) : R[M] →+* S[M] :=
   liftNCRingHom (singleOneRingHom.comp f) (of S M) fun x y ↦ by simp [commute_iff_eq]
 
 @[simp]
-lemma mapRangeRingHom_apply (f : R →+* S) (x : MonoidAlgebra R M) (m : M) :
+lemma mapRangeRingHom_apply (f : R →+* S) (x : R[M]) (m : M) :
     mapRangeRingHom M f x m = f (x m) := by
   classical
   induction x using induction_linear
@@ -114,7 +113,7 @@ lemma mapRangeRingHom_single (f : R →+* S) (a : M) (b : R) :
     mapRangeRingHom M f (single a b) = single a (f b) := by
   classical ext; simp [single_apply, apply_ite f]
 
-@[simp] lemma mapRangeRingHom_id : mapRangeRingHom M (.id R) = .id (MonoidAlgebra R M) := by
+@[simp] lemma mapRangeRingHom_id : mapRangeRingHom M (.id R) = .id (R[M]) := by
   ext <;> simp
 
 @[simp] lemma mapRangeRingHom_comp (f : S →+* T) (g : R →+* S) :
