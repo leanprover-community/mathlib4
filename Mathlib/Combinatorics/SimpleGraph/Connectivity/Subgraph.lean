@@ -133,13 +133,15 @@ abbrev toSubgraph : G.Subgraph :=
 lemma coe_toSubgraph : C.toSubgraph.coe = C.toSimpleGraph :=
   induce_eq_coe_induce_top C.supp |>.symm
 
-lemma spanningCoe_toSimpleGraph_eq_spanningCoe_toSubgraph :
-    C.toSimpleGraph.spanningCoe = C.toSubgraph.spanningCoe :=
-  spanningCoe_induce_eq_spanningCoe_induce_top _
+@[simp]
+lemma spanningCoe_toSubgraph_eq_spanningCoe_toSimpleGraph :
+    C.toSubgraph.spanningCoe = C.toSimpleGraph.spanningCoe :=
+  spanningCoe_induce_top_eq_spanningCoe_induce _
 
-lemma spanningCoe_toSimpleGraph_adj_eq_toSubgraph_adj :
-    C.toSimpleGraph.spanningCoe.Adj = C.toSubgraph.Adj :=
-  spanningCoe_induce_adj_eq_induce_top_adj _
+@[simp]
+lemma toSubgraph_adj_eq_spanningCoe_toSimpleGraph_adj :
+    C.toSubgraph.Adj = C.toSimpleGraph.spanningCoe.Adj :=
+  induce_top_adj_eq_spanningCoe_induce_adj _
 
 lemma connected_toSubgraph : C.toSubgraph.Connected :=
   ⟨C.coe_toSubgraph ▸ C.connected_toSimpleGraph⟩
