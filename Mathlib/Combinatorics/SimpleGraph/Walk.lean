@@ -1406,6 +1406,11 @@ protected def induce {u v : V} :
   | .nil, hw => rfl
   | .cons (v := u') huu' w, hw => by simp [map_induce]
 
+lemma map_induce_induceHomOfLE {s s' : Set V} (hs : s ⊆ s') {u v : V} : ∀ (w : G.Walk u v) (hw),
+    (w.induce s hw).map (G.induceHomOfLE hs).toHom = w.induce s' (subset_trans hw hs)
+  | .nil, hw => rfl
+  | .cons (v := u') huu' w, hw => by simp [map_induce_induceHomOfLE]
+
 end Walk
 
 /-! ## Deleting edges -/
