@@ -52,7 +52,7 @@ noncomputable
 def LightCondensed.free : LightCondSet ⥤ LightCondMod R :=
   Sheaf.composeAndSheafify _ (ModuleCat.free R)
 
-/-- The light condensed version of the free-forgetful adjunction. -/
+/-- The condensed version of the free-forgetful adjunction. -/
 noncomputable
 def LightCondensed.freeForgetAdjunction : free R ⊣ forget R := Sheaf.adjunction _ (ModuleCat.adj R)
 
