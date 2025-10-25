@@ -81,6 +81,20 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   haveI' x : $e =Q Int.ofNat $n := ⟨⟩
   return .isNat sℤ n' q(isNat_intOfNat $p)
 
+theorem isInt_negOfNat (m n : ℕ) (h : IsNat m n) : IsInt (Int.negOfNat m) (.negOfNat n) :=
+  ⟨congr_arg Int.negOfNat h.1⟩
+
+/-- `norm_num` extension for `Int.negOfNat`.
+
+It's useful for calling `derive` with the numerator of an `.isNegNNRat` branch. -/
+@[norm_num Int.negOfNat _]
+def evalNegOfNat : NormNumExt where eval {u αZ} e := do
+  match u, αZ, e with
+  | 0, ~q(ℤ), ~q(Int.negOfNat $a) =>
+    let ⟨n, pn⟩ ← deriveNat (u := 0) a q(inferInstance)
+    return .isNegNat q(inferInstance) n q(isInt_negOfNat $a $n $pn)
+  | _ => failure
+
 theorem isNat_natAbs_pos : {n : ℤ} → {a : ℕ} → IsNat n a → IsNat n.natAbs a
   | _, _, ⟨rfl⟩ => ⟨rfl⟩
 
@@ -718,5 +732,3 @@ end NormNum
 end Meta
 
 end Mathlib
-
-open Mathlib.Meta.NormNum
