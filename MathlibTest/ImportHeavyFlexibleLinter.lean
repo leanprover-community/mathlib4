@@ -200,6 +200,10 @@ example {K : Type*} [Field K] (x y z : K) (hy : 1 - y ≠ 0) (h : x = z) (h' : (
   field_simp
   rw [h', one_mul, h]
 
+example {K : Type*} [Field K] (x y : K) (h : x + y = x + (y + 1)) : x + y = y + x + 0 + 1 := by
+  simp [h]
+  field
+
 --  `ring_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `ring_nf`.
 -- So is `ring_nf!`.
 #guard_msgs in
