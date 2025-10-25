@@ -68,14 +68,14 @@ theorem hom_chart (y₀ y : LE₁E₂) :
 theorem contMDiffWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f s x₀ ↔
       CMDiffAt[s] n (fun x ↦ (f x).1) x₀ ∧
-        ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
-          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
+        CMDiffAt[s] n
+          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffWithinAt_totalSpace
 
 theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f x₀ ↔
-      CMDiffAt n (fun x ↦ (f x).1) x₀ ∧ ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
-          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+      CMDiffAt n (fun x ↦ (f x).1) x₀ ∧ CMDiffAt n
+        (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffAt_totalSpace
 
 end
@@ -213,7 +213,7 @@ For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be e
 lemma ContMDiffAt.clm_apply_of_inCoordinates
     (hϕ : CMDiffAt n (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
     (hv : ContMDiffAt IM (IB₁.prod 𝓘(𝕜, F₁)) n (fun m ↦ (v m : TotalSpace F₁ E₁)) m₀)
-    (hb₂ : ContMDiffAt IM IB₂ n b₂ m₀) :
+    (hb₂ : CMDiffAt n b₂ m₀) :
     ContMDiffAt IM (IB₂.prod 𝓘(𝕜, F₂)) n (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) m₀ := by
   rw [← contMDiffWithinAt_univ] at hϕ hv hb₂ ⊢
   exact ContMDiffWithinAt.clm_apply_of_inCoordinates hϕ hv hb₂
