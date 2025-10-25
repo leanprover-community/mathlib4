@@ -111,11 +111,15 @@ def coeffEquiv : R[M] ≃ (M →₀ R) where
   left_inv _ := rfl
   right_inv _ := rfl
 
+@[to_additive] lemma coeff_injective : (coeff : R[M] → M →₀ R).Injective := coeffEquiv.injective
+@[to_additive] lemma ofCoeff_injective : (ofCoeff : (M →₀ R) → R[M]).Injective :=
+  coeffEquiv.symm.injective
+
 @[to_additive (attr := simp)]
-lemma coeff_inj : x.coeff = y.coeff ↔ x = y := coeffEquiv.injective.eq_iff
+lemma coeff_inj : x.coeff = y.coeff ↔ x = y := coeff_injective.eq_iff
 
 @[to_additive]
-lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := coeffEquiv.symm.injective.eq_iff
+lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoeff_injective.eq_iff
 
 @[to_additive (attr := ext)] alias ⟨ext, _⟩ := coeff_inj
 
