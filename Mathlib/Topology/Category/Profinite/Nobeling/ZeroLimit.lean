@@ -87,15 +87,8 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     rw [Products.span_nil_eq_top]
     exact Submodule.mem_top
 
-instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := by
-  constructor
-  intro c f h
-  rw [or_iff_not_imp_left]
-  intro hc
-  ext x
-  apply mul_right_injective₀ hc
-  simp [LocallyConstant.ext_iff] at h
-  simpa [LocallyConstant.ext_iff] using h x
+instance (α : Type*) [TopologicalSpace α] : IsAddTorsionFree (LocallyConstant α ℤ) :=
+  LocallyConstant.coe_injective.isAddTorsionFree LocallyConstant.coeFnAddMonoidHom
 
 theorem GoodProducts.linearIndependentSingleton {I} [LinearOrder I] :
     LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) := by
