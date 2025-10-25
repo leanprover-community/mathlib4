@@ -63,8 +63,7 @@ def skewAdjointLieSubalgebraEquiv :
     skewAdjointLieSubalgebra (B.compl₁₂ (e : N →ₗ[R] M) e) ≃ₗ⁅R⁆ skewAdjointLieSubalgebra B := by
   apply LieEquiv.ofSubalgebras _ _ e.lieConj
   ext f
-  simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
-    LinearEquiv.coe_coe]
+  simp only [Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule]
   exact (LinearMap.isPairSelfAdjoint_equiv (B := -B) (F := B) e f).symm
 
 @[simp]
@@ -119,8 +118,7 @@ def skewAdjointMatricesLieSubalgebraEquiv (P : Matrix n n R) (h : Invertible P) 
     ext A
     suffices P.lieConj h A ∈ skewAdjointMatricesSubmodule J ↔
         A ∈ skewAdjointMatricesSubmodule (Pᵀ * J * P) by
-      simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
-        LinearEquiv.coe_coe]
+      simp only [Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule]
       exact this
     simp [Matrix.IsSkewAdjoint, J.isAdjointPair_equiv _ _ P (isUnit_of_invertible P)]
 

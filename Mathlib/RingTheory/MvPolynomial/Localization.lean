@@ -99,7 +99,7 @@ private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = 
   · simp only [auxInv, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
       Function.comp_apply, auxHom_mk, aeval_X, RingHomCompTriple.comp_eq, invSelf, Away.lift,
       lift_mk'_spec]
-    simp only [map_one, RingHom.coe_comp, Function.comp_apply]
+    simp only [map_one]
     rw [← map_one (Ideal.Quotient.mk _), ← map_mul, Ideal.Quotient.mk_eq_mk_iff_sub_mem,
       ← Ideal.neg_mem_iff, neg_sub]
     exact Ideal.mem_span_singleton_self (C r * X x - 1)

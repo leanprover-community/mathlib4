@@ -101,7 +101,12 @@ lemma moebius_im (g : GL (Fin 2) ℝ) (z : ℂ) :
   ring
 
 /-- Automorphism of `ℂ`: the identity if `0 < det g` and conjugation otherwise. -/
-def σ (g : GL (Fin 2) ℝ) : ℂ →+* ℂ := if 0 < g.det.val then RingHom.id ℂ else starRingEnd ℂ
+noncomputable def σ (g : GL (Fin 2) ℝ) : ℂ →+* ℂ :=
+  if 0 < g.det.val then RingHom.id ℂ else starRingEnd ℂ
+
+lemma σ_conj (g : GL (Fin 2) ℝ) (z : ℂ) : σ g (conj z) = conj (σ g z) := by
+  simp only [σ]
+  split_ifs <;> simp
 
 @[simp]
 lemma σ_ofReal (g : GL (Fin 2) ℝ) (y : ℝ) : σ g y = y := by
@@ -137,6 +142,10 @@ lemma σ_mul (g g' : GL (Fin 2) ℝ) (z : ℂ) : σ (g * g') z = σ g (σ g' z) 
   · simp [mul_pos h h', h, h']
 
 lemma σ_mul_comm (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (σ h z) = σ h (σ g z) := by
+  simp only [σ]
+  split_ifs <;> simp
+
+@[simp] lemma norm_σ (g : GL (Fin 2) ℝ) (z : ℂ) : ‖σ g z‖ = ‖z‖ := by
   simp only [σ]
   split_ifs <;> simp
 
@@ -191,8 +200,8 @@ transformations in the usual way, extended to all of `GL (Fin 2) ℝ` using comp
 instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
   smul := smulAux
   one_smul z := by
-    show smulAux 1 z = z
-    simp [UpperHalfPlane.ext_iff, smulAux, coe_mk, smulAux', num, denom, σ]
+    change smulAux 1 z = z
+    simp [smulAux, smulAux', num, denom, σ]
   mul_smul := mul_smul'
 
 lemma coe_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
@@ -245,8 +254,8 @@ lemma denom_one : denom 1 z = 1 := by
 
 section SLAction
 
-instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
-  MulAction.compHom ℍ <| SpecialLinearGroup.toGL.comp <| map (algebraMap R ℝ)
+noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
+  MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
 
 theorem coe_specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     ↑(g • z) =
@@ -267,13 +276,13 @@ instead we use the versions with coercions to `ℂ` as simp lemmas instead. -/
 theorem modular_S_smul (z : ℍ) :
     ModularGroup.S • z = mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos := by
   rw [specialLinearGroup_apply]
-  simp [ModularGroup.S, neg_div, inv_neg, toGL]
+  simp [ModularGroup.S, neg_div, inv_neg]
 
 theorem modular_T_zpow_smul (z : ℍ) (n : ℤ) : ModularGroup.T ^ n • z = (n : ℝ) +ᵥ z := by
   rw [UpperHalfPlane.ext_iff, coe_vadd, add_comm, coe_specialLinearGroup_apply]
-  simp [toGL, ModularGroup.coe_T_zpow,
-    of_apply, cons_val_zero, algebraMap.coe_one, Complex.ofReal_one, one_mul, cons_val_one,
-    head_cons, algebraMap.coe_zero, zero_mul, zero_add, div_one]
+  simp [ModularGroup.coe_T_zpow,
+    of_apply, cons_val_zero, Complex.ofReal_one, one_mul, cons_val_one,
+    zero_mul, zero_add, div_one]
 
 theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
   simpa only [zpow_one, Int.cast_one] using modular_T_zpow_smul z 1
@@ -299,12 +308,8 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
     simpa [modular_S_smul, coe_specialLinearGroup_apply]
   replace hc : (c : ℂ) ≠ 0 := by norm_cast
   replace h_denom : ↑c * z + d ≠ 0 := by simpa using h_denom ⟨z, hz⟩
-  have h_aux : (c : ℂ) * d + ↑c * ↑c * z ≠ 0 := by
-    rw [mul_assoc, ← mul_add, add_comm]
-    exact mul_ne_zero hc h_denom
   replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
-  field_simp
-  linear_combination (-(z * (c : ℂ) ^ 2) - c * d) * h
+  grind
 
 end SLAction
 
@@ -325,8 +330,6 @@ lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
   simp only [Subtype.ext_iff, GeneralLinearGroup.ext_iff] at h
   simpa [coe] using h i j
 
-@[deprecated (since := "2024-11-19")] noncomputable alias coe' := coe
-
 instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨coe⟩
 
@@ -340,13 +343,9 @@ theorem coe_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
     (Units.val <| Subtype.val <| coe g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
-@[deprecated (since := "2024-11-19")] alias coe'_apply_complex := coe_apply_complex
-
 @[simp]
 theorem det_coe {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe]
-
-@[deprecated (since := "2024-11-19")] alias det_coe' := det_coe
 
 lemma coe_one : coe 1 = 1 := by
   simp only [coe, map_one]

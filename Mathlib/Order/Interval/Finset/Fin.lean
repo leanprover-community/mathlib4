@@ -23,7 +23,7 @@ namespace Fin
 variable (n : ℕ)
 
 /-!
-### Locally finite order etc instances
+### Locally finite order etc. instances
 -/
 
 instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
