@@ -167,10 +167,9 @@ theorem exists_eval₂_eq_zero {k : Type*} [CommRing k] [IsSimpleRing k] [IsSepC
 
 variable (K)
 
-theorem exists_aeval_eq_zero {k : Type*} [CommSemiring k] [IsSepClosed K] [Algebra k K]
-    [FaithfulSMul k K] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
-    ∃ x : K, p.aeval x = 0 :=
-  exists_eval₂_eq_zero_of_injective _ (FaithfulSMul.algebraMap_injective _ _) p hp hsep
+theorem exists_aeval_eq_zero {k : Type*} [CommRing k] [IsSimpleRing k] [IsSepClosed K] [Algebra k K]
+    (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) : ∃ x : K, p.aeval x = 0 :=
+  exists_eval₂_eq_zero _ _ hp hsep
 
 variable (k) {K}
 
