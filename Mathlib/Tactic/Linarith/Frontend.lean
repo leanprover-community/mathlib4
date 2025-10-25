@@ -547,6 +547,7 @@ elab_rules : tactic
           st.restore
           discard <| Linarith.linarith true used cfg g
           replaceMainGoal []
+          -- TODO: we should check for, and deal with, shadowed names here.
           let idsList ← used.mapM fun e => do
             pure (Lean.mkIdent (← e.fvarId!.getUserName))
           let sugg ← `(tactic| linarith only [$(idsList.toArray),*])
