@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson, Maja Kądziołka
+Authors: Fox Thomson, Maja Kądziołka, Chris Wong, Rudy Peterson
 -/
 import Mathlib.Computability.DFA
 import Mathlib.Data.Fintype.Powerset
@@ -80,6 +80,16 @@ variable (M) in
 theorem stepSet_singleton (s : σ) (a : α) : M.stepSet {s} a = M.step s a := by
   simp [stepSet]
 
+theorem stepSet_union {S1 S2 : Set σ} {a : α} :
+    M.stepSet (S1 ∪ S2) a = M.stepSet S1 a ∪ M.stepSet S2 a := by
+  ext s
+  simp [mem_stepSet]
+  constructor
+  · rintro ⟨s', (h1 | h2), hstep⟩
+    · left; tauto
+    · right; tauto
+  · rintro (⟨s', h, hstep⟩ | ⟨s', h, hstep⟩) <;> exists s' <;> tauto
+
 variable (M) in
 /-- `M.evalFrom S x` computes all possible paths through `M` with input `x` starting at an element
   of `S`. -/
@@ -103,9 +113,19 @@ theorem evalFrom_cons (S : Set σ) (a : α) (x : List α) :
   rfl
 
 @[simp]
+theorem evalFrom_append (S : Set σ) (x y : List α) :
+    M.evalFrom S (x ++ y) = M.evalFrom (M.evalFrom S x) y := by
+  simp only [evalFrom, List.foldl_append]
+
 theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
     M.evalFrom S (x ++ [a]) = M.stepSet (M.evalFrom S x) a := by
-  simp only [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
+  simp only [evalFrom_append, evalFrom_cons, evalFrom_nil]
+
+theorem evalFrom_union (S1 S2 : Set σ) (x : List α) :
+    M.evalFrom (S1 ∪ S2) x = M.evalFrom S1 x ∪ M.evalFrom S2 x := by
+  induction x generalizing S1 S2
+  case nil => simp
+  case cons a x ih => simp [stepSet_union, ih]
 
 variable (M) in
 @[simp]
@@ -123,6 +143,52 @@ theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
     s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
   rw [evalFrom_eq_biUnion_singleton]
   simp
+
+variable (M) in
+/-- `M.acceptsFrom S` is the language of `x` such that there is an accept state
+in `M.evalFrom S x`. -/
+def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
+
+theorem mem_acceptsFrom {S : Set σ} {x : List α} :
+    x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
+  rfl
+
+@[simp]
+theorem mem_acceptsFrom_nil {S : Set σ} : [] ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
+  simp [mem_acceptsFrom]; tauto
+
+@[simp]
+theorem mem_acceptsFrom_cons {S : Set σ} {a : α} {x : List α} :
+    a :: x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
+  simp [mem_acceptsFrom]
+
+@[simp]
+theorem mem_acceptsFrom_append {S : Set σ} {x y : List α} :
+    x ++ y ∈ M.acceptsFrom S ↔ y ∈ M.acceptsFrom (M.evalFrom S x) := by
+  simp [mem_acceptsFrom]
+
+theorem acceptsFrom_union {S1 S2 : Set σ} :
+    M.acceptsFrom (S1 ∪ S2) = M.acceptsFrom S1 + M.acceptsFrom S2 := by
+  rw [Language.add_def]; ext x
+  rw [Set.mem_union]; simp_rw [↑mem_acceptsFrom, evalFrom_union]
+  constructor
+  · rintro ⟨s, hs, h | h⟩
+    · left; tauto
+    · right; tauto
+  · rintro (⟨s, hs, h⟩ | ⟨s, hs, h⟩) <;> exists s <;> tauto
+
+theorem mem_acceptsFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) (x : List α) :
+    x ∈ M.acceptsFrom (⋃ i ∈ t, f i) ↔ x ∈ ⋃ i ∈ t, M.acceptsFrom (f i) := by
+  simp [acceptsFrom]; rw [Set.mem_setOf]; tauto
+
+theorem mem_acceptsFrom_setOf_fact {S : Set σ} {p : Prop} {x : List α} :
+    x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
+  induction x generalizing S <;> simp
+  case nil => tauto
+  case cons a x ih =>
+    have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
+      ext s; simp [stepSet]; tauto
+    rw [h, ih]
 
 variable (M) in
 /-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of
@@ -150,6 +216,9 @@ variable (M) in
 def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 
 theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
+  rfl
+
+theorem accepts_acceptsFrom : M.accepts = M.acceptsFrom M.start := by
   rfl
 
 variable (M) in
@@ -294,6 +363,131 @@ theorem mem_accepts_reverse {x : List α} : x ∈ M.reverse.accepts ↔ x.revers
 
 end NFA
 
+namespace NFA
+
+/-!
+### Declarations about `NFA.concat`
+
+We provide a direct construction of concatenated NFAs without ε-transitions: if `M1` accepts
+language `L1` and `M2` accepts language `L2` then `M1 * M2` (`M1.concat M2`) accepts language
+`L1 * L2`. In order to construct `M1 * M2`, we must create transitions from accepting states in `M1`
+to states immediatately reachable after a single transition from states in `M2.start`. Furthermore,
+we must include states of `M1.accept` in `(M1 * M2).accept` if `[] ∈ M2.accepts`.
+
+Traditionally, concatenation is constructed for `εNFA`, not plain `NFA`, by adding ε-transitions
+from states in `M1.accept` to `M2.start`. Since `NFA` does not include ε-transitions, we must
+include the aforementioned transitions for `NFA.concatStep`:
+`⋃ s2 ∈ M2.start, { s2' ∈ M2.step s2 a | s1 ∈ M1.accept }`.
+
+This construction for unweighted `NFA` provides insight into the weighted case, where the weighted
+analogue for `NFA` is different from the weighted analogue for `εNFA`.
+-/
+
+variable {σ1 σ2 : Type v} (M1 : NFA α σ1) (M2 : NFA α σ2)
+
+/-- `M1.concatStart` is `(M1 * M2).start`, merely including `M1.start`. -/
+@[simp]
+def concatStart : Set (σ1 ⊕ σ2) := Sum.inl '' M1.start
+
+/-- `concatAccept M1 M2` is `(M1 * M2).accept`, including `M2.accepts`, and if `[] ∈ M2.accepts`
+then also `M1.accepts`. If [] ∈ M2.accepts`, then without including `M1.accepts`, a final state in
+`M2.accept` is unreachable in `M1 * M2`. -/
+@[simp]
+def concatAccept : Set (σ1 ⊕ σ2) :=
+  Sum.inl '' { s1 ∈ M1.accept | [] ∈ M2.accepts } ∪ Sum.inr '' M2.accept
+
+/-- `concatStep M1 M2 s a` is `(M1 * M2).step s a`, the set of states available in `M1 * M2` by a
+transition from state `s` via character `a`. We include all transitions from `M1.step` and
+`M2.step`. In order to "concatenate" `M1` and `M2`, for `(M1 * M2).step (inl s1) a` when
+`s1 ∈ M1.accept`, we must also include states reachable from a state in `M2.start` via `a`,
+`⋃ s2 ∈ M2.start, M2.step s2 a`. -/
+@[simp]
+def concatStep : σ1 ⊕ σ2 → α → Set (σ1 ⊕ σ2)
+| .inl s1, a =>
+  Sum.inl '' M1.step s1 a ∪ Sum.inr '' ⋃ s2 ∈ M2.start, { s2' ∈ M2.step s2 a | s1 ∈ M1.accept }
+| .inr s2, a =>
+  Sum.inr '' M2.step s2 a
+
+/-- `M1.concat M2` is `M1 * M2`, the concatenation of `M1` and `M2` achieved without ε-transitions.
+We decline to attatch a `@[simp]` nor `@[simps]` attribute in order to avoid unfolding the entire
+construction, and instead prefer the `M1 * M2` notation, and only simplify the projections for
+`M1 * M2`. -/
+def concat : NFA α (σ1 ⊕ σ2) where
+  step := concatStep M1 M2
+  start := concatStart M1
+  accept := concatAccept M1 M2
+
+instance : HMul (NFA α σ1) (NFA α σ2) (NFA α (σ1 ⊕ σ2)) :=
+  ⟨concat⟩
+
+lemma hmul_eq_conat : M1 * M2 = concat M1 M2 := rfl
+
+@[simp]
+lemma hmul_concatStart : (M1 * M2).start = concatStart M1 := rfl
+
+@[simp]
+lemma hmul_concatAccept : (M1 * M2).accept = concatAccept M1 M2 := rfl
+
+@[simp]
+lemma hmul_concatStep : (M1 * M2).step = concatStep M1 M2 := rfl
+
+lemma concat_stepSet_inr {S2 : Set σ2} {a : α} :
+    (M1 * M2).stepSet (Sum.inr '' S2) a = Sum.inr '' M2.stepSet S2 a := by
+  ext (s1 | s2) <;> simp [stepSet]
+
+lemma concat_acceptsFrom_inr {S2 : Set σ2} :
+    (M1 * M2).acceptsFrom (Sum.inr '' S2) = M2.acceptsFrom S2 := by
+  ext y
+  induction y generalizing S2
+  case nil => simp
+  case cons a y ih => simp [←ih, concat_stepSet_inr]
+
+theorem concat_acceptsFrom {S1 : Set σ1} :
+    (M1 * M2).acceptsFrom (Sum.inl '' S1) = M1.acceptsFrom S1 * M2.accepts := by
+  ext z
+  rw [Language.mul_def, Set.mem_image2]
+  induction z generalizing S1
+  case nil =>
+    simp; rw [mem_acceptsFrom_nil]; tauto
+  case cons a z ih =>
+    simp [stepSet, mem_acceptsFrom_biUnion, acceptsFrom_union, max, SemilatticeSup.sup]
+    simp [ih, concat_acceptsFrom_inr]; clear ih
+    simp_rw [↑mem_acceptsFrom_biUnion]
+    simp
+    simp_rw [↑mem_acceptsFrom_setOf_fact]
+    constructor
+    · rintro ⟨s1, hs1, ⟨x, hx, y, hy, rfl⟩ | ⟨s2, hstart2, hz, haccept1⟩⟩
+      · exists (a :: x); rw [mem_acceptsFrom_cons]
+        simp [stepSet, mem_acceptsFrom_biUnion]; tauto
+      · exists []; rw [mem_acceptsFrom_nil]
+        simp [accepts_acceptsFrom]; rw [mem_acceptsFrom_cons]
+        simp [stepSet, mem_acceptsFrom_biUnion]; tauto
+    · rintro ⟨x, hx, y, hy, heq⟩
+      cases x
+      case nil =>
+        rw [mem_acceptsFrom_nil] at hx
+        obtain ⟨s1, hs1, haccept1⟩ := hx
+        exists s1
+        simp at heq; subst y
+        rw [accepts_acceptsFrom, mem_acceptsFrom_cons] at hy
+        simp [stepSet, mem_acceptsFrom_biUnion] at hy
+        tauto
+      case cons b x =>
+        obtain ⟨rfl, rfl⟩ := heq
+        rw [mem_acceptsFrom_cons] at hx
+        simp [stepSet, mem_acceptsFrom_biUnion] at hx
+        obtain ⟨s1, hs1, hx⟩ := hx
+        exists s1
+        constructor; next => assumption
+        left; tauto
+
+/-- If `M1` accepts language `L1` and `M2` accepts language `L2`, then the language `L` of `M1 * M2`
+(`M1.concat M2`) is exactly equal to `L = L1 * L2`. -/
+theorem concat_accepts : (M1 * M2).accepts = M1.accepts * M2.accepts := by
+  simp [concat_acceptsFrom, accepts_acceptsFrom]
+
+end NFA
+
 namespace Language
 
 protected theorem IsRegular.reverse {L : Language α} (h : L.IsRegular) : L.reverse.IsRegular :=
@@ -307,5 +501,12 @@ protected theorem IsRegular.of_reverse {L : Language α} (h : L.reverse.IsRegula
 @[simp]
 theorem isRegular_reverse_iff {L : Language α} : L.reverse.IsRegular ↔ L.IsRegular :=
   ⟨.of_reverse, .reverse⟩
+
+/-- Regular languages are closed under concatenation. -/
+theorem IsRegular.concat {L1 L2 : Language α}
+  (h1 : L1.IsRegular) (h2 : L2.IsRegular) : (L1 * L2).IsRegular :=
+  have ⟨σ1, _, M1, hM1⟩ := h1
+  have ⟨σ2, _, M2, hM2⟩ := h2
+  ⟨_, inferInstance, (M1.toNFA * M2.toNFA).toDFA, by simp [NFA.concat_accepts, hM1, hM2]⟩
 
 end Language
