@@ -47,7 +47,7 @@ lemma eisSummand_extension_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
 
 /-- Eisenstein series are MDifferentiable (i.e. holomorphic functions from `ℍ → ℂ`). -/
 theorem eisensteinSeries_SIF_MDifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) (a : Fin 2 → ZMod N) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (eisensteinSeries_SIF a k) := by
+    MDiff (eisensteinSeries_SIF a k) := by
   intro τ
   suffices DifferentiableAt ℂ (↑ₕeisensteinSeries_SIF a k) τ.1 by
     convert MDifferentiableAt.comp τ (DifferentiableAt.mdifferentiableAt this) τ.mdifferentiable_coe
