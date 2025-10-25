@@ -630,9 +630,6 @@ protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [Top α] [B
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) :
     BooleanAlgebra α where
   __ := hf.generalizedBooleanAlgebra f map_sup map_inf map_bot map_sdiff
-  compl := compl
-  himp := himp
-  top := ⊤
   le_top _ := (@le_top β _ _ _).trans map_top.ge
   bot_le _ := map_bot.le.trans bot_le
   inf_compl_le_bot a := ((map_inf _ _).trans <| by rw [map_compl, inf_compl_eq_bot, map_bot]).le

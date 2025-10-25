@@ -1375,7 +1375,5 @@ protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α
   sSup_le _ _ h := (map_sSup _).trans_le <| iSup₂_le h
   sInf_le _ a h := (map_sInf _).trans_le <| iInf₂_le a h
   le_sInf _ _ h := (le_iInf₂ h).trans (map_sInf _).ge
-  top := ⊤
   le_top _ := (@le_top β _ _ _).trans map_top.ge
-  bot := ⊥
   bot_le _ := map_bot.le.trans bot_le

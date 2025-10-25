@@ -62,7 +62,6 @@ instance [Preorder β] [OrderBot β] : Bot (α →o β) where
   bot := const α ⊥
 
 instance orderBot [Preorder β] [OrderBot β] : OrderBot (α →o β) where
-  bot := ⊥
   bot_le _ _ := bot_le
 
 @[simps]
@@ -70,7 +69,6 @@ instance instTopOrderHom [Preorder β] [OrderTop β] : Top (α →o β) where
   top := const α ⊤
 
 instance orderTop [Preorder β] [OrderTop β] : OrderTop (α →o β) where
-  top := ⊤
   le_top _ _ := le_top
 
 instance [CompleteLattice β] : InfSet (α →o β) where

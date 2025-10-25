@@ -242,7 +242,6 @@ instance Partition.le : LE (Subtype (@IsPartition α)) :=
 /-- Defining a partial order on partitions as the partial order on their induced
 equivalence relations. -/
 instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
-  le := (· ≤ ·)
   lt x y := x ≤ y ∧ ¬y ≤ x
   le_refl _ := @le_refl (Setoid α) _ _
   le_trans _ _ _ := @le_trans (Setoid α) _ _ _ _

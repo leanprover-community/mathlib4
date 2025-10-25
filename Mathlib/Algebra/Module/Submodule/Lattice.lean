@@ -76,7 +76,6 @@ instance uniqueBot : Unique (⊥ : Submodule R M) :=
   ⟨inferInstance, fun x ↦ Subtype.ext <| (mem_bot R).1 x.mem⟩
 
 instance : OrderBot (Submodule R M) where
-  bot := ⊥
   bot_le p x := by simp +contextual [zero_mem]
 
 protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = (0 : M) :=
@@ -145,7 +144,6 @@ theorem mem_top {x : M} : x ∈ (⊤ : Submodule R M) :=
   trivial
 
 instance : OrderTop (Submodule R M) where
-  top := ⊤
   le_top _ _ _ := trivial
 
 theorem eq_top_iff' {p : Submodule R M} : p = ⊤ ↔ ∀ x, x ∈ p :=

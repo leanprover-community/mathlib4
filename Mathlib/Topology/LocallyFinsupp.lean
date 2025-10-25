@@ -306,8 +306,6 @@ lemma min_apply [SemilatticeInf Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U 
     min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
 
 instance [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
-  le := (· ≤ ·)
-  lt := (· < ·)
   le_refl := by simp [le_def]
   le_trans D₁ D₂ D₃ h₁₂ h₂₃ := fun x ↦ (h₁₂ x).trans (h₂₃ x)
   le_antisymm D₁ D₂ h₁₂ h₂₁ := by
