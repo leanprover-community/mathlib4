@@ -82,8 +82,7 @@ theorem kroneckerTMulLinearEquiv_mul [Module S A] [IsScalarTower R S A] :
     simp [single_kroneckerTMul_single, mul_kroneckerTMul_mul]
 
 /-- `Matrix.kronecker` as a linear equivalence, when the two arguments are tensored. -/
-def kroneckerLinearEquiv :
-    Matrix l m R ⊗[R] Matrix n p R ≃ₗ[R] Matrix (l × n) (m × p) R :=
+def kroneckerLinearEquiv : Matrix l m R ⊗[R] Matrix n p R ≃ₗ[R] Matrix (l × n) (m × p) R :=
   (kroneckerTMulLinearEquiv l m n p R R R R).trans (TensorProduct.lid R R).mapMatrix
 
 variable {l m n p R}
