@@ -475,8 +475,7 @@ def restrictIndexOfSmall (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'}
   mem₀ := Small.mem₀ E
 
 instance (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] {T : C} (f : T ⟶ S)
-    [IsStableUnderBaseChange.{w} J] [IsStableUnderBaseChange.{w'} J]
-    [∀ (i : E.I₀), HasPullback f (E.f i)] :
+    [IsStableUnderBaseChange J] [∀ (i : E.I₀), HasPullback f (E.f i)] :
     ZeroHypercover.Small.{w'} (E.pullback₁ f) := by
   use Small.Index E, Small.restrictFun E
   have _ (i) : HasPullback f (E.restrictIndexOfSmall.f i) := by dsimp; infer_instance
