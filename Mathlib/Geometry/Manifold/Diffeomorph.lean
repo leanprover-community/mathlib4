@@ -78,13 +78,32 @@ structure Diffeomorph extends M ≃ M' where
   protected contMDiff_toFun : CMDiff n toEquiv
   protected contMDiff_invFun : CMDiff n toEquiv.symm
 
+open Lean Manifold Elab Meta Qq in
+/-- `Diffeomorph% M N n` elaborates to `Diffeomorph I J M N n`,
+trying to determine `I` and `J` from the local context. -/
+/-scoped-/ elab:max "Diffeomorph%" ppSpace
+    M:term:arg ppSpace N:term:arg ppSpace nt:term:arg : term => do
+  let ne ← Term.elabTermEnsuringType nt q(WithTop ℕ∞)
+  let eM ← Term.elabTerm M none
+  let eN ← Term.elabTerm N none
+  let srcI ← findModel eM none
+  let tgtI ← findModel eN none
+  mkAppM ``Diffeomorph #[srcI, tgtI, eM, eN, ne]
+
 end Defs
 
 @[inherit_doc]
 scoped[Manifold] notation M " ≃ₘ^" n:1000 "⟮" I ", " J "⟯ " N => Diffeomorph I J M N n
 
+set_option quotPrecheck false in
+scoped[Manifold] notation M " ≃ₘ^" n:1000 N => Diffeomorph% I J M N n
+
 /-- Infinitely differentiable diffeomorphism between `M` and `M'` with respect to `I` and `I'`. -/
 scoped[Manifold] notation M " ≃ₘ⟮" I ", " J "⟯ " N => Diffeomorph I J M N ∞
+
+/-- Infinitely differentiable diffeomorphism between `M` and `M'` with respect to `I` and `I'`:
+try to infer the models with corners on `M` and `M'` automatically. -/
+scoped[Manifold] notation M " ≃ₘ" N => Diffeomorph% M N ∞
 
 -- Porting note: this notation is broken because `n[𝕜]` gets parsed as `getElem`
 /-- `n`-times continuously differentiable diffeomorphism between `E` and `E'`. -/
