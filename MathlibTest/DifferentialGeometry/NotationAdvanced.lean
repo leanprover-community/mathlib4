@@ -572,11 +572,12 @@ variable {f : EuclideanSpace ℝ (Fin 37) → EuclideanQuadrant m'} in
 #guard_msgs in
 #check MDiff f
 
--- Future, when products are implemented!
--- #guard_msgs in
--- #check CMDiff 37 (Prod.map f g)
--- #guard_msgs in
--- #check CMDiff 37 (Prod.map f' g')
+/-- info: ContMDiff ((𝓡 n).prod (𝓡 n')) (𝓘(ℝ, ℝ).prod (𝓡 m')) 37 (Prod.map f g) : Prop -/
+#guard_msgs in
+#check CMDiff 37 (Prod.map f g)
+/-- info: ContMDiff ((𝓡∂ 2).prod (𝓡∂ n)) (𝓘(ℝ, ℝ).prod (𝓡∂ m)) 37 (Prod.map f' g') : Prop -/
+#guard_msgs in
+#check CMDiff 37 (Prod.map f' g')
 
 end EuclideanSpace
 
