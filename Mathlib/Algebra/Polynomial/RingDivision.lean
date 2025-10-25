@@ -130,6 +130,14 @@ theorem mem_nonZeroDivisors_of_trailingCoeff {p : R[X]} (h : p.trailingCoeff ∈
 
 end nonZeroDivisors
 
+lemma aeval_ne_zero_of_irredicble_natDegree_ne_one [IsDomain R] [Ring S] [Algebra R S]
+    [FaithfulSMul R S] {p : R[X]} (hp : Irreducible p) (hdeg : p.natDegree ≠ 1) {x : S}
+    (hx : x ∈ (algebraMap R S).range) : p.aeval x ≠ 0 := by
+  obtain ⟨_, rfl⟩ := hx
+  rw [aeval_algebraMap_apply_eq_algebraMap_eval]
+  exact fun heq ↦ not_isRoot_of_irreducible_natDegree_ne_one hp hdeg <|
+    FaithfulSMul.algebraMap_injective _ _ <| map_zero (algebraMap R S) ▸ heq
+
 theorem natDegree_pos_of_monic_of_aeval_eq_zero [Nontrivial R] [Semiring S] [Algebra R S]
     [FaithfulSMul R S] {p : R[X]} (hp : p.Monic) {x : S} (hx : aeval x p = 0) :
     0 < p.natDegree :=
