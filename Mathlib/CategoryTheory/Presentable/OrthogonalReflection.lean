@@ -205,8 +205,8 @@ lemma isIso_toSucc_iff :
     · simp only [Category.assoc] at hf
       simp only [Category.comp_id, ← Category.assoc]
       refine D₂.condition _ d.1.2 ?_
-      rw [Category.assoc, Category.assoc, Category.assoc]
-      rw [← D₁.ι_comp_t_assoc, pushout.condition_assoc, reassoc_of% hf,
+      rw [Category.assoc, Category.assoc, Category.assoc,
+        ← D₁.ι_comp_t_assoc, pushout.condition_assoc, reassoc_of% hf,
         ← D₁.ι_comp_t_assoc, pushout.condition]
     · simp [reassoc_of% hf]
 
