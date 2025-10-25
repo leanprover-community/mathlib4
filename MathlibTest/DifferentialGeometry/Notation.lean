@@ -63,7 +63,7 @@ section precedence
 /-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
 #guard_msgs in
 #check (T% σ) x
-/-- info: (fun x ↦ TotalSpace.mk' F x (σ x)) x : TotalSpace F V -/
+/-- info: σ x : V x -/
 #guard_msgs in
 #check T% σ x
 -- Nothing happening, as expected.
@@ -83,7 +83,7 @@ variable {s : ι → (x : M) → V x} in
 #check T% s
 
 /--
-info: (fun a ↦ TotalSpace.mk' (ι → (x : M) → V x) a (s a)) i : TotalSpace (ι → (x : M) → V x) (Trivial ι (ι → (x : M) → V x))
+info: fun a ↦ TotalSpace.mk' ((x : M) → V x) a (s i a) : ι → TotalSpace ((x : M) → V x) (Trivial ι ((x : M) → V x))
 -/
 #guard_msgs in
 variable {s : ι → ι → (x : M) → V x} {i : ι} in
@@ -100,10 +100,38 @@ end precedence
 
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
--- Applying a section to an argument. TODO: beta-reduce instead!
+-- Applying a section to an argument.
+-- This application is not beta-reduced, because of the parentheses around the T%.
 /-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% X) x
+
+-- This one is. Also test the tracing messages.
+set_option trace.Elab.DiffGeo true in
+/--
+info: X x : TangentSpace I x
+---
+trace: [Elab.DiffGeo.TotalSpaceMk] argument(s) passed to `T%` is/are `[x]`
+-/
+#guard_msgs in
+#check (T% X x)
+
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% (fun x ↦ X x))
+
+/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% X)
+
+-- No beta-reduction, because outside parentheses.
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% (fun x ↦ X x)) x
+
+/-- info: X x : TangentSpace I x -/
+#guard_msgs in
+#check (T% (fun x ↦ X x) x)
 
 -- Applying the same elaborator twice is fine (and idempotent).
 /-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
@@ -901,7 +929,22 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 [Elab.DiffGeo.MDiff] ❌️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `ChartedSpace` structure on Unit among local instances, and Unit is not the charted space of some type in the local context either.
+      Couldn't find a `ChartedSpace` structure on `Unit` among local instances, and `Unit` is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a Euclidean space, half-space or quadrant
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not the set of units of a normed algebra
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
@@ -915,7 +958,8 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 /--
 info: fun a ↦ TotalSpace.mk' Unit a (f a) : Unit → TotalSpace Unit (Trivial Unit Unit)
 ---
-trace: [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
+trace: [Elab.DiffGeo.TotalSpaceMk] argument(s) passed to `T%` is/are `[]`
+[Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
 -/
 #guard_msgs in
 #check T% f
