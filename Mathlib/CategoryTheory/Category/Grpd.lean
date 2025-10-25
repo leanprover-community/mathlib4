@@ -30,7 +30,7 @@ universe v u
 
 namespace CategoryTheory
 
-open scoped Bicategory
+open Bicategory Functor
 
 -- intended to be used with explicit universe parameters
 /-- Category of groupoids -/
@@ -161,16 +161,13 @@ section
 attribute [-simp] eqToIso_refl
 
 /-- Forgetting pseudofunctor to `Cat`. -/
-def forgetToCat : Pseudofunctor Grpd.{v, u} Cat.{v, u} where
-  obj C := Cat.of C
-  map := id
-  map₂ := id
-  mapId C := eqToIso rfl
-  mapComp C D := eqToIso rfl
+def forgetToCat : StrictPseudofunctor Grpd.{v, u} Cat.{v, u} :=
+  StrictPseudofunctor.mk''
+    { obj C := Cat.of C
+      map := id
+      map₂ := id }
 
 end
-
-instance forgetToCatIsStrict : forgetToCat.IsStrict where
 
 instance forgetToCat_full : forgetToCat.toFunctor.Full where map_surjective f := ⟨f, rfl⟩
 
@@ -181,17 +178,6 @@ called `forget`, because it is not a faithful functor. -/
 def objects : Grpd.{v, u} ⥤ Type u where
   obj := Bundled.α
   map F := F.obj
-
--- TODO: move these up above the Pseudofunctor, or alternatively remove them...
-
-/-- Convert arrows in the category of groupoids to functors,
-which sometimes helps in applying simp lemmas -/
-theorem comp_eq_comp {C D E : Grpd.{v, u}} (f : C ⟶ D) (g : D ⟶ E) : f ≫ g = f ⋙ g :=
-  rfl
-
-/-- Converts identity in the category of groupoids to the functor identity -/
-theorem id_eq_id {C : Grpd.{v, u}} : 𝟙 C = 𝟭 C :=
-  rfl
 
 @[deprecated (since := "2025-09-04")] alias hom_to_functor := comp_eq_comp
 
