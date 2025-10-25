@@ -183,12 +183,26 @@ theorem fderivWithin_continuousAlternatingMap_apply (hf : DifferentiableWithinAt
   hf.hasFDerivWithinAt.continuousAlternatingMap_apply (fun i ↦ (hg i).hasFDerivWithinAt)
     |>.fderivWithin hs
 
+theorem fderivWithin_continuousAlternatingMap_apply_apply (hf : DifferentiableWithinAt 𝕜 f s x)
+    (hg : ∀ i, DifferentiableWithinAt 𝕜 (g i) s x) (hs : UniqueDiffWithinAt 𝕜 s x) (dx : E) :
+    fderivWithin 𝕜 (fun x ↦ f x (g · x)) s x dx =
+      fderivWithin 𝕜 f s x dx (g · x) +
+        ∑ i, f x (Function.update (g · x) i (fderivWithin 𝕜 (g i) s x dx)) := by
+  simp [fderivWithin_continuousAlternatingMap_apply, *]
+
 theorem fderiv_continuousAlternatingMap_apply (hf : DifferentiableAt 𝕜 f x)
     (hg : ∀ i, DifferentiableAt 𝕜 (g i) x) :
     fderiv 𝕜 (fun x ↦ f x (g · x)) x =
       apply 𝕜 F G (g · x) ∘L fderiv 𝕜 f x +
         ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L fderiv 𝕜 (g i) x :=
   hf.hasFDerivAt.continuousAlternatingMap_apply (fun i ↦ (hg i).hasFDerivAt) |>.fderiv
+
+theorem fderiv_continuousAlternatingMap_apply_apply (hf : DifferentiableAt 𝕜 f x)
+    (hg : ∀ i, DifferentiableAt 𝕜 (g i) x) (dx : E) :
+    fderiv 𝕜 (fun x ↦ f x (g · x)) x dx =
+      fderiv 𝕜 f x dx (g · x) +
+        ∑ i, f x (Function.update (g · x) i (fderiv 𝕜 (g i) x dx)) := by
+  simp [fderiv_continuousAlternatingMap_apply, *]
 
 end HasFDerivAt
 
