@@ -111,7 +111,7 @@ lemma ZLattice.sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq �
   have (k : ℕ) : #(s (k + 1) \ s k) ≤ 2 * d * (2 * k + 3) ^ (d - 1) := by
     trans (2 * k + 3) ^ d - (2 * k + 1) ^ d
     · simp only [le_add_iff_nonneg_right, zero_le, hs, card_sdiff_of_subset, s]
-      simp only [Fintype.card_piFinset, Int.card_Icc, sub_neg_eq_add, prod_const, card_univ, s]
+      simp only [Fintype.card_piFinset, Int.card_Icc, sub_neg_eq_add, prod_const, card_univ]
       gcongr <;> norm_cast <;> omega
     · have := abs_pow_sub_pow_le (α := ℤ) ↑(2 * k + 3) ↑(2 * k + 1) d
       norm_num at this
