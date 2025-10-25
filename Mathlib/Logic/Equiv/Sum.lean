@@ -252,7 +252,7 @@ the sum of the two subtypes `{a // p a}` and its complement `{a // ¬ p a}`
 is naturally equivalent to `α`.
 
 See `subtypeOrEquiv` for sum types over subtypes `{x // p x}` and `{x // q x}`
-that are not necessarily `IsCompl p q`. -/
+that are not necessarily `IsCompl p q`. See also `Equiv.Set.sumCompl` for a version on sets. -/
 def sumCompl {α : Type*} (p : α → Prop) [DecidablePred p] :
     { a // p a } ⊕ { a // ¬p a } ≃ α where
   toFun := Sum.elim Subtype.val Subtype.val

@@ -288,12 +288,11 @@ theorem insert_apply_right {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a :
     Equiv.Set.insert H ⟨b, Or.inr b.2⟩ = Sum.inl b :=
   (Equiv.Set.insert H).apply_eq_iff_eq_symm_apply.2 rfl
 
-/-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`. -/
+/-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`.
+
+See also `Equiv.sumCompl`. -/
 protected def sumCompl {α} (s : Set α) [DecidablePred (· ∈ s)] : s ⊕ (sᶜ : Set α) ≃ α :=
-  calc
-    s ⊕ (sᶜ : Set α) ≃ ↥(s ∪ sᶜ) := (Equiv.Set.union disjoint_compl_right).symm
-    _ ≃ @univ α := Equiv.setCongr (by simp)
-    _ ≃ α := Equiv.Set.univ _
+  Equiv.sumCompl (· ∈ s)
 
 @[simp]
 theorem sumCompl_apply_inl {α : Type u} (s : Set α) [DecidablePred (· ∈ s)] (x : s) :
