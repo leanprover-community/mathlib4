@@ -266,24 +266,39 @@ def sumCompl {α : Type*} (p : α → Prop) [DecidablePred p] :
     split_ifs <;> rfl
 
 @[simp]
-theorem sumCompl_apply_inl {α} (p : α → Prop) [DecidablePred p] (x : { a // p a }) :
+theorem sumCompl_apply_inl {α} {p : α → Prop} [DecidablePred p] (x : { a // p a }) :
     sumCompl p (Sum.inl x) = x :=
   rfl
 
 @[simp]
-theorem sumCompl_apply_inr {α} (p : α → Prop) [DecidablePred p] (x : { a // ¬p a }) :
+theorem sumCompl_apply_inr {α} {p : α → Prop} [DecidablePred p] (x : { a // ¬p a }) :
     sumCompl p (Sum.inr x) = x :=
   rfl
 
 @[simp]
-theorem sumCompl_apply_symm_of_pos {α} (p : α → Prop) [DecidablePred p] (a : α) (h : p a) :
+theorem sumCompl_symm_apply_of_pos {α} {p : α → Prop} [DecidablePred p] {a : α} (h : p a) :
     (sumCompl p).symm a = Sum.inl ⟨a, h⟩ :=
   dif_pos h
 
 @[simp]
-theorem sumCompl_apply_symm_of_neg {α} (p : α → Prop) [DecidablePred p] (a : α) (h : ¬p a) :
+theorem sumCompl_symm_apply_of_neg {α} {p : α → Prop} [DecidablePred p] {a : α} (h : ¬p a) :
     (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
   dif_neg h
+
+@[deprecated (since := "2025-01-19")]
+alias sumCompl_apply_symm_of_pos := sumCompl_symm_apply_of_pos
+@[deprecated (since := "2025-01-19")]
+alias sumCompl_apply_symm_of_neg := sumCompl_symm_apply_of_neg
+
+@[simp]
+theorem sumCompl_symm_apply_pos {α} {p : α → Prop} [DecidablePred p] (x : {x // p x}) :
+    (sumCompl p).symm x = Sum.inl x :=
+  sumCompl_symm_apply_of_pos x.2
+
+@[simp]
+theorem sumCompl_symm_apply_neg {α} {p : α → Prop} [DecidablePred p] (x : {x // ¬ p x}) :
+    (sumCompl p).symm x = Sum.inr x :=
+  sumCompl_symm_apply_of_neg x.2
 
 end sumCompl
 
