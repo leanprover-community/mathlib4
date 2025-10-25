@@ -12,7 +12,7 @@ import Mathlib.Data.Rel
 This file defines a notion of separation of a set relative to an relation.
 
 For a relation `R`, a `R`-separated set `s` is a set such that every pair of elements of `s` is
-`R`-far.
+`R`-unrelated.
 
 The concept of uniformly separated sets is used to define two further notions of separation:
 * Metric separation: `Metric.IsSeparated`, defined using the small distance relation.
@@ -29,7 +29,7 @@ open Set
 namespace SetRel
 variable {X : Type*} {R S : SetRel X X} {s t : Set X} {x : X}
 
-/-- Given a relation `R`, a set `s` is `R`-separated if its elements are pairwise `R`-far from
+/-- Given a relation `R`, a set `s` is `R`-separated if its elements are pairwise `R`-unrelated from
 each other. -/
 def IsSeparated (R : SetRel X X) (s : Set X) : Prop := s.Pairwise fun x y ↦ ¬ x ~[R] y
 
@@ -38,7 +38,7 @@ protected lemma IsSeparated.singleton : IsSeparated R {x} := pairwise_singleton 
 
 @[simp] lemma IsSeparated.of_subsingleton (hs : s.Subsingleton) : IsSeparated R s := hs.pairwise _
 
-alias _root_.Set.Subsingleton.uniformSpaceIsSeparated := IsSeparated.of_subsingleton
+alias _root_.Set.Subsingleton.relIsSeparated := IsSeparated.of_subsingleton
 
 nonrec lemma IsSeparated.mono_left (hUV : R ⊆ S) (hs : IsSeparated S s) : IsSeparated R s :=
   hs.mono' fun _x _y hxy h ↦ hxy <| hUV h
