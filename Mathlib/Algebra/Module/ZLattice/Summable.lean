@@ -38,10 +38,8 @@ lemma ZLattice.exists_forall_abs_repr_le_norm :
       ZLattice.comap_discreteTopology _ _ (by fun_prop) Subtype.val_injective
     let e : L' ≃ₗ[ℤ] L := Submodule.comapSubtypeEquivOfLe (p := L) (q := E'.restrictScalars ℤ)
       Submodule.subset_span
-    have inst : IsZLattice ℝ L' := by
-      refine ⟨Submodule.map_injective_of_injective (f := E'.subtype) Subtype.val_injective ?_⟩
-      simp [Submodule.map_span, E', L', Set.image_preimage_eq_inter_range,
-        Set.inter_eq_left.mpr Submodule.subset_span]
+    have inst : IsZLattice ℝ L' :=
+      ⟨Submodule.map_injective_of_injective E'.subtype_injective (by simp [E', L'])⟩
     obtain ⟨ε, hε, H⟩ := this (b.map e.symm) inst
     exact ⟨ε, hε, fun x i ↦ by simpa using H ⟨⟨x.1, Submodule.subset_span x.2⟩, x.2⟩ i⟩
   have : Finite ι := Module.Finite.finite_basis b
