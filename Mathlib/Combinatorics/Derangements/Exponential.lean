@@ -36,7 +36,7 @@ theorem numDerangements_tendsto_inv_e :
     -- there's no specific lemma for ℝ that ∑ x^k/k! sums to exp(x), but it's
     -- true in more general fields, so use that lemma
     rw [Real.exp_eq_exp_ℝ]
-    exact expSeries_div_hasSum_exp ℝ (-1 : ℝ)
+    exact expSeries_div_hasSum_exp (-1 : ℝ)
   intro n
   rw [← Int.cast_natCast, numDerangements_sum]
   push_cast

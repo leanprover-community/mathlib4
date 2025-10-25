@@ -10,6 +10,7 @@ import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Instances.EReal.Lemmas
+import Mathlib.Topology.Instances.Rat
 
 /-!
 # A collection of specific limit computations
@@ -27,24 +28,30 @@ open Set Function Filter Finset Metric Topology Nat uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
-theorem tendsto_inverse_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹) atTop (𝓝 0) :=
+theorem NNRat.tendsto_inv_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ (n : ℚ≥0)⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
 
-theorem tendsto_const_div_atTop_nhds_zero_nat (C : ℝ) :
+theorem NNRat.tendsto_algebraMap_inverse_atTop_nhds_zero_nat {𝕜 : Type*} [Semiring 𝕜]
+    [Algebra ℚ≥0 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
+    Tendsto (algebraMap ℚ≥0 𝕜 ∘ fun n : ℕ ↦ (n : ℚ≥0)⁻¹) atTop (𝓝 0) := by
+  convert (continuous_algebraMap ℚ≥0 𝕜).continuousAt.tendsto.comp
+    tendsto_inv_atTop_nhds_zero_nat
+  rw [map_zero]
+
+theorem tendsto_inv_atTop_nhds_zero_nat {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
+    [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
+    Tendsto (fun n : ℕ ↦ (n : 𝕜)⁻¹) atTop (𝓝 0) := by
+  convert NNRat.tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 := 𝕜)
+  simp
+
+theorem tendsto_const_div_atTop_nhds_zero_nat {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
+    [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] [ContinuousMul 𝕜] (C : 𝕜) :
     Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
-  simpa only [mul_zero] using tendsto_const_nhds.mul tendsto_inverse_atTop_nhds_zero_nat
+  simpa only [mul_zero, div_eq_mul_inv] using
+    (tendsto_const_nhds (x := C)).mul tendsto_inv_atTop_nhds_zero_nat
 
 theorem tendsto_one_div_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ 1 / (n : ℝ)) atTop (𝓝 0) :=
   tendsto_const_div_atTop_nhds_zero_nat 1
-
-theorem NNReal.tendsto_inverse_atTop_nhds_zero_nat :
-    Tendsto (fun n : ℕ ↦ (n : ℝ≥0)⁻¹) atTop (𝓝 0) := by
-  rw [← NNReal.tendsto_coe]
-  exact _root_.tendsto_inverse_atTop_nhds_zero_nat
-
-theorem NNReal.tendsto_const_div_atTop_nhds_zero_nat (C : ℝ≥0) :
-    Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
-  simpa using tendsto_const_nhds.mul NNReal.tendsto_inverse_atTop_nhds_zero_nat
 
 theorem EReal.tendsto_const_div_atTop_nhds_zero_nat {C : EReal} (h : C ≠ ⊥) (h' : C ≠ ⊤) :
     Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
@@ -62,8 +69,7 @@ theorem tendsto_one_div_add_atTop_nhds_zero_nat :
 theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜]
     [Algebra ℝ≥0 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℝ≥0 𝕜] :
     Tendsto (algebraMap ℝ≥0 𝕜 ∘ fun n : ℕ ↦ (n : ℝ≥0)⁻¹) atTop (𝓝 0) := by
-  convert (continuous_algebraMap ℝ≥0 𝕜).continuousAt.tendsto.comp
-    tendsto_inverse_atTop_nhds_zero_nat
+  convert (continuous_algebraMap ℝ≥0 𝕜).continuousAt.tendsto.comp tendsto_inv_atTop_nhds_zero_nat
   rw [map_zero]
 
 theorem tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ 𝕜]
@@ -72,12 +78,9 @@ theorem tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 
   NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat 𝕜
 
 /-- The limit of `n / (n + x)` is 1, for any constant `x` (valid in `ℝ` or any topological division
-algebra over `ℝ`, e.g., `ℂ`).
-
-TODO: introduce a typeclass saying that `1 / n` tends to 0 at top, making it possible to get this
-statement simultaneously on `ℚ`, `ℝ` and `ℂ`. -/
-theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
-    [CharZero 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [IsTopologicalDivisionRing 𝕜] (x : 𝕜) :
+algebra over `ℚ≥0`, e.g., `ℂ`). -/
+theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionSemiring 𝕜] [TopologicalSpace 𝕜]
+    [CharZero 𝕜] [ContinuousSMul ℚ≥0 𝕜] [IsTopologicalSemiring 𝕜] [ContinuousInv₀ 𝕜] (x : 𝕜) :
     Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
   convert Tendsto.congr' ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn ↦ _)) _
   · exact fun n : ℕ ↦ 1 / (1 + x / n)
@@ -88,7 +91,7 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
     refine tendsto_const_nhds.div (tendsto_const_nhds.add ?_) (by simp)
     simp_rw [div_eq_mul_inv]
     refine tendsto_const_nhds.mul ?_
-    have := ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_zero_nat
+    have := ((continuous_algebraMap ℚ≥0 𝕜).tendsto _).comp tendsto_inv_atTop_nhds_zero_nat
     rw [map_zero, Filter.tendsto_atTop'] at this
     refine Iff.mpr tendsto_atTop' ?_
     intros
@@ -743,3 +746,12 @@ lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (· / n) at
   rw [Tendsto, map_div_atTop_eq_nat n hn.bot_lt]
 
 end
+
+@[deprecated (since := "2025-08-15")]
+alias tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
+
+@[deprecated (since := "2025-08-15")]
+alias NNReal.tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
+
+@[deprecated (since := "2025-08-15")]
+alias NNReal.tendsto_const_div_atTop_nhds_zero_nat := tendsto_const_div_atTop_nhds_zero_nat
