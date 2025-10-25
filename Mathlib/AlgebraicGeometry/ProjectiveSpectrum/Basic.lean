@@ -340,7 +340,7 @@ def affineOpenCover : (Proj 𝒜).AffineOpenCover :=
   classical
   intro z hz
   rw [← DirectSum.sum_support_decompose 𝒜 z]
-  refine Ideal.sum_mem _ fun c hc ↦ if hc0 : c = 0 then ?_ else
+  refine sum_mem fun c hc ↦ if hc0 : c = 0 then ?_ else
     Ideal.subset_span ⟨⟨⟨c, Nat.pos_iff_ne_zero.mpr hc0⟩, _⟩, rfl⟩
   convert Ideal.zero_mem _
   subst hc0
@@ -423,7 +423,7 @@ def openCoverOfMapIrrelevantEqTop : X.OpenCover :=
           DirectSum.decompose_of_mem_ne 𝒜 hri hi0.ne']
       · intro x hx
         rw [← DirectSum.sum_support_decompose 𝒜 x]
-        refine Ideal.sum_mem _ fun c hc ↦ ?_
+        refine sum_mem fun c hc ↦ ?_
         have : c ≠ 0 := by contrapose! hc; simpa [hc] using hx
         exact Ideal.subset_span ⟨⟨c, _, this.bot_lt, by simp⟩, rfl⟩
     ext1
