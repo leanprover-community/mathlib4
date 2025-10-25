@@ -2593,6 +2593,9 @@ import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 import Mathlib.CategoryTheory.Localization.StructuredArrow
 import Mathlib.CategoryTheory.Localization.Triangulated
 import Mathlib.CategoryTheory.Localization.Trifunctor
+import Mathlib.CategoryTheory.LocallyCartesianClosed.Basic
+import Mathlib.CategoryTheory.LocallyCartesianClosed.Prelim
+import Mathlib.CategoryTheory.LocallyCartesianClosed.Sections
 import Mathlib.CategoryTheory.LocallyDirected
 import Mathlib.CategoryTheory.MarkovCategory.Basic
 import Mathlib.CategoryTheory.Monad.Adjunction
