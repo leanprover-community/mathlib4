@@ -19,7 +19,7 @@ Let `K` be a field, and `G` a torsion-free group. The group ring `K[G]` does not
 nontrivial zero divisors, that is, it is a domain.
 
 In this file we show that if `R` satisfies `NoZeroDivisors` and `A` is a grading type satisfying
-`UniqueProds A` (resp. `UniqueSums A`), then `MonoidAlgebra R A` (resp. `R[A]`)
+`UniqueProds A` (resp. `UniqueSums A`), then `R[A]` (resp. `R[A]`)
 also satisfies `NoZeroDivisors`.
 
 Because of the instances to `UniqueProds/Sums`, we obtain a formalization of the well-known result
@@ -34,7 +34,7 @@ The actual assumptions on `R` are weaker.
   general sufficient results stating that certain monomials in a product have as coefficient a
   product of coefficients of the factors.
 * The instance showing that `Semiring R, NoZeroDivisors R, Mul A, UniqueProds A` imply
-  `NoZeroDivisors (MonoidAlgebra R A)`.
+  `NoZeroDivisors R[A]`.
 * The instance showing that `Semiring R, NoZeroDivisors R, Add A, UniqueSums A` imply
   `NoZeroDivisors R[A]`.
 
@@ -66,7 +66,7 @@ namespace MonoidAlgebra
 
 /-- The coefficient of a monomial in a product `f * g` that can be reached in at most one way
 as a product of monomials in the supports of `f` and `g` is a product. -/
-theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : MonoidAlgebra R A} {a0 b0 : A}
+theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : R[A]} {a0 b0 : A}
     (h : UniqueMul f.support g.support a0 b0) :
     (f * g) (a0 * b0) = f a0 * g b0 := by
   classical
@@ -79,7 +79,7 @@ theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : MonoidAlgebra R A} {a0 
     · rw [notMem_support_iff.mp af, zero_mul]
     · rw [notMem_support_iff.mp bg, mul_zero]
 
-instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors (MonoidAlgebra R A) where
+instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors R[A] where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} ab := by
     contrapose! ab
     obtain ⟨da, a0, db, b0, h⟩ := UniqueProds.uniqueMul_of_nonempty
@@ -89,7 +89,7 @@ instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors (MonoidAlge
     exact mul_apply_mul_eq_mul_of_uniqueMul h ▸ mul_ne_zero a0 b0
 
 instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
-    IsLeftCancelMulZero (MonoidAlgebra R A) where
+    IsLeftCancelMulZero R[A] where
   mul_left_cancel_of_ne_zero {f} hf {g₁ g₂} eq := by
     classical
     induction hg : g₁.support ∪ g₂.support using Finset.eraseInduction generalizing g₁ g₂ with
@@ -107,15 +107,13 @@ instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
     simp_rw [support_erase, Finset.erase_union_distrib]
 
 instance [IsCancelAdd R] [IsRightCancelMulZero R] [Mul A] [UniqueProds A] :
-    IsRightCancelMulZero (MonoidAlgebra R A) :=
+    IsRightCancelMulZero R[A] :=
   MulOpposite.isLeftCancelMulZero_iff.mp <|
     MonoidAlgebra.opRingEquiv.injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
 
-instance [IsCancelAdd R] [IsCancelMulZero R] [Mul A] [UniqueProds A] :
-    IsCancelMulZero (MonoidAlgebra R A) where
+instance [IsCancelAdd R] [IsCancelMulZero R] [Mul A] [UniqueProds A] : IsCancelMulZero R[A] where
 
-instance [IsCancelAdd R] [IsDomain R] [Monoid A] [UniqueProds A] :
-    IsDomain (MonoidAlgebra R A) where
+instance [IsCancelAdd R] [IsDomain R] [Monoid A] [UniqueProds A] : IsDomain R[A] where
 
 end MonoidAlgebra
 

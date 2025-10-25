@@ -37,23 +37,23 @@ section SMul
 variable {S : Type*}
 
 instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
-    NoZeroSMulDivisors R (MonoidAlgebra k G) :=
+    NoZeroSMulDivisors R k[G] :=
   Finsupp.noZeroSMulDivisors
 
 instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
-    DistribMulAction R (MonoidAlgebra k G) :=
+    DistribMulAction R k[G] :=
   Finsupp.distribMulAction G k
 
-instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra k G) :=
+instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
   Finsupp.module G k
 
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
-    FaithfulSMul R (MonoidAlgebra k G) :=
+    FaithfulSMul R k[G] :=
   Finsupp.faithfulSMul
 
 /-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `G = kˣ`.
 -/
-def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G (MonoidAlgebra k G) :=
+def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G k[G] :=
   Finsupp.comapDistribMulAction
 
 end SMul
@@ -106,7 +106,7 @@ theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r :=
 
 theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
     (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
-  suffices (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
+  suffices (liftNC (↑f) g).comp (smulAddHom k k[G] c) =
       (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g) from
     DFunLike.congr_fun this φ
   ext
@@ -120,8 +120,7 @@ section NonUnitalNonAssocAlgebra
 
 variable (k) [Semiring k] [DistribSMul R k] [Mul G]
 
-instance isScalarTower_self [IsScalarTower R k k] :
-    IsScalarTower R (MonoidAlgebra k G) (MonoidAlgebra k G) where
+instance isScalarTower_self [IsScalarTower R k k] : IsScalarTower R k[G] k[G] where
   smul_assoc t a b := by
     ext
     -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
@@ -135,8 +134,7 @@ instance isScalarTower_self [IsScalarTower R k k] :
 /-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
 `R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
 also commute with the algebra multiplication. -/
-instance smulCommClass_self [SMulCommClass R k k] :
-    SMulCommClass R (MonoidAlgebra k G) (MonoidAlgebra k G) where
+instance smulCommClass_self [SMulCommClass R k k] : SMulCommClass R k[G] k[G] where
   smul_comm t a b := by
     ext
     -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
@@ -149,7 +147,7 @@ instance smulCommClass_self [SMulCommClass R k k] :
       imp_true_iff, ite_eq_right_iff, Pi.smul_apply, mul_zero, smul_zero]
 
 instance smulCommClass_symm_self [SMulCommClass k R k] :
-    SMulCommClass (MonoidAlgebra k G) R (MonoidAlgebra k G) :=
+    SMulCommClass k[G] R k[G] :=
   ⟨fun t a b => by
     haveI := SMulCommClass.symm k R k
     rw [← smul_comm]⟩
@@ -160,12 +158,12 @@ section Submodule
 
 variable [CommSemiring k] [Monoid G]
 variable {V : Type*} [AddCommMonoid V]
-variable [Module k V] [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V]
+variable [Module k V] [Module k[G] V] [IsScalarTower k k[G] V]
 
 /-- A submodule over `k` which is stable under scalar multiplication by elements of `G` is a
 submodule over `MonoidAlgebra k G` -/
 def submoduleOfSMulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W → of k G g • v ∈ W) :
-    Submodule (MonoidAlgebra k G) V where
+    Submodule k[G] V where
   carrier := W
   zero_mem' := W.zero_mem'
   add_mem' := W.add_mem'

@@ -34,16 +34,14 @@ variable [Semiring k]
 /-- The opposite of a `MonoidAlgebra R I` equivalent as a ring to
 the `MonoidAlgebra Rᵐᵒᵖ Iᵐᵒᵖ` over the opposite ring, taking elements to their opposite. -/
 @[simps! +simpRhs apply symm_apply]
-protected noncomputable def opRingEquiv [Mul G] :
-    (MonoidAlgebra k G)ᵐᵒᵖ ≃+* MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ :=
+protected noncomputable def opRingEquiv [Mul G] : k[G]ᵐᵒᵖ ≃+* kᵐᵒᵖ[Gᵐᵒᵖ] :=
   { opAddEquiv.symm.trans <|
       (Finsupp.mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)).trans <| Finsupp.domCongr opEquiv with
     map_mul' := by
       -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe]; erw [AddEquiv.coe_toEquiv]
       rw [← AddEquiv.coe_toAddMonoidHom]
-      refine Iff.mpr (AddMonoidHom.map_mul_iff (R := (MonoidAlgebra k G)ᵐᵒᵖ)
-        (S := MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ) _) ?_
+      refine (AddMonoidHom.map_mul_iff (R := k[G]ᵐᵒᵖ) (S := kᵐᵒᵖ[Gᵐᵒᵖ]) _).mpr ?_
       ext
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [AddMonoidHom.coe_comp, Function.comp_apply, singleAddHom_apply,
@@ -53,7 +51,7 @@ protected noncomputable def opRingEquiv [Mul G] :
       -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
         MulOpposite.opAddEquiv_symm_apply]
-      rw [MulOpposite.unop_mul (α := MonoidAlgebra k G)]
+      rw [MulOpposite.unop_mul (α := k[G])]
       simp }
 
 theorem opRingEquiv_single [Mul G] (r : k) (x : G) :
