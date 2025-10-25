@@ -120,7 +120,7 @@ noncomputable def iic (j : J) :
         dsimp
         rw [← Functor.map_comp, Category.comp_id]
         rfl }
-  isColimit := colimitOfDiagramTerminal isTerminalTop _
+  isColimit := colimitOfDiagramTerminal Preorder.isTerminalTop _
 
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Ici j` for any `j : J`. -/
