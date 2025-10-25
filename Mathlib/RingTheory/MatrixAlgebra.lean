@@ -258,14 +258,8 @@ theorem kroneckerTMulAlgEquiv_symm_apply (x : Matrix (m × n) (m × n) (A ⊗[R]
 variable (m n) in
 /-- `Matrix.kronecker` as an algebra equivalence, when the two arguments are tensored. -/
 -- TODO: upgrade this to `≃⋆ₐ` for when `R` is a ⋆-ring (after #27290)
-noncomputable def kroneckerAlgEquiv :
-    (Matrix m m R ⊗[R] Matrix n n R) ≃ₐ[R] Matrix (m × n) (m × n) R :=
-  .ofLinearEquiv (kroneckerLinearEquiv m m n n R)
-    (by simp [Algebra.TensorProduct.one_def])
-    fun x y ↦ by
-      dsimp [kroneckerLinearEquiv]
-      rw [(by rfl : ⇑(TensorProduct.lid R R) = ⇑(Algebra.TensorProduct.lid R R).toRingHom),
-        kroneckerTMulLinearEquiv_mul, Matrix.map_mul]
+def kroneckerAlgEquiv : (Matrix m m R ⊗[R] Matrix n n R) ≃ₐ[R] Matrix (m × n) (m × n) R :=
+  (kroneckerTMulAlgEquiv m n R R R R).trans (Algebra.TensorProduct.lid R R).mapMatrix
 
 @[simp] theorem toLinearEquiv_kroneckerAlgEquiv :
     (kroneckerAlgEquiv m n R).toLinearEquiv = kroneckerLinearEquiv m m n n R := rfl
