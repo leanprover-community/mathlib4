@@ -123,10 +123,23 @@ class BuildOutputProcessor:
         """Open a GitHub Actions log group for a block using its starting line.
 
         Precondition: no group is currently open (caller closed it if necessary).
-        The group title is exactly the starting line (without the trailing newline).
+        The group title is the starting line (without the trailing newline),
+        colorized by kind: info=light blue, warning=yellow, error=red.
         Callers should not print the starting line again inside the group to avoid duplication.
         """
-        self.start_group(start_line.rstrip('\n'))
+        title = start_line.rstrip('\n')
+        # Colorize the title based on the current block kind.
+        # INFO → light blue (94), WARNING → yellow (33), ERROR → red (31)
+        color_code = None
+        if self.current_kind == self.BlockKind.INFO:
+            color_code = '94'
+        elif self.current_kind == self.BlockKind.WARNING:
+            color_code = '33'
+        elif self.current_kind == self.BlockKind.ERROR:
+            color_code = '31'
+        if color_code is not None:
+            title = f"\x1b[{color_code}m{title}\x1b[0m"
+        self.start_group(title)
         self.group_open = True
 
     def is_normal_line(self, line: str) -> bool:
