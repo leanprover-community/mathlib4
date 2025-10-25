@@ -179,7 +179,7 @@ jobs:
 
     - name: Get PR
       if: ${{ steps.get-branch-sha.outputs.sha != '' }}
-      id: PR # all the steps below are skipped if 'ready-to-merge' is in the list of labels found here
+      id: find-pr # all the steps below are skipped if 'ready-to-merge' is in the list of labels found here
       uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
       # TODO: this may not work properly if the same commit is pushed to multiple branches:
       # https://github.com/8BitJonny/gh-get-current-pr/issues/8
@@ -191,7 +191,7 @@ jobs:
 
     - name: Create Pull Request
       id: pr
-      if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.PR.outputs.pr_found != 'true' }}
+      if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
       uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
       with:
         token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
