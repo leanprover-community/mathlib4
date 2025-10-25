@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Aristotle: Prove Current File",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-l",
+        "-c",
+        "python3 ${workspaceFolder}/scripts/aristotle/prove.py '${file}'"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": false
+      },
+      "group": "none"
+    },
+    {
+      "label": "Aristotle: Prove Current File (Custom Output)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-l",
+        "-c",
+        "python3 ${workspaceFolder}/scripts/aristotle/prove.py '${file}' --output '${input:outputPath}'"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": false
+      },
+      "group": "none"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "outputPath",
+      "type": "promptString",
+      "description": "Output file path",
+      "default": "${fileDirname}/${fileBasenameNoExtension}_aristotle.lean"
+    }
+  ]
+}
