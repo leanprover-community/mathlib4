@@ -113,16 +113,16 @@ lemma Submodule.linearProjOfIsCompl_comp_surjective_of_exact
 
 lemma Submodule.linearProjOfIsCompl_comp_bijective_of_exact
     (hf : Function.Injective f) {p q : Submodule R M} (hpq : IsCompl p q)
-    (hker : LinearMap.ker g ⊓ q = ⊥) (hmap : Submodule.map g q = ⊤) :
+    (hker : Disjoint (LinearMap.ker g) q) (hmap : Submodule.map g q = ⊤) :
     Function.Bijective (Submodule.linearProjOfIsCompl p q hpq ∘ₗ f) := by
   refine ⟨?_, Submodule.linearProjOfIsCompl_comp_surjective_of_exact hfg _ hmap⟩
   rwa [LinearMap.coe_comp, Set.InjOn.injective_iff ↑(LinearMap.range f) _ subset_rfl]
-  simpa [LinearMap.injOn_iff_ker_inf_bot, ← hfg.linearMap_ker_eq]
+  simpa [← LinearMap.disjoint_ker_iff_injOn, ← hfg.linearMap_ker_eq]
 
 lemma LinearMap.linearProjOfIsCompl_comp_bijective_of_exact
     (hf : Function.Injective f) {q : Submodule R M} {E : Type*} [AddCommGroup E] [Module R E]
     {i : E →ₗ[R] M} (hi : Function.Injective i) (h : IsCompl (LinearMap.range i) q)
-    (hker : LinearMap.ker g ⊓ q = ⊥) (hmap : Submodule.map g q = ⊤) :
+    (hker : Disjoint (LinearMap.ker g) q) (hmap : Submodule.map g q = ⊤) :
     Function.Bijective (LinearMap.linearProjOfIsCompl q i hi h ∘ₗ f) := by
   rw [LinearMap.linearProjOfIsCompl, LinearMap.comp_assoc, LinearMap.coe_comp,
       Function.Bijective.of_comp_iff]

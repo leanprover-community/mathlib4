@@ -172,6 +172,14 @@ lemma codisjoint_supported_supported {s t : Set α} (h : Codisjoint s t) :
   rw [codisjoint_iff, eq_top_iff, ← supported_union,
     show s ∪ t = .univ from codisjoint_iff.mp h, supported_univ]
 
+lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
+    Codisjoint (supported M R s) (supported M R t) ↔ Codisjoint s t := by
+  refine ⟨fun h ↦ codisjoint_iff.mpr (eq_top_iff.mpr fun a ↦ ?_), codisjoint_supported_supported⟩
+  obtain ⟨x, hx⟩ := exists_ne (0 : M)
+  rw [codisjoint_iff, eq_top_iff, ← supported_union] at h
+  have : Finsupp.single a x ∈ supported M R (s ∪ t) := h (show Finsupp.single a x ∈ _ from trivial)
+  simpa [Finsupp.mem_supported, Finsupp.support_single_ne_zero _ hx] using this
+
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
 @[simps!] def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
