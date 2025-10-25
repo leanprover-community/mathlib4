@@ -286,7 +286,7 @@ theorem withBot_comp (f : SupHom β γ) (g : SupHom α β) :
 /-- Adjoins a `⊤` to the codomain of a `SupHom`. -/
 @[simps]
 def withTop' [OrderTop β] (f : SupHom α β) : SupHom (WithTop α) β where
-  toFun a := a.elim ⊤ f
+  toFun a := a.mapD ⊤ f
   map_sup' a b :=
     match a, b with
     | ⊤, ⊤ => (top_sup_eq _).symm
@@ -297,7 +297,7 @@ def withTop' [OrderTop β] (f : SupHom α β) : SupHom (WithTop α) β where
 /-- Adjoins a `⊥` to the domain of a `SupHom`. -/
 @[simps]
 def withBot' [OrderBot β] (f : SupHom α β) : SupBotHom (WithBot α) β where
-  toFun a := a.elim ⊥ f
+  toFun a := a.mapD ⊥ f
   map_sup' a b :=
     match a, b with
     | ⊥, ⊥ => (bot_sup_eq _).symm
@@ -354,7 +354,7 @@ theorem withBot_comp (f : InfHom β γ) (g : InfHom α β) :
 /-- Adjoins a `⊤` to the codomain of an `InfHom`. -/
 @[simps]
 def withTop' [OrderTop β] (f : InfHom α β) : InfTopHom (WithTop α) β where
-  toFun a := a.elim ⊤ f
+  toFun a := a.mapD ⊤ f
   map_inf' a b :=
     match a, b with
     | ⊤, ⊤ => (top_inf_eq _).symm
@@ -366,7 +366,7 @@ def withTop' [OrderTop β] (f : InfHom α β) : InfTopHom (WithTop α) β where
 /-- Adjoins a `⊥` to the codomain of an `InfHom`. -/
 @[simps]
 def withBot' [OrderBot β] (f : InfHom α β) : InfHom (WithBot α) β where
-  toFun a := a.elim ⊥ f
+  toFun a := a.mapD ⊥ f
   map_inf' a b :=
     match a, b with
     | ⊥, ⊥ => (bot_inf_eq _).symm
