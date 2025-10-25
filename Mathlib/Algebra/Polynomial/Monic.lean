@@ -68,12 +68,6 @@ theorem monic_mul_C_of_leadingCoeff_mul_eq_one {b : R} (hp : p.leadingCoeff * b 
   nontriviality
   rw [leadingCoeff_mul' _] <;> simp [leadingCoeff_C b, hp]
 
-theorem monic_of_degree_le (n : ℕ) (H1 : degree p ≤ n) (H2 : coeff p n = 1) : Monic p :=
-  Decidable.byCases
-    (fun H : degree p < n => eq_of_zero_eq_one (H2 ▸ (coeff_eq_zero_of_degree_lt H).symm) _ _)
-    fun H : ¬degree p < n => by
-    rwa [Monic, Polynomial.leadingCoeff, natDegree, (lt_or_eq_of_le H1).resolve_left H]
-
 theorem monic_X_pow_add {n : ℕ} (H : degree p < n) : Monic (X ^ n + p) :=
   monic_of_degree_le n
     (le_trans (degree_add_le _ _) (max_le (degree_X_pow_le _) (le_of_lt H)))
@@ -173,6 +167,12 @@ theorem natDegree_mul_comm (hp : p.Monic) (q : R[X]) : (p * q).natDegree = (q * 
   · simp [h]
   rw [hp.natDegree_mul' h, Polynomial.natDegree_mul', add_comm]
   simpa [hp.leadingCoeff, leadingCoeff_ne_zero]
+
+theorem _root_.Polynomial.not_isUnit_X_add_C [Nontrivial R] (a : R) : ¬ IsUnit (X + C a) := by
+  rintro ⟨⟨_, g, hfg, hgf⟩, rfl⟩
+  have h := (monic_X_add_C a).natDegree_mul' (right_ne_zero_of_mul_eq_one hfg)
+  rw [hfg, natDegree_one, natDegree_X_add_C] at h
+  grind
 
 theorem not_dvd_of_natDegree_lt (hp : Monic p) (h0 : q ≠ 0) (hl : natDegree q < natDegree p) :
     ¬p ∣ q := by
@@ -309,8 +309,8 @@ lemma Monic.irreducible_iff_natDegree' (hp : p.Monic) : Irreducible p ↔ p ≠ 
   · simp_rw [hf.natDegree_mul hg, pos_iff_ne_zero] at h
     contrapose! h
     obtain hl | hl := le_total f.natDegree g.natDegree
-    · exact ⟨g, f, hg, hf, mul_comm g f, h.1, add_le_add_left hl _⟩
-    · exact ⟨f, g, hf, hg, rfl, h.2, add_le_add_right hl _⟩
+    · exact ⟨g, f, hg, hf, mul_comm g f, h.1, by gcongr⟩
+    · exact ⟨f, g, hf, hg, rfl, h.2, by gcongr⟩
 
 /-- Alternate phrasing of `Polynomial.Monic.irreducible_iff_natDegree'` where we only have to check
 one divisor at a time. -/

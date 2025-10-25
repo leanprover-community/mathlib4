@@ -37,7 +37,7 @@ lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X
 
 lemma eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open (b : Set (Set X))
     (hb : IsTopologicalBasis b) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
-    ∃ s : Finset b, U = s.toSet.sUnion := by
+    ∃ s : Finset b, U = (s : Set b).sUnion := by
   have hb' : b = range (fun i ↦ i : b → Set X) := by simp
   rw [hb'] at hb
   choose s hs hU using eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U hUc hUo

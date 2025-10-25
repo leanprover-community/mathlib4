@@ -544,7 +544,7 @@ is finite. -/
 theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S] [DecidableEq S]
     (m : R →+* S) (d : ℕ) {U : Set R} (h : U.Finite) :
     (⋃ (f : R[X]) (_ : f.natDegree ≤ d ∧ ∀ i, f.coeff i ∈ U),
-        ((f.map m).roots.toFinset.toSet : Set S)).Finite :=
+        ((f.map m).roots.toFinset : Set S)).Finite :=
   Set.Finite.biUnion
     (by
       -- We prove that the set of polynomials under consideration is finite because its
