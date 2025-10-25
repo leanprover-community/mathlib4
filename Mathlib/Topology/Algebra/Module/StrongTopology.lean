@@ -639,3 +639,112 @@ def arrowCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) : (E →L[𝕜] H
 end Linear
 
 end ContinuousLinearEquiv
+
+section CompactSets
+
+/-! ### Topology of bounded convergence  -/
+
+variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*}
+
+variable [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃]
+  {σ : 𝕜₁ →+* 𝕜₂} {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ]
+variable {E F G : Type*}
+  [AddCommGroup E] [Module 𝕜₁ E]
+  [AddCommGroup F] [Module 𝕜₂ F]
+  [AddCommGroup G] [Module 𝕜₃ G]
+
+variable (E F σ) in
+/-- Given `E` and `F` two topological vector spaces and `𝔖 : Set (Set E)`, then
+`UniformConvergenceCLM σ F 𝔖` is a type synonym of `E →SL[σ] F` equipped with the "topology of
+uniform convergence on the elements of `𝔖`".
+
+If the continuous linear image of any element of `𝔖` is bounded, this makes `E →SL[σ] F` a
+topological vector space. -/
+def CompactConvergenceCLM [TopologicalSpace E] [TopologicalSpace F] := E →SL[σ] F
+
+@[inherit_doc]
+scoped[CompactConvergenceCLM] notation
+  E " →SL_c[ " σ " ] " F => CompactConvergenceCLM σ E F
+
+namespace CompactConvergenceCLM
+
+instance instFunLike [TopologicalSpace E] [TopologicalSpace F] :
+    FunLike (CompactConvergenceCLM σ E F) E F :=
+  ContinuousLinearMap.funLike
+
+instance instContinuousSemilinearMapClass [TopologicalSpace E] [TopologicalSpace F] :
+    ContinuousSemilinearMapClass (CompactConvergenceCLM σ E F) σ E F :=
+  ContinuousLinearMap.continuousSemilinearMapClass
+
+section Algebra
+
+instance instAddCommGroup [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F] :
+    AddCommGroup (E →SL_c[σ] F) := ContinuousLinearMap.addCommGroup
+
+instance instModule [TopologicalSpace E] [TopologicalSpace F]
+    (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂ R F]
+    [TopologicalSpace F] [ContinuousConstSMul R F] [IsTopologicalAddGroup F] :
+    Module R (E →SL_c[σ] F) := ContinuousLinearMap.module
+
+end Algebra
+
+
+/-- The topology of bounded convergence on `E →L[𝕜] F`. This coincides with the topology induced by
+the operator norm when `E` and `F` are normed spaces. -/
+instance topologicalSpace [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F] :
+    TopologicalSpace (CompactConvergenceCLM σ E F) :=
+  UniformConvergenceCLM.instTopologicalSpace σ F { S | IsCompact S }
+
+instance topologicalAddGroup [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F] :
+    IsTopologicalAddGroup (E →SL_c[σ] F) :=
+  UniformConvergenceCLM.instIsTopologicalAddGroup σ F _
+
+instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
+    [UniformSpace E] [IsUniformAddGroup E] [TopologicalSpace F] [IsTopologicalAddGroup F]
+    [ContinuousSMul 𝕜₁ E] [ContinuousSMul 𝕜₂ F] :
+    ContinuousSMul 𝕜₂ (E →SL_c[σ] F) :=
+  UniformConvergenceCLM.continuousSMul σ F { S | IsCompact S }
+    (fun _ hs => hs.totallyBounded.isVonNBounded 𝕜₁)
+
+instance uniformSpace [TopologicalSpace E] [UniformSpace F] [IsUniformAddGroup F] :
+    UniformSpace (E →SL_c[σ] F) :=
+  UniformConvergenceCLM.instUniformSpace σ F { S | IsVonNBounded 𝕜₁ S }
+
+instance isUniformAddGroup [TopologicalSpace E] [UniformSpace F] [IsUniformAddGroup F] :
+    IsUniformAddGroup (E →SL_c[σ] F) :=
+  UniformConvergenceCLM.instIsUniformAddGroup σ F _
+
+lemma isCompact_covers {X : Type*} [TopologicalSpace X] :
+    ⋃₀ {(s : Set X) | IsCompact s} = univ := by
+  apply Set.eq_univ_of_forall
+  intro x
+  use {x}
+  simp
+
+instance instContinuousEvalConst [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F]
+    [ContinuousSMul 𝕜₁ E] : ContinuousEvalConst (E →SL_c[σ] F) E F :=
+  UniformConvergenceCLM.continuousEvalConst σ F _ isCompact_covers
+
+instance instT2Space [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F]
+    [ContinuousSMul 𝕜₁ E] [T2Space F] : T2Space (E →SL_c[σ] F) :=
+  UniformConvergenceCLM.t2Space σ F _ isCompact_covers
+
+protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace E] [TopologicalSpace F]
+    [IsTopologicalAddGroup F]
+    {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
+    (𝓝 (0 : E →SL_c[σ] F)).HasBasis (fun Si : Set E × ι => IsCompact Si.1 ∧ p Si.2)
+      fun Si => { f : E →SL_c[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } :=
+  UniformConvergenceCLM.hasBasis_nhds_zero_of_basis σ F { S | IsCompact S }
+    ⟨∅, isCompact_empty⟩
+    (directedOn_of_sup_mem fun _ _ => IsCompact.union) h
+
+protected theorem hasBasis_nhds_zero [TopologicalSpace E] [TopologicalSpace F]
+    [IsTopologicalAddGroup F] :
+    (𝓝 (0 : E →SL_c[σ] F)).HasBasis
+      (fun SV : Set E × Set F => IsCompact SV.1 ∧ SV.2 ∈ (𝓝 0 : Filter F))
+      fun SV => { f : E →SL_c[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
+  CompactConvergenceCLM.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
+
+end CompactConvergenceCLM
+
+end CompactSets
