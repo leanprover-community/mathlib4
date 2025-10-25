@@ -35,11 +35,7 @@ namespace Complex
 
 /-- If `f` is complex differentiable on an open disc with center `c` and radius `R > 0` and is
 continuous on its closure, then `f' c` can be represented as an integral over the corresponding
-circle.
-
-TODO: add a version for `w ∈ Metric.ball c R`.
-
-TODO: add a version for higher derivatives. -/
+circle. -/
 theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : ℂ → F} (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) :
     deriv f c = (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z := by
@@ -47,7 +43,15 @@ theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : 
   refine (hf.hasFPowerSeriesOnBall hR).hasFPowerSeriesAt.deriv.trans ?_
   simp only [cauchyPowerSeries_apply, one_div, zpow_neg, pow_one, smul_smul, zpow_two, mul_inv]
 
-theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
+theorem iteratedDeriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {n : ℕ} {f : ℂ → F}
+    (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R)) : iteratedDeriv n f c = n.factorial  •
+    (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z := by
+  lift R to ℝ≥0 using hR.le
+  rw [iteratedDeriv, ← (hf.hasFPowerSeriesOnBall hR).factorial_smul, cauchyPowerSeries]
+  simp
+
+/-- Cauchy's Estimate. -/
+private theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
   have : ∀ z ∈ sphere c R, ‖(z - c) ^ (-2 : ℤ) • f z‖ ≤ C / (R * R) :=
@@ -60,6 +64,26 @@ theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F
     _ ≤ R * (C / (R * R)) :=
       (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le this)
     _ = C / R := by rw [mul_div_left_comm, div_self_mul_self', div_eq_mul_inv]
+
+theorem norm_iteratedDeriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {n : ℕ} {f : ℂ → F}
+    (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
+    ‖iteratedDeriv n f c‖ ≤ n.factorial * C / R ^ n := by
+  have : ∀ z ∈ sphere c R, ‖(z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ ≤ C / (R ^ n  * R) :=
+    fun z (hz : ‖z - c‖ = R) => by
+    have := (div_le_div_iff_of_pos_right (mul_pos (pow_pos hR n) hR)).2 (hC z hz)
+    simp [norm_smul, norm_pow, norm_inv, hz, ← div_eq_inv_mul, ← div_mul_eq_div_div, mul_comm R]
+    exact this
+  calc
+    ‖iteratedDeriv n f c‖ = ‖n.factorial • (2 * π * I : ℂ)⁻¹ •
+      ∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ :=
+      congr_arg norm (iteratedDeriv_eq_smul_circleIntegral hR hf)
+    _ ≤ n.factorial * (R * (C / (R ^ n * R))) := by
+      simp only [RCLike.norm_nsmul (K := ℂ), nsmul_eq_mul]
+      have := (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le this)
+      refine mul_le_mul_of_nonneg_left this (?_ : (0 : ℝ) ≤ n.factorial)
+      exact_mod_cast ((Nat.factorial_pos n).le)
+    _ = n.factorial * C / R ^ n := by
+      grind
 
 /-- If `f` is complex differentiable on an open disc of radius `R > 0`, is continuous on its
 closure, and its values on the boundary circle of this disc are bounded from above by `C`, then the
