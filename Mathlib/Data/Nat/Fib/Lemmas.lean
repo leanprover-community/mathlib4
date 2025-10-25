@@ -36,13 +36,13 @@ lemma fib_add_two_mul_fib_sub_fib_succ_sq (n : ℕ) :
     _ = (!![1, 1; 1, 0] ^ (n + 1)).det := by congr; simp [← Matrix.ext_iff]
     _ = (-1) ^ (n + 1) := by simp
 
-/-- Cassini's identity for even `n`: `fib (n + 2) * fib n = fib (n + 1) ^ 2 - 1.` -/
+/-- Cassini's identity for even `n`: `fib (n + 2) * fib n = fib (n + 1) ^ 2 - 1`. -/
 lemma fib_add_two_mul_fib_of_even {n : ℕ} (hn2 : Even n) :
     fib (n + 2) * fib n = fib (n + 1) ^ 2 - 1 := by
   obtain ⟨a, rfl⟩ := hn2
   grind [fib_add_two_mul_fib_sub_fib_succ_sq, pow_mul]
 
-/-- Cassini's identity for odd `n`: `fib (n + 1) * fib (n - 1) = fib n ^ 2 - 1.` -/
+/-- Cassini's identity for odd `n`: `fib (n + 1) * fib (n - 1) = fib n ^ 2 - 1`. -/
 lemma fib_succ_mul_fib_pred_of_odd {n : ℕ} (hn : Odd n) :
     fib (n + 1) * fib (n - 1) = fib n ^ 2 - 1 := by
   obtain ⟨a, rfl⟩ := hn
