@@ -32,7 +32,7 @@ theorem LinearIsometryEquiv.adjoint_toLinearMap_eq_symm {K : Type*}
   have := FiniteDimensional.complete 𝕜 A
   have := FiniteDimensional.complete 𝕜 K
   calc adjoint e.toLinearMap = (ContinuousLinearMap.adjoint ↑e).toLinearMap := rfl
-    _ = (e.symm).toLinearMap := congr($e.adjoint_eq_symm)
+    _ = e.symm.toLinearMap := congr($e.adjoint_eq_symm)
 
 namespace Coalgebra
 variable [Coalgebra 𝕜 A]
@@ -59,7 +59,7 @@ noncomputable def ringOfFiniteDimensionalInnerProductSpace :
   one_mul x := by
     dsimp [HMul.hMul, OfNat.ofNat]
     rw [← rTensor_tmul, ← comp_apply, ← adjoint_rTensor, ← adjoint_comp, rTensor_counit_comp_comul]
-    change adjoint ((lidIsometry 𝕜 A).symm.toLinearMap) _ = _
+    change adjoint (lidIsometry 𝕜 A).symm.toLinearMap _ = _
     rw [LinearIsometryEquiv.adjoint_toLinearMap_eq_symm]
     exact one_smul _ _
   mul_one x := by
@@ -85,7 +85,7 @@ noncomputable def algebraOfFiniteDimensionalInnerProductSpace : Algebra 𝕜 A w
       simp_rw [ringOfFiniteDimensionalInnerProductSpace_mul_def, ← map_tmul, ← adjoint_map,
         ← comp_apply, ← adjoint_comp, ← lTensor_comp_rTensor, comp_assoc,
         rTensor_counit_comp_comul, adjoint_comp]
-      change _ = ((adjoint ((lidIsometry 𝕜 A).symm.toLinearMap)) ∘ₗ _) _
+      change _ = ((adjoint (lidIsometry 𝕜 A).symm.toLinearMap) ∘ₗ _) _
       rw [LinearIsometryEquiv.adjoint_toLinearMap_eq_symm]
       simp only [LinearIsometryEquiv.symm_symm, toLinearEquiv_lidIsometry, adjoint_lTensor,
         coe_comp, LinearEquiv.coe_coe, Function.comp_apply, lTensor_tmul, lid_tmul]
