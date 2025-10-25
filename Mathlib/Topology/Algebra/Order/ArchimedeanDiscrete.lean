@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.GroupTheory.ArchimedeanDensely
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Order.DenselyOrdered
@@ -15,23 +14,6 @@ import Mathlib.Topology.Order.DenselyOrdered
 This file contains some supplements to the results in `Mathlib.Topology.Algebra.Order.Archimedean`,
 involving discreteness of subgroups, which require heavier imports.
 -/
-
-namespace AddSubgroup
--- TODO: Currently it does not work to obtain this via `to_additive`, since
--- the formulation of `LinearOrderedCommGroup.discrete_iff_not_denselyOrdered` seems to defeat
--- the additivizer.
-
-variable {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [TopologicalSpace G]
-  [OrderTopology G] [Archimedean G]
-
-instance [DiscreteTopology G] : IsAddCyclic G := by
-  nontriviality G
-  have : ¬DenselyOrdered G := fun contra ↦
-    haveI := contra.subsingleton_of_discreteTopology; false_of_nontrivial_of_subsingleton G
-  obtain ⟨e⟩ := (LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered G).mpr this
-  exact e.isAddCyclic.mpr inferInstance
-
-end AddSubgroup
 
 namespace Subgroup
 
@@ -68,13 +50,11 @@ instance instDiscreteTopologyZMultiples (g : G) : DiscreteTopology (zpowers g) :
 
 variable [MulArchimedean G]
 
-@[to_additive existing]
+@[to_additive]
 instance [DiscreteTopology G] : IsCyclic G := by
   nontriviality G
-  have : ¬DenselyOrdered G := fun contra ↦
-    haveI := contra.subsingleton_of_discreteTopology; false_of_nontrivial_of_subsingleton G
-  obtain ⟨e⟩ := (LinearOrderedCommGroup.discrete_iff_not_denselyOrdered G).mpr this
-  exact e.isCyclic.mpr inferInstance
+  exact LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered.mpr fun h ↦
+    haveI := h.subsingleton_of_discreteTopology; false_of_nontrivial_of_subsingleton G
 
 /-- In an Archimedean densely linearly ordered group (with the order topology), a subgroup is
 discrete iff it is cyclic. -/

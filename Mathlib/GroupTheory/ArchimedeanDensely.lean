@@ -3,20 +3,18 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
 import Mathlib.Data.Int.Interval
 import Mathlib.GroupTheory.Archimedean
-import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 /-!
 # Archimedean groups are either discrete or densely ordered
 
 This file proves a few additional facts about linearly ordered additive groups which satisfy the
-  `Archimedean` property --
-  they are either order-isomorphic and additively isomorphic to the integers,
-  or they are densely ordered.
+`Archimedean` property -- they are either order-isomorphic and additively isomorphic to the
+integers, or they are densely ordered.
 
 They are placed here in a separate file (rather than incorporated as a continuation of
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
@@ -273,6 +271,29 @@ lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
   obtain ⟨_, _⟩ := exists_between (one_pos (α := ℤ))
   cutsat
 
+/-- Any linearly ordered archimedean additive group is either cyclic, or densely ordered,
+exclusively. -/
+lemma LinearOrderedAddCommGroup.isAddCyclic_iff_not_denselyOrdered {G : Type*}
+    [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G] [Nontrivial G] :
+    IsAddCyclic G ↔ ¬ DenselyOrdered G := by
+  rw [← discrete_iff_not_denselyOrdered]
+  constructor
+  · rintro ⟨g, hg⟩
+    constructor
+    apply int_orderAddMonoidIso_of_isLeast_pos (x := |g|)
+    constructor
+    · rw [Set.mem_setOf, abs_pos]
+      rintro rfl
+      obtain ⟨h, hh⟩ := exists_ne (0 : G)
+      obtain ⟨n, rfl⟩ := hg h
+      simp at hh
+    · refine mem_lowerBounds.mpr fun x hx ↦ ?_
+      obtain ⟨n, rfl⟩ := hg x
+      rw [← abs_eq_self.mpr hx.le, abs_zsmul]
+      exact le_smul_of_one_le_left (abs_nonneg _) (Int.one_le_abs fun hn ↦ by simp_all)
+  · rintro ⟨e⟩
+    exact e.isAddCyclic.mpr inferInstance
+
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered. -/
@@ -290,6 +311,29 @@ lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
   rw [← OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr,
     LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered,
     denselyOrdered_iff_of_orderIsoClass e]
+
+/-- Any linearly ordered mul-archimedean group is either cyclic, or densely ordered, exclusively. -/
+@[to_additive existing]
+lemma LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered [Nontrivial G] :
+    IsCyclic G ↔ ¬ DenselyOrdered G := by
+  rw [← discrete_iff_not_denselyOrdered]
+  constructor
+  · rintro ⟨g, hg⟩
+    constructor
+    apply multiplicative_int_orderMonoidIso_of_isLeast_one_lt (x := |g|ₘ)
+    constructor
+    · rw [Set.mem_setOf, one_lt_mabs]
+      rintro rfl
+      obtain ⟨h, hh⟩ := exists_ne (1 : G)
+      obtain ⟨n, rfl⟩ := hg h
+      simp at hh
+    · refine mem_lowerBounds.mpr fun x hx ↦ ?_
+      obtain ⟨n, rfl⟩ := hg x
+      rw [← mabs_eq_self.mpr hx.le, mabs_zpow]
+      conv_lhs => rw [← zpow_one |g|ₘ]
+      exact zpow_le_zpow_right (one_le_mabs _) (Int.one_le_abs fun hn ↦ by simp_all)
+  · rintro ⟨e⟩
+    exact e.isCyclic.mpr inferInstance
 
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
