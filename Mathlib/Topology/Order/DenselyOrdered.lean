@@ -343,10 +343,9 @@ lemma DenselyOrdered.subsingleton_of_discreteTopology [DiscreteTopology α] : Su
   intro a b
   by_contra! contra
   suffices b ∈ Ioo a b by
-    #adaptation_note /-- nightly-2025-10-25
-    used to be grind
-    -/
-    exact absurd this.2 (lt_irrefl b)
+    #adaptation_note /-- 2025-10-25 https://github.com/leanprover/lean4/issues/10953
+      Used to be `grind`. -/
+    simp_all
   rw [← (isClosed_discrete (Ioo a b)).closure_eq, closure_Ioo contra.ne]
   grind
 
