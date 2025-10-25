@@ -28,8 +28,6 @@ universe u
 
 variable (R : Type u) (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 
-attribute [instance] AdjoinRoot.finitePresentation
-
 /-- EGA IV₁, 1.4.7.1 -/
 lemma Module.Finite.exists_free_surjective [Module.Finite R S] :
     ∃ (S' : Type u) (_ : CommRing S') (_ : Algebra R S') (_ : Module.Finite R S')
