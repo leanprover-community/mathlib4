@@ -175,6 +175,7 @@ theorem Monotone.compRel [Preorder β] {f g : β → SetRel α α} (hf : Monoton
 @[deprecated (since := "2025-10-17")] alias prodMk_mem_compRel := SetRel.prodMk_mem_comp
 @[deprecated (since := "2025-03-10")] alias prod_mk_mem_compRel := SetRel.prodMk_mem_comp
 
+set_option linter.deprecated false in
 @[deprecated SetRel.id_comp (since := "2025-10-17")]
 theorem id_compRel {r : SetRel α α} : idRel ○ r = r :=
   SetRel.id_comp _
@@ -183,6 +184,7 @@ theorem id_compRel {r : SetRel α α} : idRel ○ r = r :=
 theorem compRel_assoc {r s t : SetRel α α} : r ○ s ○ t = r ○ (s ○ t) := by
   apply SetRel.comp_assoc
 
+set_option linter.deprecated false in
 @[deprecated SetRel.left_subset_comp (since := "2025-10-17")]
 theorem left_subset_compRel {s t : SetRel α α} (h : idRel ⊆ t) : s ⊆ s ○ t := fun ⟨_x, y⟩ xy_in =>
   ⟨y, xy_in, h <| rfl⟩
@@ -226,6 +228,12 @@ theorem symmetrizeRel_subset_self (V : SetRel α α) : symmetrizeRel V ⊆ V :=
   sep_subset _ _
 
 set_option linter.deprecated false in
+@[deprecated SetRel.comm (since := "2025-10-17")]
+theorem IsSymmetricRel.mk_mem_comm {V : SetRel α α} (hV : IsSymmetricRel V) {x y : α} :
+    (x, y) ∈ V ↔ (y, x) ∈ V :=
+  Set.ext_iff.1 hV (y, x)
+
+set_option linter.deprecated false in
 @[deprecated SetRel.symmetrize_mono (since := "2025-10-17")]
 theorem symmetrize_mono {V W : SetRel α α} (h : V ⊆ W) : symmetrizeRel V ⊆ symmetrizeRel W :=
   inter_subset_inter h <| preimage_mono h
@@ -247,27 +255,27 @@ theorem IsSymmetricRel.iInter {U : (i : ι) → SetRel α α} (hU : ∀ i, IsSym
   simp_rw [IsSymmetricRel, preimage_iInter, (hU _).eq]
 
 set_option linter.deprecated false in
-@[deprecated SetRel.IsSymm.sInter (since := "2025-03-05")]
+@[deprecated SetRel.IsSymm.sInter (since := "2025-10-17")]
 lemma IsSymmetricRel.sInter {s : Set (SetRel α α)} (h : ∀ i ∈ s, IsSymmetricRel i) :
     IsSymmetricRel (⋂₀ s) := by
   rw [sInter_eq_iInter]
   exact IsSymmetricRel.iInter (by simpa)
 
 set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_preimage (since := "2025-03-05")]
+@[deprecated SetRel.isSymm_preimage (since := "2025-10-17")]
 lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
   Set.ext fun _ ↦ ht.mk_mem_comm
 
 set_option linter.deprecated false in
-@[deprecated SetRel.isSymm_image (since := "2025-03-05")]
+@[deprecated SetRel.isSymm_image (since := "2025-10-17")]
 lemma IsSymmetricRel.image_prodMap {U : Set (α × α)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f '' U) := by
   rw [IsSymmetricRel, ← image_swap_eq_preimage_swap, ← image_comp, ← Prod.map_comp_swap, image_comp,
       image_swap_eq_preimage_swap, ht]
 
 set_option linter.deprecated false in
-@[deprecated SetRel.prod_subset_comm (since := "2025-03-05")]
+@[deprecated SetRel.prod_subset_comm (since := "2025-10-17")]
 lemma IsSymmetricRel.prod_subset_comm {s : Set (α × α)} {t u : Set α} (hs : IsSymmetricRel s) :
     t ×ˢ u ⊆ s ↔ u ×ˢ t ⊆ s := by
   rw [← hs.eq, ← image_subset_iff, image_swap_prod, hs.eq]
@@ -277,7 +285,7 @@ lemma SetRel.mem_filter_prod_comm (R : SetRel α α) {f g : Filter α} [R.IsSymm
   rw [← R.inv_eq_self, SetRel.inv, ← mem_map, ← prod_comm, ← SetRel.inv, R.inv_eq_self]
 
 set_option linter.deprecated false in
-@[deprecated SetRel.mem_filter_prod_comm (since := "2025-03-05")]
+@[deprecated SetRel.mem_filter_prod_comm (since := "2025-10-17")]
 lemma IsSymmetricRel.mem_filter_prod_comm {s : Set (α × α)} {f g : Filter α}
     (hs : IsSymmetricRel s) :
     s ∈ f ×ˢ g ↔ s ∈ g ×ˢ f := by
