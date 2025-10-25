@@ -71,7 +71,6 @@ theorem IsSepClosed.splits_of_separable [IsSepClosed k] (p : k[X]) (hp : p.Separ
     p.Splits (RingHom.id k) :=
   (factors_of_separable p hp).map (RingHom.id k)
 
-
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `K` is
 separably closed.
 
