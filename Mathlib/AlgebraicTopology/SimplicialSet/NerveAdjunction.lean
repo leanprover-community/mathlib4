@@ -518,9 +518,7 @@ noncomputable instance : Reflective nerveFunctor where
 
 section
 
-/-- Via the whiskered counit (or unit) of `nerveAdjunction`, the triple composite
-`nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor` is naturally isomorphic to `nerveFunctor`. -/
-instance nerveHoNerve.binaryProductIsIso (C D : Type v) [Category.{v} C] [Category.{v} D] :
+instance (C D : Type v) [Category.{v} C] [Category.{v} D] :
     IsIso (prodComparison (nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor)
       (Cat.of C) (Cat.of D)) := by
   let iso : nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor ≅ nerveFunctor :=
@@ -530,7 +528,7 @@ instance nerveHoNerve.binaryProductIsIso (C D : Type v) [Category.{v} C] [Catego
 
 namespace hoFunctor
 
-instance binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Category.{v} D] :
+instance (C D : Type v) [Category.{v} C] [Category.{v} D] :
     IsIso (prodComparison hoFunctor (nerve C) (nerve D)) := by
   have : IsIso (nerveFunctor.map (prodComparison hoFunctor (nerve C) (nerve D))) := by
     have : IsIso (prodComparison (hoFunctor ⋙ nerveFunctor) (nerve C) (nerve D)) :=
