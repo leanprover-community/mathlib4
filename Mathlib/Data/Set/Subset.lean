@@ -5,6 +5,7 @@ Authors: Miguel Marco
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
+import Mathlib.Tactic.HigherOrder
 
 /-!
 # Sets in subtypes
@@ -144,4 +145,34 @@ lemma image_val_preimage_val_subset_self : ↑(A ↓∩ B) ⊆ B :=
 lemma preimage_val_image_val_eq_self : A ↓∩ ↑D = D :=
   Function.Injective.preimage_image Subtype.val_injective _
 
+variable {α : Type*} {s t : Set α}
+
+/-- When `s ⊆ t`, `Set.inclusion` can be lifted into a map into `t ↓∩ s`. -/
+def inclusionPreimageVal (h : s ⊆ t) : s → t ↓∩ s := fun x ↦ ⟨Set.inclusion h x, by simp⟩
+
+@[simp]
+lemma inclusionPreimageVal_mk (h : s ⊆ t) (x : α) (hx : x ∈ s) :
+    inclusionPreimageVal h ⟨x, hx⟩ = ⟨⟨x, h hx⟩, hx⟩ := rfl
+
+@[simp, higher_order val_comp_inclusionPreimageVal]
+lemma val_inclusionPreimageVal (h : s ⊆ t) (x : s) :
+    Subtype.val (inclusionPreimageVal h x) = Set.inclusion h x := rfl
+
+attribute [simp] val_comp_inclusionPreimageVal
+
+
+variable (s t) in
+/-- The 'identity' function recognizing values of the intersection `s ↓∩ t` as values of `t`. -/
+@[simp]
+def preimageValInclusion : s ↓∩ t → t := fun x ↦ ⟨x, by simpa [-Subtype.coe_prop] using x.2⟩
+
+lemma preimageValInclusion_injective : (preimageValInclusion s t).Injective := by
+  rintro ⟨x, hx⟩ ⟨y, hy⟩ h
+  simpa [Subtype.val_inj] using h
+
+/-- When `s ⊆ t`, `s ≃ t ↓∩ s`. -/
+@[simps]
+def _root_.Equiv.Set.preimageVal (h : s ⊆ t) : s ≃ t ↓∩ s where
+  toFun := inclusionPreimageVal h
+  invFun := preimageValInclusion _ _
 end Set
