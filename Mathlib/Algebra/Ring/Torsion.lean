@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.CharZero.Defs
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Regular
 
 /-!
@@ -24,3 +26,15 @@ scoped instance (R : Type*) [Semiring R] [IsDomain R] [CharZero R] :
     grind
 
 end IsDomain
+
+namespace MonoidHom
+variable {R M : Type*} [Ring R] [Monoid M] [IsMulTorsionFree M] (f : R →* M)
+
+lemma map_neg_one : f (-1) = 1 :=
+  (pow_eq_one_iff_left (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
+
+@[simp] lemma map_neg (x : R) : f (-x) = f x := by rw [← neg_one_mul, map_mul, map_neg_one, one_mul]
+
+lemma map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, neg_sub]
+
+end MonoidHom

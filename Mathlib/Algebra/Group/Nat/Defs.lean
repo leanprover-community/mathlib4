@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Nat.Basic
 
 /-!
 # The natural numbers form a monoid
@@ -45,6 +46,9 @@ instance instCommMonoid : CommMonoid ℕ where
   npow m n := n ^ m
   npow_zero := Nat.pow_zero
   npow_succ _ _ := rfl
+
+instance : IsMulTorsionFree ℕ where
+  pow_left_injective _ := Nat.pow_left_injective
 
 /-!
 ### Extra instances to short-circuit type class resolution
