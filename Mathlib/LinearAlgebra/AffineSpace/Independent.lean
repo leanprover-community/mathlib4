@@ -596,7 +596,7 @@ is not required for uniqueness, only spanning. -/
 theorem AffineMap.ext_of_span_eq_top {V₁ V₂ P₁ P₂ : Type*}
     [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
     [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
-    {ι : Type*} [Fintype ι] (p : ι → P₁)
+    {ι : Type*} (p : ι → P₁)
     (h_span : affineSpan k (Set.range p) = ⊤)
     (f g : P₁ →ᵃ[k] P₂)
     (h_agree : ∀ i, f (p i) = g (p i)) : f = g := by
@@ -604,17 +604,17 @@ theorem AffineMap.ext_of_span_eq_top {V₁ V₂ P₁ P₂ : Type*}
   have hx : x ∈ affineSpan k (Set.range p) := by
     rw [h_span]
     exact AffineSubspace.mem_top k V₁ x
-  obtain ⟨w, hw_sum, hw_eq⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hx
+  obtain ⟨s, w, hw_sum, hw_eq⟩ := eq_affineCombination_of_mem_affineSpan hx
   rw [hw_eq]
-  rw [Finset.map_affineCombination Finset.univ p w hw_sum f,
-      Finset.map_affineCombination Finset.univ p w hw_sum g]
-  have : (f ∘ p : ι → P₂) = (g ∘ p : ι → P₂) := funext h_agree
+  rw [Finset.map_affineCombination s p w hw_sum f,
+      Finset.map_affineCombination s p w hw_sum g]
+  have : (f : P₁ → P₂) ∘ p = (g : P₁ → P₂) ∘ p := funext h_agree
   rw [this]
 
 /-- If two affine automorphisms agree on a set that spans the entire space, then they are equal.
 
 Specialization of `AffineMap.ext_of_span_eq_top` to affine automorphisms. -/
-theorem AffineEquiv.ext_of_span_eq_top {ι : Type*} [Fintype ι] (p : ι → P)
+theorem AffineEquiv.ext_of_span_eq_top {ι : Type*} (p : ι → P)
     (h_span : affineSpan k (Set.range p) = ⊤)
     (T₁ T₂ : P ≃ᵃ[k] P)
     (h_agree : T₁ ∘ p = T₂ ∘ p) : T₁ = T₂ := by
