@@ -49,10 +49,16 @@ lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ cong
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
   intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
 
-@[simp high, norm_cast] lemma intCast_eq_zero {n : ℤ} : (n : ℚ) = 0 ↔ n = 0 := intCast_inj
-@[simp high, norm_cast] lemma natCast_eq_zero {n : ℕ} : (n : ℚ) = 0 ↔ n = 0 := natCast_inj
-@[simp high, norm_cast] lemma intCast_eq_one {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
-@[simp high, norm_cast] lemma natCast_eq_one {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
+@[deprecated (since := "2025-10-24")] alias intCast_eq_zero := intCast_eq_zero_iff
+@[deprecated (since := "2025-10-24")] alias natCast_eq_zero := natCast_eq_zero_iff
+
+@[simp high, norm_cast] lemma intCast_eq_one_iff {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
+
+@[deprecated (since := "2025-10-24")] alias intCast_eq_one := intCast_eq_one_iff
+
+@[simp high, norm_cast] lemma natCast_eq_one_iff {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
+
+@[deprecated (since := "2025-10-24")] alias natCast_eq_one := natCast_eq_one_iff
 
 lemma mkRat_eq_divInt (n d) : mkRat n d = n /. d := rfl
 
