@@ -109,7 +109,7 @@ theorem largeSchroder_eq_one_add_X_mul_largeSchroder_add_X_mul_largeSchroder_pow
     rw [X_mul_largeSchroder_pow_coeff _ hn', X_mul_largeSchroder_coeff _ hn',
       show n = n - 1 + 1 by omega, largeSchroder_succ_range (n - 1), show n - 1 + 1 = n by omega]
 
-
+/-- The power series for small Schröder numbers -/
 def smallSchroderPowerSeries : PowerSeries ℚ :=
   PowerSeries.mk smallSchroder
 
