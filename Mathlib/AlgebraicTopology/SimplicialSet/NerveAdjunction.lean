@@ -540,12 +540,12 @@ instance (C D : Type v) [Category.{v} C] [Category.{v} D] :
     exact IsIso.of_isIso_fac_right (prodComparison_comp hoFunctor nerveFunctor).symm
   exact isIso_of_fully_faithful nerveFunctor _
 
-instance binarySimplexProductIsIso.{w} (n m : ℕ) :
+instance isIso_prodComparison_simplices.{w} (n m : ℕ) :
     IsIso (prodComparison hoFunctor (Δ[n] : SSet.{w}) Δ[m]) :=
   IsIso.of_isIso_fac_right (prodComparison_natural
     hoFunctor (stdSimplex.isoNerve n).hom (stdSimplex.isoNerve m).hom).symm
 
-lemma binaryProductWithSimplexIsIso {D : SSet.{u}} (X : SSet.{u})
+lemma isIso_prodComparison_withSimplex {D : SSet.{u}} (X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
     IsIso (prodComparison hoFunctor D X) := by
   have : (prod.functor.obj D).IsLeftAdjoint := by
@@ -562,22 +562,22 @@ lemma binaryProductWithSimplexIsIso {D : SSet.{u}} (X : SSet.{u})
   exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans ..) _
     (Presheaf.isColimitTautologicalCocone' X)
 
-instance binaryProductIsIso (X Y : SSet) :
-    IsIso (prodComparison hoFunctor X Y) := hoFunctor.binaryProductWithSimplexIsIso _ fun m ↦ by
+instance isIso_prodComparison (X Y : SSet) :
+    IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_withSimplex _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
     prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
   · ext <;> simp [← Functor.map_comp]
   suffices IsIso (prodComparison hoFunctor Δ[m] X) by infer_instance
-  exact hoFunctor.binaryProductWithSimplexIsIso _ (hoFunctor.binarySimplexProductIsIso _)
+  exact isIso_prodComparison_withSimplex _ (isIso_prodComparison_simplices _)
 
-/-- The functor `hoFunctor : SSet ⥤ Cat` preserves binary products of simplicial sets
-`X` and `Y`. -/
+/-- The functor `hoFunctor : SSet ⥤ Cat` preserves binary products of simplicial sets `X` and
+`Y`. -/
 instance preservesBinaryProducts (X Y : SSet) :
     PreservesLimit (pair X Y) hoFunctor :=
   PreservesLimitPair.of_iso_prod_comparison hoFunctor X Y
 
-/-- The functor `hoFunctor : SSet ⥤ Cat` preserves limits of functors
-out of `Discrete Limits.WalkingPair`. -/
+/-- The functor `hoFunctor : SSet ⥤ Cat` preserves limits of functors out of
+`Discrete Limits.WalkingPair`. -/
 instance preservesBinaryProducts' :
     PreservesLimitsOfShape (Discrete Limits.WalkingPair) hoFunctor where
   preservesLimit {F} := preservesLimit_of_iso_diagram hoFunctor (id (diagramIsoPair F).symm)
