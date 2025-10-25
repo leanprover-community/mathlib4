@@ -317,9 +317,9 @@ of the tangent of the angle at one of the vertices) of a `π / 2` rotation of th
 the other two vertices, plus the midpoint of those vertices. -/
 theorem inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_circumcenter (t : Triangle ℝ P)
     {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
-    ((Real.Angle.tan (∡ (t.points i₁) (t.points i₂) (t.points i₃)))⁻¹ / 2) •
-      o.rotation (π / 2 : ℝ) (t.points i₃ -ᵥ t.points i₁) +ᵥ
-        midpoint ℝ (t.points i₁) (t.points i₃) = t.circumcenter :=
+    ((Real.Angle.tan (∡ (t i₁) (t i₂) (t i₃)))⁻¹ / 2) •
+      o.rotation (π / 2 : ℝ) (t i₃ -ᵥ t i₁) +ᵥ
+        midpoint ℝ (t i₁) (t i₃) = t.circumcenter :=
   Sphere.inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center (t.mem_circumsphere _)
     (t.mem_circumsphere _) (t.mem_circumsphere _) (t.independent.injective.ne h₁₂)
     (t.independent.injective.ne h₁₃) (t.independent.injective.ne h₂₃)
@@ -328,8 +328,8 @@ theorem inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_circumcenter (
 divided by the absolute value of the sine of the angle at the third point (a version of the law
 of sines or sine rule). -/
 theorem dist_div_sin_oangle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
-    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) : dist (t.points i₁) (t.points i₃) /
-      |Real.Angle.sin (∡ (t.points i₁) (t.points i₂) (t.points i₃))| / 2 = t.circumradius :=
+    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) : dist (t i₁) (t i₃) /
+      |Real.Angle.sin (∡ (t i₁) (t i₂) (t i₃))| / 2 = t.circumradius :=
   Sphere.dist_div_sin_oangle_div_two_eq_radius (t.mem_circumsphere _) (t.mem_circumsphere _)
     (t.mem_circumsphere _) (t.independent.injective.ne h₁₂) (t.independent.injective.ne h₁₃)
     (t.independent.injective.ne h₂₃)
@@ -338,8 +338,8 @@ theorem dist_div_sin_oangle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i
 divided by the absolute value of the sine of the angle at the third point (a version of the law
 of sines or sine rule). -/
 theorem dist_div_sin_oangle_eq_two_mul_circumradius (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
-    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) : dist (t.points i₁) (t.points i₃) /
-      |Real.Angle.sin (∡ (t.points i₁) (t.points i₂) (t.points i₃))| = 2 * t.circumradius :=
+    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) : dist (t i₁) (t i₃) /
+      |Real.Angle.sin (∡ (t i₁) (t i₂) (t i₃))| = 2 * t.circumradius :=
   Sphere.dist_div_sin_oangle_eq_two_mul_radius (t.mem_circumsphere _) (t.mem_circumsphere _)
     (t.mem_circumsphere _) (t.independent.injective.ne h₁₂) (t.independent.injective.ne h₁₃)
     (t.independent.injective.ne h₂₃)
@@ -348,10 +348,10 @@ theorem dist_div_sin_oangle_eq_two_mul_circumradius (t : Triangle ℝ P) {i₁ i
 angle at the third point. -/
 theorem circumsphere_eq_of_dist_of_oangle (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
     (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) : t.circumsphere =
-    ⟨((Real.Angle.tan (∡ (t.points i₁) (t.points i₂) (t.points i₃)))⁻¹ / 2) •
-      o.rotation (π / 2 : ℝ) (t.points i₃ -ᵥ t.points i₁) +ᵥ midpoint ℝ (t.points i₁) (t.points i₃),
-      dist (t.points i₁) (t.points i₃) /
-        |Real.Angle.sin (∡ (t.points i₁) (t.points i₂) (t.points i₃))| / 2⟩ :=
+    ⟨((Real.Angle.tan (∡ (t i₁) (t i₂) (t i₃)))⁻¹ / 2) •
+      o.rotation (π / 2 : ℝ) (t i₃ -ᵥ t i₁) +ᵥ midpoint ℝ (t i₁) (t i₃),
+      dist (t i₁) (t i₃) /
+        |Real.Angle.sin (∡ (t i₁) (t i₂) (t i₃))| / 2⟩ :=
   t.circumsphere.ext
     (t.inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_circumcenter h₁₂ h₁₃ h₂₃).symm
     (t.dist_div_sin_oangle_div_two_eq_circumradius h₁₂ h₁₃ h₂₃).symm
@@ -360,9 +360,9 @@ theorem circumsphere_eq_of_dist_of_oangle (t : Triangle ℝ P) {i₁ i₂ i₃ :
 they have the same circumsphere. -/
 theorem circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq {t₁ t₂ : Triangle ℝ P}
     {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
-    (h₁ : t₁.points i₁ = t₂.points i₁) (h₃ : t₁.points i₃ = t₂.points i₃)
-    (h₂ : (2 : ℤ) • ∡ (t₁.points i₁) (t₁.points i₂) (t₁.points i₃) =
-      (2 : ℤ) • ∡ (t₂.points i₁) (t₂.points i₂) (t₂.points i₃)) :
+    (h₁ : t₁ i₁ = t₂ i₁) (h₃ : t₁ i₃ = t₂ i₃)
+    (h₂ : (2 : ℤ) • ∡ (t₁ i₁) (t₁ i₂) (t₁ i₃) =
+      (2 : ℤ) • ∡ (t₂ i₁) (t₂ i₂) (t₂ i₃)) :
     t₁.circumsphere = t₂.circumsphere := by
   rw [t₁.circumsphere_eq_of_dist_of_oangle h₁₂ h₁₃ h₂₃,
     t₂.circumsphere_eq_of_dist_of_oangle h₁₂ h₁₃ h₂₃,
@@ -373,23 +373,23 @@ triangle at that fourth point equals twice the third angle of the triangle, the 
 lies in the circumsphere of the triangle. -/
 theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i₁ i₂ i₃ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
-    (h : (2 : ℤ) • ∡ (t.points i₁) p (t.points i₃) =
-      (2 : ℤ) • ∡ (t.points i₁) (t.points i₂) (t.points i₃)) : p ∈ t.circumsphere := by
-  let t'p : Fin 3 → P := Function.update t.points i₂ p
-  have h₁ : t'p i₁ = t.points i₁ := by simp [t'p, h₁₂]
+    (h : (2 : ℤ) • ∡ (t i₁) p (t i₃) =
+      (2 : ℤ) • ∡ (t i₁) (t i₂) (t i₃)) : p ∈ t.circumsphere := by
+  let t'p : Fin 3 → P := Function.update t i₂ p
+  have h₁ : t'p i₁ = t i₁ := by simp [t'p, h₁₂]
   have h₂ : t'p i₂ = p := by simp [t'p]
-  have h₃ : t'p i₃ = t.points i₃ := by simp [t'p, h₂₃.symm]
+  have h₃ : t'p i₃ = t i₃ := by simp [t'p, h₂₃.symm]
   have ha : AffineIndependent ℝ t'p := by
     rw [affineIndependent_iff_not_collinear_of_ne h₁₂ h₁₃ h₂₃, h₁, h₂, h₃,
       collinear_iff_of_two_zsmul_oangle_eq h, ←
       affineIndependent_iff_not_collinear_of_ne h₁₂ h₁₃ h₂₃]
     exact t.independent
   let t' : Triangle ℝ P := ⟨t'p, ha⟩
-  have h₁' : t'.points i₁ = t.points i₁ := h₁
-  have h₂' : t'.points i₂ = p := h₂
-  have h₃' : t'.points i₃ = t.points i₃ := h₃
-  have h' : (2 : ℤ) • ∡ (t'.points i₁) (t'.points i₂) (t'.points i₃) =
-      (2 : ℤ) • ∡ (t.points i₁) (t.points i₂) (t.points i₃) := by rwa [h₁', h₂', h₃']
+  have h₁' : t' i₁ = t i₁ := h₁
+  have h₂' : t' i₂ = p := h₂
+  have h₃' : t' i₃ = t i₃ := h₃
+  have h' : (2 : ℤ) • ∡ (t' i₁) (t' i₂) (t' i₃) =
+      (2 : ℤ) • ∡ (t i₁) (t i₂) (t i₃) := by rwa [h₁', h₂', h₃']
   rw [← circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq h₁₂ h₁₃ h₂₃ h₁' h₃' h', ←
     h₂']
   exact Simplex.mem_circumsphere _ _
@@ -420,7 +420,7 @@ theorem cospherical_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄
   refine ⟨t₂.mem_circumsphere 0, ?_, t₂.mem_circumsphere 1, t₂.mem_circumsphere 2⟩
   rw [Affine.Triangle.circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq
     (by decide : (0 : Fin 3) ≠ 1) (by decide : (0 : Fin 3) ≠ 2) (by decide)
-    (show t₂.points 0 = t₁.points 0 from rfl) rfl h.symm]
+    (show t₂ 0 = t₁ 0 from rfl) rfl h.symm]
   exact t₁.mem_circumsphere 1
 
 /-- Converse of "angles in same segment are equal" and "opposite angles of a cyclic quadrilateral

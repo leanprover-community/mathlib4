@@ -317,7 +317,7 @@ theorem sbtw_A_B₁_C : Sbtw ℝ cfg.A cfg.B₁ cfg.C :=
 theorem sbtw_A_A₁_A₂ : Sbtw ℝ cfg.A cfg.A₁ cfg.A₂ := by
   refine Sphere.sbtw_secondInter cfg.A_mem_circumsphere ?_
   convert cfg.sbtw_B_A₁_C.dist_lt_max_dist _
-  change _ = max (dist (cfg.triangleABC.points 1) _) (dist (cfg.triangleABC.points 2) _)
+  change _ = max (dist (cfg.triangleABC 1) _) (dist (cfg.triangleABC 2) _)
   simp_rw [circumsphere_center, circumsphere_radius, dist_circumcenter_eq_circumradius, max_self]
 
 theorem sbtw_B_B₁_B₂ : Sbtw ℝ cfg.B cfg.B₁ cfg.B₂ := by
@@ -360,11 +360,11 @@ theorem B₂_ne_Q : cfg.B₂ ≠ cfg.Q := by rw [← symm_A₂]; exact cfg.symm.
 
 theorem B₂_ne_A₂ : cfg.B₂ ≠ cfg.A₂ := by
   intro h
-  have hA : Sbtw ℝ (cfg.triangleABC.points 1) cfg.A₁ (cfg.triangleABC.points 2) := cfg.sbtw_B_A₁_C
-  have hB : Sbtw ℝ (cfg.triangleABC.points 0) cfg.B₁ (cfg.triangleABC.points 2) := cfg.sbtw_A_B₁_C
-  have hA' : cfg.A₂ ∈ line[ℝ, cfg.triangleABC.points 0, cfg.A₁] :=
+  have hA : Sbtw ℝ (cfg.triangleABC 1) cfg.A₁ (cfg.triangleABC 2) := cfg.sbtw_B_A₁_C
+  have hB : Sbtw ℝ (cfg.triangleABC 0) cfg.B₁ (cfg.triangleABC 2) := cfg.sbtw_A_B₁_C
+  have hA' : cfg.A₂ ∈ line[ℝ, cfg.triangleABC 0, cfg.A₁] :=
     Sphere.secondInter_vsub_mem_affineSpan _ _ _
-  have hB' : cfg.A₂ ∈ line[ℝ, cfg.triangleABC.points 1, cfg.B₁] := by
+  have hB' : cfg.A₂ ∈ line[ℝ, cfg.triangleABC 1, cfg.B₁] := by
     rw [← h]; exact Sphere.secondInter_vsub_mem_affineSpan _ _ _
   exact (sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair (by decide) hA hB hA' hB').symm.not_rotate
     cfg.sbtw_A_A₁_A₂.wbtw
