@@ -353,14 +353,13 @@ lemma pow_inertiaDeg_eq_absNorm [IsDedekindDomain R] [Module.Free ℤ R] [Module
 /-- The absolute norm of an ideal `P` above a rational (positive) prime `p` is
 `p ^ ((span {p}).inertiaDeg P)`.
 See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
-lemma pow_inertialDeg_eq_absNorm' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
+lemma pow_inertiaDeg_eq_absNorm' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
     (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
     p ^ ((span {(p : ℤ)}).inertiaDeg P) = absNorm P :=
-  pow_inertialDeg_eq_absNorm P (Nat.prime_iff_prime_int.mp hp)
+  pow_inertiaDeg_eq_absNorm P (Nat.prime_iff_prime_int.mp hp)
 
-@[deprecated (since := "2025-10-25")] alias absNorm_eq_pow_inertiaDeg := pow_inertialDeg_eq_absNorm
-@[deprecated (since := "2025-10-25")]
-alias absNorm_eq_pow_inertiaDeg' := pow_inertialDeg_eq_absNorm'
+@[deprecated (since := "2025-10-25")] alias absNorm_eq_pow_inertiaDeg := pow_inertiaDeg_eq_absNorm
+@[deprecated (since := "2025-10-25")] alias absNorm_eq_pow_inertiaDeg' := pow_inertiaDeg_eq_absNorm'
 
 end absNorm
 section FinrankQuotientMap
