@@ -115,6 +115,7 @@ import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.PrintSorries
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
+import Reap
 
 /-!
 This file imports all tactics which do not have significant theory imports,
