@@ -760,6 +760,23 @@ def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
 
 end Exists
 
+section HasStrongEpiMonoFactorisations
+
+variable [HasStrongEpiMonoFactorisations C] [StrongEpiCategory C]
+
+lemma mk_imageι_eq (f : X ⟶ Y) {Z : C} (π : X ⟶ Z) [Epi π] (ι : Z ⟶ Y)
+    [Mono ι] (fac : π ≫ ι = f) :
+    mk (image.ι f) = mk ι :=
+  ((equivMonoOver _).inverse.mapIso (MonoOver.imageObjIso (Over.mk f) π ι fac)).to_eq
+
+lemma exists_obj_mk (f : X ⟶ Y)
+    {A B : C} (i : A ⟶ X) [Mono i] (π : A ⟶ B) [Epi π] (ι : B ⟶ Y) [Mono ι]
+    (fac : i ≫ f = π ≫ ι) :
+    (Subobject.exists f).obj (.mk i) = .mk ι :=
+  Subobject.mk_imageι_eq (i ≫ f) π ι fac.symm
+
+end HasStrongEpiMonoFactorisations
+
 end Subobject
 
 end CategoryTheory
