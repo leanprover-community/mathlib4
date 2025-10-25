@@ -18,6 +18,8 @@ This file contains results about smoothness of standard maps associated to produ
 
 -/
 
+assert_not_exists mfderiv
+
 open Set Function Filter ChartedSpace
 
 open scoped Topology Manifold
