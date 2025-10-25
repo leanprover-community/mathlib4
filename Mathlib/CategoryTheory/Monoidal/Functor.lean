@@ -1166,7 +1166,22 @@ variable {C D}
 
 /--
 Auxiliary definition for `Functor.Monoidal.transport`
+
+We generate the lemmas `coreMonoidalTransport_εIso_hom`, `coreMonoidalTransport_εIso_inv`,
+`coreMonoidalTransport_μIso_hom`, and `coreMonoidalTransport_μIso_hom` with `@[simps!]`, but they
+should probably not be global simp lemmas (in some cases, we might want to define a monoidal
+structure on a functor by transporting it along an natural isomorphism, but then forget where it
+came from and only use the abstract properties of monoidal functors).
+Turn them on as simp lemmas locally using:
+
+```lean
+attribute [local simp] Functor.Monoidal.coreMonoidalTransport_εIso_hom
+  Functor.Monoidal.coreMonoidalTransport_εIso_inv
+  Functor.Monoidal.coreMonoidalTransport_μIso_hom
+  Functor.Monoidal.coreMonoidalTransport_μIso_hom
+```
 -/
+@[simps! -isSimp]
 def coreMonoidalTransport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.CoreMonoidal where
   εIso := εIso F ≪≫ i.app _
   μIso X Y := tensorIso (i.symm.app _) (i.symm.app _) ≪≫ μIso F X Y ≪≫ i.app _
@@ -1209,6 +1224,78 @@ Transport the structure of a monoidal functor along a natural isomorphism of fun
 def transport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.Monoidal :=
   (coreMonoidalTransport i).toMonoidal
 
+@[reassoc]
+lemma transport_ε {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : letI := transport i
+    LaxMonoidal.ε G = LaxMonoidal.ε F ≫ i.hom.app (𝟙_ C) :=
+  rfl
+
+@[reassoc]
+lemma transport_η {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : letI := transport i
+    OplaxMonoidal.η G = i.inv.app (𝟙_ C) ≫ OplaxMonoidal.η F :=
+  rfl
+
+@[reassoc]
+lemma transport_μ {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) (X Y : C) : letI := transport i
+    LaxMonoidal.μ G X Y = (i.inv.app X ⊗ₘ i.inv.app Y) ≫ LaxMonoidal.μ F X Y ≫ i.hom.app (X ⊗ Y) :=
+  rfl
+
+@[reassoc]
+lemma transport_δ {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) (X Y : C) : letI := transport i
+    OplaxMonoidal.δ G X Y =
+      i.inv.app (X ⊗ Y) ≫ OplaxMonoidal.δ F X Y ≫ (i.hom.app X ⊗ₘ i.hom.app Y) :=
+  coreMonoidalTransport_μIso_inv _ _ _
+
 end Functor.Monoidal
+
+namespace Equivalence
+
+variable {C D}
+
+attribute [local simp] Functor.Monoidal.coreMonoidalTransport_εIso_hom
+  Functor.Monoidal.coreMonoidalTransport_εIso_inv
+  Functor.Monoidal.coreMonoidalTransport_μIso_hom
+  Functor.Monoidal.coreMonoidalTransport_μIso_hom
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.inverse` and `e.functor ⋙ F`
+are monoidal functors, `F` is monoidal as well.
+-/
+@[simps! -isSimp]
+def monoidalOfPrecompFunctor (e : C ≌ D) (F : D ⥤ E) [e.inverse.Monoidal]
+    [(e.functor ⋙ F).Monoidal] : F.Monoidal :=
+  Monoidal.transport (e.invFunIdAssoc F)
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.functor` and `e.inverse ⋙ F`
+are monoidal functors, `F` is monoidal as well.
+-/
+@[simps! -isSimp]
+def monoidalOfPrecompInverse (e : C ≌ D) (F : C ⥤ E) [e.functor.Monoidal]
+    [(e.inverse ⋙ F).Monoidal] : F.Monoidal :=
+  letI : (e.symm.functor ⋙ F).Monoidal := inferInstanceAs (e.inverse ⋙ F).Monoidal
+  e.symm.monoidalOfPrecompFunctor _
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.functor` and `F ⋙ e.inverse`
+are monoidal functors, `F` is monoidal as well.
+-/
+@[simps! -isSimp]
+def monoidalOfPostcompInverse (e : C ≌ D) (F : E ⥤ D) [e.functor.Monoidal]
+    [(F ⋙ e.inverse).Monoidal] : F.Monoidal :=
+  letI : (F ⋙ e.inverse ⋙ e.functor).Monoidal :=
+    inferInstanceAs ((F ⋙ e.inverse) ⋙ e.functor).Monoidal
+  Monoidal.transport (isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor)
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.inverse` and `F ⋙ e.functor`
+are monoidal functors, `F` is monoidal as well.
+-/
+@[simps! -isSimp]
+def monoidalOfPostcompFunctor (e : C ≌ D) (F : E ⥤ C) [e.inverse.Monoidal]
+    [(F ⋙ e.functor).Monoidal] : F.Monoidal :=
+  letI : (F ⋙ e.symm.inverse).Monoidal := inferInstanceAs (F ⋙ e.functor).Monoidal
+  e.symm.monoidalOfPostcompInverse _
+
+end Equivalence
 
 end CategoryTheory
