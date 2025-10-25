@@ -519,8 +519,7 @@ noncomputable instance : Reflective nerveFunctor where
 section
 
 /-- Via the whiskered counit (or unit) of `nerveAdjunction`, the triple composite
-`nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor` is naturally isomorphic to `nerveFunctor`.
-As `nerveFunctor` is a right adjoint, this functor preserves binary products. -/
+`nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor` is naturally isomorphic to `nerveFunctor`. -/
 instance nerveHoNerve.binaryProductIsIso (C D : Type v) [Category.{v} C] [Category.{v} D] :
     IsIso (prodComparison (nerveFunctor ⋙ hoFunctor ⋙ nerveFunctor)
       (Cat.of C) (Cat.of D)) := by
@@ -529,7 +528,9 @@ instance nerveHoNerve.binaryProductIsIso (C D : Type v) [Category.{v} C] [Catego
       isoWhiskerRight nerveFunctorCompHoFunctorIso nerveFunctor ≪≫ nerveFunctor.leftUnitor
   exact IsIso.of_isIso_fac_right (prodComparison_natural_of_natTrans iso.hom).symm
 
-instance hoFunctor.binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Category.{v} D] :
+namespace hoFunctor
+
+instance binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Category.{v} D] :
     IsIso (prodComparison hoFunctor (nerve C) (nerve D)) := by
   have : IsIso (nerveFunctor.map (prodComparison hoFunctor (nerve C) (nerve D))) := by
     have : IsIso (prodComparison (hoFunctor ⋙ nerveFunctor) (nerve C) (nerve D)) :=
@@ -539,12 +540,12 @@ instance hoFunctor.binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Cate
     exact IsIso.of_isIso_fac_right (prodComparison_comp hoFunctor nerveFunctor).symm
   exact isIso_of_fully_faithful nerveFunctor _
 
-instance hoFunctor.binarySimplexProductIsIso.{w} (n m : ℕ) :
+instance binarySimplexProductIsIso.{w} (n m : ℕ) :
     IsIso (prodComparison hoFunctor (Δ[n] : SSet.{w}) Δ[m]) :=
   IsIso.of_isIso_fac_right (prodComparison_natural
     hoFunctor (stdSimplex.isoNerve n).hom (stdSimplex.isoNerve m).hom).symm
 
-lemma hoFunctor.binaryProductWithSimplexIsIso {D : SSet.{u}} (X : SSet.{u})
+lemma binaryProductWithSimplexIsIso {D : SSet.{u}} (X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
     IsIso (prodComparison hoFunctor D X) := by
   have : (prod.functor.obj D).IsLeftAdjoint := by
@@ -561,12 +562,7 @@ lemma hoFunctor.binaryProductWithSimplexIsIso {D : SSet.{u}} (X : SSet.{u})
   exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans ..) _
     (Presheaf.isColimitTautologicalCocone' X)
 
-/-- The natural transformation `prodComparisonNatTrans hofunctor X` is a natural transformation
-between cocontinuous functors whose component at `Y : SSet` is `prodComparison hoFunctor X Y`.
-This makes use of cartesian closure of both `SSet.{u}` and `Cat.{u,u}` to establish cocontinuity of
-the product functors on both categories.
--/
-instance hoFunctor.binaryProductIsIso (X Y : SSet) :
+instance binaryProductIsIso (X Y : SSet) :
     IsIso (prodComparison hoFunctor X Y) := hoFunctor.binaryProductWithSimplexIsIso _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
     prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
@@ -576,23 +572,25 @@ instance hoFunctor.binaryProductIsIso (X Y : SSet) :
 
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves binary products of simplicial sets
 `X` and `Y`. -/
-instance hoFunctor.preservesBinaryProducts (X Y : SSet) :
+instance preservesBinaryProducts (X Y : SSet) :
     PreservesLimit (pair X Y) hoFunctor :=
   PreservesLimitPair.of_iso_prod_comparison hoFunctor X Y
 
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves limits of functors
 out of `Discrete Limits.WalkingPair`. -/
-instance hoFunctor.preservesBinaryProducts' :
+instance preservesBinaryProducts' :
     PreservesLimitsOfShape (Discrete Limits.WalkingPair) hoFunctor where
   preservesLimit {F} := preservesLimit_of_iso_diagram hoFunctor (id (diagramIsoPair F).symm)
 
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves finite products of simplicial sets. -/
-instance hoFunctor.preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
+instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
   Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal _
 
 /-- A product preserving functor between cartesian closed categories is lax monoidal. -/
-noncomputable instance hoFunctor.laxMonoidal : LaxMonoidal hoFunctor :=
+noncomputable instance laxMonoidal : LaxMonoidal hoFunctor :=
   (Monoidal.ofChosenFiniteProducts hoFunctor).toLaxMonoidal
+
+end hoFunctor
 
 end
 

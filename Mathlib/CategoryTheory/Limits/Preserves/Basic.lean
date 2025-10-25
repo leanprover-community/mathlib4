@@ -703,14 +703,13 @@ lemma isIso_app_coconePt_of_preservesColimit
     (α : L ⟶ L') [IsIso (whiskerLeft K α)] (c : Cocone K) (hc : IsColimit c)
     [PreservesColimit K L] [PreservesColimit K L'] :
     IsIso (α.app c.pt) := by
-  obtain ⟨hc₁⟩ := PreservesColimit.preserves (F := L) hc
-  obtain ⟨hc₂⟩ := PreservesColimit.preserves (F := L') hc
-  let e := IsColimit.coconePointsIsoOfNatIso hc₁ hc₂ (asIso (whiskerLeft K α))
+  let e := IsColimit.coconePointsIsoOfNatIso
+    (isColimitOfPreserves L hc) (isColimitOfPreserves L' hc) (asIso (whiskerLeft K α))
   convert inferInstanceAs (IsIso e.hom)
-  apply hc₁.hom_ext fun j ↦ ?_
+  apply (isColimitOfPreserves L hc).hom_ext fun j ↦ ?_
   simp only [Functor.comp_obj, Functor.mapCocone_pt, Functor.const_obj_obj, Functor.mapCocone_ι_app,
     NatTrans.naturality, IsColimit.coconePointsIsoOfNatIso_hom, asIso_hom, e]
-  refine ((hc₁.ι_map (L'.mapCocone c) (whiskerLeft K α) j).trans ?_).symm
+  refine ((((isColimitOfPreserves L hc)).ι_map (L'.mapCocone c) (whiskerLeft K α) j).trans ?_).symm
   simp
 
 end
