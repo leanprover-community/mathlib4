@@ -6,7 +6,6 @@ Authors: Jeremy Avigad
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Algebra.Field.IsField
 
 /-!
 # Basic lemmas for `ℤˣ`.
@@ -31,9 +30,5 @@ lemma units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
 
 lemma units_ne_iff_eq_neg {u v : ℤˣ} : u ≠ v ↔ u = -v := by
   simpa only [Ne, Units.ext_iff] using isUnit_ne_iff_eq_neg u.isUnit v.isUnit
-
-/-- `ℤ` with its usual ring structure is not a field. -/
-theorem not_isField : ¬IsField ℤ :=
-  fun h ↦ by simpa using eq_one_or_neg_one_of_mul_eq_one (h.mul_inv_cancel two_ne_zero).choose_spec
 
 end Int
