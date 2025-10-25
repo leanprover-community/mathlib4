@@ -190,7 +190,7 @@ theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Type*} [PartialOrder α] [Li
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : MonotoneOn φ t)
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : MonotoneOn ψ s := by
   rintro x xs y ys l
-  rcases le_total (ψ x) (ψ y) with (ψxy|ψyx)
+  rcases le_total (ψ x) (ψ y) with (ψxy | ψyx)
   · exact ψxy
   · have := hφ (ψts ys) (ψts xs) ψyx
     rw [φψs.eq ys, φψs.eq xs] at this
