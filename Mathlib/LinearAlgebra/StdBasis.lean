@@ -32,6 +32,7 @@ this is a basis over `Fin 3 → R`.
 -/
 
 open Function LinearMap Module Set Submodule
+
 namespace Pi
 variable {ι R M : Type*}
 
