@@ -33,7 +33,15 @@ namespace WithBot
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
   ⟨⊥, Classical.arbitrary α, by simp⟩
 
-instance [IsEmpty α] : Unique (WithBot α) := Option.instUniqueOfIsEmpty
+/-- `WithTop α` is a `Subsingleton` if and only if `α` is empty. -/
+theorem subsingleton_iff_isEmpty {α : Type*} : Subsingleton (WithBot α) ↔ IsEmpty α :=
+  ⟨fun h ↦ ⟨fun x ↦ by simpa using h.elim x ⊥⟩,
+   fun h ↦ ⟨fun x y ↦ by
+     have := IsEmpty.false (α := α)
+     cases x <;> cases y <;> solve_by_elim⟩⟩
+
+instance [IsEmpty α] : Unique (WithBot α) :=
+  @Unique.mk' _ _ (subsingleton_iff_isEmpty.2 ‹_›)
 
 open Function
 
@@ -620,8 +628,6 @@ def instDecidableEqTop : (x : WithTop α) → Decidable (x = ⊤)
 instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
   WithBot.nontrivial
 
-instance [IsEmpty α] : Unique (WithTop α) := Option.instUniqueOfIsEmpty
-
 open Function
 
 theorem coe_injective : Injective ((↑) : α → WithTop α) :=
@@ -652,6 +658,16 @@ theorem top_ne_coe : ⊤ ≠ (a : WithTop α) :=
 @[simp]
 theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
   nofun
+
+/-- `WithTop α` is a `Subsingleton` if and only if `α` is empty. -/
+theorem subsingleton_iff_isEmpty {α : Type*} : Subsingleton (WithTop α) ↔ IsEmpty α :=
+  ⟨fun h ↦ ⟨fun x ↦ by simpa using h.elim x ⊤⟩,
+   fun h ↦ ⟨fun x y ↦ by
+     have := IsEmpty.false (α := α)
+     cases x <;> cases y <;> solve_by_elim⟩⟩
+
+instance [IsEmpty α] : Unique (WithTop α) :=
+  @Unique.mk' _ _ (subsingleton_iff_isEmpty.2 ‹_›)
 
 /-- `WithTop.toDual` is the equivalence sending `⊤` to `⊥` and any `a : α` to `toDual a : αᵒᵈ`.
 See `WithTop.toDualBotEquiv` for the related order-iso.
