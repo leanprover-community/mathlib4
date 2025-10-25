@@ -277,6 +277,10 @@ theorem HasBasis.to_hasBasis (hl : l.HasBasis p s) (h : ∀ i, p i → ∃ i', p
     let ⟨i, hi, hss'⟩ := h' i' hi'
     hl.mem_iff.2 ⟨i, hi, hss'⟩
 
+theorem HasBasis.to_hasBasis_iff (h : ∀ i, p i → ∃ i', p' i' ∧ s' i' ⊆ s i)
+    (h' : ∀ i', p' i' → ∃ i, p i ∧ s i ⊆ s' i') : l.HasBasis p s ↔ l.HasBasis p' s' :=
+  ⟨(·.to_hasBasis h h'), (·.to_hasBasis h' h)⟩
+
 protected lemma HasBasis.congr (hl : l.HasBasis p s) {p' s'} (hp : ∀ i, p i ↔ p' i)
     (hs : ∀ i, p i → s i = s' i) : l.HasBasis p' s' :=
   ⟨fun t ↦ by simp only [hl.mem_iff, ← hp]; exact exists_congr fun i ↦
