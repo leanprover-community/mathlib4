@@ -344,18 +344,13 @@ theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : absNorm (I : Ide
 theorem absNorm_pos_of_nonZeroDivisors (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
   absNorm_pos_iff_mem_nonZeroDivisors.mpr (SetLike.coe_mem I)
 
-/-- `ℤ` with its usual ring structure is not a field. -/
-theorem Int.not_isField : ¬IsField ℤ :=
-  fun h ↦ have := h.mul_inv_cancel (show 2 ≠ 0 by decide); by grind
-
 /-- The norm of a maximal ideal is a prime power.
 The prime is `(P.under ℤ).absNorm` and the exponent is `(P.under ℤ).inertialDeg P`.
 See `Ideal.absNorm_pow_inertiaDeg`. -/
 lemma exists_prime_and_absNorm_eq_pow (P : Ideal S) [P.IsMaximal] :
     ∃ p n, 0 < n ∧ ↑p ∈ P ∧ p.Prime ∧ P.absNorm = p ^ n := by
-  have hP : P ≠ ⊥ := by
-    refine Ring.ne_bot_of_isMaximal_of_not_isField ‹_› fun h ↦ Int.not_isField ?_
-    exact isField_of_isIntegral_of_isField (FaithfulSMul.algebraMap_injective ℤ S) h
+  have := CharZero.of_noZeroSMulDivisors S S
+  have hP : P ≠ ⊥ := Ideal.IsMaximal.ne_bot_of_isIntegral_int P
   letI := Ideal.finiteQuotientOfFreeOfNeBot P hP
   cases nonempty_fintype (S ⧸ P)
   letI := Ideal.Quotient.field P

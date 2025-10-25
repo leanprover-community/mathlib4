@@ -140,14 +140,14 @@ instance [IsGalois K L] : MulAction.IsPretransitive (L ≃ₐ[K] L) (primesOver 
     exact ⟨(galRestrict A K L B).symm σ, Subtype.val_inj.mp <|
       (congrFun (congrArg map ((galRestrict A K L B).apply_symm_apply σ)) P).trans hs⟩
 
-/-- All the `ramificationIdx` over a fixed maximal ideal are the same. -/
+/-- All the `ramificationIdx` over a fixed prime ideal are the same. -/
 theorem ramificationIdx_eq_of_isGalois [IsGalois K L] :
     ramificationIdx (algebraMap A B) p P = ramificationIdx (algebraMap A B) p Q := by
   rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩
   rw [← hs]
   exact (ramificationIdx_map_eq p P σ).symm
 
-/-- All the `inertiaDeg` over a fixed maximal ideal are the same. -/
+/-- All the `inertiaDeg` over a fixed prime ideal are the same. -/
 theorem inertiaDeg_eq_of_isGalois [IsGalois K L] :
     inertiaDeg p P = inertiaDeg p Q := by
   rcases exists_map_eq_of_isGalois p P Q K L with ⟨σ, hs⟩

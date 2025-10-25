@@ -85,7 +85,7 @@ lemma NumberField.not_dvd_discr_iff_forall_liesOver {p : ℤ} (hp : Prime p) :
   constructor
   · intro H P hP hP' hP''
     have := Ideal.absNorm_dvd_absNorm_of_le (Ideal.dvd_iff_le.mp hP'')
-    rw [absNorm_differentIdeal (K := K), Ideal.absNorm_eq_pow_inertiaDeg P hp,
+    rw [absNorm_differentIdeal (K := K), ← Ideal.pow_inertiaDeg_eq_absNorm P hp,
       ← Int.natAbs_pow, Int.natAbs_dvd_natAbs] at this
     exact H (.trans (dvd_pow_self _ (Ideal.inertiaDeg_pos' ..).ne') this)
   · intro H h
