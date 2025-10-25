@@ -208,10 +208,6 @@ theorem factors_iff_card_roots :
   ⟨fun h ↦ h.natDegree_eq_card_roots.symm, fun h ↦ factors_iff_exists_multiset.mpr
     ⟨f.roots, (C_leadingCoeff_mul_prod_multiset_X_sub_C h).symm⟩⟩
 
-theorem roots_map [IsSimpleRing R] {S : Type*} [CommRing S] [IsDomain S]
-    (i : R →+* S) (hf : f.Factors) : (f.map i).roots = f.roots.map i :=
-  (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
-
 theorem Factors.roots_ne_zero (hf : Factors f) (hf0 : natDegree f ≠ 0) :
     f.roots ≠ 0 := by
   obtain ⟨a, ha⟩ := hf.exists_eval_eq_zero (degree_ne_of_natDegree_ne hf0)
@@ -287,6 +283,10 @@ end DivisionSemiring
 section Field
 
 variable [Field R]
+
+theorem roots_map {f : R[X]} {S : Type*} [CommRing S] [IsDomain S] (i : R →+* S) (hf : f.Factors) :
+    (f.map i).roots = f.roots.map i :=
+  (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
 
 open UniqueFactorizationMonoid in
 -- Todo: Remove or fix name once `Splits` is gone.
