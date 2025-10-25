@@ -203,15 +203,13 @@ lemma MDifferentiableOn.inner_bundle
   fun x hx ↦ (hv x hx).inner_bundle (hw x hx)
 
 
-#check (fun m ↦ (v m : TotalSpace F E))
-set_option trace.Elab.DiffGeo true in
 /-- Given two differentiable maps into the same fibers of a Riemannian bundle,
 their scalar product is differentiable. -/
 lemma MDifferentiable.inner_bundle
     (hv : MDifferentiable IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (v m : TotalSpace F E)))
     (hw : MDifferentiable IM (IB.prod 𝓘(ℝ, F)) (fun m ↦ (w m : TotalSpace F E))) :
-    True := sorry--MDiff (fun b ↦ ⟪v b, w b⟫) :=
-  --fun x ↦ (hv x).inner_bundle (hw x)
+    MDiff (fun b ↦ ⟪v b, w b⟫) :=
+  fun x ↦ (hv x).inner_bundle (hw x)
 
 end MDifferentiable
 

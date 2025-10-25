@@ -371,8 +371,8 @@ is a linear equivalence. -/
 noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
     TangentSpace I x ≃L[𝕜] TangentSpace J (f x) where
-  toFun := mfderiv I J f x
-  invFun := mfderiv J I hf.localInverse (f x)
+  toFun := mfderiv% f x
+  invFun := mfderiv% hf.localInverse (f x)
   left_inv := by
     apply ContinuousLinearMap.leftInverse_of_comp
     rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_left.mfderiv_eq]
@@ -387,15 +387,15 @@ noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
       exact hf.mdifferentiableAt hn
     rw [mfderiv_comp _ hf' (hf.localInverse_mdifferentiableAt hn),
       hf.localInverse_left_inv hf.localInverse_mem_target]
-  continuous_toFun := (mfderiv I J f x).cont
-  continuous_invFun := (mfderiv J I hf.localInverse (f x)).cont
+  continuous_toFun := (mfderiv% f x).cont
+  continuous_invFun := (mfderiv% hf.localInverse (f x)).cont
   map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add _ x_1 y
   map_smul' := by intros; simp
 
 @[simp, mfld_simps]
 lemma IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
-    hf.mfderivToContinuousLinearEquiv hn = mfderiv I J f x := rfl
+    hf.mfderivToContinuousLinearEquiv hn = mfderiv% f x := rfl
 
 /-- Each differential of a `C^n` diffeomorphism of Banach manifolds (`n ≥ 1`)
 is a linear equivalence. -/
@@ -405,7 +405,7 @@ noncomputable def Diffeomorph.mfderivToContinuousLinearEquiv
   (Φ.isLocalDiffeomorph x).mfderivToContinuousLinearEquiv hn
 
 lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) :
-    Φ.mfderivToContinuousLinearEquiv hn x = mfderiv I J Φ x := by rfl
+    Φ.mfderivToContinuousLinearEquiv hn x = mfderiv% Φ x := by rfl
 
 /-- If `f` is a `C^n` local diffeomorphism of Banach manifolds (`n ≥ 1`),
 each differential is a linear equivalence. -/
@@ -416,7 +416,7 @@ noncomputable def IsLocalDiffeomorph.mfderivToContinuousLinearEquiv
 
 lemma IsLocalDiffeomorph.mfderivToContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorph I J n f) (hn : 1 ≤ n) (x : M) :
-    hf.mfderivToContinuousLinearEquiv hn x = mfderiv I J f x :=
+    hf.mfderivToContinuousLinearEquiv hn x = mfderiv% f x :=
   (hf x).mfderivToContinuousLinearEquiv_coe hn
 
 end Differential
