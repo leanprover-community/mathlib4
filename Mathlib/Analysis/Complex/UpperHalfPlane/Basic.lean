@@ -111,6 +111,14 @@ lemma I_re : I.re = 0 := rfl
 @[simp, norm_cast]
 lemma coe_I : I = Complex.I := rfl
 
+open Complex in
+lemma pnat_div_upperHalfPlane_im_pos (n : ℕ+) (z : ℍ) : 0 < (-(n : ℂ) / z).im := by
+  simp only [div_im, neg_im, natCast_im, neg_zero, coe_re, zero_mul, zero_div, neg_re, natCast_re,
+    coe_im, neg_mul, zero_sub, Left.neg_pos_iff, div_neg_iff, Left.neg_neg_iff, Nat.cast_pos,
+    PNat.pos, mul_pos_iff_of_pos_left, Complex.normSq_pos, ne_eq]
+  right
+  simpa using ⟨z.2, ne_zero z⟩
+
 end UpperHalfPlane
 
 namespace Mathlib.Meta.Positivity
