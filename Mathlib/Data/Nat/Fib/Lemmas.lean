@@ -49,10 +49,12 @@ lemma fib_succ_mul_fib_pred_of_odd {n : ℕ} (hn : Odd n) :
   grind [fib_add_two_mul_fib_sub_fib_succ_sq, pow_mul]
 
 /-- **Catalan's identity**:
-`fib (x + a + 2) ^ 2 - fib (x + 1) * fib (x + 2 * a + 3) = (-1) ^ (x + 1) * fib (a + 1) ^ 2`. -/
-lemma fib_add_add_two_sq_sub_fib_add_mul_fib_add_two_mul_add_three (x a : ℕ) :
-    (fib (x + a + 2) ^ 2 - fib (x + 1) * fib (x + 2 * a + 3) : ℤ)
-      = (-1) ^ (x + 1) * fib (a + 1) ^ 2 :=
+`fib (x + a + 1) ^ 2 - fib (x + 1) * fib (x + 2 * a + 1) = (-1) ^ (x + 1) * fib a ^ 2`. -/
+lemma fib_add_add_one_sq_sub_fib_succ_mul_fib_add_two_mul_succ (x a : ℕ) :
+    (fib (x + a + 1) ^ 2 - fib (x + 1) * fib (x + 2 * a + 1) : ℤ) = (-1) ^ (x + 1) * fib a ^ 2 := by
+  by_cases ha : a = 0
+  · simp [ha, sq]
+  obtain ⟨a, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero ha
   calc (fib (x + a + 2) ^ 2 - fib (x + 1) * fib (x + 2 * a + 3) : ℤ)
       = (fib (x + 1) * fib (a + 2) + fib x * fib (a + 1)) ^ 2 - fib (x + 1) *
           (fib (x + 1) * (fib ((a + 1) + 1) ^ 2 + fib (a + 1) ^ 2) + fib ((x + 1) - 1)
