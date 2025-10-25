@@ -76,35 +76,36 @@ class BuildOutputProcessor:
         self.group_open = False
         class _State(Enum):
             OUTSIDE = auto()
-            GROUP_OPEN = auto()
-            IN_WARNING = auto()
-            IN_ERROR = auto()
-            IN_INFO = auto()
+            GROUP_OPEN = auto()  # progress (✔) group is open
+            IN_BLOCK = auto()    # inside an ℹ/⚠/✖ block group
         self.State = _State
         self.state = self.State.OUTSIDE
-        class _Evt(Enum):
-            NORMAL = auto()
-            NEW_WARNING = auto()
-            NEW_ERROR = auto()
-            NEW_INFO = auto()
-            OTHER = auto()
-        self.Evt = _Evt
+
+        class _BlockKind(Enum):
+            INFO = auto()
+            WARNING = auto()
+            ERROR = auto()
+        self.BlockKind = _BlockKind
+        self.current_kind = None  # type: _BlockKind | None
+        self.block_lists = {
+            self.BlockKind.INFO: self.infos,
+            self.BlockKind.WARNING: self.warnings,
+            self.BlockKind.ERROR: self.errors,
+        }
 
     def start_group(self, name: str):
         """Start a GitHub Actions log group"""
         print(f"::group::{name}", flush=True)
 
-    def end_group(self):
-        """End a GitHub Actions log group"""
+    def close_group(self):
+        """Close the current log group.
+
+        Precondition: a group is currently open.
+        """
         print("::endgroup::", flush=True)
+        self.group_open = False
 
-    def close_group_if_open(self):
-        """Close the current group if one is open."""
-        if self.group_open:
-            self.end_group()
-            self.group_open = False
-
-    def open_group_for_line(self, line: str):
+    def open_group_for_normal_line(self, line: str):
         """Open a progress group named by this line's [N/M] info.
 
         Precondition: no group is currently open (caller closed it if necessary).
@@ -132,17 +133,16 @@ class BuildOutputProcessor:
         """Check if line is normal build output (checkmark)."""
         return line.strip().startswith('✔')
 
-    def is_warning_start(self, line: str) -> bool:
-        """Check if line starts a warning"""
-        return line.strip().startswith('⚠')
-
-    def is_error_start(self, line: str) -> bool:
-        """Check if line starts an error"""
-        return line.strip().startswith('✖')
-
-    def is_info_start(self, line: str) -> bool:
-        """Check if line starts an info block"""
-        return line.strip().startswith('ℹ')
+    def detect_block_kind(self, line: str):
+        """Return the BlockKind if the line starts a block; otherwise None."""
+        stripped = line.strip()
+        if stripped.startswith('⚠'):
+            return self.BlockKind.WARNING
+        if stripped.startswith('✖'):
+            return self.BlockKind.ERROR
+        if stripped.startswith('ℹ'):
+            return self.BlockKind.INFO
+        return None
 
     def is_build_summary(self, line: str) -> bool:
         """Check if line is a build summary (end of build output)"""
@@ -183,115 +183,79 @@ class BuildOutputProcessor:
         }
 
     def process_line(self, line: str):
-        """Process a single line of output via an explicit finite state machine, streaming output immediately.
+        """Process one output line with a simple state machine and stream output.
 
-        (Implementation detail) State machine overview:
-        - States:
-            - OUTSIDE: No open group and not collecting lines into a block.
-            - GROUP_OPEN: A ::group:: for normal ✔ lines is open.
-            - IN_WARNING: Collecting a warning block (⚠ line + following lines); a block ::group:: is open.
-            - IN_ERROR: Collecting an error block (✖ line + following lines); a block ::group:: is open.
-            - IN_INFO: Collecting an info block (ℹ line + following lines); a block ::group:: is open.
+        States
+        - OUTSIDE: No group open, not collecting a block.
+        - GROUP_OPEN: A progress (✔) ::group:: is open.
+        - IN_BLOCK: Inside an ℹ/⚠/✖ block ::group::; `current_kind` is set.
 
-        - Events (one for each new output line)
-            - NORMAL: Line starts with ✔
-            - NEW_WARNING: Line starts with ⚠
-            - NEW_ERROR: Line starts with ✖
-            - NEW_INFO: Line starts with ℹ
-            - OTHER: Any other line (including end-of-build summary lines)
-            - EOF: End of build output
+        Classification
+        - `is_normal_line(line)` detects ✔ lines.
+        - `detect_block_kind(line)` detects ℹ/⚠/✖ starts (returns None otherwise).
 
-        - Transitions (current state + event → sequence; of; actions → next state)
-            - OUTSIDE + NORMAL → open_group; print → GROUP_OPEN
-            - OUTSIDE + NEW_* → start_block; print → IN_*
-            - OUTSIDE + OTHER → print → OUTSIDE
-            - GROUP_OPEN + NORMAL → print → GROUP_OPEN
-            - GROUP_OPEN + NEW_*/OTHER → close_group; (open block group + start_block if NEW_*); print → IN_* or OUTSIDE
-            - IN_* + NORMAL → flush_block (closes block group); open_group; print → GROUP_OPEN
-            - IN_* + NEW_* → flush_block (closes previous block group); open block group + start_block; print → IN_*
-            - IN_* + OTHER → if summary-line then flush_block else append_block; print → OUTSIDE or IN_*
-            - * + EOF → flush_block; close_group
+        Transitions (current state → next)
+        - OUTSIDE
+          - normal → open progress group; print → GROUP_OPEN
+          - block start → open block group (title is starting line); do not echo start line → IN_BLOCK
+          - other → print → OUTSIDE
+        - GROUP_OPEN
+          - normal → print → GROUP_OPEN
+          - block start → close progress group; open block group → IN_BLOCK
+          - other → close progress group; print → OUTSIDE
+        - IN_BLOCK
+          - normal → flush block (records JSON, closes block group); open progress group; print → GROUP_OPEN
+          - block start → flush block; open new block group → IN_BLOCK
+          - other → if build summary then flush block and print (→ OUTSIDE) else append to block and print (→ IN_BLOCK)
+
+        EOF is handled by `finalize()`: flush any open block and close any open group.
         """
 
-        # Classify input line into an event
-        if self.is_warning_start(line):
-            evt = self.Evt.NEW_WARNING
-        elif self.is_error_start(line):
-            evt = self.Evt.NEW_ERROR
-        elif self.is_info_start(line):
-            evt = self.Evt.NEW_INFO
-        elif self.is_normal_line(line):
-            evt = self.Evt.NORMAL
-        else:
-            evt = self.Evt.OTHER
+        block_kind = self.detect_block_kind(line)
+        is_normal = self.is_normal_line(line)
 
-        # State-driven behavior
         if self.state == self.State.OUTSIDE:
-            if evt == self.Evt.NORMAL:
-                self.open_group_for_line(line)
+            if is_normal:
+                self.open_group_for_normal_line(line)
                 print(line, end='', flush=True)
                 self.state = self.State.GROUP_OPEN
-            elif evt == self.Evt.NEW_WARNING:
+            elif block_kind is not None:
+                self.current_kind = block_kind
                 self.current_block = [line]
                 self.open_group_for_block(line)
-                self.state = self.State.IN_WARNING
-            elif evt == self.Evt.NEW_ERROR:
-                self.current_block = [line]
-                self.open_group_for_block(line)
-                self.state = self.State.IN_ERROR
-            elif evt == self.Evt.NEW_INFO:
-                self.current_block = [line]
-                self.open_group_for_block(line)
-                self.state = self.State.IN_INFO
-            elif evt == self.Evt.OTHER:
+                self.state = self.State.IN_BLOCK
+            else:
                 print(line, end='', flush=True)
             return
 
         if self.state == self.State.GROUP_OPEN:
-            if evt == self.Evt.NORMAL:
+            if is_normal:
                 print(line, end='', flush=True)
             else:
-                # Close group, then handle the event outside the group
-                self.close_group_if_open()
-                if evt == self.Evt.NEW_WARNING:
+                self.close_group()
+                if block_kind is not None:
+                    self.current_kind = block_kind
                     self.current_block = [line]
                     self.open_group_for_block(line)
-                    self.state = self.State.IN_WARNING
-                elif evt == self.Evt.NEW_ERROR:
-                    self.current_block = [line]
-                    self.open_group_for_block(line)
-                    self.state = self.State.IN_ERROR
-                elif evt == self.Evt.NEW_INFO:
-                    self.current_block = [line]
-                    self.open_group_for_block(line)
-                    self.state = self.State.IN_INFO
+                    self.state = self.State.IN_BLOCK
                 else:
                     print(line, end='', flush=True)
                     self.state = self.State.OUTSIDE
             return
 
-        if self.state in (self.State.IN_WARNING, self.State.IN_ERROR, self.State.IN_INFO):
-            if evt == self.Evt.NORMAL:
+        if self.state == self.State.IN_BLOCK:
+            if is_normal:
                 self.flush_block()
-                self.open_group_for_line(line)
+                self.open_group_for_normal_line(line)
                 print(line, end='', flush=True)
                 self.state = self.State.GROUP_OPEN
-            elif evt == self.Evt.NEW_WARNING:
+            elif block_kind is not None:
                 self.flush_block()
+                self.current_kind = block_kind
                 self.current_block = [line]
                 self.open_group_for_block(line)
-                self.state = self.State.IN_WARNING
-            elif evt == self.Evt.NEW_ERROR:
-                self.flush_block()
-                self.current_block = [line]
-                self.open_group_for_block(line)
-                self.state = self.State.IN_ERROR
-            elif evt == self.Evt.NEW_INFO:
-                self.flush_block()
-                self.current_block = [line]
-                self.open_group_for_block(line)
-                self.state = self.State.IN_INFO
-            else:  # OTHER → continuation or summary
+                self.state = self.State.IN_BLOCK
+            else:
                 if self.is_build_summary(line):
                     self.flush_block()
                     print(line, end='', flush=True)
@@ -302,7 +266,7 @@ class BuildOutputProcessor:
             return
 
     def flush_block(self):
-        """Record the current warning/error block for the summary."""
+        """Record the current ℹ/⚠/✖ block for the summary and close its group."""
         if not self.current_block:
             return
 
@@ -322,23 +286,21 @@ class BuildOutputProcessor:
             'full_output': block_text
         }
 
-        if self.state == self.State.IN_WARNING:
-            self.warnings.append(block_data)
-        elif self.state == self.State.IN_ERROR:
-            self.errors.append(block_data)
-        elif self.state == self.State.IN_INFO:
-            self.infos.append(block_data)
+        if self.current_kind is not None:
+            self.block_lists[self.current_kind].append(block_data)
 
-        # Close any open group for this block; lines were already streamed.
-        self.close_group_if_open()
+        # Close the group for this block; lines were already streamed.
+        self.close_group()
         # Do not print here; lines were already streamed as they arrived.
         self.current_block = []
+        self.current_kind = None
         self.state = self.State.OUTSIDE
 
     def finalize(self):
         """Finalize processing"""
         self.flush_block()
-        self.close_group_if_open()
+        if self.group_open:
+            self.close_group()
 
     def get_summary(self) -> Dict[str, Any]:
         """Get summary of warnings and errors"""
