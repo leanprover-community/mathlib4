@@ -409,7 +409,6 @@ theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → 
     equivFunOnFinite.symm f = ∑ a, single a (f a) :=
   (univ_sum_single _).symm
 
-@[simp]
 theorem coe_univ_sum_single [Fintype α] [AddCommMonoid M] (f : α → M) :
     ⇑(∑ a : α, single a (f a)) = f :=
   congrArg _ (equivFunOnFinite_symm_eq_sum f).symm
