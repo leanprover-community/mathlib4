@@ -5,7 +5,6 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.RingTheory.SimpleRing.Defs
-import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 
@@ -22,6 +21,8 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
   ring is injective.
 
 -/
+
+assert_not_exists Finset
 
 variable (R : Type*) [NonUnitalNonAssocRing R]
 
@@ -64,10 +65,6 @@ protected theorem _root_.RingHom.injective
     {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocSemiring S] [Nontrivial S]
     (f : R →+* S) : Function.Injective f :=
   injective_ringHom_or_subsingleton_codomain f |>.resolve_right fun r => not_subsingleton _ r
-
-instance {R S : Type*} [CommRing R] [IsSimpleRing R] [Semiring S] [Nontrivial S] [Algebra R S] :
-    FaithfulSMul R S :=
-  faithfulSMul_iff_algebraMap_injective R S |>.mpr (algebraMap R S).injective
 
 universe u in
 lemma iff_injective_ringHom_or_subsingleton_codomain (R : Type u) [NonAssocRing R] [Nontrivial R] :
