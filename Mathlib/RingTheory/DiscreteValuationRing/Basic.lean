@@ -341,6 +341,31 @@ theorem eq_unit_mul_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irre
   use n, u
   apply mul_comm
 
+/-
+TODO: Find somewhere reasonable for this to go
+-/
+theorem div_smul_div_comm {G K : Type*}
+    [Group G] [Field K] [DistribMulAction G K] [IsScalarTower G K K]
+    (g h : G) (a b : K) (hb : b ≠ 0) :
+    (g / h) • (a / b) = (g • a) / (h • b) := by
+  rw [eq_div_iff_mul_eq (ne_of_apply_ne (h⁻¹ • ·) (by simpa)), smul_mul_smul_comm]
+  simp [hb]
+
+/--
+If `K` is the fraction field of a discrete valuation ring `R`, any element `x` of `K` can be
+expressed as `u • (algebraMap R K ϖ)^n` for some `u : Rˣ`, `n : ℤ`.
+-/
+lemma exists_units_eq_smul_zpow_of_irreducible
+    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+    {ϖ : R} (hϖ : Irreducible ϖ) (x : K) (hx : x ≠ 0) :
+    ∃ (n : ℤ) (u : Rˣ), x = u • algebraMap R K ϖ ^ n := by
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := R) x
+  obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible (x := x) (by simp_all) hϖ
+  obtain ⟨m, v, rfl⟩ := eq_unit_mul_pow_irreducible (by simpa using hy) hϖ
+  have hϖ' : algebraMap R K ϖ ≠ 0 := by simpa using hϖ.ne_zero
+  refine ⟨n - m, u / v, ?_⟩
+  simp [hϖ', zpow_sub₀, div_smul_div_comm, Units.smul_def u, Units.smul_def v, Algebra.smul_def]
+
 open Submodule.IsPrincipal
 
 theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (hirr : Irreducible ϖ) :
