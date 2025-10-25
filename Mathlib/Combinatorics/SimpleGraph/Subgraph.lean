@@ -1119,9 +1119,6 @@ theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
   ext
   simp
 
-lemma induce_adj' {G' : G.Subgraph} {s : Set V} {u v : s} : (G'.induce s).Adj u v ↔ G'.Adj u v := by
-  simp
-
 lemma _root_.SimpleGraph.spanningCoe_induce_adj_eq_induce_top_adj (s : Set V) :
     (G.induce s).spanningCoe.Adj = ((⊤ : G.Subgraph).induce s).Adj := by
   grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe, Subgraph.spanningCoe_adj]
