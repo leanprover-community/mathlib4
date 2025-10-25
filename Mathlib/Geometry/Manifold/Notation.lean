@@ -316,7 +316,7 @@ This implementation is not maximally robust yet.
 -- TODO: consider lowering monad to `MetaM`
 def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
     TermElabM <| Option <| Expr × Option (Expr × Expr) := do
-  trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
+  -- trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
   if let some m ← tryStrategy m!"TotalSpace"       fromTotalSpace     then return some (m, none)
   if let some m ← tryStrategy m!"TangentBundle"    fromTangentBundle  then return some (m, none)
   if let some (m, eK) ← tryStrategy' (Expr × Expr) m!"NormedSpace"   fromNormedSpace then
@@ -643,59 +643,50 @@ This implementation is not maximally robust yet.
 -/
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
+
+-- This function calls itself, which is why it is partial for now.
+-- This should not be an issue in practice.
+-- TODO: can I prove this terminates w.r.t. a suitable measure?
+-- I'm only recursing into subexpressions (at least, after match_expr), right?
 partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
-  -- At first, try finding a model on the space itself.
-  if let some (m, _) ← findModelInner e baseInfo then return m
-  -- Otherwise, check if we have a binary product or a binary sum.
-  -- TODO: also support higher order products and sums, by recursively calling this method on them
-  -- Also support combinations of those!
-
-  -- Matching if e is Open M does not work easily.
-  -- match_expr below fails
-  -- avoiding the wnhf does not seem to make a difference
-  -- I see e being printed as a subtype, so I'm clearly unfolding too much...
-  trace[Elab.DiffGeo.MDiff] "e is `{e}`"
-  -- if let mkApp (.const ``TopologicalSpace.Opens _) M := e then
-  --   trace[Elab.DiffGeo.MDiff] "take 1: Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
-  --   return ← findModel M baseInfo
-
-  match_expr e with
-  | TopologicalSpace.Opens M _ =>
-    trace[Elab.DiffGeo.MDiff] "take 2: Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
-    -- This recursive call makes the definition partial, but that's fine in practice.
-    -- (In practice, `M` is not an `Opens`, as `Open X` is (currently?) not a topological space.
-    findModel M baseInfo
-  | Prod E F =>
-    trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a product, recursing into each factor"
-    let prodHelp (E) := match_expr E with
-    | Prod _ _ => "\nNote: finding a model with corners on products of three or more spaces \
-      is not implemented yet"
-    | _ => ""
-    let some (srcE, normedSpaceE) := ← findModelInner E baseInfo
-      | throwError "Found no model with corners on first factor `{E}`{prodHelp E}"
-    let some (srcF, normedSpaceF) := ← findModelInner F baseInfo
-      | throwError "Found no model with corners on second factor `{F}`{prodHelp F}"
-    -- If both E and F are normed spaces, emit a warning and return (for now).
-    if normedSpaceE.isSome && normedSpaceF.isSome then
-      throwError "`{e}` is a product of normed spaces, so there are two potential models with \
-      corners\nFor now, please specify the model by hand."
-    let eTerm : Term ← Term.exprToSyntax srcE
-    let fTerm : Term ← Term.exprToSyntax srcF
-    let iTerm : Term ← ``(ModelWithCorners.prod $eTerm $fTerm)
-    Term.elabTerm iTerm none
-  | Sum E F =>
-    trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a direct sum of `{E}` and `{F}`\n\
-      We assume the models match, and only look into the first summand"
-    let sumHelp (E) := match_expr E with
-    | Sum _ _ => "\nNote: finding a model with corners on direct sums of three or more spaces \
-      is not implemented yet"
-    | _ => ""
-    let some (I, _) ← findModelInner E baseInfo
-      | throwError "Found no model with corners on first summand `{E}{sumHelp E}`"
-    let eTerm : Term ← Term.exprToSyntax I
-    Term.elabTerm eTerm none
-  | _ => throwError "Could not find a model with corners for `{e}`"
-
+  trace[Elab.DiffGeo.MDiff] "Finding a model with corners for: `{e}`"
+  let some (u, _) := ← go e baseInfo
+    | throwError "Could not find a model with corners for `{e}`"
+  return u
+where
+  go (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
+      TermElabM <| Option <| Expr × Option (Expr × Expr) := do
+    -- At first, try finding a model on the space itself.
+    if let some (m, r) ← findModelInner e baseInfo then return some (m, r)
+    -- Otherwise, we recurse into the expression,
+    -- depending whether we have an open subset of a space,
+    -- a product, or a direct sum of spaces.
+    match_expr e with
+    | TopologicalSpace.Opens M _ =>
+      trace[Elab.DiffGeo.MDiff] "Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
+      -- (In practice, `M` is not an `Opens`, as `Open X` is (currently?) not a topological space.
+      go M baseInfo
+    | Prod E F =>
+      trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a product, recursing into each factor"
+      let some (srcE, normedSpaceE) := ← go E baseInfo
+        | throwError "Found no model with corners on first factor `{E}`"
+      let some (srcF, normedSpaceF) := ← go F baseInfo
+        | throwError "Found no model with corners on second factor `{F}`"
+      -- If both E and F are normed spaces, we have ambiguity: warn and exit.
+      if normedSpaceE.isSome && normedSpaceF.isSome then
+        throwError "`{e}` is a product of normed spaces, so there are two potential models with \
+        corners\nFor now, please specify the model by hand."
+      -- Otherwise, we are not a normed space, and normally form the product model.
+      let eTerm : Term ← Term.exprToSyntax srcE
+      let fTerm : Term ← Term.exprToSyntax srcF
+      let iTerm : Term ← ``(ModelWithCorners.prod $eTerm $fTerm)
+      return some (← Term.elabTerm iTerm none, none)
+    | Sum E F =>
+      trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a direct sum of `{E}` and `{F}`\n\
+        We assume the models match, and only look into the first summand"
+      go E
+    | _ => return none
+    pure none
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
