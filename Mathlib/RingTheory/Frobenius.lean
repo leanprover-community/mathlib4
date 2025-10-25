@@ -146,7 +146,7 @@ lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdea
     rw [IsScalarTower.algebraMap_eq R S (Localization.AtPrime Q), ← Ideal.comap_comap,
       Localization.AtPrime.comap_maximalIdeal]
   intro x
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective Q.primeCompl x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq Q.primeCompl x
   simp only [localize, coe_mk, Localization.localRingHom_mk', RingHom.coe_coe, h,
     ← IsLocalization.mk'_pow]
   rw [← IsLocalization.mk'_sub,

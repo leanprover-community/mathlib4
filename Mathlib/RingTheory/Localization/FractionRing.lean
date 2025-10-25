@@ -198,7 +198,7 @@ theorem mk'_eq_div {r} (s : nonZeroDivisors A) : mk' K r s = algebraMap A K r / 
 
 theorem div_surjective (z : K) :
     ∃ x y : A, y ∈ nonZeroDivisors A ∧ algebraMap _ _ x / algebraMap _ _ y = z :=
-  let ⟨x, ⟨y, hy⟩, h⟩ := mk'_surjective (nonZeroDivisors A) z
+  let ⟨x, ⟨y, hy⟩, h⟩ := exists_mk'_eq (nonZeroDivisors A) z
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 
 theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
