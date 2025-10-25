@@ -5,10 +5,8 @@ Authors: David Loeffler
 -/
 import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.DiscreteSubset
 import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
