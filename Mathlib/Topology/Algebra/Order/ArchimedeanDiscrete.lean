@@ -18,6 +18,23 @@ This file contains some supplements to the results in `Mathlib.Topology.Algebra.
 involving discreteness of subgroups, which require heavier imports.
 -/
 
+namespace AddSubgroup
+-- TODO: Currently it does not work to obtain this via `to_additive`, since
+-- the formulation of `LinearOrderedCommGroup.discrete_iff_not_denselyOrdered` seems to defeat
+-- the additivizer.
+
+variable {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [TopologicalSpace G]
+  [OrderTopology G] [Archimedean G]
+
+instance [DiscreteTopology G] : IsAddCyclic G := by
+  nontriviality G
+  have : ¬DenselyOrdered G := fun contra ↦
+    haveI := contra.subsingleton_of_discreteTopology; false_of_nontrivial_of_subsingleton G
+  obtain ⟨e⟩ := (LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered G).mpr this
+  exact e.isAddCyclic.mpr inferInstance
+
+end AddSubgroup
+
 namespace Subgroup
 
 variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
@@ -53,6 +70,7 @@ instance instDiscreteTopologyZMultiples (g : G) : DiscreteTopology (zpowers g) :
 
 variable [MulArchimedean G]
 
+@[to_additive existing]
 instance [DiscreteTopology G] : IsCyclic G := by
   nontriviality G
   have : ¬DenselyOrdered G := fun contra ↦
@@ -62,6 +80,8 @@ instance [DiscreteTopology G] : IsCyclic G := by
 
 /-- In an Archimedean densely linearly ordered group (with the order topology), a subgroup is
 discrete iff it is cyclic. -/
+@[to_additive /-- In an Archimedean linearly ordered additive group (with the order topology), a
+subgroup is discrete iff it is cyclic. -/]
 lemma discrete_iff_cyclic {H : Subgroup G} : IsCyclic H ↔ DiscreteTopology H := by
   nontriviality G using isCyclic_of_subsingleton, Subsingleton.discreteTopology
   rw [Subgroup.isCyclic_iff_exists_zpowers_eq_top]
@@ -78,37 +98,3 @@ lemma discrete_iff_cyclic {H : Subgroup G} : IsCyclic H ↔ DiscreteTopology H :
     exact isCyclic_iff_exists_zpowers_eq_top.mp inferInstance
 
 end Subgroup
-
-namespace AddSubgroup
--- TODO: Currently it does not work to obtain these two declarations via `to_additive`, since
--- the formulation of `LinearOrderedCommGroup.discrete_iff_not_denselyOrdered` seems to defeat
--- the additivizer.
-
-variable {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [TopologicalSpace G]
-  [OrderTopology G] [Archimedean G]
-
-instance [DiscreteTopology G] : IsAddCyclic G := by
-  nontriviality G
-  have : ¬DenselyOrdered G := fun contra ↦
-    haveI := contra.subsingleton_of_discreteTopology; false_of_nontrivial_of_subsingleton G
-  obtain ⟨e⟩ := (LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered G).mpr this
-  exact e.isAddCyclic.mpr inferInstance
-
-/-- In an Archimedean densely linearly ordered group (with the order topology), a subgroup is
-discrete iff it is cyclic. -/
-lemma discrete_iff_cyclic {H : AddSubgroup G} : IsAddCyclic H ↔ DiscreteTopology H := by
-  nontriviality G using isAddCyclic_of_subsingleton, Subsingleton.discreteTopology
-  rw [AddSubgroup.isAddCyclic_iff_exists_zmultiples_eq_top]
-  constructor
-  · rintro ⟨g, rfl⟩
-    infer_instance
-  · have := H.dense_or_cyclic
-    simp only [← AddSubgroup.zmultiples_eq_closure, Eq.comm (a := H)] at this
-    refine fun hA ↦ this.elim (fun h ↦ ?_) id
-    -- remains to show a contradiction assuming `H` is both dense and discrete
-    obtain rfl : H = ⊤ := by
-      rw [← coe_eq_univ, ← (dense_iff_closure_eq.mp h), H.isClosed_of_discrete.closure_eq]
-    have : DiscreteTopology G := by rwa [← (Homeomorph.Set.univ G).discreteTopology_iff]
-    exact isAddCyclic_iff_exists_zmultiples_eq_top.mp inferInstance
-
-end AddSubgroup
