@@ -5,7 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Nat.Factorization.Defs
-import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
@@ -382,7 +382,7 @@ theorem log_nat_eq_sum_factorization (n : ℕ) :
   · simp only [← log_pow, ← Nat.cast_pow]
     rw [← Finsupp.log_prod, ← Nat.cast_finsuppProd, Nat.factorization_prod_pow_eq_self hn]
     intro p hp
-    rw [pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
+    rw [eq_zero_of_pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
 
 theorem tendsto_pow_log_div_mul_add_atTop (a b : ℝ) (n : ℕ) (ha : a ≠ 0) :
     Tendsto (fun x => log x ^ n / (a * x + b)) atTop (𝓝 0) :=
@@ -403,8 +403,8 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   filter_upwards [eventually_gt_atTop 1] with x hx
   aesop (add safe forward log_pos)
 
-/-- `Real.exp` as a `PartialHomeomorph` with `source = univ` and `target = {z | 0 < z}`. -/
-@[simps] noncomputable def expPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+/-- `Real.exp` as an `OpenPartialHomeomorph` with `source = univ` and `target = {z | 0 < z}`. -/
+@[simps] noncomputable def expPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := Real.exp
   invFun := Real.log
   source := univ

@@ -45,6 +45,7 @@ instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOr
     [∀ i, CanonicallyOrderedMul (Z i)] :
     CanonicallyOrderedMul (∀ i, Z i) where
   __ := Pi.existsMulOfLe
+  le_mul_self _ _ := fun _ => le_mul_self
   le_self_mul _ _ := fun _ => le_self_mul
 
 @[to_additive]

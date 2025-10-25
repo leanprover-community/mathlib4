@@ -34,7 +34,7 @@ open Function
 section Definitions
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
-  {C₁ C₂ : PointedCone R E}
+  {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
 
 /-- Every pointed cone is a convex cone. -/
 @[coe]
@@ -53,7 +53,7 @@ theorem toConvexCone_injective : Injective ((↑) : PointedCone R E → ConvexCo
 theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointed := by
   simp [toConvexCone, ConvexCone.Pointed]
 
-@[simp] lemma mem_toConvexCone {C : PointedCone R E} {x : E} : x ∈ C.toConvexCone ↔ x ∈ C := .rfl
+@[simp] lemma mem_toConvexCone : x ∈ C.toConvexCone ↔ x ∈ C := .rfl
 
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
@@ -61,6 +61,9 @@ lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.conv
 
 instance instZero (C : PointedCone R E) : Zero C :=
   ⟨0, C.zero_mem⟩
+
+nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
+  C.smul_mem ⟨r, hr⟩ hx
 
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
 def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : PointedCone R E where
@@ -92,6 +95,15 @@ lemma _root_.ConvexCone.toPointedCone_top : (⊤ : ConvexCone R E).toPointedCone
 
 instance canLift : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
   prf C hC := ⟨C.toPointedCone hC, rfl⟩
+
+variable (R) in
+/-- The span of a set `s` is the smallest pointed cone that contains `s`.
+
+Pointed cones being defined as submodules over nonnegative scalars, this is exactly the
+submodule span of `s` w.r.t. nonnegative scalars. -/
+abbrev span (s : Set E) : PointedCone R E := Submodule.span R≥0 s
+
+lemma subset_span {s : Set E} : s ⊆ PointedCone.span R s := Submodule.subset_span
 
 end Definitions
 
@@ -181,4 +193,15 @@ theorem toConvexCone_positive : ↑(positive R E) = ConvexCone.positive R E :=
   rfl
 
 end PositiveCone
+
+section OrderedAddCommGroup
+variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [PartialOrder E]
+  [IsOrderedAddMonoid E] [Module R E]
+
+/-- Constructs an ordered module given an ordered group, a cone, and a proof that
+the order relation is the one defined by the cone. -/
+lemma to_isOrderedModule (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y - x ∈ C) :
+    IsOrderedModule R E := .of_smul_nonneg <| by simp +contextual [h, C.smul_mem]
+
+end OrderedAddCommGroup
 end PointedCone

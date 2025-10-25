@@ -25,7 +25,7 @@ open Real Set MeasureTheory Filter Asymptotics
 
 open scoped Real Topology
 
-open Complex hiding exp abs_of_nonneg
+open Complex hiding exp
 
 theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p) :
     (fun x : ℝ => exp (- b * x ^ p)) =o[atTop] fun x : ℝ => exp (-x) := by
@@ -325,7 +325,7 @@ theorem integral_gaussian_Ioi (b : ℝ) :
   convert integral_gaussian_complex_Ioi (by rwa [ofReal_re] : 0 < (b : ℂ).re)
   · simp
   · rw [sqrt_eq_rpow, ← ofReal_div, ofReal_div, ofReal_cpow]
-    · norm_num
+    · simp
     · exact (div_pos pi_pos hb).le
 
 -- see https://github.com/leanprover-community/mathlib4/issues/29041

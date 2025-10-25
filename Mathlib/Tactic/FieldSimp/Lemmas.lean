@@ -5,6 +5,7 @@ Authors: Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Field.Power
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Util.Qq
 
 /-! # Lemmas for the field_simp tactic
@@ -41,6 +42,9 @@ theorem zpow'_add (a : α) (m n : ℤ) :
 
 theorem zpow'_of_ne_zero_right (a : α) (n : ℤ) (hn : n ≠ 0) : zpow' a n = a ^ n := by
   simp [zpow', hn]
+
+theorem zpow'_of_ne_zero_left (a : α) (n : ℤ) (ha : a ≠ 0) : zpow' a n = a ^ n := by
+  simp [zpow', ha]
 
 @[simp]
 lemma zero_zpow' (n : ℤ) : zpow' (0 : α) n = 0 := by
@@ -85,8 +89,7 @@ lemma zpow'_mul (a : α) (m n : ℤ) : zpow' a (m * n) = zpow' (zpow' a m) n := 
   by_cases hm : m = 0
   · rw [hm]
     simp [zpow', ha]
-  simp [zpow', ha, hm, hn]
-  exact zpow_mul a m n
+  simpa [zpow', ha, hm, hn] using zpow_mul a m n
 
 lemma zpow'_ofNat (a : α) {n : ℕ} (hn : n ≠ 0) : zpow' a n = a ^ n := by
   rw [zpow'_of_ne_zero_right]
@@ -101,8 +104,7 @@ lemma mul_zpow' [CommGroupWithZero α] (n : ℤ) (a b : α) :
   · simp [ha]
   by_cases hb : b = 0
   · simp [hb]
-  simp [zpow', ha, hb]
-  exact mul_zpow a b n
+  simpa [zpow', ha, hb] using mul_zpow a b n
 
 theorem list_prod_zpow' [CommGroupWithZero α] {r : ℤ} {l : List α} :
     zpow' (prod l) r = prod (map (fun x ↦ zpow' x r) l) :=
@@ -149,6 +151,22 @@ theorem eq_eq_cancel_eq {M : Type*} [CancelMonoidWithZero M] {e₁ e₂ f₁ f�
   subst H₁ H₂
   rw [mul_right_inj' HL]
 
+theorem le_eq_cancel_le {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [PosMulMono M]
+    [PosMulReflectLE M] {e₁ e₂ f₁ f₂ L : M}
+    (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : 0 < L) :
+    (e₁ ≤ e₂) = (f₁ ≤ f₂) := by
+  subst H₁ H₂
+  apply Iff.eq
+  exact mul_le_mul_iff_right₀ HL
+
+theorem lt_eq_cancel_lt {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [PosMulStrictMono M]
+    [PosMulReflectLT M] {e₁ e₂ f₁ f₂ L : M}
+    (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : 0 < L) :
+    (e₁ < e₂) = (f₁ < f₂) := by
+  subst H₁ H₂
+  apply Iff.eq
+  exact mul_lt_mul_iff_of_pos_left HL
+
 /-! ### Theory of lists of pairs (exponent, atom)
 
 This section contains the lemmas which are orchestrated by the `field_simp` tactic
@@ -188,6 +206,15 @@ theorem cons_ne_zero [GroupWithZero M] (r : ℤ) {x : M} (hx : x ≠ 0) {l : NF 
   apply mul_ne_zero ?_ hl
   simp [zpow'_eq_zero_iff, hx]
 
+theorem cons_pos [GroupWithZero M] [PartialOrder M] [PosMulStrictMono M] [PosMulReflectLT M]
+    [ZeroLEOneClass M] (r : ℤ) {x : M} (hx : 0 < x) {l : NF M} (hl : 0 < l.eval) :
+    0 < ((r, x) ::ᵣ l).eval := by
+  unfold eval cons
+  apply mul_pos ?_ hl
+  simp only
+  rw [zpow'_of_ne_zero_left _ _ hx.ne']
+  apply zpow_pos hx
+
 theorem atom_eq_eval [GroupWithZero M] (x : M) : x = NF.eval [(1, x)] := by simp [eval]
 
 variable (M) in
@@ -202,13 +229,13 @@ theorem mul_eq_eval₁ [CommGroupWithZero M] (a₁ : ℤ × M) {a₂ : ℤ × M}
 theorem mul_eq_eval₂ [CommGroupWithZero M] (r₁ r₂ : ℤ) (x : M) {l₁ l₂ l : NF M}
     (h : l₁.eval * l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = ((r₁ + r₂, x) ::ᵣ l).eval := by
-  simp [zpow'_add, ← h]
+  simp only [eval_cons, ← h, zpow'_add]
   ac_rfl
 
 theorem mul_eq_eval₃ [CommGroupWithZero M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
     (h : (a₁ ::ᵣ l₁).eval * l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₂ ::ᵣ l).eval := by
-  simp [← h]
+  simp only [eval_cons, ← h]
   ac_rfl
 
 theorem mul_eq_eval [GroupWithZero M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁.eval)

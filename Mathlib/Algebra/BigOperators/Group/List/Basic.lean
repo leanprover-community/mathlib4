@@ -53,7 +53,7 @@ theorem prod_concat : (l.concat a).prod = l.prod * a := by
 theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).prod := by
   induction l with
   | nil => simp
-  | cons head tail ih => simp only [*, List.flatten, map, prod_append, prod_cons]
+  | cons head tail ih => simp only [*, List.flatten_cons, map, prod_append, prod_cons]
 
 open scoped Relator in
 @[to_additive]
@@ -142,9 +142,6 @@ Instead, we write the statement in terms of `L[0]?.getD 1`.
   Instead, we write the statement in terms of `L[0]?.getD 0`. -/]
 theorem getElem?_zero_mul_tail_prod (l : List M) : l[0]?.getD 1 * l.tail.prod = l.prod := by
   cases l <;> simp
-
-@[deprecated (since := "2025-02-15")] alias get?_zero_mul_tail_prod := getElem?_zero_mul_tail_prod
-@[deprecated (since := "2025-02-15")] alias get?_zero_add_tail_sum := getElem?_zero_add_tail_sum
 
 /-- Same as `get?_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by
   requiring the list to be nonempty. -/
