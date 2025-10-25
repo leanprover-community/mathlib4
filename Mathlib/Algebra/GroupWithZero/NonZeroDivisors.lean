@@ -150,6 +150,9 @@ theorem mul_right_coe_nonZeroDivisors_eq_zero_iff {c : M₀⁰} : x * c = 0 ↔ 
 lemma IsUnit.mem_nonZeroDivisors (hx : IsUnit x) : x ∈ M₀⁰ :=
   ⟨fun _ ↦ hx.mul_right_eq_zero.mp, fun _ ↦ hx.mul_left_eq_zero.mp⟩
 
+variable (M₀) in
+lemma isUnit_le_nonZeroDivisors : IsUnit.submonoid M₀ ≤ M₀⁰ := fun _ ↦ (·.mem_nonZeroDivisors)
+
 section Nontrivial
 variable [Nontrivial M₀]
 
