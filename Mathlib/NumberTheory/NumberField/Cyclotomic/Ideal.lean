@@ -7,7 +7,6 @@ import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
 import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
-import Mathlib.RingTheory.Ideal.GoingUp
 
 /-!
 # Ideals in cyclotomic fields
@@ -30,6 +29,12 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 
 * `IsCyclotomicExtension.Rat.ramificationIdx_of_not_dvd`: if the prime `p` does not divide `m`,
   then the ramification index of `p` in `ℚ(ζₘ)` is `1`.
+
+* `IsCyclotomicExtension.Rat.inertiaDeg_eq`: write `n = p ^ (k + 1) * m` where the prime `p` does
+  not divide `m`, then the inertia degree of `p` in `ℚ(ζₙ)` if the order of `p` modulo `m`.
+
+* `IsCyclotomicExtension.Rat.ramificationIdx_eq`: write `n = p ^ (k + 1) * m` where the prime
+  `p` does not divide `m`, then the ramification index of `p` in `ℚ(ζₙ)` is `p ^ (k - 1) * (p - 1)`.
 
 -/
 
@@ -164,7 +169,7 @@ section notDVD
 
 open NumberField.Ideal Polynomial
 
-variable [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
+variable {m} [NeZero m] [hK : IsCyclotomicExtension {m} ℚ K]
 
 theorem inertiaDeg_of_not_dvd (hm : ¬ p ∣ m) :
     inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
@@ -208,29 +213,29 @@ theorem inertiaDegIn_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) := by
   have : IsGalois ℚ K := isGalois {m} ℚ K
   obtain ⟨⟨P, _, _⟩⟩ := 𝒑.nonempty_primesOver (S := 𝓞 K)
-  rw [inertiaDegIn_eq_inertiaDeg 𝒑 P ℚ K, inertiaDeg_of_not_dvd m p K P hm]
+  rw [inertiaDegIn_eq_inertiaDeg 𝒑 P ℚ K, inertiaDeg_of_not_dvd p K P hm]
 
 theorem ramificationIdxIn_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.ramificationIdxIn (𝓞 K) = 1 := by
   have : IsGalois ℚ K := isGalois {m} ℚ K
   obtain ⟨⟨P, _, _⟩⟩ := 𝒑.nonempty_primesOver (S := 𝓞 K)
-  rw [ramificationIdxIn_eq_ramificationIdx 𝒑 P ℚ K, ramificationIdx_of_not_dvd m p K P hm]
+  rw [ramificationIdxIn_eq_ramificationIdx 𝒑 P ℚ K, ramificationIdx_of_not_dvd p K P hm]
 
 end notDVD
 
 section generalCase
 
-variable [IsCyclotomicExtension {n} ℚ K]
+variable {m p k} [IsCyclotomicExtension {n} ℚ K]
 
 open IntermediateField
 
-theorem inertiaDeg_ramificationIdx (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
-    inertiaDeg 𝒑 P = orderOf (p : ZMod m) ∧
-      ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
+theorem inertiaDegIn_ramificationIdxIn (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
+    𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) ∧
+      𝒑.ramificationIdxIn (𝓞 K) = p ^ k * (p - 1) := by
   have : IsAbelianGalois ℚ K := IsCyclotomicExtension.isAbelianGalois {n} ℚ K
   have : NeZero m := ⟨fun h ↦ by simp [h] at hm⟩
   have : NeZero n := by exact ⟨hn ▸ NeZero.ne (p ^ (k + 1) * m)⟩
-  have : P.IsMaximal := sorry
+  have hp' : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
   let ζ := zeta n ℚ K
   have hζ := zeta_spec n ℚ K
   -- Root of unity of order `m`
@@ -239,109 +244,67 @@ theorem inertiaDeg_ramificationIdx (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) 
   let Fₘ := ℚ⟮ζₘ⟯
   have : IsCyclotomicExtension {m} ℚ Fₘ :=
     (isCyclotomicExtension_singleton_iff_eq_adjoin _ _ _ _ hζₘ).mpr rfl
-  -- The prime ideal of `ℚ⟮ζₘ⟯` below `P`
-  let Pₘ := comap (algebraMap (𝓞 Fₘ) (𝓞 K)) P
-  have : Pₘ.IsMaximal := isMaximal_comap_of_isIntegral_of_isMaximal _
+  -- A prime ideal of `ℚ⟮ζₘ⟯` above `𝒑`
+  obtain ⟨Pₘ, _, _⟩ := exists_ideal_liesOver_maximal_of_isIntegral 𝒑 (𝓞 Fₘ)
   -- Root of unity of order `p ^ (k + 1)`
   let ζₚ := ζ ^ m
   have hζₚ := hζ.pow (NeZero.pos _) (mul_comm _ m ▸ hn)
   let Fₚ := ℚ⟮ζₚ⟯
   have : IsCyclotomicExtension {p ^ (k + 1)} ℚ Fₚ :=
     (isCyclotomicExtension_singleton_iff_eq_adjoin _ _ _ _ hζₚ).mpr rfl
-  -- The prime ideal of `ℚ⟮ζₚ⟯` below `P`
-  let Pₚ := comap (algebraMap (𝓞 Fₚ) (𝓞 K)) P
-  have : Pₚ.IsMaximal := isMaximal_comap_of_isIntegral_of_isMaximal _
-  have h₁ := ramificationIdx_algebra_tower (p := 𝒑) (P := Pₚ) (Q := P)
-    (by
-      refine map_ne_bot_of_ne_bot ?_
-      apply Ring.ne_bot_of_isMaximal_of_not_isField inferInstance (not_isField Fₚ))
-    (by
-      apply map_ne_bot_of_ne_bot
-      simpa using hp.out.ne_zero)
-    (by
-      apply Ideal.map_comap_le)
---  rw [ramificationIdx_eq_of_prime_pow p k Fₚ] at h₁
-  have h₂ := inertiaDeg_algebra_tower 𝒑 Pₘ P
+  -- A prime ideal of `ℚ⟮ζₚ⟯` above `𝒑`
+  obtain ⟨Pₚ, _, _⟩ := exists_ideal_liesOver_maximal_of_isIntegral 𝒑 (𝓞 Fₚ)
+  have hPp : Ideal.map (algebraMap (𝓞 Fₚ) (𝓞 K)) Pₚ ≠ ⊥ :=
+    map_ne_bot_of_ne_bot <| IsMaximal.ne_bot_of_isIntegral_int Pₚ
   suffices (Pₘ.primesOver (𝓞 K)).ncard *
-      (Pₘ.inertiaDeg P * ramificationIdx (algebraMap (𝓞 ↥Fₚ) (𝓞 K)) Pₚ P) = 1 by
+      (Pₘ.inertiaDegIn (𝓞 K) * Pₚ.ramificationIdxIn (𝓞 K)) = 1 by
     replace this := Nat.eq_one_of_mul_eq_one_left this
-    rw [ramificationIdx_eq_of_prime_pow p k Fₚ] at h₁ -- FIX THIS
-    rw [h₁, inertiaDeg_algebra_tower 𝒑 Pₘ P, inertiaDeg_of_not_dvd m _ Fₘ Pₘ hm,
-      Nat.eq_one_of_mul_eq_one_left this, Nat.eq_one_of_mul_eq_one_right this, mul_one, mul_one]
+    rw [← inertiaDegIn_mul_inertiaDegIn 𝒑 Pₘ ℚ Fₘ K (𝓞 K),
+      ← ramificationIdxIn_mul_ramificationIdxInIn Pₚ ℚ Fₚ K (𝓞 K) (map_ne_bot_of_ne_bot hp') hPp,
+      Nat.eq_one_of_mul_eq_one_left this, Nat.eq_one_of_mul_eq_one_right this, mul_one, mul_one,
+      inertiaDegIn_of_not_dvd p _ hm, ramificationIdxIn_of_prime_pow p k Fₚ]
     exact Nat.pair_eq_pair.mp rfl
-  have h₃ : (𝒑.primesOver (𝓞 Fₘ)).ncard * (Pₘ.primesOver (𝓞 K)).ncard =
-      (𝒑.primesOver (𝓞 K)).ncard := by
-    sorry
-    -- rw [ncard_primesOver_eq_sum_ncard_primesOver ℤ (𝓞 Fₘ)]
-    -- conv_lhs =>
-    --   enter [2, P]
-    --   rw [ncard_primesOver_eq_ncard_primesOver ℚ Fₘ K 𝒑 P.val Pₘ]
-    -- rw [Finset.sum_const, smul_eq_mul, Finset.card_univ]
-    -- rw [← Set.toFinset_card, ← Set.ncard_eq_toFinset_card']
   rw [← Nat.mul_eq_right (Module.finrank_pos (R := ℚ) (M := K)).ne']
   calc
     _ = (Pₘ.primesOver (𝓞 K)).ncard *
-          (Pₘ.inertiaDeg P * ramificationIdx (algebraMap (𝓞 Fₚ) (𝓞 K)) Pₚ P) *
+          (Pₘ.inertiaDegIn (𝓞 K) * Pₚ.ramificationIdxIn (𝓞 K)) *
           (Module.finrank ℚ Fₚ * ((𝒑.primesOver (𝓞 Fₘ)).ncard * 𝒑.inertiaDegIn (𝓞 Fₘ))) := ?_
     _ = ((𝒑.primesOver (𝓞 Fₘ)).ncard * (Pₘ.primesOver (𝓞 K)).ncard) *
-          (𝒑.ramificationIdxIn (𝓞 Fₚ) * ramificationIdx (algebraMap (𝓞 Fₚ) (𝓞 K)) Pₚ P) *
-          (𝒑.inertiaDegIn (𝓞 Fₘ) * Pₘ.inertiaDeg P) := ?_
+          (𝒑.ramificationIdxIn (𝓞 Fₚ) * Pₚ.ramificationIdxIn (𝓞 K)) *
+          (𝒑.inertiaDegIn (𝓞 Fₘ) * Pₘ.inertiaDegIn (𝓞 K)) := ?_
     _ = Module.finrank ℚ K := ?_
   · rw [finrank n K, hn, Nat.totient_mul, ← finrank _ Fₚ, ← finrank _ Fₘ,
       ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑)
-      (by simpa using hp.out.ne_zero) (𝓞 Fₘ) ℚ Fₘ, ramificationIdxIn_of_not_dvd m p Fₘ hm, one_mul]
+      (by simpa using hp.out.ne_zero) (𝓞 Fₘ) ℚ Fₘ, ramificationIdxIn_of_not_dvd p Fₘ hm, one_mul]
     refine Nat.Coprime.pow_left (k + 1) ?_
     exact not_not.mp <| (Nat.Prime.dvd_iff_not_coprime hp.out).not.mp hm
   · rw [← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑)
       (by simpa using hp.out.ne_zero) (𝓞 Fₚ) ℚ Fₚ, inertiaDegIn_of_prime_pow p k Fₚ,
       ncard_primesOver_of_prime_pow p k Fₚ, mul_one, one_mul]
     ring
-  · rw [h₃, ramificationIdxIn_eq_ramificationIdx 𝒑 Pₚ ℚ Fₚ, ← h₁,
-      inertiaDegIn_eq_inertiaDeg 𝒑 Pₘ ℚ Fₘ, ← h₂, ← ramificationIdxIn_eq_ramificationIdx 𝒑 P ℚ K,
-      ← inertiaDegIn_eq_inertiaDeg 𝒑 P ℚ K, mul_assoc,
-      ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn _ (𝓞 K) ℚ K]
-    simpa using hp.out.ne_zero
+  · rw [ncard_primesOver_mul_ncard_primesOver ℚ Fₘ Pₘ K (𝓞 K) hp',
+      ramificationIdxIn_mul_ramificationIdxInIn Pₚ ℚ Fₚ K (𝓞 K) (map_ne_bot_of_ne_bot hp') hPp,
+      inertiaDegIn_mul_inertiaDegIn 𝒑 Pₘ ℚ Fₘ K (𝓞 K), mul_assoc,
+      ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp' (𝓞 K) ℚ K]
 
+/--
+Write `n = p ^ (k + 1) * m` where the prime `p` does not divide `m`, then the inertia degree of
+`p` in `ℚ(ζₙ)` if the order of `p` modulo `m`.
+-/
+theorem inertiaDeg_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
+    inertiaDeg 𝒑 P = orderOf (p : ZMod m) := by
+  have : IsGalois ℚ K := isGalois {n} ℚ K
+  rw [← inertiaDegIn_eq_inertiaDeg 𝒑 P ℚ K, (inertiaDegIn_ramificationIdxIn n K hn hm).1]
 
-#exit
+/--
+Write `n = p ^ (k + 1) * m` where the prime `p` does not divide `m`, then the ramification index
+of `p` in `ℚ(ζₙ)` is `p ^ (k - 1) * (p - 1)`.
+-/
+theorem ramificationIdx_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
+    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
+  have : IsGalois ℚ K := isGalois {n} ℚ K
+  rw [← ramificationIdxIn_eq_ramificationIdx 𝒑 P ℚ K, (inertiaDegIn_ramificationIdxIn n K hn hm).2]
 
-  rw [← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑)
-    (by simpa using hp.out.ne_zero) (𝓞 Fₘ) ℚ Fₘ]
-  rw [← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑)
-    (by simpa using hp.out.ne_zero) (𝓞 Fₚ) ℚ Fₚ]
-  rw [inertiaDegIn_of_prime_pow p k Fₚ]
-  rw [ramificationIdxIn_of_not_dvd m p Fₘ]
-  rw [one_mul, mul_one]
-
-
-
-
-
-
-
-
-#exit
-
-  rw [finrank n K, hn, Nat.totient_mul, Nat.totient_prime_pow, add_tsub_cancel_right,
-    ramificationIdxIn_eq_ramificationIdx 𝒑 P ℚ K, inertiaDegIn_eq_inertiaDeg 𝒑 P ℚ K, h₁, h₃]
-    at h_main
-  rw [← finrank m Fₘ, ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑)
-    (by simpa using hp.out.ne_zero) (𝓞 Fₘ) ℚ Fₘ] at h_main
-  rw [ramificationIdxIn_eq_ramificationIdx 𝒑 Pₘ ℚ Fₘ] at h_main
-  rw [ramificationIdx_of_not_dvd m p Fₘ, one_mul] at h_main
-  rw [h₂, inertiaDegIn_eq_inertiaDeg 𝒑 Pₘ ℚ Fₘ, ← mul_assoc, ← mul_assoc,
-    mul_assoc _ _ (𝒑.inertiaDeg Pₘ)] at h_main
-
-
-  rw [← finrank m Fₘ, ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn (p := 𝒑)
-    (by simpa using hp.out.ne_zero) (𝓞 Fₘ) ℚ Fₘ] at h_main
-  rw [Nat.mul_right_inj] at h_main
-  rw [Nat.mul_right_inj] at h_main
-  rw [ramificationIdxIn_eq_ramificationIdx 𝒑 Pₘ ℚ Fₘ] at h_main
-  rw [ramificationIdx_of_not_dvd m p Fₘ, one_mul] at h_main
-  rw [h₂, inertiaDegIn_eq_inertiaDeg 𝒑 Pₘ ℚ Fₘ, ← mul_assoc, ← mul_assoc,
-    mul_assoc _ _ (𝒑.inertiaDeg Pₘ)] at h_main
-  rw [ Nat.mul_eq_right] at h_main
 end generalCase
 
 end IsCyclotomicExtension.Rat
