@@ -505,6 +505,43 @@ lemma fderivCompContinuousLinearMap_apply (f : F [⋀^ι]→L[𝕜] G) (g dg : E
       ∑ i, f fun j ↦ Function.update (fun _ ↦ g) i dg j (v j) := by
   simp [fderivCompContinuousLinearMap]
 
+@[nontriviality]
+lemma fderivCompContinuousLinearMap_of_isEmpty [IsEmpty ι] :
+    fderivCompContinuousLinearMap (ι := ι) (𝕜 := 𝕜) (E := E) (F := F) (G := G) = 0 := by
+  ext; simp
+
+variable (G) in
+/-- `fderivCompContinuousLinearMap` as a continuous linear map. -/
+def fderivCompContinuousLinearMapCLM (g : E →L[𝕜] F) :
+    (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E →L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
+  LinearMap.mkContinuous
+    { toFun := (fderivCompContinuousLinearMap · g)
+      map_add' f₁ f₂ := by ext; simp [Finset.sum_add_distrib]
+      map_smul' c f := by ext; simp [Finset.smul_sum]
+    } (Fintype.card ι * ‖g‖ ^ (Fintype.card ι - 1)) fun f ↦ by
+      refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun dg ↦ ?_
+      refine opNorm_le_bound _ (by positivity) fun v ↦ ?_
+      simp? [mul_assoc] says
+        simp only [LinearMap.coe_mk, AddHom.coe_mk, fderivCompContinuousLinearMap_apply, mul_assoc]
+      refine (norm_sum_le _ _).trans ?_
+      grw [← nsmul_eq_mul]
+      apply Finset.sum_le_card_nsmul
+      rintro i -
+      grw [le_opNorm]
+      simp? [mul_left_comm (‖g‖ ^ _), Fintype.prod_eq_mul_prod_compl i] says
+        simp only [Fintype.prod_eq_mul_prod_compl i, Function.update_self, mul_left_comm (‖g‖ ^ _)]
+      grw [dg.le_opNorm, mul_assoc]
+      gcongr
+      rw [← Finset.card_singleton i, ← Finset.card_compl, ← Finset.prod_const,
+        ← Finset.prod_mul_distrib]
+      gcongr with j hj
+      simpa [Function.update_of_ne (by simpa using hj)] using g.le_opNorm _
+
+@[simp]
+lemma fderivCompContinuousLinearMapCLM_apply (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
+    fderivCompContinuousLinearMapCLM G g f = fderivCompContinuousLinearMap f g :=
+  rfl
+
 end ContinuousAlternatingMap
 
 /-- Given a continuous linear isomorphism between the domains,
