@@ -29,7 +29,7 @@ reflective. Since the category of simplicial sets is cocomplete, we conclude in
 `Mathlib/CategoryTheory/Category/Cat/Colimit.lean` that the category of categories has colimits.
 
 Finally we show that `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` preserves finite cartesian products; note
-it fails to preserve infinite products.
+that it fails to preserve infinite products.
 -/
 
 namespace CategoryTheory
