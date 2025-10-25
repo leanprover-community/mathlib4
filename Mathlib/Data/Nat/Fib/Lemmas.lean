@@ -64,9 +64,8 @@ lemma fib_add_sub_fib_add_two_mul_mul_fib {x a : ℕ} (hx : x ≠ 0) (ha : a ≠
         · rw [add_comm, fib_add_of_ne_zero hx]
           simp only [cast_add, cast_mul, add_comm, mul_comm]
         · rw [add_comm x, fib_add_of_ne_zero hx]
-          simp_rw [two_mul, add_assoc, fib_add_of_ne_zero (m := a) (n := a + 1) (by grind),
-            fib_add_of_ne_zero (m := a) (n := a) ha]
-          simp only [add_tsub_cancel_right, cast_add, cast_mul, sq, add_comm, mul_comm]
+          simp_rw [two_mul, fib_add _ _, fib_add_of_ne_zero (m := a) (n := a) ha]
+          simp only [cast_add, cast_mul, sq, add_comm, mul_comm]
     _ = fib x * fib (x - 1) * fib a * (fib (a + 1) - fib (a - 1)) +
       fib a ^ 2 * (fib (x - 1) ^ 2 - fib x ^ 2) := by ring
     _ = fib a ^ 2 * (fib (x - 1) ^ 2 + fib x * fib (x - 1) - fib x ^ 2) := by
