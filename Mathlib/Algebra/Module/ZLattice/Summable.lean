@@ -23,6 +23,8 @@ We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
 
 noncomputable section
 
+open Module
+
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [FiniteDimensional ℝ E] {L : Submodule ℤ E} [DiscreteTopology L]
 variable {ι : Type*} (b : Basis ι ℤ L)
@@ -110,7 +112,7 @@ lemma ZLattice.sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq �
     exact fun i ↦ Icc_subset_Icc (by simpa) (by simpa) (hx i)
   have (k : ℕ) : #(s (k + 1) \ s k) ≤ 2 * d * (2 * k + 3) ^ (d - 1) := by
     trans (2 * k + 3) ^ d - (2 * k + 1) ^ d
-    · simp only [le_add_iff_nonneg_right, zero_le, hs, card_sdiff, s]
+    · simp only [le_add_iff_nonneg_right, zero_le, hs, card_sdiff_of_subset, s]
       simp only [Fintype.card_piFinset, Int.card_Icc, sub_neg_eq_add, prod_const, card_univ, s]
       gcongr <;> norm_cast <;> omega
     · have := abs_pow_sub_pow_le (α := ℤ) ↑(2 * k + 3) ↑(2 * k + 1) d
