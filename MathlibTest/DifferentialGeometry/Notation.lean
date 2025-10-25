@@ -106,8 +106,13 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 #guard_msgs in
 #check (T% X) x
 
--- This one is.
-/-- info: X x : TangentSpace I x -/
+-- This one is. Also test the tracing messages.
+set_option trace.Elab.DiffGeo true in
+/--
+info: X x : TangentSpace I x
+---
+trace: [Elab.DiffGeo.TotalSpaceMk] argument(s) passed to `T%` is/are `[x]`
+-/
 #guard_msgs in
 #check (T% X x)
 
@@ -947,7 +952,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 /--
 info: fun a ↦ TotalSpace.mk' Unit a (f a) : Unit → TotalSpace Unit (Trivial Unit Unit)
 ---
-trace: [Elab.DiffGeo.TotalSpaceMk] arguments passed to T% are `[]`
+trace: [Elab.DiffGeo.TotalSpaceMk] argument(s) passed to `T%` is/are `[]`
 [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
 -/
 #guard_msgs in
