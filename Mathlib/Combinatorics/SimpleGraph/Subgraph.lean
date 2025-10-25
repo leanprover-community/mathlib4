@@ -1119,9 +1119,13 @@ theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
   ext
   simp
 
+lemma _root_.SimpleGraph.spanningCoe_induce_eq_spanningCoe_induce_top (s : Set V) :
+    (G.induce s).spanningCoe = ((⊤ : G.Subgraph).induce s).spanningCoe := by
+  grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]
+
 lemma _root_.SimpleGraph.spanningCoe_induce_adj_eq_induce_top_adj (s : Set V) :
-    (G.induce s).spanningCoe.Adj = ((⊤ : G.Subgraph).induce s).Adj := by
-  grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe, Subgraph.spanningCoe_adj]
+    (G.induce s).spanningCoe.Adj = ((⊤ : G.Subgraph).induce s).Adj :=
+  spanningCoe_induce_eq_spanningCoe_induce_top _ ▸ rfl
 
 section Induce
 
