@@ -42,6 +42,8 @@ def piOptionEquivProd {α} {β : Option α → Type*} :
   invFun x a := Option.casesOn a x.fst x.snd
   left_inv f := funext fun a => by cases a <;> rfl
 
+section subtypeCongr
+
 /-- Combines an `Equiv` between two subtypes with an `Equiv` between their complements to form a
   permutation. -/
 def subtypeCongr {α} {p q : α → Prop} [DecidablePred p] [DecidablePred q]
