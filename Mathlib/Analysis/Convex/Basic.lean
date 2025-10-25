@@ -3,8 +3,6 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Ring.Action.Pointwise.Set
 import Mathlib.Analysis.Convex.Star
 import Mathlib.Tactic.FieldSimp
@@ -164,9 +162,16 @@ theorem convex_segment [IsOrderedRing 𝕜] (x y : E) : Convex 𝕜 [x -[𝕜] y
   · rw [add_add_add_comm, ← mul_add, ← mul_add, habp, habq, mul_one, mul_one, hab]
   · match_scalars <;> noncomm_ring
 
+/-- See `Convex.semilinear_image` for a version for semilinar maps, but requiring that `𝕜` be a
+  linear order, instead of just a partial order. -/
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
   exact ⟨a • x + b • y, hs hx hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
+
+/-- See `Convex.semilinear_range` for a version for semilinar maps, but requiring that `𝕜` be a
+  linear order, instead of just a partial order. -/
+theorem Convex.linear_range (f : E →ₗ[𝕜] F) : Convex 𝕜 (Set.range f) :=
+    image_univ ▸ convex_univ.linear_image f
 
 theorem Convex.is_linear_image (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
     Convex 𝕜 (f '' s) :=
@@ -486,9 +491,32 @@ end AddCommGroup
 
 end OrderedRing
 
-section LinearOrderedSemiring
+section LinearOrder
 
-variable [Semiring 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [LinearOrder 𝕜] [AddCommMonoid E]
+
+section SemilinearMap
+
+variable {𝕜' : Type*} [Semiring 𝕜'] [LinearOrder 𝕜']
+variable {σ : 𝕜 →+* 𝕜'} [RingHomSurjective σ]
+variable {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F'] [Module 𝕜 E]
+
+theorem Convex.semilinear_image {s : Set E} (hs : Convex 𝕜 s) (hσ : StrictMono σ)
+    (f : E →ₛₗ[σ] F') : Convex 𝕜' (f '' s) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
+  obtain ⟨r, rfl⟩ : ∃ r : 𝕜, σ r = a := RingHomSurjective.is_surjective ..
+  obtain ⟨t, rfl⟩ : ∃ r : 𝕜, σ r = b := RingHomSurjective.is_surjective ..
+  refine ⟨r • x + t • y, hs hx hy (by simpa [← hσ.le_iff_le]) (by simpa [← hσ.le_iff_le])
+    ?_, by simp⟩
+  apply_fun σ using StrictMono.injective hσ
+  simpa
+
+theorem Convex.semilinear_range (hσ : StrictMono σ) (f : E →ₛₗ[σ] F') : Convex 𝕜' (Set.range f) :=
+  image_univ ▸ convex_univ.semilinear_image hσ f
+
+end SemilinearMap
+
+variable [IsOrderedRing 𝕜]
 
 theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (x + y) ≤ (f x) + (f y))
     (hf2 : ∀ ⦃c⦄ x, 0 ≤ c → f (c • x) ≤ c * f x) (B : 𝕜) :
@@ -500,7 +528,7 @@ theorem Convex_subadditive_le [SMul 𝕜 E] {f : E → 𝕜} (hf1 : ∀ x y, f (
     _ ≤ a • B + b • B := by gcongr <;> assumption
     _ ≤ B := by rw [← add_smul, hs, one_smul]
 
-end LinearOrderedSemiring
+end LinearOrder
 
 theorem Convex.midpoint_mem [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [Invertible (2 : 𝕜)] {s : Set E} {x y : E}
