@@ -14,9 +14,8 @@ import Mathlib.Order.Interval.Finset.DenselyOrdered
 # Archimedean groups are either discrete or densely ordered
 
 This file proves a few additional facts about linearly ordered additive groups which satisfy the
-  `Archimedean` property --
-  they are either order-isomorphic and additively isomorphic to the integers,
-  or they are densely ordered.
+`Archimedean` property -- they are either order-isomorphic and additively isomorphic to the
+integers, or they are densely ordered.
 
 They are placed here in a separate file (rather than incorporated as a continuation of
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
