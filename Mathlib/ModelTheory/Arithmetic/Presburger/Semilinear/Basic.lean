@@ -180,7 +180,7 @@ private theorem Nat.isSemilinearSet_biInter_finset [Finite κ] {s : Finset ι} {
 ### Semilinear sets in `ℕ ^ k` are closed under complement and set difference
 
 We first show that the complement of a proper linear set `s` in `ℕ ^ k` is semilinear, through
-several private defintions:
+several private definitions:
 
 1. `base`, `periods`: the base vector and the set of periods of the proper linear set `s`.
 2. `basisSet`, `basis`: the linearly independent periods of `s` can be extended to a basis of
