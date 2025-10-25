@@ -488,6 +488,13 @@ variable [Semiring α]
 instance semiring [Fintype n] [DecidableEq n] : Semiring (Matrix n n α) :=
   { Matrix.nonUnitalSemiring, Matrix.nonAssocSemiring with }
 
+protected lemma map_pow {β : Type*} [Fintype n] [DecidableEq n] [Semiring β]
+    (M : Matrix n n α) (f : α →+* β) : ∀ {a : ℕ}, (M ^ a).map f = (M.map f) ^ a
+  | 0 => by simp
+  | n + 1 => by
+    simp_rw [pow_succ, Matrix.map_mul]
+    rw [Matrix.map_pow]
+
 end Semiring
 
 section NonUnitalNonAssocRing
