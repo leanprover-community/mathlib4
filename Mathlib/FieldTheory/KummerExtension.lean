@@ -51,23 +51,26 @@ open Polynomial IntermediateField AdjoinRoot
 
 section Splits
 
-theorem X_pow_sub_C_splits_of_isPrimitiveRoot
+theorem X_pow_sub_C_factors_of_isPrimitiveRoot
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (e : α ^ n = a) :
-    (X ^ n - C a).Splits (RingHom.id _) := by
+    (X ^ n - C a).Factors := by
   cases n.eq_zero_or_pos with
   | inl hn =>
     rw [hn, pow_zero, ← C.map_one, ← map_sub]
-    exact splits_C _ _
+    exact Factors.C _
   | inr hn =>
-    rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
+    rw [factors_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
+
+@[deprecated (since := "2025-10-24")]
+alias X_pow_sub_C_splits_of_isPrimitiveRoot := X_pow_sub_C_factors_of_isPrimitiveRoot
 
 -- make this private, as we only use it to prove a strictly more general version
 private
 theorem X_pow_sub_C_eq_prod'
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (hn : 0 < n) (e : α ^ n = a) :
     (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
-  rw [eq_prod_roots_of_monic_of_splits_id (monic_X_pow_sub_C _ (Nat.pos_iff_ne_zero.mp hn))
-    (X_pow_sub_C_splits_of_isPrimitiveRoot hζ e), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
+  rw [Factors.eq_prod_roots_of_monic (monic_X_pow_sub_C _ (Nat.pos_iff_ne_zero.mp hn))
+    (X_pow_sub_C_factors_of_isPrimitiveRoot hζ e), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
   rfl
 
 lemma X_pow_sub_C_eq_prod {R : Type*} [CommRing R] [IsDomain R]
@@ -300,11 +303,11 @@ lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
   have := Fact.mk H
   letI : Algebra K K[n√a] := inferInstance
   constructor
-  · rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
+  · rw [Splits, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
       Polynomial.map_X]
     have ⟨_, hζ⟩ := hζ
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero <| ne_zero_of_irreducible_X_pow_sub_C H)] at hζ
-    exact X_pow_sub_C_splits_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective)
+    exact X_pow_sub_C_factors_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective)
       (root_X_pow_sub_C_pow n a)
   · rw [eq_top_iff, ← AdjoinRoot.adjoinRoot_eq_top]
     apply Algebra.adjoin_mono
@@ -517,11 +520,12 @@ lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
     {a : K} {α : L} (ha : α ^ (finrank K L) = algebraMap K L a) (hα : K⟮α⟯ = ⊤) :
     IsSplittingField K L (X ^ (finrank K L) - C a) := by
   constructor
-  · rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
+  · rw [Splits, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
       Polynomial.map_X]
     have ⟨_, hζ⟩ := hK
     rw [mem_primitiveRoots finrank_pos] at hζ
-    exact X_pow_sub_C_splits_of_isPrimitiveRoot (hζ.map_of_injective (algebraMap K _).injective) ha
+    exact X_pow_sub_C_factors_of_isPrimitiveRoot
+      (hζ.map_of_injective (algebraMap K _).injective) ha
   · rw [eq_top_iff, ← IntermediateField.top_toSubalgebra, ← hα,
       IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite K α)]
     apply Algebra.adjoin_mono

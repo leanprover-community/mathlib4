@@ -79,6 +79,9 @@ namespace IsAlgClosed
 
 variable {k}
 
+theorem factors [IsAlgClosed k] (p : k[X]) : p.Factors :=
+  p.map_id ▸ splits p
+
 /--
 If `k` is algebraically closed, then every nonconstant polynomial has a root.
 -/
