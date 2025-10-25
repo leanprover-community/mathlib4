@@ -5,7 +5,6 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Data.List.SplitBy
 import Mathlib.Data.PNat.Defs
-import Mathlib.Order.TypeTags
 
 /-!
 # Run-length encoding
