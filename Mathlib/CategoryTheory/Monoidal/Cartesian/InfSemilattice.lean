@@ -28,7 +28,7 @@ namespace SemilatticeInf
 /-- Cartesian monoidal structure for the preorder category of a meet-semilattice with
 a greatest element. -/
 noncomputable scoped instance cartesianMonoidalCategory : CartesianMonoidalCategory C :=
-  .ofChosenFiniteProducts ⟨_, Preorder.isTerminalTop C⟩ fun X Y ↦ ⟨_, Preorder.isLimitBinaryFan X Y⟩
+  .ofChosenFiniteProducts ⟨_, Preorder.isTerminalTop⟩ fun X Y ↦ ⟨_, Preorder.isLimitBinaryFan X Y⟩
 
 /-- Braided structure for the preorder category of a meet-semilattice with a greatest element. -/
 noncomputable scoped instance braidedCategory : BraidedCategory C := .ofCartesianMonoidalCategory

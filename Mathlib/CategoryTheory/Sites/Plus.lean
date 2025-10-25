@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Limits.Preorder
 
 /-!
 
@@ -235,7 +236,7 @@ theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P)
   intro X
   refine IsIso.comp_isIso' inferInstance ?_
   suffices ∀ (S T : (J.Cover X.unop)ᵒᵖ) (f : S ⟶ T), IsIso ((J.diagram P X.unop).map f) from
-    isIso_ι_of_isInitial (initialOpOfTerminal isTerminalTop) _
+    isIso_ι_of_isInitial (initialOpOfTerminal Preorder.isTerminalTop) _
   intro S T e
   have : S.unop.toMultiequalizer P ≫ (J.diagram P X.unop).map e = T.unop.toMultiequalizer P :=
     Multiequalizer.hom_ext _ _ _ (fun II => by simp)
