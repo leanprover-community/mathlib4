@@ -2051,6 +2051,7 @@ import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.Fibonacci
 import Mathlib.Analysis.SpecificLimits.FloorPow
+import Mathlib.Analysis.SpecificLimits.InvPow
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.SpecificLimits.RCLike
 import Mathlib.Analysis.Subadditive
