@@ -52,9 +52,8 @@ lemma fib_succ_mul_fib_pred_of_odd {n : ℕ} (hn : Odd n) :
 lemma fib_add_sq_sub_fib_mul_fib_add_two_mul {x a : ℕ} (hx : x ≠ 0) (ha : a ≠ 0) :
     (fib (x + a) ^ 2 - fib x * fib (x + 2 * a) : ℤ) = (-1) ^ x * fib a ^ 2 :=
   calc (fib (x + a) ^ 2 - fib x * fib (x + 2 * a) : ℤ)
-      = (fib x * fib (a + 1) + fib (x - 1) * fib a) ^ 2 - (fib x * (fib (a + 1) ^ 2 + fib a ^ 2) +
-          fib (x - 1) * (fib a * fib (a + 1) + fib (a - 1) * fib a)) * fib x := by
-        rw [mul_comm]
+      = (fib x * fib (a + 1) + fib (x - 1) * fib a) ^ 2 - fib x * (fib x * (fib (a + 1) ^ 2 +
+          fib a ^ 2) + fib (x - 1) * (fib a * fib (a + 1) + fib (a - 1) * fib a)) := by
         congr 2
         · rw [add_comm, fib_add_of_ne_zero hx]
           simp only [cast_add, cast_mul, add_comm, mul_comm]
