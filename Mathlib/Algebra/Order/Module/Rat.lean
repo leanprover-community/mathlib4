@@ -3,8 +3,8 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Order.Module.Basic
-import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.Rat.Cast.Order
 
 /-!
@@ -13,13 +13,19 @@ import Mathlib.Data.Rat.Cast.Order
 
 variable {α : Type*}
 
-instance PosSMulMono.nnrat_of_rat [Preorder α] [MulAction ℚ α] [PosSMulMono ℚ α] :
+instance PosSMulMono.nnrat_of_rat [Preorder α] [MulAction ℚ α] [MulAction ℚ≥0 α]
+    [IsScalarTower ℚ≥0 ℚ α] [PosSMulMono ℚ α] :
     PosSMulMono ℚ≥0 α where
-  smul_le_smul_of_nonneg_left _q hq _a₁ _a₂ ha := smul_le_smul_of_nonneg_left (α := ℚ) ha hq
+  smul_le_smul_of_nonneg_left _q hq _a₁ _a₂ ha := by
+    rw [← NNRat.cast_smul_eq_nnqsmul ℚ, ← NNRat.cast_smul_eq_nnqsmul ℚ]
+    exact smul_le_smul_of_nonneg_left (α := ℚ) ha hq
 
-instance PosSMulStrictMono.nnrat_of_rat [Preorder α] [MulAction ℚ α] [PosSMulStrictMono ℚ α] :
+instance PosSMulStrictMono.nnrat_of_rat [Preorder α] [MulAction ℚ≥0 α] [MulAction ℚ α]
+    [IsScalarTower ℚ≥0 ℚ α] [PosSMulStrictMono ℚ α] :
     PosSMulStrictMono ℚ≥0 α where
-  smul_lt_smul_of_pos_left _q hq _a₁ _a₂ ha := smul_lt_smul_of_pos_left (α := ℚ) ha hq
+  smul_lt_smul_of_pos_left _q hq _a₁ _a₂ ha := by
+    rw [← NNRat.cast_smul_eq_nnqsmul ℚ, ← NNRat.cast_smul_eq_nnqsmul ℚ]
+    exact smul_lt_smul_of_pos_left (α := ℚ) ha hq
 
 section LinearOrderedAddCommGroup
 variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]

@@ -9,7 +9,7 @@ import Mathlib.Topology.Sets.Closeds
 /-!
 # Closed submodules of a topological module
 
-This files builds the frame of closed `R`-submodules of a topological module `M`.
+This file builds the frame of closed `R`-submodules of a topological module `M`.
 
 One can turn `s : Submodule R E` + `hs : IsClosed s` into `s : ClosedSubmodule R E` in a tactic
 block by doing `lift s to ClosedSubmodule R E using hs`.
