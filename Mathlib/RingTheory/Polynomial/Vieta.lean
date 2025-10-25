@@ -3,7 +3,7 @@ Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.Algebra.Polynomial.Factors
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
 /-!
