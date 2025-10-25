@@ -692,6 +692,15 @@ theorem lift_app {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersi
       X.presheaf.map (eqToHom <| app_eq_invApp_app_of_comp_eq_aux _ _ _ (lift_fac ..).symm V).op :=
   IsOpenImmersion.app_eq_appIso_inv_app_of_comp_eq _ _ _ (lift_fac _ _ _).symm _
 
+lemma isPullback {U V X Y : Scheme.{u}} (g : U ⟶ V) (iU : U ⟶ X) (iV : V ⟶ Y) (f : X ⟶ Y)
+    [IsOpenImmersion iU] [IsOpenImmersion iV] (H : iU ≫ f = g ≫ iV)
+    (H' : f ⁻¹ᵁ iV.opensRange = iU.opensRange) : IsPullback g iU iV f := by
+  let e := IsOpenImmersion.isoOfRangeEq (pullback.snd iV f) iU
+    (by simpa [range_pullback_snd_of_left] using congr(($H').1))
+  convert (IsPullback.of_horiz_isIso (show CommSq e.inv iU (pullback.snd iV f) (𝟙 X) from
+    ⟨by simp [e]⟩)).paste_horiz (IsPullback.of_hasPullback iV f)
+  simp [← cancel_mono iV, e, pullback.condition, H]
+
 /-- If `f` is an open immersion `X ⟶ Y`, the global sections of `X`
 are naturally isomorphic to the sections of `Y` over the image of `f`. -/
 noncomputable
