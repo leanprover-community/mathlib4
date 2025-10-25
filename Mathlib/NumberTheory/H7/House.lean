@@ -71,7 +71,7 @@ theorem house_rpow_le' (α : K) (i : ℕ) : house (α^(i : ℤ)) ≤ house α ^ 
   simp only [zpow_natCast, map_pow, Real.rpow_natCast]
   apply norm_pow_le ((canonicalEmbedding K) α)
 
-theorem house_int_mul (α : K) (c : ℕ) :
+theorem house_num_mul (α : K) (c : ℕ) :
     house ((c : K)* α) = norm (c : ℝ) * house (α) := by
   simp only [Real.norm_natCast]
   rw [house_eq_sup'];rw [house_eq_sup']
