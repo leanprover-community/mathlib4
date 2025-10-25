@@ -16,18 +16,18 @@ universe u
 
 namespace RingHom
 
-variable {R S : Type u} [CommRing R] [CommRing S]
+variable {R S : Type*} [CommRing R] [CommRing S]
 
 /-- A ring hom `R →+* S` is étale, if `S` is an étale `R`-algebra. -/
 @[algebraize RingHom.Etale.toAlgebra]
-def Etale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
-  @Algebra.Etale R _ S _ f.toAlgebra
+def Etale {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
+  @Algebra.Etale R S _ _ f.toAlgebra
 
 /-- Helper lemma for the `algebraize` tactic -/
 lemma Etale.toAlgebra {f : R →+* S} (hf : Etale f) :
-    @Algebra.Etale R _ S _ f.toAlgebra := hf
+    @Algebra.Etale R S _ _ f.toAlgebra := hf
 
-variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
+variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
 
 lemma etale_algebraMap [Algebra R S] : (algebraMap R S).Etale ↔ Algebra.Etale R S := by
   rw [RingHom.Etale, toAlgebra_algebraMap]

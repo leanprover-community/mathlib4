@@ -18,11 +18,9 @@ import Mathlib.RingTheory.Etale.Basic
 
 -/
 
-universe u v
-
 namespace Algebra.FormallyEtale
 
-variable {R : Type (max u v)} {I : Type u} (A : I → Type (max u v))
+variable {R : Type*} {I : Type*} (A : I → Type*)
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
 
 theorem pi_iff [Finite I] :
