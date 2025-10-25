@@ -772,10 +772,15 @@ lemma AffineIndependent.card_subtype_ne_eq_finrank_of_span_eq_top
     _ = Module.finrank k V := by omega
 
 /-- Two affinely independent families with the same index type that both span the entire
-space can be mapped to each other by an affine automorphism. -/
+space can be mapped to each other by an affine automorphism.
+
+This result is closely related to the TODO in `Mathlib.LinearAlgebra.AffineSpace.Basis` about
+constructing affine equivalences to barycentric coordinate spaces. Once that equivalence is
+fully constructed, this theorem could be reproven as a simple composition through the
+barycentric coordinate space. -/
 theorem AffineIndependent.exists_affineEquiv_of_span_eq_top
     {k : Type*} {V : Type*} {P : Type*}
-    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     (f g : ι → P)
     (hf : AffineIndependent k f)
