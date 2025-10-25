@@ -5,7 +5,6 @@ Authors: Ashvni Narayanan, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.CharZero.AddMonoidHom
-import Mathlib.Algebra.Ring.Int.Field
 import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
