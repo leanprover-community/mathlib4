@@ -18,6 +18,10 @@ finitely presented as a module.
   module over `R`, then it is finitely presented as an algebra over `R`.
 - `Module.FinitePresentation.of_finite_of_finitePresentation`: If `S` is finite as a module over `R`
   and finitely presented as an algebra over `R`, then it is finitely presented as a module over `R`.
+
+## References
+
+- [Grothendieck, EGA IV₁ 1.4.7][ega-iv-1]
 -/
 
 universe u
@@ -50,7 +54,7 @@ lemma Module.Finite.exists_free_surjective [Module.Finite R S] :
     have ha := Algebra.IsIntegral.isIntegral (R := R) a
     have := ((minpoly.monic ha).map (algebraMap R S')).finite_adjoinRoot
     have := ((minpoly.monic ha).map (algebraMap R S')).free_adjoinRoot
-    letI := f.toRingHom.toAlgebra
+    algebraize [f.toRingHom]
     refine ⟨AdjoinRoot ((minpoly R a).map (algebraMap R S')), inferInstance, inferInstance,
       .trans S' _, .trans (S := S'), .trans _ S' _,
       (AdjoinRoot.liftHom _ a (by simp)).restrictScalars R, ?_⟩

@@ -208,15 +208,11 @@ variable {R}
 
 /-- Any `f : A →ₐ[R] B` is also an `R ⧸ I`-algebra homomorphism if the `R`-algebra structure on
 `A` and `B` factors via `R ⧸ I`. -/
+@[simps! apply]
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
     (f : A →ₐ[R] B) : A →ₐ[S] B where
-  __ := f
+  toRingHom := f
   commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply]
-
-@[simp]
-lemma extendScalarsOfSurjective_apply (h : Function.Surjective (algebraMap R S))
-    (f : A →ₐ[R] B) (x : A) :
-    f.extendScalarsOfSurjective h x = f x := rfl
 
 @[simp]
 lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
@@ -265,15 +261,11 @@ variable {R}
 
 /-- Any `f : A ≃ₐ[R] B` is also an `R ⧸ I`-algebra isomorphism if the `R`-algebra structure on
 `A` and `B` factors via `R ⧸ I`. -/
+@[simps! apply]
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
     (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
-  __ := f
+  toRingEquiv := f
   commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes'
-
-@[simp]
-lemma extendScalarsOfSurjective_apply (h : Function.Surjective (algebraMap R S))
-    (f : A ≃ₐ[R] B) (x : A) :
-    f.extendScalarsOfSurjective h x = f x := rfl
 
 @[simp]
 lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
