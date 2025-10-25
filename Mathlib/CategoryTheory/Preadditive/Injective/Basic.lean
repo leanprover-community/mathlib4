@@ -30,6 +30,10 @@ class Injective (J : C) : Prop where
 
 attribute [inherit_doc Injective] Injective.factors
 
+variable (C) in
+/-- The `ObjectProperty C` corresponding to the notion of injective objects in `C`. -/
+abbrev isInjective : ObjectProperty C := Injective
+
 lemma Limits.IsZero.injective {X : C} (h : IsZero X) : Injective X where
   factors _ _ _ := ⟨h.from_ _, h.eq_of_tgt _ _⟩
 

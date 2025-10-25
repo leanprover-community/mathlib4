@@ -44,6 +44,10 @@ An object `P` is called *projective* if every morphism out of `P` factors throug
 class Projective (P : C) : Prop where
   factors : ∀ {E X : C} (f : P ⟶ X) (e : E ⟶ X) [Epi e], ∃ f', f' ≫ e = f
 
+variable (C) in
+/-- The `ObjectProperty C` corresponding to the notion of projective objects in `C`. -/
+abbrev isProjective : ObjectProperty C := Projective
+
 lemma Limits.IsZero.projective {X : C} (h : IsZero X) : Projective X where
   factors _ _ _ := ⟨h.to_ _, h.eq_of_src _ _⟩
 
