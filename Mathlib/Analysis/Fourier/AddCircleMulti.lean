@@ -49,8 +49,7 @@ variable (n : d → ℤ)
 /-- Exponential monomials in `d` variables. -/
 def mFourier : C(UnitAddTorus d, ℂ) where
   toFun x := ∏ i : d, fourier (n i) (x i)
-  continuous_toFun := continuous_finset_prod _
-    fun i _ ↦ (fourier (n i)).continuous.comp (continuous_apply i)
+  continuous_toFun := by fun_prop
 
 variable {n} {x : UnitAddTorus d}
 

@@ -147,7 +147,8 @@ lemma tendsto_of_monotone_of_pointwise (hF_mono : Monotone F)
     (h_tendsto : ∀ x, Tendsto (F · x) atTop (𝓝 (f x))) :
     Tendsto F atTop (𝓝 f) :=
   tendsto_of_tendstoLocallyUniformly <|
-    hF_mono.tendstoLocallyUniformly_of_forall_tendsto (F · |>.continuous) f.continuous h_tendsto
+    hF_mono.tendstoLocallyUniformly_of_forall_tendsto (F · |> map_continuous)
+      (map_continuous _) h_tendsto
 
 /-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions
 converging pointwise to a continuous function `f`, then `F n` converges to `f` in the

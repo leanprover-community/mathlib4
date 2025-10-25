@@ -444,7 +444,7 @@ variable [SemilatticeSup β] [Zero β] [TopologicalSpace β] [ContinuousSup β]
 
 instance instSup : Max C_c(α, β) where max f g :=
   { toFun := f ⊔ g
-    continuous_toFun := Continuous.sup f.continuous g.continuous
+    continuous_toFun := by simp only [Pi.sup_def]; fun_prop
     hasCompactSupport' := f.hasCompactSupport.sup g.hasCompactSupport }
 
 @[simp, norm_cast] lemma coe_sup (f g : C_c(α, β)) : ⇑(f ⊔ g) = ⇑f ⊔ g := rfl
@@ -470,7 +470,7 @@ variable [SemilatticeInf β] [Zero β] [TopologicalSpace β] [ContinuousInf β]
 
 instance instInf : Min C_c(α, β) where min f g :=
   { toFun := f ⊓ g
-    continuous_toFun := Continuous.inf f.continuous g.continuous
+    continuous_toFun := by simp only [Pi.inf_def]; fun_prop
     hasCompactSupport' := f.hasCompactSupport.inf g.hasCompactSupport }
 
 @[simp, norm_cast] lemma coe_inf (f g : C_c(α, β)) : ⇑(f ⊓ g) = ⇑f ⊓ g := rfl

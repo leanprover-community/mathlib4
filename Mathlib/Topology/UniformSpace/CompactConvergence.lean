@@ -119,7 +119,7 @@ theorem tendsto_iff_forall_isCompact_tendstoUniformlyOn
     have hnhds : s ∈ 𝓝[K] x := inter_mem_nhdsWithin _ <| f.continuousAt _ (ball_mem_nhds _ hW)
     -- This set is compact because it is an intersection of `K`
     -- with a closed set `{y | (f x, f y) ∈ W} = f ⁻¹' UniformSpace.ball (f x) W`
-    have hcomp : IsCompact s := hK.inter_right <| (isClosed_ball _ hWc).preimage f.continuous
+    have hcomp : IsCompact s := hK.inter_right <| (isClosed_ball _ hWc).preimage (map_continuous f)
     -- `f` maps `s` to the open set `ball (f x) V = {z | (f x, z) ∈ V}`
     have hmaps : MapsTo f s (ball (f x) V) := fun x hx ↦ hWU hx.2
     use s, hnhds
@@ -279,7 +279,7 @@ theorem isUniformEmbedding_comp (g : C(β, δ)) (hg : IsUniformEmbedding g) :
 theorem uniformContinuous_comp_left (g : C(α, γ)) :
     UniformContinuous (fun f ↦ f.comp g : C(γ, β) → C(α, β)) :=
   isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
-    UniformOnFun.precomp_uniformContinuous (fun _ hK ↦ hK.image g.continuous) |>.comp
+    UniformOnFun.precomp_uniformContinuous (fun _ hK ↦ hK.image (map_continuous g)) |>.comp
       isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
 
 /-- Any pair of a homeomorphism `X ≃ₜ Z` and an isomorphism `Y ≃ᵤ T` of uniform spaces gives rise
@@ -376,8 +376,8 @@ theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} [TopologicalS
   set 𝔖 : Set (Set α) := {K | IsCompact K}
   set 𝔗₁ : Set (Set δ₁) := {K | IsCompact K}
   set 𝔗₂ : Set (Set δ₂) := {K | IsCompact K}
-  have h_image₁ : MapsTo (φ₁ '' ·) 𝔗₁ 𝔖 := fun K hK ↦ hK.image φ₁.continuous
-  have h_image₂ : MapsTo (φ₂ '' ·) 𝔗₂ 𝔖 := fun K hK ↦ hK.image φ₂.continuous
+  have h_image₁ : MapsTo (φ₁ '' ·) 𝔗₁ 𝔖 := fun K hK ↦ hK.image (map_continuous φ₁)
+  have h_image₂ : MapsTo (φ₂ '' ·) 𝔗₂ 𝔖 := fun K hK ↦ hK.image (map_continuous φ₂)
   have h_preimage₁ : MapsTo (φ₁ ⁻¹' ·) 𝔖 𝔗₁ := fun K ↦ h_proper₁.isCompact_preimage
   have h_preimage₂ : MapsTo (φ₂ ⁻¹' ·) 𝔖 𝔗₂ := fun K ↦ h_proper₂.isCompact_preimage
   have h_cover' : ∀ S ∈ 𝔖, S ⊆ range φ₁ ∪ range φ₂ := fun S _ ↦ h_cover ▸ subset_univ _
@@ -396,7 +396,7 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} [∀ i, Topolo
   -- `UniformOnFun.uniformSpace_eq_iInf_precomp_of_cover`...
   set 𝔖 : Set (Set α) := {K | IsCompact K}
   set 𝔗 : Π i, Set (Set (δ i)) := fun i ↦ {K | IsCompact K}
-  have h_image : ∀ i, MapsTo (φ i '' ·) (𝔗 i) 𝔖 := fun i K hK ↦ hK.image (φ i).continuous
+  have h_image : ∀ i, MapsTo (φ i '' ·) (𝔗 i) 𝔖 := fun i K hK ↦ hK.image (map_continuous (φ i))
   have h_preimage : ∀ i, MapsTo (φ i ⁻¹' ·) 𝔖 (𝔗 i) := fun i K ↦ (h_proper i).isCompact_preimage
   have h_cover' : ∀ S ∈ 𝔖, ∃ I : Set ι, I.Finite ∧ S ⊆ ⋃ i ∈ I, range (φ i) := fun S hS ↦ by
     refine ⟨{i | (range (φ i) ∩ S).Nonempty}, h_lf.finite_nonempty_inter_compact hS,

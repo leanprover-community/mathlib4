@@ -268,7 +268,9 @@ theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as
   obj x := ⟨f x.as⟩
   map p := p.mapFn f
   map_id _ := rfl
-  map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; exact congr_arg Quotient.mk'' (p.map_trans q f.continuous)
+  map_comp := by
+    rintro _ _ _ ⟨p⟩ ⟨q⟩;
+    exact congr_arg Quotient.mk'' (p.map_trans q <| map_continuous f)
 
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/
 def fundamentalGroupoidFunctor : TopCat ⥤ Grpd where

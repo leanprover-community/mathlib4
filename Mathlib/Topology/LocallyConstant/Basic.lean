@@ -386,7 +386,7 @@ variable [TopologicalSpace Y]
 
 /-- Pull back of locally constant maps under a continuous map, by pre-composition. -/
 def comap (f : C(X, Y)) (g : LocallyConstant Y Z) : LocallyConstant X Z :=
-  ⟨g ∘ f, g.isLocallyConstant.comp_continuous f.continuous⟩
+  ⟨g ∘ f, g.isLocallyConstant.comp_continuous <| map_continuous f⟩
 
 @[simp]
 theorem coe_comap (f : C(X, Y)) (g : LocallyConstant Y Z) :

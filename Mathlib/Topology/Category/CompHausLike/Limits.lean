@@ -75,9 +75,7 @@ def finiteCoproduct.desc {B : CompHausLike P} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B :=
   ofHom _
   { toFun := fun ⟨a, x⟩ ↦ e a x
-    continuous_toFun := by
-      apply continuous_sigma
-      intro a; exact (e a).hom.continuous }
+    continuous_toFun := continuous_sigma <| by fun_prop }
 
 @[reassoc (attr := simp)]
 lemma finiteCoproduct.ι_desc {B : CompHausLike P} (e : (a : α) → (X a ⟶ B)) (a : α) :
@@ -199,8 +197,7 @@ pairs `(x,y)` such that `f x = g y`, with the topology induced by the product.
 def pullback : CompHausLike P :=
   letI set := { xy : X × Y | f xy.fst = g xy.snd }
   haveI : CompactSpace set :=
-    isCompact_iff_compactSpace.mp (isClosed_eq (f.hom.continuous.comp continuous_fst)
-      (g.hom.continuous.comp continuous_snd)).isCompact
+    isCompact_iff_compactSpace.mp (isClosed_eq (by fun_prop) (by fun_prop)).isCompact
   CompHausLike.of P set
 
 /--
