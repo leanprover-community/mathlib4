@@ -16,5 +16,12 @@ attribute [grind ←] Finset.disjoint_empty_right
 
 attribute [grind] Pairwise
 
+-- Add this line:
+--attribute [-grind] Disjoint.out
+-- or add both of these:
+--attribute [-grind] disjoint_comm
+--attribute [-grind] Disjoint.mono_left
+-- to make plain `grind` with default e-match instance threshold succeed
+
 example : Pairwise (Function.onFun Disjoint fun x ↦ S1 x) := by
-  grind
+  grind (instances := 2000)
