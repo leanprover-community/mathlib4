@@ -526,6 +526,9 @@ elab_rules : tactic
         let st ← saveState
         try
           let used₀ ← Linarith.linarithUsedHyps o.isSome args.toList cfg g
+          -- Check that all used hypotheses are fvars (not arbitrary terms)
+          if used₀.any (fun e => e.fvarId?.isNone) then
+            throwError "linarith? currently only supports named hypothesis, not terms"
           let used ←
             if cfg.minimize then
               let rec minimize (hs : List Expr) (i : Nat) : TacticM (List Expr) := do
@@ -544,11 +547,8 @@ elab_rules : tactic
           st.restore
           discard <| Linarith.linarith true used cfg g
           replaceMainGoal []
-          let used := used.map Expr.fvarId?
-          if used.any (· == none) then
-            throwError "linarith? currently only supports named hypothesis, not terms"
-          let idsList ← used.filterMapM fun h? => do
-            h?.mapM fun h => do pure (Lean.mkIdent (← h.getUserName))
+          let idsList ← used.mapM fun e => do
+            pure (Lean.mkIdent (← e.fvarId!.getUserName))
           let sugg ← `(tactic| linarith only [$(idsList.toArray),*])
           Lean.Meta.Tactic.TryThis.addSuggestion tk sugg
         catch e =>
