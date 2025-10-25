@@ -967,6 +967,9 @@ abbrev snd (p : G.Walk u v) : V := p.getVert 1
 lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
     (q.cons hadj).snd = v := by simp
 
+theorem snd_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : p.snd ∈ p.support.tail :=
+  p.notNilRec (by simp) h
+
 /-- The walk obtained by taking the first `n` darts of a walk. -/
 def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   match p, n with
@@ -1172,6 +1175,14 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   | .cons h q =>
     simp only [getVert_cons_succ, tail_cons]
     exact getVert_copy q n (getVert_zero q).symm rfl
+
+@[simp]
+theorem getVert_mem_tail_support {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) (i : ℕ) (h : 0 < i) :
+    p.getVert i ∈ p.support.tail := by
+  cases i
+  · contradiction
+  · rw [← getVert_tail, ← p.support_tail_of_not_nil hp]
+    exact getVert_mem_support p.tail _
 
 lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
     p = q := by
@@ -1407,6 +1418,13 @@ protected def induce {u v : V} :
   | .cons (v := u') huu' w, hw => by simp [map_induce]
 
 end Walk
+
+/-- Walk in an induced subgraph. -/
+def Walk.induce {G : SimpleGraph V} {u v : V} (s : Set V) :
+    (p : G.Walk u v) → (h : ∀ w, w ∈ p.support → w ∈ s) →
+    (G.induce s).Walk ⟨u, h _ (p.start_mem_support)⟩ ⟨v, h _ (p.end_mem_support)⟩
+  | nil, _ => nil
+  | cons' x y z hxy pyz, _ => cons (by exact hxy) (pyz.induce s (by simp_all))
 
 /-! ## Deleting edges -/
 
