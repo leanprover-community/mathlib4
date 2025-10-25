@@ -282,7 +282,7 @@ lemma sum_coeff_single (f : R[M]) : f.coeff.sum single = f := by ext; simp
 alias sum_single := sum_coeff_single
 
 @[to_additive (attr := deprecated Finsupp.single_apply (since := "2025-08-14"))]
-theorem single_apply {a a' : M} {b : R} [Decidable (a = a')] :
+protected theorem single_apply {a a' : M} {b : R} [Decidable (a = a')] :
     (single a b).coeff a' = if a = a' then b else 0 :=
   Finsupp.single_apply
 
