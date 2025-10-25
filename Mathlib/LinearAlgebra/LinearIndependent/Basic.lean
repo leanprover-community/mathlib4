@@ -556,8 +556,8 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
 
 end Module
 
-section Nontrivial
-variable [Ring R] [AddCommGroup M] [Module R M] [IsDomain R] [Module.IsTorsionFree R M]
+section IsDomain
+variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.IsTorsionFree R M]
   {v : ι → M} {i : ι}
 
 lemma linearIndependent_unique_iff [Unique ι] : LinearIndependent R v ↔ v default ≠ 0 := by
@@ -582,4 +582,4 @@ theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M
   rw [linearIndependent_unique_iff]
   exact ⟨fun h i ↦ by rwa [Unique.eq_default i], fun h ↦ h _⟩
 
-end Nontrivial
+end IsDomain

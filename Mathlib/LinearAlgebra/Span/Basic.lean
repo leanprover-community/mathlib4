@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Order.CompactlyGenerated.Basic
 public import Mathlib.Order.OmegaCompletePartialOrder
