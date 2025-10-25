@@ -188,6 +188,10 @@ local postfix:1024 "♯" => continuousLinearMapOfBilin
 variable (B : E →L⋆[𝕜] E →L[𝕜] 𝕜)
 
 @[simp]
+theorem continuousLinearMapOfBilin_zero : (0 : E →L⋆[𝕜] E →L[𝕜] 𝕜)♯ = 0 := by
+  simp [continuousLinearMapOfBilin]
+
+@[simp]
 theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
   rw [continuousLinearMapOfBilin, coe_comp', ContinuousLinearEquiv.coe_coe,
     LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, toDual_symm_apply]
