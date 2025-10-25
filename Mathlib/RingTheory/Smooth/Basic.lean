@@ -3,13 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 
@@ -161,6 +155,8 @@ instance mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynomial σ R) := by
 instance polynomial : FormallySmooth R R[X] :=
   FormallySmooth.of_equiv (MvPolynomial.pUnitAlgEquiv R)
 
+instance : FormallySmooth R R := .of_equiv (MvPolynomial.isEmptyAlgEquiv R PEmpty)
+
 end Polynomial
 
 section Comp
@@ -179,6 +175,19 @@ theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := b
   apply_fun AlgHom.restrictScalars R at e'
   exact ⟨f''.restrictScalars _, e'.trans (AlgHom.ext fun _ => rfl)⟩
 
+lemma of_restrictScalars (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    [FormallyUnramified R S] [FormallySmooth R T] :
+    FormallySmooth S T where
+  comp_surjective B _ _ I hI f := by
+    letI := Algebra.compHom B (algebraMap R S)
+    have : IsScalarTower R S B := .of_algebraMap_eq' rfl
+    obtain ⟨g, hg⟩ := Algebra.FormallySmooth.comp_surjective I hI (f.restrictScalars R)
+    suffices g.comp (IsScalarTower.toAlgHom R S T) = IsScalarTower.toAlgHom R S B from
+      ⟨{ __ := g,  commutes' x := congr($this x) }, AlgHom.ext fun x ↦ congr($hg x)⟩
+    apply Algebra.FormallyUnramified.comp_injective _ hI
+    rw [← AlgHom.comp_assoc, hg]
+    exact AlgHom.ext f.commutes
 
 end Comp
 
@@ -239,6 +248,21 @@ theorem iff_split_surjection [FormallySmooth R P] :
     conv_rhs => rw [← this, AlgHom.id_apply]
     rfl
   · rintro ⟨g, hg⟩; exact FormallySmooth.of_split f g hg
+
+omit hf in
+lemma iff_of_surjective (h : Function.Surjective (algebraMap R A)) :
+    Algebra.FormallySmooth R A ↔ IsIdempotentElem (RingHom.ker (algebraMap R A)) := by
+  rw [Algebra.FormallySmooth.iff_split_surjection (Algebra.ofId R A) h]
+  constructor
+  · rintro ⟨g, hg⟩
+    let e : A ≃ₐ[R] R ⧸ RingHom.ker (algebraMap R A) ^ 2 :=
+      .ofAlgHom _ _ (Ideal.Quotient.algHom_ext _ (by ext)) hg
+    rw [IsIdempotentElem, ← pow_two, ← Ideal.mk_ker (I := _ ^ 2), ← Ideal.Quotient.algebraMap_eq,
+      ← e.toAlgHom.comp_algebraMap, RingHom.ker_comp_of_injective _ (by exact e.injective)]
+  · intro H
+    let e := (Ideal.quotientEquivAlgOfEq _ ((pow_two _).trans H)).trans
+      (Ideal.quotientKerAlgEquivOfSurjective (f := Algebra.ofId R A) h)
+    refine ⟨e.symm.toAlgHom, AlgHom.ext <| h.forall.mpr fun x ↦ by simp⟩
 
 end OfSurjective
 

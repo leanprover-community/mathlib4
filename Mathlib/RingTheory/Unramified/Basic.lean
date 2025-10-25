@@ -201,7 +201,7 @@ theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
   congr
   exact FormallyUnramified.ext I ⟨2, hI⟩ (AlgHom.congr_fun e)
 
-theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
+theorem of_restrictScalars [FormallyUnramified R B] : FormallyUnramified A B := by
   rw [iff_comp_injective]
   intro Q _ _ I e f₁ f₂ e'
   letI := ((algebraMap A Q).comp (algebraMap R A)).toAlgebra
@@ -210,6 +210,8 @@ theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
   refine FormallyUnramified.ext I ⟨2, e⟩ ?_
   intro x
   exact AlgHom.congr_fun e' x
+
+@[deprecated (since := "2025-10-24")] alias of_comp := of_restrictScalars
 
 end Comp
 
@@ -289,7 +291,7 @@ The intended use is for copying proofs between `Formally{Unramified, Smooth, Eta
 without the need to change anything (including removing redundant arguments). -/
 @[nolint unusedArguments]
 theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
-  FormallyUnramified.of_comp R Rₘ Sₘ
+  FormallyUnramified.of_restrictScalars R Rₘ Sₘ
 
 theorem localization_map [FormallyUnramified R S] :
     FormallyUnramified Rₘ Sₘ := by
