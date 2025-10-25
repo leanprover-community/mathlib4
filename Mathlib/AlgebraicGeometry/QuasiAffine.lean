@@ -83,13 +83,13 @@ private lemma IsQuasiAffine.of_isOpenImmersion [CompactSpace X]
         simp [toSpecΓ_naturality]
     · infer_instance
 
-/-- Any quasicompact locally closed subscheme of an quasi-affine scheme is quasi-affine. -/
+/-- Any quasicompact locally closed subscheme of a quasi-affine scheme is quasi-affine. -/
 @[stacks 0BCK]
 lemma IsQuasiAffine.of_isImmersion
     [Y.IsQuasiAffine] [IsImmersion f] [CompactSpace X] : X.IsQuasiAffine := by
   wlog hY : IsAffine Y
   · refine @this _ _ (f ≫ Y.toSpecΓ) ?_ ?_ _ ?_ <;> clear this <;> infer_instance
-  have : QuasiCompact f := by rwa [quasiCompact_over_affine_iff]
+  have : QuasiCompact f := by rwa [quasiCompact_iff_compactSpace]
   have : IsAffine f.image :=
     HasAffineProperty.iff_of_isAffine.mp (inferInstanceAs (IsAffineHom f.imageι))
   exact .of_isOpenImmersion f.toImage
