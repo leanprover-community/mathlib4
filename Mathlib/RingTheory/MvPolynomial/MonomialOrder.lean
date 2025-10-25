@@ -663,6 +663,7 @@ lemma leadingTerm_zero : m.leadingTerm (0 : MvPolynomial σ R) = 0 := by
   rw [leadingTerm_eq_zero_iff]
 
 /-- The degree of `f` equals to the degree of `leadingTerm f` -/
+@[simp]
 lemma degree_leadingTerm (f : MvPolynomial σ R) :
     m.degree (m.leadingTerm f) = m.degree f := by
   classical
