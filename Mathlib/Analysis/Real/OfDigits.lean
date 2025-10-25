@@ -27,7 +27,7 @@ representations of reals as sequences of digits in positional system.
 namespace Real
 
 /-- `ofDigits` takes a sequence of digits `(d₀, d₁, ...)` in base `b` and returns the
-  real numnber `0.d₀d₁d₂... = ∑ᵢ(dᵢ/bⁱ)`. This auxiliary definition `ofDigitsTerm` sends the
+  real number `0.d₀d₁d₂... = ∑ᵢ(dᵢ/bⁱ)`. This auxiliary definition `ofDigitsTerm` sends the
   sequence to the function sending `i` to `dᵢ/bⁱ`. -/
 noncomputable def ofDigitsTerm {b : ℕ} (digits : ℕ → Fin b) : ℕ → ℝ :=
   fun i ↦ (digits i) * ((b : ℝ) ^ (i + 1))⁻¹

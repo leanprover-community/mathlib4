@@ -81,7 +81,7 @@ functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓^{" n "}_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F n K
 
-/-- Notation for the space of bundled smooth (inifinitely differentiable)
+/-- Notation for the space of bundled smooth (infinitely differentiable)
 functions with support in a compact set `K`. -/
 scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
@@ -89,7 +89,7 @@ scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
 open Distributions
 
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
-continously differentiable functions with support in the compact set `K`. -/
+continuously differentiable functions with support in the compact set `K`. -/
 class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)

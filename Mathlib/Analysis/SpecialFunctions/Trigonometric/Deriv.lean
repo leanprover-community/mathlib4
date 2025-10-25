@@ -808,7 +808,7 @@ end Real
 
 section iteratedDeriv
 
-/-! ### Simp lemmas for iterated derivaties of `sin` and `cos`. -/
+/-! ### Simp lemmas for iterated derivatives of `sin` and `cos`. -/
 
 namespace Complex
 
