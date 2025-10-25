@@ -20,7 +20,7 @@ Given a list `l`,
   if `α` does not have decidable equality, then
   there is a bijection `List.Nodup.getBijectionOfForallMemList`;
 
-* if `l` is sorted w.r.t. `(<)`, then `List.Sorted.getIso` is the same bijection reinterpreted
+* if `l` is sorted w.r.t. `(<)`, then `List.SortedLT.getIso` is the same bijection reinterpreted
   as an `OrderIso`.
 
 -/
@@ -69,31 +69,40 @@ def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ 
 
 end Nodup
 
-namespace Sorted
-
+section Sorted
 variable [Preorder α] {l : List α}
 
-theorem get_mono (h : l.Sorted (· ≤ ·)) : Monotone l.get := fun _ _ => h.rel_get_of_le
-
-theorem get_strictMono (h : l.Sorted (· < ·)) : StrictMono l.get := fun _ _ => h.rel_get_of_lt
+@[deprecated (since := "2025-10-11")]
+alias Sorted.get_mono := SortedLE.get_mono
+@[deprecated (since := "2025-10-11")]
+alias Sorted.get_strictMono := SortedLT.get_strictMono
 
 variable [DecidableEq α]
 
 /-- If `l` is a list sorted w.r.t. `(<)`, then `List.get` defines an order isomorphism between
 `Fin (length l)` and the set of elements of `l`. -/
-def getIso (l : List α) (H : Sorted (· < ·) l) : Fin (length l) ≃o { x // x ∈ l } where
-  toEquiv := H.nodup.getEquiv l
+def SortedLT.getIso (l : List α) (H : SortedLT l) : Fin (length l) ≃o { x // x ∈ l } where
+  toEquiv := H.pairwise.nodup.getEquiv l
   map_rel_iff' := H.get_strictMono.le_iff_le
 
-variable (H : Sorted (· < ·) l) {x : { x // x ∈ l }} {i : Fin l.length}
+variable (H : SortedLT l) {x : { x // x ∈ l }} {i : Fin l.length}
 
 @[simp]
-theorem coe_getIso_apply : (H.getIso l i : α) = get l i :=
+theorem SortedLT.coe_getIso_apply : (H.getIso l i : α) = get l i :=
   rfl
 
 @[simp]
-theorem coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = idxOf (↑x) l :=
+theorem SortedLT.coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = idxOf (↑x) l :=
   rfl
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.getIso := SortedLT.getIso
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.coe_getIso_apply := SortedLT.coe_getIso_apply
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.coe_getIso_symm_apply := SortedLT.coe_getIso_symm_apply
 
 end Sorted
 
