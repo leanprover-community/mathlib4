@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Data.List.Chain
-import Mathlib.Data.List.Flatten
 
 /-!
 # Split a list into contiguous runs of elements which pairwise satisfy a relation.
