@@ -127,7 +127,7 @@ lemma homCategory.ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ �
 by giving object level isomorphisms, and checking naturality only in the forward direction.
 -/
 @[simps]
-def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
+def isoMk (app : ∀ a, η.app a ≅ θ.app a)
     (naturality :
       ∀ {a b} (f : a ⟶ b),
         F.map f ◁ (app b).hom ≫ θ.naturality f =
@@ -243,15 +243,15 @@ lemma homCategory.ext {m n : η ⟶ θ} (w : ∀ b, m.app b = n.app b) : m = n :
 by giving object level isomorphisms, and checking naturality only in the forward direction.
 -/
 @[simps]
-def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
+def isoMk (app : ∀ a, η.app a ≅ θ.app a)
     (naturality :
       ∀ {a b} (f : a ⟶ b),
         F.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
           (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by aesop_cat) : η ≅ θ where
-  hom := { app := fun a => (app a).hom }
+  hom := { app a := (app a).hom }
   inv :=
-    { app := fun a => (app a).inv
-      naturality := fun {a b} f => by
+    { app a := (app a).inv
+      naturality {a b} f := by
         simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }
 
 end StrongTrans
