@@ -548,6 +548,7 @@ elab_rules : tactic
           if used.any (· == none) then
             throwError "linarith? currently only supports named hypothesis, not terms"
           let idsList ← used.filterMapM fun h? => do
+            -- TODO: we should check for, and deal with, shadowed names here.
             h?.mapM fun h => do pure (Lean.mkIdent (← h.getUserName))
           let sugg ← `(tactic| linarith only [$(idsList.toArray),*])
           Lean.Meta.Tactic.TryThis.addSuggestion tk sugg
