@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Data.Set.Notation
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.Directed
@@ -27,7 +28,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 
 assert_not_exists CompleteLattice
 
-open Set
+open Set Set.Notation
 
 variable {α β : Type*}
 
@@ -115,6 +116,16 @@ theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (h
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
   (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
+
+@[simp] protected theorem IsChain.diff {s t : Set α} (h : IsChain r s) : IsChain r (s \ t) :=
+  h.mono Set.diff_subset
+
+theorem isChain_preimage_subtypeVal (s t : Set α) :
+    @IsChain ↑s (r · ·) (s ↓∩ t) ↔ IsChain r (s ∩ t) := by
+  simp [IsChain, Set.Pairwise]
+
+theorem isChain_coe_univ_iff {s : Set α} : @IsChain ↑s (r · ·) univ ↔ IsChain r s := by
+  simpa using isChain_preimage_subtypeVal s univ
 
 section Rel
 
