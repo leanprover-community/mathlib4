@@ -771,36 +771,6 @@ lemma AffineIndependent.card_subtype_ne_eq_finrank_of_span_eq_top
           rw [hf.affineSpan_eq_top_iff_card_eq_finrank_add_one.mp hf_span]
     _ = Module.finrank k V := by omega
 
-/-- Given an affinely independent family that spans the entire space, the differences from any
-base point form a linear basis of the ambient space.
-
-This is a key construction: affine bases correspond to linear bases via the difference map. -/
-lemma AffineIndependent.toBasis_of_span_eq_top
-    {k : Type*} {V : Type*} {P : Type*}
-    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
-    {ι : Type*} [Fintype ι] [DecidableEq ι] {f : ι → P}
-    (hf : AffineIndependent k f)
-    (hf_span : affineSpan k (Set.range f) = ⊤)
-    (i₀ : ι) :
-    ∃ (B : Module.Basis {i // i ≠ i₀} k V), ∀ i : {i // i ≠ i₀}, B i = f i -ᵥ f i₀ := by
-  let f_diff : {i // i ≠ i₀} → V := fun i => f i -ᵥ f i₀
-
-  have h_linear_indep : LinearIndependent k f_diff := by
-    have h := (affineIndependent_iff_linearIndependent_vsub k f i₀).mp hf
-    convert h using 2
-
-  have h_card : Fintype.card {i // i ≠ i₀} = Module.finrank k V :=
-    hf.card_subtype_ne_eq_finrank_of_span_eq_top hf_span i₀
-
-  have h_span : ⊤ ≤ Submodule.span k (Set.range f_diff) := by
-    exact (h_linear_indep.span_eq_top_of_card_eq_finrank' h_card).ge
-
-  let B : Module.Basis {i // i ≠ i₀} k V := Module.Basis.mk h_linear_indep h_span
-
-  use B
-  intro i
-  exact Module.Basis.mk_apply h_linear_indep h_span i
-
 /-- Two affinely independent families with the same index type that both span the entire
 space can be mapped to each other by an affine automorphism. -/
 theorem AffineIndependent.exists_affineEquiv_of_span_eq_top
@@ -815,16 +785,21 @@ theorem AffineIndependent.exists_affineEquiv_of_span_eq_top
     ∃ (T : P ≃ᵃ[k] P), T ∘ f = g := by
   obtain ⟨i₀⟩ := Nonempty.of_affineSpan_range_eq_top f hf_span
 
-  obtain ⟨B_f, hB_f⟩ := hf.toBasis_of_span_eq_top hf_span i₀
-  obtain ⟨B_g, hB_g⟩ := hg.toBasis_of_span_eq_top hg_span i₀
+  let b_f : AffineBasis ι k P := ⟨f, hf, hf_span⟩
+  let b_g : AffineBasis ι k P := ⟨g, hg, hg_span⟩
 
-  use AffineEquiv.ofLinearEquiv (B_f.equiv B_g (Equiv.refl _)) (f i₀) (g i₀)
+  use AffineEquiv.ofLinearEquiv
+    ((b_f.basisOf i₀).equiv (b_g.basisOf i₀) (Equiv.refl _)) (f i₀) (g i₀)
 
   ext i
   by_cases hi : i = i₀
   · simp [hi]
   · simp only [AffineEquiv.ofLinearEquiv_apply, Function.comp_apply]
-    rw [← hB_f ⟨i, hi⟩, Module.Basis.equiv_apply, Equiv.refl_apply, hB_g, vsub_vadd]
+    have hf_basis : f i -ᵥ f i₀ = b_f.basisOf i₀ ⟨i, hi⟩ :=
+      (AffineBasis.basisOf_apply b_f i₀ ⟨i, hi⟩).symm
+    have hg_basis : g i -ᵥ g i₀ = b_g.basisOf i₀ ⟨i, hi⟩ :=
+      (AffineBasis.basisOf_apply b_g i₀ ⟨i, hi⟩).symm
+    rw [hf_basis, Module.Basis.equiv_apply, Equiv.refl_apply, hg_basis.symm, vsub_vadd]
 
 /-- An affinely independent family in a finite-dimensional space has cardinality at most
 `finrank + 1`. -/
