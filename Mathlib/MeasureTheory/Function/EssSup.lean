@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.Order.Filter.ENNReal
-import Mathlib.Probability.UniformOn
 
 /-!
 # Essential supremum and infimum
@@ -29,7 +28,7 @@ sense). We do not define that quantity here, which is simply the supremum of a m
 -/
 
 
-open Filter MeasureTheory ProbabilityTheory Set TopologicalSpace
+open Filter MeasureTheory Set TopologicalSpace
 open scoped ENNReal NNReal
 
 variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
@@ -93,14 +92,6 @@ variable [MeasurableSingletonClass α]
 
 @[simp] lemma essInf_count_eq_ciInf (hf : BddBelow (Set.range f)) :
     essInf f .count = ⨅ a, f a := essInf_eq_ciInf (by simp) hf
-
-@[simp] lemma essSup_uniformOn_eq_ciSup [Finite α] (hf : BddAbove (Set.range f)) :
-    essSup f (uniformOn univ) = ⨆ a, f a :=
-  essSup_eq_ciSup (by simpa [uniformOn, cond_apply]) hf
-
-@[simp] lemma essInf_cond_count_eq_ciInf [Finite α] (hf : BddBelow (Set.range f)) :
-    essInf f (uniformOn univ) = ⨅ a, f a :=
-  essInf_eq_ciInf (by simpa [uniformOn, cond_apply]) hf
 
 end ConditionallyCompleteLattice
 

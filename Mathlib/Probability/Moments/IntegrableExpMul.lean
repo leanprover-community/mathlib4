@@ -38,7 +38,7 @@ We prove the integrability of other functions for `t` in the interior of that in
 
 open MeasureTheory Filter Finset Real
 
-open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
+open scoped MeasureTheory ENNReal NNReal Topology
 
 namespace ProbabilityTheory
 

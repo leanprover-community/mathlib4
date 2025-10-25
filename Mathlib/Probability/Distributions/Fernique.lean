@@ -7,6 +7,7 @@ import Mathlib.Analysis.Normed.Lp.WithLp
 import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.L1Space.Integrable
+import Mathlib.Probability.ConditionalProbability
 import Mathlib.Topology.MetricSpace.Polish
 
 /-!
