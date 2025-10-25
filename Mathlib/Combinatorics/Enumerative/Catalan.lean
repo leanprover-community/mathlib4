@@ -5,10 +5,13 @@ Authors: Julian Kuelshammer, Weijie Jiang
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Qify
 
 /-!
 # Catalan numbers
@@ -238,28 +241,76 @@ theorem largeSchroder_succ' (n : ℕ) :
 
 theorem largeSchroder_succ_range (n : ℕ) :
   largeSchroder (n + 1) = largeSchroder n +
-    ∑ i ∈ Finset.range (n + 1), largeSchroder i * largeSchroder (n - i) := by
+    ∑ i ∈ range (n + 1), largeSchroder i * largeSchroder (n - i) := by
   rw [largeSchroder_succ, sum_range]
 
-/-- The small Schroder numbers are half the large Schroder numbers,
-except for `n = 0` and `n = 1`. -/
+/-- The small Schroder number is equal to : `largeSchroder n = 2 * smallSchroder (n + 1), n ≥ 1` -/
 def smallSchroder (n : ℕ) : ℚ :=
   match n with
-  | 0 => 0
+  | 0 => 1
   | 1 => 1
-  | _ => largeSchroder n / 2
+  | n + 1 => largeSchroder n / 2
 
 @[simp]
-theorem smallSchroder_zero : smallSchroder 0 = 0 := by
-  simp [smallSchroder]
+theorem smallSchroder_zero : smallSchroder 0 = 1 := by
+  simp only [smallSchroder]
 
 @[simp]
 theorem smallSchroder_one : smallSchroder 1 = 1 := by
-  simp [smallSchroder]
+  simp only [smallSchroder]
 
-@[simp]
-theorem largeSchroder_eq_smallSchroder_mul_two {n : ℕ} (h : 2 ≤ n) :
-  largeSchroder n = smallSchroder n * 2 := by
-  have : n ≠ 0 ∧ n ≠ 1 := by omega
-  obtain ⟨_, _⟩ := this
-  simp [smallSchroder]
+theorem largeSchroder_eq_smallSchroder_succ_mul_two {n : ℕ} (h : 1 ≤ n) :
+  largeSchroder n = smallSchroder (n + 1) * 2 := by
+  simp only [smallSchroder]
+  aesop
+
+theorem smallSchroder_succ_eq_largeSchroder_div_two {n : ℕ} (h : 1 ≤ n) :
+  smallSchroder (n + 1) = largeSchroder n / 2 := by
+  simp only [smallSchroder]
+  aesop
+
+theorem smallSchroder_sum_range (n : ℕ) (hn : 1 < n) :
+  smallSchroder (n + 1) =
+    3 * smallSchroder n +
+      2 * ∑ i ∈ range (n - 2), smallSchroder (i + 2) * smallSchroder (n - 1 - i) := by
+  by_cases hn' : n = 1
+  · simp [hn']
+    aesop
+  · have hn : 2 ≤ n := by omega
+    obtain h_largeSchroder_succ := largeSchroder_succ_range (n - 1)
+    nth_rw 1 [show n - 1 + 1 = n by omega] at h_largeSchroder_succ
+    have sum_eq : ∑ i ∈ range (n - 1 + 1), largeSchroder i * largeSchroder (n - 1 - i) =
+      2 * largeSchroder (n - 1) + ∑ i ∈ Ico 1 (n - 1),
+        largeSchroder i * largeSchroder (n - 1 - i) := by
+      rw [sum_range_succ, show n - 1 = n - 2 + 1 by omega, sum_range_succ', sum_Ico_eq_sum_range,
+        show n - 2 + 1 = n - 1 by omega, show n - 1 - 1 = n - 2 by omega]
+      simp only [largeSchroder_zero, tsub_zero, one_mul, tsub_self, mul_one]
+      rw [add_assoc, ← two_mul, add_comm]
+      congr 1
+      apply sum_congr rfl
+      intro x hx
+      simp at hx
+      rw [add_comm x 1]
+    rw [sum_eq] at h_largeSchroder_succ
+    have sum_eq' : ∑ i ∈ Ico 1 (n - 1), (largeSchroder i : ℚ) * largeSchroder (n - 1 - i) =
+      4 * ∑ i ∈ Ico 1 (n - 1), smallSchroder (i + 1) * smallSchroder (n - i) := by
+      rw [mul_sum]
+      apply sum_congr rfl
+      intro x hx
+      simp at hx
+      rw [largeSchroder_eq_smallSchroder_succ_mul_two (by omega),
+        largeSchroder_eq_smallSchroder_succ_mul_two (by omega), show n - 1 - x + 1 = n - x by omega]
+      linarith
+    qify at h_largeSchroder_succ
+    rw [sum_eq', largeSchroder_eq_smallSchroder_succ_mul_two (by omega),
+      largeSchroder_eq_smallSchroder_succ_mul_two (by omega), sum_Ico_eq_sum_range,
+      ← mul_right_inj' (show (1 / 2 : ℚ) ≠ 0 from by norm_num)] at h_largeSchroder_succ
+    have : (1 / 2 : ℚ) * (smallSchroder (n + 1) * 2) = smallSchroder (n + 1) := by ring
+    rw [this] at h_largeSchroder_succ
+    rw [h_largeSchroder_succ, show n - 1 + 1 = n by omega, show n - 1 - 1 = n - 2 by omega]
+    ring_nf
+    congr 2
+    apply sum_congr rfl
+    intro x hx
+    simp at hx
+    rw [show n - (1 + x) = n - 1 - x by omega]
