@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Products.Basic
 
 /-!
-# Joins of category
+# Joins of categories
 
 Given categories `C, D`, this file constructs a category `C ⋆ D`. Its objects are either
 objects of `C` or objects of `D`, morphisms between objects of `C` are morphisms in `C`,
@@ -75,7 +75,7 @@ def id : ∀ X : C ⋆ D, Hom X X
 def comp : ∀ {x y z : C ⋆ D}, Hom x y → Hom y z → Hom x z
   | .left _x, .left _y, .left _z, f, g => ULift.up (ULift.down f ≫ ULift.down g)
   | .left _x, .left _y, .right _z, _, _ => PUnit.unit
-  | .left _x, .right _y, .right _z, _, _ =>  PUnit.unit
+  | .left _x, .right _y, .right _z, _, _ => PUnit.unit
   | .right _x, .right _y, .right _z, f, g => ULift.up (ULift.down f ≫ ULift.down g)
 
 instance : Category.{max v₁ v₂} (C ⋆ D) where
@@ -126,7 +126,7 @@ def inclRight : D ⥤ C ⋆ D where
 
 variable {C D}
 
-/-- An induction principle for morphisms in a join of category: a morphism is either of the form
+/-- An induction principle for morphisms in a join of categories: a morphism is either of the form
 `(inclLeft _ _).map _`, `(inclRight _ _).map _`, or is `edge _ _`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def homInduction {P : {x y : C ⋆ D} → (x ⟶ y) → Sort*}
@@ -206,7 +206,7 @@ section Functoriality
 variable {C D} {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
 
 /-- A pair of functors `F : C ⥤ E, G : D ⥤ E` as well as a natural transformation
-`α : (Prod.fst C D) ⋙ F ⟶ (Prod.snd C D) ⋙ G`. defines a functor out of `C ⋆ D`.
+`α : (Prod.fst C D) ⋙ F ⟶ (Prod.snd C D) ⋙ G` defines a functor out of `C ⋆ D`.
 This is the main entry point to define functors out of a join of categories. -/
 def mkFunctor (F : C ⥤ E) (G : D ⥤ E) (α : Prod.fst C D ⋙ F ⟶ Prod.snd C D ⋙ G) :
     C ⋆ D ⥤ E where
@@ -237,7 +237,7 @@ section
 
 variable (F : C ⥤ E) (G : D ⥤ E) (α : Prod.fst C D ⋙ F ⟶ Prod.snd C D ⋙ G)
 
--- As these equality of objects are definitional, they should be fine.
+-- As these equalities of objects are definitional, they should be fine.
 @[simp]
 lemma mkFunctor_obj_left (c : C) : (mkFunctor F G α).obj (left c) = F.obj c := rfl
 
@@ -276,7 +276,7 @@ lemma mkFunctor_map_edge (c : C) (d : D) :
 
 end
 
-/-- Construct a natural transformation between functors from a join from
+/-- Construct a natural transformation between functors out of a join from
 the data of natural transformations between each side that are compatible with the
 action on edge maps. -/
 def mkNatTrans {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
@@ -352,7 +352,7 @@ lemma mkNatTransComp
 
 end
 
-/-- Two functors out of a join of category are naturally isomorphic if their
+/-- Two functors out of a join of categories are naturally isomorphic if their
 compositions with the inclusions are isomorphic and the whiskering with the canonical
 transformation is respected through these isomorphisms. -/
 @[simps]
