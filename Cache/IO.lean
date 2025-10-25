@@ -37,7 +37,11 @@ def isPartOfMathlibCache (mod : Name) : Bool := #[
   `ProofWidgets,
   `Archive,
   `Counterexamples,
-  `MathlibTest ].contains mod.getRoot
+  `MathlibTest,
+  -- Allow PRs to upload oleans for Reap for testing.
+  `Requests,
+  `OpenAIClient,
+  `Reap,].contains mod.getRoot
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
@@ -70,7 +74,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.16-pre3"
+  "0.1.16"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -90,7 +94,7 @@ def getLeanTar : IO String := do
 /-- Bump this number to invalidate the cache, in case the existing hashing inputs are insufficient.
 It is not a global counter, and can be reset to 0 as long as the lean githash or lake manifest has
 changed since the last time this counter was touched. -/
-def rootHashGeneration : UInt64 := 3
+def rootHashGeneration : UInt64 := 4
 
 /--
 `CacheM` stores the following information:
