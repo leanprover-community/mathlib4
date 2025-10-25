@@ -645,9 +645,9 @@ This implementation is not maximally robust yet.
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   -- At first, try finding a model on the space itself.
   if let some (m, _) ← findModelInner e baseInfo then return m
-  -- Otherwise, check if we have a binary product.
-  -- TODO: also support higher order products, by recursively calling this method on them
-  -- At first, try finding a model on the space itself.
+  -- Otherwise, check if we have a binary product or a binary sum.
+  -- TODO: also support higher order products and sums, by recursively calling this method on them
+  -- Also support combinations of those!
   match_expr e with
   | Prod E F =>
     trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a product, recursing into each factor"
@@ -667,6 +667,17 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
     let fTerm : Term ← Term.exprToSyntax srcF
     let iTerm : Term ← ``(ModelWithCorners.prod $eTerm $fTerm)
     Term.elabTerm iTerm none
+  | Sum E F =>
+    trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a direct sum of `{E}` and `{F}`\n\
+      We assume the models match, and only look into the first summand"
+    let sumHelp (E) := match_expr E with
+    | Sum _ _ => "\nNote: finding a model with corners on direct sums of three or more spaces \
+      is not implemented yet"
+    | _ => ""
+    let some (I, _) ← findModelInner E baseInfo
+      | throwError "Found no model with corners on first summand `{E}{sumHelp E}`"
+    let eTerm : Term ← Term.exprToSyntax I
+    Term.elabTerm eTerm none
   | _ => throwError "Could not find a model with corners for `{e}`"
 
 
