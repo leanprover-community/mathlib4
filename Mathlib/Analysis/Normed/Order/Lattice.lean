@@ -57,13 +57,10 @@ instance : HasSolidNorm ℝ := ⟨fun _ _ => id⟩
 
 instance : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le]⟩
 
-end SolidNorm
-
 instance Int.hasSolidNorm : HasSolidNorm ℤ where
   solid x y h := by simpa [← Int.norm_cast_real, ← Int.cast_abs] using h
 
-instance Rat.hasSolidNorm : HasSolidNorm ℚ where
-  solid x y h := by simpa [← Rat.norm_cast_real, ← Rat.cast_abs] using h
+end SolidNorm
 
 variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]
 

@@ -523,7 +523,7 @@ theorem prod_eq_generateFrom {μ : Measure α} {ν : Measure β} {C : Set (Set �
   rw [h₁ s hs t ht, prod_prod]
 
 /- Note that the next theorem is not true for s-finite measures: let `μ = ν = ∞ • Leb` on `[0,1]`
-(they are  s-finite as countable sums of the finite Lebesgue measure), and let `μν = μ.prod ν + λ`
+(they are s-finite as countable sums of the finite Lebesgue measure), and let `μν = μ.prod ν + λ`
 where `λ` is Lebesgue measure on the diagonal. Then both measures give infinite mass to rectangles
 `s × t` whose sides have positive Lebesgue measure, and `0` measure when one of the sides has zero
 Lebesgue measure. And yet they do not coincide, as the first one gives zero mass to the diagonal,

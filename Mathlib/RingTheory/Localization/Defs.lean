@@ -901,7 +901,7 @@ namespace IsLocalization
 variable [IsLocalization M S]
 
 theorem mk'_neg (x : R) (y : M) :
-    mk' S (-x) y = - mk' S x y := by
+    mk' S (-x) y = -mk' S x y := by
   rw [eq_comm, eq_mk'_iff_mul_eq, neg_mul, map_neg, mk'_spec]
 
 theorem mk'_sub (x₁ x₂ : R) (y₁ y₂ : M) :

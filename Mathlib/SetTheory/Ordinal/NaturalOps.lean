@@ -653,9 +653,11 @@ instance : CommSemiring NatOrdinal :=
     mul_one := nmul_one
     mul_comm := nmul_comm }
 
-instance : IsOrderedRing NatOrdinal :=
-  { mul_le_mul_of_nonneg_left := fun _ _ c h _ => nmul_le_nmul_left h c
-    mul_le_mul_of_nonneg_right := fun _ _ c h _ => nmul_le_nmul_right h c }
+instance : IsOrderedMonoid NatOrdinal where
+  mul_le_mul_left _a _b hab _c := nmul_le_nmul_left hab _
+  mul_le_mul_right _a _b hab _c := nmul_le_nmul_right hab _
+
+instance : IsOrderedRing NatOrdinal where
 
 end NatOrdinal
 

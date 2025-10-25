@@ -946,7 +946,7 @@ theorem card_disjiUnion (s : Finset ι) (t : ι → Finset M) (h) :
     #(s.disjiUnion t h) = ∑ a ∈ s, #(t a) :=
   Multiset.card_bind _ _
 
-theorem card_biUnion [DecidableEq M] {t : ι → Finset M} (h : s.toSet.PairwiseDisjoint t) :
+theorem card_biUnion [DecidableEq M] {t : ι → Finset M} (h : (s : Set ι).PairwiseDisjoint t) :
     #(s.biUnion t) = ∑ u ∈ s, #(t u) := by simpa using sum_biUnion h (M := ℕ) (f := 1)
 
 theorem card_biUnion_le [DecidableEq M] {s : Finset ι} {t : ι → Finset M} :
@@ -959,7 +959,7 @@ theorem card_biUnion_le [DecidableEq M] {s : Finset ι} {t : ι → Finset M} :
       _ ≤ ∑ a ∈ insert a s, #(t a) := by grind
 
 theorem card_eq_sum_card_fiberwise [DecidableEq M] {f : ι → M} {s : Finset ι} {t : Finset M}
-    (H : s.toSet.MapsTo f t) : #s = ∑ b ∈ t, #{a ∈ s | f a = b} := by
+    (H : (s : Set ι).MapsTo f t) : #s = ∑ b ∈ t, #{a ∈ s | f a = b} := by
   simp only [card_eq_sum_ones, sum_fiberwise_of_maps_to H]
 
 theorem card_eq_sum_card_image [DecidableEq M] (f : ι → M) (s : Finset ι) :

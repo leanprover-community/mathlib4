@@ -756,7 +756,7 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) :=
                     rfl
       have h₂ : ‖v‖ = √(‖v‖ ^ 2) := by simp
       rw [h₂, ← Real.sqrt_mul]
-      gcongr
+      · gcongr
       positivity
     rw [← Real.sqrt_le_sqrt_iff (by positivity)]
     simp [hmain]
