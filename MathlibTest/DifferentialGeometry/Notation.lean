@@ -1027,7 +1027,6 @@ info: MDifferentiable (I.prod (I.prod I)) (I'.prod (𝓘(𝕜, 𝕜).prod I')) (
 -/
 #guard_msgs in
 #check MDiff (Prod.map f (Prod.map h g))
-
 /--
 info: MDifferentiable ((I.prod I).prod I) ((I'.prod I').prod 𝓘(𝕜, 𝕜)) (Prod.map (Prod.map f g) h) : Prop
 -/
