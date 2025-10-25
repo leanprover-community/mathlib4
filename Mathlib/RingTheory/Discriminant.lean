@@ -221,7 +221,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
     rfl
     ext σ
     rw [← aeval_algHom_apply,
-      aeval_root_derivative_of_splits (minpoly.monic (Algebra.IsSeparable.isIntegral K pb.gen))
+      aeval_root_derivative_of_factors (minpoly.monic (Algebra.IsSeparable.isIntegral K pb.gen))
         (IsAlgClosed.splits_codomain _) (hroots σ),
       ← Finset.prod_mk _ (hnodup.erase _)]
   rw [Finset.prod_sigma', Finset.prod_sigma']
