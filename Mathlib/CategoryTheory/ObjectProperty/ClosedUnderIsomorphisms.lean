@@ -74,6 +74,10 @@ instance : IsClosedUnderIsomorphisms (isoClosure P) where
     rintro X Y e ⟨Z, hZ, ⟨f⟩⟩
     exact ⟨Z, hZ, ⟨e.symm.trans f⟩⟩
 
+lemma isClosedUnderIsomorphisms_iff_isoClosure_eq_self :
+    IsClosedUnderIsomorphisms P ↔ isoClosure P = P :=
+  ⟨fun _ ↦ isoClosure_eq_self _, fun h ↦ by rw [← h]; infer_instance⟩
+
 instance (F : C ⥤ D) : IsClosedUnderIsomorphisms (P.map F) where
   of_iso := by
     rintro _ _ e ⟨X, hX, ⟨e'⟩⟩
@@ -82,6 +86,22 @@ instance (F : C ⥤ D) : IsClosedUnderIsomorphisms (P.map F) where
 instance (F : D ⥤ C) [P.IsClosedUnderIsomorphisms] :
     IsClosedUnderIsomorphisms (P.inverseImage F) where
   of_iso e hX := P.prop_of_iso (F.mapIso e) hX
+
+@[simp]
+lemma isoClosure_strictMap (F : C ⥤ D) :
+    (P.strictMap F).isoClosure = P.map F := by
+  refine le_antisymm ?_ ?_
+  · rw [isoClosure_le_iff]
+    exact P.strictMap_le_map F
+  · rintro X ⟨Y, hY, ⟨e⟩⟩
+    exact ⟨F.obj Y, ⟨Y, hY⟩, ⟨e.symm⟩⟩
+
+@[simp]
+lemma map_isoClosure (F : C ⥤ D) :
+    P.isoClosure.map F = P.map F := by
+  refine le_antisymm ?_ (map_monotone P.le_isoClosure F)
+  rintro X ⟨Y, ⟨Z, hZ, ⟨e⟩⟩, ⟨e'⟩⟩
+  exact ⟨Z, hZ, ⟨F.mapIso e.symm ≪≫ e'⟩⟩
 
 end ObjectProperty
 
