@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 In this file we prove that a finite-dimensional Lie algebra over a field is semisimple
 if it does not have non-trivial abelian ideals and it admits a
 non-degenerate reflexive invariant bilinear form.
-Here a form is *invariant* if it invariant under the Lie bracket
+Here a form is *invariant* if it is invariant under the Lie bracket
 in the sense that `⁅x, Φ⁆ = 0` for all `x` or equivalently, `Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆`.
 
 ## Main results

@@ -10,7 +10,7 @@ import Mathlib.Algebra.Ring.ULift
 /-!
 # Field instances for `ULift`
 
-This file defines instances for field, semifield and related structures on `ULift` types.
+This file defines instances for fields, semifields, and related structures on `ULift` types.
 
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 -/

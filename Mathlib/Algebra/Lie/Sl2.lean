@@ -72,7 +72,7 @@ lemma f_ne_zero (t : IsSl2Triple h e f) : f ≠ 0 := by
 variable {R}
 
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a vector is said to be
-primitive if it is a simultaneous eigenvector for the action of both `h`, `e`, and the eigenvalue
+primitive if it is a simultaneous eigenvector for the action of both `h` and `e`, and the eigenvalue
 for `e` is zero. -/
 structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop where
   ne_zero : m ≠ 0

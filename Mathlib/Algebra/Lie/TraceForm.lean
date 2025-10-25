@@ -25,7 +25,7 @@ We define the trace / Killing form in this file and prove some basic properties.
 ## Main definitions
 
 * `LieModule.traceForm`: a finite, free representation of a Lie algebra `L` induces a bilinear form
-  on `L` called the trace Form.
+  on `L` called the trace form.
 * `LieModule.traceForm_eq_zero_of_isNilpotent`: the trace form induced by a nilpotent
   representation of a Lie algebra vanishes.
 * `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
@@ -43,7 +43,7 @@ open Set Module
 namespace LieModule
 
 /-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
-the trace Form. See also `killingForm`. -/
+the trace form. See also `killingForm`. -/
 noncomputable def traceForm : LinearMap.BilinForm R L :=
   ((LinearMap.mul _ _).compl₁₂ (φ).toLinearMap (φ).toLinearMap).compr₂ (trace R M)
 

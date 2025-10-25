@@ -71,7 +71,7 @@ theorem signVariations_eraseLead (h : SignType.sign P.leadingCoeff = SignType.si
       coeffList_eraseLead hpz]
 
 /-- If we drop the leading coefficient, the sign changes drop by 0 or 1 depending on whether
-the first two nonzero coeffients match. -/
+the first two nonzero coefficients match. -/
 theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
     signVariations P = signVariations P.eraseLead + if SignType.sign P.leadingCoeff
       = -SignType.sign P.eraseLead.leadingCoeff then 1 else 0 := by

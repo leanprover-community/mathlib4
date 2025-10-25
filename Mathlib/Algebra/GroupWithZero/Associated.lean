@@ -24,7 +24,7 @@ multiplied by a unit on the right. -/
 def Associated [Monoid M] (x y : M) : Prop :=
   ∃ u : Mˣ, x * u = y
 
-/-- Notation for two elements of a monoid are associated, i.e.
+/-- Notation for two elements of a monoid being associated, i.e.
 if one of them is another one multiplied by a unit on the right. -/
 local infixl:50 " ~ᵤ " => Associated
 
