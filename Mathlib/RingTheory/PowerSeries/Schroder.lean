@@ -6,7 +6,7 @@ Authors: Weijie Jiang
 
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.RingTheory.Binomial
-import Mathlib.RingTheory.PowerSeries.WellKnown
+import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Schröder Numbers Power Series
