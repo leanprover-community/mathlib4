@@ -649,9 +649,19 @@ partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : Te
   -- Otherwise, check if we have a binary product or a binary sum.
   -- TODO: also support higher order products and sums, by recursively calling this method on them
   -- Also support combinations of those!
+
+  -- Matching if e is Open M does not work easily.
+  -- match_expr below fails
+  -- avoiding the wnhf does not seem to make a difference
+  -- I see e being printed as a subtype, so I'm clearly unfolding too much...
+  trace[Elab.DiffGeo.MDiff] "e is `{e}`"
+  -- if let mkApp (.const ``TopologicalSpace.Opens _) M := e then
+  --   trace[Elab.DiffGeo.MDiff] "take 1: Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
+  --   return ← findModel M baseInfo
+
   match_expr e with
-  | TopologicalSpace.Opens M =>
-    trace[Elab.DiffGeo.MDiff] "Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
+  | TopologicalSpace.Opens M _ =>
+    trace[Elab.DiffGeo.MDiff] "take 2: Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
     -- This recursive call makes the definition partial, but that's fine in practice.
     -- (In practice, `M` is not an `Opens`, as `Open X` is (currently?) not a topological space.
     findModel M baseInfo
