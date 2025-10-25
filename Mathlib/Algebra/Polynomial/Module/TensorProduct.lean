@@ -9,6 +9,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # PolynomialModule is isomorphic to a tensor product
+
 For a commutative ring `R` and an `R`-module `M`, we obtain an isomorphism between
 `R[X] ⊗[R] M` and `PolynomialModule R M` as `R[X]`-modules; this isomorphism is called
 `polynomialTensorProductLEquivPolynomialModule`.
