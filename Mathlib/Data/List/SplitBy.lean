@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Flatten
 
 /-!
 # Split a list into contiguous runs of elements which pairwise satisfy a relation.
@@ -11,7 +12,7 @@ import Mathlib.Data.List.Chain
 This file provides the basic API for `List.splitBy` which is defined in Core.
 The main results are the following:
 
-- `List.join_splitBy`: the lists in `List.splitBy` join to the original list.
+- `List.flatten_splitBy`: the lists in `List.splitBy` join to the original list.
 - `List.nil_notMem_splitBy`: the empty list is not contained in `List.splitBy`.
 - `List.isChain_of_mem_splitBy`: any two adjacent elements in a list in
   `List.splitBy` are related by the specified relation.
@@ -51,6 +52,14 @@ theorem flatten_splitBy (r : α → α → Bool) (l : List α) : (l.splitBy r).f
   | nil => rfl
   | cons _ _ => flatten_splitByLoop
 
+@[simp]
+theorem splitBy_eq_nil {r : α → α → Bool} {l : List α} : l.splitBy r = [] ↔ l = [] := by
+  have := flatten_splitBy r l
+  refine ⟨fun _ ↦ ?_, ?_⟩ <;> simp_all
+
+theorem splitBy_ne_nil {r : α → α → Bool} {l : List α} : l.splitBy r ≠ [] ↔ l ≠ [] :=
+  splitBy_eq_nil.not
+
 private theorem nil_notMem_splitByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
     [] ∉ splitBy.loop r l a g [] := by
   induction l generalizing a g with
@@ -65,6 +74,7 @@ private theorem nil_notMem_splitByLoop {r : α → α → Bool} {l : List α} {a
 
 @[deprecated (since := "2025-05-23")] alias nil_not_mem_splitByLoop := nil_notMem_splitByLoop
 
+@[simp]
 theorem nil_notMem_splitBy (r : α → α → Bool) (l : List α) : [] ∉ l.splitBy r :=
   match l with
   | nil => not_mem_nil
@@ -75,6 +85,16 @@ theorem nil_notMem_splitBy (r : α → α → Bool) (l : List α) : [] ∉ l.spl
 theorem ne_nil_of_mem_splitBy (r : α → α → Bool) {l : List α} (h : m ∈ l.splitBy r) : m ≠ [] := by
   rintro rfl
   exact nil_notMem_splitBy r l h
+
+theorem head_head_splitBy (r : α → α → Bool) {l : List α} (hn : l ≠ []) :
+    ((l.splitBy r).head (splitBy_ne_nil.2 hn)).head
+      (ne_nil_of_mem_splitBy (head_mem _)) = l.head hn := by
+  simp_rw [← head_flatten_of_head_ne_nil, flatten_splitBy]
+
+theorem getLast_getLast_splitBy (r : α → α → Bool) {l : List α} (hn : l ≠ []) :
+    ((l.splitBy r).getLast (splitBy_ne_nil.2 hn)).getLast
+      (ne_nil_of_mem_splitBy (getLast_mem _)) = l.getLast hn := by
+  simp_rw [← getLast_flatten_of_getLast_ne_nil, flatten_splitBy]
 
 private theorem isChain_of_mem_splitByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α}
     (hga : ∀ b ∈ g.head?, r b a) (hg : g.IsChain fun y x ↦ r x y)
