@@ -28,7 +28,7 @@ section
 
 variable [HasZeroMorphisms C] [HasZeroObject C]
 
-variable {α : Type t} {X : α → C} (hX : IsSeparating (Set.range X))
+variable {α : Type t} {X : α → C} (hX : ObjectProperty.IsSeparating (.ofObj X))
 
 variable (X) in
 /-- If `X : α → C` is a separating family, and `c : ComplexShape ι` has no loop,
@@ -40,14 +40,15 @@ noncomputable def separatingFamily (j : α × ι) : HomologicalComplex C c :=
 
 include hX in
 lemma isSeparating_separatingFamily :
-    IsSeparating (Set.range (separatingFamily c X)) := by
+    ObjectProperty.IsSeparating (.ofObj (separatingFamily c X)) := by
   intro K L f g h
   ext j
   apply hX
-  rintro _ ⟨a, rfl⟩ p
+  rintro _ ⟨a⟩ p
   have H := evalCompCoyonedaCorepresentable c (X a) j
   apply H.homEquiv.symm.injective
-  simpa only [H.homEquiv_symm_comp] using h _ ⟨⟨a, j⟩, rfl⟩ (H.homEquiv.symm p)
+  simpa only [H.homEquiv_symm_comp] using h _
+    (ObjectProperty.ofObj_apply _ ⟨a, j⟩) (H.homEquiv.symm p)
 
 end
 
