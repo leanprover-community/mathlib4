@@ -483,8 +483,6 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
 #guard_msgs in
 #check CMDiff 2 k
 
-#exit
-
 end interval
 
 section UpperHalfPlane
