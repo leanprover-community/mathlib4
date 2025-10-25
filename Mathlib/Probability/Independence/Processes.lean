@@ -9,7 +9,7 @@ import Mathlib.Probability.Independence.Basic
 /-!
 # Independence of stochastic processes
 
-Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
+We prove that two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
 for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
 $(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent. We prove an analogous
 condition for a family of stochastic processes.
