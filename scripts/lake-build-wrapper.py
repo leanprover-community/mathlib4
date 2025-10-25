@@ -3,8 +3,8 @@
 Usage: lake-build-wrapper.py <output_file.json> <command> [args...]
 
 Wrapper script for `lake build` to be used in GitHub actions that:
-1. Groups only normal build output (✔ lines) into collapsible log groups
-2. Emits all non-✔ lines (including ℹ/⚠/✖ and summaries) outside groups
+1. Groups normal build output (✔ lines) into collapsible log groups
+2. Also groups ℹ/⚠/✖ blocks into collapsible log groups; build summaries remain outside groups
 3. Extracts information about infos/warnings/errors to JSON output file
 
 Example `lake build` log output:
@@ -28,7 +28,8 @@ Build completed successfully (7401 jobs).
 
 Notes:
 - a line beginning with ✔ is a "normal line" and contiguous sequences of these will be collapsed into log groups
-- build lines beginning with ℹ/⚠/✖ begin info/warning/error blocks;
+- build lines beginning with ℹ/⚠/✖ begin info/warning/error blocks; these blocks are grouped as well
+- the title of each ℹ/⚠/✖ group is exactly the starting line; that starting line is not echoed again inside the group body
 - blocks are ended by either a normal line ✔ or a build summary line like "Build completed" / "Some required targets logged failures:"
 - in the example above, there is one error block and one warning block
 - note that there can be more than one error or warning in a block
@@ -104,16 +105,28 @@ class BuildOutputProcessor:
             self.group_open = False
 
     def open_group_for_line(self, line: str):
-        """Open a group named by progress info from this line, if not already open."""
-        if not self.group_open:
-            stripped = line.strip()
-            first_match = re.search(r'\[(\d+)/(\d+)\]', stripped)
-            if first_match:
-                group_name = f"Build progress [starting at {first_match.group(1)}/{first_match.group(2)}]"
-            else:
-                group_name = "Build progress"
-            self.start_group(group_name)
-            self.group_open = True
+        """Open a progress group named by this line's [N/M] info.
+
+        Precondition: no group is currently open (caller closed it if necessary).
+        """
+        stripped = line.strip()
+        first_match = re.search(r'\[(\d+)/(\d+)\]', stripped)
+        if first_match:
+            group_name = f"Build progress [starting at {first_match.group(1)}/{first_match.group(2)}]"
+        else:
+            group_name = "Build progress"
+        self.start_group(group_name)
+        self.group_open = True
+
+    def open_group_for_block(self, start_line: str):
+        """Open a GitHub Actions log group for a block using its starting line.
+
+        Precondition: no group is currently open (caller closed it if necessary).
+        The group title is exactly the starting line (without the trailing newline).
+        Callers should not print the starting line again inside the group to avoid duplication.
+        """
+        self.start_group(start_line.rstrip('\n'))
+        self.group_open = True
 
     def is_normal_line(self, line: str) -> bool:
         """Check if line is normal build output (checkmark)."""
@@ -175,10 +188,10 @@ class BuildOutputProcessor:
         (Implementation detail) State machine overview:
         - States:
             - OUTSIDE: No open group and not collecting lines into a block.
-            - GROUP_OPEN: A ::group:: is open; only ✔ lines are printed inside the group.
-            - IN_WARNING: Collecting a warning block (⚠ line + following lines).
-            - IN_ERROR: Collecting an error block (✖ line + following lines).
-            - IN_INFO: Collecting an info block (ℹ line + following lines).
+            - GROUP_OPEN: A ::group:: for normal ✔ lines is open.
+            - IN_WARNING: Collecting a warning block (⚠ line + following lines); a block ::group:: is open.
+            - IN_ERROR: Collecting an error block (✖ line + following lines); a block ::group:: is open.
+            - IN_INFO: Collecting an info block (ℹ line + following lines); a block ::group:: is open.
 
         - Events (one for each new output line)
             - NORMAL: Line starts with ✔
@@ -193,9 +206,9 @@ class BuildOutputProcessor:
             - OUTSIDE + NEW_* → start_block; print → IN_*
             - OUTSIDE + OTHER → print → OUTSIDE
             - GROUP_OPEN + NORMAL → print → GROUP_OPEN
-            - GROUP_OPEN + NEW_*/OTHER → close_group; print; (start_block if NEW_*) → IN_* or OUTSIDE
-            - IN_* + NORMAL → flush_block; open_group; print → GROUP_OPEN
-            - IN_* + NEW_* → flush_block; start_block; print → IN_*
+            - GROUP_OPEN + NEW_*/OTHER → close_group; (open block group + start_block if NEW_*); print → IN_* or OUTSIDE
+            - IN_* + NORMAL → flush_block (closes block group); open_group; print → GROUP_OPEN
+            - IN_* + NEW_* → flush_block (closes previous block group); open block group + start_block; print → IN_*
             - IN_* + OTHER → if summary-line then flush_block else append_block; print → OUTSIDE or IN_*
             - * + EOF → flush_block; close_group
         """
@@ -220,19 +233,17 @@ class BuildOutputProcessor:
                 self.state = self.State.GROUP_OPEN
             elif evt == self.Evt.NEW_WARNING:
                 self.current_block = [line]
-                print(line, end='', flush=True)
+                self.open_group_for_block(line)
                 self.state = self.State.IN_WARNING
             elif evt == self.Evt.NEW_ERROR:
                 self.current_block = [line]
-                print(line, end='', flush=True)
+                self.open_group_for_block(line)
                 self.state = self.State.IN_ERROR
             elif evt == self.Evt.NEW_INFO:
                 self.current_block = [line]
-                print(line, end='', flush=True)
+                self.open_group_for_block(line)
                 self.state = self.State.IN_INFO
             elif evt == self.Evt.OTHER:
-                # Print outside any groups
-                self.close_group_if_open()
                 print(line, end='', flush=True)
             return
 
@@ -244,15 +255,15 @@ class BuildOutputProcessor:
                 self.close_group_if_open()
                 if evt == self.Evt.NEW_WARNING:
                     self.current_block = [line]
-                    print(line, end='', flush=True)
+                    self.open_group_for_block(line)
                     self.state = self.State.IN_WARNING
                 elif evt == self.Evt.NEW_ERROR:
                     self.current_block = [line]
-                    print(line, end='', flush=True)
+                    self.open_group_for_block(line)
                     self.state = self.State.IN_ERROR
                 elif evt == self.Evt.NEW_INFO:
                     self.current_block = [line]
-                    print(line, end='', flush=True)
+                    self.open_group_for_block(line)
                     self.state = self.State.IN_INFO
                 else:
                     print(line, end='', flush=True)
@@ -268,17 +279,17 @@ class BuildOutputProcessor:
             elif evt == self.Evt.NEW_WARNING:
                 self.flush_block()
                 self.current_block = [line]
-                print(line, end='', flush=True)
+                self.open_group_for_block(line)
                 self.state = self.State.IN_WARNING
             elif evt == self.Evt.NEW_ERROR:
                 self.flush_block()
                 self.current_block = [line]
-                print(line, end='', flush=True)
+                self.open_group_for_block(line)
                 self.state = self.State.IN_ERROR
             elif evt == self.Evt.NEW_INFO:
                 self.flush_block()
                 self.current_block = [line]
-                print(line, end='', flush=True)
+                self.open_group_for_block(line)
                 self.state = self.State.IN_INFO
             else:  # OTHER → continuation or summary
                 if self.is_build_summary(line):
@@ -318,6 +329,8 @@ class BuildOutputProcessor:
         elif self.state == self.State.IN_INFO:
             self.infos.append(block_data)
 
+        # Close any open group for this block; lines were already streamed.
+        self.close_group_if_open()
         # Do not print here; lines were already streamed as they arrived.
         self.current_block = []
         self.state = self.State.OUTSIDE
