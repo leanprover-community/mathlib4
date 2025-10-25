@@ -204,9 +204,15 @@ protected theorem isCompact (s : NonemptyCompacts α) : IsCompact (s : Set α) :
 protected theorem nonempty (s : NonemptyCompacts α) : (s : Set α).Nonempty :=
   s.nonempty'
 
+theorem toCompacts_injective : Function.Injective (toCompacts (α := α)) :=
+  .of_comp (f := SetLike.coe) SetLike.coe_injective
+
 /-- Reinterpret a nonempty compact as a closed set. -/
 def toCloseds [T2Space α] (s : NonemptyCompacts α) : Closeds α :=
   ⟨s, s.isCompact.isClosed⟩
+
+theorem toCloseds_injective [T2Space α] : Function.Injective (toCloseds (α := α)) :=
+  .of_comp (f := SetLike.coe) SetLike.coe_injective
 
 @[ext]
 protected theorem ext {s t : NonemptyCompacts α} (h : (s : Set α) = t) : s = t :=

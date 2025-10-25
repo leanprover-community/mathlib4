@@ -654,6 +654,70 @@ theorem mem_comp_comp {V W M : SetRel β β} [W.IsSymm] {p : β × β} :
     rw [mem_ball_symmetry] at z_in
     exact ⟨z, ⟨w, w_in, hwz⟩, z_in⟩
 
+/-- The thickening of a set with respect to `V : Set (β × β)`. Recovers the notion of metric
+thickening when `V = {p | dist p.1 p.2 < r}`. -/
+def thickening (V : Set (β × β)) (s : Set β) : Set β := ⋃ x ∈ s, ball x V
+
+@[simp]
+theorem thickening_empty (V : Set (β × β)) : thickening V ∅ = ∅ := by
+  simp [thickening]
+
+@[simp]
+theorem thickening_singleton (V : Set (β × β)) (x : β) : thickening V {x} = ball x V :=
+  Set.biUnion_singleton _ _
+
+@[simp]
+theorem thickening_union (V : Set (β × β)) (s t : Set β) :
+    thickening V (s ∪ t) = thickening V s ∪ thickening V t :=
+  Set.biUnion_union _ _ _
+
+@[simp]
+theorem thickening_iUnion {ι : Sort*} (V : Set (β × β)) (f : ι → Set β) :
+    thickening V (⋃ (i : ι), f i) = ⋃ (i : ι), thickening V (f i) :=
+  Set.biUnion_iUnion _ _
+
+theorem thickening_biUnion {ι : Type*} (V : Set (β × β)) (f : ι → Set β) (I : Set ι) :
+    thickening V (⋃ i ∈ I, f i) = ⋃ i ∈ I, thickening V (f i) := by simp
+
+@[gcongr]
+theorem thickening_mono {V W : Set (β × β)} (h : V ⊆ W) (s : Set β) :
+    thickening V s ⊆ thickening W s :=
+  Set.iUnion₂_mono fun _ _ => ball_mono h _
+
+theorem ball_subset_thickening {x : β} {s : Set β} (hx : x ∈ s) (V : Set (β × β)) :
+    ball x V ⊆ thickening V s :=
+  Set.subset_biUnion_of_mem (u := (ball · V)) hx
+
+@[gcongr]
+theorem thickening_subset_of_subset (V : Set (β × β)) {s t : Set β} (h : s ⊆ t) :
+    thickening V s ⊆ thickening V t :=
+  Set.biUnion_subset_biUnion_left h
+
+theorem thickening_thickening_subset (V W : Set (β × β)) (s : Set β) :
+    thickening V (thickening W s) ⊆ thickening (W ○ V) s := by
+  intro
+  simp only [thickening, Set.mem_iUnion, ball, compRel]
+  grind
+
+theorem thickening_ball (x : β) (V W : Set (β × β)) : thickening V (ball x W) ⊆ ball x (W ○ V) := by
+  simp_rw [← thickening_singleton]
+  exact thickening_thickening_subset _ _ _
+
+theorem self_subset_thickening_of_refl {V : Set (β × β)} (s : Set β) (hV : ∀ x ∈ s, (x, x) ∈ V) :
+    s ⊆ thickening V s :=
+  fun x hx => Set.mem_biUnion hx (hV x hx)
+
+theorem self_subset_thickening {V : Set (α × α)} (hV : V ∈ 𝓤 α) (s : Set α) :
+    s ⊆ thickening V s :=
+  self_subset_thickening_of_refl _ fun _ _ => refl_mem_uniformity hV
+
+theorem closure_subset_thickening {V : Set (α × α)} (hV : V ∈ 𝓤 α) (s : Set α) :
+    closure s ⊆ thickening V s := by
+  intro x hx
+  simp_rw [mem_closure_iff_nhds, nhds_eq_comap_uniformity] at hx
+  obtain ⟨y, hy₁, hy₂⟩ := hx _ <| Filter.preimage_mem_comap <| UniformSpace.symm hV
+  exact Set.mem_biUnion hy₂ hy₁
+
 end UniformSpace
 
 /-!
