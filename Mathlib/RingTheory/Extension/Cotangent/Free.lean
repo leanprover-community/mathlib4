@@ -95,7 +95,7 @@ open Generators
 
 variable (P : PreSubmersivePresentation R S ι σ) [Finite σ]
 
-/-- To show a pre-submersive presentation with kernel `I = (fᵢ)` is submersive, it satisfies to show
+/-- To show a pre-submersive presentation with kernel `I = (fᵢ)` is submersive, it suffices to show
 that the images of the `fᵢ` form a basis of `I/I²` and that the restricted
 cotangent complex `I/I² → S ⊗[R] (Ω[R[Xᵢ]⁄R]) = ⊕ᵢ S → ⊕ⱼ S` is bijective. -/
 lemma isUnit_jacobian_of_cotangentRestrict_bijective
