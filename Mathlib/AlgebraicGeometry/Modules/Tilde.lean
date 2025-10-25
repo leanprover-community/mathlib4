@@ -172,7 +172,7 @@ This is `M^~` as a sheaf of `R`-modules.
 noncomputable def tildeInModuleCat :
     TopCat.Presheaf (ModuleCat R) (PrimeSpectrum.Top R) :=
   (PresheafOfModules.forgetToPresheafModuleCat (op ⊤) <|
-    Limits.initialOpOfTerminal Limits.isTerminalTop).obj (tilde M).1 ⋙
+    Limits.initialOpOfTerminal Preorder.isTerminalTop).obj (tilde M).1 ⋙
   ModuleCat.restrictScalars (StructureSheaf.globalSectionsIso R).hom.hom
 
 namespace Tilde
