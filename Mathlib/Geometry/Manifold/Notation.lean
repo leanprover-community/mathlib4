@@ -255,6 +255,8 @@ using the local context to infer the appropriate instance. This supports the fol
 - a model with corners on a manifold, or on its underlying model space
 - a closed interval of real numbers,
 - Euclidean space, Euclidean half-space and Euclidean quadrants
+- a metric sphere in a real or complex inner product space
+- the units of a normed algebra
 - the complex upper half plane
 - a space of continuous k-linear maps
 - the trivial model `𝓘(𝕜, E)` on a normed space
