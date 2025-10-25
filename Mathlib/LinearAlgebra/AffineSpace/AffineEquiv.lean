@@ -565,24 +565,17 @@ theorem pointReflection_fixed_iff_of_module [Invertible (2 : k)] {x y : P₁} :
 
 Given a linear equivalence `A : V ≃ₗ[k] V` and base points `f₀ g₀ : P`, this constructs
 the affine equivalence `T x = A (x -ᵥ f₀) +ᵥ g₀`. This is the standard way to convert
-a linear automorphism into an affine automorphism with specified base point mapping. -/
+a linear automorphism into an affine automorphism with specified base point mapping.
+
+This is defined as a composition of three affine equivalences:
+`(vaddConst k f₀).symm` (shift by -f₀), then the linear equivalence viewed as an affine map,
+then `vaddConst k g₀` (shift by +g₀). -/
 def ofLinearEquiv {k : Type*} {V : Type*} {P : Type*}
     [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
-    (A : V ≃ₗ[k] V) (f₀ g₀ : P) : P ≃ᵃ[k] P := {
-  toFun := fun x => A (x -ᵥ f₀) +ᵥ g₀
-  invFun := fun x => A.symm (x -ᵥ g₀) +ᵥ f₀
-  left_inv := by
-    intro x
-    simp [LinearEquiv.symm_apply_apply]
-  right_inv := by
-    intro x
-    simp [LinearEquiv.apply_symm_apply]
-  linear := A
-  map_vadd' := by
-    intro p v
-    change A ((v +ᵥ p) -ᵥ f₀) +ᵥ g₀ = A v +ᵥ (A (p -ᵥ f₀) +ᵥ g₀)
-    rw [vadd_vsub_assoc, LinearEquiv.map_add, vadd_vadd]
-}
+    (A : V ≃ₗ[k] V) (f₀ g₀ : P) : P ≃ᵃ[k] P :=
+  let linearAsAffine : V ≃ᵃ[k] V :=
+    { toEquiv := A.toEquiv, linear := A, map_vadd' := fun p v => A.map_add v p }
+  (vaddConst k f₀).symm.trans (linearAsAffine.trans (vaddConst k g₀))
 
 @[simp]
 theorem ofLinearEquiv_apply {k : Type*} {V : Type*} {P : Type*}
