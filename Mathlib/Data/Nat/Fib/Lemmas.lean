@@ -17,7 +17,7 @@ to `(-1) ^ (n + 1)`. And Catalan's identity states that for any naturals `x` and
 
 namespace Nat
 
-/-- Being a linear recurrence, the entries of the Fibonacci sequence can be related to
+/-- Being a linear recurrence, the entries of the Fibonacci sequence can be related via
 matrix exponentiation. -/
 lemma fib_matrix_eq : ∀ {n : ℕ},
     !![fib (n + 2), fib (n + 1); fib (n + 1), fib n] = !![1, 1; 1, 0] ^ (n + 1)
