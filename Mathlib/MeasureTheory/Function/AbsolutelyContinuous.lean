@@ -3,11 +3,8 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Analysis.Normed.MulAction
+import Mathlib.Analysis.BoundedVariation
 import Mathlib.Order.SuccPred.IntervalSucc
-import Mathlib.Topology.EMetricSpace.BoundedVariation
 
 /-!
 # Absolutely Continuous Functions
@@ -41,6 +38,10 @@ We use the `ε`-`δ` definition to prove that
 `LipschitzOnWith.absolutelyContinuousOnInterval`;
 * absolutely continuous functions have bounded variation -
 `AbsolutelyContinuousOnInterval.boundedVariationOn`.
+
+We conclude that
+* absolutely continuous functions are a.e. differentiable -
+`AbsolutelyContinuousOnInterval.ae_differentiableAt`.
 
 ## Tags
 absolutely continuous
@@ -257,7 +258,7 @@ theorem fun_mul {f g : ℝ → ℝ}
 on `uIcc a b`. -/
 theorem mul {f g : ℝ → ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x * g x) a b :=
+    AbsolutelyContinuousOnInterval (f * g) a b :=
   hf.fun_mul hg
 
 /-- If `f` is Lipschitz on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
@@ -363,5 +364,11 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   · convert h_mono (show i + 1 ≤ n + 1 by omega)
     · norm_cast
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field_simp; abel
+
+/-- If `f` is absolute continuous on `uIcc a b`, then `f'` exists a.e. on `uIcc a b`. -/
+theorem ae_differentiableAt {f : ℝ → ℝ} {a b : ℝ}
+    (hf : AbsolutelyContinuousOnInterval f a b) :
+    ∀ᵐ (x : ℝ), x ∈ uIcc a b → DifferentiableAt ℝ f x :=
+  hf.boundedVariationOn.ae_differentiableAt_of_mem_uIcc
 
 end AbsolutelyContinuousOnInterval

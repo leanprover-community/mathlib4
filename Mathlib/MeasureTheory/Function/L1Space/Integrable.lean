@@ -38,6 +38,8 @@ noncomputable section
 
 open EMetric ENNReal Filter MeasureTheory NNReal Set TopologicalSpace
 
+open scoped Topology
+
 variable {α β γ δ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α} [MeasurableSpace δ]
 variable [NormedAddCommGroup β] [NormedAddCommGroup γ]
   [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε'] [ENorm ε'']
@@ -1210,5 +1212,41 @@ lemma Integrable.snd {f : α → E × F} (hf : Integrable f μ) : Integrable (fu
 lemma integrable_prod {f : α → E × F} :
     Integrable f μ ↔ Integrable (fun x ↦ (f x).1) μ ∧ Integrable (fun x ↦ (f x).2) μ :=
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prodMk h.2⟩
+
+section Limit
+
+/-- If `G n` tends to `f` a.e. and each `‖G n ·‖ₑ` is `AEMeasurable`, then the lower Lebesgue
+integral of `‖f ·‖ₑ` is at most the liminf of the lower Lebesgue integral of `‖G n ·‖ₑ`. -/
+theorem lintegral_bound_of_tendsto_atTop_aemeasurable_enorm
+    {G : ℕ → ℝ → ℝ} {f : ℝ → ℝ} {μ : Measure ℝ}
+    (hGf : ∀ᵐ x ∂μ, Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (f x)))
+    (hG : ∀ (n : ℕ), AEMeasurable (fun x ↦ ‖G n x‖ₑ) μ) :
+    ∫⁻ x, ‖f x‖ₑ ∂μ ≤ liminf (fun n ↦ ∫⁻ x, ‖G n x‖ₑ ∂μ) atTop :=
+  lintegral_congr_ae (by filter_upwards [hGf] with x hx using hx.enorm.liminf_eq) ▸
+    (MeasureTheory.lintegral_liminf_le' hG)
+
+/-- If `G n` tends to `f` a.e. and each `G n` is `AEStronglyMeasurable`, then the lower Lebesgue
+integral of `‖f ·‖ₑ` is at most the liminf of the lower Lebesgue integral of `‖G n ·‖ₑ`. -/
+theorem lintegral_bound_of_tendsto_atTop_aestronglyMeasurable
+    {G : ℕ → ℝ → ℝ} {f : ℝ → ℝ} {μ : Measure ℝ}
+    (hGf : ∀ᵐ x ∂μ, Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (f x)))
+    (hG : ∀ (n : ℕ), AEStronglyMeasurable (G n) μ) :
+    ∫⁻ x, ‖f x‖ₑ ∂μ ≤ liminf (fun n ↦ ∫⁻ x, ‖G n x‖ₑ ∂μ) atTop :=
+  lintegral_bound_of_tendsto_atTop_aemeasurable_enorm hGf
+    (fun n ↦ (hG n).aemeasurable.enorm)
+
+/-- If `G n` tends to `f` a.e., each `G n` is `AEStronglyMeasurable` and the liminf of the lower
+Lebesgue integral of `‖G n ·‖ₑ` is finite, then `f` is Lebesgue integrable. -/
+theorem integrable_of_tendsto_atTop_aestronglyMeasurable_liminf_ne_top
+    {G : ℕ → ℝ → ℝ} {f : ℝ → ℝ} {μ : Measure ℝ}
+    (hGf : ∀ᵐ x ∂μ, Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (f x)))
+    (hG : ∀ (n : ℕ), AEStronglyMeasurable (G n) μ)
+    (hG' : liminf (fun n ↦ ∫⁻ x, ‖G n x‖ₑ ∂μ) atTop ≠ ⊤) :
+    Integrable f μ :=
+  ⟨aestronglyMeasurable_of_tendsto_ae _ hG hGf,
+   lt_of_le_of_lt (lintegral_bound_of_tendsto_atTop_aestronglyMeasurable hGf hG)
+    hG'.lt_top⟩
+
+end Limit
 
 end MeasureTheory

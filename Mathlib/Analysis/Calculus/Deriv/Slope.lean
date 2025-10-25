@@ -69,6 +69,8 @@ theorem hasDerivWithinAt_iff_tendsto_slope' (hs : x ∉ s) :
 theorem hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x) (𝓝[≠] x) (𝓝 f') :=
   hasDerivAtFilter_iff_tendsto_slope
 
+alias ⟨HasDerivAt.tendsto_slope, _⟩ := hasDerivAt_iff_tendsto_slope
+
 theorem hasDerivAt_iff_tendsto_slope_left_right [LinearOrder 𝕜] : HasDerivAt f f' x ↔
     Tendsto (slope f x) (𝓝[<] x) (𝓝 f') ∧ Tendsto (slope f x) (𝓝[>] x) (𝓝 f') := by
   simp [hasDerivAt_iff_tendsto_slope, ← Iio_union_Ioi, nhdsWithin_union]
@@ -165,15 +167,7 @@ lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
   apply ge_of_tendsto this
   filter_upwards [self_mem_nhdsWithin] with y hy
   simp only [mem_diff, mem_singleton_iff] at hy
-  rcases lt_or_gt_of_ne hy.2 with h'y | h'y
-  · simp only [slope, vsub_eq_sub, smul_eq_mul]
-    apply mul_nonneg_of_nonpos_of_nonpos
-    · simpa using h'y.le
-    · simpa using h'g (by simp [hy]) (by simp) h'y.le
-  · simp only [slope, vsub_eq_sub, smul_eq_mul]
-    apply mul_nonneg
-    · simpa using h'y.le
-    · simpa [sub_nonneg] using h'g (by simp) (by simp [hy]) h'y.le
+  exact h'g.slope_nonneg (by simp) (by simp [hy])
 
 /-- The derivative within a set of a monotone function is nonnegative. -/
 lemma MonotoneOn.derivWithin_nonneg (hg : MonotoneOn g s) :
@@ -183,6 +177,14 @@ lemma MonotoneOn.derivWithin_nonneg (hg : MonotoneOn g s) :
   by_cases hx : AccPt x (𝓟 s); swap
   · simp [derivWithin_zero_of_not_accPt hx]
   exact hd.hasDerivWithinAt.nonneg_of_monotoneOn hx hg
+
+/-- The derivative at the interior of a set of a monotone function is nonnegative. -/
+lemma MonotoneOn.deriv_nonneg (hg : MonotoneOn g s) (hs : s ∈ 𝓝 x) :
+    0 ≤ deriv g x := by
+  by_cases hd : DifferentiableAt 𝕜 g x; swap
+  · simp [deriv_zero_of_not_differentiableAt hd]
+  rw [hd.differentiableWithinAt.hasDerivWithinAt.hasDerivAt hs |>.deriv]
+  exact MonotoneOn.derivWithin_nonneg hg
 
 /-- If a monotone function has a derivative, then this derivative is nonnegative. -/
 lemma HasDerivAt.nonneg_of_monotone (hd : HasDerivAt g g' x) (hg : Monotone g) : 0 ≤ g' := by
@@ -206,6 +208,11 @@ lemma HasDerivWithinAt.nonpos_of_antitoneOn (hx : AccPt x (𝓟 s))
 lemma AntitoneOn.derivWithin_nonpos (hg : AntitoneOn g s) :
     derivWithin g s x ≤ 0 := by
   simpa [derivWithin.fun_neg] using hg.neg.derivWithin_nonneg
+
+/-- The derivative at the interior of a set of a antitone function is nonpositive. -/
+lemma AntitoneOn.deriv_nonpos (hg : AntitoneOn g s) (hs : s ∈ 𝓝 x) :
+    deriv g x ≤ 0 := by
+  simpa [deriv.fun_neg] using hg.neg.deriv_nonneg hs
 
 /-- If an antitone function has a derivative, then this derivative is nonpositive. -/
 lemma HasDerivAt.nonpos_of_antitone (hd : HasDerivAt g g' x) (hg : Antitone g) : g' ≤ 0 := by
