@@ -29,7 +29,7 @@ noncomputable section
 
 open Finset Function
 
-variable {α β γ ι M M' N P G H R S : Type*}
+variable {α β M N P : Type*}
 
 namespace Finsupp
 
@@ -190,7 +190,7 @@ theorem unique_single_eq_iff [Unique α] {b' : M} : single a b = single a' b' �
   rw [Finsupp.unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same,
     single_eq_same]
 
-lemma apply_single' [Zero N] [Zero P] (e : N → P) (he : e 0 = 0) (a : α) (n : N) (b : α) :
+lemma apply_single' [Zero N] (e : N → M) (he : e 0 = 0) (a : α) (n : N) (b : α) :
     e ((single a n) b) = single a (e n) b := by
   classical
   simp only [single_apply]
@@ -433,7 +433,7 @@ end Erase
 
 section MapRange
 
-variable [Zero M] [Zero N] [Zero P]
+variable [Zero M] [Zero N]
 
 @[simp]
 theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
