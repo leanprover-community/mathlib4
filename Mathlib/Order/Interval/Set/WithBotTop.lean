@@ -29,8 +29,7 @@ theorem preimage_coe_top : (some : α → WithTop α) ⁻¹' {⊤} = (∅ : Set 
 variable [Preorder α] {a b : α}
 
 theorem range_coe : range (some : α → WithTop α) = Iio ⊤ := by
-  ext x
-  rw [mem_Iio, WithTop.lt_top_iff_ne_top, mem_range, ne_top_iff_exists]
+  ext; simp [mem_range, WithTop.lt_top_iff_ne_top, ne_top_iff_exists]
 
 @[simp]
 theorem preimage_coe_Ioi : (some : α → WithTop α) ⁻¹' Ioi a = Ioi a :=
@@ -134,8 +133,8 @@ theorem preimage_coe_bot : (some : α → WithBot α) ⁻¹' {⊥} = (∅ : Set 
 
 variable [Preorder α] {a b : α}
 
-theorem range_coe : range (some : α → WithBot α) = Ioi ⊥ :=
-  @WithTop.range_coe αᵒᵈ _
+theorem range_coe : range (some : α → WithBot α) = Ioi ⊥ := by
+  ext; simp [mem_range, WithBot.bot_lt_iff_ne_bot, ne_bot_iff_exists]
 
 @[simp]
 theorem preimage_coe_Ioi : (some : α → WithBot α) ⁻¹' Ioi a = Ioi a :=

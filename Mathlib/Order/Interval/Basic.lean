@@ -292,8 +292,8 @@ variable [LE α]
 -- https://github.com/leanprover-community/mathlib4/issues/380
 -- Note(kmill): `Interval` is an `abbrev`, so none of these `instance`s are needed.
 instance : Inhabited (Interval α) := WithBot.inhabited
-instance : LE (Interval α) := WithBot.le
-instance : OrderBot (Interval α) := WithBot.orderBot
+instance : LE (Interval α) := WithBot.instLE
+instance : OrderBot (Interval α) := WithBot.instOrderBot
 
 instance : Coe (NonemptyInterval α) (Interval α) :=
   WithBot.coe
@@ -339,7 +339,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : Preorder (Interval α) :=
-  WithBot.preorder
+  WithBot.instPreorder
 
 /-- `{a}` as an interval. -/
 def pure (a : α) : Interval α :=
@@ -401,7 +401,7 @@ section PartialOrder
 variable [PartialOrder α] [PartialOrder β] {s t : Interval α} {a b : α}
 
 instance partialOrder : PartialOrder (Interval α) :=
-  WithBot.partialOrder
+  WithBot.instPartialOrder
 
 /-- Consider an interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : Interval α ↪o Set α :=

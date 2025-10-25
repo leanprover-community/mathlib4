@@ -392,20 +392,14 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
       _ ≤ _ := by rw [sup_cons]; exact max_le_max le_rfl ih
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
-  simpa only [degree, ← support_toFinsupp, toFinsupp_mul]
-    using AddMonoidAlgebra.sup_support_mul_le (WithBot.coe_add _ _).le _ _
+  simpa [degree, ← support_toFinsupp] using AddMonoidAlgebra.sup_support_mul_le (by simp) ..
 
 theorem degree_mul_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
-    degree (p * q) ≤ a + b :=
-  (p.degree_mul_le _).trans <| add_le_add ‹_› ‹_›
+    degree (p * q) ≤ a + b := by grw [degree_mul_le, hp, hq]
 
 theorem degree_pow_le (p : R[X]) : ∀ n : ℕ, degree (p ^ n) ≤ n • degree p
   | 0 => by rw [pow_zero, zero_nsmul]; exact degree_one_le
-  | n + 1 =>
-    calc
-      degree (p ^ (n + 1)) ≤ degree (p ^ n) + degree p := by
-        rw [pow_succ]; exact degree_mul_le _ _
-      _ ≤ _ := by rw [succ_nsmul]; exact add_le_add_right (degree_pow_le _ _) _
+  | n + 1 => by grw [pow_succ, succ_nsmul, degree_mul_le, degree_pow_le]
 
 theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :
     degree (p ^ b) ≤ b * a := by
