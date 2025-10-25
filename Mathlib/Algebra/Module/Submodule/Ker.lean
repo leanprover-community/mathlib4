@@ -179,6 +179,10 @@ theorem disjoint_ker' {p : Submodule R M} :
     ⟨fun H x hx y hy h => eq_of_sub_eq_zero <| H _ (sub_mem hx hy) (by simp [h]),
      fun H x h₁ h₂ => H x h₁ 0 (zero_mem _) (by simpa using h₂)⟩
 
+lemma disjoint_ker_iff_injOn {p : Submodule R M} :
+    Disjoint p (ker f) ↔ Set.InjOn f p :=
+  disjoint_ker'
+
 theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
     (hd : Disjoint p (ker f)) : Set.InjOn f s := fun _ hx _ hy =>
   disjoint_ker'.1 hd _ (h hx) _ (h hy)

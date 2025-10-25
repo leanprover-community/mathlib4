@@ -713,6 +713,14 @@ theorem comapDomain_mapDomain (hf : Function.Injective f) (l : α →₀ M) :
     comapDomain f (mapDomain f l) hf.injOn = l := by
   ext; rw [comapDomain_apply, mapDomain_apply hf]
 
+lemma mem_range_mapDomain_iff (hf : Function.Injective f) (x : β →₀ M) :
+    x ∈ Set.range (Finsupp.mapDomain f) ↔ ∀ b ∉ Set.range f, x b = 0 := by
+  refine ⟨fun ⟨y, hy⟩ x hx ↦ hy ▸ Finsupp.mapDomain_notin_range y x hx, fun h ↦ ?_⟩
+  refine ⟨Finsupp.comapDomain f x hf.injOn, Finsupp.mapDomain_comapDomain f hf _ fun i hi ↦ ?_⟩
+  by_contra hc
+  simp only [Finset.mem_coe, Finsupp.mem_support_iff, ne_eq] at hi
+  exact hi (h _ hc)
+
 end FInjective
 
 end ComapDomain
