@@ -6,7 +6,7 @@ Authors: Kim Morrison, Eric Wieser
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Composition
 import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Maps
 
 
 /-!
