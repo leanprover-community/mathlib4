@@ -16,9 +16,10 @@ from typing import Optional
 try:
     import aristotlelib
 except ImportError:
-    print("Error: aristotlelib is not installed.", file=sys.stderr)
-    print("Install it with: pip install aristotlelib", file=sys.stderr)
-    sys.exit(1)
+    raise SystemExit(
+        "Error: aristotlelib is not installed.\n"
+        "Install it with: pip install aristotlelib"
+    )
 
 
 def find_project_root() -> Optional[Path]:
@@ -92,27 +93,30 @@ def get_api_key() -> str:
         return api_key
 
     # Not found anywhere
-    print("Error: ARISTOTLE_API_KEY not found.", file=sys.stderr)
-    print("\nYou can set your API key in one of these ways:", file=sys.stderr)
-    print("\n1. Environment variable:", file=sys.stderr)
-    print("     export ARISTOTLE_API_KEY='your-api-key-here'", file=sys.stderr)
-    print("\n2. Project config file (.aristotle.conf in repo root):", file=sys.stderr)
-    print("     echo 'ARISTOTLE_API_KEY=your-api-key-here' > .aristotle.conf", file=sys.stderr)
-    print("\n3. User config file (~/.config/aristotle/config):", file=sys.stderr)
-    print("     mkdir -p ~/.config/aristotle", file=sys.stderr)
-    print("     echo 'ARISTOTLE_API_KEY=your-api-key-here' > ~/.config/aristotle/config", file=sys.stderr)
-    sys.exit(1)
+    raise SystemExit(
+        "Error: ARISTOTLE_API_KEY not found.\n"
+        "\n"
+        "You can set your API key in one of these ways:\n"
+        "\n"
+        "1. Environment variable:\n"
+        "     export ARISTOTLE_API_KEY='your-api-key-here'\n"
+        "\n"
+        "2. Project config file (.aristotle.conf in repo root):\n"
+        "     echo 'ARISTOTLE_API_KEY=your-api-key-here' > .aristotle.conf\n"
+        "\n"
+        "3. User config file (~/.config/aristotle/config):\n"
+        "     mkdir -p ~/.config/aristotle\n"
+        "     echo 'ARISTOTLE_API_KEY=your-api-key-here' > ~/.config/aristotle/config"
+    )
 
 
 def validate_input_file(file_path: Path) -> None:
     """Validate that the input file exists and is a .lean file."""
     if not file_path.exists():
-        print(f"Error: File not found: {file_path}", file=sys.stderr)
-        sys.exit(1)
+        raise SystemExit(f"Error: File not found: {file_path}")
 
     if file_path.suffix != ".lean":
-        print(f"Error: Input file must have .lean extension: {file_path}", file=sys.stderr)
-        sys.exit(1)
+        raise SystemExit(f"Error: Input file must have .lean extension: {file_path}")
 
 
 async def prove_file(input_path: Path, output_path: Optional[Path], api_key: str) -> None:
@@ -142,10 +146,9 @@ async def prove_file(input_path: Path, output_path: Optional[Path], api_key: str
         print(f"✓ Proof written to: {result_path}")
 
     except Exception as e:
-        print(f"\n✗ Error communicating with Aristotle API: {e}", file=sys.stderr)
         import traceback
         traceback.print_exc()
-        sys.exit(1)
+        raise SystemExit(f"\n✗ Error communicating with Aristotle API: {e}")
 
 
 def main():
