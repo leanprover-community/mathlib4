@@ -85,7 +85,7 @@ This is inverse to the restriction. See `galRestrictHom`. -/
 noncomputable
 def galLift (σ : B →ₐ[A] B₂) : L →ₐ[K] L₂ :=
   haveI := (IsFractionRing.injective A K).isDomain
-  haveI := Module.IsTorsionFree.trans_faithfulSMul A K L₂
+  haveI := .trans_faithfulSMul A K L₂
   haveI := IsIntegralClosure.isLocalization A K L B
   haveI H : ∀ (y :  Algebra.algebraMapSubmonoid B A⁰),
       IsUnit (((algebraMap B₂ L₂).comp σ) (y : B)) := by

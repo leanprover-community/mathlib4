@@ -234,7 +234,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   have := B.finite
   set P := minpoly R B.gen with hP
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
-  haveI : Module.IsTorsionFree R L := Module.IsTorsionFree.trans_faithfulSMul R K L
+  haveI : Module.IsTorsionFree R L := .trans_faithfulSMul R K L
   let _ := P.map (algebraMap R L)
   -- There is a polynomial `Q` such that `p • z = aeval B.gen Q`. We can assume that
   -- `Q.degree < P.degree` and `Q ≠ 0`.
