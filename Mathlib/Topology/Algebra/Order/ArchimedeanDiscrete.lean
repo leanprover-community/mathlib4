@@ -94,4 +94,21 @@ instance [DiscreteTopology G] : IsAddCyclic G := by
   obtain ⟨e⟩ := (LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered G).mpr this
   exact e.isAddCyclic.mpr inferInstance
 
+/-- In an Archimedean densely linearly ordered group (with the order topology), a subgroup is
+discrete iff it is cyclic. -/
+lemma discrete_iff_cyclic {H : AddSubgroup G} : IsAddCyclic H ↔ DiscreteTopology H := by
+  nontriviality G using isAddCyclic_of_subsingleton, Subsingleton.discreteTopology
+  rw [AddSubgroup.isAddCyclic_iff_exists_zmultiples_eq_top]
+  constructor
+  · rintro ⟨g, rfl⟩
+    infer_instance
+  · have := H.dense_or_cyclic
+    simp only [← AddSubgroup.zmultiples_eq_closure, Eq.comm (a := H)] at this
+    refine fun hA ↦ this.elim (fun h ↦ ?_) id
+    -- remains to show a contradiction assuming `H` is both dense and discrete
+    obtain rfl : H = ⊤ := by
+      rw [← coe_eq_univ, ← (dense_iff_closure_eq.mp h), H.isClosed_of_discrete.closure_eq]
+    have : DiscreteTopology G := by rwa [← (Homeomorph.Set.univ G).discreteTopology_iff]
+    exact isAddCyclic_iff_exists_zmultiples_eq_top.mp inferInstance
+
 end AddSubgroup
