@@ -63,8 +63,9 @@ theorem Nat.isLinearSet_iff_exists_matrix {s : Set (ι → ℕ)} :
 /-! ### Semilinear sets in `ℕ ^ k` are closed under intersection -/
 
 /- The set of solutions of a linear equation `a + f x = b + g y` in `ℕ ^ k` is semilinear. -/
-private theorem Nat.isSemilinearSet_setOf_eq [Finite ι] [IsCancelAdd M] {F : Type*}
-    [FunLike F (ι → ℕ) M] [AddMonoidHomClass F (ι → ℕ) M] (a b : M) (f g : F) :
+private theorem Nat.isSemilinearSet_setOf_eq [Finite ι] [IsCancelAdd M] {F G : Type*}
+    [FunLike F (ι → ℕ) M] [AddMonoidHomClass F (ι → ℕ) M] [FunLike G (ι → ℕ) M]
+    [AddMonoidHomClass G (ι → ℕ) M] (a b : M) (f : F) (g : G) :
     IsSemilinearSet { x | a + f x = b + g x } := by
   have hpwo := Pi.isPWO { x | a + f x = b + g x }
   convert (IsSemilinearSet.of_finite <| (setOf_minimal_antichain _).finite_of_partiallyWellOrderedOn
@@ -625,8 +626,8 @@ lemma IsSemilinearSet.exists_fg_eq_subtypeVal₂ (hs₁ : IsSemilinearSet s₁)
     <;> simp_rw [image_image, AddSubmonoid.coe_inclusion]
 
 /-- The set of solutions of a linear equation `a + f x = b + g y` is semilinear. -/
-theorem isSemilinearSet_setOf_eq [AddMonoid.FG M] [IsCancelAdd N] {F : Type*} [FunLike F M N]
-    [AddMonoidHomClass F M N] (a b : N) (f g : F) :
+theorem isSemilinearSet_setOf_eq [AddMonoid.FG M] [IsCancelAdd N] {F G : Type*} [FunLike F M N]
+    [AddMonoidHomClass F M N] [FunLike G M N] [AddMonoidHomClass G M N] (a b : N) (f : F) (g : G) :
     IsSemilinearSet { x | a + f x = b + g x } := by
   rcases fg_iff_exists_fin_addMonoidHom.1 (AddMonoid.FG.fg_top (M := M)) with ⟨n, h, hh⟩
   rw [AddMonoidHom.mrange_eq_top] at hh
