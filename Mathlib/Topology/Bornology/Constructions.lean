@@ -84,6 +84,32 @@ theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
   exact (isBounded_prod_of_nonempty (hs.prod hs)).trans and_self_iff
 
+section tendsto
+
+lemma _root_.Filter.Tendsto.cobounded_prod {γ : Type*} {f : α × β → γ} {l : Filter γ}
+    (h₁ : ∀ s : Set α, IsBounded s → Tendsto f (𝓟 s ×ˢ cobounded β) l)
+    (h₂ : Tendsto f (cobounded α ×ˢ ⊤) l) :
+    Tendsto f (cobounded (α × β)) l := by
+  intro s hs
+  rw [mem_map, ← isCobounded_def, ← isBounded_compl_iff, ← preimage_compl]
+  specialize h₂ hs
+  rw [mem_map, mem_prod_top] at h₂
+  set t := {a | ∀ (b : β), (a, b) ∈ f ⁻¹' s}
+  have ht : t ×ˢ univ ⊆ f ⁻¹' s := by grind
+  specialize h₁ tᶜ (IsCobounded.compl h₂) hs
+  rw [mem_map, mem_prod_iff] at h₁
+  obtain ⟨t₁, ht₁, t₂, ht₂, H⟩ := h₁
+  rw [mem_principal, compl_subset_comm] at ht₁
+  rw [← compl_subset_compl, ← preimage_compl, compl_prod_eq_union] at H ht
+  simp only [compl_univ, prod_empty, union_empty] at ht
+  have := subset_inter H ht
+  rw [union_inter_distrib_right, prod_inter_prod, prod_inter_prod] at this
+  have ht₁t : t₁ᶜ ∩ tᶜ = ∅ := (disjoint_compl_left_iff_subset.mpr ht₁).symm.inter_eq
+  simp only [ht₁t, inter_self, empty_prod, univ_inter, inter_univ, empty_union] at this
+  exact IsCobounded.compl h₂ |>.prod (IsCobounded.compl ht₂) |>.subset this
+
+end tendsto
+
 /-!
 ### Bounded sets in `Π i, X i`
 -/

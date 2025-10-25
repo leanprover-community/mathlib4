@@ -50,3 +50,15 @@ instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by
 end CharacterSpace
 
 end WeakDual
+
+section cobounded
+
+open Filter Bornology
+
+@[simp]
+theorem tendsto_algebraMap_cobounded (𝕜 𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜']
+    [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] :
+    Tendsto (algebraMap 𝕜 𝕜') (cobounded 𝕜) (cobounded 𝕜') :=
+  algebraMap_cobounded_le_cobounded 𝕜 𝕜'
+
+end cobounded
