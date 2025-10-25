@@ -338,8 +338,11 @@ theorem isNormal_deriv (f) : IsNormal (deriv f) :=
 theorem deriv_strictMono (f) : StrictMono (deriv f) :=
   derivFamily_strictMono _
 
-theorem deriv_id_of_nfp_id (h : nfp f = id) : deriv f = id :=
+theorem deriv_eq_id_of_nfp_eq_id (h : nfp f = id) : deriv f = id :=
   ((isNormal_deriv _).eq_iff_zero_and_succ IsNormal.refl).2 (by simp [h])
+
+@[deprecated (since := "2025-10-25")]
+alias deriv_id_of_nfp_id := deriv_eq_id_of_nfp_eq_id
 
 theorem IsNormal.deriv_fp (H : IsNormal f) : ∀ o, f (deriv f o) = deriv f o :=
   derivFamily_fp (i := ⟨⟩) H
@@ -359,9 +362,6 @@ theorem IsNormal.mem_range_deriv (H : IsNormal f) {a} : a ∈ Set.range (deriv f
 theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoints f) := by
   convert derivFamily_eq_enumOrd fun _ : Unit => H
   exact (Set.iInter_const _).symm
-
-theorem deriv_eq_id_of_nfp_eq_id (h : nfp f = id) : deriv f = id :=
-  (IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) IsNormal.refl).2 <| by simp [h]
 
 theorem nfp_zero_left (a) : nfp 0 a = a := by
   rw [← iSup_iterate_eq_nfp]
