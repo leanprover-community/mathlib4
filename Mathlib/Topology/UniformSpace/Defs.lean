@@ -262,6 +262,16 @@ lemma IsSymmetricRel.sInter {s : Set (SetRel α α)} (h : ∀ i ∈ s, IsSymmetr
   exact IsSymmetricRel.iInter (by simpa)
 
 set_option linter.deprecated false in
+@[deprecated SetRel.isSymm_id (since := "2025-10-17")]
+lemma isSymmetricRel_idRel : IsSymmetricRel (idRel : Set (α × α)) := by
+  simp [IsSymmetricRel, idRel, eq_comm]
+
+set_option linter.deprecated false in
+@[deprecated SetRel.isSymm_univ (since := "2025-10-17")]
+lemma isSymmetricRel_univ : IsSymmetricRel (Set.univ : Set (α × α)) := by
+  simp [IsSymmetricRel]
+
+set_option linter.deprecated false in
 @[deprecated SetRel.isSymm_preimage (since := "2025-10-17")]
 lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
