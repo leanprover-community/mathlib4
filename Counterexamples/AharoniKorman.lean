@@ -568,7 +568,8 @@ def chainBetween (a b c d : ℕ) : Finset (ℕ × ℕ) :=
     then Ico (a, b) (a, d) ∪ Icc (a, d) (c, d)
     else ∅
 
-lemma chainBetween_isChain {a b c d : ℕ} : IsChain (· ≤ ·) (chainBetween a b c d).toSet := by
+lemma chainBetween_isChain {a b c d : ℕ} :
+    IsChain (· ≤ ·) (chainBetween a b c d : Set (ℕ × ℕ)) := by
   rw [chainBetween]
   split_ifs
   · rintro ⟨v, w⟩ hvw ⟨x, y⟩ hxy
@@ -577,7 +578,7 @@ lemma chainBetween_isChain {a b c d : ℕ} : IsChain (· ≤ ·) (chainBetween a
   · simp
 
 lemma image_chainBetween_isChain {a b c d n : ℕ} :
-    IsChain (· ≤ ·) ((chainBetween a b c d).image (embed n)).toSet := by
+    IsChain (· ≤ ·) ((chainBetween a b c d).image (embed n) : Set Hollom) := by
   rw [coe_image]
   apply chainBetween_isChain.image
   simp
@@ -650,8 +651,8 @@ theorem card_C_inter_Icc_eq (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
   set I : Finset Hollom := {x ∈ int | x ∈ C}
   have int_eq : int = Set.Icc h(xl, yl, n) h(xh, yh, n) := by
     simp only [coe_image, coe_Icc, int, embed_image_Icc]
-  have hI : IsChain (· ≤ ·) I.toSet := hC.mono (by simp [Set.subset_def, I])
-  have hIn : I.toSet ⊆ level n := by simp +contextual [Set.subset_def, I, int, embed_apply]
+  have hI : IsChain (· ≤ ·) I := hC.mono (by simp [Set.subset_def, I])
+  have hIn : ↑I ⊆ level n := by simp +contextual [Set.subset_def, I, int, embed_apply]
   have : Set.MapsTo line int (Icc (xl + yl) (xh + yh)) := by
     rw [int_eq, coe_Icc]
     exact line_mapsTo rfl
@@ -724,7 +725,7 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
     omega
   -- Thus the image of `B` under `f` is all of `I`, except for exactly one element.
   have card_eq : (I \ B.image f).card = 1 := by
-    rw [card_sdiff, cI, card_image_of_injOn f_inj, cB]
+    rw [card_sdiff_of_subset, cI, card_image_of_injOn f_inj, cB]
     · omega
     · rw [← coe_subset, coe_image]
       exact f_maps.image_subset
@@ -1144,8 +1145,8 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
   -- ...then let `F` be the chain from `(a, a)` to `(3 * a, a)`...
   let F : Finset Hollom := (chainBetween a a (3 * a) a).image (embed n)
   -- ...observing that by definition of `a`, we know `F` is entirely within `S \ (C ∩ level n)`...
-  have F_subs : F.toSet ⊆ S n C \ (C ∩ level n) := calc
-    F.toSet = embed n '' chainBetween a a (3 * a) a := Finset.coe_image
+  have F_subs : ↑F ⊆ S n C \ (C ∩ level n) := calc
+    F = embed n '' chainBetween a a (3 * a) a := Finset.coe_image
     _ ⊆ embed n '' Finset.Icc (a, a) (3 * a, a) := Set.image_mono chainBetween_subset
     _ = embed n '' Set.Icc (a, a) (3 * a, a) := by simp
     _ ⊆ embed n '' Set.Ici (a, a) := Set.image_mono Set.Icc_subset_Ici_self

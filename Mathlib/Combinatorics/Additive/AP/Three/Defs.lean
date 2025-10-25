@@ -64,7 +64,7 @@ three. -/
 @[to_additive /-- A set is **3AP-free** if it does not contain any non-trivial arithmetic
 progression of length three.
 
-This is also sometimes called a **non averaging set** or **Salem-Spencer set**. -/]
+This is also sometimes called a **non-averaging set** or **Salem-Spencer set**. -/]
 def ThreeGPFree : Prop := ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → a = b
 
 /-- Whether a given finset is 3GP-free is decidable. -/
@@ -449,7 +449,7 @@ lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) (hkn : k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by
   suffices h : Set.BijOn (Nat.cast : ℕ → Fin n.succ) (range k) (Iio k : Finset (Fin n.succ)) by
     exact (AddMonoidHomClass.isAddFreimanHom (Nat.castRingHom _) h.mapsTo).addRothNumber_mono h
-  refine ⟨?_, (CharP.natCast_injOn_Iio _ n.succ).mono (by simp; omega), ?_⟩
+  refine ⟨?_, (CharP.natCast_injOn_Iio _ n.succ).mono (by simp; cutsat), ?_⟩
   · simpa using fun x ↦ natCast_strictMono hkn
   simp only [Set.SurjOn, coe_Iio, Set.subset_def, Set.mem_Iio, Set.mem_image, lt_iff_val_lt_val,
     val_cast_of_lt, Nat.lt_succ_iff.2 hkn, coe_range]

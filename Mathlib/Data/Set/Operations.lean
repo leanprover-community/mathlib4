@@ -42,7 +42,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `Set.seq`: monadic `seq` operation on sets;
   we don't use monadic notation to ensure support for maps between different universes.
 
-## Notations
+## Notation
 
 - `f '' s`: image of a set;
 - `f ⁻¹' s`: preimage of a set;
@@ -90,7 +90,7 @@ theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p 
 
 @[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
 
-@[simp, mfld_simps, grind]
+@[simp, mfld_simps, grind ←]
 theorem mem_univ (x : α) : x ∈ @univ α := trivial
 
 /-! ### Operations -/
@@ -170,6 +170,10 @@ theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.v
   ext
   simp only [Function.comp_apply]
   apply apply_rangeSplitting
+
+lemma Subtype.range_coind (f : α → β) {p : β → Prop} (h : ∀ (a : α), p (f a)) :
+    range (Subtype.coind f h) = Subtype.val ⁻¹' range f := by
+  simp [Set.ext_iff, Subtype.ext_iff]
 
 section Prod
 
