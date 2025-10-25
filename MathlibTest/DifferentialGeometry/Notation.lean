@@ -1021,71 +1021,68 @@ For now, please specify the model by hand.
 -- XXX: double-check these could work, by trying out the equivalent
 -- MDifferentiable/ContMDiff incantation
 /--
-error: Found no model with corners on second factor `M × M`
-Note: finding a model with corners on products of three or more spaces is not implemented yet
+info: MDifferentiable (I.prod (I.prod I)) (I'.prod (𝓘(𝕜, 𝕜).prod I')) (Prod.map f (Prod.map h g)) : Prop
 -/
 #guard_msgs in
 #check MDiff (Prod.map f (Prod.map h g))
-
 /--
-error: Found no model with corners on first factor `M × M`
-Note: finding a model with corners on products of three or more spaces is not implemented yet
+info: MDifferentiable ((I.prod I).prod I) ((I'.prod I').prod 𝓘(𝕜, 𝕜)) (Prod.map (Prod.map f g) h) : Prop
 -/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map f g) h)
 
 /--
-error: Found no model with corners on first factor `M × M`
-Note: finding a model with corners on products of three or more spaces is not implemented yet
+info: MDifferentiable ((I.prod I).prod (I.prod (I.prod 𝓘(𝕜, E)))) ((I'.prod I').prod (𝓘(𝕜, 𝕜).prod I'))
+  (Prod.map (Prod.map f g) (Prod.map h k)) : Prop
 -/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map f g) (Prod.map h k))
 
 /--
-error: Found no model with corners on first factor `(M × M) × M`
-Note: finding a model with corners on products of three or more spaces is not implemented yet
+info: MDifferentiable (((I.prod I).prod I).prod (I.prod 𝓘(𝕜, E))) (((I'.prod I').prod 𝓘(𝕜, 𝕜)).prod I')
+  (Prod.map (Prod.map (Prod.map f g) h) k) : Prop
 -/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map (Prod.map f g) h) k)
 
 /--
-error: Found no model with corners on second factor `M × M × M × E`
-Note: finding a model with corners on products of three or more spaces is not implemented yet
+info: MDifferentiable (I.prod (I.prod (I.prod (I.prod 𝓘(𝕜, E))))) (I'.prod (I'.prod (𝓘(𝕜, 𝕜).prod I')))
+  (Prod.map f (Prod.map g (Prod.map h k))) : Prop
 -/
 #guard_msgs in
 #check MDiff (Prod.map f (Prod.map g (Prod.map h k)))
 
 /--
-error: Found no model with corners on second factor `EM' × F`
-Note: finding a model with corners on products of three or more spaces is not implemented yet
+error: `EM' × F` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
 -/
 #guard_msgs in
 #check CMDiff 2 (Prod.map f' (Prod.map g' h'))
 
 /--
-error: Found no model with corners on first factor `E × EM'`
-Note: finding a model with corners on products of three or more spaces is not implemented yet
+error: `E × EM'` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
 -/
 #guard_msgs in
 #check CMDiff 2 (Prod.map (Prod.map f' g') h')
 
 /--
-error: Found no model with corners on first factor `(E × EM') × F`
-Note: finding a model with corners on products of three or more spaces is not implemented yet
+error: `E × EM'` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
 -/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map (Prod.map f' g') h') k')
 
 /--
-error: Found no model with corners on first factor `E × EM'`
-Note: finding a model with corners on products of three or more spaces is not implemented yet
+error: `E × EM'` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
 -/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map f' g') (Prod.map h' k'))
 
 /--
-error: Found no model with corners on second factor `EM' × F × F`
-Note: finding a model with corners on products of three or more spaces is not implemented yet
+error: `F × F` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
 -/
 #guard_msgs in
 #check MDiff (Prod.map f' (Prod.map g' (Prod.map h' k')))
