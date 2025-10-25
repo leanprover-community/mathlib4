@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 import Mathlib.Order.Filter.AtTopBot.Group
 import Mathlib.Topology.Algebra.Group.Basic
 

@@ -6,6 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.Lattice
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
