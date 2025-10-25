@@ -958,18 +958,12 @@ Hint: Additional diagnostic information may be available using the `set_option d
 #guard_msgs in
 #check MDifferentiable I I (Sum.map f h')
 
--- Nested sums are not supported yet.
-/--
-error: Found no model with corners on first summand `M ⊕ M
-Note: finding a model with corners on direct sums of three or more spaces is not implemented yet`
--/
+-- Nested sums are also supported.
+/-- info: MDifferentiable I I' (Sum.map (Sum.map f f) f) : Prop -/
 #guard_msgs in
 #check MDiff (Sum.map (Sum.map f f) f)
 
-/--
-error: Found no model with corners on first summand `M ⊕ M ⊕ M
-Note: finding a model with corners on direct sums of three or more spaces is not implemented yet`
--/
+/-- info: MDifferentiable I I' (Sum.map (Sum.map f (Sum.map g g)) f) : Prop -/
 #guard_msgs in
 #check MDiff (Sum.map (Sum.map f (Sum.map g g)) f)
 
@@ -1022,9 +1016,7 @@ For now, please specify the model by hand.
 #guard_msgs in
 #check MDiff (Prod.map φ φ')
 
--- Currently, higher-order products are not implemented.
--- XXX: double-check these could work, by trying out the equivalent
--- MDifferentiable/ContMDiff incantation
+-- Higher-order products are implemented as well.
 /--
 info: MDifferentiable (I.prod (I.prod I)) (I'.prod (𝓘(𝕜, 𝕜).prod I')) (Prod.map f (Prod.map h g)) : Prop
 -/
@@ -1092,9 +1084,92 @@ For now, please specify the model by hand.
 #guard_msgs in
 #check MDiff (Prod.map f' (Prod.map g' (Prod.map h' k')))
 
+variable {f' : E → M} {g' : E' → M'} {h' : F → 𝕜}
+
+/--
+error: `E × E'` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
+-/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f' g') h') -- domain E × E' × F
+
+/--
+error: `E × E'` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
+-/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f' g') f) -- domain E × E' × M = (E × E') × M
+
+/--
+info: MDifferentiable (𝓘(𝕜, E).prod (𝓘(𝕜, E).prod I)) (I.prod (I.prod I')) (Prod.map f' (Prod.map f' f)) : Prop
+-/
+#guard_msgs in
+#check MDiff (Prod.map f' (Prod.map f' f)) -- domain E × (E' × M)
+
+/--
+info: MDifferentiable (I.prod (𝓘(𝕜, E).prod I)) (I'.prod (I.prod I')) (Prod.map f (Prod.map f' f)) : Prop
+-/
+#guard_msgs in
+#check MDiff (Prod.map f (Prod.map f' f)) -- domain M × (E × M)
+
+/--
+error: `E × F` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
+-/
+#guard_msgs in
+#check MDiff (Prod.map f (Prod.map f' h')) -- domain M × (E × F)
+
+/--
+info: MDifferentiable ((I.prod 𝓘(𝕜, E)).prod 𝓘(𝕜, F)) ((I'.prod I).prod 𝓘(𝕜, 𝕜)) (Prod.map (Prod.map f f') h') : Prop
+-/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f f') h') -- domain (M × E) × F
+
+/--
+info: MDifferentiable ((𝓘(𝕜, E).prod I).prod 𝓘(𝕜, F)) ((I.prod I').prod 𝓘(𝕜, 𝕜)) (Prod.map (Prod.map f' f) h') : Prop
+-/
+#guard_msgs in
+#check MDiff (Prod.map (Prod.map f' f) h') -- domain (E × M) × F
+
 -- TODO: add many more tests!
 
 end product
+
+-- Combining sums and products.
+
+variable {f : M → M'} {g : M' → M} {f' g' : E → M} {h' : F → E}
+
+/--
+info: MDifferentiable (I'.prod (I.prod I)) (I.prod (I'.prod I')) (Prod.map g (Prod.map f f)) : Prop
+-/
+#guard_msgs in
+#check MDiff (Prod.map g (Prod.map f f))
+-- domain M' × (M ⊕ M)
+
+/--
+info: MDifferentiable (𝓘(𝕜, E).prod (𝓘(𝕜, E).prod I)) (I.prod (I.prod I')) (Prod.map f' (Prod.map (Sum.map f' g') f)) : Prop
+-/
+#guard_msgs in
+#check MDiff (Prod.map f' (Prod.map (Sum.map f' g') f)) -- domain E × (E ⊕ E) × M
+
+/--
+info: MDifferentiable (𝓘(𝕜, E).prod I) (I.prod I') (Prod.map (Sum.map f' f') (Sum.map f f)) : Prop
+-/
+#guard_msgs in
+#check MDiff (Prod.map (Sum.map f' f') (Sum.map f f)) -- domain (M ⊕ M) × (E ⊕ E)
+
+/--
+info: MDifferentiable (I.prod 𝓘(𝕜, E)) (I'.prod I) (Prod.map (Sum.map f f) (Sum.map f' g')) : Prop
+-/
+#guard_msgs in
+#check MDiff (Prod.map (Sum.map f f) (Sum.map f' g'))
+
+/--
+info: MDifferentiable (I.prod 𝓘(𝕜, E)) (I'.prod I)
+  (Sum.map (Prod.map (Sum.map f f) (Sum.map f' g')) (Prod.map (Sum.map f f) (Sum.map f' g'))) : Prop
+-/
+#guard_msgs in
+#check MDiff (Sum.map (Prod.map (Sum.map f f) (Sum.map f' g')) (Prod.map (Sum.map f f) (Sum.map f' g'))) -- domain: (M ⊕ M) × (E ⊕ E) ⊕ (M ⊕ M) × (E ⊕ E)
 
 section opens
 
@@ -1129,15 +1204,13 @@ variable {s : Opens (M ⊕ M)} {f : s → 𝕜 × E}
 #guard_msgs in
 #check MDiff f
 
-#exit
-
 end opens
 
 -- TODO: add enough tests for the combination of sums and products!
 
-/-- error: Found no model with corners on first summand `M × E` -/
+/-- info: MDifferentiable (I.prod 𝓘(𝕜, E)) I' (Sum.map k k) : Prop -/
 #guard_msgs in
-#check MDiff (Sum.map k k')
+#check MDiff (Sum.map k k)
 
 end
 
@@ -1152,7 +1225,7 @@ variable {f : Unit → Unit}
 /--
 error: Could not find a model with corners for `Unit`
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a `Bundle.TotalSpace`.

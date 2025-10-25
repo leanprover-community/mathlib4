@@ -657,7 +657,7 @@ where
     | Sum E F =>
       trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a direct sum of `{E}` and `{F}`\n\
         We assume the models match, and only look into the first summand"
-      go E
+      return ← go E baseInfo
     | _ => return none
     pure none
 
