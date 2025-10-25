@@ -5014,6 +5014,7 @@ import Mathlib.NumberTheory.NumberField.Ideal.Basic
 import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Dimension
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
