@@ -68,42 +68,6 @@ import Mathlib.RingTheory.SimpleModule.Basic
 Torsion, submodule, module, quotient
 -/
 
-/-! ### Torsion-free modules -/
-
-namespace Module
-variable {R M : Type*} [Semiring R]
-
-section AddCommMonoid
-variable [AddCommMonoid M] [Module R M]
-
-variable (R M) in
-/-- A `R`-module `M` is torsion-free if scalar multiplication by an element `r : R` is injective if
-multiplication (on `R`) by `r` is.
-
-For domains, this is equivalent to the usual condition of `r • m = 0 → r = 0 ∨ m = 0`.
-TODO: Prove it. -/
-class IsTorsionFree where
-  isSMulRegular ⦃r : R⦄ : IsRegular r → IsSMulRegular M r
-
-instance : IsTorsionFree R R where isSMulRegular _r hr := hr.1
-instance : IsTorsionFree Rᵐᵒᵖ R where isSMulRegular _r hr := hr.unop.2
-
-instance [IsAddTorsionFree M] : IsTorsionFree ℕ M where
-  isSMulRegular n hn := nsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
-
-end AddCommMonoid
-
-section AddCommGroup
-variable [AddCommGroup M]
-
-instance [IsAddTorsionFree M] : IsTorsionFree ℤ M where
-  isSMulRegular n hn := zsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
-
-end AddCommGroup
-end Module
-
-/-! ### Torsion -/
-
 namespace Ideal
 
 section TorsionOf

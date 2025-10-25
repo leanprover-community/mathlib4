@@ -3,9 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Algebra.Module.Torsion.Free
 import Mathlib.NumberTheory.RamificationInertia.Basic
-import Mathlib.RingTheory.Unramified.LocalRing
 import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
 
