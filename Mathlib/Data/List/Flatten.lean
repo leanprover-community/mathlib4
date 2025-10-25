@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
 import Mathlib.Data.List.Induction
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Util.AssertExists
 
 /-!
 # Join of a list of lists
