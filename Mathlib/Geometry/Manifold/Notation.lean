@@ -197,7 +197,7 @@ scoped elab:max "T% " t:term:arg args:term* : term => do
   let e ← Term.elabTerm t none
   let args' ← args.mapM (fun t ↦ Term.elabTerm t none)
   trace[Elab.DiffGeo.TotalSpaceMk] "arguments passed to T% are `{args}`"
-  totalSpaceElab (Expr.beta e args')
+  totalSpaceElab (Expr.beta (Expr.eta e) args')
 
 namespace Elab
 
