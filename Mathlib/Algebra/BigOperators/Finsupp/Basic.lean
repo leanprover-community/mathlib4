@@ -406,10 +406,8 @@ theorem univ_sum_single_apply' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
   simp
 
 theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
-    equivFunOnFinite.symm f = ∑ a, single a (f a) := by
-  rw [← univ_sum_single (equivFunOnFinite.symm f)]
-  ext
-  simp
+    equivFunOnFinite.symm f = ∑ a, single a (f a) :=
+  (univ_sum_single _).symm
 
 @[simp]
 theorem coe_univ_sum_single [Fintype α] [AddCommMonoid M] (f : α → M) :
