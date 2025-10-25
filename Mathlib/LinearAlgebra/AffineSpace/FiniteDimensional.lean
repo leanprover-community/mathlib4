@@ -709,7 +709,7 @@ the dimension of the ambient vector space. This version doesn't require proving 
 is nonempty, since that follows from the spanning condition when the space is nonempty. -/
 lemma affineDim_eq_finrank_of_affineSpan_eq_top
     {k : Type*} {V : Type*} {P : Type*}
-    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [_inst : FiniteDimensional k V]
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
     [Nonempty P]
     {s : Set P} (h : affineSpan k s = ⊤) :
     affineDim k s = Module.finrank k V :=
