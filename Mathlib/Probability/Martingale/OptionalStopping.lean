@@ -135,7 +135,7 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
   · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
   · exact le_trans (mul_nonneg ε.coe_nonneg ENNReal.toReal_nonneg) h
 
-@[deprecated (since := "2025-09-08")] alias smul_le_stoppedValue_hitting :=
+@[deprecated (since := "2025-10-25")] alias smul_le_stoppedValue_hitting :=
   smul_le_stoppedValue_hittingBtwn
 
 /-- **Doob's maximal inequality**: Given a non-negative submartingale `f`, for all `ε : ℝ≥0`,

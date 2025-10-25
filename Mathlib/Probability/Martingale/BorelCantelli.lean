@@ -62,7 +62,7 @@ protected lemma Submartingale.stoppedAbove [IsFiniteMeasure μ] (hf : Submarting
     Submartingale (stoppedAbove f r) ℱ μ :=
   hf.stoppedProcess (hf.adapted.isStoppingTime_leastGE r)
 
-@[deprecated (since := "2025-09-08")] alias Submartingale.stoppedValue_leastGE :=
+@[deprecated (since := "2025-10-25")] alias Submartingale.stoppedValue_leastGE :=
   Submartingale.stoppedAbove
 
 variable {r : ℝ} {R : ℝ≥0}
@@ -87,7 +87,7 @@ theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     simp only [untopD_coe_enat, Nat.cast_lt, gt_iff_lt] at *
     omega
 
-@[deprecated (since := "2025-09-08")] alias norm_stoppedValue_leastGE_le := stoppedAbove_le
+@[deprecated (since := "2025-10-25")] alias norm_stoppedValue_leastGE_le := stoppedAbove_le
 
 theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hr : 0 ≤ r) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
@@ -98,7 +98,7 @@ theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ] (hf : Submart
   refine le_trans ?_ ((hf.stoppedAbove r).setIntegral_le (zero_le _) MeasurableSet.univ)
   simp [stoppedAbove, stoppedProcess, hf0]
 
-@[deprecated (since := "2025-09-08")] alias Submartingale.stoppedValue_leastGE_eLpNorm_le :=
+@[deprecated (since := "2025-10-25")] alias Submartingale.stoppedValue_leastGE_eLpNorm_le :=
   Submartingale.eLpNorm_stoppedAbove_le
 
 theorem Submartingale.eLpNorm_stoppedAbove_le' [IsFiniteMeasure μ]
@@ -109,7 +109,7 @@ theorem Submartingale.eLpNorm_stoppedAbove_le' [IsFiniteMeasure μ]
   refine (hf.eLpNorm_stoppedAbove_le hr hf0 hbdd i).trans ?_
   simp [ENNReal.coe_toNNReal (measure_ne_top μ _), ENNReal.coe_toNNReal]
 
-@[deprecated (since := "2025-09-08")] alias Submartingale.stoppedValue_leastGE_eLpNorm_le' :=
+@[deprecated (since := "2025-10-25")] alias Submartingale.stoppedValue_leastGE_eLpNorm_le' :=
   Submartingale.eLpNorm_stoppedAbove_le'
 
 /-- This lemma is superseded by `Submartingale.bddAbove_iff_exists_tendsto`. -/
