@@ -85,7 +85,6 @@ theorem mem_neg {g : M} {S : Submodule R M} : g ∈ -S ↔ -g ∈ S :=
 
 This is available as an instance in the `Pointwise` locale. -/
 protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M) where
-  neg := Neg.neg
   neg_neg _S := SetLike.coe_injective <| neg_neg _
 
 scoped[Pointwise] attribute [instance] Submodule.involutivePointwiseNeg
@@ -197,7 +196,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
 
 open Pointwise
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Submodule R M) : ↑(a • S) = a • (S : Set M) :=
   rfl
 

@@ -123,9 +123,9 @@ instance (priority := 100) : FaithfulSMul R K :=
 variable {R K}
 
 open algebraMap in
-@[norm_cast, simp]
+@[norm_cast]
 theorem coe_inj {a b : R} : (↑a : K) = ↑b ↔ a = b :=
-  (IsFractionRing.injective R K).eq_iff
+  algebraMap.coe_inj _ _
 
 protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] {x : R}
     (hx : x ∈ nonZeroDivisors R) : algebraMap R K x ≠ 0 :=
@@ -489,14 +489,18 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
   convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
   exact (MulEquivClass.map_nonZeroDivisors h).symm
 
-protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
-    [IsFractionRing R S] : Nontrivial S := by
-  apply nontrivial_of_ne
-  · intro h
-    apply @zero_ne_one R
-    exact
-      IsLocalization.injective S (le_of_eq rfl)
-        (((algebraMap R S).map_zero.trans h).trans (algebraMap R S).map_one.symm)
+variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]
+
+theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
+  by_contra! h'
+  rcases h' with ⟨_, _⟩ | ⟨_, _⟩
+  · obtain ⟨c, hc⟩ := h.exists_of_eq (x := 1) (y := 0) (Subsingleton.elim _ _)
+    simp at hc
+  · apply (h.map_units 1).ne_zero
+    rw [Subsingleton.eq_zero ((1 : nonZeroDivisors R) : R), map_zero]
+
+protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
+  h.nontrivial_iff_nontrivial.mp hR
 
 end IsFractionRing
 
@@ -593,10 +597,10 @@ section IsScalarTower
 
 attribute [local instance] liftAlgebra
 
-instance (B C : Type*) [CommRing B] [IsDomain B] [CommRing C] [IsDomain C] [Algebra A B]
+instance (B C : Type*) [CommRing B] [IsDomain B] [Field C] [IsDomain C] [Algebra A B]
     [Algebra A C] [Algebra B C] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A C]
     [NoZeroSMulDivisors B C] [IsScalarTower A B C] :
-    IsScalarTower (FractionRing A) (FractionRing B) (FractionRing C) where
+    IsScalarTower (FractionRing A) (FractionRing B) C where
   smul_assoc a b c := a.ind fun ⟨a₁, a₂⟩ ↦ by
     rw [← smul_right_inj (nonZeroDivisors.coe_ne_zero a₂)]
     simp_rw [← smul_assoc, Localization.smul_mk, smul_eq_mul, Localization.mk_eq_mk',

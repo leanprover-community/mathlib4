@@ -122,6 +122,9 @@ alias comp_mem_coverings := IsStableUnderComposition.comp_mem_coverings
 alias sup_mem_coverings := IsStableUnderSup.sup_mem_coverings
 alias hasPullbacks_of_mem := HasPullbacks.hasPullbacks_of_mem
 
+instance (J : Precoverage C) [Limits.HasPullbacks C] : J.HasPullbacks where
+  hasPullbacks_of_mem := inferInstance
+
 lemma pullbackArrows_mem {J : Precoverage C} [IsStableUnderBaseChange.{max u v} J]
     {X Y : C} (f : X ⟶ Y) {R : Presieve Y} (hR : R ∈ J Y) [R.HasPullbacks f] :
     R.pullbackArrows f ∈ J X := by
@@ -177,7 +180,7 @@ instance [HasIsos J] : HasIsos (J.comap F) where
 instance [IsStableUnderComposition.{w', w} J] :
     IsStableUnderComposition.{w', w} (J.comap F) where
   comp_mem_coverings {ι} S Y f hf σ Z g hg := by
-    simp at hf hg ⊢
+    simp only [mem_comap_iff, Presieve.map_ofArrows, Functor.map_comp] at hf hg ⊢
     exact J.comp_mem_coverings _ hf _ hg
 
 instance [PreservesLimitsOfShape WalkingCospan F] [IsStableUnderBaseChange.{w} J] :

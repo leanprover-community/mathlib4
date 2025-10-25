@@ -544,8 +544,8 @@ lemma one_lt_height_iff {x : α} : 1 < Order.height x ↔ ∃ y z, z < y ∧ y <
   · obtain ⟨p, hp, hlen⟩ := Order.exists_series_of_le_height x (n := 2) h
     refine ⟨p 1, p 0, p.rel_of_lt ?_, hp ▸ p.rel_of_lt ?_⟩ <;> simp [Fin.lt_def, hlen]
   · rintro ⟨y, z, hzy, hyx⟩
-    let p : LTSeries α := RelSeries.fromListChain' [z, y, x] (List.cons_ne_nil z [y, x])
-      (List.Chain'.cons_cons hzy <| List.chain'_pair.mpr hyx)
+    let p : LTSeries α := RelSeries.fromListIsChain [z, y, x] (List.cons_ne_nil z [y, x])
+      (List.IsChain.cons_cons hzy <| List.isChain_pair.mpr hyx)
     have : p.last = x := by simp [p, ← RelSeries.getLast_toList]
     exact Order.length_le_height this.le
 
@@ -1105,11 +1105,11 @@ lemma coheight_le_of_krullDim_preimage_le (x : α) :
 include f h in
 lemma krullDim_le_of_krullDim_preimage_le :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m := by
-  rw [Order.krullDim_eq_iSup_height, Order.krullDim_eq_iSup_height]
-  apply iSup_le fun x ↦ (le_trans (WithBot.coe_mono (height_le_of_krullDim_preimage_le f h x)) ?_)
+  rw [Order.krullDim_eq_iSup_height, Order.krullDim_eq_iSup_height, iSup_le_iff]
+  refine fun x ↦ (WithBot.coe_mono (height_le_of_krullDim_preimage_le f h x)).trans ?_
   push_cast
-  apply add_le_add_right <| mul_le_mul_of_nonneg_left ?_ (right_eq_inf.mp rfl)
-  exact le_iSup_iff.mpr fun b a ↦ a (f x)
+  gcongr
+  exacts [right_eq_inf.mp rfl, le_iSup_iff.mpr fun b a ↦ a (f x)]
 
 /-- Another version when the `OrderHom` is unbundled -/
 lemma krullDim_le_of_krullDim_preimage_le' (f : α → β) (h_mono : Monotone f)
