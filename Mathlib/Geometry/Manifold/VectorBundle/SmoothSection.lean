@@ -74,8 +74,8 @@ lemma ContMDiff.add_section (hs : CMDiff n (T% s)) (ht : CMDiff n (T% t)) :
     CMDiff n (T% (s + t)) :=
   fun x₀ ↦ (hs x₀).add_section (ht x₀)
 
-lemma ContMDiffWithinAt.neg_section (hs : CMDiffAt[u] n (T% s) x₀) :
-    CMDiffAt[u] n (T% (-s)) x₀ := by
+lemma ContMDiffWithinAt.neg_section
+    (hs : CMDiffAt[u] n (T% s) x₀) : CMDiffAt[u] n (T% (-s)) x₀ := by
   rw [contMDiffWithinAt_section] at hs ⊢
   set e := trivializationAt F V x₀
   refine hs.neg.congr_of_eventuallyEq ?_ ?_
@@ -400,15 +400,15 @@ instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
 end
 
 protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : n ≠ 0) :
-    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+    MDiff fun x => TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff.mdifferentiable hn
 
 protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) :
-    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+    MDiff fun x => TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff.mdifferentiable (by simp)
 
 protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
-    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x => TotalSpace.mk' F x (s x : V x)) x :=
+    MDiffAt (fun x => TotalSpace.mk' F x (s x : V x)) x :=
   s.mdifferentiable x
 
 end ContMDiffSection
