@@ -643,10 +643,32 @@ This implementation is not maximally robust yet.
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
-  trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  match ← findModelInner e baseInfo with
-  | some (m, _eK) => return m
-  | none => throwError "Could not find a model with corners for {e}"
+  -- At first, try finding a model on the space itself.
+  if let some (m, _) ← findModelInner e baseInfo then return m
+  -- Otherwise, check if we have a binary product.
+  -- TODO: also support higher order products, by recursively calling this method on them
+  -- At first, try finding a model on the space itself.
+  match_expr e with
+  | Prod E F =>
+    trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a product, recursing into each factor"
+    let prodHelp (E) := match_expr E with
+    | Prod _ _ => "\nNote: finding a model with corners on products of three or more spaces \
+      is not implemented yet"
+    | _ => ""
+    let some (srcE, normedSpaceE) := ← findModelInner E baseInfo
+      | throwError "Found no model with corners on first factor `{E}`{prodHelp E}"
+    let some (srcF, normedSpaceF) := ← findModelInner F baseInfo
+      | throwError "Found no model with corners on second factor `{F}`{prodHelp F}"
+    -- If both E and F are normed spaces, emit a warning and return (for now).
+    if normedSpaceE.isSome && normedSpaceF.isSome then
+      throwError "`{e}` is a product of normed spaces, so there are two potential models with \
+      corners\nFor now, please specify the model by hand."
+    let eTerm : Term ← Term.exprToSyntax srcE
+    let fTerm : Term ← Term.exprToSyntax srcF
+    let iTerm : Term ← ``(ModelWithCorners.prod $eTerm $fTerm)
+    Term.elabTerm iTerm none
+  | _ => throwError "Could not find a model with corners for {e}"
+
 
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
