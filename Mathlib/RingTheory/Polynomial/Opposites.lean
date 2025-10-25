@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Polynomial.Degree.Support
+import Mathlib.Tactic.NoncommRing
 
-/-!  #  Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
+/-! # Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 
 This file contains the basic API for "pushing through" the isomorphism
 `opRingEquiv : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X]`.  It allows going back and forth between a polynomial ring
@@ -93,5 +94,33 @@ theorem natDegree_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).natDegree 
 theorem leadingCoeff_opRingEquiv (p : R[X]ᵐᵒᵖ) :
     (opRingEquiv R p).leadingCoeff = op (unop p).leadingCoeff := by
   rw [leadingCoeff, coeff_opRingEquiv, natDegree_opRingEquiv, leadingCoeff]
+
+theorem isLeftCancelMulZero_iff :
+    IsLeftCancelMulZero R[X] ↔ IsLeftCancelMulZero R ∧ IsCancelAdd R where
+  mp h := .intro (C_injective.isLeftCancelMulZero _ C_0 fun _ _ ↦ C_mul) <|
+    have : IsLeftCancelAdd R := .mk fun a b c eq ↦ by
+      nontriviality R
+      let trinomial (r : R) : R[X] := a • X ^ 2 + r • X + C a
+      have ht r : (X + C 1) * trinomial r = a • X ^ 3 + (a + r) • X ^ 2 + (a + r) • X + C a := by
+        simp only [trinomial, mul_add, add_mul, ← C_mul', C_1, one_mul, ← mul_assoc, X_mul_C, C_add]
+        noncomm_ring
+      simpa [trinomial] using congr_arg (coeff · 1) <|
+        h.1 (a₁ := trinomial b) (a₂ := trinomial c) (X_add_C_ne_zero 1) <| by simp_rw [ht, eq]
+    AddCommMagma.IsLeftCancelAdd.toIsCancelAdd R
+  mpr := fun ⟨_, _⟩ ↦ inferInstance
+
+theorem isRightCancelMulZero_iff :
+    IsRightCancelMulZero R[X] ↔ IsRightCancelMulZero R ∧ IsCancelAdd R := by
+  rw [← MulOpposite.isLeftCancelMulZero_iff, (opRingEquiv R).isLeftCancelMulZero_iff,
+    isLeftCancelMulZero_iff, MulOpposite.isLeftCancelMulZero_iff, MulOpposite.isCancelAdd_iff]
+
+protected theorem isCancelMulZero_iff :
+    IsCancelMulZero R[X] ↔ IsCancelMulZero R ∧ IsCancelAdd R := by
+  simp_rw [isCancelMulZero_iff, isLeftCancelMulZero_iff, isRightCancelMulZero_iff]
+  rw [and_and_and_comm, and_self]
+
+theorem isDomain_iff : IsDomain R[X] ↔ IsDomain R ∧ IsCancelAdd R := by
+  simp_rw [isDomain_iff_cancelMulZero_and_nontrivial, nontrivial_iff,
+    Polynomial.isCancelMulZero_iff, and_right_comm]
 
 end Polynomial
