@@ -165,8 +165,7 @@ theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddCommMonoid M₃] [Module R 
   rfl
 
 theorem Module.Dual.eval_naturality (f : M₁ →ₗ[R] M₂) :
-    f.dualMap.dualMap ∘ₗ eval R M₁ = eval R M₂ ∘ₗ f := by
-  rfl
+    f.dualMap.dualMap ∘ₗ eval R M₁ = eval R M₂ ∘ₗ f := rfl
 
 @[simp]
 lemma Dual.apply_one_mul_eq (f : Dual R R) (r : R) :

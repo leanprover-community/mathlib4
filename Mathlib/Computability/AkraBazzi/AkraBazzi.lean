@@ -259,7 +259,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
     rw [Set.mem_Ioi] at hz
     exact ne_of_gt <| zero_lt_one.trans hz
   have h_deriv_q : deriv q =O[atTop] fun x => x ^ ((p a b) - 1) := calc deriv q
-    _ = deriv fun x => (fun z => z ^ (p a b)) x * (fun z => 1 - ε z) x := by rfl
+    _ = deriv fun x => (fun z => z ^ (p a b)) x * (fun z => 1 - ε z) x := rfl
     _ =ᶠ[atTop] fun x => deriv (fun z => z ^ (p a b)) x * (1 - ε x) +
           x ^ (p a b) * deriv (fun z => 1 - ε z) x := by
       filter_upwards [eventually_ne_atTop 0, eventually_gt_atTop 1] with x hx hx'
@@ -350,7 +350,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
     exact ne_of_gt <| zero_lt_one.trans hz
   have h_deriv_q : deriv q =O[atTop] fun x => x ^ ((p a b) - 1) :=
     calc deriv q
-      _ = deriv fun x => (fun z => z ^ (p a b)) x * (fun z => 1 + ε z) x := by rfl
+      _ = deriv fun x => (fun z => z ^ (p a b)) x * (fun z => 1 + ε z) x := rfl
       _ =ᶠ[atTop] fun x => deriv (fun z => z ^ (p a b)) x * (1 + ε x)
           + x ^ (p a b) * deriv (fun z => 1 + ε z) x := by
         filter_upwards [eventually_ne_atTop 0, eventually_gt_atTop 1] with x hx hx'

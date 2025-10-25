@@ -536,7 +536,7 @@ def truncLTLinearMap [DecidableLT Γ] (c : Γ) : HahnSeries Γ V →ₗ[R] HahnS
 variable (R) in
 @[simp]
 theorem coe_truncLTLinearMap [DecidableLT Γ] (c : Γ) :
-    (truncLTLinearMap R c : HahnSeries Γ V → HahnSeries Γ V) = truncLT c := by rfl
+    (truncLTLinearMap R c : HahnSeries Γ V → HahnSeries Γ V) = truncLT c := rfl
 
 end Module
 

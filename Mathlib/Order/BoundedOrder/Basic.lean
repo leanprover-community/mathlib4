@@ -388,8 +388,7 @@ theorem bot_def [∀ i, Bot (α' i)] : (⊥ : ∀ i, α' i) = fun _ => ⊥ :=
   rfl
 
 @[simp]
-theorem bot_comp {α β γ : Type*} [Bot γ] (x : α → β) : (⊥ : β → γ) ∘ x = ⊥ := by
-  rfl
+theorem bot_comp {α β γ : Type*} [Bot γ] (x : α → β) : (⊥ : β → γ) ∘ x = ⊥ := rfl
 
 instance [∀ i, Top (α' i)] : Top (∀ i, α' i) :=
   ⟨fun _ => ⊤⟩
@@ -403,8 +402,7 @@ theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
   rfl
 
 @[simp]
-theorem top_comp {α β γ : Type*} [Top γ] (x : α → β) : (⊤ : β → γ) ∘ x = ⊤ := by
-  rfl
+theorem top_comp {α β γ : Type*} [Top γ] (x : α → β) : (⊤ : β → γ) ∘ x = ⊤ := rfl
 
 instance instOrderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) where
   le_top _ := fun _ => le_top

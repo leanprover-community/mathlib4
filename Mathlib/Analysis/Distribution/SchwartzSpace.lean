@@ -1187,7 +1187,7 @@ def integralCLM : 𝓢(D, V) →L[𝕜] V := by
 
 variable (𝕜) in
 @[simp]
-lemma integralCLM_apply (f : 𝓢(D, V)) : integralCLM 𝕜 μ f = ∫ x, f x ∂μ := by rfl
+lemma integralCLM_apply (f : 𝓢(D, V)) : integralCLM 𝕜 μ f = ∫ x, f x ∂μ := rfl
 
 end Integration
 

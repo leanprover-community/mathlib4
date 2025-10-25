@@ -258,8 +258,7 @@ B  --- η B ---> C(characterSpace ℂ B, ℂ)
 theorem gelfandStarTransform_naturality {A B : Type*} [CommCStarAlgebra A] [CommCStarAlgebra B]
     (φ : A →⋆ₐ[ℂ] B) :
     (gelfandStarTransform B : _ →⋆ₐ[ℂ] _).comp φ =
-      (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := by
-  rfl
+      (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := rfl
 
 /--
 Consider the contravariant functors between compact Hausdorff spaces and commutative unital

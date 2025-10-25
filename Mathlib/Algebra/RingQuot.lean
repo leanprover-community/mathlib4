@@ -240,8 +240,7 @@ theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
   rfl
 
 theorem smul_quot [Algebra S R] {n : S} {a : R} :
-    (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
-  rfl
+    (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := rfl
 
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
