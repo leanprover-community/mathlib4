@@ -90,12 +90,15 @@ instance universallyClosed_snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf 
     UniversallyClosed (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g hf
 
-instance universallyClosed_isLocalAtTarget : IsLocalAtTarget @UniversallyClosed := by
+instance universallyClosed_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @UniversallyClosed := by
   rw [universallyClosed_eq]
-  apply universally_isLocalAtTarget
+  apply universally_isZariskiLocalAtTarget
   intro X Y f ι U hU H
   simp_rw [topologically, morphismRestrict_base] at H
   exact hU.isClosedMap_iff_restrictPreimage.mpr H
+
+instance (f : X ⟶ Y) (V : Y.Opens) [UniversallyClosed f] : UniversallyClosed (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
 
 open Scheme.Pullback _root_.PrimeSpectrum MvPolynomial in
 /-- If `X` is universally closed over a field, then `X` is quasi-compact. -/

@@ -397,7 +397,7 @@ lemma exists_index : ∃ (i' : I) (hii' : i' ⟶ A.i),
   use (A.c.π.app A.i ≫ A.a).base s
   have H : A.c.π.app A.i ≫ A.a ≫ pullback.diagonal f =
       A.c.π.app A.i ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb) := by ext <;> simp [hab]
-  simp [← Scheme.comp_base_apply, - Scheme.comp_coeBase, H]
+  simp [← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base, H]
 
 /-- (Implementation)
 The index `i'` such that `a` and `b` restricted onto `i'` maps into the diagonal components.
