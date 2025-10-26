@@ -26,7 +26,7 @@ section CommRing
 variable (G A B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
   [MulSemiringAction G B]
 
-/-- `G` is a Galois group for `L/K` if the action on `L` is faithful with fixed field `K`.
+/-- `G` is a Galois group for `L/K` if the action of `G` on `L` is faithful with fixed field `K`.
 In particular, we do not assume that `L` is an algebraic extension of `K`.
 
 See the implementation notes in this file for the meaning of this definition in the case of rings.
