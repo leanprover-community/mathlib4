@@ -22,9 +22,10 @@ namespace Int
 `fib (n + 2) = fib n + fib (n + 1)`.
 
 This is an extension of `Nat.fib`. -/
+@[pp_nodot]
 def fib (n : ℤ) : ℤ :=
-  if 0 ≤ n then Nat.fib n.toNat
-  else if n % 2 = 0 then -(-n).toNat.fib else (-n).toNat.fib
+  if 0 ≤ n then n.toNat.fib else
+  if Even n then -(-n).toNat.fib else (-n).toNat.fib
 
 @[simp] theorem fib_natCast (n : ℕ) : Int.fib n = Nat.fib n := rfl
 @[simp] theorem fib_zero : Int.fib 0 = 0 := rfl
@@ -35,7 +36,7 @@ def fib (n : ℤ) : ℤ :=
 
 theorem fib_neg_natCast (n : ℕ) : Int.fib (-n) = (-1) ^ (n + 1) * n.fib := by
   simp only [fib, Int.neg_nonneg, natCast_nonpos_iff, toNat_neg_natCast, Nat.fib_zero,
-    neg_emod_two, neg_neg, toNat_natCast, reduceNeg]
+    neg_neg, toNat_natCast, reduceNeg]
   split_ifs with hn h
   · simp [hn]
   · obtain ⟨a, rfl⟩ : Even n := by grind
@@ -43,7 +44,7 @@ theorem fib_neg_natCast (n : ℕ) : Int.fib (-n) = (-1) ^ (n + 1) * n.fib := by
   · obtain ⟨a, rfl⟩ : Odd n := by grind
     simp [add_assoc, ← two_mul, ← mul_add_one]
 
-theorem fib_add_two {n : ℤ} :
+theorem fib_add_two (n : ℤ) :
     fib (n + 2) = fib n + fib (n + 1) := by
   rcases n with (n | n)
   · dsimp
@@ -64,11 +65,11 @@ theorem fib_add_two {n : ℤ} :
         · rw [Nat.fib_add_one hn0, this, fib_neg_natCast, pow_add]
           simp
 
-theorem fib_eq_fib_add_two_sub_fib_add_one {n : ℤ} :
+theorem fib_eq_fib_add_two_sub_fib_add_one (n : ℤ) :
     fib n = fib (n + 2) - fib (n + 1) := by
   simp only [fib_add_two, add_sub_cancel_right]
 
-theorem fib_add_one {n : ℤ} :
+theorem fib_add_one (n : ℤ) :
     fib (n + 1) = fib (n + 2) - fib n := by
   simp only [fib_add_two, add_sub_cancel_left]
 
@@ -79,5 +80,15 @@ theorem fib_add_one {n : ℤ} :
   · rw [show (negSucc n) = -((n + 1 : ℕ) : ℤ) by rfl, fib_neg_natCast]
     have : -1 + -(n : ℤ) = 0 ↔ (n : ℤ) = -1 := by grind
     simp [this]
+
+theorem fib_natCast_add_natCast (m n : ℕ) :
+    fib (m + n) = fib (m - 1) * fib n + fib m * fib (n + 1) := by
+  if hm : m = 0 then simp [hm] else
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hm
+  simp_rw [← natCast_add, ← natCast_add_one, add_assoc, add_comm,
+    fib_natCast, ← add_assoc, Nat.fib_add]
+  simp [add_comm]
+
+-- TODO: `fib_natCast_sub_natCast`, `fib_add`, ...
 
 end Int
