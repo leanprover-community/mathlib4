@@ -134,21 +134,11 @@ lemma comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
   rw [natDegree_X_add_C] at ha
   exact one_ne_zero ha
 
-@[simp]
-theorem natDegree_eq_zero_iff_eq_one (hp : p.Monic) : p.natDegree = 0 ↔ p = 1 := by
-  constructor <;> intro h
-  swap
-  · rw [h]
-    exact natDegree_one
-  have : p = C (p.coeff 0) := by
-    rw [← Polynomial.degree_le_zero_iff]
-    rwa [Polynomial.natDegree_eq_zero_iff_degree_le_zero] at h
-  rw [this]
-  rw [← h, ← Polynomial.leadingCoeff, Monic.def.1 hp, C_1]
+@[deprecated (since := "2025-10-26")] alias natDegree_eq_zero_iff_eq_one := natDegree_eq_zero
 
 @[simp]
 theorem degree_le_zero_iff_eq_one (hp : p.Monic) : p.degree ≤ 0 ↔ p = 1 := by
-  rw [← hp.natDegree_eq_zero_iff_eq_one, natDegree_eq_zero_iff_degree_le_zero]
+  rw [← hp.natDegree_eq_zero, natDegree_eq_zero_iff_degree_le_zero]
 
 theorem natDegree_mul (hp : p.Monic) (hq : q.Monic) :
     (p * q).natDegree = p.natDegree + q.natDegree := by
@@ -228,7 +218,7 @@ theorem Monic.eq_one_of_isUnit (hm : Monic p) (hpu : IsUnit p) : p = 1 := by
   obtain ⟨q, h⟩ := hpu.exists_right_inv
   have := hm.natDegree_mul' (right_ne_zero_of_mul_eq_one h)
   rw [h, natDegree_one, eq_comm, add_eq_zero] at this
-  exact hm.natDegree_eq_zero_iff_eq_one.mp this.1
+  exact hm.natDegree_eq_zero.mp this.1
 
 theorem Monic.isUnit_iff (hm : p.Monic) : IsUnit p ↔ p = 1 :=
   ⟨hm.eq_one_of_isUnit, fun h => h.symm ▸ isUnit_one⟩
@@ -303,7 +293,7 @@ lemma Monic.irreducible_iff_natDegree (hp : p.Monic) :
   by_cases hp1 : p = 1; · simp [hp1]
   rw [irreducible_of_monic hp hp1, and_iff_right hp1]
   refine forall₄_congr fun a b ha hb => ?_
-  rw [ha.natDegree_eq_zero_iff_eq_one, hb.natDegree_eq_zero_iff_eq_one]
+  rw [ha.natDegree_eq_zero, hb.natDegree_eq_zero]
 
 lemma Monic.irreducible_iff_natDegree' (hp : p.Monic) : Irreducible p ↔ p ≠ 1 ∧
     ∀ f g : R[X], f.Monic → g.Monic → f * g = p → g.natDegree ∉ Ioc 0 (p.natDegree / 2) := by
@@ -493,7 +483,7 @@ theorem Monic.mul_right_ne_zero (hp : Monic p) {q : R[X]} (hq : q ≠ 0) : p * q
 theorem Monic.mul_natDegree_lt_iff (h : Monic p) {q : R[X]} :
     (p * q).natDegree < p.natDegree ↔ p ≠ 1 ∧ q = 0 := by
   by_cases hq : q = 0
-  · suffices 0 < p.natDegree ↔ p.natDegree ≠ 0 by simpa [hq, ← h.natDegree_eq_zero_iff_eq_one]
+  · suffices 0 < p.natDegree ↔ p.natDegree ≠ 0 by simpa [hq, ← h.natDegree_eq_zero]
     exact ⟨fun h => h.ne', fun h => lt_of_le_of_ne (Nat.zero_le _) h.symm⟩
   · simp [h.natDegree_mul', hq]
 
