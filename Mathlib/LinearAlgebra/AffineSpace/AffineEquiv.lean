@@ -561,6 +561,25 @@ theorem pointReflection_fixed_iff_of_module [Invertible (2 : k)] {x y : P₁} :
     pointReflection k x y = y ↔ y = x :=
   ((injective_pointReflection_left_of_module k y).eq_iff' (pointReflection_self k y)).trans eq_comm
 
+/-- Construct an affine equivalence from a linear equivalence and two base points.
+
+Given a linear equivalence `A : V ≃ₗ[k] V` and base points `f₀ g₀ : P`, this constructs
+the affine equivalence `T x = A (x -ᵥ f₀) +ᵥ g₀`. This is the standard way to convert
+a linear automorphism into an affine automorphism with specified base point mapping. -/
+def ofLinearEquiv {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
+    (A : V ≃ₗ[k] V) (f₀ g₀ : P) : P ≃ᵃ[k] P :=
+  let linearAsAffine : V ≃ᵃ[k] V :=
+    { toEquiv := A.toEquiv, linear := A, map_vadd' := fun p v => A.map_add v p }
+  (vaddConst k f₀).symm.trans (linearAsAffine.trans (vaddConst k g₀))
+
+@[simp]
+theorem ofLinearEquiv_apply {k : Type*} {V : Type*} {P : Type*}
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
+    (A : V ≃ₗ[k] V) (f₀ g₀ : P) (x : P) :
+    ofLinearEquiv A f₀ g₀ x = A (x -ᵥ f₀) +ᵥ g₀ :=
+  rfl
+
 end AffineEquiv
 
 namespace LinearEquiv
