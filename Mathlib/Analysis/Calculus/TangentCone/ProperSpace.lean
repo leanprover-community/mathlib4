@@ -1,3 +1,4 @@
+import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.Calculus.TangentCone.Defs
 
 open Filter Set Metric NormedField

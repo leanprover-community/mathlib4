@@ -1,4 +1,6 @@
+import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.Calculus.TangentCone.Defs
+import Mathlib.Analysis.Normed.Module.Basic
 
 open Filter Set
 open scoped Topology
