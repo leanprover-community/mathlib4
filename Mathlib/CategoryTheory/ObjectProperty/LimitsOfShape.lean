@@ -118,7 +118,7 @@ lemma limitsOfShape_monotone {Q : ObjectProperty C} (hPQ : P ≤ Q) :
 @[simp]
 lemma limitsOfShape_isoClosure :
     P.isoClosure.limitsOfShape J = P.limitsOfShape J := by
-  refine le_antisymm ?_ (limitsOfShape_monotone _ (P.le_isoClosure))
+  refine le_antisymm ?_ (limitsOfShape_monotone _ P.le_isoClosure)
   intro X ⟨h⟩
   choose obj h₁ h₂ using h.prop_diag_obj
   exact
