@@ -564,8 +564,8 @@ alias integral2_divergence_prod_of_hasFDerivWithinAt_off_countable :=
 `f g : ℝ × ℝ → E` and iterated integral `∫ x in a₁..b₁, ∫ y in a₂..b₂, _`, where
 `a₁ a₂ b₁ b₂ : ℝ`. When thinking of `f` and `g` as the two coordinates of a single function
 `F : ℝ × ℝ → E × E` and when `E = ℝ`, this is the usual statement that the integral of the
-divergence of `F` inside the rectangle with vertices `(aᵢ, bⱼ)`, `i, j =1,2`, equals the integral of
-the normal derivative of `F` along the boundary.
+divergence of `F` inside the rectangle with vertices `(aᵢ, bⱼ)`, `i, j = 1, 2`,
+equals the integral of the normal derivative of `F` along the boundary.
 
 See also `MeasureTheory.integral_divergence_prod_Icc_of_hasFDerivAt_of_le`
 for a version that uses an integral over `Icc a b`, where `a b : ℝ × ℝ`, `a ≤ b`.

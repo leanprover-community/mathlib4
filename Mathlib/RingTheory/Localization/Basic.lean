@@ -302,6 +302,10 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
       h.symm.commutes]
     exact id
 
+variable {M} in
+protected theorem self (H : M ≤ IsUnit.submonoid R) : IsLocalization M R :=
+  isLocalization_of_algEquiv _ (atUnits _ _ (S := Localization M) H).symm
+
 theorem isLocalization_iff_of_algEquiv [Algebra R P] (h : S ≃ₐ[R] P) :
     IsLocalization M S ↔ IsLocalization M P :=
   ⟨fun _ => isLocalization_of_algEquiv M h, fun _ => isLocalization_of_algEquiv M h.symm⟩
@@ -566,6 +570,9 @@ theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)
     Function.Injective (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) :=
   have : IsLocalization (M.map (algebraMap R S)) Sₘ := i
   IsLocalization.map_injective_of_injective _ _ _ hRS
+
+instance : IsLocalization (Algebra.algebraMapSubmonoid R M) Rₘ := by
+  simpa
 
 end Algebra
 
