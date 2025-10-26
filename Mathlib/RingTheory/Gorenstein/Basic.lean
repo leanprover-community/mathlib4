@@ -319,36 +319,63 @@ lemma projectiveDimension_eq_zero_of_projective (M : ModuleCat.{v} R) [Projectiv
       ModuleCat.isZero_iff_subsingleton, not_subsingleton_iff_nontrivial]
     assumption
 
-universe w
-
-variable [Small.{v} R] [UnivLE.{v, w}]
-
-instance hasExt_of_small'' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
-
 section
 
 variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
-def QuotSMulTop_linearMap (x : R) (f : M →ₗ[R] N) : QuotSMulTop x M →ₗ[R] QuotSMulTop x N :=
+def quotSMulTopLinearMap (x : R) (f : M →ₗ[R] N) : QuotSMulTop x M →ₗ[R] QuotSMulTop x N :=
   Submodule.mapQ _ _ f (fun m hm ↦ by
     rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp hm with ⟨m', _, hm'⟩
     simpa [← hm'] using Submodule.smul_mem_pointwise_smul _ x ⊤ trivial)
 
-def quotSMulTop_linearEquiv (x : R) (e : M ≃ₗ[R] N) :
+def quotSMulTopLinearEquiv (x : R) (e : M ≃ₗ[R] N) :
     (QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop x N) where
-  __ := QuotSMulTop_linearMap x e.toLinearMap
-  invFun := QuotSMulTop_linearMap x e.symm.toLinearMap
+  __ := quotSMulTopLinearMap x e.toLinearMap
+  invFun := quotSMulTopLinearMap x e.symm.toLinearMap
   left_inv y := by
     induction y using Submodule.Quotient.induction_on
-    simp [QuotSMulTop_linearMap]
+    simp [quotSMulTopLinearMap]
   right_inv y := by
     induction y using Submodule.Quotient.induction_on
-    simp [QuotSMulTop_linearMap]
+    simp [quotSMulTopLinearMap]
+
+def Ideal.smulTopLinearMap (I : Ideal R) (f : M →ₗ[R] N) :
+    M ⧸ I • (⊤ : Submodule R M) →ₗ[R] N ⧸ I • (⊤ : Submodule R N) :=
+  Submodule.mapQ _ _ f (Submodule.smul_top_le_comap_smul_top I f)
+
+def Ideal.smulTopLinearEquiv (I : Ideal R) (e : M ≃ₗ[R] N) :
+    (M ⧸ I • (⊤ : Submodule R M)) ≃ₗ[R] (N ⧸ I • (⊤ : Submodule R N)) where
+  __ := Ideal.smulTopLinearMap I e
+  invFun := Ideal.smulTopLinearMap I e.symm
+  left_inv y := by
+    induction y using Submodule.Quotient.induction_on
+    simp [smulTopLinearMap]
+  right_inv y := by
+    induction y using Submodule.Quotient.induction_on
+    simp [smulTopLinearMap]
+
+omit [IsLocalRing R] [IsNoetherianRing R] in
+lemma Ideal.ofList_reverse (rs : List R) : Ideal.ofList rs.reverse = Ideal.ofList rs := by
+  simp [Ideal.ofList]
+
+variable (M) in
+def Submodule.quotOfListSMulTopEquivQuotSMulTopOuter {rs rs' : List R} {a : R}
+    (eq : rs = rs' ++ [a]) : (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M)) ≃ₗ[R]
+    QuotSMulTop a (M ⧸ Ideal.ofList rs' • (⊤ : Submodule R M)) :=
+  ((Submodule.quotEquivOfEq _ _ (by simp [eq, sup_comm, Ideal.ofList_reverse])).trans
+    (Submodule.quotOfListConsSMulTopEquivQuotSMulTopOuter M a rs'.reverse)).trans
+    (quotSMulTopLinearEquiv a (Submodule.quotEquivOfEq _ _ (by simp [Ideal.ofList_reverse])))
+
+def Ideal.quotOfListSMulTopEquivQuotSMulTopOuter {rs rs' : List R} {a : R}
+    (eq : rs = rs' ++ [a]) : (R ⧸ Ideal.ofList rs) ≃ₗ[R]
+    QuotSMulTop a (R ⧸ Ideal.ofList rs') :=
+    ((Submodule.quotEquivOfEq _ _ (by simp)).trans
+    (Submodule.quotOfListSMulTopEquivQuotSMulTopOuter R eq)).trans
+    (quotSMulTopLinearEquiv a (Submodule.quotEquivOfEq _ _ (by simp)))
 
 end
 
-open Pointwise
+variable [Small.{v} R]
 
 lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs) :
     projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) = rs.length := by
@@ -357,13 +384,24 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
     apply IsLocalRing.le_maximalIdeal reg.2.symm
     simpa using (Ideal.mem_span x).mpr fun p a ↦ a hx
   let e : (Shrink.{v} (R ⧸ Ideal.ofList rs)) ≃ₗ[R]
-    (Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)) := sorry
+    (Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)) :=
+    ((Shrink.linearEquiv R _).trans (Submodule.quotEquivOfEq _ _ (by simp))).trans
+    ((Ideal.ofList rs).smulTopLinearEquiv (Shrink.linearEquiv R R).symm)
   rw [projectiveDimension_eq_of_iso e.toModuleIso]
   let _ : Module.Finite R (Shrink.{v} R) := Module.Finite.equiv (Shrink.linearEquiv R _).symm
   let _ : Module.Free R (Shrink.{v} R) := Module.Free.of_equiv (Shrink.linearEquiv R _).symm
   rw [projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
     (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max]
   rw [projectiveDimension_eq_zero_of_projective, zero_add]
+
+universe w
+
+variable [UnivLE.{v, w}]
+
+instance hasExt_of_small'' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
+  CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
+
+open Pointwise
 
 noncomputable def quotSMulTop_ext_equiv_ext_quotSMulTop (M : ModuleCat.{v} R) (n : ℕ)
     [HasProjectiveDimensionLE M n] (a : R) (reg : IsSMulRegular M a) (N : ModuleCat.{v} R) :
@@ -427,7 +465,9 @@ noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [No
       rw [(Shrink.linearEquiv R _).isSMulRegular_congr, ← Ideal.mul_top (Ideal.ofList rs')]
       simpa using reg'
     let e1' : QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')) ≃ₗ[R]
-      (Shrink.{v} (R ⧸ Ideal.ofList rs)) := sorry
+      (Shrink.{v} (R ⧸ Ideal.ofList rs)) :=
+      ((quotSMulTopLinearEquiv a (Shrink.linearEquiv R (R ⧸ Ideal.ofList rs'))).trans
+      (Ideal.quotOfListSMulTopEquivQuotSMulTopOuter eqapp).symm).trans (Shrink.linearEquiv R _).symm
     let e1 : Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M (n + 1) ≃ₗ[R]
       Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
       __ := (((extFunctor.{w} (n + 1)).mapIso e1'.toModuleIso.op).app M).addCommGroupIsoToAddEquiv
@@ -440,10 +480,9 @@ noncomputable def ext_quotient_regular_sequence_length (M : ModuleCat.{v} R) [No
       Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) :=
       quotSMulTop_ext_equiv_ext_quotSMulTop (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs')))
         n a reg'' M
-    let e3 : QuotSMulTop a (M ⧸ Ideal.ofList rs' • (⊤ : Submodule R M)) ≃ₗ[R]
-      M ⧸ Ideal.ofList rs • (⊤ : Submodule R M) := sorry
     exact ((e1.trans e2.symm).trans
-      (quotSMulTop_linearEquiv a (hn rs' rs'reg (by simp [rs', len])))).trans e3
+      (quotSMulTopLinearEquiv a (hn rs' rs'reg (by simp [rs', len])))).trans
+      (Submodule.quotOfListSMulTopEquivQuotSMulTopOuter M eqapp).symm
 
 omit [IsLocalRing R] in
 lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.Finite R N] (n : ℕ)
