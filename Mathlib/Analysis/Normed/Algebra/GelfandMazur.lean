@@ -134,12 +134,12 @@ open Filter Bornology in
 `z : 𝕜 ↦ ‖x - z • 1‖` achieves a global minimum for every `x : F`. -/
 lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜]
     [ProperSpace 𝕜] [SeminormedRing F] [NormedAlgebra 𝕜 F] [NormOneClass F] (x : F) :
-  ∃ z : 𝕜, IsMinOn (‖x - · • 1‖) Set.univ z := by
-  have : Tendsto (‖x - · • 1‖) (cobounded 𝕜) atTop := by
-    simp only [← Algebra.algebraMap_eq_smul_one]
+  ∃ z : 𝕜, IsMinOn (‖x - algebraMap 𝕜 F ·‖) Set.univ z := by
+  have : Tendsto (‖x - algebraMap 𝕜 F ·‖) (cobounded 𝕜) atTop := by
     exact tendsto_norm_cobounded_atTop |>.comp <| tendsto_const_sub_cobounded x |>.comp <| by simp
   simp only [isMinOn_univ_iff]
-  refine (show Continuous fun z : 𝕜 ↦ ‖x - z • 1‖ by fun_prop).exists_forall_le_of_isBounded 0 ?_
+  refine (show Continuous fun z : 𝕜 ↦ ‖x - algebraMap 𝕜 F z‖ by fun_prop)
+    |>.exists_forall_le_of_isBounded 0 ?_
   simpa [isBounded_def, Set.compl_setOf, Set.Ioi] using this (Ioi_mem_atTop (‖x - (0 : 𝕜) • 1‖))
 
 /-!
@@ -155,30 +155,31 @@ is bounded below by `M`, then the norm of the value at `x - c • 1` of a monic 
 of degree `n` is bounded below by `M ^ n`. This follows by induction from the fact that
 every monic polynomial over `ℂ` factors as a product of monic linear polynomials. -/
 private lemma le_aeval_of_isMonicOfDegree (x : F) {M : ℝ} (hM : 0 ≤ M)
-    (h : ∀ z' : ℂ, M ≤ ‖x - z' • 1‖) {p : ℂ[X]} {n : ℕ} (hp : IsMonicOfDegree p n) (c : ℂ) :
-    M ^ n ≤ ‖aeval (x - c • 1) p‖ := by
+    (h : ∀ z' : ℂ, M ≤ ‖x - algebraMap ℂ F z'‖) {p : ℂ[X]} {n : ℕ} (hp : IsMonicOfDegree p n)
+    (c : ℂ) :
+    M ^ n ≤ ‖aeval (x - algebraMap ℂ F c) p‖ := by
   induction n generalizing p with
   | zero => simp [isMonicOfDegree_zero_iff.mp hp]
   | succ n ih =>
     obtain ⟨f₁, f₂, hf₁, hf₂, H⟩ := hp.eq_isMonicOfDegree_one_mul_isMonicOfDegree
     obtain ⟨r, rfl⟩ := isMonicOfDegree_one_iff.mp hf₁
-    have H' (y : F) : aeval y (X + C r) = y + r • 1 := by
-      simp [Algebra.algebraMap_eq_smul_one]
-    rw [H, aeval_mul, norm_mul, mul_comm, pow_succ, H', sub_add, ← sub_smul]
+    have H' (y : F) : aeval y (X + C r) = y + algebraMap ℂ F r := by simp
+    rw [H, aeval_mul, norm_mul, mul_comm, pow_succ, H', sub_add, ← map_sub]
     exact mul_le_mul (ih hf₂) (h (c - r)) hM (norm_nonneg _)
 
 /- We show that when `z ↦ ‖x - z • 1‖` is never zero (and attains a minimum), then
 it is constant. This uses the auxiliary result `norm_eq_of_isMinOn_of_forall_le`. -/
 private lemma norm_sub_eq_norm_sub_of_isMinOn {x : F} {z : ℂ}
-    (hz : IsMinOn (‖x - · • 1‖) Set.univ z) (H : ∀ z' : ℂ, ‖x - z' • 1‖ ≠ 0) (c : ℂ) :
-    ‖x - c • 1‖ = ‖x - z • 1‖ := by
-  set M := ‖x - z • 1‖ with hMdef
+    (hz : IsMinOn (‖x - algebraMap ℂ F ·‖) Set.univ z) (H : ∀ z' : ℂ, ‖x - algebraMap ℂ F z'‖ ≠ 0)
+    (c : ℂ) :
+    ‖x - algebraMap ℂ F c‖ = ‖x - algebraMap ℂ F z‖ := by
+  set M := ‖x - algebraMap ℂ F z‖ with hMdef
   have hM₀ : 0 < M := by have := H z; positivity
-  refine norm_eq_of_isMinOn_of_forall_le (f := (x - · • 1)) hM₀ hMdef.symm hz (by fun_prop)
-    (fun {y} w hy n hn ↦ ?_) c
+  refine norm_eq_of_isMinOn_of_forall_le (f := (x - algebraMap ℂ F ·)) hM₀ hMdef.symm hz
+    (by fun_prop) (fun {y} w hy n hn ↦ ?_) c
   dsimp only at hy ⊢
   -- show `‖x - w • 1‖ ≤ M * (1 + (‖x - w • 1 - (x - y • 1)‖ / M) ^ n)`
-  rw [sub_sub_sub_cancel_left, ← sub_smul, Algebra.norm_smul_one_eq_norm, norm_sub_rev y w,
+  rw [sub_sub_sub_cancel_left, ← map_sub, norm_algebraMap, norm_sub_rev y w, norm_one, mul_one,
     show M * (1 + (‖w - y‖ / M) ^ n) = (M ^ n + ‖w - y‖ ^ n) / M ^ (n - 1) by
       simp only [field, div_pow, ← pow_succ', Nat.sub_add_cancel hn],
     le_div_iff₀ (by positivity)]
@@ -187,19 +188,19 @@ private lemma norm_sub_eq_norm_sub_of_isMinOn {x : F} {z : ℂ}
       (isMonicOfDegree_X_sub_one (w - y)) (by compute_degree!) <| sub_dvd_pow_sub_pow X _ n
   grw [le_aeval_of_isMonicOfDegree x hM₀.le (isMinOn_univ_iff.mp hz) hp y]
   rw [eq_comm, ← eq_sub_iff_add_eq, mul_comm] at hrel
-  apply_fun (‖aeval (x - y • 1) ·‖) at hrel
-  simp only [map_mul, map_sub, aeval_X, aeval_C, Algebra.algebraMap_eq_smul_one, norm_mul,
-    map_pow, sub_sub_sub_cancel_right] at hrel
+  apply_fun (‖aeval (x - algebraMap ℂ F y) ·‖) at hrel
+  simp only [map_mul, map_sub, aeval_X, aeval_C, norm_mul, map_pow, sub_sub_sub_cancel_right]
+    at hrel
   rw [hrel]
-  exact (norm_sub_le ..).trans <| by simp [hy, ← sub_smul]
+  exact (norm_sub_le ..).trans <| by simp [hy, ← map_sub]
 
 /-- If `F` is a normed `ℂ`-algebra and `x: F`, then there is a complex number `z` such that
 `‖x - z • 1‖ = 0` (whence `x = z • 1`). -/
 lemma exists_norm_sub_smul_one_eq_zero (x : F) :
-    ∃ z : ℂ, ‖x - z • 1‖ = 0 := by
+    ∃ z : ℂ, ‖x - algebraMap ℂ F z‖ = 0 := by
   -- there is a minimizing `z : ℂ`; get it.
   obtain ⟨z, hz⟩ := exists_isMinOn_norm_sub_smul ℂ x
-  set M := ‖x - z • 1‖ with hM
+  set M := ‖x - algebraMap ℂ F z‖ with hM
   rcases eq_or_lt_of_le (show 0 ≤ M from norm_nonneg _) with hM₀ | hM₀
     -- minimum is zero: nothing to do
   · exact ⟨z, hM₀.symm⟩
@@ -209,7 +210,7 @@ lemma exists_norm_sub_smul_one_eq_zero (x : F) :
   have key := norm_sub_eq_norm_sub_of_isMinOn hz H (‖x‖ + M + 1)
   rw [← hM, norm_sub_rev] at key
   replace key := (norm_sub_norm_le ..).trans_eq key
-  rw [Algebra.norm_smul_one_eq_norm] at key
+  rw [norm_algebraMap, norm_one, mul_one] at key
   norm_cast at key
   rw [Real.norm_eq_abs, abs_of_nonneg (by positivity)] at key
   linarith
@@ -227,7 +228,7 @@ def algEquivOfNormMul : ℂ ≃ₐ[ℂ] F :=
     refine ⟨FaithfulSMul.algebraMap_injective ℂ F, fun x ↦ ?_⟩
     obtain ⟨z, hz⟩ := exists_norm_sub_smul_one_eq_zero x
     refine ⟨z, ?_⟩
-    rwa [norm_eq_zero, sub_eq_zero, ← algebraMap_eq_smul_one, eq_comm, ← ofId_apply] at hz
+    rwa [norm_eq_zero, sub_eq_zero, eq_comm, ← ofId_apply] at hz
 
 /-- A version of the **Gelfand-Mazur Theorem** for nontrivial normed `ℂ`-algebras `F`
 with multiplicative norm: any such `F` is isomorphic to `ℂ` as a `ℂ`-algebra. -/
@@ -246,7 +247,7 @@ variable {F : Type*} [NormedRing F] [NormedAlgebra ℝ F]
 
 /- An abbreviation introduced for conciseness below.
 We will show that for every `x : F`, `φ x` takes the value zero. -/
-private abbrev φ (x : F) (u : ℝ × ℝ) : F := x ^ 2 - u.1 • x + u.2 • 1
+private abbrev φ (x : F) (u : ℝ × ℝ) : F := x ^ 2 - u.1 • x + algebraMap ℝ F u.2
 
 private lemma continuous_φ (x : F) : Continuous (φ x) := by fun_prop
 
@@ -315,7 +316,8 @@ private lemma norm_φ_eq_norm_φ_of_isMinOn {x : F} {z : ℝ × ℝ} (h : IsMinO
 `φ x w` grows unboundedly as `w : ℝ × ℝ` does. We will use this to obtain a contradiction
 when `φ x` does not attain the value zero. -/
 open Filter Topology Bornology in
-private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c) (hbd : ∀ r : ℝ, c ≤ ‖x - r • 1‖) :
+private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c)
+    (hbd : ∀ r : ℝ, c ≤ ‖x - algebraMap ℝ F r‖) :
     Tendsto (φ x ·) (cobounded (ℝ × ℝ)) (cobounded F) := by
   simp_rw [φ, sub_add]
   refine tendsto_const_sub_cobounded _ |>.comp ?_
@@ -329,7 +331,7 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c) (hbd : ∀ 
       filter_upwards [prod_mem_prod (mem_principal_self s) univ_mem] with w hw
       rw [norm_sub_rev]
       refine le_trans ?_ (norm_sub_norm_le ..)
-      simp only [norm_algebraMap', norm_smul, norm_one, mul_one]
+      simp only [norm_algebraMap', norm_smul]--, norm_one, mul_one]
       gcongr
       exact hM _ (Set.mem_prod.mp hw).1
     simp only [norm_algebraMap', sub_eq_add_neg]
@@ -339,9 +341,9 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c) (hbd : ∀ 
       refine tendsto_atTop_mono' _ ?_ this
       filter_upwards [prod_mem_prod (isBounded_singleton (x := 0)) univ_mem] with y hy
       calc ‖y.1‖ * c
-        _ ≤ ‖y.1‖ * ‖x - (y.1⁻¹ * y.2) • 1‖ := by gcongr; exact hbd _
-        _ = ‖y.1 • x - y.2 • 1‖ := by
-          simp only [← norm_smul, smul_sub, smul_smul]
+        _ ≤ ‖y.1‖ * ‖x - algebraMap ℝ F (y.1⁻¹ * y.2)‖ := by gcongr; exact hbd _
+        _ = ‖y.1 • x - algebraMap ℝ F y.2‖ := by
+          simp only [← norm_smul, smul_sub, smul_smul, Algebra.algebraMap_eq_smul_one]
           simp_all
     rw [tendsto_mul_const_atTop_of_pos hc₀, tendsto_norm_atTop_iff_cobounded]
     exact tendsto_fst
@@ -351,12 +353,12 @@ open Bornology Filter in
 private lemma exists_isMinOn_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) Set.univ z := by
   -- use that `‖x - · • 1‖` has a minimum.
   obtain ⟨u, hu⟩ := exists_isMinOn_norm_sub_smul ℝ x
-  rcases eq_or_lt_of_le (norm_nonneg (x - u • 1)) with hc₀ | hc₀
+  rcases eq_or_lt_of_le (norm_nonneg (x - algebraMap ℝ F u)) with hc₀ | hc₀
   · -- if this minimum is zero, use `(u, 0)`.
     rw [eq_comm, norm_eq_zero, sub_eq_zero] at hc₀
-    exact ⟨(u, 0), fun z' ↦ by simp [φ, hc₀, sq]⟩
+    exact ⟨(u, 0), fun z' ↦ by simp [φ, hc₀, sq, Algebra.smul_def]⟩
   -- otherwise, use `tendsto_φ_cobounded`.
-  set c := ‖x - u • 1‖
+  set c := ‖x - algebraMap ℝ F u‖
   simp only [isMinOn_univ_iff]
   refine (continuous_φ x).norm.exists_forall_le_of_isBounded (0, 0) ?_
   rw [isMinOn_univ_iff] at hu
@@ -376,10 +378,11 @@ lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
   by_contra! H
   set M := ‖φ x z‖
   -- use that `‖φ x ·‖` is constant *and* is unbounded to produce a contradiction.
-  have h' (r : ℝ) : √M ≤ ‖x - r • 1‖ := by
+  have h' (r : ℝ) : √M ≤ ‖x - algebraMap ℝ F r‖ := by
     rw [← sq_le_sq₀ M.sqrt_nonneg (norm_nonneg _), Real.sq_sqrt (norm_nonneg _), ← norm_pow,
       Commute.sub_sq <| algebraMap_eq_smul_one (A := F) r ▸ commute_algebraMap_right r x]
-    convert isMinOn_univ_iff.mp h (2 * r, r ^ 2) using 4 <;> simp [two_mul, add_smul, smul_pow]
+    convert isMinOn_univ_iff.mp h (2 * r, r ^ 2) using 4 <;>
+      simp [two_mul, add_mul, ← commutes, smul_def, mul_add]
   have := tendsto_norm_atTop_iff_cobounded.mpr <| tendsto_φ_cobounded (by positivity) h'
   simp only [norm_φ_eq_norm_φ_of_isMinOn h (norm_ne_zero_iff.mpr H)] at this
   exact Filter.not_tendsto_const_atTop _ _ this
