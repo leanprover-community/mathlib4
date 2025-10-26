@@ -310,10 +310,7 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     rcases eq_or_ne k m with (rfl | hkm)
     · by_cases l = k <;> aesop
     · rcases eq_or_ne n m with (rfl | hmn)
-      · rcases eq_or_ne k l with (rfl | hkl)
-        · simp_all
-        · rw [if_neg hkm, if_neg hkl, mul_one] at hk
-          simp_all
+      · by_cases k = l <;> simp_all
       · rw [if_neg hkm.symm, if_neg hmn.symm, one_mul, mul_one] at hm
         aesop
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩ | ⟨h, rfl, rfl⟩)
