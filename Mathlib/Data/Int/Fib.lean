@@ -27,22 +27,24 @@ def fib (n : ℤ) : ℤ :=
   if 0 ≤ n then n.toNat.fib else
   if Even n then -(-n).toNat.fib else (-n).toNat.fib
 
-@[simp] theorem fib_natCast (n : ℕ) : Int.fib n = Nat.fib n := rfl
-@[simp] theorem fib_zero : Int.fib 0 = 0 := rfl
-@[simp] theorem fib_one : Int.fib 1 = 1 := rfl
-@[simp] theorem fib_two : Int.fib 2 = 1 := rfl
-@[simp] theorem fib_neg_one : Int.fib (-1) = 1 := rfl
-@[simp] theorem fib_neg_two : Int.fib (-2) = -1 := rfl
+@[simp] theorem fib_natCast (n : ℕ) : fib n = Nat.fib n := rfl
+@[simp] theorem fib_zero : fib 0 = 0 := rfl
+@[simp] theorem fib_one : fib 1 = 1 := rfl
+@[simp] theorem fib_two : fib 2 = 1 := rfl
+@[simp] theorem fib_neg_one : fib (-1) = 1 := rfl
+@[simp] theorem fib_neg_two : fib (-2) = -1 := rfl
+theorem fib_of_nonneg {n : ℤ} (hn : 0 ≤ n) : fib n = n.toNat.fib := by simp [fib, hn]
+theorem fib_of_odd {n : ℤ} (hn : Odd n) : fib n = (natAbs n).fib := by grind [fib]
+@[simp] theorem fib_two_mul_add_one {n : ℤ} :
+    fib (2 * n + 1) = (natAbs (2 * n + 1)).fib := fib_of_odd <| by simp
+@[simp] theorem fib_two_mul_add_one_nonneg {n : ℤ} : 0 ≤ fib (2 * n + 1) := by simp
+theorem fib_neg_natCast_of_even {n : ℕ} (hne : Even n) :
+    fib (-n) = - n.fib := by simp_all [fib]
 
 theorem fib_neg_natCast (n : ℕ) : Int.fib (-n) = (-1) ^ (n + 1) * n.fib := by
-  simp only [fib, Int.neg_nonneg, natCast_nonpos_iff, toNat_neg_natCast, Nat.fib_zero,
-    neg_neg, toNat_natCast, reduceNeg]
-  split_ifs with hn h
-  · simp [hn]
-  · obtain ⟨a, rfl⟩ : Even n := by grind
-    simp [← two_mul, Odd.neg_one_pow (Exists.intro a rfl)]
-  · obtain ⟨a, rfl⟩ : Odd n := by grind
-    simp [add_assoc, ← two_mul, ← mul_add_one]
+  rcases n.even_or_odd with (hn | hn)
+  · simp_all [fib_neg_natCast_of_even hn, pow_add]
+  · simp_all [fib_of_odd]
 
 theorem fib_add_two (n : ℤ) :
     fib (n + 2) = fib n + fib (n + 1) := by
@@ -81,10 +83,7 @@ theorem fib_add_one (n : ℤ) :
     have : -1 + -(n : ℤ) = 0 ↔ (n : ℤ) = -1 := by grind
     simp [this]
 
-theorem fib_two_mul_add_one_nonneg {n : ℤ} :
-    0 ≤ fib (2 * n + 1) := by grind [fib]
-
--- auxiliary for `fib_add`, so maybe private?
+-- auxiliary for `fib_add`
 theorem fib_natCast_add_natCast (m n : ℕ) :
     fib (m + n) = fib (m - 1) * fib n + fib m * fib (n + 1) := by
   if hm : m = 0 then simp [hm] else
@@ -93,7 +92,7 @@ theorem fib_natCast_add_natCast (m n : ℕ) :
     fib_natCast, ← add_assoc, Nat.fib_add]
   simp [add_comm]
 
--- TODO: (private? )`fib_natCast_sub_natCast`
--- `fib_add`, `fib_two_mul`, `fib_two_mul_add_one`, `fib_two_mul_add_two`, `fib_dvd`, ...
+-- TODO: `fib_natCast_sub_natCast`,
+-- `fib_add`, `fib_two_mul`, `fib_two_mul_add_one'`, `fib_two_mul_add_two`, `fib_dvd`, ...
 
 end Int
