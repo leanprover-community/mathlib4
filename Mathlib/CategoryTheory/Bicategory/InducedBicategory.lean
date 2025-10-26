@@ -11,6 +11,14 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Strict
 
 In this file we develop API for constructing a full sub-bicategory of a bicategory.
 
+## TODO
+
+One might also want to develop "locally induced" bicategories, which should allow for a sub-class
+of 1-morphisms as well. However, this needs more thought. If tries the naive approach of simply
+replacing the map `F` below with a "functor" (between `CategoryStruct`s), one runs into the issue
+that `map_comp` and `map_id` might not be definitional equalities (which they should be in
+practice). Hence one needs to carefully carry these around, or specify `F` in a way that ensures
+they are def-eqs, perhaps constructing it from specified `MorhpismProperty`s.
 -/
 
 namespace CategoryTheory.Bicategory
