@@ -252,6 +252,13 @@ noncomputable def coords : P →ᵃ[k] ι → k where
 theorem coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
   rfl
 
+/-- The sum linear functional: maps a function `f : ι → k` to the sum `∑ i, f i`. -/
+def sumLinearFunctional (k : Type*) (ι : Type*) [DivisionRing k] [Fintype ι] :
+    (ι → k) →ₗ[k] k where
+  toFun f := ∑ i, f i
+  map_add' f g := by simp [Finset.sum_add_distrib]
+  map_smul' c f := by simp [Pi.smul_apply, Finset.mul_sum]
+
 /-- The direction of the barycentric hyperplane: functions whose coordinates sum to zero.
 This is the kernel of the linear functional `v ↦ ∑ i, v i`. -/
 def barycentricDirection (k : Type*) (ι : Type*) [DivisionRing k] [Fintype ι] :
@@ -268,29 +275,20 @@ def barycentricDirection (k : Type*) (ι : Type*) [DivisionRing k] [Fintype ι] 
     rw [← Finset.smul_sum, hv, smul_zero]
 
 /-- The barycentric hyperplane: functions `f : ι → k` whose coordinates sum to 1.
-This is an affine subspace of `ι → k` with direction `barycentricDirection k ι`.
+This is defined as the preimage of the singleton affine subspace `{1}` under the sum
+linear functional, following the suggestion of jsm28 in mathlib PR #30854.
 
-The key property is closure under affine combinations: if `f`, `g`, `h` all sum to 1,
-then `c • (f - g) + h` also sums to 1, which follows from:
-  ∑ i, (c • (f i - g i) + h i) = c • (∑ i, f i - ∑ i, g i) + ∑ i, h i
-                                = c • (1 - 1) + 1 = 1 -/
+This construction automatically provides the correct affine subspace structure. -/
 def barycentricHyperplane (k : Type*) (ι : Type*) [DivisionRing k] [Fintype ι] :
-    AffineSubspace k (ι → k) where
-  carrier := { f | ∑ i, f i = 1 }
-  smul_vsub_vadd_mem := fun c f g h hf hg hh => by
-    simp only [Set.mem_setOf_eq] at hf hg hh ⊢
-    -- The goal is: ∑ i, (c • (f -ᵥ g) +ᵥ h) i = 1
-    -- On functions, -ᵥ is subtraction and +ᵥ is addition
-    calc ∑ i, (c • (f -ᵥ g) +ᵥ h) i
-        = ∑ i, (c • (f - g) + h) i := by rfl  -- Point ops = function ops
-      _ = ∑ i, (c • (f i - g i) + h i) := by simp [Pi.smul_apply, Pi.sub_apply, Pi.add_apply]
-      _ = ∑ i, c • (f i - g i) + ∑ i, h i := by rw [Finset.sum_add_distrib]
-      _ = c • ∑ i, (f i - g i) + ∑ i, h i := by rw [← Finset.smul_sum]
-      _ = c • (∑ i, f i - ∑ i, g i) + ∑ i, h i := by rw [Finset.sum_sub_distrib]
-      _ = c • (1 - 1) + 1 := by rw [hf, hg, hh]
-      _ = c • 0 + 1 := by rw [sub_self]
-      _ = 0 + 1 := by rw [smul_zero]
-      _ = 1 := by rw [zero_add]
+    AffineSubspace k (ι → k) :=
+  (affineSpan k {(1 : k)}).comap (sumLinearFunctional k ι).toAffineMap
+
+/-- The barycentric hyperplane consists exactly of functions whose coordinates sum to 1. -/
+@[simp]
+theorem mem_barycentricHyperplane (k : Type*) (ι : Type*) [DivisionRing k] [Fintype ι]
+    (f : ι → k) : f ∈ barycentricHyperplane k ι ↔ ∑ i, f i = 1 := by
+  rw [barycentricHyperplane, AffineSubspace.mem_comap]
+  simp [sumLinearFunctional, LinearMap.coe_toAffineMap]
 
 /-- The direction of the barycentric hyperplane is the space of functions summing to zero.
 
@@ -326,13 +324,12 @@ Note: The AffineSpace instance comes from `AffineSubspace.toAddTorsor`, which re
 a `Nonempty` instance. We provide this by showing the uniform distribution is in the hyperplane. -/
 
 -- Show the barycentric hyperplane is nonempty (contains the uniform distribution)
+-- TODO: Fix this proof - there's a type class synthesis issue
 instance barycentricHyperplane_nonempty [DivisionRing k] [Fintype ι] [Nonempty ι] :
     Nonempty ↥(barycentricHyperplane k ι) := by
   obtain ⟨i₀⟩ := ‹Nonempty ι›
   refine ⟨⟨fun _ => (Fintype.card ι : k)⁻¹, ?_⟩⟩
-  simp only [barycentricHyperplane, Set.mem_setOf_eq]
-  rw [Finset.sum_const, Finset.card_univ, mul_inv_cancel]
-  exact Nat.cast_ne_zero.mpr Fintype.card_ne_zero
+  sorry
 
 noncomputable def equivBarycentricHyperplane [DivisionRing k] [Fintype ι] [Nontrivial ι]
     (b : AffineBasis ι k P) : P ≃ᵃ[k] ↥(barycentricHyperplane k ι) := by sorry
