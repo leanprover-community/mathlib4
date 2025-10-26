@@ -343,7 +343,8 @@ theorem det_eq_zero_iff_ker_ne_bot [IsDomain R] [Free R M] [Module.Finite R M] {
 /--
 If the determinant of a map vanishes, then the map is not onto.
 TODO: This should only require `[IsDomain R] [Free R M]`, which we get if we generalize
-LinearAlgebra.LinearAlgebra.FiniteDimensional.Basic, which includes ker_eq_bot_iff_range_eq_top.
+`Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`, which includes
+`LinearMap.ker_eq_bot_iff_range_eq_top`.
 -/
 theorem range_lt_top_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f : M →ₗ[𝕜] M}
     (hf : f.det = 0) : range f < ⊤ := by
