@@ -38,13 +38,11 @@ theorem fib_of_odd {n : ℤ} (hn : Odd n) : fib n = (natAbs n).fib := by grind [
 @[simp] theorem fib_two_mul_add_one {n : ℤ} :
     fib (2 * n + 1) = (natAbs (2 * n + 1)).fib := fib_of_odd <| by simp
 @[simp] theorem fib_two_mul_add_one_nonneg {n : ℤ} : 0 ≤ fib (2 * n + 1) := by simp
-theorem fib_neg_natCast_of_even {n : ℕ} (hne : Even n) :
-    fib (-n) = - n.fib := by simp_all [fib]
 
-theorem fib_neg_natCast (n : ℕ) : Int.fib (-n) = (-1) ^ (n + 1) * n.fib := by
+theorem fib_neg_natCast (n : ℕ) : fib (-n) = (-1) ^ (n + 1) * n.fib := by
   rcases n.even_or_odd with (hn | hn)
-  · simp_all [fib_neg_natCast_of_even hn, pow_add]
-  · simp_all [fib_of_odd]
+  · simp [fib, hn, pow_add]
+  · simp [fib_of_odd, hn]
 
 theorem fib_add_two (n : ℤ) :
     fib (n + 2) = fib n + fib (n + 1) := by
