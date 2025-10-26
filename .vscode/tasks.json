@@ -4,11 +4,10 @@
     {
       "label": "Aristotle: Prove Current File",
       "type": "shell",
-      "command": "bash",
+      "command": "python3",
       "args": [
-        "-l",
-        "-c",
-        "python3 ${workspaceFolder}/scripts/aristotle/prove.py '${file}'"
+        "${workspaceFolder}/scripts/aristotle/prove.py",
+        "${file}"
       ],
       "problemMatcher": [],
       "presentation": {
@@ -21,11 +20,12 @@
     {
       "label": "Aristotle: Prove Current File (Custom Output)",
       "type": "shell",
-      "command": "bash",
+      "command": "python3",
       "args": [
-        "-l",
-        "-c",
-        "python3 ${workspaceFolder}/scripts/aristotle/prove.py '${file}' --output '${input:outputPath}'"
+        "${workspaceFolder}/scripts/aristotle/prove.py",
+        "${file}",
+        "--output",
+        "${input:outputPath}"
       ],
       "problemMatcher": [],
       "presentation": {
