@@ -2935,7 +2935,7 @@ lemma eq6a : house (rho h7 q hq0 h2mq) ≤ (q*q) * ((h7.c₄ ^ (h7.n q : ℝ)) *
         (h7.γ' ^ ((b q t) * ((h7.l₀' q hq0 h2mq))))
     have := h7.c_coeffspow_r q hq0 t h2mq
     simp only [mul_assoc] at *
-    rw [this];clear this
+    rw [this]; clear this
     --rw [H]
     have HH := triple_comm h7.K
         (h7.c₁^(h7.r q hq0 h2mq))
@@ -4539,7 +4539,7 @@ lemma abs_denom : norm (((z - (h7.l₀' q hq0 h2mq : ℂ)) ^ (-(h7.r q hq0 h2mq 
       intros x hx
       · apply norm_nonneg
       · intros x hx
-        simp only [norm_pow, norm_div, Real.norm_natCast]
+        simp only [norm_pow, norm_div]
         refine (pow_le_pow_iff_left₀ ?_ ?_ ?_).mpr ?_
         · rw [← norm_div]
           apply norm_nonneg
@@ -4547,8 +4547,12 @@ lemma abs_denom : norm (((z - (h7.l₀' q hq0 h2mq : ℂ)) ^ (-(h7.r q hq0 h2mq 
         · exact rneq0 h7 q hq0 h2mq
         · sorry
     · sorry
-    · sorry
-  · simp only [zpow_neg, zpow_natCast, norm_pow, norm_div, Real.norm_natCast, prod_const]
+    · simp only [zpow_neg, zpow_natCast, inv_nonneg]
+      apply pow_nonneg
+      apply mul_nonneg
+      · sorry
+      · simp only [inv_nonneg, Nat.cast_nonneg]
+  · simp only [zpow_neg, zpow_natCast, norm_pow, norm_div, prod_const]
     sorry
 
 #exit
