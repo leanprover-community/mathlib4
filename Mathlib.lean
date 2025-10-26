@@ -3380,6 +3380,7 @@ import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.ConditionallyCompleteOrder
 import Mathlib.Data.Int.DivMod
+import Mathlib.Data.Int.Fib
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Init
 import Mathlib.Data.Int.Interval
