@@ -36,8 +36,8 @@ def fib (n : ℤ) : ℤ :=
 theorem fib_of_nonneg {n : ℤ} (hn : 0 ≤ n) : fib n = n.toNat.fib := by simp [fib, hn]
 theorem fib_of_odd {n : ℤ} (hn : Odd n) : fib n = (natAbs n).fib := by grind [fib]
 @[simp] theorem fib_two_mul_add_one {n : ℤ} :
-    fib (2 * n + 1) = (natAbs (2 * n + 1)).fib := fib_of_odd <| by simp
-@[simp] theorem fib_two_mul_add_one_nonneg {n : ℤ} : 0 ≤ fib (2 * n + 1) := by simp
+    fib (2 * n + 1) = (natAbs (2 * n + 1)).fib := fib_of_odd <| odd_two_mul_add_one n
+theorem fib_two_mul_add_one_nonneg {n : ℤ} : 0 ≤ fib (2 * n + 1) := by simp
 
 theorem fib_neg_natCast (n : ℕ) : fib (-n) = (-1) ^ (n + 1) * n.fib := by
   rcases n.even_or_odd with (hn | hn)
