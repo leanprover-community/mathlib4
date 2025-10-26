@@ -763,7 +763,7 @@ value at `none`. -/
 lemma AffineIndependent.option_extend
     {k : Type*} {V : Type*} {P : Type*}
     [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
-    {ι : Type*} [Nonempty ι]
+    {ι : Type*} [_instNE : Nonempty ι]
     {f : ι → P} (hf : AffineIndependent k f)
     {p : P} (hp : p ∉ affineSpan k (Set.range f)) :
     AffineIndependent k (fun o : Option ι => o.elim p f) := by

@@ -705,12 +705,13 @@ noncomputable def affineDim (s : Set P) : ℕ :=
   Module.finrank k (affineSpan k s).direction
 
 /-- If the affine span of a set equals the whole space, then its affine dimension equals
-the dimension of the ambient vector space. This version doesn't require proving the set
-is nonempty, since that follows from the spanning condition when the space is nonempty. -/
+the dimension of the ambient vector space.
+
+This works for both finite and infinite-dimensional spaces. In the infinite-dimensional case,
+both sides equal 0 (the convention for `finrank` on infinite-dimensional spaces). -/
 lemma affineDim_eq_finrank_of_affineSpan_eq_top
     {k : Type*} {V : Type*} {P : Type*}
-    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P] [FiniteDimensional k V]
-    [Nonempty P]
+    [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
     {s : Set P} (h : affineSpan k s = ⊤) :
     affineDim k s = Module.finrank k V :=
   calc affineDim k s

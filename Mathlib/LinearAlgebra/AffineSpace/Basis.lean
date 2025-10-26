@@ -377,7 +377,6 @@ theorem equivBarycentricCoords_apply [Fintype ι] (b : AffineBasis ι k P) (p : 
 /-- The barycentric coordinates of any point sum to 1.
 This shows that the image of `equivBarycentricCoords` consists precisely of functions
 summing to 1, as requested in the TODO. -/
-@[simp]
 theorem equivBarycentricCoords_apply_sum [Fintype ι] (b : AffineBasis ι k P) (p : P) :
     ∑ i, b.equivBarycentricCoords p i = 1 := by
   simp only [equivBarycentricCoords_apply]
