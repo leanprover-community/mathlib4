@@ -510,8 +510,6 @@ instance : Mul ONote :=
   ⟨mul⟩
 
 instance : MulZeroClass ONote where
-  mul := (· * ·)
-  zero := 0
   zero_mul o := by cases o <;> rfl
   mul_zero o := by cases o <;> rfl
 

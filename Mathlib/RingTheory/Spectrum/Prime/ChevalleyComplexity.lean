@@ -342,7 +342,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
             RingHom.algebraMap_toAlgebra]; exact Set.union_compl_self _) _
       _ = (⋃ C ∈ S₁, C.toSet) ∪ ⋃ C ∈ S₂, C.toSet := ?_
       _ = ⋃ C ∈ S₁ ∪ S₂, C.toSet := by
-        simpa using (Set.biUnion_union S₁.toSet S₂.toSet _).symm
+        simpa using (Set.biUnion_union (SetLike.coe S₁) S₂ _).symm
     congr 1
     · convert congr(comap q₁.toRingHom '' $hT₁)
       · dsimp only [e₁]
