@@ -222,7 +222,7 @@ end fundamental_identity
 section inertia
 
 variable {R S G : Type*} [CommRing R] [CommRing S] [Algebra R S] [Group G]
-  [MulSemiringAction G S] [SMulCommClass G R S] [Algebra.IsInvariant R S G] [Finite G]
+  [MulSemiringAction G S] [IsGaloisGroup G R S] [Finite G]
 
 open scoped Pointwise
 
@@ -257,26 +257,19 @@ lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
 /-- The cardinality of the inertia group is equal to the ramification index. -/
 lemma card_inertia_eq_ramificationIdxIn
     [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S]
-    (K L : Type*) [Field K] [Field L] [Algebra K L] [Algebra R L] [Algebra R K] [Algebra S L]
-    [IsScalarTower R S L] [IsScalarTower R K L] [IsFractionRing R K] [IsFractionRing S L]
-    [MulSemiringAction G L] [IsGaloisGroup G K L]
+    [NoZeroSMulDivisors R S]
     (p : Ideal R) (hp : p ≠ ⊥)
     (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
     Nat.card (P.toAddSubgroup.inertia G) = Ideal.ramificationIdxIn p S := by
-  letI := IsGaloisGroup.isGalois G K L
-  letI := IsGaloisGroup.finiteDimensional G K L
   have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
-  have := NoZeroSMulDivisors.trans_faithfulSMul R K L
-  have : NoZeroSMulDivisors R S := IsIntegralClosure.noZeroSMulDivisors R L
   have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
   refine mul_right_injective₀ (primesOver_ncard_ne_zero p S) ?_
   refine mul_left_injective₀ (b := Module.finrank (R ⧸ p) (S ⧸ P)) ?_ ?_
   · intro e; simp [e, eq_comm, Nat.card_eq_zero, ‹Finite G›.not_infinite] at H
   dsimp only
   rw [H, mul_assoc, ← Ideal.inertiaDeg_algebraMap,
-    ← Ideal.inertiaDegIn_eq_inertiaDeg p P K L,
-    Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S K L,
-    IsGaloisGroup.card_eq_finrank G K L]
+    ← Ideal.inertiaDegIn_eq_inertiaDeg p P G,
+    Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S G]
 
 end inertia
 
