@@ -81,6 +81,10 @@ theorem fib_add_one (n : ℤ) :
     have : -1 + -(n : ℤ) = 0 ↔ (n : ℤ) = -1 := by grind
     simp [this]
 
+theorem fib_two_mul_add_one_nonneg {n : ℤ} :
+    0 ≤ fib (2 * n + 1) := by grind [fib]
+
+-- auxiliary for `fib_add`, so maybe private?
 theorem fib_natCast_add_natCast (m n : ℕ) :
     fib (m + n) = fib (m - 1) * fib n + fib m * fib (n + 1) := by
   if hm : m = 0 then simp [hm] else
@@ -89,6 +93,7 @@ theorem fib_natCast_add_natCast (m n : ℕ) :
     fib_natCast, ← add_assoc, Nat.fib_add]
   simp [add_comm]
 
--- TODO: `fib_natCast_sub_natCast`, `fib_add`, ...
+-- TODO: (private? )`fib_natCast_sub_natCast`
+-- `fib_add`, `fib_two_mul`, `fib_two_mul_add_one`, `fib_two_mul_add_two`, `fib_dvd`, ...
 
 end Int
