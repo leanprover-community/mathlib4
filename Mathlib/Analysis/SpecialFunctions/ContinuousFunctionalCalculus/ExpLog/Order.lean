@@ -45,7 +45,7 @@ lemma CFC.tendsto_cfc_rpow_sub_one_log {a : A} (ha : IsStrictlyPositive a) :
 
 open Classical Real in
 /-- `log` is operator monotone. -/
-lemma CFC.log_monotoneOn : MonotoneOn CFC.log {a : A | IsStrictlyPositive a} := by
+lemma CFC.log_monotoneOn : MonotoneOn log {a : A | IsStrictlyPositive a} := by
   /- We have that `log x = lim_{p → 0} p⁻¹ * (x^p - 1)` with uniform convergence on the spectrum of
   any positive definite operator, which means that `CFC.log a = lim_{p→0} p⁻¹ * (a^p - 1)` by the
   continuity of the CFC (`tendsto_cfc_fun`). Then, we use the fact that `x^p` is monotone for
@@ -53,8 +53,8 @@ lemma CFC.log_monotoneOn : MonotoneOn CFC.log {a : A | IsStrictlyPositive a} := 
   (`isClosed.monotoneOn`) to conclude the proof. -/
   let s := {a : A | IsStrictlyPositive a}
   let f (p : ℝ) := fun a => if a ∈ s then cfc (A := A) (fun x => p⁻¹ * (x ^ p - 1)) a else 0
-  let g := fun a => if a ∈ s then CFC.log (A := A) a else 0
-  have hg : s.EqOn g (CFC.log (A := A)) := by
+  let g := fun a => if a ∈ s then log (A := A) a else 0
+  have hg : s.EqOn g (log (A := A)) := by
     intro p hp
     simp [g, hp]
   refine MonotoneOn.congr ?_ hg
@@ -65,7 +65,7 @@ lemma CFC.log_monotoneOn : MonotoneOn CFC.log {a : A | IsStrictlyPositive a} := 
     by_cases ha : a ∈ s
     · have hf : ∀ p, cfc (fun x => p⁻¹ * (x ^ p - 1)) a = f p a := by intro p; simp [f, ha]
       refine Filter.Tendsto.congr hf ?_
-      have : g a = CFC.log a := by simp [g, ha]
+      have : g a = log a := by simp [g, ha]
       rw [this]
       exact tendsto_cfc_rpow_sub_one_log ha
     · have hg' : g a = 0 := by simp [g, ha]
@@ -99,3 +99,7 @@ lemma CFC.log_monotoneOn : MonotoneOn CFC.log {a : A | IsStrictlyPositive a} := 
     simp only
     gcongr
     grind
+
+@[gcongr]
+lemma CFC.log_le_log {a b : A} (ha : IsStrictlyPositive a) (hab : a ≤ b) : log a ≤ log b :=
+  log_monotoneOn ha (ha.of_le hab) hab
