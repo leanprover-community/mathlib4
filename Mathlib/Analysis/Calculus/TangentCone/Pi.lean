@@ -1,4 +1,17 @@
+/-
+Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
 import Mathlib.Analysis.Calculus.TangentCone.Basic
+
+/-!
+# Indexed product of sets with unique differentiability property
+
+In this file we prove that the indexed product
+of a family sets with unique differentiability property
+has the same property, see `UniqueDiffOn.pi` and  `UniqueDiffOn.univ_pi`.
+-/
 
 open Filter Set
 open scoped Topology
