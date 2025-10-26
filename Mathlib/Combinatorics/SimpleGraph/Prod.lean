@@ -3,7 +3,7 @@ Copyright (c) 2022 George Peter Banyard, Yaël Dillies, Kyle Miller. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Paths
 import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
@@ -37,7 +37,7 @@ variable {G : SimpleGraph α} {H : SimpleGraph β}
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 def boxProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) where
   Adj x y := G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1
-  symm x y := by simp [and_comm, or_comm, eq_comm, adj_comm]
+  symm x y := by simp [and_comm, eq_comm, adj_comm]
   loopless x := by simp
 
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
@@ -155,12 +155,12 @@ lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [Decidab
   | .cons x w' => next c =>
     unfold ofBoxProdLeft ofBoxProdRight
     rw [length_cons, length_boxProd w']
-    have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by aesop
+    have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by simp_all
     rcases disj with h₁ | h₂
-    · simp only [h₁, irrefl, false_and, and_self, ↓reduceDIte, length_cons, Or.by_cases]
+    · simp only [h₁, and_self, ↓reduceDIte, length_cons, Or.by_cases]
       rw [add_comm, add_comm w'.ofBoxProdLeft.length 1, add_assoc]
       congr <;> simp [h₁.2.symm]
-    · simp only [h₂, irrefl, false_and, ↓reduceDIte, length_cons, add_assoc, Or.by_cases]
+    · simp only [h₂, add_assoc, Or.by_cases]
       congr <;> simp [h₂.2.symm]
 
 end Walk

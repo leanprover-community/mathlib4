@@ -19,24 +19,21 @@ namespace LindemannWeierstrass
 noncomputable section
 
 open scoped Nat
-
 open Complex Polynomial
-
-attribute [local fun_prop] Polynomial.differentiable Complex.continuous_abs
 
 theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
     HasDerivAt (fun x : ℝ ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s)))
       (s * (cexp (-(x • s)) * p.eval (x • s))) x := by
   have h₀ := (hasDerivAt_id' x).smul_const s
-  have h₁ := h₀.neg.cexp
+  have h₁ := h₀.fun_neg.cexp
   have h₂ := ((sumIDeriv p).hasDerivAt (x • s)).comp x h₀
-  convert (h₁.mul h₂).neg using 1
+  convert (h₁.mul h₂).fun_neg using 1
   nth_rw 1 [sumIDeriv_eq_self_add p]
   simp only [one_smul, eval_add, Function.comp_apply]
   ring
 
 theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
-    s * ∫ x in (0)..1, exp (-(x • s)) * p.eval (x • s) =
+    s * ∫ x in 0..1, exp (-(x • s)) * p.eval (x • s) =
       -(exp (-s) * p.sumIDeriv.eval s) + p.sumIDeriv.eval 0 := by
   rw [← intervalIntegral.integral_const_mul,
     intervalIntegral.integral_eq_sub_of_hasDerivAt
@@ -53,7 +50,7 @@ private def P (f : ℂ[X]) (s : ℂ) :=
   exp s * f.sumIDeriv.eval 0 - f.sumIDeriv.eval s
 
 private theorem P_eq_integral_exp_mul_eval (f : ℂ[X]) (s : ℂ) :
-    P f s = exp s * (s * ∫ x in (0)..1, exp (-(x • s)) * f.eval (x • s)) := by
+    P f s = exp s * (s * ∫ x in 0..1, exp (-(x • s)) * f.eval (x • s)) := by
   rw [integral_exp_mul_eval, mul_add, mul_neg, exp_neg, mul_inv_cancel_left₀ (exp_ne_zero s),
     neg_add_eq_sub, P]
 
@@ -119,14 +116,14 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
     have h :
       (fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Ioc 0 1 ⊆
         (fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Icc 0 1 :=
-      Set.image_subset _ Set.Ioc_subset_Icc_self
+      Set.image_mono Set.Ioc_subset_Icc_self
     refine (IsCompact.image isCompact_Icc ?_).isBounded.subset h
     fun_prop
   obtain ⟨c, h⟩ := this.exists_norm_le
   simp_rw [Real.norm_eq_abs] at h
   refine P_le _ s c (fun p x hx => ?_)
   specialize h (max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) (Set.mem_image_of_mem _ hx)
-  refine le_trans ?_ (pow_le_pow_left₀ (abs_nonneg _) h _)
+  grw [← h]
   simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, norm_mul,
     Complex.norm_pow, real_smul, norm_mul, norm_real, ← eval₂_eq_eval_map, ← aeval_def, abs_mul,
     abs_norm, mul_pow, Real.norm_of_nonneg hx.1.le]

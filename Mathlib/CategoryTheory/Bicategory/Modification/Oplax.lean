@@ -60,8 +60,10 @@ structure Modification where
   /-- The underlying family of 2-morphisms. -/
   app (a : B) : η.app a ⟶ θ.app a
   /-- The naturality condition. -/
-  naturality {a b : B} (f : a ⟶ b) :
-    F.map f ◁ app b ≫ θ.naturality f = η.naturality f ≫ app a ▷ G.map f := by aesop_cat
+  naturality :
+    ∀ {a b : B} (f : a ⟶ b),
+      F.map f ◁ app b ≫ θ.naturality f = η.naturality f ≫ app a ▷ G.map f := by
+    cat_disch
 
 attribute [reassoc (attr := simp)] Modification.naturality
 

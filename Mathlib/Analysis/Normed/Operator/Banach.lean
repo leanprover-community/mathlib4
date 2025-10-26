@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.CompleteMetrizable
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
-import Mathlib.Analysis.Normed.Affine.Isometry
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Banach open mapping theorem
@@ -31,7 +31,11 @@ linear itself but which satisfies a bound `‖inverse x‖ ≤ C * ‖x‖`. A s
 map doesn't always have a continuous linear right inverse, but it always has a nonlinear inverse
 in this sense, by Banach's open mapping theorem. -/
 structure NonlinearRightInverse where
+  /-- The underlying function.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : F → E
+  /-- The bound `C` so that `‖inverse x‖ ≤ C * ‖x‖` for all `x`. -/
   nnnorm : ℝ≥0
   bound' : ∀ y, ‖toFun y‖ ≤ nnnorm * ‖y‖
   right_inv' : ∀ y, f (toFun y) = y
@@ -96,12 +100,11 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y => ?_⟩
   rcases eq_or_ne y 0 with rfl | hy
-  · use 0
-    simp
-  · have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.is_iso, hc]
+  · simp
+  · have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.norm_map, hc]
     rcases rescale_to_shell hc' (half_pos εpos) hy with ⟨d, hd, ydlt, -, dinv⟩
     let δ := ‖d‖ * ‖y‖ / 4
-    have δpos : 0 < δ := div_pos (mul_pos (norm_pos_iff.2 hd) (norm_pos_iff.2 hy)) (by norm_num)
+    have δpos : 0 < δ := by positivity
     have : a + d • y ∈ ball a ε := by
       simp [dist_eq_norm, lt_of_le_of_lt ydlt.le (half_lt_self εpos)]
     rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₁, z₁im, h₁⟩
@@ -123,8 +126,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
           simp only [x, f.map_sub]
           abel
         _ ≤ ‖f x₁ - (a + d • y)‖ + ‖f x₂ - a‖ := norm_sub_le _ _
-        _ ≤ δ + δ := by rw [dist_eq_norm'] at h₁ h₂; gcongr
-        _ = 2 * δ := (two_mul _).symm
+        _ ≤ 2 * δ := by grind [dist_eq_norm']
     have J : ‖f (σ' d⁻¹ • x) - y‖ ≤ 1 / 2 * ‖y‖ :=
       calc
         ‖f (σ' d⁻¹ • x) - y‖ = ‖d⁻¹ • f x - (d⁻¹ * d) • y‖ := by
@@ -133,17 +135,11 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
         _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
         _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
         _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
-        _ = ‖d‖⁻¹ * ‖d‖ * ‖y‖ / 2 := by
-          simp only [δ]
-          ring
-        _ = ‖y‖ / 2 := by
-          rw [inv_mul_cancel₀, one_mul]
-          simp [norm_eq_zero, hd]
-        _ = 1 / 2 * ‖y‖ := by ring
+        _ = 1 / 2 * ‖y‖ := by simpa [δ, field] using by norm_num
     rw [← dist_eq_norm] at J
     have K : ‖σ' d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
       calc
-        ‖σ' d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, RingHomIsometric.is_iso, norm_inv]
+        ‖σ' d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, RingHomIsometric.norm_map, norm_inv]
         _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) := by
           gcongr
           · simpa using dinv
@@ -191,7 +187,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
   have sNu : Summable fun n => ‖u n‖ := by
     refine .of_nonneg_of_le (fun n => norm_nonneg _) ule ?_
-    exact Summable.mul_right _ (summable_geometric_of_lt_one (by norm_num) (by norm_num))
+    exact Summable.mul_right _ (summable_geometric_of_lt_one (by simp) (by norm_num))
   have su : Summable u := sNu.of_norm
   let x := tsum u
   have x_ineq : ‖x‖ ≤ (2 * C + 1) * ‖y‖ :=
@@ -238,7 +234,6 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
   have : x + w ∈ ball x ε :=
     calc
       dist (x + w) x = ‖w‖ := by
-        rw [dist_eq_norm]
         simp
       _ ≤ C * ‖z - y‖ := wnorm
       _ < C * (ε / C) := by
@@ -249,9 +244,6 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
 
 theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
   (f.isOpenMap surj).isQuotientMap f.continuous surj
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap := isQuotientMap
 
 end
 
@@ -365,9 +357,8 @@ theorem coe_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
 
 @[simp]
 lemma equivRange_symm_toLinearEquiv (hinj : Injective f) (hclo : IsClosed (range f)) :
-    (f.equivRange hinj hclo).symm.toLinearEquiv =
-      (LinearEquiv.ofInjective f.toLinearMap hinj).symm := by
-  rfl
+    (f.equivRange hinj hclo).toLinearEquiv.symm =
+      (LinearEquiv.ofInjective f.toLinearMap hinj).symm := rfl
 
 @[simp]
 lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))
@@ -375,7 +366,7 @@ lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))
   suffices f ((f.equivRange hinj hclo).symm ⟨f x, by simp⟩) = f x from hinj this
   trans f ((f.equivRange hinj hclo).symm.toLinearEquiv ⟨f x, by simp⟩)
   · rfl -- is there an API lemma for this already?
-  dsimp only [equivRange_symm_toLinearEquiv]
+  simp only [ContinuousLinearEquiv.toLinearEquiv_symm, equivRange_symm_toLinearEquiv]
   set x' : LinearMap.range f := ⟨f x, by simp⟩
   set f' : E →ₛₗ[σ] F := ↑f
   change f' ((LinearEquiv.ofInjective f' hinj).symm x') = _
@@ -494,7 +485,6 @@ theorem closed_complemented_range_of_isCompl_of_ker_eq_bot {F : Type*} [NormedAd
     IsClosed (LinearMap.range f : Set F) := by
   haveI : CompleteSpace G := hG.completeSpace_coe
   let g := coprodSubtypeLEquivOfIsCompl f h hker
-  -- Porting note: was `rw [congr_arg coe ...]`
   rw [range_eq_map_coprodSubtypeLEquivOfIsCompl f h hker]
   apply g.toHomeomorph.isClosed_image.2
   exact isClosed_univ.prod isClosed_singleton
@@ -593,7 +583,7 @@ variable [CompleteSpace F]
 
 lemma _root_.AntilipschitzWith.completeSpace_range_clm {f : E →SL[σ] F} {c : ℝ≥0}
     (hf : AntilipschitzWith c f) : CompleteSpace (LinearMap.range f) :=
-  IsClosed.completeSpace_coe <| hf.isClosed_range f.uniformContinuous
+  IsClosed.completeSpace_coe (hs := hf.isClosed_range f.uniformContinuous)
 
 variable [RingHomInvPair σ' σ] [RingHomIsometric σ] [RingHomIsometric σ']
 

@@ -16,12 +16,12 @@ replaced by `$(?m)`.
 -/
 
 namespace Mathlib.Tactic
-open Lean Parser Tactic Elab Tactic Meta
+open Lean Parser Elab Tactic Meta
 
 initialize registerTraceClass `Tactic.congrm
 
 /--
-`congrm e` is a tactic for proving goals of the form `lhs = rhs`, `lhs ↔ rhs`, `HEq lhs rhs`,
+`congrm e` is a tactic for proving goals of the form `lhs = rhs`, `lhs ↔ rhs`, `lhs ≍ rhs`,
 or `R lhs rhs` when `R` is a reflexive relation.
 The expression `e` is a pattern containing placeholders `?_`,
 and this pattern is matched against `lhs` and `rhs` simultaneously.

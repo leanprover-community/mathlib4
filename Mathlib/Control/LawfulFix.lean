@@ -128,14 +128,14 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
     dsimp [approx]
     rfl
   · apply ωSup_le _ _ _
-    simp only [Fix.approxChain, OrderHom.coe_mk]
+    simp only [Fix.approxChain]
     intro y x
     apply approx_le_fix f
 
 theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
   rw [fix_eq_ωSup f]
   apply ωSup_le _ _ _
-  simp only [Fix.approxChain, OrderHom.coe_mk]
+  simp only [Fix.approxChain]
   intro i
   induction i with
   | zero => dsimp [Fix.approx]; apply bot_le
@@ -206,14 +206,14 @@ variable (α β γ)
 /-- `Sigma.curry` as a monotone function. -/
 @[simps]
 def monotoneCurry [(x y : _) → Preorder <| γ x y] :
-    (∀ x : Σa, β a, γ x.1 x.2) →o ∀ (a) (b : β a), γ a b where
+    (∀ x : Σ a, β a, γ x.1 x.2) →o ∀ (a) (b : β a), γ a b where
   toFun := curry
   monotone' _x _y h a b := h ⟨a, b⟩
 
 /-- `Sigma.uncurry` as a monotone function. -/
 @[simps]
 def monotoneUncurry [(x y : _) → Preorder <| γ x y] :
-    (∀ (a) (b : β a), γ a b) →o ∀ x : Σa, β a, γ x.1 x.2 where
+    (∀ (a) (b : β a), γ a b) →o ∀ x : Σ a, β a, γ x.1 x.2 where
   toFun := uncurry
   monotone' _x _y h a := h a.1 a.2
 

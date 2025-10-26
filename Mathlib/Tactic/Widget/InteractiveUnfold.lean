@@ -3,11 +3,10 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Batteries.Lean.Position
+import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Lean.GoalsLocation
 import Mathlib.Lean.Meta.KAbstractPositions
-import Lean.Util.FoldConsts
 
 /-!
 
@@ -113,39 +112,31 @@ def filteredUnfolds (e : Expr) : MetaM (Array Expr) :=
 
 end InteractiveUnfold
 
-/-- Return the rewrite tactic string `rw (config := ..) [← ..] at ..` -/
-def mkRewrite (occ : Option Nat) (symm : Bool) (rewrite : String) (loc : Option Name) : String :=
-  let cfg := match occ with
-    | some n => s! " (config := \{ occs := .pos [{n}]})"
-    | none => ""
-  let loc := match loc with
-    | some n => s! " at {n}"
-    | none => ""
-  let symm := if symm then "← " else ""
-  s! "rw{cfg} [{symm}{rewrite}]{loc}"
+/-- Return syntax for the rewrite tactic `rw [e]`. -/
+def mkRewrite (occ : Option Nat) (symm : Bool) (e : Term) (loc : Option Name) :
+    CoreM (TSyntax `tactic) := do
+  let loc ← loc.mapM fun h => `(Lean.Parser.Tactic.location| at $(mkIdent h):term)
+  let rule ← if symm then `(Parser.Tactic.rwRule| ← $e) else `(Parser.Tactic.rwRule| $e:term)
+  match occ with
+  | some n => `(tactic| nth_rw $(Syntax.mkNatLit n):num [$rule] $(loc)?)
+  | none => `(tactic| rw [$rule] $(loc)?)
 
-/--
-Return a string of the expression suitable for pasting into the editor.
-
-We ignore any options set by the user.
-
-We set `pp.universes` to false because new universe level metavariables are not understood
-by the elaborator.
-
-We set `pp.unicode.fun` to true as per Mathlib convention.
--/
-def pasteString (e : Expr) : MetaM String :=
-  withOptions (fun _ => Options.empty
-    |>.setBool `pp.universes false
-    |>.setBool `pp.unicode.fun true) do
-  return Format.pretty (← Meta.ppExpr e) (width := 90) (indent := 2)
+/-- Given tactic syntax `tac` that we want to paste into the editor, return it as a string.
+This function respects the 100 character limit for long lines. -/
+def tacticPasteString (tac : TSyntax `tactic) (range : Lsp.Range) : CoreM String := do
+  let column := range.start.character
+  let indent := column
+  return (← PrettyPrinter.ppTactic tac).pretty 100 indent column
 
 namespace InteractiveUnfold
 
 /-- Return the tactic string that does the unfolding. -/
-def tacticString (e unfold : Expr) (occ : Option Nat) (loc : Option Name) : MetaM String := do
-  let rfl := s! "show {← pasteString (← mkEq e unfold)} from rfl"
-  return mkRewrite occ false rfl loc
+def tacticSyntax (e eNew : Expr) (occ : Option Nat) (loc : Option Name) :
+    MetaM (TSyntax `tactic) := do
+  let e ← PrettyPrinter.delab e
+  let eNew ← PrettyPrinter.delab eNew
+  let fromRfl ← `(show $e = $eNew from $(mkIdent `rfl))
+  mkRewrite occ false fromRfl loc
 
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
 for pasting the rewrite tactic. Return `none` when there are no unfolds. -/
@@ -155,7 +146,8 @@ def renderUnfolds (e : Expr) (occ : Option Nat) (loc : Option Name) (range : Lsp
   if results.isEmpty then
     return none
   let core ← results.mapM fun unfold => do
-    let tactic ← tacticString e unfold occ loc
+    let tactic ← tacticSyntax e unfold occ loc
+    let tactic ← tacticPasteString tactic range
     return <li> {
       .element "p" #[] <|
         #[<span className="font-code" style={json% { "white-space" : "pre-wrap" }}> {
@@ -189,13 +181,14 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
       let rootExpr ← loc.rootExpr
-      let some (subExpr, occ) ← viewKAbstractSubExpr rootExpr loc.pos |
+      let some (subExpr, occ) ← withReducible <| viewKAbstractSubExpr rootExpr loc.pos |
         return .text "expressions with bound variables are not supported"
       unless ← kabstractIsTypeCorrect rootExpr subExpr loc.pos do
         return .text <| "The selected expression cannot be rewritten, because the motive is " ++
           "not type correct. This usually occurs when trying to rewrite a term that appears " ++
           "as a dependent argument."
-      let html ← renderUnfolds subExpr occ (← loc.location) props.replaceRange doc
+      let location ← loc.fvarId?.mapM FVarId.getUserName
+      let html ← renderUnfolds subExpr occ location props.replaceRange doc
       return html.getD
         <span>
           No unfolds found for {<InteractiveCode fmt={← ppExprTagged subExpr}/>}
@@ -219,7 +212,7 @@ This gives a list of rewrite suggestions for the selected expression.
 Click on a suggestion to replace `unfold?` by a tactic that performs this rewrite.
 -/
 elab stx:"unfold?" : tactic => do
-  let some range := (← getFileMap).rangeOfStx? stx | return
+  let some range := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash UnfoldComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
 

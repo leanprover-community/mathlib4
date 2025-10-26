@@ -28,7 +28,7 @@ with respect to the volume `vol` is the sum of `vol J (f (π.tag J))` over all b
 The integral is defined as the limit of integral sums along a filter. Different filters correspond
 to different integration theories. In order to avoid code duplication, all our definitions and
 theorems take an argument `l : BoxIntegral.IntegrationParams`. This is a type that holds three
-boolean values, and encodes eight filters including those corresponding to Riemann,
+Boolean values, and encodes eight filters including those corresponding to Riemann,
 Henstock-Kurzweil, and McShane integrals.
 
 Following the design of infinite sums (see `hasSum` and `tsum`), we define a predicate
@@ -208,8 +208,7 @@ theorem integrable_iff_cauchy_basis [CompleteSpace F] : Integrable I l f vol ↔
   rw [integrable_iff_cauchy, cauchy_map_iff',
     (l.hasBasis_toFilteriUnion_top _).prod_self.tendsto_iff uniformity_basis_dist_le]
   refine forall₂_congr fun ε _ => exists_congr fun r => ?_
-  simp only [exists_prop, Prod.forall, Set.mem_iUnion, exists_imp, prodMk_mem_set_prod_eq, and_imp,
-    mem_inter_iff, mem_setOf_eq]
+  simp only [Prod.forall, exists_imp, prodMk_mem_set_prod_eq, and_imp, mem_setOf_eq]
   exact
     and_congr Iff.rfl
       ⟨fun H c₁ c₂ π₁ π₂ h₁ hU₁ h₂ hU₂ => H π₁ π₂ c₁ h₁ hU₁ c₂ h₂ hU₂,
@@ -302,9 +301,11 @@ theorem HasIntegral.sum {α : Type*} {s : Finset α} {f : α → ℝⁿ → E} {
     (h : ∀ i ∈ s, HasIntegral I l (f i) vol (g i)) :
     HasIntegral I l (fun x => ∑ i ∈ s, f i x) vol (∑ i ∈ s, g i) := by
   classical
-  induction' s using Finset.induction_on with a s ha ihs; · simp [hasIntegral_zero]
-  simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
-  exact h.1.add (ihs h.2)
+  induction s using Finset.induction_on with
+  | empty => simp [hasIntegral_zero]
+  | insert a s ha ihs =>
+    simp only [Finset.sum_insert ha]; rw [Finset.forall_mem_insert] at h
+    exact h.1.add (ihs h.2)
 
 theorem HasIntegral.smul (hf : HasIntegral I l f vol y) (c : ℝ) :
     HasIntegral I l (c • f) vol (c • y) := by
@@ -550,7 +551,7 @@ theorem dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq (h : Integra
           dist (∑ J ∈ π₀.boxes, integralSum f vol (πi J)) (∑ J ∈ π₀.boxes, integral J l f vol) :=
       dist_triangle _ _ _
     _ ≤ ε + δ' + ∑ _J ∈ π₀.boxes, δ' := add_le_add this (dist_sum_sum_le_of_le _ hπiδ')
-    _ = ε + δ := by field_simp [δ']; ring
+    _ = ε + δ := by simp [field, δ']; ring
 
 /-- **Henstock-Sacks inequality**. Let `r : ℝⁿ → (0, ∞)` be a function such that for any tagged
 *partition* of `I` subordinate to `r`, the integral sum of `f` over this partition differs from the
@@ -577,7 +578,7 @@ theorem tendsto_integralSum_sum_integral (h : Integrable I l f vol) (π₀ : Pre
       (𝓝 <| ∑ J ∈ π₀.boxes, integral J l f vol) := by
   refine ((l.hasBasis_toFilteriUnion I π₀).tendsto_iff nhds_basis_closedBall).2 fun ε ε0 => ?_
   refine ⟨h.convergenceR ε, h.convergenceR_cond ε, ?_⟩
-  simp only [mem_inter_iff, Set.mem_iUnion, mem_setOf_eq]
+  simp only [mem_setOf_eq]
   rintro π ⟨c, hc, hU⟩
   exact h.dist_integralSum_sum_integral_le_of_memBaseSet_of_iUnion_eq ε0 hc hU
 
@@ -694,7 +695,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     rw [← sum_mul]
     trans μ.toBoxAdditive I * ε₁; swap
     · linarith
-    simp_rw [mul_le_mul_right ε₁0, μ.toBoxAdditive_apply]
+    simp_rw [mul_le_mul_iff_left₀ ε₁0, μ.toBoxAdditive_apply]
     refine le_trans ?_ <| toReal_mono (lt_top_iff_ne_top.1 μI) <| μ.mono <| un (B \ B') sdiff_subset
     simp_rw [measureReal_def]
     rw [← toReal_sum (fun J hJ ↦ μJ_ne_top J (mem_sdiff.1 hJ).1), ← Finset.tsum_subtype]
@@ -783,7 +784,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
   classical
   set δ : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) := fun c x => if x ∈ s then δ₁ c x (εs x) else (δ₂ c) x ε'
   refine ⟨δ, fun c => l.rCond_of_bRiemann_eq_false hl, ?_⟩
-  simp only [Set.mem_iUnion, mem_inter_iff, mem_setOf_eq]
+  simp only [mem_setOf_eq]
   rintro π ⟨c, hπδ, hπp⟩
   -- Now we split the sum into two parts based on whether `π.tag J` belongs to `s` or not.
   rw [← g.sum_partition_boxes le_rfl hπp, Metric.mem_closedBall, integralSum,

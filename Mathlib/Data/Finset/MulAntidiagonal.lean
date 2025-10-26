@@ -53,9 +53,9 @@ variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
 /-- `Finset.mulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` that multiply to `a`, but its construction requires proofs that `s` and `t` are
 well-ordered. -/
-@[to_additive "`Finset.addAntidiagonal hs ht a` is the set of all pairs of an element in
+@[to_additive /-- `Finset.addAntidiagonal hs ht a` is the set of all pairs of an element in
 `s` and an element in `t` that add to `a`, but its construction requires proofs that `s` and `t` are
-well-ordered."]
+well-ordered. -/]
 noncomputable def mulAntidiagonal : Finset (α × α) :=
   (Set.MulAntidiagonal.finite_of_isPWO hs ht a).toFinset
 

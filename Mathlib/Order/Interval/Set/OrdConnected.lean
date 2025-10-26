@@ -233,6 +233,31 @@ theorem dual_ordConnected_iff {s : Set α} : OrdConnected (ofDual ⁻¹' s) ↔ 
 theorem dual_ordConnected {s : Set α} [OrdConnected s] : OrdConnected (ofDual ⁻¹' s) :=
   dual_ordConnected_iff.2 ‹_›
 
+/-- The preimage of an `OrdConnected` set under a map which is monotone on a set `t`,
+when intersected with `t`, is `OrdConnected`. More precisely, it is the intersection with `t`
+of an `OrdConnected` set. -/
+theorem OrdConnected.preimage_monotoneOn {f : β → α} {t : Set β} {s : Set α}
+    (hs : OrdConnected s) (hf : MonotoneOn f t) :
+    ∃ u, OrdConnected u ∧ t ∩ f ⁻¹' s = t ∩ u := by
+  let u := {x | (∃ y ∈ t, y ≤ x ∧ f y ∈ s) ∧ (∃ z ∈ t, x ≤ z ∧ f z ∈ s)}
+  refine ⟨u, ⟨?_⟩, Subset.antisymm ?_ ?_⟩
+  · rintro x ⟨⟨y, yt, yx, ys⟩, -⟩ x' ⟨-, ⟨z, zt, x'z, zs⟩⟩ a ha
+    exact ⟨⟨y, yt, yx.trans ha.1, ys⟩, ⟨z, zt, ha.2.trans x'z, zs⟩⟩
+  · rintro x ⟨xt, xs⟩
+    exact ⟨xt, ⟨x, xt, le_rfl, xs⟩, ⟨x, xt, le_rfl, xs⟩⟩
+  · rintro x ⟨xt, ⟨y, yt, yx, ys⟩, ⟨z, zt, xz, zs⟩⟩
+    refine ⟨xt, ?_⟩
+    apply hs.out ys zs
+    exact ⟨hf yt xt yx, hf xt zt xz⟩
+
+/-- The preimage of an `OrdConnected` set under a map which is antitone on a set `t`,
+when intersected with `t`, is `OrdConnected`. More precisely, it is the intersection with `t`
+of an `OrdConnected` set. -/
+theorem OrdConnected.preimage_antitoneOn {f : β → α} {t : Set β} {s : Set α}
+    (hs : OrdConnected s) (hf : AntitoneOn f t) :
+    ∃ u, OrdConnected u ∧ t ∩ f ⁻¹' s = t ∩ u :=
+  (OrdConnected.preimage_monotoneOn hs.dual hf.dual_right :)
+
 end Preorder
 
 section PartialOrder
