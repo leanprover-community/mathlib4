@@ -2803,12 +2803,34 @@ lemma eq5 : h7.c₅ q hq0 h2mq ^ (-(h7.r q hq0 h2mq) : ℤ)
   · exact h2
 
 
-lemma one_leq_c1rho : 1 ≤ ↑(h7.cρ q hq0 h2mq) := sorry
+lemma one_leq_c1rho : 1 ≤ ↑(h7.cρ q hq0 h2mq) := by {
+  apply Int.one_le_abs
+  by_contra H
+  simp only [mul_eq_zero, pow_eq_zero_iff', ne_eq, OfNat.ofNat_ne_zero, false_or, not_or] at H
+  cases' H with h1 h2
+  · apply (h7.c₁neq0)
+    exact h1.1
+  · apply (h7.c₁neq0)
+    exact h2.1
+}
 
-lemma one_leq_norm_c1rho : 1 ≤ norm (h7.cρ q hq0 h2mq) := sorry
+lemma one_leq_norm_c1rho : 1 ≤ norm (h7.cρ q hq0 h2mq) := by
+  have := one_leq_c1rho h7 q hq0 h2mq
+  have : |(h7.cρ q hq0 h2mq)| = ‖(h7.cρ q hq0 h2mq : ℤ)‖ := by {
+    simp only [Int.cast_abs]
+    exact rfl
+    }
+  rw [← this]
+  simp only [Int.cast_abs, ge_iff_le]
+  have:= Int.one_le_abs (z:= (h7.cρ q hq0 h2mq))
+  norm_cast
+  apply this
+  exact cρ_ne_zero h7 q hq0 h2mq
 
-
-lemma zero_leq_c1rho : 0 ≤ ↑(h7.cρ q hq0 h2mq) := sorry
+lemma zero_leq_c1rho : 0 ≤ ↑(h7.cρ q hq0 h2mq) := by {
+    have := one_leq_c1rho h7 q hq0 h2mq
+    exact Int.le_of_lt this
+}
 
 def c₆ : ℝ := house (1 + h7.β')
 

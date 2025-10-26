@@ -341,8 +341,15 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
    (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by {
       intros k hkr
       induction' k with k IH
-      sorry
-      sorry
+      · use 0
+        simp only [Function.iterate_zero, id_eq, tsub_zero, Pi.zero_apply, mul_zero, add_zero]
+        rw [hR₁ z]
+        simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
+        left
+        sorry
+      · simp only [Function.iterate_succ, Function.comp_apply]
+
+
     }
 
 
