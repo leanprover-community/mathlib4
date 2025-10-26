@@ -50,7 +50,7 @@ theorem tendsto_const_div_atTop_nhds_zero_nat {𝕜 : Type*} [Semifield 𝕜] [C
   simpa only [mul_zero, div_eq_mul_inv] using
     (tendsto_const_nhds (x := C)).mul tendsto_inv_atTop_nhds_zero_nat
 
-theorem tendsto_one_div_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ 1/(n : ℝ)) atTop (𝓝 0) :=
+theorem tendsto_one_div_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ 1 / (n : ℝ)) atTop (𝓝 0) :=
   tendsto_const_div_atTop_nhds_zero_nat 1
 
 theorem EReal.tendsto_const_div_atTop_nhds_zero_nat {C : EReal} (h : C ≠ ⊥) (h' : C ≠ ⊤) :
@@ -102,7 +102,7 @@ theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
     Tendsto (fun n : ℕ => ((n % m : ℕ) : ℝ) / (n : ℝ)) atTop (𝓝 0) := by
   have h0 : ∀ᶠ n : ℕ in atTop, 0 ≤ (fun n : ℕ => ((n % m : ℕ) : ℝ)) n := by aesop
   exact tendsto_bdd_div_atTop_nhds_zero h0
-    (.of_forall (fun n ↦  cast_le.mpr (mod_lt n hm).le)) tendsto_natCast_atTop_atTop
+    (.of_forall (fun n ↦ cast_le.mpr (mod_lt n hm).le)) tendsto_natCast_atTop_atTop
 
 /-- If `a ≠ 0`, `(a * x + c)⁻¹` tends to `0` as `x` tends to `∞`. -/
 theorem tendsto_mul_add_inv_atTop_nhds_zero (a c : ℝ) (ha : a ≠ 0) :
@@ -192,7 +192,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*}
   rw [tendsto_zero_iff_abs_tendsto_zero]
   refine ⟨fun h ↦ by_contra (fun hr_le ↦ ?_), fun h ↦ ?_⟩
   · by_cases hr : 1 = |r|
-    · replace h : Tendsto (fun n : ℕ ↦ |r|^n) atTop (𝓝 0) := by simpa only [← abs_pow, h]
+    · replace h : Tendsto (fun n : ℕ ↦ |r| ^ n) atTop (𝓝 0) := by simpa only [← abs_pow, h]
       simp only [hr.symm, one_pow] at h
       exact zero_ne_one <| tendsto_nhds_unique h tendsto_const_nhds
     · apply @not_tendsto_nhds_of_tendsto_atTop 𝕜 ℕ _ _ _ _ atTop _ (fun n ↦ |r| ^ n) _ 0 _
@@ -278,7 +278,7 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
 
 @[simp]
 protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
-    Tendsto (fun n ↦ r^n) atTop (𝓝 ∞) ↔ 1 < r := by
+    Tendsto (fun n ↦ r ^ n) atTop (𝓝 ∞) ↔ 1 < r := by
   refine ⟨?_, ?_⟩
   · contrapose!
     intro r_le_one h_tends
@@ -287,7 +287,7 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
     obtain ⟨n, hn⟩ := h_tends
     exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one₀ (zero_le _) r_le_one
   · intro r_gt_one
-    have obs := @Tendsto.inv ℝ≥0∞ ℕ _ _ _ (fun n ↦ (r⁻¹)^n) atTop 0
+    have obs := @Tendsto.inv ℝ≥0∞ ℕ _ _ _ (fun n ↦ (r⁻¹) ^ n) atTop 0
     simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
     simpa [← ENNReal.inv_pow] using obs <| ENNReal.inv_lt_one.mpr r_gt_one
 
@@ -401,8 +401,8 @@ theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n +
   simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
 
 lemma ENNReal.tsum_two_zpow_neg_add_one :
-    ∑' m : ℕ, 2 ^ (-1 - m  : ℤ) = (1 : ℝ≥0∞) := by
-  simp_rw [neg_sub_left, ENNReal.zpow_neg,← Nat.cast_one (R := ℤ), ← Nat.cast_add, zpow_natCast,
+    ∑' m : ℕ, 2 ^ (-1 - m : ℤ) = (1 : ℝ≥0∞) := by
+  simp_rw [neg_sub_left, ENNReal.zpow_neg, ← Nat.cast_one (R := ℤ), ← Nat.cast_add, zpow_natCast,
     ENNReal.inv_pow, ENNReal.tsum_geometric_add_one, one_sub_inv_two, inv_inv]
   exact ENNReal.inv_mul_cancel (Ne.symm (NeZero.ne' 2)) (Ne.symm top_ne_ofNat)
 
