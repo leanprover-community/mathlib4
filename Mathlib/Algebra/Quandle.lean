@@ -119,7 +119,7 @@ bijections) that is self-distributive.  It is a shelf such that each
 element's action is invertible.
 
 The notations `x ◃ y` and `x ◃⁻¹ y` denote the action and the
-inverse action, respectively, and they are right associative.
+inverse action, respectively, and they are right associative..............................................
 -/
 class Rack (α : Type u) extends Shelf α where
   /-- The inverse actions of the elements -/
