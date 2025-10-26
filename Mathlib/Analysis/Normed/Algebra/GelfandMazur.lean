@@ -110,9 +110,9 @@ namespace NormedAlgebra
 open Filter Topology in
 /- The key step: show that the norm of a suitable function is constant if the norm takes
 a positive minimum and condition `H` below is satisfied. -/
-private lemma aux {X E : Type*} [TopologicalSpace X] [PreconnectedSpace X]
-    [SeminormedAddCommGroup E] {f : X → E} {M : ℝ} {x : X} (hM : 0 < M) (hx : ‖f x‖ = M)
-    (h : IsMinOn (‖f ·‖) Set.univ x) (hf : Continuous f)
+private lemma norm_eq_of_isMinOn_of_forall_le {X E : Type*} [TopologicalSpace X]
+    [PreconnectedSpace X] [SeminormedAddCommGroup E] {f : X → E} {M : ℝ} {x : X} (hM : 0 < M)
+    (hx : ‖f x‖ = M) (h : IsMinOn (‖f ·‖) Set.univ x) (hf : Continuous f)
     (H : ∀ {y} z, ‖f y‖ = M → ∀ n > 0, ‖f z‖ ≤ M * (1 + (‖f z - f y‖ / M) ^ n)) (y : X) :
     ‖f y‖ = M := by
   suffices {y | ‖f y‖ = M} = Set.univ by simpa only [← this, hx] using Set.mem_univ y
@@ -131,7 +131,7 @@ private lemma aux {X E : Type*} [TopologicalSpace X] [PreconnectedSpace X]
 open Filter Bornology in
 /-- In a normed algebra `F` over a normed field `𝕜` that is a proper space, the function
 `z : 𝕜 ↦ ‖x - z • 1‖` achieves a global minimum for every `x : F`. -/
-lemma exists_min_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜]
+lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜]
     [ProperSpace 𝕜] [SeminormedRing F] [NormedAlgebra 𝕜 F] [NormOneClass F] (x : F) :
   ∃ z : 𝕜, IsMinOn (‖x - · • 1‖) Set.univ z := by
   have : Tendsto (‖x - · • 1‖) (cobounded 𝕜) atTop := by
@@ -163,12 +163,13 @@ private lemma le_aeval_of_isMonicOfDegree (x : F) {M : ℝ} (hM : 0 ≤ M)
     rw [H, aeval_mul, norm_mul, mul_comm, pow_succ, H', sub_add, ← sub_smul]
     exact mul_le_mul (ih hf₂) (h (c - r)) hM (norm_nonneg _)
 
-private lemma norm_sub_is_constant {x : F} {z : ℂ} (hz : IsMinOn (‖x - · • 1‖) Set.univ z)
-    (H : ∀ z' : ℂ, ‖x - z' • 1‖ ≠ 0) (c : ℂ) :
+private lemma norm_sub_eq_norm_sub_of_isMinOn {x : F} {z : ℂ}
+    (hz : IsMinOn (‖x - · • 1‖) Set.univ z) (H : ∀ z' : ℂ, ‖x - z' • 1‖ ≠ 0) (c : ℂ) :
     ‖x - c • 1‖ = ‖x - z • 1‖ := by
   set M := ‖x - z • 1‖ with hMdef
   have hM₀ : 0 < M := by have := H z; positivity
-  refine aux (f := (x - · • 1)) hM₀ hMdef.symm hz (by fun_prop) (fun {y} w hy n hn ↦ ?_) c
+  refine norm_eq_of_isMinOn_of_forall_le (f := (x - · • 1)) hM₀ hMdef.symm hz (by fun_prop)
+    (fun {y} w hy n hn ↦ ?_) c
   dsimp only at hy ⊢
   rw [sub_sub_sub_cancel_left, ← sub_smul, Algebra.norm_smul_one_eq_norm, norm_sub_rev y w,
     show M * (1 + (‖w - y‖ / M) ^ n) = (M ^ n + ‖w - y‖ ^ n) / M ^ (n - 1) by
@@ -187,12 +188,12 @@ private lemma norm_sub_is_constant {x : F} {z : ℂ} (hz : IsMinOn (‖x - · �
 
 lemma exists_norm_sub_smul_one_eq_zero (x : F) :
     ∃ z : ℂ, ‖x - z • 1‖ = 0 := by
-  obtain ⟨z, hz⟩ := exists_min_norm_sub_smul ℂ x
+  obtain ⟨z, hz⟩ := exists_isMinOn_norm_sub_smul ℂ x
   set M := ‖x - z • 1‖ with hM
   rcases eq_or_lt_of_le (show 0 ≤ M from norm_nonneg _) with hM₀ | hM₀
   · exact ⟨z, hM₀.symm⟩
   by_contra! H
-  have key := norm_sub_is_constant hz H (‖x‖ + M + 1)
+  have key := norm_sub_eq_norm_sub_of_isMinOn hz H (‖x‖ + M + 1)
   rw [← hM, norm_sub_rev] at key
   replace key := (norm_sub_norm_le ..).trans_eq key
   rw [Algebra.norm_smul_one_eq_norm] at key
@@ -255,12 +256,13 @@ private lemma le_aeval_of_isMonicOfDegree {x : F} {M : ℝ} (hM : 0 ≤ M)
 /- The key step in the proof: if `a` and `b` are real numbers minimizing `‖x ^ 2 - a • x + b • 1‖`,
 and the minimal value is strictly positive, then the function `(s, t) ↦ ‖x ^ 2 - s • x + t • 1‖`
 is constant. -/
-private lemma is_const_norm_φ {x : F} {z : ℝ × ℝ} (h : IsMinOn (‖φ x ·‖) Set.univ z)
+private lemma norm_φ_eq_norm_φ_of_isMinOn {x : F} {z : ℝ × ℝ} (h : IsMinOn (‖φ x ·‖) Set.univ z)
     (H : ‖φ x z‖ ≠ 0) (w : ℝ × ℝ) :
     ‖φ x w‖ = ‖φ x z‖ := by
   set M : ℝ := ‖φ x z‖ with hMdef
   have hM₀ : 0 < M := by positivity
-  refine aux hM₀ hMdef.symm h (continuous_φ x) (fun {w} u hw n hn ↦ ?_) w
+  refine norm_eq_of_isMinOn_of_forall_le hM₀ hMdef.symm h (continuous_φ x)
+    (fun {w} u hw n hn ↦ ?_) w
   have HH : M * (1 + (‖φ x u - φ x w‖ / M) ^ n) = (M ^ n + ‖φ x u - φ x w‖ ^ n) / M ^ (n - 1) := by
     simp only [field, div_pow, ← pow_succ', Nat.sub_add_cancel hn]
   rw [HH, le_div_iff₀ (by positivity)]; clear HH
@@ -312,8 +314,8 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c) (hbd : ∀ 
     exact tendsto_fst
 
 open Bornology Filter in
-private lemma exists_min_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) Set.univ z := by
-  obtain ⟨u, hu⟩ := exists_min_norm_sub_smul ℝ x
+private lemma exists_isMinOn_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) Set.univ z := by
+  obtain ⟨u, hu⟩ := exists_isMinOn_norm_sub_smul ℝ x
   rcases eq_or_lt_of_le (norm_nonneg (x - u • 1)) with hc₀ | hc₀
   · rw [eq_comm, norm_eq_zero, sub_eq_zero] at hc₀
     exact ⟨(u, 0), fun z' ↦ by simp [φ, hc₀, sq]⟩
@@ -330,7 +332,7 @@ e.g., a normed division ring, then every `x : F` is the root of a monic quadrati
 with real coefficients. -/
 lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
     ∃ p : ℝ[X], IsMonicOfDegree p 2 ∧ aeval x p = 0 := by
-  obtain ⟨z, h⟩ := exists_min_norm_φ x
+  obtain ⟨z, h⟩ := exists_isMinOn_norm_φ x
   suffices φ x z = 0 from ⟨_, isMonicOfDegree_sub_add_two z.1 z.2, by rwa [aeval_eq_φ]⟩
   by_contra! H
   set M := ‖φ x z‖
@@ -340,7 +342,7 @@ lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
       Commute.sub_sq <| algebraMap_eq_smul_one (A := F) r ▸ commute_algebraMap_right r x]
     convert isMinOn_univ_iff.mp h (2 * r, r ^ 2) using 4 <;> simp [two_mul, add_smul, smul_pow]
   have := tendsto_norm_atTop_iff_cobounded.mpr <| tendsto_φ_cobounded (by positivity) h'
-  simp only [is_const_norm_φ h (norm_ne_zero_iff.mpr H)] at this
+  simp only [norm_φ_eq_norm_φ_of_isMinOn h (norm_ne_zero_iff.mpr H)] at this
   exact Filter.not_tendsto_const_atTop _ _ this
 
 /-- A version of the **Gelfand-Mazur Theorem** over `ℝ`.
