@@ -43,7 +43,7 @@ def uniformSpaceOfCompactR1 [TopologicalSpace γ] [CompactSpace γ] [R1Space γ]
       /-
         This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
         of the diagonal `Δ`, there exists a smaller neighborhood `V` such that `V ○ V ⊆ W`.
-        -/
+      -/
     set 𝓝Δ := 𝓝ˢ (diagonal γ)
     -- The filter of neighborhoods of Δ
     set F := 𝓝Δ.lift' fun s : Set (γ × γ) => s ○ s
