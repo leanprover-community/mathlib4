@@ -16,22 +16,24 @@ Definition of the sequence: `F₀ = 0`, `F₁ = 1`, and `Fₙ₊₂ = Fₙ₊₁
 
 -/
 
+namespace Int
+
 /-- The Fibonacci sequence for integers. This satisfies `fib 0 = 0`, `fib 1 = 1`,
 `fib (n + 2) = fib n + fib (n + 1)`.
 
 This is an extension of `Nat.fib`. -/
-def Int.fib (n : ℤ) : ℤ :=
+def fib (n : ℤ) : ℤ :=
   if 0 ≤ n then Nat.fib n.toNat
   else if n % 2 = 0 then -(-n).toNat.fib else (-n).toNat.fib
 
-@[simp] theorem Int.fib_natCast (n : ℕ) : Int.fib n = Nat.fib n := rfl
-@[simp] theorem Int.fib_zero : Int.fib 0 = 0 := rfl
-@[simp] theorem Int.fib_one : Int.fib 1 = 1 := rfl
-@[simp] theorem Int.fib_two : Int.fib 2 = 1 := rfl
-@[simp] theorem Int.fib_neg_one : Int.fib (-1) = 1 := rfl
-@[simp] theorem Int.fib_neg_two : Int.fib (-2) = -1 := rfl
+@[simp] theorem fib_natCast (n : ℕ) : Int.fib n = Nat.fib n := rfl
+@[simp] theorem fib_zero : Int.fib 0 = 0 := rfl
+@[simp] theorem fib_one : Int.fib 1 = 1 := rfl
+@[simp] theorem fib_two : Int.fib 2 = 1 := rfl
+@[simp] theorem fib_neg_one : Int.fib (-1) = 1 := rfl
+@[simp] theorem fib_neg_two : Int.fib (-2) = -1 := rfl
 
-theorem Int.fib_neg_natCast (n : ℕ) : Int.fib (-n) = (-1) ^ (n + 1) * n.fib := by
+theorem fib_neg_natCast (n : ℕ) : Int.fib (-n) = (-1) ^ (n + 1) * n.fib := by
   simp only [fib, Int.neg_nonneg, natCast_nonpos_iff, toNat_neg_natCast, Nat.fib_zero,
     neg_emod_two, neg_neg, toNat_natCast, reduceNeg]
   split_ifs with hn h
@@ -41,7 +43,7 @@ theorem Int.fib_neg_natCast (n : ℕ) : Int.fib (-n) = (-1) ^ (n + 1) * n.fib :=
   · obtain ⟨a, rfl⟩ : Odd n := by grind
     simp [add_assoc, ← two_mul, ← mul_add_one]
 
-theorem Int.fib_add_two {n : ℤ} :
+theorem fib_add_two {n : ℤ} :
     fib (n + 2) = fib n + fib (n + 1) := by
   rcases n with (n | n)
   · dsimp
@@ -62,10 +64,20 @@ theorem Int.fib_add_two {n : ℤ} :
         · rw [Nat.fib_add_one hn0, this, fib_neg_natCast, pow_add]
           simp
 
-theorem Int.fib_eq_fib_add_two_sub_fib_succ {n : ℤ} :
+theorem fib_eq_fib_add_two_sub_fib_add_one {n : ℤ} :
     fib n = fib (n + 2) - fib (n + 1) := by
   simp only [fib_add_two, add_sub_cancel_right]
 
-theorem Int.fib_add_one {n : ℤ} :
+theorem fib_add_one {n : ℤ} :
     fib (n + 1) = fib (n + 2) - fib n := by
   simp only [fib_add_two, add_sub_cancel_left]
+
+@[simp] theorem fib_eq_zero {n : ℤ} :
+    fib n = 0 ↔ n = 0 := by
+  rcases n with (n | n)
+  · simp
+  · rw [show (negSucc n) = -((n + 1 : ℕ) : ℤ) by rfl, fib_neg_natCast]
+    have : -1 + -(n : ℤ) = 0 ↔ (n : ℤ) = -1 := by grind
+    simp [this]
+
+end Int
