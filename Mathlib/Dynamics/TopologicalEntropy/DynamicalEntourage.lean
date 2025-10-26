@@ -31,7 +31,7 @@ entropy
 
 Add product of entourages.
 
-In the context of (pseudo-e)metric spaces, relate the usual definition of dynamical balls with.............
+In the context of (pseudo-e)metric spaces, relate the usual definition of dynamical balls with
 these dynamical entourages.
 -/
 
@@ -90,7 +90,7 @@ lemma _root_.IsSymmetricRel.dynEntourage (T : X → X) {U : Set (X × X)}
   exact map_apply' _ _ _ ▸ IsSymmetricRel.mk_mem_comm h
 
 @[deprecated (since := "2025-03-05")]
-alias _root_.SymmetricRel.dynEntouage := _root_.IsSymmetricRel.dynEntourage
+alias _root_.SymmetricRel.dynEntourage := _root_.IsSymmetricRel.dynEntourage
 
 lemma dynEntourage_comp_subset (T : X → X) (U V : Set (X × X)) (n : ℕ) :
     (dynEntourage T U n) ○ (dynEntourage T V n) ⊆ dynEntourage T (U ○ V) n := by
@@ -117,7 +117,7 @@ lemma dynEntourage_antitone (T : X → X) (U : Set (X × X)) :
 
 @[simp]
 lemma dynEntourage_zero {T : X → X} {U : Set (X × X)} :
-    dynEntourage T U 0 = univ := by simp [dynEnourage]
+    dynEntourage T U 0 = univ := by simp [dynEntourage]
 
 @[simp]
 lemma dynEntourage_one {T : X → X} {U : Set (X × X)} :
