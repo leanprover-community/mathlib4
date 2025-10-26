@@ -820,12 +820,7 @@ theorem Biproduct.column_nonzero_of_iso' {σ τ : Type} [Finite τ] {S : σ → 
     dsimp [x]
     rw [← Category.id_comp (inv f), Category.assoc, ← biproduct.total]
     simp only [comp_sum_assoc]
-    conv_lhs =>
-      congr
-      congr
-      next => skip
-      intro j; simp only [reassoced]
-    simp
+    grind [CategoryTheory.Limits.zero_comp, Finset.sum_const_zero]
   exact h₁.symm.trans h₀
 
 /-- If `f : ⨁ S ⟶ ⨁ T` is an isomorphism, and `s` is a non-trivial summand of the source,
