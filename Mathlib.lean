@@ -5385,6 +5385,7 @@ import Mathlib.Probability.Independence.InfinitePi
 import Mathlib.Probability.Independence.Integrable
 import Mathlib.Probability.Independence.Integration
 import Mathlib.Probability.Independence.Kernel
+import Mathlib.Probability.Independence.Process
 import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
 import Mathlib.Probability.Kernel.Basic
