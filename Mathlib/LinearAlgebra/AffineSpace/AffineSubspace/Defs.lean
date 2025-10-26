@@ -642,6 +642,18 @@ theorem nonempty_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) : s
   rw [AffineSubspace.span_empty] at h
   exact bot_ne_top k V P h
 
+/-- If the affine span of the range of a function is a nonempty affine subspace,
+then the index type must be nonempty. -/
+lemma Nonempty.of_affineSpan_range {ι : Type*} (f : ι → P) (M : AffineSubspace k P)
+    (h_span : affineSpan k (Set.range f) = M) (h_nonempty : (M : Set P).Nonempty) : Nonempty ι :=
+  Set.range_nonempty_iff_nonempty.mp ((spanPoints_nonempty k _).mp (h_span ▸ h_nonempty))
+
+/-- If the affine span of the range of a function equals the entire space, then the index type
+must be nonempty. -/
+lemma Nonempty.of_affineSpan_range_eq_top {ι : Type*} (f : ι → P)
+    (h : affineSpan k (Set.range f) = ⊤) : Nonempty ι :=
+  Nonempty.of_affineSpan_range k V P f ⊤ h Set.univ_nonempty
+
 /-- If the affine span of a set is `⊤`, then the vector span of the same set is the `⊤`. -/
 theorem vectorSpan_eq_top_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) :
     vectorSpan k s = ⊤ := by rw [← direction_affineSpan, h, direction_top]
