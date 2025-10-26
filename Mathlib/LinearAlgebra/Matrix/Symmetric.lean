@@ -111,7 +111,7 @@ theorem isSymm_diagonal [DecidableEq n] [Zero α] (v : n → α) : (diagonal v).
   diagonal_transpose _
 
 /-- A block matrix `A.fromBlocks B C D` is symmetric,
-    if `A` and `D` are symmetric and `Bᵀ = C`. -/
+if `A` and `D` are symmetric and `Bᵀ = C`. -/
 theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} (hA : A.IsSymm) (hBC : Bᵀ = C) (hD : D.IsSymm) :
     (A.fromBlocks B C D).IsSymm := by

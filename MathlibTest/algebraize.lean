@@ -53,12 +53,37 @@ and hence needs to be created through a lemma. See e.g.
 def RingHom.TestProperty4 (n : ℕ) {A B : Type*} [CommRing A] [CommRing B] (_ : A →+* B) : Prop :=
   ∀ m, n = m
 
+/--
+warning: Hypothesis hf has type
+  RingHom.TestProperty4 n f.
+Its head symbol RingHom.TestProperty4 is (effectively) tagged with `@[algebraize RingHom.TestProperty4.toAlgebra]`, but no constant
+  RingHom.TestProperty4.toAlgebra
+has been found.
+Check for missing imports, missing namespaces or typos.
+-/
+#guard_msgs (warning) in
+example (n : ℕ) {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) (hf : f.TestProperty4 n) :
+    True := by
+  algebraize [f]
+  trivial
+
 lemma RingHom.TestProperty4.toAlgebra (n : ℕ) {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B)
     (hf : f.TestProperty4 n) :
     letI : Algebra A B := f.toAlgebra
     Algebra.TestProperty4 n A B :=
       letI : Algebra A B := f.toAlgebra
       { out := hf }
+
+/-- Test property for when the `RingHom` property corresponds to a `Module` property
+  using `RingHom.toModule`. (Compare to property 2, which uses `RingHom.toAlgebra.toModule`.) -/
+class Module.TestProperty5 (A M : Type*) [Semiring A] [AddCommMonoid M] [Module A M] : Prop where
+  out : ∀ x : A, ∀ M : M, x • M = 0
+
+/-- Test property for when the `RingHom` property corresponds to a `Module` property
+  using `RingHom.toModule`. (Compare to property 2, which uses `RingHom.toAlgebra.toModule`.) -/
+@[algebraize Module.TestProperty5]
+def RingHom.TestProperty5 {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) : Prop :=
+  @Module.TestProperty5 A B _ _ f.toModule
 
 end example_definitions
 
@@ -123,10 +148,35 @@ example (A B : Type*) [CommRing A] [CommRing B] (f g : A →+* B) (hf : f.TestPr
     guard_hyp algebraizeInst_1
   trivial
 
+/- make sure the tactic is able to see through assigned metavariables -/
+example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) : f.TestProperty3 → True := by
+  refine @id (?P → True) ?h
+  intro hf -- the type of this variable is `?P := f.TestProperty3`, rather than just `f.TestProperty3`
+  algebraize [f]
+  guard_hyp algebraizeInst : @Algebra.TestProperty3 A B _ _ f.toAlgebra
+  trivial
+
+/- make sure the tactic is able to see through assigned metavariables -/
+example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) : f.TestProperty3 ↔ (@Algebra.TestProperty3 A B _ _ f.toAlgebra) := by
+  constructor
+  · intro hf -- the type of this variable is `?P := f.TestProperty3`, rather than just `f.TestProperty3`
+    algebraize [f]
+    guard_hyp algebraizeInst : @Algebra.TestProperty3 A B _ _ f.toAlgebra
+    exact algebraizeInst
+  · exact fun x => x.out
+
 example (n m : ℕ) (A B : Type*) [CommRing A] [CommRing B] (f g : A →+* B) (hf : f.TestProperty4 n)
     (hg : g.TestProperty4 m) : True := by
   algebraize [f]
   guard_hyp algebraizeInst : Algebra.TestProperty4 n A B
+  fail_if_success
+    guard_hyp algebraizeInst_1
+  trivial
+
+example (A B : Type*) [CommRing A] [CommRing B] (f g : A →+* B) (hf : f.TestProperty5)
+    (hg : g.TestProperty5) : True := by
+  algebraize [f]
+  guard_hyp algebraizeInst : @Module.TestProperty5 A B _ _ f.toModule
   fail_if_success
     guard_hyp algebraizeInst_1
   trivial

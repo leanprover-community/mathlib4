@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 /-!
@@ -45,7 +44,7 @@ theorem GoodProducts.linearIndependentEmpty {I} [LinearOrder I] :
     LinearIndependent ℤ (eval (∅ : Set (I → Bool))) := linearIndependent_empty_type
 
 /-- The empty list as a `Products` -/
-def Products.nil : Products I := ⟨[], by simp only [List.chain'_nil]⟩
+def Products.nil : Products I := ⟨[], by simp only [List.isChain_nil]⟩
 
 theorem Products.lt_nil_empty {I} [LinearOrder I] : { m : Products I | m < Products.nil } = ∅ := by
   ext ⟨m, hm⟩
@@ -84,7 +83,7 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     apply hll
     have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩} := by
       simpa only [Products.nil, Products.lt_iff_lex_lt, Set.singleton_subset_iff, Set.mem_setOf_eq]
-    apply Submodule.span_mono (Set.image_subset _ he)
+    grw [← he]
     rw [Products.span_nil_eq_top]
     exact Submodule.mem_top
 
@@ -199,7 +198,7 @@ theorem smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ 
 
 end GoodProducts
 
-variable {o : Ordinal} (ho : o.IsLimit)
+variable {o : Ordinal} (ho : Order.IsSuccLimit o)
 include ho
 
 theorem Products.limitOrdinal (l : Products I) : l.isGood (π C (ord I · < o)) ↔
@@ -207,7 +206,7 @@ theorem Products.limitOrdinal (l : Products I) : l.isGood (π C (ord I · < o)) 
   refine ⟨fun h ↦ ?_, fun ⟨o', ⟨ho', hl⟩⟩ ↦ isGood_mono C (le_of_lt ho') hl⟩
   use Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a))
   have hslt : Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) < o := by
-    simp only [Finset.sup_lt_iff ho.pos, List.mem_toFinset]
+    simp only [Finset.sup_lt_iff ho.bot_lt, List.mem_toFinset]
     exact fun b hb ↦ ho.succ_lt (prop_of_isGood C (ord I · < o) h b hb)
   refine ⟨hslt, fun he ↦ h ?_⟩
   have hlt : ∀ i ∈ l.val, ord I i < Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) := by

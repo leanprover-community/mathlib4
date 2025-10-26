@@ -63,8 +63,7 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
     classical
     convert_to (∏ i ∈ insert j s, f i) ~ᵤ (∏ i ∈ insert j s, g i)
     rw [Finset.prod_insert hjs, Finset.prod_insert hjs]
-    exact Associated.mul_mul (h j (Finset.mem_insert_self j s))
-      (IH (fun i hi ↦ h i (Finset.mem_insert_of_mem hi)))
+    grind [Associated.mul_mul]
 
 theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero M₀] {p : M₀} (hp : Prime p)
     {s : Multiset M₀} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
@@ -95,7 +94,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero M₀]
     simp only [Set.mem_setOf_eq] at hind
     obtain ⟨ha₁ | ha₂, hs⟩ := hm
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
-      refine hind x (y*k) ?_ hs ?_
+      refine hind x (y * k) ?_ hs ?_
       · simp only [← mul_assoc, ← hprod, ← Multiset.prod_cons, mul_comm]
         refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure ?_,
           Multiset.forall_mem_cons.2 ⟨subset_closure ?_, fun t ht => subset_closure (hs t ht)⟩⟩)
@@ -123,7 +122,7 @@ theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero M₀]
   | cons a s induct =>
     rw [Multiset.prod_cons]
     obtain ⟨k, rfl⟩ : a ∣ n := div a (Multiset.mem_cons_self a s)
-    apply mul_dvd_mul_left a
+    gcongr
     refine induct _ (fun a ha => h a (Multiset.mem_cons_of_mem ha)) (fun b b_in_s => ?_)
       fun a => (Multiset.countP_le_of_le _ (Multiset.le_cons_self _ _)).trans (uniq a)
     have b_div_n := div b (Multiset.mem_cons_of_mem b_in_s)
@@ -172,7 +171,6 @@ theorem prod_eq_one_iff {p : Multiset (Associates M)} :
 
 theorem prod_le_prod {p q : Multiset (Associates M)} (h : p ≤ q) : p.prod ≤ q.prod := by
   haveI := Classical.decEq (Associates M)
-  haveI := Classical.decEq M
   suffices p.prod ≤ (p + (q - p)).prod by rwa [add_tsub_cancel_of_le h] at this
   suffices p.prod * 1 ≤ p.prod * (q - p).prod by simpa
   exact mul_mono (le_refl p.prod) one_le

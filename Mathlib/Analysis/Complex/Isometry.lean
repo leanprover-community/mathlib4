@@ -157,4 +157,4 @@ theorem det_rotation (a : Circle) : LinearMap.det ((rotation a).toLinearEquiv : 
 /-- The determinant of `rotation` (as a linear equiv) is equal to `1`. -/
 @[simp]
 theorem linearEquiv_det_rotation (a : Circle) : LinearEquiv.det (rotation a).toLinearEquiv = 1 := by
-  rw [← Units.eq_iff, LinearEquiv.coe_det, det_rotation, Units.val_one]
+  rw [← Units.val_inj, LinearEquiv.coe_det, det_rotation, Units.val_one]

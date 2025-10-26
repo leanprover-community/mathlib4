@@ -26,8 +26,6 @@ instances for `Prop` and `fun`.
 
 assert_not_exists Monotone
 
-open Function OrderDual
-
 universe u v
 
 variable {α : Type u} {β : Type v}
@@ -385,6 +383,7 @@ instance [∀ i, Bot (α' i)] : Bot (∀ i, α' i) :=
 theorem bot_apply [∀ i, Bot (α' i)] (i : ι) : (⊥ : ∀ i, α' i) i = ⊥ :=
   rfl
 
+@[push ←]
 theorem bot_def [∀ i, Bot (α' i)] : (⊥ : ∀ i, α' i) = fun _ => ⊥ :=
   rfl
 
@@ -399,6 +398,7 @@ instance [∀ i, Top (α' i)] : Top (∀ i, α' i) :=
 theorem top_apply [∀ i, Top (α' i)] (i : ι) : (⊤ : ∀ i, α' i) i = ⊤ :=
   rfl
 
+@[push ←]
 theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
   rfl
 

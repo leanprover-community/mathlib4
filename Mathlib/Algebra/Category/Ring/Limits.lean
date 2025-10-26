@@ -3,10 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Ring.Pi
+import Mathlib.Algebra.Ring.Shrink
+import Mathlib.Algebra.Ring.Subring.Defs
 
 /-!
 # The category of (commutative) rings has all limits
@@ -17,7 +18,7 @@ the underlying types are just the limits in the category of types.
 
 
 -- We use the following trick a lot of times in this file.
-library_note "change elaboration strategy with `by apply`"/--
+library_note2 «change elaboration strategy with `by apply`» /--
 Some definitions may be extremely slow to elaborate, when the target type to be constructed
 is complicated and when the type of the term given in the definition is also complicated and does
 not obviously match the target type. In this case, instead of just giving the term, prefixing it
@@ -204,7 +205,7 @@ and then reuse the existing limit.
 -/
 instance :
     CreatesLimit F (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) :=
-  -- Porting note: Lean can not see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this
+  -- Porting note: Lean cannot see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this
   -- instance is added.
   let _ : (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCat.{u} SemiRingCat.{u}
@@ -289,11 +290,11 @@ instance ringObj (j) : Ring ((F ⋙ forget RingCat).obj j) :=
 /-- The flat sections of a functor into `RingCat` form a subring of all sections.
 -/
 def sectionsSubring : Subring (∀ j, F.obj j) :=
-  let f : J ⥤ AddGrp.{u} :=
-    F ⋙ forget₂ RingCat.{u} AddCommGrp.{u} ⋙
-    forget₂ AddCommGrp.{u} AddGrp.{u}
+  let f : J ⥤ AddGrpCat.{u} :=
+    F ⋙ forget₂ RingCat.{u} AddCommGrpCat.{u} ⋙
+    forget₂ AddCommGrpCat.{u} AddGrpCat.{u}
   let g : J ⥤ SemiRingCat.{u} := F ⋙ forget₂ RingCat.{u} SemiRingCat.{u}
-  { AddGrp.sectionsAddSubgroup (J := J) f,
+  { AddGrpCat.sectionsAddSubgroup (J := J) f,
     SemiRingCat.sectionsSubsemiring (J := J) g with
     carrier := (F ⋙ forget RingCat.{u}).sections }
 
@@ -370,22 +371,22 @@ instance forget₂SemiRing_preservesLimits : PreservesLimits (forget₂ RingCat 
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂AddCommGroupPreservesLimitsAux :
-    IsLimit ((forget₂ RingCat.{u} AddCommGrp).mapCone (limitCone.{v, u} F)) := by
-  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ RingCat.{u} AddCommGrp.{u}) ⋙ forget _)) :=
+    IsLimit ((forget₂ RingCat.{u} AddCommGrpCat).mapCone (limitCone.{v, u} F)) := by
+  let _ : Small.{u} (Functor.sections ((F ⋙ forget₂ RingCat.{u} AddCommGrpCat.{u}) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
-  apply AddCommGrp.limitConeIsLimit.{v, u} _
+  apply AddCommGrpCat.limitConeIsLimit.{v, u} _
 
 /-- The forgetful functor from rings to additive commutative groups preserves all limits.
 -/
 instance forget₂AddCommGroup_preservesLimitsOfSize [UnivLE.{v, u}] :
-    PreservesLimitsOfSize.{v, v} (forget₂ RingCat.{u} AddCommGrp.{u}) where
+    PreservesLimitsOfSize.{v, v} (forget₂ RingCat.{u} AddCommGrpCat.{u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
         preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v, u} F)
           (forget₂AddCommGroupPreservesLimitsAux F) }
 
 instance forget₂AddCommGroup_preservesLimits :
-    PreservesLimits (forget₂ RingCat AddCommGrp.{u}) :=
+    PreservesLimits (forget₂ RingCat AddCommGrpCat.{u}) :=
   RingCat.forget₂AddCommGroup_preservesLimitsOfSize.{u, u}
 
 /-- The forgetful functor from rings to types preserves all limits. (That is, the underlying

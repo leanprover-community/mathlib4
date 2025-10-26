@@ -46,7 +46,7 @@ lemma TensorProduct.map_injective_of_flat_flat_of_isDomain
   congr! 1
   ext p q
   -- `simp` solves the goal but it times out
-  change (1 : K) ⊗ₜ[R] f p ⊗ₜ[R] g q = (AlgebraTensorModule.assoc R R K K M N)
+  change (1 : K) ⊗ₜ[R] (f p ⊗ₜ[R] g q) = (AlgebraTensorModule.assoc R R K K M N)
     (((1 : K) • (algebraMap R K) 1 ⊗ₜ[R] f p) ⊗ₜ[R] g q)
   simp only [map_one, one_smul, AlgebraTensorModule.assoc_tmul]
 
@@ -70,4 +70,4 @@ This is true over non-domains if one of the modules is flat.
 See `LinearIndepOn.tmul_of_flat_left`. -/
 nonrec lemma LinearIndepOn.tmul_of_isDomain (hv : LinearIndepOn R v s) (hw : LinearIndepOn R w t) :
     LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
-  ((hv.tmul_of_isDomain hw).comp _ (Equiv.Set.prod _ _).injective:)
+  ((hv.tmul_of_isDomain hw).comp _ (Equiv.Set.prod _ _).injective :)

@@ -35,7 +35,7 @@ variable {F : Type u → Type u} [Applicative F] [CommApplicative F]
 variable {α' β' : Type u} (f : α' → F β')
 
 /-- Map each element of a `Multiset` to an action, evaluate these actions in order,
-    and collect the results.
+and collect the results.
 -/
 def traverse : Multiset α' → F (Multiset β') := by
   refine Quotient.lift (Functor.map ofList ∘ Traversable.traverse f) ?_
@@ -53,7 +53,7 @@ def traverse : Multiset α' → F (Multiset β') := by
       (fun a b (l : List β') ↦ (↑(a :: b :: l) : Multiset β')) <$> f y <*> f x =
         (fun a b l ↦ ↑(a :: b :: l)) <$> f x <*> f y := by
       rw [CommApplicative.commutative_map]
-      congr
+      congr 2
       funext a b l
       simpa [flip] using Perm.swap a b l
     simp [Function.comp_def, this, functor_norm]

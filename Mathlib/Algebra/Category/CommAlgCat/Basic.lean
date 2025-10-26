@@ -15,9 +15,7 @@ This file defines the bundled category `CommAlgCat` of commutative algebras over
 ring `R` along with the forgetful functors to `CommRingCat` and `AlgCat`.
 -/
 
-namespace CategoryTheory
-
-open Limits
+open CategoryTheory Limits
 
 universe w v u
 
@@ -148,17 +146,19 @@ def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Algebra R X} {_ 
 
 /-- Build an `AlgEquiv` from an isomorphism in the category `CommAlgCat R`. -/
 @[simps]
-def ofIso (i : A ≅ B) : A ≃ₐ[R] B where
+def algEquivOfIso (i : A ≅ B) : A ≃ₐ[R] B where
   __ := i.hom.hom
   toFun := i.hom
   invFun := i.inv
   left_inv x := by simp
   right_inv x := by simp
 
+@[deprecated (since := "2025-08-22")] alias ofIso := algEquivOfIso
+
 /-- Algebra equivalences between `Algebra`s are the same as isomorphisms in `CommAlgCat`. -/
 @[simps]
 def isoEquivAlgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐ[R] Y) where
-  toFun := ofIso
+  toFun := algEquivOfIso
   invFun := isoMk
 
 instance reflectsIsomorphisms_forget : (forget (CommAlgCat.{u} R)).ReflectsIsomorphisms where
@@ -207,5 +207,3 @@ instance : HasColimits (CommAlgCat.{u} R) :=
 -- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.
 instance : HasLimits (CommAlgCat.{u} R) :=
   Adjunction.has_limits_of_equivalence (commAlgCatEquivUnder (.of R)).functor
-
-end CategoryTheory

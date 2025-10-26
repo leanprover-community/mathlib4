@@ -66,7 +66,7 @@ theorem exists_finsupp_eq_lexOrder_of_ne_zero {φ : MvPowerSeries σ R} (hφ : �
   exact ⟨ofLex p, by simp only [toLex_ofLex, hp]⟩
 
 theorem coeff_ne_zero_of_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
-    (h : toLex d = lexOrder φ) : coeff R d φ ≠ 0 := by
+    (h : toLex d = lexOrder φ) : coeff d φ ≠ 0 := by
   have hφ : φ ≠ 0 := by
     simp only [ne_eq, ← lexOrder_eq_top_iff_eq_zero, ← h, WithTop.coe_ne_top, not_false_eq_true]
   have hφ' := lexOrder_def_of_ne_zero hφ
@@ -79,7 +79,7 @@ theorem coeff_ne_zero_of_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
   apply WellFounded.min_mem
 
 theorem coeff_eq_zero_of_lt_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
-    (h : toLex d < lexOrder φ) : coeff R d φ = 0 := by
+    (h : toLex d < lexOrder φ) : coeff d φ = 0 := by
   by_cases hφ : φ = 0
   · simp only [hφ, map_zero]
   · rcases lexOrder_def_of_ne_zero hφ with ⟨ne, hφ'⟩
@@ -88,13 +88,13 @@ theorem coeff_eq_zero_of_lt_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ �
     exact WellFounded.not_lt_min _ (toLex '' φ.support) ne (Set.mem_image_equiv.mpr h') h
 
 theorem lexOrder_le_of_coeff_ne_zero {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
-    (h : coeff R d φ ≠ 0) : lexOrder φ ≤ toLex d := by
+    (h : coeff d φ ≠ 0) : lexOrder φ ≤ toLex d := by
   rw [← not_lt]
   intro h'
   exact h (coeff_eq_zero_of_lt_lexOrder h')
 
 theorem le_lexOrder_iff {φ : MvPowerSeries σ R} {w : WithTop (Lex (σ →₀ ℕ))} :
-    w ≤ lexOrder φ ↔ (∀ (d : σ →₀ ℕ) (_ : toLex d < w), coeff R d φ = 0) := by
+    w ≤ lexOrder φ ↔ (∀ (d : σ →₀ ℕ) (_ : toLex d < w), coeff d φ = 0) := by
   constructor
   · intro h d hd
     apply coeff_eq_zero_of_lt_lexOrder
@@ -110,7 +110,7 @@ theorem le_lexOrder_iff {φ : MvPowerSeries σ R} {w : WithTop (Lex (σ →₀ �
     rwa [← hd]
 
 theorem min_lexOrder_le {φ ψ : MvPowerSeries σ R} :
-    min (lexOrder φ) (lexOrder ψ) ≤ lexOrder (φ + ψ)  := by
+    min (lexOrder φ) (lexOrder ψ) ≤ lexOrder (φ + ψ) := by
   rw [le_lexOrder_iff]
   intro d hd
   simp only [lt_min_iff] at hd
@@ -118,7 +118,7 @@ theorem min_lexOrder_le {φ ψ : MvPowerSeries σ R} :
 
 theorem coeff_mul_of_add_lexOrder {φ ψ : MvPowerSeries σ R}
     {p q : σ →₀ ℕ} (hp : lexOrder φ = toLex p) (hq : lexOrder ψ = toLex q) :
-    coeff R (p + q) (φ * ψ) = coeff R p φ * coeff R q ψ := by
+    coeff (p + q) (φ * ψ) = coeff p φ * coeff q ψ := by
   rw [coeff_mul, Finset.sum_eq_single_of_mem ⟨p, q⟩ (by simp)]
   rintro ⟨u, v⟩ h h'
   simp only [Finset.mem_antidiagonal] at h

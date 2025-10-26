@@ -3,125 +3,112 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.Action.TransferInstance
 import Mathlib.Logic.Small.Defs
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
-# Transfer group structures from `α` to `Shrink α`.
+# Transfer group structures from `α` to `Shrink α`
 -/
 
-noncomputable section
+-- FIXME: `to_additive` is incompatible with `noncomputable section`.
+-- See https://github.com/leanprover-community/mathlib4/issues/1074.
+suppress_compilation
 
-variable {α : Type*}
+universe v
+variable {M α : Type*} [Small.{v} α]
 
--- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
-@[to_additive]
-noncomputable instance [One α] [Small α] : One (Shrink α) := (equivShrink _).symm.one
+namespace Shrink
+
+@[to_additive] instance [One α] : One (Shrink.{v} α) := (equivShrink α).symm.one
+@[to_additive] instance [Mul α] : Mul (Shrink.{v} α) := (equivShrink α).symm.mul
+@[to_additive] instance [Div α] : Div (Shrink.{v} α) := (equivShrink α).symm.div
+@[to_additive] instance [Inv α] : Inv (Shrink.{v} α) := (equivShrink α).symm.Inv
+@[to_additive] instance [Pow α M] : Pow (Shrink.{v} α) M := (equivShrink α).symm.pow M
+
+end Shrink
 
 @[to_additive (attr := simp)]
-lemma equivShrink_symm_one [One α] [Small α] : (equivShrink α).symm 1 = 1 :=
+lemma equivShrink_symm_one [One α] : (equivShrink α).symm 1 = 1 :=
   (equivShrink α).symm_apply_apply 1
 
--- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
-@[to_additive]
-noncomputable instance [Mul α] [Small α] : Mul (Shrink α) := (equivShrink _).symm.mul
-
 @[to_additive (attr := simp)]
-lemma equivShrink_symm_mul [Mul α] [Small α] (x y : Shrink α) :
+lemma equivShrink_symm_mul [Mul α] (x y : Shrink α) :
     (equivShrink α).symm (x * y) = (equivShrink α).symm x * (equivShrink α).symm y := by
-  rw [Equiv.mul_def]
-  simp
+  simp [Equiv.mul_def]
 
 @[to_additive (attr := simp)]
-lemma equivShrink_mul [Mul α] [Small α] (x y : α) :
+lemma equivShrink_mul [Mul α] (x y : α) :
     equivShrink α (x * y) = equivShrink α x * equivShrink α y := by
-  rw [Equiv.mul_def]
-  simp
+  simp [Equiv.mul_def]
 
 @[simp]
-lemma equivShrink_symm_smul {R : Type*} [SMul R α] [Small α] (r : R) (x : Shrink α) :
-    (equivShrink α).symm (r • x) = r • (equivShrink α).symm x := by
-  rw [Equiv.smul_def]
-  simp
+lemma equivShrink_symm_smul {M : Type*} [SMul M α] (m : M) (x : Shrink α) :
+    (equivShrink α).symm (m • x) = m • (equivShrink α).symm x := by
+  simp [Equiv.smul_def]
 
 @[simp]
-lemma equivShrink_smul {R : Type*} [SMul R α] [Small α] (r : R) (x : α) :
-    equivShrink α (r • x) = r • equivShrink α x := by
-  rw [Equiv.smul_def]
-  simp
-
--- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
-@[to_additive]
-noncomputable instance [Div α] [Small α] : Div (Shrink α) := (equivShrink _).symm.div
-
+lemma equivShrink_smul {M : Type*} [SMul M α] (m : M) (x : α) :
+    equivShrink α (m • x) = m • equivShrink α x := by
+  simp [Equiv.smul_def]
 @[to_additive (attr := simp)]
-lemma equivShrink_symm_div [Div α] [Small α] (x y : Shrink α) :
+lemma equivShrink_symm_div [Div α] (x y : Shrink α) :
     (equivShrink α).symm (x / y) = (equivShrink α).symm x / (equivShrink α).symm y := by
-  rw [Equiv.div_def]
-  simp
+  simp [Equiv.div_def]
 
 @[to_additive (attr := simp)]
-lemma equivShrink_div [Div α] [Small α] (x y : α) :
+lemma equivShrink_div [Div α] (x y : α) :
     equivShrink α (x / y) = equivShrink α x / equivShrink α y := by
-  rw [Equiv.div_def]
-  simp
-
--- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
-@[to_additive]
-noncomputable instance [Inv α] [Small α] : Inv (Shrink α) := (equivShrink _).symm.Inv
+  simp [Equiv.div_def]
 
 @[to_additive (attr := simp)]
-lemma equivShrink_symm_inv [Inv α] [Small α] (x : Shrink α) :
+lemma equivShrink_symm_inv [Inv α] (x : Shrink α) :
     (equivShrink α).symm x⁻¹ = ((equivShrink α).symm x)⁻¹ := by
-  rw [Equiv.inv_def]
-  simp
+  simp [Equiv.inv_def]
 
 @[to_additive (attr := simp)]
-lemma equivShrink_inv [Inv α] [Small α] (x : α) :
-    equivShrink α x⁻¹ = (equivShrink α x)⁻¹ := by
-  rw [Equiv.inv_def]
-  simp
+lemma equivShrink_inv [Inv α] (x : α) : equivShrink α x⁻¹ = (equivShrink α x)⁻¹ := by
+  simp [Equiv.inv_def]
 
--- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
+namespace Shrink
+
+/-- Shrink `α` to a smaller universe preserves multiplication. -/
+@[to_additive /-- Shrink `α` to a smaller universe preserves addition. -/]
+def mulEquiv [Mul α] : Shrink.{v} α ≃* α := (equivShrink α).symm.mulEquiv
+
 @[to_additive]
-noncomputable instance [Semigroup α] [Small α] : Semigroup (Shrink α) :=
-  (equivShrink _).symm.semigroup
+instance [Semigroup α] : Semigroup (Shrink.{v} α) := (equivShrink α).symm.semigroup
 
-instance [SemigroupWithZero α] [Small α] : SemigroupWithZero (Shrink α) :=
-  (equivShrink _).symm.semigroupWithZero
-
--- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
 @[to_additive]
-noncomputable instance [CommSemigroup α] [Small α] : CommSemigroup (Shrink α) :=
-  (equivShrink _).symm.commSemigroup
+instance [CommSemigroup α] : CommSemigroup (Shrink.{v} α) := (equivShrink α).symm.commSemigroup
 
-instance [MulZeroClass α] [Small α] : MulZeroClass (Shrink α) :=
-  (equivShrink _).symm.mulZeroClass
-
--- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
 @[to_additive]
-noncomputable instance [MulOneClass α] [Small α] : MulOneClass (Shrink α) :=
-  (equivShrink _).symm.mulOneClass
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Shrink.{v} α) :=
+  (equivShrink α).symm.isLeftCancelMul
 
-instance [MulZeroOneClass α] [Small α] : MulZeroOneClass (Shrink α) :=
-  (equivShrink _).symm.mulZeroOneClass
-
--- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
 @[to_additive]
-noncomputable instance [Monoid α] [Small α] : Monoid (Shrink α) :=
-  (equivShrink _).symm.monoid
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Shrink.{v} α) :=
+  (equivShrink α).symm.isRightCancelMul
 
--- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
 @[to_additive]
-noncomputable instance [CommMonoid α] [Small α] : CommMonoid (Shrink α) :=
-  (equivShrink _).symm.commMonoid
+instance [Mul α] [IsCancelMul α] : IsCancelMul (Shrink.{v} α) := (equivShrink α).symm.isCancelMul
 
--- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
 @[to_additive]
-noncomputable instance [Group α] [Small α] : Group (Shrink α) :=
-  (equivShrink _).symm.group
+instance [MulOneClass α] : MulOneClass (Shrink.{v} α) := (equivShrink α).symm.mulOneClass
 
--- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
 @[to_additive]
-noncomputable instance [CommGroup α] [Small α] : CommGroup (Shrink α) :=
-  (equivShrink _).symm.commGroup
+instance [Monoid α] : Monoid (Shrink.{v} α) := (equivShrink α).symm.monoid
+
+@[to_additive]
+instance [CommMonoid α] : CommMonoid (Shrink.{v} α) := (equivShrink α).symm.commMonoid
+
+@[to_additive]
+instance [Group α] : Group (Shrink.{v} α) := (equivShrink α).symm.group
+
+@[to_additive]
+instance [CommGroup α] : CommGroup (Shrink.{v} α) := (equivShrink α).symm.commGroup
+
+@[to_additive]
+instance [Monoid M] [MulAction M α] : MulAction M (Shrink.{v} α) := (equivShrink α).symm.mulAction M
+
+end Shrink

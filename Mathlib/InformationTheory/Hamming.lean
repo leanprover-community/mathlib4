@@ -21,7 +21,7 @@ code.
 * `hammingNorm x`: the Hamming norm of `x`, the number of non-zero entries.
 * `Hamming β`: a type synonym for `Π i, β i` with `dist` and `norm` provided by the above.
 * `Hamming.toHamming`, `Hamming.ofHamming`: functions for casting between `Hamming β` and
-`Π i, β i`.
+  `Π i, β i`.
 * the Hamming norm forms a normed group on `Hamming β`.
 -/
 
@@ -57,7 +57,7 @@ theorem hammingDist_triangle (x y z : ∀ i, β i) :
     unfold hammingDist
     refine le_trans (card_mono ?_) (card_union_le _ _)
     rw [← filter_or]
-    exact monotone_filter_right _ fun i h ↦ (h.ne_or_ne _).imp_right Ne.symm
+    exact monotone_filter_right _ fun i _ h ↦ (h.ne_or_ne _).imp_right Ne.symm
 
 /-- Corresponds to `dist_triangle_left`. -/
 theorem hammingDist_triangle_left (x y z : ∀ i, β i) :
@@ -109,13 +109,12 @@ theorem hammingDist_le_card_fintype {x y : ∀ i, β i} : hammingDist x y ≤ Fi
   card_le_univ _
 
 theorem hammingDist_comp_le_hammingDist (f : ∀ i, γ i → β i) {x y : ∀ i, γ i} :
-    (hammingDist (fun i => f i (x i)) fun i => f i (y i)) ≤ hammingDist x y :=
-  card_mono (monotone_filter_right _ fun i H1 H2 => H1 <| congr_arg (f i) H2)
+    hammingDist (fun i => f i (x i)) (fun i => f i (y i)) ≤ hammingDist x y := by
+  dsimp [hammingDist]; gcongr; simp +contextual
 
 theorem hammingDist_comp (f : ∀ i, γ i → β i) {x y : ∀ i, γ i} (hf : ∀ i, Injective (f i)) :
-    (hammingDist (fun i => f i (x i)) fun i => f i (y i)) = hammingDist x y :=
-  le_antisymm (hammingDist_comp_le_hammingDist _) <|
-    card_mono (monotone_filter_right _ fun i H1 H2 => H1 <| hf i H2)
+    hammingDist (fun i => f i (x i)) (fun i => f i (y i)) = hammingDist x y :=
+  le_antisymm (hammingDist_comp_le_hammingDist _) <| by dsimp [hammingDist]; gcongr; exact @hf _ _ _
 
 theorem hammingDist_smul_le_hammingDist [∀ i, SMul α (β i)] {k : α} {x y : ∀ i, β i} :
     hammingDist (k • x) (k • y) ≤ hammingDist x y :=
@@ -365,13 +364,8 @@ instance : PseudoMetricSpace (Hamming β) where
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
     push_cast
     constructor
-    · refine fun hs => ⟨1, zero_lt_one, fun hab => ?_⟩
-      rw_mod_cast [hammingDist_lt_one] at hab
-      rw [ofHamming_inj, ← mem_idRel] at hab
-      exact hs hab
-    · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
-      rw [mem_idRel] at hab
-      rw [hab]
+    · refine fun hs ↦ ⟨1, zero_lt_one, fun hab ↦ hs <| by simpa using hab⟩
+    · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ rfl
       refine hs (lt_of_eq_of_lt ?_ hε)
       exact mod_cast hammingDist_self _
   toBornology := ⟨⊥, bot_le⟩

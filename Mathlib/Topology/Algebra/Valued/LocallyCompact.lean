@@ -12,7 +12,7 @@ import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
-# Necessary and sufficient conditions for a locally compact nonarchimedean normed field
+# Necessary and sufficient conditions for a locally compact valued field
 
 ## Main Definitions
 * `totallyBounded_iff_finite_residueField`: when the valuation ring is a DVR,
@@ -23,11 +23,13 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 norm, nonarchimedean, rank one, compact, locally compact
 -/
 
-variable {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
-
 open NNReal
 
+section NormedField
+
 open scoped NormedField
+
+variable {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
 
 @[simp]
 lemma NormedField.v_eq_valuation (x : K) : Valued.v x = NormedField.valuation x := rfl
@@ -89,6 +91,14 @@ variable (K) in
 lemma exists_nnnorm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 :=
   exists_norm_coe_lt_one K
 
+end Valued.integer
+
+end NormedField
+
+namespace Valued.integer
+
+variable {K Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Valued K Γ₀]
+
 section FiniteResidueField
 
 open Valued
@@ -111,7 +121,9 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuati
         (IsDiscreteValuationRing.not_a_field _) n).trans
         (Ideal.powQuotPowSuccEquivMapMkPowSuccPow _ n))
 
-lemma totallyBounded_iff_finite_residueField [IsDiscreteValuationRing 𝒪[K]] :
+open scoped Valued
+lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).RankOne]
+    [IsDiscreteValuationRing 𝒪[K]] :
     TotallyBounded (Set.univ (α := 𝒪[K])) ↔ Finite 𝓀[K] := by
   constructor
   · intro H
@@ -131,21 +143,24 @@ lemma totallyBounded_iff_finite_residueField [IsDiscreteValuationRing 𝒪[K]] :
     convert (Ideal.Quotient.mk_eq_mk_iff_sub_mem (I := 𝓂[K]) y x).mpr _
     -- TODO: make Valued.maximalIdeal abbreviations instead of def
     rw [Valued.maximalIdeal, hp.maximalIdeal_eq, ← SetLike.mem_coe,
-      coe_span_singleton_eq_closedBall]
+      (Valuation.integer.integers _).coe_span_singleton_eq_setOf_le_v_algebraMap]
     rw [dist_comm] at hy'
     simpa [dist_eq_norm] using hy'.le
   · intro H
     rw [Metric.totallyBounded_iff]
     intro ε εpos
     obtain ⟨p, hp⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
-    have hp' := norm_irreducible_lt_one hp
-    obtain ⟨n, hn⟩ : ∃ n : ℕ, ‖p‖ ^ n < ε := exists_pow_lt_of_lt_one εpos hp'
+    have hp' := Valuation.integer.v_irreducible_lt_one hp
+    obtain ⟨n, hn⟩ : ∃ n : ℕ, ‖(p : K)‖ ^ n < ε := exists_pow_lt_of_lt_one εpos
+      (toNormedField.norm_lt_one_iff.mpr hp')
     have hF := finite_quotient_maximalIdeal_pow_of_finite_residueField H n
     refine ⟨Quotient.out '' (Set.univ (α := 𝒪[K] ⧸ (𝓂[K] ^ n))), Set.toFinite _, ?_⟩
-    simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n), hp.maximalIdeal_pow_eq_closedBall_pow,
-      AddSubgroupClass.coe_norm,
-      Set.image_univ, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq',
-      Set.iUnion_subset_iff, Metric.vadd_closedBall, vadd_eq_add, add_zero]
+    have : {y : 𝒪[K] | v (y : K) ≤ v (p : K) ^ n} = Metric.closedBall 0 (‖p‖ ^ n)  := by
+      ext
+      simp [← norm_pow]
+    simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n), hp.maximalIdeal_pow_eq_setOf_le_v_coe_pow,
+      this, AddSubgroupClass.coe_norm, Set.image_univ, Set.mem_range, Set.iUnion_exists,
+      Set.iUnion_iUnion_eq', Set.iUnion_subset_iff, Metric.vadd_closedBall, vadd_eq_add, add_zero]
     intro
     exact (Metric.closedBall_subset_ball hn).trans (Set.subset_iUnion_of_subset _ le_rfl)
 
@@ -155,139 +170,140 @@ section CompactDVR
 
 open Valued
 
-lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
-    [LinearOrderedCommGroupWithZero Γ₀] [MulArchimedean Γ₀] [hv : Valued F Γ₀] [CompactSpace 𝒪[F]]
-    (h : ∃ x : F, 0 < Valued.v x ∧ Valued.v x < 1) :
-    IsPrincipalIdealRing 𝒪[F] := by
+lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
+    Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ):= by
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
   -- pulls back across `TopologicalSpace.induced` from a `LocallyCompactSpace`.
-  -- The strategy to show that we have a PIR is by contradiction,
-  -- assuming that the range of the valuation is densely ordered.
+  constructor
+  refine LocallyFiniteOrder.ofFiniteIcc ?_
+  -- We only need to show that we can construct a finite set for some set between
+  -- a non-zero `z : Γ₀` and 1, because we can scale/invert this set to cover the whole group.
+  suffices ∀ z : (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ, (Set.Icc z 1).Finite by
+    rintro x y
+    rcases lt_trichotomy y x with hxy | rfl | hxy
+    · rw [Set.Icc_eq_empty_of_lt]
+      · exact Set.finite_empty
+      · simp [hxy]
+    · simp
+    wlog h : x ≤ 1 generalizing x y
+    · push_neg at h
+      specialize this y⁻¹ x⁻¹ (inv_lt_inv' hxy) (inv_le_one_of_one_le (h.trans hxy).le)
+      refine (this.inv).subset ?_
+      rw [Set.inv_Icc]
+      intro
+      simp +contextual
+    generalize_proofs _ _ _ _ hxu hyu
+    rcases le_total y 1 with hy | hy
+    · exact (this x).subset (Set.Icc_subset_Icc_right hy)
+    · have H : (Set.Icc y⁻¹ 1).Finite := this _
+      refine ((this x).union H.inv).subset (le_of_eq ?_)
+      rw [Set.inv_Icc, inv_one, Set.Icc_union_Icc_eq_Icc] <;>
+      simp [h, hy]
   -- We can construct a family of spheres at every single element of the valuation ring
   -- outside of a closed ball, which will cover.
   -- Since we are in a compact space, this cover has a finite subcover.
-  -- This subcover, when excluding the sphere at 1, then has a max element since it is finite.
-  -- However, since we are densely ordered, we can find an element with a valuation between
-  -- the max element and 1, which is a contradiction, since it is outside the cover.
-
   -- First, we need to pick a threshold element with a nontrivial valuation less than 1,
   -- which will form -- the inner closed ball of the cover, which we need to cover 0.
-  -- We have such an element by construction.
-  obtain ⟨x, hx, hx'⟩ : ∃ x : 𝒪[F], 0 < hv.v x ∧ hv.v x < 1 := by
-    obtain ⟨x, hx, hx'⟩ := h
-    refine ⟨⟨x, hx'.le⟩, hx, hx'⟩
-  -- the key result is that a valuation ring that maps into a `MulArchimedean` value group
-  -- is a PIR iff the value group is not densely ordered.
-  have hi : Valuation.Integers (R := F) Valued.v 𝒪[F] := Valuation.integer.integers v
-  rw [hi.isPrincipalIdealRing_iff_not_denselyOrdered]
-  intro H
+  intro z
+  obtain ⟨a, ha⟩ := z.val.prop
+  rcases lt_or_ge 1 z with hz1 | hz1
+  · rw [Set.Icc_eq_empty_of_lt]
+    · exact Set.finite_empty
+    · simp [hz1]
+  have z0' : 0 < (z : MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by simp
+  have z0 : 0 < ((z : MonoidHom.mrange (Valued.v : Valuation K Γ₀)) : Γ₀) :=
+    Subtype.coe_lt_coe.mpr z0'
+  have a0 : 0 < v a := by simp [ha, z0]
   -- Construct our cover, which has an inner closed ball, and spheres for each element
   -- outside of the closed ball. These are all open sets by the nonarchimedean property.
-  let U : 𝒪[F] → Set 𝒪[F] := fun y ↦ if hv.v y < hv.v x
-    then {z | hv.v z ≤ hv.v x}
-    else {z | hv.v z = hv.v y}
-  -- Extract out the finite subcover from our cover, which is a finite set of elements of
-  -- the valuation ring, whose spheres cover the whole ring.
-  obtain ⟨t, ht⟩ := CompactSpace.elim_nhds_subcover U <| by
-    intro y
+  let U : K → Set K := fun y ↦ if v (y : K) ≤ z
+    then {w | v (w : K) ≤ z}
+    else {w | v (w : K) = v (y : K)}
+  have := hc.elim_finite_subcover U
+  specialize this ?_ ?_
+  · intro w
     simp only [U]
-    split_ifs with hy
-    · refine IsOpen.mem_nhds ((Valued.isOpen_closedball _ hx.ne').preimage ?_) ?_
-      · exact continuous_subtype_val
-      · simp [hy.le]
-    · refine IsOpen.mem_nhds ((Valued.isOpen_sphere _ ?_).preimage ?_) ?_
-      · simp only [not_lt] at hy
-        exact (hx.trans_le hy).ne'
-      · exact continuous_subtype_val
-      · simp
+    split_ifs with hw
+    · exact Valued.isOpen_closedBall _ z0.ne'
+    · refine Valued.isOpen_sphere _ ?_
+      push_neg at hw
+      refine (hw.trans' ?_).ne'
+      simp [z0]
+  · intro w
+    simp only [integer, SetLike.mem_coe, Valuation.mem_integer_iff, Set.mem_iUnion, U]
+    intro hw
+    use if v w ≤ z then a else w
+    split_ifs <;>
+    simp_all
   -- For each element of the valuation ring that is bigger than our threshold element above,
-  -- then there must be something in the cover that has the precise valuation of the element,
+  -- there must be something in the cover that has the precise valuation of the element,
   -- because it must be outside the inner closed ball, and thus is covered by some sphere.
-  have htm : ∀ y : 𝒪[F], hv.v x < hv.v y → ∃ z ∈ t, hv.v z = hv.v y := by
-    intro y hy
-    have := ht.ge (Set.mem_univ y)
-    simp only [Set.mem_iUnion, exists_prop', nonempty_prop, U] at this
-    -- we get the `z` from the cover that covers our arbitrary `y` with its set
-    obtain ⟨z, hz, hz'⟩ := this
-    -- and this `z` is either less than or greater than (or equal to) the threshold element
-    split_ifs at hz' with h
-    -- the `z` is inside closed ball case, which is a contradiction since we know `y` is outside
-    · simp [hy.not_ge] at hz'
-    -- the `z` is gives a sphere, so we plug it in
-    · simp only [Set.mem_setOf_eq] at hz'
-      exact ⟨z, hz, hz'.symm⟩
-  -- Pick an element of the valuation ring to use as the excluded element of the subcover
-  -- (since we know that all elements of the valuation ring have valuation less than or equal to 1).
-  obtain ⟨y, _, hy'⟩ : ∃ y : 𝒪[F], y ∈ t ∧ hv.v y = 1 := by simpa using htm 1 (by simpa using hx')
-  -- And pick an element in the subcover that is greater than the threshold element, but less
-  -- than valuation 1. We will need this to show that the subcover excluding the element
-  -- with valuation 1 is nonempty, which will allow us to take a max element.
-  obtain ⟨w, hwt, hw1, hxw⟩ : ∃ w : 𝒪[F], w ∈ t ∧ hv.v w < 1 ∧ hv.v x < hv.v w := by
-    replace hx' : (⟨_, x, rfl⟩ : Set.range hv.v) < ⟨_, 1, rfl⟩ := by simpa using hx'
-    obtain ⟨⟨_, w, rfl⟩, hw, hw'⟩ := exists_between hx'
-    obtain ⟨u, hu, hu'⟩ := htm ⟨w, by simpa using hw'.le⟩ hw
-    exact ⟨u, hu, hu' ▸ by simpa using hw', hu' ▸ by simpa using hw⟩
-  -- We're ready to work with the cover that excludes elements with valuation 1.
-  let u := t.filter (fun a : 𝒪[F] ↦ hv.v a < 1)
-  have hwu : w ∈ u := by simp [u, hwt, hw1] -- and it is nonempty.
-  -- So the element that takes on the largest valuation in this partial cover is in the cover itself
-  -- which is the case because this partial cover is closed under the max (`⊔`) operation:
-  -- if `‖x‖ ∈ u` and `‖y‖ ∈ u`, then `max ‖x‖ ‖y‖ ∈ u`
-  obtain hl' := (u.image (hv.v ∘ ((↑) : 𝒪[F] → F))).max'_mem <| by simpa using ⟨_, hwu⟩
-  simp only [Finset.mem_image, Finset.mem_filter, Function.comp_apply, u] at hl'
-  obtain ⟨l, ⟨hl, hl'⟩, hvl⟩ := hl'
-  -- we know that this largest element must have valuation less than 1,
-  -- since it is in the partial cover, and this is the property of the partial cover
-  have hm : (⟨hv.v l, l, rfl⟩ : Set.range hv.v) < (⟨1, y, hy'⟩) := by simpa using hl'
-  -- Prepare the contradiction, pick an element that has a valuation between the max element and 1.
-  obtain ⟨⟨_, m, rfl⟩, hm⟩ := exists_between hm
-  simp only [Subtype.mk_lt_mk] at hm
-  -- well, it is in the ring, so there is something in the cover that covers it,
-  -- and it must be a sphere since it is larger than the threshold element by virtue of
-  -- `v x < v l < v m`.
-  obtain ⟨n, hn, hn'⟩ : ∃ n ∈ t, hv.v n = hv.v m := by
-    refine htm ⟨m, hm.right.le⟩ (hxw.trans (hm.left.trans_le' ?_))
-    rw [hvl]
-    refine Finset.le_max' _ _ ?_
-    simp only [Finset.mem_image, Finset.mem_filter, Function.comp_apply]
-    exact ⟨w, ⟨hwt, hw1⟩, rfl⟩
-  rw [← hn'] at hm -- clean up what valuations we refer to
-  -- to supply the contradiction, we have `v l < v n`, now prove that also `v n ≤ v l`
-  refine hm.left.not_ge ?_
-  -- which is the case since `‖l‖ = u.max' ..` and the property of `Finset.max'`
-  rw [hvl]
-  refine Finset.le_max' _ _ ?_
-  simp only [Finset.mem_image, Finset.mem_filter, Function.comp_apply]
-  use n
-  simp [hn, hm.right]
+  obtain ⟨t, ht⟩ := this
+  classical
+  refine (t.finite_toSet.dependent_image ?_).subset ?_
+  · refine fun i hi ↦ if hi' : v i ≤ z then z else Units.mk0 ⟨(v i), by simp⟩ ?_
+    push_neg at hi'
+    exact Subtype.coe_injective.ne_iff.mp (hi'.trans' z0).ne'
+  · intro i
+    simp only [Set.mem_Icc, Finset.mem_coe, exists_prop, Set.mem_setOf_eq, and_imp]
+    -- we get the `c` from the cover that covers our arbitrary `i` with its set
+    obtain ⟨c, hc⟩ := i.val.prop
+    intro hzi hi1
+    have hj := ht (hc.trans_le hi1)
+    simp only [Set.mem_iUnion, exists_prop, U] at hj
+    obtain ⟨j, hj, hj'⟩ := hj
+    use j, hj
+    -- and this `c` is either less than or greater than (or equal to) the threshold element
+    split_ifs at hj' with hcj
+    · simp only [Set.mem_setOf_eq, hc, Subtype.coe_le_coe, Units.val_le_val] at hj'
+      simp [hcj, le_antisymm hj' hzi]
+    · simp only [Set.mem_setOf_eq] at hj'
+      rw [dif_neg hcj]
+      simp [← hj', hc]
 
-lemma isDiscreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
-    IsDiscreteValuationRing 𝒪[K] := by
-  -- To prove we have a DVR, we need to show it is a local ring and a PIR and not a field.
-  -- First, note that it is a local ring, which the TC knows about.
-  -- We prove that it is not a field inline later.
-  have hl : IsLocalRing 𝒪[K] := inferInstance
-  obtain ⟨x, hx, hx'⟩ := exists_nnnorm_lt_one K
-  rw [← nnnorm_one (G := K)] at hx'
-  have key : IsPrincipalIdealRing 𝒪[K] :=
-    isPrincipalIdealRing_of_compactSpace (NormedField.exists_norm_lt_one K)
-  exact {
-    __ := hl
-    __ := key
-    not_a_field' := by
-      -- here is the other place where the nontriviality of the norm comes in,
-      -- since if we had `‖x‖ = 0 ∨ ‖x‖ = 1`, then the maximal ideal would be `⊥`.
-      simp only [ne_eq, Ideal.ext_iff, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
-        Ideal.mem_bot, not_forall, isUnit_iff_norm_eq_one]
-      refine ⟨x, ?_⟩
-      simp only [← coe_lt_coe, coe_zero, coe_nnnorm, norm_pos_iff, ne_eq,
-        nnnorm_one, coe_one] at hx hx'
-      simpa [hx] using hx'.ne
-  }
+lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
+    MulArchimedean (MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by
+  rw [← Units.mulArchimedean_iff]
+  obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
+  exact MulArchimedean.of_locallyFiniteOrder
+
+lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
+    IsPrincipalIdealRing 𝒪[K] := by
+  -- The strategy to show that we have a PIR is by contradiction,
+  -- assuming that the range of the valuation is densely ordered.
+  have hi : Valuation.Integers (R := K) Valued.v 𝒪[K] := Valuation.integer.integers v
+  have hc : IsCompact (X := K) 𝒪[K] := isCompact_iff_compactSpace.mpr hc
+  -- We can also construct that it has a locally finite order, by compactness
+  -- which leads to a contradiction.
+  obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
+  have hm := mulArchimedean_mrange_of_isCompact_integer hc
+  -- The key result is that a valuation ring that maps into a `MulArchimedean` value group
+  -- is a PIR iff the value group is not densely ordered.
+  refine hi.isPrincipalIdealRing_iff_not_denselyOrdered_mrange.mpr fun _ ↦ ?_
+  -- since we are densely ordered, we necessarily are nontrivial
+  exact not_subsingleton (MonoidHom.mrange (v : Valuation K Γ₀))ˣ
+    (LocallyFiniteOrder.denselyOrdered_iff_subsingleton.mp inferInstance)
+
+theorem _root_.Valuation.isNontrivial_iff_not_a_field {K Γ : Type*} [Field K]
+    [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) :
+    v.IsNontrivial ↔ IsLocalRing.maximalIdeal v.integer ≠ ⊥ := by
+  simp_rw [ne_eq, eq_bot_iff, v.isNontrivial_iff_exists_lt_one, SetLike.le_def, Ideal.mem_bot,
+    not_forall, exists_prop, IsLocalRing.notMem_maximalIdeal.not_right,
+    Valuation.Integer.not_isUnit_iff_valuation_lt_one]
+  exact ⟨fun ⟨x, hx0, hx1⟩ ↦ ⟨⟨x, hx1.le⟩, by simp [Subtype.ext_iff, *]⟩,
+  fun ⟨x, hx1, hx0⟩ ↦ ⟨x, by simp [*]⟩⟩
+
+lemma isDiscreteValuationRing_of_compactSpace [hn : (Valued.v : Valuation K Γ₀).IsNontrivial]
+    [CompactSpace 𝒪[K]] : IsDiscreteValuationRing 𝒪[K] where
+  -- To prove we have a DVR, we need to show it is
+  -- a local ring (instance is directly inferred) and a PIR and not a field.
+  __ := isPrincipalIdealRing_of_compactSpace
+  not_a_field' := v.isNontrivial_iff_not_a_field.mp hn
 
 end CompactDVR
 
-lemma compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField :
+lemma compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField
+    [(Valued.v : Valuation K Γ₀).RankOne] :
     CompactSpace 𝒪[K] ↔ CompleteSpace 𝒪[K] ∧ IsDiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
   refine ⟨fun h ↦ ?_, fun ⟨_, _, h⟩ ↦ ⟨?_⟩⟩
   · have : IsDiscreteValuationRing 𝒪[K] := isDiscreteValuationRing_of_compactSpace
@@ -299,22 +315,24 @@ lemma compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_resi
     rw [isCompact_iff_totallyBounded_isComplete]
     exact ⟨h, completeSpace_iff_isComplete_univ.mp ‹_›⟩
 
-lemma properSpace_iff_compactSpace_integer :
+lemma properSpace_iff_compactSpace_integer [(Valued.v : Valuation K Γ₀).RankOne] :
     ProperSpace K ↔ CompactSpace 𝒪[K] := by
   simp only [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ, Subtype.range_coe_subtype,
-             mem_iff, ← mem_closedBall_zero_iff, Set.setOf_mem_eq]
+             toNormedField.setOf_mem_integer_eq_closedBall]
   constructor <;> intro h
   · exact isCompact_closedBall 0 1
   · suffices LocallyCompactSpace K from .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace K
     exact IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup h <|
       Metric.closedBall_mem_nhds 0 zero_lt_one
 
-lemma properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_finite_residueField :
+lemma properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_finite_residueField
+    [(Valued.v : Valuation K Γ₀).RankOne] :
     ProperSpace K ↔ CompleteSpace K ∧ IsDiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
   simp only [properSpace_iff_compactSpace_integer,
       compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField,
+      toNormedField.setOf_mem_integer_eq_closedBall,
       completeSpace_iff_isComplete_univ (α := 𝒪[K]), Subtype.isComplete_iff,
       NormedField.completeSpace_iff_isComplete_closedBall, Set.image_univ,
-      Subtype.range_coe_subtype, mem_iff, ← mem_closedBall_zero_iff, Set.setOf_mem_eq]
+      Subtype.range_coe_subtype]
 
 end Valued.integer

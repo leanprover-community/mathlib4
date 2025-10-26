@@ -24,7 +24,8 @@ loop.
 uniform space, uniform continuity, compact space
 -/
 
-open Uniformity Topology Filter UniformSpace Set
+open Topology Filter UniformSpace Set
+open scoped SetRel
 
 variable {γ : Type*}
 
@@ -88,12 +89,12 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- Indeed assume for contradiction there is some (u, v) in the intersection.
     obtain ⟨⟨u, v⟩, ⟨u_in, v_in⟩, w, huw, hwv⟩ :=
       clusterPt_iff_nonempty.mp hxy.of_inf_left hV₁₂ this
-    -- So u ∈ V₁, v ∈ V₂, and there exists some w such that (u, w) ∈ W and (w ,v) ∈ W.
+    -- So u ∈ V₁, v ∈ V₂, and there exists some w such that (u, w) ∈ W and (w, v) ∈ W.
     -- Because u is in V₁ which is disjoint from U₂ and U₃, (u, w) ∈ W forces (u, w) ∈ U₁ ×ˢ U₁.
     have uw_in : (u, w) ∈ U₁ ×ˢ U₁ :=
       (huw.resolve_right fun h => h.1 <| Or.inl u_in).resolve_right fun h =>
         hU₁₂.le_bot ⟨VU₁ u_in, h.1⟩
-    -- Similarly, because v ∈ V₂, (w ,v) ∈ W forces (w, v) ∈ U₂ ×ˢ U₂.
+    -- Similarly, because v ∈ V₂, (w, v) ∈ W forces (w, v) ∈ U₂ ×ˢ U₂.
     have wv_in : (w, v) ∈ U₂ ×ˢ U₂ :=
       (hwv.resolve_right fun h => h.2 <| Or.inr v_in).resolve_left fun h =>
         hU₁₂.le_bot ⟨h.2, VU₂ v_in⟩

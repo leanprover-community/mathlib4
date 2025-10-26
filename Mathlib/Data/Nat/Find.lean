@@ -66,18 +66,20 @@ protected def find : ℕ :=
 protected theorem find_spec : p (Nat.find H) :=
   (Nat.findX H).2.left
 
+grind_pattern Nat.find_spec => Nat.find H
+
 protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
   @(Nat.findX H).2.right
 
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
   Nat.le_of_not_gt fun l => Nat.find_min H l h
 
-lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬ p n := by
+lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
   constructor
-  · rintro rfl
-    exact ⟨Nat.find_spec h, fun _ ↦ Nat.find_min h⟩
+  · grind [Nat.find_min]
   · rintro ⟨hm, hlt⟩
-    exact le_antisymm (Nat.find_min' h hm) (not_lt.1 <| imp_not_comm.1 (hlt _) <| Nat.find_spec h)
+    have := Nat.find_min' h hm
+    grind
 
 @[simp] lemma find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m < n, p m :=
   ⟨fun h2 ↦ ⟨Nat.find h, h2, Nat.find_spec h⟩,
@@ -86,10 +88,10 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
 @[simp] lemma find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
   simp only [← Nat.lt_succ_iff, find_lt_iff]
 
-@[simp] lemma le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬ p m := by
+@[simp] lemma le_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n ≤ Nat.find h ↔ ∀ m < n, ¬p m := by
   simp only [← not_lt, find_lt_iff, not_exists, not_and]
 
-@[simp] lemma lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬ p m := by
+@[simp] lemma lt_find_iff (h : ∃ n : ℕ, p n) (n : ℕ) : n < Nat.find h ↔ ∀ m ≤ n, ¬p m := by
   simp only [← succ_le_iff, le_find_iff, succ_le_succ_iff]
 
 @[simp] lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
@@ -127,7 +129,7 @@ lemma find_congr' [DecidablePred q] {hp : ∃ n, p n} {hq : ∃ n, q n} (hpq : �
 lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
   (Nat.find_le_iff _ _).2 ⟨n, le_refl _, hn⟩
 
-lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0) :
+lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬p 0) :
     Nat.find h₁ = Nat.find h₂ + 1 := by
   refine (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ ?_⟩
   cases n
@@ -181,13 +183,13 @@ lemma findGreatest_eq_iff :
     rw [eq_comm, Iff.comm]
     simp only [Nat.le_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
     rintro rfl
-    exact ⟨fun h ↦ (h rfl).elim, fun n hlt heq ↦ by omega⟩
+    exact ⟨fun h ↦ (h rfl).elim, fun n hlt heq ↦ by cutsat⟩
   | succ k ihk =>
     by_cases hk : P (k + 1)
     · rw [findGreatest_eq hk]
       constructor
       · rintro rfl
-        exact ⟨le_refl _, fun _ ↦ hk, fun n hlt hle ↦ by omega⟩
+        exact ⟨le_refl _, fun _ ↦ hk, fun n hlt hle ↦ by cutsat⟩
       · rintro ⟨hle, h0, hm⟩
         rcases Decidable.lt_or_eq_of_le hle with hlt | rfl
         exacts [(hm hlt (le_refl _) hk).elim, rfl]

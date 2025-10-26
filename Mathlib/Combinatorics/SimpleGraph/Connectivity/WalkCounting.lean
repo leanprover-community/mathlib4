@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Finite.Lattice
 
@@ -37,7 +36,6 @@ variable {V : Type u} (G : SimpleGraph V)
 section WalkCounting
 
 theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} = {Walk.nil} := by
-  ext p
   simp
 
 theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
@@ -55,11 +53,7 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
   | cons huw pwv =>
     simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
       Set.mem_iUnion, Set.mem_image]
-    constructor
-    · rintro rfl
-      exact ⟨_, huw, pwv, rfl, rfl⟩
-    · rintro ⟨w, huw, pwv, rfl, rfl, rfl⟩
-      rfl
+    grind
 
 /-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
 Note that `u` and `v` may be the same. -/
@@ -128,7 +122,7 @@ open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
   ext p
-  simp [finsetWalkLengthLT, mem_coe, mem_finsetWalkLength_iff]
+  simp [finsetWalkLengthLT, mem_finsetWalkLength_iff]
 
 variable {G} in
 theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
@@ -144,7 +138,6 @@ instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v 
 
 theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
     {p : G.Walk u v | p.length = n}.toFinset = G.finsetWalkLength n u v := by
-  ext p
   simp [← coe_finsetWalkLength_eq]
 
 /- See `SimpleGraph.adjMatrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th
@@ -271,7 +264,7 @@ lemma ncard_oddComponents_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
       using (c.odd_oddComponents_ncard_subset_supp _ h).2 hc
   let f : G'.oddComponents → G.oddComponents :=
     fun ⟨c, hc⟩ ↦ ⟨(aux c hc).choose, (aux c hc).choose_spec.1⟩
-  refine Finite.card_le_of_injective f fun c c' fcc' ↦ ?_
+  refine Nat.card_le_card_of_injective f fun c c' fcc' ↦ ?_
   simp only [Subtype.mk.injEq, f] at fcc'
   exact Subtype.val_injective (ConnectedComponent.eq_of_common_vertex
     ((fcc' ▸ (aux c.1 c.2).choose_spec.2) (ConnectedComponent.nonempty_supp _).some_mem)

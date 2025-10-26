@@ -66,11 +66,11 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
     ?_, ?_, ?_⟩
   · rw [← hs]
     refine le_antisymm ?_ ?_ <;> intro x hx
-    · simp only [Finset.inf_image, CompTriple.comp_eq, Submodule.mem_finset_inf,
+    · simp only [Finset.inf_image, CompTriple.comp_eq, Submodule.mem_finsetInf,
       Function.comp_apply, Finset.mem_filter, id_eq, and_imp] at hx ⊢
       intro J hJ
       exact hx J hJ J hJ rfl
-    · simp only [Submodule.mem_finset_inf, id_eq, Finset.inf_image, CompTriple.comp_eq,
+    · simp only [Submodule.mem_finsetInf, id_eq, Finset.inf_image, CompTriple.comp_eq,
       Function.comp_apply, Finset.mem_filter, and_imp] at hx ⊢
       intro J _ K hK _
       exact hx K hK
@@ -143,9 +143,9 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
            ← Ideal.add_mem_iff_left _ (Ideal.mul_mem_right _ _ hs)]
     · simpa only [mem_colon_singleton] using mul_mem_right _ _
     · simp
-  rcases h with (h|h)
+  rcases h with (h | h)
   · replace h : I = I.colon (span {b}) := by
-      rcases eq_or_ne n 0 with rfl|hn'
+      rcases eq_or_ne n 0 with rfl | hn'
       · simpa [f] using hn 1 zero_le_one
       refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono le_rfl ?_))
       · intro
