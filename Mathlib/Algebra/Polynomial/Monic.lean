@@ -377,24 +377,24 @@ theorem natDegree_map_eq_of_injective (hf : Injective f) (p : R[X]) :
     natDegree (p.map f) = natDegree p :=
   natDegree_eq_of_degree_eq (degree_map_eq_of_injective hf p)
 
-theorem leadingCoeff_map' (hf : Injective f) (p : R[X]) :
+theorem leadingCoeff_map_of_injective (hf : Injective f) (p : R[X]) :
     leadingCoeff (p.map f) = f (leadingCoeff p) := by
   unfold leadingCoeff
   rw [coeff_map, natDegree_map_eq_of_injective hf p]
+
+@[deprecated (since := "2025-10-26")]
+alias leadingCoeff_map' := leadingCoeff_map_of_injective
+@[deprecated (since := "2025-10-26")]
+alias leadingCoeff_of_injective := leadingCoeff_map_of_injective
 
 theorem nextCoeff_map (hf : Injective f) (p : R[X]) : (p.map f).nextCoeff = f p.nextCoeff := by
   unfold nextCoeff
   rw [natDegree_map_eq_of_injective hf]
   split_ifs <;> simp [*]
 
-theorem leadingCoeff_of_injective (hf : Injective f) (p : R[X]) :
-    leadingCoeff (p.map f) = f (leadingCoeff p) := by
-  delta leadingCoeff
-  rw [coeff_map f, natDegree_map_eq_of_injective hf p]
-
 theorem monic_of_injective (hf : Injective f) {p : R[X]} (hp : (p.map f).Monic) : p.Monic := by
   apply hf
-  rw [← leadingCoeff_of_injective hf, hp.leadingCoeff, f.map_one]
+  rw [← leadingCoeff_map_of_injective hf, hp.leadingCoeff, f.map_one]
 
 theorem _root_.Function.Injective.monic_map_iff (hf : Injective f) {p : R[X]} :
     p.Monic ↔ (p.map f).Monic :=
