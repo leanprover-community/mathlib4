@@ -130,6 +130,9 @@ instance isPretransitive_of_isGaloisGroup : MulAction.IsPretransitive G (primesO
     rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, hs⟩
     exact ⟨σ, Subtype.val_inj.mp hs⟩
 
+@[deprecated (since := "2025-10-26")]
+alias isPretransitive_of_isGalois := isPretransitive_of_isGaloisGroup
+
 include G in
 /-- All the `ramificationIdx` over a fixed maximal ideal are the same. -/
 theorem ramificationIdx_eq_of_isGaloisGroup :
@@ -137,12 +140,18 @@ theorem ramificationIdx_eq_of_isGaloisGroup :
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
   exact (ramificationIdx_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
 
+@[deprecated (since := "2025-10-26")]
+alias ramificationIdx_eq_of_isGalois := ramificationIdx_eq_of_isGaloisGroup
+
 include G in
 /-- All the `inertiaDeg` over a fixed maximal ideal are the same. -/
-theorem inertiaDeg_eq_of_isGalois [p.IsMaximal] :
+theorem inertiaDeg_eq_of_isGaloisGroup [p.IsMaximal] :
     inertiaDeg p P = inertiaDeg p Q := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
   exact (inertiaDeg_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
+
+@[deprecated (since := "2025-10-26")]
+alias inertiaDeg_eq_of_isGalois := inertiaDeg_eq_of_isGaloisGroup
 
 include G in
 /-- The `ramificationIdxIn` is equal to any ramification index over the same ideal. -/
@@ -168,7 +177,7 @@ theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] :
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
   rw [inertiaDegIn, dif_pos h]
-  exact inertiaDeg_eq_of_isGalois p h.choose P G
+  exact inertiaDeg_eq_of_isGaloisGroup p h.choose P G
 
 include G in
 theorem inertiaDegIn_ne_zero {p : Ideal A} [p.IsMaximal] [NoZeroSMulDivisors A B]
