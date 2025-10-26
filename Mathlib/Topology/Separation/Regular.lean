@@ -270,7 +270,7 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X] [RegularSpace 
 /-- Given two separable points `x` and `y`, we can find neighbourhoods
 `x ∈ V₁ ⊆ U₁` and `y ∈ V₂ ⊆ U₂`, with the `Vₖ` closed and the `Uₖ` open,
 such that the `Uₖ` are disjoint. -/
-theorem disjoint_nested_nhds_of_separable [RegularSpace X] {x y : X} (h : ¬Inseparable x y) :
+theorem disjoint_nested_nhds_of_not_inseparable [RegularSpace X] {x y : X} (h : ¬Inseparable x y) :
     ∃ U₁ ∈ 𝓝 x, ∃ V₁ ∈ 𝓝 x, ∃ U₂ ∈ 𝓝 y, ∃ V₂ ∈ 𝓝 y,
       IsClosed V₁ ∧ IsClosed V₂ ∧ IsOpen U₁ ∧ IsOpen U₂ ∧ V₁ ⊆ U₁ ∧ V₂ ⊆ U₂ ∧ Disjoint U₁ U₂ := by
   rcases r1_separation h with ⟨U₁, U₂, U₁_op, U₂_op, x_in, y_in, H⟩
@@ -401,7 +401,7 @@ with the `Vₖ` closed and the `Uₖ` open, such that the `Uₖ` are disjoint. -
 theorem disjoint_nested_nhds [T3Space X] {x y : X} (h : x ≠ y) :
     ∃ U₁ ∈ 𝓝 x, ∃ V₁ ∈ 𝓝 x, ∃ U₂ ∈ 𝓝 y, ∃ V₂ ∈ 𝓝 y,
       IsClosed V₁ ∧ IsClosed V₂ ∧ IsOpen U₁ ∧ IsOpen U₂ ∧ V₁ ⊆ U₁ ∧ V₂ ⊆ U₂ ∧ Disjoint U₁ U₂ :=
-  disjoint_nested_nhds_of_separable (mt Inseparable.eq h)
+  disjoint_nested_nhds_of_not_inseparable (mt Inseparable.eq h)
 
 open SeparationQuotient
 
