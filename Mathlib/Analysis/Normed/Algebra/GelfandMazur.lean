@@ -131,7 +131,7 @@ private lemma norm_eq_of_isMinOn_of_forall_le {X E : Type*} [TopologicalSpace X]
 
 open Filter Bornology in
 /-- In a normed algebra `F` over a normed field `𝕜` that is a proper space, the function
-`z : 𝕜 ↦ ‖x - z • 1‖` achieves a global minimum for every `x : F`. -/
+`z : 𝕜 ↦ ‖x - algebraMap 𝕜 F z‖` achieves a global minimum for every `x : F`. -/
 lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜]
     [ProperSpace 𝕜] [SeminormedRing F] [NormedAlgebra 𝕜 F] [NormOneClass F] (x : F) :
   ∃ z : 𝕜, IsMinOn (‖x - algebraMap 𝕜 F ·‖) Set.univ z := by
@@ -151,7 +151,7 @@ namespace Complex
 variable {F : Type*} [NormedRing F] [NormOneClass F] [NormMulClass F] [NormedAlgebra ℂ F]
 
 /- If the norm of every monic linear polynomial over `ℂ`, evaluated at some `x : F`,
-is bounded below by `M`, then the norm of the value at `x - c • 1` of a monic polynomial
+is bounded below by `M`, then the norm of the value at `x - algebraMap ℂ F c` of a monic polynomial
 of degree `n` is bounded below by `M ^ n`. This follows by induction from the fact that
 every monic polynomial over `ℂ` factors as a product of monic linear polynomials. -/
 private lemma le_aeval_of_isMonicOfDegree (x : F) {M : ℝ} (hM : 0 ≤ M)
@@ -167,7 +167,7 @@ private lemma le_aeval_of_isMonicOfDegree (x : F) {M : ℝ} (hM : 0 ≤ M)
     rw [H, aeval_mul, norm_mul, mul_comm, pow_succ, H', sub_add, ← map_sub]
     exact mul_le_mul (ih hf₂) (h (c - r)) hM (norm_nonneg _)
 
-/- We show that when `z ↦ ‖x - z • 1‖` is never zero (and attains a minimum), then
+/- We show that when `z ↦ ‖x - algebraMap ℂ F z‖` is never zero (and attains a minimum), then
 it is constant. This uses the auxiliary result `norm_eq_of_isMinOn_of_forall_le`. -/
 private lemma norm_sub_eq_norm_sub_of_isMinOn {x : F} {z : ℂ}
     (hz : IsMinOn (‖x - algebraMap ℂ F ·‖) Set.univ z) (H : ∀ z' : ℂ, ‖x - algebraMap ℂ F z'‖ ≠ 0)
@@ -178,7 +178,8 @@ private lemma norm_sub_eq_norm_sub_of_isMinOn {x : F} {z : ℂ}
   refine norm_eq_of_isMinOn_of_forall_le (f := (x - algebraMap ℂ F ·)) hM₀ hMdef.symm hz
     (by fun_prop) (fun {y} w hy n hn ↦ ?_) c
   dsimp only at hy ⊢
-  -- show `‖x - w • 1‖ ≤ M * (1 + (‖x - w • 1 - (x - y • 1)‖ / M) ^ n)`
+  -- show
+  --  `‖x - algebraMap ℂ F w‖ ≤ M * (1 + (‖x - algebraMap ℂ F w - (x - algebraMap ℂ F y)‖ / M) ^ n)`
   rw [sub_sub_sub_cancel_left, ← map_sub, norm_algebraMap, norm_sub_rev y w, norm_one, mul_one,
     show M * (1 + (‖w - y‖ / M) ^ n) = (M ^ n + ‖w - y‖ ^ n) / M ^ (n - 1) by
       simp only [field, div_pow, ← pow_succ', Nat.sub_add_cancel hn],
@@ -194,8 +195,8 @@ private lemma norm_sub_eq_norm_sub_of_isMinOn {x : F} {z : ℂ}
   rw [hrel]
   exact (norm_sub_le ..).trans <| by simp [hy, ← map_sub]
 
-/-- If `F` is a normed `ℂ`-algebra and `x: F`, then there is a complex number `z` such that
-`‖x - z • 1‖ = 0` (whence `x = z • 1`). -/
+/-- If `F` is a normed `ℂ`-algebra and `x : F`, then there is a complex number `z` such that
+`‖x - algebraMap ℂ F z‖ = 0` (whence `x = algebraMap ℂ F z`). -/
 lemma exists_norm_sub_smul_one_eq_zero (x : F) :
     ∃ z : ℂ, ‖x - algebraMap ℂ F z‖ = 0 := by
   -- there is a minimizing `z : ℂ`; get it.
@@ -204,7 +205,7 @@ lemma exists_norm_sub_smul_one_eq_zero (x : F) :
   rcases eq_or_lt_of_le (show 0 ≤ M from norm_nonneg _) with hM₀ | hM₀
     -- minimum is zero: nothing to do
   · exact ⟨z, hM₀.symm⟩
-  -- otherwise, use the result from above that `z ↦ ‖x - z • 1‖` is constant
+  -- otherwise, use the result from above that `z ↦ ‖x - algebraMap ℂ F z‖` is constant
   -- to derive a contradiction.
   by_contra! H
   have key := norm_sub_eq_norm_sub_of_isMinOn hz H (‖x‖ + M + 1)
@@ -272,8 +273,8 @@ private lemma le_aeval_of_isMonicOfDegree {x : F} {M : ℝ} (hM : 0 ≤ M)
     rw [H, aeval_mul, norm_mul, mul_comm, pow_succ, hab, aeval_eq_φ x (a, b)]
     exact mul_le_mul (ih hf₂) (h (a, b)) hM (norm_nonneg _)
 
-/- The key step in the proof: if `a` and `b` are real numbers minimizing `‖x ^ 2 - a • x + b • 1‖`,
-and the minimal value is strictly positive, then the function `(s, t) ↦ ‖x ^ 2 - s • x + t • 1‖`
+/- The key step in the proof: if `a` and `b` are real numbers minimizing `‖φ x (a, b)‖`,
+and the minimal value is strictly positive, then the function `(s, t) ↦ ‖φ x (s, t)‖`
 is constant. -/
 private lemma norm_φ_eq_norm_φ_of_isMinOn {x : F} {z : ℝ × ℝ} (h : IsMinOn (‖φ x ·‖) Set.univ z)
     (H : ‖φ x z‖ ≠ 0) (w : ℝ × ℝ) :
@@ -312,7 +313,7 @@ private lemma norm_φ_eq_norm_φ_of_isMinOn {x : F} {z : ℝ × ℝ} (h : IsMinO
 
 /- Existence of a minimizing monic polynomial of degree 2 -/
 
-/- Assuming that `‖x - · • 1‖` is bounded below by a positive constant, we show that
+/- Assuming that `‖x - algebraMap ℝ F ·‖` is bounded below by a positive constant, we show that
 `φ x w` grows unboundedly as `w : ℝ × ℝ` does. We will use this to obtain a contradiction
 when `φ x` does not attain the value zero. -/
 open Filter Topology Bornology in
@@ -351,7 +352,7 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c)
 /- The norm of `‖φ x ·‖` attains a minimum on `ℝ × ℝ`. -/
 open Bornology Filter in
 private lemma exists_isMinOn_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) Set.univ z := by
-  -- use that `‖x - · • 1‖` has a minimum.
+  -- use that `‖x - algebraMap ℝ F ·‖` has a minimum.
   obtain ⟨u, hu⟩ := exists_isMinOn_norm_sub_smul ℝ x
   rcases eq_or_lt_of_le (norm_nonneg (x - algebraMap ℝ F u)) with hc₀ | hc₀
   · -- if this minimum is zero, use `(u, 0)`.
