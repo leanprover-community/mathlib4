@@ -255,9 +255,13 @@ theorem coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
 /-- The affine equivalence between an affine space with a basis and the space of
 barycentric coordinates `ι → k`.
 
-This resolves the TODO from the module docstring. The forward direction maps each point
-to its barycentric coordinates, and the inverse maps coordinates back to their affine combination.
-The image of this map consists of functions `f : ι → k` satisfying `∑ i, f i = 1`. -/
+This partially resolves the TODO from the module docstring, which asks for an equivalence
+to `{ f : ι →₀ k | f.sum = 1 }`. The target space `ι → k` is larger, but the image of this
+equivalence is precisely characterized by `equivBarycentricCoords_apply_sum`: it consists
+of exactly those functions `f : ι → k` satisfying `∑ i, f i = 1`.
+
+The forward direction maps each point to its barycentric coordinates, and the inverse maps
+coordinates back to their affine combination. -/
 noncomputable def equivBarycentricCoords [Fintype ι] (b : AffineBasis ι k P) :
     P ≃ᵃ[k] (ι → k) :=
   sorry
@@ -268,6 +272,15 @@ the coordinate functions `b.coord`. -/
 theorem equivBarycentricCoords_apply [Fintype ι] (b : AffineBasis ι k P) (p : P) (i : ι) :
     b.equivBarycentricCoords p i = b.coord i p :=
   sorry
+
+/-- The barycentric coordinates of any point sum to 1.
+This shows that the image of `equivBarycentricCoords` consists precisely of functions
+summing to 1, as requested in the TODO. -/
+@[simp]
+theorem equivBarycentricCoords_apply_sum [Fintype ι] (b : AffineBasis ι k P) (p : P) :
+    ∑ i, b.equivBarycentricCoords p i = 1 := by
+  simp only [equivBarycentricCoords_apply]
+  exact b.sum_coord_apply_eq_one p
 
 /-- Applying the inverse of `equivBarycentricCoords` to barycentric coordinates
 reconstructs the point as an affine combination. -/
