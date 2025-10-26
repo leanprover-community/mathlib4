@@ -293,4 +293,3 @@ theorem UniqueDiffWithinAt.mono_closure (h : UniqueDiffWithinAt 𝕜 s x) (st : 
 end Normed
 
 end UniqueDiff
-

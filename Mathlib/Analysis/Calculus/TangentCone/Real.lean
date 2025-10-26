@@ -110,4 +110,3 @@ theorem uniqueDiffWithinAt_Iic (x : ℝ) : UniqueDiffWithinAt ℝ (Iic x) x :=
   (uniqueDiffWithinAt_Iio x).mono Set.Iio_subset_Iic_self
 
 end Real
-
