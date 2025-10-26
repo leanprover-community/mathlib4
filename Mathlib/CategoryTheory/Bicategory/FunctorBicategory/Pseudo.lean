@@ -52,19 +52,19 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
 between pseudofunctors. -/
 @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
-  ModificationIso.ofComponents (fun a => α_ (η.app a) (θ.app a) (ι.app a))
+  isoMk (fun a => α_ (η.app a) (θ.app a) (ι.app a))
 
 /-- Left unitor for the vertical composition of strong natural transformations
 between pseudofunctors. -/
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
-  ModificationIso.ofComponents (fun a => λ_ (η.app a))
+  isoMk (fun a => λ_ (η.app a))
 
 /-- Right unitor for the vertical composition of strong natural transformations
 between pseudofunctors. -/
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
-  ModificationIso.ofComponents (fun a => ρ_ (η.app a))
+  isoMk (fun a => ρ_ (η.app a))
 
 variable (B C)
 
