@@ -28,6 +28,7 @@ variable (G A B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
 
 /-- `G` is a Galois group for `L/K` if the action of `G` on `L` is faithful with fixed field `K`.
 In particular, we do not assume that `L` is an algebraic extension of `K`.
+
 See the implementation notes in this file for the meaning of this definition in the case of rings.
 -/
 class IsGaloisGroup where
@@ -103,6 +104,8 @@ variable (G H K L : Type*) [Group G] [Group H] [Field K] [Field L] [Algebra K L]
   [MulSemiringAction G L] [MulSemiringAction H L]
 
 namespace IsGaloisGroup
+
+attribute [instance low] commutes isInvariant
 
 theorem fixedPoints_eq_bot [IsGaloisGroup G K L] :
     FixedPoints.intermediateField G = (⊥ : IntermediateField K L) := by
