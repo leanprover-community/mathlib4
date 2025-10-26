@@ -297,8 +297,7 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
     signVariations P + 1 ≤ signVariations ((X - C η) * P) := by
   -- do induction on the degree
   generalize hd : P.natDegree = d
-  induction d using Nat.strong_induction_on generalizing P
-  rename_i d ih
+  induction d using Nat.strong_induction_on generalizing P with | _ d ih =>
 
   -- can assume it starts positive, otherwise negate P
   wlog h_lC : 0 < leadingCoeff P generalizing P with H
