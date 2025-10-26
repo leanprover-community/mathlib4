@@ -56,6 +56,11 @@ theorem kroneckerTMulLinearEquiv_tmul (a : Matrix l m M) (b : Matrix n p N) :
     kroneckerTMulLinearEquiv l m n p R S M N (a ⊗ₜ b) = a ⊗ₖₜ b := rfl
 
 @[simp]
+theorem kroneckerTMulLinearEquiv_symm_kroneckerTMul (a : Matrix l m M) (b : Matrix n p N) :
+    (kroneckerTMulLinearEquiv l m n p R S M N).symm (a ⊗ₖₜ b) = a ⊗ₜ b := by
+  simp [LinearEquiv.symm_apply_eq]
+
+@[simp]
 theorem kroneckerTMulAlgEquiv_symm_single_tmul
     (ia : l) (ja : m) (ib : n) (jb : p) (a : M) (b : N) :
     (kroneckerTMulLinearEquiv l m n p R S M N).symm (single (ia, ib) (ja, jb) (a ⊗ₜ b)) =
