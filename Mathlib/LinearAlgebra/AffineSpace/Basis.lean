@@ -253,15 +253,22 @@ theorem coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
   rfl
 
 /-- The affine equivalence between an affine space with a basis and the space of
-barycentric coordinates `ι → k`.
+barycentric coordinates.
 
-This partially resolves the TODO from the module docstring, which asks for an equivalence
-to `{ f : ι →₀ k | f.sum = 1 }`. The target space `ι → k` is larger, but the image of this
-equivalence is precisely characterized by `equivBarycentricCoords_apply_sum`: it consists
-of exactly those functions `f : ι → k` satisfying `∑ i, f i = 1`.
+**TODO**: The module docstring requests an equivalence `P ≃ᵃ[k] { f : ι →₀ k | f.sum = 1 }`.
+This is the correct mathematical statement: the set `{ f : ι → k | ∑ i, f i = 1 }` is an
+affine hyperplane in `ι → k` (an affine subspace with direction `{ f | ∑ i, f i = 0 }`).
 
-The forward direction maps each point to its barycentric coordinates, and the inverse maps
-coordinates back to their affine combination. -/
+However, encoding this as a type in Lean is nontrivial. We would need to either:
+1. Define it as an `AffineSubspace` and show the subtype inherits affine space structure, or
+2. Directly construct the affine space structure on the subtype.
+
+For now, this is left as `sorry`. The key mathematical facts are captured in the API lemmas:
+- `equivBarycentricCoords_apply`: forward map gives barycentric coordinates
+- `equivBarycentricCoords_apply_sum`: coordinates sum to 1
+- `equivBarycentricCoords_symm_apply`: inverse is affine combination
+
+These lemmas are sufficient to prove `exists_affineEquiv_of_span_eq_top` by composition. -/
 noncomputable def equivBarycentricCoords [Fintype ι] (b : AffineBasis ι k P) :
     P ≃ᵃ[k] (ι → k) :=
   sorry
