@@ -252,6 +252,30 @@ noncomputable def coords : P →ᵃ[k] ι → k where
 theorem coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
   rfl
 
+/-- The affine equivalence between an affine space with a basis and the space of
+barycentric coordinates `ι → k`.
+
+This resolves the TODO from the module docstring. The forward direction maps each point
+to its barycentric coordinates, and the inverse maps coordinates back to their affine combination.
+The image of this map consists of functions `f : ι → k` satisfying `∑ i, f i = 1`. -/
+noncomputable def equivBarycentricCoords [Fintype ι] (b : AffineBasis ι k P) :
+    P ≃ᵃ[k] (ι → k) :=
+  sorry
+
+/-- The barycentric coordinates of a point via `equivBarycentricCoords` match
+the coordinate functions `b.coord`. -/
+@[simp]
+theorem equivBarycentricCoords_apply [Fintype ι] (b : AffineBasis ι k P) (p : P) (i : ι) :
+    b.equivBarycentricCoords p i = b.coord i p :=
+  sorry
+
+/-- Applying the inverse of `equivBarycentricCoords` to barycentric coordinates
+reconstructs the point as an affine combination. -/
+@[simp]
+theorem equivBarycentricCoords_symm_apply [Fintype ι] (b : AffineBasis ι k P) (w : ι → k) :
+    b.equivBarycentricCoords.symm w = Finset.univ.affineCombination k b w :=
+  sorry
+
 instance instVAdd : VAdd V (AffineBasis ι k P) where
   vadd x b :=
     { toFun := x +ᵥ ⇑b,

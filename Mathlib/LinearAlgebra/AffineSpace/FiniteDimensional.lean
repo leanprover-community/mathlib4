@@ -774,10 +774,8 @@ lemma AffineIndependent.card_subtype_ne_eq_finrank_of_span_eq_top
 /-- Two affinely independent families with the same index type that both span the entire
 space can be mapped to each other by an affine automorphism.
 
-This result is closely related to the TODO in `Mathlib.LinearAlgebra.AffineSpace.Basis` about
-constructing affine equivalences to barycentric coordinate spaces. Once that equivalence is
-fully constructed, this theorem could be reproven as a simple composition through the
-barycentric coordinate space. -/
+This is proven by composing affine equivalences through the barycentric coordinate space:
+we map `f` to its barycentric coordinates, then map those coordinates to `g`. -/
 theorem AffineIndependent.exists_affineEquiv_of_span_eq_top
     {k : Type*} {V : Type*} {P : Type*}
     [DivisionRing k] [AddCommGroup V] [Module k V] [AddTorsor V P]
@@ -788,23 +786,41 @@ theorem AffineIndependent.exists_affineEquiv_of_span_eq_top
     (hf_span : affineSpan k (Set.range f) = ⊤)
     (hg_span : affineSpan k (Set.range g) = ⊤) :
     ∃ (T : P ≃ᵃ[k] P), T ∘ f = g := by
-  obtain ⟨i₀⟩ := Nonempty.of_affineSpan_range_eq_top f hf_span
-
+  -- Construct affine bases from the given data
   let b_f : AffineBasis ι k P := ⟨f, hf, hf_span⟩
   let b_g : AffineBasis ι k P := ⟨g, hg, hg_span⟩
 
-  use AffineEquiv.ofLinearEquiv
-    ((b_f.basisOf i₀).equiv (b_g.basisOf i₀) (Equiv.refl _)) (f i₀) (g i₀)
+  -- The affine equivalence is the composition:
+  -- f → barycentric coords (via b_f) → g (via inverse of b_g)
+  use b_f.equivBarycentricCoords.trans b_g.equivBarycentricCoords.symm
 
+  -- Verify that this maps f to g
   ext i
-  by_cases hi : i = i₀
-  · simp [hi]
-  · simp only [AffineEquiv.ofLinearEquiv_apply, Function.comp_apply]
-    have hf_basis : f i -ᵥ f i₀ = b_f.basisOf i₀ ⟨i, hi⟩ :=
-      (AffineBasis.basisOf_apply b_f i₀ ⟨i, hi⟩).symm
-    have hg_basis : g i -ᵥ g i₀ = b_g.basisOf i₀ ⟨i, hi⟩ :=
-      (AffineBasis.basisOf_apply b_g i₀ ⟨i, hi⟩).symm
-    rw [hf_basis, Module.Basis.equiv_apply, Equiv.refl_apply, hg_basis.symm, vsub_vadd]
+  change (b_f.equivBarycentricCoords.trans b_g.equivBarycentricCoords.symm) (b_f i) = b_g i
+
+  -- Unfold the composition: apply b_f.equivBarycentricCoords then b_g.equivBarycentricCoords.symm
+  rw [AffineEquiv.trans_apply, AffineBasis.equivBarycentricCoords_symm_apply]
+
+  -- The key: by coord_apply, b_f.coord j (b_f i) = if i = j then 1 else 0
+  -- So we're computing the affine combination of b_g with indicator weights at i
+
+  have h_coords : ∀ j, b_f.equivBarycentricCoords (b_f i) j = if j = i then 1 else 0 := by
+    intro j
+    rw [AffineBasis.equivBarycentricCoords_apply, AffineBasis.coord_apply]
+
+  -- Rewrite the affine combination using these coordinates
+  conv_lhs =>
+    arg 2
+    ext j
+    rw [h_coords j]
+
+  -- Now we have affineCombination with indicator weights, which gives b_g i
+  classical
+  apply Finset.affineCombination_of_eq_one_of_eq_zero
+  · exact Finset.mem_univ i
+  · simp
+  · intros j _ hj
+    simp [hj]
 
 /-- An affinely independent family in a finite-dimensional space has cardinality at most
 `finrank + 1`. -/
@@ -972,8 +988,8 @@ theorem AffineSubspace.exists_affineEquiv_of_affineDim_eq
   have hf₂_span : affineSpan k (Set.range f₂) = M₂ := by
     rw [Subtype.range_coe]; exact hs₂_span
 
-  haveI : Nonempty s₁ := Nonempty.of_affineSpan_range f₁ M₁ hf₁_span h_nonempty₁
-  haveI : Nonempty s₂ := Nonempty.of_affineSpan_range f₂ M₂ hf₂_span h_nonempty₂
+  haveI : Nonempty s₁ := @Nonempty.of_affineSpan_range k V V _ _ _ _ s₁ f₁ M₁ hf₁_span h_nonempty₁
+  haveI : Nonempty s₂ := @Nonempty.of_affineSpan_range k V V _ _ _ _ s₂ f₂ M₂ hf₂_span h_nonempty₂
 
   have h_card_eq : Fintype.card s₁ = Fintype.card s₂ :=
     affineIndependent_card_eq_of_affineDim_eq
