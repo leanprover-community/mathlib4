@@ -348,6 +348,14 @@ lemma charFun_eq_charFunDual_toDualMap {E : Type*} [NormedAddCommGroup E] [Inner
     charFun μ t = charFunDual μ (InnerProductSpace.toDualMap ℝ E t) := by
   simp [charFunDual_apply, charFun_apply, real_inner_comm]
 
+@[simp]
+lemma charFun_toDual_symm_eq_charFunDual {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+    [InnerProductSpace ℝ E] {mE : MeasurableSpace E} {μ : Measure E} (L : StrongDual ℝ E) :
+    charFun μ ((InnerProductSpace.toDual ℝ E).symm L) = charFunDual μ L := by
+  rw [charFun_eq_charFunDual_toDualMap]
+  congr with x
+  simp
+
 lemma charFunDual_map [OpensMeasurableSpace E] [BorelSpace F] (L : E →L[ℝ] F)
     (L' : StrongDual ℝ F) : charFunDual (μ.map L) L' = charFunDual μ (L'.comp L) := by
   rw [charFunDual_eq_charFun_map_one, charFunDual_eq_charFun_map_one,

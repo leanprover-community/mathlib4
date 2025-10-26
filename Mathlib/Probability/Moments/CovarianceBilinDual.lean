@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
+import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.Probability.Moments.Variance
 
@@ -298,6 +299,10 @@ lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) : 0 ≤ covarianceB
   · rw [covarianceBilinDual_self_eq_variance h]
     exact variance_nonneg ..
   · simp [h]
+
+lemma isPosSemidef_covarianceBilinDual : (covarianceBilinDual μ).toBilinForm.IsPosSemidef where
+  eq := covarianceBilinDual_comm
+  nonneg := covarianceBilinDual_self_nonneg
 
 end Covariance
 
