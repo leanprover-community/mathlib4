@@ -24,14 +24,14 @@ def Int.fib (n : ℤ) : ℤ :=
   if 0 ≤ n then Nat.fib n.toNat
   else if n % 2 = 0 then -(-n).toNat.fib else (-n).toNat.fib
 
-@[simp] theorem Int.fib_nat (n : ℕ) : Int.fib n = Nat.fib n := rfl
+@[simp] theorem Int.fib_natCast (n : ℕ) : Int.fib n = Nat.fib n := rfl
 @[simp] theorem Int.fib_zero : Int.fib 0 = 0 := rfl
 @[simp] theorem Int.fib_one : Int.fib 1 = 1 := rfl
 @[simp] theorem Int.fib_two : Int.fib 2 = 1 := rfl
 @[simp] theorem Int.fib_neg_one : Int.fib (-1) = 1 := rfl
 @[simp] theorem Int.fib_neg_two : Int.fib (-2) = -1 := rfl
 
-theorem Int.fib_neg_nat (n : ℕ) : Int.fib (-n) = (-1) ^ (n + 1) * n.fib := by
+theorem Int.fib_neg_natCast (n : ℕ) : Int.fib (-n) = (-1) ^ (n + 1) * n.fib := by
   simp only [fib, Int.neg_nonneg, natCast_nonpos_iff, toNat_neg_natCast, Nat.fib_zero,
     neg_emod_two, neg_neg, toNat_natCast, reduceNeg]
   split_ifs with hn h
@@ -45,21 +45,21 @@ theorem Int.fib_add_two {n : ℤ} :
     fib (n + 2) = fib n + fib (n + 1) := by
   rcases n with (n | n)
   · dsimp
-    rw [show (n : ℤ) + 2 = (n + 2 : ℕ) by rfl, fib_nat, Nat.fib_add_two]
+    rw [show (n : ℤ) + 2 = (n + 2 : ℕ) by rfl, fib_natCast, Nat.fib_add_two]
     rfl
-  · rw [show negSucc n = -((n + 1 : ℕ) : ℤ) by rfl, fib_neg_nat]
+  · rw [show negSucc n = -((n + 1 : ℕ) : ℤ) by rfl, fib_neg_natCast]
     simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, reduceNeg, add_comm,
-      add_assoc, reduceAdd, add_neg_cancel_comm_assoc, fib_neg_nat]
+      add_assoc, reduceAdd, add_neg_cancel_comm_assoc, fib_neg_natCast]
     if hn0 : n = 0 then simp [hn0] else
     symm
     calc _ = (-1) ^ (n + 1) * ((n.fib - (n + 1).fib : ℤ)) := by grind
       _ = _ := by
         have : -(n : ℤ) + 1 = -((n - 1 : ℕ) : ℤ) := by grind
         obtain (⟨n, rfl⟩ | ⟨n, rfl⟩) := n.even_or_odd
-        · rw [Nat.fib_add_one hn0, this, fib_neg_nat, pow_add, ← two_mul,
+        · rw [Nat.fib_add_one hn0, this, fib_neg_natCast, pow_add, ← two_mul,
             Nat.sub_add_cancel (by grind)]
           simp
-        · rw [Nat.fib_add_one hn0, this, fib_neg_nat, pow_add]
+        · rw [Nat.fib_add_one hn0, this, fib_neg_natCast, pow_add]
           simp
 
 theorem Int.fib_eq_fib_add_two_sub_fib_succ {n : ℤ} :
