@@ -198,13 +198,14 @@ Version at a point within a set. -/
 lemma ContMDiffWithinAt.sum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, CMDiffAt[u] n (T% (t i ·)) x₀) :
-    CMDiffAt[u] n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) x₀ := by
+    CMDiffAt[u] n (T% (fun x ↦ ∑' i, (t i x))) x₀ := by
+  dsimp
   obtain ⟨u', hu', hfin⟩ := ht x₀
   -- All sections `t i` but a finite set `s` vanish near `x₀`: choose a neighbourhood `u` of `x₀`
   -- and a finite set `s` of sections which don't vanish.
   let s := {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ u').Nonempty}
   have := hfin.fintype
-  have : CMDiffAt[u ∩ u'] n (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) x₀ :=
+  have : CMDiffAt[u ∩ u'] n (T% (fun x ↦ (∑ i ∈ s, (t i x)))) x₀ :=
     .sum_section fun i hi ↦ ((ht' i).mono Set.inter_subset_left)
   apply (contMDiffWithinAt_inter hu').mp
   apply this.congr fun y hy ↦ ?_
@@ -230,20 +231,20 @@ lemma ContMDiffWithinAt.sum_section_of_locallyFinite
 /-- The sum of a locally finite collection of sections is `C^k` at `x` iff each section is. -/
 lemma ContMDiffAt.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, CMDiffAt n (T% (t i ·)) x₀) :
-    CMDiffAt n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) x₀ := by
+    CMDiffAt n (T% (fun x ↦ (∑' i, (t i x)))) x₀ := by
   simp_rw [← contMDiffWithinAt_univ] at ht' ⊢
   exact .sum_section_of_locallyFinite ht ht'
 
 /-- The sum of a locally finite collection of sections is `C^k` on a set `u` iff each section is. -/
 lemma ContMDiffOn.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, CMDiff[u] n (T% (t i ·))) :
-    CMDiff[u] n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) :=
+    CMDiff[u] n (T% (fun x ↦ ∑' i, (t i x))) :=
   fun x hx ↦ .sum_section_of_locallyFinite ht (ht' · x hx)
 
 /-- The sum of a locally finite collection of sections is `C^k` iff each section is. -/
 lemma ContMDiff.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, CMDiff n (T% (t i ·))) :
-    CMDiff n (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) :=
+    CMDiff n (T% (fun x ↦ ∑' i, (t i x))) :=
   fun x ↦ .sum_section_of_locallyFinite ht fun i ↦ ht' i x
 
 -- Future: the next four lemmas can presumably be generalised, but some hypotheses on the supports
@@ -251,7 +252,8 @@ lemma ContMDiff.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : 
 lemma ContMDiffWithinAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, CMDiffAt[u] n (T% (t i ·)) x₀) :
-    CMDiffAt[u] n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) x₀ := by
+    CMDiffAt[u] n (T% (fun x ↦ ∑ᶠ i, t i x)) x₀ := by
+  dsimp
   apply (ContMDiffWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
       (fun y hy ↦ ?_) (by grind) trivial
   rw [← tsum_eq_finsum (L := SummationFilter.unconditional ι)]
@@ -266,19 +268,19 @@ lemma ContMDiffWithinAt.finsum_section_of_locallyFinite
 lemma ContMDiffAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, CMDiffAt n (T% (t i ·)) x₀) :
-    CMDiffAt n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) x₀ := by
+    CMDiffAt n (T% (fun x ↦ ∑ᶠ i, t i x)) x₀ := by
   simp_rw [← contMDiffWithinAt_univ] at ht' ⊢
   exact .finsum_section_of_locallyFinite ht ht'
 
 lemma ContMDiffOn.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, CMDiff[u] n (T% (t i ·))) :
-    CMDiff[u] n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) :=
+    CMDiff[u] n (T% (fun x ↦ ∑ᶠ i, t i x)) :=
   fun x hx ↦ .finsum_section_of_locallyFinite ht fun i ↦ ht' i x hx
 
 lemma ContMDiff.finsum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, CMDiff n (T% (t i ·))) :
-    CMDiff n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) :=
+    CMDiff n (T% (fun x ↦ ∑ᶠ i, t i x)) :=
   fun x ↦ .finsum_section_of_locallyFinite ht fun i ↦ ht' i x
 
 end operations
