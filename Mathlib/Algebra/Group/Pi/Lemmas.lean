@@ -280,10 +280,7 @@ For injections of commuting elements at the same index, see `Commute.map` -/
 theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
     Pairwise fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
   intro i j hij x y; ext k
-  by_cases h1 : i = k
-  · subst h1
-    simp [hij]
-  simp_all
+  by_cases i = k <;> simp_all
 
 /-- The injection into a pi group with the same values commutes. -/
 @[to_additive /-- The injection into an additive pi group with the same values commutes. -/]
@@ -297,7 +294,7 @@ theorem Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) 
 theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :
     Function.update g i x = g / mulSingle i (g i) * mulSingle i x := by
   ext j
-  by_cases i = j <;> aesop
+  by_cases j = i <;> aesop
 
 @[to_additive]
 theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
@@ -311,13 +308,13 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     have hn := (congr_fun h n).symm
     simp only [mul_apply, mulSingle_apply] at hk hl hm hn
     rcases eq_or_ne k m with (rfl | hkm)
-    · by_cases k = l <;> aesop
-    · rcases eq_or_ne m n with (rfl | hmn)
+    · by_cases l = k <;> aesop
+    · rcases eq_or_ne n m with (rfl | hmn)
       · rcases eq_or_ne k l with (rfl | hkl)
-        · aesop
-        · rw [if_neg hkm.symm, if_neg hkl.symm, mul_one] at hk
-          aesop
-      · rw [if_neg hkm, if_neg hmn.symm, one_mul, mul_one] at hm
+        · simp_all
+        · rw [if_neg hkm, if_neg hkl, mul_one] at hk
+          simp_all
+      · rw [if_neg hkm.symm, if_neg hmn.symm, one_mul, mul_one] at hm
         aesop
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩ | ⟨h, rfl, rfl⟩)
     · rfl
