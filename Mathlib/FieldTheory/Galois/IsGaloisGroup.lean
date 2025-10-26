@@ -37,17 +37,16 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
   [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
   [MulSemiringAction G L] [IsScalarTower G B L]
 
-theorem IsGaloisGroup.toIsFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] :
+theorem IsGaloisGroup.to_isFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] :
     IsGaloisGroup G K L := by
   have hc (a : A) : (algebraMap K L) (algebraMap A K a) = (algebraMap B L) (algebraMap A B a) := by
-    simp only [← IsScalarTower.algebraMap_apply]
+    simp_rw [← IsScalarTower.algebraMap_apply]
   refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ ?_⟩, ⟨fun x h ↦ ?_⟩⟩
   · have := hGAB.faithful
     exact eq_of_smul_eq_smul fun y ↦ by simpa [← algebraMap.coe_smul] using h (algebraMap B L y)
   · obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := A) x
     obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective (A := B) y
-    simp_rw [Algebra.smul_def, smul_mul', map_div₀, smul_div₀', hc,
-      ← algebraMap.coe_smul, smul_algebraMap]
+    simp [Algebra.smul_def, smul_mul', smul_div₀', hc, ← algebraMap.coe_smul]
   · have := hGAB.isInvariant.isIntegral
     have : Nontrivial A := (IsFractionRing.nontrivial_iff_nontrivial A K).mpr inferInstance
     have : Nontrivial B := (IsFractionRing.nontrivial_iff_nontrivial B L).mpr inferInstance
@@ -59,12 +58,33 @@ theorem IsGaloisGroup.toIsFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] :
     have hxy : algebraMap B L x / algebraMap B L y =
       algebraMap B L b / algebraMap B L (algebraMap A B a) := by
       rw [div_eq_div_iff hy' ha, ← map_mul, hb, map_mul]
-    simp only [hxy, smul_div₀', ← algebraMap.coe_smul, smul_algebraMap, div_left_inj' ha,
-      IsFractionRing.coe_inj] at h
-    obtain ⟨b, rfl⟩ := hGAB.isInvariant.isInvariant b h
+    obtain ⟨b, rfl⟩ := hGAB.isInvariant.isInvariant b
+      (by simpa [ha, hxy, smul_div₀', ← algebraMap.coe_smul] using h)
     use algebraMap A K b / algebraMap A K a
-    simp only [map_div₀, hc]
-    rw [div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
+    simp [hc, div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
+
+theorem IsGaloisGroup.of_isFractionRing [hGKL : IsGaloisGroup G K L]
+    [IsIntegrallyClosed A] [Algebra.IsIntegral A B] : IsGaloisGroup G A B := by
+  have hc (a : A) : (algebraMap K L) (algebraMap A K a) = (algebraMap B L) (algebraMap A B a) := by
+    simp_rw [← IsScalarTower.algebraMap_apply]
+  refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ IsFractionRing.injective B L ?_⟩, ⟨fun x h ↦ ?_⟩⟩
+  · have := hGKL.faithful
+    refine eq_of_smul_eq_smul fun (y : L) ↦ ?_
+    obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := B) y
+    simp only [smul_div₀', ← algebraMap.coe_smul, h]
+  · simp [Algebra.smul_def, algebraMap.coe_smul, ← hc]
+  · obtain ⟨b, hb⟩ := hGKL.isInvariant.isInvariant (algebraMap B L x)
+      (by simpa [← algebraMap.coe_smul])
+    have hx : IsIntegral A (algebraMap B L x) := (Algebra.IsIntegral.isIntegral x).algebraMap
+    rw [← hb, isIntegral_algebraMap_iff (algebraMap K L).injective,
+      IsIntegrallyClosedIn.isIntegral_iff] at hx
+    obtain ⟨a, rfl⟩ := hx
+    exact ⟨a, by rwa [hc, IsFractionRing.coe_inj] at hb⟩
+
+theorem IsGaloisGroup.iff_isFractionRing [Finite G] [IsIntegrallyClosed A] :
+    IsGaloisGroup G A B ↔ Algebra.IsIntegral A B ∧ IsGaloisGroup G K L :=
+  ⟨fun h ↦ ⟨h.isInvariant.isIntegral, h.to_isFractionRing G A B K L⟩,
+    fun ⟨_, h⟩ ↦ h.of_isFractionRing G A B K L⟩
 
 end Field
 
