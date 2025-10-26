@@ -116,29 +116,32 @@ include p in
 /-- If `p` is a maximal ideal of `A`, `P` and `Q` are prime ideals
   lying over `p`, then there exists `σ ∈ Aut (B / A)` such that `σ P = Q`. In other words,
   the Galois group `Gal(L / K)` acts transitively on the set of all prime ideals lying over `p`. -/
-theorem exists_map_eq_of_isGaloisGroup : ∃ σ : G, σ • P = Q := by
+theorem exists_smul_eq_of_isGaloisGroup : ∃ σ : G, σ • P = Q := by
   rcases IsInvariant.exists_smul_of_under_eq A B G P Q <|
     (over_def P p).symm.trans (over_def Q p) with ⟨σ, hs⟩
   exact ⟨σ, hs.symm⟩
 
+@[deprecated (since := "2025-10-26")]
+alias exists_map_eq_of_isGaloisGroup := exists_smul_eq_of_isGaloisGroup
+
 instance isPretransitive_of_isGaloisGroup : MulAction.IsPretransitive G (primesOver p B) where
   exists_smul_eq := by
     intro ⟨P, _, _⟩ ⟨Q, _, _⟩
-    rcases exists_map_eq_of_isGaloisGroup p P Q G with ⟨σ, hs⟩
+    rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, hs⟩
     exact ⟨σ, Subtype.val_inj.mp hs⟩
 
 include G in
 /-- All the `ramificationIdx` over a fixed maximal ideal are the same. -/
 theorem ramificationIdx_eq_of_isGaloisGroup :
     ramificationIdx (algebraMap A B) p P = ramificationIdx (algebraMap A B) p Q := by
-  rcases exists_map_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
+  rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
   exact (ramificationIdx_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
 
 include G in
 /-- All the `inertiaDeg` over a fixed maximal ideal are the same. -/
 theorem inertiaDeg_eq_of_isGalois [p.IsMaximal] :
     inertiaDeg p P = inertiaDeg p Q := by
-  rcases exists_map_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
+  rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
   exact (inertiaDeg_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
 
 include G in
