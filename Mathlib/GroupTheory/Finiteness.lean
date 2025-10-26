@@ -170,8 +170,8 @@ theorem Monoid.fg_iff :
 
 /-- A monoid is finitely generated iff there exists a surjective homomorphism from a `FreeMonoid`
 on finitely many generators. -/
-@[to_additive /-- A additive monoid is finitely generated iff there exists a surjective homomorphism
-from a `FreeAddMonoid` on finitely many generators.-/]
+@[to_additive /-- An additive monoid is finitely generated iff there exists a surjective
+homomorphism from a `FreeAddMonoid` on finitely many generators.-/]
 theorem Monoid.fg_iff_exists_freeMonoid_hom_surjective :
     Monoid.FG M ↔ ∃ (S : Set M) (_ : S.Finite) (φ : FreeMonoid S →* M), Function.Surjective φ := by
   refine ⟨fun ⟨S, hS⟩ ↦ ⟨S, S.finite_toSet, FreeMonoid.lift Subtype.val, ?_⟩, ?_⟩

@@ -262,8 +262,8 @@ def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
   }
 
 lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
-  CommSq (Sigma.desc fun i ↦ (c.ι.app i).left) (strongEpiMonoFactorisationSigmaDesc F).e
-    c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
+    CommSq (Sigma.desc fun i ↦ (c.ι.app i).left) (strongEpiMonoFactorisationSigmaDesc F).e
+      c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
   w := by
     apply Sigma.hom_ext
     intro j
