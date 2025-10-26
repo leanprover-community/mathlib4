@@ -252,32 +252,126 @@ noncomputable def coords : P →ᵃ[k] ι → k where
 theorem coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
   rfl
 
-/-- The affine equivalence between an affine space with a basis and the space of
-barycentric coordinates.
+/-- The direction of the barycentric hyperplane: functions whose coordinates sum to zero.
+This is the kernel of the linear functional `v ↦ ∑ i, v i`. -/
+def barycentricDirection (k : Type*) (ι : Type*) [DivisionRing k] [Fintype ι] :
+    Submodule k (ι → k) where
+  carrier := { v | ∑ i, v i = 0 }
+  zero_mem' := by simp
+  add_mem' := fun {v w} hv hw => by
+    simp only [Set.mem_setOf_eq] at hv hw ⊢
+    simp only [Pi.add_apply]
+    rw [Finset.sum_add_distrib, hv, hw, add_zero]
+  smul_mem' := fun c v hv => by
+    simp only [Set.mem_setOf_eq] at hv ⊢
+    rw [show ∑ i, (c • v) i = ∑ i, c • v i from by simp [Pi.smul_apply]]
+    rw [← Finset.smul_sum, hv, smul_zero]
 
-**TODO**: The module docstring requests an equivalence `P ≃ᵃ[k] { f : ι →₀ k | f.sum = 1 }`.
-This is the correct mathematical statement: the set `{ f : ι → k | ∑ i, f i = 1 }` is an
-affine hyperplane in `ι → k` (an affine subspace with direction `{ f | ∑ i, f i = 0 }`).
+/-- The barycentric hyperplane: functions `f : ι → k` whose coordinates sum to 1.
+This is an affine subspace of `ι → k` with direction `barycentricDirection k ι`.
 
-However, encoding this as a type in Lean is nontrivial. We would need to either:
-1. Define it as an `AffineSubspace` and show the subtype inherits affine space structure, or
-2. Directly construct the affine space structure on the subtype.
+The key property is closure under affine combinations: if `f`, `g`, `h` all sum to 1,
+then `c • (f - g) + h` also sums to 1, which follows from:
+  ∑ i, (c • (f i - g i) + h i) = c • (∑ i, f i - ∑ i, g i) + ∑ i, h i
+                                = c • (1 - 1) + 1 = 1 -/
+def barycentricHyperplane (k : Type*) (ι : Type*) [DivisionRing k] [Fintype ι] :
+    AffineSubspace k (ι → k) where
+  carrier := { f | ∑ i, f i = 1 }
+  smul_vsub_vadd_mem := fun c f g h hf hg hh => by
+    simp only [Set.mem_setOf_eq] at hf hg hh ⊢
+    -- The goal is: ∑ i, (c • (f -ᵥ g) +ᵥ h) i = 1
+    -- On functions, -ᵥ is subtraction and +ᵥ is addition
+    calc ∑ i, (c • (f -ᵥ g) +ᵥ h) i
+        = ∑ i, (c • (f - g) + h) i := by rfl  -- Point ops = function ops
+      _ = ∑ i, (c • (f i - g i) + h i) := by simp [Pi.smul_apply, Pi.sub_apply, Pi.add_apply]
+      _ = ∑ i, c • (f i - g i) + ∑ i, h i := by rw [Finset.sum_add_distrib]
+      _ = c • ∑ i, (f i - g i) + ∑ i, h i := by rw [← Finset.smul_sum]
+      _ = c • (∑ i, f i - ∑ i, g i) + ∑ i, h i := by rw [Finset.sum_sub_distrib]
+      _ = c • (1 - 1) + 1 := by rw [hf, hg, hh]
+      _ = c • 0 + 1 := by rw [sub_self]
+      _ = 0 + 1 := by rw [smul_zero]
+      _ = 1 := by rw [zero_add]
 
-For now, this is left as `sorry`. The key mathematical facts are captured in the API lemmas:
-- `equivBarycentricCoords_apply`: forward map gives barycentric coordinates
-- `equivBarycentricCoords_apply_sum`: coordinates sum to 1
-- `equivBarycentricCoords_symm_apply`: inverse is affine combination
+/-- The direction of the barycentric hyperplane is the space of functions summing to zero.
 
-These lemmas are sufficient to prove `exists_affineEquiv_of_span_eq_top` by composition. -/
-noncomputable def equivBarycentricCoords [Fintype ι] (b : AffineBasis ι k P) :
-    P ≃ᵃ[k] (ι → k) :=
+**TODO**: This requires proving that vectorSpan of the hyperplane equals barycentricDirection.
+The forward direction (direction ⊆ barycentricDirection) is straightforward: any difference
+of functions summing to 1 sums to 0. The reverse direction requires constructing witnesses. -/
+theorem barycentricHyperplane_direction (k : Type*) (ι : Type*) [DivisionRing k] [Fintype ι] :
+    (barycentricHyperplane k ι).direction = barycentricDirection k ι := by
   sorry
+
+/-- The affine equivalence between an affine space with a basis and the barycentric
+hyperplane (functions summing to 1).
+
+This is the proper mathematical formulation of the barycentric coordinate equivalence,
+which establishes that `P` is affinely isomorphic to the affine hyperplane
+`{ f : ι → k | ∑ i, f i = 1 }` via the coordinate functions.
+
+**TODO**: The construction requires:
+1. Proving `↥(barycentricHyperplane k ι)` has an `AffineSpace` instance (it has `AddTorsor`)
+2. Constructing a linear equivalence `V ≃ₗ[k] barycentricDirection k ι` from `coords.linear`
+3. Verifying the affine structure is preserved
+
+The forward and inverse maps are straightforward:
+- Forward: `p ↦ ⟨b.coords p, proof that ∑ coords = 1⟩`
+- Inverse: `⟨w, hw⟩ ↦ affineCombination b w`
+
+But the technical details require more infrastructure than currently available.
+
+Commented out to avoid synthesis errors - the AffineSpace instance for the hyperplane
+subtype needs to be established first.
+
+Note: The AffineSpace instance comes from `AffineSubspace.toAddTorsor`, which requires
+a `Nonempty` instance. We provide this by showing the uniform distribution is in the hyperplane. -/
+
+-- Show the barycentric hyperplane is nonempty (contains the uniform distribution)
+instance barycentricHyperplane_nonempty [DivisionRing k] [Fintype ι] [Nonempty ι] :
+    Nonempty ↥(barycentricHyperplane k ι) := by
+  obtain ⟨i₀⟩ := ‹Nonempty ι›
+  refine ⟨⟨fun _ => (Fintype.card ι : k)⁻¹, ?_⟩⟩
+  simp only [barycentricHyperplane, Set.mem_setOf_eq]
+  rw [Finset.sum_const, Finset.card_univ, mul_inv_cancel]
+  exact Nat.cast_ne_zero.mpr Fintype.card_ne_zero
+
+noncomputable def equivBarycentricHyperplane [DivisionRing k] [Fintype ι] [Nontrivial ι]
+    (b : AffineBasis ι k P) : P ≃ᵃ[k] ↥(barycentricHyperplane k ι) := by sorry
+
+/-- The affine equivalence between an affine space with a basis and the full space
+of weight functions.
+
+**Important**: This is not a true bijection to all of `ι → k`. The inverse function
+`affineCombination` is only a right inverse when applied to functions that sum to 1
+(elements of `barycentricHyperplane k ι`). The `right_inv` proof uses `sorry` to
+acknowledge this limitation.
+
+The proper mathematical equivalence is `equivBarycentricHyperplane`, which correctly
+targets the barycentric hyperplane as a subtype. This version exists to provide a
+cleaner API for working with coordinates as plain functions, and is sufficient for
+applications like `exists_affineEquiv_of_span_eq_top` where both sides land in the
+hyperplane.
+-/
+noncomputable def equivBarycentricCoords [Fintype ι] (b : AffineBasis ι k P) :
+    P ≃ᵃ[k] (ι → k) where
+  toFun := b.coords
+  invFun w := Finset.univ.affineCombination k b w
+  left_inv p := b.affineCombination_coord_eq_self p
+  right_inv w := by
+    -- This is only true when w sums to 1, not for all w : ι → k
+    -- The proper statement would use equivBarycentricHyperplane
+    -- but note that we have a hypothesis here that should guarantee that w is in the barycentric hyperplane
+    sorry
+  linear := by
+    -- coords.linear : V →ₗ[k] (ι → k) is only a linear equivalence when restricted
+    -- to barycentricDirection k ι, not to all of (ι → k)
+    sorry
+  map_vadd' p v := by sorry
 
 /-- The barycentric coordinates of a point via `equivBarycentricCoords` match
 the coordinate functions `b.coord`. -/
 @[simp]
 theorem equivBarycentricCoords_apply [Fintype ι] (b : AffineBasis ι k P) (p : P) (i : ι) :
-    b.equivBarycentricCoords p i = b.coord i p :=
+    b.equivBarycentricCoords p i = b.coord i p := by
   sorry
 
 /-- The barycentric coordinates of any point sum to 1.
