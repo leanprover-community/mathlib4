@@ -44,8 +44,8 @@ structure Hom (X Y : InducedBicategory C F) where
   /-- The morphism in `C` underlying the morphism in `InducedBicategory C F`. -/
   hom : F X.as ⟶ F Y.as
 
-@[simps id_hom comp_hom] -- TODO: remove _Hom simp lemma?
-instance CategoryStruct : CategoryStruct (InducedBicategory C F) where
+@[simps id_hom comp_hom]
+instance categoryStruct : CategoryStruct (InducedBicategory C F) where
   Hom X Y := Hom X Y
   id X := ⟨𝟙 (F X.as)⟩
   comp u v := ⟨u.hom ≫ v.hom⟩
@@ -56,13 +56,15 @@ instance Hom.category (X Y : InducedBicategory C F) : Category (X ⟶ Y) where
   id X := 𝟙 _
   comp u v := u ≫ v
 
+/-- Constructor for 2-isomorphisms in the induced bicategory. -/
 @[simps!]
 def isoMk {X Y : InducedBicategory C F} {f g : X ⟶ Y} (φ : f.hom ≅ g.hom) : f ≅ g where
   hom := φ.hom
   inv := φ.inv
 
-@[simps!] -- TODO: check simp lemmas
+@[simps!]
 instance bicategory : Bicategory (InducedBicategory C F) where
+  __ := categoryStruct
   whiskerLeft {_ _ _} h {_ _} η := h.hom ◁ η
   whiskerRight {_ _ _} {_ _} η h := η ▷ h.hom
   associator x y z := isoMk (α_ x.hom y.hom z.hom)
@@ -70,12 +72,14 @@ instance bicategory : Bicategory (InducedBicategory C F) where
   rightUnitor x := isoMk (ρ_ x.hom)
   whisker_exchange := whisker_exchange
 
+attribute [-simp] bicategory_comp_hom bicategory_Hom
+
 section
 
-/-- The forgetful functor from an induced bicategory to the original bicategory,
+/-- The forgetful pseudofunctor from an induced bicategory to the original bicategory,
 forgetting the extra data.
 -/
-@[simps!] -- TODO: do I want these simp lemmas?
+@[simps!]
 def inducedPseudofunctor : StrictPseudofunctor (InducedBicategory C F) C :=
   StrictPseudofunctor.mk' {
     obj X := F X.as
