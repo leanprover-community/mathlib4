@@ -47,16 +47,16 @@ variable {S : Matrix n n 𝕜} [Fintype n] (hS : S.PosDef)
 applying Gram-Schmidt-Orthogonalization w.r.t. the inner product induced by `Sᵀ` on the standard
 basis vectors `Pi.basisFun`. -/
 noncomputable def LDL.lowerInv : Matrix n n 𝕜 :=
-  @gramSchmidt 𝕜 (n → 𝕜) _ (_ :) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
+  @gramSchmidt 𝕜 (n → 𝕜) _ (_ :) hS.transpose.innerProductSpace n _ _ _
     (Pi.basisFun 𝕜 n)
 
 theorem LDL.lowerInv_eq_gramSchmidtBasis :
     LDL.lowerInv hS =
       ((Pi.basisFun 𝕜 n).toMatrix
-          (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (_ :) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
+          (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (_ :) hS.transpose.innerProductSpace n _ _ _
             (Pi.basisFun 𝕜 n)))ᵀ := by
-  letI := NormedAddCommGroup.ofMatrix hS.transpose
-  letI := InnerProductSpace.ofMatrix hS.transpose
+  letI := hS.transpose.normedAddCommGroup
+  letI := hS.transpose.innerProductSpace
   ext i j
   rw [LDL.lowerInv, Basis.coePiBasisFun.toMatrix_eq_transpose, coe_gramSchmidtBasis]
   rfl
@@ -65,13 +65,13 @@ noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := 
   rw [LDL.lowerInv_eq_gramSchmidtBasis]
   haveI :=
     Basis.invertibleToMatrix (Pi.basisFun 𝕜 n)
-      (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (_ :) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
+      (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (_ :) hS.transpose.innerProductSpace n _ _ _
         (Pi.basisFun 𝕜 n))
   infer_instance
 
 theorem LDL.lowerInv_orthogonal {i j : n} (h₀ : i ≠ j) :
     ⟪LDL.lowerInv hS i, Sᵀ *ᵥ LDL.lowerInv hS j⟫ₑ = 0 :=
-  @gramSchmidt_orthogonal 𝕜 _ _ (_ :) (InnerProductSpace.ofMatrix hS.transpose) _ _ _ _ _ _ _ h₀
+  @gramSchmidt_orthogonal 𝕜 _ _ (_ :) hS.transpose.innerProductSpace _ _ _ _ _ _ _ h₀
 
 /-- The entries of the diagonal matrix `D` of the LDL decomposition. -/
 noncomputable def LDL.diagEntries : n → 𝕜 := fun i =>
@@ -83,7 +83,7 @@ noncomputable def LDL.diag : Matrix n n 𝕜 :=
 
 theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
   rw [←
-    @gramSchmidt_triangular 𝕜 (n → 𝕜) _ (_ :) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
+    @gramSchmidt_triangular 𝕜 (n → 𝕜) _ (_ :) hS.transpose.innerProductSpace n _ _ _
       i j hij (Pi.basisFun 𝕜 n),
     Pi.basisFun_repr, LDL.lowerInv]
 
