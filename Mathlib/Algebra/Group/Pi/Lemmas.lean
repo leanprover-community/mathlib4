@@ -301,22 +301,14 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · have hk := congr_fun h k
     have hl := congr_fun h l
-    have hm := (congr_fun h m).symm
-    have hn := (congr_fun h n).symm
+    have hm := congr_fun h m
+    have hn := congr_fun h n
     simp only [mul_apply, mulSingle_apply] at hk hl hm hn
-    rcases eq_or_ne k m with (rfl | hkm)
-    · by_cases l = k <;> aesop
-    · rcases eq_or_ne n m with (rfl | hmn)
-      · by_cases k = l <;> simp_all
-      · rw [if_neg hkm.symm, if_neg hmn.symm, one_mul, mul_one] at hm
-        aesop
-  · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩ | ⟨h, rfl, rfl⟩)
-    · rfl
-    · apply mul_comm
-    · simp_rw [← Pi.mulSingle_mul, h, mulSingle_one]
+    grind [mul_one, one_mul]
+  · aesop (add simp [mulSingle_apply])
 
 end Single
 
