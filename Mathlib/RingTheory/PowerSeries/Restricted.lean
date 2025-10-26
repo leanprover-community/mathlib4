@@ -133,7 +133,10 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
        _ ≤ ‖(coeff fst) f‖ * |c| ^ fst * (‖(coeff snd) g‖ * |c| ^ snd) := by
         grw [norm_mul_le]
         #adaptation_note
-        /-- 2025-10-26: this was by `grind` -/
+        /--
+        Broken in `nightly-2025-10-26`: this was by `grind`,
+        but looks like it may already be fixed by the time `nightly-2025-10-27` arrives.
+        -/
         rw [pow_add]
         linarith
   have : max Nf Ng ≤ fst ∨ max Nf Ng ≤ snd := by omega
