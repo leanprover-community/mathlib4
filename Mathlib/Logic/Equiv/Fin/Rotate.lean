@@ -33,7 +33,7 @@ theorem finRotate_of_lt {k : ℕ} (h : k < n) :
   dsimp [finRotate_succ]
   simp [finAddFlip_apply_mk_left h, Nat.add_comm]
 
-theorem finRotate_last' : finRotate (n + 1) ⟨n, by omega⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
+theorem finRotate_last' : finRotate (n + 1) ⟨n, by cutsat⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
   dsimp [finRotate_succ]
   rw [finAddFlip_apply_mk_right le_rfl]
   simp
@@ -64,8 +64,8 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
   obtain rfl | h := Fin.eq_or_lt_of_le i.le_last
   · simp [finRotate_last]
   · cases i
-    simp only [Fin.lt_iff_val_lt_val, Fin.val_last, Fin.val_mk] at h
-    simp [finRotate_of_lt h, Fin.ext_iff, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
+    simp only [Fin.lt_iff_val_lt_val, Fin.val_last] at h
+    simp [finRotate_of_lt h, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
 
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
   simp
@@ -105,6 +105,6 @@ theorem finRotate_symm_lt_iff_ne_zero [NeZero n] (i : Fin n) :
     (finRotate _).symm i < i ↔ i ≠ 0 := by
   obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero (NeZero.ne n)
   refine ⟨fun hi hc ↦ ?_, fun hi ↦ ?_⟩
-  · simp only [hc, Fin.last_add_one, Fin.not_lt_zero] at hi
+  · simp only [hc, Fin.not_lt_zero] at hi
   · rw [Fin.lt_iff_val_lt_val, coe_finRotate_symm_of_ne_zero hi]
     apply sub_lt (zero_lt_of_ne_zero <| Fin.val_ne_zero_iff.mpr hi) Nat.zero_lt_one

@@ -57,7 +57,7 @@ theorem vadd_mem_pointwise_vadd_iff {v : V} {s : AffineSubspace k P} {p : P} :
   ext; simp [pointwise_vadd_eq_map, map_bot]
 
 @[simp] lemma pointwise_vadd_top (v : V) : v +ᵥ (⊤ : AffineSubspace k P) = ⊤ := by
-  ext; simp [pointwise_vadd_eq_map, map_top, vadd_eq_iff_eq_neg_vadd]
+  ext; simp [pointwise_vadd_eq_map, vadd_eq_iff_eq_neg_vadd]
 
 theorem pointwise_vadd_direction (v : V) (s : AffineSubspace k P) :
     (v +ᵥ s).direction = s.direction := by

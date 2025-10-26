@@ -3,7 +3,7 @@ Copyright (c) 2023 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Group.Defs
 import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
@@ -27,7 +27,7 @@ open scoped ENNReal
 variable {M : Type*} [Monoid M] [MeasurableSpace M]
 
 /-- Multiplicative convolution of measures. -/
-@[to_additive "Additive convolution of measures."]
+@[to_additive /-- Additive convolution of measures. -/]
 noncomputable def mconv (μ : Measure M) (ν : Measure M) :
     Measure M := Measure.map (fun x : M × M ↦ x.1 * x.2) (μ.prod ν)
 
@@ -38,43 +38,71 @@ scoped[MeasureTheory] infixr:80 " ∗ₘ " => MeasureTheory.Measure.mconv
 scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.conv
 
 @[to_additive]
+theorem lintegral_mconv_eq_lintegral_prod [MeasurableMul₂ M] {μ ν : Measure M}
+    {f : M → ℝ≥0∞} (hf : Measurable f) :
+    ∫⁻ z, f z ∂(μ ∗ₘ ν) = ∫⁻ z, f (z.1 * z.2) ∂(μ.prod ν) := by
+  rw [mconv, lintegral_map hf measurable_mul]
+
+@[to_additive]
 theorem lintegral_mconv [MeasurableMul₂ M] {μ ν : Measure M} [SFinite ν]
     {f : M → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ z, f z ∂(μ ∗ₘ ν) = ∫⁻ x, ∫⁻ y, f (x * y) ∂ν ∂μ := by
-  rw [mconv, lintegral_map hf measurable_mul, lintegral_prod]
-  fun_prop
+  rw [lintegral_mconv_eq_lintegral_prod hf, lintegral_prod _ (by fun_prop)]
+
+@[to_additive]
+lemma dirac_mconv [MeasurableMul₂ M] (x : M) (μ : Measure M) [SFinite μ] :
+    (dirac x) ∗ₘ μ = μ.map (fun y ↦ x * y) := by
+  unfold mconv
+  rw [dirac_prod, map_map (by fun_prop) (by fun_prop)]
+  simp [Function.comp_def]
+
+@[to_additive]
+lemma mconv_dirac [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] (x : M) :
+    μ ∗ₘ (dirac x) = μ.map (fun y ↦ y * x) := by
+  unfold mconv
+  rw [prod_dirac, map_map (by fun_prop) (by fun_prop)]
+  simp [Function.comp_def]
+
+@[to_additive (attr := simp)]
+lemma dirac_mconv_dirac [MeasurableMul₂ M] (x y : M) :
+    (dirac x) ∗ₘ (dirac y) = dirac (x * y) := by
+  rw [mconv_dirac, map_dirac (by fun_prop)]
 
 /-- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
-@[to_additive (attr := simp) "Convolution of the dirac measure at 0 with a measure μ returns μ."]
+@[to_additive (attr := simp)
+/-- Convolution of the dirac measure at 0 with a measure μ returns μ. -/]
 theorem dirac_one_mconv [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] :
-    (Measure.dirac 1) ∗ₘ μ = μ := by
-  unfold mconv
-  rw [MeasureTheory.Measure.dirac_prod, map_map (by fun_prop)]
-  · simp only [Function.comp_def, one_mul, map_id']
-  fun_prop
+    (dirac 1) ∗ₘ μ = μ := by
+  simp [dirac_mconv]
 
 /-- Convolution of a measure μ with the dirac measure at 1 returns μ. -/
-@[to_additive (attr := simp) "Convolution of a measure μ with the dirac measure at 0 returns μ."]
+@[to_additive (attr := simp)
+/-- Convolution of a measure μ with the dirac measure at 0 returns μ. -/]
 theorem mconv_dirac_one [MeasurableMul₂ M]
-    (μ : Measure M) [SFinite μ] : μ ∗ₘ (Measure.dirac 1) = μ := by
-  unfold mconv
-  rw [MeasureTheory.Measure.prod_dirac, map_map (by fun_prop)]
-  · simp only [Function.comp_def, mul_one, map_id']
-  fun_prop
+    (μ : Measure M) [SFinite μ] : μ ∗ₘ (dirac 1) = μ := by
+  simp [mconv_dirac]
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
-@[to_additive (attr := simp) "Convolution of the zero measure with a measure μ returns
-the zero measure."]
+@[to_additive (attr := simp) /-- Convolution of the zero measure with a measure μ returns
+the zero measure. -/]
 theorem zero_mconv (μ : Measure M) : (0 : Measure M) ∗ₘ μ = (0 : Measure M) := by
   unfold mconv
   simp
 
 /-- Convolution of a measure μ with the zero measure returns the zero measure. -/
-@[to_additive (attr := simp) "Convolution of a measure μ with the zero measure returns the zero
-measure."]
+@[to_additive (attr := simp) /-- Convolution of a measure μ with the zero measure returns the zero
+measure. -/]
 theorem mconv_zero (μ : Measure M) : μ ∗ₘ (0 : Measure M) = (0 : Measure M) := by
   unfold mconv
   simp
+
+-- `mconv_smul_right` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
+-- hence it is placed in the `WithDensity` file, where the instance is defined.
+@[to_additive conv_smul_left]
+theorem mconv_smul_left (μ : Measure M) (ν : Measure M) [SFinite ν] (s : ℝ≥0∞) :
+    (s • μ) ∗ₘ ν = s • (μ ∗ₘ ν) := by
+  unfold mconv
+  rw [← Measure.map_smul, Measure.prod_smul_left]
 
 @[to_additive]
 theorem mconv_add [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
@@ -91,7 +119,7 @@ theorem add_mconv [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : M
   fun_prop
 
 /-- To get commutativity, we need the underlying multiplication to be commutative. -/
-@[to_additive "To get commutativity, we need the underlying addition to be commutative."]
+@[to_additive /-- To get commutativity, we need the underlying addition to be commutative. -/]
 theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M] (μ : Measure M)
     (ν : Measure M) [SFinite μ] [SFinite ν] : μ ∗ₘ ν = ν ∗ₘ μ := by
   unfold mconv
@@ -100,7 +128,7 @@ theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul
   fun_prop
 
 /-- The convolution of s-finite measures is s-finite. -/
-@[to_additive "The convolution of s-finite measures is s-finite."]
+@[to_additive /-- The convolution of s-finite measures is s-finite. -/]
 instance sfinite_mconv_of_sfinite (μ : Measure M) (ν : Measure M) [SFinite μ] [SFinite ν] :
     SFinite (μ ∗ₘ ν) := inferInstanceAs <| SFinite ((μ.prod ν).map fun (x : M × M) ↦ x.1 * x.2)
 
@@ -113,7 +141,7 @@ instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasu
   exact {measure_univ_lt_top := h}
 
 /-- Convolution is associative. -/
-@[to_additive "Convolution is associative."]
+@[to_additive /-- Convolution is associative. -/]
 theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
     [SFinite ν] [SFinite ρ] :
     (μ ∗ₘ ν) ∗ₘ ρ = μ ∗ₘ (ν ∗ₘ ρ) := by
@@ -128,7 +156,21 @@ theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
 instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : Measure M)
     [MeasurableMul₂ M] [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     IsProbabilityMeasure (μ ∗ₘ ν) :=
-  MeasureTheory.isProbabilityMeasure_map (by fun_prop)
+  isProbabilityMeasure_map (by fun_prop)
+
+@[to_additive]
+theorem mconv_absolutelyContinuous [MeasurableMul₂ M] {μ ν ρ : Measure M}
+    [IsMulLeftInvariant ρ] [SFinite ν] (hν : ν ≪ ρ) : μ ∗ₘ ν ≪ ρ := by
+  refine AbsolutelyContinuous.mk (fun s hs h ↦ ?_)
+  rw [← lintegral_indicator_one hs, lintegral_mconv (by measurability)]
+  conv in s.indicator 1 (_ * _) => change s.indicator 1 ((fun y ↦ x * y) y)
+  simp only [← Set.indicator_comp_right, Pi.one_comp]
+  conv in ∫⁻ _, _ ∂ν =>
+    rw [lintegral_indicator_one (by apply MeasurableSet.preimage hs (by fun_prop))]
+  have h0 (x : M) : ν (HMul.hMul x ⁻¹' s) = 0 := by
+    apply hν
+    rw [← map_apply (by fun_prop) hs, IsMulLeftInvariant.map_mul_left_eq_self, h]
+  simp [h0]
 
 @[to_additive]
 lemma map_mconv_monoidHom {M M' : Type*} {mM : MeasurableSpace M} [Monoid M] [MeasurableMul₂ M]
@@ -136,12 +178,11 @@ lemma map_mconv_monoidHom {M M' : Type*} {mM : MeasurableSpace M} [Monoid M] [Me
     {μ ν : Measure M} [SFinite μ] [SFinite ν]
     (L : M →* M') (hL : Measurable L) :
     (μ ∗ₘ ν).map L = (μ.map L) ∗ₘ (ν.map L) := by
-  unfold Measure.mconv
-  rw [Measure.map_map (by fun_prop) (by fun_prop)]
+  unfold mconv
+  rw [map_map (by fun_prop) (by fun_prop)]
   have : (L ∘ fun p : M × M ↦ p.1 * p.2) = (fun p : M' × M' ↦ p.1 * p.2) ∘ (Prod.map L L) := by
     ext; simp
-  rw [this, ← Measure.map_map (by fun_prop) (by fun_prop),
-    ← Measure.map_prod_map _ _ (by fun_prop) (by fun_prop)]
+  rw [this, ← map_map (by fun_prop) (by fun_prop), ← map_prod_map _ _ (by fun_prop) (by fun_prop)]
 
 lemma map_conv_continuousLinearMap {E F : Type*} [AddCommMonoid E] [AddCommMonoid F]
     [Module ℝ E] [Module ℝ F] [TopologicalSpace E] [TopologicalSpace F]
@@ -149,8 +190,8 @@ lemma map_conv_continuousLinearMap {E F : Type*} [AddCommMonoid E] [AddCommMonoi
     [OpensMeasurableSpace E] [BorelSpace F]
     {μ ν : Measure E} [SFinite μ] [SFinite ν]
     (L : E →L[ℝ] F) :
-    (μ ∗ ν).map L = (μ.map L).conv (ν.map L) := by
-  suffices (μ ∗ ν).map (L : E →+ F) = (μ.map (L : E →+ F)).conv (ν.map (L : E →+ F)) by simpa
+    (μ ∗ ν).map L = (μ.map L) ∗ (ν.map L) := by
+  suffices (μ ∗ ν).map (L : E →+ F) = (μ.map (L : E →+ F)) ∗ (ν.map (L : E →+ F)) by simpa
   rw [map_conv_addMonoidHom]
   rw [AddMonoidHom.coe_coe]
   fun_prop

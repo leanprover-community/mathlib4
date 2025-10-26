@@ -16,9 +16,9 @@ Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extensi
 ## Main Definitions
 
 * `IsUltrametricDist.algNormOfAlgEquiv` : given `σ : L ≃ₐ[K] L`, the function `L → ℝ` sending
-`x : L` to `‖ σ x ‖` is a `K`-algebra norm on `L`.
+  `x : L` to `‖ σ x ‖` is a `K`-algebra norm on `L`.
 * `IsUltrametricDist.invariantExtension` : the function `L → ℝ` sending `x : L` to the maximum of
-`‖ σ x ‖` over all `σ : L ≃ₐ[K] L` is a `K`-algebra norm on `L`.
+  `‖ σ x ‖` over all `σ : L ≃ₐ[K] L` is a `K`-algebra norm on `L`.
 
 ## Main Results
 * `IsUltrametricDist.isPowMul_algNormOfAlgEquiv` : `algNormOfAlgEquiv` is power-multiplicative.
@@ -53,7 +53,7 @@ def algNormOfAlgEquiv (σ : L ≃ₐ[K] L) :
     AlgebraNorm K L where
   toFun x     := Classical.choose (exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional
     h_fin hu.isNonarchimedean_norm) (σ x)
-  map_zero'   := by simp [map_eq_zero_iff_eq_zero, EmbeddingLike.map_eq_zero_iff]
+  map_zero'   := by simp
   add_le' x y := by simp [map_add σ, map_add_le_add]
   neg' x      := by simp [map_neg σ, map_neg_eq_map]
   mul_le' x y := by simp [map_mul σ, map_mul_le_mul]
@@ -113,7 +113,7 @@ def invariantExtension : AlgebraNorm K L where
       (le_ciSup (Set.range fun σ : L ≃ₐ[K] L ↦ algNormOfAlgEquiv σ x).toFinite.bddAbove
         AlgEquiv.refl))
   smul' r x := by
-    simp only [AlgebraNormClass.map_smul_eq_mul, NormedRing.toRingNorm_apply,
+    simp only [AlgebraNormClass.map_smul_eq_mul,
       Real.mul_iSup_of_nonneg (norm_nonneg _)]
 
 @[simp]
@@ -139,8 +139,7 @@ theorem isNonarchimedean_invariantExtension :
 /-- The algebra norm `invariantExtension` extends the norm on `K`. -/
 theorem invariantExtension_extends (x : K) :
     (invariantExtension K L) (algebraMap K L x) = ‖x‖ := by
-  rw [invariantExtension, ← AlgebraNorm.toFun_eq_coe]
-  simp [AlgebraNorm.toFun_eq_coe, algNormOfAlgEquiv_extends _ x, ciSup_const]
+  simp [algNormOfAlgEquiv_extends _ x, ciSup_const]
 
 end invariantExtension
 

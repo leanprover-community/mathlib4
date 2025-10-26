@@ -147,12 +147,12 @@ theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) =
 @[simp]
 theorem sInf_toSubalgebra (S : Set (IntermediateField F E)) :
     (sInf S).toSubalgebra = sInf (toSubalgebra '' S) :=
-  SetLike.coe_injective <| by simp [Set.sUnion_image]
+  SetLike.coe_injective <| by simp
 
 @[simp]
 theorem sInf_toSubfield (S : Set (IntermediateField F E)) :
     (sInf S).toSubfield = sInf (toSubfield '' S) :=
-  SetLike.coe_injective <| by simp [Set.sUnion_image]
+  SetLike.coe_injective <| by simp
 
 @[simp]
 theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :
@@ -239,6 +239,11 @@ variable {K : Type*} [Field K] [Algebra K E] [Algebra K F] [IsScalarTower K F E]
 theorem restrictScalars_top : (⊤ : IntermediateField F E).restrictScalars K = ⊤ :=
   rfl
 
+@[simp]
+theorem restrictScalars_eq_top_iff {L : IntermediateField F E} :
+    L.restrictScalars K = ⊤ ↔ L = ⊤ := by
+  simp [SetLike.ext_iff]
+
 variable (K)
 variable (L L' : IntermediateField F E)
 
@@ -303,11 +308,8 @@ theorem adjoin_eq_range_algebraMap_adjoin :
 theorem adjoin.algebraMap_mem (x : F) : algebraMap F E x ∈ adjoin F S :=
   IntermediateField.algebraMap_mem (adjoin F S) x
 
-theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F S := by
-  intro x hx
-  obtain ⟨f, hf⟩ := hx
-  rw [← hf]
-  exact adjoin.algebraMap_mem F S f
+theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F S :=
+  set_range_subset (adjoin F S)
 
 instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
   coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
@@ -316,7 +318,7 @@ theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure 
 
 instance adjoin.setCoe : CoeTC S (adjoin F S) where coe x := ⟨x, subset_adjoin F S (Subtype.mem x)⟩
 
-@[mono]
+@[mono, gcongr]
 theorem adjoin.mono (T : Set E) (h : S ⊆ T) : adjoin F S ≤ adjoin F T :=
   GaloisConnection.monotone_l gc h
 
@@ -373,7 +375,7 @@ theorem adjoin_insert_adjoin (x : E) :
       (Set.insert_subset_iff.mpr
         ⟨subset_adjoin _ _ (Set.mem_insert _ _),
           adjoin_le_iff.mpr (subset_adjoin_of_subset_right _ _ (Set.subset_insert _ _))⟩))
-    (adjoin.mono _ _ _ (Set.insert_subset_insert (subset_adjoin _ _)))
+    (by grw [← subset_adjoin])
 
 /-- `F[S][T] = F[T][S]` -/
 theorem adjoin_adjoin_comm (T : Set E) :
@@ -402,6 +404,14 @@ theorem lift_bot (K : IntermediateField F E) :
 @[simp]
 theorem lift_top (K : IntermediateField F E) :
     lift (F := K) ⊤ = K := by rw [lift, ← AlgHom.fieldRange_eq_map, fieldRange_val]
+
+theorem lift_sup (K : IntermediateField F E) (L L' : IntermediateField F K) :
+    lift (L ⊔ L') = lift L ⊔ lift L' := by
+  simp [lift, map_sup]
+
+theorem lift_inf (K : IntermediateField F E) (L L' : IntermediateField F K) :
+    lift (L ⊓ L') = lift L ⊓ lift L' := by
+  simp [lift, map_inf]
 
 @[simp]
 theorem adjoin_self (K : IntermediateField F E) :
@@ -484,9 +494,6 @@ theorem algHom_ext_of_eq_adjoin {S : IntermediateField F E} {s : Set E} (hS : S 
   subst hS; exact adjoin_algHom_ext F h
 
 end
-
-/- Porting note (kmill): this notation is replacing the typeclass-based one I had previously
-written, and it gives true `{x₁, x₂, ..., xₙ}` sets in the `adjoin` term. -/
 
 open Lean in
 /-- Supporting function for the `F⟮x₁,x₂,...,xₙ⟯` adjunction notation. -/

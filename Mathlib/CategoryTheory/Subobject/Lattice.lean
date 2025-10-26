@@ -110,9 +110,13 @@ open ZeroObject
 def botCoeIsoZero {B : C} : ((⊥ : MonoOver B) : C) ≅ 0 :=
   initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial
 
--- Porting note: removed @[simp] as the LHS simplifies
 theorem bot_arrow_eq_zero [HasZeroMorphisms C] {B : C} : (⊥ : MonoOver B).arrow = 0 :=
   zero_of_source_iso_zero _ botCoeIsoZero
+
+/-- `simp`-normal form of `bot_arrow_eq_zero`. -/
+@[simp]
+theorem initialTo_b_eq_zero [HasZeroMorphisms C] {B : C} : initial.to B = 0 := by
+  rw [← bot_arrow, bot_arrow_eq_zero]
 
 end ZeroOrderBot
 
@@ -162,7 +166,7 @@ variable [HasImages C] [HasBinaryCoproducts C]
 which is functorial in both arguments,
 and which on `Subobject A` will induce a `SemilatticeSup`. -/
 def sup {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A :=
-  curryObj ((forget A).prod (forget A) ⋙ uncurry.obj Over.coprod ⋙ image)
+  Functor.curryObj ((forget A).prod (forget A) ⋙ Functor.uncurry.obj Over.coprod ⋙ image)
 
 /-- A morphism version of `le_sup_left`. -/
 def leSupLeft {A : C} (f g : MonoOver A) : f ⟶ (sup.obj f).obj g := by
@@ -297,7 +301,7 @@ variable [HasZeroMorphisms C]
 
 theorem bot_eq_zero {B : C} : (⊥ : Subobject B) = Subobject.mk (0 : 0 ⟶ B) :=
   mk_eq_mk_of_comm _ _ (initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial)
-    (by simp [eq_iff_true_of_subsingleton])
+    (by simp)
 
 @[simp]
 theorem bot_arrow {B : C} : (⊥ : Subobject B).arrow = 0 :=
@@ -306,8 +310,7 @@ theorem bot_arrow {B : C} : (⊥ : Subobject B).arrow = 0 :=
 theorem bot_factors_iff_zero {A B : C} (f : A ⟶ B) : (⊥ : Subobject B).Factors f ↔ f = 0 :=
   ⟨by
     rintro ⟨h, rfl⟩
-    simp only [MonoOver.bot_arrow_eq_zero, Functor.id_obj, Functor.const_obj_obj,
-      MonoOver.bot_left, comp_zero],
+    simp only [MonoOver.bot_arrow_eq_zero, MonoOver.bot_left, comp_zero],
    by
     rintro rfl
     exact ⟨0, by simp⟩⟩
@@ -410,7 +413,7 @@ theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → S
 theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
     (Subobject.inf.obj (Quotient.mk'' f₁)).obj f₂ =
       (Subobject.map f₁.arrow).obj ((Subobject.pullback f₁.arrow).obj f₂) := by
-  induction' f₂ using Quotient.inductionOn' with f₂
+  induction f₂ using Quotient.inductionOn'
   rfl
 
 theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
@@ -575,8 +578,8 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
           Set.mem_image_of_mem (equivShrink (Subobject A)) hf⟩) ≫
       eqToHom (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _))
   · dsimp [sInf]
-    simp only [Category.comp_id, Category.assoc, ← underlyingIso_hom_comp_eq_mk,
-      Subobject.arrow_congr, congrArg_mpr_hom_left, Iso.cancel_iso_hom_left]
+    simp only [Category.assoc, ← underlyingIso_hom_comp_eq_mk,
+      Iso.cancel_iso_hom_left]
     convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
     simp
 
@@ -693,14 +696,14 @@ def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic
     ⟨Subobject.mk (Z.arrow ≫ Y.arrow),
       Set.mem_Iic.mpr (le_of_comm ((underlyingIso _).hom ≫ Z.arrow) (by simp))⟩
   invFun Z := Subobject.mk (ofLE _ _ Z.2)
-  left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by aesop_cat)
+  left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by cat_disch)
   right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by simp [← Iso.eq_inv_comp]))
   map_rel_iff' {W Z} := by
     dsimp
     constructor
     · intro h
       exact le_of_comm (((underlyingIso _).inv ≫ ofLE _ _ (Subtype.mk_le_mk.mp h) ≫
-        (underlyingIso _).hom)) (by aesop_cat)
+        (underlyingIso _).hom)) (by cat_disch)
     · intro h
       exact Subtype.mk_le_mk.mpr (le_of_comm
         ((underlyingIso _).hom ≫ ofLE _ _ h ≫ (underlyingIso _).inv) (by simp))

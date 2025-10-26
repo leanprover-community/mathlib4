@@ -501,7 +501,7 @@ theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromorph
   let g := (fun z ↦ (z - x) ^ (n₁ - n)) • g₁ +  (fun z ↦ (z - x) ^ (n₂ - n)) • g₂
   have h₁g : AnalyticAt 𝕜 g x := by
     apply AnalyticAt.add
-    apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_left n₁ n₂))).smul h₁g₁
+    · apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_left n₁ n₂))).smul h₁g₁
     apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_right n₁ n₂))).smul h₁g₂
   have : f₁ + f₂ =ᶠ[𝓝[≠] x] ((· - x) ^ n) • g := by
     filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin]
@@ -712,7 +712,7 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
   rcases (hf x hx).eventually_eq_zero_or_eventually_ne_zero with h₁f | h₁f
   · filter_upwards [eventually_eventually_nhdsWithin.2 h₁f] with a h₁a
     suffices ∀ᶠ (z : 𝕜) in 𝓝[≠] a, f z = 0 by
-      simp +contextual [meromorphicOrderAt_eq_top_iff, h₁a, this]
+      simp +contextual [meromorphicOrderAt_eq_top_iff, this]
     obtain rfl | hax := eq_or_ne a x
     · exact h₁a
     rw [eventually_nhdsWithin_iff, eventually_nhds_iff] at h₁a ⊢
@@ -730,3 +730,21 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
 alias codiscrete_setOf_order_eq_zero_or_top := codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top
 
 end MeromorphicOn
+
+lemma MeromorphicAt.comp_analyticAt {g : 𝕜 → 𝕜}
+    (hf : MeromorphicAt f (g x)) (hg : AnalyticAt 𝕜 g x) : MeromorphicAt (f ∘ g) x := by
+  obtain ⟨r, hr⟩ := hf
+  by_cases hg' : analyticOrderAt (g · - g x) x = ⊤
+  · -- trivial case: `g` is locally constant near `x`
+    refine .congr (.const (f (g x)) x) ?_
+    filter_upwards [nhdsWithin_le_nhds <| analyticOrderAt_eq_top.mp hg'] with z hz
+    grind
+  · -- interesting case: `g z - g x` looks like `(z - x) ^ n` times a non-vanishing function
+    obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.mp hg'
+    obtain ⟨h, han, hne, heq⟩ := (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast.mp hn.symm
+    set j := fun z ↦ (z - g x) ^ r • f z
+    have : AnalyticAt 𝕜 (fun z ↦ (h z)⁻¹ ^ r • j (g z)) x := by fun_prop (disch := assumption)
+    refine ⟨n * r, this.congr ?_⟩
+    filter_upwards [heq, han.continuousAt.tendsto.eventually_ne hne] with z hz hzne
+    simp only [inv_pow, Function.comp_apply, inv_smul_eq_iff₀ (pow_ne_zero r hzne)]
+    rw [← mul_smul (h z ^ r), mul_comm, pow_mul, ← mul_pow, ← smul_eq_mul, ← hz]

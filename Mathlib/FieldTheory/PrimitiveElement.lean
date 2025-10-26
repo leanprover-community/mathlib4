@@ -64,7 +64,7 @@ theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α�
     rw [show x = α ^ n by norm_cast; rw [hn, Units.val_mk0]]
     exact zpow_mem (mem_adjoin_simple_self F (E := E) ↑α) n
 
-/-- Primitive element theorem for finite dimensional extension of a finite field. -/
+/-- Primitive element theorem for finite-dimensional extension of a finite field. -/
 theorem exists_primitive_element_of_finite_bot [Finite F] [FiniteDimensional F E] :
     ∃ α : E, F⟮α⟯ = ⊤ :=
   haveI : Finite E := Module.finite_of_finite F
@@ -161,7 +161,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
   · dsimp only [γ]
     convert (gcd_map (algebraMap F⟮γ⟯ E)).symm
   · simp only [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq, Polynomial.map_sub,
-      map_C, AdjoinSimple.algebraMap_gen, map_add, Polynomial.map_mul, map_X]
+      map_C, AdjoinSimple.algebraMap_gen, Polynomial.map_mul, map_X]
     congr
 
 -- If `F` is infinite and `E/F` has only finitely many intermediate fields, then for any
@@ -341,13 +341,18 @@ end Field
 variable (F E : Type*) [Field F] [Field E] [Algebra F E]
     [FiniteDimensional F E] [Algebra.IsSeparable F E]
 
+theorem AlgHom.natCard_of_splits (L : Type*) [Field L] [Algebra F L]
+    (hL : ∀ x : E, (minpoly F x).Splits (algebraMap F L)) :
+    Nat.card (E →ₐ[F] L) = finrank F E :=
+  (AlgHom.natCard_of_powerBasis (L := L) (Field.powerBasisOfFiniteOfSeparable F E)
+    (Algebra.IsSeparable.isSeparable _ _) <| hL _).trans
+      (PowerBasis.finrank _).symm
+
 @[simp]
 theorem AlgHom.card_of_splits (L : Type*) [Field L] [Algebra F L]
     (hL : ∀ x : E, (minpoly F x).Splits (algebraMap F L)) :
     Fintype.card (E →ₐ[F] L) = finrank F E := by
-  convert (AlgHom.card_of_powerBasis (L := L) (Field.powerBasisOfFiniteOfSeparable F E)
-    (Algebra.IsSeparable.isSeparable _ _) <| hL _).trans
-      (PowerBasis.finrank _).symm
+  rw [Fintype.card_eq_nat_card, AlgHom.natCard_of_splits F E L hL]
 
 @[simp]
 theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :

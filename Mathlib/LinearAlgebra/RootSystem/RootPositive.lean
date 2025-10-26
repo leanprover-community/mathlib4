@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
-import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 
 /-!
 # Invariant and root-positive bilinear forms on root pairings
@@ -77,19 +76,7 @@ lemma apply_reflection_reflection (x y : M) :
   B.isOrthogonal_reflection i x y
 
 @[simp]
-lemma apply_weylGroup_smul (g : P.weylGroup) (x y : M) :
-    B.form (g • x) (g • y) = B.form x y := by
-  revert x y
-  obtain ⟨g, hg⟩ := g
-  induction hg using weylGroup.induction with
-  | mem i => simp
-  | one => simp
-  | mul g₁ g₂ hg₁ hg₂ hg₁' hg₂' =>
-    intro x y
-    rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
-
-@[simp]
-lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)]:
+lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)] :
     B.form (P.root i) (P.root j) = 0 ↔ P.pairing i j = 0 := by
   calc B.form (P.root i) (P.root j) = 0
       ↔ 2 * B.form (P.root i) (P.root j) = 0 := by simp [two_ne_zero]
@@ -169,12 +156,12 @@ lemma zero_lt_posForm_apply_root (i : ι)
   simpa only [zero_lt_posForm_iff] using B.exists_pos_eq i
 
 lemma isSymm_posForm :
-    B.posForm.IsSymm := by
-  intro x y
-  apply FaithfulSMul.algebraMap_injective S R
-  simpa using B.symm.eq x y
+    B.posForm.IsSymm where
+  eq x y := by
+    apply FaithfulSMul.algebraMap_injective S R
+    simpa using B.symm.eq x y
 
-/-- The length of the `i`-th root wrt a root-positive form taking values in `S`. -/
+/-- The length of the `i`-th root w.r.t. a root-positive form taking values in `S`. -/
 def rootLength (i : ι) : S :=
   B.posForm (P.rootSpanMem S i) (P.rootSpanMem S i)
 
