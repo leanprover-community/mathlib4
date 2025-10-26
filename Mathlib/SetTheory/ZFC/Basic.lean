@@ -662,7 +662,7 @@ theorem toSet_image (f : ZFSet → ZFSet) [Definable₁ f] (x : ZFSet) :
   ext
   simp
 
-section
+section Small
 
 variable {α : Type*} [Small.{u} α]
 
@@ -706,7 +706,7 @@ theorem subset_iUnion (f : α → ZFSet.{u}) (i : α) : f i ⊆ ⋃ i, f i := by
   intro x hx
   simpa using ⟨i, hx⟩
 
-end
+end Small
 
 /-- Kuratowski ordered pair -/
 def pair (x y : ZFSet.{u}) : ZFSet.{u} :=
