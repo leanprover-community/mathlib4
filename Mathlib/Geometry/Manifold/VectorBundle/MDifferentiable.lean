@@ -37,9 +37,8 @@ variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 Version at a point within a set -/
 theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
     MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F)) f s x₀ ↔
-      MDifferentiableWithinAt IM IB (fun x => (f x).proj) s x₀ ∧
-      MDifferentiableWithinAt IM 𝓘(𝕜, F)
-        (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
+      MDiffAt[s] (fun x => (f x).proj) x₀ ∧
+      MDiffAt[s] (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
   simp +singlePass only [mdifferentiableWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
@@ -68,7 +67,7 @@ theorem mdifferentiableAt_totalSpace (f : M → TotalSpace F E) {x₀ : M} :
 in terms of the preferred trivialization at that point. -/
 theorem mdifferentiableWithinAt_section (s : Π b, E b) {u : Set B} {b₀ : B} :
     MDifferentiableWithinAt IB (IB.prod 𝓘(𝕜, F)) (T% s) u b₀ ↔
-      MDifferentiableWithinAt IB 𝓘(𝕜, F) (fun b ↦ (trivializationAt F E b₀ (s b)).2) u b₀ := by
+      MDiffAt[u] (fun b ↦ (trivializationAt F E b₀ (s b)).2) b₀ := by
   rw [mdifferentiableWithinAt_totalSpace]
   change MDifferentiableWithinAt _ _ id _ _ ∧ _ ↔ _
   simp [mdifferentiableWithinAt_id]
@@ -289,8 +288,7 @@ using any trivialisation whose `baseSet` contains `s`. -/
 theorem Trivialization.mdifferentiableOn_section_iff {s : ∀ x, E x} {a : Set B}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
-    MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (T% s) a ↔
-      MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) a := by
+    MDiff[a] (T% s) ↔ MDiff[a] (fun x ↦ (e ⟨x, s x⟩).2) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩ <;>
   have := (h x hx).mdifferentiableAt <| ha.mem_nhds hx
   · exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mp this).mdifferentiableWithinAt
@@ -302,8 +300,7 @@ can be determined using `e`. -/
 theorem Trivialization.mdifferentiableOn_section_baseSet_iff {s : ∀ x, E x}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] :
-    MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (T% s) e.baseSet ↔
-      MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
+    MDiff[e.baseSet] (T% s) ↔ MDiff[e.baseSet] (fun x ↦ (e ⟨x, s x⟩).2) :=
   e.mdifferentiableOn_section_iff e.open_baseSet subset_rfl
 
 end
