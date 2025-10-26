@@ -489,13 +489,14 @@ Version at a point within a set. -/
 lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
     (ht' : ∀ i, MDiffAt[u] (T% (t i ·)) x₀) :
-    MDiffAt[u] (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) x₀ := by
+    MDiffAt[u] (T% (fun x ↦ ∑' i, (t i x))) x₀ := by
+  dsimp
   obtain ⟨u', hu', hfin⟩ := ht x₀
   -- All sections `t i` but a finite set `s` vanish near `x₀`: choose a neighbourhood `u` of `x₀`
   -- and a finite set `s` of sections which don't vanish.
   let s := {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ u').Nonempty}
   have := hfin.fintype
-  have : MDiffAt[u ∩ u'] (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) x₀ :=
+  have : MDiffAt[u ∩ u'] (T% (fun x ↦ ∑ i ∈ s, (t i x))) x₀ :=
      .sum_section fun i ↦ ((ht' i).mono inter_subset_left)
   apply (mdifferentiableWithinAt_inter hu').mp
   apply this.congr' (fun y hy ↦ ?_) inter_subset_right (mem_of_mem_nhds hu')
@@ -544,6 +545,7 @@ lemma MDifferentiableWithinAt.finsum_section_of_locallyFinite
     rw [Set.mem_setOf] at hx ⊢
     use y
     simpa using ⟨hx, mem_of_mem_nhds hu⟩
+  dsimp
   rw [tsum_eq_finsum (hfin.subset this)]
 
 lemma MDifferentiableAt.finsum_section_of_locallyFinite
