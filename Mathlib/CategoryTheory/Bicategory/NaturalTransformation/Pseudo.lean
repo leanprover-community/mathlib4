@@ -25,8 +25,9 @@ In this file we define strong transformations, which require the 2-morphism to b
 * `Pseudofunctor.StrongTrans.vcomp η θ`: the vertical composition of strong transformations `η`
   and `θ`.
 
-Using this we obtain a `CategoryStruct` on pseudofunctors, where the arrows are given by
-strong transformations. See `Pseudofunctor.categoryStruct`.
+Using this we obtain a (scoped) `CategoryStruct` on pseudofunctors, where the arrows are given by
+strong transformations. To access this instance, run `open scoped Pseudofunctor.StrongTrans`.
+See `Pseudofunctor.StrongTrans.categoryStruct`.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)

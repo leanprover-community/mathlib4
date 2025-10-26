@@ -3,7 +3,6 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 
@@ -21,7 +20,8 @@ Given two pseudofunctors `F` and `G`, we define:
   `η` and `θ` (between `F` and `G`).
 * `Pseudofunctor.StrongTrans.homCategory F G` : the category structure on strong transformations
   between `F` and `G`, where the morphisms are modifications, and composition is given by vertical
-  composition of modifications.
+  composition of modifications. Note that this a scoped instance in the `Pseudofunctor.StrongTrans`
+  namespace, so you need to run `open scoped Pseudofunctor.StrongTrans` to access it.
 
 -/
 
@@ -105,14 +105,28 @@ theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
 
 end
 
+variable (η) in
+/-- The identity modification. -/
+@[simps]
+def id : Modification η η where app a := 𝟙 (η.app a)
+
+instance : Inhabited (Modification η η) :=
+  ⟨Modification.id η⟩
+
+/-- Vertical composition of modifications. -/
+@[simps]
+def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
+  app a := Γ.app a ≫ Δ.app a
+
+
 end Modification
 
 /-- Category structure on the strong transformations between pseudofunctors. -/
-@[simps]
+@[simps!]
 scoped instance homCategory : Category (F ⟶ G) where
   Hom := Modification
-  id η := { app := fun a ↦ 𝟙 (η.app a) }
-  comp Γ Δ := { app := fun a ↦ Γ.app a ≫ Δ.app a }
+  id := Modification.id
+  comp := Modification.vcomp
 
 instance : Inhabited (Modification η η) :=
   ⟨𝟙 η⟩
@@ -125,14 +139,15 @@ lemma homCategory.ext {m n : η ⟶ θ} (w : ∀ b, m.app b = n.app b) : m = n :
 by giving object level isomorphisms, and checking naturality only in the forward direction.
 -/
 @[simps]
-def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
+def isoMk (app : ∀ a, η.app a ≅ θ.app a)
     (naturality : ∀ {a b} (f : a ⟶ b),
       F.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
-        (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by aesop_cat) : η ≅ θ where
-  hom := { app := fun a => (app a).hom }
+        (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by aesop_cat) :
+    η ≅ θ where
+  hom := { app a := (app a).hom }
   inv :=
-    { app := fun a => (app a).inv
-      naturality := fun {a b} f => by
+    { app a := (app a).inv
+      naturality {a b} f := by
         simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }
 
 end StrongTrans

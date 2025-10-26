@@ -13,7 +13,7 @@ In this file we define modifications of oplax and strong transformations of opla
 
 A modification `Γ` between oplax transformations `η` and `θ` (of oplax functors) consists of a
 family of 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which for all 1-morphisms `f : a ⟶ b`
-satisfies the equation `(F.map f ◁ app b) ≫ θ.naturality f = η.naturality f ≫ app a ▷ G.map f`.
+satisfies the equation `(F.map f ◁ app b) ≫ θ.naturality f = η.naturality f ≫ (app a ▷ G.map f)`.
 
 Modifications between strong transformations are defined similarly.
 
@@ -26,10 +26,17 @@ Given two oplax functors `F` and `G`, we define:
 * `OplaxTrans.homCategory F G`: the category structure on the oplax transformations
   between `F` and `G`, where composition is given by vertical composition.
 
-* `StrongTrans.Modification η θ`: modifications between oplax transformations `η` and `θ` between
+* `StrongTrans.Modification η θ`: modifications between strong transformations `η` and `θ` between
   `F` and `G`.
 * `StrongTrans.homCategory F G`: the category structure on the strong transformations
-  between `F` and `G`, where composition is given by vertical composition.
+  between `F` and `G`, where composition is given by vertical composition. Note that this a scoped
+  instance in the `Oplax.OplaxTrans` namespace, so you need to run `open scoped Oplax.OplaxTrans`
+  to access it.
+
+## Note
+
+The category structure in
+
 
 ## TODO
 * Once lax transformations between oplax functors are defined, we should also define
@@ -89,17 +96,27 @@ theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
 
 end
 
+variable (η) in
+/-- The identity modification. -/
+@[simps]
+def id : Modification η η where app a := 𝟙 (η.app a)
+
+instance : Inhabited (Modification η η) :=
+  ⟨Modification.id η⟩
+
+/-- Vertical composition of modifications. -/
+@[simps]
+def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
+  app a := Γ.app a ≫ Δ.app a
+
 end Modification
 
 /-- Category structure on the oplax natural transformations between OplaxFunctors. -/
-@[simps]
+@[simps!]
 scoped instance homCategory (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   Hom := Modification
-  id η := { app := fun a ↦ 𝟙 (η.app a) }
-  comp Γ Δ := { app := fun a => Γ.app a ≫ Δ.app a }
-
-instance : Inhabited (Modification η η) :=
-  ⟨𝟙 η⟩
+  id := Modification.id
+  comp := Modification.vcomp
 
 @[ext]
 lemma homCategory.ext {Γ Δ : η ⟶ θ} (w : ∀ b, Γ.app b = Δ.app b) : Γ = Δ :=
@@ -109,10 +126,12 @@ lemma homCategory.ext {Γ Δ : η ⟶ θ} (w : ∀ b, Γ.app b = Δ.app b) : Γ 
 by giving object level isomorphisms, and checking naturality only in the forward direction.
 -/
 @[simps]
-def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
-    (naturality : ∀ {a b} (f : a ⟶ b),
-      F.map f ◁ (app b).hom ≫ θ.naturality f =
-        η.naturality f ≫ (app a).hom ▷ G.map f := by aesop_cat) : η ≅ θ where
+def isoMk (app : ∀ a, η.app a ≅ θ.app a)
+    (naturality :
+      ∀ {a b} (f : a ⟶ b),
+        F.map f ◁ (app b).hom ≫ θ.naturality f =
+          η.naturality f ≫ (app a).hom ▷ G.map f := by aesop_cat) :
+    η ≅ θ where
   hom := { app := fun a => (app a).hom }
   inv :=
     { app := fun a => (app a).inv
@@ -190,14 +209,27 @@ theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
 
 end
 
+variable (η) in
+/-- The identity modification. -/
+@[simps]
+def id : Modification η η where app a := 𝟙 (η.app a)
+
+instance : Inhabited (Modification η η) :=
+  ⟨Modification.id η⟩
+
+/-- Vertical composition of modifications. -/
+@[simps]
+def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
+  app a := Γ.app a ≫ Δ.app a
+
 end Modification
 
 /-- Category structure on the strong natural transformations between oplax functors. -/
-@[simps]
+@[simps!]
 scoped instance homCategory : Category (F ⟶ G) where
   Hom := Modification
-  id η := { app := fun a ↦ 𝟙 (η.app a) }
-  comp Γ Δ := { app := fun a => Γ.app a ≫ Δ.app a }
+  id := Modification.id
+  comp := Modification.vcomp
 
 instance : Inhabited (Modification η η) :=
   ⟨𝟙 η⟩
@@ -210,15 +242,15 @@ lemma homCategory.ext {Γ Δ : η ⟶ θ} (w : ∀ b, Γ.app b = Δ.app b) : Γ 
 by giving object level isomorphisms, and checking naturality only in the forward direction.
 -/
 @[simps]
-def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
+def isoMk (app : ∀ a, η.app a ≅ θ.app a)
     (naturality :
       ∀ {a b} (f : a ⟶ b),
         F.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
           (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by aesop_cat) : η ≅ θ where
-  hom := { app := fun a => (app a).hom }
+  hom := { app a := (app a).hom }
   inv :=
-    { app := fun a => (app a).inv
-      naturality := fun {a b} f => by
+    { app a := (app a).inv
+      naturality {a b} f := by
         simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }
 
 end StrongTrans
