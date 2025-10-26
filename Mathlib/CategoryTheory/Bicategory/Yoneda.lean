@@ -21,7 +21,7 @@ import Mathlib.CategoryTheory.Bicategory.Coherence
 
 namespace CategoryTheory
 
-open Category Bicategory Bicategory.Opposite
+open Category Bicategory Bicategory.Opposite Opposite
 
 open Bicategory
 
@@ -40,21 +40,24 @@ variable {B : Type u₁} [LocallySmallBicategory.{v₁} B]
 
 -- TODO: need more simps?
 @[simps]
-def representable (x : B) : Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁} where
+def representable (x : B) : Pseudofunctor Bᵒᵖ Cat.{v₁, v₁} where
   -- On objects:
   -- Hom functors: postcomposing (in `Bᴮᵒᵖ`).
-  toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => Cat.of ((bop x) ⟶ y))
-      (fun a b => (postcomposing (bop x) a b))
-  mapId := fun a => rightUnitorNatIso (bop x) a
-  mapComp := fun {a b c} f g => (associatorNatIsoLeft (bop x) f g).symm
+  toPrelaxFunctor :=
+    PrelaxFunctor.mkOfHomFunctors (fun y => Cat.of ((op x) ⟶ y))
+      (fun a b => (postcomposing (op x) a b))
+  mapId a := rightUnitorNatIso (op x) a
+  mapComp f g := (associatorNatIsoLeft (op x) f g).symm
   map₂_whisker_left := by
     intro a b c f g h η
     apply NatTrans.ext
     ext x
     -- TODO: why doesn't simp do this
     rw [NatTrans.comp_app, NatTrans.comp_app]
+    -- TODO: simp should finish this...
     dsimp
-    simp
+    simp [whiskerRight_comp_symm, -whiskerRight_comp]
+    rfl -- hmmmmmmmmmm.... BAD OPPOSITE THING. need to make it a type synonym
   map₂_whisker_right := by
     intro a b c f g h η
     apply NatTrans.ext
@@ -62,6 +65,7 @@ def representable (x : B) : Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁} where
     rw [NatTrans.comp_app, NatTrans.comp_app]
     dsimp
     simp
+    rfl --hmmmm
   map₂_associator := by
     intro a b c d f g h
     apply NatTrans.ext
@@ -92,10 +96,10 @@ def representable (x : B) : Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁} where
 -- Could this be representable from normal coyoneda?
 @[simps]
 def StrongNatTrans.representable {x y : B} (f : x ⟶ y) : representable x ⟶ representable y where
-  app z := (precomp z f.bop)
+  app z := (precomp z f.op)
   naturality {a b} g := {
-    hom := { app := fun h => (α_ f.bop h g).inv }
-    inv := { app := fun h => (α_ f.bop h g).hom }
+    hom := { app := fun h => (α_ f.op h g).inv }
+    inv := { app := fun h => (α_ f.op h g).hom }
     hom_inv_id := by
       -- this all should be automatic
       apply NatTrans.ext; ext x
@@ -131,7 +135,7 @@ def Modification.representable {x y : B} {f g : x ⟶ y} (η : f ⟶ g) :
       (StrongNatTrans.representable g).toOplax where
   -- should this be expressed in terms of precomposing somewhere?
   app a := {
-    app := ((bop2 η) ▷ ·)
+    app := ((op2 η) ▷ ·)
       -- TODO: rw suggested some yoneda here... Can yoneda be used higher up
       -- here somewhere?
     naturality := by intros; apply whisker_exchange
@@ -174,7 +178,7 @@ def yoneda.prelaxFunctor : PrelaxFunctor B (Pseudofunctor Bᴮᵒᵖ Cat.{v₁, 
 def yoneda : Pseudofunctor B (Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁}) where
   toPrelaxFunctor := yoneda.prelaxFunctor
   mapId a := Pseudofunctor.isoOfComponents (yoneda.prelaxFunctor.map (𝟙 a))
-      (𝟙 (yoneda.prelaxFunctor.obj a)) (fun b => leftUnitorNatIso (bop a) b) <| by
+      (𝟙 (yoneda.prelaxFunctor.obj a)) (fun b => leftUnitorNatIso (op a) b) <| by
     intro a b f
     apply NatTrans.ext
     ext x
@@ -198,7 +202,7 @@ def yoneda : Pseudofunctor B (Pseudofunctor Bᴮᵒᵖ Cat.{v₁, v₁}) where
     rw [Cat.associator_hom_app, Cat.associator_inv_app, Cat.associator_inv_app]
     simp only [Cat.comp_obj, postcomp_obj, precomp_obj, eqToHom_refl, comp_id, id_comp]
     -- TODO: remove?
-    erw [pentagon_hom_inv_inv_inv_hom g.bop f.bop x h]
+    erw [pentagon_hom_inv_inv_inv_hom g.op f.op x h]
     rfl
   -- these should all be proven generally?
   map₂_whisker_left := by
