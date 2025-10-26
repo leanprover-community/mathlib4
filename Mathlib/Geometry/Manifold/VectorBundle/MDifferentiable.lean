@@ -442,7 +442,7 @@ lemma mdifferentiable_smul_const_section
 
 lemma MDifferentiableWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
     (hs : ∀ i, MDiffAt[u] (T% (t i ·)) x₀) :
-    MDiffAt[u] (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) x₀ := by
+    MDiffAt[u] (T% (fun x ↦ ∑ i ∈ s, (t i x))) x₀ := by
   classical
   induction s using Finset.induction_on with
   | empty => simpa using (contMDiffWithinAt_zeroSection 𝕜 E).mdifferentiableWithinAt one_ne_zero
@@ -451,18 +451,18 @@ lemma MDifferentiableWithinAt.sum_section {ι : Type*} {s : Finset ι} {t : ι �
 
 lemma MDifferentiableAt.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x} {x₀ : B}
     (hs : ∀ i, MDiffAt (T% (t i ·)) x₀) :
-    MDiffAt (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) x₀ := by
+    MDiffAt (T% (fun x ↦ ∑ i ∈ s, (t i x))) x₀ := by
   simp_rw [← mdifferentiableWithinAt_univ] at hs ⊢
   exact MDifferentiableWithinAt.sum_section hs
 
 lemma MDifferentiableOn.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
     (hs : ∀ i, MDiff[u] (T% (t i ·))) :
-    MDiff[u] (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) :=
+    MDiff[u] (T% (fun x ↦ ∑ i ∈ s, (t i x))) :=
   fun x₀ hx₀ ↦ .sum_section fun i ↦ hs i x₀ hx₀
 
 lemma MDifferentiable.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : B) → E x}
     (hs : ∀ i, MDiff (T% (t i ·))) :
-    MDiff (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) :=
+    MDiff (T% (fun x ↦ ∑ i ∈ s, (t i x))) :=
   fun x₀ ↦ .sum_section fun i ↦ (hs i) x₀
 
 /-- The scalar product `ψ • s` of a differentiable function `ψ : M → 𝕜` and a section `s` of a
@@ -514,7 +514,7 @@ if each section is. -/
 lemma MDifferentiableAt.sum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
     (ht' : ∀ i, MDiffAt (T% (t i ·)) x₀) :
-    MDiffAt (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) x₀ := by
+    MDiffAt (T% (fun x ↦ ∑' i, (t i x))) x₀ := by
   simp_rw [← mdifferentiableWithinAt_univ] at ht' ⊢
   exact .sum_section_of_locallyFinite ht ht'
 
@@ -523,19 +523,19 @@ if each section is. -/
 lemma MDifferentiableOn.sum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
     (ht' : ∀ i, MDiff[u] (T% (t i ·))) :
-    MDiff[u] (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) :=
+    MDiff[u] (T% (fun x ↦ ∑' i, (t i x))) :=
   fun x hx ↦ .sum_section_of_locallyFinite ht (ht' · x hx)
 
 /-- The sum of a locally finite collection of sections is differentiable if each section is. -/
 lemma MDifferentiable.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
     (ht' : ∀ i, MDiff (T% (t i ·))) :
-    MDiff (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) :=
+    MDiff (T% (fun x ↦ ∑' i, (t i x))) :=
   fun x ↦ .sum_section_of_locallyFinite ht fun i ↦ ht' i x
 
 lemma MDifferentiableWithinAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
     (ht' : ∀ i, MDiffAt[u] (T% (t i ·)) x₀) :
-    MDiffAt[u] (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) x₀ := by
+    MDiffAt[u] (T% (fun x ↦ ∑ᶠ i, t i x)) x₀ := by
   apply (MDifferentiableWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
       (fun y hy ↦ ?_) (by grind) trivial
   choose U hu hfin using ht y
@@ -549,18 +549,18 @@ lemma MDifferentiableWithinAt.finsum_section_of_locallyFinite
 lemma MDifferentiableAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
     (ht' : ∀ i, MDiffAt (T% (t i ·)) x₀) :
-    MDiffAt (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) x₀ := by
+    MDiffAt (T% (fun x ↦ ∑ᶠ i, t i x)) x₀ := by
   simp_rw [← mdifferentiableWithinAt_univ] at ht' ⊢
   exact .finsum_section_of_locallyFinite ht ht'
 
 lemma MDifferentiableOn.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0}) (ht' : ∀ i, MDiff[u] (T% (t i ·))) :
-    MDiff[u] (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) :=
+    MDiff[u] (T% (fun x ↦ ∑ᶠ i, t i x)) :=
   fun x hx ↦ .finsum_section_of_locallyFinite ht fun i ↦ ht' i x hx
 
 lemma MDifferentiable.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0}) (ht' : ∀ i, MDiff (T% (t i ·))) :
-    MDiff (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) :=
+    MDiff (T% (fun x ↦ ∑ᶠ i, t i x)) :=
   fun x ↦ .finsum_section_of_locallyFinite ht fun i ↦ ht' i x
 
 end operations
