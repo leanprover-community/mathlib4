@@ -21,7 +21,7 @@ order on matrices on `ℝ` or `ℂ`.
   and `xᴴMx` is nonnegative for all `x`.
 * `Matrix.PosDef` : a matrix `M : Matrix n n R` is positive definite if it is Hermitian and `xᴴMx`
   is greater than zero for all nonzero `x`.
-* `Matrix.InnerProductSpace.ofMatrix`: the inner product on `n → 𝕜` induced by a positive definite
+* `Matrix.PosDef.innerProductSpace`: the inner product on `n → 𝕜` induced by a positive definite
   matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
 
 ## Main results
@@ -608,7 +608,7 @@ namespace Matrix
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 
 /-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
-noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
+noncomputable abbrev PosDef.normedAddCommGroup {M : Matrix n n 𝕜} (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
     { inner x y := (M *ᵥ y) ⬝ᵥ star x
@@ -623,8 +623,8 @@ noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
       smul_left _ _ _ := by rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul] }
 
 /-- A positive definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
-def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
-    @InnerProductSpace 𝕜 (n → 𝕜) _ (NormedAddCommGroup.ofMatrix hM).toSeminormedAddCommGroup :=
+def PosDef.innerProductSpace {M : Matrix n n 𝕜} (hM : M.PosDef) :
+    @InnerProductSpace 𝕜 (n → 𝕜) _ hM.normedAddCommGroup.toSeminormedAddCommGroup :=
   InnerProductSpace.ofCore _
 
 end Matrix
