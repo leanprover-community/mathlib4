@@ -123,7 +123,6 @@
  ["docBlame", "WriterT.run"],
  ["docBlame", "WriterT.runThe"],
  ["docBlame", "algebraMap.coeHTCT"],
- ["docBlame", "Affine.Simplex.points"],
  ["docBlame", "AlgebraicGeometry.PresheafedSpace.carrier"],
  ["docBlame", "AlgebraicGeometry.PresheafedSpace.presheaf"],
  ["docBlame", "Array.cyclicPermute!.cyclicPermuteAux"],
