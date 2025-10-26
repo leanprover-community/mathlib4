@@ -3,8 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.Analysis.InnerProductSpace.Positive
+import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.CovarianceBilinDual
 
 /-!
@@ -99,6 +100,17 @@ lemma isPosSemidef_covarianceBilin [CompleteSpace E] [IsFiniteMeasure μ] :
     (covarianceBilin μ).toBilinForm.IsPosSemidef where
   eq := covarianceBilin_comm
   nonneg := covarianceBilin_self_nonneg
+
+lemma covarianceBilin_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+    [MeasurableSpace F] [BorelSpace F] [CompleteSpace E] [FiniteDimensional ℝ F]
+    [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L : E →L[ℝ] F) (u v : F) :
+    covarianceBilin (μ.map L) u v = covarianceBilin μ (L.adjoint u) (L.adjoint v) := by
+  rw [covarianceBilin_apply, covarianceBilin_apply h]
+  · simp_rw [id, L.integral_id_map (h.integrable (by simp))]
+    rw [integral_map]
+    · simp_rw [← map_sub, ← L.adjoint_inner_left]
+    all_goals fun_prop
+  · exact memLp_map_measure_iff (by fun_prop) (by fun_prop) |>.2 (L.comp_memLp' h)
 
 lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] (c : E) :
     covarianceBilin (μ.map (fun x ↦ c + x)) = covarianceBilin μ := by
