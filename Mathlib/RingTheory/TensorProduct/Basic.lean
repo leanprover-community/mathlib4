@@ -1026,8 +1026,8 @@ theorem tensorTensorTensorComm_symm_tmul (m : A) (n : C) (p : B) (q : D) :
   rfl
 
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R R' S T A B C D).symm = tensorTensorTensorComm R S R' T A C B D := by
-  ext; rfl
+    (tensorTensorTensorComm R R' S T A B C D).symm = tensorTensorTensorComm R S R' T A C B D :=
+  rfl
 
 theorem tensorTensorTensorComm_toLinearEquiv :
     (tensorTensorTensorComm R R' S T A B C D).toLinearEquiv =
@@ -1036,9 +1036,7 @@ theorem tensorTensorTensorComm_toLinearEquiv :
 @[simp]
 theorem toLinearEquiv_tensorTensorTensorComm :
     (tensorTensorTensorComm R R R R A B C D).toLinearEquiv =
-      _root_.TensorProduct.tensorTensorTensorComm R A B C D := by
-  apply LinearEquiv.toLinearMap_injective
-  ext; simp
+      _root_.TensorProduct.tensorTensorTensorComm R A B C D := rfl
 
 lemma map_bijective {f : A →ₐ[R] B} {g : C →ₐ[R] D}
     (hf : Function.Bijective f) (hg : Function.Bijective g) :
