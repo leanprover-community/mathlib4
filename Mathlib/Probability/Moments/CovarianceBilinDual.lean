@@ -189,6 +189,7 @@ lemma uncenteredCovarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L�
 @[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin_of_not_memLp :=
   uncenteredCovarianceBilinDual_of_not_memLp
 
+@[simp]
 lemma uncenteredCovarianceBilinDual_zero : uncenteredCovarianceBilinDual (0 : Measure E) = 0 := by
   ext
   have : Subsingleton (Lp ℝ 2 (0 : Measure E)) := ⟨fun x y ↦ Lp.ext_iff.2 rfl⟩
@@ -290,6 +291,13 @@ lemma covarianceBilinDual_self_eq_variance (h : MemLp id 2 μ) (L : StrongDual �
 
 @[deprecated (since := "2025-07-16")] alias covarianceBilin_same_eq_variance :=
   covarianceBilinDual_self_eq_variance
+
+@[simp]
+lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) : 0 ≤ covarianceBilinDual μ L L := by
+  by_cases h : MemLp id 2 μ
+  · rw [covarianceBilinDual_self_eq_variance h]
+    exact variance_nonneg ..
+  · simp [h]
 
 end Covariance
 
