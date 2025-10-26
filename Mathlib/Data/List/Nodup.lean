@@ -369,7 +369,7 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (l.take n).elem
   | [], n, _ => by simp
   | b::l, 0, _ => by simp
-  | b::l, n+1, hl => by
+  | b::l, n + 1, hl => by
     rw [take_succ_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), filter_cons_of_pos (by simp)]
     congr 1
     refine List.filter_congr ?_

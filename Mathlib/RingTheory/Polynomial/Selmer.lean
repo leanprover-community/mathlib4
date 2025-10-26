@@ -177,7 +177,8 @@ theorem Ideal.card_inertiaSubgroup [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
   let : Algebra K L := FractionRing.liftAlgebra A L
   let _ : MulSemiringAction G L := MulSemiringAction.compHom L
       ((IsFractionRing.fieldEquivOfAlgEquivHom K L).comp (MulSemiringAction.toAlgAut G A B))
-  have hGKL : IsGaloisGroup G K L := IsGaloisGroup.toIsFractionRing G A B K L
+  have hGKL : IsGaloisGroup G K L := IsGaloisGroup.to_isFractionRing G A B K L
+    (fun g b ↦ IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L _ b)
   have : IsGalois K L := hGKL.isGalois
   have : FiniteDimensional K L := hGKL.finiteDimensional
   rw [Ideal.inertiaSubgroup_eq_ker P Q G]
