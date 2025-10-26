@@ -59,6 +59,10 @@ theorem univ_nontrivial [h : Nontrivial α] :
     (Finset.univ : Finset α).Nontrivial :=
   univ_nontrivial_iff.mpr h
 
+@[simp] lemma singleton_ne_univ [Nontrivial α] (a : α) : {a} ≠ univ := by
+  apply SetLike.coe_ne_coe.1
+  simp
+
 @[simp]
 theorem univ_eq_empty [IsEmpty α] : (univ : Finset α) = ∅ :=
   univ_eq_empty_iff.2 ‹_›
