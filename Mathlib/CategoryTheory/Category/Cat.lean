@@ -74,8 +74,22 @@ instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
 instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
 
+/-- Synonym for `NatTrans.app` to help with automation. -/
+abbrev app {C D : Cat} {F G : C ⟶ D} (α : F ⟶ G) (x : C) := α.app x
+
+def NatTrans.mk' {C D : Cat} {F G : C ⟶ D} (app : (X : C) → F.obj X ⟶ G.obj X)
+    (naturality : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f := by
+      cat_disch) : F ⟶ G :=
+  { app := app }
+
+@[simp]
+theorem app_mk {C D : Cat} {F G : C ⟶ D} {app : (X : C) → F.obj X ⟶ G.obj X}
+      {naturality : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f} (X : C) :
+    Cat.app (NatTrans.mk' app naturality) X = app X := by
+  rfl
+
 @[ext]
-theorem ext {C D : Cat} {F G : C ⟶ D} {α β : F ⟶ G} (w : α.app = β.app) : α = β :=
+theorem ext {C D : Cat} {F G : C ⟶ D} {α β : F ⟶ G} (w : app α = app β) : α = β :=
   NatTrans.ext w
 
 @[simp]
@@ -96,45 +110,45 @@ theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ 
   rfl
 
 @[simp]
-theorem id_app {C D : Cat} (F : C ⟶ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
+theorem id_app {C D : Cat} (F : C ⟶ D) (X : C) : app (𝟙 F : F ⟶ F) X = 𝟙 (F.obj X) := rfl
 
 @[simp]
 theorem comp_app {C D : Cat} {F G H : C ⟶ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
-    (α ≫ β).app X = α.app X ≫ β.app X := rfl
+    app (α ≫ β) X = app α X ≫ app β X := rfl
 
 @[simp]
 theorem eqToHom_app {C D : Cat} (F G : C ⟶ D) (h : F = G) (X : C) :
-    (eqToHom h).app X = eqToHom (Functor.congr_obj h X) :=
+    app (eqToHom h) X = eqToHom (Functor.congr_obj h X) :=
   CategoryTheory.eqToHom_app h X
 
 @[simp]
 lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
-    (F ◁ η).app X = η.app (F.obj X) :=
+    app (F ◁ η) X = app η (F.obj X) :=
   rfl
 
 @[simp]
 lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
-    (η ▷ H).app X = H.map (η.app X) :=
+    app (η ▷ H) X = H.map (app η X) :=
   rfl
 
-lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = eqToHom (by simp) :=
+lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : app (λ_ F).hom X = eqToHom (by simp) :=
   rfl
 
-lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).inv.app X = eqToHom (by simp) :=
+lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : app (λ_ F).inv X = eqToHom (by simp) :=
   rfl
 
-lemma rightUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).hom.app X = eqToHom (by simp) :=
+lemma rightUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : app (ρ_ F).hom X = eqToHom (by simp) :=
   rfl
 
-lemma rightUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).inv.app X = eqToHom (by simp) :=
+lemma rightUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : app (ρ_ F).inv X = eqToHom (by simp) :=
   rfl
 
 lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
-    (α_ F G H).hom.app X = eqToHom (by simp) :=
+    app (α_ F G H).hom X = eqToHom (by simp) :=
   rfl
 
 lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
-    (α_ F G H).inv.app X = eqToHom (by simp) :=
+    app (α_ F G H).inv X = eqToHom (by simp) :=
   rfl
 
 /-- The identity in the category of categories equals the identity functor. -/
@@ -193,8 +207,8 @@ defines an isomorphism in `Cat`. -/
 def isoOfEquiv {C D : Cat.{v, u}} (e : C ≌ D)
     (h₁ : ∀ (X : C), e.inverse.obj (e.functor.obj X) = X)
     (h₂ : ∀ (Y : D), e.functor.obj (e.inverse.obj Y) = Y)
-    (h₃ : ∀ (X : C), e.unitIso.hom.app X = eqToHom (h₁ X).symm := by cat_disch)
-    (h₄ : ∀ (Y : D), e.counitIso.hom.app Y = eqToHom (h₂ Y) := by cat_disch) :
+    (h₃ : ∀ (X : C), app e.unitIso.hom X = eqToHom (h₁ X).symm := by cat_disch)
+    (h₄ : ∀ (Y : D), app e.counitIso.hom Y = eqToHom (h₂ Y) := by cat_disch) :
     C ≅ D where
   hom := e.functor
   inv := e.inverse
