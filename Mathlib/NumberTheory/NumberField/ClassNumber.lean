@@ -165,6 +165,26 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_I
     exact hspan ▸ inertiaDeg_pos ..
   · exact hspan ▸ hlies
 
+instance (K : Type*) [Field K] [NumberField K]
+    (G : Type*) [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) where
+  smul := fun g x ↦ ⟨g • (x : K), sorry⟩
+  one_smul := sorry
+  mul_smul := sorry
+  smul_zero := sorry
+  smul_add := sorry
+  smul_one := sorry
+  smul_mul := sorry
+
+instance inst4 (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
+    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G K L] :
+    IsGaloisGroup G (𝓞 K) (𝓞 L) := by
+  sorry
+
+instance inst5 (L : Type*) [Field L] [NumberField L]
+    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G ℚ L] :
+    IsGaloisGroup G ℤ (𝓞 L) := by
+  sorry
+
 /-- Let `K` be a number field such that `K/ℚ` is Galois and let `M K` be the Minkowski bound of `K`.
 To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
 `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, there is an ideal `P` above `p` such that
@@ -187,9 +207,9 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOv
     (by simp [hp.ne_zero])
   by_cases h : ⌊(M K)⌋₊ < p ^ ((span ({↑p} : Set ℤ)).inertiaDeg P)
   · linarith
-  rw [inertiaDeg_eq_of_isGalois _ Q P ℚ K] at H
-  obtain ⟨σ, rfl⟩ := exists_map_eq_of_isGalois (span ({↑p} : Set ℤ)) Q P ℚ K
-  exact (H.resolve_left h).map_ringHom σ
+  rw [inertiaDeg_eq_of_isGaloisGroup _ Q P (K ≃ₐ[ℚ] K)] at H
+  obtain ⟨σ, rfl⟩ := exists_smul_eq_of_isGaloisGroup (span ({↑p} : Set ℤ)) Q P (K ≃ₐ[ℚ] K)
+  exact (H.resolve_left h).map_ringHom (MulSemiringAction.toRingHom (K ≃ₐ[ℚ] K) (𝓞 K) σ)
 
 theorem isPrincipalIdealRing_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ nrComplexPlaces K *
