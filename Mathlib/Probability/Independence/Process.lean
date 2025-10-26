@@ -32,7 +32,7 @@ variable {α : Type*} {mα : MeasurableSpace α} {κ : Kernel α Ω} {P : Measur
 /-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
 for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
 $(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent. -/
-lemma IndepFun.indepFun_processes {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
+lemma IndepFun.indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X : (i : S) → Ω → 𝓧 i}
     {Y : (j : T) → Ω → 𝓨 j} (hX : ∀ i, Measurable (X i)) (hY : ∀ j, Measurable (Y j))
     (h : ∀ (I : Finset S) (J : Finset T),
@@ -75,7 +75,7 @@ lemma IndepFun.indepFun_processes {T : Type*} {𝓧 : S → Type*} {𝓨 : T →
 for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}^ the families
 $(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
 (X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent. -/
-lemma iIndepFun.iIndepFun_processes {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
+lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, Measurable (X i j))
     (h : ∀ (I : Finset S) (J : (i : I) → Finset (T i)),
@@ -120,24 +120,24 @@ variable {P : Measure Ω}
 /-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
 for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
 $(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent. -/
-lemma IndepFun.indepFun_processes {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
+lemma IndepFun.indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X : (i : S) → Ω → 𝓧 i}
     {Y : (j : T) → Ω → 𝓨 j} (hX : ∀ i, Measurable (X i)) (hY : ∀ j, Measurable (Y j))
     (h : ∀ (I : Finset S) (J : Finset T),
       IndepFun (fun ω (i : I) ↦ X i ω) (fun ω (j : J) ↦ Y j ω) P) [IsProbabilityMeasure P] :
     IndepFun (fun ω i ↦ X i ω) (fun ω j ↦ Y j ω) P :=
-  Kernel.IndepFun.indepFun_processes hX hY h
+  Kernel.IndepFun.indepFun_process hX hY h
 
 /-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
 for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}^ the families
 $(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
 (X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent. -/
-lemma iIndepFun.iIndepFun_processes {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
+lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, Measurable (X i j))
     (h : ∀ (I : Finset S) (J : (i : I) → Finset (T i)),
       iIndepFun (fun i ω (j : J i) ↦ X i j ω) P) :
     iIndepFun (fun i ω j ↦ X i j ω) P :=
-  Kernel.iIndepFun.iIndepFun_processes hX h
+  Kernel.iIndepFun.iIndepFun_process hX h
 
 end ProbabilityTheory
