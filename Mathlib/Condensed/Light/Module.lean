@@ -33,19 +33,20 @@ open CategoryTheory
 variable (R : Type u) [Ring R]
 
 /--
-The category of condensed `R`-modules, defined as sheaves of `R`-modules over
-`CompHaus` with respect to the coherent Grothendieck topology.
+The category of light condensed `R`-modules, defined as sheaves of `R`-modules over
+`LightProfinite.{u}` with respect to the coherent Grothendieck topology.
 -/
 abbrev LightCondMod := LightCondensed.{u} (ModuleCat.{u} R)
 
 noncomputable instance : Abelian (LightCondMod.{u} R) := sheafIsAbelian
 
-/-- The forgetful functor from condensed `R`-modules to condensed sets. -/
+/-- The forgetful functor from light condensed `R`-modules to light condensed sets. -/
 def LightCondensed.forget : LightCondMod R ⥤ LightCondSet :=
   sheafCompose _ (CategoryTheory.forget _)
 
 /--
-The left adjoint to the forgetful functor. The *free condensed `R`-module* on a condensed set.
+The left adjoint to the forgetful functor. The *free light condensed `R`-module* on a light
+condensed set.
 -/
 noncomputable
 def LightCondensed.free : LightCondSet ⥤ LightCondMod R :=
@@ -56,8 +57,8 @@ noncomputable
 def LightCondensed.freeForgetAdjunction : free R ⊣ forget R := Sheaf.adjunction _ (ModuleCat.adj R)
 
 /--
-The category of condensed abelian groups, defined as sheaves of abelian groups over
-`CompHaus` with respect to the coherent Grothendieck topology.
+The category of light condensed abelian groups, defined as sheaves of `ℤ`-modules over
+`LightProfinite.{0}` with respect to the coherent Grothendieck topology.
 -/
 abbrev LightCondAb := LightCondMod ℤ
 
