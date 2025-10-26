@@ -27,10 +27,13 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 
 ## Main results
 
-* `ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn`: Let `p` be a maximal ideal of `A`,
+* `Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn`: Let `p` be a prime of `A`,
   `r` be the number of prime ideals lying over `p`, `e` be the ramification index of `p` in `B`,
   and `f` be the inertia degree of `p` in `B`. Then `r * (e * f) = [L : K]`. It is the form of the
   `Ideal.sum_ramification_inertia` in the case of Galois extension.
+
+* `Ideal.card_inertia_eq_ramificationIdxIn`:
+  The cardinality of the inertia group is equal to the ramification index.
 
 ## References
 
@@ -215,5 +218,66 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn :
   rw [ramificationIdxIn_eq_ramificationIdx p P G, inertiaDegIn_eq_inertiaDeg p P G]
 
 end fundamental_identity
+
+section inertia
+
+variable {R S G : Type*} [CommRing R] [CommRing S] [Algebra R S] [Group G]
+  [MulSemiringAction G S] [SMulCommClass G R S] [Algebra.IsInvariant R S G] [Finite G]
+
+open scoped Pointwise
+
+open Algebra
+
+attribute [local instance 1001] Ideal.Quotient.field Module.Free.of_divisionRing in
+lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
+    (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
+    (p.primesOver S).ncard * Nat.card (P.toAddSubgroup.inertia G) *
+      Module.finrank (R ⧸ p) (S ⧸ P) = Nat.card G := by
+  trans (p.primesOver S).ncard * Nat.card (MulAction.stabilizer G P); swap
+  · rw [← IsInvariant.orbit_eq_primesOver R S G p P]
+    simpa using Nat.card_congr (MulAction.orbitProdStabilizerEquivGroup G P)
+  rw [mul_assoc]
+  have : IsGalois (R ⧸ p) (S ⧸ P) := { __ := Ideal.Quotient.normal (A := R) G p P }
+  have := Ideal.Quotient.finite_of_isInvariant G p P
+  congr 1
+  have : Subgroup.index _ = _ := Nat.card_congr
+    (QuotientGroup.quotientKerEquivOfSurjective (Ideal.Quotient.stabilizerHom P p G)
+      (Ideal.Quotient.stabilizerHom_surjective G p P)).toEquiv
+  rw [← IsGalois.card_aut_eq_finrank, ← this]
+  convert (Ideal.Quotient.stabilizerHom P p G).ker.card_mul_index using 2
+  rw [Ideal.Quotient.ker_stabilizerHom]
+  refine Nat.card_congr (Subgroup.subgroupOfEquivOfLe ?_).toEquiv.symm
+  intro σ hσ
+  ext x
+  rw [Ideal.pointwise_smul_eq_comap, Ideal.mem_comap]
+  convert P.add_mem_iff_right (inv_mem hσ x) (b := x) using 2
+  simp
+
+-- TODO : get rid of `K` and `L` in the statement (and replace with `[IsGaloisGroup G R S]`)
+/-- The cardinality of the inertia group is equal to the ramification index. -/
+lemma card_inertia_eq_ramificationIdxIn
+    [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S]
+    (K L : Type*) [Field K] [Field L] [Algebra K L] [Algebra R L] [Algebra R K] [Algebra S L]
+    [IsScalarTower R S L] [IsScalarTower R K L] [IsFractionRing R K] [IsFractionRing S L]
+    [MulSemiringAction G L] [IsGaloisGroup G K L]
+    (p : Ideal R) (hp : p ≠ ⊥)
+    (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
+    Nat.card (P.toAddSubgroup.inertia G) = Ideal.ramificationIdxIn p S := by
+  letI := IsGaloisGroup.isGalois G K L
+  letI := IsGaloisGroup.finiteDimensional G K L
+  have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
+  have := NoZeroSMulDivisors.trans_faithfulSMul R K L
+  have : NoZeroSMulDivisors R S := IsIntegralClosure.noZeroSMulDivisors R L
+  have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
+  refine mul_right_injective₀ (primesOver_ncard_ne_zero p S) ?_
+  refine mul_left_injective₀ (b := Module.finrank (R ⧸ p) (S ⧸ P)) ?_ ?_
+  · intro e; simp [e, eq_comm, Nat.card_eq_zero, ‹Finite G›.not_infinite] at H
+  dsimp only
+  rw [H, mul_assoc, ← Ideal.inertiaDeg_algebraMap,
+    ← Ideal.inertiaDegIn_eq_inertiaDeg p P K L,
+    Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S K L,
+    IsGaloisGroup.card_eq_finrank G K L]
+
+end inertia
 
 end Ideal
