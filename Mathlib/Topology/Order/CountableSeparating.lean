@@ -34,7 +34,7 @@ instance range_Iio : HasCountableSeparatingOn X (· ∈ range Iio) s := by
   · rintro x - y - h
     by_contra! hne
     wlog hlt : x < y generalizing x y
-    · refine this y x ?_ hne.symm (hne.lt_or_lt.resolve_left hlt)
+    · refine this y x ?_ hne.symm (hne.lt_or_gt.resolve_left hlt)
       simpa only [iff_comm] using h
     cases (Ioo x y).eq_empty_or_nonempty with
     | inl he =>

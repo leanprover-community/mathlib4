@@ -18,8 +18,7 @@ Files `Data.Multiset.NatAntidiagonal` and `Data.Finset.NatAntidiagonal` successi
 `List` definition we have here into `Multiset` and `Finset`.
 -/
 
-
-open List Function Nat
+open Function
 
 namespace List
 
@@ -39,7 +38,7 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
   · rintro rfl
     refine ⟨x.fst, ?_, ?_⟩
     · rw [mem_range]
-      omega
+      cutsat
     · exact Prod.ext rfl (by simp only [Nat.add_sub_cancel_left])
 
 /-- The length of the antidiagonal of `n` is `n + 1`. -/
@@ -60,7 +59,7 @@ theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
 theorem antidiagonal_succ {n : ℕ} :
     antidiagonal (n + 1) = (0, n + 1) :: (antidiagonal n).map (Prod.map Nat.succ id) := by
   simp only [antidiagonal, range_succ_eq_map, map_cons, Nat.add_succ_sub_one,
-    Nat.add_zero, id, eq_self_iff_true, Nat.sub_zero, map_map, Prod.map_apply]
+    Nat.add_zero, id, Nat.sub_zero, map_map, Prod.map_apply]
   apply congr rfl (congr rfl _)
   ext; simp
 

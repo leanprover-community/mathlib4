@@ -3,7 +3,7 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
 import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
@@ -12,7 +12,7 @@ import Mathlib.Topology.Algebra.IsUniformGroup.Order
 # Uniform convergence of products of functions
 
 We gather some results about the uniform convergence of infinite products, in particular those of
-the form `∏' i, (1 + f i x)` for a sequence `f` of complex valued functions.
+the form `∏' i, (1 + f i x)` for a sequence `f` of complex-valued functions.
 -/
 
 open Filter Function Complex Finset Topology
@@ -44,7 +44,7 @@ lemma Summable.tendstoUniformlyOn_tsum_nat_log_one_add {f : ℕ → α → ℂ} 
     TendstoUniformlyOn (fun n x ↦ ∑ m ∈ Finset.range n, log (1 + f m x))
     (fun x ↦ ∑' n, log (1 + f n x)) atTop K := by
   rw [← Nat.cofinite_eq_atTop] at h
-  exact (hu.hasSumUniformlyOn_log_one_add h).tendstoUniformlyOn_finset_range rfl
+  exact (hu.hasSumUniformlyOn_log_one_add h).tendstoUniformlyOn_finsetRange rfl
 
 /-- If `x ↦ ∑' i, log (f i x)` is uniformly convergent on `𝔖`, its sum has bounded-above real part
 on each set in `𝔖`, and the functions `f i x` have no zeroes, then  `∏' i, f i x` is uniformly
@@ -65,8 +65,7 @@ lemma hasProdUniformlyOn_of_clog (hf : SummableUniformlyOn (fun i x ↦ log (f i
   have h1 := hr.tsum_eqOn hK
   simp only [hasSumUniformlyOn_iff_tendstoUniformlyOn] at hr
   refine ((hr K hK).comp_cexp ?_).congr ?_
-  · simp +contextual [← h1 _]
-    exact hg K hK
+  · simpa +contextual [← h1 _] using hg K hK
   · filter_upwards with s i hi using by simp [exp_sum, fun y ↦ exp_log (hfn K hK i hi y)]
 
 lemma multipliableUniformlyOn_of_clog (hf : SummableUniformlyOn (fun i x ↦ log (f i x)) 𝔖)
@@ -146,7 +145,7 @@ lemma hasProdLocallyUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsOpen 
     HasProdLocallyUniformlyOn (fun n x ↦ 1 + f n x) (fun x ↦ ∏' i, (1 + f i x)) K :=
   hasProdLocallyUniformlyOn_one_add hK hu (Nat.cofinite_eq_atTop ▸ h) hcts
 
-lemma multipliableLocallyUniformlyOn_nat_one_add  {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ}
+lemma multipliableLocallyUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ}
     (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
     (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableLocallyUniformlyOn (fun n x ↦ 1 + f n x) K :=

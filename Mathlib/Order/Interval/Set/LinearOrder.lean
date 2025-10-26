@@ -122,7 +122,7 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
       simp only [Subset.antisymm_iff] at e
       simp only [le_antisymm_iff]
       rcases h with h | h <;>
-      simp only [gt_iff_lt, not_lt, Ico_subset_Ico_iff h] at e <;>
+      simp only [Ico_subset_Ico_iff h] at e <;>
       [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>
       tauto,
@@ -182,7 +182,7 @@ theorem Iic_union_Ici_of_le (h : a ≤ b) : Iic b ∪ Ici a = univ :=
   eq_univ_of_forall fun x => (h.ge_or_le x).symm
 
 theorem Iio_union_Ioi_of_lt (h : a < b) : Iio b ∪ Ioi a = univ :=
-  eq_univ_of_forall fun x => (h.lt_or_lt x).symm
+  eq_univ_of_forall fun x => (h.gt_or_lt x).symm
 
 @[simp]
 theorem Iic_union_Ici : Iic a ∪ Ici a = univ :=
@@ -211,10 +211,10 @@ theorem Ioo_union_Ioi' (h₁ : c < b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
     tauto
 
 theorem Ioo_union_Ioi (h : c < max a b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
-  rcases le_total a b with hab | hab <;> simp [hab] at h
-  · exact Ioo_union_Ioi' h
+  rcases le_total a b with hab | hab
+  · simp only [hab, sup_of_le_right] at h; exact Ioo_union_Ioi' h
   · rw [min_comm]
-    simp [*, min_eq_left_of_lt]
+    simp_all [min_eq_left_of_lt]
 
 theorem Ioi_subset_Ioo_union_Ici : Ioi a ⊆ Ioo a b ∪ Ici b := fun x hx =>
   (lt_or_ge x b).elim (fun hxb => Or.inl ⟨hx, hxb⟩) fun hxb => Or.inr hxb
@@ -239,9 +239,9 @@ theorem Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := b
     tauto
 
 theorem Ico_union_Ici (h : c ≤ max a b) : Ico a b ∪ Ici c = Ici (min a c) := by
-  rcases le_total a b with hab | hab <;> simp [hab] at h
-  · exact Ico_union_Ici' h
-  · simp [*]
+  rcases le_total a b with hab | hab
+  · simp only [hab, sup_of_le_right] at h; exact Ico_union_Ici' h
+  · simp_all
 
 theorem Ioi_subset_Ioc_union_Ioi : Ioi a ⊆ Ioc a b ∪ Ioi b := fun x hx =>
   (le_or_gt x b).elim (fun hxb => Or.inl ⟨hx, hxb⟩) fun hxb => Or.inr hxb
@@ -259,9 +259,9 @@ theorem Ioc_union_Ioi' (h₁ : c ≤ b) : Ioc a b ∪ Ioi c = Ioi (min a c) := b
     tauto
 
 theorem Ioc_union_Ioi (h : c ≤ max a b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
-  rcases le_total a b with hab | hab <;> simp [hab] at h
-  · exact Ioc_union_Ioi' h
-  · simp [*]
+  rcases le_total a b with hab | hab
+  · simp only [hab, sup_of_le_right] at h; exact Ioc_union_Ioi' h
+  · simp_all
 
 theorem Ici_subset_Icc_union_Ioi : Ici a ⊆ Icc a b ∪ Ioi b := fun x hx =>
   (le_or_gt x b).elim (fun hxb => Or.inl ⟨hx, hxb⟩) fun hxb => Or.inr hxb
@@ -294,9 +294,9 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
     tauto
 
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
-  rcases le_or_gt a b with hab | hab <;> simp [hab] at h
-  · exact Icc_union_Ici' h
-  · rcases h with h | h
+  rcases le_or_gt a b with hab | hab
+  · simp only [hab, sup_of_le_right] at h; exact Icc_union_Ici' h
+  · simp only [le_sup_iff] at h; rcases h with h | h
     · simp [*]
     · have hca : c ≤ a := h.trans hab.le
       simp [*]
@@ -328,9 +328,9 @@ theorem Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := b
     tauto
 
 theorem Iio_union_Ico (h : min c d ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
-  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
-  · exact Iio_union_Ico' h
-  · simp [*]
+  rcases le_total c d with hcd | hcd
+  · simp only [hcd, inf_of_le_left] at h; exact Iio_union_Ico' h
+  · simp_all
 
 theorem Iic_subset_Iic_union_Ioc : Iic b ⊆ Iic a ∪ Ioc a b := fun x hx =>
   (le_or_gt x a).elim (fun hxa => Or.inl hxa) fun hxa => Or.inr ⟨hxa, hx⟩
@@ -349,10 +349,10 @@ theorem Iic_union_Ioc' (h₁ : c < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
     tauto
 
 theorem Iic_union_Ioc (h : min c d < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
-  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
-  · exact Iic_union_Ioc' h
+  rcases le_total c d with hcd | hcd
+  · simp only [hcd, inf_of_le_left] at h; exact Iic_union_Ioc' h
   · rw [max_comm]
-    simp [*, max_eq_right_of_lt h]
+    simp_all [max_eq_right_of_lt]
 
 theorem Iio_subset_Iic_union_Ioo : Iio b ⊆ Iic a ∪ Ioo a b := fun x hx =>
   (le_or_gt x a).elim (fun hxa => Or.inl hxa) fun hxa => Or.inr ⟨hxa, hx⟩
@@ -365,16 +365,16 @@ theorem Iic_union_Ioo_eq_Iio (h : a < b) : Iic a ∪ Ioo a b = Iio b :=
 theorem Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
   ext x
   rcases lt_or_ge x b with hba | hba
-  · simp [hba, h₁]
+  · simp [hba]
   · simp only [mem_Iio, mem_union, mem_Ioo, lt_max_iff]
     refine or_congr Iff.rfl ⟨And.right, ?_⟩
     exact fun h₂ => ⟨h₁.trans_le hba, h₂⟩
 
 theorem Iio_union_Ioo (h : min c d < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
-  rcases le_total c d with hcd | hcd <;> simp [hcd] at h
-  · exact Iio_union_Ioo' h
+  rcases le_total c d with hcd | hcd
+  · simp only [hcd, inf_of_le_left] at h; exact Iio_union_Ioo' h
   · rw [max_comm]
-    simp [*, max_eq_right_of_lt h]
+    simp_all [max_eq_right_of_lt]
 
 theorem Iic_subset_Iic_union_Icc : Iic b ⊆ Iic a ∪ Icc a b :=
   Subset.trans Iic_subset_Iic_union_Ioc (union_subset_union_right _ Ioc_subset_Icc_self)
@@ -393,9 +393,9 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
     tauto
 
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
-  rcases le_or_gt c d with hcd | hcd <;> simp [hcd] at h
-  · exact Iic_union_Icc' h
-  · rcases h with h | h
+  rcases le_or_gt c d with hcd | hcd
+  · simp only [hcd, inf_of_le_left] at h; exact Iic_union_Icc' h
+  · simp only [inf_le_iff] at h; rcases h with h | h
     · have hdb : d ≤ b := hcd.le.trans h
       simp [*]
     · simp [*]
@@ -565,8 +565,8 @@ Otherwise for `b < a = d < c` the l.h.s. is `∅` and the r.h.s. is `{a}`.
 theorem Icc_union_Icc (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     Icc a b ∪ Icc c d = Icc (min a c) (max b d) := by
   rcases le_or_gt a b with hab | hab <;> rcases le_or_gt c d with hcd | hcd <;>
-    simp only [min_eq_left, min_eq_right, max_eq_left, max_eq_right, min_eq_left_of_lt,
-      min_eq_right_of_lt, max_eq_left_of_lt, max_eq_right_of_lt, hab, hcd] at h₁ h₂
+    simp only [min_eq_left, max_eq_right,
+      min_eq_right_of_lt, max_eq_left_of_lt, hab, hcd] at h₁ h₂
   · exact Icc_union_Icc' h₂.le h₁.le
   all_goals simp [*, min_eq_left_of_lt, max_eq_left_of_lt, min_eq_right_of_lt, max_eq_right_of_lt]
 
@@ -596,7 +596,7 @@ theorem Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     simp only [min_eq_left, min_eq_right, max_eq_left, max_eq_right, hab, hcd] at h₁ h₂
   · exact Ioo_union_Ioo' h₂ h₁
   all_goals
-    simp [*, min_eq_left_of_lt, min_eq_right_of_lt, max_eq_left_of_lt, max_eq_right_of_lt,
+    simp [*,
       le_of_lt h₂, le_of_lt h₁]
 
 theorem Ioo_subset_Ioo_union_Ioo (h₁ : a ≤ a₁) (h₂ : c < b) (h₃ : b₁ ≤ d) :
@@ -703,7 +703,7 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
   rw [Ioc_union_Ioc, Ioc_union_Ioc]
   · ac_rfl
   all_goals
-  solve_by_elim (config := { maxDepth := 5 }) [min_le_of_left_le, min_le_of_right_le,
-       le_max_of_le_left, le_max_of_le_right, le_refl]
+  solve_by_elim (maxDepth := 5) [min_le_of_left_le, min_le_of_right_le,
+    le_max_of_le_left, le_max_of_le_right, le_refl]
 
 end Set

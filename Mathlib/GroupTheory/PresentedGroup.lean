@@ -85,7 +85,7 @@ theorem induction_on {rels : Set (FreeGroup α)} {C : PresentedGroup rels → Pr
 
 theorem generated_by (rels : Set (FreeGroup α)) (H : Subgroup (PresentedGroup rels))
     (h : ∀ j : α, PresentedGroup.of j ∈ H) (x : PresentedGroup rels) : x ∈ H := by
-  induction' x with z
+  obtain ⟨z⟩ := x
   induction z
   · exact one_mem H
   · exact h _
@@ -121,13 +121,13 @@ def toGroup (h : ∀ r ∈ rels, FreeGroup.lift f r = 1) : PresentedGroup rels �
 
 @[simp]
 theorem toGroup.of (h : ∀ r ∈ rels, FreeGroup.lift f r = 1) {x : α} : toGroup h (of x) = f x :=
-  FreeGroup.lift.of
+  FreeGroup.lift_apply_of
 
 theorem toGroup.unique (h : ∀ r ∈ rels, FreeGroup.lift f r = 1) (g : PresentedGroup rels →* G)
     (hg : ∀ x : α, g (PresentedGroup.of x) = f x) : ∀ {x}, g x = toGroup h x := by
   intro x
   refine QuotientGroup.induction_on x ?_
-  exact fun _ ↦ FreeGroup.lift.unique (g.comp (QuotientGroup.mk' _)) hg
+  exact fun _ ↦ FreeGroup.lift_unique (g.comp (QuotientGroup.mk' _)) hg
 
 @[ext]
 theorem ext {φ ψ : PresentedGroup rels →* G} (hx : ∀ (x : α), φ (.of x) = ψ (.of x)) : φ = ψ := by

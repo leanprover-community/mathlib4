@@ -3,7 +3,7 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.Field.GeomSum
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Analysis.Normed.Field.Basic
 
@@ -102,7 +102,7 @@ theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRo
             apply pow_pos
             exact zero_lt_one.trans ha
           simp [zero_lt_one.trans ha]
-        _ = cauchyBound p := by field_simp [tsub_add_cancel_of_le]
+        _ = cauchyBound p := by simp [field, tsub_add_cancel_of_le]
   apply le_of_eq at h
   have pld : ‖p.leadingCoeff‖₊ ≠ 0 := by simpa
   calc ‖a‖₊ ^ p.natDegree
@@ -113,7 +113,7 @@ theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRo
     _ ≤ (∑ x ∈ range p.natDegree, ‖p.coeff x * a ^ x‖₊) / ‖p.leadingCoeff‖₊ := by
       gcongr
       apply nnnorm_sum_le
-    _ = (∑ x ∈ range p.natDegree, ‖p.coeff x‖₊ * ‖a‖₊ ^ x) / ‖p.leadingCoeff‖₊ := by simp [abs_mul]
+    _ = (∑ x ∈ range p.natDegree, ‖p.coeff x‖₊ * ‖a‖₊ ^ x) / ‖p.leadingCoeff‖₊ := by simp
     _ ≤ (∑ x ∈ range p.natDegree, ‖p.leadingCoeff‖₊ * (cauchyBound p - 1) * ‖a‖₊ ^ x) /
         ‖p.leadingCoeff‖₊ := by
       gcongr (∑ x ∈ _, ?_ * _) / _
@@ -123,6 +123,5 @@ theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRo
     _ = (cauchyBound p - 1) * ∑ x ∈ range p.natDegree, ‖a‖₊ ^ x := by
       simp only [← mul_sum]
       field_simp
-      ring
 
 end Polynomial

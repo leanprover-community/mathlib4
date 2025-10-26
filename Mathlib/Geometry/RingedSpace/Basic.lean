@@ -75,25 +75,14 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   obtain ⟨V, hxV, g, rfl⟩ := X.presheaf.germ_exist x g'
   let W := U ⊓ V
   have hxW : x ∈ W := ⟨hx, hxV⟩
-  -- Porting note: `erw` can't write into `HEq`, so this is replaced with another `HEq` in the
-  -- desired form
   replace heq : (X.presheaf.germ _ x hxW) ((X.presheaf.map (U.infLELeft V).op) f *
       (X.presheaf.map (U.infLERight V).op) g) = (X.presheaf.germ _ x hxW) 1 := by
-    dsimp [germ]
-    erw [map_mul, map_one, show X.presheaf.germ _ x hxW ((X.presheaf.map (U.infLELeft V).op) f) =
-      X.presheaf.germ U x hx f from X.presheaf.germ_res_apply (Opens.infLELeft U V) x hxW f,
-      show X.presheaf.germ _ x hxW (X.presheaf.map (U.infLERight V).op g) =
-      X.presheaf.germ _ x hxV g from X.presheaf.germ_res_apply (Opens.infLERight U V) x hxW g]
-    exact heq
-  -- note: we have to force lean to resynthesize this as <...>.hom _ = <...>.hom _
-  obtain ⟨W', hxW', i₁, i₂, (heq' : (X.presheaf.map i₁.op) _ = (X.presheaf.map i₂.op) 1)⟩ :=
-    X.presheaf.germ_eq x hxW hxW _ _ heq
+    rwa [map_mul, map_one, X.presheaf.germ_res_apply (Opens.infLELeft U V) x hxW f,
+      X.presheaf.germ_res_apply (Opens.infLERight U V) x hxW g]
+  obtain ⟨W', hxW', i₁, i₂, heq'⟩ := X.presheaf.germ_eq x hxW hxW _ _ heq
   use W', i₁ ≫ Opens.infLELeft U V, hxW'
   simp only [map_mul, map_one] at heq'
   simpa using isUnit_of_mul_eq_one _ _ heq'
-
-@[deprecated (since := "2025-02-08")] alias _root_.CommRingCat.germ_res_apply := germ_res_apply
-@[deprecated (since := "2025-02-08")] alias _root_.CommRingCat.germ_res_apply' := germ_res_apply'
 
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
@@ -102,9 +91,8 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
   choose V iVU m h_unit using fun x : U => X.isUnit_res_of_isUnit_germ U f x x.2 (h x.1 x.2)
   have hcover : U ≤ iSup V := by
     intro x hxU
-    -- Porting note: in Lean3 `rw` is sufficient
-    erw [Opens.mem_iSup]
-    exact ⟨⟨x, hxU⟩, m ⟨x, hxU⟩⟩
+    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe, Subtype.exists]
+    tauto
   -- Let `g x` denote the inverse of `f` in `U x`.
   choose g hg using fun x : U => IsUnit.exists_right_inv (h_unit x)
   have ic : IsCompatible (sheaf X).val V g := by
@@ -113,19 +101,13 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     rintro z ⟨hzVx, hzVy⟩
     rw [germ_res_apply, germ_res_apply]
     apply (h z ((iVU x).le hzVx)).mul_right_inj.mp
-    -- Porting note: now need explicitly typing the rewrites
-    -- note: this is bad, I think we should replace the `FunLike` on
-    -- concrete category with `CoeFun`
     rw [← germ_res_apply X.presheaf (iVU x) z hzVx f]
     -- Porting note: change was not necessary in Lean3
     change X.presheaf.germ _ z hzVx _ * (X.presheaf.germ _ z hzVx _) =
       X.presheaf.germ _ z hzVx _ * X.presheaf.germ _ z hzVy (g y)
-    rw [← RingHom.map_mul,
-      congr_arg (X.presheaf.germ (V x) z hzVx) (hg x),
-      germ_res_apply X.presheaf _ _ _ f,
+    rw [← RingHom.map_mul, hg x, germ_res_apply X.presheaf _ _ _ f,
       ← germ_res_apply X.presheaf (iVU y) z hzVy f,
-      ← RingHom.map_mul,
-      congr_arg (X.presheaf.germ (V y) z hzVy) (hg y), RingHom.map_one, RingHom.map_one]
+      ← RingHom.map_mul, (hg y), RingHom.map_one, RingHom.map_one]
   -- We claim that these local inverses glue together to a global inverse of `f`.
   obtain ⟨gl, gl_spec, -⟩ :
     -- We need to rephrase the result from `HasForget` to `CommRingCat`.
@@ -135,7 +117,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
   apply X.sheaf.eq_of_locally_eq' V U iVU hcover
   intro i
   -- We need to rephrase the goal from `HasForget` to `CommRingCat`.
-  show ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
+  change ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
   rw [RingHom.map_one, RingHom.map_mul, gl_spec]
   exact hg i
 
@@ -193,10 +175,7 @@ theorem basicOpen_res {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (f : X.presheaf.obj 
     rw [germ_res_apply' X.presheaf]
     exact hx
 
--- This should fire before `basicOpen_res`.
--- Porting note: this lemma is not in simple normal form because of `basicOpen_res`, as in Lean3
--- it is specifically said "This should fire before `basic_open_res`", this lemma is marked with
--- high priority
+/-- High priority: This should fire before `basicOpen_res`. -/
 @[simp (high)]
 theorem basicOpen_res_eq {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) [IsIso i] (f : X.presheaf.obj U) :
     @basicOpen X (unop V) (X.presheaf.map i f) = @RingedSpace.basicOpen X (unop U) f := by

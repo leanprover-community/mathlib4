@@ -115,7 +115,7 @@ equalities. -/
 @[simps]
 protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M where
   carrier := s
-  zero_mem' := by simpa [hs] using p.zero_mem'
+  zero_mem' := by simp [hs]
   add_mem' := hs.symm ▸ p.add_mem'
   smul_mem' := by simpa [hs] using p.smul_mem'
 
@@ -129,8 +129,6 @@ theorem toAddSubmonoid_injective : Injective (toAddSubmonoid : Submodule R M →
 theorem toAddSubmonoid_inj : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
   toAddSubmonoid_injective.eq_iff
 
-@[deprecated (since := "2024-12-29")] alias toAddSubmonoid_eq := toAddSubmonoid_inj
-
 @[simp]
 theorem coe_toAddSubmonoid (p : Submodule R M) : (p.toAddSubmonoid : Set M) = p :=
   rfl
@@ -140,8 +138,6 @@ theorem toSubMulAction_injective : Injective (toSubMulAction : Submodule R M →
 
 theorem toSubMulAction_inj : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
   toSubMulAction_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toSubMulAction_eq := toSubMulAction_inj
 
 @[simp]
 theorem coe_toSubMulAction (p : Submodule R M) : (p.toSubMulAction : Set M) = p :=
@@ -186,7 +182,6 @@ variable (p)
 theorem mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 
-@[simp]
 protected theorem zero_mem : (0 : M) ∈ p :=
   zero_mem _
 
@@ -241,7 +236,7 @@ protected theorem nonempty : (p : Set M).Nonempty :=
 
 @[simp]
 theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
-  Subtype.ext_iff_val
+  Subtype.ext_iff
 
 variable {p}
 
@@ -322,8 +317,6 @@ theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → A
 @[simp]
 theorem toAddSubgroup_inj : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toAddSubgroup_eq := toAddSubgroup_inj
 
 protected theorem sub_mem : x ∈ p → y ∈ p → x - y ∈ p :=
   sub_mem

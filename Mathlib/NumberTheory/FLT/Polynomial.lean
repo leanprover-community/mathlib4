@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.MasonStothers
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.Tactic.GCongr
 
 /-!
 # Fermat's Last Theorem for polynomials over a field
@@ -19,7 +20,7 @@ all polynomials must be constants.
 
 More generally, we can prove non-solvability of the Fermat-Catalan equation: there are no
 non-constant polynomial solutions to the equation `u * a ^ p + v * b ^ q + w * c ^ r = 0`, where
-`p, q, r ≥ 3` with `p * q + q * r + r * p ≤ p * q * r` , `p, q, r` not divisible by `char k`,
+`p, q, r ≥ 3` with `p * q + q * r + r * p ≤ p * q * r`, `p, q, r` not divisible by `char k`,
 and `u, v, w` are nonzero elements in `k`.
 FLT is the special case where `p = q = r = n`, `u = v = 1`, and `w = -1`.
 
@@ -182,8 +183,8 @@ private theorem Polynomial.flt_catalan_aux
       · have _ : ch ≠ 1 := CharP.ringChar_ne_one
         have hch2 : 2 ≤ ch := by omega
         rw [← add_le_add_iff_right 1, ← eq_d, eq_deg_a]
-        refine le_trans ?_ (Nat.mul_le_mul_left _ hch2)
-        omega
+        grw [← hch2]
+        cutsat
       · rw [eq_a, eq_b, eq_c, ← expand_C ch u, ← expand_C ch v, ← expand_C ch w] at heq
         simp_rw [← map_pow, ← map_mul, ← map_add] at heq
         rwa [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq
@@ -234,22 +235,17 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
     FermatLastTheoremWith' k[X] n := by
   classical
   rw [FermatLastTheoremWith']
-  intros a b c ha hb hc heq
+  intro a b c ha hb hc heq
   obtain ⟨a', eq_a⟩ := gcd_dvd_left a b
   obtain ⟨b', eq_b⟩ := gcd_dvd_right a b
   set d := gcd a b
   have hd : d ≠ 0 := gcd_ne_zero_of_left ha
   rw [eq_a, eq_b, mul_pow, mul_pow, ← mul_add] at heq
   have hdc : d ∣ c := by
+    -- TODO: This is basically reproving `IsIntegrallyClosed.pow_dvd_pow_iff`
     have hn : 0 < n := by omega
     have hdncn : d ^ n ∣ c ^ n := ⟨_, heq.symm⟩
-    rw [dvd_iff_normalizedFactors_le_normalizedFactors hd hc]
-    rw [dvd_iff_normalizedFactors_le_normalizedFactors
-          (pow_ne_zero n hd) (pow_ne_zero n hc),
-        normalizedFactors_pow, normalizedFactors_pow] at hdncn
-    simp_rw [Multiset.le_iff_count, Multiset.count_nsmul,
-      mul_le_mul_left hn] at hdncn ⊢
-    exact hdncn
+    simpa [dvd_iff_normalizedFactors_le_normalizedFactors, Multiset.le_iff_count, *] using hdncn
   obtain ⟨c', eq_c⟩ := hdc
   rw [eq_a, mul_ne_zero_iff] at ha
   rw [eq_b, mul_ne_zero_iff] at hb

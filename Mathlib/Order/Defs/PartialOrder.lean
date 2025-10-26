@@ -3,6 +3,7 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
+import Batteries.Tactic.Alias
 import Batteries.Tactic.Trans
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
@@ -42,6 +43,13 @@ class Preorder (α : Type*) extends LE α, LT α where
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
+instance [Preorder α] : Std.LawfulOrderLT α where
+  lt_iff := Preorder.lt_iff_le_not_ge
+
+instance [Preorder α] : Std.IsPreorder α where
+  le_refl := Preorder.le_refl
+  le_trans := Preorder.le_trans
+
 @[deprecated (since := "2025-05-11")] alias Preorder.lt_iff_le_not_le := Preorder.lt_iff_le_not_ge
 
 variable [Preorder α] {a b c : α}
@@ -78,7 +86,7 @@ alias LE.le.not_gt := not_lt_of_ge
 @[deprecated (since := "2025-06-07")] alias LE.le.not_lt := LE.le.not_gt
 
 
-lemma ge_trans : a ≥ b → b ≥ c → a ≥ c := fun h₁ h₂ => le_trans h₂ h₁
+lemma ge_trans : b ≤ a → c ≤ b → c ≤ a := fun h₁ h₂ => le_trans h₂ h₁
 
 lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
 
@@ -90,11 +98,14 @@ lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
 lemma lt_of_le_of_lt (hab : a ≤ b) (hbc : b < c) : a < c :=
   lt_of_le_not_ge (le_trans hab (le_of_lt hbc)) fun hca ↦ not_le_of_gt hbc (le_trans hca hab)
 
-lemma gt_of_gt_of_ge (h₁ : a > b) (h₂ : b ≥ c) : a > c := lt_of_le_of_lt h₂ h₁
-lemma gt_of_ge_of_gt (h₁ : a ≥ b) (h₂ : b > c) : a > c := lt_of_lt_of_le h₂ h₁
+lemma lt_of_lt_of_le' : b < a → c ≤ b → c < a := flip lt_of_le_of_lt
+lemma lt_of_le_of_lt' : b ≤ a → c < b → c < a := flip lt_of_lt_of_le
 
-lemma lt_trans (hab : a < b) (hbc : b < c) : a < c := lt_of_lt_of_le hab (le_of_lt hbc)
-lemma gt_trans : a > b → b > c → a > c := fun h₁ h₂ => lt_trans h₂ h₁
+@[deprecated (since := "2025-06-07")] alias gt_of_gt_of_ge := lt_of_lt_of_le'
+@[deprecated (since := "2025-06-07")] alias gt_of_ge_of_gt := lt_of_le_of_lt'
+
+lemma lt_trans : a < b → b < c → a < c := fun h₁ h₂ => lt_of_lt_of_le h₁ (le_of_lt h₂)
+lemma gt_trans : b < a → c < b → c < a := flip lt_trans
 
 lemma ne_of_lt (h : a < b) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
 lemma ne_of_gt (h : b < a) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
@@ -107,37 +118,34 @@ alias not_lt_of_gt := lt_asymm
 lemma le_of_lt_or_eq (h : a < b ∨ a = b) : a ≤ b := h.elim le_of_lt le_of_eq
 lemma le_of_eq_or_lt (h : a = b ∨ a < b) : a ≤ b := h.elim le_of_eq le_of_lt
 
-instance (priority := 900) : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
-instance (priority := 900) : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
-instance (priority := 900) : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
-instance (priority := 900) : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
-instance (priority := 900) : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
-instance (priority := 900) : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
-instance (priority := 900) : @Trans α α α GT.gt GE.ge GT.gt := ⟨gt_of_gt_of_ge⟩
-instance (priority := 900) : @Trans α α α GE.ge GT.gt GT.gt := ⟨gt_of_ge_of_gt⟩
+instance : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
+instance : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
+instance : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
+instance : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
+instance : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
+instance : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
+instance : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'⟩
+instance : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
-def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
-  | a, b =>
-    if hab : a ≤ b then
-      if hba : b ≤ a then isFalse fun hab' => not_le_of_gt hab' hba
-      else isTrue <| lt_of_le_not_ge hab hba
-    else isFalse fun hab' => hab (le_of_lt hab')
+def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
+  fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
 
 /-- `WCovBy a b` means that `a = b` or `b` covers `a`.
-This means that `a ≤ b` and there is no element in between.
+This means that `a ≤ b` and there is no element in between. This is denoted `a ⩿ b`.
 -/
 def WCovBy (a b : α) : Prop :=
   a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
-/-- Notation for `WCovBy a b`. -/
+@[inherit_doc]
 infixl:50 " ⩿ " => WCovBy
 
-/-- `CovBy a b` means that `b` covers `a`: `a < b` and there is no element in between. -/
+/-- `CovBy a b` means that `b` covers `a`. This means that `a < b` and there is no element in
+between. This is denoted `a ⋖ b`. -/
 def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
-/-- Notation for `CovBy a b`. -/
+@[inherit_doc]
 infixl:50 " ⋖ " => CovBy
 
 end Preorder
@@ -152,11 +160,16 @@ section PartialOrder
 class PartialOrder (α : Type*) extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
+instance [PartialOrder α] : Std.IsPartialOrder α where
+  le_antisymm := PartialOrder.le_antisymm
+
 variable [PartialOrder α] {a b : α}
 
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
 
-alias eq_of_le_of_le := le_antisymm
+alias eq_of_le_of_ge := le_antisymm
+
+@[deprecated (since := "2025-06-07")] alias eq_of_le_of_le := eq_of_le_of_ge
 
 lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun e => ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
@@ -171,20 +184,12 @@ def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
       if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
     else isFalse fun heq => hab (heq ▸ le_refl _)
 
-namespace Decidable
-
-variable [DecidableLE α]
-
-lemma lt_or_eq_of_le (hab : a ≤ b) : a < b ∨ a = b :=
+-- See Note [decidable namespace]
+protected lemma Decidable.lt_or_eq_of_le [DecidableLE α] (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_ge hab hba)
 
-lemma eq_or_lt_of_le (hab : a ≤ b) : a = b ∨ a < b :=
-  (lt_or_eq_of_le hab).symm
-
-lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b :=
-  ⟨lt_or_eq_of_le, le_of_lt_or_eq⟩
-
-end Decidable
+protected lemma Decidable.le_iff_lt_or_eq [DecidableLE α] : a ≤ b ↔ a < b ∨ a = b :=
+  ⟨Decidable.lt_or_eq_of_le, le_of_lt_or_eq⟩
 
 lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
 lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq

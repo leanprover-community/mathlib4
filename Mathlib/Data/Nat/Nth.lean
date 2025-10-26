@@ -9,7 +9,6 @@ import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.WellFounded
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Data.Finset.Sort
 
 /-!
@@ -50,7 +49,7 @@ natural number satisfying `p`), or `0` if there is no such number. See also
 `Subtype.orderIsoOfNat` for the order isomorphism with ℕ when `p` is infinitely often true. -/
 noncomputable def nth (p : ℕ → Prop) (n : ℕ) : ℕ := by
   classical exact
-    if h : Set.Finite (setOf p) then (h.toFinset.sort (· ≤ ·)).getD n 0
+    if h : Set.Finite (setOf p) then h.toFinset.sort.getD n 0
     else @Nat.Subtype.orderIsoOfNat (setOf p) (Set.Infinite.to_subtype h) n
 
 variable {p}
@@ -64,7 +63,7 @@ theorem nth_of_card_le (hf : (setOf p).Finite) {n : ℕ} (hn : #hf.toFinset ≤ 
     nth p n = 0 := by rw [nth, dif_pos hf, List.getD_eq_default]; rwa [Finset.length_sort]
 
 theorem nth_eq_getD_sort (h : (setOf p).Finite) (n : ℕ) :
-    nth p n = (h.toFinset.sort (· ≤ ·)).getD n 0 :=
+    nth p n = h.toFinset.sort.getD n 0 :=
   dif_pos h
 
 theorem nth_eq_orderEmbOfFin (hf : (setOf p).Finite) {n : ℕ} (hn : n < #hf.toFinset) :
@@ -361,10 +360,11 @@ theorem filter_range_nth_eq_insert_of_infinite (hp : (setOf p).Infinite) (k : �
 
 theorem count_nth {n : ℕ} (hn : ∀ hf : (setOf p).Finite, n < #hf.toFinset) :
     count p (nth p n) = n := by
-  induction' n with k ihk
-  · exact count_nth_zero _
-  · rw [count_eq_card_filter_range, filter_range_nth_eq_insert hn, card_insert_of_notMem, ←
-      count_eq_card_filter_range, ihk fun hf => lt_of_succ_lt (hn hf)]
+  induction n with
+  | zero => exact count_nth_zero _
+  | succ k ihk =>
+    rw [count_eq_card_filter_range, filter_range_nth_eq_insert hn, card_insert_of_notMem,
+      ← count_eq_card_filter_range, ihk fun hf => lt_of_succ_lt (hn hf)]
     simp
 
 theorem count_nth_of_lt_card_finite {n : ℕ} (hp : (setOf p).Finite) (hlt : n < #hp.toFinset) :

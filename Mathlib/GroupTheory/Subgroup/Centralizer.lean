@@ -21,7 +21,7 @@ variable {H K : Subgroup G}
 
 /-- The `centralizer` of `s` is the subgroup of `g : G` commuting with every `h : s`. -/
 @[to_additive
-      "The `centralizer` of `s` is the additive subgroup of `g : G` commuting with every `h : s`."]
+/-- The `centralizer` of `s` is the additive subgroup of `g : G` commuting with every `h : s`. -/]
 def centralizer (s : Set G) : Subgroup G :=
   { Submonoid.centralizer s with
     carrier := Set.centralizer s
@@ -69,7 +69,13 @@ theorem map_centralizer_le_centralizer_image (s : Set G) (f : G →* G') :
   rw [← map_mul, ← map_mul, hg h hh]
 
 @[to_additive]
-instance Centralizer.characteristic [hH : H.Characteristic] :
+instance normal_centralizer [H.Normal] : (centralizer H : Subgroup G).Normal where
+  conj_mem g hg i h hh := by
+    simpa [-mul_left_inj, -mul_right_inj, mul_assoc]
+      using congr(i * $(hg _ <| ‹H.Normal›.conj_mem _ hh i⁻¹) * i⁻¹)
+
+@[to_additive]
+instance characteristic_centralizer [hH : H.Characteristic] :
     (centralizer (H : Set G)).Characteristic := by
   refine Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective ?_
   rw [map_mul, map_mul]
@@ -99,8 +105,7 @@ lemma closure_le_centralizer_centralizer (s : Set G) :
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
 @[to_additive
-      "If all the elements of a set `s` commute, then `closure s` is an additive
-      commutative group."]
+/-- If all the elements of a set `s` commute, then `closure s` is an additive commutative group. -/]
 abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
     CommGroup (closure k) :=
   { (closure k).toGroup with
