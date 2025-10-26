@@ -33,7 +33,7 @@ used by Fenn and Rourke for framed codimension-2 knots and
 links in [FennRourke1992]. Unital shelves are discussed in [crans2017].
 
 The name "rack" came from wordplay by Conway and Wraith for the "wrack
-and ruin" of forgetting everything but the conjugation operation for a..................................
+and ruin" of forgetting everything but the conjugation operation for a
 group.
 
 ## Main definitions
