@@ -1178,6 +1178,7 @@ import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.CentroidHom
 import Mathlib.Algebra.Star.Conjneg
 import Mathlib.Algebra.Star.Free
+import Mathlib.Algebra.Star.LinearMap
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.MonoidHom
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
@@ -2420,6 +2421,7 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.FunctorToTypes
@@ -2558,6 +2560,7 @@ import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.Bifunctor
 import Mathlib.CategoryTheory.Localization.Bousfield
+import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
@@ -2830,6 +2833,7 @@ import Mathlib.CategoryTheory.Sites.Hypercover.Homotopy
 import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 import Mathlib.CategoryTheory.Sites.Hypercover.One
 import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+import Mathlib.CategoryTheory.Sites.Hypercover.ZeroFamily
 import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Sites.JointlySurjective
 import Mathlib.CategoryTheory.Sites.LeftExact
@@ -3723,6 +3727,7 @@ import Mathlib.Data.Set.Operations
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Order
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.Set.Pairwise.Chain
 import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Data.Set.Pairwise.List
 import Mathlib.Data.Set.Piecewise
@@ -3844,6 +3849,7 @@ import Mathlib.FieldTheory.Differential.Basic
 import Mathlib.FieldTheory.Differential.Liouville
 import Mathlib.FieldTheory.Extension
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Finite.Extension
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.FieldTheory.Finite.Polynomial
 import Mathlib.FieldTheory.Finite.Trace
@@ -5379,6 +5385,7 @@ import Mathlib.Probability.Independence.InfinitePi
 import Mathlib.Probability.Independence.Integrable
 import Mathlib.Probability.Independence.Integration
 import Mathlib.Probability.Independence.Kernel
+import Mathlib.Probability.Independence.Process
 import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
 import Mathlib.Probability.Kernel.Basic
@@ -5553,6 +5560,7 @@ import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.DedekindDomain.Instances
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.DedekindDomain.SInteger
 import Mathlib.RingTheory.DedekindDomain.SelmerGroup
@@ -6717,6 +6725,7 @@ import Mathlib.Topology.ContinuousMap.Units
 import Mathlib.Topology.ContinuousMap.Weierstrass
 import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Convenient.GeneratedBy
 import Mathlib.Topology.Covering
 import Mathlib.Topology.Defs.Basic
 import Mathlib.Topology.Defs.Filter

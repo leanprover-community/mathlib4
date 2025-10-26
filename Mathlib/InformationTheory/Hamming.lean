@@ -364,13 +364,8 @@ instance : PseudoMetricSpace (Hamming β) where
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
     push_cast
     constructor
-    · refine fun hs => ⟨1, zero_lt_one, fun hab => ?_⟩
-      rw_mod_cast [hammingDist_lt_one] at hab
-      rw [ofHamming_inj, ← mem_idRel] at hab
-      exact hs hab
-    · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
-      rw [mem_idRel] at hab
-      rw [hab]
+    · refine fun hs ↦ ⟨1, zero_lt_one, fun hab ↦ hs <| by simpa using hab⟩
+    · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ rfl
       refine hs (lt_of_eq_of_lt ?_ hε)
       exact mod_cast hammingDist_self _
   toBornology := ⟨⊥, bot_le⟩
