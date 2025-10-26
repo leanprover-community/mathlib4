@@ -3,7 +3,7 @@ Copyright (c) 2025 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.Functor.Strict
 
 /-!
 
@@ -75,14 +75,12 @@ section
 /-- The forgetful functor from an induced bicategory to the original bicategory,
 forgetting the extra data.
 -/
--- TODO: should be a StrictPseudofunctor!
-@[simps]
-def inducedPseudofunctor : Pseudofunctor (InducedBicategory C F) C where
-  obj X := F X.as
-  map f := f.hom
-  map₂ η := η
-  mapId b := eqToIso rfl
-  mapComp f g := eqToIso rfl
+@[simps!] -- TODO: do I want these simp lemmas?
+def inducedPseudofunctor : StrictPseudofunctor (InducedBicategory C F) C :=
+  StrictPseudofunctor.mk' {
+    obj X := F X.as
+    map f := f.hom
+    map₂ η := η }
 
 end
 
