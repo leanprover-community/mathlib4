@@ -342,7 +342,10 @@ lemma DenselyOrdered.subsingleton_of_discreteTopology [DiscreteTopology α] : Su
   suffices ∀ a b : α, b ≤ a from ⟨fun a b ↦ le_antisymm (this b a) (this a b)⟩
   intro a b
   by_contra! contra
-  suffices b ∈ Ioo a b by grind
+  suffices b ∈ Ioo a b by
+    #adaptation_note /-- 2025-10-25 https://github.com/leanprover/lean4/issues/10953
+      Used to be `grind`. -/
+    simp_all
   rw [← (isClosed_discrete (Ioo a b)).closure_eq, closure_Ioo contra.ne]
   grind
 

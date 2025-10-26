@@ -105,8 +105,8 @@ def parseUpToHere (pos : String.Pos.Raw) (post : String := "") : CommandElabM Sy
 is a substring of `s`:
 the syntax is an atom with value `pattern` whose the range is the range of `pattern` in `s`. -/
 def toSyntax (s pattern : String) (offset : String.Pos.Raw := 0) : Syntax :=
-  let beg := ((s.splitOn pattern).getD 0 "").endPos.offsetBy offset
-  let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos.offsetBy offset
+  let beg := ((s.splitOn pattern).getD 0 "").rawEndPos.offsetBy offset
+  let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).rawEndPos.offsetBy offset
   mkAtomFrom (.ofRange ⟨beg, fin⟩) pattern
 
 /-- Return if `line` looks like a correct authors line in a copyright header.
@@ -193,7 +193,7 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
     -- If the list of authors spans multiple lines, all but the last line should end with a trailing
     -- comma. This excludes e.g. other comments in the copyright header.
     let authorsLine := "\n".intercalate authorsLines
-    let authorsStart := (("\n".intercalate [openComment, copyrightAuthor, license, ""])).endPos
+    let authorsStart := (("\n".intercalate [openComment, copyrightAuthor, license, ""])).rawEndPos
     if authorsLines.length > 1 && !authorsLines.dropLast.all (·.endsWith ",") then
       output := output.push ((toSyntax copyright authorsLine),
         "If an authors line spans multiple lines, \
