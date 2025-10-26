@@ -214,9 +214,7 @@ theorem orderOf_eq_iff {n} (h : 0 < n) :
   split_ifs with h1
   · classical
     rw [find_eq_iff]
-    simp only [h, true_and]
-    push_neg
-    rfl
+    simp only [h, true_and, not_and]
   · rw [iff_false_left h.ne]
     rintro ⟨h', -⟩
     exact h1 ⟨n, h, h'⟩

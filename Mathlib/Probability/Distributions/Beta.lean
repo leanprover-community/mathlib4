@@ -74,7 +74,7 @@ lemma betaPDF_of_pos_lt_one {α β x : ℝ} (hx_pos : 0 < x) (hx_lt : x < 1) :
 lemma lintegral_betaPDF {α β : ℝ} :
     ∫⁻ x, betaPDF α β x =
       ∫⁻ (x : ℝ) in Ioo 0 1, ENNReal.ofReal (1 / beta α β * x ^ (α - 1) * (1 - x) ^ (β - 1)) := by
-    rw [← lintegral_add_compl _ measurableSet_Iic,
+  rw [← lintegral_add_compl _ measurableSet_Iic,
     setLIntegral_eq_zero measurableSet_Iic (fun x (hx : x ≤ 0) ↦ betaPDF_eq_zero_of_nonpos hx),
     zero_add, compl_Iic, ← lintegral_add_compl _ measurableSet_Ici,
     setLIntegral_eq_zero measurableSet_Ici (fun x (hx : 1 ≤ x) ↦ betaPDF_eq_zero_of_one_le hx),

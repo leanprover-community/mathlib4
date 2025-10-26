@@ -203,24 +203,18 @@ section NormedDivisionRing
 variable [NormedDivisionRing R]
 
 /-- The spectral value of a monic polynomial `P` is less than or equal to one if and only
-  if all of its coefficients have norm less than or equal to 1. -/
+if all of its coefficients have norm less than or equal to 1. -/
 theorem spectralValue_le_one_iff {P : R[X]} (hP : Monic P) :
     spectralValue P ≤ 1 ↔ ∀ n : ℕ, ‖P.coeff n‖ ≤ 1 := by
   rw [spectralValue]
   refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
-  · by_contra! hn
-    have hsupr : 1 < iSup (spectralValueTerms P) := by
-      refine lt_of_lt_of_le ?_ (le_ciSup (spectralValueTerms_bddAbove P) n)
-      simp only [spectralValueTerms]
-      split_ifs with hPn
-      · exact Real.one_lt_rpow hn (by simp [hPn])
-      · rw [not_lt, le_iff_lt_or_eq] at hPn
-        rcases hPn with hlt | heq
-        · simpa [coeff_eq_zero_of_natDegree_lt hlt, norm_zero] using hn
-        · rw [Monic, leadingCoeff, heq] at hP
-          rw [hP, norm_one] at hn
-          exact hn.false.elim
-    exact (hsupr.trans_le h).false
+  · obtain hPn | hPn | hPn := lt_trichotomy P.natDegree n
+    · simp [coeff_eq_zero_of_natDegree_lt hPn]
+    · rw [← hPn, hP.coeff_natDegree, norm_one]
+    · have : spectralValueTerms P n ≤ 1 := le_ciSup (spectralValueTerms_bddAbove P) n |>.trans h
+      contrapose! this
+      simp only [spectralValueTerms_of_lt_natDegree _ hPn]
+      exact Real.one_lt_rpow this (by simp [hPn])
   · apply ciSup_le (fun n ↦ ?_)
     rw [spectralValueTerms]
     split_ifs with hn
@@ -251,8 +245,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
   by_cases hx0 : f x = 0
   · rw [hx0]; exact spectralValue_nonneg p
   · by_contra h_ge
-    have hn_lt : ∀ (n : ℕ) (_ : n < p.natDegree), ‖p.coeff n‖ < f x ^ (p.natDegree - n) := by
-      intro n hn
+    have hn_lt (n : ℕ) (hn : n < p.natDegree) : ‖p.coeff n‖ < f x ^ (p.natDegree - n) := by
       have hexp : (‖p.coeff n‖ ^ (1 / (p.natDegree - n : ℝ))) ^ (p.natDegree - n) =
           ‖p.coeff n‖ := by
         rw [← rpow_natCast, ← rpow_mul (norm_nonneg _), mul_comm, rpow_mul (norm_nonneg _),
@@ -269,8 +262,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     have h_deg : 0 < p.natDegree := natDegree_pos_of_monic_of_aeval_eq_zero hp hx
     have h_lt : f ((Finset.range p.natDegree).sum fun i : ℕ ↦ p.coeff i • x ^ i) <
         f (x ^ p.natDegree) := by
-      have hn' : ∀ (n : ℕ) (_ : n < p.natDegree), f (p.coeff n • x ^ n) < f (x ^ p.natDegree) := by
-        intro n hn
+      have hn' (n : ℕ) (hn : n < p.natDegree) : f (p.coeff n • x ^ n) < f (x ^ p.natDegree) := by
         by_cases hn0 : n = 0
         · rw [hn0, pow_zero, map_smul_eq_mul, hf_pm _ (succ_le_iff.mpr h_deg),
             ← Nat.sub_zero p.natDegree, ← hn0]
