@@ -644,6 +644,7 @@ theorem swap_self (a : α) : swap a a = Equiv.refl _ :=
 theorem swap_comm (a b : α) : swap a b = swap b a :=
   ext fun r => swapCore_comm r _ _
 
+@[aesop simp, grind =]
 theorem swap_apply_def (a b x : α) : swap a b x = if x = a then b else if x = b then a else x :=
   rfl
 
