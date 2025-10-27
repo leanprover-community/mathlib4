@@ -60,12 +60,12 @@ inductive Walk : V → V → Type u
 attribute [refl] Walk.nil
 
 @[simps]
-instance Walk.instInhabited (v : V) : Inhabited (G.Walk v v) := ⟨nil⟩
+instance Walk.instInhabited (v : V) : Inhabited (G.Walk v v) := ⟨Walk.nil⟩
 
 /-- The one-edge walk associated to a pair of adjacent vertices. -/
 @[match_pattern, reducible]
 def Adj.toWalk {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : G.Walk u v :=
-  Walk.nil.cons h
+  Walk.cons h Walk.nil
 
 namespace Walk
 
@@ -73,11 +73,11 @@ variable {G}
 
 /-- Pattern to get `Walk.nil` with the vertex as an explicit argument. -/
 @[match_pattern]
-abbrev nil' (u : V) : G.Walk u u := nil
+abbrev nil' (u : V) : G.Walk u u := Walk.nil
 
 /-- Pattern to get `Walk.cons` with the vertices as explicit arguments. -/
 @[match_pattern]
-abbrev cons' (u v w : V) (h : G.Adj u v) (p : G.Walk v w) : G.Walk u w := p.cons h
+abbrev cons' (u v w : V) (h : G.Adj u v) (p : G.Walk v w) : G.Walk u w := Walk.cons h p
 
 /-- Change the endpoints of a walk using equalities. This is helpful for relaxing
 definitional equality constraints and to be able to state otherwise difficult-to-state
@@ -136,7 +136,7 @@ theorem concat_eq_append {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
 /-- The concatenation of the reverse of the first walk with the second walk. -/
 protected def reverseAux {u v w : V} : G.Walk u v → G.Walk u w → G.Walk v w
   | nil, q => q
-  | cons h p, q => p.reverseAux (q.cons (G.symm h))
+  | cons h p, q => Walk.reverseAux p (cons (G.symm h) q)
 
 /-- The walk in reverse. -/
 @[symm]
@@ -184,16 +184,16 @@ lemma getVert_cons_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
 
 lemma getVert_cons {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : n ≠ 0) :
     (p.cons h).getVert n = p.getVert (n - 1) := by
-  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
+  obtain ⟨_, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
   rfl
 
 @[simp]
 theorem cons_append {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (q : G.Walk w x) :
-    (p.cons h).append q = (p.append q).cons h := rfl
+    (cons h p).append q = cons h (p.append q) := rfl
 
 @[simp]
 theorem cons_nil_append {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h nil).append p = p.cons h := rfl
+    (cons h nil).append p = cons h p := rfl
 
 @[simp]
 theorem nil_append {u v : V} (p : G.Walk u v) : nil.append p = p :=
@@ -213,22 +213,22 @@ theorem append_copy_copy {u v w u' v' w'} (p : G.Walk u v) (q : G.Walk v w)
     (p.copy hu hv).append (q.copy hv hw) = (p.append q).copy hu hw := by
   subst_vars; rfl
 
-theorem concat_nil {u v : V} (h : G.Adj u v) : nil.concat h = nil.cons h := rfl
+theorem concat_nil {u v : V} (h : G.Adj u v) : nil.concat h = cons h nil := rfl
 
 @[simp]
 theorem concat_cons {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (h' : G.Adj w x) :
-    (p.cons h).concat h' = (p.concat h').cons h := rfl
+    (cons h p).concat h' = cons h (p.concat h') := rfl
 
 theorem append_concat {u v w x : V} (p : G.Walk u v) (q : G.Walk v w) (h : G.Adj w x) :
     p.append (q.concat h) = (p.append q).concat h := append_assoc _ _ _
 
 theorem concat_append {u v w x : V} (p : G.Walk u v) (h : G.Adj v w) (q : G.Walk w x) :
-    (p.concat h).append q = p.append (q.cons h) := by
+    (p.concat h).append q = p.append (cons h q) := by
   rw [concat_eq_append, ← append_assoc, cons_nil_append]
 
 /-- A non-trivial `cons` walk is representable as a `concat` walk. -/
 theorem exists_cons_eq_concat {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    ∃ (x : V) (q : G.Walk u x) (h' : G.Adj x w), p.cons h = q.concat h' := by
+    ∃ (x : V) (q : G.Walk u x) (h' : G.Adj x w), cons h p = q.concat h' := by
   induction p generalizing u with
   | nil => exact ⟨_, nil, h, rfl⟩
   | cons h' p ih =>
@@ -239,19 +239,19 @@ theorem exists_cons_eq_concat {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
 /-- A non-trivial `concat` walk is representable as a `cons` walk. -/
 theorem exists_concat_eq_cons {u v w : V} :
     ∀ (p : G.Walk u v) (h : G.Adj v w),
-      ∃ (x : V) (h' : G.Adj u x) (q : G.Walk x w), p.concat h = q.cons h'
+      ∃ (x : V) (h' : G.Adj u x) (q : G.Walk x w), p.concat h = cons h' q
   | nil, h => ⟨_, h, nil, rfl⟩
   | cons h' p, h => ⟨_, h', Walk.concat p h, concat_cons _ _ _⟩
 
 @[simp]
 theorem reverse_nil {u : V} : (nil : G.Walk u u).reverse = nil := rfl
 
-theorem reverse_singleton {u v : V} (h : G.Adj u v) : (nil.cons h).reverse = nil.cons (G.symm h) :=
+theorem reverse_singleton {u v : V} (h : G.Adj u v) : (cons h nil).reverse = cons (G.symm h) nil :=
   rfl
 
 @[simp]
 theorem cons_reverseAux {u v w x : V} (p : G.Walk u v) (q : G.Walk w x) (h : G.Adj w u) :
-    (p.cons h).reverseAux q = p.reverseAux (q.cons (G.symm h)) := rfl
+    (cons h p).reverseAux q = p.reverseAux (cons (G.symm h) q) := rfl
 
 @[simp]
 protected theorem append_reverseAux {u v w x : V}
@@ -274,7 +274,7 @@ protected theorem reverseAux_eq_reverse_append {u v w : V} (p : G.Walk u v) (q :
 
 @[simp]
 theorem reverse_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (p.cons h).reverse = p.reverse.append (nil.cons (G.symm h)) := by simp [reverse]
+    (cons h p).reverse = p.reverse.append (cons (G.symm h) nil) := by simp [reverse]
 
 @[simp]
 theorem reverse_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
@@ -287,7 +287,7 @@ theorem reverse_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
 
 @[simp]
 theorem reverse_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
-    (p.concat h).reverse = p.reverse.cons (G.symm h) := by simp [concat_eq_append]
+    (p.concat h).reverse = cons (G.symm h) p.reverse := by simp [concat_eq_append]
 
 @[simp]
 theorem reverse_reverse {u v : V} (p : G.Walk u v) : p.reverse.reverse = p := by
@@ -309,7 +309,7 @@ theorem length_nil {u : V} : (nil : G.Walk u u).length = 0 := rfl
 
 @[simp]
 theorem length_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (p.cons h).length = p.length + 1 := rfl
+    (cons h p).length = p.length + 1 := rfl
 
 @[simp]
 theorem length_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
@@ -351,7 +351,7 @@ lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) 
   induction p with
   | nil => simp at hp
   | cons h p' =>
-    simp at hp
+    simp only [Walk.length_cons, add_eq_right] at hp
     exact (p'.eq_of_length_eq_zero hp) ▸ h
 
 @[simp]
@@ -366,7 +366,7 @@ theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
   induction p with
   | nil => rfl
   | cons h p ih =>
-    simp [getVert_append, ih]
+    simp only [reverse_cons, getVert_append, length_reverse, ih, length_cons]
     split_ifs
     next hi => simp only [Nat.succ_sub hi.le, Nat.succ_eq_add_one, getVert_cons_succ]
     next hi =>
@@ -404,8 +404,10 @@ theorem concatRec_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
   simp only [concatRec]
   apply eq_of_heq (rec_heq_of_heq _ _)
   trans concatRecAux @Hnil @Hconcat (cons h.symm p.reverse)
-  · congr; simp
-  · rw [concatRecAux, eqRec_heq_iff_heq]; congr <;> simp
+  · congr
+    simp
+  · rw [concatRecAux, eqRec_heq_iff_heq]
+    congr <;> simp
 
 end ConcatRec
 
@@ -500,7 +502,7 @@ theorem support_eq_concat {u v : V} (p : G.Walk u v) : p.support = p.support.dro
   cases p with
   | nil => rfl
   | cons h p =>
-    obtain ⟨_, _, _, hq⟩ := p.exists_cons_eq_concat h
+    obtain ⟨_, _, _, hq⟩ := exists_cons_eq_concat h p
     simp [hq]
 
 @[simp]
@@ -529,7 +531,7 @@ theorem mem_tail_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk 
 
 @[simp]
 theorem end_mem_tail_support_of_ne {u v : V} (h : u ≠ v) (p : G.Walk u v) : v ∈ p.support.tail := by
-  obtain ⟨_, _, _, rfl⟩ := p.exists_eq_cons_of_ne h
+  obtain ⟨_, _, _, rfl⟩ := exists_eq_cons_of_ne h p
   simp
 
 @[simp, nolint unusedHavesSuffices]
@@ -574,13 +576,13 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
 theorem isChain_adj_cons_support {u v w : V} (h : G.Adj u v) :
     ∀ (p : G.Walk v w), List.IsChain G.Adj (u :: p.support)
   | nil => .cons_cons h (.singleton _)
-  | cons h' p => (isChain_adj_cons_support h' p).cons_cons h
+  | cons h' p => .cons_cons h (isChain_adj_cons_support h' p)
 
 @[deprecated (since := "2025-09-24")] alias chain_adj_support := isChain_adj_cons_support
 
 theorem isChain_adj_support {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.Adj p.support
   | nil => .singleton _
-  | cons h p => p.isChain_adj_cons_support h
+  | cons h p => isChain_adj_cons_support h p
 
 @[deprecated (since := "2025-09-24")] alias chain'_adj_support := isChain_adj_support
 
@@ -588,12 +590,12 @@ theorem isChain_dartAdj_cons_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G
     List.IsChain G.DartAdj (d :: p.darts) := by
   induction p generalizing d with
   | nil => exact .singleton _
-  | cons h' p ih => exact (ih rfl).cons_cons h
+  | cons h' p ih => exact .cons_cons h (ih rfl)
 
 theorem isChain_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.DartAdj p.darts
   | nil => .nil
   -- Porting note: needed to defer `rfl` to help elaboration
-  | cons h p => p.isChain_dartAdj_cons_darts (by rfl)
+  | cons h p => isChain_dartAdj_cons_darts (by rfl) p
 
 @[deprecated (since := "2025-09-24")] alias chain_dartAdj_darts := isChain_dartAdj_cons_darts
 @[deprecated (since := "2025-09-24")] alias chain'_dartAdj_darts := isChain_dartAdj_darts
@@ -644,14 +646,14 @@ theorem cons_map_snd_darts {u v : V} (p : G.Walk u v) : (u :: p.darts.map (·.sn
   induction p <;> simp [*]
 
 theorem map_snd_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.snd) = p.support.tail := by
-  simpa using congr_arg List.tail p.cons_map_snd_darts
+  simpa using congr_arg List.tail (cons_map_snd_darts p)
 
 theorem map_fst_darts_append {u v : V} (p : G.Walk u v) :
     p.darts.map (·.fst) ++ [v] = p.support := by
   induction p <;> simp [*]
 
 theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.support.dropLast := by
-  simpa! using congr_arg List.dropLast p.map_fst_darts_append
+  simpa! using congr_arg List.dropLast (map_fst_darts_append p)
 
 @[simp]
 theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
@@ -705,7 +707,7 @@ theorem length_edges {u v : V} (p : G.Walk u v) : p.edges.length = p.length := b
 theorem dart_fst_mem_support_of_mem_darts {u v : V} :
     ∀ (p : G.Walk u v) {d : G.Dart}, d ∈ p.darts → d.fst ∈ p.support
   | cons h p', d, hd => by
-    simp at hd ⊢
+    simp only [support_cons, darts_cons, List.mem_cons] at hd ⊢
     rcases hd with rfl | hd
     · exact .inl rfl
     · exact .inr (dart_fst_mem_support_of_mem_darts _ hd)
@@ -731,7 +733,7 @@ theorem darts_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
   induction p with
   | nil => simp
   | cons _ p' ih =>
-    simp at h ⊢
+    simp only [darts_cons, support_cons, List.nodup_cons] at h ⊢
     exact ⟨(h.1 <| dart_fst_mem_support_of_mem_darts p' ·), ih h.2⟩
 
 theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.Nodup) :
@@ -739,7 +741,7 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
   induction p with
   | nil => simp
   | cons _ p' ih =>
-    simp at h ⊢
+    simp [edges_cons, support_cons, List.nodup_cons] at h ⊢
     exact ⟨(h.1 <| fst_mem_support_of_mem_edges p' ·), ih h.2⟩
 
 lemma getVert_eq_support_getElem {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
@@ -776,30 +778,30 @@ theorem range_getVert_eq_range_support_getElem {u v : V} (p : G.Walk u v) :
 
 theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
-  rw [support_reverse]
-  refine List.nodup_tail_reverse p.support ?h
+  rw [Walk.support_reverse]
+  refine List.nodup_tail_reverse p.support ?_
   rw [← getVert_eq_support_getElem? _ (by cutsat), List.getLast?_eq_getElem?,
-    ← getVert_eq_support_getElem? _ (by rw [length_support]; cutsat)]
-  aesop
+    ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; cutsat)]
+  simp
 
 theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v → List (Sym2 V))
-  | nil, nil, _ => rfl
-  | nil, cons _ _, h => by simp at h
-  | cons _ _, nil, h => by simp at h
-  | cons' u v c h₁ w₁, cons' _ v' _ h₂ w₂, h => by
+  | .nil, .nil, _ => rfl
+  | .nil, .cons _ _, h => by simp at h
+  | .cons _ _, .nil, h => by simp at h
+  | .cons' u v c h₁ w₁, .cons' _ v' _ h₂ w₂, h => by
     have h₃ : u ≠ v' := by rintro rfl; exact G.loopless _ h₂
     obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₃] using h
-    obtain rfl := edges_injective h₃
+    obtain rfl := Walk.edges_injective h₃
     rfl
 
-theorem darts_injective {u v : V} : Function.Injective (darts : G.Walk u v → List G.Dart) :=
+theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
   edges_injective.of_comp
 
 /-- The `Set` of edges of a walk. -/
 def edgeSet {u v : V} (p : G.Walk u v) : Set (Sym2 V) := {e | e ∈ p.edges}
 
 @[simp]
-lemma mem_edgeSet {u v : V} {p : G.Walk u v} {e : Sym2 V} : e ∈ p.edgeSet ↔ e ∈ p.edges := .rfl
+lemma mem_edgeSet {u v : V} {p : G.Walk u v} {e : Sym2 V} : e ∈ p.edgeSet ↔ e ∈ p.edges := Iff.rfl
 
 @[simp]
 lemma edgeSet_nil (u : V) : (nil : G.Walk u u).edgeSet = ∅ := by ext; simp
@@ -809,7 +811,7 @@ lemma edgeSet_reverse {u v : V} (p : G.Walk u v) : p.reverse.edgeSet = p.edgeSet
 
 @[simp]
 theorem edgeSet_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (p.cons h).edgeSet = insert s(u, v) p.edgeSet := by ext; simp
+    (cons h p).edgeSet = insert s(u, v) p.edgeSet := by ext; simp
 
 @[simp]
 theorem edgeSet_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
@@ -837,14 +839,14 @@ variable {u v w : V}
 
 @[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
-@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (p.cons h).Nil := nofun
+@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
 
 instance (p : G.Walk v w) : Decidable p.Nil :=
   match p with
   | nil => isTrue .nil
   | cons _ _ => isFalse nofun
 
-protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | nil => rfl
+protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
 
 lemma not_nil_of_ne {p : G.Walk v w} : v ≠ w → ¬ p.Nil := mt Nil.eq
 
@@ -858,7 +860,7 @@ lemma not_nil_iff_lt_length {p : G.Walk v w} : ¬ p.Nil ↔ 0 < p.length := by
   cases p <;> simp
 
 lemma not_nil_iff {p : G.Walk v w} :
-    ¬ p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = q.cons h := by
+    ¬ p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = cons h q := by
   cases p <;> simp [*]
 
 @[simp]
@@ -899,9 +901,9 @@ theorem end_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : v ∈ p
 /-- The walk obtained by removing the first `n` darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   match p, n with
-  | nil, _ => nil
+  | .nil, _ => .nil
   | p, 0 => p.copy (getVert_zero p).symm rfl
-  | cons _ q, (n + 1) => q.drop n
+  | .cons _ q, (n + 1) => q.drop n
 
 @[simp]
 lemma drop_length (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n := by
@@ -924,9 +926,9 @@ lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
 /-- The walk obtained by taking the first `n` darts of a walk. -/
 def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   match p, n with
-  | nil, _ => nil
-  | p, 0 => nil.copy rfl p.getVert_zero.symm
-  | cons h q, (n + 1) => (q.take n).cons h
+  | .nil, _ => .nil
+  | p, 0 => nil.copy rfl (getVert_zero p).symm
+  | .cons h q, (n + 1) => .cons h (q.take n)
 
 @[simp]
 lemma take_length (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.length := by
@@ -947,14 +949,14 @@ abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
 lemma penultimate_nil : (@nil _ G v).penultimate = v := rfl
 
 @[simp]
-lemma penultimate_cons_nil (h : G.Adj u v) : (nil.cons h).penultimate = u := rfl
+lemma penultimate_cons_nil (h : G.Adj u v) : (cons h nil).penultimate = u := rfl
 
 @[simp]
 lemma penultimate_cons_cons {w'} (h : G.Adj u v) (h₂ : G.Adj v w) (p : G.Walk w w') :
-    ((p.cons h₂).cons h).penultimate = (p.cons h₂).penultimate := rfl
+    (cons h (cons h₂ p)).penultimate = (cons h₂ p).penultimate := rfl
 
 lemma penultimate_cons_of_not_nil (h : G.Adj u v) (p : G.Walk v w) (hp : ¬ p.Nil) :
-    (p.cons h).penultimate = p.penultimate :=
+    (cons h p).penultimate = p.penultimate :=
   p.notNilRec (by simp) hp h
 
 @[simp]
@@ -964,7 +966,7 @@ lemma penultimate_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
 @[simp]
 lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
     G.Adj p.penultimate w := by
-  conv => rhs; rw [← p.getVert_length]
+  conv => rhs; rw [← getVert_length p]
   rw [nil_iff_length_eq] at hp
   convert adj_getVert_succ _ _ <;> omega
 
@@ -980,8 +982,8 @@ lemma penultimate_reverse (p : G.Walk u v) : p.reverse.penultimate = p.snd := by
 def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
 
 lemma drop_zero {u v} (p : G.Walk u v) :
-    p.drop 0 = p.copy p.getVert_zero.symm rfl := by
-  cases p <;> simp [drop]
+    p.drop 0 = p.copy (getVert_zero p).symm rfl := by
+  cases p <;> simp [Walk.drop]
 
 lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
     (p.drop n).support = p.support.drop (n ⊓ p.length) := by
@@ -991,14 +993,14 @@ lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
 def dropLast (p : G.Walk u v) : G.Walk u p.penultimate := p.take (p.length - 1)
 
 @[simp]
-lemma tail_nil : (@nil _ G v).tail = nil := rfl
+lemma tail_nil : (@nil _ G v).tail = .nil := rfl
 
 @[simp]
 lemma tail_cons_nil (h : G.Adj u v) : (nil.cons h).tail = nil := rfl
 
 @[simp]
 lemma tail_cons (h : G.Adj u v) (p : G.Walk v w) :
-    (p.cons h).tail = p.copy p.getVert_zero.symm rfl := by
+    (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
   cases p <;> rfl
 
 @[deprecated (since := "2025-08-19")] alias tail_cons_eq := tail_cons
@@ -1007,14 +1009,14 @@ lemma tail_cons (h : G.Adj u v) (p : G.Walk v w) :
 lemma dropLast_nil : (@nil _ G v).dropLast = nil := rfl
 
 @[simp]
-lemma dropLast_cons_nil (h : G.Adj u v) : (nil.cons h).dropLast = nil := rfl
+lemma dropLast_cons_nil (h : G.Adj u v) : (cons h nil).dropLast = nil := rfl
 
 @[simp]
 lemma dropLast_cons_cons {w'} (h : G.Adj u v) (h₂ : G.Adj v w) (p : G.Walk w w') :
-    ((p.cons h₂).cons h).dropLast = (p.cons h₂).dropLast.cons h := rfl
+    (cons h (cons h₂ p)).dropLast = cons h (cons h₂ p).dropLast := rfl
 
 lemma dropLast_cons_of_not_nil (h : G.Adj u v) (p : G.Walk v w) (hp : ¬ p.Nil) :
-    (p.cons h).dropLast = (p.dropLast.copy rfl (penultimate_cons_of_not_nil _ _ hp).symm).cons h :=
+    (cons h p).dropLast = cons h (p.dropLast.copy rfl (penultimate_cons_of_not_nil _ _ hp).symm) :=
   p.notNilRec (by simp) hp h
 
 @[simp]
@@ -1046,7 +1048,7 @@ lemma edge_lastDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.lastDart hp).edge = s(p.penultimate, w) := rfl
 
 lemma cons_tail_eq (p : G.Walk u v) (hp : ¬ p.Nil) :
-    p.tail.cons (p.adj_snd hp) = p := by
+    cons (p.adj_snd hp) p.tail = p := by
   cases p <;> simp at hp ⊢
 
 @[simp]
@@ -1078,7 +1080,7 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
 
 @[simp] lemma support_tail (p : G.Walk u u) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
-  rw [← p.cons_support_tail hp, List.tail_cons]
+  rw [← cons_support_tail p hp, List.tail_cons]
 
 lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
     p.tail.support = p.support.tail := by
@@ -1094,7 +1096,7 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
     rename_i x _
     by_cases h : x ∈ S
     · obtain ⟨d, hd, hcd⟩ := ih h vS
-      exact ⟨d, hd.tail _, hcd⟩
+      exact ⟨d, List.Mem.tail _ hd, hcd⟩
     · exact ⟨⟨_, a⟩, List.Mem.head _, uS, h⟩
 
 @[simp] lemma getVert_copy {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
@@ -1115,7 +1117,7 @@ lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
     cases p with
     | nil => simp at h
     | cons _ p =>
-      simp [List.cons.injEq] at h
+      simp only [support_cons, List.cons.injEq, true_and] at h
       apply List.getElem_of_eq at h
       specialize h (i := 0) (by simp)
       simp_rw [List.getElem_zero, p.head_support, q.head_support] at h
@@ -1133,7 +1135,7 @@ lemma ext_getVert_le_length {u v} {p q : G.Walk u v} (hl : p.length = q.length)
   intro k
   cases le_or_gt k p.length with
   | inl hk =>
-    rw [← p.getVert_eq_support_getElem? hk, ← q.getVert_eq_support_getElem? (hl ▸ hk)]
+    rw [← getVert_eq_support_getElem? p hk, ← getVert_eq_support_getElem? q (hl ▸ hk)]
     exact congrArg some (h k hk)
   | inr hk =>
     replace hk : p.length + 1 ≤ k := hk
@@ -1161,7 +1163,7 @@ variable {G G' G''}
 /-- Given a graph homomorphism, map walks to walks. -/
 protected def map (f : G →g G') {u v : V} : G.Walk u v → G'.Walk (f u) (f v)
   | nil => nil
-  | cons h p => (p.map f).cons (f.map_adj h)
+  | cons h p => cons (f.map_adj h) (p.map f)
 
 variable (f : G →g G') (f' : G' →g G'') {u v u' v' : V} (p : G.Walk u v)
 
@@ -1169,7 +1171,7 @@ variable (f : G →g G') (f' : G' →g G'') {u v u' v' : V} (p : G.Walk u v)
 theorem map_nil : (nil : G.Walk u u).map f = nil := rfl
 
 @[simp]
-theorem map_cons {w : V} (h : G.Adj w u) : (p.cons h).map f = (p.map f).cons (f.map_adj h) := rfl
+theorem map_cons {w : V} (h : G.Adj w u) : (cons h p).map f = cons (f.map_adj h) (p.map f) := rfl
 
 @[simp]
 theorem map_copy (hu : u = u') (hv : v = v') :
@@ -1243,7 +1245,7 @@ protected def transfer {u v : V} (p : G.Walk u v)
   match p with
   | nil => nil
   | cons' u v w _ p =>
-    (p.transfer H fun e he => h e (by simp [he])).cons (h s(u, v) (by simp)) 
+    cons (h s(u, v) (by simp)) (p.transfer H fun e he => h e (by simp [he]))
 
 variable {u v : V} (p : G.Walk u v)
 
@@ -1286,7 +1288,8 @@ theorem transfer_append {w : V} (q : G.Walk v w) (hpq) :
 
 @[simp]
 theorem reverse_transfer (hp) :
-    (p.transfer H hp).reverse = p.reverse.transfer H (by simp; exact hp) := by
+    (p.transfer H hp).reverse =
+      p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse]; exact hp) := by
   induction p <;> simp [*]
 
 /-! ### Inducing a walk -/
@@ -1299,22 +1302,22 @@ protected def induce {u v : V} :
     ∀ (w : G.Walk u v) (hw : ∀ x ∈ w.support, x ∈ s),
       (G.induce s).Walk ⟨u, hw _ w.start_mem_support⟩ ⟨v, hw _ w.end_mem_support⟩
   | nil, hw => nil
-  | cons (v := u') huu' w, hw => (w.induce <| by simp_all).cons (induce_adj.2 huu')
+  | cons (v := u') huu' w, hw => .cons (induce_adj.2 huu') <| w.induce <| by simp_all
 
-@[simp] lemma induce_nil (hw) : (nil : G.Walk u u).induce s hw = nil := rfl
+@[simp] lemma induce_nil (hw) : (.nil : G.Walk u u).induce s hw = .nil := rfl
 
 @[simp] lemma induce_cons (huu' : G.Adj u u') (w : G.Walk u' v) (hw) :
-    (w.cons huu').induce s hw = (w.induce s <| by simp_all).cons (induce_adj.2 huu') := rfl
+    (w.cons huu').induce s hw = .cons (induce_adj.2 huu') (w.induce s <| by simp_all) := rfl
 
 @[simp] lemma support_induce {u v : V} :
     ∀ (w : G.Walk u v) (hw), (w.induce s hw).support = w.support.attachWith _ hw
-  | nil, hw => rfl
-  | cons (v := u') hu w, hw => by simp [support_induce]
+  | .nil, hw => rfl
+  | .cons (v := u') hu w, hw => by simp [support_induce]
 
 @[simp] lemma map_induce {u v : V} :
     ∀ (w : G.Walk u v) (hw), (w.induce s hw).map (Embedding.induce _).toHom = w
-  | nil, hw => rfl
-  | cons (v := u') huu' w, hw => by simp [map_induce]
+  | .nil, hw => rfl
+  | .cons (v := u') huu' w, hw => by simp [map_induce]
 
 end Walk
 
@@ -1334,13 +1337,13 @@ abbrev toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w)
 
 @[simp]
 theorem toDeleteEdges_nil (s : Set (Sym2 V)) {v : V} (hp) :
-    (nil : G.Walk v v).toDeleteEdges s hp = nil := rfl
+    (Walk.nil : G.Walk v v).toDeleteEdges s hp = Walk.nil := rfl
 
 @[simp]
 theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : G.Adj u v) (p : G.Walk v w) (hp) :
-    (p.cons h).toDeleteEdges s hp =
-      (p.toDeleteEdges s fun _ he ↦ hp _ <| he.tail _).cons
-        (deleteEdges_adj.mpr ⟨h, hp _ (List.Mem.head _)⟩) :=
+    (Walk.cons h p).toDeleteEdges s hp =
+      Walk.cons (deleteEdges_adj.mpr ⟨h, hp _ (List.Mem.head _)⟩)
+        (p.toDeleteEdges s fun _ he ↦ hp _ <| List.Mem.tail _ he) :=
   rfl
 
 variable {v w : V}
@@ -1353,7 +1356,7 @@ abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
 
 @[simp]
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
-    (p.toDeleteEdges s hp).map (.ofLE (G.deleteEdges_le s)) = p := by
+    Walk.map (.ofLE (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
   rw [← transfer_eq_map_ofLE, transfer_transfer, transfer_self]
   apply edges_transfer _ _ ▸ p.edges_subset_edgeSet
 
@@ -1385,7 +1388,7 @@ protected lemma IsSubwalk.cons {u v u' v' w} {p : G.Walk u v} {q : G.Walk u' v'}
 
 @[simp]
 lemma isSubwalk_cons {u v w} (p : G.Walk u v) (h : G.Adj w u) : p.IsSubwalk (p.cons h) :=
-  p.isSubwalk_rfl.cons h
+  (isSubwalk_rfl p).cons h
 
 lemma IsSubwalk.trans {u₁ v₁ u₂ v₂ u₃ v₃} {p₁ : G.Walk u₁ v₁} {p₂ : G.Walk u₂ v₂}
     {p₃ : G.Walk u₃ v₃} (h₁ : p₁.IsSubwalk p₂) (h₂ : p₂.IsSubwalk p₃) :
@@ -1410,7 +1413,7 @@ lemma isSubwalk_nil_iff {u v u'} (p : G.Walk u v) :
     · rintro ⟨rfl, rfl, ⟨⟩⟩
 
 lemma nil_isSubwalk_iff_exists {u' u v} (q : G.Walk u v) :
-    (nil : G.Walk u' u').IsSubwalk q ↔
+    (Walk.nil : G.Walk u' u').IsSubwalk q ↔
       ∃ (ru : G.Walk u u') (rv : G.Walk u' v), q = ru.append rv := by
   simp [IsSubwalk]
 
@@ -1439,9 +1442,9 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
         ← p₁.getVert_eq_support_getElem (Nat.le_refl _)]
     refine ⟨p₂.take s.length |>.copy rfl h₁, p₂.drop (s.length + p₁.length) |>.copy h₂ rfl, ?_⟩
     apply ext_support
-    simp [← h, support_append, take_support_eq_support_take_succ, List.take_append,
-      drop_support_eq_support_drop_min, List.tail_drop]
-    rw [min_eq_left (by grind [length_support]), List.drop_append, List.drop_append,
+    simp only [← h, support_append, support_copy, take_support_eq_support_take_succ,
+      List.take_append, drop_support_eq_support_drop_min, List.tail_drop]
+    rw [Nat.min_eq_left (by grind [length_support]), List.drop_append, List.drop_append,
       List.drop_eq_nil_of_le (by cutsat), List.drop_eq_nil_of_le (by grind [length_support]),
       p₁.support_eq_cons]
     simp +arith
