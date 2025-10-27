@@ -165,8 +165,8 @@ lemma natDegree_map_lt' (hp : f p.leadingCoeff = 0) (hp₀ : 0 < natDegree p) :
 
 theorem degree_map_eq_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCoeff p) ≠ 0) :
     degree (p.map f) = degree p := by
-  have hp0 := leadingCoeff_ne_zero.mp fun hp0 ↦ hf <| congr_arg _ hp0 |>.trans f.map_zero
-  simp [hf, hp0, degree_map_le.antisymm, degree_eq_natDegree, le_degree_of_ne_zero]
+  grind [degree_eq_natDegree, coeff_map, coeff_natDegree, le_degree_of_ne_zero, degree_map_le,
+    le_antisymm, leadingCoeff_ne_zero, RingHom.map_zero]
 
 theorem natDegree_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCoeff p) ≠ 0) :
     natDegree (p.map f) = natDegree p :=
@@ -174,13 +174,11 @@ theorem natDegree_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCo
 
 theorem leadingCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCoeff p) ≠ 0) :
     leadingCoeff (p.map f) = f (leadingCoeff p) := by
-  unfold leadingCoeff
-  simp [hf, natDegree_map_of_leadingCoeff_ne_zero]
+  grind [natDegree_map_of_leadingCoeff_ne_zero, coeff_map, coeff_natDegree]
 
 theorem nextCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f p.leadingCoeff ≠ 0) :
     (p.map f).nextCoeff = f p.nextCoeff := by
-  rw [nextCoeff, nextCoeff, natDegree_map_of_leadingCoeff_ne_zero _ hf]
-  split_ifs <;> simp
+  grind [nextCoeff, natDegree_map_of_leadingCoeff_ne_zero, coeff_map, map_zero]
 
 end Map
 
