@@ -25,6 +25,9 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
 /-- The tangent cone of a product contains the tangent cone of its left factor. -/
 theorem subset_tangentConeAt_prod_left (ht : y ∈ closure t) :
     LinearMap.inl 𝕜 E F '' tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
+  rintro _ ⟨v, hv, rfl⟩
+  rcases exists_fun_of_mem_tangentConeAt hv with ⟨α, l, hlne, c, d, hd₀, hds, hcd⟩
+  
   rintro _ ⟨v, ⟨c, d, hd, hc, hy⟩, rfl⟩
   have : ∀ n, ∃ d', y + d' ∈ t ∧ ‖c n • d'‖ < ((1 : ℝ) / 2) ^ n := by
     intro n

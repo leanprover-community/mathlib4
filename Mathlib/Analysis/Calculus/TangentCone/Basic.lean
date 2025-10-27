@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.TangentCone.Defs
-import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
@@ -17,32 +17,58 @@ and `UniqueDiffOn`.
 open Filter Set Metric NormedField
 open scoped Topology Pointwise
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E F G : Type*}
+namespace Filter
 
-section TVS
-variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable {x y : E} {s t : Set E}
+theorem HasBasis.map₂ {ια ιβ : Type*} {α β γ : Type*} {la : Filter α} {lb : Filter β}
+    {pa : ια → Prop} {sa : ια → Set α} {pb : ιβ → Prop} {sb : ιβ → Set β}
+    (f : α → β → γ) (ha : la.HasBasis pa sa) (hb : lb.HasBasis pb sb) :
+    (la.map₂ f lb).HasBasis (fun i : ια × ιβ ↦ pa i.1 ∧ pb i.2)
+      fun i ↦ ((sa i.1).image2 f (sb i.2)) := by
+  simpa [map_prod_eq_map₂] using (ha.prod hb).map f.uncurry
 
-theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
-    (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
-  refine ⟨fun n ↦ (r ^ n)⁻¹, fun n ↦ r ^ n • y, hs, ?_, ?_⟩
-  · simp only [norm_inv, norm_pow, ← inv_pow]
-    exact tendsto_pow_atTop_atTop_of_one_lt <| (one_lt_inv₀ (norm_pos_iff.2 hr₀)).2 hr
-  · simp only [inv_smul_smul₀ (pow_ne_zero _ hr₀), tendsto_const_nhds]
+@[to_additive]
+theorem HasBasis.smul {ια ιβ : Type*} {α β : Type*} [SMul α β]
+    {la : Filter α} {lb : Filter β} {pa : ια → Prop} {sa : ια → Set α}
+    {pb : ιβ → Prop} {sb : ιβ → Set β}
+    (ha : la.HasBasis pa sa) (hb : lb.HasBasis pb sb) :
+    (la • lb).HasBasis (fun i : ια × ιβ ↦ pa i.1 ∧ pb i.2) fun i ↦ (sa i.1 • sb i.2) :=
+  ha.map₂ (· • ·) hb
+
+theorem HasBasis.eq_top_iff {ι : Sort*} {α : Type*} {l : Filter α} {p : ι → Prop}
+    {s : ι → Set α} (h : l.HasBasis p s) : l = ⊤ ↔ ∀ i, p i → s i = univ := by
+  simp [← top_le_iff, h.ge_iff]
+
+theorem univ_smul_nhds_zero {G₀ X : Type*} [GroupWithZero G₀] [Zero X] [MulActionWithZero G₀ X]
+    [TopologicalSpace G₀] [(𝓝[≠] (0 : G₀)).NeBot] [TopologicalSpace X] [ContinuousSMul G₀ X]
+    {s : Set X} (hs : s ∈ 𝓝 0) :
+    (univ : Set G₀) • s = univ := by
+  refine eq_univ_of_forall fun x ↦ ?_
+  have : Tendsto (· • x) (𝓝 (0 : G₀)) (𝓝 0) := by
+    rw [← zero_smul G₀ x]
+    exact tendsto_id.smul tendsto_const_nhds
+  rcases nonempty_of_mem (inter_mem_nhdsWithin {0}ᶜ <| mem_map.1 <| this hs) with ⟨c, hc₀, hc⟩
+  refine ⟨c⁻¹, trivial, c • x, hc, ?_⟩
+  simp_all
 
 @[simp]
-theorem tangentConeAt_univ : tangentConeAt 𝕜 univ x = univ :=
-  let ⟨_r, hr₀, hr⟩ := exists_norm_lt_one 𝕜
-  eq_univ_of_forall fun _ ↦ mem_tangentConeAt_of_pow_smul (norm_pos_iff.1 hr₀) hr <|
-    Eventually.of_forall fun _ ↦ mem_univ _
+theorem top_smul_nhds_zero {G₀ X : Type*} [GroupWithZero G₀] [Zero X] [MulActionWithZero G₀ X]
+    [TopologicalSpace G₀] [(𝓝[≠] (0 : G₀)).NeBot] [TopologicalSpace X] [ContinuousSMul G₀ X] :
+    (⊤ : Filter G₀) • 𝓝 (0 : X) = ⊤ := by
+  rw [(hasBasis_top.smul (basis_sets _)).eq_top_iff]
+  rintro ⟨_, s⟩ ⟨-, hs⟩
+  exact univ_smul_nhds_zero hs
 
-@[deprecated (since := "2025-04-27")] alias tangentCone_univ := tangentConeAt_univ
+end Filter
+
+variable {𝕜 E : Type*}
+
+section SMulMonoid
+
+variable [AddCommMonoid E] [SMul 𝕜 E] [TopologicalSpace E] {s t : Set E} {x : E}
 
 @[gcongr]
-theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
-  rintro y ⟨c, d, ds, ctop, clim⟩
-  exact ⟨c, d, mem_of_superset ds fun n hn => h hn, ctop, clim⟩
+theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := fun y hy ↦
+  hy.mono <| by gcongr
 
 @[deprecated (since := "2025-04-27")] alias tangentCone_mono := tangentConeAt_mono
 
@@ -50,46 +76,36 @@ theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentCon
 Given `x ∈ s` and a field extension `𝕜 ⊆ 𝕜'`, the tangent cone of `s` at `x` with
 respect to `𝕜` is contained in the tangent cone of `s` at `x` with respect to `𝕜'`.
 -/
-@[gcongr]
-theorem tangentConeAt_mono_field {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-  [Module 𝕜' E] [IsScalarTower 𝕜 𝕜' E] : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜' s x := by
-  intro α hα
-  simp only [tangentConeAt, eventually_atTop, ge_iff_le, tendsto_norm_atTop_iff_cobounded,
-    mem_setOf_eq] at hα ⊢
-  obtain ⟨c, d, ⟨a, h₁a⟩, h₁, h₂⟩ := hα
-  use ((algebraMap 𝕜 𝕜') ∘ c), d
-  constructor
-  · use a
-  · constructor
-    · intro β hβ
-      rw [mem_map, mem_atTop_sets]
-      obtain ⟨n, hn⟩ := mem_atTop_sets.1
-        (mem_map.1 (h₁ (algebraMap_cobounded_le_cobounded (𝕜 := 𝕜) (𝕜' := 𝕜') hβ)))
-      use n, fun _ _ ↦ by simp_all
-    · simpa
+theorem tangentConeAt_mono_field
+    {𝕜' : Type*} [Monoid 𝕜'] [SMul 𝕜 𝕜'] [MulAction 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
+    tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜' s x := by
+  refine fun y hy ↦ hy.mono ?_
+  rw [← smul_one_smul (Filter 𝕜')]
+  grw [le_top (a := ⊤ • 1)]
 
-variable [ContinuousSMul 𝕜 E]
+theorem Filter.HasBasis.tangentConeAt_eq_biInter_closure {ι} {p : ι → Prop} {U : ι → Set E}
+    (h : (𝓝 0).HasBasis p U) :
+    tangentConeAt 𝕜 s x = ⋂ (i) (_ : p i), closure ((univ : Set 𝕜) • (U i ∩ (x + ·) ⁻¹' s)) := by
+  ext y
+  simp only [tangentConeAt, mem_setOf_eq, mem_iInter₂, ← map₂_smul, ← map_prod_eq_map₂,
+    ((nhdsWithin_hasBasis h _).top_prod.map _).clusterPt_iff_forall_mem_closure, image_prod,
+    image2_smul]
 
-/-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
-the sequence `d` tends to 0 at infinity. -/
-theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
-    (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
-    Tendsto d l (𝓝 0) := by
-  have : ∀ᶠ n in l, (c n)⁻¹ • c n • d n = d n :=
-    (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun n hn ↦ inv_smul_smul₀ hn (d n)
-  rw [tendsto_norm_atTop_iff_cobounded] at hc
-  simpa using Tendsto.congr' this <| (tendsto_inv₀_cobounded.comp hc).smul hd
+theorem tangentConeAt_eq_biInter_closure :
+    tangentConeAt 𝕜 s x = ⋂ U ∈ 𝓝 0, closure ((univ : Set 𝕜) • (U ∩ (x + ·) ⁻¹' s)) :=
+  (basis_sets _).tangentConeAt_eq_biInter_closure
 
 variable [ContinuousAdd E]
 
 theorem tangentConeAt_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
-  rintro y ⟨c, d, ds, ctop, clim⟩
-  refine ⟨c, d, ?_, ctop, clim⟩
-  suffices Tendsto (fun n => x + d n) atTop (𝓝[t] x) from
-    tendsto_principal.1 (tendsto_inf.1 this).2
-  refine (tendsto_inf.2 ⟨?_, tendsto_principal.2 ds⟩).mono_right h
-  simpa only [add_zero] using tendsto_const_nhds.add (tangentConeAt.lim_zero atTop ctop clim)
+  refine fun y hy ↦ hy.mono ?_
+  gcongr _ • ?_
+  rw [nhdsWithin_le_iff]
+  suffices Tendsto (x + ·) (𝓝[(x + ·) ⁻¹' s] 0) (𝓝[s] x) from
+    this.mono_right h |> tendsto_nhdsWithin_iff.mp |>.2
+  refine .inf ?_ (mapsTo_preimage _ _).tendsto
+  exact (continuous_add_left x).tendsto' 0 x (add_zero _)
 
 @[deprecated (since := "2025-04-27")] alias tangentCone_mono_nhds := tangentConeAt_mono_nhds
 
@@ -105,29 +121,52 @@ theorem tangentConeAt_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩
 
 @[deprecated (since := "2025-04-27")] alias tangentCone_inter_nhds := tangentConeAt_inter_nhds
 
-end TVS
+end SMulMonoid
 
-section Normed
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {x y : E} {s t : Set E}
+section SMulGroup
+
+variable [AddCommGroup E] [SMul 𝕜 E]
+  [TopologicalSpace E] [ContinuousAdd E] [ContinuousConstSMul 𝕜 E]
+  {s t : Set E} {x : E}
 
 @[simp]
 theorem tangentConeAt_closure : tangentConeAt 𝕜 (closure s) x = tangentConeAt 𝕜 s x := by
   refine Subset.antisymm ?_ (tangentConeAt_mono subset_closure)
-  rintro y ⟨c, d, ds, ctop, clim⟩
-  obtain ⟨u, -, u_pos, u_lim⟩ :
-      ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
-    exists_seq_strictAnti_tendsto (0 : ℝ)
-  have : ∀ᶠ n in atTop, ∃ d', x + d' ∈ s ∧ dist (c n • d n) (c n • d') < u n := by
-    filter_upwards [ctop.eventually_gt_atTop 0, ds] with n hn hns
-    rcases Metric.mem_closure_iff.mp hns (u n / ‖c n‖) (div_pos (u_pos n) hn) with ⟨y, hys, hy⟩
-    refine ⟨y - x, by simpa, ?_⟩
-    rwa [dist_smul₀, ← dist_add_left x, add_sub_cancel, ← lt_div_iff₀' hn]
-  simp only [Filter.skolem, eventually_and] at this
-  rcases this with ⟨d', hd's, hd'⟩
-  exact ⟨c, d', hd's, ctop, clim.congr_dist
-    (squeeze_zero' (.of_forall fun _ ↦ dist_nonneg) (hd'.mono fun _ ↦ le_of_lt) u_lim)⟩
+  simp only [(nhds_basis_opens _).tangentConeAt_eq_biInter_closure]
+  refine iInter₂_mono fun U hU ↦ closure_minimal ?_ isClosed_closure
+  grw [(isOpenMap_add_left x).preimage_closure_subset_closure_preimage, hU.2.inter_closure,
+    set_smul_closure_subset]
+
+end SMulGroup
+
+section TVS
+
+@[simp]
+theorem tangentConeAt_univ [DivisionSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+    [TopologicalSpace 𝕜] [(𝓝[≠] (0 : 𝕜)).NeBot] [TopologicalSpace E] [ContinuousSMul 𝕜 E] {x : E} :
+    tangentConeAt 𝕜 univ x = univ := by
+  simp [tangentConeAt]
+
+@[deprecated (since := "2025-04-27")] alias tangentCone_univ := tangentConeAt_univ
+
+/-
+TODO: restore, deprecate
+/-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
+the sequence `d` tends to 0 at infinity. -/
+theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
+    (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
+    Tendsto d l (𝓝 0) := by
+  have : ∀ᶠ n in l, (c n)⁻¹ • c n • d n = d n :=
+    (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun n hn ↦ inv_smul_smul₀ hn (d n)
+  rw [tendsto_norm_atTop_iff_cobounded] at hc
+  simpa using Tendsto.congr' this <| (tendsto_inv₀_cobounded.comp hc).smul hd
+-/
+
+end TVS
+
+section Normed
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {x y : E} {s t : Set E}
 
 /-- The tangent cone at a non-isolated point contains `0`. -/
 theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : x ∈ closure s) :
@@ -287,7 +326,6 @@ end TVS
 
 section Normed
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {x y : E} {s t : Set E}
 
 @[simp]

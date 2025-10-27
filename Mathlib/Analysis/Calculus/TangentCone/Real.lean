@@ -19,6 +19,12 @@ In this file we prove that
 open Filter Set
 open scoped Topology
 
+theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
+    (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
+  apply mem_tangentConeAt_of_seq (c := fun n ↦ (r ^ n)⁻¹) _ hs
+  · simp [hr₀, tendsto_const_nhds]
+  · simpa using (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).smul_const y
+
 section RealNormed
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]

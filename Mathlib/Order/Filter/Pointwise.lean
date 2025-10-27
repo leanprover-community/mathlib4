@@ -826,7 +826,7 @@ theorem smul_le_smul : f₁ ≤ f₂ → g₁ ≤ g₂ → f₁ • g₁ ≤ f�
 theorem smul_le_smul_left : g₁ ≤ g₂ → f • g₁ ≤ f • g₂ :=
   map₂_mono_left
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem smul_le_smul_right : f₁ ≤ f₂ → f₁ • g ≤ f₂ • g :=
   map₂_mono_right
 

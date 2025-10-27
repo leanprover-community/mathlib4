@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 # N-ary maps of filter
@@ -56,6 +57,13 @@ theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β
 @[simp]
 theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g = f ×ˢ g := by
   simp only [← map_prod_eq_map₂, map_id']
+
+theorem HasBasis.map₂ {ια ιβ : Type*} {α β γ : Type*} {la : Filter α} {lb : Filter β}
+    {pa : ια → Prop} {sa : ια → Set α} {pb : ιβ → Prop} {sb : ιβ → Set β}
+    (f : α → β → γ) (ha : la.HasBasis pa sa) (hb : lb.HasBasis pb sb) :
+    (la.map₂ f lb).HasBasis (fun i : ια × ιβ ↦ pa i.1 ∧ pb i.2)
+      fun i ↦ ((sa i.1).image2 f (sb i.2)) := by
+  simpa [map_prod_eq_map₂'] using (ha.prod hb).map f.uncurry
 
 -- lemma image2_mem_map₂_iff (hm : injective2 m) : image2 m s t ∈ map₂ m f g ↔ s ∈ f ∧ t ∈ g :=
 -- ⟨by { rintro ⟨u, v, hu, hv, h⟩, rw image2_subset_image2_iff hm at h,

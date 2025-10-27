@@ -23,6 +23,9 @@ universe u v w
 variable {X : Type u} [TopologicalSpace X] {Y : Type v} {ι : Sort w} {α β : Type*}
   {x : X} {s s₁ s₂ t : Set X}
 
+@[simp]
+protected lemma ClusterPt.top : ClusterPt x ⊤ := by simp [ClusterPt]
+
 theorem clusterPt_sup {F G : Filter X} : ClusterPt x (F ⊔ G) ↔ ClusterPt x F ∨ ClusterPt x G := by
   simp only [ClusterPt, inf_sup_left, sup_neBot]
 
