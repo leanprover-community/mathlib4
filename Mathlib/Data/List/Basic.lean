@@ -449,7 +449,7 @@ theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
 theorem surjective_get_iff {l : List α} : l.get.Surjective ↔ (∀ x, x ∈ l) :=
   ⟨fun h x ↦ mem_iff_get.mpr <| h x, fun h x ↦ mem_iff_get.mp <| h x⟩
 
-theorem surjective_getElem_iff {l : List α} :
+theorem surjective_getElem_fin_iff {l : List α} :
     (fun (n : Fin l.length) ↦ l[n]).Surjective ↔ (∀ x, x ∈ l) :=
   surjective_get_iff
 
