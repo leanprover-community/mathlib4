@@ -176,10 +176,11 @@ private lemma le_aeval_of_isMonicOfDegree (x : F) {M : ℝ} (hM : 0 ≤ M)
     simpa only [pow_succ, mul_comm, H, aeval_mul, H', sub_add, ← map_sub, norm_mul]
       using mul_le_mul (ih hf₂) (h (c - r)) hM (norm_nonneg _)
 
+open Set in
 /- We show that when `z ↦ ‖x - algebraMap ℂ F z‖` is never zero (and attains a minimum), then
 it is constant. This uses the auxiliary result `norm_eq_of_isMinOn_of_forall_le`. -/
 private lemma norm_sub_eq_norm_sub_of_isMinOn {x : F} {z : ℂ}
-    (hz : IsMinOn (‖x - algebraMap ℂ F ·‖) Set.univ z) (H : ∀ z' : ℂ, ‖x - algebraMap ℂ F z'‖ ≠ 0)
+    (hz : IsMinOn (‖x - algebraMap ℂ F ·‖) univ z) (H : ∀ z' : ℂ, ‖x - algebraMap ℂ F z'‖ ≠ 0)
     (c : ℂ) :
     ‖x - algebraMap ℂ F c‖ = ‖x - algebraMap ℂ F z‖ := by
   set M := ‖x - algebraMap ℂ F z‖ with hMdef
@@ -199,7 +200,7 @@ private lemma norm_sub_eq_norm_sub_of_isMinOn {x : F} {z : ℂ}
   grw [le_aeval_of_isMonicOfDegree x hM₀.le (isMinOn_univ_iff.mp hz) hp y]
   rw [eq_comm, ← eq_sub_iff_add_eq, mul_comm] at hrel
   apply_fun (‖aeval (x - algebraMap ℂ F y) ·‖) at hrel
-  simp only [map_mul, map_sub, aeval_X, aeval_C, norm_mul, map_pow, sub_sub_sub_cancel_right]
+  simp only [map_sub, map_mul, aeval_X, aeval_C, sub_sub_sub_cancel_right, norm_mul, map_pow]
     at hrel
   rw [hrel]
   exact (norm_sub_le ..).trans <| by simp [hy, ← map_sub]
