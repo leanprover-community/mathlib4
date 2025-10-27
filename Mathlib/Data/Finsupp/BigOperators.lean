@@ -40,8 +40,7 @@ theorem List.support_sum_subset [AddZeroClass M] (l : List (ι →₀ M)) :
   | nil => simp
   | cons hd tl IH =>
     simp only [List.sum_cons]
-    refine Finsupp.support_add.trans (Finset.union_subset_union ?_ IH)
-    rfl
+    exact Finsupp.support_add.trans (Finset.union_subset_union Finset.Subset.rfl IH)
 
 theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M)) :
     s.sum.support ⊆ (s.map Finsupp.support).sup := by

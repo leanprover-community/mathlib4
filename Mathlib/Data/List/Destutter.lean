@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez, Eric Wieser
 -/
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Dedup
 
 /-!
 # Destuttering of Lists
@@ -176,7 +177,7 @@ theorem map_destutter {f : α → β} : ∀ {l : List α}, (∀ a ∈ l, ∀ b �
 
 /-- For a injective function `f`, `destutter' (·≠·)` commutes with `map f`. -/
 theorem map_destutter_ne {f : α → β} (h : Injective f) [DecidableEq α] [DecidableEq β] :
-    (l.destutter (·≠·)).map f = (l.map f).destutter (·≠·) :=
+    (l.destutter (· ≠ ·)).map f = (l.map f).destutter (· ≠ ·) :=
   map_destutter fun _ _ _ _ ↦ h.ne_iff.symm
 
 /-- `destutter'` on a relation like ≠ or <, whose negation is transitive, has length monotone
@@ -270,5 +271,23 @@ other `≠`-chain sublist. -/
 lemma IsChain.length_le_length_destutter_ne [DecidableEq α] (hl : l₁ <+ l₂)
     (hl₁ : l₁.IsChain (· ≠ ·)) : l₁.length ≤ (l₂.destutter (· ≠ ·)).length :=
   hl₁.length_le_length_destutter hl
+
+/--
+If the elements of a list `l` are related pairwise by an antisymmetric relation `r`, then
+destuttering `l` by disequality produces the same result as deduplicating `l`.
+This is most useful when `r` is a strict or weak ordering.
+-/
+lemma Pairwise.destutter_eq_dedup [DecidableEq α] {r : α → α → Prop} [IsAntisymm α r] :
+    ∀ {l : List α}, l.Pairwise r → l.destutter (· ≠ ·) = l.dedup
+  | [], h => by simp
+  | [x], h => by simp
+  | x :: y :: xs, h => by
+    rw [pairwise_cons] at h
+    rw [destutter_cons_cons, ← destutter_cons', ← destutter_cons', h.2.destutter_eq_dedup]
+    obtain rfl | hxy := eq_or_ne x y
+    · simpa using h.2.destutter_eq_dedup
+    · simp only [mem_cons, forall_eq_or_imp, pairwise_cons] at h
+      have : x ∉ xs := fun hx ↦ hxy (antisymm h.1.1 (h.2.1 x hx))
+      rw [if_pos hxy, dedup_cons_of_notMem (a := x) (by simp [*])]
 
 end List
