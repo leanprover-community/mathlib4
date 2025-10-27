@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wang Yiran
 -/
 
-import Mathlib.RingTheory.PowerSeries.Inverse
+import Mathlib.Data.Nat.Choose.Central
+import Mathlib.Tactic.Ring.Basic
 
 /-!
 # Monotone lattice paths and a ballot-style subdiagonal condition
@@ -19,8 +20,6 @@ This file defines and studies monotone lattice paths.  It introduces:
 -/
 
 open Nat
-open Finset
-open scoped BigOperators
 
 universe u
 
