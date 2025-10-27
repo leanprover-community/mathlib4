@@ -23,6 +23,8 @@ and a monomial order `m : MonomialOrder σ`.
 
 * `m.leadingTerm f` is the leading term of `f` for the monomial ordering `m`.
 
+* `m.sPolynomial f g` is S-polynomial of `f` and `g`.
+
 * `m.leadingCoeff_ne_zero_iff f` asserts that this coefficient is nonzero iff `f ≠ 0`.
 
 * in a field, `m.isUnit_leadingCoeff f` asserts that this coefficient is a unit iff `f ≠ 0`.
