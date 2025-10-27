@@ -1214,7 +1214,7 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
           if coeff p n = 1
           then (80, "X ^ " ++ Nat.repr n)
           else (70, "C " ++ reprArg (coeff p n) ++ " * X ^ " ++ Nat.repr n))
-      (p.support.sort (· ≤ ·))
+      p.support.sort
     match termPrecAndReprs with
     | [] => "0"
     | [(tprec, t)] => if prec ≥ tprec then Lean.Format.paren t else t

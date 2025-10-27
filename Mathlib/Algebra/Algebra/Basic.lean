@@ -115,6 +115,10 @@ theorem mem_algebraMapSubmonoid_of_mem {S : Type*} [Semiring S] [Algebra R S] {M
   Set.mem_image_of_mem (algebraMap R S) x.2
 
 @[simp]
+lemma algebraMapSubmonoid_self (M : Submonoid R) : Algebra.algebraMapSubmonoid R M = M :=
+  Submonoid.map_id M
+
+@[simp]
 lemma algebraMapSubmonoid_powers {S : Type*} [Semiring S] [Algebra R S] (r : R) :
     Algebra.algebraMapSubmonoid S (.powers r) = Submonoid.powers (algebraMap R S r) := by
   simp [Algebra.algebraMapSubmonoid]
@@ -415,6 +419,13 @@ instance (priority := 110) IsScalarTower.to_smulCommClass' : SMulCommClass A R M
 instance (priority := 200) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
     [Algebra R A] : SMulCommClass R A A :=
   IsScalarTower.to_smulCommClass
+
+-- see Note [lower instance priority]
+instance (priority := 100) {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
+    [Algebra R A] [Algebra S A] :
+    SMulCommClass R S A where
+  smul_comm r s a := by
+    rw [Algebra.smul_def, mul_smul_comm, ← Algebra.smul_def]
 
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _
