@@ -571,13 +571,13 @@ instance isIso_prodComparison (X Y : SSet) :
 
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves binary products of simplicial sets `X` and
 `Y`. -/
-instance preservesBinaryProducts (X Y : SSet) :
+instance preservesBinaryProduct (X Y : SSet) :
     PreservesLimit (pair X Y) hoFunctor :=
   PreservesLimitPair.of_iso_prod_comparison hoFunctor X Y
 
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves limits of functors out of
 `Discrete Limits.WalkingPair`. -/
-instance preservesBinaryProducts' :
+instance preservesBinaryProducts :
     PreservesLimitsOfShape (Discrete Limits.WalkingPair) hoFunctor where
   preservesLimit {F} := preservesLimit_of_iso_diagram hoFunctor (id (diagramIsoPair F).symm)
 
