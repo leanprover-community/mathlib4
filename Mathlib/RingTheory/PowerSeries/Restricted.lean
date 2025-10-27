@@ -133,9 +133,12 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
        _ ≤ ‖(coeff fst) f‖ * |c| ^ fst * (‖(coeff snd) g‖ * |c| ^ snd) := by
         grw [norm_mul_le]
         #adaptation_note
-        /-- 2025-10-26: this was by `grind` -/
+        /--
+        Broken in `nightly-2025-10-26`: this was by `grind`, but is now no longer supported.
+        See https://github.com/leanprover/lean4/pull/10970.
+        -/
         rw [pow_add]
-        linarith
+        grind
   have : max Nf Ng ≤ fst ∨ max Nf Ng ≤ snd := by omega
   rcases this with this | this
   · calc _ < ε / max a b * b := by
