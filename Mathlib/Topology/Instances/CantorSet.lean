@@ -7,9 +7,9 @@ Filippo A. E. Nuccio
 -/
 import Mathlib.Analysis.Real.OfDigits
 import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.FinCases
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Tactic.FinCases
 
 /-!
 # Ternary Cantor Set
@@ -159,9 +159,7 @@ theorem ofDigits_zero_two_sequence_mem_cantorSet {a : ℕ → Fin 3}
     use ofDigits (fun i ↦ a (i + 1))
     have : (ofDigits fun i ↦ a (i + 1)) ∈ preCantorSet i := ih (by solve_by_elim)
     simp only [this, ofDigits_eq_sum_add_ofDigits a 1, Finset.range_one, ofDigitsTerm,
-      Nat.cast_ofNat, Finset.sum_singleton, zero_add, pow_one, true_and]
-    field_simp
-    norm_cast
+      Nat.cast_ofNat, Finset.sum_singleton, zero_add, pow_one, true_and, field]
     specialize h 0
     generalize a 0 = x at h
     fin_cases x <;> simp at ⊢ h
@@ -169,9 +167,7 @@ theorem ofDigits_zero_two_sequence_mem_cantorSet {a : ℕ → Fin 3}
 /-- If two base-3 representations using only digits `0` and `2` define the same number,
 then the sequences must be equal.
 This uniqueness fails for general base-3 representations (e.g. `0.1000... = 0.0222...`). -/
-theorem ofDigits_zero_two_sequence_unique {a b : ℕ → Fin 3}
-    (ha : ∀ n, a n ≠ 1)
-    (hb : ∀ n, b n ≠ 1)
+theorem ofDigits_zero_two_sequence_unique {a b : ℕ → Fin 3} (ha : ∀ n, a n ≠ 1) (hb : ∀ n, b n ≠ 1)
     (h : ofDigits a = ofDigits b) :
     a = b := by
   by_contra! h
@@ -182,22 +178,12 @@ theorem ofDigits_zero_two_sequence_unique {a b : ℕ → Fin 3}
   generalize n0 = n1 at h1 h2
   clear h n0
   wlog h3 : a n1 = 0 ∧ b n1 = 2 generalizing a b
-  · replace h3 : a n1 = 2 ∧ b n1 = 0 := by
-      specialize ha n1
-      specialize hb n1
-      generalize a n1 = u at *
-      generalize b n1 = v at *
-      fin_cases u <;> fin_cases v <;> simp at ha hb h2 h3 ⊢
-    exact this hb ha h.symm (fun n hn ↦ (h1 n hn).symm) h2.symm (by rwa [and_comm])
+  · exact this hb ha h.symm (fun n hn ↦ (h1 n hn).symm) h2.symm (by grind)
   obtain ⟨h3, h4⟩ := h3
   clear h2
   have : ∑ x ∈ Finset.range n1, ofDigitsTerm a x = ∑ x ∈ Finset.range n1, ofDigitsTerm b x := by
     apply Finset.sum_congr rfl
-    intro i hi
-    simp only [ofDigitsTerm]
-    congr
-    rw [h1]
-    simpa using hi
+    grind [ofDigitsTerm]
   rw [ofDigits_eq_sum_add_ofDigits a (n1 + 1),
     ofDigits_eq_sum_add_ofDigits b (n1 + 1), Finset.sum_range_succ,
     Finset.sum_range_succ, this] at h
