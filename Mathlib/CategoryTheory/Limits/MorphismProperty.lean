@@ -163,7 +163,6 @@ instance [P.ContainsIdentities] : HasTerminal (P.Over ⊤ X) :=
   let h : IsTerminal (Over.mk ⊤ (𝟙 X) (P.id_mem X)) := Over.mkIdTerminal P X
   h.hasTerminal
 
-
 /-- If `P` is stable under composition, base change and satisfies post-cancellation,
 `Over.forget P ⊤ X` creates pullbacks. -/
 noncomputable instance createsLimitsOfShape_walkingCospan [HasPullbacks T]
