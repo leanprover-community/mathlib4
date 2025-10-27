@@ -709,6 +709,10 @@ theorem uniformContinuousOn_iff [PseudoMetricSpace β] {f : α → β} {s : Set 
       ∀ ε > 0, ∃ δ > 0, ∀ x ∈ s, ∀ y ∈ s, dist x y < δ → dist (f x) (f y) < ε :=
   Metric.uniformity_basis_dist.uniformContinuousOn_iff Metric.uniformity_basis_dist
 
+theorem uniformContinuous_iff_le [PseudoMetricSpace β] {f : α → β} :
+    UniformContinuous f ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃a b : α⦄, dist a b ≤ δ → dist (f a) (f b) ≤ ε :=
+  uniformity_basis_dist_le.uniformContinuous_iff uniformity_basis_dist_le
+
 theorem uniformContinuousOn_iff_le [PseudoMetricSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔
       ∀ ε > 0, ∃ δ > 0, ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ δ → dist (f x) (f y) ≤ ε :=
