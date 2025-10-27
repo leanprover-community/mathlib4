@@ -13,9 +13,9 @@ Definition and properties of stopping times.
 
 ## Main definitions
 
-* `MeasureTheory.IsStoppingTime`: a stopping time with respect to some filtration `f` is a
-  function `τ` such that for all `i`, the preimage of `{j | j ≤ i}` along `τ` is
-  `f i`-measurable
+* `MeasureTheory.IsStoppingTime`: a stopping time with respect to some filtration `f` on a
+  measurable space `Ω` is a function `τ : Ω → WithTop ι` such that for all `i : ι`,
+  the preimage of `{j | j ≤ i}` along `τ` is `f i`-measurable
 * `MeasureTheory.IsStoppingTime.measurableSpace`: the σ-algebra associated with a stopping time
 
 ## Main results
@@ -24,6 +24,25 @@ Definition and properties of stopping times.
   progressively measurable.
 * `memLp_stoppedProcess`: if a process belongs to `ℒp` at every time in `ℕ`, then its stopped
   process belongs to `ℒp` as well.
+
+## Implementation notes
+
+For a filtration on a type `ι`, we define stopping times as functions from the measurable space `Ω`
+to `WithTop ι`, which allows stopping times that can take an infinite value, represented by
+`⊤ : WithTop ι`.
+
+This means that if we have a process `X : ι → Ω → β` and a stopping time `τ : Ω → WithTop ι`, then
+to consider the value of `X` at the stopping time `τ ω`, we need to write `X (τ ω).untopA ω`,
+in which `(τ ω).untopA` is the value of `τ ω` in `ι` if `τ ω ≠ ⊤` and some arbitrary value if
+`τ ω = ⊤`.
+
+While indexing would be more convenient if we defined stopping times as functions from `Ω` to `ι`,
+this would prevent us from using stopping times as in standard mathematical literature, where a
+typical example of stopping time is the first time an event occurs, which may never happen.
+Consider for example the first time a coin lands heads when flipping it infinitely many times:
+this is almost surely finite, but possibly infinite. We could also not use a function `Ω → ι` with
+arbitrary value for the infinite case, because this would be incompatible with the stopping time
+property.
 
 ## Tags
 
