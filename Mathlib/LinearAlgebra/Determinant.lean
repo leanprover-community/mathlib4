@@ -10,7 +10,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
-
+import Mathlib.RingTheory.Finiteness.Cardinality
 /-!
 # Determinant of families of vectors
 
@@ -485,15 +485,36 @@ theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' 
   ext x
   rfl
 
+/-- Builds a linear equivalence from an endomorphism whose determinant is a unit. -/
+noncomputable def LinearMap.equivOfIsUnitDet
+    [Module.Free R M] [Module.Finite R M]
+    {f : M →ₗ[R] M} (h : IsUnit f.det) :
+    M ≃ₗ[R] M := by
+  by_cases hR : Nontrivial R
+  · let ⟨ι, b⟩ := (Module.Free.exists_basis R M).some
+    have : Finite ι := Module.Finite.finite_basis b
+    have : Fintype ι := Fintype.ofFinite ι
+    have : DecidableEq ι := Classical.typeDecidableEq ι
+    exact LinearEquiv.ofIsUnitDet (by rwa [det_toMatrix b])
+  · exact 1
+
+@[simp]
+theorem LinearMap.coe_equivOfIsUnitDet
+    [Module.Free R M] [Module.Finite R M]
+    {f : M →ₗ[R] M} (h : IsUnit f.det) :
+    (LinearMap.equivOfIsUnitDet h : M →ₗ[R] M) = f := by
+  by_cases hR : Nontrivial R
+  · ext x
+    simp [equivOfIsUnitDet, dif_pos hR]
+  · rw [not_nontrivial_iff_subsingleton] at hR
+    haveI : Subsingleton (M →ₗ[R] M) := Module.subsingleton R _
+    apply Subsingleton.allEq
+
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/
 abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M]
     [FiniteDimensional 𝕜 M] (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) : M ≃ₗ[𝕜] M :=
-  have : IsUnit (LinearMap.toMatrix (Module.finBasis 𝕜 M)
-      (Module.finBasis 𝕜 M) f).det := by
-    rw [LinearMap.det_toMatrix]
-    exact isUnit_iff_ne_zero.2 hf
-  LinearEquiv.ofIsUnitDet this
+  LinearMap.equivOfIsUnitDet (f := f) (Ne.isUnit hf)
 
 theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ[R] M)
     (h : ∀ x, f x = f' (e x)) : Associated (LinearMap.det f) (LinearMap.det f') := by
