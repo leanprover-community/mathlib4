@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.CategoryTheory.Elementwise
+import Mathlib.Tactic.Linter.InnerOuter
 
 /-!
 # The category of schemes
