@@ -260,9 +260,8 @@ noncomputable def cantorToTernary (x : ℝ) : Stream' (Fin 3) :=
   (cantorToBinary x).map (fun b ↦ cond b 2 0)
 
 theorem cantorToTernary_ne_one {x : ℝ} {n : ℕ} : (cantorToTernary x).get n ≠ 1 := by
-  simp only [cantorToTernary]
   intro h
-  simp only [Fin.isValue, Stream'.get_map] at h
+  simp only [cantorToTernary, Fin.isValue, Stream'.get_map] at h
   generalize (cantorToBinary x).get n = b at h
   cases b <;> simp at h
 
@@ -280,30 +279,25 @@ theorem cantorSequence_eq_self_sub_sum_cantorToTernary (x : ℝ) (n : ℕ) :
       rw [ih]
     _ = _ := by
       simp only [cantorSequence]
-      conv => rhs; simp [Stream'.get_succ_iterate']
+      conv_rhs => simp only [Stream'.get_succ_iterate']
       simp only [cantorToTernary, cantorToBinary, cantorSequence, ofDigitsTerm, Stream'.get_map]
       set y := (Stream'.iterate cantorStep x).get n
       split_ifs with h_if <;> simp only [cantorStep, h_if] <;> simp
-      rw [pow_succ, mul_inv]
-      set a := (3 : ℝ) ^ n
-      ring_nf
-      rw [mul_inv_cancel₀ (by simp [a])]
+      field_simp
       ring
 
 theorem ofDigits_cantorToTernary_sum_le {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
     ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i ≤ x := by
-  have := cantorSequence_eq_self_sub_sum_cantorToTernary x n
   have h_mem := cantorSequence_mem_cantorSet hx n
-  rw [this] at h_mem
+  rw [cantorSequence_eq_self_sub_sum_cantorToTernary x n] at h_mem
   apply cantorSet_subset_unitInterval at h_mem
   simp only [Set.mem_Icc] at h_mem
   simpa using h_mem.left
 
 theorem le_ofDigits_cantorToTernary_sum {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
     x - (3⁻¹ : ℝ)^n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i := by
-  have := cantorSequence_eq_self_sub_sum_cantorToTernary x n
   have h_mem := cantorSequence_mem_cantorSet hx n
-  rw [this] at h_mem
+  rw [cantorSequence_eq_self_sub_sum_cantorToTernary x n] at h_mem
   apply cantorSet_subset_unitInterval at h_mem
   simp only [Set.mem_Icc] at h_mem
   rw [← mul_le_mul_iff_left₀ (show 0 < (3 : ℝ)^n by positivity), sub_mul, inv_pow,
@@ -322,10 +316,7 @@ theorem ofDigits_cantorToTernary {x : ℝ} (hx : x ∈ cantorSet) :
   · rw [← tendsto_sub_nhds_zero_iff]
     simp only [sub_sub_cancel_left]
     rw [show 0 = -(0 : ℝ) by simp]
-    apply Filter.Tendsto.neg
-    apply tendsto_pow_atTop_nhds_zero_of_abs_lt_one
-    rw [abs_lt]
-    constructor <;> norm_num
+    exact (tendsto_pow_atTop_nhds_zero_of_abs_lt_one (by norm_num)).neg
   · exact tendsto_const_nhds
   · exact fun _ ↦ le_ofDigits_cantorToTernary_sum hx
   · exact fun _ ↦ ofDigits_cantorToTernary_sum_le hx
@@ -335,9 +326,7 @@ theorem cantorSet_eq_zero_two_ofDigits :
   ext x
   refine ⟨fun h ↦ ?_, fun ⟨a, ha⟩ ↦ ?_⟩
   · use cantorToTernary x
-    constructor
-    · apply cantorToTernary_ne_one
-    · apply ofDigits_cantorToTernary h
+    exact ⟨fun _ ↦ cantorToTernary_ne_one, ofDigits_cantorToTernary h⟩
   · rw [← ha.right]
     exact ofDigits_zero_two_sequence_mem_cantorSet ha.left
 
