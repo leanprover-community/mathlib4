@@ -63,6 +63,13 @@ def excenterWeightsUnnorm (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : ℝ
     s.excenterWeightsUnnorm ∅ i = (s.height i)⁻¹ :=
   one_mul _
 
+lemma excenterWeightsUnnorm_ne_zero (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
+    s.excenterWeightsUnnorm signs i ≠ 0 := by
+  rw [excenterWeightsUnnorm]
+  refine mul_ne_zero ?_ ?_
+  · grind
+  · simp [(s.height_pos i).ne']
+
 /-- Whether an excenter exists with a given choice of signs. -/
 def ExcenterExists (signs : Finset (Fin (n + 1))) : Prop :=
   ∑ i, s.excenterWeightsUnnorm signs i ≠ 0
@@ -72,6 +79,14 @@ signs determined by the given set of indices.  An excenter with those signs exis
 the sum of these weights is 1. -/
 def excenterWeights (signs : Finset (Fin (n + 1))) : Fin (n + 1) → ℝ :=
   (∑ i, s.excenterWeightsUnnorm signs i)⁻¹ • s.excenterWeightsUnnorm signs
+
+variable {s} in
+lemma ExcenterExists.excenterWeights_ne_zero {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i : Fin (n + 1)) : s.excenterWeights signs i ≠ 0 := by
+  rw [excenterWeights]
+  refine mul_ne_zero ?_ (s.excenterWeightsUnnorm_ne_zero _ _)
+  rw [ExcenterExists] at h
+  simp [h]
 
 @[simp] lemma excenterWeightsUnnorm_compl (signs : Finset (Fin (n + 1))) :
     s.excenterWeightsUnnorm signsᶜ = -s.excenterWeightsUnnorm signs := by
@@ -360,6 +375,36 @@ lemma sign_signedInfDist_incenter (i : Fin (n + 1)) :
     SignType.sign (s.signedInfDist i s.incenter) = 1 := by
   convert s.excenterExists_empty.sign_signedInfDist_excenter i
   simp
+
+variable {s} in
+lemma ExcenterExists.affineCombination_eq_excenter_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {w : Fin (n + 1) → ℝ} (hw : ∑ j, w j = 1) :
+    Finset.univ.affineCombination ℝ s.points w = s.excenter signs ↔
+      w = s.excenterWeights signs := by
+  constructor
+  · simp_rw [excenter, exsphere]
+    exact fun he ↦ (affineIndependent_iff_eq_of_fintype_affineCombination_eq ℝ s.points).1
+      s.independent _ _ hw h.sum_excenterWeights_eq_one he
+  · rintro rfl
+    rw [excenter, exsphere]
+
+variable {s} in
+lemma ExcenterExists.excenter_ne_point {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i : Fin (n + 1)) : s.excenter signs ≠ s.points i := by
+  intro he
+  rw [eq_comm, ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ s.points
+    (Finset.mem_univ _), h.affineCombination_eq_excenter_iff
+    (Finset.univ.sum_affineCombinationSingleWeights ℝ (Finset.mem_univ _))] at he
+  obtain ⟨j, hij⟩ : ∃ j, j ≠ i := exists_ne i
+  have he' : Finset.affineCombinationSingleWeights ℝ i j = s.excenterWeights signs j := by
+    rw [he]
+  simp only [ne_eq, hij, not_false_eq_true, Finset.affineCombinationSingleWeights_apply_of_ne]
+    at he'
+  exact h.excenterWeights_ne_zero _ he'.symm
+
+lemma incenter_ne_point (i : Fin (n + 1)) :
+    s.incenter ≠ s.points i :=
+  s.excenterExists_empty.excenter_ne_point i
 
 /-- A touchpoint is where an exsphere of a simplex is tangent to one of the faces. -/
 def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
