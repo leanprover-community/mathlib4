@@ -311,6 +311,14 @@ lemma equiv_smallShiftedHomMap (G : D₁ ⥤ D₂) [G.CommShift M]
 
   sorry
 
+lemma equiv_smallShiftedHomMap' (G : D₁ ⥤ D₂) [G.CommShift M]
+    [CatCommSq Φ.functor L₁ L₂ G] {m : M} (f : SmallShiftedHom.{w} W₁ X Y m) :
+    (SmallShiftedHom.equiv W₂ L₂) (Φ.smallShiftedHomMap f) =
+      (ShiftedHom.mk₀ 0 rfl ((CatCommSq.iso Φ.functor L₁ L₂ G).hom.app X)).comp
+      (((SmallShiftedHom.equiv W₁ L₁ f).map G).comp (ShiftedHom.mk₀ 0 rfl
+      ((CatCommSq.iso Φ.functor L₁ L₂ G).inv.app Y)) (zero_add m)) (add_zero m) := by
+  rw [equiv_smallShiftedHomMap Φ L₁ L₂ G, ShiftedHom.mk₀_comp 0 rfl, ShiftedHom.comp_mk₀ _ 0 rfl]
+
 variable {Z : C₁}
   [HasSmallLocalizedShiftedHom.{w} W₁ M X Z] [HasSmallLocalizedShiftedHom.{w} W₁ M Y Z]
   [HasSmallLocalizedShiftedHom.{w} W₁ M Z Z]
