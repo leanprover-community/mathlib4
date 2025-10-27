@@ -44,8 +44,7 @@ theorem fib_neg_natCast (n : ℕ) : fib (-n) = (-1) ^ (n + 1) * n.fib := by
   · simp [fib, hn, pow_add]
   · simp [fib_of_odd, hn]
 
-theorem fib_add_two (n : ℤ) :
-    fib (n + 2) = fib n + fib (n + 1) := by
+theorem fib_add_two (n : ℤ) : fib (n + 2) = fib n + fib (n + 1) := by
   rcases n with (n | n)
   · dsimp
     rw [show (n : ℤ) + 2 = (n + 2 : ℕ) by rfl, fib_natCast, Nat.fib_add_two]
