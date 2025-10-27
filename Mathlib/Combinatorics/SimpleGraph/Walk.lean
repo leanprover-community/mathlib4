@@ -1243,7 +1243,7 @@ protected def transfer {u v : V} (p : G.Walk u v)
   match p with
   | nil => nil
   | cons' u v w _ p =>
-    (p.transfer H fun e he => h e (by simp [he])).cons (h s(u, v) (by simp)) 
+    (p.transfer H fun e he => h e (by simp [he])).cons (h s(u, v) (by simp))
 
 variable {u v : V} (p : G.Walk u v)
 
