@@ -81,13 +81,14 @@ theorem floor_of_nonpos (ha : a ≤ 0) : ⌊a⌋₊ = 0 :=
     rintro rfl
     exact floor_zero
 
+@[gcongr]
 theorem floor_mono : Monotone (floor : R → ℕ) := fun a b h => by
   obtain ha | ha := le_total a 0
   · rw [floor_of_nonpos ha]
     exact Nat.zero_le _
   · exact le_floor ((floor_le ha).trans h)
 
-@[gcongr, bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋₊ ≤ ⌊b⌋₊ := floor_mono hab
+@[bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋₊ ≤ ⌊b⌋₊ := floor_mono hab
 
 theorem le_floor_iff' (hn : n ≠ 0) : n ≤ ⌊a⌋₊ ↔ (n : R) ≤ a := by
   obtain ha | ha := le_total a 0
