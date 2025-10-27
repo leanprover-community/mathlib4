@@ -117,8 +117,8 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
     rcases mem_iUnion₂.mp (Acover.symm.subset <| mem_univ x) with ⟨a, ha, hax⟩
     -- Since `(i, j) ∈ 𝐒(V, a)` we also have `(F i a, F j a) ∈ V`, and finally we get
     -- `(F i x, F j x) ∈ V ○ V ○ V ⊆ U`.
-    exact hVU (prodMk_mem_compRel (prodMk_mem_compRel
-      (Vsymm.mk_mem_comm.mp (hax i)) (hij a ha)) (hax j))
+    exact hVU <| SetRel.prodMk_mem_comp (SetRel.prodMk_mem_comp (SetRel.symm V <| hax i) (hij a ha))
+      (hax j)
   -- This completes the proof.
   exact mem_of_superset
     (A.iInter_mem_sets.mpr fun x _ ↦ mem_iInf_of_mem x <| preimage_mem_comap hV) this
@@ -163,12 +163,12 @@ theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
     (F_eqcont : Equicontinuous F) (ℱ : Filter ι) (f : X → α) :
     Tendsto (UniformFun.ofFun ∘ F) ℱ (𝓝 <| UniformFun.ofFun f) ↔
     Tendsto F ℱ (𝓝 f) := by
-  -- Assume `ℱ` is non trivial.
+  -- Assume `ℱ` is non-trivial.
   rcases ℱ.eq_or_neBot with rfl | ℱ_ne
   · simp
   constructor <;> intro H
   -- The forward direction is always true, the interesting part is the converse.
-  · exact UniformFun.uniformContinuous_toFun.continuous.tendsto _|>.comp H
+  · exact UniformFun.uniformContinuous_toFun.continuous.tendsto _ |>.comp H
   -- To prove it, assume that `F` tends to `f` *pointwise* along `ℱ`.
   · set S : Set (X → α) := closure (range F)
     set 𝒢 : Filter S := comap (↑) (map F ℱ)

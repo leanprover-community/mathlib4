@@ -91,12 +91,11 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
         exact hb' _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
       else simp only [Finset.eq_of_mem_insert_of_notMem hy hyS, lt_self_iff_false] at hxy
   · ext x
-    simp only [OrderEmbedding.coe_ofStrictMono, Finset.insert_val,
+    simp only [OrderEmbedding.coe_ofStrictMono,
       Function.comp_apply, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
 
 variable (α β)
 
--- Porting note: Mathport warning: expanding binder collection (p q «expr ∈ » f)
 /-- The type of partial order isomorphisms between `α` and `β` defined on finite subsets.
 A partial order isomorphism is encoded as a finite subset of `α × β`, consisting
 of pairs which should be identified. -/

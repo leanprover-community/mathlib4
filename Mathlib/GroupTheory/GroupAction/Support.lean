@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
-# Support of an element under an action action
+# Support of an element under an action
 
 Given an action of a group `G` on a type `α`, we say that a set `s : Set α` supports an element
 `a : α` if, for all `g` that fix `s` pointwise, `g` fixes `a`.

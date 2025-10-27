@@ -53,7 +53,7 @@ it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvP
 
 -/
 
-/-- Monomial orders : equivalence of `σ →₀ ℕ` with a well ordered type -/
+/-- Monomial orders : equivalence of `σ →₀ ℕ` with a well-ordered type -/
 structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
@@ -125,7 +125,7 @@ noncomputable instance {α N : Type*} [LinearOrder α]
     [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
     IsOrderedCancelAddMonoid (Lex (α →₀ N)) where
   le_of_add_le_add_left a b c h := by simpa only [add_le_add_iff_left] using h
-  add_le_add_left a b h c := by simpa only [add_le_add_iff_left] using h
+  add_le_add_left a b h c := by simpa using h
 
 /-- for the lexicographic ordering, X 0 * X 1 < X 0 ^ 2 -/
 example : toLex (Finsupp.single 0 2) > toLex (Finsupp.single 0 1 + Finsupp.single 1 1) := by

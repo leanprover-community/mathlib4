@@ -5,7 +5,7 @@ Authors: David Loeffler, Geoffrey Irving, Stefan Kebekus
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+import Mathlib.Analysis.Normed.Operator.Mul
 import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.Analytic.OfScalars
 
@@ -1137,10 +1137,12 @@ theorem Finset.analyticWithinAt_fun_sum {f : α → E → F} {c : E} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s c := by
   classical
-  induction' N using Finset.induction with a B aB hB
-  · simp only [Finset.sum_empty]
+  induction N using Finset.induction with
+  | empty =>
+    simp only [Finset.sum_empty]
     exact analyticWithinAt_const
-  · simp_rw [Finset.sum_insert aB]
+  | insert a B aB hB =>
+    simp_rw [Finset.sum_insert aB]
     simp only [Finset.mem_insert] at h
     exact (h a (Or.inl rfl)).add (hB fun b m ↦ h b (Or.inr m))
 
@@ -1196,10 +1198,12 @@ theorem Finset.analyticWithinAt_fun_prod {A : Type*} [NormedCommRing A] [NormedA
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s c := by
   classical
-  induction' N using Finset.induction with a B aB hB
-  · simp only [Finset.prod_empty]
+  induction N using Finset.induction with
+  | empty =>
+    simp only [Finset.prod_empty]
     exact analyticWithinAt_const
-  · simp_rw [Finset.prod_insert aB]
+  | insert a B aB hB =>
+    simp_rw [Finset.prod_insert aB]
     simp only [Finset.mem_insert] at h
     exact (h a (Or.inl rfl)).mul (hB fun b m ↦ h b (Or.inr m))
 

@@ -5,11 +5,9 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Gauge
+import Mathlib.Analysis.RCLike.Extend
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.Module.LocallyConvex
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.NormedSpace.Extend
 
 /-!
 # Separation Hahn-Banach theorem
@@ -35,6 +33,7 @@ We provide many variations to stricten the result under more assumptions on the 
 * `Convex ℝ s → interior (closure s) ⊆ s`
 -/
 
+assert_not_exists ContinuousLinearMap.hasOpNorm
 
 open Set
 
@@ -102,7 +101,6 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
     rw [← add_zero x₀] at hx₀
     exact disj.zero_notMem_sub_set (vadd_mem_vadd_set_iff.1 hx₀)
   obtain ⟨f, hf₁, hf₂⟩ := separate_convex_open_set ‹0 ∈ C› ‹_› (hs₂.sub_right.vadd _) ‹x₀ ∉ C›
-  have : f b₀ = f a₀ + 1 := by simp [x₀, ← hf₁]
   have forall_le : ∀ a ∈ s, ∀ b ∈ t, f a ≤ f b := by
     intro a ha b hb
     have := hf₂ (x₀ + (a - b)) (vadd_mem_vadd_set <| sub_mem_sub ha hb)
@@ -135,11 +133,6 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   obtain rfl | ⟨b₀, hb₀⟩ := t.eq_empty_or_nonempty
   · exact ⟨0, 1, fun a _ha => by simp, by simp⟩
   obtain ⟨f, s, hf₁, hf₂⟩ := geometric_hahn_banach_open hs₁ hs₂ ht₁ disj
-  have hf : IsOpenMap f := by
-    refine f.isOpenMap_of_ne_zero ?_
-    rintro rfl
-    simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
-    exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
   refine ⟨f, s, hf₁, image_subset_iff.1 (?_ : f '' t ⊆ Ioi s)⟩
   rw [← interior_Ici]
   refine interior_maximal (image_subset_iff.2 hf₂) (f.isOpenMap_of_ne_zero ?_ _ ht₃)
@@ -228,7 +221,7 @@ noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] : StrongDual ℝ
 lemma re_extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] (g : StrongDual ℝ E) (x : E) :
     re ((extendTo𝕜'ₗ g) x : 𝕜) = g x := by
   have h g (x : E) : extendTo𝕜'ₗ g x = ((g x : 𝕜) - (I : 𝕜) * (g ((I : 𝕜) • x) : 𝕜)) := rfl
-  simp only [h , map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
+  simp only [h, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
     sub_self, sub_zero]
 
 variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]

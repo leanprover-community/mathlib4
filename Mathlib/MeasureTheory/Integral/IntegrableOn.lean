@@ -58,10 +58,6 @@ theorem AEStronglyMeasurable.stronglyMeasurableAtFilter_of_mem {s}
     (h : AEStronglyMeasurable f (μ.restrict s)) (hl : s ∈ l) : StronglyMeasurableAtFilter f l μ :=
   ⟨s, hl, h⟩
 
-@[deprecated (since := "2025-02-12")]
-alias AeStronglyMeasurable.stronglyMeasurableAtFilter_of_mem :=
-    AEStronglyMeasurable.stronglyMeasurableAtFilter_of_mem
-
 protected theorem MeasureTheory.StronglyMeasurable.stronglyMeasurableAtFilter
     (h : StronglyMeasurable f) : StronglyMeasurableAtFilter f l μ :=
   h.aestronglyMeasurable.stronglyMeasurableAtFilter
@@ -241,7 +237,7 @@ theorem integrableOn_finite_iUnion [PseudoMetrizableSpace ε] [Finite β] {t : �
 -- f is finite on almost every element of `s`
 lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
     {s : Finset α} {f : α → E} : IntegrableOn f s μ := by
-  rw [← s.toSet.biUnion_of_singleton]
+  rw [← (s : Set α).biUnion_of_singleton]
   simp [integrableOn_finset_iUnion, measure_lt_top]
 
 lemma IntegrableOn.of_finite [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
@@ -409,6 +405,11 @@ theorem IntegrableOn.integrable_of_forall_notMem_eq_zero
 @[deprecated (since := "2025-05-23")]
 alias IntegrableOn.integrable_of_forall_not_mem_eq_zero :=
   IntegrableOn.integrable_of_forall_notMem_eq_zero
+
+theorem IntegrableOn.of_inter_support {f : α → ε'}
+    (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :
+    IntegrableOn f s μ := by
+  simpa using hf.of_forall_diff_eq_zero hs
 
 theorem integrableOn_iff_integrable_of_support_subset
     {f : α → ε'} (h1s : support f ⊆ s) : IntegrableOn f s μ ↔ Integrable f μ := by

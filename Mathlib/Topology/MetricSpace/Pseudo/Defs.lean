@@ -442,6 +442,8 @@ theorem nonempty_closedBall : (closedBall x ε).Nonempty ↔ 0 ≤ ε :=
 theorem closedBall_eq_empty : closedBall x ε = ∅ ↔ ε < 0 := by
   rw [← not_nonempty_iff_eq_empty, nonempty_closedBall, not_le]
 
+@[simp] alias ⟨_, closedBall_of_neg⟩ := closedBall_eq_empty
+
 /-- Closed balls and spheres coincide when the radius is non-positive -/
 theorem closedBall_eq_sphere_of_nonpos (hε : ε ≤ 0) : closedBall x ε = sphere x ε :=
   Set.ext fun _ => (hε.trans dist_nonneg).ge_iff_eq'
@@ -505,7 +507,7 @@ theorem closedBall_eq_bInter_ball : closedBall x ε = ⋂ δ > ε, ball x δ := 
 theorem ball_subset_ball' (h : ε₁ + dist x y ≤ ε₂) : ball x ε₁ ⊆ ball y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
-    _ < ε₁ + dist x y := add_lt_add_right (mem_ball.1 hz) _
+    _ < ε₁ + dist x y := by gcongr; exact hz
     _ ≤ ε₂ := h
 
 @[gcongr]
@@ -516,7 +518,7 @@ theorem closedBall_subset_closedBall' (h : ε₁ + dist x y ≤ ε₂) :
     closedBall x ε₁ ⊆ closedBall y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
-    _ ≤ ε₁ + dist x y := add_le_add_right (mem_closedBall.1 hz) _
+    _ ≤ ε₁ + dist x y := by gcongr; exact hz
     _ ≤ ε₂ := h
 
 theorem closedBall_subset_ball (h : ε₁ < ε₂) : closedBall x ε₁ ⊆ ball x ε₂ :=
@@ -526,7 +528,7 @@ theorem closedBall_subset_ball' (h : ε₁ + dist x y < ε₂) :
     closedBall x ε₁ ⊆ ball y ε₂ := fun z hz =>
   calc
     dist z y ≤ dist z x + dist x y := dist_triangle _ _ _
-    _ ≤ ε₁ + dist x y := add_le_add_right (mem_closedBall.1 hz) _
+    _ ≤ ε₁ + dist x y := by gcongr; exact hz
     _ < ε₂ := h
 
 theorem dist_le_add_of_nonempty_closedBall_inter_closedBall
