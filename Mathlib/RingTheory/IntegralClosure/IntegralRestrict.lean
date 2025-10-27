@@ -524,8 +524,8 @@ lemma Algebra.algebraMap_intNorm_of_isGalois [IsGalois (FractionRing A) (Fractio
   simp only [MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe]
   convert (prod_galRestrict_eq_norm A (FractionRing A) (FractionRing B) B x).symm
 
-theorem Algebra.dvd_algebraMap_intNorm_self [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
-    (x : B) : x ∣ algebraMap A B (intNorm A B x) := by
+open Polynomial IsScalarTower in
+theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intNorm A B x) := by
   classical
   by_cases hx : x = 0
   · exact ⟨1, by simp [hx]⟩
@@ -537,18 +537,27 @@ theorem Algebra.dvd_algebraMap_intNorm_self [Algebra.IsSeparable (FractionRing A
       _root_.IsIntegral.tower_top (A := B) this
     refine ⟨y, ?_⟩
     apply FaithfulSMul.algebraMap_injective B L
-    rw [← IsScalarTower.algebraMap_apply, map_mul, hy, mul_inv_cancel_left₀]
+    rw [← algebraMap_apply, map_mul, hy, mul_inv_cancel_left₀]
     exact (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective B L)).mpr hx
-  rw [← isIntegral_algHom_iff (IsScalarTower.toAlgHom A L E)
-    (FaithfulSMul.algebraMap_injective L E), IsScalarTower.coe_toAlgHom', map_mul, map_inv₀,
-    IsScalarTower.algebraMap_apply A K L, algebraMap_intNorm (L := L),
-    ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply, norm_eq_prod_embeddings,
-    ← Finset.univ.mul_prod_erase _ (Finset.mem_univ (IsScalarTower.toAlgHom K L E)),
-    IsScalarTower.coe_toAlgHom', ← IsScalarTower.algebraMap_apply, inv_mul_cancel_left₀]
-  · refine _root_.IsIntegral.prod _ fun σ _ ↦ ?_
-    change IsIntegral A ((σ.restrictScalars A) (IsScalarTower.toAlgHom A B L x))
-    rw [isIntegral_algHom_iff _ (RingHom.injective _),
-      isIntegral_algHom_iff _ (FaithfulSMul.algebraMap_injective B L)]
-    exact IsIntegral.isIntegral x
+  rw [← isIntegral_algHom_iff (toAlgHom A L E)
+    (FaithfulSMul.algebraMap_injective L E), coe_toAlgHom', map_mul, map_inv₀,
+    algebraMap_apply A K L, algebraMap_intNorm (L := L), ← algebraMap_apply, ← algebraMap_apply,
+    norm_eq_prod_roots _ (IsAlgClosed.splits_codomain _), ← Multiset.prod_erase
+    (a := algebraMap B E x)]
   · have := NoZeroSMulDivisors.trans_faithfulSMul B L E
-    exact (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective B E)).mpr hx
+    rw [mul_pow, ← mul_pow_sub_one (Nat.pos_iff_ne_zero.1 Module.finrank_pos) (algebraMap B E x),
+      mul_assoc, inv_mul_cancel_left₀]
+    · refine IsIntegral.mul (IsIntegral.pow ?_ _)
+        (IsIntegral.pow (IsIntegral.multiset_prod (fun a ha ↦ ⟨minpoly A x, minpoly.monic
+          (IsIntegral.isIntegral x), ?_⟩)) _)
+      · exact (isIntegral_algebraMap_iff (NoZeroSMulDivisors.iff_algebraMap_injective.1 this)).mpr
+          (IsIntegral.isIntegral x)
+      · replace ha := Multiset.erase_subset _ _ ha
+        suffices (aeval a) ((minpoly A x).map (algebraMap A K)) = 0 by simpa
+        rw [← minpoly.isIntegrallyClosed_eq_field_fractions K L (IsIntegral.isIntegral x)]
+        simp only [mem_roots', ne_eq, Polynomial.map_eq_zero, IsRoot.def, eval_map_algebraMap] at ha
+        exact ha.2
+    · exact (map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective B E)).mpr hx
+  · simp only [mem_roots', ne_eq, Polynomial.map_eq_zero, IsRoot.def, eval_map_algebraMap]
+    refine ⟨minpoly.ne_zero (IsIntegral.isIntegral _), ?_⟩
+    simp [algebraMap_apply B L E, aeval_algebraMap_apply]
