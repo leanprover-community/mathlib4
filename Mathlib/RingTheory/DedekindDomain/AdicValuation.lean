@@ -484,8 +484,7 @@ instance : Algebra S (v.adicCompletion K) where
     | hp =>
       exact isClosed_eq (continuous_mul_left _) (continuous_mul_right _)
     | ih x =>
-      change (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
-        = x * (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K)
+      simp [Completion.coeRingHom] -- FIXME simps
       norm_cast
       rw [Algebra.commutes]
   smul_def' r x := by
