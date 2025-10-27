@@ -340,7 +340,8 @@ theorem UniformContinuousOn.tendstoUniformlyOn [UniformSpace α] [UniformSpace �
   rw [tendstoUniformlyOn_iff_tendsto]
   change Tendsto (Prod.map ↿F ↿F ∘ φ) (𝓝[U] x ×ˢ 𝓟 V) (𝓤 γ)
   simp only [nhdsWithin, Filter.prod_eq_inf, comap_inf, inf_assoc, comap_principal, inf_principal]
-  refine hF.comp (Tendsto.inf ?_ <| tendsto_principal_principal.2 fun x hx => ⟨⟨hU, hx.2⟩, hx⟩)
+  refine Tendsto.comp hF
+    (Tendsto.inf ?_ <| tendsto_principal_principal.2 fun x hx => ⟨⟨hU, hx.2⟩, hx⟩)
   simp only [uniformity_prod_eq_comap_prod, tendsto_comap_iff,
     nhds_eq_comap_uniformity, comap_comap]
   exact tendsto_comap.prodMk (tendsto_diag_uniformity _ _)
@@ -440,7 +441,7 @@ theorem TendstoUniformlyOnFilter.uniformCauchySeqOnFilter (hF : TendstoUniformly
   apply this.diag_of_prod_right.mono
   simp only [and_imp, Prod.forall]
   intro n1 n2 x hl hr
-  exact Set.mem_of_mem_of_subset (prodMk_mem_compRel (htsymm hl) hr) htmem
+  exact htmem <| SetRel.prodMk_mem_comp (htsymm hl) hr
 
 /-- A sequence that converges uniformly is also uniformly Cauchy -/
 theorem TendstoUniformlyOn.uniformCauchySeqOn (hF : TendstoUniformlyOn F f p s) :
@@ -473,7 +474,7 @@ theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto
     and_imp, Prod.forall]
   -- Complete the proof
   intro x n hx hm'
-  refine Set.mem_of_mem_of_subset (mem_compRel.mpr ?_) htmem
+  refine Set.mem_of_mem_of_subset ?_ htmem
   rw [Uniform.tendsto_nhds_right] at hm'
   have := hx.and (hm' ht)
   obtain ⟨m, hm⟩ := this.exists

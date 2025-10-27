@@ -44,7 +44,7 @@ instance [X.IsQuasiAffine] : IsOpenImmersion X.toSpecΓ := by
   rw [← X.toSpecΓ.toImage_imageι]
   infer_instance
 
-/-- Any quasicompact locally closed subscheme of an quasi-affine scheme is quasi-affine. -/
+/-- Any quasicompact locally closed subscheme of a quasi-affine scheme is quasi-affine. -/
 @[stacks 0BCK]
 lemma IsQuasiAffine.of_isImmersion
     [Y.IsQuasiAffine] [IsImmersion f] [CompactSpace X] : X.IsQuasiAffine := by
@@ -81,8 +81,17 @@ lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpac
   refine ⟨PrimeSpectrum.basicOpen r, (X.toSpecΓ_preimage_basicOpen r).ge hxr, ?_⟩
   suffices IsOpenImmersion ((X.basicOpen r).ι ≫ X.toSpecΓ) by
     convert this <;> rw [toSpecΓ_preimage_basicOpen]
-  rw [← Opens.toSpecΓ_SpecMap_map_top]
+  rw [← Opens.toSpecΓ_SpecMap_presheaf_map_top]
   have := isLocalization_basicOpen_of_qcqs isCompact_univ isQuasiSeparated_univ r
   exact MorphismProperty.comp_mem _ hr.isoSpec.hom _ inferInstance (.of_isLocalization r)
+
+lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasiAffine := by
+  have := QuasiCompact.compactSpace_of_compactSpace f
+  refine .of_forall_exists_mem_basicOpen _ fun x ↦ ?_
+  obtain ⟨_, ⟨_, ⟨r, hr, rfl⟩, rfl⟩, hxr, -⟩ := (IsQuasiAffine.isBasis_basicOpen
+    Y).exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
+  refine ⟨f.appTop r, ?_⟩
+  rw [← preimage_basicOpen_top]
+  exact ⟨hr.preimage _, hxr⟩
 
 end AlgebraicGeometry.Scheme
