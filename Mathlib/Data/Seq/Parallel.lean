@@ -156,14 +156,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         apply IH _ _ _ (Or.inr _) T
         rw [a, Seq.get?_tail]
       rcases e : Seq.get? S 0 with - | o
-      · have D : Seq.destruct S = none := by
-          dsimp [Seq.destruct]
-          rw [e]
-          rfl
-        rw [D]
-        simp only
-        have TT := TT l'
-        rwa [Seq.destruct_eq_none D, Seq.tail_nil] at TT
+      · grind [Seq.get?_zero_eq_none, Seq.get?_nil]
       · have D : Seq.destruct S = some (o, S.tail) := by
           dsimp [Seq.destruct]
           rw [e]
