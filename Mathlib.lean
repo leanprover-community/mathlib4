@@ -1061,8 +1061,6 @@ import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Algebra.Polynomial.RuleOfSigns
-import Mathlib.Algebra.Polynomial.RuleOfSigns
-import Mathlib.Algebra.Polynomial.RuleOfSigns
 import Mathlib.Algebra.Polynomial.Sequence
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.Algebra.Polynomial.SpecificDegree
