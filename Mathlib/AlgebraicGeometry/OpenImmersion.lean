@@ -82,7 +82,7 @@ def opensFunctor : X.Opens ⥤ Y.Opens :=
   LocallyRingedSpace.IsOpenImmersion.opensFunctor f.toLRSHom
 
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`.
-The prefered name in lemmas is `image` and it should be treated as an infix. -/
+The preferred name in lemmas is `image` and it should be treated as an infix. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
 
 @[simp] lemma coe_image {U : X.Opens} : f ''ᵁ U = f '' U := rfl
@@ -428,6 +428,9 @@ lemma of_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion 
     IsIso.of_isIso_comp_left (f := g.stalkMap (f x)) _
   IsOpenImmersion.of_isIso_stalkMap _ <|
     IsOpenEmbedding.of_comp _ (Scheme.Hom.isOpenEmbedding g) (Scheme.Hom.isOpenEmbedding (f ≫ g))
+
+instance : MorphismProperty.HasOfPostcompProperty @IsOpenImmersion @IsOpenImmersion where
+  of_postcomp f g _ _ := .of_comp f g
 
 theorem iff_isIso_stalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsOpenImmersion f ↔ IsOpenEmbedding f ∧ ∀ x, IsIso (f.stalkMap x) :=
