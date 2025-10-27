@@ -784,8 +784,8 @@ instance (R₀ R A : Type*) [CommSemiring R₀] [CommSemiring R] [CommRing A] [I
 /-- Let `K / RatFunc A / A[X] / R` be a tower. If `K / A[X] / R` is a scalar tower
 then so is `K / RatFunc A / R`. -/
 instance (R A K : Type*) [CommRing A] [IsDomain A] [Field K] [Algebra A[X] K]
-    [FaithfulSMul A[X] K] [CommSemiring R] [Algebra R A[X]] [SMul R K]
-    [IsScalarTower R A[X] K] [FaithfulSMul A[X] K] : IsScalarTower R (RatFunc A) K :=
+    [FaithfulSMul A[X] K] [CommSemiring R] [Algebra R A[X]] [SMul R K] [IsScalarTower R A[X] K] :
+    IsScalarTower R (RatFunc A) K :=
   IsScalarTower.to₁₃₄ _ A[X] _ _
 
 /-- Let `K / k / RatFunc A / A[X]` be a tower. If `K / k / A[X]` is a scalar tower
