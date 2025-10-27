@@ -167,7 +167,7 @@ theorem ramificationIdxIn_eq_ramificationIdx :
 
 include G in
 theorem ramificationIdxIn_ne_zero [IsDedekindDomain B] {p : Ideal A} [p.IsPrime] (hp : p ≠ ⊥)
-    [NoZeroSMulDivisors A B] [Nontrivial B] : p.ramificationIdxIn B ≠ 0 := by
+    [NoZeroSMulDivisors A B] : p.ramificationIdxIn B ≠ 0 := by
   have : Algebra.IsIntegral A B := IsGaloisGroup.isInvariant.isIntegral A B G
   obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
   rw [ramificationIdxIn_eq_ramificationIdx p P G]
