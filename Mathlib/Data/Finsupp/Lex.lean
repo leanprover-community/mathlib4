@@ -63,12 +63,12 @@ theorem lex_lt_of_lt [PartialOrder N] (r) [IsStrictOrder α r] {x y : α →₀ 
     Pi.Lex r (· < ·) x y :=
   DFinsupp.lex_lt_of_lt r (id hlt : x.toDFinsupp < y.toDFinsupp)
 
-instance Lex.isStrictOrder [LinearOrder α] [PartialOrder N] :
+variable [LinearOrder α]
+
+instance Lex.isStrictOrder [PartialOrder N] :
     IsStrictOrder (Lex (α →₀ N)) (· < ·) where
   irrefl _ := lt_irrefl (α := Lex (α → N)) _
   trans _ _ _ := lt_trans (α := Lex (α → N))
-
-variable [LinearOrder α]
 
 /-- The partial order on `Finsupp`s obtained by the lexicographic ordering.
 See `Finsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
