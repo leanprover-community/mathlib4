@@ -63,17 +63,17 @@ lemma freeYonedaHomEquiv_symm_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A} (α : M
 
 variable (C)
 
-lemma isSeparating {ι : Type w} {S : ι → A} (hS : IsSeparating (Set.range S)) :
-    IsSeparating (Set.range (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda X (S i))) := by
+lemma isSeparating {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparating (.ofObj S)) :
+    ObjectProperty.IsSeparating (.ofObj (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda X (S i))) := by
   intro F G f g h
   ext ⟨X⟩
   refine hS _ _ ?_
-  rintro _ ⟨i, rfl⟩ α
+  rintro _ ⟨i⟩ α
   apply freeYonedaHomEquiv.symm.injective
   simpa only [freeYonedaHomEquiv_symm_comp] using
-    h _ ⟨⟨X, i⟩, rfl⟩ (freeYonedaHomEquiv.symm α)
+    h _ (ObjectProperty.ofObj_apply _ ⟨X, i⟩) (freeYonedaHomEquiv.symm α)
 
-lemma isSeparator {ι : Type w} {S : ι → A} (hS : IsSeparating (Set.range S))
+lemma isSeparator {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparating (.ofObj S))
     [HasCoproduct (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda X (S i))]
     [HasZeroMorphisms A] :
     IsSeparator (∐ (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda X (S i))) :=
