@@ -179,7 +179,7 @@ inductive MulInd : ℕ → Prop where
 
 run_cmd do
   unless findTranslation? (← getEnv) `Test.MulInd.one == some `Test.AddInd.zero do throwError "1"
-  unless findTranslation? (← getEnv) `Test.MulInd.basic == none do throwError "2"
+  unless findTranslation? (← getEnv) `Test.MulInd.basic == some `Test.AddInd.basic do throwError "2"
   unless findTranslation? (← getEnv) `Test.MulInd == some `Test.AddInd do throwError "3"
 
 @[to_additive addFixedNumeralTest]
@@ -272,7 +272,7 @@ lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 := by
 
 /- Test that we can rewrite with definitions without the `@[to_additive]` attribute. -/
 @[to_additive addoptiontest]
-lemma optiontest (x : Option α) : x.elim .none Option.some = x := by
+lemma optiontest (x : Option α) : x.elim none some = x := by
   cases x <;> rw [Option.elim]
 
 /- Check that `to_additive` works if a `_match` aux declaration is created. -/
@@ -304,7 +304,7 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 error: the permutation
 [[2, 3, 50]]
 provided by the `(reorder := ...)` option is out of bounds, the type
-  {α : Type u_1} → [Mul α] → α → α → α → α
+  {α : Type u_1} → [Add α] → α → α → α → α
 has only 5 arguments
 -/
 #guard_msgs in
@@ -431,7 +431,7 @@ end guessName
 
 end Test
 
-run_cmd Elab.Command.liftCoreM <| ToAdditive.insertTranslation `localize `add_localize
+run_meta ToAdditive.insertTranslation `localize `add_localize
 
 @[to_additive] def localize.r := Nat
 @[to_additive add_localize] def localize := Nat
@@ -570,8 +570,10 @@ run_cmd
   logInfo doc
 
 /--
-warning: String syntax for `to_additive` docstrings is deprecated:
-Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+warning: String syntax for `to_additive` docstrings is deprecated: Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+
+Update deprecated syntax to:
+  [apply] /-- (via `str` syntax) I am an additive docstring! -/
 -/
 #guard_msgs in
 @[to_additive "(via `str` syntax) I am an additive docstring!"]
@@ -707,3 +709,66 @@ info: Subtype.add_neg_iff_mul_inv._proof_1 {α β : Type} [AddGroup α] [MyRing 
 -/
 #guard_msgs in
 #check Subtype.add_neg_iff_mul_inv._proof_1
+
+/-!
+Test that `relevant_arg` and `reorder` are passed to `simps` and `.eq_1`, and to
+structure fields/constructors.
+-/
+
+structure SimpleNSMul (β : Type 1) (α : Type) where
+  x : Nat
+
+@[to_additive (reorder := 1 2) (relevant_arg := 2)]
+structure SimplePow (α : Type) (β : Type 1) where
+  x : Nat
+
+@[to_additive (reorder := 1 2) (attr := simps)]
+def simplePowZero (α β) : SimplePow α β where
+  x := 0
+
+@[to_additive]
+lemma simplePowZero_x' {β} : (simplePowZero Nat β).x = 0 := by
+  rw [simplePowZero_x]
+
+@[to_additive]
+lemma simplePowZero_x'' {β} : (simplePowZero Nat β).x = 0 := by
+  rw [simplePowZero.eq_1]
+
+/-- info: simpleNSMulZero_x' {β : Type 1} : (simpleNSMulZero β ℕ).x = 0 -/
+#guard_msgs in
+#check simpleNSMulZero_x'
+/-- info: simpleNSMulZero_x'' {β : Type 1} : (simpleNSMulZero β ℕ).x = 0 -/
+#guard_msgs in
+#check simpleNSMulZero_x''
+
+
+structure AddMonoidAlgebra' (k G : Type) where
+  x : G → k
+
+@[to_additive (relevant_arg := 2)]
+structure MonoidAlgebra' (k G : Type) where
+  x : G → k
+
+variable {G : Type} [Monoid G]
+
+@[to_additive]
+instance : Mul (MonoidAlgebra' Nat G) where
+  mul a b := ⟨fun i => a.1 i * b.1 1⟩
+
+-- Unfortunately, `relevant_arg` information isn't passed to `*.casesOn`:
+/--
+error: @[to_additive] failed. The translated value is not type correct. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration
+instAddAddMonoidAlgebra'Nat_1.match_1:
+Application type mismatch: The argument
+  fun x => motive x x✝
+has type
+  AddMonoidAlgebra' ℕ G → Sort u_1
+but is expected to have type
+  MonoidAlgebra' ℕ G → Sort u_1
+in the application
+  @MonoidAlgebra'.casesOn ℕ G fun x => motive x x✝
+-/
+#guard_msgs in
+@[to_additive]
+instance : Mul (MonoidAlgebra' Nat G) where
+  mul | ⟨a⟩, ⟨b⟩ => ⟨fun i => a i * b 1⟩

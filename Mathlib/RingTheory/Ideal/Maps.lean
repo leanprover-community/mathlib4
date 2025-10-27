@@ -386,6 +386,47 @@ theorem map_eq_top_or_isMaximal_of_surjective (hf : Function.Surjective f) {I : 
 
 end Surjective
 
+section Pi
+
+variable {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
+
+theorem map_evalRingHom_pi {I : Π i, Ideal (R i)} (i : ι) :
+    (pi I).map (Pi.evalRingHom R i) = I i := by
+  ext r
+  rw [mem_map_iff_of_surjective (Pi.evalRingHom R i) (Function.surjective_eval _)]
+  classical refine ⟨?_, fun hr ↦ ⟨_, single_mem_pi hr, by simp⟩⟩
+  rintro ⟨r, hr, rfl⟩
+  exact hr i
+
+/-- Ideals in a finite direct product semiring `Πᵢ Rᵢ` are identified with tuples of ideals
+in the individual semirings, in an order-preserving way.
+
+(Note that this is not in general true for infinite direct products:
+If infinitely many of the `Rᵢ` are nontrivial, then there exists an ideal of `Πᵢ Rᵢ` that
+is not of the form `Πᵢ Iᵢ`, namely the ideal of finitely supported elements of `Πᵢ Rᵢ`
+(it is also not a principal ideal).) -/
+@[simps!] def piOrderIso [Finite ι] : Ideal (Π i, R i) ≃o Π i, Ideal (R i) := .symm
+{ toFun := pi
+  invFun I i := I.map (Pi.evalRingHom R i)
+  left_inv _ := funext map_evalRingHom_pi
+  right_inv I := by
+    ext r
+    simp_rw [mem_pi, mem_map_iff_of_surjective (Pi.evalRingHom R _) (Function.surjective_eval _)]
+    refine ⟨(fun ⟨r', hr'⟩ ↦ ?_) ∘ Classical.skolem.mp, fun hr i ↦ ⟨r, hr, rfl⟩⟩
+    have := Fintype.ofFinite ι
+    classical rw [show r = ∑ i, Pi.single i 1 * r' i from funext fun i ↦ by
+      rw [← (hr' _).2, Finset.sum_apply, Fintype.sum_eq_single i fun j ne ↦ by simp [ne]]; simp]
+    exact sum_mem fun i _ ↦ I.mul_mem_left _ (hr' i).1
+  map_rel_iff' := pi_le_pi_iff }
+
+instance [Finite ι] [∀ i, IsPrincipalIdealRing (R i)] : IsPrincipalIdealRing (Π i, R i) where
+  principal I := by
+    rw [← piOrderIso.symm_apply_apply I]
+    exact ⟨_, congr(pi $(funext fun i ↦
+      (Submodule.IsPrincipal.span_singleton_generator _).symm)).trans pi_span⟩
+
+end Pi
+
 section Injective
 
 theorem comap_bot_le_of_injective (hf : Function.Injective f) : comap f ⊥ ≤ I := by
@@ -606,10 +647,12 @@ theorem le_comap_mul : comap f K * comap f L ≤ comap f (K * L) :=
       mul_mono (map_le_iff_le_comap.2 <| le_rfl) (map_le_iff_le_comap.2 <| le_rfl)
 
 theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
-  induction' n with n n_ih
-  · rw [pow_zero, pow_zero, Ideal.one_eq_top, Ideal.one_eq_top]
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero, Ideal.one_eq_top, Ideal.one_eq_top]
     exact rfl.le
-  · rw [pow_succ, pow_succ]
+  | succ n n_ih =>
+    rw [pow_succ, pow_succ]
     exact (Ideal.mul_mono_left n_ih).trans (Ideal.le_comap_mul f)
 
 lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+* S}
@@ -678,7 +721,7 @@ theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
 lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
     (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
   ext x
-  simp [mem_ker, Ideal.mem_iInf, funext_iff]
+  simp [mem_ker, funext_iff]
 
 @[simp]
 theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
@@ -743,7 +786,7 @@ theorem ker_isPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
   have := Ideal.bot_prime (α := S)
   inferInstanceAs (Ideal.comap f ⊥).IsPrime
 
-/-- The kernel of a homomorphism to a field is a maximal ideal. -/
+/-- The kernel of a homomorphism to a division ring is a maximal ideal. -/
 theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [DivisionRing K]
     [FunLike F R K] [RingHomClass F R K] (f : F)
     (hf : Function.Surjective f) : (ker f).IsMaximal :=
@@ -998,11 +1041,10 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
 
 lemma IsMaximal.map_of_surjective_of_ker_le {f : F} (hf : Function.Surjective f) {m : Ideal R}
     [m.IsMaximal] (hk : RingHom.ker f ≤ m) : (m.map f).IsMaximal := by
-  obtain h | h := m.map_eq_top_or_isMaximal_of_surjective f hf ‹_›
-  · apply congr_arg (comap f) at h
-    rw [comap_map_of_surjective _ hf, comap_top] at h
-    exact (IsMaximal.ne_top ‹_› (eq_top_iff.mpr <| h ▸ sup_le (le_of_eq rfl) hk)).elim
-  · exact h
+  refine m.map_eq_top_or_isMaximal_of_surjective f hf ‹_› |>.resolve_left fun h => ?_
+  apply congr_arg (comap f) at h
+  rw [comap_map_of_surjective _ hf, comap_top, ← RingHom.ker_eq_comap_bot, sup_of_le_left hk] at h
+  exact IsMaximal.ne_top ‹_› h
 
 end Ring
 
@@ -1143,8 +1185,6 @@ variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
 
 lemma ker_coe : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
-
-@[deprecated (since := "2025-02-24")] alias coe_ker := ker_coe
 
 lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl

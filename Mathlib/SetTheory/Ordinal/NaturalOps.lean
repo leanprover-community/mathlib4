@@ -272,7 +272,7 @@ termination_by (a, b, c)
 @[simp]
 theorem nadd_zero (a : Ordinal) : a ♯ 0 = a := by
   rw [nadd, ciSup_of_empty fun _ : Iio 0 ↦ _, sup_bot_eq]
-  convert iSup_succ a
+  convert _root_.iSup_succ a
   rename_i x
   cases x
   exact nadd_zero _
@@ -339,14 +339,10 @@ instance : AddLeftMono NatOrdinal.{u} :=
   ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
 
 instance : AddLeftReflectLE NatOrdinal.{u} :=
-  ⟨fun a b c h => by
-    by_contra! h'
-    exact h.not_gt (add_lt_add_left h' a)⟩
+  ⟨fun a b c h => by by_contra! h'; exact h.not_gt (by gcongr)⟩
 
 instance : AddCommMonoid NatOrdinal :=
-  { add := (· + ·)
-    add_assoc := nadd_assoc
-    zero := 0
+  { add_assoc := nadd_assoc
     zero_add := zero_nadd
     add_zero := nadd_zero
     add_comm := nadd_comm
@@ -522,8 +518,6 @@ theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
   convert csInf_Ici
   ext b
   refine ⟨fun H ↦ le_of_forall_lt (a := a) fun c hc ↦ ?_, fun ha c hc ↦ ?_⟩
-  -- Porting note: had to add arguments to `nmul_one` in the next two lines
-  -- for the termination checker.
   · simpa [nmul_one c] using H c hc
   · simpa [nmul_one c] using hc.trans_le ha
 termination_by a
@@ -685,20 +679,20 @@ theorem nmul_nadd_le {a b a' b' : NatOrdinal} (ha : a' ≤ a) (hb : b' ≤ b) :
 
 instance : CommSemiring NatOrdinal :=
   { NatOrdinal.instAddCommMonoid with
-    mul := (· * ·)
     left_distrib := nmul_nadd
     right_distrib := nadd_nmul
     zero_mul := zero_nmul
     mul_zero := nmul_zero
     mul_assoc := nmul_assoc
-    one := 1
     one_mul := one_nmul
     mul_one := nmul_one
     mul_comm := nmul_comm }
 
-instance : IsOrderedRing NatOrdinal :=
-  { mul_le_mul_of_nonneg_left := fun _ _ c h _ => nmul_le_nmul_left h c
-    mul_le_mul_of_nonneg_right := fun _ _ c h _ => nmul_le_nmul_right h c }
+instance : IsOrderedMonoid NatOrdinal where
+  mul_le_mul_left _a _b hab _c := nmul_le_nmul_left hab _
+  mul_le_mul_right _a _b hab _c := nmul_le_nmul_right hab _
+
+instance : IsOrderedRing NatOrdinal where
 
 end NatOrdinal
 

@@ -59,9 +59,7 @@ theorem vsub_left_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p
   rw [mem_direction_iff_eq_vsub_left hp]
   simp
 
--- See note [reducible non instances]
-/-- This is not an instance because it loops with `AddTorsor.nonempty`. -/
-abbrev toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
+instance toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
   vadd a b := ⟨(a : V) +ᵥ (b : P), vadd_mem_of_mem_direction a.2 b.2⟩
   zero_vadd := fun a => by
     ext
@@ -76,8 +74,6 @@ abbrev toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction
   vadd_vsub' a b := by
     ext
     apply AddTorsor.vadd_vsub'
-
-attribute [local instance] toAddTorsor
 
 @[simp, norm_cast]
 theorem coe_vsub (s : AffineSubspace k P) [Nonempty s] (a b : s) : ↑(a -ᵥ b) = (a : P) -ᵥ (b : P) :=
@@ -108,9 +104,6 @@ theorem subtype_injective (s : AffineSubspace k P) [Nonempty s] : Function.Injec
 @[simp]
 theorem coe_subtype (s : AffineSubspace k P) [Nonempty s] : (s.subtype : s → P) = ((↑) : s → P) :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
 
 end AffineSubspace
 
@@ -150,8 +143,6 @@ theorem preimage_coe_affineSpan_singleton (x : P) :
   eq_univ_of_forall fun y => (AffineSubspace.mem_affineSpan_singleton _ _).1 y.2
 
 variable (P)
-
-attribute [local instance] toAddTorsor
 
 /-- The top affine subspace is linearly equivalent to the affine space.
 This is the affine version of `Submodule.topEquiv`. -/
@@ -312,10 +303,6 @@ theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) 
 
 variable {k}
 
-section WithLocalInstance
-
-attribute [local instance] AffineSubspace.toAddTorsor
-
 /-- A set, considered as a subset of its spanned affine subspace, spans the whole subspace. -/
 @[simp]
 theorem affineSpan_coe_preimage_eq_top (A : Set P) [Nonempty A] :
@@ -325,8 +312,6 @@ theorem affineSpan_coe_preimage_eq_top (A : Set P) [Nonempty A] :
   refine affineSpan_induction' (fun y hy ↦ ?_) (fun c u hu v hv w hw ↦ ?_) hx
   · exact subset_affineSpan _ _ hy
   · exact AffineSubspace.smul_vsub_vadd_mem _ _
-
-end WithLocalInstance
 
 /-- Suppose a set of vectors spans `V`.  Then a point `p`, together with those vectors added to `p`,
 spans `P`. -/
@@ -575,8 +560,6 @@ theorem map_mono {s₁ s₂ : AffineSubspace k P₁} (h : s₁ ≤ s₂) : s₁.
 section inclusion
 variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁]
 
-attribute [local instance] AffineSubspace.toAddTorsor
-
 /-- Affine map from a smaller to a larger subspace of the same space.
 
 This is the affine version of `Submodule.inclusion`. -/
@@ -617,8 +600,6 @@ namespace AffineEquiv
 
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
-
-attribute [local instance] AffineSubspace.toAddTorsor
 
 /-- Affine equivalence between two equal affine subspace.
 
@@ -691,7 +672,7 @@ theorem comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 
--- lemmas about map and comap derived from the galois connection
+-- lemmas about map and comap derived from the Galois connection
 theorem map_le_iff_le_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   image_subset_iff

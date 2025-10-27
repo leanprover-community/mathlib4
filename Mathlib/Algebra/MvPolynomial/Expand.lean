@@ -48,8 +48,7 @@ lemma expand_zero :
   ext1 i
   simp
 
-lemma expand_zero_apply (p : MvPolynomial σ R) :
-    expand 0 (σ := σ) (R := R) p = .C (MvPolynomial.eval (1 : σ → R) p) := by
+lemma expand_zero_apply (p : MvPolynomial σ R) : expand 0 p = .C (MvPolynomial.eval 1 p) := by
   simp
 
 @[simp]
@@ -99,6 +98,7 @@ lemma aeval_comp_expand {A : Type*} [CommSemiring A] [Algebra R A] (f : σ → A
     (aeval f).comp (expand p) = aeval (R := R) (f ^ p) := by
   ext; simp
 
+@[simp]
 lemma aeval_expand {A : Type*} [CommSemiring A] [Algebra R A]
     (f : σ → A) (φ : MvPolynomial σ R) (p : ℕ) :
     aeval f (expand p φ) = aeval (f ^ p) φ :=
@@ -108,6 +108,14 @@ lemma aeval_expand {A : Type*} [CommSemiring A] [Algebra R A]
 lemma eval_expand (f : σ → R) (φ : MvPolynomial σ R) (p : ℕ) :
     eval f (expand p φ) = eval (f ^ p) φ :=
   eval₂_expand ..
+
+theorem expand_mul_eq_comp (p q : ℕ) :
+    expand (σ := σ) (R := R) (p * q) = (expand p).comp (expand q) := by
+  ext1 i
+  simp [pow_mul]
+
+theorem expand_mul (p q : ℕ) (φ : MvPolynomial σ R) : φ.expand (p * q) = (φ.expand q).expand p :=
+  DFunLike.congr_fun (expand_mul_eq_comp p q) φ
 
 @[simp]
 lemma coeff_expand_smul (φ : MvPolynomial σ R) {p : ℕ} (hp : p ≠ 0) (m : σ →₀ ℕ) :

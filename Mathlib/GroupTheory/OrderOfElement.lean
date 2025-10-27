@@ -47,10 +47,9 @@ variable [Monoid G] {a b x y : G} {n m : ℕ}
 
 section IsOfFinOrder
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
 @[to_additive]
 theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt (x * ·) n 1 ↔ x ^ n = 1 := by
-  rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; beta_reduce; rw [mul_one]
+  rw [IsPeriodicPt, IsFixedPt, mul_left_iterate_apply_one]
 
 /-- `IsOfFinOrder` is a predicate on an element `x` of a monoid to be of finite order, i.e. there
 exists `n ≥ 1` such that `x ^ n = 1`. -/
@@ -166,6 +165,10 @@ Otherwise, i.e. if `x` is of infinite order, then `orderOf x` is `0` by conventi
 noncomputable def orderOf (x : G) : ℕ :=
   minimalPeriod (x * ·) 1
 
+@[to_additive (attr := nontriviality)]
+theorem Subsingleton.orderOf_eq [Subsingleton G] (x : G) : orderOf x = 1 := by
+  simp [orderOf, nontriviality]
+
 @[simp]
 theorem addOrderOf_ofMul_eq_orderOf (x : G) : addOrderOf (Additive.ofMul x) = orderOf x :=
   rfl
@@ -178,11 +181,10 @@ lemma orderOf_ofAdd_eq_addOrderOf {α : Type*} [AddMonoid α] (a : α) :
 protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
   minimalPeriod_pos_of_mem_periodicPts h
 
-@[to_additive addOrderOf_nsmul_eq_zero]
+@[to_additive (attr := simp) addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
   convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed in the middle of the rewrite
-  rw [orderOf, mul_left_iterate]; beta_reduce; rw [mul_one]
+  rw [orderOf, mul_left_iterate_apply_one]
 
 @[to_additive]
 theorem orderOf_eq_zero (h : ¬IsOfFinOrder x) : orderOf x = 0 := by
@@ -212,9 +214,7 @@ theorem orderOf_eq_iff {n} (h : 0 < n) :
   split_ifs with h1
   · classical
     rw [find_eq_iff]
-    simp only [h, true_and]
-    push_neg
-    rfl
+    simp only [h, true_and, not_and]
   · rw [iff_false_left h.ne]
     rintro ⟨h', -⟩
     exact h1 ⟨n, h, h'⟩
@@ -266,7 +266,7 @@ theorem orderOf_pow_dvd (n : ℕ) : orderOf (x ^ n) ∣ orderOf x := by
 
 @[to_additive]
 lemma pow_injOn_Iio_orderOf : (Set.Iio <| orderOf x).InjOn (x ^ ·) := by
-  simpa only [mul_left_iterate, mul_one]
+  simpa only [mul_left_iterate_apply_one]
     using iterate_injOn_Iio_minimalPeriod (f := (x * ·)) (x := 1)
 
 @[to_additive]
@@ -353,6 +353,11 @@ theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf 
 @[to_additive (attr := norm_cast)]
 theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
   orderOf_injective (Units.coeHom G) Units.val_injective y
+
+@[to_additive]
+lemma IsUnit.orderOf_eq_one [Subsingleton Gˣ] {x : G} (h : IsUnit x) :
+    orderOf x = 1 := by
+  simp [isUnit_iff_eq_one.mp h]
 
 @[to_additive (attr := norm_cast)]
 theorem Units.isOfFinOrder_val {u : Gˣ} : IsOfFinOrder (u : G) ↔ IsOfFinOrder u :=
@@ -639,7 +644,7 @@ lemma zpow_mod_orderOf (x : G) (z : ℤ) : x ^ (z % (orderOf x : ℤ)) = x ^ z :
   calc
     x ^ (z % (orderOf x : ℤ)) = x ^ (z % orderOf x + orderOf x * (z / orderOf x) : ℤ) := by
         simp [zpow_add, zpow_mul, pow_orderOf_eq_one]
-    _ = x ^ z := by rw [Int.emod_add_ediv]
+    _ = x ^ z := by rw [Int.emod_add_mul_ediv]
 
 @[to_additive (attr := simp) zsmul_smul_addOrderOf]
 theorem zpow_pow_orderOf : (x ^ i) ^ orderOf x = 1 := by
@@ -960,25 +965,9 @@ open QuotientGroup
 
 @[to_additive]
 theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
-  classical
-    have ft_prod : Fintype ((G ⧸ zpowers x) × zpowers x) :=
-      Fintype.ofEquiv G groupEquivQuotientProdSubgroup
-    have ft_s : Fintype (zpowers x) := @Fintype.prodRight _ _ _ ft_prod _
-    have ft_cosets : Fintype (G ⧸ zpowers x) :=
-      @Fintype.prodLeft _ _ _ ft_prod ⟨⟨1, (zpowers x).one_mem⟩⟩
-    have eq₁ : Fintype.card G = @Fintype.card _ ft_cosets * @Fintype.card _ ft_s :=
-      calc
-        Fintype.card G = @Fintype.card _ ft_prod :=
-          @Fintype.card_congr _ _ _ ft_prod groupEquivQuotientProdSubgroup
-        _ = @Fintype.card _ (@instFintypeProd _ _ ft_cosets ft_s) :=
-          congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
-        _ = @Fintype.card _ ft_cosets * @Fintype.card _ ft_s :=
-          @Fintype.card_prod _ _ ft_cosets ft_s
-    have eq₂ : orderOf x = @Fintype.card _ ft_s :=
-      calc
-        orderOf x = _ := Fintype.card_zpowers.symm
-        _ = _ := congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
-    exact Dvd.intro (@Fintype.card (G ⧸ Subgroup.zpowers x) ft_cosets) (by rw [eq₁, eq₂, mul_comm])
+  use Fintype.card (G ⧸ zpowers x)
+  rw [← card_zpowers, mul_comm, ← Fintype.card_prod,
+    ← Fintype.card_congr groupEquivQuotientProdSubgroup]
 
 @[to_additive]
 theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.card G := by
@@ -1101,7 +1090,7 @@ section PowIsSubgroup
 
 /-- A nonempty idempotent subset of a finite cancellative monoid is a submonoid -/
 @[to_additive
-/-- A nonempty idempotent subset of a finite cancellative add monoid is a submonoid -/]
+/-- A nonempty idempotent subset of a finite cancellative additive monoid is a submonoid -/]
 def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Finite M] (S : Set M)
     (hS1 : S.Nonempty) (hS2 : S * S = S) : Submonoid M :=
   have pow_mem (a : M) (ha : a ∈ S) (n : ℕ) : a ^ (n + 1) ∈ S := by
@@ -1118,7 +1107,7 @@ def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Finite M] (S : Set M
     mul_mem' := fun ha hb => (congr_arg₂ (· ∈ ·) rfl hS2).mp (Set.mul_mem_mul ha hb) }
 
 /-- A nonempty idempotent subset of a finite group is a subgroup -/
-@[to_additive /-- A nonempty idempotent subset of a finite add group is a subgroup -/]
+@[to_additive /-- A nonempty idempotent subset of a finite additive group is a subgroup -/]
 def subgroupOfIdempotent {G : Type*} [Group G] [Finite G] (S : Set G) (hS1 : S.Nonempty)
     (hS2 : S * S = S) : Subgroup G :=
   { submonoidOfIdempotent S hS1 hS2 with
@@ -1129,7 +1118,7 @@ def subgroupOfIdempotent {G : Type*} [Group G] [Finite G] (S : Set G) (hS1 : S.N
 
 /-- If `S` is a nonempty subset of a finite group `G`, then `S ^ |G|` is a subgroup -/
 @[to_additive (attr := simps!) smulCardAddSubgroup
-  /-- If `S` is a nonempty subset of a finite add group `G`, then `|G| • S` is a subgroup -/]
+  /-- If `S` is a nonempty subset of a finite additive group `G`, then `|G| • S` is a subgroup -/]
 def powCardSubgroup {G : Type*} [Group G] [Fintype G] (S : Set G) (hS : S.Nonempty) : Subgroup G :=
   have one_mem : (1 : G) ∈ S ^ Fintype.card G := by
     obtain ⟨a, ha⟩ := hS
@@ -1234,7 +1223,7 @@ lemma charP_of_ne_zero (hn : card R = p) (hR : ∀ i < p, (i : R) = 0 → i = 0)
       rw [← Nat.mod_add_div n p, Nat.cast_add, Nat.cast_mul, H, zero_mul, add_zero] at h
       rw [Nat.dvd_iff_mod_eq_zero]
       apply hR _ (Nat.mod_lt _ _) h
-      rw [← hn, gt_iff_lt, Fintype.card_pos_iff]
+      rw [← hn, Fintype.card_pos_iff]
       exact ⟨0⟩
     · rintro ⟨n, rfl⟩
       rw [Nat.cast_mul, H, zero_mul]

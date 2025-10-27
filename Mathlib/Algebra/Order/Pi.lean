@@ -45,6 +45,7 @@ instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOr
     [∀ i, CanonicallyOrderedMul (Z i)] :
     CanonicallyOrderedMul (∀ i, Z i) where
   __ := Pi.existsMulOfLe
+  le_mul_self _ _ := fun _ => le_mul_self
   le_self_mul _ _ := fun _ => le_self_mul
 
 @[to_additive]
@@ -57,8 +58,8 @@ instance isOrderedRing [∀ i, Semiring (f i)] [∀ i, PartialOrder (f i)] [∀ 
     IsOrderedRing (∀ i, f i) where
   add_le_add_left _ _ hab _ := fun _ => add_le_add_left (hab _) _
   zero_le_one := fun i => zero_le_one (α := f i)
-  mul_le_mul_of_nonneg_left _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
-  mul_le_mul_of_nonneg_right _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
+  mul_le_mul_of_nonneg_left _ hc _ _ hab := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
+  mul_le_mul_of_nonneg_right _ hc _ _ hab := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
 
 end Pi
 

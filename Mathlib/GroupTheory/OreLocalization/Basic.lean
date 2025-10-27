@@ -16,7 +16,7 @@ import Mathlib.Algebra.Group.Basic
 This file defines the localization of a monoid over a left Ore set and proves its universal
 mapping property.
 
-## Notations
+## Notation
 
 Introduces the notation `R[S⁻¹]` for the Ore localization of a monoid `R` at a right Ore
 subset `S`. Also defines a new heterogeneous division notation `r /ₒ s` for a numerator `r : R` and

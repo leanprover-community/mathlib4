@@ -299,7 +299,7 @@ theorem sub_martingale [Preorder E] [AddLeftMono E]
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [Lattice F] [NormedSpace ℝ F] [CompleteSpace F]
-  [OrderedSMul ℝ F]
+  [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Supermartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
@@ -310,7 +310,7 @@ theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Superma
 theorem smul_nonpos [IsOrderedAddMonoid F] {f : ι → Ω → F} {c : ℝ}
     (hc : c ≤ 0) (hf : Supermartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by simp : - -c • f = -(-c • f))]
+  rw [← neg_neg c, neg_smul]
   exact (hf.smul_nonneg <| neg_nonneg.2 hc).neg
 
 end
@@ -322,16 +322,16 @@ namespace Submartingale
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [Lattice F] [IsOrderedAddMonoid F]
-  [NormedSpace ℝ F] [CompleteSpace F] [OrderedSMul ℝ F]
+  [NormedSpace ℝ F] [CompleteSpace F] [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Submartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by simp : - -c • f = -(c • -f))]
+  rw [← neg_neg (c • f), ← smul_neg]
   exact Supermartingale.neg (hf.neg.smul_nonneg hc)
 
 theorem smul_nonpos {f : ι → Ω → F} {c : ℝ} (hc : c ≤ 0) (hf : Submartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
-  rw [← neg_neg c, (by simp : - -c • f = -(-c • f))]
+  rw [← neg_neg c, neg_smul]
   exact (hf.smul_nonneg <| neg_nonneg.2 hc).neg
 
 end
@@ -446,7 +446,7 @@ theorem Martingale.eq_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : �
 namespace Submartingale
 
 protected theorem integrable_stoppedValue [LE E] {f : ℕ → Ω → E} (hf : Submartingale f 𝒢 μ)
-    {τ : Ω → ℕ} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
+    {τ : Ω → ℕ∞} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
     Integrable (stoppedValue f τ) μ :=
   integrable_stoppedValue ℕ hτ hf.integrable hbdd
 

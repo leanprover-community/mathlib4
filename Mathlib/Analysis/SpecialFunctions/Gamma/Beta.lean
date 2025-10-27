@@ -83,18 +83,12 @@ theorem betaIntegral_convergent {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
     conv_lhs => rw [mul_comm]
     congr 2 <;> · push_cast; ring
   · norm_num
-  · norm_num
+  · simp
 
 theorem betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := by
-  rw [betaIntegral, betaIntegral]
-  have := intervalIntegral.integral_comp_mul_add (a := 0) (b := 1) (c := -1)
-    (fun x : ℝ => (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)) neg_one_lt_zero.ne 1
-  rw [inv_neg, inv_one, neg_one_smul, ← intervalIntegral.integral_symm] at this
-  simp? at this says
-    simp only [neg_mul, one_mul, ofReal_add, ofReal_neg, ofReal_one, sub_add_cancel_right, neg_neg,
-      mul_one, neg_add_cancel, mul_zero, zero_add] at this
-  conv_lhs at this => arg 1; intro x; rw [add_comm, ← sub_eq_add_neg, mul_comm]
-  exact this
+  simpa [betaIntegral, ← intervalIntegral.integral_symm, add_comm, mul_comm, sub_eq_add_neg]
+    using intervalIntegral.integral_comp_mul_add (a := 0) (b := 1) (c := -1)
+      (fun x : ℝ => (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)) neg_one_lt_zero.ne 1
 
 theorem betaIntegral_eval_one_right {u : ℂ} (hu : 0 < re u) : betaIntegral u 1 = 1 / u := by
   simp_rw [betaIntegral, sub_self, cpow_zero, mul_one]
@@ -203,10 +197,12 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
 /-- Explicit formula for the Beta function when second argument is a positive integer. -/
 theorem betaIntegral_eval_nat_add_one_right {u : ℂ} (hu : 0 < re u) (n : ℕ) :
     betaIntegral u (n + 1) = n ! / ∏ j ∈ Finset.range (n + 1), (u + j) := by
-  induction' n with n IH generalizing u
-  · rw [Nat.cast_zero, zero_add, betaIntegral_eval_one_right hu, Nat.factorial_zero, Nat.cast_one]
+  induction n generalizing u with
+  | zero =>
+    rw [Nat.cast_zero, zero_add, betaIntegral_eval_one_right hu, Nat.factorial_zero, Nat.cast_one]
     simp
-  · have := betaIntegral_recurrence hu (?_ : 0 < re n.succ)
+  | succ n IH =>
+    have := betaIntegral_recurrence hu (?_ : 0 < re n.succ)
     swap; · rw [← ofReal_natCast, ofReal_re]; positivity
     rw [mul_comm u _, ← eq_div_iff] at this
     swap; · contrapose! hu; rw [hu, zero_re]
@@ -344,17 +340,15 @@ theorem GammaSeq_tendsto_Gamma (s : ℂ) : Tendsto (GammaSeq s) atTop (𝓝 <| G
     · refine (Nat.lt_floor_add_one _).trans_le ?_
       rw [sub_eq_neg_add, Nat.floor_add_one (neg_nonneg.mpr hs), Nat.cast_add_one]
   intro m
-  induction' m with m IH generalizing s
-  · -- Base case: `0 < re s`, so Gamma is given by the integral formula
-    intro hs
+  induction m generalizing s with intro hs
+  | zero => -- Base case: `0 < re s`, so Gamma is given by the integral formula
     rw [Nat.cast_zero, neg_zero] at hs
     rw [← Gamma_eq_GammaAux]
     · refine Tendsto.congr' ?_ (approx_Gamma_integral_tendsto_Gamma_integral hs)
       refine (eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn => ?_)
       exact (GammaSeq_eq_approx_Gamma_integral hs hn).symm
     · rwa [Nat.cast_zero, neg_lt_zero]
-  · -- Induction step: use recurrence formulae in `s` for Gamma and GammaSeq
-    intro hs
+  | succ m IH => -- Induction step: use recurrence formulae in `s` for Gamma and GammaSeq
     rw [Nat.cast_succ, neg_add, ← sub_eq_add_neg, sub_lt_iff_lt_add, ← one_re, ← add_re] at hs
     rw [GammaAux]
     have := @Tendsto.congr' _ _ _ ?_ _ _
@@ -397,7 +391,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
     Finset.prod_range_add_one_eq_factorial, Nat.cast_pow,
     (by intros; ring : ∀ a b c d : ℂ, a * b * (c * d) = a * (d * (b * c))), ← div_div,
     mul_div_cancel_right₀, ← div_div, mul_comm z _, mul_one_div]
-  exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr <| Nat.factorial_ne_zero n)
+  exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr <| by positivity)
 
 /-- Euler's reflection formula for the complex Gamma function. -/
 theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (π * z) := by
@@ -523,6 +517,11 @@ theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma 
     specialize ihn (s + 1) (by rwa [add_re, one_re, neg_add', sub_lt_iff_lt_add, ← Nat.cast_succ])
     exact differentiableAt_id.mul (ihn.comp s (f := fun s => s + 1) <|
       differentiableAt_id.add_const (1 : ℂ))
+
+lemma betaIntegral_eq_Gamma_mul_div (u v : ℂ) (hu : 0 < u.re) (hv : 0 < v.re) :
+    betaIntegral u v = Gamma u * Gamma v / Gamma (u + v) := by
+  rw [Gamma_mul_Gamma_eq_betaIntegral hu hv,
+      mul_div_cancel_left₀ _ (Gamma_ne_zero_of_re_pos (add_pos hu hv))]
 
 end Complex
 

@@ -106,8 +106,8 @@ theorem bell_eq (m : Multiset ℕ) :
     apply Nat.dvd_mul_left
   · rw [← Nat.pos_iff_ne_zero]
     apply Nat.mul_pos
-    · simp only [gt_iff_lt, CanonicallyOrderedAdd.multiset_prod_pos, mem_map,
-      forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    · simp only [CanonicallyOrderedAdd.multiset_prod_pos, mem_map, forall_exists_index, and_imp,
+        forall_apply_eq_imp_iff₂]
       exact fun _ _ ↦ Nat.factorial_pos _
     · apply Finset.prod_pos
       exact fun _ _ ↦ Nat.factorial_pos _
