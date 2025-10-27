@@ -43,11 +43,11 @@ section GaussianPDF
 /-- Probability density function of the Gaussian distribution with mean `μ` and variance `v`. -/
 noncomputable
 def gaussianPDFReal (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ :=
-  (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v))
+  (√(2 * π * v))⁻¹ * rexp (-(x - μ) ^ 2 / (2 * v))
 
 lemma gaussianPDFReal_def (μ : ℝ) (v : ℝ≥0) :
     gaussianPDFReal μ v =
-      fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v)) := rfl
+      fun x ↦ (√(2 * π * v))⁻¹ * rexp (-(x - μ) ^ 2 / (2 * v)) := rfl
 
 @[simp]
 lemma gaussianPDFReal_zero_var (m : ℝ) : gaussianPDFReal m 0 = 0 := by
@@ -81,9 +81,9 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
   rw [gaussianPDFReal_def]
   by_cases hv : v = 0
   · simp [hv]
-  let g : ℝ → ℝ := fun x ↦ (√(2 * π * v))⁻¹ * rexp (- x ^ 2 / (2 * v))
+  let g : ℝ → ℝ := fun x ↦ (√(2 * π * v))⁻¹ * rexp (-x ^ 2 / (2 * v))
   have hg : Integrable g := by
-    suffices g = fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (2 * v)⁻¹ * x ^ 2) by
+    suffices g = fun x ↦ (√(2 * π * v))⁻¹ * rexp (-(2 * v)⁻¹ * x ^ 2) by
       rw [this]
       refine (integrable_exp_neg_mul_sq ?_).const_mul (√(2 * π * v))⁻¹
       simp [lt_of_le_of_ne (zero_le _) (Ne.symm hv)]

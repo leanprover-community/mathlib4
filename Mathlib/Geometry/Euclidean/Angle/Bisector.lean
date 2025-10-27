@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 import Mathlib.Geometry.Euclidean.Projection
 
@@ -42,15 +43,12 @@ private lemma dist_orthogonalProjection_eq_iff_angle_eq_aux₁ {p p' : P}
     · subst hpp'
       exact hp'.2
     · by_contra hn
-      rw [angle_self_of_ne hpp', angle_comm, angle_eq_arcsin_of_angle_eq_pi_div_two,
+      rw [angle_self_of_ne hpp', angle_comm,
+        angle_eq_arcsin_of_angle_eq_pi_div_two (angle_self_orthogonalProjection p hp'.2),
         Real.zero_eq_arcsin_iff, div_eq_zero_iff] at h
       · simp only [dist_eq_zero, hpp', or_false] at h
         rw [eq_comm] at h
         simp [orthogonalProjection_eq_self_iff, hn] at h
-      · rw [angle, ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
-        exact Submodule.inner_left_of_mem_orthogonal (K := s₂.direction)
-          (AffineSubspace.vsub_mem_direction hp'.2 (orthogonalProjection_mem _))
-          (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
       · exact .inl (Ne.symm (orthogonalProjection_eq_self_iff.symm.not.1 hn))
 
 /-- Auxiliary lemma for the degenerate case of `dist_orthogonalProjection_eq_iff_angle_eq` where
@@ -87,10 +85,10 @@ lemma dist_orthogonalProjection_eq_iff_angle_eq {p p' : P} {s₁ s₂ : AffineSu
   · exact dist_orthogonalProjection_eq_iff_angle_eq_aux hp' h'
   rw [not_or] at h'
   rw [angle_comm,
-    angle_eq_arcsin_of_angle_eq_pi_div_two ?_
+    angle_eq_arcsin_of_angle_eq_pi_div_two (angle_self_orthogonalProjection p hp'.1)
       (.inl (Ne.symm (orthogonalProjection_eq_self_iff.symm.not.1 h'.1))),
     angle_comm,
-    angle_eq_arcsin_of_angle_eq_pi_div_two ?_
+    angle_eq_arcsin_of_angle_eq_pi_div_two (angle_self_orthogonalProjection p hp'.2)
       (.inl (Ne.symm (orthogonalProjection_eq_self_iff.symm.not.1 h'.2)))]
   · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · rw [h]
@@ -106,14 +104,6 @@ lemma dist_orthogonalProjection_eq_iff_angle_eq {p p' : P} {s₁ s₂ : AffineSu
         exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'.1)
       · rw [dist_orthogonalProjection_eq_infDist]
         exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'.2)
-  · rw [angle, ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
-    exact Submodule.inner_left_of_mem_orthogonal (K := s₂.direction)
-      (AffineSubspace.vsub_mem_direction hp'.2 (orthogonalProjection_mem _))
-      (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
-  · rw [angle, ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
-    exact Submodule.inner_left_of_mem_orthogonal (K := s₁.direction)
-      (AffineSubspace.vsub_mem_direction hp'.1 (orthogonalProjection_mem _))
-      (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
 
 section Oriented
 

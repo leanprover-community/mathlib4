@@ -26,8 +26,6 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀' → M₀)
     (hf : Injective f) (zero : f 0 = 0) (mul : ∀ a b, f (a * b) = f a * f b) :
     MulZeroClass M₀' where
-  mul := (· * ·)
-  zero := 0
   zero_mul a := hf <| by simp only [mul, zero, zero_mul]
   mul_zero a := hf <| by simp only [mul, zero, mul_zero]
 
@@ -36,8 +34,6 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀ → M₀')
     (hf : Surjective f) (zero : f 0 = 0) (mul : ∀ a b, f (a * b) = f a * f b) :
     MulZeroClass M₀' where
-  mul := (· * ·)
-  zero := 0
   mul_zero := hf.forall.2 fun x => by simp only [← zero, ← mul, mul_zero]
   zero_mul := hf.forall.2 fun x => by simp only [← zero, ← mul, zero_mul]
 
