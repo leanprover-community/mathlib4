@@ -15,7 +15,7 @@ import Mathlib.Tactic.SplitIfs
 
 This file lists various basic lemmas about semigroups, monoids, and groups. Most proofs are
 one-liners from the corresponding axioms. For the definitions of semigroups, monoids and groups, see
-`Algebra/Group/Defs.lean`.
+`Mathlib/Algebra/Group/Defs.lean`.
 -/
 
 assert_not_exists MonoidWithZero DenselyOrdered
