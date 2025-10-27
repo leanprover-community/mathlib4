@@ -193,7 +193,7 @@ protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
     exact (h.map _).append ih
   | swap x y xs =>
     simp only [List.sym2, map_cons, cons_append]
-    conv => enter [1,2,1]; rw [Sym2.eq_swap]
+    conv => enter [1, 2, 1]; rw [Sym2.eq_swap]
     -- Explicit permutation to speed up simps that follow.
     refine Perm.trans (Perm.swap ..) (Perm.trans (Perm.cons _ ?_) (Perm.swap ..))
     simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe,
