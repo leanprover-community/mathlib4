@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wang Yiran
 -/
 
-import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Tactic.Ring.Basic
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic.Ring
 
 /-!
 # Monotone lattice paths and a ballot-style subdiagonal condition
@@ -58,6 +58,6 @@ theorem pathCount_eq_closed : ∀ m n, pathCount m n = (m + n).choose m := by
       rw [Nat.add_right_comm]
 
 /-- Diagonal specialization of `pathCount_eq_closed`. -/
-lemma pathCount_eq_closed_n_n : ∀ n, pathCount n n = (2 * n).choose n := by
+theorem pathCount_eq_closed_n_n : ∀ n, pathCount n n = (2 * n).choose n := by
   intro n
   simpa [two_mul] using (pathCount_eq_closed n n)
