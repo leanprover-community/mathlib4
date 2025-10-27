@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.RootSystem.Defs
 # Root pairings taking values in a subring
 
 This file lays out the basic theory of root pairings over a commutative ring `R`, where `R` is an
-`S`-algebra, and the the pairing between roots and coroots takes values in `S`. The main application
+`S`-algebra, and the pairing between roots and coroots takes values in `S`. The main application
 of this theory is the theory of crystallographic root systems, where `S = ℤ`.
 
 ## Main definitions:

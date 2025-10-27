@@ -146,6 +146,12 @@ instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime 
 theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
+theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
+    P.toAddSubgroup.inertia M ≤ MulAction.stabilizer M P := by
+  refine fun σ hσ ↦ SetLike.ext fun x ↦ ?_
+  rw [Ideal.mem_pointwise_smul_iff_inv_smul_mem,
+    ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]
+
 /-! TODO: add `equivSMul` like we have for subgroup. -/
 
 end Group
