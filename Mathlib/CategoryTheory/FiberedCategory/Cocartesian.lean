@@ -7,9 +7,9 @@ Authors: Calle Sönne
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
 
 /-!
-# Cocartesian morphisms
+# Co-Cartesian morphisms
 
-This file defines cocartesian resp. strongly cocartesian morphisms with respect to a functor
+This file defines co-Cartesian resp. strongly co-Cartesian morphisms with respect to a functor
 `p : 𝒳 ⥤ 𝒮`.
 
 This file has been adapted from `Mathlib/CategoryTheory/FiberedCategory/Cartesian.lean`,
@@ -17,11 +17,11 @@ please try to change them in sync.
 
 ## Main definitions
 
-`IsCocartesian p f φ` expresses that `φ` is a cocartesian morphism lying over `f : R ⟶ S` with
+`IsCocartesian p f φ` expresses that `φ` is a co-Cartesian morphism lying over `f : R ⟶ S` with
 respect to `p`. This means that for any morphism `φ' : a ⟶ b'` lying over `f` there
 is a unique morphism `τ : b ⟶ b'` lying over `𝟙 S`, such that `φ' = φ ≫ τ`.
 
-`IsStronglyCocartesian p f φ` expresses that `φ` is a strongly cocartesian morphism lying over `f`
+`IsStronglyCocartesian p f φ` expresses that `φ` is a strongly co-Cartesian morphism lying over `f`
 with respect to `p`.
 
 ## Implementation
@@ -46,14 +46,14 @@ section
 
 variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
 
-/-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is cocartesian if for all
+/-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is co-Cartesian if for all
 morphisms `φ' : a ⟶ b'`, also lying over `f`, there exists a unique morphism `χ : b ⟶ b'` lifting
 `𝟙 S` such that `φ' = φ ≫ χ`. -/
 class IsCocartesian : Prop extends IsHomLift p f φ where
   universal_property {b' : 𝒳} (φ' : a ⟶ b') [IsHomLift p f φ'] :
       ∃! χ : b ⟶ b', IsHomLift p (𝟙 S) χ ∧ φ ≫ χ = φ'
 
-/-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is strongly cocartesian if for
+/-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is strongly co-Cartesian if for
 all morphisms `φ' : a ⟶ b'` and all diagrams of the form
 ```
 a --φ--> b        b'
@@ -77,30 +77,30 @@ section
 
 variable {b' : 𝒳} (φ' : a ⟶ b') [IsHomLift p f φ']
 
-/-- Given a cocartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
+/-- Given a co-Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
 `φ' : a ⟶ b'` which also lifts `f`, then `IsCocartesian.map f φ φ'` is the morphism `b ⟶ b'` lying
 over `𝟙 S` obtained from the universal property of `φ`. -/
 protected noncomputable def map : b ⟶ b' :=
-  Classical.choose <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ'
+  Classical.choose <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ'
 
 instance map_isHomLift : IsHomLift p (𝟙 S) (IsCocartesian.map p f φ φ') :=
-  (Classical.choose_spec <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.1
+  (Classical.choose_spec <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ').1.1
 
 @[reassoc (attr := simp)]
 lemma fac : φ ≫ IsCocartesian.map p f φ φ' = φ' :=
-  (Classical.choose_spec <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.2
+  (Classical.choose_spec <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ').1.2
 
-/-- Given a cocartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
+/-- Given a co-Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
 `φ' : a ⟶ b'` which also lifts `f`. Then any morphism `ψ : b ⟶ b'` lifting `𝟙 S` such that
 `g ≫ ψ = φ'` must equal the map induced by the universal property of `φ`. -/
 lemma map_uniq (ψ : b ⟶ b') [IsHomLift p (𝟙 S) ψ] (hψ : φ ≫ ψ = φ') :
     ψ = IsCocartesian.map p f φ φ' :=
-  (Classical.choose_spec <| IsCocartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').2
+  (Classical.choose_spec <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ').2
     ψ ⟨inferInstance, hψ⟩
 
 end
 
-/-- Given a cocartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and two morphisms
+/-- Given a co-Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and two morphisms
 `ψ ψ' : b ⟶ b'` lifting `𝟙 S` such that `φ ≫ ψ = φ ≫ ψ'`. Then we must have `ψ = ψ'`. -/
 protected lemma ext (φ : a ⟶ b) [IsCocartesian p f φ] {b' : 𝒳} (ψ ψ' : b ⟶ b')
     [IsHomLift p (𝟙 S) ψ] [IsHomLift p (𝟙 S) ψ'] (h : φ ≫ ψ = φ ≫ ψ') : ψ = ψ' := by
@@ -112,7 +112,7 @@ lemma map_self : IsCocartesian.map p f φ φ = 𝟙 b := by
   apply map_uniq
   simp only [comp_id]
 
-/-- The canonical isomorphism between the codomains of two cocartesian morphisms
+/-- The canonical isomorphism between the codomains of two co-Cartesian morphisms
 lying over the same object. -/
 noncomputable def codomainUniqueUpToIso {b' : 𝒳} (φ' : a ⟶ b') [IsCocartesian p f φ'] :
     b ≅ b' where
@@ -127,7 +127,8 @@ noncomputable def codomainUniqueUpToIso {b' : 𝒳} (φ' : a ⟶ b') [IsCocartes
     apply IsCocartesian.ext p (p.map φ') φ'
     simp only [fac_assoc, fac, comp_id]
 
-/-- Postcomposing a cocartesian morphism with an isomorphism lifting the identity is cocartesian. -/
+/-- Postcomposing a co-Cartesian morphism with an isomorphism lifting the identity is
+co-Cartesian. -/
 instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
     IsCocartesian p f (φ ≫ φ'.hom) where
   universal_property := by
@@ -139,7 +140,8 @@ instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom]
     apply map_uniq
     exact ((assoc φ _ _) ▸ hτ₂)
 
-/-- Precomposing a cocartesian morphism with an isomorphism lifting the identity is cocartesian. -/
+/-- Precomposing a co-Cartesian morphism with an isomorphism lifting the identity is
+co-Cartesian. -/
 instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom] :
     IsCocartesian p f (φ'.hom ≫ φ) where
   universal_property := by
@@ -158,7 +160,7 @@ section
 
 variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsStronglyCocartesian p f φ]
 
-/-- The universal property of a strongly cocartesian morphism.
+/-- The universal property of a strongly co-Cartesian morphism.
 
 This lemma is more flexible with respect to non-definitional equalities than the field
 `universal_property'` of `IsStronglyCocartesian`. -/
@@ -184,7 +186,7 @@ a --φ--> b        b'
 v        v        v
 R --f--> S --g--> S'
 ```
-such that `φ` is strongly cocartesian, and a morphism `φ' : a ⟶ b'`. Then `map` is the map
+such that `φ` is strongly co-Cartesian, and a morphism `φ' : a ⟶ b'`. Then `map` is the map
 `b ⟶ b'` lying over `g` obtained from the universal property of `φ`. -/
 noncomputable def map : b ⟶ b' :=
   Classical.choose <| universal_property p f φ _ _ hf' φ'
@@ -204,7 +206,7 @@ a --φ--> b        b'
 v        v        v
 R --f--> S --g--> S'
 ```
-such that `φ` is strongly cocartesian, and morphisms `φ' : a ⟶ b'`, `ψ : b ⟶ b'` such that
+such that `φ` is strongly co-Cartesian, and morphisms `φ' : a ⟶ b'`, `ψ : b ⟶ b'` such that
 `g ≫ ψ = φ'`. Then `ψ` is the map induced by the universal property. -/
 lemma map_uniq (ψ : b ⟶ b') [IsHomLift p g ψ] (hψ : φ ≫ ψ = φ') : ψ = map p f φ hf' φ' :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').2 ψ ⟨inferInstance, hψ⟩
@@ -218,7 +220,7 @@ a --φ--> b        b'
 v        v        v
 R --f--> S --g--> S'
 ```
-such that `φ` is strongly cocartesian, and morphisms `ψ ψ' : b ⟶ b'` such that
+such that `φ` is strongly co-Cartesian, and morphisms `ψ ψ' : b ⟶ b'` such that
 `g ≫ ψ = φ' = g ≫ ψ'`. Then we have that `ψ = ψ'`. -/
 protected lemma ext (φ : a ⟶ b) [IsStronglyCocartesian p f φ] {S' : 𝒮} {b' : 𝒳} (g : S ⟶ S')
     {ψ ψ' : b ⟶ b'} [IsHomLift p g ψ] [IsHomLift p g ψ'] (h : φ ≫ ψ = φ ≫ ψ') : ψ = ψ' := by
@@ -253,7 +255,7 @@ a --φ''--> b''
 v          v
 R --f''--> S''
 ```
-such that `φ` and `φ'` are strongly cocartesian morphisms, and such that `f' = f ≫ g` and
+such that `φ` and `φ'` are strongly co-Cartesian morphisms, and such that `f' = f ≫ g` and
 `f'' = f' ≫ g'`. Then composing the induced map from `b ⟶ b'` with the induced map from
 `b' ⟶ b''` gives the induced map from `b ⟶ b''`. -/
 @[reassoc (attr := simp)]
@@ -271,14 +273,14 @@ section
 
 variable {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S} {g : S ⟶ T} {φ : a ⟶ b} {ψ : b ⟶ c}
 
-/-- Given two strongly cocartesian morphisms `φ`, `ψ` as follows
+/-- Given two strongly co-Cartesian morphisms `φ`, `ψ` as follows
 ```
 a --φ--> b --ψ--> c
 |        |        |
 v        v        v
 R --f--> S --g--> T
 ```
-Then the composite `φ ≫ ψ` is also strongly cocartesian. -/
+Then the composite `φ ≫ ψ` is also strongly co-Cartesian. -/
 instance comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p g ψ] :
     IsStronglyCocartesian p (f ≫ g) (φ ≫ ψ) where
   universal_property' := by
@@ -298,7 +300,7 @@ a --φ--> b --ψ--> c
 v        v        v
 R --f--> S --g--> T
 ```
-such that `φ ≫ ψ` and `φ` are strongly cocartesian, then so is `ψ`. -/
+such that `φ ≫ ψ` and `φ` are strongly co-Cartesian, then so is `ψ`. -/
 protected lemma of_comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p (f ≫ g) (φ ≫ ψ)]
     [IsHomLift p g ψ] : IsStronglyCocartesian p g ψ where
   universal_property' := by
@@ -331,7 +333,7 @@ instance of_iso (φ : a ≅ b) [IsHomLift p f φ.hom] : IsStronglyCocartesian p 
 instance of_isIso (φ : a ⟶ b) [IsHomLift p f φ] [IsIso φ] : IsStronglyCocartesian p f φ :=
   @IsStronglyCocartesian.of_iso _ _ _ _ p _ _ _ _ f (asIso φ) (by aesop)
 
-/-- A strongly cocartesian arrow lying over an isomorphism is an isomorphism. -/
+/-- A strongly co-Cartesian arrow lying over an isomorphism is an isomorphism. -/
 lemma isIso_of_base_isIso (φ : a ⟶ b) [IsStronglyCocartesian p f φ] [IsIso f] : IsIso φ := by
   subst_hom_lift p f φ; clear a b R S
   -- Let `φ'` be the morphism induced by applying universal property to `𝟙 a` lying over `f ≫ f⁻¹`.
@@ -349,7 +351,7 @@ lemma isIso_of_base_isIso (φ : a ⟶ b) [IsStronglyCocartesian p f φ] [IsIso f
 
 end
 
-/-- The canonical isomorphism between the codomains of two strongly cocartesian arrows lying over
+/-- The canonical isomorphism between the codomains of two strongly co-Cartesian arrows lying over
 isomorphic objects. -/
 noncomputable def codomainIsoOfBaseIso {R S S' : 𝒮} {a b b' : 𝒳} {f : R ⟶ S} {f' : R ⟶ S'}
     {g : S ≅ S'} (h : f' = f ≫ g.hom) (φ : a ⟶ b) (φ' : a ⟶ b') [IsStronglyCocartesian p f φ]

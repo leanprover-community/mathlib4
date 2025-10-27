@@ -64,7 +64,7 @@ theorem eq_of_mem_of_mem {a : α} {o1 o2 : Option α} (h1 : a ∈ o1) (h2 : a �
   h1.trans h2.symm
 
 theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → Prop) :=
-  fun _ _ _=> mem_unique
+  fun _ _ _ => mem_unique
 
 theorem some_injective (α : Type*) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
 
@@ -158,19 +158,12 @@ theorem pbind_eq_none {f : ∀ a : α, a ∈ x → Option β}
 
 theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     (pmap (pmap f) x H).join = pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
-  #adaptation_note
-  /--
-  A grind bug, fixed in https://github.com/leanprover/lean4/pull/10335,
-  prevented this by `grind [cases Option]`.
-  This can be adopted once we are on v4.24.0. (Similarly below.)
-  (Also: use `attribute [local grind cases] Option` in this file?)
-  -/
-  rcases x with (_ | _ | x) <;> simp
+  grind [cases Option]
 
 theorem pmap_bind_id_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     ((pmap (pmap f) x H).bind fun a ↦ a) =
       pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
-  rcases x with (_ | _ | x) <;> simp
+  grind [cases Option]
 
 end pmap
 

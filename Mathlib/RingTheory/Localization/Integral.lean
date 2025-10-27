@@ -82,7 +82,6 @@ theorem integerNormalization_spec (p : S[X]) :
         (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
           (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
   · rw [RingHom.map_zero, notMem_support_iff.mp hi, smul_zero]
-    -- Porting note: was `convert (smul_zero _).symm, ...`
 
 theorem integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p :=
@@ -120,8 +119,7 @@ theorem integerNormalization_eq_zero_iff {p : K[X]} :
   refine Polynomial.ext_iff.trans (Polynomial.ext_iff.trans ?_).symm
   obtain ⟨⟨b, nonzero⟩, hb⟩ := integerNormalization_spec (nonZeroDivisors A) p
   constructor <;> intro h i
-  · -- Porting note: avoided some defeq abuse
-    rw [coeff_zero, ← to_map_eq_zero_iff (K := K), hb i, h i, coeff_zero, smul_zero]
+  · rw [coeff_zero, ← to_map_eq_zero_iff (K := K), hb i, h i, coeff_zero, smul_zero]
   · have hi := h i
     rw [Polynomial.coeff_zero, ← @to_map_eq_zero_iff A _ K, hb i, Algebra.smul_def] at hi
     apply Or.resolve_left (eq_zero_or_eq_zero_of_mul_eq_zero hi)
@@ -195,7 +193,6 @@ theorem is_integral_localization_at_leadingCoeff {x : S} (p : R[X]) (hp : aeval 
             (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :
           Rₘ →+* _).IsIntegralElem
       (algebraMap S Sₘ x) :=
-  -- Porting note: added `haveI`
   haveI : IsLocalization (Submonoid.map (algebraMap R S) M) Sₘ :=
     inferInstanceAs (IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ)
   (algebraMap R S).isIntegralElem_localization_at_leadingCoeff x p hp M hM
@@ -220,14 +217,11 @@ theorem isIntegral_localization [Algebra.IsIntegral R S] :
   · obtain ⟨p, hp⟩ := Algebra.IsIntegral.isIntegral (R := R) s
     exact hx.symm ▸ is_integral_localization_at_leadingCoeff p hp.2 (hp.1.symm ▸ M.one_mem)
 
-@[nolint unusedHavesSuffices] -- It claims the `have : IsLocalization` line is unnecessary,
-                              -- but remove it and the proof won't work.
 theorem isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S}
     (hf : f.IsIntegral) (M : Submonoid R) :
     (map (Localization (M.map (f : R →* S))) f
           (M.le_comap_map : _ ≤ Submonoid.comap (f : R →* S) _) :
         Localization M →+* _).IsIntegral :=
-  -- Porting note: added
   let _ := f.toAlgebra
   have : Algebra.IsIntegral R S := ⟨hf⟩
   have : IsLocalization (Algebra.algebraMapSubmonoid S M)
@@ -293,12 +287,12 @@ open Algebra
 the integral closure `C` of `A` in `L` has fraction field `L`. -/
 theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
     (inj : ∀ x, algebraMap A L x = 0 → x = 0) : IsFractionRing C L :=
-  { map_units' := fun ⟨y, hy⟩ =>
+  { map_units := fun ⟨y, hy⟩ =>
       IsUnit.mk0 _
         (show algebraMap C L y ≠ 0 from fun h =>
           mem_nonZeroDivisors_iff_ne_zero.mp hy
             ((injective_iff_map_eq_zero (algebraMap C L)).mp (algebraMap_injective C A L) _ h))
-    surj' := fun z =>
+    surj := fun z =>
       let ⟨x, hx, int⟩ := (Algebra.IsAlgebraic.isAlgebraic z).exists_integral_multiple
       ⟨⟨mk' C _ int, algebraMap _ _ x, mem_nonZeroDivisors_of_ne_zero fun h ↦
         hx (inj _ <| by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero])⟩, by

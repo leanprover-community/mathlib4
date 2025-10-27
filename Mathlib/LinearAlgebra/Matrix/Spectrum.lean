@@ -5,6 +5,7 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.Rank
@@ -22,7 +23,7 @@ spectral theorem, diagonalization theorem -/
 namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
-variable {A : Matrix n n 𝕜}
+variable {A B : Matrix n n 𝕜}
 
 lemma finite_real_spectrum [DecidableEq n] : (spectrum ℝ A).Finite := by
   rw [← spectrum.preimage_algebraMap 𝕜]
@@ -42,12 +43,15 @@ namespace IsHermitian
 section DecidableEq
 
 variable [DecidableEq n]
-variable (hA : A.IsHermitian)
+variable (hA : A.IsHermitian) (hB : B.IsHermitian)
 
 /-- The eigenvalues of a Hermitian matrix, indexed by `Fin (Fintype.card n)` where `n` is the index
 type of the matrix. -/
 noncomputable def eigenvalues₀ : Fin (Fintype.card n) → ℝ :=
   (isHermitian_iff_isSymmetric.1 hA).eigenvalues finrank_euclideanSpace
+
+lemma eigenvalues₀_antitone : Antitone hA.eigenvalues₀ :=
+  LinearMap.IsSymmetric.eigenvalues_antitone ..
 
 /-- The eigenvalues of a Hermitian matrix, reusing the index `n` of the matrix entries. -/
 noncomputable def eigenvalues : n → ℝ := fun i =>
@@ -141,11 +145,43 @@ theorem eigenvalues_eq (i : n) :
     inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,
     mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
 
+open Polynomial in
+lemma charpoly_eq : A.charpoly = ∏ i, (X - C (hA.eigenvalues i : 𝕜)) := by
+  conv_lhs => rw [hA.spectral_theorem, charpoly_mul_comm, ← mul_assoc]
+  simp [charpoly_diagonal]
+
+lemma roots_charpoly_eq_eigenvalues :
+    A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues) Finset.univ.val := by
+  rw [hA.charpoly_eq, Polynomial.roots_prod]
+  · simp
+  · simp [Finset.prod_ne_zero_iff, Polynomial.X_sub_C_ne_zero]
+
+lemma roots_charpoly_eq_eigenvalues₀ :
+    A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues₀) Finset.univ.val := by
+  rw [hA.roots_charpoly_eq_eigenvalues]
+  simp only [← Multiset.map_map, eigenvalues, ← Function.comp_apply (f := hA.eigenvalues₀)]
+  simp
+
+lemma sort_roots_charpoly_eq_eigenvalues₀ :
+    (A.charpoly.roots.map RCLike.re).sort (· ≥ ·) = List.ofFn hA.eigenvalues₀ := by
+  simp_rw [hA.roots_charpoly_eq_eigenvalues₀, Fin.univ_val_map, Multiset.map_coe, List.map_ofFn,
+    Function.comp_def, RCLike.ofReal_re, Multiset.coe_sort]
+  rw [List.mergeSort_of_sorted]
+  simpa [List.Sorted] using (eigenvalues₀_antitone hA).ofFn_sorted
+
+lemma eigenvalues_eq_eigenvalues_iff :
+    hA.eigenvalues = hB.eigenvalues ↔ A.charpoly = B.charpoly := by
+  constructor <;> intro h
+  · rw [hA.charpoly_eq, hB.charpoly_eq, h]
+  · suffices hA.eigenvalues₀ = hB.eigenvalues₀ by unfold eigenvalues; rw [this]
+    simp_rw [← List.ofFn_inj, ← sort_roots_charpoly_eq_eigenvalues₀, h]
+
+theorem splits_charpoly (hA : A.IsHermitian) : A.charpoly.Splits (RingHom.id 𝕜) :=
+  Polynomial.splits_iff_card_roots.mpr (by simp [hA.roots_charpoly_eq_eigenvalues])
+
 /-- The determinant of a Hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
-  convert congr_arg det hA.spectral_theorem
-  rw [det_mul_right_comm]
-  simp
+  simp [det_eq_prod_roots_charpoly_of_splits hA.splits_charpoly, hA.roots_charpoly_eq_eigenvalues]
 
 /-- rank of a Hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
@@ -169,8 +205,8 @@ theorem spectrum_real_eq_range_eigenvalues :
   conv_lhs => rw [hA.spectral_theorem, ← spectrum.algebraMap_mem_iff 𝕜]
   simp
 
-@[deprecated (since := "14-08-2025")] alias eigenvalues_eq_spectrum_real :=
-  spectrum_real_eq_range_eigenvalues
+@[deprecated (since := "2025-08-14")]
+alias eigenvalues_eq_spectrum_real := spectrum_real_eq_range_eigenvalues
 
 /-- The eigenvalues of a Hermitian matrix `A` are all zero iff `A = 0`. -/
 theorem eigenvalues_eq_zero_iff :
@@ -195,14 +231,8 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
 
 theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
     A.trace = ∑ i, (hA.eigenvalues i : 𝕜) := by
-  conv_lhs => rw [hA.spectral_theorem, trace_mul_cycle]
-  simp
+  simp [trace_eq_sum_roots_charpoly_of_splits hA.splits_charpoly, hA.roots_charpoly_eq_eigenvalues]
 
 end IsHermitian
 
 end Matrix
-
-/-The following were removed as a result of the refactor, since they either were
-unused in the library, followed as immediate consequences of, or were replaced by
-above results (e.g. results about inverses don't need replacement because their unitary
-analogues have replaced them). -/

@@ -166,11 +166,11 @@ theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
   have hp : p ∈ (cs i').toSet := (cs i').b_mem_toSet
   have h2p : p ∈ (cs i).toSet := by
     intro j; constructor
-    trans (0 : ℝ)
-    · rw [← add_le_add_iff_right (1 : ℝ)]; convert b_add_w_le_one h
-      · rw [hi]
-      · rw [zero_add]
-    · apply zero_le_b h
+    · trans (0 : ℝ)
+      · rw [← add_le_add_iff_right (1 : ℝ)]; convert b_add_w_le_one h
+        · rw [hi]
+        · rw [zero_add]
+      · apply zero_le_b h
     · apply lt_of_lt_of_le (side_subset h <| (cs i').b_mem_side j).2
       simp [hi, zero_le_b h]
   exact (h.PairwiseDisjoint hi').le_bot ⟨hp, h2p⟩
@@ -295,7 +295,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   rw [if_pos]
   · gcongr
     exact (hi.2 _).1
-  rfl
+  simp [j]
 
 /-- There is a cube in the valley -/
 theorem nonempty_bcubes : (bcubes cs c).Nonempty :=
@@ -329,7 +329,7 @@ theorem mi_xm_ne_one : (cs <| mi h v).xm ≠ 1 := by
   · apply lt_of_lt_of_le _ h.b_add_w_le_one
     · exact i
     · exact 0
-    rw [xm, mi_mem_bcubes.1, hi.1, _root_.add_lt_add_iff_left]
+    rw [xm, mi_mem_bcubes.1, hi.1, add_lt_add_iff_left]
     exact mi_strict_minimal h2i.symm hi
 
 /-- If `mi` lies on the boundary of the valley in dimension j, then this lemma expresses that all
@@ -401,7 +401,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     suffices ∀ j : Fin n, ite (j = j') x' ((cs i).b j.succ) ∈ c.side j.succ by
       simpa [p', bottom, toSet, tail, side_tail]
     intro j₂
-    by_cases hj₂ : j₂ = j'; · simp [hj₂]; apply tail_sub h2i'; apply hx'.1
+    by_cases hj₂ : j₂ = j'; · simpa [hj₂] using tail_sub h2i' _ hx'.1
     simp only [if_false, hj₂]; apply tail_sub hi; apply b_mem_side
   rcases v.1 hp' with ⟨_, ⟨i'', rfl⟩, hi''⟩
   have h2i'' : i'' ∈ bcubes cs c := ⟨hi''.1.symm, v.2.1 i'' hi''.1.symm ⟨tail p', hi''.2, hp'.2⟩⟩

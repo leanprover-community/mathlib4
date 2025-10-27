@@ -386,8 +386,8 @@ theorem exists_mem_of_measure_ne_zero_of_ae (hs : μ s ≠ 0) {p : α → Prop}
   rw [← μ.restrict_apply_self, ← frequently_ae_mem_iff] at hs
   exact (hs.and_eventually hp).exists
 
-/-- If a quasi measure preserving map `f` maps a set `s` to a set `t`,
-then it is quasi measure preserving with respect to the restrictions of the measures. -/
+/-- If a quasi-measure-preserving map `f` maps a set `s` to a set `t`,
+then it is quasi-measure-preserving with respect to the restrictions of the measures. -/
 theorem QuasiMeasurePreserving.restrict {ν : Measure β} {f : α → β}
     (hf : QuasiMeasurePreserving f μ ν) {t : Set β} (hmaps : MapsTo f s t) :
     QuasiMeasurePreserving f (μ.restrict s) (ν.restrict t) where
@@ -500,9 +500,9 @@ theorem restrict_biUnion {s : ι → Set α} {T : Set ι} (hT : Countable T)
   exact restrict_iUnion (fun i j hij ↦ hd i.coe_prop j.coe_prop (Subtype.coe_ne_coe.mpr hij)) (hm ·)
 
 theorem restrict_biUnion_finset {s : ι → Set α} {T : Finset ι}
-    (hd : T.toSet.Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
+    (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = sum fun (i : T) => μ.restrict (s i) :=
-  restrict_biUnion (T := T.toSet) Finite.to_countable hd hm
+  restrict_biUnion (T := (T : Set ι)) Finite.to_countable hd hm
 
 theorem restrict_iUnion_le [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) ≤ sum fun i => μ.restrict (s i) :=
@@ -1083,7 +1083,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       rw [Summable.tsum_finsetSum (fun _ _ ↦ ENNReal.summable)]
       congr with i
       rw [tsum_subtype (G i) (fun C ↦ (μ.restrict (P C)) t)]
-    _ = ∑ C ∈ Cs, ∑ i ∈ F, C.toSet.indicator (fun _ ↦ (μ.restrict (P C)) t) i := by
+    _ = ∑ C ∈ Cs, ∑ i ∈ F, (C : Set ι).indicator (fun _ ↦ (μ.restrict (P C)) t) i := by
       rw [sum_eq_tsum_indicator]
       congr with C
       by_cases hC : C ∈ F.powerset <;> by_cases hC' : C = ∅ <;>
@@ -1093,12 +1093,12 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       refine sum_le_sum fun C hC ↦ ?_
       by_cases hPC : P C = ∅
       · simp [hPC]
-      have hCM : C.toSet.encard ≤ M :=
+      have hCM : (C : Set ι).encard ≤ M :=
         have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
         (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left (zero_le _) <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
-        _ = C.toSet.ncard := (ncard_coe_finset C).symm
+        _ = (C : Set ι).ncard := (ncard_coe_finset C).symm
         _ ≤ M := ENat.toNat_le_of_le_coe hCM
     _ = M • (μ.restrict (⋃ C ∈ Cs, (P C)) t) := by
       rw [← smul_sum, ← Cs.tsum_subtype, μ.restrict_biUnion_finset _ P_meas, Measure.sum_apply _ ht]
