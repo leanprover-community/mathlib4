@@ -298,9 +298,20 @@ def inradius : ℝ :=
 @[simp] lemma exradius_empty : s.exradius ∅ = s.inradius :=
   rfl
 
+@[simp] lemma exsphere_compl (signs : Finset (Fin (n + 1))) :
+    s.exsphere signsᶜ = s.exsphere signs := by
+  simp [exsphere, excenterWeights_compl, excenterWeightsUnnorm_compl, Pi.neg_apply]
+
+@[simp] lemma excenter_compl (signs : Finset (Fin (n + 1))) :
+    s.excenter signsᶜ = s.excenter signs := by
+  simp_rw [excenter, exsphere_compl]
+
+@[simp] lemma exradius_compl (signs : Finset (Fin (n + 1))) :
+    s.exradius signsᶜ = s.exradius signs := by
+  simp_rw [exradius, exsphere_compl]
+
 @[simp] lemma exsphere_univ : s.exsphere Finset.univ = s.insphere := by
-  rw [exsphere, ← Finset.compl_empty, excenterWeightsUnnorm_compl, excenterWeights_compl]
-  simp [Pi.neg_apply, Finset.sum_neg_distrib, insphere, exsphere]
+  rw [← Finset.compl_empty, exsphere_compl, insphere]
 
 @[simp] lemma excenter_univ : s.excenter Finset.univ = s.incenter := by
   rw [excenter, exsphere_univ, insphere_center]
@@ -526,6 +537,19 @@ inradius. -/
 lemma dist_incenter (i : Fin (n + 1)) :
     dist s.incenter (s.touchpoint ∅ i) = s.inradius :=
   s.excenterExists_empty.dist_excenter _
+
+variable {s} in
+/-- An excenter is equidistant to any two of its touchpoints. -/
+lemma ExcenterExists.dist_excenter_eq_dist_excenter {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i₁ i₂ : Fin (n + 1)) :
+    dist (s.excenter signs) (s.touchpoint signs i₁) =
+      dist (s.excenter signs) (s.touchpoint signs i₂) := by
+  simp_rw [h.dist_excenter]
+
+/-- The incenter is equidistant to any two of its touchpoints. -/
+lemma dist_incenter_eq_dist_incenter (i₁ i₂ : Fin (n + 1)) :
+    dist s.incenter (s.touchpoint ∅ i₁) = dist s.incenter (s.touchpoint ∅ i₂) :=
+  s.excenterExists_empty.dist_excenter_eq_dist_excenter _ _
 
 variable {s} in
 lemma ExcenterExists.touchpoint_mem_exsphere {signs : Finset (Fin (n + 1))}
@@ -827,11 +851,74 @@ lemma touchpointWeights_singleton_neg [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (hn
     s.touchpointWeights {i} j i < 0 := by
   simpa [sign_eq_neg_one_iff] using s.sign_touchpointWeights_singleton_neg hne
 
+variable {s} in
+lemma ExcenterExists.touchpoint_ne_point [Nat.AtLeastTwo n] {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i j : Fin (n + 1)) : s.touchpoint signs i ≠ s.points j := by
+  intro he
+  rw [eq_comm, ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ s.points
+    (Finset.mem_univ _), affineCombination_eq_touchpoint_iff
+    (Finset.univ.sum_affineCombinationSingleWeights ℝ (Finset.mem_univ _))] at he
+  have : 1 < n := Nat.AtLeastTwo.one_lt
+  obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by cutsat)
+  have he' : Finset.affineCombinationSingleWeights ℝ j k = s.touchpointWeights signs i k := by
+    rw [he]
+  simp only [ne_eq, hkj, not_false_eq_true,
+    Finset.affineCombinationSingleWeights_apply_of_ne] at he'
+  rw [eq_comm] at he'
+  apply_fun SignType.sign at he'
+  rw [h.sign_touchpointWeights hki.symm, excenterWeights] at he'
+  have h' := h
+  rw [ExcenterExists] at h'
+  simp only [Pi.smul_apply, smul_eq_mul, sign_zero, sign_eq_zero_iff, mul_eq_zero, inv_eq_zero,
+    h', false_or] at he'
+  rw [excenterWeightsUnnorm] at he'
+  by_cases hk : k ∈ signs <;> simp [hk, (s.height_pos k).ne'] at he'
+
+lemma touchpoint_empty_ne_point [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
+    s.touchpoint ∅ i ≠ s.points j :=
+  s.excenterExists_empty.touchpoint_ne_point i j
+
 end Simplex
 
 namespace Triangle
 
 variable (t : Triangle ℝ P)
+
+/-- All excenters exist for a triangle. -/
+lemma excenterExists (signs : Finset (Fin 3)) : t.ExcenterExists signs := by
+  have h : signs = ∅ ∨ signs = ∅ᶜ ∨ ∃ i, signs = {i} ∨ signs = {i}ᶜ := by decide +revert
+  rcases h with rfl | rfl | ⟨i, rfl | rfl⟩
+  · exact t.excenterExists_empty
+  · rw [Simplex.excenterExists_compl]
+    exact t.excenterExists_empty
+  · exact t.excenterExists_singleton _
+  · rw [Simplex.excenterExists_compl]
+    exact t.excenterExists_singleton _
+
+/-- An excenter of a triangle is either the incenter or the excenter opposite a vertex. -/
+lemma excenter_eq_incenter_or_excenter_singleton (signs : Finset (Fin 3)) :
+    t.excenter signs = t.incenter ∨ ∃ i, t.excenter signs = t.excenter {i} := by
+  have h : signs = ∅ ∨ signs = Finset.univ ∨ ∃ i, signs = {i} ∨ signs = {i}ᶜ := by decide +revert
+  rcases h with rfl | rfl | ⟨i, rfl | rfl⟩
+  · exact .inl rfl
+  · exact .inl t.excenter_univ
+  · exact .inr ⟨i, rfl⟩
+  · refine .inr ⟨i, ?_⟩
+    rw [t.excenter_compl]
+
+/-- An excenter of a triangle is either the incenter or the excenter opposite one of three
+enumerated different vertices. This is intended for when it is known a point is an excenter and
+it is to be proved which excenter it is by elimination of the other cases. -/
+lemma excenter_eq_incenter_or_excenter_singleton_of_ne (signs : Finset (Fin 3)) {i₁ i₂ i₃ : Fin 3}
+    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    t.excenter signs = t.incenter ∨ t.excenter signs = t.excenter {i₁} ∨
+      t.excenter signs = t.excenter {i₂} ∨ t.excenter signs = t.excenter {i₃} := by
+  rcases t.excenter_eq_incenter_or_excenter_singleton signs with h | ⟨i, h⟩
+  · exact .inl h
+  · refine .inr ?_
+    rw [h]
+    have : i = i₁ ∨ i = i₂ ∨ i = i₃ := by clear h; decide +revert
+    grind
 
 lemma sbtw_touchpoint_empty {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     Sbtw ℝ (t.points i₁) (t.touchpoint ∅ i₂) (t.points i₃) := by
