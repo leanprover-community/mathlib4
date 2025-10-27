@@ -523,14 +523,11 @@ def stalkIso (x : PrimeSpectrum.Top R) :
     rw [← this, ← hs, const_apply, localizationToStalk_mk']
     refine (structureSheaf R).presheaf.germ_ext V hxV (homOfLE hg) iVU ?_
     rw [← hs, res_const']
-  inv_hom_id := CommRingCat.hom_ext <|
-    @IsLocalization.ringHom_ext R _ x.asIdeal.primeCompl (Localization.AtPrime x.asIdeal) _ _
-      (Localization.AtPrime x.asIdeal) _ _
-      (RingHom.comp (stalkToFiberRingHom R x).hom (localizationToStalk R x).hom)
-      (RingHom.id (Localization.AtPrime _)) <| by
-        ext f
-        rw [RingHom.comp_apply, RingHom.comp_apply, localizationToStalk_of,
-          stalkToFiberRingHom_toStalk, RingHom.comp_apply, RingHom.id_apply]
+  inv_hom_id := CommRingCat.hom_ext <| IsLocalization.ringHom_ext x.asIdeal.primeCompl <| by
+    ext f
+    rw [CommRingCat.hom_comp, CommRingCat.hom_id,
+      RingHom.comp_apply, RingHom.comp_apply, localizationToStalk_of,
+      stalkToFiberRingHom_toStalk, RingHom.comp_apply, RingHom.id_apply]
 
 instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) :=
   (stalkIso R x).isIso_hom
