@@ -110,7 +110,7 @@ instance [Subsingleton R] : Unique (SkewPolynomial R) :=
 The set of all `n` such that `X^n` has a non-zero coefficient.
 -/
 def support (p : SkewPolynomial R) : Finset ℕ :=
-  Finset.map ⟨toAdd, fun ⦃_ _⦄ a ↦ Multiplicative.ext a⟩ (SkewMonoidAlgebra.support p)
+  Finset.map ⟨toAdd, toAdd.injective⟩ (SkewMonoidAlgebra.support p)
 
 @[simp] lemma support_zero : (0 : SkewPolynomial R).support = ∅ := rfl
 
@@ -119,8 +119,7 @@ def support (p : SkewPolynomial R) : Finset ℕ :=
 lemma card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 
 lemma support_add : (p + q).support ⊆ p.support ∪ q.support := by
-  simp only [support, ← Finset.map_union, Finset.map_subset_map]
-  exact SkewMonoidAlgebra.support_add
+  simpa [support, ← Finset.map_union, Finset.map_subset_map] using SkewMonoidAlgebra.support_add
 
 section phi
 
