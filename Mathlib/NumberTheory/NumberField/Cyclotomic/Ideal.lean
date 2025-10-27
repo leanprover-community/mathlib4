@@ -104,26 +104,6 @@ theorem ramificationIdx_span_zeta_sub_one :
 
 variable (K)
 
-instance (K : Type*) [Field K] [NumberField K]
-    (G : Type*) [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) where
-  smul := fun g x ↦ ⟨g • (x : K), sorry⟩
-  one_smul := sorry
-  mul_smul := sorry
-  smul_zero := sorry
-  smul_add := sorry
-  smul_one := sorry
-  smul_mul := sorry
-
-instance inst4 (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
-    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G K L] :
-    IsGaloisGroup G (𝓞 K) (𝓞 L) := by
-  sorry
-
-instance inst5 (L : Type*) [Field L] [NumberField L]
-    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G ℚ L] :
-    IsGaloisGroup G ℤ (𝓞 L) := by
-  sorry
-
 include hK in
 theorem ncard_primesOver_of_prime_pow :
     (primesOver 𝒑 (𝓞 K)).ncard = 1 := by

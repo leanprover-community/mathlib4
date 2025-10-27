@@ -165,26 +165,6 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_I
     exact hspan ▸ inertiaDeg_pos ..
   · exact hspan ▸ hlies
 
-instance (K : Type*) [Field K] [NumberField K]
-    (G : Type*) [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) where
-  smul := fun g x ↦ ⟨g • (x : K), sorry⟩
-  one_smul := sorry
-  mul_smul := sorry
-  smul_zero := sorry
-  smul_add := sorry
-  smul_one := sorry
-  smul_mul := sorry
-
-instance inst4 (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
-    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G K L] :
-    IsGaloisGroup G (𝓞 K) (𝓞 L) := by
-  sorry
-
-instance inst5 (L : Type*) [Field L] [NumberField L]
-    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G ℚ L] :
-    IsGaloisGroup G ℤ (𝓞 L) := by
-  sorry
-
 /-- Let `K` be a number field such that `K/ℚ` is Galois and let `M K` be the Minkowski bound of `K`.
 To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
 `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, there is an ideal `P` above `p` such that

@@ -121,6 +121,8 @@ instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
   inferInstanceAs (Algebra (integralClosure _ _) L)
 instance {L : Type*} [Ring L] [Algebra K L] : IsScalarTower (𝓞 K) K L :=
   inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
+instance {G : Type*} [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) :=
+  inferInstanceAs (MulSemiringAction G (integralClosure _ _))
 
 variable {K}
 

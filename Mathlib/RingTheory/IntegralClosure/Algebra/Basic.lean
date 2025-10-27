@@ -243,3 +243,18 @@ instance Algebra.IsIntegral.tensorProduct [CommRing B]
   isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
 
 end TensorProduct
+
+section MulSemiringAction
+
+instance (R K : Type*) [CommRing R] [CommRing K] [Algebra R K]
+    (G : Type*) [Group G] [MulSemiringAction G K] [SMulCommClass G R K] :
+    MulSemiringAction G (integralClosure R K) where
+  smul := fun g x ↦ ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
+  one_smul x := by ext; exact one_smul G (x : K)
+  mul_smul g h x := by ext; exact mul_smul g h (x : K)
+  smul_zero g := by ext; exact smul_zero g
+  smul_add g x y := by ext; exact smul_add g (x : K) (y : K)
+  smul_one g := by ext; exact smul_one g
+  smul_mul g x y := by ext; exact smul_mul' g (x : K) (y : K)
+
+end MulSemiringAction

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Invariant.Basic
 
 /-!
@@ -97,6 +98,18 @@ theorem IsGaloisGroup.iff_isFractionRing [Finite G] [IsIntegrallyClosed A] :
     IsGaloisGroup G A B ↔ Algebra.IsIntegral A B ∧ IsGaloisGroup G K L :=
   ⟨fun h ↦ ⟨h.isInvariant.isIntegral, h.to_isFractionRing G A B K L hGBL⟩,
     fun ⟨_, h⟩ ↦ h.of_isFractionRing G A B K L hGBL⟩
+
+open NumberField
+
+instance (K L : Type*) [Field K] [Field L] [NumberField K] [NumberField L] [Algebra K L]
+    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G K L] :
+    IsGaloisGroup G (𝓞 K) (𝓞 L) :=
+  IsGaloisGroup.of_isFractionRing G (𝓞 K) (𝓞 L) K L (fun _ _ ↦ rfl)
+
+instance (L : Type*) [Field L] [NumberField L]
+    (G : Type*) [Group G] [MulSemiringAction G L] [IsGaloisGroup G ℚ L] :
+    IsGaloisGroup G ℤ (𝓞 L) :=
+  IsGaloisGroup.of_isFractionRing G ℤ (𝓞 L) ℚ L (fun _ _ ↦ rfl)
 
 end Field
 
