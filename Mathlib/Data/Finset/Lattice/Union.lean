@@ -27,7 +27,7 @@ section Sup
 
 variable [SemilatticeSup α] [OrderBot α]
 
-@[simp]
+@[simp, grind =]
 theorem sup_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
     (s.biUnion t).sup f = s.sup fun x => (t x).sup f :=
   eq_of_forall_ge_iff fun c => by simp [@forall_swap _ β]
@@ -38,7 +38,7 @@ section Inf
 
 variable [SemilatticeInf α] [OrderTop α]
 
-@[simp] theorem inf_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
+@[simp, grind =] theorem inf_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
     (s.biUnion t).inf f = s.inf fun x => (t x).inf f :=
   @sup_biUnion αᵒᵈ _ _ _ _ _ _ _ _
 

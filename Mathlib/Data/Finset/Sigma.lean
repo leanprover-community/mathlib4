@@ -43,7 +43,7 @@ protected def sigma : Finset (Σ i, α i) :=
 
 variable {s s₁ s₂ t t₁ t₂}
 
-@[simp]
+@[simp, grind =]
 theorem mem_sigma {a : Σ i, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t a.1 :=
   Multiset.mem_sigma
 
