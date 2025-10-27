@@ -23,18 +23,10 @@ with respect to an ideal `I`:
 - `AdicCompletion I M`: if `I` is finitely generated, then this is the universal complete module
   with a linear map `AdicCompletion.coeHom` from `M`. This map is injective iff `M` is Hausdorff
   and surjective iff `M` is precomplete.
-- `IsAdicCompletion.lift`: if `N` is `I`-adically complete, then a compatible family of
+- `IsAdicComplete.lift`: if `N` is `I`-adically complete, then a compatible family of
   linear maps `M →ₗ[R] N ⧸ (I ^ n • ⊤)` can be lifted to a unique linear map `M →ₗ[R] N`.
-  Together with `mk_lift_apply` and `eq_lift`, it gives the full universal property of being
+  Together with `mk_lift_apply` and `eq_lift`, it gives the universal property of being
   `I`-adically complete.
-
-- (TO BE MOVED) `IsAdicComplete.liftRingHom`: if `R` is
-  `I`-adically complete, then a compatible family of
-  ring maps `S →+* R ⧸ I ^ a n` can be lifted to a unique ring map `S →+* R`.
-  Together with `mk_liftRingHom_apply` and `eq_liftRingHom`, it gives the full universal property
-  of `R` being `I`-adically complete.
-
-
 -/
 
 suppress_compilation
@@ -936,7 +928,7 @@ variable {a : ℕ → ℕ} (ha : StrictMono a)
 
 variable {I M}
 /--
-Instead of providing all `M →ₗ[R] N ⧸ (I ^ n • ⊤)`, we can just provide
+Instead of providing all `M →ₗ[R] N ⧸ (I ^ n • ⊤)`, one can just provide
 `M →ₗ[R] N ⧸ (I ^ (a n) • ⊤)` for a strictly increasing sequence `a n` to recover all
 `M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
 -/
@@ -946,8 +938,7 @@ def extend (n : ℕ) :
 
 variable (hf : ∀ {m}, factorPow I N (ha.monotone m.le_succ) ∘ₗ (f (m + 1)) = f m)
 
-include hf
-
+include hf in
 theorem factorPow_comp_eq_of_factorPow_comp_succ_eq
     {m n : ℕ} (hle : m ≤ n) : factorPow I N (ha.monotone hle) ∘ₗ f n = f m := by
   ext x
@@ -958,11 +949,11 @@ theorem factorPow_comp_eq_of_factorPow_comp_succ_eq
     simp only [LinearMap.ext_iff] at hf
     simpa using (hf x).symm
 
-@[simp]
+include hf in
 theorem extend_eq (n : ℕ) : extend ha f (a n) = f n :=
   factorPow_comp_eq_of_factorPow_comp_succ_eq ha f hf (ha.id_le n)
 
-@[simp]
+include hf in
 theorem factorPow_comp_extend {m n : ℕ} (hle : m ≤ n) :
     factorPow I N hle ∘ₗ extend ha f n = extend ha f m := by
   ext
@@ -976,25 +967,28 @@ A variant of `IsAdicComplete.lift`. Only takes `f n : M →ₗ[R] N ⧸ (I ^ (a 
 from a strictly increasing sequence `a n`.
 -/
 def lift : M →ₗ[R] N :=
-  -- (coeEquiv I N).symm ∘ₗ AdicCompletion.lift I (extend ha f) (factorPow_comp_extend ha f hf)
   IsAdicComplete.lift I (extend ha f) (factorPow_comp_extend ha f hf)
 
 theorem coeHom_lift_apply (x : M) :
     coeHom I N (lift I ha f hf x) =
     AdicCompletion.lift I (extend ha f) (factorPow_comp_extend ha f hf) x :=
-  sorry
+  IsAdicComplete.coeHom_lift_apply I (extend ha f) (factorPow_comp_extend ha f hf) x
 
 theorem coeHom_comp_lift :
     (coeHom I N) ∘ₗ (lift I ha f hf) =
       AdicCompletion.lift I (extend ha f) (factorPow_comp_extend ha f hf) :=
-  sorry
+  IsAdicComplete.coeHom_comp_lift I (extend ha f) (factorPow_comp_extend ha f hf)
 
+@[simp]
 theorem mk_lift_apply {n : ℕ} (x : M) :
     (Submodule.Quotient.mk (lift I ha f hf x)) = f n x := by
-  simp [← eval_coeHom_apply, lift, coeEquiv, extend]
-  sorry
+  simp only [lift, IsAdicComplete.lift, coeEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    Function.comp_apply, ← eval_coeHom_apply, LinearEquiv.apply_ofBijective_symm_apply, coe_eval,
+    eval_lift_apply]
+  rw [extend_eq ha f hf]
 
-theorem mk_comp_lift {n : ℕ} :
+@[simp]
+theorem mkQ_comp_lift {n : ℕ} :
     mkQ (I ^ (a n) • ⊤ : Submodule R N) ∘ₗ (lift I ha f hf) = f n := by
   ext
   exact mk_lift_apply I ha f hf _
@@ -1004,8 +998,8 @@ theorem eq_lift {F : M →ₗ[R] N}
   ext s
   rw [IsHausdorff.eq_iff_smodEq (I := I)]
   intro n
-  sorry
-  -- simp [SModEq, hF, mk_lift_apply I ha f hf]
+  apply SModEq.mono (smul_mono_left (Ideal.pow_le_pow_right (ha.id_le n)))
+  simp [SModEq, hF, mk_lift_apply I ha f hf]
 
 end StrictMono
 
