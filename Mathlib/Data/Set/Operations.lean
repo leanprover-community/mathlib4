@@ -156,6 +156,16 @@ def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 /-- Any map `f : ι → α` factors through a map `rangeFactorization f : ι → range f`. -/
 def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_range_self i⟩
 
+@[simp] lemma rangeFactorization_injective :
+    (Set.rangeFactorization f).Injective ↔ f.Injective := by
+  simp [Function.Injective, rangeFactorization]
+
+@[simp] lemma rangeFactorization_surjective : (rangeFactorization f).Surjective :=
+  fun ⟨_, i, rfl⟩ ↦ ⟨i, rfl⟩
+
+@[simp] lemma rangeFactorization_bijective :
+    (Set.rangeFactorization f).Bijective ↔ f.Injective := by simp [Function.Bijective]
+
 end Range
 
 /-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
