@@ -10,7 +10,7 @@ import Mathlib.Condensed.Light.Basic
 import Mathlib.Condensed.Light.Instances
 /-!
 
-# Light condensed sets form a Cartesian-closed category
+# Light condensed sets form a Cartesian closed category
 -/
 
 universe u
