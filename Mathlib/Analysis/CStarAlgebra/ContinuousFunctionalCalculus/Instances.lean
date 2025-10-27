@@ -3,10 +3,12 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Analysis.Complex.Spectrum
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.Normed.Algebra.Spectrum
+import Mathlib.Analysis.RCLike.Lemmas
 
 /-! # Instances of the continuous functional calculus
 
@@ -258,6 +260,23 @@ instance Nonneg.instNonUnitalContinuousFunctionalCalculus :
     isUniformEmbedding_subtype_val le_rfl
     (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
+/-- In a C⋆-algebra, commuting nonnegative elements have nonnegative products. -/
+lemma Commute.mul_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) (h : Commute a b) :
+    0 ≤ a * b := by
+  rw [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts]
+  refine ⟨ha.isSelfAdjoint.commute_iff hb.isSelfAdjoint |>.mp h, ?_⟩
+  rw [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at hb
+  obtain ⟨x, hx₁, hx₂, rfl⟩ := CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts hb.1 hb.2
+  have hx := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mpr ⟨hx₁, hx₂⟩
+  rw [← mul_assoc, quasispectrumRestricts_iff, quasispectrum.mul_comm,
+    ← quasispectrumRestricts_iff, ← mul_assoc]
+  exact QuasispectrumRestricts.nnreal_of_nonneg <| conjugate_nonneg_of_nonneg ha hx
+
+lemma commute_iff_mul_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    Commute a b ↔ 0 ≤ a * b :=
+  ⟨Commute.mul_nonneg ha hb,
+  fun h => ha.isSelfAdjoint.commute_iff hb.isSelfAdjoint |>.mpr h.isSelfAdjoint⟩
+
 open NNReal in
 lemma NNReal.spectrum_nonempty {A : Type*} [Ring A] [StarRing A] [LE A]
     [TopologicalSpace A] [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
@@ -278,6 +297,11 @@ instance Nonneg.instContinuousFunctionalCalculus :
   SpectrumRestricts.cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
     isUniformEmbedding_subtype_val le_rfl
     (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
+
+theorem IsStrictlyPositive.commute_iff {a b : A} (ha : IsStrictlyPositive a)
+    (hb : IsStrictlyPositive b) : Commute a b ↔ IsStrictlyPositive (a * b) := by
+  rw [commute_iff_mul_nonneg ha.nonneg hb.nonneg]
+  exact ⟨fun h => ha.isUnit.mul hb.isUnit |>.isStrictlyPositive h, fun h => h.nonneg⟩
 
 end Nonneg
 
@@ -301,6 +325,15 @@ lemma cfc_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by 
   exact ha.spectrumRestricts.cfc_eq_restrict (f := Complex.reCLM)
     Complex.isometry_ofReal.isUniformEmbedding ha ha.isStarNormal f
 
+lemma cfc_complex_eq_real {f : ℂ → ℂ} (a : A) (hf_real : ∀ x ∈ spectrum ℂ a, star (f x) = f x)
+    (ha : IsSelfAdjoint a := by cfc_tac) :
+    cfc f a = cfc (fun x : ℝ ↦ (f x).re) a := by
+  rw [cfc_real_eq_complex ..]
+  refine cfc_congr fun x hx ↦ ?_
+  simp_rw [RCLike.star_def, RCLike.conj_eq_iff_re, RCLike.re_eq_complex_re,
+    RCLike.ofReal_eq_complex_ofReal] at hf_real
+  rw [← SpectrumRestricts.real_iff.mp ha.spectrumRestricts _ hx, hf_real _ hx]
+
 end RealEqComplex
 
 section RealEqComplexNonUnital
@@ -320,6 +353,15 @@ lemma cfcₙ_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := 
   exact ha.quasispectrumRestricts.cfcₙ_eq_restrict (f := Complex.reCLM)
     Complex.isometry_ofReal.isUniformEmbedding ha ha.isStarNormal f
 
+lemma cfcₙ_complex_eq_real {f : ℂ → ℂ} (a : A) (hf_real : ∀ x ∈ σₙ ℂ a, star (f x) = f x)
+    (ha : IsSelfAdjoint a := by cfc_tac) :
+    cfcₙ f a = cfcₙ (fun x : ℝ ↦ (f x).re) a := by
+  rw [cfcₙ_real_eq_complex ..]
+  refine cfcₙ_congr fun x hx ↦ ?_
+  simp_rw [RCLike.star_def, RCLike.conj_eq_iff_re, RCLike.re_eq_complex_re,
+    RCLike.ofReal_eq_complex_ofReal] at hf_real
+  rw [← QuasispectrumRestricts.real_iff.mp ha.quasispectrumRestricts _ hx, hf_real _ hx]
+
 end RealEqComplexNonUnital
 
 section NNRealEqReal
@@ -336,10 +378,16 @@ lemma cfcHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
       (cfcHom (IsSelfAdjoint.of_nonneg ha)) := by
   apply (SpectrumRestricts.nnreal_of_nonneg ha).cfcHom_eq_restrict _ isUniformEmbedding_subtype_val
 
-lemma cfc_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := by cfc_tac) :
+lemma cfc_nnreal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := by cfc_tac) :
     cfc f a = cfc (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   apply (SpectrumRestricts.nnreal_of_nonneg ha).cfc_eq_restrict _
     isUniformEmbedding_subtype_val ha (.of_nonneg ha)
+
+lemma cfc_real_eq_nnreal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ spectrum ℝ a, 0 ≤ f x)
+    (ha : 0 ≤ a := by cfc_tac) : cfc f a = cfc (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
+  rw [cfc_nnreal_eq_real ..]
+  refine cfc_congr fun x hx ↦ ?_
+  rw [x.coe_toNNReal (spectrum_nonneg_of_nonneg ha hx), (f x).coe_toNNReal (hf_nonneg x hx)]
 
 end NNRealEqReal
 
@@ -358,10 +406,17 @@ lemma cfcₙHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
   apply (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙHom_eq_restrict _
     isUniformEmbedding_subtype_val
 
-lemma cfcₙ_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := by cfc_tac) :
+lemma cfcₙ_nnreal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := by cfc_tac) :
     cfcₙ f a = cfcₙ (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   apply (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙ_eq_restrict _
     isUniformEmbedding_subtype_val ha (.of_nonneg ha)
+
+lemma cfcₙ_real_eq_nnreal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ σₙ ℝ a, 0 ≤ f x)
+    (ha : 0 ≤ a := by cfc_tac) : cfcₙ f a = cfcₙ (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
+  rw [cfcₙ_nnreal_eq_real ..]
+  refine cfcₙ_congr fun x hx ↦ ?_
+  rw [x.coe_toNNReal (quasispectrum_nonneg_of_nonneg _ ha _ hx),
+    (f x).coe_toNNReal (hf_nonneg x hx)]
 
 end NNRealEqRealNonUnital
 

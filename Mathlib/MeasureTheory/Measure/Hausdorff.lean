@@ -910,8 +910,8 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     let f : γ n := fun i =>
       ⟨⌊(x i - a i) * n⌋₊, by
         apply Nat.floor_lt_ceil_of_lt_of_pos
-        · refine (mul_lt_mul_right npos).2 ?_
-          simp only [(hx i).right, sub_lt_sub_iff_right]
+        · gcongr
+          exact (hx i).right
         · refine mul_pos ?_ npos
           simpa only [Rat.cast_lt, sub_pos] using H i⟩
     refine ⟨f, fun i => ⟨?_, ?_⟩⟩

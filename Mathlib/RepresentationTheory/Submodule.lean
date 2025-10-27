@@ -44,7 +44,6 @@ instance : BoundedOrder ρ.invtSubmodule where
 protected lemma nontrivial_iff : Nontrivial ρ.invtSubmodule ↔ Nontrivial V := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose! h
-    rw [not_nontrivial_iff_subsingleton] at h ⊢
     infer_instance
   · refine ⟨⊥, ⊤, ?_⟩
     rw [← Subtype.coe_ne_coe, invtSubmodule.coe_top, invtSubmodule.coe_bot]

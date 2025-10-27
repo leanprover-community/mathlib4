@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot, Filippo A. E. Nuccio
 -/
+import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.GroupWithZero.Range
 import Mathlib.Algebra.Order.Ring.Basic
@@ -385,6 +386,10 @@ lemma one_apply_lt_one_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀) 
   rw [one_apply_def]
   split_ifs <;> simp_all
 
+@[simp]
+lemma one_apply_eq_one_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀) x = 1 ↔ x ≠ 0 :=
+  MonoidWithZeroHom.one_apply_eq_one_iff
+
 end One
 
 end Monoid
@@ -427,6 +432,21 @@ theorem val_le_one_or_val_inv_le_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1
   by_cases h : x = 0
   · simp only [h, map_zero, zero_le', inv_zero, or_self]
   · simp only [← one_le_val_iff v h, le_total]
+
+/-- The subgroup of elements whose valuation is less than or equal to a certain value. -/
+def leAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀) : AddSubgroup R where
+  carrier := { x | v x ≤ γ }
+  zero_mem' := by simp
+  add_mem' {x y} x_in y_in := (v.map_add x y).trans (max_le x_in y_in)
+  neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
+
+@[simp]
+lemma mem_leAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀} {x : R} :
+    x ∈ v.leAddSubgroup γ ↔ v x ≤ γ :=
+  Iff.rfl
+
+lemma leAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.leAddSubgroup :=
+  fun _ _ h _ ↦ h.trans'
 
 
 open MonoidWithZeroHom in
@@ -484,6 +504,18 @@ open MonoidWithZeroHom in
     x ∈ ltAddSubgroup v γ ↔ v.restrict x < γ :=
   Iff.rfl
 
+lemma ltAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.ltAddSubgroup :=
+  fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
+
+lemma ltAddSubgroup_le_leAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) :
+    v.ltAddSubgroup γ ≤ v.leAddSubgroup γ :=
+  fun _ h ↦ h.le
+
+@[simp]
+lemma leAddSubgroup_zero {K : Type*} [Field K] (v : Valuation K Γ₀) :
+    v.leAddSubgroup 0 = ⊥ := by
+  ext; simp
+
 end Group
 
 end Basic
@@ -533,6 +565,11 @@ lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
     simp [hx]
   · use x⁻¹
     simp [- map_inv₀, ← one_lt_val_iff, hx]
+
+theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) :
+    v.IsNontrivial ↔ ∃ x, x ≠ 0 ∧ v x < 1 :=
+  ⟨fun h ↦ by simpa using h.exists_lt_one (v := v), fun ⟨x, hx0, hx1⟩ ↦ ⟨x, by simp [hx0, hx1.ne]⟩⟩
 
 lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
@@ -1109,29 +1146,15 @@ theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R)
     ofAddValuation v r = Additive.toMul (OrderDual.ofDual (v r)) :=
   rfl
 
-instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) where
-  zero := ⟨0, 0, by simp⟩
-  zero_mul := by
-    intro a
-    exact Subtype.ext (zero_mul a.val)
-  mul_zero := by
-    intro a
-    exact Subtype.ext (mul_zero a.val)
+instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) :=
+  inferInstanceAs (CommMonoidWithZero (MonoidHom.mrange (v : R →*₀ Γ₀)))
 
 @[simp]
-lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ₀) = 0 := rfl
+lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ₀) = 0 := by
+  rfl
 
 instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
-    CommGroupWithZero (MonoidHom.mrange v) where
-  inv := fun x ↦ ⟨x⁻¹, by
-    obtain ⟨y, hy⟩ := x.prop
-    simp_rw [← hy, ← v.map_inv]
-    exact MonoidHom.mem_mrange.mpr ⟨_, rfl⟩⟩
-  exists_pair_ne := ⟨⟨v 0, by simp⟩, ⟨v 1, by simp [- map_one]⟩, by simp⟩
-  inv_zero := Subtype.ext inv_zero
-  mul_inv_cancel := by
-    rintro ⟨a, ha⟩ h
-    simp only [ne_eq, Subtype.ext_iff] at h
-    simpa using mul_inv_cancel₀ h
+    CommGroupWithZero (MonoidHom.mrange v) :=
+  inferInstanceAs (CommGroupWithZero (MonoidHom.mrange (v : K →*₀ Γ₀)))
 
 end Valuation

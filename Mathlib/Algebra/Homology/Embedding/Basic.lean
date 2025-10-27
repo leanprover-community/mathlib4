@@ -202,7 +202,7 @@ end
 def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => n)
     (fun _ _ h => by simpa using h)
-    (by dsimp; omega)
+    (by dsimp; cutsat)
 
 instance : embeddingUpNat.IsRelIff := by dsimp [embeddingUpNat]; infer_instance
 
@@ -214,7 +214,7 @@ instance : embeddingUpNat.IsTruncGE where
 def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => -n)
     (fun _ _ h => by simpa using h)
-    (by dsimp; omega)
+    (by dsimp; cutsat)
 
 instance : embeddingDownNat.IsRelIff := by dsimp [embeddingDownNat]; infer_instance
 
@@ -227,8 +227,8 @@ variable (p : ℤ)
 @[simps!]
 def embeddingUpIntGE : Embedding (up ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => p + n)
-    (fun _ _ h => by dsimp at h; omega)
-    (by dsimp; omega)
+    (fun _ _ h => by dsimp at h; cutsat)
+    (by dsimp; cutsat)
 
 instance : (embeddingUpIntGE p).IsRelIff := by dsimp [embeddingUpIntGE]; infer_instance
 
@@ -239,8 +239,8 @@ instance : (embeddingUpIntGE p).IsTruncGE where
 @[simps!]
 def embeddingUpIntLE : Embedding (down ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => p - n)
-    (fun _ _ h => by dsimp at h; omega)
-    (by dsimp; omega)
+    (fun _ _ h => by dsimp at h; cutsat)
+    (by dsimp; cutsat)
 
 instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_instance
 
@@ -252,10 +252,10 @@ lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    exact h (p - n).natAbs (by simp; omega)
+    exact h (p - n).natAbs (by simp; cutsat)
   · intros
     dsimp
-    omega
+    cutsat
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_range_embeddingUpIntLE_iff := notMem_range_embeddingUpIntLE_iff
@@ -265,10 +265,10 @@ lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    exact h (n - p).natAbs (by simp; omega)
+    exact h (n - p).natAbs (by simp; cutsat)
   · intros
     dsimp
-    omega
+    cutsat
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_range_embeddingUpIntGE_iff := notMem_range_embeddingUpIntGE_iff

@@ -440,6 +440,15 @@ include ha in
 lemma cfcₙ_star_id : cfcₙ (star · : R → R) a = star a := by
   rw [cfcₙ_star _ a, cfcₙ_id' R a]
 
+variable (R) in
+theorem range_cfcₙ_eq_range_cfcₙHom {a : A} (ha : p a) :
+    Set.range (cfcₙ (R := R) · a) = NonUnitalStarAlgHom.range (cfcₙHom ha (R := R)) := by
+  ext
+  constructor
+  all_goals rintro ⟨f, rfl⟩
+  · exact cfcₙ_cases _ a f (zero_mem _) fun hf hf₀ ha ↦ ⟨_, rfl⟩
+  · exact ⟨Subtype.val.extend f 0, cfcₙHom_eq_cfcₙ_extend _ ha _ |>.symm⟩
+
 section Comp
 
 variable [UniqueHom R A]
