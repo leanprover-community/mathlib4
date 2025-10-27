@@ -549,8 +549,7 @@ lemma isIso_prodComparison_withSimplex {D : SSet.{u}} (X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
     IsIso (prodComparison hoFunctor D X) := by
   have : (prod.functor.obj D).IsLeftAdjoint := by
-    have : (MonoidalCategory.tensorLeft D).IsLeftAdjoint :=
-      (FunctorToTypes.adj D).isLeftAdjoint
+    have : (MonoidalCategory.tensorLeft D).IsLeftAdjoint := inferInstance
     exact Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
   have : (prod.functor.obj (hoFunctor.obj D)).IsLeftAdjoint :=
     Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
