@@ -823,6 +823,10 @@ theorem coe_mul : ((φ * ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ * ψ
     simp only [coeff_coe, MvPowerSeries.coeff_mul, coeff_mul]
 
 @[simp, norm_cast]
+lemma coe_smul (φ : MvPolynomial σ R) (r : R) :
+  (r • φ : MvPolynomial σ R) = r • (φ : MvPowerSeries σ R) := rfl
+
+@[simp, norm_cast]
 theorem coe_C (a : R) : ((C a : MvPolynomial σ R) : MvPowerSeries σ R) = MvPowerSeries.C a :=
   coe_monomial _ _
 
