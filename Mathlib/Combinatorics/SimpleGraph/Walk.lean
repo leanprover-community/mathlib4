@@ -98,16 +98,16 @@ theorem copy_copy {u v u' v' u'' v''} (p : G.Walk u v)
   subst_vars; rfl
 
 @[simp]
-theorem copy_nil {u u'} (hu : u = u') : (nil : G.Walk u u).copy hu hu = nil := by
+theorem copy_nil {u u'} (hu : u = u') : (Walk.nil : G.Walk u u).copy hu hu = nil := by
   subst_vars; rfl
 
 theorem copy_cons {u v w u' w'} (h : G.Adj u v) (p : G.Walk v w) (hu : u = u') (hw : w = w') :
-    (p.cons h).copy hu hw = (p.copy rfl hw).cons (hu ▸ h) := by
+    (Walk.cons h p).copy hu hw = Walk.cons (hu ▸ h) (p.copy rfl hw) := by
   subst_vars; rfl
 
 @[simp]
 theorem cons_copy {u v w v' w'} (h : G.Adj u v) (p : G.Walk v' w') (hv : v' = v) (hw : w' = w) :
-    (p.copy hv hw).cons h = (p.cons (hv ▸ h)).copy rfl hw := by
+    cons h (p.copy hv hw) = (Walk.cons (hv ▸ h) p).copy rfl hw := by
   subst_vars; rfl
 
 theorem exists_eq_cons_of_ne {u v : V} (hne : u ≠ v) :
@@ -875,7 +875,7 @@ lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by
 
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
-  | nil | cons _ _ => by simp
+  | .nil | .cons _ _ => by simp
 
 alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
@@ -995,7 +995,7 @@ def dropLast (p : G.Walk u v) : G.Walk u p.penultimate := p.take (p.length - 1)
 lemma tail_nil : (@nil _ G v).tail = .nil := rfl
 
 @[simp]
-lemma tail_cons_nil (h : G.Adj u v) : (nil.cons h).tail = nil := rfl
+lemma tail_cons_nil (h : G.Adj u v) : (Walk.cons h .nil).tail = .nil := rfl
 
 @[simp]
 lemma tail_cons (h : G.Adj u v) (p : G.Walk v w) :
@@ -1376,7 +1376,7 @@ lemma isSubwalk_rfl {u v} (p : G.Walk u v) : p.IsSubwalk p :=
   ⟨nil, nil, by simp⟩
 
 @[simp]
-lemma nil_isSubwalk {u v} (q : G.Walk u v) : (nil : G.Walk u u).IsSubwalk q :=
+lemma nil_isSubwalk {u v} (q : G.Walk u v) : (Walk.nil : G.Walk u u).IsSubwalk q :=
   ⟨nil, q, by simp⟩
 
 protected lemma IsSubwalk.cons {u v u' v' w} {p : G.Walk u v} {q : G.Walk u' v'}
