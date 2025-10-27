@@ -185,7 +185,7 @@ lemma condDistrib_comp {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} [StandardBorel
   calc μ.map (fun x ↦ (X x, (f ∘ Y) x))
   _ = (μ.map (fun x ↦ (X x, Y x))).map (Prod.map id f) := by
     rw [AEMeasurable.map_map_of_aemeasurable (by fun_prop) (by fun_prop)]
-    rfl
+    simp [Function.comp_def]
   _ = (μ.map X ⊗ₘ condDistrib Y X μ).map (Prod.map id f) := by rw [compProd_map_condDistrib hY]
   _ = μ.map X ⊗ₘ (condDistrib Y X μ).map f := by rw [Measure.compProd_map hf]
 
@@ -195,7 +195,7 @@ lemma condDistrib_comp_self (X : α → β) {f : β → Ω} (hf : Measurable f) 
   swap; · simp [Measure.map_of_not_aemeasurable hX, Filter.EventuallyEq]
   refine condDistrib_ae_eq_of_measure_eq_compProd X (by fun_prop) ?_
   rw [Measure.compProd_deterministic, AEMeasurable.map_map_of_aemeasurable (by fun_prop) hX]
-  rfl
+  simp [Function.comp_def]
 
 lemma condDistrib_self (Y : α → Ω) : condDistrib Y Y μ =ᵐ[μ.map Y] Kernel.id := by
   simpa using condDistrib_comp_self Y measurable_id
@@ -215,7 +215,7 @@ lemma condDistrib_map {γ : Type*} {mγ : MeasurableSpace γ}
   refine condDistrib_ae_eq_of_measure_eq_compProd (μ := ν.map f) X hY ?_
   rw [AEMeasurable.map_map_of_aemeasurable hX hf, compProd_map_condDistrib (by fun_prop),
     AEMeasurable.map_map_of_aemeasurable (by fun_prop) hf]
-  rfl
+  simp [Function.comp_def]
 
 lemma condDistrib_fst_prod {γ : Type*} {mγ : MeasurableSpace γ}
     (X : α → β) (hY : AEMeasurable Y μ) (ν : Measure γ) [IsProbabilityMeasure ν] :
@@ -361,7 +361,7 @@ theorem condExp_prod_ae_eq_integral_condDistrib₀ [NormedSpace ℝ F] [Complete
     (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a)))
     (hf_int : Integrable (fun a => f (X a, Y a)) μ) :
     μ[fun a => f (X a, Y a)|mβ.comap X] =ᵐ[μ] fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a) :=
-  haveI hf_int' : Integrable f (μ.map fun a => (X a, Y a)) := by
+  have hf_int' : Integrable f (μ.map fun a => (X a, Y a)) := by
     rwa [integrable_map_measure hf (hX.aemeasurable.prodMk hY)]
   condExp_prod_ae_eq_integral_condDistrib' hX hY hf_int'
 
@@ -371,7 +371,7 @@ theorem condExp_prod_ae_eq_integral_condDistrib [NormedSpace ℝ F] [CompleteSpa
     (hX : Measurable X) (hY : AEMeasurable Y μ) (hf : StronglyMeasurable f)
     (hf_int : Integrable (fun a => f (X a, Y a)) μ) :
     μ[fun a => f (X a, Y a)|mβ.comap X] =ᵐ[μ] fun a => ∫ y, f (X a, y) ∂condDistrib Y X μ (X a) :=
-  haveI hf_int' : Integrable f (μ.map fun a => (X a, Y a)) := by
+  have hf_int' : Integrable f (μ.map fun a => (X a, Y a)) := by
     rwa [integrable_map_measure hf.aestronglyMeasurable (hX.aemeasurable.prodMk hY)]
   condExp_prod_ae_eq_integral_condDistrib' hX hY hf_int'
 
@@ -398,8 +398,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {m�
   suffices h : Measure.QuasiMeasurePreserving Prod.snd (μ.map fun ω ↦ (X ω, ω)) μ from
     Measure.QuasiMeasurePreserving.ae_eq h hf.ae_eq_mk
   refine ⟨measurable_snd, Measure.AbsolutelyContinuous.mk fun s hs hμs => ?_⟩
-  rw [Measure.map_apply _ hs]
-  swap; · exact measurable_snd
+  rw [Measure.map_apply measurable_snd hs]
   by_cases hX : AEMeasurable X μ
   · rw [Measure.map_apply_of_aemeasurable]
     · rw [← univ_prod, mk_preimage_prod, preimage_univ, univ_inter, preimage_id']
