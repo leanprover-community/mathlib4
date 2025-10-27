@@ -34,7 +34,6 @@ walks
 -/
 
 -- TODO: split
-set_option linter.style.longFile 1700
 
 open Function
 
