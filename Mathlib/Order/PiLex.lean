@@ -68,6 +68,12 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder hwf hlt
 
+theorem lex_lt_iff_of_subsingleton [Preorder α] [LT N] [Subsingleton α]
+    {a b : Lex (α →₀ N)} {i : α} : a < b ↔ ofLex a i < ofLex b i := by
+  simp only [lex_lt_iff, Unique.exists_iff, and_iff_right_iff_imp]
+  refine fun _ j hj ↦ False.elim (lt_irrefl j ?_)
+  simpa only [Unique.uniq] using hj
+
 theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r) :
     IsTrichotomous (∀ i, β i) (Pi.Lex r @s) :=
   { trichotomous := fun a b => by
