@@ -28,7 +28,7 @@ for general functions; for the specific case of Dirichlet characters see
   `LFunction Φ s` multiplied by an Archimedean Gamma-factor.
 
 Note that `ZMod.completedLFunction Φ s` is only mathematically well-defined if `Φ` is either even
-or odd. Here we extend it to all functions `Φ` by linearity  (but the functional equation only holds
+or odd. Here we extend it to all functions `Φ` by linearity (but the functional equation only holds
 if `Φ` is either even or odd).
 
 ## Main theorems

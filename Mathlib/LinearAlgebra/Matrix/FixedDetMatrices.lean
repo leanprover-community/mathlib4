@@ -58,7 +58,7 @@ lemma smul_coe (m : R) (g : SpecialLinearGroup n R) (A : FixedDetMatrix n R m) :
 
 section IntegralFixedDetMatrices
 
-local notation:1024 "Δ" m : 1024 => (FixedDetMatrix (Fin 2) ℤ m)
+local notation:1024 "Δ" m:1024 => (FixedDetMatrix (Fin 2) ℤ m)
 
 variable {m : ℤ}
 
@@ -221,7 +221,7 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
   solve_by_elim (maxDepth := 10)
 
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
-     ∀ B (n : ℤ), C (T^n • B) ↔ C B := by
+     ∀ B (n : ℤ), C (T ^ n • B) ↔ C B := by
   intro B n
   induction n with
   | zero => simp only [zpow_zero, one_smul]
