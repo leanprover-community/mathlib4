@@ -248,6 +248,13 @@ For the `simp` version of this lemma, see `det_submatrix_equiv_self`; this one i
 theorem det_reindex_self (e : m ≃ n) (A : Matrix m m R) : det (reindex e e A) = det A :=
   det_submatrix_equiv_self e.symm A
 
+lemma det_reindex (e e' : m ≃ n) (M : Matrix m m R) :
+    (M.reindex e e').det = sign (e'.trans e.symm) * M.det := by
+  trans ((M.reindex (e.trans e'.symm) (.refl _)).reindex e' e').det
+  · congr 1; ext; simp
+  · simp_rw [det_reindex_self, reindex_apply, Equiv.refl_symm, Equiv.coe_refl, det_permute]
+    rfl
+
 /-- Reindexing both indices along equivalences preserves the absolute of the determinant.
 
 For the `simp` version of this lemma, see `abs_det_submatrix_equiv_equiv`;

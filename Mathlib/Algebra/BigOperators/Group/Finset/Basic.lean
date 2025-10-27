@@ -355,6 +355,11 @@ theorem prod_eq_single {s : Finset ι} {f : ι → M} (a : ι) (h₀ : ∀ b ∈
       prod_const_one.trans (h₁ this).symm
 
 @[to_additive]
+lemma prod_eq_prod_ite_mem [Fintype ι] (s : Finset ι) (f : ι → M) [DecidablePred (· ∈ s)] :
+    ∏ i ∈ s, f i = ∏ i, if i ∈ s then f i else 1 := by
+  rw [← Finset.prod_filter]; congr; aesop
+
+@[to_additive]
 lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
     (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) :
     ∏ x ∈ s, f x = if a ∈ s then f a else 1 := by
