@@ -204,6 +204,7 @@
   "Mathlib.Init"],
  "ignore":
  {"Mathlib.Util.Notation3": ["Lean.Elab.AuxDef", "Lean.Elab.BuiltinCommand"],
+  "Mathlib.Topology.UniformSpace.OfCompactT2": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.UniformSpace.Defs": ["Mathlib.Tactic.Monotonicity.Basic"],
   "Mathlib.Topology.Sober": ["Mathlib.Algebra.HierarchyDesign"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
@@ -427,9 +428,7 @@
   "Mathlib.Geometry.Manifold.Notation":
   ["Mathlib.Geometry.Manifold.ContMDiff.Defs",
    "Mathlib.Geometry.Manifold.MFDeriv.Defs"],
-  "Mathlib.FieldTheory.Normal.Defs": ["Mathlib.FieldTheory.Galois.Notation"],
   "Mathlib.FieldTheory.Galois.Notation": ["Mathlib.Algebra.Algebra.Equiv"],
-  "Mathlib.FieldTheory.Finite.Basic": ["Mathlib.FieldTheory.Galois.Notation"],
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
