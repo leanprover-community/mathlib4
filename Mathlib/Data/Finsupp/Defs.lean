@@ -463,4 +463,53 @@ theorem support_zipWith [D : DecidableEq α] {f : M → N → P} {hf : f 0 0 = 0
 
 end ZipWith
 
+section Restrict
+
+variable [Zero α] (f g : ι → α) (s : Finset ι)
+  [DecidablePred fun i ↦ i ∈ s] [DecidablePred fun i ↦ f i ≠ 0]
+
+/-- The restriction of a finitely supported map `ι →₀ α` to `s : Finset ι`. -/
+def restrict : ι →₀ α where
+  toFun i := if i ∈ s then f i else 0
+  support := {i ∈ s | f i ≠ 0}
+  mem_support_toFun i := by simp
+
+variable {f g s}
+
+theorem restrict_apply {i : ι} : restrict f s i = if i ∈ s then f i else 0 := rfl
+
+theorem restrict_support_le : (restrict f s).support ⊆ s := fun i hi ↦ by
+  simp only [mem_support_iff, restrict_apply, ne_eq, ite_eq_right_iff, Classical.not_imp] at hi
+  exact hi.1
+
+theorem restrict_restrict [DecidableEq ι] {t : Finset ι} [DecidablePred fun i ↦ i ∈ t]
+    [DecidablePred fun i ↦ i ∈ s ∩ t] [DecidablePred fun i ↦ (restrict f s) i ≠ 0] :
+    restrict (restrict f s) t = restrict f (s ∩ t) := by
+  ext i
+  simp only [restrict_apply]
+  by_cases ht : i ∈ t
+  · rw [if_pos ht]
+    by_cases hs : i ∈ s
+    · rw [if_pos hs, if_pos (mem_inter_of_mem hs ht)]
+    · rw [if_neg hs, if_neg (fun hs' ↦ hs (Finset.inter_subset_left hs'))]
+  · rw [if_neg ht, if_neg (fun ht' ↦ ht (Finset.inter_subset_right ht'))]
+
+theorem eq_restrict_iff :
+    g = restrict f s ↔ g.support ⊆ s ∧ ∀ i, i ∈ s → f i = g i := by
+  suffices g.support ⊆ s ∧ (∀ i, i ∈ s → f i = g i) ↔
+      ∀ i, (i ∈ s → g i = f i) ∧ (i ∉ s → g i = 0) by
+    rw [this, funext_iff]
+    apply forall_congr'
+    intro i
+    by_cases hi : i ∈ s <;> simp [restrict_apply, hi]
+  rw [Set.subset_def, and_comm, forall_and]
+  apply and_congr
+  · simp_rw [eq_comm]
+  · simp [not_imp_comm]
+
+theorem self_eq_restrict_iff : f = restrict f s ↔ f.support ⊆ s := by
+  simp [eq_restrict_iff]
+
+end Restrict
+
 end Finsupp
