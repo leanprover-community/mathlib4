@@ -145,6 +145,8 @@ instance denumerableList : Denumerable (List α) :=
 @[simp]
 theorem list_ofNat_zero : ofNat (List α) 0 = [] := by rw [← @encode_list_nil α, ofNat_encode]
 
+-- TODO: find a good way to fix the linter
+set_option linter.flexible false in
 @[simp, nolint unusedHavesSuffices] -- This is a false positive in the unusedHavesSuffices linter.
 theorem list_ofNat_succ (v : ℕ) :
     ofNat (List α) (succ v) = ofNat α v.unpair.1 :: ofNat (List α) v.unpair.2 :=
