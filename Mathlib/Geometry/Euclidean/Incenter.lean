@@ -476,6 +476,19 @@ lemma dist_incenter (i : Fin (n + 1)) :
   s.excenterExists_empty.dist_excenter _
 
 variable {s} in
+/-- An excenter is equidistant to any two of its touchpoints. -/
+lemma ExcenterExists.dist_excenter_eq_dist_excenter {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i₁ i₂ : Fin (n + 1)) :
+    dist (s.excenter signs) (s.touchpoint signs i₁) =
+      dist (s.excenter signs) (s.touchpoint signs i₂) := by
+  simp_rw [h.dist_excenter]
+
+/-- The incenter is equidistant to any two of its touchpoints. -/
+lemma dist_incenter_eq_dist_incenter (i₁ i₂ : Fin (n + 1)) :
+    dist s.incenter (s.touchpoint ∅ i₁) = dist s.incenter (s.touchpoint ∅ i₂) :=
+  s.excenterExists_empty.dist_excenter_eq_dist_excenter _ _
+
+variable {s} in
 lemma ExcenterExists.touchpoint_mem_exsphere {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (i : Fin (n + 1)) : s.touchpoint signs i ∈ s.exsphere signs :=
   mem_sphere'.2 (h.dist_excenter i)
