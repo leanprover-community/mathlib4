@@ -309,14 +309,14 @@ theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :
   have : Invertible A := h.invertible
   calc
   _ = (scalar n X - C.mapMatrix A⁻¹).det := rfl
-  _ = C A⁻¹.det * (C.mapMatrix A * (scalar n X - C.mapMatrix A⁻¹)).det := by
-    rw [det_mul, ← RingHom.map_det, ← mul_assoc, ← C_mul, ← det_mul, inv_mul_of_invertible]
-    simp
-  _ = _ := by
-    rw [mul_sub, ← RingHom.map_mul, mul_inv_of_invertible, RingHom.map_one, ← neg_sub, det_neg,
-      det_one_sub_mul_comm, charpolyRev, smul_eq_diagonal_mul]
-    simp
-    ac_rfl
+  _ = C (A⁻¹ * A).det * (scalar n X - C.mapMatrix A⁻¹).det := by simp
+  _ = C A⁻¹.det * C A.det * (scalar n X - C.mapMatrix A⁻¹).det := by rw [det_mul]; simp
+  _ = C A⁻¹.det * (C A.det * (scalar n X - C.mapMatrix A⁻¹).det) := by ac_rfl
+  _ = C A⁻¹.det * (C.mapMatrix A * (scalar n X - C.mapMatrix A⁻¹)).det := by simp [RingHom.map_det]
+  _ = C A⁻¹.det * (C.mapMatrix A * scalar n X - 1).det := by rw [mul_sub, ← RingHom.map_mul]; simp
+  _ = C A⁻¹.det * ((-1) ^ Fintype.card n * (1 - scalar n X * C.mapMatrix A).det) := by
+    rw [← neg_sub, det_neg, det_one_sub_mul_comm]
+  _ = _ := by simp [charpolyRev, smul_eq_diagonal_mul]; ac_rfl
 
 @[simp] lemma eval_charpolyRev :
     eval 0 M.charpolyRev = 1 := by
