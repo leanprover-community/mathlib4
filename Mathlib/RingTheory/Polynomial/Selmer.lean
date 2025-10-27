@@ -163,7 +163,8 @@ variable {A : Type*} [CommRing A] [IsDedekindDomain A] {P : Ideal A} (hP : P ≠
   (Q : Ideal B) [Q.IsPrime] [hQ : Q.LiesOver P] [NoZeroSMulDivisors A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [IsGaloisGroup G A B]
 
--- PR #30675
+-- todo: clean up statement of `card_inertia_eq_ramificationIdxIn`
+-- (e.g., we shouldn't need Dedekind A or separable)
 include hP in
 theorem Ideal.card_inertiaSubgroup [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
     Nat.card (Q.toAddSubgroup.inertia G) =
@@ -273,10 +274,10 @@ theorem genthm₀ (K : Type*) [Field K] [NumberField K]
       _ _ m.asIdeal _ _ _ H _ _ _ _ _
     rw [← Ideal.ramificationIdxIn_eq_ramificationIdx (m.asIdeal.under (𝓞 F)) m.asIdeal F K]
     rw [← Ideal.ramificationIdxIn_eq_ramificationIdx (m.asIdeal.under (𝓞 ℚ)) m.asIdeal ℚ K]
-    rw [← @Ideal.card_inertiaSubgroup (𝓞 F) _ _ (m.asIdeal.under (𝓞 F)) ?_ _ (𝓞 K) _ _
-      _ _ m.asIdeal _ _ _ H _ _ _ _ _]
-    rw [← @Ideal.card_inertiaSubgroup (𝓞 ℚ) _ _ (m.asIdeal.under (𝓞 ℚ)) ?_ _ (𝓞 K) _ _
-      _ _ m.asIdeal _ _ _ G _ _ _ _ _]
+    rw [← Ideal.card_inertia_eq_ramificationIdxIn (G := H) F K (m.asIdeal.under (𝓞 F)) ?_
+      m.asIdeal]
+    rw [← Ideal.card_inertia_eq_ramificationIdxIn (G := G) ℚ K (m.asIdeal.under (𝓞 ℚ)) ?_
+      m.asIdeal]
     apply h
     all_goals intro h; exact hm (m.asIdeal.eq_bot_of_liesOver_bot (h := ⟨h.symm⟩))
   -- switch over from 𝓞 ℚ to ℤ at some point
