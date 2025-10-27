@@ -119,7 +119,7 @@ if its leading coefficient (for that monomial order) is 1. -/
 def Monic (f : MvPolynomial σ R) : Prop :=
   m.leadingCoeff f = 1
 
-/-- the leading term of of a multivariate polynomial with respect to a monomial ordering -/
+/-- The leading term of of a multivariate polynomial with respect to a monomial ordering. -/
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
 
@@ -621,6 +621,7 @@ protected theorem Monic.prod {ι : Type*} {P : ι → MvPolynomial σ R} {s : Fi
 /--
 The leading term in a multivariate polynomial is zero if and only if this polynomial is zero.
 -/
+@[simp]
 lemma leadingTerm_eq_zero_iff (p : MvPolynomial σ R) : m.leadingTerm p = 0 ↔ p = 0 := by
   simp only [leadingTerm, monomial_eq_zero, leadingCoeff_eq_zero_iff]
 
@@ -660,12 +661,14 @@ lemma leadingTerm_zero : m.leadingTerm (0 : MvPolynomial σ R) = 0 := by
   rw [leadingTerm_eq_zero_iff]
 
 /-- The degree of `f` equals to the degree of `leadingTerm f` -/
+@[simp]
 lemma degree_leadingTerm (f : MvPolynomial σ R) :
     m.degree (m.leadingTerm f) = m.degree f := by
   classical
   simp [leadingTerm, degree_monomial]
   simp_intro h
 
+@[simp]
 lemma leadingCoeff_leadingTerm (f : MvPolynomial σ R) :
     m.leadingCoeff (m.leadingTerm f) = m.leadingCoeff f := by
   simp [leadingTerm, leadingCoeff_monomial]
