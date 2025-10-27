@@ -356,22 +356,20 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c)
     rw [tendsto_mul_const_atTop_of_pos hc₀, tendsto_norm_atTop_iff_cobounded]
     exact tendsto_fst
 
+open Bornology Filter Set in
 /- The norm of `‖φ x ·‖` attains a minimum on `ℝ × ℝ`. -/
-open Bornology Filter in
-private lemma exists_isMinOn_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) Set.univ z := by
+private lemma exists_isMinOn_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) univ z := by
   -- use that `‖x - algebraMap ℝ F ·‖` has a minimum.
   obtain ⟨u, hu⟩ := exists_isMinOn_norm_sub_smul ℝ x
   rcases eq_or_lt_of_le (norm_nonneg (x - algebraMap ℝ F u)) with hc₀ | hc₀
-  · -- if this minimum is zero, use `(u, 0)`.
-    rw [eq_comm, norm_eq_zero, sub_eq_zero] at hc₀
-    exact ⟨(u, 0), fun z' ↦ by simp [φ, hc₀, sq, Algebra.smul_def]⟩
+    -- if this minimum is zero, use `(u, 0)`.
+  · rw [eq_comm, norm_eq_zero, sub_eq_zero] at hc₀
+    exact ⟨(u, 0), fun _ ↦ by simp [φ, hc₀, sq, Algebra.smul_def]⟩
   -- otherwise, use `tendsto_φ_cobounded`.
-  set c := ‖x - algebraMap ℝ F u‖
-  simp only [isMinOn_univ_iff]
+  simp only [isMinOn_univ_iff] at hu ⊢
   refine (continuous_φ x).norm.exists_forall_le_of_isBounded (0, 0) ?_
-  rw [isMinOn_univ_iff] at hu
-  simpa [isBounded_def, Set.compl_setOf, Set.Ioi] using
-    tendsto_norm_cobounded_atTop.comp (tendsto_φ_cobounded hc₀ hu) (Ioi_mem_atTop (‖φ x (0, 0)‖))
+  simpa [isBounded_def, compl_setOf, Ioi]
+    using tendsto_norm_cobounded_atTop.comp (tendsto_φ_cobounded hc₀ hu) (Ioi_mem_atTop _)
 
 open Algebra in
 /-- If `F` is a normed `ℝ`-algebra with a multiplicative norm (and such that `‖1‖ = 1`),
