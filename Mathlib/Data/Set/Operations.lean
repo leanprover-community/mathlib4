@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Kim Morrison, Patrick Massot, Kyle Miller,
 Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
+import Aesop
 import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
@@ -208,6 +209,14 @@ theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :
   rfl
 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
+
+theorem prod_image_left (f : α → γ) (s : Set α) (t : Set β) :
+    (f '' s) ×ˢ t = (fun x ↦ (f x.1, x.2)) '' s ×ˢ t := by
+  aesop
+
+theorem prod_image_right (f : α → γ) (s : Set α) (t : Set β) :
+    t ×ˢ (f '' s) = (fun x ↦ (x.1, f x.2)) '' t ×ˢ s := by
+  aesop
 
 end Prod
 
