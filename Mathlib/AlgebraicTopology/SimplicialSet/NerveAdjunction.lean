@@ -545,29 +545,25 @@ instance isIso_prodComparison_stdSimplex.{w} (n m : ℕ) :
   IsIso.of_isIso_fac_right (prodComparison_natural
     hoFunctor (stdSimplex.isoNerve n).hom (stdSimplex.isoNerve m).hom).symm
 
-lemma isIso_prodComparison_withSimplex {D : SSet.{u}} (X : SSet.{u})
+attribute [local instance]
+  CartesianMonoidalCategory.isLeftAdjoint_prod_functor in
+lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
     IsIso (prodComparison hoFunctor D X) := by
-  have : (prod.functor.obj D).IsLeftAdjoint := by
-    have : (MonoidalCategory.tensorLeft D).IsLeftAdjoint := inferInstance
-    exact Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
-  have : (prod.functor.obj (hoFunctor.obj D)).IsLeftAdjoint :=
-    Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
-  have : hoFunctor.IsLeftAdjoint := inferInstance
   have : IsIso (whiskerLeft (CostructuredArrow.proj uliftYoneda X ⋙ uliftYoneda)
-      (prodComparisonNatTrans hoFunctor D)) := by
+      (prodComparisonNatTrans hoFunctor.{u} D)) := by
     rw [NatTrans.isIso_iff_isIso_app]
     exact fun x ↦ H (x.left).len
-  exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans ..) _
+  exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans hoFunctor _) _
     (Presheaf.isColimitTautologicalCocone' X)
 
 instance isIso_prodComparison (X Y : SSet) :
-    IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_withSimplex _ fun m ↦ by
+    IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
     prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
   · ext <;> simp [← Functor.map_comp]
   suffices IsIso (prodComparison hoFunctor Δ[m] X) by infer_instance
-  exact isIso_prodComparison_withSimplex _ (isIso_prodComparison_simplices _)
+  exact isIso_prodComparison_of_stdSimplex _ (isIso_prodComparison_stdSimplex _)
 
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves binary products of simplicial sets `X` and
 `Y`. -/
