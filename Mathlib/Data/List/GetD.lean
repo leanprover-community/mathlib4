@@ -34,8 +34,8 @@ theorem getD_eq_getElem? (i : Fin l.length) : l.getD i d = l[i]?.get (by simp) :
   simp only [getD_eq_getElem?_getD, Fin.is_lt, getElem?_pos, Option.getD_some, Fin.getElem_fin,
     Option.get_some]
 
-theorem getD_eq_get (i : Fin l.length) : l.getD i d = l.get i := by
-  simp only [getD_eq_getElem?_getD, Fin.is_lt, getElem?_pos, Option.getD_some, get_eq_getElem]
+theorem getD_eq_get (i : Fin l.length) : l.getD i d = l.get i :=
+  getD_eq_getElem ..
 
 theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by
   simp only [getD_eq_getElem?_getD, getElem?_map, Option.getD_map]
