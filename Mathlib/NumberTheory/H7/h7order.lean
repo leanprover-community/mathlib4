@@ -356,7 +356,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
   (hf : AnalyticAt ℂ R z) (hf : ∀ z : ℂ, AnalyticAt ℂ R₁ z)
   (hR₁ : ∀ z, R z  = (z - z₀)^r * R₁ z) :
   ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, deriv^[k] R z =
-   (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by {
+   (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by { stop
       intros k hkr
       induction' k with k IH
       · use 0
@@ -369,7 +369,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
       · simp only [Function.iterate_succ, Function.comp_apply]
         obtain ⟨R₂, hR₂⟩ := IH (Nat.le_of_succ_le hkr)
         rw [change_deriv R]
-        use (R₂)
+        use (0)
         have : deriv (fun z => (z - z₀)^(r - k) *
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z =
              (z - z₀) ^ (r - (k + 1)) * (↑r.factorial / ↑(r - (k + 1)).factorial * R₁ z + (z - z₀) * R₂ z)
@@ -380,6 +380,21 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
               rw [← iteratedDeriv_eq_iterate]
               rw [← iteratedDeriv_eq_iterate] at hR₂
               rw [← iteratedDeriv_succ]
+              rw [deriv_fun_mul]
+              rw [deriv_fun_add]
+              rw [deriv_fun_mul]
+              rw [deriv_fun_mul]
+              simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
+                deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
+                deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
+              sorry
+              sorry
+              sorry
+              sorry
+              sorry
+              sorry
+              sorry
+              sorry
               sorry
             }
         rw [this];clear this
@@ -390,6 +405,8 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
         simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
           deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
           deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
+        sorry
+
 
 
 
@@ -434,7 +451,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
         --   }
 
         }
-#exit
+
 
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
   ∀ z₀ n (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤),
