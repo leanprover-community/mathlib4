@@ -589,10 +589,6 @@ instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
 noncomputable instance Monoidal : Monoidal hoFunctor :=
   Monoidal.ofChosenFiniteProducts hoFunctor
 
-/-- A product preserving functor between cartesian closed categories is lax monoidal. -/
-noncomputable instance laxMonoidal : LaxMonoidal hoFunctor := Monoidal.toLaxMonoidal
-
-
 end hoFunctor
 
 end
