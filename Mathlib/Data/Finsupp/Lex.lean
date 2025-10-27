@@ -45,8 +45,15 @@ theorem lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → P
 instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
 
+instance [LT α] [LT N] : LT (Colex (α →₀ N)) :=
+  ⟨fun f g ↦ Finsupp.Lex (· > ·) (· < ·) (ofColex f) (ofColex g)⟩
+
 theorem lex_lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
     a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
+  .rfl
+
+theorem colex_lt_iff [LT α] [LT N] {a b : Colex (α →₀ N)} :
+    a < b ↔ ∃ i, (∀ j, i < j → a j = b j) ∧ a i < b i :=
   .rfl
 
 theorem lex_lt_iff_of_unique [Preorder α] [LT N] [Unique α] {a b : Lex (α →₀ N)} :
