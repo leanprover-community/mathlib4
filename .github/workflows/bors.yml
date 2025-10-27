@@ -149,9 +149,8 @@ jobs:
 
           # Extract package names from lake-manifest.json and validate them
           # Only allow A-Z, a-z, 0-9, _, and - characters
-          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
-
           # Build the LEAN_SRC_PATH by appending each validated package
+          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
           for pkg in $PACKAGE_NAMES; do
             if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
               LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
