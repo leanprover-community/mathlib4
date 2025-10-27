@@ -451,14 +451,14 @@ theorem get_surjective_iff {l : List α} : l.get.Surjective ↔ (∀ x, x ∈ l)
 
 @[simp]
 theorem getElem_fin_surjective_iff {l : List α} :
-    (fun (n : Fin l.length) ↦ l[n]).Surjective ↔ (∀ x, x ∈ l) :=
+    (fun (n : Fin l.length) ↦ l[n.val]).Surjective ↔ (∀ x, x ∈ l) :=
   get_surjective_iff
 
 @[simp]
 theorem getElem?_surjective_iff {l : List α} : (fun (n : ℕ) ↦ l[n]?).Surjective ↔ (∀ x, x ∈ l) := by
   refine ⟨fun h x ↦ mem_iff_getElem?.mpr <| h x, fun h x ↦ ?_⟩
   cases x with
-  | none => exact ⟨l.length, getElem?_eq_none le_rfl⟩
+  | none => exact ⟨l.length, getElem?_eq_none <| Nat.le_refl _⟩
   | some x => exact mem_iff_getElem?.mp <| h x
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
