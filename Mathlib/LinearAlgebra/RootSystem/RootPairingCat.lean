@@ -53,7 +53,7 @@ attribute [instance] RootPairingCat.coweightIsAddCommGroup RootPairingCat.coweig
 
 namespace RootPairingCat
 
-instance category : Category.{v, max (v+1) u} (RootPairingCat.{v} R) where
+instance category : Category.{v, max (v + 1) u} (RootPairingCat.{v} R) where
   Hom P Q := RootPairing.Hom P.pairing Q.pairing
   id P := RootPairing.Hom.id P.pairing
   comp f g := RootPairing.Hom.comp g f
