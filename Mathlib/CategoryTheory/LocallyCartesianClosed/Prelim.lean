@@ -24,6 +24,9 @@ choice of pullback functor `Over X ⥤ Over Y` along `f` as a right adjoint to `
 - `Over.ChosenPullback.isPullback` proves that the reindexing squares of an instance of
   `ChosenPullback g` are pullback squares.
 
+- `binaryFanIsBinaryProduct` shows that the binary fan constructed from the projections of
+  `ChosenPullback` is a binary product in `Over X`, and computably so!
+
 - We prove that in cartesian monoidal categories, morphisms to the terminal object and the product
   projections have chosen pullbacks.
 
@@ -276,7 +279,8 @@ def binaryFanIsBinaryProduct :
 
 attribute [local instance] Over.cartesianMonoidalCategory
 
-/-- The object `Σ_ Y (Δ_ Y Z)` is isomorphic to the binary product `Y ⊗ Z` in `Over X`. -/
+/-- The push-pull object `Σ_ Y (Δ_ Y Z)` is isomorphic to the cartesian product `Y ⊗ Z`
+in the slice category `Over X`. -/
 @[simps!]
 noncomputable def mapPullbackIsoProd [HasPullbacks C] :
     (map Z.hom).obj ((pullback Z.hom).obj Y) ≅ Y ⊗ Z :=
@@ -284,8 +288,8 @@ noncomputable def mapPullbackIsoProd [HasPullbacks C] :
     (binaryFanIsBinaryProduct Y Z) (pullback.isLimit _ _).pullbackConeEquivBinaryFanFunctor
 
 attribute [local instance] ofHasPullbacksAlong in
-/-- Given a morphism `f : X' ⟶ X` and an object `Y` over `X`, the object
-`(map f).obj ((pullback f).obj Y)` is isomorphic to the binary product of `Over.mk f` and `Y`. -/
+/-- Given a morphism `g : W ⟶ X` and an object `Y` over `X`, the object
+`(map g).obj ((pullback g).obj Y)` is isomorphic to the cartesian product of `Y` and `Over.mk f`. -/
 noncomputable def mapPullackIsoProd' [HasPullbacks C] {W : C} (g : W ⟶ X) :
     (map g).obj ((pullback g).obj Y) ≅ Y ⊗ Over.mk g :=
   mapPullbackIsoProd Y (Over.mk g)
@@ -314,8 +318,8 @@ variable {X : C}
 
 attribute [local instance] Over.cartesianMonoidalCategory
 attribute [local instance] ofHasPullbacksAlong in
-/-- The pull-push composition `pullback Y.hom ⋙ map Y.hom` is naturally isomorphic
-to the left tensor product functor `Y ⊗ _` in `Over X`. -/
+/-- The pull-push composition `pullback Z.hom ⋙ map Z.hom` is naturally isomorphic
+to the right tensor product functor `_ ⊗ Z` in the slice category `Over X`. -/
 noncomputable def pullbackMapNatIsoTensorLeft [HasPullbacks C] (Z : Over X) :
     pullback Z.hom ⋙ map Z.hom ≅ tensorRight Z :=
   NatIso.ofComponents
