@@ -570,8 +570,9 @@ jobs:
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
+        # and that miscellaneous executables still work
         run: |
-          lake build Batteries Qq Aesop ProofWidgets Plausible
+          lake build Batteries Qq Aesop ProofWidgets Plausible pole unused
 
       # temporarily comment out
       # - name: build AesopTest (nightly-testing only)
