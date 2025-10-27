@@ -30,8 +30,7 @@ noncomputable def Functor.mapShiftedHom
     ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) n →
     ShiftedHom ((singleFunctor D 0).obj (F.obj X)) ((singleFunctor D 0).obj (F.obj Y)) n :=
   fun f ↦ (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫
-    f.map F.mapDerivedCategory ≫ ((shiftFunctor (DerivedCategory D) n).map
-      ((F.mapDerivedCategorySingleFunctor 0).hom.app Y))
+    f.map F.mapDerivedCategory ≫ ((F.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦n⟧'
 
 /-- The map between `Ext` induced by `F.mapShiftedHomAddHom`. -/
 noncomputable def Functor.mapExt [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
@@ -85,7 +84,7 @@ instance [F.Linear R] : Functor.Linear R (F.mapHomotopyCategory (ComplexShape.up
       Functor.map_smul]
     rfl
 
-instance [F.Linear R] [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] :
+instance hi [F.Linear R] [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] :
     F.mapDerivedCategory.Linear R := by
   rw [← Localization.functor_linear_iff DerivedCategory.Qh
     (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)) R

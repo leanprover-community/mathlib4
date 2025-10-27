@@ -242,4 +242,20 @@ instance NatTrans.commShift_iso_hom_of_localization :
 
 end
 
+namespace LocalizerMorphism
+
+variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+  {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂} (Φ : LocalizerMorphism W₁ W₂)
+  {M : Type*} [AddMonoid M] [HasShift C₁ M] [HasShift C₂ M]
+  [W₁.IsCompatibleWithShift M] [W₂.IsCompatibleWithShift M] [Φ.functor.CommShift M]
+
+variable {D₁ D₂ : Type*} [Category D₁] [Category D₂]
+  (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁] (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
+  [HasShift D₁ M] [HasShift D₂ M] [L₁.CommShift M] [L₂.CommShift M]
+
+noncomputable instance : (Φ.localizedFunctor L₁ L₂).CommShift M :=
+  Functor.commShiftOfLocalization L₁ W₁ M (Φ.functor ⋙ L₂) _
+
+end LocalizerMorphism
+
 end CategoryTheory
