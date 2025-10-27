@@ -121,8 +121,7 @@ lemma integrable_thickenedIndicator {Ω : Type*} {mΩ : MeasurableSpace Ω}
     {δ : ℝ} (δ_pos : 0 < δ) :
     Integrable (fun ω ↦ (thickenedIndicator δ_pos F ω : ℝ)) μ := by
   refine .of_bound (by fun_prop) 1 (ae_of_all _ fun x ↦ ?_)
-  simp only [thickenedIndicator_apply, Real.norm_eq_abs, NNReal.abs_eq, NNReal.coe_le_one]
-  exact thickenedIndicator_le_one δ_pos F x
+  simpa using thickenedIndicator_le_one δ_pos F x
 
 /-- The integrals of thickened indicators of a closed set against a finite measure tend to the
 measure of the closed set if the thickening radii tend to zero. -/
