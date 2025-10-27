@@ -60,19 +60,23 @@ section maximalRealSubfield
 A number field `K` is `CM` if `K` is a totally complex quadratic extension of its maximal
 real subfield `K⁺`.
 -/
-class IsCMField (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] : Prop where
-  is_quadratic : IsQuadraticExtension (maximalRealSubfield K) K
+class IsCMField (K : Type*) [Field K] [NumberField K] : Prop where
+  [to_isTotallyComplex : IsTotallyComplex K]
+  [is_quadratic : IsQuadraticExtension (maximalRealSubfield K) K]
 
 namespace IsCMField
 
 open ComplexEmbedding
 
-variable (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] [IsCMField K]
+variable (K : Type*) [Field K] [NumberField K] [IsCMField K]
 
 local notation3 "K⁺" => maximalRealSubfield K
 
 instance isQuadraticExtension : IsQuadraticExtension K⁺ K :=
   IsCMField.is_quadratic
+
+instance isTotallyComplex : IsTotallyComplex K :=
+  IsCMField.to_isTotallyComplex
 
 theorem card_infinitePlace_eq_card_infinitePlace :
     Fintype.card (InfinitePlace K⁺) = Fintype.card (InfinitePlace K) := by
@@ -251,7 +255,7 @@ by the complex conjugation, see `IsCMField.unitsComplexConj_eq_self_iff`.
 -/
 def realUnits : Subgroup (𝓞 K)ˣ := (Units.map (algebraMap (𝓞 K⁺) (𝓞 K)).toMonoidHom).range
 
-omit [IsTotallyComplex K] [IsCMField K] in
+omit [IsCMField K] in
 theorem mem_realUnits_iff (u : (𝓞 K)ˣ) :
     u ∈ realUnits K ↔ ∃ v : (𝓞 K⁺)ˣ, algebraMap (𝓞 K⁺) (𝓞 K) v = u := by
   simp [realUnits, MonoidHom.mem_range, RingHom.toMonoidHom_eq_coe, Units.ext_iff]
