@@ -295,11 +295,11 @@ theorem natDegree_map_eq_of_injective {f : R →+* S} (hf : Function.Injective f
     (p.map f).natDegree = p.natDegree :=
   natDegree_eq_of_degree_eq <| degree_map_eq_of_injective hf _
 
-theorem leadingCoeff_map_eq_of_injective {f : R →+* S} (hf : Function.Injective f)
+theorem leadingCoeff_map_of_injective {f : R →+* S} (hf : Function.Injective f)
     (p : Polynomial R) : (p.map f).leadingCoeff = f p.leadingCoeff := by
   grind [leadingCoeff, natDegree_map_eq_of_injective, coeff_map]
 
-theorem nextCoeff_map_eq_of_injective {f : R →+* S} (hf : Function.Injective f) (p : Polynomial R) :
+theorem nextCoeff_map {f : R →+* S} (hf : Function.Injective f) (p : Polynomial R) :
     (p.map f).nextCoeff = f p.nextCoeff := by
   simp only [hf, nextCoeff, natDegree_map_eq_of_injective]
   split_ifs <;> simp

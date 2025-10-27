@@ -272,11 +272,11 @@ theorem natDegree_map (f : R →+* S) : (p.map f).natDegree = p.natDegree :=
 
 @[simp]
 theorem leadingCoeff_map (f : R →+* S) : (p.map f).leadingCoeff = f p.leadingCoeff :=
-  leadingCoeff_map_eq_of_injective f.injective _
+  leadingCoeff_map_of_injective f.injective _
 
 theorem nextCoeff_map_eq_from_simpleRing (p : R[X]) (f : R →+* S) :
     (p.map f).nextCoeff = f p.nextCoeff :=
-  nextCoeff_map_eq_of_injective f.injective _
+  nextCoeff_map f.injective _
 
 theorem monic_map_iff {f : R →+* S} {p : R[X]} :
     (p.map f).Monic ↔ p.Monic :=
