@@ -631,29 +631,15 @@ of all polynomials in B, excluding zero.
 -/
 lemma image_leadingTerm_sdiff_singleton_zero (B : Set (MvPolynomial σ R)) :
     m.leadingTerm '' (B \ {0}) = (m.leadingTerm '' B) \ {0} := by
-  apply subset_antisymm
-  · intro p
-    simp
-    intro q hq hq' hpq
-    exact ⟨⟨q, hq, hpq⟩, hpq ▸ (m.leadingTerm_eq_zero_iff _).not.mpr hq'⟩
-  · intro p
-    simp
-    intro q hq hpq hp
-    rw [←hpq, MonomialOrder.leadingTerm_eq_zero_iff] at hp
-    exact ⟨q, ⟨hq, hp⟩, hpq⟩
+  aesop
 
 /--
 The leading terms of a Set `B` inserted zero polynomial equal to leading terms of `B`
 inserted zero polynomial
 -/
 lemma image_leadingTerm_insert_zero (B : Set (MvPolynomial σ R)) :
-  m.leadingTerm '' (insert (0 : MvPolynomial σ R) B) = insert 0 (m.leadingTerm '' B) := by
-  unfold leadingTerm
-  apply subset_antisymm
-  · simp_intro p hp
-    rwa [Eq.comm (a := p) (b := 0)]
-  · simp_intro p hp
-    rwa [Eq.comm (a := 0) (b := p)]
+    m.leadingTerm '' (insert (0 : MvPolynomial σ R) B) = insert 0 (m.leadingTerm '' B) := by
+  aesop
 
 /-- The leading term of the zero polynomial is zero -/
 @[simp]
@@ -665,7 +651,8 @@ lemma leadingTerm_zero : m.leadingTerm (0 : MvPolynomial σ R) = 0 := by
 lemma degree_leadingTerm (f : MvPolynomial σ R) :
     m.degree (m.leadingTerm f) = m.degree f := by
   classical
-  simp [leadingTerm, degree_monomial]
+  -- simp? [leadingTerm, degree_monomial]
+  simp only [leadingTerm, degree_monomial, leadingCoeff_eq_zero_iff, ite_eq_right_iff]
   simp_intro h
 
 @[simp]
@@ -732,7 +719,8 @@ theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
     m.degree (f - m.leadingTerm f) ≺[m] m.degree f ↔ m.degree f ≠ 0 := by
   constructor
   · intro h h'
-    simp [h'] at h
+    -- simp? [h'] at h
+    simp only [h', map_zero] at h
     exact not_lt_bot h
   · intro h
     by_cases hl : f - m.leadingTerm f = 0
