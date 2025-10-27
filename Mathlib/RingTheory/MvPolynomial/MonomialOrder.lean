@@ -625,6 +625,11 @@ The leading term in a multivariate polynomial is zero if and only if this polyno
 lemma leadingTerm_eq_zero_iff (p : MvPolynomial σ R) : m.leadingTerm p = 0 ↔ p = 0 := by
   simp only [leadingTerm, monomial_eq_zero, leadingCoeff_eq_zero_iff]
 
+/-- The leading term of the zero polynomial is zero -/
+@[simp]
+lemma leadingTerm_zero : m.leadingTerm (0 : MvPolynomial σ R) = 0 := by
+  rw [leadingTerm_eq_zero_iff]
+
 /--
 The leading terms of non-zero polynomials within a set `B` is equal to the leading terms
 of all polynomials in B, excluding zero.
@@ -640,11 +645,6 @@ inserted zero polynomial
 lemma image_leadingTerm_insert_zero (B : Set (MvPolynomial σ R)) :
     m.leadingTerm '' (insert (0 : MvPolynomial σ R) B) = insert 0 (m.leadingTerm '' B) := by
   aesop
-
-/-- The leading term of the zero polynomial is zero -/
-@[simp]
-lemma leadingTerm_zero : m.leadingTerm (0 : MvPolynomial σ R) = 0 := by
-  rw [leadingTerm_eq_zero_iff]
 
 /-- The degree of `f` equals to the degree of `leadingTerm f` -/
 @[simp]
