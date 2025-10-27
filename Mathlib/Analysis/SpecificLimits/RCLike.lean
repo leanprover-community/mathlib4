@@ -30,22 +30,10 @@ theorem tendsto_ofReal_atBot_cobounded :
     Tendsto ofReal atBot (Bornology.cobounded 𝕜) :=
   tendsto_norm_atTop_iff_cobounded.mp (mod_cast tendsto_abs_atBot_atTop)
 
-variable {𝕜}
-
-theorem tendsto_add_mul_div_add_mul_atTop_nhds (a b c : 𝕜) {d : 𝕜} (hd : d ≠ 0) :
-    Tendsto (fun k : ℕ ↦ (a + c * k) / (b + d * k)) atTop (𝓝 (c / d)) := by
-  apply Filter.Tendsto.congr'
-  case f₁ => exact fun k ↦ (a * (↑k)⁻¹ + c) / (b * (↑k)⁻¹ + d)
-  · refine (eventually_ne_atTop 0).mp (Eventually.of_forall ?_)
-    intro h hx
-    field_simp (discharger := norm_cast)
-  · apply Filter.Tendsto.div _ _ hd
-    all_goals
-      apply zero_add (_ : 𝕜) ▸ Filter.Tendsto.add_const _ _
-      apply mul_zero (_ : 𝕜) ▸ Filter.Tendsto.const_mul _ _
-      exact tendsto_inv_atTop_nhds_zero_nat
-
 end RCLike
 
-@[deprecated (since := "2025-08-15")]
+@[deprecated (since := "2025-10-27")]
 alias RCLike.tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
+
+@[deprecated (since := "2025-10-27")]
+alias RCLike.tendsto_add_mul_div_add_mul_atTop_nhds := tendsto_add_mul_div_add_mul_atTop_nhds

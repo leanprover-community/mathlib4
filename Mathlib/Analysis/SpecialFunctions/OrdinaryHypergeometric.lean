@@ -204,6 +204,6 @@ theorem ordinaryHypergeometricSeries_radius_eq_one
         (c + k) / (a + k) * ((1 + k) / (b + k)) := by field_simp
   simp_rw [this]
   apply (mul_one (1 : 𝕂)) ▸ Filter.Tendsto.mul <;>
-  convert RCLike.tendsto_add_mul_div_add_mul_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
+  convert tendsto_add_mul_div_add_mul_atTop_nhds _ _ (1 : 𝕂) one_ne_zero <;> simp
 
 end RCLike
