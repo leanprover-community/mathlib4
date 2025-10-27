@@ -1,5 +1,17 @@
 import Mathlib.RingTheory.PowerSeries.Inverse
 
+/-!
+# Monotone lattice paths and a ballot-style subdiagonal condition
+
+This file defines and studies monotone lattice paths.  It introduces:
+* `pathCount`, `pathCountFrom` and their closed forms,
+* a Dyck/ballot-style subdiagonal condition on words (`SubdiagProp`) and the corresponding set.
+
+## Main statements
+* `pathCount_eq_closed : pathCount m n = (m + n).choose m`
+* `pathCountFrom_eq_closed`
+-/
+
 open Nat
 open Finset
 open scoped BigOperators
@@ -45,8 +57,6 @@ theorem pathCount_eq_closed : ∀ m n, pathCount m n = (m + n).choose m := by
 lemma pathCount_eq_closed_n_n : ∀ n, pathCount n n = (2 * n).choose n := by
   intro n
   simpa [two_mul] using (pathCount_eq_closed n n)
-
-/-! # Words over two-step alphabet and a ballot-style subdiagonal condition -/
 
 /-- A step is either horizontal `H` or vertical `V` (encoded as `Bool`). -/
 abbrev Step := Bool
