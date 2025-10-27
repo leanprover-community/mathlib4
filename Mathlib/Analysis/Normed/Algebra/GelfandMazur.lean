@@ -289,11 +289,10 @@ is constant. -/
 private lemma norm_φ_eq_norm_φ_of_isMinOn {x : F} {z : ℝ × ℝ} (h : IsMinOn (‖φ x ·‖) Set.univ z)
     (H : ‖φ x z‖ ≠ 0) (w : ℝ × ℝ) :
     ‖φ x w‖ = ‖φ x z‖ := by
-  set M : ℝ := ‖φ x z‖ with hMdef
+  set M : ℝ := ‖φ x z‖ with hM
   have hM₀ : 0 < M := by positivity
   -- we use the key result `norm_eq_of_isMinOn_of_forall_le`
-  refine norm_eq_of_isMinOn_of_forall_le hM₀ hMdef.symm h (continuous_φ x)
-    (fun {w} u hw n hn ↦ ?_) w
+  refine norm_eq_of_isMinOn_of_forall_le hM₀ hM.symm h (continuous_φ x) (fun {w} u hw n hn ↦ ?_) w
   -- show `‖φ x u‖ ≤ M * (1 + (‖φ x u - φ x w‖ / M) ^ n)`
   have HH : M * (1 + (‖φ x u - φ x w‖ / M) ^ n) = (M ^ n + ‖φ x u - φ x w‖ ^ n) / M ^ (n - 1) := by
     simp only [field, div_pow, ← pow_succ', Nat.sub_add_cancel hn]
@@ -312,12 +311,12 @@ private lemma norm_φ_eq_norm_φ_of_isMinOn {x : F} {z : ℝ × ℝ} (h : IsMinO
   rw [show 2 * n - 2 = 2 * (n - 1) by grind] at hp
   -- use that `‖aeval p x‖ ≥ M ^ (n - 1)`.
   grw [le_aeval_of_isMonicOfDegree hM₀.le (isMinOn_univ_iff.mp h) hp]
-  rw [← sub_eq_iff_eq_add, eq_comm, mul_comm] at hrel
-  apply_fun (‖aeval x ·‖) at hrel
-  rw [map_mul, norm_mul, map_sub, aeval_eq_φ x u] at hrel
   -- from (*) above, deduce
   -- `‖φ x u‖ * ‖(aeval x) p‖ = ‖(aeval x) (q w ^ n) - (aeval x) ((q w - q u) ^ n)‖`
   -- and use that.
+  rw [← sub_eq_iff_eq_add, eq_comm, mul_comm] at hrel
+  apply_fun (‖aeval x ·‖) at hrel
+  rw [map_mul, norm_mul, map_sub, aeval_eq_φ x u] at hrel
   rw [hrel, norm_sub_rev (φ ..)]
   exact (norm_sub_le ..).trans <| by simp [q, aeval_eq_φ, hw]
 
