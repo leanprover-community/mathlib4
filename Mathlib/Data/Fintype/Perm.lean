@@ -141,7 +141,7 @@ def fintypePerm [Fintype α] : Fintype (Perm α) :=
 Helper function for `Equiv.instFintype`. We make this irreducible because otherwise
 it can easily produce large terms that trigger "deep recursion" errors.
 -/
-irreducible_def Equiv.instFintype_aux [Fintype α] [Fintype β]
+irreducible_def Equiv.instFintypeAux [Fintype α] [Fintype β]
     (h : Fintype.card β = Fintype.card α) : Fintype (α ≃ β) :=
   Trunc.recOnSubsingleton (Fintype.truncEquivFin α) fun eα =>
     Trunc.recOnSubsingleton (Fintype.truncEquivFin β) fun eβ =>
@@ -149,7 +149,7 @@ irreducible_def Equiv.instFintype_aux [Fintype α] [Fintype β]
         (equivCongr (Equiv.refl α) (eα.trans (Eq.recOn h eβ.symm)) : α ≃ α ≃ (α ≃ β))
 
 instance Equiv.instFintype [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
-  if h : Fintype.card β = Fintype.card α then Equiv.instFintype_aux h
+  if h : Fintype.card β = Fintype.card α then Equiv.instFintypeAux h
   else ⟨∅, fun x => False.elim (h (Fintype.card_eq.2 ⟨x.symm⟩))⟩
 
 @[to_additive]
