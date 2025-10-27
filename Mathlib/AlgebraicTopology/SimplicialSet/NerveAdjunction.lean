@@ -540,7 +540,7 @@ instance (C D : Type v) [Category.{v} C] [Category.{v} D] :
     exact IsIso.of_isIso_fac_right (prodComparison_comp hoFunctor nerveFunctor).symm
   exact isIso_of_fully_faithful nerveFunctor _
 
-instance isIso_prodComparison_simplices.{w} (n m : ℕ) :
+instance isIso_prodComparison_stdSimplex.{w} (n m : ℕ) :
     IsIso (prodComparison hoFunctor (Δ[n] : SSet.{w}) Δ[m]) :=
   IsIso.of_isIso_fac_right (prodComparison_natural
     hoFunctor (stdSimplex.isoNerve n).hom (stdSimplex.isoNerve m).hom).symm
