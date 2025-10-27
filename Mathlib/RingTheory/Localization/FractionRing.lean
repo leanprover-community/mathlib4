@@ -573,10 +573,7 @@ lemma algebraMap_liftAlgebra :
   rfl
 
 instance {R₀} [SMul R₀ R] [IsScalarTower R₀ R R] [SMul R₀ K] [IsScalarTower R₀ R K] :
-    IsScalarTower R₀ (FractionRing R) K where
-  smul_assoc r₀ r k := r.ind fun ⟨r, s⟩ ↦ by
-    simp_rw [Localization.smul_mk, Algebra.smul_def, Localization.mk_eq_mk',
-      algebraMap_liftAlgebra, IsFractionRing.lift_mk', mul_comm_div, ← Algebra.smul_def, smul_assoc]
+    IsScalarTower R₀ (FractionRing R) K := IsScalarTower.to₁₃₄ _ R _ _
 
 end liftAlgebra
 
