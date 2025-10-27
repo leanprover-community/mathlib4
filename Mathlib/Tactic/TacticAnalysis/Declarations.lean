@@ -189,12 +189,14 @@ register_option linter.tacticAnalysis.mergeWithGrind : Bool := {
   defValue := false
 }
 
+private abbrev mergeWithGrindAllowed : Std.HashSet Name := { `«tactic#adaptation_note_» }
+
 @[tacticAnalysis linter.tacticAnalysis.mergeWithGrind,
   inherit_doc linter.tacticAnalysis.mergeWithGrind]
 def mergeWithGrind : TacticAnalysis.Config where
   run seq := do
     if let #[(preCtx, preI), (_postCtx, postI)] := seq[0:2].array then
-      if postI.stx.getKind == ``Lean.Parser.Tactic.grind then
+      if postI.stx.getKind == ``Lean.Parser.Tactic.grind && preI.stx.getKind ∉ mergeWithGrindAllowed then
         if let [goal] := preI.goalsBefore then
           let goals ← try
             preCtx.runTacticCode preI goal postI.stx

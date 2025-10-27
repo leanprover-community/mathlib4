@@ -143,10 +143,8 @@ variable [Preorder α] [Preorder β] [FunLike F α β] [OrderHomClass F α β]
 
 protected theorem monotone (f : F) : Monotone f := fun _ _ => map_rel f
 
+@[gcongr]
 protected theorem mono (f : F) : Monotone f := fun _ _ => map_rel f
-
-@[gcongr] protected lemma GCongr.mono (f : F) {a b : α} (hab : a ≤ b) : f a ≤ f b :=
-  OrderHomClass.mono f hab
 
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` into an actual
 `OrderHom`. This is declared as the default coercion from `F` to `α →o β`. -/
@@ -1220,3 +1218,10 @@ lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder
     rw [hf.le_iff_ge]
 
 end DenselyOrdered
+
+universe v u in
+/-- The bijection `ULift.{v} α ≃ α` as an isomorphism of orders. -/
+@[pp_with_univ, simps!]
+def ULift.orderIso {α : Type u} [Preorder α] :
+    ULift.{v} α ≃o α :=
+  Equiv.ulift.toOrderIso (fun _ _ ↦ id) (fun _ _ ↦ id)
