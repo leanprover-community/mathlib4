@@ -54,7 +54,7 @@ def sylvester (f g : R[X]) (m n : ℕ) : Matrix (Fin (m + n)) (Fin (m + n)) R :=
 
 variable (f g : R[X]) (m n : ℕ)
 
-@[simp] theorem sylvester_C_left :
+@[simp] theorem sylvester_zero_left_deg :
     sylvester f g 0 m = Matrix.diagonal (fun _ ↦ f.coeff 0) :=
   Matrix.ext fun i j ↦ j.addCases nofun fun j ↦ by
     rw [sylvester, Matrix.of_apply, Fin.addCases_right, Matrix.diagonal_apply]
@@ -163,7 +163,7 @@ lemma resultant_comm : resultant f g m n = (-1) ^ (m * n) * resultant g f n m :=
   rw [resultant_comm]; simp
 
 /-- `Res(a, g) = a ^ deg g` -/
-theorem resultant_C_zero_right (r : R) : resultant (C r) g 0 m = r ^ m := by simp
+theorem resultant_C_zero_right (r : R) : resultant f (C r) m 0 = r ^ m := by simp
 
 @[simp]
 theorem resultant_zero_right : resultant f 0 m n = 0 ^ m * f.coeff 0 ^ n := by
