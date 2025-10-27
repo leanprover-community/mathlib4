@@ -35,9 +35,10 @@ def fib (n : ℤ) : ℤ :=
 @[simp] theorem fib_neg_two : fib (-2) = -1 := rfl
 theorem fib_of_nonneg {n : ℤ} (hn : 0 ≤ n) : fib n = n.toNat.fib := by simp [fib, hn]
 theorem fib_of_odd {n : ℤ} (hn : Odd n) : fib n = (natAbs n).fib := by grind [fib]
-@[simp] theorem fib_two_mul_add_one {n : ℤ} :
-    fib (2 * n + 1) = (natAbs (2 * n + 1)).fib := fib_of_odd <| odd_two_mul_add_one n
-theorem fib_two_mul_add_one_nonneg {n : ℤ} : 0 ≤ fib (2 * n + 1) := by simp
+theorem fib_two_mul_add_one {n : ℤ} : fib (2 * n + 1) = (natAbs (2 * n + 1)).fib :=
+  fib_of_odd <| odd_two_mul_add_one n
+theorem fib_two_mul_add_one_nonneg {n : ℤ} : 0 ≤ fib (2 * n + 1) := by
+  simp [fib_two_mul_add_one]
 
 theorem fib_neg_natCast (n : ℕ) : fib (-n) = (-1) ^ (n + 1) * n.fib := by
   rcases n.even_or_odd with (hn | hn)
@@ -68,12 +69,10 @@ theorem fib_eq_fib_add_two_sub_fib_add_one (n : ℤ) :
     fib n = fib (n + 2) - fib (n + 1) := by
   simp only [fib_add_two, add_sub_cancel_right]
 
-theorem fib_add_one (n : ℤ) :
-    fib (n + 1) = fib (n + 2) - fib n := by
+theorem fib_add_one (n : ℤ) : fib (n + 1) = fib (n + 2) - fib n := by
   simp only [fib_add_two, add_sub_cancel_left]
 
-@[simp] theorem fib_eq_zero {n : ℤ} :
-    fib n = 0 ↔ n = 0 := by
+@[simp] theorem fib_eq_zero {n : ℤ} : fib n = 0 ↔ n = 0 := by
   rcases n with (n | n)
   · simp
   · rw [show (negSucc n) = -((n + 1 : ℕ) : ℤ) by rfl, fib_neg_natCast]
