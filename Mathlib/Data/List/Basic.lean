@@ -446,14 +446,14 @@ theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp [mem_iff_getElem, @forall_swap α]
 
-theorem surjective_get_iff {l : List α} : l.get.Surjective ↔ (∀ x, x ∈ l) :=
+theorem get_surjective_iff {l : List α} : l.get.Surjective ↔ (∀ x, x ∈ l) :=
   forall_congr' fun _ ↦ mem_iff_get.symm
 
-theorem surjective_getElem_fin_iff {l : List α} :
+theorem getElem_fin_surjective_iff {l : List α} :
     (fun (n : Fin l.length) ↦ l[n]).Surjective ↔ (∀ x, x ∈ l) :=
-  surjective_get_iff
+  get_surjective_iff
 
-theorem surjective_getElem?_iff {l : List α} : (fun (n : ℕ) ↦ l[n]?).Surjective ↔ (∀ x, x ∈ l) := by
+theorem getElem?_surjective_iff {l : List α} : (fun (n : ℕ) ↦ l[n]?).Surjective ↔ (∀ x, x ∈ l) := by
   refine ⟨fun h x ↦ mem_iff_getElem?.mpr <| h x, fun h x ↦ ?_⟩
   cases x with
   | none => exact ⟨l.length, getElem?_eq_none le_rfl⟩
