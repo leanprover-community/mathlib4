@@ -117,24 +117,24 @@ open Polynomial
 
 namespace NormedAlgebra
 
-open Filter Topology in
+open Filter Topology Set in
 /- The key step: show that the norm of a suitable function is constant if the norm takes
 a positive minimum and condition `H` below is satisfied. -/
 private lemma norm_eq_of_isMinOn_of_forall_le {X E : Type*} [TopologicalSpace X]
     [PreconnectedSpace X] [SeminormedAddCommGroup E] {f : X → E} {M : ℝ} {x : X} (hM : 0 < M)
-    (hx : ‖f x‖ = M) (h : IsMinOn (‖f ·‖) Set.univ x) (hf : Continuous f)
+    (hx : ‖f x‖ = M) (h : IsMinOn (‖f ·‖) univ x) (hf : Continuous f)
     (H : ∀ {y} z, ‖f y‖ = M → ∀ n > 0, ‖f z‖ ≤ M * (1 + (‖f z - f y‖ / M) ^ n)) (y : X) :
     ‖f y‖ = M := by
-  suffices {y | ‖f y‖ = M} = Set.univ by simpa only [← this, hx] using Set.mem_univ y
-  refine IsClopen.eq_univ ⟨isClosed_eq (by fun_prop) (by fun_prop), ?_⟩ <| Set.nonempty_of_mem hx
+  suffices {y | ‖f y‖ = M} = univ by simpa only [← this, hx] using mem_univ y
+  refine IsClopen.eq_univ ⟨isClosed_eq (by fun_prop) (by fun_prop), ?_⟩ <| nonempty_of_mem hx
   rw [isOpen_iff_eventually]
   intro w hw
   filter_upwards [mem_map.mp <| hf.tendsto w (Metric.ball_mem_nhds (f w) hM)] with u hu
-  simp only [Set.mem_preimage, Metric.mem_ball, dist_eq_norm, ← div_lt_one₀ hM] at hu
+  simp only [mem_preimage, Metric.mem_ball, dist_eq_norm, ← div_lt_one₀ hM] at hu
   refine le_antisymm ?_ (hx ▸ isMinOn_univ_iff.mp h u)
   suffices Tendsto (fun n : ℕ ↦ M * (1 + (‖f u - f w‖ / M) ^ n)) atTop (𝓝 (M * (1 + 0))) by
     refine ge_of_tendsto (by simpa) ?_
-    filter_upwards [Filter.Ioi_mem_atTop 0] with n hn
+    filter_upwards [Ioi_mem_atTop 0] with n hn
     exact H u hw n hn
   exact tendsto_pow_atTop_nhds_zero_of_lt_one (by positivity) hu |>.const_add 1 |>.const_mul M
 
