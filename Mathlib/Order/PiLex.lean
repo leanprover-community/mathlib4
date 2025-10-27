@@ -49,14 +49,6 @@ basic API, just in case -/
 /-- The notation `Πₗ i, α i` refers to a pi type equipped with the lexicographic order. -/
 notation3 (prettyPrint := false) "Πₗ " (...) ", " r:(scoped p => Lex (∀ i, p i)) => r
 
-@[simp]
-theorem toLex_apply (x : ∀ i, β i) (i : ι) : toLex x i = x i :=
-  rfl
-
-@[simp]
-theorem ofLex_apply (x : Lex (∀ i, β i)) (i : ι) : ofLex x i = x i :=
-  rfl
-
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
   let h' := Pi.lt_def.1 hlt
@@ -95,6 +87,16 @@ instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
 
 instance [LT ι] [∀ a, LT (β a)] : LT (Colex (∀ i, β i)) :=
   ⟨Pi.Lex (· > ·) (· < ·)⟩
+
+-- If `Lex` and `Colex` are ever made into one-field structures, the `CoeFun` instance will actually
+-- fire. This will make `x i` syntactically equal to `ofLex x i` for `x : Πₗ i, α i`, thus making
+-- the following theorems redundant.
+
+@[simp] theorem toLex_apply (x : ∀ i, β i) (i : ι) : toLex x i = x i := rfl
+@[simp] theorem ofLex_apply (x : Lex (∀ i, β i)) (i : ι) : ofLex x i = x i := rfl
+
+@[simp] theorem toColex_apply (x : ∀ i, β i) (i : ι) : toColex x i = x i := rfl
+@[simp] theorem ofColex_apply (x : Colex (∀ i, β i)) (i : ι) : ofColex x i = x i := rfl
 
 instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
     IsStrictOrder (Lex (∀ i, β i)) (· < ·) where
