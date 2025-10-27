@@ -22,6 +22,7 @@ We provide a formalization of proofs of the following versions of the *Gelfand-M
   with multiplicative norm is isomorphic to `ℂ` as a `ℂ`-algebra.
 * `NormedAlgebra.Real.nonempty_algEquiv_or`: if a field `F` is a normed `ℝ`-algebra,
   then `F` is isomorphic as an `ℝ`-algebra either to `ℝ` or to `ℂ`.
+
   With some additional work (TODO), this implies a
   [Theorem of Ostrowski](https://en.wikipedia.org/wiki/Ostrowski%27s_theorem#Another_Ostrowski's_theorem),
   which says that any field that is complete with respect to an archimedean absolute value
@@ -36,6 +37,9 @@ is isomorphic to `ℂ`) that is originally due to Ostrowski
   (Section 7)][ostrowski1916].
 See also the concise version provided by Peter Scholze on
 [Math Overflow](https://mathoverflow.net/questions/10535/ways-to-prove-the-fundamental-theorem-of-algebra/420803#420803).
+
+(In the following, we write `a • 1` instead of `algebraMap _ F a` for easier reading.
+In the code, we use `algebraMap`.)
 
 This proof goes as follows. Let `x : F` be arbitrary; we need to show that `x = z • 1`
 for some `z : ℂ`. We consider the function `z ↦ ‖x - z • 1‖`. It has a minimum `M`,
@@ -52,10 +56,10 @@ when `|z|` is sufficiently large.
 
 ### The real case
 
-THe usual proof for the real case is "either `F` contains a square root of `-1`;
+The usual proof for the real case is "either `F` contains a square root of `-1`;
 then `F` is in fact a normed `ℂ`-agebra and we can use the result above, or else
 we adjoin a square root of `-1` to `F` to obtain a normed `ℂ`-agebra `F'` and
-apply the result to `F'`". The difficulty with formalizing this is that
+apply the result to `F'`". The difficulty with formalizing this is that (as of October 2025)
 Mathlib does not provide a normed `ℂ`-algebra instance for `F'` (neither for
 `F' := AdjoinRoot (X ^ 2 + 1 : F[X])` nor for `F' := TensorProduct ℝ ℂ F`),
 and it is not so straight-forward to set this up. So we take inspiration from the
@@ -65,7 +69,7 @@ Since irreducible polynomials over `ℝ` have degree at most `2`, it must be the
 that each element is annihilated by a monic polynomial of degree `2`.
 We fix `x : F` in the following.
 
-The space `ℝ²` of monic polynomials of degree `2` is complete and locally compact
+The space `ℝ × ℝ` of monic polynomials of degree `2` is complete and locally compact
 and hence `‖aeval x p‖` gets large when `p` has large coefficients.
 This is actually slightly subtle. It is certainly true for `‖x - r • 1‖` with `r : ℝ`.
 If the minimum of this is zero, then the minimum for monic polynomials of degree `2`
@@ -73,7 +77,7 @@ will also be zero (and is attained on a one-dimensional subset). Otherwise, one 
 indeed show that a bound on `‖x ^ 2 - a • x + b • 1‖` implies bounds on `|a|` and `|b|`.
 
 By the first sentence of the previous paragraph, there will be some `p₀`
-such that `‖aeval x p₀‖` attains a minimum (see `NormedAlgebra.Real.exists_min_norm_φ`).
+such that `‖aeval x p₀‖` attains a minimum (see `NormedAlgebra.Real.exists_isMinOn_norm_φ`).
 We assume that this is positive and derive a contradiction. Let `M := ‖aeval x p₀‖ > 0`
 be the minimal value.
 Since every monic polynomial `f : ℝ[X]` of even degree can be written as a product
@@ -81,11 +85,11 @@ of monic polynomials of degree `2`
 (see `Polynomial.IsMonicOfDegree.eq_isMonicOfDegree_two_mul_isMonicOfDegree`),
 it follows that `‖aeval x f‖ ≥ M ^ (f.natDegree / 2)`.
 
-The goal is now to show that when `a` and `b` achieve the minimum `M` of `‖x ^ 2 - a • x + b • 1‖`,
+The goal is now to show that when `a` and `b` achieve the minimum `M` of `‖x ^ 2 - a • x + b • 1‖`
 and `M > 0`, then we can find some neighborhood `U` of `(a, b)` in `ℝ × ℝ`
 such that `‖x ^ 2 - a' • x + b' • 1‖ = M` for all `(a', b') ∈ U`
 Then the set `S = {(a', b') | ‖x ^ 2 - a' • x + b' • 1‖ = M}` must be all of `ℝ × ℝ` (as it is
-closed, open, and nonempty). (see `NormedAlgebra.Real.is_const_norm_sq_sub_add`).
+closed, open, and nonempty). (see `NormedAlgebra.Real.norm_φ_eq_norm_φ_of_isMinOn`).
 This will lead to a contradiction with the growth of `‖x ^ 2 - a • x‖` as `|a|` gets large.
 
 To get there, the idea is, similarly to the complex case, to use the fact that
