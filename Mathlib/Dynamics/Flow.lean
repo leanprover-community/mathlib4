@@ -99,7 +99,6 @@ namespace Flow
 
 variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ]
   {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
-  {β : Type*} [TopologicalSpace β] (ψ : Flow τ β)
 
 instance : Inhabited (Flow τ α) :=
   ⟨{  toFun := fun _ x => x
