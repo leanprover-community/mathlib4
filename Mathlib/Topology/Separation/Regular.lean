@@ -306,6 +306,17 @@ theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace X] [Regul
   refine ⟨interior L, isOpen_interior, KL, A.trans LU, ?_⟩
   exact L_compact.closure_of_subset interior_subset
 
+lemma IsCompact.closure_eq_nhdsKer [RegularSpace X] {s : Set X} (hs : IsCompact s) :
+    closure s = nhdsKer s := by
+  apply subset_antisymm
+  · rw [nhdsKer, ← hs.lift'_closure_nhdsSet]
+    simp +contextual [Filter.lift', Filter.lift, closure_mono, subset_of_mem_nhdsSet]
+  · intro y hy
+    by_contra! hy'
+    rw [← _root_.disjoint_nhdsSet_nhds, Filter.disjoint_iff] at hy'
+    obtain ⟨t, hts, t', ht'y, H⟩ := hy'
+    exact Set.disjoint_iff.mp H ⟨hy t hts, mem_of_mem_nhds ht'y⟩
+
 end LocallyCompactRegularSpace
 
 section T25
