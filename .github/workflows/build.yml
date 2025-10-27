@@ -149,8 +149,23 @@ jobs:
       - name: set LEAN_SRC_PATH
         shell: bash
         run: |
-          # Construct the LEAN_SRC_PATH using the toolchain directory
-          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake:.lake/packages/Cli:.lake/packages/batteries:.lake/packages/Qq:.lake/packages/aesop:.lake/packages/proofwidgets:.lake/packages/importGraph:.lake/packages/LeanSearchClient:.lake/packages/plausible:.lake/packages/requests:.lake/packages/openAI_client:.lake/packages/reap"
+          cd pr-branch
+
+          # Start with the base paths
+          LEAN_SRC_PATH=".:$TOOLCHAIN_DIR/src/lean/lake"
+
+          # Extract package names from lake-manifest.json and validate them
+          # Only allow A-Z, a-z, 0-9, _, and - characters
+          # Build the LEAN_SRC_PATH by appending each validated package
+          PACKAGE_NAMES=$(jq -r '.packages[].name' lake-manifest.json)
+          for pkg in $PACKAGE_NAMES; do
+            if [[ "$pkg" =~ ^[A-Za-z0-9_-]+$ ]]; then
+              LEAN_SRC_PATH="$LEAN_SRC_PATH:.lake/packages/$pkg"
+            else
+              echo "Warning: Skipping invalid package name: $pkg"
+            fi
+          done
+
           echo "LEAN_SRC_PATH=$LEAN_SRC_PATH"
 
           # Set it as an environment variable for subsequent steps
