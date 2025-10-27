@@ -487,6 +487,16 @@ theorem toReal_pi : (π : Angle).toReal = π := by
 @[simp]
 theorem toReal_eq_pi_iff {θ : Angle} : θ.toReal = π ↔ θ = π := by rw [← toReal_inj, toReal_pi]
 
+lemma toReal_neg_eq_neg_toReal_iff {θ : Angle} : (-θ).toReal = -(θ.toReal) ↔ θ ≠ π := by
+  nth_rw 1 [← coe_toReal θ, ← coe_neg, toReal_coe_eq_self_iff]
+  constructor
+  · rintro ⟨h, h'⟩ rfl
+    simp at h
+  · intro h
+    rw [neg_lt_neg_iff]
+    have h' : θ.toReal ≠ π := by simp [h]
+    exact ⟨(toReal_le_pi θ).lt_of_ne h', by linarith [neg_pi_lt_toReal θ]⟩
+
 theorem pi_ne_zero : (π : Angle) ≠ 0 := by
   rw [← toReal_injective.ne_iff, toReal_pi, toReal_zero]
   exact Real.pi_ne_zero
@@ -585,6 +595,29 @@ theorem two_nsmul_toReal_eq_two_mul_add_two_pi {θ : Angle} :
 theorem two_zsmul_toReal_eq_two_mul_add_two_pi {θ : Angle} :
     ((2 : ℤ) • θ).toReal = 2 * θ.toReal + 2 * π ↔ θ.toReal ≤ -π / 2 := by
   rw [two_zsmul, ← two_nsmul, two_nsmul_toReal_eq_two_mul_add_two_pi]
+
+lemma two_nsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two {θ ψ : Angle} (hθ : |θ.toReal| < π / 2)
+    (hψ : |ψ.toReal| < π / 2) : (2 : ℕ) • θ = (2 : ℕ) • ψ ↔ θ = ψ := by
+  constructor
+  · intro h
+    rw [two_nsmul_eq_iff] at h
+    rcases h with rfl | rfl
+    · rfl
+    · rw [abs_lt] at hψ hθ
+      rw [← coe_toReal ψ, ← coe_add] at hθ
+      by_cases hψ' : ψ.toReal ≤ 0
+      · have hψt : -π < ψ.toReal + π ∧ ψ.toReal + π ≤ π := ⟨by linarith, by linarith⟩
+        rw [toReal_coe_eq_self_iff.2 hψt] at hθ
+        linarith
+      · have hψt : π < ψ.toReal + π ∧ ψ.toReal + π ≤ 3 * π := ⟨by linarith, by linarith⟩
+        rw [toReal_coe_eq_self_sub_two_pi_iff.2 hψt] at hθ
+        linarith
+  · rintro rfl
+    rfl
+
+lemma two_zsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two {θ ψ : Angle} (hθ : |θ.toReal| < π / 2)
+    (hψ : |ψ.toReal| < π / 2) : (2 : ℤ) • θ = (2 : ℤ) • ψ ↔ θ = ψ := by
+  simp_rw [two_zsmul, ← two_nsmul, two_nsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two hθ hψ]
 
 @[simp]
 theorem sin_toReal (θ : Angle) : Real.sin θ.toReal = sin θ := by
