@@ -320,12 +320,10 @@ private lemma norm_φ_eq_norm_φ_of_isMinOn {x : F} {z : ℝ × ℝ} (h : IsMinO
   rw [hrel, norm_sub_rev (φ ..)]
   exact (norm_sub_le ..).trans <| by simp [q, aeval_eq_φ, hw]
 
-/- Existence of a minimizing monic polynomial of degree 2 -/
-
+open Filter Topology Bornology in
 /- Assuming that `‖x - algebraMap ℝ F ·‖` is bounded below by a positive constant, we show that
 `φ x w` grows unboundedly as `w : ℝ × ℝ` does. We will use this to obtain a contradiction
 when `φ x` does not attain the value zero. -/
-open Filter Topology Bornology in
 private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c)
     (hbd : ∀ r : ℝ, c ≤ ‖x - algebraMap ℝ F r‖) :
     Tendsto (φ x ·) (cobounded (ℝ × ℝ)) (cobounded F) := by
@@ -336,14 +334,14 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c)
   refine .cobounded_prod (fun s hs ↦ ?_) ?_
     -- the first component is bounded and the second one is unbounded
   · obtain ⟨M, hM_pos, hM⟩ : ∃ M > 0, ∀ y ∈ s, ‖y‖ ≤ M := hs.exists_pos_norm_le
-    suffices Tendsto (fun y ↦ ‖algebraMap ℝ F y.2‖ - M * ‖x‖) (𝓟 s ×ˢ cobounded ℝ) atTop by
+    suffices Tendsto (‖algebraMap ℝ F ·.2‖ - M * ‖x‖) (𝓟 s ×ˢ cobounded ℝ) atTop by
       refine tendsto_atTop_mono' _ ?_ this
       filter_upwards [prod_mem_prod (mem_principal_self s) univ_mem] with w hw
       rw [norm_sub_rev]
       refine le_trans ?_ (norm_sub_norm_le ..)
-      simp only [norm_algebraMap', norm_smul]--, norm_one, mul_one]
+      specialize hM _ (Set.mem_prod.mp hw).1
+      simp only [norm_algebraMap', norm_smul]
       gcongr
-      exact hM _ (Set.mem_prod.mp hw).1
     simp only [norm_algebraMap', sub_eq_add_neg]
     exact tendsto_atTop_add_const_right _ _ <| tendsto_norm_atTop_iff_cobounded.mpr tendsto_snd
     -- the first component is unbounded and the second one is arbitrary
