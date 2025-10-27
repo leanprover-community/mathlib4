@@ -158,12 +158,7 @@ theorem eval_eq_sum_degreeLTEquiv {n : ℕ} {p : R[X]} (hp : p ∈ degreeLT R n)
   simp_rw [eval_eq_sum]
   exact (sum_fin _ (by simp_rw [zero_mul, forall_const]) (mem_degreeLT.mp hp)).symm
 
-theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n := by
-  ext x
-  by_cases x_zero : x = 0
-  · simp_rw [x_zero, Submodule.zero_mem]
-  · rw [mem_degreeLT, mem_degreeLE, ← natDegree_lt_iff_degree_lt (by rwa [ne_eq]),
-      ← natDegree_le_iff_degree_le, Nat.lt_succ]
+theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n := rfl
 
 /-- The equivalence between monic polynomials of degree `n` and polynomials of degree less than
 `n`, formed by adding a term `X ^ n`. -/
