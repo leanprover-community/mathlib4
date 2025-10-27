@@ -173,8 +173,8 @@ private lemma le_aeval_of_isMonicOfDegree (x : F) {M : ℝ} (hM : 0 ≤ M)
     obtain ⟨f₁, f₂, hf₁, hf₂, H⟩ := hp.eq_isMonicOfDegree_one_mul_isMonicOfDegree
     obtain ⟨r, rfl⟩ := isMonicOfDegree_one_iff.mp hf₁
     have H' (y : F) : aeval y (X + C r) = y + algebraMap ℂ F r := by simp
-    rw [H, aeval_mul, norm_mul, mul_comm, pow_succ, H', sub_add, ← map_sub]
-    exact mul_le_mul (ih hf₂) (h (c - r)) hM (norm_nonneg _)
+    simpa only [pow_succ, mul_comm, H, aeval_mul, H', sub_add, ← map_sub, norm_mul]
+      using mul_le_mul (ih hf₂) (h (c - r)) hM (norm_nonneg _)
 
 /- We show that when `z ↦ ‖x - algebraMap ℂ F z‖` is never zero (and attains a minimum), then
 it is constant. This uses the auxiliary result `norm_eq_of_isMinOn_of_forall_le`. -/
