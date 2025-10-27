@@ -1,12 +1,12 @@
 import Std
 import Batteries
--- import Mathlib.AdicSpace
--- import Mathlib.AdicSpace.AdicSpace
--- import Mathlib.AdicSpace.HuberPair
--- import Mathlib.AdicSpace.Spa.RationalOpenData
--- import Mathlib.AdicSpace.Spa.StalkValuation
--- import Mathlib.AdicSpace.Spa.StructurePresheaf
--- import Mathlib.AdicSpace.Spv
+import Mathlib.AdicSpace
+import Mathlib.AdicSpace.AdicSpace
+import Mathlib.AdicSpace.HuberPair
+import Mathlib.AdicSpace.Spa.RationalOpenData
+import Mathlib.AdicSpace.Spa.StalkValuation
+import Mathlib.AdicSpace.Spa.StructurePresheaf
+import Mathlib.AdicSpace.Spv
 import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.AddConstMap.Equiv
 import Mathlib.Algebra.AddTorsor.Basic
@@ -6176,11 +6176,11 @@ import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Widget.StringDiagram
 import Mathlib.Tactic.WithoutCDot
 import Mathlib.Tactic.Zify
--- import Mathlib.Tempered
+import Mathlib.Tempered
 import Mathlib.Testing.Plausible.Functions
 import Mathlib.Testing.Plausible.Sampleable
 import Mathlib.Testing.Plausible.Testable
--- import Mathlib.TopologicalCovering
+import Mathlib.TopologicalCovering
 import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.AffineSubspace
