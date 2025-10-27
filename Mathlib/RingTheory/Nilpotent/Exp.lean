@@ -11,7 +11,7 @@ import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Maps
 import Mathlib.Tactic.FieldSimp
 
 /-!
