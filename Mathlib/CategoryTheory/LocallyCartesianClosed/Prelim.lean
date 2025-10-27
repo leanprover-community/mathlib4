@@ -69,6 +69,7 @@ class ChosenPullback {Y X : C} (f : Y ⟶ X) where
 
 namespace ChosenPullback
 
+/-- `ChosenPullback (Over.mk f).hom` from  `ChosenPullback f`. -/
 def ofOverMk {Y X : C} (f : Y ⟶ X) [ChosenPullback f] : ChosenPullback (Over.mk f).hom :=
   inferInstanceAs (ChosenPullback f)
 
@@ -175,6 +176,8 @@ section Lift
 
 variable {W : C} (a : W ⟶ Y) (b : W ⟶ Z) (h : a ≫ f = b ≫ g)
 
+/-- Given morphisms `a : W ⟶ Y` and `b : W ⟶ Z` satisfying `a ≫ f = b ≫ g`,
+constructs the unique morphism `W ⟶ pullbackObj f g`. -/
 def lift : W ⟶ pullbackObj f g :=
   (((mapPullbackAdj g).homEquiv (Over.mk b) (Over.mk f)) (Over.homMk a)).left
 
@@ -253,16 +256,12 @@ def binaryFan [ChosenPullback Z.hom] : BinaryFan Y Z :=
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
 @[simp]
-theorem binaryFan_pt_left : (binaryFan Y Z).pt.left = pullbackObj Y.hom Z.hom := by
+theorem binaryFan_pt :
+    (binaryFan Y Z).pt = Over.mk (Y:= pullbackObj Y.hom Z.hom) (snd Y.hom Z.hom ≫ Z.hom) := by
   rfl
 
 @[simp]
 theorem binaryFan_pt_hom : (binaryFan Y Z).pt.hom = snd Y.hom Z.hom ≫ Z.hom := by
-  rfl
-
-@[simp]
-theorem binaryFan_pt :
-    (binaryFan Y Z).pt = Over.mk (Y:= pullbackObj Y.hom Z.hom) (snd Y.hom Z.hom ≫ Z.hom) := by
   rfl
 
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
