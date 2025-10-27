@@ -224,7 +224,7 @@ lemma exists_norm_sub_smul_one_eq_zero (x : F) :
   rw [norm_algebraMap, norm_one, mul_one] at key
   norm_cast at key
   rw [Real.norm_eq_abs, abs_of_nonneg (by positivity)] at key
-  linarith
+  linarith only [key]
 
 variable (F) [Nontrivial F]
 
