@@ -35,8 +35,8 @@ choice of pullback functor `Over X ⥤ Over Y` along `f` as a right adjoint to `
   properties as they agree with the explicit pullbacks in the category of types defined by
   `Types.PullbackObj`.
 
-- `Over.mapPulbackNatIsoTensorLeft` constructs a natural isomorphism between the pull-push
-  composition `(pullback Y.hom) ⋙ (map Y.hom)` and the left tensor product functor `tensorLeft Y`.
+- `Over.mapPulbackNatIsoTensorRight` constructs a natural isomorphism between the pull-push
+  composition `(pullback Z.hom) ⋙ (map Z.hom)` and the functor `tensorRight Z`.
 
 - `mapStarIso` constructs a natural isomorphism between the functors `star X` and
   `star Y ⋙ pullback f` for any morphism `f : X ⟶ Y`.
@@ -53,7 +53,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Limits Comonad CartesianMonoidalCategory MonoidalCategory Limits
+open Category Limits CartesianMonoidalCategory MonoidalCategory
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -312,7 +312,7 @@ theorem mapPullbackIsoProd_hom_comp_snd [HasPullbacks C] :
 
 end BinaryProduct
 
-section TensorLeft
+section TensorRight
 
 variable {X : C}
 
@@ -320,7 +320,7 @@ attribute [local instance] Over.cartesianMonoidalCategory
 attribute [local instance] ofHasPullbacksAlong in
 /-- The pull-push composition `pullback Z.hom ⋙ map Z.hom` is naturally isomorphic
 to the right tensor product functor `_ ⊗ Z` in the slice category `Over X`. -/
-noncomputable def pullbackMapNatIsoTensorLeft [HasPullbacks C] (Z : Over X) :
+noncomputable def pullbackMapNatIsoTensorRight [HasPullbacks C] (Z : Over X) :
     pullback Z.hom ⋙ map Z.hom ≅ tensorRight Z :=
   NatIso.ofComponents
     (fun Y => mapPullbackIsoProd Y Z)
@@ -339,11 +339,11 @@ noncomputable def pullbackMapNatIsoTensorLeft [HasPullbacks C] (Z : Over X) :
 
 attribute [local instance] ofHasPullbacksAlong in
 @[simp]
-theorem Over.pullbackMapNatIsoTensorLeft_hom_app [HasPullbacks C] {Y : Over X} (Z : Over X) :
-    (pullbackMapNatIsoTensorLeft Z).hom.app Y = (mapPullbackIsoProd Y Z).hom := by
+theorem Over.pullbackMapNatIsoTensorRight_hom_app [HasPullbacks C] {Y : Over X} (Z : Over X) :
+    (pullbackMapNatIsoTensorRight Z).hom.app Y = (mapPullbackIsoProd Y Z).hom := by
   aesop
 
-end TensorLeft
+end TensorRight
 
 end ChosenPullback
 
