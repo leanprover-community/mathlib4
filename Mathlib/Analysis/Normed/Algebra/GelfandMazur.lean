@@ -9,7 +9,7 @@ import Mathlib.Analysis.Normed.Algebra.Basic
 /-!
 # A (new?) proof of the Gelfand-Mazur Theorem
 
-We provide a formalization of proofs of the following versions of the *Gelfand-Mazur* *Theorem*.
+We provide a formalization of proofs of the following versions of the *Gelfand-Mazur Theorem*.
 
 * `NormedAlgebra.Complex.algEquivOfNormMul`: if `F` is a nontrivial normed `ℂ`-algebra
   with multiplicative norm, then we obtain a `ℂ`-algebra equivalence with `ℂ`.
@@ -22,6 +22,11 @@ We provide a formalization of proofs of the following versions of the *Gelfand-M
   with multiplicative norm is isomorphic to `ℂ` as a `ℂ`-algebra.
 * `NormedAlgebra.Real.nonempty_algEquiv_or`: if a field `F` is a normed `ℝ`-algebra,
   then `F` is isomorphic as an `ℝ`-algebra either to `ℝ` or to `ℂ`.
+  With some additional work (TODO), this implies a
+  [Theorem of Ostrowski](https://en.wikipedia.org/wiki/Ostrowski%27s_theorem#Another_Ostrowski's_theorem),
+  which says that any field that is complete with respect to an archimedean absolute value
+  is isomorphic to either `ℝ` or `ℂ` as a field with absolute value. The additional input needed
+  for this is to show that any such field is in fact a normed `ℝ`-algebra.
 
 ### The complex case
 
