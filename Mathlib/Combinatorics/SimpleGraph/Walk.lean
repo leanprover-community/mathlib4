@@ -368,7 +368,7 @@ theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
   | cons h p ih =>
     simp only [reverse_cons, getVert_append, length_reverse, ih, length_cons]
     split_ifs
-    next hi => simp only [Nat.succ_sub hi.le, Nat.succ_eq_add_one, getVert_cons_succ]
+    next hi => simp [Nat.succ_sub hi.le]
     next hi =>
       obtain rfl | hi' := eq_or_gt_of_not_lt hi
       · simp
@@ -791,8 +791,7 @@ theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v 
   | .cons' u v c h₁ w₁, .cons' _ v' _ h₂ w₂, h => by
     have h₃ : u ≠ v' := by rintro rfl; exact G.loopless _ h₂
     obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₃] using h
-    obtain rfl := Walk.edges_injective h₃
-    rfl
+    rw [edges_injective h₃]
 
 theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
   edges_injective.of_comp
