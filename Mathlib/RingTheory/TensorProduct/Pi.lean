@@ -6,7 +6,7 @@ Authors: Christian Merten
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.Prod
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Tensor product and products of algebras
