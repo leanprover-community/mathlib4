@@ -128,6 +128,7 @@ instance ring : Ring (Completion α) :=
         fun a b c => by rw [← coe_add, ← coe_mul, ← coe_mul, ← coe_mul, ← coe_add, add_mul] }
 
 /-- The map from a uniform ring to its completion, as a ring homomorphism. -/
+@[simps]
 def coeRingHom : α →+* Completion α where
   toFun := (↑)
   map_one' := coe_one α
