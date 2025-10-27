@@ -115,6 +115,15 @@ theorem tendsto_lintegral_thickenedIndicator_of_isClosed {Ω : Type*} {mΩ : Mea
   have key := thickenedIndicator_tendsto_indicator_closure δs_pos δs_lim F
   rwa [F_closed.closure_eq] at key
 
+/-- A thickened indicator is integrable. -/
+lemma integrable_thickenedIndicator {Ω : Type*} {mΩ : MeasurableSpace Ω}
+    [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : Measure Ω} [IsFiniteMeasure μ] (F : Set Ω)
+    {δ : ℝ} (δ_pos : 0 < δ) :
+    Integrable (fun ω ↦ (thickenedIndicator δ_pos F ω : ℝ)) μ := by
+  refine .of_bound (by fun_prop) 1 (ae_of_all _ fun x ↦ ?_)
+  simp only [thickenedIndicator_apply, Real.norm_eq_abs, NNReal.abs_eq, NNReal.coe_le_one]
+  exact thickenedIndicator_le_one δ_pos F x
+
 /-- The integrals of thickened indicators of a closed set against a finite measure tend to the
 measure of the closed set if the thickening radii tend to zero. -/
 lemma tendsto_integral_thickenedIndicator_of_isClosed {Ω : Type*} {mΩ : MeasurableSpace Ω}
@@ -124,22 +133,17 @@ lemma tendsto_integral_thickenedIndicator_of_isClosed {Ω : Type*} {mΩ : Measur
     Tendsto (fun n : ℕ ↦ ∫ ω, (thickenedIndicator (δs_pos n) F ω : ℝ) ∂μ) atTop (𝓝 (μ.real F)) := by
   -- we switch to the `lintegral` formulation and apply the corresponding lemma there
   let fs : ℕ → Ω → ℝ := fun n ω ↦ thickenedIndicator (δs_pos n) F ω
-  have h_int n (ν : Measure Ω) [IsFiniteMeasure ν] : Integrable (fs n) ν := by
-    refine .of_bound (by fun_prop) 1 (ae_of_all _ fun x ↦ ?_)
-    simp only [thickenedIndicator_apply, Real.norm_eq_abs, NNReal.abs_eq, NNReal.coe_le_one, fs]
-    exact thickenedIndicator_le_one (δs_pos _) F x
   have h := tendsto_lintegral_thickenedIndicator_of_isClosed μ F_closed δs_pos δs_lim
   have h_eq (n : ℕ) : ∫⁻ ω, thickenedIndicator (δs_pos n) F ω ∂μ
       = ENNReal.ofReal (∫ ω, fs n ω ∂μ) := by
     rw [lintegral_coe_eq_integral]
-    exact h_int _ _
+    exact integrable_thickenedIndicator F (δs_pos _)
   simp_rw [h_eq] at h
   rw [Measure.real_def]
   have h_eq' : (fun n ↦ ∫ ω, fs n ω ∂μ) = fun n ↦ (ENNReal.ofReal (∫ ω, fs n ω ∂μ)).toReal := by
     ext n
     rw [ENNReal.toReal_ofReal]
-    refine integral_nonneg fun x ↦ ?_
-    simp [fs]
+    exact integral_nonneg fun x ↦ by simp [fs]
   rwa [h_eq', ENNReal.tendsto_toReal_iff (by simp) (by finiteness)]
 
 end MeasureTheory -- namespace
