@@ -156,56 +156,6 @@ theorem Ideal.inertiaSubgroup_eq_ker : Q.toAddSubgroup.inertia G =
 
 end inertiadef
 
-section inertiadef
-
-variable {A : Type*} [CommRing A] [IsDedekindDomain A] {P : Ideal A} (hP : P ≠ ⊥) [P.IsMaximal]
-  {B : Type*} [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
-  (Q : Ideal B) [Q.IsPrime] [hQ : Q.LiesOver P] [NoZeroSMulDivisors A B]
-  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [IsGaloisGroup G A B]
-
--- todo: clean up statement of `card_inertia_eq_ramificationIdxIn`
--- (e.g., we shouldn't need Dedekind A or separable)
-include hP in
-theorem Ideal.card_inertiaSubgroup [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
-    Nat.card (Q.toAddSubgroup.inertia G) =
-      Ideal.ramificationIdxIn P B := by
-  let K := FractionRing A
-  let L := FractionRing B
-  have : FaithfulSMul A L := by
-    rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq A B L]
-    apply (IsFractionRing.injective B L).comp
-    exact NoZeroSMulDivisors.iff_algebraMap_injective.mp inferInstance
-  let : Algebra K L := FractionRing.liftAlgebra A L
-  let _ : MulSemiringAction G L := MulSemiringAction.compHom L
-      ((IsFractionRing.fieldEquivOfAlgEquivHom K L).comp (MulSemiringAction.toAlgAut G A B))
-  have hGKL : IsGaloisGroup G K L := IsGaloisGroup.to_isFractionRing G A B K L
-    (fun g b ↦ IsFractionRing.fieldEquivOfAlgEquiv_algebraMap K L L _ b)
-  have : IsGalois K L := hGKL.isGalois
-  have : FiniteDimensional K L := hGKL.finiteDimensional
-  rw [Ideal.inertiaSubgroup_eq_ker P Q G]
-  have hf := Ideal.Quotient.stabilizerHom_surjective G P Q
-  have : Finite ((B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) := Finite.of_surjective _ hf
-  have key := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hP B K L
-  rw [← Algebra.IsInvariant.orbit_eq_primesOver A B G P Q, ← MulAction.index_stabilizer] at key
-  have h1 : Nat.card G = Module.finrank K L := IsGaloisGroup.card_eq_finrank G K L
-  have h2 : Nat.card ((B ⧸ Q) ≃ₐ[A ⧸ P] (B ⧸ Q)) = Module.finrank (A ⧸ P) (B ⧸ Q) := by
-    have : IsMaximal Q := Ideal.IsMaximal.of_liesOver_isMaximal Q P
-    let _ : Field (A ⧸ P) := Quotient.field P
-    let _ : Field (B ⧸ Q) := Quotient.field Q
-    have := Ideal.Quotient.normal G P Q
-    have := Ideal.Quotient.finite_of_isInvariant G P Q
-    have : IsGalois (A ⧸ P) (B ⧸ Q) := { __ := Ideal.Quotient.normal (A := A) G P Q }
-    rw [IsGalois.card_aut_eq_finrank]
-  rw [inertiaDegIn_eq_inertiaDeg P Q K L, inertiaDeg_algebraMap] at key
-  rw [← h1, ← h2, ← (MulAction.stabilizer G Q).index_mul_card] at key
-  rw [mul_right_inj' Subgroup.index_ne_zero_of_finite] at key
-  rw [← (Quotient.stabilizerHom Q P G).ker.card_mul_index, Subgroup.index_ker,
-    MonoidHom.range_eq_top_of_surjective _ hf, Subgroup.card_top] at key
-  rw [mul_left_inj' Nat.card_pos.ne'] at key
-  rw [Subgroup.card_subtype, key]
-
-end inertiadef
-
 section inertia
 
 theorem AddSubgroup.subgroupOf_inertia {M : Type*} [AddGroup M] (I : AddSubgroup M)
@@ -270,8 +220,6 @@ theorem genthm₀ (K : Type*) [Field K] [NumberField K]
     -- These sorrys can be removed with an `IsDedekindDomain` assumption on `card_inertiaSubgroup`.
     have : Algebra.IsSeparable (𝓞 F ⧸ Ideal.under (𝓞 F) m.asIdeal) (𝓞 K ⧸ m.asIdeal) := sorry
     have : Algebra.IsSeparable (𝓞 ℚ ⧸ Ideal.under (𝓞 ℚ) m.asIdeal) (𝓞 K ⧸ m.asIdeal) := sorry
-    have key := @Ideal.card_inertiaSubgroup (𝓞 F) _ _ (m.asIdeal.under (𝓞 F)) ?_ _ (𝓞 K) _ _
-      _ _ m.asIdeal _ _ _ H _ _ _ _ _
     rw [← Ideal.ramificationIdxIn_eq_ramificationIdx (m.asIdeal.under (𝓞 F)) m.asIdeal F K]
     rw [← Ideal.ramificationIdxIn_eq_ramificationIdx (m.asIdeal.under (𝓞 ℚ)) m.asIdeal ℚ K]
     rw [← Ideal.card_inertia_eq_ramificationIdxIn (G := H) F K (m.asIdeal.under (𝓞 F)) ?_
