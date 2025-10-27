@@ -138,18 +138,18 @@ private lemma norm_eq_of_isMinOn_of_forall_le {X E : Type*} [TopologicalSpace X]
     exact H u hw n hn
   exact tendsto_pow_atTop_nhds_zero_of_lt_one (by positivity) hu |>.const_add 1 |>.const_mul M
 
-open Filter Bornology in
+open Filter Bornology Set in
 /-- In a normed algebra `F` over a normed field `𝕜` that is a proper space, the function
 `z : 𝕜 ↦ ‖x - algebraMap 𝕜 F z‖` achieves a global minimum for every `x : F`. -/
-lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜]
-    [ProperSpace 𝕜] [SeminormedRing F] [NormedAlgebra 𝕜 F] [NormOneClass F] (x : F) :
-  ∃ z : 𝕜, IsMinOn (‖x - algebraMap 𝕜 F ·‖) Set.univ z := by
+lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜] [ProperSpace 𝕜]
+    [SeminormedRing F] [NormedAlgebra 𝕜 F] [NormOneClass F] (x : F) :
+    ∃ z : 𝕜, IsMinOn (‖x - algebraMap 𝕜 F ·‖) univ z := by
   have : Tendsto (‖x - algebraMap 𝕜 F ·‖) (cobounded 𝕜) atTop := by
     exact tendsto_norm_cobounded_atTop |>.comp <| tendsto_const_sub_cobounded x |>.comp <| by simp
   simp only [isMinOn_univ_iff]
   refine (show Continuous fun z : 𝕜 ↦ ‖x - algebraMap 𝕜 F z‖ by fun_prop)
     |>.exists_forall_le_of_isBounded 0 ?_
-  simpa [isBounded_def, Set.compl_setOf, Set.Ioi] using this (Ioi_mem_atTop (‖x - (0 : 𝕜) • 1‖))
+  simpa [isBounded_def, compl_setOf, Ioi] using this (Ioi_mem_atTop ‖x - (0 : 𝕜) • 1‖)
 
 /-!
 ### The complex case
