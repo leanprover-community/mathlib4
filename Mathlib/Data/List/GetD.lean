@@ -31,13 +31,14 @@ theorem getD_eq_getElem {n : ℕ} (hn : n < l.length) : l.getD n d = l[n] := by
   grind
 
 theorem getD_eq_getElem? (i : Fin l.length) : l.getD i d = l[i]?.get (by simp) := by
-  simp
+  simp only [getD_eq_getElem?_getD, Fin.is_lt, getElem?_pos, Option.getD_some, Fin.getElem_fin,
+    Option.get_some]
 
 theorem getD_eq_get (i : Fin l.length) : l.getD i d = l.get i := by
-  simp
+  simp only [getD_eq_getElem?_getD, Fin.is_lt, getElem?_pos, Option.getD_some, get_eq_getElem]
 
 theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by
-  simp
+  simp only [getD_eq_getElem?_getD, getElem?_map, Option.getD_map]
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
   grind
