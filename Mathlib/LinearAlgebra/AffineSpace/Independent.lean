@@ -407,6 +407,37 @@ theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k]
 
 end Composition
 
+/-- If a family is affinely independent, the infimum of the affine spans of points indexed by two
+subsets equals the affine span of points indexed by the intersection of those subsets, if the
+underlying ring is nontrivial. -/
+lemma AffineIndependent.inf_affineSpan_eq_affineSpan_inter [Nontrivial k] {p : ι → P}
+    (ha : AffineIndependent k p) (s₁ s₂ : Set ι) :
+    affineSpan k (p '' s₁) ⊓ affineSpan k (p '' s₂) = affineSpan k (p '' (s₁ ∩ s₂)) := by
+  classical
+  ext p'
+  simp_rw [AffineSubspace.mem_inf_iff, Set.image_eq_range, mem_affineSpan_iff_eq_affineCombination,
+    ← Finset.eq_affineCombination_subset_iff_eq_affineCombination_subtype]
+  constructor
+  · rintro ⟨⟨fs₁, hfs₁, w₁, hw₁, rfl⟩, ⟨fs₂, hfs₂, w₂, hw₂, hw₁₂⟩⟩
+    rw [affineIndependent_iff_indicator_eq_of_affineCombination_eq] at ha
+    replace ha := ha fs₁ fs₂ w₁ w₂ hw₁ hw₂ hw₁₂
+    refine ⟨fs₁ ∩ fs₂, by grind, w₁, ?_, ?_⟩
+    · rw [← hw₁, ← fs₁.sum_inter_add_sum_diff fs₂, eq_comm]
+      convert add_zero _
+      refine Finset.sum_eq_zero ?_
+      intro i hi
+      rw [← Set.indicator_of_mem (s := ↑fs₁) (by grind) w₁, ha, Set.indicator_of_notMem (by grind)]
+    · rw [affineCombination_indicator_subset w₁ p Finset.inter_subset_left]
+      refine affineCombination_congr (k := k) (P := P) _ ?_ (fun _ _ ↦ rfl)
+      intro i hi
+      rw [coe_inter, ← Set.indicator_indicator, Set.indicator_of_mem (by simpa using hi),
+        Set.indicator_apply]
+      simp only [mem_coe, left_eq_ite_iff]
+      intro hi₂
+      rw [← Set.indicator_of_mem (s := ↑fs₁) (by simpa using hi) w₁, ha]
+      simp [hi₂]
+  · grind
+
 /-- If a family is affinely independent, and the spans of points
 indexed by two subsets of the index type have a point in common, those
 subsets of the index type have an element in common, if the underlying
@@ -414,18 +445,12 @@ ring is nontrivial. -/
 theorem AffineIndependent.exists_mem_inter_of_exists_mem_inter_affineSpan [Nontrivial k] {p : ι → P}
     (ha : AffineIndependent k p) {s1 s2 : Set ι} {p0 : P} (hp0s1 : p0 ∈ affineSpan k (p '' s1))
     (hp0s2 : p0 ∈ affineSpan k (p '' s2)) : ∃ i : ι, i ∈ s1 ∩ s2 := by
-  rw [Set.image_eq_range] at hp0s1 hp0s2
-  rw [mem_affineSpan_iff_eq_affineCombination, ←
-    Finset.eq_affineCombination_subset_iff_eq_affineCombination_subtype] at hp0s1 hp0s2
-  rcases hp0s1 with ⟨fs1, hfs1, w1, hw1, hp0s1⟩
-  rcases hp0s2 with ⟨fs2, hfs2, w2, hw2, hp0s2⟩
-  rw [affineIndependent_iff_indicator_eq_of_affineCombination_eq] at ha
-  replace ha := ha fs1 fs2 w1 w2 hw1 hw2 (hp0s1 ▸ hp0s2)
-  have hnz : ∑ i ∈ fs1, w1 i ≠ 0 := hw1.symm ▸ one_ne_zero
-  rcases Finset.exists_ne_zero_of_sum_ne_zero hnz with ⟨i, hifs1, hinz⟩
-  simp_rw [← Set.indicator_of_mem (Finset.mem_coe.2 hifs1) w1, ha] at hinz
-  use i, hfs1 hifs1
-  exact hfs2 (Set.mem_of_indicator_ne_zero hinz)
+  have hp0' : p0 ∈ affineSpan k (p '' s1) ⊓ affineSpan k (p '' s2) := ⟨hp0s1, hp0s2⟩
+  rw [ha.inf_affineSpan_eq_affineSpan_inter] at hp0'
+  rw [← Set.Nonempty]
+  by_contra he
+  rw [Set.not_nonempty_iff_eq_empty] at he
+  simp [he, AffineSubspace.notMem_bot] at hp0'
 
 /-- If a family is affinely independent, the spans of points indexed
 by disjoint subsets of the index type are disjoint, if the underlying
