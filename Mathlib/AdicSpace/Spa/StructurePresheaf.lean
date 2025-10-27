@@ -1,4 +1,6 @@
 import Mathlib.AdicSpace.Spa.RationalOpenData
+import Mathlib.Topology.Category.TopCommRingCat
+import Mathlib.Topology.Sheaves.Presheaf
 
 universe u
 

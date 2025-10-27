@@ -1,4 +1,6 @@
 import Mathlib.AdicSpace.Spa.StalkValuation
+import Mathlib.Combinatorics.Quiver.ReflQuiver
+import Mathlib.Geometry.RingedSpace.OpenImmersion
 
 universe u
 

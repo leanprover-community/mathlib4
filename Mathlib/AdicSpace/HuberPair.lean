@@ -1,8 +1,12 @@
-import Mathlib
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.RingTheory.Finiteness.Subalgebra
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
+import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 universe u
 
-open Topology CategoryTheory TopologicalSpace
+open Topology TopologicalSpace
 
 structure HuberRing.ringOfDefinition (R₀ : Type u) (R : Type u)
     [CommRing R₀] [TopologicalSpace R₀] [IsTopologicalRing R₀]

@@ -1,4 +1,6 @@
 import Mathlib.AdicSpace.Spa.StructurePresheaf
+import Mathlib.Topology.Sheaves.Stalks
+import Mathlib.Algebra.Category.Ring.Colimits
 
 universe u
 

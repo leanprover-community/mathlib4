@@ -1,8 +1,9 @@
 import Mathlib.AdicSpace.HuberPair
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 universe u
 
-open Topology CategoryTheory TopologicalSpace
+open Topology TopologicalSpace
 
 def Spv (R : Type u) [CommRing R] : Type u := ValuativeRel R
 

@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # Category of topological commutative rings
