@@ -54,13 +54,12 @@ def algebraOfModule (n : ℕ) (R : Type*) [Ring R] [Module (ZMod n) R] : Algebra
     · obtain ⟨r, rfl⟩ := ZMod.natCast_zmod_surjective r
       simp [Nat.cast_smul_eq_nsmul, Nat.cast_comm]
 
-instance instIsScalarTower (n : ℕ) (R M : Type*) [Semiring R] [AddCommMonoid M]
+instance instIsScalarTower (n : ℕ) (R M : Type*) [Ring R] [AddCommGroup M]
     [Module (ZMod n) R] [m₁ : Module (ZMod n) M] [Module R M] :
     IsScalarTower (ZMod n) R M := by
-  let := ZMod.algebraOfModule
+  let := ZMod.algebraOfModule n R
   let m₂ := Module.compHom M (algebraMap (ZMod n) R)
-  have : m₁ = m₂ := by subsingleton
-  subst m₁
+  obtain rfl : m₁ = m₂ := Subsingleton.elim _ _
   exact ⟨fun x y z ↦ by rw [Algebra.smul_def, mul_smul]; rfl⟩
 
 end ZMod
