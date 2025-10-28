@@ -555,27 +555,32 @@ theorem MDifferentiable.prodMap (hf : MDifferentiable I I' f) (hg : MDifferentia
 alias MDifferentiable.prod_map := MDifferentiable.prodMap
 
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
-    {df : TangentSpace I x →L[𝕜] TangentSpace J (f x)}
+    {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)}
     (hf : HasMFDerivWithinAt I J f (Prod.fst '' s) p.1 df)
     {dg : TangentSpace I' p.2 →L[𝕜] TangentSpace J' (g p.2)}
     (hg : HasMFDerivWithinAt I' J' g (Prod.snd '' s) p.2 dg) :
     HasMFDerivWithinAt (I.prod I') (J.prod J') (Prod.map f g) s p (df.prodMap dg) := by
-  refine ⟨hf.1.prodMap hg.1, ?_⟩
-  have : ((extChartAt (I.prod I') (x, x')).symm ⁻¹' s ×ˢ t ∩ range (I.prod I')) =
-      ((extChartAt I x).symm ⁻¹' s ∩ range I) ×ˢ ((extChartAt I' x').symm ⁻¹' t ∩ range I') := by
+  refine ⟨hf.1.prodMap hg.1 |>.mono (by grind), ?_⟩
+  have better : ((extChartAt (I.prod I') p).symm ⁻¹' s ∩ range ↑(I.prod I')) ⊆
+      ((extChartAt I p.1).symm ⁻¹' (Prod.fst '' s) ∩ range I) ×ˢ
+        ((extChartAt I' p.2).symm ⁻¹' (Prod.snd '' s) ∩ range I') := by
     simp only [mfld_simps]
-    rw [range_prodMap, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
-    ext x₀
-    constructor <;> intro hx₀ <;> simp_all
-  rw [writtenInExtChart_prod, this]
-  exact hf.2.prodMap _ hg.2
+    rw [range_prodMap, I.toPartialEquiv.prod_symm, (chartAt H p.1).toPartialEquiv.prod_symm]
+    -- This is very tedious; a nicer proof is welcome!
+    intro p₀ ⟨hp₀, ⟨hp₁₁, hp₁₂⟩⟩
+    refine ⟨⟨?_, by assumption⟩, ⟨?_, by assumption⟩⟩
+    · simp_all
+      use (chartAt H' p.2).symm <| I'.symm p₀.2
+    · simp_all
+      use (chartAt H p.1).symm <| I.symm p₀.1
+  rw [writtenInExtChart_prod]
+  exact (hf.2.prodMap _ hg.2).mono better
 
-lemma HasMFDerivAt.prodMap {x' : M'} {f : M → N} {g : M' → N'}
-    {df : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf : HasMFDerivAt I J f x df)
-    {dg : TangentSpace I' x' →L[𝕜] TangentSpace J' (g x')}
-    (hg : HasMFDerivAt I' J' g x' dg) :
-    HasMFDerivAt (I.prod I') (J.prod J') (Prod.map f g) (x, x')
-      ((mfderiv I J f x).prodMap (mfderiv I' J' g x')) := by
+lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
+    {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)} (hf : HasMFDerivAt I J f p.1 df)
+    {dg : TangentSpace I' p.2 →L[𝕜] TangentSpace J' (g p.2)} (hg : HasMFDerivAt I' J' g p.2 dg) :
+    HasMFDerivAt (I.prod I') (J.prod J') (Prod.map f g) p
+      ((mfderiv I J f p.1).prodMap (mfderiv I' J' g p.2)) := by
   simp_rw [← hasMFDerivWithinAt_univ, ← mfderivWithin_univ, ← univ_prod_univ]
   convert hf.hasMFDerivWithinAt.prodMap hg.hasMFDerivWithinAt
   · rw [mfderivWithin_univ]; exact hf.mfderiv
