@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2020 Johan Commelin. All rights reserved.
+Copyright (c) 2020 Yuval Filmus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuval Filmus
 -/
-import Mathlib.RingTheory.Polynomial.Chebyshev.Real
+import Mathlib.RingTheory.Polynomial.ChebyshevReal.Basic
 import Mathlib.LinearAlgebra.Lagrange
 import Mathlib.Topology.Algebra.Polynomial
 
