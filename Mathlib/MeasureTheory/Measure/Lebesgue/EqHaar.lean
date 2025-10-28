@@ -259,9 +259,6 @@ equal to `μ s` times the absolute value of the inverse of the determinant of `f
 @[simp]
 theorem addHaar_preimage_linearMap {f : E →ₗ[ℝ] E} (hf : LinearMap.det f ≠ 0) (s : Set E) :
     μ (f ⁻¹' s) = ENNReal.ofReal |(LinearMap.det f)⁻¹| * μ s :=
-  have that :
-    ((f.equivOfDetNeZero hf).toContinuousLinearEquiv.toHomeomorph.toMeasurableEquiv : E → E) =
-      ⇑f := by ext x; simp
   calc
     μ (f ⁻¹' s) = Measure.map f μ s := by rw [← that, MeasurableEquiv.map_apply]
     _ = ENNReal.ofReal |(LinearMap.det f)⁻¹| * μ s := by
