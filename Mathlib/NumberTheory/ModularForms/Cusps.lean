@@ -309,6 +309,14 @@ lemma strictPeriods_eq_zmultiples_strictWidthInfty [DiscreteTopology 𝒢.strict
     Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
       <| AddSubgroup.discrete_iff_addCyclic.mpr inferInstance]
 
+lemma strictWidthInfty_SL2Z : strictWidthInfty 𝒮ℒ = 1 := by
+  have := strictPeriods_SL2Z
+  rw [strictPeriods_eq_zmultiples_strictWidthInfty, Eq.comm,
+    AddSubgroup.zmultiples_eq_zmultiples_iff (not_isOfFinAddOrder_of_isAddTorsionFree one_ne_zero)]
+    at this
+  have := strictWidthInfty_nonneg 𝒮ℒ
+  grind
+
 lemma strictWidthInfty_mem_strictPeriods : 𝒢.strictWidthInfty ∈ 𝒢.strictPeriods := by
   by_cases h : DiscreteTopology 𝒢.strictPeriods
   · simp [strictPeriods_eq_zmultiples_strictWidthInfty]
