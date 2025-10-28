@@ -184,7 +184,8 @@ def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
 
 /-- The categorical equivalence between `ModuleCat` and `SemimoduleCat`.
 
-In the inverse direction, data (such as the negation operation) is created which may lead to diamonds when applied to semi-modules that already have an existing additive group structure.  -/
+In the inverse direction, data (such as the negation operation) is created which may lead to
+diamonds when applied to semi-modules that already have an existing additive group structure. -/
 def equivalenceSemimoduleCat : ModuleCat.{v} R ≌ SemimoduleCat.{v} R where
   functor :=
   { obj M := .of R M
