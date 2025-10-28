@@ -521,14 +521,16 @@ lemma GradedPiece.algebraMap.map_mul [hasGMul F F_lt] (r s : R) : GradedMonoid.m
 
 lemma GradedPiece.algebraMap.commutes [hasGMul F F_lt] (r : R) (i : ι) (a : GradedPiece F F_lt i) :
     HEq ((mk F F_lt (r • (1 : F 0))) * a) (a * (mk F F_lt (r • (1 : F 0)))) := by
-  induction' a using GradedPiece.induction_on with ra
+  induction a using GradedPiece.induction_on
+  rename_i ra
   simp only [mk_mul]
   have : (r • (1 : A)) * ra.1 = ra.1 * (r • (1 : A)) := by simp
   exact HEq_eq_mk_coe_eq F F_lt _ _ (by simp) this rfl rfl
 
 lemma GradedPiece.algebraMap.smul_def [hasGMul F F_lt] (r : R) (i : ι) (a : GradedPiece F F_lt i) :
     HEq (r • a) ((mk F F_lt (r • (1 : F 0))) * a) := by
-  induction' a using GradedPiece.induction_on with ra
+  induction a using GradedPiece.induction_on
+  rename_i ra
   simp only [mk_mul, GradedPiece.mk_smul]
   have : r • ra.1 = (r • (1 : A)) * ra := by simp
   exact HEq_eq_mk_coe_eq F F_lt _ _ (zero_add i).symm this rfl rfl
