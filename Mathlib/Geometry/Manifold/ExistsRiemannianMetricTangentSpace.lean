@@ -151,6 +151,26 @@ noncomputable def g (i : B) (p : B) (v w : (@TangentSpace ℝ _ _ _ _ _ _ IB B _
   letI dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
   @Inner.inner ℝ EB _ (dψ v) (dψ w)
 
+-- Yet another attempt to prove continuity
+
+variable (i p : B)
+
+-- #check (inferInstance : Norm (TangentSpace IB p))
+#check (inferInstance : Norm (TangentSpace IB p →L[ℝ] ℝ))
+
+noncomputable
+instance tangent_norm : Norm (TangentSpace IB p) := sorry
+instance cotangent_norm :  Norm (TangentSpace IB p → ℝ) := sorry
+
+lemma g_bounded (i p : B) :
+  ∃ C, ∀ v : TangentSpace IB p, ‖fun w => g i p v w‖ ≤ C * ‖v‖ := by
+  sorry
+
+variable (IB) in
+noncomputable def g' (i p : B) : TangentSpace IB p → TangentSpace IB p → ℝ := fun v w ↦
+  letI dψ := mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p
+  @Inner.inner ℝ EB _ (dψ v) (dψ w)
+
 noncomputable def g_comp (i : B) :
   B × TangentBundle IB B × TangentBundle IB B → ℝ :=
   fun x =>
@@ -223,16 +243,26 @@ lemma g_pos (i p : B) (hp : p ∈ (extChartAt IB i).source)
 lemma g_cont (i p : B) (v : TangentSpace IB p) :
   Continuous (fun w ↦ g i p v w) := by
   unfold g
+  fun_prop
 
-  have continuous_inner_left {v : EB} : Continuous (fun w ↦ @Inner.inner ℝ EB _ v w) :=
-    continuous_inner.comp (continuous_const.prodMk continuous_id)
+lemma g'_cont2 (i p : B) : Continuous (g' IB i p) := by
+  unfold g'
+  fun_prop
 
-  have h_desired : Continuous fun w ↦
-  @Inner.inner ℝ EB _ ((mfderiv IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) p) v)
-    ((mfderiv IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) p) w) := by
-    exact continuous_inner_left |>.comp (mfderiv IB 𝓘(ℝ, EB) (↑(extChartAt IB i)) p).continuous
+lemma g_continuous_prod (i p : B) :
+  Continuous (fun (vw : TangentSpace IB p × TangentSpace IB p) => g i p vw.1 vw.2) := by
+  unfold g
+  apply Continuous.inner
+  · exact (mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p).continuous.comp continuous_fst
+  · exact (mfderiv IB 𝓘(ℝ, EB) (extChartAt IB i) p).continuous.comp continuous_snd
 
-  exact h_desired
+lemma g_cont' (i p : B) :
+  Continuous (fun (v : (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) p ) ↦ ContinuousLinearMap.mk
+    { toFun := fun w ↦ g i p v w
+      map_add' := fun x y ↦ g_add' i p x y v
+      map_smul' := fun m x ↦ g_smul' i p x v m }
+    (g_cont i p v)) := by
+  exact sorry
 
 noncomputable
 def g_bilinear (i p : B) :
@@ -452,6 +482,18 @@ lemma g_global_pos (f : SmoothPartitionOfUnity B IB B)
 lemma g_global_bilinear_eq_sum (f : SmoothPartitionOfUnity B IB B) (p : B) :
   g_global_bilinear f p = ∑ᶠ (j : B), (f j) p • g_bilinear j p := rfl
 
+lemma urk i : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+  (fun (x : B) ↦ (TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_bilinear i x) :
+    TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ) (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))))
+  ((fun x ↦ (extChartAt IB x).source) i) := by
+  have : ((extChartAt IB i).source) = ((fun x ↦ (extChartAt IB x).source) i) := rfl
+  rw [← this]
+  have goal : ContMDiffOn IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞
+    (fun x ↦ (TotalSpace.mk' (EB →L[ℝ] EB →L[ℝ] ℝ) x (g_bilinear i x) :
+      TotalSpace (EB →L[ℝ] EB →L[ℝ] ℝ) (W (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))))
+    (extChartAt IB i).source := sorry
+  exact goal
+
 lemma bar (f : SmoothPartitionOfUnity B IB B)
         (h_sub : f.IsSubordinate (fun x ↦ (extChartAt IB x).source)) :
   ContMDiff IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) ∞ fun x ↦
@@ -467,7 +509,7 @@ lemma bar (f : SmoothPartitionOfUnity B IB B)
         (U := fun x ↦ (extChartAt IB x).source)
         (by intro i; exact isOpen_extChartAt_source i)
         h_sub
-        (by intro i; sorry)
+        (by intro i; exact (urk i))
       exact h
 
 lemma g_global_bilinear_smooth (f : SmoothPartitionOfUnity B IB B)
