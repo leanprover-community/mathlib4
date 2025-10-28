@@ -182,6 +182,23 @@ theorem mapRingHom_coe (hf : UniformContinuous f) (a : α) :
     mapRingHom f hf.continuous a = f a := by
   rw [mapRingHom_apply, map_coe hf]
 
+def mapRingEquiv (f : α ≃+* β) (hf : UniformContinuous f) (hf' : UniformContinuous f.symm) :
+    Completion α ≃+* Completion β where
+  __ := mapRingHom f hf.continuous
+  invFun := mapRingHom f.symm hf'.continuous
+  left_inv y := by
+    induction y using induction_on
+    · exact isClosed_eq (continuous_map.comp continuous_map) continuous_id
+    · rw [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+        MonoidHom.coe_coe, mapRingHom_coe hf, mapRingHom_coe hf']
+      simp
+  right_inv x := by
+    induction x using induction_on
+    · exact isClosed_eq (continuous_map.comp continuous_map) continuous_id
+    · rw [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+        MonoidHom.coe_coe, mapRingHom_coe hf', mapRingHom_coe hf]
+      simp
+
 section Algebra
 
 variable (A : Type*) [Ring A] [UniformSpace A] [IsUniformAddGroup A] [IsTopologicalRing A]

@@ -49,11 +49,23 @@ noncomputable def valuationEquivPadicValuation {R : Type*} [CommRing R] [IsDedek
   Valuation.IsEquiv.uniformEquiv (𝔭.valuation_surjective ℚ) (Rat.surjective_padicValuation _)
     𝔭.valuation_equiv_padicValuation
 
-noncomputable
-def adicCompletionEquivPadic {R : Type*} [CommRing R] [IsDedekindDomain R]
+noncomputable def adicCompletion.padicUniformEquiv {R : Type*} [CommRing R] [IsDedekindDomain R]
     [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)] (𝔭 : HeightOneSpectrum R) :
     𝔭.adicCompletion ℚ ≃ᵤ ℚ_[𝔭] :=
   (UniformSpace.Completion.mapEquiv 𝔭.valuationEquivPadicValuation).trans Padic.withValUniformEquiv
+
+noncomputable def adicCompletion.padicRingEquiv {R : Type*} [CommRing R] [IsDedekindDomain R]
+    [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)] (𝔭 : HeightOneSpectrum R) :
+    𝔭.adicCompletion ℚ ≃+* ℚ_[𝔭] :=
+  (UniformSpace.Completion.mapRingEquiv _ 𝔭.valuationEquivPadicValuation.uniformContinuous
+    𝔭.valuationEquivPadicValuation.symm.uniformContinuous).trans
+  Padic.withValRingEquiv
+
+noncomputable def adicCompletion.padicAlgEquiv {R : Type*} [CommRing R] [IsDedekindDomain R]
+    [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)] (𝔭 : HeightOneSpectrum R) :
+    𝔭.adicCompletion ℚ ≃ₐ[ℚ] ℚ_[𝔭] where
+  __ := adicCompletion.padicRingEquiv 𝔭
+  commutes' q := by simp
 
 open UniformSpace.Completion in
 theorem _root_.Valuation.IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {Γ₀ : Type*}
@@ -69,8 +81,9 @@ theorem _root_.Valuation.IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field 
     rw [Valued.valuedCompletion_apply, ← WithVal.apply_equiv, mapEquiv_coe]
     simpa using h.le_one_iff_le_one
 
-noncomputable def adicCompletionIntegersEquivPadicInt {R : Type*} [CommRing R] [IsDedekindDomain R]
-    [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)] (𝔭 : HeightOneSpectrum R) :
+noncomputable def adicCompletionIntegers.padicIntUniformEquiv {R : Type*} [CommRing R]
+    [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)]
+    (𝔭 : HeightOneSpectrum R) :
     𝔭.adicCompletionIntegers ℚ ≃ᵤ ℤ_[𝔭] :=
   let e : 𝔭.adicCompletionIntegers ℚ ≃ᵤ
       (Valued.v.valuationSubring : ValuationSubring (Rat.padicValuation 𝔭).Completion) :=
@@ -79,15 +92,65 @@ noncomputable def adicCompletionIntegersEquivPadicInt {R : Type*} [CommRing R] [
         (𝔭.valuation_surjective ℚ) (Rat.surjective_padicValuation _)
   e.trans PadicInt.withValIntegersUniformEquiv
 
+universe u v
+
+-- TODO : move
+@[simps!]
+def _root_.RingEquiv.restrict {R : Type u} {S : Type v} [NonAssocSemiring R] [NonAssocSemiring S]
+    {σR : Type*} {σS : Type*} [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R]
+    [SubsemiringClass σS S] (f : R ≃+* S) (s' : σR) (s : σS) (h : ∀ x, x ∈ s' ↔ f x ∈ s) :
+    s' ≃+* s where
+  __ := RingHom.restrict f _ _ fun _ ↦ (h _).1
+  invFun := RingHom.restrict f.symm _ _ fun y hy ↦ by
+    obtain ⟨x, rfl⟩ := f.surjective y; simp [(h _).2 hy]
+  left_inv y := by simp [← Subtype.val_inj]
+  right_inv x := by simp [← Subtype.val_inj]
+
+-- TODO : move
+open scoped Valued in
+noncomputable def _root_.PadicInt.withValIntegersRingEquiv {p : ℕ} [Fact p.Prime] :
+    𝒪[(Rat.padicValuation p).Completion] ≃+* ℤ_[p] :=
+  Padic.withValRingEquiv.restrict _ (PadicInt.subring p) fun _ ↦
+    (Padic.withValUniformEquiv_norm_le_one_iff _).symm
+
+noncomputable def adicCompletionIntegers.padicIntRingEquiv {R : Type*} [CommRing R]
+    [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)]
+    (𝔭 : HeightOneSpectrum R) :
+    𝔭.adicCompletionIntegers ℚ ≃+* ℤ_[𝔭] :=
+  let e : 𝔭.adicCompletionIntegers ℚ ≃+*
+      (Valued.v.valuationSubring : ValuationSubring (Rat.padicValuation 𝔭).Completion) :=
+    (UniformSpace.Completion.mapRingEquiv _ 𝔭.valuationEquivPadicValuation.uniformContinuous
+      𝔭.valuationEquivPadicValuation.symm.uniformContinuous).restrict _ _ fun _ ↦ by
+      simpa using 𝔭.valuation_equiv_padicValuation.valuedCompletion_le_one_iff
+        (𝔭.valuation_surjective ℚ) (Rat.surjective_padicValuation _)
+  e.trans PadicInt.withValIntegersRingEquiv
+
+theorem adicCompletion.padicAlgEquiv_bijOn {R : Type*} [CommRing R]
+    [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ] [Nonempty (R ≃+* ℤ)]
+    (𝔭 : HeightOneSpectrum R) :
+    Set.BijOn (padicAlgEquiv 𝔭) (𝔭.adicCompletionIntegers ℚ) (PadicInt.subring 𝔭) := by
+  refine ⟨?_, (padicAlgEquiv 𝔭).injective.injOn, ?_⟩
+  · intro x hx
+    simp
+    change ‖(adicCompletionIntegers.padicIntRingEquiv 𝔭 ⟨x, hx⟩)‖ ≤ 1
+    exact PadicInt.norm_le_one ((adicCompletionIntegers.padicIntRingEquiv 𝔭) ⟨x, hx⟩)
+  · have := (adicCompletionIntegers.padicIntRingEquiv 𝔭).surjective
+    intro y hy
+    obtain ⟨x, hx⟩ := this ⟨y, hy⟩
+    use x
+    use x.2
+    change (adicCompletionIntegers.padicIntRingEquiv 𝔭 x) = y
+    rw [hx]
+
 instance : Nonempty (𝓞 ℚ ≃+* ℤ) := ⟨Rat.ringOfIntegersEquiv⟩
 
 instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation ℚ Γ₀} :
     Nonempty (𝓞 (WithVal v) ≃+* ℤ) := ⟨Rat.ringOfIntegersWithValEquiv v⟩
 
 noncomputable example (𝔭 : HeightOneSpectrum (𝓞 ℚ)) : 𝔭.adicCompletion ℚ ≃ᵤ ℚ_[𝔭] :=
-  𝔭.adicCompletionEquivPadic
+  adicCompletion.padicUniformEquiv 𝔭
 
 noncomputable example (𝔭 : HeightOneSpectrum (𝓞 ℚ)) : CompactSpace (𝔭.adicCompletionIntegers ℚ) :=
-  𝔭.adicCompletionIntegersEquivPadicInt.toHomeomorph.symm.compactSpace
+  (adicCompletionIntegers.padicIntUniformEquiv 𝔭).toHomeomorph.symm.compactSpace
 
 end IsDedekindDomain.HeightOneSpectrum
