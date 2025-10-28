@@ -1031,7 +1031,7 @@ sending `f ⊗ g` to the composition of `TensorProduct.map f g` with
 the natural isomorphism `R ⊗ R ≃ R`.
 -/
 def dualDistrib : Dual R M ⊗[R] Dual R N →ₗ[R] Dual R (M ⊗[R] N) :=
-  compRight _ ↑(TensorProduct.lid R R) ∘ₗ homTensorHomMap (.id R) M N R R
+  compRight _ (TensorProduct.lid R R) ∘ₗ homTensorHomMap (.id R) M N R R
 
 variable {R M N}
 
