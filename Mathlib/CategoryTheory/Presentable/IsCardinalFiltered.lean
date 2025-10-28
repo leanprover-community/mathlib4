@@ -212,7 +212,7 @@ instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
         ι.naturality i j f := by
           ext
           · simpa using c₁.w f
-          · simpa using c₂.w f}⟩
+          · simpa using c₂.w f }⟩
 
 instance isCardinalFiltered_pi {ι : Type u'} (J : ι → Type u) [∀ i, Category.{v} (J i)]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [∀ i, IsCardinalFiltered (J i) κ] :
