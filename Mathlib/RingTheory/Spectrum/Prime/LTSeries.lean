@@ -74,11 +74,13 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     {x : R} (hx : x ∈ p.last.asIdeal) : ∃ q : LTSeries (PrimeSpectrum R),
     x ∈ (q 1).asIdeal ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by
   generalize hp : p.length = n
-  induction' n with n hn generalizing p
-  · use RelSeries.singleton _ p.last
+  induction n generalizing p with
+  | zero =>
+    use RelSeries.singleton _ p.last
     simp only [RelSeries.singleton_toFun, hx, RelSeries.singleton_length, RelSeries.head,
       RelSeries.last_singleton, and_true, true_and]
     rw [show 0 = Fin.last p.length from Fin.zero_eq_mk.mpr hp, RelSeries.last]
+  | succ n hn => ?_
   by_cases h0 : n = 0
   · use p
     have h1 : 1 = Fin.last p.length := by

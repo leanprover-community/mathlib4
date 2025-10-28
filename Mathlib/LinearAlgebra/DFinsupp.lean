@@ -581,6 +581,40 @@ theorem iSupIndep_iff_dfinsupp_lsum_injective (p : ι → Submodule R N) :
     iSupIndep p ↔ Function.Injective (lsum ℕ fun i => (p i).subtype) :=
   ⟨iSupIndep.dfinsupp_lsum_injective, iSupIndep_of_dfinsupp_lsum_injective p⟩
 
+theorem iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero (p : ι → Submodule R N) :
+    iSupIndep p ↔ ∀ (s : Finset ι) (v : ι → N),
+    (∀ i ∈ s, v i ∈ p i) → (∑ i ∈ s, v i = 0) → ∀ i ∈ s, v i = 0 := by
+  simp_rw [iSupIndep_def, Submodule.disjoint_def]
+  constructor
+  · intro h s v hv hv0 i hi
+    apply h _ _ (hv i hi)
+    rw [← s.add_sum_erase _ hi, add_eq_zero_iff_neg_eq] at hv0
+    rw [← Submodule.neg_mem_iff, hv0]
+    exact SetLike.le_def.mp (biSup_mono <| by grind) (Submodule.sum_mem_biSup <| by grind)
+  · intro h i x hx hsup
+    obtain ⟨f, hf, rfl⟩ := (Submodule.mem_iSup_iff_exists_finsupp ..).mp hsup
+    contrapose! h
+    use insert i f.support, fun j ↦ if j = i then -f.sum fun _ x ↦ x else f j
+    refine ⟨fun j hj ↦ ?_, ?_, by grind [neg_eq_zero, Finsupp.mem_support_iff]⟩
+    · beta_reduce
+      split_ifs with h
+      · exact (p j).neg_mem (h ▸ hx)
+      · simpa [h] using hf j
+    · specialize hf i
+      simp at hf
+      grind [Finsupp.sum, Finset.sum_congr, Finsupp.mem_support_iff]
+
+theorem iSupIndep_iff_finset_sum_eq_imp_eq (p : ι → Submodule R N) :
+    iSupIndep p ↔ ∀ (s : Finset ι) (v w : ι → N),
+    (∀ i ∈ s, v i ∈ p i ∧ w i ∈ p i) → (∑ i ∈ s, v i = ∑ i ∈ s, w i) → ∀ i ∈ s, v i = w i := by
+  rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero]
+  constructor
+  · intro h s v w hvw
+    simpa [sub_eq_zero] using h s (v - w) fun i hi => (p i).sub_mem (hvw i hi).1 (hvw i hi).2
+  · intro h s v hv hv0
+    specialize h s v 0
+    simp_all
+
 /-- A family of additive subgroups over an additive group are independent if and only if
 `DFinsupp.sumAddHom` applied with `AddSubgroup.subtype` is injective. -/
 theorem iSupIndep_iff_dfinsuppSumAddHom_injective (p : ι → AddSubgroup N) :
@@ -589,6 +623,18 @@ theorem iSupIndep_iff_dfinsuppSumAddHom_injective (p : ι → AddSubgroup N) :
 
 @[deprecated (since := "2025-04-06")]
 alias iSupIndep_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
+
+/-- If `(pᵢ)ᵢ` is a family of independent submodules that generates the whole module `N`, then
+`N` is isomorphic to the direct sum of the submodules. -/
+@[simps! apply] noncomputable def iSupIndep.linearEquiv {p : ι → Submodule R N} (ind : iSupIndep p)
+    (iSup_top : ⨆ i, p i = ⊤) : (Π₀ i, p i) ≃ₗ[R] N  :=
+  .ofBijective _ ⟨ind.dfinsupp_lsum_injective, by
+    rwa [← LinearMap.range_eq_top, ← Submodule.iSup_eq_range_dfinsupp_lsum]⟩
+
+theorem iSupIndep.linearEquiv_symm_apply {p : ι → Submodule R N} (ind : iSupIndep p)
+    (iSup_top : ⨆ i, p i = ⊤) {i : ι} {x : N} (h : x ∈ p i) :
+    (ind.linearEquiv iSup_top).symm x = .single i ⟨x, h⟩ := by
+  simp [← LinearEquiv.eq_symm_apply, iSupIndep.linearEquiv]
 
 /-- If a family of submodules is independent, then a choice of nonzero vector from each submodule
 forms a linearly independent family.

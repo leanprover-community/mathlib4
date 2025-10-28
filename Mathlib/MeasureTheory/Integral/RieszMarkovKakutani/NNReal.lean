@@ -7,7 +7,7 @@ Authors: Yoh Tanimoto
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
 /-!
-#  Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
+# Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
 
 This file proves the Riesz-Markov-Kakutani representation theorem on a locally compact
 T2 space `X` for `ℝ≥0`-linear functionals `Λ`.
@@ -39,8 +39,8 @@ namespace NNRealRMK
 the (Bochner) integral of `f` (as a `ℝ`-valued function) with respect to the `rieszMeasure`
 associated to `Λ` is equal to `Λ f`. -/
 theorem integral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫ (x : X), (f x : ℝ) ∂(rieszMeasure Λ) = Λ f := by
-  rw [← eq_toRealLinear_toReal Λ f,
-      ← RealRMK.integral_rieszMeasure (toRealLinear_nonneg Λ) f.toReal]
+  rw [← eq_toRealPositiveLinear_toReal Λ f,
+      ← RealRMK.integral_rieszMeasure (toRealPositiveLinear Λ) f.toReal]
   simp [RealRMK.rieszMeasure, NNRealRMK.rieszMeasure]
 
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,

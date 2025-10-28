@@ -164,7 +164,7 @@ lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
 
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=
-  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i} , p
+  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i}, p
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
     (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
@@ -224,6 +224,7 @@ private theorem card_finMulAntidiag_pi (d n : ℕ) (hn : Squarefree n) :
   apply Finset.card_bij (Nat.primeFactorsPiBij d n) (primeFactorsPiBij_img d n hn)
     (primeFactorsPiBij_inj d n) (primeFactorsPiBij_surj d n hn)
 
+open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     #(finMulAntidiag d n) = d ^ ω n := by
   rw [← card_finMulAntidiag_pi d n hn, Finset.card_pi, Finset.prod_const,
@@ -296,6 +297,7 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
 end card_pair_lcm_eq
 
 open card_pair_lcm_eq in
+open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_pair_lcm_eq {n : ℕ} (hn : Squarefree n) :
     #{p ∈ (n.divisors ×ˢ n.divisors) | p.1.lcm p.2 = n} = 3 ^ ω n := by
   rw [← card_finMulAntidiag_of_squarefree hn, eq_comm]

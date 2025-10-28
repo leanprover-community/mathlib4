@@ -22,7 +22,7 @@ set_option mathlib.tactic.category.grind true
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [CategoryTheory universes].
+-- declare the `v`'s first; see note [category theory universes].
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 section
@@ -35,22 +35,22 @@ The axiom `map_id` expresses preservation of identities, and
 `map_comp` expresses functoriality. -/
 @[stacks 001B]
 structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D] :
-    Type max v₁ v₂ u₁ u₂
-    extends Prefunctor C D where
+    Type max v₁ v₂ u₁ u₂ where
+  /-- The action of a functor on objects. -/
+  obj : C → D
+  /-- The action of a functor on morphisms. -/
+  map : ∀ {X Y : C}, (X ⟶ Y) → ((obj X) ⟶ (obj Y))
   /-- A functor preserves identity morphisms. -/
   map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by cat_disch
   /-- A functor preserves composition. -/
   map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by cat_disch
-
-/-- The prefunctor between the underlying quivers. -/
-add_decl_doc Functor.toPrefunctor
 
 end
 
 /-- Notation for a functor between categories. -/
 -- A functor is basically a function, so give ⥤ a similar precedence to → (25).
 -- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
-scoped [CategoryTheory] infixr:26 " ⥤ " => Functor -- type as \func
+scoped[CategoryTheory] infixr:26 " ⥤ " => Functor -- type as \func
 
 attribute [simp] Functor.map_id Functor.map_comp
 attribute [grind =] Functor.map_id
@@ -78,7 +78,7 @@ protected def id : C ⥤ C where
   map f := f
 
 /-- Notation for the identity functor on a category. -/
-scoped [CategoryTheory] notation "𝟭" => Functor.id -- Type this as `\sb1`
+scoped[CategoryTheory] notation "𝟭" => Functor.id -- Type this as `\sb1`
 
 instance : Inhabited (C ⥤ C) :=
   ⟨Functor.id C⟩
@@ -98,22 +98,27 @@ section
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
 
+/-- The prefunctor between the underlying quivers. -/
+@[simps]
+def toPrefunctor (F : C ⥤ D) : Prefunctor C D := { F with }
+
+theorem congr_map (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y}
+    (h : f = g) : F.map f = F.map g := by
+  rw [h]
+
 /-- `F ⋙ G` is the composition of a functor `F` and a functor `G` (`F` first, then `G`).
 -/
-@[simps obj]
+@[simps (attr := grind =) obj]
 def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
 
 /-- Notation for composition of functors. -/
-scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
+scoped[CategoryTheory] infixr:80 " ⋙ " => Functor.comp
 
-@[simp]
+@[simp, grind =]
 theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
     (F ⋙ G).map f = G.map (F.map f) := rfl
-
-attribute [grind =] comp_obj
-attribute [grind =] comp_map
 
 -- These are not simp lemmas because rewriting along equalities between functors
 -- is not necessarily a good idea.

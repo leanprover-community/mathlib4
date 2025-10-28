@@ -178,7 +178,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
       calc
         ↑(pn + 2) * f x = (↑pn + 1 + 1) * f x := by norm_cast
         _ = (↑pn + 1) * f x + f x := by ring
-        _ ≤ f (↑pn.succ * x) + f x := mod_cast add_le_add_right (hpn pn.succ_pos) (f x)
+        _ ≤ f (↑pn.succ * x) + f x := by norm_cast; grw [hpn pn.succ_pos]
         _ ≤ f ((↑pn + 1) * x + x) := by exact_mod_cast H2 _ _ (mul_pos pn.cast_add_one_pos hx) hx
         _ = f ((↑pn + 1 + 1) * x) := by ring_nf
         _ = f (↑(pn + 2) * x) := by norm_cast
@@ -186,7 +186,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
     intro n hn
     have hf1 : 1 ≤ f 1 := by
       have a_pos : (0 : ℝ) < a := Rat.cast_pos.mpr (zero_lt_one.trans ha1)
-      suffices ↑a * 1 ≤ ↑a * f 1 by rwa [← mul_le_mul_left a_pos]
+      suffices ↑a * 1 ≤ ↑a * f 1 by rwa [← mul_le_mul_iff_right₀ a_pos]
       calc
         ↑a * 1 = ↑a := mul_one (a : ℝ)
         _ = f a := hae.symm

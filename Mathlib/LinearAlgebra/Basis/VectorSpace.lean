@@ -248,7 +248,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _
     simp_rw [Basis.extend_apply_self]
-  dsimp []
+  dsimp
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
@@ -286,6 +286,15 @@ theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v �
   rcases LinearMap.exists_extend_of_notMem (0 : p →ₗ[K] K) hv 1 with ⟨f, hpf, hfv⟩
   refine ⟨f, by simp [hfv], fun x hx ↦ ?_⟩
   simpa using congr($hpf ⟨x, hx⟩)
+
+/-- If `V` and `V'` are nontrivial vector spaces over a field `K`, the space of `K`-linear maps
+between them is nontrivial. -/
+instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : V)
+  obtain ⟨w, hw⟩ := exists_ne (0 : V')
+  have : v ∉ (⊥ : Submodule K V) := by simp only [mem_bot, hv, not_false_eq_true]
+  obtain ⟨g, _, hg⟩ := LinearMap.exists_extend_of_notMem (K := K) 0 this w
+  exact ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
 
 @[deprecated (since := "2025-05-23")]
 alias Submodule.exists_le_ker_of_not_mem := Submodule.exists_le_ker_of_notMem

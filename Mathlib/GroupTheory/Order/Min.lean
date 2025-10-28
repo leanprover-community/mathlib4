@@ -29,9 +29,9 @@ variable (α) [Monoid α]
 
 /-- The minimum order of a non-identity element. Also the minimum size of a nontrivial subgroup, see
 `Monoid.le_minOrder_iff_forall_subgroup`. Returns `∞` if the monoid is torsion-free. -/
-@[to_additive "The minimum order of a non-identity element. Also the minimum size of a nontrivial
+@[to_additive /-- The minimum order of a non-identity element. Also the minimum size of a nontrivial
 subgroup, see `AddMonoid.le_minOrder_iff_forall_addSubgroup`. Returns `∞` if the monoid is
-torsion-free."]
+torsion-free. -/]
 noncomputable def minOrder : ℕ∞ := ⨅ (a : α) (_ha : a ≠ 1) (_ha' : IsOfFinOrder a), orderOf a
 
 variable {α} {a : α}

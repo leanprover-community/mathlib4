@@ -105,8 +105,9 @@ then `Sublist l l'`.
 -/
 theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ)
     (hf : ∀ ix : ℕ, l[ix]? = l'[f ix]?) : l <+ l' := by
-  induction' l with hd tl IH generalizing l' f
-  · simp
+  induction l generalizing l' f with
+  | nil => simp
+  | cons hd tl IH => ?_
   have : some hd = l'[f 0]? := by simpa using hf 0
   rw [eq_comm, List.getElem?_eq_some_iff] at this
   obtain ⟨w, h⟩ := this
@@ -119,16 +120,13 @@ theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ
   have : ∀ ix, tl[ix]? = (l'.drop (f 0 + 1))[f' ix]? := by
     intro ix
     rw [List.getElem?_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf]
-    simp only [getElem?_cons_succ]
+    · simp only [getElem?_cons_succ]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
   apply List.Sublist.append _ (IH _ this)
   rw [List.singleton_sublist, ← h, l'.getElem_take' _ (Nat.lt_succ_self _)]
   exact List.getElem_mem _
-
-@[deprecated (since := "2025-02-15")] alias sublist_of_orderEmbedding_get?_eq :=
-sublist_of_orderEmbedding_getElem?_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
@@ -154,9 +152,6 @@ theorem sublist_iff_exists_orderEmbedding_getElem?_eq {l l' : List α} :
         · simpa using hf _
   · rintro ⟨f, hf⟩
     exact sublist_of_orderEmbedding_getElem?_eq f hf
-
-@[deprecated (since := "2025-02-15")] alias sublist_iff_exists_orderEmbedding_get?_eq :=
-sublist_iff_exists_orderEmbedding_getElem?_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `Fin l.length` into `Fin l'.length` such that
@@ -189,7 +184,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       dsimp only
       split_ifs with hi hj hj
       · rwa [Fin.val_fin_lt, f.lt_iff_lt]
-      · omega
+      · cutsat
       · exact absurd (h.trans hj) hi
       · simpa using h
     · intro i

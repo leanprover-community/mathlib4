@@ -57,9 +57,9 @@ open Finset
 let `a0 b0 : G` be two elements.  `UniqueMul A B a0 b0` asserts `a0 * b0` can be written in at
 most one way as a product of an element of `A` and an element of `B`. -/
 @[to_additive
-      "Let `G` be a Type with addition, let `A B : Finset G` be finite subsets and
+      /-- Let `G` be a Type with addition, let `A B : Finset G` be finite subsets and
 let `a0 b0 : G` be two elements.  `UniqueAdd A B a0 b0` asserts `a0 + b0` can be written in at
-most one way as a sum of an element from `A` and an element from `B`."]
+most one way as a sum of an element from `A` and an element from `B`. -/]
 def UniqueMul {G} [Mul G] (A B : Finset G) (a0 b0 : G) : Prop :=
   ∀ ⦃a b⦄, a ∈ A → b ∈ B → a * b = a0 * b0 → a = a0 ∧ b = b0
 
@@ -136,7 +136,7 @@ theorem exists_iff_exists_existsUnique :
     exact ⟨a, b, ha, hb, (iff_existsUnique ha hb).mpr h⟩⟩
 
 /-- `UniqueMul` is preserved by inverse images under injective, multiplicative maps. -/
-@[to_additive "`UniqueAdd` is preserved by inverse images under injective, additive maps."]
+@[to_additive /-- `UniqueAdd` is preserved by inverse images under injective, additive maps. -/]
 theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G) {A B : Finset H}
     (u : UniqueMul A B (f a0) (f b0)) :
     UniqueMul (A.preimage f hf.injOn) (B.preimage f hf.injOn) a0 b0 := by
@@ -154,9 +154,9 @@ theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G
 
 See `UniqueMul.mulHom_map_iff` for a version with swapped bundling. -/
 @[to_additive
-      "`UniqueAdd` is preserved under additive maps that are injective.
+      /-- `UniqueAdd` is preserved under additive maps that are injective.
 
-See `UniqueAdd.addHom_map_iff` for a version with swapped bundling."]
+See `UniqueAdd.addHom_map_iff` for a version with swapped bundling. -/]
 theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Injective f) :
     UniqueMul (A.image f) (B.image f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 :=
   ⟨of_mulHom_image f fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·), fun h _ _ ↦ by
@@ -169,9 +169,9 @@ theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Inject
 
 See `UniqueMul.mulHom_image_iff` for a version with swapped bundling. -/
 @[to_additive
-      "`UniqueAdd` is preserved under embeddings that are additive.
+      /-- `UniqueAdd` is preserved under embeddings that are additive.
 
-See `UniqueAdd.addHom_image_iff` for a version with swapped bundling."]
+See `UniqueAdd.addHom_image_iff` for a version with swapped bundling. -/]
 theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
     UniqueMul (A.map f) (B.map f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
   classical simp_rw [← mulHom_image_iff ⟨f, mul⟩ f.2, Finset.map_eq_image]; rfl
@@ -318,7 +318,7 @@ theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f) (_ : U
     UniqueProds H := of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·))
 
 /-- `UniqueProd` is preserved under multiplicative equivalences. -/
-@[to_additive "`UniqueSums` is preserved under additive equivalences."]
+@[to_additive /-- `UniqueSums` is preserved under additive equivalences. -/]
 theorem _root_.MulEquiv.uniqueProds_iff (f : G ≃* H) : UniqueProds G ↔ UniqueProds H :=
   ⟨of_injective_mulHom f.symm f.symm.injective, of_injective_mulHom f f.injective⟩
 
@@ -416,10 +416,10 @@ open MulOpposite in
         simpa only [mul_one, one_mul, ← mul_inv_rev, he, true_imp_iff, inv_inj, and_comm] using hu
       push_neg at h21; obtain ⟨rfl, rfl⟩ := h21
       rcases hcard with hC | hD
-      · obtain ⟨c, hc, hc1⟩ := exists_ne_of_one_lt_card hC 1
+      · obtain ⟨c, hc, hc1⟩ := exists_mem_ne hC 1
         refine (hc1 ?_).elim
         simpa using hu ⟨_, ⟨_, hD, rfl⟩, _, hc, rfl⟩ ⟨_, hD, _, ⟨_, hc, rfl⟩, rfl⟩
-      · obtain ⟨d, hd, hd1⟩ := exists_ne_of_one_lt_card hD 1
+      · obtain ⟨d, hd, hd1⟩ := exists_mem_ne hD 1
         refine (hd1 ?_).elim
         simpa using hu ⟨_, ⟨_, hd, rfl⟩, _, hC, rfl⟩ ⟨_, hd, _, ⟨_, hC, rfl⟩, rfl⟩
     all_goals apply_rules [Nonempty.mul, Nonempty.image, Finset.Nonempty.map, hc.1, hc.2.1]
@@ -499,7 +499,7 @@ theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f)
   of_mulHom f (fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·))
 
 /-- `TwoUniqueProd` is preserved under multiplicative equivalences. -/
-@[to_additive "`TwoUniqueSums` is preserved under additive equivalences."]
+@[to_additive /-- `TwoUniqueSums` is preserved under additive equivalences. -/]
 theorem _root_.MulEquiv.twoUniqueProds_iff (f : G ≃* H) : TwoUniqueProds G ↔ TwoUniqueProds H :=
   ⟨of_injective_mulHom f.symm f.symm.injective, of_injective_mulHom f f.injective⟩
 
@@ -570,8 +570,8 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
 /-- This instance asserts that if `G` has a right-cancellative multiplication, a linear order, and
   multiplication is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
-  "This instance asserts that if `G` has a right-cancellative addition, a linear order,
-  and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`."]
+  /-- This instance asserts that if `G` has a right-cancellative addition, a linear order,
+  and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`. -/]
 instance (priority := 100) of_covariant_right [IsRightCancelMul G]
     [LinearOrder G] [MulLeftStrictMono G] :
     TwoUniqueProds G where
@@ -589,7 +589,7 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
       · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_ge <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
     refine ⟨_, mk_mem_product ha0 hb0, _, mk_mem_product ha1 hb1, fun he ↦ ?_, this, ?_⟩
     · rw [Prod.mk_inj] at he; rw [he.1, he.2, he1] at he0
-      obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_ne_of_one_lt_card hc (a0, b0)
+      obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_mem_ne hc (a0, b0)
       rw [mem_product] at h2
       refine (min'_lt_max' _ (mul_mem_mul ha0 hb0) (mul_mem_mul h2.1 h2.2) fun he ↦ hne ?_).ne he0
       exact Prod.ext_iff.mpr (this h2.1 h2.2 he.symm)
@@ -604,8 +604,8 @@ open MulOpposite in
 /-- This instance asserts that if `G` has a left-cancellative multiplication, a linear order, and
   multiplication is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueProds`. -/
 @[to_additive
-  "This instance asserts that if `G` has a left-cancellative addition, a linear order, and
-  addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`."]
+  /-- This instance asserts that if `G` has a left-cancellative addition, a linear order, and
+  addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`. -/]
 instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
     [LinearOrder G] [MulRightStrictMono G] :
     TwoUniqueProds G :=
