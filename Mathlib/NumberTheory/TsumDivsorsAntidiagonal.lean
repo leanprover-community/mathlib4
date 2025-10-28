@@ -95,6 +95,9 @@ theorem summable_prod_mul_pow (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (ℕ+ × ℕ+) ↦ c.2 ^ k * (r ^ (c.1 * c.2 : ℕ)) := by
   simpa [sigmaAntidiagonalEquivProd.summable_iff.symm] using summable_divisorsAntidiagonal_aux k hr
 
+-- access notation `σ`
+open scoped sigma
+
 theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' d : ℕ+, ∑' c : ℕ+, c ^ k * r ^ (d * c : ℕ) = ∑' e : ℕ+, σ k e * r ^ (e : ℕ) := by
   suffices ∑' c : ℕ+ × ℕ+, c.2 ^ k * r ^ (c.1 * c.2 : ℕ) =
@@ -113,10 +116,10 @@ lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) (k : ℕ)
   have (m : ℕ) [NeZero m] := tsum_geometric_of_norm_lt_one (ξ := r ^ m)
     (by simpa using pow_lt_one₀ (by simp) hr (NeZero.ne _))
   simp only [div_eq_mul_inv, ← this, ← tsum_mul_left, mul_assoc, ← _root_.pow_succ',
-    ← fun (n : ℕ) ↦ tsum_pnat_eq_tsum_succ (fun m ↦ n ^ k * (r ^ n) ^ m)]
+    ← fun (n : ℕ) ↦ tsum_pnat_eq_tsum_succ (f := fun m ↦ n ^ k * (r ^ n) ^ m)]
   have h00 := tsum_prod_pow_eq_tsum_sigma k hr
   rw [Summable.tsum_comm (by apply (summable_prod_mul_pow k hr).prod_symm)] at h00
   rw [← h00]
-  exact tsum_congr₂ <| fun b c ↦ by simp [mul_comm b.val c.val, pow_mul]
+  exact tsum_congr₂ <| fun b c ↦ by simp [mul_comm c.val b.val, pow_mul]
 
 end tsum

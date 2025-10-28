@@ -283,7 +283,7 @@ noncomputable def finiteArchimedeanClassOrderHomInvLex :
     obtain h | ⟨rfl, hle⟩ := Prod.Lex.le_iff.mp h
     · induction ac using FiniteArchimedeanClass.ind with | mk a ha
       induction bc using FiniteArchimedeanClass.ind with | mk b hb
-      simp [ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
+      simp only [ne_eq, ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
       rw [FiniteArchimedeanClass.mk_le_mk, archimedeanClassMk_le_archimedeanClassMk_iff]
       exact .inl (by simpa [ha, hb] using h)
     · exact OrderHom.monotone _ hle

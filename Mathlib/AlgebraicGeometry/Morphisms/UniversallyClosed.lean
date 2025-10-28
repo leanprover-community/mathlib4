@@ -90,22 +90,25 @@ instance universallyClosed_snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf 
     UniversallyClosed (pullback.snd f g) :=
   MorphismProperty.pullback_snd f g hf
 
-instance universallyClosed_isLocalAtTarget : IsLocalAtTarget @UniversallyClosed := by
+instance universallyClosed_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @UniversallyClosed := by
   rw [universallyClosed_eq]
-  apply universally_isLocalAtTarget
+  apply universally_isZariskiLocalAtTarget
   intro X Y f ι U hU H
   simp_rw [topologically, morphismRestrict_base] at H
   exact hU.isClosedMap_iff_restrictPreimage.mpr H
 
+instance (f : X ⟶ Y) (V : Y.Opens) [UniversallyClosed f] : UniversallyClosed (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
 open Scheme.Pullback _root_.PrimeSpectrum MvPolynomial in
 /-- If `X` is universally closed over a field, then `X` is quasi-compact. -/
 lemma compactSpace_of_universallyClosed
-    {K} [Field K] (f : X ⟶ Spec(K)) [UniversallyClosed f] : CompactSpace X := by
+    {K} [Field K] (f : X ⟶ Spec (.of K)) [UniversallyClosed f] : CompactSpace X := by
   classical
   let 𝒰 : X.OpenCover := X.affineCover
   let U (i : 𝒰.I₀) : X.Opens := (𝒰.f i).opensRange
-  let T : Scheme := Spec(MvPolynomial 𝒰.I₀ K)
-  let q : T ⟶ Spec(K) := Spec.map (CommRingCat.ofHom MvPolynomial.C)
+  let T : Scheme := Spec (.of <| MvPolynomial 𝒰.I₀ K)
+  let q : T ⟶ Spec (.of K) := Spec.map (CommRingCat.ofHom MvPolynomial.C)
   let Ti (i : 𝒰.I₀) : T.Opens := basicOpen (MvPolynomial.X i)
   let fT : pullback f q ⟶ T := pullback.snd f q
   let p : pullback f q ⟶ X := pullback.fst f q

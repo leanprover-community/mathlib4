@@ -39,7 +39,7 @@ noncomputable section
 
 namespace CategoryTheory.Limits
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe w' w₂' w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
@@ -238,7 +238,7 @@ lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e 
 lemma preservesLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂, w₂'}]
     [PreservesLimitsOfSize.{w', w₂'} F] : PreservesLimitsOfSize.{w, w₂} F where
   preservesLimitsOfShape {J} := preservesLimitsOfShape_of_equiv
-    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm F
+    ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm F
 
 /-- `PreservesLimitsOfSize_shrink.{w w'} F` tries to obtain `PreservesLimitsOfSize.{w w'} F`
 from some other `PreservesLimitsOfSize F`.
@@ -297,7 +297,7 @@ lemma preservesColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (
 lemma preservesColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂, w₂'}]
     [PreservesColimitsOfSize.{w', w₂'} F] : PreservesColimitsOfSize.{w, w₂} F where
   preservesColimitsOfShape {J} := preservesColimitsOfShape_of_equiv
-    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm F
+    ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm F
 
 /--
 `PreservesColimitsOfSize_shrink.{w w'} F` tries to obtain `PreservesColimitsOfSize.{w w'} F`
@@ -543,7 +543,7 @@ lemma reflectsLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e :
 lemma reflectsLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂, w₂'}]
     [ReflectsLimitsOfSize.{w', w₂'} F] : ReflectsLimitsOfSize.{w, w₂} F where
   reflectsLimitsOfShape {J} := reflectsLimitsOfShape_of_equiv
-    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm F
+    ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm F
 
 /-- `reflectsLimitsOfSize_shrink.{w w'} F` tries to obtain `reflectsLimitsOfSize.{w w'} F`
 from some other `reflectsLimitsOfSize F`.
@@ -646,7 +646,7 @@ lemma reflectsColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e
 lemma reflectsColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂, w₂'}]
     [ReflectsColimitsOfSize.{w', w₂'} F] : ReflectsColimitsOfSize.{w, w₂} F where
   reflectsColimitsOfShape {J} := reflectsColimitsOfShape_of_equiv
-    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm F
+    ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm F
 
 /-- `reflectsColimitsOfSize_shrink.{w w'} F` tries to obtain `reflectsColimitsOfSize.{w w'} F`
 from some other `reflectsColimitsOfSize F`.

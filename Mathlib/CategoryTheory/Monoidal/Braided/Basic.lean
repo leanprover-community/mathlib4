@@ -151,6 +151,12 @@ def tensorLeftIsoTensorRight (X : C) :
   hom := { app Y := (β_ X Y).hom }
   inv := { app Y := (β_ X Y).inv }
 
+variable (C) in
+/-- The braiding isomorphism as a natural isomorphism of bifunctors `C ⥤ C ⥤ C`. -/
+@[simps!]
+def curriedBraidingNatIso : curriedTensor C ≅ (curriedTensor C).flip :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ β_ X Y))
+
 @[reassoc]
 theorem yang_baxter (X Y Z : C) :
     (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
