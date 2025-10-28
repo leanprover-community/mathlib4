@@ -80,15 +80,17 @@ lemma covarianceBilin_apply_eq_cov [CompleteSpace E] [IsFiniteMeasure μ]
   rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_eq_covariance h]
   rfl
 
-lemma covarianceBilin_real {μ : Measure ℝ} [IsFiniteMeasure μ] (h : MemLp id 2 μ) (x y : ℝ) :
+lemma covarianceBilin_real {μ : Measure ℝ} [IsFiniteMeasure μ] (x y : ℝ) :
     covarianceBilin μ x y = x * y * Var[id; μ] := by
-  simp only [covarianceBilin_apply_eq_cov h, RCLike.inner_apply, conj_trivial, mul_comm]
-  rw [covariance_mul_left, covariance_mul_right, ← mul_assoc, covariance_self aemeasurable_id']
-  rfl
+  by_cases h : MemLp id 2 μ
+  · simp only [covarianceBilin_apply_eq_cov h, RCLike.inner_apply, conj_trivial, mul_comm]
+    rw [covariance_mul_left, covariance_mul_right, ← mul_assoc, covariance_self aemeasurable_id']
+    rfl
+  · simp [h, variance_of_not_memLp, aestronglyMeasurable_id]
 
-lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (h : MemLp id 2 μ) (x : ℝ) :
+lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (x : ℝ) :
     covarianceBilin μ x x = x ^ 2 * Var[id; μ] := by
-  rw [covarianceBilin_real h, pow_two]
+  rw [covarianceBilin_real, pow_two]
 
 @[simp]
 lemma covarianceBilin_self_nonneg [CompleteSpace E] [IsFiniteMeasure μ] (x : E) :
