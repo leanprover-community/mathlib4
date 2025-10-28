@@ -1254,19 +1254,17 @@ theorem range_elim {α β} (b : β) (f : α → β) :
   rw [range_eq]
   simp [Function.comp_def]
 
-/-- The image of the non-`none` elements of `Option α` under `Option.elim b f` equals
-`range f`. -/
-theorem elim_image_some_eq_range {α β} (f : α → β) (b : β) :
-    (fun o : Option α => o.elim b f) '' {x : Option α | x ≠ none} = range f := by
+/-- The image of `range some` under `Option.elim b f` equals `range f`. -/
+theorem image_elim_range_some_eq_range {α β} (f : α → β) (b : β) :
+    (fun o : Option α => o.elim b f) '' range some = range f := by
   ext y
-  simp only [mem_range, mem_image, mem_setOf_eq]
+  simp only [mem_range, mem_image]
   constructor
-  · intro ⟨x, hx_ne, hx_eq⟩
-    cases x with
-    | none => contradiction
-    | some i => exact ⟨i, hx_eq⟩
+  · intro ⟨x, ⟨i, hi⟩, hx_eq⟩
+    subst hi
+    exact ⟨i, hx_eq⟩
   · intro ⟨i, hi⟩
-    exact ⟨some i, some_ne_none i, hi⟩
+    exact ⟨some i, ⟨i, rfl⟩, hi⟩
 
 end Option
 
