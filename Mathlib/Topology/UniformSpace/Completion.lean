@@ -505,6 +505,10 @@ theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf 
 def mapEquiv (e : α ≃ᵤ β) : Completion α ≃ᵤ Completion β := cPkg.mapEquiv cPkg e
 
 @[simp]
+theorem mapEquiv_symm (e : α ≃ᵤ β) : (mapEquiv e).symm = mapEquiv e.symm :=
+  cPkg.mapEquiv_symm cPkg e
+
+@[simp]
 theorem mapEquiv_coe (e : α ≃ᵤ β) (a : α) : mapEquiv e a = (e a) := cPkg.mapEquiv_coe cPkg e a
 
 end Map
