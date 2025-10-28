@@ -12,8 +12,8 @@ import Mathlib.Topology.Sets.Opens
 /-!
 # Open subgroups of a topological group
 
-This files builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
-and its additive version `OpenAddSubgroup`.  This lattice has a top element, the subgroup of all
+This file builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
+and its additive version `OpenAddSubgroup`. This lattice has a top element, the subgroup of all
 elements, but no bottom element in general. The trivial subgroup which is the natural candidate
 bottom has no reason to be open (this happens only in discrete groups).
 
@@ -136,14 +136,8 @@ instance : Inhabited (OpenSubgroup G) :=
 
 @[to_additive]
 theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) := by
-  apply isOpen_compl_iff.1
-  refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ⟨(fun y ↦ y * x⁻¹) ⁻¹' U, ?_, ?_, ?_⟩
-  · refine fun u hux hu ↦ hx ?_
-    simp only [Set.mem_preimage, SetLike.mem_coe] at hux hu ⊢
-    convert U.mul_mem (U.inv_mem hux) hu
-    simp
-  · exact U.isOpen.preimage (continuous_mul_right _)
-  · simp [one_mem]
+  have := QuotientGroup.discreteTopology U.isOpen
+  exact QuotientGroup.t1Space_iff.mp inferInstance
 
 @[to_additive]
 theorem isClopen [ContinuousMul G] (U : OpenSubgroup G) : IsClopen (U : Set G) :=
@@ -291,27 +285,19 @@ lemma subgroupOf_isOpen (U K : Subgroup G) (h : IsOpen (K : Set G)) :
     IsOpen (K.subgroupOf U : Set U) :=
   Continuous.isOpen_preimage (continuous_iff_le_induced.mpr fun _ ↦ id) _ h
 
-@[to_additive]
+@[to_additive (attr := deprecated QuotientGroup.discreteTopology (since := "2025-10-09"))]
 lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
-    DiscreteTopology (G ⧸ U) := by
-  refine discreteTopology_iff_isOpen_singleton.mpr (fun g ↦ ?_)
-  induction g using Quotient.inductionOn with | h g =>
-  change IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
-  convert_to IsOpen ((g * ·) '' U)
-  · ext g'
-    simp only [Set.mem_preimage, Set.mem_singleton_iff, QuotientGroup.eq, Set.image_mul_left]
-    rw [← U.inv_mem_iff]
-    simp
-  · exact Homeomorph.mulLeft g |>.isOpen_image |>.mpr h
+    DiscreteTopology (G ⧸ U) :=
+  QuotientGroup.discreteTopology h
 
 @[to_additive]
 instance [ContinuousMul G] (U : OpenSubgroup G) : DiscreteTopology (G ⧸ U.toSubgroup) :=
-  discreteTopology U.toSubgroup U.isOpen
+  QuotientGroup.discreteTopology U.isOpen
 
 @[to_additive]
 lemma quotient_finite_of_isOpen [ContinuousMul G] [CompactSpace G] (U : Subgroup G)
     (h : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
-  have : DiscreteTopology (G ⧸ U) := U.discreteTopology h
+  have : DiscreteTopology (G ⧸ U) := QuotientGroup.discreteTopology h
   finite_of_compact_of_discrete
 
 @[to_additive]
