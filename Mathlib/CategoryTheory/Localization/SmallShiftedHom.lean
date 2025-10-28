@@ -124,9 +124,14 @@ namespace SmallShiftedHom
 
 section
 
+variable [W.IsCompatibleWithShift M] {X Y Z : C}
+
+/-- Constructor for `SmallShiftedHom`. -/
+noncomputable def mk {m : M} [HasSmallLocalizedShiftedHom.{w} W M X Y] (f : ShiftedHom X Y m) :
+    SmallShiftedHom.{w} W X Y m :=
+  SmallHom.mk _ f
+
 variable {W}
-variable [W.IsCompatibleWithShift M]
-variable {X Y Z : C}
 
 /-- Given `f : SmallShiftedHom.{w} W X Y a`, this is the element in
 `SmallHom.{w} W (X⟦n⟧) (Y⟦a'⟧)` that is obtained by shifting by `n`
@@ -151,7 +156,7 @@ variable (W) in
 noncomputable def mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
     (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) :
     SmallShiftedHom.{w} W X Y m₀ :=
-  SmallHom.mk W (f ≫ (shiftFunctorZero' C m₀ hm₀).inv.app Y)
+  SmallShiftedHom.mk _ (ShiftedHom.mk₀ _ hm₀ f)
 
 end
 
@@ -203,6 +208,12 @@ lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
   rfl
 
 end
+
+@[simp]
+lemma equiv_mk [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M} (f : ShiftedHom X Y m) :
+    equiv W L (.mk _ f) = f.map L :=
+  ((L.commShiftIso m).app Y).homToEquiv.symm.injective
+    ((Equiv.symm_apply_apply ..).trans (by simp [ShiftedHom.map, mk]))
 
 @[simp]
 lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
@@ -310,6 +321,47 @@ lemma equiv_smallShiftedHomMap (G : D₁ ⥤ D₂) [G.CommShift M]
     ShiftedHom.mk₀_comp]
   congr 3
   simp [← Functor.map_comp_assoc, -Functor.map_comp]
+
+variable [W₁.IsCompatibleWithShift M] [W₂.IsCompatibleWithShift M]
+
+@[simp]
+lemma smallShiftedHomMap_mk {m : M} (f : ShiftedHom X₁ Y₁ m) :
+    Φ.smallShiftedHomMap eX eY (.mk _ f) =
+      .mk _ ((ShiftedHom.mk₀ _ rfl eX.inv).comp
+        ((f.map Φ.functor).comp (.mk₀ _ rfl eY.hom) (zero_add m)) (add_zero _)) := by
+  apply (SmallShiftedHom.equiv W₂ W₂.Q).injective
+  let e := CatCommSq.iso Φ.functor W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)
+  simp only [Φ.equiv_smallShiftedHomMap W₁.Q W₂.Q _ _ (Φ.localizedFunctor W₁.Q W₂.Q) e,
+    Functor.comp_obj, ShiftedHom.map, SmallShiftedHom.equiv_mk, Functor.map_comp, assoc,
+    ShiftedHom.comp_mk₀, NatTrans.shift_app, Functor.commShiftIso_comp_inv_app,
+    Functor.commShiftIso_comp_hom_app, Iso.hom_inv_id_app_assoc, ShiftedHom.mk₀_comp,
+    Functor.commShiftIso_hom_naturality]
+  nth_rw 2 [← Functor.map_comp_assoc]
+  simp [reassoc_of% (NatIso.naturality_2 e f)]
+
+lemma smallShiftedHomMap_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X₁ ⟶ Y₁) :
+    Φ.smallShiftedHomMap eX eY (.mk₀ _ _ hm₀ f) =
+      .mk₀ _ _ hm₀ (eX.inv ≫ Φ.functor.map f ≫ eY.hom) := by
+  simp [SmallShiftedHom.mk₀]
+
+noncomputable def smallShiftedHomMap_comp
+    [HasSmallLocalizedShiftedHom.{w} W₁ M Y₁ Z₁] [HasSmallLocalizedShiftedHom.{w''} W₂ M Z₂ Z₂]
+    [HasSmallLocalizedShiftedHom.{w''} W₂ M Y₂ Z₂] [HasSmallLocalizedShiftedHom.{w} W₁ M X₁ Z₁]
+    [HasSmallLocalizedShiftedHom.{w} W₁ M Z₁ Z₁] [HasSmallLocalizedShiftedHom.{w''} W₂ M X₂ Z₂]
+    {a b c : M} (f : SmallShiftedHom.{w} W₁ X₁ Y₁ a) (g : SmallShiftedHom.{w} W₁ Y₁ Z₁ b)
+    (h : b + a = c) :
+    Φ.smallShiftedHomMap eX eZ (f.comp g h) =
+      (Φ.smallShiftedHomMap eX eY f).comp (Φ.smallShiftedHomMap eY eZ g) h := by
+  apply (SmallShiftedHom.equiv W₂ W₂.Q).injective
+  let e := CatCommSq.iso Φ.functor W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)
+  simp only [Φ.equiv_smallShiftedHomMap W₁.Q W₂.Q _ _ (Φ.localizedFunctor W₁.Q W₂.Q) e,
+    SmallShiftedHom.equiv_comp, ShiftedHom.map_comp]
+  rw [ShiftedHom.comp_assoc _ _ _ _ (zero_add b) (by simpa),
+    ShiftedHom.comp_assoc _ _ _ _ h (by simpa),
+    ShiftedHom.comp_assoc _ _ _ _ (add_zero b) (by simpa),
+    ← ShiftedHom.comp_assoc _ _ _ (add_zero 0) (add_zero b) (by simp),
+    ShiftedHom.mk₀_comp_mk₀]
+  simp
 
 end LocalizerMorphism
 

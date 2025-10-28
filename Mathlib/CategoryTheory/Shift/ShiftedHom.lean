@@ -163,6 +163,12 @@ def map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M] :
   F.map f ≫ (F.commShiftIso a).hom.app Y
 
 @[simp]
+lemma map_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (F : C ⥤ D) [F.CommShift M] :
+    (ShiftedHom.mk₀ m₀ hm₀ f).map F = .mk₀ _ hm₀ (F.map f) := by
+  subst hm₀
+  simp [map, mk₀, shiftFunctorZero', F.commShiftIso_zero M, ← Functor.map_comp_assoc]
+
+@[simp]
 lemma id_map {a : M} (f : ShiftedHom X Y a) : f.map (𝟭 C) = f := by
   simp [map, Functor.commShiftIso, Functor.CommShift.iso]
 
