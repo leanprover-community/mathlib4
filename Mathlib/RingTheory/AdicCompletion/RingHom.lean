@@ -133,16 +133,31 @@ theorem evalₐ_comp_liftRingHom (n : ℕ) :
   ext
   exact evalₐ_liftRingHom_apply I f hf n _
 
+/--
+When `S` is `I`-adic complete, the canonical map from `M` to its `I`-adic completion is an `S`-algebra
+isomorphism.
+-/
+noncomputable def ofAlgEquiv [IsAdicComplete I S] : S →ₐ[S] AdicCompletion I S :=
+  { ofLinearEquiv I S with
+    map_mul' := fun x y ↦ sorry
+  }
+
+
+@[simp]
+theorem ofLinearEquiv_apply [IsAdicComplete I S] (x : M) :
+    ofLinearEquiv I M x = of I M x :=
+  rfl
+
 end AdicCompletion
 
 namespace IsAdicComplete
 
 variable [IsAdicComplete I S]
 
--- def liftRingHom (f : (n : ℕ) → R →+* S ⧸ I ^ n)
---     (hf : ∀ {m n : ℕ} (hle : m ≤ n), (factorPow I hle).comp (f n) = f m) :
---     R →+* S :=
---   (linearEquiv I S).symm.toRingHom.comp (AdicCompletion.liftRingHom I f hf)
+def liftRingHom (f : (n : ℕ) → R →+* S ⧸ I ^ n)
+    (hf : ∀ {m n : ℕ} (hle : m ≤ n), (factorPow I hle).comp (f n) = f m) :
+    R →+* S :=
+  (linearEquiv I S).symm.toRingHom.comp (AdicCompletion.liftRingHom I f hf)
 
 namespace StrictMono
 
