@@ -23,6 +23,8 @@ variable {D : Type u'} [Category.{v'} D] [Abelian D]
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
+section ShiftedHom
+
 open DerivedCategory in
 /-- The map between `ShiftedHom` induced by `F.mapDerivedCategory` where `F` is exact. -/
 noncomputable def Functor.mapShiftedHom
@@ -31,13 +33,6 @@ noncomputable def Functor.mapShiftedHom
     ShiftedHom ((singleFunctor D 0).obj (F.obj X)) ((singleFunctor D 0).obj (F.obj Y)) n :=
   fun f ↦ (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫
     f.map F.mapDerivedCategory ≫ ((F.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦n⟧'
-
-/-- The map between `Ext` induced by `F.mapShiftedHomAddHom`. -/
-noncomputable def Functor.mapExt [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    Ext.{w} X Y n → Ext.{w'} (F.obj X) (F.obj Y) n :=
-  letI := HasDerivedCategory.standard C
-  letI := HasDerivedCategory.standard D
-  (Ext.homEquiv.symm ∘ (F.mapShiftedHom X Y n)) ∘ Ext.homEquiv
 
 lemma Functor.mapShiftedHom_zero [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D]
     (X Y : C) (n : ℤ) : F.mapShiftedHom X Y n 0 = 0 := by simp [mapShiftedHom, ShiftedHom.map]
@@ -59,18 +54,6 @@ noncomputable def Functor.mapShiftedHomAddHom
   toFun := F.mapShiftedHom X Y n
   map_zero' := F.mapShiftedHom_zero ..
   map_add' _ _ := F.mapShiftedHom_add .. }
-
-/-- The additive homomorphism between `Ext` induced by `F.mapShiftedHomAddHom`. -/
-noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    Ext.{w} X Y n →+ Ext.{w'} (F.obj X) (F.obj Y) n :=
-  letI := HasDerivedCategory.standard C
-  letI := HasDerivedCategory.standard D
-  (Ext.homAddEquiv.symm.toAddMonoidHom.comp (F.mapShiftedHomAddHom X Y n)).comp
-    Ext.homAddEquiv.toAddMonoidHom
-
-@[simp]
-lemma Functor.mapExtAddHom_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    F.mapExtAddHom X Y n = F.mapExt X Y n := rfl
 
 variable (R : Type*) [Ring R] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] [F.Linear R]
 
@@ -111,6 +94,31 @@ noncomputable def Functor.mapShiftedHomLinearMap
   __ := F.mapShiftedHomAddHom X Y n
   map_smul' := F.mapShiftedHomAddHom_linear R X Y n
 
+end ShiftedHom
+
+section Ext
+
+/-- The map between `Ext` induced by `F.mapShiftedHomAddHom`. -/
+noncomputable def Functor.mapExt [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
+    Ext.{w} X Y n → Ext.{w'} (F.obj X) (F.obj Y) n :=
+  letI := HasDerivedCategory.standard C
+  letI := HasDerivedCategory.standard D
+  (Ext.homEquiv.symm ∘ (F.mapShiftedHom X Y n)) ∘ Ext.homEquiv
+
+/-- The additive homomorphism between `Ext` induced by `F.mapShiftedHomAddHom`. -/
+noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
+    Ext.{w} X Y n →+ Ext.{w'} (F.obj X) (F.obj Y) n :=
+  letI := HasDerivedCategory.standard C
+  letI := HasDerivedCategory.standard D
+  (Ext.homAddEquiv.symm.toAddMonoidHom.comp (F.mapShiftedHomAddHom X Y n)).comp
+    Ext.homAddEquiv.toAddMonoidHom
+
+@[simp]
+lemma Functor.mapExtAddHom_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
+    F.mapExtAddHom X Y n = F.mapExt X Y n := rfl
+
+variable (R : Type*) [Ring R] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] [F.Linear R]
+
 /-- Upgrade of `F.mapExtAddHom` assuming `F` is linear. -/
 noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
     Ext.{w} X Y n →ₗ[R] Ext.{w'} (F.obj X) (F.obj Y) n :=
@@ -121,11 +129,11 @@ noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : 
 
 @[simp]
 lemma Functor.mapExtLinearMap_toAddMonoidHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    F.mapExtLinearMap R X Y n = F.mapExtAddHom X Y n := rfl
+    F.mapExtLinearMap R X Y n = F.mapExtAddHom X Y n := sorry
 
 @[simp]
 lemma Functor.mapExtLinearMap_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
-    F.mapExtLinearMap R X Y n = F.mapExt X Y n := rfl
+    F.mapExtLinearMap R X Y n = F.mapExt X Y n := sorry
 
 namespace Abelian.Ext
 
@@ -141,5 +149,7 @@ lemma mapExt_extClass_eq_extClass_map [HasExt.{w} C] [HasExt.{w'} D] {S : ShortC
     (hS : S.ShortExact) : F.mapExt S.X₃ S.X₁ 1 hS.extClass = (hS.map_of_exact F).extClass := sorry
 
 end Abelian.Ext
+
+end Ext
 
 end CategoryTheory
