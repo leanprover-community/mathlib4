@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 /-!
 # Chosen pullbacks
 
-# Main declarations
+## Main declarations
 
 - `ChosenPullback` : For a morphism `f : Y ⟶ X` in `C`, the type class `ChosenPullback f`
 provides the data of a pullback functor `Over X ⥤ Over Y` as a right adjoint to `Over.map f`.
