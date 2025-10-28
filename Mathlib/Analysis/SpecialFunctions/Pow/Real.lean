@@ -597,31 +597,19 @@ theorem rpow_le_rpow_of_exponent_le (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x
   repeat' rw [rpow_def_of_pos (lt_of_lt_of_le zero_lt_one hx)]
   rw [exp_le_exp]; exact mul_le_mul_of_nonneg_left hyz (log_nonneg hx)
 
-theorem rpow_lt_rpow_of_exponent_neg {x y z : ℝ} (hy : 0 < y) (hxy : y < x) (hz : z < 0) :
-    x ^ z < y ^ z := by
-  have hx : 0 < x := hy.trans hxy
-  rw [← neg_neg z, Real.rpow_neg (le_of_lt hx) (-z), Real.rpow_neg (le_of_lt hy) (-z),
-      inv_lt_inv₀ (rpow_pos_of_pos hx _) (rpow_pos_of_pos hy _)]
-  exact Real.rpow_lt_rpow (by positivity) hxy <| neg_pos_of_neg hz
+@[deprecated (since := "2025-10-28")] alias rpow_lt_rpow_of_exponent_neg :=
+  rpow_lt_rpow_of_neg
 
 theorem strictAntiOn_rpow_Ioi_of_exponent_neg {r : ℝ} (hr : r < 0) :
     StrictAntiOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
-  fun _ ha _ _ hab => rpow_lt_rpow_of_exponent_neg ha hab hr
+  fun _ ha _ _ hab => rpow_lt_rpow_of_neg ha hab hr
 
-theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x) (hz : z ≤ 0) :
-    x ^ z ≤ y ^ z := by
-  rcases ne_or_eq z 0 with hz_zero | rfl
-  case inl =>
-    rcases ne_or_eq x y with hxy' | rfl
-    case inl =>
-      exact le_of_lt <| rpow_lt_rpow_of_exponent_neg hy (Ne.lt_of_le (id (Ne.symm hxy')) hxy)
-        (Ne.lt_of_le hz_zero hz)
-    case inr => simp
-  case inr => simp
+@[deprecated (since := "2025-10-28")] alias rpow_le_rpow_of_exponent_nonpos :=
+  rpow_le_rpow_of_nonpos
 
 theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
     AntitoneOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
-  fun _ ha _ _ hab => rpow_le_rpow_of_exponent_nonpos ha hab hr
+  fun _ ha _ _ hab => rpow_le_rpow_of_nonpos ha hab hr
 
 @[simp]
 theorem rpow_le_rpow_left_iff (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
