@@ -826,8 +826,13 @@ variable (I M) in
 When `M` is `I`-adic complete, the canonical map from `M` to its `I`-adic completion is a linear
 equivalence.
 -/
-def linearEquiv [IsAdicComplete I M] : M ≃ₗ[R] AdicCompletion I M :=
+def ofLinearEquiv [IsAdicComplete I M] : M ≃ₗ[R] AdicCompletion I M :=
   LinearEquiv.ofBijective (of I M) (bijective_of I M)
+
+@[simp]
+theorem ofLinearEquiv_apply [IsAdicComplete I M] (x : M) :
+    ofLinearEquiv I M x = of I M x :=
+  rfl
 
 end Bijective
 
@@ -850,13 +855,13 @@ linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
 -/
 def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) :
-    M →ₗ[R] N := (linearEquiv I N).symm ∘ₗ AdicCompletion.lift I f h
+    M →ₗ[R] N := (ofLinearEquiv I N).symm ∘ₗ AdicCompletion.lift I f h
 
 @[simp]
 theorem of_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (x : M) :
     of I N (lift I f h x) = AdicCompletion.lift I f h x := by
-  simp [lift, linearEquiv]
+  simp [lift, ofLinearEquiv]
 
 @[simp]
 theorem of_comp_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
@@ -873,7 +878,7 @@ projection `M →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
 theorem mk_lift_apply {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) (x : M) :
     (Submodule.Quotient.mk (lift I f h x)) = f n x := by
-  simp only [lift, linearEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  simp only [lift, ofLinearEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
   rw [← mkQ_apply, ← eval_of]
   simp
 
@@ -970,7 +975,7 @@ theorem of_comp_lift :
 @[simp]
 theorem mk_lift_apply {n : ℕ} (x : M) :
     (Submodule.Quotient.mk (lift I ha f hf x)) = f n x := by
-  simp only [lift, IsAdicComplete.lift, linearEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  simp only [lift, IsAdicComplete.lift, ofLinearEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe,
     Function.comp_apply]
   rw [← mkQ_apply, ← eval_of]
   simp [extend_eq ha f hf]
