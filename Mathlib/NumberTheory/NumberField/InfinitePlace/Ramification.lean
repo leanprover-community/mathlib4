@@ -528,8 +528,7 @@ variable [w.1.LiesOver v.1]
 
 theorem comap_eq : w.comap (algebraMap K L) = v := by
   ext
-  simp_rw [comap_apply, coe_apply]
-  exact AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
+  simpa only [coe_apply] using AbsoluteValue.ext_iff.1 (LiesOver.comp_eq w.1 v.1) _
 
 theorem mk_embedding_comp : InfinitePlace.mk (w.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.mk_embedding, comap_eq w v]
