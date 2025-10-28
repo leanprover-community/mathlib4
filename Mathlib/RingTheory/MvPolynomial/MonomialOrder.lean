@@ -56,7 +56,7 @@ and a monomial order `m : MonomialOrder σ`.
   is nonzero, then the leading coefficient is that product.
 
 * `m.degree_mul_of_isRegular_left`, `m.degree_mul_of_isRegular_right` and `m.degree_mul`
-  assert the  equality when the leading coefficient of `f` or `g` is regular,
+  assert the equality when the leading coefficient of `f` or `g` is regular,
   or when `R` is a domain and `f` and `g` are nonzero.
 
 * `m.leadingCoeff_mul_of_isRegular_left`, `m.leadingCoeff_mul_of_isRegular_right`
