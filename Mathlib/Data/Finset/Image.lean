@@ -483,8 +483,9 @@ theorem attach_insert [DecidableEq α] {a : α} {s : Finset α} :
         ((attach s).image fun x => ⟨x.1, mem_insert_of_mem x.2⟩) :=
   ext fun ⟨x, hx⟩ =>
     ⟨Or.casesOn (mem_insert.1 hx)
-        (fun h : x = a => fun _ => mem_insert.2 <| Or.inl <| Subtype.ext h) fun h : x ∈ s => fun _ =>
-        mem_insert_of_mem <| mem_image.2 <| ⟨⟨x, h⟩, mem_attach _ _, Subtype.ext rfl⟩,
+        (fun h : x = a => fun _ => mem_insert.2 <| Or.inl <| Subtype.ext h)
+        fun h : x ∈ s => fun _ =>
+          mem_insert_of_mem <| mem_image.2 <| ⟨⟨x, h⟩, mem_attach _ _, Subtype.ext rfl⟩,
       fun _ => Finset.mem_attach _ _⟩
 
 @[simp]
