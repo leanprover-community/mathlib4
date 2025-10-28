@@ -17,7 +17,7 @@ operations on the codomain of `X`.
 See for instance `HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`.
 -/
 
-open MeasureTheory
+open MeasureTheory Measure
 
 open scoped ENNReal
 
@@ -41,7 +41,7 @@ variable {X μ} {P : Measure Ω}
 
 lemma HasLaw.congr {Y : Ω → 𝓧} (hX : HasLaw X μ P) (hY : Y =ᵐ[P] X) : HasLaw Y μ P where
   aemeasurable := hX.aemeasurable.congr hY.symm
-  map_eq := by rw [Measure.map_congr hY, hX.map_eq]
+  map_eq := by rw [map_congr hY, hX.map_eq]
 
 lemma _root_.MeasureTheory.MeasurePreserving.hasLaw (h : MeasurePreserving X P μ) :
     HasLaw X μ P where
@@ -52,6 +52,17 @@ lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
     MeasurePreserving X P μ where
   measurable := h₂
   map_eq := h₁.map_eq
+
+protected lemma HasLaw.id : HasLaw id μ μ where
+  map_eq := map_id
+
+protected theorem HasLaw.isFiniteMeasure_iff (hX : HasLaw X μ P) :
+    IsFiniteMeasure μ ↔ IsFiniteMeasure P := by
+  rw [← hX.map_eq, isFiniteMeasure_map_iff hX.aemeasurable]
+
+protected theorem HasLaw.isProbabilityMeasure_iff (hX : HasLaw X μ P) :
+    IsProbabilityMeasure μ ↔ IsProbabilityMeasure P := by
+  rw [← hX.map_eq, isProbabilityMeasure_map_iff hX.aemeasurable]
 
 @[fun_prop]
 lemma HasLaw.comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure 𝒴} {Y : 𝓧 → 𝒴}
@@ -69,7 +80,7 @@ lemma HasLaw.fun_comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measur
 @[to_additive]
 lemma IndepFun.hasLaw_mul {M : Type*} [Monoid M] {mM : MeasurableSpace M} [MeasurableMul₂ M]
     {μ ν : Measure M} [SigmaFinite μ] [SigmaFinite ν] {X Y : Ω → M}
-    (hX : HasLaw X μ P) (hY : HasLaw Y ν P) (hXY : IndepFun X Y P) :
+    (hX : HasLaw X μ P) (hY : HasLaw Y ν P) (hXY : X ⟂ᵢ[P] Y) :
     HasLaw (X * Y) (μ ∗ₘ ν) P where
   map_eq := by
     rw [hXY.map_mul_eq_map_mconv_map₀' hX.aemeasurable hY.aemeasurable, hX.map_eq, hY.map_eq]
@@ -79,15 +90,14 @@ lemma IndepFun.hasLaw_mul {M : Type*} [Monoid M] {mM : MeasurableSpace M} [Measu
 @[to_additive]
 lemma IndepFun.hasLaw_fun_mul {M : Type*} [Monoid M] {mM : MeasurableSpace M} [MeasurableMul₂ M]
     {μ ν : Measure M} [SigmaFinite μ] [SigmaFinite ν] {X Y : Ω → M}
-    (hX : HasLaw X μ P) (hY : HasLaw Y ν P) (hXY : IndepFun X Y P) :
+    (hX : HasLaw X μ P) (hY : HasLaw Y ν P) (hXY : X ⟂ᵢ[P] Y) :
     HasLaw (fun ω ↦ X ω * Y ω) (μ ∗ₘ ν) P := hXY.hasLaw_mul hX hY
 
 lemma HasLaw.integral_comp {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {X : Ω → 𝓧} (hX : HasLaw X μ P) {f : 𝓧 → E} (hf : AEStronglyMeasurable f μ) :
     P[f ∘ X] = ∫ x, f x ∂μ := by
-  rw [← hX.map_eq, integral_map hX.aemeasurable]
-  · rfl
-  · rwa [hX.map_eq]
+  rw [← hX.map_eq, integral_map hX.aemeasurable, Function.comp_def]
+  rwa [hX.map_eq]
 
 lemma HasLaw.lintegral_comp {X : Ω → 𝓧} (hX : HasLaw X μ P) {f : 𝓧 → ℝ≥0∞}
     (hf : AEMeasurable f μ) : ∫⁻ ω, f (X ω) ∂P = ∫⁻ x, f x ∂μ := by

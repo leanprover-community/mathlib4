@@ -223,7 +223,8 @@ lemma ext_of_isFaithful [IsFaithful R L M] {x y : L} (h : ∀ m : M, ⁅x, m⁆ 
 @[simp]
 lemma toEnd_eq_zero_iff [IsFaithful R L M] {x : L} :
     toEnd R L M x = 0 ↔ x = 0 := by
-  simp [- LieHom.map_zero, ← (toEnd R L M).map_zero]
+  rw [← (toEnd R L M).toLinearMap.map_zero]
+  exact toEnd_eq_iff R L M
 
 lemma isFaithful_iff' : IsFaithful R L M ↔ ∀ x : L, (∀ m : M, ⁅x, m⁆ = 0) → x = 0 := by
   refine ⟨fun h x hx ↦ ?_, fun h ↦ ⟨fun x y hxy ↦ ?_⟩⟩
@@ -341,9 +342,6 @@ theorem toEnd_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
 @[simp]
 theorem toEnd_restrict_eq_toEnd (h := N.toEnd_comp_subtype_mem x) :
     (toEnd R L M x).restrict h = toEnd R L N x := by
-  ext
-  simp only [LinearMap.restrict_coe_apply, toEnd_apply_apply, ← coe_bracket,
-    SetLike.coe_eq_coe]
   rfl
 
 lemma mapsTo_pow_toEnd_sub_algebraMap {φ : R} {k : ℕ} {x : L} :

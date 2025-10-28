@@ -149,6 +149,14 @@ theorem principal_singleton (a : α) : 𝓟 {a} = pure a :=
   Filter.ext fun s => by simp only [mem_pure, mem_principal, singleton_subset_iff]
 
 @[simp]
+theorem biSup_pure_eq_principal (s : Set α) : ⨆ a ∈ s, pure a = 𝓟 s :=
+  Filter.ext fun s => by simp [Set.subset_def]
+
+@[simp]
+theorem iSup_pure_eq_top : ⨆ a, pure a = (⊤ : Filter α) := by
+  rw [← principal_univ, ← biSup_pure_eq_principal, iSup_univ]
+
+@[simp]
 theorem map_pure (f : α → β) (a : α) : map f (pure a) = pure (f a) :=
   rfl
 
@@ -386,22 +394,13 @@ theorem map_le_iff_le_comap : map m f ≤ g ↔ f ≤ comap m g :=
 theorem gc_map_comap (m : α → β) : GaloisConnection (map m) (comap m) :=
   fun _ _ => map_le_iff_le_comap
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono : Monotone (map m) :=
   (gc_map_comap m).monotone_l
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono : Monotone (comap m) :=
   (gc_map_comap m).monotone_u
-
-/-- Temporary lemma that we can tag with `gcongr` -/
-@[gcongr] theorem _root_.GCongr.Filter.map_le_map {F G : Filter α} (h : F ≤ G) :
-    map m F ≤ map m G := map_mono h
-
-/-- Temporary lemma that we can tag with `gcongr` -/
-@[gcongr]
-theorem _root_.GCongr.Filter.comap_le_comap {F G : Filter β} (h : F ≤ G) :
-    comap m F ≤ comap m G := comap_mono h
 
 @[simp] theorem map_bot : map m ⊥ = ⊥ := (gc_map_comap m).l_bot
 

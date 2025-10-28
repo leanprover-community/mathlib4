@@ -64,7 +64,14 @@ theorem hasseDeriv_coeff (n : ℕ) :
     (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by
   rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial]
   · simp only [if_true, add_tsub_cancel_right]
-  · grind [coeff_monomial, Nat.choose_eq_zero_of_lt, Nat.cast_zero, zero_mul]
+  · #adaptation_note
+    /-- Prior to nightly-2025-08-14, this was working as
+    `grind [coeff_monomial, Nat.choose_eq_zero_of_lt, Nat.cast_zero, zero_mul]` -/
+    intro i _hi hink
+    rw [coeff_monomial]
+    by_cases hik : i < k
+    · simp only [Nat.choose_eq_zero_of_lt hik, ite_self, Nat.cast_zero, zero_mul]
+    · grind
   · intro h
     simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
@@ -116,8 +123,9 @@ theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
     zero_mul, monomial_zero_right]
 
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
-  induction' k with k ih
-  · rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
+  induction k with
+  | zero => rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
+  | succ k ih => ?_
   ext f n : 2
   rw [iterate_succ_apply', ← ih]
   simp only [LinearMap.smul_apply, coeff_smul, LinearMap.map_smul_of_tower, coeff_derivative,
@@ -160,7 +168,7 @@ theorem hasseDeriv_comp (k l : ℕ) :
   rw [cast_choose ℚ h1, cast_choose ℚ h2, cast_choose ℚ h3, cast_choose ℚ hikl]
   rw [show i - (k + l) = i - l - k by rw [add_comm]; apply tsub_add_eq_tsub_tsub]
   simp only [add_tsub_cancel_left]
-  field_simp; ring
+  field_simp
 
 theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) ≤ natDegree p - n := by

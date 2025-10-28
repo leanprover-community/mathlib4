@@ -44,7 +44,7 @@ import Mathlib.RingTheory.Noetherian.Defs
 * `RingHom.isSemisimpleRing_of_surjective`: any quotient of a semisimple ring is semisimple.
 
 ## TODO
-* Artin-Wedderburn Theory
+* Artin-Wedderburn Theory (uniqueness)
 * Unify with the work on Schur's Lemma in a category theory context
 
 -/
@@ -53,20 +53,24 @@ import Mathlib.RingTheory.Noetherian.Defs
 variable {ι : Type*} (R S : Type*) [Ring R] [Ring S] (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- A module is simple when it has only two submodules, `⊥` and `⊤`. -/
-abbrev IsSimpleModule :=
+@[mk_iff] class IsSimpleModule extends
   IsSimpleOrder (Submodule R M)
 
 /-- A module is semisimple when every submodule has a complement, or equivalently, the module
   is a direct sum of simple modules. -/
-abbrev IsSemisimpleModule :=
+@[mk_iff] class IsSemisimpleModule extends
   ComplementedLattice (Submodule R M)
+
+instance [IsSimpleModule R M] : IsSemisimpleModule R M where
+
+instance (R) [DivisionRing R] : IsSimpleModule R R where
 
 /-- A ring is semisimple if it is semisimple as a module over itself. -/
 abbrev IsSemisimpleRing := IsSemisimpleModule R R
 
 variable {R S} in
-theorem RingEquiv.isSemisimpleRing (e : R ≃+* S) [IsSemisimpleRing R] : IsSemisimpleRing S :=
-  (Submodule.orderIsoMapComap e.toSemilinearEquiv).complementedLattice
+theorem RingEquiv.isSemisimpleRing (e : R ≃+* S) [IsSemisimpleRing R] : IsSemisimpleRing S where
+  __ := (Submodule.orderIsoMapComap e.toSemilinearEquiv).complementedLattice
 
 variable {R S} in
 theorem RingEquiv.isSemisimpleRing_iff (e : R ≃+* S) : IsSemisimpleRing R ↔ IsSemisimpleRing S :=
@@ -82,25 +86,24 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
 variable {m : Submodule R M} {N : Type*} [AddCommGroup N] {R S M}
 
 theorem LinearMap.isSimpleModule_iff_of_bijective [Module S N] {σ : R →+* S} [RingHomSurjective σ]
-    (l : M →ₛₗ[σ] N) (hl : Function.Bijective l) : IsSimpleModule R M ↔ IsSimpleModule S N :=
-  (Submodule.orderIsoMapComapOfBijective l hl).isSimpleOrder_iff
+    (l : M →ₛₗ[σ] N) (hl : Function.Bijective l) : IsSimpleModule R M ↔ IsSimpleModule S N := by
+  simp_rw [isSimpleModule_iff, (Submodule.orderIsoMapComapOfBijective l hl).isSimpleOrder_iff]
 
 variable [Module R N]
 
-theorem IsSimpleModule.congr (e : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=
-  (Submodule.orderIsoMapComap e).isSimpleOrder
+theorem IsSimpleModule.congr (e : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M where
+  __ := (Submodule.orderIsoMapComap e).isSimpleOrder
 
 theorem LinearEquiv.isSimpleModule_iff (e : M ≃ₗ[R] N) : IsSimpleModule R M ↔ IsSimpleModule R N :=
   ⟨(·.congr e.symm), (·.congr e)⟩
 
 theorem isSimpleModule_iff_isAtom : IsSimpleModule R m ↔ IsAtom m := by
-  rw [← Set.isSimpleOrder_Iic_iff_isAtom]
+  rw [← Set.isSimpleOrder_Iic_iff_isAtom, isSimpleModule_iff]
   exact m.mapIic.isSimpleOrder_iff
 
 theorem isSimpleModule_iff_isCoatom : IsSimpleModule R (M ⧸ m) ↔ IsCoatom m := by
-  rw [← Set.isSimpleOrder_Ici_iff_isCoatom]
-  apply OrderIso.isSimpleOrder_iff
-  exact Submodule.comapMkQRelIso m
+  rw [← Set.isSimpleOrder_Ici_iff_isCoatom, isSimpleModule_iff]
+  exact (Submodule.comapMkQRelIso m).isSimpleOrder_iff
 
 theorem covBy_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
     A ⋖ B ↔ IsSimpleModule R (B ⧸ Submodule.comap B.subtype A) := by
@@ -137,6 +140,7 @@ theorem ker_toSpanSingleton_isMaximal {m : M} (hm : m ≠ 0) :
   rw [Ideal.isMaximal_def, ← isSimpleModule_iff_isCoatom]
   exact congr (quotKerEquivOfSurjective _ <| toSpanSingleton_surjective R hm)
 
+open scoped IsSimpleOrder in
 instance : IsNoetherian R M := isNoetherian_iff'.mpr inferInstance
 
 end IsSimpleModule
@@ -162,11 +166,12 @@ theorem IsSimpleModule.annihilator_isMaximal {R} [CommRing R] [Module R M]
   rwa [e.annihilator_eq, I.annihilator_quotient]
 
 theorem isSimpleModule_iff_toSpanSingleton_surjective : IsSimpleModule R M ↔
-    Nontrivial M ∧ ∀ x : M, x ≠ 0 → Function.Surjective (LinearMap.toSpanSingleton R M x) :=
-  ⟨fun h ↦ ⟨h.nontrivial, fun _ ↦ h.toSpanSingleton_surjective⟩, fun ⟨_, h⟩ ↦
+    Nontrivial M ∧ ∀ x : M, x ≠ 0 → Function.Surjective (LinearMap.toSpanSingleton R M x) where
+  mp h := ⟨h.nontrivial, fun _ ↦ h.toSpanSingleton_surjective⟩
+  mpr := fun ⟨_, h⟩ ↦ (isSimpleModule_iff R M).mpr
     ⟨fun m ↦ or_iff_not_imp_left.mpr fun ne_bot ↦
       have ⟨x, hxm, hx0⟩ := m.ne_bot_iff.mp ne_bot
-      top_unique <| fun z _ ↦ by obtain ⟨y, rfl⟩ := h x hx0 z; exact m.smul_mem _ hxm⟩⟩
+      top_unique <| fun z _ ↦ by obtain ⟨y, rfl⟩ := h x hx0 z; exact m.smul_mem _ hxm⟩
 
 /-- A ring is a simple module over itself iff it is a division ring. -/
 theorem isSimpleModule_self_iff_isUnit :
@@ -179,10 +184,48 @@ theorem isSimpleModule_self_iff_isUnit :
     exact ⟨⟨x, y, left_inv_eq_right_inv hzy hyx ▸ hzy, hyx⟩, rfl⟩
 
 theorem IsSemisimpleModule.of_sSup_simples_eq_top
-    (h : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M :=
-  complementedLattice_of_sSup_atoms_eq_top (by simp_rw [← h, isSimpleModule_iff_isAtom])
+    (h : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M where
+  __ := complementedLattice_of_sSup_atoms_eq_top (by simp_rw [← h, isSimpleModule_iff_isAtom])
+
+namespace Module.Finite
+
+variable (R₀ P : Type*) [Semiring R₀] [AddCommMonoid P] [Module R P]
+
+section
+
+variable [Module R₀ P] [SMulCommClass R R₀ P] [Module.Finite R₀ (M →ₗ[R] P)]
+
+theorem of_isComplemented_domain (h : IsComplemented m) : Module.Finite R₀ (m →ₗ[R] P) :=
+  .of_surjective (.lcomp R₀ P ..) (LinearMap.surjective_comp_subtype_of_isComplemented h)
+
+instance [IsSemisimpleModule R M] : Module.Finite R₀ (m →ₗ[R] P) :=
+  .of_isComplemented_domain _ _ (exists_isCompl m)
+
+end
+
+section
+
+variable [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R]
+  [IsScalarTower R₀ R M] [Module.Finite R₀ (P →ₗ[R] M)]
+
+theorem of_isComplemented_codomain (h : IsComplemented m) : Module.Finite R₀ (P →ₗ[R] m) :=
+  .of_surjective (.compRight ..) (LinearMap.surjective_comp_linearProjOfIsCompl h.choose_spec)
+
+instance [IsSemisimpleModule R M] : Module.Finite R₀ (P →ₗ[R] m) :=
+  .of_isComplemented_codomain _ _ (exists_isCompl m)
+
+end
+
+end Module.Finite
 
 namespace IsSemisimpleModule
+
+theorem eq_bot_or_exists_simple_le (N : Submodule R M) [IsSemisimpleModule R N] :
+    N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
+  rw [← N.subsingleton_iff_eq_bot, ← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top]
+  refine (eq_bot_or_exists_atom_le _).imp .symm fun ⟨m, h, _⟩ ↦ ⟨_, N.map_subtype_le m, ?_⟩
+  rw [← isSimpleModule_iff_isAtom] at h
+  exact .congr (m.equivMapOfInjective _ N.subtype_injective).symm
 
 variable [IsSemisimpleModule R M]
 
@@ -190,22 +233,17 @@ theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
     (hf : Function.Injective f) (g : N →ₗ[R] P) :
     ∃ h : M →ₗ[R] P, h ∘ₗ f = g :=
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.range f)
-  ⟨g ∘ₗ LinearMap.linearProjOfIsCompl _ f hf compl, by ext; simp⟩
+  ⟨g ∘ₗ f.linearProjOfIsCompl _ hf compl, by ext; simp⟩
 
-theorem lifting_property (f : M →ₗ[R] N) (hf : Function.Surjective f) :
-    ∃ h : N →ₗ[R] M, f ∘ₗ h = LinearMap.id := by
+theorem lifting_property {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N)
+    (hf : Function.Surjective f) (g : P →ₗ[R] N) :
+    ∃ h : P →ₗ[R] M, f ∘ₗ h = g := by
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.ker f)
-  use Submodule.subtype _ ∘ₗ ((f.quotKerEquivOfSurjective hf).symm ≪≫ₗ
-    Submodule.quotientEquivOfIsCompl _ m compl).toLinearMap
-  ext x
-  dsimp
-  obtain ⟨z, rfl⟩ := hf x
-  rw [← LinearMap.sub_mem_ker_iff, ← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
-    map_sub, Submodule.mkQ_apply, Submodule.mkQ_apply, Submodule.mk_quotientEquivOfIsCompl_apply,
-    ← LinearMap.quotKerEquivOfSurjective_apply_mk f hf, LinearEquiv.symm_apply_apply, sub_self]
-
-theorem eq_bot_or_exists_simple_le (N : Submodule R M) : N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
-  simpa only [isSimpleModule_iff_isAtom, and_comm] using eq_bot_or_exists_atom_le _
+  let e := (Submodule.quotientEquivOfIsCompl _ m compl).symm ≪≫ₗ f.quotKerEquivOfSurjective hf
+  refine ⟨Submodule.subtype _ ∘ₗ e.symm.toLinearMap ∘ₗ g, LinearMap.ext fun x ↦ ?_⟩
+  obtain ⟨z, eq⟩ := e.surjective (g x)
+  simp only [LinearMap.comp_apply, ← eq, LinearEquiv.coe_coe, e.symm_apply_apply]
+  simp [e]
 
 theorem sSup_simples_le (N : Submodule R M) :
     sSup { m : Submodule R M | IsSimpleModule R m ∧ m ≤ N } = N := by
@@ -231,14 +269,14 @@ theorem annihilator_isRadical (R) [CommRing R] [Module R M] [IsSemisimpleModule 
   rw [← Submodule.annihilator_top, ← sSup_simples_eq_top, sSup_eq_iSup', Submodule.annihilator_iSup]
   exact Ideal.isRadical_iInf _ fun i ↦ (i.2.annihilator_isMaximal).isPrime.isRadical
 
-instance submodule {m : Submodule R M} : IsSemisimpleModule R m :=
-  m.mapIic.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
+instance submodule {m : Submodule R M} : IsSemisimpleModule R m where
+  __ := m.mapIic.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
 
 variable {R M}
 open LinearMap
 
-theorem congr (e : N ≃ₗ[R] M) : IsSemisimpleModule R N :=
-  (Submodule.orderIsoMapComap e.symm).complementedLattice
+theorem congr (e : N ≃ₗ[R] M) : IsSemisimpleModule R N where
+  __ := (Submodule.orderIsoMapComap e.symm).complementedLattice
 
 theorem of_injective (f : N →ₗ[R] M) (hf : Function.Injective f) : IsSemisimpleModule R N :=
   congr (Submodule.topEquiv.symm.trans <| Submodule.equivMapOfInjective f hf _)
@@ -265,8 +303,9 @@ variable {M' : Type*} [AddCommGroup M'] [Module R M'] {N'} [AddCommGroup N'] [Mo
 
 theorem _root_.LinearMap.isSemisimpleModule_iff_of_bijective
     [RingHomSurjective σ] (hl : Function.Bijective l) :
-    IsSemisimpleModule R M' ↔ IsSemisimpleModule S N' :=
-  (Submodule.orderIsoMapComapOfBijective l hl).complementedLattice_iff
+    IsSemisimpleModule R M' ↔ IsSemisimpleModule S N' := by
+  simp_rw [isSemisimpleModule_iff,
+    (Submodule.orderIsoMapComapOfBijective l hl).complementedLattice_iff]
 
 -- TODO: generalize Submodule.equivMapOfInjective from InvPair to RingHomSurjective
 proof_wanted _root_.LinearMap.isSemisimpleModule_of_injective (_ : Function.Injective l)
@@ -293,6 +332,7 @@ theorem sSup_simples_eq_top_iff_isSemisimpleModule :
 lemma isSemisimpleModule_of_isSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
     (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) (hp' : ⨆ i ∈ s, p i = ⊤) :
     IsSemisimpleModule R M := by
+  simp_rw [isSemisimpleModule_iff] at hp ⊢
   refine complementedLattice_of_complementedLattice_Iic (fun i hi ↦ ?_) hp'
   simpa only [← (p i).mapIic.complementedLattice_iff] using hp i hi
 
@@ -484,38 +524,20 @@ noncomputable instance _root_.Module.End.instDivisionRing
 
 end LinearMap
 
--- Porting note: adding a namespace with all the new statements; existing result is not used in ML3
 namespace JordanHolderModule
-
--- Porting note: jordanHolderModule was timing out so outlining the fields
-
-/-- An isomorphism `X₂ / X₁ ∩ X₂ ≅ Y₂ / Y₁ ∩ Y₂` of modules for pairs
-`(X₁,X₂) (Y₁,Y₂) : Submodule R M` -/
-def Iso (X Y : Submodule R M × Submodule R M) : Prop :=
-  Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
-
-theorem iso_symm {X Y : Submodule R M × Submodule R M} : Iso X Y → Iso Y X :=
-  fun ⟨f⟩ => ⟨f.symm⟩
-
-theorem iso_trans {X Y Z : Submodule R M × Submodule R M} : Iso X Y → Iso Y Z → Iso X Z :=
-  fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
-
-@[nolint unusedArguments]
-theorem second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :
-    Iso (X,X ⊔ Y) (X ⊓ Y,Y) := by
-  constructor
-  rw [sup_comm, inf_comm]
-  dsimp
-  exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
 instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := CovBy.lt
   sup_eq_of_isMaximal hxz hyz := WCovBy.sup_eq hxz.wcovBy hyz.wcovBy
   isMaximal_inf_left_of_isMaximal_sup := inf_covBy_of_covBy_sup_of_covBy_sup_left
-  Iso := Iso
-  iso_symm := iso_symm
-  iso_trans := iso_trans
-  second_iso := second_iso
+  Iso X Y := Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
+  iso_symm := fun ⟨f⟩ => ⟨f.symm⟩
+  iso_trans := fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
+  second_iso {X} {Y} _ := by
+    constructor
+    rw [sup_comm, inf_comm]
+    dsimp
+    exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
 end JordanHolderModule

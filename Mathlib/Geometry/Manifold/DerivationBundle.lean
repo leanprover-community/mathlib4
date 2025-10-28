@@ -38,8 +38,6 @@ Denoted as `C^n⟮I, M; 𝕜⟯⟨x⟩` within the `Derivation` namespace. -/
 def PointedContMDiffMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯
 
-@[deprecated (since := "2025-01-09")] alias PointedSmoothMap := PointedContMDiffMap
-
 @[inherit_doc]
 scoped[Derivation] notation "C^" n "⟮" I ", " M "; " 𝕜 "⟯⟨" x "⟩" => PointedContMDiffMap 𝕜 I M n x
 
@@ -106,8 +104,6 @@ variable (X : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯) (f : 
 def ContMDiffFunction.evalAt (x : M) : C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩] 𝕜 :=
   (PointedContMDiffMap.eval x).toLinearMap
 
-@[deprecated (since := "2025-01-09")] alias SmoothFunction.evalAt := ContMDiffFunction.evalAt
-
 namespace Derivation
 
 variable {I}
@@ -126,9 +122,9 @@ variable {I} {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Ty
   [ChartedSpace H' M']
 
 /-- The heterogeneous differential as a linear map, denoted as `𝒅ₕ` within the `Manifold` namespace.
-Instead of taking a function as an argument this
-differential takes `h : f x = y`. It is particularly handy to deal with situations where the points
-on where it has to be evaluated are equal but not definitionally equal. -/
+Instead of taking a function as an argument, this
+differential takes `h : f x = y`. It is particularly handy for situations where the points
+at which it has to be evaluated are equal but not definitionally equal. -/
 def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) :
     PointDerivation I x →ₗ[𝕜] PointDerivation I' y where
   toFun v :=

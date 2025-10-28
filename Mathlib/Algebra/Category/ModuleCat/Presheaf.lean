@@ -115,7 +115,7 @@ def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
 /-- The underlying presheaf of abelian groups of a presheaf of modules. -/
 noncomputable def presheaf : Cᵒᵖ ⥤ Ab where
   obj X := (forget₂ _ _).obj (M.obj X)
-  map f := AddCommGrp.ofHom <| AddMonoidHom.mk' (M.map f) (by simp)
+  map f := AddCommGrpCat.ofHom <| AddMonoidHom.mk' (M.map f) (by simp)
 
 @[simp]
 lemma presheaf_obj_coe (X : Cᵒᵖ) :
@@ -134,7 +134,7 @@ variable (R) in
 noncomputable def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
   obj M := M.presheaf
   map f :=
-    { app := fun X ↦ AddCommGrp.ofHom <| AddMonoidHom.mk' (Hom.app f X) (by simp)
+    { app := fun X ↦ AddCommGrpCat.ofHom <| AddMonoidHom.mk' (Hom.app f X) (by simp)
       naturality := fun X Y g ↦ by ext x; exact naturality_apply f g x }
 
 @[simp]
@@ -410,7 +410,7 @@ noncomputable def forgetToPresheafModuleCatMap
       (Y := (forgetToPresheafModuleCatObj X hX N).obj Y)
     { toFun := f.app Y
       map_add' := by simp
-      map_smul' := fun r ↦ (f.app Y).hom.map_smul (R.1.map (hX.to Y) _) }
+      map_smul' := fun r ↦ (f.app Y).hom.map_smul (R.map (hX.to Y) _) }
   naturality Y Z g := by
     ext x
     exact naturality_apply f g x

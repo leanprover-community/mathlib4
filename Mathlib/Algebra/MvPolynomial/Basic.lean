@@ -152,7 +152,7 @@ theorem single_eq_monomial (s : σ →₀ ℕ) (a : R) : Finsupp.single s a = mo
   rfl
 
 theorem mul_def : p * q = p.sum fun m a => q.sum fun n b => monomial (m + n) (a * b) :=
-  AddMonoidAlgebra.mul_def
+  AddMonoidAlgebra.mul_def ..
 
 /-- `C a` is the constant polynomial with value `a` -/
 def C : R →+* MvPolynomial σ R :=
@@ -279,12 +279,12 @@ theorem X_inj [Nontrivial R] (m n : σ) : X m = (X n : MvPolynomial σ R) ↔ m 
   X_injective.eq_iff
 
 theorem monomial_pow : monomial s a ^ e = monomial (e • s) (a ^ e) :=
-  AddMonoidAlgebra.single_pow e
+  AddMonoidAlgebra.single_pow ..
 
 @[simp]
 theorem monomial_mul {s s' : σ →₀ ℕ} {a b : R} :
     monomial s a * monomial s' b = monomial (s + s') (a * b) :=
-  AddMonoidAlgebra.single_mul_single
+  AddMonoidAlgebra.single_mul_single ..
 
 variable (σ R)
 
@@ -442,7 +442,7 @@ theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
   -- probably because of the type synonym
   · ext x
     exact hC _
-  · apply Finsupp.mulHom_ext'; intros x
+  · apply Finsupp.mulHom_ext'; intro x
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `Finsupp.mulHom_ext'` needs to have increased priority
     apply MonoidHom.ext_mnat
     exact hX _
@@ -582,7 +582,12 @@ theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
 
 @[simp]
 theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
-  single_eq_of_ne fun h => by cases Finsupp.single_eq_zero.1 h
+  single_eq_of_ne' fun h => by cases Finsupp.single_eq_zero.1 h
+
+@[simp]
+theorem coeff_mapRange (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) (m) :
+    coeff m (mapRange g hg φ) = g (coeff m φ) := by
+  simp [mapRange, coeff]
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
@@ -661,12 +666,12 @@ theorem coeff_mul [DecidableEq σ] (p q : MvPolynomial σ R) (n : σ →₀ ℕ)
 @[simp]
 theorem coeff_mul_monomial (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff (m + s) (p * monomial s r) = coeff m p * r :=
-  AddMonoidAlgebra.mul_single_apply_aux p _ _ _ _ fun _a _ => add_left_inj _
+  AddMonoidAlgebra.mul_single_apply_aux fun _a _ => add_left_inj _
 
 @[simp]
 theorem coeff_monomial_mul (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ R) :
     coeff (s + m) (monomial s r * p) = r * coeff m p :=
-  AddMonoidAlgebra.single_mul_apply_aux p _ _ _ _ fun _a _ => add_right_inj _
+  AddMonoidAlgebra.single_mul_apply_aux fun _a _ => add_right_inj _
 
 @[simp]
 theorem coeff_mul_X (m) (s : σ) (p : MvPolynomial σ R) :
@@ -723,7 +728,6 @@ theorem coeff_mul_monomial' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
   classical
   split_ifs with h
   · conv_rhs => rw [← coeff_mul_monomial _ s]
-    congr with t
     rw [tsub_add_cancel_of_le h]
   · contrapose! h
     rw [← mem_support_iff] at h
@@ -1030,7 +1034,7 @@ variable [Algebra R S] {M : Submodule R S}
 lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M * coeffsIn σ N := by
   classical
   refine le_antisymm (coeffsIn_le.2 ?_) ?_
-  · intros r hr s
+  · intro r hr s
     induction hr using Submodule.mul_induction_on' with
     | mem_mul_mem m hm n hn =>
       rw [← add_zero s, ← monomial_mul]
@@ -1038,7 +1042,7 @@ lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M *
     | add x _ y _ hx hy =>
       simpa [map_add] using add_mem hx hy
   · rw [Submodule.mul_le]
-    intros x hx y hy k
+    intro x hx y hy k
     rw [MvPolynomial.coeff_mul]
     exact sum_mem fun c hc ↦ Submodule.mul_mem_mul (hx _) (hy _)
 

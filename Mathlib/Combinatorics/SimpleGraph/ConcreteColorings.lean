@@ -5,13 +5,14 @@ Authors: Iván Renison
 -/
 import Mathlib.Combinatorics.SimpleGraph.Circulant
 import Mathlib.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Data.Fin.Parity
 
 /-!
 # Concrete colorings of common graphs
 
-This file defines colorings for some common graphs
+This file defines colorings for some common graphs.
 
 ## Main declarations
 
@@ -120,21 +121,21 @@ def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
     | 1 => simp at h
     | n + 2 =>
       simp only
-      simp [cycleGraph_adj] at hadj
+      simp only [cycleGraph_adj] at hadj
       split_ifs with hu hv
       · simp [Fin.eq_mk_iff_val_eq.mpr hu, Fin.eq_mk_iff_val_eq.mpr hv] at hadj
       · refine (Fin.ne_of_lt (Fin.mk_lt_of_lt_val (?_))).symm
         exact v.val.mod_lt Nat.zero_lt_two
       · refine (Fin.ne_of_lt (Fin.mk_lt_of_lt_val ?_))
         exact u.val.mod_lt Nat.zero_lt_two
-      · simp [Fin.ext_iff]
+      · simp only [ne_eq, Fin.ext_iff]
         have hu' : u.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
         have hv' : v.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
         cases hadj with
         | inl huv | inr huv =>
           rw [← add_eq_of_eq_sub' huv.symm]
           simp only [Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu', Fin.val_one]
-          rw [show ∀ x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; omega,
+          rw [show ∀ x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; cutsat,
             Nat.even_add]
           simp only [Nat.not_even_one, iff_false, not_iff_self, iff_not_self]
           exact id
@@ -155,5 +156,40 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
       exact hOdd
     rw [← hn3]
     exact Walk.three_le_chromaticNumber_of_odd_loop w hOdd'
+
+section CompleteEquipartiteGraph
+
+variable {r t : ℕ}
+
+/-- The injection `(x₁, x₂) ↦ x₁` is always a `r`-coloring of a `completeEquipartiteGraph r ·`. -/
+def Coloring.completeEquipartiteGraph :
+  (completeEquipartiteGraph r t).Coloring (Fin r) := ⟨Prod.fst, id⟩
+
+/-- The `completeEquipartiteGraph r t` is always `r`-colorable. -/
+theorem completeEquipartiteGraph_colorable :
+  (completeEquipartiteGraph r t).Colorable r := ⟨Coloring.completeEquipartiteGraph⟩
+
+end CompleteEquipartiteGraph
+
+open Walk
+lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
+    G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
+  simp_rw [← Nat.not_odd_iff_even]
+  constructor <;> intro h
+  · intro _ w ho
+    have := (w.three_le_chromaticNumber_of_odd_loop ho).trans h.chromaticNumber_le
+    norm_cast
+  · apply colorable_iff_forall_connectedComponents.2
+    intro c
+    obtain ⟨_, hv⟩ := c.nonempty_supp
+    use fun a ↦ Fin.ofNat 2 (c.connected_toSimpleGraph ⟨_, hv⟩ a).some.length
+    intro a b hab he
+    apply h _ <| (((c.connected_toSimpleGraph ⟨_, hv⟩ a).some.concat hab).append
+                 (c.connected_toSimpleGraph ⟨_, hv⟩ b).some.reverse).map c.toSimpleGraph_hom
+    rw [length_map, length_append, length_concat, length_reverse, add_right_comm]
+    have : ((Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ a)).length) % 2 =
+        (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
+      simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
+    exact (Nat.even_iff.mpr (by cutsat)).add_one
 
 end SimpleGraph

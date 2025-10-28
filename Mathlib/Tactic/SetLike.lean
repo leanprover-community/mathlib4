@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 
-import Mathlib.Init
+import Mathlib.Tactic.Basic
 import Aesop
 
 /-!
@@ -18,7 +18,7 @@ so we must put this declaration into its own file.
 declare_aesop_rule_sets [SetLike] (default := true)
 declare_aesop_rule_sets [SetLike!] (default := false)
 
-library_note "SetLike Aesop ruleset"/--
+library_note2 «SetLike Aesop ruleset» /--
 The Aesop tactic (`aesop`) can automatically prove obvious facts about membership in structures
 such as subgroups and subrings. Certain lemmas regarding membership in algebraic substructures
 are given the `aesop` attribute according to the following principles:
@@ -36,8 +36,8 @@ are given the `aesop` attribute according to the following principles:
   - Rules that cause loops (even in the absence of metavariables) are given a low priority of 5%.
     These rules are placed in the `SetLike!` ruleset instead of the `SetLike` ruleset so that
     they are not invoked by default. An example is `SetLike.mem_of_subset`.
-  - Simplifying the left hand side of a membership goal is prioritised over simplifying the
-    right hand side. By default, rules simplifying the LHS (e.g., `mul_mem`) are given
+  - Simplifying the left-hand side of a membership goal is prioritised over simplifying the
+    right-hand side. By default, rules simplifying the LHS (e.g., `mul_mem`) are given
     probability 90% and rules simplifying the RHS are given probability 80%
     (e.g., `Subgroup.mem_closure_of_mem`).
   - These default probabilities are for rules with simple hypotheses that fail quickly when

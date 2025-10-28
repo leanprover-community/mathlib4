@@ -73,7 +73,7 @@ theorem isPreprimitive_fixingSubgroup_insert_iff {a : α} {t : Set (ofStabilizer
 
 end Preprimitive
 
-/-- An additive action is `n`-multiply preprimitive  if is is `n`-multiply transitive
+/-- An additive action is `n`-multiply preprimitive if it is `n`-multiply transitive
   and if, when `n ≥ 1`, for every set `s` of cardinality `n - 1`,
   the action of `fixingAddSubgroup M s` on the complement of `s` is preprimitive. -/
 @[mk_iff]
@@ -86,7 +86,7 @@ class _root_.AddAction.IsMultiplyPreprimitive
   isPreprimitive_ofFixingAddSubgroup (M n) {s : Set α} (hs : s.encard + 1 = n) :
     AddAction.IsPreprimitive (fixingAddSubgroup M s) (SubAddAction.ofFixingAddSubgroup M s)
 
-/-- A group action is `n`-multiply preprimitive  if is is `n`-multiply
+/-- A group action is `n`-multiply preprimitive if it is `n`-multiply
 transitive and if, when `n ≥ 1`, for every set `s` of cardinality
 n - 1, the action of `fixingSubgroup M s` on the complement of `s`
 is preprimitive. -/
@@ -135,7 +135,7 @@ theorem is_one_preprimitive_iff :
       exact fun h ↦ by simp [h] at hs
 
 /-- The action of `stabilizer M a` is one-less preprimitive -/
-@[to_additive]
+@[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]
 theorem isMultiplyPreprimitive_ofStabilizer
     [IsPretransitive M α] {n : ℕ} {a : α} [IsMultiplyPreprimitive M α n.succ] :
     IsMultiplyPreprimitive (stabilizer M a) (SubMulAction.ofStabilizer M a) n := by
@@ -155,7 +155,7 @@ theorem isMultiplyPreprimitive_ofStabilizer
       aesop
     exact IsPreprimitive.of_surjective ofFixingSubgroup_insert_map_bijective.surjective
 
-/-- A pretransitive action is `n.succ-`preprimitive  iff
+/-- A pretransitive action is `n.succ-`preprimitive iff
   the action of stabilizers is `n`-preprimitive. -/
 @[to_additive]
 theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
@@ -198,7 +198,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
       simp only
       rw [← Nat.cast_one, ← Nat.cast_add, ← hs]
       apply congr_arg₂ _ _ rfl
-      rw [show s = g⁻¹ • s' from by ext; simp [hs'],
+      rw [show s = g⁻¹ • s' from by simp [hs'],
         ← Set.image_smul, (MulAction.injective g⁻¹).encard_image, hst]
       rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, ENat.coe_one]
       exact notMem_val_image M t
@@ -210,7 +210,7 @@ theorem ofFixingSubgroup.isMultiplyPreprimitive
     {m n : ℕ} [IsMultiplyPreprimitive M α n] {s : Set α} [Finite s] (hs : s.ncard + m = n) :
     IsMultiplyPreprimitive (fixingSubgroup M s) (SubMulAction.ofFixingSubgroup M s) m where
   isMultiplyPretransitive := by
-    apply ofFixingSubgroup.isMultiplyPretransitive s hs
+    apply ofFixingSubgroup.isMultiplyPretransitive _ s hs
   isPreprimitive_ofFixingSubgroup {t} ht := by
     let t' : Set α := Subtype.val '' t
     have htt' : t = Subtype.val ⁻¹' t' :=
@@ -226,7 +226,7 @@ theorem ofFixingSubgroup.isMultiplyPreprimitive
     · apply disjoint_val_image
 
 /-- `n.succ`-pretransitivity implies `n`-preprimitivity. -/
-@[to_additive "`n.succ`-pretransitivity implies `n`-preprimitivity."]
+@[to_additive /-- `n.succ`-pretransitivity implies `n`-preprimitivity. -/]
 theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     (hα : ↑n.succ ≤ ENat.card α) [IsMultiplyPretransitive M α n.succ] :
     IsMultiplyPreprimitive M α n := by
@@ -247,7 +247,7 @@ theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     simp [Set.ncard, hs', hm, add_comm 1]
 
 /-- An `n`-preprimitive action is `m`-preprimitive for `m ≤ n`. -/
-@[to_additive "An `n`-preprimitive action is `m`-preprimitive for `m ≤ n`."]
+@[to_additive /-- An `n`-preprimitive action is `m`-preprimitive for `m ≤ n`. -/]
 theorem isMultiplyPreprimitive_of_le
     {n : ℕ} (hn : IsMultiplyPreprimitive M α n)
     {m : ℕ} (hmn : m ≤ n) (hα : ↑n ≤ ENat.card α) :
@@ -316,7 +316,7 @@ theorem isMultiplyPreprimitive_congr
   · intro s hs
     let t := f '' s
     let ψ : fixingSubgroup M s → fixingSubgroup N t := fun ⟨g, hg⟩ ↦ ⟨φ g, by
-      simp [mem_fixingSubgroup_iff] at hg ⊢
+      simp only [mem_fixingSubgroup_iff] at hg ⊢
       intro y hy
       suffices ∃ x ∈ s, y = f x by
         obtain ⟨x, hx, rfl⟩ := this

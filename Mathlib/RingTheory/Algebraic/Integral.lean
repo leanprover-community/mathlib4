@@ -318,8 +318,6 @@ variable (R S A) [NoZeroDivisors S]
     Algebra.IsAlgebraic R A :=
   ⟨fun _ ↦ (alg.1 _).restrictScalars _⟩
 
-@[deprecated (since := "2025-02-08")] alias IsAlgebraic.trans' := IsAlgebraic.trans
-
 theorem IsIntegral.trans_isAlgebraic [Algebra.IsIntegral R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
   ⟨fun _ ↦ (alg.1 _).restrictScalars_of_isIntegral _⟩
@@ -638,3 +636,19 @@ open Cardinal in
 end Algebra.IsAlgebraic
 
 end Polynomial
+
+section FractionRing
+
+open Algebra Module
+open scoped nonZeroDivisors
+
+attribute [local instance] FractionRing.liftAlgebra
+
+instance [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [Module.Finite R S] :
+    FiniteDimensional (FractionRing R) (FractionRing S) := by
+  obtain ⟨_, s, hs⟩ := Module.Finite.exists_fin (R := R) (M := S)
+  exact Module.finite_def.mpr <|
+    (span_eq_top_localization_localization (FractionRing R) R⁰ (FractionRing S) hs) ▸
+      Submodule.fg_span (Set.toFinite _)
+
+end FractionRing

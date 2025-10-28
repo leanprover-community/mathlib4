@@ -132,8 +132,10 @@ theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
       ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).card := by
   rw [A_fibre_over_judgePair r h]
   apply Finset.card_image_of_injOn
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): used to be `tidy`
-  unfold Set.InjOn; intros; ext; all_goals aesop
+  -- `aesop` sees through the abbrev `AgreedTriple C J = C × (J × J)`, but `simp` does not.
+  -- Tell `simp` to unfold the abbreviations more aggressively, and it works.
+  -- See also: https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/.60simp.60.20can't.20see.20through.20structure.20abbrevs.3F/with/534442087
+  aesop (add simp [Set.InjOn, AgreedTriple.contestant, AgreedTriple.judgePair])
 
 theorem A_card_upper_bound {k : ℕ}
     (hk : ∀ p : JudgePair J, p.Distinct → (agreedContestants r p).card ≤ k) :
@@ -154,7 +156,7 @@ theorem add_sq_add_sq_sub {α : Type*} [Ring α] (x y : α) :
 theorem norm_bound_of_odd_sum {x y z : ℤ} (h : x + y = 2 * z + 1) :
     2 * z * z + 2 * z + 1 ≤ x * x + y * y := by
   suffices 4 * z * z + 4 * z + 1 + 1 ≤ 2 * x * x + 2 * y * y by
-    rw [← mul_le_mul_left (zero_lt_two' ℤ)]; ring_nf at this ⊢; exact this
+    rw [← mul_le_mul_iff_right₀ (zero_lt_two' ℤ)]; ring_nf at this ⊢; exact this
   have h' : (x + y) * (x + y) = 4 * z * z + 4 * z + 1 := by rw [h]; ring
   rw [← add_sq_add_sq_sub, h', add_le_add_iff_left]
   suffices 0 < (x - y) * (x - y) by apply Int.add_one_le_of_lt this
@@ -183,14 +185,14 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
   let t := Finset.univ.filter fun p : JudgePair J => p.Distinct
   have hs : 2 * z * z + 2 * z + 1 ≤ s.card := judge_pairs_card_lower_bound r hJ c
   have hst : s \ t = Finset.univ.diag := by
-    ext p; constructor <;> intros hp
+    ext p; constructor <;> intro hp
     · unfold s t at hp
       aesop
     · unfold s t
       suffices p.judge₁ = p.judge₂ by simp [this]
       aesop
   have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ, Finset.card_univ]
-  rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff]
+  rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff_of_subset]
   · rw [hst']; rw [add_assoc] at hs; apply le_tsub_of_add_le_right hs
   · apply Finset.sdiff_subset
 
