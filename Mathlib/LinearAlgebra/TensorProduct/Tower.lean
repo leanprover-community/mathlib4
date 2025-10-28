@@ -473,9 +473,8 @@ theorem leftComm_symm_tmul (m : M) (p : P) (q : Q) :
   rfl
 
 /-- The heterobasic version of `leftComm` coincides with the regular version. -/
-theorem leftComm_eq : leftComm R R M P Q = TensorProduct.leftComm R M P Q := by
-  rw [← LinearEquiv.toLinearMap_inj]
-  ext; rfl
+theorem leftComm_eq : leftComm R R M P Q = TensorProduct.leftComm R M P Q :=
+  LinearEquiv.toLinearMap_inj.mp <| by ext; rfl
 
 end leftComm
 
@@ -567,11 +566,8 @@ theorem tensorTensorTensorComm_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
 
 /-- The heterobasic version of `tensorTensorTensorComm` coincides with the regular version. -/
 theorem tensorTensorTensorComm_eq :
-    tensorTensorTensorComm R R R R M N P Q = TensorProduct.tensorTensorTensorComm R M N P Q := by
-  -- not defeq anymore
-  rw [← LinearEquiv.toLinearMap_inj]
-  apply TensorProduct.ext_fourfold'
-  simp
+    tensorTensorTensorComm R R R R M N P Q = TensorProduct.tensorTensorTensorComm R M N P Q :=
+  LinearEquiv.toLinearMap_inj.mp <| ext_fourfold' <| by simp
 
 end tensorTensorTensorComm
 
