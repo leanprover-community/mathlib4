@@ -80,7 +80,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   modifyEnv fun env => funPropDeclsExt.addEntry env decl
 
-  trace[Meta.Tactic.funProp.attr]
+  trace[Meta.Tactic.fun_prop.attr]
     "added new function property `{declName}`\nlook up pattern is `{path}`"
 
 
