@@ -205,6 +205,7 @@
   "Mathlib.Init"],
  "ignore":
  {"Mathlib.Util.Notation3": ["Lean.Elab.AuxDef", "Lean.Elab.BuiltinCommand"],
+  "Mathlib.Topology.UniformSpace.OfCompactT2": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.UniformSpace.Defs": ["Mathlib.Tactic.Monotonicity.Basic"],
   "Mathlib.Topology.Sober": ["Mathlib.Algebra.HierarchyDesign"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
