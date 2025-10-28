@@ -28,15 +28,14 @@ theorem AnalyticOn.hasFPowerSeriesOnSubball
   set p := FormalMultilinearSeries.ofScalars 𝕜 (fun n ↦ iteratedDeriv n f x / n.factorial)
   let g (t : 𝕜) := p.sum (t - x)
   have hg : HasFPowerSeriesOnBall g p x p.radius := by
-    simpa using (p.hasFPowerSeriesOnBall (lt_of_lt_of_le hr_pos hr)).comp_sub x
+    simpa using (p.hasFPowerSeriesOnBall (by order)).comp_sub x
   have hg' : AnalyticOnNhd 𝕜 g (EMetric.ball x p.radius) := by
     simpa using p.analyticOnNhd.comp_sub x
   replace hg' : AnalyticOnNhd 𝕜 g (EMetric.ball x r) := hg'.mono (EMetric.ball_subset_ball hr)
   apply h.eqOn_of_preconnected_of_eventuallyEq at hg'
   apply (hg.mono hr_pos hr).congr
   symm
-  apply hg' (Metric.isConnected_eball hr_pos).isPreconnected
-    (show x ∈ EMetric.ball x r by simpa) ?_
+  apply hg' (Metric.isConnected_eball hr_pos).isPreconnected (show x ∈ EMetric.ball x r by simpa) ?_
   have hf : AnalyticAt 𝕜 f x := h _ (by simp [hr_pos])
   apply AnalyticAt.hasFPowerSeriesAt at hf
   unfold Filter.EventuallyEq Filter.Eventually
