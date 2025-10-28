@@ -323,11 +323,6 @@ instance instNonAssocSemiring : NonAssocSemiring (QuadraticAlgebra R a b) where
   one_mul _ := by ext <;> simp
   mul_one _ := by ext <;> simp
 
-@[simp]
-theorem nsmul_mk (n : ℕ) (x y : R) :
-    (n : QuadraticAlgebra R a b) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by
-  ext <;> simp
-
 end NonAssocSemiring
 
 section Semiring
