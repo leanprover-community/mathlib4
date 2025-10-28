@@ -3,10 +3,8 @@ Copyright (c) 2019 Robert A. Spencer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Markus Himmel
 -/
+import Mathlib.Algebra.Category.ModuleCat.Semi
 import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.PUnit
-import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
@@ -183,6 +181,17 @@ lemma hom_inv_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : N) : e.hom (e.inv
 def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
   toFun := Hom.hom
   invFun := ofHom
+
+/-- The categorical equivalence between `ModuleCat` and `SemimoduleCat`. -/
+def equivalenceSemimoduleCat : ModuleCat.{v} R ≌ SemimoduleCat.{v} R where
+  functor :=
+  { obj M := .of R M
+    map f := SemimoduleCat.ofHom f.hom' }
+  inverse := letI := Module.addCommMonoidToAddCommGroup
+  { obj M := of R M
+    map {M N} f := ofHom f.hom }
+  unitIso := NatIso.ofComponents fun _ ↦ { hom := ⟨.id⟩, inv := ⟨.id⟩ }
+  counitIso := NatIso.ofComponents fun _ ↦ { hom := ⟨.id⟩, inv := ⟨.id⟩ }
 
 end
 
