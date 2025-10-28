@@ -726,9 +726,6 @@ instance (α : Type*) [h : Nonempty α] : Nonempty αᵒᵈ :=
 instance (α : Type*) [h : Subsingleton α] : Subsingleton αᵒᵈ :=
   h
 
-instance (α : Type*) [h : Unique α] : Unique αᵒᵈ :=
-  h
-
 instance (α : Type*) [LE α] : LE αᵒᵈ :=
   ⟨fun x y : α ↦ y ≤ x⟩
 
