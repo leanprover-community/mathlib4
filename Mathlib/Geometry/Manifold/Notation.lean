@@ -519,31 +519,48 @@ where
                 is not reducibly definitionally equal to `{α}`: continue the search"
               return none
           | _ => return none
-
-      let factFinder := findSomeLocalInstanceOf? ``Fact fun _inst type ↦ do
+      let factFinder (E : Expr) := findSomeLocalInstanceOf? ``Fact fun _inst type ↦ do
         trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
         match_expr type with
         | Fact a =>
           trace[Elab.DiffGeo.MDiff] "considering fact of kind `{a}`"
-          -- match a with
-          -- | ``(Module.finrank Real $E) =>--q(finrank ℝ $E = 2) =>
-          --   return none
-          -- | _ => return none
-          return some a
+          match_expr a with
+          | Eq _ lhs rhs =>
+            match_expr lhs with
+            | Module.finrank R F _ _ _ =>
+              -- We use reducible transparency to allow using a type synonym: this should not
+              -- be unfolded. XXX double-check this!
+              if (← withReducible (pureIsDefEq R q(ℝ))) && (← withReducible (pureIsDefEq E F)) then
+                trace[Elab.DiffGeo.MDiff] "found a fact about `finrank ℝ E` via `{_inst}`"
+                -- Try to unify the rhs with an expression m + 1, for a natural number m.
+                -- If we find one, that's the dimension of our model with corners.
+                -- TODO: the following code fails!
+                let a : Q(ℕ) := ← mkFreshExprMVar (some q(ℕ))
+                if ← isDefEqGuarded a q($a + 1) then
+                  let d : Q(ℕ) := ← Lean.instantiateMVars a
+                  return some d
+                else
+                  trace[Elab.DiffGeo.MDiff] "found a fact about `finrank ℝ E`, but the right hand \
+                    side `{rhs}` is not of the form `m + 1` for some `m`: continue the search"
+                  return none
+                  -- TODO: make test for this, where the rhs is something weird!
+              else
+                trace[Elab.DiffGeo.MDiff] "found a fact about finrank, \
+                  but not about `finrank ℝ E`: continue the search"
+                -- TODO: also test this message!
+                return none
+            | _ => return none
+          | _ => return none
         | _ => return none
       if let some E := (← searchIPSpace) then
         -- We found a sphere in the inner product space E: search for a `Fact (finrank ℝ E) = m`,
         -- then the sphere is m-1-dimensional, and modelEuclideanSpace m-1 is our model.
-        let eE : Term ← Term.exprToSyntax E
-        -- let lhs := ``(Module.finrank ℝ $eE)
-        -- TODO: want to match on an expression $lhs = X, and then try to unify X with m + 1
-        -- match E with
-        -- | q(Eq $lhs s) =>
-        --   throwError ""
-        -- | _ => throwError "sd"
-        let some _a ← factFinder
+        let some nE ← factFinder E
           | throwError "Found no fact `finrank ℝ {E} = n + 1` in the local context"
-        throwError "TODO!"
+        -- Lean warns about an unused variable here, why?
+        let _nT : Term ← Term.exprToSyntax nE
+        let iTerm : Term ← `(modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin _nT)))
+        Term.elabTerm iTerm none
       else throwError "found no real normed space instance on `{α}`"
     | _ => throwError "`{e}` is not a sphere in a real normed space"
   /-- Attempt to find a model with corners from a normed field.

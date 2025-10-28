@@ -940,6 +940,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 [Elab.DiffGeo.MDiff] ❌️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not the set of units of a normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Sphere
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
