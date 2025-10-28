@@ -313,8 +313,7 @@ end
 
 section
 
-variable {X Y : C₁} [HasSmallLocalizedHom.{w} W₁ X Y]
-  {X' Y' : C₂}
+variable {X Y : C₁} [HasSmallLocalizedHom.{w} W₁ X Y] {X' Y' : C₂}
   [HasSmallLocalizedHom.{w'} W₂ X' X']
   [HasSmallLocalizedHom.{w'} W₂ X' Y']
   [HasSmallLocalizedHom.{w'} W₂ Y' Y']
