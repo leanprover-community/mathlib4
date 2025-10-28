@@ -531,11 +531,13 @@ theorem nmul_lt_nmul_of_pos_left (h₁ : a < b) (h₂ : 0 < c) : c ⨳ a < c ⨳
 theorem nmul_lt_nmul_of_pos_right (h₁ : a < b) (h₂ : 0 < c) : a ⨳ c < b ⨳ c :=
   lt_nmul_iff.2 ⟨a, h₁, 0, h₂, by simp⟩
 
+@[gcongr]
 theorem nmul_le_nmul_left (h : a ≤ b) (c) : c ⨳ a ≤ c ⨳ b := by
   rcases lt_or_eq_of_le h with (h₁ | rfl) <;> rcases (eq_zero_or_pos c).symm with (h₂ | rfl)
   · exact (nmul_lt_nmul_of_pos_left h₁ h₂).le
   all_goals simp
 
+@[gcongr]
 theorem nmul_le_nmul_right (h : a ≤ b) (c) : a ⨳ c ≤ b ⨳ c := by
   rw [nmul_comm, nmul_comm b]
   exact nmul_le_nmul_left h c
@@ -727,7 +729,7 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
     rcases eq_zero_or_pos a with (rfl | ha)
     · simp
     · rw [(isNormal_mul_right ha).apply_of_isSuccLimit hc, Ordinal.iSup_le_iff]
-      rintro ⟨i, hi⟩
-      exact (H i hi).trans (nmul_le_nmul_left hi.le a)
+      rintro ⟨i, (hi : i < c)⟩
+      grw [H i hi, hi]
 
 end Ordinal
