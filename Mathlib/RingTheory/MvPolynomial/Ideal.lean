@@ -84,17 +84,21 @@ lemma span_leadingTerm_eq_span_monomial {B : Set (MvPolynomial σ R)}
     · exact ht
     · use fun p ↦ (MvPolynomial.C (m.leadingCoeff ↑p : R) : MvPolynomial σ R) • c ↑p
       apply Finset.sum_congr rfl
-      simp
+      -- simp?
+      simp only [Finset.univ_eq_attach, Finset.mem_attach, smul_eq_mul, forall_const,
+        Subtype.forall]
       intro a ha
       rw [mul_assoc, mul_left_comm, MvPolynomial.C_mul_monomial, mul_one]
   · split_ands
     · exact ht
     · use fun p ↦ if hp : ↑p ∈ B then ((hB (↑p) (hp)).unit)⁻¹ • c ↑p else 0
       apply Finset.sum_congr rfl
-      · simp
+      · -- simp?
+        simp only [Finset.univ_eq_attach, Finset.mem_attach, smul_eq_mul, dite_mul, zero_mul,
+        forall_const, Subtype.forall]
         intro a ha
-        simp [Set.mem_of_mem_of_subset ha ht]
-        rw [smul_mul_assoc, ←mul_smul_comm, MvPolynomial.smul_monomial, IsUnit.inv_smul]
+        simp [Set.mem_of_mem_of_subset ha ht, smul_mul_assoc, ←mul_smul_comm,
+          MvPolynomial.smul_monomial, IsUnit.inv_smul]
 
 lemma span_leadingTerm_eq_span_monomial₀ {B : Set (MvPolynomial σ R)}
     (hB : ∀ p ∈ B, IsUnit (m.leadingCoeff p) ∨ p = 0) :
