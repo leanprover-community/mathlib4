@@ -184,9 +184,15 @@ open Padic Valued
 
 variable {p : ℕ} [Fact p.Prime]
 
+/-- The `p`-adic integers are ring isomorphic to the integers of the uniform completion
+of the rationals at the `p`-adic valuation. -/
+noncomputable def withValIntegersRingEquiv {p : ℕ} [Fact p.Prime] :
+    𝒪[(Rat.padicValuation p).Completion] ≃+* ℤ_[p] :=
+  withValRingEquiv.restrict _ (subring p) fun _ ↦ (withValUniformEquiv_norm_le_one_iff _).symm
+
 /-- The `p`-adic integers are isomophic as uniform spaces to the integers of the uniform completion
 of the rationals at the `p`-adic valuation. -/
 noncomputable def withValIntegersUniformEquiv : 𝒪[(Rat.padicValuation p).Completion] ≃ᵤ ℤ_[p] :=
-  Padic.withValUniformEquiv.subtype fun _ ↦ (withValUniformEquiv_norm_le_one_iff _).symm
+  withValUniformEquiv.subtype fun _ ↦ (withValUniformEquiv_norm_le_one_iff _).symm
 
 end PadicInt
