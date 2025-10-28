@@ -507,6 +507,8 @@ lemma naive_relation : (naive s hs).relation = v := rfl
 
 @[simp] lemma naive_relation_apply (i : ι) : (naive s hs).relation i = v i := rfl
 
+lemma mem_ker_naive (i : ι) : v i ∈ (naive s hs).ker := relation_mem_ker _ i
+
 end
 
 end Construction

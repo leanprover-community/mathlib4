@@ -358,6 +358,33 @@ instance away_snd {R S} [CommSemiring R] [CommSemiring S] :
 
 end Prod
 
+open Pointwise in
+/-- Suppose `J ≤ I` are ideals of `R`, then `R / I` is the localization away from `r : R / J`
+if `r - 1 ∈ I` and for some `n`, `r ^ n • I ≤ J`.
+For sake of usability, we state this for surjective ring maps instead of ideals. -/
+lemma Away.of_sub_one_mem_ker {R S T : Type*}
+    [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+    [Algebra S T] [IsScalarTower R S T]
+    (h₁ : Function.Surjective (algebraMap S T))
+    (h₂ : Function.Surjective (algebraMap R S))
+    (r : R) (hr : r - 1 ∈ RingHom.ker (algebraMap R T))
+    {n : ℕ} (hn : r ^ n • RingHom.ker (algebraMap R T) ≤ RingHom.ker (algebraMap R S)) :
+    IsLocalization.Away (algebraMap R S r) T := by
+  refine .mk _ ?_ (fun t ↦ ?_) fun x y h ↦ ?_
+  · rw [← IsScalarTower.algebraMap_apply]
+    have : algebraMap R T r = algebraMap R T 1 := by rwa [← RingHom.sub_mem_ker_iff]
+    simp [this]
+  · obtain ⟨s, rfl⟩ := h₁ t
+    exact ⟨0, by simp⟩
+  · obtain ⟨a, rfl⟩ := h₂ x
+    obtain ⟨b, rfl⟩ := h₂ y
+    use n
+    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply] at h
+    rw [← map_pow, ← map_mul, ← map_mul, ← RingHom.sub_mem_ker_iff, ← mul_sub]
+    apply hn
+    use a - b
+    simp [h]
+
 end IsLocalization
 
 namespace Localization

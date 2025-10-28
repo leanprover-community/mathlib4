@@ -117,6 +117,13 @@ theorem smul_comap_le_comap_smul (f : M →ₗ[R] M') (S : Submodule R M') (I : 
   rw [f.map_smul]
   exact Submodule.smul_mem_smul hr hx
 
+lemma comap_smul'' {f : M →ₗ[R] M'} (hf : Function.Injective f) {p : Submodule R M'}
+    (hp : p ≤ LinearMap.range f) {I : Ideal R} :
+    Submodule.comap f (I • p) = I • Submodule.comap f p := by
+  refine le_antisymm ?_ (by simp)
+  conv_lhs => rw [← Submodule.map_comap_eq_self hp, ← Submodule.map_smul'']
+  rw [Submodule.comap_map_eq_of_injective hf]
+
 end Semiring
 
 section CommSemiring
