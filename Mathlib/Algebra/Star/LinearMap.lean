@@ -72,12 +72,9 @@ theorem intrinsicStar_comp (f : E →ₗ[R] F) (g : G →ₗ[R] E) :
 @[simp] theorem intrinsicStar_zero : star (0 : E →ₗ[R] F) = 0 := by ext; simp
 
 section NonUnitalNonAssocSemiring
-variable {R' E F G H : Type*} [CommSemiring R'] [StarRing R']
+variable {R' E : Type*} [CommSemiring R'] [StarRing R']
   [NonUnitalNonAssocSemiring E] [StarRing E] [Module R E] [Module R' E]
   [StarModule R E] [StarModule R' E] [SMulCommClass R E E] [IsScalarTower R E E]
-  [NonUnitalNonAssocSemiring F] [StarRing F] [Module R' F] [StarModule R' F]
-  [NonUnitalNonAssocSemiring G] [StarRing G] [Module R' G] [StarModule R' G]
-  [NonUnitalNonAssocSemiring H] [StarRing H] [Module R' H] [StarModule R' H]
 
 theorem intrinsicStar_mulLeft (x : E) : star (mulLeft R x) = mulRight R (star x) := by ext; simp
 
@@ -88,11 +85,28 @@ theorem intrinsicStar_mul' [SMulCommClass R' E E] [IsScalarTower R' E E] :
     star (mul' R' E) = mul' R' E ∘ₗ TensorProduct.comm R' E E :=
   TensorProduct.ext' fun _ _ ↦ by simp
 
-theorem _root_.TensorProduct.intrinsicStar_map (f : E →ₗ[R'] F) (g : G →ₗ[R'] H) :
+end NonUnitalNonAssocSemiring
+
+section TensorProduct
+variable {R E F G H : Type*} [CommSemiring R] [StarRing R]
+  [AddCommMonoid E] [StarAddMonoid E] [Module R E] [StarModule R E]
+  [AddCommMonoid F] [StarAddMonoid F] [Module R F] [StarModule R F]
+  [AddCommMonoid G] [StarAddMonoid G] [Module R G] [StarModule R G]
+  [AddCommMonoid H] [StarAddMonoid H] [Module R H] [StarModule R H]
+
+theorem _root_.TensorProduct.intrinsicStar_map (f : E →ₗ[R] F) (g : G →ₗ[R] H) :
     star (TensorProduct.map f g) = TensorProduct.map (star f) (star g) :=
   TensorProduct.ext' fun _ _ ↦ by simp
 
-end NonUnitalNonAssocSemiring
+theorem intrinsicStar_lTensor (f : E →ₗ[R] F) :
+    star (lTensor G f) = lTensor G (star f) := by
+  simp [lTensor, TensorProduct.intrinsicStar_map]
+
+theorem intrinsicStar_rTensor (f : E →ₗ[R] F) :
+    star (rTensor G f) = rTensor G (star f) := by
+  simp [rTensor, TensorProduct.intrinsicStar_map]
+
+end TensorProduct
 
 variable [SMulCommClass R R F]
 
