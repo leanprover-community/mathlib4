@@ -51,7 +51,7 @@ theorem HasTemperateGrowth.isBigO {f : E → F}
     ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) :=
   Function.hasTemperateGrowth_iff_isBigO.mp hf_temperate |>.2 n
 
-/-- If `f` as temperate growth, then for any `N : ℕ` one can find `k` such that *all* iterated
+/-- If `f` has temperate growth, then for any `N : ℕ` one can find `k` such that *all* iterated
 derivatives of `f` of order `≤ N` are `O((1 + ‖x‖) ^ k)`.
 
 Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
