@@ -25,10 +25,11 @@ Finally, if the codomain of `f` is a finite-dimensional space, then we can autom
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
 and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`.
 
+For the version where the implicit equation is defined by a $C^n$ function `f : E × F → G` with an
+invertible derivative `∂f/∂y`, see `IsContDiffImplicitAt.implicitFunction`.
+
 ## TODO
 
-* Add a version for a function `f : E × F → G` such that $$\frac{\partial f}{\partial y}$$ is
-  invertible.
 * Add a version for `f : 𝕜 × 𝕜 → 𝕜` proving `HasStrictDerivAt` and `deriv φ = ...`.
 * Prove that in a real vector space the implicit function has the same smoothness as the original
   one.
