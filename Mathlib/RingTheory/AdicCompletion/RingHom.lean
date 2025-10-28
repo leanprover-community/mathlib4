@@ -28,20 +28,6 @@ open Ideal Quotient
 
 variable {R S : Type*} [NonAssocSemiring R] [CommRing S] (I : Ideal S)
 
-variable {I} in
-/--
-Helper lemma for the construction of `S ⧸ I ^ n → S ⧸ (I ^ n • ⊤)`.
--/
-private lemma Ideal.pow_le_pow_smul_top {n : ℕ} : I ^ n ≤ I ^ n • ⊤ :=
-  le_of_eq ((smul_eq_mul (I ^ n) _) ▸ (mul_top _).symm : I ^ n = I ^ n • ⊤)
-
-variable {I} in
-/--
-Helper lemma for the construction of `S ⧸ (I ^ n • ⊤) → S ⧸ I ^ n`.
--/
-private lemma Ideal.pow_smul_top_le_pow {n : ℕ} : I ^ n • ⊤ ≤ I ^ n :=
-  le_of_eq ((smul_eq_mul (I ^ n) _) ▸ (mul_top _).symm : I ^ n = I ^ n • ⊤).symm
-
 namespace AdicCompletion
 
 /--
@@ -67,7 +53,7 @@ ring maps `R →+* S ⧸ I ^ n`.
 def liftRingHom (f : (n : ℕ) → R →+* S ⧸ I ^ n)
     (hf : ∀ {m n : ℕ} (hle : m ≤ n), (factorPow I hle).comp (f n) = f m) :
     R →+* AdicCompletion I S where
-  toFun := fun x ↦ ⟨fun n ↦ (factor pow_le_pow_smul_top) (f n x),
+  toFun := fun x ↦ ⟨fun n ↦ (factor (le_of_eq (mul_top _).symm)) (f n x),
     fun hkl ↦ by simp [transitionMap, Submodule.factorPow, ← hf hkl]⟩
   map_add' x y := by
     simp only [map_add]
@@ -85,15 +71,14 @@ def liftRingHom (f : (n : ℕ) → R →+* S ⧸ I ^ n)
 variable (f : (n : ℕ) → R →+* S ⧸ I ^ n)
   (hf : ∀ {m n : ℕ} (hle : m ≤ n), (factorPow I hle).comp (f n) = f m)
 
-@[simp]
 theorem factor_eval_liftRingHom_apply (n : ℕ) (x : R) :
-    (factor pow_smul_top_le_pow) (eval I S n (liftRingHom I f hf x)) = (f n x) := by
+    (factor (le_of_eq (mul_top _))) (eval I S n (liftRingHom I f hf x)) = (f n x) := by
   simp [liftRingHom, eval]
 
 @[simp]
 theorem evalₐ_liftRingHom_apply (n : ℕ) (x : R) :
     (evalₐ I n) (liftRingHom I f hf x) = f n x := by
-  rw [← factor_eval_eq_evalₐ I n _ pow_smul_top_le_pow]
+  rw [← factor_eval_eq_evalₐ I n _ (le_of_eq (mul_top _))]
   simp [liftRingHom, eval]
 
 @[simp]
@@ -120,10 +105,8 @@ theorem of_ofAlgEquiv_symm_apply (x : AdicCompletion I S) :
     of I S ((ofAlgEquiv I).symm x) = x := by
   simp [ofAlgEquiv]
 
-@[simp]
-theorem factor_mk_ofAlgEquiv_symm_apply (n : ℕ) (x : AdicCompletion I S) :
-    factor pow_le_pow_smul_top (Ideal.Quotient.mk (I ^ n) ((ofAlgEquiv I).symm x)) =
-    eval I S n x := by
+theorem mk_smul_top_ofAlgEquiv_symm_apply (n : ℕ) (x : AdicCompletion I S) :
+    Ideal.Quotient.mk (I ^ n • ⊤) ((ofAlgEquiv I).symm x) = eval I S n x := by
   nth_rw 2 [← of_ofAlgEquiv_symm_apply I x]
   simp [-of_ofAlgEquiv_symm_apply, eval]
 
@@ -131,7 +114,7 @@ theorem factor_mk_ofAlgEquiv_symm_apply (n : ℕ) (x : AdicCompletion I S) :
 theorem mk_ofAlgEquiv_symm_apply (n : ℕ) (x : AdicCompletion I S) :
     Ideal.Quotient.mk (I ^ n) ((ofAlgEquiv I).symm x) = evalₐ I n x := by
   simp only [evalₐ, AlgHom.coe_comp, Function.comp_apply, AlgHom.ofLinearMap_apply]
-  rw [← factor_mk_ofAlgEquiv_symm_apply I n x]
+  rw [← mk_smul_top_ofAlgEquiv_symm_apply I n x]
   simp
 
 end AdicCompletion

@@ -121,14 +121,13 @@ def evalₐ (n : ℕ) : AdicCompletion I R →ₐ[R] R ⧸ I ^ n :=
     (Ideal.quotientEquivAlgOfEq R h)
     (AlgHom.ofLinearMap (eval I R n) rfl (fun _ _ ↦ rfl))
 
-@[simp]
-theorem factor_evalₐ_apply (n : ℕ) (x : AdicCompletion I R) (h : I ^ n ≤ I ^ n • ⊤) :
-    (factor h) (evalₐ I n x) = (eval I R n x) := by
-  simp [evalₐ]
+theorem factor_evalₐ_apply (n : ℕ) (x : AdicCompletion I R) (h : I ^ n ≤ I ^ n * ⊤) :
+    (Ideal.Quotient.factor h) (evalₐ I n x) = (eval I R n x) := by
+  simp [evalₐ, smul_eq_mul]
 
-theorem factor_eval_eq_evalₐ (n : ℕ) (x : AdicCompletion I R) (h : I ^ n • ⊤ ≤ I ^ n) :
+theorem factor_eval_eq_evalₐ (n : ℕ) (x : AdicCompletion I R) (h : I ^ n * ⊤ ≤ I ^ n) :
     (factor h) (eval I R n x) = (evalₐ I n x) := by
-  simp [evalₐ]
+  simp [evalₐ, smul_eq_mul]
 
 @[simp]
 theorem evalₐ_mk (n : ℕ) (x : AdicCauchySequence I R) :
