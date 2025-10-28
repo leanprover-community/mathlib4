@@ -42,9 +42,9 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
     exact this.elim _ _
   have : n = j * (d + e) := by
     apply DirectSum.degree_eq_of_mem_mem 𝒜 hb'
-    convert SetLike.pow_mem_graded _ _ using 2
-    · infer_instance
-    · exact hx ▸ SetLike.mul_mem_graded hf hg
+    · convert SetLike.pow_mem_graded _ _ using 2
+      · infer_instance
+      · exact hx ▸ SetLike.mul_mem_graded hf hg
     · exact hx ▸ hfg
   let x0 : NumDenSameDeg 𝒜 (.powers f) :=
   { deg := j * (d * (e + 1))
@@ -287,8 +287,8 @@ theorem valuativeCriterion_existence_aux
             · simp; ring
           · ext i; congr 1; ring
           · ring
-      _ ≤ (∏ i : ι, ψ i₀ ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) :=
-          mul_le_mul_right' (Finset.prod_le_prod' fun i a ↦ pow_le_pow_left₀ zero_le' (hi₀ i) _) _
+      _ ≤ (∏ i : ι, ψ i₀ ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) := by
+          gcongr with i; exacts [fun i _ ↦ zero_le', zero_le', hi₀ i]
       _ = ψ i₀ ^ (d i₀ * a * d j) := by
           rw [Finset.prod_pow_eq_pow_sum, ← pow_add]
           simp_rw [mul_comm (d _) (ai _), hai]
