@@ -92,9 +92,12 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
     exact LinearMap.isCompl_range_inl_inr
 
 @[simp]
-lemma implicitFunctionData_prodFun (h : IsContDiffImplicitAt n f f' a) :
-    (h.implicitFunctionData.leftFun h.implicitFunctionData.pt,
-      h.implicitFunctionData.rightFun h.implicitFunctionData.pt) = (a.1, f a) := rfl
+lemma implicitFunctionData_leftFun_pt (h : IsContDiffImplicitAt n f f' a) :
+    h.implicitFunctionData.leftFun h.implicitFunctionData.pt = a.1 := rfl
+
+@[simp]
+lemma implicitFunctionData_rightFun_pt (h : IsContDiffImplicitAt n f f' a) :
+    h.implicitFunctionData.rightFun h.implicitFunctionData.pt = f a := rfl
 
 /-- The implicit function provided by the general theorem, from which we construct the more useful
 form `IsContDiffImplicitAt.implicitFunction`. -/
@@ -135,7 +138,7 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
 
 /-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
 also $C^n$ at `x`. -/
-theorem contDiff_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
+theorem contDiffAt_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
     ContDiffAt 𝕜 n h.implicitFunction a.1 := by
   have := h.implicitFunctionData.contDiff_implicitFunction contDiffAt_fst h.contDiffAt h.one_le
   rw [implicitFunction_def]
