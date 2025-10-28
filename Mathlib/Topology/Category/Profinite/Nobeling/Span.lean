@@ -188,7 +188,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
   | cons a as ih =>
     rw [List.map_cons, List.prod_cons]
     intro ha
-    specialize ih (by rw [List.isChain_cons'] at ha; exact ha.2)
+    specialize ih (by rw [List.isChain_cons] at ha; exact ha.2)
     rw [Finsupp.mem_span_image_iff_linearCombination] at ih
     simp only [Finsupp.mem_supported, Finsupp.linearCombination_apply] at ih
     obtain ⟨c, hc, hc'⟩ := ih
