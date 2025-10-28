@@ -102,6 +102,9 @@ variable [DecidableEq α]
 lemma covBy_insert (ha : a ∉ s) : s ⋖ insert a s :=
   (wcovBy_insert _ _).covBy_of_lt <| ssubset_insert ha
 
+@[simp] lemma empty_covBy_singleton (a : α) : ∅ ⋖ ({a} : Finset α) :=
+  insert_empty_eq (β := Finset α) a ▸ covBy_insert <| notMem_empty a
+
 @[simp] lemma erase_covBy (ha : a ∈ s) : s.erase a ⋖ s := ⟨erase_ssubset ha, (erase_wcovBy _ _).2⟩
 
 lemma _root_.CovBy.exists_finset_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s = t := by
