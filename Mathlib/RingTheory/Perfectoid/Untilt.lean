@@ -30,7 +30,7 @@ is not the untilt *functor*.
 Perfectoid, Tilting equivalence, Untilt
 -/
 
-open Perfection Ring.Perfection Ideal
+open Perfection Ideal
 
 namespace PreTilt
 
