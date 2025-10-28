@@ -770,81 +770,66 @@ lemma eval_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Sub
     (n : ℕ) (x : M) : (lift I f h x).val n = f n x :=
   rfl
 
-section coeHom
+section Bijective
 
-variable (M)
+variable {I}
 
-def coeHom : M →ₗ[R] AdicCompletion I M :=
-  lift I (fun n ↦ (I ^ n • ⊤ : Submodule R M).mkQ) (by simp)
-
-scoped instance coe : Coe M (AdicCompletion I M) where
-  coe := coeHom I M
-
-variable {M} in
-theorem coeHom_apply (x : M) : coeHom I M x = (x : AdicCompletion I M) :=
-  rfl
-
-@[simp]
-theorem eval_comp_coeHom (n : ℕ) : eval I M n ∘ₗ coeHom I M = (I ^ n • ⊤ : Submodule R M).mkQ :=
-  rfl
-
-@[simp]
-theorem eval_coeHom_apply (n : ℕ) (x : M) :
-    eval I M n (coeHom I M x) = Submodule.Quotient.mk x :=
-  rfl
-
-variable {I M}
-
-theorem coeHom_injective_iff : Function.Injective (coeHom I M) ↔ IsHausdorff I M := by
+theorem injective_of_iff : Function.Injective (of I M) ↔ IsHausdorff I M := by
   constructor
   · refine fun h ↦ ⟨fun x hx ↦ h ?_⟩
     ext n
-    simpa [coeHom, SModEq.zero] using hx n
+    simpa [of, SModEq.zero] using hx n
   · intro h
     rw [← LinearMap.ker_eq_bot]
     ext x
     simp only [LinearMap.mem_ker, Submodule.mem_bot]
     refine ⟨fun hx ↦ h.haus x fun n ↦ ?_, fun hx ↦ by simp [hx]⟩
     rw [Subtype.ext_iff] at hx
-    simpa using congrFun hx n
+    simpa [SModEq.zero] using congrFun hx n
 
 variable (I M) in
-theorem coeHom_injective [IsHausdorff I M] : Function.Injective (coeHom I M) :=
-  coeHom_injective_iff.mpr ‹_›
+theorem injective_of [IsHausdorff I M] : Function.Injective (of I M) :=
+  injective_of_iff.mpr ‹_›
 
-theorem coeHom_surjective_iff : Function.Surjective (coeHom I M) ↔ IsPrecomplete I M := by
+theorem surjective_of_iff : Function.Surjective (of I M) ↔ IsPrecomplete I M := by
   constructor
   · refine fun h ↦ ⟨fun f hmn ↦ ?_⟩
     let u : AdicCompletion I M := ⟨fun n ↦ Submodule.Quotient.mk (f n), fun c ↦ (hmn c).symm⟩
     obtain ⟨x, hx⟩ := h u
     refine ⟨x, fun n ↦ ?_⟩
-    simp [SModEq, ← eval_coeHom_apply, hx, u]
+    simp only [SModEq]
+    rw [← mkQ_apply _ x, ← eval_of, hx]
+    simp [u]
   · intro h u
     choose x hx using (fun n ↦ Submodule.Quotient.mk_surjective (I ^ n • ⊤ : Submodule R M) (u.1 n))
     obtain ⟨a, ha⟩ := h.prec (f := x) (fun hmn ↦ by rw [SModEq, hx, ← u.2 hmn, ← hx]; simp)
     use a
     ext n
-    simpa [SModEq, ← eval_coeHom_apply, ha, ← hx] using (ha n).symm
+    simpa [SModEq, ← eval_of, ha, ← hx] using (ha n).symm
 
 variable (I M) in
-theorem coeHom_surjective [IsPrecomplete I M] : Function.Surjective (coeHom I M) :=
-  coeHom_surjective_iff.mpr ‹_›
+theorem surjective_of [IsPrecomplete I M] : Function.Surjective (of I M) :=
+  surjective_of_iff.mpr ‹_›
 
-theorem coeHom_bijective_iff : Function.Bijective (coeHom I M) ↔ IsAdicComplete I M :=
+theorem bijective_of_iff : Function.Bijective (of I M) ↔ IsAdicComplete I M :=
   ⟨fun h ↦
-    { toIsHausdorff := coeHom_injective_iff.mp h.1,
-      toIsPrecomplete := coeHom_surjective_iff.mp h.2 },
-   fun h ↦ ⟨coeHom_injective_iff.mpr h.1, coeHom_surjective_iff.mpr h.2⟩⟩
+    { toIsHausdorff := injective_of_iff.mp h.1,
+      toIsPrecomplete := surjective_of_iff.mp h.2 },
+   fun h ↦ ⟨injective_of_iff.mpr h.1, surjective_of_iff.mpr h.2⟩⟩
 
 variable (I M) in
-theorem coeHom_bijective [IsAdicComplete I M] : Function.Bijective (coeHom I M) :=
-  coeHom_bijective_iff.mpr ‹_›
+theorem bijective_of [IsAdicComplete I M] : Function.Bijective (of I M) :=
+  bijective_of_iff.mpr ‹_›
 
 variable (I M) in
-def coeEquiv [IsAdicComplete I M] : M ≃ₗ[R] AdicCompletion I M :=
-  LinearEquiv.ofBijective (coeHom I M) (coeHom_bijective I M)
+/--
+When `M` is `I`-adic complete, the canonical map from `M` to its `I`-adic completion is a linear
+equivalence.
+-/
+def linearEquiv [IsAdicComplete I M] : M ≃ₗ[R] AdicCompletion I M :=
+  LinearEquiv.ofBijective (of I M) (bijective_of I M)
 
-end coeHom
+end Bijective
 
 end AdicCompletion
 
@@ -865,20 +850,20 @@ linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
 -/
 def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) :
-    M →ₗ[R] N := (coeEquiv I N).symm ∘ₗ AdicCompletion.lift I f h
+    M →ₗ[R] N := (linearEquiv I N).symm ∘ₗ AdicCompletion.lift I f h
 
 @[simp]
-theorem coeHom_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+theorem of_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (x : M) :
-    coeHom I N (lift I f h x) = AdicCompletion.lift I f h x := by
-  simp [lift, coeEquiv]
+    of I N (lift I f h x) = AdicCompletion.lift I f h x := by
+  simp [lift, linearEquiv]
 
 @[simp]
-theorem coeHom_comp_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+theorem of_comp_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) :
-    (coeHom I N) ∘ₗ (lift I f h) = AdicCompletion.lift I f h := by
+    (of I N) ∘ₗ (lift I f h) = AdicCompletion.lift I f h := by
   ext1 x
-  exact coeHom_lift_apply I f h x
+  exact of_lift_apply I f h x
 
 /--
 The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
@@ -888,7 +873,10 @@ projection `M →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
 theorem mk_lift_apply {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) (x : M) :
     (Submodule.Quotient.mk (lift I f h x)) = f n x := by
-  simp [← eval_coeHom_apply, lift, coeEquiv]
+  simp only [lift, linearEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  rw [← mkQ_apply, ← eval_of]
+  simp
+
 
 @[simp]
 theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
@@ -969,23 +957,23 @@ from a strictly increasing sequence `a n`.
 def lift : M →ₗ[R] N :=
   IsAdicComplete.lift I (extend ha f) (factorPow_comp_extend ha f hf)
 
-theorem coeHom_lift_apply (x : M) :
-    coeHom I N (lift I ha f hf x) =
+theorem of_lift_apply (x : M) :
+    of I N (lift I ha f hf x) =
     AdicCompletion.lift I (extend ha f) (factorPow_comp_extend ha f hf) x :=
-  IsAdicComplete.coeHom_lift_apply I (extend ha f) (factorPow_comp_extend ha f hf) x
+  IsAdicComplete.of_lift_apply I (extend ha f) (factorPow_comp_extend ha f hf) x
 
-theorem coeHom_comp_lift :
-    (coeHom I N) ∘ₗ (lift I ha f hf) =
+theorem of_comp_lift :
+    (of I N) ∘ₗ (lift I ha f hf) =
       AdicCompletion.lift I (extend ha f) (factorPow_comp_extend ha f hf) :=
-  IsAdicComplete.coeHom_comp_lift I (extend ha f) (factorPow_comp_extend ha f hf)
+  IsAdicComplete.of_comp_lift I (extend ha f) (factorPow_comp_extend ha f hf)
 
 @[simp]
 theorem mk_lift_apply {n : ℕ} (x : M) :
     (Submodule.Quotient.mk (lift I ha f hf x)) = f n x := by
-  simp only [lift, IsAdicComplete.lift, coeEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply, ← eval_coeHom_apply, LinearEquiv.apply_ofBijective_symm_apply, coe_eval,
-    eval_lift_apply]
-  rw [extend_eq ha f hf]
+  simp only [lift, IsAdicComplete.lift, linearEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    Function.comp_apply]
+  rw [← mkQ_apply, ← eval_of]
+  simp [extend_eq ha f hf]
 
 @[simp]
 theorem mkQ_comp_lift {n : ℕ} :
