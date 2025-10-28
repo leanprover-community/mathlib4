@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Defs
+import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas on `Int.floor`, `Int.ceil` and `Int.fract`
@@ -27,6 +28,76 @@ rounding, floor, ceil
 assert_not_exists Finset
 
 open Set
+
+namespace Mathlib.Meta.Positivity
+
+open Lean.Meta Qq
+
+variable {α : Type*}
+
+private theorem int_floor_nonneg [Ring α] [LinearOrder α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
+    0 ≤ ⌊a⌋ :=
+  Int.floor_nonneg.2 ha
+
+private theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α}
+    (ha : 0 < a) :
+    0 ≤ ⌊a⌋ :=
+  int_floor_nonneg ha.le
+
+/-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
+@[positivity ⌊_⌋]
+def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℤ), ~q(@Int.floor $α' $ir $io $j $a) =>
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+        assertInstancesCommute
+        pure (.nonnegative q(int_floor_nonneg_of_pos (α := $α') $pa))
+    | .nonnegative pa =>
+        assertInstancesCommute
+        pure (.nonnegative q(int_floor_nonneg (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Int.floor application"
+
+private theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} :
+    0 < a → 0 < ⌈a⌉₊ :=
+  Nat.ceil_pos.2
+
+/-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
+@[positivity ⌈_⌉₊]
+def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
+    let _i ← synthInstanceQ q(LinearOrder $α')
+    let _i ← synthInstanceQ q(IsStrictOrderedRing $α')
+    assertInstancesCommute
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+      assertInstancesCommute
+      pure (.positive q(nat_ceil_pos (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Nat.ceil application"
+
+private theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
+  Int.ceil_pos.2
+
+/-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
+@[positivity ⌈_⌉]
+def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℤ), ~q(@Int.ceil $α' $ir $io $j $a) =>
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+        assertInstancesCommute
+        pure (.positive q(int_ceil_pos (α := $α') $pa))
+    | .nonnegative pa =>
+        let _i ← synthInstanceQ q(IsStrictOrderedRing $α')
+        assertInstancesCommute
+        pure (.nonnegative q(Int.ceil_nonneg (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Int.ceil application"
+
+end Mathlib.Meta.Positivity
 
 variable {F R S : Type*}
 
@@ -57,11 +128,11 @@ theorem lt_succ_floor (a : R) : a < ⌊a⌋.succ :=
 theorem lt_floor_add_one (a : R) : a < ⌊a⌋ + 1 := by
   simpa only [Int.succ, Int.cast_add, Int.cast_one] using lt_succ_floor a
 
-@[mono]
+@[gcongr, mono]
 theorem floor_mono : Monotone (floor : R → ℤ) :=
   gc_coe_floor.monotone_u
 
-@[gcongr, bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋ ≤ ⌊b⌋ := floor_mono hab
+@[bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋ ≤ ⌊b⌋ := floor_mono hab
 
 theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
   rw [Int.lt_iff_add_one_le, zero_add, le_floor, cast_one]
@@ -208,7 +279,7 @@ lemma mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊a * n
   rw [mul_comm, cast_mul_floor_div_cancel_of_pos hn]
 
 theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
-  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by omega) a
+  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by cutsat) a
 
 theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) {a : k} : ⌊a * n⌋ / n = ⌊a⌋ := by
   rw [mul_comm, natCast_mul_floor_div_cancel hn]
@@ -242,10 +313,7 @@ theorem fract_sub_self (a : R) : fract a - a = -⌊a⌋ :=
   sub_sub_cancel_left _ _
 
 theorem fract_add (a b : R) : ∃ z : ℤ, fract (a + b) - fract a - fract b = z :=
-  ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
-    unfold fract
-    simp only [sub_eq_add_neg, neg_add_rev, neg_neg, cast_add, cast_neg]
-    abel⟩
+  ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by unfold fract; grind⟩
 
 variable [IsStrictOrderedRing R]
 
@@ -474,7 +542,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
   · simp
   replace hn : 0 < (n : k) := by norm_cast
   have : ∀ {l : ℤ}, 0 ≤ l → fract ((l : k) / n) = ↑(l % n) / n := by
-    intros l hl
+    intro l hl
     obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg
     · rw [cast_natCast, ← natCast_mod, cast_natCast, fract_div_natCast_eq_div_natCast_mod]
     · rw [Right.nonneg_neg_iff, natCast_nonpos_iff] at hl
@@ -694,6 +762,7 @@ lemma ceil_div_ceil_inv_sub_one (ha : 1 ≤ a) : ⌈⌈(a - 1)⁻¹⌉ / a⌉ = 
     ← lt_div_iff₀ (sub_pos.2 <| inv_lt_one_of_one_lt₀ ha)]
   convert ceil_lt_add_one (R := k) _ using 1
   field_simp
+  abel
 
 lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b * a := by
   obtain hab | hba := le_total a (b - 1)⁻¹
@@ -789,6 +858,20 @@ theorem map_fract (f : F) (hf : StrictMono f) (a : R) : fract (f a) = f (fract a
   simp_rw [fract, map_sub, map_intCast, map_floor _ hf]
 
 end Int
+
+namespace Nat
+
+variable [Ring R] [LinearOrder R] [FloorRing R] [IsStrictOrderedRing R] {a : R}
+
+/-- a variant of `Nat.ceil_lt_add_one` with its condition `0 ≤ a` generalized to `-1 < a` -/
+@[bound]
+lemma ceil_lt_add_one_of_gt_neg_one (ha : -1 < a) : ⌈a⌉₊ < a + 1 := by
+  by_cases h : 0 ≤ a
+  · exact ceil_lt_add_one h
+  · rw [ceil_eq_zero.mpr (le_of_not_ge h), cast_zero]
+    exact neg_lt_iff_pos_add.mp ha
+
+end Nat
 
 section FloorRingToSemiring
 

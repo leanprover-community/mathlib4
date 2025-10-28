@@ -8,7 +8,7 @@ import Mathlib.Algebra.Lie.Killing
 import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
 /-!
-# Derivations of finite dimensional Killing Lie algebras
+# Derivations of finite-dimensional Killing Lie algebras
 
 This file establishes that all derivations of finite-dimensional Killing Lie algebras are inner.
 

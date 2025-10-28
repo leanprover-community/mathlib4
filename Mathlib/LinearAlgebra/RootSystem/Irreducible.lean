@@ -107,8 +107,8 @@ def toRootSystem [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : RootSystem �
 
 lemma invtSubmodule_reflection_of_invtSubmodule_coreflection (i : ι) (q : Submodule R N)
     (hq : q ∈ invtSubmodule (P.coreflection i)) :
-    q.dualAnnihilator.map P.toDualLeft.symm ∈ invtSubmodule (P.reflection i) := by
-  rw [LinearEquiv.map_mem_invtSubmodule_iff, LinearEquiv.symm_symm, toDualLeft_conj_reflection,
+    q.dualAnnihilator.map P.toPerfPair.symm ∈ invtSubmodule (P.reflection i) := by
+  rw [LinearEquiv.map_mem_invtSubmodule_iff, LinearEquiv.symm_symm, toPerfPair_conj_reflection,
     Module.End.mem_invtSubmodule, ← Submodule.map_le_iff_le_comap]
   exact (Submodule.dualAnnihilator_map_dualMap_le _ _).trans <| Submodule.dualAnnihilator_anti hq
 
@@ -119,10 +119,10 @@ lemma IsIrreducible.mk' {K : Type*} [Field K] [Module K M] [Module K N] [Nontriv
     (h : ∀ (q : Submodule K M), (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤) :
     P.IsIrreducible where
   nontrivial := inferInstance
-  nontrivial' := (Module.nontrivial_dual_iff K).mp P.toDualLeft.symm.nontrivial
+  nontrivial' := (Module.nontrivial_dual_iff K).mp P.toPerfPair.symm.nontrivial
   eq_top_of_invtSubmodule_reflection := h
   eq_top_of_invtSubmodule_coreflection q stab ne_bot := by
-    specialize h (q.dualAnnihilator.map P.toDualLeft.symm)
+    specialize h (q.dualAnnihilator.map P.toPerfPair.symm)
       fun i ↦ invtSubmodule_reflection_of_invtSubmodule_coreflection P i q (stab i)
     rw [Submodule.map_eq_top_iff, not_imp_comm] at h
     replace ne_bot : q.dualAnnihilator ≠ ⊤ := by simpa

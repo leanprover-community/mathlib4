@@ -96,33 +96,67 @@ end ENorm
 /-- A type `E` equipped with a continuous map `‖·‖ₑ : E → ℝ≥0∞`
 
 NB. We do not demand that the topology is somehow defined by the enorm:
-for ℝ≥0∞ (the motivating example behind this definition), this is not true. -/
+for `ℝ≥0∞` (the motivating example behind this definition), this is not true. -/
 class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
   continuous_enorm : Continuous enorm
 
-/-- An enormed monoid is an additive monoid endowed with a continuous enorm. -/
-class ENormedAddMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, AddMonoid E where
-  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
+/-- An e-seminormed monoid is an additive monoid endowed with a continuous enorm.
+Note that we do not ask for the enorm to be positive definite:
+non-trivial elements may have enorm zero. -/
+class ESeminormedAddMonoid (E : Type*) [TopologicalSpace E]
+    extends ContinuousENorm E, AddMonoid E where
+  enorm_zero : ‖(0 : E)‖ₑ = 0
   protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
-/-- An enormed monoid is a monoid endowed with a continuous enorm. -/
+/-- An enormed monoid is an additive monoid endowed with a continuous enorm,
+which is positive definite: in other words, this is an `ESeminormedAddMonoid` with a positive
+definiteness condition added. -/
+class ENormedAddMonoid (E : Type*) [TopologicalSpace E]
+    extends ESeminormedAddMonoid E where
+  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
+
+/-- An e-seminormed monoid is a monoid endowed with a continuous enorm.
+Note that we only ask for the enorm to be a semi-norm: non-trivial elements may have enorm zero. -/
 @[to_additive]
-class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
-  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+class ESeminormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
+  enorm_zero : ‖(1 : E)‖ₑ = 0
   enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
+/-- An enormed monoid is a monoid endowed with a continuous enorm,
+which is positive definite: in other words, this is an `ESeminormedMonoid` with a positive
+definiteness condition added. -/
+@[to_additive]
+class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ESeminormedMonoid E where
+  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+
+/-- An e-seminormed commutative monoid is an additive commutative monoid endowed with a continuous
+enorm.
+
+We don't have `ESeminormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
+is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
+the topology coming from `edist`. -/
+class ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E]
+  extends ESeminormedAddMonoid E, AddCommMonoid E where
+
 /-- An enormed commutative monoid is an additive commutative monoid
-endowed with a continuous enorm.
+endowed with a continuous enorm which is positive definite.
 
 We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
 the topology coming from `edist`. -/
 class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
-  extends ENormedAddMonoid E, AddCommMonoid E where
+  extends ESeminormedAddCommMonoid E, ENormedAddMonoid E where
 
-/-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
+/-- An e-seminormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
 @[to_additive]
-class ENormedCommMonoid (E : Type*) [TopologicalSpace E] extends ENormedMonoid E, CommMonoid E where
+class ESeminormedCommMonoid (E : Type*) [TopologicalSpace E]
+  extends ESeminormedMonoid E, CommMonoid E where
+
+/-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm
+which is positive definite. -/
+@[to_additive]
+class ENormedCommMonoid (E : Type*) [TopologicalSpace E]
+  extends ESeminormedCommMonoid E, ENormedMonoid E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
@@ -634,8 +668,8 @@ lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (
   rw [norm_div_rev, mul_comm]
   exact norm_mul_sub_norm_div_le_two_mul _ _
 
-@[to_additive (attr := simp 1001) mem_sphere_iff_norm]
--- Porting note: increase priority so the left-hand side doesn't reduce
+-- Higher priority to fire before `mem_sphere`.
+@[to_additive (attr := simp high) mem_sphere_iff_norm]
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
 
 @[to_additive] -- `simp` can prove this
@@ -852,8 +886,8 @@ lemma nnnorm_div_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x / y
 lemma nnnorm_div_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_div_eq_norm_left _ <| congr_arg NNReal.toReal h
 
-/-- The non negative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
-@[to_additive toReal_coe_nnnorm /-- The non negative norm seen as an `ENNReal` and
+/-- The nonnegative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
+@[to_additive toReal_coe_nnnorm /-- The nonnegative norm seen as an `ENNReal` and
 then as a `Real` is equal to the norm. -/]
 theorem toReal_coe_nnnorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
 
@@ -868,11 +902,11 @@ end NNNorm
 section ENorm
 
 @[to_additive (attr := simp) enorm_zero]
-lemma enorm_one' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
-  rw [ENormedMonoid.enorm_eq_zero]
+lemma enorm_one' {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
+  rw [ESeminormedMonoid.enorm_zero]
 
 @[to_additive exists_enorm_lt]
-lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ENormedMonoid E]
+lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
     [hbot : NeBot (𝓝[≠] (1 : E))] {c : ℝ≥0∞} (hc : c ≠ 0) : ∃ x ≠ (1 : E), ‖x‖ₑ < c :=
   frequently_iff_neBot.mpr hbot |>.and_eventually
     (ContinuousENorm.continuous_enorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
@@ -895,6 +929,10 @@ theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
 
 @[to_additive]
 theorem edist_one_eq_enorm (x : E) : edist x 1 = ‖x‖ₑ := by rw [edist_eq_enorm_div, div_one]
+
+@[to_additive]
+lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
+  rw [← edist_eq_enorm_div, edist_comm, edist_eq_enorm_div]
 
 @[to_additive]
 theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ ‖a‖ₑ < r := by
@@ -929,12 +967,18 @@ lemma ContinuousOn.enorm (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s
 
 end ContinuousENorm
 
+section ESeminormedMonoid
+
+variable {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E]
+
+@[to_additive enorm_add_le]
+lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ESeminormedMonoid.enorm_mul_le a b
+
+end ESeminormedMonoid
+
 section ENormedMonoid
 
 variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
-
-@[to_additive enorm_add_le]
-lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
 
 @[to_additive (attr := simp) enorm_eq_zero]
 lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
@@ -952,6 +996,7 @@ end ENormedMonoid
 
 instance : ENormedAddCommMonoid ℝ≥0∞ where
   continuous_enorm := continuous_id
+  enorm_zero := by simp
   enorm_eq_zero := by simp
   enorm_add_le := by simp
 
@@ -1040,7 +1085,7 @@ theorem norm_of_nonpos (hr : r ≤ 0) : ‖r‖ = -r :=
 theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
   le_abs_self r
 
-@[simp 1100] lemma norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n := abs_of_nonneg n.cast_nonneg
+lemma norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n := abs_of_nonneg n.cast_nonneg
 @[simp 1100] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n := NNReal.eq <| norm_natCast _
 @[simp 1100] lemma enorm_natCast (n : ℕ) : ‖(n : ℝ)‖ₑ = n := by simp [enorm]
 
@@ -1079,9 +1124,8 @@ theorem enorm_eq_ofReal_abs (r : ℝ) : ‖r‖ₑ = ENNReal.ofReal |r| := by
 
 theorem toNNReal_eq_nnnorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ := by
   rw [Real.toNNReal_of_nonneg hr]
-  ext
-  rw [coe_mk, coe_nnnorm r, Real.norm_eq_abs r, abs_of_nonneg hr]
-  -- Porting note: this is due to the change from `Subtype.val` to `NNReal.toReal` for the coercion
+  congr
+  rw [Real.norm_eq_abs r, abs_of_nonneg hr]
 
 theorem ofReal_le_enorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖ₑ := by
   rw [enorm_eq_ofReal_abs]; gcongr; exact le_abs_self _
@@ -1100,7 +1144,7 @@ end NNReal
 section SeminormedCommGroup
 
 variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
-variable {ε : Type*} [TopologicalSpace ε] [ENormedCommMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε]
 
 @[to_additive]
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
@@ -1117,8 +1161,9 @@ theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x =
   · simp only [comp_apply, norm_one', ofAdd_zero]
   · exact norm_mul_le' x y
 
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
 @[bound]
-theorem enorm_sum_le {ε} [TopologicalSpace ε] [ENormedAddCommMonoid ε] (s : Finset ι) (f : ι → ε) :
+theorem enorm_sum_le (s : Finset ι) (f : ι → ε) :
     ‖∑ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
   s.le_sum_of_subadditive enorm enorm_zero enorm_add_le f
 
@@ -1171,14 +1216,14 @@ theorem mul_mem_ball_iff_norm : a * b ∈ ball a r ↔ ‖b‖ < r := by
 theorem mul_mem_closedBall_iff_norm : a * b ∈ closedBall a r ↔ ‖b‖ ≤ r := by
   rw [mem_closedBall_iff_norm'', mul_div_cancel_left]
 
-@[to_additive (attr := simp 1001)]
--- Porting note: increase priority so that the left-hand side doesn't simplify
+-- Higher priority to apply this before the equivalent lemma `Metric.preimage_mul_left_ball`.
+@[to_additive (attr := simp high)]
 theorem preimage_mul_ball (a b : E) (r : ℝ) : (b * ·) ⁻¹' ball a r = ball (a / b) r := by
   ext c
   simp only [dist_eq_norm_div, Set.mem_preimage, mem_ball, div_div_eq_mul_div, mul_comm]
 
-@[to_additive (attr := simp 1001)]
--- Porting note: increase priority so that the left-hand side doesn't simplify
+-- Higher priority to apply this before the equivalent lemma `Metric.preimage_mul_left_closedBall`.
+@[to_additive (attr := simp high)]
 theorem preimage_mul_closedBall (a b : E) (r : ℝ) :
     (b * ·) ⁻¹' closedBall a r = closedBall (a / b) r := by
   ext c
@@ -1243,8 +1288,7 @@ theorem nnnorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0}
     ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
   (norm_prod_le_of_le s h).trans_eq (NNReal.coe_sum ..).symm
 
--- Porting note: increase priority so that the LHS doesn't simplify
-@[to_additive (attr := simp 1001) norm_norm]
+@[to_additive (attr := simp high) norm_norm] -- Higher priority as a shortcut lemma.
 lemma norm_norm' (x : E) : ‖‖x‖‖ = ‖x‖ := Real.norm_of_nonneg (norm_nonneg' _)
 
 @[to_additive (attr := simp) nnnorm_norm]

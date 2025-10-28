@@ -16,7 +16,7 @@ import Mathlib.Algebra.Notation.Prod
 In this file we define an extension of `Equiv` called `RingEquiv`, which is a datatype representing
 an isomorphism of `Semiring`s, `Ring`s, `DivisionRing`s, or `Field`s.
 
-## Notations
+## Notation
 
 * ``infixl ` ≃+* `:25 := RingEquiv``
 
@@ -230,9 +230,6 @@ theorem refl_apply (x : R) : RingEquiv.refl R x = x :=
 @[simp]
 theorem coe_refl (R : Type*) [Mul R] [Add R] : ⇑(RingEquiv.refl R) = id :=
   rfl
-
-@[deprecated coe_refl (since := "2025-02-10")]
-alias coe_refl_id := coe_refl
 
 @[simp]
 theorem coe_addEquiv_refl : (RingEquiv.refl R : R ≃+ R) = AddEquiv.refl R :=
@@ -451,6 +448,18 @@ theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.B
     (x : R) : ofBijective f hf x = f x :=
   rfl
 
+@[simp]
+lemma ofBijective_symm_comp (f : R →ₙ+* S) (hf : Function.Bijective f) :
+    ((RingEquiv.ofBijective f hf).symm : _ →ₙ+* _).comp f = NonUnitalRingHom.id R := by
+  ext
+  exact (RingEquiv.ofBijective f hf).injective <| RingEquiv.apply_symm_apply ..
+
+@[simp]
+lemma comp_ofBijective_symm (f : R →ₙ+* S) (hf : Function.Bijective f) :
+    f.comp ((RingEquiv.ofBijective f hf).symm : _ →ₙ+* _) = NonUnitalRingHom.id S := by
+  ext
+  exact (RingEquiv.ofBijective f hf).symm.injective <| RingEquiv.apply_symm_apply ..
+
 /-- Product of a singleton family of (non-unital non-associative semi)rings is isomorphic
 to the only member of this family. -/
 @[simps! -fullyApplied]
@@ -459,6 +468,17 @@ def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAss
   __ := Equiv.piUnique R
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
+
+/-- `Equiv.cast (congrArg _ h)` as a ring equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+@[simps!]
+protected def cast
+    {ι : Type*} {R : ι → Type*} [∀ i, Mul (R i)] [∀ i, Add (R i)] {i j : ι} (h : i = j) :
+    R i ≃+* R j where
+  __ := AddEquiv.cast h
+  __ := MulEquiv.cast h
 
 /-- A family of ring isomorphisms `∀ j, (R j ≃+* S j)` generates a
 ring isomorphisms between `∀ j, R j` and `∀ j, S j`.
@@ -524,6 +544,17 @@ def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) [DecidablePred p] (Y : �
     [∀ i, NonUnitalNonAssocSemiring (Y i)] :
     ((i : ι) → Y i) ≃+* ((i : { x : ι // p x }) → Y i) × ((i : { x : ι // ¬p x }) → Y i) where
   toEquiv := Equiv.piEquivPiSubtypeProd p Y
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+/-- The opposite of a direct product is isomorphic to the direct product of the opposites
+as rings. -/
+def piMulOpposite {ι : Type*} (S : ι → Type*) [∀ i, NonUnitalNonAssocSemiring (S i)] :
+    (Π i, S i)ᵐᵒᵖ ≃+* Π i, (S i)ᵐᵒᵖ where
+  toFun f i := .op (f.unop i)
+  invFun f := .op fun i ↦ (f i).unop
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
@@ -776,12 +807,10 @@ theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
 
 theorem toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
     e.toRingHom.comp e.symm.toRingHom = RingHom.id _ := by
-  ext
   simp
 
 theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
     e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
-  ext
   simp
 
 /-- Construct an equivalence of rings from homomorphisms in both directions, which are inverses.

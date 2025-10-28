@@ -17,7 +17,7 @@ This file defines bundled homomorphisms of `R`-coalgebras. We largely mimic
 * `Coalgebra.counitCoalgHom R A : A →ₗc[R] R`: the counit of a coalgebra as a coalgebra
   homomorphism.
 
-## Notations
+## Notation
 
 * `A →ₗc[R] B` : `R`-coalgebra homomorphism from `A` to `B`.
 
@@ -79,7 +79,7 @@ theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
 
 @[simp]
 theorem map_comp_comul_apply (f : F) (x : A) :
-    TensorProduct.map (f : A →ₗ[R] B) f (comul x) = comul (R := R) (f x) :=
+    TensorProduct.map f f (σ₁₂ := .id _) (comul x) = comul (R := R) (f x) :=
   LinearMap.congr_fun (map_comp_comul f) _
 
 end CoalgHomClass

@@ -17,7 +17,7 @@ valuation.basic).
 We already know from valuation.topology that one can build a topology on `K` which
 makes it a topological ring.
 
-The first goal is to show `K` is a topological *field*, ie inversion is continuous
+The first goal is to show `K` is a topological *field*, i.e. inversion is continuous
 at every non-zero element.
 
 The next goal is to prove `K` is a *completable* topological field. This gives us
@@ -181,15 +181,7 @@ instance (priority := 100) completable : CompletableTopField K :=
             simp at x_in₀
           exact (Valuation.ne_zero_iff _).mp this
         · refine lt_of_lt_of_le H₁ ?_
-          rw [Units.min_val]
-          apply min_le_min _ x_in₀
-          rw [mul_assoc]
-          have : ((γ₀ * γ₀ : Γ₀ˣ) : Γ₀) ≤ v x * v x :=
-            calc
-              ↑γ₀ * ↑γ₀ ≤ ↑γ₀ * v x := mul_le_mul_left' x_in₀ ↑γ₀
-              _ ≤ _ := mul_le_mul_right' x_in₀ (v x)
-          rw [Units.val_mul]
-          exact mul_le_mul_left' this γ }
+          grw [Units.min_val, mul_assoc, Units.val_mul, Units.val_mul, x_in₀] }
 
 open WithZeroTopology
 
@@ -392,6 +384,21 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
 @[simp]
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
+
+lemma valuedCompletion_surjective_iff :
+    Function.Surjective (v : hat K → Γ₀) ↔ Function.Surjective (v : K → Γ₀) := by
+  constructor <;> intro h γ <;> obtain ⟨a, ha⟩ := h γ
+  · induction a using Completion.induction_on
+    · by_cases H : ∃ x : K, (v : K → Γ₀) x = γ
+      · simp [H]
+      · simp only [H, imp_false]
+        rcases eq_or_ne γ 0 with rfl | hγ
+        · simp at H
+        · convert isClosed_univ.sdiff (isOpen_sphere (hat K) hγ) using 1
+          ext x
+          simp
+    · exact ⟨_, by simpa using ha⟩
+  · exact ⟨a, by simp [ha]⟩
 
 instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
     [FaithfulSMul R K] : FaithfulSMul R (hat K) := by

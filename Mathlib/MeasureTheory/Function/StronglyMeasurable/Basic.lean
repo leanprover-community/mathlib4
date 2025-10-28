@@ -131,7 +131,7 @@ private lemma simpleFuncAux_eq_of_lt : ∀ n > m, simpleFuncAux f g n (g m) = f 
   | _, .refl => by simp [simpleFuncAux]
   | _, Nat.le.step (m := n) hmn => by
     obtain hnm | hnm := eq_or_ne (g n) (g m) <;>
-      simp [simpleFuncAux, Set.piecewise_eq_of_notMem , hnm.symm, simpleFuncAux_eq_of_lt _ hmn]
+      simp [simpleFuncAux, Set.piecewise_eq_of_notMem, hnm.symm, simpleFuncAux_eq_of_lt _ hmn]
 
 private lemma simpleFuncAux_eventuallyEq : ∀ᶠ n in atTop, simpleFuncAux f g n (g m) = f (g m) :=
   eventually_atTop.2 ⟨_, simpleFuncAux_eq_of_lt⟩
@@ -458,6 +458,12 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
     (hf : StronglyMeasurable f) (c : β) : StronglyMeasurable fun x => f x • c :=
   continuous_smul.comp_stronglyMeasurable (hf.prodMk stronglyMeasurable_const)
 
+/-- Pointwise star on functions induced from continuous star preserves strong measurability. -/
+@[measurability]
+protected theorem star {R : Type*} [MeasurableSpace α] [Star R] [TopologicalSpace R]
+    [ContinuousStar R] (f : α → R) (hf : StronglyMeasurable f) : StronglyMeasurable (star f) :=
+  ⟨fun n => star (hf.approx n), fun x => (hf.tendsto_approx x).star⟩
+
 /-- In a normed vector space, the addition of a measurable function and a strongly measurable
 function is measurable. Note that this is not true without further second-countability assumptions
 for the addition of two measurable functions. -/
@@ -619,7 +625,7 @@ variable {n : MeasurableSpace β} in
 lemma Finset.stronglyMeasurable_prod_apply {ι : Type*} {f : ι → α → β → M} {g : α → β}
     {s : Finset ι} (hf : ∀ i ∈ s, StronglyMeasurable ↿(f i)) (hg : Measurable g) :
     StronglyMeasurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
-  simp; fun_prop (discharger := assumption)
+  simp only [Finset.prod_apply]; fun_prop (discharger := assumption)
 
 end CommMonoid
 
@@ -653,7 +659,7 @@ theorem _root_.Measurable.stronglyMeasurable [TopologicalSpace β] [PseudoMetriz
   letI := pseudoMetrizableSpacePseudoMetric β
   nontriviality β; inhabit β
   exact ⟨SimpleFunc.approxOn f hf Set.univ default (Set.mem_univ _), fun x ↦
-    SimpleFunc.tendsto_approxOn hf (Set.mem_univ _) (by rw [closure_univ]; simp)⟩
+    SimpleFunc.tendsto_approxOn hf (Set.mem_univ _) (by simp)⟩
 
 /-- In a space with second countable topology, strongly measurable and measurable are equivalent. -/
 theorem _root_.stronglyMeasurable_iff_measurable [TopologicalSpace β] [MetrizableSpace β]
@@ -736,7 +742,7 @@ theorem _root_.Embedding.comp_stronglyMeasurable_iff {m : MeasurableSpace α} [T
     have hG : IsClosedEmbedding G :=
       { hg.codRestrict _ _ with
         isClosed_range := by
-          rw [surjective_onto_range.range_eq]
+          rw [rangeFactorization_surjective.range_eq]
           exact isClosed_univ }
     have : Measurable (G ∘ f) := Measurable.subtype_mk H.measurable
     exact hG.measurableEmbedding.measurable_comp_iff.1 this
@@ -915,8 +921,6 @@ Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnnorm`, this lemma prove
 protected theorem enorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
     {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
   (continuous_enorm.comp_stronglyMeasurable hf).measurable
-
-@[deprecated (since := "2025-01-21")] alias ennnorm := StronglyMeasurable.enorm
 
 @[fun_prop, measurability]
 protected theorem real_toNNReal {_ : MeasurableSpace α} {f : α → ℝ} (hf : StronglyMeasurable f) :
@@ -1232,7 +1236,7 @@ theorem measurable_uncurry_of_continuous_of_measurable {α β ι : Type*} [Topol
         (fun p : α × (t_sf n).range => u (↑p.snd) p.fst) ∘ Prod.swap :=
       rfl
     rw [this, @measurable_swap_iff α (↥(t_sf n).range) β m]
-    exact measurable_from_prod_countable fun j => h j
+    exact measurable_from_prod_countable_left fun j => h j
   have :
     (fun p : ι × α => u (t_sf n p.fst) p.snd) =
       (fun p : ↥(t_sf n).range × α => u p.fst p.snd) ∘ fun p : ι × α =>
@@ -1265,7 +1269,7 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
           (fun p : α × (t_sf n).range => u (↑p.snd) p.fst) ∘ Prod.swap :=
         rfl
       rw [this, measurable_swap_iff]
-      exact measurable_from_prod_countable fun j => (h j).measurable
+      exact measurable_from_prod_countable_left fun j => (h j).measurable
     · have : IsSeparable (⋃ i : (t_sf n).range, range (u i)) :=
         .iUnion fun i => (h i).isSeparable_range
       apply this.mono

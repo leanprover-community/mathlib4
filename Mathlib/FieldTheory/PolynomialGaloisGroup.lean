@@ -15,7 +15,7 @@ some results about some extension `E` above `p.SplittingField`.
 ## Main definitions
 
 - `Polynomial.Gal p`: the Galois group of a polynomial p.
-- `Polynomial.Gal.restrict p E`: the restriction homomorphism `(E ≃ₐ[F] E) → gal p`.
+- `Polynomial.Gal.restrict p E`: the restriction homomorphism `Gal(E/F) → gal p`.
 - `Polynomial.Gal.galAction p E`: the action of `gal p` on the roots of `p` in `E`.
 
 ## Main results
@@ -50,22 +50,9 @@ variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 /-- The Galois group of a polynomial. -/
 def Gal :=
   p.SplittingField ≃ₐ[F] p.SplittingField
--- The `Group, Fintype` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
+deriving Group, Fintype, EquivLike, AlgEquivClass
 
 namespace Gal
-
-instance instGroup : Group (Gal p) :=
-  inferInstanceAs (Group (p.SplittingField ≃ₐ[F] p.SplittingField))
-
-instance instFintype : Fintype (Gal p) :=
-  inferInstanceAs (Fintype (p.SplittingField ≃ₐ[F] p.SplittingField))
-
-instance : EquivLike p.Gal p.SplittingField p.SplittingField :=
-  inferInstanceAs (EquivLike (p.SplittingField ≃ₐ[F] p.SplittingField) _ _)
-
-instance : AlgEquivClass p.Gal F p.SplittingField p.SplittingField :=
-  inferInstanceAs (AlgEquivClass (p.SplittingField ≃ₐ[F] p.SplittingField) F _ _)
 
 instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
   AlgEquiv.applyMulSemiringAction
@@ -123,7 +110,7 @@ instance [h : Fact (p.Splits (algebraMap F E))] : IsScalarTower F p.SplittingFie
 -- Since we don't really care about this definition, marking it as irreducible
 -- causes that unification to error out early.
 /-- Restrict from a superfield automorphism into a member of `gal p`. -/
-def restrict [Fact (p.Splits (algebraMap F E))] : (E ≃ₐ[F] E) →* p.Gal :=
+def restrict [Fact (p.Splits (algebraMap F E))] : Gal(E/F) →* p.Gal :=
   AlgEquiv.restrictNormalHom p.SplittingField
 
 theorem restrict_surjective [Fact (p.Splits (algebraMap F E))] [Normal F E] :
@@ -186,7 +173,7 @@ variable {p E}
 
 /-- `Polynomial.Gal.restrict p E` is compatible with `Polynomial.Gal.galAction p E`. -/
 @[simp]
-theorem restrict_smul [Fact (p.Splits (algebraMap F E))] (ϕ : E ≃ₐ[F] E) (x : rootSet p E) :
+theorem restrict_smul [Fact (p.Splits (algebraMap F E))] (ϕ : Gal(E/F)) (x : rootSet p E) :
     ↑(restrict p E ϕ • x) = ϕ x := by
   let ψ := AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F p.SplittingField E)
   change ↑(ψ (ψ.symm _)) = ϕ x
@@ -200,7 +187,7 @@ variable (p E)
 def galActionHom [Fact (p.Splits (algebraMap F E))] : p.Gal →* Equiv.Perm (rootSet p E) :=
   MulAction.toPermHom _ _
 
-theorem galActionHom_restrict [Fact (p.Splits (algebraMap F E))] (ϕ : E ≃ₐ[F] E) (x : rootSet p E) :
+theorem galActionHom_restrict [Fact (p.Splits (algebraMap F E))] (ϕ : Gal(E/F)) (x : rootSet p E) :
     ↑(galActionHom p E (restrict p E ϕ) x) = ϕ x :=
   restrict_smul ϕ x
 

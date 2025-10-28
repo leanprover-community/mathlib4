@@ -408,10 +408,6 @@ theorem coe_div [Div β] (f g : α →ₛ β) : ⇑(f / g) = ⇑f / ⇑g :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_le [LE β] {f g : α →ₛ β} : (f : α → β) ≤ g ↔ f ≤ g :=
-  Iff.rfl
-
-@[simp, norm_cast]
 theorem coe_sup [Max β] (f g : α →ₛ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
@@ -671,8 +667,10 @@ variable [Preorder β] {s : Set α} {f f₁ f₂ g g₁ g₂ : α →ₛ β} {hs
 
 instance instPreorder : Preorder (α →ₛ β) := Preorder.lift (⇑)
 
-@[norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
+@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl
+
+@[deprecated (since := "2025-10-21")] alias coe_le := coe_le_coe
 
 @[simp] lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' ↔ f ≤ g := Iff.rfl
 @[simp] lemma mk_lt_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' < mk g hg hg' ↔ f < g := Iff.rfl
@@ -832,7 +830,7 @@ theorem approx_apply [TopologicalSpace β] [OrderClosedTopology β] [MeasurableS
   · exact hf measurableSet_Ici
 
 theorem monotone_approx (i : ℕ → β) (f : α → β) : Monotone (approx i f) := fun _ _ h =>
-  Finset.sup_mono <| Finset.range_subset.2 h
+  Finset.sup_mono <| Finset.range_subset_range.2 h
 
 theorem approx_comp [TopologicalSpace β] [OrderClosedTopology β] [MeasurableSpace β]
     [OpensMeasurableSpace β] [MeasurableSpace γ] {i : ℕ → β} {f : γ → β} {g : α → γ} {n : ℕ} (a : α)
@@ -887,11 +885,11 @@ theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n 
       _ < ⊤ := ENNReal.coe_lt_top
   · exact WithTop.top_pos
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_eapprox (f : α → ℝ≥0∞) : Monotone (eapprox f) :=
   monotone_approx _ f
 
-@[gcongr]
+@[deprecated monotone_eapprox (since := "2025-08-13")]
 lemma eapprox_mono {m n : ℕ} (hmn : m ≤ n) : eapprox f m ≤ eapprox f n := monotone_eapprox _ hmn
 
 lemma iSup_eapprox_apply (hf : Measurable f) (a : α) : ⨆ n, (eapprox f n : α →ₛ ℝ≥0∞) a = f a := by
@@ -983,7 +981,7 @@ theorem map_lintegral (g : β → ℝ≥0∞) (f : α →ₛ β) :
   rw [map_preimage_singleton, ← f.sum_measure_preimage_singleton, Finset.mul_sum]
   refine Finset.sum_congr ?_ ?_
   · congr
-  · grind [Finset.mem_filter]
+  · grind
 
 theorem add_lintegral (f g : α →ₛ ℝ≥0∞) : (f + g).lintegral μ = f.lintegral μ + g.lintegral μ :=
   calc

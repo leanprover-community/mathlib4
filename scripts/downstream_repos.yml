@@ -2,9 +2,15 @@
 # It is used by the `downstream-tags.py` script to check whether a given tag exists on the
 # downstream repositories.
 
-- github: https://github.com/ImperialCollegeLondon/FLT
+- github: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   default_branch: main
-  name: Fermat's Last Theorem
+  name: Prime Number Theorem and ...
+  workflows:
+    build: push.yml
+    docs: push.yml
+- github: https://github.com/emilyriehl/infinity-cosmos
+  default_branch: main
+  name: ∞-Cosmos
   workflows:
     build: blueprint.yml
     docs: blueprint.yml
@@ -17,9 +23,50 @@
     build: push.yml
     docs: push.yml
     release-tag: create-release.yml
-- github: https://github.com/emilyriehl/infinity-cosmos
+- github: https://github.com/ImperialCollegeLondon/FLT
   default_branch: main
-  name: ∞-Cosmos
+  name: Fermat's Last Theorem
+  workflows:
+    build: blueprint.yml
+    docs: blueprint.yml
+    release-tag: create-release.yml
+    update: update.yml
+- github: https://github.com/james18lpc/GibbsMeasure
+  default_branch: main
+  name: Gibbs Measures
+  workflows:
+    build: push.yml
+    docs: push.yml
+    release-tag: lean-release-tag.yml
+- github: https://github.com/kbuzzard/ClassFieldTheory
+  default_branch: main
+  name: Class Field Theory
+  workflows:
+    build: build-project.yml
+    docs: blueprint.yml
+    release-tag: create-release.yml
+- github: https://github.com/leanprover-community/flt-regular
+  default_branch: master
+  name: Fermat's Last Theorem for regular primes
+  workflows:
+    build: push.yml
+    docs: push.yml
+- github: https://github.com/leanprover-community/sphere-eversion
+  default_branch: master
+  name: The sphere eversion project
+  workflows:
+    build: blueprint.yml
+    docs: blueprint.yml
+- github: https://github.com/Paul-Lez/PersistentDecomp
+  default_branch: master
+  name: Decomposition of Persistence Modules
+  workflows:
+    build: push.yml
+    docs: push.yml
+    release-tag: lean-release-tag.yml
+- github: https://github.com/RemyDegenne/brownian-motion
+  default_branch: master
+  name: Brownian motion project
   workflows:
     build: blueprint.yml
     docs: blueprint.yml
@@ -31,32 +78,65 @@
   workflows:
     build: push.yml
     docs: push.yml
-- github: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
-  default_branch: main
-  name: Prime Number Theorem and ...
-  workflows:
-    build: push.yml
-    docs: push.yml
-- github: https://github.com/leanprover-community/sphere-eversion
-  default_branch: master
-  name: The sphere eversion project
-  workflows:
-    build: blueprint.yml
-    docs: blueprint.yml
-- github: https://github.com/YaelDillies/LeanCamCombi
-  default_branch: master
-  name: Cambridge Combinatorics in Lean
-  workflows:
-    build: push_master.yml
-    docs: push_master.yml
+    release-tag: lean-release-tag.yml
 - github: https://github.com/YaelDillies/add-combi
   default_branch: master
   name: add-combi
   workflows:
     build: build.yml
     docs: build.yml
+    release-tag: lean-release-tag.yml
+- github: https://github.com/YaelDillies/ChandraFurstLipton
+  default_branch: master
+  name: Chandra-Furst-Lipton
+  workflows:
+    build: push.yml
+    docs: push.yml
+    release-tag: lean-release-tag.yml
+- github: https://github.com/YaelDillies/ForbiddenMatrix
+  default_branch: master
+  name: Forbidden Matrix Theory
+  workflows:
+    build: push.yml
+    docs: push.yml
+    release-tag: lean-release-tag.yml
+- github: https://github.com/YaelDillies/LeanAPAP
+  default_branch: master
+  name: Arithmetic Progressions - Almost Periodicity
+  workflows:
+    build: push_master.yml
+    docs: push_master.yml
+    release-tag: lean-release-tag.yml
+- github: https://github.com/YaelDillies/LeanCamCombi
+  default_branch: master
+  name: Cambridge Combinatorics in Lean
+  workflows:
+    build: push_master.yml
+    docs: push_master.yml
+    release-tag: lean-release-tag.yml
+- github: https://github.com/YaelDillies/MiscYD
+  default_branch: master
+  name: Miscellaneous results by Yaël Dillies
+  workflows:
+    build: push_master.yml
+    docs: push_master.yml
+    release-tag: lean-release-tag.yml
+- github: https://github.com/YaelDillies/Toric
+  default_branch: master
+  name: Toric varieties
+  workflows:
+    build: push_master.yml
+    docs: push_master.yml
+    release-tag: lean-release-tag.yml
 - github: https://github.com/vihdzp/combinatorial-games
   default_branch: master
   name: Combinatorial Games in Lean
   workflows:
     build: lean_action_ci.yml
+- github: https://github.com/Whysoserioushah/BrauerGroup_new
+  default_branch: main
+  name: Brauer Group
+  workflows:
+    build: push_main.yml
+    docs: push_main.yml
+    release-tag: lean-release-tag.yml

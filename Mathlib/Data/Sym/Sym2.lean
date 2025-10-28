@@ -173,9 +173,7 @@ theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w 
   simp
 
 theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = q.swap := by
-  cases p
-  cases q
-  simp only [eq_iff, Prod.mk_inj, Prod.swap_prod_mk]
+  simp
 
 /-- The universal property of `Sym2`; symmetric functions of two arguments are equivalent to
 functions from `Sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
@@ -341,10 +339,7 @@ theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, Sym2.mk, e.out_eq]⟩
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
-  refine ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => ?_⟩
-  obtain rfl | rfl := Sym2.mem_iff.1 hc
-  · exact h.1
-  · exact h.2
+  simp
 
 @[simp] lemma coe_mk {x y : α} : (s(x, y) : Set α) = {x, y} := by ext z; simp
 
@@ -629,7 +624,7 @@ theorem mem_toFinset {x : α} {z : Sym2 α} : x ∈ z.toFinset ↔ x ∈ z := by
   rw [← Sym2.mem_toMultiset, Sym2.toFinset, Multiset.mem_toFinset]
 
 lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
-  ext; simp [←Sym2.mem_toFinset, ←Sym2.mem_iff]
+  ext; simp [← Sym2.mem_toFinset, ← Sym2.mem_iff]
 
 /-- Mapping an unordered pair on the diagonal to a finite set produces a finset of size `1`. -/
 theorem card_toFinset_of_isDiag (z : Sym2 α) (h : z.IsDiag) : #(z : Sym2 α).toFinset = 1 := by
@@ -775,7 +770,6 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
 @[simp]
 theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other' h) = z := by
   induction z
-  have h' := mem_iff.mp h
   aesop (add norm unfold [Sym2.rec, Quot.rec]) (rule_sets := [Sym2])
 
 @[simp]
@@ -845,7 +839,7 @@ lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ 
     (g : { g : α → α → N // ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁ }) :
     lift f • lift g = lift ⟨f.val • g.val, fun _ _ => by
       rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', f.prop, g.prop]⟩ := by
-  ext ⟨i,j⟩
+  ext ⟨i, j⟩
   simp_all only [Pi.smul_apply', lift_mk]
 
 /--

@@ -5,9 +5,10 @@ Authors: Chris Hughes, Thomas Browning
 -/
 import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
+import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts.Defs
 import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.GroupTheory.Coset.Card
+import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
@@ -17,11 +18,13 @@ import Mathlib.GroupTheory.GroupAction.Hom
 
 This file proves properties of group actions which use the quotient group construction, notably
 * the orbit-stabilizer theorem `MulAction.card_orbit_mul_card_stabilizer_eq_card_group`
-* the class formula `MulAction.card_eq_sum_card_group_div_card_stabilizer'`
+* the class formula `MulAction.selfEquivSigmaOrbitsQuotientStabilizer'`
 * Burnside's lemma `MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group`,
 
 as well as their analogues for additive groups.
 -/
+
+assert_not_exists Cardinal
 
 universe u v w
 
@@ -211,26 +214,6 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
         (Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
           orbitEquivQuotientStabilizer α (φ ω)
 
-/-- **Class formula** for a finite group acting on a finite type. See
-`MulAction.card_eq_sum_card_group_div_card_stabilizer` for a specialized version using
-`Quotient.out`. -/
-@[to_additive
-      /-- **Class formula** for a finite group acting on a finite type. See
-      `AddAction.card_eq_sum_card_addGroup_div_card_stabilizer` for a specialized version using
-      `Quotient.out`. -/]
-theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [Fintype Ω]
-    [∀ b : β, Fintype <| stabilizer α b] {φ : Ω → β} (hφ : LeftInverse Quotient.mk'' φ) :
-    Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α (φ ω)) := by
-  classical
-    have : ∀ ω : Ω, Fintype.card α / Fintype.card (stabilizer α (φ ω)) =
-        Fintype.card (α ⧸ stabilizer α (φ ω)) := by
-      intro ω
-      rw [Fintype.card_congr (@Subgroup.groupEquivQuotientProdSubgroup α _ (stabilizer α <| φ ω)),
-        Fintype.card_prod, Nat.mul_div_cancel]
-      exact Fintype.card_pos_iff.mpr (by infer_instance)
-    simp_rw [this, ← Fintype.card_sigma,
-      Fintype.card_congr (selfEquivSigmaOrbitsQuotientStabilizer' α β hφ)]
-
 /-- **Class formula**. This is a special case of
 `MulAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out`. -/
 @[to_additive
@@ -238,13 +221,6 @@ theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [F
       `AddAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out`. -/]
 noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σ ω : Ω, α ⧸ stabilizer α ω.out :=
   selfEquivSigmaOrbitsQuotientStabilizer' α β Quotient.out_eq'
-
-/-- **Class formula** for a finite group acting on a finite type. -/
-@[to_additive /-- **Class formula** for a finite group acting on a finite type. -/]
-theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fintype Ω]
-    [∀ b : β, Fintype <| stabilizer α b] :
-    Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α ω.out) :=
-  card_eq_sum_card_group_div_card_stabilizer' α β Quotient.out_eq'
 
 /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
 `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is a group acting on `X` and

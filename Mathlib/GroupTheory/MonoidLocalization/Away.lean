@@ -58,19 +58,19 @@ noncomputable def AwayMap.lift (hg : IsUnit (g x)) : N →* P :=
       exact IsUnit.pow n hg
 
 @[simp]
-theorem AwayMap.lift_eq (hg : IsUnit (g x)) (a : M) : F.lift x hg (F.toMap a) = g a :=
+theorem AwayMap.lift_eq (hg : IsUnit (g x)) (a : M) : F.lift x hg (F a) = g a :=
   Submonoid.LocalizationMap.lift_eq _ _ _
 
 @[simp]
-theorem AwayMap.lift_comp (hg : IsUnit (g x)) : (F.lift x hg).comp F.toMap = g :=
+theorem AwayMap.lift_comp (hg : IsUnit (g x)) : (F.lift x hg).comp F = g :=
   Submonoid.LocalizationMap.lift_comp _ _
 
 /-- Given `x y : M` and Localization maps `F : M →* N, G : M →* P` away from `x` and `x * y`
 respectively, the homomorphism induced from `N` to `P`. -/
 noncomputable def awayToAwayRight (y : M) (G : AwayMap (x * y) P) : N →* P :=
   F.lift x <|
-    show IsUnit (G.toMap x) from
-      isUnit_of_mul_eq_one (G.toMap x) (G.mk' y ⟨x * y, mem_powers _⟩) <| by
+    show IsUnit (G x) from
+      isUnit_of_mul_eq_one (G x) (G.mk' y ⟨x * y, mem_powers _⟩) <| by
         rw [mul_mk'_eq_mk'_of_mul, mk'_self]
 
 end AwayMap
@@ -105,19 +105,19 @@ noncomputable def AwayMap.lift (hg : IsAddUnit (g x)) : B →+ C :=
       exact IsAddUnit.map (nsmulAddMonoidHom n : C →+ C) hg
 
 @[simp]
-theorem AwayMap.lift_eq (hg : IsAddUnit (g x)) (a : A) : F.lift x hg (F.toMap a) = g a :=
+theorem AwayMap.lift_eq (hg : IsAddUnit (g x)) (a : A) : F.lift x hg (F a) = g a :=
   AddSubmonoid.LocalizationMap.lift_eq _ _ _
 
 @[simp]
-theorem AwayMap.lift_comp (hg : IsAddUnit (g x)) : (F.lift x hg).comp F.toMap = g :=
+theorem AwayMap.lift_comp (hg : IsAddUnit (g x)) : (F.lift x hg).comp F = g :=
   AddSubmonoid.LocalizationMap.lift_comp _ _
 
 /-- Given `x y : A` and Localization maps `F : A →+ B, G : A →+ C` away from `x` and `x + y`
 respectively, the homomorphism induced from `B` to `C`. -/
 noncomputable def awayToAwayRight (y : A) (G : AwayMap (x + y) C) : B →+ C :=
   F.lift x <|
-    show IsAddUnit (G.toMap x) from
-      isAddUnit_of_add_eq_zero (G.toMap x) (G.mk' y ⟨x + y, mem_multiples _⟩) <| by
+    show IsAddUnit (G x) from
+      isAddUnit_of_add_eq_zero (G x) (G.mk' y ⟨x + y, mem_multiples _⟩) <| by
         rw [add_mk'_eq_mk'_of_add, mk'_self]
 
 end AwayMap

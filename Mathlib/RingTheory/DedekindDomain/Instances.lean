@@ -3,11 +3,9 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.FieldTheory.Separable
+import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 # Instances for Dedekind domains
@@ -17,8 +15,9 @@ A very common situation in number theory is to have an extension of (say) Dedeki
 `S`, and to prove a property of this extension it is useful to consider the localization `Rₚ` of `R`
 at `P`, a prime ideal of `R`. One also works with the corresponding localization `Sₚ` of `S` and the
 fraction fields `K` and `L` of `R` and `S`. In this situation there are many compatible algebra
-structures and various properties of the rings involved. This file contains a collection of such
-instances.
+structures and various properties of the rings involved. Another situation is when we have a
+tower extension `R ⊆ S ⊆ T` and thus we work with `Rₚ ⊆ Sₚ ⊆ Tₚ` where
+`Tₚ` is the localization of `T` at `P`. This file contains a collection of such instances.
 
 ## Implementation details
 In general one wants all the results below for any algebra satisfying `IsLocalization`, but those
@@ -31,10 +30,13 @@ open nonZeroDivisors IsLocalization Algebra IsFractionRing IsScalarTower
 
 attribute [local instance] FractionRing.liftAlgebra
 
-variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [IsDomain R] [IsDomain S] [Algebra R S]
+variable {R : Type*} (S : Type*) (T : Type*) [CommRing R] [CommRing S] [CommRing T] [IsDomain R]
+  [IsDomain S] [IsDomain T] [Algebra R S]
 
 local notation3 "K" => FractionRing R
 local notation3 "L" => FractionRing S
+local notation3 "F" => FractionRing T
+
 section
 
 theorem algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul {A : Type*} (B : Type*)
@@ -84,10 +86,25 @@ local notation3 "Sₚ" => Localization P'
 
 variable [FaithfulSMul R S]
 
-noncomputable instance : Algebra Sₚ L :=
+instance : NoZeroSMulDivisors S Sₚ := by
+  rw [NoZeroSMulDivisors.iff_algebraMap_injective,
+    injective_iff_isRegular (algebraMapSubmonoid S P.primeCompl)]
+  exact fun ⟨x, hx⟩ ↦ isRegular_iff_ne_zero'.mpr <|
+    ne_of_mem_of_not_mem hx <| by simp [Algebra.algebraMapSubmonoid]
+
+instance : NoZeroSMulDivisors R Sₚ := by
+  have := IsLocalization.AtPrime.faithfulSMul Rₚ R P
+  exact NoZeroSMulDivisors.trans_faithfulSMul R Rₚ _
+
+/--
+This is not an instance because it creates a diamond with `OreLocalization.instAlgebra`.
+-/
+noncomputable abbrev Localization.AtPrime.liftAlgebra : Algebra Sₚ L :=
   (map _ (T := S⁰) (RingHom.id S)
     (algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _
       P.primeCompl_le_nonZeroDivisors)).toAlgebra
+
+attribute [local instance] Localization.AtPrime.liftAlgebra
 
 instance : IsScalarTower S Sₚ L :=
   localization_isScalarTower_of_submonoid_le _ _ _ _
@@ -136,3 +153,54 @@ instance [Algebra.IsSeparable K L] :
     Algebra.IsSeparable (FractionRing Rₚ) (FractionRing Sₚ) :=
   let _ : Algebra Rₚ (FractionRing Sₚ) := OreLocalization.instAlgebra
   FractionRing.isSeparable_of_isLocalization S _ _ P.primeCompl_le_nonZeroDivisors
+
+local notation3 "P''" => algebraMapSubmonoid T P.primeCompl
+local notation3 "Tₚ" => Localization P''
+
+variable [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+
+instance : IsLocalization (algebraMapSubmonoid T P') Tₚ := by
+  rw [show algebraMapSubmonoid T P' = P'' by simp]
+  exact Localization.isLocalization
+
+/--
+Let `R ⊆ S ⊆ T` be a tower of rings. Let `Sₚ` and `Tₚ` denote the localizations of `S` and `T` at
+the prime ideal `P` of `R`. Then `Tₚ` is a `Sₚ`-algebra.
+This cannot be an instance since it creates a diamond when `S = T`.
+-/
+noncomputable abbrev Localization.AtPrime.algebra_localization_localization :
+    Algebra Sₚ Tₚ := localizationAlgebra P' T
+
+attribute [local instance] Localization.AtPrime.algebra_localization_localization
+
+instance : IsScalarTower S Sₚ Tₚ :=
+  IsScalarTower.of_algebraMap_eq' <|
+    by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
+
+instance : IsScalarTower R Sₚ Tₚ :=
+  IsScalarTower.of_algebraMap_eq' <|
+    by rw [IsScalarTower.algebraMap_eq R S Sₚ, ← RingHom.comp_assoc,
+      ← IsScalarTower.algebraMap_eq S, ← IsScalarTower.algebraMap_eq]
+
+instance [Module.Finite S T] : Module.Finite Sₚ Tₚ := Module.Finite.of_isLocalization S T P'
+
+instance [NoZeroSMulDivisors S T] : NoZeroSMulDivisors Sₚ Tₚ :=
+  NoZeroSMulDivisors_of_isLocalization S T Sₚ Tₚ <|
+    algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ <|
+      Ideal.primeCompl_le_nonZeroDivisors P
+
+variable [NoZeroSMulDivisors R T]
+
+instance : IsScalarTower Rₚ Sₚ Tₚ := by
+  refine ⟨fun a b c ↦ a.ind fun ⟨a₁, a₂⟩ ↦ ?_⟩
+  have : a₂.val ≠ 0 := nonZeroDivisors.ne_zero <| Ideal.primeCompl_le_nonZeroDivisors P <| a₂.prop
+  rw [← smul_right_inj this, ← _root_.smul_assoc (M := R) (N := Sₚ), ← _root_.smul_assoc (M := R)
+    (α := Sₚ), ← _root_.smul_assoc (M := R) (α := Tₚ), Localization.smul_mk, smul_eq_mul,
+    Localization.mk_eq_mk', IsLocalization.mk'_mul_cancel_left, algebraMap_smul, algebraMap_smul,
+    _root_.smul_assoc]
+
+instance [NoZeroSMulDivisors S T] [Algebra.IsSeparable L F] :
+    Algebra.IsSeparable (FractionRing Sₚ) (FractionRing Tₚ) := by
+  refine FractionRing.isSeparable_of_isLocalization T Sₚ Tₚ (M := P') ?_
+  apply algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul
+  exact fun _ h ↦ mem_nonZeroDivisors_of_ne_zero <| ne_of_mem_of_not_mem h <| by simp

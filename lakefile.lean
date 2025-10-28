@@ -9,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.67" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.77" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -17,6 +17,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.67" -- ProofWidgets 
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
+
 
 /-!
 ## Options for building mathlib
@@ -26,7 +27,11 @@ require "leanprover-community" / "plausible" @ git "main"
 `lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.mathlibStandardSet, true⟩,
+  ⟨`linter.checkInitImports, true⟩,
+  ⟨`linter.allScriptsDocumented, true⟩,
+  ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
 ]
 
@@ -154,6 +159,17 @@ post_update pkg do
   if rootPkg.name = pkg.name then
     return -- do not run in Mathlib itself
   if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
+    -- Check if Lake version matches toolchain version
+    let toolchainFile := rootPkg.dir / "lean-toolchain"
+    let toolchainContent ← IO.FS.readFile toolchainFile
+    let toolchainVersion := match toolchainContent.trim.splitOn ":" with
+      | [_, version] => version
+      | _ => toolchainContent.trim  -- fallback to full content if format is unexpected
+    if Lean.versionString ≠ toolchainVersion then
+      IO.println s!"Not running `lake exe cache get` yet, \
+        as the `lake` version does not match the toolchain version in the project.\n\
+        You should run `lake exe cache get` manually."
+      return
     let exeFile ← runBuild cache.fetch
     -- Run the command in the root package directory,
     -- which is the one that holds the .lake folder and lean-toolchain file.

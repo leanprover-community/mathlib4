@@ -77,16 +77,12 @@ theorem monotone_comp_ofDual_iff : Monotone (f ∘ ofDual) ↔ Antitone f :=
 theorem antitone_comp_ofDual_iff : Antitone (f ∘ ofDual) ↔ Monotone f :=
   forall_swap
 
--- Porting note:
--- Here (and below) without the type ascription, Lean is seeing through the
--- defeq `βᵒᵈ = β` and picking up the wrong `Preorder` instance.
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/logic.2Eequiv.2Ebasic.20mathlib4.23631/near/311744939
 @[simp]
-theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f : α → βᵒᵈ) ↔ Antitone f :=
+theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f) ↔ Antitone f :=
   Iff.rfl
 
 @[simp]
-theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f : α → βᵒᵈ) ↔ Monotone f :=
+theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f) ↔ Monotone f :=
   Iff.rfl
 
 @[simp]
@@ -98,11 +94,11 @@ theorem antitoneOn_comp_ofDual_iff : AntitoneOn (f ∘ ofDual) s ↔ MonotoneOn 
   forall₂_swap
 
 @[simp]
-theorem monotoneOn_toDual_comp_iff : MonotoneOn (toDual ∘ f : α → βᵒᵈ) s ↔ AntitoneOn f s :=
+theorem monotoneOn_toDual_comp_iff : MonotoneOn (toDual ∘ f) s ↔ AntitoneOn f s :=
   Iff.rfl
 
 @[simp]
-theorem antitoneOn_toDual_comp_iff : AntitoneOn (toDual ∘ f : α → βᵒᵈ) s ↔ MonotoneOn f s :=
+theorem antitoneOn_toDual_comp_iff : AntitoneOn (toDual ∘ f) s ↔ MonotoneOn f s :=
   Iff.rfl
 
 @[simp]
@@ -257,7 +253,7 @@ theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin
     let ⟨_, hb⟩ := not_isMin_iff.1 h
     (hf hb).not_isMax ha
 
-lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n)  := by
+lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n) := by
   rw [Nat.add_comm m, Nat.add_comm m]
   induction m with
   | zero => rw [Nat.add_zero, Nat.add_zero]
@@ -335,9 +331,11 @@ theorem StrictMonoOn.le_iff_le (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s)
   ⟨fun h ↦ le_of_not_gt fun h' ↦ (hf hb ha h').not_ge h, fun h ↦
     h.lt_or_eq_dec.elim (fun h' ↦ (hf ha hb h').le) fun h' ↦ h' ▸ le_rfl⟩
 
-theorem StrictAntiOn.le_iff_le (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+theorem StrictAntiOn.le_iff_ge (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a ≤ f b ↔ b ≤ a :=
   hf.dual_right.le_iff_le hb ha
+
+@[deprecated (since := "2025-08-12")] alias StrictAntiOn.le_iff_le := StrictAntiOn.le_iff_ge
 
 theorem StrictMonoOn.eq_iff_eq (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a = f b ↔ a = b :=
@@ -353,21 +351,27 @@ theorem StrictMonoOn.lt_iff_lt (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s)
     f a < f b ↔ a < b := by
   rw [lt_iff_le_not_ge, lt_iff_le_not_ge, hf.le_iff_le ha hb, hf.le_iff_le hb ha]
 
-theorem StrictAntiOn.lt_iff_lt (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+theorem StrictAntiOn.lt_iff_gt (hf : StrictAntiOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
     f a < f b ↔ b < a :=
   hf.dual_right.lt_iff_lt hb ha
+
+@[deprecated (since := "2025-08-12")] alias StrictAntiOn.lt_iff_lt := StrictAntiOn.lt_iff_gt
 
 theorem StrictMono.le_iff_le (hf : StrictMono f) {a b : α} : f a ≤ f b ↔ a ≤ b :=
   (hf.strictMonoOn Set.univ).le_iff_le trivial trivial
 
-theorem StrictAnti.le_iff_le (hf : StrictAnti f) {a b : α} : f a ≤ f b ↔ b ≤ a :=
-  (hf.strictAntiOn Set.univ).le_iff_le trivial trivial
+theorem StrictAnti.le_iff_ge (hf : StrictAnti f) {a b : α} : f a ≤ f b ↔ b ≤ a :=
+  (hf.strictAntiOn Set.univ).le_iff_ge trivial trivial
+
+@[deprecated (since := "2025-08-12")] alias StrictAnti.le_iff_le := StrictAnti.le_iff_ge
 
 theorem StrictMono.lt_iff_lt (hf : StrictMono f) {a b : α} : f a < f b ↔ a < b :=
   (hf.strictMonoOn Set.univ).lt_iff_lt trivial trivial
 
-theorem StrictAnti.lt_iff_lt (hf : StrictAnti f) {a b : α} : f a < f b ↔ b < a :=
-  (hf.strictAntiOn Set.univ).lt_iff_lt trivial trivial
+theorem StrictAnti.lt_iff_gt (hf : StrictAnti f) {a b : α} : f a < f b ↔ b < a :=
+  (hf.strictAntiOn Set.univ).lt_iff_gt trivial trivial
+
+@[deprecated (since := "2025-08-12")] alias StrictAnti.lt_iff_lt := StrictAnti.lt_iff_gt
 
 protected theorem StrictMonoOn.compares (hf : StrictMonoOn f s) {a b : α} (ha : a ∈ s)
     (hb : b ∈ s) : ∀ {o : Ordering}, o.Compares (f a) (f b) ↔ o.Compares a b
@@ -409,11 +413,11 @@ theorem StrictMono.minimal_of_minimal_image (hf : StrictMono f) {a} (hmin : ∀ 
 
 theorem StrictAnti.minimal_of_maximal_image (hf : StrictAnti f) {a} (hmax : ∀ p, p ≤ f a) (x : α) :
     a ≤ x :=
-  hf.le_iff_le.mp (hmax (f x))
+  hf.le_iff_ge.mp (hmax (f x))
 
 theorem StrictAnti.maximal_of_minimal_image (hf : StrictAnti f) {a} (hmin : ∀ p, f a ≤ p) (x : α) :
     x ≤ a :=
-  hf.le_iff_le.mp (hmin (f x))
+  hf.le_iff_ge.mp (hmin (f x))
 
 end Preorder
 
@@ -740,4 +744,4 @@ lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
     · push_neg at h; obtain ⟨N, hN⟩ := h
       replace hN : f N = c + 1 := by specialize hc N; omega
       use c + 1, N; intro n hn
-      specialize mono_f hn; specialize hc n; omega
+      specialize mono_f hn; specialize hc n; cutsat

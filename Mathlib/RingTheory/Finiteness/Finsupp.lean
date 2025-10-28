@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.MonoidAlgebra.Module
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Finiteness.Basic

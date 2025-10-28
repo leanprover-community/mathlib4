@@ -124,7 +124,7 @@ export AddAction (add_vadd)
 export SMulCommClass (smul_comm)
 export VAddCommClass (vadd_comm)
 
-library_note "bundled maps over different rings"/--
+library_note2 «bundled maps over different rings» /--
 Frequently, we find ourselves wanting to express a bilinear map `M →ₗ[R] N →ₗ[R] P` or an
 equivalence between maps `(M →ₗ[R] N) ≃ₗ[R] (M' →ₗ[R] N')` where the maps have an associated ring
 `R`. Unfortunately, using definitions like these requires that `R` satisfy `CommSemiring R`, and
@@ -388,7 +388,6 @@ See note [reducible non-instances]. -/
     /-- Pullback an additive action along an injective map respecting `+ᵥ`. -/]
 protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
-  smul := (· • ·)
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
 
@@ -398,7 +397,6 @@ See note [reducible non-instances]. -/
     /-- Pushforward an additive action along a surjective map respecting `+ᵥ`. -/]
 protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
-  smul := (· • ·)
   one_smul := by simp [hf.forall, ← smul]
   mul_smul := by simp [hf.forall, ← smul, mul_smul]
 
@@ -488,7 +486,6 @@ lemma isScalarTower_iff_smulCommClass_of_commMonoid (R₁ R : Type*)
     SMulCommClass R₁ R R ↔ IsScalarTower R₁ R R :=
   ⟨fun _ ↦ IsScalarTower.of_commMonoid R₁ R, fun _ ↦ SMulCommClass.of_commMonoid R₁ R R⟩
 
-
 end
 
 section CompatibleScalar
@@ -515,6 +512,34 @@ lemma IsScalarTower.of_smul_one_mul {M N} [Monoid N] [SMul M N]
 lemma SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
     (H : ∀ (x : M) (y : N), y * x • (1 : N) = x • y) : SMulCommClass M N N :=
   ⟨fun x y z ↦ by rw [← H x z, smul_eq_mul, ← H, smul_eq_mul, mul_assoc]⟩
+
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / P / M` and `Q / P / N` are
+scalar towers, then `Q / N / M` is also a scalar tower.
+-/
+@[to_additive] lemma IsScalarTower.to₁₂₄ (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [Monoid P] [MulAction P Q]
+    [IsScalarTower M N P] [IsScalarTower M P Q] [IsScalarTower N P Q] : IsScalarTower M N Q where
+  smul_assoc m n q := by rw [← smul_one_smul P, smul_assoc m, smul_assoc, smul_one_smul]
+
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / N` are
+scalar towers, then `Q / P / M` is also a scalar tower.
+-/
+@[to_additive] lemma IsScalarTower.to₁₃₄ (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MulAction N P] [MulAction N Q]
+    [IsScalarTower M N P] [IsScalarTower M N Q] [IsScalarTower N P Q] : IsScalarTower M P Q where
+  smul_assoc m p q := by rw [← smul_one_smul N m, smul_assoc, smul_one_smul]
+
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / M` are
+scalar towers, then `Q / P / N` is also a scalar tower.
+-/
+@[to_additive] lemma IsScalarTower.to₂₃₄ (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MulAction N P] [MulAction N Q]
+    [IsScalarTower M N P] [IsScalarTower M N Q] [IsScalarTower M P Q]
+    (h : Function.Surjective fun m : M ↦ m • (1 : N)) : IsScalarTower N P Q where
+  smul_assoc n p q := by obtain ⟨m, rfl⟩ := h n; simp_rw [smul_one_smul, smul_assoc]
 
 end CompatibleScalar
 
@@ -543,3 +568,52 @@ lemma smul_mul' (a : M) (b₁ b₂ : N) : a • (b₁ * b₂) = a • b₁ * a �
   MulDistribMulAction.smul_mul ..
 
 end MulDistribMulAction
+
+section IsCancelSMul
+
+variable (G P : Type*)
+
+/-- A vector addition is left-cancellative if it is pointwise injective on the left. -/
+class IsLeftCancelVAdd [VAdd G P] : Prop where
+  protected left_cancel' : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
+
+/-- A scalar multiplication is left-cancellative if it is pointwise injective on the left. -/
+@[to_additive]
+class IsLeftCancelSMul [SMul G P] : Prop where
+  protected left_cancel' : ∀ (a : G) (b c : P), a • b = a • c → b = c
+
+@[to_additive]
+lemma IsLeftCancelSMul.left_cancel {G P} [SMul G P] [IsLeftCancelSMul G P] (a : G) (b c : P) :
+    a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
+
+@[to_additive]
+instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
+  left_cancel' := IsLeftCancelMul.mul_left_cancel
+
+/-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
+class IsCancelVAdd [VAdd G P] : Prop extends IsLeftCancelVAdd G P where
+  protected right_cancel' : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
+
+/-- A scalar multiplication is cancellative if it is pointwise injective on the left and right. -/
+@[to_additive]
+class IsCancelSMul [SMul G P] : Prop extends IsLeftCancelSMul G P where
+  protected right_cancel' : ∀ (a b : G) (c : P), a • c = b • c → a = b
+
+@[to_additive]
+lemma IsCancelSMul.left_cancel {G P} [SMul G P] [IsCancelSMul G P] (a : G) (b c : P) :
+    a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
+
+@[to_additive]
+lemma IsCancelSMul.right_cancel {G P} [SMul G P] [IsCancelSMul G P] (a b : G) (c : P) :
+    a • c = b • c → a = b := IsCancelSMul.right_cancel' a b c
+
+@[to_additive]
+instance [CancelMonoid G] : IsCancelSMul G G where
+  left_cancel' := IsLeftCancelMul.mul_left_cancel
+  right_cancel' _ _ _ := mul_right_cancel
+
+@[to_additive]
+instance [Group G] [MulAction G P] : IsLeftCancelSMul G P where
+  left_cancel' a b c h := by rw [← inv_smul_smul a b, h, inv_smul_smul]
+
+end IsCancelSMul

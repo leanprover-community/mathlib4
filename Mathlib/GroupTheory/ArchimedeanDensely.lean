@@ -15,7 +15,7 @@ import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 This file proves a few additional facts about linearly ordered additive groups which satisfy the
   `Archimedean` property --
-  they are either order-isomorphic and additvely isomorphic to the integers,
+  they are either order-isomorphic and additively isomorphic to the integers,
   or they are densely ordered.
 
 They are placed here in a separate file (rather than incorporated as a continuation of
@@ -55,7 +55,7 @@ lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
   · exact fun h ↦ h.exists
 
 lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg _ := by
-  suffices e 1 = 1 ∨ - e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
+  suffices e 1 = 1 ∨ -e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
   have he : ¬IsOfFinAddOrder (e 1) :=
     not_isOfFinAddOrder_of_isAddTorsionFree ((AddEquiv.map_ne_zero_iff e).mpr Int.one_ne_zero)
   rw [← AddSubgroup.zmultiples_eq_zmultiples_iff he]
@@ -212,7 +212,7 @@ noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos
   let g : (⊤ : AddSubgroup ℤ) ≃+o ℤ := ⟨AddSubsemigroup.topEquiv,
     (AddSubsemigroup.strictMono_topEquiv).le_iff_le⟩
   let g' : AddSubgroup.closure ({1} : Set ℤ) ≃+o (⊤ : AddSubgroup ℤ) :=
-    ⟨(.subsemigroupCongr (by simp [AddSubgroup.closure_singleton_int_one_eq_top])),
+    ⟨(.subsemigroupCongr (by simp)),
      (AddEquiv.strictMono_subsemigroupCongr _).le_iff_le⟩
   let f := closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
   exact ((((e.trans e').trans f).trans g').trans g : G ≃+o ℤ)
@@ -223,7 +223,7 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_is
     {x : G} (h : IsLeast {y : G | 1 < y} x) : G ≃*o Multiplicative ℤ := by
   have : IsLeast {y : Additive G | 0 < y} (.ofMul x) := h
   let f' := LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos (G := Additive G) this
-  exact ⟨AddEquiv.toMultiplicative' f', by simp⟩
+  exact f'.toMultiplicativeRight
 
 /-- Any locally finite linear additive group is archimedean. -/
 lemma Archimedean.of_locallyFiniteOrder {G : Type*} [AddCommGroup G] [LinearOrder G]
@@ -271,52 +271,25 @@ lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
   intro e H
   rw [denselyOrdered_iff_of_orderIsoClass e] at H
   obtain ⟨_, _⟩ := exists_between (one_pos (α := ℤ))
-  omega
+  cutsat
 
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered. -/
 lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
     Nonempty (G ≃*o Multiplicative ℤ) ∨ DenselyOrdered G := by
-  refine (LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)).imp ?_ id
-  rintro ⟨f, hf⟩
-  exact ⟨AddEquiv.toMultiplicative' f, hf⟩
+  rw [← OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr]
+  exact LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)
 
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered, exclusively. -/
 lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
     Nonempty (G ≃*o Multiplicative ℤ) ↔ ¬ DenselyOrdered G := by
-  let e : G ≃o Additive G := OrderIso.refl G
-  rw [denselyOrdered_iff_of_orderIsoClass e,
-    ← LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (Additive G)]
-  refine Nonempty.congr ?_ ?_ <;> intro f
-  · exact ⟨MulEquiv.toAdditive' f, by simp⟩
-  · exact ⟨MulEquiv.toAdditive'.symm f, by simp⟩
-
-lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] :
-    DenselyOrdered G₀ˣ ↔ DenselyOrdered G₀ := by
-  constructor
-  · intro H
-    refine ⟨fun x y h ↦ ?_⟩
-    rcases (zero_le' (a := x)).eq_or_lt with rfl | hx
-    · lift y to G₀ˣ using h.ne'.isUnit
-      obtain ⟨z, hz⟩ := exists_ne (1 : G₀ˣ)
-      refine ⟨(y * |z|ₘ⁻¹ : G₀ˣ), ?_, ?_⟩
-      · simp [zero_lt_iff]
-      · rw [Units.val_lt_val]
-        simp [hz]
-    · obtain ⟨z, hz, hz'⟩ := H.dense (Units.mk0 x hx.ne') (Units.mk0 y (hx.trans h).ne')
-        (by simp [← Units.val_lt_val, h])
-      refine ⟨z, ?_, ?_⟩ <;>
-      simpa [← Units.val_lt_val]
-  · intro H
-    refine ⟨fun x y h ↦ ?_⟩
-    obtain ⟨z, hz⟩ := exists_between (Units.val_lt_val.mpr h)
-    rcases (zero_le' (a := z)).eq_or_lt with rfl | hz'
-    · simp at hz
-    refine ⟨Units.mk0 z hz'.ne', ?_⟩
-    simp [← Units.val_lt_val, hz]
+  let e : G ≃o Additive G := .refl G
+  rw [← OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr,
+    LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered,
+    denselyOrdered_iff_of_orderIsoClass e]
 
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
@@ -404,10 +377,8 @@ lemma LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
   let e : G ≃o Additive G := OrderIso.refl G
   suffices Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Set.WellFoundedOn {x | e g ≤ x} (· < ·) by
-    rw [this, LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete]
-    refine Nonempty.congr (fun f ↦ ?_) (fun f ↦ ?_)
-    · exact ⟨AddEquiv.toMultiplicative' f, by simp⟩
-    · exact ⟨MulEquiv.toAdditive' f, by simp⟩
+    rw [this, LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete,
+      OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr]
   refine ⟨fun h ↦ (h.mapsTo e.symm fun _ ↦ e.le_symm_apply.mpr).mono' ?_,
     fun h ↦ (h.mapsTo e fun _ ↦ ?_).mono' ?_⟩ <;>
   simp [Function.onFun]
@@ -479,6 +450,12 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
     intro a _ _ b _ hb0
     refine inv_strictAnti₀ ?_
     simp [zero_lt_iff, hb0]
+
+instance instWellFoundedGTWithZeroMultiplicativeIntLeOne :
+    WellFoundedGT { v : ℤᵐ⁰ // v ≤ 1 } :=
+  { wf :=
+    (LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
+    one_ne_zero).mpr instNonemptyOfInhabited }
 
 end WellFounded
 

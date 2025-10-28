@@ -30,6 +30,9 @@ Let R be an integral domain, assumed to be a principal ideal ring and a local ri
 ### Definitions
 
 * `addVal R : AddValuation R PartENat` : the additive valuation on a DVR.
+* `toEuclideanDomain R : EuclideanDomain R` : a non-canonical structure of Euclidean domain on a
+  DVR, where `x % y = 0` if `y ∣ x` and `x % y = x` otherwise. The GCD algorithm terminates in two
+  steps.
 
 ## Implementation notes
 
@@ -374,7 +377,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
   rcases h with h | h
   · rw [sub_eq_zero] at h
     exact mod_cast h
-  · apply (hirr.ne_zero (pow_eq_zero h)).elim
+  · apply (hirr.ne_zero (eq_zero_of_pow_eq_zero h)).elim
 
 /-!
 ## The additive valuation on a DVR
@@ -476,6 +479,85 @@ instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
       Ideal.span_singleton_pow, Ideal.mem_span_singleton, ← addVal_le_iff_dvd, hϖ.addVal_pow] at hx
     rwa [← addVal_eq_top_iff, WithTop.eq_top_iff_forall_ge]
 
+noncomputable section toEuclideanDomain
+variable {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+
+/-- A noncomputable quotient to define the Euclidean domain structure. The GCD algorithm only takes
+two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one step;
+otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case. -/
+def quotient (x y : R) : R :=
+  open Classical in if y = 0 then 0 else if h : y ∣ x then h.choose else 0
+
+/-- A noncomputable remainder to define the Euclidean domain structure. The GCD algorithm only takes
+two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one step;
+otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case. -/
+def remainder (x y : R) : R :=
+  open Classical in if y ∣ x then 0 else x
+
+/-- A modification of the valuation, sending `0` to `⊥` instead of `⊤`. -/
+def toWithBotNat (x : R) : WithBot ℕ :=
+  addVal R x
+
+@[simp] lemma toWithBotNat_zero : toWithBotNat (R := R) 0 = ⊥ :=
+  addVal_zero
+
+@[simp] lemma toWithBotNat_eq_bot_iff (x : R) : toWithBotNat x = ⊥ ↔ x = 0 :=
+  addVal_eq_top_iff
+
+@[simp] lemma bot_lt_toWithBotNat_iff (x : R) : ⊥ < toWithBotNat x ↔ x ≠ 0 := by
+  rw [bot_lt_iff_ne_bot]; simp
+
+lemma toWithBotNat_le_toWithBotNat_iff {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
+    toWithBotNat x ≤ toWithBotNat y ↔ x ∣ y := by
+  unfold toWithBotNat
+  generalize hvx : addVal R x = vx
+  generalize hvy : addVal R y = vy
+  cases vx with
+  | top => rw [addVal_eq_top_iff] at hvx; tauto
+  | coe vx =>
+    cases vy with
+    | top => rw [addVal_eq_top_iff] at hvy; tauto
+    | coe vy =>
+      rw [← addVal_le_iff_dvd, hvx, hvy]
+      exact WithBot.coe_le_coe.trans WithTop.coe_le_coe.symm
+
+lemma dvd_of_toWithBotNat_le_toWithBotNat (x y : R) (hx : x ≠ 0)
+    (hle : toWithBotNat x ≤ toWithBotNat y) : x ∣ y := by
+  by_cases hy : y = 0
+  · simp [hy, hx] at hle
+  exact (toWithBotNat_le_toWithBotNat_iff hx hy).mp hle
+
+variable (R) in
+/-- A noncomputable Euclidean domain structure on a discrete valuation ring, where the GCD algorithm
+only takes two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one
+step; otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case.
+See `EuclideanDomain.to_principal_ideal_domain` for EuclideanDomain ⇒ PID. -/
+def toEuclideanDomain : EuclideanDomain R where
+  quotient := quotient
+  quotient_zero x := by simp [quotient]
+  remainder := remainder
+  quotient_mul_add_remainder_eq x y := by
+    rw [remainder, quotient]
+    split_ifs with h₁ h₂ h₂
+    · rw [h₁, zero_dvd_iff] at h₂; rw [h₁, h₂]; ring
+    · rw [h₁]; ring
+    · rw [← h₂.choose_spec]; ring
+    · ring
+  r x y := toWithBotNat x < toWithBotNat y
+  r_wellFounded := WellFounded.onFun wellFounded_lt
+  remainder_lt x y hy := by
+    rw [remainder]
+    split_ifs with hyx
+    · rwa [toWithBotNat_zero, bot_lt_toWithBotNat_iff]
+    · exact lt_iff_not_ge.mpr (mt (dvd_of_toWithBotNat_le_toWithBotNat _ _ hy) hyx)
+  mul_left_not_lt x y hy := by
+    by_cases hx : x = 0
+    · simp [hx]
+    rw [not_lt, toWithBotNat_le_toWithBotNat_iff hx (mul_ne_zero hx hy)]
+    exact dvd_mul_right _ _
+
+end toEuclideanDomain
+
 end IsDiscreteValuationRing
 
 
@@ -500,7 +582,7 @@ lemma maximalIdeal_eq_setOf_le_v_algebraMap :
     (IsLocalRing.maximalIdeal O : Set O) =
       {y : O | v (algebraMap O K y) ≤ v (algebraMap O K ϖ)} := by
   letI : IsDomain O := hv.hom_inj.isDomain
-  intros _ _ h
+  intro _ _ h
   rw [← hv.coe_span_singleton_eq_setOf_le_v_algebraMap, ← h.maximalIdeal_eq]
 
 lemma maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
@@ -509,7 +591,7 @@ lemma maximalIdeal_pow_eq_setOf_le_v_algebraMap_pow :
     ((IsLocalRing.maximalIdeal O ^ n : Ideal O) : Set O) =
       {y : O | v (algebraMap O K y) ≤ v (algebraMap O K ϖ) ^ n} := by
   letI : IsDomain O := hv.hom_inj.isDomain
-  intros _ ϖ h n
+  intro _ ϖ h n
   have : (v (algebraMap O K ϖ)) ^ n = v (algebraMap O K (ϖ ^ n)) := by simp
   rw [this, ← hv.coe_span_singleton_eq_setOf_le_v_algebraMap,
       ← Ideal.span_singleton_pow, ← h.maximalIdeal_eq]

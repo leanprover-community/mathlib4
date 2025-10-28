@@ -26,7 +26,13 @@ open Simplicial CategoryTheory Limits
 
 namespace SimplexCategory
 
+instance {n m : ℕ} : DecidableEq (⦋n⦌ ⟶ ⦋m⦌) := fun a b =>
+  decidable_of_iff (a.toOrderHom = b.toOrderHom) SimplexCategory.Hom.ext_iff.symm
+
 section Init
+
+lemma congr_toOrderHom_apply {a b : SimplexCategory} {f g : a ⟶ b} (h : f = g)
+    (x : Fin (a.len + 1)) : f.toOrderHom x = g.toOrderHom x := by rw [h]
 
 /-- The constant morphism from ⦋0⦌. -/
 def const (x y : SimplexCategory) (i : Fin (y.len + 1)) : x ⟶ y :=
@@ -112,15 +118,15 @@ def mkOfLe {n} (i j : Fin (n + 1)) (h : i ≤ j) : ⦋1⦌ ⟶ ⦋n⦌ :=
 
 @[simp]
 lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
-    mkOfLe j j (by omega) = ⦋1⦌.const ⦋n⦌ j := Hom.ext_one_left _ _
+    mkOfLe j j (by cutsat) = ⦋1⦌.const ⦋n⦌ j := Hom.ext_one_left _ _
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the "diagonal composite" edge -/
 def diag (n : ℕ) : ⦋1⦌ ⟶ ⦋n⦌ :=
-  mkOfLe 0 (Fin.ofNat (n + 1) n) (Fin.zero_le _)
+  mkOfLe 0 (Fin.last n) (Fin.zero_le _)
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the edge spanning the interval from `j` to `j + l`. -/
 def intervalEdge {n} (j l : ℕ) (hjl : j + l ≤ n) : ⦋1⦌ ⟶ ⦋n⦌ :=
-  mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l)
+  mkOfLe ⟨j, (by cutsat)⟩ ⟨j + l, (by cutsat)⟩ (Nat.le_add_right j l)
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`. -/
 def mkOfSucc {n} (i : Fin n) : ⦋1⦌ ⟶ ⦋n⦌ :=
@@ -156,7 +162,7 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
 def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     ⦋l⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
-    toFun := fun i => ⟨i.1 + j, (by omega)⟩
+    toFun := fun i => ⟨i.1 + j, (by cutsat)⟩
     monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
   }
 
@@ -174,44 +180,28 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
     mkOfSucc ⟨j + i.1, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.2 j) hjl⟩ := by
   unfold subinterval mkOfSucc
-  ext i
-  match i with
-  | 0 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
-      Fin.succ_mk]
-    rw [add_comm]
-    rfl
-  | 1 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
-      Fin.succ_mk]
-    rw [← Nat.add_comm j _]
-    rfl
+  ext (i : Fin 2)
+  match i with | 0 | 1 => simp; cutsat
 
 @[simp]
 lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
   unfold subinterval intervalEdge diag mkOfLe
-  ext i
-  match i with
-  | 0 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom,
-      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
-    rw [Nat.add_comm]
-    rfl
-  | 1 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom,
-      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
-    rw [Nat.add_comm]
-    simp only [Fin.isValue, Fin.ofNat_eq_cast, Fin.natCast_eq_last]
-    rfl
+  ext (i : Fin 2)
+  match i with | 0 | 1 => simp <;> omega
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
 
 theorem hom_zero_zero (f : ⦋0⦌ ⟶ ⦋0⦌) : f = 𝟙 _ := by
   apply Subsingleton.elim
+
+@[simp]
+lemma eqToHom_toOrderHom {x y : SimplexCategory} (h : x = y) :
+  SimplexCategory.Hom.toOrderHom (eqToHom h) =
+    (Fin.castOrderIso (congrArg (fun t ↦ t.len + 1) h)).toOrderEmbedding.toOrderHom := by
+  subst h
+  rfl
 
 end Init
 
@@ -301,7 +291,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
   simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred]
   split_ifs
   any_goals simp
-  all_goals omega
+  all_goals cutsat
 
 @[reassoc]
 theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.castSucc) :
@@ -369,7 +359,6 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   | cast k =>
     cases k using Fin.cases with
     | zero =>
-      ext
       simp
     | succ k =>
       rcases le_or_gt i k with (h | h)
@@ -419,7 +408,7 @@ lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
     δ 1 ≫ mkOfSucc i = SimplexCategory.const _ ⦋n⦌ i.castSucc := by
   ext x
   fin_cases x
-  aesop
+  rfl
 
 /-- If `i + 1 < j`, `mkOfSucc i ≫ δ j` is the morphism `⦋1⦌ ⟶ ⦋n⦌` that
 sends `0` and `1` to `i` and `i + 1`, respectively. -/
@@ -449,7 +438,7 @@ lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
 sends `0` and `1` to `i` and `i + 2`, respectively. -/
 lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     (h : j = i.succ.castSucc) :
-    mkOfSucc i ≫ δ j = intervalEdge i 2 (by omega) := by
+    mkOfSucc i ≫ δ j = intervalEdge i 2 (by cutsat) := by
   ext x
   fin_cases x
   · subst h
@@ -589,6 +578,9 @@ instance (x : SimplexCategory) (n : ℕ) : OfNat (ToType x) n :=
 
 lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 
+@[simp]
+lemma concreteCategoryHom_id (n : SimplexCategory) : ConcreteCategory.hom (𝟙 n) = .id := rfl
+
 end Concrete
 
 section EpiMono
@@ -612,43 +604,28 @@ theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
     NonemptyFinLinOrd.epi_iff_surjective, NonemptyFinLinOrd.coe_of, ConcreteCategory.hom_ofHom]
 
 /-- A monomorphism in `SimplexCategory` must increase lengths -/
-theorem len_le_of_mono {x y : SimplexCategory} {f : x ⟶ y} : Mono f → x.len ≤ y.len := by
-  intro hyp_f_mono
-  have f_inj : Function.Injective f.toOrderHom.toFun := mono_iff_injective.1 hyp_f_mono
-  simpa using Fintype.card_le_of_injective f.toOrderHom.toFun f_inj
+theorem len_le_of_mono {x y : SimplexCategory} (f : x ⟶ y) [Mono f] : x.len ≤ y.len := by
+  simpa using Fintype.card_le_of_injective f.toOrderHom.toFun
+    (by dsimp; rwa [← mono_iff_injective])
 
-theorem le_of_mono {n m : ℕ} {f : ⦋n⦌ ⟶ ⦋m⦌} : CategoryTheory.Mono f → n ≤ m :=
-  len_le_of_mono
+theorem le_of_mono {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) [Mono f] : n ≤ m :=
+  len_le_of_mono f
 
 /-- An epimorphism in `SimplexCategory` must decrease lengths -/
-theorem len_le_of_epi {x y : SimplexCategory} {f : x ⟶ y} : Epi f → y.len ≤ x.len := by
-  intro hyp_f_epi
-  have f_surj : Function.Surjective f.toOrderHom.toFun := epi_iff_surjective.1 hyp_f_epi
-  simpa using Fintype.card_le_of_surjective f.toOrderHom.toFun f_surj
+theorem len_le_of_epi {x y : SimplexCategory} (f : x ⟶ y) [Epi f] : y.len ≤ x.len := by
+  simpa using Fintype.card_le_of_surjective f.toOrderHom.toFun
+    (by dsimp; rwa [← epi_iff_surjective])
 
-theorem le_of_epi {n m : ℕ} {f : ⦋n⦌ ⟶ ⦋m⦌} : Epi f → m ≤ n := len_le_of_epi
+theorem le_of_epi {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) [Epi f] : m ≤ n := len_le_of_epi f
 
-instance {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
-  rw [mono_iff_injective]
-  exact Fin.succAbove_right_injective
+lemma len_eq_of_isIso {x y : SimplexCategory} (f : x ⟶ y) [IsIso f] : x.len = y.len :=
+  le_antisymm (len_le_of_mono f) (len_le_of_epi f)
+
+lemma eq_of_isIso {n m : ℕ} (f : ⦋n⦌ ⟶ ⦋m⦌) [IsIso f] : n = m :=
+  len_eq_of_isIso f
 
 instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
-  rw [epi_iff_surjective]
-  intro b
-  simp only [σ, mkHom, Hom.toOrderHom_mk]
-  by_cases h : b ≤ i
-  · use b.castSucc
-    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
-    dsimp
-    rw [Fin.predAbove_of_le_castSucc i b.castSucc (by simpa only [Fin.coe_eq_castSucc] using h)]
-    simp only [len_mk, Fin.castPred_castSucc]
-  · use b.succ
-    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
-    dsimp
-    rw [Fin.predAbove_of_castSucc_lt i b.succ _, Fin.pred_succ]
-    rw [not_le] at h
-    rw [Fin.lt_iff_val_lt_val] at h ⊢
-    simpa only [Fin.val_succ, Fin.coe_castSucc] using Nat.lt.step h
+  simpa only [epi_iff_surjective] using Fin.predAbove_surjective i
 
 instance : (forget SimplexCategory).ReflectsIsomorphisms :=
   ⟨fun f hf =>
@@ -678,6 +655,29 @@ theorem isIso_of_bijective {x y : SimplexCategory} {f : x ⟶ y}
     (hf : Function.Bijective f.toOrderHom.toFun) : IsIso f :=
   haveI : IsIso ((forget SimplexCategory).map f) := (isIso_iff_bijective _).mpr hf
   isIso_of_reflects_iso f (forget SimplexCategory)
+
+lemma isIso_iff_of_mono {n m : SimplexCategory} (f : n ⟶ m) [hf : Mono f] :
+    IsIso f ↔ n.len = m.len := by
+  refine ⟨fun _ ↦ len_eq_of_isIso f, fun h ↦ ?_⟩
+  obtain rfl : n = m := by aesop
+  rw [mono_iff_injective] at hf
+  exact isIso_of_bijective ⟨hf, by rwa [← Finite.injective_iff_surjective]⟩
+
+instance {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
+  rw [mono_iff_injective]
+  exact Fin.succAbove_right_injective
+
+lemma isIso_iff_of_epi {n m : SimplexCategory} (f : n ⟶ m) [hf : Epi f] :
+    IsIso f ↔ n.len = m.len := by
+  refine ⟨fun _ ↦ len_eq_of_isIso f, fun h ↦ ?_⟩
+  obtain rfl : n = m := by aesop
+  rw [epi_iff_surjective] at hf
+  exact isIso_of_bijective ⟨by rwa [Finite.injective_iff_surjective], hf⟩
+
+instance : Balanced SimplexCategory where
+  isIso_of_mono_of_epi f _ _ := by
+    rw [isIso_iff_of_epi]
+    exact le_antisymm (len_le_of_mono f) (len_le_of_epi f)
 
 /-- An isomorphism in `SimplexCategory` induces an `OrderIso`. -/
 @[simp]
@@ -733,7 +733,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
       rw [Fin.succAbove_of_le_castSucc i.succ _]
       simp only [Fin.lt_iff_val_lt_val, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
         Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
-      omega
+      cutsat
 
 theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (hθ : ¬Function.Injective θ.toOrderHom) :
@@ -746,7 +746,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n
     by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
     · refine ⟨y, x, ⟨h₁.symm, ?_⟩⟩
-      omega
+      cutsat
   rcases hθ₂ with ⟨x, y, ⟨h₁, h₂⟩⟩
   use x.castPred ((Fin.le_last _).trans_lt' h₂).ne
   apply eq_σ_comp_of_not_injective'
@@ -790,9 +790,9 @@ theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ :=
   infer_instance
 
 theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by
-  rcases eq_σ_comp_of_not_injective θ (by
-    by_contra h
-    simpa using le_of_mono (mono_iff_injective.mpr h)) with ⟨i, θ', h⟩
+  obtain ⟨i, θ', h⟩ := eq_σ_comp_of_not_injective θ (by
+    rw [← mono_iff_injective]
+    grind [→ le_of_mono])
   use i
   haveI : Epi (σ i ≫ θ') := by
     rw [← h]
@@ -801,9 +801,9 @@ theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i :
   rw [h, eq_id_of_epi θ', Category.comp_id]
 
 theorem eq_δ_of_mono {n : ℕ} (θ : ⦋n⦌ ⟶ ⦋n + 1⦌) [Mono θ] : ∃ i : Fin (n + 2), θ = δ i := by
-  rcases eq_comp_δ_of_not_surjective θ (by
-    by_contra h
-    simpa using le_of_epi (epi_iff_surjective.mpr h)) with ⟨i, θ', h⟩
+  obtain ⟨i, θ', h⟩ := eq_comp_δ_of_not_surjective θ (by
+    rw [← epi_iff_surjective]
+    grind [→ le_of_epi])
   use i
   haveI : Mono (θ' ≫ δ i) := by
     rw [← h]
@@ -811,12 +811,9 @@ theorem eq_δ_of_mono {n : ℕ} (θ : ⦋n⦌ ⟶ ⦋n + 1⦌) [Mono θ] : ∃ i
   haveI := CategoryTheory.mono_of_mono θ' (δ i)
   rw [h, eq_id_of_mono θ', Category.id_comp]
 
-theorem len_lt_of_mono {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [hi : Mono i] (hi' : Δ ≠ Δ') :
+theorem len_lt_of_mono {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [Mono i] (hi' : Δ ≠ Δ') :
     Δ'.len < Δ.len := by
-  rcases lt_or_eq_of_le (len_le_of_mono hi) with (h | h)
-  · exact h
-  · exfalso
-    exact hi' (by ext; exact h.symm)
+  grind [→ len_le_of_mono, SimplexCategory.ext]
 
 noncomputable instance : SplitEpiCategory SimplexCategory :=
   skeletalEquivalence.inverse.splitEpiCategoryImpOfIsEquivalence
@@ -836,9 +833,7 @@ theorem image_eq {Δ Δ' Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : Δ ⟶ 
   haveI := strongEpi_of_epi e
   let e := image.isoStrongEpiMono e i fac
   ext
-  exact
-    le_antisymm (len_le_of_epi (inferInstance : Epi e.hom))
-      (len_le_of_mono (inferInstance : Mono e.hom))
+  exact le_antisymm (len_le_of_epi e.hom) (len_le_of_mono e.hom)
 
 theorem image_ι_eq {Δ Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : Δ ⟶ image φ} [Epi e]
     {i : image φ ⟶ Δ''} [Mono i] (fac : e ≫ i = φ) : image.ι φ = i := by
@@ -876,5 +871,17 @@ instance : HasTerminal SimplexCategory :=
 /-- The isomorphism between the terminal object in `SimplexCategory` and `⦋0⦌`. -/
 noncomputable def topIsoZero : ⊤_ SimplexCategory ≅ ⦋0⦌ :=
   terminalIsoIsTerminal isTerminalZero
+
+lemma δ_injective {n : ℕ} : Function.Injective (δ (n := n)) := by
+  intro i j hij
+  rw [← Fin.succAbove_left_inj]
+  ext k : 1
+  exact congr($hij k)
+
+lemma σ_injective {n : ℕ} : Function.Injective (σ (n := n)) := by
+  intro i j hij
+  rw [← Fin.predAbove_left_inj]
+  ext k : 1
+  exact congr($hij k)
 
 end SimplexCategory
