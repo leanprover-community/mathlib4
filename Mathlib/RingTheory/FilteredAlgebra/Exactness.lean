@@ -151,7 +151,8 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     use GradedPiece.mk FR FR_lt ⟨r, hr⟩
     rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk, QuotientAddGroup.mk'_eq_mk']
     exact ⟨⟨s', IsFiltration.F_lt_le_F FS FS_lt i hs'⟩, ⟨hs', SetCoe.ext this⟩⟩
-  · induction' y using QuotientAddGroup.induction_on with z
+  · induction y using QuotientAddGroup.induction_on
+    rename_i z
     rw [← hy, GradedPieceHom_comp_apply]
     exact congrArg (GradedPiece.mk FT FT_lt) (SetCoe.ext (fgexact.apply_apply_eq_zero z.1))
 
@@ -198,7 +199,7 @@ lemma zero_of_pieces_range {p : ℤ} {y : FS p} (hy : y.1 ∈ Set.range f)
     have : ((g.piece_wise_hom p) y) = 0 := by
       simpa [← Subtype.val_inj, FilteredHom.piece_wise_hom, ← hx]
     simp [this]
-  · simp [of_eq_of_ne p i (GradedPiece.mk FS (fun n ↦ FS (n - 1)) (y : ofClass (FS p))) (Ne.symm h)]
+  · simp [of_eq_of_ne p i (GradedPiece.mk FS (fun n ↦ FS (n - 1)) (y : ofClass (FS p))) h]
 
 theorem strict_of_exhaustive_exact (monoS : Monotone FS) (monoT : Monotone FT)
     (exact : Function.Exact Gr+[f] Gr+[g])
@@ -214,9 +215,10 @@ theorem strict_of_exhaustive_exact (monoS : Monotone FS) (monoT : Monotone FT)
     exact ⟨s, by simpa only [← hs, add_sub_cancel] using monoS (Int.le_max_right p p') y₀p'⟩
   have (i : ℕ) : i ≤ s → ∃ y ∈ FS (p + s - i), g y = z := by
     intro h
-    induction' i with i ih
+    induction i
     · simpa using ⟨y₀, ⟨hs, gy₀z⟩⟩
-    · rcases ih (Nat.le_of_succ_le h) with ⟨y, ymem, yeq⟩
+    · rename_i i ih
+      rcases ih (Nat.le_of_succ_le h) with ⟨y, ymem, yeq⟩
       simp only [Nat.cast_add, Nat.cast_one]
       have hy : Gr+(p + s - i)[g] (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) = 0 := by
         have zin : z ∈ FT (p + s - i) := by
@@ -233,7 +235,8 @@ theorem strict_of_exhaustive_exact (monoS : Monotone FS) (monoT : Monotone FT)
         simpa only [← AddMonoidHom.exact_iff.mp
           (GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g (p + s - i) exact)]
           using hy
-      induction' xi using GradedPiece.induction_on with xiout
+      induction xi using GradedPiece.induction_on
+      rename_i xiout
       rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk_eq,
         GradedPiece.mk_eq, QuotientAddGroup.eq_iff_sub_mem] at fxiy
       use y - f xiout
@@ -257,17 +260,20 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
     have (s : ℕ) : ∃ r : FR p, y - f r ∈ (f.range : Set S) ∩ FS (p - s) := by
       let yₚ := of (GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y, hp⟩ : ofClass (FS p)))
       obtain ⟨xₚ, hxₚ⟩ := (exact yₚ).1 <| zero_of_pieces_range ⟨x', hx'⟩ comp_eq_zero
-      induction' s with s ih
-      · induction' xₚ p using GradedPiece.induction_on with xₚp
+      induction s
+      · induction xₚ p using GradedPiece.induction_on
+        rename_i xₚp
         refine ⟨xₚp, ⟨⟨x' - xₚp, hx' ▸ AddMonoidHom.map_sub f.toAddMonoidHom x' xₚp⟩, ?_⟩⟩
         simp only [Nat.cast_zero, sub_zero, SetLike.mem_coe]
         rw [sub_eq_add_neg, add_comm]
         exact add_mem (neg_mem (FilteredHom.pieces_wise xₚp.2)) hp
-      · rcases ih with ⟨r, ⟨hr₁, hr₂⟩⟩
+      · rename_i s ih
+        rcases ih with ⟨r, ⟨hr₁, hr₂⟩⟩
         let yₚₛ :=
           of (GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y - f r, hr₂⟩ : ofClass (FS (p - s))))
         obtain ⟨xₚₛ, hxₚₛ⟩ := (exact yₚₛ).mp (zero_of_pieces_range hr₁ comp_eq_zero)
-        induction' h : xₚₛ (p - s) using GradedPiece.induction_on with xₚₛps
+        induction h : xₚₛ (p - s) using GradedPiece.induction_on
+        rename_i xₚₛps
         have ps_mem_p : xₚₛps.val ∈ FR p := monoR (by omega) xₚₛps.2
         let xr := (⟨xₚₛps + r, add_mem ps_mem_p r.2⟩ : FR p)
         refine ⟨xr, ⟨⟨x' - xr, hx' ▸ map_sub f.toAddMonoidHom x' xr⟩, ?_⟩⟩
@@ -308,9 +314,10 @@ theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
       rw [← Set.Nonempty.subset_singleton_iff Set.Nonempty.of_subtype, ← t₀bot]
       exact monoS (Int.min_le_right p t₀)
     have (s : ℕ) : ∃ r : R, y - f r ∈ FS (p - s) := by
-      induction' s with s ih
+      induction s
       · exact ⟨0, by simpa using hy⟩
-      · rcases ih with ⟨r, hr⟩
+      · rename_i s ih
+        rcases ih with ⟨r, hr⟩
         have : g (y - f r) = 0 := by simpa [yto0] using comp_zero r
         have mem_ker :
           Gr+(p - s)[g] (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y - f r, hr⟩) = 0 := by
@@ -320,7 +327,8 @@ theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
           exact SetCoe.ext this
         rcases ((GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g _ exact) _).mp
            mem_ker with ⟨r', hr'⟩
-        induction' r' using GradedPiece.induction_on with r'out
+        induction r' using GradedPiece.induction_on
+        rename_i r'out
         have : Gr+(p - s)[f] ((GradedPiece.mk FR fun n ↦ FR (n - 1)) r'out) =
             (GradedPiece.mk FS fun n ↦ FS (n - 1)) ⟨y - f r, hr⟩ := by
           simpa using hr'
