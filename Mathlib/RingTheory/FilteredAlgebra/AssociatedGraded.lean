@@ -67,7 +67,8 @@ variable [DecidableEq ι]
 theorem of_eq_of_ne (i j : ι) (x : GradedPiece F F_lt i) (h : i ≠ j) : (of x) j = 0 :=
   DirectSum.of_eq_of_ne i j x h
 
-theorem of_eq_same (i : ι) (x : GradedPiece F F_lt i) : (of x) i = x :=
+@[simp]
+theorem of_eq_self (i : ι) (x : GradedPiece F F_lt i) : (of x) i = x :=
   DirectSum.of_eq_same i x
 
 lemma of_apply {i : ι} (j : ι) (x : GradedPiece F F_lt i) :
