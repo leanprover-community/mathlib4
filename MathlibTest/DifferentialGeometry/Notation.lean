@@ -947,8 +947,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 /--
 info: fun a ↦ TotalSpace.mk' Unit a (f a) : Unit → TotalSpace Unit (Trivial Unit Unit)
 ---
-trace: [Elab.DiffGeo.TotalSpaceMk] argument(s) passed to `T%` is/are `[]`
-[Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
+trace: [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
 -/
 #guard_msgs in
 #check T% f
