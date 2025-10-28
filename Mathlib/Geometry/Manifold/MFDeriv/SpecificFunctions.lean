@@ -574,7 +574,9 @@ lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N
     · simp_all
       use (chartAt H p.1).symm <| I.symm p₀.1
   rw [writtenInExtChart_prod]
-  exact (hf.2.prodMap _ hg.2).mono better
+  apply HasFDerivWithinAt.mono ?_ better
+  apply HasFDerivWithinAt.prodMap
+  exacts [hf.2.mono (fst_image_prod_subset ..), hg.2.mono (snd_image_prod_subset ..)]
 
 lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)} (hf : HasMFDerivAt I J f p.1 df)
