@@ -333,6 +333,14 @@ theorem orthogonalProjection_vadd_smul_vsub_orthogonalProjection {s : AffineSubs
   orthogonalProjection_vadd_eq_self hp
     (Submodule.smul_mem _ _ (vsub_orthogonalProjection_mem_direction_orthogonal s _))
 
+lemma orthogonalProjection_orthogonalProjection_of_le {s₁ s₂ : AffineSubspace ℝ P} [Nonempty s₁]
+    [Nonempty s₂] [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
+    (h : s₁ ≤ s₂) (p : P) :
+    orthogonalProjection s₁ (orthogonalProjection s₂ p) = orthogonalProjection s₁ p := by
+  rw [orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem]
+  exact SetLike.le_def.1 (Submodule.orthogonal_le (direction_le h))
+    (orthogonalProjection_vsub_mem_direction_orthogonal _ _)
+
 /-- The square of the distance from a point in `s` to `p₂` equals the
 sum of the squares of the distances of the two points to the
 `orthogonalProjection`. -/
