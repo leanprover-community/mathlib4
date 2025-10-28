@@ -126,7 +126,7 @@ lemma of_associated {r r' : R} (h : Associated r r') [IsLocalization.Away r S] :
     rw [mul_pow, mul_comm (r ^ n), mul_assoc, mul_assoc, hn]
 
 /-- If `r` and `r'` are associated elements of `R`, an `R`-algebra `S`
-is the localization of `R` away from `r` if and only of it is the localization of `R` away from
+is the localization of `R` away from `r` if and only if it is the localization of `R` away from
 `r'`. -/
 lemma iff_of_associated {r r' : R} (h : Associated r r') :
     IsLocalization.Away r S ↔ IsLocalization.Away r' S :=

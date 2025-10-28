@@ -439,7 +439,7 @@ lemma Cotangent.finite (hP : P.ker.FG) :
   refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
   rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
     ← Submodule.map_top]
-  exact (P.ker.fg_top.mpr hP).map _
+  exact ((Submodule.fg_top P.ker).mpr hP).map _
 
 end Cotangent
 
