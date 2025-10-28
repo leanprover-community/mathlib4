@@ -128,11 +128,11 @@ lemma isStrongGenerator_iff_exists_extremalEpi
   refine ⟨fun hP X ↦ ?_, fun hP ↦ .mk_of_exists_extremalEpi hP⟩
   have := hasCoproductsOfShape_of_small.{w} C (CostructuredArrow P.ι X)
   have := (coproductIsCoproduct (P.coproductFromFamily X)).whiskerEquivalence
-    ((Discrete.equivalence (equivShrink.{w} _))).symm
+    (Discrete.equivalence (equivShrink.{w} _)).symm
   refine ⟨_, fun j ↦ ((equivShrink.{w} (CostructuredArrow P.ι X)).symm j).left.1,
     fun j ↦ ((equivShrink.{w} _).symm j).1.2, _,
     (coproductIsCoproduct (P.coproductFromFamily X)).whiskerEquivalence
-    ((Discrete.equivalence (equivShrink.{w} _))).symm, _, hP.extremalEpi_coproductFrom X⟩
+    (Discrete.equivalence (equivShrink.{w} _)).symm, _, hP.extremalEpi_coproductFrom X⟩
 
 lemma IsStrongGenerator.mk_of_exists_colimitsOfShape
     (hP : ∀ (X : C), ∃ (J : Type w) (_ : SmallCategory J), Nonempty (P.ColimitOfShape J X)) :
