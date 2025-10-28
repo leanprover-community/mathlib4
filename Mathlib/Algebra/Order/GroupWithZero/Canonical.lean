@@ -114,14 +114,6 @@ section LinearOrderedCommGroupWithZero
 variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
 
 -- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosMono : MulPosMono α where
-  elim _a _b _c hbc := mul_le_mul_right' hbc _
-
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulMono : PosMulMono α where
-  elim _a _b _c hbc := mul_le_mul_left' hbc _
-
--- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLE :
     PosMulReflectLE α where
   elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_left' hbc a⁻¹
@@ -135,17 +127,13 @@ instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosReflectLE :
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLT :
     PosMulReflectLT α where elim _a _b _c := lt_of_mul_lt_mul_left'
 
-#adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add `dsimp only` -/
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulStrictMono :
-    PosMulStrictMono α where
-  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_iff_right₀ a.2).1 h
+    PosMulStrictMono α := PosMulReflectLE.toPosMulStrictMono
 
-#adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add `dsimp only` -/
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
-    MulPosStrictMono α where
-  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_iff_left₀ a.2).1 h
+    MulPosStrictMono α := MulPosReflectLE.toMulPosStrictMono
 
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=
