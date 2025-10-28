@@ -86,8 +86,8 @@ instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
 instance [LT ι] [∀ a, LT (β a)] : LT (Colex (∀ i, β i)) :=
   ⟨Pi.Lex (· > ·) (· < ·)⟩
 
--- If `Lex` and `Colex` are ever made into one-field structures, the `CoeFun` instance will actually
--- fire. This will make `x i` syntactically equal to `ofLex x i` for `x : Πₗ i, α i`, thus making
+-- If `Lex` and `Colex` are ever made into one-field structures, we need a `CoeFun` instance.
+-- This will make `x i` syntactically equal to `ofLex x i` for `x : Πₗ i, α i`, thus making
 -- the following theorems redundant.
 
 @[simp] theorem toLex_apply (x : ∀ i, β i) (i : ι) : toLex x i = x i := rfl

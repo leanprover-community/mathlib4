@@ -24,7 +24,7 @@ variable {R : Type*} [NormedRing R] (c : ℝ)
 open PowerSeries Filter
 open scoped Topology
 
-/-- A power series over `R` is restricted of paramerter `c` if we have
+/-- A power series over `R` is restricted of parameter `c` if we have
 `‖coeff R i f‖ * c ^ i → 0`. -/
 def IsRestricted (f : PowerSeries R) :=
   Tendsto (fun (i : ℕ) ↦ (norm (coeff i f)) * c ^ i) atTop (𝓝 0)
