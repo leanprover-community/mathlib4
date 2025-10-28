@@ -377,9 +377,8 @@ for all real bounded continuous functions `f` and `g` we have
 lemma eq_prod_of_integral_mul_boundedContinuousFunction
     (h : ∀ (f : X →ᵇ ℝ) (g : Y →ᵇ ℝ),
       ∫ z, f z.1 * g z.2 ∂ξ = (∫ x, f x ∂μ) * (∫ y, g y ∂ν)) :
-    ξ = μ.prod ν := by
-  refine ext_of_integral_mul_boundedContinuousFunction fun f g ↦ ?_
-  rw [h, integral_prod_mul]
+    ξ = μ.prod ν :=
+  ext_of_integral_mul_boundedContinuousFunction fun f g ↦ by rw [h, integral_prod_mul]
 
 end Measure
 
