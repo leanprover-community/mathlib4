@@ -120,6 +120,42 @@ theorem AnalyticOnNhd.divisor_nonneg {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f
   · simp [hf.meromorphicOn, hx, (hf x hx).meromorphicOrderAt_nonneg]
   simp [hx]
 
+/--
+The divisor of a constant function is `0`.
+-/
+@[simp]
+theorem divisor_const (e : E) :
+    divisor (fun _ ↦ e) U = 0 := by
+  classical
+  ext x
+  simp only [divisor_def, meromorphicOrderAt_const, Function.locallyFinsuppWithin.coe_zero,
+    Pi.zero_apply, ite_eq_right_iff, WithTop.untop₀_eq_zero,
+    LinearOrderedAddCommGroupWithTop.top_ne_zero, imp_false, ite_eq_left_iff, WithTop.zero_ne_top,
+    Decidable.not_not, and_imp]
+  tauto
+
+/--
+The divisor of a constant function is `0`.
+-/
+@[simp]
+theorem divisor_intCast (n : ℤ) :
+    divisor (n : 𝕜 → 𝕜) U = 0 := divisor_const (n : 𝕜)
+
+/--
+The divisor of a constant function is `0`.
+-/
+@[simp]
+theorem divisor_natCast (n : ℕ) :
+    divisor (n : 𝕜 → 𝕜) U = 0 := divisor_const (n : 𝕜)
+
+/--
+The divisor of a constant function is `0`.
+-/
+@[simp] theorem divisor_ofNat (n : ℕ) :
+    divisor (ofNat(n) : 𝕜 → 𝕜) U = 0 := by
+  convert divisor_const (n : 𝕜)
+  simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
+
 /-!
 ## Behavior under Standard Operations
 -/
@@ -145,6 +181,16 @@ theorem divisor_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : Mero
   · simp [hz]
 
 /--
+If orders are finite, the divisor of the scalar product of two meromorphic functions is the sum of
+the divisors.
+-/
+theorem divisor_fun_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ U)
+    (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z ∈ U, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₂f₂ : ∀ z ∈ U, meromorphicOrderAt f₂ z ≠ ⊤) :
+    divisor (fun z ↦ f₁ z • f₂ z) U = divisor f₁ U + divisor f₂ U :=
+  divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
+
+/--
 If orders are finite, the divisor of the product of two meromorphic functions is the sum of the
 divisors.
 
@@ -155,7 +201,16 @@ See `MeromorphicOn.exists_order_ne_top_iff_forall` and
 theorem divisor_mul {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z ∈ U, meromorphicOrderAt f₁ z ≠ ⊤)
     (h₂f₂ : ∀ z ∈ U, meromorphicOrderAt f₂ z ≠ ⊤) :
-    divisor (f₁ * f₂) U = divisor f₁ U + divisor f₂ U :=
+    divisor (f₁ * f₂) U = divisor f₁ U + divisor f₂ U := divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
+
+/--
+If orders are finite, the divisor of the product of two meromorphic functions is the sum of the
+divisors.
+-/
+theorem divisor_fun_mul {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f₁ U)
+    (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z ∈ U, meromorphicOrderAt f₁ z ≠ ⊤)
+    (h₂f₂ : ∀ z ∈ U, meromorphicOrderAt f₂ z ≠ ⊤) :
+    divisor (fun z ↦ f₁ z * f₂ z) U = divisor f₁ U + divisor f₂ U :=
   divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
 
 /-- The divisor of the inverse is the negative of the divisor. -/
@@ -166,6 +221,48 @@ theorem divisor_inv {f : 𝕜 → 𝕜} :
   by_cases h : MeromorphicOn f U ∧ z ∈ U
   · simp [divisor_apply, h, meromorphicOrderAt_inv]
   · simp [divisor_def, h]
+
+/-- The divisor of the inverse is the negative of the divisor. -/
+@[simp]
+theorem divisor_fun_inv {f : 𝕜 → 𝕜} : divisor (fun z ↦ (f z)⁻¹) U = -divisor f U := divisor_inv
+
+/--
+If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `f`.
+-/
+theorem divisor_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
+    divisor (f ^ n) U = n • divisor f U := by
+  classical
+  ext z
+  by_cases hn : n = 0
+  · simp [hn]
+  by_cases hz : z ∈ U
+  · simp [hf.pow, divisor_apply, meromorphicOrderAt_pow (hf z hz), hf, hz]
+  · simp [hz]
+
+/--
+If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `f`.
+-/
+theorem divisor_fun_pow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℕ) :
+    divisor (fun z ↦ f z ^ n) U = n • divisor f U := divisor_pow hf n
+
+/--
+If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `f`.
+-/
+theorem divisor_zpow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℤ) :
+    divisor (f ^ n) U = n • divisor f U := by
+  classical
+  ext z
+  by_cases hn : n = 0
+  · simp [hn]
+  by_cases hz : z ∈ U
+  · simp [hf.zpow, divisor_apply, meromorphicOrderAt_zpow (hf z hz), hf, hz]
+  · simp [hz]
+
+/--
+If `f` is meromorphic, then the divisor of `f ^ n` is `n` times the divisor of `f`.
+-/
+theorem divisor_fun_zpow {f : 𝕜 → 𝕜} (hf : MeromorphicOn f U) (n : ℤ) :
+    divisor (fun z ↦ f z ^ n) U = n • divisor f U := divisor_zpow hf n
 
 /--
 Taking the divisor of a meromorphic function commutes with restriction.

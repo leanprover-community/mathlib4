@@ -162,12 +162,11 @@ Factorized rational functions are nowhere locally constant zero.
 -/
 theorem meromorphicOrderAt_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
     meromorphicOrderAt (∏ᶠ u, (· - u) ^ d u) z ≠ ⊤ := by
+  classical
   by_cases hd : d.support.Finite
   · simp [meromorphicOrderAt_eq d hd]
   · rw [← mulSupport] at hd
-    have : AnalyticAt 𝕜 (1 : 𝕜 → 𝕜) z := analyticAt_const
-    simp [finprod_of_infinite_mulSupport hd, this.meromorphicOrderAt_eq,
-      this.analyticOrderAt_eq_zero.2 (by simp)]
+    simp [finprod_of_infinite_mulSupport hd]
 
 @[deprecated (since := "2025-05-22")] alias order_ne_top := meromorphicOrderAt_ne_top
 
