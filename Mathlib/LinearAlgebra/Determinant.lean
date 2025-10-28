@@ -499,16 +499,23 @@ noncomputable def LinearMap.equivOfIsUnitDet
   · exact 1
 
 @[simp]
+theorem LinearMap.equivOfIsUnitDet_apply
+    [Module.Free R M] [Module.Finite R M]
+    {f : M →ₗ[R] M} (h : IsUnit f.det) (x : M) :
+    (LinearMap.equivOfIsUnitDet h) x = f x := by
+  by_cases hR : Nontrivial R
+  · simp [equivOfIsUnitDet, dif_pos hR]
+  · rw [not_nontrivial_iff_subsingleton] at hR
+    have : Subsingleton M := Module.subsingleton R M
+    apply Subsingleton.allEq
+
+@[simp]
 theorem LinearMap.coe_equivOfIsUnitDet
     [Module.Free R M] [Module.Finite R M]
     {f : M →ₗ[R] M} (h : IsUnit f.det) :
     (LinearMap.equivOfIsUnitDet h : M →ₗ[R] M) = f := by
-  by_cases hR : Nontrivial R
-  · ext x
-    simp [equivOfIsUnitDet, dif_pos hR]
-  · rw [not_nontrivial_iff_subsingleton] at hR
-    haveI : Subsingleton (M →ₗ[R] M) := Module.subsingleton R _
-    apply Subsingleton.allEq
+  ext
+  apply LinearMap.equivOfIsUnitDet_apply
 
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/
@@ -516,17 +523,19 @@ abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCo
     [FiniteDimensional 𝕜 M] (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) : M ≃ₗ[𝕜] M :=
   LinearMap.equivOfIsUnitDet (f := f) (Ne.isUnit hf)
 
+@[simp]
+theorem LinearMap.equivOfDetNeZero_apply {𝕜 : Type*} [Field 𝕜]
+    {M : Type*} [AddCommGroup M] [Module 𝕜 M] [FiniteDimensional 𝕜 M]
+    (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) (x : M) :
+    (LinearMap.equivOfDetNeZero f hf : M ≃ₗ[𝕜] M) x = f x := by
+  simp [LinearMap.equivOfDetNeZero]
+
+@[simp]
 theorem LinearMap.coe_equivOfDetNeZero {𝕜 : Type*} [Field 𝕜]
     {M : Type*} [AddCommGroup M] [Module 𝕜 M] [FiniteDimensional 𝕜 M]
     (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) :
     (LinearMap.equivOfDetNeZero f hf : M →ₗ[𝕜] M) = f := by
-  simp only [LinearMap.equivOfDetNeZero, coe_equivOfIsUnitDet]
-
-theorem LinearMap.equivOfDetNeZero_apply {𝕜 : Type*} [Field 𝕜]
-    {M : Type*} [AddCommGroup M] [Module 𝕜 M] [FiniteDimensional 𝕜 M]
-    (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) (x : M) :
-    (LinearMap.equivOfDetNeZero f hf : M →ₗ[𝕜] M) x = f x := by
-  simp only [coe_equivOfDetNeZero]
+  simp
 
 theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ[R] M)
     (h : ∀ x, f x = f' (e x)) : Associated (LinearMap.det f) (LinearMap.det f') := by
