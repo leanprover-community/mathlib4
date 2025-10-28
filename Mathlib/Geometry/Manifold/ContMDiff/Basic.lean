@@ -21,6 +21,8 @@ chain rule, manifolds, higher derivative
 
 -/
 
+assert_not_exists mfderiv
+
 open Filter Function Set Topology
 open scoped Manifold ContDiff
 
