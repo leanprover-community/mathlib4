@@ -629,7 +629,6 @@ variable [Fact (Module.finrank ℝ E'' = 2 + 4)] in -- should be 5
 -- variable [Fact (Module.finrank ℝ E'' = 4 + 1)] in
 -- #check MDifferentiable 𝓘(ℝ) (𝓡 4) f
 
-#exit
 end sphere
 
 section UpperHalfPlane
