@@ -3,9 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.Action.Opposite
+import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Opposite
@@ -30,29 +31,13 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 `star_neg : star (-r) = - star r` when the underlying semiring is a ring.
 -/
 
-assert_not_exists Finset
-assert_not_exists Subgroup
-assert_not_exists Rat.instField
+assert_not_exists Finset Subgroup Rat.instField
 
 universe u v w
 
 open MulOpposite
 
-/-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
--/
-class Star (R : Type u) where
-  star : R → R
-
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% Star.star
-
 variable {R : Type u}
-
-export Star (star)
-
-/-- A star operation (e.g. complex conjugate).
--/
-add_decl_doc star
 
 /-- `StarMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under star. -/
 class StarMemClass (S R : Type*) [Star R] [SetLike S R] : Prop where
@@ -61,7 +46,7 @@ class StarMemClass (S R : Type*) [Star R] [SetLike S R] : Prop where
 
 export StarMemClass (star_mem)
 
-attribute [aesop safe apply (rule_sets := [SetLike])] star_mem
+attribute [aesop 90% (rule_sets := [SetLike])] star_mem
 
 namespace StarMemClass
 
@@ -86,8 +71,16 @@ export InvolutiveStar (star_involutive)
 theorem star_star [InvolutiveStar R] (r : R) : star (star r) = r :=
   star_involutive _
 
+lemma star_mem_iff {S : Type*} [SetLike S R] [InvolutiveStar R] [StarMemClass S R]
+    {s : S} {x : R} : star x ∈ s ↔ x ∈ s :=
+  ⟨fun h => star_star x ▸ star_mem h, fun h => star_mem h⟩
+
 theorem star_injective [InvolutiveStar R] : Function.Injective (star : R → R) :=
   Function.Involutive.injective star_involutive
+
+@[aesop 5% (rule_sets := [SetLike!])]
+theorem mem_of_star_mem {S R : Type*} [InvolutiveStar R] [SetLike S R] [StarMemClass S R]
+    {s : S} {r : R} (hr : star r ∈ s) : r ∈ s := by rw [← star_star r]; exact star_mem hr
 
 @[simp]
 theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
@@ -151,11 +144,13 @@ alias ⟨_, Commute.star_star⟩ := commute_star_star
 theorem commute_star_comm {x y : R} : Commute (star x) y ↔ Commute x (star y) := by
   rw [← commute_star_star, star_star]
 
+alias ⟨Commute.star_right, Commute.star_left⟩ := commute_star_comm
+
 end StarMul
 
 /-- In a commutative ring, make `simp` prefer leaving the order unchanged. -/
 @[simp]
-theorem star_mul' [CommSemigroup R] [StarMul R] (x y : R) : star (x * y) = star x * star y :=
+theorem star_mul' [CommMagma R] [StarMul R] (x y : R) : star (x * y) = star x * star y :=
   (star_mul x y).trans (mul_comm _ _)
 
 /-- `star` as a `MulEquiv` from `R` to `Rᵐᵒᵖ` -/
@@ -172,13 +167,10 @@ def starMulAut [CommSemigroup R] [StarMul R] : MulAut R :=
     toFun := star
     map_mul' := star_mul' }
 
-variable (R)
-
+variable (R) in
 @[simp]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
   op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
-
-variable {R}
 
 @[simp]
 theorem star_pow [Monoid R] [StarMul R] (x : R) (n : ℕ) : star (x ^ n) = star x ^ n :=
@@ -213,7 +205,7 @@ section
 attribute [local instance] starMulOfComm
 
 /-- Note that since `starMulOfComm` is reducible, `simp` can already prove this. -/
-theorem star_id_of_comm {R : Type*} [CommSemiring R] {x : R} : star x = x :=
+theorem star_id_of_comm {R : Type*} [CommMonoid R] {x : R} : star x = x :=
   rfl
 
 end
@@ -235,13 +227,10 @@ def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R :=
     toFun := star
     map_add' := star_add }
 
-variable (R)
-
+variable (R) in
 @[simp]
 theorem star_zero [AddMonoid R] [StarAddMonoid R] : star (0 : R) = 0 :=
   (starAddEquiv : R ≃+ R).map_zero
-
-variable {R}
 
 @[simp]
 theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x = 0 :=
@@ -289,28 +278,28 @@ theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) 
 
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
-    star (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
+    star (ofNat(n) : R) = ofNat(n) :=
   star_natCast _
 
 section
 
 @[simp, norm_cast]
-theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
+theorem star_intCast [NonAssocRing R] [StarRing R] (z : ℤ) : star (z : R) = z :=
   (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
 
 end
 
 section CommSemiring
+
 variable [CommSemiring R] [StarRing R]
 
 /-- `star` as a ring automorphism, for commutative `R`. -/
 @[simps apply]
 def starRingAut : RingAut R := { starAddEquiv, starMulAut (R := R) with toFun := star }
 
-variable (R)
-
+variable (R) in
 /-- `star` as a ring endomorphism, for commutative `R`. This is used to denote complex
-conjugation, and is available under the notation `conj` in the locale `ComplexConjugate`.
+conjugation, and is available under the notation `conj` in the scope `ComplexConjugate`.
 
 Note that this is the preferred form (over `starRingAut`, available under the same hypotheses)
 because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short for
@@ -318,24 +307,15 @@ because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short f
 case for `(↑starRingAut : R →* R)`. -/
 def starRingEnd : R →+* R := @starRingAut R _ _
 
-variable {R}
-
 @[inherit_doc]
 scoped[ComplexConjugate] notation "conj" => starRingEnd _
 
 /-- This is not a simp lemma, since we usually want simp to keep `starRingEnd` bundled.
- For example, for complex conjugation, we don't want simp to turn `conj x`
- into the bare function `star x` automatically since most lemmas are about `conj x`. -/
+For example, for complex conjugation, we don't want simp to turn `conj x`
+into the bare function `star x` automatically since most lemmas are about `conj x`. -/
 theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute due to report by linter:
-
-simp can prove this:
-  by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]
-One of the lemmas above could be a duplicate.
-If that's not the case try reordering lemmas or adding @[priority].
- -/
--- @[simp]
+-- Not `@[simp]` because `simp` can already prove it.
 theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 
 instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveStar (S →+* R) where
@@ -366,8 +346,6 @@ end CommSemiring
 theorem star_inv₀ [GroupWithZero R] [StarMul R] (x : R) : star x⁻¹ = (star x)⁻¹ :=
   op_injective <| (map_inv₀ (starMulEquiv : R ≃* Rᵐᵒᵖ) x).trans (op_inv (star x)).symm
 
-@[deprecated (since := "2024-11-18")] alias star_inv' := star_inv₀
-
 @[simp]
 theorem star_zpow₀ [GroupWithZero R] [StarMul R] (x : R) (z : ℤ) : star (x ^ z) = star x ^ z :=
   op_injective <| (map_zpow₀ (starMulEquiv : R ≃* Rᵐᵒᵖ) x z).trans (op_zpow (star x) z).symm
@@ -377,8 +355,6 @@ theorem star_zpow₀ [GroupWithZero R] [StarMul R] (x : R) (z : ℤ) : star (x ^
 theorem star_div₀ [CommGroupWithZero R] [StarMul R] (x y : R) : star (x / y) = star x / star y := by
   apply op_injective
   rw [division_def, op_div, mul_comm, star_mul, star_inv₀, op_mul, op_inv]
-
-@[deprecated (since := "2024-11-18")] alias star_div' := star_div₀
 
 /-- Any commutative semiring admits the trivial `*`-structure.
 
@@ -393,7 +369,7 @@ instance Int.instStarRing : StarRing ℤ := starRingOfComm
 instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
 instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
 
-/-- A star module `A` over a star ring `R` is a module which is a star add monoid,
+/-- A star module `A` over a star ring `R` is a module which is a star additive monoid,
 and the two star structures are compatible in the sense
 `star (r • a) = star r • star a`.
 
@@ -404,7 +380,6 @@ the statement only requires `[Star R] [Star A] [SMul R A]`.
 If used as `[CommRing R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]`, this represents a
 star algebra.
 -/
-
 class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop where
   /-- `star` commutes with scalar multiplication -/
   star_smul : ∀ (r : R) (a : A), star (r • a) = star r • star a
@@ -488,16 +463,16 @@ theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
 
 protected instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : R) [Invertible r] :
     Invertible (star r) where
-  invOf := Star.star (⅟ r)
+  invOf := Star.star (⅟r)
   invOf_mul_self := by rw [← star_mul, mul_invOf_self, star_one]
   mul_invOf_self := by rw [← star_mul, invOf_mul_self, star_one]
 
 theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
-    [Invertible (star r)] : star (⅟ r) = ⅟ (star r) := by
-  have : star (⅟ r) = star (⅟ r) * ((star r) * ⅟ (star r)) := by
+    [Invertible (star r)] : star (⅟r) = ⅟(star r) := by
+  have : star (⅟r) = star (⅟r) * ((star r) * ⅟(star r)) := by
     simp only [mul_invOf_self, mul_one]
   rw [this, ← mul_assoc]
-  have : (star (⅟ r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
+  have : (star (⅟r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
   rw [this, star_one, one_mul]
 
 
@@ -555,8 +530,12 @@ instance [Mul R] [StarMul R] : StarMul Rᵐᵒᵖ where
 instance [AddMonoid R] [StarAddMonoid R] : StarAddMonoid Rᵐᵒᵖ where
   star_add x y := unop_injective (star_add x.unop y.unop)
 
-instance [Semiring R] [StarRing R] : StarRing Rᵐᵒᵖ where
+instance [NonUnitalSemiring R] [StarRing R] : StarRing Rᵐᵒᵖ where
   star_add x y := unop_injective (star_add x.unop y.unop)
+
+instance {M : Type*} [Star R] [Star M] [SMul R M] [StarModule R M] :
+    StarModule R Mᵐᵒᵖ where
+  star_smul r x := unop_injective (star_smul r x.unop)
 
 end MulOpposite
 

@@ -5,6 +5,11 @@ Authors: Fox Thomson
 -/
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.Tactic.NthRewrite
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Impartial.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Basic definitions about impartial (pre-)games
@@ -24,25 +29,28 @@ open scoped PGame
 
 namespace PGame
 
-/-- The definition for an impartial game, defined using Conway induction. -/
-def ImpartialAux (G : PGame) : Prop :=
+private def ImpartialAux (G : PGame) : Prop :=
   (G ≈ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j)
 termination_by G
 
-theorem impartialAux_def {G : PGame} : G.ImpartialAux ↔
-    (G ≈ -G) ∧ (∀ i, ImpartialAux (G.moveLeft i)) ∧ ∀ j, ImpartialAux (G.moveRight j) := by
-  rw [ImpartialAux]
+/-- An impartial game is one that's equivalent to its negative, such that each left and right move
+is also impartial.
 
-/-- A typeclass on impartial games. -/
+Note that this is a slightly more general definition than the one that's usually in the literature,
+as we don't require `G ≡ -G`. Despite this, the Sprague-Grundy theorem still holds: see
+`SetTheory.PGame.equiv_nim_grundyValue`.
+
+In such a game, both players have the same payoffs at any subposition. -/
 class Impartial (G : PGame) : Prop where
   out : ImpartialAux G
 
-theorem impartial_iff_aux {G : PGame} : G.Impartial ↔ G.ImpartialAux :=
+private theorem impartial_iff_aux {G : PGame} : G.Impartial ↔ G.ImpartialAux :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
 theorem impartial_def {G : PGame} :
-    G.Impartial ↔ (G ≈ -G) ∧ (∀ i, Impartial (G.moveLeft i)) ∧ ∀ j, Impartial (G.moveRight j) := by
-  simpa only [impartial_iff_aux] using impartialAux_def
+    G.Impartial ↔ G ≈ -G ∧ (∀ i, Impartial (G.moveLeft i)) ∧ ∀ j, Impartial (G.moveRight j) := by
+  simp_rw [impartial_iff_aux]
+  rw [ImpartialAux]
 
 namespace Impartial
 
@@ -94,28 +102,23 @@ instance impartial_neg (G : PGame) [G.Impartial] : (-G).Impartial := by
   refine ⟨?_, fun i => ?_, fun i => ?_⟩
   · rw [neg_neg]
     exact Equiv.symm (neg_equiv_self G)
-  · rw [moveLeft_neg']
+  · rw [moveLeft_neg]
     exact impartial_neg _
-  · rw [moveRight_neg']
+  · rw [moveRight_neg]
     exact impartial_neg _
 termination_by G
 
 variable (G : PGame) [Impartial G]
 
 theorem nonpos : ¬0 < G := by
-  intro h
-  have h' := neg_lt_neg_iff.2 h
-  rw [neg_zero, lt_congr_left (Equiv.symm (neg_equiv_self G))] at h'
-  exact (h.trans h').false
+  apply (lt_asymm · ?_)
+  rwa [← neg_lt_neg_iff, neg_zero, ← lt_congr_right (neg_equiv_self G)]
 
 theorem nonneg : ¬G < 0 := by
-  intro h
-  have h' := neg_lt_neg_iff.2 h
-  rw [neg_zero, lt_congr_right (Equiv.symm (neg_equiv_self G))] at h'
-  exact (h.trans h').false
+  simpa using nonpos (-G)
 
 /-- In an impartial game, either the first player always wins, or the second player always wins. -/
-theorem equiv_or_fuzzy_zero : (G ≈ 0) ∨ G ‖ 0 := by
+theorem equiv_or_fuzzy_zero : G ≈ 0 ∨ G ‖ 0 := by
   rcases lt_or_equiv_or_gt_or_fuzzy G 0 with (h | h | h | h)
   · exact ((nonneg G) h).elim
   · exact Or.inl h
@@ -123,11 +126,11 @@ theorem equiv_or_fuzzy_zero : (G ≈ 0) ∨ G ‖ 0 := by
   · exact Or.inr h
 
 @[simp]
-theorem not_equiv_zero_iff : ¬(G ≈ 0) ↔ G ‖ 0 :=
+theorem not_equiv_zero_iff : ¬ G ≈ 0 ↔ G ‖ 0 :=
   ⟨(equiv_or_fuzzy_zero G).resolve_left, Fuzzy.not_equiv⟩
 
 @[simp]
-theorem not_fuzzy_zero_iff : ¬G ‖ 0 ↔ (G ≈ 0) :=
+theorem not_fuzzy_zero_iff : ¬ G ‖ 0 ↔ G ≈ 0 :=
   ⟨(equiv_or_fuzzy_zero G).resolve_right, Equiv.not_fuzzy⟩
 
 theorem add_self : G + G ≈ 0 :=
@@ -138,12 +141,12 @@ theorem mk'_add_self : (⟦G⟧ : Game) + ⟦G⟧ = 0 :=
   game_eq (add_self G)
 
 /-- This lemma doesn't require `H` to be impartial. -/
-theorem equiv_iff_add_equiv_zero (H : PGame) : (H ≈ G) ↔ (H + G ≈ 0) := by
+theorem equiv_iff_add_equiv_zero (H : PGame) : H ≈ G ↔ H + G ≈ 0 := by
   rw [equiv_iff_game_eq, ← add_right_cancel_iff (a := ⟦G⟧), mk'_add_self, ← quot_add,
     equiv_iff_game_eq, quot_zero]
 
 /-- This lemma doesn't require `H` to be impartial. -/
-theorem equiv_iff_add_equiv_zero' (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := by
+theorem equiv_iff_add_equiv_zero' (H : PGame) : G ≈ H ↔ G + H ≈ 0 := by
   rw [equiv_iff_game_eq, ← add_left_cancel_iff, mk'_add_self, ← quot_add, equiv_iff_game_eq,
     Eq.comm, quot_zero]
 
@@ -165,14 +168,14 @@ theorem equiv_zero_iff_ge : (G ≈ 0) ↔ 0 ≤ G :=
 theorem fuzzy_zero_iff_gf : G ‖ 0 ↔ 0 ⧏ G :=
   ⟨And.right, fun h => ⟨lf_zero_iff.2 h, h⟩⟩
 
-theorem forall_leftMoves_fuzzy_iff_equiv_zero : (∀ i, G.moveLeft i ‖ 0) ↔ (G ≈ 0) := by
+theorem forall_leftMoves_fuzzy_iff_equiv_zero : (∀ i, G.moveLeft i ‖ 0) ↔ G ≈ 0 := by
   refine ⟨fun hb => ?_, fun hp i => ?_⟩
   · rw [equiv_zero_iff_le G, le_zero_lf]
     exact fun i => (hb i).1
   · rw [fuzzy_zero_iff_lf]
     exact hp.1.moveLeft_lf i
 
-theorem forall_rightMoves_fuzzy_iff_equiv_zero : (∀ j, G.moveRight j ‖ 0) ↔ (G ≈ 0) := by
+theorem forall_rightMoves_fuzzy_iff_equiv_zero : (∀ j, G.moveRight j ‖ 0) ↔ G ≈ 0 := by
   refine ⟨fun hb => ?_, fun hp i => ?_⟩
   · rw [equiv_zero_iff_ge G, zero_le_lf]
     exact fun i => (hb i).2
@@ -182,13 +185,13 @@ theorem forall_rightMoves_fuzzy_iff_equiv_zero : (∀ j, G.moveRight j ‖ 0) �
 theorem exists_left_move_equiv_iff_fuzzy_zero : (∃ i, G.moveLeft i ≈ 0) ↔ G ‖ 0 := by
   refine ⟨fun ⟨i, hi⟩ => (fuzzy_zero_iff_gf G).2 (lf_of_le_moveLeft hi.2), fun hn => ?_⟩
   rw [fuzzy_zero_iff_gf G, zero_lf_le] at hn
-  cases' hn with i hi
+  obtain ⟨i, hi⟩ := hn
   exact ⟨i, (equiv_zero_iff_ge _).2 hi⟩
 
 theorem exists_right_move_equiv_iff_fuzzy_zero : (∃ j, G.moveRight j ≈ 0) ↔ G ‖ 0 := by
   refine ⟨fun ⟨i, hi⟩ => (fuzzy_zero_iff_lf G).2 (lf_of_moveRight_le hi.1), fun hn => ?_⟩
   rw [fuzzy_zero_iff_lf G, lf_zero_le] at hn
-  cases' hn with i hi
+  obtain ⟨i, hi⟩ := hn
   exact ⟨i, (equiv_zero_iff_le _).2 hi⟩
 
 end Impartial

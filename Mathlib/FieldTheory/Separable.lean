@@ -10,6 +10,7 @@ import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.PowerBasis
+import Mathlib.Data.ENat.Lattice
 
 /-!
 
@@ -22,9 +23,9 @@ properties about separable polynomials here.
 
 * `Polynomial.Separable f`: a polynomial `f` is separable iff it is coprime with its derivative.
 * `IsSeparable K x`: an element `x` is separable over `K` iff the minimal polynomial of `x`
-over `K` is separable.
+  over `K` is separable.
 * `Algebra.IsSeparable K L`: `L` is separable over `K` iff every element in `L` is separable
-over `K`.
+  over `K`.
 
 -/
 
@@ -212,6 +213,7 @@ theorem separable_prod' {ι : Sort _} {f : ι → R[X]} {s : Finset ι} :
       h2.1.mul (ih h1.2.2 h2.2)
         (IsCoprime.prod_right fun i his => h1.1.2 i his <| Ne.symm <| ne_of_mem_of_not_mem his has)
 
+open scoped Function in -- required for scoped `on` notation
 theorem separable_prod {ι : Sort _} [Fintype ι] {f : ι → R[X]} (h1 : Pairwise (IsCoprime on f))
     (h2 : ∀ x, (f x).Separable) : (∏ x, f x).Separable :=
   separable_prod' (fun _x _hx _y _hy hxy => h1 hxy) fun x _hx => h2 x
@@ -221,8 +223,8 @@ theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} {f : ι → R
     (hfxy : f x = f y) : x = y := by
   classical
   by_contra hxy
-  rw [← insert_erase hx, prod_insert (not_mem_erase _ _), ←
-    insert_erase (mem_erase_of_ne_of_mem (Ne.symm hxy) hy), prod_insert (not_mem_erase _ _), ←
+  rw [← insert_erase hx, prod_insert (notMem_erase _ _), ←
+    insert_erase (mem_erase_of_ne_of_mem (Ne.symm hxy) hy), prod_insert (notMem_erase _ _), ←
     mul_assoc, hfxy, ← sq] at hfs
   cases (hfs.of_mul_left.of_pow (not_isUnit_X_sub_C _) two_ne_zero).2
 
@@ -261,11 +263,10 @@ theorem separable_C_mul_X_pow_add_C_mul_X_add_C
     {n : ℕ} (a b c : R) (hn : (n : R) = 0) (hb : IsUnit b) :
     (C a * X ^ n + C b * X + C c).Separable := by
   set f := C a * X ^ n + C b * X + C c
-  have hderiv : derivative f = C b := by
-    simp_rw [f, map_add derivative, derivative_C]
-    simp [hn]
   obtain ⟨e, hb⟩ := hb.exists_left_inv
   refine ⟨-derivative f, f + C e, ?_⟩
+  have hderiv : derivative f = C b := by
+    simp [hn, f, map_add derivative, derivative_C, derivative_X_pow]
   rw [hderiv, right_distrib, ← add_assoc, neg_mul, mul_comm, neg_add_cancel, zero_add,
     ← map_mul, hb, map_one]
 
@@ -308,13 +309,13 @@ variable {F : Type u} [Field F] {K : Type v} [Field K]
 
 theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
     f.Separable ↔ derivative f ≠ 0 :=
-  ⟨fun h1 h2 => hf.not_unit <| isCoprime_zero_right.1 <| h2 ▸ h1, fun h =>
+  ⟨fun h1 h2 => hf.not_isUnit <| isCoprime_zero_right.1 <| h2 ▸ h1, fun h =>
     EuclideanDomain.isCoprime_of_dvd (mt And.right h) fun g hg1 _hg2 ⟨p, hg3⟩ hg4 =>
       let ⟨u, hu⟩ := (hf.isUnit_or_isUnit hg3).resolve_left hg1
       have : f ∣ derivative f := by
         conv_lhs => rw [hg3, ← hu]
         rwa [Units.mul_right_dvd]
-      not_lt_of_le (natDegree_le_of_dvd this h) <|
+      not_lt_of_ge (natDegree_le_of_dvd this h) <|
         natDegree_derivative_lt <| mt derivative_of_natDegree_zero h⟩
 
 attribute [local instance] Ideal.Quotient.field in
@@ -364,11 +365,11 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
 theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p ≠ 0) :
     ∃ (n : ℕ) (g : F[X]), g.Separable ∧ expand F (p ^ n) g = f := by
   replace hp : p.Prime := (CharP.char_is_prime_or_zero F p).resolve_right hp
-  induction' hn : f.natDegree using Nat.strong_induction_on with N ih generalizing f
+  induction hn : f.natDegree using Nat.strong_induction_on generalizing f with | _ N ih
   rcases separable_or p hf with (h | ⟨h1, g, hg, hgf⟩)
   · refine ⟨0, f, h, ?_⟩
     rw [pow_zero, expand_one]
-  · cases' N with N
+  · rcases N with - | N
     · rw [natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff] at hn
       rw [hn, separable_C, isUnit_iff_ne_zero, Classical.not_not] at h1
       have hf0 : f ≠ 0 := hf.ne_zero
@@ -403,9 +404,8 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
   revert g₁ g₂
   wlog hn : n₁ ≤ n₂
   · intro g₁ hg₁ Hg₁ g₂ hg₂ Hg₂
-    simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_le hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
-  have hf0 : f ≠ 0 := hf.ne_zero
-  intros g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
+    simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_ge hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
+  intro g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
   rw [le_iff_exists_add] at hn
   rcases hn with ⟨k, rfl⟩
   rw [← hgf₁, pow_add, expand_mul, expand_inj (pow_pos hp n₁)] at hgf₂
@@ -513,12 +513,7 @@ theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f
     f.Separable := by
   rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
   · rintro ⟨⟩
-  rw [pos_iff_ne_zero, Ne, natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff]
-  refine fun hf1 => hf.not_unit ?_
-  rw [hf1, isUnit_C, isUnit_iff_ne_zero]
-  intro hf2
-  rw [hf2, C_0] at hf1
-  exact absurd hf1 hf.ne_zero
+  exact Irreducible.natDegree_pos hf
 
 end Field
 
@@ -585,6 +580,11 @@ theorem Algebra.isSeparable_iff :
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
     fun h => ⟨fun x => (h x).2⟩⟩
 
+variable {L} in
+lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : Function.Injective f)
+    (H : IsSeparable F x) : IsSeparable F (f x) := by
+  rwa [IsSeparable, minpoly.algHom_eq _ hf]
+
 variable {E : Type*}
 
 section AlgEquiv
@@ -599,9 +599,6 @@ theorem AlgEquiv.isSeparable_iff {x : K} : IsSeparable F (e x) ↔ IsSeparable F
 /-- Transfer `Algebra.IsSeparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.Algebra.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
   ⟨fun _ ↦ e.symm.isSeparable_iff.mp (Algebra.IsSeparable.isSeparable _ _)⟩
-
-@[deprecated (since := "2024-08-06")]
-alias AlgEquiv.isSeparable := AlgEquiv.Algebra.isSeparable
 
 theorem AlgEquiv.Algebra.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
   ⟨fun _ ↦ AlgEquiv.Algebra.isSeparable e, fun _ ↦ AlgEquiv.Algebra.isSeparable e.symm⟩
@@ -618,7 +615,7 @@ over `L`. -/
 @[stacks 09H2 "first part"]
 theorem IsSeparable.tower_top
     {x : E} (h : IsSeparable F x) : IsSeparable L x :=
-  h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
+  .of_dvd (.map h) (minpoly.dvd_map_of_isScalarTower ..)
 
 variable (F E) in
 /-- If `E / K / F` is an extension tower, `E` is separable over `F`, then it's also separable
@@ -627,9 +624,6 @@ over `K`. -/
 theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
     Algebra.IsSeparable L E :=
   ⟨fun x ↦ IsSeparable.tower_top _ (Algebra.IsSeparable.isSeparable F x)⟩
-
-@[deprecated (since := "2024-08-06")]
-alias IsSeparable.of_isScalarTower := Algebra.isSeparable_tower_top_of_isSeparable
 
 end IsScalarTower
 
@@ -731,6 +725,7 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
   letI := e₁.toRingHom.toAlgebra
   letI : Algebra A₂ B₁ :=
     { (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
+        algebraMap := (algebraMap A₁ B₁).comp e₁.symm.toRingHom
         smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
         commutes' := fun r x ↦ (Algebra.commutes) (e₁.symm.toRingHom r) x
         smul_def' := fun _ _ ↦ rfl }
@@ -754,13 +749,18 @@ variable {R S T : Type*} [CommRing S]
 variable {K L F : Type*} [Field K] [Field L] [Field F]
 variable [Algebra K S] [Algebra K L]
 
+theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
+    (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
+    Nat.card (S →ₐ[K] L) = pb.dim := by
+  classical
+  rw [Nat.card_congr pb.liftEquiv', Nat.subtype_card _ (fun x => Multiset.mem_toFinset),
+    ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
+  exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
+
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
     (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
   classical
-  let _ := (PowerBasis.AlgHom.fintype pb : Fintype (S →ₐ[K] L))
-  rw [Fintype.card_congr pb.liftEquiv', Fintype.card_of_subtype _ (fun x => Multiset.mem_toFinset),
-    ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
-  exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
+  rw [Fintype.card_eq_nat_card, AlgHom.natCard_of_powerBasis pb h_sep h_splits]
 
 end CardAlgHom

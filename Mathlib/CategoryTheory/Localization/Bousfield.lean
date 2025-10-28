@@ -3,14 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.Local
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.Localization.Adjunction
 
 /-!
 # Bousfield localization
 
-Given a predicate `P : C → Prop` on the objects of a category `C`,
+Given a predicate `P : ObjectProperty C` on the objects of a category `C`,
 we define `Localization.LeftBousfield.W P : MorphismProperty C`
 as the class of morphisms `f : X ⟶ Y` such that for any `Z : C`
 such that `P Z`, the precomposition with `f` induces a bijection
@@ -34,17 +34,17 @@ namespace CategoryTheory
 
 open Category
 
-namespace Localization
-
 variable {C D : Type*} [Category C] [Category D]
+
+namespace Localization
 
 namespace LeftBousfield
 
 section
 
-variable (P : C → Prop)
+variable (P : ObjectProperty C)
 
-/-- Given a predicate `P : C → Prop`, this is the class of morphisms `f : X ⟶ Y`
+/-- Given `P : ObjectProperty C`, this is the class of morphisms `f : X ⟶ Y`
 such that for all `Z : C` such that `P Z`, the precomposition with `f` induces
 a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`. -/
 def W : MorphismProperty C := fun _ _ f =>
@@ -58,11 +58,11 @@ noncomputable def W.homEquiv {X Y : C} {f : X ⟶ Y} (hf : W P f) (Z : C) (hZ : 
     (Y ⟶ Z) ≃ (X ⟶ Z) :=
   Equiv.ofBijective _ (hf Z hZ)
 
-lemma W_isoClosure : W (isoClosure P) = W P := by
+lemma W_isoClosure : W P.isoClosure = W P := by
   ext X Y f
   constructor
   · intro hf Z hZ
-    exact hf _ (le_isoClosure _ _ hZ)
+    exact hf _ (P.le_isoClosure _ hZ)
   · rintro hf Z ⟨Z', hZ', ⟨e⟩⟩
     constructor
     · intro g₁ g₂ eq
@@ -100,6 +100,20 @@ lemma W_iff_isIso {X Y : C} (f : X ⟶ Y) (hX : P X) (hY : P Y) :
     obtain ⟨g, hg⟩ := (hf _ hX).2 (𝟙 X)
     exact ⟨g, hg, (hf _ hY).1 (by simp only [reassoc_of% hg, comp_id])⟩
   · apply W_of_isIso
+
+instance : (W P).RespectsIso where
+  precomp f (_ : IsIso f) g hg := (W P).comp_mem f g (W_of_isIso _ f) hg
+  postcomp f (_ : IsIso f) g hg := (W P).comp_mem g f hg (W_of_isIso _ f)
+
+lemma le_W_iff (P : ObjectProperty C) (W : MorphismProperty C) :
+    W ≤ LeftBousfield.W P ↔ P ≤ W.isLocal :=
+  ⟨fun h _ hZ _ _ _ hf ↦ h _ hf _ hZ,
+    fun h _ _ _ hf _ hZ ↦ h _ hZ _ hf⟩
+
+lemma galoisConnection :
+    GaloisConnection (OrderDual.toDual ∘ W (C := C))
+      (MorphismProperty.isLocal ∘ OrderDual.ofDual) :=
+  le_W_iff
 
 end
 
@@ -144,5 +158,15 @@ end
 end LeftBousfield
 
 end Localization
+
+open Localization
+
+lemma ObjectProperty.le_isLocal_W (P : ObjectProperty C) :
+    P ≤ (LeftBousfield.W P).isLocal := by
+  rw [← LeftBousfield.le_W_iff]
+
+lemma MorphismProperty.le_leftBousfieldW_isLocal (W : MorphismProperty C) :
+    W ≤ LeftBousfield.W W.isLocal := by
+  rw [LeftBousfield.le_W_iff]
 
 end CategoryTheory

@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Union
 import Mathlib.Data.Multiset.Pi
+import Mathlib.Logic.Function.DependsOn
 
 /-!
-# The cartesian product of finsets
+# The Cartesian product of finsets
 
 ## Main definitions
 
@@ -110,7 +112,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
                 dedup <|
                   (Multiset.pi s.1 fun a : α => (t a).val).map fun f a' h' =>
                     Multiset.Pi.cons s.1 a b f a' (h ▸ h'))))
-      _ (insert_val_of_not_mem ha)
+      _ (insert_val_of_notMem ha)
   subst s'; rw [pi_cons]
   congr; funext b
   exact ((pi s t).nodup.map <| Multiset.Pi.cons_injective ha).dedup.symm
@@ -163,20 +165,50 @@ def restrict (s : Finset ι) (f : (i : ι) → π i) : (i : s) → π i := fun x
 
 theorem restrict_def (s : Finset ι) : s.restrict (π := π) = fun f x ↦ f x := rfl
 
+variable {s t u : Finset ι}
+
+theorem _root_.Set.piCongrLeft_comp_restrict :
+    (s.equivToSet.symm.piCongrLeft (fun i : s ↦ π i)) ∘ (s : Set ι).restrict = s.restrict := rfl
+
+theorem piCongrLeft_comp_restrict :
+    (s.equivToSet.piCongrLeft (fun i : s ↦ π i)) ∘ s.restrict = (s : Set ι).restrict := rfl
+
 /-- If a function `f` is restricted to a finite set `t`, and `s ⊆ t`,
 this is the restriction to `s`. -/
 @[simp]
-def restrict₂ {s t : Finset ι} (hst : s ⊆ t) (f : (i : t) → π i) : (i : s) → π i :=
-  fun x ↦ f ⟨x.1, hst x.2⟩
+def restrict₂ (hst : s ⊆ t) (f : (i : t) → π i) (i : s) : π i := f ⟨i.1, hst i.2⟩
 
-theorem restrict₂_def {s t : Finset ι} (hst : s ⊆ t) :
-    restrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
+theorem restrict₂_def (hst : s ⊆ t) : restrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
 
-theorem restrict₂_comp_restrict {s t : Finset ι} (hst : s ⊆ t) :
+theorem restrict₂_comp_restrict (hst : s ⊆ t) :
     (restrict₂ (π := π) hst) ∘ t.restrict = s.restrict := rfl
 
-theorem restrict₂_comp_restrict₂ {s t u : Finset ι} (hst : s ⊆ t) (htu : t ⊆ u) :
+theorem restrict₂_comp_restrict₂ (hst : s ⊆ t) (htu : t ⊆ u) :
     (restrict₂ (π := π) hst) ∘ (restrict₂ htu) = restrict₂ (hst.trans htu) := rfl
 
+lemma dependsOn_restrict (s : Finset ι) : DependsOn (s.restrict (π := π)) s :=
+  (s : Set ι).dependsOn_restrict
+
+lemma restrict_preimage [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) :
+    s.restrict ⁻¹' (Set.univ.pi t) =
+      Set.pi s (fun i ↦ if h : i ∈ s then t ⟨i, h⟩ else Set.univ) := by
+  ext x
+  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, restrict, forall_const, Subtype.forall,
+    mem_coe]
+  refine ⟨fun h i hi ↦ by simpa [hi] using h i hi, fun h i hi ↦ ?_⟩
+  convert h i hi
+  rw [dif_pos hi]
+
+lemma restrict₂_preimage [DecidablePred (· ∈ s)] (hst : s ⊆ t) (u : (i : s) → Set (π i)) :
+    (restrict₂ hst) ⁻¹' (Set.univ.pi u) =
+      (@Set.univ t).pi (fun j ↦ if h : j.1 ∈ s then u ⟨j.1, h⟩ else Set.univ) := by
+  ext x
+  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, restrict₂, forall_const, Subtype.forall]
+  refine ⟨fun h i hi ↦ ?_, fun h i i_mem ↦ by simpa [i_mem] using h i (hst i_mem)⟩
+  split_ifs with i_mem
+  · exact h i i_mem
+  · exact Set.mem_univ _
+
 end Pi
+
 end Finset

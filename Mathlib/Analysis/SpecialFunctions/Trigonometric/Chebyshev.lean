@@ -3,16 +3,16 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Data.Complex.Exponential
-import Mathlib.Data.Complex.Module
+import Mathlib.Analysis.Complex.Trigonometric
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Multiple angle formulas in terms of Chebyshev polynomials
 
-This file gives the trigonometric characterizations of Chebyshev polynomials, for both the real
-(`Real.cos`) and complex (`Complex.cos`) cosine.
+This file gives the trigonometric characterizations of Chebyshev polynomials, for the real
+(`Real.cos`) and complex (`Complex.cos`) cosine and the real (`Real.cosh`) and complex
+(`Complex.cosh`) hyperbolic cosine.
 -/
 
 
@@ -22,33 +22,21 @@ open Polynomial
 
 variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
-@[simp]
-theorem aeval_T (x : A) (n : ℤ) : aeval x (T R n) = (T A n).eval x := by
-  rw [aeval_def, eval₂_eq_eval_map, map_T]
-
-@[simp]
-theorem aeval_U (x : A) (n : ℤ) : aeval x (U R n) = (U A n).eval x := by
-  rw [aeval_def, eval₂_eq_eval_map, map_U]
-
-@[simp]
-theorem algebraMap_eval_T (x : R) (n : ℤ) :
-    algebraMap R A ((T R n).eval x) = (T A n).eval (algebraMap R A x) := by
-  rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_T]
-
-@[simp]
-theorem algebraMap_eval_U (x : R) (n : ℤ) :
-    algebraMap R A ((U R n).eval x) = (U A n).eval (algebraMap R A x) := by
-  rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_U]
-
--- Porting note: added type ascriptions to the statement
 @[simp, norm_cast]
 theorem complex_ofReal_eval_T : ∀ (x : ℝ) n, (((T ℝ n).eval x : ℝ) : ℂ) = (T ℂ n).eval (x : ℂ) :=
   @algebraMap_eval_T ℝ ℂ _ _ _
 
--- Porting note: added type ascriptions to the statement
 @[simp, norm_cast]
 theorem complex_ofReal_eval_U : ∀ (x : ℝ) n, (((U ℝ n).eval x : ℝ) : ℂ) = (U ℂ n).eval (x : ℂ) :=
   @algebraMap_eval_U ℝ ℂ _ _ _
+
+@[simp, norm_cast]
+theorem complex_ofReal_eval_C : ∀ (x : ℝ) n, (((C ℝ n).eval x : ℝ) : ℂ) = (C ℂ n).eval (x : ℂ) :=
+  @algebraMap_eval_C ℝ ℂ _ _ _
+
+@[simp, norm_cast]
+theorem complex_ofReal_eval_S : ∀ (x : ℝ) n, (((S ℝ n).eval x : ℝ) : ℂ) = (S ℂ n).eval (x : ℂ) :=
+  @algebraMap_eval_S ℝ ℂ _ _ _
 
 /-! ### Complex versions -/
 
@@ -84,12 +72,12 @@ theorem U_complex_cos (n : ℤ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1
   | zero => simp
   | one => simp [one_add_one_eq_two, sin_two_mul]; ring
   | add_two n ih1 ih2 =>
-    simp only [U_add_two, add_sub_cancel_right, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
+    simp only [U_add_two, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
       mul_assoc, ih1, ih2, sub_eq_iff_eq_add, sin_add_sin]
     push_cast
     ring_nf
   | neg_add_one n ih1 ih2 =>
-    simp only [U_sub_one, add_sub_cancel_right, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
+    simp only [U_sub_one, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
       mul_assoc, ih1, ih2, sub_eq_iff_eq_add', sin_add_sin]
     push_cast
     ring_nf
@@ -104,6 +92,40 @@ theorem C_two_mul_complex_cos (n : ℤ) : (C ℂ n).eval (2 * cos θ) = 2 * cos 
 evaluates on `2 * cos θ` to the value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]
 theorem S_two_mul_complex_cos (n : ℤ) : (S ℂ n).eval (2 * cos θ) * sin θ = sin ((n + 1) * θ) := by
+  simp [S_eq_U_comp_half_mul_X]
+
+/-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cosh θ` to the
+value `cosh (n * θ)`. -/
+@[simp]
+theorem T_complex_cosh (n : ℤ) : (T ℂ n).eval (cosh θ) = cosh (n * θ) := calc
+  (T ℂ n).eval (cosh θ)
+  _ = (T ℂ n).eval (cos (θ * I))        := by rw [cos_mul_I]
+  _ = cos (n * (θ * I))                 := T_complex_cos (θ * I) n
+  _ = cos (n * θ * I)                   := by rw [mul_assoc]
+  _ = cosh (n * θ)                      := cos_mul_I (n * θ)
+
+/-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cosh θ` to the
+value `sinh ((n + 1) * θ) / sinh θ`. -/
+@[simp]
+theorem U_complex_cosh (n : ℤ) : (U ℂ n).eval (cosh θ) * sinh θ = sinh ((n + 1) * θ) := calc
+  (U ℂ n).eval (cosh θ) * sinh θ
+  _ = (U ℂ n).eval (cos (θ * I)) * sin (θ * I) * (-I)   := by simp [cos_mul_I, sin_mul_I, mul_assoc]
+  _ = sin ((n + 1) * (θ * I)) * (-I)                    := by rw [U_complex_cos]
+  _ = sin ((n + 1) * θ * I) * (-I)                      := by rw [mul_assoc]
+  _ = sinh ((n + 1) * θ)                                := by
+    rw [sin_mul_I ((n + 1) * θ), mul_assoc, mul_neg, I_mul_I, neg_neg, mul_one]
+
+/-- The `n`-th rescaled Chebyshev polynomial of the first kind (Vieta–Lucas polynomial) evaluates on
+`2 * cosh θ` to the value `2 * cosh (n * θ)`. -/
+@[simp]
+theorem C_two_mul_complex_cosh (n : ℤ) : (C ℂ n).eval (2 * cosh θ) = 2 * cosh (n * θ) := by
+  simp [C_eq_two_mul_T_comp_half_mul_X]
+
+/-- The `n`-th rescaled Chebyshev polynomial of the second kind (Vieta–Fibonacci polynomial)
+evaluates on `2 * cosh θ` to the value `sinh ((n + 1) * θ) / sinh θ`. -/
+@[simp]
+theorem S_two_mul_complex_cosh (n : ℤ) : (S ℂ n).eval (2 * cosh θ) * sinh θ =
+    sinh ((n + 1) * θ) := by
   simp [S_eq_U_comp_half_mul_X]
 
 end Complex
@@ -130,14 +152,37 @@ theorem U_real_cos : (U ℝ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) :=
 /-- The `n`-th rescaled Chebyshev polynomial of the first kind (Vieta–Lucas polynomial) evaluates on
 `2 * cos θ` to the value `2 * cos (n * θ)`. -/
 @[simp]
-theorem C_two_mul_real_cos : (C ℝ n).eval (2 * cos θ) = 2 * cos (n * θ) := by
-  simp [C_eq_two_mul_T_comp_half_mul_X]
+theorem C_two_mul_real_cos : (C ℝ n).eval (2 * cos θ) = 2 * cos (n * θ) :=
+  mod_cast C_two_mul_complex_cos θ n
 
 /-- The `n`-th rescaled Chebyshev polynomial of the second kind (Vieta–Fibonacci polynomial)
 evaluates on `2 * cos θ` to the value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]
-theorem S_two_mul_real_cos : (S ℝ n).eval (2 * cos θ) * sin θ = sin ((n + 1) * θ) := by
-  simp [S_eq_U_comp_half_mul_X]
+theorem S_two_mul_real_cos : (S ℝ n).eval (2 * cos θ) * sin θ = sin ((n + 1) * θ) :=
+  mod_cast S_two_mul_complex_cos θ n
+
+/-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cosh θ` to the
+value `cosh (n * θ)`. -/
+@[simp]
+theorem T_real_cosh (n : ℤ) : (T ℝ n).eval (cosh θ) = cosh (n * θ) := mod_cast T_complex_cosh θ n
+
+/-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cosh θ` to the
+value `sinh ((n + 1) * θ) / sinh θ`. -/
+@[simp]
+theorem U_real_cosh (n : ℤ) : (U ℝ n).eval (cosh θ) * sinh θ = sinh ((n + 1) * θ) :=
+  mod_cast U_complex_cosh θ n
+
+/-- The `n`-th rescaled Chebyshev polynomial of the first kind (Vieta–Lucas polynomial) evaluates on
+`2 * cosh θ` to the value `2 * cosh (n * θ)`. -/
+@[simp]
+theorem C_two_mul_real_cosh (n : ℤ) : (C ℝ n).eval (2 * cosh θ) = 2 * cosh (n * θ) :=
+  mod_cast C_two_mul_complex_cosh θ n
+
+/-- The `n`-th rescaled Chebyshev polynomial of the second kind (Vieta–Fibonacci polynomial)
+evaluates on `2 * cosh θ` to the value `sinh ((n + 1) * θ) / sinh θ`. -/
+@[simp]
+theorem S_two_mul_real_cosh (n : ℤ) : (S ℝ n).eval (2 * cosh θ) * sinh θ = sinh ((n + 1) * θ) :=
+  mod_cast S_two_mul_complex_cosh θ n
 
 end Real
 

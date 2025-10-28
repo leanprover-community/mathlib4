@@ -55,8 +55,8 @@ The composite of any two differentials `d i j ≫ d j k` must be zero.
 structure HomologicalComplex (c : ComplexShape ι) where
   X : ι → V
   d : ∀ i j, X i ⟶ X j
-  shape : ∀ i j, ¬c.Rel i j → d i j = 0 := by aesop_cat
-  d_comp_d' : ∀ i j k, c.Rel i j → c.Rel j k → d i j ≫ d j k = 0 := by aesop_cat
+  shape : ∀ i j, ¬c.Rel i j → d i j = 0 := by cat_disch
+  d_comp_d' : ∀ i j k, c.Rel i j → c.Rel j k → d i j ≫ d j k = 0 := by cat_disch
 
 namespace HomologicalComplex
 
@@ -214,7 +214,7 @@ commuting with the differentials.
 @[ext]
 structure Hom (A B : HomologicalComplex V c) where
   f : ∀ i, A.X i ⟶ B.X i
-  comm' : ∀ i j, c.Rel i j → f i ≫ B.d i j = A.d i j ≫ f j := by aesop_cat
+  comm' : ∀ i j, c.Rel i j → f i ≫ B.d i j = A.d i j ≫ f j := by cat_disch
 
 @[reassoc (attr := simp)]
 theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
@@ -269,7 +269,7 @@ theorem eqToHom_f {C₁ C₂ : HomologicalComplex V c} (h : C₁ = C₂) (n : ι
 
 -- We'll use this later to show that `HomologicalComplex V c` is preadditive when `V` is.
 theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
-    Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
+    Function.Injective fun f : Hom C₁ C₂ => f.f := by cat_disch
 
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
   ⟨{ f := fun _ => 0}⟩
@@ -359,19 +359,19 @@ lemma XIsoOfEq_hom_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n
 lemma XIsoOfEq_inv_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n' : ι} (h : n = n') :
     φ.f n' ≫ (L.XIsoOfEq h).inv = (K.XIsoOfEq h).inv ≫ φ.f n := by subst h; simp
 
--- Porting note: removed @[simp] as the linter complained
 /-- If `C.d i j` and `C.d i j'` are both allowed, then we must have `j = j'`,
 and so the differentials only differ by an `eqToHom`.
 -/
+@[simp]
 theorem d_comp_eqToHom {i j j' : ι} (rij : c.Rel i j) (rij' : c.Rel i j') :
     C.d i j' ≫ eqToHom (congr_arg C.X (c.next_eq rij' rij)) = C.d i j := by
   obtain rfl := c.next_eq rij rij'
   simp only [eqToHom_refl, comp_id]
 
--- Porting note: removed @[simp] as the linter complained
 /-- If `C.d i j` and `C.d i' j` are both allowed, then we must have `i = i'`,
 and so the differentials only differ by an `eqToHom`.
 -/
+@[simp]
 theorem eqToHom_comp_d {i i' j : ι} (rij : c.Rel i j) (rij' : c.Rel i' j) :
     eqToHom (congr_arg C.X (c.prev_eq rij rij')) ≫ C.d i' j = C.d i j := by
   obtain rfl := c.prev_eq rij rij'
@@ -440,23 +440,21 @@ theorem dTo_eq {i j : ι} (r : c.Rel i j) : C.dTo j = (C.xPrevIso r).hom ≫ C.d
   obtain rfl := c.prev_eq' r
   exact (Category.id_comp _).symm
 
-@[simp]
-theorem dTo_eq_zero {j : ι} (h : ¬c.Rel (c.prev j) j) : C.dTo j = 0 :=
-  C.shape _ _ h
+theorem dTo_eq_zero {j : ι} (h : ¬c.Rel (c.prev j) j) : C.dTo j = 0 := by
+  simp [h]
 
 theorem dFrom_eq {i j : ι} (r : c.Rel i j) : C.dFrom i = C.d i j ≫ (C.xNextIso r).inv := by
   obtain rfl := c.next_eq' r
   exact (Category.comp_id _).symm
 
-@[simp]
-theorem dFrom_eq_zero {i : ι} (h : ¬c.Rel i (c.next i)) : C.dFrom i = 0 :=
-  C.shape _ _ h
+theorem dFrom_eq_zero {i : ι} (h : ¬c.Rel i (c.next i)) : C.dFrom i = 0 := by
+  simp [h]
 
 @[reassoc (attr := simp)]
 theorem xPrevIso_comp_dTo {i j : ι} (r : c.Rel i j) : (C.xPrevIso r).inv ≫ C.dTo j = C.d i j := by
   simp [C.dTo_eq r]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem xPrevIsoSelf_comp_dTo {j : ι} (h : ¬c.Rel (c.prev j) j) :
     (C.xPrevIsoSelf h).inv ≫ C.dTo j = 0 := by simp [h]
 
@@ -465,11 +463,11 @@ theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) :
     C.dFrom i ≫ (C.xNextIso r).hom = C.d i j := by
   simp [C.dFrom_eq r]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem dFrom_comp_xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) :
     C.dFrom i ≫ (C.xNextIsoSelf h).hom = 0 := by simp [h]
 
-@[simp 1100]
+-- This is not a simp lemma; the LHS already simplifies.
 theorem dTo_comp_dFrom (j : ι) : C.dTo j ≫ C.dFrom j = 0 :=
   C.d_comp_d _ _ _
 
@@ -498,7 +496,7 @@ def isoApp (f : C₁ ≅ C₂) (i : ι) : C₁.X i ≅ C₂.X i :=
 which commute with the differentials. -/
 @[simps]
 def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
-    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by aesop_cat) :
+    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by cat_disch) :
     C₁ ≅ C₂ where
   hom :=
     { f := fun i => (f i).hom
@@ -552,21 +550,19 @@ theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 
-attribute [simp 1100] comm_from_assoc
 attribute [simp] comm_from_apply
 
 @[reassoc, elementwise]
 theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
   f.comm _ _
 
-attribute [simp 1100] comm_to_assoc
 attribute [simp] comm_to_apply
 
 /-- A morphism of chain complexes
 induces a morphism of arrows of the differentials out of each object.
 -/
 def sqFrom (f : Hom C₁ C₂) (i : ι) : Arrow.mk (C₁.dFrom i) ⟶ Arrow.mk (C₂.dFrom i) :=
-  Arrow.homMk (f.comm_from i)
+  Arrow.homMk _ _ (f.comm_from i)
 
 @[simp]
 theorem sqFrom_left (f : Hom C₁ C₂) (i : ι) : (f.sqFrom i).left = f.f i :=
@@ -589,7 +585,7 @@ theorem sqFrom_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
 induces a morphism of arrows of the differentials into each object.
 -/
 def sqTo (f : Hom C₁ C₂) (j : ι) : Arrow.mk (C₁.dTo j) ⟶ Arrow.mk (C₂.dTo j) :=
-  Arrow.homMk (f.comm_to j)
+  Arrow.homMk _ _ (f.comm_to j)
 
 @[simp]
 theorem sqTo_left (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).left = f.prev j :=
@@ -617,7 +613,6 @@ def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ 
   { X := X
     d := fun i j => if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
     shape := fun i j w => by
-      dsimp
       rw [dif_neg (Ne.symm w)]
     d_comp_d' := fun i j k hij hjk => by
       dsimp at hij hjk
@@ -770,7 +765,7 @@ variable (P Q : ChainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ Q.
       (p :
         Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
           f' ≫ Q.d (n + 1) n = P.d (n + 1) n ≫ f),
-      Σ'f'' : P.X (n + 2) ⟶ Q.X (n + 2), f'' ≫ Q.d (n + 2) (n + 1) = P.d (n + 2) (n + 1) ≫ p.2.1)
+      Σ' f'' : P.X (n + 2) ⟶ Q.X (n + 2), f'' ≫ Q.d (n + 2) (n + 1) = P.d (n + 2) (n + 1) ≫ p.2.1)
 
 /-- An auxiliary construction for `mkHom`.
 
@@ -835,7 +830,6 @@ def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n +
   { X := X
     d := fun i j => if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
     shape := fun i j w => by
-      dsimp
       rw [dif_neg]
       exact w
     d_comp_d' := fun i j k => by
@@ -938,7 +932,7 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₀ ⟶ X₁)
-    -- (succ' : ∀ : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
+    -- (succ' : ∀ : Σ X₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
     (succ' : ∀ {X₀ X₁ : V} (f : X₀ ⟶ X₁), Σ' (X₂ : V) (d : X₁ ⟶ X₂), f ≫ d = 0) :
     CochainComplex V ℕ :=
   mk _ _ _ _ _ (succ' d).2.2 (fun S => succ' S.g)

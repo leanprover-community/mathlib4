@@ -164,12 +164,9 @@ theorem age.jointEmbedding : JointEmbedding (L.age M) := fun _ hN _ hP =>
     ⟨Embedding.comp (inclusion le_sup_left) hN.2.some.equivRange.toEmbedding⟩,
     ⟨Embedding.comp (inclusion le_sup_right) hP.2.some.equivRange.toEmbedding⟩⟩
 
-variable {M}
-
+variable {M} in
 theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : Bundled.mk S ∈ L.age M := by
   exact ⟨(Substructure.fg_iff_structure_fg _).1 fg, ⟨subtype _⟩⟩
-
-variable (M)
 
 /-- Any class in the age of a structure has a representative which is a finitely generated
 substructure. -/
@@ -192,13 +189,12 @@ theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Cou
     exact ⟨⟨(fg_iff_structure_fg _).1 (fg_closure s.finite_toSet), ⟨Substructure.subtype _⟩⟩, hs⟩
   · simp only [mem_range, Quotient.eq]
     rintro ⟨P, ⟨⟨s, hs⟩, ⟨PM⟩⟩, hP2⟩
-    have : P ≈ N := by apply Quotient.eq'.mp; rw [hP2]; rfl -- Porting note: added
-    refine ⟨s.image PM, Setoid.trans (b := P) ?_ this⟩
+    refine ⟨s.image PM, Setoid.trans (b := P) ?_ <| Quotient.exact hP2⟩
     rw [← Embedding.coe_toHom, Finset.coe_image, closure_image PM.toHom, hs, ← Hom.range_eq_map]
     exact ⟨PM.equivRange.symm⟩
 
+-- This is not a simp-lemma because it does not apply to itself.
 /-- The age of a direct limit of structures is the union of the ages of the structures. -/
--- @[simp] -- Porting note: cannot simplify itself
 theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     (G : ι → Type max w w') [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     [DirectedSystem G fun i j h => f i j h] : L.age (DirectLimit G f) = ⋃ i : ι, L.age (G i) := by
@@ -216,9 +212,8 @@ theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] 
     intro x hx
     refine ⟨f (out x).1 i (hi (out x).1 (Finset.mem_image_of_mem _ hx)) (out x).2, ?_⟩
     rw [Embedding.coe_toHom, DirectLimit.of_apply, @Quotient.mk_eq_iff_out _ (_),
-      DirectLimit.equiv_iff G f _ (hi (out x).1 (Finset.mem_image_of_mem _ hx)),
+      DirectLimit.equiv_iff G f (le_refl _) (hi (out x).1 (Finset.mem_image_of_mem _ hx)),
       DirectedSystem.map_self]
-    rfl
   · rintro ⟨i, Mfg, ⟨e⟩⟩
     exact ⟨Mfg, ⟨Embedding.comp (DirectLimit.of L ι G f i) e⟩⟩
 
@@ -228,7 +223,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     (fg : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) (hp : Hereditary K)
     (jep : JointEmbedding K) : ∃ M : Bundled.{w} L.Structure, Structure.CG L M ∧ L.age M = K := by
   obtain ⟨F, hF⟩ := hc.exists_eq_range (hn.image _)
-  simp only [Set.ext_iff, Quotient.forall, mem_image, mem_range, Quotient.eq'] at hF
+  simp only [Set.ext_iff, Quotient.forall, mem_image, mem_range] at hF
   simp_rw [Quotient.eq_mk_iff_out] at hF
   have hF' : ∀ n : ℕ, (F n).out ∈ K := by
     intro n
@@ -239,7 +234,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     exact (hp.is_equiv_invariant_of_fg fg _ _ hP2).1 hP1
   choose P hPK hP hFP using fun (N : K) (n : ℕ) => jep N N.2 (F (n + 1)).out (hF' _)
   let G : ℕ → K := @Nat.rec (fun _ => K) ⟨(F 0).out, hF' 0⟩ fun n N => ⟨P N n, hPK N n⟩
-  -- Poting note: was
+  -- Porting note: was
   -- let f : ∀ i j, i ≤ j → G i ↪[L] G j := DirectedSystem.natLeRec fun n => (hP _ n).some
   let f : ∀ (i j : ℕ), i ≤ j → (G i).val ↪[L] (G j).val := by
     refine DirectedSystem.natLERec (G' := fun i => (G i).val) (L := L) ?_
@@ -254,7 +249,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     have : Quotient.out (Quotient.mk' N) ≈ N := Quotient.eq_mk_iff_out.mp rfl
     obtain ⟨n, ⟨e⟩⟩ := (hF N).1 ⟨N, KN, this⟩
     refine mem_iUnion_of_mem n ⟨fg _ KN, ⟨Embedding.comp ?_ e.symm.toEmbedding⟩⟩
-    cases' n with n
+    rcases n with - | n
     · dsimp [G]; exact Embedding.refl _ _
     · dsimp [G]; exact (hFP _ n).some
 
@@ -302,15 +297,15 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
   change _ = t.toEmbedding.comp s
   ext x
   have eq' := congr_fun (congr_arg DFunLike.coe eq) ⟨s x, Hom.mem_range.2 ⟨x, rfl⟩⟩
-  simp only [Embedding.comp_apply, Hom.comp_apply,
-    Equiv.coe_toHom, Embedding.coe_toHom, coeSubtype] at eq'
+  simp only [Embedding.comp_apply,
+    coe_subtype] at eq'
   simp only [Embedding.comp_apply, ← eq', Equiv.coe_toEmbedding, EmbeddingLike.apply_eq_iff_eq]
   apply (Embedding.equivRange (Embedding.comp r g)).injective
   ext
   simp only [Equiv.apply_symm_apply, Embedding.equivRange_apply, s]
 
 /-- A countably generated structure is ultrahomogeneous if and only if any equivalence between
-finitely generated substructures can be extended to any element in the domain.-/
+finitely generated substructures can be extended to any element in the domain. -/
 theorem isUltrahomogeneous_iff_IsExtensionPair (M_CG : CG L M) : L.IsUltrahomogeneous M ↔
     L.IsExtensionPair M M := by
   constructor
@@ -322,8 +317,8 @@ theorem isUltrahomogeneous_iff_IsExtensionPair (M_CG : CG L M) : L.IsUltrahomoge
     refine ⟨⟨⟨S, f'.toHom.range, f'.equivRange⟩, f_FG.sup (fg_closure_singleton _)⟩,
       subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ⟨dom_le_S, ?_⟩⟩
     ext
-    simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, coeSubtype, eq_f',
-      Embedding.equivRange_apply, Substructure.coe_inclusion, EmbeddingLike.apply_eq_iff_eq]
+    simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, coe_subtype, eq_f',
+      Embedding.equivRange_apply, Substructure.coe_inclusion]
   · intro h S S_FG f
     let ⟨g, ⟨dom_le_dom, eq⟩⟩ :=
       equiv_between_cg M_CG M_CG ⟨⟨S, f.toHom.range, f.equivRange⟩, S_FG⟩ h h
@@ -348,11 +343,10 @@ theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
   apply Subtype.ext
   have hgn := (Embedding.ext_iff.1 hg) ((PM.comp NP).equivRange n)
   simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, Equiv.symm_apply_apply,
-    Substructure.coeSubtype, Embedding.equivRange_apply] at hgn
+    Substructure.coe_subtype, Embedding.equivRange_apply] at hgn
   simp only [Embedding.comp_apply, Equiv.coe_toEmbedding]
   erw [Substructure.coe_inclusion, Substructure.coe_inclusion]
-  simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, Set.coe_inclusion,
-    Embedding.equivRange_apply, hgn]
+  simp only [Embedding.equivRange_apply, hgn]
   -- This used to be `simp only [...]` before https://github.com/leanprover/lean4/pull/2644
   erw [Embedding.comp_apply, Equiv.coe_toEmbedding,
     Embedding.equivRange_apply]
@@ -389,7 +383,7 @@ protected theorem isExtensionPair : L.IsExtensionPair M N := by
   refine ⟨⟨⟨S, g.toHom.range, g.equivRange⟩, S_FG⟩,
     subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ⟨le_sup_left, ?_⟩⟩
   ext
-  simp [S, Subtype.mk_le_mk, PartialEquiv.le_def, g_eq]
+  simp [S, g_eq]
 
 /-- The Fraïssé limit of a class is unique, in that any two Fraïssé limits are isomorphic. -/
 theorem nonempty_equiv : Nonempty (M ≃[L] N) := by

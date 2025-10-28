@@ -7,6 +7,8 @@ import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Degree of univariate polynomials
@@ -48,9 +50,9 @@ def degree (p : R[X]) : WithBot ℕ :=
 
 /-- `natDegree p` forces `degree p` to ℕ, by defining `natDegree 0 = 0`. -/
 def natDegree (p : R[X]) : ℕ :=
-  (degree p).unbot' 0
+  (degree p).unbotD 0
 
-/-- `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`-/
+/-- `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`. -/
 def leadingCoeff (p : R[X]) : R :=
   coeff p (natDegree p)
 
@@ -98,20 +100,19 @@ theorem degree_eq_iff_natDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
 
 theorem degree_eq_iff_natDegree_eq_of_pos {p : R[X]} {n : ℕ} (hn : 0 < n) :
     p.degree = n ↔ p.natDegree = n := by
-  obtain rfl|h := eq_or_ne p 0
+  obtain rfl | h := eq_or_ne p 0
   · simp [hn.ne]
   · exact degree_eq_iff_natDegree_eq h
 
 theorem natDegree_eq_of_degree_eq_some {p : R[X]} {n : ℕ} (h : degree p = n) : natDegree p = n := by
-  -- Porting note: `Nat.cast_withBot` is required.
-  rw [natDegree, h, Nat.cast_withBot, WithBot.unbot'_coe]
+  rw [natDegree, h, Nat.cast_withBot, WithBot.unbotD_coe]
 
 theorem degree_ne_of_natDegree_ne {n : ℕ} : p.natDegree ≠ n → degree p ≠ n :=
   mt natDegree_eq_of_degree_eq_some
 
 @[simp]
 theorem degree_le_natDegree : degree p ≤ natDegree p :=
-  WithBot.giUnbot'Bot.gc.le_u_l _
+  WithBot.giUnbotDBot.gc.le_u_l _
 
 theorem natDegree_eq_of_degree_eq [Semiring S] {q : S[X]} (h : degree p = degree q) :
     natDegree p = natDegree q := by unfold natDegree; rw [h]
@@ -132,16 +133,16 @@ theorem degree_le_degree (h : coeff q (natDegree p) ≠ 0) : degree p ≤ degree
     exact le_degree_of_ne_zero h
 
 theorem natDegree_le_iff_degree_le {n : ℕ} : natDegree p ≤ n ↔ degree p ≤ n :=
-  WithBot.unbot'_le_iff (fun _ ↦ bot_le)
+  WithBot.unbotD_le_iff (fun _ ↦ bot_le)
 
 theorem natDegree_lt_iff_degree_lt (hp : p ≠ 0) : p.natDegree < n ↔ p.degree < ↑n :=
-  WithBot.unbot'_lt_iff (absurd · (degree_eq_bot.not.mpr hp))
+  WithBot.unbotD_lt_iff (absurd · (degree_eq_bot.not.mpr hp))
 
 alias ⟨degree_le_of_natDegree_le, natDegree_le_of_degree_le⟩ := natDegree_le_iff_degree_le
 
 theorem natDegree_le_natDegree [Semiring S] {q : S[X]} (hpq : p.degree ≤ q.degree) :
     p.natDegree ≤ q.natDegree :=
-  WithBot.giUnbot'Bot.gc.monotone_l hpq
+  WithBot.giUnbotDBot.gc.monotone_l hpq
 
 @[simp]
 theorem degree_C (ha : a ≠ 0) : degree (C a) = (0 : WithBot ℕ) := by
@@ -163,8 +164,8 @@ theorem degree_one_le : degree (1 : R[X]) ≤ (0 : WithBot ℕ) := by rw [← C_
 theorem natDegree_C (a : R) : natDegree (C a) = 0 := by
   by_cases ha : a = 0
   · have : C a = 0 := by rw [ha, C_0]
-    rw [natDegree, degree_eq_bot.2 this, WithBot.unbot'_bot]
-  · rw [natDegree, degree_C ha, WithBot.unbot_zero']
+    rw [natDegree, degree_eq_bot.2 this, WithBot.unbotD_bot]
+  · rw [natDegree, degree_C ha, WithBot.unbotD_zero]
 
 @[simp]
 theorem natDegree_one : natDegree (1 : R[X]) = 0 :=
@@ -174,19 +175,12 @@ theorem natDegree_one : natDegree (1 : R[X]) = 0 :=
 theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
   simp only [← C_eq_natCast, natDegree_C]
 
-@[deprecated (since := "2024-04-17")]
-alias natDegree_nat_cast := natDegree_natCast
-
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem natDegree_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
-    natDegree (no_index (OfNat.ofNat n : R[X])) = 0 :=
+    natDegree (ofNat(n) : R[X]) = 0 :=
   natDegree_natCast _
 
 theorem degree_natCast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
-
-@[deprecated (since := "2024-04-17")]
-alias degree_nat_cast_le := degree_natCast_le
 
 @[simp]
 theorem degree_monomial (n : ℕ) (ha : a ≠ 0) : degree (monomial n a) = n := by
@@ -248,6 +242,10 @@ theorem degree_X_le : degree (X : R[X]) ≤ 1 :=
 theorem natDegree_X_le : (X : R[X]).natDegree ≤ 1 :=
   natDegree_le_of_degree_le degree_X_le
 
+theorem withBotSucc_degree_eq_natDegree_add_one (h : p ≠ 0) : p.degree.succ = p.natDegree + 1 := by
+  rw [degree_eq_natDegree h]
+  exact WithBot.succ_coe p.natDegree
+
 end Semiring
 
 section NonzeroSemiring
@@ -288,13 +286,7 @@ theorem natDegree_neg_le_of_le {p : R[X]} (hp : natDegree p ≤ m) : natDegree (
 theorem natDegree_intCast (n : ℤ) : natDegree (n : R[X]) = 0 := by
   rw [← C_eq_intCast, natDegree_C]
 
-@[deprecated (since := "2024-04-17")]
-alias natDegree_int_cast := natDegree_intCast
-
 theorem degree_intCast_le (n : ℤ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
-
-@[deprecated (since := "2024-04-17")]
-alias degree_int_cast_le := degree_intCast_le
 
 @[simp]
 theorem leadingCoeff_neg (p : R[X]) : (-p).leadingCoeff = -p.leadingCoeff := by
@@ -312,7 +304,7 @@ def nextCoeff (p : R[X]) : R :=
 
 lemma nextCoeff_eq_zero :
     p.nextCoeff = 0 ↔ p.natDegree = 0 ∨ 0 < p.natDegree ∧ p.coeff (p.natDegree - 1) = 0 := by
-  simp [nextCoeff, or_iff_not_imp_left, pos_iff_ne_zero]; aesop
+  simp [nextCoeff, or_iff_not_imp_left, pos_iff_ne_zero]; simp_all
 
 lemma nextCoeff_ne_zero : p.nextCoeff ≠ 0 ↔ p.natDegree ≠ 0 ∧ p.coeff (p.natDegree - 1) ≠ 0 := by
   simp [nextCoeff]
@@ -343,7 +335,7 @@ theorem degree_add_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degr
   (p.degree_add_le q).trans <| max_le_max ‹_› ‹_›
 
 theorem natDegree_add_le (p q : R[X]) : natDegree (p + q) ≤ max (natDegree p) (natDegree q) := by
-  cases' le_max_iff.1 (degree_add_le p q) with h h <;> simp [natDegree_le_natDegree h]
+  rcases le_max_iff.1 (degree_add_le p q) with h | h <;> simp [natDegree_le_natDegree h]
 
 theorem natDegree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : natDegree p ≤ n)
     (hq : natDegree q ≤ n) : natDegree (p + q) ≤ n :=
@@ -373,9 +365,7 @@ theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤
   natDegree_le_iff_degree_le.2 <| degree_C_mul_X_pow_le _ _
 
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
-  rcases p with ⟨p⟩
-  simp only [erase_def, degree, coeff, support]
-  -- Porting note: simpler convert-free proof to be explicit about definition unfolding
+  simp only [erase_def, degree, support]
   apply sup_mono
   rw [Finsupp.support_erase]
   apply Finset.erase_subset
@@ -383,7 +373,7 @@ theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p :
 theorem degree_erase_lt (hp : p ≠ 0) : degree (p.erase (natDegree p)) < degree p := by
   apply lt_of_le_of_ne (degree_erase_le _ _)
   rw [degree_eq_natDegree hp, degree, support_erase]
-  exact fun h => not_mem_erase _ _ (mem_of_max h)
+  exact fun h => notMem_erase _ _ (mem_of_max h)
 
 theorem degree_update_le (p : R[X]) (n : ℕ) (a : R) : degree (p.update n a) ≤ max (degree p) n := by
   classical
@@ -403,20 +393,14 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
       _ ≤ _ := by rw [sup_cons]; exact max_le_max le_rfl ih
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
-  simpa only [degree, ← support_toFinsupp, toFinsupp_mul]
-    using AddMonoidAlgebra.sup_support_mul_le (WithBot.coe_add _ _).le _ _
+  simpa [degree, ← support_toFinsupp] using AddMonoidAlgebra.sup_support_mul_le (by simp) ..
 
 theorem degree_mul_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
-    degree (p * q) ≤ a + b :=
-  (p.degree_mul_le _).trans <| add_le_add ‹_› ‹_›
+    degree (p * q) ≤ a + b := by grw [degree_mul_le, hp, hq]
 
 theorem degree_pow_le (p : R[X]) : ∀ n : ℕ, degree (p ^ n) ≤ n • degree p
   | 0 => by rw [pow_zero, zero_nsmul]; exact degree_one_le
-  | n + 1 =>
-    calc
-      degree (p ^ (n + 1)) ≤ degree (p ^ n) + degree p := by
-        rw [pow_succ]; exact degree_mul_le _ _
-      _ ≤ _ := by rw [succ_nsmul]; exact add_le_add_right (degree_pow_le _ _) _
+  | n + 1 => by grw [pow_succ, succ_nsmul, degree_mul_le, degree_pow_le]
 
 theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :
     degree (p ^ b) ≤ b * a := by
@@ -465,7 +449,7 @@ theorem leadingCoeff_one : leadingCoeff (1 : R[X]) = 1 :=
 theorem monic_one : Monic (1 : R[X]) :=
   leadingCoeff_C _
 
-theorem Monic.ne_zero {R : Type*} [Semiring R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :
+theorem Monic.ne_zero [Nontrivial R] {p : R[X]} (hp : p.Monic) :
     p ≠ 0 := by
   rintro rfl
   simp [Monic] at hp
@@ -473,6 +457,10 @@ theorem Monic.ne_zero {R : Type*} [Semiring R] [Nontrivial R] {p : R[X]} (hp : p
 theorem Monic.ne_zero_of_ne (h : (0 : R) ≠ 1) {p : R[X]} (hp : p.Monic) : p ≠ 0 := by
   nontriviality R
   exact hp.ne_zero
+
+lemma Monic.ne_zero_of_C [Nontrivial R] {c : R} (hc : Monic (C c)) : c ≠ 0 := by
+  rintro rfl
+  simp [Monic] at hc
 
 theorem Monic.ne_zero_of_polynomial_ne {r} (hp : Monic p) (hne : q ≠ r) : p ≠ 0 :=
   haveI := Nontrivial.of_polynomial_ne hne
@@ -506,7 +494,6 @@ theorem degree_zero_le : degree (0 : R[X]) ≤ 0 := natDegree_eq_zero_iff_degree
 
 theorem degree_le_iff_coeff_zero (f : R[X]) (n : WithBot ℕ) :
     degree f ≤ n ↔ ∀ m : ℕ, n < m → coeff f m = 0 := by
-  -- Porting note: `Nat.cast_withBot` is required.
   simp only [degree, Finset.max, Finset.sup_le_iff, mem_support_iff, Ne, ← not_le,
     not_imp_comm, Nat.cast_withBot]
 

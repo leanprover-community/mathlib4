@@ -17,7 +17,7 @@ as well as the dual construction for normal epimorphisms. We show equivalences r
 monomorphisms (`CategoryTheory.equivalenceReflectsNormalMono`), and that the pullback of a
 normal monomorphism is normal (`CategoryTheory.normalOfIsPullbackSndOfNormal`).
 
-We also define classes `NormalMonoCategory` and `NormalEpiCategory` for classes in which
+We also define classes `IsNormalMonoCategory` and `IsNormalEpiCategory` for categories in which
 every monomorphism or epimorphism is normal, and deduce that these categories are
 `RegularMonoCategory`s resp. `RegularEpiCategory`s.
 
@@ -41,7 +41,7 @@ variable [HasZeroMorphisms C]
 
 /-- A normal monomorphism is a morphism which is the kernel of some morphism. -/
 class NormalMono (f : X ⟶ Y) where
-  Z : C -- Porting note: violates naming convention but can't think of a better one
+  Z : C
   g : Y ⟶ Z
   w : f ≫ g = 0
   isLimit : IsLimit (KernelFork.ofι f w)
@@ -75,7 +75,7 @@ instance (priority := 100) NormalMono.regularMono (f : X ⟶ Y) [I : NormalMono 
     w := by simpa using I.w }
 
 /-- If `f` is a normal mono, then any map `k : W ⟶ Y` such that `k ≫ normal_mono.g = 0` induces
-    a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
+a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
 def NormalMono.lift' {W : C} (f : X ⟶ Y) [hf : NormalMono f] (k : W ⟶ Y) (h : k ≫ hf.g = 0) :
     { l : W ⟶ X // l ≫ f = k } :=
   KernelFork.IsLimit.lift' NormalMono.isLimit _ h
@@ -114,23 +114,23 @@ section
 variable (C)
 
 /-- A normal mono category is a category in which every monomorphism is normal. -/
-class NormalMonoCategory where
-  normalMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], NormalMono f
+class IsNormalMonoCategory : Prop where
+  normalMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], Nonempty (NormalMono f)
 
-attribute [inherit_doc NormalMonoCategory] NormalMonoCategory.normalMonoOfMono
+attribute [inherit_doc IsNormalMonoCategory] IsNormalMonoCategory.normalMonoOfMono
 
 end
 
 /-- In a category in which every monomorphism is normal, we can express every monomorphism as
-    a kernel. This is not an instance because it would create an instance loop. -/
-def normalMonoOfMono [NormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMono f :=
-  NormalMonoCategory.normalMonoOfMono _
+a kernel. This is not an instance because it would create an instance loop. -/
+def normalMonoOfMono [IsNormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMono f :=
+  (IsNormalMonoCategory.normalMonoOfMono _).some
 
-instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [NormalMonoCategory C] :
-    RegularMonoCategory C where
-  regularMonoOfMono f _ := by
+instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [IsNormalMonoCategory C] :
+    IsRegularMonoCategory C where
+  regularMonoOfMono f _ := ⟨by
     haveI := normalMonoOfMono f
-    infer_instance
+    infer_instance⟩
 
 end
 
@@ -171,7 +171,7 @@ instance (priority := 100) NormalEpi.regularEpi (f : X ⟶ Y) [I : NormalEpi f] 
     w := by simpa using I.w }
 
 /-- If `f` is a normal epi, then every morphism `k : X ⟶ W` satisfying `NormalEpi.g ≫ k = 0`
-    induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
+induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
 def NormalEpi.desc' {W : C} (f : X ⟶ Y) [nef : NormalEpi f] (k : X ⟶ W) (h : nef.g ≫ k = 0) :
     { l : Y ⟶ W // f ≫ l = k } :=
   CokernelCofork.IsColimit.desc' NormalEpi.isColimit _ h
@@ -252,22 +252,22 @@ section
 variable (C)
 
 /-- A normal epi category is a category in which every epimorphism is normal. -/
-class NormalEpiCategory where
-  normalEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], NormalEpi f
+class IsNormalEpiCategory : Prop where
+  normalEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Nonempty (NormalEpi f)
 
-attribute [inherit_doc NormalEpiCategory] NormalEpiCategory.normalEpiOfEpi
+attribute [inherit_doc IsNormalEpiCategory] IsNormalEpiCategory.normalEpiOfEpi
 
 end
 
 /-- In a category in which every epimorphism is normal, we can express every epimorphism as
-    a kernel. This is not an instance because it would create an instance loop. -/
-def normalEpiOfEpi [NormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
-  NormalEpiCategory.normalEpiOfEpi _
+a kernel. This is not an instance because it would create an instance loop. -/
+def normalEpiOfEpi [IsNormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
+  (IsNormalEpiCategory.normalEpiOfEpi _).some
 
-instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [NormalEpiCategory C] :
-    RegularEpiCategory C where
-  regularEpiOfEpi f _ := by
+instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [IsNormalEpiCategory C] :
+    IsRegularEpiCategory C where
+  regularEpiOfEpi f _ := ⟨by
     haveI := normalEpiOfEpi f
-    infer_instance
+    infer_instance⟩
 
 end CategoryTheory

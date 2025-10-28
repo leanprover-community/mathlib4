@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 
@@ -33,8 +34,8 @@ variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
   to themselves form a module. -/
-structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] extends
-  AddSubmonoid M, SubMulAction R M : Type v
+structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] : Type v
+    extends AddSubmonoid M, SubMulAction R M
 
 /-- Reinterpret a `Submodule` as an `AddSubmonoid`. -/
 add_decl_doc Submodule.toAddSubmonoid
@@ -49,6 +50,28 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
+
+@[simp] lemma carrier_eq_coe (s : Submodule R M) : s.carrier = s := rfl
+
+/-- The actual `Submodule` obtained from an element of a `SMulMemClass` and `AddSubmonoidClass`. -/
+@[simps]
+def ofClass {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
+    [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) : Submodule R M where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  smul_mem' := SMulMemClass.smul_mem
+
+instance (priority := 100) : CanLift (Set M) (Submodule R M) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ ∀ (r : R) {x}, x ∈ s → r • x ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        smul_mem' := h.2.2 },
+      rfl ⟩
 
 instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
   zero_mem _ := AddSubmonoid.zero_mem' _
@@ -74,7 +97,6 @@ theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Se
 @[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
   rfl
 
--- Porting note: replaced `S ⊆ S' : Set` with `S ≤ S'`
 @[simp]
 theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :
     (⟨S, h⟩ : Submodule R M) ≤ (⟨S', h'⟩ : Submodule R M) ↔ S ≤ S' :=
@@ -84,22 +106,18 @@ theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :
 theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 
--- Porting note: adding this as the `simp`-normal form of `toSubMulAction_eq`
-@[simp]
+@[deprecated SetLike.coe_set_eq (since := "2025-04-20")]
 theorem carrier_inj : p.carrier = q.carrier ↔ p = q :=
   (SetLike.coe_injective (A := Submodule R M)).eq_iff
 
 /-- Copy of a submodule with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
+@[simps]
 protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M where
   carrier := s
-  zero_mem' := by simpa [hs] using p.zero_mem'
+  zero_mem' := by simp [hs]
   add_mem' := hs.symm ▸ p.add_mem'
   smul_mem' := by simpa [hs] using p.smul_mem'
-
-@[simp]
-theorem coe_copy (S : Submodule R M) (s : Set M) (hs : s = ↑S) : (S.copy s hs : Set M) = s :=
-  rfl
 
 theorem copy_eq (S : Submodule R M) (s : Set M) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
@@ -108,7 +126,7 @@ theorem toAddSubmonoid_injective : Injective (toAddSubmonoid : Submodule R M →
   fun p q h => SetLike.ext'_iff.2 (show (p.toAddSubmonoid : Set M) = q from SetLike.ext'_iff.1 h)
 
 @[simp]
-theorem toAddSubmonoid_eq : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
+theorem toAddSubmonoid_inj : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
   toAddSubmonoid_injective.eq_iff
 
 @[simp]
@@ -118,7 +136,7 @@ theorem coe_toAddSubmonoid (p : Submodule R M) : (p.toAddSubmonoid : Set M) = p 
 theorem toSubMulAction_injective : Injective (toSubMulAction : Submodule R M → SubMulAction R M) :=
   fun p q h => SetLike.ext'_iff.2 (show (p.toSubMulAction : Set M) = q from SetLike.ext'_iff.1 h)
 
-theorem toSubMulAction_eq : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
+theorem toSubMulAction_inj : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
   toSubMulAction_injective.eq_iff
 
 @[simp]
@@ -134,7 +152,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
 
 -- Prefer subclasses of `Module` over `SMulMemClass`.
 /-- A submodule of a `Module` is a `Module`. -/
-instance (priority := 75) toModule : Module R S' :=
+instance (priority := 75) toModule : Module R S' := fast_instance%
   Subtype.coe_injective.module R (AddSubmonoidClass.subtype S') (SetLike.val_smul S')
 
 /-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
@@ -161,11 +179,9 @@ variable {p q : Submodule R M}
 variable {r : R} {x y : M}
 variable (p)
 
--- Porting note: removing `@[simp]` since it can already be proven
 theorem mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 
-@[simp]
 protected theorem zero_mem : (0 : M) ∈ p :=
   zero_mem _
 
@@ -183,6 +199,18 @@ theorem smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h
 theorem smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M] (g : G) :
     g • x ∈ p ↔ x ∈ p :=
   p.toSubMulAction.smul_mem_iff' g
+
+@[simp]
+lemma smul_mem_iff'' [Invertible r] :
+    r • x ∈ p ↔ x ∈ p := by
+  refine ⟨fun h ↦ ?_, p.smul_mem r⟩
+  rw [← invOf_smul_smul r x]
+  exact p.smul_mem _ h
+
+lemma smul_mem_iff_of_isUnit (hr : IsUnit r) :
+    r • x ∈ p ↔ x ∈ p :=
+  let _ : Invertible r := hr.invertible
+  smul_mem_iff'' p
 
 instance add : Add p :=
   ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
@@ -208,11 +236,11 @@ protected theorem nonempty : (p : Set M).Nonempty :=
 
 @[simp]
 theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
-  Subtype.ext_iff_val
+  Subtype.ext_iff
 
 variable {p}
 
-@[norm_cast] -- Porting note: removed `@[simp]` because this follows from `ZeroMemClass.coe_zero`
+@[norm_cast]
 theorem coe_eq_zero {x : p} : (x : M) = 0 ↔ x = 0 :=
   (SetLike.coe_eq_coe : (x : M) = (0 : p) ↔ x = 0)
 
@@ -233,20 +261,20 @@ theorem coe_smul_of_tower [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x
     ((r • x : p) : M) = r • (x : M) :=
   rfl
 
-@[norm_cast] -- Porting note: removed `@[simp]` because this is now structure eta
+@[norm_cast]
 theorem coe_mk (x : M) (hx : x ∈ p) : ((⟨x, hx⟩ : p) : M) = x :=
   rfl
 
--- Porting note: removed `@[simp]` because this is exactly `SetLike.coe_mem`
 theorem coe_mem (x : p) : (x : M) ∈ p :=
   x.2
 
 variable (p)
 
-instance addCommMonoid : AddCommMonoid p :=
+instance addCommMonoid : AddCommMonoid p := fast_instance%
   { p.toAddSubmonoid.toAddCommMonoid with }
 
-instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
+instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
+    Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with
     smul_zero := fun a => by ext; simp
     zero_smul := fun a => by ext; simp
@@ -284,10 +312,10 @@ theorem mem_toAddSubgroup : x ∈ p.toAddSubgroup ↔ x ∈ p :=
   Iff.rfl
 
 theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → AddSubgroup M)
-  | _, _, h => SetLike.ext (SetLike.ext_iff.1 h : _)
+  | _, _, h => SetLike.ext (SetLike.ext_iff.1 h :)
 
 @[simp]
-theorem toAddSubgroup_eq : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
+theorem toAddSubgroup_inj : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
 
 protected theorem sub_mem : x ∈ p → y ∈ p → x - y ∈ p :=
@@ -314,7 +342,7 @@ theorem sub_mem_iff_left (hy : y ∈ p) : x - y ∈ p ↔ x ∈ p := by
 theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 
-instance addCommGroup : AddCommGroup p :=
+instance addCommGroup : AddCommGroup p := fast_instance%
   { p.toAddSubgroup.toAddCommGroup with }
 
 end AddCommGroup

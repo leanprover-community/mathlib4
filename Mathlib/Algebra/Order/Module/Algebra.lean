@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Ordered algebras
@@ -16,11 +17,11 @@ This file proves properties of algebras where both rings are ordered compatibly.
 `positivity` extension for `algebraMap`
 -/
 
-variable {α β : Type*} [OrderedCommSemiring α]
+variable {α β : Type*} [CommSemiring α] [PartialOrder α]
 
 section OrderedSemiring
 variable (β)
-variable [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α}
+variable [Semiring β] [PartialOrder β] [IsOrderedRing β] [Algebra α β] [SMulPosMono α β] {a : α}
 
 @[mono] lemma algebraMap_mono : Monotone (algebraMap α β) :=
   fun a₁ a₂ ha ↦ by
@@ -36,7 +37,7 @@ lemma algebraMap_nonneg (ha : 0 ≤ a) : 0 ≤ algebraMap α β a := by simpa us
 end OrderedSemiring
 
 section StrictOrderedSemiring
-variable [StrictOrderedSemiring β] [Algebra α β]
+variable [Semiring β] [PartialOrder β] [IsStrictOrderedRing β] [Algebra α β]
 
 section SMulPosMono
 variable [SMulPosMono α β] [SMulPosReflectLE α β] {a₁ a₂ : α}
@@ -78,35 +79,46 @@ open Lean Meta Qq Function
 @[positivity algebraMap _ _ _]
 def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
   let ~q(@algebraMap $α _ $instα $instβ $instαβ $a) := e | throwError "not `algebraMap`"
-  let pα ← synthInstanceQ (q(PartialOrder $α) : Q(Type u_1))
+  let pα ← synthInstanceQ q(PartialOrder $α)
   match ← core q(inferInstance) pα a with
   | .positive pa =>
-    let _instαring ← synthInstanceQ q(OrderedCommSemiring $α)
+    let _instαSemiring ← synthInstanceQ q(Semiring $α)
+    let _instαPartialOrder ← synthInstanceQ q(PartialOrder $α)
     try
-      let _instβring ← synthInstanceQ q(StrictOrderedSemiring $β)
+      let _instβSemiring ← synthInstanceQ q(Semiring $β)
+      let _instβPartialOrder  ← synthInstanceQ q(PartialOrder $β)
+      let _instβIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $β)
       let _instαβsmul ← synthInstanceQ q(SMulPosStrictMono $α $β)
       assertInstancesCommute
       return .positive q(algebraMap_pos $β $pa)
     catch _ =>
-      let _instβring ← synthInstanceQ q(OrderedSemiring $β)
+      let _instβSemiring ← synthInstanceQ q(Semiring $β)
+      let _instβPartialOrder  ← synthInstanceQ q(PartialOrder $β)
+      let _instβIsOrderedRing ← synthInstanceQ q(IsOrderedRing $β)
       let _instαβsmul ← synthInstanceQ q(SMulPosMono $α $β)
       assertInstancesCommute
       return .nonnegative q(algebraMap_nonneg $β <| le_of_lt $pa)
   | .nonnegative pa =>
-    let _instαring ← synthInstanceQ q(OrderedCommSemiring $α)
-    let _instβring ← synthInstanceQ q(OrderedSemiring $β)
+    let _instαSemiring ← synthInstanceQ q(CommSemiring $α)
+    let _instαPartialOrder ← synthInstanceQ q(PartialOrder $α)
+    let _instβSemiring ← synthInstanceQ q(Semiring $β)
+    let _instβPartialOrder  ← synthInstanceQ q(PartialOrder $β)
+    let _instβIsOrderedRing ← synthInstanceQ q(IsOrderedRing $β)
     let _instαβsmul ← synthInstanceQ q(SMulPosMono $α $β)
     assertInstancesCommute
     return .nonnegative q(algebraMap_nonneg $β $pa)
   | _ => pure .none
 
-example [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 ≤ a) :
+example [Semiring β] [PartialOrder β] [IsOrderedRing β] [Algebra α β] [SMulPosMono α β]
+    {a : α} (ha : 0 ≤ a) :
     0 ≤ algebraMap α β a := by positivity
 
-example [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 < a) :
+example [Semiring β] [PartialOrder β] [IsOrderedRing β] [Algebra α β] [SMulPosMono α β]
+    {a : α} (ha : 0 < a) :
     0 ≤ algebraMap α β a := by positivity
 
-example [StrictOrderedSemiring β] [Algebra α β] [SMulPosStrictMono α β] {a : α} (ha : 0 < a) :
+example [Semiring β] [PartialOrder β] [IsStrictOrderedRing β] [Algebra α β] [SMulPosStrictMono α β]
+    {a : α} (ha : 0 < a) :
     0 < algebraMap α β a := by positivity
 
 end Mathlib.Meta.Positivity

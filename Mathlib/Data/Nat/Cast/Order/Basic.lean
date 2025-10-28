@@ -3,10 +3,10 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Order.Hom.Basic
 
 /-!
@@ -33,9 +33,6 @@ theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
   monotone_nat_of_le_succ fun n ↦ by
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 
-@[deprecated mono_cast (since := "2024-02-10")]
-theorem cast_le_cast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
-
 @[gcongr]
 theorem _root_.GCongr.natCast_le_natCast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
 
@@ -45,9 +42,8 @@ theorem cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
   @Nat.cast_zero α _ ▸ mono_cast (Nat.zero_le n)
 
 /-- See also `Nat.ofNat_nonneg`, specialised for an `OrderedSemiring`. -/
--- See note [no_index around OfNat.ofNat]
 @[simp low]
-theorem ofNat_nonneg' (n : ℕ) [n.AtLeastTwo] : 0 ≤ (no_index (OfNat.ofNat n : α)) := cast_nonneg' n
+theorem ofNat_nonneg' (n : ℕ) [n.AtLeastTwo] : 0 ≤ (ofNat(n) : α) := cast_nonneg' n
 
 section Nontrivial
 
@@ -73,7 +69,7 @@ theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
 lemma _root_.GCongr.natCast_lt_natCast {a b : ℕ} (h : a < b) : (a : α) < b := strictMono_cast h
 
 /-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def castOrderEmbedding : ℕ ↪o α :=
   OrderEmbedding.ofStrictMono Nat.cast Nat.strictMono_cast
 
@@ -91,6 +87,9 @@ theorem one_lt_cast : 1 < (n : α) ↔ 1 < n := by rw [← cast_one, cast_lt]
 @[simp, norm_cast]
 theorem one_le_cast : 1 ≤ (n : α) ↔ 1 ≤ n := by rw [← cast_one, cast_le]
 
+theorem one_le_cast_iff_ne_zero : 1 ≤ (n : α) ↔ n ≠ 0 :=
+  one_le_cast.trans one_le_iff_ne_zero
+
 @[simp, norm_cast]
 theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
   rw [← cast_one, cast_lt, Nat.lt_succ_iff, le_zero]
@@ -98,53 +97,45 @@ theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
 @[simp, norm_cast]
 theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le]
 
-@[simp] lemma cast_nonpos : (n : α) ≤ 0 ↔ n = 0 := by norm_cast; omega
+@[simp] lemma cast_nonpos : (n : α) ≤ 0 ↔ n = 0 := by norm_cast; cutsat
 
 section
 variable [m.AtLeastTwo]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_le_cast : (no_index (OfNat.ofNat m : α)) ≤ n ↔ (OfNat.ofNat m : ℕ) ≤ n :=
+theorem ofNat_le_cast : (ofNat(m) : α) ≤ n ↔ (OfNat.ofNat m : ℕ) ≤ n :=
   cast_le
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_lt_cast : (no_index (OfNat.ofNat m : α)) < n ↔ (OfNat.ofNat m : ℕ) < n :=
+theorem ofNat_lt_cast : (ofNat(m) : α) < n ↔ (OfNat.ofNat m : ℕ) < n :=
   cast_lt
 
 end
 
 variable [n.AtLeastTwo]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem cast_le_ofNat : (m : α) ≤ (no_index (OfNat.ofNat n)) ↔ m ≤ OfNat.ofNat n :=
+theorem cast_le_ofNat : (m : α) ≤ (ofNat(n) : α) ↔ m ≤ OfNat.ofNat n :=
   cast_le
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem cast_lt_ofNat : (m : α) < (no_index (OfNat.ofNat n)) ↔ m < OfNat.ofNat n :=
+theorem cast_lt_ofNat : (m : α) < (ofNat(n) : α) ↔ m < OfNat.ofNat n :=
   cast_lt
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem one_lt_ofNat : 1 < (no_index (OfNat.ofNat n : α)) :=
+theorem one_lt_ofNat : 1 < (ofNat(n) : α) :=
   one_lt_cast.mpr AtLeastTwo.one_lt
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem one_le_ofNat : 1 ≤ (no_index (OfNat.ofNat n : α)) :=
+theorem one_le_ofNat : 1 ≤ (ofNat(n) : α) :=
   one_le_cast.mpr NeZero.one_le
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem not_ofNat_le_one : ¬(no_index (OfNat.ofNat n : α)) ≤ 1 :=
+theorem not_ofNat_le_one : ¬(ofNat(n) : α) ≤ 1 :=
   (cast_le_one.not.trans not_le).mpr AtLeastTwo.one_lt
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem not_ofNat_lt_one : ¬(no_index (OfNat.ofNat n : α)) < 1 :=
+theorem not_ofNat_lt_one : ¬(ofNat(n) : α) < 1 :=
   mt le_of_lt not_ofNat_le_one
 
 variable [m.AtLeastTwo]
@@ -153,18 +144,14 @@ variable [m.AtLeastTwo]
 -- and `Nat.cast_ofNat`, but their LHSs match literally every inequality, so they're too expensive.
 -- If https://github.com/leanprover/lean4/issues/2867 is fixed in a performant way, these can be made `@[simp]`.
 
--- See note [no_index around OfNat.ofNat]
 -- @[simp]
 theorem ofNat_le :
-    (no_index (OfNat.ofNat m : α)) ≤ (no_index (OfNat.ofNat n)) ↔
-      (OfNat.ofNat m : ℕ) ≤ OfNat.ofNat n :=
+    (ofNat(m) : α) ≤ (ofNat(n) : α) ↔ (OfNat.ofNat m : ℕ) ≤ OfNat.ofNat n :=
   cast_le
 
--- See note [no_index around OfNat.ofNat]
 -- @[simp]
 theorem ofNat_lt :
-    (no_index (OfNat.ofNat m : α)) < (no_index (OfNat.ofNat n)) ↔
-      (OfNat.ofNat m : ℕ) < OfNat.ofNat n :=
+    (ofNat(m) : α) < (ofNat(n) : α) ↔ (OfNat.ofNat m : ℕ) < OfNat.ofNat n :=
   cast_lt
 
 end OrderedSemiring

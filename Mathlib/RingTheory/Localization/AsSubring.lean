@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Junyan Xu
 -/
 import Mathlib.RingTheory.Localization.LocalizationLocalization
+import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 /-!
 
@@ -58,7 +60,7 @@ instance isLocalization_range_mapToFractionRing (B : Type*) [CommRing B] [Algebr
     [IsLocalization S B] (hS : S ≤ A⁰) : IsLocalization S (mapToFractionRing K S B hS).range :=
   IsLocalization.isLocalization_of_algEquiv S <|
     show B ≃ₐ[A] _ from AlgEquiv.ofBijective (mapToFractionRing K S B hS).rangeRestrict (by
-      refine ⟨fun a b h => ?_, Set.surjective_onto_range⟩
+      refine ⟨fun a b h => ?_, Set.rangeFactorization_surjective⟩
       refine (IsLocalization.lift_injective_iff _).2 (fun a b => ?_) (Subtype.ext_iff.1 h)
       exact ⟨fun h => congr_arg _ (IsLocalization.injective _ hS h),
         fun h => congr_arg _ (IsFractionRing.injective A K h)⟩)
@@ -125,13 +127,20 @@ noncomputable def ofField : Subalgebra A K :=
     symm
     apply mem_range_mapToFractionRing_iff_ofField
 
-instance isLocalization_ofField : IsLocalization S (subalgebra.ofField K S hS) := by
-  dsimp only [Localization.subalgebra.ofField]
-  rw [Subalgebra.copy_eq]
-  infer_instance
+theorem ofField_eq : ofField K S hS = subalgebra K S hS := by
+  simp_rw [ofField, subalgebra, Subalgebra.copy_eq]
 
-instance isFractionRing_ofField : IsFractionRing (subalgebra.ofField K S hS) K :=
-  IsFractionRing.isFractionRing_of_isLocalization S _ _ hS
+instance isLocalization_ofField : IsLocalization S (ofField K S hS) := by
+  rw [ofField_eq]
+  exact isLocalization_subalgebra K S hS
+
+instance (S : Subalgebra A K) : IsFractionRing S K := by
+  refine IsFractionRing.of_field S K fun z ↦ ?_
+  rcases IsFractionRing.div_surjective (A := A) z with ⟨x, y, _, eq⟩
+  exact ⟨algebraMap A S x, algebraMap A S y, eq.symm⟩
+
+instance isFractionRing_ofField : IsFractionRing (ofField K S hS) K :=
+  inferInstance
 
 end subalgebra
 

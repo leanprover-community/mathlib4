@@ -3,13 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Heyting regular elements
 
 This file defines Heyting regular elements, elements of a Heyting algebra that are their own double
-complement, and proves that they form a boolean algebra.
+complement, and proves that they form a Boolean algebra.
 
 From a logic standpoint, this means that we can perform classical logic within intuitionistic logic
 by simply double-negating all propositions. This is practical for synthetic computability theory.
@@ -18,7 +18,7 @@ by simply double-negating all propositions. This is practical for synthetic comp
 
 * `IsRegular`: `a` is Heyting-regular if `aᶜᶜ = a`.
 * `Regular`: The subtype of Heyting-regular elements.
-* `Regular.BooleanAlgebra`: Heyting-regular elements form a boolean algebra.
+* `Regular.BooleanAlgebra`: Heyting-regular elements form a Boolean algebra.
 
 ## References
 
@@ -72,7 +72,7 @@ protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) :
     Disjoint a bᶜ ↔ a ≤ b := by rw [← le_compl_iff_disjoint_right, hb.eq]
 
 -- See note [reducible non-instances]
-/-- A Heyting algebra with regular excluded middle is a boolean algebra. -/
+/-- A Heyting algebra with regular excluded middle is a Boolean algebra. -/
 abbrev _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : BooleanAlgebra α :=
   have : ∀ a : α, IsCompl a aᶜ := fun a =>
     ⟨disjoint_compl_right,
@@ -86,7 +86,7 @@ abbrev _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) 
 
 variable (α)
 
-/-- The boolean algebra of Heyting regular elements. -/
+/-- The Boolean algebra of Heyting regular elements. -/
 def Regular : Type _ :=
   { a : α // IsRegular a }
 
@@ -94,7 +94,6 @@ variable {α}
 
 namespace Regular
 
--- Porting note: `val` and `prop` are new
 /-- The coercion `Regular α → α` -/
 @[coe] def val : Regular α → α :=
   Subtype.val
@@ -226,7 +225,6 @@ theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
   compl_compl
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
--- Porting note: removed @[nolint decidable_classical]
 theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
   propext <| Decidable.not_not
 

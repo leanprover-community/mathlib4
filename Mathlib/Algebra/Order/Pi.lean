@@ -3,6 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Algebra.Notation.Lemmas
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
@@ -22,12 +23,11 @@ namespace Pi
 
 /-- The product of a family of ordered commutative monoids is an ordered commutative monoid. -/
 @[to_additive
-      "The product of a family of ordered additive commutative monoids is
-an ordered additive commutative monoid."]
-instance orderedCommMonoid {ι : Type*} {Z : ι → Type*} [∀ i, OrderedCommMonoid (Z i)] :
-    OrderedCommMonoid (∀ i, Z i) where
-  __ := Pi.partialOrder
-  __ := Pi.commMonoid
+      /-- The product of a family of ordered additive commutative monoids is
+an ordered additive commutative monoid. -/]
+instance isOrderedMonoid {ι : Type*} {Z : ι → Type*} [∀ i, CommMonoid (Z i)]
+    [∀ i, PartialOrder (Z i)] [∀ i, IsOrderedMonoid (Z i)] :
+    IsOrderedMonoid (∀ i, Z i) where
   mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left' (w i) _
 
 @[to_additive]
@@ -39,48 +39,27 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
 
 /-- The product of a family of canonically ordered monoids is a canonically ordered monoid. -/
 @[to_additive
-      "The product of a family of canonically ordered additive monoids is
-a canonically ordered additive monoid."]
-instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
-    CanonicallyOrderedCommMonoid (∀ i, Z i) where
-  __ := Pi.instOrderBot
-  __ := Pi.orderedCommMonoid
+      /-- The product of a family of canonically ordered additive monoids is
+a canonically ordered additive monoid. -/]
+instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOrder (Z i)]
+    [∀ i, CanonicallyOrderedMul (Z i)] :
+    CanonicallyOrderedMul (∀ i, Z i) where
   __ := Pi.existsMulOfLe
+  le_mul_self _ _ := fun _ => le_mul_self
   le_self_mul _ _ := fun _ => le_self_mul
 
 @[to_additive]
-instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
-    OrderedCancelCommMonoid (∀ i : I, f i) where
-  __ := Pi.commMonoid
+instance isOrderedCancelMonoid [∀ i, CommMonoid <| f i] [∀ i, PartialOrder <| f i]
+    [∀ i, IsOrderedCancelMonoid <| f i] :
+    IsOrderedCancelMonoid (∀ i : I, f i) where
   le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
-  mul_le_mul_left _ _ c h i := mul_le_mul_left' (c i) (h i)
 
-@[to_additive]
-instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) where
-  __ := Pi.commGroup
-  __ := Pi.orderedCommMonoid
-  npow := Monoid.npow
-
-instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i, f i) where
-  __ := Pi.semiring
-  __ := Pi.partialOrder
+instance isOrderedRing [∀ i, Semiring (f i)] [∀ i, PartialOrder (f i)] [∀ i, IsOrderedRing (f i)] :
+    IsOrderedRing (∀ i, f i) where
   add_le_add_left _ _ hab _ := fun _ => add_le_add_left (hab _) _
   zero_le_one := fun i => zero_le_one (α := f i)
-  mul_le_mul_of_nonneg_left _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
-  mul_le_mul_of_nonneg_right _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
-
-instance orderedCommSemiring [∀ i, OrderedCommSemiring (f i)] : OrderedCommSemiring (∀ i, f i) where
-  __ := Pi.commSemiring
-  __ := Pi.orderedSemiring
-
-instance orderedRing [∀ i, OrderedRing (f i)] : OrderedRing (∀ i, f i) where
-  __ := Pi.ring
-  __ := Pi.orderedSemiring
-  mul_nonneg _ _ ha hb := fun _ => mul_nonneg (ha _) (hb _)
-
-instance orderedCommRing [∀ i, OrderedCommRing (f i)] : OrderedCommRing (∀ i, f i) where
-  __ := Pi.commRing
-  __ := Pi.orderedRing
+  mul_le_mul_of_nonneg_left _ hc _ _ hab := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
+  mul_le_mul_of_nonneg_right _ hc _ _ hab := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
 
 end Pi
 
@@ -132,7 +111,7 @@ variable {ι : Type*} {α : ι → Type*} [DecidableEq ι] [∀ i, One (α i)] [
 
 @[to_additive (attr := simp)]
 lemma mulSingle_le_mulSingle : mulSingle i a ≤ mulSingle i b ↔ a ≤ b := by
-  simp [mulSingle, update_le_update_iff]
+  simp [mulSingle]
 
 @[to_additive (attr := gcongr)] alias ⟨_, GCongr.mulSingle_mono⟩ := mulSingle_le_mulSingle
 

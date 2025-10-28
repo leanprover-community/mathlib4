@@ -1,9 +1,8 @@
 import Mathlib.Data.Nat.Notation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ApplyFun
+import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 import Mathlib.Logic.Function.Defs
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Matrix.ConjTranspose
 
 private axiom test_sorry : ∀ {α}, α
 
@@ -58,7 +57,7 @@ example (f : ℕ → ℕ → ℕ) (h : f 1 x ≠ f 1 y) : x ≠ y := by
   assumption
 
 example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) : Injective f := by
-  intros x x' h
+  intro x x' h
   apply_fun g at h
   exact H h
 
@@ -234,6 +233,7 @@ example (α β : Type u) [Fintype α] [Fintype β] (h : α = β) : True := by
   trivial
 
 -- Check that metavariables in the goal do not prevent apply_fun from detecting the relation
+set_option linter.unusedTactic false in
 example (f : α ≃ β) (x y : α) (h : f x = f y) : x = y := by
   change _
   -- now the goal is a metavariable

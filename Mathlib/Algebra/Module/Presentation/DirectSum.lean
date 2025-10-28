@@ -13,7 +13,7 @@ import Mathlib.Data.Finsupp.ToDFinsupp
 If `M : ι → Type _` is a family of `A`-modules, then the data of a presentation
 of each `M i`, we obtain a presentation of the module `⨁ i, M i`.
 In particular, from a presentation of an `A`-module `M`, we get
-a presention of `ι →₀ M`.
+a presentation of `ι →₀ M`.
 
 -/
 
@@ -49,7 +49,7 @@ the data of a solution of `Relations.directSum relations` in `N`
 is equivalent to the data of a family of solutions of `relations i` in `N`
 for all `i`. -/
 @[simps]
-def directSumEquiv :
+noncomputable def directSumEquiv :
     (Relations.directSum relations).Solution N ≃
       ∀ i, (relations i).Solution N where
   toFun s i :=
@@ -63,12 +63,10 @@ def directSumEquiv :
       linearCombination_var_relation := fun ⟨i, r⟩ ↦ by
         rw [← (t i).linearCombination_var_relation r]
         apply Finsupp.linearCombination_embDomain }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- Given `solution : ∀ (i : ι), (relations i).Solution (M i)`, this is the
 canonical solution of `Relations.directSum relations` in `⨁ i, M i`. -/
-def directSum (solution : ∀ (i : ι), (relations i).Solution (M i)) :
+noncomputable def directSum (solution : ∀ (i : ι), (relations i).Solution (M i)) :
     (Relations.directSum relations).Solution (⨁ i, M i) :=
   directSumEquiv.symm (fun i ↦ (solution i).postcomp (lof A ι M i))
 
@@ -114,7 +112,7 @@ noncomputable def directSum (pres : ∀ (i : ι), Presentation A (M i)) :
     (Relations.Solution.IsPresentation.directSum (fun i ↦ (pres i).toIsPresentation))
 
 @[simp]
-lemma directSum_var (pres : ∀ (i : ι), Presentation A (M i)) (i : ι) (g : (pres i).G):
+lemma directSum_var (pres : ∀ (i : ι), Presentation A (M i)) (i : ι) (g : (pres i).G) :
     (directSum pres).var ⟨i, g⟩ = lof A ι M i ((pres i).var g) := rfl
 
 section

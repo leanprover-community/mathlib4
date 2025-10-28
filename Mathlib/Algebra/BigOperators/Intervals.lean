@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Interval.Finset
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+import Mathlib.Algebra.Order.Interval.Finset.Basic
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Results about big operators over intervals
@@ -16,105 +16,37 @@ We prove results about big operators over intervals.
 
 open Nat
 
-variable {α M : Type*}
+variable {α G M : Type*}
 
 namespace Finset
-section PartialOrder
-variable [PartialOrder α] [CommMonoid M] {f : α → M} {a b : α}
-
-section LocallyFiniteOrder
-variable [LocallyFiniteOrder α]
-
-@[to_additive]
-lemma mul_prod_Ico_eq_prod_Icc (h : a ≤ b) : f b * ∏ x ∈ Ico a b, f x = ∏ x ∈ Icc a b, f x := by
-  rw [Icc_eq_cons_Ico h, prod_cons]
-
-@[to_additive]
-lemma prod_Ico_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ico a b, f x) * f b = ∏ x ∈ Icc a b, f x := by
-  rw [mul_comm, mul_prod_Ico_eq_prod_Icc h]
-
-@[to_additive]
-lemma mul_prod_Ioc_eq_prod_Icc (h : a ≤ b) : f a * ∏ x ∈ Ioc a b, f x = ∏ x ∈ Icc a b, f x := by
-  rw [Icc_eq_cons_Ioc h, prod_cons]
-
-@[to_additive]
-lemma prod_Ioc_mul_eq_prod_Icc (h : a ≤ b) : (∏ x ∈ Ioc a b, f x) * f a = ∏ x ∈ Icc a b, f x := by
-  rw [mul_comm, mul_prod_Ioc_eq_prod_Icc h]
-
-end LocallyFiniteOrder
-
-section LocallyFiniteOrderTop
-variable [LocallyFiniteOrderTop α]
-
-@[to_additive]
-lemma mul_prod_Ioi_eq_prod_Ici (a : α) : f a * ∏ x ∈ Ioi a, f x = ∏ x ∈ Ici a, f x := by
-  rw [Ici_eq_cons_Ioi, prod_cons]
-
-@[to_additive]
-lemma prod_Ioi_mul_eq_prod_Ici (a : α) : (∏ x ∈ Ioi a, f x) * f a = ∏ x ∈ Ici a, f x := by
-  rw [mul_comm, mul_prod_Ioi_eq_prod_Ici]
-
-end LocallyFiniteOrderTop
-
-section LocallyFiniteOrderBot
-variable [LocallyFiniteOrderBot α]
-
-@[to_additive]
-lemma mul_prod_Iio_eq_prod_Iic (a : α) : f a * ∏ x ∈ Iio a, f x = ∏ x ∈ Iic a, f x := by
-  rw [Iic_eq_cons_Iio, prod_cons]
-
-@[to_additive]
-lemma prod_Iio_mul_eq_prod_Iic (a : α) : (∏ x ∈ Iio a, f x) * f a = ∏ x ∈ Iic a, f x := by
-  rw [mul_comm, mul_prod_Iio_eq_prod_Iic]
-
-end LocallyFiniteOrderBot
-end PartialOrder
-
-section LinearOrder
-variable [Fintype α] [LinearOrder α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
-  [CommMonoid M]
-
-@[to_additive]
-lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
-    ∏ i, ∏ j ∈ Ioi i, f j i * f i j = ∏ i, ∏ j ∈ {i}ᶜ, f j i := by
-  simp_rw [← Ioi_disjUnion_Iio, prod_disjUnion, prod_mul_distrib]
-  congr 1
-  rw [prod_sigma', prod_sigma']
-  refine prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) ?_ ?_ ?_ ?_ ?_ <;> simp
-
-end LinearOrder
 
 section Generic
 variable [CommMonoid M] {s₂ s₁ s : Finset α} {a : α} {g f : α → M}
 
 @[to_additive]
-theorem prod_Ico_add' [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [LocallyFiniteOrder α]
+theorem prod_Ico_add' [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+    [ExistsAddOfLE α] [LocallyFiniteOrder α]
     (f : α → M) (a b c : α) : (∏ x ∈ Ico a b, f (x + c)) = ∏ x ∈ Ico (a + c) (b + c), f x := by
   rw [← map_add_right_Ico, prod_map]
   rfl
 
 @[to_additive]
-theorem prod_Ico_add [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [LocallyFiniteOrder α]
+theorem prod_Ico_add [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+    [ExistsAddOfLE α] [LocallyFiniteOrder α]
     (f : α → M) (a b c : α) : (∏ x ∈ Ico a b, f (c + x)) = ∏ x ∈ Ico (a + c) (b + c), f x := by
   convert prod_Ico_add' f a b c using 2
   rw [add_comm]
 
 @[to_additive (attr := simp)]
-theorem prod_Ico_add_right_sub_eq [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α]
-    [LocallyFiniteOrder α] [Sub α] [OrderedSub α] (a b c : α) :
+theorem prod_Ico_add_right_sub_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
+    [ExistsAddOfLE α] [LocallyFiniteOrder α] [Sub α] [OrderedSub α] (a b c : α) :
     ∏ x ∈ Ico (a + c) (b + c), f (x - c) = ∏ x ∈ Ico a b, f x := by
   simp only [← map_add_right_Ico, prod_map, addRightEmbedding_apply, add_tsub_cancel_right]
 
 @[to_additive]
 theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
     (∏ k ∈ Ico a (b + 1), f k) = (∏ k ∈ Ico a b, f k) * f b := by
-  rw [Nat.Ico_succ_right_eq_insert_Ico hab, prod_insert right_not_mem_Ico, mul_comm]
-
-@[to_additive]
-theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → M) :
-    ∏ k ∈ Ico a b, f k = f a * ∏ k ∈ Ico (a + 1) b, f k := by
-  have ha : a ∉ Ico (a + 1) b := by simp
-  rw [← prod_insert ha, Nat.Ico_insert_succ_left hab]
+  rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, prod_insert right_notMem_Ico, mul_comm]
 
 @[to_additive]
 theorem prod_Ico_consecutive (f : ℕ → M) {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :
@@ -126,7 +58,7 @@ theorem prod_Ioc_consecutive (f : ℕ → M) {m n k : ℕ} (hmn : m ≤ n) (hnk 
     ((∏ i ∈ Ioc m n, f i) * ∏ i ∈ Ioc n k, f i) = ∏ i ∈ Ioc m k, f i := by
   rw [← Ioc_union_Ioc_eq_Ioc hmn hnk, prod_union]
   apply disjoint_left.2 fun x hx h'x => _
-  intros x hx h'x
+  intro x hx h'x
   exact lt_irrefl _ ((mem_Ioc.1 h'x).1.trans_le (mem_Ioc.1 hx).2)
 
 @[to_additive]
@@ -136,8 +68,8 @@ theorem prod_Ioc_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
 
 @[to_additive]
 theorem prod_Icc_succ_top {a b : ℕ} (hab : a ≤ b + 1) (f : ℕ → M) :
-    (∏ k in Icc a (b + 1), f k) = (∏ k in Icc a b, f k) * f (b + 1) := by
-  rw [← Nat.Ico_succ_right, prod_Ico_succ_top hab, Nat.Ico_succ_right]
+    (∏ k ∈ Icc a (b + 1), f k) = (∏ k ∈ Icc a b, f k) * f (b + 1) := by
+  rw [← Ico_add_one_right_eq_Icc, prod_Ico_succ_top hab, Ico_add_one_right_eq_Icc]
 
 @[to_additive]
 theorem prod_range_mul_prod_Ico (f : ℕ → M) {m n : ℕ} (h : m ≤ n) :
@@ -160,9 +92,8 @@ theorem prod_Ico_eq_div {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ}
   simpa only [div_eq_mul_inv] using prod_Ico_eq_mul_inv f h
 
 @[to_additive]
-theorem prod_range_div_prod_range {α : Type*} [CommGroup α] {f : ℕ → α} {n m : ℕ} (hnm : n ≤ m) :
-    ((∏ k ∈ range m, f k) / ∏ k ∈ range n, f k) =
-    ∏ k ∈ (range m).filter fun k => n ≤ k, f k := by
+theorem prod_range_div_prod_range {G : Type*} [CommGroup G] {f : ℕ → G} {n m : ℕ} (hnm : n ≤ m) :
+    ((∏ k ∈ range m, f k) / ∏ k ∈ range n, f k) = ∏ k ∈ range m with n ≤ k, f k := by
   rw [← prod_Ico_eq_div f hnm]
   congr
   apply Finset.ext
@@ -177,7 +108,6 @@ theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → 
   refine sum_nbij' (fun x ↦ ⟨x.2, x.1⟩) (fun x ↦ ⟨x.2, x.1⟩) ?_ ?_ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
-  rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
   omega
 
 /-- The two ways of summing over `(i, j)` in the range `a ≤ i < j < b` are equal. -/
@@ -188,7 +118,6 @@ theorem sum_Ico_Ico_comm' {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ →
   refine sum_nbij' (fun x ↦ ⟨x.2, x.1⟩) (fun x ↦ ⟨x.2, x.1⟩) ?_ ?_ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
-  rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
   omega
 
 @[to_additive]
@@ -204,17 +133,16 @@ theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1)
   have : ∀ i < m, i ≤ n := by
     intro i hi
     exact (add_le_add_iff_right 1).1 (le_trans (Nat.lt_iff_add_one_le.1 hi) h)
-  rcases lt_or_le k m with hkm | hkm
+  rcases lt_or_ge k m with hkm | hkm
   · rw [← Nat.Ico_image_const_sub_eq_Ico (this _ hkm)]
     refine (prod_image ?_).symm
-    simp only [mem_Ico]
+    simp only [mem_Ico, Set.InjOn, mem_coe]
     rintro i ⟨_, im⟩ j ⟨_, jm⟩ Hij
     rw [← tsub_tsub_cancel_of_le (this _ im), Hij, tsub_tsub_cancel_of_le (this _ jm)]
   · have : n + 1 - k ≤ n + 1 - m := by
       rw [tsub_le_tsub_iff_left h]
       exact hkm
-    simp only [hkm, Ico_eq_empty_of_le, prod_empty, tsub_le_iff_right, Ico_eq_empty_of_le
-      this]
+    simp only [hkm, Ico_eq_empty_of_le, prod_empty, Ico_eq_empty_of_le this]
 
 theorem sum_Ico_reflect {δ : Type*} [AddCommMonoid δ] (f : ℕ → δ) (k : ℕ) {m n : ℕ}
     (h : m ≤ n + 1) : (∑ j ∈ Ico k m, f (n - j)) = ∑ j ∈ Ico (n + 1 - m) (n + 1 - k), f j :=
@@ -239,11 +167,6 @@ theorem prod_Ico_id_eq_factorial : ∀ n : ℕ, (∏ x ∈ Ico 1 (n + 1), x) = n
     rw [prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n, Nat.factorial_succ,
       prod_Ico_id_eq_factorial n, Nat.succ_eq_add_one, mul_comm]
 
-@[simp]
-theorem prod_range_add_one_eq_factorial : ∀ n : ℕ, (∏ x ∈ range n, (x + 1)) = n !
-  | 0 => rfl
-  | n + 1 => by simp [factorial, Finset.range_succ, prod_range_add_one_eq_factorial n]
-
 section GaussSum
 
 /-- Gauss' summation formula -/
@@ -258,7 +181,7 @@ theorem sum_range_id_mul_two (n : ℕ) : (∑ i ∈ range n, i) * 2 = n * (n - 1
 
 /-- Gauss' summation formula -/
 theorem sum_range_id (n : ℕ) : ∑ i ∈ range n, i = n * (n - 1) / 2 := by
-  rw [← sum_range_id_mul_two n, Nat.mul_div_cancel _ zero_lt_two]
+  rw [← sum_range_id_mul_two n, Nat.mul_div_cancel _ Nat.zero_lt_two]
 
 end GaussSum
 
@@ -269,9 +192,8 @@ lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
   rw [prod_sigma', prod_sigma']
   refine prod_nbij' (fun a ↦ ⟨a.2, a.1 - a.2⟩) (fun a ↦ ⟨a.1 + a.2, a.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
     simp +contextual only [mem_sigma, mem_range, lt_tsub_iff_left,
-      Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, imp_self,
-      implies_true, Sigma.forall, forall_const, add_tsub_cancel_of_le, Sigma.mk.inj_iff,
-      add_tsub_cancel_left, heq_eq_eq]
+      Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, implies_true,
+      Sigma.forall, add_tsub_cancel_of_le, add_tsub_cancel_left]
   exact fun a b han hba ↦ lt_of_le_of_lt hba han
 
 end Generic
@@ -301,6 +223,10 @@ theorem prod_Ico_div_bot (hmn : m < n) : (∏ i ∈ Ico m n, f i) / f m = ∏ i 
 theorem prod_Ico_succ_div_top (hmn : m ≤ n) :
     (∏ i ∈ Ico m (n + 1), f i) / f n = ∏ i ∈ Ico m n, f i :=
   div_eq_iff_eq_mul.mpr <| prod_Ico_succ_top hmn _
+
+@[to_additive]
+theorem prod_Ico_div (hmn : m ≤ n) : ∏ i ∈ Ico m n, f (i + 1) / f i = f n / f m := by
+  rw [prod_Ico_eq_div _ hmn, prod_range_div, prod_range_div, div_div_div_cancel_right]
 
 end Group
 

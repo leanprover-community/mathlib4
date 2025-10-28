@@ -110,7 +110,7 @@ instance : Top (TwoSidedIdeal R) where
 lemma top_ringCon : (⊤ : TwoSidedIdeal R).ringCon = ⊤ := rfl
 
 @[simp]
-lemma mem_top {x : R} : x ∈ (⊤: TwoSidedIdeal R) := trivial
+lemma mem_top {x : R} : x ∈ (⊤ : TwoSidedIdeal R) := trivial
 
 instance : Bot (TwoSidedIdeal R) where
   bot := { ringCon := ⊥ }
@@ -128,6 +128,12 @@ instance : CompleteLattice (TwoSidedIdeal R) where
   __ := (inferInstance : CompleteSemilatticeInf (TwoSidedIdeal R))
   le_top _ := by rw [ringCon_le_iff]; exact le_top
   bot_le _ := by rw [ringCon_le_iff]; exact bot_le
+
+@[simp]
+lemma coe_bot : ((⊥ : TwoSidedIdeal R) : Set R) = {0} := rfl
+
+@[simp]
+lemma coe_top : ((⊤ : TwoSidedIdeal R) : Set R) = Set.univ := rfl
 
 lemma one_mem_iff {R : Type*} [NonAssocRing R] (I : TwoSidedIdeal R) :
     (1 : R) ∈ I ↔ I = ⊤ :=

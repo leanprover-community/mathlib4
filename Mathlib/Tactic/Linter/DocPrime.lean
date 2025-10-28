@@ -18,7 +18,7 @@ to an unprimed version of that declaration, or an explanation as to why no bette
 is possible.
 -/
 
-open Lean Elab
+open Lean Elab Linter
 
 namespace Mathlib.Linter
 
@@ -38,13 +38,15 @@ namespace DocPrime
 
 @[inherit_doc Mathlib.Linter.linter.docPrime]
 def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.docPrime (← getOptions) do
+  unless getLinterValue linter.docPrime (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
   unless [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind do return
   -- ignore private declarations
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.private)).isSome then return
+  -- ignore examples
+  if (stx.find? (·.isOfKind ``Lean.Parser.Command.example)).isSome then return
   let docstring := stx[0][0]
   -- The current declaration's id, possibly followed by a list of universe names.
   let declId :=
@@ -52,6 +54,7 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
       stx[1][3][0]
     else
       stx[1][1]
+  if let .missing := declId then return
   -- The name of the current declaration, with namespaces resolved.
   let declName : Name :=
     if let `_root_ :: rest := declId[0].getId.components then

@@ -3,7 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -20,6 +20,8 @@ which is a continuous linear map `SeparationQuotient E →L[K] E`.
 -/
 
 assert_not_exists LinearIndependent
+
+open scoped Topology
 
 namespace SeparationQuotient
 
@@ -57,7 +59,7 @@ instance instSMulCommClass [ContinuousConstSMul N X] [SMulCommClass M N X] :
     SMulCommClass M N (SeparationQuotient X) :=
   surjective_mk.smulCommClass mk_smul mk_smul
 
-@[to_additive instVAddAssocClass]
+@[to_additive]
 instance instIsScalarTower [SMul M N] [ContinuousConstSMul N X] [IsScalarTower M N X] :
     IsScalarTower M N (SeparationQuotient X) where
   smul_assoc a b := surjective_mk.forall.2 fun x ↦ congr_arg mk <| smul_assoc a b x
@@ -90,7 +92,6 @@ instance instMul [Mul M] [ContinuousMul M] : Mul (SeparationQuotient M) where
 @[to_additive (attr := simp)]
 theorem mk_mul [Mul M] [ContinuousMul M] (a b : M) : mk (a * b) = mk a * mk b := rfl
 
-
 @[to_additive]
 instance instContinuousMul [Mul M] [ContinuousMul M] : ContinuousMul (SeparationQuotient M) where
   continuous_mul := isQuotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_mul
@@ -114,7 +115,7 @@ instance instMulOneClass [MulOneClass M] [ContinuousMul M] :
   surjective_mk.mulOneClass mk mk_one mk_mul
 
 /-- `SeparationQuotient.mk` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`SeparationQuotient.mk` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `SeparationQuotient.mk` as an `AddMonoidHom`. -/]
 def mkMonoidHom [MulOneClass M] [ContinuousMul M] : M →* SeparationQuotient M where
   toFun := mk
   map_mul' := mk_mul
@@ -177,36 +178,45 @@ theorem mk_div [Div G] [ContinuousDiv G] (x y : G) : mk (x / y) = mk x / mk y :=
 instance instContinuousDiv [Div G] [ContinuousDiv G] : ContinuousDiv (SeparationQuotient G) where
   continuous_div' := isQuotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_div'
 
-instance instZSMul [AddGroup G] [TopologicalAddGroup G] : SMul ℤ (SeparationQuotient G) :=
+instance instZSMul [AddGroup G] [IsTopologicalAddGroup G] : SMul ℤ (SeparationQuotient G) :=
   inferInstance
 
 @[to_additive existing]
-instance instZPow [Group G] [TopologicalGroup G] : Pow (SeparationQuotient G) ℤ where
+instance instZPow [Group G] [IsTopologicalGroup G] : Pow (SeparationQuotient G) ℤ where
   pow x n := Quotient.map' (s₁ := inseparableSetoid G) (· ^ n) (fun _ _ h ↦ Inseparable.zpow h n) x
 
 @[to_additive, simp] -- `mk_zsmul` is not a `simp` lemma because we have `mk_smul`
-theorem mk_zpow [Group G] [TopologicalGroup G] (x : G) (n : ℤ) : mk (x ^ n) = (mk x) ^ n := rfl
+theorem mk_zpow [Group G] [IsTopologicalGroup G] (x : G) (n : ℤ) : mk (x ^ n) = (mk x) ^ n := rfl
 
 @[to_additive]
-instance instGroup [Group G] [TopologicalGroup G] : Group (SeparationQuotient G) :=
+instance instGroup [Group G] [IsTopologicalGroup G] : Group (SeparationQuotient G) :=
   surjective_mk.group mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
 
 @[to_additive]
-instance instCommGroup [CommGroup G] [TopologicalGroup G] : CommGroup (SeparationQuotient G) :=
+instance instCommGroup [CommGroup G] [IsTopologicalGroup G] : CommGroup (SeparationQuotient G) :=
   surjective_mk.commGroup mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
+
+@[to_additive]
+instance instIsTopologicalGroup [Group G] [IsTopologicalGroup G] :
+    IsTopologicalGroup (SeparationQuotient G) where
 
 end Group
 
-section UniformGroup
+section IsUniformGroup
 
 @[to_additive]
-instance instUniformGroup {G : Type*} [Group G] [UniformSpace G] [UniformGroup G] :
-    UniformGroup (SeparationQuotient G) where
+instance instIsUniformGroup {G : Type*} [Group G] [UniformSpace G] [IsUniformGroup G] :
+    IsUniformGroup (SeparationQuotient G) where
   uniformContinuous_div := by
     rw [uniformContinuous_dom₂]
     exact uniformContinuous_mk.comp uniformContinuous_div
 
-end UniformGroup
+@[deprecated (since := "2025-03-31")] alias
+  instUniformAddGroup := SeparationQuotient.instIsUniformAddGroup
+@[to_additive existing, deprecated (since := "2025-03-31")] alias
+  instUniformGroup := SeparationQuotient.instIsUniformGroup
+
+end IsUniformGroup
 
 section MonoidWithZero
 
@@ -253,10 +263,10 @@ instance instRightDistribClass [Mul R] [Add R] [RightDistribClass R]
   surjective_mk.rightDistribClass mk mk_add mk_mul
 
 instance instNonUnitalnonAssocSemiring [NonUnitalNonAssocSemiring R]
-    [TopologicalSemiring R] : NonUnitalNonAssocSemiring (SeparationQuotient R) :=
+    [IsTopologicalSemiring R] : NonUnitalNonAssocSemiring (SeparationQuotient R) :=
   surjective_mk.nonUnitalNonAssocSemiring mk mk_zero mk_add mk_mul mk_smul
 
-instance instNonUnitalSemiring [NonUnitalSemiring R] [TopologicalSemiring R] :
+instance instNonUnitalSemiring [NonUnitalSemiring R] [IsTopologicalSemiring R] :
     NonUnitalSemiring (SeparationQuotient R) :=
   surjective_mk.nonUnitalSemiring mk mk_zero mk_add mk_mul mk_smul
 
@@ -268,7 +278,7 @@ theorem mk_natCast [NatCast R] (n : ℕ) : mk (n : R) = n := rfl
 
 @[simp]
 theorem mk_ofNat [NatCast R] (n : ℕ) [n.AtLeastTwo] :
-    mk (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
+    mk (ofNat(n) : R) = OfNat.ofNat n :=
   rfl
 
 instance instIntCast [IntCast R] : IntCast (SeparationQuotient R) where
@@ -277,42 +287,42 @@ instance instIntCast [IntCast R] : IntCast (SeparationQuotient R) where
 @[simp, norm_cast]
 theorem mk_intCast [IntCast R] (n : ℤ) : mk (n : R) = n := rfl
 
-instance instNonAssocSemiring [NonAssocSemiring R] [TopologicalSemiring R] :
+instance instNonAssocSemiring [NonAssocSemiring R] [IsTopologicalSemiring R] :
     NonAssocSemiring (SeparationQuotient R) :=
   surjective_mk.nonAssocSemiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_natCast
 
-instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [TopologicalRing R] :
+instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [IsTopologicalRing R] :
     NonUnitalNonAssocRing (SeparationQuotient R) :=
   surjective_mk.nonUnitalNonAssocRing mk mk_zero mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
 
-instance instNonUnitalRing [NonUnitalRing R] [TopologicalRing R] :
+instance instNonUnitalRing [NonUnitalRing R] [IsTopologicalRing R] :
     NonUnitalRing (SeparationQuotient R) :=
   surjective_mk.nonUnitalRing mk mk_zero mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
 
-instance instNonAssocRing [NonAssocRing R] [TopologicalRing R] :
+instance instNonAssocRing [NonAssocRing R] [IsTopologicalRing R] :
     NonAssocRing (SeparationQuotient R) :=
   surjective_mk.nonAssocRing mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
     mk_natCast mk_intCast
 
-instance instSemiring [Semiring R] [TopologicalSemiring R] :
+instance instSemiring [Semiring R] [IsTopologicalSemiring R] :
     Semiring (SeparationQuotient R) :=
   surjective_mk.semiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_pow mk_natCast
 
-instance instRing [Ring R] [TopologicalRing R] :
+instance instRing [Ring R] [IsTopologicalRing R] :
     Ring (SeparationQuotient R) :=
   surjective_mk.ring mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub mk_smul mk_smul mk_pow
     mk_natCast mk_intCast
 
 instance instNonUnitalNonAssocCommSemiring [NonUnitalNonAssocCommSemiring R]
-    [TopologicalSemiring R] :
+    [IsTopologicalSemiring R] :
     NonUnitalNonAssocCommSemiring (SeparationQuotient R) :=
   surjective_mk.nonUnitalNonAssocCommSemiring mk mk_zero mk_add mk_mul mk_smul
 
-instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] [TopologicalSemiring R] :
+instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] [IsTopologicalSemiring R] :
     NonUnitalCommSemiring (SeparationQuotient R) :=
   surjective_mk.nonUnitalCommSemiring mk mk_zero mk_add mk_mul mk_smul
 
-instance instCommSemiring [CommSemiring R] [TopologicalSemiring R] :
+instance instCommSemiring [CommSemiring R] [IsTopologicalSemiring R] :
     CommSemiring (SeparationQuotient R) :=
   surjective_mk.commSemiring mk mk_zero mk_one mk_add mk_mul mk_smul mk_pow mk_natCast
 
@@ -320,22 +330,22 @@ instance instHasDistribNeg [Mul R] [HasDistribNeg R] [ContinuousMul R] [Continuo
     HasDistribNeg (SeparationQuotient R) :=
   surjective_mk.hasDistribNeg mk mk_neg mk_mul
 
-instance instNonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R] [TopologicalRing R] :
+instance instNonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R] [IsTopologicalRing R] :
     NonUnitalNonAssocCommRing (SeparationQuotient R) :=
   surjective_mk.nonUnitalNonAssocCommRing mk mk_zero mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
 
-instance instNonUnitalCommRing [NonUnitalCommRing R] [TopologicalRing R] :
+instance instNonUnitalCommRing [NonUnitalCommRing R] [IsTopologicalRing R] :
     NonUnitalCommRing (SeparationQuotient R) :=
   surjective_mk.nonUnitalCommRing mk mk_zero mk_add mk_mul mk_neg mk_sub mk_smul mk_smul
 
-instance instCommRing [CommRing R] [TopologicalRing R] :
+instance instCommRing [CommRing R] [IsTopologicalRing R] :
     CommRing (SeparationQuotient R) :=
   surjective_mk.commRing mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub mk_smul mk_smul mk_pow
     mk_natCast mk_intCast
 
 /-- `SeparationQuotient.mk` as a `RingHom`. -/
 @[simps]
-def mkRingHom [NonAssocSemiring R] [TopologicalSemiring R] : R →+* SeparationQuotient R where
+def mkRingHom [NonAssocSemiring R] [IsTopologicalSemiring R] : R →+* SeparationQuotient R where
   toFun := mk
   map_one' := mk_one; map_zero' := mk_zero; map_add' := mk_add; map_mul' := mk_mul
 
@@ -364,8 +374,10 @@ end DistribSMul
 
 section Module
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R S M N : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M]
+    [Semiring S] [AddCommMonoid N] [Module S N]
+    [TopologicalSpace N]
 
 instance instModule : Module R (SeparationQuotient M) :=
   surjective_mk.module R mkAddMonoidHom mk_smul
@@ -379,14 +391,28 @@ def mkCLM : M →L[R] SeparationQuotient M where
   map_add' := mk_add
   map_smul' := mk_smul
 
+variable {R M}
+
+/-- The lift (as a continuous linear map) of `f` with `f x = f y` for `Inseparable x y`. -/
+@[simps]
+noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y) :
+    SeparationQuotient M →SL[σ] N where
+  toFun := SeparationQuotient.lift f hf
+  map_add' := Quotient.ind₂ <| map_add f
+  map_smul' {r} := Quotient.ind <| map_smulₛₗ f r
+
+@[simp]
+theorem liftCLM_mk {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
+    (x : M) : liftCLM f hf (mk x) = f x := rfl
+
 end Module
 
 section Algebra
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-    [TopologicalSpace A] [TopologicalSemiring A] [ContinuousConstSMul R A]
+    [TopologicalSpace A] [IsTopologicalSemiring A] [ContinuousConstSMul R A]
 
 instance instAlgebra : Algebra R (SeparationQuotient A) where
-  toRingHom := mkRingHom.comp (algebraMap R A)
+  algebraMap := mkRingHom.comp (algebraMap R A)
   commutes' r := Quotient.ind fun a => congrArg _ <| Algebra.commutes r a
   smul_def' r := Quotient.ind fun a => congrArg _ <| Algebra.smul_def r a
 

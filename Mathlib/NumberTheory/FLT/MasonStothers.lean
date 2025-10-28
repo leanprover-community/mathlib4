@@ -16,9 +16,6 @@ Proof is based on this online note by Franz Lemmermeyer http://www.fen.bilkent.e
 which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason's Theorem",
 but slightly different.
 
-## TODO
-
-Prove polynomial FLT using Mason-Stothers theorem.
 -/
 
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
@@ -44,20 +41,32 @@ private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian
     a.natDegree + b.natDegree + c.natDegree = (a * b * c).natDegree := by
       rw [Polynomial.natDegree_mul ab_nz hc, Polynomial.natDegree_mul ha hb]
     _ = ((divRadical (a * b * c)) * (radical (a * b * c))).natDegree := by
-      rw [mul_comm _ (radical _), radical_mul_divRadical (a * b * c)]
+      rw [mul_comm _ (radical _), radical_mul_divRadical]
     _ = abc_dr.natDegree + abc_r.natDegree := by
-      rw [← Polynomial.natDegree_mul (divRadical_ne_zero abc_nz) (radical_ne_zero (a * b * c))]
+      rw [← Polynomial.natDegree_mul (divRadical_ne_zero abc_nz) radical_ne_zero]
     _ < a.natDegree + b.natDegree + abc_r.natDegree := by
       exact Nat.add_lt_add_right abc_dr_ndeg_lt _
 
 /-- **Polynomial ABC theorem.** -/
-theorem Polynomial.abc {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b)
-    (hbc : IsCoprime b c) (hca : IsCoprime c a) (hsum : a + b + c = 0) :
-    ( natDegree a + 1 ≤ (radical (a * b * c)).natDegree ∧
+protected theorem Polynomial.abc
+    {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
+    (hab : IsCoprime a b) (hsum : a + b + c = 0) :
+    (natDegree a + 1 ≤ (radical (a * b * c)).natDegree ∧
       natDegree b + 1 ≤ (radical (a * b * c)).natDegree ∧
-      natDegree c + 1 ≤ (radical (a * b * c)).natDegree ) ∨
+      natDegree c + 1 ≤ (radical (a * b * c)).natDegree) ∨
       derivative a = 0 ∧ derivative b = 0 ∧ derivative c = 0 := by
   set w := wronskian a b with wab
+  have hbc : IsCoprime b c := by
+    rw [add_eq_zero_iff_neg_eq] at hsum
+    rw [← hsum, IsCoprime.neg_right_iff]
+    convert IsCoprime.add_mul_left_right hab.symm 1
+    rw [mul_one]
+  have hsum' : b + c + a = 0 := by rwa [add_rotate] at hsum
+  have hca : IsCoprime c a := by
+    rw [add_eq_zero_iff_neg_eq] at hsum'
+    rw [← hsum', IsCoprime.neg_right_iff]
+    convert IsCoprime.add_mul_left_right hbc.symm 1
+    rw [mul_one]
   have wbc : w = wronskian b c := wronskian_eq_of_sum_zero hsum
   have wca : w = wronskian c a := by
     rw [add_rotate] at hsum
@@ -75,11 +84,11 @@ theorem Polynomial.abc {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 
   by_cases hw : w = 0
   · right
     rw [hw] at wab wbc
-    cases' hab.wronskian_eq_zero_iff.mp wab.symm with ga gb
-    cases' hbc.wronskian_eq_zero_iff.mp wbc.symm with _ gc
+    obtain ⟨ga, gb⟩ := hab.wronskian_eq_zero_iff.mp wab.symm
+    obtain ⟨_, gc⟩ := hbc.wronskian_eq_zero_iff.mp wbc.symm
     exact ⟨ga, gb, gc⟩
   · left
-    -- use the subcall three times, using the symmetry in `a, b, c`
+    -- use `abc_subcall` three times, using the symmetry in `a, b, c`
     refine ⟨?_, ?_, ?_⟩
     · rw [mul_rotate] at abc_dr_dvd_w ⊢
       apply abc_subcall wbc <;> assumption

@@ -3,7 +3,6 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 
@@ -134,13 +133,14 @@ theorem map_natCast (n : ℕ) : D (n : A) = 0 := by
 
 @[simp]
 theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
-  induction' n with n ihn
-  · rw [pow_zero, map_one_eq_zero, zero_smul]
-  · rcases (zero_le n).eq_or_lt with (rfl | hpos)
-    · erw [pow_one, one_smul, pow_zero, one_smul]
+  induction n with
+  | zero => rw [pow_zero, map_one_eq_zero, zero_smul]
+  | succ n ihn =>
+    rcases (zero_le n).eq_or_lt with (rfl | hpos)
+    · simp
     · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
       simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
-        Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, one_nsmul]
+        Nat.add_succ_sub_one, add_zero, one_nsmul]
 
 open Polynomial in
 @[simp]
@@ -226,11 +226,14 @@ theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
 instance : AddCommMonoid (Derivation R A M) :=
   coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
-/-- `coe_fn` as an `AddMonoidHom`. -/
+/-- `coeFn` as an `AddMonoidHom`. -/
 def coeFnAddMonoidHom : Derivation R A M →+ A → M where
-  toFun := (↑)
+  toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+lemma coeFnAddMonoidHom_apply (D : Derivation R A M) : coeFnAddMonoidHom D = D := rfl
 
 instance : DistribMulAction S (Derivation R A M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
@@ -405,7 +408,7 @@ variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra R A]
 rule. -/
 def mk' (D : A →ₗ[R] M) (h : ∀ a b, D (a * b) = a • D b + b • D a) : Derivation R A M where
   toLinearMap := D
-  map_one_eq_zero' := (add_right_eq_self (a := D 1)).1 <| by
+  map_one_eq_zero' := (add_eq_left (a := D 1)).1 <| by
     simpa only [one_smul, one_mul] using (h 1 1).symm
   leibniz' := h
 
@@ -439,9 +442,6 @@ protected theorem map_sub : D (a - b) = D a - D b :=
 theorem map_intCast (n : ℤ) : D (n : A) = 0 := by
   rw [← zsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
 
-@[deprecated (since := "2024-04-05")] alias map_coe_nat := map_natCast
-@[deprecated (since := "2024-04-05")] alias map_coe_int := map_intCast
-
 theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b := by
   rw [neg_smul]
   refine eq_neg_of_add_eq_zero_left ?_
@@ -450,7 +450,7 @@ theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b :
     _ = a • D (a * b) := by rw [leibniz, smul_add, add_comm]
     _ = 0 := by rw [h, map_one_eq_zero, smul_zero]
 
-theorem leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=
+theorem leibniz_invOf [Invertible a] : D (⅟a) = -⅟a ^ 2 • D a :=
   D.leibniz_of_mul_eq_one <| invOf_mul_self a
 
 section Field
@@ -483,7 +483,7 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     simp only [zpow_natCast, leibniz_pow, natCast_zsmul]
     rw [← zpow_natCast]
     congr
-    omega
+    cutsat
   · rw [h, zpow_neg, zpow_natCast, leibniz_inv, leibniz_pow, inv_pow, ← pow_mul, ← zpow_natCast,
       ← zpow_natCast, ← Nat.cast_smul_eq_nsmul K, ← Int.cast_smul_eq_zsmul K, smul_smul, smul_smul,
       smul_smul]
@@ -492,7 +492,7 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     rw [← zpow_sub₀ ha]
     congr 3
     · norm_cast
-    omega
+    cutsat
 
 end Field
 

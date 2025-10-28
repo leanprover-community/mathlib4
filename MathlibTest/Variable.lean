@@ -16,7 +16,10 @@ namespace Tests
 
 section
 -- works like `variable` when there are no missing instances
-/-- info: Try this: variable? (x : Nat) [DecidableEq α] => (x : Nat) [DecidableEq α] -/
+/--
+info: Try this:
+  [apply] variable? (x : Nat) [DecidableEq α] => (x : Nat) [DecidableEq α]
+-/
 #guard_msgs in
 variable? (x : Nat) [DecidableEq α]
 
@@ -25,7 +28,10 @@ example : DecidableEq α := inferInstance
 end
 
 section
-/-- info: Try this: variable? [Module R M] => [Semiring R] [AddCommMonoid M] [Module R M] -/
+/--
+info: Try this:
+  [apply] variable? [Module R M] => [Semiring R] [AddCommMonoid M] [Module R M]
+-/
 #guard_msgs in
 variable? [Module R M]
 example : Semiring R := inferInstance
@@ -46,7 +52,8 @@ section
 /--
 warning: Calculated binders do not match the expected binders given after `=>`.
 ---
-info: Try this: variable? [Module R M] => [Semiring R] [AddCommMonoid M] [Module R M]
+info: Try this:
+  [apply] variable? [Module R M] => [Semiring R] [AddCommMonoid M] [Module R M]
 -/
 #guard_msgs in
 variable? [Module R M] => [Ring R] [AddCommMonoid M] [Module R M]
@@ -56,7 +63,8 @@ section
 /--
 error: failed to synthesize
   Semiring R
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 variable? [Module R M] => [Module R M]
@@ -66,7 +74,8 @@ section
 /--
 warning: Calculated binders do not match the expected binders given after `=>`.
 ---
-info: Try this: variable? [Semiring R] => [Semiring R]
+info: Try this:
+  [apply] variable? [Semiring R] => [Semiring R]
 -/
 #guard_msgs in
 variable? [Semiring R] => [Ring R]
@@ -76,12 +85,16 @@ namespace foo
 class A (α : Type)
 class B (α : Type) [A α]
 class C (α : Type) [A α] [B α]
-/-- info: Try this: variable? [C α] => [A α] [B α] [C α] -/
+/--
+info: Try this:
+  [apply] variable? [C α] => [A α] [B α] [C α]
+-/
 #guard_msgs in
 variable? [C α]
 
 /--
-info: Try this: variable? [(α : Type) → C α] => [(α : Type) → A α] [(α : Type) → B α] [(α : Type) → C α]
+info: Try this:
+  [apply] variable? [(α : Type) → C α] => [(α : Type) → A α] [(α : Type) → B α] [(α : Type) → C α]
 -/
 #guard_msgs in
 variable? [(α : Type) → C α]
@@ -93,8 +106,9 @@ section
 -- There are two different add operations on `A`.
 -- See also the next test.
 /--
-info: Try this: variable? [Module R A] [Algebra S A] => [Semiring R] [AddCommMonoid A] [Module R A] [CommSemiring S]
-  [Semiring A] [Algebra S A]
+info: Try this:
+  [apply] variable? [Module R A] [Algebra S A] => [Semiring R] [AddCommMonoid A] [Module R A] [CommSemiring S]
+    [Semiring A] [Algebra S A]
 -/
 #guard_msgs in
 variable? [Module R A] [Algebra S A]
@@ -103,7 +117,8 @@ end
 section
 -- Similar to the previous test, but this time there is only a single add operation on `A`.
 /--
-info: Try this: variable? [Algebra S A] [Module R A] => [CommSemiring S] [Semiring A] [Algebra S A] [Semiring R] [Module R A]
+info: Try this:
+  [apply] variable? [Algebra S A] [Module R A] => [CommSemiring S] [Semiring A] [Algebra S A] [Semiring R] [Module R A]
 -/
 #guard_msgs in
 variable? [Algebra S A] [Module R A]
@@ -111,8 +126,9 @@ end
 
 section
 /--
-info: Try this: variable? (f : Nat → Type) [∀ i, Module R (f i)] => (f : Nat → Type) [Semiring R]
-  [(i : ℕ) → AddCommMonoid (f i)] [∀ i, Module R (f i)]
+info: Try this:
+  [apply] variable? (f : Nat → Type) [∀ i, Module R (f i)] => (f : Nat → Type) [Semiring R]
+    [(i : ℕ) → AddCommMonoid (f i)] [∀ i, Module R (f i)]
 -/
 #guard_msgs in
 variable? (f : Nat → Type) [∀ i, Module R (f i)]
@@ -126,7 +142,8 @@ f : ℕ → Type
 inst✝ : (i : ℕ) → AddCommMonoid (f i)
 ⊢ (i : ℕ) → Module ℕ (f i)
 ---
-info: Try this: variable? (f : Nat → Type) [∀ i, Module Nat (f i)] => (f : Nat → Type) [(i : ℕ) → AddCommMonoid (f i)]
+info: Try this:
+  [apply] variable? (f : Nat → Type) [∀ i, Module Nat (f i)] => (f : Nat → Type) [(i : ℕ) → AddCommMonoid (f i)]
 -/
 #guard_msgs in
 variable? (f : Nat → Type) [∀ i, Module Nat (f i)]
@@ -134,14 +151,20 @@ variable? (f : Nat → Type) [∀ i, Module Nat (f i)]
 end
 
 section
-/-- info: Try this: variable? [Algebra k V] => [CommSemiring k] [Semiring V] [Algebra k V] -/
+/--
+info: Try this:
+  [apply] variable? [Algebra k V] => [CommSemiring k] [Semiring V] [Algebra k V]
+-/
 #guard_msgs in
 variable? [Algebra k V]
 end
 
 section
 -- Checking that `Algebra` doesn't introduce its own `CommSemiring k`.
-/-- info: Try this: variable? [Field k] [Algebra k A] => [Field k] [Semiring A] [Algebra k A] -/
+/--
+info: Try this:
+  [apply] variable? [Field k] [Algebra k A] => [Field k] [Semiring A] [Algebra k A]
+-/
 #guard_msgs in
 variable? [Field k] [Algebra k A]
 example : (inferInstance : Field k).toCommSemiring = (inferInstance : CommSemiring k) := rfl
@@ -152,7 +175,10 @@ end
 structure VectorSpace (k V : Type _) [Field k] [AddCommGroup V] [Module k V]
 
 section
-/-- info: Try this: variable? [VectorSpace R M] => [Field R] [AddCommGroup M] [Module R M] -/
+/--
+info: Try this:
+  [apply] variable? [VectorSpace R M] => [Field R] [AddCommGroup M] [Module R M]
+-/
 #guard_msgs in
 variable? [VectorSpace R M]
 example : Field R := inferInstance
@@ -162,8 +188,9 @@ end
 
 section
 /--
-info: Try this: variable? [VectorSpace k V] [Algebra k V] => [Field k] [AddCommGroup V] [Module k V] [Semiring V]
-  [Algebra k V]
+info: Try this:
+  [apply] variable? [VectorSpace k V] [Algebra k V] => [Field k] [AddCommGroup V] [Module k V] [Semiring V]
+    [Algebra k V]
 -/
 #guard_msgs in
 variable? [VectorSpace k V] [Algebra k V]
@@ -189,8 +216,9 @@ structure Rep (k A V : Type _)
 
 section
 /--
-info: Try this: variable? [Rep k A V] => [Field k] [AddCommGroup A] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
-  [DistribMulAction A V] [SMulCommClass k A V]
+info: Try this:
+  [apply] variable? [Rep k A V] => [Field k] [AddCommGroup A] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
+    [DistribMulAction A V] [SMulCommClass k A V]
 -/
 #guard_msgs in
 variable? [Rep k A V]
@@ -198,8 +226,9 @@ end
 
 section
 /--
-info: Try this: variable? [VectorSpace k A] [Rep k A V] => [Field k] [AddCommGroup A] [Module k A] [Ring A] [Algebra k A]
-  [AddCommGroup V] [Module k V] [DistribMulAction A V] [SMulCommClass k A V]
+info: Try this:
+  [apply] variable? [VectorSpace k A] [Rep k A V] => [Field k] [AddCommGroup A] [Module k A] [Ring A] [Algebra k A]
+    [AddCommGroup V] [Module k V] [DistribMulAction A V] [SMulCommClass k A V]
 -/
 #guard_msgs in
 variable? [VectorSpace k A] [Rep k A V]
@@ -216,7 +245,8 @@ structure UniqueFactorizationDomain (R : Type _)
 
 section
 /--
-info: Try this: variable? [UniqueFactorizationDomain R] => [CommRing R] [IsDomain R] [UniqueFactorizationMonoid R]
+info: Try this:
+  [apply] variable? [UniqueFactorizationDomain R] => [CommRing R] [IsDomain R] [UniqueFactorizationMonoid R]
 -/
 #guard_msgs in
 variable? [UniqueFactorizationDomain R]
@@ -231,7 +261,8 @@ section
 /--
 error: invalid binder annotation, type is not a class instance
   UniqueFactorizationDomain R
-use the command `set_option checkBinderAnnotations false` to disable the check
+
+Note: Use the command `set_option checkBinderAnnotations false` to disable the check
 -/
 #guard_msgs in
 variable? [UniqueFactorizationDomain R] =>
@@ -243,7 +274,10 @@ section
 Test that unused variables are not reported for the variable list either before or after `=>`.
 -/
 
-/-- info: Try this: variable? {α : _} => {α : _} -/
+/--
+info: Try this:
+  [apply] variable? {α : _} => {α : _}
+-/
 #guard_msgs in
 variable? {α : _}
 

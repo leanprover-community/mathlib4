@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -14,10 +14,12 @@ def testSorryTac : TacticM Unit := do
   let t ← `(test_sorry)
   closeMainGoalUsing `sorry fun _ _ => elabTerm t e
 
-example {α} [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
 
-example {α : Type} (_inst : (a : Prop) → Decidable a) [LinearOrderedCommRing α]
+example {α : Type} (_inst : (a : Prop) → Decidable a)
+    [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b c : α}
     (ha : a < 0)
     (hb : ¬b = 0)
@@ -29,18 +31,19 @@ example {α : Type} (_inst : (a : Prop) → Decidable a) [LinearOrderedCommRing 
     0 < 1 - a := by
   linarith
 
-example (e b c a v0 v1 : Rat) (h1 : v0 = 5*a) (h2 : v1 = 3*b) (h3 : v0 + v1 + c = 10) :
+example (e b c a v0 v1 : Rat) (h1 : v0 = 5 * a) (h2 : v1 = 3 * b) (h3 : v0 + v1 + c = 10) :
     v0 + 5 + (v1 - 3) + (c - 2) = 10 := by
   linarith
 
-example {α} [LinearOrderedCommRing α] (e b c a v0 v1 : α) (h1 : v0 = 5*a) (h2 : v1 = 3*b)
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
+    (e b c a v0 v1 : α) (h1 : v0 = 5 * a) (h2 : v1 = 3 * b)
     (h3 : v0 + v1 + c = 10) : v0 + 5 + (v1 - 3) + (c - 2) = 10 := by
   linarith
 
 example (h : (1 : ℤ) < 0) (g : ¬ (37 : ℤ) < 42) (_k : True) (l : (-7 : ℤ) < 5): (3 : ℤ) < 7 := by
   linarith [(rfl : 0 = 0)]
 
-example (u v r s t : Rat) (h : 0 < u*(t*v + t*r + s)) : 0 < (t*(r + v) + s)*3*u := by
+example (u v r s t : Rat) (h : 0 < u * (t * v + t * r + s)) : 0 < (t * (r + v) + s) * 3 * u := by
   linarith
 
 example (A B : Rat) (h : 0 < A * B) : 0 < 8*A*B := by
@@ -49,18 +52,20 @@ example (A B : Rat) (h : 0 < A * B) : 0 < 8*A*B := by
 example (A B : Rat) (h : 0 < A * B) : 0 < A*8*B := by
   linarith
 
-example {α} [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (x : α) : 0 ≤ x := by
   have h : 0 ≤ x := test_sorry
   linarith
 
-example {α} [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (x : α) : 0 ≤ x := by
   have h : 0 ≤ x := test_sorry
   linarith [h]
 
-example {α} [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) :
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
+    (u v r s t : α) (h : 0 < u * (t * v + t * r + s)) :
     0 < (t*(r + v) + s)*3*u := by linarith
 
-example {α} [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
+    (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
   linarith
 
 example (s : Set ℕ) (_h : s = ∅) : 0 ≤ 1 := by linarith
@@ -73,11 +78,11 @@ example (A B : Rat) (h : 0 < A * B) : 0 < A*B/8 := by
 example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
   linarith
 
-example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
- by linarith
+example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε := by
+  linarith
 
-example (x y z : Rat) (h1 : 2*x < 3*y) (h2 : -4*x + z/2 < 0)
-    (h3 : 12*y - z < 0) : False := by
+example (x y z : Rat) (h1 : 2 * x < 3 * y) (h2 : -4 * x + z / 2 < 0)
+    (h3 : 12 * y - z < 0) : False := by
   linarith
 
 example (ε : Rat) (h1 : 0 < ε) : ε / 2 < ε := by linarith
@@ -98,7 +103,7 @@ example (x : Rat) (h : 0 < x) : 0 < x/2/3 := by linarith
 
 example (x : Rat) (h : 0 < x) : 0 < x/(2/3) := by linarith
 
-variable {K : Type*} [LinearOrderedField K]
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
 example (a : K) (ha : 10 / (8 + 2) ≤ a) : 1 ≤ a := by linarith
 
@@ -118,16 +123,16 @@ example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
 
 -- We haven't implemented `restrict_type` yet.
 -- example (a b c : ℚ) (x y : ℤ) (h1 : x ≤ 3*y) (h2 : b + 2 > 3 + b) : false :=
--- by linarith (config := {restrict_type := ℚ})
+-- by linarith (restrict_type := ℚ)
 
 example (g v V c h : Rat) (h1 : h = 0) (h2 : v = V) (h3 : V > 0) (h4 : g > 0)
     (h5 : 0 ≤ c) (h6 : c < 1) : v ≤ V := by
   linarith
 
-example (x y z : ℤ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0) (h3 : 12*y - 4* z < 0) : False := by
+example (x y z : ℤ) (h1 : 2 * x < 3 * y) (h2 : -4 * x + 2 * z < 0) (h3 : 12 * y - 4 * z < 0) : False := by
   linarith
 
-example (x y z : ℤ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0) (h3 : x*y < 5) (h3 : 12*y - 4* z < 0) :
+example (x y z : ℤ) (h1 : 2 * x < 3 * y) (h2 : -4 * x + 2 * z < 0) (h3 : x * y < 5) (h3 : 12 * y - 4 * z < 0) :
     False := by
   linarith
 
@@ -137,13 +142,13 @@ example (a b c : Rat) (h1 : a > 0) (h2 : b > 5) (h3 : c < -10) (h4 : a + b - c <
 example (a b c : Rat) (h2 : b > 0) (h3 : ¬ b ≥ 0) : False := by
   linarith
 
-example (x y z : Rat) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
+example (x y z : Rat) (hx : x ≤ 3 * y) (h2 : y ≤ 2 * z) (h3 : x ≥ 6 * z) : x = 3*y := by
   linarith
 
-example (x y z : ℤ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0) (h3 : x*y < 5) : ¬ 12*y - 4* z < 0 := by
+example (x y z : ℤ) (h1 : 2 * x < 3 * y) (h2 : -4 * x + 2 * z < 0) (h3 : x * y < 5) : ¬ 12*y - 4* z < 0 := by
   linarith
 
-example (x y z : Rat) (hx : ¬ x > 3*y) (h2 : ¬ y > 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
+example (x y z : Rat) (hx : ¬ x > 3 * y) (h2 : ¬ y > 2 * z) (h3 : x ≥ 6 * z) : x = 3 * y := by
   linarith
 
 example (x y : Rat) (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3) (h' : (x + 4) * x ≥ 0)
@@ -165,15 +170,15 @@ example (x : Rat) : id x ≥ x := by
 
 opaque Nat.prime : ℕ → Prop
 
-example (x y z : Rat) (h1 : 2*x + ((-3)*y) < 0) (h2 : (-4)*x + 2*z < 0) (h3 : 12*y + (-4)* z < 0)
+example (x y z : Rat) (h1 : 2 * x + ((-3) * y) < 0) (h2 : (-4) * x + 2 * z < 0) (h3 : 12 * y + (-4) * z < 0)
     (h4 : Nat.prime 7) : False := by
   linarith
 
-example (x y z : Rat) (h1 : 2*1*x + (3)*(y*(-1)) < 0) (h2 : (-2)*x*2 < -(z + z))
-    (h3 : 12*y + (-4)* z < 0) (h4 : Nat.prime 7) : False := by
+example (x y z : Rat) (h1 : 2 * 1 * x + (3) * (y * (-1)) < 0) (h2 : (-2) * x * 2 < -(z + z))
+    (h3 : 12 * y + (-4) * z < 0) (h4 : Nat.prime 7) : False := by
   linarith
 
-example (w x y z : ℤ) (h1 : 4*x + (-3)*y + 6*w ≤ 0) (h2 : (-1)*x < 0) (h3 : y < 0) (h4 : w ≥ 0)
+example (w x y z : ℤ) (h1 : 4 * x + (-3) * y + 6 * w ≤ 0) (h2 : (-1) * x < 0) (h3 : y < 0) (h4 : w ≥ 0)
     (h5 : Nat.prime x.natAbs) : False := by
   linarith
 
@@ -193,7 +198,7 @@ example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
 
 end term_arguments
 
-example (i n : ℕ) (h : (2:ℤ) ^ i ≤ 2 ^ n) : (0:ℤ) ≤ 2 ^ n - 2 ^ i := by
+example (i n : ℕ) (h : (2 : ℤ) ^ i ≤ 2 ^ n) : (0 : ℤ) ≤ 2 ^ n - 2 ^ i := by
   linarith
 
 -- Check we use `exfalso` on non-comparison goals.
@@ -201,14 +206,13 @@ example (a b c : Rat) (h2 : b > 0) (h3 : b < 0) : Nat.prime 10 := by
   linarith
 
 example (a b c : Rat) (h2 : (2 : Rat) > 3) : a + b - c ≥ 3 := by
-  linarith (config := {exfalso := false})
+  linarith -exfalso
 
 -- Verify that we split conjunctions in hypotheses.
 example (x y : Rat)
     (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) :
     False := by
-  fail_if_success
-    linarith (config := {splitHypotheses := false})
+  fail_if_success linarith -splitHypotheses
   linarith
 
 example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) (l : (-7 : ℤ) < 5) : 3 < 7 := by
@@ -232,7 +236,7 @@ example (x y : ℕ) (h : x < 3 * y) : True := by
 
 example : (Nat.cast 2 : ℤ) = 2 := Nat.cast_ofNat
 
-example (x y z : ℕ) (hx : x ≤ 3*y) (h2 : y ≤ 2*z) (h3 : x ≥ 6*z) : x = 3*y := by
+example (x y z : ℕ) (hx : x ≤ 3 * y) (h2 : y ≤ 2 * z) (h3 : x ≥ 6 * z) : x = 3 * y := by
   linarith
 
 example (a b c : ℕ) : ¬ a + b < a := by
@@ -267,18 +271,18 @@ example (N : ℕ) (n : ℕ) (Hirrelevant : n > N) (A : Rat) (l : Rat) (h : A - l
     (h_1 : ¬A ≤ -A) (h_2 : ¬l ≤ -l) (h_3 : -(A - l) < 1) : A < l + 1 := by
   linarith
 
-example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1)*n ≥ 0) (h2 : d = 2/3*(((q : Rat) - 1)*n)) :
-    d ≤ ((q : Rat) - 1)*n := by
+example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1) * n ≥ 0) (h2 : d = 2 / 3 * (((q : Rat) - 1) * n)) :
+    d ≤ ((q : Rat) - 1) * n := by
   linarith
 
-example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1)*n ≥ 0) (h2 : d = 2/3*(((q : Rat) - 1)*n)) :
-    ((q : Rat) - 1)*n - d = 1/3 * (((q : Rat) - 1)*n) := by
+example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1) * n ≥ 0) (h2 : d = 2 / 3 * (((q : Rat) - 1) * n)) :
+    ((q : Rat) - 1)*n - d = 1/3 * (((q : Rat) - 1) * n) := by
   linarith
 
-example (x y z : ℚ) (hx : x < 5) (hx2 : x > 5) (hy : y < 5000000000) (hz : z > 34*y) : false := by
+example (x y z : ℚ) (hx : x < 5) (hx2 : x > 5) (hy : y < 5000000000) (hz : z > 34 * y) : false := by
   linarith only [hx, hx2]
 
-example (x y z : ℚ) (hx : x < 5) (hy : y < 5000000000) (hz : z > 34*y) : x ≤ 5 := by
+example (x y z : ℚ) (hx : x < 5) (hy : y < 5000000000) (hz : z > 34 * y) : x ≤ 5 := by
   linarith only [hx]
 
 /- The speed of `linarith` is very sensitive to how much typeclass inference is demanded by the
@@ -291,7 +295,7 @@ in several places used off-the-shelf library lemmas requiring low-level typeclas
 After a tweak to rely only on custom `linarith` clones of these lemmas taking high-level typeclasses,
 this now (November 2024) takes 1647 heartbeats (63 ms on a good laptop). -/
 set_option maxHeartbeats 2000 in
-example {K : Type*} [LinearOrderedField K] {x y : K}
+example {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K] {x y : K}
     (h : x + y = 10) (h' : x + 2 * y ≤ 18) (h : x < 2) : False := by
   linarith (config := {discharger := testSorryTac})
 
@@ -468,7 +472,7 @@ example (a1 a2 a3 b1 b2 b3 c1 c2 c3 d1 d2 d3 : ℕ)
     (h2 : c1 + c2 + c3 = d1 + d2 + d3) :
     a1 * c1 + a2 * c1 + a3 * c1 + a1 * c2 + a2 * c2 + a3 * c2 + a1 * c3 + a2 * c3 + a3 * c3 =
     b1 * d1 + b2 * d1 + b3 * d1 + b1 * d2 + b2 * d2 + b3 * d2 + b1 * d3 + b2 * d3 + b3 * d3 := by
-  nlinarith --(config := { oracle := some .fourierMotzkin })
+  nlinarith --(oracle := some .fourierMotzkin)
 
 -- This should not be slower than the example below with the Fourier-Motzkin oracle
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
@@ -477,7 +481,7 @@ example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
 
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
     p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
-  nlinarith (config := { oracle := .fourierMotzkin })
+  nlinarith (oracle := .fourierMotzkin)
 
 section
 -- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
@@ -499,7 +503,9 @@ end
 
 axiom T : Type
 
-@[instance] axiom T_zero : OrderedRing T
+@[instance] axiom T.ring : Ring T
+@[instance] axiom T.partialOrder : PartialOrder T
+@[instance] axiom T.isOrderedRing : IsOrderedRing T
 
 namespace T
 
@@ -511,25 +517,25 @@ lemma works {a b : ℕ} (hab : a ≤ b) (h : b < a) : false := by
 end T
 
 example (a b c : ℚ) (h : a ≠ b) (h3 : b ≠ c) (h2 : a ≥ b) : b ≠ c := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 example (a b c : ℚ) (h : a ≠ b) (h2 : a ≥ b) (h3 : b ≠ c) : a > b := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 example (a b : ℕ) (h1 : b ≠ a) (h2 : b ≤ a) : b < a := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 example (a b : ℕ) (h1 : b ≠ a) (h2 : ¬a < b) : b < a := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 section
 -- Regression test for issue that splitNe didn't see `¬ a = b`
 
 example (a b : Nat) (h1 : a < b + 1) (h2 : a ≠ b) : a < b := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 example (a b : Nat) (h1 : a < b + 1) (h2 : ¬ a = b) : a < b := by
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 end
 
@@ -537,7 +543,7 @@ end
 -- before splitNe splitting
 example (r : ℚ) (h' : 1 = r * 2) : 1 = 0 ∨ r = 1 / 2 := by
   by_contra! h''
-  linarith (config := {splitNe := true})
+  linarith +splitNe
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
 
@@ -549,8 +555,8 @@ lemma bar (x y : Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith
 -- -- issue https://github.com/leanprover-community/mathlib4/pull/9822
 -- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j := by linarith
 
-example {α} [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
-  cases' h with x h
+example {α} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (h : ∃ x : α, 0 ≤ x) : True := by
+  obtain ⟨x, h⟩ := h
   have : 0 ≤ x := by linarith
   trivial
 
@@ -573,24 +579,27 @@ example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
 universe u v
 -- simulate the type of MvPolynomial
 def P : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
-noncomputable instance {c d} : LinearOrderedField (P c d) := test_sorry
+noncomputable instance {c d} : Field (P c d) := test_sorry
+noncomputable instance {c d} : LinearOrder (P c d) := test_sorry
+noncomputable instance {c d} : IsStrictOrderedRing (P c d) := test_sorry
 
-example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
+example (p : P PUnit.{u + 1} PUnit.{v + 1}) (h : 0 < p) : 0 < 2 * p := by
   linarith
 
 example (n : Nat) : n + 1 ≥ (1 / 2 : ℚ) := by linarith
 
-example {α : Type} [LinearOrderedCommRing α] (n : Nat) : (5 : α) - (n : α) ≤ (6 : α) := by
+example {α : Type} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (n : Nat) : (5 : α) - (n : α) ≤ (6 : α) := by
   linarith
 
-example {α : Type} [LinearOrderedCommRing α] (n : Nat) : -(n : α) ≤ 0 := by
+example {α : Type} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (n : Nat) : -(n : α) ≤ 0 := by
   linarith
 
-example {α : Type} [LinearOrderedCommRing α]
+example {α : Type} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α]
     (n : Nat) (a : α) (h : a ≥ 2) : a * (n : α) + 5 ≥ 4 := by nlinarith
 example (x : ℚ) (h : x * (2⁻¹ + 2 / 3) = 1) : x = 6 / 7 := by linarith
 
-example {α} [LinearOrderedCommSemiring α] (x : α) (_ : 0 ≤ x) : 0 ≤ 1 := by linarith
+example {α} [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] (x : α) (_ : 0 ≤ x) :
+    0 ≤ 1 := by linarith
 
 example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
   -- Make h₁'s type be a metavariable. At one point this caused the strengthenStrictInt
@@ -598,26 +607,26 @@ example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
   change _ at h₁
   linarith
 
-/-- error: unknown identifier 'garbage' -/
+/-- error: Unknown identifier `garbage` -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
   linarith [p _ garbage]
 
-/-- error: unknown identifier 'garbage' -/
+/-- error: Unknown identifier `garbage` -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
   nlinarith [p _ garbage]
 
 /--
-error: don't know how to synthesize placeholder for argument 'x'
+error: don't know how to synthesize placeholder for argument `x`
 context:
 q : Prop
-p : ℤ → 1 = 2
+p : ∀ (x : ℤ), 1 = 2
 ⊢ ℤ
 ---
 error: unsolved goals
 q : Prop
-p : ℤ → 1 = 2
+p : ∀ (x : ℤ), 1 = 2
 ⊢ 1 = 2
 -/
 #guard_msgs in
@@ -677,20 +686,6 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     False := by
   intros; linarith
 
--- TODO: still broken with Fourier-Motzkin
-/--
-error: linarith failed to find a contradiction
-case h1.h
-a b c d e : ℚ
-ha : 2 * a + b + c + d + e = 4
-hb : a + 2 * b + c + d + e = 5
-hc : a + b + 2 * c + d + e = 6
-hd : a + b + c + 2 * d + e = 7
-he : a + b + c + d + 2 * e = 8
-a✝ : e < 3
-⊢ False
-failed
--/
 #guard_msgs in
 /-- https://github.com/leanprover-community/mathlib4/issues/8875 -/
 example (a b c d e : ℚ)
@@ -700,26 +695,8 @@ example (a b c d e : ℚ)
     (hd : a + b + c + 2 * d + e = 7)
     (he : a + b + c + d + 2 * e = 8) :
     e = 3 := by
-  linarith (config := { oracle := .fourierMotzkin })
+  linarith (oracle := .fourierMotzkin)
 
-set_option linter.unusedTactic false in
--- TODO: still broken with Fourier-Motzkin
-/--
-error: linarith failed to find a contradiction
-x1 x2 x3 x4 x5 x6 x7 x8 : ℚ
-a✝⁹ : 3 * x4 - x3 - x2 - x1 < 0
-a✝⁸ : x5 - x4 < 0
-a✝⁷ : 2 * (x5 - x4) < 0
-a✝⁶ : -x6 + x3 < 0
-a✝⁵ : -x6 + x2 < 0
-a✝⁴ : 2 * (x6 - x5) < 0
-a✝³ : x8 - x7 < 0
-a✝² : -x8 + x2 < 0
-a✝¹ : -x8 + x7 - x5 + x1 < 0
-a✝ : x7 - x5 < 0
-⊢ False
-failed
--/
 #guard_msgs in
 /-- https://github.com/leanprover-community/mathlib4/issues/2717 -/
 example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
@@ -734,7 +711,7 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     -x8 + x7 - x5 + x1 < 0 →
     x7 - x5 < 0 → False := by
   intros
-  linarith (config := { oracle := .fourierMotzkin })
+  linarith (oracle := .fourierMotzkin)
 
 section findSquares
 
@@ -745,9 +722,9 @@ example (x : ℤ) : 0 ≤ x * wrapped x := by nlinarith
 private def tightlyWrapped (z : ℤ) : ℤ := z
 /--
 error: linarith failed to find a contradiction
-case a
+case h
 x : ℤ
-a✝ : 0 > x * tightlyWrapped x
+a✝ : x * tightlyWrapped x < 0
 ⊢ False
 failed
 -/
@@ -755,3 +732,44 @@ failed
 example (x : ℤ) : 0 ≤ x * tightlyWrapped x := by nlinarith
 
 end findSquares
+
+-- `Expr.mdata` should be ignored by linarith
+example (x : Int) (h : x = -2) : x = no_index(-2) := by
+  linarith [h]
+
+/-!
+From https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Adding.20an.20extra.20hypothesis.20breaks.20linarith/near/533973472
+-/
+namespace metavariables
+
+theorem foo {i m : ℕ} : i ∣ 2 ^ m → m = m := fun _ => rfl
+
+variable (k a i : ℕ)
+
+theorem base (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+-- It's not clear which of the following should succeed and which should fail.
+-- For now this primarily serves to record behavior changes.
+
+theorem before_i (useless : i ≤ i) (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+theorem before_k (useless : k ≤ k) (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+theorem after_i_fails (h : (a : ℤ) * 2 ^ k = 2 ^ i) (useless : i ≤ i) : True := by
+  fail_if_success have := foo ⟨2^k, by linarith⟩
+  trivial
+
+theorem after_k_fails (h : (a : ℤ) * 2 ^ k = 2 ^ i) (useless : k ≤ k) : True := by
+  fail_if_success have := foo ⟨2^k, by linarith⟩
+  trivial
+
+end metavariables

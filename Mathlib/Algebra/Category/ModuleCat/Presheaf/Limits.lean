@@ -63,7 +63,7 @@ taking a limit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
 noncomputable def limitPresheafOfModules : PresheafOfModules R where
   obj X := limit (F ⋙ evaluation R X)
-  map {_ Y} f := limMap (whiskerLeft F (restriction R f)) ≫
+  map {_ Y} f := limMap (Functor.whiskerLeft F (restriction R f)) ≫
     (preservesLimitIso (ModuleCat.restrictScalars (R.map f).hom) (F ⋙ evaluation R Y)).inv
   map_id X := by
     dsimp
@@ -71,8 +71,9 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
     apply limit.hom_ext
     intro j
     dsimp
-    simp only [limMap_π, Functor.comp_obj, evaluation_obj, whiskerLeft_app,
+    simp only [limMap_π, Functor.comp_obj, evaluation_obj, Functor.whiskerLeft_app,
       restriction_app, assoc]
+    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
     erw [preservesLimitIso_hom_π]
     rw [← ModuleCat.restrictScalarsId'App_inv_naturality, map_id,
       ModuleCat.restrictScalarsId'_inv_app]
@@ -83,16 +84,19 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
       comp_id]
     apply limit.hom_ext
     intro j
-    simp only [Functor.comp_obj, evaluation_obj, limMap_π, whiskerLeft_app, restriction_app,
+    simp only [Functor.comp_obj, evaluation_obj, limMap_π, Functor.whiskerLeft_app, restriction_app,
       map_comp, ModuleCat.restrictScalarsComp'_inv_app, Functor.map_comp, assoc]
+    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
     erw [preservesLimitIso_hom_π]
     rw [← ModuleCat.restrictScalarsComp'App_inv_naturality]
     dsimp
     rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc, assoc,
       preservesLimitIso_inv_π]
+    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
     erw [limMap_π]
     dsimp
     simp only [Functor.map_comp, assoc, preservesLimitIso_inv_π_assoc]
+    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
     erw [limMap_π_assoc]
     dsimp
 
@@ -126,7 +130,7 @@ noncomputable instance toPresheaf_preservesLimit :
     PreservesLimit F (toPresheaf R) :=
   preservesLimit_of_preserves_limit_cone (isLimitLimitCone F)
     (Limits.evaluationJointlyReflectsLimits _
-      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
+      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrpCat)
         (isLimitLimitCone F)))
 
 end Limits
@@ -138,6 +142,8 @@ section Small
 variable [Small.{v} J]
 
 instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
+
+instance hasLimitsOfSize : HasLimitsOfSize.{v, v} (PresheafOfModules.{v} R) where
 
 noncomputable instance evaluation_preservesLimitsOfShape (X : Cᵒᵖ) :
     PreservesLimitsOfShape J (evaluation R X : PresheafOfModules.{v} R ⥤ _) where

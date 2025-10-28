@@ -25,13 +25,13 @@ as a linear map. This is used in particular in the proof of the Lindemann-Weiers
   polynomials
 * `Polynomial.sumIDeriv_map`: `Polynomial.sumIDeriv` commutes with `Polynomial.map`
 * `Polynomial.sumIDeriv_derivative`: `Polynomial.sumIDeriv` commutes with `Polynomial.derivative`
-* `Polynomial.sumIDeriv_eq_self_add`: `sumIDeriv p = p + sumIDeriv (derivative p)`
-* `Polynomial.exists_iterate_derivative_eq_factorial_smul`: the `k`'th iterated derivative of a
+* `Polynomial.sumIDeriv_eq_self_add`: `sumIDeriv p = p + derivative (sumIDeriv p)`
+* `Polynomial.exists_iterate_derivative_eq_factorial_smul`: the `k`-th iterated derivative of a
   polynomial has a common factor `k!`
 * `Polynomial.aeval_iterate_derivative_of_lt`, `Polynomial.aeval_iterate_derivative_self`,
   `Polynomial.aeval_iterate_derivative_of_ge`: applying `Polynomial.aeval` to iterated derivatives
 * `Polynomial.aeval_sumIDeriv`, `Polynomial.aeval_sumIDeriv_of_pos`: applying `Polynomial.aeval` to
-   `Polynomial.sumIDeriv`
+  `Polynomial.sumIDeriv`
 
 -/
 
@@ -50,7 +50,7 @@ variable [Semiring R] [Semiring S]
 Sum of iterated derivatives of a polynomial, as a linear map
 
 This definition does not allow different weights for the derivatives. It is likely that it could be
-extended to allow them, but this was not needed for the initial use case (the integration by part
+extended to allow them, but this was not needed for the initial use case (the integration by parts
 of the integral $I_i$ in the
 [Lindemann-Weierstrass](https://en.wikipedia.org/wiki/Lindemann%E2%80%93Weierstrass_theorem)
 theorem).
@@ -95,8 +95,8 @@ theorem sumIDeriv_derivative (p : R[X]) : sumIDeriv (derivative p) = derivative 
     derivative_sum]
   simp_rw [← Function.iterate_succ_apply, Function.iterate_succ_apply']
 
-theorem sumIDeriv_eq_self_add (p : R[X]) : sumIDeriv p = p + sumIDeriv (derivative p) := by
-  rw [sumIDeriv_derivative, sumIDeriv_apply, derivative_sum, sum_range_succ', sum_range_succ,
+theorem sumIDeriv_eq_self_add (p : R[X]) : sumIDeriv p = p + derivative (sumIDeriv p) := by
+  rw [sumIDeriv_apply, derivative_sum, sum_range_succ', sum_range_succ,
     add_comm, ← add_zero (Finset.sum _ _)]
   simp_rw [← Function.iterate_succ_apply' derivative, Nat.succ_eq_add_one,
     Function.iterate_zero_apply, iterate_derivative_eq_zero (Nat.lt_succ_self _)]
@@ -158,32 +158,36 @@ theorem aeval_iterate_derivative_of_ge (p : R[X]) (q : ℕ) {k : ℕ} (hk : q �
   simp_rw [hp', nsmul_eq_mul, map_mul, map_natCast, ← mul_assoc, ← Nat.cast_mul,
     Nat.add_descFactorial_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 
+theorem aeval_sumIDeriv_eq_eval (p : R[X]) (r : A) :
+    aeval r (sumIDeriv p) = eval r (sumIDeriv (map (algebraMap R A) p)) := by
+  rw [aeval_def, eval, sumIDeriv_map, eval₂_map, RingHom.id_comp]
+
 theorem aeval_sumIDeriv (p : R[X]) (q : ℕ) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
-      ∀ (r : A) {p' : A[X]}, p.map (algebraMap R A) = (X - C r) ^ q * p' →
+      ∀ (r : A), (X - C r) ^ q ∣ p.map (algebraMap R A) →
         aeval r (sumIDeriv p) = q ! • aeval r gp := by
   have h (k) :
       ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
-        ∀ (r : A) {p' : A[X]}, p.map (algebraMap R A) = (X - C r) ^ q * p' →
+        ∀ (r : A), (X - C r) ^ q ∣ p.map (algebraMap R A) →
           aeval r (derivative^[k] p) = q ! • aeval r gp := by
     cases lt_or_ge k q with
     | inl hk =>
       use 0
       rw [natDegree_zero]
       use Nat.zero_le _
-      intro r p' hp
+      intro r ⟨p', hp⟩
       rw [map_zero, smul_zero, aeval_iterate_derivative_of_lt p q r hp hk]
     | inr hk =>
       obtain ⟨gp, gp_le, h⟩ := aeval_iterate_derivative_of_ge A p q hk
-      exact ⟨gp, gp_le.trans (tsub_le_tsub_left hk _), fun r p' _ => h r⟩
+      exact ⟨gp, gp_le.trans (tsub_le_tsub_left hk _), fun r _ => h r⟩
   choose c h using h
   choose c_le hc using h
   refine ⟨(range (p.natDegree + 1)).sum c, ?_, ?_⟩
   · refine (natDegree_sum_le _ _).trans ?_
     rw [fold_max_le]
     exact ⟨Nat.zero_le _, fun i _ => c_le i⟩
-  intro r p' hp
-  rw [sumIDeriv_apply, map_sum]; simp_rw [hc _ r hp, map_sum, smul_sum]
+  intro r ⟨p', hp⟩
+  rw [sumIDeriv_apply, map_sum]; simp_rw [hc _ r ⟨_, hp⟩, map_sum, smul_sum]
 
 theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq : 0 < q)
     (inj_amap : Function.Injective (algebraMap R A)) :
@@ -200,7 +204,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     rw [Polynomial.map_zero] at hp
     replace hp := (mul_eq_zero.mp hp.symm).resolve_left ?_
     · rw [hp, eval_zero, smul_zero]
-    exact fun h => X_sub_C_ne_zero r (pow_eq_zero h)
+    exact fun h => X_sub_C_ne_zero r (eq_zero_of_pow_eq_zero h)
   let c k := if hk : q ≤ k then (aeval_iterate_derivative_of_ge A p q hk).choose else 0
   have c_le (k) : (c k).natDegree ≤ p.natDegree - k := by
     dsimp only [c]
@@ -239,11 +243,19 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     · rw [smul_sum, sum_congr rfl]
       intro k hk
       exact hc k (mem_Ico.mp hk).1 r
-  · rw [range_eq_Ico, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_not_mem]
+  · rw [range_eq_Ico, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem]
     intro x hx
     rw [mem_inter, mem_Ico, mem_Ico] at hx
-    exact hx.1.2.not_le hx.2.1
+    exact hx.1.2.not_ge hx.2.1
 
 end CommSemiring
+
+theorem eval_sumIDeriv_of_pos
+    [CommRing R] [Nontrivial R] [NoZeroDivisors R] (p : R[X]) {q : ℕ} (hq : 0 < q) :
+    ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
+      ∀ (r : R) {p' : R[X]},
+        p = ((X : R[X]) - C r) ^ (q - 1) * p' →
+        eval r (sumIDeriv p) = (q - 1)! • p'.eval r + q ! • eval r gp := by
+  simpa using aeval_sumIDeriv_of_pos R p hq Function.injective_id
 
 end Polynomial

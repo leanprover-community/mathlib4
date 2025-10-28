@@ -47,21 +47,12 @@ theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
     Subobject.ofLE (imageSubobject f) (kernelSubobject g) h = imageToKernel f g w :=
   rfl
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
--- Porting note: removed elementwise attribute which does not seem to be helpful here
--- a more suitable lemma is added below
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem imageToKernel_arrow (w : f ≫ g = 0) :
     imageToKernel f g w ≫ (kernelSubobject g).arrow = (imageSubobject f).arrow := by
   simp [imageToKernel]
-
-@[simp]
-lemma imageToKernel_arrow_apply [ConcreteCategory V] (w : f ≫ g = 0)
-    (x : (forget V).obj (Subobject.underlying.obj (imageSubobject f))) :
-    (kernelSubobject g).arrow (imageToKernel f g w x) =
-      (imageSubobject f).arrow x := by
-  rw [← comp_apply, imageToKernel_arrow]
 
 -- This is less useful as a `simp` lemma than it initially appears,
 -- as it "loses" the information the morphism factors through the image.
@@ -85,7 +76,6 @@ theorem imageToKernel_zero_left [HasKernels V] [HasZeroObject V] {w} :
 theorem imageToKernel_zero_right [HasImages V] {w} :
     imageToKernel f (0 : B ⟶ C) w =
       (imageSubobject f).arrow ≫ inv (kernelSubobject (0 : B ⟶ C)).arrow := by
-  ext
   simp
 
 section

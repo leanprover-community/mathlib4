@@ -3,9 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Analysis.Complex.Liouville
 import Mathlib.FieldTheory.PolynomialGaloisGroup
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!
@@ -27,8 +28,8 @@ open scoped ComplexConjugate
 
 namespace Complex
 
-/-- **Fundamental theorem of algebra**: every non constant complex polynomial
-  has a root -/
+/-- **Fundamental theorem of algebra**: every nonconstant complex polynomial
+  has a root. -/
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
   by_contra! hf'
   /- Since `f` has no roots, `f⁻¹` is differentiable. And since `f` is a polynomial, it tends to
@@ -47,6 +48,11 @@ instance isAlgClosed : IsAlgClosed ℂ :=
 
 end Complex
 
+/-- An algebraic extension of ℝ is isomorphic to either ℝ or ℂ as an ℝ-algebra. -/
+theorem Real.nonempty_algEquiv_or (F : Type*) [Field F] [Algebra ℝ F] [Algebra.IsAlgebraic ℝ F] :
+    Nonempty (F ≃ₐ[ℝ] ℝ) ∨ Nonempty (F ≃ₐ[ℝ] ℂ) :=
+  IsAlgClosed.nonempty_algEquiv_or_of_finrank_eq_two F Complex.finrank_real_complex
+
 namespace Polynomial.Gal
 
 section Rationals
@@ -58,7 +64,7 @@ attribute [local instance] splits_ℚ_ℂ
 attribute [local ext] Complex.ext
 
 /-- The number of complex roots equals the number of real roots plus
-    the number of roots not fixed by complex conjugation (i.e. with some imaginary component). -/
+the number of roots not fixed by complex conjugation (i.e. with some imaginary component). -/
 theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     (p.rootSet ℂ).toFinset.card =
       (p.rootSet ℝ).toFinset.card +
@@ -74,9 +80,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
   let a : Finset ℂ := ?_
   on_goal 1 => let b : Finset ℂ := ?_
   on_goal 1 => let c : Finset ℂ := ?_
-  -- Porting note: was
-  --   change a.card = b.card + c.card
-  suffices a.card = b.card + c.card by exact this
+  change a.card = b.card + c.card
   have ha : ∀ z : ℂ, z ∈ a ↔ aeval z p = 0 := by
     intro z; rw [Set.mem_toFinset, mem_rootSet_of_ne hp]
   have hb : ∀ z : ℂ, z ∈ b ↔ aeval z p = 0 ∧ z.im = 0 := by
@@ -159,15 +163,7 @@ theorem galActionHom_bijective_of_prime_degree' {p : ℚ[X]} (p_irr : Irreducibl
           MonoidHom.map_one, MonoidHom.map_one])
   have key := card_complex_roots_eq_card_real_add_card_not_gal_inv p
   simp_rw [Set.toFinset_card] at key
-  rw [key, add_le_add_iff_left] at p_roots1 p_roots2
-  rw [key, add_right_inj]
-  suffices ∀ m : ℕ, 2 ∣ m → 1 ≤ m → m ≤ 3 → m = 2 by exact this n hn p_roots1 p_roots2
-  rintro m ⟨k, rfl⟩ h2 h3
-  exact le_antisymm
-      (Nat.lt_succ_iff.mp
-        (lt_of_le_of_ne h3 (show 2 * k ≠ 2 * 1 + 1 from Nat.two_mul_ne_two_mul_add_one)))
-      (Nat.succ_le_iff.mpr
-        (lt_of_le_of_ne h2 (show 2 * 0 + 1 ≠ 2 * k from Nat.two_mul_ne_two_mul_add_one.symm)))
+  omega
 
 end Rationals
 
@@ -193,29 +189,16 @@ lemma Polynomial.quadratic_dvd_of_aeval_eq_zero_im_ne_zero (p : ℝ[X]) {z : ℂ
       rw [← add_conj, map_add, ← mul_conj', map_mul]
       ring
 
-/-- An irreducible real polynomial has degree at most two. -/
-lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤ 2 := by
+/-- An irreducible real polynomial has natural degree at most two. -/
+lemma Irreducible.natDegree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree p ≤ 2 := by
   obtain ⟨z, hz⟩ : ∃ z : ℂ, aeval z p = 0 :=
     IsAlgClosed.exists_aeval_eq_zero _ p (degree_pos_of_irreducible hp).ne'
-  cases eq_or_ne z.im 0 with
-  | inl hz0 =>
-    lift z to ℝ using hz0
-    erw [aeval_ofReal, RCLike.ofReal_eq_zero] at hz
-    exact (degree_eq_one_of_irreducible_of_root hp hz).trans_le one_le_two
-  | inr hz0 =>
-    obtain ⟨q, rfl⟩ := p.quadratic_dvd_of_aeval_eq_zero_im_ne_zero hz hz0
-    have hd : degree (X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2)) = 2 := by
-      compute_degree!
-    have hq : IsUnit q := by
-      refine (of_irreducible_mul hp).resolve_left (mt isUnit_iff_degree_eq_zero.1 ?_)
-      rw [hd]
-      exact two_ne_zero
-    refine (degree_mul_le _ _).trans_eq ?_
-    rwa [isUnit_iff_degree_eq_zero.1 hq, add_zero]
+  rw [← finrank_real_complex]
+  convert minpoly.natDegree_le z using 1
+  · rw [← minpoly.eq_of_irreducible hp hz, natDegree_mul hp.ne_zero (by simpa using hp.ne_zero),
+      natDegree_C, add_zero]
+  infer_instance
 
-/-- An irreducible real polynomial has natural degree at most two. -/
-lemma Irreducible.natDegree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree p ≤ 2 :=
-  natDegree_le_iff_degree_le.2 hp.degree_le_two
-
-@[deprecated (since := "2024-02-18")]
-alias Irreducible.nat_degree_le_two := Irreducible.natDegree_le_two
+/-- An irreducible real polynomial has degree at most two. -/
+lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤ 2 :=
+  natDegree_le_iff_degree_le.1 hp.natDegree_le_two

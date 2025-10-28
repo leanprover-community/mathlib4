@@ -30,7 +30,7 @@ for `r` to ensure that `d ^ r` is monotone in `d`. It might be a good idea to us
 
 Hölder continuity, Lipschitz continuity
 
- -/
+-/
 
 
 variable {X Y Z : Type*}
@@ -161,6 +161,11 @@ namespace HolderWith
 
 variable {C r : ℝ≥0} {f : X → Y}
 
+theorem restrict_iff {s : Set X} : HolderWith C r (s.restrict f) ↔ HolderOnWith C r f s := by
+  simp [HolderWith, HolderOnWith]
+
+protected alias ⟨_, _root_.HolderOnWith.holderWith⟩ := restrict_iff
+
 theorem edist_le (h : HolderWith C r f) (x y : X) :
     edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ) :=
   h x y
@@ -200,7 +205,7 @@ lemma of_isEmpty [IsEmpty X] : HolderWith C r f := isEmptyElim
 
 lemma mono {C' : ℝ≥0} (hf : HolderWith C r f) (h : C ≤ C') :
     HolderWith C' r f :=
-  fun x₁ x₂ ↦ (hf x₁ x₂).trans (mul_right_mono (coe_le_coe.2 h))
+  fun x₁ x₂ ↦ (hf x₁ x₂).trans (by gcongr)
 
 end HolderWith
 
@@ -208,27 +213,47 @@ end Emetric
 
 section PseudoMetric
 
-variable [PseudoMetricSpace X] [PseudoMetricSpace Y] {C r : ℝ≥0} {f : X → Y}
+variable [PseudoMetricSpace X] [PseudoMetricSpace Y] {C r : ℝ≥0} {f : X → Y} {s : Set X} {x y : X}
+
+namespace HolderOnWith
+
+theorem nndist_le_of_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s)
+    {d : ℝ≥0} (hd : nndist x y ≤ d) : nndist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
+  rw [← ENNReal.coe_le_coe, ← edist_nndist, ENNReal.coe_mul,
+    ENNReal.coe_rpow_of_nonneg _ r.coe_nonneg]
+  apply hf.edist_le_of_le hx hy
+  rwa [edist_nndist, ENNReal.coe_le_coe]
+
+theorem nndist_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s) :
+    nndist (f x) (f y) ≤ C * nndist x y ^ (r : ℝ) :=
+  hf.nndist_le_of_le hx hy le_rfl
+
+theorem dist_le_of_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s)
+    {d : ℝ} (hd : dist x y ≤ d) : dist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
+  lift d to ℝ≥0 using dist_nonneg.trans hd
+  rw [dist_nndist] at hd ⊢
+  norm_cast at hd ⊢
+  exact hf.nndist_le_of_le hx hy hd
+
+theorem dist_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s) :
+    dist (f x) (f y) ≤ C * dist x y ^ (r : ℝ) :=
+  hf.dist_le_of_le hx hy le_rfl
+
+end HolderOnWith
 
 namespace HolderWith
 
 theorem nndist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nndist x y ≤ d) :
-    nndist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
-  rw [← ENNReal.coe_le_coe, ← edist_nndist, ENNReal.coe_mul,
-    ENNReal.coe_rpow_of_nonneg _ r.coe_nonneg]
-  apply hf.edist_le_of_le
-  rwa [edist_nndist, ENNReal.coe_le_coe]
+    nndist (f x) (f y) ≤ C * d ^ (r : ℝ) :=
+  (hf.holderOnWith univ).nndist_le_of_le (mem_univ x) (mem_univ y) hd
 
 theorem nndist_le (hf : HolderWith C r f) (x y : X) :
     nndist (f x) (f y) ≤ C * nndist x y ^ (r : ℝ) :=
   hf.nndist_le_of_le le_rfl
 
 theorem dist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ} (hd : dist x y ≤ d) :
-    dist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
-  lift d to ℝ≥0 using dist_nonneg.trans hd
-  rw [dist_nndist] at hd ⊢
-  norm_cast at hd ⊢
-  exact hf.nndist_le_of_le hd
+    dist (f x) (f y) ≤ C * d ^ (r : ℝ) :=
+  (hf.holderOnWith univ).dist_le_of_le (mem_univ x) (mem_univ y) hd
 
 theorem dist_le (hf : HolderWith C r f) (x y : X) : dist (f x) (f y) ≤ C * dist x y ^ (r : ℝ) :=
   hf.dist_le_of_le le_rfl
@@ -258,16 +283,25 @@ variable [PseudoMetricSpace X] [SeminormedAddCommGroup Y] {C C' r : ℝ≥0} {f 
 namespace HolderWith
 
 lemma add (hf : HolderWith C r f) (hg : HolderWith C' r g) :
-    HolderWith (C + C') r (f + g) := fun x₁ x₂ => by
-  refine le_trans (edist_add_add_le _ _ _ _) <| le_trans (add_le_add (hf x₁ x₂) (hg x₁ x₂)) ?_
-  rw [coe_add, add_mul]
+    HolderWith (C + C') r (f + g) := by
+  intro x₁ x₂
+  simp only [Pi.add_apply, coe_add]
+  grw [edist_add_add_le, hf x₁ x₂, hg x₁ x₂]
+  rw [add_mul]
 
-lemma smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul α Y] (a : α)
+lemma smul {α} [SeminormedAddCommGroup α] [SMulZeroClass α Y] [IsBoundedSMul α Y] (a : α)
     (hf : HolderWith C r f) : HolderWith (C * ‖a‖₊) r (a • f) := fun x₁ x₂ => by
-  rw [Pi.smul_apply, coe_mul, Pi.smul_apply, edist_smul₀, mul_comm (C : ℝ≥0∞),
-    ENNReal.smul_def, smul_eq_mul, mul_assoc]
+  refine edist_smul_le _ _ _ |>.trans ?_
+  rw [coe_mul, ENNReal.smul_def, smul_eq_mul, mul_comm (C : ℝ≥0∞), mul_assoc]
   gcongr
   exact hf x₁ x₂
+
+lemma smul_iff {α} [SeminormedRing α] [Module α Y] [NormSMulClass α Y] (a : α)
+    (ha : ‖a‖₊ ≠ 0) :
+    HolderWith (C * ‖a‖₊) r (a • f) ↔ HolderWith C r f := by
+  simp_rw [HolderWith, coe_mul, Pi.smul_apply, edist_smul₀, ENNReal.smul_def, smul_eq_mul,
+    mul_comm (C : ℝ≥0∞), mul_assoc,
+    ENNReal.mul_le_mul_left (ENNReal.coe_ne_zero.mpr ha) ENNReal.coe_ne_top, mul_comm]
 
 end HolderWith
 

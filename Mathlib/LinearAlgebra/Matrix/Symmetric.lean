@@ -13,7 +13,7 @@ This file contains the definition and basic results about symmetric matrices.
 
 ## Main definition
 
- * `Matrix.isSymm`: a matrix `A : Matrix n n α` is "symmetric" if `Aᵀ = A`.
+* `Matrix.isSymm`: a matrix `A : Matrix n n α` is "symmetric" if `Aᵀ = A`.
 
 ## Tags
 
@@ -40,18 +40,17 @@ theorem IsSymm.ext_iff {A : Matrix n n α} : A.IsSymm ↔ ∀ i j, A j i = A i j
   Matrix.ext_iff.symm
 
 /-- A version of `Matrix.ext` that unfolds the `Matrix.transpose`. -/
--- @[ext] -- Porting note: removed attribute
 theorem IsSymm.ext {A : Matrix n n α} : (∀ i j, A j i = A i j) → A.IsSymm :=
   Matrix.ext
 
 theorem IsSymm.apply {A : Matrix n n α} (h : A.IsSymm) (i j : n) : A j i = A i j :=
   IsSymm.ext_iff.1 h i j
 
-theorem isSymm_mul_transpose_self [Fintype n] [CommSemiring α] (A : Matrix n n α) :
+theorem isSymm_mul_transpose_self [Fintype n] [NonUnitalCommSemiring α] (A : Matrix n n α) :
     (A * Aᵀ).IsSymm :=
   transpose_mul _ _
 
-theorem isSymm_transpose_mul_self [Fintype n] [CommSemiring α] (A : Matrix n n α) :
+theorem isSymm_transpose_mul_self [Fintype n] [NonUnitalCommSemiring α] (A : Matrix n n α) :
     (Aᵀ * A).IsSymm :=
   transpose_mul _ _
 
@@ -112,7 +111,7 @@ theorem isSymm_diagonal [DecidableEq n] [Zero α] (v : n → α) : (diagonal v).
   diagonal_transpose _
 
 /-- A block matrix `A.fromBlocks B C D` is symmetric,
-    if `A` and `D` are symmetric and `Bᵀ = C`. -/
+if `A` and `D` are symmetric and `Bᵀ = C`. -/
 theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} (hA : A.IsSymm) (hBC : Bᵀ = C) (hD : D.IsSymm) :
     (A.fromBlocks B C D).IsSymm := by
@@ -126,8 +125,8 @@ theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n 
 theorem isSymm_fromBlocks_iff {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} : (A.fromBlocks B C D).IsSymm ↔ A.IsSymm ∧ Bᵀ = C ∧ Cᵀ = B ∧ D.IsSymm :=
   ⟨fun h =>
-    ⟨(congr_arg toBlocks₁₁ h : _), (congr_arg toBlocks₂₁ h : _), (congr_arg toBlocks₁₂ h : _),
-      (congr_arg toBlocks₂₂ h : _)⟩,
+    ⟨(congr_arg toBlocks₁₁ h :), (congr_arg toBlocks₂₁ h :), (congr_arg toBlocks₁₂ h :),
+      (congr_arg toBlocks₂₂ h :)⟩,
     fun ⟨hA, hBC, _, hD⟩ => IsSymm.fromBlocks hA hBC hD⟩
 
 end Matrix

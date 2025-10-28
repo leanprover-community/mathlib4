@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yuyang Zhao
 -/
 
-import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.SeparableClosure
 
 /-!
@@ -24,6 +24,8 @@ In a field extension `K/k`
 * `FiniteGaloisIntermediateField` should be a `ConditionallyCompleteLattice` but isn't proved yet.
 
 -/
+
+open IntermediateField
 
 variable (k K : Type*) [Field k] [Field K] [Algebra k K]
 
@@ -52,7 +54,6 @@ lemma val_injective : Function.Injective (toIntermediateField (k := k) (K := K))
   simpa only [mk.injEq] using eq
 
 /-- Turns the collection of finite Galois IntermediateFields of `K/k` into a lattice. -/
-
 instance (L₁ L₂ : IntermediateField k K) [IsGalois k L₁] [IsGalois k L₂] :
     IsGalois k ↑(L₁ ⊔ L₂) where
 
@@ -97,7 +98,7 @@ lemma le_iff (L₁ L₂ : FiniteGaloisIntermediateField k K) :
 
 variable (k) in
 /-- The minimal (finite) Galois intermediate field containing a finite set `s : Set K` in a
-Galois extension `K/k` defined as the the normal closure of the field obtained by adjoining
+Galois extension `K/k` defined as the normal closure of the field obtained by adjoining
 the set `s : Set K` to `k`. -/
 noncomputable def adjoin [IsGalois k K] (s : Set K) [Finite s] :
     FiniteGaloisIntermediateField k K := {
@@ -123,7 +124,7 @@ lemma subset_adjoin [IsGalois k K] (s : Set K) [Finite s] :
 theorem adjoin_simple_le_iff [IsGalois k K] {x : K} {L : FiniteGaloisIntermediateField k K} :
     adjoin k {x} ≤ L ↔ x ∈ L.toIntermediateField := by
   simp only [le_iff, adjoin_val, IntermediateField.normalClosure_le_iff_of_normal,
-    IntermediateField.adjoin_le_iff, Set.le_eq_subset, Set.singleton_subset_iff, SetLike.mem_coe]
+    IntermediateField.adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
 
 @[simp]
 theorem adjoin_map [IsGalois k K] (f : K →ₐ[k] K) (s : Set K) [Finite s] :
@@ -137,8 +138,13 @@ theorem adjoin_simple_map_algHom [IsGalois k K] (f : K →ₐ[k] K) (x : K) :
   simpa only [Set.image_singleton] using adjoin_map f { x }
 
 @[simp]
-theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : K ≃ₐ[k] K) (x : K) :
+theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : Gal(K/k)) (x : K) :
     adjoin k {f x} = adjoin k {x} :=
   adjoin_simple_map_algHom (f : K →ₐ[k] K) x
+
+nonrec lemma mem_fixingSubgroup_iff (α : Gal(K/k)) (L : FiniteGaloisIntermediateField k K) :
+    α ∈ L.fixingSubgroup ↔ α.restrictNormalHom L = 1 := by
+  simp [IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
+    AlgEquiv.restrictNormalHom_apply]
 
 end FiniteGaloisIntermediateField

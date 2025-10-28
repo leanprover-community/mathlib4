@@ -18,7 +18,7 @@ for homomorphisms to a finite codomain.
   infinite) graph `G` has a homomorphism to some finite graph `F`, then there is also a homomorphism
   `G →g F`.
 
-## Notations
+## Notation
 
 `→fg` is a module-local variant on `→g` where the domain is a finite subgraph of some supergraph
 `G`.
@@ -157,7 +157,7 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
   haveI : ∀ G' : G.Finsubgraphᵒᵖ, Fintype ((finsubgraphHomFunctor G F).obj G') := by
     intro G'
     haveI : Fintype (G'.unop.val.verts : Type u) := G'.unop.property.fintype
-    haveI : Fintype (↥G'.unop.val.verts → W) := by classical exact Pi.fintype
+    haveI : Fintype (↥G'.unop.val.verts → W) := by classical exact Pi.instFintype
     exact Fintype.ofInjective (fun f => f.toFun) RelHom.coe_fn_injective
   -- Use compactness to obtain a section.
   obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system (finsubgraphHomFunctor G F)
@@ -179,7 +179,7 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
       Quiver.Hom.op (CategoryTheory.homOfLE singletonFinsubgraph_le_adj_right)
     rw [← hu hv, ← hu hv']
     -- Porting note: was `apply Hom.map_adj`
-    refine Hom.map_adj (u (Opposite.op (finsubgraphOfAdj e))) ?_
+    apply Hom.map_adj (u _) ?_
     -- `v` and `v'` are definitionally adjacent in `finsubgraphOfAdj e`
     simp [finsubgraphOfAdj]
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.GroupTheory.Submonoid.Center
 
 /-!
@@ -12,8 +11,7 @@ import Mathlib.GroupTheory.Submonoid.Center
 
 -/
 
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists MonoidWithZero Multiset
 
 variable {G : Type*} [Group G]
 
@@ -23,8 +21,8 @@ variable (G)
 
 /-- The center of a group `G` is the set of elements that commute with everything in `G` -/
 @[to_additive
-      "The center of an additive group `G` is the set of elements that commute with
-      everything in `G`"]
+      /-- The center of an additive group `G` is the set of elements that commute with
+      everything in `G` -/]
 def center : Subgroup G :=
   { Submonoid.center G with
     carrier := Set.center G
@@ -38,25 +36,20 @@ theorem coe_center : ↑(center G) = Set.center G :=
 theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
   rfl
 
-instance center.isCommutative : (center G).IsCommutative :=
+instance center.isMulCommutative : IsMulCommutative (center G) :=
   ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
 
-/-- For a group with zero, the center of the units is the same as the units of the center. -/
-@[simps! apply_val_coe symm_apply_coe_val]
-def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
-    Subgroup.center (G₀ˣ) ≃* (Submonoid.center G₀)ˣ where
-  toFun := MonoidHom.toHomUnits <|
-    { toFun := fun u ↦ ⟨(u : G₀ˣ),
-      (Submonoid.mem_center_iff.mpr (fun r ↦ by
-          rcases eq_or_ne r 0 with (rfl | hr)
-          · rw [mul_zero, zero_mul]
-          exact congrArg Units.val <| (u.2.comm <| Units.mk0 r hr).symm))⟩
-      map_one' := rfl
-      map_mul' := fun _ _ ↦ rfl }
-  invFun u := unitsCenterToCenterUnits G₀ u
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
-  map_mul' := map_mul _
+@[deprecated (since := "2025-04-09")] alias center.isCommutative := Subgroup.center.isMulCommutative
+
+variable {G} in
+/-- The center of isomorphic groups are isomorphic. -/
+@[to_additive (attr := simps!) /-- The center of isomorphic additive groups are isomorphic. -/]
+def centerCongr {H} [Group H] (e : G ≃* H) : center G ≃* center H := Submonoid.centerCongr e
+
+/-- The center of a group is isomorphic to the center of its opposite. -/
+@[to_additive (attr := simps!)
+/-- The center of an additive group is isomorphic to the center of its opposite. -/]
+def centerToMulOpposite : center G ≃* center Gᵐᵒᵖ := Submonoid.centerToMulOpposite
 
 variable {G}
 
@@ -96,6 +89,10 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
 variable {H : Subgroup G}
 
 section Normalizer
+
+@[to_additive]
+instance instNormalCenter : (center G).Normal :=
+  ⟨fun a ha b ↦ by simp [mul_assoc, mem_center_iff.mp ha b, ha]⟩
 
 @[to_additive]
 theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by

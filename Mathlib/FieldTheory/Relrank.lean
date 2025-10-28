@@ -3,7 +3,7 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.Adjoin
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 
@@ -16,12 +16,12 @@ This file contains basics about the relative rank of subfields and intermediate 
 - `Subfield.relrank A B`, `IntermediateField.relrank A B`:
   defined to be `[B : A ⊓ B]` as a `Cardinal`.
   In particular, when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
-  This is similar to `Subgroup.relindex` but it is `Cardinal` valued.
+  This is similar to `Subgroup.relIndex` but it is `Cardinal` valued.
 
 - `Subfield.relfinrank A B`, `IntermediateField.relfinrank A B`:
   the `Nat` version of `Subfield.relrank A B` and `IntermediateField.relrank A B`, respectively.
   If `B / A ⊓ B` is an infinite extension, then it is zero.
-  This is similar to `Subgroup.relindex`.
+  This is similar to `Subgroup.relIndex`.
 
 -/
 
@@ -35,19 +35,11 @@ variable {E : Type v} [Field E] {L : Type w} [Field L]
 
 variable (A B C : Subfield E)
 
-#adaptation_note
-/--
-This `synthInstance.maxHeartbeats` (and below) was required after nightly-2024-11-14;
-it's not exactly clear why, but we were very close to the limit previously,
-so probably we should not particularly blame changes in Lean, and instead optimize in Mathlib.
--/
-set_option synthInstance.maxHeartbeats 400000 in
 /-- `Subfield.relrank A B` is defined to be `[B : A ⊓ B]` as a `Cardinal`, in particular,
 when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
-This is similar to `Subgroup.relindex` but it is `Cardinal` valued. -/
+This is similar to `Subgroup.relIndex` but it is `Cardinal` valued. -/
 noncomputable def relrank := Module.rank ↥(A ⊓ B) (extendScalars (inf_le_right : A ⊓ B ≤ B))
 
-set_option synthInstance.maxHeartbeats 400000 in
 /-- The `Nat` version of `Subfield.relrank`.
 If `B / A ⊓ B` is an infinite extension, then it is zero. -/
 noncomputable def relfinrank := finrank ↥(A ⊓ B) (extendScalars (inf_le_right : A ⊓ B ≤ B))
@@ -63,15 +55,13 @@ theorem relrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relrank A C = relrank B C
 theorem relfinrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relfinrank A C = relfinrank B C :=
   congr(toNat $(relrank_eq_of_inf_eq h))
 
-set_option synthInstance.maxHeartbeats 400000 in
-/-- If `A ≤ B`, then `Subfield.relrank A B` is `[B : A]` -/
+/-- If `A ≤ B`, then `Subfield.relrank A B` is `[B : A]`. -/
 theorem relrank_eq_rank_of_le (h : A ≤ B) : relrank A B = Module.rank A (extendScalars h) := by
   rw [relrank]
   have := inf_of_le_left h
   congr!
 
-set_option synthInstance.maxHeartbeats 400000 in
-/-- If `A ≤ B`, then `Subfield.relfinrank A B` is `[B : A]` -/
+/-- If `A ≤ B`, then `Subfield.relfinrank A B` is `[B : A]`. -/
 theorem relfinrank_eq_finrank_of_le (h : A ≤ B) : relfinrank A B = finrank A (extendScalars h) :=
   congr(toNat $(relrank_eq_rank_of_le h))
 
@@ -122,9 +112,9 @@ theorem relrank_top_left : relrank ⊤ A = 1 := relrank_eq_one_of_le le_top
 @[simp]
 theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le_top
 
-set_option synthInstance.maxHeartbeats 400000 in
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
+  let _ : AddCommMonoid (⊤ : IntermediateField A E) := inferInstance
   rw [relrank_eq_rank_of_le (show A ≤ ⊤ from le_top), extendScalars_top,
     IntermediateField.topEquiv.toLinearEquiv.rank_eq]
 
@@ -289,7 +279,7 @@ variable (A B C : IntermediateField F E)
 
 /-- `IntermediateField.relrank A B` is defined to be `[B : A ⊓ B]` as a `Cardinal`, in particular,
 when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
-This is similar to `Subgroup.relindex` but it is `Cardinal` valued. -/
+This is similar to `Subgroup.relIndex` but it is `Cardinal` valued. -/
 noncomputable def relrank := A.toSubfield.relrank B.toSubfield
 
 /-- The `Nat` version of `IntermediateField.relrank`.

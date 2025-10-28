@@ -36,7 +36,7 @@ variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 open Function Filter Module Set Metric
 
-open scoped Topology Manifold
+open scoped Topology Manifold ContDiff
 
 noncomputable section
 
@@ -47,7 +47,7 @@ In this section we define a structure for a bundled smooth bump function and pro
 -/
 
 variable (I) in
-/-- Given a smooth manifold modelled on a finite dimensional space `E`,
+/-- Given a smooth manifold modelled on a finite-dimensional space `E`,
 `f : SmoothBumpFunction I M` is a smooth function on `M` such that in the extended chart `e` at
 `f.c`:
 
@@ -135,7 +135,7 @@ theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ suppor
     extChartAt I c '' s =
       closedBall (extChartAt I c c) f.rOut ∩ range I ∩ (extChartAt I c).symm ⁻¹' s := by
   rw [support_eq_inter_preimage, subset_inter_iff, ← extChartAt_source I, ← image_subset_iff] at hs
-  cases' hs with hse hsf
+  obtain ⟨hse, hsf⟩ := hs
   apply Subset.antisymm
   · refine subset_inter (subset_inter (hsf.trans ball_subset_closedBall) ?_) ?_
     · rintro _ ⟨x, -, rfl⟩; exact mem_range_self _
@@ -146,7 +146,7 @@ theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ suppor
 
 theorem mem_Icc : f x ∈ Icc (0 : ℝ) 1 := by
   have : f x = 0 ∨ f x = _ := indicator_eq_zero_or_self _ _ _
-  cases' this with h h <;> rw [h]
+  rcases this with h | h <;> rw [h]
   exacts [left_mem_Icc.2 zero_le_one, ⟨f.nonneg, f.le_one⟩]
 
 theorem nonneg : 0 ≤ f x :=
@@ -207,7 +207,7 @@ theorem isClosed_image_of_isClosed {s : Set M} (hsc : IsClosed s) (hs : s ⊆ su
   rw [f.image_eq_inter_preimage_of_subset_support hs]
   refine ContinuousOn.preimage_isClosed_of_isClosed
     ((continuousOn_extChartAt_symm _).mono f.closedBall_subset) ?_ hsc
-  exact IsClosed.inter isClosed_ball I.isClosed_range
+  exact IsClosed.inter isClosed_closedBall I.isClosed_range
 
 /-- If `f` is a smooth bump function and `s` closed subset of the support of `f` (i.e., of the open
 ball of radius `f.rOut`), then there exists `0 < r < f.rOut` such that `s` is a subset of the open
@@ -231,7 +231,6 @@ theorem support_updateRIn {r : ℝ} (hr : r ∈ Ioo 0 f.rOut) :
     support (f.updateRIn r hr) = support f := by
   simp only [support_eq_inter_preimage, updateRIn_rOut]
 
--- Porting note: was an `Inhabited` instance
 instance : Nonempty (SmoothBumpFunction I c) := nhdsWithin_range_basis.nonempty
 
 variable [T2Space M]
@@ -243,14 +242,14 @@ theorem isClosed_symm_image_closedBall :
 theorem tsupport_subset_symm_image_closedBall :
     tsupport f ⊆ (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) := by
   rw [tsupport, support_eq_symm_image]
-  exact closure_minimal (image_subset _ <| inter_subset_inter_left _ ball_subset_closedBall)
+  exact closure_minimal (image_mono <| inter_subset_inter_left _ ball_subset_closedBall)
     f.isClosed_symm_image_closedBall
 
 theorem tsupport_subset_extChartAt_source : tsupport f ⊆ (extChartAt I c).source :=
   calc
     tsupport f ⊆ (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) :=
       f.tsupport_subset_symm_image_closedBall
-    _ ⊆ (extChartAt I c).symm '' (extChartAt I c).target := image_subset _ f.closedBall_subset
+    _ ⊆ (extChartAt I c).symm '' (extChartAt I c).target := image_mono f.closedBall_subset
     _ = (extChartAt I c).source := (extChartAt I c).symm_image_target_eq_source
 
 theorem tsupport_subset_chartAt_source : tsupport f ⊆ (chartAt H c).source := by
@@ -283,22 +282,18 @@ theorem nhds_basis_support {s : Set M} (hs : s ∈ 𝓝 c) :
   ((nhds_basis_tsupport c).restrict_subset hs).to_hasBasis'
     (fun f hf => ⟨f, hf.2, subset_closure⟩) fun f _ => f.support_mem_nhds
 
-variable [SmoothManifoldWithCorners I M]
+variable [IsManifold I ∞ M]
 
 /-- A smooth bump function is infinitely smooth. -/
-protected theorem contMDiff : ContMDiff I 𝓘(ℝ) ⊤ f := by
+protected theorem contMDiff : ContMDiff I 𝓘(ℝ) ∞ f := by
   refine contMDiff_of_tsupport fun x hx => ?_
   have : x ∈ (chartAt H c).source := f.tsupport_subset_chartAt_source hx
   refine ContMDiffAt.congr_of_eventuallyEq ?_ <| f.eqOn_source.eventuallyEq_of_mem <|
     (chartAt H c).open_source.mem_nhds this
   exact f.contDiffAt.contMDiffAt.comp _ (contMDiffAt_extChartAt' this)
 
-@[deprecated (since := "2024-11-20")] alias smooth := SmoothBumpFunction.contMDiff
-
-protected theorem contMDiffAt {x} : ContMDiffAt I 𝓘(ℝ) ⊤ f x :=
+protected theorem contMDiffAt {x} : ContMDiffAt I 𝓘(ℝ) ∞ f x :=
   f.contMDiff.contMDiffAt
-
-@[deprecated (since := "2024-11-20")] alias smoothAt := SmoothBumpFunction.contMDiffAt
 
 protected theorem continuous : Continuous f :=
   f.contMDiff.continuous
@@ -306,18 +301,16 @@ protected theorem continuous : Continuous f :=
 /-- If `f : SmoothBumpFunction I c` is a smooth bump function and `g : M → G` is a function smooth
 on the source of the chart at `c`, then `f • g` is smooth on the whole manifold. -/
 theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
-    (hg : ContMDiffOn I 𝓘(ℝ, G) ⊤ g (chartAt H c).source) :
-    ContMDiff I 𝓘(ℝ, G) ⊤ fun x => f x • g x := by
+    (hg : ContMDiffOn I 𝓘(ℝ, G) ∞ g (chartAt H c).source) :
+    ContMDiff I 𝓘(ℝ, G) ∞ fun x => f x • g x := by
   refine contMDiff_of_tsupport fun x hx => ?_
-  have : x ∈ (chartAt H c).source :=
   -- Porting note: was a more readable `calc`
   -- calc
   --   x ∈ tsupport fun x => f x • g x := hx
   --   _ ⊆ tsupport f := tsupport_smul_subset_left _ _
   --   _ ⊆ (chart_at _ c).source := f.tsupport_subset_chartAt_source
+  have : x ∈ (chartAt H c).source :=
     f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx
   exact f.contMDiffAt.smul ((hg _ this).contMDiffAt <| (chartAt _ _).open_source.mem_nhds this)
-
-@[deprecated (since := "2024-11-20")] alias smooth_smul := contMDiff_smul
 
 end SmoothBumpFunction

@@ -17,8 +17,6 @@ universe w v u
 
 open CategoryTheory
 
-open scoped Classical
-
 namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
@@ -62,8 +60,6 @@ We require this condition only for `J = Fin n` in the definition, then deduce a 
 class HasFiniteCoproducts : Prop where
   /-- `C` has all finite coproducts -/
   out (n : ℕ) : HasColimitsOfShape (Discrete (Fin n)) C
-
--- attribute [class] HasFiniteCoproducts Porting note: this doesn't seem necessary in Lean 4
 
 instance hasColimitsOfShape_discrete [HasFiniteCoproducts C] (ι : Type w) [Finite ι] :
     HasColimitsOfShape (Discrete ι) C := by

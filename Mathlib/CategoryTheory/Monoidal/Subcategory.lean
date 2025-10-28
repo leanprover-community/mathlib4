@@ -13,15 +13,16 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 /-!
 # Full monoidal subcategories
 
-Given a monoidal category `C` and a monoidal predicate on `C`, that is a function `P : C → Prop`
-closed under `𝟙_` and `⊗`, we can put a monoidal structure on `{X : C // P X}` (the category
-structure is defined in `Mathlib.CategoryTheory.FullSubcategory`).
+Given a monoidal category `C` and a property of objects `P : ObjectProperty C`
+that is monoidal (i.e. it holds for the unit and is stable by `⊗`),
+we can put a monoidal structure on `P.FullSubcategory` (the category
+structure is defined in `Mathlib/CategoryTheory/ObjectProperty/FullSubcategory.lean`).
 
 When `C` is also braided/symmetric, the full monoidal subcategory also inherits the
 braided/symmetric structure.
 
 ## TODO
-* Add monoidal/braided versions of `CategoryTheory.FullSubcategory.Lift`
+* Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
 
 
@@ -29,92 +30,111 @@ universe u v
 
 namespace CategoryTheory
 
-namespace MonoidalCategory
+open MonoidalCategory
 
-open Iso
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C] (P : C → Prop)
+namespace ObjectProperty
 
-/-- A property `C → Prop` is a monoidal predicate if it is closed under `𝟙_` and `⊗`.
+/-- Given three properties of objects `P₁`, `P₂`, and `Q` in a monoidal
+category `C`, we say `TensorLE P₁ P₂ Q` holds if the tensor product
+of an object in `P₁` and an object `P₂` is necessary in `Q`,
+see also `ObjectProperty.IsMonoidal`. -/
+class TensorLE (P₁ P₂ Q : ObjectProperty C) : Prop where
+  prop_tensor (X₁ X₂ : C) (h₁ : P₁ X₁) (h₂ : P₂ X₂) : Q (X₁ ⊗ X₂)
+
+lemma prop_tensor {P₁ P₂ Q : ObjectProperty C} [TensorLE P₁ P₂ Q]
+    {X₁ X₂ : C} (h₁ : P₁ X₁) (h₂ : P₂ X₂) : Q (X₁ ⊗ X₂) :=
+  TensorLE.prop_tensor _ _ h₁ h₂
+
+/-- This is the property that `P : ObjectProperty C` holds
+for the unit of the monoidal category structure. -/
+class ContainsUnit (P : ObjectProperty C) : Prop where
+  prop_unit : P (𝟙_ C)
+
+lemma prop_unit (P : ObjectProperty C) [ContainsUnit P] : P (𝟙_ C) :=
+  ContainsUnit.prop_unit
+
+/-- If `C` is a monoidal category, we say that `P : ObjectProperty C`
+is monoidal if it is stable by tensor product and holds for the unit. -/
+class IsMonoidal (P : ObjectProperty C) : Prop extends
+  ContainsUnit P, TensorLE P P P where
+
+/-- A property of objects is a monoidal closed if it is closed under taking internal homs
 -/
-class MonoidalPredicate : Prop where
-  prop_id : P (𝟙_ C) := by aesop_cat
-  prop_tensor : ∀ {X Y}, P X → P Y → P (X ⊗ Y) := by aesop_cat
+class IsMonoidalClosed (P : ObjectProperty C) [MonoidalClosed C] : Prop where
+  prop_ihom (X Y : C) : P X → P Y → P ((ihom X).obj Y) := by cat_disch
 
-open MonoidalPredicate
+lemma prop_ihom (P : ObjectProperty C) [MonoidalClosed C] [P.IsMonoidalClosed]
+    {X Y : C} (hX : P X) (hY : P Y) : P ((ihom X).obj Y) :=
+  IsMonoidalClosed.prop_ihom _ _ hX hY
 
-variable [MonoidalPredicate P]
+variable (P : ObjectProperty C) [P.IsMonoidal]
 
 @[simps]
-instance : MonoidalCategoryStruct (FullSubcategory P) where
+instance : MonoidalCategoryStruct P.FullSubcategory where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
   whiskerLeft X _ _ f := X.1 ◁ f
   whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y := (f ▷ Y.1 :)
-  tensorHom f g := f ⊗ g
-  tensorUnit := ⟨𝟙_ C, prop_id⟩
-  associator X Y Z :=
-    ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
-      inv_hom_id (α_ X.1 Y.1 Z.1)⟩
-  leftUnitor X := ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
-  rightUnitor X := ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩
+  tensorHom f g := f ⊗ₘ g
+  tensorUnit := ⟨𝟙_ C, P.prop_unit⟩
+  associator X Y Z := P.isoMk (α_ X.1 Y.1 Z.1)
+  leftUnitor X :=  P.isoMk (λ_ X.1)
+  rightUnitor X := P.isoMk (ρ_ X.1)
 
 /--
-When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
-  `C`.
+When `P : ObjectProperty C` is monoidal, the full subcategory for `P` inherits the
+monoidal structure of `C`.
 -/
 instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
-  Monoidal.induced (fullSubcategoryInclusion P)
-    { μIso := fun _ _ => eqToIso rfl
-      εIso := eqToIso rfl }
+  Monoidal.induced P.ι
+    { μIso _ _ := Iso.refl _
+      εIso := Iso.refl _ }
 
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
 ("forgetting" the condition).
 -/
-instance fullSubcategoryInclusionMonoidal : (fullSubcategoryInclusion P).Monoidal :=
+instance monoidalι : P.ι.Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
-@[simp] lemma fullSubcategoryInclusion_ε : ε (fullSubcategoryInclusion P) = 𝟙 _ := rfl
-@[simp] lemma fullSubcategoryInclusion_η : ε (fullSubcategoryInclusion P) = 𝟙 _ := rfl
-@[simp] lemma fullSubcategoryInclusion_μ (X Y : FullSubcategory P) :
-    μ (fullSubcategoryInclusion P) X Y = 𝟙 _ := rfl
-@[simp] lemma fullSubcategoryInclusion_δ (X Y : FullSubcategory P) :
-    δ (fullSubcategoryInclusion P) X Y = 𝟙 _ := rfl
+@[simp] lemma ι_ε : ε P.ι = 𝟙 _ := rfl
+@[simp] lemma ι_η : ε P.ι = 𝟙 _ := rfl
+@[simp] lemma ι_μ (X Y : FullSubcategory P) : μ P.ι X Y = 𝟙 _ := rfl
+@[simp] lemma ι_δ (X Y : FullSubcategory P) : δ P.ι X Y = 𝟙 _ := rfl
 
 section
 
 variable [Preadditive C]
 
-instance [MonoidalPreadditive C] : MonoidalPreadditive (FullSubcategory P) :=
-  monoidalPreadditive_of_faithful (fullSubcategoryInclusion P)
+instance [MonoidalPreadditive C] : MonoidalPreadditive P.FullSubcategory :=
+  monoidalPreadditive_of_faithful P.ι
 
 variable (R : Type*) [Ring R] [Linear R C]
 
-instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R (FullSubcategory P) :=
-  monoidalLinearOfFaithful R (fullSubcategoryInclusion P)
+instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R P.FullSubcategory :=
+  monoidalLinearOfFaithful R P.ι
 
 end
 
 section
 
-variable {P} {P' : C → Prop} [MonoidalPredicate P'] (h : ∀ ⦃X⦄, P X → P' X)
+variable {P} {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P')
 
-/-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
-subcategories. -/
-instance  : (FullSubcategory.map h).Monoidal :=
+/-- An inequality `P ≤ P'` between monoidal properties of objects induces
+a monoidal functor between full monoidal subcategories. -/
+instance : (ιOfLE h).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
 
-@[simp] lemma fullSubcategory_map_ε : ε (FullSubcategory.map h) = 𝟙 _ := rfl
-@[simp] lemma fullSubcategory_map_η : η (FullSubcategory.map h) = 𝟙 _ := rfl
-@[simp] lemma fullSubcategory_map_μ (X Y : FullSubcategory P) :
-    μ (FullSubcategory.map h) X Y = 𝟙 _ := rfl
-@[simp] lemma fullSubcategory_map_δ (X Y : FullSubcategory P) :
-    δ (FullSubcategory.map h) X Y = 𝟙 _ := rfl
+@[simp] lemma ιOfLE_ε : ε (ιOfLE h) = 𝟙 _ := rfl
+@[simp] lemma ιOfLE_η : η (ιOfLE h) = 𝟙 _ := rfl
+@[simp] lemma ιOfLE_μ (X Y : P.FullSubcategory) : μ (ιOfLE h) X Y = 𝟙 _ := rfl
+@[simp] lemma ιOfLE_δ (X Y : FullSubcategory P) : δ (ιOfLE h) X Y = 𝟙 _ := rfl
 
 end
 
@@ -125,22 +145,19 @@ variable [BraidedCategory C]
 /-- The braided structure on a full subcategory inherited by the braided structure on `C`.
 -/
 instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
-  braidedCategoryOfFaithful (fullSubcategoryInclusion P)
-    (fun X Y =>
-      ⟨(β_ X.1 Y.1).hom, (β_ X.1 Y.1).inv, (β_ X.1 Y.1).hom_inv_id, (β_ X.1 Y.1).inv_hom_id⟩)
-    fun X Y => by aesop_cat
+  .ofFaithful P.ι fun X Y ↦ P.isoMk (β_ X.1 Y.1)
 
 /-- The forgetful braided functor from a full braided subcategory into the original category
 ("forgetting" the condition).
 -/
-instance : (fullSubcategoryInclusion P).Braided where
+instance : P.ι.Braided where
 
 variable {P}
 
-/-- An implication of predicates `P → P'` induces a braided functor between full braided
-subcategories. -/
-instance {P' : C → Prop} [MonoidalPredicate P'] (h : ∀ ⦃X⦄, P X → P' X) :
-    (FullSubcategory.map h).Braided where
+/-- An inequality `P ≤ P'` between monoidal properties of objects induces
+a braided functor between full braided subcategories. -/
+instance {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P') :
+    (ιOfLE h).Braided where
 
 end Braided
 
@@ -148,28 +165,19 @@ section Symmetric
 
 variable [SymmetricCategory C]
 
-instance fullSymmetricSubcategory : SymmetricCategory (FullSubcategory P) :=
-  symmetricCategoryOfFaithful (fullSubcategoryInclusion P)
+instance fullSymmetricSubcategory : SymmetricCategory P.FullSubcategory :=
+  symmetricCategoryOfFaithful P.ι
 
 end Symmetric
 
 section Closed
 
-variable [MonoidalClosed C]
-
-/-- A property `C → Prop` is a closed predicate if it is closed under taking internal homs
--/
-class ClosedPredicate : Prop where
-  prop_ihom : ∀ {X Y}, P X → P Y → P ((ihom X).obj Y) := by aesop_cat
-
-open ClosedPredicate
-
-variable [ClosedPredicate P]
+variable [MonoidalClosed C] [P.IsMonoidalClosed]
 
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
-    { rightAdj := FullSubcategory.lift P (fullSubcategoryInclusion P ⋙ ihom X.1)
-        fun Y => prop_ihom X.2 Y.2
+    { rightAdj := P.lift (P.ι ⋙ ihom X.1)
+        fun Y => P.prop_ihom X.2 Y.2
       adj :=
         { unit :=
           { app := fun Y => (ihom.coev X.1).app Y.1
@@ -183,17 +191,20 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
             by simp [FullSubcategory.comp_def, FullSubcategory.id_def] } }
 
 @[simp]
-theorem fullMonoidalClosedSubcategory_ihom_obj (X Y : FullSubcategory P) :
+theorem ihom_obj (X Y : P.FullSubcategory) :
     ((ihom X).obj Y).obj = (ihom X.obj).obj Y.obj :=
   rfl
 
 @[simp]
-theorem fullMonoidalClosedSubcategory_ihom_map (X : FullSubcategory P) {Y Z : FullSubcategory P}
+theorem ihom_map (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
     (f : Y ⟶ Z) : (ihom X).map f = (ihom X.obj).map f :=
   rfl
 
 end Closed
 
-end MonoidalCategory
+end ObjectProperty
+
+@[deprecated (since := "2025-03-05")]
+alias MonoidalCategory.MonoidalPredicate := ObjectProperty.IsMonoidal
 
 end CategoryTheory

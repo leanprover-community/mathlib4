@@ -3,11 +3,8 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Modules over a ring
@@ -36,13 +33,7 @@ to use a canonical `Module` typeclass throughout.
 semimodule, module, vector space
 -/
 
-assert_not_exists Field
-assert_not_exists Invertible
-assert_not_exists Multiset
-assert_not_exists Pi.single_smul₀
-assert_not_exists RingHom
-assert_not_exists Set.indicator
-assert_not_exists Units
+assert_not_exists Field Invertible Pi.single_smul₀ RingHom Set.indicator Multiset Units
 
 open Function Set
 
@@ -70,7 +61,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
 -- see Note [lower instance priority]
 /-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
 instance (priority := 100) Module.toMulActionWithZero
-  {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
+    {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }
@@ -83,7 +74,6 @@ theorem Convex.combo_self {a b : R} (h : a + b = 1) (x : M) : a • x + b • x 
 
 variable (R)
 
--- Porting note: this is the letter of the mathlib3 version, but not really the spirit
 theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
 
 /-- Pullback a `Module` structure along an injective additive monoid homomorphism.
@@ -160,13 +150,13 @@ end Module
 
 /-- A module over a `Subsingleton` semiring is a `Subsingleton`. We cannot register this
 as an instance because Lean has no way to guess `R`. -/
-protected theorem Module.subsingleton (R M : Type*) [Semiring R] [Subsingleton R] [AddCommMonoid M]
-    [Module R M] : Subsingleton M :=
+protected theorem Module.subsingleton (R M : Type*) [MonoidWithZero R] [Subsingleton R] [Zero M]
+    [MulActionWithZero R M] : Subsingleton M :=
   MulActionWithZero.subsingleton R M
 
 /-- A semiring is `Nontrivial` provided that there exists a nontrivial module over this semiring. -/
-protected theorem Module.nontrivial (R M : Type*) [Semiring R] [Nontrivial M] [AddCommMonoid M]
-    [Module R M] : Nontrivial R :=
+protected theorem Module.nontrivial (R M : Type*) [MonoidWithZero R] [Nontrivial M] [Zero M]
+    [MulActionWithZero R M] : Nontrivial R :=
   MulActionWithZero.nontrivial R M
 
 -- see Note [lower instance priority]

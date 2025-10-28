@@ -39,13 +39,13 @@ It is also useful to consider the following stronger conditions:
 ## Instances
 
 - `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian.lean`) :
-  any left-noetherian ring satisfies the Orzech property.
+  any left-Noetherian ring satisfies the Orzech property.
   This applies in particular to division rings.
 
 - `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
-  (for non trivial rings).
+  (for non-trivial rings).
 
-- `IsNoetherianRing.strongRankCondition` : every nontrivial left-noetherian ring satisfies the
+- `IsNoetherianRing.strongRankCondition` : every nontrivial left-Noetherian ring satisfies the
   strong rank condition (and so in particular every division ring or field).
 
 - `rankCondition_of_strongRankCondition` : the strong rank condition implies the rank condition.
@@ -101,7 +101,6 @@ free module, rank, Orzech property, (strong) rank condition, invariant basis num
 
 -/
 
-
 noncomputable section
 
 open Function
@@ -149,7 +148,7 @@ instance (priority := 100) strongRankCondition_of_orzechProperty
     apply OrzechProperty.injective_of_surjective_of_injective i f hi
       (Fin.castSucc_injective _).surjective_comp_right
     ext m
-    simp [f, update_apply, (Fin.castSucc_lt_last m).ne]
+    simp [f]
   simpa using congr_fun h (Fin.last n)
 
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]
@@ -194,6 +193,11 @@ theorem card_le_of_surjective' [RankCondition R] {α β : Type*} [Fintype α] [F
     card_le_of_surjective R ((P.toLinearMap.comp f).comp Q.toLinearMap)
       ((P.surjective.comp i).comp Q.surjective)
 
+theorem Module.Finite.exists_nat_not_surjective [RankCondition R] (M) [AddCommMonoid M] [Module R M]
+    [Module.Finite R M] : ∃ n : ℕ, ∀ f : M →ₗ[R] (Fin n → R), ¬Surjective f :=
+  have ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
+  ⟨n + 1, fun g hg ↦ by simpa using le_of_fin_surjective R (g ∘ₗ f) (hg.comp hf)⟩
+
 /-- By the universal property for free modules, any surjective map `(Fin n → R) →ₗ[R] (Fin m → R)`
 has an injective splitting `(Fin m → R) →ₗ[R] (Fin n → R)`
 from which the strong rank condition gives the necessary inequality for the rank condition.
@@ -229,20 +233,17 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
   eq_of_fin_equiv R
     ((LinearEquiv.funCongrLeft R R (Fintype.equivFin α)).trans f ≪≫ₗ
       (LinearEquiv.funCongrLeft R R (Fintype.equivFin β)).symm)
--- Porting note: this was not well-named because `lequiv` could mean other things
--- (e.g., `localEquiv`)
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
-  by_contra h
+  by_contra! h
   refine zero_ne_one (eq_of_fin_equiv R ?_)
-  haveI := not_nontrivial_iff_subsingleton.1 h
   haveI : Subsingleton (Fin 1 → R) :=
     Subsingleton.intro fun a b => funext fun x => Subsingleton.elim _ _
   exact
     { toFun := 0
       invFun := 0
-      map_add' := by aesop
-      map_smul' := by aesop
+      map_add' := by simp
+      map_smul' := by simp
       left_inv := fun _ => by simp [eq_iff_true_of_subsingleton]
       right_inv := fun _ => by simp [eq_iff_true_of_subsingleton] }
 
@@ -252,7 +253,7 @@ section
 
 variable (R : Type u) [Ring R] [Nontrivial R] [IsNoetherianRing R]
 
-/-- Any nontrivial noetherian ring satisfies the strong rank condition,
+/-- Any nontrivial Noetherian ring satisfies the strong rank condition,
     since it satisfies Orzech property. -/
 instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R :=
   inferInstance
@@ -280,8 +281,8 @@ variable {R : Type u} [CommRing R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι'
 
 /-- An `R`-linear map `R^n → R^m` induces a function `R^n/I^n → R^m/I^m`. -/
 private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
-    (ι → R) ⧸ I.pi ι → (ι' → R) ⧸ I.pi ι' := fun x =>
-  Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
+    (ι → R) ⧸ Ideal.pi (fun _ ↦ I) → (ι' → R) ⧸ Ideal.pi fun _ ↦ I := fun x =>
+  Quotient.liftOn' x (fun y => Ideal.Quotient.mk _ (e y))
     (by
       refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
       rw [Submodule.quotientRel_def] at hab
@@ -290,31 +291,14 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
 
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
-private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] ι' → R) :
-    ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] (ι' → R) ⧸ I.pi ι' where
-  -- Porting note: Lean couldn't correctly infer `(I.pi ι)` and `(I.pi ι')` on their own
+private def inducedEquiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] ι' → R) :
+    ((ι → R) ⧸ Ideal.pi fun _ ↦ I) ≃ₗ[R ⧸ I] (ι' → R) ⧸ Ideal.pi fun _ ↦ I where
   toFun := induced_map I e
   invFun := induced_map I e.symm
-  map_add' := by
-    rintro ⟨a⟩ ⟨b⟩
-    convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
-    congr
-    simp only [map_add]
-  map_smul' := by
-    rintro ⟨a⟩ ⟨b⟩
-    convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
-    congr
-    simp only [LinearEquiv.coe_coe, LinearEquiv.map_smulₛₗ, RingHom.id_apply]
-  left_inv := by
-    rintro ⟨a⟩
-    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-    congr
-    simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
-  right_inv := by
-    rintro ⟨a⟩
-    convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
-    congr
-    simp only [LinearEquiv.coe_coe,  LinearEquiv.apply_symm_apply]
+  map_add' := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (map_add ..)
+  map_smul' := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (map_smul ..)
+  left_inv := by rintro ⟨a⟩; exact congr_arg _ (e.left_inv ..)
+  right_inv := by rintro ⟨a⟩; exact congr_arg _ (e.right_inv ..)
 
 end
 
@@ -324,14 +308,18 @@ attribute [local instance] Ideal.Quotient.field
 
 /-- Nontrivial commutative rings have the invariant basis number property.
 
-In fact, any nontrivial commutative ring satisfies the strong rank condition, see
-`commRing_strongRankCondition`. We prove this instance separately to avoid dependency on
-`LinearAlgebra.Charpoly.Basic`. -/
+There are two stronger results in mathlib: `commRing_strongRankCondition`, which says that any
+nontrivial commutative ring satisfies the strong rank condition, and
+`rankCondition_of_nontrivial_of_commSemiring`, which says that any nontrivial commutative semiring
+satisfies the rank condition.
+
+We prove this instance separately to avoid dependency on
+`Mathlib/LinearAlgebra/Charpoly/Basic.lean` or `Mathlib/LinearAlgebra/Matrix/ToLin.lean`. -/
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
   ⟨fun e =>
     let ⟨I, _hI⟩ := Ideal.exists_maximal R
     eq_of_fin_equiv (R ⧸ I)
-      ((Ideal.piQuotEquiv _ _).symm ≪≫ₗ (induced_equiv _ e ≪≫ₗ Ideal.piQuotEquiv _ _))⟩
+      ((Ideal.piQuotEquiv _ _).symm ≪≫ₗ inducedEquiv _ e ≪≫ₗ Ideal.piQuotEquiv _ _)⟩
 
 end

@@ -9,7 +9,13 @@ import Mathlib.Order.UpperLower.Basic
 /-!
 # Definition of direct systems, inverse systems, and cardinalities in specific inverse systems
 
-In this file we compute the cardinality of each node in an inverse system `F i` indexed by a
+The first part of this file concerns directed systems: `DirectLimit` is defined as the quotient
+of the disjoint union (`Sigma` type) by an equivalence relation (`Setoid`): compare
+`CategoryTheory.Limits.Types.Quot`, which is a quotient by a plain relation.
+Recursion and induction principles for constructing functions from and to `DirectLimit` and
+proving things about elements in `DirectLimit`.
+
+In the second part we compute the cardinality of each node in an inverse system `F i` indexed by a
 well-order in which every map between successive nodes has constant fiber `X i`, and every limit
 node is the `limit` of the inverse subsystem formed by all previous nodes.
 (To avoid importing `Cardinal`, we in fact construct a bijection rather than
@@ -41,7 +47,7 @@ to work.
 
 It is possible to circumvent the introduction of the `compat` condition using Zorn's lemma;
 if there is a chain of natural families (i.e. for any two families in the chain, one is an
-extension of the other) over lowersets (which are all of the form `Iic`, `Iio`, or `univ`),
+extension of the other) over lower sets (which are all of the form `Iic`, `Iio`, or `univ`),
 we can clearly take the union to get a natural family that extends them all. If a maximal
 natural family has domain `Iic i` or `Iio i` (`i` a limit), we already know how to extend it
 one step further to `Iic i⁺` or `Iic i` respectively, so it must be the case that the domain
@@ -52,7 +58,7 @@ the distinguished bijection that is compatible with the projections to all `X i`
 
 open Order Set
 
-variable {ι : Type*} [Preorder ι] {F X : ι → Type*}
+variable {ι : Type*} [Preorder ι] {F₁ F₂ F X : ι → Type*}
 
 variable (F) in
 /-- A directed system is a functor from a category (directed poset) to another category. -/
@@ -60,13 +66,191 @@ class DirectedSystem (f : ∀ ⦃i j⦄, i ≤ j → F i → F j) : Prop where
   map_self ⦃i⦄ (x : F i) : f le_rfl x = x
   map_map ⦃k j i⦄ (hij : i ≤ j) (hjk : j ≤ k) (x : F i) : f hjk (f hij x) = f (hij.trans hjk) x
 
+section DirectedSystem
+
+variable {T₁ : ∀ ⦃i j : ι⦄, i ≤ j → Sort*} (f₁ : ∀ i j (h : i ≤ j), T₁ h)
+variable [∀ ⦃i j⦄ (h : i ≤ j), FunLike (T₁ h) (F₁ i) (F₁ j)] [DirectedSystem F₁ (f₁ · · ·)]
+variable {T₂ : ∀ ⦃i j : ι⦄, i ≤ j → Sort*} (f₂ : ∀ i j (h : i ≤ j), T₂ h)
+variable [∀ ⦃i j⦄ (h : i ≤ j), FunLike (T₂ h) (F₂ i) (F₂ j)] [DirectedSystem F₂ (f₂ · · ·)]
+variable {T : ∀ ⦃i j : ι⦄, i ≤ j → Sort*} (f : ∀ i j (h : i ≤ j), T h)
+variable [∀ ⦃i j⦄ (h : i ≤ j), FunLike (T h) (F i) (F j)] [DirectedSystem F (f · · ·)]
+
+/-- A copy of `DirectedSystem.map_self` specialized to FunLike, as otherwise the
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
+theorem DirectedSystem.map_self' ⦃i⦄ (x) : f i i le_rfl x = x :=
+  DirectedSystem.map_self (f := (f · · ·)) x
+
+/-- A copy of `DirectedSystem.map_map` specialized to FunLike, as otherwise the
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
+theorem DirectedSystem.map_map' ⦃i j k⦄ (hij hjk x) :
+    f j k hjk (f i j hij x) = f i k (hij.trans hjk) x :=
+  DirectedSystem.map_map (f := (f · · ·)) hij hjk x
+
+namespace DirectLimit
+open DirectedSystem
+
+variable [IsDirected ι (· ≤ ·)]
+
+/-- The setoid on the sigma type defining the direct limit. -/
+def setoid : Setoid (Σ i, F i) where
+  r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2
+  iseqv := ⟨fun x ↦ ⟨x.1, le_rfl, le_rfl, rfl⟩, fun ⟨i, hx, hy, eq⟩ ↦ ⟨i, hy, hx, eq.symm⟩,
+    fun ⟨j, hx, _, jeq⟩ ⟨k, _, hz, keq⟩ ↦
+      have ⟨i, hji, hki⟩ := exists_ge_ge j k
+      ⟨i, hx.trans hji, hz.trans hki, by
+        rw [← map_map' _ hx hji, ← map_map' _ hz hki, jeq, ← keq, map_map', map_map']⟩⟩
+
+theorem r_of_le (x : Σ i, F i) (i : ι) (h : x.1 ≤ i) : (setoid f).r x ⟨i, f _ _ h x.2⟩ :=
+  ⟨i, h, le_rfl, (map_map' _ _ _ _).symm⟩
+
+variable (F) in
+/-- The direct limit of a directed system. -/
+abbrev _root_.DirectLimit : Type _ := Quotient (setoid f)
+
+variable {f} in
+theorem eq_of_le (x : Σ i, F i) (i : ι) (h : x.1 ≤ i) :
+    (⟦x⟧ : DirectLimit F f) = ⟦⟨i, f _ _ h x.2⟩⟧ :=
+  Quotient.sound (r_of_le _ x i h)
+
+@[elab_as_elim] protected theorem induction {C : DirectLimit F f → Prop}
+    (ih : ∀ i x, C ⟦⟨i, x⟩⟧) (x : DirectLimit F f) : C x :=
+  Quotient.ind (fun _ ↦ ih _ _) x
+
+theorem exists_eq_mk (z : DirectLimit F f) : ∃ i x, z = ⟦⟨i, x⟩⟧ := by rcases z; exact ⟨_, _, rfl⟩
+
+theorem exists_eq_mk₂ (z w : DirectLimit F f) : ∃ i x y, z = ⟦⟨i, x⟩⟧ ∧ w = ⟦⟨i, y⟩⟧ :=
+  z.inductionOn₂ w fun x y ↦
+    have ⟨i, hxi, hyi⟩ := exists_ge_ge x.1 y.1
+    ⟨i, _, _, eq_of_le x i hxi, eq_of_le y i hyi⟩
+
+theorem exists_eq_mk₃ (w u v : DirectLimit F f) :
+    ∃ i x y z, w = ⟦⟨i, x⟩⟧ ∧ u = ⟦⟨i, y⟩⟧ ∧ v = ⟦⟨i, z⟩⟧ :=
+  w.inductionOn₃ u v fun x y z ↦
+    have ⟨i, hxi, hyi, hzi⟩ := directed_of₃ (· ≤ ·) x.1 y.1 z.1
+    ⟨i, _, _, _, eq_of_le x i hxi, eq_of_le y i hyi, eq_of_le z i hzi⟩
+
+@[elab_as_elim] protected theorem induction₂ {C : DirectLimit F f → DirectLimit F f → Prop}
+    (ih : ∀ i x y, C ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧) (x y : DirectLimit F f) : C x y := by
+  obtain ⟨_, _, _, rfl, rfl⟩ := exists_eq_mk₂ f x y; apply ih
+
+@[elab_as_elim] protected theorem induction₃
+    {C : DirectLimit F f → DirectLimit F f → DirectLimit F f → Prop}
+    (ih : ∀ i x y z, C ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ ⟦⟨i, z⟩⟧) (x y z : DirectLimit F f) : C x y z := by
+  obtain ⟨_, _, _, _, rfl, rfl, rfl⟩ := exists_eq_mk₃ f x y z; apply ih
+
+theorem mk_injective (h : ∀ i j hij, Function.Injective (f i j hij)) (i) :
+    Function.Injective fun x ↦ (⟦⟨i, x⟩⟧ : DirectLimit F f) :=
+  fun _ _ eq ↦ have ⟨_, _, _, eq⟩ := Quotient.eq.mp eq; h _ _ _ eq
+
+section map₀
+
+variable [Nonempty ι] (ih : ∀ i, F i)
+
+/-- "Nullary map" to construct an element in the direct limit. -/
+noncomputable def map₀ : DirectLimit F f := ⟦⟨Classical.arbitrary ι, ih _⟩⟧
+
+theorem map₀_def (compat : ∀ i j h, f i j h (ih i) = ih j) (i) : map₀ f ih = ⟦⟨i, ih i⟩⟧ :=
+  have ⟨j, hcj, hij⟩ := exists_ge_ge (Classical.arbitrary ι) i
+  Quotient.sound ⟨j, hcj, hij, (compat ..).trans (compat ..).symm⟩
+
+end map₀
+
+section lift
+
+variable {C : Sort*} (ih : ∀ i, F i → C) (compat : ∀ i j h x, ih i x = ih j (f i j h x))
+
+/-- To define a function from the direct limit, it suffices to provide one function from each
+component subject to a compatibility condition. -/
+protected def lift (z : DirectLimit F f) : C :=
+  z.recOn (fun x ↦ ih x.1 x.2) fun x y ⟨k, hxk, hyk, eq⟩ ↦ by
+    simp_rw [eq_rec_constant, compat _ _ hxk, compat _ _ hyk, eq]
+
+theorem lift_def (x) : DirectLimit.lift f ih compat ⟦x⟧ = ih x.1 x.2 := rfl
+
+theorem lift_injective (h : ∀ i, Function.Injective (ih i)) :
+    Function.Injective (DirectLimit.lift f ih compat) :=
+  DirectLimit.induction₂ _ fun i x y eq ↦ by simp_rw [lift_def] at eq; rw [h i eq]
+
+end lift
+
+section map
+
+variable (ih : ∀ i, F₁ i → F₂ i) (compat : ∀ i j h x, f₂ i j h (ih i x) = ih j (f₁ i j h x))
+
+/-- To define a function from the direct limit, it suffices to provide one function from each
+component subject to a compatibility condition. -/
+def map (z : DirectLimit F₁ f₁) : DirectLimit F₂ f₂ :=
+  z.lift _ (fun i x ↦ ⟦⟨i, ih i x⟩⟧) fun j k h x ↦ Quotient.sound <|
+    have ⟨i, hji, hki⟩ := exists_ge_ge j k
+    ⟨i, hji, hki, by simp_rw [compat, map_map']⟩
+
+theorem map_def (x) : map f₁ f₂ ih compat ⟦x⟧ = ⟦⟨x.1, ih x.1 x.2⟩⟧ := rfl
+
+end map
+
+section lift₂
+
+variable {C : Sort*} (ih : ∀ i, F₁ i → F₂ i → C)
+  (compat : ∀ i j h x y, ih i x y = ih j (f₁ i j h x) (f₂ i j h y))
+
+private noncomputable def lift₂Aux (z : Σ i, F₁ i) (w : Σ i, F₂ i) :
+    {x : C // ∀ i (hzi : z.1 ≤ i) (hwi : w.1 ≤ i), x = ih i (f₁ _ _ hzi z.2) (f₂ _ _ hwi w.2)} := by
+  choose j hzj hwj using exists_ge_ge z.1 w.1
+  refine ⟨ih j (f₁ _ _ hzj z.2) (f₂ _ _ hwj w.2), fun k hzk hwk ↦ ?_⟩
+  have ⟨i, hji, hki⟩ := exists_ge_ge j k
+  simp_rw [compat _ _ hji, compat _ _ hki, map_map']
+
+/-- To define a binary function from the direct limit, it suffices to provide one binary function
+from each component subject to a compatibility condition. -/
+protected noncomputable def lift₂ (z : DirectLimit F₁ f₁) (w : DirectLimit F₂ f₂) : C :=
+  z.hrecOn₂ w (φ := fun _ _ ↦ C) (lift₂Aux f₁ f₂ ih compat · ·)
+    fun _ _ _ _ ⟨j, hx, hyj, jeq⟩ ⟨k, hyk, hz, keq⟩ ↦ heq_of_eq <| by
+      have ⟨i, hji, hki⟩ := exists_ge_ge j k
+      simp_rw [(lift₂Aux ..).2 _ (hx.trans hji) (hyk.trans hki),
+        (lift₂Aux ..).2 _ (hyj.trans hji) (hz.trans hki),
+        ← map_map' _ hx hji, jeq, ← map_map' _ hz hki, ← keq, map_map']
+
+theorem lift₂_def₂ (x : Σ i, F₁ i) (y : Σ i, F₂ i) (i) (hxi : x.1 ≤ i) (hyi : y.1 ≤ i) :
+    DirectLimit.lift₂ f₁ f₂ ih compat ⟦x⟧ ⟦y⟧ = ih i (f₁ _ _ hxi x.2) (f₂ _ _ hyi y.2) :=
+  (lift₂Aux _ _ _ compat _ _).2 ..
+
+theorem lift₂_def (i x y) : DirectLimit.lift₂ f₁ f₂ ih compat ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = ih i x y := by
+  rw [lift₂_def₂ _ _ _ _ _ _ i le_rfl le_rfl, map_self', map_self']
+
+end lift₂
+
+section map₂
+
+variable (ih : ∀ i, F₁ i → F₂ i → F i)
+  (compat : ∀ i j h x y, f i j h (ih i x y) = ih j (f₁ i j h x) (f₂ i j h y))
+
+/-- To define a function from the direct limit, it suffices to provide one function from each
+component subject to a compatibility condition. -/
+noncomputable def map₂ : DirectLimit F₁ f₁ → DirectLimit F₂ f₂ → DirectLimit F f :=
+  DirectLimit.lift₂ f₁ f₂ (fun i x y ↦ ⟦⟨i, ih i x y⟩⟧) fun j k h x y ↦ Quotient.sound <|
+    have ⟨i, hji, hki⟩ := exists_ge_ge j k
+    ⟨i, hji, hki, by simp_rw [compat, map_map']⟩
+
+theorem map₂_def₂ (x y) (i) (hxi : x.1 ≤ i) (hyi : y.1 ≤ i) :
+    map₂ f₁ f₂ f ih compat ⟦x⟧ ⟦y⟧ = ⟦⟨i, ih i (f₁ _ _ hxi x.2) (f₂ _ _ hyi y.2)⟩⟧ :=
+  lift₂_def₂ ..
+
+theorem map₂_def (i x y) : map₂ f₁ f₂ f ih compat ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = ⟦⟨i, ih i x y⟩⟧ :=
+  lift₂_def ..
+
+end map₂
+
+end DirectLimit
+
+end DirectedSystem
+
 variable (f : ∀ ⦃i j : ι⦄, i ≤ j → F j → F i) ⦃i j : ι⦄ (h : i ≤ j)
 
 /-- A inverse system indexed by a preorder is a contravariant functor from the preorder
 to another category. It is dual to `DirectedSystem`. -/
 class InverseSystem : Prop where
-  map_self ⦃i⦄ (x : F i) : f le_rfl x = x
-  map_map ⦃k j i⦄ (hkj : k ≤ j) (hji : j ≤ i) (x : F i) : f hkj (f hji x) = f (hkj.trans hji) x
+  map_self ⦃i : ι⦄ (x : F i) : f le_rfl x = x
+  map_map ⦃k j i : ι⦄ (hkj : k ≤ j) (hji : j ≤ i) (x : F i) : f hkj (f hji x) = f (hkj.trans hji) x
 
 namespace InverseSystem
 
@@ -99,7 +283,6 @@ then `piLT X i` is the limit of all `piLT X j` for `j < i`. -/
 @[simps apply] noncomputable def piLTLim : piLT X i ≃ limit (piLTProj (X := X)) i where
   toFun f := ⟨fun j ↦ piLTProj j.2.le f, fun _ _ _ ↦ rfl⟩
   invFun f l := let k := hi.mid l.2; f.1 ⟨k, k.2.2⟩ ⟨l, k.2.1⟩
-  left_inv f := rfl
   right_inv f := by
     ext j l
     set k := hi.mid (l.2.trans j.2)
@@ -124,10 +307,7 @@ def piSplitLE : piLT X i × X i ≃ ∀ j : Iic i, X j where
   toFun f j := if h : j = i then h.symm ▸ f.2 else f.1 ⟨j, j.2.lt_of_ne h⟩
   invFun f := (fun j ↦ f ⟨j, j.2.le⟩, f ⟨i, le_rfl⟩)
   left_inv f := by ext j; exacts [dif_neg j.2.ne, dif_pos rfl]
-  right_inv f := by
-    ext j; dsimp only; split_ifs with h
-    · cases (Subtype.ext h : j = ⟨i, le_rfl⟩); rfl
-    · rfl
+  right_inv f := by grind
 
 @[simp] theorem piSplitLE_eq {f : piLT X i × X i} :
     piSplitLE f ⟨i, le_rfl⟩ = f.2 := by simp [piSplitLE]
@@ -181,7 +361,7 @@ induces a bijection at the limit ordinal. -/
 @[simps] def invLimEquiv : limit f i ≃ limit (piLTProj (X := X)) i where
   toFun t := ⟨fun l ↦ equiv l (t.1 l), fun _ _ h ↦ Eq.symm <| by simp_rw [← t.2 h]; apply nat⟩
   invFun t := ⟨fun l ↦ (equiv l).symm (t.1 l),
-    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.2 h]; simp⟩
+    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.2 h] <;> simp⟩
   left_inv t := by ext; apply Equiv.left_inv
   right_inv t := by ext1; ext1; apply Equiv.right_inv
 
@@ -216,7 +396,7 @@ variable [SuccOrder ι] (f) (equivSucc : ∀ ⦃i⦄, ¬IsMax i → F i⁺ ≃ F
   /-- It is a natural family of bijections. -/
   nat : IsNatEquiv f equiv
   /-- It is compatible with a family of bijections relating `F i⁺` to `F i`. -/
-  compat {i} (hsi : (i⁺ : ι) ∈ s) (hi : ¬IsMax i) (x) :
+  compat {i : ι} (hsi : (i⁺ : ι) ∈ s) (hi : ¬IsMax i) (x) :
     equiv ⟨i⁺, hsi⟩ x ⟨i, lt_succ_of_not_isMax hi⟩ = (equivSucc hi x).2
 
 variable {s t : Set ι} {f equivSucc} [WellFoundedLT ι]
@@ -232,7 +412,7 @@ theorem unique_pEquivOn (hs : IsLowerSet s) {e₁ e₂ : PEquivOn f equivSucc s}
   obtain ⟨e₁, nat₁, compat₁⟩ := e₁
   obtain ⟨e₂, nat₂, compat₂⟩ := e₂
   ext1; ext1 i; dsimp only
-  refine SuccOrder.prelimitRecOn i.1 (C := fun i ↦ ∀ h : i ∈ s, e₁ ⟨i, h⟩ = e₂ ⟨i, h⟩)
+  refine SuccOrder.prelimitRecOn i.1 (motive := fun i ↦ ∀ h : i ∈ s, e₁ ⟨i, h⟩ = e₂ ⟨i, h⟩)
     (fun i nmax ih hi ↦ ?_) (fun i lim ih hi ↦ ?_) i.2
   · ext x ⟨j, hj⟩
     obtain rfl | hj := ((lt_succ_iff_of_not_isMax nmax).mp hj).eq_or_lt

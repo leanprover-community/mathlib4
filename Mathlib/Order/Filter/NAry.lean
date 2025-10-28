@@ -73,11 +73,9 @@ lemma hasBasis_map₂ :
 theorem map₂_mono (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) : map₂ m f₁ g₁ ≤ map₂ m f₂ g₂ :=
   fun _ ⟨s, hs, t, ht, hst⟩ => ⟨s, hf hs, t, hg ht, hst⟩
 
-@[gcongr]
 theorem map₂_mono_left (h : g₁ ≤ g₂) : map₂ m f g₁ ≤ map₂ m f g₂ :=
   map₂_mono Subset.rfl h
 
-@[gcongr]
 theorem map₂_mono_right (h : f₁ ≤ f₂) : map₂ m f₁ g ≤ map₂ m f₂ g :=
   map₂_mono h Subset.rfl
 
@@ -135,6 +133,7 @@ theorem map₂_pure : map₂ m (pure a) (pure b) = pure (m a b) := by rw [map₂
 theorem map₂_swap (m : α → β → γ) (f : Filter α) (g : Filter β) :
     map₂ m f g = map₂ (fun a b => m b a) g f := by
   rw [← map_prod_eq_map₂, prod_comm, map_map, ← map_prod_eq_map₂, Function.comp_def]
+  simp
 
 @[simp]
 theorem map₂_left [NeBot g] : map₂ (fun x _ => x) f g = f := by

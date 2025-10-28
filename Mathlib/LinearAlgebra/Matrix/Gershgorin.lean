@@ -42,10 +42,10 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
     simp_rw [mem_closedBall_iff_norm']
     refine ⟨i, ?_⟩
     calc
-      _ = ‖(A i i * v i - μ * v i) * (v i)⁻¹‖ := by congr; field_simp [h_nz]; ring
+      _ = ‖(A i i * v i - μ * v i) * (v i)⁻¹‖ := by congr; field_simp
       _ = ‖(A i i * v i - ∑ j, A i j * v j) * (v i)⁻¹‖ := by
                 rw [show μ * v i = ∑ x : n, A i x * v x by
-                  rw [← Matrix.dotProduct, ← Matrix.mulVec]
+                  rw [← dotProduct, ← Matrix.mulVec]
                   exact (congrFun (Module.End.mem_eigenspace_iff.mp h_eg) i).symm]
       _ = ‖(∑ j ∈ Finset.univ.erase i, A i j * v j) * (v i)⁻¹‖ := by
                 rw [Finset.sum_erase_eq_sub (Finset.mem_univ i), ← neg_sub, neg_mul, norm_neg]

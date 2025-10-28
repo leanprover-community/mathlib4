@@ -5,13 +5,14 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Lie.Weights.Killing
 import Mathlib.LinearAlgebra.RootSystem.Basic
+import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.Algebra.Algebra.Rat
 
 /-!
 # The root system associated with a Lie algebra
 
-We show that the roots of a finite dimensional splitting semisimple Lie algebra over a field of
+We show that the roots of a finite-dimensional splitting semisimple Lie algebra over a field of
 characteristic 0 form a root system. We achieve this by studying root chains.
 
 ## Main results
@@ -116,9 +117,9 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn 
     have := apply_coroot_eq_cast' (-α) W
     simp only [coroot_neg, map_neg, hW, nsmul_eq_mul, Pi.natCast_def, coe_chainTop, zsmul_eq_mul,
       Int.cast_natCast, Pi.add_apply, Pi.neg_apply, Pi.mul_apply, root_apply_coroot hα, mul_two,
-      neg_add_rev, apply_coroot_eq_cast' α β, Int.cast_sub, Int.cast_mul, Int.cast_ofNat,
-      mul_comm (2 : K), add_sub_cancel, neg_neg, add_sub, Nat.cast_inj,
-      eq_sub_iff_add_eq, ← Nat.cast_add, ← sub_eq_neg_add, sub_eq_iff_eq_add] at this
+      apply_coroot_eq_cast' α β, Int.cast_sub, Int.cast_mul, Int.cast_ofNat, mul_comm (2 : K),
+      add_sub_cancel, add_sub, Nat.cast_inj, eq_sub_iff_add_eq, ← Nat.cast_add, ← sub_eq_neg_add,
+      sub_eq_iff_eq_add] at this
     omega
   have H₂ : ((1 + n + chainTopCoeff (-α) W) • α + chainTop (-α) W : H → K) =
       (chainTopCoeff α β + 1) • α + β := by
@@ -184,7 +185,7 @@ lemma chainLength_zero [Nontrivial L] : chainLength 0 β = 0 := by
   `β (coroot α) = q - r`. In particular, it is an integer. -/
 lemma apply_coroot_eq_cast :
     β (coroot α) = (chainBotCoeff α β - chainTopCoeff α β : ℤ) := by
-  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; omega
+  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; cutsat
 
 lemma le_chainBotCoeff_of_rootSpace_ne_top
     (hα : α.IsNonZero) (n : ℤ) (hn : rootSpace H (-n • α + β) ≠ ⊥) :
@@ -297,7 +298,7 @@ lemma rootSpace_one_div_two_smul (hα : α.IsNonZero) : rootSpace H ((2⁻¹ : K
   by_contra h
   let W : Weight K H L := ⟨_, h⟩
   have hW : 2 • (W : H → K) = α := by
-    show 2 • (2⁻¹ : K) • (α : H → K) = α
+    change 2 • (2⁻¹ : K) • (α : H → K) = α
     rw [← Nat.cast_smul_eq_nsmul K, smul_smul]; simp
   apply α.genWeightSpace_ne_bot
   have := rootSpace_two_smul W (fun (e : (W : H → K) = 0) ↦ hα <| by
@@ -324,7 +325,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
     set k' : ℤ := n - chainTopCoeff α β
     subst H
     have : k' ∈ ({-1, 0, 1} : Finset ℤ) := by
-      show k' ∈ Finset.Icc (-1 : ℤ) (1 : ℤ)
+      change k' ∈ Finset.Icc (-1 : ℤ) (1 : ℤ)
       exact this
     simpa only [Int.reduceNeg, Finset.mem_insert, Finset.mem_singleton, ← @Int.cast_inj K,
       Int.cast_zero, Int.cast_neg, Int.cast_one] using this
@@ -335,7 +336,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
     swap
     · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg, neg_sub, true_and]
       rw [← Nat.cast_add, chainBotCoeff_add_chainTopCoeff, hn]
-      omega
+      cutsat
     rw [h, hk, ← Int.cast_smul_eq_zsmul K, ← add_smul] at this
     simp only [Int.cast_sub, Int.cast_natCast,
       sub_add_sub_cancel', add_sub_cancel_left, ne_eq] at this
@@ -367,7 +368,6 @@ lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
   have : β (coroot α) = 0 := by
     by_cases hα : α.IsZero
     · simp [coroot_eq_zero_iff.mpr hα]
-    apply add_left_injective (β (coroot α))
     simpa [root_apply_coroot hα, mul_two] using congr_fun (sub_eq_zero.mp e) (coroot α)
   have : reflectRoot α β = β := by ext; simp [reflectRoot, this]
   exact hβ (this ▸ e)
@@ -379,7 +379,7 @@ field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
     RootSystem H.root K (Dual K H) H :=
   RootSystem.mk'
-    IsReflexive.toPerfectPairingDual
+    .id
     { toFun := (↑)
       inj' := by
         intro α β h; ext x; simpa using LinearMap.congr_fun h x  }
@@ -388,10 +388,11 @@ def rootSystem :
     (fun ⟨α, hα⟩ ↦ by simpa using root_apply_coroot <| by simpa using hα)
     (by
       rintro ⟨α, hα⟩ - ⟨⟨β, hβ⟩, rfl⟩
-      simp only [Function.Embedding.coeFn_mk, IsReflexive.toPerfectPairingDual_toLin,
-        Function.comp_apply, Set.mem_range, Subtype.exists, exists_prop]
-      exact ⟨reflectRoot α β, (by simpa using reflectRoot_isNonZero α β <| by simpa using hβ), rfl⟩)
+      simpa using
+        ⟨reflectRoot α β, by simpa using reflectRoot_isNonZero α β <| by simpa using hβ, rfl⟩)
     (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
+    (fun α β ↦
+      ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩)
 
 @[simp]
 lemma corootForm_rootSystem_eq_killing :
@@ -399,26 +400,24 @@ lemma corootForm_rootSystem_eq_killing :
   rw [restrict_killingForm_eq_sum, RootPairing.CorootForm, ← Finset.sum_coe_sort (s := H.root)]
   rfl
 
-@[simp] lemma rootSystem_toPerfectPairing_apply (f x) : (rootSystem H).toPerfectPairing f x = f x :=
-  rfl
-@[deprecated (since := "2024-09-09")]
-alias rootSystem_toLin_apply := rootSystem_toPerfectPairing_apply
+@[simp] lemma rootSystem_toLinearMap_apply (f x) : (rootSystem H).toLinearMap f x = f x := rfl
 @[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
 
 instance : (rootSystem H).IsCrystallographic where
-  exists_int α β :=
+  exists_value α β :=
     ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
-theorem isReduced_rootSystem : (rootSystem H).IsReduced := by
-  intro ⟨α, hα⟩ ⟨β, hβ⟩ e
-  rw [LinearIndependent.pair_iff' ((rootSystem H).ne_zero _), not_forall] at e
-  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, rootSystem_root_apply, ne_eq, not_not] at e
-  obtain ⟨u, hu⟩ := e
-  obtain (h | h) :=
-    eq_neg_or_eq_of_eq_smul α β (by simpa using hβ) u (by ext x; exact DFunLike.congr_fun hu.symm x)
-  · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
-  · left; ext x; simpa using DFunLike.congr_fun h.symm x
+instance : (rootSystem H).IsReduced where
+  eq_or_eq_neg := by
+    intro ⟨α, hα⟩ ⟨β, hβ⟩ e
+    rw [LinearIndependent.pair_iff' ((rootSystem H).ne_zero _), not_forall] at e
+    simp only [rootSystem_root_apply, ne_eq, not_not] at e
+    obtain ⟨u, hu⟩ := e
+    obtain (h | h) := eq_neg_or_eq_of_eq_smul α β (by simpa using hβ) u
+      (by ext x; exact DFunLike.congr_fun hu.symm x)
+    · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
+    · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
 end LieAlgebra.IsKilling

@@ -21,7 +21,7 @@ weakly locally compact.
 
 ## Tags
 
-grouup action, proper action, properly discontinuous, compactly generated
+group action, proper action, properly discontinuous, compactly generated
 -/
 
 variable {G X : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [TopologicalSpace X]
@@ -47,11 +47,10 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
     -- Because `X × X` is compactly generated, to show that f is proper
     -- it is enough to show that the preimage of a compact set `K` is compact.
     refine isProperMap_iff_isCompact_preimage.2
-      ⟨(continuous_prod_mk.2
-      ⟨continuous_prod_of_discrete_left.2 continuous_const_smul, by fun_prop⟩),
+      ⟨(continuous_prod_of_discrete_left.2 continuous_const_smul).prodMk (by fun_prop),
       fun K hK ↦ ?_⟩
     -- We set `K' := pr₁(K) ∪ pr₂(K)`, which is compact because `K` is compact and `pr₁` and
-    -- `pr₂` are continuous. We halso have that `K ⊆ K' × K'`, and `K` is closed because `X` is T2.
+    -- `pr₂` are continuous. We also have that `K ⊆ K' × K'`, and `K` is closed because `X` is T2.
     -- Therefore `f ⁻¹ (K)` is also closed and `f ⁻¹ (K) ⊆ f ⁻¹ (K' × K')`, thus it suffices to
     -- show that `f ⁻¹ (K' × K')` is compact.
     let K' := fst '' K ∪ snd '' K
@@ -81,8 +80,7 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
         isCompact_singleton.prod <| (hK'.image <| continuous_const_smul _).inter hK'
     -- We conclude as explained above.
     exact this.of_isClosed_subset (hK.isClosed.preimage <|
-      continuous_prod_mk.2
-      ⟨continuous_prod_of_discrete_left.2 continuous_const_smul, by fun_prop⟩) <|
+      (continuous_prod_of_discrete_left.2 continuous_const_smul).prodMk (by fun_prop)) <|
       preimage_mono fun x hx ↦ ⟨Or.inl ⟨x, hx, rfl⟩, Or.inr ⟨x, hx, rfl⟩⟩
   · intro h; constructor
     intro K L hK hL
@@ -92,8 +90,8 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
     apply IsCompact.finite_of_discrete
     -- Now set `h : (g, x) ↦ (g⁻¹ • x, x)`, because `f` is proper by hypothesis, so is `h`.
     have : IsProperMap (fun gx : G × X ↦ (gx.1⁻¹ • gx.2, gx.2)) :=
-      (IsProperMap.prodMap (Homeomorph.isProperMap (Homeomorph.inv G)) isProperMap_id).comp <|
-        ProperSMul.isProperMap_smul_pair
+      ProperSMul.isProperMap_smul_pair.comp <|
+        (Homeomorph.inv G).isProperMap.prodMap isProperMap_id
     --But we also have that `{g | Set.Nonempty ((g • ·) '' K ∩ L)} = h ⁻¹ (K × L)`, which
     -- concludes the proof.
     have eq : {g | Set.Nonempty ((g • ·) '' K ∩ L)} =

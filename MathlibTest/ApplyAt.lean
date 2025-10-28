@@ -36,7 +36,7 @@ example {G : Type*} [Monoid G] (a b c : G) (h : a * c = b * c)
   · exact h
   · guard_target = IsRightCancelMul G
     constructor
-    intros a b c
+    intro a b c
     apply hh
 
 example {α β γ δ : Type*} (f : α → β → γ → δ) (a : α) (b : β) (g : γ) : δ := by
@@ -96,7 +96,7 @@ example {A B : Prop} (h : A ↔ B) : A → B := by
   apply h.mp at hA
   assumption
 
-example (a : ℝ) (h3: a + 1 = 0) : a = -1 := by
+example (a : ℝ) (h3 : a + 1 = 0) : a = -1 := by
   apply (congrArg (fun x => x - 1)) at h3
   simp at h3
   assumption
@@ -105,3 +105,19 @@ example (a b : ℝ) (h : -a * b = 0) : a = 0 ∨ b = 0 := by
   apply (congrArg (fun x => x / 1)) at h
   simp at h
   assumption
+
+/-- `apply H at h` when type of `H h` depends on proof of `h` (https://github.com/leanprover-community/mathlib4/issues/20623) -/
+example (h : True) : True := by
+  have H (h : True) : h = h := rfl
+  apply H at h
+  simp at h
+  exact h
+
+/-- `apply H at h` when type of `H h` depends on proof of `h` (https://github.com/leanprover-community/mathlib4/issues/20623) -/
+example (a : List Nat) (k : Nat) (hk : k < a.length) : True := by
+  have H (k : Nat) {xs ys : List Nat} (hk: k < xs.length)
+    (h : xs = ys) : xs[k] = ys[k]'(h ▸ hk) := h ▸ rfl
+  have h : a = a.map id := by simp
+  apply H k hk at h
+  simp at h
+  exact h

@@ -5,8 +5,6 @@ Authors: Aaron Anderson
 -/
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.LucasLehmer
-import Mathlib.Algebra.GeomSum
-import Mathlib.RingTheory.Multiplicity
 import Mathlib.Tactic.NormNum.Prime
 
 /-!
@@ -33,8 +31,11 @@ namespace Nat
 
 open ArithmeticFunction Finset
 
+-- access notation `σ`
+open scoped sigma
+
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
-  simp_rw [sigma_one_apply, mersenne, show 2 = 1 + 1 from rfl, ← geom_sum_mul_add 1 (k + 1)]
+  simp_rw [sigma_one_apply, mersenne, ← one_add_one_eq_two, ← geom_sum_mul_add 1 (k + 1)]
   norm_num
 
 /-- Euclid's theorem that Mersenne primes induce perfect numbers -/
@@ -44,7 +45,7 @@ theorem perfect_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1))
     mul_comm,
     isMultiplicative_sigma.map_mul_of_coprime ((Odd.coprime_two_right (by simp)).pow_right _),
     sigma_two_pow_eq_mersenne_succ]
-  · simp [pr, Nat.prime_two, sigma_one_apply]
+  · simp [pr, sigma_one_apply]
   · positivity
 
 theorem ne_zero_of_prime_mersenne (k : ℕ) (pr : (mersenne (k + 1)).Prime) : k ≠ 0 := by
@@ -56,7 +57,7 @@ theorem even_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Pr
 
 theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k * m ∧ ¬Even m := by
   have h := Nat.finiteMultiplicity_iff.2 ⟨Nat.prime_two.ne_one, hpos⟩
-  cases' pow_multiplicity_dvd 2 n with m hm
+  obtain ⟨m, hm⟩ := pow_multiplicity_dvd 2 n
   use multiplicity 2 n, m
   refine ⟨hm, ?_⟩
   rw [even_iff_two_dvd]

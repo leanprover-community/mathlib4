@@ -58,11 +58,6 @@ theorem finrank_eq_finrank_subalgebra : finrank K F.toSubalgebra = finrank K F :
 
 variable {F} {E}
 
-@[simp]
-theorem toSubalgebra_eq_iff : F.toSubalgebra = E.toSubalgebra ↔ F = E := by
-  rw [SetLike.ext_iff, SetLike.ext'_iff, Set.ext_iff]
-  rfl
-
 /-- If `F ≤ E` are two intermediate fields of `L / K` such that `[E : K] ≤ [F : K]` are finite,
 then `F = E`. -/
 theorem eq_of_le_of_finrank_le [hfin : FiniteDimensional K E] (h_le : F ≤ E)
@@ -101,6 +96,30 @@ then `F = E`. -/
 theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
+
+theorem finrank_dvd_of_le_left (h : F ≤ E) : finrank E L ∣ finrank F L := by
+  let _ := (inclusion h).toRingHom.toAlgebra
+  have : IsScalarTower F E L := IsScalarTower.of_algebraMap_eq fun x ↦ rfl
+  exact Dvd.intro_left (finrank F E) (finrank_mul_finrank F E L)
+
+theorem finrank_dvd_of_le_right (h : F ≤ E) : finrank K F ∣ finrank K E := by
+  let _ := (inclusion h).toRingHom.toAlgebra
+  exact Dvd.intro (finrank F E) (finrank_mul_finrank K F E)
+
+theorem finrank_le_of_le_left [FiniteDimensional F L] (h : F ≤ E) : finrank E L ≤ finrank F L :=
+  Nat.le_of_dvd Module.finrank_pos (finrank_dvd_of_le_left h)
+
+theorem finrank_le_of_le_right [FiniteDimensional K E] (h : F ≤ E) : finrank K F ≤ finrank K E :=
+  Nat.le_of_dvd Module.finrank_pos (finrank_dvd_of_le_right h)
+
+/-- Mapping a finite-dimensional intermediate field along an algebra equivalence gives
+a finite-dimensional intermediate field. -/
+instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
+    FiniteDimensional K (E.map f) :=
+  LinearEquiv.finiteDimensional (IntermediateField.equivMap E f).toLinearEquiv
+
+@[deprecated (since := "2025-05-02")]
+alias _root_.im_finiteDimensional := IntermediateField.finiteDimensional_map
 
 end FiniteDimensional
 

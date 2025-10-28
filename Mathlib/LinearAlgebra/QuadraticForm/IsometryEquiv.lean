@@ -20,10 +20,9 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
   parametrization of `QuadraticForm.weightedSumSquares`.
 -/
 
+open Module QuadraticMap
 
 variable {ι R K M M₁ M₂ M₃ V N : Type*}
-
-open QuadraticMap
 
 namespace QuadraticMap
 
@@ -34,7 +33,6 @@ variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R 
 
 /-- An isometric equivalence between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
 is a linear equivalence between `M₁` and `M₂` that commutes with the quadratic forms. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet @[nolint has_nonempty_instance]
 structure IsometryEquiv (Q₁ : QuadraticMap R M₁ N) (Q₂ : QuadraticMap R M₂ N)
     extends M₁ ≃ₗ[R] M₂ where
   map_app' : ∀ m, Q₂ (toFun m) = Q₁ m
@@ -54,17 +52,14 @@ instance : EquivLike (Q₁.IsometryEquiv Q₂) M₁ M₂ where
   inv f := f.toLinearEquiv.symm
   left_inv f := f.toLinearEquiv.left_inv
   right_inv f := f.toLinearEquiv.right_inv
-  coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
+  coe_injective' f g := by cases f; cases g; simp +contextual
 
 instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
   map_add f := map_add f.toLinearEquiv
   map_smulₛₗ f := map_smulₛₗ f.toLinearEquiv
 
--- Porting note: was `Coe`
 instance : CoeOut (Q₁.IsometryEquiv Q₂) (M₁ ≃ₗ[R] M₂) :=
   ⟨IsometryEquiv.toLinearEquiv⟩
-
--- Porting note: syntaut
 
 @[simp]
 theorem coe_toLinearEquiv (f : Q₁.IsometryEquiv Q₂) : ⇑(f : M₁ ≃ₗ[R] M₂) = f :=
@@ -124,7 +119,7 @@ def isometryEquivOfCompLinearEquiv (Q : QuadraticMap R M N) (f : M₁ ≃ₗ[R] 
     map_app' := by
       intro
       simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
-        LinearEquiv.apply_symm_apply, f.apply_symm_apply] }
+        f.apply_symm_apply] }
 
 variable [Finite ι]
 

@@ -16,7 +16,7 @@ This file checks that this and similar tricks have had the desired effect:
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 
-example {a b : α} [LinearOrderedField α] : a / 2 ≤ b / 2 := by
+example {a b : α} [Field α] [LinearOrder α] [IsStrictOrderedRing α] : a / 2 ≤ b / 2 := by
   fail_if_success with_reducible_and_instances apply mul_le_mul -- fails, as desired
   exact test_sorry
 

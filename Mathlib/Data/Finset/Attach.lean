@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Defs
+import Mathlib.Data.Multiset.MapFold
 
 /-!
 # Attaching a proof of membership to a finite set
@@ -21,12 +22,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists CompleteLattice
-
-assert_not_exists OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
 
 open Multiset Subtype Function
 
@@ -50,8 +46,11 @@ def attach (s : Finset α) : Finset { x // x ∈ s } :=
 theorem attach_val (s : Finset α) : s.attach.1 = s.1.attach :=
   rfl
 
-@[simp]
+@[simp, grind ←]
 theorem mem_attach (s : Finset α) : ∀ x, x ∈ s.attach :=
   Multiset.mem_attach _
+
+@[simp, norm_cast]
+theorem coe_attach (s : Finset α) : (s.attach : Set s) = Set.univ := by ext; simp
 
 end Finset

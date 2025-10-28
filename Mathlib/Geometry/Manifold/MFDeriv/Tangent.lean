@@ -22,10 +22,10 @@ open scoped Manifold
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M]
+  [IsManifold I 1 M]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M']
+  [IsManifold I' 1 M']
 
 
 /-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
@@ -48,7 +48,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
       (chartAt (ModelProd H E) p).symm (TotalSpace.toProd H E q) := by
   dsimp only [tangentMap]
   rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm (chart_mem_atlas _ _) h)]
-  simp only [ContinuousLinearMap.coe_coe, TangentBundle.chartAt, h, tangentBundleCore,
+  simp only [TangentBundle.chartAt, tangentBundleCore,
     mfld_simps, (· ∘ ·)]
   -- `simp` fails to apply `PartialEquiv.prod_symm` with `ModelProd`
   congr
@@ -80,11 +80,10 @@ lemma inTangentCoordinates_eq_mfderiv_comp
   congr
   · have : MDifferentiableAt I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x) :=
       mdifferentiableAt_extChartAt hy
-    simp at this
-    simp [mfderiv, this]
+    simp_all [mfderiv]
   · simp only [mfderivWithin, writtenInExtChartAt, modelWithCornersSelf_coe, range_id, inter_univ]
     rw [if_pos]
-    · simp [Function.comp_def, PartialHomeomorph.left_inv (chartAt H (f x₀)) hx]
+    · simp [Function.comp_def, OpenPartialHomeomorph.left_inv (chartAt H (f x₀)) hx]
     · apply mdifferentiableWithinAt_extChartAt_symm
       apply (extChartAt I (f x₀)).map_source
       simpa using hx

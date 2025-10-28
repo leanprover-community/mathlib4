@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Basic
 
 /-!
 
@@ -31,9 +31,9 @@ from the natural numbers into it is injective.
 *Warning*: for a semiring `R`, `CharZero R` and `CharP R 0` need not coincide.
 * `CharZero R` requires an injection `ℕ ↪ R`;
 * `CharP R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`.
-For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
-`CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
-This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
+  For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
+  `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
+  This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
 class CharZero (R) [AddMonoidWithOne R] : Prop where
   /-- An additive monoid with one has characteristic zero if the canonical map `ℕ → R` is
@@ -80,29 +80,26 @@ theorem cast_eq_one {n : ℕ} : (n : R) = 1 ↔ n = 1 := by rw [← cast_one, ca
 theorem cast_ne_one {n : ℕ} : (n : R) ≠ 1 ↔ n ≠ 1 :=
   cast_eq_one.not
 
-instance (priority := 100) AtLeastTwo.toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
-  ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
-
 end Nat
 
 namespace OfNat
 
 variable [AddMonoidWithOne R] [CharZero R]
 
-@[simp] lemma ofNat_ne_zero (n : ℕ) [n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 0 :=
+@[simp] lemma ofNat_ne_zero (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) ≠ 0 :=
   Nat.cast_ne_zero.2 (NeZero.ne n)
 
-@[simp] lemma zero_ne_ofNat (n : ℕ) [n.AtLeastTwo] : 0 ≠ (no_index (ofNat n) : R) :=
+@[simp] lemma zero_ne_ofNat (n : ℕ) [n.AtLeastTwo] : 0 ≠ (ofNat(n) : R) :=
   (ofNat_ne_zero n).symm
 
-@[simp] lemma ofNat_ne_one (n : ℕ) [n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 1 :=
+@[simp] lemma ofNat_ne_one (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) ≠ 1 :=
   Nat.cast_ne_one.2 (Nat.AtLeastTwo.ne_one)
 
-@[simp] lemma one_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (1 : R) ≠ no_index (ofNat n) :=
+@[simp] lemma one_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (1 : R) ≠ ofNat(n) :=
   (ofNat_ne_one n).symm
 
 @[simp] lemma ofNat_eq_ofNat {m n : ℕ} [m.AtLeastTwo] [n.AtLeastTwo] :
-    (no_index (ofNat m) : R) = no_index (ofNat n) ↔ (ofNat m : ℕ) = ofNat n :=
+    (ofNat(m) : R) = ofNat(n) ↔ (ofNat m : ℕ) = ofNat n :=
   Nat.cast_inj
 
 end OfNat

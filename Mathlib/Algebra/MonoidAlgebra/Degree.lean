@@ -97,14 +97,15 @@ section AddOnly
 variable [Add A] [Add B] [Add T] [AddLeftMono B] [AddRightMono B]
   [AddLeftMono T] [AddRightMono T]
 
-theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
+theorem sup_support_mul_le {degb : A → B} (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b)
     (f g : R[A]) :
     (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
   classical
-  exact (Finset.sup_mono <| support_mul _ _).trans <| Finset.sup_add_le.2 fun _fd fds _gd gds ↦
-    degbm.trans <| add_le_add (Finset.le_sup fds) (Finset.le_sup gds)
+  grw [support_mul, Finset.sup_add_le]
+  rintro _fd fds _gd gds
+  grw [degbm, ← Finset.le_sup fds, ← Finset.le_sup gds]
 
-theorem le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
+theorem le_inf_support_mul {degt : A → T} (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (f g : R[A]) :
     f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt :=
   sup_support_mul_le (B := Tᵒᵈ) degtm f g
@@ -126,8 +127,7 @@ theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
     exact fun a ha => by rwa [Finset.mem_singleton.mp (Finsupp.support_single_subset ha)]
   | f::fs => by
     rw [List.prod_cons, List.map_cons, List.sum_cons]
-    exact (sup_support_mul_le (@fun a b => degbm a b) _ _).trans
-        (add_le_add_left (sup_support_list_prod_le degb0 degbm fs) _)
+    grw [sup_support_mul_le degbm, sup_support_list_prod_le degb0 degbm]
 
 theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List R[A]) :
@@ -299,7 +299,7 @@ theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [Ad
     split_ifs; exacts [bot_le, hzero.le]
   · intro i s his ih
     rw [Finset.prod_insert his, Finset.sum_insert his]
-    exact (supDegree_mul_le hadd).trans (add_le_add_left ih _)
+    exact (supDegree_mul_le hadd).trans (by gcongr)
 
 theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     [AddLeftStrictMono B] [AddRightStrictMono B]
@@ -311,7 +311,7 @@ theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
   · refine fun a ha hne => if_neg (fun he => ?_)
     apply_fun D at he; simp_rw [hadd] at he
     exact (add_lt_add_left (((Finset.le_sup ha).trans hq).lt_of_ne <| hD.ne_iff.2 hne) _).ne he
-  · intro h; rw [if_pos rfl, Finsupp.not_mem_support_iff.1 h, mul_zero]
+  · intro h; rw [if_pos rfl, Finsupp.notMem_support_iff.1 h, mul_zero]
   · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => if_neg <| fun he => ?_)
     apply_fun D at he
     simp_rw [hadd] at he
@@ -319,7 +319,7 @@ theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     exact (add_lt_add_of_lt_of_le (((Finset.le_sup ha).trans hp).lt_of_ne <| hD.ne_iff.2 hne)
       <| (Finset.le_sup ha').trans hq).ne he
   · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
-    rw [Finsupp.not_mem_support_iff.mp h, zero_mul]
+    rw [Finsupp.notMem_support_iff.mp h, zero_mul]
 
 end SupDegree
 
@@ -379,10 +379,10 @@ open Finsupp in
 lemma supDegree_add_eq_left (h : q.supDegree D < p.supDegree D) :
     (p + q).supDegree D = p.supDegree D := by
   apply (supDegree_add_le.trans <| sup_le le_rfl h.le).antisymm
-  obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D (ne_zero_of_not_supDegree_le h.not_le)
+  obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D (ne_zero_of_not_supDegree_le h.not_ge)
   rw [he] at h ⊢
   apply Finset.le_sup
-  rw [mem_support_iff, add_apply, apply_eq_zero_of_not_le_supDegree h.not_le, add_zero]
+  rw [mem_support_iff, add_apply, apply_eq_zero_of_not_le_supDegree h.not_ge, add_zero]
   exact mem_support_iff.mp ha
 
 lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
@@ -391,10 +391,10 @@ lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
 
 lemma leadingCoeff_add_eq_left (h : q.supDegree D < p.supDegree D) :
     (p + q).leadingCoeff D = p.leadingCoeff D := by
-  obtain ⟨a, he⟩ := supDegree_mem_range D (ne_zero_of_not_supDegree_le h.not_le)
+  obtain ⟨a, he⟩ := supDegree_mem_range D (ne_zero_of_not_supDegree_le h.not_ge)
   rw [leadingCoeff, supDegree_add_eq_left h, Finsupp.add_apply, ← leadingCoeff,
     apply_eq_zero_of_not_le_supDegree (D := D), add_zero]
-  rw [← he, Function.apply_invFun_apply (f := D), he]; exact h.not_le
+  rw [← he, Function.apply_invFun_apply (f := D), he]; exact h.not_ge
 
 lemma leadingCoeff_add_eq_right (h : p.supDegree D < q.supDegree D) :
     (p + q).leadingCoeff D = q.leadingCoeff D := by
@@ -414,7 +414,7 @@ lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 :
 lemma leadingCoeff_ne_zero (hD : D.Injective) : p.leadingCoeff D ≠ 0 ↔ p ≠ 0 :=
   (leadingCoeff_eq_zero hD).ne
 
-lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [CommRing R] {p q : R[A]}
+lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [Ring R] {p q : R[A]}
     (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff D = q.leadingCoeff D) :
     (p - q).supDegree D < p.supDegree D ∨ p = q := by
   rw [or_iff_not_imp_right]
@@ -478,14 +478,14 @@ lemma supDegree_mul
     (hpq : leadingCoeff D p * leadingCoeff D q ≠ 0)
     (hp : p ≠ 0) (hq : q ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
-  cases subsingleton_or_nontrivial R; · exact (hp (Subsingleton.elim _ _)).elim
   apply supDegree_eq_of_max
   · rw [← AddSubsemigroup.coe_set_mk (Set.range D), ← AddHom.srange_mk _ hadd, SetLike.mem_coe]
-    exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq)
+    · exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq)
+    · exact (AddHom.srange ⟨D, hadd⟩).add_mem
   · simp_rw [Finsupp.mem_support_iff, apply_supDegree_add_supDegree hD hadd]
     exact hpq
-  · have := covariantClass_le_of_lt B B (· + ·)
-    have := covariantClass_le_of_lt B B (Function.swap (· + ·))
+  · have := addLeftMono_of_addLeftStrictMono B
+    have := addRightMono_of_addRightStrictMono B
     exact fun a ha => (Finset.le_sup ha).trans (supDegree_mul_le hadd)
 
 lemma Monic.supDegree_mul_of_ne_zero_left

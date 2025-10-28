@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Induction principles for `∀ i, Finset (α i)`
@@ -41,7 +41,8 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
         r i x (g i) → p g → p (update g i (insert x (g i)))) :
     p f := by
   cases nonempty_fintype ι
-  induction' hs : univ.sigma f using Finset.strongInductionOn with s ihs generalizing f; subst s
+  induction hs : univ.sigma f using Finset.strongInductionOn generalizing f with | _ s ihs
+  subst s
   rcases eq_empty_or_nonempty (univ.sigma f) with he | hne
   · convert h0 using 1
     simpa [funext_iff] using he
@@ -50,12 +51,12 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
     set g := update f i ((f i).erase x) with hg
     clear_value g
     have hx' : x ∉ g i := by
-      rw [hg, update_same]
-      apply not_mem_erase
+      rw [hg, update_self]
+      apply notMem_erase
     rw [show f = update g i (insert x (g i)) by
-      rw [hg, update_idem, update_same, insert_erase x_mem, update_eq_self]] at hr ihs ⊢
+      rw [hg, update_idem, update_self, insert_erase x_mem, update_eq_self]] at hr ihs ⊢
     clear hg
-    rw [update_same, erase_insert hx'] at hr
+    rw [update_self, erase_insert hx'] at hr
     refine step _ _ _ hr (ihs (univ.sigma g) ?_ _ rfl)
     rw [ssubset_iff_of_subset (sigma_mono (Subset.refl _) _)]
     exacts [⟨⟨i, x⟩, mem_sigma.2 ⟨mem_univ _, by simp⟩, by simp [hx']⟩,
@@ -70,18 +71,16 @@ that require `∀ i, LinearOrder (α i)`. -/
 theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step : ∀ (g : ∀ i, Finset (α i)) (i : ι), ∀ x ∉ g i, p g → p (update g i (insert x (g i)))) :
     p f :=
-  induction_on_pi_of_choice (fun _ x s ↦ x ∉ s) (fun _ s ⟨x, hx⟩ ↦ ⟨x, hx, not_mem_erase x s⟩) f
+  induction_on_pi_of_choice (fun _ x s ↦ x ∉ s) (fun _ s ⟨x, hx⟩ ↦ ⟨x, hx, notMem_erase x s⟩) f
     h0 step
 
--- Porting note: this docstring is the exact translation of the one from mathlib3 but
--- the last sentence (here and in the next lemma) does make much sense to me...
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all
 maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i, Finset (α i)`, an index
 `i : ι`, and an element`x : α i` that is strictly greater than all elements of `g i`, `p g` implies
 `p (update g i (insert x (g i)))`.
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a
-version that `x ∉ g i` instead of ` does not need `∀ i, LinearOrder (α i)`. -/
+version that needs `x ∉ g i` and does not need `∀ i, LinearOrder (α i)`. -/
 theorem induction_on_pi_max [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α i)) → Prop}
     (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :
@@ -97,7 +96,7 @@ maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i
 `p (update g i (insert x (g i)))`.
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a
-version that `x ∉ g i` instead of ` does not need `∀ i, LinearOrder (α i)`. -/
+version that needs `x ∉ g i` and does not need `∀ i, LinearOrder (α i)`. -/
 theorem induction_on_pi_min [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α i)) → Prop}
     (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :

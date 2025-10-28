@@ -18,16 +18,21 @@ for those subobjects.
 
 -/
 
+assert_not_exists RelIso
 
 variable {M G R : Type*}
 variable [Monoid M] [Group G] [Semiring R]
 
+instance (priority := low) [MulSemiringAction M R] {S : Type*} [SetLike S M] (s : S)
+    [SubmonoidClass S M] : MulSemiringAction s R :=
+  { inferInstanceAs (DistribMulAction s R), inferInstanceAs (MulDistribMulAction s R) with }
+
 /-- A stronger version of `Submonoid.distribMulAction`. -/
 instance Submonoid.mulSemiringAction [MulSemiringAction M R] (H : Submonoid M) :
     MulSemiringAction H R :=
-  { inferInstanceAs (DistribMulAction H R), inferInstanceAs (MulDistribMulAction H R) with }
+  inferInstance
 
 /-- A stronger version of `Subgroup.distribMulAction`. -/
 instance Subgroup.mulSemiringAction [MulSemiringAction G R] (H : Subgroup G) :
     MulSemiringAction H R :=
-  H.toSubmonoid.mulSemiringAction
+  inferInstance

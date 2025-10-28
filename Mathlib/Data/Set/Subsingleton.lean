@@ -3,7 +3,8 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
+import Mathlib.Tactic.ByContra
 
 /-!
 # Subsingleton
@@ -14,6 +15,8 @@ Also defines `Nontrivial s : Prop` : the predicate saying that `s` has at least 
 elements.
 
 -/
+
+assert_not_exists HeytingAlgebra RelIso
 
 open Function
 
@@ -77,13 +80,21 @@ lemma Subsingleton.inter_singleton : (s ∩ {a}).Subsingleton :=
 lemma Subsingleton.singleton_inter : ({a} ∩ s).Subsingleton :=
   Set.subsingleton_of_subset_singleton Set.inter_subset_left
 
-theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : Set.Subsingleton s :=
+lemma subsingleton_of_subsingleton_inter_left (h : (s ∪ t).Subsingleton) :
+    s.Subsingleton :=
+  fun _ h₁ _ h₂ ↦ h (.inl h₁) (.inl h₂)
+
+lemma subsingleton_of_subsingleton_inter_right (h : (s ∪ t).Subsingleton) :
+    t.Subsingleton :=
+  fun _ h₁ _ h₂ ↦ h (.inr h₁) (.inr h₂)
+
+theorem subsingleton_of_subsingleton [Subsingleton α] {s : Set α} : s.Subsingleton :=
   subsingleton_univ.anti (subset_univ s)
 
-theorem subsingleton_isTop (α : Type*) [PartialOrder α] : Set.Subsingleton { x : α | IsTop x } :=
+theorem subsingleton_isTop (α : Type*) [PartialOrder α] : { x : α | IsTop x }.Subsingleton :=
   fun x hx _ hy => hx.isMax.eq_of_le (hy x)
 
-theorem subsingleton_isBot (α : Type*) [PartialOrder α] : Set.Subsingleton { x : α | IsBot x } :=
+theorem subsingleton_isBot (α : Type*) [PartialOrder α] : { x : α | IsBot x }.Subsingleton :=
   fun x hx _ hy => hx.isMin.eq_of_ge (hy x)
 
 theorem exists_eq_singleton_iff_nonempty_subsingleton :
@@ -110,6 +121,11 @@ instance subsingleton_coe_of_subsingleton [Subsingleton α] {s : Set α} : Subsi
   rw [s.subsingleton_coe]
   exact subsingleton_of_subsingleton
 
+lemma Subsingleton.denselyOrdered {s : Set α} [LT α] (hs : s.Subsingleton) :
+    DenselyOrdered s :=
+  have := (subsingleton_coe _).mpr hs
+  ⟨fun _ _ h ↦ ⟨_, h.trans_eq (Subsingleton.elim _ _), h⟩⟩
+
 end Subsingleton
 
 /-! ### Nontrivial -/
@@ -124,8 +140,6 @@ protected def Nontrivial (s : Set α) : Prop :=
 
 theorem nontrivial_of_mem_mem_ne {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y) : s.Nontrivial :=
   ⟨x, hx, y, hy, hxy⟩
-
--- Porting note: following the pattern for `Exists`, we have renamed `some` to `choose`.
 
 /-- Extract witnesses from s.nontrivial. This function might be used instead of case analysis on the
 argument. Note that it makes a proof depend on the classical.choice axiom. -/
@@ -229,6 +243,14 @@ theorem nontrivial_of_univ_nontrivial (h : (univ : Set α).Nontrivial) : Nontriv
 theorem nontrivial_univ_iff : (univ : Set α).Nontrivial ↔ Nontrivial α :=
   ⟨nontrivial_of_univ_nontrivial, fun h => @nontrivial_univ _ h⟩
 
+@[simp]
+theorem singleton_ne_univ [Nontrivial α] (a : α) : {a} ≠ univ :=
+  fun h ↦ nontrivial_univ.not_subset_singleton h.superset
+
+@[simp]
+theorem singleton_ssubset_univ [Nontrivial α] (a : α) : {a} ⊂ univ :=
+  ssubset_univ_iff.mpr <| singleton_ne_univ a
+
 theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
   let ⟨x, _, y, _, hxy⟩ := hs
   ⟨⟨x, y, hxy⟩⟩
@@ -249,11 +271,11 @@ theorem nontrivial_mono {α : Type*} {s t : Set α} (hst : s ⊆ t) (hs : Nontri
     Nontrivial t :=
   Nontrivial.coe_sort <| (nontrivial_coe_sort.1 hs).mono hst
 
-@[simp]
+@[simp, push]
 theorem not_subsingleton_iff : ¬s.Subsingleton ↔ s.Nontrivial := by
   simp_rw [Set.Subsingleton, Set.Nontrivial, not_forall, exists_prop]
 
-@[simp]
+@[simp, push]
 theorem not_nontrivial_iff : ¬s.Nontrivial ↔ s.Subsingleton :=
   Iff.not_left not_subsingleton_iff.symm
 
@@ -277,6 +299,16 @@ theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
   Eq.symm <| eq_univ_of_forall fun x => by
     rw [mem_insert_iff, mem_singleton_iff]
     exact Classical.propComplete x
+
+@[simp]
+theorem univ_set_of_isEmpty [IsEmpty α] : @univ (Set α) = {∅} :=
+  subset_antisymm (fun S hS ↦ by simp [Set.eq_empty_of_isEmpty S]) (by simp)
+
+@[simp]
+theorem univ_set_eq_singleton_empty_iff : @Set.univ (Set α) = {∅} ↔ IsEmpty α := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ by simp⟩
+  suffices @univ α ∈ univ by aesop
+  simp
 
 end Nontrivial
 section Monotonicity

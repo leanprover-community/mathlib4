@@ -3,10 +3,8 @@ Copyright (c) 2021 Eric Weiser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Ring.Subring.Pointwise
-import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Pointwise actions on subalgebras.
@@ -26,13 +24,13 @@ theorem mul_toSubmodule_le (S T : Subalgebra R A) :
     (Subalgebra.toSubmodule S)* (Subalgebra.toSubmodule T) ≤ Subalgebra.toSubmodule (S ⊔ T) := by
   rw [Submodule.mul_le]
   intro y hy z hz
-  show y * z ∈ S ⊔ T
+  change y * z ∈ S ⊔ T
   exact mul_mem (Algebra.mem_sup_left hy) (Algebra.mem_sup_right hz)
 
 /-- As submodules, subalgebras are idempotent. -/
 @[simp]
-theorem mul_self (S : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule S)
-    = (Subalgebra.toSubmodule S) := by
+theorem isIdempotentElem_toSubmodule (S : Subalgebra R A) :
+    IsIdempotentElem S.toSubmodule := by
   apply le_antisymm
   · refine (mul_toSubmodule_le _ _).trans_eq ?_
     rw [sup_idem]
@@ -58,7 +56,8 @@ theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A
     exact Submodule.mul_mem_mul (show (1 : A) ∈ S from one_mem S) (algebraMap_mem T _)
   have := Submodule.mul_mem_mul hx hy
   rwa [mul_assoc, mul_comm _ (Subalgebra.toSubmodule T), ← mul_assoc _ _ (Subalgebra.toSubmodule S),
-    mul_self, mul_comm (Subalgebra.toSubmodule T), ← mul_assoc, mul_self] at this
+    isIdempotentElem_toSubmodule, mul_comm T.toSubmodule, ← mul_assoc,
+    isIdempotentElem_toSubmodule] at this
 
 variable {R' : Type*} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R A]
 
@@ -75,7 +74,7 @@ scoped[Pointwise] attribute [instance] Subalgebra.pointwiseMulAction
 
 open Pointwise
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (m : R') (S : Subalgebra R A) : ↑(m • S) = m • (S : Set A) :=
   rfl
 

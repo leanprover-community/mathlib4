@@ -41,15 +41,15 @@ theorem coeff_divX : (divX p).coeff n = p.coeff (n + 1) := by
   rw [add_comm]; cases p; rfl
 
 theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p :=
-  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
+  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, coeff_mul_X]
 
 @[simp]
 theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
-  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
+  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C]
 
 @[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=
-  ext fun n => by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]
+  ext fun n => by simp [coeff_divX]
 
 theorem divX_eq_zero_iff : divX p = 0 ↔ p = C (p.coeff 0) :=
   ⟨fun h => by simpa [eq_comm, h] using divX_mul_X_add p, fun h => by rw [h, divX_C]⟩
@@ -89,7 +89,7 @@ theorem natDegree_divX_eq_natDegree_tsub_one : p.divX.natDegree = p.natDegree - 
   apply map_natDegree_eq_sub (φ := divX_hom)
   · intro f
     simpa [divX_hom, divX_eq_zero_iff] using eq_C_of_natDegree_eq_zero
-  · intros n c c0
+  · intro n c c0
     rw [← C_mul_X_pow_eq_monomial, divX_hom_toFun, divX_C_mul, divX_X_pow]
     split_ifs with n0
     · simp [n0]
@@ -156,7 +156,7 @@ if it holds for
 with appropriate restrictions on each term.
 
 See `natDegree_ne_zero_induction_on` for a similar statement involving no explicit multiplication.
- -/
+-/
 @[elab_as_elim]
 theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree p)
     (hC : ∀ {a}, a ≠ 0 → P (C a * X)) (hX : ∀ {p}, 0 < degree p → P p → P (p * X))
@@ -172,7 +172,7 @@ theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree 
       if h0 : 0 < degree p then hX h0 (ih h0)
       else by
         rw [eq_C_of_degree_le_zero (le_of_not_gt h0)] at h0' ⊢
-        exact hC fun h : coeff p 0 = 0 => by simp [h, Nat.not_lt_zero] at h0')
+        exact hC fun h : coeff p 0 = 0 => by simp [h] at h0')
     h0
 
 /-- A property holds for all polynomials of non-zero `natDegree` with coefficients in a
@@ -184,7 +184,7 @@ with appropriate restrictions on each term.
 Note that multiplication is "hidden" in the assumption on monomials, so there is no explicit
 multiplication in the statement.
 See `degree_pos_induction_on` for a similar statement involving more explicit multiplications.
- -/
+-/
 @[elab_as_elim]
 theorem natDegree_ne_zero_induction_on {M : R[X] → Prop} {f : R[X]} (f0 : f.natDegree ≠ 0)
     (h_C_add : ∀ {a p}, M p → M (C a + p)) (h_add : ∀ {p q}, M p → M q → M (p + q))

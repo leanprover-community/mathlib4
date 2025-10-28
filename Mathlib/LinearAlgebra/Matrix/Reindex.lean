@@ -106,14 +106,13 @@ variable [CommSemiring R] [Fintype n] [Fintype m] [DecidableEq m] [DecidableEq n
   [Semiring A] [Algebra R A]
 
 /-- For square matrices with coefficients in an algebra over a commutative semiring, the natural
-    map that reindexes a matrix's rows and columns with equivalent types,
-    `Matrix.reindex`, is an equivalence of algebras. -/
+map that reindexes a matrix's rows and columns with equivalent types,
+`Matrix.reindex`, is an equivalence of algebras. -/
 def reindexAlgEquiv (e : m ≃ n) : Matrix m m A ≃ₐ[R] Matrix n n A :=
   { reindexLinearEquiv A A e e with
     toFun := reindex e e
     map_mul' := fun a b => (reindexLinearEquiv_mul A A e e e a b).symm
-    -- Porting note: `submatrix_smul` needed help
-    commutes' := fun r => by simp [algebraMap, Algebra.toRingHom, submatrix_smul _ 1] }
+    commutes' := fun r => by simp [algebraMap, Algebra.algebraMap] }
 
 @[simp]
 theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :
@@ -131,7 +130,7 @@ theorem reindexAlgEquiv_refl : reindexAlgEquiv R A (Equiv.refl m) = AlgEquiv.ref
 
 theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m A) (N : Matrix m m A) :
     reindexAlgEquiv R A e (M * N) = reindexAlgEquiv R A e M * reindexAlgEquiv R A e N :=
-  _root_.map_mul ..
+  map_mul ..
 
 end Algebra
 
@@ -147,7 +146,7 @@ theorem det_reindexLinearEquiv_self [CommRing R] [Fintype m] [DecidableEq m] [Fi
 
 For the `simp` version of this lemma, see `det_submatrix_equiv_self`.
 -/
-theorem det_reindexAlgEquiv (B : Type*) [CommRing R] [CommRing B] [Algebra R B] [Fintype m]
+theorem det_reindexAlgEquiv (B : Type*) [CommSemiring R] [CommRing B] [Algebra R B] [Fintype m]
     [DecidableEq m] [Fintype n] [DecidableEq n] (e : m ≃ n) (A : Matrix m m B) :
     det (reindexAlgEquiv R B e A) = det A :=
   det_reindex_self e A

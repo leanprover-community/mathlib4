@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Infinite sum in the reals
@@ -36,7 +36,7 @@ theorem dist_le_tsum_of_dist_le_of_tendsto (d : ℕ → ℝ) (hf : ∀ n, dist (
   refine le_of_tendsto (tendsto_const_nhds.dist ha) (eventually_atTop.2 ⟨n, fun m hnm ↦ ?_⟩)
   refine le_trans (dist_le_Ico_sum_of_dist_le hnm fun _ _ ↦ hf _) ?_
   rw [sum_Ico_eq_sum_range]
-  refine sum_le_tsum (range _) (fun _ _ ↦ le_trans dist_nonneg (hf _)) ?_
+  refine Summable.sum_le_tsum (range _) (fun _ _ ↦ le_trans dist_nonneg (hf _)) ?_
   exact hd.comp_injective (add_right_injective n)
 
 theorem dist_le_tsum_of_dist_le_of_tendsto₀ (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
@@ -65,10 +65,10 @@ theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀
 
 theorem summable_sigma_of_nonneg {α} {β : α → Type*} {f : (Σ x, β x) → ℝ} (hf : ∀ x, 0 ≤ f x) :
     Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
-  lift f to (Σx, β x) → ℝ≥0 using hf
+  lift f to (Σ x, β x) → ℝ≥0 using hf
   simpa using mod_cast NNReal.summable_sigma
 
-lemma summable_partition {α β : Type*} {f : β → ℝ} (hf : 0 ≤ f) {s : α  → Set β}
+lemma summable_partition {α β : Type*} {f : β → ℝ} (hf : 0 ≤ f) {s : α → Set β}
     (hs : ∀ i, ∃! j, i ∈ s j) : Summable f ↔
       (∀ j, Summable fun i : s j ↦ f i) ∧ Summable fun j ↦ ∑' i : s j, f i := by
   simpa only [← (Set.sigmaEquiv s hs).summable_iff] using summable_sigma_of_nonneg (fun _ ↦ hf _)
@@ -90,13 +90,16 @@ theorem summable_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ 
 
 theorem Real.tsum_le_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
     (h : ∀ n, ∑ i ∈ Finset.range n, f i ≤ c) : ∑' n, f n ≤ c :=
-  _root_.tsum_le_of_sum_range_le (summable_of_sum_range_le hf h) h
+  (summable_of_sum_range_le hf h).tsum_le_of_sum_range_le h
 
 /-- If a sequence `f` with non-negative terms is dominated by a sequence `g` with summable
 series and at least one term of `f` is strictly smaller than the corresponding term in `g`,
 then the series of `f` is strictly smaller than the series of `g`. -/
-theorem tsum_lt_tsum_of_nonneg {i : ℕ} {f g : ℕ → ℝ} (h0 : ∀ b : ℕ, 0 ≤ f b)
+protected theorem Summable.tsum_lt_tsum_of_nonneg {i : ℕ} {f g : ℕ → ℝ} (h0 : ∀ b : ℕ, 0 ≤ f b)
     (h : ∀ b : ℕ, f b ≤ g b) (hi : f i < g i) (hg : Summable g) : ∑' n, f n < ∑' n, g n :=
-  tsum_lt_tsum h hi (.of_nonneg_of_le h0 h hg) hg
+  Summable.tsum_lt_tsum h hi (.of_nonneg_of_le h0 h hg) hg
+
+@[deprecated (since := "2025-04-12")] alias tsum_lt_tsum_of_nonneg :=
+  Summable.tsum_lt_tsum_of_nonneg
 
 end summable

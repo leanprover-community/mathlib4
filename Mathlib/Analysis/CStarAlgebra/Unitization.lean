@@ -38,12 +38,8 @@ lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
     _ ≤ ‖(mul 𝕜 E).flip a‖ * ‖b‖ := by
         simpa only [flip_apply, mul_apply', norm_star] using le_opNorm ((mul 𝕜 E).flip a) (star b)
 
-@[deprecated (since := "2024-02-02")] alias op_norm_mul_flip_apply := opNorm_mul_flip_apply
-
 lemma opNNNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖₊ = ‖a‖₊ :=
   Subtype.ext (opNorm_mul_flip_apply 𝕜 a)
-
-@[deprecated (since := "2024-02-02")] alias op_nnnorm_mul_flip_apply := opNNNorm_mul_flip_apply
 
 variable (E)
 
@@ -60,7 +56,7 @@ variable (E)
 instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mp <|
     show ‖mul 𝕜 E a‖₊ = ‖a‖₊ by
-    rw [← sSup_closed_unit_ball_eq_nnnorm]
+    rw [← sSup_unitClosedBall_eq_nnnorm]
     refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ ?_ fun r hr => ?_
     · exact (Metric.nonempty_closedBall.mpr zero_le_one).image _
     · rintro - ⟨x, hx, rfl⟩
@@ -74,7 +70,7 @@ instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
       refine ⟨_, ⟨k • star a, ?_, rfl⟩, ?_⟩
       · simpa only [mem_closedBall_zero_iff, norm_smul, one_mul, norm_star] using
           (NNReal.le_inv_iff_mul_le ha.ne').1 (one_mul ‖a‖₊⁻¹ ▸ hk₂.le : ‖k‖₊ ≤ ‖a‖₊⁻¹)
-      · simp only [map_smul, nnnorm_smul, mul_apply', mul_smul_comm, CStarRing.nnnorm_self_mul_star]
+      · simp only [map_smul, nnnorm_smul, mul_apply', CStarRing.nnnorm_self_mul_star]
         rwa [← div_lt_iff₀ (mul_pos ha ha), div_eq_mul_inv, mul_inv, ← mul_assoc]
 
 section CStarProperty
@@ -87,12 +83,12 @@ variable {E}
 out so that declaring the `CStarRing` instance doesn't time out. -/
 theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 ≤ ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖ := by
-  /- The key idea is that we can use `sSup_closed_unit_ball_eq_norm` to make this about
+  /- The key idea is that we can use `sSup_unitClosedBall_eq_norm` to make this about
   applying this linear map to elements of norm at most one. There is a bit of `sqrt` and `sq`
   shuffling that needs to occur, which is primarily just an annoyance. -/
   refine (Real.le_sqrt (norm_nonneg _) (norm_nonneg _)).mp ?_
   simp only [Unitization.splitMul_apply]
-  rw [← sSup_closed_unit_ball_eq_norm]
+  rw [← sSup_unitClosedBall_eq_norm]
   refine csSup_le ((Metric.nonempty_closedBall.2 zero_le_one).image _) ?_
   rintro - ⟨b, hb, rfl⟩
   simp only
@@ -101,7 +97,7 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     ← CStarRing.norm_star_mul_self, ContinuousLinearMap.add_apply, star_add, mul_apply',
     Algebra.algebraMap_eq_smul_one, ContinuousLinearMap.smul_apply,
     ContinuousLinearMap.one_apply, star_mul, star_smul, add_mul, smul_mul_assoc, ← mul_smul_comm,
-    mul_assoc, ← mul_add, ← sSup_closed_unit_ball_eq_norm]
+    mul_assoc, ← mul_add, ← sSup_unitClosedBall_eq_norm]
   refine (norm_mul_le _ _).trans ?_
   calc
     _ ≤ ‖star x.fst • (x.fst • b + x.snd * b) + star x.snd * (x.fst • b + x.snd * b)‖ := by
@@ -135,12 +131,12 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
     -- Show that `(Unitization.splitMul 𝕜 E x).snd` satisfies the C⋆-property, in two stages:
     have h₁ : ∀ x : Unitization 𝕜 E,
         ‖(Unitization.splitMul 𝕜 E x).snd‖ ≤ ‖(Unitization.splitMul 𝕜 E (star x)).snd‖ := by
-      simp only [add_zero, Unitization.splitMul_apply, Unitization.snd_star, Unitization.fst_star]
+      simp only [Unitization.splitMul_apply, Unitization.snd_star, Unitization.fst_star]
       intro x
       /- split based on whether the term inside the norm is zero or not. If so, it's trivial.
       If not, then apply `norm_splitMul_snd_sq` and cancel one copy of the norm -/
       by_cases h : algebraMap 𝕜 (E →L[𝕜] E) x.fst + mul 𝕜 E x.snd = 0
-      · simp only [h, norm_zero, norm_le_zero_iff]
+      · simp only [h, norm_zero]
         exact norm_nonneg _
       · have : ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 ≤
           ‖(Unitization.splitMul 𝕜 E (star x)).snd‖ * ‖(Unitization.splitMul 𝕜 E x).snd‖ :=
@@ -149,9 +145,9 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
             exact norm_mul_le _ _
         rw [sq] at this
         rw [← Ne, ← norm_pos_iff] at h
-        simp only [add_zero, Unitization.splitMul_apply, Unitization.snd_star,
-          Unitization.fst_star, star_star] at this
-        exact (mul_le_mul_right h).mp this
+        simp only [Unitization.splitMul_apply, Unitization.snd_star,
+          Unitization.fst_star] at this
+        exact (mul_le_mul_iff_left₀ h).mp this
     -- in this step we make use of the key lemma `norm_splitMul_snd_sq`
     have h₂ : ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖
         = ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 := by
@@ -164,7 +160,7 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
     -- Show that `(Unitization.splitMul 𝕜 E x).fst` satisfies the C⋆-property
     have h₃ : ‖(Unitization.splitMul 𝕜 E (star x * x)).fst‖
         = ‖(Unitization.splitMul 𝕜 E x).fst‖ ^ 2 := by
-      simp only [Unitization.splitMul_apply, Unitization.fst_mul, Unitization.fst_star, add_zero,
+      simp only [Unitization.splitMul_apply, Unitization.fst_mul, Unitization.fst_star,
         norm_mul, norm_star, sq]
     rw [h₂, h₃]
     /- use the definition of the norm, and split into cases based on whether the norm in the first
@@ -183,6 +179,5 @@ noncomputable instance Unitization.instCStarAlgebra {A : Type*} [NonUnitalCStarA
 
 noncomputable instance Unitization.instCommCStarAlgebra {A : Type*} [NonUnitalCommCStarAlgebra A] :
     CommCStarAlgebra (Unitization ℂ A) where
-  mul_comm := mul_comm
 
 end CStarProperty

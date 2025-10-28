@@ -15,12 +15,12 @@ open Lean.Meta
 
 namespace Lean.Elab.Tactic
 
-/-- Derives `Inhabited α` from `Nonempty α` with `Classical.choice`-/
+/-- Derives `Inhabited α` from `Nonempty α` with `Classical.choice`. -/
 noncomputable def nonempty_to_inhabited (α : Sort*) (_ : Nonempty α) : Inhabited α :=
   Inhabited.mk (Classical.ofNonempty)
 
 /-- Derives `Inhabited α` from `Nonempty α` without `Classical.choice`
-assuming `α` is of type `Prop`-/
+assuming `α` is of type `Prop`. -/
 def nonempty_prop_to_inhabited (α : Prop) (α_nonempty : Nonempty α) : Inhabited α :=
   Inhabited.mk <| Nonempty.elim α_nonempty id
 
@@ -32,7 +32,7 @@ If the target is a `Prop`, this is done constructively. Otherwise, it uses `Clas
 syntax (name := inhabit) "inhabit " atomic(ident " : ")? term : tactic
 
 /-- `evalInhabit` takes in the MVarId of the main goal, runs the core portion of the inhabit tactic,
-    and returns the resulting MVarId -/
+and returns the resulting MVarId -/
 def evalInhabit (goal : MVarId) (h_name : Option Ident) (term : Syntax) : TacticM MVarId := do
   goal.withContext do
     let e ← Tactic.elabTerm term none

@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finite.Sigma
 import Mathlib.Data.Set.Finite.Powerset
 import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Finiteness of unions and intersections
@@ -20,8 +20,7 @@ and a `Set.Finite` constructor.
 finite sets
 -/
 
-assert_not_exists OrderedRing
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedRing MonoidWithZero
 
 open Set Function
 
@@ -54,6 +53,17 @@ lemma toFinset_iUnion [Fintype β] [DecidableEq α] (f : β → Set α)
   ext v
   simp only [mem_toFinset, mem_iUnion, Finset.mem_biUnion, Finset.mem_univ, true_and]
 
+/-- A union of sets with `Fintype` structure over a set with `Fintype` structure has a `Fintype`
+structure. -/
+def fintypeBiUnion [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
+    (H : ∀ i ∈ s, Fintype (t i)) : Fintype (⋃ x ∈ s, t x) :=
+  haveI : ∀ i : toFinset s, Fintype (t i) := fun i => H i (mem_toFinset.1 i.2)
+  Fintype.ofFinset (s.toFinset.attach.biUnion fun x => (t x).toFinset) fun x => by simp
+
+instance fintypeBiUnion' [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
+    [∀ i, Fintype (t i)] : Fintype (⋃ x ∈ s, t x) :=
+  Fintype.ofFinset (s.toFinset.biUnion fun x => (t x).toFinset) <| by simp
+
 end FintypeInstances
 
 end Set
@@ -72,11 +82,10 @@ Some set instances do not appear here since they are consequences of others, for
 
 namespace Finite.Set
 
-open scoped Classical
-
 instance finite_iUnion [Finite ι] (f : ι → Set α) [∀ i, Finite (f i)] : Finite (⋃ i, f i) := by
-  rw [iUnion_eq_range_psigma]
-  apply Set.finite_range
+  have : Fintype (PLift ι) := Fintype.ofFinite _
+  have : ∀ i, Fintype (f i) := fun i => Fintype.ofFinite _
+  classical apply (fintypeiUnion _).finite
 
 instance finite_sUnion {s : Set (Set α)} [Finite s] [H : ∀ t : s, Finite (t : Set α)] :
     Finite (⋃₀ s) := by
@@ -154,6 +163,43 @@ theorem Finite.iUnion {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Fini
   · rw [he i hi, mem_empty_iff_false] at hx
     contradiction
 
+/-- An indexed union of pairwise disjoint sets is finite iff all sets are finite, and all but
+finitely many are empty. -/
+lemma finite_iUnion_iff {ι : Type*} {s : ι → Set α} (hs : Pairwise fun i j ↦ Disjoint (s i) (s j)) :
+    (⋃ i, s i).Finite ↔ (∀ i, (s i).Finite) ∧ {i | (s i).Nonempty}.Finite where
+  mp h := by
+    refine ⟨fun i ↦ h.subset <| subset_iUnion _ _, ?_⟩
+    let u (i : {i | (s i).Nonempty}) : ⋃ i, s i := ⟨i.2.choose, mem_iUnion.2 ⟨i.1, i.2.choose_spec⟩⟩
+    have u_inj : Function.Injective u := by
+      rintro ⟨i, hi⟩ ⟨j, hj⟩ hij
+      ext
+      refine hs.eq <| not_disjoint_iff.2 ⟨u ⟨i, hi⟩, hi.choose_spec, ?_⟩
+      rw [hij]
+      exact hj.choose_spec
+    have : Finite (⋃ i, s i) := h
+    exact .of_injective u u_inj
+  mpr h := h.2.iUnion (fun _ _ ↦ h.1 _) (by simp [not_nonempty_iff_eq_empty])
+
+protected lemma Infinite.iUnion {ι : Sort*} {s : ι → Set α} (i : ι) (hi : (s i).Infinite) :
+    (⋃ i, s i).Infinite :=
+  fun h ↦ hi (h.subset (Set.subset_iUnion s i))
+
+lemma Infinite.iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set α} (i : ι) (j : κ i)
+    (hij : (s i j).Infinite) : (⋃ (i) (j), s i j).Infinite :=
+  fun hc ↦ hij (hc.subset <| subset_iUnion₂ _ _)
+
+@[simp] lemma finite_iUnion_of_subsingleton {ι : Sort*} [Subsingleton ι] {s : ι → Set α} :
+    (⋃ i, s i).Finite ↔ ∀ i, (s i).Finite := by
+  rw [← iUnion_plift_down, finite_iUnion_iff _root_.Subsingleton.pairwise]
+  simp [PLift.forall, Finite.of_subsingleton]
+
+/-- An indexed union of pairwise disjoint sets is finite iff all sets are finite, and all but
+finitely many are empty. -/
+lemma PairwiseDisjoint.finite_biUnion_iff {f : β → Set α} {s : Set β} (hs : s.PairwiseDisjoint f) :
+    (⋃ i ∈ s, f i).Finite ↔ (∀ i ∈ s, (f i).Finite) ∧ {i ∈ s | (f i).Nonempty}.Finite := by
+  rw [finite_iUnion_iff (by aesop (add unfold safe [Pairwise, PairwiseDisjoint, Set.Pairwise]))]
+  simp
+
 section preimage
 variable {f : α → β} {s : Set β}
 
@@ -171,6 +217,16 @@ theorem union_finset_finite_of_range_finite (f : α → Finset β) (h : (range f
   exact h.biUnion fun y _ => y.finite_toSet
 
 end SetFiniteConstructors
+
+/--
+If the image of `s` under `f` is finite, and each fiber of `f` has a finite intersection
+with `s`, then `s` is itself finite.
+
+It is useful to give `f` explicitly here so this can be used with `apply`.
+-/
+lemma Finite.of_finite_fibers (f : α → β) {s : Set α} (himage : (f '' s).Finite)
+    (hfibers : ∀ x ∈ f '' s, (s ∩ f ⁻¹' {x}).Finite) : s.Finite :=
+  (himage.biUnion hfibers).subset fun x ↦ by aesop
 
 /-! ### Properties -/
 
@@ -250,9 +306,9 @@ lemma map_finite_iInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [
 theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j := by
-  induction s, hs using Set.Finite.dinduction_on with
-  | H0 => simp [iSup_const]
-  | H1 _ _ ihs =>
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp [iSup_const]
+  | insert _ _ ihs =>
     rw [forall_mem_insert] at hf
     simp only [iInf_insert, ← ihs hf.2]
     exact iSup_inf_of_monotone hf.1 fun j₁ j₂ hj => iInf₂_mono fun i hi => hf.2 i hi hj
@@ -335,13 +391,14 @@ variable [Preorder α] [IsDirected α (· ≤ ·)] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded above. -/
 protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
-  Finite.induction_on hs bddAbove_empty fun _ _ h => h.insert _
+  Finite.induction_on _ hs bddAbove_empty fun _ _ h => h.insert _
 
 /-- A finite union of sets which are all bounded above is still bounded above. -/
 theorem Finite.bddAbove_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
-    BddAbove (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddAbove (S i) :=
-  Finite.induction_on H (by simp only [biUnion_empty, bddAbove_empty, forall_mem_empty])
-    fun _ _ hs => by simp only [biUnion_insert, forall_mem_insert, bddAbove_union, hs]
+    BddAbove (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddAbove (S i) := by
+  induction I, H using Set.Finite.induction_on with
+  | empty => simp only [biUnion_empty, bddAbove_empty, forall_mem_empty]
+  | insert _ _ hs => simp only [biUnion_insert, forall_mem_insert, bddAbove_union, hs]
 
 theorem infinite_of_not_bddAbove : ¬BddAbove s → s.Infinite :=
   mt Finite.bddAbove
@@ -389,11 +446,29 @@ lemma Set.finite_diff_iUnion_Ioo (s : Set α) : (s \ ⋃ (x ∈ s) (y ∈ s), Io
 lemma Set.finite_diff_iUnion_Ioo' (s : Set α) : (s \ ⋃ x : s × s, Ioo x.1 x.2).Finite := by
   simpa only [iUnion, iSup_prod, iSup_subtype] using s.finite_diff_iUnion_Ioo
 
+lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonempty ι]
+    {f : ι → Set α} (h : Directed (· ⊆ ·) f) {s : Finset α} (hs : (s : Set α) ⊆ ⋃ i, f i) :
+    ∃ i, (s : Set α) ⊆ f i := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons b t hbt iht =>
+    simp only [Finset.coe_cons, Set.insert_subset_iff, Set.mem_iUnion] at hs ⊢
+    rcases hs.imp_right iht with ⟨⟨i, hi⟩, j, hj⟩
+    rcases h i j with ⟨k, hik, hjk⟩
+    exact ⟨k, hik hi, hj.trans hjk⟩
+
 theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f : ι → Set α}
     {c : Set ι} (hn : c.Nonempty) (hc : DirectedOn (fun i j => f i ⊆ f j) c) {s : Finset α}
     (hs : (s : Set α) ⊆ ⋃ i ∈ c, f i) : ∃ i ∈ c, (s : Set α) ⊆ f i := by
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+theorem DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion {α : Type*} {c : Set (Set α)}
+    (hn : c.Nonempty) (hc : DirectedOn (· ⊆ ·) c) {s : Set α} (hs : s.Finite)
+    (hsc : s ⊆ sUnion c) : ∃ t ∈ c, s ⊆ t := by
+  rw [← hs.coe_toFinset, sUnion_eq_biUnion] at hsc
+  have := DirectedOn.exists_mem_subset_of_finset_subset_biUnion hn hc hsc
+  exact hs.coe_toFinset ▸ this
 
 end LinearOrder

@@ -8,7 +8,7 @@ import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-! # Smooth manifolds as locally ringed spaces
 
-This file equips a smooth manifold-with-corners with the structure of a locally ringed space.
+This file equips a smooth manifold with the structure of a locally ringed space.
 
 ## Main results
 
@@ -18,8 +18,7 @@ This file equips a smooth manifold-with-corners with the structure of a locally 
 
 ## Main definitions
 
-* `SmoothManifoldWithCorners.locallyRingedSpace`: A smooth manifold-with-corners can be considered
-  as a locally ringed space.
+* `IsManifold.locallyRingedSpace`: A smooth manifold can be considered as a locally ringed space.
 
 ## TODO
 
@@ -31,9 +30,7 @@ smooth manifolds.
 noncomputable section
 universe u
 
-/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
-Later, replace with `open scoped ContDiff`. -/
-local notation "∞" => (⊤ : ℕ∞)
+open scoped ContDiff
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
   {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
@@ -68,7 +65,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     have hV : V₀ = Set.range (Set.inclusion hUV) := by
       convert (Set.range_inclusion hUV).symm
       ext y
-      show _ ↔ y ∈ Subtype.val ⁻¹' (Subtype.val '' V₀)
+      change _ ↔ y ∈ Subtype.val ⁻¹' (Subtype.val '' V₀)
       rw [Set.preimage_image_eq _ Subtype.coe_injective]
     clear_value V
     subst hV
@@ -81,7 +78,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     -- Let `g` be the pointwise inverse of `f` on `V`, which is smooth since `f` is nonzero there
     let g : C^∞⟮IM, V; 𝓘(𝕜), 𝕜⟯ := ⟨(f ∘ Set.inclusion hUV)⁻¹, ?_⟩
     -- The germ of `g` is inverse to the germ of `f`, so `f` is a unit
-    · refine ⟨⟨S.germ _ x (hxV) (SmoothMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ _ x hxV g,
+    · refine ⟨⟨S.germ _ x (hxV) (ContMDiffMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ _ x hxV g,
         ?_, ?_⟩, S.germ_res_apply hUV.hom x hxV f⟩
       · rw [← map_mul]
         -- Qualified the name to avoid Lean not finding a `OneHomClass` https://github.com/leanprover-community/mathlib4/pull/8386
@@ -98,10 +95,8 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
         apply inv_mul_cancel₀
         exact hVf y
     · intro y
-      #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-        was `exact`; somehow `convert` bypasess unification issues -/
-      convert ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
-        (f.contMDiff.comp (contMDiff_inclusion hUV)).contMDiffAt
+      exact (((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
+        (f.contMDiff.comp (contMDiff_inclusion hUV)).contMDiffAt :)
 
 /-- The non-units of the stalk at `x` of the sheaf of smooth functions from `M` to `𝕜`, considered
 as a sheaf of commutative rings, are the functions whose values at `x` are zero. -/
@@ -112,7 +107,7 @@ theorem smoothSheafCommRing.nonunits_stalk (x : M) :
   rw [mem_nonunits_iff, not_iff_comm, Iff.comm]
   apply smoothSheafCommRing.isUnit_stalk_iff
 
-/-- The stalks of the structure sheaf of a smooth manifold-with-corners are local rings. -/
+/-- The stalks of the structure sheaf of a smooth manifold are local rings. -/
 instance smoothSheafCommRing.instLocalRing_stalk (x : M) :
     IsLocalRing ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x) := by
   apply IsLocalRing.of_nonunits_add
@@ -122,8 +117,8 @@ instance smoothSheafCommRing.instLocalRing_stalk (x : M) :
 
 variable (M)
 
-/-- A smooth manifold-with-corners can be considered as a locally ringed space. -/
-def SmoothManifoldWithCorners.locallyRingedSpace : LocallyRingedSpace where
+/-- A smooth manifold can be considered as a locally ringed space. -/
+def IsManifold.locallyRingedSpace : LocallyRingedSpace where
   carrier := TopCat.of M
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond

@@ -17,7 +17,7 @@ categories of sheaves. We also show that `G` preserves sheafification.
 
 namespace CategoryTheory
 
-open GrothendieckTopology CategoryTheory Limits Opposite
+open GrothendieckTopology Limits Opposite Functor
 
 universe v₁ v₂ u₁ u₂
 
@@ -28,7 +28,7 @@ variable {F : D ⥤ E} {G : E ⥤ D}
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
 whose forgetful functor preserves the correct limits. -/
-abbrev sheafForget [ConcreteCategory D] [HasSheafCompose J (forget D)] :
+abbrev sheafForget [HasForget D] [HasSheafCompose J (forget D)] :
     Sheaf J D ⥤ Sheaf J (Type _) :=
   sheafCompose J (forget D)
 
@@ -63,7 +63,7 @@ lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj
   simp only [Functor.comp_obj, sheafToPresheaf_obj, sheafCompose_obj_val, whiskeringRight_obj_obj,
     adjunction, Adjunction.map_restrictFullyFaithful_counit_app, Iso.refl_inv, NatTrans.id_app,
     Functor.comp_map, whiskeringRight_obj_map, Adjunction.comp_counit_app,
-    instCategorySheaf_comp_val, instCategorySheaf_id_val, sheafificationAdjunction_counit_app_val,
+    comp_val, sheafificationAdjunction_counit_app_val,
     sheafifyMap_sheafifyLift, Functor.id_obj, whiskerRight_id', Category.comp_id, Category.id_comp]
 
 
@@ -96,15 +96,7 @@ instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
 
 section ForgetToType
 
-variable [HasWeakSheafify J D] [ConcreteCategory D] [HasSheafCompose J (forget D)]
-
-@[deprecated (since := "2024-11-26")] alias composeAndSheafifyFromTypes := composeAndSheafify
-
-/-- The adjunction `composeAndSheafify J G ⊣ sheafForget J`. -/
-@[deprecated Sheaf.adjunction (since := "2024-11-26")] abbrev adjunctionToTypes
-    {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D) :
-    composeAndSheafify J G ⊣ sheafForget J :=
-  adjunction _ adj
+variable [HasWeakSheafify J D] [HasForget D] [HasSheafCompose J (forget D)]
 
 example [(forget D).IsRightAdjoint] :
     (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint := by infer_instance

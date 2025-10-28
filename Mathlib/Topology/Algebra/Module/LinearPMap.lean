@@ -5,6 +5,7 @@ Authors: Moritz Doll
 -/
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Partially defined linear operators over topological vector spaces
@@ -26,9 +27,9 @@ underlying spaces are normed.
 
 ## Main statements
 
-* `LinearPMap.closable_iff_exists_closed_extension`: an unbounded operator is closable iff it has a
-  closed extension.
-* `LinearPMap.closable.exists_unique`: there exists a unique closure
+* `LinearPMap.isClosable_iff_exists_closed_extension`: an unbounded operator is closable iff it has
+  a closed extension.
+* `LinearPMap.IsClosable.existsUnique`: there exists a unique closure
 * `LinearPMap.closureHasCore`: the domain of `f` is a core of its closure
 
 ## References
@@ -52,6 +53,7 @@ namespace LinearPMap
 
 /-! ### Closed and closable operators -/
 
+section Basic
 
 /-- An unbounded operator is closed iff its graph is closed. -/
 def IsClosed (f : E →ₗ.[R] F) : Prop :=
@@ -71,7 +73,7 @@ theorem IsClosed.isClosable {f : E →ₗ.[R] F} (hf : f.IsClosed) : f.IsClosabl
 /-- If `g` has a closable extension `f`, then `g` itself is closable. -/
 theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg : g ≤ f) :
     g.IsClosable := by
-  cases' hf with f' hf
+  obtain ⟨f', hf⟩ := hf
   have : g.graph.topologicalClosure ≤ f'.graph := by
     rw [← hf]
     exact Submodule.topologicalClosure_mono (le_graph_of_le hfg)
@@ -82,7 +84,7 @@ theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg 
 /-- The closure is unique. -/
 theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
     ∃! f' : E →ₗ.[R] F, f.graph.topologicalClosure = f'.graph := by
-  refine exists_unique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph ?_
+  refine existsUnique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph ?_
   rw [← hy₁, ← hy₂]
 
 open Classical in
@@ -150,20 +152,30 @@ Note that we don't require that `f` is closable, due to the definition of the cl
 theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
   refine ⟨f.le_closure.1, ?_⟩
   congr
-  ext x y hxy
+  ext x h1 h2
   · simp only [domRestrict_domain, Submodule.mem_inf, and_iff_left_iff_imp]
     intro hx
     exact f.le_closure.1 hx
-  let z : f.closure.domain := ⟨y.1, f.le_closure.1 y.2⟩
-  have hyz : (y : E) = z := by simp [z]
+  let z : f.closure.domain := ⟨x, f.le_closure.1 h2⟩
+  have hyz : x = z := rfl
   rw [f.le_closure.2 hyz]
-  exact domRestrict_apply (hxy.trans hyz)
+  exact domRestrict_apply hyz
+
+end Basic
 
 /-! ### Topological properties of the inverse -/
 
 section Inverse
 
 variable {f : E →ₗ.[R] F}
+
+/-- The inverse of `f : LinearPMap` is closed if and only if `f` is closed. -/
+theorem inverse_closed_iff (hf : LinearMap.ker f.toFun = ⊥) : f.inverse.IsClosed ↔ f.IsClosed := by
+  rw [IsClosed, inverse_graph hf]
+  exact (ContinuousLinearEquiv.prodComm R E F).isClosed_image
+
+variable [ContinuousAdd E] [ContinuousAdd F]
+variable [TopologicalSpace R] [ContinuousSMul R E] [ContinuousSMul R F]
 
 /-- If `f` is invertible and closable as well as its closure being invertible, then
 the graph of the inverse of the closure is given by the closure of the graph of the inverse. -/
@@ -177,8 +189,7 @@ theorem closure_inverse_graph (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClos
   have h1 := Set.image_equiv_eq_preimage_symm f.graph (LinearEquiv.prodComm R E F).toEquiv
   have h2 := Set.image_equiv_eq_preimage_symm (_root_.closure f.graph)
     (LinearEquiv.prodComm R E F).toEquiv
-  simp only [LinearEquiv.coe_toEquiv, LinearEquiv.prodComm_apply,
-    LinearEquiv.coe_toEquiv_symm] at h1 h2
+  simp only [LinearEquiv.coe_toEquiv, LinearEquiv.prodComm_apply] at h1 h2
   rw [h1, h2]
   apply continuous_swap.closure_preimage_subset
 

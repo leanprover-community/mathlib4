@@ -16,7 +16,7 @@ then we can turn an `R`-submodule into an `S`-submodule by forgetting the action
 this restriction of scalars for submodules.
 
 ## Main definitions:
- * `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
+* `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
 
 -/
 
@@ -55,7 +55,7 @@ variable (R M)
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars S : Submodule R M → Submodule S M) := fun _ _ h =>
-  ext <| Set.ext_iff.1 (SetLike.ext'_iff.1 h : _)
+  ext <| Set.ext_iff.1 (SetLike.ext'_iff.1 h :)
 
 @[simp]
 theorem restrictScalars_inj {V₁ V₂ : Submodule R M} :
@@ -80,7 +80,7 @@ def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
 
 /-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
 as turning it into a type and adding a module structure. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :=
   { AddEquiv.refl p with
     map_smul' := fun _ _ => rfl }
@@ -106,6 +106,11 @@ we can turn an `R`-submodule into an `S`-submodule by forgetting the action of `
 def restrictScalarsLatticeHom : CompleteLatticeHom (Submodule R M) (Submodule S M) where
   toFun := restrictScalars S
   map_sInf' s := by ext; simp
-  map_sSup' s := by rw [← toAddSubmonoid_eq, toAddSubmonoid_sSup, ← Set.image_comp]; simp
+  map_sSup' s := by rw [← toAddSubmonoid_inj, toAddSubmonoid_sSup, ← Set.image_comp]; simp
+
+@[simp]
+lemma toIntSubmodule_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    (N : Submodule R M) :
+    N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl
 
 end Submodule

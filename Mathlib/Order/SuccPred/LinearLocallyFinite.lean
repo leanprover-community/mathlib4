@@ -3,12 +3,13 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Countable.Basic
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Finset.Max
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Logic.Encodable.Basic
+import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Linear locally finite orders
@@ -30,7 +31,7 @@ Furthermore, we show that there is an `OrderIso` between such an order and a sub
 
 ## Main results
 
-Instances about linear locally finite orders:
+Results about linear locally finite orders:
 * `LinearLocallyFiniteOrder.SuccOrder`: a linear locally finite order has a successor function.
 * `LinearLocallyFiniteOrder.PredOrder`: a linear locally finite order has a predecessor
   function.
@@ -111,7 +112,7 @@ theorem isGLB_Ioc_of_isGLB_Ioi {i j k : ι} (hij_lt : i < j) (h : IsGLB (Set.Ioi
   simp_rw [IsGLB, IsGreatest, mem_upperBounds, mem_lowerBounds] at h ⊢
   refine ⟨fun x hx ↦ h.1 x hx.1, fun x hx ↦ h.2 x ?_⟩
   intro y hy
-  rcases le_or_lt y j with h_le | h_lt
+  rcases le_or_gt y j with h_le | h_lt
   · exact hx y ⟨hy, h_le⟩
   · exact le_trans (hx j ⟨hij_lt, le_rfl⟩) h_lt.le
 
@@ -140,29 +141,38 @@ theorem le_of_lt_succFn (j i : ι) (hij : j < succFn i) : j ≤ i := by
   rw [mem_lowerBounds] at hk_lb
   exact not_lt.mp fun hi_lt_j ↦ not_le.mpr hk (hk_lb j hi_lt_j)
 
-noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι where
+variable (ι) in
+/-- A locally finite order is a `SuccOrder`.
+This is not an instance, because its `succ` field conflicts with computable `SuccOrder` structures
+on `ℕ` and `ℤ`. -/
+noncomputable def succOrder [LocallyFiniteOrder ι] : SuccOrder ι where
   succ := succFn
   le_succ := le_succFn
   max_of_succ_le h := isMax_of_succFn_le _ h
   succ_le_of_lt h := succFn_le_of_lt _ _ h
 
-noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : PredOrder ι :=
+variable (ι) in
+/-- A locally finite order is a `PredOrder`.
+This is not an instance, because its `succ` field conflicts with computable `PredOrder` structures
+on `ℕ` and `ℤ`. -/
+noncomputable def predOrder [LocallyFiniteOrder ι] : PredOrder ι :=
+  letI := succOrder (ι := ιᵒᵈ)
   inferInstanceAs (PredOrder ιᵒᵈᵒᵈ)
 
-instance (priority := 100) [LocallyFiniteOrder ι] : IsSuccArchimedean ι where
+instance (priority := 100) [LocallyFiniteOrder ι] [SuccOrder ι] : IsSuccArchimedean ι where
   exists_succ_iterate_of_le := by
     intro i j hij
     rw [le_iff_lt_or_eq] at hij
-    cases' hij with hij hij
+    rcases hij with hij | hij
     swap
     · refine ⟨0, ?_⟩
       simpa only [Function.iterate_zero, id] using hij
     by_contra! h
-    have h_lt : ∀ n, succ^[n] i < j := by
-      intro n
-      induction' n with n hn
-      · simpa only [Function.iterate_zero, id] using hij
-      · refine lt_of_le_of_ne ?_ (h _)
+    have h_lt : ∀ n, succ^[n] i < j := fun n ↦ by
+      induction n with
+      | zero => simpa only [Function.iterate_zero, id] using hij
+      | succ n hn =>
+        refine lt_of_le_of_ne ?_ (h _)
         rw [Function.iterate_succ', Function.comp_apply]
         exact succ_le_of_lt hn
     have h_mem : ∀ n, succ^[n] i ∈ Finset.Icc i j :=
@@ -178,8 +188,8 @@ instance (priority := 100) [LocallyFiniteOrder ι] : IsSuccArchimedean ι where
     have h_max : IsMax (succ^[n] i) := isMax_iterate_succ_of_eq_of_ne h_eq hnm.ne
     exact not_le.mpr (h_lt n) (h_max (h_lt n).le)
 
-instance (priority := 100) [LocallyFiniteOrder ι] : IsPredArchimedean ι :=
-  inferInstance
+instance (priority := 100) [LocallyFiniteOrder ι] [PredOrder ι] : IsPredArchimedean ι :=
+  inferInstanceAs (IsPredArchimedean ιᵒᵈᵒᵈ)
 
 end LinearLocallyFiniteOrder
 
@@ -224,7 +234,7 @@ lemma toZ_nonneg (hi : i0 ≤ i) : 0 ≤ toZ i0 i := by rw [toZ_of_ge hi]; exact
 theorem toZ_neg (hi : i < i0) : toZ i0 i < 0 := by
   refine lt_of_le_of_ne ?_ ?_
   · rw [toZ_of_lt hi]
-    omega
+    cutsat
   · by_contra h
     have h_eq := iterate_pred_toZ i hi
     rw [← h_eq, h] at hi
@@ -236,10 +246,10 @@ theorem toZ_iterate_succ_le (n : ℕ) : toZ i0 (succ^[n] i0) ≤ n := by
   exact Nat.find_min' _ rfl
 
 theorem toZ_iterate_pred_ge (n : ℕ) : -(n : ℤ) ≤ toZ i0 (pred^[n] i0) := by
-  rcases le_or_lt i0 (pred^[n] i0) with h | h
+  rcases le_or_gt i0 (pred^[n] i0) with h | h
   · have h_eq : pred^[n] i0 = i0 := le_antisymm (pred_iterate_le _ _) h
     rw [h_eq, toZ_of_eq]
-    omega
+    cutsat
   · rw [toZ_of_lt h]
     refine Int.neg_le_neg ?_
     norm_cast
@@ -258,7 +268,7 @@ theorem toZ_iterate_succ_of_not_isMax (n : ℕ) (hn : ¬IsMax (succ^[n] i0)) :
 
 theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
     toZ i0 (pred^[n] i0) = -n := by
-  cases' n with n
+  rcases n with - | n
   · simp
   have : pred^[n.succ] i0 < i0 := by
     refine lt_of_le_of_ne (pred_iterate_le _ _) fun h_pred_iterate_eq ↦ hn ?_
@@ -276,7 +286,7 @@ theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
     exact isMin_iterate_pred_of_eq_of_ne h_eq.symm (Ne.symm hmn)
 
 theorem le_of_toZ_le {j : ι} (h_le : toZ i0 i ≤ toZ i0 j) : i ≤ j := by
-  rcases le_or_lt i0 i with hi | hi <;> rcases le_or_lt i0 j with hj | hj
+  rcases le_or_gt i0 i with hi | hi <;> rcases le_or_gt i0 j with hj | hj
   · rw [← iterate_succ_toZ i hi, ← iterate_succ_toZ j hj]
     exact Monotone.monotone_iterate_of_le_map succ_mono (le_succ _) (Int.toNat_le_toNat h_le)
   · exact absurd ((toZ_neg hj).trans_le (toZ_nonneg hi)) (not_lt.mpr h_le)
@@ -290,7 +300,7 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
   · rw [le_antisymm h_le (hi_max h_le)]
   by_cases hj_min : IsMin j
   · rw [le_antisymm h_le (hj_min h_le)]
-  rcases le_or_lt i0 i with hi | hi <;> rcases le_or_lt i0 j with hj | hj
+  rcases le_or_gt i0 i with hi | hi <;> rcases le_or_gt i0 j with hj | hj
   · let m := Nat.find (exists_succ_iterate_of_le h_le)
     have hm : succ^[m] i = j := Nat.find_spec (exists_succ_iterate_of_le h_le)
     have hj_eq : j = succ^[(toZ i0 i).toNat + m] i0 := by
@@ -299,17 +309,16 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
       rw [Function.iterate_add]
       rfl
     by_contra h
-    by_cases hm0 : m = 0
+    obtain hm0 | hm0 : m = 0 ∨ 1 ≤ m := by cutsat
     · rw [hm0, Function.iterate_zero, id] at hm
       rw [hm] at h
       exact h (le_of_eq rfl)
     refine hi_max (max_of_succ_le (le_trans ?_ (@le_of_toZ_le _ _ _ _ _ i0 j i ?_)))
     · have h_succ_le : succ^[(toZ i0 i).toNat + 1] i0 ≤ j := by
         rw [hj_eq]
-        refine Monotone.monotone_iterate_of_le_map succ_mono (le_succ i0) (add_le_add_left ?_ _)
-        exact Nat.one_le_iff_ne_zero.mpr hm0
+        exact Monotone.monotone_iterate_of_le_map succ_mono (le_succ i0) (by gcongr)
       rwa [Function.iterate_succ', Function.comp_apply, iterate_succ_toZ i hi] at h_succ_le
-    · exact le_of_not_le h
+    · exact le_of_not_ge h
   · exact absurd h_le (not_le.mpr (hj.trans_le hi))
   · exact (toZ_neg hi).le.trans (toZ_nonneg hj)
   · let m := Nat.find (exists_pred_iterate_of_le (α := ι) h_le)
@@ -320,17 +329,16 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
       rw [Function.iterate_add]
       rfl
     by_contra h
-    by_cases hm0 : m = 0
+    obtain hm0 | hm0 : m = 0 ∨ 1 ≤ m := by cutsat
     · rw [hm0, Function.iterate_zero, id] at hm
       rw [hm] at h
       exact h (le_of_eq rfl)
     refine hj_min (min_of_le_pred ?_)
     refine (@le_of_toZ_le _ _ _ _ _ i0 j i ?_).trans ?_
-    · exact le_of_not_le h
+    · exact le_of_not_ge h
     · have h_le_pred : i ≤ pred^[(-toZ i0 j).toNat + 1] i0 := by
         rw [hj_eq]
-        refine Monotone.antitone_iterate_of_map_le pred_mono (pred_le i0) (add_le_add_left ?_ _)
-        exact Nat.one_le_iff_ne_zero.mpr hm0
+        exact Monotone.antitone_iterate_of_map_le pred_mono (pred_le i0) (by gcongr)
       rwa [Function.iterate_succ', Function.comp_apply, iterate_pred_toZ j hj] at h_le_pred
 
 theorem toZ_le_iff (i j : ι) : toZ i0 i ≤ toZ i0 j ↔ i ≤ j :=
@@ -358,7 +366,7 @@ noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
   map_rel_iff' := by intro i j; exact toZ_le_iff i j
 
 instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := by
-  cases' isEmpty_or_nonempty ι with _ hι
+  rcases isEmpty_or_nonempty ι with _ | hι
   · infer_instance
   · exact Countable.of_equiv _ orderIsoRangeToZOfLinearSuccPredArch.symm.toEquiv
 
@@ -368,7 +376,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
   toFun := toZ hι.some
   invFun n := if 0 ≤ n then succ^[n.toNat] hι.some else pred^[(-n).toNat] hι.some
   left_inv i := by
-    rcases le_or_lt hι.some i with hi | hi
+    rcases le_or_gt hι.some i with hi | hi
     · have h_nonneg : 0 ≤ toZ hι.some i := toZ_nonneg hi
       simp_rw [if_pos h_nonneg]
       exact iterate_succ_toZ i hi
@@ -376,7 +384,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
       simp_rw [if_neg (not_le.mpr h_neg)]
       exact iterate_pred_toZ i hi
   right_inv n := by
-    rcases le_or_lt 0 n with hn | hn
+    rcases le_or_gt 0 n with hn | hn
     · simp_rw [if_pos hn]
       rw [toZ_iterate_succ]
       exact Int.toNat_of_nonneg hn
@@ -412,7 +420,7 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
   left_inv i := iterate_succ_toZ i bot_le
   right_inv n := by
     ext1
-    simp only [Subtype.coe_mk]
+    simp only
     refine le_antisymm ?_ ?_
     · rw [Int.toNat_le]
       exact toZ_iterate_succ_le _
@@ -428,3 +436,9 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
     rw [← @toZ_le_iff ι _ _ _ _ ⊥, Int.toNat_of_nonneg (toZ_nonneg bot_le)]
 
 end OrderIso
+
+instance (priority := 100) Countable.of_linearOrder_locallyFiniteOrder [LocallyFiniteOrder ι] :
+    Countable ι :=
+  have := LinearLocallyFiniteOrder.succOrder ι
+  have := LinearLocallyFiniteOrder.predOrder ι
+  countable_of_linear_succ_pred_arch

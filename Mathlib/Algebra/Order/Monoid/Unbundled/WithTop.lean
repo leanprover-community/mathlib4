@@ -5,12 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Order.WithBot
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Order.WithBot
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
@@ -38,6 +35,8 @@ theorem coe_one : ((1 : α) : WithTop α) = 1 :=
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_eq_one : (a : WithTop α) = 1 ↔ a = 1 := coe_eq_coe
 
+@[to_additive] lemma coe_ne_one : (a : WithTop α) ≠ 1 ↔ a ≠ 1 := coe_eq_one.ne
+
 @[to_additive (attr := simp, norm_cast)]
 lemma one_eq_coe : 1 = (a : WithTop α) ↔ a = 1 := eq_comm.trans coe_eq_one
 
@@ -50,7 +49,7 @@ theorem untop_one : (1 : WithTop α).untop coe_ne_top = 1 :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem untop_one' (d : α) : (1 : WithTop α).untop' d = 1 :=
+theorem untopD_one (d : α) : (1 : WithTop α).untopD d = 1 :=
   rfl
 
 @[to_additive (attr := simp, norm_cast) coe_nonneg]
@@ -73,6 +72,14 @@ theorem coe_lt_one [LT α] {a : α} : (a : WithTop α) < 1 ↔ a < 1 :=
 protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 : WithTop β) :=
   rfl
 
+@[to_additive]
+theorem map_eq_one_iff {α} {f : α → β} {v : WithTop α} [One β] :
+    WithTop.map f v = 1 ↔ ∃ x, v = .some x ∧ f x = 1 := map_eq_some_iff
+
+@[to_additive]
+theorem one_eq_map_iff {α} {f : α → β} {v : WithTop α} [One β] :
+    1 = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = 1 := some_eq_map_iff
+
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
@@ -80,31 +87,22 @@ end One
 
 section Add
 
-variable [Add α] {a b c d : WithTop α} {x : α}
+variable [Add α] {w x y z : WithTop α} {a b : α}
 
 instance add : Add (WithTop α) :=
   ⟨Option.map₂ (· + ·)⟩
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
 
-@[simp]
-theorem top_add (a : WithTop α) : ⊤ + a = ⊤ :=
-  rfl
+@[simp] lemma top_add (x : WithTop α) : ⊤ + x = ⊤ := rfl
+@[simp] lemma add_top (x : WithTop α) : x + ⊤ = ⊤ := by cases x <;> rfl
+
+@[simp] lemma add_eq_top : x + y = ⊤ ↔ x = ⊤ ∨ y = ⊤ := by cases x <;> cases y <;> simp [← coe_add]
+
+lemma add_ne_top : x + y ≠ ⊤ ↔ x ≠ ⊤ ∧ y ≠ ⊤ := by cases x <;> cases y <;> simp [← coe_add]
 
 @[simp]
-theorem add_top (a : WithTop α) : a + ⊤ = ⊤ := by cases a <;> rfl
-
-@[simp]
-theorem add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
-  match a, b with
-  | ⊤, _ => simp
-  | _, ⊤ => simp
-  | (a : α), (b : α) => simp only [← coe_add, coe_ne_top, or_false]
-
-theorem add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
-  add_eq_top.not.trans not_or
-
-theorem add_lt_top [LT α] {a b : WithTop α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
+lemma add_lt_top [LT α] : x + y < ⊤ ↔ x < ⊤ ∧ y < ⊤ := by
   simp_rw [WithTop.lt_top_iff_ne_top, add_ne_top]
 
 theorem add_eq_coe :
@@ -113,129 +111,87 @@ theorem add_eq_coe :
   | some a, ⊤, c => by simp
   | some a, some b, c => by norm_cast; simp
 
-theorem add_coe_eq_top_iff {x : WithTop α} {y : α} : x + y = ⊤ ↔ x = ⊤ := by simp
+lemma add_coe_eq_top_iff : x + b = ⊤ ↔ x = ⊤ := by simp
+lemma coe_add_eq_top_iff : a + y = ⊤ ↔ y = ⊤ := by simp
 
-theorem coe_add_eq_top_iff {y : WithTop α} : ↑x + y = ⊤ ↔ y = ⊤ := by simp
+lemma add_right_inj [IsRightCancelAdd α] (hz : z ≠ ⊤) : x + z = y + z ↔ x = y := by
+  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]
 
-theorem add_right_cancel_iff [IsRightCancelAdd α] (ha : a ≠ ⊤) : b + a = c + a ↔ b = c := by
-  lift a to α using ha
-  obtain rfl | hb := eq_or_ne b ⊤
-  · rw [top_add, eq_comm, WithTop.add_coe_eq_top_iff, eq_comm]
-  lift b to α using hb
-  simp_rw [← WithTop.coe_add, eq_comm, WithTop.add_eq_coe, coe_eq_coe, exists_and_left,
-    exists_eq_left, add_left_inj, exists_eq_right, eq_comm]
+lemma add_right_cancel [IsRightCancelAdd α] (hz : z ≠ ⊤) (h : x + z = y + z) : x = y :=
+  (WithTop.add_right_inj hz).1 h
 
-theorem add_right_cancel [IsRightCancelAdd α] (ha : a ≠ ⊤) (h : b + a = c + a) : b = c :=
-  (WithTop.add_right_cancel_iff ha).1 h
+lemma add_left_inj [IsLeftCancelAdd α] (hx : x ≠ ⊤) : x + y = x + z ↔ y = z := by
+  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]
 
-theorem add_left_cancel_iff [IsLeftCancelAdd α] (ha : a ≠ ⊤) : a + b = a + c ↔ b = c := by
-  lift a to α using ha
-  obtain rfl | hb := eq_or_ne b ⊤
-  · rw [add_top, eq_comm, WithTop.coe_add_eq_top_iff, eq_comm]
-  lift b to α using hb
-  simp_rw [← WithTop.coe_add, eq_comm, WithTop.add_eq_coe, eq_comm, coe_eq_coe,
-    exists_and_left, exists_eq_left', add_right_inj, exists_eq_right']
+lemma add_left_cancel [IsLeftCancelAdd α] (hx : x ≠ ⊤) (h : x + y = x + z) : y = z :=
+  (WithTop.add_left_inj hx).1 h
 
-theorem add_left_cancel [IsLeftCancelAdd α] (ha : a ≠ ⊤) (h : a + b = a + c) : b = c :=
-  (WithTop.add_left_cancel_iff ha).1 h
+instance addLeftMono [LE α] [AddLeftMono α] : AddLeftMono (WithTop α) where
+  elim x y z := by
+    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
 
-instance addLeftMono [LE α] [AddLeftMono α] : AddLeftMono (WithTop α) :=
-  ⟨fun a b c h => by
-    cases a <;> cases c <;> try exact le_top
-    rcases le_coe_iff.1 h with ⟨b, rfl, _⟩
-    exact coe_le_coe.2 (add_le_add_left (coe_le_coe.1 h) _)⟩
+instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithTop α) where
+  elim x y z := by
+    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using fun _ ↦ by gcongr
 
-instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithTop α) :=
-  ⟨fun a b c h => by
-    cases a <;> cases c <;> try exact le_top
-    rcases le_coe_iff.1 h with ⟨b, rfl, _⟩
-    exact coe_le_coe.2 (add_le_add_right (coe_le_coe.1 h) _)⟩
+instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithTop α) where
+  elim x y z := by
+    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using lt_of_add_lt_add_left
 
-instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithTop α) :=
-  ⟨fun a b c h => by
-    induction a; · exact (WithTop.not_top_lt _ h).elim
-    induction b; · exact (WithTop.not_top_lt _ h).elim
-    induction c
-    · exact coe_lt_top _
-    · exact coe_lt_coe.2 (lt_of_add_lt_add_left <| coe_lt_coe.1 h)⟩
+instance addRightReflectLT [LT α] [AddRightReflectLT α] : AddRightReflectLT (WithTop α) where
+  elim x y z := by
+    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using lt_of_add_lt_add_right
 
-instance addRightReflectLT [LT α] [AddRightReflectLT α] : AddRightReflectLT (WithTop α) :=
-  ⟨fun a b c h => by
-    cases a <;> cases b <;> try exact (WithTop.not_top_lt _ h).elim
-    cases c
-    · exact coe_lt_top _
-    · exact coe_lt_coe.2 (lt_of_add_lt_add_right <| coe_lt_coe.1 h)⟩
+protected lemma le_of_add_le_add_left [LE α] [AddLeftReflectLE α] (hx : x ≠ ⊤) :
+    x + y ≤ x + z → y ≤ z := by
+  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]; simpa using le_of_add_le_add_left
 
-protected theorem le_of_add_le_add_left [LE α] [AddLeftReflectLE α] (ha : a ≠ ⊤)
-    (h : a + b ≤ a + c) : b ≤ c := by
-  lift a to α using ha
-  induction c
-  · exact le_top
-  · induction b
-    · exact (not_top_le_coe _ h).elim
-    · simp only [← coe_add, coe_le_coe] at h ⊢
-      exact le_of_add_le_add_left h
+protected lemma le_of_add_le_add_right [LE α] [AddRightReflectLE α] (hz : z ≠ ⊤) :
+    x + z ≤ y + z → x ≤ y := by
+  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]; simpa using le_of_add_le_add_right
 
-protected theorem le_of_add_le_add_right [LE α] [AddRightReflectLE α]
-    (ha : a ≠ ⊤) (h : b + a ≤ c + a) : b ≤ c := by
-  lift a to α using ha
-  cases c
-  · exact le_top
-  · cases b
-    · exact (not_top_le_coe _ h).elim
-    · exact coe_le_coe.2 (le_of_add_le_add_right <| coe_le_coe.1 h)
+protected lemma add_lt_add_left [LT α] [AddLeftStrictMono α] (hx : x ≠ ⊤) :
+    y < z → x + y < x + z := by
+  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
 
-protected theorem add_lt_add_left [LT α] [AddLeftStrictMono α] (ha : a ≠ ⊤)
-    (h : b < c) : a + b < a + c := by
-  lift a to α using ha
-  rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
-  cases c
-  · exact coe_lt_top _
-  · exact coe_lt_coe.2 (add_lt_add_left (coe_lt_coe.1 h) _)
+protected lemma add_lt_add_right [LT α] [AddRightStrictMono α] (hz : z ≠ ⊤) :
+    x < y → x + z < y + z := by
+  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
 
-protected theorem add_lt_add_right [LT α] [AddRightStrictMono α] (ha : a ≠ ⊤)
-    (h : b < c) : b + a < c + a := by
-  lift a to α using ha
-  rcases lt_iff_exists_coe.1 h with ⟨b, rfl, h'⟩
-  cases c
-  · exact coe_lt_top _
-  · exact coe_lt_coe.2 (add_lt_add_right (coe_lt_coe.1 h) _)
+protected lemma add_le_add_iff_left [LE α] [AddLeftMono α] [AddLeftReflectLE α] (hx : x ≠ ⊤) :
+    x + y ≤ x + z ↔ y ≤ z := ⟨WithTop.le_of_add_le_add_left hx, fun _ ↦ by gcongr⟩
 
-protected theorem add_le_add_iff_left [LE α] [AddLeftMono α]
-    [AddLeftReflectLE α] (ha : a ≠ ⊤) : a + b ≤ a + c ↔ b ≤ c :=
-  ⟨WithTop.le_of_add_le_add_left ha, fun h => add_le_add_left h a⟩
+protected lemma add_le_add_iff_right [LE α] [AddRightMono α] [AddRightReflectLE α] (hz : z ≠ ⊤) :
+    x + z ≤ y + z ↔ x ≤ y := ⟨WithTop.le_of_add_le_add_right hz, fun _ ↦ by gcongr⟩
 
-protected theorem add_le_add_iff_right [LE α] [AddRightMono α]
-    [AddRightReflectLE α] (ha : a ≠ ⊤) : b + a ≤ c + a ↔ b ≤ c :=
-  ⟨WithTop.le_of_add_le_add_right ha, fun h => add_le_add_right h a⟩
+protected lemma add_lt_add_iff_left [LT α] [AddLeftStrictMono α] [AddLeftReflectLT α] (hx : x ≠ ⊤) :
+    x + y < x + z ↔ y < z := ⟨lt_of_add_lt_add_left, WithTop.add_lt_add_left hx⟩
 
-protected theorem add_lt_add_iff_left [LT α] [AddLeftStrictMono α]
-    [AddLeftReflectLT α] (ha : a ≠ ⊤) : a + b < a + c ↔ b < c :=
-  ⟨lt_of_add_lt_add_left, WithTop.add_lt_add_left ha⟩
-
-protected theorem add_lt_add_iff_right [LT α] [AddRightStrictMono α]
-    [AddRightReflectLT α] (ha : a ≠ ⊤) : b + a < c + a ↔ b < c :=
-  ⟨lt_of_add_lt_add_right, WithTop.add_lt_add_right ha⟩
+protected lemma add_lt_add_iff_right [LT α] [AddRightStrictMono α] [AddRightReflectLT α]
+    (hz : z ≠ ⊤) : x + z < y + z ↔ x < y := ⟨lt_of_add_lt_add_right, WithTop.add_lt_add_right hz⟩
 
 protected theorem add_lt_add_of_le_of_lt [Preorder α] [AddLeftStrictMono α]
-    [AddRightMono α] (ha : a ≠ ⊤) (hab : a ≤ b) (hcd : c < d) :
-    a + c < b + d :=
-  (WithTop.add_lt_add_left ha hcd).trans_le <| add_le_add_right hab _
+    [AddRightMono α] (hw : w ≠ ⊤) (hwy : w ≤ y) (hxz : x < z) :
+    w + x < y + z :=
+  (WithTop.add_lt_add_left hw hxz).trans_le <| by gcongr
 
 protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
-    [AddRightStrictMono α] (hc : c ≠ ⊤) (hab : a < b) (hcd : c ≤ d) :
-    a + c < b + d :=
-  (WithTop.add_lt_add_right hc hab).trans_le <| add_le_add_left hcd _
+    [AddRightStrictMono α] (hx : x ≠ ⊤) (hwy : w < y) (hxz : x ≤ z) :
+    w + x < y + z :=
+  (WithTop.add_lt_add_right hx hwy).trans_le <| by gcongr
 
-lemma addLECancellable_of_ne_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
-    (ha : a ≠ ⊤) : AddLECancellable a := fun _b _c ↦ WithTop.le_of_add_le_add_left ha
+lemma addLECancellable_of_ne_top [LE α] [AddLeftReflectLE α]
+    (hx : x ≠ ⊤) : AddLECancellable x := fun _b _c ↦ WithTop.le_of_add_le_add_left hx
 
-lemma addLECancellable_of_lt_top [Preorder α] [ContravariantClass α α (· + ·) (· ≤ ·)]
-    (ha : a < ⊤) : AddLECancellable a := addLECancellable_of_ne_top ha.ne
+lemma addLECancellable_of_lt_top [Preorder α] [AddLeftReflectLE α]
+    (hx : x < ⊤) : AddLECancellable x := addLECancellable_of_ne_top hx.ne
+
+lemma addLECancellable_coe [LE α] [AddLeftReflectLE α] (a : α) :
+    AddLECancellable (a : WithTop α) := addLECancellable_of_ne_top coe_ne_top
 
 lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable a ↔ a ≠ ⊤ where
-  mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_le <| h <| by simp
+    [AddLeftReflectLE α] : AddLECancellable x ↔ x ≠ ⊤ where
+  mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_ge <| h <| by simp
   mpr := addLECancellable_of_ne_top
 
 --  There is no `WithTop.map_mul_of_mulHom`, since `WithTop` does not have a multiplication.
@@ -300,11 +256,9 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
   { WithTop.one, WithTop.addMonoid with
     natCast := fun n => ↑(n : α),
     natCast_zero := by
-      simp only -- Porting note: Had to add this...?
-      rw [Nat.cast_zero, WithTop.coe_zero],
+      simp only [Nat.cast_zero, WithTop.coe_zero],
     natCast_succ := fun n => by
-      simp only -- Porting note: Had to add this...?
-      rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one] }
+      simp only [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one] }
 
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl
 
@@ -312,23 +266,36 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 @[simp] lemma natCast_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
 @[simp] lemma natCast_lt_top [LT α] (n : ℕ) : (n : WithTop α) < ⊤ := coe_lt_top _
 
-@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
-@[deprecated (since := "2024-04-05")] alias nat_ne_top := natCast_ne_top
-@[deprecated (since := "2024-04-05")] alias top_ne_nat := top_ne_natCast
-
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : α) : WithTop α) = OfNat.ofNat n := rfl
+    ((ofNat(n) : α) : WithTop α) = ofNat(n) := rfl
 @[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
-    (m : WithTop α) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n :=
+    (m : WithTop α) = ofNat(n) ↔ m = ofNat(n) :=
   coe_eq_coe
 @[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
-    no_index (OfNat.ofNat n) = (m : WithTop α) ↔ OfNat.ofNat n = m :=
+    ofNat(n) = (m : WithTop α) ↔ ofNat(n) = m :=
   coe_eq_coe
-@[simp] lemma ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n : WithTop α) ≠ ⊤ :=
+@[simp] lemma ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : WithTop α) ≠ ⊤ :=
   natCast_ne_top n
-@[simp] lemma top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊤ : WithTop α) ≠ no_index (OfNat.ofNat n) :=
+@[simp] lemma top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊤ : WithTop α) ≠ ofNat(n) :=
   top_ne_natCast n
+
+@[simp] lemma map_ofNat {f : α → β} (n : ℕ) [n.AtLeastTwo] :
+    WithTop.map f (ofNat(n) : WithTop α) = f (ofNat(n)) := map_coe f n
+
+@[simp] lemma map_natCast {f : α → β} (n : ℕ) :
+    WithTop.map f (n : WithTop α) = f n := map_coe f n
+
+lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithTop β} :
+    a.map f = ofNat(n) ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma ofNat_eq_map_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithTop β} :
+    ofNat(n) = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
+
+lemma map_eq_natCast_iff {f : β → α} {n : ℕ} {a : WithTop β} :
+    a.map f = n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma natCast_eq_map_iff {f : β → α} {n : ℕ} {a : WithTop β} :
+    n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
 
 end AddMonoidWithOne
 
@@ -374,30 +341,23 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
 @[to_additive (attr := simp) top_pos]
 theorem one_lt_top [One α] [LT α] : (1 : WithTop α) < ⊤ := coe_lt_top _
 
-@[deprecated top_pos (since := "2024-10-22")]
-alias zero_lt_top := top_pos
-
-@[norm_cast, deprecated coe_pos (since := "2024-10-22")]
-theorem zero_lt_coe [Zero α] [LT α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
-  coe_lt_coe
-
 /-- A version of `WithTop.map` for `OneHom`s. -/
-@[to_additive (attr := simps (config := .asFn))
-  "A version of `WithTop.map` for `ZeroHom`s"]
+@[to_additive (attr := simps -fullyApplied)
+  /-- A version of `WithTop.map` for `ZeroHom`s -/]
 protected def _root_.OneHom.withTopMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
   map_one' := by rw [WithTop.map_one, map_one, coe_one]
 
 /-- A version of `WithTop.map` for `AddHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddHom.withTopMap {M N : Type*} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithTop M) (WithTop N) where
   toFun := WithTop.map f
   map_add' := WithTop.map_add f
 
 /-- A version of `WithTop.map` for `AddMonoidHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddMonoidHom.withTopMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithTop M →+ WithTop N :=
   { ZeroHom.withTopMap f.toZeroHom, AddHom.withTopMap f.toAddHom with toFun := WithTop.map f }
@@ -426,7 +386,7 @@ theorem unbot_one : (1 : WithBot α).unbot coe_ne_bot = 1 :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem unbot_one' (d : α) : (1 : WithBot α).unbot' d = 1 :=
+theorem unbotD_one (d : α) : (1 : WithBot α).unbotD d = 1 :=
   rfl
 
 @[to_additive (attr := simp, norm_cast) coe_nonneg]
@@ -445,13 +405,151 @@ theorem coe_lt_one [LT α] : (a : WithBot α) < 1 ↔ a < 1 := coe_lt_coe
 protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=
   rfl
 
+@[to_additive]
+theorem map_eq_one_iff {α} {f : α → β} {v : WithBot α} [One β] :
+    WithBot.map f v = 1 ↔ ∃ x, v = .some x ∧ f x = 1 := map_eq_some_iff
+
+@[to_additive]
+theorem one_eq_map_iff {α} {f : α → β} {v : WithBot α} [One β] :
+    1 = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = 1 := some_eq_map_iff
+
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
 end One
 
-instance add [Add α] : Add (WithBot α) :=
-  WithTop.add
+section Add
+variable [Add α] {w x y z : WithBot α} {a b : α}
+
+instance add : Add (WithBot α) :=
+  ⟨Option.map₂ (· + ·)⟩
+
+@[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithBot α) := rfl
+
+@[simp] lemma bot_add (x : WithBot α) : ⊥ + x = ⊥ := rfl
+@[simp] lemma add_bot (x : WithBot α) : x + ⊥ = ⊥ := by cases x <;> rfl
+
+@[simp] lemma add_eq_bot : x + y = ⊥ ↔ x = ⊥ ∨ y = ⊥ := by cases x <;> cases y <;> simp [← coe_add]
+
+lemma add_ne_bot : x + y ≠ ⊥ ↔ x ≠ ⊥ ∧ y ≠ ⊥ := by cases x <;> cases y <;> simp [← coe_add]
+
+@[simp]
+lemma bot_lt_add [LT α] : ⊥ < x + y ↔ ⊥ < x ∧ ⊥ < y := by
+  simp_rw [WithBot.bot_lt_iff_ne_bot, add_ne_bot]
+
+theorem add_eq_coe :
+    ∀ {a b : WithBot α} {c : α}, a + b = c ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = c
+  | ⊥, b, c => by simp
+  | some a, ⊥, c => by simp
+  | some a, some b, c => by norm_cast; simp
+
+lemma add_coe_eq_bot_iff : x + b = ⊥ ↔ x = ⊥ := by simp
+lemma coe_add_eq_bot_iff : a + y = ⊥ ↔ y = ⊥ := by simp
+
+lemma add_right_inj [IsRightCancelAdd α] (hz : z ≠ ⊥) : x + z = y + z ↔ x = y := by
+  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]
+
+lemma add_right_cancel [IsRightCancelAdd α] (hz : z ≠ ⊥) (h : x + z = y + z) : x = y :=
+  (WithBot.add_right_inj hz).1 h
+
+lemma add_left_inj [IsLeftCancelAdd α] (hx : x ≠ ⊥) : x + y = x + z ↔ y = z := by
+  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]
+
+lemma add_left_cancel [IsLeftCancelAdd α] (hx : x ≠ ⊥) (h : x + y = x + z) : y = z :=
+  (WithBot.add_left_inj hx).1 h
+
+instance addLeftMono [LE α] [AddLeftMono α] : AddLeftMono (WithBot α) where
+  elim x y z := by
+    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
+
+instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithBot α) where
+  elim x y z := by
+    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using fun _ ↦ by gcongr
+
+instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithBot α) where
+  elim x y z := by
+    cases x <;> cases y <;> cases z <;> simp [← coe_add]; simpa using lt_of_add_lt_add_left
+
+instance addRightReflectLT [LT α] [AddRightReflectLT α] : AddRightReflectLT (WithBot α) where
+  elim x y z := by
+    cases x <;> cases y <;> cases z <;> simp [← coe_add, swap]; simpa using lt_of_add_lt_add_right
+
+protected lemma le_of_add_le_add_left [LE α] [AddLeftReflectLE α] (hx : x ≠ ⊥) :
+    x + y ≤ x + z → y ≤ z := by
+  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]; simpa using le_of_add_le_add_left
+
+protected lemma le_of_add_le_add_right [LE α] [AddRightReflectLE α] (hz : z ≠ ⊥) :
+    x + z ≤ y + z → x ≤ y := by
+  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]; simpa using le_of_add_le_add_right
+
+protected lemma add_lt_add_left [LT α] [AddLeftStrictMono α] (hx : x ≠ ⊥) :
+    y < z → x + y < x + z := by
+  lift x to α using hx; cases y <;> cases z <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
+
+protected lemma add_lt_add_right [LT α] [AddRightStrictMono α] (hz : z ≠ ⊥) :
+    x < y → x + z < y + z := by
+  lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
+
+protected lemma add_le_add_iff_left [LE α] [AddLeftMono α] [AddLeftReflectLE α] (hx : x ≠ ⊥) :
+    x + y ≤ x + z ↔ y ≤ z := ⟨WithBot.le_of_add_le_add_left hx, fun _ ↦ by gcongr⟩
+
+protected lemma add_le_add_iff_right [LE α] [AddRightMono α] [AddRightReflectLE α] (hz : z ≠ ⊥) :
+    x + z ≤ y + z ↔ x ≤ y := ⟨WithBot.le_of_add_le_add_right hz, fun _ ↦ by gcongr⟩
+
+protected lemma add_lt_add_iff_left [LT α] [AddLeftStrictMono α] [AddLeftReflectLT α] (hx : x ≠ ⊥) :
+    x + y < x + z ↔ y < z := ⟨lt_of_add_lt_add_left, WithBot.add_lt_add_left hx⟩
+
+protected lemma add_lt_add_iff_right [LT α] [AddRightStrictMono α] [AddRightReflectLT α]
+    (hz : z ≠ ⊥) : x + z < y + z ↔ x < y := ⟨lt_of_add_lt_add_right, WithBot.add_lt_add_right hz⟩
+
+protected theorem add_lt_add_of_le_of_lt [Preorder α] [AddLeftStrictMono α]
+    [AddRightMono α] (hw : w ≠ ⊥) (hwy : w ≤ y) (hxz : x < z) :
+    w + x < y + z :=
+  (WithBot.add_lt_add_left hw hxz).trans_le <| by gcongr
+
+protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
+    [AddRightStrictMono α] (hx : x ≠ ⊥) (hwy : w < y) (hxz : x ≤ z) :
+    w + x < y + z :=
+  (WithBot.add_lt_add_right hx hwy).trans_le <| by gcongr
+
+lemma addLECancellable_of_ne_bot [LE α] [AddLeftReflectLE α]
+    (hx : x ≠ ⊥) : AddLECancellable x := fun _b _c ↦ WithBot.le_of_add_le_add_left hx
+
+lemma addLECancellable_of_lt_bot [Preorder α] [AddLeftReflectLE α]
+    (hx : x < ⊥) : AddLECancellable x := addLECancellable_of_ne_bot hx.ne
+
+lemma addLECancellable_coe [LE α] [AddLeftReflectLE α] (a : α) :
+    AddLECancellable (a : WithBot α) := addLECancellable_of_ne_bot coe_ne_bot
+
+lemma addLECancellable_iff_ne_bot [Nonempty α] [Preorder α]
+    [AddLeftReflectLE α] : AddLECancellable x ↔ x ≠ ⊥ where
+  mp := by rintro h rfl; exact (bot_lt_coe <| Classical.arbitrary _).not_ge <| h <| by simp
+  mpr := addLECancellable_of_ne_bot
+
+/--
+Addition in `WithBot (WithTop α)` is right cancellative provided the element
+being cancelled is not `⊤` or `⊥`.
+-/
+lemma add_le_add_iff_right' {α : Type*} [Add α] [LE α]
+    [AddRightMono α] [AddRightReflectLE α]
+    {a b c : WithBot (WithTop α)} (hc : c ≠ ⊥) (hc' : c ≠ ⊤) :
+    a + c ≤ b + c ↔ a ≤ b := by
+  induction a <;> induction b <;> induction c <;> norm_cast at * <;>
+    aesop (add simp WithTop.add_le_add_iff_right)
+
+--  There is no `WithBot.map_mul_of_mulHom`, since `WithBot` does not have a multiplication.
+@[simp]
+protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
+    (f : F) (a b : WithBot α) :
+    (a + b).map f = a.map f + b.map f := by
+  induction a
+  · exact (bot_add _).symm
+  · induction b
+    · exact (add_bot _).symm
+    · rw [map_coe, map_coe, ← coe_add, ← coe_add, ← map_add]
+      rfl
+
+end Add
 
 instance AddSemigroup [AddSemigroup α] : AddSemigroup (WithBot α) :=
   WithTop.addSemigroup
@@ -495,23 +593,36 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
 
 @[simp] lemma bot_ne_natCast (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
 
-@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
-@[deprecated (since := "2024-04-05")] alias nat_ne_bot := natCast_ne_bot
-@[deprecated (since := "2024-04-05")] alias bot_ne_nat := bot_ne_natCast
-
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : α) : WithBot α) = OfNat.ofNat n := rfl
+    ((ofNat(n) : α) : WithBot α) = ofNat(n) := rfl
 @[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
-    (m : WithBot α) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n :=
+    (m : WithBot α) = ofNat(n) ↔ m = ofNat(n) :=
   coe_eq_coe
 @[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
-    no_index (OfNat.ofNat n) = (m : WithBot α) ↔ OfNat.ofNat n = m :=
+    ofNat(n) = (m : WithBot α) ↔ ofNat(n) = m :=
   coe_eq_coe
-@[simp] lemma ofNat_ne_bot (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n : WithBot α) ≠ ⊥ :=
+@[simp] lemma ofNat_ne_bot (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : WithBot α) ≠ ⊥ :=
   natCast_ne_bot n
-@[simp] lemma bot_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊥ : WithBot α) ≠ no_index (OfNat.ofNat n) :=
+@[simp] lemma bot_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊥ : WithBot α) ≠ ofNat(n) :=
   bot_ne_natCast n
+
+@[simp] lemma map_ofNat {f : α → β} (n : ℕ) [n.AtLeastTwo] :
+    WithBot.map f (ofNat(n) : WithBot α) = f ofNat(n) := map_coe f n
+
+@[simp] lemma map_natCast {f : α → β} (n : ℕ) :
+    WithBot.map f (n : WithBot α) = f n := map_coe f n
+
+lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
+    a.map f = ofNat(n) ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma ofNat_eq_map_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
+    ofNat(n) = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
+
+lemma map_eq_natCast_iff {f : β → α} {n : ℕ} {a : WithBot β} :
+    a.map f = n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma natCast_eq_map_iff {f : β → α} {n : ℕ} {a : WithBot β} :
+    n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
 
 end AddMonoidWithOne
 
@@ -521,137 +632,26 @@ instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
   WithTop.addCommMonoidWithOne
 
-section Add
-
-variable [Add α] {a b c d : WithBot α} {x y : α}
-
-@[simp, norm_cast]
-theorem coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
-  rfl
-
-@[simp]
-theorem bot_add (a : WithBot α) : ⊥ + a = ⊥ :=
-  rfl
-
-@[simp]
-theorem add_bot (a : WithBot α) : a + ⊥ = ⊥ := by cases a <;> rfl
-
-@[simp]
-theorem add_eq_bot : a + b = ⊥ ↔ a = ⊥ ∨ b = ⊥ :=
-  WithTop.add_eq_top
-
-theorem add_ne_bot : a + b ≠ ⊥ ↔ a ≠ ⊥ ∧ b ≠ ⊥ :=
-  WithTop.add_ne_top
-
-theorem bot_lt_add [LT α] {a b : WithBot α} : ⊥ < a + b ↔ ⊥ < a ∧ ⊥ < b :=
-  WithTop.add_lt_top (α := αᵒᵈ)
-
-theorem add_eq_coe : a + b = x ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = x :=
-  WithTop.add_eq_coe
-
-theorem add_coe_eq_bot_iff : a + y = ⊥ ↔ a = ⊥ :=
-  WithTop.add_coe_eq_top_iff
-
-theorem coe_add_eq_bot_iff : ↑x + b = ⊥ ↔ b = ⊥ :=
-  WithTop.coe_add_eq_top_iff
-
-theorem add_right_cancel_iff [IsRightCancelAdd α] (ha : a ≠ ⊥) : b + a = c + a ↔ b = c :=
-  WithTop.add_right_cancel_iff ha
-
-theorem add_right_cancel [IsRightCancelAdd α] (ha : a ≠ ⊥) (h : b + a = c + a) : b = c :=
-  WithTop.add_right_cancel ha h
-
-theorem add_left_cancel_iff [IsLeftCancelAdd α] (ha : a ≠ ⊥) : a + b = a + c ↔ b = c :=
-  WithTop.add_left_cancel_iff ha
-
-theorem add_left_cancel [IsLeftCancelAdd α] (ha : a ≠ ⊥) (h : a + b = a + c) : b = c :=
-  WithTop.add_left_cancel ha h
-
--- There is no `WithBot.map_mul_of_mulHom`, since `WithBot` does not have a multiplication.
-@[simp]
-protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
-    (f : F) (a b : WithBot α) :
-    (a + b).map f = a.map f + b.map f :=
-  WithTop.map_add f a b
-
 /-- A version of `WithBot.map` for `OneHom`s. -/
-@[to_additive (attr := simps (config := .asFn))
-  "A version of `WithBot.map` for `ZeroHom`s"]
+@[to_additive (attr := simps -fullyApplied)
+  /-- A version of `WithBot.map` for `ZeroHom`s -/]
 protected def _root_.OneHom.withBotMap {M N : Type*} [One M] [One N] (f : OneHom M N) :
     OneHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f
   map_one' := by rw [WithBot.map_one, map_one, coe_one]
 
 /-- A version of `WithBot.map` for `AddHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddHom.withBotMap {M N : Type*} [Add M] [Add N] (f : AddHom M N) :
     AddHom (WithBot M) (WithBot N) where
   toFun := WithBot.map f
   map_add' := WithBot.map_add f
 
 /-- A version of `WithBot.map` for `AddMonoidHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [AddZeroClass N]
     (f : M →+ N) : WithBot M →+ WithBot N :=
   { ZeroHom.withBotMap f.toZeroHom, AddHom.withBotMap f.toAddHom with toFun := WithBot.map f }
-
-variable [Preorder α]
-
-instance addLeftMono [AddLeftMono α] : AddLeftMono (WithBot α) :=
-  OrderDual.addLeftMono (α := WithTop αᵒᵈ)
-
-instance addRightMono [AddRightMono α] : AddRightMono (WithBot α) :=
-  OrderDual.addRightMono (α := WithTop αᵒᵈ)
-
-instance addLeftReflectLT [AddLeftReflectLT α] : AddLeftReflectLT (WithBot α) :=
-  OrderDual.addLeftReflectLT (α := WithTop αᵒᵈ)
-
-instance addRightReflectLT [AddRightReflectLT α] : AddRightReflectLT (WithBot α) :=
-  OrderDual.addRightReflectLT (α := WithTop αᵒᵈ)
-
-protected theorem le_of_add_le_add_left [AddLeftReflectLE α] (ha : a ≠ ⊥)
-    (h : a + b ≤ a + c) : b ≤ c :=
-  WithTop.le_of_add_le_add_left (α := αᵒᵈ) ha h
-
-protected theorem le_of_add_le_add_right [AddRightReflectLE α]
-    (ha : a ≠ ⊥) (h : b + a ≤ c + a) : b ≤ c :=
-  WithTop.le_of_add_le_add_right (α := αᵒᵈ) ha h
-
-protected theorem add_lt_add_left [AddLeftStrictMono α] (ha : a ≠ ⊥) (h : b < c) :
-    a + b < a + c :=
-  WithTop.add_lt_add_left (α := αᵒᵈ) ha h
-
-protected theorem add_lt_add_right [AddRightStrictMono α] (ha : a ≠ ⊥)
-    (h : b < c) : b + a < c + a :=
-  WithTop.add_lt_add_right (α := αᵒᵈ) ha h
-
-protected theorem add_le_add_iff_left [AddLeftMono α]
-    [AddLeftReflectLE α] (ha : a ≠ ⊥) : a + b ≤ a + c ↔ b ≤ c :=
-  ⟨WithBot.le_of_add_le_add_left ha, fun h => add_le_add_left h a⟩
-
-protected theorem add_le_add_iff_right [AddRightMono α]
-    [AddRightReflectLE α] (ha : a ≠ ⊥) : b + a ≤ c + a ↔ b ≤ c :=
-  ⟨WithBot.le_of_add_le_add_right ha, fun h => add_le_add_right h a⟩
-
-protected theorem add_lt_add_iff_left [AddLeftStrictMono α]
-    [AddLeftReflectLT α] (ha : a ≠ ⊥) : a + b < a + c ↔ b < c :=
-  ⟨lt_of_add_lt_add_left, WithBot.add_lt_add_left ha⟩
-
-protected theorem add_lt_add_iff_right [AddRightStrictMono α]
-    [AddRightReflectLT α] (ha : a ≠ ⊥) : b + a < c + a ↔ b < c :=
-  ⟨lt_of_add_lt_add_right, WithBot.add_lt_add_right ha⟩
-
-protected theorem add_lt_add_of_le_of_lt [AddLeftStrictMono α]
-    [AddRightMono α] (hb : b ≠ ⊥) (hab : a ≤ b) (hcd : c < d) :
-    a + c < b + d :=
-  WithTop.add_lt_add_of_le_of_lt (α := αᵒᵈ) hb hab hcd
-
-protected theorem add_lt_add_of_lt_of_le [AddLeftMono α]
-    [AddRightStrictMono α] (hd : d ≠ ⊥) (hab : a < b) (hcd : c ≤ d) :
-    a + c < b + d :=
-  WithTop.add_lt_add_of_lt_of_le (α := αᵒᵈ) hd hab hcd
-
-end Add
 
 -- instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) :=
 --   { WithBot.partialOrder, WithBot.addCommMonoid with

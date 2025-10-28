@@ -5,7 +5,8 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
 # Topology on `TrivSqZeroExt R M`
@@ -57,28 +58,22 @@ nonrec theorem continuous_snd : Continuous (snd : tsze R M → M) :=
   continuous_snd
 
 theorem continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
-  continuous_id.prod_mk continuous_const
+  continuous_id.prodMk continuous_const
 
 theorem continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
-  continuous_const.prod_mk continuous_id
+  continuous_const.prodMk continuous_id
 
 theorem IsEmbedding.inl [Zero M] : IsEmbedding (inl : R → tsze R M) :=
   .of_comp continuous_inl continuous_fst .id
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_inl := IsEmbedding.inl
-
 theorem IsEmbedding.inr [Zero R] : IsEmbedding (inr : M → tsze R M) :=
   .of_comp continuous_inr continuous_snd .id
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_inr := IsEmbedding.inr
 
 variable (R M)
 
 /-- `TrivSqZeroExt.fst` as a continuous linear map. -/
 @[simps]
-def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] R :=
+def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : StrongDual R (tsze R M) :=
   { ContinuousLinearMap.fst R R M with toFun := fst }
 
 /-- `TrivSqZeroExt.snd` as a continuous linear map. -/
@@ -105,7 +100,7 @@ instance [Add R] [Add M] [ContinuousAdd R] [ContinuousAdd M] : ContinuousAdd (ts
 
 instance [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousMul R] [ContinuousSMul R M]
     [ContinuousSMul Rᵐᵒᵖ M] [ContinuousAdd M] : ContinuousMul (tsze R M) :=
-  ⟨((continuous_fst.comp continuous_fst).mul (continuous_fst.comp continuous_snd)).prod_mk <|
+  ⟨((continuous_fst.comp continuous_fst).mul (continuous_fst.comp continuous_snd)).prodMk <|
       ((continuous_fst.comp continuous_fst).smul (continuous_snd.comp continuous_snd)).add
         ((MulOpposite.continuous_op.comp <| continuous_fst.comp <| continuous_snd).smul
           (continuous_snd.comp continuous_fst))⟩
@@ -114,14 +109,14 @@ instance [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (ts
   Prod.continuousNeg
 
 /-- This is not an instance due to complaints by the `fails_quickly` linter. At any rate, we only
-really care about the `TopologicalRing` instance below. -/
+really care about the `IsTopologicalRing` instance below. -/
 theorem topologicalSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
-    [TopologicalSemiring R] [ContinuousAdd M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
-    TopologicalSemiring (tsze R M) := { }
+    [IsTopologicalSemiring R] [ContinuousAdd M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
+    IsTopologicalSemiring (tsze R M) := { }
 
-instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [TopologicalRing R]
-    [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
-    TopologicalRing (tsze R M) where
+instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsTopologicalRing R]
+    [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
+    IsTopologicalRing (tsze R M) where
 
 instance [SMul S R] [SMul S M] [ContinuousConstSMul S R] [ContinuousConstSMul S M] :
     ContinuousConstSMul S (tsze R M) :=
@@ -161,9 +156,9 @@ instance instUniformSpace : UniformSpace (tsze R M) where
 instance [CompleteSpace R] [CompleteSpace M] : CompleteSpace (tsze R M) :=
   inferInstanceAs <| CompleteSpace (R × M)
 
-instance [AddGroup R] [AddGroup M] [UniformAddGroup R] [UniformAddGroup M] :
-    UniformAddGroup (tsze R M) :=
-  inferInstanceAs <| UniformAddGroup (R × M)
+instance [AddGroup R] [AddGroup M] [IsUniformAddGroup R] [IsUniformAddGroup M] :
+    IsUniformAddGroup (tsze R M) :=
+  inferInstanceAs <| IsUniformAddGroup (R × M)
 
 open Uniformity
 
@@ -179,10 +174,10 @@ nonrec theorem uniformContinuous_snd : UniformContinuous (snd : tsze R M → M) 
   uniformContinuous_snd
 
 theorem uniformContinuous_inl [Zero M] : UniformContinuous (inl : R → tsze R M) :=
-  uniformContinuous_id.prod_mk uniformContinuous_const
+  uniformContinuous_id.prodMk uniformContinuous_const
 
 theorem uniformContinuous_inr [Zero R] : UniformContinuous (inr : M → tsze R M) :=
-  uniformContinuous_const.prod_mk uniformContinuous_id
+  uniformContinuous_const.prodMk uniformContinuous_id
 
 end Uniformity
 

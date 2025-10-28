@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Comma.Arrow
 /-!
 # Commutative squares
 
-This file provide an API for commutative squares in categories.
+This file provides an API for commutative squares in categories.
 If `top`, `left`, `right` and `bottom` are four morphisms which are the edges
 of a square, `CommSq top left right bottom` is the predicate that this
 square is commutative.
@@ -41,7 +41,7 @@ is a commuting square.
 -/
 structure CommSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) : Prop where
   /-- The square commutes. -/
-  w : f ≫ h = g ≫ i
+  w : f ≫ h = g ≫ i := by cat_disch
 
 attribute [reassoc] CommSq.w
 
@@ -153,15 +153,14 @@ variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
 The datum of a lift in a commutative square, i.e. an up-right-diagonal
 morphism which makes both triangles commute. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 @[ext]
 structure LiftStruct (sq : CommSq f i p g) where
   /-- The lift. -/
   l : B ⟶ X
   /-- The upper left triangle commutes. -/
-  fac_left : i ≫ l = f
+  fac_left : i ≫ l = f := by cat_disch
   /-- The lower right triangle commutes. -/
-  fac_right : l ≫ p = g
+  fac_right : l ≫ p = g := by cat_disch
 
 namespace LiftStruct
 
@@ -188,17 +187,17 @@ in the opposite category. -/
 def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op where
   toFun := op
   invFun := unop
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
-/-- Equivalences of `LiftStruct` for a square in the oppositive category and
+/-- Equivalences of `LiftStruct` for a square in the opposite category and
 the corresponding square in the original category. -/
 def unopEquiv {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
     (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.unop where
   toFun := unop
   invFun := op
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 end LiftStruct
 
@@ -226,12 +225,9 @@ class HasLift : Prop where
 
 namespace HasLift
 
-variable {sq}
-
+variable {sq} in
 theorem mk' (l : sq.LiftStruct) : HasLift sq :=
   ⟨Nonempty.intro l⟩
-
-variable (sq)
 
 theorem iff : HasLift sq ↔ Nonempty sq.LiftStruct := by
   constructor

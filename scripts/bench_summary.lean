@@ -54,7 +54,7 @@ def formatPercent (reldiff : Float) : String :=
   let reldiff := reldiff * 10 ^ 4
   let sgn : Int := if reldiff < 0 then -1 else 1
   let reldiff := (.ofInt sgn) * reldiff
-  let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.val) 0 2
+  let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.toFin) 0 2
   -- the `if ... then ... else ...` makes sure that the output includes leading `0`s
   s!"({sgn}{intDigs}.{if decDigs < 10 then "0" else ""}{decDigs}%)"
 
@@ -87,7 +87,7 @@ def summary (bc : Bench) : String :=
 /--
 `toTable bcs` formats an array of `Bench`es into a markdown table whose columns are
 the file name, the absolute change in instruction counts and the relative change as a percentage.
-A typical entry may look like ``|`Mathlib.Analysis.Seminorm`|+2.509⬝10⁹|(+1.41%)|``.
+A typical entry may look like ``|`Mathlib/Analysis/Seminorm.lean`|+2.509⬝10⁹|(+1.41%)|``.
 -/
 def toTable (bcs : Array Bench) : String :=
   let header := "|File|Instructions|%|\n|-|-:|:-:|"
@@ -147,7 +147,9 @@ open Lean Elab Command in
 as a comment to a pull request.  It takes as input
 * the number `PR` and the name `repo` as a `String` containing the relevant pull-request
   (it reads and posts comments there)
-* the optional `jobID` string for reporting the action that produced the output
+* the optional `jobID` numeral for reporting the action that produced the output
+  (`jobID` is a natural number, even though it gets converted to a `String` -- this is mostly
+  due to the fact that it is easier to get CI to pass a number, than a string with quotations)
 * the `String` `tempFile` of a temporary file where the command stores transient information.
 
 The code itself interfaces with the shell to retrieve and process json data and eventually
@@ -163,10 +165,9 @@ Here is a summary of the steps:
 * process the final string to produce a summary (using `benchOutput`),
 * finally post the resulting output to the PR (using `gh pr comment ...`).
 -/
-def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : String := "")
+def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : Nat := 0)
     (author : String := "leanprover-bot") (tempFile : String := "benchOutput.json") :
     CommandElabM Unit := do
-  let job_msg := s!"\n[CI run](https://github.com/{repo}/actions/runs/{jobID})"
   let PR := s!"{PR}"
   let jq := s!".comments | last | select(.author.login==\"{author}\") | .body"
 
@@ -188,6 +189,8 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : String := "")
     logInfo m!"Found\nsource: '{source}'\ntarget: '{target}'\ninstead of two commit hashes."
     return
   dbg_trace s!"Using commits\nsource: '{source}'\ntarget: '{target}'\n"
+
+  let job_msg := s!"\n[CI run](https://github.com/{repo}/actions/runs/{jobID}) [Lakeprof report](https://speed.lean-lang.org/mathlib4-out/{target}/)"
 
   -- retrieve the data from the speed-center
   let curlSpeedCenter : IO.Process.SpawnArgs :=

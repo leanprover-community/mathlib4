@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Simon Hudon, Sébastien Gouëzel, Kim Morrison, Thomas 
 import Lean.Elab.Eval
 import Lean.Elab.Tactic.BuiltinTactic
 import Mathlib.Init
+import Lean.Meta.Tactic.TryThis
 
 /-!
 # Success If Fail With Message
@@ -16,7 +17,7 @@ It's mostly useful in tests, where we want to make sure that tactics fail in cer
 circumstances.
 -/
 
-open Lean Elab Tactic
+open Lean Meta Elab Tactic
 
 namespace Mathlib.Tactic
 
@@ -28,9 +29,9 @@ syntax (name := successIfFailWithMsg) "success_if_fail_with_msg " term:max tacti
 
 /-- Evaluates `tacs` and succeeds only if `tacs` both fails and throws an error equal (as a string)
 to `msg`. -/
-def successIfFailWithMessage {s α : Type} {m : Type → Type}
-    [Monad m] [MonadLiftT IO m] [MonadBacktrack s m] [MonadError m]
-    (msg : String) (tacs : m α) (ref : Option Syntax := none) : m Unit := do
+def successIfFailWithMessage {s α : Type} {m : Type → Type} [Monad m] [MonadLiftT BaseIO m]
+    [MonadLiftT CoreM m] [MonadBacktrack s m] [MonadError m] (msg : String) (tacs : m α)
+    (msgref : Option Syntax := none) (ref : Option Syntax := none) : m Unit := do
   let s ← saveState
   let err ←
     try _ ← tacs; pure none
@@ -38,6 +39,12 @@ def successIfFailWithMessage {s α : Type} {m : Type → Type}
   restoreState s
   if let some err := err then
     unless msg.trim == err.trim do
+      if let some msgref := msgref then
+        let suggestion : TryThis.Suggestion :=
+          { suggestion := s!"\"{err.trim}\""
+            toCodeActionTitle? := some (fun _ => "Update with tactic error message")}
+        TryThis.addSuggestion msgref suggestion (header := "Update with tactic error message: ")
+
       if let some ref := ref then
         throwErrorAt ref "tactic '{ref}' failed, but got different error message:\n\n{err}"
       else
@@ -51,7 +58,7 @@ def successIfFailWithMessage {s α : Type} {m : Type → Type}
 elab_rules : tactic
 | `(tactic| success_if_fail_with_msg $msg:term $tacs:tacticSeq) =>
   Term.withoutErrToSorry <| withoutRecover do
-    let msg ← unsafe Term.evalTerm String (.const ``String []) msg
-    successIfFailWithMessage msg (evalTacticSeq tacs) tacs
+    let msg' ← unsafe Term.evalTerm String (.const ``String []) msg
+    successIfFailWithMessage msg' (evalTacticSeq tacs) msg tacs
 
 end Mathlib.Tactic

@@ -16,7 +16,6 @@ import Mathlib.Order.Interval.Set.Disjoint
 
 assert_not_exists Finset
 
-open scoped Classical
 open Pointwise CauSeq
 
 namespace Real
@@ -43,7 +42,7 @@ theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i,
   ⟨isCauSeq_iff_lift.2 (CauSeq.of_near _ (const abs x) h),
     sub_eq_zero.1 <|
       abs_eq_zero.1 <|
-        (eq_of_le_of_forall_le_of_dense (abs_nonneg _)) fun _ε ε0 =>
+        (eq_of_le_of_forall_lt_imp_le_of_dense (abs_nonneg _)) fun _ε ε0 =>
           mk_near_of_forall_near <| (h _ ε0).imp fun _i h j ij => le_of_lt (h j ij)⟩
 
 theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ, (z : ℝ) ≤ x → z ≤ ub :=
@@ -56,7 +55,7 @@ theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ,
 theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x := by
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
   have : ∀ d : ℕ, BddAbove { m : ℤ | ∃ y ∈ s, (m : ℝ) ≤ y * d } := by
-    cases' exists_int_gt U with k hk
+    obtain ⟨k, hk⟩ := exists_int_gt U
     refine fun d => ⟨k * d, fun z h => ?_⟩
     rcases h with ⟨y, yS, hy⟩
     refine Int.cast_le.1 (hy.trans ?_)
@@ -89,8 +88,8 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     simpa using sub_lt_iff_lt_add'.2 (lt_of_le_of_lt hy <| sub_lt_iff_lt_add.1 <| hf₂ _ k0 _ yS)
   let g : CauSeq ℚ abs := ⟨fun n => f n / n, hg⟩
   refine ⟨mk g, ⟨fun x xS => ?_, fun y h => ?_⟩⟩
-  · refine le_of_forall_ge_of_dense fun z xz => ?_
-    cases' exists_nat_gt (x - z)⁻¹ with K hK
+  · refine le_of_forall_lt_imp_le_of_dense fun z xz => ?_
+    obtain ⟨K, hK⟩ := exists_nat_gt (x - z)⁻¹
     refine le_mk_of_forall_le ⟨K, fun n nK => ?_⟩
     replace xz := sub_pos.2 xz
     replace hK := hK.le.trans (Nat.cast_le.2 nK)
@@ -111,9 +110,11 @@ theorem exists_isGLB (hne : s.Nonempty) (hbdd : BddBelow s) : ∃ x, IsGLB s x :
   rw [← isLUB_neg]
   exact Classical.choose_spec (Real.exists_isLUB hne' hbdd')
 
+open scoped Classical in
 noncomputable instance : SupSet ℝ :=
   ⟨fun s => if h : s.Nonempty ∧ BddAbove s then Classical.choose (exists_isLUB h.1 h.2) else 0⟩
 
+open scoped Classical in
 theorem sSup_def (s : Set ℝ) :
     sSup s = if h : s.Nonempty ∧ BddAbove s then Classical.choose (exists_isLUB h.1 h.2) else 0 :=
   rfl
@@ -130,8 +131,6 @@ theorem sInf_def (s : Set ℝ) : sInf s = -sSup (-s) := rfl
 protected theorem isGLB_sInf (h₁ : s.Nonempty) (h₂ : BddBelow s) : IsGLB s (sInf s) := by
   rw [sInf_def, ← isLUB_neg', neg_neg]
   exact Real.isLUB_sSup h₁.neg h₂.neg
-
-@[deprecated (since := "2024-10-02")] alias is_glb_sInf := isGLB_sInf
 
 noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
   __ := Real.linearOrder
@@ -168,6 +167,9 @@ theorem le_sSup_iff (h : BddAbove s) (h' : s.Nonempty) :
 @[simp]
 theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
   dif_neg <| by simp
+
+theorem sInf_univ : sInf (@Set.univ ℝ) = 0 := by
+  simp [sInf_def]
 
 @[simp] lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
   dsimp [iSup]
@@ -253,6 +255,7 @@ lemma iInf_nonneg (hf : ∀ i, 0 ≤ f i) : 0 ≤ iInf f := Real.le_iInf hf le_r
 /-- As `sSup s = 0` when `s` is a set of reals that's unbounded above, it suffices to show that `s`
 contains a nonnegative element to show that `0 ≤ sSup s`. -/
 lemma sSup_nonneg' (hs : ∃ x ∈ s, 0 ≤ x) : 0 ≤ sSup s := by
+  classical
   obtain ⟨x, hxs, hx⟩ := hs
   exact dite _ (fun h ↦ le_csSup_of_le h hxs hx) fun h ↦ (sSup_of_not_bddAbove h).ge
 
@@ -263,6 +266,7 @@ lemma iSup_nonneg' (hf : ∃ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i := sSup_nonneg' <|
 /-- As `sInf s = 0` when `s` is a set of reals that's unbounded below, it suffices to show that `s`
 contains a nonpositive element to show that `sInf s ≤ 0`. -/
 lemma sInf_nonpos' (hs : ∃ x ∈ s, x ≤ 0) : sInf s ≤ 0 := by
+  classical
   obtain ⟨x, hxs, hx⟩ := hs
   exact dite _ (fun h ↦ csInf_le_of_le h hxs hx) fun h ↦ (sInf_of_not_bddBelow h).le
 
@@ -305,12 +309,12 @@ theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
   have ub : ∃ x, ∀ y ∈ s, y ≤ x := (exists_gt f).imp ub'
   refine ⟨sSup s, ((lt_total _ _).resolve_left fun h => ?_).resolve_right fun h => ?_⟩
   · rcases h with ⟨ε, ε0, i, ih⟩
-    refine (csSup_le lb (ub' _ ?_)).not_lt (sub_lt_self _ (half_pos ε0))
+    refine (csSup_le lb (ub' _ ?_)).not_gt (sub_lt_self _ (half_pos ε0))
     refine ⟨_, half_pos ε0, i, fun j ij => ?_⟩
     rw [sub_apply, const_apply, sub_right_comm, le_sub_iff_add_le, add_halves]
     exact ih _ ij
   · rcases h with ⟨ε, ε0, i, ih⟩
-    refine (le_csSup ub ?_).not_lt ((lt_add_iff_pos_left _).2 (half_pos ε0))
+    refine (le_csSup ub ?_).not_gt ((lt_add_iff_pos_left _).2 (half_pos ε0))
     refine ⟨_, half_pos ε0, i, fun j ij => ?_⟩
     rw [sub_apply, const_apply, add_comm, ← sub_sub, le_sub_iff_add_le, add_halves]
     exact ih _ ij
@@ -373,8 +377,7 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     rw [← q.num_div_den, one_lt_div (by positivity)] at hq
     rw [q.mul_den_eq_num]
     norm_cast at hq ⊢
-    rw [le_tsub_iff_left hq.le]
-    exact hq
+    cutsat
   use 2 * k ^ 2
   calc
     ((2 * k ^ 2 : ℕ) + 1 : ℝ) ≤ 2 ^ (2 * k) := mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _
@@ -382,5 +385,12 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     _ ≤ ((1 / k + 1) ^ k : ℝ) ^ (2 * k) := by gcongr; exact mul_add_one_le_add_one_pow (by simp) _
     _ = (1 / k + 1 : ℝ) ^ (2 * k ^ 2) := by rw [← pow_mul, mul_left_comm, sq]
     _ < a ^ (2 * k ^ 2) := by gcongr
+
+lemma exists_nat_pos_inv_lt {b : ℝ} (hb : 0 < b) :
+    ∃ (n : ℕ), 0 < n ∧ (n : ℝ)⁻¹ < b := by
+  refine (exists_nat_gt b⁻¹).imp fun k hk ↦ ?_
+  have := (inv_pos_of_pos hb).trans hk
+  refine ⟨Nat.cast_pos.mp this, ?_⟩
+  rwa [inv_lt_comm₀ this hb]
 
 end Real

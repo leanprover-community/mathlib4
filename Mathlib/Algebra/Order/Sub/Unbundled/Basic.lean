@@ -24,17 +24,17 @@ variable [AddCommSemigroup α] [PartialOrder α] [ExistsAddOfLE α]
 theorem add_tsub_cancel_of_le (h : a ≤ b) : a + (b - a) = b := by
   refine le_antisymm ?_ le_add_tsub
   obtain ⟨c, rfl⟩ := exists_add_of_le h
-  exact add_le_add_left add_tsub_le_left a
+  grw [add_tsub_le_left]
 
 theorem tsub_add_cancel_of_le (h : a ≤ b) : b - a + a = b := by
   rw [add_comm]
   exact add_tsub_cancel_of_le h
 
-theorem add_le_of_le_tsub_right_of_le (h : b ≤ c) (h2 : a ≤ c - b) : a + b ≤ c :=
-  (add_le_add_right h2 b).trans_eq <| tsub_add_cancel_of_le h
+theorem add_le_of_le_tsub_right_of_le (h : b ≤ c) (h2 : a ≤ c - b) : a + b ≤ c := by
+  grw [h2, tsub_add_cancel_of_le h]
 
-theorem add_le_of_le_tsub_left_of_le (h : a ≤ c) (h2 : b ≤ c - a) : a + b ≤ c :=
-  (add_le_add_left h2 a).trans_eq <| add_tsub_cancel_of_le h
+theorem add_le_of_le_tsub_left_of_le (h : a ≤ c) (h2 : b ≤ c - a) : a + b ≤ c := by
+  grw [h2, add_tsub_cancel_of_le h]
 
 theorem tsub_le_tsub_iff_right (h : c ≤ b) : a - c ≤ b - c ↔ a ≤ b := by
   rw [tsub_le_iff_right, tsub_add_cancel_of_le h]
@@ -150,6 +150,11 @@ protected theorem tsub_lt_tsub_iff_left_of_le_of_le [AddLeftReflectLT α]
   ⟨hb.lt_of_tsub_lt_tsub_left_of_le h₂, hab.tsub_lt_tsub_left_of_le h₁⟩
 
 @[simp]
+protected lemma add_add_tsub_cancel (hc : AddLECancellable c) (hcb : c ≤ b) :
+    a + c + (b - c) = a + b := by
+  rw [← hc.add_tsub_assoc_of_le hcb, add_right_comm, hc.add_tsub_cancel_right]
+
+@[simp]
 protected theorem add_tsub_tsub_cancel (hac : AddLECancellable (a - c)) (h : c ≤ a) :
     a + b - (a - c) = b + c :=
   hac.tsub_eq_of_eq_add <| by rw [add_assoc, add_tsub_cancel_of_le h, add_comm]
@@ -234,6 +239,10 @@ theorem tsub_lt_tsub_iff_left_of_le_of_le [AddLeftReflectLT α] (h₁ : b ≤ a)
     (h₂ : c ≤ a) : a - b < a - c ↔ c < b :=
   Contravariant.AddLECancellable.tsub_lt_tsub_iff_left_of_le_of_le Contravariant.AddLECancellable h₁
     h₂
+
+@[simp]
+lemma add_add_tsub_cancel (hcb : c ≤ b) : a + c + (b - c) = a + b :=
+  Contravariant.AddLECancellable.add_add_tsub_cancel hcb
 
 @[simp]
 theorem add_tsub_tsub_cancel (h : c ≤ a) : a + b - (a - c) = b + c :=

@@ -16,7 +16,7 @@ import Mathlib.Data.Vector.Basic
 * arithmetic operations for `SNum`.
 -/
 
-open Mathlib
+open List (Vector)
 
 namespace PosNum
 
@@ -85,7 +85,7 @@ instance : HXor PosNum PosNum Num where hXor := PosNum.lxor
 @[simp] lemma lxor_eq_xor (p q : PosNum) : p.lxor q = p ^^^ q := rfl
 
 /-- `a.testBit n` is `true` iff the `n`-th bit (starting from the LSB) in the binary representation
-      of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
+of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
 def testBit : PosNum → Nat → Bool
   | 1, 0 => true
   | 1, _ => false
@@ -109,9 +109,7 @@ instance : HShiftLeft PosNum Nat PosNum where hShiftLeft := PosNum.shiftl
 
 @[simp] lemma shiftl_eq_shiftLeft (p : PosNum) (n : Nat) : p.shiftl n = p <<< n := rfl
 
-
--- Porting note: `PosNum.shiftl` is defined as tail-recursive in Lean4.
---               This theorem ensures the definition is same to one in Lean3.
+-- This shows that the tail-recursive definition is the same as the more naïve recursion.
 theorem shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), p <<< n.succ = bit0 (p <<< n)
   | _, 0       => rfl
   | p, .succ n => shiftl_succ_eq_bit0_shiftl p.bit0 n
@@ -170,7 +168,7 @@ def lxor : Num → Num → Num
   | p, 0 => p
   | pos p, pos q => p ^^^ q
 
-instance : Xor Num where xor := Num.lxor
+instance : XorOp Num where xor := Num.lxor
 
 @[simp] lemma lxor_eq_xor (p q : Num) : p.lxor q = p ^^^ q := rfl
 
@@ -193,7 +191,7 @@ instance : HShiftRight Num Nat Num where hShiftRight := Num.shiftr
 @[simp] lemma shiftr_eq_shiftRight (p : Num) (n : Nat) : p.shiftr n = p >>> n := rfl
 
 /-- `a.testBit n` is `true` iff the `n`-th bit (starting from the LSB) in the binary representation
-      of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
+of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
 def testBit : Num → Nat → Bool
   | 0, _ => false
   | pos p, n => p.testBit n
@@ -206,12 +204,12 @@ def oneBits : Num → List Nat
 end Num
 
 /-- This is a nonzero (and "non minus one") version of `SNum`.
-    See the documentation of `SNum` for more details. -/
+See the documentation of `SNum` for more details. -/
 inductive NzsNum : Type
   | msb : Bool → NzsNum
   /-- Add a bit at the end of a `NzsNum`. -/
   | bit : Bool → NzsNum → NzsNum
-  deriving DecidableEq  -- Porting note: Removed `deriving has_reflect`.
+  deriving DecidableEq
 
 /-- Alternative representation of integers using a sign bit at the end.
   The convention on sign here is to have the argument to `msb` denote
@@ -230,7 +228,7 @@ inductive NzsNum : Type
 inductive SNum : Type
   | zero : Bool → SNum
   | nz : NzsNum → SNum
-  deriving DecidableEq  -- Porting note: Removed `deriving has_reflect`.
+  deriving DecidableEq
 
 instance : Coe NzsNum SNum :=
   ⟨SNum.nz⟩
@@ -283,13 +281,13 @@ def bit0 : NzsNum → NzsNum :=
 def bit1 : NzsNum → NzsNum :=
   bit true
 
-/-- The `head` of a `NzsNum` is the boolean value of its LSB. -/
+/-- The `head` of a `NzsNum` is the Boolean value of its LSB. -/
 def head : NzsNum → Bool
   | msb b => b
   | b :: _ => b
 
 /-- The `tail` of a `NzsNum` is the `SNum` obtained by removing the LSB.
-      Edge cases: `tail 1 = 0` and `tail (-2) = -1`. -/
+Edge cases: `tail 1 = 0` and `tail (-2) = -1`. -/
 def tail : NzsNum → SNum
   | msb b => SNum.zero (Not b)
   | _ :: p => p
@@ -311,7 +309,7 @@ def not : SNum → SNum
   | zero z => zero (Not z)
   | nz p => ~p
 
--- Porting note: Defined `priority` so that `~1 : SNum` is unambiguous.
+-- Higher `priority` so that `~1 : SNum` is unambiguous.
 @[inherit_doc]
 scoped prefix:100 (priority := default + 1) "~" => not
 
@@ -342,8 +340,7 @@ namespace NzsNum
 
 open SNum
 
-/-- A dependent induction principle for `NzsNum`, with base cases
-      `0 : SNum` and `(-1) : SNum`. -/
+/-- A dependent induction principle for `NzsNum`, with base cases `0 : SNum` and `(-1) : SNum`. -/
 def drec' {C : SNum → Sort*} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) :
     ∀ p : NzsNum, C p
   | msb b => by rw [← bit_one]; exact s b (SNum.zero (Not b)) (z (Not b))
@@ -355,13 +352,13 @@ namespace SNum
 
 open NzsNum
 
-/-- The `head` of a `SNum` is the boolean value of its LSB. -/
+/-- The `head` of a `SNum` is the Boolean value of its LSB. -/
 def head : SNum → Bool
   | zero z => z
   | nz p => p.head
 
 /-- The `tail` of a `SNum` is obtained by removing the LSB.
-      Edge cases: `tail 1 = 0`, `tail (-2) = -1`, `tail 0 = 0` and `tail (-1) = -1`. -/
+Edge cases: `tail 1 = 0`, `tail (-2) = -1`, `tail 0 = 0` and `tail (-1) = -1`. -/
 def tail : SNum → SNum
   | zero z => zero z
   | nz p => p.tail
@@ -376,7 +373,7 @@ def rec' {α} (z : Bool → α) (s : Bool → SNum → α → α) : SNum → α 
   drec' z s
 
 /-- `SNum.testBit n a` is `true` iff the `n`-th bit (starting from the LSB) of `a` is active.
-      If the size of `a` is less than `n`, this evaluates to `false`. -/
+If the size of `a` is less than `n`, this evaluates to `false`. -/
 def testBit : Nat → SNum → Bool
   | 0, p => head p
   | n + 1, p => testBit n (tail p)
@@ -397,7 +394,7 @@ instance : Neg SNum :=
   ⟨SNum.neg⟩
 
 /-- `SNum.czAdd a b n` is `n + a - b` (where `a` and `b` should be read as either 0 or 1).
-      This is useful to implement the carry system in `cAdd`. -/
+This is useful to implement the carry system in `cAdd`. -/
 def czAdd : Bool → Bool → SNum → SNum
   | false, false, p => p
   | false, true, p => pred p
@@ -409,12 +406,12 @@ end SNum
 namespace SNum
 
 /-- `a.bits n` is the vector of the `n` first bits of `a` (starting from the LSB). -/
-def bits : SNum → ∀ n, Mathlib.Vector Bool n
+def bits : SNum → ∀ n, List.Vector Bool n
   | _, 0 => Vector.nil
   | p, n + 1 => head p ::ᵥ bits (tail p) n
 
 /-- `SNum.cAdd n m a` is `n + m + a` (where `a` should be read as either 0 or 1).
-      `a` represents a carry bit. -/
+`a` represents a carry bit. -/
 def cAdd : SNum → SNum → Bool → SNum :=
   rec' (fun a p c ↦ czAdd c a p) fun a p IH ↦
     rec' (fun b c ↦ czAdd c b (a :: p)) fun b q _ c ↦ Bool.xor3 a b c :: IH q (Bool.carry a b c)

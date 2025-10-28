@@ -12,10 +12,10 @@ In this file we prove the Schur-Zassenhaus theorem.
 
 ## Main results
 
-- `exists_right_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
+- `Subgroup.exists_right_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (right) complement of `H`.
-- `exists_left_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
+- `Subgroup.exists_left_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (left) complement of `H`.
 -/
@@ -25,10 +25,10 @@ namespace Subgroup
 
 section SchurZassenhausAbelian
 
-open MulOpposite MulAction Subgroup.leftTransversals MemLeftTransversals
+open MulOpposite MulAction Subgroup.leftTransversals
 
-variable {G : Type*} [Group G] (H : Subgroup G) [IsCommutative H] [FiniteIndex H]
-  (α β : leftTransversals (H : Set G))
+variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteIndex H]
+  (α β : H.LeftTransversal)
 
 /-- The quotient of the transversals of an abelian normal `N` by the `diff` relation. -/
 def QuotientDiff :=
@@ -37,9 +37,8 @@ def QuotientDiff :=
       ⟨fun α => diff_self (MonoidHom.id H) α, fun h => by rw [← diff_inv, h, inv_one],
         fun h h' => by rw [← diff_mul_diff, h, h', one_mul]⟩)
 
-instance : Inhabited H.QuotientDiff := by
-  dsimp [QuotientDiff] -- Porting note: Added `dsimp`
-  infer_instance
+instance : Inhabited H.QuotientDiff :=
+  inferInstanceAs (Inhabited <| Quotient _)
 
 theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     diff (MonoidHom.id H) (g • α) (g • β) =
@@ -52,7 +51,7 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
           hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩
       map_one' := by rw [Subtype.ext_iff, coe_mk, coe_one, mul_one, inv_mul_cancel]
       map_mul' := fun h₁ h₂ => by
-        simp only [Subtype.ext_iff, coe_mk, coe_mul, mul_assoc, mul_inv_cancel_left] }
+        simp only [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left] }
   refine (Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun x ↦ ?_).trans (map_prod ϕ _ _).symm
   simp only [ϕ, smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, mul_inv_rev, mul_assoc,
     MonoidHom.id_apply, toPerm_symm_apply, MonoidHom.coe_mk, OneHom.coe_mk]
@@ -65,7 +64,7 @@ noncomputable instance : MulAction G H.QuotientDiff where
     Quotient.map' (fun α => op g⁻¹ • α) fun α β h =>
       Subtype.ext
         (by
-          rwa [smul_diff_smul', coe_mk, coe_one, mul_eq_one_iff_eq_inv, mul_right_eq_self, ←
+          rwa [smul_diff_smul', coe_mk, coe_one, mul_eq_one_iff_eq_inv, mul_eq_left, ←
             coe_one, ← Subtype.ext_iff])
   mul_smul g₁ g₂ q :=
     Quotient.inductionOn' q fun T =>
@@ -83,7 +82,7 @@ theorem smul_diff' (h : H) :
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
   rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, MulOpposite.unop_op, mul_left_inj,
     ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
-  exact self_eq_mul_right.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
+  exact left_eq_mul.mpr ((QuotientGroup.eq_one_iff _).mpr h.2)
 
 theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
     (h : H) : h • α = α → h = 1 :=
@@ -117,8 +116,6 @@ private theorem exists_right_complement'_of_coprime_aux (hH : Nat.Coprime (Nat.c
 
 end SchurZassenhausAbelian
 
-open scoped Classical
-
 universe u
 
 namespace SchurZassenhausInduction
@@ -139,14 +136,14 @@ variable {G : Type u} [Group G] {N : Subgroup G} [Normal N]
 include h1 h3
 
 /-! We will arrive at a contradiction via the following steps:
- * step 0: `N` (the normal Hall subgroup) is nontrivial.
- * step 1: If `K` is a subgroup of `G` with `K ⊔ N = ⊤`, then `K = ⊤`.
- * step 2: `N` is a minimal normal subgroup, phrased in terms of subgroups of `G`.
- * step 3: `N` is a minimal normal subgroup, phrased in terms of subgroups of `N`.
- * step 4: `p` (`min_fact (Fintype.card N)`) is prime (follows from step0).
- * step 5: `P` (a Sylow `p`-subgroup of `N`) is nontrivial.
- * step 6: `N` is a `p`-group (applies step 1 to the normalizer of `P` in `G`).
- * step 7: `N` is abelian (applies step 3 to the center of `N`).
+* step 0: `N` (the normal Hall subgroup) is nontrivial.
+* step 1: If `K` is a subgroup of `G` with `K ⊔ N = ⊤`, then `K = ⊤`.
+* step 2: `N` is a minimal normal subgroup, phrased in terms of subgroups of `G`.
+* step 3: `N` is a minimal normal subgroup, phrased in terms of subgroups of `N`.
+* step 4: `p` (`min_fact (Fintype.card N)`) is prime (follows from step0).
+* step 5: `P` (a Sylow `p`-subgroup of `N`) is nontrivial.
+* step 6: `N` is a `p`-group (applies step 1 to the normalizer of `P` in `G`).
+* step 7: `N` is abelian (applies step 3 to the center of `N`).
 -/
 
 
@@ -162,8 +159,8 @@ include h2 in
 private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
   contrapose! h3
   have h4 : (N.comap K.subtype).index = N.index := by
-    rw [← N.relindex_top_right, ← hK]
-    exact (relindex_sup_right K N).symm
+    rw [← N.relIndex_top_right, ← hK]
+    exact (relIndex_sup_right K N).symm
   have h5 : Nat.card K < Nat.card G := by
     rw [← K.index_mul_card]
     exact lt_mul_of_one_lt_left Nat.card_pos (one_lt_index_of_ne_top h3)
@@ -172,9 +169,9 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
     exact h1.coprime_dvd_left (card_comap_dvd_of_injective N K.subtype Subtype.coe_injective)
   obtain ⟨H, hH⟩ := h2 K h5 h6
   replace hH : Nat.card (H.map K.subtype) = N.index := by
-    rw [← relindex_bot_left, ← relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
-      relindex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
-      range_subtype, ← relindex_sup_right, hK, relindex_top_right]
+    rw [← relIndex_bot_left, ← relIndex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
+      relIndex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
+      range_subtype, ← relIndex_sup_right, hK, relIndex_top_right]
   have h7 : Nat.card N * Nat.card (H.map K.subtype) = Nat.card G := by
     rw [hH, ← N.index_mul_card, mul_comm]
   have h8 : (Nat.card N).Coprime (Nat.card (H.map K.subtype)) := by
@@ -241,12 +238,12 @@ private theorem step6 : IsPGroup (Nat.card N).minFac N := by
   refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
   haveI : (P.1.map N.subtype).Normal :=
-    normalizer_eq_top.mp (step1 h1 h2 h3 (P.1.map N.subtype).normalizer P.normalizer_sup_eq_top)
+    normalizer_eq_top_iff.mp (step1 h1 h2 h3 (P.map N.subtype).normalizer P.normalizer_sup_eq_top)
   exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
 
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-theorem step7 : IsCommutative N := by
+theorem step7 : IsMulCommutative N := by
   haveI := N.bot_or_nontrivial.resolve_left (step0 h1 h3)
   haveI : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   exact

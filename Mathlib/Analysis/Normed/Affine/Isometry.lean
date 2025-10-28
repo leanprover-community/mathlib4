@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
 import Mathlib.Tactic.FailIfNoProgress
 
@@ -46,7 +47,7 @@ variable (𝕜 : Type*) {V V₁ V₁' V₂ V₃ V₄ : Type*} {P₁ P₁' : Type
   [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P₄] [NormedAddTorsor V₄ P₄]
 
 /-- A `𝕜`-affine isometric embedding of one normed add-torsor over a normed `𝕜`-space into
-another. -/
+another, denoted as `f : P →ᵃⁱ[𝕜] P₂`. -/
 structure AffineIsometry extends P →ᵃ[𝕜] P₂ where
   norm_map : ∀ x : V, ‖linear x‖ = ‖x‖
 
@@ -180,7 +181,7 @@ theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
 def id : P →ᵃⁱ[𝕜] P :=
   ⟨AffineMap.id 𝕜 P, fun _ => rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(id : P →ᵃⁱ[𝕜] P) = _root_.id :=
   rfl
 
@@ -260,14 +261,15 @@ end AffineSubspace
 
 variable (𝕜 P P₂)
 
-/-- An affine isometric equivalence between two normed vector spaces. -/
+/-- An affine isometric equivalence between two normed vector spaces,
+denoted `f : P ≃ᵃⁱ[𝕜] P₂`. -/
 structure AffineIsometryEquiv extends P ≃ᵃ[𝕜] P₂ where
   norm_map : ∀ x, ‖linear x‖ = ‖x‖
 
 variable {𝕜 P P₂}
 
 -- `≃ᵃᵢ` would be more consistent with the linear isometry equiv notation, but it is uglier
-notation:25 P " ≃ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometryEquiv 𝕜 P P₂
+@[inherit_doc] notation:25 P " ≃ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometryEquiv 𝕜 P P₂
 
 namespace AffineIsometryEquiv
 
@@ -449,16 +451,31 @@ theorem symm_apply_apply (x : P) : e.symm (e x) = x :=
 @[simp]
 theorem symm_symm : e.symm.symm = e := rfl
 
+theorem symm_bijective : Bijective (AffineIsometryEquiv.symm : (P₂ ≃ᵃⁱ[𝕜] P) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
-theorem toAffineEquiv_symm : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
+theorem toAffineEquiv_symm : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
   rfl
 
 @[simp]
-theorem toIsometryEquiv_symm : e.toIsometryEquiv.symm = e.symm.toIsometryEquiv :=
+theorem coe_symm_toAffineEquiv : ⇑e.toAffineEquiv.symm = e.symm :=
   rfl
 
 @[simp]
-theorem toHomeomorph_symm : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+theorem toIsometryEquiv_symm : e.symm.toIsometryEquiv = e.toIsometryEquiv.symm :=
+  rfl
+
+@[simp]
+theorem coe_symm_toIsometryEquiv : ⇑e.toIsometryEquiv.symm = e.symm :=
+  rfl
+
+@[simp]
+theorem toHomeomorph_symm : e.symm.toHomeomorph = e.toHomeomorph.symm :=
+  rfl
+
+@[simp]
+theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm :=
   rfl
 
 /-- Composition of `AffineIsometryEquiv`s as an `AffineIsometryEquiv`. -/
@@ -573,13 +590,46 @@ theorem comp_continuous_iff {f : α → P} : Continuous (e ∘ f) ↔ Continuous
 
 section Constructions
 
-variable (𝕜)
+variable (s₁ s₂ : AffineSubspace 𝕜 P) [Nonempty s₁] [Nonempty s₂]
 
+/-- The identity equivalence of an affine subspace equal to `⊤` to the whole space. -/
+def ofTop (h : s₁ = ⊤) : s₁ ≃ᵃⁱ[𝕜] P :=
+  { (AffineEquiv.ofEq s₁ ⊤ h).trans (AffineSubspace.topEquiv 𝕜 V P) with norm_map := fun _ ↦ rfl }
+
+variable {s₁}
+
+@[simp]
+lemma ofTop_apply (h : s₁ = ⊤) (x : s₁) : (ofTop s₁ h x : P) = x :=
+  rfl
+
+@[simp]
+lemma ofTop_symm_apply_coe (h : s₁ = ⊤) (x : P) : (ofTop s₁ h).symm x = x :=
+  rfl
+
+variable (s₁)
+
+/-- `AffineEquiv.ofEq` as an `AffineIsometryEquiv`. -/
+def ofEq (h : s₁ = s₂) : s₁ ≃ᵃⁱ[𝕜] s₂ :=
+  { AffineEquiv.ofEq s₁ s₂ h with norm_map := fun _ ↦ rfl }
+
+variable {s₁ s₂}
+
+@[simp]
+lemma coe_ofEq_apply (h : s₁ = s₂) (x : s₁) : (ofEq s₁ s₂ h x : P) = x :=
+  rfl
+
+@[simp]
+lemma ofEq_symm (h : s₁ = s₂) : (ofEq s₁ s₂ h).symm = ofEq s₂ s₁ h.symm :=
+  rfl
+
+@[simp]
+lemma ofEq_rfl : ofEq s₁ s₁ rfl = refl 𝕜 s₁ :=
+  rfl
+
+variable (𝕜) in
 /-- The map `v ↦ v +ᵥ p` as an affine isometric equivalence between `V` and `P`. -/
 def vaddConst (p : P) : V ≃ᵃⁱ[𝕜] P :=
   { AffineEquiv.vaddConst 𝕜 p with norm_map := fun _ => rfl }
-
-variable {𝕜}
 
 @[simp]
 theorem coe_vaddConst (p : P) : ⇑(vaddConst 𝕜 p) = fun v => v +ᵥ p :=
@@ -598,13 +648,10 @@ theorem vaddConst_toAffineEquiv (p : P) :
     (vaddConst 𝕜 p).toAffineEquiv = AffineEquiv.vaddConst 𝕜 p :=
   rfl
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- `p' ↦ p -ᵥ p'` as an affine isometric equivalence. -/
 def constVSub (p : P) : P ≃ᵃⁱ[𝕜] V :=
   { AffineEquiv.constVSub 𝕜 p with norm_map := norm_neg }
-
-variable {𝕜}
 
 @[simp]
 theorem coe_constVSub (p : P) : ⇑(constVSub 𝕜 p) = (p -ᵥ ·) :=
@@ -617,14 +664,11 @@ theorem symm_constVSub (p : P) :
   ext
   rfl
 
-variable (𝕜 P)
-
+variable (𝕜 P) in
 /-- Translation by `v` (that is, the map `p ↦ v +ᵥ p`) as an affine isometric automorphism of `P`.
 -/
 def constVAdd (v : V) : P ≃ᵃⁱ[𝕜] P :=
   { AffineEquiv.constVAdd 𝕜 P v with norm_map := fun _ => rfl }
-
-variable {𝕜 P}
 
 @[simp]
 theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (v +ᵥ ·) :=
@@ -642,13 +686,10 @@ theorem vadd_vsub {f : P → P₂} (hf : Isometry f) {p : P} {g : V → V₂}
   convert (vaddConst 𝕜 (f p)).symm.isometry.comp (hf.comp (vaddConst 𝕜 p).isometry)
   exact funext hg
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- Point reflection in `x` as an affine isometric automorphism. -/
 def pointReflection (x : P) : P ≃ᵃⁱ[𝕜] P :=
   (constVSub 𝕜 x).trans (vaddConst 𝕜 x)
-
-variable {𝕜}
 
 theorem pointReflection_apply (x y : P) : (pointReflection 𝕜 x) y = (x -ᵥ y) +ᵥ x :=
   rfl
@@ -702,32 +743,6 @@ theorem pointReflection_midpoint_right (x y : P) : pointReflection ℝ (midpoint
 end Constructions
 
 end AffineIsometryEquiv
-
-/-- If `f` is an affine map, then its linear part is continuous iff `f` is continuous. -/
-theorem AffineMap.continuous_linear_iff {f : P →ᵃ[𝕜] P₂} : Continuous f.linear ↔ Continuous f := by
-  inhabit P
-  have :
-    (f.linear : V → V₂) =
-      (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
-        f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
-    ext v
-    simp
-  rw [this]
-  simp only [Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
-
-/-- If `f` is an affine map, then its linear part is an open map iff `f` is an open map. -/
-theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.linear ↔ IsOpenMap f := by
-  inhabit P
-  have :
-    (f.linear : V → V₂) =
-      (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
-        f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
-    ext v
-    simp
-  rw [this]
-  simp only [Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
-
-attribute [local instance] AffineSubspace.nonempty_map -- Porting note: removed `fails_quickly`
 
 namespace AffineSubspace
 

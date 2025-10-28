@@ -57,6 +57,7 @@ variable {R}
 
 variable {F : Cᵒᵖ ⥤ Type u} {G : PresheafOfModules.{u} R}
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The morphism of presheaves of modules `freeObj F ⟶ G` corresponding to
 a morphism `F ⟶ G.presheaf ⋙ forget _` of presheaves of types. -/
 @[simps]
@@ -77,21 +78,21 @@ noncomputable def freeAdjunctionUnit : F ⟶ (freeObj (R := R) F).presheaf ⋙ f
 /-- The bijection `(freeObj F ⟶ G) ≃ (F ⟶ G.presheaf ⋙ forget _)` when
 `F` is a presheaf of types and `G` a presheaf of modules. -/
 noncomputable def freeHomEquiv : (freeObj F ⟶ G) ≃ (F ⟶ G.presheaf ⋙ forget _) where
-  toFun ψ := freeAdjunctionUnit R F ≫ whiskerRight ((toPresheaf _).map ψ) _
+  toFun ψ := freeAdjunctionUnit R F ≫ Functor.whiskerRight ((toPresheaf _).map ψ) _
   invFun φ := freeObjDesc φ
   left_inv ψ := by ext1 X; dsimp; ext x; simp [toPresheaf]
   right_inv φ := by ext; simp [toPresheaf]
 
 lemma free_hom_ext {ψ ψ' : freeObj F ⟶ G}
-    (h : freeAdjunctionUnit R F ≫ whiskerRight ((toPresheaf _).map ψ) _ =
-      freeAdjunctionUnit R F ≫ whiskerRight ((toPresheaf _).map ψ') _ ) : ψ = ψ' :=
+    (h : freeAdjunctionUnit R F ≫ Functor.whiskerRight ((toPresheaf _).map ψ) _ =
+      freeAdjunctionUnit R F ≫ Functor.whiskerRight ((toPresheaf _).map ψ') _) : ψ = ψ' :=
   freeHomEquiv.injective h
 
 variable (R) in
 /-- The free presheaf of modules functor is left adjoint to the forget functor
 `PresheafOfModules.{u} R ⥤ Cᵒᵖ ⥤ Type u`. -/
 noncomputable def freeAdjunction :
-    free.{u} R ⊣ (toPresheaf R ⋙ (whiskeringRight _ _ _).obj (forget Ab)) :=
+    free.{u} R ⊣ (toPresheaf R ⋙ (Functor.whiskeringRight _ _ _).obj (forget Ab)) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦ freeHomEquiv
       homEquiv_naturality_left_symm := fun {F₁ F₂ G} f g ↦

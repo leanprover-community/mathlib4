@@ -16,9 +16,9 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 ## Main definitions
 
 * `CategoryTheory.CoverPreserving`: a functor between sites is cover-preserving if it
-pushes covering sieves to covering sieves
+  pushes covering sieves to covering sieves
 * `CategoryTheory.CompatiblePreserving`: a functor between sites is compatible-preserving
-if it pushes compatible families of elements to compatible families.
+  if it pushes compatible families of elements to compatible families.
 
 ## Main results
 
@@ -51,7 +51,6 @@ variable {L : GrothendieckTopology A}
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
 if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 structure CoverPreserving (G : C ⥤ D) : Prop where
   cover_preserve : ∀ {U : C} {S : Sieve U} (_ : S ∈ J U), S.functorPushforward G ∈ K (G.obj U)
 
@@ -72,7 +71,6 @@ compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each comm
 This is actually stronger than merely preserving compatible families because of the definition of
 `functorPushforward` used.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet @[nolint has_nonempty_instance]
 structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop where
   compatible :
     ∀ (ℱ : Sheaf K (Type w)) {Z} {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T}
@@ -122,14 +120,8 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
     Then, it suffices to prove that it is compatible when restricted onto `u(c'.X.right)`.
     -/
   let c' := IsCofiltered.cone (c.toStructuredArrow ⋙ StructuredArrow.pre _ _ _)
-  have eq₁ : f₁ = (c'.pt.hom ≫ G.map (c'.π.app left).right) ≫ eqToHom (by simp) := by
-    erw [← (c'.π.app left).w]
-    dsimp [c]
-    simp
-  have eq₂ : f₂ = (c'.pt.hom ≫ G.map (c'.π.app right).right) ≫ eqToHom (by simp) := by
-    erw [← (c'.π.app right).w]
-    dsimp [c]
-    simp
+  have eq₁ : f₁ = (c'.pt.hom ≫ G.map (c'.π.app left).right) ≫ eqToHom (by simp) := by simp [c]
+  have eq₂ : f₂ = (c'.pt.hom ≫ G.map (c'.π.app right).right) ≫ eqToHom (by simp) := by simp [c]
   conv_lhs => rw [eq₁]
   conv_rhs => rw [eq₂]
   simp only [c, op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
@@ -144,7 +136,7 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   exact hx (c'.π.app left).right (c'.π.app right).right hg₁ hg₂ (e₁.symm.trans e₂)
 
 theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful]
-    (hF : ∀ {c : C} {d : D} (_ : d ⟶ F.obj c), Σc', F.obj c' ≅ d) : CompatiblePreserving K F := by
+    (hF : ∀ {c : C} {d : D} (_ : d ⟶ F.obj c), Σ c', F.obj c' ≅ d) : CompatiblePreserving K F := by
   constructor
   introv hx he
   obtain ⟨X', e⟩ := hF f₁
@@ -156,22 +148,18 @@ theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful
 
 variable {F J K}
 
-/-- If `F` is cover-preserving and compatible-preserving,
-then `F` is a continuous functor.
-
-This result is basically <https://stacks.math.columbia.edu/tag/00WW>.
--/
+/-- If `F` is cover-preserving and compatible-preserving, then `F` is a continuous functor. -/
+@[stacks 00WW "This is basically this Stacks entry."]
 lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} K F)
     (hF₂ : CoverPreserving J K F) : Functor.IsContinuous.{w} F J K where
   op_comp_isSheaf_of_types G X S hS x hx := by
-    apply exists_unique_of_exists_of_unique
+    apply existsUnique_of_exists_of_unique
     · have H := (isSheaf_iff_isSheaf_of_type _ _).1 G.2 _ (hF₂.cover_preserve hS)
       exact ⟨H.amalgamate (x.functorPushforward F) (hx.functorPushforward hF₁),
         fun V f hf => (H.isAmalgamation (hx.functorPushforward hF₁) (F.map f) _).trans
           (hF₁.apply_map _ hx hf)⟩
     · intro y₁ y₂ hy₁ hy₂
-      apply (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1 G.2) _
-        (hF₂.cover_preserve hS)).ext
+      apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.2).isSeparated _ (hF₂.cover_preserve hS)).ext
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
       dsimp
       simp only [Functor.map_comp, types_comp_apply]

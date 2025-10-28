@@ -3,11 +3,9 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.BilinearForm.DualLattice
+import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace.Basic
 
 /-!
@@ -27,7 +25,7 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
@@ -35,10 +33,10 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
+open Algebra Module
+open scoped nonZeroDivisors Polynomial
 
 variable (A K : Type*) [CommRing A] [Field K]
-
-open scoped nonZeroDivisors Polynomial
 
 section IsIntegralClosure
 
@@ -48,8 +46,6 @@ We show that an integral closure of a Dedekind domain in a finite separable
 field extension is again a Dedekind domain. This implies the ring of integers
 of a number field is a Dedekind domain. -/
 
-
-open Algebra
 
 variable [Algebra A K] [IsFractionRing A K]
 variable (L : Type*) [Field L] (C : Type*) [CommRing C]
@@ -63,12 +59,12 @@ theorem IsIntegralClosure.isLocalization [IsDomain A] [Algebra.IsAlgebraic K L] 
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
   haveI : IsDomain C :=
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
-  haveI : NoZeroSMulDivisors A L := NoZeroSMulDivisors.trans A K L
+  haveI : NoZeroSMulDivisors A L := NoZeroSMulDivisors.trans_faithfulSMul A K L
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
   refine ⟨?_, fun z => ?_, fun {x y} h => ⟨1, ?_⟩⟩
   · rintro ⟨_, x, hx, rfl⟩
     rw [isUnit_iff_ne_zero, map_ne_zero_iff _ (IsIntegralClosure.algebraMap_injective C A L),
-      Subtype.coe_mk, map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective A C)]
+      Subtype.coe_mk, map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective A C)]
     exact mem_nonZeroDivisors_iff_ne_zero.mp hx
   · obtain ⟨m, hm⟩ :=
       IsIntegral.exists_multiple_integral_of_isLocalization A⁰ z
@@ -114,9 +110,8 @@ to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
     ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) :=
   have := IsLocalization.isAlgebraic K (nonZeroDivisors A)
-  have := Algebra.IsAlgebraic.trans' A (algebraMap K L).injective
-  Algebra.IsAlgebraic.exists_integral_multiples (IsScalarTower.algebraMap_eq A K L ▸
-    (algebraMap K L).injective.comp (IsFractionRing.injective _ _)) _
+  have := Algebra.IsAlgebraic.trans A K L
+  Algebra.IsAlgebraic.exists_integral_multiples ..
 
 variable (L)
 
@@ -141,7 +136,7 @@ theorem FiniteDimensional.exists_is_basis_integral :
   · intro x; simp only [inv_mul_cancel_left₀ hy']
   · intro x; simp only [mul_inv_cancel_left₀ hy']
   · rintro ⟨x', hx'⟩
-    simp only [Algebra.smul_def, Finset.mem_image, exists_prop, Finset.mem_univ,
+    simp only [Algebra.smul_def, Finset.mem_image, Finset.mem_univ,
       true_and] at his'
     simp only [Basis.map_apply, LinearEquiv.coe_mk]
     exact his' _ ⟨_, rfl⟩

@@ -13,9 +13,9 @@ multiplication is defined by `a • some b = some (a • b)` and `a • none = n
 
 ## See also
 
-* `Mathlib.Algebra.Group.Action.Pi`
-* `Mathlib.Algebra.Group.Action.Sigma`
-* `Mathlib.Algebra.Group.Action.Sum`
+* `Mathlib/Algebra/Group/Action/Pi.lean`
+* `Mathlib/Algebra/Group/Action/Sigma.lean`
+* `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
 
 assert_not_exists MonoidWithZero
@@ -68,7 +68,6 @@ end SMul
 
 instance [Monoid M] [MulAction M α] :
     MulAction M (Option α) where
-  smul := (· • ·)
   one_smul b := by
     cases b
     exacts [rfl, congr_arg some (one_smul _ _)]

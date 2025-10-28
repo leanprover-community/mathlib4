@@ -194,11 +194,10 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
       subst h₂
       cases ys
       · cases h₁
-      · simp only [applyId, map, Prod.toSigma, dlookup_cons_eq, Option.getD_some,
-          getElem?_cons_zero, Option.some.injEq]
+      · simp
     · cases ys
       · cases h₁
-      · cases' h₀ with _ _ h₀ h₁
+      · obtain - | ⟨h₀, h₁⟩ := h₀
         simp only [getElem?_cons_succ, zip_cons_cons, applyId_cons] at h₂ ⊢
         rw [if_neg]
         · apply xs_ih <;> solve_by_elim [Nat.succ.inj]
@@ -218,24 +217,24 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
     induction xs generalizing ys with
     | nil => contradiction
     | cons x' xs xs_ih =>
-      cases' ys with y ys
+      rcases ys with - | ⟨y, ys⟩
       · cases h₃
       dsimp [List.dlookup] at h₃; split_ifs at h₃ with h
       · rw [Option.some_inj] at h₃
         subst x'; subst val
-        simp only [List.mem_cons, true_or, eq_self_iff_true]
-      · cases' h₀ with _ _ h₀ h₅
-        cases' h₂ with _ _ h₂ h₄
+        simp only [List.mem_cons, true_or]
+      · obtain - | ⟨h₀, h₅⟩ := h₀
+        obtain - | ⟨h₂, h₄⟩ := h₂
         have h₆ := Nat.succ.inj h₁
         specialize xs_ih h₅ h₃ h₄ h₆
         simp only [Ne.symm h, xs_ih, List.mem_cons]
         suffices val ∈ ys by tauto
         rw [← Option.mem_def, List.mem_dlookup_iff] at h₃
-        · simp only [Prod.toSigma, List.mem_map, heq_iff_eq, Prod.exists] at h₃
+        · simp only [Prod.toSigma, List.mem_map, Prod.exists] at h₃
           rcases h₃ with ⟨a, b, h₃, h₄, h₅⟩
           apply (List.of_mem_zip h₃).2
         simp only [List.NodupKeys, List.keys, comp_def, Prod.fst_toSigma, List.map_map]
-        rwa [List.map_fst_zip _ _ (le_of_eq h₆)]
+        rwa [List.map_fst_zip (le_of_eq h₆)]
 
 theorem List.applyId_eq_self [DecidableEq α] {xs ys : List α} (x : α) :
     x ∉ xs → List.applyId.{u} (xs.zip ys) x = x := by
@@ -253,8 +252,8 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
   intro x y h
   by_cases hx : x ∈ xs <;> by_cases hy : y ∈ xs
   · rw [List.mem_iff_getElem?] at hx hy
-    cases' hx with i hx
-    cases' hy with j hy
+    obtain ⟨i, hx⟩ := hx
+    obtain ⟨j, hy⟩ := hy
     suffices some x = some y by injection this
     have h₂ := h₁.length_eq
     rw [List.applyId_zip_eq h₀ h₂ _ _ _ hx] at h
@@ -264,7 +263,7 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
       rw [← List.applyId_zip_eq] <;> assumption
     · rw [← h₁.length_eq]
       rw [List.getElem?_eq_some_iff] at hx
-      cases' hx with hx hx'
+      obtain ⟨hx, hx'⟩ := hx
       exact hx
   · rw [← applyId_mem_iff h₀ h₁] at hx hy
     rw [h] at hx
@@ -301,7 +300,7 @@ def sliceSizes : ℕ → MLList Id ℕ+
 /-- Shrink a permutation of a list, slicing a segment in the middle.
 
 The sizes of the slice being removed start at `n` (with `n` the length
-of the list) and then `n / 2`, then `n / 4`, etc down to 1. The slices
+of the list) and then `n / 2`, then `n / 4`, etc. down to 1. The slices
 will be taken at index `0`, `n / k`, `2n / k`, `3n / k`, etc.
 -/
 protected def shrinkPerm {α : Type} [DecidableEq α] :
@@ -312,10 +311,6 @@ protected def shrinkPerm {α : Type} [DecidableEq α] :
     let i ← List.finRange <| k / n
     pure <| Perm.slice (i * n) n xs
 
-
--- Porting note: removed, there is no `sizeof` in the new `Sampleable`
--- instance [SizeOf α] : SizeOf (InjectiveFunction α) :=
---   ⟨fun ⟨xs, _, _⟩ => SizeOf.sizeOf (xs.map Sigma.fst)⟩
 
 /-- Shrink an injective function slicing a segment in the middle of the domain and removing
 the corresponding elements in the codomain, hence maintaining the property that
@@ -339,12 +334,12 @@ protected def mk (xs ys : List α) (h : xs ~ ys) (h' : ys.Nodup) : InjectiveFunc
   have h₁ : ys.length ≤ xs.length := le_of_eq h.length_eq.symm
   InjectiveFunction.mapToSelf (List.toFinmap' (xs.zip ys))
     (by
-      simp only [List.toFinmap', comp_def, List.map_fst_zip, List.map_snd_zip, *, Prod.fst_toSigma,
-        Prod.snd_toSigma, List.map_map])
-    (by simp only [List.toFinmap', comp_def, List.map_snd_zip, *, Prod.snd_toSigma, List.map_map])
+      simp only [List.toFinmap', comp_def, List.map_fst_zip, List.map_snd_zip, *,
+        List.map_map])
+    (by simp only [List.toFinmap', comp_def, List.map_snd_zip, *, List.map_map])
 
 protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Injective (apply f) := by
-  cases' f with xs hperm hnodup
+  obtain ⟨xs, hperm, hnodup⟩ := f
   generalize h₀ : List.map Sigma.fst xs = xs₀
   generalize h₁ : xs.map (@id ((Σ _ : α, α) → α) <| @Sigma.snd α fun _ : α => α) = xs₁
   dsimp [id] at h₁
@@ -353,27 +348,29 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
     induction xs with
     | nil => simp only [List.zip_nil_right, List.map_nil]
     | cons xs_hd xs_tl xs_ih =>
-      simp only [Prod.toSigma, eq_self_iff_true, Sigma.eta, List.zip_cons_cons,
+      simp only [Sigma.eta, List.zip_cons_cons,
         List.map, List.cons_inj_right]
       exact xs_ih
   revert hperm hnodup
-  rw [hxs]; intros hperm hnodup
+  rw [hxs]; intro hperm hnodup
   apply InjectiveFunction.applyId_injective
   · rwa [← h₀, hxs, hperm.nodup_iff]
   · rwa [← hxs, h₀, h₁] at hperm
 
-instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
-  proxy := InjectiveFunction ℤ
-  interp f := ⟨apply f, f.injective⟩
-  sample := do
+instance : Arbitrary (InjectiveFunction ℤ) where
+  arbitrary := do
     let ⟨sz⟩ ← Gen.up Gen.getSize
     let xs' := Int.range (-(2 * sz + 2)) (2 * sz + 2)
     let ys ← Gen.permutationOf xs'
     have Hinj : Injective fun r : ℕ => -(2 * sz + 2 : ℤ) + ↑r := fun _x _y h =>
         Int.ofNat.inj (add_right_injective _ h)
     let r : InjectiveFunction ℤ :=
-      InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| (List.nodup_range _).map Hinj)
+      InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| List.nodup_range.map Hinj)
     pure r
+
+instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
+  proxy := InjectiveFunction ℤ
+  interp f := ⟨apply f, f.injective⟩
   shrink := {shrink := @InjectiveFunction.shrink ℤ _ }
 
 end InjectiveFunction

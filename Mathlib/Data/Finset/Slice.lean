@@ -3,10 +3,10 @@ Copyright (c) 2021 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Order.Antichain
 import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # `r`-sets and slice
@@ -24,7 +24,7 @@ the set family made of its `r`-sets.
 
 ## Notation
 
-`A # r` is notation for `A.slice r` in locale `finset_family`.
+`A # r` is notation for `A.slice r` in scope `finset_family`.
 -/
 
 
@@ -59,10 +59,10 @@ theorem sized_iUnion {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀
   simp_rw [Set.Sized, Set.mem_iUnion, forall_exists_index]
   exact forall_swap
 
--- @[simp] -- Porting note: left hand side is not simp-normal form.
+-- `simp` normal form is `sized_iUnion`.
 theorem sized_iUnion₂ {f : ∀ i, κ i → Set (Finset α)} :
     (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r := by
- simp only [Set.sized_iUnion]
+  simp only [Set.sized_iUnion]
 
 protected theorem Sized.isAntichain (hA : A.Sized r) : IsAntichain (· ⊆ ·) A :=
   fun _s hs _t ht h hst => h <| Finset.eq_of_subset_of_card_le hst ((hA ht).trans (hA hs).symm).le
@@ -112,7 +112,6 @@ variable {𝒜 : Finset (Finset α)} {A A₁ A₂ : Finset α} {r r₁ r₂ : �
 /-- The `r`-th slice of a set family is the subset of its elements which have cardinality `r`. -/
 def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) := {A ∈ 𝒜 | #A = r}
 
--- Porting note: old code: scoped[FinsetFamily]
 @[inherit_doc]
 scoped[Finset] infixl:90 " # " => Finset.slice
 

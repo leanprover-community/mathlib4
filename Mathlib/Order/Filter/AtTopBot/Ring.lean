@@ -16,16 +16,16 @@ namespace Filter
 
 section OrderedSemiring
 
-variable [OrderedSemiring α] {l : Filter β} {f g : β → α}
+variable [Semiring α] [PartialOrder α] [IsOrderedRing α] {l : Filter β} {f g : β → α}
 
-theorem Tendsto.atTop_mul_atTop (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
+theorem Tendsto.atTop_mul_atTop₀ (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atTop := by
   refine tendsto_atTop_mono' _ ?_ hg
   filter_upwards [hg.eventually (eventually_ge_atTop 0),
     hf.eventually (eventually_ge_atTop 1)] with _ using le_mul_of_one_le_left
 
 theorem tendsto_mul_self_atTop : Tendsto (fun x : α => x * x) atTop atTop :=
-  tendsto_id.atTop_mul_atTop tendsto_id
+  tendsto_id.atTop_mul_atTop₀ tendsto_id
 
 /-- The monomial function `x^n` tends to `+∞` at `+∞` for any positive natural `n`.
 A version for positive real powers exists as `tendsto_rpow_atTop`. -/
@@ -40,39 +40,39 @@ theorem zero_pow_eventuallyEq [MonoidWithZero α] :
 
 section OrderedRing
 
-variable [OrderedRing α] {l : Filter β} {f g : β → α}
+variable [Ring α] [PartialOrder α] [IsOrderedRing α] {l : Filter β} {f g : β → α}
 
-theorem Tendsto.atTop_mul_atBot (hf : Tendsto f l atTop) (hg : Tendsto g l atBot) :
+theorem Tendsto.atTop_mul_atBot₀ (hf : Tendsto f l atTop) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot := by
-  have := hf.atTop_mul_atTop <| tendsto_neg_atBot_atTop.comp hg
+  have := hf.atTop_mul_atTop₀ <| tendsto_neg_atBot_atTop.comp hg
   simpa only [Function.comp_def, neg_mul_eq_mul_neg, neg_neg] using
     tendsto_neg_atTop_atBot.comp this
 
-theorem Tendsto.atBot_mul_atTop (hf : Tendsto f l atBot) (hg : Tendsto g l atTop) :
+theorem Tendsto.atBot_mul_atTop₀ (hf : Tendsto f l atBot) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atBot := by
   have : Tendsto (fun x => -f x * g x) l atTop :=
-    (tendsto_neg_atBot_atTop.comp hf).atTop_mul_atTop hg
+    (tendsto_neg_atBot_atTop.comp hf).atTop_mul_atTop₀ hg
   simpa only [Function.comp_def, neg_mul_eq_neg_mul, neg_neg] using
     tendsto_neg_atTop_atBot.comp this
 
-theorem Tendsto.atBot_mul_atBot (hf : Tendsto f l atBot) (hg : Tendsto g l atBot) :
+theorem Tendsto.atBot_mul_atBot₀ (hf : Tendsto f l atBot) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atTop := by
   have : Tendsto (fun x => -f x * -g x) l atTop :=
-    (tendsto_neg_atBot_atTop.comp hf).atTop_mul_atTop (tendsto_neg_atBot_atTop.comp hg)
+    (tendsto_neg_atBot_atTop.comp hf).atTop_mul_atTop₀ (tendsto_neg_atBot_atTop.comp hg)
   simpa only [neg_mul_neg] using this
 
 end OrderedRing
 
 section LinearOrderedSemiring
 
-variable [LinearOrderedSemiring α] {l : Filter β} {f : β → α}
+variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] {l : Filter β} {f : β → α}
 
-theorem Tendsto.atTop_of_const_mul {c : α} (hc : 0 < c) (hf : Tendsto (fun x => c * f x) l atTop) :
+theorem Tendsto.atTop_of_const_mul₀ {c : α} (hc : 0 < c) (hf : Tendsto (fun x => c * f x) l atTop) :
     Tendsto f l atTop :=
   tendsto_atTop.2 fun b => (tendsto_atTop.1 hf (c * b)).mono
     fun _x hx => le_of_mul_le_mul_left hx hc
 
-theorem Tendsto.atTop_of_mul_const {c : α} (hc : 0 < c) (hf : Tendsto (fun x => f x * c) l atTop) :
+theorem Tendsto.atTop_of_mul_const₀ {c : α} (hc : 0 < c) (hf : Tendsto (fun x => f x * c) l atTop) :
     Tendsto f l atTop :=
   tendsto_atTop.2 fun b => (tendsto_atTop.1 hf (b * c)).mono
     fun _x hx => le_of_mul_le_mul_right hx hc
@@ -83,7 +83,7 @@ theorem tendsto_pow_atTop_iff {n : ℕ} : Tendsto (fun x : α => x ^ n) atTop at
 
 end LinearOrderedSemiring
 
-theorem not_tendsto_pow_atTop_atBot [LinearOrderedRing α] :
+theorem not_tendsto_pow_atTop_atBot [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     ∀ {n : ℕ}, ¬Tendsto (fun x : α => x ^ n) atTop atBot
   | 0 => by simp [not_tendsto_const_atBot]
   | n + 1 => (tendsto_pow_atTop n.succ_ne_zero).not_tendsto disjoint_atTop_atBot
@@ -92,12 +92,10 @@ end Filter
 
 open Filter
 
-variable {R : Type*} [LinearOrderedSemiring R]
+variable {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
 
 theorem exists_lt_mul_self (a : R) : ∃ x ≥ 0, a < x * x :=
-  let ⟨x, hxa, hx0⟩ :=
-    ((tendsto_mul_self_atTop.eventually (eventually_gt_atTop a)).and (eventually_ge_atTop 0)).exists
-  ⟨x, hx0, hxa⟩
+  ((eventually_ge_atTop 0).and (tendsto_mul_self_atTop.eventually (eventually_gt_atTop a))).exists
 
 theorem exists_le_mul_self (a : R) : ∃ x ≥ 0, a ≤ x * x :=
   let ⟨x, hx0, hxa⟩ := exists_lt_mul_self a

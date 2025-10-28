@@ -27,7 +27,7 @@ section CommRing
 variable [CommRing R] [CommRing A]
 variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N₁] [AddCommGroup N₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
-variable [SMulCommClass R A M₁] [IsScalarTower R A M₁] [SMulCommClass R A N₁] [IsScalarTower R A N₁]
+variable [SMulCommClass R A M₁] [IsScalarTower R A M₁] [IsScalarTower R A N₁]
 variable [Module R M₂] [Module R N₂]
 
 section InvertibleTwo
@@ -40,8 +40,7 @@ variable (R A) in
 
 Note this is heterobasic; the quadratic map on the left can take values in a module over a larger
 ring than the one on the right. -/
--- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
-noncomputable def tensorDistrib :
+def tensorDistrib :
     QuadraticMap A M₁ N₁ ⊗[R] QuadraticMap R M₂ N₂ →ₗ[A] QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   -- while `letI`s would produce a better term than `let`, they would make this already-slow
@@ -55,16 +54,24 @@ noncomputable def tensorDistrib :
 
 @[simp]
 theorem tensorDistrib_tmul (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂) (m₁ : M₁)
-    (m₂ : M₂) : tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₁ m₁ ⊗ₜ Q₂ m₂   :=
+    (m₂ : M₂) : tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₁ m₁ ⊗ₜ Q₂ m₂ :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   (BilinMap.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
 /-- The tensor product of two quadratic maps, a shorthand for dot notation. -/
--- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
-protected noncomputable abbrev tmul (Q₁ : QuadraticMap A M₁ N₁)
+protected abbrev tmul (Q₁ : QuadraticMap A M₁ N₁)
     (Q₂ : QuadraticMap R M₂ N₂) : QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
+
+theorem associated_tmul [Invertible (2 : A)]
+    (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂) :
+    (Q₁.tmul Q₂).associated = Q₁.associated.tmul Q₂.associated := by
+  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
+  rw [QuadraticMap.tmul, BilinMap.tmul]
+  have : Subsingleton (Invertible (2 : A)) := inferInstance
+  convert associated_left_inverse A (LinearMap.BilinMap.tmul_isSymm
+    (QuadraticMap.associated_isSymm A Q₁) (QuadraticMap.associated_isSymm R Q₂))
 
 end QuadraticMap
 
@@ -75,8 +82,7 @@ variable (R A) in
 
 Note this is heterobasic; the quadratic form on the left can take values in a larger ring than
 the one on the right. -/
--- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
-noncomputable def tensorDistrib :
+def tensorDistrib :
     QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
   (AlgebraTensorModule.rid R A A).congrQuadraticMap.toLinearMap ∘ₗ QuadraticMap.tensorDistrib R A
 
@@ -90,32 +96,15 @@ theorem tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
 /-- The tensor product of two quadratic forms, a shorthand for dot notation. -/
--- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
-protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
+protected abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     QuadraticForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (Q₁ ⊗ₜ[R] Q₂)
 
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
-    associated (R := A) (Q₁.tmul Q₂)
-      = BilinForm.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
-  letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
-  /- Previously `QuadraticForm.tensorDistrib` was defined in a similar way to
-  `QuadraticMap.tensorDistrib`. We now obtain the definition of `QuadraticForm.tensorDistrib`
-  from `QuadraticMap.tensorDistrib` using `A ⊗[R] R ≃ₗ[A] A`. Hypothesis `e1` below shows that the
-  new definition is equal to the old, and allows us to reuse the old proof.
-
-  TODO: Define `IsSymm` for bilinear maps and generalise this result to Quadratic Maps.
-  -/
-  have e1: (BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂) ∘
-    BilinForm.tensorDistrib R A (M₁ := M₁) (M₂ := M₂) ∘
-    AlgebraTensorModule.map
-      (QuadraticMap.associated : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
-      (QuadraticMap.associated : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)) =
-       tensorDistrib R A := rfl
-  rw [QuadraticForm.tmul, ← e1, BilinForm.tmul]
-  dsimp
-  have : Subsingleton (Invertible (2 : A)) := inferInstance
-  convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
+    (Q₁.tmul Q₂).associated = BilinForm.tmul Q₁.associated Q₂.associated := by
+  rw [BilinForm.tmul, BilinForm.tensorDistrib, LinearMap.comp_apply, ← BilinMap.tmul,
+    ← QuadraticMap.associated_tmul Q₁ Q₂]
+  aesop
 
 theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     polarBilin (Q₁.tmul Q₂) = ⅟(2 : A) • BilinForm.tmul (polarBilin Q₁) (polarBilin Q₂) := by
@@ -126,8 +115,7 @@ theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
 
 variable (A) in
 /-- The base change of a quadratic form. -/
--- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
-protected noncomputable def baseChange (Q : QuadraticForm R M₂) : QuadraticForm A (A ⊗[R] M₂) :=
+protected def baseChange (Q : QuadraticForm R M₂) : QuadraticForm A (A ⊗[R] M₂) :=
   QuadraticForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (QuadraticMap.sq (R := A)) Q
 
 @[simp]
@@ -151,13 +139,13 @@ end QuadraticForm
 
 end InvertibleTwo
 
-/-- If two quadratic forms from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
+/-- If two quadratic maps from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
 
-In other words, if a base change exists for a quadratic form, it is unique.
+In other words, if a base change exists for a quadratic map, it is unique.
 
 Note that unlike `QuadraticForm.baseChange`, this does not need `Invertible (2 : R)`. -/
 @[ext]
-theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticForm A (A ⊗[R] M₂)⦄
+theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticMap A (A ⊗[R] M₂) N₁⦄
     (h : ∀ m, Q₁ (1 ⊗ₜ m) = Q₂ (1 ⊗ₜ m)) :
     Q₁ = Q₂ := by
   replace h (a m) : Q₁ (a ⊗ₜ m) = Q₂ (a ⊗ₜ m) := by
@@ -173,6 +161,6 @@ theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticForm A (A ⊗[R] M₂)⦄
       rw [← TensorProduct.tmul_add, h, h, h]
     replace := congr($this x y)
     dsimp [polar] at this
-    linear_combination this + hx + hy
+    linear_combination (norm := module) this + hx + hy
 
 end CommRing

@@ -3,8 +3,8 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.GroupAction.CardCommute
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.GroupTheory.Abelianization.Finite
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
@@ -21,9 +21,9 @@ This file introduces the commuting probability of finite groups.
 * Neumann's theorem.
 -/
 
-noncomputable section
+assert_not_exists Ideal TwoSidedIdeal
 
-open scoped Classical
+noncomputable section
 
 open Fintype
 
@@ -76,6 +76,7 @@ variable {M}
 
 theorem commProb_eq_one_iff [h : Nonempty M] :
     commProb M = 1 ↔ Std.Commutative ((· * ·) : M → M → M) := by
+  classical
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
@@ -99,7 +100,7 @@ theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : �
       commuting pairs as `H`. -/
   rw [commProb_def, commProb_def, div_le_iff₀, mul_assoc, ← mul_pow, ← Nat.cast_mul,
     mul_comm H.index, H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · refine Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) ?_
+  · refine Nat.card_le_card_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) ?_
     exact fun p q h ↦ by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
   · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2
@@ -109,7 +110,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
       conjugacy classes as `G ⧸ H`. -/
   rw [commProb_def', commProb_def', div_le_iff₀, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,
     H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · apply Finite.card_le_of_surjective
+  · apply Nat.card_le_card_of_surjective
     show Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
     exact ConjClasses.map_surjective Quotient.mk''_surjective
   · exact Nat.cast_ne_zero.mpr Finite.card_pos.ne'
@@ -138,7 +139,7 @@ private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
 
 private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
   | 0 | 1 | 2 | 3 => by decide
-  | n + 4 => by omega
+  | n + 4 => by cutsat
 
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
@@ -178,7 +179,8 @@ lemma commProb_nil : commProb (Product []) = 1 := by
 
 lemma commProb_cons (n : ℕ) (l : List ℕ) :
     commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
-  simp [Product, commProb_pi, Fin.prod_univ_succ]
+  simp only [commProb_pi, Fin.prod_univ_succ, Fin.getElem_fin, Fin.val_succ, Fin.val_zero,
+    List.getElem_cons_zero, List.length_cons, List.getElem_cons_succ]
 
 /-- Construction of a group with commuting probability `1 / n`. -/
 theorem commProb_reciprocal (n : ℕ) :
@@ -192,7 +194,7 @@ theorem commProb_reciprocal (n : ℕ) :
   · have := div_two_lt h0
     rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
         commProb_odd (by decide)]
-    field_simp [h0, h2.two_dvd]
+    simp [field, h2.two_dvd]
     norm_num
   · have := div_four_lt h0 h1
     rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
@@ -203,7 +205,6 @@ theorem commProb_reciprocal (n : ℕ) :
       have h1 := (Nat.div_add_mod n 4).symm
       zify at h0 h1 ⊢
       linear_combination (h0 + h1 * (n % 4)) * n
-    · have := hn.pos.ne'
-      positivity
+    · positivity [hn.pos.ne']
 
 end DihedralGroup

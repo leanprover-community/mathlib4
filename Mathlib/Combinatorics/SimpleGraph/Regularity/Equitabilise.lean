@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Order.Partition.Equipartition
 
 /-!
@@ -45,19 +46,21 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   -- Get rid of the easy case `m = 0`
   obtain rfl | m_pos := m.eq_zero_or_pos
   · refine ⟨⊥, by simp, ?_, by simpa [Finset.filter_true_of_mem] using hs.symm⟩
-    simp only [le_zero_iff, card_eq_zero, mem_biUnion, exists_prop, mem_filter, id,
+    simp only [le_zero_iff, card_eq_zero, mem_biUnion, mem_filter, id,
       and_assoc, sdiff_eq_empty_iff_subset, subset_iff]
     exact fun x hx a ha =>
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
   -- Prove the case `m > 0` by strong induction on `s`
-  induction' s using Finset.strongInduction with s ih generalizing a b
+  induction s using Finset.strongInduction generalizing a b with | H s ih => _
   -- If `a = b = 0`, then `s = ∅` and we can partition into zero parts
   by_cases hab : a = 0 ∧ b = 0
-  · simp only [hab.1, hab.2, add_zero, zero_mul, eq_comm, card_eq_zero, Finset.bot_eq_empty] at hs
+  · -- Rewrite using `← bot_eq_empty` because we have theorems about `Finpartition ⊥`,
+    -- and nothing about `Finpartition ∅`, even though they are defeq in this case.
+    -- TODO: specialize the `Finpartition ⊥` lemmas to `Finpartition ∅`?
+    simp only [hab.1, hab.2, add_zero, zero_mul, eq_comm, card_eq_zero, ← bot_eq_empty] at hs
     subst hs
-    -- Porting note: to synthesize `Finpartition ∅`, `have` is required
-    have : P = Finpartition.empty _ := Unique.eq_default (α := Finpartition ⊥) P
-    exact ⟨Finpartition.empty _, by simp, by simp [this], by simp [hab.2]⟩
+    exact ⟨Finpartition.empty _, by simp, by simp [Unique.eq_default P, -bot_eq_empty],
+      by simp [hab.2]⟩
   simp_rw [not_and_or, ← Ne.eq_def, ← pos_iff_ne_zero] at hab
   -- `n` will be the size of the smallest part
   set n := if 0 < a then m else m + 1 with hn
@@ -81,7 +84,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   · obtain ⟨t, hts, htn⟩ := exists_subset_card_eq (hn₂.trans_eq hs)
     have ht : t.Nonempty := by rwa [← card_pos, htn]
     have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = #(s \ t) := by
-      rw [card_sdiff ‹t ⊆ s›, htn, hn₃]
+      rw [card_sdiff_of_subset ‹t ⊆ s›, htn, hn₃]
     obtain ⟨R, hR₁, _, hR₃⟩ :=
       @ih (s \ t) (sdiff_ssubset hts ‹t.Nonempty›) (if 0 < a then a - 1 else a)
         (if 0 < a then b else b - 1) (P.avoid t) hcard
@@ -92,15 +95,15 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     simp_rw [extend_parts, filter_insert, htn, n, m.succ_ne_self.symm.ite_eq_right_iff]
     split_ifs with ha
     · rw [hR₃, if_pos ha]
-    rw [card_insert_of_not_mem, hR₃, if_neg ha, tsub_add_cancel_of_le]
+    rw [card_insert_of_notMem, hR₃, if_neg ha, tsub_add_cancel_of_le]
     · exact hab.resolve_left ha
-    · intro H; exact ht.ne_empty (le_sdiff_iff.1 <| R.le <| filter_subset _ _ H)
+    · intro H; exact ht.ne_empty (le_sdiff_right.1 <| R.le <| filter_subset _ _ H)
   push_neg at h
   obtain ⟨u, hu₁, hu₂⟩ := h
   obtain ⟨t, htu, htn⟩ := exists_subset_card_eq (hn₁.trans hu₂)
   have ht : t.Nonempty := by rwa [← card_pos, htn]
   have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = #(s \ t) := by
-    rw [card_sdiff (htu.trans <| P.le hu₁), htn, hn₃]
+    rw [card_sdiff_of_subset (htu.trans <| P.le hu₁), htn, hn₃]
   obtain ⟨R, hR₁, hR₂, hR₃⟩ :=
     @ih (s \ t) (sdiff_ssubset (htu.trans <| P.le hu₁) ht) (if 0 < a then a - 1 else a)
       (if 0 < a then b else b - 1) (P.avoid t) hcard
@@ -109,19 +112,16 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   · simp only [mem_insert, forall_eq_or_imp, extend_parts, and_iff_left hR₁, htn, hn]
     exact ite_eq_or_eq _ _ _
   · conv in _ ∈ _ => rw [← insert_erase hu₁]
-    simp only [and_imp, mem_insert, forall_eq_or_imp, Ne, extend_parts]
+    simp only [mem_insert, forall_eq_or_imp, extend_parts]
     refine ⟨?_, fun x hx => (card_le_card ?_).trans <| hR₂ x ?_⟩
-    · simp only [filter_insert, if_pos htu, biUnion_insert, mem_erase, id]
+    · simp only [filter_insert, if_pos htu, biUnion_insert, id]
       obtain rfl | hut := eq_or_ne u t
       · rw [sdiff_eq_empty_iff_subset.2 subset_union_left]
         exact bot_le
       refine
         (card_le_card fun i => ?_).trans
           (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i => hut <| i.antisymm htu, rfl⟩)
-      -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined differently
-      simp only [not_exists, not_and, mem_biUnion, and_imp, mem_union, mem_filter, mem_sdiff,
-        id, not_or]
-      exact fun hi₁ hi₂ hi₃ =>
+      simpa using fun hi₁ hi₂ hi₃ =>
         ⟨⟨hi₁, hi₂⟩, fun x hx hx' => hi₃ _ hx <| hx'.trans sdiff_subset⟩
     · apply sdiff_subset_sdiff Subset.rfl (biUnion_subset_biUnion_of_subset_left _ _)
       exact filter_subset_filter _ (subset_insert _ _)
@@ -133,8 +133,8 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   simp only [extend_parts, filter_insert, htn, hn, m.succ_ne_self.symm.ite_eq_right_iff]
   split_ifs with h
   · rw [hR₃, if_pos h]
-  · rw [card_insert_of_not_mem, hR₃, if_neg h, Nat.sub_add_cancel (hab.resolve_left h)]
-    intro H; exact ht.ne_empty (le_sdiff_iff.1 <| R.le <| filter_subset _ _ H)
+  · rw [card_insert_of_notMem, hR₃, if_neg h, Nat.sub_add_cancel (hab.resolve_left h)]
+    intro H; exact ht.ne_empty (le_sdiff_right.1 <| R.le <| filter_subset _ _ H)
 
 variable (h : a * m + b * (m + 1) = #s)
 
@@ -180,8 +180,7 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
 theorem card_parts_equitabilise (hm : m ≠ 0) : #(P.equitabilise h).parts = a + b := by
   rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or,
     card_union_of_disjoint, P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
-  exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀
+  aesop (add norm disjoint_filter)
 
 theorem card_parts_equitabilise_subset_le :
     t ∈ P.parts → #(t \ {u ∈ (P.equitabilise h).parts | u ⊆ t}.biUnion id) ≤ m :=

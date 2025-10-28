@@ -11,67 +11,44 @@ import Mathlib.Data.List.InsertIdx
 Split out from `Data.List.Basic` to reduce its dependencies.
 -/
 
-open List
-
 variable {α β γ : Type*}
 
 namespace List
 
 @[simp]
-theorem length_flatMap (l : List α) (f : α → List β) :
-    length (List.flatMap l f) = sum (map (length ∘ f) l) := by
-  rw [List.flatMap, length_flatten, map_map]
+theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] :=
+  Set.eq_empty_iff_forall_notMem.trans eq_nil_iff_forall_not_mem.symm
 
-lemma countP_flatMap (p : β → Bool) (l : List α) (f : α → List β) :
-    countP p (l.flatMap f) = sum (map (countP p ∘ f) l) := by
-  rw [List.flatMap, countP_flatten, map_map]
-
-lemma count_flatMap [BEq β] (l : List α) (f : α → List β) (x : β) :
-    count x (l.flatMap f) = sum (map (count x ∘ f) l) := countP_flatMap _ _ _
-
-@[deprecated (since := "2024-08-20")] alias getElem_reverse' := getElem_reverse
-
-theorem tail_reverse_eq_reverse_dropLast (l : List α) :
-    l.reverse.tail = l.dropLast.reverse := by
-  ext i v; by_cases hi : i < l.length - 1
-  · simp only [← drop_one]
-    rw [getElem?_eq_getElem (by simpa), getElem?_eq_getElem (by simpa),
-      ← getElem_drop' _, getElem_reverse, getElem_reverse, getElem_dropLast]
-    · simp [show l.length - 1 - (1 + i) = l.length - 1 - 1 - i by omega]
-    all_goals ((try simp); omega)
-  · rw [getElem?_eq_none, getElem?_eq_none]
-    all_goals (simp; omega)
-
-@[deprecated (since := "2024-08-19")] alias nthLe_tail := getElem_tail
-
-theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
-    Set.InjOn (fun k => insertIdx k x l) { n | n ≤ l.length } := by
-  induction' l with hd tl IH
-  · intro n hn m hm _
+theorem injOn_insertIdx_index_of_notMem (l : List α) (x : α) (hx : x ∉ l) :
+    Set.InjOn (fun k => l.insertIdx k x) { n | n ≤ l.length } := by
+  intro n hn m hm h
+  induction l generalizing n m with
+  | nil =>
     simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]
-  · intro n hn m hm h
+  | cons hd tl IH =>
     simp only [length, Set.mem_setOf_eq] at hn hm
     simp only [mem_cons, not_or] at hx
     cases n <;> cases m
     · rfl
     · simp [hx.left] at h
     · simp [Ne.symm hx.left] at h
-    · simp only [true_and, eq_self_iff_true, insertIdx_succ_cons] at h
-      rw [Nat.succ_inj']
-      refine IH hx.right ?_ ?_ (by injection h)
+    · simp only [insertIdx_succ_cons, cons.injEq, true_and] at h
+      rw [Nat.succ_inj]
+      refine IH hx.right ?_ ?_ h
       · simpa [Nat.succ_le_succ_iff] using hn
       · simpa [Nat.succ_le_succ_iff] using hm
 
-@[deprecated (since := "2024-10-21")]
-alias injOn_insertNth_index_of_not_mem := injOn_insertIdx_index_of_not_mem
+@[deprecated (since := "2025-05-23")]
+alias injOn_insertIdx_index_of_not_mem := injOn_insertIdx_index_of_notMem
 
 theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α → α}
     (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) := by
   rintro _ ⟨l, rfl⟩
-  induction' l with b l H
-  · exact ⟨[], rfl⟩
-  · cases' hfg (Set.mem_range_self b) with c hgf
-    cases' H with m hgf'
+  induction l with
+  | nil => exact ⟨[], rfl⟩
+  | cons b l H =>
+    obtain ⟨c, hgf⟩ := hfg (Set.mem_range_self b)
+    obtain ⟨m, hgf'⟩ := H
     rw [foldr_cons, ← hgf, ← hgf']
     exact ⟨c :: m, rfl⟩
 
@@ -79,13 +56,9 @@ theorem foldl_range_subset_of_range_subset {f : α → β → α} {g : α → γ
     (hfg : (Set.range fun a c => f c a) ⊆ Set.range fun b c => g c b) (a : α) :
     Set.range (foldl f a) ⊆ Set.range (foldl g a) := by
   change (Set.range fun l => _) ⊆ Set.range fun l => _
-  -- Porting note: This was simply `simp_rw [← foldr_reverse]`
-  simp_rw [← foldr_reverse _ (fun z w => g w z), ← foldr_reverse _ (fun z w => f w z)]
-  -- Porting note: This `change` was not necessary in mathlib3
-  change (Set.range (foldr (fun z w => f w z) a ∘ reverse)) ⊆
-    Set.range (foldr (fun z w => g w z) a ∘ reverse)
-  simp_rw [Set.range_comp _ reverse, reverse_involutive.bijective.surjective.range_eq,
-    Set.image_univ]
+  -- Porting note: have to write `(foldr_reverse)` instead of `foldr_reverse`.
+  simp_rw [← (foldr_reverse), Set.range_comp' _ reverse,
+    reverse_involutive.bijective.surjective.range_eq, Set.image_univ]
   exact foldr_range_subset_of_range_subset hfg a
 
 theorem foldr_range_eq_of_range_eq {f : β → α → α} {g : γ → α → α} (hfg : Set.range f = Set.range g)
@@ -126,7 +99,7 @@ theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ
   | _ :: _, [], _ => rfl
   | [], _ :: _, _ => rfl
   | a :: as, b :: bs, s => by
-    simp only [mapAccumr₂, foldr, mapAccumr₂_eq_foldr f as]
+    simp only [mapAccumr₂, mapAccumr₂_eq_foldr f as]
     rfl
 
 end MapAccumr

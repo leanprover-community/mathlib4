@@ -6,6 +6,7 @@ Authors: Patrick Massot
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.OrderClosed
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -43,15 +44,15 @@ scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
   nhdsAdjoint 0 <| ⨅ γ ≠ 0, 𝓟 (Iio γ)
 
 theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
-   rw [nhds_nhdsAdjoint, sup_of_le_right]
-   exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
+  rw [nhds_nhdsAdjoint, sup_of_le_right]
+  exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
 
 /-!
 ### Neighbourhoods of zero
 -/
 
 theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
-  rw [nhds_eq_update, update_same]
+  rw [nhds_eq_update, update_self]
 
 /-- In a linearly ordered group with zero element adjoined, `U` is a neighbourhood of `0` if and
 only if there exists a nonzero element `γ₀` such that `Iio γ₀ ⊆ U`. -/
@@ -159,7 +160,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
     simp only [continuous_iff_continuousAt, ContinuousAt]
     rintro ⟨x, y⟩
     wlog hle : x ≤ y generalizing x y
-    · have := (this y x (le_of_not_le hle)).comp (continuous_swap.tendsto (x, y))
+    · have := (this y x (le_of_not_ge hle)).comp (continuous_swap.tendsto (x, y))
       simpa only [mul_comm, Function.comp_def, Prod.swap] using this
     rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip]
     · rw [zero_mul]
@@ -177,7 +178,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       exact pure_le_nhds (x * y)
 
 @[nolint defLemma]
-scoped instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
+scoped instance (priority := 100) : ContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]
     exact pure_le_nhds γ⁻¹⟩

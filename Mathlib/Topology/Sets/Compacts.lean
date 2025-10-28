@@ -45,7 +45,7 @@ instance : SetLike (Compacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Compacts α) : Set α := s
 
-initialize_simps_projections Compacts (carrier → coe)
+initialize_simps_projections Compacts (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : Compacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -152,7 +152,6 @@ theorem equiv_refl : Compacts.equiv (Homeomorph.refl α) = Equiv.refl _ :=
 @[simp]
 theorem equiv_trans (f : α ≃ₜ β) (g : β ≃ₜ γ) :
     Compacts.equiv (f.trans g) = (Compacts.equiv f).trans (Compacts.equiv g) :=
-  -- Porting note: can no longer write `map_comp _ _ _ _` and unify
   Equiv.ext <| map_comp g f g.continuous f.continuous
 
 @[simp]
@@ -197,7 +196,7 @@ instance : SetLike (NonemptyCompacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : NonemptyCompacts α) : Set α := s
 
-initialize_simps_projections NonemptyCompacts (carrier → coe)
+initialize_simps_projections NonemptyCompacts (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : NonemptyCompacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -217,7 +216,6 @@ protected theorem ext {s t : NonemptyCompacts α} (h : (s : Set α) = t) : s = t
 theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 
--- Porting note: `@[simp]` moved to `coe_toCompacts`
 theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
   rfl
 
@@ -288,7 +286,7 @@ instance : SetLike (PositiveCompacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : PositiveCompacts α) : Set α := s
 
-initialize_simps_projections PositiveCompacts (carrier → coe)
+initialize_simps_projections PositiveCompacts (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : PositiveCompacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -311,7 +309,6 @@ protected theorem ext {s t : PositiveCompacts α} (h : (s : Set α) = t) : s = t
 theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 
--- Porting note: `@[simp]` moved to a new lemma
 theorem carrier_eq_coe (s : PositiveCompacts α) : s.carrier = s :=
   rfl
 
@@ -400,7 +397,7 @@ end PositiveCompacts
 
 /-! ### Compact open sets -/
 
-/-- The type of compact open sets of a topological space. This is useful in non Hausdorff contexts,
+/-- The type of compact open sets of a topological space. This is useful in non-Hausdorff contexts,
 in particular spectral spaces. -/
 structure CompactOpens (α : Type*) [TopologicalSpace α] extends Compacts α where
   isOpen' : IsOpen carrier
@@ -417,7 +414,7 @@ instance : SetLike (CompactOpens α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : CompactOpens α) : Set α := s
 
-initialize_simps_projections CompactOpens (carrier → coe)
+initialize_simps_projections CompactOpens (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : CompactOpens α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -452,6 +449,12 @@ instance : Bot (CompactOpens α) where bot := ⟨⊥, isOpen_empty⟩
 
 instance : SemilatticeSup (CompactOpens α) := SetLike.coe_injective.semilatticeSup _ coe_sup
 instance : OrderBot (CompactOpens α) := OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) coe_bot
+
+@[simp]
+lemma coe_finsetSup {ι : Type*} {f : ι → CompactOpens α} {s : Finset ι} :
+    (↑(s.sup f) : Set α) = ⋃ i ∈ s, f i := by
+  classical
+  induction s using Finset.induction_on <;> simp [*]
 
 instance : Inhabited (CompactOpens α) :=
   ⟨⊥⟩

@@ -3,8 +3,8 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Fin.Tuple.Reflection
+import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Lemmas for concrete matrices `Matrix (Fin m) (Fin n) α`
@@ -22,7 +22,7 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 ## Main definitions
 
 * `Matrix.transposeᵣ`
-* `Matrix.dotProductᵣ`
+* `dotProductᵣ`
 * `Matrix.mulᵣ`
 * `Matrix.mulVecᵣ`
 * `Matrix.vecMulᵣ`
@@ -42,7 +42,7 @@ def Forall : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
   | 0, _, P => P (of ![])
   | _ + 1, _, P => FinVec.Forall fun r => Forall fun A => P (of (Matrix.vecCons r A))
 
-/-- This can be use to prove
+/-- This can be used to prove
 ```lean
 example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
   (∀ x, P x) ↔ ∀ a b c d e f, P !![a, b, c; d, e, f] :=
@@ -64,7 +64,7 @@ def Exists : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
   | 0, _, P => P (of ![])
   | _ + 1, _, P => FinVec.Exists fun r => Exists fun A => P (of (Matrix.vecCons r A))
 
-/-- This can be use to prove
+/-- This can be used to prove
 ```lean
 example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
   (∃ x, P x) ↔ ∃ a b c d e f, P !![a, b, c; d, e, f] :=
@@ -107,7 +107,7 @@ theorem transposeᵣ_eq : ∀ {m n} (A : Matrix (Fin m) (Fin n) α), transpose�
 example (a b c d : α) : transpose !![a, b; c, d] = !![a, c; b, d] :=
   (transposeᵣ_eq _).symm
 
-/-- `Matrix.dotProduct` with better defeq for `Fin` -/
+/-- `dotProduct` with better defeq for `Fin` -/
 def dotProductᵣ [Mul α] [Add α] [Zero α] {m} (a b : Fin m → α) : α :=
   FinVec.sum <| FinVec.seq (FinVec.map (· * ·) a) b
 
@@ -120,11 +120,11 @@ example (a b c d : α) [Mul α] [AddCommMonoid α] :
 -/
 @[simp]
 theorem dotProductᵣ_eq [Mul α] [AddCommMonoid α] {m} (a b : Fin m → α) :
-    dotProductᵣ a b = dotProduct a b := by
+    dotProductᵣ a b = a ⬝ᵥ b := by
   simp_rw [dotProductᵣ, dotProduct, FinVec.sum_eq, FinVec.seq_eq, FinVec.map_eq,
       Function.comp_apply]
 
-example (a b c d : α) [Mul α] [AddCommMonoid α] : dotProduct ![a, b] ![c, d] = a * c + b * d :=
+example (a b c d : α) [Mul α] [AddCommMonoid α] : ![a, b] ⬝ᵥ ![c, d] = a * c + b * d :=
   (dotProductᵣ_eq _ _).symm
 
 /-- `Matrix.mul` with better defeq for `Fin` -/
@@ -146,7 +146,7 @@ example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b�
 @[simp]
 theorem mulᵣ_eq [Mul α] [AddCommMonoid α] (A : Matrix (Fin l) (Fin m) α)
     (B : Matrix (Fin m) (Fin n) α) : mulᵣ A B = A * B := by
-  simp [mulᵣ, Function.comp, Matrix.transpose]
+  simp [mulᵣ, Matrix.transpose]
   rfl
 
 example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
@@ -170,7 +170,7 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 @[simp]
 theorem mulVecᵣ_eq [NonUnitalNonAssocSemiring α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) :
     mulVecᵣ A v = A *ᵥ v := by
-  simp [mulVecᵣ, Function.comp]
+  simp [mulVecᵣ]
   rfl
 
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
@@ -192,7 +192,7 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 @[simp]
 theorem vecMulᵣ_eq [NonUnitalNonAssocSemiring α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) :
     vecMulᵣ v A = v ᵥ* A := by
-  simp [vecMulᵣ, Function.comp]
+  simp [vecMulᵣ]
   rfl
 
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :

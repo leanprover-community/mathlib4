@@ -9,11 +9,11 @@ import Mathlib.Algebra.Exact
 
 # The snake lemma in terms of modules
 
-The snake lemma is proven in `Algebra/Homology/ShortComplex/SnakeLemma.lean` for all abelian
+The snake lemma is proven in `Mathlib/Algebra/Homology/ShortComplex/SnakeLemma.lean` for all abelian
 categories, but for definitional equality and universe issues we reprove them here for modules.
 
 ## Main results
-- `SnakeLemma.δ`: The connecting homomorphism guranteed by the snake lemma.
+- `SnakeLemma.δ`: The connecting homomorphism guaranteed by the snake lemma.
 - `SnakeLemma.exact_δ_left`: The connecting homomorphism is exact on the right.
 - `SnakeLemma.exact_δ_right`: The connecting homomorphism is exact on the left.
 
@@ -80,7 +80,7 @@ lemma SnakeLemma.eq_of_eq (x : K₃)
 
 /--
 **Snake Lemma**
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
                 K₃
                 |
@@ -124,7 +124,7 @@ lemma SnakeLemma.δ_eq (x : K₃) (y) (hy : f₂ y = ι₃ x) (z) (hz : g₁ z =
 
 include hι₂ in
 /--
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
         K₂ -F-→ K₃
         |       |
@@ -142,7 +142,7 @@ C₁
 
 ```
 such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is injective with a
-(set-theoretic) retraction `ρ`, and `ι₃` is injective, then `K₂ -F→ K₂ -δ→ C₁` is exact.
+(set-theoretic) retraction `ρ`, and `ι₃` is injective, then `K₂ -F→ K₃ -δ→ C₁` is exact.
 -/
 lemma SnakeLemma.exact_δ_right (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ = ι₃.comp F)
     (h : Injective ι₃) :
@@ -163,7 +163,7 @@ lemma SnakeLemma.exact_δ_right (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ 
 
 include hπ₂ in
 /--
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
                 K₃
                 |
@@ -181,11 +181,10 @@ C₁ -G-→ C₂
 
 ```
 such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is injective with a
-(set-theoretic) retraction `ρ`, and `π₁` is surjective, then `K₂ -δ→ C₁ -G→ C₂` is exact.
+(set-theoretic) retraction `ρ`, and `π₁` is surjective, then `K₃ -δ→ C₁ -G→ C₂` is exact.
 -/
 lemma SnakeLemma.exact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π₂.comp g₁) (h : Surjective π₁) :
     Exact (δ i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁) G := by
-  haveI H₁ : ∀ x, f₂ (σ x) = x := congr_fun hσ
   haveI H₂ := δ_aux i₂ i₃ f₂ g₁ g₂ hg h₂ σ hσ ρ hρ ι₃ hι₃
   intro x
   constructor
@@ -196,11 +195,11 @@ lemma SnakeLemma.exact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π
       g₂.comp_apply, hy, hg.apply_apply_eq_zero])
     exact ⟨z, δ_eq i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁ _ _ hz.symm _ hy.symm⟩
   · rintro ⟨x, rfl⟩
-    simp only [δ, id_eq, coe_mk, AddHom.coe_mk]
+    simp only [δ, coe_mk, AddHom.coe_mk]
     rw [← G.comp_apply, hF, π₂.comp_apply, H₂, hπ₂.apply_apply_eq_zero]
 
 /--
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
                 K₃
                 |
@@ -232,7 +231,7 @@ lemma SnakeLemma.δ'_eq (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
 
 include hι₂ in
 /--
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
         K₂ -F-→ K₃
         |       |
@@ -250,7 +249,7 @@ C₁
 
 ```
 such that `f₂` is surjective, `g₁` is injective, and `ι₃` is injective,
-then `K₂ -F→ K₂ -δ→ C₁` is exact.
+then `K₂ -F→ K₃ -δ→ C₁` is exact.
 -/
 lemma SnakeLemma.exact_δ'_right (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
     (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ = ι₃.comp F) (h : Injective ι₃) :
@@ -259,7 +258,7 @@ lemma SnakeLemma.exact_δ'_right (hf₂ : Surjective f₂) (hg₁ : Injective g�
 
 include hπ₂ in
 /--
-Supppose we have an exact commutative diagram
+Suppose we have an exact commutative diagram
 ```
                 K₃
                 |
@@ -277,7 +276,7 @@ C₁ -G-→ C₂
 
 ```
 such that `f₂` is surjective, `g₁` is injective, and `π₁` is surjective,
-then `K₂ -δ→ C₁ -G→ C₂` is exact.
+then `K₃ -δ→ C₁ -G→ C₂` is exact.
 -/
 lemma SnakeLemma.exact_δ'_left (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
     (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π₂.comp g₁) (h : Surjective π₁) :

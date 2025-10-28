@@ -3,10 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.Data.Finsupp.Defs
 
 /-!
 # The pointwise product on `Finsupp`.
@@ -51,15 +51,17 @@ theorem mul_apply {g₁ g₂ : α →₀ β} {a : α} : (g₁ * g₂) a = g₁ a
 theorem single_mul (a : α) (b₁ b₂ : β) : single a (b₁ * b₂) = single a b₁ * single a b₂ :=
   (zipWith_single_single _ _ _ _ _).symm
 
+lemma support_mul_subset_left {g₁ g₂ : α →₀ β} :
+    (g₁ * g₂).support ⊆ g₁.support := fun x hx => by
+  aesop
+
+lemma support_mul_subset_right {g₁ g₂ : α →₀ β} :
+    (g₁ * g₂).support ⊆ g₂.support := fun x hx => by
+  aesop
+
 theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
-    (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support := by
-  intro a h
-  simp only [mul_apply, mem_support_iff] at h
-  simp only [mem_support_iff, mem_inter, Ne]
-  rw [← not_or]
-  intro w
-  apply h
-  cases' w with w w <;> (rw [w]; simp)
+    (g₁ * g₂).support ⊆ g₁.support ∩ g₂.support :=
+  subset_inter support_mul_subset_left support_mul_subset_right
 
 instance : MulZeroClass (α →₀ β) :=
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul

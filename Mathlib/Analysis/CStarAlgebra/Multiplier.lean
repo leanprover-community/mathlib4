@@ -3,7 +3,6 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Jon Bannon
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
@@ -73,7 +72,6 @@ scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 
 
 open MultiplierAlgebra
 
--- Porting note: `ext` was generating the wrong extensionality lemma; it deconstructed the `×`.
 @[ext]
 lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
@@ -123,7 +121,7 @@ instance instNeg : Neg 𝓜(𝕜, A) where
     { toProd := -a.toProd
       central := fun x y =>
         show -a.snd x * y = x * -a.fst y by
-          simp only [ContinuousLinearMap.neg_apply, neg_mul, mul_neg, central] }
+          simp only [neg_mul, mul_neg, central] }
 
 instance instSub : Sub 𝓜(𝕜, A) where
   sub a b :=
@@ -193,9 +191,10 @@ instance instIntCast : IntCast 𝓜(𝕜, A) where
 instance instPow : Pow 𝓜(𝕜, A) ℕ where
   pow a n :=
     ⟨a.toProd ^ n, fun x y => by
-      induction' n with k hk generalizing x y
-      · rfl
-      · rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
+      induction n generalizing x y with
+      | zero => rfl
+      | succ k hk =>
+        rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
         rw [pow_succ' a.snd, mul_apply, a.central, hk, pow_succ a.fst, mul_apply]⟩
 
 instance instInhabited : Inhabited 𝓜(𝕜, A) :=
@@ -225,15 +224,9 @@ theorem one_toProd : (1 : 𝓜(𝕜, A)).toProd = 1 :=
 theorem natCast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_toProd := natCast_toProd
-
 @[simp]
 theorem intCast_toProd (n : ℤ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_toProd := intCast_toProd
 
 @[simp]
 theorem pow_toProd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).toProd = a.toProd ^ n :=
@@ -280,26 +273,14 @@ theorem mul_snd (a b : 𝓜(𝕜, A)) : (a * b).snd = b.snd * a.snd :=
 theorem natCast_fst (n : ℕ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_fst := natCast_fst
-
 theorem natCast_snd (n : ℕ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_snd := natCast_snd
 
 theorem intCast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_fst := intCast_fst
-
 theorem intCast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_snd := intCast_snd
 
 theorem pow_fst (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
   rfl
@@ -336,7 +317,7 @@ instance instRing : Ring 𝓜(𝕜, A) :=
 
 /-- The canonical map `DoubleCentralizer.toProd` as an additive group homomorphism. -/
 @[simps]
-def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A) where
+noncomputable def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A) where
   toFun := toProd
   map_zero' := rfl
   map_add' _x _y := rfl
@@ -352,25 +333,26 @@ def toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜]
 
 /-- The module structure is inherited as the pullback under the additive group monomorphism
 `DoubleCentralizer.toProd : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A)` -/
-instance instModule {S : Type*} [Semiring S] [Module S A] [SMulCommClass 𝕜 S A]
+noncomputable instance instModule {S : Type*} [Semiring S] [Module S A] [SMulCommClass 𝕜 S A]
     [ContinuousConstSMul S A] [IsScalarTower S A A] [SMulCommClass S A A] : Module S 𝓜(𝕜, A) :=
   Function.Injective.module S toProdHom (ext (𝕜 := 𝕜) (A := A)) fun _x _y => rfl
 
 -- TODO: generalize to `Algebra S 𝓜(𝕜, A)` once `ContinuousLinearMap.algebra` is generalized.
 instance instAlgebra : Algebra 𝕜 𝓜(𝕜, A) where
-  toFun k :=
-    { toProd := algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A)) k
-      central := fun x y => by
-        simp_rw [Prod.algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_apply, one_apply,
-          mul_smul_comm, smul_mul_assoc] }
-  map_one' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_one <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
-  map_mul' _ _ :=
-    ext (𝕜 := 𝕜) (A := A) _ _ <|
-      Prod.ext (map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _)
-        ((map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _).trans (Algebra.commutes _ _))
-  map_zero' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_zero <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
-  map_add' _ _ := ext (𝕜 := 𝕜) (A := A) _ _ <|
-    map_add (algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))) _ _
+  algebraMap :=
+  { toFun k :=
+      { toProd := algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A)) k
+        central := fun x y => by
+          simp_rw [Prod.algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_apply, one_apply,
+            mul_smul_comm, smul_mul_assoc] }
+    map_one' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_one <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
+    map_mul' _ _ :=
+      ext (𝕜 := 𝕜) (A := A) _ _ <|
+        Prod.ext (map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _)
+          ((map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _).trans (Algebra.commutes _ _))
+    map_zero' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_zero <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
+    map_add' _ _ := ext (𝕜 := 𝕜) (A := A) _ _ <|
+      map_add (algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))) _ _ }
   commutes' _ _ := ext (𝕜 := 𝕜) (A := A) _ _ <|
     Prod.ext (Algebra.commutes _ _) (Algebra.commutes _ _).symm
   smul_def' _ _ := ext (𝕜 := 𝕜) (A := A) _ _ <|
@@ -440,22 +422,18 @@ end Star
 ### Coercion from an algebra into its multiplier algebra
 -/
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The natural coercion of `A` into `𝓜(𝕜, A)` given by sending `a : A` to the pair of linear
 maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`, respectively.
 
 Warning: if `A = 𝕜`, then this is a coercion which is not definitionally equal to the
 `algebraMap 𝕜 𝓜(𝕜, 𝕜)` coercion, but these are propositionally equal. See
 `DoubleCentralizer.coe_eq_algebraMap` below. -/
--- Porting note: added `noncomputable`; IR check does not recognise `ContinuousLinearMap.mul`
 @[coe]
 protected noncomputable def coe (a : A) : 𝓜(𝕜, A) :=
   { fst := ContinuousLinearMap.mul 𝕜 A a
     snd := (ContinuousLinearMap.mul 𝕜 A).flip a
     central := fun _x _y => mul_assoc _ _ _ }
-
-variable {𝕜}
 
 /-- The natural coercion of `A` into `𝓜(𝕜, A)` given by sending `a : A` to the pair of linear
 maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`, respectively.
@@ -528,19 +506,16 @@ theorem norm_def' (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdMulOppositeHom a‖ :
 theorem nnnorm_def' (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdMulOppositeHom a‖₊ :=
   rfl
 
-instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
+noncomputable instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instModule with
-    norm_smul_le := fun k a => (norm_smul_le k a.toProdMulOpposite : _) }
+    norm_smul_le := fun k a => (norm_smul_le k a.toProdMulOpposite :) }
 
-instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) :=
+noncomputable instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instAlgebra, DoubleCentralizer.instNormedSpace with }
 
 theorem isUniformEmbedding_toProdMulOpposite :
     IsUniformEmbedding (toProdMulOpposite (𝕜 := 𝕜) (A := A)) :=
   isUniformEmbedding_comap toProdMulOpposite_injective
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toProdMulOpposite := isUniformEmbedding_toProdMulOpposite
 
 instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range isUniformEmbedding_toProdMulOpposite.isUniformInducing]
@@ -560,10 +535,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
   -- a handy lemma for this proof
   have h0 : ∀ f : A →L[𝕜] A, ∀ C : ℝ≥0, (∀ b : A, ‖f b‖₊ ^ 2 ≤ C * ‖f b‖₊ * ‖b‖₊) → ‖f‖₊ ≤ C := by
     intro f C h
-    have h1 : ∀ b, C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by
-      intro b
-      convert mul_le_mul_right' (mul_le_mul_left' (f.le_opNNNorm b) C) ‖b‖₊ using 1
-      ring
+    have h1 b : C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by grw [f.le_opNNNorm b]; ring_nf; rfl
     have := NNReal.div_le_of_le_mul <| f.opNNNorm_le_bound _ <| by
       simpa only [sqrt_sq, sqrt_mul] using fun b ↦ sqrt_le_sqrt.2 <| (h b).trans (h1 b)
     convert NNReal.rpow_le_rpow this two_pos.le
@@ -578,7 +550,6 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
       _ ≤ ‖a.snd (star (a.fst b))‖₊ * ‖b‖₊ := (a.central (star (a.fst b)) b ▸ nnnorm_mul_le _ _)
       _ ≤ ‖a.snd‖₊ * ‖a.fst b‖₊ * ‖b‖₊ :=
         nnnorm_star (a.fst b) ▸ mul_le_mul_right' (a.snd.le_opNNNorm _) _
-
   have h2 : ∀ b, ‖a.snd b‖₊ ^ 2 ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ := by
     intro b
     calc
@@ -589,7 +560,6 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
       _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := mul_comm _ _
       _ ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ :=
         nnnorm_star (a.snd b) ▸ mul_le_mul_right' (a.fst.le_opNNNorm _) _
-
   exact le_antisymm (h0 _ _ h1) (h0 _ _ h2)
 
 theorem nnnorm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a.snd‖₊ :=
@@ -630,7 +600,7 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
     On the other hand, for any `‖z‖ ≤ 1`, we may choose `x := star z` and `y := z` to get:
     `‖star (L (star x)) * L y‖ = ‖star (L z) * (L z)‖ = ‖L z‖ ^ 2`, and taking the supremum over
     all such `z` yields that the supremum is at least `‖L‖ ^ 2`. It is the latter part of the
-    argument where `DenselyNormedField 𝕜` is required (for `sSup_closed_unit_ball_eq_nnnorm`). -/
+    argument where `DenselyNormedField 𝕜` is required (for `sSup_unitClosedBall_eq_nnnorm`). -/
       have hball : (Metric.closedBall (0 : A) 1).Nonempty :=
         Metric.nonempty_closedBall.2 zero_le_one
       have key :
@@ -645,17 +615,17 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
               (a.fst.le_opNorm_of_le hy))
           _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
       rw [← nnnorm_snd]
-      simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
+      simp only [mul_snd, ← sSup_unitClosedBall_eq_nnnorm, star_snd, mul_apply]
       simp only [← @opNNNorm_mul_apply 𝕜 _ A]
-      simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
+      simp only [← sSup_unitClosedBall_eq_nnnorm, mul_apply']
       refine csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) ?_ fun r hr => ?_
       · rintro - ⟨x, hx, rfl⟩
         refine csSup_le (hball.image _) ?_
         rintro - ⟨y, hy, rfl⟩
         exact key x y (mem_closedBall_zero_iff.1 hx) (mem_closedBall_zero_iff.1 hy)
-      · simp only [Set.mem_image, Set.mem_setOf_eq, exists_prop, exists_exists_and_eq_and]
+      · simp only [Set.mem_image, exists_exists_and_eq_and]
         have hr' : NNReal.sqrt r < ‖a‖₊ := ‖a‖₊.sqrt_mul_self ▸ NNReal.sqrt_lt_sqrt.2 hr
-        simp_rw [← nnnorm_fst, ← sSup_closed_unit_ball_eq_nnnorm] at hr'
+        simp_rw [← nnnorm_fst, ← sSup_unitClosedBall_eq_nnnorm] at hr'
         obtain ⟨_, ⟨x, hx, rfl⟩, hxr⟩ := exists_lt_of_lt_csSup (hball.image _) hr'
         have hx' : ‖x‖₊ ≤ 1 := mem_closedBall_zero_iff.1 hx
         refine ⟨star x, mem_closedBall_zero_iff.2 ((nnnorm_star x).trans_le hx'), ?_⟩

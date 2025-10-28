@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Two
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Data.Nat.Periodic
-import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.Divisors
 
 /-!
 # Euler's totient function
@@ -20,8 +20,7 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 `totient_prime_pow`.
 -/
 
-assert_not_exists Algebra
-assert_not_exists LinearMap
+assert_not_exists Algebra LinearMap
 
 open Finset
 
@@ -48,8 +47,8 @@ theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n �
   let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=
     { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
       invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
-      left_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta]
-      right_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta] }
+      left_inv := fun m => by simp only [Subtype.coe_eta]
+      right_inv := fun m => by simp only [Subtype.coe_eta] }
   rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]
 
 theorem totient_le (n : ℕ) : φ n ≤ n :=
@@ -75,30 +74,28 @@ theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
   rw [totient, filter_Ico_card_eq_of_periodic, count_eq_card_filter_range]
   exact periodic_coprime a
 
-theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
+theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_ne_zero : a ≠ 0) :
     #{x ∈ Ico k (k + n) | a.Coprime x} ≤ totient a * (n / a + 1) := by
   conv_lhs => rw [← Nat.mod_add_div n a]
-  induction' n / a with i ih
-  · rw [← filter_coprime_Ico_eq_totient a k]
-    simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
-      zero_add]
+  induction n / a with
+  | zero =>
+    rw [← filter_coprime_Ico_eq_totient a k]
+    simp only [add_zero, mul_one, mul_zero, zero_add]
     gcongr
-    exact Ico_subset_Ico rfl.le (add_le_add_left (le_of_lt (mod_lt n a_pos)) k)
+    exact le_of_lt (mod_lt n (pos_iff_ne_zero.mpr a_ne_zero))
+  | succ i ih => ?_
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
     #{x ∈ Ico k (k + n % a + a * i + a) | a.Coprime x}
-      = #{x ∈ Ico k (k + n % a + a * i) ∪
+      ≤ #{x ∈ Ico k (k + n % a + a * i) ∪
         Ico (k + n % a + a * i) (k + n % a + a * i + a) | a.Coprime x} := by
-      congr
-      rw [Ico_union_Ico_eq_Ico]
-      · rw [add_assoc]
-        exact le_self_add
-      exact le_self_add
+      gcongr
+      apply Ico_subset_Ico_union_Ico
     _ ≤ #{x ∈ Ico k (k + n % a + a * i) | a.Coprime x} + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
       apply card_union_le
-    _ ≤ a.totient * i + a.totient + a.totient := add_le_add_right ih (totient a)
+    _ ≤ a.totient * i + a.totient + a.totient := by grw [← mul_add_one, ih]
 
 open ZMod
 
@@ -126,7 +123,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
 
 theorem totient_mul {m n : ℕ} (h : m.Coprime n) : φ (m * n) = φ m * φ n :=
   if hmn0 : m * n = 0 then by
-    cases' Nat.mul_eq_zero.1 hmn0 with h h <;>
+    rcases Nat.mul_eq_zero.1 hmn0 with h | h <;>
       simp only [totient_zero, mul_zero, zero_mul, h]
   else by
     haveI : NeZero (m * n) := ⟨hmn0⟩
@@ -144,7 +141,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
   rw [Nat.mul_div_cancel_left x hd0]
   apply Finset.card_bij fun k _ => d * k
   · simp only [mem_filter, mem_range, and_imp, Coprime]
-    refine fun a ha1 ha2 => ⟨(mul_lt_mul_left hd0).2 ha1, ?_⟩
+    refine fun a ha1 ha2 => ⟨by gcongr, ?_⟩
     rw [gcd_mul_left, ha2, mul_one]
   · simp [hd0.ne']
   · simp only [mem_filter, mem_range, exists_prop, and_imp]
@@ -153,8 +150,8 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
       rw [← hb2]
       apply gcd_dvd_right
     rcases this with ⟨q, rfl⟩
-    refine ⟨q, ⟨⟨(mul_lt_mul_left hd0).1 hb1, ?_⟩, rfl⟩⟩
-    rwa [gcd_mul_left, mul_right_eq_self_iff hd0] at hb2
+    refine ⟨q, ⟨⟨(mul_lt_mul_iff_right₀ hd0).1 hb1, ?_⟩, rfl⟩⟩
+    rwa [gcd_mul_left, mul_eq_left hd0.ne'] at hb2
 
 theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
@@ -182,7 +179,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
         (by
           rw [sdiff_eq_filter]
           apply filter_congr
-          simp only [mem_range, mem_filter, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
+          simp only [mem_range, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
             hp.coprime_iff_not_dvd]
           intro a ha
           constructor
@@ -197,8 +194,8 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
         simp only [mem_image, mem_range, exists_imp]
         rintro b ⟨h, rfl⟩
         rw [Nat.pow_succ]
-        exact (mul_lt_mul_right hp.pos).2 h
-      rw [card_sdiff h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←
+        exact (mul_lt_mul_iff_left₀ hp.pos).2 h
+      rw [card_sdiff_of_subset h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←
         one_mul (p ^ n), pow_succ', ← tsub_mul, one_mul, mul_comm]
 
 /-- When `p` is prime, then the totient of `p ^ n` is `p ^ (n - 1) * (p - 1)` -/
@@ -218,11 +215,12 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
     · rintro rfl
       rw [totient_one, tsub_self] at h
       exact one_ne_zero h
-  rw [totient_eq_card_coprime, range_eq_Ico, ← Ico_insert_succ_left hp.le, Finset.filter_insert,
-    if_neg (not_coprime_of_dvd_of_dvd hp (dvd_refl p) (dvd_zero p)), ← Nat.card_Ico 1 p] at h
+  rw [totient_eq_card_coprime, range_eq_Ico, ← Finset.insert_Ico_add_one_left_eq_Ico hp.le,
+    Finset.filter_insert, if_neg (not_coprime_of_dvd_of_dvd hp (dvd_refl p) (dvd_zero p)),
+    ← Nat.card_Ico 1 p] at h
   refine
     p.prime_of_coprime hp fun n hn hnz => Finset.filter_card_eq h n <| Finset.mem_Ico.mpr ⟨?_, hn⟩
-  rwa [succ_le_iff, pos_iff_ne_zero]
+  cutsat
 
 theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
     Fintype.card (ZMod p)ˣ ≤ p - 1 := by
@@ -232,7 +230,7 @@ theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
 
 theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
-  cases' eq_zero_or_neZero p with hp hp
+  rcases eq_zero_or_neZero p with hp | hp
   · subst hp
     simp only [ZMod, not_prime_zero, false_iff, zero_tsub]
     -- the subst created a non-defeq but subsingleton instance diamond; resolve it
@@ -243,6 +241,11 @@ theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
 @[simp]
 theorem totient_two : φ 2 = 1 :=
   (totient_prime prime_two).trans rfl
+
+/-- Euler's totient function is only odd at `1` or `2`. -/
+theorem odd_totient_iff {n : ℕ} :
+    Odd (φ n) ↔ n = 1 ∨ n = 2 := by
+  rcases n with _ | _ | _ | _ <;> simp [Nat.totient_even]
 
 theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
   | 0 => by simp
@@ -255,6 +258,21 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
   rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> norm_num
+
+theorem odd_totient_iff_eq_one {n : ℕ} :
+    Odd (φ n) ↔ φ n = 1 := by
+  simp [Nat.odd_totient_iff, Nat.totient_eq_one_iff]
+
+/-- `Nat.totient m` and `Nat.totient n` are coprime iff one of them is 1. -/
+theorem totient_coprime_totient_iff (m n : ℕ) :
+    (φ m).Coprime (φ n) ↔ (m = 1 ∨ m = 2) ∨ (n = 1 ∨ n = 2) := by
+  constructor
+  · rw [← not_imp_not]
+    simp_rw [← odd_totient_iff, not_or, not_odd_iff_even, even_iff_two_dvd]
+    exact fun h ↦ Nat.not_coprime_of_dvd_of_dvd one_lt_two h.1 h.2
+  · simp_rw [← totient_eq_one_iff]
+    rintro (h | h) <;> rw [h]
+    exacts [Nat.coprime_one_left _, Nat.coprime_one_right _]
 
 /-! ### Euler's product formula for the totient function
 
@@ -328,9 +346,9 @@ theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) :=
   · simp
   have hd0 : 0 < d := Nat.gcd_pos_of_pos_left _ ha0
   apply le_of_mul_le_mul_right _ hd0
-  rw [← totient_gcd_mul_totient_mul a b, mul_comm]
-  apply mul_le_mul_left' (Nat.totient_le d)
+  grw [← totient_gcd_mul_totient_mul a b, mul_comm, d.totient_le]
 
+@[gcongr]
 theorem totient_dvd_of_dvd {a b : ℕ} (h : a ∣ b) : φ a ∣ φ b := by
   rcases eq_or_ne a 0 with (rfl | ha0)
   · simp [zero_dvd_iff.1 h]
@@ -353,3 +371,19 @@ theorem totient_mul_of_prime_of_not_dvd {p n : ℕ} (hp : p.Prime) (h : ¬p ∣ 
   simpa [h] using coprime_or_dvd_of_prime hp n
 
 end Nat
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq
+
+/-- Extension for `Nat.totient`. -/
+@[positivity Nat.totient _]
+def evalNatTotient : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.totient $n) =>
+    assumeInstancesCommute
+    match ← core z p n with
+    | .positive pa => return .positive q(Nat.totient_pos.mpr $pa)
+    | _ => failure
+  | _, _, _ => throwError "not Nat.totient"
+
+end Mathlib.Meta.Positivity

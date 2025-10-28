@@ -12,7 +12,9 @@ private axiom test_sorry : ∀ {α}, α
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
-@[instance] axiom Real.linearOrderedField : LinearOrderedField ℝ
+@[instance] axiom Real.field : Field ℝ
+@[instance] axiom Real.linearOrder : LinearOrder ℝ
+@[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
 /-! ### Simple Cases with ℤ and two or less equations -/
 
@@ -133,7 +135,7 @@ variable {K V : Type*}
 section
 variable [AddCommGroup V] [Field K] [CharZero K] [Module K V] {a b μ ν : K} {v w x y : V}
 
-example  (h : a ^ 2 + b ^ 2 = 1) : a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
+example (h : a ^ 2 + b ^ 2 = 1) : a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
   linear_combination (norm := module) h • x
 
 example (h1 : a • x + b • y = 0) (h2 : a • μ • x + b • ν • y = 0) : (μ - ν) • a • x = 0 := by
@@ -150,22 +152,25 @@ example (h : a + b ≠ 0) (H : a • x = b • y) : x = (b / (a + b)) • (x + y
 
 end
 
-example [OrderedCommSemiring K] [OrderedCancelAddCommMonoid V] [Module K V] [OrderedSMul K V]
+example [CommSemiring K] [PartialOrder K] [IsOrderedRing K] [AddCommMonoid V] [PartialOrder V]
+    [IsOrderedCancelAddMonoid V] [Module K V] [PosSMulStrictMono K V]
     {x y r : V} (hx : x < r) (hy : y < r) {a b : K} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) :
     a • x + b • y < r := by
   linear_combination (norm := skip) a • hx + b • hy + hab • r
   apply le_of_eq
   module
 
-example [OrderedCommSemiring K] [OrderedCancelAddCommMonoid V] [Module K V] [OrderedSMul K V]
+example [CommSemiring K] [PartialOrder K] [IsOrderedRing K]
+    [AddCommMonoid V] [PartialOrder V] [IsOrderedCancelAddMonoid V] [Module K V] [PosSMulMono K V]
     {x y z : V} (hyz : y ≤ z) {a b : K} (hb : 0 ≤ b) (hab : a + b = 1) (H : z ≤ a • x + b • y) :
     a • z ≤ a • x := by
   linear_combination (norm := skip) b • hyz + hab • z + H
   apply le_of_eq
   module
 
-example [OrderedCommRing K] [OrderedAddCommGroup V] [Module K V] [OrderedSMul K V]
-    {x y : V} (hx : 0 < x) (hxy : x < y) {a b c : K} (hc : 0 < c) (hac : c < a) (hab : a + b ≤ 1):
+example [CommRing K] [PartialOrder K] [IsOrderedRing K] [AddCommGroup V] [PartialOrder V]
+    [IsOrderedAddMonoid V] [Module K V] [IsStrictOrderedModule K V]
+    {x y : V} (hx : 0 < x) (hxy : x < y) {a b c : K} (hc : 0 < c) (hac : c < a) (hab : a + b ≤ 1) :
     c • x + b • y < y := by
   have := hx.trans hxy
   linear_combination (norm := skip) hab • y + hac • y + c • hxy
@@ -192,7 +197,7 @@ in particular negation/subtraction does not "distribute". The following four tes
 current behaviour, without taking a stance on whether this should be considered a feature or a bug.
 -/
 
-example {a : ℕ}  (h : a = 3) : a ^ 2 + 3 = 4 * a := by
+example {a : ℕ} (h : a = 3) : a ^ 2 + 3 = 4 * a := by
   linear_combination a * h - h
 
 /--
@@ -309,14 +314,14 @@ example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination ha
 --   sake of simplicity, but the tactic could potentially be modified to allow
 --   this behavior.
 /--
-error: application type mismatch
-  Mathlib.Tactic.LinearCombination.mul_const_eq h2 0
-argument
+error: Application type mismatch: The argument
   0
 has type
-  ℝ : Type
+  ℝ
 but is expected to have type
-  ℤ : Type
+  ℤ
+in the application
+  Mathlib.Tactic.LinearCombination.mul_const_eq h2 0
 -/
 #guard_msgs in
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by

@@ -3,8 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jack McKoen
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
+import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
@@ -21,12 +21,12 @@ category structure on `SSet`.
 
 universe u
 
-open Simplicial CategoryTheory MonoidalCategory
+open Simplicial CategoryTheory MonoidalCategory Limits
 
 namespace SSet
 
-noncomputable instance : ChosenFiniteProducts SSet.{u} :=
-  (inferInstance : ChosenFiniteProducts (SimplexCategoryᵒᵖ ⥤ Type u))
+instance : CartesianMonoidalCategory SSet.{u} :=
+  (inferInstance : CartesianMonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type u))
 
 @[simp]
 lemma leftUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (𝟙_ _ ⊗ K).obj Δ) :
@@ -47,7 +47,7 @@ lemma rightUnitor_inv_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x :
 @[simp]
 lemma tensorHom_app_apply {K K' L L' : SSet.{u}} (f : K ⟶ K') (g : L ⟶ L')
     {Δ : SimplexCategoryᵒᵖ} (x : (K ⊗ L).obj Δ) :
-    (f ⊗ g).app Δ x = ⟨f.app Δ x.1, g.app Δ x.2⟩ := rfl
+    (f ⊗ₘ g).app Δ x = ⟨f.app Δ x.1, g.app Δ x.2⟩ := rfl
 
 @[simp]
 lemma whiskerLeft_app_apply (K : SSet.{u}) {L L' : SSet.{u}} (g : L ⟶ L')
@@ -69,11 +69,11 @@ lemma associator_inv_app_apply (K L M : SSet.{u}) {Δ : SimplexCategoryᵒᵖ}
     (x : (K ⊗ L ⊗ M).obj Δ) :
     (α_ K L M).inv.app Δ x = ⟨⟨x.1, x.2.1⟩, x.2.2⟩ := rfl
 
-/-- The bijection `(𝟙_ SSet ⟶ K) ≃ K _[0]`. -/
-def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _[0] where
+/-- The bijection `(𝟙_ SSet ⟶ K) ≃ K _⦋0⦌`. -/
+def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _⦋0⦌ where
   toFun φ := φ.app _ PUnit.unit
   invFun x :=
-    { app := fun Δ _ => K.map (SimplexCategory.const Δ.unop [0] 0).op x
+    { app := fun Δ _ => K.map (SimplexCategory.const Δ.unop ⦋0⦌ 0).op x
       naturality := fun Δ Δ' f => by
         ext ⟨⟩
         dsimp
@@ -85,5 +85,16 @@ def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _[0] where
     rw [← FunctorToTypes.naturality]
     rfl
   right_inv x := by simp
+
+/-- The object `Δ[0]` is terminal in `SSet`. -/
+def stdSimplex.isTerminalObj₀ : IsTerminal (Δ[0] : SSet.{u}) :=
+  IsTerminal.ofUniqueHom (fun _ ↦ SSet.const (obj₀Equiv.symm 0))
+    (fun _ _ ↦ by
+      ext ⟨n⟩
+      exact objEquiv.injective (by ext; simp))
+
+@[ext]
+lemma stdSimplex.ext₀ {X : SSet.{u}} {f g : X ⟶ Δ[0]} : f = g :=
+  isTerminalObj₀.hom_ext _ _
 
 end SSet

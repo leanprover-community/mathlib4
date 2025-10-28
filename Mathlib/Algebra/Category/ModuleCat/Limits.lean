@@ -5,7 +5,8 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.DirectLimit
+import Mathlib.Algebra.Colimit.Module
+import Mathlib.Algebra.Module.Shrink
 
 /-!
 # The category of R-modules has all limits
@@ -40,9 +41,9 @@ instance moduleObj (j) :
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
 -/
 def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
-  { AddGrp.sectionsAddSubgroup.{v, w}
-      (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{w} ⋙
-          forget₂ AddCommGrp AddGrp.{w}) with
+  { AddGrpCat.sectionsAddSubgroup.{v, w}
+      (F ⋙ forget₂ (ModuleCat R) AddCommGrpCat.{w} ⋙
+          forget₂ AddCommGrpCat AddGrpCat.{w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
     smul_mem' := fun r s sh j j' f => by
       simpa [Functor.sections, forget_map] using congr_arg (r • ·) (sh f) }
@@ -81,7 +82,7 @@ def limitπLinearMap (j) :
   toFun := (Types.Small.limitCone (F ⋙ forget (ModuleCat R))).π.app j
   map_smul' _ _ := by
     simp only [Types.Small.limitCone_π_app,
-      ← Shrink.linearEquiv_apply (F ⋙ forget (ModuleCat R)).sections R, map_smul]
+      ← Shrink.linearEquiv_apply R (F ⋙ forget (ModuleCat R)).sections, map_smul]
     simp only [Shrink.linearEquiv_apply]
     rfl
   map_add' _ _ := by
@@ -133,8 +134,6 @@ instance hasLimit : HasLimit F := HasLimit.mk {
 /-- If `J` is `u`-small, the category of `R`-modules has limits of shape `J`. -/
 lemma hasLimitsOfShape [Small.{w} J] : HasLimitsOfShape J (ModuleCat.{w} R) where
 
--- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
--- is a `Prop`, declaring this as `irreducible` should presumably have no effect
 /-- The category of R-modules has all limits. -/
 lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (ModuleCat.{w} R) where
   has_limits_of_shape _ := hasLimitsOfShape
@@ -148,15 +147,15 @@ instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂AddCommGroup_preservesLimitsAux :
-    IsLimit ((forget₂ (ModuleCat R) AddCommGrp).mapCone (limitCone F)) :=
-  letI : Small.{w} (Functor.sections ((F ⋙ forget₂ _ AddCommGrp) ⋙ forget _)) :=
+    IsLimit ((forget₂ (ModuleCat R) AddCommGrpCat).mapCone (limitCone F)) :=
+  letI : Small.{w} (Functor.sections ((F ⋙ forget₂ _ AddCommGrpCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R)))
-  AddCommGrp.limitConeIsLimit
-    (F ⋙ forget₂ (ModuleCat.{w} R) _ : J ⥤ AddCommGrp.{w})
+  AddCommGrpCat.limitConeIsLimit
+    (F ⋙ forget₂ (ModuleCat.{w} R) _ : J ⥤ AddCommGrpCat.{w})
 
 /-- The forgetful functor from R-modules to abelian groups preserves all limits. -/
 instance forget₂AddCommGroup_preservesLimit :
-    PreservesLimit F (forget₂ (ModuleCat R) AddCommGrp) :=
+    PreservesLimit F (forget₂ (ModuleCat R) AddCommGrpCat) :=
   preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
     (forget₂AddCommGroup_preservesLimitsAux F)
 
@@ -164,11 +163,11 @@ instance forget₂AddCommGroup_preservesLimit :
 -/
 instance forget₂AddCommGroup_preservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v}
-      (forget₂ (ModuleCat.{w} R) AddCommGrp.{w}) where
+      (forget₂ (ModuleCat.{w} R) AddCommGrpCat.{w}) where
   preservesLimitsOfShape := { preservesLimit := inferInstance }
 
 instance forget₂AddCommGroup_preservesLimits :
-    PreservesLimits (forget₂ (ModuleCat R) AddCommGrp.{w}) :=
+    PreservesLimits (forget₂ (ModuleCat R) AddCommGrpCat.{w}) :=
   ModuleCat.forget₂AddCommGroup_preservesLimitsOfSize.{w, w}
 
 /-- The forgetful functor from R-modules to types preserves all limits.
@@ -185,32 +184,31 @@ instance forget_preservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
 end
 
 instance forget₂AddCommGroup_reflectsLimit :
-    ReflectsLimit F (forget₂ (ModuleCat.{w} R) AddCommGrp) where
+    ReflectsLimit F (forget₂ (ModuleCat.{w} R) AddCommGrpCat) where
   reflects {c} hc := ⟨by
-    have : HasLimit (F ⋙ forget₂ (ModuleCat R) AddCommGrp) := ⟨_, hc⟩
+    have : HasLimit (F ⋙ forget₂ (ModuleCat R) AddCommGrpCat) := ⟨_, hc⟩
     have : Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R))) := by
-      simpa only [AddCommGrp.hasLimit_iff_small_sections] using this
-    have := reflectsLimit_of_reflectsIsomorphisms F (forget₂ (ModuleCat R) AddCommGrp)
+      simpa only [AddCommGrpCat.hasLimit_iff_small_sections] using this
+    have := reflectsLimit_of_reflectsIsomorphisms F (forget₂ (ModuleCat R) AddCommGrpCat)
     exact isLimitOfReflects _ hc⟩
 
 instance forget₂AddCommGroup_reflectsLimitOfShape :
-    ReflectsLimitsOfShape J (forget₂ (ModuleCat.{w} R) AddCommGrp) where
+    ReflectsLimitsOfShape J (forget₂ (ModuleCat.{w} R) AddCommGrpCat) where
 
 instance forget₂AddCommGroup_reflectsLimitOfSize :
-    ReflectsLimitsOfSize.{t, v} (forget₂ (ModuleCat.{w} R) AddCommGrp) where
+    ReflectsLimitsOfSize.{t, v} (forget₂ (ModuleCat.{w} R) AddCommGrpCat) where
 
 section DirectLimit
 
 open Module
 
 variable {ι : Type v}
-variable [dec_ι : DecidableEq ι] [Preorder ι]
+variable [DecidableEq ι] [Preorder ι]
 variable (G : ι → Type v)
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j h => f i j h]
+variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j h ↦ f i j h]
 
-/-- The diagram (in the sense of `CategoryTheory`)
- of an unbundled `directLimit` of modules. -/
+/-- The diagram (in the sense of `CategoryTheory`) of an unbundled `directLimit` of modules. -/
 @[simps]
 def directLimitDiagram : ι ⥤ ModuleCat R where
   obj i := ModuleCat.of R (G i)
@@ -221,7 +219,7 @@ def directLimitDiagram : ι ⥤ ModuleCat R where
   map_comp hij hjk := by
     ext
     symm
-    apply Module.DirectedSystem.map_map
+    apply Module.DirectedSystem.map_map f
 
 variable [DecidableEq ι]
 
@@ -241,16 +239,15 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]
-def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f) where
+def directLimitIsColimit : IsColimit (directLimitCocone G f) where
   desc s := ofHom <|
-    DirectLimit.lift R ι G f (fun i => (s.ι.app i).hom) fun i j h x => by
+    Module.DirectLimit.lift R ι G f (fun i => (s.ι.app i).hom) fun i j h x => by
       simp only [Functor.const_obj_obj]
       rw [← s.w (homOfLE h)]
       rfl
   fac s i := by
     ext
-    dsimp only [directLimitCocone, CategoryStruct.comp]
-    rw [LinearMap.comp_apply]
+    dsimp only [hom_comp, directLimitCocone, hom_ofHom, LinearMap.comp_apply]
     apply DirectLimit.lift_of
   uniq s m h := by
     have :
@@ -260,8 +257,7 @@ def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCoc
       rw [← h]
       rfl
     ext
-    simp only [this]
-    apply Module.DirectLimit.lift_unique
+    simp [this]
 
 end DirectLimit
 

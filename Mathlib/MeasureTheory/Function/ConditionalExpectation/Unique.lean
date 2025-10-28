@@ -13,7 +13,7 @@ Two Lp functions `f, g` which are almost everywhere strongly measurable with res
 `m` and verify `∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ` for all `m`-measurable sets `s` are equal
 almost everywhere. This proves the uniqueness of the conditional expectation, which is not yet
 defined in this file but is introduced in
-`Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic`.
+`Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`.
 
 ## Main statements
 
@@ -45,14 +45,11 @@ section UniquenessOfConditionalExpectation
 
 theorem lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero (hm : m ≤ m0) (f : lpMeas E' 𝕜 m p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
-    -- Porting note: needed to add explicit casts in the next two hypotheses
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn (f : Lp E' p μ) s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, (f : Lp E' p μ) x ∂μ = 0) :
     f =ᵐ[μ] (0 : α → E') := by
   obtain ⟨g, hg_sm, hfg⟩ := lpMeas.ae_fin_strongly_measurable' hm f hp_ne_zero hp_ne_top
   refine hfg.trans ?_
-  -- Porting note: added
-  unfold Filter.EventuallyEq at hfg
   refine ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim hm ?_ ?_ hg_sm
   · intro s hs hμs
     have hfg_restrict : f =ᵐ[μ.restrict s] g := ae_restrict_of_ae hfg
@@ -63,10 +60,6 @@ theorem lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero (hm : m ≤ m0) (f : lpM
     rw [integral_congr_ae hfg_restrict.symm]
     exact hf_zero s hs hμs
 
-@[deprecated (since := "2024-04-17")]
-alias lpMeas.ae_eq_zero_of_forall_set_integral_eq_zero :=
-  lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
-
 variable (𝕜)
 
 include 𝕜 in
@@ -74,24 +67,12 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = 0)
-    (hf_meas : AEStronglyMeasurable' m f μ) : f =ᵐ[μ] 0 := by
+    (hf_meas : AEStronglyMeasurable[m] f μ) : f =ᵐ[μ] 0 := by
   let f_meas : lpMeas E' 𝕜 m p μ := ⟨f, hf_meas⟩
-  -- Porting note: `simp only` does not call `rfl` to try to close the goal. See https://github.com/leanprover-community/mathlib4/issues/5025
-  have hf_f_meas : f =ᵐ[μ] f_meas := by simp only [f_meas, Subtype.coe_mk]; rfl
+  have hf_f_meas : f =ᵐ[μ] f_meas := by simp [f_meas]
   refine hf_f_meas.trans ?_
-  refine lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero hm f_meas hp_ne_zero hp_ne_top ?_ ?_
-  · intro s hs hμs
-    have hfg_restrict : f =ᵐ[μ.restrict s] f_meas := ae_restrict_of_ae hf_f_meas
-    rw [IntegrableOn, integrable_congr hfg_restrict.symm]
-    exact hf_int_finite s hs hμs
-  · intro s hs hμs
-    have hfg_restrict : f =ᵐ[μ.restrict s] f_meas := ae_restrict_of_ae hf_f_meas
-    rw [integral_congr_ae hfg_restrict.symm]
-    exact hf_zero s hs hμs
-
-@[deprecated (since := "2024-04-17")]
-alias Lp.ae_eq_zero_of_forall_set_integral_eq_zero' :=
-  Lp.ae_eq_zero_of_forall_setIntegral_eq_zero'
+  exact lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
+    hm f_meas hp_ne_zero hp_ne_top hf_int_finite hf_zero
 
 include 𝕜 in
 /-- **Uniqueness of the conditional expectation** -/
@@ -99,7 +80,7 @@ theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (h
     (hp_ne_top : p ≠ ∞) (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
     (hfg : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
-    (hf_meas : AEStronglyMeasurable' m f μ) (hg_meas : AEStronglyMeasurable' m g μ) :
+    (hf_meas : AEStronglyMeasurable[m] f μ) (hg_meas : AEStronglyMeasurable[m] g μ) :
     f =ᵐ[μ] g := by
   suffices h_sub : ⇑(f - g) =ᵐ[μ] 0 by
     rw [← sub_ae_eq_zero]; exact (Lp.coeFn_sub f g).symm.trans h_sub
@@ -112,14 +93,8 @@ theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (h
     intro s hs hμs
     rw [IntegrableOn, integrable_congr (ae_restrict_of_ae (Lp.coeFn_sub f g))]
     exact (hf_int_finite s hs hμs).sub (hg_int_finite s hs hμs)
-  have hfg_meas : AEStronglyMeasurable' m (⇑(f - g)) μ :=
-    AEStronglyMeasurable'.congr (hf_meas.sub hg_meas) (Lp.coeFn_sub f g).symm
-  exact
-    Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' 𝕜 hm (f - g) hp_ne_zero hp_ne_top hfg_int hfg'
-      hfg_meas
-
-@[deprecated (since := "2024-04-17")]
-alias Lp.ae_eq_of_forall_set_integral_eq' := Lp.ae_eq_of_forall_setIntegral_eq'
+  exact Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' 𝕜 hm (f - g) hp_ne_zero hp_ne_top hfg_int hfg'
+    <| (hf_meas.sub hg_meas).congr (Lp.coeFn_sub f g).symm
 
 variable {𝕜}
 
@@ -127,28 +102,20 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
     {f g : α → F'} (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
     (hfg_eq : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
-    (hfm : AEStronglyMeasurable' m f μ) (hgm : AEStronglyMeasurable' m g μ) : f =ᵐ[μ] g := by
-  rw [← ae_eq_trim_iff_of_aeStronglyMeasurable' hm hfm hgm]
-  have hf_mk_int_finite :
-    ∀ s, MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ (hfm.mk f) s (μ.trim hm) := by
-    intro s hs hμs
+    (hfm : AEStronglyMeasurable[m] f μ) (hgm : AEStronglyMeasurable[m] g μ) : f =ᵐ[μ] g := by
+  rw [← ae_eq_trim_iff_of_aestronglyMeasurable hm hfm hgm]
+  have hf_mk_int_finite (s) :
+      MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ _ (hfm.mk f) s (μ.trim hm) := by
+    intro hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
-    -- Porting note: `rw [IntegrableOn]` fails with
-    -- synthesized type class instance is not definitionally equal to expression inferred by typing
-    -- rules, synthesized m0 inferred m
-    unfold IntegrableOn
-    rw [restrict_trim hm _ hs]
+    rw [IntegrableOn, restrict_trim hm _ hs]
     refine Integrable.trim hm ?_ hfm.stronglyMeasurable_mk
     exact Integrable.congr (hf_int_finite s hs hμs) (ae_restrict_of_ae hfm.ae_eq_mk)
-  have hg_mk_int_finite :
-    ∀ s, MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ (hgm.mk g) s (μ.trim hm) := by
-    intro s hs hμs
+  have hg_mk_int_finite (s) :
+      MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ _ (hgm.mk g) s (μ.trim hm) := by
+    intro hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
-    -- Porting note: `rw [IntegrableOn]` fails with
-    -- synthesized type class instance is not definitionally equal to expression inferred by typing
-    -- rules, synthesized m0 inferred m
-    unfold IntegrableOn
-    rw [restrict_trim hm _ hs]
+    rw [IntegrableOn, restrict_trim hm _ hs]
     refine Integrable.trim hm ?_ hgm.stronglyMeasurable_mk
     exact Integrable.congr (hg_int_finite s hs hμs) (ae_restrict_of_ae hgm.ae_eq_mk)
   have hfg_mk_eq :
@@ -163,10 +130,6 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
       integral_congr_ae (ae_restrict_of_ae hgm.ae_eq_mk.symm)]
     exact hfg_eq s hs hμs
   exact ae_eq_of_forall_setIntegral_eq_of_sigmaFinite hf_mk_int_finite hg_mk_int_finite hfg_mk_eq
-
-@[deprecated (since := "2024-04-17")]
-alias ae_eq_of_forall_set_integral_eq_of_sigmaFinite' :=
-  ae_eq_of_forall_setIntegral_eq_of_sigmaFinite'
 
 end UniquenessOfConditionalExpectation
 
@@ -207,15 +170,15 @@ theorem integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : �
 
 /-- Let `m` be a sub-σ-algebra of `m0`, `f` an `m0`-measurable function and `g` an `m`-measurable
 function, such that their integrals coincide on `m`-measurable sets with finite measure.
-Then `∫⁻ x in s, ‖g x‖₊ ∂μ ≤ ∫⁻ x in s, ‖f x‖₊ ∂μ` on all `m`-measurable sets with finite
+Then `∫⁻ x in s, ‖g x‖ₑ ∂μ ≤ ∫⁻ x in s, ‖f x‖ₑ ∂μ` on all `m`-measurable sets with finite
 measure. -/
-theorem lintegral_nnnorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
+theorem lintegral_enorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
     (hf : StronglyMeasurable f) (hfi : IntegrableOn f s μ) (hg : StronglyMeasurable[m] g)
     (hgi : IntegrableOn g s μ)
     (hgf : ∀ t, MeasurableSet[m] t → μ t < ∞ → ∫ x in t, g x ∂μ = ∫ x in t, f x ∂μ)
-    (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) : (∫⁻ x in s, ‖g x‖₊ ∂μ) ≤ ∫⁻ x in s, ‖f x‖₊ ∂μ := by
-  rw [← ofReal_integral_norm_eq_lintegral_nnnorm hfi, ←
-    ofReal_integral_norm_eq_lintegral_nnnorm hgi, ENNReal.ofReal_le_ofReal_iff]
+    (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) : (∫⁻ x in s, ‖g x‖ₑ ∂μ) ≤ ∫⁻ x in s, ‖f x‖ₑ ∂μ := by
+  rw [← ofReal_integral_norm_eq_lintegral_enorm hfi, ←
+    ofReal_integral_norm_eq_lintegral_enorm hgi, ENNReal.ofReal_le_ofReal_iff]
   · exact integral_norm_le_of_forall_fin_meas_integral_eq hm hf hfi hg hgi hgf hs hμs
   · positivity
 

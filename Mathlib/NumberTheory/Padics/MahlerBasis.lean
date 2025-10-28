@@ -16,10 +16,10 @@ import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 # The Mahler basis of continuous functions
 
 In this file we introduce the Mahler basis function `mahler k`, for `k : ℕ`, which is the unique
-continuous map `ℤ_[p] → ℚ_[p]` agreeing with `n ↦ n.choose k` for `n ∈ ℕ`.
+continuous map `ℤ_[p] → ℤ_[p]` agreeing with `n ↦ n.choose k` for `n ∈ ℕ`.
 
-Using this, we prove Mahler's theorem, showing that for any any continuous function `f` on `ℤ_[p]`
-(valued in a `p`-adic normed space `E`), the Mahler series `x ↦ ∑' k, mahler k x • Δ^[n] f 0`
+Using this, we prove Mahler's theorem, showing that for any continuous function `f` on `ℤ_[p]`
+(valued in a normed `ℤ_[p]`-module `E`), the Mahler series `x ↦ ∑' k, mahler k x • Δ^[n] f 0`
 converges (uniformly) to `f`, and this construction defines a Banach-space isomorphism between
 `C(ℤ_[p], E)` and the space of sequences `ℕ → E` tending to 0.
 
@@ -66,9 +66,11 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
     ← Ring.factorial_nsmul_multichoose_eq_ascPochhammer, smul_eq_mul, Nat.cast_mul, norm_mul]
   exact mul_le_of_le_one_right (norm_nonneg _) (norm_le_one _)
 
+instance : IsAddTorsionFree ℤ_[p] where
+  nsmul_right_injective _ := smul_right_injective ℤ_[p]
+
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
-  nsmul_right_injective hn := smul_right_injective ℤ_[p] hn
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
   multichoose x k := ⟨(ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]), by
     rw [norm_div, div_le_one (by simpa using k.factorial_ne_zero)]
@@ -90,29 +92,18 @@ lemma continuous_choose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.choose 
 end PadicInt
 
 /--
-The `k`-th Mahler basis function, i.e. the unique continuous function `ℤ_[p] → ℚ_[p]`
+The `k`-th Mahler basis function, i.e. the unique continuous function `ℤ_[p] → ℤ_[p]`
 agreeing with `n ↦ n.choose k` for `n ∈ ℕ`. See [colmez2010], §1.2.1.
 -/
-noncomputable def mahler (k : ℕ) : C(ℤ_[p], ℚ_[p]) where
-  toFun x := ↑(Ring.choose x k)
-  continuous_toFun := continuous_induced_rng.mp (PadicInt.continuous_choose k)
+noncomputable def mahler (k : ℕ) : C(ℤ_[p], ℤ_[p]) where
+  toFun x := Ring.choose x k
+  continuous_toFun := PadicInt.continuous_choose k
 
 lemma mahler_apply (k : ℕ) (x : ℤ_[p]) : mahler k x = Ring.choose x k := rfl
 
 /-- The function `mahler k` extends `n ↦ n.choose k` on `ℕ`. -/
 lemma mahler_natCast_eq (k n : ℕ) : mahler k (n : ℤ_[p]) = n.choose k := by
-  simp only [mahler_apply, Ring.choose_natCast, PadicInt.coe_natCast]
-
-/--
-The uniform norm of the `k`-th Mahler basis function is 1, for every `k`.
--/
-@[simp] lemma norm_mahler_eq (k : ℕ) : ‖(mahler k : C(ℤ_[p], ℚ_[p]))‖ = 1 := by
-  apply le_antisymm
-  · -- Show all values have norm ≤ 1
-    exact (mahler k).norm_le_of_nonempty.mpr (fun _ ↦ PadicInt.norm_le_one _)
-  · -- Show norm 1 is attained at `x = k`
-    refine (le_of_eq ?_).trans ((mahler k).norm_coe_le_norm k)
-    rw [mahler_natCast_eq, Nat.choose_self, Nat.cast_one, norm_one]
+  simp only [mahler_apply, Ring.choose_natCast]
 
 section fwdDiff
 
@@ -138,7 +129,7 @@ private lemma bojanic_mahler_step1 [AddCommMonoidWithOne M] [AddCommGroup G] (f 
       ∑ k ∈ range (n + 1), ((-1 : ℤ) ^ (n - k) * n.choose k) • (f (k + R) - f k) := by
   have aux : Δ_[1]^[n + R] f 0 = R.choose (R - 1 + 1) • Δ_[1]^[n + R] f 0 := by
     rw [Nat.sub_add_cancel hR, Nat.choose_self, one_smul]
-  rw [neg_add_eq_sub, eq_sub_iff_add_eq, add_comm, aux, (by omega : n + R = (n + ((R - 1) + 1))),
+  rw [neg_add_eq_sub, eq_sub_iff_add_eq, add_comm, aux, (by cutsat : n + R = (n + ((R - 1) + 1))),
     ← sum_range_succ, Nat.sub_add_cancel hR,
     ← sub_eq_iff_eq_add.mpr (sum_range_succ' (fun x ↦ R.choose x • Δ_[1]^[n + x] f 0) R), add_zero,
     Nat.choose_zero_right, one_smul]
@@ -155,7 +146,7 @@ namespace PadicInt
 section norm_fwdDiff
 
 variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℚ_[p] E] [IsUltrametricDist E]
+  [NormedAddCommGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E] [IsUltrametricDist E]
 
 /--
 Second step in Bojanić's proof of Mahler's theorem (equation (11) of [bojanic74]): show that values
@@ -176,20 +167,23 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     -- a binomial coefficient which is divisible by `p`
     rw [norm_neg, ← coe_nnnorm, coe_le_coe]
     refine nnnorm_sum_le_of_forall_le (fun i hi ↦ Finset.le_sup_of_le hi ?_)
-    rw [mem_range] at hi
-    rw [← Nat.cast_smul_eq_nsmul ℚ_[p], nnnorm_smul, div_eq_inv_mul]
-    refine mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
+    rw [← Nat.cast_smul_eq_nsmul ℤ_[p], div_eq_inv_mul]
+    refine (nnnorm_smul_le _ _).trans <| mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
     -- remains to show norm of binomial coeff is `≤ p⁻¹`
-    have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by omega)
-    rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, Padic.norm_eq_pow_val (mod_cast this.ne'),
-      coe_zpow, NNReal.coe_natCast, (zpow_right_strictMono₀ (mod_cast hp.out.one_lt)).le_iff_le,
-      neg_le_neg_iff, Padic.valuation_natCast, Nat.one_le_cast]
-    exact one_le_padicValNat_of_dvd this <| hp.out.dvd_choose_pow (by omega) (by omega)
+    rw [mem_range] at hi
+    have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by cutsat)
+    rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, PadicInt.norm_eq_zpow_neg_valuation
+      (mod_cast this.ne'), coe_zpow, NNReal.coe_natCast,
+      zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt), neg_le_neg_iff,
+      ← PadicInt.valuation_coe, PadicInt.coe_natCast, Padic.valuation_natCast, Nat.one_le_cast]
+    exact one_le_padicValNat_of_dvd this.ne' <| hp.out.dvd_choose_pow (by cutsat) (by cutsat)
   · -- Bounding the sum over `range (n + 1)`: every term is small by the choice of `t`
-    refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_succ (fun i _ ↦ ?_)
+    refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_add_one (fun i _ ↦ ?_)
     calc ‖((-1 : ℤ) ^ (n - i) * n.choose i) • (f (i + ↑(p ^ t)) - f i)‖
+    _ ≤ ‖((-1 : ℤ) ^ (n - i) * n.choose i : ℤ_[p])‖ * ‖(f (i + ↑(p ^ t)) - f i)‖ := by
+      rw [← Int.cast_smul_eq_zsmul ℤ_[p]]
+      exact (norm_smul_le ..).trans (by norm_cast)
     _ ≤ ‖f (i + ↑(p ^ t)) - f i‖ := by
-      rw [← Int.cast_smul_eq_zsmul ℚ_[p], norm_smul]
       apply mul_le_of_le_one_left (norm_nonneg _)
       simpa only [← coe_intCast] using norm_le_one _
     _ ≤ ‖f‖ / p ^ s := by
@@ -199,23 +193,23 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
 /--
 Explicit bound for the decay rate of the Mahler coefficients of a continuous function on `ℤ_[p]`.
 This will be used to prove Mahler's theorem.
- -/
+-/
 lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
     (hst : ∀ x y : ℤ_[p], ‖x - y‖ ≤ p ^ (-t : ℤ) → ‖f x - f y‖ ≤ ‖f‖ / p ^ s) (n : ℕ) :
     ‖Δ_[1]^[n + s * p ^ t] f 0‖ ≤ ‖f‖ / p ^ s := by
   -- We show the following more general statement by induction on `k`:
   suffices ∀ {k : ℕ}, k ≤ s → ‖Δ_[1]^[n + k * p ^ t] f 0‖ ≤ ‖f‖ / p ^ k from this le_rfl
   intro k hk
-  induction' k with k IH generalizing n
-  · -- base case just says that `‖Δ^[·] (⇑f) 0‖` is bounded by `‖f‖`
+  induction k generalizing n with
+  | zero => -- base case just says that `‖Δ^[·] (⇑f) 0‖` is bounded by `‖f‖`
     simpa only [zero_mul, pow_zero, add_zero, div_one] using norm_fwdDiff_iter_apply_le 1 f 0 n
-  · -- induction is the "step 2" lemma above
+  | succ k IH => -- induction is the "step 2" lemma above
     rw [add_mul, one_mul, ← add_assoc]
     refine (bojanic_mahler_step2 hst (n + k * p ^ t)).trans (max_le ?_ ?_)
     · rw [← coe_nnnorm, ← NNReal.coe_natCast, ← NNReal.coe_pow, ← NNReal.coe_div, NNReal.coe_le_coe]
       refine Finset.sup_le fun j _ ↦ ?_
       rw [pow_succ, ← div_div, div_le_div_iff_of_pos_right (mod_cast hp.out.pos), add_right_comm]
-      exact_mod_cast IH (n + (j + 1)) (by omega)
+      exact_mod_cast IH (n + (j + 1)) (by cutsat)
     · exact div_le_div_of_nonneg_left (norm_nonneg _)
         (mod_cast pow_pos hp.out.pos _) (mod_cast pow_le_pow_right₀ hp.out.one_le hk)
 
@@ -245,20 +239,37 @@ end norm_fwdDiff
 
 section mahler_coeff
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℚ_[p] E]
+variable {E : Type*} [NormedAddCommGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E]
   (a : E) (n : ℕ) (x : ℤ_[p])
 
 /--
 A single term of a Mahler series, given by the product of the scalar-valued continuous map
-`mahler n : ℤ_[p] → ℚ_[p]` with a constant vector in some normed `ℚ_[p]`-vector space.
+`mahler n : ℤ_[p] → ℤ_[p]` with a constant vector in some normed `ℤ_[p]`-module.
 -/
-noncomputable def mahlerTerm : C(ℤ_[p], E) := (mahler n : C(_, ℚ_[p])) • .const _ a
+noncomputable def mahlerTerm : C(ℤ_[p], E) := (mahler n : C(_, ℤ_[p])) • .const _ a
 
 lemma mahlerTerm_apply : mahlerTerm a n x = mahler n x • a := by
   simp only [mahlerTerm, ContinuousMap.smul_apply', ContinuousMap.const_apply]
 
+@[simp]
 lemma norm_mahlerTerm : ‖(mahlerTerm a n : C(ℤ_[p], E))‖ = ‖a‖ := by
-  simp only [mahlerTerm, ContinuousMap.norm_smul_const, norm_mahler_eq, one_mul]
+  apply le_antisymm
+  · -- Show all values have norm ≤ 1
+    rw [ContinuousMap.norm_le_of_nonempty]
+    refine fun _ ↦ (norm_smul_le _ _).trans <| mul_le_of_le_one_left (norm_nonneg _) (norm_le_one _)
+  · -- Show norm 1 is attained at `x = k`
+    refine le_trans ?_ <| (mahlerTerm a n).norm_coe_le_norm n
+    simp [mahlerTerm_apply, mahler_natCast_eq]
+
+@[simp]
+lemma mahlerTerm_one : (mahlerTerm 1 n : C(ℤ_[p], ℤ_[p])) = mahler n := by
+  ext; simp [mahlerTerm_apply]
+
+/--
+The uniform norm of the `k`-th Mahler basis function is 1, for every `k`.
+-/
+@[simp] lemma norm_mahler_eq (k : ℕ) : ‖(mahler k : C(ℤ_[p], ℤ_[p]))‖ = 1 := by
+  simp [← mahlerTerm_one]
 
 /-- A series of the form considered in Mahler's theorem. -/
 noncomputable def mahlerSeries (a : ℕ → E) : C(ℤ_[p], E) := ∑' n, mahlerTerm (a n) n
@@ -283,12 +294,12 @@ The value of a Mahler series at a natural number `n` is given by the finite sum 
 terms, for any `n ≤ m`.
 -/
 lemma mahlerSeries_apply_nat (ha : Tendsto a atTop (𝓝 0)) {m n : ℕ} (hmn : m ≤ n) :
-    mahlerSeries a (m : ℤ_[p]) = ∑ i in range (n + 1), m.choose i • a i := by
-  have h_van (i) : m.choose (i + (n + 1)) = 0 := Nat.choose_eq_zero_of_lt (by omega)
+    mahlerSeries a (m : ℤ_[p]) = ∑ i ∈ range (n + 1), m.choose i • a i := by
+  have h_van (i) : m.choose (i + (n + 1)) = 0 := Nat.choose_eq_zero_of_lt (by cutsat)
   have aux : Summable fun i ↦ m.choose (i + (n + 1)) • a (i + (n + 1)) := by
     simpa only [h_van, zero_smul] using summable_zero
   simp only [mahlerSeries_apply ha, mahler_natCast_eq, Nat.cast_smul_eq_nsmul, add_zero,
-    ← sum_add_tsum_nat_add' (f := fun i ↦ m.choose i • a i) aux, h_van, zero_smul, tsum_zero]
+    ← aux.sum_add_tsum_nat_add' (f := fun i ↦ m.choose i • a i), h_van, zero_smul, tsum_zero]
 
 /--
 The coefficients of a Mahler series can be recovered from the sum by taking forward differences at
@@ -297,7 +308,7 @@ The coefficients of a Mahler series can be recovered from the sum by taking forw
 lemma fwdDiff_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) (n) :
     Δ_[1]^[n] (mahlerSeries a) (0 : ℤ_[p]) = a n :=
   calc Δ_[1]^[n] (mahlerSeries a) 0
-  -- throw away terms after the n'th
+  -- throw away terms after the nth
   _ = Δ_[1]^[n] (fun k ↦ ∑ j ∈ range (n + 1), k.choose j • (a j)) 0 := by
     simp only [fwdDiff_iter_eq_sum_shift, zero_add]
     refine Finset.sum_congr rfl fun j hj ↦ ?_
@@ -309,42 +320,35 @@ lemma fwdDiff_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) (n) :
     rw [sum_comm]
   -- bring `Δ_[1]` inside scalar-mult
   _ = ∑ j ∈ range (n + 1), (Δ_[1]^[n] (fun k ↦ k.choose j : ℕ → ℤ) 0) • (a j) := by
-    simp only [fwdDiff_iter_eq_sum_shift, zero_add, sum_smul, smul_assoc, Nat.cast_id,
+    simp only [fwdDiff_iter_eq_sum_shift, zero_add, sum_smul, smul_assoc,
       natCast_zsmul]
   -- finish using `fwdDiff_iter_choose_zero`
   _ = a n := by
     simp only [fwdDiff_iter_choose_zero, ite_smul, one_smul, zero_smul, sum_ite_eq,
       Finset.mem_range, lt_add_iff_pos_right, zero_lt_one, ↓reduceIte]
 
-end mahler_coeff
-
-section mahler_coeff
-
-variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℚ_[p] E] [IsUltrametricDist E] [CompleteSpace E]
-
 /--
 **Mahler's theorem**: for any continuous function `f` from `ℤ_[p]` to a `p`-adic Banach space, the
-Mahler series with coeffients `n ↦ Δ_[1]^[n] f 0` converges to the original function `f`.
+Mahler series with coefficients `n ↦ Δ_[1]^[n] f 0` converges to the original function `f`.
 -/
 lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[n] f 0) n) f := by
-  -- First show `∑' n, mahler_term f n` converges to *something*.
+  -- First show `∑' n, mahlerTerm f n` converges to *something*.
   have : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[n] f 0) n)
       (mahlerSeries (Δ_[1]^[·] f 0) : C(ℤ_[p], E)) :=
-    hasSum_mahlerSeries (PadicInt.fwdDiff_tendsto_zero f)
+    hasSum_mahlerSeries (fwdDiff_tendsto_zero f)
   -- Now show that the sum of the Mahler terms must equal `f` on a dense set, so it is actually `f`.
   convert this using 1
-  refine ContinuousMap.coe_injective (PadicInt.denseRange_natCast.equalizer
+  refine ContinuousMap.coe_injective (denseRange_natCast.equalizer
     (map_continuous f) (map_continuous _) (funext fun n ↦ ?_))
-  simpa only [Function.comp_apply, mahlerSeries_apply_nat (fwdDiff_tendsto_zero f) le_rfl,
-    zero_add, sum_apply, Pi.smul_apply, nsmul_one] using (shift_eq_sum_fwdDiff_iter 1 f n 0)
+  simpa [mahlerSeries_apply_nat (fwdDiff_tendsto_zero f) le_rfl]
+    using shift_eq_sum_fwdDiff_iter 1 f n 0
 
 variable (E) in
 /--
 The isometric equivalence from `C(ℤ_[p], E)` to the space of sequences in `E` tending to `0` given
 by Mahler's theorem, for `E` a nonarchimedean `ℚ_[p]`-Banach space.
 -/
-noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℚ_[p]] C₀(ℕ, E) where
+noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℤ_[p]] C₀(ℕ, E) where
   toFun f := ⟨⟨(Δ_[1]^[·] f 0), continuous_of_discreteTopology⟩,
     cocompact_eq_atTop (α := ℕ) ▸ fwdDiff_tendsto_zero f⟩
   invFun a := mahlerSeries a
@@ -367,8 +371,7 @@ noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℚ_[p]] C₀(ℕ, E) wh
     · rw [← (hasSum_mahler f).tsum_eq]
       refine (norm_tsum_le _).trans (ciSup_le fun n ↦ ?_)
       refine le_trans (le_of_eq ?_) (BoundedContinuousFunction.norm_coe_le_norm _ n)
-      simp only [ZeroAtInftyContinuousMap.toBCF_apply, ZeroAtInftyContinuousMap.coe_mk,
-        norm_mahlerTerm, (hasSum_mahler f).tsum_eq]
+      simp [(hasSum_mahler f).tsum_eq]
 
 lemma mahlerEquiv_apply (f : C(ℤ_[p], E)) : mahlerEquiv E f = fun n ↦ Δ_[1]^[n] f 0 := rfl
 

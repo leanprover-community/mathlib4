@@ -48,11 +48,10 @@ theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
   rw [huv, disjoint_comm]
   refine Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) ?_
-  rw [← LinearMap.range_coe, span_eq (LinearMap.range S.f.hom), hS.moduleCat_range_eq_ker]
+  rw [← LinearMap.coe_range, span_eq (LinearMap.range S.f.hom), hS.moduleCat_range_eq_ker]
   exact range_ker_disjoint hw
 
 include hv hm in
-
 /-- In the commutative diagram
 ```
              f     g
@@ -76,7 +75,7 @@ end
 
 include hS' hv in
 /-- Given a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of `R`-modules and linearly independent
-    families `v : ι → N` and `w : ι' → P`, we get a linearly independent family `ι ⊕ ι' → M` -/
+families `v : ι → N` and `w : ι' → P`, we get a linearly independent family `ι ⊕ ι' → M` -/
 theorem linearIndependent_shortExact {w : ι' → S.X₃} (hw : LinearIndependent R w) :
     LinearIndependent R (Sum.elim (S.f ∘ v) (S.g.hom.toFun.invFun ∘ w)) := by
   apply linearIndependent_leftExact hS'.exact hv _ hS'.mono_f rfl
@@ -112,13 +111,13 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
   have hsub : m - m' ∈ LinearMap.range S.f.hom := by
     rw [hS.moduleCat_range_eq_ker]
     simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
-    rw [← hm, map_finsupp_sum]
+    rw [← hm, map_finsuppSum]
     simp only [Function.comp_apply, map_smul]
   obtain ⟨n, hnm⟩ := hsub
   have hn : n ∈ span R (range v) := hv mem_top
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
   obtain ⟨cn, hn⟩ := hn
-  rw [← hn, map_finsupp_sum] at hnm
+  rw [← hn, map_finsuppSum] at hnm
   rw [← sub_add_cancel m m', ← hnm,]
   simp only [map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • S.f (v a)) =
@@ -135,7 +134,7 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
 
 include hS in
 /-- Given an exact sequence `X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of `R`-modules and spanning
-    families `v : ι → X₁` and `w : ι' → X₃`, we get a spanning family `ι ⊕ ι' → X₂` -/
+families `v : ι → X₁` and `w : ι' → X₃`, we get a spanning family `ι ⊕ ι' → X₂` -/
 theorem span_rightExact {w : ι' → S.X₃} (hv : ⊤ ≤ span R (range v))
     (hw : ⊤ ≤ span R (range w)) (hE : Epi S.g) :
     ⊤ ≤ span R (range (Sum.elim (S.f ∘ v) (S.g.hom.toFun.invFun ∘ w))) := by

@@ -15,9 +15,9 @@ open CategoryTheory
 
 universe u
 
-namespace AddCommGrp
+namespace AddCommGrpCat
 
-instance wellPowered_addCommGrp : WellPowered AddCommGrp.{u} :=
-  wellPowered_of_equiv (forget₂ (ModuleCat.{u} ℤ) AddCommGrp.{u}).asEquivalence
+instance wellPowered_addCommGrp : WellPowered.{u} AddCommGrpCat.{u} :=
+  wellPowered_of_equiv (forget₂ (ModuleCat.{u} ℤ) AddCommGrpCat.{u}).asEquivalence
 
-end AddCommGrp
+end AddCommGrpCat

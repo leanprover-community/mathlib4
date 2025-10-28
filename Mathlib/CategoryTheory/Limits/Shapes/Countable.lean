@@ -48,7 +48,7 @@ instance (priority := 100) hasCountableLimits_of_hasLimits [HasLimits C] :
   out := inferInstance
 
 universe v in
-instance [Category.{v} J] [CountableCategory J] [HasCountableLimits C] : HasLimitsOfShape J C :=
+instance [HasCountableLimits C] [Category.{v} J] [CountableCategory J] : HasLimitsOfShape J C :=
   have : HasLimitsOfShape (HomAsType J) C := HasCountableLimits.out (HomAsType J)
   hasLimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
@@ -56,7 +56,7 @@ instance [Category.{v} J] [CountableCategory J] [HasCountableLimits C] : HasLimi
 class HasCountableProducts where
   out (J : Type) [Countable J] : HasProductsOfShape J C
 
-instance [HasCountableProducts C] : HasProductsOfShape J C :=
+instance [HasCountableProducts C] (J : Type*) [Countable J] : HasProductsOfShape J C :=
   have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
   have : HasLimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableProducts.out _
   hasLimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
@@ -92,8 +92,10 @@ instance (priority := 100) hasCountableColimits_of_hasColimits [HasColimits C] :
     HasCountableColimits C where
   out := inferInstance
 
+-- See note [instance argument order]
 universe v in
-instance [Category.{v} J] [CountableCategory J] [HasCountableColimits C] : HasColimitsOfShape J C :=
+instance [HasCountableColimits C] (J : Type*) [Category.{v} J] [CountableCategory J] :
+    HasColimitsOfShape J C :=
   have : HasColimitsOfShape (HomAsType J) C := HasCountableColimits.out (HomAsType J)
   hasColimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
@@ -107,7 +109,8 @@ instance (priority := 100) hasCountableCoproducts_of_hasCoproducts [HasCoproduct
     have : HasCoproducts.{0} C := has_smallest_coproducts_of_hasCoproducts
     inferInstance
 
-instance [HasCountableCoproducts C] : HasCoproductsOfShape J C :=
+-- See note [instance argument order]
+instance [HasCountableCoproducts C] (J : Type*) [Countable J] : HasCoproductsOfShape J C :=
   have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
   have : HasColimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableCoproducts.out _
   hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
@@ -160,8 +163,8 @@ instance sequentialFunctor_final : (sequentialFunctor J).Final where
       ⟨StructuredArrow.mk (homOfLE g)⟩
     apply isConnected_of_zigzag
     refine fun i j ↦ ⟨[j], ?_⟩
-    simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
-      List.getLast_cons, not_true_eq_false, List.getLast_singleton', reduceCtorEq]
+    simp only [List.isChain_cons_cons, Zag, List.isChain_singleton, and_true, ne_eq,
+      not_false_eq_true, List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
     wlog h : j.right ≤ i.right
     · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
@@ -211,17 +214,15 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
       ⟨CostructuredArrow.mk (homOfLE g)⟩
     apply isConnected_of_zigzag
     refine fun i j ↦ ⟨[j], ?_⟩
-    simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
-      List.getLast_cons, not_true_eq_false, List.getLast_singleton', reduceCtorEq]
+    simp only [List.isChain_cons_cons, Zag, List.isChain_singleton, and_true, ne_eq,
+      not_false_eq_true, List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
     wlog h : (unop i.left) ≤ (unop j.left)
     · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
     · right
       exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
 
-/--
-This is proved in https://stacks.math.columbia.edu/tag/0032
--/
+@[stacks 0032]
 proof_wanted preorder_of_cofiltered (J : Type*) [Category J] [IsCofiltered J] :
     ∃ (I : Type*) (_ : Preorder I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
 
@@ -255,16 +256,5 @@ proof_wanted hasCountableColimits_of_hasFiniteColimits_and_hasSequentialColimits
 end IsCofiltered
 
 end Preorder
-
-@[deprecated (since := "2024-11-01")] alias sequentialFunctor := IsCofiltered.sequentialFunctor
-@[deprecated (since := "2024-11-01")] alias sequentialFunctor_obj :=
-  IsCofiltered.sequentialFunctor_obj
-@[deprecated (since := "2024-11-01")] alias sequentialFunctor_map :=
-  IsCofiltered.sequentialFunctor_map
-@[deprecated (since := "2024-11-01")] alias sequentialFunctor_initial_aux :=
-  IsCofiltered.sequentialFunctor_initial_aux
-@[deprecated (since := "2024-11-01")] alias sequentialFunctor_initial :=
-  IsCofiltered.sequentialFunctor_initial
-attribute [nolint defLemma] sequentialFunctor_initial
 
 end CategoryTheory.Limits

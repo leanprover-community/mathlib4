@@ -18,7 +18,7 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 variable {α : Type*}
 
 section LinearOrderedAddCommGroup
-variable [LinearOrderedCommGroup α]
+variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 
 @[to_additive] lemma mabs_zpow (n : ℤ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ |n| := by
   obtain n0 | n0 := le_total 0 n
@@ -31,21 +31,21 @@ variable [LinearOrderedCommGroup α]
 end LinearOrderedAddCommGroup
 
 lemma odd_abs [LinearOrder α] [Ring α] {a : α} : Odd (abs a) ↔ Odd a := by
-  cases' abs_choice a with h h <;> simp only [h, odd_neg]
+  rcases abs_choice a with h | h <;> simp only [h, odd_neg]
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] {n : ℕ} {a b : α}
+variable [Ring α] [LinearOrder α] [IsOrderedRing α] {n : ℕ} {a b : α}
 
-@[simp] lemma abs_one : |(1 : α)| = 1 := abs_of_pos zero_lt_one
+@[simp] lemma abs_one : |(1 : α)| = 1 := abs_of_nonneg zero_le_one
 
-lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
+lemma abs_two : |(2 : α)| = 2 := abs_of_nonneg zero_le_two
 
+@[simp]
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
   rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
-    simp only [abs_of_nonpos, abs_of_nonneg, true_or, or_true, eq_self_iff_true, neg_mul,
-      mul_neg, neg_neg, *]
+    simp only [abs_of_nonpos, abs_of_nonneg, true_or, or_true, neg_mul, mul_neg, neg_neg, *]
 
 /-- `abs` as a `MonoidWithZeroHom`. -/
 def absHom : α →*₀ α where
@@ -64,15 +64,29 @@ lemma Even.pow_abs (hn : Even n) (a : α) : |a| ^ n = a ^ n := by
 
 lemma abs_neg_one_pow (n : ℕ) : |(-1 : α) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
 
-lemma abs_pow_eq_one (a : α) (h : n ≠ 0) : |a ^ n| = 1 ↔ |a| = 1 := by
-  convert pow_left_inj₀ (abs_nonneg a) zero_le_one h
-  exacts [(pow_abs _ _).symm, (one_pow _).symm]
-
+omit [IsOrderedRing α] in
 @[simp] lemma abs_mul_abs_self (a : α) : |a| * |a| = a * a :=
   abs_by_cases (fun x => x * x = a * a) rfl (neg_mul_neg a a)
 
-@[simp]
-lemma abs_mul_self (a : α) : |a * a| = a * a := by rw [abs_mul, abs_mul_abs_self]
+lemma abs_mul_self (a : α) : |a * a| = a * a := by simp
+
+omit [IsOrderedRing α] in
+@[simp] lemma sq_abs (a : α) : |a| ^ 2 = a ^ 2 := by simpa only [sq] using abs_mul_abs_self a
+
+lemma abs_sq (x : α) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self x
+
+lemma exists_abs_lt [Nontrivial α] (a : α) : ∃ b > 0, |a| < b :=
+  ⟨|a| + 1, lt_of_lt_of_le zero_lt_one <| by simp, lt_add_one |a|⟩
+
+end LinearOrderedRing
+
+section LinearStrictOrderedRing
+
+variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {n : ℕ} {a b : α}
+
+lemma abs_pow_eq_one (a : α) (h : n ≠ 0) : |a ^ n| = 1 ↔ |a| = 1 := by
+  convert pow_left_inj₀ (abs_nonneg a) zero_le_one h
+  exacts [(pow_abs _ _).symm, (one_pow _).symm]
 
 lemma abs_eq_iff_mul_self_eq : |a| = |b| ↔ a * a = b * b := by
   rw [← abs_mul_abs_self, ← abs_mul_abs_self b]
@@ -87,23 +101,16 @@ lemma abs_le_iff_mul_self_le : |a| ≤ |b| ↔ a * a ≤ b * b := by
   exact mul_self_le_mul_self_iff (abs_nonneg a) (abs_nonneg b)
 
 lemma abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
-  simpa only [abs_one, one_mul] using @abs_le_iff_mul_self_le α _ a 1
-
--- Porting note: added `simp` to replace `pow_bit0_abs`
-@[simp] lemma sq_abs (a : α) : |a| ^ 2 = a ^ 2 := by simpa only [sq] using abs_mul_abs_self a
-
-lemma abs_sq (x : α) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self x
+  simpa only [abs_one, one_mul] using abs_le_iff_mul_self_le (a := a) (b := 1)
 
 lemma sq_lt_sq : a ^ 2 < b ^ 2 ↔ |a| < |b| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn₀ two_ne_zero).lt_iff_lt (abs_nonneg a) (abs_nonneg b)
+  simpa only [sq_abs] using sq_lt_sq₀ (abs_nonneg a) (abs_nonneg b)
 
 lemma sq_lt_sq' (h1 : -b < a) (h2 : a < b) : a ^ 2 < b ^ 2 :=
   sq_lt_sq.2 (lt_of_lt_of_le (abs_lt.2 ⟨h1, h2⟩) (le_abs_self _))
 
 lemma sq_le_sq : a ^ 2 ≤ b ^ 2 ↔ |a| ≤ |b| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn₀ two_ne_zero).le_iff_le (abs_nonneg a) (abs_nonneg b)
+  simpa only [sq_abs] using sq_le_sq₀ (abs_nonneg a) (abs_nonneg b)
 
 lemma sq_le_sq' (h1 : -b ≤ a) (h2 : a ≤ b) : a ^ 2 ≤ b ^ 2 :=
   sq_le_sq.2 (le_trans (abs_le.mpr ⟨h1, h2⟩) (le_abs_self _))
@@ -127,33 +134,58 @@ lemma sq_eq_sq_iff_abs_eq_abs (a b : α) : a ^ 2 = b ^ 2 ↔ |a| = |b| := by
   simp only [le_antisymm_iff, sq_le_sq]
 
 @[simp] lemma sq_le_one_iff_abs_le_one (a : α) : a ^ 2 ≤ 1 ↔ |a| ≤ 1 := by
-  simpa only [one_pow, abs_one] using @sq_le_sq _ _ a 1
+  simpa only [one_pow, abs_one] using sq_le_sq (a := a) (b := 1)
 
 @[simp] lemma sq_lt_one_iff_abs_lt_one (a : α) : a ^ 2 < 1 ↔ |a| < 1 := by
-  simpa only [one_pow, abs_one] using @sq_lt_sq _ _ a 1
+  simpa only [one_pow, abs_one] using sq_lt_sq (a := a) (b := 1)
 
 @[simp] lemma one_le_sq_iff_one_le_abs (a : α) : 1 ≤ a ^ 2 ↔ 1 ≤ |a| := by
-  simpa only [one_pow, abs_one] using @sq_le_sq _ _ 1 a
+  simpa only [one_pow, abs_one] using sq_le_sq (a := 1) (b := a)
 
 @[simp] lemma one_lt_sq_iff_one_lt_abs (a : α) : 1 < a ^ 2 ↔ 1 < |a| := by
-  simpa only [one_pow, abs_one] using @sq_lt_sq _ _ 1 a
+  simpa only [one_pow, abs_one] using sq_lt_sq (a := 1) (b := a)
 
-lemma exists_abs_lt {α : Type*} [LinearOrderedRing α] (a : α) : ∃ b > 0, |a| < b :=
-  ⟨|a| + 1, lt_of_lt_of_le zero_lt_one <| by simp, lt_add_one |a|⟩
-
-end LinearOrderedRing
+end LinearStrictOrderedRing
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing α]
+variable [CommRing α] [LinearOrder α] (a b : α) (n : ℕ)
 
 theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
   rw [abs_mul_abs_self]
   simp only [mul_add, add_comm, add_left_comm, mul_comm, sub_eq_add_neg, mul_one, mul_neg,
     neg_add_rev, neg_neg, add_assoc]
 
-lemma abs_unit_intCast (a : ℤˣ) : |((a : ℤ) : α)| = 1 := by
+lemma abs_unit_intCast [IsOrderedRing α] (a : ℤˣ) : |((a : ℤ) : α)| = 1 := by
   cases Int.units_eq_one_or a <;> simp_all
+
+private def geomSum : ℕ → α
+  | 0 => 1
+  | n + 1 => a * geomSum n + b ^ (n + 1)
+
+private theorem abs_geomSum_le [IsOrderedRing α] : |geomSum a b n| ≤ (n + 1) * max |a| |b| ^ n := by
+  induction n with | zero => simp [geomSum] | succ n ih => ?_
+  refine (abs_add_le ..).trans ?_
+  rw [abs_mul, abs_pow, Nat.cast_succ, add_one_mul]
+  refine add_le_add ?_ (pow_le_pow_left₀ (abs_nonneg _) le_sup_right _)
+  rw [pow_succ, ← mul_assoc, mul_comm |a|]
+  exact mul_le_mul ih le_sup_left (abs_nonneg _) (mul_nonneg
+    (@Nat.cast_succ α .. ▸ Nat.cast_nonneg _) <| pow_nonneg ((abs_nonneg _).trans le_sup_left) _)
+
+omit [LinearOrder α] in
+private theorem pow_sub_pow_eq_sub_mul_geomSum :
+    a ^ (n + 1) - b ^ (n + 1) = (a - b) * geomSum a b n := by
+  induction n with | zero => simp [geomSum] | succ n ih => ?_
+  rw [geomSum, mul_add, mul_comm a, ← mul_assoc, ← ih,
+    sub_mul, sub_mul, ← pow_succ, ← pow_succ', mul_comm, sub_add_sub_cancel]
+
+theorem abs_pow_sub_pow_le [IsOrderedRing α] :
+    |a ^ n - b ^ n| ≤ |a - b| * n * max |a| |b| ^ (n - 1) := by
+  obtain _ | n := n; · simp
+  rw [Nat.add_sub_cancel, pow_sub_pow_eq_sub_mul_geomSum, abs_mul, mul_assoc, Nat.cast_succ]
+  gcongr
+  · exact abs_nonneg _
+  · exact abs_geomSum_le ..
 
 end LinearOrderedCommRing
 
@@ -163,14 +195,14 @@ variable [Ring α] [LinearOrder α]
 
 @[simp]
 theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
-  cases' abs_choice a with h h <;> simp only [h, neg_dvd]
+  rcases abs_choice a with h | h <;> simp only [h, neg_dvd]
 
 theorem abs_dvd_self (a : α) : |a| ∣ a :=
   (abs_dvd a a).mpr (dvd_refl a)
 
 @[simp]
 theorem dvd_abs (a b : α) : a ∣ |b| ↔ a ∣ b := by
-  cases' abs_choice b with h h <;> simp only [h, dvd_neg]
+  rcases abs_choice b with h | h <;> simp only [h, dvd_neg]
 
 theorem self_dvd_abs (a : α) : a ∣ |a| :=
   (dvd_abs a a).mpr (dvd_refl a)
@@ -183,7 +215,7 @@ end
 open Nat
 
 section LinearOrderedRing
-variable {R : Type*} [LinearOrderedRing R] {a b : R} {n : ℕ}
+variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {a b : R} {n : ℕ}
 
 lemma pow_eq_pow_iff_of_ne_zero (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a = -b ∧ Even n :=
   match n.even_xor_odd with

@@ -3,7 +3,8 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Logic.Equiv.List
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Logic.Encodable.Pi
 
 /-!
 # W types
@@ -43,12 +44,12 @@ variable {α : Type*} {β : α → Type*}
 
 /-- The canonical map to the corresponding sigma type, returning the label of a node as an
   element `a` of `α`, and the children of the node as a function `β a → WType β`. -/
-def toSigma : WType β → Σa : α, β a → WType β
+def toSigma : WType β → Σ a : α, β a → WType β
   | ⟨a, f⟩ => ⟨a, f⟩
 
 /-- The canonical map from the sigma type into a `WType`. Given a node `a : α`, and
   its children as a function `β a → WType β`, return the corresponding tree. -/
-def ofSigma : (Σa : α, β a → WType β) → WType β
+def ofSigma : (Σ a : α, β a → WType β) → WType β
   | ⟨a, f⟩ => WType.mk a f
 
 @[simp]
@@ -56,33 +57,29 @@ theorem ofSigma_toSigma : ∀ w : WType β, ofSigma (toSigma w) = w
   | ⟨_, _⟩ => rfl
 
 @[simp]
-theorem toSigma_ofSigma : ∀ s : Σa : α, β a → WType β, toSigma (ofSigma s) = s
+theorem toSigma_ofSigma : ∀ s : Σ a : α, β a → WType β, toSigma (ofSigma s) = s
   | ⟨_, _⟩ => rfl
 
-variable (β)
-
+variable (β) in
 /-- The canonical bijection with the sigma type, showing that `WType` is a fixed point of
   the polynomial functor `X ↦ Σ a : α, β a → X`. -/
 @[simps]
-def equivSigma : WType β ≃ Σa : α, β a → WType β where
+def equivSigma : WType β ≃ Σ a : α, β a → WType β where
   toFun := toSigma
   invFun := ofSigma
   left_inv := ofSigma_toSigma
   right_inv := toSigma_ofSigma
 
-variable {β}
-
--- Porting note: Universes have a different order than mathlib3 definition
 /-- The canonical map from `WType β` into any type `γ` given a map `(Σ a : α, β a → γ) → γ`. -/
-def elim (γ : Type*) (fγ : (Σa : α, β a → γ) → γ) : WType β → γ
+def elim (γ : Type*) (fγ : (Σ a : α, β a → γ) → γ) : WType β → γ
   | ⟨a, f⟩ => fγ ⟨a, fun b => elim γ fγ (f b)⟩
 
-theorem elim_injective (γ : Type*) (fγ : (Σa : α, β a → γ) → γ)
+theorem elim_injective (γ : Type*) (fγ : (Σ a : α, β a → γ) → γ)
     (fγ_injective : Function.Injective fγ) : Function.Injective (elim γ fγ)
   | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h => by
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)
     congr with x
-    exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x : _)
+    exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x :)
 
 instance [hα : IsEmpty α] : IsEmpty (WType β) :=
   ⟨fun w => WType.recOn w (IsEmpty.elim hα)⟩
@@ -98,9 +95,10 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
           show WType β from Nat.recOn n ⟨b, IsEmpty.elim' he⟩ fun _ ih => ⟨a, fun _ => ih⟩)
         ?_
     intro n m h
-    induction' n with n ih generalizing m
-    · cases' m with m <;> simp_all
-    · cases' m with m
+    induction n generalizing m with
+    | zero => rcases m with - | m <;> simp_all
+    | succ n ih =>
+      rcases m with - | m
       · simp_all
       · refine congr_arg Nat.succ (ih ?_)
         simp_all [funext_iff]⟩
@@ -140,14 +138,14 @@ private def encodable_zero : Encodable (WType' β 0) :=
   have : ∀ x, finv (f x) = x := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
   Encodable.ofLeftInverse f finv this
 
-private def f (n : ℕ) : WType' β (n + 1) → Σa : α, β a → WType' β n
+private def f (n : ℕ) : WType' β (n + 1) → Σ a : α, β a → WType' β n
   | ⟨t, h⟩ => by
-    cases' t with a f
+    obtain ⟨a, f⟩ := t
     have h₀ : ∀ i : β a, WType.depth (f i) ≤ n := fun i =>
       Nat.le_of_lt_succ (lt_of_lt_of_le (WType.depth_lt_depth_mk a f i) h)
     exact ⟨a, fun i : β a => ⟨f i, h₀ i⟩⟩
 
-private def finv (n : ℕ) : (Σa : α, β a → WType' β n) → WType' β (n + 1)
+private def finv (n : ℕ) : (Σ a : α, β a → WType' β n) → WType' β (n + 1)
   | ⟨a, f⟩ =>
     let f' := fun i : β a => (f i).val
     have : WType.depth ⟨a, f'⟩ ≤ n + 1 := Nat.add_le_add_right (Finset.sup_le fun b _ => (f b).2) 1
@@ -165,8 +163,8 @@ private def encodable_succ (n : Nat) (_ : Encodable (WType' β n)) : Encodable (
 encodable. -/
 instance : Encodable (WType β) := by
   haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.rec encodable_zero encodable_succ n
-  let f : WType β → Σn, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
-  let finv : (Σn, WType' β n) → WType β := fun p => p.2.1
+  let f : WType β → Σ n, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
+  let finv : (Σ n, WType' β n) → WType β := fun p => p.2.1
   have : ∀ t, finv (f t) = t := fun t => rfl
   exact Encodable.ofLeftInverse f finv this
 

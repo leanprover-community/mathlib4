@@ -3,9 +3,9 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-
 import Mathlib.Algebra.Order.Antidiag.Pi
 import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Sets of tuples with a fixed product
@@ -15,9 +15,9 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 
 ## Main Results
 * There are `d^(ω n)` ways to write `n` as a product of `d` natural numbers, when `n` is squarefree
-(`card_finMulAntidiag_of_squarefree`)
+  (`card_finMulAntidiag_of_squarefree`)
 * There are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`, when `n` is squarefree
-(`card_pair_lcm_eq`)
+  (`card_pair_lcm_eq`)
 -/
 
 open Finset
@@ -33,12 +33,11 @@ This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
         (⟨x.val.1, Nat.pos_of_mem_divisors <| Nat.fst_mem_divisors_of_mem_antidiagonal x.prop⟩,
         ⟨x.val.2, Nat.pos_of_mem_divisors <| Nat.snd_mem_divisors_of_mem_antidiagonal x.prop⟩),
       fun _ _ h => Subtype.ext <| Prod.ext (congr_arg (·.1.val) h) (congr_arg (·.2.val) h)⟩
-
   have mem_divisorsAntidiagonal {n : ℕ+} (x : ℕ+ × ℕ+) :
     x ∈ divisorsAntidiagonal n ↔ x.1 * x.2 = n := by
     simp_rw [divisorsAntidiagonal, Finset.mem_map, Finset.mem_attach, Function.Embedding.coeFn_mk,
       Prod.ext_iff, true_and, ← coe_inj, Subtype.exists]
-    aesop
+    simp
   { antidiagonal := fun n ↦ divisorsAntidiagonal (Additive.toMul n) |>.map
       (.prodMap (Additive.ofMul.toEmbedding) (Additive.ofMul.toEmbedding))
     mem_antidiagonal := by simp [← ofMul_mul, mem_divisorsAntidiagonal] }
@@ -75,7 +74,7 @@ theorem mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ} :
       apply Nat.pos_of_ne_zero
       exact Finset.prod_ne_zero_iff.mp h.ne.symm _ (mem_univ _)
   · simp only [not_lt, nonpos_iff_eq_zero] at h
-    simp only [h, not_mem_empty, ne_eq, not_true_eq_false, and_false]
+    simp only [h, notMem_empty, ne_eq, not_true_eq_false, and_false]
 
 @[simp]
 theorem finMulAntidiag_zero_right (d : ℕ) :
@@ -83,15 +82,10 @@ theorem finMulAntidiag_zero_right (d : ℕ) :
 
 theorem finMulAntidiag_one {d : ℕ} :
     finMulAntidiag d 1 = {fun _ => 1} := by
-  ext f
-  simp only [mem_finMulAntidiag, and_true, mem_singleton]
-  constructor
-  · intro ⟨hf, _⟩; ext i
-    rw [← Nat.dvd_one, ← hf]
-    exact dvd_prod_of_mem f (mem_univ _)
-  · rintro rfl
-    simp only [prod_const_one, implies_true, ne_eq, one_ne_zero, not_false_eq_true,
-    and_self]
+  ext
+  simp only [mem_finMulAntidiag, prod_eq_one_iff, mem_univ, forall_const, ne_eq, one_ne_zero,
+    not_false_eq_true, and_true, mem_singleton]
+  grind
 
 theorem finMulAntidiag_zero_left {n : ℕ} (hn : n ≠ 1) :
     finMulAntidiag 0 n = ∅ := by
@@ -116,8 +110,8 @@ theorem finMulAntidiag_eq_piFinset_divisors_filter {d m n : ℕ} (hmn : m ∣ n)
     finMulAntidiag d m =
       {f ∈ Fintype.piFinset fun _ : Fin d => n.divisors | ∏ i, f i = m} := by
   ext f
-  simp only [mem_univ, not_true, IsEmpty.forall_iff, implies_true, ne_eq, true_and,
-    Fintype.mem_piFinset, mem_divisors, Nat.isUnit_iff, mem_filter]
+  simp only [ne_eq,
+    Fintype.mem_piFinset, mem_divisors, mem_filter]
   constructor
   · intro hf
     refine ⟨?_, prod_eq_of_mem_finMulAntidiag hf⟩
@@ -128,7 +122,7 @@ theorem finMulAntidiag_eq_piFinset_divisors_filter {d m n : ℕ} (hmn : m ∣ n)
 lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
     (finMulAntidiag d n).image (fun f => f i) = divisors n := by
   ext k
-  simp only [mem_image, ne_eq, mem_divisors, Nat.isUnit_iff]
+  simp only [mem_image, ne_eq, mem_divisors]
   constructor
   · rintro ⟨f, hf, rfl⟩
     exact ⟨dvd_of_mem_finMulAntidiag hf _, (mem_finMulAntidiag.mp hf).2⟩
@@ -141,14 +135,10 @@ lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
       omega
     obtain ⟨i', hi_ne⟩ := exists_ne i
     use fun j => if j = i then k else if j = i' then r else 1
-    simp only [ite_true, and_true, hn]
-    rw [← Finset.mul_prod_erase (a:=i) (h:=mem_univ _),
-      ← Finset.mul_prod_erase (a:= i')]
-    · rw [if_neg hi_ne, if_pos rfl, if_pos rfl, prod_eq_one]
-      · refine ⟨by ring, hn⟩
-      intro j hj
-      simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
-      rw [if_neg hj.1, if_neg hj.2]
+    simp only [ite_true, and_true]
+    rw [← Finset.mul_prod_erase (h := mem_univ i),
+      ← Finset.mul_prod_erase (a := i')]
+    · simp_all
     exact mem_erase.mpr ⟨hi_ne, mem_univ _⟩
 
 lemma image_piFinTwoEquiv_finMulAntidiag {n : ℕ} :
@@ -156,7 +146,7 @@ lemma image_piFinTwoEquiv_finMulAntidiag {n : ℕ} :
   ext x
   simp [(piFinTwoEquiv <| fun _ => ℕ).symm.surjective.exists]
 
-lemma finMulAntidiag_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
+lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
     (hp : p ∈ n.primeFactorsList) (f : Fin d → ℕ) (hf : f ∈ finMulAntidiag d n) :
     ∃! i, p ∣ f i := by
   rw [mem_finMulAntidiag] at hf
@@ -168,16 +158,16 @@ lemma finMulAntidiag_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
   apply Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp.1, hi, hj⟩
   apply Nat.coprime_of_squarefree_mul
   apply hn.squarefree_of_dvd
-  rw [← hf.1, ← Finset.mul_prod_erase _ _ (his),
+  rw [← hf.1, ← Finset.mul_prod_erase _ _ his,
     ← Finset.mul_prod_erase _ _ (mem_erase.mpr ⟨hij, mem_univ _⟩), ← mul_assoc]
   apply Nat.dvd_mul_right
 
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=
-  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i} , p
+  fun f _ i => ∏ p ∈ {p ∈ n.primeFactors.attach | f p.1 p.2 = i}, p
 
 private theorem primeFactorsPiBij_img (d n : ℕ) (hn : Squarefree n)
-  (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
+    (f : (p : ℕ) → p ∈ n.primeFactors → Fin d) (hf : f ∈ pi n.primeFactors fun _ => univ) :
     Nat.primeFactorsPiBij d n f hf ∈ finMulAntidiag d n := by
   rw [mem_finMulAntidiag]
   refine ⟨?_, hn.ne_zero⟩
@@ -212,10 +202,10 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
 private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
     (t : Fin d → ℕ) (ht : t ∈ finMulAntidiag d n) : ∃ (g : _)
     (hg : g ∈ pi n.primeFactors fun _ => univ), Nat.primeFactorsPiBij d n g hg = t := by
-  have exists_unique := fun (p : ℕ) (hp : p ∈ n.primeFactors) =>
-    (finMulAntidiag_exists_unique_prime_dvd hn
+  have existsUnique := fun (p : ℕ) (hp : p ∈ n.primeFactors) =>
+    (finMulAntidiag_existsUnique_prime_dvd hn
       (mem_primeFactors_iff_mem_primeFactorsList.mp hp) t ht)
-  choose f hf hf_unique using exists_unique
+  choose f hf hf_unique using existsUnique
   refine ⟨f, ?_, ?_⟩
   · simp only [mem_pi, mem_univ, forall_true_iff]
   funext i
@@ -223,8 +213,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)
   · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
-    ext ⟨p, hp⟩
-    refine ⟨by rintro rfl; apply hf, fun h => (hf_unique p hp i h).symm⟩
+    grind
   rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
   rw [primeFactors_filter_dvd_of_dvd hn.ne_zero this]
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this
@@ -235,15 +224,14 @@ private theorem card_finMulAntidiag_pi (d n : ℕ) (hn : Squarefree n) :
   apply Finset.card_bij (Nat.primeFactorsPiBij d n) (primeFactorsPiBij_img d n hn)
     (primeFactorsPiBij_inj d n) (primeFactorsPiBij_surj d n hn)
 
+open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     #(finMulAntidiag d n) = d ^ ω n := by
   rw [← card_finMulAntidiag_pi d n hn, Finset.card_pi, Finset.prod_const,
     ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
     Finset.card_fin]
 
-theorem finMulAntidiag_three {n : ℕ} :
-    ∀ a ∈ finMulAntidiag 3 n, a 0 * a 1 * a 2 = n := by
-  intro a ha
+theorem finMulAntidiag_three {n : ℕ} (a) (ha : a ∈ finMulAntidiag 3 n) : a 0 * a 1 * a 2 = n := by
   rw [← (mem_finMulAntidiag.mp ha).1, Fin.prod_univ_three a]
 
 namespace card_pair_lcm_eq
@@ -297,12 +285,11 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
     rw [mem_filter, Finset.mem_product] at hb
     refine ⟨?_, hn⟩
     · rw [Fin.prod_univ_three a]
-      simp only [a, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
-      Matrix.cons_val_two, Matrix.tail_cons]
+      dsimp only [a, Matrix.cons_val]
       rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
         Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
   use a; use ha
-  apply Prod.ext <;> simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]
+  apply Prod.ext <;> dsimp only [a, Matrix.cons_val]
     <;> apply Nat.mul_div_cancel'
   · apply Nat.gcd_dvd_left
   · apply Nat.gcd_dvd_right
@@ -310,6 +297,7 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
 end card_pair_lcm_eq
 
 open card_pair_lcm_eq in
+open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_pair_lcm_eq {n : ℕ} (hn : Squarefree n) :
     #{p ∈ (n.divisors ×ˢ n.divisors) | p.1.lcm p.2 = n} = 3 ^ ω n := by
   rw [← card_finMulAntidiag_of_squarefree hn, eq_comm]

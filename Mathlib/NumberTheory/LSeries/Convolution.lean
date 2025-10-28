@@ -3,8 +3,8 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.LSeries.Convergence
 
@@ -40,10 +40,8 @@ def toArithmeticFunction {R : Type*} [Zero R] (f : ℕ → R) : ArithmeticFuncti
 lemma toArithmeticFunction_congr {R : Type*} [Zero R] {f f' : ℕ → R}
     (h : ∀ {n}, n ≠ 0 → f n = f' n) :
     toArithmeticFunction f = toArithmeticFunction f' := by
-  ext ⟨- | _⟩
-  · simp only [zero_eq, ArithmeticFunction.map_zero]
-  · simp only [toArithmeticFunction, ArithmeticFunction.coe_mk, succ_ne_zero, ↓reduceIte,
-      ne_eq, not_false_eq_true, h]
+  ext
+  simp_all [toArithmeticFunction]
 
 /-- If we consider an arithmetic function just as a function and turn it back into an
 arithmetic function, it is the same as before. -/
@@ -52,7 +50,7 @@ lemma ArithmeticFunction.toArithmeticFunction_eq_self {R : Type*} [Zero R]
     (f : ArithmeticFunction R) :
     toArithmeticFunction f = f := by
   ext n
-  simp (config := {contextual := true}) [toArithmeticFunction, ArithmeticFunction.map_zero]
+  simp +contextual [toArithmeticFunction]
 
 /-- Dirichlet convolution of two sequences.
 
@@ -66,28 +64,25 @@ scoped[LSeries.notation] infixl:70 " ⍟ " => LSeries.convolution
 lemma LSeries.convolution_congr {R : Type*} [Semiring R] {f f' g g' : ℕ → R}
     (hf : ∀ {n}, n ≠ 0 → f n = f' n) (hg : ∀ {n}, n ≠ 0 → g n = g' n) :
     f ⍟ g = f' ⍟ g' := by
-  simp only [convolution, toArithmeticFunction_congr hf, toArithmeticFunction_congr hg]
+  simp [convolution, toArithmeticFunction_congr hf, toArithmeticFunction_congr hg]
 
 /-- The product of two arithmetic functions defines the same function as the Dirichlet convolution
 of the functions defined by them. -/
 lemma ArithmeticFunction.coe_mul {R : Type*} [Semiring R] (f g : ArithmeticFunction R) :
     f ⍟ g = ⇑(f * g) := by
-  simp only [convolution, ArithmeticFunction.toArithmeticFunction_eq_self]
+  simp [convolution]
 
 namespace LSeries
 
 lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
     f ⍟ g = fun n ↦ ∑ p ∈ n.divisorsAntidiagonal, f p.1 * g p.2 := by
   ext n
-  simp only [convolution, toArithmeticFunction, ArithmeticFunction.mul_apply,
-    ArithmeticFunction.coe_mk, mul_ite, mul_zero, ite_mul, zero_mul]
-  refine Finset.sum_congr rfl fun p hp ↦ ?_
-  obtain ⟨h₁, h₂⟩ := ne_zero_of_mem_divisorsAntidiagonal hp
-  simp only [h₂, ↓reduceIte, h₁]
+  simpa [convolution, toArithmeticFunction] using
+    Finset.sum_congr rfl fun p hp ↦ by simp [ne_zero_of_mem_divisorsAntidiagonal hp]
 
 @[simp]
 lemma convolution_map_zero {R : Type*} [Semiring R] (f g : ℕ → R) : (f ⍟ g) 0 = 0 := by
-  simp only [convolution_def, divisorsAntidiagonal_zero, Finset.sum_empty]
+  simp [convolution_def]
 
 
 /-!
@@ -99,12 +94,12 @@ in terms of a sum over `Nat.divisorsAntidiagonal`. -/
 lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     term (f ⍟ g) s n = ∑ p ∈ n.divisorsAntidiagonal, term f s p.1 * term g s p.2 := by
   rcases eq_or_ne n 0 with rfl | hn
-  · simp only [term_zero, divisorsAntidiagonal_zero, Finset.sum_empty]
+  · simp
   -- now `n ≠ 0`
   rw [term_of_ne_zero hn, convolution_def, Finset.sum_div]
   refine Finset.sum_congr rfl fun p hp ↦ ?_
   have ⟨hp₁, hp₂⟩ := ne_zero_of_mem_divisorsAntidiagonal hp
-  rw [term_of_ne_zero hp₁ f s, term_of_ne_zero hp₂ g s, mul_comm_div, div_div, ← mul_div_assoc,
+  rw [term_of_ne_zero hp₁, term_of_ne_zero hp₂, mul_comm_div, div_div, ← mul_div_assoc,
     ← natCast_mul_natCast_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
 
 open Set in
@@ -119,15 +114,14 @@ lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) :
   rcases eq_or_ne n 0 with rfl | hn
   · -- show that both sides vanish when `n = 0`; this is the hardest part of the proof!
     refine (term_zero ..).trans ?_
-    -- the right hand sum is over the union below, but in each term, one factor is always zero
+    -- the right-hand sum is over the union below, but in each term, one factor is always zero
     have hS : (fun p ↦ p.1 * p.2) ⁻¹' {0} = {0} ×ˢ univ ∪ univ ×ˢ {0} := by
       ext
-      simp only [mem_preimage, mem_singleton_iff, Nat.mul_eq_zero, mem_union, mem_prod, mem_univ,
-        and_true, true_and]
+      simp
     have : ∀ p : (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {0}, term f s p.val.1 * term g s p.val.2 = 0 := by
-      rintro ⟨⟨p₁, p₂⟩, hp⟩
-      rcases hS ▸ hp with ⟨rfl, -⟩ | ⟨-, rfl⟩ <;> simp only [term_zero, zero_mul, mul_zero]
-    simp only [this, tsum_zero]
+      rintro ⟨⟨_, _⟩, hp⟩
+      rcases hS ▸ hp with ⟨rfl, -⟩ | ⟨-, rfl⟩ <;> simp
+    simp [this]
   -- now `n ≠ 0`
   rw [show (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {n} = n.divisorsAntidiagonal by ext; simp [hn],
     Finset.tsum_subtype' n.divisorsAntidiagonal fun p ↦ term f s p.1 * term g s p.2,
@@ -141,9 +135,9 @@ equals the product of their L-series, assuming both L-series converge. -/
 lemma LSeriesHasSum.convolution {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesHasSum f s a)
     (hg : LSeriesHasSum g s b) :
     LSeriesHasSum (f ⍟ g) s (a * b) := by
-  simp only [LSeriesHasSum, term_convolution']
   have hsum := summable_mul_of_summable_norm hf.summable.norm hg.summable.norm
-  exact (HasSum.mul hf hg hsum).tsum_fiberwise (fun p ↦ p.1 * p.2)
+  -- NB: this `simpa` is quite slow if un-squeezed
+  simpa only [LSeriesHasSum, term_convolution'] using (hf.mul hg hsum).tsum_fiberwise _
 
 /-- The L-series of the convolution product `f ⍟ g` of two sequences `f` and `g`
 equals the product of their L-series, assuming both L-series converge. -/
@@ -166,6 +160,12 @@ lemma LSeriesSummable.convolution {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSum
     (hg : LSeriesSummable g s) :
     LSeriesSummable (f ⍟ g) s :=
   (LSeriesHasSum.convolution hf.LSeriesHasSum hg.LSeriesHasSum).LSeriesSummable
+
+/-- The abscissa of absolute convergence of `f ⍟ g` is at most the maximum of those
+of `f` and `g`. -/
+lemma LSeries.abscissaOfAbsConv_convolution_le (f g : ℕ → ℂ) :
+    abscissaOfAbsConv (f ⍟ g) ≤ max (abscissaOfAbsConv f) (abscissaOfAbsConv g) :=
+  abscissaOfAbsConv_binop_le LSeriesSummable.convolution f g
 
 namespace ArithmeticFunction
 

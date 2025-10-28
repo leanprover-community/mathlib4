@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
+import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
@@ -16,7 +17,7 @@ A module satisfying these equivalent conditions is said to be a *Noetherian* R-m
 A ring is a *Noetherian ring* if it is Noetherian as a module over itself.
 
 (Note that we do not assume yet that our rings are commutative,
-so perhaps this should be called "left Noetherian".
+so perhaps this should be called "left-Noetherian".
 To avoid cumbersome names once we specialize to the commutative case,
 we don't make this explicit in the declaration names.)
 
@@ -38,7 +39,7 @@ is proved in `RingTheory.Polynomial`.
 ## References
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [samuel1967]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
 
@@ -46,16 +47,14 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 -/
 
-assert_not_exists Finsupp.linearCombination
-assert_not_exists Matrix
-assert_not_exists Pi.basis
+assert_not_exists Finsupp.linearCombination Matrix Pi.basis
 
 open Set Pointwise
 
 /-- `IsNoetherian R M` is the proposition that `M` is a Noetherian `R`-module,
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.
 -/
--- Porting note: should this be renamed to `Noetherian`?
+-- TODO: should this be renamed to `Noetherian`?
 class IsNoetherian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
   noetherian : ∀ s : Submodule R M, s.FG
 
@@ -112,9 +111,7 @@ variable {R M P : Type*} {N : Type w} [Semiring R] [AddCommMonoid M] [Module R M
   [Module R N] [AddCommMonoid P] [Module R P]
 
 theorem isNoetherian_iff' : IsNoetherian R M ↔ WellFoundedGT (Submodule R M) := by
-  have := (CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 0 3
-  -- Porting note: inlining this makes rw complain about it being a metavariable
-  rw [this]
+  refine .trans ?_ ((CompleteLattice.wellFoundedGT_characterisations <| Submodule R M).out 0 3).symm
   exact
     ⟨fun ⟨h⟩ => fun k => (fg_iff_compact k).mp (h k), fun h =>
       ⟨fun k => (fg_iff_compact k).mpr (h k)⟩⟩
@@ -161,7 +158,34 @@ theorem set_has_maximal_iff_noetherian :
 /-- A module is Noetherian iff every increasing chain of submodules stabilizes. -/
 theorem monotone_stabilizes_iff_noetherian :
     (∀ f : ℕ →o Submodule R M, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsNoetherian R M := by
-  rw [isNoetherian_iff, WellFounded.monotone_chain_condition]
+  rw [isNoetherian_iff', wellFoundedGT_iff_monotone_chain_condition]
+
+variable [IsNoetherian R M]
+
+open Filter
+/-- For an endomorphism of a Noetherian module, any sufficiently large iterate has disjoint kernel
+and range. -/
+theorem Module.End.eventually_disjoint_ker_pow_range_pow (f : End R M) :
+    ∀ᶠ n in atTop, Disjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
+  obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.ker (f ^ n) = LinearMap.ker (f ^ m)⟩ :=
+    monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
+  refine eventually_atTop.mpr ⟨n, fun m hm ↦ disjoint_iff.mpr ?_⟩
+  rw [← hn _ hm, Submodule.eq_bot_iff]
+  rintro - ⟨hx, ⟨x, rfl⟩⟩
+  apply pow_map_zero_of_le hm
+  replace hx : x ∈ LinearMap.ker (f ^ (n + m)) := by
+    simpa [f.pow_apply n, f.pow_apply m, ← f.pow_apply (n + m), ← iterate_add_apply] using hx
+  rwa [← hn _ (n.le_add_right m)] at hx
+
+lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
+    ∀ᶠ n in atTop, ⨆ m, LinearMap.ker (f ^ m) = LinearMap.ker (f ^ n) := by
+  obtain ⟨n, hn : ∀ m, n ≤ m → ker (f ^ n) = ker (f ^ m)⟩ :=
+    monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
+  refine eventually_atTop.mpr ⟨n, fun m hm ↦ ?_⟩
+  refine le_antisymm (iSup_le fun l ↦ ?_) (le_iSup (fun i ↦ LinearMap.ker (f ^ i)) m)
+  rcases le_or_gt m l with h | h
+  · rw [← hn _ (hm.trans h), hn _ hm]
+  · exact f.iterateKer.monotone h.le
 
 end
 

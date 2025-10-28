@@ -22,73 +22,52 @@ open CategoryTheory
 
 universe v₁ v₂ u₁ u₂
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory.Adjunction
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
-/-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
-@[simps! unit_app counit_app]
-def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv := fun {X Y} =>
-      ((h.homEquiv (Opposite.op Y) (Opposite.op X)).trans (opEquiv _ _)).symm.trans
-        (opEquiv _ _)
-    homEquiv_naturality_left_symm := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
-      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` and
-      -- `homEquiv` aren't firing.
-      intros
-      simp [opEquiv, homEquiv]
-    homEquiv_naturality_right := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
-      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` and
-      -- `homEquiv` aren't firing.
-      intros
-      simp [opEquiv, homEquiv] }
-
-/-- If `G` is adjoint to `F.op` then `F` is adjoint to `G.unop`. -/
-def adjointUnopOfAdjointOp (F : C ⥤ D) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G ⊣ F.op) : F ⊣ G.unop :=
-  adjointOfOpAdjointOp F G.unop (h.ofNatIsoLeft G.opUnopIso.symm)
-
-/-- If `G.op` is adjoint to `F` then `F.unop` is adjoint to `G`. -/
-def unopAdjointOfOpAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : D ⥤ C) (h : G.op ⊣ F) : F.unop ⊣ G :=
-  adjointOfOpAdjointOp _ _ (h.ofNatIsoRight F.opUnopIso.symm)
-
 /-- If `G` is adjoint to `F` then `F.unop` is adjoint to `G.unop`. -/
-def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G ⊣ F) : F.unop ⊣ G.unop :=
-  adjointUnopOfAdjointOp F.unop G (h.ofNatIsoRight F.opUnopIso.symm)
+@[simps]
+def unop {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Cᵒᵖ} (h : G ⊣ F) : F.unop ⊣ G.unop where
+  unit := NatTrans.unop h.counit
+  counit := NatTrans.unop h.unit
+  left_triangle_components _ := Quiver.Hom.op_inj (h.right_triangle_components _)
+  right_triangle_components _ := Quiver.Hom.op_inj (h.left_triangle_components _)
 
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
-@[simps! unit_app counit_app]
-def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv := fun X Y =>
-      (opEquiv _ Y).trans ((h.homEquiv _ _).symm.trans (opEquiv X (Opposite.op _)).symm)
-    homEquiv_naturality_left_symm := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
-      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` aren't firing.
-      intros
-      simp [opEquiv]
-    homEquiv_naturality_right := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
-      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` aren't firing.
-      intros
-      simp [opEquiv] }
+@[simps]
+def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
+  unit := NatTrans.op h.counit
+  counit := NatTrans.op h.unit
+  left_triangle_components _ := Quiver.Hom.unop_inj (by simp)
+  right_triangle_components _ := Quiver.Hom.unop_inj (by simp)
 
-/-- If `G` is adjoint to `F.unop` then `F` is adjoint to `G.op`. -/
-def adjointOpOfAdjointUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : D ⥤ C) (h : G ⊣ F.unop) : F ⊣ G.op :=
-  (opAdjointOpOfAdjoint F.unop _ h).ofNatIsoLeft F.opUnopIso
+/-- If `F` is adjoint to `G.leftOp` then `G` is adjoint to `F.leftOp`. -/
+@[simps]
+def leftOp {F : C ⥤ Dᵒᵖ} {G : D ⥤ Cᵒᵖ} (a : F ⊣ G.leftOp) : G ⊣ F.leftOp where
+  unit := NatTrans.unop a.counit
+  counit := NatTrans.op a.unit
+  left_triangle_components X := congr($(a.right_triangle_components (.op X)).op)
+  right_triangle_components X := congr($(a.left_triangle_components X.unop).unop)
 
-/-- If `G.unop` is adjoint to `F` then `F.op` is adjoint to `G`. -/
-def opAdjointOfUnopAdjoint (F : C ⥤ D) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G.unop ⊣ F) : F.op ⊣ G :=
-  (opAdjointOpOfAdjoint _ G.unop h).ofNatIsoRight G.opUnopIso
+/-- If `F.rightOp` is adjoint to `G` then `G.rightOp` is adjoint to `F`. -/
+@[simps]
+def rightOp {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) : G.rightOp ⊣ F where
+  unit := NatTrans.unop a.counit
+  counit := NatTrans.op a.unit
+  left_triangle_components X := congr($(a.right_triangle_components (.op X)).op)
+  right_triangle_components X := congr($(a.left_triangle_components X.unop).unop)
 
-/-- If `G.unop` is adjoint to `F.unop` then `F` is adjoint to `G`. -/
-def adjointOfUnopAdjointUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G.unop ⊣ F.unop) : F ⊣ G :=
-  (adjointOpOfAdjointUnop _ _ h).ofNatIsoRight G.opUnopIso
+lemma leftOp_eq {F : C ⥤ Dᵒᵖ} {G : D ⥤ Cᵒᵖ} (a : F ⊣ G.leftOp) :
+    a.leftOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
+  ext X; simp [Equivalence.unit]
+
+lemma rightOp_eq {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) :
+    a.rightOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
+  ext X; simp [Equivalence.unit]
 
 /-- If `F` and `F'` are both adjoint to `G`, there is a natural isomorphism
 `F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda`.
@@ -119,7 +98,31 @@ Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Adju
 -/
 def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
-  NatIso.removeOp (natIsoOfRightAdjointNatIso (opAdjointOpOfAdjoint _ F' adj2)
-    (opAdjointOpOfAdjoint _ _ adj1) (NatIso.op l))
+  NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))
 
-end CategoryTheory.Adjunction
+end Adjunction
+
+namespace Functor
+
+instance IsLeftAdjoint.op {F : C ⥤ D} [F.IsLeftAdjoint] : F.op.IsRightAdjoint :=
+  ⟨F.rightAdjoint.op, ⟨.op <| .ofIsLeftAdjoint _⟩⟩
+
+instance IsRightAdjoint.op {F : C ⥤ D} [F.IsRightAdjoint] : F.op.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.op, ⟨.op <| .ofIsRightAdjoint _⟩⟩
+
+instance IsLeftAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsLeftAdjoint] : F.leftOp.IsRightAdjoint :=
+  ⟨F.rightAdjoint.rightOp, ⟨.leftOp <| .ofIsLeftAdjoint _⟩⟩
+
+-- TODO: Do we need to introduce `Adjunction.leftUnop`?
+instance IsRightAdjoint.leftOp {F : C ⥤ Dᵒᵖ} [F.IsRightAdjoint] : F.leftOp.IsLeftAdjoint :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).IsLeftAdjoint
+
+-- TODO: Do we need to introduce `Adjunction.rightUnop`?
+instance IsLeftAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsLeftAdjoint] : F.rightOp.IsRightAdjoint :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).IsRightAdjoint
+
+instance IsRightAdjoint.rightOp {F : Cᵒᵖ ⥤ D} [F.IsRightAdjoint] : F.rightOp.IsLeftAdjoint :=
+  ⟨F.leftAdjoint.leftOp, ⟨.rightOp <| .ofIsRightAdjoint _⟩⟩
+
+end Functor
+end CategoryTheory

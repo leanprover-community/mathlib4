@@ -2,8 +2,9 @@
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.Set
+import Mathlib.Algebra.Notation.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Order.Basic
-import Mathlib.Data.Nat.Defs
 
 set_option autoImplicit true
 example (a b : ℕ) (foo : False)  : a < b := by

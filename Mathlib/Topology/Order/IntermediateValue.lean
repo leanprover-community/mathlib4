@@ -7,6 +7,7 @@ import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Topology.Order.DenselyOrdered
 import Mathlib.Topology.Order.Monotone
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Intermediate Value Theorem
@@ -258,14 +259,13 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
     simp only [insert_subset_iff, mem_insert_iff, mem_singleton_iff, true_or, or_true,
       singleton_subset_iff, and_self]
   · refine Or.inr <| Or.inr <| Or.inr <| Or.inr ?_
-    cases'
-      mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx => csInf_le hb hx with
-      hs hs
+    rcases mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx ↦
+      csInf_le hb hx with hs | hs
     · exact Or.inl hs
     · exact Or.inr (Or.inl hs)
   · iterate 6 apply Or.inr
-    cases' mem_Iic_Iio_of_subset_of_subset (hs.Iio_csSup_subset hb ha) fun x hx => le_csSup ha hx
-      with hs hs
+    rcases mem_Iic_Iio_of_subset_of_subset (hs.Iio_csSup_subset hb ha) fun x hx ↦
+      le_csSup ha hx with hs | hs
     · exact Or.inl hs
     · exact Or.inr (Or.inl hs)
   · iterate 8 apply Or.inr
@@ -304,11 +304,11 @@ theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsC
   let c := sSup (s ∩ Icc a b)
   have c_mem : c ∈ S := hs.csSup_mem ⟨_, ha⟩ Sbd
   have c_le : c ≤ b := csSup_le ⟨_, ha⟩ fun x hx => hx.2.2
-  cases' eq_or_lt_of_le c_le with hc hc
+  rcases eq_or_lt_of_le c_le with hc | hc
   · exact hc ▸ c_mem.1
   exfalso
   rcases hgt c ⟨c_mem.1, c_mem.2.1, hc⟩ with ⟨x, xs, cx, xb⟩
-  exact not_lt_of_le (le_csSup Sbd ⟨xs, le_trans (le_csSup Sbd ha) (le_of_lt cx), xb⟩) cx
+  exact not_lt_of_ge (le_csSup Sbd ⟨xs, le_trans (le_csSup Sbd ha) (le_of_lt cx), xb⟩) cx
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and for any `a ≤ x < y ≤ b`, `x ∈ s`, the set `s ∩ (x, y]`
@@ -317,29 +317,83 @@ theorem IsClosed.Icc_subset_of_forall_exists_gt {a b : α} {s : Set α} (hs : Is
     (ha : a ∈ s) (hgt : ∀ x ∈ s ∩ Ico a b, ∀ y ∈ Ioi x, (s ∩ Ioc x y).Nonempty) : Icc a b ⊆ s := by
   intro y hy
   have : IsClosed (s ∩ Icc a y) := by
-    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y by
-      rw [this]
-      exact IsClosed.inter hs isClosed_Icc
-    rw [inter_assoc]
-    congr
-    exact (inter_eq_self_of_subset_right <| Icc_subset_Icc_right hy.2).symm
-  exact
-    IsClosed.mem_of_ge_of_forall_exists_gt this ha hy.1 fun x hx =>
-      hgt x ⟨hx.1, Ico_subset_Ico_right hy.2 hx.2⟩ y hx.2.2
+    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y from this ▸ hs.inter isClosed_Icc
+    grind [inter_assoc, inter_eq_self_of_subset_right, Icc_subset_Icc_right]
+  exact IsClosed.mem_of_ge_of_forall_exists_gt this ha hy.1 fun x hx ↦
+    hgt x ⟨hx.1, Ico_subset_Ico_right hy.2 hx.2⟩ y hx.2.2
+
+/-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
+on a closed subset, contains `b`, and the set `s ∩ (a, b]` has no minimal point, then `a ∈ s`. -/
+theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
+    (hb : b ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ioc a b, (s ∩ Ico a x).Nonempty) : a ∈ s := by
+  suffices OrderDual.toDual a ∈ ofDual ⁻¹' s by aesop
+  have : IsClosed (OrderDual.ofDual ⁻¹' (s ∩ Icc a b)) := hs
+  rw [preimage_inter, ← Icc_toDual] at this
+  apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
+  rw [Ico_toDual, ← preimage_inter, preimage_equiv_eq_image_symm, mem_image] at hx
+  aesop
+
+/-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
+on a closed subset, contains `b`, and for any `a ≤ y < x ≤ b`, `x ∈ s`, the set `s ∩ [y, x)`
+is not empty, then `[a, b] ⊆ s`. -/
+theorem IsClosed.Icc_subset_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
+    (hb : b ∈ s) (hgt : ∀ x ∈ s ∩ Ioc a b, ∀ y ∈ Iio x, (s ∩ Ico y x).Nonempty) : Icc a b ⊆ s := by
+  intro y hy
+  have : IsClosed (s ∩ Icc y b) := by
+    suffices s ∩ Icc y b = s ∩ Icc a b ∩ Icc y b from this ▸ hs.inter isClosed_Icc
+    grind [Icc_subset_Icc_left, inter_eq_self_of_subset_right, inter_assoc]
+  exact IsClosed.mem_of_ge_of_forall_exists_lt this hb hy.2 fun x hx ↦
+    hgt x ⟨hx.1, Ioc_subset_Ioc_left hy.1 hx.2⟩ y hx.2.1
 
 variable [DenselyOrdered α] {a b : α}
+
+/-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
+on a closed subset, contains `a`, and for any `x ∈ [a, b)` such that `[a, x]` is included in `s`,
+the set `s` includes some open neighborhood of `x` within `(x, +∞)`, then `[a, b] ⊆ s`. -/
+lemma IsClosed.Icc_subset_of_forall_mem_nhdsGT_of_Icc_subset {a b : α} {s : Set α}
+    (hs : IsClosed (s ∩ Icc a b)) (ha : a ∈ s)
+    (h : ∀ t ∈ Ico a b, Icc a t ⊆ s → s ∈ 𝓝[>] t) :
+    Icc a b ⊆ s := by
+  rcases lt_or_ge b a with hab | hab
+  · simp_all
+  set A := {t ∈ Icc a b | Icc a t ⊆ s}
+  have a_mem : a ∈ A := ⟨left_mem_Icc.mpr hab, by simp [ha]⟩
+  have bdd_A : BddAbove A := ⟨b, fun t ht ↦ ht.1.2⟩
+  set t₁ := sSup A
+  have t₁_mem : t₁ ∈ Icc a b := ⟨le_csSup bdd_A a_mem, csSup_le ⟨a, a_mem⟩ (fun t ht ↦ ht.1.2)⟩
+  obtain ⟨⟨t₁a, t₁b⟩, ht₁⟩ : t₁ ∈ A := by
+    refine ⟨t₁_mem, fun t ht ↦ ?_⟩
+    rcases ht.2.eq_or_lt with rfl | h
+    · have : closure A ⊆ s ∩ Icc a b := by
+        apply (closure_subset_iff hs).2 (fun t ht ↦ ⟨?_, ht.1⟩)
+        have : t ∈ Icc a t := ⟨ht.1.1, le_rfl⟩
+        exact ht.2 this
+      apply this.trans inter_subset_left
+      exact csSup_mem_closure ⟨a, a_mem⟩ bdd_A
+    · obtain ⟨c, cA, tc⟩ : ∃ c ∈ A, t < c := (lt_csSup_iff bdd_A ⟨a, a_mem⟩).1 h
+      apply cA.2
+      exact ⟨ht.1, tc.le⟩
+  suffices t₁ = b by simpa [this] using ht₁
+  apply eq_of_le_of_not_lt t₁b fun t₁b' ↦ ?_
+  obtain ⟨m, t₁m, H⟩ : ∃ m > t₁, Ioo t₁ m ⊆ s :=
+    (mem_nhdsGT_iff_exists_Ioo_subset' t₁b').mp (h t₁ ⟨t₁a, t₁b'⟩ (fun s hs ↦ ht₁ hs))
+  obtain ⟨t, hat, ht⟩ : ∃ t, t₁ < t ∧ t < min m b := exists_between (lt_min t₁m t₁b')
+  have : t ∈ A := by
+    refine ⟨⟨by order, ht.le.trans (min_le_right _ _)⟩, fun t' ht' ↦ ?_⟩
+    rcases le_or_gt t' t₁ with h't' | h't'
+    · exact ht₁ ⟨ht'.1, h't'⟩
+    · exact H ⟨h't', ht'.2.trans_lt <| ht.trans_le <| min_le_left ..⟩
+  have : t ≤ t₁ := le_csSup bdd_A this
+  order
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and for any `x ∈ s ∩ [a, b)` the set `s` includes some open
 neighborhood of `x` within `(x, +∞)`, then `[a, b] ⊆ s`. -/
 theorem IsClosed.Icc_subset_of_forall_mem_nhdsWithin {a b : α} {s : Set α}
     (hs : IsClosed (s ∩ Icc a b)) (ha : a ∈ s) (hgt : ∀ x ∈ s ∩ Ico a b, s ∈ 𝓝[>] x) :
-    Icc a b ⊆ s := by
-  apply hs.Icc_subset_of_forall_exists_gt ha
-  rintro x ⟨hxs, hxab⟩ y hyxb
-  have : s ∩ Ioc x y ∈ 𝓝[>] x :=
-    inter_mem (hgt x ⟨hxs, hxab⟩) (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hyxb⟩)
-  exact (nhdsWithin_Ioi_self_neBot' ⟨b, hxab.2⟩).nonempty_of_mem this
+    Icc a b ⊆ s :=
+  hs.Icc_subset_of_forall_mem_nhdsGT_of_Icc_subset ha
+    (fun _t ht h't ↦ hgt _ ⟨h't ⟨ht.1, le_rfl⟩, ht⟩)
 
 theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : IsClosed s)
     (ht : IsClosed t) (hab : Icc a b ⊆ s ∪ t) (hx : x ∈ Icc a b ∩ s) (hy : y ∈ Icc a b ∩ t) :
@@ -352,7 +406,7 @@ theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : I
   rintro z ⟨zs, hz⟩
   have zt : z ∈ tᶜ := fun zt => hst ⟨z, xyab <| Ico_subset_Icc_self hz, zs, zt⟩
   have : tᶜ ∩ Ioc z y ∈ 𝓝[>] z := by
-    rw [← nhdsWithin_Ioc_eq_nhdsWithin_Ioi hz.2]
+    rw [← nhdsWithin_Ioc_eq_nhdsGT hz.2]
     exact mem_nhdsWithin.2 ⟨tᶜ, ht.isOpen_compl, zt, Subset.rfl⟩
   apply mem_of_superset this
   have : Ioc z y ⊆ s ∪ t := fun w hw => hab (xyab ⟨le_trans hz.1 (le_of_lt hw.1), hw.2⟩)
@@ -509,35 +563,35 @@ theorem exists_mem_Icc_isFixedPt_of_mapsTo {a b : α} {f : α → α} (hf : Cont
 
 theorem intermediate_value_Ico {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ico (f a) (f b) ⊆ f '' Ico a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_le (he ▸ h.1))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_ge (he ▸ h.1))) fun hlt =>
     @IsPreconnected.intermediate_value_Ico _ _ _ _ _ _ _ isPreconnected_Ico _ _ ⟨refl a, hlt⟩
       (right_nhdsWithin_Ico_neBot hlt) inf_le_right _ (hf.mono Ico_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨hab, refl b⟩).mono Ico_subset_Icc_self)
 
 theorem intermediate_value_Ico' {a b : α} (hab : a ≤ b) {f : α → δ}
     (hf : ContinuousOn f (Icc a b)) : Ioc (f b) (f a) ⊆ f '' Ico a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_le (he ▸ h.2))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_ge (he ▸ h.2))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioc _ _ _ _ _ _ _ isPreconnected_Ico _ _ ⟨refl a, hlt⟩
       (right_nhdsWithin_Ico_neBot hlt) inf_le_right _ (hf.mono Ico_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨hab, refl b⟩).mono Ico_subset_Icc_self)
 
 theorem intermediate_value_Ioc {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ioc (f a) (f b) ⊆ f '' Ioc a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_le_of_lt (he ▸ h.1))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_le_of_gt (he ▸ h.1))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioc _ _ _ _ _ _ _ isPreconnected_Ioc _ _ ⟨hlt, refl b⟩
       (left_nhdsWithin_Ioc_neBot hlt) inf_le_right _ (hf.mono Ioc_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨refl a, hab⟩).mono Ioc_subset_Icc_self)
 
 theorem intermediate_value_Ioc' {a b : α} (hab : a ≤ b) {f : α → δ}
     (hf : ContinuousOn f (Icc a b)) : Ico (f b) (f a) ⊆ f '' Ioc a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_le_of_lt (he ▸ h.2))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_le_of_gt (he ▸ h.2))) fun hlt =>
     @IsPreconnected.intermediate_value_Ico _ _ _ _ _ _ _ isPreconnected_Ioc _ _ ⟨hlt, refl b⟩
       (left_nhdsWithin_Ioc_neBot hlt) inf_le_right _ (hf.mono Ioc_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨refl a, hab⟩).mono Ioc_subset_Icc_self)
 
 theorem intermediate_value_Ioo {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ioo (f a) (f b) ⊆ f '' Ioo a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_lt (he ▸ h.1))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_gt (he ▸ h.1))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioo _ _ _ _ _ _ _ isPreconnected_Ioo _ _
       (left_nhdsWithin_Ioo_neBot hlt) (right_nhdsWithin_Ioo_neBot hlt) inf_le_right inf_le_right _
       (hf.mono Ioo_subset_Icc_self) _ _
@@ -546,7 +600,7 @@ theorem intermediate_value_Ioo {a b : α} (hab : a ≤ b) {f : α → δ} (hf : 
 
 theorem intermediate_value_Ioo' {a b : α} (hab : a ≤ b) {f : α → δ}
     (hf : ContinuousOn f (Icc a b)) : Ioo (f b) (f a) ⊆ f '' Ioo a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_lt (he ▸ h.2))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_gt (he ▸ h.2))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioo _ _ _ _ _ _ _ isPreconnected_Ioo _ _
       (right_nhdsWithin_Ioo_neBot hlt) (left_nhdsWithin_Ioo_neBot hlt) inf_le_right inf_le_right _
       (hf.mono Ioo_subset_Icc_self) _ _
@@ -606,7 +660,7 @@ theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → 
   by_cases ha : f a ≤ f ⊥
   · obtain ⟨u, hu⟩ := intermediate_value_Ioc le_top hf_c.continuousOn ⟨H.trans_le ha, hf⟩
     have : u = ⊥ := hf_i hu.2
-    aesop
+    simp_all
   · by_cases hb : f ⊥ < f b
     · obtain ⟨u, hu⟩ := intermediate_value_Ioo bot_le hf_c.continuousOn ⟨hb, H⟩
       rw [hf_i hu.2] at hu
@@ -615,7 +669,7 @@ theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → 
       replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
       obtain ⟨u, hu⟩ := intermediate_value_Ioo' hab.le hf_c.continuousOn ⟨hb, ha⟩
       have : u = ⊥ := hf_i hu.2
-      aesop
+      simp_all
 
 theorem Continuous.strictAnti_of_inj_boundedOrder [BoundedOrder α] {f : α → δ}
     (hf_c : Continuous f) (hf : f ⊤ ≤ f ⊥) (hf_i : Injective f) : StrictAnti f :=
@@ -692,19 +746,11 @@ theorem Continuous.strictMono_of_inj {f : α → δ}
     (hf_c.continuousOn.strictMonoOn_of_injOn_Icc' hcd.le hf_i.injOn).imp
       (hf_c.strictMonoOn_of_inj_rigidity hf_i hcd)
       (hf_c.strictMonoOn_of_inj_rigidity (δ := δᵒᵈ) hf_i hcd)
-  by_cases hn : Nonempty α
-  · let a : α := Classical.choice ‹_›
-    by_cases h : ∃ b : α, a ≠ b
-    · choose b hb using h
-      by_cases hab : a < b
-      · exact H hab
-      · push_neg at hab
-        have : b < a := by exact Ne.lt_of_le (id (Ne.symm hb)) hab
-        exact H this
-    · push_neg at h
-      haveI : Subsingleton α := ⟨fun c d => Trans.trans (h c).symm (h d)⟩
-      exact Or.inl <| Subsingleton.strictMono f
-  · aesop
+  cases subsingleton_or_nontrivial α with
+  | inl h => exact Or.inl <| Subsingleton.strictMono f
+  | inr h =>
+    obtain ⟨a, b, hab⟩ := exists_pair_lt α
+    exact H hab
 
 /-- Every continuous injective `f : (a, b) → δ` is strictly monotone
 or antitone (increasing or decreasing). -/

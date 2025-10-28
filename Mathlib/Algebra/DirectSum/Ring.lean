@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.DirectSum.Basic
+import Mathlib.Algebra.Ring.Associator
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`
@@ -128,7 +129,7 @@ class GRing [AddMonoid ι] [∀ i, AddCommGroup (A i)] extends GSemiring A where
   intCast_ofNat : ∀ n : ℕ, intCast n = natCast n
   /-- On negative integers, the canonical map from ℤ to a graded ring is the negative extension of
   the canonical map from ℕ to the underlying graded semiring. -/
-  -- Porting note: -(n+1) -> Int.negSucc
+  -- Porting note: -(n + 1) -> Int.negSucc
   intCast_negSucc_ofNat : ∀ n : ℕ, intCast (Int.negSucc n) = -natCast (n + 1 : ℕ)
 
 /-- A graded version of `CommRing`. -/
@@ -198,9 +199,7 @@ theorem mulHom_apply (a b : ⨁ i, A i) : mulHom A a b = a * b := rfl
 
 theorem mulHom_of_of {i j} (a : A i) (b : A j) :
     mulHom A (of A i a) (of A j b) = of A (i + j) (GradedMonoid.GMul.mul a b) := by
-  unfold mulHom
-  simp only [toAddMonoid_of, flip_apply, coe_comp, Function.comp_apply]
-  rfl
+  simp
 
 theorem of_mul_of {i j} (a : A i) (b : A j) :
     of A i a * of A j b = of _ (i + j) (GradedMonoid.GMul.mul a b) :=
@@ -230,15 +229,13 @@ private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
 
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
-  suffices (mulHom A).compHom.comp (mulHom A) =
-      (AddMonoidHom.compHom flipHom <| (mulHom A).flip.compHom.comp (mulHom A)).flip by
-      simpa only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
-        AddMonoidHom.flipHom_apply]
-        using DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
-  ext ai ax bi bx ci cx
-  dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
-    AddMonoidHom.flipHom_apply]
-  simp_rw [mulHom_of_of]
+  suffices AddMonoidHom.mulLeft₃ = AddMonoidHom.mulRight₃ by
+      simpa only [AddMonoidHom.mulLeft₃_apply, AddMonoidHom.mulRight₃_apply] using
+        DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
+  ext ai ax bi bx ci cx : 6
+  dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.mulLeft₃_apply,
+    AddMonoidHom.mulRight₃_apply]
+  simp_rw [of_mul_of]
   exact of_eq_of_gradedMonoid_eq (_root_.mul_assoc (GradedMonoid.mk ai ax) ⟨bi, bx⟩ ⟨ci, cx⟩)
 
 instance instNatCast : NatCast (⨁ i, A i) where
@@ -279,7 +276,7 @@ theorem list_prod_ofFn_of_eq_dProd (n : ℕ) (fι : Fin n → ι) (fA : ∀ a, A
     (List.ofFn fun a => of A (fι a) (fA a)).prod = of A _ ((List.finRange n).dProd fι fA) := by
   rw [List.ofFn_eq_map, ofList_dProd]
 
-theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
+theorem mul_eq_dfinsuppSum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a'
       = a.sum fun _ ai => a'.sum fun _ aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
   change mulHom _ a a' = _
@@ -287,22 +284,24 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
   -- simpa only [mul_hom, to_add_monoid, dfinsupp.lift_add_hom_apply, dfinsupp.sum_add_hom_apply,
   -- add_monoid_hom.dfinsupp_sum_apply, flip_apply, add_monoid_hom.dfinsupp_sum_add_hom_apply],
   rw [mulHom, toAddMonoid, DFinsupp.liftAddHom_apply]
+  dsimp only [DirectSum]
+  rw [DFinsupp.sumAddHom_apply, AddMonoidHom.dfinsuppSum_apply]
+  apply congrArg _
+  simp_rw [flip_apply]
+  funext x
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [DFinsupp.sumAddHom_apply]
-  rw [AddMonoidHom.dfinsupp_sum_apply]
-  apply congrArg _
-  funext x
-  simp_rw [flip_apply]
-  erw [DFinsupp.sumAddHom_apply]
-  simp only [gMulHom, AddMonoidHom.dfinsupp_sum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
-  ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
+  simp only [gMulHom, AddMonoidHom.dfinsuppSum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
+    ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
+
+@[deprecated (since := "2025-04-06")] alias mul_eq_dfinsupp_sum := mul_eq_dfinsuppSum
 
 /-- A heavily unfolded version of the definition of multiplication -/
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a' =
       ∑ ij ∈ DFinsupp.support a ×ˢ DFinsupp.support a',
         DirectSum.of _ _ (GradedMonoid.GMul.mul (a ij.fst) (a' ij.snd)) := by
-  simp only [mul_eq_dfinsupp_sum, DFinsupp.sum, Finset.sum_product]
+  simp only [mul_eq_dfinsuppSum, DFinsupp.sum, Finset.sum_product]
 
 end Semiring
 
@@ -424,9 +423,8 @@ instance : NatCast (A 0) :=
 theorem of_natCast (n : ℕ) : of A 0 n = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 ofNat(n) = ofNat(n) :=
   of_natCast A n
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/
@@ -528,7 +526,7 @@ theorem ringHom_ext ⦃f g : (⨁ i, A i) →+* R⦄ (h : ∀ i x, f (of A i x) 
 /-- A family of `AddMonoidHom`s preserving `DirectSum.One.one` and `DirectSum.Mul.mul`
 describes a `RingHom`s on `⨁ i, A i`. This is a stronger version of `DirectSum.toMonoid`.
 
-Of particular interest is the case when `A i` are bundled subojects, `f` is the family of
+Of particular interest is the case when `A i` are bundled subobjects, `f` is the family of
 coercions such as `AddSubmonoid.subtype (A i)`, and the `[GSemiring A]` structure originates from
 `DirectSum.gsemiring.ofAddSubmonoids`, in which case the proofs about `GOne` and `GMul`
 can be discharged by `rfl`. -/
@@ -546,7 +544,7 @@ def toSemiring (f : ∀ i, A i →+ R) (hone : f _ GradedMonoid.GOne.one = 1)
       rw [(toAddMonoid f).map_mul_iff]
       refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
       refine DirectSum.addHom_ext' (fun yi ↦ AddMonoidHom.ext (fun yv ↦ ?_))
-      show
+      change
         toAddMonoid f (of A xi xv * of A yi yv) =
           toAddMonoid f (of A xi xv) * toAddMonoid f (of A yi yv)
       simp_rw [of_mul_of, toAddMonoid_of]
@@ -578,7 +576,7 @@ def liftRingHom :
       rw [← F.map_one]
       rfl,
       by
-      intros i j ai aj
+      intro i j ai aj
       simp only [AddMonoidHom.comp_apply, AddMonoidHom.coe_coe]
       rw [← F.map_mul (of A i ai), of_mul_of ai]⟩
   left_inv f := by
@@ -587,8 +585,7 @@ def liftRingHom :
   right_inv F := by
     apply RingHom.coe_addMonoidHom_injective
     refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
-    simp only [RingHom.coe_addMonoidHom_mk, DirectSum.toAddMonoid_of, AddMonoidHom.mk_coe,
-      AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
+    simp only [DirectSum.toAddMonoid_of, AddMonoidHom.comp_apply, toSemiring_coe_addMonoidHom]
 
 end ToSemiring
 
@@ -642,7 +639,7 @@ instance CommSemiring.directSumGCommSemiring {R : Type*} [AddCommMonoid ι] [Com
   __ := CommMonoid.gCommMonoid ι
 
 /-- A direct sum of copies of a `CommRing` inherits the commutative multiplication structure. -/
-instance CommmRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R] :
+instance CommRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R] :
     DirectSum.GCommRing fun _ : ι => R where
   __ := Ring.directSumGRing ι
   __ := CommMonoid.gCommMonoid ι

@@ -7,11 +7,13 @@ import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Algebra.GroupWithZero.Units.Equiv
 
 /-!
 # fintype instances relating to units
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -27,7 +29,7 @@ theorem Fintype.card_units_int : Fintype.card ℤˣ = 2 := rfl
 instance [Monoid α] [Fintype α] [DecidableEq α] : Fintype αˣ :=
   Fintype.ofEquiv _ (unitsEquivProdSubtype α).symm
 
-instance [Monoid α] [Finite α] : Finite αˣ := Finite.of_injective _ Units.ext
+instance [Monoid α] [Finite α] : Finite αˣ := .of_injective _ Units.val_injective
 
 variable (α)
 

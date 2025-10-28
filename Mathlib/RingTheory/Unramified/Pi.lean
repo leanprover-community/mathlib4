@@ -32,7 +32,7 @@ theorem pi_iff :
     exact FormallyUnramified.of_surjective (Pi.evalAlgHom R f i) (Function.surjective_eval i)
   · intro H
     rw [iff_comp_injective]
-    intros B _ _ J hJ f₁ f₂ e
+    intro B _ _ J hJ f₁ f₂ e
     ext g
     rw [← Finset.univ_sum_single g, map_sum, map_sum]
     refine Finset.sum_congr rfl ?_
@@ -65,7 +65,7 @@ theorem pi_iff :
           Function.comp_apply, AlgHom.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
         rw [eq_comm, ← sub_eq_zero, ← (Ideal.Quotient.mk J').map_one, ← map_sub,
           Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
-      · intros r s; simp [Pi.single_mul]
+      · intro r s; simp [Pi.single_mul]
     let f₂' : f x →ₐ[R] B ⧸ J' := by
       apply AlgHom.ofLinearMap
         (((Ideal.Quotient.mkₐ R J').comp f₂).toLinearMap.comp (LinearMap.single _ _ x))
@@ -73,12 +73,12 @@ theorem pi_iff :
           Function.comp_apply, AlgHom.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
         rw [eq_comm, ← sub_eq_zero, ← (Ideal.Quotient.mk J').map_one, ← map_sub,
           Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton, H]
-      · intros r s; simp [Pi.single_mul]
+      · intro r s; simp [Pi.single_mul]
     suffices f₁' = f₂' by
       have := AlgHom.congr_fun this (g x)
       simp only [AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, LinearMap.coe_comp,
         LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply, ← map_sub,
-        Ideal.Quotient.mkₐ_eq_mk, ← sub_eq_zero (b := Ideal.Quotient.mk J' _), sub_zero, f₁', f₂',
+        Ideal.Quotient.mkₐ_eq_mk, ← sub_eq_zero (b := Ideal.Quotient.mk J' _), f₁', f₂',
         Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton, J'] at this
       obtain ⟨c, hc⟩ := this
       apply_fun (f₁ e * ·) at hc
@@ -94,5 +94,8 @@ theorem pi_iff :
         LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply,
         Ideal.Quotient.mkₐ_eq_mk]
       exact Ideal.mem_map_of_mem (Ideal.Quotient.mk J') (hf (Pi.single x r))
+
+instance [∀ i, FormallyUnramified R (f i)] : FormallyUnramified R (Π i, f i) :=
+  (pi_iff _).mpr ‹_›
 
 end Algebra.FormallyUnramified

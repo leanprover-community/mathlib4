@@ -67,6 +67,9 @@ The following is the second equivalent characterization of linear disjointness:
 - `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_comm_of_commute`:
   linear disjointness is symmetric under some commutative conditions.
 
+- `Submodule.LinearDisjoint.map`:
+  linear disjointness is preserved by injective algebra homomorphisms.
+
 - `Submodule.linearDisjoint_op`:
   linear disjointness is preserved by taking multiplicative opposite.
 
@@ -124,6 +127,7 @@ linearly disjoint, linearly independent, tensor product
 
 -/
 
+open Module
 open scoped TensorProduct
 
 noncomputable section
@@ -158,9 +162,13 @@ theorem LinearDisjoint.val_mulMap_tmul (H : M.LinearDisjoint N) (m : M) (n : N) 
     (H.mulMap (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
 
 @[nontriviality]
-theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N := by
+theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N :=
   haveI : Subsingleton S := Module.subsingleton R S
-  exact ⟨Function.injective_of_subsingleton _⟩
+  ⟨Function.injective_of_subsingleton _⟩
+
+@[nontriviality]
+theorem LinearDisjoint.of_subsingleton_top [Subsingleton S] : M.LinearDisjoint N :=
+  ⟨Function.injective_of_subsingleton _⟩
 
 /-- Linear disjointness is preserved by taking multiplicative opposite. -/
 theorem linearDisjoint_op :
@@ -183,6 +191,17 @@ theorem linearDisjoint_comm_of_commute
   ⟨fun H ↦ H.symm_of_commute hc, fun H ↦ H.symm_of_commute fun _ _ ↦ (hc _ _).symm⟩
 
 namespace LinearDisjoint
+
+/-- Linear disjointness is preserved by injective algebra homomorphisms. -/
+theorem map (H : M.LinearDisjoint N) {T : Type w} [Semiring T] [Algebra R T]
+    {F : Type*} [FunLike F S T] [AlgHomClass F R S T] (f : F) (hf : Function.Injective f) :
+    (M.map f).LinearDisjoint (N.map f) := by
+  rw [linearDisjoint_iff] at H ⊢
+  have : _ ∘ₗ
+    (TensorProduct.congr (M.equivMapOfInjective f hf) (N.equivMapOfInjective f hf)).toLinearMap
+      = _ := M.mulMap_map_comp_eq N f
+  replace H : Function.Injective ((f : S →ₗ[R] T) ∘ₗ mulMap M N) := hf.comp H
+  simpa only [← this, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] using H
 
 variable (M N)
 
@@ -246,7 +265,7 @@ theorem of_linearDisjoint_fg_left
     (H : ∀ M' : Submodule R S, M' ≤ M → M'.FG → M'.LinearDisjoint N) :
     M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
   obtain ⟨M', hM, hFG, h⟩ :=
-    TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
+    TensorProduct.exists_finite_submodule_left_of_setFinite' {x, y} (Set.toFinite _)
   rw [Module.Finite.iff_fg] at hFG
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
@@ -259,7 +278,7 @@ theorem of_linearDisjoint_fg_right
     (H : ∀ N' : Submodule R S, N' ≤ N → N'.FG → M.LinearDisjoint N') :
     M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
   obtain ⟨N', hN, hFG, h⟩ :=
-    TensorProduct.exists_finite_submodule_right_of_finite' {x, y} (Set.toFinite _)
+    TensorProduct.exists_finite_submodule_right_of_setFinite' {x, y} (Set.toFinite _)
   rw [Module.Finite.iff_fg] at hFG
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)

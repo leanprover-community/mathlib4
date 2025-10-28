@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Nat.Init
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.OfNat
 
 /-!
 # Cast of natural numbers
@@ -29,25 +31,6 @@ protected def Nat.unaryCast [One R] [Zero R] [Add R] : ℕ → R
   | 0 => 0
   | n + 1 => Nat.unaryCast n + 1
 
--- the following four declarations are not in mathlib3 and are relevant to the way numeric
--- literals are handled in Lean 4.
-
-/-- A type class for natural numbers which are greater than or equal to `2`. -/
-class Nat.AtLeastTwo (n : ℕ) : Prop where
-  prop : n ≥ 2
-
-instance instNatAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
-
-namespace Nat.AtLeastTwo
-
-variable {n : ℕ} [n.AtLeastTwo]
-
-lemma one_lt : 1 < n := prop
-lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
-
-end Nat.AtLeastTwo
-
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
 instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
@@ -57,20 +40,19 @@ instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeas
     OfNat R n where
   ofNat := n.cast
 
-library_note "no_index around OfNat.ofNat"
+library_note2 «no_index around OfNat.ofNat»
 /--
 When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
 in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
+
+Rather than referencing this library note, use `ofNat(n)` as a shorthand for
+`no_index (OfNat.ofNat n)`.
 
 Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20Polynomial.2Ecoeff.20example/near/395438147).
 -/
 
 @[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
-  (Nat.cast (no_index (OfNat.ofNat n)) : R) = OfNat.ofNat n := rfl
-
-theorem Nat.cast_eq_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
-    (Nat.cast n : R) = OfNat.ofNat n :=
-  rfl
+    (Nat.cast ofNat(n) : R) = ofNat(n) := rfl
 
 /-! ### Additive monoids with one -/
 
@@ -86,7 +68,7 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`. -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 
-library_note "coercion into rings"
+library_note2 «coercion into rings»
 /--
 Coercions such as `Nat.castCoe` that go from a concrete structure such as
 `ℕ` to an arbitrary ring `R` should be set up as follows:
@@ -155,22 +137,22 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
   | succ k =>
       rw [Nat.binCast]
       by_cases h : (k + 1) % 2 = 0
-      · conv => rhs; rw [← Nat.mod_add_div (k+1) 2]
+      · conv => rhs; rw [← Nat.mod_add_div (k + 1) 2]
         rw [if_pos h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
         rw [h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
-      · conv => rhs; rw [← Nat.mod_add_div (k+1) 2]
+      · conv => rhs; rw [← Nat.mod_add_div (k + 1) 2]
         rw [if_neg h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
         have h1 := Or.resolve_left (Nat.mod_two_eq_zero_or_one (succ k)) h
         rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
         simp only [Nat.cast_add, Nat.cast_one]
 
-theorem cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
+theorem cast_two [NatCast R] : ((2 : ℕ) : R) = (2 : R) := rfl
 
-theorem cast_three [AddMonoidWithOne R] : ((3 : ℕ) : R) = (3 : R) := rfl
+theorem cast_three [NatCast R] : ((3 : ℕ) : R) = (3 : R) := rfl
 
-theorem cast_four [AddMonoidWithOne R] : ((4 : ℕ) : R) = (4 : R) := rfl
+theorem cast_four [NatCast R] : ((4 : ℕ) : R) = (4 : R) := rfl
 
-attribute [simp, norm_cast] Int.natAbs_ofNat
+attribute [simp, norm_cast] Int.natAbs_natCast
 
 end Nat
 
@@ -182,9 +164,8 @@ protected abbrev AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne
 protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
-    natCast_zero := by simp only [Nat.binCast, Nat.cast],
+    natCast_zero := by simp only [Nat.binCast],
     natCast_succ := fun n => by
-      dsimp only [NatCast.natCast]
       letI : AddMonoidWithOne R := AddMonoidWithOne.unary
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
 

@@ -50,11 +50,11 @@ structure HomologyData where
   /-- a right homology data -/
   right : S.RightHomologyData
   /-- the compatibility isomorphism relating the two dual notions of
-    `LeftHomologyData` and `RightHomologyData`  -/
+  `LeftHomologyData` and `RightHomologyData` -/
   iso : left.H ≅ right.H
   /-- the pentagon relation expressing the compatibility of the left
   and right homology data -/
-  comm : left.π ≫ iso.hom ≫ right.ι = left.i ≫ right.p := by aesop_cat
+  comm : left.π ≫ iso.hom ≫ right.ι = left.i ≫ right.p := by cat_disch
 
 attribute [reassoc (attr := simp)] HomologyData.comm
 
@@ -201,8 +201,7 @@ class HasHomology : Prop where
   condition : Nonempty S.HomologyData
 
 /-- A chosen `S.HomologyData` for a short complex `S` that has homology -/
-noncomputable def homologyData [HasHomology S] :
-  S.HomologyData := HasHomology.condition.some
+noncomputable def homologyData [HasHomology S] : S.HomologyData := HasHomology.condition.some
 
 variable {S}
 
@@ -290,7 +289,8 @@ def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ : S₁ ⟶ S₂}
 /-- When `S₁.f`, `S₁.g`, `S₂.f` and `S₂.g` are all zero, the action on homology of a
 morphism `φ : S₁ ⟶ S₂` is given by the action `φ.τ₂` on the middle objects. -/
 @[simps]
-def ofZeros (φ : S₁ ⟶ S₂) (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
+noncomputable def ofZeros (φ : S₁ ⟶ S₂)
+    (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
     HomologyMapData φ (HomologyData.ofZeros S₁ hf₁ hg₁) (HomologyData.ofZeros S₂ hf₂ hg₂) where
   left := LeftHomologyMapData.ofZeros φ hf₁ hg₁ hf₂ hg₂
   right := RightHomologyMapData.ofZeros φ hf₁ hg₁ hf₂ hg₂
@@ -326,7 +326,7 @@ def ofIsLimitKernelFork (φ : S₁ ⟶ S₂)
 /-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
 data (for the identity of `S`) which relates the homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
-def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
+noncomputable def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
     (c : CokernelCofork S.f) (hc : IsColimit c) :
     HomologyMapData (𝟙 S) (HomologyData.ofZeros S hf hg)
       (HomologyData.ofIsColimitCokernelCofork S hg c hc) where
@@ -337,7 +337,7 @@ def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
 data (for the identity of `S`) which relates the homology data
 `HomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
 @[simps]
-def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
+noncomputable def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
     (c : KernelFork S.g) (hc : IsLimit c) :
     HomologyMapData (𝟙 S)
       (HomologyData.ofIsLimitKernelFork S hf c hc)
@@ -403,8 +403,7 @@ lemma LeftHomologyData.homologyIso_leftHomologyData [S.HasHomology] :
 lemma RightHomologyData.homologyIso_rightHomologyData [S.HasHomology] :
     S.rightHomologyData.homologyIso = S.rightHomologyIso.symm := by
   ext
-  dsimp [homologyIso, rightHomologyIso]
-  erw [rightHomologyMap'_id, comp_id]
+  simp [homologyIso, rightHomologyIso]
 
 variable {S}
 
@@ -621,7 +620,7 @@ lemma HomologyData.leftRightHomologyComparison'_eq (h : S.HomologyData) :
     π_leftRightHomologyComparison'_ι, comm]
 
 instance isIso_leftRightHomologyComparison'_of_homologyData (h : S.HomologyData) :
-  IsIso (leftRightHomologyComparison' h.left h.right) := by
+    IsIso (leftRightHomologyComparison' h.left h.right) := by
     rw [h.leftRightHomologyComparison'_eq]
     infer_instance
 
@@ -926,15 +925,15 @@ lemma homology_π_ι :
 `cokernel S.f ⟶ S.X₃`. -/
 noncomputable def homologyIsoKernelDesc [HasCokernel S.f]
     [HasKernel (cokernel.desc S.f S.g S.zero)] :
-  S.homology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
-    S.rightHomologyIso.symm ≪≫ S.rightHomologyIsoKernelDesc
+    S.homology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
+  S.rightHomologyIso.symm ≪≫ S.rightHomologyIsoKernelDesc
 
 /-- The homology of a short complex `S` identifies to the cokernel of the induced morphism
 `S.X₁ ⟶ kernel S.g`. -/
 noncomputable def homologyIsoCokernelLift [HasKernel S.g]
     [HasCokernel (kernel.lift S.g S.f S.zero)] :
-  S.homology ≅ cokernel (kernel.lift S.g S.f S.zero) :=
-    S.leftHomologyIso.symm ≪≫ S.leftHomologyIsoCokernelLift
+    S.homology ≅ cokernel (kernel.lift S.g S.f S.zero) :=
+  S.leftHomologyIso.symm ≪≫ S.leftHomologyIsoCokernelLift
 
 @[reassoc (attr := simp)]
 lemma LeftHomologyData.homologyπ_comp_homologyIso_hom (h : S.LeftHomologyData) :
@@ -1172,6 +1171,53 @@ instance epi_homologyMap_of_epi_cyclesMap
     [S₁.HasHomology] [S₂.HasHomology] [Epi (cyclesMap φ)] :
     Epi (homologyMap φ) :=
   epi_homologyMap_of_epi_cyclesMap' φ inferInstance
+
+/-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
+left homology data for `S` whose `K` and `H` fields are
+respectively `S.cycles` and `S.homology`. -/
+@[simps!]
+noncomputable def LeftHomologyData.canonical [S.HasHomology] : S.LeftHomologyData where
+  K := S.cycles
+  H := S.homology
+  i := S.iCycles
+  π := S.homologyπ
+  wi := by simp
+  hi := S.cyclesIsKernel
+  wπ := S.toCycles_comp_homologyπ
+  hπ := S.homologyIsCokernel
+
+/-- Computation of the `f'` field of `LeftHomologyData.canonical`. -/
+@[simp]
+lemma LeftHomologyData.canonical_f' [S.HasHomology] :
+    (LeftHomologyData.canonical S).f' = S.toCycles := rfl
+
+/-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
+right homology data for `S` whose `Q` and `H` fields are
+respectively `S.opcycles` and `S.homology`. -/
+@[simps!]
+noncomputable def RightHomologyData.canonical [S.HasHomology] : S.RightHomologyData where
+  Q := S.opcycles
+  H := S.homology
+  p := S.pOpcycles
+  ι := S.homologyι
+  wp := by simp
+  hp := S.opcyclesIsCokernel
+  wι := S.homologyι_comp_fromOpcycles
+  hι := S.homologyIsKernel
+
+/-- Computation of the `g'` field of `RightHomologyData.canonical`. -/
+@[simp]
+lemma RightHomologyData.canonical_g' [S.HasHomology] :
+    (RightHomologyData.canonical S).g' = S.fromOpcycles := rfl
+
+/-- Given a short complex `S` such that `S.HasHomology`, this is the canonical
+homology data for `S` whose `left.K`, `left/right.H` and `right.Q` fields are
+respectively `S.cycles`, `S.homology` and `S.opcycles`. -/
+@[simps!]
+noncomputable def HomologyData.canonical [S.HasHomology] : S.HomologyData where
+  left := LeftHomologyData.canonical S
+  right := RightHomologyData.canonical S
+  iso := Iso.refl _
 
 end ShortComplex
 

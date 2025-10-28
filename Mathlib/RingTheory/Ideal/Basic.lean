@@ -3,12 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Field.IsField
+import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.RingTheory.Ideal.Maximal
 import Mathlib.Tactic.FinCases
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 
@@ -28,9 +28,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 -/
 
 
-universe u v w
-
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {ι α β F : Type*}
 
 open Set Function
 
@@ -40,23 +38,64 @@ section Semiring
 
 namespace Ideal
 
-variable [Semiring α] (I : Ideal α) {a b : α}
+variable {R : ι → Type*} [Π i, Semiring (R i)] (I J : Π i, Ideal (R i))
 
 section Pi
 
-variable (ι : Type v)
+/-- `Πᵢ Iᵢ` as an ideal of `Πᵢ Rᵢ`. -/
+def pi : Ideal (Π i, R i) where
+  carrier := { r | ∀ i, r i ∈ I i }
+  zero_mem' i := (I i).zero_mem
+  add_mem' ha hb i := (I i).add_mem (ha i) (hb i)
+  smul_mem' a _b hb i := (I i).mul_mem_left (a i) (hb i)
 
-/-- `I^n` as an ideal of `R^n`. -/
-def pi : Ideal (ι → α) where
-  carrier := { x | ∀ i, x i ∈ I }
-  zero_mem' _i := I.zero_mem
-  add_mem' ha hb i := I.add_mem (ha i) (hb i)
-  smul_mem' a _b hb i := I.mul_mem_left (a i) (hb i)
-
-theorem mem_pi (x : ι → α) : x ∈ I.pi ι ↔ ∀ i, x i ∈ I :=
+theorem mem_pi (r : Π i, R i) : r ∈ pi I ↔ ∀ i, r i ∈ I i :=
   Iff.rfl
 
+@[simp] theorem pi_span {r : Π i, R i} : pi (span {r ·}) = span {r} := by
+  ext; simp_rw [mem_pi, mem_span_singleton', funext_iff, Classical.skolem, Pi.mul_def]
+
+instance (priority := low) [∀ i, (I i).IsTwoSided] : (pi I).IsTwoSided :=
+  ⟨fun _b hb i ↦ mul_mem_right _ _ (hb i)⟩
+
+variable {I J}
+
+theorem single_mem_pi [DecidableEq ι] {i : ι} {r : R i} (hr : r ∈ I i) : Pi.single i r ∈ pi I := by
+  intro j
+  obtain rfl | ne := eq_or_ne i j
+  · simpa
+  · simp [ne]
+
+@[simp] theorem pi_le_pi_iff : pi I ≤ pi J ↔ I ≤ J where
+  mp le i r hr := by classical simpa using le (single_mem_pi hr) i
+  mpr le r hr i := le i (hr i)
+
 end Pi
+
+section Commute
+
+variable {α : Type*} [Semiring α] (I : Ideal α) {a b : α}
+
+theorem add_pow_mem_of_pow_mem_of_le_of_commute {m n k : ℕ}
+    (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hk : m + n ≤ k + 1)
+    (hab : Commute a b) :
+    (a + b) ^ k ∈ I := by
+  simp_rw [hab.add_pow, ← Nat.cast_comm]
+  apply I.sum_mem
+  intro c _
+  apply mul_mem_left
+  by_cases h : m ≤ c
+  · rw [hab.pow_pow]
+    exact I.mul_mem_left _ (I.pow_mem_of_pow_mem ha h)
+  · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
+    cutsat
+
+theorem add_pow_add_pred_mem_of_pow_mem_of_commute {m n : ℕ}
+    (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hab : Commute a b) :
+    (a + b) ^ (m + n - 1) ∈ I :=
+  I.add_pow_mem_of_pow_mem_of_le_of_commute ha hb (by rw [← Nat.sub_le_iff_le_add]) hab
+
+end Commute
 
 end Ideal
 
@@ -74,31 +113,20 @@ variable [CommSemiring α] (I : Ideal α)
 
 theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hk : m + n ≤ k + 1) :
-    (a + b) ^ k ∈ I := by
-  rw [add_pow]
-  apply I.sum_mem
-  intro c _
-  apply mul_mem_right
-  by_cases h : m ≤ c
-  · exact I.mul_mem_right _ (I.pow_mem_of_pow_mem ha h)
-  · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
-    simp only [not_le, Nat.lt_iff_add_one_le] at h
-    have hck : c ≤ k := by
-      rw [← add_le_add_iff_right 1]
-      exact le_trans h (le_trans (Nat.le_add_right _ _) hk)
-    rw [Nat.le_sub_iff_add_le hck, ← add_le_add_iff_right 1]
-    exact le_trans (by rwa [add_comm _ n, add_assoc, add_le_add_iff_left]) hk
+    (a + b) ^ k ∈ I :=
+  I.add_pow_mem_of_pow_mem_of_le_of_commute ha hb hk (Commute.all ..)
 
-theorem add_pow_add_pred_mem_of_pow_mem  {m n : ℕ}
+theorem add_pow_add_pred_mem_of_pow_mem {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) :
     (a + b) ^ (m + n - 1) ∈ I :=
-  I.add_pow_mem_of_pow_mem_of_le ha hb <| by rw [← Nat.sub_le_iff_le_add]
+  I.add_pow_add_pred_mem_of_pow_mem_of_commute ha hb (Commute.all ..)
 
 theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
     s.sum ^ (Multiset.card s * n + 1) ∈
     span ((s.map fun (x : α) ↦ x ^ (n + 1)).toFinset : Set α) := by
-  induction' s using Multiset.induction_on with a s hs
-  · simp
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons a s hs => ?_
   simp only [Finset.coe_insert, Multiset.map_cons, Multiset.toFinset_cons, Multiset.sum_cons,
     Multiset.card_cons, add_pow]
   refine Submodule.sum_mem _ ?_
@@ -129,14 +157,15 @@ theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
 theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     span ((fun (x : α) => x ^ n) '' s) = ⊤ := by
   rw [eq_top_iff_one]
-  cases' n with n
+  rcases n with - | n
   · obtain rfl | ⟨x, hx⟩ := eq_empty_or_nonempty s
     · rw [Set.image_empty, hs]
       trivial
     · exact subset_span ⟨_, hx, pow_zero _⟩
   rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs
   rcases hs with ⟨f, hf⟩
-  have hf : (f.support.sum fun a => f a * a) = 1 := hf -- Porting note: was `change ... at hf`
+  simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,
+    LinearMap.id_coe, id_eq, smul_eq_mul] at hf
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
   rw [hf, one_pow] at this
   refine span_le.mpr ?_ this
@@ -160,13 +189,20 @@ theorem span_range_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : s → ℕ) :
   simp_rw [pow_add]
   exact mul_mem_left _ _ (subset_span ⟨_, rfl⟩)
 
+theorem prod_mem {ι : Type*} {f : ι → α} {s : Finset ι}
+    (I : Ideal α) {i : ι} (hi : i ∈ s) (hfi : f i ∈ I) :
+    ∏ i ∈ s, f i ∈ I := by
+  classical
+  rw [Finset.prod_eq_prod_diff_singleton_mul hi]
+  exact Ideal.mul_mem_left _ _ hfi
+
 end Ideal
 
 end CommSemiring
 
 section DivisionSemiring
 
-variable {K : Type u} [DivisionSemiring K] (I : Ideal K)
+variable {K : Type*} [DivisionSemiring K] (I : Ideal K)
 
 namespace Ideal
 
@@ -254,7 +290,7 @@ end Ring
 
 namespace Ideal
 
-variable {R : Type u} [CommSemiring R] [Nontrivial R]
+variable {R : Type*} [CommSemiring R] [Nontrivial R]
 
 theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M := by
   rcases Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top.1 non_field with ⟨I, Ibot, Itop⟩

@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Logic.Encodable.Basic
@@ -21,7 +21,7 @@ This property already has a name, namely `α ≃ ℕ`, but here we are intereste
 typeclass.
 -/
 
-assert_not_exists OrderedSemiring
+assert_not_exists Monoid
 
 variable {α β : Type*}
 
@@ -51,9 +51,8 @@ def ofNat (α) [Denumerable α] (n : ℕ) : α :=
 theorem decode_eq_ofNat (α) [Denumerable α] (n : ℕ) : decode (α := α) n = some (ofNat α n) :=
   Option.eq_some_of_isSome _
 
-@[simp]
-theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := α) n = b :=
-  Option.some.inj <| (decode_eq_ofNat _ _).symm.trans h
+theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := α) n = b := by
+  simpa using h
 
 @[simp]
 theorem encode_ofNat (n) : encode (ofNat α n) = n := by
@@ -84,15 +83,11 @@ way. -/
 def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
   { Encodable.ofEquiv _ e with
     decode_inv := fun n => by
-      -- Porting note: replaced `simp`
-      simp_rw [Option.mem_def, decode_ofEquiv e, encode_ofEquiv e, decode_eq_ofNat,
-        Option.map_some', Option.some_inj, exists_eq_left', Equiv.apply_symm_apply,
-        Denumerable.encode_ofNat] }
+      simp [decode_ofEquiv, encode_ofEquiv] }
 
 @[simp]
 theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
-  -- Porting note: added `letI`
   letI := ofEquiv _ e
   refine ofNat_of_decode ?_
   rw [decode_ofEquiv e]
@@ -118,16 +113,17 @@ instance option : Denumerable (Option α) :=
       rw [decode_option_zero, Option.mem_def]
     | succ n =>
       refine ⟨some (ofNat α n), ?_, ?_⟩
-      · rw [decode_option_succ, decode_eq_ofNat, Option.map_some', Option.mem_def]
+      · rw [decode_option_succ, decode_eq_ofNat, Option.map_some, Option.mem_def]
       rw [encode_some, encode_ofNat]⟩
 
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by
-    suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
-    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
+    suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by
+      simpa [bit_bodd_div2]
+    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.map_some,
       Option.mem_def, Sum.exists]
-    cases bodd n <;> simp [decodeSum, bit, encodeSum, Nat.two_mul]⟩
+    cases bodd n <;> simp [bit, encodeSum, Nat.two_mul]⟩
 
 section Sigma
 
@@ -135,7 +131,7 @@ variable {γ : α → Type*} [∀ a, Denumerable (γ a)]
 
 /-- A denumerable collection of denumerable types is denumerable. -/
 instance sigma : Denumerable (Sigma γ) :=
-  ⟨fun n => by simp [decodeSigma]⟩
+  ⟨fun n => by simp⟩
 
 @[simp]
 theorem sigma_ofNat_val (n : ℕ) :
@@ -148,7 +144,6 @@ end Sigma
 instance prod : Denumerable (α × β) :=
   ofEquiv _ (Equiv.sigmaEquivProd α β).symm
 
--- Porting note: removed @[simp] - simp can prove it
 theorem prod_ofNat_val (n : ℕ) :
     ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) := by simp
 
@@ -189,13 +184,13 @@ section Classical
 
 theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s := by
   by_contra h
-  have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
-    lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, Nat.add_sub_cancel' hax]⟩
+  have (a : ℕ) (ha : a ∈ s) : a < x + 1 :=
+    lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [Nat.add_right_comm, Nat.add_sub_cancel' hax]⟩
   classical
   exact Fintype.false
     ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap
       (fun (y : ℕ) (hy : y ∈ s) => Subtype.mk y hy) (by simp [-Multiset.range_succ])).toFinset,
-      by simpa [Subtype.ext_iff_val, Multiset.mem_filter, -Multiset.range_succ] ⟩
+      by simpa [Subtype.ext_iff, Multiset.mem_filter, -Multiset.range_succ] ⟩
 
 end Classical
 
@@ -210,20 +205,19 @@ theorem succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_lt h
   have : Nat.find hx ≤ k := Nat.find_min' _ (hk ▸ x.2)
-  show (y : ℕ) + Nat.find hx + 1 ≤ x by omega
+  show (y : ℕ) + Nat.find hx + 1 ≤ x by cutsat
 
 theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ y :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
-      (h ⟨_, Nat.find_spec hx⟩ hxy).not_lt <|
-        (by omega : (y : ℕ) < (y : ℕ) + Nat.find hx + 1)
+      (h ⟨_, Nat.find_spec hx⟩ hxy).not_gt <|
+        (by cutsat : (y : ℕ) < (y : ℕ) + Nat.find hx + 1)
 
 theorem lt_succ_self (x : s) : x < succ x :=
   calc
-    -- Porting note: replaced `x + _`, added type annotations
-    (x : ℕ) ≤ (x + Nat.find (exists_succ x) : ℕ) := le_add_right ..
-    _ < (succ x : ℕ) := Nat.lt_succ_self (x + _)
+    (x : ℕ) ≤ (x + _) := le_add_right ..
+    _ < (succ x) := Nat.lt_succ_self (x + _)
 
 theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
   ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
@@ -234,32 +228,24 @@ def ofNat (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : ℕ → s
   | 0 => ⊥
   | n + 1 => succ (ofNat s n)
 
-theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = ⟨x, hx⟩
-  | x => fun hx => by
+theorem ofNat_surjective : Surjective (ofNat s)
+  | ⟨x, hx⟩ => by
     set t : List s :=
       ((List.range x).filter fun y => y ∈ s).pmap
         (fun (y : ℕ) (hy : y ∈ s) => ⟨y, hy⟩)
-        (by intros a ha; simpa using (List.mem_filter.mp ha).2) with ht
+        (by intro a ha; simpa using (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by
-      simp [List.mem_filter, Subtype.ext_iff_val, ht]
-    have wf : ∀ m : s, List.maximum t = m → ↑m < x := fun m hmax => by
-      simpa using hmt.mp (List.maximum_mem hmax)
-    cases' hmax : List.maximum t with m
-    · refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
+      simp [List.mem_filter, Subtype.ext_iff, ht]
+    cases hmax : List.maximum t with
+    | bot =>
+      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (a := (⊥ : s)) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
-    cases' ofNat_surjective_aux m.2 with a ha
-    refine ⟨a + 1, le_antisymm ?_ ?_⟩ <;> rw [ofNat]
-    · refine succ_le_of_lt ?_
-      rw [ha]
-      exact wf _ hmax
-    · refine le_succ_of_forall_lt_le fun z hz => ?_
-      rw [ha]
-      cases m
-      exact List.le_maximum_of_mem (hmt.2 hz) hmax
-decreasing_by
-  tauto
-
-theorem ofNat_surjective : Surjective (ofNat s) := fun ⟨_, hx⟩ => ofNat_surjective_aux hx
+    | coe m =>
+      have wf : ↑m < x := by simpa using hmt.mp (List.maximum_mem hmax)
+      rcases ofNat_surjective m with ⟨a, rfl⟩
+      refine ⟨a + 1, le_antisymm (succ_le_of_lt wf) ?_⟩
+      exact le_succ_of_forall_lt_le fun z hz => List.le_maximum_of_mem (hmt.2 hz) hmax
+  termination_by n => n.val
 
 @[simp]
 theorem ofNat_range : Set.range (ofNat s) = Set.univ :=
@@ -277,14 +263,12 @@ private theorem toFunAux_eq {s : Set ℕ} [DecidablePred (· ∈ s)] (x : s) :
   rw [toFunAux, List.countP_eq_length_filter]
   rfl
 
-open Finset
-
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
-    rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_not_mem]
+    rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_notMem]
     rintro n hn
     rw [mem_filter, ofNat, mem_range] at hn
-    exact bot_le.not_lt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
+    exact bot_le.not_gt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
   | n + 1 => by
     have ih : toFunAux (ofNat s n) = n := right_inverse_aux n
     have h₁ : (ofNat s n : ℕ) ∉ {x ∈ range (ofNat s n) | x ∈ s} := by simp
@@ -298,10 +282,10 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
          fun h =>
           h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>
             ⟨h.1.trans (lt_succ_self _), h.2⟩⟩
-    simp only [toFunAux_eq, ofNat, range_succ] at ih ⊢
+    simp only [toFunAux_eq, ofNat] at ih ⊢
     conv =>
       rhs
-      rw [← ih, ← card_insert_of_not_mem h₁, ← h₂]
+      rw [← ih, ← card_insert_of_notMem h₁, ← h₂]
 
 /-- Any infinite set of naturals is denumerable. -/
 def denumerable (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : Denumerable s :=

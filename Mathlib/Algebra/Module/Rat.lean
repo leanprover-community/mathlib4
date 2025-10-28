@@ -6,7 +6,6 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Order.Field.Rat
 
 /-!
 # Basic results about modules over the rationals.
@@ -29,9 +28,6 @@ theorem map_ratCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLi
     f ((c : R) • x) = (c : S) • f x := by
   rw [Rat.cast_def, Rat.cast_def, div_eq_mul_inv, div_eq_mul_inv, mul_smul, mul_smul,
     map_intCast_smul f R S, map_inv_natCast_smul f R S]
-
-@[deprecated (since := "2024-04-17")]
-alias map_rat_cast_smul := map_ratCast_smul
 
 theorem map_nnrat_smul [AddCommMonoid M] [AddCommMonoid M₂]
     [_instM : Module ℚ≥0 M] [_instM₂ : Module ℚ≥0 M₂]
@@ -67,9 +63,6 @@ theorem ratCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing
     [DivisionRing S] [Module R E] [Module S E] (r : ℚ) (x : E) : (r : R) • x = (r : S) • x :=
   map_ratCast_smul (AddMonoidHom.id E) R S r x
 
-@[deprecated (since := "2024-04-17")]
-alias rat_cast_smul_eq := ratCast_smul_eq
-
 instance IsScalarTower.nnrat {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
     [Module ℚ≥0 R] [Module ℚ≥0 M] : IsScalarTower ℚ≥0 R M where
   smul_assoc r x y := map_nnrat_smul ((smulAddHom R M).flip y) r x
@@ -77,6 +70,18 @@ instance IsScalarTower.nnrat {R : Type u} {M : Type v} [Semiring R] [AddCommMono
 instance IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
     [Module ℚ R] [Module ℚ M] : IsScalarTower ℚ R M where
   smul_assoc r x y := map_rat_smul ((smulAddHom R M).flip y) r x
+
+/-- `nnqsmul` is equal to any other module structure via a cast. -/
+lemma NNRat.cast_smul_eq_nnqsmul (R : Type*) [DivisionSemiring R]
+    [MulAction R M] [MulAction ℚ≥0 M] [IsScalarTower ℚ≥0 R M]
+    (q : ℚ≥0) (x : M) : (q : R) • x = q • x := by
+  rw [← one_smul R x, ← smul_assoc, ← smul_assoc]; simp
+
+/-- `qsmul` is equal to any other module structure via a cast. -/
+lemma Rat.cast_smul_eq_qsmul (R : Type*) [DivisionRing R]
+    [MulAction R M] [MulAction ℚ M] [IsScalarTower ℚ R M]
+    (q : ℚ) (x : M) : (q : R) • x = q • x := by
+  rw [← one_smul R x, ← smul_assoc, ← smul_assoc]; simp
 
 section
 variable {α : Type u} {M : Type v}

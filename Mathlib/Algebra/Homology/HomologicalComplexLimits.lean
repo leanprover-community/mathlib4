@@ -70,7 +70,8 @@ noncomputable def coneOfHasLimitEval : Cone F where
       naturality := fun i j φ => by
         ext n
         dsimp
-        erw [limit.w, id_comp] }
+        erw [limit.w]
+        rw [id_comp] }
 
 /-- The cone `coneOfHasLimitEval F` is limit. -/
 noncomputable def isLimitConeOfHasLimitEval : IsLimit (coneOfHasLimitEval F) :=
@@ -86,13 +87,13 @@ end
 instance [HasLimitsOfShape J C] : HasLimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
 
 noncomputable instance [HasLimitsOfShape J C] (n : ι) :
-  PreservesLimitsOfShape J (eval C c n) := ⟨inferInstance⟩
+    PreservesLimitsOfShape J (eval C c n) := ⟨inferInstance⟩
 
 instance [HasFiniteLimits C] : HasFiniteLimits (HomologicalComplex C c) :=
   ⟨fun _ _ => inferInstance⟩
 
-noncomputable instance [HasFiniteLimits C] (n : ι) :
-  PreservesFiniteLimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
+noncomputable instance [HasFiniteLimits C] (n : ι) : PreservesFiniteLimits (eval C c n) :=
+  ⟨fun _ _ _ => inferInstance⟩
 
 instance [HasFiniteLimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Mono φ] (n : ι) :
     Mono (φ.f n) := by
@@ -114,7 +115,7 @@ def isColimitOfEval (s : Cocone F)
         intro j
         have eq := fun k => (hs k).fac ((eval C c k).mapCocone t)
         simp only [Functor.mapCocone_ι_app, eval_map] at eq
-        simp only [Functor.mapCocone_ι_app, eval_map, assoc]
+        simp only [Functor.mapCocone_ι_app, eval_map]
         rw [reassoc_of% (eq i), Hom.comm_assoc, eq i', Hom.comm] }
   fac t j := by
     ext i
@@ -146,7 +147,8 @@ noncomputable def coconeOfHasColimitEval : Cocone F where
       naturality := fun i j φ => by
         ext n
         dsimp
-        erw [colimit.w (F ⋙ eval C c n) φ, comp_id] }
+        erw [colimit.w (F ⋙ eval C c n) φ]
+        rw [comp_id] }
 
 /-- The cocone `coconeOfHasLimitEval F` is colimit. -/
 noncomputable def isColimitCoconeOfHasColimitEval : IsColimit (coconeOfHasColimitEval F) :=
@@ -163,13 +165,13 @@ end
 instance [HasColimitsOfShape J C] : HasColimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
 
 noncomputable instance [HasColimitsOfShape J C] (n : ι) :
-  PreservesColimitsOfShape J (eval C c n) := ⟨inferInstance⟩
+    PreservesColimitsOfShape J (eval C c n) := ⟨inferInstance⟩
 
 instance [HasFiniteColimits C] : HasFiniteColimits (HomologicalComplex C c) :=
   ⟨fun _ _ => inferInstance⟩
 
 noncomputable instance [HasFiniteColimits C] (n : ι) :
-  PreservesFiniteColimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
+    PreservesFiniteColimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
 
 instance [HasFiniteColimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Epi φ] (n : ι) :
     Epi (φ.f n) := by
