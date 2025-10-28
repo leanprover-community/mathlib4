@@ -950,4 +950,46 @@ def weightedVSubOfPoint (w : ι → k) : (ι → P) × P →ᵃ[k] V where
     simp [LinearMap.sum_apply, Finset.weightedVSubOfPoint, vsub_vadd_eq_vsub_sub,
      vadd_vsub_assoc, ← sub_add_eq_add_sub, smul_add, Finset.sum_add_distrib]
 
+variable {P}
+
+/-- If two affine maps agree on a set that spans the entire space, then they are equal. -/
+theorem ext_of_span_eq_top {V₁ V₂ P₁ P₂ : Type*}
+    [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
+    [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P₁}
+    (h_span : affineSpan k s = ⊤)
+    (f g : P₁ →ᵃ[k] P₂)
+    (h_agree : ∀ p ∈ s, f p = g p) : f = g := by
+  ext x
+  have hx : x ∈ affineSpan k s := by
+    rw [h_span]
+    exact AffineSubspace.mem_top k V₁ x
+  rw [← Subtype.range_coe (s := s)] at hx
+  obtain ⟨t, w, hw_sum, hw_eq⟩ := eq_affineCombination_of_mem_affineSpan hx
+  rw [hw_eq]
+  rw [Finset.map_affineCombination t (Subtype.val : s → P₁) w hw_sum f,
+      Finset.map_affineCombination t (Subtype.val : s → P₁) w hw_sum g]
+  apply Finset.affineCombination_congr
+  · simp
+  · intro i _
+    exact h_agree i.val i.property
+
 end AffineMap
+
+namespace AffineEquiv
+
+variable {k : Type*} {V : Type*} {P : Type*}
+
+/-- If two affine automorphisms agree on a set that spans the entire space, then they are equal.
+
+Specialization of `AffineMap.ext_of_span_eq_top` to affine automorphisms. -/
+theorem ext_of_span_eq_top [CommRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+    {s : Set P}
+    (h_span : affineSpan k s = ⊤)
+    (T₁ T₂ : P ≃ᵃ[k] P)
+    (h_agree : ∀ p ∈ s, T₁ p = T₂ p) : T₁ = T₂ := by
+  rw [← AffineEquiv.toAffineMap_inj]
+  exact @AffineMap.ext_of_span_eq_top k _ V V P P _ _ _ _ _ _ s h_span
+    T₁.toAffineMap T₂.toAffineMap h_agree
+
+end AffineEquiv
