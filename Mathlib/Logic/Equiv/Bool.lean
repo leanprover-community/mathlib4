@@ -5,6 +5,7 @@ Authors: Kenny Lau, Emily Riehl, Wrenna Robson
 -/
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Function.Basic
+
 /-!
 # Equivalences involving `Bool`
 
