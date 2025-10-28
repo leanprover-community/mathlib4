@@ -55,7 +55,8 @@ lemma Module.Finite.exists_free_surjective [Module.Finite R S] :
     algebraize [f.toRingHom]
     refine ⟨AdjoinRoot ((minpoly R a).map (algebraMap R S')), inferInstance, inferInstance,
       .trans S' _, .trans (S := S'), .trans _ S' _,
-      (AdjoinRoot.liftHom _ a (by simp)).restrictScalars R, ?_⟩
+      (AdjoinRoot.liftAlgHom _ (Algebra.ofId _ _) a
+        (by simp [← Polynomial.aeval_def])).restrictScalars R, ?_⟩
     simp only [Finset.coe_insert, AlgHom.coe_range, AlgHom.coe_restrictScalars',
       Set.insert_subset_iff, Set.mem_range]
     exact ⟨⟨.root _, by simp⟩, hsf.trans fun y ⟨x, hx⟩ ↦ ⟨.of _ x, by simpa⟩⟩
