@@ -368,7 +368,7 @@ a bijection from the set of roots of `Polynomial.expand R p f` to the set of roo
 It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
 noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
   ((frobeniusEquiv R p).image _).trans <| .setCongr <| show _ '' setOf (· ∈ _) = setOf (· ∈ _) by
-    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f), Finset.mem_val,
+    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f),
       Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
       frobeniusEquiv_apply]
 
@@ -383,7 +383,7 @@ noncomputable def rootsExpandPowEquivRoots (n : ℕ) :
   ((iterateFrobeniusEquiv R p n).image _).trans <|
     .setCongr <| show _ '' (setOf (· ∈ _)) = setOf (· ∈ _) by
     classical simp_rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n),
-      Finset.mem_val, Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
+      Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
       EquivLike.coe_coe, iterateFrobeniusEquiv_apply]
 
 @[simp]

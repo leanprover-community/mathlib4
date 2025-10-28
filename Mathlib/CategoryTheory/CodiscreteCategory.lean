@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 /-!
 # Codiscrete categories
 
-We define `Codiscrete A` as an alias for the type `A` ,
+We define `Codiscrete A` as an alias for the type `A`,
 and use this type alias to provide a `Category` instance
 whose Hom type are Unit types.
 
@@ -20,7 +20,7 @@ whose Hom type are Unit types.
 `f : C ⥤ Codiscrete A`.
 
 Similarly, `Codiscrete.natTrans` and `Codiscrete.natIso` promote `I`-indexed families of morphisms,
-or `I`-indexed families of isomorphisms to natural transformations or natural isomorphism.
+or `I`-indexed families of isomorphisms to natural transformations or natural isomorphisms.
 
 We define `functorToCat : Type u ⥤ Cat.{0,u}` which sends a type to the codiscrete category and show
 it is right adjoint to `Cat.objects.`
@@ -33,12 +33,12 @@ universe u v w
 -- to enforce using `CodiscreteEquiv` (or `Codiscrete.mk` and `Codiscrete.as`) to move between
 -- `Codiscrete α` and `α`. Otherwise there is too much API leakage.
 /-- A wrapper for promoting any type to a category,
-with a unique morphisms between any two objects of the category.
+with a unique morphism between any two objects of the category.
 -/
 @[ext, aesop safe cases (rule_sets := [CategoryTheory])]
 structure Codiscrete (α : Type u) where
   /-- A wrapper for promoting any type to a category,
-  with a unique morphisms between any two objects of the category. -/
+  with a unique morphism between any two objects of the category. -/
   as : α
 
 @[simp]
@@ -49,8 +49,8 @@ theorem Codiscrete.mk_as {α : Type u} (X : Codiscrete α) : Codiscrete.mk X.as 
 def codiscreteEquiv {α : Type u} : Codiscrete α ≃ α where
   toFun := Codiscrete.as
   invFun := Codiscrete.mk
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 instance {α : Type u} [DecidableEq α] : DecidableEq (Codiscrete α) :=
   codiscreteEquiv.decidableEq
@@ -77,7 +77,7 @@ def invFunctor (F : C ⥤ Codiscrete A) : C → A := Codiscrete.as ∘ F.obj
 def natTrans {F G : C ⥤ Codiscrete A} : F ⟶ G where
   app _ := ⟨⟩
 
-/-- Given two functors into a codiscrete category, the trivial natural transformation is an
+/-- Given two functors into a codiscrete category, the trivial natural transformation is a
 natural isomorphism. -/
 def natIso {F G : C ⥤ Codiscrete A} : F ≅ G where
   hom := natTrans

@@ -12,7 +12,7 @@ import Mathlib.Analysis.Calculus.Deriv.Basic
 
 ## Main Definitions
 
-Let `f` be a function from a Hilbert Space `F` to `𝕜` (`𝕜` is `ℝ` or `ℂ`) , `x` be a point in `F`
+Let `f` be a function from a Hilbert Space `F` to `𝕜` (`𝕜` is `ℝ` or `ℂ`), `x` be a point in `F`
 and `f'` be a vector in F. Then
 
   `HasGradientWithinAt f f' s x`
@@ -28,10 +28,10 @@ This file contains the following parts of gradient.
 * the definition of gradient.
 * the theorems translating between `HasGradientAtFilter` and `HasFDerivAtFilter`,
   `HasGradientWithinAt` and `HasFDerivWithinAt`, `HasGradientAt` and `HasFDerivAt`,
-  `Gradient` and `fderiv`.
+  `gradient` and `fderiv`.
 * theorems the Uniqueness of Gradient.
 * the theorems translating between  `HasGradientAtFilter` and `HasDerivAtFilter`,
-  `HasGradientAt` and `HasDerivAt`, `Gradient` and `deriv` when `F = 𝕜`.
+  `HasGradientAt` and `HasDerivAt`, `gradient` and `deriv` when `F = 𝕜`.
 * the theorems about the congruence of the gradient.
 * the theorems about the gradient of constant function.
 * the theorems about the continuity of a function admitting a gradient.
@@ -88,7 +88,7 @@ theorem hasGradientWithinAt_iff_hasFDerivWithinAt {s : Set F} :
     HasGradientWithinAt f f' s x ↔ HasFDerivWithinAt f (toDual 𝕜 F f') s x :=
   Iff.rfl
 
-theorem hasFDerivWithinAt_iff_hasGradientWithinAt {frechet : F →L[𝕜] 𝕜} {s : Set F} :
+theorem hasFDerivWithinAt_iff_hasGradientWithinAt {frechet : StrongDual 𝕜 F} {s : Set F} :
     HasFDerivWithinAt f frechet s x ↔ HasGradientWithinAt f ((toDual 𝕜 F).symm frechet) s x := by
   rw [hasGradientWithinAt_iff_hasFDerivWithinAt, (toDual 𝕜 F).apply_symm_apply frechet]
 
@@ -96,7 +96,7 @@ theorem hasGradientAt_iff_hasFDerivAt :
     HasGradientAt f f' x ↔ HasFDerivAt f (toDual 𝕜 F f') x :=
   Iff.rfl
 
-theorem hasFDerivAt_iff_hasGradientAt {frechet : F →L[𝕜] 𝕜} :
+theorem hasFDerivAt_iff_hasGradientAt {frechet : StrongDual 𝕜 F} :
     HasFDerivAt f frechet x ↔ HasGradientAt f ((toDual 𝕜 F).symm frechet) x := by
   rw [hasGradientAt_iff_hasFDerivAt, (toDual 𝕜 F).apply_symm_apply frechet]
 
@@ -156,9 +156,7 @@ variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
-    ext; simp
-  rwa [HasDerivAtFilter, this]
+  tauto
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by

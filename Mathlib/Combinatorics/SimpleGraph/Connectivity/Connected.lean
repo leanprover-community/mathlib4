@@ -3,7 +3,6 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
 import Mathlib.Combinatorics.SimpleGraph.Paths
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
@@ -72,7 +71,7 @@ protected theorem Adj.reachable {u v : V} (h : G.Adj u v) : G.Reachable u v :=
 @[refl]
 protected theorem Reachable.refl (u : V) : G.Reachable u u := ⟨Walk.nil⟩
 
-protected theorem Reachable.rfl {u : V} : G.Reachable u u := Reachable.refl _
+@[simp] protected theorem Reachable.rfl {u : V} : G.Reachable u u := Reachable.refl _
 
 @[symm]
 protected theorem Reachable.symm {u v : V} (huv : G.Reachable u v) : G.Reachable v u :=
@@ -143,6 +142,11 @@ theorem reachable_is_equivalence : Equivalence G.Reachable :=
 lemma reachable_bot {u v : V} : (⊥ : SimpleGraph V).Reachable u v ↔ u = v :=
   ⟨fun h ↦ h.elim fun p ↦ match p with | .nil => rfl, fun h ↦ h ▸ .rfl⟩
 
+@[simp] lemma reachable_top {u v : V} : (completeGraph V).Reachable u v := by
+  obtain rfl | huv := eq_or_ne u v
+  · simp
+  · exact ⟨.cons huv .nil⟩
+
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 
@@ -154,22 +158,28 @@ theorem Preconnected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H)
   hf.forall₂.2 fun _ _ => Nonempty.map (Walk.map _) <| hG _ _
 
 @[mono]
-protected lemma Preconnected.mono  {G G' : SimpleGraph V} (h : G ≤ G') (hG : G.Preconnected) :
+protected lemma Preconnected.mono {G G' : SimpleGraph V} (h : G ≤ G') (hG : G.Preconnected) :
     G'.Preconnected := fun u v => (hG u v).mono h
 
-lemma bot_preconnected_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
+lemma preconnected_bot_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simpa [subsingleton_iff, ← reachable_bot] using h⟩
-  contrapose h
-  simp [nontrivial_iff.mp <| not_subsingleton_iff_nontrivial.mp h, Preconnected, reachable_bot, h]
+  contrapose! h
+  simp [nontrivial_iff.mp h, Preconnected, reachable_bot]
 
-lemma bot_preconnected [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
-  bot_preconnected_iff_subsingleton.mpr ‹_›
+lemma preconnected_bot [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
+  preconnected_bot_iff_subsingleton.mpr ‹_›
 
-lemma bot_not_preconnected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected :=
-  bot_preconnected_iff_subsingleton.not.mpr <| not_subsingleton_iff_nontrivial.mpr ‹_›
+lemma not_preconnected_bot [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected :=
+  preconnected_bot_iff_subsingleton.not.mpr <| not_subsingleton_iff_nontrivial.mpr ‹_›
 
-lemma top_preconnected : (⊤ : SimpleGraph V).Preconnected := fun x y => by
+@[simp] lemma preconnected_top : (⊤ : SimpleGraph V).Preconnected := fun x y => by
   if h : x = y then rw [h] else exact Adj.reachable h
+
+@[deprecated (since := "2025-09-23")] alias bot_preconnected := preconnected_bot
+@[deprecated (since := "2025-09-23")]
+alias bot_preconnected_iff_subsingleton := preconnected_bot_iff_subsingleton
+@[deprecated (since := "2025-09-23")] alias bot_not_preconnected := not_preconnected_bot
+@[deprecated (since := "2025-09-23")] alias top_preconnected := preconnected_top
 
 theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
     G.Preconnected ↔ H.Preconnected :=
@@ -184,10 +194,20 @@ lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
   obtain ⟨p⟩ := h v w
   cases p with
   | nil => contradiction
-  | @cons _ w => use w
+  | @cons _ w => exact ⟨w, ‹_›⟩
+
+lemma Preconnected.degree_pos_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (h : G.Preconnected)
+    (v : V) [Fintype (G.neighborSet v)] : 0 < G.degree v := by
+  simp [degree_pos_iff_mem_support, h.support_eq_univ]
+
+lemma Preconnected.minDegree_pos_of_nontrivial [Nontrivial V] [Fintype V] {G : SimpleGraph V}
+    [DecidableRel G.Adj] (h : G.Preconnected) : 0 < G.minDegree := by
+  obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
+  rw [hv]
+  exact h.degree_pos_of_nontrivial v
 
 lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
-    (hx : x ∈ p.support) : ∃y ∈ p.support, G.Adj x y := by
+    (hx : x ∈ p.support) : ∃ y ∈ p.support, G.Adj x y := by
   induction p with
   | nil =>
     exact (hp Walk.Nil.nil).elim
@@ -259,11 +279,18 @@ theorem Connected.exists_isPath {G : SimpleGraph V} (h : G.Connected) (u v : V) 
     ∃ p : G.Walk u v, p.IsPath :=
   (h u v).exists_isPath
 
-lemma bot_not_connected [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
-  simp [bot_not_preconnected, connected_iff, ‹_›]
+lemma connected_bot_iff : (⊥ : SimpleGraph V).Connected ↔ Subsingleton V ∧ Nonempty V := by
+  simp [preconnected_bot_iff_subsingleton, connected_iff]
 
-lemma top_connected [Nonempty V] : (⊤ : SimpleGraph V).Connected where
-  preconnected := top_preconnected
+lemma not_connected_bot [Nontrivial V] : ¬(⊥ : SimpleGraph V).Connected := by
+  simp [not_preconnected_bot, connected_iff]
+
+lemma connected_top_iff : (completeGraph V).Connected ↔ Nonempty V := by simp [connected_iff]
+
+@[simp] lemma connected_top [Nonempty V] : (completeGraph V).Connected := by rwa [connected_top_iff]
+
+@[deprecated (since := "2025-09-23")] alias bot_not_connected := not_connected_bot
+@[deprecated (since := "2025-09-23")] alias top_connected := connected_top
 
 theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
     G.Connected ↔ H.Connected :=
@@ -286,8 +313,7 @@ instance inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
 
 instance isEmpty [IsEmpty V] : IsEmpty (ConnectedComponent G) := by
   by_contra! hc
-  rw [@not_isEmpty_iff] at hc
-  obtain ⟨v, _⟩ := (Classical.inhabited_of_nonempty hc).default.exists_rep
+  obtain ⟨v, _⟩ := hc.some.exists_rep
   exact IsEmpty.false v
 
 @[elab_as_elim]
@@ -468,8 +494,8 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
     C.supp ≃ (φ.connectedComponentEquiv C).supp where
   toFun v := ⟨φ v, ConnectedComponent.iso_image_comp_eq_map_iff_eq_comp.mpr v.prop⟩
   invFun v' := ⟨φ.symm v', ConnectedComponent.iso_inv_image_comp_eq_iff_eq_map.mpr v'.prop⟩
-  left_inv v := Subtype.ext_val (φ.toEquiv.left_inv ↑v)
-  right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
+  left_inv v := Subtype.ext (φ.toEquiv.left_inv ↑v)
+  right_inv v := Subtype.ext (φ.toEquiv.right_inv ↑v)
 
 lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.coe}
     (hv : v ∈ (↑) '' (c : Set H.verts)) (hw : w ∈ H.verts)
@@ -503,11 +529,9 @@ lemma biUnion_supp_eq_supp {G G' : SimpleGraph V} (h : G ≤ G') (c' : Connected
 
 lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
     c.supp = (Set.univ : Set V) := by
-  have ⟨w, hw⟩ := c.exists_rep
+  obtain ⟨w, rfl⟩ := c.exists_rep
   ext v
-  simp only [Set.mem_univ, iff_true, mem_supp_iff, ← hw]
-  apply ConnectedComponent.sound
-  exact (@top_connected V (Nonempty.intro v)).preconnected v w
+  simpa [-ConnectedComponent.eq] using ConnectedComponent.sound (G := ⊤)
 
 lemma reachable_of_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C.supp) (hv : v ∈ C.supp) : G.Reachable u v := by
@@ -515,11 +539,7 @@ lemma reachable_of_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v 
   exact ConnectedComponent.exact (hv ▸ hu)
 
 lemma mem_supp_of_adj_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
-    (hu : u ∈ C.supp) (hadj : G.Adj u v) : v ∈ C.supp := by
-  have hC : G.connectedComponentMk u = G.connectedComponentMk v :=
-    connectedComponentMk_eq_of_adj hadj
-  rw [hu] at hC
-  exact hC.symm
+    (hu : u ∈ C.supp) (hadj : G.Adj u v) : v ∈ C.supp := (mem_supp_congr_adj C hadj).mp hu
 
 /--
 Given a connected component `C` of a simple graph `G`, produce the induced graph on `C`.
@@ -586,6 +606,18 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
 @[deprecated (since := "2025-05-08")] alias connected_induce_supp := connected_toSimpleGraph
 
 end ConnectedComponent
+
+/-- Given graph homomorphisms from each connected component of `G` to `H` this is the graph
+homomorphism from `G` to `H` -/
+@[simps]
+def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
+    (C : (c : G.ConnectedComponent) → c.toSimpleGraph →g H) : G →g H where
+  toFun := fun x ↦ (C (G.connectedComponentMk _)) _
+  map_rel' := fun hab ↦ by
+    have h : (G.connectedComponentMk _).toSimpleGraph.Adj ⟨_, rfl⟩
+        ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
+    convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
+      rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]
 
 -- TODO: Extract as lemma about general equivalence relation
 lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :
@@ -681,7 +713,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       rw [Sym2.eq_swap]
       intro h
       cases hp (Walk.edges_toPath_subset p h)
-    · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or]
+    · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, true_or]
   · rintro ⟨u, c, hc, he⟩
     refine ⟨c.adj_of_mem_edges he, ?_⟩
     by_contra! hb
@@ -721,13 +753,13 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   · rwa [deleteEdges, Disjoint.sdiff_eq_left (by simpa)]
   refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
   obtain ⟨P, hP⟩ := hG.exists_isPath w x
-  obtain heP | heP := em' <| s(x,y) ∈ P.edges
-  · exact ⟨(P.toDeleteEdges {s(x,y)} (by aesop)).reverse⟩
+  obtain heP | heP := em' <| s(x, y) ∈ P.edges
+  · exact ⟨(P.toDeleteEdges {s(x, y)} (by aesop)).reverse⟩
   have hyP := P.snd_mem_support_of_mem_edges heP
   let P₁ := P.takeUntil y hyP
   have hxP₁ := Walk.endpoint_notMem_support_takeUntil hP hyP hxy.ne
-  have heP₁ : s(x,y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
-  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x,y)} (by aesop)⟩)
+  have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
+  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by aesop)⟩)
 
 end BridgeEdges
 

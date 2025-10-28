@@ -281,8 +281,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
   rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul_comm, ← Finset.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
   congr 1
-  have : (n ! : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr n.factorial_ne_zero
-  field_simp [this]
+  field_simp [n.factorial_ne_zero]
 
 /-- `NormedSpace.exp 𝕂 x` has explicit two-sided inverse `NormedSpace.exp 𝕂 (-x)`. -/
 noncomputable def invertibleExpOfMemBall [CharZero 𝕂] {x : 𝔸}
@@ -307,8 +306,8 @@ theorem isUnit_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
 
 theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) [Invertible (exp 𝕂 x)] :
-    ⅟ (exp 𝕂 x) = exp 𝕂 (-x) := by
-  letI := invertibleExpOfMemBall hx; convert (rfl : ⅟ (exp 𝕂 x) = _)
+    ⅟(exp 𝕂 x) = exp 𝕂 (-x) := by
+  letI := invertibleExpOfMemBall hx; convert (rfl : ⅟(exp 𝕂 x) = _)
 
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp_of_mem_ball {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f)
@@ -430,7 +429,7 @@ theorem exp_hasFPowerSeriesAt_zero : HasFPowerSeriesAt (exp 𝕂) (expSeries �
 
 @[continuity, fun_prop]
 theorem exp_continuous : Continuous (exp 𝕂 : 𝔸 → 𝔸) := by
-  rw [continuous_iff_continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
+  rw [← continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
     expSeries_radius_eq_top 𝕂 𝔸]
   exact continuousOn_exp
 
@@ -460,7 +459,7 @@ noncomputable def invertibleExp (x : 𝔸) : Invertible (exp 𝕂 x) :=
 theorem isUnit_exp (x : 𝔸) : IsUnit (exp 𝕂 x) :=
   isUnit_exp_of_mem_ball <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
-theorem invOf_exp (x : 𝔸) [Invertible (exp 𝕂 x)] : ⅟ (exp 𝕂 x) = exp 𝕂 (-x) :=
+theorem invOf_exp (x : 𝔸) [Invertible (exp 𝕂 x)] : ⅟(exp 𝕂 x) = exp 𝕂 (-x) :=
   invOf_exp_of_mem_ball <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
 theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp 𝕂 x) = exp 𝕂 (-x) :=
@@ -483,8 +482,9 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     exp 𝕂 (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp 𝕂 (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp 𝕂 := by
   classical
-    induction' s using Finset.induction_on with a s ha ih
-    · simp
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
     rw [Finset.noncommProd_insert_of_notMem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute,
       ih (h.mono <| Finset.subset_insert _ _)]
     refine Commute.sum_right _ _ _ fun i hi => ?_

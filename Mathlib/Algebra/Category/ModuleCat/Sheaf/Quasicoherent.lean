@@ -33,8 +33,8 @@ variable (M : SheafOfModules.{u} R)
 
 section
 
-variable [HasWeakSheafify J AddCommGrp.{u}] [J.WEqualsLocallyBijective AddCommGrp.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
+variable [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 /-- A global presentation of a sheaf of modules `M` consists of a family `generators.s`
 of sections `s` which generate `M`, and a family of sections which generate
@@ -48,9 +48,9 @@ structure Presentation where
 end
 
 
-variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
-  [∀ X, HasWeakSheafify (J.over X) AddCommGrp.{u}]
-  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrp.{u}]
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 /-- This structure contains the data of a family of objects `X i` which cover
 the terminal object, and of a presentation of `M.over (X i)` for all `i`. -/
@@ -83,7 +83,7 @@ class IsQuasicoherent : Prop where
   nonempty_quasicoherentData : Nonempty M.QuasicoherentData
 
 /-- A sheaf of modules is finitely presented if it is locally the cokernel of a
-morphism between coproducts of finitely many copies of the sheaf of rings.. -/
+morphism between coproducts of finitely many copies of the sheaf of rings. -/
 class IsFinitePresentation : Prop where
   exists_quasicoherentData :
     ∃ (σ : M.QuasicoherentData), ∀ (i : σ.I), (Finite (σ.presentation i).generators.I ∧

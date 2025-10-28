@@ -59,9 +59,9 @@ theorem not_isLocalRing_of_prod_of_nontrivial (R₁ R₂ : Type*) [Semiring R₁
   not_isLocalRing_def ha hb (by simp)
 
 /-- The following conditions are equivalent for a commutative (semi)ring `R`:
-    * `R` is not local,
-    * the maximal spectrum of `R` is nontrivial,
-    * `R` has two distinct maximal ideals.
+* `R` is not local,
+* the maximal spectrum of `R` is nontrivial,
+* `R` has two distinct maximal ideals.
 -/
 theorem not_isLocalRing_tfae {R : Type*} [CommSemiring R] [Nontrivial R] :
     List.TFAE [

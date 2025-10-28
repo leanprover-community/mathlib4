@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.UniqueProds.Basic
-import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.MonoidAlgebra.Opposite
 
 /-!
 # Variations on non-zero divisors in `AddMonoidAlgebra`s
@@ -27,7 +27,7 @@ that if `R` is a field and `A` is a left-ordered group, then `R[A]` contains no 
 zero-divisors.
 The actual assumptions on `R` are weaker.
 
-##  Main results
+## Main results
 
 * `MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul` and
   `AddMonoidAlgebra.mul_apply_add_eq_mul_of_uniqueAdd`
@@ -72,15 +72,14 @@ theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : MonoidAlgebra R A} {a0 
   classical
   simp_rw [mul_apply, sum, ← Finset.sum_product']
   refine (Finset.sum_eq_single (a0, b0) ?_ ?_).trans (if_pos rfl) <;> simp_rw [Finset.mem_product]
-  · refine fun ab hab hne => if_neg (fun he => hne <| Prod.ext ?_ ?_)
+  · refine fun ab hab hne ↦ if_neg (fun he ↦ hne <| Prod.ext ?_ ?_)
     exacts [(h hab.1 hab.2 he).1, (h hab.1 hab.2 he).2]
-  · refine fun hnotMem => ite_eq_right_iff.mpr (fun _ => ?_)
+  · refine fun hnotMem ↦ ite_eq_right_iff.mpr (fun _ ↦ ?_)
     rcases not_and_or.mp hnotMem with af | bg
     · rw [notMem_support_iff.mp af, zero_mul]
     · rw [notMem_support_iff.mp bg, mul_zero]
 
-instance instNoZeroDivisorsOfUniqueProds [NoZeroDivisors R] [Mul A] [UniqueProds A] :
-    NoZeroDivisors (MonoidAlgebra R A) where
+instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors (MonoidAlgebra R A) where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} ab := by
     contrapose! ab
     obtain ⟨da, a0, db, b0, h⟩ := UniqueProds.uniqueMul_of_nonempty
@@ -88,6 +87,35 @@ instance instNoZeroDivisorsOfUniqueProds [NoZeroDivisors R] [Mul A] [UniqueProds
     refine support_nonempty_iff.mp ⟨da * db, ?_⟩
     rw [mem_support_iff] at a0 b0 ⊢
     exact mul_apply_mul_eq_mul_of_uniqueMul h ▸ mul_ne_zero a0 b0
+
+instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
+    IsLeftCancelMulZero (MonoidAlgebra R A) where
+  mul_left_cancel_of_ne_zero {f} hf {g₁ g₂} eq := by
+    classical
+    induction hg : g₁.support ∪ g₂.support using Finset.eraseInduction generalizing g₁ g₂ with
+    | _ s ih =>
+    obtain h | h := s.eq_empty_or_nonempty <;> subst s
+    · simp_rw [Finset.union_eq_empty, support_eq_empty] at h; exact h.1.trans h.2.symm
+    have ⟨af, haf, ag, hag, uniq⟩ := UniqueProds.uniqueMul_of_nonempty (support_nonempty_iff.2 hf) h
+    have h := mul_apply_mul_eq_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_left)
+    dsimp only at eq
+    rw [eq, mul_apply_mul_eq_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_right)] at h
+    have := mul_left_cancel₀ (mem_support_iff.mp haf) h
+    rw [← g₁.erase_add_single ag, ← g₂.erase_add_single ag, this] at eq ⊢
+    simp_rw [mul_add, add_right_cancel_iff] at eq
+    rw [ih ag hag eq]
+    simp_rw [support_erase, Finset.erase_union_distrib]
+
+instance [IsCancelAdd R] [IsRightCancelMulZero R] [Mul A] [UniqueProds A] :
+    IsRightCancelMulZero (MonoidAlgebra R A) :=
+  MulOpposite.isLeftCancelMulZero_iff.mp <|
+    MonoidAlgebra.opRingEquiv.injective.isLeftCancelMulZero _ (map_zero _) (map_mul _)
+
+instance [IsCancelAdd R] [IsCancelMulZero R] [Mul A] [UniqueProds A] :
+    IsCancelMulZero (MonoidAlgebra R A) where
+
+instance [IsCancelAdd R] [IsDomain R] [Monoid A] [UniqueProds A] :
+    IsDomain (MonoidAlgebra R A) where
 
 end MonoidAlgebra
 
@@ -100,26 +128,20 @@ theorem mul_apply_add_eq_mul_of_uniqueAdd [Add A] {f g : R[A]} {a0 b0 : A}
     (f * g) (a0 + b0) = f a0 * g b0 :=
   MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul (A := Multiplicative A) h
 
-instance instNoZeroDivisorsOfUniqueSums [NoZeroDivisors R] [Add A] [UniqueSums A] :
-    NoZeroDivisors R[A] := MonoidAlgebra.instNoZeroDivisorsOfUniqueProds (A := Multiplicative A)
+instance [NoZeroDivisors R] [Add A] [UniqueSums A] : NoZeroDivisors R[A] :=
+  inferInstanceAs (NoZeroDivisors (MonoidAlgebra R (Multiplicative A)))
+
+instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Add A] [UniqueSums A] :
+    IsLeftCancelMulZero R[A] :=
+  inferInstanceAs (IsLeftCancelMulZero (MonoidAlgebra R (Multiplicative A)))
+
+instance [IsCancelAdd R] [IsRightCancelMulZero R] [Add A] [UniqueSums A] :
+    IsRightCancelMulZero R[A] :=
+  inferInstanceAs (IsRightCancelMulZero (MonoidAlgebra R (Multiplicative A)))
+
+instance [IsCancelAdd R] [IsCancelMulZero R] [Add A] [UniqueSums A] : IsCancelMulZero R[A] where
+
+instance [IsCancelAdd R] [IsDomain R] [AddMonoid A] [UniqueSums A] : IsDomain R[A] where
 
 end AddMonoidAlgebra
 end Semiring
-
-section Ring
-variable [Ring R] [IsDomain R]
-
-namespace MonoidAlgebra
-
-instance instIsDomainOfUniqueProds [Monoid A] [UniqueProds A] : IsDomain (MonoidAlgebra R A) :=
-  NoZeroDivisors.to_isDomain _
-
-end MonoidAlgebra
-
-namespace AddMonoidAlgebra
-
-instance instIsDomainOfUniqueSums [AddMonoid A] [UniqueSums A] : IsDomain R[A] :=
-  NoZeroDivisors.to_isDomain _
-
-end AddMonoidAlgebra
-end Ring

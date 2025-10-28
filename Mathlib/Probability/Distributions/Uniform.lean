@@ -41,7 +41,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 
 open scoped Finset MeasureTheory NNReal ENNReal
 
--- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` locale :(
+-- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` scope :(
 open TopologicalSpace MeasureTheory.Measure PMF
 
 noncomputable section
@@ -121,7 +121,7 @@ theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
   by_cases hnt : μ s = ∞
   · simp [pdf_eq_zero_of_measure_eq_zero_or_top hu (Or.inr hnt), hnt]
   by_cases hns : μ s = 0
-  · filter_upwards [measure_zero_iff_ae_notMem.mp hns,
+  · filter_upwards [measure_eq_zero_iff_ae_notMem.mp hns,
       pdf_eq_zero_of_measure_eq_zero_or_top hu (Or.inl hns)] with x hx h'x
     simp [hx, h'x, hns]
   have : HasPDF X ℙ μ := hasPDF hns hnt hu
@@ -245,7 +245,7 @@ theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
   Set.ext
     (by
       let ⟨a, ha⟩ := hs
-      simp [mem_support_iff, Finset.ne_empty_of_mem ha])
+      simp [mem_support_iff])
 
 theorem mem_support_uniformOfFinset_iff (a : α) : a ∈ (uniformOfFinset s hs).support ↔ a ∈ s := by
   simp
@@ -292,7 +292,7 @@ variable [Fintype α] [Nonempty α]
 
 @[simp]
 theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
-  simp [uniformOfFintype, Finset.mem_univ, if_true, uniformOfFinset_apply]
+  simp [uniformOfFintype, Finset.mem_univ, uniformOfFinset_apply]
 
 @[simp]
 theorem support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
@@ -352,7 +352,7 @@ theorem ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.ca
 open scoped Classical in
 @[simp]
 theorem support_ofMultiset : (ofMultiset s hs).support = s.toFinset :=
-  Set.ext (by simp [mem_support_iff, hs])
+  Set.ext (by simp [mem_support_iff])
 
 open scoped Classical in
 theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support ↔ a ∈ s.toFinset := by

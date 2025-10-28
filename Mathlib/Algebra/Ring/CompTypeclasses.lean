@@ -130,12 +130,10 @@ namespace RingHomCompTriple
 
 instance ids : RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂ :=
   ⟨by
-    ext
     simp⟩
 
 instance right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ :=
   ⟨by
-    ext
     simp⟩
 
 end RingHomCompTriple

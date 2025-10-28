@@ -293,13 +293,13 @@ def mapHom : VariableChange R →* VariableChange A where
     ext <;> simp only [map_one, Units.val_one, map_zero]
   map_mul' C C' := by
     simp only [mul_def, map]
-    ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
+    ext <;> map_simp <;> simp only [Units.coe_map, MonoidHom.coe_coe]
 
 end VariableChange
 
 lemma map_variableChange (C : VariableChange R) : (C.map φ) • (W.map φ) = (C • W).map φ := by
   simp only [map, variableChange_def, VariableChange.map]
-  ext <;> map_simp <;> simp only [Units.coe_map, Units.coe_map_inv, MonoidHom.coe_coe]
+  ext <;> map_simp <;> simp only [Units.coe_map_inv, MonoidHom.coe_coe]
 
 end BaseChange
 

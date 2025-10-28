@@ -88,14 +88,14 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   have ha : a ∈ s := by simp [s, hpt, hab]
   rcases hab.eq_or_lt with (rfl | _hlt)
   · exact ha.2
-  -- Porting note: the `obtain` below was instead
-  -- `set c := Sup s`
-  -- `have hsc : IsLUB s c := isLUB_csSup ⟨a, ha⟩ sbd`
-  obtain ⟨c, hsc⟩ : ∃ c, IsLUB s c := ⟨sSup s, isLUB_csSup ⟨a, ha⟩ ⟨b, hsb⟩⟩
+  let c := sSup s
+  have hsc : IsLUB s c := isLUB_csSup ⟨a, ha⟩ ⟨b, hsb⟩
   have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
   specialize hf c hc
   have hcs : c ∈ s := by
-    rcases hc.1.eq_or_lt with (rfl | hlt); · assumption
+    -- rcases ... with (rfl | ... ) fails here, rewrite manually.
+    rcases hc.1.eq_or_lt with (h | hlt)
+    · rwa [h] at ha
     refine ⟨hc, fun hcf => hf fun U hU => ?_⟩
     rcases (mem_nhdsLE_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
       with ⟨x, hxc, hxU⟩
@@ -105,8 +105,9 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
     rw [diff_subset_iff]
     exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
       Ioc_subset_Ioc_left hy.1.le
-  rcases hc.2.eq_or_lt with (rfl | hlt)
-  · exact hcs.2
+  -- rcases ... with (rfl | ... ) fails here, rewrite manually.
+  rcases hc.2.eq_or_lt with (h | hlt)
+  · simpa [h] using hcs.2
   exfalso
   refine hf fun U hU => ?_
   rcases (mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
@@ -336,7 +337,7 @@ theorem Continuous.exists_forall_ge [ClosedIciTopology α] [Nonempty β] {f : β
   Continuous.exists_forall_le (α := αᵒᵈ) hf hlim
 
 /-- A continuous function with compact support has a global minimum. -/
-@[to_additive "A continuous function with compact support has a global minimum."]
+@[to_additive /-- A continuous function with compact support has a global minimum. -/]
 theorem Continuous.exists_forall_le_of_hasCompactMulSupport [ClosedIicTopology α] [Nonempty β]
     [One α] {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) :
     ∃ x : β, ∀ y : β, f x ≤ f y := by
@@ -345,7 +346,7 @@ theorem Continuous.exists_forall_le_of_hasCompactMulSupport [ClosedIicTopology �
   exact ⟨x, hx⟩
 
 /-- A continuous function with compact support has a global maximum. -/
-@[to_additive "A continuous function with compact support has a global maximum."]
+@[to_additive /-- A continuous function with compact support has a global maximum. -/]
 theorem Continuous.exists_forall_ge_of_hasCompactMulSupport [ClosedIciTopology α] [Nonempty β]
     [One α] {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) :
     ∃ x : β, ∀ y : β, f y ≤ f x :=
@@ -375,13 +376,13 @@ theorem IsCompact.bddAbove_image [ClosedIciTopology α] [Nonempty α] {f : β �
   IsCompact.bddBelow_image (α := αᵒᵈ) hK hf
 
 /-- A continuous function with compact support is bounded below. -/
-@[to_additive "A continuous function with compact support is bounded below."]
+@[to_additive /-- A continuous function with compact support is bounded below. -/]
 theorem Continuous.bddBelow_range_of_hasCompactMulSupport [ClosedIicTopology α] [One α]
     {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) : BddBelow (range f) :=
   (h.isCompact_range hf).bddBelow
 
 /-- A continuous function with compact support is bounded above. -/
-@[to_additive "A continuous function with compact support is bounded above."]
+@[to_additive /-- A continuous function with compact support is bounded above. -/]
 theorem Continuous.bddAbove_range_of_hasCompactMulSupport [ClosedIciTopology α] [One α]
     {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) : BddAbove (range f) :=
   Continuous.bddBelow_range_of_hasCompactMulSupport (α := αᵒᵈ) hf h
@@ -583,5 +584,18 @@ theorem le_sSup_image_Icc (h : ContinuousOn f <| Icc a b) (hc : c ∈ Icc a b) :
   have := mem_image_of_mem f hc
   rw [h.image_Icc (hc.1.trans hc.2)] at this
   exact this.2
+
+theorem image_Icc_of_monotoneOn (hab : a ≤ b) (h : ContinuousOn f <| Icc a b)
+    (h' : MonotoneOn f <| Icc a b) : f '' Icc a b = Icc (f a) (f b) := by
+  rw [h.image_Icc hab]
+  congr!
+  · exact h'.sInf_image_Icc hab
+  · exact h'.sSup_image_Icc hab
+
+theorem image_Icc_of_antitoneOn (hab : a ≤ b) (h : ContinuousOn f <| Icc a b)
+    (h' : AntitoneOn f <| Icc a b) : f '' Icc a b = Icc (f b) (f a) := by
+  have : Icc (f b) (f a) = Icc (toDual (f a)) (toDual (f b)) := by rw [Icc_toDual]; rfl
+  rw [this]
+  exact image_Icc_of_monotoneOn (β := βᵒᵈ) hab h h'.dual_right
 
 end ContinuousOn
