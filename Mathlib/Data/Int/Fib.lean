@@ -73,11 +73,7 @@ theorem fib_add_one (n : ℤ) : fib (n + 1) = fib (n + 2) - fib n := by
   simp only [fib_add_two, add_sub_cancel_left]
 
 @[simp] theorem fib_eq_zero {n : ℤ} : fib n = 0 ↔ n = 0 := by
-  rcases n with (n | n)
-  · simp
-  · rw [show (negSucc n) = -((n + 1 : ℕ) : ℤ) by rfl, fib_neg_natCast]
-    have : -1 + -(n : ℤ) = 0 ↔ (n : ℤ) = -1 := by grind
-    simp [this]
+  obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg <;> simp [fib_neg_natCast]
 
 -- auxiliary for `fib_add`
 theorem fib_natCast_add_natCast (m n : ℕ) :
