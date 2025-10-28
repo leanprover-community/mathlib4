@@ -144,14 +144,14 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
     openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
-  have H : (pullback.fst f f).base x = (pullback.snd f f).base x :=
+  have H : pullback.fst f f x = pullback.snd f f x :=
     hf (by rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.condition])
-  let i := 𝒰.idx (f.base ((pullback.fst f f).base x))
-  obtain ⟨y : 𝒰.X i, hy : (𝒰.f i).base y = f.base _⟩ :=
-    𝒰.covers (f.base ((pullback.fst f f).base x))
+  let i := 𝒰.idx (f (pullback.fst f f x))
+  obtain ⟨y : 𝒰.X i, hy : 𝒰.f i y = f _⟩ :=
+    𝒰.covers (f (pullback.fst f f x))
   obtain ⟨z, hz₁, hz₂⟩ := exists_preimage_pullback _ _ hy.symm
   let j := (𝒱 i).idx z
-  obtain ⟨w : (𝒱 i).X j, hy : ((𝒱 i).f j).base w = z⟩ := (𝒱 i).covers z
+  obtain ⟨w : (𝒱 i).X j, hy : (𝒱 i).f j w = z⟩ := (𝒱 i).covers z
   refine ⟨i, j, ?_⟩
   simp_rw [diagonalCover_map]
   change x ∈ Set.range _
@@ -168,12 +168,12 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
   simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
     openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
-  let i := 𝒰.idx (f.base x)
-  obtain ⟨y : 𝒰.X i, hy : (𝒰.f i).base y = f.base x⟩ := 𝒰.covers (f.base x)
+  let i := 𝒰.idx (f x)
+  obtain ⟨y : 𝒰.X i, hy : 𝒰.f i y = f x⟩ := 𝒰.covers (f x)
   obtain ⟨z, hz₁, hz₂⟩ := exists_preimage_pullback _ _ hy.symm
   let j := (𝒱 i).idx z
-  obtain ⟨w : (𝒱 i).X j, hy : ((𝒱 i).f j).base w = z⟩ := (𝒱 i).covers z
-  refine ⟨i, j, (pullback.diagonal ((𝒱 i).f j ≫ pullback.snd f (𝒰.f i))).base w, ?_⟩
+  obtain ⟨w : (𝒱 i).X j, hy : (𝒱 i).f j w = z⟩ := (𝒱 i).covers z
+  refine ⟨i, j, (pullback.diagonal ((𝒱 i).f j ≫ pullback.snd f (𝒰.f i))) w, ?_⟩
   rw [← hz₁, ← hy, ← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply]
   simp only [diagonalCover, openCoverOfBase_I₀,
     Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,

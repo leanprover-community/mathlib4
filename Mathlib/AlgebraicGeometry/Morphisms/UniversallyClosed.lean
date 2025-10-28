@@ -39,8 +39,8 @@ along any morphism `Y' ⟶ Y` is (topologically) a closed map.
 class UniversallyClosed (f : X ⟶ Y) : Prop where
   out : universally (topologically @IsClosedMap) f
 
-lemma Scheme.Hom.isClosedMap {X Y : Scheme} (f : X.Hom Y) [UniversallyClosed f] :
-    IsClosedMap f.base := UniversallyClosed.out _ _ _ IsPullback.of_id_snd
+lemma Scheme.Hom.isClosedMap {X Y : Scheme} (f : X ⟶ Y) [UniversallyClosed f] :
+    IsClosedMap f := UniversallyClosed.out _ _ _ IsPullback.of_id_snd
 
 theorem universallyClosed_eq : @UniversallyClosed = universally (topologically @IsClosedMap) := by
   ext X Y f; rw [universallyClosed_iff]
@@ -60,7 +60,7 @@ instance universallyClosed_isStableUnderBaseChange : IsStableUnderBaseChange @Un
 
 instance isClosedMap_isStableUnderComposition :
     IsStableUnderComposition (topologically @IsClosedMap) where
-  comp_mem f g hf hg := IsClosedMap.comp (f := f.base) (g := g.base) hg hf
+  comp_mem f g hf hg := IsClosedMap.comp (f := f) (g := g) hg hf
 
 instance universallyClosed_isStableUnderComposition :
     IsStableUnderComposition @UniversallyClosed := by
@@ -116,35 +116,35 @@ lemma compactSpace_of_universallyClosed
   have hZ : IsClosed Z := by
     simp only [Z, isClosed_compl_iff, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe]
     exact isOpen_iUnion fun i ↦ (fT.continuous.1 _ (Ti i).2).inter (p.continuous.1 _ (U i).2)
-  let Zc : T.Opens := ⟨(fT.base '' Z)ᶜ, (fT.isClosedMap _ hZ).isOpen_compl⟩
+  let Zc : T.Opens := ⟨(fT '' Z)ᶜ, (fT.isClosedMap _ hZ).isOpen_compl⟩
   let ψ : MvPolynomial 𝒰.I₀ K →ₐ[K] K := MvPolynomial.aeval (fun _ ↦ 1)
-  let t : T := (Spec.map <| CommRingCat.ofHom ψ.toRingHom).base default
+  let t : T := (Spec.map <| CommRingCat.ofHom ψ.toRingHom) default
   have ht (i : 𝒰.I₀) : t ∈ Ti i := show ψ (.X i) ≠ 0 by simp [ψ]
   have htZc : t ∈ Zc := by
     intro ⟨z, hz, hzt⟩
-    suffices ∃ i, fT.base z ∈ Ti i ∧ p.base z ∈ U i from hz (by simpa)
-    exact ⟨𝒰.idx (p.base z), hzt ▸ ht _, by simpa [U] using 𝒰.covers (p.base z)⟩
+    suffices ∃ i, fT z ∈ Ti i ∧ p z ∈ U i from hz (by simpa)
+    exact ⟨𝒰.idx (p z), hzt ▸ ht _, by simpa [U] using 𝒰.covers (p z)⟩
   obtain ⟨U', ⟨g, rfl⟩, htU', hU'le⟩ := Opens.isBasis_iff_nbhd.mp isBasis_basic_opens htZc
   let σ : Finset 𝒰.I₀ := MvPolynomial.vars g
   let φ : MvPolynomial 𝒰.I₀ K →+* MvPolynomial 𝒰.I₀ K :=
     (MvPolynomial.aeval fun i : 𝒰.I₀ ↦ if i ∈ σ then MvPolynomial.X i else 0).toRingHom
-  let t' : T := (Spec.map (CommRingCat.ofHom φ)).base t
+  let t' : T := Spec.map (CommRingCat.ofHom φ) t
   have ht'g : t' ∈ PrimeSpectrum.basicOpen g :=
     show φ g ∉ t.asIdeal from (show φ g = g from aeval_ite_mem_eq_self g subset_rfl).symm ▸ htU'
-  have h : t' ∉ fT.base '' Z := hU'le ht'g
+  have h : t' ∉ fT '' Z := hU'le ht'g
   suffices ⋃ i ∈ σ, (U i).1 = Set.univ from
     ⟨this ▸ Finset.isCompact_biUnion _ fun i _ ↦ isCompact_range (𝒰.f i).continuous⟩
   rw [Set.iUnion₂_eq_univ_iff]
   contrapose! h
   obtain ⟨x, hx⟩ := h
-  obtain ⟨z, rfl, hzr⟩ := exists_preimage_pullback x t' (Subsingleton.elim (f.base x) (q.base t'))
-  suffices ∀ i, t ∈ (Ti i).comap (comap φ) → p.base z ∉ U i from ⟨z, by simpa [Z, p, fT, hzr], hzr⟩
+  obtain ⟨z, rfl, hzr⟩ := exists_preimage_pullback x t' (Subsingleton.elim (f x) (q t'))
+  suffices ∀ i, t ∈ (Ti i).comap (comap φ) → p z ∉ U i from ⟨z, by simpa [Z, p, fT, hzr], hzr⟩
   intro i hi₁ hi₂
   rw [comap_basicOpen, show φ (.X i) = 0 by simpa [φ] using (hx i · hi₂), basicOpen_zero] at hi₁
   cases hi₁
 
 @[stacks 04XU]
-lemma Scheme.Hom.isProperMap (f : X.Hom Y) [UniversallyClosed f] : IsProperMap f.base := by
+lemma Scheme.Hom.isProperMap (f : X ⟶ Y) [UniversallyClosed f] : IsProperMap f := by
   rw [isProperMap_iff_isClosedMap_and_compact_fibers]
   refine ⟨Scheme.Hom.continuous f, ?_, ?_⟩
   · exact MorphismProperty.universally_le (P := topologically @IsClosedMap) _ UniversallyClosed.out

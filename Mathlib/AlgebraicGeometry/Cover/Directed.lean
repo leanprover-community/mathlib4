@@ -45,7 +45,7 @@ class LocallyDirected (𝒰 : X.Cover (precoverage P)) [Category 𝒰.I₀] wher
   w {i j : 𝒰.I₀} (hij : i ⟶ j) : trans hij ≫ 𝒰.f j = 𝒰.f i := by aesop_cat
   directed {i j : 𝒰.I₀} (x : (pullback (𝒰.f i) (𝒰.f j)).carrier) :
     ∃ (k : 𝒰.I₀) (hki : k ⟶ i) (hkj : k ⟶ j) (y : 𝒰.X k),
-      (pullback.lift (trans hki) (trans hkj) (by simp [w])).base y = x
+      (pullback.lift (trans hki) (trans hkj) (by simp [w])) y = x
   property_trans {i j : 𝒰.I₀} (hij : i ⟶ j) : P (trans hij) := by infer_instance
 
 variable (𝒰 : X.Cover (precoverage P)) [Category 𝒰.I₀] [𝒰.LocallyDirected]
@@ -66,7 +66,7 @@ lemma trans_comp {i j k : 𝒰.I₀} (hij : i ⟶ j) (hjk : j ⟶ k) :
 
 lemma exists_lift_trans_eq {i j : 𝒰.I₀} (x : (pullback (𝒰.f i) (𝒰.f j)).carrier) :
     ∃ (k : 𝒰.I₀) (hki : k ⟶ i) (hkj : k ⟶ j) (y : 𝒰.X k),
-      (pullback.lift (𝒰.trans hki) (𝒰.trans hkj) (by simp)).base y = x :=
+      (pullback.lift (𝒰.trans hki) (𝒰.trans hkj) (by simp)) y = x :=
   LocallyDirected.directed x
 
 lemma property_trans {i j : 𝒰.I₀} (hij : i ⟶ j) : P (𝒰.trans hij) :=
@@ -100,7 +100,7 @@ instance : (𝒰.functorOfLocallyDirected ⋙ Scheme.forget).IsLocallyDirected w
   cond {i j k} fi fj xi xj hxij := by
     simp only [Functor.comp_obj, Cover.functorOfLocallyDirected_obj, forget_obj, Functor.comp_map,
       Cover.functorOfLocallyDirected_map, forget_map] at hxij
-    have : (𝒰.f i).base xi = (𝒰.f j).base xj := by
+    have : 𝒰.f i xi = 𝒰.f j xj := by
       rw [← 𝒰.trans_map fi, ← 𝒰.trans_map fj, Hom.comp_base, Hom.comp_base,
         ConcreteCategory.comp_apply, hxij, ConcreteCategory.comp_apply]
     obtain ⟨z, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback xi xj this
@@ -142,10 +142,10 @@ instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ 
           pullback.map _ _ _ _ (𝟙 Y) (pullback.lift (𝒰.trans hki) (𝒰.trans hkj) (by simp)) (𝟙 X)
             (by simp) (by simp) ≫ iso.inv := by
       apply pullback.hom_ext <;> apply pullback.hom_ext <;> simp [iso]
-    obtain ⟨k, hki, hkj, yk, hyk⟩ := 𝒰.exists_lift_trans_eq ((iso.hom ≫ pullback.snd _ _).base x)
+    obtain ⟨k, hki, hkj, yk, hyk⟩ := 𝒰.exists_lift_trans_eq ((iso.hom ≫ pullback.snd _ _) x)
     refine ⟨k, hki, hkj, show x ∈ Set.range _ from ?_⟩
     rw [this, Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp, Pullback.range_map]
-    use iso.hom.base x
+    use iso.hom x
     simp only [Hom.id_base, TopCat.hom_id, ContinuousMap.coe_id, Set.range_id, Set.preimage_univ,
       Set.univ_inter, Set.mem_preimage, Set.mem_range, hom_inv_apply, and_true]
     exact ⟨yk, hyk⟩
@@ -232,7 +232,7 @@ def Cover.LocallyDirected.ofIsBasisOpensRange {𝒰 : X.OpenCover} [Preorder �
   trans_id i := by rw [← cancel_mono (𝒰.f i)]; simp
   trans_comp hij hjk := by rw [← cancel_mono (𝒰.f _)]; simp
   directed {i j} x := by
-    have : (pullback.fst (𝒰.f i) (𝒰.f j) ≫ 𝒰.f i).base x ∈
+    have : (pullback.fst (𝒰.f i) (𝒰.f j) ≫ 𝒰.f i) x ∈
       (pullback.fst (𝒰.f i) (𝒰.f j) ≫ 𝒰.f i).opensRange := ⟨x, rfl⟩
     obtain ⟨k, ⟨k, rfl⟩, ⟨y, hy⟩, h⟩ := TopologicalSpace.Opens.isBasis_iff_nbhd.mp H this
     refine ⟨k, homOfLE <| hle.mpr <| le_trans h ?_, homOfLE <| hle.mpr <| le_trans h ?_, y, ?_⟩

@@ -43,7 +43,7 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
   classical
   cases isEmpty_or_nonempty I
   · have e := (isLimitEquivIsTerminalOfIsEmpty _ _ hc).uniqueUpToIso specULiftZIsTerminal
-    exact Nonempty.map e.inv.base inferInstance
+    exact Nonempty.map e.inv inferInstance
   · have i := Nonempty.some ‹Nonempty I›
     have : IsCofiltered I := ⟨⟩
     let 𝒰 := (D.obj i).affineCover.finiteSubcover
@@ -62,7 +62,7 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
             · simp [g]
             · simp
             · exact Finset.mem_image_of_mem _ (Finset.mem_univ _)) (by simp)
-        exact Function.isEmpty F.base
+        exact Function.isEmpty F
       obtain ⟨x, -⟩ :=
         Cover.covers (𝒰.pullback₁ (D.map (g i (by simp)))) (Nonempty.some inferInstance)
       exact (this _).elim x
@@ -87,7 +87,7 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
     let α : F ⟶ Over.forget _ ⋙ D := Functor.whiskerRight
       (Functor.whiskerLeft (Over.post D) (Over.mapPullbackAdj (𝒰.f j)).counit) (Over.forget _)
     exact this.map (((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc).lift
-        ((Cones.postcompose α).obj c'.1)).base
+        ((Cones.postcompose α).obj c'.1))
 
 include hc in
 open Scheme.IdealSheafData in
@@ -102,8 +102,8 @@ lemma exists_mem_of_isClosed_of_nonempty
     (hZc : ∀ (i : I), IsClosed (Z i))
     (hZne : ∀ i, (Z i).Nonempty)
     (hZcpt : ∀ i, IsCompact (Z i))
-    (hmapsTo : ∀ {i i' : I} (f : i ⟶ i'), Set.MapsTo (D.map f).base (Z i) (Z i')) :
-    ∃ (s : c.pt), ∀ i, (c.π.app i).base s ∈ Z i := by
+    (hmapsTo : ∀ {i i' : I} (f : i ⟶ i'), Set.MapsTo (D.map f) (Z i) (Z i')) :
+    ∃ (s : c.pt), ∀ i, (c.π.app i) s ∈ Z i := by
   let D' : I ⥤ Scheme :=
   { obj i := (vanishingIdeal ⟨Z i, hZc i⟩).subscheme
     map {X Y} f := subschemeMap _ _ (D.map f) (by
@@ -153,8 +153,8 @@ lemma exists_mem_of_isClosed_of_nonempty'
     (hZne : ∀ i hij, (Z i hij).Nonempty)
     (hZcpt : ∀ i hij, IsCompact (Z i hij))
     (hstab : ∀ (i i' : I) (hi'i : i' ⟶ i) (hij : i ⟶ j),
-      Set.MapsTo (D.map hi'i).base (Z i' (hi'i ≫ hij)) (Z i hij)) :
-    ∃ (s : c.pt), ∀ i hij, (c.π.app i).base s ∈ Z i hij := by
+      Set.MapsTo (D.map hi'i) (Z i' (hi'i ≫ hij)) (Z i hij)) :
+    ∃ (s : c.pt), ∀ i hij, (c.π.app i) s ∈ Z i hij := by
   have {i₁ i₂ : Over j} (f : i₁ ⟶ i₂) : IsAffineHom ((Over.forget j ⋙ D).map f) := by
     dsimp; infer_instance
   simpa [Over.forall_iff] using exists_mem_of_isClosed_of_nonempty (Over.forget j ⋙ D) _
@@ -283,19 +283,19 @@ variable (A : ExistsHomHomCompEqCompAux D t f)
 
 omit [LocallyOfFiniteType f] in
 lemma exists_index : ∃ (i' : I) (hii' : i' ⟶ A.i),
-    ((D.map hii' ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb)).base ⁻¹'
+    ((D.map hii' ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb)) ⁻¹'
       ((Scheme.Pullback.diagonalCoverDiagonalRange f A.𝒰S A.𝒰X : Set <|
         ↑(pullback f f))ᶜ)) = ∅ := by
   let W := Scheme.Pullback.diagonalCoverDiagonalRange f A.𝒰S A.𝒰X
   by_contra! h
   let Z (i' : I) (hii' : i' ⟶ A.i) :=
-    (D.map hii' ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb)).base ⁻¹' Wᶜ
+    (D.map hii' ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb)) ⁻¹' Wᶜ
   have hZ (i') (hii' : i' ⟶ A.i) : IsClosed (Z i' hii') :=
     (W.isOpen.isClosed_compl).preimage <| Scheme.Hom.continuous _
   obtain ⟨s, hs⟩ := exists_mem_of_isClosed_of_nonempty' D A.c A.hc Z hZ h
     (fun _ _ ↦ (hZ _ _).isCompact) (fun i i' hii' hij ↦ by simp [Z, Set.MapsTo])
   refine hs A.i (𝟙 A.i) (Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange _ _ _ ?_)
-  use (A.c.π.app A.i ≫ A.a).base s
+  use (A.c.π.app A.i ≫ A.a) s
   have H : A.c.π.app A.i ≫ A.a ≫ pullback.diagonal f =
       A.c.π.app A.i ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb) := by ext <;> simp [hab]
   simp [← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base, H]
@@ -316,7 +316,7 @@ def g : D.obj A.i' ⟶ pullback f f :=
 
 omit [LocallyOfFiniteType f] in
 lemma range_g_subset :
-    Set.range A.g.base ⊆ Scheme.Pullback.diagonalCoverDiagonalRange f A.𝒰S A.𝒰X := by
+    Set.range A.g ⊆ Scheme.Pullback.diagonalCoverDiagonalRange f A.𝒰S A.𝒰X := by
   simpa [ExistsHomHomCompEqCompAux.hii', g] using A.exists_index.choose_spec.choose_spec
 
 /-- (Implementation)

@@ -768,7 +768,7 @@ lemma zeroLocus_mono {U : X.Opens} {s t : Set Γ(X, U)} (h : s ⊆ t) :
   exact fun x H f hf hxf ↦ H f (h hf) hxf
 
 lemma preimage_zeroLocus {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (s : Set Γ(Y, U)) :
-    f.base ⁻¹' Y.zeroLocus s = X.zeroLocus ((f.app U).hom '' s) := by
+    f ⁻¹' Y.zeroLocus s = X.zeroLocus ((f.app U).hom '' s) := by
   ext
   simp [← Scheme.preimage_basicOpen]
 
@@ -842,7 +842,7 @@ alias Scheme.iso_hom_base_inv_base := Scheme.hom_base_inv_base
 @[simp]
 lemma Scheme.hom_inv_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
     e.inv (e.hom x) = x := by
-  change (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
+  change (e.hom ≫ e.inv) x = 𝟙 X.toPresheafedSpace x
   simp
 
 @[deprecated (since := "2025-10-07")]
@@ -859,7 +859,7 @@ alias Scheme.iso_inv_base_hom_base := Scheme.inv_base_hom_base
 @[simp]
 lemma Scheme.inv_hom_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
     e.hom (e.inv y) = y := by
-  change (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
+  change (e.inv ≫ e.hom) y = 𝟙 Y.toPresheafedSpace y
   simp
 
 @[deprecated (since := "2025-10-07")]
