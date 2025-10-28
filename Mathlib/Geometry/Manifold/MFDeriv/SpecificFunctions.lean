@@ -586,27 +586,26 @@ lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
   · rw [mfderivWithin_univ]; exact hf.mfderiv
   · rw [mfderivWithin_univ]; exact hg.mfderiv
 
-lemma mfderivWithin_prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' → N'}
-    (hf : MDifferentiableWithinAt I J f s x) (hg : MDifferentiableWithinAt I' J' g t x')
-    (hs : UniqueMDiffWithinAt I s x) (ht : UniqueMDiffWithinAt I' t x') :
-    mfderivWithin (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) (x, x')
-      = (mfderivWithin I J f s x).prodMap (mfderivWithin I' J' g t x') := by
-  have hf' : HasMFDerivWithinAt I J f (Prod.fst '' s ×ˢ t) (x, x').1 (mfderivWithin I J f s x) := by
+lemma mfderivWithin_prodMap {p : M × M'} {t : Set M'} {f : M → N} {g : M' → N'}
+    (hf : MDifferentiableWithinAt I J f s p.1) (hg : MDifferentiableWithinAt I' J' g t p.2)
+    (hs : UniqueMDiffWithinAt I s p.1) (ht : UniqueMDiffWithinAt I' t p.2) :
+    mfderivWithin (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) p
+      = (mfderivWithin I J f s p.1).prodMap (mfderivWithin I' J' g t p.2) := by
+  have hf' : HasMFDerivWithinAt I J f (Prod.fst '' s ×ˢ t) p.1 (mfderivWithin I J f s p.1) := by
     apply hf.hasMFDerivWithinAt.mono (by grind)
-  have : HasMFDerivWithinAt I' J' g (Prod.snd '' s ×ˢ t) (x, x').2 (mfderivWithin I' J' g t x') := by
+  have hg' : HasMFDerivWithinAt I' J' g (Prod.snd '' s ×ˢ t) p.2 (mfderivWithin I' J' g t p.2) := by
     apply hg.hasMFDerivWithinAt.mono (by grind)
-  apply (hf'.prodMap this).mfderivWithin (hs.prod ht)
+  apply (hf'.prodMap hg').mfderivWithin (hs.prod ht)
 
-lemma mfderiv_prodMap {x' : M'} {f : M → N} {g : M' → N'}
-    (hf : MDifferentiableAt I J f x) (hg : MDifferentiableAt I' J' g x') :
-    mfderiv (I.prod I') (J.prod J') (Prod.map f g) (x, x')
-      = (mfderiv I J f x).prodMap (mfderiv I' J' g x') := by
+lemma mfderiv_prodMap {p : M × M'} {f : M → N} {g : M' → N'}
+    (hf : MDifferentiableAt I J f p.1) (hg : MDifferentiableAt I' J' g p.2) :
+    mfderiv (I.prod I') (J.prod J') (Prod.map f g) p
+      = (mfderiv I J f p.1).prodMap (mfderiv I' J' g p.2) := by
   simp_rw [← mfderivWithin_univ]
   rw [← univ_prod_univ]
   exact mfderivWithin_prodMap hf.mdifferentiableWithinAt hg.mdifferentiableWithinAt
     (uniqueMDiffWithinAt_univ I) (uniqueMDiffWithinAt_univ I')
 
-#exit
 end prodMap
 
 @[simp, mfld_simps]
