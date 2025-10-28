@@ -89,10 +89,6 @@ instance : Zero (QuadraticAlgebra R a b) := ⟨⟨0, 0⟩⟩
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : QuadraticAlgebra R a b) = 0 := rfl
 
-@[simp]
-theorem coe_eq_zero_iff {r : R} : (r : QuadraticAlgebra R a b) = 0 ↔ r = 0 := by
-  rw [← coe_zero, coe_inj]
-
 instance : Inhabited (QuadraticAlgebra R a b) := ⟨0⟩
 
 section One
