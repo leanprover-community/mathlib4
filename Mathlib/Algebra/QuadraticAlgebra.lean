@@ -453,18 +453,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R]
-
-instance instCommRing : CommRing (QuadraticAlgebra R a b) where
-
-instance [CharZero R] : CharZero (QuadraticAlgebra R a b) where
-  cast_injective m n := by
-    simp [QuadraticAlgebra.ext_iff]
-
-@[simp]
-theorem zsmul_val (n : ℤ) (x y : R) :
-    (n : QuadraticAlgebra R a b) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by
-  ext <;> simp
+instance instCommRing [CommRing R] : CommRing (QuadraticAlgebra R a b) where
 
 end CommRing
 
