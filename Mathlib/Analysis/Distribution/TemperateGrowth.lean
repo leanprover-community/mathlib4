@@ -134,7 +134,7 @@ lemma integrable_pow_neg_integrablePower
     Integrable (fun x ↦ (1 + ‖x‖) ^ (- (μ.integrablePower : ℝ))) μ := by
   simpa [Measure.integrablePower, h] using h.exists_integrable.choose_spec
 
-instance IsFiniteMeasure.instHasTemperateGrowth {μ : Measure D}
+instance _root_.MeasureTheory.IsFiniteMeasure.instHasTemperateGrowth {μ : Measure D}
     [h : IsFiniteMeasure μ] : μ.HasTemperateGrowth := ⟨⟨0, by simp⟩⟩
 
 variable [NormedSpace ℝ D] [FiniteDimensional ℝ D] [BorelSpace D] in
