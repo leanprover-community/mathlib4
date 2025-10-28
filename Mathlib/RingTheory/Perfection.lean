@@ -109,8 +109,8 @@ theorem coeffMonoidHom_iterate_powMonoidHom' (f : Perfection M p) (n m : ℕ) (h
 theorem pthRootMonoidHom_powMonoidHom : (pthRootMonoidHom M p).comp (powMonoidHom p) = .id _ := by
   ext; simp [coeffMonoidHom_pthRootMonoidHom, coeffMonoidHom_pow_p']
 
-theorem powMonoidHom_pthRootMonoidHom : (powMonoidHom p).comp (pthRootMonoidHom M p) = .id _ := by
-  ext; simp [coeffMonoidHom_pthRootMonoidHom, coeffMonoidHom_pow_p']
+theorem powMonoidHom_pthRootMonoidHom : (powMonoidHom p).comp (pthRootMonoidHom M p) = .id _ :=
+  pthRootMonoidHom_powMonoidHom
 
 /-- Given monoids `M` and `N`, with `M` being perfect,
 any homomorphism `M →+* N` can be lifted uniquely to a homomorphism `M →* Perfection N p`. -/
@@ -140,6 +140,12 @@ def mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N] (φ : M �
   toFun f := ⟨fun n ↦ φ (f.coeffMonoidHom M p n), fun n ↦ by rw [← map_pow, coeffMonoidHom_pow_p']⟩
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
+
+instance perfectRing : PerfectRing (Perfection M p) p where
+  bijective_frobenius := Function.bijective_iff_has_inverse.mpr
+    ⟨pthRootMonoidHom M p,
+     (congr($powMonoidHom_pthRootMonoidHom ·)),
+     (congr($pthRootMonoidHom_powMonoidHom ·))⟩
 
 end CommMonoid
 
@@ -226,12 +232,6 @@ theorem coeff_ne_zero_of_le {f : Perfection R p} {m n : ℕ} (hfm : coeff R p m 
   hk.symm ▸ coeff_add_ne_zero hfm k
 
 variable (R p)
-
-instance perfectRing : PerfectRing (Perfection R p) p where
-  bijective_frobenius := Function.bijective_iff_has_inverse.mpr
-    ⟨pthRoot R p,
-     DFunLike.congr_fun <| @frobenius_pthRoot R _ p _ _,
-     DFunLike.congr_fun <| @pthRoot_frobenius R _ p _ _⟩
 
 /-- Given rings `R` and `S` of characteristic `p`, with `R` being perfect,
 any homomorphism `R →+* S` can be lifted to a homomorphism `R →+* Perfection S p`. -/
