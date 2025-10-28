@@ -260,7 +260,9 @@ equal to `μ s` times the absolute value of the inverse of the determinant of `f
 theorem addHaar_preimage_linearMap {f : E →ₗ[ℝ] E} (hf : LinearMap.det f ≠ 0) (s : Set E) :
     μ (f ⁻¹' s) = ENNReal.ofReal |(LinearMap.det f)⁻¹| * μ s :=
   calc
-    μ (f ⁻¹' s) = Measure.map f μ s := by rw [← that, MeasurableEquiv.map_apply]
+    μ (f ⁻¹' s) = Measure.map f μ s :=
+          ((f.equivOfDetNeZero hf).toContinuousLinearEquiv.toHomeomorph.toMeasurableEquiv.map_apply
+          s).symm
     _ = ENNReal.ofReal |(LinearMap.det f)⁻¹| * μ s := by
       rw [map_linearMap_addHaar_eq_smul_addHaar μ hf]; rfl
 
