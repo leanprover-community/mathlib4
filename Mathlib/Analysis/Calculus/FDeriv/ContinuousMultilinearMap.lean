@@ -9,10 +9,27 @@ import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 /-!
 # Derivatives of operations on continuous multilinear maps
 
-In this file we prove a formula
-for the derivative of `fun x ↦ (f x).compContinuousLinearMap (g · x)`,
-where `f x` is a continuous multilinear map
-and `g i x`, `i : ι`, is a family of continuous linear maps.
+In this file,
+
+- `ι` is an index type (`Fin n` in many applications);
+- `E`, `F i`, `G i`, `H`, `i : ι`, are normed spaces;
+- `f x` is a continuous multilinear map from `Π i, G i` to `H`, depending on a parameter `x : E`;
+- `g i x`, `i : ι`, is a continuous linear map `F i → G i`, depending on a parameter `x : E`;
+
+Given this data, for each `x` we can define a continuous multilinear map from `Π i, F i` to `H`
+given by `(f x).compContinuousLinearMap (fun i ↦ g i x) v = f (fun i ↦ g i (v i))`.
+
+As a map between functional spaces,
+`ContinuousMultilinearMap.compContinuousLinearMap` is multilinear in `(f; g i)`.
+Thus its derivative with respect to each map (`f` or `g i`)
+is given by substituting `f'` or `g' i` instead of `f` or `g i`
+in `(f x).compContinuousLinearMap (fun i ↦ g i x)`,
+and the full differential is given by the sum of these terms.
+
+In terms of bundled maps, the derivative with respect to `f`
+is given by `ContinuousMultilinearMap.compContinuousLinearMapL`
+and the sum of terms that represent the derivatives with respect to `g i`
+is given by `ContinuousMultilinearMap.fderivCompContinuousLinearMap`.
 -/
 
 variable {𝕜 ι E : Type*} {F G : ι → Type*} {H : Type*}
