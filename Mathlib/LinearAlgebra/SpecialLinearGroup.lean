@@ -286,5 +286,3 @@ noncomputable def _root_.Matrix.SpecialLinearGroup.toLin_equiv
     (SpecialLinearGroup.congr_linEquiv b.repr'.symm)
 
 end Matrix
-
-
