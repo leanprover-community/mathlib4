@@ -45,7 +45,7 @@ instance (P : ObjectProperty Cᵒᵖ) [ObjectProperty.Small.{w} P] :
 
 instance {ι : Type*} (X : ι → C) [Small.{w} ι] :
     ObjectProperty.Small.{w} (ofObj X) :=
-  small_of_surjective (f := fun i ↦ ⟨X i, by simp⟩) (by rintro ⟨_, ⟨i⟩⟩;simp )
+  small_of_surjective (f := fun i ↦ ⟨X i, by simp⟩) (by rintro ⟨_, ⟨i⟩⟩; simp)
 
 instance (X Y : C) : ObjectProperty.Small.{w} (.pair X Y) := by
   dsimp [pair]

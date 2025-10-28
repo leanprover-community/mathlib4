@@ -155,7 +155,6 @@ instance CommSemigroup.isCentralScalar [CommSemigroup α] : IsCentralScalar α �
 /-- Like `Monoid.toMulAction`, but multiplies on the right. -/
 @[to_additive /-- Like `AddMonoid.toAddAction`, but adds on the right. -/]
 instance Monoid.toOppositeMulAction [Monoid α] : MulAction αᵐᵒᵖ α where
-  smul := (· • ·)
   one_smul := mul_one
   mul_smul _ _ _ := (mul_assoc _ _ _).symm
 
