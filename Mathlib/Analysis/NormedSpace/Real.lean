@@ -76,7 +76,7 @@ theorem frontier_ball (x : E) {r : ℝ} (hr : r ≠ 0) :
 
 theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (closedBall x r) = ball x r := by
-  cases' hr.lt_or_lt with hr hr
+  rcases hr.lt_or_gt with hr | hr
   · rw [closedBall_eq_empty.2 hr, ball_eq_empty.2 hr.le, interior_empty]
   refine Subset.antisymm ?_ ball_subset_interior_closedBall
   intro y hy
@@ -98,7 +98,7 @@ theorem frontier_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
   rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_diff_ball]
 
 theorem interior_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : interior (sphere x r) = ∅ := by
-  rw [← frontier_closedBall x hr, interior_frontier isClosed_ball]
+  rw [← frontier_closedBall x hr, interior_frontier isClosed_closedBall]
 
 theorem frontier_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
@@ -142,7 +142,7 @@ theorem frontier_closedBall' (x : E) (r : ℝ) : frontier (closedBall x r) = sph
 
 @[simp]
 theorem interior_sphere' (x : E) (r : ℝ) : interior (sphere x r) = ∅ := by
-  rw [← frontier_closedBall' x, interior_frontier isClosed_ball]
+  rw [← frontier_closedBall' x, interior_frontier isClosed_closedBall]
 
 @[simp]
 theorem frontier_sphere' (x : E) (r : ℝ) : frontier (sphere x r) = sphere x r := by

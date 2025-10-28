@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Data.Nat.Bitwise
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Nimbers
@@ -12,7 +12,7 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 The goal of this file is to define the nimbers, constructed as ordinals endowed with new
 arithmetical operations. The nim sum `a + b` is recursively defined as the least ordinal not equal
 to any `a' + b` or `a + b'` for `a' < a` and `b' < b`. There is also a nim product, defined in the
-`Mathlib.SetTheory.Nimber.Field` file.
+`Mathlib/SetTheory/Nimber/Field.lean` file.
 
 Nim addition arises within the context of impartial games. By the Sprague-Grundy theorem, each
 impartial game is equivalent to some game of nim. If `x ≈ nim o₁` and `y ≈ nim o₂`, then
@@ -141,6 +141,9 @@ protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
 theorem lt_one_iff_zero {a : Nimber} : a < 1 ↔ a = 0 :=
   Ordinal.lt_one_iff_zero
 
+theorem one_le_iff_ne_zero {a : Nimber} : 1 ≤ a ↔ a ≠ 0 :=
+  Ordinal.one_le_iff_ne_zero
+
 theorem eq_nat_of_le_nat {a : Nimber} {b : ℕ} (h : a ≤ ∗b) : ∃ c : ℕ, a = ∗c :=
   Ordinal.lt_omega0.1 (h.trans_lt (nat_lt_omega0 b))
 
@@ -158,6 +161,9 @@ end Nimber
 
 theorem not_small_nimber : ¬ Small.{u} Nimber.{max u v} :=
   not_small_ordinal
+
+instance Nimber.uncountable : Uncountable Nimber :=
+  Ordinal.uncountable
 
 open Nimber
 
@@ -229,7 +235,7 @@ private theorem add_nonempty (a b : Nimber.{u}) :
 
 theorem exists_of_lt_add (h : c < a + b) : (∃ a' < a, a' + b = c) ∨ ∃ b' < b, a + b' = c := by
   rw [add_def] at h
-  have := not_mem_of_lt_csInf' h
+  have := notMem_of_lt_csInf' h
   rwa [Set.mem_compl_iff, not_not] at this
 
 theorem add_le_of_forall_ne (h₁ : ∀ a' < a, a' + b ≠ c) (h₂ : ∀ b' < b, a + b' ≠ c) :
@@ -248,7 +254,7 @@ instance : IsLeftCancelAdd Nimber := by
   constructor
   intro a b c h
   apply le_antisymm <;>
-  apply le_of_not_lt
+  apply le_of_not_gt
   · exact fun hc => (add_ne_of_lt a b).2 c hc h.symm
   · exact fun hb => (add_ne_of_lt a c).2 b hb h
 
@@ -256,7 +262,7 @@ instance : IsRightCancelAdd Nimber := by
   constructor
   intro a b c h
   apply le_antisymm <;>
-  apply le_of_not_lt
+  apply le_of_not_gt
   · exact fun hc => (add_ne_of_lt a b).1 c hc h.symm
   · exact fun ha => (add_ne_of_lt c b).1 a ha h
 
@@ -377,7 +383,7 @@ theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
       replace hc := Nat.cast_lt.1 hc
       rw [add_nat]
       simpa using hc.ne
-  · apply le_of_not_lt
+  · apply le_of_not_gt
     intro hc
     obtain ⟨c, hc'⟩ := eq_nat_of_le_nat hc.le
     rw [hc', OrderIso.lt_iff_lt, Nat.cast_lt] at hc

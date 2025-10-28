@@ -38,7 +38,7 @@ variable {C : Type u} [Category.{v} C] {I : C} (F : Cᵒᵖ ⥤ Type w)
 
 open Limits Opposite
 
-variable (hF : (ofArrows (X := I) Empty.elim instIsEmptyEmpty.elim).IsSheafFor F)
+variable (hF : (ofArrows (X := I) Empty.elim Empty.instIsEmpty.elim).IsSheafFor F)
 
 section Terminal
 
@@ -73,7 +73,7 @@ section Product
 variable (hI : IsInitial I)
 
 -- This is the data of a particular disjoint coproduct in `C`.
-variable {α : Type} {X : α → C} (c : Cofan X) (hc : IsColimit c)
+variable {α : Type*} [Small.{w} α] {X : α → C} (c : Cofan X) (hc : IsColimit c)
 
 theorem piComparison_fac :
     have : HasCoproduct X := ⟨⟨c, hc⟩⟩
@@ -105,13 +105,8 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
   obtain ⟨t, ht₁, ht₂⟩ := hi b
   refine ⟨F.map ((opCoproductIsoProduct' hc (productIsProduct _)).inv) t, ht₁, fun y hy ↦ ?_⟩
   apply_fun F.map ((opCoproductIsoProduct' hc (productIsProduct _)).hom) using injective_of_mono _
-  simp only [← FunctorToTypes.map_comp_apply, Iso.op, Category.assoc]
-  rw [ht₂ (F.map ((opCoproductIsoProduct' hc (productIsProduct _)).hom) y) (by simp [← hy])]
-  change (𝟙 (F.obj (∏ᶜ fun x ↦ op (X x)))) t = _
-  rw [← Functor.map_id]
-  refine congrFun ?_ t
-  congr
-  simp [Iso.eq_inv_comp, ← Category.assoc, ← op_comp, eq_comm, ← Iso.eq_comp_inv]
+  simp [← FunctorToTypes.map_comp_apply,
+    ht₂ (F.map ((opCoproductIsoProduct' hc (productIsProduct _)).hom) y) (by simp [← hy])]
 
 variable [HasInitial C] [∀ i, Mono (c.inj i)]
   (hd : Pairwise fun i j => IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
@@ -154,10 +149,9 @@ lemma preservesProduct_of_isSheafFor
 
 include hc hd hF hI in
 theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔
-    Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
-  refine ⟨fun hF' ↦ ⟨preservesProduct_of_isSheafFor _ hF hI c hc hd hF'⟩, fun hF' ↦ ?_⟩
-  let _ := hF'.some
-  exact isSheafFor_of_preservesProduct F c hc
+    PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F :=
+  ⟨fun hF' ↦ preservesProduct_of_isSheafFor _ hF hI c hc hd hF',
+    fun _ ↦ isSheafFor_of_preservesProduct F c hc⟩
 
 end Product
 

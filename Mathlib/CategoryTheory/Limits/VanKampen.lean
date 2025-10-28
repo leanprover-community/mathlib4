@@ -62,7 +62,7 @@ theorem NatTrans.Equifibered.whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : 
     Equifibered (whiskerRight α H) :=
   fun _ _ f => (hα f).map H
 
-theorem NatTrans.Equifibered.whiskerLeft {K : Type*} [Category K]  {F G : J ⥤ C} {α : F ⟶ G}
+theorem NatTrans.Equifibered.whiskerLeft {K : Type*} [Category K] {F G : J ⥤ C} {α : F ⟶ G}
     (hα : Equifibered α) (H : K ⥤ J) : Equifibered (whiskerLeft H α) :=
   fun _ _ f => hα (H.map f)
 
@@ -105,10 +105,10 @@ theorem IsVanKampenColimit.isUniversal {F : J ⥤ C} {c : Cocone F} (H : IsVanKa
 /-- A universal colimit is a colimit. -/
 noncomputable def IsUniversalColimit.isColimit {F : J ⥤ C} {c : Cocone F}
     (h : IsUniversalColimit c) : IsColimit c := by
-  refine ((h c (𝟙 F) (𝟙 c.pt : _) (by rw [Functor.map_id, Category.comp_id, Category.id_comp])
+  refine ((h c (𝟙 F) (𝟙 c.pt :) (by rw [Functor.map_id, Category.comp_id, Category.id_comp])
     (NatTrans.equifibered_of_isIso _)) fun j => ?_).some
   haveI : IsIso (𝟙 c.pt) := inferInstance
-  exact IsPullback.of_vert_isIso ⟨by erw [NatTrans.id_app, Category.comp_id, Category.id_comp]⟩
+  exact IsPullback.of_vert_isIso ⟨by simp⟩
 
 /-- A van Kampen colimit is a colimit. -/
 noncomputable def IsVanKampenColimit.isColimit {F : J ⥤ C} {c : Cocone F}
@@ -345,10 +345,7 @@ theorem IsUniversalColimit.map_reflective
   let cf : (Cocones.precompose β.hom).obj c' ⟶ Gl.mapCocone c'' := by
     refine { hom := pullback.lift ?_ f ?_ ≫ (PreservesPullback.iso _ _ _).inv, w := ?_ }
     · exact inv <| adj.counit.app c'.pt
-    · rw [IsIso.inv_comp_eq, ← adj.counit_naturality_assoc f, ← cancel_mono (adj.counit.app <|
-        Gl.obj c.pt), Category.assoc, Category.assoc, adj.left_triangle_components]
-      erw [Category.comp_id]
-      rfl
+    · simp [← cancel_mono (adj.counit.app <| Gl.obj c.pt)]
     · intro j
       rw [← Category.assoc, Iso.comp_inv_eq]
       ext
@@ -426,7 +423,7 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
     Gl.map (colimit.desc _ ⟨_, whiskerRight α' Gr ≫ c.2⟩) := by
     symm
     convert @IsColimit.coconePointUniqueUpToIso_hom_desc _ _ _ _ ((F' ⋙ Gr) ⋙ Gl)
-      (Gl.mapCocone ⟨_, (whiskerRight α' Gr ≫ c.2 : _)⟩) _ _ hl hr using 2
+      (Gl.mapCocone ⟨_, (whiskerRight α' Gr ≫ c.2 :)⟩) _ _ hl hr using 2
     · apply hr.hom_ext
       intro j
       rw [hr.fac, Functor.mapCocone_ι_app, ← Gl.map_comp, colimit.cocone_ι, colimit.ι_desc]
@@ -464,7 +461,7 @@ theorem hasStrictInitial_of_isUniversal [HasInitial C]
         obtain ⟨l, h₁, h₂⟩ := Limits.BinaryCofan.IsColimit.desc' this (f ≫ initial.to A) (𝟙 A)
         rcases(Category.id_comp _).symm.trans h₂ with rfl
         exact ⟨⟨_, ((Category.id_comp _).symm.trans h₁).symm, initialIsInitial.hom_ext _ _⟩⟩
-      refine (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> dsimp <;> simp)
+      refine (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> simp)
         (mapPair_equifibered _) ?_).some
       rintro ⟨⟨⟩⟩ <;> dsimp <;>
         exact IsPullback.of_horiz_isIso ⟨(Category.id_comp _).trans (Category.comp_id _).symm⟩)
@@ -563,7 +560,7 @@ theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : Binary
   refine PullbackCone.mono_of_isLimitMkIdId _ (IsPullback.isLimit ?_)
   refine (h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr ?_
       (mapPair_equifibered _)).mp ⟨?_⟩ ⟨WalkingPair.right⟩
-  · ext ⟨⟨⟩⟩ <;> dsimp; simp
+  · ext ⟨⟨⟩⟩ <;> simp
   · exact ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
       dsimp
       infer_instance)).some
@@ -572,7 +569,7 @@ theorem BinaryCofan.isPullback_initial_to_of_isVanKampen [HasInitial C] {c : Bin
     (h : IsVanKampenColimit c) : IsPullback (initial.to _) (initial.to _) c.inl c.inr := by
   refine ((h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr ?_
       (mapPair_equifibered _)).mp ⟨?_⟩ ⟨WalkingPair.left⟩).flip
-  · ext ⟨⟨⟩⟩ <;> dsimp; simp
+  · ext ⟨⟨⟩⟩ <;> simp
   · exact ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
       dsimp
       infer_instance)).some

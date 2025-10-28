@@ -122,8 +122,8 @@ theorem equivalence₂CounitIso_eq :
     (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF := by
   ext Y'
   dsimp [equivalence₂, Iso.refl]
-  simp only [equivalence₁CounitIso_eq, equivalence₂CounitIso_hom_app,
-    equivalence₁CounitIso_hom_app, Functor.map_comp, assoc]
+  simp only [equivalence₁CounitIso_eq, equivalence₁CounitIso_hom_app, comp_id, id_comp,
+    Functor.map_comp, assoc, equivalence₂CounitIso_hom_app]
 
 /-- The unit isomorphism of the equivalence `equivalence₂` between `A` and `B`. -/
 @[simps!]
@@ -138,8 +138,8 @@ def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.
 theorem equivalence₂UnitIso_eq : (equivalence₂ eB hF).unitIso = equivalence₂UnitIso eB hF := by
   ext X
   dsimp [equivalence₂]
-  simp only [equivalence₂UnitIso_hom_app, equivalence₁UnitIso_eq, equivalence₁UnitIso_hom_app,
-      assoc, NatIso.cancel_natIso_hom_left]
+  simp only [equivalence₁UnitIso_eq, equivalence₁UnitIso_hom_app, comp_id, id_comp, assoc,
+    equivalence₂UnitIso_hom_app]
   rfl
 
 variable {eB}
@@ -198,8 +198,9 @@ theorem equivalenceCounitIso_eq (hη : τ₀ = τ₁ hF hG η) :
   dsimp [equivalence]
   simp only [comp_id, id_comp, Functor.map_comp, equivalence₂CounitIso_eq,
     equivalence₂CounitIso_hom_app, assoc, equivalenceCounitIso_hom_app]
-  simp only [← eB.inverse.map_comp_assoc, ← τ₀_hom_app, hη, τ₁_hom_app]
-  erw [hF.inv.naturality_assoc, hF.inv.naturality_assoc]
+  simp only [← eB.inverse.map_comp_assoc, ← τ₀_hom_app, hη, τ₁_hom_app, equivalence₂_inverse,
+    Functor.comp_obj]
+  rw [hF.inv.naturality_assoc, hF.inv.naturality_assoc]
   dsimp
   congr 2
   simp only [← e'.functor.map_comp_assoc, Equivalence.fun_inv_map, assoc,
@@ -243,9 +244,8 @@ theorem equivalenceUnitIso_eq (hε : υ hF = ε) :
     (equivalence hF hG).unitIso = equivalenceUnitIso hG ε := by
   ext1; apply NatTrans.ext; ext X
   dsimp [equivalence]
-  simp only [assoc, comp_id, equivalenceUnitIso_hom_app]
-  erw [id_comp]
-  simp only [equivalence₂UnitIso_eq eB hF, equivalence₂UnitIso_hom_app,
+  simp only [assoc, comp_id, equivalenceUnitIso_hom_app, equivalence₂_inverse, Functor.comp_obj,
+    id_comp, equivalence₂UnitIso_eq eB hF, equivalence₂UnitIso_hom_app,
     ← eA.inverse.map_comp_assoc, assoc, ← hε, υ_hom_app]
 
 end Compatibility

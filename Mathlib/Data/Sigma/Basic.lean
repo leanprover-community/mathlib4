@@ -50,12 +50,8 @@ instance instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq
       | _, _, isFalse n => isFalse fun h ↦ Sigma.noConfusion h fun _ e₂ ↦ n <| eq_of_heq e₂
     | _, _, _, _, isFalse n => isFalse fun h ↦ Sigma.noConfusion h fun e₁ _ ↦ n e₁
 
--- sometimes the built-in injectivity support does not work
-@[simp] -- @[nolint simpNF]
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
-    Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ HEq b₁ b₂ :=
-  ⟨fun h ↦ by cases h; simp,
-   fun ⟨h₁, h₂⟩ ↦ by subst h₁; rw [eq_of_heq h₂]⟩
+    Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ HEq b₁ b₂ := by simp
 
 @[simp]
 theorem eta : ∀ x : Σa, β a, Sigma.mk x.1 x.2 = x
@@ -80,11 +76,11 @@ theorem subtype_ext {β : Type*} {p : α → β → Prop} :
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl, rfl => rfl
 
 -- This is not a good simp lemma, as its discrimination tree key is just an arrow.
-theorem «forall» {p : (Σa, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=
+theorem «forall» {p : (Σ a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=
   ⟨fun h a b ↦ h ⟨a, b⟩, fun h ⟨a, b⟩ ↦ h a b⟩
 
 @[simp]
-theorem «exists» {p : (Σa, β a) → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ :=
+theorem «exists» {p : (Σ a, β a) → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ :=
   ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
 
 lemma exists' {p : ∀ a, β a → Prop} : (∃ a b, p a b) ↔ ∃ x : Σ a, β a, p x.1 x.2 :=
@@ -169,11 +165,11 @@ theorem Sigma.curry_update {γ : ∀ a, β a → Type*} [DecidableEq α] [∀ a,
   obtain rfl | ha := eq_or_ne ia ja
   · obtain rfl | hb := eq_or_ne ib jb
     · simp
-    · simp only [update_same]
-      rw [Function.update_noteq (mt _ hb.symm), Function.update_noteq hb.symm]
+    · simp only [update_self]
+      rw [Function.update_of_ne (mt _ hb.symm), Function.update_of_ne hb.symm]
       rintro h
       injection h
-  · rw [Function.update_noteq (ne_of_apply_ne Sigma.fst _), Function.update_noteq]
+  · rw [Function.update_of_ne (ne_of_apply_ne Sigma.fst _), Function.update_of_ne]
     · exact ha.symm
     · exact ha.symm
 
@@ -197,8 +193,6 @@ theorem Prod.snd_toSigma {α β} (x : α × β) : (Prod.toSigma x).snd = x.snd :
 theorem Prod.toSigma_mk {α β} (x : α) (y : β) : (x, y).toSigma = ⟨x, y⟩ :=
   rfl
 
--- Porting note: the meta instance `has_reflect (Σa, β a)` was removed here.
-
 end Sigma
 
 namespace PSigma
@@ -213,8 +207,6 @@ def elim {γ} (f : ∀ a, β a → γ) (a : PSigma β) : γ :=
 theorem elim_val {γ} (f : ∀ a, β a → γ) (a b) : PSigma.elim f ⟨a, b⟩ = f a b :=
   rfl
 
-@[deprecated (since := "2024-07-27")] alias ex_of_psig := ex_of_PSigma
-
 instance [Inhabited α] [Inhabited (β default)] : Inhabited (PSigma β) :=
   ⟨⟨default, default⟩⟩
 
@@ -227,24 +219,14 @@ instance decidableEq [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] 
       | _, _, isFalse n => isFalse fun h ↦ PSigma.noConfusion h fun _ e₂ ↦ n <| eq_of_heq e₂
     | _, _, _, _, isFalse n => isFalse fun h ↦ PSigma.noConfusion h fun e₁ _ ↦ n e₁
 
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/porting.20data.2Esigma.2Ebasic/near/304855864
--- for an explanation of why this is currently needed. It generates `PSigma.mk.inj`.
--- This could be done elsewhere.
-gen_injective_theorems% PSigma
-
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     @PSigma.mk α β a₁ b₁ = @PSigma.mk α β a₂ b₂ ↔ a₁ = a₂ ∧ HEq b₁ b₂ :=
   (Iff.intro PSigma.mk.inj) fun ⟨h₁, h₂⟩ ↦
     match a₁, a₂, b₁, b₂, h₁, h₂ with
     | _, _, _, _, Eq.refl _, HEq.refl _ => rfl
 
-@[deprecated PSigma.ext_iff (since := "2024-07-27")]
-protected theorem eq {α : Sort*} {β : α → Sort*} : ∀ {p₁ p₂ : Σ' a, β a} (h₁ : p₁.1 = p₂.1),
-    (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
-  | ⟨_, _⟩, _, rfl, rfl => rfl
-
 -- This should not be a simp lemma, since its discrimination tree key would just be `→`.
-theorem «forall» {p : (Σ'a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=
+theorem «forall» {p : (Σ' a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=
   ⟨fun h a b ↦ h ⟨a, b⟩, fun h ⟨a, b⟩ ↦ h a b⟩
 
 @[simp] lemma «exists» {p : (Σ' a, β a) → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ :=

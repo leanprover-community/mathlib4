@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Category.Preorder
 In this file we define the predicates `IsTerminal` and `IsInitial` as well as the class
 `InitialMonoClass`.
 
-The classes `HasTerminal` and `HasInitial` and the associated notations for terminal and inital
+The classes `HasTerminal` and `HasInitial` and the associated notations for terminal and initial
 objects are defined in `Terminal.lean`.
 
 ## References
@@ -57,11 +57,11 @@ abbrev IsInitial (X : C) :=
 
 /-- An object `Y` is terminal iff for every `X` there is a unique morphism `X ⟶ Y`. -/
 def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
-    IsLimit (⟨Y, by aesop_cat, by aesop_cat⟩ : Cone F) ≃ ∀ X : C, Unique (X ⟶ Y) where
+    IsLimit (⟨Y, by aesop_cat, by simp⟩ : Cone F) ≃ ∀ X : C, Unique (X ⟶ Y) where
   toFun t X :=
-    { default := t.lift ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩
+    { default := t.lift ⟨X, ⟨by aesop_cat, by simp⟩⟩
       uniq := fun f =>
-        t.uniq ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩ f (by aesop_cat) }
+        t.uniq ⟨X, ⟨by aesop_cat, by simp⟩⟩ f (by simp) }
   invFun u :=
     { lift := fun s => (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
@@ -103,10 +103,10 @@ def IsTerminal.equivOfIso {X Y : C} (e : X ≅ Y) :
 
 /-- An object `X` is initial iff for every `Y` there is a unique morphism `X ⟶ Y`. -/
 def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
-    IsColimit (⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩ : Cocone F) ≃ ∀ Y : C, Unique (X ⟶ Y) where
+    IsColimit (⟨X, ⟨by aesop_cat, by simp⟩⟩ : Cocone F) ≃ ∀ Y : C, Unique (X ⟶ Y) where
   toFun t X :=
-    { default := t.desc ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩
-      uniq := fun f => t.uniq ⟨X, ⟨by aesop_cat, by aesop_cat⟩⟩ f (by aesop_cat) }
+    { default := t.desc ⟨X, ⟨by aesop_cat, by simp⟩⟩
+      uniq := fun f => t.uniq ⟨X, ⟨by aesop_cat, by simp⟩⟩ f (by simp) }
   invFun u :=
     { desc := fun s => (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
@@ -152,7 +152,7 @@ def IsTerminal.from {X : C} (t : IsTerminal X) (Y : C) : Y ⟶ X :=
 
 /-- Any two morphisms to a terminal object are equal. -/
 theorem IsTerminal.hom_ext {X Y : C} (t : IsTerminal X) (f g : Y ⟶ X) : f = g :=
-  IsLimit.hom_ext t (by aesop_cat)
+  IsLimit.hom_ext t (by simp)
 
 @[simp]
 theorem IsTerminal.comp_from {Z : C} (t : IsTerminal Z) {X Y : C} (f : X ⟶ Y) :
@@ -169,7 +169,7 @@ def IsInitial.to {X : C} (t : IsInitial X) (Y : C) : X ⟶ Y :=
 
 /-- Any two morphisms from an initial object are equal. -/
 theorem IsInitial.hom_ext {X Y : C} (t : IsInitial X) (f g : X ⟶ Y) : f = g :=
-  IsColimit.hom_ext t (by aesop_cat)
+  IsColimit.hom_ext t (by simp)
 
 @[simp]
 theorem IsInitial.to_comp {X : C} (t : IsInitial X) {Y Z : C} (f : Y ⟶ Z) : t.to Y ≫ f = t.to Z :=
@@ -217,12 +217,12 @@ variable (X : C) {F₁ : Discrete.{w} PEmpty ⥤ C} {F₂ : Discrete.{w'} PEmpty
     as long as the cone points are isomorphic. -/
 def isLimitChangeEmptyCone {c₁ : Cone F₁} (hl : IsLimit c₁) (c₂ : Cone F₂) (hi : c₁.pt ≅ c₂.pt) :
     IsLimit c₂ where
-  lift c := hl.lift ⟨c.pt, by aesop_cat, by aesop_cat⟩ ≫ hi.hom
+  lift c := hl.lift ⟨c.pt, by aesop_cat, by simp⟩ ≫ hi.hom
   uniq c f _ := by
     dsimp
     rw [← hl.uniq _ (f ≫ hi.inv) _]
     · simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id]
-    · aesop_cat
+    · simp
 
 /-- Replacing an empty cone in `IsLimit` by another with the same cone point
     is an equivalence. -/
@@ -235,16 +235,23 @@ def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.pt ≅
     dsimp [Function.LeftInverse,Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
 
+/-- If `F` is an empty diagram, then a cone over `F` is limiting iff the cone point is terminal. -/
+noncomputable
+def isLimitEquivIsTerminalOfIsEmpty {J : Type*} [Category J] [IsEmpty J] {F : J ⥤ C} (c : Cone F) :
+    IsLimit c ≃ IsTerminal c.pt :=
+  (IsLimit.whiskerEquivalenceEquiv (equivalenceOfIsEmpty (Discrete PEmpty.{1}) _)).trans
+    (isLimitEmptyConeEquiv _ _ _ (.refl _))
+
 /-- Being initial is independent of the empty diagram, its universe, and the cocone over it,
     as long as the cocone points are isomorphic. -/
 def isColimitChangeEmptyCocone {c₁ : Cocone F₁} (hl : IsColimit c₁) (c₂ : Cocone F₂)
     (hi : c₁.pt ≅ c₂.pt) : IsColimit c₂ where
-  desc c := hi.inv ≫ hl.desc ⟨c.pt, by aesop_cat, by aesop_cat⟩
+  desc c := hi.inv ≫ hl.desc ⟨c.pt, by aesop_cat, by simp⟩
   uniq c f _ := by
     dsimp
     rw [← hl.uniq _ (hi.hom ≫ f) _]
     · simp only [Iso.inv_hom_id_assoc]
-    · aesop_cat
+    · simp
 
 /-- Replacing an empty cocone in `IsColimit` by another with the same cocone point
     is an equivalence. -/
@@ -256,6 +263,14 @@ def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c�
   right_inv := by
     dsimp [Function.LeftInverse,Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
+
+/-- If `F` is an empty diagram,
+then a cocone over `F` is colimiting iff the cocone point is initial. -/
+noncomputable
+def isColimitEquivIsInitialOfIsEmpty {J : Type*} [Category J] [IsEmpty J]
+    {F : J ⥤ C} (c : Cocone F) : IsColimit c ≃ IsInitial c.pt :=
+  (IsColimit.whiskerEquivalenceEquiv (equivalenceOfIsEmpty (Discrete PEmpty.{1}) _)).trans
+    (isColimitEmptyCoconeEquiv _ _ _ (.refl _))
 
 end Univ
 

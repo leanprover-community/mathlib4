@@ -10,8 +10,7 @@ import Mathlib.Algebra.Group.Units.Hom
 # Multiplicative and additive equivalence acting on units.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {F α M N G : Type*}
 
@@ -21,8 +20,6 @@ variable {F α M N G : Type*}
 def toUnits [Group G] : G ≃* Gˣ where
   toFun x := ⟨x, x⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩
   invFun x := x
-  left_inv _ := rfl
-  right_inv _ := Units.ext rfl
   map_mul' _ _ := Units.ext rfl
 
 @[to_additive (attr := simp)]
@@ -50,7 +47,7 @@ theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
   rfl
 
 /-- Left multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive (attr := simps (config := .asFn) apply)
+@[to_additive (attr := simps -fullyApplied apply)
   "Left addition of an additive unit is a permutation of the underlying type."]
 def mulLeft (u : Mˣ) : Equiv.Perm M where
   toFun x := u * x
@@ -67,7 +64,7 @@ theorem mulLeft_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
   (mulLeft a).bijective
 
 /-- Right multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive (attr := simps (config := .asFn) apply)
+@[to_additive (attr := simps -fullyApplied apply)
 "Right addition of an additive unit is a permutation of the underlying type."]
 def mulRight (u : Mˣ) : Equiv.Perm M where
   toFun x := x * u
@@ -170,13 +167,7 @@ variable (α) in
 def unitsEquivProdSubtype [Monoid α] : αˣ ≃ {p : α × α // p.1 * p.2 = 1 ∧ p.2 * p.1 = 1} where
   toFun u := ⟨(u, ↑u⁻¹), u.val_inv, u.inv_val⟩
   invFun p := Units.mk (p : α × α).1 (p : α × α).2 p.prop.1 p.prop.2
-  left_inv _ := Units.ext rfl
-  right_inv _ := Subtype.ext <| Prod.ext rfl rfl
 
--- Porting note: we don't put `@[simp]` on the additive version;
--- mysteriously simp can already prove that one (although not the multiplicative one)!
--- Porting note: `@[simps apply]` removed because right now it's generating lemmas which
--- aren't in simp normal form (they contain a `toFun`)
 /-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
 @[to_additive (attr := simps apply)
@@ -189,13 +180,17 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 
-@[instance]
-theorem isLocalHom_equiv [Monoid M] [Monoid N] [EquivLike F M N]
-    [MulEquivClass F M N] (f : F) : IsLocalHom f where
-  map_nonunit a ha := by
-    convert ha.map (f : M ≃* N).symm
-    rw [MulEquiv.eq_symm_apply]
-    rfl -- note to reviewers: ugly `rfl`
+section EquivLike
+variable [Monoid M] [Monoid N] [EquivLike F M N] [MulEquivClass F M N] (f : F) {x : M}
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_equiv := isLocalHom_equiv
+-- Higher priority to take over the non-additivisable `isUnit_map_iff`
+@[to_additive (attr := simp high)]
+lemma MulEquiv.isUnit_map : IsUnit (f x) ↔ IsUnit x where
+  mp hx := by
+    simpa using hx.map <| MonoidHom.mk ⟨EquivLike.inv f, EquivLike.injective f <| by simp⟩
+      fun x y ↦ EquivLike.injective f <| by simp
+  mpr := .map f
+
+@[instance] theorem isLocalHom_equiv : IsLocalHom f where map_nonunit := by simp
+
+end EquivLike

@@ -3,7 +3,7 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Data.Fintype.Perm
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Data.Matrix.Mul
 import Mathlib.GroupTheory.Perm.Sign
 
@@ -60,7 +60,7 @@ theorem detp_mul :
       ofSign (t * s) = (ofSign t).map (mulRightEmbedding σ) := by
     ext τ
     simp_rw [mem_map, mulRightEmbedding_apply, ← eq_mul_inv_iff_mul_eq, exists_eq_right,
-      mem_ofSign, _root_.map_mul, _root_.map_inv, mul_inv_eq_iff_eq_mul, mem_ofSign.mp hσ]
+      mem_ofSign, map_mul, map_inv, mul_inv_eq_iff_eq_mul, mem_ofSign.mp hσ]
   have h {s t} : detp s A * detp t B =
       ∑ σ ∈ ofSign s, ∑ τ ∈ ofSign (t * s), ∏ k, A k (σ k) * B (σ k) (τ k) := by
     simp_rw [detp, sum_mul_sum, prod_mul_distrib]
@@ -81,7 +81,7 @@ theorem detp_mul :
   refine congr_arg₂ (· + ·) (sum_congr rfl fun σ hσ ↦ ?_) (add_comm _ _)
   replace hσ : ¬ Function.Injective σ := by
     contrapose! hσ
-    rw [not_mem_compl, mem_map, ofSign_disjUnion]
+    rw [notMem_compl, mem_map, ofSign_disjUnion]
     exact ⟨Equiv.ofBijective σ hσ.bijective_of_finite, mem_univ _, rfl⟩
   obtain ⟨i, j, hσ, hij⟩ := Function.not_injective_iff.mp hσ
   replace hσ k : σ (swap i j k) = σ k := by
@@ -122,7 +122,7 @@ theorem mul_adjp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A)
     have key : ({j}ᶜ : Finset n) = disjUnion ({i} : Finset n) ({i, j} : Finset n)ᶜ (by simp) := by
       rw [singleton_disjUnion, cons_eq_insert, compl_insert, insert_erase]
       rwa [mem_compl, mem_singleton]
-    simp_rw [key, prod_disjUnion, prod_singleton, Perm.mul_apply, swap_apply_left, ← mul_assoc]
+    simp_rw [key, prod_disjUnion, prod_singleton, f, Perm.mul_apply, swap_apply_left, ← mul_assoc]
     rw [mul_comm (A i x) (A i (σ i)), hp.2.2]
     refine congr_arg _ (prod_congr rfl fun x hx ↦ ?_)
     rw [mem_compl, mem_insert, mem_singleton, not_or] at hx
@@ -179,7 +179,7 @@ theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
   rw [← prod_mul_prod_compl {τ⁻¹ j}, mul_mul_mul_comm, mul_comm, ← smul_eq_mul]
   apply IsAddUnit.smul_right
   have h0 : ∀ k, k ∈ ({τ⁻¹ j} : Finset n)ᶜ ↔ τ k ∈ ({j} : Finset n)ᶜ := by
-    simp [show τ⁻¹ = τ.symm from rfl, eq_symm_apply]
+    simp [inv_def, eq_symm_apply]
   rw [← prod_equiv τ h0 fun _ _ ↦ rfl, ← prod_mul_distrib, ← mul_prod_erase _ _ hl2, ← smul_eq_mul]
   exact (isAddUnit_mul hAB l (σ (τ l)) (τ l) hl1).smul_right _
 

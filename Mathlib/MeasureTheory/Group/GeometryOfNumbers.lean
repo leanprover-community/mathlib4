@@ -45,7 +45,7 @@ variable {E L : Type*} [MeasurableSpace E] {μ : Measure E} {F s : Set E}
 /-- **Blichfeldt's Theorem**. If the volume of the set `s` is larger than the covolume of the
 countable subgroup `L` of `E`, then there exist two distinct points `x, y ∈ L` such that `(x + s)`
 and `(y + s)` are not disjoint. -/
-theorem exists_pair_mem_lattice_not_disjoint_vadd [AddCommGroup L] [Countable L] [AddAction L E]
+theorem exists_pair_mem_lattice_not_disjoint_vadd [AddGroup L] [Countable L] [AddAction L E]
     [MeasurableSpace L] [MeasurableVAdd L E] [VAddInvariantMeasure L E μ]
     (fund : IsAddFundamentalDomain L F μ) (hS : NullMeasurableSet s μ) (h : μ F < μ s) :
     ∃ x y : L, x ≠ y ∧ ¬Disjoint (x +ᵥ s) (y +ᵥ s) := by
@@ -65,10 +65,10 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
     ∃ x ≠ 0, ((x : L) : E) ∈ s := by
   have h_vol : μ F < μ ((2⁻¹ : ℝ) • s) := by
     rw [addHaar_smul_of_nonneg μ (by norm_num : 0 ≤ (2 : ℝ)⁻¹) s, ←
-      mul_lt_mul_right (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (pow_ne_top two_ne_top),
+      mul_lt_mul_right (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (by finiteness),
       mul_right_comm, ofReal_pow (by norm_num : 0 ≤ (2 : ℝ)⁻¹), ofReal_inv_of_pos zero_lt_two]
     norm_num
-    rwa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero two_ne_top, one_pow, one_mul]
+    rwa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top, one_pow, one_mul]
   obtain ⟨x, y, hxy, h⟩ :=
     exists_pair_mem_lattice_not_disjoint_vadd fund ((h_conv.smul _).nullMeasurableSet _) h_vol
   obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw⟩ := Set.not_disjoint_iff.mp h

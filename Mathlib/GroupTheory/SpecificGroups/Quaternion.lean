@@ -3,10 +3,8 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.IntervalCases
-import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!
 # Quaternion Groups
@@ -120,6 +118,10 @@ theorem xa_mul_a (i j : ZMod (2 * n)) : xa i * a j = xa (i + j) :=
 theorem xa_mul_xa (i j : ZMod (2 * n)) : xa i * xa j = a ((n : ZMod (2 * n)) + j - i) :=
   rfl
 
+@[simp]
+theorem a_zero : a 0 = (1 : QuaternionGroup n) := by
+  rfl
+
 theorem one_def : (1 : QuaternionGroup n) = a 0 :=
   rfl
 
@@ -138,13 +140,10 @@ private def fintypeHelper : ZMod (2 * n) ⊕ ZMod (2 * n) ≃ QuaternionGroup n 
 /-- The special case that more or less by definition `QuaternionGroup 0` is isomorphic to the
 infinite dihedral group. -/
 def quaternionGroupZeroEquivDihedralGroupZero : QuaternionGroup 0 ≃* DihedralGroup 0 where
-  toFun i :=
-    -- Porting note: Originally `QuaternionGroup.recOn i DihedralGroup.r DihedralGroup.sr`
-    match i with
+  toFun
     | a j => DihedralGroup.r j
     | xa j => DihedralGroup.sr j
-  invFun i :=
-    match i with
+  invFun
     | DihedralGroup.r j => a j
     | DihedralGroup.sr j => xa j
   left_inv := by rintro (k | k) <;> rfl
@@ -157,7 +156,7 @@ instance [NeZero n] : Fintype (QuaternionGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
 instance : Nontrivial (QuaternionGroup n) :=
-  ⟨⟨a 0, xa 0, by revert n; simp⟩⟩ -- Porting note: `revert n; simp` was `decide`
+  ⟨⟨a 0, xa 0, by simp [← a_zero]⟩⟩
 
 /-- If `0 < n`, then `QuaternionGroup n` has `4n` elements.
 -/
@@ -167,28 +166,25 @@ theorem card [NeZero n] : Fintype.card (QuaternionGroup n) = 4 * n := by
 
 @[simp]
 theorem a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
-  induction' k with k IH
-  · rw [Nat.cast_zero]; rfl
-  · rw [pow_succ, IH, a_mul_a]
+  induction k with
+  | zero => rw [Nat.cast_zero]; rfl
+  | succ k IH =>
+    rw [pow_succ, IH, a_mul_a]
     congr 1
     norm_cast
 
--- @[simp] -- Porting note: simp changes this to `a 0 = 1`, so this is no longer a good simp lemma.
 theorem a_one_pow_n : (a 1 : QuaternionGroup n) ^ (2 * n) = 1 := by
-  rw [a_one_pow, one_def]
-  congr 1
-  exact ZMod.natCast_self _
+  simp
 
 @[simp]
 theorem xa_sq (i : ZMod (2 * n)) : xa i ^ 2 = a n := by simp [sq]
 
 @[simp]
 theorem xa_pow_four (i : ZMod (2 * n)) : xa i ^ 4 = 1 := by
-  rw [pow_succ, pow_succ, sq, xa_mul_xa, a_mul_xa, xa_mul_xa,
-    add_sub_cancel_right, add_sub_assoc, sub_sub_cancel]
-  norm_cast
-  rw [← two_mul]
-  simp [one_def]
+  calc xa i ^ 4
+      = a (n + n)  := by simp [pow_succ, add_sub_assoc, sub_sub_cancel]
+    _ = a ↑(2 * n) := by simp [Nat.cast_add, two_mul]
+    _ = 1          := by simp
 
 /-- If `0 < n`, then `xa i` has order 4.
 -/
@@ -216,7 +212,7 @@ theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by
 -/
 @[simp]
 theorem orderOf_a_one : orderOf (a 1 : QuaternionGroup n) = 2 * n := by
-  cases' eq_zero_or_neZero n with hn hn
+  rcases eq_zero_or_neZero n with hn | hn
   · subst hn
     simp_rw [mul_zero, orderOf_eq_zero_iff']
     intro n h
@@ -243,7 +239,7 @@ theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) :
 theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
   rw [← normalize_eq 2, ← lcm_mul_left, normalize_eq]
   norm_num
-  cases' eq_zero_or_neZero n with hn hn
+  rcases eq_zero_or_neZero n with hn | hn
   · subst hn
     simp only [lcm_zero_left, mul_zero]
     exact Monoid.exponent_eq_zero_of_order_zero orderOf_a_one

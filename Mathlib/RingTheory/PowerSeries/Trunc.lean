@@ -129,6 +129,33 @@ lemma trunc_X_of {n : ℕ} (hn : 2 ≤ n) : trunc n X = (Polynomial.X : R[X]) :=
     | zero => contradiction
     | succ n => exact trunc_X n
 
+@[simp]
+lemma trunc_one_left (p : R⟦X⟧) : trunc (R := R) 1 p = .C (coeff R 0 p) := by
+  ext i; simp +contextual [coeff_trunc, Polynomial.coeff_C]
+
+lemma trunc_one_X : trunc (R := R) 1 X = 0 := by simp
+
+@[simp]
+lemma trunc_C_mul (n : ℕ) (r : R) (f : R⟦X⟧) : trunc n (C R r * f) = .C r * trunc n f := by
+  ext i; simp [coeff_trunc]
+
+@[simp]
+lemma trunc_mul_C (n : ℕ) (f : R⟦X⟧) (r : R) : trunc n (f * C R r) = trunc n f * .C r := by
+  ext i; simp [coeff_trunc]
+
+/-- Split off the first `n` coefficients. -/
+lemma eq_shift_mul_X_pow_add_trunc (n : ℕ) (f : R⟦X⟧) :
+    f = (mk fun i ↦ coeff R (i + n) f) * X ^ n + (f.trunc n : R⟦X⟧) := by
+  ext j
+  rw [map_add, Polynomial.coeff_coe, coeff_mul_X_pow', coeff_trunc]
+  simp_rw [← not_le]
+  split_ifs with h <;> simp [h]
+
+/-- Split off the first `n` coefficients. -/
+lemma eq_X_pow_mul_shift_add_trunc (n : ℕ) (f : R⟦X⟧) :
+    f = X ^ n * (mk fun i ↦ coeff R (i + n) f) + (f.trunc n : R⟦X⟧) := by
+  rw [← (commute_X_pow _ n).eq, ← eq_shift_mul_X_pow_add_trunc]
+
 end Trunc
 
 section Trunc
@@ -139,7 +166,7 @@ Lemmas in this section involve the coercion `R[X] → R⟦X⟧`, so they may onl
 variable {R : Type*} [CommSemiring R]
 
 open Nat hiding pow_succ pow_zero
-open Polynomial Finset Finset.Nat
+open Finset Finset.Nat
 
 theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     trunc n ↑(trunc m f) = trunc n f := by
@@ -152,7 +179,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
 @[simp] theorem trunc_trunc {n} (f : R⟦X⟧) : trunc n ↑(trunc n f) = trunc n f :=
   trunc_trunc_of_le f
 
-@[simp] theorem trunc_trunc_mul {n} (f g : R ⟦X⟧) :
+@[simp] theorem trunc_trunc_mul {n} (f g : R⟦X⟧) :
     trunc n ((trunc n f) * g : R⟦X⟧) = trunc n (f * g) := by
   ext m
   rw [coeff_trunc, coeff_trunc]
@@ -163,7 +190,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     rw [coeff_coe, coeff_trunc, if_pos ha]
   · rfl
 
-@[simp] theorem trunc_mul_trunc {n} (f g : R ⟦X⟧) :
+@[simp] theorem trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (f * (trunc n g) : R⟦X⟧) = trunc n (f * g) := by
   rw [mul_comm, trunc_trunc_mul, mul_comm]
 
@@ -210,6 +237,14 @@ theorem coeff_mul_eq_coeff_trunc_mul_trunc {d n} (f g) (h : d < n) :
   coeff_mul_eq_coeff_trunc_mul_trunc₂ f g h h
 
 end Trunc
+
+section Map
+variable {S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
+
+lemma trunc_map (p : R⟦X⟧) (n : ℕ) : (p.map f).trunc n = (p.trunc n).map f := by
+  ext m; simp [coeff_trunc, apply_ite f]
+
+end Map
 
 end PowerSeries
 

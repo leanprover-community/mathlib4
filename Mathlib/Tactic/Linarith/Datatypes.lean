@@ -16,20 +16,24 @@ We split them into their own file.
 This file also contains a few convenient auxiliary functions.
 -/
 
-open Lean Elab Tactic Meta Qq Mathlib
+open Lean Elab Tactic Meta Qq
 
 initialize registerTraceClass `linarith
 initialize registerTraceClass `linarith.detail
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
+
+/-- A shorthand for getting the types of a list of proofs terms, to trace. -/
+def linarithGetProofsMessage (l : List Expr) : MetaM MessageData := do
+  return m!"{← l.mapM fun e => do instantiateMVars (← inferType e)}"
 
 /--
 A shorthand for tracing the types of a list of proof terms
 when the `trace.linarith` option is set to true.
 -/
 def linarithTraceProofs {α} [ToMessageData α] (s : α) (l : List Expr) : MetaM Unit := do
-  trace[linarith] "{s}"
-  trace[linarith] (← l.mapM fun e => do instantiateMVars (← inferType e))
+  if ← isTracingEnabledFor `linarith then
+    addRawTrace <| .trace { cls := `linarith } (toMessageData s) #[← linarithGetProofsMessage l]
 
 /-! ### Linear expressions -/
 
@@ -141,7 +145,7 @@ def Comp.scale (c : Comp) (n : Nat) : Comp :=
 `Comp.add c1 c2` adds the expressions represented by `c1` and `c2`.
 The coefficient of variable `a` in `c1.add c2`
 is the sum of the coefficients of `a` in `c1` and `c2`.
- -/
+-/
 def Comp.add (c1 c2 : Comp) : Comp :=
   ⟨c1.str.max c2.str, c1.coeffs.add c2.coeffs⟩
 
@@ -156,7 +160,7 @@ def Comp.cmp : Comp → Comp → Ordering
 /--
 A `Comp` represents a contradiction if its expression has no coefficients and its strength is <,
 that is, it represents the fact `0 < 0`.
- -/
+-/
 def Comp.isContr (c : Comp) : Bool := c.coeffs.isEmpty && c.str = Ineq.lt
 
 instance Comp.ToFormat : ToFormat Comp :=
@@ -167,15 +171,20 @@ instance Comp.ToFormat : ToFormat Comp :=
 
 /-! ### Control -/
 
+/-- Metadata about preprocessors, for trace output. -/
+structure PreprocessorBase : Type where
+  /-- The name of the preprocessor, populated automatically, to create linkable trace messages. -/
+  name : Name := by exact decl_name%
+  /-- The description of the preprocessor. -/
+  description : String
+
 /--
 A preprocessor transforms a proof of a proposition into a proof of a different proposition.
 The return type is `List Expr`, since some preprocessing steps may create multiple new hypotheses,
 and some may remove a hypothesis from the list.
 A "no-op" preprocessor should return its input as a singleton list.
 -/
-structure Preprocessor : Type where
-  /-- The name of the preprocessor, used in trace output. -/
-  name : String
+structure Preprocessor : Type extends PreprocessorBase where
   /-- Replace a hypothesis by a list of hypotheses. These expressions are the proof terms. -/
   transform : Expr → MetaM (List Expr)
 
@@ -184,9 +193,7 @@ Some preprocessors need to examine the full list of hypotheses instead of workin
 As with `Preprocessor`, the input to a `GlobalPreprocessor` is replaced by, not added to, its
 output.
 -/
-structure GlobalPreprocessor : Type where
-  /-- The name of the global preprocessor, used in trace output. -/
-  name : String
+structure GlobalPreprocessor : Type extends PreprocessorBase where
   /-- Replace the collection of all hypotheses with new hypotheses.
   These expressions are proof terms. -/
   transform : List Expr → MetaM (List Expr)
@@ -206,9 +213,7 @@ Each branch is independent, so hypotheses that appear in multiple branches shoul
 The preprocessor is responsible for making sure that each branch contains the correct goal
 metavariable.
 -/
-structure GlobalBranchingPreprocessor : Type where
-  /-- The name of the global branching preprocessor, used in trace output. -/
-  name : String
+structure GlobalBranchingPreprocessor : Type extends PreprocessorBase where
   /-- Given a goal, and a list of hypotheses,
   produce a list of pairs (consisting of a goal and list of hypotheses). -/
   transform : MVarId → List Expr → MetaM (List Branch)
@@ -217,14 +222,14 @@ structure GlobalBranchingPreprocessor : Type where
 A `Preprocessor` lifts to a `GlobalPreprocessor` by folding it over the input list.
 -/
 def Preprocessor.globalize (pp : Preprocessor) : GlobalPreprocessor where
-  name := pp.name
+  __ := pp
   transform := List.foldrM (fun e ret => do return (← pp.transform e) ++ ret) []
 
 /--
 A `GlobalPreprocessor` lifts to a `GlobalBranchingPreprocessor` by producing only one branch.
 -/
 def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPreprocessor where
-  name := pp.name
+  __ := pp
   transform := fun g l => do return [⟨g, ← pp.transform l⟩]
 
 /--
@@ -233,13 +238,14 @@ tracing the result if `trace.linarith` is on.
 -/
 def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
     (g : MVarId) (l : List Expr) : MetaM (List Branch) := g.withContext do
-  let branches ← pp.transform g l
-  if branches.length > 1 then
-    trace[linarith] "Preprocessing: {pp.name} has branched, with branches:"
-  for ⟨goal, hyps⟩ in branches do
-    goal.withContext do
-      linarithTraceProofs m!"Preprocessing: {pp.name}" hyps
-  return branches
+  withTraceNode `linarith (fun e =>
+      return m!"{exceptEmoji e} {.ofConstName pp.name}: {pp.description}") do
+    let branches ← pp.transform g l
+    if branches.length > 1 then
+      trace[linarith] "Preprocessing: {pp.name} has branched, with branches:"
+    for ⟨goal, hyps⟩ in branches do
+      trace[linarith] (← goal.withContext <| linarithGetProofsMessage hyps)
+    return branches
 
 instance PreprocessorToGlobalBranchingPreprocessor :
     Coe Preprocessor GlobalBranchingPreprocessor :=
@@ -299,4 +305,4 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')
 
-end Linarith
+end Mathlib.Tactic.Linarith

@@ -84,7 +84,8 @@ private lemma image_T_subset_S [DecidableEq α] [DecidableEq β] (v) (hv : v ∈
     simp only [mul_neg, neg_neg]
     exact mul_le_mul_of_nonpos_right (hv.2 j) hsign
   · rw [posPart_eq_self.2 hsign]
-    exact mul_le_mul_of_nonneg_right (hv.2 j) hsign
+    gcongr
+    apply hv.2
   · rw [posPart_eq_zero.2 hsign]
     exact mul_nonpos_of_nonneg_of_nonpos (hv.1 j) hsign
 
@@ -92,7 +93,7 @@ private lemma image_T_subset_S [DecidableEq α] [DecidableEq β] (v) (hv : v ∈
 
 private lemma card_T_eq [DecidableEq β] : #T = (B + 1) ^ n := by
   rw [Pi.card_Icc 0 B']
-  simp only [Pi.zero_apply, card_Icc, sub_zero, toNat_ofNat_add_one, prod_const, card_univ,
+  simp only [Pi.zero_apply, card_Icc, sub_zero, toNat_natCast_add_one, prod_const, card_univ,
     add_pos_iff, zero_lt_one, or_true]
 
 -- This lemma is necessary to be able to apply the formula #(Icc a b) = b + 1 - a
@@ -102,11 +103,11 @@ private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
     apply Finset.sum_nonpos
     intro j _
     simp only [mul_neg, Left.neg_nonpos_iff]
-    exact mul_nonneg (Nat.cast_nonneg B) (negPart_nonneg (A i j))
+    positivity
   _ ≤ P i + 1 := by
     apply le_trans (Finset.sum_nonneg _) (Int.le_add_one (le_refl P i))
     intro j _
-    exact mul_nonneg (Nat.cast_nonneg B) (posPart_nonneg (A i j))
+    positivity
 
 private lemma card_S_eq [DecidableEq α] : #(Finset.Icc N P) = ∏ i : α, (P i - N i + 1) := by
   rw [Pi.card_Icc N P, Nat.cast_prod]
@@ -115,7 +116,7 @@ private lemma card_S_eq [DecidableEq α] : #(Finset.Icc N P) = ∏ i : α, (P i 
   rw [Int.card_Icc_of_le (N i) (P i) (N_le_P_add_one A i)]
   exact add_sub_right_comm (P i) 1 (N i)
 
-/-- The sup norm of a non-zero integer matrix is at least one  -/
+/-- The sup norm of a non-zero integer matrix is at least one -/
 lemma one_le_norm_A_of_ne_zero (hA : A ≠ 0) : 1 ≤ ‖A‖ := by
   by_contra! h
   apply hA
@@ -146,13 +147,13 @@ private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
         linarith only [h]
       · simp only [mul_neg, sum_neg_distrib, sub_neg_eq_add, add_le_add_iff_right]
         have h1 : n * max 1 ‖A‖ * B = ∑ _ : β, max 1 ‖A‖ * B := by
-          simp only [sum_const, card_univ, nsmul_eq_mul]
+          simp
           ring
         simp_rw [h1, ← Finset.sum_add_distrib, ← mul_add, mul_comm (max 1 ‖A‖), ← Int.cast_add]
         gcongr with j _
         rw [posPart_add_negPart (A i j), Int.cast_abs]
         exact le_trans (norm_entry_le_entrywise_sup_norm A) (le_max_right ..)
-  _  = (n * max 1 ‖A‖ * B + 1) ^ m := by simp only [prod_const, card_univ]
+  _  = (n * max 1 ‖A‖ * B + 1) ^ m := by simp
   _  ≤ (n * max 1 ‖A‖) ^ m * (B + 1) ^ m := by
         rw [← mul_pow, mul_add, mul_one]
         gcongr
@@ -184,9 +185,9 @@ theorem exists_ne_zero_int_vec_norm_le
   refine ⟨x - y, sub_ne_zero.mpr hneq, by simp only [mulVec_sub, sub_eq_zero, hfeq], ?_⟩
   -- Inequality
   have n_mul_norm_A_pow_e_nonneg : 0 ≤ (n * max 1 ‖A‖) ^ e := by positivity
-  rw [← norm_col (ι := Unit), norm_le_iff n_mul_norm_A_pow_e_nonneg]
+  rw [← norm_replicateCol (ι := Unit), norm_le_iff n_mul_norm_A_pow_e_nonneg]
   intro i j
-  simp only [col_apply, Pi.sub_apply]
+  simp only [replicateCol_apply, Pi.sub_apply]
   rw [Int.norm_eq_abs, ← Int.cast_abs]
   refine le_trans ?_ (Nat.floor_le n_mul_norm_A_pow_e_nonneg)
   norm_cast

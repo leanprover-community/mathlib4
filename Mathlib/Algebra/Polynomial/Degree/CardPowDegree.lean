@@ -3,7 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Order.EuclideanAbsoluteValue
+import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Polynomial.FieldDivision
 
@@ -15,13 +15,13 @@ to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
 
 ## Main definitions
 
- * `Polynomial.cardPowDegree` is an absolute value on `𝔽_q[t]`, the ring of
-   polynomials over a finite field of cardinality `q`, mapping a polynomial `p`
-   to `q ^ degree p` (where `q ^ degree 0 = 0`)
+* `Polynomial.cardPowDegree` is an absolute value on `𝔽_q[t]`, the ring of
+  polynomials over a finite field of cardinality `q`, mapping a polynomial `p`
+  to `q ^ degree p` (where `q ^ degree 0 = 0`)
 
 ## Main results
- * `Polynomial.cardPowDegree_isEuclidean`: `cardPowDegree` respects the
-   Euclidean domain structure on the ring of polynomials
+* `Polynomial.cardPowDegree_isEuclidean`: `cardPowDegree` respects the
+  Euclidean domain structure on the ring of polynomials
 
 -/
 
@@ -44,7 +44,6 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
   letI := Classical.decEq Fq
   { toFun := fun p => if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ p.natDegree
     nonneg' := fun p => by
-      dsimp
       split_ifs
       · rfl
       exact pow_nonneg (Int.ofNat_zero_le _) _
@@ -98,7 +97,7 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
       · simp only [hp, hq, lt_self_iff_false]
       · simp only [hp, hq, degree_zero, Ne, bot_lt_iff_ne_bot, degree_eq_bot, pow_pos,
           not_false_iff]
-      · simp only [hp, hq, degree_zero, not_lt_bot, (pow_pos _).not_lt]
+      · simp only [hp, hq, degree_zero, not_lt_bot, (pow_pos _).not_gt]
       · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt, pow_lt_pow_iff_right₀]
         exact mod_cast @Fintype.one_lt_card Fq _ _ }
 

@@ -12,7 +12,7 @@ This file provides the basic API for `List.splitBy` which is defined in Core.
 The main results are the following:
 
 - `List.join_splitBy`: the lists in `List.splitBy` join to the original list.
-- `List.nil_not_mem_splitBy`: the empty list is not contained in `List.splitBy`.
+- `List.nil_notMem_splitBy`: the empty list is not contained in `List.splitBy`.
 - `List.chain'_of_mem_splitBy`: any two adjacent elements in a list in `List.splitBy` are related by
   the specified relation.
 - `List.chain'_getLast_head_splitBy`: the last element of each list in `List.splitBy` is not
@@ -51,7 +51,7 @@ theorem flatten_splitBy (r : α → α → Bool) (l : List α) : (l.splitBy r).f
   | nil => rfl
   | cons _ _ => flatten_splitByLoop
 
-private theorem nil_not_mem_splitByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
+private theorem nil_notMem_splitByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
     [] ∉ splitBy.loop r l a g [] := by
   induction l generalizing a g with
   | nil =>
@@ -63,14 +63,18 @@ private theorem nil_not_mem_splitByLoop {r : α → α → Bool} {l : List α} {
     · rw [splitByLoop_eq_append, mem_append]
       simpa using IH
 
-theorem nil_not_mem_splitBy (r : α → α → Bool) (l : List α) : [] ∉ l.splitBy r :=
+@[deprecated (since := "2025-05-23")] alias nil_not_mem_splitByLoop := nil_notMem_splitByLoop
+
+theorem nil_notMem_splitBy (r : α → α → Bool) (l : List α) : [] ∉ l.splitBy r :=
   match l with
-  | nil => not_mem_nil _
-  | cons _ _ => nil_not_mem_splitByLoop
+  | nil => not_mem_nil
+  | cons _ _ => nil_notMem_splitByLoop
+
+@[deprecated (since := "2025-05-23")] alias nil_not_mem_splitBy := nil_notMem_splitBy
 
 theorem ne_nil_of_mem_splitBy (r : α → α → Bool) {l : List α} (h : m ∈ l.splitBy r) : m ≠ [] := by
   rintro rfl
-  exact nil_not_mem_splitBy r l h
+  exact nil_notMem_splitBy r l h
 
 private theorem chain'_of_mem_splitByLoop {r : α → α → Bool} {l : List α} {a : α} {g : List α}
     (hga : ∀ b ∈ g.head?, r b a) (hg : g.Chain' fun y x ↦ r x y)
@@ -79,12 +83,12 @@ private theorem chain'_of_mem_splitByLoop {r : α → α → Bool} {l : List α}
   | nil =>
     rw [splitBy.loop, reverse_cons, mem_append, mem_reverse, mem_singleton] at h
     obtain hm | rfl := h
-    · exact (not_mem_nil m hm).elim
+    · exact (not_mem_nil hm).elim
     · apply List.chain'_reverse.1
       rw [reverse_reverse]
       exact chain'_cons'.2 ⟨hga, hg⟩
   | cons b l IH =>
-    simp [splitBy.loop] at h
+    simp only [splitBy.loop, reverse_cons] at h
     split at h
     · apply IH _ (chain'_cons'.2 ⟨hga, hg⟩) h
       intro b hb
@@ -136,13 +140,12 @@ theorem chain'_getLast_head_splitBy (r : α → α → Bool) (l : List α) :
   cases l with
   | nil => exact chain'_nil
   | cons _ _ =>
-    apply chain'_getLast_head_splitByLoop _ (not_mem_nil _) chain'_nil
+    apply chain'_getLast_head_splitByLoop _ not_mem_nil chain'_nil
     rintro _ ⟨⟩
 
 @[deprecated (since := "2024-10-30")] alias groupBy_nil := splitBy_nil
 @[deprecated (since := "2024-10-30")] alias flatten_groupBy := flatten_splitBy
-@[deprecated (since := "2024-10-15")] alias join_splitBy := flatten_splitBy
-@[deprecated (since := "2024-10-30")] alias nil_not_mem_groupBy := nil_not_mem_splitBy
+@[deprecated (since := "2024-10-30")] alias nil_not_mem_groupBy := nil_notMem_splitBy
 @[deprecated (since := "2024-10-30")] alias ne_nil_of_mem_groupBy := ne_nil_of_mem_splitBy
 @[deprecated (since := "2024-10-30")] alias chain'_of_mem_groupBy := chain'_of_mem_splitBy
 @[deprecated (since := "2024-10-30")]

@@ -6,7 +6,7 @@ Authors: Chris Hughes, Thomas Browning
 import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Dynamics.PeriodicPts
+import Mathlib.Dynamics.PeriodicPts.Defs
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
@@ -17,9 +17,11 @@ import Mathlib.GroupTheory.GroupAction.Hom
 # Properties of group actions involving quotient groups
 
 This file proves properties of group actions which use the quotient group construction, notably
-* the orbit-stabilizer theorem `card_orbit_mul_card_stabilizer_eq_card_group`
-* the class formula `card_eq_sum_card_group_div_card_stabilizer'`
-* Burnside's lemma `sum_card_fixedBy_eq_card_orbits_mul_card_group`
+* the orbit-stabilizer theorem `MulAction.card_orbit_mul_card_stabilizer_eq_card_group`
+* the class formula `MulAction.card_eq_sum_card_group_div_card_stabilizer'`
+* Burnside's lemma `MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group`,
+
+as well as their analogues for additive groups.
 -/
 
 universe u v w
@@ -93,39 +95,14 @@ theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
 theorem Quotient.mk_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) :
     QuotientGroup.mk (b • q.out) = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq']
 
--- Porting note: removed simp attribute, simp can prove this
 @[to_additive]
-theorem Quotient.coe_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out) = b • q :=
-  Quotient.mk_smul_out H b q
+theorem Quotient.coe_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out) = b • q := by
+  simp
 
 theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
     q.out⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out ∈ H := by
   rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out,
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
-
-@[to_additive]
-alias Quotient.mk_smul_out' := Quotient.mk_smul_out
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated Quotient.mk_smul_out (since := "2024-10-19")] Quotient.mk_smul_out'
-attribute [deprecated AddAction.Quotient.mk_vadd_out (since := "2024-10-19")]
-AddAction.Quotient.mk_vadd_out'
-
--- Porting note: removed simp attribute, simp can prove this
-@[to_additive]
-alias Quotient.coe_smul_out' := Quotient.coe_smul_out
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated Quotient.coe_smul_out (since := "2024-10-19")] Quotient.coe_smul_out'
-attribute [deprecated AddAction.Quotient.coe_vadd_out (since := "2024-10-19")]
-AddAction.Quotient.coe_vadd_out'
-
-
-@[deprecated (since := "2024-10-19")]
-alias _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem :=
-  QuotientGroup.out_conj_pow_minimalPeriod_mem
 
 end QuotientAction
 
@@ -231,7 +208,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
     β ≃ Σω : Ω, orbitRel.Quotient.orbit ω := selfEquivSigmaOrbits' α β
     _ ≃ Σω : Ω, α ⧸ stabilizer α (φ ω) :=
       Equiv.sigmaCongrRight fun ω =>
-        (Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
+        (Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
           orbitEquivQuotientStabilizer α (φ ω)
 
 /-- **Class formula** for a finite group acting on a finite type. See
@@ -324,17 +301,13 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
     let f : Quotient (rightRel H) → orbitRel.Quotient H β :=
       fun a ↦ Quotient.liftOn' a (fun g ↦ ⟦g • b⟧) fun g₁ g₂ r ↦ by
         replace r := Setoid.symm' _ r
-        change (rightRel H).r _ _ at r
         rw [rightRel_eq] at r
-        simp only [Quotient.eq]
-        change g₁ • b ∈ orbit H (g₂ • b)
-        rw [mem_orbit_iff]
+        simp only [Quotient.eq, orbitRel_apply, mem_orbit_iff]
         exact ⟨⟨g₁ * g₂⁻¹, r⟩, by simp [mul_smul]⟩
     exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
       (Quotient.mk''_surjective.comp (MulAction.surjective_smul _ _)))
 
-variable {β}
-
+variable {β} in
 /-- A bijection between the quotient of the action of a subgroup `H` on an orbit, and a
 corresponding quotient expressed in terms of `Setoid.comap Subtype.val`. -/
 @[to_additive "A bijection between the quotient of the action of an additive subgroup `H` on an
@@ -346,8 +319,7 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     have hx := x.property
     rwa [orbitRel.Quotient.mem_orbit] at hx⟩⟧) fun a b h ↦ by
-      simp only [← Quotient.eq,
-                 orbitRel.Quotient.subgroup_quotient_eq_iff] at h
+      simp only [← Quotient.eq, orbitRel.Quotient.subgroup_quotient_eq_iff] at h
       simp only [Quotient.eq] at h ⊢
       exact h
   invFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
@@ -367,8 +339,6 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     intro q
     induction q using Quotient.inductionOn'
     rfl
-
-variable (β)
 
 /-- A bijection between the orbits under the action of a subgroup `H` on `β`, and the orbits
 under the action of `H` on each orbit under the action of `G`. -/
@@ -416,19 +386,49 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
   left_inv := fun y ↦ by
-    induction' y using Quotient.inductionOn' with y
+    cases y using Quotient.inductionOn'
     simp only [Quotient.liftOn'_mk'']
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     convert mem_orbit_self _
-    rw [inv_smul_eq_iff, (exists_smul_eq α y x).choose_spec]
+    rw [inv_smul_eq_iff, (exists_smul_eq α _ x).choose_spec]
   right_inv := fun g ↦ by
-    induction' g using Quotient.inductionOn' with g
+    cases g using Quotient.inductionOn' with | _ g
     simp only [Quotient.liftOn'_mk'', Quotient.liftOn'_mk, QuotientGroup.mk]
     rw [Quotient.eq'', leftRel_eq]
     simp only
     convert one_mem H
     · rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot, ← free (g⁻¹ • x),
         mem_stabilizer_iff, mul_smul, (exists_smul_eq α (g⁻¹ • x) x).choose_spec]
+
+/-- If `α` acts on `β` with trivial stabilizers, `β` is equivalent
+to the product of the quotient of `β` by `α` and `α`.
+See `MulAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/
+@[to_additive selfEquivOrbitsQuotientProd' "If `α` acts freely on `β`, `β` is equivalent
+to the product of the quotient of `β` by `α` and `α`.
+See `AddAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`."]
+noncomputable def selfEquivOrbitsQuotientProd'
+    {φ : Quotient (MulAction.orbitRel α β) → β} (hφ : Function.LeftInverse Quotient.mk'' φ)
+    (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
+    β ≃ Quotient (MulAction.orbitRel α β) × α :=
+  (MulAction.selfEquivSigmaOrbitsQuotientStabilizer' α β hφ).trans <|
+    (Equiv.sigmaCongrRight <| fun _ ↦
+      (Subgroup.quotientEquivOfEq (h _)).trans (QuotientGroup.quotientEquivSelf α)).trans <|
+    Equiv.sigmaEquivProd _ _
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddAction.selfEquivOrbitsQuotientSum' := AddAction.selfEquivOrbitsQuotientProd'
+
+/-- If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by `α` and
+`α`. -/
+@[to_additive selfEquivOrbitsQuotientProd
+  "If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by
+`α` and `α`."]
+noncomputable def selfEquivOrbitsQuotientProd (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
+    β ≃ Quotient (MulAction.orbitRel α β) × α :=
+  MulAction.selfEquivOrbitsQuotientProd' Quotient.out_eq' h
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddAction.selfEquivOrbitsQuotientSum := AddAction.selfEquivOrbitsQuotientProd
 
 end MulAction
 

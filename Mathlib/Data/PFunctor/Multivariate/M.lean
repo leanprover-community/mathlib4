@@ -14,23 +14,23 @@ as the greatest fixpoint of a polynomial functor.
 
 ## Main definitions
 
- * `M.mk`     - constructor
- * `M.dest`   - destructor
- * `M.corec`  - corecursor: useful for formulating infinite, productive computations
- * `M.bisim`  - bisimulation: proof technique to show the equality of infinite objects
+* `M.mk`     - constructor
+* `M.dest`   - destructor
+* `M.corec`  - corecursor: useful for formulating infinite, productive computations
+* `M.bisim`  - bisimulation: proof technique to show the equality of infinite objects
 
 ## Implementation notes
 
 Dual view of M-types:
 
- * `mp`: polynomial functor
- * `M`: greatest fixed point of a polynomial functor
+* `mp`: polynomial functor
+* `M`: greatest fixed point of a polynomial functor
 
 Specifically, we define the polynomial functor `mp` as:
 
- * A := a possibly infinite tree-like structure without information in the nodes
- * B := given the tree-like structure `t`, `B t` is a valid path
-   from the root of `t` to any given node.
+* A := a possibly infinite tree-like structure without information in the nodes
+* B := given the tree-like structure `t`, `B t` is a valid path
+  from the root of `t` to any given node.
 
 As a result `mp α` is made of a dataless tree and a function from
 its valid paths to values of `α`
@@ -40,8 +40,8 @@ that `A` is a possibly infinite tree.
 
 ## Reference
 
- * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+* Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
+  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
 
@@ -191,7 +191,7 @@ theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β
     M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x := by
   trans
   · apply M.dest_corec'
-  cases' g x with a f; dsimp
+  obtain ⟨a, f⟩ := g x; dsimp
   rw [MvPFunctor.map_eq]; congr
   conv_rhs => rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
   rfl
@@ -216,8 +216,8 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
             M.dest P x = ⟨a, splitFun f f₁⟩ ∧
               M.dest P y = ⟨a, splitFun f f₂⟩ ∧ ∀ i, R (f₁ i) (f₂ i))
     (x y) (r : R x y) : x = y := by
-  cases' x with a₁ f₁
-  cases' y with a₂ f₂
+  obtain ⟨a₁, f₁⟩ := x
+  obtain ⟨a₂, f₂⟩ := y
   dsimp [mp] at *
   have : a₁ = a₂ := by
     refine
@@ -231,15 +231,16 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     exact ⟨_, _, _, rfl, rfl, fun b => ⟨_, _, h' b, rfl, rfl⟩⟩
   subst this
   congr with (i p)
-  induction' p with x a f h' i c x a f h' i c p IH <;>
-    try
-      rcases h _ _ r with ⟨a', f', f₁', f₂', e₁, e₂, h''⟩
-      rcases M.bisim_lemma P e₁ with ⟨g₁', e₁', rfl, rfl⟩
-      rcases M.bisim_lemma P e₂ with ⟨g₂', e₂', e₃, rfl⟩
-      cases h'.symm.trans e₁'
-      cases h'.symm.trans e₂'
-  · exact (congr_fun (congr_fun e₃ i) c : _)
-  · exact IH _ _ (h'' _)
+  induction p with (
+    obtain ⟨a', f', f₁', f₂', e₁, e₂, h''⟩ := h _ _ r
+    obtain ⟨g₁', e₁', rfl, rfl⟩ := M.bisim_lemma P e₁
+    obtain ⟨g₂', e₂', e₃, rfl⟩ := M.bisim_lemma P e₂
+    cases h'.symm.trans e₁'
+    cases h'.symm.trans e₂')
+  | root x a f h' i c =>
+    exact congr_fun (congr_fun e₃ i) c
+  | child x a f h' i c p IH =>
+    exact IH _ _ (h'' _)
 
 theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equivalence R)
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
@@ -249,12 +250,10 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   introv Hr
   specialize h _ _ Hr
   clear Hr
-
   revert h
   rcases M.dest P x with ⟨ax, fx⟩
   rcases M.dest P y with ⟨ay, fy⟩
   intro h
-
   rw [map_eq, map_eq] at h
   injection h with h₀ h₁
   subst ay
@@ -284,11 +283,11 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     induction Hr
     · rw [← Quot.factor_mk_eq R (Relation.EqvGen R) this]
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
-    all_goals aesop
+    all_goals simp_all
 
 theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
     M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x := by
-  cases' x with a f
+  obtain ⟨a, f⟩ := x
   rw [map_eq]
   conv =>
     rhs

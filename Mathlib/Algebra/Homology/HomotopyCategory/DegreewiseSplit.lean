@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 
-/-! Degreewise split exact sequences of cochain complexes
+/-!
+# Degreewise split exact sequences of cochain complexes
 
 The main result of this file is the lemma
 `HomotopyCategory.distinguished_iff_iso_trianglehOfDegreewiseSplit` which asserts
@@ -14,6 +15,8 @@ is distinguished iff it is isomorphic to the triangle attached to a
 degreewise split short exact sequence of cochain complexes.
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated Preadditive
 
@@ -93,7 +96,7 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
         ShortComplex.map_X₁, zero_comp, comp_zero, reassoc_of% f_r, zero_sub, sub_neg_eq_add,
         mappingCone.ext_from_iff _ (p + 1) _ rfl, comp_add, mappingCone.inl_v_fst_v_assoc,
         mappingCone.inl_v_snd_v_assoc, shiftFunctor_obj_X', sub_zero, add_zero, comp_id,
-        mappingCone.inr_f_fst_v_assoc, mappingCone.inr_f_snd_v_assoc, add_left_eq_self, neg_eq_zero,
+        mappingCone.inr_f_fst_v_assoc, mappingCone.inr_f_snd_v_assoc, add_eq_right, neg_eq_zero,
         true_and]
     rw [← comp_f_assoc, S.zero, zero_f, zero_comp]
   inv_hom_id := by
@@ -201,7 +204,7 @@ noncomputable def triangleRotateIsoTriangleOfDegreewiseSplit :
     (triangle φ).rotate ≅
       triangleOfDegreewiseSplit _ (triangleRotateShortComplexSplitting φ) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by ext; dsimp; simp)
+    (by simp) (by simp) (by ext; simp)
 
 /-- The triangle `(triangleh φ).rotate` is isomorphic to a triangle attached to a
 degreewise split short exact sequence of cochain complexes. -/

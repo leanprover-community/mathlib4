@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.Data.Countable.Small
@@ -27,10 +27,9 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 -/
 
 -- Various pieces of algebra that have previously been spuriously imported here:
-assert_not_exists map_ne_zero
-assert_not_exists Field
- -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
- -- finiteness currently relies on more algebra than it needs.
+assert_not_exists map_ne_zero Field
+-- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
+-- finiteness currently relies on more algebra than it needs.
 
 universe w v₁ v₂ v u₁ u₂ u
 
@@ -155,8 +154,7 @@ open CategoryTheory.Prod
 
 variable [IsFiltered K]
 
-/-- This follows this proof from
-* Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
+/-- This follows this proof from `Borceux, Handbook of categorical algebra 1, Theorem 2.13.4`
 although with different names.
 -/
 theorem colimitLimitToLimitColimit_surjective :
@@ -219,9 +217,7 @@ theorem colimitLimitToLimitColimit_surjective :
         ((curry.obj F).obj j').map (gf f) (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
           ((curry.obj F).obj j').map (hf f) (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) :=
         (w f).choose_spec.choose_spec.choose_spec
-      rw [curry_obj_obj_map, curry_obj_obj_map] at q
-      -- Porting note: Lean 4 `dsimp` unfolds `gf` and `hf` in `q` :-(
-      -- See discussion at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/.60dsimp.60.20unfolding.20local.20lets
+      dsimp only [curry_obj_obj_map, curry_obj_obj_map] at q
       simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
       convert q <;> simp only [comp_id]
     clear_value kf gf hf
@@ -253,7 +249,6 @@ theorem colimitLimitToLimitColimit_surjective :
     have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' := by
       intros j₁ j₂ j₃ j₄ f f'
       rw [s', s']
-      -- Porting note: the three goals here in Lean 3 were in a different order
       · exact k'O
       · exact Finset.mem_biUnion.mpr ⟨j₃, Finset.mem_univ _,
           Finset.mem_biUnion.mpr ⟨j₄, Finset.mem_univ _,
@@ -348,7 +343,7 @@ noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
   · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
   · exact asIso (colimitLimitToLimitColimitCone F)
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C]
 
 section
 
@@ -401,7 +396,6 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
   simp only [← Category.assoc, Iso.comp_inv_eq,
     Limits.colimitObjIsoColimitCompEvaluation_ι_app_hom,
     Limits.HasColimit.isoOfNatIso_ι_hom, NatIso.ofComponents_hom_app]
-  dsimp
   simp
 
 end

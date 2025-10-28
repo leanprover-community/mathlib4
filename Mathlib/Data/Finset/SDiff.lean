@@ -9,7 +9,8 @@ import Mathlib.Data.Finset.Lattice.Lemmas
 # Difference of finite sets
 
 ## Main declarations
-* `Finset.instSDiffFinset`: Defines the set difference `s \ t` for finsets `s` and `t`.
+
+* `Finset.instSDiff`: Defines the set difference `s \ t` for finsets `s` and `t`.
 * `Finset.instGeneralizedBooleanAlgebra`: Finsets almost have a boolean algebra structure
 
 ## Tags
@@ -20,12 +21,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists CompleteLattice
-
-assert_not_exists OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
 
 open Multiset Subtype Function
 
@@ -46,7 +42,7 @@ section Sdiff
 variable [DecidableEq α] {s t u v : Finset α} {a b : α}
 
 /-- `s \ t` is the set consisting of the elements of `s` that are not in `t`. -/
-instance : SDiff (Finset α) :=
+instance instSDiff : SDiff (Finset α) :=
   ⟨fun s₁ s₂ => ⟨s₁.1 - s₂.1, nodup_of_le (Multiset.sub_le_self ..) s₁.2⟩⟩
 
 @[simp]
@@ -59,7 +55,7 @@ theorem mem_sdiff : a ∈ s \ t ↔ a ∈ s ∧ a ∉ t :=
 
 @[simp]
 theorem inter_sdiff_self (s₁ s₂ : Finset α) : s₁ ∩ (s₂ \ s₁) = ∅ :=
-  eq_empty_of_forall_not_mem <| by
+  eq_empty_of_forall_notMem <| by
     simp only [mem_inter, mem_sdiff]; rintro x ⟨h, _, hn⟩; exact hn h
 
 instance : GeneralizedBooleanAlgebra (Finset α) :=
@@ -68,12 +64,17 @@ instance : GeneralizedBooleanAlgebra (Finset α) :=
         ← and_or_left, em, and_true, implies_true]
     inf_inf_sdiff := fun x y => by
       simp only [Finset.ext_iff, inter_sdiff_self, inter_empty, inter_assoc, false_iff,
-        inf_eq_inter, not_mem_empty, bot_eq_empty, not_false_iff, implies_true] }
+        inf_eq_inter, notMem_empty, bot_eq_empty, not_false_iff, implies_true] }
 
-theorem not_mem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by
+theorem notMem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by
   simp only [mem_sdiff, h, not_true, not_false_iff, and_false]
 
-theorem not_mem_sdiff_of_not_mem_left (h : a ∉ s) : a ∉ s \ t := by simp [h]
+@[deprecated (since := "2025-05-23")] alias not_mem_sdiff_of_mem_right := notMem_sdiff_of_mem_right
+
+theorem notMem_sdiff_of_notMem_left (h : a ∉ s) : a ∉ s \ t := by simp [h]
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_sdiff_of_not_mem_left := notMem_sdiff_of_notMem_left
 
 theorem union_sdiff_of_subset (h : s ⊆ t) : s ∪ t \ s = t :=
   sup_sdiff_cancel_right h
@@ -81,11 +82,13 @@ theorem union_sdiff_of_subset (h : s ⊆ t) : s ∪ t \ s = t :=
 theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂ \ s₁ ∪ s₁ = s₂ :=
   (union_comm _ _).trans (union_sdiff_of_subset h)
 
-lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := by
-  ext x; simp [and_assoc]
+/-- See also `Finset.sdiff_inter_right_comm`. -/
+lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := inf_sdiff_assoc ..
 
-@[deprecated inter_sdiff_assoc (since := "2024-05-01")]
-theorem inter_sdiff (s t u : Finset α) : s ∩ (t \ u) = (s ∩ t) \ u := (inter_sdiff_assoc _ _ _).symm
+/-- See also `Finset.inter_sdiff_assoc`. -/
+lemma sdiff_inter_right_comm (s t u : Finset α) : s \ t ∩ u = (s ∩ u) \ t := sdiff_inf_right_comm ..
+
+lemma inter_sdiff_left_comm (s t u : Finset α) : s ∩ (t \ u) = t ∩ (s \ u) := inf_sdiff_left_comm ..
 
 @[simp]
 theorem sdiff_inter_self (s₁ s₂ : Finset α) : s₂ \ s₁ ∩ s₁ = ∅ :=
@@ -163,17 +166,19 @@ theorem sdiff_nonempty : (s \ t).Nonempty ↔ ¬s ⊆ t :=
 theorem empty_sdiff (s : Finset α) : ∅ \ s = ∅ :=
   bot_sdiff
 
-theorem insert_sdiff_of_not_mem (s : Finset α) {t : Finset α} {x : α} (h : x ∉ t) :
+theorem insert_sdiff_of_notMem (s : Finset α) {t : Finset α} {x : α} (h : x ∉ t) :
     insert x s \ t = insert x (s \ t) := by
   rw [← coe_inj, coe_insert, coe_sdiff, coe_sdiff, coe_insert]
-  exact Set.insert_diff_of_not_mem _ h
+  exact Set.insert_diff_of_notMem _ h
+
+@[deprecated (since := "2025-05-23")] alias insert_sdiff_of_not_mem := insert_sdiff_of_notMem
 
 theorem insert_sdiff_of_mem (s : Finset α) {x : α} (h : x ∈ t) : insert x s \ t = s \ t := by
   rw [← coe_inj, coe_sdiff, coe_sdiff, coe_insert]
   exact Set.insert_diff_of_mem _ h
 
 @[simp] lemma insert_sdiff_cancel (ha : a ∉ s) : insert a s \ s = {a} := by
-  rw [insert_sdiff_of_not_mem _ ha, Finset.sdiff_self, insert_emptyc_eq]
+  rw [insert_sdiff_of_notMem _ ha, Finset.sdiff_self, insert_empty_eq]
 
 @[simp]
 theorem insert_sdiff_insert (s t : Finset α) (x : α) : insert x s \ insert x t = s \ insert x t :=
@@ -185,10 +190,12 @@ lemma insert_sdiff_insert' (hab : a ≠ b) (ha : a ∉ s) : insert a s \ insert 
 lemma cons_sdiff_cons (hab : a ≠ b) (ha hb) : s.cons a ha \ s.cons b hb = {a} := by
   rw [cons_eq_insert, cons_eq_insert, insert_sdiff_insert' hab ha]
 
-theorem sdiff_insert_of_not_mem {x : α} (h : x ∉ s) (t : Finset α) : s \ insert x t = s \ t := by
+theorem sdiff_insert_of_notMem {x : α} (h : x ∉ s) (t : Finset α) : s \ insert x t = s \ t := by
   refine Subset.antisymm (sdiff_subset_sdiff (Subset.refl _) (subset_insert _ _)) fun y hy => ?_
   simp only [mem_sdiff, mem_insert, not_or] at hy ⊢
   exact ⟨hy.1, fun hxy => h <| hxy ▸ hy.1, hy.2⟩
+
+@[deprecated (since := "2025-05-23")] alias sdiff_insert_of_not_mem := sdiff_insert_of_notMem
 
 @[simp] theorem sdiff_subset {s t : Finset α} : s \ t ⊆ s := le_iff_subset.mp sdiff_le
 
@@ -234,8 +241,6 @@ theorem union_eq_sdiff_union_sdiff_union_inter (s t : Finset α) : s ∪ t = s \
 
 theorem sdiff_eq_self_iff_disjoint : s \ t = s ↔ Disjoint s t :=
   sdiff_eq_self_iff_disjoint'
-
-@[deprecated (since := "2024-10-01")] alias sdiff_eq_self := sdiff_eq_self_iff_disjoint
 
 theorem sdiff_eq_self_of_disjoint (h : Disjoint s t) : s \ t = s :=
   sdiff_eq_self_iff_disjoint.2 h

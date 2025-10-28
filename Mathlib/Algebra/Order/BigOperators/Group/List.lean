@@ -3,9 +3,9 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Big operators on a list in ordered groups
@@ -24,9 +24,9 @@ variable [Monoid M]
 lemma Forall₂.prod_le_prod' [Preorder M] [MulRightMono M]
     [MulLeftMono M] {l₁ l₂ : List M} (h : Forall₂ (· ≤ ·) l₁ l₂) :
     l₁.prod ≤ l₂.prod := by
-  induction' h with a b la lb hab ih ih'
-  · rfl
-  · simpa only [prod_cons] using mul_le_mul' hab ih'
+  induction h with
+  | nil => rfl
+  | cons hab ih ih' => simpa only [prod_cons] using mul_le_mul' hab ih'
 
 /-- If `l₁` is a sublist of `l₂` and all elements of `l₂` are greater than or equal to one, then
 `l₁.prod ≤ l₂.prod`. One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 1 ≤ a` instead
@@ -86,7 +86,7 @@ lemma prod_lt_prod_of_ne_nil [Preorder M] [MulLeftStrictMono M]
 lemma prod_le_pow_card [Preorder M] [MulRightMono M]
     [MulLeftMono M] (l : List M) (n : M) (h : ∀ x ∈ l, x ≤ n) :
     l.prod ≤ n ^ l.length := by
-      simpa only [map_id', map_const', prod_replicate] using prod_le_prod' h
+  simpa only [map_id', map_const', prod_replicate] using prod_le_prod' h
 
 @[to_additive card_nsmul_le_sum]
 lemma pow_card_le_prod [Preorder M] [MulRightMono M]
@@ -117,7 +117,7 @@ lemma one_le_prod_of_one_le [Preorder M] [MulLeftMono M] {l : List M}
   induction' l with hd tl ih
   · rfl
   rw [prod_cons]
-  exact one_le_mul (hl₁ hd (mem_cons_self hd tl)) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
+  exact one_le_mul (hl₁ hd mem_cons_self) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
 
 @[to_additive]
 lemma max_prod_le (l : List α) (f g : α → M) [LinearOrder M]
@@ -140,7 +140,7 @@ lemma prod_min_le [LinearOrder M] [MulLeftMono M]
 end Monoid
 
 -- TODO: develop theory of tropical rings
-lemma sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → N) (h0 : f 0 ≤ 0)
+lemma sum_le_foldr_max [AddZeroClass M] [Zero N] [LinearOrder N] (f : M → N) (h0 : f 0 ≤ 0)
     (hadd : ∀ x y, f (x + y) ≤ max (f x) (f y)) (l : List M) : f l.sum ≤ (l.map f).foldr max 0 := by
   induction' l with hd tl IH
   · simpa using h0
@@ -148,7 +148,7 @@ lemma sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → N)
   exact (hadd _ _).trans (max_le_max le_rfl IH)
 
 @[to_additive sum_pos]
-lemma one_lt_prod_of_one_lt [OrderedCommMonoid M] :
+lemma one_lt_prod_of_one_lt [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M] :
     ∀ l : List M, (∀ x ∈ l, (1 : M) < x) → l ≠ [] → 1 < l.prod
   | [], _, h => (h rfl).elim
   | [b], h, _ => by simpa using h
@@ -163,7 +163,8 @@ lemma one_lt_prod_of_one_lt [OrderedCommMonoid M] :
 
 /-- See also `List.le_prod_of_mem`. -/
 @[to_additive "See also `List.le_sum_of_mem`."]
-lemma single_le_prod [OrderedCommMonoid M] {l : List M} (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) :
+lemma single_le_prod [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+    {l : List M} (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) :
     ∀ x ∈ l, x ≤ l.prod := by
   induction l
   · simp
@@ -173,14 +174,14 @@ lemma single_le_prod [OrderedCommMonoid M] {l : List M} (hl₁ : ∀ x ∈ l, (1
   case cons.right hd tl ih => exact fun x H => le_mul_of_one_le_of_le hl₁.1 (ih hl₁.right x H)
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]
-lemma all_one_of_le_one_le_of_prod_eq_one [OrderedCommMonoid M] {l : List M}
-    (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) (hl₂ : l.prod = 1) {x : M} (hx : x ∈ l) : x = 1 :=
+lemma all_one_of_le_one_le_of_prod_eq_one [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
+    {l : List M} (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) (hl₂ : l.prod = 1) {x : M} (hx : x ∈ l) : x = 1 :=
   _root_.le_antisymm (hl₂ ▸ single_le_prod hl₁ _ hx) (hl₁ x hx)
 
-section CanonicallyOrderedCommMonoid
-variable [CanonicallyOrderedCommMonoid M] {l : List M}
+section CanonicallyOrderedMul
+variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {l : List M}
 
-@[to_additive] lemma prod_eq_one_iff : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
+@[to_additive] lemma prod_eq_one_iff [IsOrderedMonoid M] : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
     rw [List.eq_replicate_iff.2 ⟨_, h⟩, prod_replicate, one_pow]
     · exact (length l)
@@ -188,7 +189,7 @@ variable [CanonicallyOrderedCommMonoid M] {l : List M}
 
 @[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i => (L.take i).prod := by
   refine monotone_nat_of_le_succ fun n => ?_
-  cases' lt_or_le n L.length with h h
+  rcases lt_or_ge n L.length with h | h
   · rw [prod_take_succ _ _ h]
     exact le_self_mul
   · simp [take_of_length_le h, take_of_length_le (le_trans h (Nat.le_succ _))]
@@ -206,5 +207,6 @@ theorem le_prod_of_mem {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod :
       simp only [List.prod_cons]
       exact le_mul_left ih
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
+
 end List

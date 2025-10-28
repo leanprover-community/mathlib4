@@ -28,7 +28,7 @@ Given a functor `F : J ⥤ Type v`:
 * `nonempty_sections_of_finite_cofiltered_system` shows that if `J` is cofiltered and each
   `F.obj j` is nonempty and finite, `F.sections` is nonempty.
 * `nonempty_sections_of_finite_inverse_system` is a specialization of the above to `J` being a
-   directed set (and `F : Jᵒᵖ ⥤ Type v`).
+  directed set (and `F : Jᵒᵖ ⥤ Type v`).
 * `isMittagLeffler_of_exists_finite_range` shows that if `J` is cofiltered and for all `j`,
   there exists some `i` and `f : i ⟶ j` such that the range of `F.map f` is finite, then
   `F` is Mittag-Leffler.
@@ -170,15 +170,11 @@ def toPreimages : J ⥤ Type v where
     rw [← mem_preimage, preimage_preimage, mem_preimage]
     convert h (g ≫ f); rw [F.map_comp]; rfl
   map_id j := by
-    #adaptation_note /-- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_id]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
     rfl
   map_comp f g := by
-    #adaptation_note /-- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_comp]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_comp]
     rfl
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
@@ -253,15 +249,11 @@ def toEventualRanges : J ⥤ Type v where
   obj j := F.eventualRange j
   map f := (F.eventualRange_mapsTo f).restrict _ _ _
   map_id i := by
-    #adaptation_note /--- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_id]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
     rfl
   map_comp _ _ := by
-    #adaptation_note /-- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp] -/
-    simp only [MapsTo.restrict, Subtype.map_def, F.map_comp]
+    simp +unfoldPartialApp only [MapsTo.restrict, Subtype.map, F.map_comp]
     rfl
 
 instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.toEventualRanges.obj j) :=
@@ -273,12 +265,6 @@ def toEventualRangesSectionsEquiv : F.toEventualRanges.sections ≃ F.sections w
   toFun s := ⟨_, fun f => Subtype.coe_inj.2 <| s.prop f⟩
   invFun s :=
     ⟨fun _ => ⟨_, mem_iInter₂.2 fun _ f => ⟨_, s.prop f⟩⟩, fun f => Subtype.ext <| s.prop f⟩
-  left_inv _ := by
-    ext
-    rfl
-  right_inv _ := by
-    ext
-    rfl
 
 /-- If `F` satisfies the Mittag-Leffler condition, its restriction to eventual ranges is a
 surjective functor. -/
@@ -344,7 +330,7 @@ theorem eventually_injective [Nonempty J] [Finite F.sections] :
   have card_le : ∀ j, Fintype.card (F.obj j) ≤ Fintype.card F.sections :=
     fun j => Fintype.card_le_of_surjective _ (F.eval_section_surjective_of_surjective Fsur j)
   let fn j := Fintype.card F.sections - Fintype.card (F.obj j)
-  refine ⟨fn.argmin Nat.lt_wfRel.wf,
+  refine ⟨fn.argmin,
     fun i f => ((Fintype.bijective_iff_surjective_and_card _).2
       ⟨Fsur f, le_antisymm ?_ (Fintype.card_le_of_surjective _ <| Fsur f)⟩).1⟩
   rw [← Nat.sub_le_sub_iff_left (card_le i)]

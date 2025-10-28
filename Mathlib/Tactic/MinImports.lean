@@ -3,8 +3,13 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Init
+import Lean.Elab.DefView
+import Lean.Util.CollectAxioms
 import ImportGraph.Imports
+import ImportGraph.RequiredModules
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-! # `#min_imports in` a command to find minimal imports
 
@@ -63,12 +68,13 @@ def getSyntaxNodeKinds : Syntax → NameSet
   | .ident _ _ nm _ => NameSet.empty.insert nm
   | _ => {}
 
-/-- extracts the names of the declarations in `env` on which `decl` depends. -/
--- source:
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Counting.20prerequisites.20of.20a.20theorem/near/425370265
-def getVisited (env : Environment) (decl : Name) : NameSet :=
-  let (_, { visited, .. }) := CollectAxioms.collect decl |>.run env |>.run {}
-  visited
+/-- Extracts the names of the declarations in `env` on which `decl` depends. -/
+def getVisited (decl : Name) : CommandElabM NameSet := do
+  unless (← hasConst decl) do
+    return {}
+  -- without resetting the state, the "unused tactics" linter gets confused?
+  let st ← get
+  liftCoreM decl.transitivelyUsedConstants <* set st
 
 /-- `getId stx` takes as input a `Syntax` `stx`.
 If `stx` contains a `declId`, then it returns the `ident`-syntax for the `declId`.
@@ -131,7 +137,46 @@ def previousInstName : Name → Name
     .str init newTail
   | nm => nm
 
-/--`getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/--
+`getDeclName cmd id` takes a `Syntax` input `cmd` and returns the `Name` of the declaration defined
+by `cmd`.
+-/
+def getDeclName (cmd : Syntax) : CommandElabM Name := do
+  let ns ← getCurrNamespace
+  let id1 ← getId cmd
+  let id2 := mkIdentFrom id1 (previousInstName id1.getId)
+  let some declStx := cmd.find? (·.isOfKind ``Parser.Command.declaration) | pure default
+  let some modifiersStx := declStx.find? (·.isOfKind ``Parser.Command.declModifiers) | pure default
+  let modifiers : TSyntax ``Parser.Command.declModifiers := ⟨modifiersStx⟩
+  -- the `get`/`set` state catches issues with elaboration of, for instance, `scoped` attributes
+  let s ← get
+  let modifiers ← elabModifiers modifiers
+  set s
+  liftCoreM do (
+    -- Try applying the algorithm in `Lean.mkDeclName` to attach a namespace to the name.
+    -- Unfortunately calling `Lean.mkDeclName` directly won't work: it will complain that there is
+    -- already a declaration with this name.
+    (do
+      let shortName := id1.getId
+      let view := extractMacroScopes shortName
+      let name := view.name
+      let isRootName := (`_root_).isPrefixOf name
+      let mut fullName := if isRootName then
+        { view with name := name.replacePrefix `_root_ Name.anonymous }.review
+      else
+        ns ++ shortName
+      -- Apply name visibility rules: private names get mangled.
+      match modifiers.visibility with
+      | .private => return mkPrivateName (← getEnv) fullName
+      | _ => return fullName) <|>
+    -- try the visible name or the current "nameless" `instance` name
+    realizeGlobalConstNoOverload id1 <|>
+    -- otherwise, guess what the previous "nameless" `instance` name was
+    realizeGlobalConstNoOverload id2 <|>
+    -- failing everything, use the current namespace followed by the visible name
+    return ns ++ id1.getId)
+
+/-- `getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 declaration names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
@@ -147,23 +192,14 @@ you can use `Lean.NameSet.transitivelyUsedConstants` to get those.
 def getAllDependencies (cmd id : Syntax) :
     CommandElabM NameSet := do
   let env ← getEnv
-  let id1 ← getId cmd
-  let ns ← getCurrNamespace
-  let id2 := mkIdentFrom id1 (previousInstName id1.getId)
-  let nm ← liftCoreM do (
-    -- try the visible name or the current "nameless" `instance` name
-    realizeGlobalConstNoOverload id1 <|>
-    -- otherwise, guess what the previous "nameless" `instance` name was
-    realizeGlobalConstNoOverload id2 <|>
-    -- failing everything, use the current namespace followed by the visible name
-    return ns ++ id1.getId)
+  let nm ← getDeclName cmd
   -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
-  return getVisited env nm
-              |>.append (getVisited env id.getId)
+  return (← getVisited nm)
+              |>.append (← getVisited id.getId)
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
 
-/--`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/-- `getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
@@ -215,10 +251,10 @@ def minImpsCore (stx id : Syntax) : CommandElabM Unit := do
 
 /-- `#min_imports in cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
 to find a collection of minimal imports that should be sufficient for `cmd` to work. -/
-syntax (name := minImpsStx) "#min_imports" "in" command : command
+syntax (name := minImpsStx) "#min_imports" " in " command : command
 
 @[inherit_doc minImpsStx]
-syntax "#min_imports" "in" term : command
+syntax "#min_imports" " in " term : command
 
 elab_rules : command
   | `(#min_imports in $cmd:command) => do

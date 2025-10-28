@@ -81,8 +81,10 @@ theorem frequently_ae_iff {p : α → Prop} : (∃ᵐ a ∂μ, p a) ↔ μ { a |
 theorem frequently_ae_mem_iff {s : Set α} : (∃ᵐ a ∂μ, a ∈ s) ↔ μ s ≠ 0 :=
   not_congr compl_mem_ae_iff
 
-theorem measure_zero_iff_ae_nmem {s : Set α} : μ s = 0 ↔ ∀ᵐ a ∂μ, a ∉ s :=
+theorem measure_zero_iff_ae_notMem {s : Set α} : μ s = 0 ↔ ∀ᵐ a ∂μ, a ∉ s :=
   compl_mem_ae_iff.symm
+
+@[deprecated (since := "2025-05-24")] alias measure_zero_iff_ae_nmem := measure_zero_iff_ae_notMem
 
 theorem ae_of_all {p : α → Prop} (μ : F) : (∀ a, p a) → ∀ᵐ a ∂μ, p a :=
   Eventually.of_forall
@@ -133,7 +135,7 @@ theorem ae_le_of_ae_lt {β : Type*} [Preorder β] {f g : α → β} (h : ∀ᵐ 
 theorem ae_eq_empty : s =ᵐ[μ] (∅ : Set α) ↔ μ s = 0 :=
   eventuallyEq_empty.trans <| by simp only [ae_iff, Classical.not_not, setOf_mem_eq]
 
--- Porting note: The priority should be higher than `eventuallyEq_univ`.
+-- The priority should be higher than `eventuallyEq_univ`.
 @[simp high]
 theorem ae_eq_univ : s =ᵐ[μ] (univ : Set α) ↔ μ sᶜ = 0 :=
   eventuallyEq_univ
@@ -184,6 +186,15 @@ theorem ae_eq_set_inter {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t'
 theorem ae_eq_set_union {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
     (s ∪ s' : Set α) =ᵐ[μ] (t ∪ t' : Set α) :=
   h.union h'
+
+theorem ae_eq_set_diff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
+    s \ s' =ᵐ[μ] t \ t' :=
+  h.diff h'
+
+open scoped symmDiff in
+theorem ae_eq_set_symmDiff {s' t' : Set α} (h : s =ᵐ[μ] t) (h' : s' =ᵐ[μ] t') :
+    s ∆ s' =ᵐ[μ] t ∆ t' :=
+  h.symmDiff h'
 
 theorem union_ae_eq_univ_of_ae_eq_univ_left (h : s =ᵐ[μ] univ) : (s ∪ t : Set α) =ᵐ[μ] univ :=
   (ae_eq_set_union h (ae_eq_refl t)).trans <| by rw [univ_union]

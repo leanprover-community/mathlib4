@@ -3,7 +3,7 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Antoine Labelle
 -/
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
@@ -20,11 +20,7 @@ contraction, dual module, tensor product
 
 suppress_compilation
 
--- Porting note: universe metavariables behave oddly
-universe w u v₁ v₂ v₃ v₄
-
-variable {ι : Type w} (R : Type u) (M : Type v₁) (N : Type v₂)
-  (P : Type v₃) (Q : Type v₄)
+variable {ι : Type*} (R M N P Q : Type*)
 
 -- Porting note: we need high priority for this to fire first; not the case in ML3
 attribute [local ext high] TensorProduct.ext
@@ -42,17 +38,14 @@ variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [Module R M] [Module R N] [Module R P] [Module R Q]
 variable [DecidableEq ι] [Fintype ι] (b : Basis ι R M)
 
--- Porting note: doesn't like implicit ring in the tensor product
 /-- The natural left-handed pairing between a module and its dual. -/
 def contractLeft : Module.Dual R M ⊗[R] M →ₗ[R] R :=
   (uncurry _ _ _ _).toFun LinearMap.id
 
--- Porting note: doesn't like implicit ring in the tensor product
 /-- The natural right-handed pairing between a module and its dual. -/
 def contractRight : M ⊗[R] Module.Dual R M →ₗ[R] R :=
   (uncurry _ _ _ _).toFun (LinearMap.flip LinearMap.id)
 
--- Porting note: doesn't like implicit ring in the tensor product
 /-- The natural map associating a linear map to the tensor product of two modules. -/
 def dualTensorHom : Module.Dual R M ⊗[R] N →ₗ[R] M →ₗ[R] N :=
   let M' := Module.Dual R M
@@ -119,12 +112,12 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
 single one and zeros elsewhere -/
 theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Finite n] [DecidableEq m]
     [DecidableEq n] (bM : Basis m R M) (bN : Basis n R N) (j : m) (i : n) :
-    toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = stdBasisMatrix i j 1 := by
+    toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = single i j 1 := by
   ext i' j'
   by_cases hij : i = i' ∧ j = j' <;>
     simp [LinearMap.toMatrix_apply, Finsupp.single_eq_pi_single, hij]
   rw [and_iff_not_or_not, Classical.not_not] at hij
-  cases' hij with hij hij <;> simp [hij]
+  rcases hij with hij | hij <;> simp [hij]
 
 end CommSemiring
 
@@ -138,7 +131,7 @@ variable {R M N P Q}
 
 /-- If `M` is free, the natural linear map $M^* ⊗ N → Hom(M, N)$ is an equivalence. This function
 provides this equivalence in return for a basis of `M`. -/
--- @[simps! apply] -- Porting note: removed and created manually; malformed
+-- We manually create simp-lemmas because `@[simps]` generates a malformed lemma
 noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N :=
   LinearEquiv.ofLinear (dualTensorHom R M N)
     (∑ i, TensorProduct.mk R _ N (b.dualBasis i) ∘ₗ (LinearMap.applyₗ (R := R) (b i)))
@@ -155,26 +148,23 @@ noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R]
 
 @[simp]
 theorem dualTensorHomEquivOfBasis_apply (x : Module.Dual R M ⊗[R] N) :
-    (dualTensorHomEquivOfBasis (N := N) b :
-    Module.Dual R M ⊗[R] N → (M →ₗ[R] N)) x = (dualTensorHom R M N) x := by
+    dualTensorHomEquivOfBasis b x = dualTensorHom R M N x := by
   ext; rfl
 
 @[simp]
 theorem dualTensorHomEquivOfBasis_toLinearMap :
-    (dualTensorHomEquivOfBasis b : Module.Dual R M ⊗[R] N ≃ₗ[R] M →ₗ[R] N).toLinearMap =
-      dualTensorHom R M N :=
+    (dualTensorHomEquivOfBasis b).toLinearMap = dualTensorHom R M N :=
   rfl
 
--- Porting note: should N be explicit in dualTensorHomEquivOfBasis?
 @[simp]
 theorem dualTensorHomEquivOfBasis_symm_cancel_left (x : Module.Dual R M ⊗[R] N) :
-    (dualTensorHomEquivOfBasis (N := N) b).symm (dualTensorHom R M N x) = x := by
+    (dualTensorHomEquivOfBasis b).symm (dualTensorHom R M N x) = x := by
   rw [← dualTensorHomEquivOfBasis_apply b,
     LinearEquiv.symm_apply_apply <| dualTensorHomEquivOfBasis (N := N) b]
 
 @[simp]
 theorem dualTensorHomEquivOfBasis_symm_cancel_right (x : M →ₗ[R] N) :
-    dualTensorHom R M N ((dualTensorHomEquivOfBasis (N := N) b).symm x) = x := by
+    dualTensorHom R M N ((dualTensorHomEquivOfBasis b).symm x) = x := by
   rw [← dualTensorHomEquivOfBasis_apply b, LinearEquiv.apply_symm_apply]
 
 variable (R M N P Q)
@@ -223,7 +213,6 @@ noncomputable def rTensorHomEquivHomRTensor : (M →ₗ[R] P) ⊗[R] Q ≃ₗ[R]
 @[simp]
 theorem lTensorHomEquivHomLTensor_toLinearMap :
     (lTensorHomEquivHomLTensor R M P Q).toLinearMap = lTensorHomToHomLTensor R M P Q := by
-  classical -- Porting note: missing decidable for choosing basis
   let e := congr (LinearEquiv.refl R P) (dualTensorHomEquiv R M Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine (cancel_right h).1 ?_
@@ -236,7 +225,6 @@ theorem lTensorHomEquivHomLTensor_toLinearMap :
 @[simp]
 theorem rTensorHomEquivHomRTensor_toLinearMap :
     (rTensorHomEquivHomRTensor R M P Q).toLinearMap = rTensorHomToHomRTensor R M P Q := by
-  classical -- Porting note: missing decidable for choosing basis
   let e := congr (dualTensorHomEquiv R M P) (LinearEquiv.refl R Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine (cancel_right h).1 ?_

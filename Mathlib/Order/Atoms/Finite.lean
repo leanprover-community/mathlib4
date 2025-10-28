@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Order.Atoms
+import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness
@@ -13,8 +14,8 @@ import Mathlib.Order.Atoms
 This module contains some results on atoms and simple lattices in the finite context.
 
 ## Main results
-  * `Finite.to_isAtomic`, `Finite.to_isCoatomic`: Finite partial orders with bottom resp. top
-    are atomic resp. coatomic.
+* `Finite.to_isAtomic`, `Finite.to_isCoatomic`: Finite partial orders with bottom resp. top
+  are atomic resp. coatomic.
 
 -/
 
@@ -76,11 +77,10 @@ instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] 
     IsCoatomic α := by
   refine IsCoatomic.mk fun b => or_iff_not_imp_left.2 fun ht => ?_
   obtain ⟨c, hc, hmax⟩ :=
-    Set.Finite.exists_maximal_wrt id { x : α | b ≤ x ∧ x ≠ ⊤ } (Set.toFinite _) ⟨b, le_rfl, ht⟩
+    Set.Finite.exists_maximalFor id { x : α | b ≤ x ∧ x ≠ ⊤ } (Set.toFinite _) ⟨b, le_rfl, ht⟩
   refine ⟨c, ⟨hc.2, fun y hcy => ?_⟩, hc.1⟩
   by_contra hyt
-  obtain rfl : c = y := hmax y ⟨hc.1.trans hcy.le, hyt⟩ hcy.le
-  exact (lt_self_iff_false _).mp hcy
+  exact not_lt_iff_le_imp_ge.2 (hmax ⟨hc.1.trans hcy.le, hyt⟩) hcy
 
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isAtomic [PartialOrder α] [OrderBot α] [Finite α] :
@@ -95,10 +95,10 @@ variable [Preorder α] [LocallyFiniteOrder α]
 
 instance : IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
-    obtain ⟨x, hxmem, hx⟩ := (LocallyFiniteOrder.finsetIoc a b).exists_minimal
+    obtain ⟨x, hx, hxmin⟩ := (LocallyFiniteOrder.finsetIoc a b).exists_minimal
       ⟨b, by simpa [LocallyFiniteOrder.finset_mem_Ioc]⟩
-    simp only [LocallyFiniteOrder.finset_mem_Ioc, and_imp] at hxmem hx
-    exact ⟨x, ⟨hxmem.1, fun c hac hcx ↦ hx _ hac (hcx.le.trans hxmem.2) hcx⟩, hxmem.2⟩
+    simp only [LocallyFiniteOrder.finset_mem_Ioc] at hx hxmin
+    exact ⟨x, ⟨hx.1, fun c hac hcx ↦ hcx.not_ge <| hxmin ⟨hac, hcx.le.trans hx.2⟩ hcx.le⟩, hx.2⟩
 
 instance : IsStronglyCoatomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; infer_instance

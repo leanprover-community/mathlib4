@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.RingTheory.MatrixPolynomialAlgebra
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -58,6 +58,33 @@ theorem charmatrix_apply_ne (h : i ≠ j) : charmatrix M i j = -C (M i j) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, diagonal_apply_ne _ h,
     map_apply, sub_eq_neg_self]
 
+@[simp]
+theorem charmatrix_zero : charmatrix (0 : Matrix n n R) = Matrix.scalar n (X : R[X]) := by
+  simp [charmatrix]
+
+@[simp]
+theorem charmatrix_diagonal (d : n → R) :
+    charmatrix (diagonal d) = diagonal fun i => X - C (d i) := by
+  rw [charmatrix, scalar_apply, RingHom.mapMatrix_apply, diagonal_map (map_zero _), diagonal_sub]
+
+@[simp]
+theorem charmatrix_one : charmatrix (1 : Matrix n n R) = diagonal fun _ => X - 1 :=
+  charmatrix_diagonal _
+
+@[simp]
+theorem charmatrix_natCast (k : ℕ) :
+    charmatrix (k : Matrix n n R) = diagonal fun _ => X - (k : R[X]) :=
+  charmatrix_diagonal _
+
+@[simp]
+theorem charmatrix_ofNat (k : ℕ) [k.AtLeastTwo] :
+    charmatrix (ofNat(k) : Matrix n n R) = diagonal fun _ => X - ofNat(k) :=
+  charmatrix_natCast _
+
+@[simp]
+theorem charmatrix_transpose (M : Matrix n n R) : (Mᵀ).charmatrix = M.charmatrixᵀ := by
+  simp [charmatrix, transpose_map]
+
 theorem matPolyEquiv_charmatrix : matPolyEquiv (charmatrix M) = X - C M := by
   ext k i j
   simp only [matPolyEquiv_coeff_apply, coeff_sub, Pi.sub_apply]
@@ -96,10 +123,38 @@ lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n 
 
 alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
-/-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$.
--/
+/-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$. -/
 def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
+
+theorem eval_charpoly (M : Matrix m m R) (t : R) :
+    M.charpoly.eval t = (Matrix.scalar _ t - M).det := by
+  rw [Matrix.charpoly, ← Polynomial.coe_evalRingHom, RingHom.map_det, Matrix.charmatrix]
+  congr
+  ext i j
+  obtain rfl | hij := eq_or_ne i j <;> simp [*]
+
+@[simp]
+theorem charpoly_zero : charpoly (0 : Matrix n n R) = X ^ Fintype.card n := by
+  simp [charpoly]
+
+theorem charpoly_diagonal (d : n → R) : charpoly (diagonal d) = ∏ i, (X - C (d i)) := by
+  simp [charpoly]
+
+theorem charpoly_one : charpoly (1 : Matrix n n R) = (X - 1) ^ Fintype.card n := by
+  simp [charpoly]
+
+theorem charpoly_natCast (k : ℕ) :
+    charpoly (k : Matrix n n R) = (X - (k : R[X])) ^ Fintype.card n := by
+  simp [charpoly]
+
+theorem charpoly_ofNat (k : ℕ) [k.AtLeastTwo] :
+    charpoly (ofNat(k) : Matrix n n R) = (X - ofNat(k)) ^ Fintype.card n:=
+  charpoly_natCast _
+
+@[simp]
+theorem charpoly_transpose (M : Matrix n n R) : (Mᵀ).charpoly = M.charpoly := by
+  simp [charpoly]
 
 theorem charpoly_reindex (e : n ≃ m)
     (M : Matrix n n R) : (reindex e e M).charpoly = M.charpoly := by
@@ -152,7 +207,7 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- Using the algebra isomorphism `Matrix n n R[X] ≃ₐ[R] Polynomial (Matrix n n R)`,
   -- we have the same identity in `Polynomial (Matrix n n R)`.
   apply_fun matPolyEquiv at h
-  simp only [_root_.map_mul, matPolyEquiv_charmatrix] at h
+  simp only [map_mul, matPolyEquiv_charmatrix] at h
   -- Because the coefficient ring `Matrix n n R` is non-commutative,
   -- evaluation at `M` is not multiplicative.
   -- However, any polynomial which is a product of the form $N * (t I - M)$

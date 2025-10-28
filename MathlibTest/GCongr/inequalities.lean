@@ -21,7 +21,9 @@ open Nat Finset
 -- We deliberately mock `ℝ` here so that we don't have to import the dependencies
 axiom Real : Type
 notation "ℝ" => Real
-@[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
+@[instance] axiom Real.field : Field ℝ
+@[instance] axiom Real.linearOrder : LinearOrder ℝ
+@[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
 /-! ## Examples as a finishing tactic -/
 
@@ -149,12 +151,12 @@ example {n i : ℕ} (hi : i ∈ range n) : 2 ^ i ≤ 2 ^ n := by
   · apply le_of_lt
     simpa using hi
 
-example {n' : ℕ} (hn': 6 ≤ n') : 2 ^ ((n' + 1) * (n' + 1)) ≤ 2 ^ (n' * n' + 4 * n') := by
+example {n' : ℕ} (hn' : 6 ≤ n') : 2 ^ ((n' + 1) * (n' + 1)) ≤ 2 ^ (n' * n' + 4 * n') := by
   gcongr
   · norm_num
   · linarith
 
-example {F : ℕ → ℕ} (le_sum: ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : ℕ} (hn' : 6 ≤ n') :
+example {F : ℕ → ℕ} (le_sum : ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : ℕ} (hn' : 6 ≤ n') :
     let A := F n';
     A ! * (15 + 1) ^ n' ≤ A ! * (A + 1) ^ n' := by
   intro A
@@ -226,12 +228,12 @@ example {x y : ℕ} (h : x ≤ y) (l) : dontUnfoldMe 14 l + x ≤ 0 + y := by
 
 /-! Test that `gcongr` works well with proof arguments -/
 
-example {α β : Type*}  [SemilatticeSup α] (f : β → α)
+example {α β : Type*} [SemilatticeSup α] (f : β → α)
     {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f := by
   gcongr
 
-example {α β : Type*}  [SemilatticeSup α] (f : β → α)
+example {α β : Type*} [SemilatticeSup α] (f : β → α)
     {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
     s₁.sup' h₁ f ≤ s₂.sup' h₂ f := by
   gcongr
@@ -245,5 +247,19 @@ example {ι : Type*} [Fintype ι] {f g : ι → ℝ} : ∏ i, f i ^ 2 ≤ ∏ i,
     exact test_sorry
   · guard_target = f i ≤ g i
     exact test_sorry
+
+/-! Test that `gcongr` can deal with `_ ≤ _ → _ ≤ _` and `_ < _ → _ < _` -/
+
+example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b)  : b ≤ a + 1 → 0 ≤ 0 + 1 := by gcongr
+example {a b : ℕ} (h1 : a ≤ 0) (_h2 : 0 ≤ b) : b ≤ a + 1 → b ≤ 0 + 1 := by gcongr
+example {a b : ℕ} (_h1 : a ≤ 0) (h2 : 0 ≤ b) : b ≤ a + 1 → 0 ≤ a + 1 := by gcongr
+
+example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b)  : b < a + 1 → 0 < 0 + 1 := by gcongr
+example {a b : ℕ} (h1 : a ≤ 0) (_h2 : 0 ≤ b) : b < a + 1 → b < 0 + 1 := by gcongr
+example {a b : ℕ} (_h1 : a ≤ 0) (h2 : 0 ≤ b) : b < a + 1 → 0 < a + 1 := by gcongr
+
+/-! Test that `gcongr` with a pattern doesn't complain about type class inference problems. -/
+
+example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b) : b ≤ a + 1 → 0 ≤ 0 + 1 := by gcongr ?_ ≤ ?_ + _
 
 end GCongrTests

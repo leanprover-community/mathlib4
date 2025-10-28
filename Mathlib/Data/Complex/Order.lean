@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Complex.Abs
+import Mathlib.Data.Complex.Norm
 
 /-!
 # The partial order on the complex numbers
@@ -34,9 +34,8 @@ Complex numbers with different imaginary parts are incomparable.
 protected def partialOrder : PartialOrder ℂ where
   le z w := z.re ≤ w.re ∧ z.im = w.im
   lt z w := z.re < w.re ∧ z.im = w.im
-  lt_iff_le_not_le z w := by
-    dsimp
-    rw [lt_iff_le_not_le]
+  lt_iff_le_not_ge z w := by
+    rw [lt_iff_le_not_ge]
     tauto
   le_refl _ := ⟨le_rfl, rfl⟩
   le_trans _ _ _ h₁ h₂ := ⟨h₁.1.trans h₂.1, h₁.2.trans h₂.2⟩
@@ -44,7 +43,6 @@ protected def partialOrder : PartialOrder ℂ where
 
 namespace _root_.ComplexOrder
 
--- Porting note: made section into namespace to allow scoping
 scoped[ComplexOrder] attribute [instance] Complex.partialOrder
 
 end _root_.ComplexOrder
@@ -99,18 +97,22 @@ theorem eq_re_of_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re
   rw [eq_comm, ← conj_eq_iff_re, conj_eq_iff_im, ← (Complex.le_def.1 hz).2, Complex.ofReal_im]
 
 @[simp]
-lemma re_eq_abs {z : ℂ} : z.re = abs z ↔ 0 ≤ z :=
-  have : 0 ≤ abs z := apply_nonneg abs z
-  ⟨fun h ↦ ⟨h.symm ▸ this, (abs_re_eq_abs.1 <| h.symm ▸ _root_.abs_of_nonneg this).symm⟩,
-    fun ⟨h₁, h₂⟩ ↦ by rw [← abs_re_eq_abs.2 h₂.symm, _root_.abs_of_nonneg h₁]⟩
+lemma re_eq_norm {z : ℂ} : z.re = ‖z‖ ↔ 0 ≤ z :=
+  have : 0 ≤ ‖z‖ := norm_nonneg z
+  ⟨fun h ↦ ⟨h.symm ▸ this, (abs_re_eq_norm.1 <| h.symm ▸ abs_of_nonneg this).symm⟩,
+    fun ⟨h₁, h₂⟩ ↦ by rw [← abs_re_eq_norm.2 h₂.symm, abs_of_nonneg h₁]⟩
 
 @[simp]
-lemma neg_re_eq_abs {z : ℂ} : -z.re = abs z ↔ z ≤ 0 := by
-  rw [← neg_re, ← abs.map_neg, re_eq_abs]
+lemma neg_re_eq_norm {z : ℂ} : -z.re = ‖z‖ ↔ z ≤ 0 := by
+  rw [← neg_re, ← norm_neg z, re_eq_norm]
   exact neg_nonneg.and <| eq_comm.trans neg_eq_zero
 
 @[simp]
-lemma re_eq_neg_abs {z : ℂ} : z.re = -abs z ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_abs]
+lemma re_eq_neg_norm {z : ℂ} : z.re = -‖z‖ ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_norm]
+
+@[deprecated (since := "2025-02-16")] alias re_eq_abs := re_eq_norm
+@[deprecated (since := "2025-02-16")] alias neg_re_eq_abs := neg_re_eq_norm
+@[deprecated (since := "2025-02-16")] alias re_eq_neg_abs := re_eq_neg_norm
 
 lemma monotone_ofReal : Monotone ofReal := by
   intro x y hxy

@@ -163,7 +163,7 @@ open IsPrimitiveRoot Complex
 theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} [Field K]
     {R : Type*} [CommRing R] [IsDomain R] {μ : R} {n : ℕ} [Algebra K R] (hμ : IsPrimitiveRoot μ n)
     (h : Irreducible <| cyclotomic n K) [NeZero (n : K)] : cyclotomic n K = minpoly K μ := by
-  haveI := NeZero.of_noZeroSMulDivisors K R n
+  haveI := NeZero.of_faithfulSMul K R n
   refine minpoly.eq_of_irreducible_of_monic h ?_ (cyclotomic.monic n K)
   rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.def, isRoot_cyclotomic_iff]
 

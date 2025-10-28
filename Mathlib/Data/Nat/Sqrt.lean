@@ -3,7 +3,7 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Batteries.Data.Nat.Basic
 
 /-!
@@ -32,7 +32,7 @@ private lemma iter_fp_bound (n k : ℕ) :
   if h : (k + n / k) / 2 < k then
     simpa [if_pos h] using iter_fp_bound _ _
   else
-    simpa [if_neg h] using Nat.le_of_not_lt h
+    simpa [if_neg h] using Nat.le_of_not_gt h
 
 private lemma AM_GM : {a b : ℕ} → (4 * a * b ≤ (a + b) * (a + b))
   | 0, _ => by rw [Nat.mul_zero, Nat.zero_mul]; exact zero_le _
@@ -54,7 +54,7 @@ lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess �
     apply Nat.mul_le_of_le_div
     apply Nat.le_of_add_le_add_left (a := guess)
     rw [← Nat.mul_two, ← le_div_iff_mul_le]
-    · exact Nat.le_of_not_lt h
+    · exact Nat.le_of_not_gt h
     · exact Nat.zero_lt_two
 
 lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) :
@@ -78,11 +78,10 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
     rw [Nat.add_assoc, Nat.mul_add]
     exact Nat.add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
   · simpa only [dif_neg h] using hn
--- Porting note: the implementation of `Nat.sqrt` in `Batteries` no longer needs `sqrt_aux`.
+
 private def IsSqrt (n q : ℕ) : Prop :=
   q * q ≤ n ∧ n < (q + 1) * (q + 1)
--- Porting note: as the definition of square root has changed,
--- the proof of `sqrt_isSqrt` is attempted from scratch.
+
 /-
 Sketch of proof:
 Up to rounding, in terms of the definition of `sqrt.iter`,

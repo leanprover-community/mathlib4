@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -115,6 +116,15 @@ lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRi
     simp
   isColimit' := ⟨pushoutCoconeIsColimit R A B⟩
 
+lemma isPushout_of_isPushout (R S A B : Type u) [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R S] [Algebra S B] [Algebra R A] [Algebra A B] [Algebra R B]
+    [IsScalarTower R A B] [IsScalarTower R S B] [Algebra.IsPushout R S A B] :
+    IsPushout (ofHom (algebraMap R S)) (ofHom (algebraMap R A))
+      (ofHom (algebraMap S B)) (ofHom (algebraMap A B)) :=
+  (isPushout_tensorProduct R S A).of_iso (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    (Algebra.IsPushout.equiv R S A B).toCommRingCatIso (by simp) (by simp)
+    (by ext; simp [Algebra.IsPushout.equiv_tmul]) (by ext; simp [Algebra.IsPushout.equiv_tmul])
+
 end Pushout
 
 section BinaryCoproduct
@@ -124,9 +134,9 @@ variable (A B : CommRingCat.{u})
 /-- The tensor product `A ⊗[ℤ] B` forms a cocone for `A` and `B`. -/
 @[simps! pt ι]
 def coproductCocone : BinaryCofan A B :=
-BinaryCofan.mk
-  (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
-  (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
+  BinaryCofan.mk
+    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
 
 @[simp]
 theorem coproductCocone_inl : (coproductCocone A B).inl =
@@ -198,7 +208,7 @@ def isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
   IsInitial.ofUnique (h := fun R ↦ ⟨⟨ofHom <| (Int.castRingHom R).comp ULift.ringEquiv.toRingHom⟩,
     fun _ ↦ by
       ext : 1
-      rw [← RingHom.cancel_right (f := (ULift.ringEquiv.{0, u} (α := ℤ)).symm.toRingHom)
+      rw [← RingHom.cancel_right (f := (ULift.ringEquiv.{0, u} (R := ℤ)).symm.toRingHom)
         (hf := ULift.ringEquiv.symm.surjective)]
       apply RingHom.ext_int⟩)
 
@@ -283,7 +293,7 @@ def equalizerFork : Fork f g :=
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   fapply Fork.IsLimit.mk'
   intro s
-  use ofHom <| s.ι.hom.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x : _)
+  use ofHom <| s.ι.hom.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x :)
   constructor
   · ext
     rfl
@@ -315,23 +325,19 @@ theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
   change IsLocalHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _).hom
   infer_instance
 
-@[deprecated (since := "2024-10-10")]
-alias equalizer_ι_isLocalRingHom := equalizer_ι_isLocalHom
-
 open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
 
-instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
+instance equalizer_ι_isLocalHom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)).hom := by
-  have : _ = limit.π F (walkingParallelPairOpEquiv.functor.obj _) :=
-    (limit.isoLimitCone_inv_π
-        ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩
-        WalkingParallelPair.zero : _)
-  erw [← this]
+  have := limit.isoLimitCone_inv_π
+    ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩
+        WalkingParallelPair.zero
+  dsimp at this
+  rw [← this]
   -- note: this was not needed before https://github.com/leanprover-community/mathlib4/pull/19757
-  haveI : IsLocalHom (limit.π (walkingParallelPairOpEquiv.functor ⋙ F) zero).hom := by
-    infer_instance
+  have : IsLocalHom (limit.π (walkingParallelPairOp ⋙ F) zero).hom := by infer_instance
   infer_instance
 
 end Equalizer
@@ -370,8 +376,8 @@ def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
   · intro s m e₁ e₂
     refine hom_ext <| RingHom.ext fun (x : s.pt) => Subtype.ext ?_
     change (m x).1 = (_, _)
-    have eq1 := (congr_arg (fun f : s.pt →+* A => f x) (congrArg Hom.hom e₁) : _)
-    have eq2 := (congr_arg (fun f : s.pt →+* B => f x) (congrArg Hom.hom e₂) : _)
+    have eq1 := (congr_arg (fun f : s.pt →+* A => f x) (congrArg Hom.hom e₁) :)
+    have eq2 := (congr_arg (fun f : s.pt →+* B => f x) (congrArg Hom.hom e₂) :)
     rw [← eq1, ← eq2]
     rfl
 

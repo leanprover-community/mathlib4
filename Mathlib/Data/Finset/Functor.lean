@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kim Morrison
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Lattice.Union
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Multiset.Functor
 
@@ -116,7 +116,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
         exact hb
     pure_seq := fun f s => by simp only [pure_def, seq_def, sup_singleton, fmap_def]
     map_pure := fun _ _ => image_singleton _ _
-    seq_pure := fun _ _ => sup_singleton'' _ _
+    seq_pure := fun _ _ => sup_singleton_apply _ _
     seq_assoc := fun s t u => by
       ext a
       simp_rw [seq_def, fmap_def]
@@ -153,7 +153,7 @@ theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
 
 instance : LawfulMonad Finset :=
   { Finset.lawfulApplicative with
-    bind_pure_comp := fun _ _ => sup_singleton'' _ _
+    bind_pure_comp := fun _ _ => sup_singleton_apply _ _
     bind_map := fun _ _ => rfl
     pure_bind := fun _ _ => sup_singleton
     bind_assoc := fun s f g => by simp only [bind, ← sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
@@ -187,22 +187,23 @@ def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) 
   Multiset.toFinset <$> Multiset.traverse f s.1
 
 @[simp]
-theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
+theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = pure s := by
   rw [traverse, Multiset.id_traverse]
   exact s.val_toFinset
 
-open scoped Classical
-
+open scoped Classical in
 @[simp]
 theorem map_comp_coe (h : α → β) :
     Functor.map h ∘ Multiset.toFinset = Multiset.toFinset ∘ Functor.map h :=
   funext fun _ => image_toFinset
 
+open scoped Classical in
 @[simp]
 theorem map_comp_coe_apply (h : α → β) (s : Multiset α) :
     s.toFinset.image h = (h <$> s).toFinset :=
   congrFun (map_comp_coe h) s
 
+open scoped Classical in
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
     Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s := by
   unfold traverse

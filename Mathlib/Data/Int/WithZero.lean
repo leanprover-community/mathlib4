@@ -19,7 +19,7 @@ the morphism `WithZeroMultInt.toNNReal`.
 ## Main Results
 
 * `WithZeroMultInt.toNNReal_strictMono` : The map `withZeroMultIntToNNReal` is strictly
-   monotone whenever `1 < e`.
+  monotone whenever `1 < e`.
 
 ## Tags
 
@@ -45,13 +45,12 @@ def toNNReal {e : ℝ≥0} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ≥0 where
     simp only [dif_neg one_ne_zero]
     erw [toAdd_one, zpow_zero]
   map_mul' x y := by
-    simp only
     by_cases hxy : x * y = 0
-    · cases' zero_eq_mul.mp (Eq.symm hxy) with hx hy
+    · rcases zero_eq_mul.mp (Eq.symm hxy) with hx | hy
       --either x = 0 or y = 0
       · rw [dif_pos hxy, dif_pos hx, MulZeroClass.zero_mul]
       · rw [dif_pos hxy, dif_pos hy, MulZeroClass.mul_zero]
-    · cases' mul_ne_zero_iff.mp hxy with hx hy
+    · obtain ⟨hx, hy⟩ := mul_ne_zero_iff.mp hxy
       --  x Equiv≠ 0 and y ≠ 0
       rw [dif_neg hxy, dif_neg hx, dif_neg hy, ← zpow_add' (Or.inl he), ← toAdd_mul]
       congr
@@ -100,14 +99,10 @@ theorem toNNReal_eq_one_iff {e : ℝ≥0} (m : ℤₘ₀) (he0 : e ≠ 0) (he1 :
 
 theorem toNNReal_lt_one_iff {e : ℝ≥0} {m : ℤₘ₀} (he : 1 < e) :
     toNNReal (ne_zero_of_lt he) m < 1 ↔ m < 1 := by
-  have : 1 = (toNNReal (ne_zero_of_lt he)) 1 := rfl
-  simp_rw [this]
-  exact StrictMono.lt_iff_lt (toNNReal_strictMono he)
+  rw [← (toNNReal_strictMono he).lt_iff_lt, map_one]
 
 theorem toNNReal_le_one_iff {e : ℝ≥0} {m : ℤₘ₀} (he : 1 < e) :
     toNNReal (ne_zero_of_lt he) m ≤ 1 ↔ m ≤ 1 := by
-  have : 1 = (toNNReal (ne_zero_of_lt he)) 1 := rfl
-  simp_rw [this]
-  exact StrictMono.le_iff_le (toNNReal_strictMono he)
+  rw [← (toNNReal_strictMono he).le_iff_le, map_one]
 
 end WithZeroMulInt

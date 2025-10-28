@@ -113,7 +113,7 @@ class MonadMor₁ (m : Type → Type) where
   comp₁M (f g : Mor₁) : m Mor₁
 
 /-- Expressions for coherence isomorphisms (i.e., structural 2-morphisms
-giveb by `BicategorycalCoherence.iso`). -/
+given by `BicategoricalCoherence.iso`). -/
 structure CoherenceHom where
   /-- The underlying lean expression of a coherence isomorphism. -/
   e : Expr
@@ -443,7 +443,7 @@ class Context (ρ : Type) where
 export Context (mkContext?)
 
 /-- Construct a context from a lean expression for a 2-morphism. -/
-def mkContext {ρ  : Type} [Context ρ] (e : Expr) : MetaM ρ := do
+def mkContext {ρ : Type} [Context ρ] (e : Expr) : MetaM ρ := do
   match ← mkContext? e with
   | some c => return c
   | none => throwError "failed to construct a monoidal category or bicategory context from {e}"

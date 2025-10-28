@@ -42,12 +42,12 @@ structure PresheafOfModules where
   /-- the restriction maps of a presheaf of modules -/
   map {X Y : Cᵒᵖ} (f : X ⟶ Y) : obj X ⟶ (ModuleCat.restrictScalars (R.map f).hom).obj (obj Y)
   map_id (X : Cᵒᵖ) :
-    map (𝟙 X) =
-      (ModuleCat.restrictScalarsId' _ (congrArg RingCat.Hom.hom (R.map_id X))).inv.app _ := by
+    map (𝟙 X) = (ModuleCat.restrictScalarsId' (R.map (𝟙 X)).hom
+      (congrArg RingCat.Hom.hom (R.map_id X))).inv.app _ := by
         aesop_cat
   map_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) = map f ≫ (ModuleCat.restrictScalars _).map (map g) ≫
-      (ModuleCat.restrictScalarsComp' _ _ _
+      (ModuleCat.restrictScalarsComp' (R.map f).hom (R.map g).hom (R.map (f ≫ g)).hom
         (congrArg RingCat.Hom.hom <| R.map_comp f g)).inv.app _ := by aesop_cat
 
 namespace PresheafOfModules
@@ -57,7 +57,7 @@ attribute [reassoc] map_comp
 
 variable (M M₁ M₂ : PresheafOfModules.{v} R)
 
-lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj X) :
+protected lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj X) :
     M.map f (r • m) = R.map f r • M.map f m := by simp
 
 lemma congr_map_apply {X Y : Cᵒᵖ} {f g : X ⟶ Y} (h : f = g) (m : M.obj X) :
@@ -97,7 +97,7 @@ lemma comp_app {M₁ M₂ M₃ : PresheafOfModules R} (f : M₁ ⟶ M₂) (g : M
 
 lemma naturality_apply (f : M₁ ⟶ M₂) {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M₁.obj X) :
     Hom.app f Y (M₁.map g x) = M₂.map g (Hom.app f X x) :=
-  congr_fun ((forget _).congr_map (Hom.naturality f g)) x
+  CategoryTheory.congr_fun (Hom.naturality f g) x
 
 /-- Constructor for isomorphisms in the category of presheaves of modules. -/
 @[simps!]
@@ -113,9 +113,9 @@ def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
           Category.comp_id, Iso.hom_inv_id_assoc]}
 
 /-- The underlying presheaf of abelian groups of a presheaf of modules. -/
-def presheaf : Cᵒᵖ ⥤ Ab where
+noncomputable def presheaf : Cᵒᵖ ⥤ Ab where
   obj X := (forget₂ _ _).obj (M.obj X)
-  map f := AddMonoidHom.mk' (M.map f) (by simp)
+  map f := AddCommGrp.ofHom <| AddMonoidHom.mk' (M.map f) (by simp)
 
 @[simp]
 lemma presheaf_obj_coe (X : Cᵒᵖ) :
@@ -123,7 +123,7 @@ lemma presheaf_obj_coe (X : Cᵒᵖ) :
 
 @[simp]
 lemma presheaf_map_apply_coe {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
-    DFunLike.coe (α := M.obj X) (β := fun _ ↦ M.obj Y) (M.presheaf.map f) x = M.map f x := rfl
+    DFunLike.coe (α := M.obj X) (β := fun _ ↦ M.obj Y) (M.presheaf.map f).hom x = M.map f x := rfl
 
 instance (M : PresheafOfModules R) (X : Cᵒᵖ) :
     Module (R.obj X) (M.presheaf.obj X) :=
@@ -131,10 +131,10 @@ instance (M : PresheafOfModules R) (X : Cᵒᵖ) :
 
 variable (R) in
 /-- The forgetful functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ Ab`. -/
-def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
+noncomputable def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
   obj M := M.presheaf
   map f :=
-    { app := fun X ↦ AddMonoidHom.mk' (Hom.app f X) (by simp)
+    { app := fun X ↦ AddCommGrp.ofHom <| AddMonoidHom.mk' (Hom.app f X) (by simp)
       naturality := fun X Y g ↦ by ext x; exact naturality_apply f g x }
 
 @[simp]
@@ -144,7 +144,7 @@ lemma toPresheaf_obj_coe (X : Cᵒᵖ) :
 @[simp]
 lemma toPresheaf_map_app_apply (f : M₁ ⟶ M₂) (X : Cᵒᵖ) (x : M₁.obj X) :
     DFunLike.coe (α := M₁.obj X) (β := fun _ ↦ M₂.obj X)
-      (((toPresheaf R).map f).app X) x = f.app X x := rfl
+      (((toPresheaf R).map f).app X).hom x = f.app X x := rfl
 
 instance : (toPresheaf R).Faithful where
   map_injective {_ _ f g} h := by
@@ -162,7 +162,7 @@ that for all `X : Cᵒᵖ`, `M.obj X` is a `R.obj X` module, in such a way that 
 restriction maps are semilinear. (This constructor should be used only in cases
 when the preferred constructor `PresheafOfModules.mk` is not as convenient as this one.) -/
 @[simps]
-def ofPresheaf : PresheafOfModules.{v} R where
+noncomputable def ofPresheaf : PresheafOfModules.{v} R where
   obj X := ModuleCat.of _ (M.obj X)
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
@@ -181,7 +181,7 @@ end
 of abelian presheaves `M₁.presheaf ⟶ M₂.presheaf`
 which satisfy a suitable linearity condition. -/
 @[simps]
-def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
+noncomputable def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
     (hφ : ∀ (X : Cᵒᵖ) (r : R.obj X) (m : M₁.obj X), φ.app X (r • m) = r • φ.app X m) :
     M₁ ⟶ M₂ where
   app X := ModuleCat.ofHom
@@ -190,7 +190,7 @@ def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
       map_smul' := hφ X }
   naturality := fun f ↦ by
     ext x
-    exact congr_fun ((forget _).congr_map (φ.naturality f)) x
+    exact CategoryTheory.congr_fun (φ.naturality f) x
 
 instance : Zero (M₁ ⟶ M₂) where
   zero := { app := fun _ ↦ 0 }
@@ -262,7 +262,7 @@ noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   app M := M.map f
 
 /-- The obvious free presheaf of modules of rank `1`. -/
-def unit : PresheafOfModules R where
+noncomputable def unit : PresheafOfModules R where
   obj X := ModuleCat.of _ (R.obj X)
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
@@ -316,7 +316,7 @@ lemma sectionsMap_id {M : PresheafOfModules.{v} R} (s : M.sections) :
 
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
 @[simps! apply_coe]
-def unitHomEquiv (M : PresheafOfModules R) :
+noncomputable def unitHomEquiv (M : PresheafOfModules R) :
     (unit R ⟶ M) ≃ M.sections where
   toFun f := sectionsMk (fun X ↦ Hom.app f X (1 : R.obj X))
     (by intros; rw [← naturality_apply, unit_map_one])
@@ -360,7 +360,7 @@ lemma forgetToPresheafModuleCatObjObj_coe (Y : Cᵒᵖ) :
     (forgetToPresheafModuleCatObjObj X hX M Y : Type _) = M.obj Y := rfl
 
 /-- Auxiliary definition for `forgetToPresheafModuleCatObj`. -/
-def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
+noncomputable def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
     forgetToPresheafModuleCatObjObj X hX M Y ⟶
       forgetToPresheafModuleCatObjObj X hX M Z :=
   ModuleCat.ofHom

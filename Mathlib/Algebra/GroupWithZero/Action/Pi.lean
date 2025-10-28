@@ -20,6 +20,7 @@ This file defines instances for `MulActionWithZero` and related structures on `P
 * `Algebra.GroupWithZero.Action.Units`
 -/
 
+assert_not_exists Ring
 
 universe u v
 
@@ -66,7 +67,7 @@ theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMu
 /-- A version of `Pi.single_smul` for non-dependent functions. It is useful in cases where Lean
 fails to apply `Pi.single_smul`. -/
 theorem single_smul' {α β} [Monoid α] [AddMonoid β] [DistribMulAction α β] [DecidableEq I] (i : I)
-    (r : α) (x : β) : single (f := fun _ => β) i (r • x) = r • single (f := fun _ => β) i x :=
+    (r : α) (x : β) : single (M := fun _ => β) i (r • x) = r • single (M := fun _ => β) i x :=
   single_smul (f := fun _ => β) i r x
 
 theorem single_smul₀ {g : I → Type*} [∀ i, MonoidWithZero (f i)] [∀ i, AddMonoid (g i)]

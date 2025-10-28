@@ -5,7 +5,7 @@ Authors: Patrick Massot, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Interval.Set.Instances
 import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # The unit interval, as a topological space
@@ -52,28 +52,12 @@ theorem mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I := by
   rw [mem_Icc, mem_Icc]
   constructor <;> intro <;> constructor <;> linarith
 
-instance hasZero : Zero I :=
-  ⟨⟨0, zero_mem⟩⟩
-
-instance hasOne : One I :=
-  ⟨⟨1, by constructor <;> norm_num⟩⟩
-
-instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
-
-instance : BoundedOrder I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩; inferInstance
-
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
 @[norm_cast] theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
 @[norm_cast] theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 := coe_eq_one.not
 @[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
 @[simp, norm_cast] theorem coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
-
-instance : Nonempty I :=
-  ⟨0⟩
-
-instance : Mul I :=
-  ⟨fun x y => ⟨x * y, mul_mem x.2 y.2⟩⟩
 
 theorem mul_le_left {x y : I} : x * y ≤ x :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
@@ -107,10 +91,20 @@ theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 
--- Porting note: Proof used to be `by continuity!`
+@[simp]
+theorem symm_projIcc (x : ℝ) :
+    symm (projIcc 0 1 zero_le_one x) = projIcc 0 1 zero_le_one (1 - x) := by
+  ext
+  rcases le_total x 0 with h₀ | h₀
+  · simp [projIcc_of_le_left, projIcc_of_right_le, h₀]
+  · rcases le_total x 1 with h₁ | h₁
+    · lift x to I using ⟨h₀, h₁⟩
+      simp_rw [← coe_symm_eq, projIcc_val]
+    · simp [projIcc_of_le_left, projIcc_of_right_le, h₁]
+
 @[continuity, fun_prop]
-theorem continuous_symm : Continuous σ := by
-  apply Continuous.subtype_mk (by fun_prop)
+theorem continuous_symm : Continuous σ :=
+  Continuous.subtype_mk (by fun_prop) _
 
 /-- `unitInterval.symm` as a `Homeomorph`. -/
 @[simps]
@@ -122,8 +116,6 @@ def symmHomeomorph : I ≃ₜ I where
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
-@[deprecated (since := "2024-02-27")] alias involutive_symm := symm_involutive
-@[deprecated (since := "2024-02-27")] alias bijective_symm := symm_bijective
 
 @[simp]
 theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff
@@ -231,7 +223,6 @@ instance : LinearOrderedCommMonoidWithZero I where
     simp only [← Subtype.coe_le_coe, coe_mul]
     apply mul_le_mul le_rfl ?_ (nonneg i) (nonneg k)
     simp [h_ij]
-  __ := inferInstanceAs (LinearOrder I)
 
 end unitInterval
 
@@ -239,14 +230,16 @@ section partition
 
 namespace Set.Icc
 
-variable {α} [LinearOrderedAddCommGroup α] {a b c d : α} (h : a ≤ b) {δ : α}
+variable {α} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+  {a b c d : α} (h : a ≤ b) {δ : α}
 
 -- TODO: Set.projIci, Set.projIic
 /-- `Set.projIcc` is a contraction. -/
 lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| : α) ≤ |c - d| := by
   wlog hdc : d ≤ c generalizing c d
-  · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_le hdc)
-  rw [abs_eq_self.2 (sub_nonneg.2 hdc), abs_eq_self.2 (sub_nonneg.2 <| monotone_projIcc h hdc)]
+  · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_ge hdc)
+  rw [abs_eq_self.2 (sub_nonneg.2 hdc),
+    abs_eq_self.2 (sub_nonneg.2 <| mod_cast monotone_projIcc h hdc)]
   rw [← sub_nonneg] at hdc
   refine (max_sub_max_le_max _ _ _ _).trans (max_le (by rwa [sub_self]) ?_)
   refine ((le_abs_self _).trans <| abs_min_sub_min_le_max _ _ _ _).trans (max_le ?_ ?_)
@@ -254,9 +247,10 @@ lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| 
   · exact (abs_eq_self.mpr hdc).le
 
 /-- When `h : a ≤ b` and `δ > 0`, `addNSMul h δ` is a sequence of points in the closed interval
-  `[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
+`[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
 def addNSMul (δ : α) (n : ℕ) : Icc a b := projIcc a b h (a + n • δ)
 
+omit [IsOrderedAddMonoid α] in
 lemma addNSMul_zero : addNSMul h δ 0 = a := by
   rw [addNSMul, zero_smul, add_zero, projIcc_left]
 
@@ -286,8 +280,8 @@ end Set.Icc
 
 open scoped unitInterval
 
-/-- Any open cover `c` of a closed interval `[a, b]` in ℝ can be refined to
-  a finite partition into subintervals. -/
+/-- Any open cover `c` of a closed interval `[a, b]` in ℝ
+can be refined to a finite partition into subintervals. -/
 lemma exists_monotone_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) : ∃ t : ℕ → Icc a b, t 0 = a ∧
       Monotone t ∧ (∃ m, ∀ n ≥ m, t n = b) ∧ ∀ n, ∃ i, Icc (t n) (t (n + 1)) ⊆ c i := by
@@ -331,7 +325,6 @@ theorem projIcc_eq_one {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 1 ↔ 1 �
 
 namespace Tactic.Interactive
 
--- Porting note: This replaces an unsafe def tactic
 /-- A tactic that solves `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` for `x : I`. -/
 macro "unit_interval" : tactic =>
   `(tactic| (first
@@ -346,7 +339,8 @@ end Tactic.Interactive
 
 section
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 
 -- We only need the ordering on `𝕜` here to avoid talking about flipping the interval over.
 -- At the end of the day I only care about `ℝ`, so I'm hesitant to put work into generalizing.
@@ -375,3 +369,20 @@ theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜
   rfl
 
 end
+
+section NNReal
+
+open unitInterval NNReal
+
+/-- The coercion from `I` to `ℝ≥0`. -/
+def unitInterval.toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
+
+@[fun_prop]
+lemma unitInterval.toNNReal_continuous : Continuous toNNReal := by
+  delta toNNReal
+  fun_prop
+
+@[simp]
+lemma unitInterval.coe_toNNReal (x : I) : ((toNNReal x) : ℝ) = x := rfl
+
+end NNReal

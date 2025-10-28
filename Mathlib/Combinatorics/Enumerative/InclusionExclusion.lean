@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.BigOperators
 
 /-!
@@ -39,6 +39,8 @@ Per the above explanation, this file contains the following variants of inclusio
   version of inclusion-exclusion.
 * Prove that truncating the series alternatively gives an upper/lower bound to the true value.
 -/
+
+assert_not_exists Field
 
 namespace Finset
 variable {ι α G : Type*} [DecidableEq α] [AddCommGroup G] {s : Finset ι}

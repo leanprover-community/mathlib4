@@ -39,12 +39,27 @@ lemma succ_strictMono [NoMaxOrder α] : StrictMono (succ : WithBot α → α)
 @[gcongr] lemma succ_le_succ (hxy : x ≤ y) : x.succ ≤ y.succ := succ_mono hxy
 @[gcongr] lemma succ_lt_succ [NoMaxOrder α] (hxy : x < y) : x.succ < y.succ := succ_strictMono hxy
 
+section LinearOrder
+
+variable {α : Type*} [Nontrivial α] [LinearOrder α] [OrderBot α] [SuccOrder α]
+
+@[simp]
+theorem succ_eq_bot (a : WithBot α) : WithBot.succ a = ⊥ ↔ a = ⊥ := by
+  cases a
+  · simp
+  · simp only [WithBot.succ_coe, WithBot.coe_ne_bot, iff_false]
+    apply ne_of_gt
+    by_contra! h
+    have h₂ : _ = ⊥ := le_bot_iff.mp ((Order.le_succ _).trans h)
+    exact not_isMax_bot (h₂ ▸ Order.max_of_succ_le (h.trans bot_le))
+
+end LinearOrder
 end WithBot
 
 namespace WithTop
 variable {α : Type*} [Preorder α] [OrderTop α] [PredOrder α] {x y : WithTop α}
 
-/-- The predessor of `a : WithTop α` as an element of `α`. -/
+/-- The predecessor of `a : WithTop α` as an element of `α`. -/
 def pred (a : WithTop α) : α := a.recTopCoe ⊤ Order.pred
 
 /-- Not to be confused with `WithTop.orderPred_top`, which is about `Order.pred`. -/
@@ -69,4 +84,19 @@ lemma pred_strictMono [NoMinOrder α] : StrictMono (pred : WithTop α → α)
 @[gcongr] lemma pred_le_pred (hxy : x ≤ y) : x.pred ≤ y.pred := pred_mono hxy
 @[gcongr] lemma pred_lt_pred [NoMinOrder α] (hxy : x < y) : x.pred < y.pred := pred_strictMono hxy
 
+section LinearOrder
+
+variable {α : Type*} [Nontrivial α] [LinearOrder α] [OrderTop α] [PredOrder α]
+
+@[simp]
+theorem pred_eq_top (a : WithTop α) : WithTop.pred a = ⊤ ↔ a = ⊤ := by
+  cases a
+  · simp
+  · simp only [WithTop.pred_coe, WithTop.coe_ne_top, iff_false]
+    apply ne_of_lt
+    by_contra! h
+    have h₂ : _ = ⊤ := top_le_iff.mp (h.trans (Order.pred_le _))
+    exact not_isMin_top (h₂ ▸ Order.min_of_le_pred (le_top.trans h))
+
+end LinearOrder
 end WithTop

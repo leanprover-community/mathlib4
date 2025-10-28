@@ -3,12 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Big operators on a list in rings
@@ -28,7 +28,7 @@ lemma list_sum_right (a : R) (l : List R) (h : ∀ b ∈ l, Commute a b) : Commu
   | nil => exact Commute.zero_right _
   | cons x xs ih =>
     rw [List.sum_cons]
-    exact (h _ <| mem_cons_self _ _).add_right (ih fun j hj ↦ h _ <| mem_cons_of_mem _ hj)
+    exact (h _ mem_cons_self).add_right (ih fun j hj ↦ h _ <| mem_cons_of_mem _ hj)
 
 lemma list_sum_left (b : R) (l : List R) (h : ∀ a ∈ l, Commute a b) : Commute l.sum b :=
   ((Commute.list_sum_right _ _) fun _x hx ↦ (h _ hx).symm).symm
@@ -37,7 +37,7 @@ end Commute
 
 namespace List
 section HasDistribNeg
-variable [CommMonoid M] [HasDistribNeg M]
+variable [Monoid M] [HasDistribNeg M]
 
 @[simp]
 lemma prod_map_neg (l : List M) :
@@ -87,9 +87,9 @@ lemma dvd_sum [NonUnitalSemiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) 
   | nil => exact dvd_zero _
   | cons x l ih =>
     rw [List.sum_cons]
-    exact dvd_add (h _ (mem_cons_self _ _)) (ih fun x hx ↦ h x (mem_cons_of_mem _ hx))
+    exact dvd_add (h _ mem_cons_self) (ih fun x hx ↦ h x (mem_cons_of_mem _ hx))
 
-@[simp] lemma sum_zipWith_distrib_left [Semiring R] (f : ι → κ → R) (a : R) :
+@[simp] lemma sum_zipWith_distrib_left [NonUnitalNonAssocSemiring R] (f : ι → κ → R) (a : R) :
     ∀ (l₁ : List ι) (l₂ : List κ),
       (zipWith (fun i j ↦ a * f i j) l₁ l₂).sum = a * (zipWith f l₁ l₂).sum
   | [], _ => by simp

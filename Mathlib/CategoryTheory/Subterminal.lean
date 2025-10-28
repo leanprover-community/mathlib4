@@ -111,10 +111,10 @@ to the lattice of open subsets of `X`. More generally, if `C` is a topos, this i
 "external truth values".
 -/
 def Subterminals (C : Type u₁) [Category.{v₁} C] :=
-  FullSubcategory fun A : C => IsSubterminal A
+  ObjectProperty.FullSubcategory fun A : C => IsSubterminal A
 
 instance (C : Type u₁) [Category.{v₁} C] :
-  Category (Subterminals C) := FullSubcategory.category _
+  Category (Subterminals C) := ObjectProperty.FullSubcategory.category _
 
 instance [HasTerminal C] : Inhabited (Subterminals C) :=
   ⟨⟨⊤_ C, isSubterminal_of_terminal⟩⟩
@@ -122,13 +122,13 @@ instance [HasTerminal C] : Inhabited (Subterminals C) :=
 /-- The inclusion of the subterminal objects into the original category. -/
 @[simps!]
 def subterminalInclusion : Subterminals C ⥤ C :=
-  fullSubcategoryInclusion _
+  ObjectProperty.ι _
 
 instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Full :=
-  FullSubcategory.full _
+  ObjectProperty.full_ι _
 
 instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Faithful :=
-  FullSubcategory.faithful _
+  ObjectProperty.faithful_ι _
 
 instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) :=
   ⟨fun f g => Y.2 f g⟩
@@ -141,23 +141,16 @@ object (which is in turn equivalent to the subobjects of the terminal object).
 def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoOver (⊤_ C) where
   functor :=
     { obj := fun X => ⟨Over.mk (terminal.from X.1), X.2.mono_terminal_from⟩
-      map := fun f => MonoOver.homMk f (by ext1 ⟨⟨⟩⟩)
-      map_id := fun _ => rfl
-      map_comp := fun _ _ => rfl }
+      map := fun f => MonoOver.homMk f (by ext1 ⟨⟨⟩⟩) }
   inverse :=
     { obj := fun X =>
         ⟨X.obj.left, fun Z f g => by
           rw [← cancel_mono X.arrow]
           subsingleton⟩
-      map := fun f => f.1
-      map_id := fun _ => rfl
-      map_comp := fun _ _ => rfl }
-  -- Porting note: the original definition was triggering a timeout, using `NatIso.ofComponents`
-  -- in the definition of the natural isomorphisms makes the situation slightly better
+      map := fun f => f.1 }
   unitIso := NatIso.ofComponents (fun X => Iso.refl X) (by subsingleton)
   counitIso := NatIso.ofComponents (fun X => MonoOver.isoMk (Iso.refl _)) (by subsingleton)
   functor_unitIso_comp := by subsingleton
-  -- With `aesop` filling the auto-params this was taking 20s or so
 
 @[simp]
 theorem subterminals_to_monoOver_terminal_comp_forget [HasTerminal C] :

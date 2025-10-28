@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.CauSeq.Completion
-import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 # Real numbers from Cauchy sequences
@@ -23,10 +24,7 @@ The fact that the real numbers are a (trivial) *-ring has similarly been deferre
 -/
 
 
-assert_not_exists Finset
-assert_not_exists Module
-assert_not_exists Submonoid
-assert_not_exists FloorRing
+assert_not_exists Finset Module Submonoid FloorRing
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
@@ -36,9 +34,6 @@ structure Real where ofCauchy ::
 
 @[inherit_doc]
 notation "ℝ" => Real
-
--- Porting note: unknown attribute
--- attribute [pp_using_anonymous_constructor] Real
 
 namespace CauSeq.Completion
 
@@ -206,9 +201,9 @@ def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
 
 /-! Extra instances to short-circuit type class resolution.
 
- These short-circuits have an additional property of ensuring that a computable path is found; if
- `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
- version of them. -/
+These short-circuits have an additional property of ensuring that a computable path is found; if
+`Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
+version of them. -/
 
 instance instRing : Ring ℝ := by infer_instance
 
@@ -286,6 +281,8 @@ theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
   rw [← mk_zero, mk_lt]
   exact iff_of_eq (congr_arg Pos (sub_zero f))
 
+lemma mk_const {x : ℚ} : mk (const abs x) = x := rfl
+
 private irreducible_def le (x y : ℝ) : Prop :=
   x < y ∨ x = y
 
@@ -301,9 +298,9 @@ theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
 
 @[elab_as_elim]
 protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
-  cases' x with x
-  induction' x using Quot.induction_on with x
-  exact h x
+  obtain ⟨x⟩ := x
+  induction x using Quot.induction_on
+  exact h _
 
 theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := by
   induction a using Real.ind_mk
@@ -315,80 +312,59 @@ theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := b
 instance partialOrder : PartialOrder ℝ where
   le := (· ≤ ·)
   lt := (· < ·)
-  lt_iff_le_not_le a b := by
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
-    simpa using lt_iff_le_not_le
+  lt_iff_le_not_ge a b := by
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    simpa using lt_iff_le_not_ge
   le_refl a := by
-    induction' a using Real.ind_mk with a
+    induction a using Real.ind_mk
     rw [mk_le]
   le_trans a b c := by
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
-    induction' c using Real.ind_mk with c
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    induction c using Real.ind_mk
     simpa using le_trans
   le_antisymm a b := by
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
-    simpa [mk_eq] using @CauSeq.le_antisymm _ _ a b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    simpa [mk_eq] using CauSeq.le_antisymm
 
 instance : Preorder ℝ := by infer_instance
 
 theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
-  erw [mk_lt]
+  rw [← mk_const, ← mk_const, mk_lt]
   exact const_lt
 
 protected theorem zero_lt_one : (0 : ℝ) < 1 := by
   convert ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
 
+@[deprecated ZeroLEOneClass.factZeroLtOne (since := "2025-05-12")]
 protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
 
-@[deprecated mul_pos (since := "2024-08-15")]
-protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
-  induction' a using Real.ind_mk with a
-  induction' b using Real.ind_mk with b
-  simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
-
-instance instStrictOrderedCommRing : StrictOrderedCommRing ℝ where
-  __ := Real.commRing
+instance instNontrivial : Nontrivial ℝ where
   exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
+
+instance instZeroLEOneClass : ZeroLEOneClass ℝ where
+  zero_le_one := le_of_lt Real.zero_lt_one
+
+instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
   add_le_add_left := by
     simp only [le_iff_eq_or_lt]
     rintro a b ⟨rfl, h⟩
     · simp only [lt_self_iff_false, or_false, forall_const]
     · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
-  zero_le_one := le_of_lt Real.zero_lt_one
-  mul_pos a b :=  by
+
+instance instIsStrictOrderedRing : IsStrictOrderedRing ℝ :=
+  .of_mul_pos fun a b ↦ by
     induction' a using Real.ind_mk with a
     induction' b using Real.ind_mk with b
     simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
-instance strictOrderedRing : StrictOrderedRing ℝ :=
+instance instIsOrderedRing : IsOrderedRing ℝ :=
   inferInstance
 
-instance strictOrderedCommSemiring : StrictOrderedCommSemiring ℝ :=
-  inferInstance
-
-instance strictOrderedSemiring : StrictOrderedSemiring ℝ :=
-  inferInstance
-
-instance orderedRing : OrderedRing ℝ :=
-  inferInstance
-
-instance orderedSemiring : OrderedSemiring ℝ :=
-  inferInstance
-
-instance orderedAddCommGroup : OrderedAddCommGroup ℝ :=
-  inferInstance
-
-instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid ℝ :=
-  inferInstance
-
-instance orderedAddCommMonoid : OrderedAddCommMonoid ℝ :=
-  inferInstance
-
-instance nontrivial : Nontrivial ℝ :=
+instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℝ :=
   inferInstance
 
 private irreducible_def sup : ℝ → ℝ → ℝ
@@ -427,51 +403,51 @@ instance : DistribLattice ℝ :=
     le := (· ≤ ·)
     le_sup_left := by
       intros a b
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
       dsimp only; rw [← mk_sup, mk_le]
       exact CauSeq.le_sup_left
     le_sup_right := by
       intros a b
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
       dsimp only; rw [← mk_sup, mk_le]
       exact CauSeq.le_sup_right
     sup_le := by
       intros a b c
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
-      induction' c using Real.ind_mk with c
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
+      induction c using Real.ind_mk
       simp_rw [← mk_sup, mk_le]
       exact CauSeq.sup_le
     inf := (· ⊓ ·)
     inf_le_left := by
       intros a b
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
       dsimp only; rw [← mk_inf, mk_le]
       exact CauSeq.inf_le_left
     inf_le_right := by
       intros a b
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
       dsimp only; rw [← mk_inf, mk_le]
       exact CauSeq.inf_le_right
     le_inf := by
       intros a b c
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
-      induction' c using Real.ind_mk with c
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
+      induction c using Real.ind_mk
       simp_rw [← mk_inf, mk_le]
       exact CauSeq.le_inf
     le_sup_inf := by
       intros a b c
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
-      induction' c using Real.ind_mk with c
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
+      induction c using Real.ind_mk
       apply Eq.le
       simp only [← mk_sup, ← mk_inf]
-      exact congr_arg mk (CauSeq.sup_inf_distrib_left _ _ _).symm }
+      exact congr_arg mk (CauSeq.sup_inf_distrib_left ..).symm }
 
 -- Extra instances to short-circuit type class resolution
 instance lattice : Lattice ℝ :=
@@ -483,36 +459,25 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-open scoped Classical
-
 instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
   ⟨by
     intros a b
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
-    simpa using le_total a b⟩
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    simpa using CauSeq.le_total ..⟩
 
+open scoped Classical in
 noncomputable instance linearOrder : LinearOrder ℝ :=
   Lattice.toLinearOrder ℝ
 
-noncomputable instance linearOrderedCommRing : LinearOrderedCommRing ℝ :=
-  { Real.nontrivial, Real.strictOrderedRing, Real.commRing, Real.linearOrder with }
-
--- Extra instances to short-circuit type class resolution
-noncomputable instance : LinearOrderedRing ℝ := by infer_instance
-
-noncomputable instance : LinearOrderedSemiring ℝ := by infer_instance
-
-instance : IsDomain ℝ :=
-  { Real.nontrivial, Real.commRing, LinearOrderedRing.isDomain with }
+instance : IsDomain ℝ := IsStrictOrderedRing.isDomain
 
 noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
 
 lemma ofCauchy_div (f g) : (⟨f / g⟩ : ℝ) = (⟨f⟩ : ℝ) / (⟨g⟩ : ℝ) := by
   simp_rw [div_eq_mul_inv, ofCauchy_mul, ofCauchy_inv]
 
-noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
-  toLinearOrderedCommRing := linearOrderedCommRing
+noncomputable instance field : Field ℝ where
   mul_inv_cancel := by
     rintro ⟨a⟩ h
     rw [mul_comm]
@@ -530,10 +495,6 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
     rw [← ofCauchy_ratCast, Rat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_intCast]
 
 -- Extra instances to short-circuit type class resolution
-noncomputable instance : LinearOrderedAddCommGroup ℝ := by infer_instance
-
-noncomputable instance field : Field ℝ := by infer_instance
-
 noncomputable instance : DivisionRing ℝ := by infer_instance
 
 noncomputable instance decidableLT (a b : ℝ) : Decidable (a < b) := by infer_instance
@@ -547,24 +508,25 @@ noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_i
 The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
 converging to the same number may be printed differently.
 -/
-unsafe instance : Repr ℝ where reprPrec r _ := "Real.ofCauchy " ++ repr r.cauchy
+unsafe instance : Repr ℝ where
+  reprPrec r p := Repr.addAppParen ("Real.ofCauchy " ++ repr r.cauchy) p
 
 theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
   intro h
-  induction' x using Real.ind_mk with x
-  apply le_of_not_lt
+  induction x using Real.ind_mk
+  apply le_of_not_gt
   rw [mk_lt]
   rintro ⟨K, K0, hK⟩
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
-  apply not_lt_of_le (H _ le_rfl).1
-  erw [mk_lt]
+  apply not_lt_of_ge (H _ le_rfl).1
+  rw [← mk_const, mk_lt]
   refine ⟨_, half_pos K0, i, fun j ij => ?_⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
 
 theorem mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ i, (f j : ℝ) ≤ x) :
     mk f ≤ x := by
-  cases' h with i H
+  obtain ⟨i, H⟩ := h
   rw [← neg_le_neg_iff, ← mk_neg]
   exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩
 
@@ -578,7 +540,7 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
         le_mk_of_forall_le <| H.imp fun _ h j ij => sub_le_comm.1 (abs_sub_le_iff.1 <| h j ij).2⟩
 
 lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 ≤ (a + 1) ^ b := by
-  rcases ha.eq_or_lt with rfl|ha'
+  rcases ha.eq_or_lt with rfl | ha'
   · simp
   clear ha
   induction b generalizing a with
@@ -595,15 +557,16 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
 
 end Real
 
-/-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
-  `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
-def IsNonarchimedean {A : Type*} [Add A] (f : A → ℝ) : Prop :=
-  ∀ r s, f (r + s) ≤ max (f r) (f s)
-
 /-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
 `f (r ^ n) = (f r) ^ n`. -/
 def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
   ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
+
+lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
+    f 1 ≤ 1 := by
+  have hf1 : (f 1)^2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
+  rcases eq_zero_or_one_of_sq_eq_self hf1 with h | h <;> rw [h]
+  exact zero_le_one
 
 /-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
   `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,

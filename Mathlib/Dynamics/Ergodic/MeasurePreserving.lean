@@ -114,10 +114,19 @@ protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb)
     SigmaFinite μa :=
   SigmaFinite.of_map μa hf.aemeasurable (by rwa [hf.map_eq])
 
+protected theorem sfinite {f : α → β} (hf : MeasurePreserving f μa μb) [SFinite μa] :
+    SFinite μb := by
+  rw [← hf.map_eq]
+  infer_instance
+
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq] at hs ⊢
   rw [map_apply₀ hf.1.aemeasurable hs]
+
+theorem measureReal_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : NullMeasurableSet s μb) : μa.real (f ⁻¹' s) = μb.real s := by
+  simp [measureReal_def, measure_preimage hf hs]
 
 theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (hfe : MeasurableEmbedding f) (s : Set β) : μa (f ⁻¹' s) = μb s := by
@@ -126,6 +135,15 @@ theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
 theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa μb) (s : Set β) :
     μa (f ⁻¹' s) = μb s :=
   measure_preimage_emb hf f.measurableEmbedding s
+
+theorem measure_preimage_le {f : α → β} (hf : MeasurePreserving f μa μb) (s : Set β) :
+    μa (f ⁻¹' s) ≤ μb s := by
+  rw [← hf.map_eq]
+  exact le_map_apply hf.aemeasurable _
+
+theorem preimage_null {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : μb s = 0) : μa (f ⁻¹' s) = 0 :=
+  hf.quasiMeasurePreserving.preimage_null hs
 
 theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : β → γ} (hg : NullMeasurable g μb) :
@@ -180,13 +198,9 @@ theorem exists_mem_iterate_mem_of_measure_univ_lt_mul_measure (hf : MeasurePrese
       ∃ i < n, ∃ j < n, i ≠ j ∧ (f^[i] ⁻¹' s ∩ f^[j] ⁻¹' s).Nonempty := by
     simpa using exists_nonempty_inter_of_measure_univ_lt_sum_measure μ (fun m _ ↦ A m) this
   wlog hlt : i < j generalizing i j
-  · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_lt.resolve_left hlt)
+  · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_gt.resolve_left hlt)
   refine ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, ?_⟩
   rwa [← iterate_add_apply, tsub_add_cancel_of_le hlt.le]
-
-@[deprecated (since := "2024-08-12")]
-alias exists_mem_iterate_mem_of_volume_lt_mul_volume :=
-  exists_mem_iterate_mem_of_measure_univ_lt_mul_measure
 
 /-- A self-map preserving a finite measure is conservative: if `μ s ≠ 0`, then at least one point
 `x ∈ s` comes back to `s` under iterations of `f`. Actually, a.e. point of `s` comes back to `s`

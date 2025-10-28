@@ -7,6 +7,7 @@ import Mathlib.Order.Interval.Set.ProjIcc
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.EMetricSpace.Lipschitz
+import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bounded
 
@@ -29,6 +30,8 @@ The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the defin
 coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` take `K : ℝ` as an
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
+
+assert_not_exists Basis Ideal
 
 universe u v w x
 
@@ -179,11 +182,11 @@ variable [PseudoEMetricSpace α] {f g : α → ℝ} {Kf Kg : ℝ≥0}
 
 protected theorem max (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => max (f x) (g x) := by
-  simpa only [(· ∘ ·), one_mul] using lipschitzWith_max.comp (hf.prod hg)
+  simpa only [(· ∘ ·), one_mul] using lipschitzWith_max.comp (hf.prodMk hg)
 
 protected theorem min (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => min (f x) (g x) := by
-  simpa only [(· ∘ ·), one_mul] using lipschitzWith_min.comp (hf.prod hg)
+  simpa only [(· ∘ ·), one_mul] using lipschitzWith_min.comp (hf.prodMk hg)
 
 theorem max_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max (f x) a := by
   simpa only [max_eq_left (zero_le Kf)] using hf.max (LipschitzWith.const a)
@@ -203,6 +206,13 @@ protected theorem projIcc {a b : ℝ} (h : a ≤ b) : LipschitzWith 1 (projIcc a
   ((LipschitzWith.id.const_min _).const_max _).subtype_mk _
 
 end LipschitzWith
+
+/-- The preimage of a proper space under a Lipschitz proper map is proper. -/
+lemma LipschitzWith.properSpace {X Y : Type*} [PseudoMetricSpace X]
+    [PseudoMetricSpace Y] [ProperSpace Y] {f : X → Y} (hf : IsProperMap f)
+    {K : ℝ≥0} (hf' : LipschitzWith K f) : ProperSpace X :=
+  ⟨fun x r ↦ (hf.isCompact_preimage (isCompact_closedBall (f x) (K * r))).of_isClosed_subset
+    Metric.isClosed_closedBall (hf'.mapsTo_closedBall x r).subset_preimage⟩
 
 namespace Metric
 
@@ -290,12 +300,12 @@ variable [PseudoEMetricSpace α] {f g : α → ℝ}
 /-- The minimum of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma min (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
     LocallyLipschitz (fun x => min (f x) (g x)) :=
-  lipschitzWith_min.locallyLipschitz.comp (hf.prod hg)
+  lipschitzWith_min.locallyLipschitz.comp (hf.prodMk hg)
 
 /-- The maximum of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma max (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
     LocallyLipschitz (fun x => max (f x) (g x)) :=
-  lipschitzWith_max.locallyLipschitz.comp (hf.prod hg)
+  lipschitzWith_max.locallyLipschitz.comp (hf.prodMk hg)
 
 theorem max_const (hf : LocallyLipschitz f) (a : ℝ) : LocallyLipschitz fun x => max (f x) a :=
   hf.max (LocallyLipschitz.const a)

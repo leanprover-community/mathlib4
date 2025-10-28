@@ -77,7 +77,7 @@ lemma isUltrametricDist_of_forall_nnnorm_mul_le_max_nnnorm
   isUltrametricDist_of_forall_norm_mul_le_max_norm h
 
 lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGroup S']
-    (h : IsNonarchimedean ((↑) ∘ (nnnorm : S' → ℝ≥0))) : IsUltrametricDist S' :=
+    (h : IsNonarchimedean (nnnorm : S' → ℝ≥0)) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm h
 
 lemma isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
@@ -264,20 +264,20 @@ Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can alw
 `‖∏ j in t, f j‖ ≤ ‖f i‖`.
 -/
 @[to_additive "Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can always find
-`i ∈ t` such that `‖∑ j in t, f j‖ ≤ ‖f i‖`."]
+`i ∈ t` such that `‖∑ j ∈ t, f j‖ ≤ ‖f i‖`."]
 theorem exists_norm_finset_prod_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
-    ∃ i ∈ t, ‖∏ j in t, f j‖ ≤ ‖f i‖ :=
+    ∃ i ∈ t, ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ :=
   match t.exists_mem_eq_sup' ht (‖f ·‖) with
   |⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
 
 /--
 Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`
-if `t` is nonempty, such that `‖∏ j in t, f j‖ ≤ ‖f i‖`.
+if `t` is nonempty, such that `‖∏ j ∈ t, f j‖ ≤ ‖f i‖`.
 -/
 @[to_additive "Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`,
-belonging to `t` if `t` is nonempty, such that `‖∑ j in t, f j‖ ≤ ‖f i‖`."]
+belonging to `t` if `t` is nonempty, such that `‖∑ j ∈ t, f j‖ ≤ ‖f i‖`."]
 theorem exists_norm_finset_prod_le (t : Finset ι) [Nonempty ι] (f : ι → M) :
-    ∃ i : ι, (t.Nonempty → i ∈ t) ∧ ‖∏ j in t, f j‖ ≤ ‖f i‖ := by
+    ∃ i : ι, (t.Nonempty → i ∈ t) ∧ ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ := by
   rcases t.eq_empty_or_nonempty with rfl | ht
   · simp
   exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finset_prod_le_of_nonempty ht f
@@ -293,7 +293,7 @@ theorem exists_norm_multiset_prod_le (s : Multiset ι) [Nonempty ι] {f : ι →
   inhabit ι
   induction s using Multiset.induction_on with
   | empty => simp
-  | @cons a t hM =>
+  | cons a t hM =>
       obtain ⟨M, hMs, hM⟩ := hM
       by_cases hMa : ‖f M‖ ≤ ‖f a‖
       · refine ⟨a, by simp, ?_⟩

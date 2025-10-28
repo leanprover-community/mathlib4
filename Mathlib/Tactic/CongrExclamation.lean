@@ -371,7 +371,7 @@ where
         let cinfo ← getConstInfo congrTheorem.theoremName
         let us ← cinfo.levelParams.mapM fun _ => mkFreshLevelMVar
         let proof := mkConst congrTheorem.theoremName us
-        let ptype ← instantiateTypeLevelParams cinfo us
+        let ptype ← instantiateTypeLevelParams cinfo.toConstantVal us
         applyCongrThm? config mvarId ptype proof
       if let some mvars := res then
         return mvars
@@ -401,7 +401,7 @@ Try to apply `Function.hfunext`, returning the new goals if it succeeds.
 Like `Lean.MVarId.obviousFunext?`, we only do so if at least one side of the `HEq` is a lambda.
 This prevents unfolding of things like `Set`.
 
-Need to have `Mathlib.Logic.Function.Basic` imported for this to succeed.
+Need to have `Mathlib/Logic/Function/Basic.lean` imported for this to succeed.
 -/
 def Lean.MVarId.obviousHfunext? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
   mvarId.withContext <| observing? do
@@ -424,11 +424,6 @@ def Lean.MVarId.congrImplies?' (mvarId : MVarId) : MetaM (Option (List MVarId)) 
     let [mvarId₁, mvarId₂] ← mvarId.apply (← mkConstWithFreshMVarLevels ``implies_congr')
       | throwError "unexpected number of goals"
     return [mvarId₁, mvarId₂]
-
-protected theorem FastSubsingleton.helim {α β : Sort u} [FastSubsingleton α]
-    (h₂ : α = β) (a : α) (b : β) : HEq a b := by
-  have : Subsingleton α := FastSubsingleton.inst
-  exact Subsingleton.helim h₂ a b
 
 /--
 Try to apply `Subsingleton.helim` if the goal is a `HEq`. Tries synthesizing a `Subsingleton`

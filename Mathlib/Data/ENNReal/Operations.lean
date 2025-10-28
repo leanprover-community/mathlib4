@@ -3,10 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.WithTop
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.ENNReal.Basic
-import Mathlib.Data.NNReal.Basic
+import Mathlib.Data.ENNReal.Real
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
@@ -14,10 +11,13 @@ import Mathlib.Data.NNReal.Basic
 In this file we prove elementary properties of algebraic operations on `ℝ≥0∞`, including addition,
 multiplication, natural powers and truncated subtraction, as well as how these interact with the
 order structure on `ℝ≥0∞`. Notably excluded from this list are inversion and division, the
-definitions and properties of which can be found in `Data.ENNReal.Inv`.
+definitions and properties of which can be found in `Mathlib/Data/ENNReal/Inv.lean`.
 
-Note: the definitions of the operations included in this file can be found in `Data.ENNReal.Basic`.
+Note: the definitions of the operations included in this file can be found in
+`Mathlib/Data/ENNReal/Basic.lean`.
 -/
+
+assert_not_exists Finset
 
 open Set NNReal ENNReal
 
@@ -30,27 +30,13 @@ section Mul
 @[mono, gcongr]
 theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := WithTop.mul_lt_mul ac bd
 
-@[deprecated mul_left_mono (since := "2024-10-15")]
-protected theorem mul_left_mono : Monotone (a * ·) := mul_left_mono
-
-@[deprecated mul_right_mono (since := "2024-10-15")]
-protected theorem mul_right_mono : Monotone (· * a) := mul_right_mono
-
 protected lemma pow_right_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : ℝ≥0∞ ↦ a ^ n :=
   WithTop.pow_right_strictMono hn
-
-@[deprecated (since := "2024-10-15")] alias pow_strictMono := ENNReal.pow_right_strictMono
 
 @[gcongr] protected lemma pow_lt_pow_left (hab : a < b) {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n :=
   WithTop.pow_lt_pow_left hab hn
 
-@[deprecated max_mul (since := "2024-10-15")]
-protected theorem max_mul : max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
-
-@[deprecated mul_max (since := "2024-10-15")]
-protected theorem mul_max : a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
+-- TODO: generalize to `WithTop`
 theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) := by
   lift a to ℝ≥0 using hinf
   rw [coe_ne_zero] at h0
@@ -67,42 +53,48 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
     b * a < c * a :=
   mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_left_strictMono h0 hinf bc
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
-theorem mul_eq_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
+-- TODO: generalize to `WithTop`
+protected theorem mul_right_inj (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
   (mul_left_strictMono h0 hinf).injective.eq_iff
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
-theorem mul_eq_mul_right : c ≠ 0 → c ≠ ∞ → (a * c = b * c ↔ a = b) :=
-  mul_comm c a ▸ mul_comm c b ▸ mul_eq_mul_left
+@[deprecated (since := "2025-01-20")]
+alias mul_eq_mul_left := ENNReal.mul_right_inj
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
+-- TODO: generalize to `WithTop`
+protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c = b * c ↔ a = b :=
+  mul_comm c a ▸ mul_comm c b ▸ ENNReal.mul_right_inj h0 hinf
+
+@[deprecated (since := "2025-01-20")]
+alias mul_eq_mul_right := ENNReal.mul_left_inj
+
+-- TODO: generalize to `WithTop`
 theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
   (mul_left_strictMono h0 hinf).le_iff_le
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
+-- TODO: generalize to `WithTop`
 theorem mul_le_mul_right : c ≠ 0 → c ≠ ∞ → (a * c ≤ b * c ↔ a ≤ b) :=
   mul_comm c a ▸ mul_comm c b ▸ mul_le_mul_left
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
+-- TODO: generalize to `WithTop`
 theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b < a * c ↔ b < c :=
   (mul_left_strictMono h0 hinf).lt_iff_lt
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
+-- TODO: generalize to `WithTop`
 theorem mul_lt_mul_right : c ≠ 0 → c ≠ ∞ → (a * c < b * c ↔ a < b) :=
   mul_comm c a ▸ mul_comm c b ▸ mul_lt_mul_left
 
 protected lemma mul_eq_left (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * b = a ↔ b = 1 := by
-  simpa using ENNReal.mul_eq_mul_left ha₀ ha (c := 1)
+  simpa using ENNReal.mul_right_inj ha₀ ha (c := 1)
 
 protected lemma mul_eq_right (hb₀ : b ≠ 0) (hb : b ≠ ∞) : a * b = b ↔ a = 1 := by
-  simpa using ENNReal.mul_eq_mul_right hb₀ hb (b := 1)
+  simpa using ENNReal.mul_left_inj hb₀ hb (b := 1)
 
 end Mul
 
 section OperationsAndOrder
 
 protected theorem pow_pos : 0 < a → ∀ n : ℕ, 0 < a ^ n :=
-  CanonicallyOrderedCommSemiring.pow_pos
+  CanonicallyOrderedAdd.pow_pos
 
 protected theorem pow_ne_zero : a ≠ 0 → ∀ n : ℕ, a ^ n ≠ 0 := by
   simpa only [pos_iff_ne_zero] using ENNReal.pow_pos
@@ -149,7 +141,7 @@ end OperationsAndOrder
 
 section OperationsAndInfty
 
-variable {α : Type*}
+variable {α : Type*} {n : ℕ}
 
 @[simp] theorem add_eq_top : a + b = ∞ ↔ a = ∞ ∨ b = ∞ := WithTop.add_eq_top
 
@@ -161,6 +153,21 @@ theorem toNNReal_add {r₁ r₂ : ℝ≥0∞} (h₁ : r₁ ≠ ∞) (h₂ : r₂
   lift r₂ to ℝ≥0 using h₂
   rfl
 
+/-- If `a ≤ b + c` and `a = ∞` whenever `b = ∞` or `c = ∞`, then
+`ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
+triangle-like inequalities from `ENNReal`s to `Real`s. -/
+theorem toReal_le_add' (hle : a ≤ b + c) (hb : b = ∞ → a = ∞) (hc : c = ∞ → a = ∞) :
+    a.toReal ≤ b.toReal + c.toReal := by
+  refine le_trans (toReal_mono' hle ?_) toReal_add_le
+  simpa only [add_eq_top, or_imp] using And.intro hb hc
+
+/-- If `a ≤ b + c`, `b ≠ ∞`, and `c ≠ ∞`, then
+`ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
+triangle-like inequalities from `ENNReal`s to `Real`s. -/
+theorem toReal_le_add (hle : a ≤ b + c) (hb : b ≠ ∞) (hc : c ≠ ∞) :
+    a.toReal ≤ b.toReal + c.toReal :=
+  toReal_le_add' hle (flip absurd hb) (flip absurd hc)
+
 theorem not_lt_top {x : ℝ≥0∞} : ¬x < ∞ ↔ x = ∞ := by rw [lt_top_iff_ne_top, Classical.not_not]
 
 theorem add_ne_top : a + b ≠ ∞ ↔ a ≠ ∞ ∧ b ≠ ∞ := by simpa only [lt_top_iff_ne_top] using add_lt_top
@@ -171,18 +178,13 @@ protected lemma Finiteness.add_ne_top {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : 
 
 theorem mul_top' : a * ∞ = if a = 0 then 0 else ∞ := by convert WithTop.mul_top' a
 
--- Porting note: added because `simp` no longer uses `WithTop` lemmas for `ℝ≥0∞`
 @[simp] theorem mul_top (h : a ≠ 0) : a * ∞ = ∞ := WithTop.mul_top h
 
 theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert WithTop.top_mul' a
 
--- Porting note: added because `simp` no longer uses `WithTop` lemmas for `ℝ≥0∞`
 @[simp] theorem top_mul (h : a ≠ 0) : ∞ * a = ∞ := WithTop.top_mul h
 
 theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: assume `n ≠ 0` instead of `0 < n`
-theorem top_pow {n : ℕ} (n_pos : 0 < n) : (∞ : ℝ≥0∞) ^ n = ∞ := WithTop.top_pow n_pos
 
 theorem mul_eq_top : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0 :=
   WithTop.mul_eq_top_iff
@@ -213,39 +215,30 @@ theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
   exact zero_lt_top
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
-  CanonicallyOrderedCommSemiring.mul_pos
+  CanonicallyOrderedAdd.mul_pos
 
 theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
   mul_pos_iff.2 ⟨pos_iff_ne_zero.2 ha, pos_iff_ne_zero.2 hb⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
-@[simp] theorem pow_eq_top_iff {n : ℕ} : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := by
-  rcases n.eq_zero_or_pos with rfl | (hn : 0 < n)
-  · simp
-  · induction a
-    · simp only [Ne, hn.ne', top_pow hn, not_false_eq_true, and_self]
-    · simp only [← coe_pow, coe_ne_top, false_and]
+@[simp] lemma top_pow {n : ℕ} (hn : n ≠ 0) : (∞ : ℝ≥0∞) ^ n = ∞ := WithTop.top_pow hn
 
-theorem pow_eq_top (n : ℕ) (h : a ^ n = ∞) : a = ∞ :=
-  (pow_eq_top_iff.1 h).1
+@[simp] lemma pow_eq_top_iff : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := WithTop.pow_eq_top_iff
 
-theorem pow_ne_top (h : a ≠ ∞) {n : ℕ} : a ^ n ≠ ∞ :=
-  mt (pow_eq_top n) h
+lemma pow_ne_top_iff : a ^ n ≠ ∞ ↔ a ≠ ∞ ∨ n = 0 := WithTop.pow_ne_top_iff
 
-theorem pow_lt_top : a < ∞ → ∀ n : ℕ, a ^ n < ∞ := by
-  simpa only [lt_top_iff_ne_top] using pow_ne_top
+@[simp] lemma pow_lt_top_iff : a ^ n < ∞ ↔ a < ∞ ∨ n = 0 := WithTop.pow_lt_top_iff
 
-@[simp, norm_cast]
-theorem coe_finset_sum {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℝ≥0∞) :=
-  map_sum ofNNRealHom f s
+lemma eq_top_of_pow (n : ℕ) (ha : a ^ n = ∞) : a = ∞ := WithTop.eq_top_of_pow n ha
 
-@[simp, norm_cast]
-theorem coe_finset_prod {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℝ≥0∞) :=
-  map_prod ofNNRealHom f s
+@[deprecated (since := "2025-04-24")] alias pow_eq_top := eq_top_of_pow
+
+@[aesop (rule_sets := [finiteness]) safe apply]
+lemma pow_ne_top (ha : a ≠ ∞) : a ^ n ≠ ∞ := WithTop.pow_ne_top ha
+lemma pow_lt_top (ha : a < ∞) : a ^ n < ∞ := WithTop.pow_lt_top ha
 
 end OperationsAndInfty
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
+-- TODO: generalize to `WithTop`
 @[gcongr] protected theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
   lift a to ℝ≥0 using ac.ne_top
   lift b to ℝ≥0 using bd.ne_top
@@ -256,14 +249,14 @@ end OperationsAndInfty
 
 section Cancel
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
+-- TODO: generalize to `WithTop`
 /-- An element `a` is `AddLECancellable` if `a + b ≤ a + c` implies `b ≤ c` for all `b` and `c`.
   This is true in `ℝ≥0∞` for all elements except `∞`. -/
 @[simp]
 theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ := by
   constructor
   · rintro h rfl
-    refine zero_lt_one.not_le (h ?_)
+    refine zero_lt_one.not_ge (h ?_)
     simp
   · rintro h b c hbc
     apply ENNReal.le_of_add_le_add_left h hbc
@@ -306,7 +299,7 @@ theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
 @[simp] lemma top_sub (ha : a ≠ ∞) : ∞ - a = ∞ := by lift a to ℝ≥0 using ha; exact top_sub_coe
 
 /-- This is a special case of `WithTop.sub_top` in the `ENNReal` namespace -/
-theorem sub_top : a - ∞ = 0 := WithTop.sub_top
+@[simp] theorem sub_top : a - ∞ = 0 := WithTop.sub_top
 
 @[simp] theorem sub_eq_top_iff : a - b = ∞ ↔ a = ∞ ∧ b ≠ ∞ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ∞ ↔ a ≠ ∞ ∨ b = ∞ := WithTop.sub_ne_top_iff
@@ -318,9 +311,6 @@ theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| m
 @[simp, norm_cast]
 theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
   rw [← coe_natCast, Nat.cast_tsub, coe_sub, coe_natCast, coe_natCast]
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_sub := natCast_sub
 
 /-- See `ENNReal.sub_eq_of_eq_add'` for a version assuming that `a = c + b` itself is finite rather
 than `b`. -/
@@ -352,17 +342,11 @@ rather than `b`. -/
 protected lemma sub_eq_of_eq_add_rev' (ha : a ≠ ∞) : a = b + c → a - b = c :=
   (cancel_of_ne ha).tsub_eq_of_eq_add_rev'
 
-@[deprecated ENNReal.sub_eq_of_eq_add (since := "2024-09-30")]
-theorem sub_eq_of_add_eq (hb : b ≠ ∞) (hc : a + b = c) : c - b = a :=
-  ENNReal.sub_eq_of_eq_add hb hc.symm
+protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b := by
+  simp [ha]
 
-@[simp]
-protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b :=
-  (cancel_of_ne ha).add_tsub_cancel_left
-
-@[simp]
-protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a :=
-  (cancel_of_ne hb).add_tsub_cancel_right
+protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a := by
+  simp [hb]
 
 protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
     a - b + c = a + c - b := by
@@ -411,7 +395,7 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
     (cancel_of_ne <| ne_top_of_le_ne_top ha hc) hb hc
 
 protected theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
-  rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab, tsub_eq_zero_of_le]
+  rcases le_or_gt a b with hab | hab; · simp [hab, mul_right_mono hab, tsub_eq_zero_of_le]
   rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 
@@ -423,69 +407,29 @@ theorem sub_le_sub_iff_left (h : c ≤ a) (h' : a ≠ ∞) :
     (a - b ≤ a - c) ↔ c ≤ b :=
   (cancel_of_ne h').tsub_le_tsub_iff_left (cancel_of_ne (ne_top_of_le_ne_top h' h)) h
 
+theorem le_toReal_sub {a b : ℝ≥0∞} (hb : b ≠ ∞) : a.toReal - b.toReal ≤ (a - b).toReal := by
+  lift b to ℝ≥0 using hb
+  induction a
+  · simp
+  · simp only [← coe_sub, NNReal.sub_def, Real.coe_toNNReal', coe_toReal]
+    exact le_max_left _ _
+
+@[simp]
+lemma toNNReal_sub (hb : b ≠ ∞) : (a - b).toNNReal = a.toNNReal - b.toNNReal := by
+  lift b to ℝ≥0 using hb; induction a <;> simp [← coe_sub]
+
+@[simp]
+lemma toReal_sub_of_le (hba : b ≤ a) (ha : a ≠ ∞) : (a - b).toReal = a.toReal - b.toReal := by
+  simp [ENNReal.toReal, ne_top_of_le_ne_top ha hba, toNNReal_mono ha hba]
+
+theorem ofReal_sub (p : ℝ) {q : ℝ} (hq : 0 ≤ q) :
+    ENNReal.ofReal (p - q) = ENNReal.ofReal p - ENNReal.ofReal q := by
+  obtain h | h := le_total p q
+  · rw [ofReal_of_nonpos (sub_nonpos_of_le h), tsub_eq_zero_of_le (ofReal_le_ofReal h)]
+  refine ENNReal.eq_sub_of_add_eq ofReal_ne_top ?_
+  rw [← ofReal_add (sub_nonneg_of_le h) hq, sub_add_cancel]
+
 end Sub
-
-section Sum
-
-open Finset
-
-variable {α : Type*} {s : Finset α} {f : α → ℝ≥0∞}
-
-/-- A product of finite numbers is still finite. -/
-lemma prod_ne_top (h : ∀ a ∈ s, f a ≠ ∞) : ∏ a ∈ s, f a ≠ ∞ := WithTop.prod_ne_top h
-
-/-- A product of finite numbers is still finite. -/
-lemma prod_lt_top (h : ∀ a ∈ s, f a < ∞) : ∏ a ∈ s, f a < ∞ := WithTop.prod_lt_top h
-
-/-- A sum is infinite iff one of the summands is infinite. -/
-@[simp] lemma sum_eq_top : ∑ x ∈ s, f x = ∞ ↔ ∃ a ∈ s, f a = ∞ := WithTop.sum_eq_top
-
-/-- A sum is finite iff all summands are finite. -/
-lemma sum_ne_top : ∑ a ∈ s, f a ≠ ∞ ↔ ∀ a ∈ s, f a ≠ ∞ := WithTop.sum_ne_top
-
-/-- A sum is finite iff all summands are finite. -/
-@[simp] lemma sum_lt_top : ∑ a ∈ s, f a < ∞ ↔ ∀ a ∈ s, f a < ∞ := WithTop.sum_lt_top
-
-@[deprecated (since := "2024-08-25")] alias sum_lt_top_iff := sum_lt_top
-
-theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∑ x ∈ s, f x ≠ ∞) {a : α}
-    (ha : a ∈ s) : f a < ∞ :=
-  sum_lt_top.1 h.lt_top a ha
-
-/-- Seeing `ℝ≥0∞` as `ℝ≥0` does not change their sum, unless one of the `ℝ≥0∞` is
-infinity -/
-theorem toNNReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≠ ∞) :
-    ENNReal.toNNReal (∑ a ∈ s, f a) = ∑ a ∈ s, ENNReal.toNNReal (f a) := by
-  rw [← coe_inj, coe_toNNReal, coe_finset_sum, sum_congr rfl]
-  · intro x hx
-    exact (coe_toNNReal (hf x hx)).symm
-  · exact sum_ne_top.2 hf
-
-/-- seeing `ℝ≥0∞` as `Real` does not change their sum, unless one of the `ℝ≥0∞` is infinity -/
-theorem toReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≠ ∞) :
-    ENNReal.toReal (∑ a ∈ s, f a) = ∑ a ∈ s, ENNReal.toReal (f a) := by
-  rw [ENNReal.toReal, toNNReal_sum hf, NNReal.coe_sum]
-  rfl
-
-theorem ofReal_sum_of_nonneg {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
-    ENNReal.ofReal (∑ i ∈ s, f i) = ∑ i ∈ s, ENNReal.ofReal (f i) := by
-  simp_rw [ENNReal.ofReal, ← coe_finset_sum, coe_inj]
-  exact Real.toNNReal_sum_of_nonneg hf
-
-theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
-    (Hlt : ∀ i ∈ s, f i < g i) : ∑ i ∈ s, f i < ∑ i ∈ s, g i := by
-  induction hs using Finset.Nonempty.cons_induction with
-  | singleton => simp [Hlt _ (Finset.mem_singleton_self _)]
-  | cons _ _ _ _ ih =>
-    simp only [Finset.sum_cons, forall_mem_cons] at Hlt ⊢
-    exact ENNReal.add_lt_add Hlt.1 (ih Hlt.2)
-
-theorem exists_le_of_sum_le {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
-    (Hle : ∑ i ∈ s, f i ≤ ∑ i ∈ s, g i) : ∃ i ∈ s, f i ≤ g i := by
-  contrapose! Hle
-  apply ENNReal.sum_lt_sum_of_nonempty hs Hle
-
-end Sum
 
 section Interval
 
@@ -499,70 +443,39 @@ theorem mem_Iio_self_add : x ≠ ∞ → ε ≠ 0 → x ∈ Iio (x + ε) := fun 
 theorem mem_Ioo_self_sub_add : x ≠ ∞ → x ≠ 0 → ε₁ ≠ 0 → ε₂ ≠ 0 → x ∈ Ioo (x - ε₁) (x + ε₂) :=
   fun xt x0 ε0 ε0' => ⟨ENNReal.sub_lt_self xt x0 ε0, lt_add_right xt ε0'⟩
 
+@[simp]
+theorem image_coe_Iic (x : ℝ≥0) : (↑) '' Iic x = Iic (x : ℝ≥0∞) := WithTop.image_coe_Iic
+
+@[simp]
+theorem image_coe_Ici (x : ℝ≥0) : (↑) '' Ici x = Ico ↑x ∞ := WithTop.image_coe_Ici
+
+@[simp]
+theorem image_coe_Iio (x : ℝ≥0) : (↑) '' Iio x = Iio (x : ℝ≥0∞) := WithTop.image_coe_Iio
+
+@[simp]
+theorem image_coe_Ioi (x : ℝ≥0) : (↑) '' Ioi x = Ioo ↑x ∞ := WithTop.image_coe_Ioi
+
+@[simp]
+theorem image_coe_Icc (x y : ℝ≥0) : (↑) '' Icc x y = Icc (x : ℝ≥0∞) y := WithTop.image_coe_Icc
+
+@[simp]
+theorem image_coe_Ico (x y : ℝ≥0) : (↑) '' Ico x y = Ico (x : ℝ≥0∞) y := WithTop.image_coe_Ico
+
+@[simp]
+theorem image_coe_Ioc (x y : ℝ≥0) : (↑) '' Ioc x y = Ioc (x : ℝ≥0∞) y := WithTop.image_coe_Ioc
+
+@[simp]
+theorem image_coe_Ioo (x y : ℝ≥0) : (↑) '' Ioo x y = Ioo (x : ℝ≥0∞) y := WithTop.image_coe_Ioo
+
+@[simp]
+theorem image_coe_uIcc (x y : ℝ≥0) : (↑) '' uIcc x y = uIcc (x : ℝ≥0∞) y := by simp [uIcc]
+
+@[simp]
+theorem image_coe_uIoc (x y : ℝ≥0) : (↑) '' uIoc x y = uIoc (x : ℝ≥0∞) y := by simp [uIoc]
+
+@[simp]
+theorem image_coe_uIoo (x y : ℝ≥0) : (↑) '' uIoo x y = uIoo (x : ℝ≥0∞) y := by simp [uIoo]
+
 end Interval
-
--- TODO: generalize some of these to `WithTop α`
-section Actions
-
-/-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
-noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
-  MulAction.compHom M ofNNRealHom.toMonoidHom
-
-theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
-  rfl
-
-instance {M N : Type*} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
-    IsScalarTower ℝ≥0 M N where smul_assoc r := (smul_assoc (r : ℝ≥0∞) : _)
-
-instance smulCommClass_left {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
-    SMulCommClass ℝ≥0 M N where smul_comm r := (smul_comm (r : ℝ≥0∞) : _)
-
-instance smulCommClass_right {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
-    SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ≥0∞) : _)
-
-/-- A `DistribMulAction` over `ℝ≥0∞` restricts to a `DistribMulAction` over `ℝ≥0`. -/
-noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M] :
-    DistribMulAction ℝ≥0 M :=
-  DistribMulAction.compHom M ofNNRealHom.toMonoidHom
-
-/-- A `Module` over `ℝ≥0∞` restricts to a `Module` over `ℝ≥0`. -/
-noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
-  Module.compHom M ofNNRealHom
-
-/-- An `Algebra` over `ℝ≥0∞` restricts to an `Algebra` over `ℝ≥0`. -/
-noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where
-  smul := (· • ·)
-  commutes' r x := by simp [Algebra.commutes]
-  smul_def' r x := by simp [← Algebra.smul_def (r : ℝ≥0∞) x, smul_def]
-  toRingHom := (algebraMap ℝ≥0∞ A).comp (ofNNRealHom : ℝ≥0 →+* ℝ≥0∞)
-
--- verify that the above produces instances we might care about
-noncomputable example : Algebra ℝ≥0 ℝ≥0∞ := inferInstance
-
-noncomputable example : DistribMulAction ℝ≥0ˣ ℝ≥0∞ := inferInstance
-
-theorem coe_smul {R} (r : R) (s : ℝ≥0) [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0]
-    [IsScalarTower R ℝ≥0 ℝ≥0∞] : (↑(r • s) : ℝ≥0∞) = (r : R) • (s : ℝ≥0∞) := by
-  rw [← smul_one_smul ℝ≥0 r (s : ℝ≥0∞), smul_def, smul_eq_mul, ← ENNReal.coe_mul, smul_mul_assoc,
-    one_mul]
-
--- Porting note: added missing `DecidableEq R`
-theorem smul_top {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    [NoZeroSMulDivisors R ℝ≥0∞] [DecidableEq R] (c : R) :
-    c • ∞ = if c = 0 then 0 else ∞ := by
-  rw [← smul_one_mul, mul_top']
-  -- Porting note: need the primed version of `one_ne_zero` now
-  simp_rw [smul_eq_zero, or_iff_left (one_ne_zero' ℝ≥0∞)]
-
-lemma nnreal_smul_lt_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y < ⊤) : x • y < ⊤ := mul_lt_top (by simp) hy
-lemma nnreal_smul_ne_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y ≠ ⊤) : x • y ≠ ⊤ := mul_ne_top (by simp) hy
-
-lemma nnreal_smul_ne_top_iff {x : ℝ≥0} {y : ℝ≥0∞} (hx : x ≠ 0) : x • y ≠ ⊤ ↔ y ≠ ⊤ :=
-  ⟨by rintro h rfl; simp [smul_top, hx] at h, nnreal_smul_ne_top⟩
-
-lemma nnreal_smul_lt_top_iff {x : ℝ≥0} {y : ℝ≥0∞} (hx : x ≠ 0) : x • y < ⊤ ↔ y < ⊤ := by
-  rw [lt_top_iff_ne_top, lt_top_iff_ne_top, nnreal_smul_ne_top_iff hx]
-
-end Actions
 
 end ENNReal

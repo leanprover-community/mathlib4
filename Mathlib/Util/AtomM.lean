@@ -45,6 +45,14 @@ def AtomM.run {α : Type} (red : TransparencyMode) (m : AtomM α)
     MetaM α :=
   (m { red, evalAtom }).run' {}
 
+/-- A safe version of `isDefEq` that doesn't throw errors. We use it to avoid
+"unknown free variable '_fvar.102937'" errors when there may be out-of-scope free variables.
+
+TODO: don't catch any other errors
+-/
+def isDefEqSafe (a b : Expr) : MetaM Bool :=
+  try isDefEq a b catch _ => pure false
+
 /-- If an atomic expression has already been encountered, get the index and the stored form of the
 atom (which will be defeq at the specified transparency, but not necessarily syntactically equal).
 If the atomic expression has *not* already been encountered, store it in the list of atoms, and
@@ -55,7 +63,7 @@ In a normalizing tactic, the expression returned by `addAtom` should be consider
 def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) := do
   let c ← get
   for h : i in [:c.atoms.size] do
-    if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
+    if ← withTransparency (← read).red <| isDefEqSafe e c.atoms[i] then
       return (i, c.atoms[i])
   modifyGet fun c ↦ ((c.atoms.size, e), { c with atoms := c.atoms.push e })
 

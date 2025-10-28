@@ -3,10 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Data.Countable.Small
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Countable.Small
 /-!
 # Countable categories
 
@@ -15,8 +15,6 @@ A category is countable in this sense if it has countably many objects and count
 -/
 
 universe w v u
-
-open scoped Classical
 
 noncomputable section
 

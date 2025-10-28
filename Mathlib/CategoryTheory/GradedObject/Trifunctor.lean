@@ -186,12 +186,10 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
     { obj := fun X₃ => mapTrifunctorMapObj F p X₁ X₂ X₃
       map := fun {_ _} φ => mapTrifunctorMapMap F p (𝟙 X₁) (𝟙 X₂) φ
       map_id := fun X₃ => by
-        dsimp
         ext j i₁ i₂ i₃ h
         simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, id_comp, comp_id]
       map_comp := fun {X₃ Y₃ Z₃} φ ψ => by
-        dsimp
         ext j i₁ i₂ i₃ h
         simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, assoc, id_comp,
@@ -204,12 +202,10 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
         simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp, NatTrans.naturality_assoc] }
   map_id X₂ := by
-    dsimp
     ext X₃ j i₁ i₂ i₃ h
     simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
       NatTrans.id_app, id_comp, comp_id]
   map_comp {X₂ Y₂ Z₂} φ ψ := by
-    dsimp
     ext X₃ j i₁ i₂ i₃
     simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
       NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, NatTrans.comp_app,
@@ -330,8 +326,7 @@ noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
       invFun := fun ⟨⟨i₁, i₂⟩, hi⟩ => ⟨⟨i₁, i₂, i₃⟩, by aesop_cat⟩
       left_inv := fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => by
         obtain rfl : i₃ = i₃' := by aesop_cat
-        rfl
-      right_inv := fun _ => rfl }
+        rfl }
   let c₁₂'' : ∀ (i : ρ₁₂.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
     fun ⟨⟨i₁₂, i₃⟩, hi⟩ => by
       refine (Cocones.precompose (Iso.hom ?_)).obj ((Cocones.whiskeringEquivalence
@@ -509,8 +504,7 @@ noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
       invFun := fun ⟨⟨i₂, i₃⟩, hi⟩  => ⟨⟨i₁, i₂, i₃⟩, by aesop_cat⟩
       left_inv := fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => by
         obtain rfl : i₁ = i₁' := by aesop_cat
-        rfl
-      right_inv := fun _ => rfl }
+        rfl }
   let c₂₃'' : ∀ (i : ρ₂₃.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
     fun ⟨⟨i₁, i₂₃⟩, hi⟩ => by
       refine (Cocones.precompose (Iso.hom ?_)).obj ((Cocones.whiskeringEquivalence

@@ -21,9 +21,9 @@ namespace CommGroup
 open MonoidHom
 
 private
-lemma dvd_exponent {ι G : Type*} [Finite ι] [CommGroup G] {n : ι → ℕ}
+lemma dvd_exponent {ι G : Type*} [Finite ι] [Monoid G] {n : ι → ℕ}
     (e : G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) (i : ι) :
-  n i ∣ Monoid.exponent G := by
+    n i ∣ Monoid.exponent G := by
   classical -- to get `DecidableEq ι`
   have : n i = orderOf (e.symm <| Pi.mulSingle i <| .ofAdd 1) := by
     simpa only [MulEquiv.orderOf_eq, orderOf_piMulSingle, orderOf_ofAdd_eq_addOrderOf]
@@ -33,8 +33,9 @@ lemma dvd_exponent {ι G : Type*} [Finite ι] [CommGroup G] {n : ι → ℕ}
 variable (G M : Type*) [CommGroup G] [Finite G] [CommMonoid M]
 
 private
-lemma exists_apply_ne_one_aux (H : ∀ n : ℕ, n ∣ Monoid.exponent G → ∀ a : ZMod n, a ≠ 0 →
-    ∃ φ : Multiplicative (ZMod n) →* M, φ (.ofAdd a) ≠ 1)
+lemma exists_apply_ne_one_aux
+    (H : ∀ n : ℕ, n ∣ Monoid.exponent G → ∀ a : ZMod n, a ≠ 0 →
+      ∃ φ : Multiplicative (ZMod n) →* M, φ (.ofAdd a) ≠ 1)
     {a : G} (ha : a ≠ 1) :
     ∃ φ : G →* M, φ a ≠ 1 := by
   obtain ⟨ι, _, n, _, h⟩ := CommGroup.equiv_prod_multiplicative_zmod_of_finite G

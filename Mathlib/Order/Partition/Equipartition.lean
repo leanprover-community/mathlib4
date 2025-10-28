@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Equitable
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Tactic.ApplyFun
 

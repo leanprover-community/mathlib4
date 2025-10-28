@@ -17,8 +17,8 @@ in `LinearAlgebra/Matrix/NonsingularInverse.lean`.
 
 * `Matrix.invertibleConjTranspose`
 * `Matrix.invertibleTranspose`
-* `Matrix.isUnit_conjTranpose`
-* `Matrix.isUnit_tranpose`
+* `Matrix.isUnit_conjTranspose`
+* `Matrix.isUnit_transpose`
 -/
 
 
@@ -47,15 +47,6 @@ protected theorem invOf_mul_cancel_right (A : Matrix m n α) (B : Matrix n n α)
 /-- A copy of `mul_invOf_cancel_right` for rectangular matrices. -/
 protected theorem mul_invOf_cancel_right (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A * B * ⅟ B = A := by rw [Matrix.mul_assoc, mul_invOf_self, Matrix.mul_one]
-
-@[deprecated (since := "2024-09-07")]
-protected alias invOf_mul_self_assoc := Matrix.invOf_mul_cancel_left
-@[deprecated (since := "2024-09-07")]
-protected alias mul_invOf_self_assoc := Matrix.mul_invOf_cancel_left
-@[deprecated (since := "2024-09-07")]
-protected alias mul_invOf_mul_self_cancel := Matrix.invOf_mul_cancel_right
-@[deprecated (since := "2024-09-07")]
-protected alias mul_mul_invOf_self_cancel := Matrix.mul_invOf_cancel_right
 
 section ConjTranspose
 variable [StarRing α] (A : Matrix n n α)
@@ -117,7 +108,7 @@ section Woodbury
 
 variable [Fintype m] [DecidableEq m] [Ring α]
     (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
-    [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A * U)]
+    [Invertible A] [Invertible C] [Invertible (⅟ C + V * ⅟ A * U)]
 
 -- No spaces around multiplication signs for better clarity
 lemma add_mul_mul_invOf_mul_eq_one :
@@ -159,17 +150,17 @@ lemma add_mul_mul_invOf_mul_eq_one' :
       rw [Matrix.invOf_mul_cancel_right]
       abel
 
-/-- If matrices `A`, `C`, and `C⁻¹ + V * A⁻¹ * U` are invertible, then so is `A + U * C * V`-/
-def invertibleAddMulMul : Invertible (A + U*C*V) where
-  invOf := ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A
+/-- If matrices `A`, `C`, and `C⁻¹ + V * A⁻¹ * U` are invertible, then so is `A + U * C * V`. -/
+def invertibleAddMulMul : Invertible (A + U * C * V) where
+  invOf := ⅟A - ⅟A * U * ⅟(⅟C + V * ⅟A * U) * V * ⅟A
   invOf_mul_self := add_mul_mul_invOf_mul_eq_one' _ _ _ _
   mul_invOf_self := add_mul_mul_invOf_mul_eq_one _ _ _ _
 
 /-- The **Woodbury Identity** (`⅟` version). -/
-theorem invOf_add_mul_mul [Invertible (A + U*C*V)] :
-    ⅟(A + U*C*V) = ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
+theorem invOf_add_mul_mul [Invertible (A + U * C * V)] :
+    ⅟(A + U * C * V) = ⅟A - ⅟A * U * ⅟(⅟C + V * ⅟A * U) * V * ⅟A := by
   letI := invertibleAddMulMul A U C V
-  convert (rfl : ⅟(A + U*C*V) = _)
+  convert (rfl : ⅟(A + U * C * V) = _)
 
 end Woodbury
 

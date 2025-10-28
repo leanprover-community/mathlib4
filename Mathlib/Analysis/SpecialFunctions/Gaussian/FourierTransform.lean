@@ -49,7 +49,7 @@ def verticalIntegral (b : ℂ) (c T : ℝ) : ℂ :=
 edges. -/
 theorem norm_cexp_neg_mul_sq_add_mul_I (b : ℂ) (c T : ℝ) :
     ‖cexp (-b * (T + c * I) ^ 2)‖ = exp (-(b.re * T ^ 2 - 2 * b.im * c * T - b.re * c ^ 2)) := by
-  rw [Complex.norm_eq_abs, Complex.abs_exp, neg_mul, neg_re, ← re_add_im b]
+  rw [Complex.norm_exp, neg_mul, neg_re, ← re_add_im b]
   simp only [sq, re_add_im, mul_re, mul_im, add_re, add_im, ofReal_re, ofReal_im, I_re, I_im]
   ring_nf
 
@@ -93,14 +93,14 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
       rw [mul_assoc]
   · intro y hy
     have absy : |y| ≤ |c| := by
-      rcases le_or_lt 0 c with (h | h)
+      rcases le_or_gt 0 c with (h | h)
       · rw [uIoc_of_le h] at hy
         rw [abs_of_nonneg h, abs_of_pos hy.1]
         exact hy.2
       · rw [uIoc_of_ge h.le] at hy
         rw [abs_of_neg h, abs_of_nonpos hy.2, neg_le_neg_iff]
         exact hy.1.le
-    rw [norm_mul, Complex.norm_eq_abs, abs_I, one_mul, two_mul]
+    rw [norm_mul, norm_I, one_mul, two_mul]
     refine (norm_sub_le _ _).trans (add_le_add (vert_norm_bound hT absy) ?_)
     rw [← abs_neg y] at absy
     simpa only [neg_mul, ofReal_neg] using vert_norm_bound hT absy
@@ -118,7 +118,7 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
   refine (tendsto_exp_atBot.comp (tendsto_neg_atTop_atBot.comp ?_)).const_mul _
   apply tendsto_atTop_add_const_right
   simp_rw [sq, ← mul_assoc, ← sub_mul]
-  refine Tendsto.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ ?_) tendsto_id
+  refine Tendsto.atTop_mul_atTop₀ (tendsto_atTop_add_const_right _ _ ?_) tendsto_id
   exact (tendsto_const_mul_atTop_of_pos hb).mpr tendsto_id
 
 theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
@@ -164,7 +164,7 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     specialize C T
     rw [sub_eq_zero] at C
     unfold verticalIntegral
-    rw [integral_const_mul, intervalIntegral.integral_sub]
+    rw [intervalIntegral.integral_const_mul, intervalIntegral.integral_sub]
     · simp_rw [(fun a b => by rw [sq]; ring_nf : ∀ a b : ℂ, (a - b * I) ^ 2 = (-a + b * I) ^ 2)]
       change I₁ T = I₂ T + I * (I₄ T - I₅ T)
       rw [mul_sub, ← C]
@@ -185,7 +185,7 @@ theorem _root_.integral_cexp_quadratic (hb : b.re < 0) (c d : ℂ) :
     congr 1
     field_simp
     ring_nf
-  simp_rw [h, integral_mul_right]
+  simp_rw [h, MeasureTheory.integral_mul_const]
   rw [← re_add_im (c / (2 * b))]
   simp_rw [← add_assoc, ← ofReal_add]
   rw [integral_add_right_eq_self fun a : ℝ ↦ cexp (- -b * (↑a + ↑(c / (2 * b)).im * I) ^ 2),
@@ -210,9 +210,6 @@ theorem _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
   rw [integral_cexp_quadratic (show (-b).re < 0 by rwa [neg_re, neg_lt_zero]), neg_neg, zero_sub,
     mul_neg, div_neg, neg_neg, mul_pow, I_sq, neg_one_mul, mul_comm]
 
-@[deprecated (since := "2024-02-21")]
-alias _root_.fourier_transform_gaussian := fourierIntegral_gaussian
-
 theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     (𝓕 fun x : ℝ => cexp (-π * b * x ^ 2 + 2 * π * c * x)) = fun t : ℝ =>
     1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * (t + I * c) ^ 2) := by
@@ -233,16 +230,10 @@ theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     simp only [I_sq]
     ring
 
-@[deprecated (since := "2024-02-21")]
-alias _root_.fourier_transform_gaussian_pi' := _root_.fourierIntegral_gaussian_pi'
-
 theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
     (𝓕 fun (x : ℝ) ↦ cexp (-π * b * x ^ 2)) =
     fun t : ℝ ↦ 1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * t ^ 2) := by
   simpa only [mul_zero, zero_mul, add_zero] using fourierIntegral_gaussian_pi' hb 0
-
-@[deprecated (since := "2024-02-21")]
-alias root_.fourier_transform_gaussian_pi := _root_.fourierIntegral_gaussian_pi
 
 section InnerProductSpace
 
@@ -275,7 +266,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     Finset.sum_neg_distrib, mul_assoc, add_left_inj, neg_inj]
   norm_cast
   rw [sq_sqrt]
-  · simp [Finset.mul_sum]
+  · simp [Finset.mul_sum, mul_comm]
   · exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
 
 /-- In a real inner product space, the complex exponential of minus the square of the norm plus
@@ -295,7 +286,7 @@ theorem integral_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
     ∫ v : ι → ℝ, cexp (- ∑ i, b i * (v i : ℂ) ^ 2 + ∑ i, c i * v i)
       = ∏ i, (π / b i) ^ (1 / 2 : ℂ) * cexp (c i ^ 2 / (4 * b i)) := by
   simp_rw [← Finset.sum_neg_distrib, ← Finset.sum_add_distrib, Complex.exp_sum, ← neg_mul]
-  rw [integral_fintype_prod_eq_prod (f := fun i (v : ℝ) ↦ cexp (-b i * v ^ 2 + c i * v))]
+  rw [integral_fintype_prod_volume_eq_prod (f := fun i (v : ℝ) ↦ cexp (-b i * v ^ 2 + c i * v))]
   congr with i
   have : (-b i).re < 0 := by simpa using hb i
   convert integral_cexp_quadratic this (c i) 0 using 1 <;> simp [div_neg]
@@ -323,6 +314,7 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     rw [sq_sqrt]
     exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
   · simp [PiLp.inner_apply, EuclideanSpace.measurableEquiv, Finset.mul_sum, mul_assoc]
+    simp_rw [mul_comm]
   · simp only [EuclideanSpace.norm_eq, Real.norm_eq_abs, sq_abs, mul_pow, ← Finset.mul_sum]
     congr
     norm_cast

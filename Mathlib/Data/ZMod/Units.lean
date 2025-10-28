@@ -5,13 +5,13 @@ Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Data.Nat.PrimeFin
 import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Lemmas about units in `ZMod`.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 namespace ZMod
 
@@ -32,6 +32,11 @@ lemma unitsMap_comp {d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 lemma unitsMap_self (n : ℕ) : unitsMap (dvd_refl n) = MonoidHom.id _ := by
   simp [unitsMap, castHom_self]
 
+/-- `unitsMap_val` shows that coercing from `(ZMod m)ˣ` to `ZMod n` gives the same result
+when going via `(ZMod n)ˣ` and `ZMod m`. -/
+lemma unitsMap_val (h : n ∣ m) (a : (ZMod m)ˣ) :
+    ↑(unitsMap h a) = ((a : ZMod m).cast : ZMod n) := rfl
+
 lemma isUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit (cast (a : ZMod m) : ZMod n) :=
   Units.isUnit (unitsMap hm a)
 @[deprecated (since := "2024-12-16")] alias IsUnit_cast_of_dvd := isUnit_cast_of_dvd
@@ -45,12 +50,12 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     have : NeZero n := ⟨fun hn ↦ hm.out (eq_zero_of_zero_dvd (hn ▸ h))⟩
     simp [unitsMap_def, - castHom_apply]
   intro x hx
-  let ps := m.primeFactors.filter (fun p ↦ ¬p ∣ x)
+  let ps : Finset ℕ := {p ∈ m.primeFactors | ¬p ∣ x}
   use ps.prod id
   apply Nat.coprime_of_dvd
   intro p pp hp hpn
   by_cases hpx : p ∣ x
-  · have h := Nat.dvd_sub' hp hpx
+  · have h := Nat.dvd_sub hp hpx
     rw [add_comm, Nat.add_sub_cancel] at h
     rcases pp.dvd_mul.mp h with h | h
     · have ⟨q, hq, hq'⟩ := (pp.prime.dvd_finset_prod_iff id).mp h
@@ -59,11 +64,11 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
       exact hq.2 hpx
     · exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, pp, hpx, h⟩ hx
   · have pps : p ∈ ps := Finset.mem_filter.mpr ⟨Nat.mem_primeFactors.mpr ⟨pp, hpn, hm.out⟩, hpx⟩
-    have h := Nat.dvd_sub' hp ((Finset.dvd_prod_of_mem id pps).mul_right n)
+    have h := Nat.dvd_sub hp ((Finset.dvd_prod_of_mem id pps).mul_right n)
     rw [Nat.add_sub_cancel] at h
     contradiction
 
--- This needs `Nat.primeFactors`, so cannot go into `Mathlib.Data.ZMod.Basic`.
+-- This needs `Nat.primeFactors`, so cannot go into `Mathlib/Data/ZMod/Basic.lean`.
 open Nat in
 lemma not_isUnit_of_mem_primeFactors {n p : ℕ} (h : p ∈ n.primeFactors) :
     ¬ IsUnit (p : ZMod n) := by

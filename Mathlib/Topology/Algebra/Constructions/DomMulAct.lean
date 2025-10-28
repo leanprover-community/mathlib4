@@ -3,7 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
@@ -61,12 +61,6 @@ alias embedding_mk := isEmbedding_mk
 @[deprecated (since := "2024-10-22")]
 alias quotientMap_mk := isQuotientMap_mk
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_mk := isClosedEmbedding_mk
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_mk := isOpenEmbedding_mk
-
 @[to_additive] theorem isInducing_mk_symm : IsInducing (@mk M).symm := mkHomeomorph.symm.isInducing
 @[to_additive] theorem isEmbedding_mk_symm : IsEmbedding (@mk M).symm :=
   mkHomeomorph.symm.isEmbedding
@@ -82,9 +76,6 @@ theorem isOpenEmbedding_mk_symm : IsOpenEmbedding (@mk M).symm := mkHomeomorph.s
 @[to_additive]
 theorem isClosedEmbedding_mk_symm : IsClosedEmbedding (@mk M).symm :=
   mkHomeomorph.symm.isClosedEmbedding
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_mk_symm := isClosedEmbedding_mk_symm
 
 @[to_additive]
 theorem isQuotientMap_mk_symm : IsQuotientMap (@mk M).symm := mkHomeomorph.symm.isQuotientMap

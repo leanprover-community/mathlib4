@@ -11,6 +11,12 @@ import Mathlib.Data.ENat.Lattice
 
 This file defines the girth and the extended girth of a simple graph as the length of its smallest
 cycle, they give `0` or `∞` respectively if the graph is acyclic.
+
+## TODO
+
+- Prove that `G.egirth ≤ 2 * G.ediam + 1` and `G.girth ≤ 2 * G.diam + 1` when the diameter is
+  non-zero.
+
 -/
 
 namespace SimpleGraph
@@ -29,6 +35,9 @@ noncomputable def egirth (G : SimpleGraph α) : ℕ∞ :=
 @[simp]
 lemma le_egirth {n : ℕ∞} : n ≤ G.egirth ↔ ∀ a (w : G.Walk a a), w.IsCycle → n ≤ w.length := by
   simp [egirth]
+
+lemma egirth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.egirth ≤ w.length :=
+  le_egirth.mp le_rfl a w h
 
 @[simp]
 lemma egirth_eq_top : G.egirth = ⊤ ↔ G.IsAcyclic := by simp [egirth, IsAcyclic]
@@ -69,6 +78,9 @@ acyclic.
 -/
 noncomputable def girth (G : SimpleGraph α) : ℕ :=
   G.egirth.toNat
+
+lemma girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
+  ENat.coe_le_coe.mp <| G.egirth.coe_toNat_le_self.trans <| egirth_le_length h
 
 lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG

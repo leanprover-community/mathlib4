@@ -13,11 +13,11 @@ This file contains results about bases in normed affine spaces.
 
 ## Main definitions:
 
- * `continuous_barycentric_coord`
- * `isOpenMap_barycentric_coord`
- * `AffineBasis.interior_convexHull`
- * `IsOpen.exists_subset_affineIndependent_span_eq_top`
- * `interior_convexHull_nonempty_iff_affineSpan_eq_top`
+* `continuous_barycentric_coord`
+* `isOpenMap_barycentric_coord`
+* `AffineBasis.interior_convexHull`
+* `IsOpen.exists_subset_affineIndependent_span_eq_top`
+* `interior_convexHull_nonempty_iff_affineSpan_eq_top`
 -/
 
 assert_not_exists HasFDerivAt

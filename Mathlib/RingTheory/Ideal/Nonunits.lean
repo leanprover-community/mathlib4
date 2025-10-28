@@ -34,12 +34,14 @@ theorem mul_mem_nonunits_right [CommMonoid α] : b ∈ nonunits α → a * b ∈
 theorem mul_mem_nonunits_left [CommMonoid α] : a ∈ nonunits α → a * b ∈ nonunits α :=
   mt isUnit_of_mul_isUnit_left
 
-theorem zero_mem_nonunits [Semiring α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :=
+theorem zero_mem_nonunits [MonoidWithZero α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :=
   not_congr isUnit_zero_iff
 
 @[simp 1001] -- increased priority to appease `simpNF`
-theorem one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
+theorem one_notMem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
   not_not_intro isUnit_one
+
+@[deprecated (since := "2025-05-23")] alias one_not_mem_nonunits := one_notMem_nonunits
 
 -- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
 @[simp (high)]

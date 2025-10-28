@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Logic.UnivLE
 import Mathlib.Logic.Small.Basic
@@ -22,7 +23,7 @@ the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 -/
 
 
-universe w v v' u u'
+universe w w' v v' u u'
 
 open CategoryTheory
 
@@ -44,7 +45,6 @@ theorem EssentiallySmall.mk' {C : Type u} [Category.{v} C] {S : Type w} [SmallCa
 
 /-- An arbitrarily chosen small model for an essentially small category.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171) removed @[nolint has_nonempty_instance]
 @[pp_with_univ]
 def SmallModel (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] : Type w :=
   Classical.choose (@EssentiallySmall.equiv_smallCategory C _ _)
@@ -91,6 +91,9 @@ class LocallySmall (C : Type u) [Category.{v} C] : Prop where
 instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small.{w, v} (X ⟶ Y) :=
   LocallySmall.hom_small X Y
 
+instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] : LocallySmall.{w} Cᵒᵖ where
+  hom_small X Y := small_of_injective (opEquiv X Y).injective
+
 theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (F : C ⥤ D) [F.Faithful] [LocallySmall.{w} D] : LocallySmall.{w} C where
   hom_small {_ _} := small_of_injective F.map_injective
@@ -115,7 +118,6 @@ instance (priority := 100) locallySmall_of_essentiallySmall (C : Type u) [Catego
 /-- We define a type alias `ShrinkHoms C` for `C`. When we have `LocallySmall.{w} C`,
 we'll put a `Category.{w}` instance on `ShrinkHoms C`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 @[pp_with_univ]
 def ShrinkHoms (C : Type u) :=
   C
@@ -186,7 +188,11 @@ noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
 noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
-  (inducedFunctor (equivShrink C).symm).asEquivalence.symm
+  (Equivalence.induced _).symm
+
+instance [Small.{w'} C] [LocallySmall.{w} C] :
+    LocallySmall.{w} (Shrink.{w'} C) :=
+  locallySmall_of_faithful.{w} (equivalence.{w'} C).inverse
 
 end Shrink
 
@@ -216,15 +222,25 @@ theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w
     EssentiallySmall.{w} C :=
   (essentiallySmall_iff C).2 ⟨small_of_surjective Quotient.exists_rep, by infer_instance⟩
 
+instance small_skeleton_of_essentiallySmall [h : EssentiallySmall.{w} C] : Small.{w} (Skeleton C) :=
+  essentiallySmall_iff C |>.1 h |>.1
+
+variable {C} in
+theorem essentiallySmall_of_fully_faithful {D : Type u'} [Category.{v'} D] (F : C ⥤ D)
+    [F.Full] [F.Faithful] [EssentiallySmall.{w} D] : EssentiallySmall.{w} C :=
+  (essentiallySmall_iff C).2 ⟨small_of_injective F.mapSkeleton_injective,
+    locallySmall_of_faithful F⟩
+
 section FullSubcategory
 
-instance locallySmall_fullSubcategory [LocallySmall.{w} C] (P : C → Prop) :
-    LocallySmall.{w} (FullSubcategory P) :=
-  locallySmall_of_faithful <| fullSubcategoryInclusion P
+instance locallySmall_fullSubcategory [LocallySmall.{w} C] (P : ObjectProperty C) :
+    LocallySmall.{w} P.FullSubcategory :=
+  locallySmall_of_faithful <| P.ι
 
 instance essentiallySmall_fullSubcategory_mem (s : Set C) [Small.{w} s] [LocallySmall.{w} C] :
-    EssentiallySmall.{w} (FullSubcategory (· ∈ s)) :=
-  suffices Small.{w} (FullSubcategory (· ∈ s)) from essentiallySmall_of_small_of_locallySmall _
+    EssentiallySmall.{w} (ObjectProperty.FullSubcategory (· ∈ s)) :=
+  suffices Small.{w} (ObjectProperty.FullSubcategory (· ∈ s)) from
+    essentiallySmall_of_small_of_locallySmall _
   small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by aesop_cat)
 
 end FullSubcategory

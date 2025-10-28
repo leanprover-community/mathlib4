@@ -15,9 +15,9 @@ import Mathlib.RingTheory.Noetherian.Defs
 
 - `IsLasker`: A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
   finitely many primary ideals.
-- `IsLasker.minimal`: Any `I : Ideal R` in a ring `R` satisifying `IsLasker R` can be
+- `IsLasker.minimal`: Any `I : Ideal R` in a ring `R` satisfying `IsLasker R` can be
   decomposed into primary ideals, such that the decomposition is minimal:
-  each primary ideal is necessary, and each primary ideal has an indepedent radical.
+  each primary ideal is necessary, and each primary ideal has an independent radical.
 - `Ideal.isLasker`: Every Noetherian commutative ring is a Lasker ring.
 
 ## Implementation details
@@ -33,7 +33,7 @@ section IsLasker
 variable (R : Type*) [CommSemiring R]
 
 /-- A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
-finitely many primary ideals.-/
+finitely many primary ideals. -/
 def IsLasker : Prop :=
   ∀ I : Ideal R, ∃ s : Finset (Ideal R), s.inf id = I ∧ ∀ ⦃J⦄, J ∈ s → J.IsPrimary
 
@@ -55,12 +55,14 @@ lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
   rw [← Finset.insert_erase hJ] at hs
   simp [← hs, hJ']
 
+open scoped Function -- required for scoped `on` notation
+
 lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
     {s : Finset (Ideal R)} (hs : s.inf id = I) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
     ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       (t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical) := by
   classical
-  refine ⟨(s.image (fun J ↦ s.filter (fun I ↦ I.radical = J.radical))).image fun t ↦ t.inf id,
+  refine ⟨(s.image (fun J ↦ {I ∈ s | I.radical = J.radical})).image fun t ↦ t.inf id,
     ?_, ?_, ?_⟩
   · rw [← hs]
     refine le_antisymm ?_ ?_ <;> intro x hx

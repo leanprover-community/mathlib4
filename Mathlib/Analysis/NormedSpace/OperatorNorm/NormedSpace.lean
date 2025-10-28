@@ -49,7 +49,7 @@ that produces a concrete bound.
 -/
 theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] Fₗ)
     (h : ∀ z ∈ Metric.ball (0 : E) r, ‖f z‖ ≤ c) : ∃ C, ∀ z : E, ‖f z‖ ≤ C * ‖z‖ := by
-  cases' @NontriviallyNormedField.non_trivial 𝕜 _ with k hk
+  obtain ⟨k, hk⟩ := @NontriviallyNormedField.non_trivial 𝕜 _
   use c * (‖k‖ / r)
   intro z
   refine bound_of_shell _ r_pos hk (fun x hko hxo => ?_) _
@@ -80,7 +80,7 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
   calc
     ‖x‖ = ‖c ^ n‖⁻¹ * ‖c ^ n • x‖ := by
       rwa [← norm_inv, ← norm_smul, inv_smul_smul₀ (zpow_ne_zero _ _)]
-    _ ≤ ‖c ^ n‖⁻¹ * 1 := (mul_le_mul_of_nonneg_left (hε _ hlt).le (inv_nonneg.2 (norm_nonneg _)))
+    _ ≤ ‖c ^ n‖⁻¹ * 1 := by gcongr; exact (hε _ hlt).le
     _ ≤ ε⁻¹ * ‖c‖ * ‖f x‖ := by rwa [mul_one]
 
 end LinearMap
@@ -102,7 +102,6 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
       rintro rfl
       exact opNorm_zero)
 
-@[deprecated (since := "2024-02-02")] alias op_norm_zero_iff := opNorm_zero_iff
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
@@ -123,11 +122,11 @@ instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (
   NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
 
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
-instance toNormedRing : NormedRing (E →L[𝕜] E) :=
-  { ContinuousLinearMap.toNormedAddCommGroup, ContinuousLinearMap.toSemiNormedRing with }
+instance toNormedRing : NormedRing (E →L[𝕜] E) where
+  __ := toNormedAddCommGroup
+  __ := toSeminormedRing
 
-variable {f}
-
+variable {f} in
 theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[σ₁₂] F) {a : ℝ}
     (hf : ∀ x, ‖f x‖ = a * ‖x‖) : ‖f‖ = a := by
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
@@ -135,8 +134,6 @@ theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[�
   have ha : 0 ≤ a := by simpa only [hf, hx, mul_nonneg_iff_of_pos_right] using norm_nonneg (f x)
   apply le_antisymm (f.opNorm_le_bound ha fun y => le_of_eq (hf y))
   simpa only [hf, hx, mul_le_mul_right] using f.le_opNorm x
-
-variable (f)
 
 /-- If a continuous linear map is a topology embedding, then it is expands the distances
 by a positive factor. -/
@@ -208,22 +205,10 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     haveI := g.symm.surjective.nontrivial
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 
-@[deprecated (since := "2024-02-02")]
-alias op_norm_comp_linearIsometryEquiv := opNorm_comp_linearIsometryEquiv
-
 @[simp]
 theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
-#adaptation_note
-/--
-Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
-```
-letI : SeminormedAddCommGroup ((E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ) :=
-      toSeminormedAddCommGroup (F := Fₗ →L[𝕜] E →L[𝕜] Fₗ) (𝕜 := 𝕜) (σ₁₂ := RingHom.id 𝕜)
-```
--/
-set_option maxSynthPendingDepth 2 in
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 

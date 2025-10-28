@@ -3,7 +3,6 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
@@ -19,6 +18,12 @@ assert_not_exists Set.Subsingleton
 open Function Int
 
 variable {α M R : Type*}
+
+theorem IsSquare.nonneg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
+    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+    {x : R} (h : IsSquare x) : 0 ≤ x := by
+  rcases h with ⟨y, rfl⟩
+  exact mul_self_nonneg y
 
 namespace MonoidHom
 
@@ -36,7 +41,7 @@ end MonoidHom
 
 section OrderedSemiring
 
-variable [OrderedSemiring R] {a b x y : R} {n : ℕ}
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] {a b x y : R} {n : ℕ}
 
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_add_one_of_ne_zero hn with ⟨k, rfl⟩
@@ -59,37 +64,20 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
 
 attribute [bound] pow_le_one₀ one_le_pow₀
 
-@[deprecated (since := "2024-09-28")] alias mul_le_one := mul_le_one₀
-@[deprecated (since := "2024-09-28")] alias pow_le_one := pow_le_one₀
-@[deprecated (since := "2024-09-28")] alias pow_lt_one := pow_lt_one₀
-@[deprecated (since := "2024-09-28")] alias one_le_pow_of_one_le := one_le_pow₀
-@[deprecated (since := "2024-09-28")] alias one_lt_pow := one_lt_pow₀
-@[deprecated (since := "2024-10-04")] alias pow_right_mono := pow_right_mono₀
-@[deprecated (since := "2024-10-04")] alias pow_le_pow_right := pow_le_pow_right₀
-@[deprecated (since := "2024-10-04")] alias le_self_pow := le_self_pow₀
-
 @[deprecated pow_le_pow_left₀ (since := "2024-11-13")]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n :=
   pow_le_pow_left₀ ha hab
 
 lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a + b) ^ n := by
   rw [two_mul]
-  exact add_le_add (pow_le_pow_left₀ ha (le_add_of_nonneg_right hb) _)
-    (pow_le_pow_left₀ hb (le_add_of_nonneg_left ha) _)
+  gcongr <;> try assumption
+  exacts [le_add_of_nonneg_right hb, le_add_of_nonneg_left ha]
 
 end OrderedSemiring
 
--- See note [reducible non instances]
-/-- Turn an ordered domain into a strict ordered ring. -/
-abbrev OrderedRing.toStrictOrderedRing (α : Type*)
-    [OrderedRing α] [NoZeroDivisors α] [Nontrivial α] : StrictOrderedRing α where
-  __ := ‹OrderedRing α›
-  __ := ‹NoZeroDivisors α›
-  mul_pos _ _ ap bp := (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
-
 section StrictOrderedSemiring
 
-variable [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] {a x y : R} {n m : ℕ}
 
 @[deprecated pow_lt_pow_left₀ (since := "2024-11-13")]
 theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → x ^ n < y ^ n :=
@@ -135,14 +123,14 @@ theorem pow_lt_self_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ n
 end StrictOrderedSemiring
 
 section StrictOrderedRing
-variable [StrictOrderedRing R] {a : R}
+variable [Ring R] [PartialOrder R] [IsStrictOrderedRing R] {a : R}
 
 lemma sq_pos_of_neg (ha : a < 0) : 0 < a ^ 2 := by rw [sq]; exact mul_pos_of_neg_of_neg ha ha
 
 end StrictOrderedRing
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring R] {a b : R} {m n : ℕ}
+variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] {a b : R} {m n : ℕ}
 
 @[deprecated pow_le_pow_iff_left₀ (since := "2024-11-12")]
 lemma pow_le_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b :=
@@ -151,10 +139,6 @@ lemma pow_le_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n �
 @[deprecated pow_lt_pow_iff_left₀ (since := "2024-11-12")]
 lemma pow_lt_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b :=
   pow_lt_pow_iff_left₀ ha hb hn
-
-@[deprecated pow_left_inj₀ (since := "2024-11-12")]
-lemma pow_left_inj (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
-  pow_left_inj₀ ha hb hn
 
 @[deprecated pow_right_injective₀ (since := "2024-11-12")]
 lemma pow_right_injective (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) :=
@@ -189,6 +173,10 @@ theorem sq_eq_sq {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a =
 @[deprecated lt_of_mul_self_lt_mul_self₀ (since := "2024-11-12")]
 theorem lt_of_mul_self_lt_mul_self (hb : 0 ≤ b) : a * a < b * b → a < b :=
   lt_of_mul_self_lt_mul_self₀ hb
+
+/-- A function `f : α → R` is nonarchimedean if it satisfies the ultrametric inequality
+  `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. -/
+def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α, f (a + b) ≤ f a ⊔ f b
 
 /-!
 ### Lemmas for canonically linear ordered semirings or linear ordered rings
@@ -254,7 +242,7 @@ lemma Even.pow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n :=
   (hn.pow_nonneg _).lt_of_ne' (pow_ne_zero _ ha)
 
 lemma Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 := by
-  obtain ⟨k, rfl⟩ := hn; rw [pow_add, mul_self_pos (α := R), pow_ne_zero_iff (by simpa using h₀)]
+  obtain ⟨k, rfl⟩ := hn; rw [pow_add, mul_self_pos, pow_ne_zero_iff (by simpa using h₀)]
 
 lemma Odd.pow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 := by
   refine ⟨lt_imp_lt_of_le_imp_le (pow_nonneg · _), fun ha ↦ ?_⟩
@@ -279,7 +267,7 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
   intro a b hab
   obtain ha | ha := le_total 0 a
   · exact pow_lt_pow_left₀ hab ha hn₀
-  obtain hb | hb := lt_or_le 0 b
+  obtain hb | hb := lt_or_ge 0 b
   · exact (hn.pow_nonpos ha).trans_lt (pow_pos hb _)
   obtain ⟨c, hac⟩ := exists_add_of_le ha
   obtain ⟨d, hbd⟩ := exists_add_of_le hb
@@ -293,6 +281,18 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
     _ = b ^ n + (c ^ n + d ^ n) := by rw [add_left_comm, hn.pow_add_pow_eq_zero hbd.symm, add_zero]
   refine lt_of_add_lt_add_right (a := a + b) ?_
   rwa [add_rotate', ← hbd, add_zero, add_left_comm, ← add_assoc, ← hac, zero_add]
+
+lemma Odd.pow_injective {n : ℕ} (hn : Odd n) : Injective (· ^ n : R → R) :=
+  hn.strictMono_pow.injective
+
+lemma Odd.pow_lt_pow {n : ℕ} (hn : Odd n) {a b : R} : a ^ n < b ^ n ↔ a < b :=
+  hn.strictMono_pow.lt_iff_lt
+
+lemma Odd.pow_le_pow {n : ℕ} (hn : Odd n) {a b : R} : a ^ n ≤ b ^ n ↔ a ≤ b :=
+  hn.strictMono_pow.le_iff_le
+
+lemma Odd.pow_inj {n : ℕ} (hn : Odd n) {a b : R} : a ^ n = b ^ n ↔ a = b :=
+  hn.pow_injective.eq_iff
 
 lemma sq_pos_iff {a : R} : 0 < a ^ 2 ↔ a ≠ 0 := even_two.pow_pos_iff two_ne_zero
 

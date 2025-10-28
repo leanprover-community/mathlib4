@@ -151,6 +151,10 @@ theorem ciInf_set_le {f : β → α} {s : Set β} (H : BddBelow (f '' s)) {c : �
     ⨅ i : s, f i ≤ f c :=
   le_ciSup_set (α := αᵒᵈ) H hc
 
+lemma ciInf_le_ciSup [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) (hf' : BddAbove (range f)) :
+    ⨅ i, f i ≤ ⨆ i, f i :=
+  (ciInf_le hf (Classical.arbitrary _)).trans <| le_ciSup hf' (Classical.arbitrary _)
+
 @[simp]
 theorem ciSup_const [hι : Nonempty ι] {a : α} : ⨆ _ : ι, a = a := by
   rw [iSup, range_const, csSup_singleton]
@@ -174,13 +178,11 @@ theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
-@[simp]
-theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp :=
-  ciSup_subsingleton hp f
+theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp := by
+  simp [hp]
 
-@[simp]
-theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp :=
-  ciSup_pos (α := αᵒᵈ) hp
+theorem ciInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp := by
+  simp [hp]
 
 lemma ciSup_neg {p : Prop} {f : p → α} (hp : ¬ p) :
     ⨆ (h : p), f h = sSup (∅ : Set α) := by
@@ -223,13 +225,12 @@ theorem ciSup_eq_of_forall_le_of_forall_lt_exists_gt [Nonempty ι] {f : ι → �
   csSup_eq_of_forall_le_of_forall_lt_exists_gt (range_nonempty f) (forall_mem_range.mpr h₁)
     fun w hw => exists_range_iff.mpr <| h₂ w hw
 
--- Porting note: in mathlib3 `by exact` is not needed
 /-- Introduction rule to prove that `b` is the infimum of `f`: it suffices to check that `b`
 is smaller than `f i` for all `i`, and that this is not the case of any `w>b`.
 See `iInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/
 theorem ciInf_eq_of_forall_ge_of_forall_gt_exists_lt [Nonempty ι] {f : ι → α} (h₁ : ∀ i, b ≤ f i)
-    (h₂ : ∀ w, b < w → ∃ i, f i < w) : ⨅ i : ι, f i = b := by
-  exact ciSup_eq_of_forall_le_of_forall_lt_exists_gt (α := αᵒᵈ) (f := ‹_›) ‹_› ‹_›
+    (h₂ : ∀ w, b < w → ∃ i, f i < w) : ⨅ i : ι, f i = b :=
+  ciSup_eq_of_forall_le_of_forall_lt_exists_gt (α := αᵒᵈ) h₁ h₂
 
 /-- **Nested intervals lemma**: if `f` is a monotone sequence, `g` is an antitone sequence, and
 `f n ≤ g n` for all `n`, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
@@ -534,6 +535,7 @@ end GaloisConnection
 
 namespace OrderIso
 
+section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι]
 
 theorem map_csSup (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
@@ -568,6 +570,22 @@ theorem map_ciInf_set (e : α ≃o β) {s : Set γ} {f : γ → α} (hf : BddBel
     (hne : s.Nonempty) : e (⨅ i : s, f i) = ⨅ i : s, e (f i) :=
   e.dual.map_ciSup_set hf hne
 
+end ConditionallyCompleteLattice
+
+section ConditionallyCompleteLinearOrderBot
+variable [ConditionallyCompleteLinearOrderBot α] [ConditionallyCompleteLinearOrderBot β]
+
+@[simp]
+lemma map_ciSup' (e : α ≃o β) (f : ι → α) : e (⨆ i, f i) = ⨆ i, e (f i) := by
+  cases isEmpty_or_nonempty ι
+  · simp [map_bot]
+  by_cases hf : BddAbove (range f)
+  · exact e.map_ciSup hf
+  · have hfe : ¬ BddAbove (range fun i ↦ e (f i)) := by
+      simpa [Set.Nonempty, BddAbove, upperBounds, e.surjective.forall] using hf
+    simp [map_bot, hf, hfe]
+
+end ConditionallyCompleteLinearOrderBot
 end OrderIso
 
 section WithTopBot

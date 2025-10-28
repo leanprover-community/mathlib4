@@ -3,6 +3,8 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.CardCommute
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
@@ -21,9 +23,9 @@ This file introduces the commuting probability of finite groups.
 * Neumann's theorem.
 -/
 
-noncomputable section
+assert_not_exists Ideal TwoSidedIdeal
 
-open scoped Classical
+noncomputable section
 
 open Fintype
 
@@ -76,6 +78,7 @@ variable {M}
 
 theorem commProb_eq_one_iff [h : Nonempty M] :
     commProb M = 1 ↔ Std.Commutative ((· * ·) : M → M → M) := by
+  classical
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
@@ -178,7 +181,8 @@ lemma commProb_nil : commProb (Product []) = 1 := by
 
 lemma commProb_cons (n : ℕ) (l : List ℕ) :
     commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
-  simp [Product, commProb_pi, Fin.prod_univ_succ]
+  simp only [commProb_pi, Fin.prod_univ_succ, Fin.getElem_fin, Fin.val_succ, Fin.val_zero,
+    List.getElem_cons_zero, List.length_cons, List.getElem_cons_succ]
 
 /-- Construction of a group with commuting probability `1 / n`. -/
 theorem commProb_reciprocal (n : ℕ) :

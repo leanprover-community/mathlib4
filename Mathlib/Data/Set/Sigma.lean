@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Sets in sigma types
@@ -64,7 +64,7 @@ theorem sigma_subset_iff :
 theorem forall_sigma_iff {p : (Σ i, α i) → Prop} :
     (∀ x ∈ s.sigma t, p x) ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃a⦄, a ∈ t i → p ⟨i, a⟩ := sigma_subset_iff
 
-theorem exists_sigma_iff {p : (Σi, α i) → Prop} :
+theorem exists_sigma_iff {p : (Σ i, α i) → Prop} :
     (∃ x ∈ s.sigma t, p x) ↔ ∃ i ∈ s, ∃ a ∈ t i, p ⟨i, a⟩ :=
   ⟨fun ⟨⟨i, a⟩, ha, h⟩ ↦ ⟨i, ha.1, a, ha.2, h⟩, fun ⟨i, hi, a, ha, h⟩ ↦ ⟨⟨i, a⟩, ⟨hi, ha⟩, h⟩⟩
 
@@ -226,6 +226,10 @@ theorem sigma_subset_preimage_fst (s : Set ι) (t : ∀ i, Set (α i)) : s.sigma
 theorem fst_image_sigma_subset (s : Set ι) (t : ∀ i, Set (α i)) : Sigma.fst '' s.sigma t ⊆ s :=
   image_subset_iff.2 fun _ ↦ And.left
 
+lemma image_sigma_eq_iUnion {γ : Type*} (f : (Σ i, α i) → γ) :
+    f '' (s.sigma t) = ⋃ i ∈ s, (f ∘ Sigma.mk i) '' t i := by
+  aesop
+
 theorem fst_image_sigma (s : Set ι) (ht : ∀ i, (t i).Nonempty) : Sigma.fst '' s.sigma t = s :=
   (fst_image_sigma_subset _ _).antisymm fun i hi ↦
     let ⟨a, ha⟩ := ht i
@@ -234,5 +238,8 @@ theorem fst_image_sigma (s : Set ι) (ht : ∀ i, (t i).Nonempty) : Sigma.fst ''
 theorem sigma_diff_sigma : s₁.sigma t₁ \ s₂.sigma t₂ = s₁.sigma (t₁ \ t₂) ∪ (s₁ \ s₂).sigma t₁ :=
   ext fun x ↦ by
     by_cases h₁ : x.1 ∈ s₁ <;> by_cases h₂ : x.2 ∈ t₁ x.1 <;> simp [*, ← imp_iff_or_not]
+
+lemma sigma_eq_biUnion : s.sigma t = ⋃ i ∈ s, Sigma.mk i '' t i := by
+  aesop
 
 end Set

@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
 
 /-!
@@ -17,12 +17,12 @@ compatibility condition `(r • s) • a = r • (s • a)`.
 
 ## Main results
 
- * `IsScalarTower.Subalgebra`: if `A/S/R` is a tower and `S₀` is a subalgebra
-   between `S` and `R`, then `A/S/S₀` is a tower
- * `IsScalarTower.Subalgebra'`: if `A/S/R` is a tower and `S₀` is a subalgebra
-   between `S` and `R`, then `A/S₀/R` is a tower
- * `Subalgebra.restrictScalars`: turn an `S`-subalgebra of `A` into an `R`-subalgebra of `A`,
-   given that `A/S/R` is a tower
+* `IsScalarTower.Subalgebra`: if `A/S/R` is a tower and `S₀` is a subalgebra
+  between `S` and `R`, then `A/S/S₀` is a tower
+* `IsScalarTower.Subalgebra'`: if `A/S/R` is a tower and `S₀` is a subalgebra
+  between `S` and `R`, then `A/S₀/R` is a tower
+* `Subalgebra.restrictScalars`: turn an `S`-subalgebra of `A` into an `R`-subalgebra of `A`,
+  given that `A/S/R` is a tower
 
 -/
 
@@ -58,7 +58,7 @@ variable [Algebra R A] [IsScalarTower R S A]
 
 instance subalgebra' (S₀ : Subalgebra R S) : IsScalarTower R S₀ A :=
   @IsScalarTower.of_algebraMap_eq R S₀ A _ _ _ _ _ _ fun _ ↦
-    (IsScalarTower.algebraMap_apply R S A _ : _)
+    (IsScalarTower.algebraMap_apply R S A _ :)
 
 end Semiring
 

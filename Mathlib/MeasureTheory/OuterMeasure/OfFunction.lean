@@ -34,6 +34,8 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 
 -/
 
+assert_not_exists Basis
+
 noncomputable section
 
 open Set Function Filter
@@ -43,8 +45,6 @@ namespace MeasureTheory
 namespace OuterMeasure
 
 section OfFunction
-
--- Porting note: "set_option eqn_compiler.zeta true" removed
 
 variable {α : Type*}
 
@@ -111,8 +111,8 @@ theorem ofFunction_eq_iInf_mem {P : Set α → Prop} (m_top : ∀ s, ¬ P s → 
     · exact iInf_le_of_le ht (iInf_le_of_le ht_subset le_rfl)
     · simp only [ht, not_false_eq_true, iInf_neg, top_le_iff]
       push_neg at ht
-      obtain ⟨i, hti_not_mem⟩ := ht
-      have hfi_top : m (t i) = ∞ := m_top _ hti_not_mem
+      obtain ⟨i, hti_notMem⟩ := ht
+      have hfi_top : m (t i) = ∞ := m_top _ hti_notMem
       exact ENNReal.tsum_eq_top_of_eq_top ⟨i, hfi_top⟩
 
 variable {m m_empty}
@@ -163,7 +163,6 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
       μ s + μ t ≤ ∞ := le_top
       _ = m (f i) := (h (f i) hs ht).symm
       _ ≤ ∑' i, m (f i) := ENNReal.le_tsum i
-
   set I := fun s => { i : ℕ | (s ∩ f i).Nonempty }
   have hd : Disjoint (I s) (I t) := disjoint_iff_inf_le.mpr fun i hi => he ⟨i, hi⟩
   have hI : ∀ u ⊆ s ∪ t, μ u ≤ ∑' i : I u, μ (f i) := fun u hu =>
@@ -173,15 +172,14 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
           let ⟨i, hi⟩ := mem_iUnion.1 (hf (hu hx))
           mem_iUnion.2 ⟨⟨i, ⟨x, hx, hi⟩⟩, hi⟩
       _ ≤ ∑' i : I u, μ (f i) := measure_iUnion_le _
-
   calc
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
       add_le_add (hI _ subset_union_left) (hI _ subset_union_right)
     _ = ∑' i : ↑(I s ∪ I t), μ (f i) :=
-      (tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable ENNReal.summable).symm
+      (ENNReal.summable.tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable).symm
     _ ≤ ∑' i, μ (f i) :=
-      (tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _) (fun _ => le_rfl)
-        ENNReal.summable ENNReal.summable)
+      (ENNReal.summable.tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _)
+        (fun _ => le_rfl) ENNReal.summable)
     _ ≤ ∑' i, m (f i) := ENNReal.tsum_le_tsum fun i => ofFunction_le _
 
 theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) :
@@ -195,7 +193,7 @@ theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) 
     refine iInf_mono' fun ht => ?_
     rw [Set.image_subset_iff, preimage_iUnion] at ht
     refine ⟨ht, ENNReal.tsum_le_tsum fun n => ?_⟩
-    cases' h with hl hr
+    rcases h with hl | hr
     exacts [hl (image_preimage_subset _ _), (congr_arg m (hr.image_preimage (t n))).le]
 
 theorem map_ofFunction_le {β} (f : α → β) :

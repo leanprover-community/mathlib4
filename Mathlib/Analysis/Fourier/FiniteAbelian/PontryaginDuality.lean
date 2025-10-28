@@ -7,6 +7,7 @@ import Mathlib.Algebra.DirectSum.AddChar
 import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.GroupTheory.FiniteAbelian.Basic
+import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Pontryagin duality for finite abelian groups
@@ -20,8 +21,8 @@ Structure Theorem.
 
 ## TODO
 
-Reuse the work done in `Mathlib.GroupTheory.FiniteAbelian.Duality`. This requires to write some more
-glue.
+Reuse the work done in `Mathlib/GroupTheory/FiniteAbelian/Duality.lean`. This requires to write some
+more glue.
 -/
 
 noncomputable section
@@ -182,7 +183,7 @@ lemma sum_apply_eq_ite [Fintype α] [DecidableEq α] (a : α) :
     ∑ ψ : AddChar α ℂ, ψ a = if a = 0 then (Fintype.card α : ℂ) else 0 := by
   simpa using sum_eq_ite (doubleDualEmb a : AddChar (AddChar α ℂ) ℂ)
 
-lemma expect_apply_eq_ite [Fintype α] [DecidableEq α] (a : α) :
+lemma expect_apply_eq_ite [Finite α] [DecidableEq α] (a : α) :
     𝔼 ψ : AddChar α ℂ, ψ a = if a = 0 then 1 else 0 := by
   simpa using expect_eq_ite (doubleDualEmb a : AddChar (AddChar α ℂ) ℂ)
 

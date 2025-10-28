@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.Topology.LocallyConstant.Basic
 
@@ -93,7 +94,7 @@ theorem charFn_eq_one [Nontrivial Y] (x : X) (hU : IsClopen U) : charFn Y hU x =
   Set.indicator_eq_one_iff_mem _
 
 theorem charFn_eq_zero [Nontrivial Y] (x : X) (hU : IsClopen U) : charFn Y hU x = (0 : Y) ↔ x ∉ U :=
-  Set.indicator_eq_zero_iff_not_mem _
+  Set.indicator_eq_zero_iff_notMem _
 
 theorem charFn_inj [Nontrivial Y] (hU : IsClopen U) (hV : IsClopen V)
     (h : charFn Y hU = charFn Y hV) : U = V :=
@@ -247,7 +248,7 @@ section Algebra
 variable [CommSemiring R] [Semiring Y] [Algebra R Y]
 
 instance : Algebra R (LocallyConstant X Y) where
-  toRingHom := constRingHom.comp <| algebraMap R Y
+  algebraMap := constRingHom.comp <| algebraMap R Y
   commutes' := by
     intros
     ext
@@ -314,7 +315,7 @@ variable [TopologicalSpace Y] {Z : Type*}
 
 /-- `LocallyConstant.comap` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddMonoidHom`."]
-def comapMonoidHom [MulOneClass Z]  (f : C(X, Y)) :
+def comapMonoidHom [MulOneClass Z] (f : C(X, Y)) :
     LocallyConstant Y Z →* LocallyConstant X Z where
   toFun := comap f
   map_one' := rfl

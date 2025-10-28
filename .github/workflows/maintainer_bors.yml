@@ -23,10 +23,19 @@ jobs:
       COMMENT_REVIEW: ${{ github.event.review.body }}
     name: Add ready-to-merge or delegated label
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     steps:
       - name: Find bors merge/delegate
         id: merge_or_delegate
         run: |
+          # don't try to run if we don't have access to necessary secrets
+          if [[ -z '${{ secrets.TRIAGE_TOKEN }}' ]]
+          then
+            printf 'No access to secrets, aborting.'
+            printf 'mOrD=' > "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
           COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
           # we strip `\r` since line endings from GitHub contain this character
           COMMENT="${COMMENT//$'\r'/}"
@@ -34,14 +43,19 @@ jobs:
           printf '%s' "${COMMENT}" | hexdump -cC
           printf 'Comment:"%s"\n' "${COMMENT}"
           m_or_d="$(printf '%s' "${COMMENT}" |
-            sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *d.*=delegated=p' | head -1)"
+            sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *\(delegate\|d+\|d\=\).*=delegated=p' | head -1)"
+
+          remove_labels="$(printf '%s' "${COMMENT}" |
+            sed -n 's=^bors  *\(merge\|r\|d\)- *$=remove-labels=p' | head -1)"
 
           printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
+          printf $'"bors r-" or "bors d-" found? \'%s\'\n' "${remove_labels}"
           printf $'AUTHOR: \'%s\'\n' "${AUTHOR}"
           printf $'PR_NUMBER: \'%s\'\n' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"
           printf $'%s' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}" | hexdump -cC
 
           printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
+          printf $'removeLabels=%s\n' "${remove_labels}" >> "${GITHUB_OUTPUT}"
           if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
              [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ]
           then
@@ -54,8 +68,8 @@ jobs:
 
       - name: Check whether user is a mathlib admin
         id: user_permission
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
-        uses: actions-cool/check-user-permission@v2
+        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' || ! steps.merge_or_delegate.outputs.removeLabels == '' }}
+        uses: actions-cool/check-user-permission@7b90a27f92f3961b368376107661682c441f6103 # v2.3.0
         with:
           require: 'admin'
 
@@ -64,7 +78,7 @@ jobs:
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.merge_or_delegate.outputs.bot == 'true' ) }}
-        uses: octokit/request-action@v2.x
+        uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
         with:
           route: POST /repos/:repository/issues/:issue_number/labels
           repository: ${{ github.repository }}
@@ -77,19 +91,33 @@ jobs:
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.merge_or_delegate.outputs.bot == 'true' ) }}
         id: remove_labels
-        name: Remove "awaiting-author"
+        name: Remove "awaiting-author" and "maintainer-merge"
         # we use curl rather than octokit/request-action so that the job won't fail
         # (and send an annoying email) if the labels don't exist
         run: |
-          curl --request DELETE \
-            --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/awaiting-author" \
-            --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+          for label in awaiting-author maintainer-merge; do
+            curl --request DELETE \
+              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/${label}" \
+              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+          done
+
+      - name: On bors r/d-, remove ready-to-merge or delegated label
+        if: ${{ ! steps.merge_or_delegate.outputs.removeLabels == '' &&
+          steps.user_permission.outputs.require-result == 'true' }}
+        # we use curl rather than octokit/request-action so that the job won't fail
+        # (and send an annoying email) if the labels don't exist
+        run: |
+          for label in ready-to-merge delegated; do
+            curl --request DELETE \
+              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/${label}" \
+              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+          done
 
       - name: Set up Python
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.merge_or_delegate.outputs.bot == 'true' ) }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.x'
 
@@ -101,12 +129,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install zulip
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           sparse-checkout: |
-            scripts/zulip_emoji_merge_delegate.py
+            scripts/zulip_emoji_reactions.py
 
-      - name: Run Zulip Emoji Merge Delegate Script
+      - name: update zulip emoji reactions
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.merge_or_delegate.outputs.bot == 'true' ) }}
@@ -115,4 +143,4 @@ jobs:
           ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
           ZULIP_SITE: https://leanprover.zulipchat.com
         run: |
-          python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"
+          python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"

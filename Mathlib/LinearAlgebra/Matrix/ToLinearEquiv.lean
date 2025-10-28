@@ -18,11 +18,11 @@ to linear equivs.
 
 ## Main definitions
 
- * `Matrix.toLinearEquiv`: a matrix with an invertible determinant forms a linear equiv
+* `Matrix.toLinearEquiv`: a matrix with an invertible determinant forms a linear equiv
 
 ## Main results
 
- * `Matrix.exists_mulVec_eq_zero_iff`: `M` maps some `v ≠ 0` to zero iff `det M = 0`
+* `Matrix.exists_mulVec_eq_zero_iff`: `M` maps some `v ≠ 0` to zero iff `det M = 0`
 
 ## Tags
 
@@ -172,9 +172,33 @@ theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
   · intro hM v hv hMv
     obtain ⟨w, hwMv⟩ := hM.exists_not_ortho_of_ne_zero hv
     simp [dotProduct_mulVec, hMv, zero_dotProduct, ne_eq, not_true] at hwMv
-  · intro h v hv
+  · rw [Matrix.nondegenerate_def]
+    intro h v hv
     refine not_imp_not.mp (h v) (funext fun i => ?_)
     simpa only [dotProduct_mulVec, dotProduct_single, mul_one] using hv (Pi.single i 1)
+
+theorem Nondegenerate.mul_iff_right {A : Type*} [CommRing A] [IsDomain A]
+    {M N : Matrix n n A} (h : N.Nondegenerate) :
+    (M * N).Nondegenerate ↔ M.Nondegenerate := by
+  classical
+  simp only [nondegenerate_iff_det_ne_zero, det_mul] at h ⊢
+  exact mul_ne_zero_iff_right h
+
+theorem Nondegenerate.mul_iff_left {A : Type*} [CommRing A] [IsDomain A]
+    {M N : Matrix n n A} (h : M.Nondegenerate) :
+    (M * N).Nondegenerate ↔ N.Nondegenerate := by
+  classical
+  simp only [nondegenerate_iff_det_ne_zero, det_mul] at h ⊢
+  exact mul_ne_zero_iff_left h
+
+omit [Fintype n] in
+theorem Nondegenerate.smul_iff [Finite n] {A : Type*} [CommRing A] [IsDomain A]
+    {M : Matrix n n A} {t : A} (h : t ≠ 0) :
+    (t • M).Nondegenerate ↔ M.Nondegenerate := by
+  simp_rw [Nondegenerate, smul_mulVec_assoc, dotProduct_smul]
+  refine ⟨fun hM v hv ↦ hM v fun w ↦ ?_, fun hM v hv ↦ hM v fun w ↦ ?_⟩
+  · simp [hv]
+  · exact (mul_eq_zero_iff_left h).mp <| hv w
 
 alias ⟨Nondegenerate.det_ne_zero, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero
 
@@ -186,7 +210,8 @@ section Determinant
 
 /-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
 column positive has nonzero determinant. -/
-lemma det_ne_zero_of_sum_col_pos [DecidableEq n] {S : Type*} [LinearOrderedCommRing S]
+lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
+    {S : Type*} [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
     {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ j, 0 < ∑ i, A i j) :
     A.det ≠ 0 := by
   cases isEmpty_or_nonempty n
@@ -214,7 +239,8 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n] {S : Type*} [LinearOrderedCommR
 
 /-- A matrix whose nondiagonal entries are negative with the sum of the entries of each
 row positive has nonzero determinant. -/
-lemma det_ne_zero_of_sum_row_pos [DecidableEq n] {S : Type*} [LinearOrderedCommRing S]
+lemma det_ne_zero_of_sum_row_pos [DecidableEq n]
+    {S : Type*} [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
     {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ i, 0 < ∑ j, A i j) :
     A.det ≠ 0 := by
   rw [← Matrix.det_transpose]

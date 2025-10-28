@@ -21,6 +21,8 @@ The approach taken here is identical to (and copied from) the development in `No
 
 -/
 
+assert_not_exists RelIso
+
 set_option autoImplicit true
 
 namespace Mathlib
@@ -47,9 +49,11 @@ theorem IsNatPowModT.bit0 :
   ⟨fun h1 => by simp only [two_mul, Nat.pow_eq, pow_add, ← h1, Nat.mul_eq]; exact Nat.mul_mod ..⟩
 
 theorem natPow_zero_natMod_zero : Nat.mod (Nat.pow a (nat_lit 0)) (nat_lit 0) = nat_lit 1 := by
-  with_unfolding_all rfl
+  simp [Nat.mod, Nat.modCore]
+
 theorem natPow_zero_natMod_one : Nat.mod (Nat.pow a (nat_lit 0)) (nat_lit 1) = nat_lit 0 := by
-  with_unfolding_all rfl
+  simp [Nat.mod, Nat.modCore_eq]
+
 theorem natPow_zero_natMod_succ_succ :
     Nat.mod (Nat.pow a (nat_lit 0)) (Nat.succ (Nat.succ m)) = nat_lit 1 := by
   rw [natPow_zero]

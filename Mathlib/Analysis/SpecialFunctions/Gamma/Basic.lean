@@ -98,8 +98,8 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
     refine HasFiniteIntegral.congr (Real.GammaIntegral_convergent hs).2 ?_
     apply (ae_restrict_iff' measurableSet_Ioi).mpr
     filter_upwards with x hx
-    rw [norm_eq_abs, map_mul, abs_of_nonneg <| le_of_lt <| exp_pos <| -x,
-      abs_cpow_eq_rpow_re_of_pos hx _]
+    rw [norm_mul, Complex.norm_of_nonneg <| le_of_lt <| exp_pos <| -x,
+      norm_cpow_eq_rpow_re_of_pos hx _]
     simp
 
 /-- Euler's integral for the `Γ` function (of a complex variable `s`), defined as
@@ -175,12 +175,12 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
     refine (?_ : ContinuousAt (fun x : ℂ => x ^ (s - 1)) _).comp continuous_ofReal.continuousAt
     exact continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx.1
   rw [← hasFiniteIntegral_norm_iff]
-  simp_rw [norm_eq_abs, map_mul]
+  simp_rw [norm_mul]
   refine (((Real.GammaIntegral_convergent hs).mono_set
     Ioc_subset_Ioi_self).hasFiniteIntegral.congr ?_).const_mul _
   rw [EventuallyEq, ae_restrict_iff']
   · filter_upwards with x hx
-    rw [abs_of_nonneg (exp_pos _).le, abs_cpow_eq_rpow_re_of_pos hx.1]
+    rw [Complex.norm_of_nonneg (exp_pos _).le, norm_cpow_eq_rpow_re_of_pos hx.1]
     simp
   · exact measurableSet_Ioc
 
@@ -211,8 +211,7 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
   have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
       (fun x => s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
   rw [this]
-  have t := @integral_const_mul 0 X volume _ _ s fun x : ℝ => (-x).exp * x ^ (s - 1)
-  rw [← t, ofReal_zero, zero_cpow]
+  rw [← intervalIntegral.integral_const_mul, ofReal_zero, zero_cpow]
   · rw [mul_zero, add_zero]; congr 2; ext1; ring
   · contrapose! hs; rw [hs, zero_re]
 
@@ -236,8 +235,8 @@ theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
       (fun e : ℝ => ‖-(e : ℂ) ^ s * (-e).exp‖) =ᶠ[atTop] fun e : ℝ => e ^ s.re * (-1 * e).exp := by
     refine eventuallyEq_of_mem (Ioi_mem_atTop 0) ?_
     intro x hx; dsimp only
-    rw [norm_eq_abs, map_mul, abs.map_neg, abs_cpow_eq_rpow_re_of_pos hx,
-      abs_of_nonneg (exp_pos (-x)).le, neg_mul, one_mul]
+    rw [norm_mul, norm_neg, norm_cpow_eq_rpow_re_of_pos hx,
+      Complex.norm_of_nonneg (exp_pos (-x)).le, neg_mul, one_mul]
   exact (tendsto_congr' this).mpr (tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero _ _ zero_lt_one)
 
 end GammaRecurrence
@@ -267,7 +266,7 @@ theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 
 theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux (n + 1) s := by
-  cases' n with n n
+  rcases n with - | n
   · simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]
     rw [GammaIntegral_add_one h1, mul_div_cancel_left₀]
@@ -330,7 +329,7 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
 
 @[simp]
 theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
-    Gamma (no_index (OfNat.ofNat (n + 1) : ℂ)) = n ! :=
+    Gamma (ofNat(n + 1) : ℂ) = n ! :=
   mod_cast Gamma_nat_eq_factorial (n : ℕ)
 
 /-- At `0` the Gamma function is undefined; by convention we assign it the value `0`. -/
@@ -384,7 +383,7 @@ lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr 
       rw [integral_comp_mul_left_Ioi (fun x ↦ _ * x ^ (a - 1) * exp (-x)) _ hr, mul_zero,
         real_smul, ← one_div, ofReal_div, ofReal_one]
     _ = 1 / r * (1 / r : ℂ) ^ (a - 1) * (∫ (t : ℝ) in Ioi 0, t ^ (a - 1) * exp (-t)) := by
-      simp_rw [← integral_mul_left, mul_assoc]
+      simp_rw [← MeasureTheory.integral_const_mul, mul_assoc]
     _ = (1 / r) ^ a * Gamma a := by
       rw [aux, Gamma_eq_integral ha]
       congr 2 with x
@@ -434,7 +433,7 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
 
 @[simp]
 theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
-    Gamma (no_index (OfNat.ofNat (n + 1) : ℝ)) = n ! :=
+    Gamma (ofNat(n + 1) : ℝ) = n ! :=
   mod_cast Gamma_nat_eq_factorial (n : ℕ)
 
 /-- At `0` the Gamma function is undefined; by convention we assign it the value `0`. -/

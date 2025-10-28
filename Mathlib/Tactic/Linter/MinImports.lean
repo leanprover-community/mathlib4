@@ -18,7 +18,7 @@ It also works incrementally, accumulating increasing import information.
 This is better suited, for instance, to split files.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 /-!
 #  The "minImports" linter
@@ -61,6 +61,10 @@ Unlike the related `#min_imports` command, the linter takes into account notatio
 information.
 It also works incrementally, providing information that is better suited, for instance, to split
 files.
+
+Another important difference is that the `minImports` *linter* starts counting imports from
+where the option is set to `true` *downwards*, whereas the `#min_imports` *command* looks at the
+imports needed from the command *upwards*.
 -/
 register_option linter.minImports : Bool := {
   defValue := false
@@ -88,12 +92,24 @@ def importsBelow (tc : NameMap NameSet) (ms : NameSet) : NameSet :=
   ms.fold (·.append <| tc.findD · default) ms
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
+macro "#import_bumps" : command => `(
+  -- We emit a message to prevent the `#`-command linter from flagging `#import_bumps`.
+  run_cmd logInfo "Counting imports from here."
+  set_option Elab.async false
+  set_option linter.minImports true)
+
+@[inherit_doc Mathlib.Linter.linter.minImports]
 def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.minImports (← getOptions) do
+    unless getLinterValue linter.minImports (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return
-    if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then return
+    if stx == (← `(command| #import_bumps)) then return
+    if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then
+      logInfo "Try using '#import_bumps', instead of manually setting the linter option: \
+              the linter works best with linear parsing of the file and '#import_bumps' \
+              also sets the `Elab.async` option to `false`."
+      return
     let env ← getEnv
     -- the first time `minImportsRef` is read, it has `transClosure = none`;
     -- in this case, we set it to be the `transClosure` for the file.
@@ -114,7 +130,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
       -- `impMods` is the syntax for the modules imported in the current file
       let (impMods, _) ← Parser.parseHeader (Parser.mkInputContext contents fname)
       for i in currentlyUnneededImports do
-        match impMods.find? (·.getId == i) with
+        match impMods.raw.find? (·.getId == i) with
           | some impPos => logWarningAt impPos m!"unneeded import '{i}'"
           | _ => dbg_trace f!"'{i}' not found"  -- this should be unreachable
       -- if the linter found new imports that should be added (likely to *reduce* the dependencies)
@@ -122,7 +138,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
         -- format the imports prepending `import ` to each module name
         let withImport := (newImps.toArray.qsort Name.lt).map (s!"import {·}")
         -- log a warning at the first `import`, if there is one.
-        logWarningAt ((impMods.find? (·.isOfKind `import)).getD default)
+        logWarningAt ((impMods.raw.find? (·.isOfKind `import)).getD default)
           m!"-- missing imports\n{"\n".intercalate withImport.toList}"
     let id ← getId stx
     let newImports := getIrredundantImports env (← getAllImports stx id)
@@ -139,7 +155,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let redundant := importsSoFar.toArray.filter (!currImports.contains ·)
       -- to make `test` files more stable, we suppress the exact count of import changes if
       -- the `linter.minImports.increases` option is `false`
-      let byCount :=  if Linter.getLinterValue linter.minImports.increases (← getOptions) then
+      let byCount :=  if getLinterValue linter.minImports.increases (← getLinterOptions) then
                       m!"by {newCumulImps - oldCumulImps} "
                     else
                       m!""

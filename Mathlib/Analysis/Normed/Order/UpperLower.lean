@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Field.Pi
-import Mathlib.Algebra.Order.UpperLower
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.MetricSpace.Sequences
 
@@ -34,7 +34,7 @@ open scoped Pointwise
 variable {α ι : Type*}
 
 section NormedOrderedGroup
-variable [NormedOrderedGroup α] {s : Set α}
+variable [NormedCommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α}
 
 @[to_additive IsUpperSet.thickening]
 protected theorem IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :

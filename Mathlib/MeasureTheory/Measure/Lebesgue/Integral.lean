@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 
@@ -55,8 +55,9 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
     (fun n : ℤ => mul_nonneg (norm_nonneg
       (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
         ENNReal.toReal_nonneg) (fun n => ?_) hf) ?_
-  · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel_left,
-      ENNReal.toReal_ofReal zero_le_one, mul_one, norm_le _ (norm_nonneg _)]
+  · simp only [Compacts.coe_mk, le_add_iff_nonneg_right, zero_le_one, volume_real_Icc_of_le,
+      add_sub_cancel_left, mul_one, norm_le _ (norm_nonneg _), ContinuousMap.restrict_apply,
+      mem_Icc, and_imp]
     intro x
     have := ((f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)).norm_coe_le_norm
         ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩

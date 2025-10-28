@@ -32,14 +32,14 @@ noncomputable instance :
     intro x (hx : _ = _)
     dsimp at hx
     rcases Concrete.colimit_exists_rep S.X₂ x with ⟨j, y, rfl⟩
-    erw [← comp_apply, colimit.ι_map, comp_apply,
-      ← map_zero (by exact colimit.ι S.X₃ j : (S.X₃).obj j →+ ↑(colimit S.X₃))] at hx
-    rcases Concrete.colimit_exists_of_rep_eq.{u, u, u} S.X₃ _ _ hx
-      with ⟨k, e₁, e₂, hk : _ = S.X₃.map e₂ 0⟩
-    rw [map_zero, ← comp_apply, ← NatTrans.naturality, comp_apply] at hk
+    rw [← ConcreteCategory.comp_apply, colimMap_eq, colimit.ι_map, ConcreteCategory.comp_apply,
+      ← map_zero (colimit.ι S.X₃ j).hom] at hx
+    rcases Concrete.colimit_exists_of_rep_eq.{u, u, u} S.X₃ _ _ hx with ⟨k, e₁, e₂, hk⟩
+    rw [map_zero, ← ConcreteCategory.comp_apply, ← NatTrans.naturality, ConcreteCategory.comp_apply]
+      at hk
     rcases hS k hk with ⟨t, ht⟩
     use colimit.ι S.X₁ k t
-    erw [← comp_apply, colimit.ι_map, comp_apply, ht]
+    erw [← ConcreteCategory.comp_apply, colimit.ι_map, ConcreteCategory.comp_apply, ht]
     exact colimit.w_apply S.X₂ e₁ y)
 
 noncomputable instance :
@@ -57,7 +57,7 @@ attribute [local instance] Abelian.hasFiniteBiproducts
 instance : AB4 AddCommGrp.{u} := AB4.of_AB5 _
 
 instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
-  apply ( config := {allowSynthFailures := true} ) hasExactLimitsOfShape_of_preservesEpi
+  apply (config := { allowSynthFailures := true }) hasExactLimitsOfShape_of_preservesEpi
   exact {
     preserves {X Y} f hf := by
       let iX : limit X ≅ AddCommGrp.of ((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
@@ -65,13 +65,13 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrp.{u}) := by
       let iY : limit Y ≅ AddCommGrp.of ((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
           (limit.isLimit _).conePointUniqueUpToIso (AddCommGrp.HasLimit.productLimitCone _).isLimit
       have : Pi.map (fun i ↦ f.app ⟨i⟩) = iX.inv ≫ lim.map f ≫ iY.hom := by
-        simp only [AddCommGrp.coe_of, Functor.comp_obj, Discrete.functor_obj_eq_as, Discrete.mk_as,
-          Pi.isoLimit, IsLimit.conePointUniqueUpToIso, limit.cone,
-          AddCommGrp.HasLimit.productLimitCone, Iso.trans_inv, Functor.mapIso_inv,
-          IsLimit.uniqueUpToIso_inv, Cones.forget_map, IsLimit.liftConeMorphism_hom,
-          limit.isLimit_lift, Iso.symm_inv, Functor.mapIso_hom, IsLimit.uniqueUpToIso_hom, lim_obj,
-          lim_map, Iso.trans_hom, Iso.symm_hom, AddCommGrp.HasLimit.lift, Functor.const_obj_obj,
-          Category.assoc, limit.lift_map_assoc, Pi.cone_pt, iX, iY]
+        simp only [Functor.comp_obj, Discrete.functor_obj_eq_as, Discrete.mk_as, Pi.isoLimit,
+          IsLimit.conePointUniqueUpToIso, limit.cone, AddCommGrp.HasLimit.productLimitCone,
+          Iso.trans_inv, Functor.mapIso_inv, IsLimit.uniqueUpToIso_inv, Cones.forget_map,
+          IsLimit.liftConeMorphism_hom, limit.isLimit_lift, Iso.symm_inv, Functor.mapIso_hom,
+          IsLimit.uniqueUpToIso_hom, lim_obj, lim_map, Iso.trans_hom, Iso.symm_hom,
+          AddCommGrp.HasLimit.lift, Functor.const_obj_obj, Category.assoc, limit.lift_map_assoc,
+          Pi.cone_pt, iX, iY]
         ext g j
         change _ = (_ ≫ limit.π (Discrete.functor fun j ↦ Y.obj { as := j }) ⟨j⟩) _
         simp only [Discrete.functor_obj_eq_as, Functor.comp_obj, Discrete.mk_as, productIsProduct',

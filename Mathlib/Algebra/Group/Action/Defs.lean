@@ -5,10 +5,6 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Opposites
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Spread
 
 /-!
@@ -57,17 +53,52 @@ variable {M N G H α β γ δ : Type*}
 @[to_additive "See also `AddMonoid.toAddAction`"]
 instance (priority := 910) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
-@[to_additive (attr := simp)]
-lemma smul_eq_mul (α : Type*) [Mul α] {a a' : α} : a • a' = a * a' := rfl
+/-- Like `Mul.toSMul`, but multiplies on the right.
 
-/-- Type class for additive monoid actions. -/
+See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
+@[to_additive "Like `Add.toVAdd`, but adds on the right.
+
+  See also `AddMonoid.toOppositeAddAction`."]
+instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul αᵐᵒᵖ α where
+  smul a b := b * a.unop
+
+@[to_additive (attr := simp)]
+lemma smul_eq_mul {α : Type*} [Mul α] (a b : α) : a • b = a * b := rfl
+
+@[to_additive]
+lemma op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : MulOpposite.op a • b = b * a := rfl
+
+@[to_additive (attr := simp)]
+lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * a.unop := rfl
+
+/--
+Type class for additive monoid actions on types, with notation `g +ᵥ p`.
+
+The `AddAction G P` typeclass says that the additive monoid `G` acts additively on a type `P`.
+More precisely this means that the action satisfies the two axioms `0 +ᵥ p = p` and
+`(g₁ + g₂) +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)`. A mathematician might simply say that the additive monoid `G`
+acts on `P`.
+
+For example, if `A` is an additive group and `X` is a type, if a mathematician says
+say "let `A` act on the set `X`" they will usually mean `[AddAction A X]`.
+-/
 class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
   /-- Associativity of `+` and `+ᵥ` -/
   add_vadd : ∀ (g₁ g₂ : G) (p : P), (g₁ + g₂) +ᵥ p = g₁ +ᵥ g₂ +ᵥ p
 
-/-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
+/--
+Type class for monoid actions on types, with notation `g • p`.
+
+The `MulAction G P` typeclass says that the monoid `G` acts multiplicatively on a type `P`.
+More precisely this means that the action satisfies the two axioms `1 • p = p` and
+`(g₁ * g₂) • p = g₁ • (g₂ • p)`. A mathematician might simply say that the monoid `G`
+acts on `P`.
+
+For example, if `G` is a group and `X` is a type, if a mathematician says
+say "let `G` act on the set `X`" they will probably mean  `[AddAction G X]`.
+-/
 @[to_additive (attr := ext)]
 class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where
   /-- One is the neutral element for `•` -/
@@ -145,7 +176,7 @@ class VAddAssocClass (M N α : Type*) [VAdd M N] [VAdd N α] [VAdd M α] : Prop 
 /-- An instance of `IsScalarTower M N α` states that the multiplicative
 action of `M` on `α` is determined by the multiplicative actions of `M` on `N`
 and `N` on `α`. -/
-@[to_additive VAddAssocClass] -- TODO auto-translating
+@[to_additive]
 class IsScalarTower (M N α : Type*) [SMul M N] [SMul N α] [SMul M α] : Prop where
   /-- Associativity of `•` -/
   smul_assoc : ∀ (x : M) (y : N) (z : α), (x • y) • z = x • y • z
@@ -270,12 +301,12 @@ end SMul
 section
 
 /-- Note that the `SMulCommClass α β β` typeclass argument is usually satisfied by `Algebra α β`. -/
-@[to_additive] -- Porting note: nolint to_additive_doc
+@[to_additive]
 lemma mul_smul_comm [Mul β] [SMul α β] [SMulCommClass α β β] (s : α) (x y : β) :
     x * s • y = s • (x * y) := (smul_comm s x y).symm
 
 /-- Note that the `IsScalarTower α β β` typeclass argument is usually satisfied by `Algebra α β`. -/
-@[to_additive] -- Porting note: nolint to_additive_doc
+@[to_additive]
 lemma smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
     r • x * y = r • (x * y) := smul_assoc r x y
 
@@ -300,12 +331,6 @@ lemma smul_mul_smul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
 @[to_additive]
 alias smul_mul_smul := smul_mul_smul_comm
 
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated smul_mul_smul_comm (since := "2024-08-29")] smul_mul_smul
-attribute [deprecated vadd_add_vadd_comm (since := "2024-08-29")] vadd_add_vadd
-
-
 /-- Note that the `IsScalarTower α β β` and `SMulCommClass α β β` typeclass arguments are usually
 satisfied by `Algebra α β`. -/
 @[to_additive]
@@ -327,7 +352,7 @@ lemma Commute.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α α]
 end
 
 section
-variable [Monoid M] [MulAction M α]
+variable [Monoid M] [MulAction M α] {a : M}
 
 @[to_additive]
 lemma smul_smul (a₁ a₂ : M) (b : α) : a₁ • a₂ • b = (a₁ * a₂) • b := (mul_smul _ _ _).symm
@@ -347,6 +372,15 @@ lemma comp_smul_left (a₁ a₂ : M) : (a₁ • ·) ∘ (a₂ • ·) = (((a₁
   funext fun _ ↦ (mul_smul _ _ _).symm
 
 variable {M}
+
+@[to_additive (attr := simp)]
+theorem smul_iterate (a : M) : ∀ n : ℕ, (a • · : α → α)^[n] = (a ^ n • ·)
+  | 0 => by simp [funext_iff]
+  | n + 1 => by ext; simp [smul_iterate, pow_succ, smul_smul]
+
+@[to_additive]
+lemma smul_iterate_apply (a : M) (n : ℕ) (x : α) : (a • ·)^[n] x = a ^ n • x := by
+  rw [smul_iterate]
 
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
@@ -444,19 +478,6 @@ lemma SMulCommClass.of_commMonoid
     rw [← one_smul G (s • x), ← smul_assoc, ← one_smul G x, ← smul_assoc s 1 x,
       smul_comm, smul_assoc, one_smul, smul_assoc, one_smul]
 
-namespace MulAction
-
-variable (M α) in
-/-- Embedding of `α` into functions `M → α` induced by a multiplicative action of `M` on `α`. -/
-@[to_additive
-"Embedding of `α` into functions `M → α` induced by an additive action of `M` on `α`."]
-def toFun : α ↪ M → α :=
-  ⟨fun y x ↦ x • y, fun y₁ y₂ H ↦ one_smul M y₁ ▸ one_smul M y₂ ▸ by convert congr_fun H 1⟩
-
-@[to_additive (attr := simp)]
-lemma toFun_apply (x : M) (y : α) : MulAction.toFun M α y x = x • y := rfl
-
-end MulAction
 end
 
 section CompatibleScalar
@@ -485,3 +506,29 @@ lemma SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
   ⟨fun x y z ↦ by rw [← H x z, smul_eq_mul, ← H, smul_eq_mul, mul_assoc]⟩
 
 end CompatibleScalar
+
+/-- Typeclass for multiplicative actions on multiplicative structures.
+
+The key axiom here is `smul_mul : g • (x * y) = (g • x) * (g • y)`.
+If `G` is a group (with group law multiplication) and `Γ` is its automorphism
+group then there is a natural instance of `MulDistribMulAction Γ G`.
+
+The axiom is also satisfied by a Galois group $Gal(L/K)$ acting on the field `L`,
+but here you can use the even stronger class `MulSemiringAction`, which captures
+how the action plays with both multiplication and addition. -/
+@[ext]
+class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
+  /-- Distributivity of `•` across `*` -/
+  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
+  /-- Multiplying `1` by a scalar gives `1` -/
+  smul_one : ∀ r : M, r • (1 : N) = 1
+
+export MulDistribMulAction (smul_one)
+
+section MulDistribMulAction
+variable [Monoid M] [Monoid N] [MulDistribMulAction M N]
+
+lemma smul_mul' (a : M) (b₁ b₂ : N) : a • (b₁ * b₂) = a • b₁ * a • b₂ :=
+  MulDistribMulAction.smul_mul ..
+
+end MulDistribMulAction

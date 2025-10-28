@@ -30,7 +30,7 @@ variable {R : Type u} [Ring R] {M N : ModuleCat.{v} R} (f : M ⟶ N)
 /-- In the category of modules, every monomorphism is normal. -/
 def normalMono (hf : Mono f) : NormalMono f where
   Z := of R (N ⧸ LinearMap.range f.hom)
-  g := ofHom f.hom.range.mkQ
+  g := ofHom (LinearMap.range f.hom).mkQ
   w := hom_ext <| LinearMap.range_mkQ_comp _
   isLimit :=
     /- The following [invalid Lean code](https://github.com/leanprover-community/lean/issues/341)
@@ -71,23 +71,23 @@ def normalEpi (hf : Epi f) : NormalEpi f where
 /-- The category of R-modules is abelian. -/
 instance abelian : Abelian (ModuleCat.{v} R) where
   has_cokernels := hasCokernels_moduleCat
-  normalMonoOfMono := normalMono
-  normalEpiOfEpi := normalEpi
+  normalMonoOfMono f hf := ⟨normalMono f hf⟩
+  normalEpiOfEpi f hf := ⟨normalEpi f hf⟩
 
 section ReflectsLimits
 
--- Porting note: added to make the following definitions work
-instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) :=
+/-- Add this instance to help Lean with universe levels. -/
+instance : HasLimitsOfSize.{v,v} (ModuleCat.{max v w} R) :=
   ModuleCat.hasLimitsOfSize.{v, v, max v w}
 
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/
 instance forget_reflectsLimitsOfSize :
-    ReflectsLimitsOfSize.{v, v} (forget (ModuleCatMax.{v, w} R)) :=
+    ReflectsLimitsOfSize.{v, v} (forget (ModuleCat.{max v w} R)) :=
   reflectsLimits_of_reflectsIsomorphisms
 
 instance forget₂_reflectsLimitsOfSize :
-    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCatMax.{v, w} R) AddCommGrp.{max v w}) :=
+    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCat.{max v w} R) AddCommGrp.{max v w}) :=
   reflectsLimits_of_reflectsIsomorphisms
 
 instance forget_reflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=

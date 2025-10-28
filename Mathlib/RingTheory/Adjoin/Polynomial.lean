@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Polynomials and adjoining roots

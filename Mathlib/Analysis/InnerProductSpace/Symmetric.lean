@@ -19,7 +19,7 @@ doesn't rely on the definition of the adjoint, which allows it to be stated in n
 ## Main definitions
 
 * `LinearMap.IsSymmetric`: a (not necessarily bounded) operator on an inner product space is
-symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
+  symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
 
 ## Main statements
 
@@ -41,7 +41,7 @@ section Seminormed
 variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace LinearMap
 
@@ -75,26 +75,20 @@ theorem IsSymmetric.apply_clm {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →�
 protected theorem IsSymmetric.zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
   (inner_zero_right x : ⟪x, 0⟫ = 0).symm ▸ (inner_zero_left y : ⟪0, y⟫ = 0)
 
-@[deprecated (since := "2024-09-30")] alias isSymmetric_zero := IsSymmetric.zero
-
 @[simp]
 protected theorem IsSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
-
-@[deprecated (since := "2024-09-30")] alias isSymmetric_id := IsSymmetric.id
 
 @[aesop safe apply]
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T + S).IsSymmetric := by
   intro x y
-  rw [LinearMap.add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right]
-  rfl
+  rw [add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right, add_apply]
 
 @[aesop safe apply]
 theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T - S).IsSymmetric := by
   intro x y
-  rw [LinearMap.sub_apply, inner_sub_left, hT x y, hS x y, ← inner_sub_right]
-  rfl
+  rw [sub_apply, inner_sub_left, hT x y, hS x y, ← inner_sub_right, sub_apply]
 
 @[aesop safe apply]
 theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
@@ -105,12 +99,12 @@ theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT
 @[aesop 30% apply]
 lemma IsSymmetric.mul_of_commute {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : T.IsSymmetric)
     (hST : Commute S T) : (S * T).IsSymmetric :=
-  fun _ _ ↦ by rw [mul_apply, hS, hT, hST, mul_apply]
+  fun _ _ ↦ by rw [Module.End.mul_apply, hS, hT, hST, Module.End.mul_apply]
 
 @[aesop safe apply]
 lemma IsSymmetric.pow {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
-  refine Nat.le_induction (by simp [one_eq_id]) (fun k _ ih ↦ ?_) n n.zero_le
-  rw [iterate_succ, ← mul_eq_comp]
+  refine Nat.le_induction (by simp [Module.End.one_eq_id]) (fun k _ ih ↦ ?_) n n.zero_le
+  rw [Module.End.iterate_succ, ← Module.End.mul_eq_comp]
   exact ih.mul_of_commute hT <| .pow_left rfl k
 
 /-- For a symmetric operator `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
@@ -132,6 +126,26 @@ theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) 
     letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
     (T.restrictScalars ℝ).IsSymmetric :=
   fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
+
+@[simp]
+theorem IsSymmetric.im_inner_apply_self {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    im ⟪T x, x⟫ = 0 :=
+  conj_eq_iff_im.mp <| hT.conj_inner_sym x x
+
+@[simp]
+theorem IsSymmetric.im_inner_self_apply {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    im ⟪x, T x⟫ = 0 := by
+  simp [← hT x x, hT]
+
+@[simp]
+theorem IsSymmetric.coe_re_inner_apply_self {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    re ⟪T x, x⟫ = ⟪T x, x⟫ :=
+  conj_eq_iff_re.mp <| hT.conj_inner_sym x x
+
+@[simp]
+theorem IsSymmetric.coe_re_inner_self_apply {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    re ⟪x, T x⟫ = ⟪x, T x⟫ := by
+  simp [← hT x x, hT]
 
 section Complex
 
@@ -189,7 +203,7 @@ section Normed
 variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace LinearMap
 
@@ -219,6 +233,13 @@ theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymm
   rw [← @inner_self_eq_zero 𝕜, hT.inner_map_polarization]
   simp_rw [h _]
   ring
+
+theorem ker_le_ker_of_range {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : T.IsSymmetric)
+    (h : range S ≤ range T) : ker T ≤ ker S := by
+  intro v hv
+  rw [mem_ker] at hv ⊢
+  obtain ⟨y, hy⟩ : ∃ y, T y = S (S v) := by simpa using @h (S (S v))
+  rw [← inner_self_eq_zero (𝕜 := 𝕜), ← hS, ← hy, hT, hv, inner_zero_right]
 
 end LinearMap
 

@@ -5,14 +5,12 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Common
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
-
-Porting note:
-This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
-name clashes. -/
+-/
 
 open Nat Function Option
 
@@ -20,12 +18,16 @@ namespace Stream'
 
 universe u v w
 variable {α : Type u} {β : Type v} {δ : Type w}
+variable (m n : ℕ) (x y : List α) (a b : Stream' α)
 
 instance [Inhabited α] : Inhabited (Stream' α) :=
   ⟨Stream'.const default⟩
 
-protected theorem eta (s : Stream' α) : (head s::tail s) = s :=
+@[simp] protected theorem eta (s : Stream' α) : head s :: tail s = s :=
   funext fun i => by cases i <;> rfl
+
+/-- Alias for `Stream'.eta` to match `List` API. -/
+alias cons_head_tail := Stream'.eta
 
 @[ext]
 protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, get s₁ n = get s₂ n) → s₁ = s₂ :=
@@ -44,22 +46,23 @@ theorem tail_cons (a : α) (s : Stream' α) : tail (a::s) = s :=
   rfl
 
 @[simp]
-theorem get_drop (n m : ℕ) (s : Stream' α) : get (drop m s) n = get s (n + m) :=
+theorem get_drop (n m : ℕ) (s : Stream' α) : get (drop m s) n = get s (m + n) := by
+  rw [Nat.add_comm]
   rfl
 
 theorem tail_eq_drop (s : Stream' α) : tail s = drop 1 s :=
   rfl
 
 @[simp]
-theorem drop_drop (n m : ℕ) (s : Stream' α) : drop n (drop m s) = drop (n + m) s := by
+theorem drop_drop (n m : ℕ) (s : Stream' α) : drop n (drop m s) = drop (m + n) s := by
   ext; simp [Nat.add_assoc]
 
 @[simp] theorem get_tail {n : ℕ} {s : Stream' α} : s.tail.get n = s.get (n + 1) := rfl
 
-@[simp] theorem tail_drop' {i : ℕ} {s : Stream' α} : tail (drop i s) = s.drop (i+1) := by
+@[simp] theorem tail_drop' {i : ℕ} {s : Stream' α} : tail (drop i s) = s.drop (i + 1) := by
   ext; simp [Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
 
-@[simp] theorem drop_tail' {i : ℕ} {s : Stream' α} : drop i (tail s) = s.drop (i+1) := rfl
+@[simp] theorem drop_tail' {i : ℕ} {s : Stream' α} : drop i (tail s) = s.drop (i + 1) := rfl
 
 theorem tail_drop (n : ℕ) (s : Stream' α) : tail (drop n s) = drop n (tail s) := by simp
 
@@ -67,8 +70,13 @@ theorem get_succ (n : ℕ) (s : Stream' α) : get s (succ n) = get (tail s) n :=
   rfl
 
 @[simp]
-theorem get_succ_cons (n : ℕ) (s : Stream' α) (x : α) : get (x::s) n.succ = get s n :=
+theorem get_succ_cons (n : ℕ) (s : Stream' α) (x : α) : get (x :: s) n.succ = get s n :=
   rfl
+
+@[simp] lemma get_cons_append_zero {a : α} {x : List α} {s : Stream' α} :
+  (a :: x ++ₛ s).get 0 = a := rfl
+
+@[simp] lemma append_eq_cons {a : α} {as : Stream' α} : [a] ++ₛ as = a :: as := by rfl
 
 @[simp] theorem drop_zero {s : Stream' α} : s.drop 0 = s := rfl
 
@@ -102,7 +110,7 @@ theorem mem_cons_of_mem {a : α} {s : Stream' α} (b : α) : a ∈ s → a ∈ b
 
 theorem eq_or_mem_of_mem_cons {a b : α} {s : Stream' α} : (a ∈ b::s) → a = b ∨ a ∈ s :=
     fun ⟨n, h⟩ => by
-  cases' n with n'
+  rcases n with - | n'
   · left
     exact h
   · right
@@ -251,15 +259,15 @@ def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ →
       head s₁ = head s₂ ∧ tail s₁ ~ tail s₂
 
-theorem get_of_bisim (bisim : IsBisimulation R) :
-    ∀ {s₁ s₂} (n), s₁ ~ s₂ → get s₁ n = get s₂ n ∧ drop (n + 1) s₁ ~ drop (n + 1) s₂
-  | _, _, 0, h => bisim h
-  | _, _, n + 1, h =>
+theorem get_of_bisim (bisim : IsBisimulation R) {s₁ s₂} :
+    ∀ n, s₁ ~ s₂ → get s₁ n = get s₂ n ∧ drop (n + 1) s₁ ~ drop (n + 1) s₂
+  | 0, h => bisim h
+  | n + 1, h =>
     match bisim h with
     | ⟨_, trel⟩ => get_of_bisim bisim n trel
 
 -- If two streams are bisimilar, then they are equal
-theorem eq_of_bisim (bisim : IsBisimulation R) : ∀ {s₁ s₂}, s₁ ~ s₂ → s₁ = s₂ := fun r =>
+theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} : s₁ ~ s₂ → s₁ = s₂ := fun r =>
   Stream'.ext fun n => And.left (get_of_bisim R bisim n r)
 
 end Bisim
@@ -311,7 +319,7 @@ section Corec
 theorem corec_def (f : α → β) (g : α → α) (a : α) : corec f g a = map f (iterate g a) :=
   rfl
 
-theorem corec_eq (f : α → β) (g : α → α) (a : α) : corec f g a = f a::corec f g (g a) := by
+theorem corec_eq (f : α → β) (g : α → α) (a : α) : corec f g a = f a :: corec f g (g a) := by
   rw [corec_def, map_eq, head_iterate, tail_iterate]; rfl
 
 theorem corec_id_id_eq_const (a : α) : corec id id a = const a := by
@@ -324,12 +332,12 @@ end Corec
 
 section Corec'
 
-theorem corec'_eq (f : α → β × α) (a : α) : corec' f a = (f a).1::corec' f (f a).2 :=
+theorem corec'_eq (f : α → β × α) (a : α) : corec' f a = (f a).1 :: corec' f (f a).2 :=
   corec_eq _ _ _
 
 end Corec'
 
-theorem unfolds_eq (g : α → β) (f : α → α) (a : α) : unfolds g f a = g a::unfolds g f (f a) := by
+theorem unfolds_eq (g : α → β) (f : α → α) (a : α) : unfolds g f a = g a :: unfolds g f (f a) := by
   unfold unfolds; rw [corec_eq]
 
 theorem get_unfolds_head_tail : ∀ (n : ℕ) (s : Stream' α),
@@ -429,18 +437,41 @@ theorem mem_of_mem_even (a : α) (s : Stream' α) : a ∈ even s → a ∈ s := 
 theorem mem_of_mem_odd (a : α) (s : Stream' α) : a ∈ odd s → a ∈ s := fun ⟨n, h⟩ =>
   Exists.intro (2 * n + 1) (by rw [h, get_odd])
 
-theorem nil_append_stream (s : Stream' α) : appendStream' [] s = s :=
+@[simp] theorem nil_append_stream (s : Stream' α) : appendStream' [] s = s :=
   rfl
 
 theorem cons_append_stream (a : α) (l : List α) (s : Stream' α) :
     appendStream' (a::l) s = a::appendStream' l s :=
   rfl
 
-theorem append_append_stream : ∀ (l₁ l₂ : List α) (s : Stream' α),
+@[simp] theorem append_append_stream : ∀ (l₁ l₂ : List α) (s : Stream' α),
     l₁ ++ l₂ ++ₛ s = l₁ ++ₛ (l₂ ++ₛ s)
   | [], _, _ => rfl
   | List.cons a l₁, l₂, s => by
     rw [List.cons_append, cons_append_stream, cons_append_stream, append_append_stream l₁]
+
+lemma get_append_left (h : n < x.length) : (x ++ₛ a).get n = x[n] := by
+  induction' x with b x ih generalizing n
+  · simp at h
+  · rcases n with (_ | n)
+    · simp
+    · simp [ih n (by simpa using h), cons_append_stream]
+
+@[simp] lemma get_append_right : (x ++ₛ a).get (x.length + n) = a.get n := by
+  induction' x <;> simp [Nat.succ_add, *, cons_append_stream]
+
+@[simp] lemma get_append_length : (x ++ₛ a).get x.length = a.get 0 := get_append_right 0 x a
+
+lemma append_right_injective (h : x ++ₛ a = x ++ₛ b) : a = b := by
+  ext n; replace h := congr_arg (fun a ↦ a.get (x.length + n)) h; simpa using h
+
+@[simp] lemma append_right_inj : x ++ₛ a = x ++ₛ b ↔ a = b :=
+  ⟨append_right_injective x a b, by simp +contextual⟩
+
+lemma append_left_injective (h : x ++ₛ a = y ++ₛ b) (hl : x.length = y.length) : x = y := by
+  apply List.ext_getElem hl
+  intros
+  rw [← get_append_left, ← get_append_left, h]
 
 theorem map_append_stream (f : α → β) :
     ∀ (l : List α) (s : Stream' α), map f (l ++ₛ s) = List.map f l ++ₛ map f s
@@ -454,7 +485,7 @@ theorem drop_append_stream : ∀ (l : List α) (s : Stream' α), drop l.length (
     rw [List.length_cons, drop_succ, cons_append_stream, tail_cons, drop_append_stream l s]
 
 theorem append_stream_head_tail (s : Stream' α) : [head s] ++ₛ tail s = s := by
-  rw [cons_append_stream, nil_append_stream, Stream'.eta]
+  simp
 
 theorem mem_append_stream_right : ∀ {a : α} (l : List α) {s : Stream' α}, a ∈ s → a ∈ l ++ₛ s
   | _, [], _, h => h
@@ -463,7 +494,7 @@ theorem mem_append_stream_right : ∀ {a : α} (l : List α) {s : Stream' α}, a
     mem_cons_of_mem _ ih
 
 theorem mem_append_stream_left : ∀ {a : α} {l : List α} (s : Stream' α), a ∈ l → a ∈ l ++ₛ s
-  | _, [], _, h => absurd h (List.not_mem_nil _)
+  | _, [], _, h => absurd h List.not_mem_nil
   | a, List.cons b l, s, h =>
     Or.elim (List.eq_or_mem_of_mem_cons h) (fun aeqb : a = b => Exists.intro 0 aeqb)
       fun ainl : a ∈ l => mem_cons_of_mem b (mem_append_stream_left s ainl)
@@ -495,16 +526,21 @@ theorem take_take {s : Stream' α} : ∀ {m n}, (s.take n).take m = s.take (min 
   | m, 0 => by rw [Nat.zero_min, take_zero, List.take_nil]
   | m+1, n+1 => by rw [take_succ, List.take_succ_cons, Nat.succ_min_succ, take_succ, take_take]
 
-@[simp] theorem concat_take_get {n : ℕ} {s : Stream' α} : s.take n ++ [s.get n] = s.take (n+1) :=
+@[simp] theorem concat_take_get {n : ℕ} {s : Stream' α} : s.take n ++ [s.get n] = s.take (n + 1) :=
   (take_succ' n).symm
 
-theorem get?_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n).get? k = s.get k
-  | 0, _+1, _ => rfl
-  | k+1, n+1, h => by rw [take_succ, List.get?, get?_take (Nat.lt_of_succ_lt_succ h), get_succ]
+theorem getElem?_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n)[k]? = s.get k
+  | 0, _+1, _ => by simp only [length_take, zero_lt_succ, List.getElem?_eq_getElem]; rfl
+  | k+1, n+1, h => by
+    rw [take_succ, List.getElem?_cons_succ, getElem?_take (Nat.lt_of_succ_lt_succ h), get_succ]
 
-theorem get?_take_succ (n : ℕ) (s : Stream' α) :
-    List.get? (take (succ n) s) n = some (get s n) :=
-  get?_take (Nat.lt_succ_self n)
+@[deprecated (since := "2025-02-14")] alias get?_take := getElem?_take
+
+theorem getElem?_take_succ (n : ℕ) (s : Stream' α) :
+    (take (succ n) s)[n]? = some (get s n) :=
+  getElem?_take (Nat.lt_succ_self n)
+
+@[deprecated (since := "2025-02-14")] alias get?_take_succ := getElem?_take_succ
 
 @[simp] theorem dropLast_take {n : ℕ} {xs : Stream' α} :
     (Stream'.take n xs).dropLast = Stream'.take (n-1) xs := by
@@ -522,6 +558,43 @@ theorem append_take_drop : ∀ (n : ℕ) (s : Stream' α),
   · intro s
     rw [take_succ, drop_succ, cons_append_stream, ih (tail s), Stream'.eta]
 
+lemma append_take : x ++ (a.take n) = (x ++ₛ a).take (x.length + n) := by
+  induction' x <;> simp [take, Nat.add_comm, cons_append_stream, *]
+
+@[simp] lemma take_get (h : m < (a.take n).length) : (a.take n)[m] = a.get m := by
+  nth_rw 2 [← append_take_drop n a]; rw [get_append_left]
+
+theorem take_append_of_le_length (h : n ≤ x.length) :
+    (x ++ₛ a).take n = x.take n := by
+  apply List.ext_getElem (by simp [h])
+  intro _ _ _; rw [List.getElem_take, take_get, get_append_left]
+
+lemma take_add : a.take (m + n) = a.take m ++ (a.drop m).take n := by
+  apply append_left_injective _ _ (a.drop (m + n)) ((a.drop m).drop n) <;>
+    simp [- drop_drop]
+
+@[gcongr] lemma take_prefix_take_left (h : m ≤ n) : a.take m <+: a.take n := by
+  rw [(by simp [h] : a.take m = (a.take n).take m)]
+  apply List.take_prefix
+
+@[simp] lemma take_prefix : a.take m <+: a.take n ↔ m ≤ n :=
+  ⟨fun h ↦ by simpa using h.length_le, take_prefix_take_left m n a⟩
+
+lemma map_take (f : α → β) : (a.take n).map f = (a.map f).take n := by
+  apply List.ext_getElem <;> simp
+
+lemma take_drop : (a.drop m).take n = (a.take (m + n)).drop m := by
+  apply List.ext_getElem <;> simp
+
+lemma drop_append_of_le_length (h : n ≤ x.length) :
+    (x ++ₛ a).drop n = x.drop n ++ₛ a := by
+  obtain ⟨m, hm⟩ := Nat.exists_eq_add_of_le h
+  ext k; rcases lt_or_ge k m with _ | hk
+  · rw [get_drop, get_append_left, get_append_left, List.getElem_drop]; simpa [hm]
+  · obtain ⟨p, rfl⟩ := Nat.exists_eq_add_of_le hk
+    have hm' : m = (x.drop n).length := by simp [hm]
+    simp_rw [get_drop, ← Nat.add_assoc, ← hm, get_append_right, hm', get_append_right]
+
 -- Take theorem reduces a proof of equality of infinite streams to an
 -- induction over all their finite approximations.
 theorem take_theorem (s₁ s₂ : Stream' α) : (∀ n : ℕ, take n s₁ = take n s₂) → s₁ = s₂ := by
@@ -532,7 +605,7 @@ theorem take_theorem (s₁ s₂ : Stream' α) : (∀ n : ℕ, take n s₁ = take
       simp only [take, List.cons.injEq, and_true] at aux
     exact aux
   · have h₁ : some (get s₁ (succ n)) = some (get s₂ (succ n)) := by
-      rw [← get?_take_succ, ← get?_take_succ, h (succ (succ n))]
+      rw [← getElem?_take_succ, ← getElem?_take_succ, h (succ (succ n))]
     injection h₁
 
 protected theorem cycle_g_cons (a : α) (a₁ : α) (l₁ : List α) (a₀ : α) (l₀ : List α) :

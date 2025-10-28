@@ -3,12 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Data.NNReal.Basic
 import Mathlib.Order.Fin.Tuple
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.Order.MonotoneConvergence
 import Mathlib.Topology.MetricSpace.Pseudo.Real
+import Mathlib.Topology.Order.MonotoneConvergence
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -55,7 +56,7 @@ open Set Function Metric Filter
 
 noncomputable section
 
-open scoped Classical NNReal Topology
+open scoped NNReal Topology
 
 namespace BoxIntegral
 
@@ -92,7 +93,6 @@ theorem lower_ne_upper (i) : I.lower i ≠ I.upper i :=
 instance : Membership (ι → ℝ) (Box ι) :=
   ⟨fun I x ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
--- Porting note: added
 /-- The set of points in this box: this is the product of half-open intervals `(lower i, upper i]`,
 where `lower` and `upper` are this box' corners. -/
 @[coe]
@@ -237,7 +237,6 @@ instance : SemilatticeSup (Box ι) :=
 In this section we define coercion from `WithBot (Box ι)` to `Set (ι → ℝ)` by sending `⊥` to `∅`.
 -/
 
--- Porting note: added
 /-- The set underlying this box: `⊥` is mapped to `∅`. -/
 @[coe]
 def withBotToSet (o : WithBot (Box ι)) : Set (ι → ℝ) := o.elim ∅ (↑)
@@ -253,10 +252,10 @@ theorem coe_coe : ((I : WithBot (Box ι)) : Set (ι → ℝ)) = I := rfl
 
 theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → ℝ)).Nonempty
   | ⊥ => by
-    erw [Option.isSome]
+    unfold Option.isSome
     simp
   | (I : Box ι) => by
-    erw [Option.isSome]
+    unfold Option.isSome
     simp [I.nonempty_coe]
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
@@ -273,6 +272,7 @@ theorem withBotCoe_subset_iff {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) 
 theorem withBotCoe_inj {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) = J ↔ I = J := by
   simp only [Subset.antisymm_iff, ← le_antisymm_iff, withBotCoe_subset_iff]
 
+open scoped Classical in
 /-- Make a `WithBot (Box ι)` from a pair of corners `l u : ι → ℝ`. If `l i < u i` for all `i`,
 then the result is `⟨l, u, _⟩ : Box ι`, otherwise it is `⊥`. In any case, the result interpreted
 as a set in `ι → ℝ` is the set `{x : ι → ℝ | ∀ i, x i ∈ Ioc (l i) (u i)}`. -/
@@ -286,7 +286,7 @@ theorem mk'_eq_bot {l u : ι → ℝ} : mk' l u = ⊥ ↔ ∃ i, u i ≤ l i := 
 
 @[simp]
 theorem mk'_eq_coe {l u : ι → ℝ} : mk' l u = I ↔ l = I.lower ∧ u = I.upper := by
-  cases' I with lI uI hI; rw [mk']; split_ifs with h
+  obtain ⟨lI, uI, hI⟩ := I; rw [mk']; split_ifs with h
   · simp [WithBot.coe_eq_coe]
   · suffices l = lI → u ≠ uI by simpa
     rintro rfl rfl
@@ -349,7 +349,7 @@ theorem not_disjoint_coe_iff_nonempty_inter :
 
 /-- Face of a box in `ℝⁿ⁺¹ = Fin (n + 1) → ℝ`: the box in `ℝⁿ = Fin n → ℝ` with corners at
 `I.lower ∘ Fin.succAbove i` and `I.upper ∘ Fin.succAbove i`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def face {n} (I : Box (Fin (n + 1))) (i : Fin (n + 1)) : Box (Fin n) :=
   ⟨I.lower ∘ Fin.succAbove i, I.upper ∘ Fin.succAbove i, fun _ ↦ I.lower_lt_upper _⟩
 
@@ -382,7 +382,7 @@ theorem continuousOn_face_Icc {X} [TopologicalSpace X] {n} {f : (Fin (n + 1) →
     {I : Box (Fin (n + 1))} (h : ContinuousOn f (Box.Icc I)) {i : Fin (n + 1)} {x : ℝ}
     (hx : x ∈ Icc (I.lower i) (I.upper i)) :
     ContinuousOn (f ∘ i.insertNth x) (Box.Icc (I.face i)) :=
-  h.comp (continuousOn_const.fin_insertNth i continuousOn_id) (I.mapsTo_insertNth_face_Icc hx)
+  h.comp (continuousOn_const.finInsertNth i continuousOn_id) (I.mapsTo_insertNth_face_Icc hx)
 
 /-!
 ### Covering of the interior of a box by a monotone sequence of smaller boxes
@@ -448,7 +448,7 @@ theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
     by_contra hr
     have := div_nonpos_of_nonneg_of_nonpos (sub_nonneg.2 <| J.lower_le_upper i) (not_lt.1 hr)
     rw [← h] at this
-    exact this.not_lt (sub_pos.2 <| I.lower_lt_upper i)
+    exact this.not_gt (sub_pos.2 <| I.lower_lt_upper i)
   have hn0 := (map_ne_zero Real.nnabs).2 this.ne'
   simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right₀ hn0]
 

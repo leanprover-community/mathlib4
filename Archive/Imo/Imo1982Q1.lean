@@ -44,7 +44,7 @@ In the latter case we derive a contradiction, because if `f 1982 = 661` then
 namespace Imo1982Q1
 
 structure IsGood (f : ℕ+ → ℕ) : Prop where
-  /-- The function satisfies the functional relation-/
+  /-- The function satisfies the functional relation. -/
   rel: ∀ m n : ℕ+, f (m + n) = f m + f n ∨ f (m + n) = f m + f n + 1
   f₂ : f 2 = 0
   hf₃ : 0 < f 3
@@ -64,25 +64,23 @@ lemma f₁ : f 1 = 0 := by
   · cases Nat.succ_ne_zero _ h₂.symm
 
 lemma f₃ : f 3 = 1 := by
-    have h : f 3 = f 2 + f 1 ∨ f 3  = f 2 + f 1 + 1 := by apply hf.rel 2 1
-    rw [hf.f₁, hf.f₂, add_zero, zero_add] at h
-    have not_left : ¬ f 3 = 0 := by apply ne_of_gt hf.hf₃
-    rw [or_iff_right (not_left)] at h
-    exact h
+  have h : f 3 = f 2 + f 1 ∨ f 3 = f 2 + f 1 + 1 := hf.rel 2 1
+  rw [hf.f₁, hf.f₂, add_zero, zero_add] at h
+  exact h.resolve_left hf.hf₃.ne'
 
 lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by
   have h := hf.rel m n
   rcases h with ( hl | hr )
   · rw [hl]
-  · rw [hr]; nth_rewrite 1 [← add_zero (f n), ← add_assoc]; apply add_le_add_right (by norm_num)
+  · rw [hr]; nth_rewrite 1 [← add_zero (f n), ← add_assoc]; gcongr; norm_num
 
 lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
-  induction n using PNat.recOn
-  case p1 => simp
-  case hp n' ih =>
+  induction n with
+  | one => simp
+  | succ n' ih =>
     calc
     ↑(n' + 1) * f m = ↑n' * f m + f m := by rw [PNat.add_coe, add_mul, PNat.val_ofNat, one_mul]
-    _ ≤ f (n' * m) + f m := add_le_add_right ih (f m)
+    _ ≤ f (n' * m) + f m := by gcongr
     _ ≤ f (n' * m + m) := hf.superadditive
     _ = f ((n' + 1) * m) := by congr; rw [add_mul, one_mul]
 
@@ -98,7 +96,7 @@ lemma part_1 : 660 ≤ f (1980) := by
 
 lemma part_2 : f 1980 ≤ 660 := by
   have h : 5 * f 1980 + 33 * f 3 ≤ 5 * 660 + 33 := by
-    calc (5 : ℕ+) * f 1980 + (33 : ℕ+) * f 3 ≤  f (5 * 1980 + 33 * 3) := by apply hf.superlinear
+    calc (5 : ℕ+) * f 1980 + (33 : ℕ+) * f 3 ≤ f (5 * 1980 + 33 * 3) := by apply hf.superlinear
     _ = f 9999 := by rfl
     _ = 5 * 660 + 33 := by rw [hf.f_9999]
   rw [hf.f₃, mul_one] at h

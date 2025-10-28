@@ -46,6 +46,8 @@ open Homeomorph
 
 noncomputable section
 
+/-- `I^N` is notation (in the Topology namespace) for `N → I`,
+i.e. the unit cube indexed by a type `N`. -/
 scoped[Topology] notation "I^" N => N → I
 
 namespace Cube
@@ -76,11 +78,12 @@ end Cube
 
 variable (N X : Type*) [TopologicalSpace X] (x : X)
 
-/-- The space of paths with both endpoints equal to a specified point `x : X`. -/
+/-- The space of paths with both endpoints equal to a specified point `x : X`.
+Denoted as `Ω`, within the `Topology.Homotopy` namespace. -/
 abbrev LoopSpace :=
   Path x x
 
-scoped[Topology.Homotopy] notation "Ω" => LoopSpace
+@[inherit_doc] scoped[Topology.Homotopy] notation "Ω" => LoopSpace
 
 instance LoopSpace.inhabited : Inhabited (Path x x) :=
   ⟨Path.refl x⟩
@@ -207,7 +210,7 @@ def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
       funSplitAt_apply, ContinuousMap.uncurry_apply, ContinuousMap.coe_mk,
       Function.uncurry_apply_pair]
     obtain rfl | Hne := eq_or_ne j i
-    · cases' Hj with Hj Hj <;> simp only [Hj, p.coe_toContinuousMap, p.source, p.target] <;> rfl
+    · rcases Hj with Hj | Hj <;> simp only [Hj, p.coe_toContinuousMap, p.source, p.target] <;> rfl
     · exact GenLoop.boundary _ _ ⟨⟨j, Hne⟩, Hj⟩⟩
 
 theorem continuous_fromLoop (i : N) : Continuous (@fromLoop N X _ x _ i) :=
@@ -265,12 +268,19 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   · rintro y ⟨i, iH⟩
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
-  · continuity
-  iterate 2 intro; ext; erw [homotopyTo_apply, toLoop_apply]; swap
+  · fun_prop
+  iterate 2
+    intro
+    ext
+    dsimp
+    rw [homotopyTo_apply, toLoop_apply]
+    swap
   · apply H.apply_zero
   · apply H.apply_one
   intro t y yH
-  ext; erw [homotopyTo_apply]
+  ext
+  dsimp
+  rw [homotopyTo_apply]
   apply H.eq_fst; use i
   rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
 
@@ -279,7 +289,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
 @[simps!] def homotopyFrom (i : N) {p q : Ω^ N X x} (H : (toLoop i p).Homotopy (toLoop i q)) :
     C(I × I^N, X) :=
   (ContinuousMap.comp ⟨_, ContinuousMap.continuous_uncurry⟩
-          (ContinuousMap.comp ⟨Subtype.val, by continuity⟩ H.toContinuousMap).curry).uncurry.comp <|
+          (ContinuousMap.comp ⟨Subtype.val, by fun_prop⟩ H.toContinuousMap).curry).uncurry.comp <|
     (ContinuousMap.id I).prodMap (Cube.splitAt i)
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
@@ -348,7 +358,6 @@ end GenLoop
 def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
   Quotient (GenLoop.Homotopic.setoid N x)
 
--- Porting note: in Lean 3 this instance was derived
 instance : Inhabited (HomotopyGroup N X x) :=
   inferInstanceAs <| Inhabited <| Quotient (GenLoop.Homotopic.setoid N x)
 
@@ -364,18 +373,17 @@ def homotopyGroupEquivFundamentalGroup (i : N) :
   apply Quotient.congr (loopHomeo i).toEquiv
   exact fun p q => ⟨homotopicTo i, homotopicFrom i⟩
 
-/-- Homotopy group of finite index. -/
+/-- Homotopy group of finite index, denoted as `π_n` within the Topology namespace. -/
 abbrev HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
   HomotopyGroup (Fin n) _ x
 
-scoped[Topology] notation "π_" => HomotopyGroup.Pi
+@[inherit_doc] scoped[Topology] notation "π_" => HomotopyGroup.Pi
 
 /-- The 0-dimensional generalized loops based at `x` are in bijection with `X`. -/
 def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   toFun f := f 0
   invFun y := ⟨ContinuousMap.const _ y, fun _ ⟨i, _⟩ => isEmptyElim i⟩
   left_inv f := by ext; exact congr_arg f (Subsingleton.elim _ _)
-  right_inv _ := rfl
   continuous_invFun := ContinuousMap.const'.2.subtype_mk _
 
 /-- The homotopy "group" indexed by an empty type is in bijection with
@@ -412,7 +420,6 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
       rintro y ⟨i, iH | iH⟩ <;> cases Unique.eq_default i <;> apply (congr_arg p iH).trans
       exacts [p.source, p.target]⟩
   left_inv p := by ext y; exact congr_arg p (eq_const_of_unique y).symm
-  right_inv p := by ext; rfl
 
 /- TODO (?): deducing this from `homotopyGroupEquivFundamentalGroup` would require
   combination of `CategoryTheory.Functor.mapAut` and
@@ -432,7 +439,7 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
           prop' := fun t y iH => H.prop' _ _ ⟨default, iH⟩ }⟩
   refine
     ⟨⟨⟨⟨fun tx => H (tx.fst, tx.snd default), H.continuous.comp ?_⟩, fun y => ?_, fun y => ?_⟩, ?_⟩⟩
-  · exact continuous_fst.prod_mk ((continuous_apply _).comp continuous_snd)
+  · fun_prop
   · exact (H.apply_zero _).trans (congr_arg a₁ (eq_const_of_unique y).symm)
   · exact (H.apply_one _).trans (congr_arg a₂ (eq_const_of_unique y).symm)
   · rintro t y ⟨i, iH⟩
@@ -487,7 +494,7 @@ theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
 
 /-- Characterization of multiplication -/
 theorem mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
+    -- TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
     ((· * ·) : _ → _ → HomotopyGroup N X x) ⟦p⟧ ⟦q⟧ = ⟦transAt i q p⟧ := by
   rw [transAt_indep (Classical.arbitrary N) q, ← fromLoop_trans_toLoop]
   apply Quotient.sound

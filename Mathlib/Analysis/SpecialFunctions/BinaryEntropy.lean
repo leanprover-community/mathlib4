@@ -123,9 +123,9 @@ lemma binEntropy_nonpos_of_one_le (hp : 1 ≤ p) : binEntropy p ≤ 0 := by
 lemma binEntropy_eq_zero : binEntropy p = 0 ↔ p = 0 ∨ p = 1 := by
   refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
   contrapose! h
-  obtain hp₀ | hp₀ := h.1.lt_or_lt
+  obtain hp₀ | hp₀ := h.1.lt_or_gt
   · exact (binEntropy_neg_of_neg hp₀).ne
-  obtain hp₁ | hp₁ := h.2.lt_or_lt.symm
+  obtain hp₁ | hp₁ := h.2.lt_or_gt.symm
   · exact (binEntropy_neg_of_one_lt hp₁).ne
   · exact (binEntropy_pos hp₀ hp₁).ne'
 
@@ -136,10 +136,10 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
     simp at h
   wlog hp : p < 2⁻¹
   · have hp : 1 - p < 2⁻¹ := by
-      rw [sub_lt_comm]; norm_num at *; linarith (config := { splitNe := true })
+      rw [sub_lt_comm]; norm_num at *; linarith +splitNe
     rw [← binEntropy_one_sub]
     exact this hp.ne hp
-  obtain hp₀ | hp₀ := le_or_lt p 0
+  obtain hp₀ | hp₀ := le_or_gt p 0
   · exact (binEntropy_nonpos_of_nonpos hp₀).trans_lt <| log_pos <| by norm_num
   have hp₁ : 0 < 1 - p := sub_pos.2 <| hp.trans <| by norm_num
   calc
@@ -168,15 +168,14 @@ This is due to definition of `Real.log` for negative numbers. -/
   simp only [log_inv, mul_neg]
   fun_prop (disch := assumption)
 
-set_option push_neg.use_distrib true in
 lemma differentiableAt_binEntropy_iff_ne_zero_one :
     DifferentiableAt ℝ binEntropy p ↔ p ≠ 0 ∧ p ≠ 1 := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ differentiableAt_binEntropy h.1 h.2⟩
     <;> rintro rfl <;> unfold binEntropy at h
-  · rw [DifferentiableAt.add_iff_left] at h
+  · rw [DifferentiableAt.fun_add_iff_left] at h
     · simp [log_inv, mul_neg, ← neg_mul, ← negMulLog_def, differentiableAt_negMulLog_iff] at h
     · fun_prop (disch := simp)
-  · rw [DifferentiableAt.add_iff_right, differentiableAt_iff_comp_const_sub (b := 1)] at h
+  · rw [DifferentiableAt.fun_add_iff_right, differentiableAt_iff_comp_const_sub (b := 1)] at h
     · simp [log_inv, mul_neg, ← neg_mul, ← negMulLog_def, differentiableAt_negMulLog_iff] at h
     · fun_prop (disch := simp)
 
@@ -261,19 +260,19 @@ lemma hasDerivAt_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
 
 open Filter Topology Set
 
-private lemma tendsto_log_one_sub_sub_log_nhdsWithin_atAtop :
+private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[>] 0) atTop := by
   apply Filter.tendsto_atTop_add_left_of_le' (𝓝[>] 0) (log (1/2) : ℝ)
   · have h₁ : (0 : ℝ) < 1 / 2 := by norm_num
-    filter_upwards [Ioc_mem_nhdsWithin_Ioi' h₁] with p hx
+    filter_upwards [Ioc_mem_nhdsGT h₁] with p hx
     gcongr
     linarith [hx.2]
-  · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsWithin_zero_right
+  · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsGT_zero
 
-private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
+private lemma tendsto_log_one_sub_sub_log_nhdsLT_one_atBot :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[<] 1) atBot := by
   apply Filter.tendsto_atBot_add_right_of_ge' (𝓝[<] 1) (-log (1 - 2⁻¹))
-  · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsWithin_zero_right
+  · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsGT_zero
     apply Tendsto.comp (f := (1 - ·)) (g := log) this
     have contF : Continuous ((1 : ℝ) - ·) := continuous_sub_left 1
     have : MapsTo ((1 : ℝ) - ·) (Iio 1) (Ioi 0) := by
@@ -282,7 +281,7 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
     convert ContinuousWithinAt.tendsto_nhdsWithin (x :=(1 : ℝ)) contF.continuousWithinAt this
     exact Eq.symm (sub_eq_zero_of_eq rfl)
   · have h₁ : (1 : ℝ) - (2 : ℝ)⁻¹ < 1 := by norm_num
-    filter_upwards [Ico_mem_nhdsWithin_Iio' h₁] with p hx
+    filter_upwards [Ico_mem_nhdsLT h₁] with p hx
     gcongr
     exact hx.1
 
@@ -295,10 +294,10 @@ lemma not_continuousAt_deriv_qaryEntropy_one :
       ring
     rw [this]
     apply tendsto_atBot_add_const_left
-    exact tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot
+    exact tendsto_log_one_sub_sub_log_nhdsLT_one_atBot
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoBot) nhdsWithin_le_nhds
   · simp only [disjoint_nhds_atBot_iff, not_isBot, not_false_eq_true]
-  filter_upwards [Ioo_mem_nhdsWithin_Iio' (show 1 - 2⁻¹ < (1 : ℝ) by norm_num)]
+  filter_upwards [Ioo_mem_nhdsLT (show 1 - 2⁻¹ < (1 : ℝ) by norm_num)]
   intros
   apply (deriv_qaryEntropy _ _).symm
   · simp_all only [mem_Ioo, ne_eq]
@@ -312,10 +311,10 @@ lemma not_continuousAt_deriv_qaryEntropy_zero :
     have : (fun p ↦ log (q - 1) + log (1 - p) - log p)
         = (fun p ↦ log (q - 1) + (log (1 - p) - log p)) := by ext; ring
     rw [this]
-    exact tendsto_atTop_add_const_left _ _ tendsto_log_one_sub_sub_log_nhdsWithin_atAtop
+    exact tendsto_atTop_add_const_left _ _ tendsto_log_one_sub_sub_log_nhdsGT_atAtop
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoTop) nhdsWithin_le_nhds
   · simp only [disjoint_nhds_atTop_iff, not_isTop, not_false_eq_true]
-  filter_upwards [Ioo_mem_nhdsWithin_Ioi' (show (0 : ℝ) < 2⁻¹ by norm_num)]
+  filter_upwards [Ioo_mem_nhdsGT (show (0 : ℝ) < 2⁻¹ by norm_num)]
   intros
   apply (deriv_qaryEntropy _ _).symm
   · simp_all only [zero_add, mem_Ioo, ne_eq]
@@ -346,7 +345,7 @@ lemma deriv2_qaryEntropy :
     filter_upwards [eventually_ne_nhds xne0, eventually_ne_nhds xne1]
       with y xne0 h2 using deriv_qaryEntropy xne0 h2
   -- Pathological case where we use junk value (because function not differentiable)
-  · have : p = 0 ∨ p = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
+  · have : p = 0 ∨ p = 1 := Decidable.or_iff_not_not_and_not.mpr is_x_where_nondiff
     rw [deriv_zero_of_not_differentiableAt]
     · simp_all only [ne_eq, not_and, Decidable.not_not]
       cases this <;> simp_all only [

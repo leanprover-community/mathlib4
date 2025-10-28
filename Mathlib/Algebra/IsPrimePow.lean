@@ -3,15 +3,16 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.NumberTheory.Divisors
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.Nat
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Prime powers
 
 This file deals with prime powers: numbers which are positive integer powers of a single prime.
 -/
-
+assert_not_exists Nat.divisors
 
 variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 
@@ -86,12 +87,6 @@ theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m
   apply Nat.pos_of_ne_zero
   rintro rfl
   simp only [pow_zero, ne_eq, not_true_eq_false] at hm₁
-
-theorem Nat.disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
-    Disjoint (a.divisors.filter IsPrimePow) (b.divisors.filter IsPrimePow) := by
-  simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
-  rintro n han _ha hn hbn _hb -
-  exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
 
 theorem IsPrimePow.two_le : ∀ {n : ℕ}, IsPrimePow n → 2 ≤ n
   | 0, h => (not_isPrimePow_zero h).elim

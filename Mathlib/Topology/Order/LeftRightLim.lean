@@ -93,11 +93,11 @@ include hf
 
 theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
     leftLim f x = sSup (f '' Iio x) :=
-  leftLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Iio x)
+  leftLim_eq_of_tendsto h (hf.tendsto_nhdsLT x)
 
 theorem rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
     rightLim f x = sInf (f '' Ioi x) :=
-  rightLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Ioi x)
+  rightLim_eq_of_tendsto h (hf.tendsto_nhdsGT x)
 
 theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   letI : TopologicalSpace α := Preorder.topology α
@@ -148,11 +148,9 @@ theorem leftLim_le_rightLim (h : x ≤ y) : leftLim f x ≤ rightLim f y :=
 theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
   letI : TopologicalSpace α := Preorder.topology α
   haveI : OrderTopology α := ⟨rfl⟩
-  rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
+  rcases eq_or_neBot (𝓝[<] y) with (h' | h')
   · simpa [leftLim, h'] using rightLim_le hf h
-  obtain ⟨a, ⟨xa, ay⟩⟩ : (Ioo x y).Nonempty :=
-    forall_mem_nonempty_iff_neBot.2 (neBot_iff.2 h') (Ioo x y)
-      (Ioo_mem_nhdsWithin_Iio ⟨h, le_refl _⟩)
+  obtain ⟨a, ⟨xa, ay⟩⟩ : (Ioo x y).Nonempty := nonempty_of_mem (Ioo_mem_nhdsLT h)
   calc
     rightLim f x ≤ f a := hf.rightLim_le xa
     _ ≤ leftLim f y := hf.le_leftLim ay
@@ -163,7 +161,7 @@ theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) :=
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
   · simp [h']
   rw [leftLim_eq_sSup hf h']
-  exact hf.tendsto_nhdsWithin_Iio x
+  exact hf.tendsto_nhdsLT x
 
 theorem tendsto_leftLim_within (x : α) : Tendsto f (𝓝[<] x) (𝓝[≤] leftLim f x) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within f (hf.tendsto_leftLim x)
@@ -209,43 +207,6 @@ theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x 
     · exact hf.continuousWithinAt_Iio_iff_leftLim_eq.2 h'
     · rw [h] at h'
       exact hf.continuousWithinAt_Ioi_iff_rightLim_eq.2 h'
-
-/-- In a second countable space, the set of points where a monotone function is not right-continuous
-is at most countable. Superseded by `countable_not_continuousAt` which gives the two-sided
-version. -/
-theorem countable_not_continuousWithinAt_Ioi [SecondCountableTopology β] :
-    Set.Countable { x | ¬ContinuousWithinAt f (Ioi x) x } := by
-  apply (countable_image_lt_image_Ioi f).mono
-  rintro x (hx : ¬ContinuousWithinAt f (Ioi x) x)
-  dsimp
-  contrapose! hx
-  refine tendsto_order.2 ⟨fun m hm => ?_, fun u hu => ?_⟩
-  · filter_upwards [@self_mem_nhdsWithin _ _ x (Ioi x)] with y hy using hm.trans_le
-      (hf (le_of_lt hy))
-  rcases hx u hu with ⟨v, xv, fvu⟩
-  have : Ioo x v ∈ 𝓝[>] x := Ioo_mem_nhdsWithin_Ioi ⟨le_refl _, xv⟩
-  filter_upwards [this] with y hy
-  apply (hf hy.2.le).trans_lt fvu
-
-/-- In a second countable space, the set of points where a monotone function is not left-continuous
-is at most countable. Superseded by `countable_not_continuousAt` which gives the two-sided
-version. -/
-theorem countable_not_continuousWithinAt_Iio [SecondCountableTopology β] :
-    Set.Countable { x | ¬ContinuousWithinAt f (Iio x) x } :=
-  hf.dual.countable_not_continuousWithinAt_Ioi
-
-/-- In a second countable space, the set of points where a monotone function is not continuous
-is at most countable. -/
-theorem countable_not_continuousAt [SecondCountableTopology β] :
-    Set.Countable { x | ¬ContinuousAt f x } := by
-  apply
-    (hf.countable_not_continuousWithinAt_Ioi.union hf.countable_not_continuousWithinAt_Iio).mono
-      _
-  refine compl_subset_compl.1 ?_
-  simp only [compl_union]
-  rintro x ⟨hx, h'x⟩
-  simp only [mem_setOf_eq, Classical.not_not, mem_compl_iff] at hx h'x ⊢
-  exact continuousAt_iff_continuous_left'_right'.2 ⟨h'x, hx⟩
 
 end Monotone
 
@@ -311,11 +272,5 @@ theorem continuousWithinAt_Ioi_iff_rightLim_eq :
 coincide. -/
 theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x = rightLim f x :=
   hf.dual_right.continuousAt_iff_leftLim_eq_rightLim
-
-/-- In a second countable space, the set of points where an antitone function is not continuous
-is at most countable. -/
-theorem countable_not_continuousAt [SecondCountableTopology β] :
-    Set.Countable { x | ¬ContinuousAt f x } :=
-  hf.dual_right.countable_not_continuousAt
 
 end Antitone

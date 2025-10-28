@@ -6,7 +6,9 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.BigOperators.Expect
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Algebra.Order.Module.Rat
+import Mathlib.Tactic.GCongr
 
 /-!
 # Order properties of the average over a finset
@@ -22,7 +24,8 @@ local notation a " /ℚ " q => (q : ℚ≥0)⁻¹ • a
 
 namespace Finset
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid α] [Module ℚ≥0 α] {s : Finset ι} {f g : ι → α}
+variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α]
+  {s : Finset ι} {f g : ι → α}
 
 lemma expect_eq_zero_iff_of_nonneg (hs : s.Nonempty) (hf : ∀ i ∈ s, 0 ≤ f i) :
     𝔼 i ∈ s, f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
@@ -58,7 +61,8 @@ lemma expect_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ 𝔼 i ∈ s, f i :=
 end PosSMulMono
 
 section PosSMulMono
-variable {M N : Type*} [AddCommMonoid M] [Module ℚ≥0 M] [OrderedAddCommMonoid N] [Module ℚ≥0 N]
+variable {M N : Type*} [AddCommMonoid M] [Module ℚ≥0 M]
+  [AddCommMonoid N] [PartialOrder N] [IsOrderedAddMonoid N] [Module ℚ≥0 N]
   [PosSMulMono ℚ≥0 N] {m : M → N} {p : M → Prop} {f : ι → M} {s : Finset ι}
 
 /-- Let `{a | p a}` be an additive subsemigroup of an additive commutative monoid `M`. If `m` is a
@@ -104,7 +108,8 @@ end PosSMulMono
 end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
-variable [OrderedCancelAddCommMonoid α] [Module ℚ≥0 α] {s : Finset ι} {f : ι → α}
+variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
+  {s : Finset ι} {f : ι → α}
 section PosSMulStrictMono
 variable [PosSMulStrictMono ℚ≥0 α]
 
@@ -115,7 +120,8 @@ end PosSMulStrictMono
 end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
-variable [LinearOrderedAddCommMonoid α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α] {s : Finset ι}
+variable [AddCommMonoid α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α]
+  [PosSMulMono ℚ≥0 α] {s : Finset ι}
   {f : ι → α} {a : α}
 
 lemma exists_lt_of_lt_expect (hs : s.Nonempty) (h : a < 𝔼 i ∈ s, f i) : ∃ x ∈ s, a < f x := by
@@ -127,7 +133,7 @@ lemma exists_lt_of_expect_lt (hs : s.Nonempty) (h : 𝔼 i ∈ s, f i < a) : ∃
 end LinearOrderedAddCommMonoid
 
 section LinearOrderedAddCommGroup
-variable [LinearOrderedAddCommGroup α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α]
+variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α]
 
 lemma abs_expect_le (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ 𝔼 i ∈ s, |f i| :=
   le_expect_of_subadditive abs_zero abs_add (fun _ ↦ abs_nnqsmul _)
@@ -135,7 +141,8 @@ lemma abs_expect_le (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ �
 end LinearOrderedAddCommGroup
 
 section LinearOrderedCommSemiring
-variable [LinearOrderedCommSemiring R] [ExistsAddOfLE R] [Module ℚ≥0 R] [PosSMulMono ℚ≥0 R]
+variable [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R] [Module ℚ≥0 R]
+  [PosSMulMono ℚ≥0 R]
 
 /-- **Cauchy-Schwarz inequality** in terms of `Finset.expect`. -/
 lemma expect_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → R) :
@@ -153,7 +160,7 @@ namespace Fintype
 variable [Fintype ι]
 
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid α] [Module ℚ≥0 α] {f : ι → α}
+variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] {f : ι → α}
 
 lemma expect_eq_zero_iff_of_nonneg [Nonempty ι] (hf : 0 ≤ f) : 𝔼 i, f i = 0 ↔ f = 0 := by
   simp [expect, sum_eq_zero_iff_of_nonneg hf, univ_nonempty.ne_empty]
@@ -182,11 +189,12 @@ def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
     let p_pos : Option Q(0 < $e) := ← (do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       let .some ps ← proveFinsetNonempty s | pure none
-      let .some pα' ← trySynthInstanceQ q(OrderedCancelAddCommMonoid $α) | pure none
+      let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       let .some instαordsmul ← trySynthInstanceQ q(PosSMulStrictMono ℚ≥0 $α) | pure none
       assumeInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      return some q(@expect_pos $ι $α $pα' $instmod $s $f $instαordsmul (fun i _ ↦ $pr i) $ps))
+      return some
+        q(@expect_pos $ι $α $instα $pα $pα' $instmod $s $f $instαordsmul (fun i _ ↦ $pr i) $ps))
     -- Try to show that the sum is positive
     if let some p_pos := p_pos then
       return .positive p_pos
@@ -194,11 +202,11 @@ def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
     else
       let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      let instαordmon ← synthInstanceQ q(OrderedAddCommMonoid $α)
+      let instαordmon ← synthInstanceQ q(IsOrderedAddMonoid $α)
       let instαordsmul ← synthInstanceQ q(PosSMulMono ℚ≥0 $α)
       assumeInstancesCommute
-      return .nonnegative q(@expect_nonneg $ι $α $instαordmon $instmod $s $f $instαordsmul
-        fun i _ ↦ $pr i)
+      return .nonnegative
+        q(@expect_nonneg $ι $α $instα $pα $instαordmon $instmod $s $f $instαordsmul fun i _ ↦ $pr i)
   | _ => throwError "not Finset.expect"
 
 example (n : ℕ) (a : ℕ → ℚ) : 0 ≤ 𝔼 j ∈ range n, a j^2 := by positivity

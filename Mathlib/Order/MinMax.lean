@@ -166,7 +166,6 @@ instance min_idem : Std.IdempotentOp (α := α) min where
 theorem min_lt_max : min a b < max a b ↔ a ≠ b :=
   inf_lt_sup
 
--- Porting note: was `by simp [lt_max_iff, max_lt_iff, *]`
 theorem max_lt_max (h₁ : a < c) (h₂ : b < d) : max a b < max c d :=
   max_lt (lt_max_of_lt_left h₁) (lt_max_of_lt_right h₂)
 

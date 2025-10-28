@@ -3,7 +3,7 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Order.MinMax
 
 /-!
@@ -81,7 +81,7 @@ theorem length_splitLengths_getElem_eq {i : ℕ} (hi : i < sz.length)
   simp only [take_splitLength]
   conv_rhs =>
     rw [List.getElem_take' (hj := i.lt_add_one)]
-    simp (config := {singlePass := true}) only [← map_splitLengths_length l _ h]
+    simp +singlePass only [← map_splitLengths_length l _ h]
     rw [getElem_map]
 
 theorem splitLengths_length_getElem {α : Type*} (l : List α) (sz : List ℕ)

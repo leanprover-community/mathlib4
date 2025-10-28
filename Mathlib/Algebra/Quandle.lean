@@ -3,10 +3,10 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Group.End
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Tactic.Ring
+
 /-!
 # Racks and Quandles
 
@@ -91,7 +91,7 @@ universe u v
 The binary operation is regarded as a left action of the type on itself.
 -/
 class Shelf (α : Type u) where
-  /-- The action of the `Shelf` over `α`-/
+  /-- The action of the `Shelf` over `α` -/
   act : α → α → α
   /-- A verification that `act` is self-distributive -/
   self_distrib : ∀ {x y z : α}, act x (act y z) = act (act x y) (act x z)
@@ -172,12 +172,9 @@ namespace Rack
 
 variable {R : Type*} [Rack R]
 
--- Porting note: No longer a need for `Rack.self_distrib`
 export Shelf (self_distrib)
 
--- porting note, changed name to `act'` to not conflict with `Shelf.act`
-/-- A rack acts on itself by equivalences.
--/
+/-- A rack acts on itself by equivalences. -/
 def act' (x : R) : R ≃ R where
   toFun := Shelf.act x
   invFun := invAct x
@@ -376,9 +373,7 @@ instance oppositeQuandle : Quandle Qᵐᵒᵖ where
     simp
 
 /-- The conjugation quandle of a group.  Each element of the group acts by
-the corresponding inner automorphism.
--/
--- Porting note: no need for `nolint` and added `reducible`
+the corresponding inner automorphism. -/
 abbrev Conj (G : Type*) := G
 
 instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G) where
@@ -409,20 +404,14 @@ def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G
   toFun := f
   map_act' := by simp
 
--- Porting note: I don't think HasLift exists
--- instance {G : Type*} {H : Type*} [Group G] [Group H] : HasLift (G →* H) (Conj G →◃ Conj H)
---     where lift := Conj.map
-
 /-- The dihedral quandle. This is the conjugation quandle of the dihedral group restrict to flips.
 
-Used for Fox n-colorings of knots.
--/
+Used for Fox n-colorings of knots. -/
 def Dihedral (n : ℕ) :=
   ZMod n
 
 /-- The operation for the dihedral quandle.  It does not need to be an equivalence
-because it is an involution (see `dihedralAct.inv`).
--/
+because it is an involution (see `dihedralAct.inv`). -/
 def dihedralAct (n : ℕ) (a : ZMod n) : ZMod n → ZMod n := fun b => 2 * a - b
 
 theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAct n a) := by
@@ -449,8 +438,7 @@ end Quandle
 namespace Rack
 
 /-- This is the natural rack homomorphism to the conjugation quandle of the group `R ≃ R`
-that acts on the rack.
--/
+that acts on the rack. -/
 def toConj (R : Type*) [Rack R] : R →◃ Quandle.Conj (R ≃ R) where
   toFun := act'
   map_act' := by
@@ -670,11 +658,9 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
         simp only [Quotient.lift_mk, mapAux]
       map_mul' := fun x y =>
         Quotient.inductionOn₂ x y fun x y => by
-          simp only [toEnvelGroup.mapAux]
           change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
           simp [toEnvelGroup.mapAux] }
   invFun F := (Quandle.Conj.map F).comp (toEnvelGroup R)
-  left_inv f := by ext; rfl
   right_inv F :=
     MonoidHom.ext fun x =>
       Quotient.inductionOn x fun x => by

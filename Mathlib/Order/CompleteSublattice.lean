@@ -15,12 +15,12 @@ under arbitrary suprema and infima. As a standard example one could take the com
 invariant submodules of some module with respect to a linear map.
 
 ## Main definitions:
-  * `CompleteSublattice`: the definition of a complete sublattice
-  * `CompleteSublattice.mk'`: an alternate constructor for a complete sublattice, demanding fewer
-    hypotheses
-  * `CompleteSublattice.instCompleteLattice`: a complete sublattice is a complete lattice
-  * `CompleteSublattice.map`: complete sublattices push forward under complete lattice morphisms.
-  * `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
+* `CompleteSublattice`: the definition of a complete sublattice
+* `CompleteSublattice.mk'`: an alternate constructor for a complete sublattice, demanding fewer
+  hypotheses
+* `CompleteSublattice.instCompleteLattice`: a complete sublattice is a complete lattice
+* `CompleteSublattice.map`: complete sublattices push forward under complete lattice morphisms.
+* `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
 
 -/
 

@@ -5,14 +5,18 @@ Authors: Jz Pan
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
 import Mathlib.Algebra.Algebra.Subalgebra.Rank
+import Mathlib.Algebra.Polynomial.Basis
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.LinearDisjoint
 import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
 import Mathlib.RingTheory.Adjoin.Dimension
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.RingTheory.TensorProduct.Nontrivial
 
 /-!
 
@@ -61,10 +65,33 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
   such that the family `{ a_i * b_j }` in `S` is `R`-linearly independent,
   then `A` and `B` are linearly disjoint.
 
+### Equivalent characterization by `IsDomain` or `IsField` of tensor product
+
+The following results are related to the equivalent characterizations in
+<https://mathoverflow.net/questions/8324>.
+
+- `Subalgebra.LinearDisjoint.isDomain_of_injective`,
+  `Subalgebra.LinearDisjoint.exists_field_of_isDomain_of_injective`:
+  under some flatness and injectivity conditions, if `A` and `B` are `R`-algebras, then `A ⊗[R] B`
+  is a domain if and only if there exists an `R`-algebra which is a field that `A` and `B`
+  embed into with linearly disjoint images.
+
+- `Subalgebra.LinearDisjoint.of_isField`, `Subalgebra.LinearDisjoint.of_isField'`:
+  if `A ⊗[R] B` is a field, then `A` and `B` are linearly disjoint, moreover, for any
+  `R`-algebra `S` and injections of `A` and `B` into `S`, their images are linearly disjoint.
+
+- `Algebra.TensorProduct.not_isField_of_transcendental`,
+  `Algebra.TensorProduct.isAlgebraic_of_isField`:
+  if `A` and `B` are flat `R`-algebras, both of them are transcendental, then `A ⊗[R] B` cannot
+  be a field, equivalently, if `A ⊗[R] B` is a field, then one of them is algebraic.
+
 ### Other main results
 
 - `Subalgebra.LinearDisjoint.symm_of_commute`, `Subalgebra.linearDisjoint_comm_of_commute`:
   linear disjointness is symmetric under some commutative conditions.
+
+- `Subalgebra.LinearDisjoint.map`:
+  linear disjointness is preserved by injective algebra homomorphisms.
 
 - `Subalgebra.LinearDisjoint.bot_left`, `Subalgebra.LinearDisjoint.bot_right`:
   the image of `R` in `S` is linearly disjoint with any other subalgebras.
@@ -133,6 +160,10 @@ variable {A B}
 theorem LinearDisjoint.of_subsingleton [Subsingleton R] : A.LinearDisjoint B :=
   Submodule.LinearDisjoint.of_subsingleton
 
+@[nontriviality]
+theorem LinearDisjoint.of_subsingleton_top [Subsingleton S] : A.LinearDisjoint B :=
+  Submodule.LinearDisjoint.of_subsingleton_top
+
 /-- Linear disjointness is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : A.LinearDisjoint B)
     (hc : ∀ (a : A) (b : B), Commute a.1 b.1) : B.LinearDisjoint A :=
@@ -145,6 +176,11 @@ theorem linearDisjoint_comm_of_commute
 
 namespace LinearDisjoint
 
+/-- Linear disjointness is preserved by injective algebra homomorphisms. -/
+theorem map (H : A.LinearDisjoint B) {T : Type w} [Semiring T] [Algebra R T]
+    (f : S →ₐ[R] T) (hf : Function.Injective f) : (A.map f).LinearDisjoint (B.map f) :=
+  Submodule.LinearDisjoint.map H f hf
+
 variable (A B)
 
 /-- The image of `R` in `S` is linearly disjoint with any other subalgebras. -/
@@ -156,6 +192,19 @@ theorem bot_left : (⊥ : Subalgebra R S).LinearDisjoint B := by
 theorem bot_right : A.LinearDisjoint ⊥ := by
   rw [Subalgebra.LinearDisjoint, Algebra.toSubmodule_bot]
   exact Submodule.LinearDisjoint.one_right _
+
+variable (R) in
+/-- Images of two `R`-algebras `A` and `B` in `A ⊗[R] B` are linearly disjoint. -/
+theorem include_range (A : Type v) [Semiring A] (B : Type w) [Semiring B]
+    [Algebra R A] [Algebra R B] :
+    (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B).range.LinearDisjoint
+      (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).range := by
+  rw [Subalgebra.LinearDisjoint, Submodule.linearDisjoint_iff]
+  change Function.Injective <|
+    Submodule.mulMap (LinearMap.range Algebra.TensorProduct.includeLeft)
+      (LinearMap.range Algebra.TensorProduct.includeRight)
+  rw [← Algebra.TensorProduct.linearEquivIncludeRange_symm_toLinearMap]
+  exact LinearEquiv.injective _
 
 end LinearDisjoint
 
@@ -175,10 +224,15 @@ theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
 theorem linearDisjoint_comm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
+/-- Two subalgebras `A`, `B` in a commutative ring are linearly disjoint if and only if
+`Subalgebra.mulMap A B` is injective. -/
+theorem linearDisjoint_iff_injective : A.LinearDisjoint B ↔ Function.Injective (A.mulMap B) := by
+  rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
+  rfl
+
 namespace LinearDisjoint
 
 variable (H : A.LinearDisjoint B)
-include H
 
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint, then there is the natural isomorphism
@@ -189,10 +243,28 @@ protected def mulMap :=
 @[simp]
 theorem val_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
 
+include H in
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint, and if they are free `R`-modules, then `A ⊔ B` is also a free `R`-module. -/
 theorem sup_free_of_free [Module.Free R A] [Module.Free R B] : Module.Free R ↥(A ⊔ B) :=
   Module.Free.of_equiv H.mulMap.toLinearEquiv
+
+include H in
+/-- If `A` and `B` are subalgebras in a domain `S` over `R`, and if they are
+linearly disjoint, then `A ⊗[R] B` is also a domain. -/
+theorem isDomain [IsDomain S] : IsDomain (A ⊗[R] B) :=
+  H.injective.isDomain (A.mulMap B).toRingHom
+
+/-- If `A` and `B` are `R`-algebras, such that there exists a domain `S` over `R`
+such that `A` and `B` inject into it and their images are linearly disjoint,
+then `A ⊗[R] B` is also a domain. -/
+theorem isDomain_of_injective [IsDomain S] {A B : Type*} [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] {fa : A →ₐ[R] S} {fb : B →ₐ[R] S}
+    (hfa : Function.Injective fa) (hfb : Function.Injective fb)
+    (H : fa.range.LinearDisjoint fb.range) : IsDomain (A ⊗[R] B) :=
+  have := H.isDomain
+  (Algebra.TensorProduct.congr
+    (AlgEquiv.ofInjective fa hfa) (AlgEquiv.ofInjective fb hfb)).toMulEquiv.isDomain
 
 end LinearDisjoint
 
@@ -206,7 +278,6 @@ variable [CommRing R] [Ring S] [Algebra R S]
 
 variable (A B : Subalgebra R S)
 
-set_option maxSynthPendingDepth 2 in
 lemma mulLeftMap_ker_eq_bot_iff_linearIndependent_op {ι : Type*} (a : ι → A) :
     LinearMap.ker (Submodule.mulLeftMap (M := toSubmodule A) (toSubmodule B) a) = ⊥ ↔
     LinearIndependent B.op (MulOpposite.op ∘ A.val ∘ a) := by
@@ -245,7 +316,6 @@ theorem of_basis_left_op {ι : Type*} (a : Basis ι R A)
   rw [← mulLeftMap_ker_eq_bot_iff_linearIndependent_op] at H
   exact Submodule.LinearDisjoint.of_basis_left _ _ a H
 
-set_option maxSynthPendingDepth 2 in
 lemma mulRightMap_ker_eq_bot_iff_linearIndependent {ι : Type*} (b : ι → B) :
     LinearMap.ker (Submodule.mulRightMap (toSubmodule A) (N := toSubmodule B) b) = ⊥ ↔
     LinearIndependent A (B.val ∘ b) := by
@@ -409,6 +479,109 @@ theorem of_basis_left {ι : Type*} (a : Basis ι R A)
   of_basis_left_of_commute A B a H fun _ _ ↦ mul_comm _ _
 
 variable {A B}
+
+variable (R) in
+/-- If `A` and `B` are flat algebras over `R`, such that `A ⊗[R] B` is a domain, and such that
+the algebra maps are injective, then there exists an `R`-algebra `K` that is a field that `A`
+and `B` inject into with linearly disjoint images. Note: `K` can chosen to be the
+fraction field of `A ⊗[R] B`, but here we hide this fact. -/
+theorem exists_field_of_isDomain_of_injective (A : Type v) [CommRing A] (B : Type w) [CommRing B]
+    [Algebra R A] [Algebra R B] [Module.Flat R A] [Module.Flat R B] [IsDomain (A ⊗[R] B)]
+    (ha : Function.Injective (algebraMap R A)) (hb : Function.Injective (algebraMap R B)) :
+    ∃ (K : Type (max v w)) (_ : Field K) (_ : Algebra R K) (fa : A →ₐ[R] K) (fb : B →ₐ[R] K),
+    Function.Injective fa ∧ Function.Injective fb ∧ fa.range.LinearDisjoint fb.range :=
+  let K := FractionRing (A ⊗[R] B)
+  let i := IsScalarTower.toAlgHom R (A ⊗[R] B) K
+  have hi : Function.Injective i := IsFractionRing.injective (A ⊗[R] B) K
+  ⟨K, inferInstance, inferInstance,
+    i.comp Algebra.TensorProduct.includeLeft,
+    i.comp Algebra.TensorProduct.includeRight,
+    hi.comp (Algebra.TensorProduct.includeLeft_injective hb),
+    hi.comp (Algebra.TensorProduct.includeRight_injective ha), by
+      simpa only [AlgHom.range_comp] using (include_range R A B).map i hi⟩
+
+/-- If `A ⊗[R] B` is a field, then `A` and `B` are linearly disjoint. -/
+theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
+  nontriviality S
+  rw [linearDisjoint_iff_injective]
+  letI : Field (A ⊗[R] B) := H.toField
+  -- need this otherwise `RingHom.injective` does not work
+  letI : NonAssocRing (A ⊗[R] B) := Ring.toNonAssocRing
+  exact RingHom.injective _
+
+/-- If `A ⊗[R] B` is a field, then for any `R`-algebra `S`
+and injections of `A` and `B` into `S`, their images are linearly disjoint. -/
+theorem of_isField' {A : Type v} [Ring A] {B : Type w} [Ring B]
+    [Algebra R A] [Algebra R B] (H : IsField (A ⊗[R] B))
+    (fa : A →ₐ[R] S) (fb : B →ₐ[R] S) (hfa : Function.Injective fa) (hfb : Function.Injective fb) :
+    fa.range.LinearDisjoint fb.range := by
+  apply of_isField
+  exact Algebra.TensorProduct.congr (AlgEquiv.ofInjective fa hfa)
+    (AlgEquiv.ofInjective fb hfb) |>.symm.toMulEquiv.isField _ H
+
+-- need to be in this file since it uses linearly disjoint
+open Cardinal Polynomial in
+variable (R) in
+/-- If `A` and `B` are flat `R`-algebras, both of them are transcendental, then `A ⊗[R] B` cannot
+be a field. -/
+theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
+    (A : Type v) [CommRing A] (B : Type w) [CommRing B] [Algebra R A] [Algebra R B]
+    [Module.Flat R A] [Module.Flat R B] [Algebra.Transcendental R A] [Algebra.Transcendental R B] :
+    ¬IsField (A ⊗[R] B) := fun H ↦ by
+  letI := H.toField
+  obtain ⟨a, hta⟩ := ‹Algebra.Transcendental R A›
+  obtain ⟨b, htb⟩ := ‹Algebra.Transcendental R B›
+  have ha : Function.Injective (algebraMap R A) := Algebra.injective_of_transcendental
+  have hb : Function.Injective (algebraMap R B) := Algebra.injective_of_transcendental
+  let fa : A →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeLeft
+  let fb : B →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeRight
+  have hfa : Function.Injective fa := Algebra.TensorProduct.includeLeft_injective hb
+  have hfb : Function.Injective fb := Algebra.TensorProduct.includeRight_injective ha
+  haveI := hfa.isDomain fa.toRingHom
+  haveI := hfb.isDomain fb.toRingHom
+  haveI := ha.isDomain _
+  haveI : Module.Flat R (toSubmodule fa.range) :=
+    .of_linearEquiv (AlgEquiv.ofInjective fa hfa).symm.toLinearEquiv
+  have key1 : Module.rank R ↥(fa.range ⊓ fb.range) ≤ 1 :=
+    (include_range R A B).rank_inf_le_one_of_flat_left
+  let ga : R[X] →ₐ[R] A := aeval a
+  let gb : R[X] →ₐ[R] B := aeval b
+  let gab := fa.comp ga
+  replace hta : Function.Injective ga := transcendental_iff_injective.1 hta
+  replace htb : Function.Injective gb := transcendental_iff_injective.1 htb
+  have htab : Function.Injective gab := hfa.comp hta
+  algebraize_only [ga.toRingHom, gb.toRingHom]
+  let f := Algebra.TensorProduct.mapOfCompatibleSMul R[X] R A B
+  haveI := Algebra.TensorProduct.nontrivial_of_algebraMap_injective_of_isDomain R[X] A B hta htb
+  have hf : Function.Injective f := RingHom.injective _
+  have key2 : gab.range ≤ fa.range ⊓ fb.range := by
+    simp_rw [gab, ga, ← aeval_algHom]
+    rw [Algebra.TensorProduct.includeLeft_apply, ← Algebra.adjoin_singleton_eq_range_aeval]
+    simp_rw [Algebra.adjoin_le_iff, Set.singleton_subset_iff, Algebra.coe_inf, Set.mem_inter_iff,
+      AlgHom.coe_range, Set.mem_range]
+    refine ⟨⟨a, by simp [fa]⟩, ⟨b, hf ?_⟩⟩
+    simp_rw [fb, Algebra.TensorProduct.includeRight_apply, f,
+      Algebra.TensorProduct.mapOfCompatibleSMul_tmul]
+    convert ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
+      (simp_rw [Algebra.smul_def, mul_one]; exact aeval_X _)
+  have key3 := (Subalgebra.inclusion key2).comp (AlgEquiv.ofInjective gab htab).toAlgHom
+    |>.toLinearMap.lift_rank_le_of_injective
+      ((Subalgebra.inclusion_injective key2).comp (AlgEquiv.injective _))
+  have := lift_uzero.{u} _ ▸ (basisMonomials R).mk_eq_rank.symm
+  simp only [this, mk_eq_aleph0, lift_aleph0, aleph0_le_lift] at key3
+  exact (key3.trans key1).not_gt one_lt_aleph0
+
+variable (R) in
+/-- If `A` and `B` are flat `R`-algebras, such that `A ⊗[R] B` is a field, then one of `A` and `B`
+is algebraic over `R`. -/
+theorem _root_.Algebra.TensorProduct.isAlgebraic_of_isField
+    (A : Type v) [CommRing A] (B : Type w) [CommRing B] [Algebra R A] [Algebra R B]
+    [Module.Flat R A] [Module.Flat R B] (H : IsField (A ⊗[R] B)) :
+    Algebra.IsAlgebraic R A ∨ Algebra.IsAlgebraic R B := by
+  by_contra! h
+  simp_rw [← Algebra.transcendental_iff_not_isAlgebraic] at h
+  obtain ⟨_, _⟩ := h
+  exact Algebra.TensorProduct.not_isField_of_transcendental R A B H
 
 variable (H : A.LinearDisjoint B)
 

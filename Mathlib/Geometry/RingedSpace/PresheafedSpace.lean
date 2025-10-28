@@ -3,8 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Elementwise
+import Mathlib.Topology.Sheaves.Presheaf
 
 /-!
 # Presheafed spaces
@@ -52,26 +53,11 @@ variable {C}
 
 namespace PresheafedSpace
 
--- Porting note: using `Coe` here triggers an error, `CoeOut` seems an acceptable alternative
 instance coeCarrier : CoeOut (PresheafedSpace C) TopCat where coe X := X.carrier
 
 attribute [coe] PresheafedSpace.carrier
 
--- Porting note: we add this instance, as Lean does not reliably use the `CoeOut` instance above
--- in downstream files.
 instance : CoeSort (PresheafedSpace C) Type* where coe X := X.carrier
-
--- Porting note: the following lemma is removed because it is a syntactic tauto
-/-@[simp]
-theorem as_coe (X : PresheafedSpace.{w, v, u} C) : X.carrier = (X : TopCat.{w}) :=
-  rfl-/
-
--- Porting note: removed @[simp] as the `simpVarHead` linter complains
--- @[simp]
-theorem mk_coe (carrier) (presheaf) :
-    (({ carrier
-        presheaf } : PresheafedSpace C) : TopCat) = carrier :=
-  rfl
 
 instance (X : PresheafedSpace C) : TopologicalSpace X :=
   X.carrier.str
@@ -91,10 +77,6 @@ structure Hom (X Y : PresheafedSpace C) where
   base : (X : TopCat) ⟶ (Y : TopCat)
   c : Y.presheaf ⟶ base _* X.presheaf
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): eventually, the `ext` lemma shall be applied to terms in `X ⟶ Y`
--- rather than `Hom X Y`, this one was renamed `Hom.ext` instead of `ext`,
--- and the more practical lemma `ext` is defined just after the definition
--- of the `Category` instance
 @[ext (iff := false)]
 theorem Hom.ext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β := by
@@ -114,7 +96,6 @@ theorem hext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base)
   cases β
   congr
 
--- Porting note: `eqToHom` is no longer necessary in the definition of `c`
 /-- The identity morphism of a `PresheafedSpace`. -/
 def id (X : PresheafedSpace C) : Hom X X where
   base := 𝟙 (X : TopCat)
@@ -138,23 +119,12 @@ section
 
 attribute [local simp] id comp
 
--- Porting note: in mathlib3, `tidy` could (almost) prove the category axioms, but proofs
--- were included because `tidy` was slow. Here, `aesop_cat` succeeds reasonably quickly
--- for `comp_id` and `assoc`
 /-- The category of PresheafedSpaces. Morphisms are pairs, a continuous map and a presheaf map
     from the presheaf on the target to the pushforward of the presheaf on the source. -/
 instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
   Hom := Hom
   id := id
   comp := comp
-  id_comp _ := by
-    dsimp
-    ext
-    · dsimp
-      simp
-    · dsimp
-      simp only [map_id, whiskerRight_id', assoc]
-      erw [comp_id, comp_id]
 
 variable {C}
 
@@ -176,7 +146,6 @@ attribute [local simp] eqToHom_map
 theorem id_base (X : PresheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : TopCat) :=
   rfl
 
--- Porting note: `eqToHom` is no longer needed in the statements of `id_c` and `id_c_app`
 theorem id_c (X : PresheafedSpace C) :
     (𝟙 X : X ⟶ X).c = 𝟙 X.presheaf :=
   rfl
@@ -195,9 +164,10 @@ theorem comp_base {X Y Z : PresheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 instance (X Y : PresheafedSpace C) : CoeFun (X ⟶ Y) fun _ => (↑X → ↑Y) :=
   ⟨fun f => f.base⟩
 
--- Porting note: removed as this is a syntactic tauto
---theorem coe_to_fun_eq {X Y : PresheafedSpace.{v, v, u} C} (f : X ⟶ Y) : (f : ↑X → ↑Y) = f.base :=
---  rfl
+/-!
+Note that we don't include a `ConcreteCategory` instance, since equality of morphisms `X ⟶ Y`
+does not follow from equality of their coercions `X → Y`.
+-/
 
 -- The `reassoc` attribute was added despite the LHS not being a composition of two homs,
 -- for the reasons explained in the docstring.
@@ -247,7 +217,7 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
   inv_hom_id := by
     ext
     · dsimp
-      rw [H.inv_hom_id]
+      exact H.inv_hom_id_apply _
     dsimp
     simp only [Presheaf.toPushforwardOfIso_app, assoc, ← α.hom.naturality]
     simp only [eqToHom_map, eqToHom_app, eqToHom_trans_assoc, eqToHom_refl, id_comp]

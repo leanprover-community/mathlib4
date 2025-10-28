@@ -5,6 +5,7 @@ Authors: Moritz Doll
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 
 /-!
 
@@ -50,13 +51,13 @@ noncomputable section
 
 open RCLike
 
-open scoped ComplexConjugate Classical
+open scoped ComplexConjugate
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace LinearPMap
 
@@ -129,12 +130,7 @@ def adjointAux : T.adjointDomain →ₗ[𝕜] E where
 
 theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :
     ⟪adjointAux hT y, x⟫ = ⟪(y : F), T x⟫ := by
-  simp only [adjointAux, LinearMap.coe_mk, InnerProductSpace.toDual_symm_apply,
-    adjointDomainMkCLMExtend_apply]
-  -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
-  -- mathlib3 was finished here
-  simp only [AddHom.coe_mk, InnerProductSpace.toDual_symm_apply]
-  rw [adjointDomainMkCLMExtend_apply]
+  simp [adjointAux]
 
 theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
     (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) : adjointAux hT y = x₀ :=
@@ -142,11 +138,13 @@ theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
 
 variable (T)
 
-/-- The adjoint operator as a partially defined linear operator. -/
+open scoped Classical in
+/-- The adjoint operator as a partially defined linear operator, denoted as `T†`. -/
 def adjoint : F →ₗ.[𝕜] E where
   domain := T.adjointDomain
   toFun := if hT : Dense (T.domain : Set E) then adjointAux hT else 0
 
+@[inherit_doc]
 scoped postfix:1024 "†" => LinearPMap.adjoint
 
 theorem mem_adjoint_domain_iff (y : F) : y ∈ T†.domain ↔ Continuous ((innerₛₗ 𝕜 y).comp T.toFun) :=
@@ -156,17 +154,19 @@ variable {T}
 
 theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, ⟪w, x⟫ = ⟪y, T x⟫) :
     y ∈ T†.domain := by
-  cases' h with w hw
+  obtain ⟨w, hw⟩ := h
   rw [T.mem_adjoint_domain_iff]
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
   convert this using 1
   exact funext fun x => (hw x).symm
 
 theorem adjoint_apply_of_not_dense (hT : ¬Dense (T.domain : Set E)) (y : T†.domain) : T† y = 0 := by
+  classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
   simp only [hT, not_false_iff, dif_neg, LinearMap.zero_apply]
 
 theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := by
+  classical
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
   simp only [hT, dif_pos, LinearMap.coe_mk]
 
@@ -205,10 +205,8 @@ theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
   · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true,
       LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
-  refine LinearPMap.adjoint_apply_eq ?_ _ fun v => ?_
-  · -- Porting note: was simply `hp` as an argument above
-    simpa using hp
-  · simp only [adjoint_inner_left, hxy, LinearMap.toPMap_apply, coe_coe]
+  refine LinearPMap.adjoint_apply_eq hp _ fun v => ?_
+  simp only [adjoint_inner_left, hxy, LinearMap.toPMap_apply, coe_coe]
 
 end ContinuousLinearMap
 

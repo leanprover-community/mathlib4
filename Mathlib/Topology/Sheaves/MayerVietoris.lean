@@ -6,6 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 import Mathlib.CategoryTheory.Sites.Spaces
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # Mayer-Vietoris squares
@@ -28,6 +29,8 @@ namespace Opens
 open CategoryTheory Limits TopologicalSpace
 
 variable {T : Type u} [TopologicalSpace T]
+
+attribute [local instance] Types.instFunLike Types.instConcreteCategory
 
 /-- A square consisting of opens `X₂ ⊓ X₃`, `X₂`, `X₃` and `X₂ ⊔ X₃` is
 a Mayer-Vietoris square. -/
@@ -53,7 +56,7 @@ noncomputable def mayerVietorisSquare' (sq : Square (Opens T))
 /-- The Mayer-Vietoris square attached to two open subsets
 of a topological space. -/
 @[simps!]
-noncomputable def mayerVietorisSquare (U V : Opens T):
+noncomputable def mayerVietorisSquare (U V : Opens T) :
     (Opens.grothendieckTopology T).MayerVietorisSquare :=
   mayerVietorisSquare'
     { X₁ := U ⊓ V

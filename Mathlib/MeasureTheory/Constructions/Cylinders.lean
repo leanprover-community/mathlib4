@@ -3,10 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.MeasureTheory.PiSystem
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.Constructions
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 /-!
 # π-systems of cylinders and square cylinders
@@ -72,11 +71,11 @@ theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, Is
   have h1 : ∀ i ∈ (s₁ : Set ι), t₁ i = t₁' i :=
     fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
   have h1' : ∀ i ∉ (s₁ : Set ι), t₁' i = univ :=
-    fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
+    fun i hi ↦ Finset.piecewise_eq_of_notMem _ _ _ hi
   have h2 : ∀ i ∈ (s₂ : Set ι), t₂ i = t₂' i :=
     fun i hi ↦ (Finset.piecewise_eq_of_mem _ _ _ hi).symm
   have h2' : ∀ i ∉ (s₂ : Set ι), t₂' i = univ :=
-    fun i hi ↦ Finset.piecewise_eq_of_not_mem _ _ _ hi
+    fun i hi ↦ Finset.piecewise_eq_of_notMem _ _ _ hi
   rw [Set.pi_congr rfl h1, Set.pi_congr rfl h2, ← union_pi_inter h1' h2']
   refine ⟨s₁ ∪ s₂, fun i ↦ t₁' i ∩ t₂' i, ?_, ?_⟩
   · rw [mem_univ_pi]
@@ -182,7 +181,7 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
     rw [mem_cylinder]
     simpa only [Finset.restrict_def, Finset.coe_mem, dif_pos, f']
   rw [h] at hf'
-  exact not_mem_empty _ hf'
+  exact notMem_empty _ hf'
 
 theorem inter_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i)) (S₂ : Set (∀ i : s₂, α i))
     [DecidableEq ι] :
@@ -251,6 +250,12 @@ theorem _root_.MeasurableSet.cylinder [∀ i, MeasurableSpace (α i)] (s : Finse
     {S : Set (∀ i : s, α i)} (hS : MeasurableSet S) :
     MeasurableSet (cylinder s S) :=
   measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS
+
+/-- The indicator of a cylinder only depends on the variables whose the cylinder depends on. -/
+theorem dependsOn_cylinder_indicator_const {M : Type*} [Zero M] {I : Finset ι}
+    (S : Set (Π i : I, α i)) (c : M) :
+    DependsOn ((cylinder I S).indicator (fun _ ↦ c)) I :=
+  fun x y hxy ↦ Set.indicator_const_eq_indicator_const (by simp [Finset.restrict_def, hxy])
 
 end cylinder
 
@@ -361,53 +366,67 @@ theorem generateFrom_measurableCylinders :
     ext1 x
     simp only [mem_preimage, Function.eval, mem_cylinder, mem_setOf_eq, Finset.restrict]
 
+/-- The cylinders of a product space indexed by `ℕ` can be seen as depending on the first
+coordinates. -/
+theorem measurableCylinders_nat {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)] :
+    measurableCylinders X = ⋃ (a) (S) (_ : MeasurableSet S), {cylinder (Finset.Iic a) S} := by
+  ext s
+  simp only [mem_measurableCylinders, exists_prop, mem_iUnion, mem_singleton]
+  refine ⟨?_, fun ⟨N, S, mS, s_eq⟩ ↦ ⟨Finset.Iic N, S, mS, s_eq⟩⟩
+  rintro ⟨t, S, mS, rfl⟩
+  refine ⟨t.sup id, Finset.restrict₂ t.subset_Iic_sup_id ⁻¹' S,
+    Finset.measurable_restrict₂ _ mS, ?_⟩
+  unfold cylinder
+  rw [← preimage_comp, Finset.restrict₂_comp_restrict]
+  exact mem_singleton _
+
 end cylinders
 
 /-! ### Cylinder events as a sigma-algebra -/
 
 section cylinderEvents
 
-variable {α ι : Type*} {π : ι → Type*} {mα : MeasurableSpace α} [m : ∀ i, MeasurableSpace (π i)]
+variable {α ι : Type*} {X : ι → Type*} {mα : MeasurableSpace α} [m : ∀ i, MeasurableSpace (X i)]
   {Δ Δ₁ Δ₂ : Set ι} {i : ι}
 
 /-- The σ-algebra of cylinder events on `Δ`. It is the smallest σ-algebra making the projections
-on the `i`-th coordinate continuous for all `i ∈ Δ`. -/
-def cylinderEvents (Δ : Set ι) : MeasurableSpace (∀ i, π i) := ⨆ i ∈ Δ, (m i).comap fun σ ↦ σ i
+on the `i`-th coordinate measurable for all `i ∈ Δ`. -/
+def cylinderEvents (Δ : Set ι) : MeasurableSpace (∀ i, X i) := ⨆ i ∈ Δ, (m i).comap fun σ ↦ σ i
 
-@[simp] lemma cylinderEvents_univ : cylinderEvents (π := π) univ = MeasurableSpace.pi := by
+@[simp] lemma cylinderEvents_univ : cylinderEvents (X := X) univ = MeasurableSpace.pi := by
   simp [cylinderEvents, MeasurableSpace.pi]
 
 @[gcongr]
-lemma cylinderEvents_mono (h : Δ₁ ⊆ Δ₂) : cylinderEvents (π := π) Δ₁ ≤ cylinderEvents Δ₂ :=
+lemma cylinderEvents_mono (h : Δ₁ ⊆ Δ₂) : cylinderEvents (X := X) Δ₁ ≤ cylinderEvents Δ₂ :=
   biSup_mono h
 
-lemma cylinderEvents_le_pi : cylinderEvents (π := π) Δ ≤ MeasurableSpace.pi := by
+lemma cylinderEvents_le_pi : cylinderEvents (X := X) Δ ≤ MeasurableSpace.pi := by
   simpa using cylinderEvents_mono (subset_univ _)
 
-lemma measurable_cylinderEvents_iff {g : α → ∀ i, π i} :
+lemma measurable_cylinderEvents_iff {g : α → ∀ i, X i} :
     @Measurable _ _ _ (cylinderEvents Δ) g ↔ ∀ ⦃i⦄, i ∈ Δ → Measurable fun a ↦ g a i := by
   simp_rw [measurable_iff_comap_le, cylinderEvents, MeasurableSpace.comap_iSup,
     MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
 
 @[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_cylinderEvent_apply (hi : i ∈ Δ) :
-    Measurable[cylinderEvents Δ] fun f : ∀ i, π i => f i :=
+    Measurable[cylinderEvents Δ] fun f : ∀ i, X i => f i :=
   measurable_cylinderEvents_iff.1 measurable_id hi
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
-lemma Measurable.eval_cylinderEvents {g : α → ∀ i, π i} (hi : i ∈ Δ)
+lemma Measurable.eval_cylinderEvents {g : α → ∀ i, X i} (hi : i ∈ Δ)
     (hg : @Measurable _ _ _ (cylinderEvents Δ) g) : Measurable fun a ↦ g a i :=
   (measurable_cylinderEvent_apply hi).comp hg
 
 @[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
-lemma measurable_cylinderEvents_lambda (f : α → ∀ i, π i) (hf : ∀ i, Measurable fun a ↦ f a i) :
+lemma measurable_cylinderEvents_lambda (f : α → ∀ i, X i) (hf : ∀ i, Measurable fun a ↦ f a i) :
     Measurable f :=
   measurable_pi_iff.mpr hf
 
-/-- The function `(f, x) ↦ update f a x : (Π a, π a) × π a → Π a, π a` is measurable. -/
+/-- The function `(f, x) ↦ update f a x : (Π a, X a) × X a → Π a, X a` is measurable. -/
 lemma measurable_update_cylinderEvents' [DecidableEq ι] :
     @Measurable _ _ (.prod (cylinderEvents Δ) (m i)) (cylinderEvents Δ)
-      (fun p : (∀ i, π i) × π i ↦ update p.1 i p.2) := by
+      (fun p : (∀ i, X i) × X i ↦ update p.1 i p.2) := by
   rw [measurable_cylinderEvents_iff]
   intro j hj
   dsimp [update]
@@ -418,23 +437,23 @@ lemma measurable_update_cylinderEvents' [DecidableEq ι] :
   · exact measurable_cylinderEvents_iff.1 measurable_fst hj
 
 lemma measurable_uniqueElim_cylinderEvents [Unique ι] :
-    Measurable (uniqueElim : π (default : ι) → ∀ i, π i) := by
+    Measurable (uniqueElim : X (default : ι) → ∀ i, X i) := by
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 
-/-- The function `update f a : π a → Π a, π a` is always measurable.
+/-- The function `update f a : X a → Π a, X a` is always measurable.
 This doesn't require `f` to be measurable.
 This should not be confused with the statement that `update f a x` is measurable. -/
 @[measurability]
-lemma measurable_update_cylinderEvents (f : ∀ a : ι, π a) {a : ι} [DecidableEq ι] :
+lemma measurable_update_cylinderEvents (f : ∀ a : ι, X a) {a : ι} [DecidableEq ι] :
     @Measurable _ _ _ (cylinderEvents Δ) (update f a) :=
-  measurable_update_cylinderEvents'.comp measurable_prod_mk_left
+  measurable_update_cylinderEvents'.comp measurable_prodMk_left
 
-lemma measurable_update_cylinderEvents_left {a : ι} [DecidableEq ι] {x : π a} :
+lemma measurable_update_cylinderEvents_left {a : ι} [DecidableEq ι] {x : X a} :
     @Measurable _ _ (cylinderEvents Δ) (cylinderEvents Δ) (update · a x) :=
-  measurable_update_cylinderEvents'.comp measurable_prod_mk_right
+  measurable_update_cylinderEvents'.comp measurable_prodMk_right
 
 lemma measurable_restrict_cylinderEvents (Δ : Set ι) :
-    Measurable[cylinderEvents (π := π) Δ] (restrict Δ) := by
+    Measurable[cylinderEvents (X := X) Δ] (restrict Δ) := by
   rw [@measurable_pi_iff]; exact fun i ↦ measurable_cylinderEvent_apply i.2
 
 end cylinderEvents

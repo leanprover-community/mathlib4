@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Logic.Unique
+import Mathlib.Tactic.Conv
 
 /-!
 # Groups with an adjoined zero element
@@ -33,7 +34,7 @@ and require `0⁻¹ = 0`.
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 open Function
 
@@ -149,7 +150,7 @@ lemma zero_pow_eq (n : ℕ) : (0 : M₀) ^ n = if n = 0 then 1 else 0 := by
 lemma zero_pow_eq_one₀ [Nontrivial M₀] : (0 : M₀) ^ n = 1 ↔ n = 0 := by
   rw [zero_pow_eq, one_ne_zero.ite_eq_left_iff]
 
-lemma pow_eq_zero_of_le : ∀ {m n} (_ : m ≤ n) (_ : a ^ m = 0), a ^ n = 0
+lemma pow_eq_zero_of_le : ∀ {m n}, m ≤ n → a ^ m = 0 → a ^ n = 0
   | _, _, Nat.le.refl, ha => ha
   | _, _, Nat.le.step hmn, ha => by rw [pow_succ, pow_eq_zero_of_le hmn ha, zero_mul]
 
@@ -184,6 +185,15 @@ lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
 
 @[simp] lemma pow_eq_zero_iff' [Nontrivial M₀] : a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by
   obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+
+theorem exists_right_inv_of_exists_left_inv {α} [MonoidWithZero α]
+    (h : ∀ a : α, a ≠ 0 → ∃ b : α, b * a = 1) {a : α} (ha : a ≠ 0) : ∃ b : α, a * b = 1 := by
+  obtain _ | _ := subsingleton_or_nontrivial α
+  · exact ⟨a, Subsingleton.elim _ _⟩
+  obtain ⟨b, hb⟩ := h a ha
+  obtain ⟨c, hc⟩ := h b (left_ne_zero_of_mul <| hb.trans_ne one_ne_zero)
+  refine ⟨b, ?_⟩
+  conv_lhs => rw [← one_mul (a * b), ← hc, mul_assoc, ← mul_assoc b, hb, one_mul, hc]
 
 end MonoidWithZero
 
@@ -252,14 +262,14 @@ theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
     Function.Injective fun y => y * x := fun y y' w => by
   simpa only [mul_assoc, mul_inv_cancel₀ h, mul_one] using congr_arg (fun y => y * x⁻¹) w
 
-@[simp]
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel_right`
 theorem inv_mul_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b⁻¹ * b = a :=
   calc
     a * b⁻¹ * b = a * (b⁻¹ * b) := mul_assoc _ _ _
     _ = a := by simp [h]
 
 
-@[simp]
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel_left`
 theorem inv_mul_cancel_left₀ (h : a ≠ 0) (b : G₀) : a⁻¹ * (a * b) = b :=
   calc
     a⁻¹ * (a * b) = a⁻¹ * a * b := (mul_assoc _ _ _).symm
@@ -396,12 +406,12 @@ lemma zero_zpow_eq_one₀ {n : ℤ} : (0 : G₀) ^ n = 1 ↔ n = 0 := by
   rw [zero_zpow_eq, one_ne_zero.ite_eq_left_iff]
 
 lemma zpow_add_one₀ (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
-  | .negSucc 0 => by erw [zpow_zero, zpow_negSucc, pow_one, inv_mul_cancel₀ ha]
+  | (n : ℕ) => by simp only [← Int.natCast_succ, zpow_natCast, pow_succ]
+  | -1 => by simp [ha]
   | .negSucc (n + 1) => by
-    rw [Int.negSucc_eq, zpow_neg, Int.neg_add, Int.neg_add_cancel_right, zpow_neg, ← Int.ofNat_succ,
-      zpow_natCast, zpow_natCast, pow_succ' _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel₀ ha,
-      mul_one]
+    rw [Int.negSucc_eq, zpow_neg, Int.neg_add, Int.neg_add_cancel_right, zpow_neg,
+      ← Int.natCast_succ, zpow_natCast, zpow_natCast, pow_succ' _ (n + 1), mul_inv_rev, mul_assoc,
+      inv_mul_cancel₀ ha, mul_one]
 
 lemma zpow_sub_one₀ (ha : a ≠ 0) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
   calc
@@ -409,10 +419,10 @@ lemma zpow_sub_one₀ (ha : a ≠ 0) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
     _ = a ^ n * a⁻¹ := by rw [← zpow_add_one₀ ha, Int.sub_add_cancel]
 
 lemma zpow_add₀ (ha : a ≠ 0) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
-  induction n using Int.induction_on with
-  | hz => simp
-  | hp n ihn => simp only [← Int.add_assoc, zpow_add_one₀ ha, ihn, mul_assoc]
-  | hn n ihn => rw [zpow_sub_one₀ ha, ← mul_assoc, ← ihn, ← zpow_sub_one₀ ha, Int.add_sub_assoc]
+  induction n with
+  | zero => simp
+  | succ n ihn => simp only [← Int.add_assoc, zpow_add_one₀ ha, ihn, mul_assoc]
+  | pred n ihn => rw [zpow_sub_one₀ ha, ← mul_assoc, ← ihn, ← zpow_sub_one₀ ha, Int.add_sub_assoc]
 
 lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
     a ^ (m + n) = a ^ m * a ^ n := by

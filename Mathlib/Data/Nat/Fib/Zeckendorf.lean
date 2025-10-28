@@ -91,7 +91,7 @@ lemma lt_fib_greatestFib_add_one (n : ℕ) : n < fib (greatestFib n + 1) :=
 @[simp] lemma greatestFib_fib : ∀ {n}, n ≠ 1 → greatestFib (fib n) = n
   | 0, _ => rfl
   | _n + 2, _ => findGreatest_eq_iff.2
-    ⟨le_fib_add_one _, fun _ ↦ le_rfl, fun _m hnm _ ↦ ((fib_lt_fib le_add_self).2 hnm).not_le⟩
+    ⟨le_fib_add_one _, fun _ ↦ le_rfl, fun _m hnm _ ↦ ((fib_lt_fib le_add_self).2 hnm).not_ge⟩
 
 @[simp] lemma greatestFib_eq_zero : greatestFib n = 0 ↔ n = 0 :=
   ⟨fun h ↦ by simpa using findGreatest_eq_zero_iff.1 h zero_lt_one le_add_self, by rintro rfl; rfl⟩

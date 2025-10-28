@@ -6,7 +6,6 @@ Authors: Michael Lee
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Rename
-import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Basic
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
@@ -70,9 +69,11 @@ private lemma pairMap_of_snd_mem_fst {t : Finset σ × σ} (h : t.snd ∈ t.fst)
     pairMap σ t = (t.fst.erase t.snd, t.snd) := by
   simp [pairMap, h]
 
-private lemma pairMap_of_snd_nmem_fst {t : Finset σ × σ} (h : t.snd ∉ t.fst) :
+private lemma pairMap_of_snd_notMem_fst {t : Finset σ × σ} (h : t.snd ∉ t.fst) :
     pairMap σ t = (t.fst.cons t.snd h, t.snd) := by
   simp [pairMap, h]
+
+@[deprecated (since := "2025-05-24")] alias pairMap_of_snd_nmem_fst := pairMap_of_snd_notMem_fst
 
 @[simp]
 private theorem pairMap_involutive : (pairMap σ).Involutive := by
@@ -108,8 +109,8 @@ private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pai
     by_contra h2
     simp only [not_true_eq_false, and_true, not_forall, not_false_eq_true, exists_prop] at h2
     rw [← h2] at h
-    exact not_le_of_lt (sub_lt (card_pos.mpr ⟨t.snd, h1⟩) zero_lt_one) h
-  · rw [pairMap_of_snd_nmem_fst σ h1]
+    exact not_le_of_gt (sub_lt (card_pos.mpr ⟨t.snd, h1⟩) zero_lt_one) h
+  · rw [pairMap_of_snd_notMem_fst σ h1]
     simp only [h1] at h
     simp only [card_cons, mem_cons, true_or, implies_true, and_true]
     exact (le_iff_eq_or_lt.mp h.left).resolve_left h.right
@@ -130,7 +131,7 @@ private theorem weight_add_weight_pairMap {k : ℕ} (t : Finset σ × σ) (h : t
     rw [← tsub_tsub_assoc h.left h3, ← neg_neg ((-1 : MvPolynomial σ R) ^ (#t.1 - 1)),
       h2 (#t.1 - 1), Nat.sub_add_cancel h3]
     simp
-  · rw [pairMap_of_snd_nmem_fst σ h1]
+  · rw [pairMap_of_snd_notMem_fst σ h1]
     simp only [mul_comm, mul_assoc (∏ a ∈ t.fst, X a), card_cons, prod_cons]
     nth_rewrite 2 [← pow_one (X t.snd)]
     simp only [← pow_add, ← Nat.add_sub_assoc (Nat.lt_of_le_of_ne h.left (mt h.right h1)), add_comm,

@@ -62,8 +62,11 @@ variable {T' : Type u₆} [Category.{v₆} T']
 /-- The objects of the comma category are triples of an object `left : A`, an object
    `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`. -/
 structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
+  /-- The left subobject -/
   left : A
+  /-- The right subobject -/
   right : B
+  /-- A morphism from `L.obj left` to `R.obj right` -/
   hom : L.obj left ⟶ R.obj right
 
 -- Satisfying the inhabited linter
@@ -80,7 +83,9 @@ variable {L : A ⥤ T} {R : B ⥤ T}
 -/
 @[ext]
 structure CommaMorphism (X Y : Comma L R) where
+  /-- Morphism on left objects -/
   left : X.left ⟶ Y.left
+  /-- Morphism on right objects -/
   right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by aesop_cat
 
@@ -239,8 +244,8 @@ def map : Comma L R ⥤ Comma L' R' where
       right := F₂.map φ.right
       w := by
         dsimp
-        rw [assoc, assoc]
-        erw [α.naturality_assoc, ← β.naturality]
+        rw [assoc, assoc, ← Functor.comp_map, α.naturality_assoc, ← Functor.comp_map,
+          ← β.naturality]
         dsimp
         rw [← F.map_comp_assoc, ← F.map_comp_assoc, φ.w] }
 
@@ -289,7 +294,7 @@ theorem map_fst : map α β ⋙ fst L' R' = fst L R ⋙ F₁ :=
 where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
 @[simps!]
 def mapFst : map α β ⋙ fst L' R' ≅ fst L R ⋙ F₁ :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
 
 /-- The equality between `map α β ⋙ snd L' R'` and `snd L R ⋙ F₂`,
 where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
@@ -301,7 +306,7 @@ theorem map_snd : map α β ⋙ snd L' R' = snd L R ⋙ F₂ :=
 where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
 @[simps!]
 def mapSnd : map α β ⋙ snd L' R' ≅ snd L R ⋙ F₂ :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
 
 end
 
@@ -422,7 +427,7 @@ instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.EssSurj] : (preLeft F L R)
 instance isEquivalence_preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.IsEquivalence] :
     (preLeft F L R).IsEquivalence where
 
-/-- The functor `(F ⋙ L, R) ⥤ (L, R)` -/
+/-- The functor `(L, F ⋙ R) ⥤ (L, R)` -/
 @[simps]
 def preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) : Comma L (F ⋙ R) ⥤ Comma L R where
   obj X :=
@@ -544,13 +549,13 @@ def opFunctor : Comma L R ⥤ (Comma R.op L.op)ᵒᵖ where
   map f := ⟨op f.right, op f.left, Quiver.Hom.unop_inj (by simp)⟩
 
 /-- Composing the `leftOp` of `opFunctor L R` with `fst L.op R.op` is naturally isomorphic
-to `snd L R`.-/
+to `snd L R`. -/
 @[simps!]
 def opFunctorCompFst : (opFunctor L R).leftOp ⋙ fst _ _ ≅ (snd _ _).op :=
   Iso.refl _
 
 /-- Composing the `leftOp` of `opFunctor L R` with `snd L.op R.op` is naturally isomorphic
-to `fst L R`.-/
+to `fst L R`. -/
 @[simps!]
 def opFunctorCompSnd : (opFunctor L R).leftOp ⋙ snd _ _ ≅ (fst _ _).op :=
   Iso.refl _

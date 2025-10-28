@@ -40,6 +40,10 @@ instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
       exact
         (dvd_gcd this <| dvd_refl y).trans
           (gcd_pow_left_dvd_pow_gcd.trans <| pow_dvd_pow_of_dvd (isUnit_iff_dvd_one.1 hg) _)
-    use x * (this.unit⁻¹ : _)
-    erw [map_mul, ← Units.coe_map_inv, eq_comm, Units.eq_mul_inv_iff_mul_eq]
+    use x * (this.unit⁻¹ :)
+    rw [map_mul]
+    have coe_map_inv :=
+      Units.coe_map_inv ((algebraMap R (FractionRing R) : R →* FractionRing R)) this.unit
+    simp only [MonoidHom.coe_coe] at coe_map_inv
+    rw [← coe_map_inv, eq_comm, Units.eq_mul_inv_iff_mul_eq]
     exact he

@@ -3,14 +3,17 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Finset.Sups
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.GCongr
 
 /-!
 # The four functions theorem and corollaries
@@ -57,8 +60,8 @@ open scoped FinsetFamily
 variable {α β : Type*}
 
 section Finset
-variable [DecidableEq α] [LinearOrderedCommSemiring β] {𝒜 : Finset (Finset α)}
-  {a : α} {f f₁ f₂ f₃ f₄ : Finset α → β} {s t u : Finset α}
+variable [DecidableEq α] [CommSemiring β] [LinearOrder β] [IsStrictOrderedRing β]
+  {𝒜 : Finset (Finset α)} {a : α} {f f₁ f₂ f₃ f₄ : Finset α → β} {s t u : Finset α}
 
 /-- The `n = 1` case of the Ahlswede-Daykin inequality. Note that we can't just expand everything
 out and bound termwise since `c₀ * d₁` appears twice on the RHS of the assumptions while `c₁ * d₀`
@@ -81,8 +84,7 @@ private lemma ineq [ExistsAddOfLE β] {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ :
       = a₀ * b₁ * (c₀ * d₁) + c₀ * d₁ * (a₁ * b₀) := by ring
     _ ≤ a₀ * b₁ * (a₁ * b₀) + c₀ * d₁ * (c₀ * d₁) := mul_add_mul_le_mul_add_mul h₀₁ h₁₀
     _ = a₀ * b₀ * (a₁ * b₁) + c₀ * d₁ * (c₀ * d₁) := by ring
-    _ ≤ c₀ * d₀ * (c₁ * d₁) + c₀ * d₁ * (c₀ * d₁) :=
-        add_le_add_right (mul_le_mul h₀₀ h₁₁ (by positivity) <| by positivity) _
+    _ ≤ c₀ * d₀ * (c₁ * d₁) + c₀ * d₁ * (c₀ * d₁) := by gcongr
     _ = (c₀ * d₁ + c₁ * d₀) * (c₀ * d₁) := by ring
 
 private def collapse (𝒜 : Finset (Finset α)) (a : α) (f : Finset α → β) (s : Finset α) : β :=
@@ -101,12 +103,14 @@ private lemma filter_collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) :
         (if insert a s ∈ 𝒜 then {insert a s} else ∅) := by
   ext t; split_ifs <;> simp [erase_eq_iff ha] <;> aesop
 
+omit [LinearOrder β] [IsStrictOrderedRing β] in
 lemma collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) (f : Finset α → β) :
     collapse 𝒜 a f s = (if s ∈ 𝒜 then f s else 0) +
       if insert a s ∈ 𝒜 then f (insert a s) else 0 := by
   rw [collapse, filter_collapse_eq ha]
   split_ifs <;> simp [(ne_of_mem_of_not_mem' (mem_insert_self a s) ha).symm, *]
 
+omit [LinearOrder β] [IsStrictOrderedRing β] in
 lemma collapse_of_mem (ha : a ∉ s) (ht : t ∈ 𝒜) (hu : u ∈ 𝒜) (hts : t = s)
     (hus : u = insert a s) : collapse 𝒜 a f s = f t + f u := by
   subst hts; subst hus; simp_rw [collapse_eq ha, if_pos ht, if_pos hu]
@@ -140,10 +144,10 @@ lemma collapse_modular [ExistsAddOfLE β]
   have := htu.trans <| subset_insert a _
   have := insert_subset_insert a hsu
   have := insert_subset_insert a htu
-  have has := not_mem_mono hsu hu
-  have hat := not_mem_mono htu hu
-  have : a ∉ s ∩ t := not_mem_mono (inter_subset_left.trans hsu) hu
-  have := not_mem_union.2 ⟨has, hat⟩
+  have has := notMem_mono hsu hu
+  have hat := notMem_mono htu hu
+  have : a ∉ s ∩ t := notMem_mono (inter_subset_left.trans hsu) hu
+  have := notMem_union.2 ⟨has, hat⟩
   rw [collapse_eq has]
   split_ifs
   · rw [collapse_eq hat]
@@ -158,23 +162,24 @@ lemma collapse_modular [ExistsAddOfLE β]
     · rw [add_zero, add_mul]
       refine (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans ?_
       rw [collapse_of_mem ‹_› (union_mem_sups ‹_› ‹_›) (union_mem_sups ‹_› ‹_›) rfl
-        (insert_union _ _ _), insert_inter_of_not_mem ‹_›, ← mul_add]
-      exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›) <|
-        add_nonneg (h₄ _) <| h₄ _
+        (insert_union _ _ _), insert_inter_of_notMem ‹_›, ← mul_add]
+      gcongr
+      exacts [add_nonneg (h₄ _) <| h₄ _, le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›]
     · rw [zero_add, add_mul]
       refine (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans ?_
       rw [collapse_of_mem ‹_› (inter_mem_infs ‹_› ‹_›) (inter_mem_infs ‹_› ‹_›)
-        (inter_insert_of_not_mem ‹_›) (insert_inter_distrib _ _ _).symm, union_insert,
+        (inter_insert_of_notMem ‹_›) (insert_inter_distrib _ _ _).symm, union_insert,
         insert_union_distrib, ← add_mul]
-      exact mul_le_mul_of_nonneg_left (le_collapse_of_insert_mem ‹_› h₄
-        (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›) <| add_nonneg (h₃ _) <| h₃ _
+      gcongr
+      exacts [add_nonneg (h₃ _) <| h₃ _,
+        le_collapse_of_insert_mem ‹_› h₄ (insert_union_distrib _ _ _).symm (union_mem_sups ‹_› ‹_›)]
     · rw [add_zero, mul_zero]
       exact mul_nonneg (collapse_nonneg h₃ _) <| collapse_nonneg h₄ _
   · rw [add_zero, collapse_eq hat, mul_add]
     split_ifs
     · refine (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans ?_
       rw [collapse_of_mem ‹_› (union_mem_sups ‹_› ‹_›) (union_mem_sups ‹_› ‹_›) rfl
-        (union_insert _ _ _), inter_insert_of_not_mem ‹_›, ← mul_add]
+        (union_insert _ _ _), inter_insert_of_notMem ‹_›, ← mul_add]
       exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›) <|
         add_nonneg (h₄ _) <| h₄ _
     · rw [mul_zero, add_zero]
@@ -184,22 +189,22 @@ lemma collapse_modular [ExistsAddOfLE β]
     · rw [mul_zero, zero_add]
       refine (h ‹_› ‹_›).trans <| mul_le_mul ?_ (le_collapse_of_insert_mem ‹_› h₄
         (union_insert _ _ _) <| union_mem_sups ‹_› ‹_›) (h₄ _) <| collapse_nonneg h₃ _
-      exact le_collapse_of_mem (not_mem_mono inter_subset_left ‹_›) h₃
-        (inter_insert_of_not_mem ‹_›) <| inter_mem_infs ‹_› ‹_›
+      exact le_collapse_of_mem (notMem_mono inter_subset_left ‹_›) h₃
+        (inter_insert_of_notMem ‹_›) <| inter_mem_infs ‹_› ‹_›
     · simp_rw [mul_zero, add_zero]
       exact mul_nonneg (collapse_nonneg h₃ _) <| collapse_nonneg h₄ _
   · rw [zero_add, collapse_eq hat, mul_add]
     split_ifs
     · refine (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans ?_
       rw [collapse_of_mem ‹_› (inter_mem_infs ‹_› ‹_›) (inter_mem_infs ‹_› ‹_›)
-        (insert_inter_of_not_mem ‹_›) (insert_inter_distrib _ _ _).symm,
-        insert_inter_of_not_mem ‹_›, ← insert_inter_distrib, insert_union, insert_union_distrib,
+        (insert_inter_of_notMem ‹_›) (insert_inter_distrib _ _ _).symm,
+        insert_inter_of_notMem ‹_›, ← insert_inter_distrib, insert_union, insert_union_distrib,
         ← add_mul]
       exact mul_le_mul_of_nonneg_left (le_collapse_of_insert_mem ‹_› h₄
         (insert_union_distrib _ _ _).symm <| union_mem_sups ‹_› ‹_›) <| add_nonneg (h₃ _) <| h₃ _
     · rw [mul_zero, add_zero]
       refine (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_mem ‹_› h₃
-        (insert_inter_of_not_mem ‹_›) <| inter_mem_infs ‹_› ‹_›) (le_collapse_of_insert_mem ‹_› h₄
+        (insert_inter_of_notMem ‹_›) <| inter_mem_infs ‹_› ‹_›) (le_collapse_of_insert_mem ‹_› h₄
         (insert_union _ _ _) <| union_mem_sups ‹_› ‹_›) (h₄ _) <| collapse_nonneg h₃ _
     · rw [mul_zero, zero_add]
       exact (h ‹_› ‹_›).trans <| mul_le_mul (le_collapse_of_insert_mem ‹_› h₃
@@ -211,6 +216,7 @@ lemma collapse_modular [ExistsAddOfLE β]
   · simp_rw [add_zero, zero_mul]
     exact mul_nonneg (collapse_nonneg h₃ _) <| collapse_nonneg h₄ _
 
+omit [LinearOrder β] [IsStrictOrderedRing β] in
 lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     ∑ s ∈ u.powerset, collapse 𝒜 a f s = ∑ s ∈ 𝒜, f s := by
   calc
@@ -218,8 +224,8 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     _ = ∑ s ∈ u.powerset ∩ 𝒜, f s + ∑ s ∈ ((insert a u).powerset \ u.powerset) ∩ 𝒜, f s := ?_
     _ = ∑ s ∈ 𝒜, f s := ?_
   · rw [← Finset.sum_ite_mem, ← Finset.sum_ite_mem, sum_image, ← sum_add_distrib]
-    · exact sum_congr rfl fun s hs ↦ collapse_eq (not_mem_mono (mem_powerset.1 hs) hu) _ _
-    · exact (insert_erase_invOn.2.injOn).mono fun s hs ↦ not_mem_mono (mem_powerset.1 hs) hu
+    · exact sum_congr rfl fun s hs ↦ collapse_eq (notMem_mono (mem_powerset.1 hs) hu) _ _
+    · exact (insert_erase_invOn.2.injOn).mono fun s hs ↦ notMem_mono (mem_powerset.1 hs) hu
   · congr with s
     simp only [mem_image, mem_powerset, mem_sdiff, subset_insert_iff]
     refine ⟨?_, fun h ↦ ⟨_, h.1, ?_⟩⟩
@@ -242,15 +248,17 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
     (h : ∀ ⦃s⦄, s ⊆ u → ∀ ⦃t⦄, t ⊆ u → f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
     {𝒜 ℬ : Finset (Finset α)} (h𝒜 : 𝒜 ⊆ u.powerset) (hℬ : ℬ ⊆ u.powerset) :
     (∑ s ∈ 𝒜, f₁ s) * ∑ s ∈ ℬ, f₂ s ≤ (∑ s ∈ 𝒜 ⊼ ℬ, f₃ s) * ∑ s ∈ 𝒜 ⊻ ℬ, f₄ s := by
-  induction' u using Finset.induction with a u hu ih generalizing f₁ f₂ f₃ f₄ 𝒜 ℬ
-  · simp only [Finset.powerset_empty, Finset.subset_singleton_iff] at h𝒜 hℬ
+  induction u using Finset.induction generalizing f₁ f₂ f₃ f₄ 𝒜 ℬ with
+  | empty =>
+    simp only [Finset.powerset_empty, Finset.subset_singleton_iff] at h𝒜 hℬ
     obtain rfl | rfl := h𝒜 <;> obtain rfl | rfl := hℬ <;> simp; exact h (subset_refl ∅) subset_rfl
-  specialize ih (collapse_nonneg h₁) (collapse_nonneg h₂) (collapse_nonneg h₃) (collapse_nonneg h₄)
-    (collapse_modular hu h₁ h₂ h₃ h₄ h 𝒜 ℬ) Subset.rfl Subset.rfl
-  have : 𝒜 ⊼ ℬ ⊆ powerset (insert a u) := by simpa using infs_subset h𝒜 hℬ
-  have : 𝒜 ⊻ ℬ ⊆ powerset (insert a u) := by simpa using sups_subset h𝒜 hℬ
-  simpa only [powerset_sups_powerset_self, powerset_infs_powerset_self, sum_collapse,
-    not_false_eq_true, *] using ih
+  | insert a u hu ih =>
+    specialize ih (collapse_nonneg h₁) (collapse_nonneg h₂) (collapse_nonneg h₃)
+      (collapse_nonneg h₄) (collapse_modular hu h₁ h₂ h₃ h₄ h 𝒜 ℬ) Subset.rfl Subset.rfl
+    have : 𝒜 ⊼ ℬ ⊆ powerset (insert a u) := by simpa using infs_subset h𝒜 hℬ
+    have : 𝒜 ⊻ ℬ ⊆ powerset (insert a u) := by simpa using sups_subset h𝒜 hℬ
+    simpa only [powerset_sups_powerset_self, powerset_infs_powerset_self, sum_collapse,
+      not_false_eq_true, *] using ih
 
 variable (f₁ f₂ f₃ f₄) [Fintype α]
 
@@ -262,8 +270,8 @@ private lemma four_functions_theorem_aux (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂)
 end Finset
 
 section DistribLattice
-variable [DistribLattice α] [LinearOrderedCommSemiring β] [ExistsAddOfLE β]
-  (f f₁ f₂ f₃ f₄ g μ : α → β)
+variable [DistribLattice α] [CommSemiring β] [LinearOrder β] [IsStrictOrderedRing β]
+  [ExistsAddOfLE β] (f f₁ f₂ f₃ f₄ g μ : α → β)
 
 /-- The **Four Functions Theorem**, aka **Ahlswede-Daykin Inequality**. -/
 lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)

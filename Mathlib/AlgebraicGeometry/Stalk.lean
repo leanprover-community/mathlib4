@@ -68,7 +68,7 @@ noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
 @[simps over] noncomputable
 instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).Over X := ⟨X.fromSpecStalk x⟩
 
-@[simps! over] noncomputable
+noncomputable
 instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).CanonicallyOver X where
 
 @[simp]
@@ -165,7 +165,7 @@ lemma range_fromSpecStalk {x : X} :
   ext y
   constructor
   · rintro ⟨y, rfl⟩
-    exact ((IsLocalRing.specializes_closedPoint y).map (X.fromSpecStalk x).base.2).trans
+    exact ((IsLocalRing.specializes_closedPoint y).map (X.fromSpecStalk x).base.hom.2).trans
       (specializes_of_eq fromSpecStalk_closedPoint)
   · rintro (hy : y ⤳ x)
     have := fromSpecStalk_closedPoint (x := y)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Continuity of series of functions
@@ -13,6 +13,9 @@ We show that series of functions are continuous when each individual function in
 additionally suitable uniform summable bounds are satisfied, in `continuous_tsum`.
 
 For smoothness of series of functions, see the file `Analysis.Calculus.SmoothSeries`.
+
+TODO: update this to use `SummableUniformlyOn`.
+
 -/
 
 open Set Metric TopologicalSpace Function Filter
@@ -31,10 +34,10 @@ theorem tendstoUniformlyOn_tsum {f : α → β → F} (hu : Summable u) {s : Set
   filter_upwards [(tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos] with t ht x hx
   have A : Summable fun n => ‖f n x‖ :=
     .of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n => hfu n x hx) hu
-  rw [dist_eq_norm, ← sum_add_tsum_subtype_compl A.of_norm t, add_sub_cancel_left]
+  rw [dist_eq_norm, ← A.of_norm.sum_add_tsum_subtype_compl t, add_sub_cancel_left]
   apply lt_of_le_of_lt _ ht
   apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
-  exact tsum_le_tsum (fun n => hfu _ _ hx) (A.subtype _) (hu.subtype _)
+  exact (A.subtype _).tsum_le_tsum (fun n => hfu _ _ hx) (hu.subtype _)
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
 Version relative to a set, with index set `ℕ`. -/
@@ -63,14 +66,22 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
     apply Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) _ (hu.subtype _)
     simp only [comp_apply, Subtype.forall, Set.mem_compl_iff, Finset.mem_coe]
     aesop
-  rw [dist_eq_norm, ← sum_add_tsum_subtype_compl A.of_norm n, add_sub_cancel_left]
+  rw [dist_eq_norm, ← A.of_norm.sum_add_tsum_subtype_compl n, add_sub_cancel_left]
   apply lt_of_le_of_lt _ (ht n (Finset.union_subset_right hn))
   apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
-  apply tsum_le_tsum _ (A.subtype _) (hu.subtype _)
+  apply (A.subtype _).tsum_le_tsum _ (hu.subtype _)
   simp only [comp_apply, Subtype.forall, imp_false]
   apply fun i hi => HN i ?_ x hx
-  have : ¬ i ∈ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)
+  have :  i ∉ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)
   aesop
+
+theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [NormedAddCommGroup F]
+    [CompleteSpace F] {f : ℕ → α → F} {u : ℕ → ℝ} (hu : Summable u) {s : Set α}
+    (hfu : ∀ᶠ n in atTop, ∀ x ∈ s, ‖f n x‖ ≤ u n) :
+    TendstoUniformlyOn (fun N x => ∑ n ∈ Finset.range N, f n x)
+       (fun x => ∑' n, f n x) atTop s :=
+  fun v hv ↦ tendsto_finset_range.eventually <|
+    tendstoUniformlyOn_tsum_of_cofinite_eventually hu (Nat.cofinite_eq_atTop ▸ hfu) v hv
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
 Version with general index set. -/

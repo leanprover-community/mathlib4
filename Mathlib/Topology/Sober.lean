@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Topology.Sets.Closeds
+import Mathlib.Topology.Sets.OpenCover
 
 /-!
 # Sober spaces
 
-A quasi-sober space is a topological space where every
-irreducible closed subset has a generic point.
+A quasi-sober space is a topological space where every irreducible closed subset has a generic
+point.
 A sober space is a quasi-sober space where every irreducible closed subset
 has a *unique* generic point. This is if and only if the space is T0, and thus sober spaces can be
 stated via `[QuasiSober α] [T0Space α]`.
@@ -30,6 +31,7 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 section genericPoint
 
 /-- `x` is a generic point of `S` if `S` is the closure of `x`. -/
+@[stacks 004X "(1)"]
 def IsGenericPoint (x : α) (S : Set α) : Prop :=
   closure ({x} : Set α) = S
 
@@ -99,7 +101,7 @@ end genericPoint
 section Sober
 
 /-- A space is sober if every irreducible closed subset has a generic point. -/
-@[mk_iff]
+@[mk_iff, stacks 004X "(3)"]
 class QuasiSober (α : Type*) [TopologicalSpace α] : Prop where
   sober : ∀ {S : Set α}, IsIrreducible S → IsClosed S → ∃ x, IsGenericPoint x S
 
@@ -127,9 +129,6 @@ theorem IsIrreducible.closure_genericPoint [QuasiSober α] {S : Set α}
     (hS : IsIrreducible S) (hS' : IsClosed S) :
     closure ({hS.genericPoint} : Set α) = S :=
   hS.isGenericPoint_genericPoint_closure.trans hS'.closure_eq
-
-@[deprecated (since := "2024-10-03")]
-alias IsIrreducible.genericPoint_spec := IsIrreducible.isGenericPoint_genericPoint_closure
 
 variable (α)
 
@@ -181,9 +180,6 @@ lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedd
     apply image_injective.mpr hf.injective
     rw [← hx.def, ← hf.closure_image_eq, image_singleton]
 
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.quasiSober := Topology.IsClosedEmbedding.quasiSober
-
 theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by
@@ -207,34 +203,32 @@ theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbeddin
     exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono inter_subset_left h,
       fun h => subset_closure ⟨h, hy⟩⟩
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.quasiSober := Topology.IsOpenEmbedding.quasiSober
+lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι → Opens α}
+    (hU : TopologicalSpace.IsOpenCover U) : QuasiSober α ↔ ∀ i, QuasiSober (U i) := by
+  refine ⟨fun h i ↦ (U i).isOpenEmbedding'.quasiSober, fun hU' ↦ (quasiSober_iff _).mpr ?_⟩
+  · rintro t ⟨⟨x, hx⟩, h⟩ h'
+    obtain ⟨i, hi⟩ := hU.exists_mem x
+    have H : IsIrreducible ((↑) ⁻¹' t : Set (U i)) :=
+      ⟨⟨⟨x, hi⟩, hx⟩, h.preimage (U i).isOpenEmbedding'⟩
+    use H.genericPoint
+    apply le_antisymm
+    · simpa [h'.closure_subset_iff, h'.closure_eq] using
+        continuous_subtype_val.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
+    rw [← image_singleton, ← closure_image_closure continuous_subtype_val,
+      H.isGenericPoint_genericPoint_closure.def]
+    refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
+      (closure_mono ?_)
+    simpa only [inter_comm t, ← Subtype.image_preimage_coe] using Set.image_subset _ subset_closure
 
-/-- A space is quasi sober if it can be covered by open quasi sober subsets. -/
+lemma TopologicalSpace.IsOpenCover.quasiSober {ι : Type*} {U : ι → Opens α}
+    (hU : TopologicalSpace.IsOpenCover U) [∀ i, QuasiSober (U i)] : QuasiSober α :=
+  hU.quasiSober_iff_forall.mpr ‹_›
+
+/-- A space is quasi-sober if it can be covered by open quasi-sober subsets. -/
 theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s : Set α))
-    [hS' : ∀ s : S, QuasiSober s] (hS'' : ⋃₀ S = ⊤) : QuasiSober α := by
-  rw [quasiSober_iff]
-  intro t h h'
-  obtain ⟨x, hx⟩ := h.1
-  obtain ⟨U, hU, hU'⟩ : x ∈ ⋃₀ S := by
-    rw [hS'']
-    trivial
-  haveI : QuasiSober U := hS' ⟨U, hU⟩
-  have H : IsPreirreducible ((↑) ⁻¹' t : Set U) :=
-    h.2.preimage (hS ⟨U, hU⟩).isOpenEmbedding_subtypeVal
-  replace H : IsIrreducible ((↑) ⁻¹' t : Set U) := ⟨⟨⟨x, hU'⟩, by simpa using hx⟩, H⟩
-  use H.genericPoint
-  have := continuous_subtype_val.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
-  rw [h'.closure_eq] at this
-  apply le_antisymm
-  · apply h'.closure_subset_iff.mpr
-    simpa using this
-  rw [← image_singleton, ← closure_image_closure continuous_subtype_val,
-    H.isGenericPoint_genericPoint_closure.def]
-  refine (subset_closure_inter_of_isPreirreducible_of_isOpen h.2 (hS ⟨U, hU⟩) ⟨x, hx, hU'⟩).trans
-    (closure_mono ?_)
-  rw [inter_comm t, ← Subtype.image_preimage_coe]
-  exact Set.image_subset _ subset_closure
+    [∀ s : S, QuasiSober s] (hS' : ⋃₀ S = ⊤) : QuasiSober α :=
+  TopologicalSpace.IsOpenCover.quasiSober (U := fun s : S ↦ ⟨s, hS s⟩) <| by
+    simpa [TopologicalSpace.IsOpenCover, ← SetLike.coe_set_eq, sUnion_eq_iUnion] using hS'
 
 /-- Any Hausdorff space is a quasi-sober space because any irreducible set is a singleton. -/
 instance (priority := 100) T2Space.quasiSober [T2Space α] : QuasiSober α where

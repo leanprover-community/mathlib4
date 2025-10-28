@@ -3,7 +3,7 @@ Copyright (c) 2023 Yaël Dillies, Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Lattice.Prod
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Closure
@@ -273,8 +273,6 @@ end LinearOrder
 
 /-! ## Closure -/
 
-open Finset
-
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β] {s t : Set α} {a b : α}
 
@@ -453,8 +451,6 @@ end Lattice
 
 section DistribLattice
 variable [DistribLattice α] [DistribLattice β] {s : Set α}
-
-open Finset
 
 protected lemma SupClosed.infClosure (hs : SupClosed s) : SupClosed (infClosure s) := by
   rintro _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩

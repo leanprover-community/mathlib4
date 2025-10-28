@@ -116,7 +116,7 @@ lemma ball_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 < r) :
 for a version assuming `0 < r` instead of `Nonempty β`. -/
 lemma ball_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
     ball x r = Set.pi univ fun b => ball (x b) r :=
-  (lt_or_le 0 r).elim (ball_pi x) fun hr => by simp [ball_eq_empty.2 hr]
+  (lt_or_ge 0 r).elim (ball_pi x) fun hr => by simp [ball_eq_empty.2 hr]
 
 /-- A closed ball in a product space is a product of closed balls. See also `closedBall_pi'`
 for a version assuming `Nonempty β` instead of `0 ≤ r`. -/
@@ -129,7 +129,7 @@ lemma closedBall_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 ≤ r) :
 for a version assuming `0 ≤ r` instead of `Nonempty β`. -/
 lemma closedBall_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
     closedBall x r = Set.pi univ fun b => closedBall (x b) r :=
-  (le_or_lt 0 r).elim (closedBall_pi x) fun hr => by simp [closedBall_eq_empty.2 hr]
+  (le_or_gt 0 r).elim (closedBall_pi x) fun hr => by simp [closedBall_eq_empty.2 hr]
 
 /-- A sphere in a product space is a union of spheres on each component restricted to the closed
 ball. -/

@@ -11,7 +11,7 @@ import Mathlib.Algebra.GroupWithZero.NeZero
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 open Function
 

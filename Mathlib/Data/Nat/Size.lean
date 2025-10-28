@@ -3,6 +3,7 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Nat.Bits
 
@@ -72,9 +73,7 @@ theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
     obtain rfl : n = 0 := not_ne_iff.1 fun hn ↦ ne_of_gt (Nat.one_lt_pow hn (by decide)) this
     rw [add_zero]
 
--- TODO: decide whether `Nat.shiftLeft_eq` (which rewrites the LHS into a power) should be a simp
--- lemma; it was not in mathlib3. Until then, tell the simpNF linter to ignore the issue.
-@[simp, nolint simpNF]
+@[simp]
 theorem size_shiftLeft {m} (h : m ≠ 0) (n) : size (m <<< n) = size m + n := by
   simp only [size_shiftLeft' (shiftLeft'_ne_zero_left _ h _), ← shiftLeft'_false]
 
@@ -90,7 +89,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   cases b <;> dsimp [bit] <;> omega
 
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
-  ⟨fun h => lt_of_lt_of_le (lt_size_self _) (pow_le_pow_of_le_right (by decide) h), by
+  ⟨fun h => lt_of_lt_of_le (lt_size_self _) (Nat.pow_le_pow_right (by decide) h), by
     rw [← one_shiftLeft]
     induction m using binaryRec generalizing n with
     | z => simp

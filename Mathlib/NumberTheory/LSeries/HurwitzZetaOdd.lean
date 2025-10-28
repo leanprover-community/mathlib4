@@ -59,9 +59,8 @@ def jacobiTheta₂'' (z τ : ℂ) : ℂ :=
 
 lemma jacobiTheta₂''_conj (z τ : ℂ) :
     conj (jacobiTheta₂'' z τ) = jacobiTheta₂'' (conj z) (-conj τ) := by
-  simp only [jacobiTheta₂'', jacobiTheta₂'_conj, jacobiTheta₂_conj,
-    ← exp_conj, conj_ofReal, conj_I, map_mul, map_add, map_div₀, mul_neg, map_pow, map_ofNat,
-    neg_mul, div_neg, neg_div, jacobiTheta₂'_neg_left, jacobiTheta₂_neg_left]
+  simp [jacobiTheta₂'', jacobiTheta₂'_conj, jacobiTheta₂_conj, ← exp_conj, map_ofNat, div_neg,
+    neg_div, jacobiTheta₂'_neg_left]
 
 /-- Restatement of `jacobiTheta₂'_add_left'`: the function `jacobiTheta₂''` is 1-periodic in `z`. -/
 lemma jacobiTheta₂''_add_left (z τ : ℂ) : jacobiTheta₂'' (z + 1) τ = jacobiTheta₂'' z τ := by
@@ -77,8 +76,7 @@ lemma jacobiTheta₂''_add_left (z τ : ℂ) : jacobiTheta₂'' (z + 1) τ = jac
   congrm (cexp ?_ * ?_) <;> ring
 
 lemma jacobiTheta₂''_neg_left (z τ : ℂ) : jacobiTheta₂'' (-z) τ = -jacobiTheta₂'' z τ := by
-  simp only [jacobiTheta₂'', jacobiTheta₂'_neg_left, jacobiTheta₂_neg_left,
-    neg_mul, neg_div, ← neg_add, mul_neg, neg_sq]
+  simp [jacobiTheta₂'', jacobiTheta₂'_neg_left, neg_div, -neg_add_rev, ← neg_add]
 
 lemma jacobiTheta₂'_functional_equation' (z τ : ℂ) :
     jacobiTheta₂' z τ = (-2 * π) / (-I * τ) ^ (3 / 2 : ℂ) * jacobiTheta₂'' z (-1 / τ) := by
@@ -107,11 +105,10 @@ for an expression as a sum over `ℤ`.
 -/
 @[irreducible] def oddKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic (fun a : ℝ ↦ re (jacobiTheta₂'' a (I * x))) 1 by
-    intro a; simp only [ofReal_add, ofReal_one, jacobiTheta₂''_add_left]).lift a
+    intro a; simp [jacobiTheta₂''_add_left]).lift a
 
 lemma oddKernel_def (a x : ℝ) : ↑(oddKernel a x) = jacobiTheta₂'' a (I * x) := by
-  rw [oddKernel, Function.Periodic.lift_coe, ← conj_eq_iff_re, jacobiTheta₂''_conj, map_mul,
-    conj_I, neg_mul, neg_neg, conj_ofReal, conj_ofReal]
+  simp [oddKernel, ← conj_eq_iff_re, jacobiTheta₂''_conj]
 
 lemma oddKernel_def' (a x : ℝ) : ↑(oddKernel ↑a x) = cexp (-π * a ^ 2 * x) *
     (jacobiTheta₂' (a * I * x) (I * x) / (2 * π * I) + a * jacobiTheta₂ (a * I * x) (I * x)) := by
@@ -119,47 +116,44 @@ lemma oddKernel_def' (a x : ℝ) : ↑(oddKernel ↑a x) = cexp (-π * a ^ 2 * x
     (by ring : ↑π * I * ↑a ^ 2 * (I * ↑x) = I ^ 2 * ↑π * ↑a ^ 2 * x), I_sq, neg_one_mul]
 
 lemma oddKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : oddKernel a x = 0 := by
-  induction' a using QuotientAddGroup.induction_on with a'
+  induction a using QuotientAddGroup.induction_on with | H a' =>
   rw [← ofReal_eq_zero, oddKernel_def', jacobiTheta₂_undef, jacobiTheta₂'_undef, zero_div, zero_add,
     mul_zero, mul_zero] <;>
-  rwa [I_mul_im, ofReal_re]
+  simpa
 
 /-- Auxiliary function appearing in the functional equation for the odd Hurwitz zeta kernel, equal
 to `∑ (n : ℕ), 2 * n * sin (2 * π * n * a) * exp (-π * n ^ 2 * x)`. See `hasSum_nat_sinKernel`
 for the defining sum. -/
 @[irreducible] def sinKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic (fun ξ : ℝ ↦ re (jacobiTheta₂' ξ (I * x) / (-2 * π))) 1 by
-    intro ξ; simp_rw [ofReal_add, ofReal_one, jacobiTheta₂'_add_left]).lift a
+    intro ξ; simp [jacobiTheta₂'_add_left]).lift a
 
 lemma sinKernel_def (a x : ℝ) : ↑(sinKernel ↑a x) = jacobiTheta₂' a (I * x) / (-2 * π) := by
-  rw [sinKernel, Function.Periodic.lift_coe, re_eq_add_conj, map_div₀, jacobiTheta₂'_conj]
-  simp_rw [map_mul, conj_I, conj_ofReal, map_neg, map_ofNat, neg_mul, neg_neg, add_self_div_two]
+  simp [sinKernel, re_eq_add_conj, jacobiTheta₂'_conj, map_ofNat]
 
 lemma sinKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : sinKernel a x = 0 := by
-  induction' a using QuotientAddGroup.induction_on with a'
-  rw [← ofReal_eq_zero, sinKernel_def, jacobiTheta₂'_undef _ (by rwa [I_mul_im, ofReal_re]),
-    zero_div]
+  induction a using QuotientAddGroup.induction_on with
+  | H a => rw [← ofReal_eq_zero, sinKernel_def, jacobiTheta₂'_undef _ (by simpa), zero_div]
 
 lemma oddKernel_neg (a : UnitAddCircle) (x : ℝ) : oddKernel (-a) x = -oddKernel a x := by
-  induction' a using QuotientAddGroup.induction_on with a'
-  rw [← ofReal_inj, ← QuotientAddGroup.mk_neg, oddKernel_def, ofReal_neg, ofReal_neg, oddKernel_def,
-    jacobiTheta₂''_neg_left]
+  induction a using QuotientAddGroup.induction_on with
+  | H a => simp [← ofReal_inj, ← QuotientAddGroup.mk_neg, oddKernel_def, jacobiTheta₂''_neg_left]
 
-lemma oddKernel_zero (x : ℝ) : oddKernel 0 x = 0 := by
-  simpa only [neg_zero, eq_neg_self_iff] using oddKernel_neg 0 x
+@[simp] lemma oddKernel_zero (x : ℝ) : oddKernel 0 x = 0 := by
+  simpa using oddKernel_neg 0 x
 
 lemma sinKernel_neg (a : UnitAddCircle) (x : ℝ) :
     sinKernel (-a) x = -sinKernel a x := by
-  induction' a using QuotientAddGroup.induction_on with a'
-  rw [← ofReal_inj, ← QuotientAddGroup.mk_neg, ofReal_neg, sinKernel_def, sinKernel_def, ofReal_neg,
-    jacobiTheta₂'_neg_left, neg_div]
+  induction a using QuotientAddGroup.induction_on with
+  | H a => simp [← ofReal_inj, ← QuotientAddGroup.mk_neg, sinKernel_def, jacobiTheta₂'_neg_left,
+      neg_div]
 
-lemma sinKernel_zero (x : ℝ) : sinKernel 0 x = 0 := by
-  simpa only [neg_zero, eq_neg_self_iff] using sinKernel_neg 0 x
+@[simp] lemma sinKernel_zero (x : ℝ) : sinKernel 0 x = 0 := by
+  simpa using sinKernel_neg 0 x
 
 /-- The odd kernel is continuous on `Ioi 0`. -/
 lemma continuousOn_oddKernel (a : UnitAddCircle) : ContinuousOn (oddKernel a) (Ioi 0) := by
-  induction' a using QuotientAddGroup.induction_on with a
+  induction a using QuotientAddGroup.induction_on with | H a =>
   suffices ContinuousOn (fun x ↦ (oddKernel a x : ℂ)) (Ioi 0) from
     (continuous_re.comp_continuousOn this).congr fun a _ ↦ (ofReal_re _).symm
   simp_rw [oddKernel_def' a]
@@ -173,7 +167,7 @@ lemma continuousOn_oddKernel (a : UnitAddCircle) : ContinuousOn (oddKernel a) (I
         (by rwa [I_mul_im, ofReal_re])).comp (f := fun u : ℝ ↦ (a * I * u, I * u)) hf.continuousAt
 
 lemma continuousOn_sinKernel (a : UnitAddCircle) : ContinuousOn (sinKernel a) (Ioi 0) := by
-  induction' a using QuotientAddGroup.induction_on with a
+  induction a using QuotientAddGroup.induction_on with | H a =>
   suffices ContinuousOn (fun x ↦ (sinKernel a x : ℂ)) (Ioi 0) from
     (continuous_re.comp_continuousOn this).congr fun a _ ↦ (ofReal_re _).symm
   simp_rw [sinKernel_def]
@@ -184,9 +178,9 @@ lemma continuousOn_sinKernel (a : UnitAddCircle) : ContinuousOn (sinKernel a) (I
 lemma oddKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     oddKernel a x = 1 / x ^ (3 / 2 : ℝ) * sinKernel a (1 / x) := by
   -- first reduce to `0 < x`
-  rcases le_or_lt x 0 with hx | hx
+  rcases le_or_gt x 0 with hx | hx
   · rw [oddKernel_undef _ hx, sinKernel_undef _ (one_div_nonpos.mpr hx), mul_zero]
-  induction' a using QuotientAddGroup.induction_on with a
+  induction a using QuotientAddGroup.induction_on with | H a =>
   have h1 : -1 / (I * ↑(1 / x)) = I * x := by rw [one_div, ofReal_inv, mul_comm, ← div_div,
     div_inv_eq_mul, div_eq_mul_inv, inv_I, mul_neg, neg_one_mul, neg_mul, neg_neg, mul_comm]
   have h2 : (-I * (I * ↑(1 / x))) = 1 / x := by
@@ -237,9 +231,9 @@ lemma hasSum_int_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) : HasSum
     eq_div_iff h, ofReal_mul, ofReal_mul, ofReal_pow, ofReal_neg, ofReal_intCast,
     mul_comm _ (-2 * π : ℂ), ← mul_assoc]
   congrm ?_ * cexp (?_ + ?_)
-  · simp only [neg_mul, mul_neg, neg_neg, mul_assoc]
+  · simp [mul_assoc]
   · exact mul_right_comm (2 * π * I) a n
-  · simp only [← mul_assoc, mul_comm _ I, I_mul_I, neg_one_mul]
+  · simp [← mul_assoc, mul_comm _ I]
 
 lemma hasSum_nat_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℕ ↦ 2 * n * Real.sin (2 * π * a * n) * rexp (-π * n ^ 2 * t))
@@ -267,18 +261,18 @@ section asymp
 /-- The function `oddKernel a` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_oddKernel (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (oddKernel a) (fun x ↦ Real.exp (-p * x)) := by
-  induction' a using QuotientAddGroup.induction_on with b
+  induction a using QuotientAddGroup.induction_on with | H b =>
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_int_one b
   refine ⟨p, hp, (Eventually.isBigO ?_).trans hp'⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
-  simpa only [← (hasSum_int_oddKernel b ht).tsum_eq, Real.norm_eq_abs, HurwitzKernelBounds.F_int,
-    HurwitzKernelBounds.f_int, pow_one, norm_mul, abs_of_nonneg (exp_pos _).le] using
+  simpa [← (hasSum_int_oddKernel b ht).tsum_eq, HurwitzKernelBounds.F_int,
+    HurwitzKernelBounds.f_int, abs_of_nonneg (exp_pos _).le] using
     norm_tsum_le_tsum_norm (hasSum_int_oddKernel b ht).summable.norm
 
 /-- The function `sinKernel a` has exponential decay at `+∞`, for any `a`. -/
 lemma isBigO_atTop_sinKernel (a : UnitAddCircle) :
     ∃ p, 0 < p ∧ IsBigO atTop (sinKernel a) (fun x ↦ Real.exp (-p * x)) := by
-  induction' a using QuotientAddGroup.induction_on with a
+  induction a using QuotientAddGroup.induction_on with | H a =>
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_nat_one (le_refl 0)
   refine ⟨p, hp, (Eventually.isBigO ?_).trans (hp'.const_mul_left 2)⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
@@ -310,6 +304,7 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
     measurableSet_Ioi
   k := 3 / 2
   hk := by norm_num
+  ε := 1
   hε := one_ne_zero
   f₀ := 0
   hf₀ := rfl
@@ -318,16 +313,12 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
   hf_top r := by
     let ⟨v, hv, hv'⟩ := isBigO_atTop_oddKernel a
     rw [← isBigO_norm_left] at hv' ⊢
-    simp_rw [Function.comp_def, sub_zero, norm_real]
-    exact hv'.trans (isLittleO_exp_neg_mul_rpow_atTop hv _).isBigO
+    simpa using hv'.trans (isLittleO_exp_neg_mul_rpow_atTop hv _).isBigO
   hg_top r := by
     let ⟨v, hv, hv'⟩ := isBigO_atTop_sinKernel a
     rw [← isBigO_norm_left] at hv' ⊢
-    simp_rw [Function.comp_def, sub_zero, norm_real]
-    exact hv'.trans (isLittleO_exp_neg_mul_rpow_atTop hv _).isBigO
-  h_feq x hx := by simp_rw [Function.comp_apply, one_mul, smul_eq_mul, ← ofReal_mul,
-    oddKernel_functional_equation a, one_div x, one_div x⁻¹, inv_rpow (le_of_lt hx), one_div,
-    inv_inv]
+    simpa using hv'.trans (isLittleO_exp_neg_mul_rpow_atTop hv _).isBigO
+  h_feq x hx := by simp [← ofReal_mul, oddKernel_functional_equation a, inv_rpow (le_of_lt hx)]
 
 end FEPair
 
@@ -365,16 +356,13 @@ lemma differentiable_completedSinZeta (a : UnitAddCircle) :
 
 lemma completedHurwitzZetaOdd_neg (a : UnitAddCircle) (s : ℂ) :
     completedHurwitzZetaOdd (-a) s = -completedHurwitzZetaOdd a s := by
-  simp only [completedHurwitzZetaOdd, StrongFEPair.Λ, hurwitzOddFEPair, mellin, Function.comp_def,
-    oddKernel_neg, ofReal_neg, smul_neg]
-  rw [integral_neg, neg_div]
+  simp [completedHurwitzZetaOdd, StrongFEPair.Λ, hurwitzOddFEPair, mellin, oddKernel_neg,
+    integral_neg, neg_div]
 
 lemma completedSinZeta_neg (a : UnitAddCircle) (s : ℂ) :
     completedSinZeta (-a) s = -completedSinZeta a s := by
-  simp only [completedSinZeta, StrongFEPair.Λ, mellin, StrongFEPair.symm, WeakFEPair.symm,
-    hurwitzOddFEPair, Function.comp_def, sinKernel_neg, ofReal_neg, smul_neg]
-  rw [integral_neg, neg_div]
-
+  simp [completedSinZeta, StrongFEPair.Λ, mellin, StrongFEPair.symm, WeakFEPair.symm,
+    hurwitzOddFEPair, sinKernel_neg, integral_neg, neg_div]
 
 /-- Functional equation for the odd Hurwitz zeta function. -/
 theorem completedHurwitzZetaOdd_one_sub (a : UnitAddCircle) (s : ℂ) :
@@ -387,7 +375,7 @@ theorem completedHurwitzZetaOdd_one_sub (a : UnitAddCircle) (s : ℂ) :
 /-- Functional equation for the odd Hurwitz zeta function (alternative form). -/
 lemma completedSinZeta_one_sub (a : UnitAddCircle) (s : ℂ) :
     completedSinZeta a (1 - s) = completedHurwitzZetaOdd a s := by
-  rw [← completedHurwitzZetaOdd_one_sub, sub_sub_cancel]
+  simp [← completedHurwitzZetaOdd_one_sub]
 
 /-!
 ## Relation to the Dirichlet series for `1 < re s`
@@ -410,11 +398,10 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     simp_rw [hc, div_right_comm]
     apply Summable.div_const
     apply Summable.of_nat_of_neg <;>
-    · simp only [Int.cast_neg, abs_neg, Int.cast_natCast, Nat.abs_cast]
-      rwa [summable_one_div_nat_rpow]
+    simpa
   refine (mellin_div_const .. ▸ hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF h_sum).congr_fun
     fun n ↦ ?_
-  simp only [Int.sign_eq_sign, SignType.intCast_cast, sign_intCast, ← Int.cast_abs, ofReal_intCast]
+  simp [Int.sign_eq_sign, ← Int.cast_abs] -- non-terminal simp OK when `ring` follows
   ring
 
 /-- Formula for `completedSinZeta` as a Dirichlet series in the convergence range
@@ -428,8 +415,7 @@ lemma hasSum_nat_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   refine this.congr_fun fun n ↦ ?_
   rw [div_right_comm]
   rcases eq_or_ne n 0 with rfl | h
-  · simp only [Nat.cast_zero, mul_zero, Real.sin_zero, ofReal_zero, zero_div, mul_neg,
-      Int.sign_zero, Int.cast_zero, Complex.exp_zero, mul_one, neg_zero, add_zero]
+  · simp
   simp_rw [Int.sign_natCast_of_ne_zero h, Int.cast_one, ofReal_sin, Complex.sin]
   simp only [← mul_div_assoc, push_cast, mul_assoc (Gammaℝ _), ← mul_add]
   congr 3
@@ -446,7 +432,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   have hF t (ht : 0 < t) : HasSum (fun n ↦ c n * r n * rexp (-π * (r n) ^ 2 * t))
       (oddKernel a t / 2) := by
     refine ((hasSum_ofReal.mpr (hasSum_int_oddKernel a ht)).div_const 2).congr_fun fun n ↦ ?_
-    simp only [r, c, push_cast, div_mul_eq_mul_div, one_mul]
+    simp [r, c, push_cast, div_mul_eq_mul_div, -one_div]
   have h_sum : Summable fun i ↦ ‖c i‖ / |r i| ^ s.re := by
     simp_rw [c, ← mul_one_div ‖_‖]
     apply Summable.mul_left
@@ -460,7 +446,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 -/
 
 /-- The odd part of the Hurwitz zeta function, i.e. the meromorphic function of `s` which agrees
-with `1 / 2 * ∑' (n : ℤ), sign (n + a) / |n + a| ^ s` for `1 < re s`-/
+with `1 / 2 * ∑' (n : ℤ), sign (n + a) / |n + a| ^ s` for `1 < re s` -/
 noncomputable def hurwitzZetaOdd (a : UnitAddCircle) (s : ℂ) :=
   completedHurwitzZetaOdd a s / Gammaℝ (s + 1)
 
@@ -494,7 +480,7 @@ theorem hasSum_int_hurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℤ ↦ SignType.sign (n + a) / (↑|n + a| : ℂ) ^ s / 2) (hurwitzZetaOdd a s) := by
   refine ((hasSum_int_completedHurwitzZetaOdd a hs).div_const (Gammaℝ _)).congr_fun fun n ↦ ?_
   have : 0 < re (s + 1) := by rw [add_re, one_re]; positivity
-  simp only [div_right_comm _ _ (Gammaℝ _), mul_div_cancel_left₀ _ (Gammaℝ_ne_zero_of_re_pos this)]
+  simp [div_right_comm _ _ (Gammaℝ _), mul_div_cancel_left₀ _ (Gammaℝ_ne_zero_of_re_pos this)]
 
 /-- Formula for `hurwitzZetaOdd` as a Dirichlet series in the convergence range, with sum over `ℕ`
 (version with absolute values) -/
@@ -517,7 +503,7 @@ lemma hasSum_nat_hurwitzZetaOdd_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : �
   intro b hb
   rw [abs_of_nonneg (by positivity), (by simp : (n : ℂ) + b = ↑(n + b))]
   rcases lt_or_eq_of_le (by positivity : 0 ≤ n + b) with hb | hb
-  · rw [sign_pos hb, SignType.coe_one]
+  · simp [sign_pos hb]
   · rw [← hb, ofReal_zero, zero_cpow ((not_lt.mpr zero_le_one) ∘ (zero_re ▸ · ▸ hs)),
       div_zero, div_zero]
 
@@ -542,14 +528,12 @@ lemma hasSum_nat_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   · simp only [neg_mul, sub_mul, div_right_comm _ (2 : ℂ), Int.sign_natCast_of_ne_zero h,
       Int.cast_one, mul_one, mul_comm I, neg_neg, ← add_div, ← sub_eq_neg_add]
     congr 5 <;> ring
-  · simp only [Nat.cast_zero, Int.sign_zero, Int.cast_zero, mul_zero, zero_mul, neg_zero,
-      sub_self, zero_div, zero_add]
+  · simp
 
 /-- Reformulation of `hasSum_nat_sinZeta` using `LSeriesHasSum`. -/
 lemma LSeriesHasSum_sin (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     LSeriesHasSum (Real.sin <| 2 * π * a * ·) s (sinZeta a s) :=
-  (hasSum_nat_sinZeta a hs).congr_fun
-    (LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs) _)
+  (hasSum_nat_sinZeta a hs).congr_fun (LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs) _)
 
 /-- The trivial zeroes of the odd Hurwitz zeta function. -/
 theorem hurwitzZetaOdd_neg_two_mul_nat_sub_one (a : UnitAddCircle) (n : ℕ) :

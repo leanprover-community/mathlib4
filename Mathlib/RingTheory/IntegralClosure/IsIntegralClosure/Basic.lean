@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.FiniteType
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 
@@ -18,7 +17,6 @@ We prove basic properties of `IsIntegralClosure`.
 
 -/
 
-open scoped Classical
 open Polynomial Submodule
 
 section inv
@@ -57,7 +55,7 @@ theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {
 /-- The inverse of an integral element in a subalgebra of a division ring over a field
   also lies in that subalgebra. -/
 theorem IsIntegral.inv_mem (int : IsIntegral R x) (hx : x ∈ A) : x⁻¹ ∈ A :=
-  adjoin_le_iff.mpr (Set.singleton_subset_iff.mpr hx) int.inv_mem_adjoin
+  adjoin_le (Set.singleton_subset_iff.mpr hx) int.inv_mem_adjoin
 
 /-- An integral subalgebra of a division ring over a field is closed under inverses. -/
 theorem Algebra.IsIntegral.inv_mem [Algebra.IsIntegral R A] (hx : x ∈ A) : x⁻¹ ∈ A :=
@@ -133,8 +131,8 @@ theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
       Algebra.isIntegral_def.symm
 
 theorem Algebra.IsIntegral.adjoin {S : Set A} (hS : ∀ x ∈ S, IsIntegral R x) :
-    Algebra.IsIntegral R (Algebra.adjoin R S) :=
-  le_integralClosure_iff_isIntegral.mp <| adjoin_le_iff.mpr hS
+    Algebra.IsIntegral R (adjoin R S) :=
+  le_integralClosure_iff_isIntegral.mp <| adjoin_le hS
 
 theorem integralClosure_eq_top_iff : integralClosure R A = ⊤ ↔ Algebra.IsIntegral R A := by
   rw [← top_le_iff, le_integralClosure_iff_isIntegral,
@@ -326,9 +324,8 @@ lemma Polynomial.Monic.quotient_isIntegralElem {g : S[X]} (mon : g.Monic) {I : I
 
 /- If `I` is an ideal of the polynomial ring `S[X]` and contains a monic polynomial `f`,
 then `S[X]/I` is integral over `S`. -/
-lemma Polynomial.Monic.quotient_isIntegral {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
-    (h : g ∈ I) :
-      ((Ideal.Quotient.mkₐ S I).comp (Algebra.ofId S S[X])).IsIntegral := by
+lemma Polynomial.Monic.quotient_isIntegral {g : S[X]} (mon : g.Monic) {I : Ideal S[X]} (h : g ∈ I) :
+    ((Ideal.Quotient.mkₐ S I).comp (Algebra.ofId S S[X])).IsIntegral := by
   have eq_top : Algebra.adjoin S {(Ideal.Quotient.mkₐ S I) X} = ⊤ := by
     ext g
     constructor
@@ -340,7 +337,7 @@ lemma Polynomial.Monic.quotient_isIntegral {g : S[X]} (mon : g.Monic) {I : Ideal
           as_sum_range_C_mul_X_pow g', map_sum]
         simp only [Polynomial.C_mul', ← map_pow, map_smul]
       exact this ▸ (aeval_mem_adjoin_singleton S ((Ideal.Quotient.mk I) Polynomial.X))
-  exact fun a ↦ (eq_top ▸ (adjoin_le_integralClosure ( mon.quotient_isIntegralElem h)))
+  exact fun a ↦ (eq_top ▸ adjoin_le_integralClosure <| mon.quotient_isIntegralElem h)
     Algebra.mem_top
 
 end
@@ -370,7 +367,7 @@ protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsInt
 theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsIntegral R A :=
   ⟨fun x => IsIntegralClosure.isIntegral R B x⟩
 
-theorem noZeroSMulDivisors [Algebra R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
+theorem noZeroSMulDivisors [SMul R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
     NoZeroSMulDivisors R A := by
   refine
     Function.Injective.noZeroSMulDivisors _ (IsIntegralClosure.algebraMap_injective A R B)
@@ -518,7 +515,7 @@ protected theorem RingHom.IsIntegral.trans
 
 /-- If `R → A → B` is an algebra tower, `C` is the integral closure of `R` in `B`
 and `A` is integral over `R`, then `C` is the integral closure of `A` in `B`. -/
-lemma IsIntegralClosure.tower_top {B C : Type*} [CommRing C] [CommRing B]
+lemma IsIntegralClosure.tower_top {B C : Type*} [CommSemiring C] [CommRing B]
     [Algebra R B] [Algebra A B] [Algebra C B] [IsScalarTower R A B]
     [IsIntegralClosure C R B] [Algebra.IsIntegral R A] :
     IsIntegralClosure C A B :=
@@ -528,10 +525,6 @@ lemma IsIntegralClosure.tower_top {B C : Type*} [CommRing C] [CommRing B]
 
 theorem RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral :=
   fun x ↦ (hf x).recOn fun _y hy ↦ hy ▸ f.isIntegralElem_map
-
-theorem Algebra.isIntegral_of_surjective (h : Function.Surjective (algebraMap R A)) :
-    Algebra.IsIntegral R A :=
-  ⟨(algebraMap R A).isIntegral_of_surjective h⟩
 
 /-- If `R → A → B` is an algebra tower with `A → B` injective,
 then if the entire tower is an integral extension so is `R → A` -/
@@ -553,12 +546,12 @@ theorem Algebra.IsIntegral.tower_bot [Algebra R S] [Algebra R T] [Algebra S T]
     [h : Algebra.IsIntegral R T] : Algebra.IsIntegral R S where
   isIntegral := by
     apply RingHom.IsIntegral.tower_bot (algebraMap R S) (algebraMap S T)
-      (NoZeroSMulDivisors.algebraMap_injective S T)
+      (FaithfulSMul.algebraMap_injective S T)
     rw [← IsScalarTower.algebraMap_eq R S T]
     exact h.isIntegral
 
 theorem IsIntegral.tower_bot_of_field {R A B : Type*} [CommRing R] [Field A]
-    [CommRing B] [Nontrivial B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
+    [Ring B] [Nontrivial B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
     {x : A} (h : IsIntegral R (algebraMap A B x)) : IsIntegral R x :=
   h.tower_bot (algebraMap A B).injective
 

@@ -68,18 +68,16 @@ variable (J : GrothendieckTopology C)
 
 -- We follow https://stacks.math.columbia.edu/tag/00VL definition 00VR
 /-- A sheaf of A is a presheaf P : Cᵒᵖ => A such that for every E : A, the
-presheaf of types given by sending U : C to Hom_{A}(E, P U) is a sheaf of types.
-
-https://stacks.math.columbia.edu/tag/00VR
--/
+presheaf of types given by sending U : C to Hom_{A}(E, P U) is a sheaf of types. -/
+@[stacks 00VR]
 def IsSheaf (P : Cᵒᵖ ⥤ A) : Prop :=
   ∀ E : A, Presieve.IsSheaf J (P ⋙ coyoneda.obj (op E))
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike in
 /-- Condition that a presheaf with values in a concrete category is separated for
 a Grothendieck topology. -/
-def IsSeparated (P : Cᵒᵖ ⥤ A) [ConcreteCategory A] : Prop :=
-  ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : P.obj (op X)),
+def IsSeparated (P : Cᵒᵖ ⥤ A) {FA : A → A → Type*} {CA : A → Type*}
+    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] : Prop :=
+  ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : ToType (P.obj (op X))),
     (∀ (Y : C) (f : Y ⟶ X) (_ : S f), P.map f.op x = P.map f.op y) → x = y
 
 section LimitSheafCondition
@@ -92,7 +90,6 @@ variable (P : Cᵒᵖ ⥤ A) {X : C} (S : Sieve X) (R : Presieve X) (E : Aᵒᵖ
     the cones over the natural diagram `S.arrows.diagram.op ⋙ P` associated to `S` and `P`
     with cone point `E` are in 1-1 correspondence with sieve_compatible family of elements
     for the sieve `S` and the presheaf of types `Hom (E, P -)`. -/
-@[simps]
 def conesEquivSieveCompatibleFamily :
     (S.arrows.diagram.op ⋙ P).cones.obj E ≃
       { x : FamilyOfElements (P ⋙ coyoneda.obj E) (S : Presieve X) // x.SieveCompatible } where
@@ -109,12 +106,6 @@ def conesEquivSieveCompatibleFamily :
         rw [id_comp]
         convert rfl
         rw [Over.w] }
-  left_inv _ := rfl
-  right_inv _ := rfl
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_apply_coe
-  CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_symm_apply_app
 
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
@@ -133,8 +124,6 @@ def homEquivAmalgamation :
     (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t } where
   toFun l := ⟨l.hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
   invFun t := ⟨t.1, fun f => t.2 f.unop.1.hom f.unop.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable (P S)
 
@@ -232,7 +221,7 @@ def IsSheaf.amalgamate {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : 
     (hx : ∀ ⦃I₁ I₂ : S.Arrow⦄ (r : I₁.Relation I₂),
        x I₁ ≫ P.map r.g₁.op = x I₂ ≫ P.map r.g₂.op) : E ⟶ P.obj (op X) :=
   (hP _ _ S.condition).amalgamate (fun Y f hf => x ⟨Y, f, hf⟩) fun _ _ _ _ _ _ _ h₁ h₂ w =>
-    @hx { hf := h₁ } { hf := h₂ } { w := w }
+    @hx { hf := h₁, .. } { hf := h₂, .. } { w := w, .. }
 
 @[reassoc (attr := simp)]
 theorem IsSheaf.amalgamate_map {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
@@ -352,6 +341,12 @@ def sheafToPresheaf : Sheaf J A ⥤ Cᵒᵖ ⥤ A where
 /-- The sections of a sheaf (i.e. evaluation as a presheaf on `C`). -/
 abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
 
+/-- The sheaf sections functor on `X` is given by evaluation of presheaves on `X`. -/
+@[simps!]
+def sheafSectionsNatIsoEvaluation {X : C} :
+    (sheafSections J A).obj (op X) ≅ sheafToPresheaf J A ⋙ (evaluation _ _).obj (op X) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
 /-- The functor `Sheaf J A ⥤ Cᵒᵖ ⥤ A` is fully faithful. -/
 @[simps]
 def fullyFaithfulSheafToPresheaf : (sheafToPresheaf J A).FullyFaithful where
@@ -454,7 +449,7 @@ instance sheafHomHasZSMul : SMul ℤ (P ⟶ Q) where
     Sheaf.Hom.mk
       { app := fun U => n • f.1.app U
         naturality := fun U V i => by
-          induction' n using Int.induction_on with n ih n ih
+          induction' n with n ih n ih
           · simp only [zero_smul, comp_zero, zero_comp]
           · simpa only [add_zsmul, one_zsmul, comp_add, NatTrans.naturality, add_comp,
               add_left_inj]
@@ -524,7 +519,7 @@ section MultiequalizerConditions
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
 def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
   lift := fun E : Multifork _ => hP.amalgamate S (fun _ => E.ι _)
-    (fun _ _ r => E.condition ⟨_, _, r⟩)
+    (fun _ _ r => E.condition ⟨r⟩)
   fac := by
     rintro (E : Multifork _) (a | b)
     · apply hP.amalgamate_map
@@ -582,7 +577,6 @@ theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequaliz
     · apply (@asIso _ _ _ _ _ h).symm
     · intro a
       symm
-      erw [IsIso.inv_comp_eq]
       simp
 
 end MultiequalizerConditions
@@ -592,34 +586,35 @@ section
 variable [HasProducts.{max u₁ v₁} A]
 variable [HasProducts.{max u₁ v₁} A']
 
-/--
-The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
-of <https://stacks.math.columbia.edu/tag/00VM>.
--/
+/-- The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork
+diagram of the Stacks entry. -/
+@[stacks 00VM "The middle object of the fork diagram there."]
 def firstObj : A :=
   ∏ᶜ fun f : ΣV, { f : V ⟶ U // R f } => P.obj (op f.1)
 
-/--
-The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
-of <https://stacks.math.columbia.edu/tag/00VM>.
--/
+/-- The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork
+diagram of the Stacks entry. -/
+@[stacks 00VM "The left morphism the fork diagram there."]
 def forkMap : P.obj (op U) ⟶ firstObj R P :=
   Pi.lift fun f => P.map f.2.1.op
 
 variable [HasPullbacks C]
 
-/-- The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
+/-- The rightmost object of the fork diagram of the Stacks entry, which
 contains the data used to check a family of elements for a presieve is compatible.
 -/
+@[stacks 00VM "The rightmost object of the fork diagram there."]
 def secondObj : A :=
   ∏ᶜ fun fg : (ΣV, { f : V ⟶ U // R f }) × ΣW, { g : W ⟶ U // R g } =>
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
-/-- The map `pr₀*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
+/-- The map `pr₀*` of the Stacks entry. -/
+@[stacks 00VM "The map `pr₀*` there."]
 def firstMap : firstObj R P ⟶ secondObj R P :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
-/-- The map `pr₁*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
+/-- The map `pr₁*` of the Stacks entry. -/
+@[stacks 00VM "The map `pr₁*` there."]
 def secondMap : firstObj R P ⟶ secondObj R P :=
   Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 

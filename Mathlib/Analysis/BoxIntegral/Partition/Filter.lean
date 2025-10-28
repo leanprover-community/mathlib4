@@ -164,7 +164,7 @@ integral, rectangular box, partition, filter
 -/
 
 open Set Function Filter Metric Finset Bool
-open scoped Classical Topology Filter NNReal
+open scoped Topology Filter NNReal
 
 noncomputable section
 
@@ -202,8 +202,6 @@ namespace IntegrationParams
 def equivProd : IntegrationParams ≃ Bool × Boolᵒᵈ × Boolᵒᵈ where
   toFun l := ⟨l.1, OrderDual.toDual l.2, OrderDual.toDual l.3⟩
   invFun l := ⟨l.1, OrderDual.ofDual l.2.1, OrderDual.ofDual l.2.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 instance : PartialOrder IntegrationParams :=
   PartialOrder.lift equivProd equivProd.injective
@@ -222,7 +220,7 @@ without additional integrability assumptions, see the module docstring for detai
 instance : Inhabited IntegrationParams :=
   ⟨⊥⟩
 
-instance : DecidableRel ((· ≤ ·) : IntegrationParams → IntegrationParams → Prop) :=
+instance : DecidableLE (IntegrationParams) :=
   fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
 
 instance : DecidableEq IntegrationParams :=
@@ -346,7 +344,7 @@ theorem MemBaseSet.exists_common_compl
       (l.bDistortion → π.distortion ≤ c₁) ∧ (l.bDistortion → π.distortion ≤ c₂) := by
   wlog hc : c₁ ≤ c₂ with H
   · simpa [hU, _root_.and_comm] using
-      @H _ _ I c₂ c₁ l r₂ r₁ π₂ π₁ h₂ h₁ hU.symm (le_of_not_le hc)
+      @H _ _ I c₂ c₁ l r₂ r₁ π₂ π₁ h₂ h₁ hU.symm (le_of_not_ge hc)
   by_cases hD : (l.bDistortion : Prop)
   · rcases h₁.4 hD with ⟨π, hπU, hπc⟩
     exact ⟨π, hπU, fun _ => hπc, fun _ => hπc.trans hc⟩
@@ -366,6 +364,7 @@ variable {r : (ι → ℝ) → Ioi (0 : ℝ)}
 
 protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι → Prop) :
     l.MemBaseSet I c r (π.filter p) := by
+  classical
   refine ⟨fun J hJ => hπ.1 J (π.mem_filter.1 hJ).1, fun hH J hJ => hπ.2 hH J (π.mem_filter.1 hJ).1,
     fun hD => (distortion_filter_le _ _).trans (hπ.3 hD), fun hD => ?_⟩
   rcases hπ.4 hD with ⟨π₁, hπ₁U, hc⟩

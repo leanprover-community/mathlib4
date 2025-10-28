@@ -3,10 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.NumberTheory.Zsqrtd.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Real.Archimedean
+import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
 # Gaussian integers
@@ -127,15 +127,9 @@ theorem toComplex_eq_zero {x : ℤ[i]} : (x : ℂ) = 0 ↔ x = 0 := by
 theorem intCast_real_norm (x : ℤ[i]) : (x.norm : ℝ) = Complex.normSq (x : ℂ) := by
   rw [Zsqrtd.norm, normSq]; simp
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_real_norm := intCast_real_norm
-
 @[simp]
 theorem intCast_complex_norm (x : ℤ[i]) : (x.norm : ℂ) = Complex.normSq (x : ℂ) := by
   cases x; rw [Zsqrtd.norm, normSq]; simp
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_complex_norm := intCast_complex_norm
 
 theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
   Zsqrtd.norm_nonneg (by norm_num) _
@@ -149,14 +143,10 @@ theorem norm_pos {x : ℤ[i]} : 0 < norm x ↔ x ≠ 0 := by
 theorem abs_natCast_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
   Int.natAbs_of_nonneg (norm_nonneg _)
 
-@[deprecated (since := "2024-04-05")] alias abs_coe_nat_norm := abs_natCast_norm
-
 @[simp]
-theorem natCast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
+theorem natCast_natAbs_norm {α : Type*} [AddGroupWithOne α] (x : ℤ[i]) :
+    (x.norm.natAbs : α) = x.norm := by
   rw [← Int.cast_natCast, abs_natCast_norm]
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_natAbs_norm := natCast_natAbs_norm
 
 theorem natAbs_norm_eq (x : ℤ[i]) :
     x.norm.natAbs = x.re.natAbs * x.re.natAbs + x.im.natAbs * x.im.natAbs :=
@@ -255,10 +245,7 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
       rw [norm_natCast, Int.natAbs_mul, mul_eq_one]
       exact fun h => (ne_of_lt hp.1.one_lt).symm h.1
   have hab : ∃ a b, (p : ℤ[i]) = a * b ∧ ¬IsUnit a ∧ ¬IsUnit b := by
-    -- Porting note: was
-    -- simpa [irreducible_iff, hpu, not_forall, not_or] using hpi
-    simpa only [true_and, not_false_iff, exists_prop, irreducible_iff, hpu, not_forall, not_or]
-      using hpi
+    simpa [irreducible_iff, hpu, not_forall, not_or] using hpi
   let ⟨a, b, hpab, hau, hbu⟩ := hab
   have hnap : (norm a).natAbs = p :=
     ((hp.1.mul_eq_prime_sq_iff (mt norm_eq_one_iff.1 hau) (mt norm_eq_one_iff.1 hbu)).1 <| by

@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.MetricSpace.IsometricSMul
+import Mathlib.Tactic.Finiteness
 
 /-!
 # Hausdorff distance
@@ -129,7 +130,7 @@ theorem edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s 
     _ ≤ edist x i + diam s := add_le_add le_rfl (edist_le_diam_of_mem hi hy)
 
 /-- The edist to a set depends continuously on the point -/
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_infEdist : Continuous fun x => infEdist x s :=
   continuous_of_le_add_edist 1 (by simp) <| by
     simp only [one_mul, infEdist_le_infEdist_add_edist, forall₂_true_iff]
@@ -164,19 +165,29 @@ theorem mem_iff_infEdist_zero_of_closed (h : IsClosed s) : x ∈ s ↔ infEdist 
 
 /-- The infimum edistance of a point to a set is positive if and only if the point is not in the
 closure of the set. -/
-theorem infEdist_pos_iff_not_mem_closure {x : α} {E : Set α} :
+theorem infEdist_pos_iff_notMem_closure {x : α} {E : Set α} :
     0 < infEdist x E ↔ x ∉ closure E := by
   rw [mem_closure_iff_infEdist_zero, pos_iff_ne_zero]
 
-theorem infEdist_closure_pos_iff_not_mem_closure {x : α} {E : Set α} :
-    0 < infEdist x (closure E) ↔ x ∉ closure E := by
-  rw [infEdist_closure, infEdist_pos_iff_not_mem_closure]
+@[deprecated (since := "2025-05-23")]
+alias infEdist_pos_iff_not_mem_closure := infEdist_pos_iff_notMem_closure
 
-theorem exists_real_pos_lt_infEdist_of_not_mem_closure {x : α} {E : Set α} (h : x ∉ closure E) :
+theorem infEdist_closure_pos_iff_notMem_closure {x : α} {E : Set α} :
+    0 < infEdist x (closure E) ↔ x ∉ closure E := by
+  rw [infEdist_closure, infEdist_pos_iff_notMem_closure]
+
+@[deprecated (since := "2025-05-23")]
+alias infEdist_closure_pos_iff_not_mem_closure := infEdist_closure_pos_iff_notMem_closure
+
+theorem exists_real_pos_lt_infEdist_of_notMem_closure {x : α} {E : Set α} (h : x ∉ closure E) :
     ∃ ε : ℝ, 0 < ε ∧ ENNReal.ofReal ε < infEdist x E := by
-  rw [← infEdist_pos_iff_not_mem_closure, ENNReal.lt_iff_exists_real_btwn] at h
+  rw [← infEdist_pos_iff_notMem_closure, ENNReal.lt_iff_exists_real_btwn] at h
   rcases h with ⟨ε, ⟨_, ⟨ε_pos, ε_lt⟩⟩⟩
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
+
+@[deprecated (since := "2025-05-23")]
+alias exists_real_pos_lt_infEdist_of_not_mem_closure :=
+  exists_real_pos_lt_infEdist_of_notMem_closure
 
 theorem disjoint_closedBall_of_lt_infEdist {r : ℝ≥0∞} (h : r < infEdist x s) :
     Disjoint (closedBall x r) s := by
@@ -193,7 +204,7 @@ theorem infEdist_image (hΦ : Isometry Φ) : infEdist (Φ x) (Φ '' t) = infEdis
   simp only [infEdist, iInf_image, hΦ.edist_eq]
 
 @[to_additive (attr := simp)]
-theorem infEdist_smul {M} [SMul M α] [IsometricSMul M α] (c : M) (x : α) (s : Set α) :
+theorem infEdist_smul {M} [SMul M α] [IsIsometricSMul M α] (c : M) (x : α) (s : Set α) :
     infEdist (c • x) (c • s) = infEdist x s :=
   infEdist_image (isometry_smul _ _)
 
@@ -208,7 +219,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
   refine ⟨F, fun n => IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, ?_, ?_⟩
   · show ⋃ n, F n = U
     refine Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => ?_
-    have : ¬x ∈ Uᶜ := by simpa using hx
+    have : x ∉ Uᶜ := by simpa using hx
     rw [mem_iff_infEdist_zero_of_closed hU.isClosed_compl] at this
     have B : 0 < infEdist x Uᶜ := by simpa [pos_iff_ne_zero] using this
     have : Filter.Tendsto (fun n => a ^ n) atTop (𝓝 0) :=
@@ -435,7 +446,7 @@ def infDist (x : α) (s : Set α) : ℝ :=
 theorem infDist_eq_iInf : infDist x s = ⨅ y : s, dist x y := by
   rw [infDist, infEdist, iInf_subtype', ENNReal.toReal_iInf]
   · simp only [dist_edist]
-  · exact fun _ ↦ edist_ne_top _ _
+  · finiteness
 
 /-- The minimal distance is always nonnegative -/
 theorem infDist_nonneg : 0 ≤ infDist x s := toReal_nonneg
@@ -444,6 +455,10 @@ theorem infDist_nonneg : 0 ≤ infDist x s := toReal_nonneg
 value `∞` instead, use `EMetric.infEdist`, which takes values in `ℝ≥0∞`) -/
 @[simp]
 theorem infDist_empty : infDist x ∅ = 0 := by simp [infDist]
+
+lemma isGLB_infDist (hs : s.Nonempty) : IsGLB ((dist x ·) '' s) (infDist x s) := by
+  simpa [infDist_eq_iInf, sInf_image']
+    using isGLB_csInf (hs.image _) ⟨0, by simp [lowerBounds, dist_nonneg]⟩
 
 /-- In a metric space, the minimal edistance to a nonempty set is finite. -/
 theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
@@ -471,10 +486,13 @@ theorem infDist_le_dist_of_mem (h : y ∈ s) : infDist x s ≤ dist x y := by
 theorem infDist_le_infDist_of_subset (h : s ⊆ t) (hs : s.Nonempty) : infDist x t ≤ infDist x s :=
   ENNReal.toReal_mono (infEdist_ne_top hs) (infEdist_anti h)
 
+lemma le_infDist {r : ℝ} (hs : s.Nonempty) : r ≤ infDist x s ↔ ∀ ⦃y⦄, y ∈ s → r ≤ dist x y := by
+  simp_rw [infDist, ← ENNReal.ofReal_le_iff_le_toReal (infEdist_ne_top hs), le_infEdist,
+    ENNReal.ofReal_le_iff_le_toReal (edist_ne_top _ _), ← dist_edist]
+
 /-- The minimal distance to a set `s` is `< r` iff there exists a point in `s` at distance `< r`. -/
 theorem infDist_lt_iff {r : ℝ} (hs : s.Nonempty) : infDist x s < r ↔ ∃ y ∈ s, dist x y < r := by
-  simp_rw [infDist, ← ENNReal.lt_ofReal_iff_toReal_lt (infEdist_ne_top hs), infEdist_lt_iff,
-    ENNReal.lt_ofReal_iff_toReal_lt (edist_ne_top _ _), ← dist_edist]
+  simp [← not_le, le_infDist hs]
 
 /-- The minimal distance from `x` to `s` is bounded by the distance from `y` to `s`, modulo
 the distance between `x` and `y`. -/
@@ -483,11 +501,13 @@ theorem infDist_le_infDist_add_dist : infDist x s ≤ infDist y s + dist x y := 
   refine ENNReal.toReal_le_add' infEdist_le_infEdist_add_edist ?_ (flip absurd (edist_ne_top _ _))
   simp only [infEdist_eq_top_iff, imp_self]
 
-theorem not_mem_of_dist_lt_infDist (h : dist x y < infDist x s) : y ∉ s := fun hy =>
-  h.not_le <| infDist_le_dist_of_mem hy
+theorem notMem_of_dist_lt_infDist (h : dist x y < infDist x s) : y ∉ s := fun hy =>
+  h.not_ge <| infDist_le_dist_of_mem hy
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_dist_lt_infDist := notMem_of_dist_lt_infDist
 
 theorem disjoint_ball_infDist : Disjoint (ball x (infDist x s)) s :=
-  disjoint_left.2 fun _y hy => not_mem_of_dist_lt_infDist <| mem_ball'.1 hy
+  disjoint_left.2 fun _y hy => notMem_of_dist_lt_infDist <| mem_ball'.1 hy
 
 theorem ball_infDist_subset_compl : ball x (infDist x s) ⊆ sᶜ :=
   (disjoint_ball_infDist (s := s)).subset_compl_right
@@ -515,7 +535,7 @@ theorem uniformContinuous_infDist_pt : UniformContinuous (infDist · s) :=
   (lipschitz_infDist_pt s).uniformContinuous
 
 /-- The minimal distance to a set is continuous in point -/
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_infDist_pt : Continuous (infDist · s) :=
   (uniformContinuous_infDist_pt s).continuous
 
@@ -535,14 +555,24 @@ theorem infDist_zero_of_mem_closure (hx : x ∈ closure s) : infDist x s = 0 := 
 theorem mem_closure_iff_infDist_zero (h : s.Nonempty) : x ∈ closure s ↔ infDist x s = 0 := by
   simp [mem_closure_iff_infEdist_zero, infDist, ENNReal.toReal_eq_zero_iff, infEdist_ne_top h]
 
+theorem infDist_pos_iff_notMem_closure (hs : s.Nonempty) :
+    x ∉ closure s ↔ 0 < infDist x s :=
+  (mem_closure_iff_infDist_zero hs).not.trans infDist_nonneg.gt_iff_ne.symm
+
+@[deprecated (since := "2025-05-23")]
+alias infDist_pos_iff_not_mem_closure := infDist_pos_iff_notMem_closure
+
 /-- Given a closed set `s`, a point belongs to `s` iff its infimum distance to this set vanishes -/
 theorem _root_.IsClosed.mem_iff_infDist_zero (h : IsClosed s) (hs : s.Nonempty) :
     x ∈ s ↔ infDist x s = 0 := by rw [← mem_closure_iff_infDist_zero hs, h.closure_eq]
 
 /-- Given a closed set `s`, a point belongs to `s` iff its infimum distance to this set vanishes. -/
-theorem _root_.IsClosed.not_mem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempty) :
+theorem _root_.IsClosed.notMem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempty) :
     x ∉ s ↔ 0 < infDist x s := by
   simp [h.mem_iff_infDist_zero hs, infDist_nonneg.gt_iff_ne]
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.IsClosed.not_mem_iff_infDist_pos := _root_.IsClosed.notMem_iff_infDist_pos
 
 theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by
@@ -561,10 +591,10 @@ theorem infDist_inter_closedBall_of_mem (h : y ∈ s) :
   refine le_antisymm ?_ (infDist_le_infDist_of_subset inter_subset_left ⟨y, h⟩)
   refine not_lt.1 fun hlt => ?_
   rcases (infDist_lt_iff ⟨y, h.1⟩).mp hlt with ⟨z, hzs, hz⟩
-  rcases le_or_lt (dist z x) (dist y x) with hle | hlt
-  · exact hz.not_le (infDist_le_dist_of_mem ⟨hzs, hle⟩)
+  rcases le_or_gt (dist z x) (dist y x) with hle | hlt
+  · exact hz.not_ge (infDist_le_dist_of_mem ⟨hzs, hle⟩)
   · rw [dist_comm z, dist_comm y] at hlt
-    exact (hlt.trans hz).not_le (infDist_le_dist_of_mem h)
+    exact (hlt.trans hz).not_ge (infDist_le_dist_of_mem h)
 
 theorem _root_.IsCompact.exists_infDist_eq_dist (h : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infDist x s = dist x y :=
@@ -604,6 +634,7 @@ theorem uniformContinuous_infNndist_pt (s : Set α) : UniformContinuous fun x =>
   (lipschitz_infNndist_pt s).uniformContinuous
 
 /-- The minimal distance to a set (as `ℝ≥0`) is continuous in point -/
+@[continuity, fun_prop]
 theorem continuous_infNndist_pt (s : Set α) : Continuous fun x => infNndist x s :=
   (uniformContinuous_infNndist_pt s).continuous
 

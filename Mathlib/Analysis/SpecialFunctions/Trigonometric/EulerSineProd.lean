@@ -3,7 +3,7 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.PeakFunction
 
 /-! # Euler's infinite product for the sine function
@@ -219,7 +219,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
       dsimp only [C]
       rw [integral_cos_pow_eq, aux', integral_sin_pow, sin_zero, sin_pi, pow_succ',
         zero_mul, zero_mul, zero_mul, sub_zero, zero_div,
-        zero_add, ← mul_assoc, ← mul_assoc, mul_comm (1 / 2 : ℝ) _, Nat.cast_mul, Nat.cast_eq_ofNat]
+        zero_add, ← mul_assoc, ← mul_assoc, mul_comm (1 / 2 : ℝ) _, Nat.cast_mul, Nat.cast_ofNat]
     rw [this]
     change
       π * z * A * B / C =

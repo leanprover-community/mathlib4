@@ -35,6 +35,10 @@ section
 
 variable (C)
 
+-- Don't generate unnecessary `sizeOf_spec` or `injEq` lemmas
+-- which the `simpNF` linter will complain about.
+set_option genSizeOfSpec false in
+set_option genInjectivity false in
 /--
 Given a type `C`, the free monoidal category over `C` has as objects formal expressions built from
 (formal) tensor products of terms of `C` and a formal unit. Its morphisms are compositions and
@@ -52,13 +56,9 @@ local notation "F" => FreeMonoidalCategory
 
 namespace FreeMonoidalCategory
 
-attribute [nolint simpNF] unit.sizeOf_spec tensor.injEq tensor.sizeOf_spec
-
 /-- Formal compositions and tensor products of identities, unitors and associators. The morphisms
     of the free monoidal category are obtained as a quotient of these formal morphisms by the
     relations defining a monoidal category. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 inductive Hom : F C → F C → Type u
   | id (X) : Hom X X
   | α_hom (X Y Z : F C) : Hom ((X.tensor Y).tensor Z) (X.tensor (Y.tensor Z))
@@ -270,9 +270,9 @@ theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C
   | whiskerLeft X f hf => exact whiskerLeft X _ (hf ⟦f⟧)
   | whiskerRight f X hf => exact whiskerRight _ X (hf ⟦f⟧)
   | @tensor W X Y Z f g hf hg =>
-      have : homMk f ⊗ homMk g = homMk f ▷ X ≫ Y ◁ homMk g :=
+      have : homMk f ⊗ₘ homMk g = homMk f ▷ X ≫ Y ◁ homMk g :=
         Quotient.sound (HomEquiv.tensorHom_def f g)
-      change motive (homMk f ⊗ homMk g)
+      change motive (homMk f ⊗ₘ homMk g)
       rw [this]
       exact comp _ _ (whiskerRight _ _ (hf ⟦f⟧)) (whiskerLeft _ _ (hg ⟦g⟧))
 
@@ -305,7 +305,7 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.comp f g => projectMapAux f ≫ projectMapAux g
   | _, _, Hom.whiskerLeft X p => projectObj f X ◁ projectMapAux p
   | _, _, Hom.whiskerRight p X => projectMapAux p ▷ projectObj f X
-  | _, _, Hom.tensor f g => projectMapAux f ⊗ projectMapAux g
+  | _, _, Hom.tensor f g => projectMapAux f ⊗ₘ projectMapAux g
 
 -- Porting note: this declaration generates the same panic.
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/

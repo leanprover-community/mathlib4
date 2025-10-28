@@ -337,7 +337,7 @@ variable [HasEqualizers C]
 is an epimorphism when `h` is an epimorphism.
 In general this does not imply that `imageSubobject (h ≫ f) = imageSubobject f`,
 although it will when the ambient category is abelian.
- -/
+-/
 instance imageSubobject_comp_le_epi_of_epi {X' : C} (h : X' ⟶ X) [Epi h] (f : X ⟶ Y) [HasImage f]
     [HasImage (h ≫ f)] : Epi (Subobject.ofLE _ _ (imageSubobject_comp_le h f)) := by
   rw [ofLE_mk_le_mk_of_comm (image.preComp h f)]

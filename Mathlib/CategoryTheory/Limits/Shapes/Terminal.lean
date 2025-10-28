@@ -43,7 +43,7 @@ section Univ
 variable (X : C) {F₁ : Discrete.{w} PEmpty ⥤ C} {F₂ : Discrete.{w'} PEmpty ⥤ C}
 
 theorem hasTerminalChangeDiagram (h : HasLimit F₁) : HasLimit F₂ :=
-  ⟨⟨⟨⟨limit F₁, by aesop_cat, by aesop_cat⟩,
+  ⟨⟨⟨⟨limit F₁, by aesop_cat, by simp⟩,
     isLimitChangeEmptyCone C (limit.isLimit F₁) _ (eqToIso rfl)⟩⟩⟩
 
 theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C] :
@@ -51,7 +51,7 @@ theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C]
   has_limit _ := hasTerminalChangeDiagram C (h.1 (Functor.empty C))
 
 theorem hasInitialChangeDiagram (h : HasColimit F₁) : HasColimit F₂ :=
-  ⟨⟨⟨⟨colimit F₁, by aesop_cat, by aesop_cat⟩,
+  ⟨⟨⟨⟨colimit F₁, by aesop_cat, by simp⟩,
     isColimitChangeEmptyCocone C (colimit.isColimit F₁) _ (eqToIso rfl)⟩⟩⟩
 
 theorem hasInitialChangeUniverse [h : HasColimitsOfShape (Discrete.{w} PEmpty) C] :
@@ -92,7 +92,7 @@ theorem hasTerminal_of_unique (X : C) [∀ Y, Nonempty (Y ⟶ X)] [∀ Y, Subsin
     ⟨Classical.inhabited_of_nonempty', (Subsingleton.elim · _)⟩⟩
 
 theorem IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
-  { has_limit := fun F => HasLimit.mk ⟨⟨X, by aesop_cat, by aesop_cat⟩,
+  { has_limit := fun F => HasLimit.mk ⟨⟨X, by aesop_cat, by simp⟩,
     isLimitChangeEmptyCone _ h _ (Iso.refl _)⟩ }
 
 /-- We can more explicitly show that a category has an initial object by specifying the object,
@@ -104,7 +104,7 @@ theorem hasInitial_of_unique (X : C) [∀ Y, Nonempty (X ⟶ Y)] [∀ Y, Subsing
 
 theorem IsInitial.hasInitial {X : C} (h : IsInitial X) : HasInitial C where
   has_colimit F :=
-    HasColimit.mk ⟨⟨X, by aesop_cat, by aesop_cat⟩, isColimitChangeEmptyCocone _ h _ (Iso.refl _)⟩
+    HasColimit.mk ⟨⟨X, by aesop_cat, by simp⟩, isColimitChangeEmptyCocone _ h _ (Iso.refl _)⟩
 
 /-- The map from an object to the terminal object. -/
 abbrev terminal.from [HasTerminal C] (P : C) : P ⟶ ⊤_ C :=
@@ -132,22 +132,23 @@ instance uniqueFromInitial [HasInitial C] (P : C) : Unique (⊥_ C ⟶ P) :=
 
 @[ext] theorem initial.hom_ext [HasInitial C] {P : C} (f g : ⊥_ C ⟶ P) : f = g := by ext ⟨⟨⟩⟩
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
     f ≫ terminal.from Q = terminal.from P := by
   simp [eq_iff_true_of_subsingleton]
 
-@[simp]
+-- `initial.to_comp_assoc` does not need the `simp` attribute.
+@[simp, reassoc]
 theorem initial.to_comp [HasInitial C] {P Q : C} (f : P ⟶ Q) : initial.to P ≫ f = initial.to Q := by
   simp [eq_iff_true_of_subsingleton]
 
 /-- The (unique) isomorphism between the chosen initial object and any other initial object. -/
-@[simp]
+@[simps!]
 def initialIsoIsInitial [HasInitial C] {P : C} (t : IsInitial P) : ⊥_ C ≅ P :=
   initialIsInitial.uniqueUpToIso t
 
 /-- The (unique) isomorphism between the chosen terminal object and any other terminal object. -/
-@[simp]
+@[simps!]
 def terminalIsoIsTerminal [HasTerminal C] {P : C} (t : IsTerminal P) : ⊤_ C ≅ P :=
   terminalIsTerminal.uniqueUpToIso t
 
@@ -262,7 +263,6 @@ variable {J : Type u} [Category.{v} J]
 instance hasLimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C} : HasLimit F :=
   HasLimit.mk { cone := _, isLimit := limitOfDiagramInitial (initialIsInitial) F }
 
--- See note [dsimp, simp]
 -- This is reducible to allow usage of lemmas about `cone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object then the image of it is isomorphic
 to the limit of `F`. -/

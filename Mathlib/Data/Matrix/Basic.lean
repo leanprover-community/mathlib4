@@ -37,7 +37,6 @@ variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
 
 namespace Matrix
 
--- Porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
   Fintype.decidablePiFintype
 
@@ -215,13 +214,13 @@ variable [Fintype n] [DecidableEq n]
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
 instance instAlgebra : Algebra R (Matrix n n α) where
-  toRingHom := (Matrix.scalar n).comp (algebraMap R α)
+  algebraMap := (Matrix.scalar n).comp (algebraMap R α)
   commutes' _ _ := scalar_commute _ (fun _ => Algebra.commutes _ _) _
   smul_def' r x := by ext; simp [Matrix.scalar, Algebra.smul_def r]
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
     algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
-  dsimp [algebraMap, Algebra.toRingHom, Matrix.scalar]
+  dsimp [algebraMap, Algebra.algebraMap, Matrix.scalar]
   split_ifs with h <;> simp [h, Matrix.one_apply_ne]
 
 theorem algebraMap_eq_diagonal (r : R) :
@@ -235,15 +234,7 @@ theorem map_algebraMap (r : R) (f : α → β) (hf : f 0 = 0)
     (hf₂ : f (algebraMap R α r) = algebraMap R β r) :
     (algebraMap R (Matrix n n α) r).map f = algebraMap R (Matrix n n β) r := by
   rw [algebraMap_eq_diagonal, algebraMap_eq_diagonal, diagonal_map hf]
-  -- Porting note: (congr) the remaining proof was
-  -- ```
-  -- congr 1
-  -- simp only [hf₂, Pi.algebraMap_apply]
-  -- ```
-  -- But some `congr 1` doesn't quite work.
-  simp only [Pi.algebraMap_apply, diagonal_eq_diagonal_iff]
-  intro
-  rw [hf₂]
+  simp [hf₂]
 
 variable (R)
 
@@ -261,7 +252,7 @@ section AddHom
 variable [Add α]
 
 variable (R α) in
-/-- Extracting entries from a matrix as an additive homomorphism.  -/
+/-- Extracting entries from a matrix as an additive homomorphism. -/
 @[simps]
 def entryAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
   toFun M := M i j
@@ -621,6 +612,14 @@ theorem mapMatrix_symm (f : α ≃ₐ[R] β) :
 theorem mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m m α ≃ₐ[R] _) :=
   rfl
+
+/-- For any algebra `α` over a ring `R`, we have an `R`-algebra isomorphism
+`Matₙₓₙ(αᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose. If `α` is commutative,
+we can get rid of the `ᵒᵖ` in the left-hand side, see `Matrix.transposeAlgEquiv`. -/
+@[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
+  __ := RingEquiv.mopMatrix
+  commutes' _ := MulOpposite.unop_injective <| by
+    ext; simp [algebraMap_matrix_apply, eq_comm, apply_ite MulOpposite.unop]
 
 end AlgEquiv
 

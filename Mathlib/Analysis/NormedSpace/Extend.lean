@@ -62,7 +62,7 @@ noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :
   have smul_I : ∀ x : F, fc ((I : 𝕜) • x) = (I : 𝕜) * fc x := by
     intro x
     dsimp only [fc]
-    cases' @I_mul_I_ax 𝕜 _ with h h
+    rcases @I_mul_I_ax 𝕜 _ with h | h
     · simp [h]
     rw [mul_sub, ← mul_assoc, smul_smul, h]
     simp only [neg_mul, LinearMap.map_neg, one_mul, one_smul, mul_neg, ofReal_neg, neg_smul,

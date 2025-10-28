@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Combinatorics.Pigeonhole
-import Mathlib.Algebra.Order.EuclideanAbsoluteValue
+import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 
 /-!
 # Admissible absolute values
@@ -14,17 +14,17 @@ of the ring of integers of a global field is finite.
 
 ## Main definitions
 
- * `AbsoluteValue.IsAdmissible abv` states the absolute value `abv : R → ℤ`
-   respects the Euclidean domain structure on `R`, and that a large enough set
-   of elements of `R^n` contains a pair of elements whose remainders are
-   pointwise close together.
+* `AbsoluteValue.IsAdmissible abv` states the absolute value `abv : R → ℤ`
+  respects the Euclidean domain structure on `R`, and that a large enough set
+  of elements of `R^n` contains a pair of elements whose remainders are
+  pointwise close together.
 
 ## Main results
 
- * `AbsoluteValue.absIsAdmissible` shows the "standard" absolute value on `ℤ`,
-   mapping negative `x` to `-x`, is admissible.
- * `Polynomial.cardPowDegreeIsAdmissible` shows `cardPowDegree`,
-   mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
+* `AbsoluteValue.absIsAdmissible` shows the "standard" absolute value on `ℤ`,
+  mapping negative `x` to `-x`, is admissible.
+* `Polynomial.cardPowDegreeIsAdmissible` shows `cardPowDegree`,
+  mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
 -/
 
 local infixl:50 " ≺ " => EuclideanDomain.r
@@ -38,16 +38,13 @@ variable (abv : AbsoluteValue R ℤ)
 structure and a large enough set of elements in `R^n` will contain a pair of
 elements whose remainders are pointwise close together. -/
 structure IsAdmissible extends IsEuclidean abv where
+  /-- The cardinality required for a given `ε`. -/
   protected card : ℝ → ℕ
   /-- For all `ε > 0` and finite families `A`, we can partition the remainders of `A` mod `b`
   into `abv.card ε` sets, such that all elements in each part of remainders are close together. -/
   exists_partition' :
     ∀ (n : ℕ) {ε : ℝ} (_ : 0 < ε) {b : R} (_ : b ≠ 0) (A : Fin n → R),
       ∃ t : Fin n → Fin (card ε), ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε
-
--- Porting note: no docstrings for IsAdmissible
-attribute [nolint docBlame] IsAdmissible.card
-
 
 namespace IsAdmissible
 
@@ -70,11 +67,13 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     ∀ {ε : ℝ} (_hε : 0 < ε) {b : R} (_hb : b ≠ 0) (A : Fin (h.card ε ^ n).succ → Fin n → R),
       ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
   haveI := Classical.decEq R
-  induction' n with n ih
-  · intro ε _hε b _hb A
+  induction n with
+  | zero =>
+    intro ε _hε b _hb A
     refine ⟨0, 1, ?_, ?_⟩
     · simp
     rintro ⟨i, ⟨⟩⟩
+  | succ n ih =>
   intro ε hε b hb A
   let M := h.card ε
   -- By the "nicer" pigeonhole principle, we can find a collection `s`
@@ -98,8 +97,8 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     · rwa [Finset.length_toList]
     · ext
       simpa [(Finset.nodup_toList _).getElem_inj_iff] using h
-    · #adaptation_note
-      /-- This proof was nicer prior to https://github.com/leanprover/lean4/pull/4400.
+    · #adaptation_note /-- https://github.com/leanprover/lean4/pull/4400
+      This proof was nicer before.
       Please feel welcome to improve it, by avoiding use of `List.get` in favour of `GetElem`. -/
       have : ∀ i h, t ((Finset.univ.filter fun x ↦ t x = s).toList.get ⟨i, h⟩) = s := fun i h ↦
         (Finset.mem_filter.mp (Finset.mem_toList.mp (List.get_mem _ ⟨i, h⟩))).2

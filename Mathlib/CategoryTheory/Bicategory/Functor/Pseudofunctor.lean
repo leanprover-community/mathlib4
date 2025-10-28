@@ -5,6 +5,7 @@ Authors: Yuma Mizuno, Calle Sönne
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.CategoryTheory.Bicategory.Functor.Lax
+import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Pseudofunctors
@@ -39,18 +40,6 @@ universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
-
--- Porting note: this auxiliary def was introduced in Lean 3 and only used once, in this file,
--- to avoid a timeout. In Lean 4 the timeout isn't present and the definition causes other
--- things to break (simp proofs) so I removed it.
--- def Pseudofunctor.Map₂AssociatorAux (obj : B → C) (map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y))
---     (map₂ : ∀ {a b : B} {f g : a ⟶ b}, (f ⟶ g) → (map f ⟶ map g))
---    (map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), map (f ≫ g) ≅ map f ≫ map g) {a b c d : B}
---     (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) : Prop :=
---   map₂ (α_ f g h).hom =
---     (map_comp (f ≫ g) h).hom ≫
---       (map_comp f g).hom ▷ map h ≫
---        (α_ (map f) (map g) (map h)).hom ≫ map f ◁ (map_comp g h).inv ≫ (map_comp f (g ≫ h)).inv
 
 /-- A pseudofunctor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
@@ -158,11 +147,11 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D whe
   mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
   -- Note: whilst these are all provable by `aesop_cat`, the proof is very slow
-  map₂_whisker_left f η := by dsimp; simp
-  map₂_whisker_right η h := by dsimp; simp
-  map₂_associator f g h := by dsimp; simp
-  map₂_left_unitor f := by dsimp; simp
-  map₂_right_unitor f := by dsimp; simp
+  map₂_whisker_left f η := by simp
+  map₂_whisker_right η h := by simp
+  map₂_associator f g h := by simp
+  map₂_left_unitor f := by simp
+  map₂_right_unitor f := by simp
 
 section
 
@@ -252,6 +241,27 @@ lemma whiskerLeft_mapId_inv (f : a ⟶ b) : F.map f ◁ (F.mapId b).inv =
     (ρ_ (F.map f)).hom ≫ F.map₂ (ρ_ f).inv ≫ (F.mapComp f (𝟙 b)).hom := by
   simpa using congrArg (·.inv) (F.whiskerLeftIso_mapId f)
 
+/-- More flexible variant of `mapId`. (See the file `Bicategory.Functor.Strict`
+for applications to strict bicategories.) -/
+def mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by aesop_cat) :
+    F.map f ≅ 𝟙 (F.obj b) :=
+  F.map₂Iso (eqToIso (by rw [hf])) ≪≫ F.mapId _
+
+lemma mapId'_eq_mapId (b : B) :
+    F.mapId' (𝟙 b) rfl = F.mapId b := by
+  simp [mapId']
+
+/-- More flexible variant of `mapComp`. (See `Bicategory.Functor.Strict`
+for applications to strict bicategories.) -/
+def mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
+    (h : f ≫ g = fg := by aesop_cat) :
+    F.map fg ≅ F.map f ≫ F.map g :=
+  F.map₂Iso (eqToIso (by rw [h])) ≪≫ F.mapComp f g
+
+lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) :
+    F.mapComp' f g _ rfl = F.mapComp f g := by
+  simp [mapComp']
+
 end
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
@@ -261,15 +271,12 @@ def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C whe
   mapId := F'.mapIdIso
   mapComp := F'.mapCompIso
   map₂_whisker_left := fun f g h η => by
-    dsimp
     rw [F'.mapCompIso_hom f g, ← F.mapComp_naturality_right_assoc, ← F'.mapCompIso_hom f h,
       hom_inv_id, comp_id]
   map₂_whisker_right := fun η h => by
-    dsimp
     rw [F'.mapCompIso_hom _ h, ← F.mapComp_naturality_left_assoc, ← F'.mapCompIso_hom _ h,
       hom_inv_id, comp_id]
   map₂_associator := fun f g h => by
-    dsimp
     rw [F'.mapCompIso_hom (f ≫ g) h, F'.mapCompIso_hom f g, ← F.map₂_associator_assoc, ←
       F'.mapCompIso_hom f (g ≫ h), ← F'.mapCompIso_hom g h, whiskerLeft_hom_inv_assoc,
       hom_inv_id, comp_id]

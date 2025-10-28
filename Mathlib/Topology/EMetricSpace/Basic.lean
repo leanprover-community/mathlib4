@@ -3,9 +3,13 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.EMetricSpace.Defs
-import Mathlib.Topology.UniformSpace.UniformConvergence
+import Mathlib.Topology.UniformSpace.Compact
+import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
@@ -34,7 +38,7 @@ theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
       edist (f m) (f (n + 1)) ≤ edist (f m) (f n) + edist (f n) (f (n + 1)) := edist_triangle _ _ _
       _ ≤ (∑ i ∈ Finset.Ico m n, _) + _ := add_le_add ihn le_rfl
       _ = ∑ i ∈ Finset.Ico m (n + 1), _ := by
-      { rw [Nat.Ico_succ_right_eq_insert_Ico hle, Finset.sum_insert, add_comm]; simp }
+        rw [← Finset.insert_Ico_right_eq_Ico_add_one hle, Finset.sum_insert, add_comm]; simp
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem edist_le_range_sum_edist (f : ℕ → α) (n : ℕ) :
@@ -65,17 +69,11 @@ theorem isUniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
     ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).trans <| by
       simp only [subset_def, Prod.forall]; rfl
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_iff := isUniformInducing_iff
-
 /-- ε-δ characterization of uniform embeddings on pseudoemetric spaces -/
 nonrec theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
   (isUniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and isUniformInducing_iff
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_iff := isUniformEmbedding_iff
 
 /-- If a map between pseudoemetric spaces is a uniform embedding then the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`.
@@ -87,9 +85,6 @@ theorem controlled_of_isUniformEmbedding [PseudoEMetricSpace β] {f : α → β}
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
   ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformEmbedding_iff.1 h).2.2⟩
-
-@[deprecated (since := "2024-10-01")]
-alias controlled_of_uniformEmbedding := controlled_of_isUniformEmbedding
 
 /-- ε-δ characterization of Cauchy sequences on pseudoemetric spaces -/
 protected theorem cauchy_iff {f : Filter α} :
@@ -152,7 +147,7 @@ namespace EMetric
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
 
 theorem inseparable_iff : Inseparable x y ↔ edist x y = 0 := by
-  simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_lt_iff_le']
+  simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_gt_iff_le]
 
 alias ⟨_root_.Inseparable.edist_eq_zero, _⟩ := EMetric.inseparable_iff
 
@@ -190,7 +185,7 @@ theorem totallyBounded_iff' {s : Set α} :
 
 section Compact
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to metrizable spaces
+-- TODO: generalize to metrizable spaces
 /-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
 countable set. -/
 theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
@@ -205,8 +200,7 @@ section SecondCountable
 
 open TopologicalSpace
 
-variable (α)
-
+variable (α) in
 /-- A sigma compact pseudo emetric space has second countable topology. -/
 instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α] :
     SecondCountableTopology α := by
@@ -216,8 +210,6 @@ instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α]
   refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => ?_⟩⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering α) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
-
-variable {α}
 
 theorem secondCountable_of_almost_dense_set
     (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, closedBall x ε = univ) :
@@ -241,18 +233,14 @@ instance (priority := 100) EMetricSpace.instT0Space : T0Space γ where
 
 /-- A map between emetric spaces is a uniform embedding if and only if the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
-theorem EMetric.isUniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
+theorem EMetric.isUniformEmbedding_iff' [PseudoEMetricSpace β] {f : γ → β} :
     IsUniformEmbedding f ↔
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ := by
   rw [isUniformEmbedding_iff_isUniformInducing, isUniformInducing_iff, uniformContinuous_iff]
 
-@[deprecated (since := "2024-10-01")]
-alias EMetric.uniformEmbedding_iff' := EMetric.isUniformEmbedding_iff'
-
 /-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/
--- Porting note: made `reducible`;
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it an instance?
+-- TODO: make it an instance?
 abbrev EMetricSpace.ofT0PseudoEMetricSpace (α : Type*) [PseudoEMetricSpace α] [T0Space α] :
     EMetricSpace α :=
   { ‹PseudoEMetricSpace α› with
@@ -295,3 +283,71 @@ instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
       toUniformSpace := inferInstance,
       uniformity_edist := comap_injective (surjective_mk.prodMap surjective_mk) <| by
         simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_edist] } _
+
+namespace TopologicalSpace
+
+section Compact
+
+open Topology
+
+/-- If a set `s` is separable in a (pseudo extended) metric space, then it admits a countable dense
+subset. This is not obvious, as the countable set whose closure covers `s` given by the definition
+of separability does not need in general to be contained in `s`. -/
+theorem IsSeparable.exists_countable_dense_subset
+    {s : Set α} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
+  have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 => by
+    rcases hs with ⟨t, htc, hst⟩
+    refine ⟨t, htc, hst.trans fun x hx => ?_⟩
+    rcases mem_closure_iff.1 hx ε ε0 with ⟨y, hyt, hxy⟩
+    exact mem_iUnion₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
+  exact subset_countable_closure_of_almost_dense_set _ this
+
+/-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo extended)
+metric space.  This is not obvious, as the countable set whose closure covers `s` does not need in
+general to be contained in `s`. -/
+theorem IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
+    SeparableSpace s := by
+  rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
+  lift t to Set s using hts
+  refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
+  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
+
+end Compact
+
+end TopologicalSpace
+
+section LebesgueNumberLemma
+
+variable {s : Set α}
+
+theorem lebesgue_number_lemma_of_emetric {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
+  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
+    using uniformity_basis_edist.lebesgue_number_lemma hs hc₁ hc₂
+
+theorem lebesgue_number_lemma_of_emetric_nhds' {c : (x : α) → x ∈ s → Set α} (hs : IsCompact s)
+    (hc : ∀ x hx, c x hx ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y : s, ball x δ ⊆ c y y.2 := by
+  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
+    using uniformity_basis_edist.lebesgue_number_lemma_nhds' hs hc
+
+theorem lebesgue_number_lemma_of_emetric_nhds {c : α → Set α} (hs : IsCompact s)
+    (hc : ∀ x ∈ s, c x ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, ball x δ ⊆ c y := by
+  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
+    using uniformity_basis_edist.lebesgue_number_lemma_nhds hs hc
+
+theorem lebesgue_number_lemma_of_emetric_nhdsWithin' {c : (x : α) → x ∈ s → Set α}
+    (hs : IsCompact s) (hc : ∀ x hx, c x hx ∈ 𝓝[s] x) :
+    ∃ δ > 0, ∀ x ∈ s, ∃ y : s, ball x δ ∩ s ⊆ c y y.2 := by
+  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
+    using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin' hs hc
+
+theorem lebesgue_number_lemma_of_emetric_nhdsWithin {c : α → Set α} (hs : IsCompact s)
+    (hc : ∀ x ∈ s, c x ∈ 𝓝[s] x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, ball x δ ∩ s ⊆ c y := by
+  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
+    using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin hs hc
+
+theorem lebesgue_number_lemma_of_emetric_sUnion {c : Set (Set α)} (hs : IsCompact s)
+    (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
+  rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_emetric hs (by simpa) hc₂
+
+end LebesgueNumberLemma

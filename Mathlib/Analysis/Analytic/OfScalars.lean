@@ -11,13 +11,13 @@ import Mathlib.Analysis.Analytic.Basic
 This file contains API for analytic functions `∑ cᵢ • xⁱ` defined in terms of scalars
 `c₀, c₁, c₂, …`.
 ## Main definitions / results:
- * `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
- * `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
-   otherwise.
- * `FormalMultilinearSeries.ofScalars_radius_eq_(zero/inv/top)_of_tendsto`:
-   the ratio test for an analytic function defined in terms of a formal power series `∑ cᵢ • xⁱ`.
- * `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
-   the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
+* `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
+* `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
+  otherwise.
+* `FormalMultilinearSeries.ofScalars_radius_eq_(zero/inv/top)_of_tendsto`:
+  the ratio test for an analytic function defined in terms of a formal power series `∑ cᵢ • xⁱ`.
+* `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
+  the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
 -/
 
 namespace FormalMultilinearSeries
@@ -27,9 +27,9 @@ section Field
 open ContinuousMultilinearMap
 
 variable {𝕜 : Type*} (E : Type*) [Field 𝕜] [Ring E] [Algebra 𝕜 E] [TopologicalSpace E]
-  [TopologicalRing E] {c : ℕ → 𝕜}
+  [IsTopologicalRing E] {c : ℕ → 𝕜}
 
-/-- Formal power series of `∑ cᵢ • xⁱ` for some scalar field `𝕜` and ring algebra `E`-/
+/-- Formal power series of `∑ cᵢ • xⁱ` for some scalar field `𝕜` and ring algebra `E` -/
 def ofScalars (c : ℕ → 𝕜) : FormalMultilinearSeries 𝕜 E E :=
   fun n ↦ c n • ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E
 
@@ -78,9 +78,14 @@ theorem ofScalars_series_eq_iff [Nontrivial E] (c' : ℕ → 𝕜) :
   ⟨fun e => ofScalars_series_injective 𝕜 E e, _root_.congrArg _⟩
 
 theorem ofScalars_apply_zero (n : ℕ) :
-    (ofScalars E c n fun _ => 0) = Pi.single (f := fun _ => E) 0 (c 0 • 1) n := by
+    ofScalars E c n (fun _ => 0) = Pi.single (M := fun _ => E) 0 (c 0 • 1) n := by
   rw [ofScalars]
   cases n <;> simp
+
+@[simp]
+lemma coeff_ofScalars {𝕜 : Type*} [NontriviallyNormedField 𝕜] {p : ℕ → 𝕜} {n : ℕ} :
+    (FormalMultilinearSeries.ofScalars 𝕜 p).coeff n = p n := by
+  simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
 
 theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c + ofScalars E c' := by
   unfold ofScalars
@@ -139,17 +144,17 @@ theorem ofScalarsSum_unop [T2Space E] (x : Eᵐᵒᵖ) :
 
 end Field
 
-section Normed
+section Seminormed
 
 open Filter ENNReal
 open scoped Topology NNReal
 
-variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormedRing E]
+variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
 theorem ofScalars_norm_eq_mul :
     ‖ofScalars E c n‖ = ‖c n‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E‖ := by
-  rw [ofScalars, norm_smul (c n) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
+  rw [ofScalars, norm_smul]
 
 theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := by
   simp only [ofScalars_norm_eq_mul]
@@ -160,13 +165,22 @@ theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := 
 theorem ofScalars_norm [NormOneClass E] : ‖ofScalars E c n‖ = ‖c n‖ := by
   simp [ofScalars_norm_eq_mul]
 
+end Seminormed
+
+section Normed
+
+open Filter ENNReal
+open scoped Topology NNReal
+
+variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormedRing E]
+    [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
+
 private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
       Tendsto (fun n ↦ ‖‖c (n + 1)‖ * r' ^ (n + 1)‖ /
         ‖‖c n‖ * r' ^ n‖) atTop (𝓝 ↑(r' * r)) := by
-  simp_rw [norm_mul, norm_norm, mul_div_mul_comm, ← norm_div, pow_succ,
-    mul_div_right_comm, div_self (pow_ne_zero _ (NNReal.coe_ne_zero.mpr hr')
-    ), one_mul, norm_div, NNReal.norm_eq]
+  simp_rw [norm_mul, norm_norm, mul_div_mul_comm, ← norm_div, pow_succ, mul_div_right_comm,
+    div_self (pow_ne_zero _ (NNReal.coe_ne_zero.mpr hr')), one_mul, norm_div, NNReal.norm_eq]
   exact mul_comm r' r ▸ hc.mul tendsto_const_nhds
 
 theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
@@ -177,7 +191,7 @@ theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
   by_cases hrz : r' = 0
   · simp [hrz]
   apply FormalMultilinearSeries.le_radius_of_summable_norm
-  refine Summable.of_norm_bounded_eventually (fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
+  refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
   · refine summable_of_ratio_test_tendsto_lt_one hr' ?_ ?_
     · refine (hc.eventually_ne (NNReal.coe_ne_zero.mpr hr)).mp (Eventually.of_forall ?_)
       aesop
@@ -223,7 +237,7 @@ theorem ofScalars_radius_eq_top_of_tendsto (hc : ∀ᶠ n in atTop, c n ≠ 0)
   · apply Summable.comp_nat_add (k := 1)
     simp [hrz]
     exact (summable_const_iff 0).mpr rfl
-  · refine Summable.of_norm_bounded_eventually (fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
+  · refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
     · apply summable_of_ratio_test_tendsto_lt_one zero_lt_one (hc.mp (Eventually.of_forall ?_))
       · simp only [norm_norm]
         exact mul_zero (_ : ℝ) ▸ tendsto_succ_norm_div_norm _ hrz (NNReal.coe_zero ▸ hc')

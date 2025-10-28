@@ -14,13 +14,12 @@ This file defines diagonal matrices and the `AddCommMonoidWithOne` structure on 
 
 ## Main definitions
 
- * `Matrix.diagonal d`: matrix with the vector `d` along the diagonal
- * `Matrix.diag M`: the diagonal of a square matrix
- * `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
+* `Matrix.diagonal d`: matrix with the vector `d` along the diagonal
+* `Matrix.diag M`: the diagonal of a square matrix
+* `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
 -/
 
-assert_not_exists Algebra
-assert_not_exists Star
+assert_not_exists Algebra Star
 
 universe u u' v w
 
@@ -117,13 +116,11 @@ theorem diagonal_natCast [Zero α] [NatCast α] (m : ℕ) : diagonal (fun _ : n 
 @[norm_cast]
 theorem diagonal_natCast' [Zero α] [NatCast α] (m : ℕ) : diagonal ((m : n → α)) = m := rfl
 
--- See note [no_index around OfNat.ofNat]
 theorem diagonal_ofNat [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
-    diagonal (fun _ : n => no_index (OfNat.ofNat m : α)) = OfNat.ofNat m := rfl
+    diagonal (fun _ : n => (ofNat(m) : α)) = OfNat.ofNat m := rfl
 
--- See note [no_index around OfNat.ofNat]
 theorem diagonal_ofNat' [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
-    diagonal (no_index (OfNat.ofNat m : n → α)) = OfNat.ofNat m := rfl
+    diagonal (ofNat(m) : n → α) = OfNat.ofNat m := rfl
 
 instance [Zero α] [IntCast α] : IntCast (Matrix n n α) where
   intCast m := diagonal fun _ => m
@@ -141,18 +138,26 @@ theorem diagonal_map [Zero α] [Zero β] {f : α → β} (h : f 0 = 0) {d : n �
   simp only [diagonal_apply, map_apply]
   split_ifs <;> simp [h]
 
-protected theorem map_natCast [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_natCast [AddMonoidWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
 
--- See note [no_index around OfNat.ofNat]
-protected theorem map_ofNat [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo] :
-    (no_index (OfNat.ofNat d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
+    (ofNat(d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
-protected theorem map_intCast [AddGroupWithOne α] [AddGroupWithOne β]
+theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
+    (d : Matrix n n α) i j = if i = j then d else 0 := by
+  rw [Nat.cast_ite, Nat.cast_zero]
+  rfl
+
+theorem ofNat_apply [AddMonoidWithOne α] {i j} {d : ℕ} [d.AtLeastTwo] :
+    (ofNat(d) : Matrix n n α) i j = if i = j then d else 0 :=
+  natCast_apply
+
+protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
@@ -161,6 +166,16 @@ theorem diagonal_unique [Unique m] [DecidableEq m] [Zero α] (d : m → α) :
     diagonal d = of fun _ _ => d default := by
   ext i j
   rw [Subsingleton.elim i default, Subsingleton.elim j default, diagonal_apply_eq _ _, of_apply]
+
+@[simp]
+theorem col_diagonal [Zero α] (d : n → α) (i) : (diagonal d).col i = Pi.single i (d i) := by
+  ext
+  simp +contextual [diagonal, Pi.single_apply]
+
+@[simp]
+theorem row_diagonal [Zero α] (d : n → α) (j) : (diagonal d).row j = Pi.single j (d j) := by
+  ext
+  simp +contextual [diagonal, eq_comm, Pi.single_apply]
 
 section One
 
@@ -188,14 +203,13 @@ theorem one_apply_ne' {i j} : j ≠ i → (1 : Matrix n n α) i j = 0 :=
   diagonal_apply_ne' _
 
 @[simp]
-theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 = 1) :
+protected theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 = 1) :
     (1 : Matrix n n α).map f = (1 : Matrix n n β) := by
   ext
   simp only [one_apply, map_apply]
   split_ifs <;> simp [h₀, h₁]
 
--- Porting note: added implicit argument `(f := fun_ => α)`, why is that needed?
-theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _ => α) i 1 j := by
+theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (M := fun _ => α) i 1 j := by
   simp only [one_apply, Pi.single_apply, eq_comm]
 
 end One
@@ -229,12 +243,9 @@ end Diagonal
 section Diag
 
 /-- The diagonal of a square matrix. -/
--- @[simp] -- Porting note: simpNF does not like this.
 def diag (A : Matrix n n α) (i : n) : α :=
   A i i
 
--- Porting note: new, because of removed `simp` above.
--- TODO: set as an equation lemma for `diag`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem diag_apply (A : Matrix n n α) (i) : diag A i = A i i :=
   rfl
@@ -284,8 +295,6 @@ namespace Matrix
 
 section Transpose
 
-open Matrix
-
 @[simp]
 theorem transpose_eq_diagonal [DecidableEq n] [Zero α] {M : Matrix n n α} {v : n → α} :
     Mᵀ = diagonal v ↔ M = diagonal v :=
@@ -310,17 +319,15 @@ theorem transpose_eq_natCast [DecidableEq n] [AddMonoidWithOne α] {M : Matrix n
     Mᵀ = d ↔ M = d :=
   transpose_eq_diagonal
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem transpose_ofNat [DecidableEq n] [AddMonoidWithOne α] (d : ℕ) [d.AtLeastTwo] :
-    (no_index (OfNat.ofNat d) : Matrix n n α)ᵀ = OfNat.ofNat d :=
+    (ofNat(d) : Matrix n n α)ᵀ = OfNat.ofNat d :=
   transpose_natCast _
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem transpose_eq_ofNat [DecidableEq n] [AddMonoidWithOne α]
     {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
-    Mᵀ = no_index (OfNat.ofNat d) ↔ M = OfNat.ofNat d :=
+    Mᵀ = ofNat(d) ↔ M = OfNat.ofNat d :=
   transpose_eq_diagonal
 
 @[simp]
@@ -343,8 +350,7 @@ theorem submatrix_diagonal [Zero α] [DecidableEq m] [DecidableEq l] (d : m → 
   ext fun i j => by
     rw [submatrix_apply]
     by_cases h : i = j
-    · rw [h, diagonal_apply_eq, diagonal_apply_eq]
-      simp only [Function.comp_apply] -- Porting note: (simp) added this
+    · rw [h, diagonal_apply_eq, diagonal_apply_eq, Function.comp_apply]
     · rw [diagonal_apply_ne _ h, diagonal_apply_ne _ (he.ne h)]
 
 theorem submatrix_one [Zero α] [One α] [DecidableEq m] [DecidableEq l] (e : l → m)

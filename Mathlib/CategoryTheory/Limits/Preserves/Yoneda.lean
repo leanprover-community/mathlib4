@@ -23,7 +23,7 @@ pointwise.
 ## See also
 
 There is also a relative version of this statement where `F : J ⥤ Over A` for some presheaf
-`A`, see `Mathlib.CategoryTheory.Comma.Presheaf.Colimit`.
+`A`, see `Mathlib/CategoryTheory/Comma/Presheaf/Colimit.lean`.
 
 -/
 

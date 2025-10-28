@@ -53,9 +53,9 @@ example : CountEquivOrEquivTwoMulMod3 "IUIM" "MI" :=
 -/
 theorem mod3_eq_1_or_mod3_eq_2 {a b : ℕ} (h1 : a % 3 = 1 ∨ a % 3 = 2)
     (h2 : b % 3 = a % 3 ∨ b % 3 = 2 * a % 3) : b % 3 = 1 ∨ b % 3 = 2 := by
-  cases' h2 with h2 h2
+  rcases h2 with h2 | h2
   · rw [h2]; exact h1
-  · cases' h1 with h1 h1
+  · rcases h1 with h1 | h1
     · right; simp [h2, mul_mod, h1, Nat.succ_lt_succ]
     · left; simp only [h2, mul_mod, h1, mod_mod]
 
@@ -103,7 +103,7 @@ string to be derivable, namely that the string must start with an M and contain 
 /-- `Goodm xs` holds if `xs : Miustr` begins with `M` and has no `M` in its tail.
 -/
 def Goodm (xs : Miustr) : Prop :=
-  List.headI xs = M ∧ ¬M ∈ List.tail xs
+  List.headI xs = M ∧ M ∉ List.tail xs
 
 instance : DecidablePred Goodm := by unfold Goodm; infer_instance
 
@@ -120,33 +120,28 @@ We'll show, for each `i` from 1 to 4, that if `en` follows by Rule `i` from `st`
 -/
 
 
-theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ ↑[I])) (h₂ : Goodm (xs ++ ↑[I])) :
-    Goodm (xs ++ ↑[I, U]) := by
-  cases' h₂ with mhead nmtail
-  have : xs ≠ nil := by rintro rfl; contradiction
+theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ [I])) (h₂ : Goodm (xs ++ [I])) :
+    Goodm (xs ++ [I, U]) := by
+  obtain ⟨mhead, nmtail⟩ := h₂
   constructor
-  · -- Porting note: Original proof was `rwa [head_append] at * <;> exact this`.
-    -- However, there is no `headI_append`
-    cases xs
-    · contradiction
-    exact mhead
-  · change ¬M ∈ tail (xs ++ ↑([I] ++ [U]))
+  · cases xs <;> simp_all
+  · change M ∉ tail (xs ++ ([I] ++ [U]))
     rw [← append_assoc, tail_append_singleton_of_ne_nil]
     · simp_rw [mem_append, mem_singleton, reduceCtorEq, or_false]; exact nmtail
-    · exact append_ne_nil_of_left_ne_nil this _
+    · simp
 
 theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M :: xs)) :
-    Goodm (↑(M :: xs) ++ xs) := by
+    Goodm ((M :: xs) ++ xs) := by
   constructor
   · rfl
-  · cases' h₂ with mhead mtail
+  · obtain ⟨mhead, mtail⟩ := h₂
     contrapose! mtail
     rw [cons_append] at mtail
     exact or_self_iff.mp (mem_append.mp mtail)
 
-theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[I, I, I] ++ bs))
-    (h₂ : Goodm (as ++ ↑[I, I, I] ++ bs)) : Goodm (as ++ ↑(U :: bs)) := by
-  cases' h₂ with mhead nmtail
+theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs))
+    (h₂ : Goodm (as ++ [I, I, I] ++ bs)) : Goodm (as ++ (U :: bs)) := by
+  obtain ⟨mhead, nmtail⟩ := h₂
   have k : as ≠ nil := by rintro rfl; contradiction
   constructor
   · cases as
@@ -162,9 +157,9 @@ The proof of the next lemma is identical, on the tactic level, to the previous p
 -/
 
 
-theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ ↑[U, U] ++ bs))
-    (h₂ : Goodm (as ++ ↑[U, U] ++ bs)) : Goodm (as ++ bs) := by
-  cases' h₂ with mhead nmtail
+theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ [U, U] ++ bs))
+    (h₂ : Goodm (as ++ [U, U] ++ bs)) : Goodm (as ++ bs) := by
+  obtain ⟨mhead, nmtail⟩ := h₂
   have k : as ≠ nil := by rintro rfl; contradiction
   constructor
   · cases as

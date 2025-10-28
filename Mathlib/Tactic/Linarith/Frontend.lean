@@ -130,11 +130,11 @@ The components of `linarith` are spread between a number of files for the sake o
 linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear programming
 -/
 
-open Lean Elab Tactic Meta
-open Batteries Mathlib
+open Lean Elab Parser Tactic Meta
+open Batteries
 
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-! ### Config objects
 
@@ -144,7 +144,6 @@ be in context to choose a default.
 -/
 
 section
-open Meta
 
 /-- A configuration object for `linarith`. -/
 structure LinarithConfig : Type where
@@ -223,7 +222,7 @@ abbrev ExprMultiMap α := Array (Expr × List α)
 (If the key is not in the map it returns `self.size` as the index.) -/
 def ExprMultiMap.find {α : Type} (self : ExprMultiMap α) (k : Expr) : MetaM (Nat × List α) := do
   for h : i in [:self.size] do
-    let (k', vs) := self[i]'h.2
+    let (k', vs) := self[i]
     if ← isDefEq k' k then
       return (i, vs)
   return (self.size, [])
@@ -233,7 +232,7 @@ in the map. -/
 def ExprMultiMap.insert {α : Type} (self : ExprMultiMap α) (k : Expr) (v : α) :
     MetaM (ExprMultiMap α) := do
   for h : i in [:self.size] do
-    if ← isDefEq (self[i]'h.2).1 k then
+    if ← isDefEq self[i].1 k then
       return self.modify i fun (k, vs) => (k, v::vs)
   return self.push (k, [v])
 
@@ -250,12 +249,13 @@ Given a list `ls` of lists of proofs of comparisons, `findLinarithContradiction 
 prove `False` by calling `linarith` on each list in succession. It will stop at the first proof of
 `False`, and fail if no contradiction is found with any list.
 -/
-def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (List Expr)) :
+def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (Expr × List Expr)) :
     MetaM Expr :=
   try
-    ls.firstM (fun L => proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g L)
+    ls.firstM (fun ⟨α, L⟩ =>
+      withTraceNode `linarith (return m!"{exceptEmoji ·} running on type {α}") <|
+        proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g L)
   catch e => throwError "linarith failed to find a contradiction\n{g}\n{e.toMessageData}"
-
 
 /--
 Given a list `hyps` of proofs of comparisons, `runLinarith cfg hyps prefType`
@@ -272,13 +272,20 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
     (hyps : List Expr) : MetaM Unit := do
   let singleProcess (g : MVarId) (hyps : List Expr) : MetaM Expr := g.withContext do
     linarithTraceProofs s!"after preprocessing, linarith has {hyps.length} facts:" hyps
-    let hyp_set ← partitionByType hyps
+    let mut hyp_set ← partitionByType hyps
     trace[linarith] "hypotheses appear in {hyp_set.size} different types"
+    -- If we have a preferred type, strip it from `hyp_set` and prepare a handler with a custom
+    -- trace message
+    let pref : MetaM _ ← do
       if let some t := prefType then
         let (i, vs) ← hyp_set.find t
-        proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g vs <|>
-        findLinarithContradiction cfg g ((hyp_set.eraseIdxIfInBounds i).toList.map (·.2))
-      else findLinarithContradiction cfg g (hyp_set.toList.map (·.2))
+        hyp_set := hyp_set.eraseIdxIfInBounds i
+        pure <|
+          withTraceNode `linarith (return m!"{exceptEmoji ·} running on preferred type {t}") <|
+            proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g vs
+      else
+        pure failure
+    pref <|> findLinarithContradiction cfg g hyp_set.toList
   let mut preprocessors := cfg.preprocessors
   if cfg.splitNe then
     preprocessors := Linarith.removeNe :: preprocessors
@@ -318,8 +325,8 @@ partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig :
   if (← whnfR (← instantiateMVars (← g.getType))).isEq then
     trace[linarith] "target is an equality: splitting"
     if let some [g₁, g₂] ← try? (g.apply (← mkConst' ``eq_of_not_lt_of_not_gt)) then
-      linarith only_on hyps cfg g₁
-      linarith only_on hyps cfg g₂
+      withTraceNode `linarith (return m!"{exceptEmoji ·} proving ≥") <| linarith only_on hyps cfg g₁
+      withTraceNode `linarith (return m!"{exceptEmoji ·} proving ≤") <| linarith only_on hyps cfg g₂
       return
 
   /- If we are proving a comparison goal (and not just `False`), we consider the type of the
@@ -355,7 +362,7 @@ end Linarith
 
 /-! ### User facing functions -/
 
-open Parser Tactic Syntax
+open Syntax
 
 /-- Syntax for the arguments of `linarith`, after the optional `!`. -/
 syntax linarithArgsRest := optConfig (&" only")? (" [" term,* "]")?
@@ -480,3 +487,5 @@ elab_rules : tactic
 --   category   := doc_category.tactic,
 --   decl_names := [`tactic.interactive.nlinarith],
 --   tags       := ["arithmetic", "decision procedure", "finishing"] }
+
+end Mathlib.Tactic

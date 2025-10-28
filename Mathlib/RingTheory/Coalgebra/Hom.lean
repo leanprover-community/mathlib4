@@ -15,7 +15,7 @@ This file defines bundled homomorphisms of `R`-coalgebras. We largely mimic
 
 * `CoalgHom R A B`: the type of `R`-coalgebra morphisms from `A` to `B`.
 * `Coalgebra.counitCoalgHom R A : A →ₗc[R] R`: the counit of a coalgebra as a coalgebra
-homomorphism.
+  homomorphism.
 
 ## Notations
 
@@ -46,8 +46,8 @@ notation:25 A " →ₗc[" R "] " B => CoalgHom R A B
 from `A` to `B`. -/
 class CoalgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
-    extends SemilinearMapClass F (RingHom.id R) A B : Prop where
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B] : Prop
+    extends SemilinearMapClass F (RingHom.id R) A B where
   counit_comp : ∀ f : F, counit ∘ₗ (f : A →ₗ[R] B) = counit
   map_comp_comul : ∀ f : F, TensorProduct.map (f : A →ₗ[R] B)
     (f : A →ₗ[R] B) ∘ₗ comul = comul ∘ₗ (f : A →ₗ[R] B)
@@ -200,7 +200,7 @@ variable (R A)
 
 variable {R A}
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(CoalgHom.id R A) = id :=
   rfl
 
@@ -238,7 +238,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₗc[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
@@ -266,7 +266,7 @@ variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Modu
 variable [Coalgebra R A] [Coalgebra R B]
 
 /-- The counit of a coalgebra as a `CoalgHom`. -/
-def counitCoalgHom : A →ₗc[R] R :=
+noncomputable def counitCoalgHom : A →ₗc[R] R :=
   { counit with
     counit_comp := by ext; simp
     map_comp_comul := by

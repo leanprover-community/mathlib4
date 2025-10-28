@@ -211,7 +211,7 @@ theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c := by
 
 @[simp]
 theorem snd_ssubset_snd_iff : c.snd ⊂ d.snd ↔ d < c := by
-  rw [ssubset_iff_subset_not_subset, lt_iff_le_not_le, snd_subset_snd_iff, snd_subset_snd_iff]
+  rw [ssubset_iff_subset_not_subset, lt_iff_le_not_ge, snd_subset_snd_iff, snd_subset_snd_iff]
 
 theorem strictMono_fst : StrictMono (Prod.fst ∘ toProd : Concept α β r → Set α) := fun _ _ =>
   fst_ssubset_fst_iff.2

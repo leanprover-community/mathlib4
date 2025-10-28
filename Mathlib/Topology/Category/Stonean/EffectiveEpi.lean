@@ -12,7 +12,7 @@ import Mathlib.Topology.Category.Stonean.Limits
 
 This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `Stonean`.
 As a consequence we deduce from the material in
-`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `Stonean` is `Preregular`
+`Mathlib/Topology/Category/CompHausLike/EffectiveEpi.lean` that `Stonean` is `Preregular`
 and `Precoherent`.
 
 We also prove that for a finite family of morphisms in `Stonean` with fixed
@@ -23,8 +23,6 @@ equivalent.
 universe u
 
 open CategoryTheory Limits CompHausLike
-
-attribute [local instance] ConcreteCategory.instFunLike
 
 namespace Stonean
 

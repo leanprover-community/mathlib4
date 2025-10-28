@@ -120,7 +120,7 @@ theorem jacobiSymNat.odd_even (a b c : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b %
 /-- If `a` is divisible by `4` and `b` is odd, then we can remove the factor `4` from `a`. -/
 theorem jacobiSymNat.double_even (a b c : ℕ) (r : ℤ) (ha : a % 4 = 0) (hb : b % 2 = 1)
     (hc : a / 4 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
-  simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
+  simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   exact (jacobiSym.div_four_left (mod_cast ha) hb).symm
 
 /-- If `a` is even and `b` is odd, then we can remove a factor `2` from `a`,
@@ -128,25 +128,25 @@ but we may have to change the sign, depending on `b % 8`.
 We give one version for each of the four odd residue classes mod `8`. -/
 theorem jacobiSymNat.even_odd₁ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 1)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
-  simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
+  simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 
 theorem jacobiSymNat.even_odd₇ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 7)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
-  simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
+  simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 
 theorem jacobiSymNat.even_odd₃ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 3)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
-  simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
+  simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 
 theorem jacobiSymNat.even_odd₅ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 5)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
-  simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
+  simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 
@@ -355,14 +355,6 @@ namespace Tactic
 namespace NormNum
 
 open Lean Elab Tactic Qq Mathlib.Meta.NormNum
-
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
 
 /-- This is the `norm_num` plug-in that evaluates Jacobi symbols. -/
 @[norm_num jacobiSym _ _]

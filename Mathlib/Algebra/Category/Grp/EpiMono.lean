@@ -64,31 +64,25 @@ open CategoryTheory
 
 namespace Grp
 
-
--- Porting note: already have Group G but Lean can't use that
-@[to_additive]
-instance (G : Grp) : Group G.α :=
-  G.str
-
 variable {A B : Grp.{u}} (f : A ⟶ B)
 
 @[to_additive]
-theorem ker_eq_bot_of_mono [Mono f] : f.ker = ⊥ :=
-  MonoidHom.ker_eq_bot_of_cancel fun u _ =>
-    (@cancel_mono _ _ _ _ _ f _ (show Grp.of f.ker ⟶ A from u) _).1
+theorem ker_eq_bot_of_mono [Mono f] : f.hom.ker = ⊥ :=
+  MonoidHom.ker_eq_bot_of_cancel fun u v h => ConcreteCategory.ext_iff.mp <|
+    (@cancel_mono _ _ _ _ _ f _ (ofHom u) (ofHom v)).1 <| ConcreteCategory.ext h
 
 @[to_additive]
-theorem mono_iff_ker_eq_bot : Mono f ↔ f.ker = ⊥ :=
+theorem mono_iff_ker_eq_bot : Mono f ↔ f.hom.ker = ⊥ :=
   ⟨fun _ => ker_eq_bot_of_mono f, fun h =>
-    ConcreteCategory.mono_of_injective _ <| (MonoidHom.ker_eq_bot_iff f).1 h⟩
+    ConcreteCategory.mono_of_injective _ <| (MonoidHom.ker_eq_bot_iff f.hom).1 h⟩
 
 @[to_additive]
 theorem mono_iff_injective : Mono f ↔ Function.Injective f :=
-  Iff.trans (mono_iff_ker_eq_bot f) <| MonoidHom.ker_eq_bot_iff f
+  Iff.trans (mono_iff_ker_eq_bot f) <| MonoidHom.ker_eq_bot_iff f.hom
 
 namespace SurjectiveOfEpiAuxs
 
-local notation3 "X" => Set.range (· • (f.range : Set B) : B → Set B)
+local notation3 "X" => Set.range (· • (f.hom.range : Set B) : B → Set B)
 
 /-- Define `X'` to be the set of all left cosets with an extra point at "infinity".
 -/
@@ -109,7 +103,6 @@ instance : SMul B X' where
     match x with
     | fromCoset y => fromCoset ⟨b • y, by
           rw [← y.2.choose_spec, leftCoset_assoc]
-          -- Porting note: should we make `Bundled.α` reducible?
           let b' : B := y.2.choose
           use b * b'⟩
     | ∞ => ∞
@@ -128,53 +121,49 @@ theorem one_smul (x : X') : (1 : B) • x = x :=
     simp only [one_leftCoset, Subtype.ext_iff_val]
   | ∞ => rfl
 
-theorem fromCoset_eq_of_mem_range {b : B} (hb : b ∈ f.range) :
-    fromCoset ⟨b • ↑f.range, b, rfl⟩ = fromCoset ⟨f.range, 1, one_leftCoset _⟩ := by
+theorem fromCoset_eq_of_mem_range {b : B} (hb : b ∈ f.hom.range) :
+    fromCoset ⟨b • ↑f.hom.range, b, rfl⟩ = fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by
   congr
-  let b : B.α := b
-  change b • (f.range : Set B) = f.range
-  nth_rw 2 [show (f.range : Set B.α) = (1 : B) • f.range from (one_leftCoset _).symm]
+  nth_rw 2 [show (f.hom.range : Set B) = (1 : B) • f.hom.range from (one_leftCoset _).symm]
   rw [leftCoset_eq_iff, mul_one]
   exact Subgroup.inv_mem _ hb
 
 example (G : Type) [Group G] (S : Subgroup G) : Set G := S
 
-theorem fromCoset_ne_of_nin_range {b : B} (hb : b ∉ f.range) :
-    fromCoset ⟨b • ↑f.range, b, rfl⟩ ≠ fromCoset ⟨f.range, 1, one_leftCoset _⟩ := by
+theorem fromCoset_ne_of_nin_range {b : B} (hb : b ∉ f.hom.range) :
+    fromCoset ⟨b • ↑f.hom.range, b, rfl⟩ ≠ fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by
   intro r
   simp only [fromCoset.injEq, Subtype.mk.injEq] at r
-  -- Porting note: annoying dance between types CoeSort.coe B, B.α, and B
-  let b' : B.α := b
-  change b' • (f.range : Set B) = f.range at r
-  nth_rw 2 [show (f.range : Set B.α) = (1 : B) • f.range from (one_leftCoset _).symm] at r
+  nth_rw 2 [show (f.hom.range : Set B) = (1 : B) • f.hom.range from (one_leftCoset _).symm] at r
   rw [leftCoset_eq_iff, mul_one] at r
   exact hb (inv_inv b ▸ Subgroup.inv_mem _ r)
 
 instance : DecidableEq X' :=
   Classical.decEq _
 
-/-- Let `τ` be the permutation on `X'` exchanging `f.range` and the point at infinity.
+/-- Let `τ` be the permutation on `X'` exchanging `f.hom.range` and the point at infinity.
 -/
 noncomputable def tau : SX' :=
-  Equiv.swap (fromCoset ⟨↑f.range, ⟨1, one_leftCoset _⟩⟩) ∞
+  Equiv.swap (fromCoset ⟨↑f.hom.range, ⟨1, one_leftCoset _⟩⟩) ∞
 
 local notation "τ" => tau f
 
-theorem τ_apply_infinity : τ ∞ = fromCoset ⟨f.range, 1, one_leftCoset _⟩ :=
+theorem τ_apply_infinity : τ ∞ = fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ :=
   Equiv.swap_apply_right _ _
 
-theorem τ_apply_fromCoset : τ (fromCoset ⟨f.range, 1, one_leftCoset _⟩) = ∞ :=
+theorem τ_apply_fromCoset : τ (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) = ∞ :=
   Equiv.swap_apply_left _ _
 
-theorem τ_apply_fromCoset' (x : B) (hx : x ∈ f.range) :
-    τ (fromCoset ⟨x • ↑f.range, ⟨x, rfl⟩⟩) = ∞ :=
+theorem τ_apply_fromCoset' (x : B) (hx : x ∈ f.hom.range) :
+    τ (fromCoset ⟨x • ↑f.hom.range, ⟨x, rfl⟩⟩) = ∞ :=
   (fromCoset_eq_of_mem_range _ hx).symm ▸ τ_apply_fromCoset _
 
-theorem τ_symm_apply_fromCoset : Equiv.symm τ (fromCoset ⟨f.range, 1, one_leftCoset _⟩) = ∞ := by
+theorem τ_symm_apply_fromCoset :
+    Equiv.symm τ (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) = ∞ := by
   rw [tau, Equiv.symm_swap, Equiv.swap_apply_left]
 
 theorem τ_symm_apply_infinity :
-    Equiv.symm τ ∞ = fromCoset ⟨f.range, 1, one_leftCoset _⟩ := by
+    Equiv.symm τ ∞ = fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by
   rw [tau, Equiv.symm_swap, Equiv.swap_apply_right]
 
 /-- Let `g : B ⟶ S(X')` be defined as such that, for any `β : B`, `g(β)` is the function sending
@@ -202,7 +191,6 @@ local notation "g" => g f
 /-- Define `h : B ⟶ S(X')` to be `τ g τ⁻¹`
 -/
 def h : B →* SX' where
-  -- Porting note: mathport removed () from (τ) which are needed
   toFun β := ((τ).symm.trans (g β)).trans τ
   map_one' := by
     ext
@@ -215,9 +203,10 @@ local notation "h" => h f
 
 /-!
 The strategy is the following: assuming `epi f`
-* prove that `f.range = {x | h x = g x}`;
+* prove that `f.hom.range = {x | h x = g x}`;
 * thus `f ≫ h = f ≫ g` so that `h = g`;
-* but if `f` is not surjective, then some `x ∉ f.range`, then `h x ≠ g x` at the coset `f.range`.
+* but if `f` is not surjective, then some `x ∉ f.hom.range`, then `h x ≠ g x` at the coset
+  `f.hom.range`.
 -/
 
 
@@ -227,74 +216,71 @@ theorem g_apply_fromCoset (x : B) (y : X) :
 
 theorem g_apply_infinity (x : B) : (g x) ∞ = ∞ := rfl
 
-theorem h_apply_infinity (x : B) (hx : x ∈ f.range) : (h x) ∞ = ∞ := by
+theorem h_apply_infinity (x : B) (hx : x ∈ f.hom.range) : (h x) ∞ = ∞ := by
   change ((τ).symm.trans (g x)).trans τ _ = _
   simp only [MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
   rw [τ_symm_apply_infinity, g_apply_fromCoset]
   simpa only using τ_apply_fromCoset' f x hx
 
 theorem h_apply_fromCoset (x : B) :
-    (h x) (fromCoset ⟨f.range, 1, one_leftCoset _⟩) =
-      fromCoset ⟨f.range, 1, one_leftCoset _⟩ := by
-    change ((τ).symm.trans (g x)).trans τ _ = _
-    simp [-MonoidHom.coe_range, τ_symm_apply_fromCoset, g_apply_infinity, τ_apply_infinity]
+    (h x) (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) =
+      fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by
+  change ((τ).symm.trans (g x)).trans τ _ = _
+  simp [-MonoidHom.coe_range, τ_symm_apply_fromCoset, g_apply_infinity, τ_apply_infinity]
 
-theorem h_apply_fromCoset' (x : B) (b : B) (hb : b ∈ f.range) :
-    h x (fromCoset ⟨b • f.range, b, rfl⟩) = fromCoset ⟨b • ↑f.range, b, rfl⟩ :=
+theorem h_apply_fromCoset' (x : B) (b : B) (hb : b ∈ f.hom.range) :
+    h x (fromCoset ⟨b • f.hom.range, b, rfl⟩) = fromCoset ⟨b • ↑f.hom.range, b, rfl⟩ :=
   (fromCoset_eq_of_mem_range _ hb).symm ▸ h_apply_fromCoset f x
 
-theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.range) (b : B) (hb : b ∉ f.range) :
-    h x (fromCoset ⟨b • f.range, b, rfl⟩) = fromCoset ⟨(x * b) • ↑f.range, x * b, rfl⟩ := by
+theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.hom.range) (b : B) (hb : b ∉ f.hom.range) :
+    h x (fromCoset ⟨b • f.hom.range, b, rfl⟩) = fromCoset ⟨(x * b) • ↑f.hom.range, x * b, rfl⟩ := by
   change ((τ).symm.trans (g x)).trans τ _ = _
   simp only [tau, MonoidHom.coe_mk, Equiv.toFun_as_coe, Equiv.coe_trans, Function.comp_apply]
   rw [Equiv.symm_swap,
-    @Equiv.swap_apply_of_ne_of_ne X' _ (fromCoset ⟨f.range, 1, one_leftCoset _⟩) ∞
-      (fromCoset ⟨b • ↑f.range, b, rfl⟩) (fromCoset_ne_of_nin_range _ hb) (by simp)]
+    @Equiv.swap_apply_of_ne_of_ne X' _ (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) ∞
+      (fromCoset ⟨b • ↑f.hom.range, b, rfl⟩) (fromCoset_ne_of_nin_range _ hb) (by simp)]
   simp only [g_apply_fromCoset, leftCoset_assoc]
   refine Equiv.swap_apply_of_ne_of_ne (fromCoset_ne_of_nin_range _ fun r => hb ?_) (by simp)
   convert Subgroup.mul_mem _ (Subgroup.inv_mem _ hx) r
   rw [← mul_assoc, inv_mul_cancel, one_mul]
 
-theorem agree : f.range = { x | h x = g x } := by
+theorem agree : f.hom.range = { x | h x = g x } := by
   refine Set.ext fun b => ⟨?_, fun hb : h b = g b => by_contradiction fun r => ?_⟩
   · rintro ⟨a, rfl⟩
     change h (f a) = g (f a)
     ext ⟨⟨_, ⟨y, rfl⟩⟩⟩
     · rw [g_apply_fromCoset]
-      by_cases m : y ∈ f.range
+      by_cases m : y ∈ f.hom.range
       · rw [h_apply_fromCoset' _ _ _ m, fromCoset_eq_of_mem_range _ m]
         change fromCoset _ = fromCoset ⟨f a • (y • _), _⟩
         simp only [← fromCoset_eq_of_mem_range _ (Subgroup.mul_mem _ ⟨a, rfl⟩ m), smul_smul]
       · rw [h_apply_fromCoset_nin_range f (f a) ⟨_, rfl⟩ _ m]
         simp only [leftCoset_assoc]
     · rw [g_apply_infinity, h_apply_infinity f (f a) ⟨_, rfl⟩]
-  · have eq1 : (h b) (fromCoset ⟨f.range, 1, one_leftCoset _⟩) =
-        fromCoset ⟨f.range, 1, one_leftCoset _⟩ := by
+  · have eq1 : (h b) (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) =
+        fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by
       change ((τ).symm.trans (g b)).trans τ _ = _
       dsimp [tau]
       simp [g_apply_infinity f]
     have eq2 :
-      g b (fromCoset ⟨f.range, 1, one_leftCoset _⟩) = fromCoset ⟨b • ↑f.range, b, rfl⟩ := rfl
+        g b (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) = fromCoset ⟨b • ↑f.hom.range, b, rfl⟩ :=
+      rfl
     exact (fromCoset_ne_of_nin_range _ r).symm (by rw [← eq1, ← eq2, DFunLike.congr_fun hb])
 
-theorem comp_eq : (f ≫ show B ⟶ Grp.of SX' from g) = f ≫ show B ⟶ Grp.of SX' from h := by
+theorem comp_eq : (f ≫ ofHom g) = f ≫ ofHom h := by
   ext a
-  change g (f a) = h (f a)
+  simp only [hom_comp, hom_ofHom, MonoidHom.coe_comp, Function.comp_apply]
   have : f a ∈ { b | h b = g b } := by
     rw [← agree]
     use a
   rw [this]
 
-theorem g_ne_h (x : B) (hx : x ∉ f.range) : g ≠ h := by
+theorem g_ne_h (x : B) (hx : x ∉ f.hom.range) : g ≠ h := by
   intro r
+  apply fromCoset_ne_of_nin_range _ hx
   replace r :=
-    DFunLike.congr_fun (DFunLike.congr_fun r x) (fromCoset ⟨f.range, ⟨1, one_leftCoset _⟩⟩)
-  change _ = ((τ).symm.trans (g x)).trans τ _ at r
-  rw [g_apply_fromCoset, MonoidHom.coe_mk] at r
-  simp only [MonoidHom.coe_range, Subtype.coe_mk, Equiv.symm_swap, Equiv.toFun_as_coe,
-    Equiv.coe_trans, Function.comp_apply] at r
-  erw [Equiv.swap_apply_left, g_apply_infinity, Equiv.swap_apply_right] at r
-  exact fromCoset_ne_of_nin_range _ hx r
+    DFunLike.congr_fun (DFunLike.congr_fun r x) (fromCoset ⟨f.hom.range, ⟨1, one_leftCoset _⟩⟩)
+  simpa [g_apply_fromCoset, «h», tau, g_apply_infinity] using r
 
 end SurjectiveOfEpiAuxs
 
@@ -305,13 +291,13 @@ theorem surjective_of_epi [Epi f] : Function.Surjective f := by
   rcases r with ⟨b, hb⟩
   exact
     SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
-      ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f))
+      (congr_arg Grp.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f :=
   ⟨fun _ => surjective_of_epi f, ConcreteCategory.epi_of_surjective f⟩
 
-theorem epi_iff_range_eq_top : Epi f ↔ f.range = ⊤ :=
-  Iff.trans (epi_iff_surjective _) (Subgroup.eq_top_iff' f.range).symm
+theorem epi_iff_range_eq_top : Epi f ↔ f.hom.range = ⊤ :=
+  Iff.trans (epi_iff_surjective _) (Subgroup.eq_top_iff' f.hom.range).symm
 
 end Grp
 
@@ -327,8 +313,8 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
     apply groupAddGroupEquivalence.inverse.map_epi
   rwa [Grp.epi_iff_surjective] at i1
 
-theorem epi_iff_range_eq_top : Epi f ↔ f.range = ⊤ :=
-  Iff.trans (epi_iff_surjective _) (AddSubgroup.eq_top_iff' f.range).symm
+theorem epi_iff_range_eq_top : Epi f ↔ f.hom.range = ⊤ :=
+  Iff.trans (epi_iff_surjective _) (AddSubgroup.eq_top_iff' f.hom.range).symm
 
 end AddGrp
 
@@ -352,38 +338,30 @@ namespace CommGrp
 
 variable {A B : CommGrp.{u}} (f : A ⟶ B)
 
--- Porting note: again to help with non-transparency
-private instance (A : CommGrp) : CommGroup A.α := A.str
-private instance (A : CommGrp) : Group A.α := A.str.toGroup
+@[to_additive]
+theorem ker_eq_bot_of_mono [Mono f] : f.hom.ker = ⊥ :=
+  MonoidHom.ker_eq_bot_of_cancel fun u v h => ConcreteCategory.ext_iff.mp <|
+    (@cancel_mono _ _ _ _ _ f _ (ofHom u) (ofHom v)).1 <| ConcreteCategory.ext h
 
 @[to_additive]
-theorem ker_eq_bot_of_mono [Mono f] : f.ker = ⊥ :=
-  MonoidHom.ker_eq_bot_of_cancel fun u _ =>
-    (@cancel_mono _ _ _ _ _ f _ (show CommGrp.of f.ker ⟶ A from u) _).1
-
-@[to_additive]
-theorem mono_iff_ker_eq_bot : Mono f ↔ f.ker = ⊥ :=
+theorem mono_iff_ker_eq_bot : Mono f ↔ f.hom.ker = ⊥ :=
   ⟨fun _ => ker_eq_bot_of_mono f, fun h =>
-    ConcreteCategory.mono_of_injective _ <| (MonoidHom.ker_eq_bot_iff f).1 h⟩
+    ConcreteCategory.mono_of_injective _ <| (MonoidHom.ker_eq_bot_iff f.hom).1 h⟩
 
 @[to_additive]
 theorem mono_iff_injective : Mono f ↔ Function.Injective f :=
-  Iff.trans (mono_iff_ker_eq_bot f) <| MonoidHom.ker_eq_bot_iff f
+  Iff.trans (mono_iff_ker_eq_bot f) <| MonoidHom.ker_eq_bot_iff f.hom
 
 @[to_additive]
-theorem range_eq_top_of_epi [Epi f] : f.range = ⊤ :=
-  MonoidHom.range_eq_top_of_cancel fun u v h =>
-    (@cancel_epi _ _ _ _ _ f _ (show B ⟶ ⟨B ⧸ MonoidHom.range f, inferInstance⟩ from u) v).1 h
-
--- Porting note: again lack of transparency
-@[to_additive]
-instance (G : CommGrp) : CommGroup <| (forget CommGrp).obj G :=
-  G.str
+theorem range_eq_top_of_epi [Epi f] : f.hom.range = ⊤ :=
+  MonoidHom.range_eq_top_of_cancel fun u v h => ConcreteCategory.ext_iff.mp <|
+    (@cancel_epi _ _ _ _ _ f _ (ofHom u) (ofHom v)).1 (ConcreteCategory.ext h)
 
 @[to_additive]
-theorem epi_iff_range_eq_top : Epi f ↔ f.range = ⊤ :=
+theorem epi_iff_range_eq_top : Epi f ↔ f.hom.range = ⊤ :=
   ⟨fun _ => range_eq_top_of_epi _, fun hf =>
-    ConcreteCategory.epi_of_surjective _ <| MonoidHom.range_eq_top.mp hf⟩
+    ConcreteCategory.epi_of_surjective _ <| show Function.Surjective f.hom from
+      MonoidHom.range_eq_top.mp hf⟩
 
 @[to_additive]
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by

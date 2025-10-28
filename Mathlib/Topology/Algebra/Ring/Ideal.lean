@@ -19,7 +19,7 @@ open Topology
 
 section Ring
 
-variable {R : Type*} [TopologicalSpace R] [Ring R] [TopologicalRing R]
+variable {R : Type*} [TopologicalSpace R] [Ring R] [IsTopologicalRing R]
 
 /-- The closure of an ideal in a topological ring as an ideal. -/
 protected def Ideal.closure (I : Ideal R) : Ideal R :=
@@ -51,7 +51,7 @@ instance topologicalRingQuotientTopology : TopologicalSpace (R ⧸ N) :=
   instTopologicalSpaceQuotient
 
 -- note for the reader: in the following, `mk` is `Ideal.Quotient.mk`, the canonical map `R → R/I`.
-variable [TopologicalRing R]
+variable [IsTopologicalRing R]
 
 theorem QuotientRing.isOpenMap_coe : IsOpenMap (mk N) :=
   QuotientAddGroup.isOpenMap_coe
@@ -65,9 +65,12 @@ theorem QuotientRing.isQuotientMap_coe_coe : IsQuotientMap fun p : R × R => (mk
 @[deprecated (since := "2024-10-22")]
 alias QuotientRing.quotientMap_coe_coe := QuotientRing.isQuotientMap_coe_coe
 
-instance topologicalRing_quotient : TopologicalRing (R ⧸ N) where
-  __ := QuotientAddGroup.instTopologicalAddGroup _
+instance topologicalRing_quotient : IsTopologicalRing (R ⧸ N) where
+  __ := QuotientAddGroup.instIsTopologicalAddGroup _
   continuous_mul := (QuotientRing.isQuotientMap_coe_coe N).continuous_iff.2 <|
     continuous_quot_mk.comp continuous_mul
+
+instance [CompactSpace R] : CompactSpace (R ⧸ N) :=
+  Quotient.compactSpace
 
 end CommRing

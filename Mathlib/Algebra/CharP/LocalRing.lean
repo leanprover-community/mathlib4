@@ -46,11 +46,9 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [IsLocalRing R] (q : 
       rw [map_natCast] at a_cast_zero
       have r_dvd_a := (ringChar.spec K a).1 a_cast_zero
       exact absurd r_dvd_a r_ne_dvd_a
-    -- Let `b` be the inverse of `a`.
     have rn_cast_zero : ↑(r ^ n) = (0 : R) := by
-      rw [← @mul_one R _ ↑(r ^ n), mul_comm, ← Classical.choose_spec a_unit.exists_left_inv,
-        mul_assoc, ← Nat.cast_mul, ← q_eq_a_mul_rn, CharP.cast_eq_zero R q]
-      simp
+      rw [← one_mul (↑(r ^ n) : R), ← a_unit.val_inv_mul, mul_assoc, ← Nat.cast_mul,
+        ← q_eq_a_mul_rn, CharP.cast_eq_zero R q, mul_zero]
     have q_eq_rn := Nat.dvd_antisymm ((CharP.cast_eq_zero_iff R q (r ^ n)).mp rn_cast_zero) rn_dvd_q
     have n_pos : n ≠ 0 := fun n_zero =>
       absurd (by simpa [n_zero] using q_eq_rn) (CharP.char_ne_one R q)

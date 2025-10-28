@@ -63,7 +63,7 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
 
 theorem exists_irreducible_of_degree_pos (hf : 0 < f.degree) : ∃ g, Irreducible g ∧ g ∣ f :=
   WfDvdMonoid.exists_irreducible_factor (fun huf => ne_of_gt hf <| degree_eq_zero_of_isUnit huf)
-    fun hf0 => not_lt_of_lt hf <| hf0.symm ▸ (@degree_zero R _).symm ▸ WithBot.bot_lt_coe _
+    fun hf0 => not_lt_of_gt hf <| hf0.symm ▸ (@degree_zero R _).symm ▸ WithBot.bot_lt_coe _
 
 theorem exists_irreducible_of_natDegree_pos (hf : 0 < f.natDegree) : ∃ g, Irreducible g ∧ g ∣ f :=
   exists_irreducible_of_degree_pos <| by
@@ -130,7 +130,8 @@ instance (priority := 100) uniqueFactorizationMonoid :
       let ⟨b', hb', he⟩ := Multiset.mem_map.1 hb
       he ▸ (prime_rename_iff (σ := σ) ↑s).2 (h b' hb'),
       Units.map (@rename s σ D _ (↑)).toRingHom.toMonoidHom u, by
-      erw [Multiset.prod_hom, ← map_mul, hw]⟩
+      rw [Multiset.prod_hom, Units.coe_map, AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe,
+        AlgHom.toRingHom_toMonoidHom, MonoidHom.coe_coe, ← map_mul, hw]⟩
 
 end MvPolynomial
 

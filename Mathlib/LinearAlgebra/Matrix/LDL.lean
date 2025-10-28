@@ -13,9 +13,9 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 
 ## Main definitions
 
- * `LDL.lower` is the lower triangular matrix `L`.
- * `LDL.lowerInv` is the inverse of the lower triangular matrix `L`.
- * `LDL.diag` is the diagonal matrix `D`.
+* `LDL.lower` is the lower triangular matrix `L`.
+* `LDL.lowerInv` is the inverse of the lower triangular matrix `L`.
+* `LDL.diag` is the diagonal matrix `D`.
 
 ## Main result
 
@@ -35,7 +35,7 @@ section set_options
 
 set_option quotPrecheck false
 local notation "⟪" x ", " y "⟫ₑ" =>
-  @inner 𝕜 _ _ ((WithLp.equiv 2 _).symm x) ((WithLp.equiv _ _).symm y)
+  inner 𝕜 ((WithLp.equiv 2 _).symm x) ((WithLp.equiv _ _).symm y)
 
 open Matrix
 
@@ -47,13 +47,13 @@ variable {S : Matrix n n 𝕜} [Fintype n] (hS : S.PosDef)
 applying Gram-Schmidt-Orthogonalization w.r.t. the inner product induced by `Sᵀ` on the standard
 basis vectors `Pi.basisFun`. -/
 noncomputable def LDL.lowerInv : Matrix n n 𝕜 :=
-  @gramSchmidt 𝕜 (n → 𝕜) _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
+  @gramSchmidt 𝕜 (n → 𝕜) _ (_ :) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
     (Pi.basisFun 𝕜 n)
 
 theorem LDL.lowerInv_eq_gramSchmidtBasis :
     LDL.lowerInv hS =
       ((Pi.basisFun 𝕜 n).toMatrix
-          (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
+          (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (_ :) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
             (Pi.basisFun 𝕜 n)))ᵀ := by
   letI := NormedAddCommGroup.ofMatrix hS.transpose
   letI := InnerProductSpace.ofMatrix hS.transpose
@@ -65,13 +65,13 @@ noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := 
   rw [LDL.lowerInv_eq_gramSchmidtBasis]
   haveI :=
     Basis.invertibleToMatrix (Pi.basisFun 𝕜 n)
-      (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
+      (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (_ :) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
         (Pi.basisFun 𝕜 n))
   infer_instance
 
 theorem LDL.lowerInv_orthogonal {i j : n} (h₀ : i ≠ j) :
     ⟪LDL.lowerInv hS i, Sᵀ *ᵥ LDL.lowerInv hS j⟫ₑ = 0 :=
-  @gramSchmidt_orthogonal 𝕜 _ _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) _ _ _ _ _ _ _ h₀
+  @gramSchmidt_orthogonal 𝕜 _ _ (_ :) (InnerProductSpace.ofMatrix hS.transpose) _ _ _ _ _ _ _ h₀
 
 /-- The entries of the diagonal matrix `D` of the LDL decomposition. -/
 noncomputable def LDL.diagEntries : n → 𝕜 := fun i =>
@@ -83,7 +83,7 @@ noncomputable def LDL.diag : Matrix n n 𝕜 :=
 
 theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
   rw [←
-    @gramSchmidt_triangular 𝕜 (n → 𝕜) _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
+    @gramSchmidt_triangular 𝕜 (n → 𝕜) _ (_ :) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
       i j hij (Pi.basisFun 𝕜 n),
     Pi.basisFun_repr, LDL.lowerInv]
 
@@ -93,13 +93,13 @@ theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS * S * (LDL.low
   ext i j
   by_cases hij : i = j
   · simp only [diag, diagEntries, EuclideanSpace.inner_piLp_equiv_symm, star_star, hij,
-    diagonal_apply_eq, Matrix.mul_assoc]
+      diagonal_apply_eq, Matrix.mul_assoc, dotProduct_comm]
     rfl
   · simp only [LDL.diag, hij, diagonal_apply_ne, Ne, not_false_iff, mul_mul_apply]
     rw [conjTranspose, transpose_map, transpose_transpose, dotProduct_mulVec,
       (LDL.lowerInv_orthogonal hS fun h : j = i => hij h.symm).symm, ← inner_conj_symm,
       mulVec_transpose, EuclideanSpace.inner_piLp_equiv_symm, ← RCLike.star_def, ←
-      star_dotProduct_star, dotProduct_comm, star_star]
+      star_dotProduct_star, star_star]
     rfl
 
 /-- The lower triangular matrix `L` of the LDL decomposition. -/

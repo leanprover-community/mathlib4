@@ -16,7 +16,7 @@ universe v₁ v₂ u₁ u₂
 
 open CategoryTheory
 
-open CategoryTheory.MonoidalCategory
+open CategoryTheory.MonoidalCategory Mon_Class
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
@@ -74,18 +74,21 @@ end
 
 /-- A bimodule object for a pair of monoid objects, all internal to some monoidal category. -/
 structure Bimod (A B : Mon_ C) where
+  /-- The underlying monoidal category -/
   X : C
+  /-- The left action of this bimodule object -/
   actLeft : A.X ⊗ X ⟶ X
-  one_actLeft : (A.one ▷ X) ≫ actLeft = (λ_ X).hom := by aesop_cat
+  one_actLeft : η ▷ X ≫ actLeft = (λ_ X).hom := by aesop_cat
   left_assoc :
-    (A.mul ▷ X) ≫ actLeft = (α_ A.X A.X X).hom ≫ (A.X ◁ actLeft) ≫ actLeft := by aesop_cat
+    μ ▷ X ≫ actLeft = (α_ A.X A.X X).hom ≫ A.X ◁ actLeft ≫ actLeft := by aesop_cat
+  /-- The right action of this bimodule object -/
   actRight : X ⊗ B.X ⟶ X
-  actRight_one : (X ◁ B.one) ≫ actRight = (ρ_ X).hom := by aesop_cat
+  actRight_one : X ◁ η ≫ actRight = (ρ_ X).hom := by aesop_cat
   right_assoc :
-    (X ◁ B.mul) ≫ actRight = (α_ X B.X B.X).inv ≫ (actRight ▷ B.X) ≫ actRight := by
+    X ◁ μ ≫ actRight = (α_ X B.X B.X).inv ≫ actRight ▷ B.X ≫ actRight := by
     aesop_cat
   middle_assoc :
-    (actLeft ▷ B.X) ≫ actRight = (α_ A.X X B.X).hom ≫ (A.X ◁ actRight) ≫ actLeft := by
+    actLeft ▷ B.X ≫ actRight = (α_ A.X X B.X).hom ≫ A.X ◁ actRight ≫ actLeft := by
     aesop_cat
 
 attribute [reassoc (attr := simp)] Bimod.one_actLeft Bimod.actRight_one Bimod.left_assoc
@@ -98,6 +101,7 @@ variable {A B : Mon_ C} (M : Bimod A B)
 /-- A morphism of bimodule objects. -/
 @[ext]
 structure Hom (M N : Bimod A B) where
+  /-- The morphism between `M`'s monoidal category and `N`'s monoidal category -/
   hom : M.X ⟶ N.X
   left_act_hom : M.actLeft ≫ hom = (A.X ◁ hom) ≫ N.actLeft := by aesop_cat
   right_act_hom : M.actRight ≫ hom = (hom ▷ B.X) ≫ N.actRight := by aesop_cat
@@ -161,8 +165,8 @@ variable (A)
 @[simps]
 def regular : Bimod A A where
   X := A.X
-  actLeft := A.mul
-  actRight := A.mul
+  actLeft := μ
+  actRight := μ
 
 instance : Inhabited (Bimod A A) :=
   ⟨regular A⟩
@@ -214,7 +218,7 @@ theorem whiskerLeft_π_actLeft :
   erw [map_π_preserves_coequalizer_inv_colimMap (tensorLeft _)]
   simp only [Category.assoc]
 
-theorem one_act_left' : (R.one ▷ _) ≫ actLeft P Q = (λ_ _).hom := by
+theorem one_act_left' : (η ▷ _) ≫ actLeft P Q = (λ_ _).hom := by
   refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
   -- Porting note: had to replace `rw` by `erw`
@@ -226,7 +230,7 @@ theorem one_act_left' : (R.one ▷ _) ≫ actLeft P Q = (λ_ _).hom := by
   monoidal
 
 theorem left_assoc' :
-    (R.mul ▷ _) ≫ actLeft P Q = (α_ R.X R.X _).hom ≫ (R.X ◁ actLeft P Q) ≫ actLeft P Q := by
+    (μ ▷ _) ≫ actLeft P Q = (α_ R.X R.X _).hom ≫ (R.X ◁ actLeft P Q) ≫ actLeft P Q := by
   refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
   slice_lhs 1 2 => rw [whisker_exchange]
@@ -273,7 +277,7 @@ theorem π_tensor_id_actRight :
   erw [map_π_preserves_coequalizer_inv_colimMap (tensorRight _)]
   simp only [Category.assoc]
 
-theorem actRight_one' : (_ ◁ T.one) ≫ actRight P Q = (ρ_ _).hom := by
+theorem actRight_one' : (_ ◁ η) ≫ actRight P Q = (ρ_ _).hom := by
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
   -- Porting note: had to replace `rw` by `erw`
@@ -284,7 +288,7 @@ theorem actRight_one' : (_ ◁ T.one) ≫ actRight P Q = (ρ_ _).hom := by
   simp
 
 theorem right_assoc' :
-    (_ ◁ T.mul) ≫ actRight P Q =
+    (_ ◁ μ) ≫ actRight P Q =
       (α_ _ T.X T.X).inv ≫ (actRight P Q ▷ T.X) ≫ actRight P Q := by
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
@@ -463,7 +467,7 @@ theorem hom_left_act_hom' :
       (R.X ◁ hom P Q L) ≫ (P.tensorBimod (Q.tensorBimod L)).actLeft := by
   dsimp; dsimp [hom, homAux]
   refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
-  rw [tensorLeft_map]
+  simp only [curriedTensor_obj_map]
   slice_lhs 1 2 => rw [TensorBimod.whiskerLeft_π_actLeft]
   slice_lhs 3 4 => rw [coequalizer.π_desc]
   slice_rhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, coequalizer.π_desc,
@@ -490,7 +494,7 @@ theorem hom_right_act_hom' :
       (hom P Q L ▷ U.X) ≫ (P.tensorBimod (Q.tensorBimod L)).actRight := by
   dsimp; dsimp [hom, homAux]
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
-  rw [tensorRight_map]
+  simp only [Functor.flip_obj_map, curriedTensor_map_app]
   slice_lhs 1 2 => rw [TensorBimod.π_tensor_id_actRight]
   slice_lhs 3 4 => rw [coequalizer.π_desc]
   slice_rhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc, comp_whiskerRight]
@@ -556,7 +560,7 @@ theorem hom_inv_id : hom P Q L ≫ inv P Q L = 𝟙 _ := by
   apply coequalizer.hom_ext
   slice_lhs 1 2 => rw [coequalizer.π_desc]
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
-  rw [tensorRight_map]
+  simp only [Functor.flip_obj_map, curriedTensor_map_app]
   slice_lhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_lhs 3 4 => rw [coequalizer.π_desc]
   slice_lhs 2 4 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
@@ -570,7 +574,7 @@ theorem inv_hom_id : inv P Q L ≫ hom P Q L = 𝟙 _ := by
   apply coequalizer.hom_ext
   slice_lhs 1 2 => rw [coequalizer.π_desc]
   refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
-  rw [tensorLeft_map]
+  simp only [curriedTensor_obj_map]
   slice_lhs 1 3 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
   slice_lhs 3 4 => rw [coequalizer.π_desc]
   slice_lhs 2 4 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
@@ -591,7 +595,7 @@ noncomputable def hom : TensorBimod.X (regular R) P ⟶ P.X :=
 
 /-- The underlying morphism of the inverse component of the left unitor isomorphism. -/
 noncomputable def inv : P.X ⟶ TensorBimod.X (regular R) P :=
-  (λ_ P.X).inv ≫ (R.one ▷ _) ≫ coequalizer.π _ _
+  (λ_ P.X).inv ≫ (η[R.X] ▷ _) ≫ coequalizer.π _ _
 
 theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   dsimp only [hom, inv, TensorBimod.X]
@@ -602,7 +606,7 @@ theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   slice_lhs 3 3 => rw [← Iso.inv_hom_id_assoc (α_ R.X R.X P.X) (R.X ◁ P.actLeft)]
   slice_lhs 4 6 => rw [← Category.assoc, ← coequalizer.condition]
   slice_lhs 2 3 => rw [associator_inv_naturality_left]
-  slice_lhs 3 4 => rw [← comp_whiskerRight, Mon_.one_mul]
+  slice_lhs 3 4 => rw [← comp_whiskerRight, Mon_Class.one_mul]
   slice_rhs 1 2 => rw [Category.comp_id]
   monoidal
 
@@ -646,7 +650,7 @@ noncomputable def hom : TensorBimod.X P (regular S) ⟶ P.X :=
 
 /-- The underlying morphism of the inverse component of the right unitor isomorphism. -/
 noncomputable def inv : P.X ⟶ TensorBimod.X P (regular S) :=
-  (ρ_ P.X).inv ≫ (_ ◁ S.one) ≫ coequalizer.π _ _
+  (ρ_ P.X).inv ≫ (_ ◁ η[S.X]) ≫ coequalizer.π _ _
 
 theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   dsimp only [hom, inv, TensorBimod.X]
@@ -656,7 +660,7 @@ theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   slice_lhs 2 3 => rw [← whisker_exchange]
   slice_lhs 3 4 => rw [coequalizer.condition]
   slice_lhs 2 3 => rw [associator_naturality_right]
-  slice_lhs 3 4 => rw [← MonoidalCategory.whiskerLeft_comp, Mon_.mul_one]
+  slice_lhs 3 4 => rw [← MonoidalCategory.whiskerLeft_comp, Mon_Class.mul_one]
   slice_rhs 1 2 => rw [Category.comp_id]
   monoidal
 
@@ -761,7 +765,7 @@ theorem id_whiskerLeft_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 4 4 => rw [← Iso.inv_hom_id_assoc (α_ X.X X.X N.X) (X.X ◁ N.actLeft)]
   slice_rhs 5 7 => rw [← Category.assoc, ← coequalizer.condition]
   slice_rhs 3 4 => rw [associator_inv_naturality_left]
-  slice_rhs 4 5 => rw [← comp_whiskerRight, Mon_.one_mul]
+  slice_rhs 4 5 => rw [← comp_whiskerRight, Mon_Class.one_mul]
   have : (λ_ (X.X ⊗ N.X)).inv ≫ (α_ (𝟙_ C) X.X N.X).inv ≫ ((λ_ X.X).hom ▷ N.X) = 𝟙 _ := by
     monoidal
   slice_rhs 2 4 => rw [this]
@@ -781,7 +785,7 @@ theorem comp_whiskerLeft_bimod {W X Y Z : Mon_ C} (M : Bimod W X) (N : Bimod X Y
   slice_rhs 1 2 => rw [coequalizer.π_desc]
   dsimp [AssociatorBimod.homAux, AssociatorBimod.inv]
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
-  rw [tensorRight_map]
+  simp only [Functor.flip_obj_map, curriedTensor_map_app]
   slice_rhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_rhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
   slice_rhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, ι_colimMap, parallelPairHom_app_one]
@@ -815,7 +819,7 @@ theorem whiskerRight_id_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 3 4 => rw [← whisker_exchange]
   slice_rhs 4 5 => rw [coequalizer.condition]
   slice_rhs 3 4 => rw [associator_naturality_right]
-  slice_rhs 4 5 => rw [← MonoidalCategory.whiskerLeft_comp, Mon_.mul_one]
+  slice_rhs 4 5 => rw [← MonoidalCategory.whiskerLeft_comp, Mon_Class.mul_one]
   simp
 
 theorem whiskerRight_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M ⟶ M') (N : Bimod X Y)
@@ -832,7 +836,7 @@ theorem whiskerRight_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M ⟶
   slice_rhs 1 2 => rw [coequalizer.π_desc]
   dsimp [AssociatorBimod.invAux, AssociatorBimod.hom]
   refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
-  rw [tensorLeft_map]
+  simp only [curriedTensor_obj_map]
   slice_rhs 1 3 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
   slice_rhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
   slice_rhs 2 3 => rw [← comp_whiskerRight, ι_colimMap, parallelPairHom_app_one]
@@ -859,7 +863,7 @@ theorem whisker_assoc_bimod {W X Y Z : Mon_ C} (M : Bimod W X) {N N' : Bimod X Y
   slice_rhs 1 2 => rw [coequalizer.π_desc]
   dsimp [AssociatorBimod.homAux]
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
-  rw [tensorRight_map]
+  simp only [Functor.flip_obj_map, curriedTensor_map_app]
   slice_lhs 1 2 => rw [← comp_whiskerRight, ι_colimMap, parallelPairHom_app_one]
   slice_rhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_rhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]

@@ -89,7 +89,7 @@ instance : MonadMor₁ MonoidalM where
   id₁M a := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
-    return .id (q(MonoidalCategory.tensorUnit) : Q($ctx.C)) a
+    return .id (q(𝟙_ _) : Q($ctx.C)) a
   comp₁M f g := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -116,19 +116,19 @@ theorem StructuralOfExpr_monoidalComp {f g h i : C} [MonoidalCoherence g h]
 variable [MonoidalCategory C]
 
 theorem structuralIsoOfExpr_whiskerLeft (f : C) {g h : C}
-    (η : g ⟶ h) (η' : g ≅ h) (ih_η : η'.hom = η)  :
+    (η : g ⟶ h) (η' : g ≅ h) (ih_η : η'.hom = η) :
     (whiskerLeftIso f η').hom = f ◁ η := by
   simp [ih_η]
 
 theorem structuralIsoOfExpr_whiskerRight {f g : C} (h : C)
-    (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η)  :
+    (η : f ⟶ g) (η' : f ≅ g) (ih_η : η'.hom = η) :
     (whiskerRightIso η' h).hom = η ▷ h := by
   simp [ih_η]
 
 theorem structuralIsoOfExpr_horizontalComp {f₁ g₁ f₂ g₂ : C}
     (η : f₁ ⟶ g₁) (η' : f₁ ≅ g₁) (ih_η : η'.hom = η)
     (θ : f₂ ⟶ g₂) (θ' : f₂ ≅ g₂) (ih_θ : θ'.hom = θ) :
-    (η' ⊗ θ').hom = η ⊗ θ := by
+    (η' ⊗ᵢ θ').hom = η ⊗ₘ θ := by
   simp [ih_η, ih_θ]
 
 end
@@ -371,7 +371,7 @@ instance : MonadMor₂ MonoidalM where
         let eq := q(structuralIsoOfExpr_horizontalComp _ _ $η_iso_eq _ _ $θ_iso_eq)
         return .some ⟨← horizontalCompM η_iso.e θ_iso.e, eq⟩
       | _ => return none)
-    let e : Q($f₁_e ⊗ $f₂_e ⟶ $g₁_e ⊗ $g₂_e) := q($η_e ⊗ $θ_e)
+    let e : Q($f₁_e ⊗ $f₂_e ⟶ $g₁_e ⊗ $g₂_e) := q($η_e ⊗ₘ $θ_e)
     return .horizontalComp e iso_lift? f₁ g₁ f₂ g₂ η θ
   coherenceCompM α η θ := do
     let ctx ← read
@@ -404,7 +404,7 @@ def id₁? (e : Expr) : MonoidalM (Option Obj) := do
   let ctx ← read
   match ctx.instMonoidal? with
   | .some _monoidal => do
-    if ← withDefault <| isDefEq e (q(MonoidalCategory.tensorUnit) : Q($ctx.C)) then
+    if ← withDefault <| isDefEq e (q(𝟙_ _) : Q($ctx.C)) then
       return some ⟨none⟩
     else
       return none

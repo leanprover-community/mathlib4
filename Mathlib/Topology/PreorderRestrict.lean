@@ -15,7 +15,7 @@ continuous.
 
 namespace Preorder
 
-variable {α : Type*} [Preorder α] {X : α  → Type*} [∀ i, TopologicalSpace (X i)]
+variable {α : Type*} [Preorder α] {X : α → Type*} [∀ i, TopologicalSpace (X i)]
 
 @[continuity, fun_prop]
 theorem continuous_restrictLe (a : α) : Continuous (restrictLe (π := X) a) :=

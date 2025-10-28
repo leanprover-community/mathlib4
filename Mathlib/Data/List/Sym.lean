@@ -55,7 +55,7 @@ theorem sym2_eq_nil_iff {xs : List α} : xs.sym2 = [] ↔ xs = [] := by
 theorem left_mem_of_mk_mem_sym2 {xs : List α} {a b : α}
     (h : s(a, b) ∈ xs.sym2) : a ∈ xs := by
   induction xs with
-  | nil => exact (not_mem_nil _ h).elim
+  | nil => exact (not_mem_nil h).elim
   | cons x xs ih =>
     rw [mem_cons]
     rw [mem_sym2_cons_iff] at h
@@ -173,7 +173,7 @@ theorem dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sy
       refine mem_append_left _ ?_
       rw [mem_map]
       exact ⟨_, hm, Sym2.eq_swap⟩
-    · rw [dedup_cons_of_not_mem hm, List.sym2, map_cons, ← ih, dedup_cons_of_not_mem, cons_append,
+    · rw [dedup_cons_of_notMem hm, List.sym2, map_cons, ← ih, dedup_cons_of_notMem, cons_append,
         List.Disjoint.dedup_append, dedup_map_of_injective]
       · exact (Sym2.mkEmbedding _).injective
       · exact map_mk_disjoint_sym2 x xs hm

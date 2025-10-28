@@ -14,7 +14,7 @@ This is a mirror of the corresponding notion for localizations of rings.
 
 ## Main definitions
 
- * `IsLocalizedModule.IsInteger` is a predicate stating that `m : M'` is in the image of `M`
+* `IsLocalizedModule.IsInteger` is a predicate stating that `m : M'` is in the image of `M`
 
 ## Implementation details
 
@@ -66,7 +66,7 @@ theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (g : ι → M') :
     rw [← hsec, ← mul_smul, Submonoid.smul_def]
     congr
     simp only [Submonoid.coe_mul, Submonoid.coe_finset_prod, mul_comm]
-    rw [← Finset.prod_insert (f := fun i ↦ ((sec i).snd).val) (s.not_mem_erase i),
+    rw [← Finset.prod_insert (f := fun i ↦ ((sec i).snd).val) (s.notMem_erase i),
       Finset.insert_erase hi]
 
 /-- We can clear the denominators of a finite indexed family of fractions. -/
@@ -121,12 +121,12 @@ theorem smul_mem_finsetIntegerMultiple_span [DecidableEq M] (x : M) (s : Finset 
     (hx : f x ∈ Submodule.span R s) :
     ∃ (m : S), m • x ∈ Submodule.span R (IsLocalizedModule.finsetIntegerMultiple S f s) := by
   let y : S := IsLocalizedModule.commonDenomOfFinset S f s
-  have hx₁ : (y : R) • (s : Set M') = f '' _ :=
+  have hx₁ : y • (s : Set M') = f '' _ :=
     (IsLocalizedModule.finsetIntegerMultiple_image S f s).symm
   apply congrArg (Submodule.span R) at hx₁
   rw [Submodule.span_smul] at hx₁
   replace hx : _ ∈ y • Submodule.span R (s : Set M') := Set.smul_mem_smul_set hx
-  erw [hx₁, ← f.map_smul, ← Submodule.map_span f] at hx
+  rw [hx₁, ← f.map_smul, ← Submodule.map_span f] at hx
   obtain ⟨x', hx', hx''⟩ := hx
   obtain ⟨a, ha⟩ := (IsLocalizedModule.eq_iff_exists S f).mp hx''
   use a * y
@@ -134,7 +134,6 @@ theorem smul_mem_finsetIntegerMultiple_span [DecidableEq M] (x : M) (s : Finset 
     (IsLocalizedModule.finsetIntegerMultiple S f s : Set M)).smul_mem
       a hx' using 1
   convert ha.symm using 1
-  simp only [Submonoid.coe_subtype, Submonoid.smul_def]
-  erw [← smul_smul]
+  simp only [Submonoid.coe_subtype, Submonoid.smul_def, Submonoid.coe_mul, ← smul_smul]
 
 end IsLocalizedModule

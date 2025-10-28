@@ -21,7 +21,7 @@ one consequence being that the number of Dyck words with length `2 * n` is `cata
 ## Main definitions
 
 * `DyckWord`: a list of `U`s and `D`s with as many `U`s as `D`s and with every prefix having
-at least as many `U`s as `D`s.
+  at least as many `U`s as `D`s.
 * `DyckWord.semilength`: semilength (half the length) of a Dyck word.
 * `DyckWord.firstReturn`: for a nonempty word, the index of the `D` matching the initial `U`.
 
@@ -97,7 +97,7 @@ lemma toList_ne_nil : p.toList ≠ [] ↔ p ≠ 0 := toList_eq_nil.ne
 instance : Unique (AddUnits DyckWord) where
   uniq p := by
     obtain ⟨a, b, h, -⟩ := p
-    obtain ⟨ha, hb⟩ := append_eq_nil.mp (toList_eq_nil.mpr h)
+    obtain ⟨ha, hb⟩ := append_eq_nil_iff.mp (toList_eq_nil.mpr h)
     congr
     · exact toList_eq_nil.mp ha
     · exact toList_eq_nil.mp hb
@@ -167,7 +167,7 @@ def nest : DyckWord where
     rw [take_of_length_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
     simp only [reduceCtorEq, ite_true, ite_false]
     rw [add_comm]
-    exact add_le_add (zero_le _) ((count_le_length _ _).trans (by simp))
+    exact add_le_add (zero_le _) (count_le_length.trans (by simp))
 
 @[simp] lemma nest_ne_zero : p.nest ≠ 0 := by simp [← toList_ne_nil, nest]
 
@@ -204,9 +204,8 @@ def denest (hn : p.IsNested) : DyckWord where
       · tauto
     rw [← drop_one, take_drop, dropLast_eq_take, take_take]
     have ub : min (1 + i) (p.toList.length - 1) < p.toList.length :=
-      (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos.mpr h).ne'))
-    have lb : 0 < min (1 + i) (p.toList.length - 1) := by
-      rw [l3, add_comm, min_add_add_right]; omega
+      (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos_iff.mpr h).ne'))
+    have lb : 0 < min (1 + i) (p.toList.length - 1) := by omega
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
@@ -256,25 +255,17 @@ def firstReturn : ℕ :=
 
 include h in
 lemma firstReturn_pos : 0 < p.firstReturn := by
-  by_contra! f
-  rw [Nat.le_zero, firstReturn, findIdx_eq] at f
-  #adaptation_note
-  /--
-  If we don't swap, then the second goal is dropped after completing the first goal.
-  What's going on?
-  -/
-  swap
-  · rw [length_range, length_pos]
+  rw [← not_le, Nat.le_zero, firstReturn, findIdx_eq, getElem_range]
+  · simp only [not_lt_zero', IsEmpty.forall_iff]
+    rw [← p.cons_tail_dropLast_concat h]
+    simp
+  · rw [length_range, length_pos_iff]
     exact toList_ne_nil.mpr h
-  · rw [getElem_range] at f
-    simp at f
-    rw [← p.cons_tail_dropLast_concat h] at f
-    simp at f
 
 include h in
 lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
   have lp := length_pos_of_ne_nil (toList_ne_nil.mpr h)
-  rw [← length_range p.toList.length]
+  rw [← length_range (n := p.toList.length)]
   apply findIdx_lt_length_of_exists
   simp only [mem_range, decide_eq_true_eq]
   use p.toList.length - 1
@@ -284,7 +275,8 @@ lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
 include h in
 lemma count_take_firstReturn_add_one :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
-  have := findIdx_getElem (w := (length_range p.toList.length).symm ▸ firstReturn_lt_length h)
+  have := findIdx_getElem
+    (w := (length_range (n := p.toList.length)).symm ▸ firstReturn_lt_length h)
   simpa using this
 
 lemma count_D_lt_count_U_of_lt_firstReturn {i : ℕ} (hi : i < p.firstReturn) :
@@ -492,7 +484,7 @@ open Tree
 `f(0) = nil`. For a nonzero word find the `D` that matches the initial `U`,
 which has index `p.firstReturn`, then let `x` be everything strictly between said `U` and `D`,
 and `y` be everything strictly after said `D`. `p = x.nest + y` with `x, y` (possibly empty)
-Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib.Data.Tree`) joins two subtrees
+Dyck words. `f(p) = f(x) △ f(y)`, where △ (defined in `Mathlib/Data/Tree.lean`) joins two subtrees
 to a new root node. -/
 private def equivTreeToFun (p : DyckWord) : Tree Unit :=
   if h : p = 0 then nil else

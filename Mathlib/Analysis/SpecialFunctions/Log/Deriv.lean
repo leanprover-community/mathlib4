@@ -38,7 +38,7 @@ theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x
   rwa [exp_log hx] at this
 
 theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := by
-  cases' hx.lt_or_lt with hx hx
+  rcases hx.lt_or_gt with hx | hx
   · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
     · ext y; exact (log_neg_eq_log y).symm
     · field_simp [hx.ne]
@@ -73,7 +73,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
     · convert hasDerivAt_exp (log y)
       rw [exp_log hy]
     · exact analyticAt_rexp.contDiffAt
-  rcases hx.lt_or_lt with hx | hx
+  rcases hx.lt_or_gt with hx | hx
   · have : ContDiffAt ℝ n (log ∘ (fun y ↦ -y)) x := by
       apply ContDiffAt.comp
       apply A _ (Left.neg_pos_iff.mpr hx)
@@ -83,6 +83,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
     simp
   · exact A x hx
 
+@[fun_prop]
 theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
   intro x hx
   simp only [mem_compl_iff, mem_singleton_iff] at hx
@@ -127,8 +128,7 @@ theorem deriv.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
 `f x  ≠ 0`. -/
 lemma Real.deriv_log_comp_eq_logDeriv {f : ℝ → ℝ} {x : ℝ} (h₁ : DifferentiableAt ℝ f x)
     (h₂ : f x ≠ 0) : deriv (log ∘ f) x = logDeriv f x := by
-  simp only [ne_eq, logDeriv, Pi.div_apply, ← deriv.log h₁ h₂]
-  rfl
+  simp only [ne_eq, logDeriv, Pi.div_apply, ← deriv.log h₁ h₂, Function.comp_def]
 
 end deriv
 
@@ -158,17 +158,21 @@ theorem DifferentiableAt.log (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
     DifferentiableAt ℝ (fun x => log (f x)) x :=
   (hf.hasFDerivAt.log hx).differentiableAt
 
+@[fun_prop]
 theorem ContDiffAt.log {n} (hf : ContDiffAt ℝ n f x) (hx : f x ≠ 0) :
     ContDiffAt ℝ n (fun x => log (f x)) x :=
   (contDiffAt_log.2 hx).comp x hf
 
+@[fun_prop]
 theorem ContDiffWithinAt.log {n} (hf : ContDiffWithinAt ℝ n f s x) (hx : f x ≠ 0) :
     ContDiffWithinAt ℝ n (fun x => log (f x)) s x :=
   (contDiffAt_log.2 hx).comp_contDiffWithinAt x hf
 
+@[fun_prop]
 theorem ContDiffOn.log {n} (hf : ContDiffOn ℝ n f s) (hs : ∀ x ∈ s, f x ≠ 0) :
     ContDiffOn ℝ n (fun x => log (f x)) s := fun x hx => (hf x hx).log (hs x hx)
 
+@[fun_prop]
 theorem ContDiff.log {n} (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) :
     ContDiff ℝ n fun x => log (f x) :=
   contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.log (h x)
@@ -197,22 +201,11 @@ end LogDifferentiable
 
 namespace Real
 
-/-- The function `x * log (1 + t / x)` tends to `t` at `+∞`. -/
-theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
-    Tendsto (fun x => x * log (1 + t / x)) atTop (𝓝 t) := by
-  have h₁ : Tendsto (fun h => h⁻¹ * log (1 + t * h)) (𝓝[≠] 0) (𝓝 t) := by
-    simpa [hasDerivAt_iff_tendsto_slope, slope_fun_def] using
-      (((hasDerivAt_id (0 : ℝ)).const_mul t).const_add 1).log (by simp)
-  have h₂ : Tendsto (fun x : ℝ => x⁻¹) atTop (𝓝[≠] 0) :=
-    tendsto_inv_atTop_zero'.mono_right (nhdsWithin_mono _ fun x hx => (Set.mem_Ioi.mp hx).ne')
-  simpa only [Function.comp_def, inv_inv] using h₁.comp h₂
-
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series
 expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
 
-Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use one of generic theorems about Taylor's series
-to prove this estimate.
+TODO: use one of generic theorems about Taylor's series to prove this estimate.
 -/
 theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     |(∑ i ∈ range n, x ^ (i + 1) / (i + 1)) + log (1 - x)| ≤ |x| ^ (n + 1) / (1 - |x|) := by
@@ -268,7 +261,7 @@ theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     refine (tendsto_const_nhds.mul ?_).div_const _
     exact tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg _) h
   show Summable fun n : ℕ => x ^ (n + 1) / (n + 1)
-  refine .of_norm_bounded _ (summable_geometric_of_lt_one (abs_nonneg _) h) fun i => ?_
+  refine .of_norm_bounded (summable_geometric_of_lt_one (abs_nonneg _) h) fun i => ?_
   calc
     ‖x ^ (i + 1) / (i + 1)‖ = |x| ^ (i + 1) / (i + 1) := by
       have : (0 : ℝ) ≤ i + 1 := le_of_lt (Nat.cast_add_one_pos i)
@@ -319,5 +312,23 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
   · field_simp
     linarith
   · field_simp
+
+/-- Expansion of `log (1 + a)` as a series in powers of `a / (a + 2)`. -/
+theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
+    HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * (a / (a + 2)) ^ (2 * k + 1))
+      (log (1 + a)) := by
+  obtain (rfl | ha0) := eq_or_ne a 0
+  · simp [hasSum_zero]
+  · convert hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h ha0.symm)) using 4
+    all_goals field_simp [add_comm]
+
+lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
+  convert le_hasSum (hasSum_log_one_add hx) 0 (by intros; positivity) using 1
+  field_simp
+
+lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
+  convert lt_hasSum (hasSum_log_one_add hx.le) 0 (by intros; positivity)
+    1 (by positivity) (by positivity) using 1
+  field_simp
 
 end Real

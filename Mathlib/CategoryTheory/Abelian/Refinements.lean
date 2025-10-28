@@ -26,7 +26,7 @@ In this file, the basic result is `epi_iff_surjective_up_to_refinements`
 which states that `f : X ⟶ Y` is a morphism in an abelian category,
 then it is an epimorphism if and only if for all `y : A ⟶ Y`,
 there exists an epimorphism `π : A' ⟶ A` and `x : A' ⟶ X` such
-that `π ≫ y = x ≫ f`. In order words, if we allow a precomposition
+that `π ≫ y = x ≫ f`. In other words, if we allow a precomposition
 with an epimorphism, we may lift a morphism to `Y` to a morphism to `X`.
 Following unpublished notes by George Bergman, we shall say that the
 precomposition by an epimorphism `π ≫ y` is a refinement of `y`. Then,
@@ -44,14 +44,14 @@ category is exact if and only if it is exact up to refinements
 (see `ShortComplex.exact_iff_exact_up_to_refinements`).
 
 As it is outlined in the documentation of the file
-`Mathlib.CategoryTheory.Abelian.Pseudoelements`, the Freyd-Mitchell
+`Mathlib/CategoryTheory/Abelian/Pseudoelements.lean`, the Freyd-Mitchell
 embedding theorem implies the existence of a faithful and exact functor `ι`
 from an abelian category `C` to the category of abelian groups. If we
 define a pseudo-element of `X : C` to be an element in `ι.obj X`, one
 may do diagram chases in any abelian category using these pseudo-elements.
 However, using this approach would require proving this embedding theorem!
 Currently, mathlib contains a weaker notion of pseudo-elements
-`Mathlib.CategoryTheory.Abelian.Pseudoelements`. Some theorems can be obtained
+`Mathlib/CategoryTheory/Abelian/Pseudoelements.lean`. Some theorems can be obtained
 using this notion, but there is the issue that for this notion
 of pseudo-elements a morphism `X ⟶ Y` in `C` is not determined by
 its action on pseudo-elements (see also `Counterexamples/Pseudoelement.lean`).
@@ -63,8 +63,8 @@ these morphisms and sometimes introducing an auxiliary epimorphism `A' ⟶ A`.
 
 ## References
 * George Bergman, A note on abelian categories – translating element-chasing proofs,
-and exact embedding in abelian groups (1974)
-http://math.berkeley.edu/~gbergman/papers/unpub/elem-chase.pdf
+  and exact embedding in abelian groups (1974)
+  http://math.berkeley.edu/~gbergman/papers/unpub/elem-chase.pdf
 
 -/
 

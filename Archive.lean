@@ -1,4 +1,5 @@
 import Archive.Arithcc
+import Archive.Examples.Eisenstein
 import Archive.Examples.IfNormalization.Result
 import Archive.Examples.IfNormalization.Statement
 import Archive.Examples.IfNormalization.WithoutAesop
@@ -27,6 +28,7 @@ import Archive.Imo.Imo1988Q6
 import Archive.Imo.Imo1994Q1
 import Archive.Imo.Imo1998Q2
 import Archive.Imo.Imo2001Q2
+import Archive.Imo.Imo2001Q3
 import Archive.Imo.Imo2001Q6
 import Archive.Imo.Imo2005Q3
 import Archive.Imo.Imo2005Q4
@@ -39,6 +41,7 @@ import Archive.Imo.Imo2011Q3
 import Archive.Imo.Imo2011Q5
 import Archive.Imo.Imo2013Q1
 import Archive.Imo.Imo2013Q5
+import Archive.Imo.Imo2015Q6
 import Archive.Imo.Imo2019Q1
 import Archive.Imo.Imo2019Q2
 import Archive.Imo.Imo2019Q4
@@ -46,6 +49,7 @@ import Archive.Imo.Imo2020Q2
 import Archive.Imo.Imo2021Q1
 import Archive.Imo.Imo2024Q1
 import Archive.Imo.Imo2024Q2
+import Archive.Imo.Imo2024Q3
 import Archive.Imo.Imo2024Q5
 import Archive.Imo.Imo2024Q6
 import Archive.MiuLanguage.Basic

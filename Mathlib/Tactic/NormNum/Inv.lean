@@ -13,14 +13,6 @@ import Mathlib.Algebra.Field.Basic
 
 variable {u : Lean.Level}
 
-#adaptation_note
-/--
-Since https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter can not see usages of variables in
-`haveI' : ⋯ =Q ⋯ := ⟨⟩` clauses, so generates many false positives.
--/
-set_option linter.unusedVariables false
-
 namespace Mathlib.Meta.NormNum
 
 open Lean.Meta Qq
@@ -28,18 +20,18 @@ open Lean.Meta Qq
 /-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`. -/
 def inferCharZeroOfRing {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
     MetaM Q(CharZero $α) :=
-  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+  return ← synthInstanceQ q(CharZero $α) <|>
     throwError "not a characteristic zero ring"
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `Ring α`, if it exists. -/
 def inferCharZeroOfRing? {α : Q(Type u)} (_i : Q(Ring $α) := by with_reducible assumption) :
     MetaM (Option Q(CharZero $α)) :=
-  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
+  return (← trySynthInstanceQ q(CharZero $α)).toOption
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`. -/
 def inferCharZeroOfAddMonoidWithOne {α : Q(Type u)}
     (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
-  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+  return ← synthInstanceQ q(CharZero $α) <|>
     throwError "not a characteristic zero AddMonoidWithOne"
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `AddMonoidWithOne α`, if it
@@ -47,19 +39,19 @@ exists. -/
 def inferCharZeroOfAddMonoidWithOne? {α : Q(Type u)}
     (_i : Q(AddMonoidWithOne $α) := by with_reducible assumption) :
       MetaM (Option Q(CharZero $α)) :=
-  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
+  return (← trySynthInstanceQ q(CharZero $α)).toOption
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`. -/
 def inferCharZeroOfDivisionRing {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
-  return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
+  return ← synthInstanceQ q(CharZero $α) <|>
     throwError "not a characteristic zero division ring"
 
 /-- Helper function to synthesize a typed `CharZero α` expression given `DivisionRing α`, if it
 exists. -/
 def inferCharZeroOfDivisionRing? {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM (Option Q(CharZero $α)) :=
-  return (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption
+  return (← trySynthInstanceQ q(CharZero $α)).toOption
 
 theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat b nb →
     IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d

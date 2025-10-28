@@ -3,10 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.AddTorsor
-import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Algebra.AddTorsor.Defs
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.ConstMulAction
+import Mathlib.Topology.Connected.Basic
 
 /-!
 # Continuous monoid action
@@ -22,12 +23,6 @@ the map `(c, x) ↦ c • x` is continuous on `M × X`. We reuse this class for 
 * `Units.continuousSMul`: scalar multiplication by `Mˣ` is continuous when scalar
   multiplication by `M` is continuous. This allows `Homeomorph.smul` to be used with on monoids
   with `G = Mˣ`.
-
--- Porting note: These have all moved
-* `Homeomorph.smul_of_ne_zero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
-  is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
-* `Homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
-  is a homeomorphism of `X`.
 
 ## Main results
 
@@ -80,11 +75,11 @@ lemma IsScalarTower.continuousSMul {M : Type*} (N : Type*) {α : Type*} [Monoid 
 
 @[to_additive]
 instance : ContinuousSMul (ULift M) X :=
-  ⟨(continuous_smul (M := M)).comp₂ (continuous_uLift_down.comp continuous_fst) continuous_snd⟩
+  ⟨(continuous_smul (M := M)).comp₂ (continuous_uliftDown.comp continuous_fst) continuous_snd⟩
 
 @[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
-  continuous_const_smul _ := continuous_smul.comp (continuous_const.prod_mk continuous_id)
+  continuous_const_smul _ := continuous_smul.comp (continuous_const.prodMk continuous_id)
 
 theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*} [FunLike F α β]
     [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
@@ -99,7 +94,7 @@ theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*}
 theorem Filter.Tendsto.smul {f : α → M} {g : α → X} {l : Filter α} {c : M} {a : X}
     (hf : Tendsto f l (𝓝 c)) (hg : Tendsto g l (𝓝 a)) :
     Tendsto (fun x => f x • g x) l (𝓝 <| c • a) :=
-  (continuous_smul.tendsto _).comp (hf.prod_mk_nhds hg)
+  (continuous_smul.tendsto _).comp (hf.prodMk_nhds hg)
 
 @[to_additive]
 theorem Filter.Tendsto.smul_const {f : α → M} {l : Filter α} {c : M} (hf : Tendsto f l (𝓝 c))
@@ -124,7 +119,7 @@ theorem ContinuousOn.smul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x • g x :=
-  continuous_smul.comp (hf.prod_mk hg)
+  continuous_smul.comp (hf.prodMk hg)
 
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
 @[to_additive "If an additive action is central, then its right action is continuous when its left
@@ -236,7 +231,7 @@ end Group
 @[to_additive]
 instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :
     ContinuousSMul M (X × Y) :=
-  ⟨(continuous_fst.smul (continuous_fst.comp continuous_snd)).prod_mk
+  ⟨(continuous_fst.smul (continuous_fst.comp continuous_snd)).prodMk
       (continuous_fst.smul (continuous_snd.comp continuous_snd))⟩
 
 @[to_additive]
@@ -244,7 +239,7 @@ instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ 
     [∀ i, ContinuousSMul M (γ i)] : ContinuousSMul M (∀ i, γ i) :=
   ⟨continuous_pi fun i =>
       (continuous_fst.smul continuous_snd).comp <|
-        continuous_fst.prod_mk ((continuous_apply i).comp continuous_snd)⟩
+        continuous_fst.prodMk ((continuous_apply i).comp continuous_snd)⟩
 
 end Main
 

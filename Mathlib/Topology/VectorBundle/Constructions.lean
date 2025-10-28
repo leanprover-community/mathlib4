@@ -40,16 +40,13 @@ variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜] [
 instance trivialization.isLinear : (trivialization B F).IsLinear 𝕜 where
   linear _ _ := ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 
-variable {𝕜}
-
+variable {𝕜} in
 theorem trivialization.coordChangeL (b : B) :
     (trivialization B F).coordChangeL 𝕜 (trivialization B F) b =
       ContinuousLinearEquiv.refl 𝕜 F := by
   ext v
   rw [Trivialization.coordChangeL_apply']
   exacts [rfl, ⟨mem_univ _, mem_univ _⟩]
-
-variable (𝕜)
 
 instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
   trivialization_linear' e he := by
@@ -85,7 +82,7 @@ instance prod.isLinear [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] : (e₁.prod e�
 
 @[simp]
 theorem coordChangeL_prod [e₁.IsLinear 𝕜] [e₁'.IsLinear 𝕜] [e₂.IsLinear 𝕜] [e₂'.IsLinear 𝕜] ⦃b⦄
-    (hb : b ∈ (e₁.prod e₂).baseSet ∩ (e₁'.prod e₂').baseSet) :
+    (hb : (b ∈ e₁.baseSet ∧ b ∈ e₂.baseSet) ∧ b ∈ e₁'.baseSet ∧ b ∈ e₂'.baseSet) :
     ((e₁.prod e₂).coordChangeL 𝕜 (e₁'.prod e₂') b : F₁ × F₂ →L[𝕜] F₁ × F₂) =
       (e₁.coordChangeL 𝕜 e₁' b : F₁ →L[𝕜] F₁).prodMap (e₂.coordChangeL 𝕜 e₂' b) := by
   rw [ContinuousLinearMap.ext_iff, ContinuousLinearMap.coe_prodMap']
@@ -99,7 +96,7 @@ theorem coordChangeL_prod [e₁.IsLinear 𝕜] [e₁'.IsLinear 𝕜] [e₂.IsLin
 variable {e₁ e₂} [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)]
   [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
 
-theorem prod_apply [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B} (hx₁ : x ∈ e₁.baseSet)
+theorem prod_apply' [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B} (hx₁ : x ∈ e₁.baseSet)
     (hx₂ : x ∈ e₂.baseSet) (v₁ : E₁ x) (v₂ : E₂ x) :
     prod e₁ e₂ ⟨x, (v₁, v₂)⟩ =
       ⟨x, e₁.continuousLinearEquivAt 𝕜 x hx₁ v₁, e₂.continuousLinearEquivAt 𝕜 x hx₂ v₂⟩ :=
@@ -123,7 +120,7 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
     rintro _ _ ⟨e₁, e₂, he₁, he₂, rfl⟩ ⟨e₁', e₂', he₁', he₂', rfl⟩
     refine (((continuousOn_coordChange 𝕜 e₁ e₁').mono ?_).prod_mapL 𝕜
       ((continuousOn_coordChange 𝕜 e₂ e₂').mono ?_)).congr ?_ <;>
-      dsimp only [baseSet_prod, mfld_simps]
+      dsimp only [prod_baseSet, mfld_simps]
     · mfld_set_tac
     · mfld_set_tac
     · rintro b hb
@@ -141,11 +138,11 @@ theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ 
     {e₂ : Trivialization F₂ (π F₂ E₂)} [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B}
     (hx : x ∈ (e₁.prod e₂).baseSet) :
     (e₁.prod e₂).continuousLinearEquivAt 𝕜 x hx =
-      (e₁.continuousLinearEquivAt 𝕜 x hx.1).prod (e₂.continuousLinearEquivAt 𝕜 x hx.2) := by
+      (e₁.continuousLinearEquivAt 𝕜 x hx.1).prodCongr (e₂.continuousLinearEquivAt 𝕜 x hx.2) := by
   ext v : 2
   obtain ⟨v₁, v₂⟩ := v
   rw [(e₁.prod e₂).continuousLinearEquivAt_apply 𝕜, Trivialization.prod]
-  exact (congr_arg Prod.snd (prod_apply 𝕜 hx.1 hx.2 v₁ v₂) : _)
+  exact (congr_arg Prod.snd (prod_apply' 𝕜 hx.1 hx.2 v₁ v₂) :)
 
 end
 

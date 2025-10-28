@@ -23,7 +23,7 @@ For example, given `d : ℕ`, the power series expansion of `1/(1 - X)ᵈ⁺¹` 
 is `Σₙ ((d + n).choose d)Xⁿ`, which equals `Σₙ ((n + 1)···(n + d)/d!)Xⁿ` and hence
 `Polynomial.hilbertPoly (1 : F[X]) (d + 1)` is the polynomial `(X + 1)···(X + d)/d!`. Note that
 if `d! = 0` in `F`, then the polynomial `(X + 1)···(X + d)/d!` no longer works, so we do not want
-the characteristic of `F` to be divisible by `d!`. As `Polynomial.hilbertPoly` may take any
+`d!` to be divisible by the characteristic of `F`. As `Polynomial.hilbertPoly` may take any
 `p : F[X]` and `d : ℕ` as its inputs, it is necessary for us to assume that `CharZero F`.
 
 ## Main definitions
@@ -95,7 +95,7 @@ variable {F}
 
 /--
 `Polynomial.hilbertPoly p 0 = 0`; for any `d : ℕ`, `Polynomial.hilbertPoly p (d + 1)`
-is defined as `∑ i in p.support, (p.coeff i) • Polynomial.preHilbertPoly F d i`. If
+is defined as `∑ i ∈ p.support, (p.coeff i) • Polynomial.preHilbertPoly F d i`. If
 `M` is a graded module whose Poincaré series can be written as `p(X)/(1 - X)ᵈ` for some
 `p : ℚ[X]` with integer coefficients, then `Polynomial.hilbertPoly p d` is the Hilbert
 polynomial of `M`. See also `Polynomial.coeff_mul_invOneSubPow_eq_hilbertPoly_eval`,
@@ -104,7 +104,7 @@ which says that `PowerSeries.coeff F n (p * PowerSeries.invOneSubPow F d)` equal
 -/
 noncomputable def hilbertPoly (p : F[X]) : (d : ℕ) → F[X]
   | 0 => 0
-  | d + 1 => ∑ i in p.support, (p.coeff i) • preHilbertPoly F d i
+  | d + 1 => ∑ i ∈ p.support, (p.coeff i) • preHilbertPoly F d i
 
 lemma hilbertPoly_zero_left (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
   delta hilbertPoly; induction d with
@@ -114,7 +114,7 @@ lemma hilbertPoly_zero_left (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
 lemma hilbertPoly_zero_right (p : F[X]) : hilbertPoly p 0 = 0 := rfl
 
 lemma hilbertPoly_succ (p : F[X]) (d : ℕ) :
-    hilbertPoly p (d + 1) = ∑ i in p.support, (p.coeff i) • preHilbertPoly F d i := rfl
+    hilbertPoly p (d + 1) = ∑ i ∈ p.support, (p.coeff i) • preHilbertPoly F d i := rfl
 
 lemma hilbertPoly_X_pow_succ (d k : ℕ) :
     hilbertPoly ((X : F[X]) ^ k) (d + 1) = preHilbertPoly F d k := by
@@ -189,7 +189,7 @@ The polynomial satisfying the key property of `Polynomial.hilbertPoly p d` is un
 -/
 theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
     ∃! h : F[X], ∃ N : ℕ, ∀ n > N,
-    PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F) := by
+      PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F) := by
   use hilbertPoly p d; constructor
   · use p.natDegree
     exact fun n => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d

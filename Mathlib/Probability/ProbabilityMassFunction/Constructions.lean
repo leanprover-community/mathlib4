@@ -32,7 +32,6 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open scoped Classical
 open NNReal ENNReal Finset MeasureTheory
 
 section Map
@@ -45,6 +44,7 @@ variable (f : α → β) (p : PMF α) (b : β)
 
 theorem monad_map_eq_map {α β : Type u} (f : α → β) (p : PMF α) : f <$> p = p.map f := rfl
 
+open scoped Classical in
 @[simp]
 theorem map_apply : (map f p) b = ∑' a, if b = f a then p a else 0 := by simp [map]
 
@@ -82,6 +82,7 @@ variable (s : Set β)
 @[simp]
 theorem toOuterMeasure_map_apply : (p.map f).toOuterMeasure s = p.toOuterMeasure (f ⁻¹' s) := by
   simp [map, Set.indicator, toOuterMeasure_apply p (f ⁻¹' s)]
+  rfl
 
 variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
@@ -110,6 +111,7 @@ variable (q : PMF (α → β)) (p : PMF α) (b : β)
 
 theorem monad_seq_eq_seq {α β : Type u} (q : PMF (α → β)) (p : PMF α) : q <*> p = q.seq p := rfl
 
+open scoped Classical in
 @[simp]
 theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 := by
   simp only [seq, mul_boole, bind_apply, pure_apply]
@@ -170,8 +172,10 @@ theorem support_ofFinset : (ofFinset f s h h').support = ↑s ∩ Function.suppo
 theorem mem_support_ofFinset_iff (a : α) : a ∈ (ofFinset f s h h').support ↔ a ∈ s ∧ f a ≠ 0 := by
   simp
 
-theorem ofFinset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofFinset f s h h' a = 0 :=
+theorem ofFinset_apply_of_notMem {a : α} (ha : a ∉ s) : ofFinset f s h h' a = 0 :=
   h' a ha
+
+@[deprecated (since := "2025-05-23")] alias ofFinset_apply_of_not_mem := ofFinset_apply_of_notMem
 
 section Measure
 
@@ -207,6 +211,7 @@ theorem support_ofFintype : (ofFintype f h).support = Function.support f := rfl
 
 theorem mem_support_ofFintype_iff (a : α) : a ∈ (ofFintype f h).support ↔ f a ≠ 0 := Iff.rfl
 
+open scoped Classical in
 @[simp]
 lemma map_ofFintype [Fintype β] (f : α → ℝ≥0∞) (h : ∑ a, f a = 1) (g : α → β) :
     (ofFintype f h).map g = ofFintype (fun b ↦ ∑ a with g a = b, f a)
@@ -266,8 +271,11 @@ theorem filter_apply (a : α) :
     (p.filter s h) a = s.indicator p a * (∑' a', (s.indicator p) a')⁻¹ := by
   rw [filter, normalize_apply]
 
-theorem filter_apply_eq_zero_of_not_mem {a : α} (ha : a ∉ s) : (p.filter s h) a = 0 := by
+theorem filter_apply_eq_zero_of_notMem {a : α} (ha : a ∉ s) : (p.filter s h) a = 0 := by
   rw [filter_apply, Set.indicator_apply_eq_zero.mpr fun ha' => absurd ha' ha, zero_mul]
+
+@[deprecated (since := "2025-05-23")]
+alias filter_apply_eq_zero_of_not_mem := filter_apply_eq_zero_of_notMem
 
 theorem mem_support_filter_iff {a : α} : a ∈ (p.filter s h).support ↔ a ∈ s ∧ a ∈ p.support :=
   (mem_support_normalize_iff _ _ _).trans Set.indicator_apply_ne_zero

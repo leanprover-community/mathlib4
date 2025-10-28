@@ -42,10 +42,12 @@ predicate `IsBoundedLinearMap`). We give statements for both versions. -/
 
 @[fun_prop]
 protected theorem ContinuousLinearMap.hasStrictFDerivAt {x : E} : HasStrictFDerivAt e e x :=
-  .of_isLittleO <| (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
+    simp only [e.map_sub, sub_self, Pi.zero_apply]
 
 protected theorem ContinuousLinearMap.hasFDerivAtFilter : HasFDerivAtFilter e e x L :=
-  .of_isLittleO <| (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun x => by
+    simp only [e.map_sub, sub_self, Pi.zero_apply]
 
 @[fun_prop]
 protected theorem ContinuousLinearMap.hasFDerivWithinAt : HasFDerivWithinAt e e s x :=

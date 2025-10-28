@@ -83,7 +83,7 @@ def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj
 
 /-- The forget functor `SheafOfModules R ⥤ Sheaf J AddCommGrp`. -/
 @[simps]
-def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGrp.{v} where
+noncomputable def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGrp.{v} where
   obj M := ⟨_, M.isSheaf⟩
   map f := { val := (forget R ⋙ PresheafOfModules.toPresheaf R.val).map f }
 
@@ -93,7 +93,7 @@ when `X` is initial.
 -/
 @[simps]
 noncomputable def forgetToSheafModuleCat
-      (X : Cᵒᵖ) (hX : Limits.IsInitial X)  :
+      (X : Cᵒᵖ) (hX : Limits.IsInitial X) :
     SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.1.obj X)) where
   obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1,
     Presheaf.isSheaf_of_isSheaf_comp _ _
@@ -103,7 +103,7 @@ noncomputable def forgetToSheafModuleCat
 /-- The canonical isomorphism between
 `SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGrp.{v}`
 and `SheafOfModules.forget R ⋙ PresheafOfModules.toPresheaf R.val`. -/
-def toSheafCompSheafToPresheafIso :
+noncomputable def toSheafCompSheafToPresheafIso :
     toSheaf R ⋙ sheafToPresheaf J AddCommGrp.{v} ≅
       forget R ⋙ PresheafOfModules.toPresheaf R.val := Iso.refl _
 
@@ -154,12 +154,12 @@ variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
 variable (R) in
 /-- The obvious free sheaf of modules of rank `1`. -/
 @[simps]
-def unit : SheafOfModules R where
+noncomputable def unit : SheafOfModules R where
   val := PresheafOfModules.unit R.val
   isSheaf := ((sheafCompose J (forget₂ RingCat.{u} AddCommGrp.{u})).obj R).cond
 
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : SheafOfModules R`. -/
-def unitHomEquiv (M : SheafOfModules R) :
+noncomputable def unitHomEquiv (M : SheafOfModules R) :
     (unit R ⟶ M) ≃ M.sections :=
   (fullyFaithfulForget R).homEquiv.trans M.val.unitHomEquiv
 
@@ -211,13 +211,13 @@ noncomputable def homEquivOfIsLocallyBijective : (M₂ ⟶ N) ≃ (M₁ ⟶ N) w
           ((PresheafOfModules.toPresheaf R).map ψ)
         simp only [← hφ, Equiv.symm_apply_apply]
         replace hφ : ∀ (Z : Cᵒᵖ) (x : M₁.obj Z), φ.app Z (f.app Z x) = ψ.app Z x :=
-          fun Z x ↦ congr_fun ((forget _).congr_map (congr_app hφ Z)) x
+          fun Z x ↦ CategoryTheory.congr_fun (congr_app hφ Z) x
         intro X r y
         apply hN.isSeparated _ _
           (Presheaf.imageSieve_mem J ((toPresheaf R).map f) y)
         rintro Y p ⟨x : M₁.obj _, hx : f.app _ x = M₂.map p.op y⟩
         have hφ' : ∀ (z : M₂.obj X), φ.app _ (M₂.map p.op z) =
-            N.map p.op (φ.app _ z) := congr_fun ((forget _).congr_map (φ.naturality p.op))
+            N.map p.op (φ.app _ z) := CategoryTheory.congr_fun (φ.naturality p.op)
         change N.map p.op (φ.app X (r • y)) = N.map p.op (r • φ.app X y)
         rw [← hφ', M₂.map_smul, ← hx, ← (f.app _).hom.map_smul, hφ, (ψ.app _).hom.map_smul,
           ← hφ, hx, N.map_smul, hφ'])

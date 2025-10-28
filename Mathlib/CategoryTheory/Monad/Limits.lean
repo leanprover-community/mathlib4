@@ -62,8 +62,7 @@ def conePoint : Algebra T where
     t.hom_ext fun j => by
       rw [Category.assoc, t.fac, newCone_π_app, ← T.η.naturality_assoc, Functor.id_map,
         (D.obj j).unit]
-      dsimp; simp
-  -- See library note [dsimp, simp]
+      simp
   assoc :=
     t.hom_ext fun j => by
       rw [Category.assoc, Category.assoc, t.fac (newCone D c), newCone_π_app, ←
@@ -79,9 +78,7 @@ def liftedCone : Cone D where
     { app := fun j => { f := c.π.app j }
       naturality := fun X Y f => by
         ext1
-        dsimp
-        erw [c.w f]
-        simp }
+        simpa using (c.w f).symm }
 
 /-- (Impl) Prove that the lifted cone is limiting. -/
 @[simps]
@@ -134,7 +131,7 @@ variable {D : J ⥤ Algebra T} (c : Cocone (D ⋙ forget T)) (t : IsColimit c)
 /-- (Impl)
 The natural transformation given by the algebra structure maps, used to construct a cocone `c` with
 point `colimit (D ⋙ forget T)`.
- -/
+-/
 @[simps]
 def γ : (D ⋙ forget T) ⋙ ↑T ⟶ D ⋙ forget T where app j := (D.obj j).a
 
@@ -178,8 +175,7 @@ noncomputable def coconePoint : Algebra T where
     rw [show c.ι.app j ≫ T.η.app c.pt ≫ _ = T.η.app (D.obj j).A ≫ _ ≫ _ from
         T.η.naturality_assoc _ _,
       commuting, Algebra.unit_assoc (D.obj j)]
-    dsimp; simp
-  -- See library note [dsimp, simp]
+    simp
   assoc := by
     refine (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j => ?_
     rw [Functor.mapCocone_ι_app, Functor.mapCocone_ι_app,
@@ -237,8 +233,7 @@ noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
                   h := commuting _ _ _ }
               naturality := fun A B f => by
                 ext1
-                dsimp
-                erw [comp_id, c.w] } }
+                simpa using (c.w f) } }
       validLift := Cocones.ext (Iso.refl _)
       makesColimit := liftedCoconeIsColimit _ _ }
 
@@ -262,9 +257,8 @@ variable {J : Type u} [Category.{v} J]
 
 instance comp_comparison_forget_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
     [HasLimit (F ⋙ R)] :
-    HasLimit ((F ⋙ Monad.comparison (monadicAdjunction R)) ⋙ Monad.forget _) :=
-  @hasLimitOfIso _ _ _ _ (F ⋙ R) _ _
-    (isoWhiskerLeft F (Monad.comparisonForget (monadicAdjunction R)).symm)
+    HasLimit ((F ⋙ Monad.comparison (monadicAdjunction R)) ⋙ Monad.forget _) := by
+  assumption
 
 instance comp_comparison_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
     [HasLimit (F ⋙ R)] : HasLimit (F ⋙ Monad.comparison (monadicAdjunction R)) :=
@@ -347,7 +341,7 @@ theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimi
       let t : IsColimit c := isColimitOfPreserves (monadicLeftAdjoint R) (colimit.isColimit _)
       apply HasColimit.mk ⟨_, (IsColimit.precomposeInvEquiv _ _).symm t⟩
       apply
-        (isoWhiskerLeft F (asIso (monadicAdjunction R).counit) : _) ≪≫ F.rightUnitor
+        (isoWhiskerLeft F (asIso (monadicAdjunction R).counit) :) ≪≫ F.rightUnitor
 
 /-- If `C` has colimits then any reflective subcategory has colimits. -/
 theorem hasColimits_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfSize.{v, u} C] :
@@ -419,9 +413,7 @@ def liftedCocone : Cocone D where
     { app := fun j => { f := c.ι.app j }
       naturality := fun X Y f => by
         ext1
-        dsimp
-        erw [c.w f]
-        simp }
+        simpa using (c.w f) }
 
 /-- (Impl) Prove that the lifted cocone is colimiting. -/
 @[simps]
@@ -465,7 +457,7 @@ variable {D : J ⥤ Coalgebra T} (c : Cone (D ⋙ forget T)) (t : IsLimit c)
 /-- (Impl)
 The natural transformation given by the coalgebra structure maps, used to construct a cone `c` with
 point `limit (D ⋙ forget T)`.
- -/
+-/
 @[simps]
 def γ : D ⋙ forget T ⟶ (D ⋙ forget T) ⋙ ↑T where app j := (D.obj j).a
 
@@ -513,7 +505,7 @@ noncomputable def conePoint : Coalgebra T where
       ← show _ = _ ≫ T.map (T.map _) from T.δ.naturality _, assoc, ← Functor.map_comp, commuting,
       Functor.map_comp, ← assoc, commuting]
     simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, assoc]
-    rw [(D.obj j).coassoc,  ← assoc, ← assoc, commuting]
+    rw [(D.obj j).coassoc, ← assoc, ← assoc, commuting]
 
 /-- (Impl) Construct the lifted cone in `Coalgebra T` which will be limiting. -/
 @[simps]
@@ -566,8 +558,7 @@ noncomputable instance forgetCreatesLimit (D : J ⥤ Coalgebra T)
                   h := commuting _ _ _ }
               naturality := fun A B f => by
                 ext1
-                dsimp
-                erw [id_comp, c.w] } }
+                simpa using (c.w f).symm } }
       validLift := Cones.ext (Iso.refl _)
       makesLimit := liftedConeIsLimit _ _ }
 
@@ -588,9 +579,8 @@ end Comonad
 
 instance comp_comparison_forget_hasColimit (F : J ⥤ D) (R : D ⥤ C) [ComonadicLeftAdjoint R]
     [HasColimit (F ⋙ R)] :
-    HasColimit ((F ⋙ Comonad.comparison (comonadicAdjunction R)) ⋙ Comonad.forget _) :=
-  @hasColimitOfIso _ _ _ _ (F ⋙ R) _ _
-    (isoWhiskerLeft F (Comonad.comparisonForget (comonadicAdjunction R)).symm)
+    HasColimit ((F ⋙ Comonad.comparison (comonadicAdjunction R)) ⋙ Comonad.forget _) := by
+  assumption
 
 instance comp_comparison_hasColimit (F : J ⥤ D) (R : D ⥤ C) [ComonadicLeftAdjoint R]
     [HasColimit (F ⋙ R)] : HasColimit (F ⋙ Comonad.comparison (comonadicAdjunction R)) :=
@@ -671,7 +661,7 @@ theorem hasLimitsOfShape_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimi
       let t : IsLimit c := isLimitOfPreserves (comonadicRightAdjoint R) (limit.isLimit _)
       apply HasLimit.mk ⟨_, (IsLimit.postcomposeHomEquiv _ _).symm t⟩
       apply
-        (F.rightUnitor ≪≫ (isoWhiskerLeft F ((asIso (comonadicAdjunction R).unit) : _) )).symm
+        (F.rightUnitor ≪≫ (isoWhiskerLeft F ((asIso (comonadicAdjunction R).unit) :) )).symm
 
 /-- If `C` has limits then any coreflective subcategory has limits. -/
 theorem hasLimits_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimitsOfSize.{v, u} C] :

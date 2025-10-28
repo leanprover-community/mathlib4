@@ -82,8 +82,8 @@ section
 
 You should extend this class when you extend `ContinuousMap.Homotopy`. -/
 class HomotopyLike {X Y : outParam Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) [FunLike F (I × X) Y]
-    extends ContinuousMapClass F (I × X) Y : Prop where
+    (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) [FunLike F (I × X) Y] : Prop
+    extends ContinuousMapClass F (I × X) Y where
   /-- value of the homotopy at 0 -/
   map_zero_left (f : F) : ∀ x, f (0, x) = f₀ x
   /-- value of the homotopy at 1 -/
@@ -145,6 +145,9 @@ def curry (F : Homotopy f₀ f₁) : C(I, C(X, Y)) :=
 theorem curry_apply (F : Homotopy f₀ f₁) (t : I) (x : X) : F.curry t x = F (t, x) :=
   rfl
 
+@[simp] theorem curry_zero (F : Homotopy f₀ f₁) : F.curry 0 = f₀ := by ext; simp
+@[simp] theorem curry_one (F : Homotopy f₀ f₁) : F.curry 1 = f₁ := by ext; simp
+
 /-- Continuously extending a curried homotopy to a function from `ℝ` to `C(X, Y)`.
 -/
 def extend (F : Homotopy f₀ f₁) : C(ℝ, C(X, Y)) :=
@@ -164,9 +167,16 @@ theorem extend_apply_coe (F : Homotopy f₀ f₁) (t : I) (x : X) : F.extend t x
   ContinuousMap.congr_fun (Set.IccExtend_val (zero_le_one' ℝ) F.curry t) x
 
 @[simp]
+theorem extend_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) :
+    F.extend t = F.curry ⟨t, ht⟩ :=
+  Set.IccExtend_of_mem (zero_le_one' ℝ) F.curry ht
+
+theorem extend_zero (F : Homotopy f₀ f₁) : F.extend 0 = f₀ := by simp
+theorem extend_one (F : Homotopy f₀ f₁) : F.extend 1 = f₁ := by simp
+
 theorem extend_apply_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) (x : X) :
-    F.extend t x = F (⟨t, ht⟩, x) :=
-  ContinuousMap.congr_fun (Set.IccExtend_of_mem (zero_le_one' ℝ) F.curry ht) x
+    F.extend t x = F (⟨t, ht⟩, x) := by
+  simp [ht]
 
 protected theorem congr_fun {F G : Homotopy f₀ f₁} (h : F = G) (x : I × X) : F x = G x :=
   ContinuousMap.congr_fun (congr_arg _ h) x
@@ -212,7 +222,7 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
   toFun x := if (x.1 : ℝ) ≤ 1 / 2 then F.extend (2 * x.1) x.2 else G.extend (2 * x.1 - 1) x.2
   continuous_toFun := by
     refine
-      continuous_if_le (continuous_induced_dom.comp continuous_fst) continuous_const
+      continuous_if_le (by fun_prop) continuous_const
         (F.continuous.comp (by continuity)).continuousOn
         (G.continuous.comp (by continuity)).continuousOn ?_
     rintro x hx
@@ -371,7 +381,7 @@ structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homo
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
   prop' : ∀ t, P ⟨fun x => toFun (t, x),
-    Continuous.comp continuous_toFun (continuous_const.prod_mk continuous_id')⟩
+    Continuous.comp continuous_toFun (continuous_const.prodMk continuous_id')⟩
 
 namespace HomotopyWith
 
@@ -413,7 +423,6 @@ theorem apply_zero (F : HomotopyWith f₀ f₁ P) (x : X) : F (0, x) = f₀ x :=
 theorem apply_one (F : HomotopyWith f₀ f₁ P) (x : X) : F (1, x) = f₁ x :=
   F.map_one_left x
 
--- Porting note: removed `simp`
 theorem coe_toContinuousMap (F : HomotopyWith f₀ f₁ P) : ⇑F.toContinuousMap = F :=
   rfl
 
@@ -639,6 +648,9 @@ theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicRel f g S) (h₁ : Homotopi
 
 theorem equivalence : Equivalence fun f g : C(X, Y) => HomotopicRel f g S :=
   ⟨refl, by apply symm, by apply trans⟩
+
+theorem comp_continuousMap ⦃f₀ f₁ : C(X, Y)⦄ (h : f₀.HomotopicRel f₁ S) (g : C(Y, Z)) :
+    (g.comp f₀).HomotopicRel (g.comp f₁) S := h.map (·.compContinuousMap g)
 
 end HomotopicRel
 

@@ -32,6 +32,12 @@ usage() {
   exit 1
 }
 
+# Function to find remote for a given repository
+find_remote() {
+  local repo_pattern="$1"
+  git remote -v | grep "$repo_pattern" | grep "(fetch)" | head -n1 | cut -f1
+}
+
 # Parse arguments
 if [ $# -eq 2 ] && [[ $1 != --* ]] && [[ $2 != --* ]]; then
   BUMPVERSION=$1
@@ -75,6 +81,17 @@ if ! command -v gh &> /dev/null; then
     exit 1
 fi
 
+# Find the appropriate remotes
+UPSTREAM_REMOTE=$(find_remote "leanprover-community/mathlib4")
+if [ -z "$UPSTREAM_REMOTE" ]; then
+  echo "Error: Could not find remote for leanprover-community/mathlib4"
+  echo "Available remotes:"
+  git remote -v
+  exit 1
+fi
+
+echo "Using remote '$UPSTREAM_REMOTE' for leanprover-community/mathlib4"
+
 echo "### Creating a PR for the nightly adaptation for $NIGHTLYDATE"
 
 echo
@@ -89,11 +106,11 @@ git checkout master
 git pull
 
 echo
-echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from 'origin/master'"
+echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$UPSTREAM_REMOTE/master'"
 
 git checkout "bump/$BUMPVERSION"
 git pull
-git merge --no-edit origin/master || true # ignore error if there are conflicts
+git merge --no-edit $UPSTREAM_REMOTE/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -122,7 +139,7 @@ fi
 while git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; do
   echo
   echo "### [user] Conflict resolution"
-  echo "We are merging the latest changes from 'origin/master' into 'bump/$BUMPVERSION'"
+  echo "We are merging the latest changes from '$UPSTREAM_REMOTE/master' into 'bump/$BUMPVERSION'"
   echo "There seem to be conflicts or uncommitted files"
   echo ""
   echo "  1) Open `pwd` in a new terminal and run 'git status'"
@@ -135,9 +152,9 @@ echo "Proceeding with git push..."
 git push
 
 echo
-echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
+echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from nightly-testing"
 
-git checkout -b "bump/nightly-$NIGHTLYDATE"
+git checkout -b "bump/nightly-$NIGHTLYDATE" || git checkout "bump/nightly-$NIGHTLYDATE"
 git merge --no-edit $NIGHTLYSHA || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
@@ -160,8 +177,8 @@ fi
 if git diff --name-only --diff-filter=U | grep -q .; then
   echo
   echo "### [user] Conflict resolution"
-  echo "We are merging the latest changes from 'origin/nightly-testing' into 'bump/nightly-$NIGHTLYDATE'"
-  echo "Specifically, we are merging the following version of 'origin/nightly-testing':"
+  echo "We are merging the latest changes from nightly-testing into 'bump/nightly-$NIGHTLYDATE'"
+  echo "Specifically, we are merging the following version of nightly-testing:"
   echo "$NIGHTLYSHA"
   echo "There seem to be conflicts: please resolve them"
   echo ""
@@ -179,7 +196,7 @@ pr_title="chore: adaptations for nightly-$NIGHTLYDATE"
 # as the user might have inadvertently already committed changes
 # In general, we do not want this command to fail.
 git commit --allow-empty -m "$pr_title"
-git push --set-upstream origin "bump/nightly-$NIGHTLYDATE"
+git push --set-upstream $UPSTREAM_REMOTE "bump/nightly-$NIGHTLYDATE"
 
 # Check if there is a diff between bump/nightly-$NIGHTLYDATE and bump/$BUMPVERSION
 if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .; then
@@ -188,7 +205,7 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   echo "### [auto] create a PR for the new branch"
   echo "Creating a pull request. Setting the base of the PR to 'bump/$BUMPVERSION'"
   echo "Running the following 'gh' command to do this:"
-  gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION"
+  gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION --repo leanprover-community/mathlib4"
   echo "> $gh_command"
   gh_output=$(eval $gh_command)
   # Extract the PR number from the output
@@ -198,7 +215,7 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   echo "### [auto] post a link to the PR on Zulip"
 
   zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
-  zulip_body="> $pr_title #$pr_number"$'\n\nPlease review this PR. At the end of the month this diff will land in `master`.'
+  zulip_body=$(printf "> %s\n\nPlease review this PR. At the end of the month this diff will land in 'master'." "$pr_title #$pr_number")
 
   echo "Posting the link to the PR in a new thread on the #nightly-testing channel on Zulip"
   echo "Here is the message:"

@@ -54,80 +54,109 @@ namespace WithLp
 back and forth between the representations. -/
 protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
-instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
-instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
+/-- A recursor for `WithLp p V`, that reduces to the underlying space `V`.
 
-variable [Semiring K] [Semiring K'] [AddCommGroup V]
+This unfortunately cannot be registered with `cases_eliminator`, but it can still be used as
+`cases v using WithLp.rec with | toLp v =>`. -/
+@[elab_as_elim]
+protected def rec {motive : WithLp p V → Sort*}
+    (toLp : ∀ v : V, motive ((WithLp.equiv p _).symm v)) :
+    ∀ v, motive v :=
+  fun v => toLp ((WithLp.equiv p _) v)
 
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
-instance instAddCommGroup : AddCommGroup (WithLp p V) := ‹AddCommGroup V›
-instance instModule [Module K V] : Module K (WithLp p V) := ‹Module K V›
+instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
+instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
+instance instDecidableEq [DecidableEq V] : DecidableEq (WithLp p V) := ‹DecidableEq V›
 
-instance instIsScalarTower [SMul K K'] [Module K V] [Module K' V] [IsScalarTower K K' V] :
+instance instAddCommGroup [AddCommGroup V] : AddCommGroup (WithLp p V) := ‹AddCommGroup V›
+@[to_additive] instance instSMul [SMul K V] : SMul K (WithLp p V) := ‹SMul K V›
+@[to_additive] instance instMulAction [Monoid K] [MulAction K V] : MulAction K V := ‹MulAction K V›
+instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V] :
+    DistribMulAction K (WithLp p V) := ‹DistribMulAction K V›
+instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=
+  ‹Module K V›
+
+@[to_additive]
+instance instIsScalarTower [SMul K K'] [SMul K V] [SMul K' V] [IsScalarTower K K' V] :
     IsScalarTower K K' (WithLp p V) :=
   ‹IsScalarTower K K' V›
 
-instance instSMulCommClass [Module K V] [Module K' V] [SMulCommClass K K' V] :
+@[to_additive]
+instance instSMulCommClass [SMul K V] [SMul K' V] [SMulCommClass K K' V] :
     SMulCommClass K K' (WithLp p V) :=
   ‹SMulCommClass K K' V›
 
-instance instModuleFinite [Module K V] [Module.Finite K V] : Module.Finite K (WithLp p V) :=
+instance instModuleFinite
+    [Semiring K] [AddCommGroup V] [Module K V] [Module.Finite K V] :
+    Module.Finite K (WithLp p V) :=
   ‹Module.Finite K V›
 
 variable {K V}
-variable [Module K V]
-variable (c : K) (x y : WithLp p V) (x' y' : V)
 
 /-! `WithLp.equiv` preserves the module structure. -/
 
 @[simp]
-theorem equiv_zero : WithLp.equiv p V 0 = 0 :=
+theorem equiv_zero [AddCommGroup V] : WithLp.equiv p V 0 = 0 :=
   rfl
 
 @[simp]
-theorem equiv_symm_zero : (WithLp.equiv p V).symm 0 = 0 :=
+theorem equiv_symm_zero [AddCommGroup V] : (WithLp.equiv p V).symm 0 = 0 :=
   rfl
 
 @[simp]
-theorem equiv_add : WithLp.equiv p V (x + y) = WithLp.equiv p V x + WithLp.equiv p V y :=
+theorem equiv_symm_eq_zero_iff [AddCommGroup V] {x : V} :
+    (WithLp.equiv p V).symm x = 0 ↔ x = 0 := Iff.rfl
+
+@[simp]
+theorem equiv_eq_zero_iff [AddCommGroup V] {x : WithLp p V} :
+    WithLp.equiv p V x = 0 ↔ x = 0 := Iff.rfl
+
+@[simp]
+theorem equiv_add [AddCommGroup V] (x y : WithLp p V) :
+    WithLp.equiv p V (x + y) = WithLp.equiv p V x + WithLp.equiv p V y :=
   rfl
 
 @[simp]
-theorem equiv_symm_add :
+theorem equiv_symm_add [AddCommGroup V] (x' y' : V) :
     (WithLp.equiv p V).symm (x' + y') = (WithLp.equiv p V).symm x' + (WithLp.equiv p V).symm y' :=
   rfl
 
 @[simp]
-theorem equiv_sub : WithLp.equiv p V (x - y) = WithLp.equiv p V x - WithLp.equiv p V y :=
+theorem equiv_sub [AddCommGroup V] (x y : WithLp p V) :
+    WithLp.equiv p V (x - y) = WithLp.equiv p V x - WithLp.equiv p V y :=
   rfl
 
 @[simp]
-theorem equiv_symm_sub :
+theorem equiv_symm_sub [AddCommGroup V] (x' y' : V) :
     (WithLp.equiv p V).symm (x' - y') = (WithLp.equiv p V).symm x' - (WithLp.equiv p V).symm y' :=
   rfl
 
 @[simp]
-theorem equiv_neg : WithLp.equiv p V (-x) = -WithLp.equiv p V x :=
+theorem equiv_neg [AddCommGroup V] (x : WithLp p V) : WithLp.equiv p V (-x) = -WithLp.equiv p V x :=
   rfl
 
 @[simp]
-theorem equiv_symm_neg : (WithLp.equiv p V).symm (-x') = -(WithLp.equiv p V).symm x' :=
+theorem equiv_symm_neg [AddCommGroup V] (x' : V):
+    (WithLp.equiv p V).symm (-x') = -(WithLp.equiv p V).symm x' :=
   rfl
 
 @[simp]
-theorem equiv_smul : WithLp.equiv p V (c • x) = c • WithLp.equiv p V x :=
+theorem equiv_smul [SMul K V] (c : K) (x : WithLp p V) :
+    WithLp.equiv p V (c • x) = c • WithLp.equiv p V x :=
   rfl
 
 @[simp]
-theorem equiv_symm_smul : (WithLp.equiv p V).symm (c • x') = c • (WithLp.equiv p V).symm x' :=
+theorem equiv_symm_smul [SMul K V] (c : K) (x' : V) :
+    (WithLp.equiv p V).symm (c • x') = c • (WithLp.equiv p V).symm x' :=
   rfl
 
 variable (K V)
 
 /-- `WithLp.equiv` as a linear equivalence. -/
-@[simps (config := .asFn)]
-protected def linearEquiv : WithLp p V ≃ₗ[K] V :=
+@[simps -fullyApplied]
+protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V :=
   { LinearEquiv.refl _ _ with
     toFun := WithLp.equiv _ _
     invFun := (WithLp.equiv _ _).symm }

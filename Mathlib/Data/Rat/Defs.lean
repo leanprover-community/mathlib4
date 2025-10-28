@@ -3,12 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Batteries.Data.Rat.Lemmas
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Int.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
-import Batteries.Data.Rat.Lemmas
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Basics for the Rational Numbers
@@ -16,8 +16,8 @@ import Batteries.Data.Rat.Lemmas
 ## Summary
 
 We define the integral domain structure on `ℚ` and prove basic lemmas about it.
-The definition of the field structure on `ℚ` will be done in `Mathlib.Data.Rat.Basic` once the
-`Field` class has been defined.
+The definition of the field structure on `ℚ` will be done in `Mathlib/Algebra/Field/Rat.lean`
+once the `Field` class has been defined.
 
 ## Main Definitions
 
@@ -31,17 +31,13 @@ The definition of the field structure on `ℚ` will be done in `Mathlib.Data.Rat
 
 -- TODO: If `Inv` was defined earlier than `Algebra.Group.Defs`, we could have
 -- assert_not_exists Monoid
-assert_not_exists MonoidWithZero
-assert_not_exists Lattice
-assert_not_exists PNat
-assert_not_exists Nat.dvd_mul
+assert_not_exists MonoidWithZero Lattice PNat Nat.gcd_greatest
 
 open Function
 
 namespace Rat
 variable {q : ℚ}
 
--- Porting note: the definition of `ℚ` has changed; in mathlib3 this was a field.
 theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
 
 lemma mk'_num_den (q : ℚ) : mk' q.num q.den q.den_nz q.reduced = q := rfl
@@ -51,9 +47,8 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
 
 -- TODO: Replace `Rat.ofNat_num`/`Rat.ofNat_den` in Batteries
--- See note [no_index around OfNat.ofNat]
-@[simp] lemma num_ofNat (n : ℕ) : num (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
-@[simp] lemma den_ofNat (n : ℕ) : den (no_index (OfNat.ofNat n)) = 1 := rfl
+@[simp] lemma num_ofNat (n : ℕ) : num ofNat(n) = ofNat(n) := rfl
+@[simp] lemma den_ofNat (n : ℕ) : den ofNat(n) = 1 := rfl
 
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
 
@@ -64,22 +59,16 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
 
 @[simp, norm_cast] lemma den_intCast (n : ℤ) : (n : ℚ).den = 1 := rfl
 
-@[deprecated (since := "2024-04-29")] alias coe_int_num := num_intCast
-@[deprecated (since := "2024-04-29")] alias coe_int_den := den_intCast
-
 lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ congr_arg num
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
   intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
 
--- We want to use these lemmas earlier than the lemmas simp can prove them with
-@[simp, nolint simpNF, norm_cast] lemma natCast_inj {m n : ℕ} : (m : ℚ) = n ↔ m = n :=
+@[simp high, norm_cast] lemma natCast_inj {m n : ℕ} : (m : ℚ) = n ↔ m = n :=
   natCast_injective.eq_iff
-@[simp, nolint simpNF, norm_cast] lemma intCast_eq_zero {n : ℤ} : (n : ℚ) = 0 ↔ n = 0 := intCast_inj
-@[simp, nolint simpNF, norm_cast] lemma natCast_eq_zero {n : ℕ} : (n : ℚ) = 0 ↔ n = 0 := natCast_inj
-@[simp, nolint simpNF, norm_cast] lemma intCast_eq_one {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
-@[simp, nolint simpNF, norm_cast] lemma natCast_eq_one {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO Should this be namespaced?
+@[simp high, norm_cast] lemma intCast_eq_zero {n : ℤ} : (n : ℚ) = 0 ↔ n = 0 := intCast_inj
+@[simp high, norm_cast] lemma natCast_eq_zero {n : ℕ} : (n : ℚ) = 0 ↔ n = 0 := natCast_inj
+@[simp high, norm_cast] lemma intCast_eq_one {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
+@[simp high, norm_cast] lemma natCast_eq_one {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
 
 lemma mkRat_eq_divInt (n d) : mkRat n d = n /. d := rfl
 
@@ -107,7 +96,7 @@ theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
 theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
   (divInt_eq_zero b0).not
 
--- Porting note: this can move to Batteries
+-- TODO: this can move to Batteries
 theorem normalize_eq_mk' (n : Int) (d : Nat) (h : d ≠ 0) (c : Nat.gcd (Int.natAbs n) d = 1) :
     normalize n d h = mk' n d h c := (mk_eq_normalize ..).symm
 
@@ -146,8 +135,6 @@ def numDenCasesOn''.{u} {C : ℚ → Sort u} (a : ℚ)
     (H : ∀ (n : ℤ) (d : ℕ) (nz red), C (mk' n d nz red)) : C a :=
   numDenCasesOn a fun n d h h' ↦ by rw [← mk_eq_divInt _ _ h.ne' h']; exact H n d h.ne' _
 
--- Porting note: there's already an instance for `Add ℚ` is in Batteries.
-
 theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → ℤ → ℤ) (f₂ : ℤ → ℤ → ℤ → ℤ → ℤ)
     (fv :
       ∀ {n₁ d₁ h₁ c₁ n₂ d₂ h₂ c₂},
@@ -158,8 +145,8 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
       ∀ {n₁ d₁ n₂ d₂}, a * d₁ = n₁ * b → c * d₂ = n₂ * d →
         f₁ n₁ d₁ n₂ d₂ * f₂ a b c d = f₁ a b c d * f₂ n₁ d₁ n₂ d₂) :
     f (a /. b) (c /. d) = f₁ a b c d /. f₂ a b c d := by
-  generalize ha : a /. b = x; cases' x with n₁ d₁ h₁ c₁; rw [mk'_eq_divInt] at ha
-  generalize hc : c /. d = x; cases' x with n₂ d₂ h₂ c₂; rw [mk'_eq_divInt] at hc
+  generalize ha : a /. b = x; obtain ⟨n₁, d₁, h₁, c₁⟩ := x; rw [mk'_eq_divInt] at ha
+  generalize hc : c /. d = x; obtain ⟨n₂, d₂, h₂, c₂⟩ := x; rw [mk'_eq_divInt] at hc
   rw [fv]
   have d₁0 := Int.ofNat_ne_zero.2 h₁
   have d₂0 := Int.ofNat_ne_zero.2 h₂
@@ -168,23 +155,13 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
 
 attribute [simp] divInt_add_divInt
 
-@[deprecated divInt_add_divInt (since := "2024-03-18")]
-theorem add_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
-    a /. b + c /. d = (a * d + c * b) /. (b * d) := divInt_add_divInt _ _ b0 d0
-
 attribute [simp] neg_divInt
 
 lemma neg_def (q : ℚ) : -q = -q.num /. q.den := by rw [← neg_divInt, num_divInt_den]
 
 @[simp] lemma divInt_neg (n d : ℤ) : n /. -d = -n /. d := divInt_neg' ..
 
-@[deprecated (since := "2024-03-18")] alias divInt_neg_den := divInt_neg
-
 attribute [simp] divInt_sub_divInt
-
-@[deprecated divInt_sub_divInt (since := "2024-03-18")]
-lemma sub_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
-    a /. b - c /. d = (a * d - c * b) /. (b * d) := divInt_sub_divInt _ _ b0 d0
 
 @[simp]
 lemma divInt_mul_divInt' (n₁ d₁ n₂ d₂ : ℤ) : (n₁ /. d₁) * (n₂ /. d₂) = (n₁ * n₂) /. (d₁ * d₂) := by
@@ -200,15 +177,13 @@ lemma mk'_mul_mk' (n₁ n₂ : ℤ) (d₁ d₂ : ℕ) (hd₁ hd₂ hnd₁ hnd₂
     (h₂₁ : n₂.natAbs.Coprime d₁) :
     mk' n₁ d₁ hd₁ hnd₁ * mk' n₂ d₂ hd₂ hnd₂ = mk' (n₁ * n₂) (d₁ * d₂) (Nat.mul_ne_zero hd₁ hd₂) (by
       rw [Int.natAbs_mul]; exact (hnd₁.mul h₂₁).mul_right (h₁₂.mul hnd₂)) := by
-  rw [mul_def]; dsimp; simp [mk_eq_normalize]
+  rw [mul_def]; simp [mk_eq_normalize]
 
 lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) := by
   rw [mul_def, normalize_eq_mkRat]
 
 -- TODO: Rename `divInt_eq_iff` in Batteries to `divInt_eq_divInt`
 alias divInt_eq_divInt := divInt_eq_iff
-
-@[deprecated (since := "2024-04-29")] alias mul_num_den := mul_eq_mkRat
 
 instance instPowNat : Pow ℚ ℕ where
   pow q n := ⟨q.num ^ n, q.den ^ n, by simp [Nat.pow_eq_zero], by
@@ -249,8 +224,6 @@ lemma inv_def' (q : ℚ) : q⁻¹ = q.den /. q.num := by rw [← inv_divInt', nu
 lemma div_def' (q r : ℚ) : q / r = (q.num * r.den) /. (q.den * r.num) := by
   rw [← divInt_div_divInt, num_divInt_den, num_divInt_den]
 
-@[deprecated (since := "2024-04-15")] alias div_num_den := div_def'
-
 variable (a b c : ℚ)
 
 protected lemma add_zero : a + 0 = a := by simp [add_def, normalize_eq_mkRat]
@@ -271,16 +244,10 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
 protected lemma neg_add_cancel : -a + a = 0 := by
   simp [add_def, normalize_eq_mkRat, Int.neg_mul, Int.add_comm, ← Int.sub_eq_add_neg]
 
-@[deprecated zero_divInt (since := "2024-03-18")]
-lemma divInt_zero_one : 0 /. 1 = 0 := zero_divInt _
-
 @[simp] lemma divInt_one (n : ℤ) : n /. 1 = n := by simp [divInt, mkRat, normalize]
 @[simp] lemma mkRat_one (n : ℤ) : mkRat n 1 = n := by simp [mkRat_eq_divInt]
 
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, intCast_one]
-
-@[deprecated divInt_one (since := "2024-03-18")]
-lemma divInt_neg_one_one : -1 /. 1 = -1 := by rw [divInt_one, intCast_neg, intCast_one]
 
 protected theorem mul_assoc : a * b * c = a * (b * c) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
@@ -310,8 +277,6 @@ protected theorem mul_inv_cancel : a ≠ 0 → a * a⁻¹ = 1 :=
 
 protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
   Eq.trans (Rat.mul_comm _ _) (Rat.mul_inv_cancel _ h)
-
--- Porting note: we already have a `DecidableEq ℚ`.
 
 -- Extra instances to short-circuit type class resolution
 -- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic
@@ -356,7 +321,6 @@ instance commMonoid : CommMonoid ℚ where
   npow n q := q ^ n
   npow_zero := by intros; apply Rat.ext <;> simp [Int.pow_zero]
   npow_succ n q := by
-    dsimp
     rw [← q.mk'_num_den, mk'_pow, mk'_mul_mk']
     · congr
     · rw [mk'_pow, Int.natAbs_pow]
@@ -386,11 +350,11 @@ theorem den_neg_eq_den (q : ℚ) : (-q).den = q.den :=
 theorem num_neg_eq_neg_num (q : ℚ) : (-q).num = -q.num :=
   rfl
 
-@[simp]
+-- Not `@[simp]` as `num_ofNat` is stronger.
 theorem num_zero : Rat.num 0 = 0 :=
   rfl
 
-@[simp]
+-- Not `@[simp]` as `den_ofNat` is stronger.
 theorem den_zero : Rat.den 0 = 1 :=
   rfl
 
@@ -399,7 +363,7 @@ lemma zero_of_num_zero {q : ℚ} (hq : q.num = 0) : q = 0 := by simpa [hq] using
 theorem zero_iff_num_zero {q : ℚ} : q = 0 ↔ q.num = 0 :=
   ⟨fun _ => by simp [*], zero_of_num_zero⟩
 
-@[simp]
+-- `Not `@[simp]` as `num_ofNat` is stronger.
 theorem num_one : (1 : ℚ).num = 1 :=
   rfl
 
@@ -458,13 +422,23 @@ theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
 instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
   ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
 
-@[deprecated (since := "2024-04-05")] alias coe_int_eq_divInt := intCast_eq_divInt
-@[deprecated (since := "2024-04-05")] alias coe_int_div_eq_divInt := intCast_div_eq_divInt
-
 -- Will be subsumed by `Int.coe_inj` after we have defined
 -- `LinearOrderedField ℚ` (which implies characteristic zero).
 theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
   ⟨congr_arg num, congr_arg _⟩
 
 end Casts
+
+/--
+A version of `Rat.casesOn` that uses `/` instead of `Rat.mk'`. Use as
+```lean
+cases r with
+| div p q nonzero coprime =>
+```
+-/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+def divCasesOn {C : ℚ → Sort*} (a : ℚ)
+    (div : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
+  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact div n d nz red
+
 end Rat

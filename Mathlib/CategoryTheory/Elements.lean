@@ -56,10 +56,10 @@ lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst =
 
 /-- The category structure on `F.Elements`, for `F : C ⥤ Type`.
     A morphism `(X, x) ⟶ (Y, y)` is a morphism `f : X ⟶ Y` in `C`, so `F.map f` takes `x` to `y`.
- -/
+-/
 instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
   Hom p q := { f : p.1 ⟶ q.1 // (F.map f) p.2 = q.2 }
-  id p := ⟨𝟙 p.1, by aesop_cat⟩
+  id p := ⟨𝟙 p.1, by simp⟩
   comp {X Y Z} f g := ⟨f.val ≫ g.val, by simp [f.2, g.2]⟩
 
 /-- Natural transformations are mapped to functors between category of elements -/
@@ -201,12 +201,11 @@ given by `CategoryTheory.yonedaEquiv`.
 @[simps]
 def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F where
   obj X := CostructuredArrow.mk (yonedaEquiv.symm (unop X).2)
-  map f := by
-    fapply CostructuredArrow.homMk
-    · exact f.unop.val.unop
-    · ext Z y
+  map f :=
+    CostructuredArrow.homMk f.unop.val.unop (by
+      ext Z y
       dsimp [yonedaEquiv]
-      simp only [FunctorToTypes.map_comp_apply, ← f.unop.2]
+      simp only [FunctorToTypes.map_comp_apply, ← f.unop.2])
 
 /-- The reverse direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
 given by `CategoryTheory.yonedaEquiv`.

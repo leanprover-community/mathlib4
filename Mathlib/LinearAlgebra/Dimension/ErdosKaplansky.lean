@@ -38,7 +38,7 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
   have aleph0_le : ℵ₀ ≤ Module.rank K (ℕ → K) := (rank_finsupp_self K ℕ).symm.trans_le
     (Finsupp.lcoeFun.rank_le_of_injective <| by exact DFunLike.coe_injective)
   refine max_le aleph0_le ?_
-  obtain card_K | card_K := le_or_lt #K ℵ₀
+  obtain card_K | card_K := le_or_gt #K ℵ₀
   · exact card_K.trans aleph0_le
   by_contra!
   obtain ⟨⟨ιK, bK⟩⟩ := Module.Free.exists_basis (R := K) (M := ℕ → K)
@@ -67,7 +67,7 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
     have := h.cardinal_lift_le_rank
     rw [lift_uzero, (LinearEquiv.piCongrRight fun _ ↦ MulOpposite.opLinearEquiv Lᵐᵒᵖ).rank_eq,
         rank_fun'] at this
-    exact (nat_lt_aleph0 _).not_le this
+    exact (nat_lt_aleph0 _).not_ge this
   obtain ⟨t, g, eq0, i, hi, hgi⟩ := not_linearIndependent_iff.mp this
   refine hgi (linearIndependent_iff'.mp (bL.linearIndependent.comp e e.injective) t g ?_ i hi)
   clear_value c s

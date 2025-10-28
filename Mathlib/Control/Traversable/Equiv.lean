@@ -113,12 +113,12 @@ variable {α β γ : Type u}
 
 open LawfulTraversable Functor
 
-protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = x := by
-  rw [Equiv.traverse, id_traverse, Id.map_eq, apply_symm_apply]
+protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = pure x := by
+  rw [Equiv.traverse, id_traverse, map_pure, apply_symm_apply]
 
 protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
     Equiv.traverse eqv ((pure : β → Id β) ∘ f) x = pure (Equiv.map eqv f x) := by
-  simp only [Equiv.traverse, traverse_eq_map_id, Id.map_eq, Id.pure_eq]; rfl
+  simp only [Equiv.traverse, traverse_eq_map_id, Id.run_map, Id.run_pure]; rfl
 
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =
@@ -158,7 +158,7 @@ protected theorem isLawfulTraversable' [Traversable t']
   toLawfulFunctor := Equiv.lawfulFunctor' eqv @h₀ @h₁
   id_traverse _ := by rw [h₂, Equiv.id_traverse]
   comp_traverse _ _ _ := by rw [h₂, Equiv.comp_traverse, h₂]; congr; rw [h₂]
-  traverse_eq_map_id _ _ := by rw [h₂, Equiv.traverse_eq_map_id, h₀]; rfl
+  traverse_eq_map_id _ _ := by rw [h₂, Equiv.traverse_eq_map_id, h₀]
   naturality _ _ _ _ _ := by rw [h₂, Equiv.naturality, h₂]
 
 end Equiv

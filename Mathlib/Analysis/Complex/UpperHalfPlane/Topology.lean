@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Complex.Convex
@@ -18,7 +18,6 @@ In this file we introduce a `TopologicalSpace` structure on the upper half plane
 various instances.
 -/
 
-
 noncomputable section
 
 open Complex Filter Function Set TopologicalSpace Topology
@@ -30,9 +29,6 @@ instance : TopologicalSpace ℍ :=
 
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
   IsOpen.isOpenEmbedding_subtypeVal <| isOpen_lt continuous_const Complex.continuous_im
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_coe := isOpenEmbedding_coe
 
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
   IsEmbedding.subtypeVal
@@ -70,6 +66,17 @@ instance : NoncompactSpace ℍ := by
 
 instance : LocallyCompactSpace ℍ :=
   isOpenEmbedding_coe.locallyCompactSpace
+
+/-- Each element of `GL(2, ℝ)` defines a continuous map `ℍ → ℍ`. -/
+instance instContinuousGLSMul : ContinuousConstSMul (GL (Fin 2) ℝ) ℍ where
+  continuous_const_smul g := by
+    simp_rw [continuous_induced_rng (f := UpperHalfPlane.coe), Function.comp_def,
+      UpperHalfPlane.coe_smul, UpperHalfPlane.σ]
+    refine .comp ?_ ?_
+    · split_ifs
+      exacts [continuous_id, continuous_conj]
+    · refine .div ?_ ?_ (fun x ↦ denom_ne_zero g x) <;>
+      exact (continuous_const.mul continuous_coe).add continuous_const
 
 section strips
 
@@ -140,7 +147,7 @@ lemma ofComplex_apply_eq_ite (w : ℂ) :
   · change (Function.invFunOn UpperHalfPlane.coe Set.univ w) = _
     simp only [invFunOn, dite_eq_right_iff, mem_univ, true_and]
     rintro ⟨a, rfl⟩
-    exact (a.prop.not_le (by simpa using hw)).elim
+    exact (a.prop.not_ge (by simpa using hw)).elim
 
 lemma ofComplex_apply_of_im_pos {z : ℂ} (hz : 0 < z.im) :
     ofComplex z = ⟨z, hz⟩ := by

@@ -8,7 +8,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
@@ -28,8 +28,9 @@ We prove the basic identities
 
 ## Notes
 
-See also `Mathlib.Analysis.SpecialFunctions.Bernstein`, which defines the Bernstein approximations
-of a continuous function `f : C([0,1], ℝ)`, and shows that these converge uniformly to `f`.
+See also `Mathlib/Analysis/SpecialFunctions/Bernstein.lean`, which defines the Bernstein
+approximations of a continuous function `f : C([0,1], ℝ)`, and shows that these converge uniformly
+to `f`.
 -/
 
 
@@ -87,7 +88,7 @@ theorem eval_at_1 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 1 = if ν = n
   rw [bernsteinPolynomial]
   split_ifs with h
   · subst h; simp
-  · obtain hνn | hnν := Ne.lt_or_lt h
+  · obtain hνn | hnν := Ne.lt_or_gt h
     · simp [zero_pow <| Nat.sub_ne_zero_of_lt hνn]
     · simp [Nat.choose_eq_zero_of_lt hnν]
 
@@ -134,7 +135,7 @@ theorem derivative_zero (n : ℕ) :
 
 theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
     k < ν → (Polynomial.derivative^[k] (bernsteinPolynomial R n ν)).eval 0 = 0 := by
-  cases' ν with ν
+  rcases ν with - | ν
   · rintro ⟨⟩
   · rw [Nat.lt_succ_iff]
     induction' k with k ih generalizing n ν
@@ -170,9 +171,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
         eval_natCast, Function.comp_apply, Function.iterate_succ, ascPochhammer_succ_left]
       obtain rfl | h'' := ν.eq_zero_or_pos
       · simp
-      · have : n - 1 - (ν - 1) = n - ν := by
-          rw [gt_iff_lt, ← Nat.succ_le_iff] at h''
-          rw [← tsub_add_eq_tsub_tsub, add_comm, tsub_add_cancel_of_le h'']
+      · have : n - 1 - (ν - 1) = n - ν := by omega
         rw [this, ascPochhammer_eval_succ]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
   · simp only [not_le] at h
@@ -236,12 +235,12 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       simp only [Nat.succ_eq_add_one, add_le_add_iff_right] at h
       simp only [Fin.val_last, Fin.init_def]
       dsimp
-      apply not_mem_span_of_apply_not_mem_span_image (@Polynomial.derivative ℚ _ ^ (n - k))
+      apply notMem_span_of_apply_notMem_span_image (@Polynomial.derivative ℚ _ ^ (n - k))
       -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `span_image` into `span_image _`
       simp only [not_exists, not_and, Submodule.mem_map, Submodule.span_image _]
       intro p m
       apply_fun Polynomial.eval (1 : ℚ)
-      simp only [LinearMap.pow_apply]
+      simp only [Module.End.pow_apply]
       -- The right hand side is nonzero,
       -- so it will suffice to show the left hand side is always zero.
       suffices (Polynomial.derivative^[n - k] p).eval 1 = 0 by

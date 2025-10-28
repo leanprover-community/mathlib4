@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 import Mathlib.Topology.Category.TopCat.Limits.Products
 
 /-!
@@ -32,7 +32,7 @@ A universe polymorphic "Yoneda presheaf" on `C` given by continuous maps into a 
 @[simps]
 def yonedaPresheaf : Cᵒᵖ ⥤ Type (max w w') where
   obj X := C(F.obj (unop X), Y)
-  map f g := ContinuousMap.comp g (F.map f.unop)
+  map f g := ContinuousMap.comp g (F.map f.unop).hom
 
 /--
 A universe polymorphic Yoneda presheaf on `TopCat` given by continuous maps into a topoological
@@ -41,7 +41,7 @@ space `Y`.
 @[simps]
 def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
   obj X := C((unop X).1, Y)
-  map f g := ContinuousMap.comp g f.unop
+  map f g := ContinuousMap.comp g f.unop.hom
 
 theorem comp_yonedaPresheaf' : yonedaPresheaf F Y = F.op ⋙ yonedaPresheaf' Y := rfl
 
@@ -59,7 +59,7 @@ theorem piComparison_fac {α : Type} (X : α → TopCat) :
 
 /-- The universe polymorphic Yoneda presheaf on `TopCat` preserves finite products. -/
 noncomputable instance : PreservesFiniteProducts (yonedaPresheaf'.{w, w'} Y) where
-  preserves _ _ :=
+  preserves _ :=
     { preservesLimit := fun {K} =>
       have : ∀ {α : Type} (X : α → TopCat), PreservesLimit (Discrete.functor (fun x ↦ op (X x)))
           (yonedaPresheaf'.{w, w'} Y) := fun X => @PreservesProduct.of_iso_comparison _ _ _ _

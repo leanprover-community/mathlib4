@@ -117,7 +117,7 @@ lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
   fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
     = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
-      (fderivWithin_eventually_congr_set h).fderivWithin_eq_nhds
+      (fderivWithin_eventually_congr_set h).fderivWithin_eq_of_nhds
   _ = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := fderivWithin_congr_set h
 
 lemma fderivWithin_fderivWithin_eq_of_mem_nhds {f : E → F} {x : E} {s : Set E}
@@ -155,16 +155,40 @@ theorem IsSymmSndFDerivAt.isSymmSndFDerivWithinAt (h : IsSymmSndFDerivAt 𝕜 f 
   simp only [← isSymmSndFDerivWithinAt_univ, ← contDiffWithinAt_univ] at h hf
   exact h.mono_of_mem_nhdsWithin univ_mem hf hs uniqueDiffOn_univ hx
 
+theorem isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    IsSymmSndFDerivWithinAt 𝕜 f s x ↔
+      (iteratedFDerivWithin 𝕜 2 f s x).domDomCongr Fin.revPerm =
+        iteratedFDerivWithin 𝕜 2 f s x := by
+  simp_rw [IsSymmSndFDerivWithinAt, ContinuousMultilinearMap.ext_iff, Fin.forall_fin_succ_pi,
+    Fin.forall_fin_zero_pi]
+  simp [iteratedFDerivWithin_two_apply f hs hx, eq_comm]
+
+theorem isSymmSndFDerivAt_iff_iteratedFDeriv :
+    IsSymmSndFDerivAt 𝕜 f x ↔
+      (iteratedFDeriv 𝕜 2 f x).domDomCongr Fin.revPerm = iteratedFDeriv 𝕜 2 f x := by
+  simp only [← isSymmSndFDerivWithinAt_univ, ← iteratedFDerivWithin_univ]
+  exact isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin uniqueDiffOn_univ (mem_univ _)
+
+theorem IsSymmSndFDerivWithinAt.iteratedFDerivWithin_cons {x v w : E}
+    {hf : IsSymmSndFDerivWithinAt 𝕜 f s x} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 2 f s x ![v, w] = iteratedFDerivWithin 𝕜 2 f s x ![w, v] := by
+  simp_rw [isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin hs hx, ContinuousMultilinearMap.ext_iff,
+    ContinuousMultilinearMap.domDomCongr_apply] at hf
+  convert hf ![w, v] using 2
+  ext i
+  fin_cases i <;> simp
+
+theorem IsSymmSndFDerivAt.iteratedFDeriv_cons {x v w : E} {hf : IsSymmSndFDerivAt 𝕜 f x} :
+    iteratedFDeriv 𝕜 2 f x ![v, w] = iteratedFDeriv 𝕜 2 f x ![w, v] := by
+  simp only [← isSymmSndFDerivWithinAt_univ, ← iteratedFDerivWithin_univ] at *
+  exact hf.iteratedFDerivWithin_cons uniqueDiffOn_univ (mem_univ _)
+
 /-- If a function is analytic within a set at a point, then its second derivative is symmetric. -/
 theorem ContDiffWithinAt.isSymmSndFDerivWithinAt_of_omega (hf : ContDiffWithinAt 𝕜 ω f s x)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
-  intro v w
-  rw [← iteratedFDerivWithin_two_apply' f hs hx, ← iteratedFDerivWithin_two_apply' f hs hx,
-    ← hf.iteratedFDerivWithin_comp_perm hs hx _ (Equiv.swap 0 1)]
-  congr
-  ext i
-  fin_cases i <;> rfl
+  rw [isSymmSndFDerivWithinAt_iff_iteratedFDerivWithin hs hx]
+  exact hf.domDomCongr_iteratedFDerivWithin hs hx _
 
 /-- If a function is analytic at a point, then its second derivative is symmetric. -/
 theorem ContDiffAt.isSymmSndFDerivAt_of_omega (hf : ContDiffAt 𝕜 ω f x) :
@@ -210,8 +234,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     apply (tendsto_order.1 this).2 δ
     simpa only [zero_mul] using δpos
   have E2 : ∀ᶠ h in 𝓝[>] (0 : ℝ), (h : ℝ) < 1 :=
-    mem_nhdsWithin_Ioi_iff_exists_Ioo_subset.2
-      ⟨(1 : ℝ), by simp only [mem_Ioi, zero_lt_one], fun x hx => hx.2⟩
+    mem_nhdsWithin_of_mem_nhds <| Iio_mem_nhds zero_lt_one
   filter_upwards [E1, E2, self_mem_nhdsWithin] with h hδ h_lt_1 hpos
   -- we consider `h` small enough that all points under consideration belong to this ball,
   -- and also with `0 < h < 1`.
@@ -485,6 +508,20 @@ noncomputable irreducible_def minSmoothness (n : WithTop ℕ∞) :=
 lemma le_minSmoothness {n : WithTop ℕ∞} : n ≤ minSmoothness 𝕜 n := by
   simp only [minSmoothness]
   split_ifs <;> simp
+
+lemma minSmoothness_add {n m : WithTop ℕ∞} : minSmoothness 𝕜 (n + m) = minSmoothness 𝕜 n + m := by
+  simp only [minSmoothness]
+  split_ifs <;> simp
+
+lemma minSmoothness_monotone : Monotone (minSmoothness 𝕜) := by
+  intro m n hmn
+  simp only [minSmoothness]
+  split_ifs <;> simp [hmn]
+
+@[simp] lemma minSmoothness_eq_infty {n : WithTop ℕ∞} :
+    minSmoothness 𝕜 n = ∞ ↔ (n = ∞ ∧ IsRCLikeNormedField 𝕜) := by
+  simp only [minSmoothness]
+  split_ifs with h <;> simp [h]
 
 /-- If `minSmoothness 𝕜 m ≤ n` for some (finite) integer `m`, then one can
 find `n' ∈ [minSmoothness 𝕜 m, n]` which is not `∞`: over `ℝ` or `ℂ`, just take `m`, and otherwise

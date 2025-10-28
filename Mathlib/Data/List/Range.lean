@@ -41,15 +41,11 @@ theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
 
-@[deprecated (since := "2024-08-19")] alias nthLe_range' := get_range'
-@[deprecated (since := "2024-08-19")] alias nthLe_range'_1 := getElem_range'_1
-@[deprecated (since := "2024-08-19")] alias nthLe_range := get_range
-
-
 section Ranges
 
-/-- From `l : List ℕ`, construct `l.ranges : List (List ℕ)` such that
-  `l.ranges.map List.length = l` and `l.ranges.join = range l.sum`
+/--
+From `l : List ℕ`, construct `l.ranges : List (List ℕ)` such that `l.ranges.map List.length = l`
+and `l.ranges.join = range l.sum`
 * Example: `[1,2,3].ranges = [[0],[1,2],[3,4,5]]` -/
 def ranges : List ℕ → List (List ℕ)
   | [] => nil
@@ -87,24 +83,6 @@ theorem ranges_length (l : List ℕ) :
     apply map_congr_left
     intro s _
     simp only [Function.comp_apply, length_map]
-
-set_option linter.deprecated false in
-/-- See `List.ranges_flatten` for the version about `List.sum`. -/
-@[deprecated "Use `List.ranges_flatten`." (since := "2024-10-17")]
-lemma ranges_flatten' : ∀ l : List ℕ, l.ranges.flatten = range (Nat.sum l)
-  | [] => rfl
-  | a :: l => by
-    simp only [ranges, flatten_cons, ← map_flatten, ranges_flatten', Nat.sum_cons, range_add]
-
-@[deprecated (since := "2024-10-15")] alias ranges_join' := ranges_flatten'
-
-set_option linter.deprecated false in
-/-- Any entry of any member of `l.ranges` is strictly smaller than `Nat.sum l`.
-See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
-@[deprecated "Use `List.mem_mem_ranges_iff_lt_sum`." (since := "2024-11-18")]
-lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
-    (∃ s ∈ l.ranges, n ∈ s) ↔ n < Nat.sum l := by
-  rw [← mem_range, ← ranges_flatten', mem_flatten]
 
 end Ranges
 

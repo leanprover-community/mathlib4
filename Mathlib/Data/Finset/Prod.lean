@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Oliver Nash
 -/
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Union
 
 /-!
 # Finsets in product types
@@ -41,6 +42,10 @@ protected def product (s : Finset α) (t : Finset β) : Finset (α × β) :=
 
 instance instSProd : SProd (Finset α) (Finset β) (Finset (α × β)) where
   sprod := Finset.product
+
+@[simp]
+theorem product_eq_sprod : Finset.product s t = s ×ˢ t :=
+  rfl
 
 @[simp]
 theorem product_val : (s ×ˢ t).1 = s.1 ×ˢ t.1 :=
@@ -88,6 +93,15 @@ theorem product_subset_product_left (hs : s ⊆ s') : s ×ˢ t ⊆ s' ×ˢ t :=
 theorem product_subset_product_right (ht : t ⊆ t') : s ×ˢ t ⊆ s ×ˢ t' :=
   product_subset_product (Subset.refl _) ht
 
+theorem prodMap_image_product {δ : Type*} [DecidableEq β] [DecidableEq δ]
+    (f : α → β) (g : γ → δ) (s : Finset α) (t : Finset γ) :
+    (s ×ˢ t).image (Prod.map f g) = s.image f ×ˢ t.image g :=
+  mod_cast Set.prodMap_image_prod f g s t
+
+theorem prodMap_map_product {δ : Type*} (f : α ↪ β) (g : γ ↪ δ) (s : Finset α) (t : Finset γ) :
+    (s ×ˢ t).map (f.prodMap g) = s.map f ×ˢ t.map g := by
+  simpa [← coe_inj] using Set.prodMap_image_prod f g s t
+
 theorem map_swap_product (s : Finset α) (t : Finset β) :
     (t ×ˢ s).map ⟨Prod.swap, Prod.swap_injective⟩ = s ×ˢ t :=
   coe_injective <| by
@@ -104,13 +118,13 @@ theorem image_swap_product [DecidableEq (α × β)] (s : Finset α) (t : Finset 
 theorem product_eq_biUnion [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ˢ t = s.biUnion fun a => t.image fun b => (a, b) :=
   ext fun ⟨x, y⟩ => by
-    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
+    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk_inj, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 
 theorem product_eq_biUnion_right [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ˢ t = t.biUnion fun b => s.image fun a => (a, b) :=
   ext fun ⟨x, y⟩ => by
-    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
+    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk_inj, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 
 /-- See also `Finset.sup_product_left`. -/
@@ -166,7 +180,7 @@ theorem empty_product (t : Finset β) : (∅ : Finset α) ×ˢ t = ∅ :=
 
 @[simp]
 theorem product_empty (s : Finset α) : s ×ˢ (∅ : Finset β) = ∅ :=
-  eq_empty_of_forall_not_mem fun _ h => not_mem_empty _ (Finset.mem_product.1 h).2
+  eq_empty_of_forall_notMem fun _ h => notMem_empty _ (Finset.mem_product.1 h).2
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.product (hs : s.Nonempty) (ht : t.Nonempty) : (s ×ˢ t).Nonempty :=
@@ -193,12 +207,12 @@ theorem product_eq_empty {s : Finset α} {t : Finset β} : s ×ˢ t = ∅ ↔ s 
 
 @[simp]
 theorem singleton_product {a : α} :
-    ({a} : Finset α) ×ˢ t = t.map ⟨Prod.mk a, Prod.mk.inj_left _⟩ := by
+    ({a} : Finset α) ×ˢ t = t.map ⟨Prod.mk a, Prod.mk_right_injective _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
 @[simp]
-theorem product_singleton {b : β} : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk.inj_right _⟩ := by
+lemma product_singleton : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk_left_injective _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
@@ -363,10 +377,8 @@ theorem offDiag_insert (has : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a
   rw [insert_eq, union_comm, offDiag_union (disjoint_singleton_right.2 has), offDiag_singleton,
     union_empty, union_right_comm]
 
-theorem offDiag_filter_lt_eq_filter_le {ι}
-    [PartialOrder ι] [DecidableEq ι]
-    [DecidableRel (LE.le (α := ι))] [DecidableRel (LT.lt (α := ι))]
-    (s : Finset ι) :
+theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι]
+    [DecidableEq ι] [DecidableLE ι] [DecidableLT ι] (s : Finset ι) :
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
   rw [Finset.filter_inj']
   rintro ⟨i, j⟩

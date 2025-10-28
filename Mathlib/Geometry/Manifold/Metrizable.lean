@@ -3,7 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Geometry.Manifold.IsManifold.Basic
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.Metrizable.Urysohn
 

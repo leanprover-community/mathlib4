@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.RingTheory.RingHom.FiniteType
+import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 
 /-!
 # Morphisms of finite type
@@ -38,7 +39,7 @@ class LocallyOfFiniteType (f : X ⟶ Y) : Prop where
     ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).hom.FiniteType
 
 instance : HasRingHomProperty @LocallyOfFiniteType RingHom.FiniteType where
-  isLocal_ringHomProperty := RingHom.finiteType_is_local
+  isLocal_ringHomProperty := RingHom.finiteType_isLocal
   eq_affineLocally' := by
     ext X Y f
     rw [locallyOfFiniteType_iff, affineLocally_iff_affineOpens_le]
@@ -66,5 +67,39 @@ open scoped TensorProduct in
 instance locallyOfFiniteType_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFiniteType :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finiteType_isStableUnderBaseChange
+
+instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace (Spec (.of R)) :=
+  inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
+
+instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
+  inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
+
+nonrec lemma LocallyOfFiniteType.jacobsonSpace
+  (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
+  wlog hY : ∃ S, Y = Spec S
+  · rw [(Scheme.OpenCover.isOpenCover_opensRange (Y.affineCover.pullbackCover f)).jacobsonSpace_iff]
+    intro i
+    have inst : LocallyOfFiniteType (Y.affineCover.pullbackHom f i) :=
+      MorphismProperty.pullback_snd _ _ inferInstance
+    have inst : JacobsonSpace Y := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
+    have inst : JacobsonSpace (Y.affineCover.obj i) :=
+      .of_isOpenEmbedding (Y.affineCover.map i).isOpenEmbedding
+    let e := ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding.isEmbedding.toHomeomorph
+    have := this (Y.affineCover.pullbackHom f i) ⟨_, rfl⟩
+    exact .of_isClosedEmbedding e.symm.isClosedEmbedding
+  obtain ⟨R, rfl⟩ := hY
+  wlog hX : ∃ S, X = Spec S
+  · have inst : JacobsonSpace (Spec R) := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
+    rw [X.affineCover.isOpenCover_opensRange.jacobsonSpace_iff]
+    intro i
+    have := this _ (X.affineCover.map i ≫ f) ⟨_, rfl⟩
+    let e := (X.affineCover.map i).isOpenEmbedding.isEmbedding.toHomeomorph
+    exact .of_isClosedEmbedding e.symm.isClosedEmbedding
+  obtain ⟨S, rfl⟩ := hX
+  obtain ⟨φ, rfl : Spec.map φ = f⟩ := Spec.homEquiv.symm.surjective f
+  have : RingHom.FiniteType φ.hom := HasRingHomProperty.Spec_iff.mp ‹_›
+  algebraize [φ.hom]
+  have := PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mpr ‹_›
+  exact PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mp (isJacobsonRing_of_finiteType (A := R))
 
 end AlgebraicGeometry

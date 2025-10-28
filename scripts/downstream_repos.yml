@@ -1,0 +1,31 @@
+# This file contains basic information about significant downstream repositories.
+# It is used by the `downstream-tags.py` script to check whether a given tag exists on the
+# downstream repositories.
+
+- github: https://github.com/ImperialCollegeLondon/FLT
+  default_branch: main
+  name: Fermat's Last Theorem
+- github: https://github.com/fpvandoorn/carleson
+  default_branch: master
+  name: Carleson operators on doubling metric measure spaces
+- github: https://github.com/emilyriehl/infinity-cosmos
+  default_branch: main
+  name: ∞-Cosmos
+- github: https://github.com/teorth/pfr
+  default_branch: master
+  name: The Polynomial Freiman-Ruzsa Conjecture
+- github: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  default_branch: main
+  name: Prime Number Theorem and ...
+- github: https://github.com/leanprover-community/sphere-eversion
+  default_branch: master
+  name: The sphere eversion project
+- github: https://github.com/YaelDillies/LeanCamCombi
+  default_branch: master
+  name: Cambridge Combinatorics in Lean
+- github: https://github.com/YaelDillies/add-combi
+  default_branch: master
+  name: add-combi
+- github: https://github.com/vihdzp/combinatorial-games
+  default_branch: master
+  name: Combinatorial Games in Lean

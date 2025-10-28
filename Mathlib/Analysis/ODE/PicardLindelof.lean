@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Winston Yin
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.MetricSpace.Contracting
 
@@ -63,11 +63,22 @@ The similarly named `IsPicardLindelof` is a bundled `Prop` holding the long hypo
 Picard-Lindelöf theorem as named arguments. It is used as part of the public API.
 -/
 structure PicardLindelof (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
+  /-- Function of the initial value problem -/
   toFun : ℝ → E → E
-  (tMin tMax : ℝ)
+  /-- Lower limit of `t` -/
+  tMin : ℝ
+  /-- Upper limit of `t` -/
+  tMax : ℝ
+  /-- Initial value of `t` -/
   t₀ : Icc tMin tMax
+  /-- Initial value of `x` -/
   x₀ : E
-  (C R L : ℝ≥0)
+  /-- Bound of the function over the region of interest -/
+  C : ℝ≥0
+  /-- Radius of closed ball in `x` over which the bound `C` holds -/
+  R : ℝ≥0
+  /-- Lipschitz constant of the function -/
+  L : ℝ≥0
   isPicardLindelof : IsPicardLindelof toFun tMin t₀ tMax x₀ L R C
 
 namespace PicardLindelof
@@ -142,6 +153,7 @@ Lipschitz continuous with constant $C$. The map sending $γ$ to
 $\mathbf Pγ(t)=x₀ + ∫_{t₀}^{t} v(τ, γ(τ))\,dτ$ is a contracting map on this space, and its fixed
 point is a solution of the ODE $\dot x=v(t, x)$. -/
 structure FunSpace where
+  /-- The particular curve represented by this object. -/
   toFun : Icc v.tMin v.tMax → E
   map_t₀' : toFun v.t₀ = v.x₀
   lipschitz' : LipschitzWith v.C toFun
@@ -173,9 +185,6 @@ instance : MetricSpace v.FunSpace :=
 theorem isUniformInducing_toContinuousMap : IsUniformInducing (@toContinuousMap _ _ _ v) :=
   ⟨rfl⟩
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_toContinuousMap := isUniformInducing_toContinuousMap
-
 theorem range_toContinuousMap :
     range toContinuousMap =
       {f : C(Icc v.tMin v.tMax, E) | f v.t₀ = v.x₀ ∧ LipschitzWith v.C f} := by
@@ -190,7 +199,7 @@ protected theorem mem_closedBall (t : Icc v.tMin v.tMax) : f t ∈ closedBall v.
   calc
     dist (f t) v.x₀ = dist (f t) (f.toFun v.t₀) := by rw [f.map_t₀']
     _ ≤ v.C * dist t v.t₀ := f.lipschitz.dist_le_mul _ _
-    _ ≤ v.C * v.tDist := mul_le_mul_of_nonneg_left (v.dist_t₀_le _) v.C.2
+    _ ≤ v.C * v.tDist := by gcongr; apply v.dist_t₀_le
     _ ≤ v.R := v.isPicardLindelof.C_mul_le_R
 
 /-- Given a curve $γ \colon [t_{\min}, t_{\max}] → E$, `PicardLindelof.vComp` is the function
@@ -203,7 +212,7 @@ theorem vComp_apply_coe (t : Icc v.tMin v.tMax) : f.vComp t = v t (f t) := by
   simp only [vComp, proj_coe]
 
 theorem continuous_vComp : Continuous f.vComp := by
-  have := (continuous_subtype_val.prod_mk f.continuous).comp v.continuous_proj
+  have := (continuous_subtype_val.prodMk f.continuous).comp v.continuous_proj
   refine ContinuousOn.comp_continuous v.continuousOn this fun x => ?_
   exact ⟨(v.proj x).2, f.mem_closedBall _⟩
 
@@ -252,7 +261,7 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
   simp only [dist_eq_norm, next_apply, add_sub_add_left_eq_sub, ←
     intervalIntegral.integral_sub (intervalIntegrable_vComp _ _ _)
       (intervalIntegrable_vComp _ _ _),
-    norm_integral_eq_norm_integral_Ioc] at *
+    norm_integral_eq_norm_integral_uIoc] at *
   calc
     ‖∫ τ in Ι (v.t₀ : ℝ) t, f₁.vComp τ - f₂.vComp τ‖ ≤
         ∫ τ in Ι (v.t₀ : ℝ) t, v.L * ((v.L * |τ - v.t₀|) ^ n / n ! * d) := by
@@ -263,8 +272,8 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
       rw [v.proj_of_mem]
       exact uIcc_subset_Icc v.t₀.2 t.2 <| Ioc_subset_Icc_self hτ
     _ = (v.L * |t.1 - v.t₀|) ^ (n + 1) / (n + 1)! * d := by
-      simp_rw [mul_pow, div_eq_mul_inv, mul_assoc, MeasureTheory.integral_mul_left,
-        MeasureTheory.integral_mul_right, integral_pow_abs_sub_uIoc, div_eq_mul_inv,
+      simp_rw [mul_pow, div_eq_mul_inv, mul_assoc, MeasureTheory.integral_const_mul,
+        MeasureTheory.integral_mul_const, integral_pow_abs_sub_uIoc, div_eq_mul_inv,
         pow_succ' (v.L : ℝ), Nat.factorial_succ, Nat.cast_mul, Nat.cast_succ, mul_inv, mul_assoc]
 
 theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v.tMin v.tMax) :

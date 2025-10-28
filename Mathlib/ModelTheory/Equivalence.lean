@@ -22,7 +22,7 @@ universe u v w w'
 
 open Cardinal CategoryTheory
 
-open Cardinal FirstOrder
+open FirstOrder
 
 namespace FirstOrder
 

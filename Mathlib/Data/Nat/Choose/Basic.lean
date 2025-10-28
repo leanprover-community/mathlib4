@@ -4,13 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Monotone.Defs
 
 /-!
 # Binomial coefficients
 
 This file defines binomial coefficients and proves simple lemmas (i.e. those not
 requiring more imports).
+For the lemma that `n.choose k` counts the `k`-element-subsets of an `n`-element set,
+see `Fintype.card_powersetCard` in `Mathlib/Data/Finset/Powerset.lean`.
 
 ## Main definition and results
 
@@ -23,12 +25,12 @@ requiring more imports).
   factorial. This is used to prove `Nat.choose_le_pow` and variants. We provide similar statements
   for the ascending factorial.
 * `Nat.multichoose`: whereas `choose` counts combinations, `multichoose` counts multicombinations.
-The fact that this is indeed the correct counting function for multisets is proved in
-`Sym.card_sym_eq_multichoose` in `Data.Sym.Card`.
+  The fact that this is indeed the correct counting function for multisets is proved in
+  `Sym.card_sym_eq_multichoose` in `Data.Sym.Card`.
 * `Nat.multichoose_eq` : a proof that `multichoose n k = (n + k - 1).choose k`.
-This is central to the "stars and bars" technique in informal mathematics, where we switch between
-counting multisets of size `k` over an alphabet of size `n` to counting strings of `k` elements
-("stars") separated by `n-1` dividers ("bars").  See `Data.Sym.Card` for more detail.
+  This is central to the "stars and bars" technique in informal mathematics, where we switch between
+  counting multisets of size `k` over an alphabet of size `n` to counting strings of `k` elements
+  ("stars") separated by `n-1` dividers ("bars").  See `Data.Sym.Card` for more detail.
 
 ## Tags
 
@@ -41,7 +43,8 @@ open Nat
 namespace Nat
 
 /-- `choose n k` is the number of `k`-element subsets in an `n`-element set. Also known as binomial
-coefficients. -/
+coefficients. For the fact that this is the number of `k`-element-subsets of an `n`-element
+set, see `Fintype.card_powersetCard`. -/
 def choose : ℕ → ℕ → ℕ
   | _, 0 => 1
   | 0, _ + 1 => 0
@@ -212,7 +215,7 @@ theorem choose_mul_succ_eq (n k : ℕ) : n.choose k * (n + 1) = (n + 1).choose k
   cases k with
   | zero => simp
   | succ k =>
-    obtain hk | hk := le_or_lt (k + 1) (n + 1)
+    obtain hk | hk := le_or_gt (k + 1) (n + 1)
     · rw [choose_succ_succ, Nat.add_mul, succ_sub_succ, ← choose_succ_right_eq, ← succ_sub_succ,
         Nat.mul_sub_left_distrib, Nat.add_sub_cancel' (Nat.mul_le_mul_left _ hk)]
     · rw [choose_eq_zero_of_lt hk, choose_eq_zero_of_lt (n.lt_succ_self.trans hk), Nat.zero_mul,
@@ -290,8 +293,8 @@ private theorem choose_le_middle_of_le_half_left {n r : ℕ} (hr : r ≤ n / 2) 
 
 /-- `choose n r` is maximised when `r` is `n/2`. -/
 theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
-  cases' le_or_gt r n with b b
-  · rcases le_or_lt r (n / 2) with a | h
+  rcases le_or_gt r n with b | b
+  · rcases le_or_gt r (n / 2) with a | h
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Paul Lezeau
 -/
 import Mathlib.Data.Set.NAry
-import Mathlib.Order.Bounds.Defs
+import Mathlib.Order.Bounds.Basic
 
 /-!
 
@@ -420,6 +420,39 @@ end AntitoneMonotone
 
 end Image2
 
+section IsCofinalFor
+variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α} {f : α → β}
+
+lemma IsCofinalFor.image_of_monotone (hst : IsCofinalFor s t) (hf : Monotone f) :
+    IsCofinalFor (f '' s) (f '' t) := by
+  simp only [IsCofinalFor, forall_mem_image, exists_mem_image]
+  rintro a ha
+  obtain ⟨b, hb, hab⟩ := hst ha
+  exact ⟨b, hb, hf hab⟩
+
+lemma IsCofinalFor.image_of_antitone (hst : IsCofinalFor s t) (hf : Antitone f) :
+    IsCoinitialFor (f '' s) (f '' t) := by
+  simp only [IsCoinitialFor, forall_mem_image, exists_mem_image]
+  rintro a ha
+  obtain ⟨b, hb, hab⟩ := hst ha
+  exact ⟨b, hb, hf hab⟩
+
+lemma IsCoinitialFor.image_of_monotone (hst : IsCoinitialFor s t) (hf : Monotone f) :
+    IsCoinitialFor (f '' s) (f '' t) := by
+  simp only [IsCoinitialFor, forall_mem_image, exists_mem_image]
+  rintro a ha
+  obtain ⟨b, hb, hba⟩ := hst ha
+  exact ⟨b, hb, hf hba⟩
+
+lemma IsCoinitialFor.image_of_antitone (hst : IsCoinitialFor s t) (hf : Antitone f) :
+    IsCofinalFor (f '' s) (f '' t) := by
+  simp only [IsCofinalFor, forall_mem_image, exists_mem_image]
+  rintro a ha
+  obtain ⟨b, hb, hba⟩ := hst ha
+  exact ⟨b, hb, hf hba⟩
+
+end IsCofinalFor
+
 section Prod
 
 variable {α β : Type*} [Preorder α] [Preorder β]
@@ -463,6 +496,12 @@ theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
     IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
   @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
 
+lemma Monotone.upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
+    (hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
+    upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
+  (upperBounds_mono_of_isCofinalFor (hd.isCofinalFor_fst_image_prod_snd_image.image_of_monotone hg))
+  (upperBounds_mono_set (image_mono subset_fst_image_prod_snd_image))
+
 end Prod
 
 
@@ -494,7 +533,7 @@ theorem isLUB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     refine
       ⟨fun H a => ⟨(Function.monotone_eval a).mem_upperBounds_image H.1, fun b hb => ?_⟩, fun H =>
         ⟨?_, ?_⟩⟩
-    · suffices h : Function.update f a b ∈ upperBounds s from Function.update_same a b f ▸ H.2 h a
+    · suffices h : Function.update f a b ∈ upperBounds s from Function.update_self a b f ▸ H.2 h a
       exact fun g hg => le_update_iff.2 ⟨hb <| mem_image_of_mem _ hg, fun i _ => H.1 hg i⟩
     · exact fun g hg a => (H a).1 (mem_image_of_mem _ hg)
     · exact fun g hg a => (H a).2 ((Function.monotone_eval a).mem_upperBounds_image hg)

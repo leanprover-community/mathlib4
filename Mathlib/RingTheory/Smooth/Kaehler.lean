@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.CotangentComplex
+import Mathlib.RingTheory.Extension.Cotangent.Basic
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Tactic.StacksAttribute
@@ -31,6 +31,8 @@ import Mathlib.Tactic.StacksAttribute
   then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → S ⊗[P] Ω[P⁄R]` is injective.
 - `Algebra.FormallySmooth.iff_subsingleton_and_projective`:
   An algebra is formally smooth if and only if `H¹(L_{R/S}) = 0` and `Ω_{S/R}` is projective.
+- `Algebra.Extension.equivH1CotangentOfFormallySmooth`:
+  Any formally smooth extension can be used to calculate `H¹(L_{S/R})`.
 
 ## Future projects
 
@@ -129,6 +131,8 @@ lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
   haveI := isScalarTower_of_section_of_ker_sqZero g hf' hg
   simp only [retractionOfSectionOfKerSqZero, AlgHom.toRingHom_eq_coe, LinearMap.coe_restrictScalars,
     LinearMap.liftBaseChange_tmul, SetLike.val_smul_of_tower]
+  -- The issue is a mismatch between `RingHom.ker (algebraMap P S)` and
+  -- `RingHom.ker (IsScalarTower.toAlgHom R P S)`, but `rw` and `simp` can't rewrite it away...
   erw [Derivation.liftKaehlerDifferential_comp_D]
   exact mul_sub (g s) t (g (algebraMap P S t))
 
@@ -343,7 +347,7 @@ def retractionKerCotangentToTensorEquivSection :
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
     exact (tensorKaehlerQuotKerSqEquiv_tmul_D 1 x.1).symm
   refine Equiv.trans ?_ (retractionKerToTensorEquivSection (R := R) h₂ h₁)
-  refine ⟨fun ⟨l, hl⟩ ↦ ⟨⟨(e₁.toLinearMap ∘ₗ l ∘ₗ e₂.toLinearMap).toAddMonoidHom, ?_⟩, ?_⟩,
+  refine ⟨fun ⟨l, hl⟩ ↦ ⟨⟨e₁.toLinearMap ∘ₗ l ∘ₗ e₂.toLinearMap, ?_⟩, ?_⟩,
     fun ⟨l, hl⟩ ↦ ⟨e₁.symm.toLinearMap ∘ₗ l.restrictScalars P ∘ₗ e₂.symm.toLinearMap, ?_⟩, ?_, ?_⟩
   · rintro x y
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
@@ -380,6 +384,8 @@ include hf in
 Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
 with kernel `I` (typically a presentation `R[X] → S`),
 `S` is formally smooth iff the `P`-linear map `I/I² → S ⊗[P] Ω[P⁄R]` is split injective.
+Also see `Algebra.Extension.formallySmooth_iff_split_injection`
+for the version in terms of `Extension`.
 -/
 @[stacks 031I]
 theorem Algebra.FormallySmooth.iff_split_injection :
@@ -387,6 +393,26 @@ theorem Algebra.FormallySmooth.iff_split_injection :
   have := (retractionKerCotangentToTensorEquivSection (R := R) hf).nonempty_congr
   simp only [nonempty_subtype] at this
   rw [this, ← Algebra.FormallySmooth.iff_split_surjection _ hf]
+
+/--
+Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
+with kernel `I` (typically a presentation `R[X] → S`),
+`S` is formally smooth iff the `P`-linear map `I/I² → S ⊗[P] Ω[P⁄R]` is split injective.
+-/
+@[stacks 031I]
+theorem Algebra.Extension.formallySmooth_iff_split_injection
+    (P : Algebra.Extension.{u} R S) [FormallySmooth R P.Ring] :
+    Algebra.FormallySmooth R S ↔ ∃ l, l ∘ₗ P.cotangentComplex = LinearMap.id := by
+  refine (Algebra.FormallySmooth.iff_split_injection P.algebraMap_surjective).trans ?_
+  let e : P.ker.Cotangent ≃ₗ[P.Ring] P.Cotangent :=
+    { __ := AddEquiv.refl _, map_smul' r m := by ext1; simp; rfl }
+  constructor
+  · intro ⟨l, hl⟩
+    exact ⟨(e.comp l).extendScalarsOfSurjective P.algebraMap_surjective,
+      LinearMap.ext (DFunLike.congr_fun hl : _)⟩
+  · intro ⟨l, hl⟩
+    exact ⟨e.symm.toLinearMap ∘ₗ l.restrictScalars P.Ring,
+      LinearMap.ext (DFunLike.congr_fun hl : _)⟩
 
 include hf in
 /--
@@ -446,4 +472,121 @@ theorem Algebra.FormallySmooth.iff_subsingleton_and_projective :
     (Generators.self R S).algebraMap_surjective).trans (and_congr ?_ Iff.rfl)
   show Function.Injective (Generators.self R S).toExtension.cotangentComplex ↔ _
   rw [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot]
-  rfl
+  simp [H1Cotangent, Extension.H1Cotangent]
+
+instance [Algebra.FormallySmooth R S] : Subsingleton (Algebra.H1Cotangent R S) :=
+  (Algebra.FormallySmooth.iff_subsingleton_and_projective.mp ‹_›).1
+
+namespace Algebra.Extension
+
+lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
+    Function.Bijective (CotangentSpace.map P.toInfinitesimal) := by
+  suffices CotangentSpace.map P.toInfinitesimal =
+      (tensorKaehlerQuotKerSqEquiv _ _ _).symm.toLinearMap by
+    rw [this]; exact(tensorKaehlerQuotKerSqEquiv _ _ _).symm.bijective
+  letI : Algebra P.Ring P.infinitesimal.Ring := inferInstanceAs (Algebra P.Ring (P.Ring ⧸ _))
+  have : IsScalarTower P.Ring P.infinitesimal.Ring S := .of_algebraMap_eq' rfl
+  apply LinearMap.restrictScalars_injective P.Ring
+  ext x a
+  dsimp
+  simp only [map_tmul, id.map_eq_id, RingHom.id_apply, Hom.toAlgHom_apply]
+  exact (tensorKaehlerQuotKerSqEquiv_symm_tmul_D _ _).symm
+
+lemma Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
+    Function.Bijective (Cotangent.map P.toInfinitesimal) := by
+  constructor
+  · rw [injective_iff_map_eq_zero]
+    intro x hx
+    obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
+    have hx : x.1 ∈ P.ker ^ 2 := by
+      apply_fun Cotangent.val at hx
+      simp only [map_mk, Hom.toAlgHom_apply, val_mk, val_zero, Ideal.toCotangent_eq_zero,
+        Extension.ker_infinitesimal] at hx
+      rw [Ideal.cotangentIdeal_square] at hx
+      simpa only [toInfinitesimal, Ideal.mem_bot, infinitesimal,
+        Ideal.Quotient.eq_zero_iff_mem] using hx
+    ext
+    simpa [Ideal.toCotangent_eq_zero]
+  · intro x
+    obtain ⟨⟨x, hx⟩, rfl⟩ := Cotangent.mk_surjective x
+    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+    rw [ker_infinitesimal, Ideal.mk_mem_cotangentIdeal] at hx
+    exact ⟨.mk ⟨x, hx⟩, rfl⟩
+
+lemma H1Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
+    Function.Bijective (H1Cotangent.map P.toInfinitesimal) := by
+  constructor
+  · intro x y e
+    ext1
+    exact (Cotangent.map_toInfinitesimal_bijective P).1 (congr_arg Subtype.val e)
+  · intro ⟨x, hx⟩
+    obtain ⟨x, rfl⟩ := (Cotangent.map_toInfinitesimal_bijective P).2 x
+    refine ⟨⟨x, ?_⟩, rfl⟩
+    simpa [← CotangentSpace.map_cotangentComplex,
+      map_eq_zero_iff _ (CotangentSpace.map_toInfinitesimal_bijective P).injective] using hx
+
+/--
+Given extensions `0 → I₁ → P₁ → S → 0` and `0 → I₂ → P₂ → S → 0` with `P₁` formally smooth,
+this is an arbitrarily chosen map `P₁/I₁² → P₂/I₂²` of extensions.
+-/
+noncomputable
+def homInfinitesimal (P₁ P₂ : Extension R S) [FormallySmooth R P₁.Ring] :
+    P₁.infinitesimal.Hom P₂.infinitesimal :=
+  letI lift : P₁.Ring →ₐ[R] P₂.infinitesimal.Ring := FormallySmooth.liftOfSurjective
+    (IsScalarTower.toAlgHom R P₁.Ring S)
+    (IsScalarTower.toAlgHom R P₂.infinitesimal.Ring S)
+    P₂.infinitesimal.algebraMap_surjective
+    ⟨2, show P₂.infinitesimal.ker ^ 2 = ⊥ by
+      rw [ker_infinitesimal]; exact Ideal.cotangentIdeal_square _⟩
+  { toRingHom := (Ideal.Quotient.liftₐ (P₁.ker ^ 2) lift (by
+        show P₁.ker ^ 2 ≤ RingHom.ker lift
+        rw [pow_two, Ideal.mul_le]
+        have : ∀ r ∈ P₁.ker, lift r ∈ P₂.infinitesimal.ker :=
+          fun r hr ↦ (FormallySmooth.liftOfSurjective_apply _
+            (IsScalarTower.toAlgHom R P₂.infinitesimal.Ring S) _ _ r).trans hr
+        intro r hr s hs
+        rw [RingHom.mem_ker, map_mul, ← Ideal.mem_bot, ← P₂.ker.cotangentIdeal_square,
+          ← ker_infinitesimal, pow_two]
+        exact Ideal.mul_mem_mul (this r hr) (this s hs))).toRingHom
+    toRingHom_algebraMap := by simp
+    algebraMap_toRingHom x := by
+      obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+      exact FormallySmooth.liftOfSurjective_apply _
+            (IsScalarTower.toAlgHom R P₂.infinitesimal.Ring S) _ _ x }
+
+/-- Formally smooth extensions have isomorphic `H¹(L_P)`. -/
+noncomputable
+def H1Cotangent.equivOfFormallySmooth (P₁ P₂ : Extension R S)
+    [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :
+    P₁.H1Cotangent ≃ₗ[S] P₂.H1Cotangent :=
+  .ofBijective _ (H1Cotangent.map_toInfinitesimal_bijective P₁) ≪≫ₗ
+    H1Cotangent.equiv (Extension.homInfinitesimal _ _) (Extension.homInfinitesimal _ _)
+    ≪≫ₗ .symm (.ofBijective _ (H1Cotangent.map_toInfinitesimal_bijective P₂))
+
+lemma H1Cotangent.equivOfFormallySmooth_toLinearMap {P₁ P₂ : Extension R S} (f : P₁.Hom P₂)
+    [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :
+    (H1Cotangent.equivOfFormallySmooth P₁ P₂).toLinearMap = map f := by
+  ext1 x
+  refine (LinearEquiv.symm_apply_eq _).mpr ?_
+  show ((map (P₁.homInfinitesimal P₂)).restrictScalars S ∘ₗ map P₁.toInfinitesimal) x =
+    ((map P₂.toInfinitesimal).restrictScalars S ∘ₗ map f) x
+  rw [← map_comp, ← map_comp, map_eq]
+
+lemma H1Cotangent.equivOfFormallySmooth_apply {P₁ P₂ : Extension R S} (f : P₁.Hom P₂)
+    [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] (x) :
+    H1Cotangent.equivOfFormallySmooth P₁ P₂ x = map f x := by
+  rw [← equivOfFormallySmooth_toLinearMap]; rfl
+
+lemma H1Cotangent.equivOfFormallySmooth_symm (P₁ P₂ : Extension R S)
+    [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :
+    (equivOfFormallySmooth P₁ P₂).symm = equivOfFormallySmooth P₂ P₁ := rfl
+
+/-- Any formally smooth extension can be used to calculate `H¹(L_{S/R})`. -/
+noncomputable
+def equivH1CotangentOfFormallySmooth (P : Extension R S) [FormallySmooth R P.Ring] :
+    P.H1Cotangent ≃ₗ[S] H1Cotangent R S :=
+  have : FormallySmooth R (Generators.self R S).toExtension.Ring :=
+    inferInstanceAs (FormallySmooth R (MvPolynomial _ _))
+  H1Cotangent.equivOfFormallySmooth _ _
+
+end Algebra.Extension

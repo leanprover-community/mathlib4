@@ -152,9 +152,8 @@ theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : 
 theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+* K}
     (hf : Function.Injective f) {r s : S} (hr : eval₂ f (f r / f s) p = 0)
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
-  -- The proof works without this option, but *much* slower.
-  set_option tactic.skipAssignedInstances false in
-  nontriviality S using Subsingleton.eq_zero
+  -- if we don't specify the type with `(_ : S)`, the proof is much slower
+  nontriviality S using Subsingleton.eq_zero (_ : S)
   convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
   rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
@@ -179,7 +178,7 @@ lemma mul_scaleRoots (p q : R[X]) (r : R) :
   trans (∑ x ∈ Finset.antidiagonal n, coeff p x.1 * coeff q x.2) *
     r ^ (natDegree p + natDegree q - n)
   · rw [← coeff_mul]
-    cases lt_or_le (natDegree (p * q)) n with
+    cases lt_or_ge (natDegree (p * q)) n with
     | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
     | inr h =>
       rw [mul_comm, mul_assoc, ← pow_add, add_comm, tsub_add_tsub_cancel natDegree_mul_le h]
@@ -187,10 +186,10 @@ lemma mul_scaleRoots (p q : R[X]) (r : R) :
     apply Finset.sum_congr rfl
     simp only [Finset.mem_antidiagonal, coeff_scaleRoots, Prod.forall]
     intros a b e
-    cases lt_or_le (natDegree p) a with
+    cases lt_or_ge (natDegree p) a with
     | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
     | inr ha =>
-      cases lt_or_le (natDegree q) b with
+      cases lt_or_ge (natDegree q) b with
       | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
       | inr hb =>
         simp only [← e, mul_assoc, mul_comm (r ^ (_ - a)), ← pow_add]
@@ -216,7 +215,7 @@ lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = nat
   Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
   but this now causes a max rec depth error. -/
   rw [mul_assoc, ← pow_add]
-  cases lt_or_le (natDegree (p + q)) n with
+  cases lt_or_ge (natDegree (p + q)) n with
   | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]
   | inr hn =>
       rw [add_comm (_ - n), tsub_add_tsub_cancel (natDegree_add_le_of_degree_le le_rfl h.ge) hn]

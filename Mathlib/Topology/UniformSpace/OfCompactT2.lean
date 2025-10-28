@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Compact separated uniform spaces
@@ -79,14 +79,14 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
       · simp only [W, mem_union, mem_prod, and_self_iff]
         exact (_root_.em _).imp_left fun h => union_subset_union VU₁ VU₂ h
     -- So W ○ W ∈ F by definition of F
-    have : W ○ W ∈ F := @mem_lift' _ _ _ (fun s => s ○ s) _ W_in
-      -- Porting note: was `by simpa only using mem_lift' W_in`
+    have : W ○ W ∈ F := by simpa only using mem_lift' W_in
     -- And V₁ ×ˢ V₂ ∈ 𝓝 (x, y)
     have hV₁₂ : V₁ ×ˢ V₂ ∈ 𝓝 (x, y) := prod_mem_nhds V₁_in V₂_in
     -- But (x, y) is also a cluster point of F so (V₁ ×ˢ V₂) ∩ (W ○ W) ≠ ∅
     -- However the construction of W implies (V₁ ×ˢ V₂) ∩ (W ○ W) = ∅.
     -- Indeed assume for contradiction there is some (u, v) in the intersection.
-    obtain ⟨⟨u, v⟩, ⟨u_in, v_in⟩, w, huw, hwv⟩ := clusterPt_iff.mp hxy.of_inf_left hV₁₂ this
+    obtain ⟨⟨u, v⟩, ⟨u_in, v_in⟩, w, huw, hwv⟩ :=
+      clusterPt_iff_nonempty.mp hxy.of_inf_left hV₁₂ this
     -- So u ∈ V₁, v ∈ V₂, and there exists some w such that (u, w) ∈ W and (w ,v) ∈ W.
     -- Because u is in V₁ which is disjoint from U₂ and U₃, (u, w) ∈ W forces (u, w) ∈ U₁ ×ˢ U₁.
     have uw_in : (u, w) ∈ U₁ ×ˢ U₁ :=
@@ -104,4 +104,4 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     rw [iSup_split_single _ x, comap_const_of_mem fun V => mem_of_mem_nhds]
     suffices ∀ y ≠ x, comap (fun _ : γ ↦ x) (𝓝 y) ⊓ 𝓝 y ≤ 𝓝 x by simpa
     intro y hxy
-    simp [comap_const_of_not_mem (compl_singleton_mem_nhds hxy) (not_not_intro rfl)]
+    simp [comap_const_of_notMem (compl_singleton_mem_nhds hxy) (not_not_intro rfl)]

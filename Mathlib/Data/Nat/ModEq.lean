@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Int.GCD
+import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Congruences modulo a natural number
@@ -23,8 +24,7 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 ModEq, congruence, mod, MOD, modulo
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Function.support
+assert_not_exists OrderedAddCommMonoid Function.support
 
 namespace Nat
 
@@ -121,7 +121,7 @@ protected theorem pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a + c ≡ b + d [MOD n] := by
-  rw [modEq_iff_dvd, Int.ofNat_add, Int.ofNat_add, add_sub_add_comm]
+  rw [modEq_iff_dvd, Int.natCast_add, Int.natCast_add, add_sub_add_comm]
   exact Int.dvd_add h₁.dvd h₂.dvd
 
 @[gcongr]
@@ -134,7 +134,7 @@ protected theorem add_right (c : ℕ) (h : a ≡ b [MOD n]) : a + c ≡ b + c [M
 
 protected theorem add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b + d [MOD n]) :
     c ≡ d [MOD n] := by
-  simp only [modEq_iff_dvd, Int.ofNat_add] at *
+  simp only [modEq_iff_dvd, Int.natCast_add] at *
   rw [add_sub_add_comm] at h₂
   convert Int.dvd_sub h₂ h₁ using 1
   rw [add_sub_cancel_left]
@@ -333,7 +333,7 @@ theorem chineseRemainder_lt_mul (co : n.Coprime m) (a b : ℕ) (hn : n ≠ 0) (h
   lt_of_lt_of_le (chineseRemainder'_lt_lcm _ hn hm) (le_of_eq co.lcm_eq_mul)
 
 theorem mod_lcm (hn : a ≡ b [MOD n]) (hm : a ≡ b [MOD m]) : a ≡ b [MOD lcm n m] :=
-  Nat.modEq_iff_dvd.mpr <| Int.lcm_dvd (Nat.modEq_iff_dvd.mp hn) (Nat.modEq_iff_dvd.mp hm)
+  Nat.modEq_iff_dvd.mpr <| Int.coe_lcm_dvd (Nat.modEq_iff_dvd.mp hn) (Nat.modEq_iff_dvd.mp hm)
 
 theorem chineseRemainder_modEq_unique (co : n.Coprime m) {a b z}
     (hzan : z ≡ a [MOD n]) (hzbm : z ≡ b [MOD m]) : z ≡ chineseRemainder co a b [MOD n*m] := by
@@ -378,28 +378,15 @@ theorem add_mod_add_ite (a b c : ℕ) :
     · rw [Nat.mod_eq_of_lt (lt_of_not_ge h), add_zero]
 
 theorem add_mod_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
-    (a + b) % c = a % c + b % c := by rw [← add_mod_add_ite, if_neg (not_le_of_lt hc), add_zero]
+    (a + b) % c = a % c + b % c := by rw [← add_mod_add_ite, if_neg (not_le_of_gt hc), add_zero]
 
 theorem add_mod_add_of_le_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) :
     (a + b) % c + c = a % c + b % c := by rw [← add_mod_add_ite, if_pos hc]
 
-theorem add_div {a b c : ℕ} (hc0 : 0 < c) :
-    (a + b) / c = a / c + b / c + if c ≤ a % c + b % c then 1 else 0 := by
-  rw [← mul_right_inj' hc0.ne', ← @add_left_cancel_iff _ _ _ ((a + b) % c + a % c + b % c)]
-  suffices
-    (a + b) % c + c * ((a + b) / c) + a % c + b % c =
-      (a % c + c * (a / c) + (b % c + c * (b / c)) + c * if c ≤ a % c + b % c then 1 else 0) +
-        (a + b) % c
-    by simpa only [mul_add, add_comm, add_left_comm, add_assoc]
-  rw [mod_add_div, mod_add_div, mod_add_div, mul_ite, add_assoc, add_assoc]
-  conv_lhs => rw [← add_mod_add_ite]
-  simp only [mul_one, mul_zero]
-  ac_rfl
-
 theorem add_div_eq_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
     (a + b) / c = a / c + b / c :=
   if hc0 : c = 0 then by simp [hc0]
-  else by rw [add_div (Nat.pos_of_ne_zero hc0), if_neg (not_le_of_lt hc), add_zero]
+  else by rw [Nat.add_div (Nat.pos_of_ne_zero hc0), if_neg (not_le_of_gt hc), add_zero]
 
 protected theorem add_div_of_dvd_right {a b c : ℕ} (hca : c ∣ a) : (a + b) / c = a / c + b / c :=
   if h : c = 0 then by simp [h]
@@ -413,7 +400,7 @@ protected theorem add_div_of_dvd_left {a b c : ℕ} (hca : c ∣ b) : (a + b) / 
   rwa [add_comm, Nat.add_div_of_dvd_right, add_comm]
 
 theorem add_div_eq_of_le_mod_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) (hc0 : 0 < c) :
-    (a + b) / c = a / c + b / c + 1 := by rw [add_div hc0, if_pos hc]
+    (a + b) / c = a / c + b / c + 1 := by rw [Nat.add_div hc0, if_pos hc]
 
 theorem add_div_le_add_div (a b c : ℕ) : a / c + b / c ≤ (a + b) / c :=
   if hc0 : c = 0 then by simp [hc0]
@@ -443,7 +430,7 @@ theorem odd_of_mod_four_eq_one {n : ℕ} : n % 4 = 1 → n % 2 = 1 := by
 theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
   simpa [ModEq] using @ModEq.of_mul_left 2 n 3 2
 
-/-- A natural number is odd iff it has residue `1` or `3` mod `4`-/
+/-- A natural number is odd iff it has residue `1` or `3` mod `4`. -/
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>

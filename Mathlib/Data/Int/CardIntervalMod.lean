@@ -12,9 +12,9 @@ import Mathlib.Order.Interval.Finset.Nat
 /-!
 # Counting elements in an interval with given residue
 
-The theorems in this file generalise `Nat.card_multiples` in `Mathlib.Data.Nat.Factorization.Basic`
-to all integer intervals and any fixed residue (not just zero, which reduces to the multiples).
-Theorems are given for `Ico` and `Ioc` intervals.
+The theorems in this file generalise `Nat.card_multiples` in
+`Mathlib/Data/Nat/Factorization/Basic.lean` to all integer intervals and any fixed residue (not just
+zero, which reduces to the multiples). Theorems are given for `Ico` and `Ioc` intervals.
 -/
 
 
@@ -124,10 +124,11 @@ theorem count_modEq_card_eq_ceil (v : ℕ) :
     b.count (· ≡ v [MOD r]) = ⌈(b - (v % r : ℕ)) / (r : ℚ)⌉ := by
   have hr' : 0 < (r : ℚ) := by positivity
   rw [count_eq_card_filter_range, ← Ico_zero_eq_range, Ico_filter_modEq_card _ _ hr,
-    max_eq_left (sub_nonneg.mpr <| by gcongr <;> positivity)]
+    max_eq_left (sub_nonneg.mpr <| by gcongr; positivity)]
   conv_lhs =>
     rw [← div_add_mod v r, cast_add, cast_mul, add_comm]
-    tactic => simp_rw [← sub_sub, sub_div (_ - _), mul_div_cancel_left₀ _ hr'.ne', ceil_sub_nat]
+    tactic => simp_rw [← sub_sub, sub_div (_ - _), mul_div_cancel_left₀ _ hr'.ne',
+      Int.ceil_sub_natCast]
     rw [sub_sub_sub_cancel_right, cast_zero, zero_sub]
   rw [sub_eq_self, ceil_eq_zero_iff, Set.mem_Ioc, div_le_iff₀ hr', lt_div_iff₀ hr', neg_one_mul,
     zero_mul, neg_lt_neg_iff, cast_lt]
@@ -140,7 +141,7 @@ theorem count_modEq_card (v : ℕ) :
   have hr' : 0 < (r : ℚ) := by positivity
   rw [← ofNat_inj, count_modEq_card_eq_ceil _ hr, cast_add]
   conv_lhs => rw [← div_add_mod b r, cast_add, cast_mul, ← add_sub, _root_.add_div,
-    mul_div_cancel_left₀ _ hr'.ne', add_comm, Int.ceil_add_nat, add_comm]
+    mul_div_cancel_left₀ _ hr'.ne', add_comm, Int.ceil_add_natCast, add_comm]
   rw [add_right_inj]
   split_ifs with h
   · rw [← cast_sub h.le, Int.ceil_eq_iff, div_le_iff₀ hr', lt_div_iff₀ hr', cast_one, Int.cast_one,

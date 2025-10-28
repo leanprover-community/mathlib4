@@ -11,6 +11,11 @@ import Mathlib.CategoryTheory.Iso
 
 We provide the category instance on `C ⥤ D`, with morphisms the natural transformations.
 
+At the end of the file, we provide the left and right unitors, and the associator,
+for functor composition.
+(In fact functor composition is definitionally associative, but very often relying on this causes
+extremely slow elaboration, so it is better to insert it explicitly.)
+
 ## Universes
 
 If `C` and `D` are both small categories at the same universe level,
@@ -97,7 +102,7 @@ theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
     ext X
     rw [← cancel_epi (α.app X), ← comp_app, eq, comp_app]⟩
 
-/-- The monoid of natural transformations of the identity is commutative.-/
+/-- The monoid of natural transformations of the identity is commutative. -/
 lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
   ext X
   exact (α.naturality (β.app X)).symm
@@ -128,8 +133,6 @@ theorem exchange {I J K : D ⥤ E} (α : F ⟶ G) (β : G ⟶ H) (γ : I ⟶ J) 
 
 end NatTrans
 
-open NatTrans
-
 namespace Functor
 
 /-- Flip the arguments of a bifunctor. See also `Currying.lean`. -/
@@ -139,6 +142,37 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
     { obj := fun j => (F.obj j).obj k,
       map := fun f => (F.map f).app k, }
   map f := { app := fun j => (F.obj j).map f }
+
+
+/-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
+-/
+@[simps]
+def leftUnitor (F : C ⥤ D) :
+    𝟭 C ⋙ F ≅ F where
+  hom := { app := fun X => 𝟙 (F.obj X) }
+  inv := { app := fun X => 𝟙 (F.obj X) }
+
+/-- The right unitor, a natural isomorphism `(F ⋙ (𝟭 B)) ≅ F`.
+-/
+@[simps]
+def rightUnitor (F : C ⥤ D) :
+    F ⋙ 𝟭 D ≅ F where
+  hom := { app := fun X => 𝟙 (F.obj X) }
+  inv := { app := fun X => 𝟙 (F.obj X) }
+
+/-- The associator for functors, a natural isomorphism `((F ⋙ G) ⋙ H) ≅ (F ⋙ (G ⋙ H))`.
+
+(In fact, `iso.refl _` will work here, but it tends to make Lean slow later,
+and it's usually best to insert explicit associators.)
+-/
+@[simps]
+def associator (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') :
+    (F ⋙ G) ⋙ H ≅ F ⋙ G ⋙ H where
+  hom := { app := fun _ => 𝟙 _ }
+  inv := { app := fun _ => 𝟙 _ }
+
+protected theorem assoc (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') : (F ⋙ G) ⋙ H = F ⋙ G ⋙ H :=
+  rfl
 
 end Functor
 
@@ -167,10 +201,5 @@ theorem map_inv_hom_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Z : D) :
   simp [← NatTrans.comp_app, ← Functor.map_comp]
 
 end Iso
-
-@[deprecated (since := "2024-06-09")] alias map_hom_inv_app := Iso.map_hom_inv_id_app
-@[deprecated (since := "2024-06-09")] alias map_inv_hom_app := Iso.map_inv_hom_id_app
-@[deprecated (since := "2024-06-09")] alias map_hom_inv_app_assoc := Iso.map_hom_inv_id_app_assoc
-@[deprecated (since := "2024-06-09")] alias map_inv_hom_app_assoc := Iso.map_inv_hom_id_app_assoc
 
 end CategoryTheory

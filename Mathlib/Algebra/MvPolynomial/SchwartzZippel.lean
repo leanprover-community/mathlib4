@@ -3,14 +3,15 @@ Copyright (c) 2023 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Yaël Dillies, Andrew Yang
 -/
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.Order.Group.Finset
 import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Data.Fin.Tuple.Finset
 import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.GCongr
 
 /-!
 # The Schwartz-Zippel lemma
@@ -57,7 +58,7 @@ namespace MvPolynomial
 variable {R : Type*} [CommRing R] [IsDomain R] [DecidableEq R]
 
 -- A user should be able to provide `hp` as a named argument
--- regardless of whether one has used pattern-maching or induction to prove the lemma.
+-- regardless of whether one has used pattern-matching or induction to prove the lemma.
 set_option linter.unusedVariables false in
 /-- The **Schwartz-Zippel lemma**
 
@@ -146,7 +147,7 @@ lemma schwartz_zippel_sup_sum :
         calc
           #{x₀ ∈ S 0 | eval (cons x₀ xₜ) p = 0} ≤ #pₓ.roots.toFinset := by
             gcongr
-            simp (config := { contextual := true }) [subset_iff, eval_eq_eval_mv_eval', pₓ, hpₓ₀]
+            simp +contextual [subset_iff, eval_eq_eval_mv_eval', pₓ, hpₓ₀, p']
           _ ≤ Multiset.card pₓ.roots := pₓ.roots.toFinset_card_le
           _ ≤ pₓ.natDegree := pₓ.card_roots'
           _ = k := hpₓdeg

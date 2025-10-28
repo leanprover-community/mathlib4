@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.Tactic.Abel
-
+import Mathlib.Algebra.AddTorsor.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Defs
 /-!
 # Affine maps
 
@@ -62,7 +62,7 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2 where
   coe := AffineMap.toFun
   coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
-    cases' (AddTorsor.nonempty : Nonempty P1) with p
+    obtain ⟨p⟩ := (AddTorsor.nonempty : Nonempty P1)
     congr with v
     apply vadd_right_cancel (f p)
     rw [← f_add, h, ← g_add]
@@ -206,8 +206,7 @@ section SMul
 variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
-  -- Porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
-  smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add, map_vadd f]⟩
+  smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add]⟩
   one_smul _ := ext fun _ => one_smul _ _
   mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
 
@@ -331,7 +330,7 @@ nonrec def id : P1 →ᵃ[k] P1 where
   map_vadd' _ _ := rfl
 
 /-- The identity affine map acts as the identity. -/
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(id k P1) = _root_.id :=
   rfl
 
@@ -428,8 +427,7 @@ theorem linear_bijective_iff (f : P1 →ᵃ[k] P2) :
 theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
-  -- Porting note: `simp` needs `Set.mem_vsub` to be an expression
-  simp only [(Set.mem_vsub), Set.mem_image,
+  simp only [Set.mem_vsub, Set.mem_image,
     exists_exists_and_eq_and, exists_and_left, ← f.linearMap_vsub]
   constructor
   · rintro ⟨x, hx, y, hy, hv⟩
@@ -500,13 +498,10 @@ theorem lineMap_eq_right_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c : k} 
     lineMap p₀ p₁ c = p₁ ↔ p₀ = p₁ ∨ c = 1 := by
   rw [← @lineMap_eq_lineMap_iff k V1, lineMap_apply_one]
 
-variable (k)
-
+variable (k) in
 theorem lineMap_injective [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} (h : p₀ ≠ p₁) :
     Function.Injective (lineMap p₀ p₁ : k → P1) := fun _c₁ _c₂ hc =>
   (lineMap_eq_lineMap_iff.mp hc).resolve_left h
-
-variable {k}
 
 @[simp]
 theorem apply_lineMap (f : P1 →ᵃ[k] P2) (p₀ p₁ : P1) (c : k) :
@@ -531,6 +526,7 @@ theorem lineMap_symm (p₀ p₁ : P1) :
   rw [comp_lineMap]
   simp
 
+@[simp]
 theorem lineMap_apply_one_sub (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ (1 - c) = lineMap p₁ p₀ c := by
   rw [lineMap_symm p₀, comp_apply]
   congr
@@ -581,7 +577,8 @@ theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ =>
   rw [decomp]
   simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
 
-theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
+theorem image_uIcc {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
+    (f : k →ᵃ[k] k) (a b : k) :
     f '' Set.uIcc a b = Set.uIcc (f a) (f b) := by
   have : ⇑f = (fun x => x + f 0) ∘ fun x => x * (f 1 - f 0) := by
     ext x
@@ -654,7 +651,7 @@ variable (R)
 domain with the space of linear maps, by taking the value of the affine map at `(0 : V1)` and the
 linear part.
 
-See note [bundled maps over different rings]-/
+See note [bundled maps over different rings] -/
 @[simps]
 def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) where
   toFun f := ⟨f 0, f.linear⟩
@@ -662,10 +659,10 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
   left_inv f := by
     ext
     rw [f.decomp]
-    simp [const_apply _ _]  -- Porting note: `simp` needs `_`s to use this lemma
+    simp [const_apply]
   right_inv := by
     rintro ⟨v, f⟩
-    ext <;> simp [const_apply _ _, const_linear _ _]  -- Porting note: `simp` needs `_`s
+    ext <;> simp [const_apply, const_linear]
   map_add' := by simp
   map_smul' := by simp
 
@@ -710,7 +707,7 @@ section Ext
 
 variable [Finite ι] [DecidableEq ι] {f g : ((i : ι) → φv i) →ᵃ[k] P2}
 
-/-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
+/-- Two affine maps from a Pi-type of modules `(i : ι) → φv i` are equal if they are equal in their
   operation on `Pi.single` and at zero. Analogous to `LinearMap.pi_ext`. See also `pi_ext_nonempty`,
   which instead of agreement at zero requires `Nonempty ι`. -/
 theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ : f 0 = g 0) :
@@ -727,9 +724,9 @@ theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ :
     rwa [s₂, s₃, h₂, vadd_right_cancel_iff] at s₁
   · exact h₂
 
-/-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
+/-- Two affine maps from a Pi-type of modules `(i : ι) → φv i` are equal if they are equal in their
   operation on `Pi.single` and `ι` is nonempty.  Analogous to `LinearMap.pi_ext`. See also
-  `pi_ext_zero`, which instead `Nonempty ι` requires agreement at 0.-/
+  `pi_ext_zero`, which instead of `Nonempty ι` requires agreement at 0. -/
 theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) :
     f = g := by
   apply pi_ext_zero h
@@ -738,7 +735,7 @@ theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.si
   apply h
 
 /-- This is used as the ext lemma instead of `AffineMap.pi_ext_nonempty` for reasons explained in
-note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'`-/
+note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'` -/
 @[ext (iff := false)]
 theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single _ _ i).toAffineMap =
     g.comp (LinearMap.single _ _ i).toAffineMap) : f = g := by

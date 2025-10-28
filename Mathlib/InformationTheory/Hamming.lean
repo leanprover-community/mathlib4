@@ -215,7 +215,7 @@ instance [∀ i, Inhabited (β i)] : Inhabited (Hamming β) :=
   ⟨fun _ => default⟩
 
 instance [DecidableEq ι] [Fintype ι] [∀ i, Fintype (β i)] : Fintype (Hamming β) :=
-  Pi.fintype
+  Pi.instFintype
 
 instance [Inhabited ι] [∀ i, Nonempty (β i)] [Nontrivial (β default)] : Nontrivial (Hamming β) :=
   Pi.nontrivial
@@ -243,6 +243,8 @@ instance [Zero α] [∀ i, Zero (β i)] [∀ i, SMulWithZero α (β i)] : SMulWi
 
 instance [∀ i, AddMonoid (β i)] : AddMonoid (Hamming β) :=
   Pi.addMonoid
+
+instance [∀ i, AddGroup (β i)] : AddGroup (Hamming β) := Pi.addGroup
 
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) :=
   Pi.addCommMonoid
@@ -384,7 +386,6 @@ theorem nndist_eq_hammingDist (x y : Hamming β) :
     nndist x y = hammingDist (ofHamming x) (ofHamming y) :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
 
 instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
@@ -396,15 +397,15 @@ instance [∀ i, Zero (β i)] : Norm (Hamming β) :=
 theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = hammingNorm (ofHamming x) :=
   rfl
 
--- Porting note: merged `SeminormedAddCommGroup` and `NormedAddCommGroup` instances
+instance [∀ i, AddGroup (β i)] : NormedAddGroup (Hamming β) where
+  dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
 
 instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
   dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
 
 @[simp, push_cast]
-theorem nnnorm_eq_hammingNorm [∀ i, AddCommGroup (β i)] (x : Hamming β) :
-    ‖x‖₊ = hammingNorm (ofHamming x) :=
-  rfl
+theorem nnnorm_eq_hammingNorm [∀ i, AddGroup (β i)] (x : Hamming β) :
+    ‖x‖₊ = hammingNorm (ofHamming x) := rfl
 
 end
 

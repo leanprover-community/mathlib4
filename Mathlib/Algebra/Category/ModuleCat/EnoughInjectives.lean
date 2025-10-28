@@ -3,11 +3,8 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.Algebra.Category.Grp.EnoughInjectives
-import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 
 /-!
 # Category of $R$-modules has enough injectives
@@ -19,6 +16,7 @@ we lift enough injectives of abelian groups to arbitrary $R$-modules by adjoint 
 open CategoryTheory
 
 universe v u
+
 variable (R : Type u) [Ring R]
 
 instance : EnoughInjectives (ModuleCat.{v} ℤ) :=
@@ -28,7 +26,6 @@ lemma ModuleCat.enoughInjectives : EnoughInjectives (ModuleCat.{max v u} R) :=
   EnoughInjectives.of_adjunction (ModuleCat.restrictCoextendScalarsAdj.{max v u} (algebraMap ℤ R))
 
 open ModuleCat in
-instance [UnivLE.{u,v}] : EnoughInjectives (ModuleCat.{v} R) :=
-  letI := (equivShrink.{v} R).symm.ring
+instance [Small.{v} R] : EnoughInjectives (ModuleCat.{v} R) :=
   letI := enoughInjectives.{v} (Shrink.{v} R)
   EnoughInjectives.of_equivalence (restrictScalars (equivShrink R).symm.ringEquiv.toRingHom)

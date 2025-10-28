@@ -38,12 +38,8 @@ lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
     _ ≤ ‖(mul 𝕜 E).flip a‖ * ‖b‖ := by
         simpa only [flip_apply, mul_apply', norm_star] using le_opNorm ((mul 𝕜 E).flip a) (star b)
 
-@[deprecated (since := "2024-02-02")] alias op_norm_mul_flip_apply := opNorm_mul_flip_apply
-
 lemma opNNNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖₊ = ‖a‖₊ :=
   Subtype.ext (opNorm_mul_flip_apply 𝕜 a)
-
-@[deprecated (since := "2024-02-02")] alias op_nnnorm_mul_flip_apply := opNNNorm_mul_flip_apply
 
 variable (E)
 
@@ -178,8 +174,10 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
 unital, `A⁺¹ ≃⋆ₐ[ℂ] (ℂ × A)`. -/
 scoped[CStarAlgebra] postfix:max "⁺¹" => Unitization ℂ
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance Unitization.instCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] :
     CStarAlgebra (Unitization ℂ A) where
+  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 noncomputable instance Unitization.instCommCStarAlgebra {A : Type*} [NonUnitalCommCStarAlgebra A] :
     CommCStarAlgebra (Unitization ℂ A) where

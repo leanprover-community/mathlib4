@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Rat.Defs
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # The rational numbers are a commutative ring
@@ -16,11 +17,7 @@ This file contains the commutative ring instance on the rational numbers.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Field
-assert_not_exists PNat
-assert_not_exists Nat.dvd_mul
-assert_not_exists IsDomain.toCancelMonoidWithZero
+assert_not_exists OrderedCommMonoid Field PNat Nat.gcd_greatest IsDomain.toCancelMonoidWithZero
 
 namespace Rat
 
@@ -62,7 +59,7 @@ These also prevent non-computable instances being used to construct these instan
 -/
 
 instance commSemiring : CommSemiring ℚ := by infer_instance
-instance semiring     : Semiring ℚ     := by infer_instance
+instance semiring : Semiring ℚ := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
@@ -96,7 +93,5 @@ lemma natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by rw [← Int.cast_natCast
   rw [divInt_mul_divInt _ _ this Int.one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
 
 @[simp] lemma den_mul_eq_num (q : ℚ) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
-
-@[deprecated (since := "2024-04-07")] alias coe_nat_eq_divInt := natCast_eq_divInt
 
 end Rat

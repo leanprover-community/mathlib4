@@ -75,7 +75,7 @@ variable {R S ι : Type*}
 
 instance [Star R] [Star S] [TopologicalSpace R] [TopologicalSpace S] [ContinuousStar R]
     [ContinuousStar S] : ContinuousStar (R × S) :=
-  ⟨(continuous_star.comp continuous_fst).prod_mk (continuous_star.comp continuous_snd)⟩
+  ⟨(continuous_star.comp continuous_fst).prodMk (continuous_star.comp continuous_snd)⟩
 
 instance {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Star (C i)]
     [∀ i, ContinuousStar (C i)] : ContinuousStar (∀ i, C i) where

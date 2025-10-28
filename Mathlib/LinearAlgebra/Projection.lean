@@ -73,7 +73,7 @@ def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
 @[simp]
 theorem quotientEquivOfIsCompl_symm_apply (h : IsCompl p q) (x : q) :
     -- Porting note: type ascriptions needed on the RHS
-    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk (x : E) : E ⧸ p) := rfl
+    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk x : E ⧸ p) := rfl
 
 @[simp]
 theorem quotientEquivOfIsCompl_apply_mk_coe (h : IsCompl p q) (x : q) :
@@ -147,6 +147,10 @@ theorem linearProjOfIsCompl_apply_left (h : IsCompl p q) (x : p) :
 @[simp]
 theorem linearProjOfIsCompl_range (h : IsCompl p q) : range (linearProjOfIsCompl p q h) = ⊤ :=
   range_eq_of_proj (linearProjOfIsCompl_apply_left h)
+
+theorem linearProjOfIsCompl_surjective (h : IsCompl p q) :
+    Function.Surjective (linearProjOfIsCompl p q h) :=
+  range_eq_top.mp (linearProjOfIsCompl_range h)
 
 @[simp]
 theorem linearProjOfIsCompl_apply_eq_zero_iff (h : IsCompl p q) {x : E} :
@@ -262,7 +266,7 @@ variable {R₁ : Type*} [CommRing R₁] [Module R₁ E] [Module R₁ F]
 def ofIsComplProd {p q : Submodule R₁ E} (h : IsCompl p q) :
     (p →ₗ[R₁] F) × (q →ₗ[R₁] F) →ₗ[R₁] E →ₗ[R₁] F where
   toFun φ := ofIsCompl h φ.1 φ.2
-  map_add' := by intro φ ψ; dsimp only; rw [Prod.snd_add, Prod.fst_add, ofIsCompl_add]
+  map_add' := by intro φ ψ; rw [Prod.snd_add, Prod.fst_add, ofIsCompl_add]
   map_smul' := by intro c φ; simp [Prod.smul_snd, Prod.smul_fst, ofIsCompl_smul]
 
 @[simp]
@@ -286,7 +290,7 @@ def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
 
 end
 
-@[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify, but it does
+@[simp]
 theorem linearProjOfIsCompl_of_proj (f : E →ₗ[R] p) (hf : ∀ x : p, f x = x) :
     p.linearProjOfIsCompl (ker f) (isCompl_of_proj hf) = f := by
   ext x
@@ -348,8 +352,6 @@ correspondence with linear maps to the submodule that restrict to the identity o
   invFun f := ⟨p.subtype ∘ₗ f.1, LinearMap.ext fun x ↦ by simp [f.2], le_antisymm
     ((range_comp_le_range _ _).trans_eq p.range_subtype)
     fun x hx ↦ ⟨x, Subtype.ext_iff.1 <| f.2 ⟨x, hx⟩⟩⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end Submodule
 
@@ -367,12 +369,11 @@ structure IsProj {F : Type*} [FunLike F M M] (f : F) : Prop where
   map_mem : ∀ x, f x ∈ m
   map_id : ∀ x ∈ m, f x = x
 
-theorem isProj_iff_idempotent (f : M →ₗ[S] M) : (∃ p : Submodule S M, IsProj p f) ↔ f ∘ₗ f = f := by
+theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
+    (∃ p : Submodule S M, IsProj p f) ↔ IsIdempotentElem f := by
   constructor
-  · intro h
-    obtain ⟨p, hp⟩ := h
+  · intro ⟨p, hp⟩
     ext x
-    rw [comp_apply]
     exact hp.map_id (f x) (hp.map_mem x)
   · intro h
     use range f
@@ -381,7 +382,9 @@ theorem isProj_iff_idempotent (f : M →ₗ[S] M) : (∃ p : Submodule S M, IsPr
       exact mem_range_self f x
     · intro x hx
       obtain ⟨y, hy⟩ := mem_range.1 hx
-      rw [← hy, ← comp_apply, h]
+      rw [← hy, ← Module.End.mul_apply, h]
+
+@[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
 
 namespace IsProj
 
@@ -416,8 +419,8 @@ theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
   rw [← LinearMap.comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
   ext x
   · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inl, coprod_apply, coe_subtype,
-      _root_.map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
-  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, _root_.map_zero,
+      map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
+  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, map_zero,
       coe_subtype, zero_add, map_coe_ker, prodMap_apply, zero_apply, add_zero]
 
 end IsProj

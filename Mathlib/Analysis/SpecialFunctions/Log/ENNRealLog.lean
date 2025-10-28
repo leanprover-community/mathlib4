@@ -3,8 +3,8 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Data.Real.EReal
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Data.EReal.Basic
 
 /-!
 # Extended Nonnegative Real Logarithm
@@ -57,7 +57,7 @@ lemma log_ofReal (x : ℝ) : log (ENNReal.ofReal x) = if x ≤ 0 then ⊥ else �
   · rw [ENNReal.toReal_ofReal (not_le.mp h_nonpos).le]
 
 lemma log_ofReal_of_pos {x : ℝ} (hx : 0 < x) : log (ENNReal.ofReal x) = Real.log x := by
-  rw [log_ofReal, if_neg hx.not_le]
+  rw [log_ofReal, if_neg hx.not_ge]
 
 theorem log_pos_real {x : ℝ≥0∞} (h : x ≠ 0) (h' : x ≠ ⊤) :
     log x = Real.log (ENNReal.toReal x) := by simp [log, h, h']
@@ -77,23 +77,7 @@ section Monotonicity
 theorem log_strictMono : StrictMono log := by
   intro x y h
   unfold log
-  rcases ENNReal.trichotomy x with (rfl | rfl | x_real)
-  · rcases ENNReal.trichotomy y with (rfl | rfl | y_real)
-    · exfalso; exact lt_irrefl 0 h
-    · simp
-    · simp [(ENNReal.toReal_pos_iff.1 y_real).1.ne',
-        (ENNReal.toReal_pos_iff.1 y_real).2.ne, EReal.bot_lt_coe]
-  · exfalso; exact not_top_lt h
-  · simp only [(ENNReal.toReal_pos_iff.1 x_real).1.ne',
-      (ENNReal.toReal_pos_iff.1 x_real).2.ne, if_false]
-    rcases ENNReal.trichotomy y with (rfl | rfl | y_real)
-    · exfalso; rw [← ENNReal.bot_eq_zero] at h; exact not_lt_bot h
-    · simp
-    · simp only [(ENNReal.toReal_pos_iff.1 y_real).1.ne', ↓reduceIte,
-        (ENNReal.toReal_pos_iff.1 y_real).2.ne, EReal.coe_lt_coe_iff]
-      apply Real.log_lt_log x_real
-      exact (ENNReal.toReal_lt_toReal (ENNReal.toReal_pos_iff.1 x_real).2.ne
-        (ENNReal.toReal_pos_iff.1 y_real).2.ne).2 h
+  split_ifs <;> simp_all [Real.log_lt_log, toReal_pos_iff, pos_iff_ne_zero, lt_top_iff_ne_top]
 
 theorem log_monotone : Monotone log := log_strictMono.monotone
 
@@ -101,15 +85,10 @@ theorem log_injective : Function.Injective log := log_strictMono.injective
 
 theorem log_surjective : Function.Surjective log := by
   intro y
-  cases' eq_bot_or_bot_lt y with y_bot y_nbot
-  · exact y_bot ▸ ⟨⊥, log_zero⟩
-  cases' eq_top_or_lt_top y with y_top y_ntop
-  · exact y_top ▸ ⟨⊤, log_top⟩
-  use ENNReal.ofReal (Real.exp y.toReal)
-  have exp_y_pos := not_le_of_lt (Real.exp_pos y.toReal)
-  simp only [log, ofReal_eq_zero, exp_y_pos, ↓reduceIte, ofReal_ne_top,
-    ENNReal.toReal_ofReal (Real.exp_pos y.toReal).le, Real.log_exp y.toReal]
-  exact EReal.coe_toReal y_ntop.ne y_nbot.ne'
+  cases y with
+  | bot => use 0; simp
+  | top => use ⊤; simp
+  | coe y => use ENNReal.ofReal (Real.exp y); simp [Real.exp_pos]
 
 theorem log_bijective : Function.Bijective log := ⟨log_injective, log_surjective⟩
 
@@ -139,6 +118,9 @@ theorem log_eq_iff {x y : ℝ≥0∞} : log x = log y ↔ x = y :=
 
 @[simp] lemma zero_le_log_iff {x : ℝ≥0∞} : 0 ≤ log x ↔ 1 ≤ x := log_one ▸ @log_le_log_iff 1 x
 
+@[gcongr] lemma log_le_log {x y : ℝ≥0∞} (h : x ≤ y) : log x ≤ log y := log_monotone h
+@[gcongr] lemma log_lt_log {x y : ℝ≥0∞} (h : x < y) : log x < log y := log_strictMono h
+
 end Monotonicity
 
 /-! ### Algebraic properties -/
@@ -164,20 +146,10 @@ theorem log_mul_add {x y : ℝ≥0∞} : log (x * y) = log x + log y := by
       rw [toReal_mul]
       positivity
 
-theorem log_pow {x : ℝ≥0∞} {n : ℕ} : log (x ^ n) = n * log x := by
-  cases' Nat.eq_zero_or_pos n with n_zero n_pos
-  · simp [n_zero, pow_zero x]
-  rcases ENNReal.trichotomy x with (rfl | rfl | x_real)
-  · rw [zero_pow n_pos.ne', log_zero, EReal.mul_bot_of_pos (Nat.cast_pos'.2 n_pos)]
-  · rw [ENNReal.top_pow n_pos, log_top, EReal.mul_top_of_pos (Nat.cast_pos'.2 n_pos)]
-  · replace x_real := ENNReal.toReal_pos_iff.1 x_real
-    simp only [log, pow_eq_zero_iff', x_real.1.ne', false_and, ↓reduceIte, pow_eq_top_iff,
-      x_real.2.ne, toReal_pow, Real.log_pow, EReal.coe_mul, EReal.coe_coe_eq_natCast]
-
 theorem log_rpow {x : ℝ≥0∞} {y : ℝ} : log (x ^ y) = y * log x := by
   rcases lt_trichotomy y 0 with (y_neg | rfl | y_pos)
   · rcases ENNReal.trichotomy x with (rfl | rfl | x_real)
-    · simp only [ENNReal.zero_rpow_def y, not_lt_of_lt y_neg, y_neg.ne, if_false, log_top,
+    · simp only [ENNReal.zero_rpow_def y, not_lt_of_gt y_neg, y_neg.ne, if_false, log_top,
         log_zero, EReal.coe_mul_bot_of_neg y_neg]
     · rw [ENNReal.top_rpow_of_neg y_neg, log_zero, log_top, EReal.coe_mul_top_of_neg y_neg]
     · have x_ne_zero := (ENNReal.toReal_pos_iff.1 x_real).1.ne'
@@ -196,6 +168,9 @@ theorem log_rpow {x : ℝ≥0∞} {y : ℝ} : log (x ^ y) = y * log x := by
         rpow_eq_top_iff]
       norm_cast
       exact ENNReal.toReal_rpow x y ▸ Real.log_rpow x_real y
+
+theorem log_pow {x : ℝ≥0∞} {n : ℕ} : log (x ^ n) = n * log x := by
+  rw [← rpow_natCast, log_rpow, EReal.coe_natCast]
 
 lemma log_inv {x : ℝ≥0∞} : log x⁻¹ = - log x := by
   simp [← rpow_neg_one, log_rpow]

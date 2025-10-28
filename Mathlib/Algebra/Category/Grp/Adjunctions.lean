@@ -5,7 +5,7 @@ Authors: Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -31,7 +31,6 @@ category of abelian groups.
   abelian groups to groups.
 -/
 
-
 noncomputable section
 
 universe u
@@ -45,9 +44,9 @@ free abelian group with generators `x : X`.
 -/
 def free : Type u ⥤ AddCommGrp where
   obj α := of (FreeAbelianGroup α)
-  map := FreeAbelianGroup.map
-  map_id _ := AddMonoidHom.ext FreeAbelianGroup.map_id_apply
-  map_comp _ _ := AddMonoidHom.ext FreeAbelianGroup.map_comp_apply
+  map f := ofHom (FreeAbelianGroup.map f)
+  map_id _ := AddCommGrp.ext FreeAbelianGroup.map_id_apply
+  map_comp _ _ := AddCommGrp.ext FreeAbelianGroup.map_comp_apply
 
 @[simp]
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup α :=
@@ -64,12 +63,12 @@ theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) 
 -/
 def adj : free ⊣ forget AddCommGrp.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => FreeAbelianGroup.lift.symm
+    { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans FreeAbelianGroup.lift.symm
       -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext
-        simp only [Equiv.symm_symm]
+        simp
         apply FreeAbelianGroup.lift_comp }
 
 instance : free.{u}.IsLeftAdjoint :=
@@ -110,28 +109,20 @@ namespace Grp
 -/
 def free : Type u ⥤ Grp where
   obj α := of (FreeGroup α)
-  map := FreeGroup.map
-  map_id := by
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    intros; ext1; erw [← FreeGroup.map.unique] <;> intros <;> rfl
-  map_comp := by
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    intros; ext1; erw [← FreeGroup.map.unique] <;> intros <;> rfl
+  map f := ofHom (FreeGroup.map f)
 
 /-- The free-forgetful adjunction for groups.
 -/
 def adj : free ⊣ forget Grp.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => FreeGroup.lift.symm
-      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext1; rfl`.
+    { homEquiv := fun _ _ => ConcreteCategory.homEquiv.trans FreeGroup.lift.symm
       homEquiv_naturality_left_symm := by
         intros
-        ext1
-        simp only [Equiv.symm_symm]
-        apply Eq.symm
-        apply FreeGroup.lift.unique
+        ext : 1
+        -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): `ext` doesn't apply this theorem anymore
+        apply FreeGroup.ext_hom
         intros
-        apply FreeGroup.lift.of }
+        rfl }
 
 instance : (forget Grp.{u}).IsRightAdjoint  :=
   ⟨_, ⟨adj⟩⟩
@@ -139,25 +130,31 @@ instance : (forget Grp.{u}).IsRightAdjoint  :=
 section Abelianization
 
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
- -/
+-/
 def abelianize : Grp.{u} ⥤ CommGrp.{u} where
   obj G := CommGrp.of (Abelianization G)
-  map f := Abelianization.lift (Abelianization.of.comp f)
+  map f := CommGrp.ofHom (Abelianization.lift (Abelianization.of.comp f.hom))
   map_id := by
-    intros; simp only [coe_id]
-    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
+    intros
+    ext : 1
+    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
+    rfl
   map_comp := by
-    intros; simp only [coe_comp]
-    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
+    intros
+    ext : 1
+    apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
+    rfl
 
 /-- The abelianization-forgetful adjuction from `Group` to `CommGroup`. -/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => Abelianization.lift.symm
+    { homEquiv := fun _ _ => ((ConcreteCategory.homEquiv (C := CommGrp)).trans
+        Abelianization.lift.symm).trans
+        (ConcreteCategory.homEquiv (C := Grp)).symm
       -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
         intros
-        ext1
+        ext
         simp only [Equiv.symm_symm]
         apply Eq.symm
         apply Abelianization.lift.unique
@@ -169,52 +166,52 @@ end Abelianization
 end Grp
 
 /-- The functor taking a monoid to its subgroup of units. -/
-@[simps]
+@[simps!]
 def MonCat.units : MonCat.{u} ⥤ Grp.{u} where
   obj R := Grp.of Rˣ
-  map f := Grp.ofHom <| Units.map f
-  map_id _ := MonoidHom.ext fun _ => Units.ext rfl
-  map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
+  map f := Grp.ofHom <| Units.map f.hom
+  map_id _ := Grp.ext fun _ => Units.ext rfl
+  map_comp _ _ := Grp.ext fun _ => Units.ext rfl
 
 /-- The forgetful-units adjunction between `Grp` and `MonCat`. -/
 def Grp.forget₂MonAdj : forget₂ Grp MonCat ⊣ MonCat.units.{u} := Adjunction.mk' {
-  homEquiv := fun _ Y ↦
-    { toFun := fun f => MonoidHom.toHomUnits f
-      invFun := fun f => (Units.coeHom Y).comp f
-      left_inv := fun _ => MonoidHom.ext fun _ => rfl
-      right_inv := fun _ => MonoidHom.ext fun _ => Units.ext rfl }
+  homEquiv _ Y :=
+    { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
+      invFun f := MonCat.ofHom ((Units.coeHom Y).comp f.hom) }
   unit :=
-    { app := fun X => { (@toUnits X _).toMonoidHom with }
-      naturality := fun _ _ _ => MonoidHom.ext fun _ => Units.ext rfl }
+    { app X := ofHom (@toUnits X _)
+      naturality _ _ _ := Grp.ext fun _ => Units.ext rfl }
   counit :=
-    { app := fun X => Units.coeHom X
-      naturality := by intros; exact MonoidHom.ext fun x => rfl } }
+    { app X := MonCat.ofHom (Units.coeHom X)
+      naturality _ _ _ := MonCat.ext fun _ => rfl } }
 
 instance : MonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨Grp.forget₂MonAdj⟩⟩
 
 /-- The functor taking a monoid to its subgroup of units. -/
-@[simps]
+@[simps!]
 def CommMonCat.units : CommMonCat.{u} ⥤ CommGrp.{u} where
   obj R := CommGrp.of Rˣ
-  map f := CommGrp.ofHom <| Units.map f
-  map_id _ := MonoidHom.ext fun _ => Units.ext rfl
-  map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
+  map f := CommGrp.ofHom <| Units.map f.hom
+  map_id _ := CommGrp.ext fun _ => Units.ext rfl
+  map_comp _ _ := CommGrp.ext fun _ => Units.ext rfl
 
 /-- The forgetful-units adjunction between `CommGrp` and `CommMonCat`. -/
 def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.units.{u} :=
   Adjunction.mk' {
     homEquiv := fun _ Y ↦
-      { toFun := fun f => MonoidHom.toHomUnits f
-        invFun := fun f => (Units.coeHom Y).comp f
-        left_inv := fun _ => MonoidHom.ext fun _ => rfl
-        right_inv := fun _ => MonoidHom.ext fun _ => Units.ext rfl }
-    unit :=
-      { app := fun X => { (@toUnits X _).toMonoidHom with }
-        naturality := fun _ _ _ => MonoidHom.ext fun _ => Units.ext rfl }
-    counit :=
-      { app := fun X => Units.coeHom X
-        naturality := by intros; exact MonoidHom.ext fun x => rfl } }
+      { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
+        invFun f := CommMonCat.ofHom ((Units.coeHom Y).comp f.hom) }
+    unit.app X := ofHom toUnits.toMonoidHom
+    -- `aesop` can find the following proof but it takes `0.5`s.
+    unit.naturality _ _ _ := CommGrp.ext fun _ => Units.ext rfl
+    counit.app X := CommMonCat.ofHom (Units.coeHom X)
+    -- `aesop` can find the following proof but it takes `0.5`s.
+    counit.naturality _ _ _ := CommMonCat.ext fun _ => rfl
+    -- `aesop` can find the following proof but it takes `0.2`s.
+    homEquiv_unit := by intros; rfl
+    -- `aesop` can find the following proof but it takes `0.2`s.
+    homEquiv_counit := by intros; rfl }
 
 instance : CommMonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨CommGrp.forget₂CommMonAdj⟩⟩

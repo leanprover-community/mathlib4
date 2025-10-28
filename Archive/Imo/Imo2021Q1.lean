@@ -82,7 +82,7 @@ lemma exists_finset_3_le_card_with_pairs_summing_to_squares {n : ℕ} (hn : 100 
   obtain ⟨a, b, c, hna, hab, hbc, hcn, h₁, h₂, h₃⟩ := exists_triplet_summing_to_squares hn
   refine ⟨{a, b, c}, ?_, ?_, ?_⟩
   · suffices a ∉ {b, c} ∧ b ∉ {c} by
-      rw [Finset.card_insert_of_not_mem this.1, Finset.card_insert_of_not_mem this.2,
+      rw [Finset.card_insert_of_notMem this.1, Finset.card_insert_of_notMem this.2,
         Finset.card_singleton]
     rw [Finset.mem_insert, Finset.mem_singleton, Finset.mem_singleton]
     push_neg
@@ -126,5 +126,5 @@ theorem imo2021_q1 :
   rcases hC with ⟨a, ha, b, hb, hab⟩
   simp only [Finset.subset_iff, Finset.mem_inter] at hCA
   -- Now we split into the two cases C ⊆ [n, 2n] \ A and C ⊆ A, which can be dealt with identically.
-  cases' hCA with hCA hCA <;> [right; left] <;>
+  rcases hCA with hCA | hCA <;> [right; left] <;>
     exact ⟨a, (hCA ha).2, b, (hCA hb).2, hab, h₁ a (hCA ha).1 b (hCA hb).1 hab⟩

@@ -30,7 +30,7 @@ structure WLOGResult where
   * `h : ¬ P`: the assumption that `P` does not hold
   * `H`: the statement that in the original context `P` suffices to prove the goal.
   -/
-  reductionGoal    : MVarId
+  reductionGoal : MVarId
   /-- The pair `(HFVarId, negHypFVarId)` of `FVarIds` for `reductionGoal`:
 
   * `HFVarId`: `H`, the statement that in the original context `P` suffices to prove the goal.

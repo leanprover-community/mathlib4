@@ -15,15 +15,46 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 -/
 
 -- TODO: assert_not_exists NonUnitalNonAssociativeSemiring
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists TopologicalSpace
-assert_not_exists PseudoMetricSpace
+assert_not_exists OrderedAddCommMonoid TopologicalSpace PseudoMetricSpace
 
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
 
 initialize registerTraceClass `abel
 initialize registerTraceClass `abel.detail
+
+/--
+Tactic for evaluating equations in the language of
+*additive*, commutative monoids and groups.
+
+`abel` and its variants work as both tactics and conv tactics.
+
+* `abel1` fails if the target is not an equality that is provable by the axioms of
+  commutative monoids/groups.
+* `abel_nf` rewrites all group expressions into a normal form.
+  * In tactic mode, `abel_nf at h` can be used to rewrite in a hypothesis.
+  * `abel_nf (config := cfg)` allows for additional configuration:
+    * `red`: the reducibility setting (overridden by `!`)
+    * `zetaDelta`: if true, local let variables can be unfolded (overridden by `!`)
+    * `recursive`: if true, `abel_nf` will also recurse into atoms
+* `abel!`, `abel1!`, `abel_nf!` will use a more aggressive reducibility setting to identify atoms.
+
+For example:
+
+```
+example [AddCommMonoid α] (a b : α) : a + (b + a) = a + a + b := by abel
+example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
+```
+
+## Future work
+
+* In mathlib 3, `abel` accepted additional optional arguments:
+  ```
+  syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
+  ```
+  It is undecided whether these features should be restored eventually.
+-/
+syntax (name := abel) "abel" "!"? : tactic
 
 /-- The `Context` for a call to `abel`.
 
@@ -32,15 +63,15 @@ such as typeclass instances and `0 : α`.
 -/
 structure Context where
   /-- The type of the ambient additive commutative group or monoid. -/
-  α       : Expr
+  α : Expr
   /-- The universe level for `α`. -/
-  univ    : Level
+  univ : Level
   /-- The expression representing `0 : α`. -/
-  α0      : Expr
+  α0 : Expr
   /-- Specify whether we are in an additive commutative group or an additive commutative monoid. -/
   isGroup : Bool
   /-- The `AddCommGroup α` or `AddCommMonoid α` expression. -/
-  inst    : Expr
+  inst : Expr
 
 /-- Populate a `context` object for evaluating `e`. -/
 def mkContext (e : Expr) : MetaM Context := do
@@ -366,21 +397,8 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
       evalAtom e
   | _ => evalAtom e
 
-/-- Tactic for solving equations in the language of
-*additive*, commutative monoids and groups.
-This version of `abel` fails if the target is not an equality
-that is provable by the axioms of commutative monoids/groups.
-
-`abel1!` will use a more aggressive reducibility setting to identify atoms.
-This can prove goals that `abel` cannot, but is more expensive.
--/
-syntax (name := abel1) "abel1" "!"? : tactic
-
-open Lean Elab Meta Tactic
-
-/-- The `abel1` tactic, which solves equations in the language of commutative additive groups
-(or monoids). -/
-elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
+@[tactic_alt abel]
+elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
   let tm := if tk.isSome then .default else .reducible
   let some (_, e₁, e₂) := (← whnfR <| ← getMainTarget).eq?
     | throwError "abel1 requires an equality goal"
@@ -396,7 +414,8 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
     trace[abel] "verified that the simplified forms are identical"
     mkEqTrans p₁ (← mkEqSymm p₂)
 
-@[inherit_doc abel1] macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
+@[tactic_alt abel]
+macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
 
 theorem term_eq {α : Type*} [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
@@ -418,6 +437,8 @@ inductive AbelMode where
 structure AbelNF.Config where
   /-- the reducibility setting to use when comparing atoms for defeq -/
   red := TransparencyMode.reducible
+  /-- if true, local let variables can be unfolded -/
+  zetaDelta := false
   /-- if true, atoms inside ring expressions will be reduced recursively -/
   recursive := true
   /-- The normalization style. -/
@@ -436,16 +457,18 @@ The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form
 -/
 partial def abelNFCore
     (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
-  let ctx ← Simp.mkContext
-    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
-    (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .term =>
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
-    let ctx' := ctx.setSimpTheorems #[← thms.foldlM (·.addConst ·) {:_}]
+    let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta })
+      (simpTheorems := #[← thms.foldlM (·.addConst ·) {}])
+      (congrTheorems := ← getSimpCongrTheorems)
     pure fun r' : Simp.Result ↦ do
-      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
+  let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta, singlePass := true })
+    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+    (congrTheorems := ← getSimpCongrTheorems)
   let rec
     /-- The recursive case of `abelNF`.
     * `root`: true when the function is called directly from `abelNFCore`
@@ -462,7 +485,7 @@ partial def abelNFCore
           guard e.isApp -- all interesting group expressions are applications
           let (a, pa) ← eval e (← mkContext e) { red := cfg.red, evalAtom } s
           guard !a.isAtom
-          let r ← simp { expr := a, proof? := pa }
+          let r ← liftMetaM <| simp { expr := a, proof? := pa }
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
           pure (.done r)
         catch _ => pure <| .continue
@@ -471,9 +494,9 @@ partial def abelNFCore
     /-- The `evalAtom` implementation passed to `eval` calls `go` if `cfg.recursive` is true,
     and does nothing otherwise. -/
     evalAtom := if cfg.recursive then go false else fun e ↦ pure { expr := e }
-  go true e
+  withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| go true e
 
-open Elab.Tactic Parser.Tactic
+open Parser.Tactic
 /-- Use `abel_nf` to rewrite the main goal. -/
 def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
@@ -497,70 +520,52 @@ def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVa
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
 
-/-- Unsupported legacy syntax from mathlib3, which allowed passing additional terms to `abel`. -/
-syntax (name := abel_term) "abel" (&" raw" <|> &" term")? (location)? : tactic
-/-- Unsupported legacy syntax from mathlib3, which allowed passing additional terms to `abel!`. -/
-syntax (name := abel!_term) "abel!" (&" raw" <|> &" term")? (location)? : tactic
-
-/--
-Simplification tactic for expressions in the language of abelian groups,
-which rewrites all group expressions into a normal form.
-* `abel_nf!` will use a more aggressive reducibility setting to identify atoms.
-* `abel_nf (config := cfg)` allows for additional configuration:
-  * `red`: the reducibility setting (overridden by `!`)
-  * `recursive`: if true, `abel_nf` will also recurse into atoms
-* `abel_nf` works as both a tactic and a conv tactic.
-  In tactic mode, `abel_nf at h` can be used to rewrite in a hypothesis.
--/
+@[tactic_alt abel]
 elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
   let mut cfg ← elabAbelNFConfig cfg
-  if tk.isSome then cfg := { cfg with red := .default }
+  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
     fun _ ↦ throwError "abel_nf made no progress"
 
-@[inherit_doc abelNF] macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
+@[tactic_alt abel]
+macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| abel_nf ! $cfg:optConfig $(loc)?)
 
-@[inherit_doc abelNF] syntax (name := abelNFConv) "abel_nf" "!"? optConfig : conv
+@[inherit_doc abel]
+syntax (name := abelNFConv) "abel_nf" "!"? optConfig : conv
 
 /-- Elaborator for the `abel_nf` tactic. -/
-@[tactic abelNFConv] def elabAbelNFConv : Tactic := fun stx ↦ match stx with
+@[tactic abelNFConv]
+def elabAbelNFConv : Tactic := fun stx ↦ match stx with
   | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
     let mut cfg ← elabAbelNFConfig cfg
-    if tk.isSome then cfg := { cfg with red := .default }
+    if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     Conv.applySimpResult (← abelNFCore (← IO.mkRef {}) cfg (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
-@[inherit_doc abelNF] macro "abel_nf!" cfg:optConfig : conv => `(conv| abel_nf ! $cfg:optConfig)
+@[inherit_doc abel]
+macro "abel_nf!" cfg:optConfig : conv => `(conv| abel_nf ! $cfg:optConfig)
 
-/--
-Tactic for evaluating expressions in abelian groups.
+macro_rules
+  | `(tactic| abel !) => `(tactic| first | abel1! | try_this abel_nf!)
+  | `(tactic| abel) => `(tactic| first | abel1 | try_this abel_nf)
 
-* `abel!` will use a more aggressive reducibility setting to determine equality of atoms.
-* `abel1` fails if the target is not an equality.
+@[tactic_alt abel]
+macro "abel!" : tactic => `(tactic| abel !)
 
-For example:
-```
-example [AddCommMonoid α] (a b : α) : a + (b + a) = a + a + b := by abel
-example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
-```
--/
-macro (name := abel) "abel" : tactic =>
-  `(tactic| first | abel1 | try_this abel_nf)
-@[inherit_doc abel] macro "abel!" : tactic =>
-  `(tactic| first | abel1! | try_this abel_nf!)
-
-/--
-The tactic `abel` evaluates expressions in abelian groups.
-This is the conv tactic version, which rewrites a target which is an abel equality to `True`.
-
-See also the `abel` tactic.
--/
+@[inherit_doc abel]
 macro (name := abelConv) "abel" : conv =>
   `(conv| first | discharge => abel1 | try_this abel_nf)
+
 @[inherit_doc abelConv] macro "abel!" : conv =>
   `(conv| first | discharge => abel1! | try_this abel_nf!)
 
 end Mathlib.Tactic.Abel
+
+/-!
+We register `abel` with the `hint` tactic.
+-/
+
+register_hint abel

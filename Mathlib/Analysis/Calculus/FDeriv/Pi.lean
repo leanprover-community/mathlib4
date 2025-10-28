@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Const
 
 /-!
 # Derivatives on pi-types.

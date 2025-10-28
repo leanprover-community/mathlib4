@@ -62,7 +62,7 @@ theorem exists_approx_polynomial_aux [Ring Fq] {d : ℕ} {m : ℕ} (hm : Fintype
     rintro rfl
     specialize hA 0
     rw [degree_zero] at hA
-    exact not_lt_of_le bot_le hA
+    exact not_lt_of_ge bot_le hA
   -- Since there are > q^d elements of A, and only q^d choices for the highest `d` coefficients,
   -- there must be two elements of A with the same coefficients at
   -- `degree b - 1`, ... `degree b - d`.
@@ -175,8 +175,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
     rw [Algebra.smul_def, eq_intCast]
     exact mul_pos (Int.cast_pos.mpr (AbsoluteValue.pos _ hb)) hε
   -- We go by induction on the size `A`.
-  induction' n with n ih
-  · refine ⟨finZeroElim, finZeroElim⟩
+  induction n with | zero => refine ⟨finZeroElim, finZeroElim⟩ | succ n ih =>
   -- Show `anti_archimedean` also holds for real distances.
   have anti_archim' : ∀ {i j k} {ε : ℝ},
     (cardPowDegree (A i % b - A j % b) : ℝ) < ε →

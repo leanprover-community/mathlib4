@@ -45,16 +45,22 @@ theorem derivedSeries_succ (n : ℕ) :
     derivedSeries G (n + 1) = ⁅derivedSeries G n, derivedSeries G n⁆ :=
   rfl
 
--- Porting note: had to provide inductive hypothesis explicitly
 theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   induction n with
   | zero => exact (⊤ : Subgroup G).normal_of_characteristic
-  | succ n ih => exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
+  | succ n ih => exact Subgroup.commutator_normal (derivedSeries G n) (derivedSeries G n)
 
--- Porting note: higher simp priority to restore Lean 3 behavior
 @[simp 1100]
 theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl
+
+theorem derivedSeries_antitone : Antitone (derivedSeries G) :=
+  antitone_nat_of_succ_le fun n => (derivedSeries G n).commutator_le_self
+
+instance derivedSeries_characteristic (n : ℕ) : (derivedSeries G n).Characteristic := by
+  induction n with
+  | zero => exact Subgroup.topCharacteristic
+  | succ n _ => exact Subgroup.commutator_characteristic _ _
 
 end derivedSeries
 
@@ -62,15 +68,12 @@ section CommutatorMap
 
 section DerivedSeriesMap
 
-variable (f)
-
+variable (f) in
 theorem map_derivedSeries_le_derivedSeries (n : ℕ) :
     (derivedSeries G n).map f ≤ derivedSeries G' n := by
   induction n with
   | zero => exact le_top
   | succ n ih => simp only [derivedSeries_succ, map_commutator, commutator_mono, ih]
-
-variable {f}
 
 theorem derivedSeries_le_map_derivedSeries (hf : Function.Surjective f) (n : ℕ) :
     derivedSeries G' n ≤ (derivedSeries G n).map f := by
@@ -121,10 +124,11 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
   obtain ⟨m, hm⟩ := id hG'
   refine ⟨⟨n + m, le_bot_iff.mp (Subgroup.map_bot f ▸ hm ▸ ?_)⟩⟩
   clear hm
-  induction' m with m hm
-  · exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
+  induction m with
+  | zero =>
+    exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
       (le_bot_iff.mp ((map_derivedSeries_le_derivedSeries g n).trans hn.le))).trans hfg
-  · exact commutator_le_map_commutator hm hm
+  | succ m hm => exact commutator_le_map_commutator hm hm
 
 theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G'] :
     IsSolvable G :=
@@ -152,9 +156,9 @@ theorem IsSolvable.commutator_lt_top_of_nontrivial [hG : IsSolvable G] [Nontrivi
   obtain ⟨n, hn⟩ := hG
   contrapose! hn
   refine ne_of_eq_of_ne ?_ top_ne_bot
-  induction' n with n h
-  · exact derivedSeries_zero G
-  · rwa [derivedSeries_succ, h]
+  induction n with
+  | zero => exact derivedSeries_zero G
+  | succ n h => rwa [derivedSeries_succ, h]
 
 theorem IsSolvable.commutator_lt_of_ne_bot [IsSolvable G] {H : Subgroup G} (hH : H ≠ ⊥) :
     ⁅H, H⁆ < H := by
@@ -175,10 +179,11 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
     rw [← (map_injective (subtype_injective _)).eq_iff, Subgroup.map_bot] at hn ⊢
     rw [← hn]
     clear hn
-    induction' n with n ih
-    · rw [derivedSeries_succ, derivedSeries_zero, derivedSeries_zero, map_commutator,
+    induction n with
+    | zero =>
+      rw [derivedSeries_succ, derivedSeries_zero, derivedSeries_zero, map_commutator,
         ← MonoidHom.range_eq_map, ← MonoidHom.range_eq_map, range_subtype, range_subtype]
-    · rw [derivedSeries_succ, map_commutator, ih, derivedSeries_succ, map_commutator]
+    | succ n ih => rw [derivedSeries_succ, map_commutator, ih, derivedSeries_succ, map_commutator]
 
 end Solvable
 
@@ -191,7 +196,7 @@ theorem IsSimpleGroup.derivedSeries_succ {n : ℕ} : derivedSeries G n.succ = co
   | zero => exact derivedSeries_one G
   | succ n ih =>
     rw [_root_.derivedSeries_succ, ih, _root_.commutator]
-    cases' (commutator_normal (⊤ : Subgroup G) (⊤ : Subgroup G)).eq_bot_or_eq_top with h h
+    rcases (commutator_normal (⊤ : Subgroup G) (⊤ : Subgroup G)).eq_bot_or_eq_top with h | h
     · rw [h, commutator_bot_left]
     · rwa [h]
 

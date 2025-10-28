@@ -10,7 +10,9 @@ private axiom test_sorry : ∀ {α}, α
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
-@[instance] axiom Real.linearOrderedField : LinearOrderedField ℝ
+@[instance] axiom Real.field : Field ℝ
+@[instance] axiom Real.linearOrder : LinearOrder ℝ
+@[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
 /-! ### Simple Cases with ℤ and two or less equations -/
 
@@ -199,9 +201,9 @@ example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination' ha
 --   sake of simplicity, but the tactic could potentially be modified to allow
 --   this behavior.
 /--
-error: application type mismatch
+error: Application type mismatch: In the application
   Mathlib.Tactic.LinearCombination'.c_mul_pf h2 0
-argument
+the argument
   0
 has type
   ℝ : Type

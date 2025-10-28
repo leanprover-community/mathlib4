@@ -75,12 +75,12 @@ open Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
     [BouAC, VI.5.1 middle of Proposition 1] -/
-instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
-    TopologicalDivisionRing K :=
-  { (by infer_instance : TopologicalRing K) with
+instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
+    IsTopologicalDivisionRing K :=
+  { (by infer_instance : IsTopologicalRing K) with
     continuousAt_inv₀ := by
       intro x x_ne s s_in
-      cases' Valued.mem_nhds.mp s_in with γ hs; clear s_in
+      obtain ⟨γ, hs⟩ := Valued.mem_nhds.mp s_in; clear s_in
       rw [mem_map, Valued.mem_nhds]
       change ∃ γ : Γ₀ˣ, { y : K | (v (y - x) : Γ₀) < γ } ⊆ { x : K | x⁻¹ ∈ s }
       have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
@@ -95,7 +95,7 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
 /-- A valued division ring is separated. -/
 instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := by
   suffices T2Space K by infer_instance
-  apply TopologicalAddGroup.t2Space_of_zero_sep
+  apply IsTopologicalAddGroup.t2Space_of_zero_sep
   intro x x_ne
   refine ⟨{ k | v k < v x }, ?_, fun h => lt_irrefl _ h⟩
   rw [Valued.mem_nhds]
@@ -145,7 +145,7 @@ instance (priority := 100) completable : CompletableTopField K :=
         rcases Valued.mem_nhds_zero.mp U_in with ⟨γ₀, hU⟩
         exists γ₀, M, M_in
         intro x xM
-        apply le_of_not_lt _
+        apply le_of_not_gt _
         intro hyp
         have : x ∈ U ∩ M := ⟨hU hyp, xM⟩
         rwa [H] at this
@@ -216,7 +216,6 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
           rw [← one_mul (1 : hat K)]
         refine
           Tendsto.mul continuous_fst.continuousAt (Tendsto.comp ?_ continuous_snd.continuousAt)
-        -- Porting note: Added `ContinuousAt.tendsto`
         convert (continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))).tendsto
         exact inv_one.symm
       rcases tendsto_prod_self_iff.mp this V V_in with ⟨U, U_in, hU⟩
@@ -276,7 +275,6 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     rw [← v.map_zero (R := K), ← Valued.extension_extends (0 : K)]
     rfl
   map_one' := by
-    simp only
     rw [← Completion.coe_one, Valued.extension_extends (1 : K)]
     exact Valuation.map_one _
   map_mul' x y := by
@@ -341,8 +339,6 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
     simp_rw [← closure_coe_completion_v_lt]
     exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
 
--- Porting note: removed @[norm_cast] attribute due to error:
--- norm_cast: badly shaped lemma, rhs can't start with coe
 @[simp]
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x

@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Multiset.Fold
 
@@ -10,8 +11,7 @@ import Mathlib.Data.Multiset.Fold
 # The fold operation for a commutative associative operation over a finset.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
+assert_not_exists Monoid
 
 namespace Finset
 
@@ -48,7 +48,7 @@ theorem fold_cons (h : a ∉ s) : (cons a s h).fold op b f = f a * s.fold op b f
 theorem fold_insert [DecidableEq α] (h : a ∉ s) :
     (insert a s).fold op b f = f a * s.fold op b f := by
   unfold fold
-  rw [insert_val, ndinsert_of_not_mem h, Multiset.map_cons, fold_cons_left]
+  rw [insert_val, ndinsert_of_notMem h, Multiset.map_cons, fold_cons_left]
 
 @[simp]
 theorem fold_singleton : ({a} : Finset α).fold op b f = f a * b :=
@@ -60,7 +60,7 @@ theorem fold_map {g : γ ↪ α} {s : Finset γ} : (s.map g).fold op b f = s.fol
 
 @[simp]
 theorem fold_image [DecidableEq α] {g : γ → α} {s : Finset γ}
-    (H : ∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
+    (H : Set.InjOn g s) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
   simp only [fold, image_val_of_injOn H, Multiset.map_map]
 
 @[congr]
@@ -90,10 +90,6 @@ theorem fold_hom {op' : γ → γ → γ} [Std.Commutative op'] [Std.Associative
 theorem fold_disjUnion {s₁ s₂ : Finset α} {b₁ b₂ : β} (h) :
     (s₁.disjUnion s₂ h).fold op (b₁ * b₂) f = s₁.fold op b₁ f * s₂.fold op b₂ f :=
   (congr_arg _ <| Multiset.map_add _ _ _).trans (Multiset.fold_add _ _ _ _ _)
-
-theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
-    (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i => (t i).fold op (b i) f :=
-  (congr_arg _ <| Multiset.map_bind _ _ _).trans (Multiset.fold_bind _ _ _ _ _)
 
 theorem fold_union_inter [DecidableEq α] {s₁ s₂ : Finset α} {b₁ b₂ : β} :
     ((s₁ ∪ s₂).fold op b₁ f * (s₁ ∩ s₂).fold op b₂ f) = s₁.fold op b₂ f * s₂.fold op b₁ f := by

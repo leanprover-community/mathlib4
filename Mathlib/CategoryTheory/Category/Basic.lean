@@ -8,6 +8,7 @@ import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Tactic.TryThis
 
 /-!
 # Categories
@@ -23,11 +24,9 @@ Introduces notations in the `CategoryTheory` scope
 
 Users may like to add `g ⊚ f` for composition in the standard convention, using
 ```lean
-local notation g ` ⊚ `:80 f:80 := category.comp f g    -- type as \oo
+local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    -- type as \oo
 ```
 
-## Porting note
-I am experimenting with using the `aesop` tactic as a replacement for `tidy`.
 -/
 
 
@@ -83,7 +82,7 @@ namespace CategoryTheory
 /-- A preliminary structure on the way to defining a category,
 containing the data, but none of the axioms. -/
 @[pp_with_univ]
-class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v + 1) where
+class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v + 1} obj where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
   /-- Composition of morphisms in a category, written `f ≫ g`. -/
@@ -109,6 +108,27 @@ open Lean Meta Elab.Tactic in
     throwError "The goal does not contain `sorry`"
 
 /--
+`rfl_cat` is a macro for `intros; rfl` which is attempted in `aesop_cat` before
+doing the more expensive `aesop` tactic.
+
+This gives a speedup because `simp` (called by `aesop`) can be very slow.
+https://github.com/leanprover-community/mathlib4/pull/25475 contains measurements from June 2025.
+
+Implementation notes:
+* `refine id ?_`:
+  In some cases it is important that the type of the proof matches the expected type exactly.
+  e.g. if the goal is `2 = 1 + 1`, the `rfl` tactic will give a proof of type `2 = 2`.
+  Starting a proof with `refine id ?_` is a trick to make sure that the proof has exactly
+  the expected type, in this case `2 = 1 + 1`. See also
+  https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/changing.20a.20proof.20can.20break.20a.20later.20proof
+* `apply_rfl`:
+  `rfl` is a macro that attempts both `eq_refl` and `apply_rfl`. Since `apply_rfl`
+  subsumes `eq_refl`, we can use `apply_rfl` instead. This fails twice as fast as `rfl`.
+
+-/
+macro (name := rfl_cat) "rfl_cat" : tactic => do `(tactic| (refine id ?_; intros; apply_rfl))
+
+/--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
 This tactic fails when it is unable to solve the goal, making it suitable for
@@ -116,7 +136,7 @@ use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry |
+  first | sorry_if_sorry | rfl_cat |
   aesop $c* (config := { introsTransparency? := some .default, terminal := true })
             (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
@@ -125,7 +145,7 @@ We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop
 -/
 macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry |
+  first | sorry_if_sorry | try_this rfl_cat |
   aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
              (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
@@ -142,12 +162,9 @@ attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim
 
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
-specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.)
-
-See <https://stacks.math.columbia.edu/tag/0014>.
--/
-@[pp_with_univ]
-class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
+specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.) -/
+@[pp_with_univ, stacks 0014]
+class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} obj where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat
   /-- Identity morphisms are right identities for composition. -/
@@ -192,7 +209,7 @@ scoped infixr:80 " =≫ " => eq_whisker
 
 /--
 Notation for whiskering an equation by a morphism (on the left).
-If `g h : Y ⟶ Z` and `w : g = h` and `h : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
+If `g h : Y ⟶ Z` and `w : g = h` and `f : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
 -/
 scoped infixr:80 " ≫= " => whisker_eq
 
@@ -235,19 +252,15 @@ theorem dite_comp {P : Prop} [Decidable P]
     (if h : P then f h else f' h) ≫ g = if h : P then f h ≫ g else f' h ≫ g := by aesop
 
 /-- A morphism `f` is an epimorphism if it can be cancelled when precomposed:
-`f ≫ g = f ≫ h` implies `g = h`.
-
-See <https://stacks.math.columbia.edu/tag/003B>.
--/
+`f ≫ g = f ≫ h` implies `g = h`. -/
+@[stacks 003B]
 class Epi (f : X ⟶ Y) : Prop where
   /-- A morphism `f` is an epimorphism if it can be cancelled when precomposed. -/
   left_cancellation : ∀ {Z : C} (g h : Y ⟶ Z), f ≫ g = f ≫ h → g = h
 
 /-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed:
-`g ≫ f = h ≫ f` implies `g = h`.
-
-See <https://stacks.math.columbia.edu/tag/003B>.
--/
+`g ≫ f = h ≫ f` implies `g = h`. -/
+@[stacks 003B]
 class Mono (f : X ⟶ Y) : Prop where
   /-- A morphism `f` is a monomorphism if it can be cancelled when postcomposed. -/
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
@@ -281,11 +294,28 @@ theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g 
   convert cancel_mono f
   simp
 
+/-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
+as typeclass arguments. For a version taking them as explicit arguments, see `epi_comp'`. -/
 instance epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) :=
   ⟨fun _ _ w => (cancel_epi g).1 <| (cancel_epi_assoc_iff f).1 w⟩
 
+/-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
+as explicit arguments. For a version taking them as typeclass arguments, see `epi_comp`. -/
+theorem epi_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Epi f) (hg : Epi g) : Epi (f ≫ g) :=
+  inferInstance
+
+/-- The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
+`Mono g` as typeclass arguments. For a version taking them as explicit arguments, see `mono_comp'`.
+-/
 instance mono_comp {X Y Z : C} (f : X ⟶ Y) [Mono f] (g : Y ⟶ Z) [Mono g] : Mono (f ≫ g) :=
   ⟨fun _ _ w => (cancel_mono f).1 <| (cancel_mono_assoc_iff g).1 w⟩
+
+/-- The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
+`Mono g` as explicit arguments. For a version taking them as typeclass arguments, see `mono_comp`.
+-/
+theorem mono_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Mono f) (hg : Mono g) :
+    Mono (f ≫ g) :=
+  inferInstance
 
 theorem mono_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono (f ≫ g)] : Mono f :=
   ⟨fun _ _ w => (cancel_mono (f ≫ g)).1 <| by simp only [← Category.assoc, w]⟩
@@ -333,36 +363,3 @@ example (D : Type u) [SmallCategory D] : LargeCategory (ULift.{u + 1} D) := by i
 end
 
 end CategoryTheory
-
--- Porting note: We hope that this will become less necessary,
--- as in Lean4 `simp` will automatically enter "`dsimp` mode" when needed with dependent arguments.
--- Optimistically, we will eventually remove this library note.
-library_note "dsimp, simp"
-/-- Many proofs in the category theory library use the `dsimp, simp` pattern,
-which typically isn't necessary elsewhere.
-
-One would usually hope that the same effect could be achieved simply with `simp`.
-
-The essential issue is that composition of morphisms involves dependent types.
-When you have a chain of morphisms being composed, say `f : X ⟶ Y` and `g : Y ⟶ Z`,
-then `simp` can operate successfully on the morphisms
-(e.g. if `f` is the identity it can strip that off).
-
-However if we have an equality of objects, say `Y = Y'`,
-then `simp` can't operate because it would break the typing of the composition operations.
-We rarely have interesting equalities of objects
-(because that would be "evil" --- anything interesting should be expressed as an isomorphism
-and tracked explicitly),
-except of course that we have plenty of definitional equalities of objects.
-
-`dsimp` can apply these safely, even inside a composition.
-
-After `dsimp` has cleared up the object level, `simp` can resume work on the morphism level ---
-but without the `dsimp` step, because `simp` looks at expressions syntactically,
-the relevant lemmas might not fire.
-
-There's no bound on how many times you potentially could have to switch back and forth,
-if the `simp` introduced new objects we again need to `dsimp`.
-In practice this does occur, but only rarely, because `simp` tends to shorten chains of compositions
-(i.e. not introduce new objects at all).
--/

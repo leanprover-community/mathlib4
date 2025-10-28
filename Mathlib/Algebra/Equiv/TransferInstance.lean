@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Small.Defs
+import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -205,7 +206,6 @@ protected abbrev semigroupWithZero [SemigroupWithZero β] : SemigroupWithZero α
   let zero := e.zero
   apply e.injective.semigroupWithZero _ <;> intros <;> exact e.apply_symm_apply _
 
-@[to_additive]
 noncomputable instance [Small.{v} α] [SemigroupWithZero α] : SemigroupWithZero (Shrink.{v} α) :=
   (equivShrink α).symm.semigroupWithZero
 
@@ -462,11 +462,6 @@ protected abbrev commRing [CommRing β] : CommRing α := by
 noncomputable instance [Small.{v} α] [CommRing α] : CommRing (Shrink.{v} α) :=
   (equivShrink α).symm.commRing
 
-include e in
-/-- Transfer `Nontrivial` across an `Equiv` -/
-protected theorem nontrivial [Nontrivial β] : Nontrivial α :=
-  e.surjective.nontrivial
-
 noncomputable instance [Small.{v} α] [Nontrivial α] : Nontrivial (Shrink.{v} α) :=
   (equivShrink α).symm.nontrivial
 
@@ -686,3 +681,36 @@ lemma exists_type_univ_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :
   exact ⟨ULift (Fin n), groupH, inferInstance, ⟨MulEquiv.symm <| e.symm.mulEquiv⟩⟩
 
 end Finite
+
+section
+
+variable {R : Type*} [CommSemiring R]
+variable (A : Type*) [Semiring A] [Algebra R A]
+variable [AddCommMonoid α] [AddCommMonoid β] [Module A β]
+
+/-- Transport a module instance via an isomorphism of the underlying abelian groups.
+This has better definitional properties than `Equiv.module` since here
+the abelian group structure remains unmodified. -/
+abbrev AddEquiv.module (e : α ≃+ β) :
+    Module A α where
+  toSMul := e.toEquiv.smul A
+  one_smul := by simp [Equiv.smul_def]
+  mul_smul := by simp [Equiv.smul_def, mul_smul]
+  smul_zero := by simp [Equiv.smul_def]
+  smul_add := by simp [Equiv.smul_def]
+  add_smul := by simp [Equiv.smul_def, add_smul]
+  zero_smul := by simp [Equiv.smul_def]
+
+/-- The module instance from `AddEquiv.module` is compatible with the `R`-module structures,
+if the `AddEquiv` is induced by an `R`-module isomorphism. -/
+lemma LinearEquiv.isScalarTower [Module R α] [Module R β] [IsScalarTower R A β]
+    (e : α ≃ₗ[R] β) :
+    letI := e.toAddEquiv.module A
+    IsScalarTower R A α := by
+  letI := e.toAddEquiv.module A
+  constructor
+  intro x y z
+  simp only [Equiv.smul_def, AddEquiv.toEquiv_eq_coe, smul_assoc]
+  apply e.symm.map_smul
+
+end

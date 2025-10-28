@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kevin Buzzard
 -/
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.WellKnown
 
@@ -19,11 +20,11 @@ a sequence of rational numbers. They show up in the formula for the sums of $k$t
 powers. They are related to the Taylor series expansions of $x/\tan(x)$ and
 of $\coth(x)$, and also show up in the values that the Riemann Zeta function
 takes both at both negative and positive integers (and hence in the
-theory of modular forms). For example, if $1 \leq n$ is even then
+theory of modular forms). For example, if $1 \leq n$ then
 
 $$\zeta(2n)=\sum_{t\geq1}t^{-2n}=(-1)^{n+1}\frac{(2\pi)^{2n}B_{2n}}{2(2n)!}.$$
 
-Note however that this result is not yet formalised in Lean.
+This result is formalised in Lean: `riemannZeta_two_mul_nat`.
 
 The Bernoulli numbers can be formally defined using the power series
 
@@ -119,8 +120,7 @@ end Examples
 
 @[simp]
 theorem sum_bernoulli' (n : ℕ) : (∑ k ∈ range n, (n.choose k : ℚ) * bernoulli' k) = n := by
-  cases' n with n
-  · simp
+  cases n with | zero => simp | succ n =>
   suffices
     ((n + 1 : ℚ) * ∑ k ∈ range n, ↑(n.choose k) / (n - k + 1) * bernoulli' k) =
       ∑ x ∈ range n, ↑(n.succ.choose x) * bernoulli' x by
@@ -141,8 +141,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
     bernoulli'PowerSeries A * (exp A - 1) = X * exp A := by
   ext n
   -- constant coefficient is a special case
-  cases' n with n
-  · simp
+  cases n with | zero => simp | succ n =>
   rw [bernoulli'PowerSeries, coeff_mul, mul_comm X, sum_antidiagonal_succ']
   suffices (∑ p ∈ antidiagonal n,
       bernoulli' p.1 / p.1! * ((p.2 + 1) * p.2! : ℚ)⁻¹) = (n ! : ℚ)⁻¹ by
@@ -162,7 +161,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
 theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli' n = 0 := by
   let B := mk fun n => bernoulli' n / (n ! : ℚ)
   suffices (B - evalNegHom B) * (exp ℚ - 1) = X * (exp ℚ - 1) by
-    cases' mul_eq_mul_right_iff.mp this with h h <;>
+    rcases mul_eq_mul_right_iff.mp this with h | h <;>
       simp only [PowerSeries.ext_iff, evalNegHom, coeff_X] at h
     · apply eq_zero_of_neg_eq
       specialize h n
@@ -172,7 +171,6 @@ theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoul
     simpa [bernoulli'PowerSeries] using bernoulli'PowerSeries_mul_exp_sub_one ℚ
   rw [sub_mul, h, mul_sub X, sub_right_inj, ← neg_sub, mul_neg, neg_eq_iff_eq_neg]
   suffices evalNegHom (B * (exp ℚ - 1)) * exp ℚ = evalNegHom (X * exp ℚ) * exp ℚ by
-    rw [map_mul, map_mul] at this -- Porting note: Why doesn't simp do this?
     simpa [mul_assoc, sub_mul, mul_comm (evalNegHom (exp ℚ)), exp_mul_exp_neg_eq_one]
   congr
 
@@ -192,25 +190,21 @@ theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
 theorem bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n = bernoulli' n := by
   by_cases h0 : n = 0; · simp [h0]
   rw [bernoulli, neg_one_pow_eq_pow_mod_two]
-  cases' mod_two_eq_zero_or_one n with h h
+  rcases mod_two_eq_zero_or_one n with h | h
   · simp [h]
   · simp [bernoulli'_odd_eq_zero (odd_iff.mpr h) (one_lt_iff_ne_zero_and_ne_one.mpr ⟨h0, hn⟩)]
 
 @[simp]
 theorem sum_bernoulli (n : ℕ) :
     (∑ k ∈ range n, (n.choose k : ℚ) * bernoulli k) = if n = 1 then 1 else 0 := by
-  cases' n with n
-  · simp
-  cases' n with n
-  · rw [sum_range_one]
-    simp
+  cases n with | zero => simp | succ n =>
+  cases n with | zero => rw [sum_range_one]; simp | succ n =>
   suffices (∑ i ∈ range n, ↑((n + 2).choose (i + 2)) * bernoulli (i + 2)) = n / 2 by
     simp only [this, sum_range_succ', cast_succ, bernoulli_one, bernoulli_zero, choose_one_right,
       mul_one, choose_zero_right, cast_zero, if_false, zero_add, succ_succ_ne_one]
     ring
   have f := sum_bernoulli' n.succ.succ
   simp_rw [sum_range_succ', cast_succ, ← eq_sub_iff_add_eq] at f
-  -- Porting note: was `convert f`
   refine Eq.trans ?_ (Eq.trans f ?_)
   · congr
     funext x
@@ -222,8 +216,7 @@ theorem sum_bernoulli (n : ℕ) :
 theorem bernoulli_spec' (n : ℕ) :
     (∑ k ∈ antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli k.1) =
       if n = 0 then 1 else 0 := by
-  cases' n with n
-  · simp
+  cases n with | zero => simp | succ n =>
   rw [if_neg (succ_ne_zero _)]
   -- algebra facts
   have h₁ : (1, n) ∈ antidiagonal n.succ := by simp [mem_antidiagonal, add_comm]
@@ -248,14 +241,12 @@ def bernoulliPowerSeries :=
 theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A - 1) = X := by
   ext n
   -- constant coefficient is a special case
-  cases' n with n
-  · simp
+  cases n with | zero => simp | succ n =>
   simp only [bernoulliPowerSeries, coeff_mul, coeff_X, sum_antidiagonal_succ', one_div, coeff_mk,
     coeff_one, coeff_exp, LinearMap.map_sub, factorial, if_pos, cast_succ, cast_one, cast_mul,
     sub_zero, RingHom.map_one, add_eq_zero, if_false, _root_.inv_one, zero_add, one_ne_zero,
     mul_zero, and_false, sub_self, ← RingHom.map_mul, ← map_sum]
-  cases' n with n
-  · simp
+  cases n with | zero => simp | succ n =>
   rw [if_neg n.succ_succ_ne_one]
   have hfact : ∀ m, (m ! : ℚ) ≠ 0 := fun m => mod_cast factorial_ne_zero m
   have hite2 : ite (n.succ = 0) 1 0 = (0 : ℚ) := if_neg n.succ_ne_zero
@@ -291,7 +282,7 @@ theorem sum_range_pow (n p : ℕ) :
     simp only [f, exp_pow_eq_rescale_exp, rescale, one_div, coeff_mk, RingHom.coe_mk, coeff_exp,
       RingHom.id_apply, cast_mul, Algebra.id.map_eq_id]
     -- manipulate factorials and binomial coefficients
-    simp? at h says simp only [succ_eq_add_one, mem_range] at h
+    simp? at h says simp only [succ_eq_add_one, mem_range, f] at h
     rw [choose_eq_factorial_div_factorial h.le, eq_comm, div_eq_iff (hne q.succ), succ_eq_add_one,
       mul_assoc _ _ (q.succ ! : ℚ), mul_comm _ (q.succ ! : ℚ), ← mul_assoc, div_mul_eq_mul_div]
     simp only [add_eq, add_zero, IsUnit.mul_iff, Nat.isUnit_iff, succ.injEq, cast_mul,
@@ -323,7 +314,6 @@ theorem sum_range_pow (n p : ℕ) :
       have h_const : C ℚ (constantCoeff ℚ (exp ℚ ^ n)) = 1 := by simp
       rw [← h_const, sub_const_eq_X_mul_shift]
     -- key step: a chain of equalities of power series
-    -- Porting note: altered proof slightly
     rw [← mul_right_inj' hexp, mul_comm]
     rw [← exp_pow_sum, geom_sum_mul, h_r, ← bernoulliPowerSeries_mul_exp_sub_one,
       bernoulliPowerSeries, mul_right_comm]
@@ -332,7 +322,6 @@ theorem sum_range_pow (n p : ℕ) :
     · left
       congr
     · simp only [mul_comm, factorial, cast_succ, cast_pow]
-
   -- massage `hps` into our goal
   rw [hps, sum_mul]
   refine sum_congr rfl fun x _ => ?_
@@ -347,8 +336,7 @@ theorem sum_Ico_pow (n p : ℕ) :
       ∑ i ∈ range (p + 1), bernoulli' i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1) := by
   rw [← Nat.cast_succ]
   -- dispose of the trivial case
-  cases' p with p
-  · simp
+  cases p with | zero => simp | succ p =>
   let f i := bernoulli i * p.succ.succ.choose i * (n : ℚ) ^ (p.succ.succ - i) / p.succ.succ
   let f' i := bernoulli' i * p.succ.succ.choose i * (n : ℚ) ^ (p.succ.succ - i) / p.succ.succ
   suffices (∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ i ∈ range p.succ.succ, f' i by convert this

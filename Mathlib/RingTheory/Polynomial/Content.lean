@@ -16,14 +16,16 @@ and primitive polynomials.
 
 ## Main Definitions
 Let `p : R[X]`.
- - `p.content` is the `gcd` of the coefficients of `p`.
- - `p.IsPrimitive` indicates that `p.content = 1`.
+- `p.content` is the `gcd` of the coefficients of `p`.
+- `p.IsPrimitive` indicates that `p.content = 1`.
 
 ## Main Results
- - `Polynomial.content_mul`:
-  If `p q : R[X]`, then `(p * q).content = p.content * q.content`.
- - `Polynomial.NormalizedGcdMonoid`:
-  The polynomial ring of a GCD domain is itself a GCD domain.
+- `Polynomial.content_mul`: if `p q : R[X]`, then `(p * q).content = p.content * q.content`.
+- `Polynomial.NormalizedGcdMonoid`: the polynomial ring of a GCD domain is itself a GCD domain.
+
+## Note
+
+This has nothing to do with minimal polynomials of primitive elements in finite fields.
 
 -/
 
@@ -34,7 +36,8 @@ section Primitive
 
 variable {R : Type*} [CommSemiring R]
 
-/-- A polynomial is primitive when the only constant polynomials dividing it are units -/
+/-- A polynomial is primitive when the only constant polynomials dividing it are units.
+Note: This has nothing to do with minimal polynomials of primitive elements in finite fields. -/
 def IsPrimitive (p : R[X]) : Prop :=
   ∀ r : R, C r ∣ p → IsUnit r
 
@@ -55,6 +58,16 @@ theorem IsPrimitive.ne_zero [Nontrivial R] {p : R[X]} (hp : p.IsPrimitive) : p �
 
 theorem isPrimitive_of_dvd {p q : R[X]} (hp : IsPrimitive p) (hq : q ∣ p) : IsPrimitive q :=
   fun a ha => isPrimitive_iff_isUnit_of_C_dvd.mp hp a (dvd_trans ha hq)
+
+/-- An irreducible nonconstant polynomial over a domain is primitive. -/
+theorem _root_.Irreducible.isPrimitive [NoZeroDivisors R]
+    {p : Polynomial R} (hp : Irreducible p) (hp' : p.natDegree ≠ 0) : p.IsPrimitive := by
+  rintro r ⟨q, hq⟩
+  suffices ¬IsUnit q by simpa using ((hp.2 hq).resolve_right this).map Polynomial.constantCoeff
+  intro H
+  have hr : r ≠ 0 := by rintro rfl; simp_all
+  obtain ⟨s, hs, rfl⟩ := Polynomial.isUnit_iff.mp H
+  simp [hq, Polynomial.natDegree_C_mul hr] at hp'
 
 end Primitive
 
@@ -95,7 +108,7 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
   have h : (X * p).support = p.support.map ⟨Nat.succ, Nat.succ_injective⟩ := by
     ext a
     simp only [exists_prop, Finset.mem_map, Function.Embedding.coeFn_mk, Ne, mem_support_iff]
-    cases' a with a
+    rcases a with - | a
     · simp [coeff_X_mul_zero, Nat.succ_ne_zero]
     rw [mul_comm, coeff_mul_X]
     constructor
@@ -151,7 +164,7 @@ theorem normUnit_content {p : R[X]} : normUnit (content p) = 1 := by
   · simp [hp0]
   · ext
     apply mul_left_cancel₀ hp0
-    erw [← normalize_apply, normalize_content, mul_one]
+    rw [← normalize_apply, normalize_content, Units.val_one, mul_one]
 
 theorem content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     p.content = (Finset.range n).gcd p.coeff := by
@@ -264,11 +277,11 @@ theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
     aeval s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, map_mul, aeval_C] at hp
   have hcont : p.content ≠ 0 := fun h => hpzero (content_eq_zero_iff.1 h)
-  replace hcont := Function.Injective.ne (NoZeroSMulDivisors.algebraMap_injective R S) hcont
+  replace hcont := Function.Injective.ne (FaithfulSMul.algebraMap_injective R S) hcont
   rw [map_zero] at hcont
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero hcont hp
 
-theorem eval₂_primPart_eq_zero {S : Type*} [CommRing S] [IsDomain S] {f : R →+* S}
+theorem eval₂_primPart_eq_zero {S : Type*} [CommSemiring S] [IsDomain S] {f : R →+* S}
     (hinj : Function.Injective f) {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : eval₂ f s p = 0) :
     eval₂ f s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, eval₂_mul, eval₂_C] at hp
@@ -287,7 +300,7 @@ theorem gcd_content_eq_of_dvd_sub {a : R} {p q : R[X]} (h : C a ∣ p - q) :
       (lt_of_le_of_lt (le_max_right _ _) (Nat.lt_succ_self _))]
   apply Finset.gcd_eq_of_dvd_sub
   intro x _
-  cases' h with w hw
+  obtain ⟨w, hw⟩ := h
   use w.coeff x
   rw [← coeff_sub, hw, coeff_C_mul]
 
@@ -417,7 +430,7 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
     rw [content_mul, p.isPrimitive_primPart.dvd_primPart_iff_dvd hq]
     exact ⟨Dvd.intro _ rfl, p.primPart_dvd.trans (Dvd.intro _ rfl)⟩
   · rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
-    exact mul_dvd_mul (RingHom.map_dvd C h.1) h.2
+    exact mul_dvd_mul (_root_.map_dvd C h.1) h.2
 
 noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
   letI := Classical.decEq R

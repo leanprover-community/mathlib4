@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Antoine Chambert-Loir
 -/
 
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Ring.Action.Basic
 
 /-!
 # Equivariant homomorphisms
@@ -66,7 +67,7 @@ variable (Z : Type*) [SMul P Z]
 /-- Equivariant functions :
 When `φ : M → N` is a function, and types `X` and `Y` are endowed with additive actions
 of `M` and `N`, a function `f : X → Y` is `φ`-equivariant if `f (m +ᵥ x) = (φ m) +ᵥ (f x)`. -/
-structure AddActionHom {M N : Type*} (φ: M → N) (X : Type*) [VAdd M X] (Y : Type*) [VAdd N Y] where
+structure AddActionHom {M N : Type*} (φ : M → N) (X : Type*) [VAdd M X] (Y : Type*) [VAdd N Y] where
   /-- The underlying function. -/
   protected toFun : X → Y
   /-- The proposition that the function commutes with the additive actions. -/
@@ -75,8 +76,6 @@ structure AddActionHom {M N : Type*} (φ: M → N) (X : Type*) [VAdd M X] (Y : T
 /-- Equivariant functions :
 When `φ : M → N` is a function, and types `X` and `Y` are endowed with actions of `M` and `N`,
 a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 @[to_additive]
 structure MulActionHom where
   /-- The underlying function. -/
@@ -85,9 +84,9 @@ structure MulActionHom where
   protected map_smul' : ∀ (m : M) (x : X), toFun (m • x) = (φ m) • toFun x
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
- see https://github.com/leanprover/lean4/issues/2000 -/
+see https://github.com/leanprover/lean4/issues/2000 -/
 /-- `φ`-equivariant functions `X → Y`,
-where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively.-/
+where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively. -/
 notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
 
 /-- `M`-equivariant functions `X → Y` with respect to the action of `M`.
@@ -218,6 +217,11 @@ theorem ofEq_apply {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) (a : X) :
     (f.ofEq h) a = f a :=
   rfl
 
+lemma _root_.FaithfulSMul.of_injective
+    [FaithfulSMul M' X] [MulActionHomClass F M' X Y] (f : F)
+    (hf : Function.Injective f) :
+    FaithfulSMul M' Y where
+  eq_of_smul_eq_smul {_ _} h := eq_of_smul_eq_smul fun m ↦ hf <| by simp_rw [map_smul, h]
 
 variable {ψ χ} (M N)
 
@@ -308,7 +312,7 @@ def inverse' (f : X →ₑ[φ] Y) (g : Y → X) (k : Function.RightInverse φ' �
 @[to_additive]
 lemma inverse_eq_inverse' (f : X →[M] Y₁) (g : Y₁ → X)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) :
-  inverse f g h₁ h₂ =  inverse' f g (congrFun rfl) h₁ h₂ := by
+  inverse f g h₁ h₂ = inverse' f g (congrFun rfl) h₁ h₂ := by
   rfl
 
 @[to_additive]
@@ -354,6 +358,192 @@ end MulActionHom
 
 end MulActionHom
 
+/-- Evaluation at a point as a `MulActionHom`. -/
+@[to_additive (attr := simps) "Evaluation at a point as an `AddActionHom`."]
+def Pi.evalMulActionHom {ι M : Type*} {X : ι → Type*} [∀ i, SMul M (X i)] (i : ι) :
+    (∀ i, X i) →[M] X i where
+  toFun := Function.eval i
+  map_smul' _ _ := rfl
+
+namespace MulActionHom
+
+section FstSnd
+
+variable {M α β : Type*} [SMul M α] [SMul M β]
+
+variable (M α β) in
+/-- `Prod.fst` as a bundled `MulActionHom`. -/
+@[to_additive (attr := simps -fullyApplied) "`Prod.fst` as a bundled `AddActionHom`."]
+def fst : α × β →[M] α where
+  toFun := Prod.fst
+  map_smul' _ _ := rfl
+
+variable (M α β) in
+/-- `Prod.snd` as a bundled `MulActionHom`. -/
+@[to_additive (attr := simps -fullyApplied) "`Prod.snd` as a bundled `AddActionHom`."]
+def snd : α × β →[M] β where
+  toFun := Prod.snd
+  map_smul' _ _ := rfl
+
+end FstSnd
+
+variable {M N α β γ δ : Type*} [SMul M α] [SMul M β] [SMul N γ] [SMul N δ] {σ : M → N}
+
+/-- If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`. -/
+@[to_additive (attr := simps -fullyApplied) prod
+  "If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`."]
+def prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : α →ₑ[σ] γ × δ where
+  toFun x := (f x, g x)
+  map_smul' _ _ := Prod.ext (map_smulₛₗ f _ _) (map_smulₛₗ g _ _)
+
+@[to_additive (attr := simp) fst_comp_prod]
+lemma fst_comp_prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : (fst _ _ _).comp (prod f g) = f := rfl
+
+@[to_additive (attr := simp) snd_comp_prod]
+lemma snd_comp_prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : (snd _ _ _).comp (prod f g) = g := rfl
+
+@[to_additive (attr := simp) prod_fst_snd]
+lemma prod_fst_snd : prod (fst M α β) (snd M α β) = .id .. := rfl
+
+/-- If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`. -/
+@[to_additive (attr := simps -fullyApplied) prodMap
+  "If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`."]
+def prodMap (f : α →ₑ[σ] γ) (g : β →ₑ[σ] δ) : α × β →ₑ[σ] γ × δ where
+  toFun := Prod.map f g
+  __ := (f.comp (fst ..)).prod (g.comp (snd ..))
+
+end MulActionHom
+
+namespace MulActionHom
+
+section
+
+variable {R M N X Y : Type*} {σ : M → N}
+
+attribute [local simp] map_smulₛₗ smul_sub
+
+@[to_additive]
+instance [SMul M X] [SMul N Y] [SMul R Y] [SMulCommClass N R Y] :
+    SMul R (X →ₑ[σ] Y) where
+  smul h f := ⟨h • f, by simp [smul_comm _ h]⟩
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_smul [SMul M X] [SMul N Y] [SMul R Y] [SMulCommClass N R Y] (f : X →ₑ[σ] Y) (r : R) :
+    ⇑(r • f) = r • ⇑f := rfl
+
+instance [SMul M X] [Zero Y] [SMulZeroClass N Y] :
+    Zero (X →ₑ[σ] Y) where
+  zero := ⟨0, by simp⟩
+
+@[simp, norm_cast]
+lemma coe_zero [SMul M X] [Zero Y] [SMulZeroClass N Y] : ⇑(0 : X →ₑ[σ] Y) = 0 := rfl
+
+instance [SMul M X] [AddZeroClass Y] [DistribSMul N Y] :
+    AddZeroClass (X →ₑ[σ] Y) where
+  add f g := ⟨f + g, by simp [smul_add]⟩
+  zero_add _ := ext fun _ ↦ zero_add _
+  add_zero _ := ext fun _ ↦ add_zero _
+
+@[simp, norm_cast]
+lemma coe_add [SMul M X] [AddZeroClass Y] [DistribSMul N Y] (f g : X →ₑ[σ] Y) :
+    ⇑(f + g) = ⇑f + ⇑g := rfl
+
+instance [SMul M X] [AddMonoid Y] [DistribSMul N Y] :
+    AddMonoid (X →ₑ[σ] Y) where
+  add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
+  nsmul n f := n • f
+  nsmul_zero f := ext fun x ↦ AddMonoid.nsmul_zero (f x)
+  nsmul_succ n f := ext fun x ↦ AddMonoid.nsmul_succ n (f x)
+
+instance [SMul M X] [AddCommMonoid Y] [DistribSMul N Y] :
+    AddCommMonoid (X →ₑ[σ] Y) where
+  add_comm _ _ := ext fun _ ↦ add_comm _ _
+
+@[to_additive]
+instance [SMul M X] [SMul N Y] [Monoid R] [MulAction R Y] [SMulCommClass N R Y] :
+    MulAction R (X →ₑ[σ] Y) where
+  one_smul _ := ext fun _ ↦ one_smul _ _
+  mul_smul _ _ _ := ext fun _ ↦ mul_smul _ _ _
+
+instance [AddZeroClass Y] [SMul M X] [DistribSMul N Y] [DistribSMul R Y] [SMulCommClass N R Y] :
+    DistribSMul R (X →ₑ[σ] Y) where
+  smul_zero y := ext fun _ ↦ smul_zero y
+  smul_add y _ _ := ext fun _ ↦ smul_add y _ _
+
+instance [AddMonoid Y] [Monoid R] [SMul M X] [DistribSMul N Y]
+    [DistribMulAction R Y] [SMulCommClass N R Y] :
+    DistribMulAction R (X →ₑ[σ] Y) where
+  __ := inferInstanceAs (MulAction _ _)
+  __ := inferInstanceAs (DistribSMul _ _)
+
+instance [AddCommMonoid Y] [Semiring R] [SMul M X] [DistribSMul N Y]
+    [Module R Y] [SMulCommClass N R Y] :
+    Module R (X →ₑ[σ] Y) where
+  add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
+  zero_smul _ := ext fun _ ↦ zero_smul R _
+
+instance [SMul M X] [AddGroup Y] [DistribSMul N Y] : AddGroup (X →ₑ[σ] Y) where
+  sub f g := ⟨f - g, by simp [smul_sub]⟩
+  neg f := ⟨-f, by simp⟩
+  neg_add_cancel f := ext fun _ ↦ neg_add_cancel _
+  sub_eq_add_neg _ _ := ext fun _ ↦ sub_eq_add_neg _ _
+  zsmul z f := z • f
+  zsmul_zero' f := ext fun x ↦ SubNegMonoid.zsmul_zero' _
+  zsmul_neg' _ _ := ext fun x ↦ SubNegMonoid.zsmul_neg' _ _
+  zsmul_succ' _ _ := ext fun x ↦ SubNegMonoid.zsmul_succ' _ _
+
+@[simp, norm_cast]
+lemma coe_neg [SMul M X] [AddGroup Y] [DistribSMul N Y] (f : X →ₑ[σ] Y) :
+    ⇑(-f) = -⇑f := rfl
+
+@[simp, norm_cast]
+lemma coe_sub [SMul M X] [AddGroup Y] [DistribSMul N Y] (f g : X →ₑ[σ] Y) :
+    ⇑(f - g) = ⇑f - ⇑g := rfl
+
+instance [SMul M X] [AddCommGroup Y] [DistribSMul N Y] : AddCommGroup (X →ₑ[σ] Y) where
+
+instance [SMul M X] [Monoid N] [Monoid Y] [MulDistribMulAction N Y] :
+    Monoid (X →ₑ[σ] Y) where
+  mul f g := ⟨f * g, by simp⟩
+  mul_assoc _ _ _ := ext fun x ↦ mul_assoc _ _ _
+  one := ⟨1, by simp⟩
+  one_mul _ := ext fun x ↦ one_mul _
+  mul_one _ := ext fun x ↦ mul_one _
+
+@[simp, norm_cast]
+lemma coe_mul [SMul M X] [Monoid N] [Monoid Y] [MulDistribMulAction N Y] (f g : X →ₑ[σ] Y) :
+    ⇑(f * g) = ⇑f * ⇑g := rfl
+
+@[simp, norm_cast]
+lemma coe_one [SMul M X] [Monoid N] [Monoid Y] [MulDistribMulAction N Y] :
+    ⇑(1 : X →ₑ[σ] Y) = 1 := rfl
+
+instance [SMul M X] [Monoid N] [CommMonoid Y] [MulDistribMulAction N Y] :
+    CommMonoid (X →ₑ[σ] Y) where
+  mul_comm _ _ := ext fun _ ↦ mul_comm _ _
+
+instance [SMul M X] [Monoid N] [Semiring Y] [MulSemiringAction N Y] :
+    Semiring (X →ₑ[σ] Y) where
+  __ := inferInstanceAs (Monoid _)
+  __ := inferInstanceAs (AddCommMonoid _)
+  zero_mul _ := ext fun x ↦ zero_mul _
+  mul_zero _ := ext fun x ↦ mul_zero _
+  left_distrib _ _ _ := ext fun x ↦ left_distrib _ _ _
+  right_distrib _ _ _ := ext fun x ↦ right_distrib _ _ _
+
+instance [SMul M X] [Monoid N] [CommSemiring Y] [MulSemiringAction N Y] :
+    CommSemiring (X →ₑ[σ] Y) where
+
+instance [SMul M X] [Monoid N] [Ring Y] [MulSemiringAction N Y] :
+    Ring (X →ₑ[σ] Y) where
+
+instance [SMul M X] [Monoid N] [CommRing Y] [MulSemiringAction N Y] :
+    CommRing (X →ₑ[σ] Y) where
+
+end
+
+end MulActionHom
+
 section DistribMulAction
 
 variable {M : Type*} [Monoid M]
@@ -378,7 +568,7 @@ add_decl_doc DistribMulActionHom.toAddMonoidHom
 add_decl_doc DistribMulActionHom.toMulActionHom
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
- see https://github.com/leanprover/lean4/issues/2000 -/
+see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
 notation:25 (name := «DistribMulActionHomLocal≺»)
   A " →ₑ+[" φ:25 "] " B:0 => DistribMulActionHom φ A B
@@ -397,8 +587,8 @@ class DistribMulActionSemiHomClass (F : Type*)
     (A B : outParam Type*)
     [Monoid M] [Monoid N]
     [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]
-    [FunLike F A B]
-    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B : Prop
+    [FunLike F A B] : Prop
+    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B
 
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
   the additive monoid structure and equivariant with respect to the action of `M`.
@@ -431,7 +621,7 @@ variable {F : Type*} [FunLike F A B]
 def _root_.DistribMulActionSemiHomClass.toDistribMulActionHom
     [DistribMulActionSemiHomClass F φ A B]
     (f : F) : A →ₑ+[φ] B :=
-  { (f : A →+ B),  (f : A →ₑ[φ] B) with }
+  { (f : A →+ B), (f : A →ₑ[φ] B) with }
 
 /-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom`
 via `MulActionHomClass.toMulActionHom`. -/
@@ -573,8 +763,7 @@ variable {σ : R →* S}
 @[ext]
 theorem ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
   ext x
-  rw [← mul_one x, ← smul_eq_mul R, f.map_smulₑ, g.map_smulₑ, h]
-
+  rw [← mul_one x, ← smul_eq_mul, f.map_smulₑ, g.map_smulₑ, h]
 
 end Semiring
 
@@ -586,22 +775,8 @@ variable (S : Type*) [Semiring S] [MulSemiringAction N S]
 variable (S' : Type*) [Ring S'] [MulSemiringAction N S']
 variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 
--- variable {R S M' N'}
--- variable [AddMonoid M'] [DistribMulAction R M']
--- variable [AddMonoid N'] [DistribMulAction S N']
-
 /-- Equivariant ring homomorphisms. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure MulSemiringActionHom extends R →ₑ+[φ] S, R →+* S
-
-/-
-/-- Equivariant ring homomorphism -/
-abbrev MulSemiringActionHom
-  (M : Type*) [Monoid M]
-  (R : Type*) [Semiring R] [MulSemiringAction M R]
-  (S : Type*) [Semiring S] [MulSemiringAction M S]:= MulSemiringActionHom (MonoidHom.id M) R S
--/
 
 /-- Reinterpret an equivariant ring homomorphism as a ring homomorphism. -/
 add_decl_doc MulSemiringActionHom.toRingHom
@@ -610,7 +785,7 @@ add_decl_doc MulSemiringActionHom.toRingHom
 add_decl_doc MulSemiringActionHom.toDistribMulActionHom
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
- see https://github.com/leanprover/lean4/issues/2000 -/
+see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
 notation:25 (name := «MulSemiringActionHomLocal≺»)
   R " →ₑ+*[" φ:25 "] " S:0 => MulSemiringActionHom φ R S
@@ -627,12 +802,12 @@ class MulSemiringActionSemiHomClass (F : Type*)
     {M N : outParam Type*} [Monoid M] [Monoid N]
     (φ : outParam (M → N))
     (R S : outParam Type*) [Semiring R] [Semiring S]
-    [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S]
-    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S : Prop
+    [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S] : Prop
+    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to a `DistribMulAction`of `M` on `R` and `S` .
- -/
+-/
 abbrev MulSemiringActionHomClass
     (F : Type*)
     {M : outParam Type*} [Monoid M]
@@ -665,7 +840,7 @@ variable {F : Type*} [FunLike F R S]
 def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
     [MulSemiringActionSemiHomClass F φ R S]
     (f : F) : R →ₑ+*[φ] S :=
- { (f : R →+* S),  (f : R →ₑ+[φ] S) with }
+  { (f : R →+* S), (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/

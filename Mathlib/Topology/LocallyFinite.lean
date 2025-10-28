@@ -3,8 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.Topology.ContinuousOn
 
 /-!
 ### Locally finite families of sets
@@ -138,7 +138,7 @@ theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x :
   choose U hUx hU using hf
   choose N hN using fun x => (hU x).bddAbove
   replace hN : ∀ (x), ∀ n > N x, ∀ y ∈ U x, f (n + 1) y = f n y :=
-    fun x n hn y hy => by_contra fun hne => hn.lt.not_le <| hN x ⟨y, hne, hy⟩
+    fun x n hn y hy => by_contra fun hne => hn.lt.not_ge <| hN x ⟨y, hne, hy⟩
   replace hN : ∀ (x), ∀ n ≥ N x + 1, ∀ y ∈ U x, f n y = f (N x + 1) y :=
     fun x n hn y hy => Nat.le_induction rfl (fun k hle => (hN x _ hle _ hy).trans) n hn
   refine ⟨fun x => f (N x + 1) x, fun x => ?_⟩
@@ -191,9 +191,11 @@ theorem locallyFinite_sum {f : ι ⊕ ι' → Set X} :
   simp only [locallyFinite_iff_smallSets, ← forall_and, ← finite_preimage_inl_and_inr,
     preimage_setOf_eq, (· ∘ ·), eventually_and]
 
-theorem LocallyFinite.sum_elim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :
+theorem LocallyFinite.sumElim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :
     LocallyFinite (Sum.elim f g) :=
   locallyFinite_sum.mpr ⟨hf, hg⟩
+
+@[deprecated (since := "2025-02-20")] alias LocallyFinite.sum_elim := LocallyFinite.sumElim
 
 theorem locallyFinite_option {f : Option ι → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ some) := by

@@ -19,9 +19,9 @@ subtraction on a canonically ordered monoid (`ℕ`, `Multiset`, `PartENat`, `ENN
 ## Implementation details
 
 `OrderedSub` is a mixin type-class, so that we can use the results in this file even in cases
-where we don't have a `CanonicallyOrderedAddCommMonoid` instance
+where we don't have a `CanonicallyOrderedAdd` instance
 (even though that is our main focus). Conversely, this means we can use
-`CanonicallyOrderedAddCommMonoid` without necessarily having to define a subtraction.
+`CanonicallyOrderedAdd` without necessarily having to define a subtraction.
 
 The results in this file are ordered by the type-class assumption needed to prove it.
 This means that similar results might not be close to each other. Furthermore, we don't prove
@@ -300,7 +300,7 @@ protected theorem lt_add_of_tsub_lt_right (hc : AddLECancellable c) (h : a - c <
 protected theorem lt_tsub_of_add_lt_right (hc : AddLECancellable c) (h : a + c < b) : a < b - c :=
   (hc.le_tsub_of_add_le_right h.le).lt_of_ne <| by
     rintro rfl
-    exact h.not_le le_tsub_add
+    exact h.not_ge le_tsub_add
 
 protected theorem lt_tsub_of_add_lt_left (ha : AddLECancellable a) (h : a + c < b) : c < b - a :=
   ha.lt_tsub_of_add_lt_right <| by rwa [add_comm]

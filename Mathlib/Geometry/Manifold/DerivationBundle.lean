@@ -15,19 +15,16 @@ Moreover, we define the differential of a function in terms of derivations.
 
 The content of this file is not meant to be regarded as an alternative definition to the current
 tangent bundle but rather as a purely algebraic theory that provides a purely algebraic definition
-of the Lie algebra for a Lie group.
-
+of the Lie algebra for a Lie group. This theory coincides with the usual tangent bundle in the
+case of finite-dimensional `C^∞` real manifolds, but not in the general case.
 -/
 
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (M : Type*)
-  [TopologicalSpace M] [ChartedSpace H M] (n : ℕ∞)
+  [TopologicalSpace M] [ChartedSpace H M] (n : WithTop ℕ∞)
 
-open scoped Manifold
-/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
-Later, replace with `open scoped ContDiff`. -/
-local notation "∞" => (⊤ : ℕ∞)
+open scoped Manifold ContDiff
 
 -- the following two instances prevent poorly understood type class inference timeout problems
 instance smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := by infer_instance
@@ -35,17 +32,20 @@ instance smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := by infer
 instance smooth_functions_tower : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ := by infer_instance
 
 /-- Type synonym, introduced to put a different `SMul` action on `C^n⟮I, M; 𝕜⟯`
-which is defined as `f • r = f(x) * r`. -/
+which is defined as `f • r = f(x) * r`.
+Denoted as `C^n⟮I, M; 𝕜⟯⟨x⟩` within the `Derivation` namespace. -/
 @[nolint unusedArguments]
-def PointedSmoothMap (_ : M) :=
+def PointedContMDiffMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯
 
+@[deprecated (since := "2025-01-09")] alias PointedSmoothMap := PointedContMDiffMap
+
 @[inherit_doc]
-scoped[Derivation] notation "C^" n "⟮" I ", " M "; " 𝕜 "⟯⟨" x "⟩" => PointedSmoothMap 𝕜 I M n x
+scoped[Derivation] notation "C^" n "⟮" I ", " M "; " 𝕜 "⟯⟨" x "⟩" => PointedContMDiffMap 𝕜 I M n x
 
 variable {𝕜 M}
 
-namespace PointedSmoothMap
+namespace PointedContMDiffMap
 
 open scoped Derivation
 
@@ -53,10 +53,10 @@ instance instFunLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M 𝕜 :=
   ContMDiffMap.instFunLike
 
 instance {x : M} : CommRing C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
-  SmoothMap.commRing
+  ContMDiffMap.commRing
 
 instance {x : M} : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
-  SmoothMap.algebra
+  ContMDiffMap.algebra
 
 instance {x : M} : Inhabited C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
   ⟨0⟩
@@ -69,9 +69,9 @@ instance {x : M} : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ C^∞⟮I, M;
 
 variable {I}
 
-/-- `SmoothMap.evalRingHom` gives rise to an algebra structure of `C^∞⟮I, M; 𝕜⟯` on `𝕜`. -/
+/-- `ContMDiffMap.evalRingHom` gives rise to an algebra structure of `C^∞⟮I, M; 𝕜⟯` on `𝕜`. -/
 instance evalAlgebra {x : M} : Algebra C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 :=
-  (SmoothMap.evalRingHom x : C^∞⟮I, M; 𝕜⟯⟨x⟩ →+* 𝕜).toAlgebra
+  (ContMDiffMap.evalRingHom x : C^∞⟮I, M; 𝕜⟯⟨x⟩ →+* 𝕜).toAlgebra
 
 /-- With the `evalAlgebra` algebra structure evaluation is actually an algebra morphism. -/
 def eval (x : M) : C^∞⟮I, M; 𝕜⟯ →ₐ[C^∞⟮I, M; 𝕜⟯⟨x⟩] 𝕜 :=
@@ -82,14 +82,16 @@ theorem smul_def (x : M) (f : C^∞⟮I, M; 𝕜⟯⟨x⟩) (k : 𝕜) : f • k
 
 instance (x : M) : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 where
   smul_assoc k f h := by
-    rw [smul_def, smul_def, SmoothMap.coe_smul, Pi.smul_apply, smul_eq_mul, smul_eq_mul, mul_assoc]
+    rw [smul_def, smul_def, ContMDiffMap.coe_smul, Pi.smul_apply, smul_eq_mul, smul_eq_mul,
+      mul_assoc]
 
-end PointedSmoothMap
+end PointedContMDiffMap
 
 open scoped Derivation
 
 /-- The derivations at a point of a manifold. Some regard this as a possible definition of the
-tangent space -/
+tangent space, as this coincides with the usual tangent space for finite-dimensional `C^∞` real
+manifolds. The identification is not true in general, though. -/
 abbrev PointDerivation (x : M) :=
   Derivation 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜
 
@@ -100,9 +102,11 @@ open scoped Derivation
 variable (X : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯) (f : C^∞⟮I, M; 𝕜⟯)
 
 /-- Evaluation at a point gives rise to a `C^∞⟮I, M; 𝕜⟯`-linear map between `C^∞⟮I, M; 𝕜⟯` and `𝕜`.
- -/
-def SmoothFunction.evalAt (x : M) : C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩] 𝕜 :=
-  (PointedSmoothMap.eval x).toLinearMap
+-/
+def ContMDiffFunction.evalAt (x : M) : C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩] 𝕜 :=
+  (PointedContMDiffMap.eval x).toLinearMap
+
+@[deprecated (since := "2025-01-09")] alias SmoothFunction.evalAt := ContMDiffFunction.evalAt
 
 namespace Derivation
 
@@ -110,7 +114,7 @@ variable {I}
 
 /-- The evaluation at a point as a linear map. -/
 def evalAt (x : M) : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ →ₗ[𝕜] PointDerivation I x :=
-  (SmoothFunction.evalAt I x).compDer
+  (ContMDiffFunction.evalAt I x).compDer
 
 theorem evalAt_apply (x : M) : evalAt x X f = (X f) x :=
   rfl
@@ -121,7 +125,8 @@ variable {I} {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Ty
   [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M']
   [ChartedSpace H' M']
 
-/-- The heterogeneous differential as a linear map. Instead of taking a function as an argument this
+/-- The heterogeneous differential as a linear map, denoted as `𝒅ₕ` within the `Manifold` namespace.
+Instead of taking a function as an argument this
 differential takes `h : f x = y`. It is particularly handy to deal with situations where the points
 on where it has to be evaluated are equal but not definitionally equal. -/
 def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) :
@@ -129,28 +134,28 @@ def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) 
   toFun v :=
     Derivation.mk'
       { toFun := fun g => v (g.comp f)
-        map_add' := fun g g' => by dsimp; rw [SmoothMap.add_comp, Derivation.map_add]
+        map_add' := fun g g' => by rw [ContMDiffMap.add_comp, Derivation.map_add]
         map_smul' := fun k g => by
-          dsimp; rw [SmoothMap.smul_comp, Derivation.map_smul, smul_eq_mul] }
+          dsimp; rw [ContMDiffMap.smul_comp, Derivation.map_smul, smul_eq_mul] }
       fun g g' => by
         dsimp
-        rw [SmoothMap.mul_comp, Derivation.leibniz,
-          PointedSmoothMap.smul_def, ContMDiffMap.comp_apply,
-          PointedSmoothMap.smul_def, ContMDiffMap.comp_apply, h]
+        rw [ContMDiffMap.mul_comp, Derivation.leibniz,
+          PointedContMDiffMap.smul_def, ContMDiffMap.comp_apply,
+          PointedContMDiffMap.smul_def, ContMDiffMap.comp_apply, h]
         norm_cast
   map_smul' _ _ := rfl
   map_add' _ _ := rfl
 
-/-- The homogeneous differential as a linear map. -/
+/-- The homogeneous differential as a linear map, denoted as `𝒅` within the `Manifold` namespace. -/
 def fdifferential (f : C^∞⟮I, M; I', M'⟯) (x : M) :
     PointDerivation I x →ₗ[𝕜] PointDerivation I' (f x) :=
   hfdifferential (rfl : f x = f x)
 
 -- Standard notation for the differential. The abbreviation is `MId`.
-scoped[Manifold] notation "𝒅" => fdifferential
+@[inherit_doc] scoped[Manifold] notation "𝒅" => fdifferential
 
 -- Standard notation for the differential. The abbreviation is `MId`.
-scoped[Manifold] notation "𝒅ₕ" => hfdifferential
+@[inherit_doc] scoped[Manifold] notation "𝒅ₕ" => hfdifferential
 
 @[simp]
 theorem fdifferential_apply (f : C^∞⟮I, M; I', M'⟯) {x : M} (v : PointDerivation I x)

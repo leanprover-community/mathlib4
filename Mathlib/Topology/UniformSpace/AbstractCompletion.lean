@@ -46,8 +46,6 @@ uniform spaces, completion, universal property
 
 noncomputable section
 
-attribute [local instance] Classical.propDecidable
-
 open Filter Set Function
 
 universe u
@@ -80,8 +78,6 @@ variable {α : Type*} [UniformSpace α] (pkg : AbstractCompletion α)
 local notation "hatα" => pkg.space
 
 local notation "ι" => pkg.coe
-
-@[deprecated (since := "2024-10-08")] alias uniformInducing := isUniformInducing
 
 /-- If `α` is complete, then it is an abstract completion of itself. -/
 def ofComplete [T0Space α] [CompleteSpace α] : AbstractCompletion α :=
@@ -116,6 +112,7 @@ section Extend
 
 /-- Extension of maps to completions -/
 protected def extend (f : α → β) : hatα → β :=
+  open scoped Classical in
   if UniformContinuous f then pkg.isDenseInducing.extend f else fun x => f (pkg.dense.some x)
 
 variable {f : α → β}
@@ -133,7 +130,7 @@ theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
   by_cases hf : UniformContinuous f
   · rw [pkg.extend_def hf]
     exact uniformContinuous_uniformly_extend pkg.isUniformInducing pkg.dense hf
-  · change UniformContinuous (ite _ _ _)
+  · unfold AbstractCompletion.extend
     rw [if_neg hf]
     exact uniformContinuous_of_const fun a b => by congr 1
 
@@ -272,7 +269,7 @@ the statement of `compare_comp_eq_compare` is the commutativity of the right tri
   |        V  ∨
  α ---f---> γ
 ```
- -/
+-/
 theorem compare_comp_eq_compare (γ : Type*) [TopologicalSpace γ]
     [T3Space γ] {f : α → γ} (cont_f : Continuous f) :
     letI := pkg.uniformStruct.toTopologicalSpace
@@ -374,7 +371,7 @@ theorem uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (
 theorem continuous_map₂ {δ} [TopologicalSpace δ] {f : α → β → γ} {a : δ → hatα} {b : δ → hatβ}
     (ha : Continuous a) (hb : Continuous b) :
     Continuous fun d : δ => pkg.map₂ pkg' pkg'' f (a d) (b d) :=
-  ((pkg.uniformContinuous_map₂ pkg' pkg'' f).continuous.comp (Continuous.prod_mk ha hb) : _)
+  (pkg.uniformContinuous_map₂ pkg' pkg'' f).continuous.comp₂ ha hb
 
 theorem map₂_coe_coe (a : α) (b : β) (f : α → β → γ) (hf : UniformContinuous₂ f) :
     pkg.map₂ pkg' pkg'' f (ι a) (ι' b) = ι'' (f a b) :=

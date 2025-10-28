@@ -3,6 +3,7 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan Commelin
 -/
+
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Partition.Finpartition
 
@@ -87,8 +88,10 @@ theorem classes_inj {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.classes = r�
   ⟨fun h => h ▸ rfl, fun h => ext fun a b => by simp only [rel_iff_exists_classes, exists_prop, h]⟩
 
 /-- The empty set is not an equivalence class. -/
-theorem empty_not_mem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
-  Set.not_mem_empty y <| hy.symm ▸ r.refl' y
+theorem empty_notMem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
+  Set.notMem_empty y <| hy.symm ▸ r.refl' y
+
+@[deprecated (since := "2025-05-23")] alias empty_not_mem_classes := empty_notMem_classes
 
 /-- Equivalence classes partition the type. -/
 theorem classes_eqv_classes {r : Setoid α} (a) : ∃! b ∈ r.classes, a ∈ b :=
@@ -192,7 +195,7 @@ theorem nonempty_of_mem_partition {c : Set (Set α)} (hc : IsPartition c) {s} (h
   Set.nonempty_iff_ne_empty.2 fun hs0 => hc.1 <| hs0 ▸ h
 
 theorem isPartition_classes (r : Setoid α) : IsPartition r.classes :=
-  ⟨empty_not_mem_classes, classes_eqv_classes⟩
+  ⟨empty_notMem_classes, classes_eqv_classes⟩
 
 theorem IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
     c.PairwiseDisjoint id :=
@@ -243,25 +246,22 @@ instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
   lt x y := x ≤ y ∧ ¬y ≤ x
   le_refl _ := @le_refl (Setoid α) _ _
   le_trans _ _ _ := @le_trans (Setoid α) _ _ _ _
-  lt_iff_le_not_le _ _ := Iff.rfl
+  lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm x y hx hy := by
     let h := @le_antisymm (Setoid α) _ _ _ hx hy
     rw [Subtype.ext_iff_val, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]
 
-variable (α)
-
+variable (α) in
 /-- The order-preserving bijection between equivalence relations on a type `α`, and
   partitions of `α` into subsets. -/
 protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C } where
-  toFun r := ⟨r.classes, empty_not_mem_classes, classes_eqv_classes⟩
+  toFun r := ⟨r.classes, empty_notMem_classes, classes_eqv_classes⟩
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
   right_inv C := by rw [Subtype.ext_iff_val, ← classes_mkClasses C.1 C.2]
   map_rel_iff' {r s} := by
     conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
     rfl
-
-variable {α}
 
 /-- A complete lattice instance for partitions; there is more infrastructure for the
     equivalent complete lattice on equivalence relations. -/
@@ -279,14 +279,14 @@ def IsPartition.finpartition {c : Finset (Set α)} (hc : Setoid.IsPartition (c :
   parts := c
   supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr <| eqv_classes_disjoint hc.2
   sup_parts := c.sup_id_set_eq_sUnion.trans hc.sUnion_eq_univ
-  not_bot_mem := hc.left
+  bot_notMem := hc.left
 
 end Setoid
 
 /-- A finpartition gives rise to a setoid partition -/
 theorem Finpartition.isPartition_parts {α} (f : Finpartition (Set.univ : Set α)) :
     Setoid.IsPartition (f.parts : Set (Set α)) :=
-  ⟨f.not_bot_mem,
+  ⟨f.bot_notMem,
     Setoid.eqv_classes_of_disjoint_union (f.parts.sup_id_set_eq_sUnion.symm.trans f.sup_parts)
       f.supIndep.pairwiseDisjoint⟩
 
@@ -299,16 +299,18 @@ an index to an element of the corresponding set.
 This type is primarily useful for definitional control of `s` - if this is not needed, then
 `Setoid.ker index` by itself may be sufficient. -/
 structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
-  /-- two indexes are equal if they are equal in membership  -/
+  /-- two indexes are equal if they are equal in membership -/
   eq_of_mem : ∀ {x i j}, x ∈ s i → x ∈ s j → i = j
   /-- sends an index to an element of the corresponding set -/
   some : ι → α
-  /-- membership invariance for `some`-/
+  /-- membership invariance for `some` -/
   some_mem : ∀ i, some i ∈ s i
-  /-- index for type `α`-/
+  /-- index for type `α` -/
   index : α → ι
-  /-- membership invariance for `index`-/
+  /-- membership invariance for `index` -/
   mem_index : ∀ x, x ∈ s (index x)
+
+open scoped Function -- required for scoped `on` notation
 
 /-- The non-constructive constructor for `IndexedPartition`. -/
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
@@ -334,8 +336,7 @@ instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι =>
       index := default
       mem_index := Set.mem_univ }⟩
 
--- Porting note: `simpNF` complains about `mem_index`
-attribute [simp] some_mem --mem_index
+attribute [simp] some_mem
 
 variable (hs : IndexedPartition s)
 
@@ -417,8 +418,6 @@ theorem out_proj (x : α) : hs.out (hs.proj x) = hs.some (hs.index x) :=
 /-- The indices of `Quotient.out` and `IndexedPartition.out` are equal. -/
 theorem index_out (x : hs.Quotient) : hs.index x.out = hs.index (hs.out x) :=
   Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out x).trans (hs.index_some _).symm
-
-@[deprecated (since := "2024-10-19")] alias index_out' := index_out
 
 /-- This lemma is analogous to `Quotient.out_eq'`. -/
 @[simp]

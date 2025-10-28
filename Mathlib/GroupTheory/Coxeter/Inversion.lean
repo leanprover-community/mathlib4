@@ -5,6 +5,7 @@ Authors: Mitchell Lee, Óscar Álvarez
 -/
 import Mathlib.GroupTheory.Coxeter.Length
 import Mathlib.Data.List.GetD
+import Mathlib.Tactic.Group
 
 /-!
 # Reflections, inversions, and inversion sequences
@@ -41,6 +42,8 @@ inversions of $w$ in some order, but we do not prove that in this file.
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 namespace CoxeterSystem
 
@@ -157,7 +160,7 @@ theorem isLeftInversion_mul_right_iff {w : W} :
   rw [← isRightInversion_inv_iff, ← isRightInversion_inv_iff, mul_inv_rev, ht.inv,
     ht.isRightInversion_mul_left_iff]
 
-theorem not_isLeftInversion_mul_right_iff {w : W}  :
+theorem not_isLeftInversion_mul_right_iff {w : W} :
     ¬cs.IsLeftInversion (t * w) t ↔ cs.IsLeftInversion w t :=
   ht.isLeftInversion_mul_right_iff.not_left
 
@@ -207,9 +210,10 @@ local prefix:100 "lis" => cs.leftInvSeq
 
 theorem rightInvSeq_concat (ω : List B) (i : B) :
     ris (ω.concat i) = (List.map (MulAut.conj (s i)) (ris ω)).concat (s i) := by
-  induction' ω with j ω ih
-  · simp
-  · dsimp [rightInvSeq, concat]
+  induction ω with
+  | nil => simp
+  | cons j ω ih =>
+    dsimp [rightInvSeq, concat]
     rw [ih]
     simp only [concat_eq_append, wordProd_append, wordProd_cons, wordProd_nil, mul_one, mul_inv_rev,
       inv_simple, cons_append, cons.injEq, and_true]
@@ -217,9 +221,10 @@ theorem rightInvSeq_concat (ω : List B) (i : B) :
 
 private theorem leftInvSeq_eq_reverse_rightInvSeq_reverse (ω : List B) :
     lis ω = (ris ω.reverse).reverse := by
-  induction' ω with i ω ih
-  · simp
-  · rw [leftInvSeq, reverse_cons, ← concat_eq_append, rightInvSeq_concat, ih]
+  induction ω with
+  | nil => simp
+  | cons i ω ih =>
+    rw [leftInvSeq, reverse_cons, ← concat_eq_append, rightInvSeq_concat, ih]
     simp [map_reverse]
 
 theorem leftInvSeq_concat (ω : List B) (i : B) :
@@ -235,9 +240,9 @@ theorem leftInvSeq_reverse (ω : List B) :
   simp [leftInvSeq_eq_reverse_rightInvSeq_reverse]
 
 @[simp] theorem length_rightInvSeq (ω : List B) : (ris ω).length = ω.length := by
-  induction' ω with i ω ih
-  · simp
-  · simpa [rightInvSeq]
+  induction ω with
+  | nil => simp
+  | cons i ω ih => simpa [rightInvSeq]
 
 @[simp] theorem length_leftInvSeq (ω : List B) : (lis ω).length = ω.length := by
   simp [leftInvSeq_eq_reverse_rightInvSeq_reverse]
@@ -247,12 +252,13 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
       (π (ω.drop (j + 1)))⁻¹
         * (Option.map (cs.simple) ω[j]?).getD 1
         * π (ω.drop (j + 1)) := by
-  induction' ω with i ω ih generalizing j
-  · simp
-  · dsimp only [rightInvSeq]
+  induction ω generalizing j with
+  | nil => simp
+  | cons i ω ih =>
+    dsimp only [rightInvSeq]
     rcases j with _ | j'
     · simp [getD_cons_zero]
-    · simp only [getD_eq_getElem?_getD, get?_eq_getElem?] at ih
+    · simp only [getD_eq_getElem?_getD] at ih
       simp [getD_cons_succ, ih j']
 
 lemma getElem_rightInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
@@ -267,9 +273,10 @@ theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
       π (ω.take j)
         * (Option.map (cs.simple) ω[j]?).getD 1
         * (π (ω.take j))⁻¹ := by
-  induction' ω with i ω ih generalizing j
-  · simp
-  · dsimp [leftInvSeq]
+  induction ω generalizing j with
+  | nil => simp
+  | cons i ω ih =>
+    dsimp [leftInvSeq]
     rcases j with _ | j'
     · simp [getD_cons_zero]
     · rw [getD_cons_succ]
@@ -304,11 +311,12 @@ theorem getD_leftInvSeq_mul_self (ω : List B) (j : ℕ) :
 
 theorem rightInvSeq_drop (ω : List B) (j : ℕ) :
     ris (ω.drop j) = (ris ω).drop j := by
-  induction' j with j ih₁ generalizing ω
-  · simp
-  · induction' ω with k ω _
-    · simp
-    · rw [drop_succ_cons, ih₁ ω, rightInvSeq, drop_succ_cons]
+  induction j generalizing ω with
+  | zero => simp
+  | succ j ih₁ =>
+    induction ω with
+    | nil => simp
+    | cons k ω _ => rw [drop_succ_cons, ih₁ ω, rightInvSeq, drop_succ_cons]
 
 theorem leftInvSeq_take (ω : List B) (j : ℕ) :
     lis (ω.take j) = (lis ω).take j := by
@@ -320,9 +328,10 @@ theorem leftInvSeq_take (ω : List B) (j : ℕ) :
 
 theorem isReflection_of_mem_rightInvSeq (ω : List B) {t : W} (ht : t ∈ ris ω) :
     cs.IsReflection t := by
-  induction' ω with i ω ih
-  · simp at ht
-  · dsimp [rightInvSeq] at ht
+  induction ω with
+  | nil => simp at ht
+  | cons i ω ih =>
+    dsimp [rightInvSeq] at ht
     rcases ht with _ | ⟨_, mem⟩
     · use (π ω)⁻¹, i
       group
@@ -338,10 +347,10 @@ theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
   rw [getD_rightInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 1 [← take_append_drop (j + 1) ω]
   rw [take_succ]
-  obtain lt | le := lt_or_le j ω.length
-  · simp only [get?_eq_getElem?, getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
+  obtain lt | le := lt_or_ge j ω.length
+  · simp only [getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
     simp
-  · simp only [get?_eq_getElem?, getElem?_eq_none le]
+  · simp only [getElem?_eq_none le]
     simp
 
 theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
@@ -349,10 +358,10 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
   rw [getD_leftInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 4 [← take_append_drop (j + 1) ω]
   rw [take_succ]
-  obtain lt | le := lt_or_le j ω.length
-  · simp only [get?_eq_getElem?, getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
+  obtain lt | le := lt_or_ge j ω.length
+  · simp only [getElem?_eq_getElem lt, wordProd_append, wordProd_cons, mul_assoc]
     simp
-  · simp only [get?_eq_getElem?, getElem?_eq_none le]
+  · simp only [getElem?_eq_none le]
     simp
 
 theorem isRightInversion_of_mem_rightInvSeq {ω : List B} (hω : cs.IsReduced ω) {t : W}
@@ -382,9 +391,9 @@ theorem isLeftInversion_of_mem_leftInvSeq {ω : List B} (hω : cs.IsReduced ω) 
       _ = ℓ (π ω)                 := hω.symm
 
 theorem prod_rightInvSeq (ω : List B) : prod (ris ω) = (π ω)⁻¹ := by
-  induction' ω with i ω ih
-  · simp
-  · simp [rightInvSeq, ih, wordProd_cons]
+  induction ω with
+  | nil => simp
+  | cons i ω ih => simp [rightInvSeq, ih, wordProd_cons]
 
 theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, prod_reverse_noncomm, inv_inj]
@@ -417,10 +426,10 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
       drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), Nat.add_comm,
       ← add_assoc, Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2
-    show (take j ω ++ drop (j + 1) ω)[j' - 1]? = ω[j']?
+    show (List.take j ω ++ List.drop (j + 1) ω)[j' - 1]? = ω[j']?
     rw [getElem?_append_right (by simp [Nat.le_sub_one_of_lt j_lt_j']), getElem?_drop]
     congr
-    show j + 1 + (j' - 1 - List.length (take j ω)) = j'
+    show j + 1 + (j' - 1 - List.length (List.take j ω)) = j'
     rw [length_take]
     omega
   have h₄ : t * t' = 1                                := by
@@ -449,11 +458,11 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
 theorem IsReduced.nodup_leftInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (lis ω) := by
   simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, nodup_reverse]
   apply nodup_rightInvSeq
-  rwa [isReduced_reverse]
+  rwa [isReduced_reverse_iff]
 
 lemma getElem_succ_leftInvSeq_alternatingWord
     (i j : B) (p k : ℕ) (h : k + 1 < 2 * p) :
-    (lis (alternatingWord i j (2 * p)))[k + 1]'(by simp; exact h) =
+    (lis (alternatingWord i j (2 * p)))[k + 1]'(by simpa using h) =
     MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; omega)) := by
   rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp[h]),
     cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[h]; omega)]
@@ -467,10 +476,8 @@ theorem getElem_leftInvSeq_alternatingWord
     (i j : B) (p k : ℕ) (h : k < 2 * p) :
     (lis (alternatingWord i j (2 * p)))[k]'(by simp; omega) =
     π alternatingWord j i (2 * k + 1) := by
-  revert i j
-  induction k with
+  induction k generalizing i j with
   | zero =>
-    intro i j
     simp only [CoxeterSystem.getElem_leftInvSeq cs (alternatingWord i j (2 * p)) 0 (by simp [h]),
       take_zero, wordProd_nil, one_mul, inv_one, mul_one, alternatingWord, concat_eq_append,
       nil_append, wordProd_singleton]
@@ -478,8 +485,7 @@ theorem getElem_leftInvSeq_alternatingWord
     simp only [getElem_alternatingWord i j (2 * p) 0 (by simp [h]), add_zero, even_two,
       Even.mul_right, ↓reduceIte]
   | succ k hk =>
-    intro i j
-    simp only [getElem_succ_leftInvSeq_alternatingWord cs i j p k h, hk (by omega),
+    simp only [getElem_succ_leftInvSeq_alternatingWord cs i j p k h, hk _ _ (by omega),
       MulAut.conj_apply, inv_simple, alternatingWord_succ' j i, even_two, Even.mul_right,
       ↓reduceIte, wordProd_cons]
     rw [(by ring: 2 * (k + 1) = 2 * k + 1 + 1), alternatingWord_succ j i, wordProd_concat]

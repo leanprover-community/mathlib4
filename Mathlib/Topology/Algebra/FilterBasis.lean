@@ -3,7 +3,6 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Order.Filter.Bases
 import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
@@ -185,11 +184,11 @@ topological group. -/
 @[to_additive "If a group is endowed with a topological structure coming from a group filter basis
 then it's a topological group."]
 instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
-    @TopologicalGroup G B.topology _ := by
+    @IsTopologicalGroup G B.topology _ := by
   letI := B.topology
   have basis := B.nhds_one_hasBasis
   have basis' := basis.prod basis
-  refine TopologicalGroup.of_nhds_one ?_ ?_ ?_ ?_
+  refine IsTopologicalGroup.of_nhds_one ?_ ?_ ?_ ?_
   · rw [basis'.tendsto_iff basis]
     suffices ∀ U ∈ B, ∃ V W, (V ∈ B ∧ W ∈ B) ∧ ∀ a b, a ∈ V → b ∈ W → a * b ∈ U by simpa
     intro U U_in
@@ -243,13 +242,13 @@ def topology : TopologicalSpace R :=
 /-- If a ring is endowed with a topological structure coming from
 a ring filter basis then it's a topological ring. -/
 instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilterBasis R) :
-    @TopologicalRing R B.topology _ := by
+    @IsTopologicalRing R B.topology _ := by
   let B' := B.toAddGroupFilterBasis
   letI := B'.topology
   have basis := B'.nhds_zero_hasBasis
   have basis' := basis.prod basis
   haveI := B'.isTopologicalAddGroup
-  apply TopologicalRing.of_addGroup_of_nhds_zero
+  apply IsTopologicalRing.of_addGroup_of_nhds_zero
   · rw [basis'.tendsto_iff basis]
     suffices ∀ U ∈ B', ∃ V W, (V ∈ B' ∧ W ∈ B') ∧ ∀ a b, a ∈ V → b ∈ W → a * b ∈ U by simpa
     intro U U_in
@@ -337,8 +336,8 @@ by their neighborhoods of 0 to obtain the `ContinuousSMul` on the pre-existing t
 
 But it turns out it's just easier to get it as a byproduct of the proof, so this is just a free
 quality-of-life improvement. -/
-theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [TopologicalRing R] [TopologicalSpace M]
-    [TopologicalAddGroup M] {p : ι → Prop} {b : ι → Set M} (h : HasBasis (𝓝 0) p b)
+theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [IsTopologicalRing R] [TopologicalSpace M]
+    [IsTopologicalAddGroup M] {p : ι → Prop} {b : ι → Set M} (h : HasBasis (𝓝 0) p b)
     (hsmul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • b j ⊆ b i)
     (hsmul_left : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ • ·) (b j) (b i))
     (hsmul_right : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ b i) : ContinuousSMul R M := by
@@ -361,7 +360,7 @@ theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [TopologicalRing R] [To
 
 /-- If a module is endowed with a topological structure coming from
 a module filter basis then it's a topological module. -/
-instance (priority := 100) continuousSMul [TopologicalRing R] :
+instance (priority := 100) continuousSMul [IsTopologicalRing R] :
     @ContinuousSMul R M _ _ B.topology := by
   let B' := B.toAddGroupFilterBasis
   let _ := B'.topology

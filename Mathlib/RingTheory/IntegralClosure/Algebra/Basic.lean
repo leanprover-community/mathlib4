@@ -3,9 +3,9 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 
 /-!
 # Integral closure of a subring.
@@ -41,6 +41,11 @@ theorem Algebra.IsIntegral.of_injective (f : A →ₐ[R] B) (hf : Function.Injec
     [Algebra.IsIntegral R B] : Algebra.IsIntegral R A :=
   ⟨fun _ ↦ (isIntegral_algHom_iff f hf).mp (isIntegral _)⟩
 
+/-- Homomorphic image of an integral algebra is an integral algebra. -/
+theorem Algebra.IsIntegral.of_surjective [Algebra.IsIntegral R A]
+    (f : A →ₐ[R] B) (hf : Function.Surjective f) : Algebra.IsIntegral R B :=
+  isIntegral_def.mpr fun b ↦ let ⟨a, ha⟩ := hf b; ha ▸ (isIntegral_def.mp ‹_› a).map f
+
 theorem AlgEquiv.isIntegral_iff (e : A ≃ₐ[R] B) : Algebra.IsIntegral R A ↔ Algebra.IsIntegral R B :=
   ⟨fun h ↦ h.of_injective e.symm e.symm.injective, fun h ↦ h.of_injective e e.injective⟩
 
@@ -51,6 +56,7 @@ instance Module.End.isIntegral {M : Type*} [AddCommGroup M] [Module R M] [Module
   ⟨LinearMap.exists_monic_and_aeval_eq_zero R⟩
 
 variable (R) in
+@[nontriviality]
 theorem IsIntegral.of_finite [Module.Finite R B] (x : B) : IsIntegral R x :=
   (isIntegral_algHom_iff (Algebra.lmul R B) Algebra.lmul_injective).mp
     (Algebra.IsIntegral.isIntegral _)
@@ -61,6 +67,10 @@ theorem isIntegral_of_noetherian (_ : IsNoetherian R B) (x : B) : IsIntegral R x
 variable (R B) in
 instance Algebra.IsIntegral.of_finite [Module.Finite R B] : Algebra.IsIntegral R B :=
   ⟨.of_finite R⟩
+
+lemma Algebra.isIntegral_of_surjective (H : Function.Surjective (algebraMap R B)) :
+    Algebra.IsIntegral R B :=
+  .of_surjective (Algebra.ofId R B) H
 
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
   then all elements of `S` are integral over `R`. -/
@@ -116,6 +126,7 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
 
 variable {f}
 
+@[stacks 00GK]
 theorem RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
   letI := f.toAlgebra
   fun _ ↦ IsIntegral.of_mem_of_fg ⊤ h.1 _ trivial
@@ -190,7 +201,7 @@ nonrec theorem IsIntegral.mul {x y : A} (hx : IsIntegral R x) (hy : IsIntegral R
   hx.mul (algebraMap R A) hy
 
 theorem IsIntegral.smul {R} [CommSemiring R] [Algebra R B] [Algebra S B] [Algebra R S]
-    [IsScalarTower R S B] {x : B} (r : R)(hx : IsIntegral S x) : IsIntegral S (r • x) :=
+    [IsScalarTower R S B] {x : B} (r : R) (hx : IsIntegral S x) : IsIntegral S (r • x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
 
@@ -205,8 +216,15 @@ def integralClosure : Subalgebra R A where
   mul_mem' := IsIntegral.mul
   algebraMap_mem' _ := isIntegral_algebraMap
 
-end
-
-theorem mem_integralClosure_iff (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] {a : A} :
-    a ∈ integralClosure R A ↔ IsIntegral R a :=
+theorem mem_integralClosure_iff {a : A} : a ∈ integralClosure R A ↔ IsIntegral R a :=
   Iff.rfl
+
+variable {R} {A B : Type*} [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+
+/-- Product of two integral algebras is an integral algebra. -/
+instance Algebra.IsIntegral.prod [Algebra.IsIntegral R A] [Algebra.IsIntegral R B] :
+    Algebra.IsIntegral R (A × B) :=
+  Algebra.isIntegral_def.mpr fun x ↦
+    (Algebra.isIntegral_def.mp ‹_› x.1).pair (Algebra.isIntegral_def.mp ‹_› x.2)
+
+end

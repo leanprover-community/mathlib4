@@ -16,7 +16,8 @@ variable {α : Type*}
 
 section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c : α}
+variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
+  [Sub α] [OrderedSub α] {a b c : α}
 
 theorem add_tsub_cancel_iff_le : a + (b - a) = b ↔ a ≤ b :=
   ⟨fun h => le_iff_exists_add.mpr ⟨b - a, h.symm⟩, add_tsub_cancel_of_le⟩
@@ -39,6 +40,7 @@ theorem tsub_self (a : α) : a - a = 0 :=
 theorem tsub_le_self : a - b ≤ a :=
   tsub_le_iff_left.mpr <| le_add_left le_rfl
 
+@[simp]
 theorem zero_tsub (a : α) : 0 - a = 0 :=
   tsub_eq_zero_of_le <| zero_le a
 
@@ -49,7 +51,7 @@ theorem tsub_pos_iff_not_le : 0 < a - b ↔ ¬a ≤ b := by
   rw [pos_iff_ne_zero, Ne, tsub_eq_zero_iff_le]
 
 theorem tsub_pos_of_lt (h : a < b) : 0 < b - a :=
-  tsub_pos_iff_not_le.mpr h.not_le
+  tsub_pos_iff_not_le.mpr h.not_ge
 
 theorem tsub_lt_of_lt (h : a < b) : a - c < b :=
   lt_of_le_of_lt tsub_le_self h
@@ -104,7 +106,8 @@ end CanonicallyOrderedAddCommMonoid
 
 section CanonicallyLinearOrderedAddCommMonoid
 
-variable [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c : α}
+variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
+  {a b c : α}
 
 @[simp]
 theorem tsub_pos_iff_lt : 0 < a - b ↔ b < a := by rw [tsub_pos_iff_not_le, not_le]
@@ -116,9 +119,11 @@ theorem tsub_eq_tsub_min (a b : α) : a - b = a - min a b := by
 
 namespace AddLECancellable
 
+omit [CanonicallyOrderedAdd α] in
 protected theorem lt_tsub_iff_right (hc : AddLECancellable c) : a < b - c ↔ a + c < b :=
   ⟨lt_imp_lt_of_le_imp_le tsub_le_iff_right.mpr, hc.lt_tsub_of_add_lt_right⟩
 
+omit [CanonicallyOrderedAdd α] in
 protected theorem lt_tsub_iff_left (hc : AddLECancellable c) : a < b - c ↔ c + a < b :=
   ⟨lt_imp_lt_of_le_imp_le tsub_le_iff_left.mpr, hc.lt_tsub_of_add_lt_left⟩
 
@@ -128,7 +133,7 @@ protected theorem tsub_lt_tsub_iff_right (hc : AddLECancellable c) (h : c ≤ a)
 protected theorem tsub_lt_self (ha : AddLECancellable a) (h₁ : 0 < a) (h₂ : 0 < b) : a - b < a := by
   refine tsub_le_self.lt_of_ne fun h => ?_
   rw [← h, tsub_pos_iff_lt] at h₁
-  exact h₂.not_le (ha.add_le_iff_nonpos_left.1 <| add_le_of_le_tsub_left_of_le h₁.le h.ge)
+  exact h₂.not_ge (ha.add_le_iff_nonpos_left.1 <| add_le_of_le_tsub_left_of_le h₁.le h.ge)
 
 protected theorem tsub_lt_self_iff (ha : AddLECancellable a) : a - b < a ↔ 0 < a ∧ 0 < b := by
   refine

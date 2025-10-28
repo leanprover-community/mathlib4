@@ -14,20 +14,21 @@ In this file, we prove basic properties of germs of functions between topologica
 with respect to the neighbourhood filter `𝓝 x`.
 
 ## Main definitions and results
+
 * `Filter.Germ.value φ f`: value associated to the germ `φ` at a point `x`, w.r.t. the
-neighbourhood filter at `x`. This is the common value of all representatives of `φ` at `x`.
+  neighbourhood filter at `x`. This is the common value of all representatives of `φ` at `x`.
 * `Filter.Germ.valueOrderRingHom` and friends: the map `Germ (𝓝 x) E → E` is a
-monoid homomorphism, 𝕜-module homomorphism, ring homomorphism, monotone ring homomorphism
+  monoid homomorphism, 𝕜-linear map, ring homomorphism, monotone ring homomorphism
 
 * `RestrictGermPredicate`: given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and
-`A : set X`, build a new predicate on germs `restrictGermPredicate P A` such that
-`(∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x near A, P x f`;
-`forall_restrictRermPredicate_iff` is this equivalence.
+  `A : set X`, build a new predicate on germs `restrictGermPredicate P A` such that
+  `(∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x near A, P x f`;
+  `forall_restrictRermPredicate_iff` is this equivalence.
 
 * `Filter.Germ.sliceLeft, sliceRight`: map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y`
-to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`.
+  to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`.
 * `eq_of_germ_isConstant`: if each germ of `f : X → Y` is constant and `X` is pre-connected,
-`f` is constant.
+  `f` is constant.
 -/
 
 open scoped Topology
@@ -65,7 +66,7 @@ def valueRingHom {X E : Type*} [Semiring E] [TopologicalSpace X] {x : X} : Germ 
   { Filter.Germ.valueMulHom, Filter.Germ.valueAddHom with }
 
 /-- The map `Germ (𝓝 x) E → E` as a monotone ring homomorphism -/
-def valueOrderRingHom {X E : Type*} [OrderedSemiring E] [TopologicalSpace X] {x : X} :
+def valueOrderRingHom {X E : Type*} [Semiring E] [PartialOrder E] [TopologicalSpace X] {x : X} :
     Germ (𝓝 x) E →+*o E where
   __ := Filter.Germ.valueRingHom
   monotone' := fun φ ψ ↦
@@ -121,7 +122,7 @@ namespace Filter.Germ
 /-- Map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y` to the corresponding germ
   of functions `X → Z` at `x ∈ X` -/
 def sliceLeft [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.1) Z :=
-  P.compTendsto (Prod.mk · p.2) (Continuous.Prod.mk_left p.2).continuousAt
+  P.compTendsto (Prod.mk · p.2) (Continuous.prodMk_left p.2).continuousAt
 
 @[simp]
 theorem sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
@@ -131,7 +132,7 @@ theorem sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
 /-- Map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y` to the corresponding germ
   of functions `Y → Z` at `y ∈ Y` -/
 def sliceRight [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.2) Z :=
-  P.compTendsto (Prod.mk p.1) (Continuous.Prod.mk p.1).continuousAt
+  P.compTendsto (Prod.mk p.1) (Continuous.prodMk_right p.1).continuousAt
 
 @[simp]
 theorem sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :

@@ -85,15 +85,19 @@ protected theorem _root_.StrictAntiOn.strictAnti (h : StrictAntiOn f s) :
     StrictAnti (f ∘ Subtype.val : s → β) :=
   fun x y hlt => h x.coe_prop y.coe_prop hlt
 
-lemma MonotoneOn_insert_iff {a : α} :
+lemma monotoneOn_insert_iff {a : α} :
     MonotoneOn f (insert a s) ↔
-       (∀ b ∈ s, b ≤ a → f b ≤ f a) ∧ (∀ b ∈ s, a ≤ b → f a ≤ f b) ∧ MonotoneOn f s := by
+      (∀ b ∈ s, b ≤ a → f b ≤ f a) ∧ (∀ b ∈ s, a ≤ b → f a ≤ f b) ∧ MonotoneOn f s := by
   simp [MonotoneOn, forall_and]
 
-lemma AntitoneOn_insert_iff {a : α} :
+@[deprecated (since := "2025-06-14")] alias MonotoneOn_insert_iff := monotoneOn_insert_iff
+
+lemma antitoneOn_insert_iff {a : α} :
     AntitoneOn f (insert a s) ↔
-       (∀ b ∈ s, b ≤ a → f a ≤ f b) ∧ (∀ b ∈ s, a ≤ b → f b ≤ f a) ∧ AntitoneOn f s :=
-  @MonotoneOn_insert_iff α βᵒᵈ _ _ _ _ _
+      (∀ b ∈ s, b ≤ a → f a ≤ f b) ∧ (∀ b ∈ s, a ≤ b → f b ≤ f a) ∧ AntitoneOn f s :=
+  @monotoneOn_insert_iff α βᵒᵈ _ _ _ _ _
+
+@[deprecated (since := "2025-06-14")] alias AntitoneOn_insert_iff := antitoneOn_insert_iff
 
 end Mono
 
@@ -121,32 +125,6 @@ protected theorem rangeFactorization (h : Monotone f) : Monotone (Set.rangeFacto
 end Monotone
 
 section strictMono
-
-theorem StrictMonoOn.injOn [LinearOrder α] [Preorder β] {f : α → β} {s : Set α}
-    (H : StrictMonoOn f s) : s.InjOn f := fun x hx y hy hxy =>
-  show Ordering.eq.Compares x y from (H.compares hx hy).1 hxy
-
-theorem StrictAntiOn.injOn [LinearOrder α] [Preorder β] {f : α → β} {s : Set α}
-    (H : StrictAntiOn f s) : s.InjOn f :=
-  @StrictMonoOn.injOn α βᵒᵈ _ _ f s H
-
-theorem StrictMonoOn.comp [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β} {s : Set α}
-    {t : Set β} (hg : StrictMonoOn g t) (hf : StrictMonoOn f s) (hs : Set.MapsTo f s t) :
-    StrictMonoOn (g ∘ f) s := fun _x hx _y hy hxy => hg (hs hx) (hs hy) <| hf hx hy hxy
-
-theorem StrictMonoOn.comp_strictAntiOn [Preorder α] [Preorder β] [Preorder γ] {g : β → γ}
-    {f : α → β} {s : Set α} {t : Set β} (hg : StrictMonoOn g t) (hf : StrictAntiOn f s)
-    (hs : Set.MapsTo f s t) : StrictAntiOn (g ∘ f) s := fun _x hx _y hy hxy =>
-  hg (hs hy) (hs hx) <| hf hx hy hxy
-
-theorem StrictAntiOn.comp [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β} {s : Set α}
-    {t : Set β} (hg : StrictAntiOn g t) (hf : StrictAntiOn f s) (hs : Set.MapsTo f s t) :
-    StrictMonoOn (g ∘ f) s := fun _x hx _y hy hxy => hg (hs hy) (hs hx) <| hf hx hy hxy
-
-theorem StrictAntiOn.comp_strictMonoOn [Preorder α] [Preorder β] [Preorder γ] {g : β → γ}
-    {f : α → β} {s : Set α} {t : Set β} (hg : StrictAntiOn g t) (hf : StrictMonoOn f s)
-    (hs : Set.MapsTo f s t) : StrictAntiOn (g ∘ f) s := fun _x hx _y hy hxy =>
-  hg (hs hx) (hs hy) <| hf hx hy hxy
 
 @[simp]
 theorem strictMono_restrict [Preorder α] [Preorder β] {f : α → β} {s : Set α} :

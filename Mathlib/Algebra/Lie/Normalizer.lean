@@ -147,7 +147,7 @@ theorem lie_mem_sup_of_mem_normalizer {x y z : L} (hx : x ∈ H.normalizer) (hy 
   obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hu₁
   obtain ⟨s, rfl⟩ := Submodule.mem_span_singleton.mp hu₂
   apply Submodule.mem_sup_right
-  simp only [LieSubalgebra.mem_coe_submodule, smul_lie, add_lie, zero_add, lie_add, smul_zero,
+  simp only [LieSubalgebra.mem_toSubmodule, smul_lie, add_lie, zero_add, lie_add, smul_zero,
     lie_smul, lie_self]
   refine H.add_mem (H.smul_mem s ?_) (H.add_mem (H.smul_mem t ?_) (H.lie_mem hv hw))
   exacts [(H.mem_normalizer_iff' x).mp hx v hv, (H.mem_normalizer_iff x).mp hx w hw]
@@ -172,7 +172,7 @@ theorem normalizer_eq_self_iff :
   refine ⟨fun h => ?_, fun h => le_antisymm ?_ H.le_normalizer⟩
   · rintro ⟨x⟩ hx
     suffices x ∈ H by rwa [Submodule.Quotient.quot_mk_eq_mk, Submodule.Quotient.mk_eq_zero,
-      coe_toLieSubmodule, mem_coe_submodule]
+      coe_toLieSubmodule, mem_toSubmodule]
     rw [← h, H.mem_normalizer_iff']
     intro y hy
     replace hx : ⁅_, LieSubmodule.Quotient.mk' _ x⁆ = 0 := hx ⟨y, hy⟩

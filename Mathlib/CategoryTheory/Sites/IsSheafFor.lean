@@ -83,14 +83,22 @@ A presheaf is a sheaf (resp, separated) if every *compatible* family of elements
 (resp, at most one) amalgamation.
 
 This data is referred to as a `family` in [MM92], Chapter III, Section 4. It is also a concrete
-version of the elements of the middle object in https://stacks.math.columbia.edu/tag/00VM which is
+version of the elements of the middle object in the Stacks entry which is
 more useful for direct calculations. It is also used implicitly in Definition C2.1.2 in [Elephant].
 -/
+@[stacks 00VM "This is a concrete version of the elements of the middle object there."]
 def FamilyOfElements (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) :=
   ∀ ⦃Y : C⦄ (f : Y ⟶ X), R f → P.obj (op Y)
 
 instance : Inhabited (FamilyOfElements P (⊥ : Presieve X)) :=
   ⟨fun _ _ => False.elim⟩
+
+@[ext]
+lemma FamilyOfElements.ext {R : Presieve X} {x y : R.FamilyOfElements P}
+    (H : ∀ {Y : C} (f : Y ⟶ X) (hf : R f), x f hf = y f hf) :
+    x = y := by
+  funext Z f hf
+  exact H f hf
 
 /-- A family of elements for a presheaf on the presieve `R₂` can be restricted to a smaller presieve
 `R₁`.
@@ -111,6 +119,21 @@ lemma FamilyOfElements.map_apply
 lemma FamilyOfElements.restrict_map
     (p : FamilyOfElements P R) (φ : P ⟶ Q) {R' : Presieve X} (h : R' ≤ R) :
     (p.restrict h).map φ = (p.map φ).restrict h := rfl
+
+variable (P) in
+/-- A family of elements on `{ f : X ⟶ Y }` is an element of `F(X)`. -/
+@[simps apply, simps -isSimp symm_apply]
+def FamilyOfElements.singletonEquiv {X Y : C} (f : X ⟶ Y) :
+    (singleton f).FamilyOfElements P ≃ P.obj (op X) where
+  toFun x := x f (by simp)
+  invFun x Z g hg := P.map (eqToHom <| by cases hg; rfl).op x
+  left_inv x := by ext _ _ ⟨rfl⟩; simp
+  right_inv x := by simp
+
+@[simp]
+lemma FamilyOfElements.singletonEquiv_symm_apply_self {X Y : C} (f : X ⟶ Y) (x : P.obj (op X)) :
+    (singletonEquiv P f).symm x f ⟨⟩ = x := by
+  simp [singletonEquiv_symm_apply]
 
 /-- A family of elements for the arrow set `R` is *compatible* if for any `f₁ : Y₁ ⟶ X` and
 `f₂ : Y₂ ⟶ X` in `R`, and any `g₁ : Z ⟶ Y₁` and `g₂ : Z ⟶ Y₂`, if the square `g₁ ≫ f₁ = g₂ ≫ f₂`
@@ -266,6 +289,14 @@ theorem FamilyOfElements.comp_of_compatible (S : Sieve X) {x : FamilyOfElements 
     x (g ≫ f) (S.downward_closed hf g) = P.map g.op (x f hf) := by
   simpa using t (𝟙 _) g (S.downward_closed hf g) hf (id_comp _)
 
+lemma FamilyOfElements.compatible_singleton_iff
+    {X Y : C} (f : X ⟶ Y) (x : (singleton f).FamilyOfElements P) :
+    x.Compatible ↔ ∀ {Z : C} (p₁ p₂ : Z ⟶ X), p₁ ≫ f = p₂ ≫ f →
+      P.map p₁.op (x f ⟨⟩) = P.map p₂.op (x f ⟨⟩) := by
+  refine ⟨fun H Z p₁ p₂ h ↦ H _ _ _ _ h, fun H Y₁ Y₂ Z g₁ g₂ f₁ f₂ ↦ ?_⟩
+  rintro ⟨rfl⟩ ⟨rfl⟩ h
+  exact H _ _ h
+
 section FunctorPullback
 
 variable {D : Type u₂} [Category.{v₂} D] (F : D ⥤ C) {Z : D}
@@ -356,7 +387,7 @@ theorem FamilyOfElements.IsAmalgamation.compPresheafMap {x : FamilyOfElements P 
 
 theorem is_compatible_of_exists_amalgamation (x : FamilyOfElements P R)
     (h : ∃ t, x.IsAmalgamation t) : x.Compatible := by
-  cases' h with t ht
+  obtain ⟨t, ht⟩ := h
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ comm
   rw [← ht _ h₁, ← ht _ h₂, ← FunctorToTypes.map_comp_apply, ← op_comp, comm]
   simp
@@ -370,6 +401,14 @@ theorem isAmalgamation_sieveExtend {R : Presieve X} (x : FamilyOfElements P R) (
   intro Y f hf
   dsimp [FamilyOfElements.sieveExtend]
   rw [← ht _, ← FunctorToTypes.map_comp_apply, ← op_comp, hf.choose_spec.choose_spec.choose_spec.2]
+
+@[simp]
+lemma FamilyOfElements.isAmalgamation_singleton_iff {X Y : C} (f : X ⟶ Y)
+    (x : (singleton f).FamilyOfElements P) (y : P.obj (op Y)) :
+    x.IsAmalgamation y ↔ P.map f.op y = x f ⟨⟩ := by
+  refine ⟨fun H ↦ H _ _, ?_⟩
+  rintro H Y g ⟨rfl⟩
+  exact H
 
 /-- A presheaf is separated for a presieve if there is at most one amalgamation. -/
 def IsSeparatedFor (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) : Prop :=
@@ -416,8 +455,8 @@ This version is also useful to establish that being a sheaf is preserved under i
 presheaves.
 
 See the discussion before Equation (3) of [MM92], Chapter III, Section 4. See also C2.1.4 of
-[Elephant]. This is also a direct reformulation of <https://stacks.math.columbia.edu/tag/00Z8>.
--/
+[Elephant]. -/
+@[stacks 00Z8 "Direct reformulation"]
 def YonedaSheafCondition (P : Cᵒᵖ ⥤ Type v₁) (S : Sieve X) : Prop :=
   ∀ f : S.functor ⟶ P, ∃! g, S.functorInclusion ≫ g = f
 
@@ -459,15 +498,12 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
   constructor
   · rintro rfl Y f hf
     rw [yonedaEquiv_naturality]
-    dsimp
     simp [yonedaEquiv_apply]
-  -- See note [dsimp, simp].
   · intro h
     ext Y ⟨f, hf⟩
     convert h f hf
     rw [yonedaEquiv_naturality]
-    dsimp [yonedaEquiv]
-    simp
+    simp [yonedaEquiv]
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
 
@@ -489,7 +525,6 @@ to `P` can be (uniquely) extended to all of `yoneda.obj X`.
    S  →  P
    ↓  ↗
    yX
-
 -/
 noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P (S : Presieve X))
     (f : S.functor ⟶ P) : yoneda.obj X ⟶ P :=
@@ -503,7 +538,6 @@ that the triangle below commutes, provided `P` is a sheaf for `S`
    S  →  P
    ↓  ↗
    yX
-
 -/
 @[reassoc (attr := simp)]
 theorem IsSheafFor.functorInclusion_comp_extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P S.arrows)
@@ -760,6 +794,24 @@ theorem isSheafFor_arrows_iff_pullbacks : (ofArrows X π).IsSheafFor P ↔
   simp_rw [← Arrows.pullbackCompatible_iff, isSheafFor_arrows_iff]
 
 end Arrows
+
+@[simp]
+lemma isSeparatedFor_singleton {X Y : C} {f : X ⟶ Y} :
+    Presieve.IsSeparatedFor P (.singleton f) ↔
+      Function.Injective (P.map f.op) := by
+  rw [IsSeparatedFor, Equiv.forall_congr_left (Presieve.FamilyOfElements.singletonEquiv P f)]
+  simp_rw [FamilyOfElements.isAmalgamation_singleton_iff,
+    FamilyOfElements.singletonEquiv_symm_apply_self, Function.Injective]
+  aesop
+
+lemma isSheafFor_singleton {X Y : C} {f : X ⟶ Y} :
+    Presieve.IsSheafFor P (.singleton f) ↔
+      ∀ (x : P.obj (op X)),
+        (∀ {Z : C} (p₁ p₂ : Z ⟶ X), p₁ ≫ f = p₂ ≫ f → P.map p₁.op x = P.map p₂.op x) →
+        ∃! y, P.map f.op y = x := by
+  rw [IsSheafFor, Equiv.forall_congr_left (Presieve.FamilyOfElements.singletonEquiv P f)]
+  simp_rw [FamilyOfElements.compatible_singleton_iff,
+    FamilyOfElements.isAmalgamation_singleton_iff, FamilyOfElements.singletonEquiv_symm_apply_self]
 
 end Presieve
 

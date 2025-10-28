@@ -16,9 +16,9 @@ a type `I` to the coproduct of copies indexed by `I` of `unit R`.
 ## TODO
 
 * In case the category `C` has a terminal object `X`, promote `freeHomEquiv`
-into an adjunction between `freeFunctor` and the evaluation functor at `X`.
-(Alternatively, assuming specific universe parameters, we could show that
-`freeHomEquiv` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
+  into an adjunction between `freeFunctor` and the evaluation functor at `X`.
+  (Alternatively, assuming specific universe parameters, we could show that
+  `freeHomEquiv` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
 
 -/
 
@@ -79,7 +79,7 @@ end
 
 /-- The functor `Type u ⥤ SheafOfModules.{u} R` which sends a type `I` to
 `free I` which is a coproduct indexed by `I` of copies of `R` (thought as a
-presheaf of modules over itself). --/
+presheaf of modules over itself). -/
 noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
   obj := free
   map f := freeMap f
