@@ -12,13 +12,13 @@ import Mathlib.Logic.Function.Basic
 This file shows that `not : Bool → Bool` is an equivalence and derives some consequences
 -/
 
-open Function
-
-namespace Bool
-
 /-- The boolean negation function `not : Bool → Bool` is an involution and thus an equivalence. -/
 @[simps!]
 def Equiv.boolNot : Equiv.Perm Bool := Bool.involutive_not.toPerm
+
+namespace Bool
+
+open Function
 
 theorem not_bijective : Bijective Bool.not := Equiv.boolNot.bijective
 theorem not_injective : Injective Bool.not := Equiv.boolNot.injective
