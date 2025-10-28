@@ -801,14 +801,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have hs' := sign_sum Finset.univ_nonempty (SignType.sign (w i₃)) fun i _ => hs i
   rw [hs'] at hss
   simp_rw [hss, sign_eq_one_iff] at hs
-  refine ⟨hs i₁, ?_⟩
-  rw [hu] at hw
-  rw [Finset.sum_insert, Finset.sum_insert, Finset.sum_singleton] at hw
-  · by_contra hle
-    rw [not_lt] at hle
-    exact (hle.trans_lt (lt_add_of_pos_right _ (Left.add_pos (hs i₂) (hs i₃)))).ne' hw
-  · simpa using h₂₃
-  · simpa [not_or] using ⟨h₁₂, h₁₃⟩
+  grind
 
 end LinearOrderedRing
 
