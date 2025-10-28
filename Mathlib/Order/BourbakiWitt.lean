@@ -91,18 +91,11 @@ lemma ici_isAdmissible (le_map : ∀ x, x ≤ f x) : IsAdmissible x f (Ici x) wh
 /-- The bottom admissible set with base point `x` and inflationary function `f` -/
 abbrev bot (x : α) (f : α → α) : Set α := ⋂₀ {s | IsAdmissible x f s}
 
-@[simp]
-lemma mem_bot_iff {y : α} :
-    y ∈ bot x f ↔ ∀ s ∈ {s | IsAdmissible x f s}, y ∈ s :=
-  Iff.rfl
-
 lemma bot_isAdmissible (le_map : ∀ x, x ≤ f x) : IsAdmissible x f (bot x f) where
   base_isLeast := by
     constructor
-    · rw [mem_bot_iff]
-      exact fun _ h ↦ h.base_isLeast.1
+    · exact fun _ h ↦ h.base_isLeast.1
     · intro y hy
-      rw [mem_bot_iff] at hy
       exact hy (Ici x) (ici_isAdmissible le_map)
   image_self_subset_self := by
     rintro _ ⟨y, hy, rfl⟩ s hs
