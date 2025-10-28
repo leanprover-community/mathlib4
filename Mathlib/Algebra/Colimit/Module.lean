@@ -5,8 +5,8 @@ Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
 import Mathlib.Algebra.Colimit.DirectLimit
 import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Module.Congruence.Defs
 import Mathlib.Data.Finset.Order
-import Mathlib.GroupTheory.Congruence.Module
 import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -48,7 +48,7 @@ inductive DirectLimit.Eqv : DirectSum ι G → DirectSum ι G → Prop
     Eqv (DirectSum.lof R ι G i x) (DirectSum.lof R ι G j <| f i j h x)
 
 /-- The congruence relation to quotient the direct sum by to obtain the direct limit. -/
-def DirectLimit.addSMulCon [DecidableEq ι] : AddSMulCon R (DirectSum ι G) where
+def DirectLimit.moduleCon [DecidableEq ι] : ModuleCon R (DirectSum ι G) where
   toAddCon := addConGen (Eqv f)
   smul r _ _ h := by
     refine ((addConGen (Eqv f)).comap (smulAddHom R _ r) <| by simp).addConGen_le ?_ h
@@ -58,20 +58,20 @@ def DirectLimit.addSMulCon [DecidableEq ι] : AddSMulCon R (DirectSum ι G) wher
 variable (G)
 
 /-- The direct limit of a directed system is the modules glued together along the maps. -/
-def DirectLimit [DecidableEq ι] : Type _ := (DirectLimit.addSMulCon f).Quotient
+def DirectLimit [DecidableEq ι] : Type _ := (DirectLimit.moduleCon f).Quotient
 
 namespace DirectLimit
 
 section Basic
 
 instance addCommMonoid : AddCommMonoid (DirectLimit G f) :=
-  inferInstanceAs (AddCommMonoid <| AddSMulCon.Quotient _)
+  inferInstanceAs (AddCommMonoid (moduleCon f).Quotient)
 
-instance module : Module R (DirectLimit G f) := inferInstanceAs (Module R <| AddSMulCon.Quotient _)
+instance module : Module R (DirectLimit G f) := inferInstanceAs (Module R (moduleCon f).Quotient)
 
 instance addCommGroup (G : ι → Type*) [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
     (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) : AddCommGroup (DirectLimit G f) :=
-  inferInstanceAs (AddCommGroup <| AddSMulCon.Quotient _)
+  inferInstanceAs (AddCommGroup (moduleCon f).Quotient)
 
 instance inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩

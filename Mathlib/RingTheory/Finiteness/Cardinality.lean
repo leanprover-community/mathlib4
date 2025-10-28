@@ -3,11 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Module.Congruence.Defs
 import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.GroupTheory.Congruence.Module
 import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
@@ -130,14 +130,14 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Finite R M]
 /-- The kernel (as a congruence relation) of a random surjective linear map
 from a finite free module to a given finite module. -/
 noncomputable def kerReprₛ :=
-  AddSMulCon.ker (Finite.exists_fin' R M).choose_spec.choose.toDistribMulActionHom
+  ModuleCon.ker (Finite.exists_fin' R M).choose_spec.choose.toDistribMulActionHom
 
 /-- A representative of a finite module in the same universe as the semiring. -/
 protected abbrev reprₛ : Type u := (kerReprₛ R M).Quotient
 
 /-- The representative is isomorphic to the original module. -/
 noncomputable def reprEquivₛ : Finite.reprₛ R M ≃ₗ[R] M :=
-  AddSMulCon.quotientKerEquivOfSurjective _ (Finite.exists_fin' R M).choose_spec.choose_spec
+  ModuleCon.quotientKerEquivOfSurjective _ (Finite.exists_fin' R M).choose_spec.choose_spec
 
 end Semiring
 

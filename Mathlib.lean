@@ -671,6 +671,7 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Bimodule
 import Mathlib.Algebra.Module.Card
 import Mathlib.Algebra.Module.CharacterModule
+import Mathlib.Algebra.Module.Congruence.Defs
 import Mathlib.Algebra.Module.DedekindDomain
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.End
@@ -4039,7 +4040,6 @@ import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.Congruence.BigOperators
 import Mathlib.GroupTheory.Congruence.Defs
 import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.GroupTheory.Congruence.Module
 import Mathlib.GroupTheory.Congruence.Opposite
 import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.CoprodI
