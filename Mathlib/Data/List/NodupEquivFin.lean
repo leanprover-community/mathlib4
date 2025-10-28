@@ -125,7 +125,7 @@ theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ
   have : ∀ ix, tl[ix]? = (l'.drop (f 0 + 1))[f' ix]? := by
     intro ix
     rw [List.getElem?_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf]
-    simp only [getElem?_cons_succ]
+    · simp only [getElem?_cons_succ]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
