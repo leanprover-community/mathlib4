@@ -68,6 +68,14 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder r hlt
 
+theorem lex_iff_of_unique [Unique ι] [∀ i, LT (α i)] {r} [IsIrrefl ι r] {x y : Π₀ i, α i} :
+    DFinsupp.Lex r (fun _ ↦ (· < ·)) x y ↔ x default < y default :=
+  Pi.lex_iff_of_unique
+
+theorem lex_lt_iff_of_unique [Unique ι] [∀ i, LT (α i)] [Preorder ι] {x y : Lex (Π₀ i, α i)} :
+    x < y ↔ x default < y default :=
+  lex_iff_of_unique
+
 variable [LinearOrder ι]
 
 instance Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
@@ -92,6 +100,11 @@ instance Colex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Colex (
   le x y := ⇑(ofColex x) = ⇑(ofColex y) ∨ x < y
   __ := PartialOrder.lift (fun x : Colex (Π₀ i, α i) ↦ toColex (⇑(ofColex x)))
     (DFunLike.coe_injective (F := DFinsupp α))
+
+theorem lex_le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Lex (Π₀ i, α i)} :
+    x ≤ y ↔ x default ≤ y default := by
+  rw [le_iff_lt_or_eq, le_iff_lt_or_eq, lex_lt_iff_of_unique, ← ofLex.apply_eq_iff_eq,
+    DFunLike.ext_iff, Unique.forall_iff]
 
 section LinearOrder
 
