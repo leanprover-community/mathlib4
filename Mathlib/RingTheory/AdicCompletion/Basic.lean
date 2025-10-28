@@ -834,6 +834,11 @@ theorem ofLinearEquiv_apply [IsAdicComplete I M] (x : M) :
     ofLinearEquiv I M x = of I M x :=
   rfl
 
+@[simp]
+theorem of_ofLinearEquiv_symm_apply [IsAdicComplete I M] (x : AdicCompletion I M) :
+    of I M ((ofLinearEquiv I M).symm x) = x := by
+  simp [ofLinearEquiv]
+
 end Bijective
 
 end AdicCompletion
@@ -861,34 +866,35 @@ def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
 theorem of_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (x : M) :
     of I N (lift I f h x) = AdicCompletion.lift I f h x := by
-  simp [lift, ofLinearEquiv]
+  simp [lift]
 
 @[simp]
 theorem of_comp_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) :
     (of I N) ∘ₗ (lift I f h) = AdicCompletion.lift I f h := by
-  ext1 x
-  exact of_lift_apply I f h x
+  ext1; simp
 
 /--
 The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
-projection `M →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
+projection `N → N ⧸ (I ^ n • ⊤)` is `f n` .
 -/
 @[simp]
 theorem mk_lift_apply {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) (x : M) :
     (Submodule.Quotient.mk (lift I f h x)) = f n x := by
-  simp only [lift, ofLinearEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  simp only [lift, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
   rw [← mkQ_apply, ← eval_of]
   simp
 
-
+/--
+The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
+projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
+-/
 @[simp]
 theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) (n : ℕ) :
     (mkQ (I ^ n • ⊤ : Submodule R N)) ∘ₗ (lift I f h) = f n := by
-  ext
-  exact mk_lift_apply I h n _
+  ext; simp
 
 /--
 Uniqueness of the lift.
@@ -900,7 +906,7 @@ If `F : M →ₗ[R] N` makes the following diagram commutes
  F|  \ f n
   |   \
   v    v
-  M --> M ⧸ (I ^ a n • ⊤)
+  M --> M ⧸ (I ^ n • ⊤)
 ```
 Then it is the map `IsAdicComplete.lift`.
 -/

@@ -49,15 +49,18 @@ lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
 lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
     (hp : Antitone p) (x : (n : ℕ) → M ⧸ (p n)) (h : ∀ m, x m = factor (hp m.le_succ) (x (m + 1)))
     (m n : ℕ) (g : m ≤ n) : x m = factor (hp g) (x n) := by
-  induction' hmn : n - m with k ih generalizing m n <;>
   have : n = m + (n - m) := (Nat.add_sub_of_le g).symm
-  · rw [hmn, Nat.add_zero] at this
+  induction hmn : n - m generalizing m n with
+  | zero =>
+    rw [hmn, Nat.add_zero] at this
     subst this
     simp
-  · rw [hmn, ← add_assoc] at this
+  | succ k ih =>
+    rw [hmn, ← add_assoc] at this
     subst this
     rw [ih m (m + k) (m.le_add_right k) (by simp), h]
-    simp
+    · simp
+    · omega
 
 lemma Ideal.Quotient.eq_factor_of_eq_factor_succ {I : ℕ → Ideal R} [∀ n, (I n).IsTwoSided]
     (hI : Antitone I) (x : (n : ℕ) → R ⧸ (I n)) (h : ∀ m, x m = factor (hI m.le_succ) (x (m + 1)))
