@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.MonoidAlgebra.Module
 import Mathlib.LinearAlgebra.Finsupp.Supported
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
-#  Lemmas about the support of a finitely supported function
+# Lemmas about the support of a finitely supported function
 -/
 
 open scoped Pointwise

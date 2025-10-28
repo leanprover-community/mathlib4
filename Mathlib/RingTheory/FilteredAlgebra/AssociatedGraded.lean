@@ -67,7 +67,8 @@ variable [DecidableEq ι]
 theorem of_eq_of_ne (i j : ι) (x : GradedPiece F F_lt i) (h : i ≠ j) : (of x) j = 0 :=
   DirectSum.of_eq_of_ne i j x h
 
-theorem of_eq_same (i : ι) (x : GradedPiece F F_lt i) : (of x) i = x :=
+@[simp]
+theorem of_eq_self (i : ι) (x : GradedPiece F F_lt i) : (of x) i = x :=
   DirectSum.of_eq_same i x
 
 lemma of_apply {i : ι} (j : ι) (x : GradedPiece F F_lt i) :
@@ -131,23 +132,6 @@ lemma induction_on {i : ι} {C : GradedPiece F F_lt i → Prop} (x : GradedPiece
   QuotientAddGroup.induction_on x H
 
 lemma mk_eq {i : ι} (x : F i) : mk F F_lt x = ⟦x⟧ := rfl
-
-lemma HEq_rfl {i j : ι} {r : A} (h : i = j) (hi : r ∈ ofClass (F i)) (hj : r ∈ ofClass (F j)) :
-    HEq (mk F F_lt ⟨r, hi⟩) (mk F F_lt ⟨r, hj⟩) :=
-  h ▸ HEq.rfl
-
-lemma HEq_eq_mk_eq {i j : ι} {x : GradedPiece F F_lt i} {y : GradedPiece F F_lt j} {r s : A}
-    (h : i = j) (e : r = s) (hi : r ∈ ofClass (F i)) (hj : s ∈ ofClass (F j))
-    (hx : x = mk F F_lt ⟨r, hi⟩) (hy : y = mk F F_lt ⟨s, hj⟩) : HEq x y := by
-  rw [hx, hy]
-  subst e
-  exact HEq_rfl F F_lt h hi hj
-
--- Will be easier to use if HMul intances for F i is added and some other refactor is done.
-lemma HEq_eq_mk_coe_eq {i j : ι} {x : GradedPiece F F_lt i} {y : GradedPiece F F_lt j}
-    (r : ofClass (F i)) (s : ofClass (F j)) (h : i = j) (e : (r : A) = (s : A))
-    (hx : x = mk F F_lt r) (hy : y = mk F F_lt s) : HEq x y :=
-  HEq_eq_mk_eq F F_lt h e r.2 (e ▸ s.2) hx hy
 
 end
 

@@ -277,7 +277,7 @@ theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAddi
     rw [mem_filter] at hx
     rw [hx.2]
   · exact fun i => measurableSet_fiber _ _
-  · grind [Finset.mem_filter]
+  · grind
   · grind [Set.disjoint_iff]
 
 theorem setToSimpleFunc_congr' (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) {f g : α →ₛ E}
@@ -426,12 +426,13 @@ variable {G' G'' : Type*}
 
 theorem setToSimpleFunc_mono_left {m : MeasurableSpace α} (T T' : Set α → F →L[ℝ] G'')
     (hTT' : ∀ s x, T s x ≤ T' s x) (f : α →ₛ F) : setToSimpleFunc T f ≤ setToSimpleFunc T' f := by
-  simp_rw [setToSimpleFunc]; exact sum_le_sum fun i _ => hTT' _ i
+  simp_rw [setToSimpleFunc]; gcongr; apply hTT'
 
 theorem setToSimpleFunc_mono_left' (T T' : Set α → E →L[ℝ] G'')
     (hTT' : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, T s x ≤ T' s x) (f : α →ₛ E)
     (hf : Integrable f μ) : setToSimpleFunc T f ≤ setToSimpleFunc T' f := by
-  refine sum_le_sum fun i _ => ?_
+  unfold setToSimpleFunc
+  gcongr with i _
   by_cases h0 : i = 0
   · simp [h0]
   · exact hTT' _ (measurableSet_fiber _ _) (measure_preimage_lt_top_of_integrable _ hf h0) i
@@ -477,7 +478,7 @@ theorem norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α 
   calc
     ‖∑ x ∈ f.range, T (f ⁻¹' {x}) x‖ ≤ ∑ x ∈ f.range, ‖T (f ⁻¹' {x}) x‖ := norm_sum_le _ _
     _ ≤ ∑ x ∈ f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ := by
-      refine Finset.sum_le_sum fun b _ => ?_; simp_rw [ContinuousLinearMap.le_opNorm]
+      gcongr with b; apply ContinuousLinearMap.le_opNorm
 
 theorem norm_setToSimpleFunc_le_sum_mul_norm (T : Set α → F →L[ℝ] F') {C : ℝ}
     (hT_norm : ∀ s, MeasurableSet s → ‖T s‖ ≤ C * μ.real s) (f : α →ₛ F) :

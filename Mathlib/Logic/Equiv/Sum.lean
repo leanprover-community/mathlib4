@@ -126,7 +126,7 @@ end Perm
 
 /-- `Bool` is equivalent the sum of two `PUnit`s. -/
 def boolEquivPUnitSumPUnit : Bool ≃ PUnit.{u + 1} ⊕ PUnit.{v + 1} :=
-  ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ => false) fun _ => true,
+  ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit), Sum.elim (fun _ => false) fun _ => true,
     fun b => by cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
 
 /-- Sum of types is commutative up to an equivalence. This is `Sum.swap` as an equivalence. -/
@@ -327,14 +327,14 @@ def sigmaSumDistrib {ι} (α β : ι → Type*) :
     Sum.elim (Sigma.map id fun _ => Sum.inl) (Sigma.map id fun _ => Sum.inr), fun p => by
     rcases p with ⟨i, a | b⟩ <;> rfl, fun p => by rcases p with (⟨i, a⟩ | ⟨i, b⟩) <;> rfl⟩
 
-/-- A type indexed by  disjoint sums of types is equivalent to the sum of the sums. Compare with
+/-- A type indexed by disjoint sums of types is equivalent to the sum of the sums. Compare with
 `Equiv.sigmaSumDistrib` which has the sums as the output type. -/
 @[simps]
 def sumSigmaDistrib {α β} (t : α ⊕ β → Type*) :
     (Σ i, t i) ≃ (Σ i, t (.inl i)) ⊕ (Σ i, t (.inr i)) :=
   ⟨(match · with
-   | .mk (.inl x) y => .inl ⟨x, y⟩
-   | .mk (.inr x) y => .inr ⟨x, y⟩),
+    | .mk (.inl x) y => .inl ⟨x, y⟩
+    | .mk (.inr x) y => .inr ⟨x, y⟩),
   Sum.elim (fun a ↦ ⟨.inl a.1, a.2⟩) (fun b ↦ ⟨.inr b.1, b.2⟩),
   by rintro ⟨x|x,y⟩ <;> simp,
   by rintro (⟨x,y⟩|⟨x,y⟩) <;> simp⟩

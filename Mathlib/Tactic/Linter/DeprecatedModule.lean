@@ -7,7 +7,7 @@ import Std.Time.Format
 import Mathlib.Init
 
 /-!
-#  The `deprecated.module` linter
+# The `deprecated.module` linter
 
 The `deprecated.module` linter emits a warning when a file that has been renamed or split
 is imported.
@@ -66,7 +66,7 @@ by all files.
 It also ignores the `Mathlib/Tactic/Linter/DeprecatedModule.lean` import (namely, the current file),
 since there is no need to import this module.
 -/
-def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m] [MonadQuotation m]
+def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m]
     (msg? : Option String) : m Unit := do
   let modName ← getMainModule
   modifyEnv (deprecatedModuleExt.addEntry ·
@@ -143,7 +143,7 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if stx.isOfKind ``Linter.deprecated_modules then return
   let fm ← getFileMap
   let (importStx, _) ←
-    Parser.parseHeader { input := fm.source, fileName := ← getFileName, fileMap := fm }
+    Parser.parseHeader { inputString := fm.source, fileName := ← getFileName, fileMap := fm }
   let modulesWithNames := (getImportIds importStx).map fun i ↦ (i, i.getId)
   for (i, preferred, msg?) in deprecations do
     for (nmStx, _) in modulesWithNames.filter (·.2 == i) do

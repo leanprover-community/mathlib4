@@ -354,7 +354,7 @@ theorem ι_colimitIso_inv [HasColimit G] (X : C) :
   simp [colimitIso]
 
 /-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
-colimit is isomorpic to taking the colimit on the codomain of `F`. -/
+colimit is isomorphic to taking the colimit on the codomain of `F`. -/
 def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ colim ≅ colim (J := D) (C := E) :=
   NatIso.ofComponents (fun G => colimitIso F G) fun f => by
@@ -691,7 +691,7 @@ def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
 
 /-- A pointfree version of `limitIso`, stating that whiskering by `F` followed by taking the
-limit is isomorpic to taking the limit on the codomain of `F`. -/
+limit is isomorphic to taking the limit on the codomain of `F`. -/
 def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
   Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
@@ -1009,7 +1009,6 @@ variable (F : D ⥤ Cat) (G : C ⥤ D)
 
 open Functor
 
-set_option backward.dsimp.proofs true in
 /-- A prefunctor mapping structured arrows on `G` to structured arrows on `pre F G` with their
 action on fibers being the identity. -/
 def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
@@ -1019,8 +1018,10 @@ def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
   map := fun g => StructuredArrow.homMk
     (Grothendieck.Hom.mk (by exact g.right)
       (eqToHom (by dsimp; rw [← StructuredArrow.w g, map_comp, Cat.comp_obj])))
-    (by simp only [StructuredArrow.mk_right]
-        apply Grothendieck.ext <;> simp)
+    (by
+      simp only [StructuredArrow.mk_right]
+      generalize_proofs
+      apply Grothendieck.ext <;> simp)
 
 instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final := by
   constructor
@@ -1044,7 +1045,7 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
 
 open Limits
 
-/-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is is final on each
+/-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is final on each
 fiber `(α.app X)` induces an equivalence of fiberwise colimits of `map α ⋙ H` and `H` for each
 functor `H : Grothendieck G ⥤ Type`. -/
 def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v₁} C]

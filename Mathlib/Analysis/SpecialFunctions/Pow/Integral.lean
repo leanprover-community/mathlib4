@@ -49,7 +49,7 @@ theorem lintegral_rpow_eq_lintegral_meas_le_mul
     ∫⁻ ω, ENNReal.ofReal (f ω ^ p) ∂μ =
       ENNReal.ofReal p * ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (t ^ (p - 1)) := by
   have one_lt_p : -1 < p - 1 := by linarith
-  have obs : ∀ x : ℝ, ∫ t : ℝ in (0)..x, t ^ (p - 1) = x ^ p / p := by
+  have obs : ∀ x : ℝ, ∫ t : ℝ in 0..x, t ^ (p - 1) = x ^ p / p := by
     intro x
     rw [integral_rpow (Or.inl one_lt_p)]
     simp [Real.zero_rpow p_pos.ne.symm]
