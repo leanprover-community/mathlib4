@@ -94,4 +94,56 @@ lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasi
   rw [← preimage_basicOpen_top]
   exact ⟨hr.preimage _, hxr⟩
 
+/-- The affine basic opens of a quasi-affine scheme forms an open cover. -/
+@[simps] def openCoverBasicOpenTop (X : Scheme.{u}) [X.IsQuasiAffine] :
+    X.OpenCover where
+  I₀ := Σ' (r : Γ(X, ⊤)), IsAffineOpen (X.basicOpen r)
+  X r := X.basicOpen r.1
+  f r := (X.basicOpen r.1).ι
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, inferInstance⟩
+    obtain ⟨_, ⟨_, ⟨r, hr, rfl⟩, rfl⟩, hxr, -⟩ :=
+      (IsQuasiAffine.isBasis_basicOpen X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
+    exact ⟨⟨r, hr⟩, (X.basicOpen r).opensRange_ι.ge hxr⟩
+
+/-- If `f : X ⟶ Y` is an affine morphism between quasi-affine schemes, then it is the pullback of
+  `Spec Γ(X, ⊤) ⟶ Spec Γ(Y, ⊤)` along the open immersion `Y ⟶ Spec Γ(Y, ⊤)`. -/
+lemma isPullback_toSpecΓ_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [Y.IsQuasiAffine] :
+    IsPullback f X.toSpecΓ Y.toSpecΓ (Spec.map f.appTop) := by
+  have := QuasiCompact.compactSpace_of_compactSpace f
+  have := Scheme.IsQuasiAffine.of_isAffineHom f
+  have (r : Γ(Y, ⊤)) :
+      IsPushout f.appTop (Y.presheaf.map (homOfLE le_top).op)
+        (X.presheaf.map (homOfLE le_top).op) (f.appLE (Y.basicOpen r)
+          (X.basicOpen (f.appTop r)) (Scheme.preimage_basicOpen_top ..).ge) := by
+    have := isLocalization_basicOpen_of_qcqs isCompact_univ isQuasiSeparated_univ r
+    have := isLocalization_basicOpen_of_qcqs isCompact_univ isQuasiSeparated_univ (f.appTop r)
+    refine CommRingCat.isPushout_of_isLocalization f.appTop.hom (f.appLE (Y.basicOpen r)
+      (X.basicOpen (f.appTop r)) (Scheme.preimage_basicOpen_top ..).ge).hom ?_ (.powers r)
+    change CommRingCat.Hom.hom (Y.presheaf.map _ ≫ f.appLE _ _ _) =
+      CommRingCat.Hom.hom (f.appTop ≫ X.presheaf.map _)
+    rw [f.map_appLE, Scheme.Hom.appLE]
+  refine isPullback_of_openCover _ _ _ _ Y.openCoverBasicOpenTop fun r ↦ ?_
+  let e : pullback f (Y.basicOpen r.fst).ι ≅ Spec Γ(X, X.basicOpen (f.appTop r.1)) :=
+    pullbackRestrictIsoRestrict _ _ ≪≫ X.isoOfEq (Scheme.preimage_basicOpen_top f r.1) ≪≫
+    IsAffineOpen.isoSpec (by rw [← Scheme.preimage_basicOpen_top]; exact r.2.preimage f)
+  refine .of_iso ((this r.1).op.map Scheme.Spec) e.symm r.2.isoSpec.symm (.refl _) (.refl _)
+    ?_ ?_ (by simp) (by simp)
+  · simp only [Iso.symm_hom, Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
+    dsimp [e, Scheme.Cover.pullbackHom, IsAffineOpen.isoSpec_hom, Scheme.Hom.appLE]
+    simp only [homOfLE_leOfHom, Spec.map_comp, Category.assoc,
+      Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc, Scheme.Opens.toSpecΓ_naturality]
+    simp_rw [← Category.assoc]
+    congr 1
+    rw [← cancel_mono (Scheme.Opens.ι _)]
+    simp [pullback.condition]
+  · simp only [Iso.symm_hom, Iso.eq_inv_comp]
+    simp [e, IsAffineOpen.isoSpec_hom]
+
+lemma preimage_opensRange_toSpecΓ (f : X ⟶ Y) [IsAffineHom f] [X.IsQuasiAffine] [Y.IsQuasiAffine] :
+    Spec.map f.appTop ⁻¹ᵁ Y.toSpecΓ.opensRange = X.toSpecΓ.opensRange := by
+  simpa using (IsOpenImmersion.image_preimage_eq_preimage_image_of_isPullback
+    (isPullback_toSpecΓ_toSpecΓ f) ⊤).symm
+
 end AlgebraicGeometry.Scheme

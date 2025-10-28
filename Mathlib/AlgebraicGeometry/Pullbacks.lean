@@ -560,6 +560,49 @@ def openCoverOfBase (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
       PullbackCone.π_app_right, IsPullback.cone_snd, pullbackSymmetry_hom_comp_fst_assoc]
     rfl
 
+open pullback in
+attribute [local simp] condition condition_assoc in
+lemma _root_.AlgebraicGeometry.Scheme.isPullback_of_openCover
+    {W : Scheme.{u}} (fWX : W ⟶ X) (fWY : W ⟶ Y) (fXZ : X ⟶ Z) (fYZ : Y ⟶ Z) (𝒰 : X.OpenCover)
+    (H : ∀ i, IsPullback (𝒰.pullbackHom fWX i) ((𝒰.pullback₁ fWX).f i ≫ fWY) (𝒰.f i ≫ fXZ) fYZ) :
+    IsPullback fWX fWY fXZ fYZ := by
+  have h : fWX ≫ fXZ = fWY ≫ fYZ :=
+    Scheme.Cover.hom_ext (𝒰.pullback₁ fWX) _ _ fun i ↦ by simpa using (H i).w
+  suffices IsIso (lift fWX fWY h) from .of_iso_pullback ⟨h⟩ (asIso (lift _ _ h)) (by simp) (by simp)
+  have H₁ (i : _) : IsIso ((openCoverOfLeft 𝒰 fXZ fYZ).pullbackHom (lift fWX fWY h) i) := by
+    let f := map (𝒰.f i ≫ fXZ) fYZ fXZ fYZ (𝒰.f i) (𝟙 Y) (𝟙 Z) (by simp) (by simp)
+    have : IsPullback (fst (𝒰.f i ≫ fXZ) fYZ) f (𝒰.f i) (fst _ _) := by
+      simpa [← IsPullback.paste_vert_iff (.of_hasPullback _ _), f] using .of_hasPullback _ _
+    have H' : IsPullback (fst fWX (𝒰.f i)) (lift (snd _ _) (fst _ _ ≫ fWY) (by simp [← h]))
+        (lift fWX fWY h) f := by
+      rw [← IsPullback.paste_vert_iff this.flip (by ext <;> simp [f])]
+      simpa using .of_hasPullback _ _
+    convert inferInstanceAs (IsIso (H'.isoPullback.inv ≫ (H i).isoPullback.hom))
+    aesop (add simp [Iso.eq_inv_comp, Scheme.Cover.pullbackHom])
+  have H₂ : IsHomeomorph (lift fWX fWY h) := by
+    rw [TopologicalSpace.IsOpenCover.isHomeomorph_iff_restrictPreimage
+      (openCoverOfLeft 𝒰 fXZ fYZ).iSup_opensRange (lift fWX fWY h).continuous]
+    intro i
+    rw [← morphismRestrict_base, ← TopCat.isIso_iff_isHomeomorph, Arrow.iso_w'
+      (morphismRestrictOpensRange (lift fWX fWY h) ((openCoverOfLeft 𝒰 fXZ fYZ).f i)).symm]
+    dsimp [Cover.pullbackHom] at H₁ ⊢
+    infer_instance
+  rw [isIso_iff_isOpenImmersion_and_epi_base]
+  suffices ∀ x, IsIso ((lift fWX fWY h).stalkMap x) from
+    ⟨.of_isIso_stalkMap _ H₂.isOpenEmbedding, (TopCat.epi_iff_surjective _).mpr H₂.surjective⟩
+  intro x
+  obtain ⟨i, y, hx⟩ := Cover.exists_eq ((openCoverOfLeft 𝒰 fXZ fYZ).pullback₁ (lift fWX fWY h)) x
+  have := condition (f := lift fWX fWY h) (g := (openCoverOfLeft 𝒰 fXZ fYZ).f i)
+  have := Scheme.Hom.stalkMap_congr_hom _ _
+    (condition (f := lift fWX fWY h) (g := (openCoverOfLeft 𝒰 fXZ fYZ).f i)) y
+  have H₃ : IsIso ((lift fWX fWY h).stalkMap (fst (lift fWX fWY h) _ y)) := by
+    rw [Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_comp, ← IsIso.eq_comp_inv] at this
+    rw [this]
+    dsimp only [Cover.pullbackHom] at H₁ ⊢
+    infer_instance
+  have : x = fst (lift fWX fWY h) _ y := hx.symm
+  convert H₃ using 3
+
 variable (f : X ⟶ Y) (𝒰 : OpenCover.{u} Y) (𝒱 : ∀ i, OpenCover.{w} ((𝒰.pullback₁ f).X i))
 
 /--
