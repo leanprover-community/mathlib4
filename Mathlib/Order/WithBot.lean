@@ -295,10 +295,8 @@ lemma unbot_le_iff (hx : x ≠ ⊥) : unbot x hx ≤ b ↔ x ≤ b := by lift x 
 lemma unbotD_le_iff (hx : x = ⊥ → a ≤ b) : x.unbotD a ≤ b ↔ x ≤ b := by cases x <;> simp [hx]
 
 @[simp] lemma unbot_le_unbot (hx hy) : unbot x hx ≤ unbot y hy ↔ x ≤ y := by
-  -- TODO: Fix `lift` so that it doesn't try to clear the hypotheses I give it when it is
-  -- impossible to do so. See https://github.com/leanprover-community/mathlib4/issues/19160
-  lift x to α using id hx
-  lift y to α using id hy
+  lift x to α using hx
+  lift y to α using hy
   simp
 
 end LE
@@ -334,15 +332,13 @@ lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_def]
 `PartialOrder α`. -/
 protected lemma bot_lt_iff_ne_bot : ⊥ < x ↔ x ≠ ⊥ := by cases x <;> simp
 
-lemma lt_unbot_iff (hy : y ≠ ⊥) : a < unbot y hy ↔ a < y := by lift y to α using id hy; simp
-lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to α using id hx; simp
+lemma lt_unbot_iff (hy : y ≠ ⊥) : a < unbot y hy ↔ a < y := by lift y to α using hy; simp
+lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to α using hx; simp
 lemma unbotD_lt_iff (hx : x = ⊥ → a < b) : x.unbotD a < b ↔ x < b := by cases x <;> simp [hx]
 
 @[simp] lemma unbot_lt_unbot (hx hy) : unbot x hx < unbot y hy ↔ x < y := by
-  -- TODO: Fix `lift` so that it doesn't try to clear the hypotheses I give it when it is
-  -- impossible to do so. See https://github.com/leanprover-community/mathlib4/issues/19160
-  lift x to α using id hx
-  lift y to α using id hy
+  lift x to α using hx
+  lift y to α using hy
   simp
 
 end LT
@@ -868,7 +864,30 @@ protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
 
 lemma untop_le_iff (hx : x ≠ ⊤) : untop x hx ≤ b ↔ x ≤ b := by lift x to α using id hx; simp
 lemma le_untop_iff (hy : y ≠ ⊤) : a ≤ untop y hy ↔ a ≤ y := by lift y to α using id hy; simp
+
+lemma untopD_le_iff (hy : y ≠ ⊤) : y.untopD a ≤ b ↔ y ≤ b := by lift y to α using id hy; simp
 lemma le_untopD_iff (hy : y = ⊤ → a ≤ b) : a ≤ y.untopD b ↔ a ≤ y := by cases y <;> simp [hy]
+
+lemma untopA_le_iff [Nonempty α] (hy : y ≠ ⊤) : y.untopA ≤ b ↔ y ≤ b := untopD_le_iff hy
+lemma le_untopA_iff [Nonempty α] (hy : y ≠ ⊤) : a ≤ y.untopA ↔ a ≤ y := by
+  lift y to α using id hy; simp
+
+lemma untop_mono (hx : x ≠ ⊤) (hy : y ≠ ⊤) (h : x ≤ y) :
+    x.untop hx ≤ y.untop hy := by
+  lift x to α using id hx
+  lift y to α using id hy
+  simp only [untop_coe]
+  exact mod_cast h
+
+lemma untopD_mono (hy : y ≠ ⊤) (h : x ≤ y) :
+    x.untopD a ≤ y.untopD a := by
+  lift y to α using hy
+  cases x with
+  | top => simp at h
+  | coe a => simp only [WithTop.untopD_coe]; exact mod_cast h
+
+lemma untopA_mono [Nonempty α] (hy : y ≠ ⊤) (h : x ≤ y) :
+    x.untopA ≤ y.untopA := untopD_mono hy h
 
 end LE
 
@@ -902,7 +921,14 @@ protected lemma lt_top_iff_ne_top : x < ⊤ ↔ x ≠ ⊤ := by cases x <;> simp
 
 @[simp] lemma lt_untop_iff (hy : y ≠ ⊤) : a < y.untop hy ↔ a < y := by lift y to α using id hy; simp
 @[simp] lemma untop_lt_iff (hx : x ≠ ⊤) : x.untop hx < b ↔ x < b := by lift x to α using id hx; simp
+
 lemma lt_untopD_iff (hy : y = ⊤ → a < b) : a < y.untopD b ↔ a < y := by cases y <;> simp [hy]
+lemma untopD_lt_iff (hx : x ≠ ⊤) : x.untopD a < b ↔ x < b := by
+  lift x to α using id hx; simp
+
+lemma lt_untopA_iff [Nonempty α] (hy : y ≠ ⊤) : a < y.untopA ↔ a < y := by
+  lift y to α using id hy; simp
+lemma untopA_lt_iff [Nonempty α] (hx : x ≠ ⊤) : x.untopA < b ↔ x < b := untopD_lt_iff hx
 
 end LT
 
@@ -975,7 +1001,15 @@ lemma forall_coe_le_iff_le [NoTopOrder α] : (∀ a : α, a ≤ x → a ≤ y) �
 end Preorder
 
 section PartialOrder
-variable [PartialOrder α] [NoTopOrder α] {x y : WithTop α}
+variable [PartialOrder α] {x y : WithTop α}
+
+lemma untopD_le (hy : y ≤ b) : y.untopD a ≤ b := by
+  rwa [untopD_le_iff]
+  exact ne_top_of_le_ne_top (by simp) hy
+
+lemma untopA_le [Nonempty α] (hy : y ≤ b) : y.untopA ≤ b := untopD_le hy
+
+variable [NoTopOrder α]
 
 lemma eq_of_forall_coe_le_iff (h : ∀ a : α, a ≤ x ↔ a ≤ y) : x = y :=
   WithBot.eq_of_forall_le_coe_iff (α := αᵒᵈ) h
