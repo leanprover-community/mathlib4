@@ -5460,6 +5460,7 @@ import Mathlib.Probability.Process.FiniteDimensionalLaws
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Process.Kolmogorov
 import Mathlib.Probability.Process.PartitionFiltration
+import Mathlib.Probability.Process.Predictable
 import Mathlib.Probability.Process.Stopping
 import Mathlib.Probability.ProductMeasure
 import Mathlib.Probability.StrongLaw
