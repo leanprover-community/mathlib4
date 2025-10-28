@@ -410,6 +410,11 @@ lemma eq_bot_iff_forall_le [NoBotOrder α] : x = ⊥ ↔ ∀ b : α, x ≤ b := 
 @[deprecated (since := "2025-03-19")] alias forall_lt_iff_eq_bot := eq_bot_iff_forall_lt
 @[deprecated (since := "2025-03-19")] alias forall_le_iff_eq_bot := eq_bot_iff_forall_le
 
+lemma forall_coe_le_iff_le [NoBotOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
+  obtain _ | a := x
+  · simpa [WithBot.none_eq_bot, eq_bot_iff_forall_le] using fun a ha ↦ (not_isBot _ ha).elim
+  · exact ⟨fun h ↦ h _ le_rfl, fun hay b ↦ hay.trans'⟩
+
 lemma forall_le_coe_iff_le [NoBotOrder α] : (∀ a : α, y ≤ a → x ≤ a) ↔ x ≤ y := by
   obtain _ | y := y
   · simp [WithBot.none_eq_bot, eq_bot_iff_forall_le]
@@ -419,6 +424,9 @@ end Preorder
 
 section PartialOrder
 variable [PartialOrder α] [NoBotOrder α] {x y : WithBot α}
+
+lemma eq_of_forall_coe_le_iff (h : ∀ a : α, a ≤ x ↔ a ≤ y) : x = y :=
+  le_antisymm (forall_coe_le_iff_le.mp fun a ↦ (h a).1) (forall_coe_le_iff_le.mp fun a ↦ (h a).2)
 
 lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=
   le_antisymm (forall_le_coe_iff_le.mp fun a ↦ (h a).2) (forall_le_coe_iff_le.mp fun a ↦ (h a).1)
@@ -998,6 +1006,9 @@ lemma eq_top_iff_forall_ge [NoTopOrder α] : y = ⊤ ↔ ∀ a : α, a ≤ y :=
 lemma forall_coe_le_iff_le [NoTopOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y :=
   WithBot.forall_le_coe_iff_le (α := αᵒᵈ)
 
+lemma forall_le_coe_iff_le [NoTopOrder α] : (∀ a : α, y ≤ a → x ≤ a) ↔ x ≤ y :=
+  WithBot.forall_coe_le_iff_le (α := αᵒᵈ)
+
 end Preorder
 
 section PartialOrder
@@ -1010,6 +1021,9 @@ lemma untopD_le (hy : y ≤ b) : y.untopD a ≤ b := by
 lemma untopA_le [Nonempty α] (hy : y ≤ b) : y.untopA ≤ b := untopD_le hy
 
 variable [NoTopOrder α]
+
+lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=
+  WithBot.eq_of_forall_coe_le_iff (α := αᵒᵈ) h
 
 lemma eq_of_forall_coe_le_iff (h : ∀ a : α, a ≤ x ↔ a ≤ y) : x = y :=
   WithBot.eq_of_forall_le_coe_iff (α := αᵒᵈ) h
