@@ -400,6 +400,17 @@ lemma symm_Λ₀_eq (s : ℂ) :
   rw [P.symm.Λ₀_eq]
   rfl
 
+lemma _root_.StrongFEPair.toWeakFEPair_Λ_eq_Λ (Q : StrongFEPair E) :
+    Q.toWeakFEPair.Λ = Q.Λ := by
+  ext s
+  simp only [WeakFEPair.Λ, Q.hf₀, Q.hg₀, smul_zero, sub_zero, Λ₀, StrongFEPair.Λ, f_modif, mellin]
+  -- the following should be a lemma `mellin_congr`
+  refine integral_congr_ae <| (ae_restrict_iff' measurableSet_Ioi).mpr ?_
+  filter_upwards [compl_mem_ae_iff.mpr (Subsingleton.measure_zero (s := {1}) (by simp) _)]
+    with t (ht₁ : t ≠ 1) (ht₀ : 0 < t)
+  by_cases ht : t < 1 <;> [rw [add_comm] ; skip] <;>
+  rw [Pi.add_apply, indicator_of_mem (by grind), indicator_of_notMem (by grind), add_zero]
+
 theorem differentiable_Λ₀ : Differentiable ℂ P.Λ₀ := P.toStrongFEPair.differentiable_Λ
 
 theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠ P.k ∨ P.g₀ = 0) :
