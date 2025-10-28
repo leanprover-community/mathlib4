@@ -43,16 +43,15 @@ section Semiring
 variable {R R₂ R₃ R' R'' : Type*}
 variable [CommSemiring R] [CommSemiring R₂] [CommSemiring R₃] [Monoid R'] [Semiring R'']
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-
-variable {A M N P Q S T : Type*}
+variable {A M N P Q S : Type*}
 variable {M₂ M₃ N₂ N₃ P' P₂ P₃ Q' Q₂ Q₃ : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
 variable [AddCommMonoid P'] [AddCommMonoid Q']
 variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Q₂]
 variable [AddCommMonoid M₃] [AddCommMonoid N₃] [AddCommMonoid P₃] [AddCommMonoid Q₃]
 variable [DistribMulAction R' M]
 variable [Module R'' M]
-variable [Module R M] [Module R N] --[Module R P] [Module R Q] will be added later
+variable [Module R M] [Module R N] [Module R S]
 variable [Module R P'] [Module R Q']
 variable [Module R₂ M₂] [Module R₂ N₂] [Module R₂ P₂] [Module R₂ Q₂]
 variable [Module R₃ M₃] [Module R₃ N₃] [Module R₃ P₃] [Module R₃ Q₃]
@@ -698,7 +697,7 @@ theorem comm_symm_tmul (m : M) (n : N) : (TensorProduct.comm R M N).symm (n ⊗�
 
 -- Why is the `toLinearMap` necessary ? And why is this slow ?
 lemma lift_comp_comm_eq (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) :
-    (lift f ∘ₛₗ (TensorProduct.comm R N M).toLinearMap) = lift f.flip :=
+    lift f ∘ₛₗ (TensorProduct.comm R N M).toLinearMap = lift f.flip :=
   ext rfl
 
 end
@@ -968,7 +967,7 @@ theorem congr_symm (f : M ≃ₛₗ[σ₁₂] M₂) (g : N ≃ₛₗ[σ₁₂] N
 @[simp] theorem congr_refl_refl : congr (.refl R M) (.refl R N) = .refl R _ :=
   LinearEquiv.toLinearMap_injective <| ext' fun _ _ ↦ rfl
 
-theorem congr_trans (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (f' : P ≃ₗ[R] P') (g' : Q ≃ₗ[R] Q') :
+theorem congr_trans (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (f' : P ≃ₗ[R] S) (g' : Q ≃ₗ[R] Q') :
     congr (f ≪≫ₗ f') (g ≪≫ₗ g') = congr f g ≪≫ₗ congr f' g' :=
   LinearEquiv.toLinearMap_injective <| map_comp _ _ _ _
 
@@ -1193,11 +1192,9 @@ theorem rTensor_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
   simp only [lTensor, rTensor, ← map_comp, id_comp, comp_id]
 
 @[simp]
-theorem map_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : P' →ₗ[R] M) :
+theorem map_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : S →ₗ[R] M) :
     (map f g).comp (f'.rTensor _) = map (f.comp f') g := by
   simp only [rTensor, ← map_comp, comp_id]
-
-variable [AddCommMonoid S] [Module R S]
 
 @[simp]
 theorem map_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : S →ₗ[R] M) (x : S ⊗[R] N) :
@@ -1324,19 +1321,19 @@ variable {N}
     g.lTensor M ≪≫ₗ f.rTensor Q = TensorProduct.congr f g :=
   toLinearMap_injective <| LinearMap.rTensor_comp_lTensor M _ _
 
-@[simp] theorem rTensor_trans_congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (f' : P' ≃ₗ[R] M) :
+@[simp] theorem rTensor_trans_congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (f' : S ≃ₗ[R] M) :
     f'.rTensor _ ≪≫ₗ TensorProduct.congr f g = TensorProduct.congr (f' ≪≫ₗ f) g :=
   toLinearMap_injective <| LinearMap.map_comp_rTensor M _ _ _
 
-@[simp] theorem lTensor_trans_congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (g' : P' ≃ₗ[R] N) :
+@[simp] theorem lTensor_trans_congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (g' : S ≃ₗ[R] N) :
     g'.lTensor _ ≪≫ₗ TensorProduct.congr f g = TensorProduct.congr f (g' ≪≫ₗ g) :=
   toLinearMap_injective <| LinearMap.map_comp_lTensor M _ _ _
 
-@[simp] theorem congr_trans_rTensor (f' : P ≃ₗ[R] P') (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
+@[simp] theorem congr_trans_rTensor (f' : P ≃ₗ[R] S) (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
     TensorProduct.congr f g ≪≫ₗ f'.rTensor _ = TensorProduct.congr (f ≪≫ₗ f') g :=
   toLinearMap_injective <| LinearMap.rTensor_comp_map M _ _ _
 
-@[simp] theorem congr_trans_lTensor (g' : Q ≃ₗ[R] P') (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
+@[simp] theorem congr_trans_lTensor (g' : Q ≃ₗ[R] S) (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
     TensorProduct.congr f g ≪≫ₗ g'.lTensor _ = TensorProduct.congr f (g ≪≫ₗ g') :=
   toLinearMap_injective <| LinearMap.lTensor_comp_map M _ _ _
 
