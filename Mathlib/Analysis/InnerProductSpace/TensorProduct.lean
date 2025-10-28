@@ -252,7 +252,7 @@ def congrIsometry (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
     inner_map_map f.toLinearIsometry g.toLinearIsometry
 
 @[simp] lemma congrIsometry_apply (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
-    congrIsometry f g x = congr f g x := rfl
+    congrIsometry f g x = congr (σ₁₂ := .id _) f g x := rfl
 
 lemma congrIsometry_symm (f : E ≃ₗᵢ[𝕜] G) (g : F ≃ₗᵢ[𝕜] H) :
     (congrIsometry f g).symm = congrIsometry f.symm g.symm := rfl
