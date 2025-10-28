@@ -127,9 +127,9 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
   le_of_not_gt fun h' => not_le_of_gt (H h') h
 
 @[grind =]
-lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
+lemma min_def (a b : α) : min a b = if a ≤ b then a else b := LinearOrder.min_def a b
 @[grind =]
-lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
+lemma max_def (a b : α) : max a b = if a ≤ b then b else a := LinearOrder.max_def a b
 
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b

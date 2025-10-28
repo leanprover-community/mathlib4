@@ -26,13 +26,10 @@ we use a generic collection of instances so that it applies in other settings (e
 variable [AddMonoidWithOne α] [PartialOrder α]
 variable [AddLeftMono α] [ZeroLEOneClass α]
 
-@[mono]
+@[gcongr, mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
   monotone_nat_of_le_succ fun n ↦ by
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
-
-@[gcongr]
-theorem _root_.GCongr.natCast_le_natCast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
 
 /-- See also `Nat.cast_nonneg`, specialised for an `OrderedSemiring`. -/
 @[simp low]
@@ -60,11 +57,9 @@ end Nontrivial
 
 variable [CharZero α] {m n : ℕ}
 
+@[gcongr]
 theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
   mono_cast.strictMono_of_injective cast_injective
-
-@[gcongr]
-lemma _root_.GCongr.natCast_lt_natCast {a b : ℕ} (h : a < b) : (a : α) < b := strictMono_cast h
 
 /-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
 @[simps! -fullyApplied]

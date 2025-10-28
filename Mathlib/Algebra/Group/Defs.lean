@@ -214,10 +214,16 @@ attribute [to_additive] CommSemigroup
 
 section CommMagma
 
-variable [CommMagma G]
+variable [CommMagma G] {a : G}
 
 @[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
+
+@[simp] lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
+  simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
+
+@[simp] lemma isRightRegular_iff_isRegular : IsRightRegular a ↔ IsRegular a := by
+  simp [isRegular_iff, IsLeftRegular, IsRightRegular, mul_comm]
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
 @[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd /-- Any `AddCommMagma G` that

@@ -268,12 +268,12 @@ theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R
     (k : K) (hk : I = spanSingleton R⁰ k) :
     ∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {choose
-          (mk'_surjective R⁰ k)} : Ideal R)).factors -
+          (exists_mk'_eq R⁰ k)} : Ideal R)).factors -
         (Associates.mk v.asIdeal).count (Associates.mk ((Ideal.span {(↑(choose
-          (choose_spec (mk'_surjective R⁰ k)) : ↥R⁰) : R)}) : Ideal R)).factors : ℤ) = I := by
-  set n : R := choose (mk'_surjective R⁰ k)
-  set d : ↥R⁰ := choose (choose_spec (mk'_surjective R⁰ k))
-  have hnd : mk' K n d = k := choose_spec (choose_spec (mk'_surjective R⁰ k))
+          (choose_spec (exists_mk'_eq R⁰ k)) : ↥R⁰) : R)}) : Ideal R)).factors : ℤ) = I := by
+  set n : R := choose (exists_mk'_eq R⁰ k)
+  set d : ↥R⁰ := choose (choose_spec (exists_mk'_eq R⁰ k))
+  have hnd : mk' K n d = k := choose_spec (choose_spec (exists_mk'_eq R⁰ k))
   have hn0 : n ≠ 0 := by
     by_contra h
     rw [← hnd, h, IsFractionRing.mk'_eq_div, map_zero, zero_div, spanSingleton_zero] at hk
