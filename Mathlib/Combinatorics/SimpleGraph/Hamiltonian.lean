@@ -78,11 +78,13 @@ end
 
 /-- If a path `p` is Hamiltonian, then `p.support.get` defines an equivalence between
 `Fin p.support.length` and `α`. -/
+@[simps!]
 def IsHamiltonian.supportGetEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α :=
   p.support.getEquivOfForallCountEqOne hp
 
 /-- If a path `p` is Hamiltonian, then `p.getVert` defines an equivalence between
 `Fin p.support.length` and `α`. -/
+@[simps]
 def IsHamiltonian.getVertEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α where
   toFun := p.getVert ∘ Fin.val
   invFun := hp.supportGetEquiv.invFun
