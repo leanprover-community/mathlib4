@@ -44,10 +44,10 @@ Helper lemma for the construction of `S ⧸ (I ^ n • ⊤) → S ⧸ I ^ n`.
 lemma _root_.Ideal.pow_smul_top_le_pow {n : ℕ} : I ^ n • ⊤ ≤ I ^ n :=
   le_of_eq ((smul_eq_mul (I ^ n) _) ▸ (mul_top _).symm : I ^ n = I ^ n • ⊤).symm
 
-noncomputable def evalRingHom (n : ℕ) : AdicCompletion I S →+* S ⧸ I ^ n := evalₐ I n
+-- noncomputable def evalₐ (n : ℕ) : AdicCompletion I S →+* S ⧸ I ^ n := evalₐ I n
 
-@[simp]
-theorem evalₐ_coe (n : ℕ) : (evalₐ I n : AdicCompletion I S →+* S ⧸ I ^ n) = evalRingHom I n := rfl
+-- @[simp]
+-- theorem evalₐ_coe (n : ℕ) : (evalₐ I n : AdicCompletion I S →+* S ⧸ I ^ n) = evalₐ I n := rfl
 
 -- move to `Mathlib.RingTheory.Ideal.Quotient.Operations` after `Ideal.quotientEquivAlgOfEq_mk`
 @[simp]
@@ -68,24 +68,24 @@ theorem factorₐ_apply (R : Type*) [CommSemiring R]
     factorₐ R h x = factor h x := rfl
 
 @[simp]
-theorem factor_evalRingHom_apply (n : ℕ) (x : AdicCompletion I S) :
-    (factor pow_le_pow_smul_top) (evalRingHom I n x) = (eval I S n x) := by
-  simp [evalRingHom, evalₐ]
+theorem factor_evalₐ_apply (n : ℕ) (x : AdicCompletion I S) :
+    (factor pow_le_pow_smul_top) (evalₐ I n x) = (eval I S n x) := by
+  simp [evalₐ]
 
-theorem factor_eval_eq_evalRingHom (n : ℕ) (x : AdicCompletion I S) :
-    (factor pow_smul_top_le_pow) (eval I S n x) = (evalRingHom I n x) := by
-  simp [evalRingHom, evalₐ]
+theorem factor_eval_eq_evalₐ (n : ℕ) (x : AdicCompletion I S) :
+    (factor pow_smul_top_le_pow) (eval I S n x) = (evalₐ I n x) := by
+  simp [evalₐ]
 
 /--
 The composition map `S →+* AdicCompletion I S →+* S ⧸ I ^ n` equals to the natural quotient map.
 -/
 @[simp]
-theorem evalRingHom_of_apply (n : ℕ) (x : S) :
-    (evalRingHom I n) (of I S x) = Ideal.Quotient.mk _ x := by
-  simp [evalRingHom, evalₐ, -smul_eq_mul, -Algebra.id.smul_eq_mul]
+theorem evalₐ_of_apply (n : ℕ) (x : S) :
+    (evalₐ I n) (of I S x) = Ideal.Quotient.mk _ x := by
+  simp [evalₐ, -smul_eq_mul, -Algebra.id.smul_eq_mul]
 
-theorem surjective_evalRingHom (n : ℕ) : Function.Surjective (evalRingHom I n) := by
-  simp only [evalRingHom, evalₐ, smul_eq_mul, quotientEquivAlgOfEq_coe_algHom, RingHom.coe_coe,
+theorem surjective_evalₐ (n : ℕ) : Function.Surjective (evalₐ I n) := by
+  simp only [ evalₐ, smul_eq_mul, quotientEquivAlgOfEq_coe_algHom,
     AlgHom.coe_comp]
   apply Function.Surjective.comp
   · exact factor_surjective mul_le_right
@@ -122,23 +122,23 @@ theorem factor_eval_liftRingHom_apply (n : ℕ) (x : R) :
   simp [liftRingHom, eval]
 
 @[simp]
-theorem evalRingHom_liftRingHom_apply (n : ℕ) (x : R) :
-    (evalRingHom I n) (liftRingHom I f hf x) = f n x := by
-  rw [← factor_eval_eq_evalRingHom]
+theorem evalₐ_liftRingHom_apply (n : ℕ) (x : R) :
+    (evalₐ I n) (liftRingHom I f hf x) = f n x := by
+  rw [← factor_eval_eq_evalₐ]
   simp [liftRingHom, eval]
 
 @[simp]
-theorem evalRingHom_comp_liftRingHom (n : ℕ) :
-    (evalRingHom I n).comp (liftRingHom I f hf) = f n := by
+theorem evalₐ_comp_liftRingHom (n : ℕ) :
+    (evalₐ I n : _ →+* _).comp (liftRingHom I f hf) = f n := by
   ext
-  exact evalRingHom_liftRingHom_apply I f hf n _
+  exact evalₐ_liftRingHom_apply I f hf n _
 
 /--
 When `S` is `I`-adic complete, the canonical map from `M` to its `I`-adic completion is an `S`-algebra
 isomorphism.
 -/
-noncomputable def ofAlgEquiv [IsAdicComplete I S] : S →ₐA AdicCompletion I S :=
-  {LinearEquiv.ofBijective (of I S) (bijective_of I S) with
+noncomputable def ofAlgEquiv [IsAdicComplete I S] : S →ₐ[S] AdicCompletion I S :=
+  { ofLinearEquiv I S with
     map_mul' := fun x y ↦ sorry
   }
 
