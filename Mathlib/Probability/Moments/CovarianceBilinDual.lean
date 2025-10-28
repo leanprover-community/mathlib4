@@ -267,7 +267,7 @@ lemma covarianceBilinDual_comm (L₁ L₂ : StrongDual ℝ E) :
 lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) : 0 ≤ covarianceBilinDual μ L L := by
   by_cases h : MemLp id 2 μ
   · simp only [covarianceBilinDual, uncenteredCovarianceBilinDual,
-    ContinuousLinearMap.bilinearComp_apply, IsBoundedBilinearMap.toContinuousLinearMap_apply]
+      ContinuousLinearMap.bilinearComp_apply, IsBoundedBilinearMap.toContinuousLinearMap_apply]
     exact real_inner_self_nonneg
   · simp [h]
 
