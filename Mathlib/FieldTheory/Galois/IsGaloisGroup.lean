@@ -16,7 +16,7 @@ we do not assume that `L` is an algebraic extension of `K`.
 ## Implementation notes
 
 We actually define `IsGaloisGroup G A B` for extensions of rings `B/A`, with the same definition
-(faithful action on `B` with fixed subring `A`). In this generality, the name `IsGaloisGroup` is a
+(faithful action on `B` with fixed ring `A`). In this generality, the name `IsGaloisGroup` is a
 bit of a misnomer, since `IsGaloisGroup G A B` corresponds to the fields of fractions
 `Frac(B)/Frac(A)` being a Galois extension of fields, rather than `B/A` being étale (for instance).
 -/
