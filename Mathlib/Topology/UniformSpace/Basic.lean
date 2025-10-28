@@ -499,6 +499,13 @@ lemma UniformContinuousOn.mono (hf : UniformContinuousOn f s) (ht : t ⊆ s) :
     UniformContinuousOn f t :=
   Tendsto.mono_left hf (inf_le_inf le_rfl (by simp [ht]))
 
+lemma UniformContinuousOn.congr {f g : α → β} {s : Set α}
+    (hf : UniformContinuousOn f s) (h : EqOn f g s) :
+    UniformContinuousOn g s := by
+  apply hf.congr'
+  apply EventuallyEq.filter_mono _ inf_le_right
+  filter_upwards [mem_principal_self _] with ⟨a, b⟩ ⟨ha, hb⟩ using by simp [h ha, h hb]
+
 lemma UniformContinuousOn.comp {g : β → γ} {t : Set β} (hg : UniformContinuousOn g t)
     (hf : UniformContinuousOn f s) (hst : MapsTo f s t) : UniformContinuousOn (g ∘ f) s := by
   change Tendsto ((fun x ↦ (g x.1, g x.2)) ∘ (fun x ↦ (f x.1, f x.2))) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 γ)
