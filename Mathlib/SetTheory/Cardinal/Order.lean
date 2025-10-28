@@ -211,10 +211,6 @@ private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := 
   simp
 
 instance commSemiring : CommSemiring Cardinal.{u} where
-  zero := 0
-  one := 1
-  add := (· + ·)
-  mul := (· * ·)
   zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
   add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
   add_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumAssoc α β γ
@@ -292,7 +288,8 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
         exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
           Equiv.Set.sumCompl (range f)
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-  le_self_add a _ := (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
+  le_self_add a b := (add_zero a).ge.trans <| by grw [Cardinal.zero_le b]
+  le_add_self a _ := (zero_add a).ge.trans <| by grw [Cardinal.zero_le]
 
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
@@ -317,7 +314,6 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
 instance : CommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring with }
 
--- Porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoid Cardinal.{u} :=
   { Cardinal.commSemiring with }
@@ -378,7 +374,6 @@ protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
 instance : WellFoundedRelation Cardinal.{u} :=
   ⟨(· < ·), Cardinal.lt_wf⟩
 
--- Porting note: this no longer is automatically inferred.
 instance : WellFoundedLT Cardinal.{u} :=
   ⟨Cardinal.lt_wf⟩
 
@@ -402,7 +397,6 @@ theorem succ_ne_zero (c : Cardinal) : succ c ≠ 0 :=
   (succ_pos _).ne'
 
 theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
-  -- Porting note: rewrote the next three lines to avoid defeq abuse.
   have : Set.Nonempty { c' | c < c' } := exists_gt c
   simp_rw [succ_def, le_csInf_iff'' this, mem_setOf]
   intro b hlt
@@ -435,6 +429,10 @@ theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
 protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
   isSuccLimit_iff
 
+@[simp]
+protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=
+  not_isSuccLimit_bot
+
 /-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
 Note that `ℵ₀` is a strong limit by this definition. -/
 structure IsStrongLimit (c : Cardinal) : Prop where
@@ -449,11 +447,18 @@ protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLi
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
   H.isSuccLimit.isSuccPrelimit
 
+@[simp]
+theorem not_isStrongLimit_zero : ¬ IsStrongLimit (0 : Cardinal) :=
+  fun h ↦ h.ne_zero rfl
+
 /-! ### Indexed cardinal `sum` -/
 
-theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
+theorem lift_le_sum {ι : Type u} (f : ι → Cardinal.{v}) (i) : lift.{u, v} (f i) ≤ sum f := by
   rw [← Quotient.out_eq (f i)]
-  exact ⟨⟨fun a => ⟨i, a⟩, fun a b h => by injection h⟩⟩
+  exact ⟨⟨fun a => ⟨i, a.down⟩, fun a b h => by simpa using h⟩⟩
+
+theorem le_sum {ι : Type u} (f : ι → Cardinal.{max u v}) (i) : f i ≤ sum f := by
+  simpa [← lift_umax] using lift_le_sum f i
 
 theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
   ciSup_le' <| le_sum _
@@ -469,6 +474,7 @@ theorem sum_add_distrib' {ι} (f g : ι → Cardinal) :
     (Cardinal.sum fun i => f i + g i) = sum f + sum g :=
   sum_add_distrib f g
 
+@[gcongr]
 theorem sum_le_sum {ι} (f g : ι → Cardinal) (H : ∀ i, f i ≤ g i) : sum f ≤ sum g :=
   ⟨(Embedding.refl _).sigmaMap fun i =>
       Classical.choice <| by have := H i; rwa [← Quot.out_eq (f i), ← Quot.out_eq (g i)] at this⟩
@@ -487,10 +493,6 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
               (Equiv.trans
                 (by
                   rw [Equiv.image_eq_preimage]
-                  /- Porting note: Need to insert the following `have` b/c bad fun coercion
-                   behaviour for Equivs -/
-                  have : DFunLike.coe (Equiv.symm (Equiv.ulift (α := α))) = ULift.up (α := α) := rfl
-                  rw [this]
                   simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_setOf_eq, coe_setOf]
                   exact Equiv.refl _)
                 Equiv.ulift.symm)).trans_le

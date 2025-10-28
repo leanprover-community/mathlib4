@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.Condensed.Light.Basic
 /-!
 
-# Light condensed sets form a cartesian closed category
+# Light condensed sets form a Cartesian closed category
 -/
 
 universe u

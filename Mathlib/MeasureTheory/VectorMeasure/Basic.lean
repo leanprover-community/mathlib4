@@ -9,17 +9,17 @@ import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 
-# Vector valued measures
+# Vector-valued measures
 
-This file defines vector valued measures, which are σ-additive functions from a set to an add monoid
-`M` such that it maps the empty set and non-measurable sets to zero. In the case
+This file defines vector-valued measures, which are σ-additive functions from a set to an
+additive monoid `M` such that it maps the empty set and non-measurable sets to zero. In the case
 that `M = ℝ`, we called the vector measure a signed measure and write `SignedMeasure α`.
 Similarly, when `M = ℂ`, we call the measure a complex measure and write `ComplexMeasure α`
 (defined in `MeasureTheory/Measure/Complex`).
 
 ## Main definitions
 
-* `MeasureTheory.VectorMeasure` is a vector valued, σ-additive function that maps the empty
+* `MeasureTheory.VectorMeasure` is a vector-valued, σ-additive function that maps the empty
   and non-measurable set to zero.
 * `MeasureTheory.VectorMeasure.map` is the pushforward of a vector measure along a function.
 * `MeasureTheory.VectorMeasure.restrict` is the restriction of a vector measure on some set.
@@ -53,7 +53,7 @@ namespace MeasureTheory
 variable {α β : Type*} {m : MeasurableSpace α}
 
 /-- A vector measure on a measurable space `α` is a σ-additive `M`-valued function (for some `M`
-an add monoid) such that the empty set and non-measurable sets are mapped to zero. -/
+an additive monoid) such that the empty set and non-measurable sets are mapped to zero. -/
 structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMonoid M]
     [TopologicalSpace M] where
   /-- The measure of sets -/
@@ -778,8 +778,7 @@ theorem restrict_le_restrict_subset {i j : Set α} (hi₁ : MeasurableSet i) (hi
     subset_le_of_restrict_le_restrict v w hi₁ hi₂ (Set.Subset.trans hk₂ hij)
 
 theorem le_restrict_empty : v ≤[∅] w := by
-  intro j _
-  rw [restrict_empty, restrict_empty]
+  simp
 
 theorem le_restrict_univ_iff_le : v ≤[Set.univ] w ↔ v ≤ w := by
   simp
@@ -910,7 +909,7 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
   [AddLeftMono M] [ContinuousAdd M]
 
 instance instAddLeftMono : AddLeftMono (VectorMeasure α M) :=
-  ⟨fun _ _ _ h i hi => add_le_add_left (h i hi) _⟩
+  ⟨fun _ _ _ h i hi => by dsimp; grw [h i hi]⟩
 
 end
 

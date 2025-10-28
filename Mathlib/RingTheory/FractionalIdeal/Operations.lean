@@ -229,8 +229,7 @@ theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'
     [IsLocalization S P''] (I : FractionalIdeal S P) :
     canonicalEquiv S P' P'' (canonicalEquiv S P P' I) = canonicalEquiv S P P'' I := by
   ext
-  simp only [IsLocalization.map_map, RingHomInvPair.comp_eq₂, mem_canonicalEquiv_apply,
-    exists_exists_and_eq_and]
+  simp [IsLocalization.map_map]
 
 theorem canonicalEquiv_trans_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
     [IsLocalization S P''] :
@@ -418,9 +417,7 @@ theorem le_div_iff_of_nonzero {I J J' : FractionalIdeal R₁⁰ K} (hJ' : J' ≠
 
 theorem le_div_iff_mul_le {I J J' : FractionalIdeal R₁⁰ K} (hJ' : J' ≠ 0) :
     I ≤ J / J' ↔ I * J' ≤ J := by
-  rw [div_nonzero hJ']
-  -- Porting note: this used to be { convert; rw }, flipped the order.
-  rw [← coe_le_coe (I := I * J') (J := J), coe_mul]
+  rw [div_nonzero hJ', ← coe_le_coe (I := I * J') (J := J), coe_mul]
   exact Submodule.le_div_iff_mul_le
 
 @[simp]
@@ -431,9 +428,8 @@ theorem div_one {I : FractionalIdeal R₁⁰ K} : I / 1 = I := by
   · simpa using mem_div_iff_forall_mul_mem.mp h 1 ((algebraMap R₁ K).map_one ▸ coe_mem_one R₁⁰ 1)
   · apply mem_div_iff_forall_mul_mem.mpr
     rintro y ⟨y', _, rfl⟩
-    -- Porting note: this used to be { convert; rw }, flipped the order.
+    convert Submodule.smul_mem _ y' h using 1
     rw [mul_comm, Algebra.linearMap_apply, ← Algebra.smul_def]
-    exact Submodule.smul_mem _ y' h
 
 theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) :
     J = 1 / I := by
@@ -462,11 +458,8 @@ protected theorem map_div (I J : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] 
     (I / J).map (h : K →ₐ[R₁] K') = I.map h / J.map h := by
   by_cases H : J = 0
   · rw [H, div_zero, FractionalIdeal.map_zero, div_zero]
-  · -- Porting note: `simp` wouldn't apply these lemmas so do them manually using `rw`
-    rw [← coeToSubmodule_inj, div_nonzero H, div_nonzero (map_ne_zero _ H)]
-    simp [Submodule.map_div]
+  · simp [← coeToSubmodule_inj, div_nonzero H, div_nonzero (map_ne_zero _ H)]
 
--- Porting note: doesn't need to be @[simp] because this follows from `map_one` and `map_div`
 theorem map_one_div (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
     (1 / I).map (h : K →ₐ[R₁] K') = 1 / I.map h := by
   rw [FractionalIdeal.map_div, FractionalIdeal.map_one]
@@ -485,7 +478,7 @@ theorem eq_zero_or_one (I : FractionalIdeal K⁰ L) : I = 0 ∨ I = 1 := by
   intro x
   constructor
   · intro x_mem
-    obtain ⟨n, d, rfl⟩ := IsLocalization.mk'_surjective K⁰ x
+    obtain ⟨n, d, rfl⟩ := IsLocalization.exists_mk'_eq K⁰ x
     refine ⟨n / d, ?_⟩
     rw [map_div₀, IsFractionRing.mk'_eq_div]
   · rintro ⟨x, rfl⟩
@@ -630,9 +623,9 @@ theorem spanSingleton_mul_spanSingleton (x y : P) :
 
 @[simp]
 theorem spanSingleton_pow (x : P) (n : ℕ) : spanSingleton S x ^ n = spanSingleton S (x ^ n) := by
-  induction' n with n hn
-  · rw [pow_zero, pow_zero, spanSingleton_one]
-  · rw [pow_succ, hn, spanSingleton_mul_spanSingleton, pow_succ]
+  induction n with
+  | zero => rw [pow_zero, pow_zero, spanSingleton_one]
+  | succ n hn => rw [pow_succ, hn, spanSingleton_mul_spanSingleton, pow_succ]
 
 @[simp]
 theorem coeIdeal_span_singleton (x : R) :
@@ -760,7 +753,7 @@ theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
 theorem ideal_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra R K]
     [IsFractionRing R K] {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R} {J : Ideal R}
     (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) : J ≠ 0 := fun h ↦ by
-  rw [h, Ideal.zero_eq_bot, coeIdeal_bot, MulZeroClass.mul_zero] at haJ
+  rw [h, Ideal.zero_eq_bot, coeIdeal_bot, mul_zero] at haJ
   exact hI haJ
 
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
@@ -770,7 +763,7 @@ theorem constant_factor_ne_zero {R} [CommRing R] {K : Type*} [Field K] [Algebra 
     (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
     (Ideal.span {a} : Ideal R) ≠ 0 := fun h ↦ by
   rw [Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot] at h
-  rw [h, RingHom.map_zero, inv_zero, spanSingleton_zero, MulZeroClass.zero_mul] at haJ
+  rw [h, RingHom.map_zero, inv_zero, spanSingleton_zero, zero_mul] at haJ
   exact hI haJ
 
 instance isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Algebra R K]

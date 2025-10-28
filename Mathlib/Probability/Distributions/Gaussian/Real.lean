@@ -43,11 +43,11 @@ section GaussianPDF
 /-- Probability density function of the Gaussian distribution with mean `μ` and variance `v`. -/
 noncomputable
 def gaussianPDFReal (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ :=
-  (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v))
+  (√(2 * π * v))⁻¹ * rexp (-(x - μ) ^ 2 / (2 * v))
 
 lemma gaussianPDFReal_def (μ : ℝ) (v : ℝ≥0) :
     gaussianPDFReal μ v =
-      fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v)) := rfl
+      fun x ↦ (√(2 * π * v))⁻¹ * rexp (-(x - μ) ^ 2 / (2 * v)) := rfl
 
 @[simp]
 lemma gaussianPDFReal_zero_var (m : ℝ) : gaussianPDFReal m 0 = 0 := by
@@ -81,9 +81,9 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
   rw [gaussianPDFReal_def]
   by_cases hv : v = 0
   · simp [hv]
-  let g : ℝ → ℝ := fun x ↦ (√(2 * π * v))⁻¹ * rexp (- x ^ 2 / (2 * v))
+  let g : ℝ → ℝ := fun x ↦ (√(2 * π * v))⁻¹ * rexp (-x ^ 2 / (2 * v))
   have hg : Integrable g := by
-    suffices g = fun x ↦ (√(2 * π * v))⁻¹ * rexp (- (2 * v)⁻¹ * x ^ 2) by
+    suffices g = fun x ↦ (√(2 * π * v))⁻¹ * rexp (-(2 * v)⁻¹ * x ^ 2) by
       rw [this]
       refine (integrable_exp_neg_mul_sq ?_).const_mul (√(2 * π * v))⁻¹
       simp [lt_of_le_of_ne (zero_le _) (Ne.symm hv)]
@@ -111,8 +111,7 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     mul_neg]
   simp_rw [← neg_mul]
   rw [neg_mul, integral_gaussian, ← Real.sqrt_inv, ← Real.sqrt_mul]
-  · field_simp
-    ring
+  · simp [field]
   · positivity
 
 /-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
@@ -138,18 +137,10 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
     Real.sqrt_mul', mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk]
   rw [← mul_assoc]
   refine congr_arg₂ _ ?_ ?_
-  · field_simp
+  · simp (disch := positivity) only [Real.sqrt_mul, mul_inv_rev, field]
     rw [Real.sqrt_sq_eq_abs]
-    ring_nf
-    calc (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹
-      = (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹ * (|c| * |c|⁻¹) := by
-          rw [mul_inv_cancel₀, mul_one]
-          simp only [ne_eq, abs_eq_zero, hc, not_false_eq_true]
-    _ = (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹ * |c| * |c|⁻¹ := by ring
   · congr 1
     field_simp
-    congr 1
-    ring
 
 lemma gaussianPDFReal_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPDFReal μ v (c * x)
@@ -395,6 +386,8 @@ open Real Complex
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- The complex moment-generating function of a Gaussian distribution with mean `μ` and variance `v`
 is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
 theorem complexMGF_id_gaussianReal (z : ℂ) :
@@ -417,7 +410,9 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
       rw [integral_cexp_quadratic (by simpa using pos_iff_ne_zero.mpr hv), ← mul_assoc]
     _ = 1 * cexp (-μ ^ 2 / (2 * v) - (z + μ / v) ^ 2 / (4 * -(2 * v)⁻¹)) := by
       congr 1
-      field_simp [Real.sqrt_eq_rpow]
+      simp only [field, sqrt_eq_rpow, one_div, ofReal_inv, NNReal.coe_inv, NNReal.coe_mul,
+        NNReal.coe_ofNat, ofReal_mul, ofReal_ofNat, neg_neg, div_inv_eq_mul,
+        ne_eq, ofReal_eq_zero, rpow_eq_zero, not_false_eq_true]
       rw [Complex.ofReal_cpow (by positivity)]
       push_cast
       ring_nf
@@ -425,7 +420,7 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
       rw [one_mul]
       congr 1
       have : (v : ℂ) ≠ 0 := by simpa
-      field_simp
+      simp [field]
       ring
 
 /-- The complex moment-generating function of a random variable with Gaussian distribution
@@ -541,6 +536,17 @@ lemma memLp_id_gaussianReal' (p : ℝ≥0∞) (hp : p ≠ ∞) : MemLp id p (gau
   exact memLp_id_gaussianReal p
 
 end Moments
+
+/-- Two real Gaussian distributions are equal iff they have the same mean and variance. -/
+lemma gaussianReal_ext_iff {μ₁ μ₂ : ℝ} {v₁ v₂ : ℝ≥0} :
+    gaussianReal μ₁ v₁ = gaussianReal μ₂ v₂ ↔ μ₁ = μ₂ ∧ v₁ = v₂ := by
+  refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
+  rw [← integral_id_gaussianReal (μ := μ₁) (v := v₁),
+    ← integral_id_gaussianReal (μ := μ₂) (v := v₂), h]
+  simp only [integral_id_gaussianReal, true_and]
+  suffices (v₁ : ℝ) = v₂ by simpa
+  rw [← variance_id_gaussianReal (μ := μ₁) (v := v₁),
+    ← variance_id_gaussianReal (μ := μ₂) (v := v₂), h]
 
 section LinearMap
 

@@ -72,7 +72,7 @@ theorem powerSeriesFamily_hsum_zero (f : PowerSeries R) :
 theorem powerSeriesFamily_add {x : HahnSeries Γ V} (f g : PowerSeries R) :
     powerSeriesFamily x (f + g) = powerSeriesFamily x f + powerSeriesFamily x g := by
   ext1 n
-  by_cases hx: 0 < x.orderTop <;> · simp [hx, add_smul]
+  by_cases hx : 0 < x.orderTop <;> · simp [hx, add_smul]
 
 theorem powerSeriesFamily_smul {x : HahnSeries Γ V} (f : PowerSeries R) (r : R) :
     powerSeriesFamily x (r • f) = HahnSeries.single (0 : Γ) r • powerSeriesFamily x f := by
@@ -196,7 +196,7 @@ theorem heval_X (hx : 0 < x.orderTop) : heval x X = x := by
   rw [X_eq, monomial_eq_mk, heval_apply, powerSeriesFamily, smulFamily]
   simp only [coeff_mk, powers_toFun, hx, ↓reduceIte, ite_smul, one_smul, zero_smul]
   ext g
-  rw [coeff_hsum, finsum_eq_single _ 1 (fun n hn ↦ (by simp [hn]))]
+  rw [coeff_hsum, finsum_eq_single _ 1 (fun n hn ↦ by simp [hn])]
   simp
 
 theorem heval_unit (u : (PowerSeries R)ˣ) : IsUnit (heval x u) := by

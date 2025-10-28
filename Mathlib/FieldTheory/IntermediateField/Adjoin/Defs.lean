@@ -239,6 +239,11 @@ variable {K : Type*} [Field K] [Algebra K E] [Algebra K F] [IsScalarTower K F E]
 theorem restrictScalars_top : (⊤ : IntermediateField F E).restrictScalars K = ⊤ :=
   rfl
 
+@[simp]
+theorem restrictScalars_eq_top_iff {L : IntermediateField F E} :
+    L.restrictScalars K = ⊤ ↔ L = ⊤ := by
+  simp [SetLike.ext_iff]
+
 variable (K)
 variable (L L' : IntermediateField F E)
 
@@ -400,6 +405,14 @@ theorem lift_bot (K : IntermediateField F E) :
 theorem lift_top (K : IntermediateField F E) :
     lift (F := K) ⊤ = K := by rw [lift, ← AlgHom.fieldRange_eq_map, fieldRange_val]
 
+theorem lift_sup (K : IntermediateField F E) (L L' : IntermediateField F K) :
+    lift (L ⊔ L') = lift L ⊔ lift L' := by
+  simp [lift, map_sup]
+
+theorem lift_inf (K : IntermediateField F E) (L L' : IntermediateField F K) :
+    lift (L ⊓ L') = lift L ⊓ lift L' := by
+  simp [lift, map_inf]
+
 @[simp]
 theorem adjoin_self (K : IntermediateField F E) :
     adjoin F K = K := le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
@@ -481,9 +494,6 @@ theorem algHom_ext_of_eq_adjoin {S : IntermediateField F E} {s : Set E} (hS : S 
   subst hS; exact adjoin_algHom_ext F h
 
 end
-
-/- Porting note (kmill): this notation is replacing the typeclass-based one I had previously
-written, and it gives true `{x₁, x₂, ..., xₙ}` sets in the `adjoin` term. -/
 
 open Lean in
 /-- Supporting function for the `F⟮x₁,x₂,...,xₙ⟯` adjunction notation. -/

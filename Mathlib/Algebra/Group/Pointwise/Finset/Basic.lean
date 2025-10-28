@@ -34,9 +34,9 @@ the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat actio
 
 ## Implementation notes
 
-We put all instances in the locale `Pointwise`, so that these instances are not available by
+We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-since we expect the locale to be open whenever the instances are actually used (and making the
+since we expect the scope to be open whenever the instances are actually used (and making the
 instances reducible changes the behavior of `simp`.
 
 ## Tags
@@ -61,8 +61,8 @@ section One
 
 variable [One α] {s : Finset α} {a : α}
 
-/-- The finset `1 : Finset α` is defined as `{1}` in locale `Pointwise`. -/
-@[to_additive /-- The finset `0 : Finset α` is defined as `{0}` in locale `Pointwise`. -/]
+/-- The finset `1 : Finset α` is defined as `{1}` in scope Pointwise`. -/
+@[to_additive /-- The finset `0 : Finset α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Finset α) :=
   ⟨{1}⟩
 
@@ -178,9 +178,9 @@ section Inv
 
 variable [DecidableEq α] [Inv α] {s t : Finset α} {a : α}
 
-/-- The pointwise inversion of finset `s⁻¹` is defined as `{x⁻¹ | x ∈ s}` in locale `Pointwise`. -/
+/-- The pointwise inversion of finset `s⁻¹` is defined as `{x⁻¹ | x ∈ s}` in scope `Pointwise`. -/
 @[to_additive
-  /-- The pointwise negation of finset `-s` is defined as `{-x | x ∈ s}` in locale `Pointwise`. -/]
+  /-- The pointwise negation of finset `-s` is defined as `{-x | x ∈ s}` in scope `Pointwise`. -/]
 protected def inv : Inv (Finset α) :=
   ⟨image Inv.inv⟩
 
@@ -268,6 +268,15 @@ variable [DecidableEq α] [InvolutiveInv α] {s : Finset α} {a : α}
 @[to_additive (attr := simp)]
 lemma mem_inv' : a ∈ s⁻¹ ↔ a⁻¹ ∈ s := by simp [mem_inv, inv_eq_iff_eq_inv]
 
+@[to_additive (attr := simp)]
+theorem inv_filter (s : Finset α) (p : α → Prop) [DecidablePred p] :
+    ({x ∈ s | p x} : Finset α)⁻¹ = {x ∈ s⁻¹ | p x⁻¹} := by
+  ext; simp
+
+theorem inv_filter_univ (p : α → Prop) [Fintype α] [DecidablePred p] :
+    ({x | p x} : Finset α)⁻¹ = {x | p x⁻¹} := by
+  simp
+
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.trans Set.image_inv_eq_inv
 
@@ -286,7 +295,7 @@ lemma inv_inter (s t : Finset α) : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ := coe_in
 
 @[to_additive (attr := simp)]
 lemma inv_product [DecidableEq β] [InvolutiveInv β] (s : Finset α) (t : Finset β) :
-    (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := mod_cast s.toSet.inv_prod t.toSet
+    (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := mod_cast (s : Set α).inv_prod (t : Set β)
 
 end InvolutiveInv
 
@@ -301,10 +310,10 @@ variable [DecidableEq α] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α 
   (f : F) {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
 
 /-- The pointwise multiplication of finsets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}`
-in locale `Pointwise`. -/
+in scope `Pointwise`. -/
 @[to_additive
   /-- The pointwise addition of finsets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in
-  locale `Pointwise`. -/]
+  scope `Pointwise`. -/]
 protected def mul : Mul (Finset α) :=
   ⟨image₂ (· * ·)⟩
 
@@ -433,7 +442,7 @@ lemma image_op_mul (s t : Finset α) : (s * t).image op = t.image op * s.image o
 @[to_additive (attr := simp)]
 lemma product_mul_product_comm [DecidableEq β] (s₁ s₂ : Finset α) (t₁ t₂ : Finset β) :
     (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) :=
-  mod_cast s₁.toSet.prod_mul_prod_comm s₂ t₁.toSet t₂
+  mod_cast (s₁ : Set α).prod_mul_prod_comm s₂ (t₁ : Set β) t₂
 
 @[to_additive]
 lemma map_op_mul (s t : Finset α) :
@@ -523,7 +532,7 @@ variable [DecidableEq α] [Div α] {s s₁ s₂ t t₁ t₂ u : Finset α} {a b 
 `Pointwise`. -/
 @[to_additive
   /-- The pointwise subtraction of finsets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}`
-  in locale `Pointwise`. -/]
+  in scope `Pointwise`. -/]
 protected def div : Div (Finset α) :=
   ⟨image₂ (· / ·)⟩
 
@@ -646,7 +655,7 @@ theorem subset_div {s t : Set α} :
 
 @[to_additive (attr := simp (default + 1))]
 lemma sup_div_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
-    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x /  y) ≤ a :=
+    sup (s / t) f ≤ a ↔ ∀ x ∈ s, ∀ y ∈ t, f (x / y) ≤ a :=
   sup_image₂_le
 
 @[to_additive]
@@ -795,9 +804,9 @@ variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   change ↑(npowRec n s) = (s : Set α) ^ n
-  induction' n with n ih
-  · rw [npowRec, pow_zero, coe_one]
-  · rw [npowRec, pow_succ, coe_mul, ih]
+  induction n with
+  | zero => rw [npowRec, pow_zero, coe_one]
+  | succ n ih => rw [npowRec, pow_succ, coe_mul, ih]
 
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
 @[to_additive /-- `Finset α` is an `AddMonoid` under pointwise operations if `α` is. -/]
@@ -880,7 +889,7 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
-  simp [← mem_coe, coe_pow, Set.mem_pow]
+  simp [← mem_coe (s := s ^ n), coe_pow, Set.mem_pow]
 
 @[to_additive]
 lemma card_pow_le : ∀ {n}, #(s ^ n) ≤ #s ^ n

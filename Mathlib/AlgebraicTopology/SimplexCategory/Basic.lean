@@ -118,15 +118,15 @@ def mkOfLe {n} (i j : Fin (n + 1)) (h : i ≤ j) : ⦋1⦌ ⟶ ⦋n⦌ :=
 
 @[simp]
 lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
-    mkOfLe j j (by omega) = ⦋1⦌.const ⦋n⦌ j := Hom.ext_one_left _ _
+    mkOfLe j j (by cutsat) = ⦋1⦌.const ⦋n⦌ j := Hom.ext_one_left _ _
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the "diagonal composite" edge -/
 def diag (n : ℕ) : ⦋1⦌ ⟶ ⦋n⦌ :=
-  mkOfLe 0 (Fin.ofNat (n + 1) n) (Fin.zero_le _)
+  mkOfLe 0 (Fin.last n) (Fin.zero_le _)
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the edge spanning the interval from `j` to `j + l`. -/
 def intervalEdge {n} (j l : ℕ) (hjl : j + l ≤ n) : ⦋1⦌ ⟶ ⦋n⦌ :=
-  mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l)
+  mkOfLe ⟨j, (by cutsat)⟩ ⟨j + l, (by cutsat)⟩ (Nat.le_add_right j l)
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`. -/
 def mkOfSucc {n} (i : Fin n) : ⦋1⦌ ⟶ ⦋n⦌ :=
@@ -162,7 +162,7 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
 def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     ⦋l⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
-    toFun := fun i => ⟨i.1 + j, (by omega)⟩
+    toFun := fun i => ⟨i.1 + j, (by cutsat)⟩
     monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
   }
 
@@ -180,44 +180,28 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
     mkOfSucc ⟨j + i.1, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.2 j) hjl⟩ := by
   unfold subinterval mkOfSucc
-  ext i
-  match i with
-  | 0 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
-      Fin.succ_mk]
-    rw [add_comm]
-    rfl
-  | 1 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
-      Fin.succ_mk]
-    rw [← Nat.add_comm j _]
-    rfl
+  ext (i : Fin 2)
+  match i with | 0 | 1 => simp; cutsat
 
 @[simp]
 lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
   unfold subinterval intervalEdge diag mkOfLe
-  ext i
-  match i with
-  | 0 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom,
-      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
-    rw [Nat.add_comm]
-    rfl
-  | 1 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom,
-      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
-    rw [Nat.add_comm]
-    simp only [Fin.isValue, Fin.ofNat_eq_cast, Fin.natCast_eq_last]
-    rfl
+  ext (i : Fin 2)
+  match i with | 0 | 1 => simp <;> omega
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
 
 theorem hom_zero_zero (f : ⦋0⦌ ⟶ ⦋0⦌) : f = 𝟙 _ := by
   apply Subsingleton.elim
+
+@[simp]
+lemma eqToHom_toOrderHom {x y : SimplexCategory} (h : x = y) :
+  SimplexCategory.Hom.toOrderHom (eqToHom h) =
+    (Fin.castOrderIso (congrArg (fun t ↦ t.len + 1) h)).toOrderEmbedding.toOrderHom := by
+  subst h
+  rfl
 
 end Init
 
@@ -307,7 +291,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
   simp only [Fin.lt_iff_val_lt_val, Fin.dite_val, Fin.ite_val, Fin.coe_pred]
   split_ifs
   any_goals simp
-  all_goals omega
+  all_goals cutsat
 
 @[reassoc]
 theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.castSucc) :
@@ -454,7 +438,7 @@ lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
 sends `0` and `1` to `i` and `i + 2`, respectively. -/
 lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     (h : j = i.succ.castSucc) :
-    mkOfSucc i ≫ δ j = intervalEdge i 2 (by omega) := by
+    mkOfSucc i ≫ δ j = intervalEdge i 2 (by cutsat) := by
   ext x
   fin_cases x
   · subst h
@@ -593,6 +577,9 @@ instance (x : SimplexCategory) (n : ℕ) : OfNat (ToType x) n :=
   inferInstanceAs (OfNat (Fin _) n)
 
 lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
+
+@[simp]
+lemma concreteCategoryHom_id (n : SimplexCategory) : ConcreteCategory.hom (𝟙 n) = .id := rfl
 
 end Concrete
 
@@ -746,7 +733,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
       rw [Fin.succAbove_of_le_castSucc i.succ _]
       simp only [Fin.lt_iff_val_lt_val, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
         Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
-      omega
+      cutsat
 
 theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (hθ : ¬Function.Injective θ.toOrderHom) :
@@ -759,7 +746,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n
     by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
     · refine ⟨y, x, ⟨h₁.symm, ?_⟩⟩
-      omega
+      cutsat
   rcases hθ₂ with ⟨x, y, ⟨h₁, h₂⟩⟩
   use x.castPred ((Fin.le_last _).trans_lt' h₂).ne
   apply eq_σ_comp_of_not_injective'

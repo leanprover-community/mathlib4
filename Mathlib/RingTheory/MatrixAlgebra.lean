@@ -5,8 +5,8 @@ Authors: Kim Morrison, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Composition
-import Mathlib.Data.Matrix.Kronecker
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.LinearAlgebra.Matrix.Kronecker
+import Mathlib.RingTheory.TensorProduct.Maps
 
 
 /-!
@@ -201,8 +201,8 @@ theorem matrixEquivTensor_apply (M : Matrix n n A) :
     matrixEquivTensor n R A M = ∑ p : n × n, M p.1 p.2 ⊗ₜ single p.1 p.2 1 :=
   rfl
 
--- Porting note: short circuiting simplifier from simplifying left-hand side
-@[simp (high)]
+-- High priority, to go before `matrixEquivTensor_apply`
+@[simp high]
 theorem matrixEquivTensor_apply_single (i j : n) (x : A) :
     matrixEquivTensor n R A (single i j x) = x ⊗ₜ single i j 1 := by
   have t : ∀ p : n × n, i = p.1 ∧ j = p.2 ↔ p = (i, j) := by aesop
