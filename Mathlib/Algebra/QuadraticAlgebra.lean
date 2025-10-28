@@ -103,10 +103,6 @@ instance : One (QuadraticAlgebra R a b) := ⟨⟨1, 0⟩⟩
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : QuadraticAlgebra R a b) = 1 := rfl
 
-@[simp]
-theorem coe_eq_one_iff {r : R} : (r : QuadraticAlgebra R a b) = 1 ↔ r = 1 := by
-  rw [← coe_one, coe_inj]
-
 end One
 
 end Zero
