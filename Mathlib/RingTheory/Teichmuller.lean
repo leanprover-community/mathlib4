@@ -127,8 +127,14 @@ theorem mk_teichmuller (x : Perfection (R ⧸ I) p) :
 variable (p I) in
 theorem mk_comp_teichmuller :
     (Ideal.Quotient.mk I : _ →* _).comp (teichmuller p I) =
-      (MonoidHomClass.toMonoidHom <| coeff (R ⧸ I) p 0) :=
+      (coeff (R ⧸ I) p 0 : Perfection (R ⧸ I) p →* R ⧸ I) :=
   MonoidHom.ext mk_teichmuller
+
+variable (p I) in
+theorem mk_comp_teichmuller₀ :
+    (Ideal.Quotient.mk I : _ →*₀ _).comp (teichmuller₀ p I) =
+      (coeff (R ⧸ I) p 0 : Perfection (R ⧸ I) p →*₀ R ⧸ I) :=
+  MonoidWithZeroHom.ext mk_teichmuller
 
 variable (p I) in
 theorem mk_comp_teichmuller' :
