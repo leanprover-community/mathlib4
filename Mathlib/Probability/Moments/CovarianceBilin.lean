@@ -170,7 +170,7 @@ associated to the continuous bilinear form `B : E →L[ℝ] E →L[ℝ] ℝ` suc
 `B x y = ∫ z, ⟪x, z⟫ * ⟪y, z⟫ ∂μ` (see `covarianceOperator_inner`). Namely we have
 `B x y = ⟪F x, y⟫`.
 
-Note that the bilinear form `B` is the _uncentered_ covariance bilinear form associatied to the
+Note that the bilinear form `B` is the _uncentered_ covariance bilinear form associated to the
 measure `µ`, which is not to be confused with the covariance bilinear form defined earlier in this
 file as `covarianceBilin μ`. -/
 noncomputable def covarianceOperator (μ : Measure E) : E →L[ℝ] E :=
