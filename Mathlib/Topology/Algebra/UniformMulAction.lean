@@ -100,8 +100,8 @@ lemma IsUniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuous
 
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/
-@[to_additive "If an additive action is central, then its right action is uniform
-continuous when its left action is."]
+@[to_additive /-- If an additive action is central, then its right action is uniform
+continuous when its left action is. -/]
 instance (priority := 100) UniformContinuousConstSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X]
     [UniformContinuousConstSMul M X] : UniformContinuousConstSMul Mᵐᵒᵖ X :=
   ⟨MulOpposite.rec' fun c ↦ by simpa only [op_smul_eq_smul] using uniformContinuous_const_smul c⟩
@@ -232,7 +232,6 @@ end SMul
 @[to_additive]
 noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] :
     MulAction M (Completion X) where
-  smul := (· • ·)
   one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
   mul_smul x y :=
     ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a => by

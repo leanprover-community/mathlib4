@@ -114,10 +114,13 @@ noncomputable def Ind.yonedaCompInclusion : Ind.yoneda ⋙ Ind.inclusion C ≅ C
     (isoWhiskerRight (Ind.equivalence C).counitIso (ObjectProperty.ι _))
 
 noncomputable instance {J : Type v} [SmallCategory J] [IsFiltered J] :
+    ObjectProperty.IsClosedUnderColimitsOfShape (IsIndObject (C := C)) J :=
+  .mk' (by
+    rintro _ ⟨F, hF⟩
+    exact isIndObject_colimit _ _ hF)
+
+noncomputable instance {J : Type v} [SmallCategory J] [IsFiltered J] :
     CreatesColimitsOfShape J (Ind.inclusion C) :=
-  letI _ : CreatesColimitsOfShape J (ObjectProperty.ι (IsIndObject (C := C))) :=
-    createsColimitsOfShapeFullSubcategoryInclusion (closedUnderColimitsOfShape_of_colimit
-      (isIndObject_colimit _ _))
   inferInstanceAs <|
     CreatesColimitsOfShape J ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _)
 
@@ -126,10 +129,13 @@ instance : HasFilteredColimits (Ind C) where
     hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape (Ind.inclusion C)
 
 noncomputable instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
+    ObjectProperty.IsClosedUnderLimitsOfShape (IsIndObject (C := C)) (Discrete J) :=
+  .mk' (by
+    rintro _ ⟨F, hF⟩
+    exact isIndObject_limit_of_discrete_of_hasLimitsOfShape _ hF)
+
+noncomputable instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
     CreatesLimitsOfShape (Discrete J) (Ind.inclusion C) :=
-  letI _ : CreatesLimitsOfShape (Discrete J) (ObjectProperty.ι (IsIndObject (C := C))) :=
-    createsLimitsOfShapeFullSubcategoryInclusion (closedUnderLimitsOfShape_of_limit
-      (isIndObject_limit_of_discrete_of_hasLimitsOfShape _))
   inferInstanceAs <|
     CreatesLimitsOfShape (Discrete J) ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _)
 
@@ -139,10 +145,6 @@ instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
 
 noncomputable instance [HasLimitsOfShape WalkingParallelPair C] :
     CreatesLimitsOfShape WalkingParallelPair (Ind.inclusion C) :=
-  letI _ : CreatesLimitsOfShape WalkingParallelPair
-      (ObjectProperty.ι (IsIndObject (C := C))) :=
-    createsLimitsOfShapeFullSubcategoryInclusion
-      (closedUnderLimitsOfShape_walkingParallelPair_isIndObject)
   inferInstanceAs <|
     CreatesLimitsOfShape WalkingParallelPair
       ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _)

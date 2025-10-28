@@ -316,7 +316,7 @@ theorem IsCompact.elim_finite_subcover_image {b : Set ι} {c : ι → Set X} (hs
     ∃ b', b' ⊆ b ∧ Set.Finite b' ∧ s ⊆ ⋃ i ∈ b', c i := by
   simp only [Subtype.forall', biUnion_eq_iUnion] at hc₁ hc₂
   rcases hs.elim_finite_subcover (fun i => c i : b → Set X) hc₁ hc₂ with ⟨d, hd⟩
-  refine ⟨Subtype.val '' d.toSet, ?_, d.finite_toSet.image _, ?_⟩
+  refine ⟨Subtype.val '' (d : Set b), ?_, d.finite_toSet.image _, ?_⟩
   · simp
   · rwa [biUnion_image]
 
@@ -628,8 +628,8 @@ variable (X) in
 `Filter.cocompact`. See also `Bornology.relativelyCompact` the bornology of sets with compact
 closure. -/
 def inCompact : Bornology X where
-  cobounded' := Filter.cocompact X
-  le_cofinite' := Filter.cocompact_le_cofinite
+  cobounded := Filter.cocompact X
+  le_cofinite := Filter.cocompact_le_cofinite
 
 theorem inCompact.isBounded_iff : @IsBounded _ (inCompact X) s ↔ ∃ t, IsCompact t ∧ s ⊆ t := by
   change sᶜ ∈ Filter.cocompact X ↔ _
@@ -856,23 +856,6 @@ theorem isCompact_range [CompactSpace X] {f : X → Y} (hf : Continuous f) : IsC
 theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
   @range_diag X ▸ isCompact_range (continuous_id.prodMk continuous_id)
 
-/-- If `X` is a compact topological space, then `Prod.snd : X × Y → Y` is a closed map. -/
-theorem isClosedMap_snd_of_compactSpace [CompactSpace X] :
-    IsClosedMap (Prod.snd : X × Y → Y) := fun s hs => by
-  rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
-  intro y hy
-  have : univ ×ˢ {y} ⊆ sᶜ := by
-    exact fun (x, y') ⟨_, rfl⟩ hs => hy ⟨(x, y'), hs, rfl⟩
-  rcases generalized_tube_lemma isCompact_univ isCompact_singleton hs.isOpen_compl this
-    with ⟨U, V, -, hVo, hU, hV, hs⟩
-  refine mem_nhds_iff.2 ⟨V, ?_, hVo, hV rfl⟩
-  rintro _ hzV ⟨z, hzs, rfl⟩
-  exact hs ⟨hU trivial, hzV⟩ hzs
-
-/-- If `Y` is a compact topological space, then `Prod.fst : X × Y → X` is a closed map. -/
-theorem isClosedMap_fst_of_compactSpace [CompactSpace Y] : IsClosedMap (Prod.fst : X × Y → X) :=
-  isClosedMap_snd_of_compactSpace.comp isClosedMap_swap
-
 theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]
     {V : ι → Set X} (hV : Directed (· ⊇ ·) V) (hV_closed : ∀ i, IsClosed (V i)) {U : Set X}
     (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
@@ -912,7 +895,7 @@ theorem Topology.IsClosedEmbedding.isCompact_preimage (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
   hf.isInducing.isCompact_preimage (hf.isClosed_range) hK
 
-/-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
+/-- A closed embedding is proper, i.e., inverse images of compact sets are contained in compacts.
 Moreover, the preimage of a compact set is compact, see `IsClosedEmbedding.isCompact_preimage`. -/
 theorem Topology.IsClosedEmbedding.tendsto_cocompact (hf : IsClosedEmbedding f) :
     Tendsto f (Filter.cocompact X) (Filter.cocompact Y) :=
@@ -998,7 +981,7 @@ lemma IsCompact.sigma_exists_finite_sigma_eq {X : ι → Type*} [∀ i, Topologi
     simp only [Set.mem_sigma_iff, Finset.mem_coe, Set.mem_preimage, and_iff_right_iff_imp]
     intro hx
     obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hs hx)
-    aesop
+    simp_all
 
 /-- The coproduct of the cocompact filters on two topological spaces is the cocompact filter on
 their product. -/

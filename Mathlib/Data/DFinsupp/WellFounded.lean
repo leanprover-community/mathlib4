@@ -114,19 +114,21 @@ theorem Lex.acc_of_single (hbot : ∀ ⦃i a⦄, ¬s i a 0) [DecidableEq ι]
     (∀ i ∈ x.support, Acc (DFinsupp.Lex r s) <| single i (x i)) → Acc (DFinsupp.Lex r s) x := by
   generalize ht : x.support = t; revert x
   classical
-    induction' t using Finset.induction with b t hb ih
-    · intro x ht
+    induction t using Finset.induction with
+    | empty =>
+      intro x ht
       rw [support_eq_empty.1 ht]
       exact fun _ => Lex.acc_zero hbot
-    refine fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) ?_
-    refine ih _ (by rw [support_erase, ht, Finset.erase_insert hb]) fun a ha => ?_
-    rw [erase_ne (ha.ne_of_notMem hb)]
-    exact h a (Finset.mem_insert_of_mem ha)
+    | insert b t hb ih =>
+      refine fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) ?_
+      refine ih _ (by rw [support_erase, ht, Finset.erase_insert hb]) fun a ha => ?_
+      rw [erase_ne (ha.ne_of_notMem hb)]
+      exact h a (Finset.mem_insert_of_mem ha)
 
 theorem Lex.acc_single (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounded (s i))
     [DecidableEq ι] {i : ι} (hi : Acc (rᶜ ⊓ (· ≠ ·)) i) :
     ∀ a, Acc (DFinsupp.Lex r s) (single i a) := by
-  induction' hi with i _ ih
+  induction hi with | _ i _ ih
   refine fun a => WellFounded.induction (hs i)
     (C := fun x ↦ Acc (DFinsupp.Lex r s) (single i x)) a fun a ha ↦ ?_
   refine Acc.intro _ fun x ↦ ?_
@@ -138,12 +140,12 @@ theorem Lex.acc_single (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounde
   subst hik
   classical
     refine Lex.acc_of_single hbot x fun j hj ↦ ?_
-    obtain rfl | hij := eq_or_ne i j
+    obtain rfl | hij := eq_or_ne j i
     · exact ha _ hs
     by_cases h : r j i
     · rw [hr j h, single_eq_of_ne hij, single_zero]
       exact Lex.acc_zero hbot
-    · exact ih _ ⟨h, hij.symm⟩ _
+    · exact ih _ ⟨h, hij⟩ _
 
 theorem Lex.acc (hbot : ∀ ⦃i a⦄, ¬s i a 0) (hs : ∀ i, WellFounded (s i))
     [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] (x : Π₀ i, α i)
