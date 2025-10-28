@@ -147,21 +147,3 @@ register_hint (priority := 200) omega
 register_hint (priority := 200) fun_prop
 
 end Hint
-
-/-!
-We define a linter that tries running `aesop` at every step in proofs, reporting where it succeeds.
-There are other related linters for `grind` and `simp_all` in
-`Mathlib.Tactic.TacticAnalysis.Declarations`, but `aesop` hasn't been imported there.
--/
-section linters
-
-/-- Run `aesop` at every step in proofs, reporting where it succeeds. -/
-register_option linter.tacticAnalysis.tryAtEachStepAesop : Bool := {
-  defValue := false
-}
-
-@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepAesop,
-   inherit_doc linter.tacticAnalysis.tryAtEachStepAesop]
-def tryAtEachStepAesop := tryAtEachStep (fun _ _ => `(tactic| aesop))
-
-end linters

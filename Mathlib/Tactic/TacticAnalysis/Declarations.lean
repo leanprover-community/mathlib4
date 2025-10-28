@@ -297,8 +297,17 @@ register_option linter.tacticAnalysis.tryAtEachStepSimpAll : Bool := {
    inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAll]
 def tryAtEachStepSimpAll := tryAtEachStep (fun _ _ => `(tactic| simp_all))
 
--- We also define `linter.tacticAnalysis.tryAtEachStepAesop` in `Mathlib.Tactic.Common`
--- (to avoid needing to import `Aesop` here)
+/-- Run `aesop` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepAesop : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepAesop,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepAesop]
+def tryAtEachStepAesop := tryAtEachStep
+  -- As `aesop` isn't imported here, we construct the tactic syntax manually.
+  fun _ _ => return ⟨TSyntax.raw <|
+    mkNode `Aesop.Frontend.Parser.aesopTactic #[mkAtom "aesop", mkNullNode]⟩
 
 /-- Run `grind +premises` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepGrindPremises : Bool := {
