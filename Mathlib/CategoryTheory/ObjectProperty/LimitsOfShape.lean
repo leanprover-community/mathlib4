@@ -22,6 +22,17 @@ Under certain circumstances, the type of objects satisfying
 introduced is to deduce that the full subcategory of `P.limitsOfShape J`
 is essentially small.
 
+By requiring `P.limitsOfShape J ≤ P`, we introduce a typeclass
+`P.IsClosedUnderLimitsOfShape J`.
+
+
+## TODO
+
+* formalize the closure of `P` under finite limits (which require
+iterating over `ℕ`), and more generally the closure under limits
+indexed by a category whose type of arrows has a cardinality
+that is bounded by a certain regular cardinal (@joelriou)
+
 -/
 
 universe w v' u' v u
@@ -133,4 +144,50 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [Locall
   rintro ⟨_, ⟨F, hF⟩⟩
   exact ⟨⟨P.lift F hF, by assumption⟩, rfl⟩
 
-end CategoryTheory.ObjectProperty
+/-- A property of objects satisfies `P.IsClosedUnderLimitsOfShape J` if it
+is stable by limits of shape `J`. -/
+@[mk_iff]
+class IsClosedUnderLimitsOfShape (P : ObjectProperty C) (J : Type u') [Category.{v'} J] where
+  limitsOfShape_le (P J) : P.limitsOfShape J ≤ P
+
+variable {P J} in
+lemma IsClosedUnderLimitsOfShape.mk' [P.IsClosedUnderIsomorphisms]
+    (h : P.strictLimitsOfShape J ≤ P) :
+    P.IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := by
+    conv_rhs => rw [← P.isoClosure_eq_self]
+    rw [← isoClosure_strictLimitsOfShape]
+    exact monotone_isoClosure h
+
+export IsClosedUnderLimitsOfShape (limitsOfShape_le)
+
+section
+
+variable {J} [P.IsClosedUnderLimitsOfShape J]
+
+variable {P} in
+lemma LimitOfShape.prop {X : C} (h : P.LimitOfShape J X) : P X :=
+  P.limitsOfShape_le J _ ⟨h⟩
+
+lemma prop_of_isLimit {F : J ⥤ C} {c : Cone F} (hc : IsLimit c)
+    (hF : ∀ (j : J), P (F.obj j)) : P c.pt :=
+  P.limitsOfShape_le J _ ⟨{ diag := _, π := _, isLimit := hc, prop_diag_obj := hF }⟩
+
+lemma prop_limit (F : J ⥤ C) [HasLimit F] (hF : ∀ (j : J), P (F.obj j)) :
+    P (limit F) :=
+  P.prop_of_isLimit (limit.isLimit F) hF
+
+end
+
+end ObjectProperty
+
+namespace Limits
+
+@[deprecated (since := "2025-09-22")] alias ClosedUnderLimitsOfShape :=
+  ObjectProperty.IsClosedUnderLimitsOfShape
+@[deprecated (since := "2025-09-22")] alias closedUnderLimitsOfShape_of_limit :=
+  ObjectProperty.IsClosedUnderLimitsOfShape.mk'
+@[deprecated (since := "2025-09-22")] alias ClosedUnderLimitsOfShape.limit :=
+  ObjectProperty.prop_limit
+
+end CategoryTheory.Limits
