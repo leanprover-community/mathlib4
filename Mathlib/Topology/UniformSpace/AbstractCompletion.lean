@@ -226,12 +226,14 @@ def mapEquiv (e : α ≃ᵤ β) : hatα ≃ᵤ hatβ where
   invFun := pkg'.map pkg e.symm
   uniformContinuous_toFun := uniformContinuous_map ..
   uniformContinuous_invFun := uniformContinuous_map ..
-  left_inv := Function.leftInverse_iff_comp.2 <| pkg.funext
-    ((pkg'.continuous_map pkg e.symm).comp (pkg.continuous_map pkg' e)) continuous_id fun a ↦ by
-      simp [pkg.map_coe pkg' e.uniformContinuous, pkg'.map_coe pkg e.symm.uniformContinuous]
-  right_inv := Function.rightInverse_iff_comp.2 <| pkg'.funext
-    ((pkg.continuous_map pkg' e).comp (pkg'.continuous_map pkg e.symm)) continuous_id fun a ↦ by
-      simp [pkg.map_coe pkg' e.uniformContinuous, pkg'.map_coe pkg e.symm.uniformContinuous]
+  left_inv := Function.leftInverse_iff_comp.2 <| by
+    simp [map_comp _ _ _ e.symm.uniformContinuous e.uniformContinuous]
+  right_inv := Function.rightInverse_iff_comp.2 <| by
+    simp [map_comp _ _ _ e.uniformContinuous e.symm.uniformContinuous]
+
+@[simp]
+theorem mapEquiv_symm (e : α ≃ᵤ β) :
+    (pkg.mapEquiv pkg' e).symm = pkg'.mapEquiv pkg e.symm := rfl
 
 @[simp]
 theorem mapEquiv_coe (e : α ≃ᵤ β) (a : α) : pkg.mapEquiv pkg' e (ι a) = ι' (e a) :=
