@@ -18,7 +18,7 @@ on different probability spaces can be talked about using the `ProbabilityMeasur
 
 ## Main definitions
 
-* `TendstoInDistribution X l Z μ` : the sequence of random variables `X n` converges in
+* `TendstoInDistribution X l Z μ`: the sequence of random variables `X n` converges in
   distribution to the random variable `Z` along the filter `l` with respect to the probability
   measure `μ`.
 
