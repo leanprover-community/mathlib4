@@ -83,9 +83,9 @@ instance Lex.isStrictOrder [PartialOrder N] :
   irrefl _ := lt_irrefl (α := Lex (α → N)) _
   trans _ _ _ := lt_trans (α := Lex (α → N))
 
-instance Colex.isStrictOrder [∀ i, PartialOrder (α i)] :
+instance Colex.isStrictOrder [PartialOrder N] :
     IsStrictOrder (Colex (α →₀ N)) (· < ·) :=
-  Lex.isStrictOrder (ι := ιᵒᵈ)
+  Lex.isStrictOrder (α := αᵒᵈ)
 
 /-- The partial order on `Finsupp`s obtained by the lexicographic ordering.
 See `Finsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
