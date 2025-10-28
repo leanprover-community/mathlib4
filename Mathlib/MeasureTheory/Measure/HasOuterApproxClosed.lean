@@ -34,9 +34,9 @@ continuous functions.
   closed set tend to the measure of the set.
 * `ext_of_forall_lintegral_eq_of_IsFiniteMeasure`: Two finite measures are equal if the integrals
   of all bounded continuous functions with respect to both agree.
-* `Measure.eq_prod_of_boundedContinuousFunction`: The product of two finite measures is the only
-  finite measure `ξ` such that for all real bounded continuous functions `f` and `g` we have
-  `∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`.
+* `Measure.eq_prod_of_boundedContinuousFunction`: The product of two finite measures `μ` and `ν`
+  is the only finite measure `ξ` such that for all real bounded continuous functions `f` and `g`
+  we have `∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`.
 
 -/
 
@@ -309,8 +309,8 @@ lemma eq_prod_of_boundedContinuousFunction_nnreal
     ((tendsto_pi_nhds.1 <| HasOuterApproxClosed.tendsto_apprSeq hs₁) _).mul
     ((tendsto_pi_nhds.1 <| HasOuterApproxClosed.tendsto_apprSeq hs₂) _)
 
-/-- The product of two finite measures is the only finite measure `ξ` such that for all real
-bounded continuous functions `f` and `g` we have
+/-- The product of two finite measures `μ` and `ν` is the only finite measure `ξ` such that
+for all real bounded continuous functions `f` and `g` we have
 `∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`. -/
 lemma eq_prod_of_boundedContinuousFunction [IsFiniteMeasure ξ]
     (h : ∀ (f : X →ᵇ ℝ) (g : Y →ᵇ ℝ),
