@@ -22,7 +22,7 @@ open Function
 
 theorem not_bijective : Bijective not := Equiv.boolNot.bijective
 theorem not_injective : Injective not := Equiv.boolNot.injective
-theorem not_surjective : Surjective not :=  Equiv.boolNot.surjective
+theorem not_surjective : Surjective not := Equiv.boolNot.surjective
 
 theorem not_leftInverse : LeftInverse not not := not_not
 theorem not_rightInverse : RightInverse not not := not_not
