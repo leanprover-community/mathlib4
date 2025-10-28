@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Analysis.RCLike.Basic
@@ -142,9 +142,7 @@ theorem gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Abso
     refine hs₁.smul_mem_of_zero_mem hs₀ hδ ⟨by positivity, ?_⟩
     rw [inv_mul_le_iff₀ hr', mul_one]
     exact hδr.le
-  · have hε' := (lt_add_iff_pos_right a).2 (half_pos hε)
-    exact
-      (gauge_le_of_mem (ha.trans hε'.le) <| h _ hε').trans_lt (add_lt_add_left (half_lt_self hε) _)
+  · linarith [gauge_le_of_mem (by linarith) <| h (a + ε / 2) (by linarith)]
 
 theorem gauge_lt_eq' (absorbs : Absorbent ℝ s) (a : ℝ) :
     { x | gauge s x < a } = ⋃ (r : ℝ) (_ : 0 < r) (_ : r < a), r • s := by
@@ -233,7 +231,7 @@ theorem one_le_gauge_of_notMem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ
 section LinearOrderedField
 
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
-  [MulActionWithZero α ℝ] [OrderedSMul α ℝ]
+  [MulActionWithZero α ℝ] [IsStrictOrderedModule α ℝ]
 
 theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set E)] {s : Set E} {a : α}
     (ha : 0 ≤ a) (x : E) : gauge s (a • x) = a • gauge s x := by
@@ -439,10 +437,10 @@ theorem continuousAt_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuo
     calc
       gauge s x = gauge s (x + y + (-y)) := by simp
       _ ≤ gauge s (x + y) + gauge s (-y) := gauge_add_le hc ha _ _
-      _ ≤ gauge s (x + y) + ε := add_le_add_left (gauge_le_of_mem hε₀.le (mem_neg.1 hy.2)) _
+      _ ≤ gauge s (x + y) + ε := by grw [gauge_le_of_mem hε₀.le (mem_neg.1 hy.2)]
   · calc
       gauge s (x + y) ≤ gauge s x + gauge s y := gauge_add_le hc ha _ _
-      _ ≤ gauge s x + ε := add_le_add_left (gauge_le_of_mem hε₀.le hy.1) _
+      _ ≤ gauge s x + ε := by grw [gauge_le_of_mem hε₀.le hy.1]
 
 /-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
 is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see
@@ -581,8 +579,7 @@ theorem Convex.lipschitzWith_gauge {r : ℝ≥0} (hc : Convex ℝ s) (hr : 0 < r
     calc
       gauge s x = gauge s (y + (x - y)) := by simp
       _ ≤ gauge s y + gauge s (x - y) := gauge_add_le hc (this.mono hs) _ _
-      _ ≤ gauge s y + ‖x - y‖ / r :=
-        add_le_add_left ((gauge_mono this hs (x - y)).trans_eq (gauge_ball hr.le _)) _
+      _ ≤ gauge s y + ‖x - y‖ / r := by grw [gauge_mono this hs (x - y), gauge_ball]; positivity
       _ = gauge s y + r⁻¹ * dist x y := by rw [dist_eq_norm, div_eq_inv_mul, NNReal.coe_inv]
 
 theorem Convex.lipschitz_gauge (hc : Convex ℝ s) (h₀ : s ∈ 𝓝 (0 : E)) :

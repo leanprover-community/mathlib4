@@ -340,9 +340,7 @@ theorem inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) :=
 variable (p p')
 
 theorem subtype_comp_inclusion (p q : Submodule R M) (h : p ≤ q) :
-    q.subtype.comp (inclusion h) = p.subtype := by
-  ext ⟨b, hb⟩
-  rfl
+    q.subtype.comp (inclusion h) = p.subtype := rfl
 
 end AddCommMonoid
 

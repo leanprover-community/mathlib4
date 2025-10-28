@@ -139,6 +139,9 @@ noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
 instance [Inhabited α] : Inhabited (Antisymmetrization α r) := by
   unfold Antisymmetrization; infer_instance
 
+instance [Subsingleton α] : Subsingleton (Antisymmetrization α r) := by
+  unfold Antisymmetrization; infer_instance
+
 @[elab_as_elim]
 protected theorem Antisymmetrization.ind {p : Antisymmetrization α r → Prop} :
     (∀ a, p <| toAntisymmetrization r a) → ∀ q, p q :=
@@ -164,11 +167,16 @@ theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ AntisymmRel (· ≤ ·)
   rw [lt_iff_le_not_ge, AntisymmRel]
   tauto
 
+alias ⟨LE.le.lt_or_antisymmRel, _⟩ := le_iff_lt_or_antisymmRel
+
 theorem le_of_le_of_antisymmRel (h₁ : a ≤ b) (h₂ : AntisymmRel (· ≤ ·) b c) : a ≤ c :=
   h₁.trans h₂.le
 
 theorem le_of_antisymmRel_of_le (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b ≤ c) : a ≤ c :=
   h₁.le.trans h₂
+
+alias LE.le.trans_antisymmRel := le_of_le_of_antisymmRel
+alias AntisymmRel.trans_le := le_of_antisymmRel_of_le
 
 theorem lt_of_lt_of_antisymmRel (h₁ : a < b) (h₂ : AntisymmRel (· ≤ ·) b c) : a < c :=
   h₁.trans_le h₂.le
@@ -176,11 +184,26 @@ theorem lt_of_lt_of_antisymmRel (h₁ : a < b) (h₂ : AntisymmRel (· ≤ ·) b
 theorem lt_of_antisymmRel_of_lt (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b < c) : a < c :=
   h₁.le.trans_lt h₂
 
-alias ⟨LE.le.lt_or_antisymmRel, _⟩ := le_iff_lt_or_antisymmRel
-alias LE.le.trans_antisymmRel := le_of_le_of_antisymmRel
-alias AntisymmRel.trans_le := le_of_antisymmRel_of_le
 alias LT.lt.trans_antisymmRel := lt_of_lt_of_antisymmRel
 alias AntisymmRel.trans_lt := lt_of_antisymmRel_of_lt
+
+theorem not_lt_of_antisymmRel (h : AntisymmRel (· ≤ ·) a b) : ¬ a < b :=
+  h.ge.not_gt
+
+theorem not_gt_of_antisymmRel (h : AntisymmRel (· ≤ ·) a b) : ¬ b < a :=
+  h.le.not_gt
+
+alias AntisymmRel.not_lt := not_lt_of_antisymmRel
+alias AntisymmRel.not_gt := not_gt_of_antisymmRel
+
+theorem not_antisymmRel_of_lt : a < b → ¬ AntisymmRel (· ≤ ·) a b :=
+  imp_not_comm.1 not_lt_of_antisymmRel
+
+theorem not_antisymmRel_of_gt : b < a → ¬ AntisymmRel (· ≤ ·) a b :=
+  imp_not_comm.1 not_gt_of_antisymmRel
+
+alias LT.lt.not_antisymmRel := not_antisymmRel_of_lt
+alias LT.lt.not_antisymmRel_symm := not_antisymmRel_of_gt
 
 instance : @Trans α α α (· ≤ ·) (AntisymmRel (· ≤ ·)) (· ≤ ·) where
   trans := le_of_le_of_antisymmRel

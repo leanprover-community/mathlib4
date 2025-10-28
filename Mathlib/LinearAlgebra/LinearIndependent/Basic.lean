@@ -140,23 +140,14 @@ theorem LinearIndepOn.comp_of_image {s : Set ι'} {f : ι' → ι} (h : LinearIn
     (hf : InjOn f s) : LinearIndepOn R (v ∘ f) s :=
   LinearIndependent.comp h _ (Equiv.Set.imageOfInjOn _ _ hf).injective
 
-@[deprecated (since := "2025-02-14")] alias
-  LinearIndependent.comp_of_image := LinearIndepOn.comp_of_image
-
 theorem LinearIndepOn.image_of_comp (f : ι → ι') (g : ι' → M) (hs : LinearIndepOn R (g ∘ f) s) :
     LinearIndepOn R g (f '' s) := by
   nontriviality R
   have : InjOn f s := injOn_iff_injective.2 hs.injective.of_comp
   exact (linearIndependent_equiv' (Equiv.Set.imageOfInjOn f s this) rfl).1 hs
 
-@[deprecated (since := "2025-02-14")] alias
-  LinearIndependent.image_of_comp := LinearIndepOn.image_of_comp
-
 theorem LinearIndepOn.id_image (hs : LinearIndepOn R v s) : LinearIndepOn R id (v '' s) :=
   LinearIndepOn.image_of_comp v id hs
-
-@[deprecated (since := "2025-02-14")] alias
-  LinearIndependent.image := LinearIndepOn.id_image
 
 theorem LinearIndepOn_iff_linearIndepOn_image_injOn [Nontrivial R] :
     LinearIndepOn R v s ↔ LinearIndepOn R id (v '' s) ∧ InjOn v s :=
@@ -218,19 +209,15 @@ theorem linearIndependent_span (hs : LinearIndependent R v) :
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
     (li : LinearIndependent R ((↑) : s → M)) (t : Finset s) :
     LinearIndependent R ((↑) : Finset.map (Embedding.subtype s) t → M) :=
-  li.comp (fun _ ↦ ⟨_, _⟩) <| by intro; aesop
+  li.comp (fun _ ↦ ⟨_, by aesop⟩) <| by intro; simp
 
 section Indexed
-
-@[deprecated (since := "2025-02-15")] alias LinearIndependent.mono := LinearIndepOn.mono
 
 theorem linearIndepOn_of_finite (s : Set ι) (H : ∀ t ⊆ s, Set.Finite t → LinearIndepOn R v t) :
     LinearIndepOn R v s :=
   linearIndepOn_iffₛ.2 fun f hf g hg eq ↦
     linearIndepOn_iffₛ.1 (H _ (union_subset hf hg) <| (Finset.finite_toSet _).union <|
       Finset.finite_toSet _) f Set.subset_union_left g Set.subset_union_right eq
-
-@[deprecated (since := "2025-02-15")] alias linearIndependent_of_finite := linearIndepOn_of_finite
 
 end Indexed
 
@@ -331,9 +318,6 @@ theorem eq_of_linearIndepOn_id_of_span_subtype [Nontrivial R] {s t : Set M}
   rcases h_surj ⟨x, hx⟩ with ⟨y, hy⟩
   convert y.mem
   rw [← Subtype.mk.inj hy]
-
-@[deprecated (since := "2025-02-15")] alias
-  eq_of_linearIndependent_of_span_subtype := eq_of_linearIndepOn_id_of_span_subtype
 
 theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndepOn R id u)
     (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
@@ -500,8 +484,6 @@ theorem linearIndepOn_id_union_iff {s t : Set M} (hdj : Disjoint s t) :
     LinearIndepOn R id s ∧ LinearIndepOn R id t ∧ Disjoint (span R s) (span R t) := by
   rw [linearIndepOn_union_iff hdj, image_id, image_id]
 
-@[deprecated (since := "2025-02-14")] alias LinearIndependent.union := LinearIndepOn.union
-
 open LinearMap
 
 theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
@@ -509,10 +491,7 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
     LinearIndepOn R id (f '' s) :=
   hs.id_imageₛ <| LinearMap.injOn_of_disjoint_ker le_rfl hf_inj
 
-@[deprecated (since := "2025-02-15")] alias LinearIndependent.image_subtype :=
-  LinearIndepOn.image
-
--- See, for example, Keith Conrad's note
+-- See, for example, Keith Conrad's note [ConradLinearChar]
 --  <https://kconrad.math.uconn.edu/blurbs/galoistheory/linearchar.pdf>
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]
@@ -607,9 +586,6 @@ alias ⟨_, LinearIndepOn.singleton⟩ := linearIndepOn_singleton_iff
 variable (R) in
 theorem LinearIndepOn.id_singleton {x : M} (hx : x ≠ 0) : LinearIndepOn R id {x} :=
   linearIndependent_unique Subtype.val hx
-
-@[deprecated (since := "2025-02-15")] alias
-    linearIndependent_singleton := LinearIndepOn.id_singleton
 
 @[simp]
 theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M) :

@@ -24,7 +24,7 @@ universe w₀ w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)]
 
 
-/-- `pi C` gives the cartesian product of an indexed family of categories.
+/-- `pi C` gives the Cartesian product of an indexed family of categories.
 -/
 instance pi : Category.{max w₀ v₁} (∀ i, C i) where
   Hom X Y := ∀ i, X i ⟶ Y i
@@ -199,11 +199,8 @@ end EqToHom
 -- One could add some natural isomorphisms showing
 -- how `Functor.pi` commutes with `Pi.eval` and `Pi.comap`.
 @[simp]
-theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
-  apply Functor.ext
-  · simp
-  · intro _
-    rfl
+theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i :=
+  rfl
 
 /-- Two functors to a product category are equal iff they agree on every coordinate. -/
 theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i)) :

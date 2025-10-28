@@ -97,7 +97,7 @@ theorem integral_inter_add_diff (ht : MeasurableSet t) (hfs : IntegrableOn f s �
     ∫ x in s ∩ t, f x ∂μ + ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ :=
   integral_inter_add_diff₀ ht.nullMeasurableSet hfs
 
-theorem integral_finset_biUnion {ι : Type*} (t : Finset ι) {s : ι → Set X}
+theorem integral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (h's : Set.Pairwise (↑t) (Disjoint on s))
     (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
     ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ i ∈ t, ∫ x in s i, f x ∂μ := by
@@ -113,12 +113,19 @@ theorem integral_finset_biUnion {ι : Type*} (t : Finset ι) {s : ι → Set X}
       exact fun i hi => (h's.2 i hi (ne_of_mem_of_not_mem hi hat).symm).1
     · exact Finset.measurableSet_biUnion _ hs.2
 
-theorem integral_fintype_iUnion {ι : Type*} [Fintype ι] {s : ι → Set X}
+@[deprecated (since := "2025-08-28")]
+alias integral_finset_biUnion := integral_biUnion_finset
+
+theorem integral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
     (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise (Disjoint on s))
     (hf : ∀ i, IntegrableOn f (s i) μ) : ∫ x in ⋃ i, s i, f x ∂μ = ∑ i, ∫ x in s i, f x ∂μ := by
-  convert integral_finset_biUnion Finset.univ (fun i _ => hs i) _ fun i _ => hf i
+  convert integral_biUnion_finset Finset.univ (fun i _ => hs i) _ fun i _ => hf i
   · simp
   · simp [pairwise_univ, h's]
+
+@[deprecated (since := "2025-08-28")]
+alias integral_fintype_iUnion := integral_iUnion_fintype
+
 
 theorem setIntegral_empty : ∫ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, integral_zero_measure]
@@ -690,8 +697,6 @@ theorem setIntegral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict s] g) :
 theorem setIntegral_mono_ae (h : f ≤ᵐ[μ] g) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
   setIntegral_mono_ae_restrict hf hg (ae_restrict_of_ae h)
 
-@[gcongr high] -- higher priority than `integral_mono`
--- this lemma is better because it also gives the `x ∈ s` hypothesis
 theorem setIntegral_mono_on (hs : MeasurableSet s) (h : ∀ x ∈ s, f x ≤ g x) :
     ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
   setIntegral_mono_ae_restrict hf hg
@@ -700,6 +705,23 @@ theorem setIntegral_mono_on (hs : MeasurableSet s) (h : ∀ x ∈ s, f x ≤ g x
 theorem setIntegral_mono_on_ae (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x ≤ g x) :
     ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
   refine setIntegral_mono_ae_restrict hf hg ?_; rwa [EventuallyLE, ae_restrict_iff' hs]
+
+lemma setIntegral_mono_on_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂μ, x ∈ s → f x ≤ g x) :
+    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
+  rw [setIntegral_congr_set hs.toMeasurable_ae_eq.symm,
+    setIntegral_congr_set hs.toMeasurable_ae_eq.symm]
+  refine setIntegral_mono_on_ae ?_ ?_ ?_ ?_
+  · rwa [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
+  · rwa [integrableOn_congr_set_ae hs.toMeasurable_ae_eq]
+  · exact measurableSet_toMeasurable μ s
+  · filter_upwards [hs.toMeasurable_ae_eq.mem_iff, h] with x hx h
+    rwa [hx]
+
+@[gcongr high] -- higher priority than `integral_mono`
+-- this lemma is better because it also gives the `x ∈ s` hypothesis
+lemma setIntegral_mono_on₀ (hs : NullMeasurableSet s μ) (h : ∀ x ∈ s, f x ≤ g x) :
+    ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
+  setIntegral_mono_on_ae₀ hf hg hs (Eventually.of_forall h)
 
 theorem setIntegral_mono (h : f ≤ g) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
   integral_mono hf hg h

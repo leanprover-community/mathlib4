@@ -260,9 +260,16 @@ theorem partiallyWellOrderedOn_iff_exists_lt : s.PartiallyWellOrderedOn r ↔
     ∀ f : ℕ → α, (∀ n, f n ∈ s) → ∃ m n, m < n ∧ r (f m) (f n) :=
   ⟨PartiallyWellOrderedOn.exists_lt, fun hf f ↦ hf _ fun n ↦ (f n).2⟩
 
+theorem partiallyWellOrderedOn_univ_iff : univ.PartiallyWellOrderedOn r ↔ WellQuasiOrdered r :=
+  (RelIso.subrelUnivIso (by simp)).wellQuasiOrdered_iff
+
 theorem PartiallyWellOrderedOn.mono (ht : t.PartiallyWellOrderedOn r) (h : s ⊆ t) :
     s.PartiallyWellOrderedOn r :=
   fun f ↦ ht (Set.inclusion h ∘ f)
+
+theorem partiallyWellOrderedOn_of_wellQuasiOrdered (h : WellQuasiOrdered r) (s : Set α) :
+    s.PartiallyWellOrderedOn r :=
+  (partiallyWellOrderedOn_univ_iff.mpr h).mono s.subset_univ
 
 @[simp]
 theorem partiallyWellOrderedOn_empty (r : α → α → Prop) : PartiallyWellOrderedOn ∅ r :=
@@ -394,6 +401,12 @@ nonrec theorem IsPWO.mono (ht : t.IsPWO) : s ⊆ t → s.IsPWO := ht.mono
 nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) {f : ℕ → α} (hf : ∀ n, f n ∈ s) :
     ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
   h.exists_monotone_subseq hf
+
+theorem isPWO_univ_iff : (univ : Set α).IsPWO ↔ WellQuasiOrderedLE α :=
+  partiallyWellOrderedOn_univ_iff.trans (wellQuasiOrderedLE_def _).symm
+
+theorem isPWO_of_wellQuasiOrderedLE [h : WellQuasiOrderedLE α] (s : Set α) : s.IsPWO :=
+  partiallyWellOrderedOn_of_wellQuasiOrdered h.wqo s
 
 theorem isPWO_iff_exists_monotone_subseq :
     s.IsPWO ↔ ∀ f : ℕ → α, (∀ n, f n ∈ s) → ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
@@ -896,6 +909,10 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
     refine ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 ?_⟩
     exact ⟨hg (OrderHomClass.mono g' hab), hg' hab⟩
 
+instance Pi.wellQuasiOrderedLE {α : ι → Type*} [∀ i, LinearOrder (α i)]
+    [∀ i, WellFoundedLT (α i)] [Finite ι] : WellQuasiOrderedLE (∀ i, α i) :=
+  isPWO_univ_iff.mp (Pi.isPWO _)
+
 section ProdLex
 variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {g : γ → β} {s : Set γ}
 
@@ -938,10 +955,7 @@ theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on 
     · exact ⟨c, h'⟩
     · exact PSigma.subtype_ext (Subtype.ext h') rfl
     · dsimp only [Subtype.coe_mk, Subrel, Order.Preimage] at *
-      revert h'
-      generalize f c = d
-      rintro rfl h''
-      exact h''
+      grind
 
 theorem Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber (hι : s.WellFoundedOn (rι on f))
     (hπ : ∀ i, (s ∩ f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :

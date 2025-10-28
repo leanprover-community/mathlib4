@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
   Rémy Degenne, David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+import Mathlib.Data.Nat.NthRoot.Defs
 import Qq
 
 /-! # Power function on `ℝ`
@@ -416,7 +417,7 @@ lemma rpow_add_intCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y + n
 lemma rpow_add_natCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y + n) = x ^ y * x ^ n := by
   simpa using rpow_add_intCast hx y n
 
-lemma rpow_sub_intCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / x ^ n := by
+lemma rpow_sub_intCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y - n) = x ^ y / x ^ n := by
   simpa using rpow_add_intCast hx y (-n)
 
 lemma rpow_sub_natCast {x : ℝ} (hx : x ≠ 0) (y : ℝ) (n : ℕ) : x ^ (y - n) = x ^ y / x ^ n := by
@@ -983,7 +984,7 @@ theorem sqrt_eq_rpow (x : ℝ) : √x = x ^ (1 / (2 : ℝ)) := by
   obtain h | h := le_or_gt 0 x
   · rw [← mul_self_inj_of_nonneg (sqrt_nonneg _) (rpow_nonneg h _), mul_self_sqrt h, ← sq,
       ← rpow_natCast, ← rpow_mul h]
-    norm_num
+    simp
   · have : 1 / (2 : ℝ) * π = π / (2 : ℝ) := by ring
     rw [sqrt_eq_zero_of_nonpos h.le, rpow_def_of_neg h, this, cos_pi_div_two, mul_zero]
 
@@ -1042,94 +1043,155 @@ namespace Mathlib.Meta.NormNum
 
 open Lean.Meta Qq
 
+theorem IsNat.rpow_eq_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a : ℝ) : a ^ b = a ^ n := by
+  rw [h.1, Real.rpow_natCast]
+
+theorem IsInt.rpow_eq_inv_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ) :
+    a ^ b = (a ^ n)⁻¹ := by
+  rw [h.1, Real.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_coe, zpow_natCast]
+
+@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
 theorem isNat_rpow_pos {a b : ℝ} {nb ne : ℕ}
     (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
     IsNat (a ^ b) ne := by
   rwa [pb.out, rpow_natCast]
 
+@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
 theorem isNat_rpow_neg {a b : ℝ} {nb ne : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNat (a ^ (Int.negOfNat nb)) ne) :
     IsNat (a ^ b) ne := by
   rwa [pb.out, Real.rpow_intCast]
 
+@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
 theorem isInt_rpow_pos {a b : ℝ} {nb ne : ℕ}
     (pb : IsNat b nb) (pe' : IsInt (a ^ nb) (Int.negOfNat ne)) :
     IsInt (a ^ b) (Int.negOfNat ne) := by
   rwa [pb.out, rpow_natCast]
 
+@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
 theorem isInt_rpow_neg {a b : ℝ} {nb ne : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsInt (a ^ (Int.negOfNat nb)) (Int.negOfNat ne)) :
     IsInt (a ^ b) (Int.negOfNat ne) := by
   rwa [pb.out, Real.rpow_intCast]
 
+@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
 theorem isNNRat_rpow_pos {a b : ℝ} {nb : ℕ}
     {num den : ℕ}
     (pb : IsNat b nb) (pe' : IsNNRat (a ^ nb) num den) :
     IsNNRat (a ^ b) num den := by
   rwa [pb.out, rpow_natCast]
 
+@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
 theorem isRat_rpow_pos {a b : ℝ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
     (pb : IsNat b nb) (pe' : IsRat (a ^ nb) num den) :
     IsRat (a ^ b) num den := by
   rwa [pb.out, rpow_natCast]
 
+@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
 theorem isNNRat_rpow_neg {a b : ℝ} {nb : ℕ}
     {num den : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNNRat (a ^ (Int.negOfNat nb)) num den) :
     IsNNRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_intCast]
 
+@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
 theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
     (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a ^ (Int.negOfNat nb)) num den) :
     IsRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_intCast]
 
-/-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals. -/
+/-- Given proofs
+- that `a` is a natural number `m`
+- that `b` is a nonnegative rational number `n / d`
+- that `r ^ d = m ^ n` (written as `r ^ d = k`, `m ^ n = l`, `k = l`)
+prove that `a ^ b = r`.
+-/
+theorem IsNat.rpow_isNNRat {a b : ℝ} {m n d r : ℕ} (ha : IsNat a m) (hb : IsNNRat b n d)
+    (k : ℕ) (hr : r ^ d = k) (l : ℕ) (hm : m ^ n = l) (hkl : k = l) : IsNat (a ^ b) r := by
+  rcases ha with ⟨rfl⟩
+  constructor
+  have : d ≠ 0 := mod_cast hb.den_nz
+  rw [hb.to_eq rfl rfl, div_eq_mul_inv, Real.rpow_natCast_mul, ← Nat.cast_pow, hm, ← hkl, ← hr,
+    Nat.cast_pow, Real.pow_rpow_inv_natCast] <;> positivity
+
+theorem IsNNRat.rpow_isNNRat (a b : ℝ) (na da : ℕ) (ha : IsNNRat a na da)
+    (nr dr : ℕ) (hnum : IsNat ((na : ℝ) ^ b) nr) (hden : IsNat ((da : ℝ) ^ b) dr) :
+    IsNNRat (a ^ b) nr dr := by
+  suffices IsNNRat (nr / dr : ℝ) nr dr by
+    simpa [ha.to_eq, Real.div_rpow, hnum.1, hden.1]
+  apply IsNNRat.of_raw
+  rw [← hden.1]
+  apply (Real.rpow_pos_of_pos _ _).ne'
+  exact lt_of_le_of_ne' da.cast_nonneg ha.den_nz
+
+theorem rpow_isRat_eq_inv_rpow (a b : ℝ) (n d : ℕ) (hb : IsRat b (Int.negOfNat n) d) :
+    a ^ b = (a⁻¹) ^ (n / d : ℝ) := by
+  rw [← Real.rpow_neg_eq_inv_rpow, hb.neg_to_eq rfl rfl]
+
+open Lean in
+/-- Given proofs
+- that `a` is a natural number `na`;
+- that `b` is a nonnegative rational number `nb / db`;
+returns a tuple of
+- a natural number `r` (result);
+- the same number, as an expression;
+- a proof that `a ^ b = r`.
+
+Fails if `na` is not a `db`th power of a natural number.
+-/
+def proveIsNatRPowIsNNRat
+    (a : Q(ℝ)) (na : Q(ℕ)) (pa : Q(IsNat $a $na))
+    (b : Q(ℝ)) (nb db : Q(ℕ)) (pb : Q(IsNNRat $b $nb $db)) :
+    MetaM (ℕ × Σ r : Q(ℕ), Q(IsNat ($a ^ $b) $r)) := do
+  let r := (Nat.nthRoot db.natLit! na.natLit!) ^ nb.natLit!
+  have er : Q(ℕ) := mkRawNatLit r
+  -- avoid evaluating powers in kernel
+  let .some ⟨c, pc⟩ ← liftM <| OptionT.run <| evalNatPow er db | failure
+  let .some ⟨d, pd⟩ ← liftM <| OptionT.run <| evalNatPow na nb | failure
+  guard (c.natLit! = d.natLit!)
+  have hcd : Q($c = $d) := (q(Eq.refl $c) : Expr)
+  return (r, ⟨er, q(IsNat.rpow_isNNRat $pa $pb $c $pc $d $pd $hcd)⟩)
+
+/-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.
+Works if `a`, `b`, and `a ^ b` are in fact rational numbers,
+except for the case `a < 0`, `b` isn't integer.
+
+TODO: simplify terms like  `(-a : ℝ) ^ (b / 3 : ℝ)` and `(-a : ℝ) ^ (b / 2 : ℝ)` too,
+possibly after first considering changing the junk value. -/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
-def evalRPow : NormNumExt where eval {u α} e := do
-  let .app (.app f (a : Q(ℝ))) (b : Q(ℝ)) ← Lean.Meta.whnfR e | failure
-  guard <|← withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := ℝ) (β := ℝ))
-  haveI' : u =QL 0 := ⟨⟩
-  haveI' : $α =Q ℝ := ⟨⟩
-  haveI' h : $e =Q $a ^ $b := ⟨⟩
-  h.check
-  let (rb : Result b) ← derive (α := q(ℝ)) b
-  match rb with
-  | .isBool .. | .isNNRat .. | .isNegNNRat .. => failure
-  | .isNat sβ nb pb =>
-    match ← derive q($a ^ $nb) with
-    | .isBool .. => failure
-    | .isNat sα' ne' pe' =>
+def evalRPow : NormNumExt where eval {u αR} e := do
+  match u, αR, e with
+  | 0, ~q(ℝ), ~q(($a : ℝ)^($b : ℝ)) =>
+    match ← derive b with
+    | .isNat sβ nb pb =>
       assumeInstancesCommute
-      haveI' : $sα' =Q AddGroupWithOne.toAddMonoidWithOne := ⟨⟩
-      return .isNat sα' ne' q(isNat_rpow_pos $pb $pe')
-    | .isNegNat sα' ne' pe' =>
+      return .eqTrans q(IsNat.rpow_eq_pow $pb _) (← derive q($a ^ $nb))
+    | .isNegNat sβ nb pb =>
       assumeInstancesCommute
-      return .isNegNat sα' ne' q(isInt_rpow_pos $pb $pe')
-    | .isNNRat sα' qe' nume' dene' pe' =>
+      return .eqTrans q(IsInt.rpow_eq_inv_pow $pb _) (← derive q(($a ^ $nb)⁻¹))
+    | .isNNRat _ qb nb db pb => do
       assumeInstancesCommute
-      return .isNNRat sα' qe' nume' dene' q(isNNRat_rpow_pos $pb $pe')
-    | .isNegNNRat sα' qe' nume' dene' pe' =>
+      match ← derive a with
+      | .isNat sa na pa => do
+        let ⟨_, r, pr⟩ ← proveIsNatRPowIsNNRat a na pa b nb db pb
+        return .isNat sa r pr
+      | .isNNRat _ qα na da pa => do
+        assumeInstancesCommute
+        let ⟨rnum, ernum, pnum⟩ ←
+          proveIsNatRPowIsNNRat q(Nat.rawCast $na) na q(IsNat.of_raw _ _) b nb db pb
+        let ⟨rden, erden, pden⟩ ←
+          proveIsNatRPowIsNNRat q(Nat.rawCast $da) da q(IsNat.of_raw _ _) b nb db pb
+        return .isNNRat q(inferInstance) (rnum / rden) ernum erden
+          q(IsNNRat.rpow_isNNRat $a $b $na $da $pa $ernum $erden $pnum $pden)
+      | _ => failure
+    | .isNegNNRat _ qb nb db pb => do
+      let r ← derive q(($a⁻¹) ^ ($nb / $db : ℝ))
       assumeInstancesCommute
-      return .isNegNNRat sα' qe' nume' dene' q(isRat_rpow_pos $pb $pe')
-  | .isNegNat sβ nb pb =>
-    match ← derive q($a ^ (-($nb : ℤ))) with
-    | .isBool .. => failure
-    | .isNat sα' ne' pe' =>
-      assumeInstancesCommute
-      return .isNat sα' ne' q(isNat_rpow_neg $pb $pe')
-    | .isNegNat sα' ne' pe' =>
-      let _ := q(Real.instRing)
-      assumeInstancesCommute
-      return .isNegNat sα' ne' q(isInt_rpow_neg $pb $pe')
-    | .isNNRat sα' qe' nume' dene' pe' =>
-      assumeInstancesCommute
-      return .isNNRat sα' qe' nume' dene' q(isNNRat_rpow_neg $pb $pe')
-    | .isNegNNRat sα' qe' nume' dene' pe' =>
-      assumeInstancesCommute
-      return .isNegNNRat sα' qe' nume' dene' q(isRat_rpow_neg $pb $pe')
+      return .eqTrans q(rpow_isRat_eq_inv_rpow $a $b $nb $db $pb) r
+    | _ => failure
+  | _ => failure
 
 end Mathlib.Meta.NormNum
 

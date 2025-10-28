@@ -299,7 +299,7 @@ theorem sub_martingale [Preorder E] [AddLeftMono E]
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [Lattice F] [NormedSpace ℝ F] [CompleteSpace F]
-  [OrderedSMul ℝ F]
+  [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Supermartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
@@ -322,7 +322,7 @@ namespace Submartingale
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [Lattice F] [IsOrderedAddMonoid F]
-  [NormedSpace ℝ F] [CompleteSpace F] [OrderedSMul ℝ F]
+  [NormedSpace ℝ F] [CompleteSpace F] [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Submartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
@@ -446,7 +446,7 @@ theorem Martingale.eq_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : �
 namespace Submartingale
 
 protected theorem integrable_stoppedValue [LE E] {f : ℕ → Ω → E} (hf : Submartingale f 𝒢 μ)
-    {τ : Ω → ℕ} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
+    {τ : Ω → ℕ∞} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
     Integrable (stoppedValue f τ) μ :=
   integrable_stoppedValue ℕ hτ hf.integrable hbdd
 

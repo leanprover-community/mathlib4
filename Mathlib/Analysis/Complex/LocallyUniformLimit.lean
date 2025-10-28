@@ -5,7 +5,7 @@ Authors: Vincent Beffara
 -/
 import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Locally uniform limits of holomorphic functions

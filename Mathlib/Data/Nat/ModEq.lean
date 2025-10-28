@@ -15,7 +15,7 @@ This file defines the equivalence relation `a ≡ b [MOD n]` on the natural numb
 and proves basic properties about it such as the Chinese Remainder Theorem
 `modEq_and_modEq_iff_modEq_mul`.
 
-## Notations
+## Notation
 
 `a ≡ b [MOD n]` is notation for `Nat.ModEq n a b`, which is defined to mean `a % n = b % n`.
 
@@ -238,10 +238,10 @@ namespace ModEq
 theorem le_of_lt_add (h1 : a ≡ b [MOD m]) (h2 : a < b + m) : a ≤ b :=
   (le_total a b).elim id fun h3 =>
     Nat.le_of_sub_eq_zero
-      (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) (by omega))
+      (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) (by cutsat))
 
 theorem add_le_of_lt (h1 : a ≡ b [MOD m]) (h2 : a < b) : a + m ≤ b :=
-  le_of_lt_add (add_modEq_right.trans h1) (by omega)
+  le_of_lt_add (add_modEq_right.trans h1) (by cutsat)
 
 theorem dvd_iff (h : a ≡ b [MOD m]) (hdm : d ∣ m) : d ∣ a ↔ d ∣ b := by
   simp only [← modEq_zero_iff_dvd]
@@ -459,7 +459,7 @@ theorem odd_mul_odd_div_two {m n : ℕ} (hm1 : m % 2 = 1) (hn1 : n % 2 = 1) :
     dsimp
     rw [mul_add, two_mul_odd_div_two hm1, mul_left_comm, two_mul_odd_div_two hn1,
       two_mul_odd_div_two (Nat.odd_mul_odd hm1 hn1), Nat.mul_sub, mul_one, ←
-      Nat.add_sub_assoc (by omega), Nat.sub_add_cancel (Nat.le_mul_of_pos_right m hn0)]
+      Nat.add_sub_assoc (by cutsat), Nat.sub_add_cancel (Nat.le_mul_of_pos_right m hn0)]
 
 theorem odd_of_mod_four_eq_one {n : ℕ} : n % 4 = 1 → n % 2 = 1 := by
   simpa [ModEq] using @ModEq.of_mul_left 2 n 1 2
@@ -471,7 +471,7 @@ theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>
-    help (n % 4) (mod_lt n (by omega)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
+    help (n % 4) (mod_lt n (by cutsat)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
     fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 
 lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b :=
