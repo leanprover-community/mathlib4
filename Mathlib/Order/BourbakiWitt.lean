@@ -86,15 +86,15 @@ lemma ici_isAdmissible (le_map : ∀ x, x ≤ f x) : IsAdmissible x f (Ici x) wh
   cSup_mem := by
     intro c hc
     have ⟨y, hy⟩ := c.Nonempty'
-    apply le_trans (hc hy) (le_cSup _ _ hy)
+    exact le_trans (hc hy) (le_cSup _ _ hy)
 
 /-- The bottom admissible set with base point `x` and inflationary function `f` -/
 abbrev bot (x : α) (f : α → α) : Set α := ⋂₀ {s | IsAdmissible x f s}
 
+@[simp]
 lemma mem_bot_iff {y : α} :
-    y ∈ bot x f ↔ ∀ s ∈ {s | IsAdmissible x f s}, y ∈ s := by
-  unfold bot
-  exact mem_sInter
+    y ∈ bot x f ↔ ∀ s ∈ {s | IsAdmissible x f s}, y ∈ s :=
+  Iff.rfl
 
 lemma bot_isAdmissible (le_map : ∀ x, x ≤ f x) : IsAdmissible x f (bot x f) where
   base_isLeast := by
@@ -103,20 +103,17 @@ lemma bot_isAdmissible (le_map : ∀ x, x ≤ f x) : IsAdmissible x f (bot x f) 
       exact fun _ h ↦ h.base_isLeast.1
     · intro y hy
       rw [mem_bot_iff] at hy
-      exact (hy (Ici x) (ici_isAdmissible le_map))
+      exact hy (Ici x) (ici_isAdmissible le_map)
   image_self_subset_self := by
-    rintro _ ⟨y, hy, rfl⟩
-    rw [mem_bot_iff]
-    rintro s hs
+    rintro _ ⟨y, hy, rfl⟩ s hs
     exact hs.image_self_subset_self ⟨y, ⟨mem_sInter.1 hy _ hs, rfl⟩⟩
   cSup_mem := by
-    intro c hc
-    rw [mem_bot_iff]
-    intro s hs
+    intro c hc s hs
     exact hs.cSup_mem c (subset_trans hc (sInter_subset_of_mem hs))
 
-lemma subset_bot_iff {s : Set α} (h : IsAdmissible x f s) : s ⊆ bot x f ↔ s = bot x f := by
-  exact ⟨fun h' ↦ subset_antisymm h' (sInter_subset_of_mem h), fun h' ↦ h' ▸ subset_refl (bot x f)⟩
+lemma subset_bot_iff {s : Set α} (h : IsAdmissible x f s) : s ⊆ bot x f ↔ s = bot x f where
+  mp h' := subset_antisymm h' (sInter_subset_of_mem h)
+  mpr h' := h' ▸ subset_refl (bot x f)
 
 lemma map_mem_bot {y : α} (le_map : ∀ x, x ≤ f x) (h : y ∈ bot x f) : f y ∈ bot x f := by
   apply (bot_isAdmissible (le_map)).image_self_subset_self
@@ -182,24 +179,22 @@ lemma setOf_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
   · intro c hc
     refine ⟨(bot_isAdmissible le_map).cSup_mem _ (subset_trans hc (fun _ h ↦ h.mem_bot)), ?_⟩
     intro y hy hy'
-    by_cases h : ∀ z ∈ c, f z ≤ y
-    · exfalso
+    obtain ⟨z, hz, hzy⟩ : ∃ z ∈ c, ¬ (f z ≤ y) := by
+      by_contra! h
       apply lt_irrefl y (lt_of_lt_of_le hy' ?_)
       apply cSup_le
       intro z hz
-      apply le_trans (le_map z) (h z hz)
-    · push_neg at h
-      obtain ⟨z, hz, hzy⟩ := h
-      have h := hy
-      rw [← bot_eq_of_le_or_map_le le_map (hc hz)] at h
-      obtain (hyz | rfl) := le_iff_lt_or_eq.1 (Or.resolve_right h.2 hzy)
-      · exact le_trans ((hc hz).map_le_of_mem_of_lt hy hyz) (le_cSup _ _ hz)
-      · have hc' := (bot_isAdmissible le_map).cSup_mem _ (subset_trans hc ((fun _ h ↦ h.mem_bot)))
-        rw [← bot_eq_of_le_or_map_le le_map (hc hz)] at hc'
-        obtain ⟨_, (hc' | hc')⟩ := hc'
-        · exfalso
-          apply lt_irrefl y (lt_of_lt_of_le hy' hc')
-        · exact hc'
+      exact le_trans (le_map z) (h z hz)
+    have h : y ≤ z := by
+      rw [← bot_eq_of_le_or_map_le le_map (hc hz)] at hy
+      exact Or.resolve_right hy.2 hzy
+    obtain hyz | rfl := le_iff_lt_or_eq.1 h
+    · exact le_trans ((hc hz).map_le_of_mem_of_lt hy hyz) (le_cSup _ _ hz)
+    · have hc' := (bot_isAdmissible le_map).cSup_mem _ (subset_trans hc fun _ h ↦ h.mem_bot)
+      rw [← bot_eq_of_le_or_map_le le_map (hc hz)] at hc'
+      apply hc'.2.resolve_left
+      intro hc'
+      exact lt_irrefl y (lt_of_lt_of_le hy' hc')
 
 lemma setOf_isExtremePt_eq_bot (le_map : ∀ x, x ≤ f x) : {y | IsExtremePt x f y} = bot x f := by
   rw [← subset_bot_iff]
@@ -231,8 +226,7 @@ theorem nonempty_fixedPoints_of_inflationary [Nonempty α] (le_map : ∀ x, x �
   let y := cSup
     (NonemptyChain.mk (bot x f) ⟨x, (bot_isAdmissible le_map).base_isLeast.1⟩ (bot_isChain le_map))
   use y
-  apply le_antisymm _ (le_map y)
-  apply le_cSup _ _
+  apply le_antisymm (le_cSup _ _ (_ : f y ∈ bot x f)) (le_map y)
   apply (bot_isAdmissible le_map).image_self_subset_self
   use y
   exact ⟨(bot_isAdmissible le_map).cSup_mem _ (subset_refl _), rfl⟩
