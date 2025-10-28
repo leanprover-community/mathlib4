@@ -252,4 +252,12 @@ lemma all_one_of_le_one_le_of_prod_eq_one [CommMonoid M] [PartialOrder M] [IsOrd
     · exact (length l)
     · rfl⟩
 
+theorem prod_le_sum {α β : Type*} [Monoid α] [AddMonoid β] [Preorder β] [AddLeftMono β]
+    (l : List α) (f : α → β) (h_one : f 1 ≤ 0)
+    (h_mul : ∀ (a b : α), f (a * b) ≤ f a + f b) :
+    f l.prod ≤ (l.map f).sum := by
+  induction l with
+  | nil => simp [h_one]
+  | cons hd tl IH => simpa using (h_mul _ _).trans (add_le_add_left IH _)
+
 end List

@@ -627,3 +627,10 @@ theorem sup_powerset_len [DecidableEq α] (x : Multiset α) :
     Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetCard x h)
 
 end Multiset
+
+theorem Finset.prod_le_sum [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β]
+    (s : Finset ι) {f : ι → α} (g : α → β) (h_one : g 1 ≤ 0)
+    (h_mul : ∀ (a b : α), g (a * b) ≤ g a + g b) :
+    g (∏ x ∈ s, f x) ≤ ∑ x ∈ s, g (f x) := by
+  refine (Multiset.prod_le_sum _ _ h_one h_mul).trans_eq ?_
+  rw [Multiset.map_map, Function.comp_def, Finset.sum_map_val]

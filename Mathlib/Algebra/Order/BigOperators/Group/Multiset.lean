@@ -165,4 +165,10 @@ lemma abs_sum_le_sum_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid 
     |s.sum| ≤ (s.map abs).sum :=
   le_sum_of_subadditive _ abs_zero.le abs_add_le s
 
+lemma prod_le_sum [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β]
+    (m : Multiset α) (f : α → β) (h_one : f 1 ≤ 0) (h_mul : ∀ (a b : α), f (a * b) ≤ f a + f b) :
+    f m.prod ≤ (m.map f).sum := by
+  induction m using Quotient.inductionOn with
+  | h l => simp [l.prod_le_sum _ h_one h_mul]
+
 end Multiset
