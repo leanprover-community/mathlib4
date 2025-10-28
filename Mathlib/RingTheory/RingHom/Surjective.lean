@@ -56,7 +56,7 @@ theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective 
 theorem surjective_localizationPreserves :
     LocalizationPreserves surjective := by
   introv R H x
-  obtain ⟨x, ⟨_, s, hs, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (M.map f) x
+  obtain ⟨x, ⟨_, s, hs, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (M.map f) x
   obtain ⟨y, rfl⟩ := H x
   use IsLocalization.mk' R' y ⟨s, hs⟩
   rw [IsLocalization.map_mk']
@@ -72,7 +72,7 @@ theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
     (LinearMap.range (Algebra.linearMap R S)) s e
   intro r
   obtain ⟨a, e'⟩ := H r (algebraMap _ _ x)
-  obtain ⟨b, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers (r : R)) a
+  obtain ⟨b, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (Submonoid.powers (r : R)) a
   rw [Localization.awayMap, IsLocalization.Away.map, IsLocalization.map_mk', eq_comm,
     IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, Subtype.coe_mk, ← map_mul] at e'
   obtain ⟨⟨_, n', rfl⟩, e''⟩ := (IsLocalization.eq_iff_exists (Submonoid.powers (f r)) _).mp e'

@@ -49,7 +49,7 @@ lemma IsLocalization.ker_map (hT : Submonoid.map g M = T) :
     RingHom.ker (IsLocalization.map Q g (hT.symm ▸ M.le_comap_map) : S →+* Q) =
       (RingHom.ker g).map (algebraMap R S) := by
   ext x
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
   simp [RingHom.mem_ker, IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
     IsLocalization.mk'_mem_map_algebraMap_iff, ← hT]
 
@@ -103,7 +103,7 @@ instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
 /-- An algebra map `A →ₐ[R] B` induces an algebra map on localizations `Aₚ →ₐ[Rₚ] Bₚ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ :=
   ⟨IsLocalization.map Bₚ f.toRingHom (Algebra.algebraMapSubmonoid_le_comap M f), fun r ↦ by
-    obtain ⟨a, m, rfl⟩ := IsLocalization.mk'_surjective M r
+    obtain ⟨a, m, rfl⟩ := IsLocalization.exists_mk'_eq M r
     simp [algebraMap_mk' (S := A), algebraMap_mk' (S := B), map_mk']⟩
 
 @[simp]
