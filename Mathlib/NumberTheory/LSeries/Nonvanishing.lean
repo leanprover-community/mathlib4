@@ -12,7 +12,7 @@ import Mathlib.NumberTheory.LSeries.Positivity
 /-!
 # The L-function of a Dirichlet character does not vanish on Re(s) ≥ 1
 
-The main result in this file is `DirichletCharacter.Lfunction_ne_zero_of_one_le_re`:
+The main result in this file is `DirichletCharacter.LFunction_ne_zero_of_one_le_re`:
 if `χ` is a Dirichlet character, `s ∈ ℂ` with `1 ≤ s.re`, and either `χ` is nontrivial or `s ≠ 1`,
 then the L-function of `χ` does not vanish at `s`.
 
@@ -150,7 +150,7 @@ private lemma F_eq_LSeries (B : BadChar N) {s : ℂ} (hs : 1 < s.re) :
     simp only [ne_eq, hs', not_false_eq_true, Function.update_of_ne, B.χ.LFunction_eq_LSeries hs]
     congr 1
     · simp_rw [← LSeries_zeta_eq_riemannZeta hs, ← natCoe_apply]
-    · exact LSeries_congr s B.χ.apply_eq_toArithmeticFunction_apply
+    · exact LSeries_congr B.χ.apply_eq_toArithmeticFunction_apply s
   -- summability side goals from `LSeries_convolution'`
   · exact LSeriesSummable_zeta_iff.mpr hs
   · exact (LSeriesSummable_congr _ fun h ↦ (B.χ.apply_eq_toArithmeticFunction_apply h).symm).mpr <|
@@ -185,7 +185,7 @@ This is used later to obtain a contradiction. -/
 private lemma F_neg_two (B : BadChar N) : B.F (-2 : ℝ) = 0 := by
   have := riemannZeta_neg_two_mul_nat_add_one 0
   rw [Nat.cast_zero, zero_add, mul_one] at this
-  rw [F, ofReal_neg, ofReal_ofNat, Function.update_of_ne (mod_cast (by omega : (-2 : ℤ) ≠ 1)),
+  rw [F, ofReal_neg, ofReal_ofNat, Function.update_of_ne (mod_cast (by cutsat : (-2 : ℤ) ≠ 1)),
     this, zero_mul]
 
 end BadChar
@@ -245,16 +245,16 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
       exact .inr <| Real.one_lt_rpow (mod_cast one_lt_two.trans_le hn) <| zero_lt_one.trans hx
     have hz : ‖χ n * (n : ℂ) ^ (-(I * y))‖ = 1 := by
       rw [norm_mul, ← hn'.unit_spec, DirichletCharacter.unit_norm_eq_one χ hn'.unit,
-        ← ofReal_natCast, norm_cpow_eq_rpow_re_of_pos (mod_cast by omega)]
+        ← ofReal_natCast, norm_cpow_eq_rpow_re_of_pos (mod_cast by cutsat)]
       simp only [neg_re, mul_re, I_re, ofReal_re, zero_mul, I_im, ofReal_im, mul_zero, sub_self,
         neg_zero, Real.rpow_zero, one_mul]
     rw [MulChar.one_apply hn', one_mul]
     convert re_log_comb_nonneg' ha₀ ha₁ hz using 6
     · simp only [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg]
     · congr 2
-      rw [neg_add, cpow_add _ _ <| mod_cast by omega, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
+      rw [neg_add, cpow_add _ _ <| mod_cast by cutsat, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
         ofReal_natCast, mul_left_comm]
-    · rw [neg_add, cpow_add _ _ <| mod_cast by omega, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
+    · rw [neg_add, cpow_add _ _ <| mod_cast by cutsat, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
         ofReal_natCast, show -(2 * I * y) = (2 : ℕ) * -(I * y) by ring, cpow_nat_mul, mul_pow,
         mul_left_comm]
   · simp only [MulChar.map_nonunit _ hn', zero_mul, sub_zero, log_one, neg_zero, zero_re, mul_zero,
@@ -356,7 +356,7 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
     h.symm.imp_left <| mul_ne_zero two_ne_zero
   have help (x : ℝ) : ((1 / x) ^ 3 * x ^ 4 * 1 : ℂ) = x := by
     rcases eq_or_ne x 0 with rfl | h
-    · rw [ofReal_zero, zero_pow (by omega), mul_zero, mul_one]
+    · rw [ofReal_zero, zero_pow (by cutsat), mul_zero, mul_one]
     · rw [one_div, inv_pow, pow_succ _ 3, ← mul_assoc,
         inv_mul_cancel₀ <| pow_ne_zero 3 (ofReal_ne_zero.mpr h), one_mul, mul_one]
   -- put together the various `IsBigO` statements and `norm_LFunction_product_ge_one`

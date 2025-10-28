@@ -137,10 +137,8 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   swap
   · convert deg_lt
     rw [degree_eq_natDegree h']; rfl
-  rw [← sub_neg_eq_add, neg_div]
-  refine le_trans ?_ (sub_le_sub_left (Nat.le_ceil _) (b.natDegree : ℝ))
-  rw [← neg_div]
-  exact le_of_eq (Nat.cast_sub le_b.le)
+  rw [← sub_neg_eq_add, ← neg_div, Nat.cast_sub le_b.le]
+  grw [← Nat.le_ceil]
 
 /-- If `x` is close to `y` and `y` is close to `z`, then `x` and `z` are at least as close. -/
 theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowDegree (x - y) < a)

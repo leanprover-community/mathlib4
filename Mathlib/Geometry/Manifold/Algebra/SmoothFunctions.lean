@@ -89,8 +89,8 @@ instance monoid {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
   DFunLike.coe_injective.monoid _ coe_one coe_mul coe_pow
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
-@[to_additive (attr := simps) "Coercion to a function as an `AddMonoidHom`.
-  Similar to `AddMonoidHom.coeFn`."]
+@[to_additive (attr := simps) /-- Coercion to a function as an `AddMonoidHom`.
+  Similar to `AddMonoidHom.coeFn`. -/]
 def coeFnMonoidHom {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] : C^n⟮I, N; I', G⟯ →* N → G where
   toFun := DFunLike.coe
@@ -101,9 +101,9 @@ variable (I N)
 
 /-- For a manifold `N` and a `C^n` homomorphism `φ` between Lie groups `G'`, `G''`, the
 'left-composition-by-`φ`' group homomorphism from `C^n⟮I, N; I', G'⟯` to `C^n⟮I, N; I'', G''⟯`. -/
-@[to_additive "For a manifold `N` and a `C^n` homomorphism `φ` between additive Lie groups `G'`,
+@[to_additive /-- For a manifold `N` and a `C^n` homomorphism `φ` between additive Lie groups `G'`,
 `G''`, the 'left-composition-by-`φ`' group homomorphism from `C^n⟮I, N; I', G'⟯` to
-`C^n⟮I, N; I'', G''⟯`."]
+`C^n⟮I, N; I'', G''⟯`. -/]
 def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G']
     [ContMDiffMul I' n G'] {G'' : Type*} [Monoid G''] [TopologicalSpace G''] [ChartedSpace H'' G'']
     [ContMDiffMul I'' n G''] (φ : G' →* G'') (hφ : ContMDiff I' I'' n φ) :
@@ -114,12 +114,11 @@ def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpa
 
 variable (I') {N}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
 -- TODO: generalize to any `C^n` map instead of `Set.inclusion`
 /-- For a Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group homomorphism from
 `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/
-@[to_additive "For an additive Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group
-homomorphism from `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`."]
+@[to_additive /-- For an additive Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction'
+group homomorphism from `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/]
 def restrictMonoidHom (G : Type*) [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] {U V : Opens N} (h : U ≤ V) : C^n⟮I, V; I', G⟯ →* C^n⟮I, U; I', G⟯ where
   toFun f := ⟨f ∘ Set.inclusion h, f.contMDiff.comp (contMDiff_inclusion h)⟩
@@ -325,7 +324,6 @@ theorem smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : 
 functions with values in `𝕜`. -/
 instance module' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     Module C^n⟮I, N; 𝓘(𝕜), 𝕜⟯ C^n⟮I, N; 𝓘(𝕜, V), V⟯ where
-  smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
   mul_smul c₁ c₂ f := by ext x; exact mul_smul (c₁ x) (c₂ x) (f x)

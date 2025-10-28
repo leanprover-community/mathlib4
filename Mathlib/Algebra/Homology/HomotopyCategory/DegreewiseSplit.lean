@@ -20,7 +20,11 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated Preadditive
 
-variable {C : Type*} [Category C] [Preadditive C]
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
+
+universe v
+
+variable {C : Type*} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex
 
@@ -32,14 +36,14 @@ variable (S : ShortComplex (CochainComplex C ℤ))
 /-- The `1`-cocycle attached to a degreewise split short exact sequence of cochain complexes. -/
 def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
   Cocycle.mk
-    (Cochain.mk (fun p q _ => (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by omega) (by
+    (Cochain.mk (fun p q _ => (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by cutsat) (by
       ext p _ rfl
       have := mono_of_mono_fac (σ (p + 2)).f_r
       have r_f := fun n => (σ n).r_f
       have s_g := fun n => (σ n).s_g
       dsimp at this r_f s_g ⊢
-      rw [δ_v 1 2 (by omega) _ p (p + 2) (by omega) (p + 1) (p + 1)
-        (by omega) (by omega), Cochain.mk_v, Cochain.mk_v,
+      rw [δ_v 1 2 (by cutsat) _ p (p + 2) (by cutsat) (p + 1) (p + 1)
+        (by cutsat) (by cutsat), Cochain.mk_v, Cochain.mk_v,
         show Int.negOnePow 2 = 1 by rfl, one_smul, assoc, assoc,
         ← cancel_mono (S.f.f (p + 2)), add_comp, assoc, assoc, assoc,
         assoc, assoc, assoc, zero_comp, ← S.f.comm, reassoc_of% (r_f (p + 1)),
@@ -118,7 +122,7 @@ noncomputable def mappingConeHomOfDegreewiseSplitIso :
     have s_g := (σ (p + 1)).s_g
     dsimp at r_f s_g ⊢
     simp only [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
-      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by omega),
+      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by cutsat),
       cocycleOfDegreewiseSplit, r_f, Int.reduceNeg, Cochain.ofHom_v, sub_comp, assoc,
       Hom.comm, comp_sub, mappingCone.inl_v_fst_v_assoc, mappingCone.inl_v_snd_v_assoc,
       shiftFunctor_obj_X', zero_comp, sub_zero, homOfDegreewiseSplit_f,

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.UniqueProds.Basic
-import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.MonoidAlgebra.Opposite
 
 /-!
 # Variations on non-zero divisors in `AddMonoidAlgebra`s
@@ -27,7 +27,7 @@ that if `R` is a field and `A` is a left-ordered group, then `R[A]` contains no 
 zero-divisors.
 The actual assumptions on `R` are weaker.
 
-##  Main results
+## Main results
 
 * `MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul` and
   `AddMonoidAlgebra.mul_apply_add_eq_mul_of_uniqueAdd`
