@@ -21,8 +21,6 @@ classes and allows to transfer order instances.
 ## Type synonyms
 
 * `OrderDual α` : A type synonym reversing the meaning of all inequalities, with notation `αᵒᵈ`.
-* `AsLinearOrder α`: A type synonym to promote `PartialOrder α` to `LinearOrder α` using
-  `IsTotal α (≤)`.
 
 ### Transferring orders
 
@@ -1400,16 +1398,20 @@ instance Prop.partialOrder : PartialOrder Prop where
 
 end «Prop»
 
-/-! ### Linear order from a total partial order -/
+/-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)`.
 
-
-/-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)` -/
+**Do not use this**: instead, build a `LinearOrder` instance directly. -/
+@[deprecated "build a `LinearOrder` instance directly instead" (since := "2025-10-28")]
 def AsLinearOrder (α : Type*) :=
   α
 
+set_option linter.deprecated false in
+@[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
 instance [Inhabited α] : Inhabited (AsLinearOrder α) :=
   ⟨(default : α)⟩
 
+set_option linter.deprecated false in
+@[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
 noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (· ≤ ·)] :
     LinearOrder (AsLinearOrder α) where
   __ := inferInstanceAs (PartialOrder α)
