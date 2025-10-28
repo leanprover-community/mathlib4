@@ -41,6 +41,15 @@ structure Presentation (M : SheafOfModules.{u} R) where
   /-- relations -/
   relations : (kernel generators.π).GeneratingSections
 
+/-- A global presentation of a sheaf of module if finite if the type
+of generators and relations are finite. -/
+class Presentation.IsFinite {M : SheafOfModules.{u} R} (p : M.Presentation) : Prop where
+  isFiniteType_generators : p.generators.IsFiniteType := by infer_instance
+  finite_relations : Finite p.relations.I := by infer_instance
+
+attribute [instance] Presentation.IsFinite.isFiniteType_generators
+  Presentation.IsFinite.finite_relations
+
 end
 
 
@@ -70,12 +79,23 @@ def localGeneratorsData {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) :
   coversTop := q.coversTop
   generators i := (q.presentation i).generators
 
+/-- A (local) presentation of a sheaf of module `M` is a finite presentation, if
+each given presentation of `M.over (X i)` is a finite presentation. -/
+class IsFinitePresentation {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) : Prop where
+  isFinite_presentation (i : q.I) : (q.presentation i).IsFinite := by infer_instance
+
+attribute [instance] IsFinitePresentation.isFinite_presentation
+
+instance {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) [q.IsFinitePresentation] :
+    q.localGeneratorsData.IsFiniteType where
+  isFiniteType := by dsimp; infer_instance
+
 end QuasicoherentData
 
 /-- A sheaf of modules is quasi-coherent if it is locally the cokernel of a
 morphism between coproducts of copies of the sheaf of rings. -/
 class IsQuasicoherent (M : SheafOfModules.{u} R) : Prop where
-  nonempty_quasicoherentData : Nonempty M.QuasicoherentData
+  nonempty_quasicoherentData : Nonempty M.QuasicoherentData := by infer_instance
 
 variable (R) in
 @[inherit_doc IsQuasicoherent]
@@ -86,9 +106,7 @@ abbrev isQuasicoherent : ObjectProperty (SheafOfModules.{u} R) :=
 morphism between coproducts of finitely many copies of the sheaf of rings. -/
 class IsFinitePresentation (M : SheafOfModules.{u} R) : Prop where
   exists_quasicoherentData (M) :
-    ∃ (σ : M.QuasicoherentData),
-      (∀ (i : σ.I), Finite (σ.presentation i).generators.I) ∧
-      ∀ (i : σ.I), (Finite (σ.presentation i).relations.I)
+    ∃ (σ : M.QuasicoherentData), σ.IsFinitePresentation
 
 variable (R) in
 @[inherit_doc IsFinitePresentation]
@@ -103,7 +121,7 @@ instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
 instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
     M.IsFiniteType where
   exists_localGeneratorsData := by
-    obtain ⟨σ, _, _⟩ := IsFinitePresentation.exists_quasicoherentData M
-    exact ⟨σ.localGeneratorsData, fun _ ↦ by dsimp; infer_instance⟩
+    obtain ⟨σ, _⟩ := IsFinitePresentation.exists_quasicoherentData M
+    exact ⟨σ.localGeneratorsData, inferInstance⟩
 
 end SheafOfModules
