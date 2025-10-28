@@ -17,6 +17,9 @@ In spaces with the `HasOuterApproxClosed` property, finite Borel measures are un
 by the integrals of bounded continuous functions. Also weak convergence of finite measures and
 convergence in distribution for random variables behave somewhat well in spaces with this property.
 
+In such spaces, the product measure is characterized by the integrals of products of bounded
+continuous functions.
+
 ## Main definitions
 
 * `HasOuterApproxClosed`: the typeclass for topological spaces in which indicator functions of
@@ -31,6 +34,9 @@ convergence in distribution for random variables behave somewhat well in spaces 
   closed set tend to the measure of the set.
 * `ext_of_forall_lintegral_eq_of_IsFiniteMeasure`: Two finite measures are equal if the integrals
   of all bounded continuous functions with respect to both agree.
+* `Measure.eq_prod_of_boundedContinuousFunction`: The product of two finite measures is the only
+  finite measure `ξ` such that for all real bounded continuous functions `f` and `g` we have
+  `∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`.
 
 -/
 
