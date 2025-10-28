@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Operations
+import Mathlib.Algebra.Star.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
@@ -702,3 +703,19 @@ lemma LinearMap.mulLeft_tmul (a : A) (b : B) :
 lemma LinearMap.mulRight_tmul (a : A) (b : B) :
     mulRight R (a ⊗ₜ[R] b) = map (mulRight R a) (mulRight R b) := by
   ext; simp
+
+namespace TensorProduct
+variable [StarRing R] [StarRing A] [StarRing B] [StarModule R A] [StarModule R B]
+
+noncomputable instance : StarMul (A ⊗[R] B) where
+  star_mul x y :=
+    x.induction_on (by simp) (fun _ _ ↦
+      y.induction_on (by simp)
+        fun _ _ ↦ by simp
+      fun _ _ h₁ h₂ ↦ by simp [add_mul, mul_add, h₁, h₂])
+    fun _ _ h₁ h₂ ↦ by simp [add_mul, mul_add, h₁, h₂]
+
+noncomputable instance : StarRing (A ⊗[R] B) where
+  star_add := by simp
+
+end TensorProduct
