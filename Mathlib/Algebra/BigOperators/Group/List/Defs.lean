@@ -77,7 +77,8 @@ theorem prod_one_cons : (1 :: l).prod = l.prod := by
   rw [prod, foldr, one_mul]
 
 @[to_additive]
-theorem prod_map_one : (l.map fun _ => (1 : M)).prod = 1 := by
+theorem prod_map_one {l : List ι} :
+    (l.map fun _ => (1 : M)).prod = 1 := by
   induction l with
   | nil => rfl
   | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
