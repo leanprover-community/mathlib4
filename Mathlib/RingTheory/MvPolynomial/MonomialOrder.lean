@@ -604,6 +604,16 @@ theorem degree_prod [IsCancelMulZero R] {ι : Type*} {P : ι → MvPolynomial σ
   rw [leadingCoeff_ne_zero_iff]
   exact H i hi
 
+lemma degree_mul' [IsCancelMulZero R] [NoZeroDivisors R]
+    {f g : MvPolynomial σ R} (hf : f * g ≠ 0) :
+    m.degree (f * g) = m.degree f + m.degree g := by
+  rw [mul_ne_zero_iff] at hf
+  exact m.degree_mul hf.1 hf.2
+
+lemma notMem_support_of_degree_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+    m.degree g ∉ f.support := by
+  simp [coeff_eq_zero_of_lt h]
+
 -- TODO : it suffices that all leading coefficients but one are regular
 theorem leadingCoeff_prod_of_regular {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.leadingCoeff (P i))) :
@@ -892,6 +902,53 @@ lemma sPolynomial_mul_monomial [IsCancelMulZero R] (p₁ p₂ : MvPolynomial σ 
       rw [Nat.add_sub_add_right]
     · ring
 
+lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
+    {B : Finset ι} {g : ι → MvPolynomial σ R}
+    (hd : ∀ b ∈ B,
+      (m.toSyn <| m.degree <| g b) = d ∧ IsUnit (m.leadingCoeff <| g b) ∨ g b = 0)
+    (hfd : (m.toSyn <| m.degree <| ∑ b ∈ B, g b) < d) :
+    ∃ (c : ι → ι → R),
+      ∑ b ∈ B, g b = ∑ b₁ ∈ B, ∑ b₂ ∈ B, (c b₁ b₂) • m.sPolynomial (g b₁) (g b₂) := by
+  classical
+  induction B using Finset.induction_on with
+  | empty => simp
+  | insert b B hb h =>
+    by_cases hb0 : g b = 0
+    · simp [Finset.sum_insert hb, hb0] at hd hfd ⊢
+      exact h hd hfd
+    simp [Finset.sum_insert hb, hb0] at hfd hd
+    obtain ⟨⟨deg_gb_eq_d, isunit_gb⟩, hd⟩ := hd
+    use fun b₁ b₂ ↦ if b₂ = b then ↑isunit_gb.unit⁻¹ else 0
+    simp [Finset.sum_insert hb, hb]
+    simp [← deg_gb_eq_d] at *
+    clear d
+    trans ∑ b' ∈ B, (g b' - (m.leadingCoeff (g b') * ↑isunit_gb.unit⁻¹) • g b)
+    · rw [Finset.sum_sub_distrib, add_comm, sub_eq_add_neg,
+        ← Finset.sum_smul, ← Finset.sum_mul, ← neg_smul]
+      nth_rewrite 1 [← one_smul R <| g b]
+      congr
+      rw [← neg_mul, eq_comm]
+      convert isunit_gb.mul_val_inv
+      rw [← add_eq_zero_iff_neg_eq']
+      trans (g b).coeff (m.degree <| g b) + ∑ i ∈ B, (g i).coeff (m.degree <| g b)
+      · unfold leadingCoeff
+        congr 1
+        apply Finset.sum_congr rfl
+        intro b' hb'
+        rcases hd b' hb' with h | h <;> simp [h]
+      · rw [← coeff_sum, ← coeff_add, ← notMem_support_iff]
+        exact m.notMem_support_of_degree_lt hfd
+    · apply Finset.sum_congr rfl
+      intro b' hb'
+      rw [sPolynomial]
+      by_cases h : g b' = 0
+      · simp [h]
+      have := hd b' hb'
+      simp [h] at this
+      simp [this, smul_eq_C_mul, mul_sub, ← mul_assoc _ _ (g b), ← mul_assoc _ _ (g b'),]
+      simp_rw [← C_mul]
+      simp [mul_comm]
+
 end Ring
 
 section Field
@@ -901,6 +958,15 @@ variable {R : Type*} [Field R]
 theorem isUnit_leadingCoeff {f : MvPolynomial σ R} :
     IsUnit (m.leadingCoeff f) ↔ f ≠ 0 := by
   simp only [isUnit_iff_ne_zero, ne_eq, leadingCoeff_eq_zero_iff]
+
+lemma sPolynomial_decomposition' {d : m.syn} {ι : Type*}
+    {B : Finset ι} (g : ι → MvPolynomial σ R)
+    (hd : ∀ b ∈ B, (m.toSyn <| m.degree <| g b) = d ∨ g b = 0)
+    (hfd : (m.toSyn <| m.degree <| ∑ b ∈ B, g b) < d) :
+    ∃ (c : ι → ι → R),
+      ∑ b ∈ B, g b = ∑ b₁ ∈ B, ∑ b₂ ∈ B, (c b₁ b₂) • m.sPolynomial (g b₁) (g b₂) := by
+  refine m.sPolynomial_decomposition ?_ hfd
+  simpa [and_or_right, em']
 
 end Field
 
