@@ -145,12 +145,12 @@ private def totalSpaceElab (e : Expr) : MetaM Expr := do
       trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a section of `Bundle.Trivial {E} {E'}`"
       -- Note: we allow `isDefEq` here because any mvar assignments should persist.
       if ← withReducible (isDefEq E base) then
-        let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, e.app x]
+        let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, (e.app x).headBeta]
         mkLambdaFVars #[x] body
       else return e
     | TangentSpace _k _ E _ _ _H _ _I M _ _ _x =>
       trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a vector field on `{M}`"
-      let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, e.app x]
+      let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, (e.app x).headBeta]
       mkLambdaFVars #[x] body
     | _ => match (← instantiateMVars tgt).cleanupAnnotations with
       | .app V _ =>
@@ -161,11 +161,11 @@ private def totalSpaceElab (e : Expr) : MetaM Expr := do
           match declType with
           | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ => do
             if ← withReducible (pureIsDefEq E V) then
-              let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, e.app x]
+              let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, (e.app x).headBeta]
               some <$> mkLambdaFVars #[x] body
             else return none
           | _ => return none
-        return f?.getD e
+        return f?.getD e.headBeta
       | tgt =>
         trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
         -- TODO: can `tgt` depend on `x` in a way that is not a function application?
@@ -176,9 +176,9 @@ private def totalSpaceElab (e : Expr) : MetaM Expr := do
             bound variable (`{x}` : `{base}`).\n\
             Hint: applying the `T%` elaborator twice makes no sense."
         let trivBundle ← mkAppOptM ``Bundle.Trivial #[base, tgt]
-        let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, e.app x]
+        let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, (e.app x).headBeta]
         mkLambdaFVars #[x] body
-  | _ => return e
+  | _ => return e.headBeta
 
 open Elab in
 /--
@@ -193,11 +193,8 @@ This elaborator searches the local context for suitable hypotheses for the above
 on the expression structure, avoiding `isDefEq`. Therefore, it is (hopefully) fast enough to always
 run.
 -/
-scoped elab:max "T% " t:term:arg args:term* : term => do
-  let e ← Term.elabTerm t none
-  let args' ← args.mapM (fun t ↦ Term.elabTerm t none)
-  trace[Elab.DiffGeo.TotalSpaceMk] "argument(s) passed to `T%` is/are `{args}`"
-  totalSpaceElab (Expr.beta (Expr.eta e) args')
+scoped elab:max "T% " t:term : term => do
+  totalSpaceElab (← Term.elabTerm t none)
 
 namespace Elab
 

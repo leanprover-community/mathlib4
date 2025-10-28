@@ -106,17 +106,12 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 #guard_msgs in
 #check (T% X) x
 
--- This one is. Also test the tracing messages.
-set_option trace.Elab.DiffGeo true in
-/--
-info: X x : TangentSpace I x
----
-trace: [Elab.DiffGeo.TotalSpaceMk] argument(s) passed to `T%` is/are `[x]`
--/
+-- This one is.
+/-- info: X x : TangentSpace I x -/
 #guard_msgs in
 #check (T% X x)
 
-/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+/-- info: fun x ↦ TotalSpace.mk' E x (X x) : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x))
 
@@ -125,7 +120,7 @@ trace: [Elab.DiffGeo.TotalSpaceMk] argument(s) passed to `T%` is/are `[x]`
 #check (T% X)
 
 -- No beta-reduction, because outside parentheses.
-/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
+/-- info: (fun x ↦ TotalSpace.mk' E x (X x)) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (fun x ↦ X x)) x
 
