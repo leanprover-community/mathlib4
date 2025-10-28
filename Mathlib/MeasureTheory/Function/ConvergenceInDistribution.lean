@@ -44,15 +44,15 @@ This is the weak convergence of the laws of the random variables: `Tendsto` in t
 `ProbabilityMeasure` type. -/
 structure TendstoInDistribution [OpensMeasurableSpace E] (X : ι → Ω → E) (l : Filter ι) (Z : Ω → E)
     (μ : Measure Ω := by volume_tac) [IsProbabilityMeasure μ] : Prop where
-  forall_aeMeasurable : ∀ i, AEMeasurable (X i) μ
-  aeMeasurable_limit : AEMeasurable Z μ := by fun_prop
+  forall_aemeasurable : ∀ i, AEMeasurable (X i) μ
+  aemeasurable_limit : AEMeasurable Z μ := by fun_prop
   tendsto : Tendsto (β := ProbabilityMeasure E)
-      (fun n ↦ ⟨μ.map (X n), Measure.isProbabilityMeasure_map (forall_aeMeasurable n)⟩) l
-      (𝓝 ⟨μ.map Z, Measure.isProbabilityMeasure_map aeMeasurable_limit⟩)
+      (fun n ↦ ⟨μ.map (X n), Measure.isProbabilityMeasure_map (forall_aemeasurable n)⟩) l
+      (𝓝 ⟨μ.map Z, Measure.isProbabilityMeasure_map aemeasurable_limit⟩)
 
 lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z μ) :
     TendstoInDistribution (fun _ ↦ Z) l Z μ where
-  forall_aeMeasurable := fun _ ↦ by fun_prop
+  forall_aemeasurable := fun _ ↦ by fun_prop
   tendsto := tendsto_const_nhds
 
 lemma tendstoInDistribution_unique [HasOuterApproxClosed E] [BorelSpace E]
@@ -69,24 +69,15 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
     [TopologicalSpace F] [MeasurableSpace F] [BorelSpace F] {g : E → F} (hg : Continuous g)
     (h : TendstoInDistribution X l Z μ) :
     TendstoInDistribution (fun n ↦ g ∘ X n) l (g ∘ Z) μ where
-  forall_aeMeasurable := fun n ↦ hg.measurable.comp_aemeasurable (h.forall_aeMeasurable n)
-  aeMeasurable_limit := hg.measurable.comp_aemeasurable h.aeMeasurable_limit
+  forall_aemeasurable := fun n ↦ hg.measurable.comp_aemeasurable (h.forall_aemeasurable n)
+  aemeasurable_limit := hg.measurable.comp_aemeasurable h.aemeasurable_limit
   tendsto := by
-    have h_tendsto := h.tendsto
-    have hX := h.forall_aeMeasurable
-    have hZ := h.aeMeasurable_limit
-    rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto] at h_tendsto ⊢
-    intro f
-    specialize h_tendsto (f.compContinuous ⟨g, hg⟩)
-    simp only [ProbabilityMeasure.coe_mk, BoundedContinuousFunction.compContinuous_apply,
-      ContinuousMap.coe_mk] at h_tendsto
-    simp only [ProbabilityMeasure.coe_mk]
-    rw [← AEMeasurable.map_map_of_aemeasurable (by fun_prop) hZ,
-      integral_map (by fun_prop) (by fun_prop)]
-    convert h_tendsto with n
-    rw [integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop)]
-    · simp
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
+    convert ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg
+    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk, Subtype.mk.injEq]
+      rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable (h.forall_aemeasurable _)]
+    · simp only [ProbabilityMeasure.map, ProbabilityMeasure.coe_mk]
+      congr
+      rw [AEMeasurable.map_map_of_aemeasurable hg.aemeasurable h.aemeasurable_limit]
 
 end TendstoInDistribution
 
