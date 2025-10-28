@@ -92,9 +92,12 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
     exact LinearMap.isCompl_range_inl_inr
 
 @[simp]
-lemma implicitFunctionData_prodFun (h : IsContDiffImplicitAt n f f' a) :
-    (h.implicitFunctionData.leftFun h.implicitFunctionData.pt,
-      h.implicitFunctionData.rightFun h.implicitFunctionData.pt) = (a.1, f a) := rfl
+lemma implicitFunctionData_leftFun_pt (h : IsContDiffImplicitAt n f f' a) :
+    h.implicitFunctionData.leftFun h.implicitFunctionData.pt = a.1 := rfl
+
+@[simp]
+lemma implicitFunctionData_rightFun_pt (h : IsContDiffImplicitAt n f f' a) :
+    h.implicitFunctionData.rightFun h.implicitFunctionData.pt = f a := rfl
 
 /-- The implicit function provided by the general theorem, from which we construct the more useful
 form `IsContDiffImplicitAt.implicitFunction`. -/
@@ -105,7 +108,7 @@ lemma implicitFunctionAux_fst (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ p in 𝓝 (a.1, f a), (h.implicitFunctionAux p.1 p.2).1 = p.1 :=
   h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.fst
 
-lemma rightFun_implicitFunctionAux (h : IsContDiffImplicitAt n f f' a) :
+lemma comp_implicitFunctionAux_eq_snd (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ p in 𝓝 (a.1, f a), f (h.implicitFunctionAux p.1 p.2) = p.2 :=
   h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.snd
 
@@ -120,7 +123,7 @@ lemma implicitFunction_def (h : IsContDiffImplicitAt n f f' a) :
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
 lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ x in 𝓝 a.1, f (x, h.implicitFunction x) = f a := by
-  have := h.rightFun_implicitFunctionAux
+  have := h.comp_implicitFunctionAux_eq_snd
   have hfst := h.implicitFunctionAux_fst
   rw [nhds_prod_eq, eventually_swap_iff] at this hfst
   apply this.curry.self_of_nhds.mp
@@ -135,7 +138,7 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
 
 /-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
 also $C^n$ at `x`. -/
-theorem contDiff_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
+theorem contDiffAt_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
     ContDiffAt 𝕜 n h.implicitFunction a.1 := by
   have := h.implicitFunctionData.contDiff_implicitFunction contDiffAt_fst h.contDiffAt h.one_le
   rw [implicitFunction_def]
