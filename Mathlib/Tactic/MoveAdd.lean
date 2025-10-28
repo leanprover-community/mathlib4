@@ -9,7 +9,7 @@ import Mathlib.Order.Defs.LinearOrder
 
 /-!
 
-#  `move_add` a tactic for moving summands in expressions
+# `move_add` a tactic for moving summands in expressions
 
 The tactic `move_add` rearranges summands in expressions.
 
@@ -27,7 +27,7 @@ A term preceded by `←` gets moved to the left, while a term without `←` gets
   * `move_add [← a]` changes the goal to `a + b + c` (effectively, `a` moved to the left).
   * `move_add [a]` changes the goal to `b + c + a` (effectively, `a` moved to the right);
 
-  The tactic reorders *all* sub-expressions of the target at the same same.
+  The tactic reorders *all* sub-expressions of the target at the same time.
   For instance, if `⊢ 0 < if b + a < b + a + c then a + b else b + a` is the goal, then
   * `move_add [a]` changes the goal to `0 < if b + a < b + c + a then b + a else b + a`
     (`a` moved to the right in three sums);
@@ -125,7 +125,7 @@ section reorder
 variable {α : Type*} [BEq α]
 
 /-!
-##  Reordering the variables
+## Reordering the variables
 
 This section produces the permutations of the variables for `move_add`.
 
