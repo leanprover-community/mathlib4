@@ -570,6 +570,44 @@ theorem oangle_left_eq_arctan_of_oangle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : 
     angle_eq_arctan_of_angle_eq_pi_div_two (angle_rev_eq_pi_div_two_of_oangle_eq_pi_div_two h)
       (left_ne_of_oangle_eq_pi_div_two h)]
 
+/-- An oriented angle in a right-angled triangle (even a degenerate one) has absolute value less
+than `π / 2`. The right-angled property is expressed using unoriented angles to cover either
+orientation of right-angled triangles and include degenerate cases. -/
+lemma abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P}
+    (h : ∠ p₁ p₂ p₃ = π / 2) : |(∡ p₂ p₃ p₁).toReal| < π / 2 := by
+  by_cases hp₂ : p₂ = p₃
+  · simp [hp₂, Real.pi_pos]
+  by_cases hp₁ : p₁ = p₃
+  · simp [hp₁, Real.pi_pos]
+  rw [← angle_eq_abs_oangle_toReal hp₂ hp₁]
+  exact angle_lt_pi_div_two_of_angle_eq_pi_div_two h (Ne.symm hp₂)
+
+/-- Two oriented angles in right-angled triangles are equal if twice those angles are equal. -/
+lemma oangle_eq_oangle_of_two_zsmul_eq_of_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ p₅ p₆ : P}
+    (h : (2 : ℤ) • ∡ p₂ p₃ p₁ = (2 : ℤ) • ∡ p₅ p₆ p₄) (h₁₂₃ : ∠ p₁ p₂ p₃ = π / 2)
+    (h₄₅₆ : ∠ p₄ p₅ p₆ = π / 2) : ∡ p₂ p₃ p₁ = ∡ p₅ p₆ p₄ := by
+  rwa [Real.Angle.two_zsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two
+    (abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₁₂₃)
+    (abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₄₅₆)] at h
+
+/-- Two oriented angles in oppositely-oriented right-angled triangles are equal if twice those
+angles are equal. -/
+lemma oangle_eq_oangle_rev_of_two_zsmul_eq_of_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ p₅ p₆ : P}
+    (h : (2 : ℤ) • ∡ p₂ p₃ p₁ = (2 : ℤ) • ∡ p₄ p₆ p₅) (h₁₂₃ : ∠ p₁ p₂ p₃ = π / 2)
+    (h₄₅₆ : ∠ p₄ p₅ p₆ = π / 2) : ∡ p₂ p₃ p₁ = ∡ p₄ p₆ p₅ := by
+  refine (Real.Angle.two_zsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two
+    (abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₁₂₃) ?_).1 h
+  rw [oangle_rev]
+  suffices |(∡ p₅ p₆ p₄).toReal| < π / 2 by
+    convert this using 1
+    nth_rw 2 [← abs_neg]
+    congr
+    rw [Real.Angle.toReal_neg_eq_neg_toReal_iff]
+    intro hc
+    simp only [hc, Real.Angle.toReal_pi, abs_of_pos Real.pi_pos] at this
+    linarith [Real.pi_pos]
+  exact abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₄₅₆
+
 /-- The cosine of an angle in a right-angled triangle as a ratio of sides. -/
 theorem cos_oangle_right_of_oangle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∡ p₁ p₂ p₃ = ↑(π / 2)) :
     Real.Angle.cos (∡ p₂ p₃ p₁) = dist p₃ p₂ / dist p₁ p₃ := by
