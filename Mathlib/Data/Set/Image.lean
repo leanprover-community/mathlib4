@@ -1257,14 +1257,8 @@ theorem range_elim {α β} (b : β) (f : α → β) :
 /-- The image of `range some` under `Option.elim b f` equals `range f`. -/
 theorem image_elim_range_some_eq_range {α β} (f : α → β) (b : β) :
     (fun o : Option α => o.elim b f) '' range some = range f := by
-  ext y
-  simp only [mem_range, mem_image]
-  constructor
-  · intro ⟨x, ⟨i, hi⟩, hx_eq⟩
-    subst hi
-    exact ⟨i, hx_eq⟩
-  · intro ⟨i, hi⟩
-    exact ⟨some i, ⟨i, rfl⟩, hi⟩
+  rw [← range_comp']
+  simp
 
 end Option
 
