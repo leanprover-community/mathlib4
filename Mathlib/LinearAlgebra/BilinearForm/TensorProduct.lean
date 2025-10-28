@@ -48,13 +48,13 @@ Note this is heterobasic; the bilinear map on the left can take values in a modu
 (commutative) algebra over the ring of the module in which the right bilinear map is valued. -/
 def tensorDistrib :
     (BilinMap A M₁ N₁ ⊗[R] BilinMap R M₂ N₂) →ₗ[A] BilinMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
-  (TensorProduct.lift.equiv (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) (.id A)).symm.toLinearMap ∘ₗ
+  (TensorProduct.lift.equiv (.id A) (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)).symm.toLinearMap ∘ₗ
   ((LinearMap.llcomp A _ _ _).flip
     (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R A A M₁ M₂ M₁ M₂).toLinearMap)
   ∘ₗ TensorProduct.AlgebraTensorModule.homTensorHomMap R _ _ _ _ _ _
   ∘ₗ (TensorProduct.AlgebraTensorModule.congr
-    (TensorProduct.lift.equiv M₁ M₁ N₁ (.id A))
-    (TensorProduct.lift.equiv _ _ _ (.id R))).toLinearMap
+    (TensorProduct.lift.equiv (.id A) M₁ M₁ N₁)
+    (TensorProduct.lift.equiv (.id R) _ _ _)).toLinearMap
 
 @[simp]
 theorem tensorDistrib_tmul (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂ N₂) (m₁ : M₁) (m₂ : M₂)
@@ -164,10 +164,10 @@ noncomputable def tensorDistribEquiv :
   -- the same `LinearEquiv`s as from `tensorDistrib`,
   -- but with the inner linear map also as an equiv
   TensorProduct.congr
-    (TensorProduct.lift.equiv _ _ _ (.id R)) (TensorProduct.lift.equiv _ _ _ (.id R)) ≪≫ₗ
+    (TensorProduct.lift.equiv (.id R) _ _ _) (TensorProduct.lift.equiv (.id R) _ _ _) ≪≫ₗ
   TensorProduct.dualDistribEquiv R (M₁ ⊗ M₁) (M₂ ⊗ M₂) ≪≫ₗ
   (TensorProduct.tensorTensorTensorComm R _ _ _ _).dualMap ≪≫ₗ
-  (TensorProduct.lift.equiv _ _ _ (.id R)).symm
+  (TensorProduct.lift.equiv (.id R) _ _ _).symm
 
 @[simp]
 theorem tensorDistribEquiv_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)

@@ -731,7 +731,7 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
           ModuleCat.MonoidalCategory.tensorObj, ModuleCat.endRingEquiv] using
           hom_comm_apply f g (A.ρ g⁻¹ y ⊗ₜ[k] x) }
   invFun f :=
-    { hom := ModuleCat.ofHom <| TensorProduct.uncurry _ _ _ (.id k) f.hom.hom.flip
+    { hom := ModuleCat.ofHom <| TensorProduct.uncurry (.id k) _ _ _ f.hom.hom.flip
       comm g := ModuleCat.hom_ext <| TensorProduct.ext' fun x y => by
         simpa using LinearMap.ext_iff.1 (hom_comm_apply f g y) (A.ρ g x) }
   left_inv _ := Action.Hom.ext (ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl)
@@ -759,7 +759,7 @@ theorem homEquiv_def (A B C : Rep k G) : (ihom.adjunction A).homEquiv B C = Rep.
 @[simp]
 theorem ihom_ev_app_hom (A B : Rep k G) :
     Action.Hom.hom ((ihom.ev A).app B) = ModuleCat.ofHom
-      (TensorProduct.uncurry A (A →ₗ[k] B) B (.id k) LinearMap.id.flip) := by
+      (TensorProduct.uncurry (.id k) A (A →ₗ[k] B) B LinearMap.id.flip) := by
   ext; rfl
 
 @[simp] theorem ihom_coev_app_hom (A B : Rep k G) :
@@ -796,13 +796,13 @@ theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
 
 theorem MonoidalClosed.linearHomEquiv_symm_hom (f : B ⟶ A ⟶[Rep k G] C) :
     ((MonoidalClosed.linearHomEquiv A B C).symm f).hom =
-      ModuleCat.ofHom (TensorProduct.uncurry A B C (.id k) f.hom.hom.flip) := by
+      ModuleCat.ofHom (TensorProduct.uncurry (.id k) A B C f.hom.hom.flip) := by
   simp [linearHomEquiv]
   rfl
 
 theorem MonoidalClosed.linearHomEquivComm_symm_hom (f : A ⟶ B ⟶[Rep k G] C) :
     ((MonoidalClosed.linearHomEquivComm A B C).symm f).hom =
-      ModuleCat.ofHom (TensorProduct.uncurry A B C (.id k) f.hom.hom) :=
+      ModuleCat.ofHom (TensorProduct.uncurry (.id k) A B C f.hom.hom) :=
   ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl
 
 end MonoidalClosed
