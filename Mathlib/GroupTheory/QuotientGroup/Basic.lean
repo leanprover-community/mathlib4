@@ -15,7 +15,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 /-!
 # Quotients of groups by normal subgroups
 
-This files develops the basic theory of quotients of groups by normal subgroups. In particular it
+This file develops the basic theory of quotients of groups by normal subgroups. In particular, it
 proves Noether's first and second isomorphism theorems.
 
 ## Main statements

@@ -381,7 +381,7 @@ def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
   le' s := s.measurable_restrict.comap_le
 
 lemma piFinset_eq_comap_restrict (s : Finset ι) :
-    piFinset (X := X) s = pi.comap s.toSet.restrict := rfl
+    piFinset (X := X) s = pi.comap (s : Set ι).restrict := rfl
 
 end piFinset
 

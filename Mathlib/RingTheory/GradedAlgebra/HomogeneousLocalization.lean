@@ -229,8 +229,6 @@ theorem den_add (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 + c2).den : A) = c1.den * 
   rfl
 
 instance : CommMonoid (NumDenSameDeg 𝒜 x) where
-  one := 1
-  mul := (· * ·)
   mul_assoc _ _ _ := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
   one_mul _ := ext _ (zero_add _) (one_mul _) (one_mul _)
   mul_one _ := ext _ (add_zero _) (mul_one _) (mul_one _)
@@ -538,7 +536,7 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
   refine ⟨fun h1 ↦ ?_, IsUnit.map (algebraMap _ _)⟩
   rcases h1 with ⟨⟨a, b, eq0, eq1⟩, rfl : a = f.val⟩
   obtain ⟨f, rfl⟩ := mk_surjective f
-  obtain ⟨b, s, rfl⟩ := IsLocalization.mk'_surjective 𝔭.primeCompl b
+  obtain ⟨b, s, rfl⟩ := IsLocalization.exists_mk'_eq 𝔭.primeCompl b
   rw [val_mk, Localization.mk_eq_mk', ← IsLocalization.mk'_mul, IsLocalization.mk'_eq_iff_eq_mul,
     one_mul, IsLocalization.eq_iff_exists (M := 𝔭.primeCompl)] at eq0
   obtain ⟨c, hc : _ = c.1 * (f.den.1 * s.1)⟩ := eq0
