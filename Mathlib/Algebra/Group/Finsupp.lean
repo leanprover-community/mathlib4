@@ -136,13 +136,6 @@ lemma support_add_single {a : ι} {b : M} {f : ι →₀ M} (ha : a ∉ f.suppor
   rw [support_add_eq, H, union_comm, cons_eq_insert, insert_eq]
   rwa [H, disjoint_singleton_right]
 
-lemma support_single_add_single [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M}
-    (H : f₁ ≠ f₂) (hg₁ : g₁ ≠ 0) (hg₂ : g₂ ≠ 0) :
-    (single f₁ g₁ + single f₂ g₂).support = {f₁, f₂} := by
-  rw [support_add_eq, support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂]
-  · simp [pair_comm f₂ f₁]
-  · simp [support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂, H.symm]
-
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
     AddEquiv.finsuppUnique.symm d = single () d := by
   rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
