@@ -108,7 +108,7 @@ lemma implicitFunctionAux_fst (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ p in 𝓝 (a.1, f a), (h.implicitFunctionAux p.1 p.2).1 = p.1 :=
   h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.fst
 
-lemma rightFun_implicitFunctionAux (h : IsContDiffImplicitAt n f f' a) :
+lemma comp_implicitFunctionAux_eq_snd (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ p in 𝓝 (a.1, f a), f (h.implicitFunctionAux p.1 p.2) = p.2 :=
   h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.snd
 
@@ -123,7 +123,7 @@ lemma implicitFunction_def (h : IsContDiffImplicitAt n f f' a) :
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
 lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
     ∀ᶠ x in 𝓝 a.1, f (x, h.implicitFunction x) = f a := by
-  have := h.rightFun_implicitFunctionAux
+  have := h.comp_implicitFunctionAux_eq_snd
   have hfst := h.implicitFunctionAux_fst
   rw [nhds_prod_eq, eventually_swap_iff] at this hfst
   apply this.curry.self_of_nhds.mp
