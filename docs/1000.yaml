@@ -81,9 +81,11 @@ Q179208:
 Q179467:
   title: Fourier theorem
   decls:
-    # further generalisations possible; the wikipedia page is *really* vague
-    - UnitAddTorus.hasSum_mFourier_series_L2
-    - hasSum_fourier_series_L2
+    - MeasureTheory.Integrable.fourier_inversion
+    - Continuous.fourier_inversion
+  authors: Sébastien Gouezel
+  year: 2024
+  comment: "The wikipedia page is really vague; it's not clear what is meant here. While mathlib has some material already, there is space for more advanced results."
 
 Q179692:
   title: Independence of the axiom of choice
