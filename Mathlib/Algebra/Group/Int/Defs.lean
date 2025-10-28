@@ -48,6 +48,9 @@ instance instAddCommGroup : AddCommGroup ℤ where
   zsmul_neg' m n := by simp only [negSucc_eq, natCast_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
 
+instance instIsAddTorsionFree : IsAddTorsionFree ℤ where
+  nsmul_right_injective _n hn _x _y := Int.eq_of_mul_eq_mul_left (by cutsat)
+
 /-!
 ### Extra instances to short-circuit type class resolution
 
