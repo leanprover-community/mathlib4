@@ -27,7 +27,7 @@ theorem not_surjective : Surjective Bool.not :=  Equiv.boolNot.surjective
 theorem not_leftInverse : LeftInverse Bool.not Bool.not := Bool.not_not
 theorem not_rightInverse : RightInverse Bool.not Bool.not := Bool.not_not
 
-theorem not_HasLeftInverse : HasLeftInverse (Bool.not) := ⟨Bool.not, not_leftInverse⟩
-theorem not_HasRightInverse : HasRightInverse (Bool.not) := ⟨Bool.not, not_rightInverse⟩
+theorem not_HasLeftInverse : HasLeftInverse Bool.not := ⟨Bool.not, not_leftInverse⟩
+theorem not_HasRightInverse : HasRightInverse Bool.not := ⟨Bool.not, not_rightInverse⟩
 
 end Bool
