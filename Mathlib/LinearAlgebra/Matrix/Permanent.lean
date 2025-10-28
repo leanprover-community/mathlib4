@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Matrix.RowCol
+import Mathlib.LinearAlgebra.Matrix.RowCol
 /-!
 # Permanent of a matrix
 

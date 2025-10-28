@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
+import Mathlib.Data.Nat.Basic
+import Mathlib.Order.Basic
 
 /-!
 # Lists with no duplicates
@@ -79,11 +81,8 @@ theorem nodup_iff_injective_getElem {l : List α} :
       · exact (h j i hj hi hji hg.symm).elim,
       fun hinj i j hi hj hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (@hinj ⟨i, hi⟩ ⟨j, hj⟩ h))⟩
 
-theorem nodup_iff_injective_get {l : List α} :
-    Nodup l ↔ Function.Injective l.get := by
-  rw [nodup_iff_injective_getElem]
-  change _ ↔ Injective (fun i => l.get i)
-  simp
+theorem nodup_iff_injective_get {l : List α} : Nodup l ↔ Function.Injective l.get :=
+  nodup_iff_injective_getElem
 
 theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
     l.get i = l.get j ↔ i = j :=
@@ -97,20 +96,7 @@ theorem Nodup.getElem_inj_iff {l : List α} (h : Nodup l)
 
 theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l[i]? ≠ l[j]? := by
-  rw [Nodup, pairwise_iff_getElem]
-  constructor
-  · intro h i j hij hj
-    rw [getElem?_eq_getElem (lt_trans hij hj), getElem?_eq_getElem hj, Ne, Option.some_inj]
-    exact h _ _ (by omega) hj hij
-  · intro h i j hi hj hij
-    rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
-    exact h i j hij hj
-
-set_option linter.deprecated false in
-@[deprecated nodup_iff_getElem?_ne_getElem? (since := "2025-02-17")]
-theorem nodup_iff_get?_ne_get? {l : List α} :
-    l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
-  simp [nodup_iff_getElem?_ne_getElem?]
+  grind [List.pairwise_iff_getElem]
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
@@ -154,6 +140,15 @@ theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup l ↔ ∀ a ∈ l, count
     ⟨fun H h => H.antisymm (count_pos_iff.mpr h),
      fun H => if h : _ then (H h).le else (count_eq_zero.mpr h).trans_le (Nat.zero_le 1)⟩
 
+theorem get_bijective_iff [DecidableEq α] : l.get.Bijective ↔ ∀ a, l.count a = 1 :=
+  ⟨fun h a ↦ (nodup_iff_count_eq_one.mp <| nodup_iff_injective_get.mpr h.injective)
+    a <| mem_iff_get.mpr <| h.surjective a,
+  fun h ↦ ⟨nodup_iff_injective_get.mp <| nodup_iff_count_eq_one.mpr fun a _ ↦ h a,
+    fun a ↦ mem_iff_get.mp <| List.one_le_count_iff.mp <| by grind⟩⟩
+
+theorem getElem_bijective_iff [DecidableEq α] :
+    (fun (n : Fin l.length) ↦ l[n]).Bijective ↔ ∀ a, l.count a = 1 :=
+  get_bijective_iff
 
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
@@ -231,8 +226,7 @@ protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
-  rw [pmap_eq_map_attach]
-  exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
+  grind
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
   simpa using Pairwise.filter p
@@ -270,14 +264,7 @@ theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
   | cons a l IH =>
     cases i with
     | zero => simp
-    | succ i =>
-      rw [nodup_cons] at hl
-      rw [erase_cons_tail]
-      · simp [IH hl.2]
-      · rw [beq_iff_eq]
-        simp only [getElem_cons_succ]
-        simp only [length_cons, Nat.add_lt_add_iff_right] at h
-        exact mt (· ▸ getElem_mem h) hl.1
+    | succ i => grind
 
 theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) (i : Fin l.length) :
     l.erase (l.get i) = l.eraseIdx ↑i := by
@@ -374,7 +361,7 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (l.take n).elem
   | [], n, _ => by simp
   | b::l, 0, _ => by simp
-  | b::l, n+1, hl => by
+  | b::l, n + 1, hl => by
     rw [take_succ_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), filter_cons_of_pos (by simp)]
     congr 1
     refine List.filter_congr ?_

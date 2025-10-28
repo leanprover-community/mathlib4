@@ -69,26 +69,31 @@ lemma isPiSystem_prod :
     IsPiSystem (image2 (· ×ˢ ·) { s : Set α | MeasurableSet s } { t : Set β | MeasurableSet t }) :=
   isPiSystem_measurableSet.prod isPiSystem_measurableSet
 
+/-- The comap of a product is the supremum of the comaps. -/
+lemma MeasurableSpace.comap_prodMk {α β γ : Type*} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+    (X : α → β) (Y : α → γ) :
+    (mβ.prod mγ).comap (fun ω ↦ (X ω, Y ω)) = mβ.comap X ⊔ mγ.comap Y := by
+  simp_rw [MeasurableSpace.prod, comap_sup, comap_comp]
+  rfl
+
+/-- The comap of `Prod.map` is the product of the comaps. -/
+lemma MeasurableSpace.comap_prodMap {α β γ δ : Type*}
+    {mα : MeasurableSpace α} {mβ : MeasurableSpace β} (X : γ → α) (Y : δ → β) :
+    (mα.prod mβ).comap (Prod.map X Y) = (mα.comap X).prod (mβ.comap Y) := by
+  simp_rw [MeasurableSpace.prod, comap_sup, comap_comp]
+  rfl
+
+/-- `Prod.map` of two measurable embeddings is a measurable embedding. -/
 lemma MeasurableEmbedding.prodMap {α β γ δ : Type*} {mα : MeasurableSpace α}
     {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : α → β}
     {g : γ → δ} (hg : MeasurableEmbedding g) (hf : MeasurableEmbedding f) :
     MeasurableEmbedding (Prod.map g f) := by
+  rw [MeasurableEmbedding.iff_comap_eq]
   refine ⟨hg.injective.prodMap hf.injective, ?_, ?_⟩
-  · exact (hg.measurable.comp measurable_fst).prodMk (hf.measurable.comp measurable_snd)
-  · intro s hs
-    -- Induction using the π-system of rectangles
-    induction s, hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
-    | empty =>
-      simp only [Set.image_empty, MeasurableSet.empty]
-    | basic s hs =>
-      obtain ⟨t₁, ht₁, t₂, ht₂, rfl⟩ := hs
-      simp_rw [Prod.map, ← prod_image_image_eq]
-      exact (hg.measurableSet_image.mpr ht₁).prod (hf.measurableSet_image.mpr ht₂)
-    | compl s _ ihs =>
-      rw [← range_diff_image (hg.injective.prodMap hf.injective), range_prodMap]
-      exact .diff (.prod hg.measurableSet_range hf.measurableSet_range) ihs
-    | iUnion f _ _ ihf =>
-      simpa only [image_iUnion] using .iUnion ihf
+  · rw [Prod.instMeasurableSpace, Prod.instMeasurableSpace, MeasurableSpace.comap_prodMap,
+      hg.comap_eq, hf.comap_eq]
+  · rw [range_prodMap]
+    exact hg.measurableSet_range.prod hf.measurableSet_range
 
 lemma MeasurableEmbedding.prodMk_left {β γ : Type*} [MeasurableSingletonClass α]
     {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}

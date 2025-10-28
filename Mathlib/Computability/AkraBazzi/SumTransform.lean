@@ -12,17 +12,16 @@ import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 /-!
 # Akra-Bazzi theorem: the sum transform
 
-We develop further required preliminaries for the theorem, up to the sum transform.
+We develop further preliminaries required for the theorem, up to the sum transform.
 
 ## Main definitions and results
 
 * `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
   recurrence with parameters `g`, `a`, `b` and `r` as above.
-* `GrowsPolynomially`: The growth condition that `g` must satisfy for the theorem to apply.
-  It roughly states that
-  `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant `b ∈ (0,1)`.
 * `sumTransform`: The transformation which turns a function `g` into
   `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`.
+* `asympBound`: The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
+  `n^p (1 + ∑ g(u) / u^(p+1))`
 
 
 ## References
@@ -37,10 +36,10 @@ open Finset Real Filter Asymptotics
 open scoped Topology
 
 /-!
-#### Definition of Akra-Bazzi recurrences
+### Definition of Akra-Bazzi recurrences
 
 This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
-satisfies the recurrence
+satisfies the recurrence relation
 `T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)`
 with appropriate conditions on the various parameters.
 -/
@@ -51,13 +50,13 @@ structure AkraBazziRecurrence {α : Type*} [Fintype α] [Nonempty α]
     (T : ℕ → ℝ) (g : ℝ → ℝ) (a : α → ℝ) (b : α → ℝ) (r : α → ℕ → ℕ) where
   /-- Point below which the recurrence is in the base case -/
   n₀ : ℕ
-  /-- `n₀` is always `> 0` -/
+  /-- `n₀` is always positive -/
   n₀_gt_zero : 0 < n₀
-  /-- The `a`'s are nonzero -/
+  /-- The coefficients `a i` are positive. -/
   a_pos : ∀ i, 0 < a i
-  /-- The `b`'s are nonzero -/
+  /-- The coefficients `b i` are positive. -/
   b_pos : ∀ i, 0 < b i
-  /-- The b's are less than 1 -/
+  /-- The coefficients `b i` are less than 1. -/
   b_lt_one : ∀ i, b i < 1
   /-- `g` is nonnegative -/
   g_nonneg : ∀ x ≥ 0, 0 ≤ g x
@@ -67,9 +66,9 @@ structure AkraBazziRecurrence {α : Type*} [Fintype α] [Nonempty α]
   h_rec (n : ℕ) (hn₀ : n₀ ≤ n) : T n = (∑ i, a i * T (r i n)) + g n
   /-- Base case: `T(n) > 0` whenever `n < n₀` -/
   T_gt_zero' (n : ℕ) (hn : n < n₀) : 0 < T n
-  /-- The `r`'s always reduce `n` -/
+  /-- The functions `r i` always reduce `n`. -/
   r_lt_n : ∀ i n, n₀ ≤ n → r i n < n
-  /-- The `r`'s approximate the `b`'s -/
+  /-- The functions `r i` approximate the values `b i * n`. -/
   dist_r_b : ∀ i, (fun n => (r i n : ℝ) - b i * n) =o[atTop] fun n => n / (log n) ^ 2
 
 namespace AkraBazziRecurrence
@@ -161,7 +160,7 @@ lemma bi_min_div_two_lt_one : b (min_bi b) / 2 < 1 := by
     _ < b (min_bi b) := by aesop (add safe apply div_two_lt_of_pos)
     _ < 1 := R.b_lt_one _
 
-lemma bi_min_div_two_pos : 0 < b (min_bi b) / 2 := div_pos (R.b_pos _) (by norm_num)
+lemma bi_min_div_two_pos : 0 < b (min_bi b) / 2 := div_pos (R.b_pos _) (by simp)
 
 lemma exists_eventually_const_mul_le_r :
     ∃ c ∈ Set.Ioo (0 : ℝ) 1, ∀ᶠ (n : ℕ) in atTop, ∀ i, c * n ≤ r i n := by
@@ -246,7 +245,7 @@ lemma T_nonneg (n : ℕ) : 0 ≤ T n := le_of_lt <| R.T_pos n
 end
 
 /-!
-#### Smoothing function
+### Smoothing function
 
 We define `ε` as the "smoothing function" `fun n => 1 / log n`, which will be used in the form of a
 factor of `1 ± ε n` needed to make the induction step go through.
@@ -403,7 +402,7 @@ lemma eventually_one_add_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 + ε
   have h₁ := isLittleO_smoothingFn_one
   rw [isLittleO_iff] at h₁
   refine Eventually.natCast_atTop (p := fun n => 0 < 1 + ε n) ?_
-  filter_upwards [h₁ (by norm_num : (0 : ℝ) < 1 / 2), eventually_gt_atTop 1] with x _ hx'
+  filter_upwards [h₁ (by simp : (0 : ℝ) < 1 / 2), eventually_gt_atTop 1] with x _ hx'
   have : 0 < log x := Real.log_pos hx'
   change 0 < 1 + 1 / log x
   positivity
@@ -471,14 +470,14 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
       rw [← isTheta_const_mul_right this]
 
 /-!
-#### Akra-Bazzi exponent `p`
+### Akra-Bazzi exponent `p`
 
 Every Akra-Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
-`∑ a_i b_i^p = 1`.  This section shows the existence and uniqueness of this exponent `p` for any
-`R : AkraBazziRecurrence`, and defines `R.asympBound` to be the asymptotic bound satisfied by `R`,
-namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
+`∑ a_i b_i^p = 1`. This section shows the existence and uniqueness of this exponent `p` for any
+`R : AkraBazziRecurrence`. These results are used in the next section to define the asymptotic
+bound expression. -/
 
-@[continuity]
+@[continuity, fun_prop]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
   refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by fun_prop) ?_
   exact Continuous.rpow continuous_const continuous_id (fun x => Or.inl (ne_of_gt (R.b_pos i)))
@@ -504,9 +503,7 @@ lemma tendsto_atTop_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) 
       (by have := R.b_pos (max_bi b); linarith) (R.b_lt_one _)
   refine tendsto_atTop_mono (fun p => ?_) h₁
   refine Finset.single_le_sum (f := fun i => (a i : ℝ) * b i ^ p) (fun i _ => ?_) (mem_univ _)
-  have h₁ : 0 < a i := R.a_pos i
-  have h₂ : 0 < b i := R.b_pos i
-  positivity
+  positivity [R.a_pos i, R.b_pos i]
 
 lemma one_mem_range_sumCoeffsExp : 1 ∈ Set.range (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
   refine mem_range_of_exists_le_of_exists_ge R.continuous_sumCoeffsExp ?le_one ?ge_one
@@ -526,23 +523,24 @@ variable (a b) in
 noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
 
 include R in
--- Cannot be @[simp] because `T`, `g`, `r`, and `R` can not be inferred by `simp`.
+-- Cannot be @[simp] because `T`, `g`, `r`, and `R` cannot be inferred by `simp`.
 lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
   simp only [p]
   exact Function.invFun_eq (by rw [← Set.mem_range]; exact R.one_mem_range_sumCoeffsExp)
 
 /-!
-#### The sum transform
+### The sum transform
 
 This section defines the "sum transform" of a function `g` as
-`∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`,
-and uses it to define `asympBound` as the bound satisfied by an Akra-Bazzi recurrence.
+`∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`, and uses it to define `asympBound` as the bound satisfied
+by an Akra-Bazzi recurrence, namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. Here, the exponent `p`
+refers to the one established in the previous section.
 
 Several properties of the sum transform are then proven.
 -/
 
-/-- The transformation which turns a function `g` into
-`n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`. -/
+/-- The transformation that turns a function `g` into
+`n ^ p * ∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1)`. -/
 noncomputable def sumTransform (p : ℝ) (g : ℝ → ℝ) (n₀ n : ℕ) :=
   n ^ p * ∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1)
 
@@ -599,10 +597,10 @@ lemma eventually_atTop_sumTransform_le :
          _ ≤ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
           gcongr with u hu
           rw [Finset.mem_Ico] at hu
-          have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+          have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
           refine hn₂ u ?_
           rw [Set.mem_Icc]
-          refine ⟨?_, by norm_cast; omega⟩
+          refine ⟨?_, by norm_cast; cutsat⟩
           calc c₁ * n ≤ r i n := by exact hn₁ i
                     _ ≤ u := by exact_mod_cast hu'.1
          _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
@@ -631,10 +629,10 @@ lemma eventually_atTop_sumTransform_le :
       _ ≤ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; omega⟩
+        refine ⟨?_, by norm_cast; cutsat⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u     := by exact_mod_cast hu'.1
       _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
@@ -643,7 +641,7 @@ lemma eventually_atTop_sumTransform_le :
         have : 0 < u := calc
           0 < r i n := by exact hrpos_i
           _ ≤ u := by exact hu.1
-        exact rpow_le_rpow_of_exponent_nonpos (by positivity)
+        exact rpow_le_rpow_of_nonpos (by positivity)
           (by exact_mod_cast (le_of_lt hu.2)) (le_of_lt hp)
       _ ≤ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / n ^ (p a b + 1)) := by
         gcongr; exact Finset.sum_le_card_nsmul _ _ _ (fun x _ => by rfl)
@@ -678,10 +676,10 @@ lemma eventually_atTop_sumTransform_ge :
       _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; omega⟩
+        refine ⟨?_, by norm_cast; cutsat⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u     := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
@@ -712,10 +710,10 @@ lemma eventually_atTop_sumTransform_ge :
       _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; omega⟩
+        refine ⟨?_, by norm_cast; cutsat⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
@@ -725,7 +723,7 @@ lemma eventually_atTop_sumTransform_ge :
                       _ ≤ u := hu.1
           positivity
         · rw [Finset.mem_Ico] at hu
-          exact rpow_le_rpow_of_exponent_nonpos (by positivity)
+          exact rpow_le_rpow_of_nonpos (by positivity)
             (by exact_mod_cast hu.1) (le_of_lt hp)
       _ ≥ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / r i n ^ (p a b + 1)) := by
           gcongr; exact Finset.card_nsmul_le_sum _ _ _ (fun x _ => by rfl)
@@ -733,7 +731,7 @@ lemma eventually_atTop_sumTransform_ge :
           rw [nsmul_eq_mul, mul_assoc]
       _ ≥ n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / (c₁ * n) ^ (p a b + 1)) := by
           gcongr n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / ?_)
-          exact rpow_le_rpow_of_exponent_nonpos (by positivity) (hn₁ i) (le_of_lt hp)
+          exact rpow_le_rpow_of_nonpos (by positivity) (hn₁ i) (le_of_lt hp)
       _ = n ^ (p a b) * (n - r i n) * (c₂ * g n / (c₁ * n) ^ ((p a b) + 1)) := by
           congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
       _ ≥ n ^ (p a b) * (n - c₃ * n) * (c₂ * g n / (c₁ * n) ^ ((p a b) + 1)) := by

@@ -13,7 +13,7 @@ import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 # Gagliardo-Nirenberg-Sobolev inequality
 
 In this file we prove the Gagliardo-Nirenberg-Sobolev inequality.
-This states that for compactly supported `C¹`-functions between finite dimensional vector spaces,
+This states that for compactly supported `C¹`-functions between finite-dimensional vector spaces,
 we can bound the `L^p`-norm of `u` by the `L^q` norm of the derivative of `u`.
 The bound is up to a constant that is independent of the function `u`.
 Let `n` be the dimension of the domain.
@@ -276,11 +276,12 @@ theorem lintegral_prod_lintegral_pow_le [Fintype ι] [∀ i, SigmaFinite (μ i)]
   have h0 : (1 : ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
   have h1 : (0 : ℝ) < #ι - 1 := by linarith
   have h2 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
-  have h3 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp
-  have h4 : p = 1 + 1 / (↑#ι - 1) := by field_simp; rw [mul_comm, hp.sub_one_mul_conj]
+  have h3 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp; rfl
+  have h4 : p = 1 + 1 / (↑#ι - 1) := by simp [field]; rw [mul_comm, hp.sub_one_mul_conj]
   rw [h4]
   convert lintegral_mul_prod_lintegral_pow_le μ h2 h3 hf using 2
   field_simp
+  simp
 
 end DecidableEq
 
@@ -380,8 +381,6 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
   have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp [hιcard]
   let e : E ≃L[ℝ] ι → ℝ := ContinuousLinearEquiv.ofFinrankEq this
-  have : IsAddHaarMeasure ((volume : Measure (ι → ℝ)).map e.symm) :=
-    (e.symm : (ι → ℝ) ≃+ E).isAddHaarMeasure_map _ e.symm.continuous e.symm.symm.continuous
   have hp : Real.HolderConjugate #ι p := by rwa [hιcard]
   have h0p : 0 ≤ p := hp.symm.nonneg
   let c := addHaarScalarFactor μ ((volume : Measure (ι → ℝ)).map e.symm)
@@ -491,10 +490,12 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   · convert eLpNorm_le_eLpNorm_fderiv_one μ hu h2u hn using 2
     · suffices (p' : ℝ) = n' by simpa using this
       rw [← inv_inj, hp']
-      field_simp [n', NNReal.conjExponent]
+      simp [field, n', NNReal.conjExponent, *]
     · norm_cast
       simp_rw [n', n, eLpNormLESNormFDerivOfEqInnerConst]
+      simp only [n, NNReal.coe_one] at hnp
       field_simp
+      simp
   -- the case `p > 1`
   let q := Real.conjExponent p
   have hq : Real.HolderConjugate p q := .conjExponent hp
@@ -512,11 +513,11 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     exact hn.coe.pos
   have h2γ : γ * n' = p' := by
     rw [← NNReal.coe_inj, ← inv_inj, hp', NNReal.coe_mul, h0γ, hn.coe.conjugate_eq]
-    field_simp; ring
+    simp [field]
   have h3γ : (γ - 1) * q = p' := by
     rw [← inv_inj, hp', h0γ, hq.conjugate_eq]
     have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
-    field_simp [this]; ring
+    simp [field, this]
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
   by_cases h3u : ∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ = 0
   · rw [eLpNorm_nnreal_eq_lintegral hp'0, h3u, ENNReal.zero_rpow_of_pos] <;> positivity
@@ -541,9 +542,9 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖ₑ ∂μ := by rw [eLpNorm_one_eq_lintegral_enorm]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖ₑ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖ₑ ∂μ := by
       rw [mul_assoc, ← lintegral_const_mul γ]
-      gcongr
-      simp_rw [← mul_assoc]
-      exact enorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
+      · gcongr
+        simp_rw [← mul_assoc]
+        exact enorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
       dsimp [enorm]
       fun_prop
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) *
@@ -588,7 +589,7 @@ with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
 Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-This is the version where the codomain of `u` is a finite dimensional normed space.
+This is the version where the codomain of `u` is a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
     {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u)
@@ -644,7 +645,7 @@ function `u` supported in a bounded set `s` in a normed space `E` of finite dime
 Then the `L^q` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-Note: The codomain of `u` needs to be a finite dimensional normed space.
+Note: The codomain of `u` needs to be a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s)
@@ -696,7 +697,7 @@ function `u` supported in a bounded set `s` in a normed space `E` of finite dime
 Then the `Lᵖ` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-Note: The codomain of `u` needs to be a finite dimensional normed space.
+Note: The codomain of `u` needs to be a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv [FiniteDimensional ℝ F]
     {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s)

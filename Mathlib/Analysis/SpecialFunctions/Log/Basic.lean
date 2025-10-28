@@ -5,7 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Nat.Factorization.Defs
-import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
@@ -363,16 +363,31 @@ theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
   exact not_tendsto_nhds_of_tendsto_atBot tendsto_log_nhdsNE_zero _ <|
     h.tendsto.mono_left nhdsWithin_le_nhds
 
-theorem log_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
+open List in
+lemma log_list_prod {l : List ℝ} (h : ∀ x ∈ l, x ≠ 0) :
+    log l.prod = (l.map (fun x ↦ log x)).sum := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    simp_all only [ne_eq, mem_cons, or_true, not_false_eq_true, forall_const, forall_eq_or_imp,
+      prod_cons, map_cons, sum_cons]
+    have : l.prod ≠ 0 := by grind [prod_ne_zero]
+    rw [log_mul h.1 this, add_right_inj, ih]
+
+open Multiset in
+lemma log_multiset_prod {s : Multiset ℝ} (h : ∀ x ∈ s, x ≠ 0) :
+    log s.prod = (s.map (fun x ↦ log x)).sum := by
+  rw [← prod_toList, log_list_prod (by simp_all), sum_map_toList]
+
+open Finset in
+theorem log_prod {α : Type*} {s : Finset α} {f : α → ℝ} (hf : ∀ x ∈ s, f x ≠ 0) :
     log (∏ i ∈ s, f i) = ∑ i ∈ s, log (f i) := by
-  induction' s using Finset.cons_induction_on with a s ha ih
-  · simp
-  · rw [Finset.forall_mem_cons] at hf
-    simp [ih hf.2, log_mul hf.1 (Finset.prod_ne_zero_iff.2 hf.2)]
+  rw [← prod_map_toList, log_list_prod (by simp_all)]
+  simp
 
 protected theorem _root_.Finsupp.log_prod {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
     (hg : ∀ a, g a (f a) = 0 → f a = 0) : log (f.prod g) = f.sum fun a b ↦ log (g a b) :=
-  log_prod _ _ fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
+  log_prod fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
 
 theorem log_nat_eq_sum_factorization (n : ℕ) :
     log n = n.factorization.sum fun p t => t * log p := by
@@ -381,7 +396,7 @@ theorem log_nat_eq_sum_factorization (n : ℕ) :
   · simp only [← log_pow, ← Nat.cast_pow]
     rw [← Finsupp.log_prod, ← Nat.cast_finsuppProd, Nat.factorization_prod_pow_eq_self hn]
     intro p hp
-    rw [pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
+    rw [eq_zero_of_pow_eq_zero (Nat.cast_eq_zero.1 hp), Nat.factorization_zero_right]
 
 theorem tendsto_pow_log_div_mul_add_atTop (a b : ℝ) (n : ℕ) (ha : a ≠ 0) :
     Tendsto (fun x => log x ^ n / (a * x + b)) atTop (𝓝 0) :=
@@ -402,8 +417,8 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   filter_upwards [eventually_gt_atTop 1] with x hx
   aesop (add safe forward log_pos)
 
-/-- `Real.exp` as a `PartialHomeomorph` with `source = univ` and `target = {z | 0 < z}`. -/
-@[simps] noncomputable def expPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+/-- `Real.exp` as an `OpenPartialHomeomorph` with `source = univ` and `target = {z | 0 < z}`. -/
+@[simps] noncomputable def expPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := Real.exp
   invFun := Real.log
   source := univ

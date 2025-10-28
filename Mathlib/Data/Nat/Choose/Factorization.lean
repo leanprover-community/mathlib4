@@ -113,7 +113,7 @@ theorem factorization_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k
     = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} + (k ! * n !).factorization p := by
     have h2 := (add_tsub_cancel_right n k) ▸ choose_mul_factorial_mul_factorial (le_add_left k n)
     rw [← Pi.add_apply, ← coe_add, ← factorization_mul (ne_of_gt <| choose_pos (le_add_left k n))
-      (Nat.mul_ne_zero (factorial_ne_zero k) (factorial_ne_zero n)), ← mul_assoc, h2,
+      (by positivity), ← mul_assoc, h2,
       factorization_factorial hp hnb, factorization_mul (factorial_ne_zero k) (factorial_ne_zero n),
       coe_add, Pi.add_apply, factorization_factorial hp ((log_mono_right (le_add_left k n)).trans_lt
       hnb), factorization_factorial hp ((log_mono_right (le_add_left n k)).trans_lt
@@ -144,7 +144,7 @@ theorem factorization_le_factorization_choose_add {p : ℕ} :
     rw [← Pi.add_apply, ← coe_add, ← factorization_mul (ne_of_gt <| choose_pos hkn)
       (zero_ne_add_one k).symm]
     refine factorization_le_factorization_of_dvd_right ?_ (zero_ne_add_one n).symm
-      (Nat.mul_ne_zero (ne_of_gt <| choose_pos hkn) (zero_ne_add_one k).symm)
+      (Nat.mul_ne_zero (ne_of_gt <| choose_pos hkn) (by positivity))
     rw [← succ_mul_choose_eq]
     exact dvd_mul_right _ _
 
@@ -181,7 +181,7 @@ variable {p n k : ℕ}
 theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n := by
   by_cases h : (choose n k).factorization p = 0
   · simp [h]
-  have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_non_prime h
+  have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_not_prime h
   have hkn : k ≤ n := by
     refine le_of_not_gt fun hnk => h ?_
     simp [choose_eq_zero_of_lt hnk]
@@ -202,7 +202,7 @@ theorem factorization_choose_le_one (p_large : n < p ^ 2) : (choose n k).factori
 theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)
     (hn : n < 3 * p) : (choose n k).factorization p = 0 := by
   rcases em' p.Prime with hp | hp
-  · exact factorization_eq_zero_of_non_prime (choose n k) hp
+  · exact factorization_eq_zero_of_not_prime (choose n k) hp
   rcases lt_or_ge n k with hnk | hkn
   · simp [choose_eq_zero_of_lt hnk]
   simp only [factorization_choose hp hkn (Nat.lt_add_one _), card_eq_zero, filter_eq_empty_iff,
@@ -221,7 +221,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
       have : 3 ≤ p := lt_of_le_of_ne hp.two_le hp'.symm
       calc
         n < 3 * p := hn
-        _ ≤ p * p := mul_le_mul_right' this p
+        _ ≤ p * p := by gcongr
         _ = p ^ 2 := (sq p).symm
         _ ≤ p ^ i := pow_right_mono₀ hp.one_lt.le hi
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),
@@ -232,13 +232,15 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
 theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) (p_le_n : p ≤ n)
     (big : 2 * n < 3 * p) : (centralBinom n).factorization p = 0 := by
   refine factorization_choose_of_lt_three_mul ?_ p_le_n (p_le_n.trans ?_) big
-  · omega
+  · cutsat
   · rw [two_mul, add_tsub_cancel_left]
 
 theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factorization p = 0 := by
-  induction' n with n hn; · simp
-  rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, Finsupp.coe_add,
-    Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, Finsupp.coe_add,
+      Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
 
 theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
   by_cases hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
@@ -275,6 +277,6 @@ at most `2n`. -/
 theorem prod_pow_factorization_centralBinom (n : ℕ) :
     (∏ p ∈ Finset.range (2 * n + 1), p ^ (centralBinom n).factorization p) = centralBinom n := by
   apply prod_pow_factorization_choose
-  omega
+  cutsat
 
 end Nat

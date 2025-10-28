@@ -64,10 +64,7 @@ open Polynomial
 variable (R R' : Type*) [CommRing R] [CommRing R']
 
 /-- `T n` is the `n`-th Chebyshev polynomial of the first kind. -/
--- Well-founded definitions are now irreducible by default;
--- as this was implemented before this change,
--- we just set it back to semireducible to avoid needing to change any proofs.
-@[semireducible] noncomputable def T : ℤ → R[X]
+noncomputable def T : ℤ → R[X]
   | 0 => 1
   | 1 => X
   | (n : ℕ) + 2 => 2 * X * T (n + 1) - T n
@@ -121,21 +118,26 @@ theorem T_eq (n : ℤ) : T R n = 2 * X * T R (n - 1) - T R (n - 2) := by
   linear_combination (norm := ring_nf) T_add_two R (n - 2)
 
 @[simp]
-theorem T_zero : T R 0 = 1 := rfl
+theorem T_zero : T R 0 = 1 := by simp [T]
 
 @[simp]
-theorem T_one : T R 1 = X := rfl
+theorem T_one : T R 1 = X := by simp [T]
 
-theorem T_neg_one : T R (-1) = X := show 2 * X * 1 - X = X by ring
+theorem T_neg_one : T R (-1) = X := by
+  change T R (Int.negSucc 0) = X
+  rw [T]
+  suffices 2 * X - X = X by simpa
+  ring
+
 
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
-  simpa [pow_two, mul_assoc] using T_add_two R 0
+  unfold T; simp [pow_two, mul_assoc]
 
 @[simp]
 theorem T_neg (n : ℤ) : T R (-n) = T R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => change 2 * X * 1 - X = X; ring
+  | one => simp only [T_neg_one, T_one]
   | add_two n ih1 ih2 =>
     have h₁ := T_add_two R n
     have h₂ := T_sub_two R (-n)
@@ -231,10 +233,7 @@ theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n)
   | neg n ih => rw [T_neg, ih]; simp
 
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
--- Well-founded definitions are now irreducible by default;
--- as this was implemented before this change,
--- we just set it back to semireducible to avoid needing to change any proofs.
-@[semireducible] noncomputable def U : ℤ → R[X]
+noncomputable def U : ℤ → R[X]
   | 0 => 1
   | 1 => 2 * X
   | (n : ℕ) + 2 => 2 * X * U (n + 1) - U n
@@ -259,10 +258,10 @@ theorem U_eq (n : ℤ) : U R n = 2 * X * U R (n - 1) - U R (n - 2) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 2)
 
 @[simp]
-theorem U_zero : U R 0 = 1 := rfl
+theorem U_zero : U R 0 = 1 := by simp [U]
 
 @[simp]
-theorem U_one : U R 1 = 2 * X := rfl
+theorem U_one : U R 1 = 2 * X := by simp [U]
 
 @[simp]
 theorem U_neg_one : U R (-1) = 0 := by simpa using U_sub_one R 0
@@ -448,7 +447,7 @@ theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℤ) :
 
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
-@[semireducible] noncomputable def C : ℤ → R[X]
+noncomputable def C : ℤ → R[X]
   | 0 => 2
   | 1 => X
   | (n : ℕ) + 2 => X * C (n + 1) - C n
@@ -473,12 +472,16 @@ theorem C_eq (n : ℤ) : C R n = X * C R (n - 1) - C R (n - 2) := by
   linear_combination (norm := ring_nf) C_add_two R (n - 2)
 
 @[simp]
-theorem C_zero : C R 0 = 2 := rfl
+theorem C_zero : C R 0 = 2 := by simp [C]
 
 @[simp]
-theorem C_one : C R 1 = X := rfl
+theorem C_one : C R 1 = X := by simp [C]
 
-theorem C_neg_one : C R (-1) = X := show X * 2 - X = X by ring
+theorem C_neg_one : C R (-1) = X := by
+  change C R (Int.negSucc 0) = X
+  rw [C]
+  suffices X * 2 - X = X by simpa
+  ring
 
 theorem C_two : C R 2 = X ^ 2 - 2 := by
   simpa [pow_two, mul_assoc] using C_add_two R 0
@@ -487,7 +490,7 @@ theorem C_two : C R 2 = X ^ 2 - 2 := by
 theorem C_neg (n : ℤ) : C R (-n) = C R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => change X * 2 - X = X; ring
+  | one => simp only [C_neg_one, C_one]
   | add_two n ih1 ih2 =>
     have h₁ := C_add_two R n
     have h₂ := C_sub_two R (-n)
@@ -554,7 +557,7 @@ theorem T_eq_half_mul_C_comp_two_mul_X [Invertible (2 : R)] (n : ℤ) :
 /-- `S n` is the `n`th rescaled Chebyshev polynomial of the second kind (also known as a
 Vieta–Fibonacci polynomial), given by $S_n(2x) = U_n(x)$. See
 `Polynomial.Chebyshev.S_comp_two_mul_X`. -/
-@[semireducible] noncomputable def S : ℤ → R[X]
+noncomputable def S : ℤ → R[X]
   | 0 => 1
   | 1 => X
   | (n : ℕ) + 2 => X * S (n + 1) - S n
@@ -579,10 +582,10 @@ theorem S_eq (n : ℤ) : S R n = X * S R (n - 1) - S R (n - 2) := by
   linear_combination (norm := ring_nf) S_add_two R (n - 2)
 
 @[simp]
-theorem S_zero : S R 0 = 1 := rfl
+theorem S_zero : S R 0 = 1 := by simp [S]
 
 @[simp]
-theorem S_one : S R 1 = X := rfl
+theorem S_one : S R 1 = X := by simp [S]
 
 @[simp]
 theorem S_neg_one : S R (-1) = 0 := by simpa using S_sub_one R 0

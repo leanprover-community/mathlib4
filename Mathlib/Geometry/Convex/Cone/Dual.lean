@@ -10,7 +10,7 @@ import Mathlib.Geometry.Convex.Cone.Pointed
 # The algebraic dual of a cone
 
 Given a bilinear pairing `p` between two `R`-modules `M` and `N` and a set `s` in `M`, we define
-`PointedCone.dual p C` to be the pointed cone in `N` consisting of all points `y` such that
+`PointedCone.dual p s` to be the pointed cone in `N` consisting of all points `y` such that
 `0 ≤ p x y` for all `x ∈ s`.
 
 When the pairing is perfect, this gives us the algebraic dual of a cone. This is developed here.
@@ -90,7 +90,7 @@ variable (s) in
     dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual _
 
 @[simp]
-lemma dual_span (s : Set M) : dual p (Submodule.span R≥0 s) = dual p s := by
+lemma dual_span (s : Set M) : dual p (span R s) = dual p s := by
   refine le_antisymm (dual_le_dual Submodule.subset_span) (fun x hx y hy => ?_)
   induction hy using Submodule.span_induction with
   | mem _y h => exact hx h
