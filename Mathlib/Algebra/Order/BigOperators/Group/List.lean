@@ -163,6 +163,50 @@ theorem le_prod_of_mem {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod :
 
 end Monoid
 
+section
+variable {α β : Type*} [Monoid α] [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β]
+
+@[to_additive le_sum_of_subadditive_on_pred]
+lemma le_prod_of_submultiplicative_on_pred (f : α → β)
+    (p : α → Prop) (h_one : f 1 = 1) (hp_one : p 1)
+    (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
+    (l : List α) (hpl : ∀ a, a ∈ l → p a) : f l.prod ≤ (l.map f).prod := by
+  induction l with
+  | nil => simp [h_one]
+  | cons a s ih =>
+    have hpla : ∀ x, x ∈ s → p x := fun x hx => hpl x (mem_cons_of_mem _ hx)
+    have hp_prod : p s.prod := prod_induction p hp_mul hp_one hpla
+    grw [prod_cons, map_cons, prod_cons, h_mul a s.prod (hpl _ mem_cons_self) hp_prod, ih hpla]
+
+@[to_additive le_sum_of_subadditive]
+lemma le_prod_of_submultiplicative (f : α → β) (h_one : f 1 = 1)
+    (h_mul : ∀ a b, f (a * b) ≤ f a * f b) (l : List α) : f l.prod ≤ (l.map f).prod :=
+  le_prod_of_submultiplicative_on_pred f (fun _ => True) h_one trivial (fun x y _ _ => h_mul x y)
+    (by simp) l (by simp)
+
+@[to_additive le_sum_nonempty_of_subadditive_on_pred]
+lemma le_prod_nonempty_of_submultiplicative_on_pred (f : α → β) (p : α → Prop)
+    (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
+    (l : List α) (hl_nonempty : l ≠ []) (hl : ∀ a, a ∈ l → p a) : f l.prod ≤ (l.map f).prod := by
+  induction l with
+  | nil => simp at hl_nonempty
+  | cons a l ih =>
+    rw [prod_cons, map_cons, prod_cons]
+    by_cases hl_empty : l = []
+    · simp [hl_empty]
+    have hla_restrict : ∀ x, x ∈ l → p x := fun x hx => hl x (mem_cons_of_mem _ hx)
+    have hp_sup : p l.prod := prod_induction_nonempty p hp_mul hl_empty hla_restrict
+    have hp_a : p a := hl a mem_cons_self
+    grw [h_mul a _ hp_a hp_sup, ← ih hl_empty hla_restrict]
+
+@[to_additive le_sum_nonempty_of_subadditive]
+lemma le_prod_nonempty_of_submultiplicative (f : α → β) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)
+    (l : List α) (hs_nonempty : l ≠ ∅) : f l.prod ≤ (l.map f).prod :=
+  le_prod_nonempty_of_submultiplicative_on_pred f (fun _ => True) (by simp [h_mul]) (by simp) l
+    hs_nonempty (by simp)
+
+end
+
 -- TODO: develop theory of tropical rings
 lemma sum_le_foldr_max [AddZeroClass M] [Zero N] [LinearOrder N] (f : M → N) (h0 : f 0 ≤ 0)
     (hadd : ∀ x y, f (x + y) ≤ max (f x) (f y)) (l : List M) : f l.sum ≤ (l.map f).foldr max 0 := by

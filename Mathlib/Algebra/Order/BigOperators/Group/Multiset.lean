@@ -83,42 +83,29 @@ lemma le_prod_of_submultiplicative_on_pred (f : α → β)
     (p : α → Prop) (h_one : f 1 = 1) (hp_one : p 1)
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Multiset α) (hps : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
-  revert s
-  refine Multiset.induction ?_ ?_
-  · simp [le_of_eq h_one]
-  intro a s hs hpsa
-  have hps : ∀ x, x ∈ s → p x := fun x hx => hpsa x (mem_cons_of_mem hx)
-  have hp_prod : p s.prod := prod_induction p s hp_mul hp_one hps
-  grw [prod_cons, map_cons, prod_cons, h_mul a s.prod (hpsa a (mem_cons_self a s)) hp_prod,
-    hs hps]
+  induction s using Quotient.inductionOn with
+  | h l => simp [l.le_prod_of_submultiplicative_on_pred f p h_one hp_one h_mul hp_mul (by simpa)]
 
 @[to_additive le_sum_of_subadditive]
 lemma le_prod_of_submultiplicative (f : α → β) (h_one : f 1 = 1)
-    (h_mul : ∀ a b, f (a * b) ≤ f a * f b) (s : Multiset α) : f s.prod ≤ (s.map f).prod :=
-  le_prod_of_submultiplicative_on_pred f (fun _ => True) h_one trivial (fun x y _ _ => h_mul x y)
-    (by simp) s (by simp)
+    (h_mul : ∀ a b, f (a * b) ≤ f a * f b) (s : Multiset α) : f s.prod ≤ (s.map f).prod := by
+  induction s using Quotient.inductionOn with
+  | h l => simp [l.le_prod_of_submultiplicative f h_one h_mul]
 
 @[to_additive le_sum_nonempty_of_subadditive_on_pred]
 lemma le_prod_nonempty_of_submultiplicative_on_pred (f : α → β) (p : α → Prop)
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Multiset α) (hs_nonempty : s ≠ ∅) (hs : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
-  revert s
-  refine Multiset.induction ?_ ?_
-  · simp
-  rintro a s hs - hsa_prop
-  rw [prod_cons, map_cons, prod_cons]
-  by_cases hs_empty : s = ∅
-  · simp [hs_empty]
-  have hsa_restrict : ∀ x, x ∈ s → p x := fun x hx => hsa_prop x (mem_cons_of_mem hx)
-  have hp_sup : p s.prod := prod_induction_nonempty p hp_mul hs_empty hsa_restrict
-  have hp_a : p a := hsa_prop a (mem_cons_self a s)
-  grw [h_mul a _ hp_a hp_sup, ← hs hs_empty hsa_restrict]
+  induction s using Quotient.inductionOn with
+  | h l =>
+    simp [l.le_prod_nonempty_of_submultiplicative_on_pred f p h_mul hp_mul
+      (by simpa using hs_nonempty) (by simpa)]
 
 @[to_additive le_sum_nonempty_of_subadditive]
 lemma le_prod_nonempty_of_submultiplicative (f : α → β) (h_mul : ∀ a b, f (a * b) ≤ f a * f b)
-    (s : Multiset α) (hs_nonempty : s ≠ ∅) : f s.prod ≤ (s.map f).prod :=
-  le_prod_nonempty_of_submultiplicative_on_pred f (fun _ => True) (by simp [h_mul]) (by simp) s
-    hs_nonempty (by simp)
+    (s : Multiset α) (hs_nonempty : s ≠ ∅) : f s.prod ≤ (s.map f).prod := by
+  induction s using Quotient.inductionOn with
+  | h l => simp [l.le_prod_nonempty_of_submultiplicative f h_mul (by simpa using hs_nonempty)]
 
 end
 
