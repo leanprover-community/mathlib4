@@ -67,7 +67,7 @@ theorem self_symm_conj (f : End Y) : α.conj (α.symm.conj f) = f :=
 theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
   α.conj.toMonoidHom.map_pow f n
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: change definition so that `conjAut_apply` becomes a `rfl`?
+-- TODO: change definition so that `conjAut_apply` becomes a `rfl`?
 /-- `conj` defines a group isomorphisms between groups of automorphisms -/
 def conjAut : Aut X ≃* Aut Y :=
   (Aut.unitsEndEquivAut X).symm.trans <| (Units.mapEquiv α.conj).trans <| Aut.unitsEndEquivAut Y

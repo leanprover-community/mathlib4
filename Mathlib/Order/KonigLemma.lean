@@ -59,7 +59,7 @@ variable {α : Type*} [PartialOrder α] [IsStronglyAtomic α] {b : α}
 is covered by only finitely many others, and `b` is an element with infinitely many things above it,
 then there is a sequence starting with `b` in which each element is covered by the next. -/
 theorem exists_seq_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
-    (hb : (Ici b).Infinite) : ∃ f : ℕ → α, f 0 = b ∧ ∀ i, f i ⋖ f (i+1) :=
+    (hb : (Ici b).Infinite) : ∃ f : ℕ → α, f 0 = b ∧ ∀ i, f i ⋖ f (i + 1) :=
   let h := fun a : {a : α // (Ici a).Infinite} ↦
     exists_covby_infinite_Ici_of_infinite_Ici a.2 (hfin a)
   let ks : ℕ → {a : α // (Ici a).Infinite} := Nat.rec ⟨b, hb⟩ fun _ a ↦ ⟨_, (h a).choose_spec.2⟩
@@ -67,18 +67,18 @@ theorem exists_seq_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖
 
 /-- The sequence given by Kőnig's lemma as an order embedding -/
 theorem exists_orderEmbedding_covby_of_forall_covby_finite (hfin : ∀ (a : α), {x | a ⋖ x}.Finite)
-    (hb : (Ici b).Infinite) : ∃ f : ℕ ↪o α, f 0 = b ∧ ∀ i, f i ⋖ f (i+1) := by
+    (hb : (Ici b).Infinite) : ∃ f : ℕ ↪o α, f 0 = b ∧ ∀ i, f i ⋖ f (i + 1) := by
   obtain ⟨f, hf⟩ := exists_seq_covby_of_forall_covby_finite hfin hb
   exact ⟨OrderEmbedding.ofStrictMono f (strictMono_nat_of_lt_succ (fun i ↦ (hf.2 i).lt)), hf⟩
 
 /-- A version of Kőnig's lemma where the sequence starts at the minimum of an infinite order. -/
 theorem exists_orderEmbedding_covby_of_forall_covby_finite_of_bot [OrderBot α] [Infinite α]
-    (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) : ∃ f : ℕ ↪o α, f 0 = ⊥ ∧ ∀ i, f i ⋖ f (i+1) :=
+    (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) : ∃ f : ℕ ↪o α, f 0 = ⊥ ∧ ∀ i, f i ⋖ f (i + 1) :=
   exists_orderEmbedding_covby_of_forall_covby_finite hfin (by simpa using infinite_univ)
 
 theorem GradeMinOrder.exists_nat_orderEmbedding_of_forall_covby_finite
     [GradeMinOrder ℕ α] [OrderBot α] [Infinite α] (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) :
-    ∃ f : ℕ ↪o α, f 0 = ⊥ ∧ (∀ i, f i ⋖ f (i+1)) ∧ ∀ i, grade ℕ (f i) = i := by
+    ∃ f : ℕ ↪o α, f 0 = ⊥ ∧ (∀ i, f i ⋖ f (i + 1)) ∧ ∀ i, grade ℕ (f i) = i := by
   obtain ⟨f, h0, hf⟩ := exists_orderEmbedding_covby_of_forall_covby_finite_of_bot hfin
   refine ⟨f, h0, hf, fun i ↦ ?_⟩
   induction i with
@@ -123,10 +123,10 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
     rintro i a j b ⟨h : i ≤ j, rfl : π h b = a⟩
     refine ⟨fun ⟨hne, h'⟩ ↦ ?_, ?_⟩
     · have hle' : i + 1 ≤ j := h.lt_of_ne <| by rintro rfl; simp [π_refl] at hne
-      exact congr_arg Sigma.fst <| h' (i+1) (π hle' b) ⟨by simp, by rw [π_trans]⟩ ⟨hle', by simp⟩
-        (fun h ↦ by apply_fun Sigma.fst at h; simp at h)
+      exact congr_arg Sigma.fst <| h' (i + 1) (π hle' b) ⟨by simp, by rw [π_trans]⟩ ⟨hle', by simp⟩
+        (fun h ↦ by simp at h)
     rintro rfl
-    refine ⟨fun h ↦ by apply_fun Sigma.fst at h; simp at h, ?_⟩
+    refine ⟨fun h ↦ by simp at h, ?_⟩
     rintro j c ⟨hij : i ≤ j, hcb : π _ c = π _ b⟩ ⟨hji : j ≤ i + 1, rfl : π hji b = c⟩ hne
     replace hne := show i ≠ j by rintro rfl; contradiction
     obtain rfl := hji.antisymm (hij.lt_of_ne hne)

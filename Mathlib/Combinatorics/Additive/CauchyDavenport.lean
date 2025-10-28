@@ -65,11 +65,11 @@ variable [Group α] [DecidableEq α] {x y : Finset α × Finset α} {s t : Finse
 * or `|s₁ * t₁| = |s₂ * t₂|` and `|s₂| + |t₂| < |s₁| + |t₁|`
 * or `|s₁ * t₁| = |s₂ * t₂|` and `|s₁| + |t₁| = |s₂| + |t₂|` and `|s₁| < |s₂|`. -/
 @[to_additive
-"The relation we induct along in the proof by DeVos of the Cauchy-Davenport theorem.
+/-- The relation we induct along in the proof by DeVos of the Cauchy-Davenport theorem.
 `(s₁, t₁) < (s₂, t₂)` iff
 * `|s₁ + t₁| < |s₂ + t₂|`
 * or `|s₁ + t₁| = |s₂ + t₂|` and `|s₂| + |t₂| < |s₁| + |t₁|`
-* or `|s₁ + t₁| = |s₂ + t₂|` and `|s₁| + |t₁| = |s₂| + |t₂|` and `|s₁| < |s₂|`."]
+* or `|s₁ + t₁| = |s₂ + t₂|` and `|s₁| + |t₁| = |s₂| + |t₂|` and `|s₁| < |s₂|`. -/]
 private def DevosMulRel : Finset α × Finset α → Finset α × Finset α → Prop :=
   Prod.Lex (· < ·) (Prod.Lex (· > ·) (· < ·)) on fun x ↦ (#(x.1 * x.2), #x.1 + #x.2, #x.1)
 
@@ -106,9 +106,9 @@ private lemma wellFoundedOn_devosMulRel :
 /-- A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The size of `s * t` is
 lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size of the smallest
 subgroup. -/
-@[to_additive "A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The size of
-`s + t` is lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size of the
-smallest subgroup."]
+@[to_additive /-- A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The
+size of `s + t` is lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size
+of the smallest subgroup. -/]
 lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
     min (minOrder α) ↑(#s + #t - 1) ≤ #(s * t) := by
   -- Set up the induction on `x := (s, t)` along the `DevosMulRel` relation.
@@ -163,8 +163,8 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   -- If the left translate of `t` by `g⁻¹` is disjoint from `t`, then we're easily done.
   obtain hgt | hgt := disjoint_or_nonempty_inter t (g⁻¹ • t)
   · rw [← card_smul_finset g⁻¹ t]
-    refine Or.inr ((add_le_add_right hst _).trans ?_)
-    rw [← card_union_of_disjoint hgt]
+    right
+    grw [hst, ← card_union_of_disjoint hgt]
     exact (card_le_card_mul_left hgs).trans (le_add_of_le_left aux1)
   -- Else, we're done by induction on either `(s', t')` or `(s'', t'')` depending on whether
   -- `|s| + |t| ≤ |s'| + |t'|` or `|s| + |t| < |s''| + |t''|`. One of those two inequalities must
@@ -181,8 +181,8 @@ end General
 /-- The **Cauchy-Davenport Theorem** for torsion-free groups. The size of `s * t` is lower-bounded
 by `|s| + |t| - 1`. -/
 @[to_additive
-"The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is lower-bounded
-by `|s| + |t| - 1`."]
+/-- The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is lower-bounded
+by `|s| + |t| - 1`. -/]
 lemma cauchy_davenport_of_isMulTorsionFree [DecidableEq G] [Group G] [IsMulTorsionFree G]
     {s t : Finset G} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
   simpa only [Monoid.minOrder_eq_top, min_eq_right, le_top, Nat.cast_le]
@@ -205,8 +205,8 @@ lemma ZMod.cauchy_davenport {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs
 /-- The **Cauchy-Davenport Theorem** for linearly ordered cancellative semigroups. The size of
 `s * t` is lower-bounded by `|s| + |t| - 1`. -/
 @[to_additive
-"The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The size of
-`s + t` is lower-bounded by `|s| + |t| - 1`."]
+/-- The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The
+size of `s + t` is lower-bounded by `|s| + |t| - 1`. -/]
 lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Mul α] [IsCancelMul α]
     [MulLeftMono α] [MulRightMono α]
     {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by

@@ -143,7 +143,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
         apply le_of_eq
         simp only [EmbeddingLike.apply_eq_iff_eq]
         apply degree_smul (Units.isRegular _)
-      · simp only [Finsupp.single_eq_of_ne (Ne.symm hj), mul_zero, degree_zero, map_zero]
+      · simp only [Finsupp.single_eq_of_ne hj, mul_zero, degree_zero, map_zero]
         apply bot_le
     · simp
   push_neg at hb'
@@ -177,13 +177,8 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       · classical
         rw [Finsupp.single_apply]
         split_ifs with hc
-        · apply le_trans degree_mul_le
-          simp only [map_add]
-          apply le_of_le_of_eq (add_le_add_left (degree_monomial_le _) _)
-          simp only [← hc]
-          rw [← map_add, m.toSyn.injective.eq_iff]
-          rw [add_tsub_cancel_of_le]
-          exact hf
+        · subst j
+          grw [degree_mul_le, map_add, degree_monomial_le, ← map_add, add_tsub_cancel_of_le hf]
         · simp only [mul_zero, degree_zero, map_zero]
           exact bot_le
     · exact H'.2.2

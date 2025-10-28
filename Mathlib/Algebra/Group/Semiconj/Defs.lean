@@ -32,14 +32,14 @@ assert_not_exists MonoidWithZero DenselyOrdered
 variable {S M G : Type*}
 
 /-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
-@[to_additive "`x` is additive semiconjugate to `y` by `a` if `a + x = y + a`"]
+@[to_additive /-- `x` is additive semiconjugate to `y` by `a` if `a + x = y + a` -/]
 def SemiconjBy [Mul M] (a x y : M) : Prop :=
   a * x = y * a
 
 namespace SemiconjBy
 
 /-- Equality behind `SemiconjBy a x y`; useful for rewriting. -/
-@[to_additive "Equality behind `AddSemiconjBy a x y`; useful for rewriting."]
+@[to_additive /-- Equality behind `AddSemiconjBy a x y`; useful for rewriting. -/]
 protected theorem eq [Mul S] {a x y : S} (h : SemiconjBy a x y) : a * x = y * a :=
   h
 
@@ -49,8 +49,8 @@ variable [Semigroup S] {a b x y z x' y' : S}
 
 /-- If `a` semiconjugates `x` to `y` and `x'` to `y'`,
 then it semiconjugates `x * x'` to `y * y'`. -/
-@[to_additive (attr := simp) "If `a` semiconjugates `x` to `y` and `x'` to `y'`,
-then it semiconjugates `x + x'` to `y + y'`."]
+@[to_additive (attr := simp) /-- If `a` semiconjugates `x` to `y` and `x'` to `y'`,
+then it semiconjugates `x + x'` to `y + y'`. -/]
 theorem mul_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
     SemiconjBy a (x * x') (y * y') := by
   unfold SemiconjBy
@@ -59,16 +59,16 @@ theorem mul_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
 
 /-- If `b` semiconjugates `x` to `y` and `a` semiconjugates `y` to `z`, then `a * b`
 semiconjugates `x` to `z`. -/
-@[to_additive "If `b` semiconjugates `x` to `y` and `a` semiconjugates `y` to `z`, then `a + b`
-semiconjugates `x` to `z`."]
+@[to_additive /-- If `b` semiconjugates `x` to `y` and `a` semiconjugates `y` to `z`, then `a + b`
+semiconjugates `x` to `z`. -/]
 theorem mul_left (ha : SemiconjBy a y z) (hb : SemiconjBy b x y) : SemiconjBy (a * b) x z := by
   unfold SemiconjBy
   rw [mul_assoc, hb.eq, ← mul_assoc, ha.eq, mul_assoc]
 
 /-- The relation “there exists an element that semiconjugates `a` to `b`” on a semigroup
 is transitive. -/
-@[to_additive "The relation “there exists an element that semiconjugates `a` to `b`” on an additive
-semigroup is transitive."]
+@[to_additive /-- The relation “there exists an element that semiconjugates `a` to `b`” on an
+additive semigroup is transitive. -/]
 protected theorem transitive : Transitive fun a b : S ↦ ∃ c, SemiconjBy c a b
   | _, _, _, ⟨x, hx⟩, ⟨y, hy⟩ => ⟨y * x, hy.mul_left hx⟩
 
@@ -79,18 +79,18 @@ section MulOneClass
 variable [MulOneClass M]
 
 /-- Any element semiconjugates `1` to `1`. -/
-@[to_additive (attr := simp) "Any element semiconjugates `0` to `0`."]
+@[to_additive (attr := simp) /-- Any element semiconjugates `0` to `0`. -/]
 theorem one_right (a : M) : SemiconjBy a 1 1 := by rw [SemiconjBy, mul_one, one_mul]
 
 /-- One semiconjugates any element to itself. -/
-@[to_additive (attr := simp) "Zero semiconjugates any element to itself."]
+@[to_additive (attr := simp) /-- Zero semiconjugates any element to itself. -/]
 theorem one_left (x : M) : SemiconjBy 1 x x :=
   Eq.symm <| one_right x
 
 /-- The relation “there exists an element that semiconjugates `a` to `b`” on a monoid (or, more
 generally, on `MulOneClass` type) is reflexive. -/
-@[to_additive "The relation “there exists an element that semiconjugates `a` to `b`” on an additive
-monoid (or, more generally, on an `AddZeroClass` type) is reflexive."]
+@[to_additive /-- The relation “there exists an element that semiconjugates `a` to `b`” on an
+additive monoid (or, more generally, on an `AddZeroClass` type) is reflexive. -/]
 protected theorem reflexive : Reflexive fun a b : M ↦ ∃ c, SemiconjBy c a b
   | a => ⟨1, one_left a⟩
 
@@ -117,7 +117,7 @@ section Group
 variable [Group G]
 
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
-@[to_additive "`a` semiconjugates `x` to `a + x + -a`."]
+@[to_additive /-- `a` semiconjugates `x` to `a + x + -a`. -/]
 theorem conj_mk (a x : G) : SemiconjBy a x (a * x * a⁻¹) := by
   unfold SemiconjBy; rw [mul_assoc, inv_mul_cancel, mul_one]
 
