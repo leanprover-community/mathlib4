@@ -2516,6 +2516,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.CatCospanTransform
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Connected
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
@@ -5365,6 +5366,7 @@ import Mathlib.Probability.CDF
 import Mathlib.Probability.CondVar
 import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.ConditionalProbability
+import Mathlib.Probability.Decision.Risk.Basic
 import Mathlib.Probability.Decision.Risk.Defs
 import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Beta
