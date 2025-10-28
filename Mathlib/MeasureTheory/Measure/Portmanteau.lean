@@ -640,6 +640,21 @@ theorem tendsto_of_forall_isClosed_limsup_le
   exact (limsup_comp (fun i ↦ μs i F) u _).trans_le
     (limsup_le_limsup_of_le hu (by isBoundedDefault) ⟨1, by simp⟩)
 
+lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyGenerated]
+    (h : ∀ F : Set Ω, IsClosed F →
+      limsup (fun i ↦ (μs i : Measure Ω).real F) L ≤ (μ : Measure Ω).real F) :
+    Tendsto μs L (𝓝 μ) := by
+  refine tendsto_of_forall_isClosed_limsup_le' fun F hF ↦ ?_
+  rcases L.eq_or_neBot with rfl | hne
+  · simp
+  specialize h F hF
+  simp only [Measure.real_def] at h
+  rwa [ENNReal.limsup_toReal_eq (b := 1) (by simp) (.of_forall fun i ↦ prob_le_one),
+    ENNReal.toReal_le_toReal _ (by finiteness)] at h
+  refine ne_top_of_le_ne_top (b := 1) (by simp) ?_
+  refine limsup_le_of_le ?_ (.of_forall fun i ↦ prob_le_one)
+  exact isCoboundedUnder_le_of_le L (x := 0) (by simp)
+
 end Closed
 
 section Lipschitz
@@ -665,16 +680,9 @@ theorem tendsto_iff_forall_lipschitz_integral_tendsto {γ Ω : Type*} {mΩ : Mea
     simpa using h f'
   -- To prove the other direction, we prove convergence of the measure of closed sets.
   -- We approximate the indicator function of a closed set by bounded Lipschitz functions.
-  refine fun h ↦ tendsto_of_forall_isClosed_limsup_le' fun s hs ↦ ?_
   rcases F.eq_or_neBot with rfl | hne
   · simp
-  suffices limsup (fun i ↦ (μs i : Measure Ω).real s) F ≤ (μ : Measure Ω).real s by
-    simp only [Measure.real_def] at this
-    rwa [ENNReal.limsup_toReal_eq (b := 1) (by simp) (.of_forall fun i ↦ prob_le_one),
-      ENNReal.toReal_le_toReal _ (by finiteness)] at this
-    refine ne_top_of_le_ne_top (b := 1) (by simp) ?_
-    refine limsup_le_of_le ?_ (.of_forall fun i ↦ prob_le_one)
-    exact isCoboundedUnder_le_of_le F (x := 0) (by simp)
+  refine fun h ↦ tendsto_of_forall_isClosed_limsup_real_le' fun s hs ↦ ?_
   refine le_of_forall_pos_le_add fun ε ε_pos ↦ ?_
   let fs : ℕ → Ω → ℝ := fun n ω ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) (by positivity) s ω
   have key₁ : Tendsto (fun n ↦ ∫ ω, fs n ω ∂μ) atTop (𝓝 ((μ : Measure Ω).real s)) :=
