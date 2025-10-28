@@ -263,6 +263,14 @@ lemma covarianceBilinDual_comm (L₁ L₂ : StrongDual ℝ E) :
     simp_rw [covarianceBilinDual, uncenteredCovarianceBilinDual_apply h', mul_comm (L₁ _)]
   · simp [h]
 
+@[simp]
+lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) : 0 ≤ covarianceBilinDual μ L L := by
+  by_cases h : MemLp id 2 μ
+  · simp only [covarianceBilinDual, uncenteredCovarianceBilinDual,
+    ContinuousLinearMap.bilinearComp_apply, IsBoundedBilinearMap.toContinuousLinearMap_apply]
+    exact real_inner_self_nonneg
+  · simp [h]
+
 variable [CompleteSpace E]
 
 lemma covarianceBilinDual_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
@@ -291,13 +299,6 @@ lemma covarianceBilinDual_self_eq_variance (h : MemLp id 2 μ) (L : StrongDual �
 
 @[deprecated (since := "2025-07-16")] alias covarianceBilin_same_eq_variance :=
   covarianceBilinDual_self_eq_variance
-
-@[simp]
-lemma covarianceBilinDual_self_nonneg (L : StrongDual ℝ E) : 0 ≤ covarianceBilinDual μ L L := by
-  by_cases h : MemLp id 2 μ
-  · rw [covarianceBilinDual_self_eq_variance h]
-    exact variance_nonneg ..
-  · simp [h]
 
 end Covariance
 
