@@ -298,9 +298,9 @@ theorem addHaar_image_linearMap (f : E →ₗ[ℝ] E) (s : Set E) :
     μ (f '' s) = ENNReal.ofReal |LinearMap.det f| * μ s := by
   rcases ne_or_eq (LinearMap.det f) 0 with (hf | hf)
   · let g := (f.equivOfDetNeZero hf).toContinuousLinearEquiv
-    rw [show ⇑f = ⇑g from by ext x; simp [g],
-      ContinuousLinearEquiv.image_eq_preimage g s, addHaar_preimage_continuousLinearEquiv]
-    simp [g]
+    change μ (g '' s) = _
+    rw [ContinuousLinearEquiv.image_eq_preimage g s, addHaar_preimage_continuousLinearEquiv]
+    congr
   · simp only [hf, zero_mul, ENNReal.ofReal_zero, abs_zero]
     have : μ (LinearMap.range f) = 0 :=
       addHaar_submodule μ _ (LinearMap.range_lt_top_of_det_eq_zero hf).ne
