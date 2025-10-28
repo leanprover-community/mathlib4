@@ -174,7 +174,20 @@ instance CommAlgCat.monObjOpOf {A : Type u} [CommRing A] [Bialgebra R A] :
   mul := (CommAlgCat.ofHom <| comulAlgHom R A).op
   one_mul := by ext; exact Coalgebra.rTensor_counit_comul _
   mul_one := by ext; exact Coalgebra.lTensor_counit_comul _
-  mul_assoc := by ext; exact (Coalgebra.coassoc_symm_apply _).symm
+  mul_assoc := by
+    ext
+    convert (Coalgebra.coassoc_symm_apply _).symm
+    simp only [unop_tensorObj, coe_tensorObj, unop_comp, Quiver.Hom.unop_op, unop_whiskerLeft,
+      unop_hom_associator, Category.assoc, hom_comp, associator_inv_hom,
+      Algebra.TensorProduct.assoc, TensorProduct.AlgebraTensorModule.assoc_eq,
+      AlgEquiv.ofLinearEquiv_symm, AlgEquiv.toAlgHom_eq_coe, whiskerLeft_hom,
+      Algebra.TensorProduct.map, AlgHom.toLinearMap_id, hom_ofHom, toLinearMap_comulAlgHom,
+      TensorProduct.AlgebraTensorModule.map_eq, AlgHom.coe_comp, AlgHom.coe_coe,
+      Function.comp_apply, comulAlgHom_apply,
+      Algebra.TensorProduct.algHomOfLinearMapTensorProduct_apply, AlgEquiv.ofLinearEquiv_apply,
+      coassoc_symm_apply]
+    simp only [LinearEquiv.symm_apply_eq, coassoc_apply]
+    rfl
 
 @[simp]
 lemma CommAlgCat.one_op_of_unop_hom {A : Type u} [CommRing A] [Bialgebra R A] :
