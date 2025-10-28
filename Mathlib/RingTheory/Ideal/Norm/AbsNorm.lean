@@ -391,6 +391,13 @@ lemma exists_isMaximal_dvd_of_dvd_absNorm
       have : m ≠ 0 := fun h ↦ hpMax.ne_top (Ideal.span_singleton_eq_top.mpr (by simpa [h] using hp))
       exact Ideal.mem_of_dvd _ hp.symm.dvd (Ideal.pow_mem_of_mem _ (by simpa) _ this.bot_lt)
 
+/-- A version that takes a natural number and `Nat.Prime`. -/
+lemma exists_isMaximal_dvd_of_dvd_absNorm'
+    {p : ℕ} (hp : p.Prime) (I : Ideal S) (hI : p ∣ I.absNorm) :
+    ∃ P : Ideal S, P.IsMaximal ∧ P.under ℤ = .span {(p : ℤ)} ∧ P ∣ I :=
+  exists_isMaximal_dvd_of_dvd_absNorm (Int.prime_iff_natAbs_prime.mpr (by simpa)) _
+    (by exact_mod_cast hI)
+
 theorem finite_setOf_absNorm_eq [CharZero S] (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I = n}.Finite := by
   obtain hn | hn := Nat.eq_zero_or_pos n
