@@ -31,13 +31,14 @@ namespace Finsupp
 
 theorem finite_vaddAntidiagonal [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero V]
     (f : G →₀ R) (x : P → V) (p : P) :
-    Set.Finite (Set.vaddAntidiagonal f.support.toSet x.support p) := by
-  refine Set.Finite.of_injOn (f := Prod.fst) (t := f.support.toSet) ?_ ?_ f.support.finite_toSet
+    Set.Finite (Set.vaddAntidiagonal (SetLike.coe f.support) x.support p) := by
+  refine Set.Finite.of_injOn (f := Prod.fst) (t := (SetLike.coe f.support)) ?_ ?_
+    f.support.finite_toSet
   · intro _ ⟨h, _⟩
     exact h
   · intro _ ⟨_, _, h13⟩ gh' ⟨_, _, h23⟩ h
     rw [h, ← h23] at h13
-    refine Prod.ext h (IsLeftCancelVAdd.left_cancel gh'.1 _ _ h13)
+    exact Prod.ext h (IsLeftCancelVAdd.left_cancel gh'.1 _ _ h13)
 
 /-- The finset of pairs that vector-add to a given element. -/
 def vaddAntidiagonal [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero V] (f : G →₀ R) (x : P → V)
@@ -46,23 +47,22 @@ def vaddAntidiagonal [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero V] (f : G 
 
 theorem mem_vaddAntidiagonal_iff [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero V] (f : G →₀ R)
     (x : P → V) (p : P) (gh : G × P) :
-    gh ∈ vaddAntidiagonal f x p ↔ f gh.1 ≠ 0 ∧ (x gh.2) ≠ 0 ∧ gh.1 +ᵥ gh.2 = p := by
+    gh ∈ vaddAntidiagonal f x p ↔ f gh.1 ≠ 0 ∧ x gh.2 ≠ 0 ∧ gh.1 +ᵥ gh.2 = p := by
   simp [vaddAntidiagonal]
 
 theorem mem_vaddAntidiagonal_of_addGroup [AddGroup G] [AddAction G P] [Zero R] [Zero V]
     (f : G →₀ R) (x : P → V) (p : P) (gh : G × P) :
-    gh ∈ vaddAntidiagonal f x p ↔ (f gh.1) ≠ 0 ∧ (x gh.2) ≠ 0 ∧ gh.2 = -gh.1 +ᵥ p := by
-  rw [mem_vaddAntidiagonal_iff]
-  exact and_congr_right' <| and_congr_right' <| eq_neg_vadd_iff.symm
+    gh ∈ vaddAntidiagonal f x p ↔ f gh.1 ≠ 0 ∧ x gh.2 ≠ 0 ∧ gh.2 = -gh.1 +ᵥ p := by
+  rw [mem_vaddAntidiagonal_iff, eq_neg_vadd_iff]
 
 /-- A convolution-type scalar multiplication of finitely supported functions on formal functions. -/
 scoped instance [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [AddCommMonoid V] [SMulWithZero R V] :
     SMul (G →₀ R) (P → V) where
-  smul f x p := ∑ (G ∈ f.vaddAntidiagonal x p), (f G.1) • x G.2
+  smul f x p := ∑ G ∈ f.vaddAntidiagonal x p, f G.1 • x G.2
 
 theorem smul_eq [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [AddCommMonoid V] [SMulWithZero R V]
     (f : G →₀ R) (x : P → V) (p : P) :
-    (f • x) p = ∑ (G ∈ f.vaddAntidiagonal x p), (f G.1) • x G.2 := rfl
+    (f • x) p = ∑ G ∈ f.vaddAntidiagonal x p, f G.1 • x G.2 := rfl
 
 theorem smul_apply_addAction [AddGroup G] [AddAction G P] [Zero R] [AddCommMonoid V]
     [SMulWithZero R V] (f : G →₀ R) (x : P → V) (p : P) :
@@ -70,14 +70,14 @@ theorem smul_apply_addAction [AddGroup G] [AddAction G P] [Zero R] [AddCommMonoi
   rw [smul_eq, Finset.sum_of_injOn Prod.fst]
   · intro _ h₁ _ h₂ h
     rw [mem_coe, mem_vaddAntidiagonal_of_addGroup] at h₁ h₂
-    exact Prod.ext h (by simp [h₁.2.2, h₂.2.2, h])
+    simp [Prod.ext_iff, h₁.2.2, h₂.2.2, h]
   · intro g hg
     rw [mem_coe, mem_vaddAntidiagonal_iff] at hg
     exact mem_coe.mpr <| mem_support_iff.mpr hg.1
   · intro g hg hgn
-    rw [Set.mem_image, not_exists] at hgn
-    have : f g ≠ 0 → x (-g +ᵥ p) = 0 := by simpa [mem_vaddAntidiagonal_iff] using hgn (g, -g +ᵥ p)
-    by_cases h : f g = 0 <;> simp [h, this]
+    have h : f g = 0 ∨ x (-g +ᵥ p) = 0 := by
+      simpa [mem_vaddAntidiagonal_of_addGroup, or_iff_not_imp_left] using hgn
+    rcases h with (h | h) <;> simp [h]
   · intro g hg
     rw [mem_vaddAntidiagonal_of_addGroup] at hg
     rw [hg.2.2]
