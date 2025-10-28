@@ -522,21 +522,11 @@ theorem LinearMap.coe_equivOfIsUnitDet
 determinant is nonzero. -/
 abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M]
     [FiniteDimensional 𝕜 M] (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) : M ≃ₗ[𝕜] M :=
-  LinearMap.equivOfIsUnitDet (f := f) (Ne.isUnit hf)
-
-@[simp]
-theorem LinearMap.equivOfDetNeZero_apply {𝕜 : Type*} [Field 𝕜]
-    {M : Type*} [AddCommGroup M] [Module 𝕜 M] [FiniteDimensional 𝕜 M]
-    (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) (x : M) :
-    (LinearMap.equivOfDetNeZero f hf : M ≃ₗ[𝕜] M) x = f x := by
-  simp [LinearMap.equivOfDetNeZero]
-
-@[simp]
-theorem LinearMap.coe_equivOfDetNeZero {𝕜 : Type*} [Field 𝕜]
-    {M : Type*} [AddCommGroup M] [Module 𝕜 M] [FiniteDimensional 𝕜 M]
-    (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) :
-    (LinearMap.equivOfDetNeZero f hf : M →ₗ[𝕜] M) = f := by
-  simp
+    have : IsUnit (LinearMap.toMatrix (Module.finBasis 𝕜 M)
+      (Module.finBasis 𝕜 M) f).det := by
+    rw [LinearMap.det_toMatrix]
+    exact isUnit_iff_ne_zero.2 hf
+  LinearEquiv.ofIsUnitDet this
 
 theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ[R] M)
     (h : ∀ x, f x = f' (e x)) : Associated (LinearMap.det f) (LinearMap.det f') := by
