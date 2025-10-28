@@ -547,7 +547,7 @@ variable {v}
 /-- If `w : InfinitePlace L` lies above `v : InfinitePlace K` and `v` is complex, then so is `w`. -/
 theorem isComplex_of_isComplex_under (hv : v.IsComplex) : w.IsComplex := by
   rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv ⊢
-  let ⟨x, hx⟩ := hv
+  obtain ⟨x, hx⟩ := hv
   use algebraMap K L x
   rw [← comap_eq w v, ← mk_embedding w, comap_mk] at hx
   rcases embedding_mk_eq (w.embedding.comp (algebraMap K L)) with (_ | _) <;> aesop
