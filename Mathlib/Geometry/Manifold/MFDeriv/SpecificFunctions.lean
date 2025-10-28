@@ -554,12 +554,12 @@ theorem MDifferentiable.prodMap (hf : MDifferentiable I I' f) (hg : MDifferentia
 @[deprecated (since := "2025-04-18")]
 alias MDifferentiable.prod_map := MDifferentiable.prodMap
 
-lemma HasMFDerivWithinAt.prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' → N'}
-    {df : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf : HasMFDerivWithinAt I J f s x df)
-    {dg : TangentSpace I' x' →L[𝕜] TangentSpace J' (g x')}
-    (hg : HasMFDerivWithinAt I' J' g t x' dg) :
-    HasMFDerivWithinAt (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) (x, x')
-      (df.prodMap dg) := by
+lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
+    {df : TangentSpace I x →L[𝕜] TangentSpace J (f x)}
+    (hf : HasMFDerivWithinAt I J f (Prod.fst '' s) p.1 df)
+    {dg : TangentSpace I' p.2 →L[𝕜] TangentSpace J' (g p.2)}
+    (hg : HasMFDerivWithinAt I' J' g (Prod.snd '' s) p.2 dg) :
+    HasMFDerivWithinAt (I.prod I') (J.prod J') (Prod.map f g) s p (df.prodMap dg) := by
   refine ⟨hf.1.prodMap hg.1, ?_⟩
   have : ((extChartAt (I.prod I') (x, x')).symm ⁻¹' s ×ˢ t ∩ range (I.prod I')) =
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ×ˢ ((extChartAt I' x').symm ⁻¹' t ∩ range I') := by
