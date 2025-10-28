@@ -39,7 +39,7 @@ namespace Functor
 -/
 def of (F : C → D) [I : Functorial.{v₁, v₂} F] : C ⥤ D :=
   { I with obj := F
-           map := map F }
+           map := Functorial.map F }
 
 end Functor
 

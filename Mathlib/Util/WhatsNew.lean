@@ -86,7 +86,7 @@ def diffExtension (old new : Environment)
     (ext : PersistentEnvExtension EnvExtensionEntry EnvExtensionEntry EnvExtensionState) :
     CoreM (Option MessageData) := unsafe do
   let mut asyncMode := ext.toEnvExtension.asyncMode
-  if asyncMode matches .async then
+  if asyncMode matches .async .. then
     -- allow for diffing async extensions by bumping mode to sync
     asyncMode := .sync
   let oldSt := ext.toEnvExtension.getState (asyncMode := asyncMode) old

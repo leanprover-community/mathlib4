@@ -64,7 +64,11 @@ universe v u
 variable (C : Type u) [Category.{v} C]
 
 /-- We call a category `NonPreadditiveAbelian` if it has a zero object, kernels, cokernels, binary
-products and coproducts, and every monomorphism and every epimorphism is normal. -/
+products and coproducts, and every monomorphism and every epimorphism is normal.
+
+Notice that every such category is abelian (see `CategoryTheory.NonPreadditiveAbelian.preadditive`),
+so in practice it is preferable to work directly with `Abelian`.
+-/
 class NonPreadditiveAbelian extends HasZeroMorphisms C, IsNormalMonoCategory C,
     IsNormalEpiCategory C where
   [has_zero_object : HasZeroObject C]
@@ -396,14 +400,11 @@ theorem add_comp (X Y Z : C) (f g : X ⟶ Y) (h : Y ⟶ Z) : (f + g) ≫ h = f �
 /-- Every `NonPreadditiveAbelian` category is preadditive. -/
 def preadditive : Preadditive C where
   homGroup X Y :=
-    { add := (· + ·)
-      add_assoc := add_assoc
-      zero := 0
+    { add_assoc := add_assoc
       zero_add := neg_neg
       add_zero := add_zero
-      neg := fun f => -f
       neg_add_cancel := neg_add_cancel
-      sub_eq_add_neg := fun f g => (add_neg f g).symm -- Porting note: autoParam failed
+      sub_eq_add_neg f g := (add_neg f g).symm
       add_comm := add_comm
       nsmul := nsmulRec
       zsmul := zsmulRec }

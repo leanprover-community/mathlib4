@@ -214,7 +214,7 @@ theorem comp_d₁₂_eq :
     (cochainsIso₁ A).hom ≫ d₁₂ A =
       (inhomogeneousCochains A).d 1 2 ≫ (cochainsIso₂ A).hom := by
   ext x y
-  change A.ρ y.1 (x _) - x _ + x _ =  _ + _
+  change A.ρ y.1 (x _) - x _ + x _ = _ + _
   rw [Fin.sum_univ_two]
   simp only [Fin.val_zero, zero_add, pow_one, neg_smul, one_smul, Fin.val_one,
     Nat.one_add, neg_one_sq, sub_eq_add_neg, add_assoc]
@@ -362,7 +362,7 @@ theorem mem_cocycles₁_iff (f : G → A) :
 @[deprecated (since := "2025-06-25")] alias oneCocycles_map_one := cocycles₁_map_one
 
 @[simp] theorem cocycles₁_map_inv (f : cocycles₁ A) (g : G) :
-    A.ρ g (f g⁻¹) = - f g := by
+    A.ρ g (f g⁻¹) = -f g := by
   rw [← add_eq_zero_iff_eq_neg, ← cocycles₁_map_one f, ← mul_inv_cancel g,
     (mem_cocycles₁_iff f).1 f.2 g g⁻¹]
 
@@ -657,7 +657,7 @@ section
 variable {G A : Type*} [Group G] [AddCommGroup A] [MulAction G A]
 
 @[scoped simp] theorem map_inv_of_isCocycle₁ {f : G → A} (hf : IsCocycle₁ f) (g : G) :
-    g • f g⁻¹ = - f g := by
+    g • f g⁻¹ = -f g := by
   rw [← add_eq_zero_iff_eq_neg, ← map_one_of_isCocycle₁ hf, ← mul_inv_cancel g, hf g g⁻¹]
 
 @[deprecated (since := "2025-06-25")] alias map_inv_of_isOneCocycle := map_inv_of_isCocycle₁
@@ -1076,7 +1076,7 @@ lemma cocyclesMk₁_eq (x : cocycles₁ A) :
       simp [← inhomogeneousCochains.d_def, cocycles₁.d₁₂_apply x]) =
       (isoCocycles₁ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 1) using
-    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+    (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
 
@@ -1139,7 +1139,7 @@ lemma cocyclesMk₂_eq (x : cocycles₂ A) :
       simp [← inhomogeneousCochains.d_def, cocycles₂.d₂₃_apply x]) =
       (isoCocycles₂ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
-    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+    (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoCocycles₂_inv_comp_iCocycles_apply _ x).symm
 
@@ -1234,7 +1234,7 @@ lemma H1π_eq_zero_iff (x : cocycles₁ A) : H1π A x = 0 ↔ ⇑x ∈ coboundar
   simp only [H1π, isoCocycles₁, π, HomologicalComplex.homologyπ, homologyπ,
     cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
     LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective <|  _).1 inferInstance)]
+    ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, coboundaries₁, shortComplexH1, cocycles₁]
 
 lemma H1π_eq_iff (x y : cocycles₁ A) :
@@ -1328,7 +1328,7 @@ lemma H2π_eq_zero_iff (x : cocycles₂ A) : H2π A x = 0 ↔ ⇑x ∈ coboundar
   simp only [H2π, isoCocycles₂, π, HomologicalComplex.homologyπ, homologyπ,
     cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
     LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective <|  _).1 inferInstance)]
+    ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, coboundaries₂, shortComplexH2, cocycles₂]
 
 lemma H2π_eq_iff (x y : cocycles₂ A) :

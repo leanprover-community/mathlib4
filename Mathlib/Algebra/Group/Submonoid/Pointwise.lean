@@ -118,7 +118,7 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
 variable [Group G]
 
 /-- The submonoid with every element inverted. -/
-@[to_additive "The additive submonoid with every element negated."]
+@[to_additive /-- The additive submonoid with every element negated. -/]
 protected def inv : Inv (Submonoid G) where
   inv S :=
     { carrier := (S : Set G)⁻¹
@@ -136,7 +136,7 @@ theorem mem_inv {g : G} {S : Submonoid G} : g ∈ S⁻¹ ↔ g⁻¹ ∈ S :=
   Iff.rfl
 
 /-- Inversion is involutive on submonoids. -/
-@[to_additive "Inversion is involutive on additive submonoids."]
+@[to_additive /-- Inversion is involutive on additive submonoids. -/]
 def involutiveInv : InvolutiveInv (Submonoid G) :=
   SetLike.coe_injective.involutiveInv _ fun _ => rfl
 
@@ -151,7 +151,8 @@ theorem inv_le (S T : Submonoid G) : S⁻¹ ≤ T ↔ S ≤ T⁻¹ :=
   SetLike.coe_subset_coe.symm.trans Set.inv_subset
 
 /-- Pointwise inversion of submonoids as an order isomorphism. -/
-@[to_additive (attr := simps!) "Pointwise negation of additive submonoids as an order isomorphism"]
+@[to_additive (attr := simps!)
+/-- Pointwise negation of additive submonoids as an order isomorphism -/]
 def invOrderIso : Submonoid G ≃o Submonoid G where
   toEquiv := Equiv.inv _
   map_rel_iff' := inv_le_inv _ _
@@ -215,7 +216,7 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
 
 scoped[Pointwise] attribute [instance] Submonoid.pointwiseMulAction
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Submonoid M) : ↑(a • S) = a • (S : Set M) :=
   rfl
 

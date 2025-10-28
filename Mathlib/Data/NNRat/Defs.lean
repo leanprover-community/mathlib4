@@ -27,7 +27,7 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 
 ## Notation
 
-`ℚ≥0` is notation for `NNRat` in locale `NNRat`.
+`ℚ≥0` is notation for `NNRat` in scope `NNRat`.
 
 ## Huge warning
 
@@ -37,7 +37,7 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 
 assert_not_exists CompleteLattice OrderedCommMonoid
 
-library_note "specialised high priority simp lemma" /--
+library_note2 «specialised high priority simp lemma» /--
 It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
 using later, more general simp lemmas. In that case, the following reasons might be arguments for
 the early lemma to be tagged `@[simp high]` (rather than `@[simp, nolint simpNF]` or
@@ -54,9 +54,8 @@ instance Rat.instZeroLEOneClass : ZeroLEOneClass ℚ where
   zero_le_one := rfl
 
 instance Rat.instPosMulMono : PosMulMono ℚ where
-  elim := fun r p q h => by
-    simp only [mul_comm]
-    simpa [sub_mul, sub_nonneg] using Rat.mul_nonneg (sub_nonneg.2 h) r.2
+  mul_le_mul_of_nonneg_left r hr p q hpq := by
+    simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
 
 deriving instance CommSemiring for NNRat
 deriving instance LinearOrder for NNRat
@@ -149,6 +148,9 @@ theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
 
 theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
+
+@[simp]
+theorem mk_zero : (⟨0, le_rfl⟩ : ℚ≥0) = 0 := rfl
 
 @[norm_cast]
 theorem coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
@@ -360,16 +362,16 @@ lemma mk_divInt (n d : ℕ) :
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
   rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast
 
-@[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]; rfl
+@[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]
 
 @[simp] lemma num_divNat_den (q : ℚ≥0) : divNat q.num q.den = q :=
   ext <| by rw [← (q : ℚ).mkRat_num_den']; simp [num_coe, den_coe]
 
 lemma natCast_eq_divNat (n : ℕ) : (n : ℚ≥0) = divNat n 1 := (num_divNat_den _).symm
 
-lemma divNat_mul_divNat (n₁ n₂ : ℕ) {d₁ d₂} (hd₁ : d₁ ≠ 0) (hd₂ : d₂ ≠ 0) :
+lemma divNat_mul_divNat (n₁ n₂ : ℕ) {d₁ d₂} :
     divNat n₁ d₁ * divNat n₂ d₂ = divNat (n₁ * n₂) (d₁ * d₂) := by
-  ext; push_cast; exact Rat.divInt_mul_divInt _ _ (mod_cast hd₁) (mod_cast hd₂)
+  ext; push_cast; exact Rat.divInt_mul_divInt _ _
 
 lemma divNat_mul_left {a : ℕ} (ha : a ≠ 0) (n d : ℕ) : divNat (a * n) (a * d) = divNat n d := by
   ext; push_cast; exact Rat.divInt_mul_left (mod_cast ha)
@@ -398,10 +400,10 @@ lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) :
   ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
 
 theorem lt_def {p q : ℚ≥0} : p < q ↔ p.num * q.den < q.num * p.den := by
-  rw [← NNRat.coe_lt_coe, Rat.lt_def]; norm_cast
+  rw [← NNRat.coe_lt_coe, Rat.lt_iff]; norm_cast
 
 theorem le_def {p q : ℚ≥0} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
-  rw [← NNRat.coe_le_coe, Rat.le_def]; norm_cast
+  rw [← NNRat.coe_le_coe, Rat.le_iff]; norm_cast
 
 end NNRat
 

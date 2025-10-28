@@ -123,10 +123,9 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
     simp only [gt_iff_lt, mem_iUnion, exists_prop]
     have : ∀ r', (ENNReal.ofReal r') ≤ r → diam (f '' (ball x (ENNReal.ofReal r') ∩ D)) ≤ ε := by
       intro r' hr'
-      refine le_trans (diam_mono (subset_trans ?_ (image_subset_iff.2 hr))) (le_of_lt hn₂)
-      exact image_mono (inter_subset_inter_left D (ball_subset_ball hr'))
+      grw [← hn₂, ← image_subset_iff.2 hr, hr']
     by_cases r_top : r = ⊤
-    · use 1, one_pos, 2, one_lt_two, this 2 (by simp only [r_top, le_top])
+    · use 1, one_pos, 2, ENNReal.one_lt_two, this 2 (by simp only [r_top, le_top])
     · obtain ⟨r', hr'⟩ := exists_between (toReal_pos (ne_of_gt r0) r_top)
       use r', hr'.1, r.toReal, hr'.2, this r.toReal ofReal_toReal_le
   have S_antitone : ∀ (r₁ r₂ : ℝ), r₁ ≤ r₂ → S r₂ ⊆ S r₁ :=
@@ -144,8 +143,8 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
   use δ, δ0
   intro x xK
   obtain ⟨a, δa, ha⟩ := hδ xK
-  exact (diam_mono <| image_mono <| inter_subset_inter_left D <| ball_subset_ball <|
-    coe_le_coe.2 <| Real.toNNReal_mono (le_of_lt δa)).trans ha
+  grw [← ha]
+  gcongr
 
 /-- If `oscillation f x < ε` at every `x` in a compact set `K`, then there exists `δ > 0` such
 that the oscillation of `f` on `ball x δ` is less than `ε` for every `x` in `K`. -/

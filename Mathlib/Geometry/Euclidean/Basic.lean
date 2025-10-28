@@ -82,8 +82,6 @@ theorem dist_affineCombination {ι : Type*} {s : Finset ι} {w₁ w₂ : ι → 
     simp_rw [Pi.sub_apply, Finset.sum_sub_distrib, h₁, h₂, sub_self]
   exact inner_weightedVSub p h p h
 
--- Porting note: `inner_vsub_vsub_of_dist_eq_of_dist_eq` moved to `PerpendicularBisector`
-
 /-- The squared distance between points on a line (expressed as a
 multiple of a fixed vector added to a point) and another point,
 expressed as a quadratic. -/
@@ -109,7 +107,7 @@ theorem dist_smul_vadd_eq_dist {v : V} (p₁ p₂ : P) (hv : v ≠ 0) (r : ℝ) 
   rw [quadratic_eq_zero_iff hvi hd, neg_add_cancel, zero_div, neg_mul_eq_neg_mul, ←
     mul_sub_right_distrib, sub_eq_add_neg, ← mul_two, mul_assoc, mul_div_assoc, mul_div_mul_left,
     mul_div_assoc]
-  norm_num
+  simp
 
 open AffineSubspace Module
 

@@ -49,7 +49,7 @@ For now, we just turn off the offending simprocs in this file.
 *However*, hopefully it is possible to refactor the material here so that no disabling of
 simprocs is needed.
 
-See issue #27382.
+See issue https://github.com/leanprover-community/mathlib4/issues/27382.
 -/
 attribute [-simp] Fin.reduceFinMk
 
@@ -73,13 +73,13 @@ macro "valid" : tactic =>
 
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
 @[simp]
-abbrev obj' (i : ℕ) (hi : i ≤ n := by valid) : C := F.obj ⟨i, by omega⟩
+abbrev obj' (i : ℕ) (hi : i ≤ n := by valid) : C := F.obj ⟨i, by cutsat⟩
 
 /-- The map `F.obj' i ⟶ F.obj' j` when `F : ComposableArrows C n`, and `i` and `j`
 are natural numbers such that `i ≤ j ≤ n`. -/
 @[simp]
 abbrev map' (i j : ℕ) (hij : i ≤ j := by valid) (hjn : j ≤ n := by valid) :
-    F.obj ⟨i, by omega⟩ ⟶ F.obj ⟨j, by omega⟩ :=
+    F.obj ⟨i, by cutsat⟩ ⟶ F.obj ⟨j, by cutsat⟩ :=
   F.map (homOfLE (by simp only [Fin.mk_le_mk]; valid))
 
 lemma map'_self (i : ℕ) (hi : i ≤ n := by valid) : F.map' i i = 𝟙 _ := F.map_id _
@@ -143,7 +143,7 @@ lemma map_id (i : Fin 2) : map f i i (by simp) = 𝟙 _ :=
 
 lemma map_comp {i j k : Fin 2} (hij : i ≤ j) (hjk : j ≤ k) :
     map f i k (hij.trans hjk) = map f i j hij ≫ map f j k hjk := by
-  obtain rfl | rfl : i = j ∨ j = k := by omega
+  obtain rfl | rfl : i = j ∨ j = k := by cutsat
   · rw [map_id, id_comp]
   · rw [map_id, comp_id]
 
@@ -174,12 +174,12 @@ def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
       obtain ⟨k, hk⟩ := Nat.le.dest hij'
       exact this k i j hk (by valid)
     intro k
-    induction' k with k hk
-    · intro i j hj hj'
+    induction k with intro i j hj hj'
+    | zero =>
       simp only [add_zero] at hj
       obtain rfl := hj
       rw [F.map'_self i, G.map'_self i, id_comp, comp_id]
-    · intro i j hj hj'
+    | succ k hk =>
       rw [← add_assoc] at hj
       subst hj
       rw [F.map'_comp i (i + k) (i + k + 1), G.map'_comp i (i + k) (i + k + 1), assoc,
@@ -834,18 +834,15 @@ variable (obj : Fin (n + 1) → C) (mapSucc : ∀ (i : Fin n), obj i.castSucc �
 lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj i ≅ obj i),
     ∀ (i : ℕ) (hi : i < n), mapSucc ⟨i, hi⟩ =
       (e ⟨i, _⟩).inv ≫ F.map' i (i + 1) ≫ (e ⟨i + 1, _⟩).hom := by
-  revert obj mapSucc
-  induction' n with n hn
-  · intro obj _
-    exact ⟨mk₀ (obj 0), fun 0 => Iso.refl _, fun i hi => by simp at hi⟩
-  · intro obj mapSucc
+  induction n with
+  | zero => exact ⟨mk₀ (obj 0), fun 0 => Iso.refl _, fun i hi => by simp at hi⟩
+  | succ n hn =>
     obtain ⟨F, e, h⟩ := hn (fun i => obj i.succ) (fun i => mapSucc i.succ)
     refine ⟨F.precomp (mapSucc 0 ≫ (e 0).inv), fun i => match i with
       | 0 => Iso.refl _
       | ⟨i + 1, hi⟩ => e _, fun i hi => ?_⟩
     obtain _ | i := i
-    · simp only [← Fin.mk_zero]
-      simp
+    · simp
     · exact h i (by valid)
 
 /-- Given `obj : Fin (n + 1) → C` and `mapSucc i : obj i.castSucc ⟶ obj i.succ`
