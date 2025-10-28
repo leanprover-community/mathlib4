@@ -19,9 +19,9 @@ Then there is a canonical map `Perfection (R ⧸ I) p →*₀ R` that we shall c
 
 variable {p : ℕ} [Fact p.Prime] {R : Type*} [CommRing R] {I : Ideal R} [CharP (R ⧸ I) p]
 
-namespace Ring.Perfection
+namespace Perfection
 
-open _root_.Perfection
+open Ring (Perfection)
 
 /-- An auxiliary sequence to define the Teichmüller map. The `(n + 1)`-st term is the `p^n`-th
 power of an arbitrary lift in `R` of the `n`-th component from the perfection of `R ⧸ I`. -/
@@ -30,7 +30,7 @@ noncomputable def teichmullerAux (x : Perfection (R ⧸ I) p) : ℕ → R
   | n+1 => (coeff _ p n x).out ^ p ^ n
 
 theorem teichmullerAux_sModEq (x : Perfection (R ⧸ I) p) (m : ℕ) :
-    x.teichmullerAux m ≡ x.teichmullerAux (m + 1) [SMOD I ^ m] := by
+    teichmullerAux x m ≡ teichmullerAux x (m + 1) [SMOD I ^ m] := by
   obtain _ | m := m
   · simp
   symm
@@ -44,7 +44,7 @@ noncomputable def teichmullerCauchy (x : Perfection (R ⧸ I) p) :
 variable [IsAdicComplete I R]
 
 theorem exists_teichmullerFun (x : Perfection (R ⧸ I) p) :
-    ∃ y : R, ∀ n, x.teichmullerAux n ≡ y [SMOD I ^ n • (⊤ : Ideal R)] :=
+    ∃ y : R, ∀ n, teichmullerAux x n ≡ y [SMOD I ^ n • (⊤ : Ideal R)] :=
   IsPrecomplete.prec' _ (teichmullerCauchy x).2
 
 /-- Given an `I`-adically complete ring `R`, where `p ∈ I`, this is the underlying function of the
@@ -141,4 +141,4 @@ theorem mk_comp_teichmuller' :
     Ideal.Quotient.mk I ∘ (teichmuller p I) = coeff (R ⧸ I) p 0 :=
   funext mk_teichmuller
 
-end Ring.Perfection
+end Perfection
