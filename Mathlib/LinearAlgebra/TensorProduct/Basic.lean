@@ -600,12 +600,14 @@ variable (M N P₂ σ₁₂) in
 /-- Linearly constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
-def uncurry : (M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) →ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
-  LinearMap.flip <| lift <| LinearMap.lflip.comp LinearMap.id.flip
+def uncurry : (M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) →ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] P₂ where
+  toFun := lift
+  map_add' f g := by ext; rfl
+  map_smul' _ _ := by ext; rfl
 
 @[simp]
 theorem uncurry_apply (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) (m : M) (n : N) :
-    uncurry σ₁₂ M N P₂ f (m ⊗ₜ n) = f m n := by rw [uncurry, LinearMap.flip_apply, lift.tmul]; rfl
+    uncurry σ₁₂ M N P₂ f (m ⊗ₜ n) = f m n := rfl
 
 variable (M N P₂ σ₁₂)
 
