@@ -41,7 +41,7 @@ theorem hasTemperateGrowth_iff_isBigO {f : E → F} :
   congrm ContDiff ℝ ∞ f ∧ (∀ n, ∃ k C, ∀ x, _ ≤ C * ?_)
   rw [norm_pow, Real.norm_of_nonneg (by positivity)]
 
-/-- If `f` as temperate growth, then its `n`-th iterated derivative is `O((1 + ‖x‖) ^ k)` for
+/-- If `f` has temperate growth, then its `n`-th iterated derivative is `O((1 + ‖x‖) ^ k)` for
 some `k : ℕ` (depending on `n`).
 
 Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
