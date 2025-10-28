@@ -3127,6 +3127,7 @@ import Mathlib.Condensed.Light.CartesianClosed
 import Mathlib.Condensed.Light.Epi
 import Mathlib.Condensed.Light.Explicit
 import Mathlib.Condensed.Light.Functors
+import Mathlib.Condensed.Light.Instances
 import Mathlib.Condensed.Light.Limits
 import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Light.Small

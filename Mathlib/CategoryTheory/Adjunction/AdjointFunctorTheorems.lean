@@ -105,7 +105,7 @@ lemma isRightAdjoint_of_preservesLimits_of_isCoseparating [HasLimits D] [WellPow
     (hP : P.IsCoseparating) (G : D ⥤ C) [PreservesLimits G] :
     G.IsRightAdjoint := by
   have : ∀ A, HasInitial (StructuredArrow A G) := fun A ↦
-    hasInitial_of_isCoseparating (StructuredArrow.isCoseparating_inverseImage_proj A G hP)
+    hasInitial_of_isCoseparating.{v} (StructuredArrow.isCoseparating_inverseImage_proj A G hP)
   exact isRightAdjointOfStructuredArrowInitials _
 
 /-- The special adjoint functor theorem: if `F : C ⥤ D` preserves colimits and `C` is cocomplete,
@@ -116,7 +116,7 @@ lemma isLeftAdjoint_of_preservesColimits_of_isSeparating [HasColimits C] [WellPo
     (h𝒢 : P.IsSeparating) (F : C ⥤ D) [PreservesColimits F] :
     F.IsLeftAdjoint :=
   have : ∀ A, HasTerminal (CostructuredArrow F A) := fun A =>
-    hasTerminal_of_isSeparating (CostructuredArrow.isSeparating_inverseImage_proj F A h𝒢)
+    hasTerminal_of_isSeparating.{v} (CostructuredArrow.isSeparating_inverseImage_proj F A h𝒢)
   isLeftAdjoint_of_costructuredArrowTerminals _
 
 end SpecialAdjointFunctorTheorem
