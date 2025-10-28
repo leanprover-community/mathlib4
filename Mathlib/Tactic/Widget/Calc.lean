@@ -9,7 +9,6 @@ import Lean.Meta.Tactic.TryThis
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Batteries.CodeAction.Attr
-import Batteries.Lean.Position
 
 /-! # Calc widget
 
@@ -58,18 +57,16 @@ structure CalcParams extends SelectInsertParams where
   indent : Nat
   deriving SelectInsertParamsClass, RpcEncodable
 
-open Lean Meta
-
 /-- Return the link text and inserted text above and below of the calc widget. -/
 def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (params : CalcParams) :
-    MetaM (String × String × Option (String.Pos × String.Pos)) := do
+    MetaM (String × String × Option (String.Pos.Raw × String.Pos.Raw)) := do
   let subexprPos := getGoalLocations pos
   let some (rel, lhs, rhs) ← Lean.Elab.Term.getCalcRelation? goalType |
       throwError "invalid 'calc' step, relation expected{indentExpr goalType}"
   let relApp := mkApp2 rel
     (← mkFreshExprMVar none)
     (← mkFreshExprMVar none)
-  let some relStr := (← Meta.ppExpr relApp) |> toString |>.splitOn |>.get? 1
+  let some relStr := ((← Meta.ppExpr relApp) |> toString |>.splitOn)[1]?
     | throwError "could not find relation symbol in {relApp}"
   let isSelectedLeft := subexprPos.any (fun L ↦ #[0, 1].isPrefixOf L.toArray)
   let isSelectedRight := subexprPos.any (fun L ↦ #[1].isPrefixOf L.toArray)
@@ -111,7 +108,7 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   | true, true => "Create two new steps"
   | true, false | false, true => "Create a new step"
   | false, false => "This should not happen"
-  let pos : String.Pos := insertedCode.find (fun c => c == '?')
+  let pos : String.Pos.Raw := insertedCode.find (fun c => c == '?')
   return (stepInfo, insertedCode, some (pos, ⟨pos.byteIdx + 2⟩) )
 
 /-- Rpc function for the calc widget. -/
@@ -142,7 +139,7 @@ elab_rules : tactic
 | `(tactic|calc%$calcstx $steps) => do
   let mut isFirst := true
   for step in ← Lean.Elab.Term.mkCalcStepViews steps do
-    let some replaceRange := (← getFileMap).rangeOfStx? step.ref | continue
+    let some replaceRange := (← getFileMap).lspRangeOfStx? step.ref | continue
     let json := json% {"replaceRange": $(replaceRange),
                         "isFirst": $(isFirst),
                         "indent": $(replaceRange.start.character)}

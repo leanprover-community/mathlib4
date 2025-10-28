@@ -6,6 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Ring.Action.Basic
+import Mathlib.GroupTheory.Coset.Card
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.Quotient
 
@@ -23,21 +24,14 @@ open Polynomial
 namespace Polynomial
 
 variable (R : Type*) [Semiring R]
-variable {M}
 
+variable {M} in
 -- In this statement, we use `HSMul.hSMul m` as LHS instead of `(m • ·)`
 -- to avoid a spurious lambda-expression that complicates rewriting with this lemma.
 theorem smul_eq_map [MulSemiringAction M R] (m : M) :
     HSMul.hSMul m = map (MulSemiringAction.toRingHom M R m) := by
-  suffices DistribMulAction.toAddMonoidHom R[X] m =
-      (mapRingHom (MulSemiringAction.toRingHom M R m)).toAddMonoidHom by
-    ext1 r
-    exact DFunLike.congr_fun this r
-  ext n r : 2
-  change m • monomial n r = map (MulSemiringAction.toRingHom M R m) (monomial n r)
-  rw [Polynomial.map_monomial, Polynomial.smul_monomial, MulSemiringAction.toRingHom_apply]
-
-variable (M)
+  ext
+  simp
 
 noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] :=
   { Polynomial.distribMulAction with
@@ -58,8 +52,8 @@ variable (S : Type*) [CommSemiring S] [MulSemiringAction M S]
 theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m • f.eval x :=
   Polynomial.induction_on f (fun r ↦ by rw [smul_C, eval_C, eval_C])
     (fun f g ihf ihg ↦ by rw [smul_add, eval_add, ihf, ihg, eval_add, smul_add]) fun n r _ ↦ by
-    rw [smul_mul', smul_pow', smul_C, smul_X, eval_mul, eval_C, eval_pow, eval_X, eval_mul, eval_C,
-      eval_pow, eval_X, smul_mul', smul_pow']
+    rw [smul_mul', smul_pow', smul_C, smul_X, eval_mul, eval_C, eval_X_pow, eval_mul, eval_C,
+      eval_X_pow, smul_mul', smul_pow']
 
 variable (G : Type*) [Group G]
 

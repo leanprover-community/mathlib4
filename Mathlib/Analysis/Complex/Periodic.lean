@@ -47,8 +47,6 @@ theorem norm_qParam (z : ℂ) : ‖𝕢 h z‖ = Real.exp (-2 * π * im z / h) :
     mul_zero, sub_zero, I_re, mul_im, zero_mul, add_zero, I_im, mul_one, sub_self, zero_sub,
     neg_mul]
 
-@[deprecated (since := "2025-02-17")] alias abs_qParam := norm_qParam
-
 theorem im_invQParam (q : ℂ) : im (invQParam h q) = -h / (2 * π) * Real.log ‖q‖ := by
   simp only [invQParam, ← div_div, div_I, neg_mul, neg_im, mul_im, mul_re, div_ofReal_re,
     div_ofNat_re, ofReal_re, I_re, mul_zero, div_ofReal_im, div_ofNat_im, ofReal_im, zero_div, I_im,
@@ -72,7 +70,18 @@ theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]
   simpa using Real.pi_pos
 
-@[deprecated (since := "2025-02-17")] alias abs_qParam_lt_iff := norm_qParam_lt_iff
+lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
+  simp [qParam, exp_ne_zero]
+
+@[fun_prop]
+lemma differentiable_qParam : Differentiable ℂ (𝕢 h) := by
+  unfold qParam
+  fun_prop
+
+@[fun_prop]
+lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
+  unfold qParam
+  fun_prop
 
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_
@@ -86,7 +95,7 @@ theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := b
 theorem invQParam_tendsto (hh : 0 < h) : Tendsto (invQParam h) (𝓝[≠] 0) I∞ := by
   simp only [tendsto_comap_iff, comp_def, im_invQParam]
   apply Tendsto.const_mul_atBot_of_neg (div_neg_of_neg_of_pos (neg_lt_zero.mpr hh) (by positivity))
-  exact Real.tendsto_log_nhdsWithin_zero_right.comp tendsto_norm_nhdsNE_zero
+  exact Real.tendsto_log_nhdsGT_zero.comp tendsto_norm_nhdsNE_zero
 
 end qParam
 
@@ -167,7 +176,7 @@ variable {h : ℝ} {f : ℂ → ℂ}
 
 theorem boundedAtFilter_cuspFunction (hh : 0 < h) (h_bd : BoundedAtFilter I∞ f) :
     BoundedAtFilter (𝓝[≠] 0) (cuspFunction h f) := by
-  refine (h_bd.comp_tendsto <| invQParam_tendsto hh).congr' ?_ (by rfl)
+  refine (h_bd.comp_tendsto <| invQParam_tendsto hh).congr' ?_ (by simp)
   refine eventually_nhdsWithin_of_forall fun q hq ↦ ?_
   rw [cuspFunction_eq_of_nonzero _ _ hq, comp_def]
 

@@ -68,7 +68,7 @@ Let `J` be injective and `g` a morphism into `J`, then `g` can be factored throu
 def factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] : Y ⟶ J :=
   (Injective.factors g f).choose
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem comp_factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] :
     f ≫ factorThru g f = g :=
   (Injective.factors g f).choose_spec
@@ -112,10 +112,10 @@ instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
     Nonempty.intro
       { J := WithBot X
         injective := inferInstance
-        f := Option.some
+        f := WithBot.some
         mono := by
           rw [mono_iff_injective]
-          exact Option.some_injective X }
+          exact WithBot.coe_injective }
 
 instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injective (P ⨯ Q) where
   factors g f mono := by
@@ -218,9 +218,8 @@ variable [HasZeroMorphisms C] {X Y : C} (f : X ⟶ Y) [HasCokernel f]
 an arbitrarily chosen injective object under `cokernel f`.
 -/
 def syzygies : C :=
-  under (cokernel f) -- Porting note: no deriving Injective
-
-instance : Injective <| syzygies f := injective_under (cokernel f)
+  under (cokernel f)
+deriving Injective
 
 /-- When `C` has enough injective,
 `Injective.d f : Y ⟶ syzygies f` is the composition
@@ -293,6 +292,18 @@ def injectivePresentationOfMap (adj : F ⊣ G)
   f := adj.homEquiv _ _ I.f
 
 end Adjunction
+
+namespace Functor
+
+variable {D : Type*} [Category D] (F : C ⥤ D)
+
+theorem injective_of_map_injective [F.Full] [F.Faithful]
+    [F.PreservesMonomorphisms] {I : C} (hI : Injective (F.obj I)) : Injective I where
+  factors g f _ := by
+    obtain ⟨h, fac⟩ := hI.factors (F.map g) (F.map f)
+    exact ⟨F.preimage h, F.map_injective (by simp [fac])⟩
+
+end Functor
 
 /--
 [Lemma 3.8](https://ncatlab.org/nlab/show/injective+object#preservation_of_injective_objects)

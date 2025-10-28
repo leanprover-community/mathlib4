@@ -59,7 +59,7 @@ instance instSMulCommClass [ContinuousConstSMul N X] [SMulCommClass M N X] :
     SMulCommClass M N (SeparationQuotient X) :=
   surjective_mk.smulCommClass mk_smul mk_smul
 
-@[to_additive instVAddAssocClass]
+@[to_additive]
 instance instIsScalarTower [SMul M N] [ContinuousConstSMul N X] [IsScalarTower M N X] :
     IsScalarTower M N (SeparationQuotient X) where
   smul_assoc a b := surjective_mk.forall.2 fun x ↦ congr_arg mk <| smul_assoc a b x
@@ -92,7 +92,6 @@ instance instMul [Mul M] [ContinuousMul M] : Mul (SeparationQuotient M) where
 @[to_additive (attr := simp)]
 theorem mk_mul [Mul M] [ContinuousMul M] (a b : M) : mk (a * b) = mk a * mk b := rfl
 
-
 @[to_additive]
 instance instContinuousMul [Mul M] [ContinuousMul M] : ContinuousMul (SeparationQuotient M) where
   continuous_mul := isQuotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_mul
@@ -116,7 +115,7 @@ instance instMulOneClass [MulOneClass M] [ContinuousMul M] :
   surjective_mk.mulOneClass mk mk_one mk_mul
 
 /-- `SeparationQuotient.mk` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`SeparationQuotient.mk` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `SeparationQuotient.mk` as an `AddMonoidHom`. -/]
 def mkMonoidHom [MulOneClass M] [ContinuousMul M] : M →* SeparationQuotient M where
   toFun := mk
   map_mul' := mk_mul
@@ -197,22 +196,27 @@ instance instGroup [Group G] [IsTopologicalGroup G] : Group (SeparationQuotient 
 instance instCommGroup [CommGroup G] [IsTopologicalGroup G] : CommGroup (SeparationQuotient G) :=
   surjective_mk.commGroup mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
 
-/-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
-theorem nhds_mk (x : G) : 𝓝 (mk x) = .map mk (𝓝 x) :=
-  le_antisymm ((SeparationQuotient.isOpenMap_mk).nhds_le x) continuous_quot_mk.continuousAt
+@[to_additive]
+instance instIsTopologicalGroup [Group G] [IsTopologicalGroup G] :
+    IsTopologicalGroup (SeparationQuotient G) where
 
 end Group
 
-section UniformGroup
+section IsUniformGroup
 
 @[to_additive]
-instance instUniformGroup {G : Type*} [Group G] [UniformSpace G] [UniformGroup G] :
-    UniformGroup (SeparationQuotient G) where
+instance instIsUniformGroup {G : Type*} [Group G] [UniformSpace G] [IsUniformGroup G] :
+    IsUniformGroup (SeparationQuotient G) where
   uniformContinuous_div := by
     rw [uniformContinuous_dom₂]
     exact uniformContinuous_mk.comp uniformContinuous_div
 
-end UniformGroup
+@[deprecated (since := "2025-03-31")] alias
+  instUniformAddGroup := SeparationQuotient.instIsUniformAddGroup
+@[to_additive existing, deprecated (since := "2025-03-31")] alias
+  instUniformGroup := SeparationQuotient.instIsUniformGroup
+
+end IsUniformGroup
 
 section MonoidWithZero
 

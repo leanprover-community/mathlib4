@@ -7,6 +7,7 @@ Authors: Felix Weilacher
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.CantorScheme
+import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Perfect Sets
@@ -42,7 +43,7 @@ private theorem Perfect.small_diam_aux (hC : Perfect C) (ε_pos : 0 < ε) {x : �
   have : x ∈ EMetric.ball x (ε / 2) := by
     apply EMetric.mem_ball_self
     rw [ENNReal.div_pos_iff]
-    exact ⟨ne_of_gt ε_pos, by norm_num⟩
+    exact ⟨ne_of_gt ε_pos, by simp⟩
   have := hC.closure_nhds_inter x xC this EMetric.isOpen_ball
   refine ⟨this.1, this.2, ?_, ?_⟩
   · rw [IsClosed.closure_subset_iff hC.closed]
@@ -121,7 +122,7 @@ theorem Perfect.exists_nat_bool_injection
   · rintro y ⟨x, rfl⟩
     exact map_mem ⟨_, hdom⟩ 0
   · apply hdiam.map_continuous.comp
-    continuity
+    fun_prop
   intro x y hxy
   simpa only [← Subtype.val_inj] using hdisj'.map_injective hxy
 
@@ -132,7 +133,7 @@ from the Cantor space `ℕ → Bool`. -/
 theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type*} [TopologicalSpace α]
     [PolishSpace α] {C : Set α} (hC : IsClosed C) (hunc : ¬C.Countable) :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Function.Injective f := by
-  letI := upgradePolishSpace α
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
   obtain ⟨D, hD, Dnonempty, hDC⟩ := exists_perfect_nonempty_of_isClosed_of_not_countable hC hunc
   obtain ⟨f, hfD, hf⟩ := hD.exists_nat_bool_injection Dnonempty
   exact ⟨f, hfD.trans hDC, hf⟩

@@ -103,8 +103,6 @@ lemma ShortExact.map_of_exact (hS : S.ShortExact)
     [PreservesFiniteColimits F] : (S.map F).ShortExact := by
   have := hS.mono_f
   have := hS.epi_g
-  have := preserves_mono_of_preservesLimit F S.f
-  have := preserves_epi_of_preservesColimit F S.g
   exact hS.map F
 
 end
@@ -126,7 +124,7 @@ lemma ShortExact.isIso_f_iff {S : ShortComplex C} (hS : S.ShortExact) [Balanced 
     have : Epi S.f := (S.exact_iff_epi (hX₃.eq_of_tgt _ _)).1 hS.exact
     apply isIso_of_mono_of_epi
 
-lemma ShortExact.isIso_g_iff  {S : ShortComplex C} (hS : S.ShortExact) [Balanced C] :
+lemma ShortExact.isIso_g_iff {S : ShortComplex C} (hS : S.ShortExact) [Balanced C] :
     IsIso S.g ↔ IsZero S.X₁ := by
   have := hS.exact.hasZeroObject
   have := hS.mono_f
@@ -166,6 +164,26 @@ noncomputable def ShortExact.gIsCokernel [Balanced C] {S : ShortComplex C} (hS :
     IsColimit (CokernelCofork.ofπ S.g S.zero) := by
   have := hS.epi_g
   exact hS.exact.gIsCokernel
+
+/-- Is `S` is an exact short complex and `h : S.HomologyData`, there is
+a short exact sequence `0 ⟶ h.left.K ⟶ S.X₂ ⟶ h.right.Q ⟶ 0`. -/
+lemma Exact.shortExact {S : ShortComplex C} (hS : S.Exact) (h : S.HomologyData) :
+    (ShortComplex.mk _ _ (h.exact_iff_i_p_zero.1 hS)).ShortExact where
+  exact := by
+    have := hS.epi_f' h.left
+    have := hS.mono_g' h.right
+    let S' := ShortComplex.mk h.left.i S.g (by simp)
+    let S'' := ShortComplex.mk _ _ (h.exact_iff_i_p_zero.1 hS)
+    let a : S ⟶ S' :=
+      { τ₁ := h.left.f'
+        τ₂ := 𝟙 _
+        τ₃ := 𝟙 _ }
+    let b : S'' ⟶ S' :=
+      { τ₁ := 𝟙 _
+        τ₂ := 𝟙 _
+        τ₃ := h.right.g' }
+    rwa [ShortComplex.exact_iff_of_epi_of_isIso_of_mono b,
+      ← ShortComplex.exact_iff_of_epi_of_isIso_of_mono a]
 
 /-- A split short complex is short exact. -/
 lemma Splitting.shortExact {S : ShortComplex C} [HasZeroObject C] (s : S.Splitting) :

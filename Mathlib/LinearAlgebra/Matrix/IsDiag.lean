@@ -3,9 +3,9 @@ Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
-import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.LinearAlgebra.Matrix.Kronecker
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
-import Mathlib.Data.Matrix.Kronecker
+import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Diagonal matrices
@@ -69,12 +69,12 @@ theorem IsDiag.map [Zero α] [Zero β] {A : Matrix n n α} (ha : A.IsDiag) {f : 
   intro i j h
   simp [ha h, hf]
 
-theorem IsDiag.neg [AddGroup α] {A : Matrix n n α} (ha : A.IsDiag) : (-A).IsDiag := by
+theorem IsDiag.neg [SubtractionMonoid α] {A : Matrix n n α} (ha : A.IsDiag) : (-A).IsDiag := by
   intro i j h
   simp [ha h]
 
 @[simp]
-theorem isDiag_neg_iff [AddGroup α] {A : Matrix n n α} : (-A).IsDiag ↔ A.IsDiag :=
+theorem isDiag_neg_iff [SubtractionMonoid α] {A : Matrix n n α} : (-A).IsDiag ↔ A.IsDiag :=
   ⟨fun ha _ _ h => neg_eq_zero.1 (ha h), IsDiag.neg⟩
 
 theorem IsDiag.add [AddZeroClass α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
@@ -82,18 +82,18 @@ theorem IsDiag.add [AddZeroClass α] {A B : Matrix n n α} (ha : A.IsDiag) (hb :
   intro i j h
   simp [ha h, hb h]
 
-theorem IsDiag.sub [AddGroup α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
+theorem IsDiag.sub [SubtractionMonoid α] {A B : Matrix n n α} (ha : A.IsDiag) (hb : B.IsDiag) :
     (A - B).IsDiag := by
   intro i j h
   simp [ha h, hb h]
 
-theorem IsDiag.smul [Monoid R] [AddMonoid α] [DistribMulAction R α] (k : R) {A : Matrix n n α}
+theorem IsDiag.smul [Zero α] [SMulZeroClass R α] (k : R) {A : Matrix n n α}
     (ha : A.IsDiag) : (k • A).IsDiag := by
   intro i j h
   simp [ha h]
 
 @[simp]
-theorem isDiag_smul_one (n) [Semiring α] [DecidableEq n] (k : α) :
+theorem isDiag_smul_one (n) [MulZeroOneClass α] [DecidableEq n] (k : α) :
     (k • (1 : Matrix n n α)).IsDiag :=
   isDiag_one.smul k
 
@@ -104,12 +104,12 @@ theorem IsDiag.transpose [Zero α] {A : Matrix n n α} (ha : A.IsDiag) : Aᵀ.Is
 theorem isDiag_transpose_iff [Zero α] {A : Matrix n n α} : Aᵀ.IsDiag ↔ A.IsDiag :=
   ⟨IsDiag.transpose, IsDiag.transpose⟩
 
-theorem IsDiag.conjTranspose [Semiring α] [StarRing α] {A : Matrix n n α} (ha : A.IsDiag) :
-    Aᴴ.IsDiag :=
+theorem IsDiag.conjTranspose [NonUnitalNonAssocSemiring α] [StarRing α] {A : Matrix n n α}
+    (ha : A.IsDiag) : Aᴴ.IsDiag :=
   ha.transpose.map (star_zero _)
 
 @[simp]
-theorem isDiag_conjTranspose_iff [Semiring α] [StarRing α] {A : Matrix n n α} :
+theorem isDiag_conjTranspose_iff [NonUnitalNonAssocSemiring α] [StarRing α] {A : Matrix n n α} :
     Aᴴ.IsDiag ↔ A.IsDiag :=
   ⟨fun ha => by
     convert ha.conjTranspose
@@ -122,7 +122,7 @@ theorem IsDiag.submatrix [Zero α] {A : Matrix n n α} (ha : A.IsDiag) {f : m �
 theorem IsDiag.kronecker [MulZeroClass α] {A : Matrix m m α} {B : Matrix n n α} (hA : A.IsDiag)
     (hB : B.IsDiag) : (A ⊗ₖ B).IsDiag := by
   rintro ⟨a, b⟩ ⟨c, d⟩ h
-  simp only [Prod.mk.inj_iff, Ne, not_and_or] at h
+  simp only [Prod.mk_inj, Ne, not_and_or] at h
   rcases h with hac | hbd
   · simp [hA hac]
   · simp [hB hbd]
@@ -155,7 +155,7 @@ theorem isDiag_fromBlocks_iff [Zero α] {A : Matrix m m α} {B : Matrix m n α} 
     convert IsDiag.fromBlocks ha hd
 
 /-- A symmetric block matrix `A.fromBlocks B C D` is diagonal
-    if `A` and `D` are diagonal and `B` is `0`. -/
+if `A` and `D` are diagonal and `B` is `0`. -/
 theorem IsDiag.fromBlocks_of_isSymm [Zero α] {A : Matrix m m α} {C : Matrix n m α}
     {D : Matrix n n α} (h : (A.fromBlocks 0 C D).IsSymm) (ha : A.IsDiag) (hd : D.IsDiag) :
     (A.fromBlocks 0 C D).IsDiag := by

@@ -37,7 +37,7 @@ theorem exp_arg (z : Circle) : exp (arg z) = z :=
 
 /-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 noncomputable def argPartialEquiv : PartialEquiv Circle ℝ where
   toFun := arg ∘ (↑)
   invFun := exp
@@ -49,7 +49,7 @@ noncomputable def argPartialEquiv : PartialEquiv Circle ℝ where
   right_inv' _ hx := arg_exp hx.1 hx.2
 
 /-- `Complex.arg` and `expMapCircle` define an equivalence between `circle` and `(-π, π]`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 noncomputable def argEquiv : Circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩
   invFun := exp ∘ (↑)
@@ -126,7 +126,7 @@ variable {T : ℝ}
 theorem scaled_exp_map_periodic : Function.Periodic (fun x => Circle.exp (2 * π / T * x)) T := by
   -- The case T = 0 is not interesting, but it is true, so we prove it to save hypotheses
   rcases eq_or_ne T 0 with (rfl | hT)
-  · intro x; simp
+  · simp
   · intro x; simp_rw [mul_add]; rw [div_mul_cancel₀ _ hT, Circle.periodic_exp]
 
 /-- The canonical map `fun x => exp (2 π i x / T)` from `ℝ / ℤ • T` to the unit circle in `ℂ`.
@@ -158,7 +158,6 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
   rw [QuotientAddGroup.eq]; simp_rw [AddSubgroup.mem_zmultiples_iff, zsmul_eq_mul]
   use m
   field_simp at hm
-  rw [← mul_right_inj' Real.two_pi_pos.ne']
   linarith
 
 /-- The homeomorphism between `AddCircle (2 * π)` and `Circle`. -/
@@ -181,7 +180,7 @@ noncomputable def homeomorphCircle (hT : T ≠ 0) : AddCircle T ≃ₜ Circle :=
 
 theorem homeomorphCircle_apply (hT : T ≠ 0) (x : AddCircle T) :
     homeomorphCircle hT x = toCircle x := by
-  induction' x using QuotientAddGroup.induction_on with x
+  cases x using QuotientAddGroup.induction_on
   rw [homeomorphCircle, Homeomorph.trans_apply,
     homeomorphAddCircle_apply_mk, homeomorphCircle'_apply_mk, toCircle_apply_mk]
   ring_nf

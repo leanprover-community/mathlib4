@@ -8,13 +8,14 @@ import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Tactic.TryThis
 
 /-!
 # Categories
 
 Defines a category, as a type class parametrised by the type of objects.
 
-## Notations
+## Notation
 
 Introduces notations in the `CategoryTheory` scope
 * `X ⟶ Y` for the morphism spaces (type as `\hom`),
@@ -26,12 +27,10 @@ Users may like to add `g ⊚ f` for composition in the standard convention, usin
 local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    -- type as \oo
 ```
 
-## Porting note
-I am experimenting with using the `aesop` tactic as a replacement for `tidy`.
 -/
 
 
-library_note "CategoryTheory universes"
+library_note2 «category theory universes»
 /--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
@@ -56,7 +55,7 @@ for which objects live in `Type u` and morphisms live in `Type v`.
 
 Because the universe parameter `u` for the objects can be inferred from `C`
 when we write `Category C`, while the universe parameter `v` for the morphisms
-can not be automatically inferred, through the category theory library
+cannot be automatically inferred, through the category theory library
 we introduce universe parameters with morphism levels listed first,
 as in
 ```
@@ -83,7 +82,7 @@ namespace CategoryTheory
 /-- A preliminary structure on the way to defining a category,
 containing the data, but none of the axioms. -/
 @[pp_with_univ]
-class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v + 1) where
+class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v + 1} obj where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
   /-- Composition of morphisms in a category, written `f ≫ g`. -/
@@ -109,6 +108,27 @@ open Lean Meta Elab.Tactic in
     throwError "The goal does not contain `sorry`"
 
 /--
+`rfl_cat` is a macro for `intros; rfl` which is attempted in `aesop_cat` before
+doing the more expensive `aesop` tactic.
+
+This gives a speedup because `simp` (called by `aesop`) can be very slow.
+https://github.com/leanprover-community/mathlib4/pull/25475 contains measurements from June 2025.
+
+Implementation notes:
+* `refine id ?_`:
+  In some cases it is important that the type of the proof matches the expected type exactly.
+  e.g. if the goal is `2 = 1 + 1`, the `rfl` tactic will give a proof of type `2 = 2`.
+  Starting a proof with `refine id ?_` is a trick to make sure that the proof has exactly
+  the expected type, in this case `2 = 1 + 1`. See also
+  https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/changing.20a.20proof.20can.20break.20a.20later.20proof
+* `apply_rfl`:
+  `rfl` is a macro that attempts both `eq_refl` and `apply_rfl`. Since `apply_rfl`
+  subsumes `eq_refl`, we can use `apply_rfl` instead. This fails twice as fast as `rfl`.
+
+-/
+macro (name := rfl_cat) "rfl_cat" : tactic => do `(tactic| (refine id ?_; intros; apply_rfl))
+
+/--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
 This tactic fails when it is unable to solve the goal, making it suitable for
@@ -116,7 +136,7 @@ use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry |
+  first | sorry_if_sorry | rfl_cat |
   aesop $c* (config := { introsTransparency? := some .default, terminal := true })
             (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
@@ -125,7 +145,7 @@ We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop
 -/
 macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry |
+  first | sorry_if_sorry | try_this rfl_cat |
   aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
              (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
@@ -140,21 +160,46 @@ macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_cla
 
 attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim
 
+open Lean Elab Tactic in
+/-- A tactic for discharging easy category theory goals, widely used as an autoparameter.
+Currently this defaults to the `aesop_cat` wrapper around `aesop`, but by setting
+the option `mathlib.tactic.category.grind` to `true`, it will use the `grind` tactic instead.
+-/
+def categoryTheoryDischarger : TacticM Unit := do
+  if ← getBoolOption `mathlib.tactic.category.grind then
+    if ← getBoolOption `mathlib.tactic.category.log_grind then
+      logInfo "Category theory discharger using `grind`."
+    evalTacticSeq (← `(tacticSeq|
+      intros; (try dsimp only) <;> ((try ext); grind (gen := 20) (ematch := 20))))
+  else
+    if ← getBoolOption `mathlib.tactic.category.log_aesop then
+      logInfo "Category theory discharger using `aesop`."
+    evalTactic (← `(tactic| aesop_cat))
+
+@[inherit_doc categoryTheoryDischarger]
+elab (name := cat_disch) "cat_disch" : tactic =>
+  categoryTheoryDischarger
+
+set_option mathlib.tactic.category.grind true
+
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
 specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.) -/
 @[pp_with_univ, stacks 0014]
-class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
+class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} obj where
   /-- Identity morphisms are left identities for composition. -/
-  id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by aesop_cat
+  id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by cat_disch
   /-- Identity morphisms are right identities for composition. -/
-  comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by aesop_cat
+  comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by cat_disch
   /-- Composition in a category is associative. -/
   assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h := by
-    aesop_cat
+    cat_disch
 
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
 attribute [trans] CategoryStruct.comp
+
+attribute [grind =] Category.id_comp Category.comp_id
+attribute [grind _=_] Category.assoc
 
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
@@ -189,7 +234,7 @@ scoped infixr:80 " =≫ " => eq_whisker
 
 /--
 Notation for whiskering an equation by a morphism (on the left).
-If `g h : Y ⟶ Z` and `w : g = h` and `h : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
+If `g h : Y ⟶ Z` and `w : g = h` and `f : X ⟶ Y`, then `f ≫= w : f ≫ g = f ≫ h`.
 -/
 scoped infixr:80 " ≫= " => whisker_eq
 
@@ -311,6 +356,18 @@ theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Ep
     (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
 
+/-- `f : X ⟶ Y` is a monomorphism iff for all `Z`, composition of morphisms `Z ⟶ X` with `f`
+is injective. -/
+lemma mono_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Mono f ↔ ∀ Z, (fun g : Z ⟶ X ↦ g ≫ f).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_mono f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
+
+/-- `f : X ⟶ Y` is an epimorphism iff for all `Z`, composition of morphisms `Y ⟶ Z` with `f`
+is injective. -/
+lemma epi_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Epi f ↔ ∀ Z, (fun g : Y ⟶ Z ↦ f ≫ g).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_epi f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
+
 section
 
 variable [Quiver.IsThin C] (f : X ⟶ Y)
@@ -332,47 +389,18 @@ variable [Category.{v} C]
 
 universe u'
 
-instance uliftCategory : Category.{v} (ULift.{u'} C) where
+/-- The category structure on `ULift C` that is induced from the category
+structure on `C`. This is not made a global instance because of a diamond
+when `C` is a preordered type. -/
+def uliftCategory : Category.{v} (ULift.{u'} C) where
   Hom X Y := X.down ⟶ Y.down
   id X := 𝟙 X.down
   comp f g := f ≫ g
 
+attribute [local instance] uliftCategory in
 -- We verify that this previous instance can lift small categories to large categories.
 example (D : Type u) [SmallCategory D] : LargeCategory (ULift.{u + 1} D) := by infer_instance
 
 end
 
 end CategoryTheory
-
--- Porting note: We hope that this will become less necessary,
--- as in Lean4 `simp` will automatically enter "`dsimp` mode" when needed with dependent arguments.
--- Optimistically, we will eventually remove this library note.
-library_note "dsimp, simp"
-/-- Many proofs in the category theory library use the `dsimp, simp` pattern,
-which typically isn't necessary elsewhere.
-
-One would usually hope that the same effect could be achieved simply with `simp`.
-
-The essential issue is that composition of morphisms involves dependent types.
-When you have a chain of morphisms being composed, say `f : X ⟶ Y` and `g : Y ⟶ Z`,
-then `simp` can operate successfully on the morphisms
-(e.g. if `f` is the identity it can strip that off).
-
-However if we have an equality of objects, say `Y = Y'`,
-then `simp` can't operate because it would break the typing of the composition operations.
-We rarely have interesting equalities of objects
-(because that would be "evil" --- anything interesting should be expressed as an isomorphism
-and tracked explicitly),
-except of course that we have plenty of definitional equalities of objects.
-
-`dsimp` can apply these safely, even inside a composition.
-
-After `dsimp` has cleared up the object level, `simp` can resume work on the morphism level ---
-but without the `dsimp` step, because `simp` looks at expressions syntactically,
-the relevant lemmas might not fire.
-
-There's no bound on how many times you potentially could have to switch back and forth,
-if the `simp` introduced new objects we again need to `dsimp`.
-In practice this does occur, but only rarely, because `simp` tends to shorten chains of compositions
-(i.e. not introduce new objects at all).
--/

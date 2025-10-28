@@ -6,7 +6,6 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Adhesive
 import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 import Mathlib.CategoryTheory.Subpresheaf.Image
 import Mathlib.CategoryTheory.Subpresheaf.Sieves
@@ -15,7 +14,7 @@ import Mathlib.CategoryTheory.Subpresheaf.Sieves
 
 # Subsheaf of types
 
-We define the sub(pre)sheaf of a type valued presheaf.
+We define the sub(pre)sheaf of a type-valued presheaf.
 
 ## Main results
 
@@ -44,6 +43,11 @@ variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
 variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 
+/-- Every subpresheaf of a separated presheaf is itself separated. -/
+theorem Subpresheaf.isSeparated {J : GrothendieckTopology C} (h : Presieve.IsSeparated J F) :
+    Presieve.IsSeparated J G.toPresheaf :=
+  fun _ S hS _ _ _ hx₁ hx₂ ↦ Subtype.ext <| h S hS _ _ _ (hx₁.map G.ι) (hx₂.map G.ι)
+
 /-- The sheafification of a subpresheaf as a subpresheaf.
 Note that this is a sheaf only when the whole presheaf is a sheaf. -/
 def Subpresheaf.sheafify : Subpresheaf F where
@@ -58,7 +62,7 @@ def Subpresheaf.sheafify : Subpresheaf F where
 theorem Subpresheaf.le_sheafify : G ≤ G.sheafify J := by
   intro U s hs
   change _ ∈ J _
-  convert J.top_mem U.unop -- Porting note: `U.unop` can not be inferred now
+  convert J.top_mem U.unop
   rw [eq_top_iff]
   rintro V i -
   exact G.map i.op hs
@@ -78,30 +82,21 @@ theorem Subpresheaf.eq_sheafify (h : Presieve.IsSheaf J F) (hG : Presieve.IsShea
 
 theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
     Presieve.IsSheaf J (G.sheafify J).toPresheaf := by
-  intro U S hS x hx
+  refine (isSeparated _ hF.isSeparated).isSheaf fun U S hS x hx ↦ ?_
   let S' := Sieve.bind S fun Y f hf => G.sieveOfSection (x f hf).1
   have := fun (V) (i : V ⟶ U) (hi : S' i) => hi
-  -- Porting note: change to explicit variable so that `choose` can find the correct
-  -- dependent functions. Thus everything follows need two additional explicit variables.
   choose W i₁ i₂ hi₂ h₁ h₂ using this
   dsimp [-Sieve.bind_apply] at *
   let x'' : Presieve.FamilyOfElements F S' := fun V i hi => F.map (i₁ V i hi).op (x _ (hi₂ V i hi))
-  have H : ∀ s, x.IsAmalgamation s ↔ x''.IsAmalgamation s.1 := by
-    intro s
-    constructor
-    · intro H V i hi
-      dsimp only [x'']
-      conv_lhs => rw [← h₂ _ _ hi]
-      rw [← H _ (hi₂ _ _ hi)]
-      exact FunctorToTypes.map_comp_apply F (i₂ _ _ hi).op (i₁ _ _ hi).op _
-    · intro H V i hi
-      refine Subtype.ext ?_
-      apply (hF _ (x i hi).2).isSeparatedFor.ext
-      intro V' i' hi'
-      have hi'' : S' (i' ≫ i) := ⟨_, _, _, hi, hi', rfl⟩
-      have := H _ hi''
-      rw [op_comp, F.map_comp] at this
-      exact this.trans (congr_arg Subtype.val (hx _ _ (hi₂ _ _ hi'') hi (h₂ _ _ hi'')))
+  have H : ∀ s, x''.IsAmalgamation s.1 → x.IsAmalgamation s := by
+    intro s H V i hi
+    refine Subtype.ext ?_
+    apply (hF _ (x i hi).2).isSeparatedFor.ext
+    intro V' i' hi'
+    have hi'' : S' (i' ≫ i) := ⟨_, _, _, hi, hi', rfl⟩
+    have := H _ hi''
+    rw [op_comp, F.map_comp] at this
+    exact this.trans (congr_arg Subtype.val (hx _ _ (hi₂ _ _ hi'') hi (h₂ _ _ hi'')))
   have : x''.Compatible := by
     intro V₁ V₂ V₃ g₁ g₂ g₃ g₄ S₁ S₂ e
     rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply]
@@ -110,7 +105,7 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
         (hx (g₁ ≫ i₁ _ _ S₁) (g₂ ≫ i₁ _ _ S₂) (hi₂ _ _ S₁) (hi₂ _ _ S₂)
         (by simp only [Category.assoc, h₂, e]))
   obtain ⟨t, ht, ht'⟩ := hF _ (J.bind_covering hS fun V i hi => (x i hi).2) _ this
-  refine ⟨⟨t, _⟩, (H ⟨t, ?_⟩).mpr ht, fun y hy => Subtype.ext (ht' _ ((H _).mp hy))⟩
+  refine ⟨⟨t, _⟩, H ⟨t, ?_⟩ ht⟩
   refine J.superset_covering ?_ (J.bind_covering hS fun V i hi => (x i hi).2)
   intro V i hi
   dsimp
@@ -136,22 +131,22 @@ theorem Subpresheaf.sheafify_sheafify (h : Presieve.IsSheaf J F) :
 noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
     (G.sheafify J).toPresheaf ⟶ F' where
   app _ s := (h (G.sieveOfSection s.1) s.prop).amalgamate
-    (_) ((G.family_of_elements_compatible s.1).compPresheafMap f)
+    (_) ((G.family_of_elements_compatible s.1).map f)
   naturality := by
     intro U V i
     ext s
     apply (h _ ((Subpresheaf.sheafify J G).toPresheaf.map i s).prop).isSeparatedFor.ext
     intro W j hj
     refine (Presieve.IsSheafFor.valid_glue (h _ ((G.sheafify J).toPresheaf.map i s).2)
-      ((G.family_of_elements_compatible _).compPresheafMap _) _ hj).trans ?_
+      ((G.family_of_elements_compatible _).map _) _ hj).trans ?_
     dsimp
     conv_rhs => rw [← FunctorToTypes.map_comp_apply]
     change _ = F'.map (j ≫ i.unop).op _
     refine Eq.trans ?_ (Presieve.IsSheafFor.valid_glue (h _ s.2)
-      ((G.family_of_elements_compatible s.1).compPresheafMap f) (j ≫ i.unop) ?_).symm
-    · dsimp [Presieve.FamilyOfElements.compPresheafMap]
+      ((G.family_of_elements_compatible s.1).map f) (j ≫ i.unop) ?_).symm
+    · dsimp [Presieve.FamilyOfElements.map]
       exact congr_arg _ (Subtype.ext (FunctorToTypes.map_comp_apply _ _ _ _).symm)
-    · dsimp [Presieve.FamilyOfElements.compPresheafMap] at hj ⊢
+    · dsimp [Presieve.FamilyOfElements.map] at hj ⊢
       rwa [FunctorToTypes.map_comp_apply]
 
 theorem Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
@@ -160,9 +155,8 @@ theorem Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSh
   apply (h _ ((Subpresheaf.homOfLe (G.le_sheafify J)).app U s).prop).isSeparatedFor.ext
   intro V i hi
   have := elementwise_of% f.naturality
-  -- Porting note: filled in some underscores where Lean3 could automatically fill.
-  exact (Presieve.IsSheafFor.valid_glue (h _ ((homOfLe (_ : G ≤ sheafify J G)).app U s).2)
-    ((G.family_of_elements_compatible _).compPresheafMap _) _ hi).trans (this _ _)
+  exact (Presieve.IsSheafFor.valid_glue (h _ ((homOfLe (_ : _ ≤ sheafify _ _)).app _ _).2)
+    ((G.family_of_elements_compatible _).map _) _ _).trans (this _ _)
 
 theorem Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
     (l₁ l₂ : (G.sheafify J).toPresheaf ⟶ F')
@@ -190,15 +184,12 @@ theorem Subpresheaf.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
 
 section Image
 
-variable (J)
-
+variable (J) in
 /-- A morphism factors through the sheafification of the image presheaf. -/
 @[simps!]
 def Subpresheaf.toRangeSheafify (f : F' ⟶ F) : F' ⟶ ((Subpresheaf.range f).sheafify J).toPresheaf :=
   toRange f ≫ Subpresheaf.homOfLe ((range f).le_sheafify J)
 
-
-variable {J}
 
 /-- The image sheaf of a morphism between sheaves, defined to be the sheafification of
 `image_presheaf`. -/
@@ -279,13 +270,6 @@ noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F �
 
 instance : Limits.HasImages (Sheaf J (Type max v u)) :=
   ⟨fun f => ⟨⟨imageFactorization f⟩⟩⟩
-
-@[deprecated (since := "2025-01-25")] alias toImagePresheafSheafify :=
-  Subpresheaf.toRangeSheafify
-@[deprecated (since := "2025-01-25")] alias imageSheaf := Sheaf.image
-@[deprecated (since := "2025-01-25")] alias toImageSheaf := Sheaf.toImage
-@[deprecated (since := "2025-01-25")] alias imageSheafι := Sheaf.imageι
-@[deprecated (since := "2025-01-25")] alias toImageSheaf_ι := Sheaf.toImage_ι
 
 end Image
 

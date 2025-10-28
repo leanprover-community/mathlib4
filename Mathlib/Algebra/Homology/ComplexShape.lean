@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Relation
+import Mathlib.Logic.Function.Basic
 
 /-!
 # Shapes of homological complexes
@@ -56,7 +57,7 @@ Below we define `c.next` and `c.prev` which provide these related elements.
 @[ext]
 structure ComplexShape (ι : Type*) where
   /-- Nonzero differentials `X i ⟶ X j` shall be allowed
-    on homological complexes when `Rel i j` holds. -/
+  on homological complexes when `Rel i j` holds. -/
   Rel : ι → ι → Prop
   /-- There is at most one nonzero differential from `X i`. -/
   next_eq : ∀ {i j j'}, Rel i j → Rel i j' → j = j'
@@ -147,19 +148,19 @@ theorem prev_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.prev j = i
   rw [prev, dif_pos]
   exact Exists.choose_spec (⟨i, h⟩ : ∃ k, c.Rel k j)
 
-lemma next_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ k, ¬ c.Rel j k) :
+lemma next_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ k, ¬c.Rel j k) :
     c.next j = j :=
   dif_neg (by simpa using hj)
 
-lemma prev_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ i, ¬ c.Rel i j) :
+lemma prev_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ i, ¬c.Rel i j) :
     c.prev j = j :=
   dif_neg (by simpa using hj)
 
-lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬ c.Rel j (c.next j)) :
+lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel j (c.next j)) :
     c.next j = j :=
   c.next_eq_self' j (fun k hk' => hj (by simpa only [c.next_eq' hk'] using hk'))
 
-lemma prev_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬ c.Rel (c.prev j) j) :
+lemma prev_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel (c.prev j) j) :
     c.prev j = j :=
   c.prev_eq_self' j (fun k hk' => hj (by simpa only [c.prev_eq' hk'] using hk'))
 

@@ -59,9 +59,8 @@ noncomputable def ShiftSequence.tautological : ShiftSequence F M where
   shiftIso n a a' ha' := (Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (shiftFunctorAdd' C n a a' ha').symm _
   shiftIso_zero a := by
-    dsimp
     rw [shiftFunctorAdd'_zero_add]
-    aesop_cat
+    cat_disch
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
     dsimp
@@ -97,12 +96,9 @@ lemma shiftIso_inv_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X �
       (shiftIso F n a a' ha').inv.app X ≫ (shift F a).map (f⟦n⟧') := by
   simp
 
-variable (M)
-
+variable (M) in
 /-- The canonical isomorphism `F.shift 0 ≅ F`. -/
 def isoShiftZero : F.shift (0 : M) ≅ F := ShiftSequence.isoZero
-
-variable {M}
 
 /-- The canonical isomorphism `shiftFunctor C n ⋙ F ≅ F.shift n`. -/
 def isoShift (n : M) : shiftFunctor C n ⋙ F ≅ F.shift n :=
@@ -239,7 +235,6 @@ lemma shiftIso_hom_app_comp_shiftMap_of_add_eq_zero [F.ShiftSequence G]
       (by rw [← add_left_inj m, add_assoc, hnm, zero_add, add_zero])).hom.app Y) := by
   have hnm' : m + n = 0 := by
     rw [← add_left_inj m, add_assoc, hnm, zero_add, add_zero]
-  dsimp
   simp [F.shiftIso_hom_app_comp_shiftMap f n 0 hnm' a' a, shiftIso_zero_hom_app,
     shiftFunctorCompIsoId]
 

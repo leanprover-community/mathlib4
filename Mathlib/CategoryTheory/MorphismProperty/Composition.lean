@@ -67,7 +67,7 @@ instance Prod.containsIdentities {C₁ C₂ : Type*} [Category C₁] [Category C
   ⟨fun _ => ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
 
 instance Pi.containsIdentities {J : Type w} {C : J → Type u}
-  [∀ j, Category.{v} (C j)] (W : ∀ j, MorphismProperty (C j)) [∀ j, (W j).ContainsIdentities] :
+    [∀ j, Category.{v} (C j)] (W : ∀ j, MorphismProperty (C j)) [∀ j, (W j).ContainsIdentities] :
     (pi W).ContainsIdentities :=
   ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
 
@@ -156,8 +156,8 @@ end naturalityProperty
 
 /-- A morphism property is multiplicative if it contains identities and is stable by
 composition. -/
-class IsMultiplicative (W : MorphismProperty C)
-    extends W.ContainsIdentities, W.IsStableUnderComposition : Prop
+class IsMultiplicative (W : MorphismProperty C) : Prop
+    extends W.ContainsIdentities, W.IsStableUnderComposition
 
 namespace IsMultiplicative
 
@@ -295,21 +295,20 @@ lemma multiplicativeClosure_eq_multiplicativeClosure' :
       | id x => exact .id x
       | of_comp f g hf hg hr => exact W.multiplicativeClosure.comp_mem f g (.of f hf) hr
 
-/-- A class of morphisms `W` has the of-postcomp property wrt. `W'` if whenever
+/-- A class of morphisms `W` has the of-postcomp property w.r.t. `W'` if whenever
 `g` is in `W'` and `f ≫ g` is in `W`, also `f` is in `W`. -/
 class HasOfPostcompProperty (W W' : MorphismProperty C) : Prop where
   of_postcomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W' g → W (f ≫ g) → W f
 
-/-- A class of morphisms `W` has the of-precomp property wrt. `W'` if whenever
+/-- A class of morphisms `W` has the of-precomp property w.r.t. `W'` if whenever
 `f` is in `W'` and `f ≫ g` is in `W`, also `g` is in `W`. -/
 class HasOfPrecompProperty (W W' : MorphismProperty C) : Prop where
   of_precomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W' f → W (f ≫ g) → W g
 
 /-- A class of morphisms `W` has the two-out-of-three property if whenever two out
 of three maps in `f`, `g`, `f ≫ g` are in `W`, then the third map is also in `W`. -/
-class HasTwoOutOfThreeProperty (W : MorphismProperty C)
-    extends W.IsStableUnderComposition, W.HasOfPostcompProperty W,
-      W.HasOfPrecompProperty W : Prop where
+class HasTwoOutOfThreeProperty (W : MorphismProperty C) : Prop
+    extends W.IsStableUnderComposition, W.HasOfPostcompProperty W, W.HasOfPrecompProperty W where
 
 section
 
@@ -352,6 +351,12 @@ instance (F : C ⥤ D) (W : MorphismProperty D) [W.HasTwoOutOfThreeProperty] :
     (W.inverseImage F).HasTwoOutOfThreeProperty where
   of_postcomp f g hg hfg := W.of_postcomp (F.map f) (F.map g) hg (by simpa using hfg)
   of_precomp f g hf hfg := W.of_precomp (F.map f) (F.map g) hf (by simpa using hfg)
+
+instance [W.RespectsIso] : W.HasOfPrecompProperty (isomorphisms C) where
+  of_precomp _ _ (_ : IsIso _) := (W.cancel_left_of_respectsIso _ _).mp
+
+instance [W.RespectsIso] : W.HasOfPostcompProperty (isomorphisms C) where
+  of_postcomp _ _ (_ : IsIso _) := (W.cancel_right_of_respectsIso _ _).mp
 
 end MorphismProperty
 

@@ -19,7 +19,7 @@ universe u v
 
 variable {ι α : Type*} {κ : ι → Type*} [Π i, Fintype (κ i)]
 
-open Finset Function
+open Finset
 
 lemma Set.biUnion_finsetSigma_univ (s : Finset ι) (f : Sigma κ → Set α) :
     ⋃ ij ∈ s.sigma fun _ ↦ Finset.univ, f ij = ⋃ i ∈ s, ⋃ j, f ⟨i, j⟩ := by aesop

@@ -7,19 +7,28 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.ModEq
+import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
+import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.NormNum.RealSqrt
+import Mathlib.Tactic.NormNum.Irrational
+import Mathlib.Tactic.Simproc.Factors
 
 /-!
 # Tests for `norm_num` extensions
 
 Some tests of unported extensions are still commented out.
 -/
+
+-- The default is very low, and we want to test performance on large numbers.
+set_option exponentiation.threshold 2000
 
 -- set_option profiler true
 -- set_option trace.profiler true
@@ -108,7 +117,7 @@ set_option maxRecDepth 8000 in
 example : Nat.Prime (2 ^ 25 - 39) := by norm_num1
 example : ¬ Nat.Prime ((2 ^ 19 - 1) * (2 ^ 25 - 39)) := by norm_num1
 
-example : Nat.Prime 317 := by norm_num (config := {decide := false})
+example : Nat.Prime 317 := by norm_num -decide
 
 example : Nat.minFac 0 = 2 := by norm_num1
 example : Nat.minFac 1 = 1 := by norm_num1
@@ -119,15 +128,6 @@ example : Nat.minFac 121 = 11 := by norm_num1
 example : Nat.minFac 221 = 13 := by norm_num1
 example : Nat.minFac (2 ^ 19 - 1) = 2 ^ 19 - 1 := by norm_num1
 
-/-
-example : Nat.factors 0 = [] := by norm_num1
-example : Nat.factors 1 = [] := by norm_num1
-example : Nat.factors 2 = [2] := by norm_num1
-example : Nat.factors 3 = [3] := by norm_num1
-example : Nat.factors 4 = [2, 2] := by norm_num1
-example : Nat.factors 12 = [2, 2, 3] := by norm_num1
-example : Nat.factors 221 = [13, 17] := by norm_num1
--/
 
 -- randomized tests
 example : Nat.gcd 35 29 = 1 := by norm_num1
@@ -192,83 +192,81 @@ example : Nat.Coprime 93 34 := by norm_num1
 
 example : ¬ Nat.Prime 912 := by norm_num1
 example : Nat.minFac 912 = 2 := by norm_num1
--- example : Nat.factors 912 = [2, 2, 2, 2, 3, 19] := by norm_num1
 
 example : ¬ Nat.Prime 681 := by norm_num1
 example : Nat.minFac 681 = 3 := by norm_num1
--- example : Nat.factors 681 = [3, 227] := by norm_num1
 
 example : ¬ Nat.Prime 728 := by norm_num1
 example : Nat.minFac 728 = 2 := by norm_num1
--- example : Nat.factors 728 = [2, 2, 2, 7, 13] := by norm_num1
+example : Nat.primeFactorsList 728 = [2, 2, 2, 7, 13] := by simp
 
 example : ¬ Nat.Prime 248 := by norm_num1
 example : Nat.minFac 248 = 2 := by norm_num1
--- example : Nat.factors 248 = [2, 2, 2, 31] := by norm_num1
+example : Nat.primeFactorsList 248 = [2, 2, 2, 31] := by simp
 
 example : ¬ Nat.Prime 682 := by norm_num1
 example : Nat.minFac 682 = 2 := by norm_num1
--- example : Nat.factors 682 = [2, 11, 31] := by norm_num1
+example : Nat.primeFactorsList 682 = [2, 11, 31] := by simp
 
 example : ¬ Nat.Prime 115 := by norm_num1
 example : Nat.minFac 115 = 5 := by norm_num1
--- example : Nat.factors 115 = [5, 23] := by norm_num1
+example : Nat.primeFactorsList 115 = [5, 23] := by simp
 
 example : ¬ Nat.Prime 824 := by norm_num1
 example : Nat.minFac 824 = 2 := by norm_num1
--- example : Nat.factors 824 = [2, 2, 2, 103] := by norm_num1
+example : Nat.primeFactorsList 824 = [2, 2, 2, 103] := by simp
 
 example : ¬ Nat.Prime 942 := by norm_num1
 example : Nat.minFac 942 = 2 := by norm_num1
--- example : Nat.factors 942 = [2, 3, 157] := by norm_num1
+example : Nat.primeFactorsList 942 = [2, 3, 157] := by simp
 
 example : ¬ Nat.Prime 34 := by norm_num1
 example : Nat.minFac 34 = 2 := by norm_num1
--- example : Nat.factors 34 = [2, 17] := by norm_num1
+example : Nat.primeFactorsList 34 = [2, 17] := by simp
 
 example : ¬ Nat.Prime 754 := by norm_num1
 example : Nat.minFac 754 = 2 := by norm_num1
--- example : Nat.factors 754 = [2, 13, 29] := by norm_num1
+example : Nat.primeFactorsList 754 = [2, 13, 29] := by simp
 
 example : ¬ Nat.Prime 663 := by norm_num1
 example : Nat.minFac 663 = 3 := by norm_num1
--- example : Nat.factors 663 = [3, 13, 17] := by norm_num1
+example : Nat.primeFactorsList 663 = [3, 13, 17] := by simp
 
 example : ¬ Nat.Prime 923 := by norm_num1
 example : Nat.minFac 923 = 13 := by norm_num1
--- example : Nat.factors 923 = [13, 71] := by norm_num1
+example : Nat.primeFactorsList 923 = [13, 71] := by simp
 
 example : ¬ Nat.Prime 77 := by norm_num1
 example : Nat.minFac 77 = 7 := by norm_num1
--- example : Nat.factors 77 = [7, 11] := by norm_num1
+example : Nat.primeFactorsList 77 = [7, 11] := by simp
 
 example : ¬ Nat.Prime 162 := by norm_num1
 example : Nat.minFac 162 = 2 := by norm_num1
--- example : Nat.factors 162 = [2, 3, 3, 3, 3] := by norm_num1
+example : Nat.primeFactorsList 162 = [2, 3, 3, 3, 3] := by simp
 
 example : ¬ Nat.Prime 669 := by norm_num1
 example : Nat.minFac 669 = 3 := by norm_num1
--- example : Nat.factors 669 = [3, 223] := by norm_num1
+example : Nat.primeFactorsList 669 = [3, 223] := by simp
 
 example : ¬ Nat.Prime 476 := by norm_num1
 example : Nat.minFac 476 = 2 := by norm_num1
--- example : Nat.factors 476 = [2, 2, 7, 17] := by norm_num1
+example : Nat.primeFactorsList 476 = [2, 2, 7, 17] := by simp
 
 example : Nat.Prime 251 := by norm_num1
 example : Nat.minFac 251 = 251 := by norm_num1
--- example : Nat.factors 251 = [251] := by norm_num1
+example : Nat.primeFactorsList 251 = [251] := by simp
 
 example : ¬ Nat.Prime 129 := by norm_num1
 example : Nat.minFac 129 = 3 := by norm_num1
--- example : Nat.factors 129 = [3, 43] := by norm_num1
+example : Nat.primeFactorsList 129 = [3, 43] := by simp
 
 example : ¬ Nat.Prime 471 := by norm_num1
 example : Nat.minFac 471 = 3 := by norm_num1
--- example : Nat.factors 471 = [3, 157] := by norm_num1
+example : Nat.primeFactorsList 471 = [3, 157] := by simp
 
 example : ¬ Nat.Prime 851 := by norm_num1
 example : Nat.minFac 851 = 23 := by norm_num1
--- example : Nat.factors 851 = [23, 37] := by norm_num1
+example : Nat.primeFactorsList 851 = [23, 37] := by simp
 
 /-
 example : ¬ Squarefree 0 := by norm_num1
@@ -299,13 +297,15 @@ example : @Squarefree ℕ Multiplicative.monoid 1 := by
   rintro x ⟨dx, hd⟩
   revert x dx
   rw [Multiplicative.ofAdd.surjective.forall₂]
-  intros x dx h
+  intro x dx h
   simp_rw [← ofAdd_add, Multiplicative.ofAdd.injective.eq_iff] at h
   cases x
   · simp [isUnit_one]
   · simp only [Nat.succ_add, Nat.add_succ] at h
     cases h
 -/
+
+section NatLog
 
 example : Nat.log 0 0 = 0 := by norm_num1
 example : Nat.log 0 1 = 0 := by norm_num1
@@ -319,6 +319,21 @@ example : Nat.log 2 2 = 1 := by norm_num1
 example : Nat.log 2 256 = 8 := by norm_num1
 example : Nat.log 10 10000000 = 7 := by norm_num1
 example : Nat.log 10 (10 ^ 7 + 2) + Nat.log 2 (2 ^ 30 + 3) = 7 + 30 := by norm_num1
+
+example : Nat.clog 0 0 = 0 := by norm_num1
+example : Nat.clog 0 1 = 0 := by norm_num1
+example : Nat.clog 0 100 = 0 := by norm_num1
+example : Nat.clog 1 0 = 0 := by norm_num1
+example : Nat.clog 1 1 = 0 := by norm_num1
+example : Nat.clog 1 100 = 0 := by norm_num1
+example : Nat.clog 10 0 = 0 := by norm_num1
+example : Nat.clog 10 3 = 1 := by norm_num1
+example : Nat.clog 2 2 = 1 := by norm_num1
+example : Nat.clog 2 256 = 8 := by norm_num1
+example : Nat.clog 10 10000000 = 7 := by norm_num1
+example : Nat.clog 10 (10 ^ 7 + 2) + Nat.clog 2 (2 ^ 30 + 3) = 8 + 31 := by norm_num1
+
+end NatLog
 
 example : Nat.fib 0 = 0 := by norm_num1
 example : Nat.fib 1 = 1 := by norm_num1
@@ -344,27 +359,27 @@ variable {α : Type _} [CommRing α]
 
 -- Lists:
 -- `by decide` closes the three goals below.
-example : ([1, 2, 1, 3]).sum = 7 := by norm_num (config := {decide := true}) only
-example : (List.range 10).sum = 45 := by norm_num (config := {decide := true}) only
-example : (List.finRange 10).sum = 45 := by norm_num (config := {decide := true}) only
+example : ([1, 2, 1, 3]).sum = 7 := by norm_num +decide only
+example : (List.range 10).sum = 45 := by norm_num +decide only
+example : (List.finRange 10).sum = 45 := by norm_num +decide only
 
 example : (([1, 2, 1, 3] : List ℚ).map (fun i => i^2)).sum = 15 := by norm_num
 
 -- Multisets:
 -- `by decide` closes the three goals below.
-example : (1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).sum = 7 := by norm_num (config := {decide := true}) only
+example : (1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).sum = 7 := by norm_num +decide only
 example : ((1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).map (fun i => i^2)).sum = 15 := by
-  norm_num (config := {decide := true}) only
-example : (Multiset.range 10).sum = 45 := by norm_num (config := {decide := true}) only
-example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num (config := {decide := true}) only
+  norm_num +decide only
+example : (Multiset.range 10).sum = 45 := by norm_num +decide only
+example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num +decide only
 
 example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by
   norm_num
 
 -- Finsets:
-example : Finset.prod (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (fun x ↦ x) = 2 := by norm_num1
+example : Finset.prod (Finset.cons 2 ∅ (Finset.notMem_empty _)) (fun x ↦ x) = 2 := by norm_num1
 example : Finset.prod
-    (Finset.cons 6 (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (by norm_num))
+    (Finset.cons 6 (Finset.cons 2 ∅ (Finset.notMem_empty _)) (by norm_num))
     (fun x ↦ x) =
   12 := by norm_num1
 
@@ -407,8 +422,8 @@ end big_operators
 
 section floor
 
-variable (R : Type*) [LinearOrderedRing R] [FloorRing R]
-variable (K : Type*) [LinearOrderedField K] [FloorRing K]
+variable (R : Type*) [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+variable (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
 example : ⌊(-1 : R)⌋ = -1 := by norm_num
 example : ⌊(2 : R)⌋ = 2 := by norm_num
@@ -419,6 +434,11 @@ example : ⌈(-1 : R)⌉ = -1 := by norm_num
 example : ⌈(2 : R)⌉ = 2 := by norm_num
 example : ⌈(15 / 16 : K)⌉ + 1 = 2 := by norm_num
 example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num
+
+example : Int.fract (2 : R) = 0 := by norm_num
+example : Int.fract (16 / 15 : K) = 1 / 15 := by norm_num
+example : Int.fract (3.7 : ℚ) = 0.7 := by norm_num
+example : Int.fract (-3.7 : ℚ) = 0.3 := by norm_num
 
 end floor
 
@@ -444,6 +464,24 @@ example : legendreSym 1000003 7 = -1 := by norm_num1
 
 end jacobi
 
+section even_odd
+
+example : Even 16 := by norm_num1
+example : ¬Even 17 := by norm_num1
+example : Even (16 : ℤ) := by norm_num1
+example : ¬Even (17 : ℤ) := by norm_num1
+example : Even (-20 : ℤ) := by norm_num1
+example : ¬Even (-21 : ℤ) := by norm_num1
+
+example : Odd 5 := by norm_num1
+example : ¬Odd 4 := by norm_num1
+example : Odd (5 : ℤ) := by norm_num1
+example : ¬Odd (4 : ℤ) := by norm_num1
+example : Odd (-5 : ℤ) := by norm_num1
+example : ¬Odd (-4 : ℤ) := by norm_num1
+
+end even_odd
+
 section mod
 
 example : (5 : ℕ) % 4 = 1 := by norm_num1
@@ -468,6 +506,19 @@ example : ¬ (2 : ℤ) ∣ 5 := by norm_num1
 example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
 example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
 
+example : 10 ≡ 7 [MOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [MOD 5]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD 5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD 5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD 50]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD -3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD -5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD -5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD -50]) := by norm_num1
+
 end mod
 
 section num_den
@@ -479,3 +530,63 @@ example : (-6 / 15 : ℚ).num = -2 := by norm_num1
 example : (-6 / 15 : ℚ).den = 5 := by norm_num1
 
 end num_den
+
+section real_sqrt
+
+example : Real.sqrt 25 = 5 := by norm_num
+example : Real.sqrt (25 / 16) = 5 / 4 := by norm_num
+example : Real.sqrt (0.25) = 1/2 := by norm_num
+example : NNReal.sqrt 25 = 5 := by norm_num
+example : NNReal.sqrt (25 / 16) = 5 / 4 := by norm_num
+example : Real.sqrt (-37) = 0 := by norm_num
+example : Real.sqrt (-5 / 3) = 0 := by norm_num
+example : Real.sqrt 0 = 0 := by norm_num
+example : NNReal.sqrt 0 = 0 := by norm_num
+
+end real_sqrt
+
+section Factorial
+
+open Nat
+
+example : 0! = 1 := by norm_num1
+example : 1! = 1 := by norm_num1
+example : 2! = 2 := by norm_num1
+example : 3! = 6 := by norm_num1
+example : 4! = 24 := by norm_num1
+
+example : 10! = 3628800 := by norm_num1
+example : 1000! / 999! = 1000 := by norm_num1
+example : (Nat.sqrt 1024)! = 32! := by norm_num1
+example : (1 : ℚ) / 0 ! + 1 / 1 ! + 1 / 2 ! + 1 / 3! + 1 / 4! = 65 / 24 := by norm_num1
+
+example : (4 + 2).ascFactorial 3 = 336 := by norm_num1
+example : (5 + 5).descFactorial 2 = 90 := by norm_num1
+example : (1000000).descFactorial 1000001 = 0 := by norm_num1
+
+example : (200 : ℕ) ! / (10 ^ 370) = 78865 := by norm_num1
+
+end Factorial
+
+section irrational
+
+example : Irrational √2 := by norm_num1
+example : Irrational √(5 - 2) := by norm_num1
+example : Irrational √(7/4) := by norm_num1
+example : Irrational √(4/7) := by norm_num1
+example : Irrational √(1/2 + 1/2 + 1/3) := by norm_num1
+example : Irrational (100 ^ (1/3 : ℝ)) := by norm_num1
+example : Irrational ((27/38) ^ (1/3 : ℝ)) := by norm_num1
+example : Irrational ((87/6) ^ (54/321 : ℝ)) := by norm_num1
+
+-- Large prime number
+-- The current implementation should run in O(log n) time
+example : Irrational
+  √5210644015679228794060694325390955853335898483908056458352183851018372555735221 := by norm_num1
+
+-- Large numerator does not affect performance.
+-- We only need to check that it is coprime with the denominator.
+example : Irrational (100 ^ ((10^1000 + 10^500) / 3 : ℝ)) := by norm_num1
+
+
+end irrational

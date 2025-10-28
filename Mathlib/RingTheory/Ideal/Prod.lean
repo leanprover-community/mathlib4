@@ -25,12 +25,31 @@ namespace Ideal
 def prod : Ideal (R × S) := I.comap (RingHom.fst R S) ⊓ J.comap (RingHom.snd R S)
 
 @[simp]
-theorem mem_prod {r : R} {s : S} : (⟨r, s⟩ : R × S) ∈ prod I J ↔ r ∈ I ∧ s ∈ J :=
+theorem coe_prod (I : Ideal R) (J : Ideal S) : ↑(prod I J) = (I ×ˢ J : Set (R × S)) :=
+  rfl
+
+@[simp]
+theorem mem_prod {x : R × S} : x ∈ prod I J ↔ x.1 ∈ I ∧ x.2 ∈ J :=
   Iff.rfl
 
 @[simp]
 theorem prod_top_top : prod (⊤ : Ideal R) (⊤ : Ideal S) = ⊤ :=
   Ideal.ext <| by simp
+
+@[simp]
+theorem prod_bot_bot : prod (⊥ : Ideal R) (⊥ : Ideal S) = ⊥ :=
+  SetLike.coe_injective <| Set.singleton_prod_singleton
+
+@[gcongr]
+theorem prod_mono {I₁ I₂ : Ideal R} {J₁ J₂ : Ideal S} (hI : I₁ ≤ I₂) (hJ : J₁ ≤ J₂) :
+    prod I₁ J₁ ≤ prod I₂ J₂ :=
+  Set.prod_mono hI hJ
+
+theorem prod_mono_left {I₁ I₂ : Ideal R} {J : Ideal S} (hI : I₁ ≤ I₂) : prod I₁ J ≤ prod I₂ J :=
+  Set.prod_mono_left hI
+
+theorem prod_mono_right {I : Ideal R} {J₁ J₂ : Ideal S} (hJ : J₁ ≤ J₂) : prod I J₁ ≤ prod I J₂ :=
+  Set.prod_mono_right hJ
 
 /-- Every ideal of the product ring is of the form `I × J`, where `I` and `J` can be explicitly
     given as the image under the projection maps. -/
@@ -69,7 +88,7 @@ theorem map_prodComm_prod :
   simp [map_map]
 
 /-- Ideals of `R × S` are in one-to-one correspondence with pairs of ideals of `R` and ideals of
-    `S`. -/
+`S`. -/
 def idealProdEquiv : Ideal (R × S) ≃o Ideal R × Ideal S where
   toFun I := ⟨map (RingHom.fst R S) I, map (RingHom.snd R S) I⟩
   invFun I := prod I.1 I.2
@@ -86,16 +105,48 @@ theorem idealProdEquiv_symm_apply (I : Ideal R) (J : Ideal S) :
     idealProdEquiv.symm ⟨I, J⟩ = prod I J :=
   rfl
 
-theorem prod.ext_iff {I I' : Ideal R} {J J' : Ideal S} :
+theorem span_prod_le {s : Set R} {t : Set S} :
+    span (s ×ˢ t) ≤ prod (span s) (span t) := by
+  rw [ideal_prod_eq (span (s ×ˢ t)), map_span, map_span]
+  gcongr
+  · exact Set.fst_image_prod_subset _ _
+  · exact Set.snd_image_prod_subset _ _
+
+theorem span_prod {s : Set R} {t : Set S} (hst : s.Nonempty ↔ t.Nonempty) :
+    span (s ×ˢ t) = prod (span s) (span t) := by
+  simp_rw [iff_iff_and_or_not_and_not, Set.not_nonempty_iff_eq_empty] at hst
+  obtain ⟨hs, ht⟩ | ⟨rfl, rfl⟩ := hst
+  · conv_lhs => rw [Ideal.ideal_prod_eq (Ideal.span (s ×ˢ t))]
+    congr 1
+    · rw [Ideal.map_span]
+      simp [Set.fst_image_prod _ ht]
+    · rw [Ideal.map_span]
+      simp [Set.snd_image_prod hs]
+  · simp
+
+@[simp]
+theorem prod_inj {I I' : Ideal R} {J J' : Ideal S} :
     prod I J = prod I' J' ↔ I = I' ∧ J = J' := by
-  simp only [← idealProdEquiv_symm_apply, idealProdEquiv.symm.injective.eq_iff, Prod.mk.inj_iff]
+  simp only [← idealProdEquiv_symm_apply, idealProdEquiv.symm.injective.eq_iff, Prod.mk_inj]
+
+@[deprecated (since := "2025-05-22")] alias prod.ext_iff := prod_inj
+
+@[simp]
+theorem prod_eq_bot_iff {I : Ideal R} {J : Ideal S} :
+    prod I J = ⊥ ↔ I = ⊥ ∧ J = ⊥ := by
+  rw [← prod_inj, prod_bot_bot]
+
+@[simp]
+theorem prod_eq_top_iff {I : Ideal R} {J : Ideal S} :
+    prod I J = ⊤ ↔ I = ⊤ ∧ J = ⊤ := by
+  rw [← prod_inj, prod_top_top]
 
 theorem isPrime_of_isPrime_prod_top {I : Ideal R} (h : (Ideal.prod I (⊤ : Ideal S)).IsPrime) :
     I.IsPrime := by
   constructor
   · contrapose! h
     rw [h, prod_top_top, isPrime_iff]
-    simp [isPrime_iff, h]
+    simp
   · intro x y hxy
     have : (⟨x, 1⟩ : R × S) * ⟨y, 1⟩ ∈ prod I ⊤ := by
       rw [Prod.mk_mul_mk, mul_one, mem_prod]
@@ -109,16 +160,9 @@ theorem isPrime_of_isPrime_prod_top' {I : Ideal S} (h : (Ideal.prod (⊤ : Ideal
   -- Note: couldn't synthesize the right instances without the `R` and `S` hints
   exact map_isPrime_of_equiv (RingEquiv.prodComm (R := R) (S := S))
 
-theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Ideal S)).IsPrime := by
-  constructor
-  · rcases h with ⟨h, -⟩
-    contrapose! h
-    rw [← prod_top_top, prod.ext_iff] at h
-    exact h.1
-  rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨h₁, _⟩
-  rcases h.mem_or_mem h₁ with h | h
-  · exact Or.inl ⟨h, trivial⟩
-  · exact Or.inr ⟨h, trivial⟩
+theorem isPrime_ideal_prod_top {I : Ideal R} [h : I.IsPrime] : (prod I (⊤ : Ideal S)).IsPrime where
+  ne_top' := by simpa using h.ne_top
+  mem_or_mem' {x y} := by simpa using h.mem_or_mem
 
 theorem isPrime_ideal_prod_top' {I : Ideal S} [h : I.IsPrime] : (prod (⊤ : Ideal R) I).IsPrime := by
   letI : IsPrime (prod I (⊤ : Ideal R)) := isPrime_ideal_prod_top
@@ -153,3 +197,11 @@ theorem ideal_prod_prime (I : Ideal (R × S)) :
     · exact isPrime_ideal_prod_top'
 
 end Ideal
+
+open Submodule.IsPrincipal in
+instance [IsPrincipalIdealRing R] [IsPrincipalIdealRing S] : IsPrincipalIdealRing (R × S) where
+  principal I := by
+    rw [I.ideal_prod_eq, ← span_singleton_generator (I.map _),
+      ← span_singleton_generator (I.map (RingHom.snd R S)), ← Ideal.span, ← Ideal.span,
+      ← Ideal.span_prod (iff_of_true (by simp) (by simp)), Set.singleton_prod_singleton]
+    exact ⟨_, rfl⟩

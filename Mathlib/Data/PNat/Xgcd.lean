@@ -37,9 +37,9 @@ open Nat
 namespace PNat
 
 /-- A term of `XgcdType` is a system of six naturals.  They should
- be thought of as representing the matrix
- [[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
- together with the vector [a, b] = [ap + 1, bp + 1].
+be thought of as representing the matrix
+[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
+together with the vector [a, b] = [ap + 1, bp + 1].
 -/
 structure XgcdType where
   /-- `wp` is a variable which changes through the algorithm. -/
@@ -64,7 +64,7 @@ instance : SizeOf XgcdType :=
   ⟨fun u => u.bp⟩
 
 /-- The `Repr` instance converts terms to strings in a way that
- reflects the matrix/vector interpretation as above. -/
+reflects the matrix/vector interpretation as above. -/
 instance : Repr XgcdType where
   reprPrec
   | g, _ => s!"[[[{repr (g.wp + 1)}, {repr g.x}], \
@@ -104,9 +104,9 @@ def qp : ℕ :=
   u.q - 1
 
 /-- The map `v` gives the product of the matrix
- [[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
- and the vector [a, b] = [ap + 1, bp + 1].  The map
- `vp` gives [sp, tp] such that v = [sp + 1, tp + 1].
+[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
+and the vector [a, b] = [ap + 1, bp + 1].  The map
+`vp` gives [sp, tp] such that v = [sp + 1, tp + 1].
 -/
 def vp : ℕ × ℕ :=
   ⟨u.wp + u.x + u.ap + u.wp * u.ap + u.x * u.bp, u.y + u.zp + u.bp + u.y * u.ap + u.zp * u.bp⟩
@@ -136,13 +136,14 @@ theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   constructor <;> intro h <;> simp only [w, succPNat, succ_eq_add_one, z] at * <;>
     simp only [← coe_inj, mul_coe, mk_coe] at *
   · simp_all [← h]; ring
-  · simp [Nat.mul_add, Nat.add_mul, ← Nat.add_assoc] at h; rw [← h]; ring
-  -- Porting note: Old code has been removed as it was much more longer.
+  · simp only [Nat.mul_add, Nat.add_mul, one_mul, mul_one, ← Nat.add_assoc,
+      Nat.add_right_cancel_iff] at h
+    rw [← h]; ring
 
 /-- `IsReduced` holds if the two entries in the vector are the
- same.  The reduction algorithm will produce a system with this
- property, whose product vector is the same as for the original
- system. -/
+same.  The reduction algorithm will produce a system with this
+property, whose product vector is the same as for the original
+system. -/
 def IsReduced : Prop :=
   u.ap = u.bp
 
@@ -214,9 +215,9 @@ theorem qp_eq (hr : u.r = 0) : u.q = u.qp + 1 := by
   · exact (Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hq)).symm
 
 /-- The following function provides the starting point for
- our algorithm.  We will apply an iterative reduction process
- to it, which will produce a system satisfying IsReduced.
- The gcd can be read off from this final system.
+our algorithm.  We will apply an iterative reduction process
+to it, which will produce a system satisfying IsReduced.
+The gcd can be read off from this final system.
 -/
 def start (a b : ℕ+) : XgcdType :=
   ⟨0, 0, 0, 0, a - 1, b - 1⟩
@@ -257,12 +258,12 @@ theorem finish_v (hr : u.r = 0) : u.finish.v = u.v := by
     ring
 
 /-- This is the main reduction step, which is used when u.r ≠ 0, or
- equivalently b does not divide a. -/
+equivalently b does not divide a. -/
 def step : XgcdType :=
   XgcdType.mk (u.y * u.q + u.zp) u.y ((u.wp + 1) * u.q + u.x) u.wp u.bp (u.r - 1)
 
 /-- We will apply the above step recursively.  The following result
- is used to ensure that the process terminates. -/
+is used to ensure that the process terminates. -/
 theorem step_wf (hr : u.r ≠ 0) : SizeOf.sizeOf u.step < SizeOf.sizeOf u := by
   change u.r - 1 < u.bp
   have h₀ : u.r - 1 + 1 = u.r := Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hr)
@@ -287,14 +288,13 @@ theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
     rw [← ha, hr]
     ring
 
--- Porting note: removed 'have' and added decreasing_by to avoid lint errors
 /-- We can now define the full reduction function, which applies
- step as long as possible, and then applies finish. Note that the
- "have" statement puts a fact in the local context, and the
- equation compiler uses this fact to help construct the full
- definition in terms of well-founded recursion.  The same fact
- needs to be introduced in all the inductive proofs of properties
- given below. -/
+step as long as possible, and then applies finish. Note that the
+"have" statement puts a fact in the local context, and the
+equation compiler uses this fact to help construct the full
+definition in terms of well-founded recursion.  The same fact
+needs to be introduced in all the inductive proofs of properties
+given below. -/
 def reduce (u : XgcdType) : XgcdType :=
   dite (u.r = 0) (fun _ => u.finish) fun _h =>
     flip (reduce u.step)
@@ -401,11 +401,9 @@ theorem gcd_props :
         b = b' * d ∧
           z * a' = succPNat (x * b') ∧
             w * b' = succPNat (y * a') ∧ (z * a : ℕ) = x * b + d ∧ (w * b : ℕ) = y * a + d := by
-  intros d w x y z a' b'
+  intro d w x y z a' b'
   let u := XgcdType.start a b
   let ur := u.reduce
-
-  have _ : d = ur.a := rfl
   have hb : d = ur.b := u.reduce_isReduced'
   have ha' : (a' : ℕ) = w + x := gcdA'_coe a b
   have hb' : (b' : ℕ) = y + z := gcdB'_coe a b
@@ -413,7 +411,6 @@ theorem gcd_props :
   constructor
   · exact hdet
   have hdet' : (w * z : ℕ) = x * y + 1 := by rw [← mul_coe, hdet, succPNat_coe]
-  have _ : u.v = ⟨a, b⟩ := XgcdType.start_v a b
   let hv : Prod.mk (w * d + x * ur.b : ℕ) (y * d + z * ur.b : ℕ) = ⟨a, b⟩ :=
     u.reduce_v.trans (XgcdType.start_v a b)
   rw [← hb, ← add_mul, ← add_mul, ← ha', ← hb'] at hv
@@ -435,10 +432,7 @@ theorem gcd_props :
   constructor
   · apply eq
     rw [succPNat_coe, Nat.succ_eq_add_one, mul_coe, hwb']
-  rw [ha'', hb'']
-  repeat rw [← @mul_assoc]
-  rw [hza', hwb']
-  constructor <;> ring
+  grind
 
 theorem gcd_eq : gcdD a b = gcd a b := by
   rcases gcd_props a b with ⟨_, h₁, h₂, _, _, h₅, _⟩

@@ -23,8 +23,8 @@ variable {C : Type u} [SmallCategory C] [Preadditive C] [HasFiniteColimits C]
 attribute [local instance] HasFiniteBiproducts.of_hasFiniteCoproducts in
 noncomputable instance : Preadditive (Ind C) :=
   .ofFullyFaithful (((Ind.leftExactFunctorEquivalence C).trans
-    (AddCommGrp.leftExactFunctorForgetEquivalence _).symm).fullyFaithfulFunctor.comp
-      (fullyFaithfulFullSubcategoryInclusion _))
+    (AddCommGrpCat.leftExactFunctorForgetEquivalence _).symm).fullyFaithfulFunctor.comp
+      (ObjectProperty.fullyFaithfulι _))
 
 instance : HasFiniteBiproducts (Ind C) :=
   HasFiniteBiproducts.of_hasFiniteCoproducts

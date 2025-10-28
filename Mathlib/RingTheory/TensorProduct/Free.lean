@@ -3,16 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.Pi
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Results on bases of tensor products
 
 In the file we construct a basis for the base change of a module to an algebra,
-and deducde that `Module.Free` is stable under base change.
+and deduce that `Module.Free` is stable under base change.
 
 ## Main declarations
 
@@ -24,8 +24,7 @@ and deducde that `Module.Free` is stable under base change.
 
 assert_not_exists Cardinal
 
-suppress_compilation
-
+open Module
 open scoped TensorProduct
 
 namespace Algebra
@@ -67,12 +66,11 @@ noncomputable def basis : Basis ι A (A ⊗[R] M) where
 @[simp]
 theorem basis_repr_tmul (a : A) (m : M) :
     (basis A b).repr (a ⊗ₜ m) = a • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) :=
-  basisAux_tmul b a m -- Porting note: Lean 3 had _ _ _
+  basisAux_tmul b _ _
 
 theorem basis_repr_symm_apply (a : A) (i : ι) :
     (basis A b).repr.symm (Finsupp.single i a) = a ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
-  rw [basis, LinearEquiv.coe_symm_mk] -- Porting note: `coe_symm_mk` isn't firing in `simp`
-  simp [Equiv.uniqueProd_symm_apply, basisAux]
+  simp [basis, LinearEquiv.coe_symm_mk', Equiv.uniqueProd_symm_apply, basisAux]
 
 @[simp]
 theorem basis_apply (i : ι) : basis A b i = 1 ⊗ₜ b i := basis_repr_symm_apply b 1 i
@@ -88,7 +86,7 @@ variable [Fintype ι]
 variable {ι' N : Type*} [Fintype ι'] [DecidableEq ι'] [AddCommMonoid N] [Module R N]
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
-lemma _root_.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
+lemma _root_.Module.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
     baseChange A (b'.linearMap b ij) = (basis A b').linearMap (basis A b) ij := by
   apply (basis A b').ext
   intro k
@@ -98,7 +96,7 @@ lemma _root_.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) 
 
 variable [DecidableEq ι]
 
-lemma _root_.Basis.baseChange_end (b : Basis ι R M) (ij : ι × ι) :
+lemma _root_.Module.Basis.baseChange_end (b : Basis ι R M) (ij : ι × ι) :
     baseChange A (b.end ij) = (basis A b).end ij :=
   b.baseChange_linearMap A b ij
 

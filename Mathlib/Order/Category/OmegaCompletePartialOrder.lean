@@ -18,8 +18,8 @@ an `OmegaCompletePartialOrder`.
 
 ## Main definitions
 
- * `ωCPO`
-   * an instance of `Category` and `ConcreteCategory`
+* `ωCPO`
+  * an instance of `Category` and `ConcreteCategory`
 
 -/
 
@@ -96,7 +96,7 @@ instance omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartia
   OmegaCompletePartialOrder.subtype _ fun c hc => by
     rw [f.continuous, g.continuous]
     congr 1
-    apply OrderHom.ext; funext x -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
+    ext x
     apply hc _ ⟨_, rfl⟩
 
 namespace HasEqualizers
@@ -118,13 +118,13 @@ def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
         monotone' := fun _ _ h => s.ι.monotone h
         map_ωSup' := fun x => Subtype.ext (s.ι.continuous x)
       }, by ext; rfl, fun hm => by
-      apply ContinuousHom.ext _ _ fun x => Subtype.ext ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
+      ext x : 2; apply Subtype.ext ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
       apply ContinuousHom.congr_fun hm⟩
 
 end HasEqualizers
 
 instance : HasProducts.{v} ωCPO.{v} :=
-  fun _ => { has_limit := fun _ => hasLimitOfIso Discrete.natIsoFunctor.symm }
+  fun _ => { has_limit := fun _ => hasLimit_of_iso Discrete.natIsoFunctor.symm }
 
 instance {X Y : ωCPO.{v}} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   HasLimit.mk ⟨_, HasEqualizers.isEqualizer f g⟩

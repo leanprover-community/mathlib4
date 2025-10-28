@@ -27,7 +27,7 @@ open Asymptotics Polynomial Topology
 
 namespace Polynomial
 
-variable {𝕜 : Type*} [NormedLinearOrderedField 𝕜] (P Q : 𝕜[X])
+variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] (P Q : 𝕜[X])
 
 theorem eventually_no_roots (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
   atTop_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
@@ -119,17 +119,17 @@ theorem isEquivalent_atTop_div :
   refine
     (P.isEquivalent_atTop_lead.symm.div Q.isEquivalent_atTop_lead.symm).symm.trans
       (EventuallyEq.isEquivalent ((eventually_gt_atTop 0).mono fun x hx => ?_))
-  simp [← div_mul_div_comm, hP, hQ, zpow_sub₀ hx.ne.symm]
+  simp [← div_mul_div_comm, zpow_sub₀ hx.ne.symm]
 
 theorem div_tendsto_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
     Tendsto (fun x => eval x P / eval x Q) atTop (𝓝 0) := by
   by_cases hP : P = 0
-  · simp [hP, tendsto_const_nhds]
+  · simp [hP]
   rw [← natDegree_lt_natDegree_iff hP] at hdeg
   refine (isEquivalent_atTop_div P Q).symm.tendsto_nhds ?_
   rw [← mul_zero]
   refine (tendsto_zpow_atTop_zero ?_).const_mul _
-  omega
+  cutsat
 
 theorem div_tendsto_zero_iff_degree_lt (hQ : Q ≠ 0) :
     Tendsto (fun x => eval x P / eval x Q) atTop (𝓝 0) ↔ P.degree < Q.degree := by
@@ -151,7 +151,7 @@ theorem div_tendsto_leadingCoeff_div_of_degree_eq (hdeg : P.degree = Q.degree) :
     Tendsto (fun x => eval x P / eval x Q) atTop (𝓝 <| P.leadingCoeff / Q.leadingCoeff) := by
   refine (isEquivalent_atTop_div P Q).symm.tendsto_nhds ?_
   rw [show (P.natDegree : ℤ) = Q.natDegree by simp [hdeg, natDegree]]
-  simp [tendsto_const_nhds]
+  simp
 
 theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
     (hpos : 0 < P.leadingCoeff / Q.leadingCoeff) :
@@ -163,7 +163,7 @@ theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine (isEquivalent_atTop_div P Q).symm.tendsto_atTop ?_
   apply Tendsto.const_mul_atTop hpos
   apply tendsto_zpow_atTop_atTop
-  omega
+  cutsat
 
 theorem div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
     (hnng : 0 ≤ P.leadingCoeff / Q.leadingCoeff) :
@@ -184,7 +184,7 @@ theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine (isEquivalent_atTop_div P Q).symm.tendsto_atBot ?_
   apply Tendsto.const_mul_atTop_of_neg hneg
   apply tendsto_zpow_atTop_atTop
-  omega
+  cutsat
 
 theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
     (hnps : P.leadingCoeff / Q.leadingCoeff ≤ 0) :

@@ -34,7 +34,7 @@ The actual mathematical content of the proof is here.
 @[inline] def onModCases_start (p : Sort*) (a : ℤ) (n : ℕ) (hn : Nat.ble 1 n = true)
     (H : OnModCases n a (nat_lit 0) p) : p :=
   H (a % ↑n).toNat <| by
-    have := ofNat_pos.2 <| Nat.le_of_ble_eq_true hn
+    have := natCast_pos.2 <| Nat.le_of_ble_eq_true hn
     have nonneg := emod_nonneg a <| Int.ne_of_gt this
     refine ⟨Nat.zero_le _, ?_, ?_⟩
     · rw [Int.toNat_lt nonneg]; exact Int.emod_lt_of_pos _ this
@@ -80,8 +80,8 @@ Int case of `mod_cases h : e % n`.
 def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℤ)) (n : ℕ) : TacticM Unit := do
   let ⟨u, p, g⟩ ← inferTypeQ (.mvar (← getMainGoal))
   have lit : Q(ℕ) := mkRawNatLit n
-  let p₁ : Nat.ble 1 $lit =Q true := ⟨⟩
-  let (p₂, gs) ← proveOnModCases lit e (mkRawNatLit 0) p
+  have p₁ : Nat.ble 1 $lit =Q true := ⟨⟩
+  let (p₂, gs) ← proveOnModCases lit e q(nat_lit 0) p
   let gs ← gs.mapM fun g => do
     let (fvar, g) ← match h with
     | `(binderIdent| $n:ident) => g.intro n.getId
@@ -140,13 +140,14 @@ and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [MOD n] → p`.
 partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℕ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
   if n.natLit! ≤ b.natLit! then
-    pure ((q(onModCases_stop $p $n $a) : Expr), [])
+    have : $b =Q $n := ⟨⟩
+    pure (q(onModCases_stop $p $n $a), [])
   else
     let ty := q($a ≡ $b [MOD $n] → $p)
     let g ← mkFreshExprMVarQ ty
     let ((pr : Q(OnModCases $n $a (Nat.add $b 1) $p)), acc) ←
       proveOnModCases n a (mkRawNatLit (b.natLit! + 1)) p
-    pure ((q(onModCases_succ $b $g $pr) : Expr), g.mvarId! :: acc)
+    pure (q(onModCases_succ $b $g $pr), g.mvarId! :: acc)
 
 /--
 Nat case of `mod_cases h : e % n`.
@@ -155,7 +156,7 @@ def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℕ)) (n : ℕ) : TacticM Un
   let ⟨u, p, g⟩ ← inferTypeQ (.mvar (← getMainGoal))
   have lit : Q(ℕ) := mkRawNatLit n
   let p₁ : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
-  let (p₂, gs) ← proveOnModCases lit e (mkRawNatLit 0) p
+  let (p₂, gs) ← proveOnModCases lit e q(nat_lit 0) p
   let gs ← gs.mapM fun g => do
     let (fvar, g) ← match h with
     | `(binderIdent| $n:ident) => g.intro n.getId

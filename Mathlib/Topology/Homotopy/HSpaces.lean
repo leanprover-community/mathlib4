@@ -26,20 +26,20 @@ Some notable properties of `H-spaces` are
 ## Main Results
 
 * Every topological group `G` is an `H-space` using its operation `* : G → G → G` (this is already
-true if `G` has an instance of a `MulOneClass` and `ContinuousMul`);
+  true if `G` has an instance of a `MulOneClass` and `ContinuousMul`);
 * Given two `H-spaces` `X` and `Y`, their product is again an `H`-space. We show in an example that
-starting with two topological groups `G, G'`, the `H`-space structure on `G × G'` is definitionally
-equal to the product of `H-space` structures on `G` and `G'`.
+  starting with two topological groups `G, G'`, the `H`-space structure on `G × G'` is
+  definitionally equal to the product of `H-space` structures on `G` and `G'`.
 * The loop space based at every `x : X` carries a structure of an `H-spaces`.
 
 ## To Do
 * Prove that for every `NormedAddTorsor Z` and every `z : Z`, the operation
-`fun x y ↦ midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
+  `fun x y ↦ midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
-first three inherit the structure because they are topological groups (they are Lie groups,
-actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternion; and the
-fourth from the fact that `S^7` coincides with the octonions of norm 1 (it is not a group, in
-particular, only has an instance of `MulOneClass`).
+  first three inherit the structure because they are topological groups (they are Lie groups,
+  actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternion; and the
+  fourth from the fact that `S^7` coincides with the octonions of norm 1 (it is not a group, in
+  particular, only has an instance of `MulOneClass`).
 
 ## References
 
@@ -70,7 +70,6 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 /-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
--- Porting note: opening `HSpaces` so that the above notation works
 open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
@@ -78,7 +77,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
   hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by fun_prop⟩
   e := (HSpace.e, HSpace.e)
   hmul_e_e := by
-    simp only [ContinuousMap.coe_mk, Prod.mk.inj_iff]
+    simp only [ContinuousMap.coe_mk, Prod.mk_inj]
     exact ⟨HSpace.hmul_e_e, HSpace.hmul_e_e⟩
   eHmul := by
     let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
@@ -89,7 +88,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.eHmul.1.3 x) (HSpace.eHmul.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp h
+      replace h := Prod.mk_inj.mp h
       exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
@@ -100,7 +99,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.hmulE.1.3 x) (HSpace.hmulE.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp h
+      replace h := Prod.mk_inj.mp h
       exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
 
 
@@ -109,12 +108,12 @@ namespace IsTopologicalGroup
 /-- The definition `toHSpace` is not an instance because its additive version would
 lead to a diamond since a topological field would inherit two `HSpace` structures, one from the
 `MulOneClass` and one from the `AddZeroClass`. In the case of a group, we make
-`IsTopologicalGroup.hSpace` an instance."-/
+`IsTopologicalGroup.hSpace` an instance." -/
 @[to_additive
-      "The definition `toHSpace` is not an instance because it comes together with a
+      /-- The definition `toHSpace` is not an instance because it comes together with a
       multiplicative version which would lead to a diamond since a topological field would inherit
       two `HSpace` structures, one from the `MulOneClass` and one from the `AddZeroClass`.
-      In the case of an additive group, we make `IsTopologicalAddGroup.hSpace` an instance."]
+      In the case of an additive group, we make `IsTopologicalAddGroup.hSpace` an instance. -/]
 def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M] : HSpace M where
   hmul := ⟨Function.uncurry Mul.mul, continuous_mul⟩
   e := 1
@@ -192,20 +191,18 @@ def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   toFun t := γ (qRight (t, θ))
   continuous_toFun := by fun_prop
   source' := by
-    dsimp only
     rw [qRight_zero_left, γ.source]
   target' := by
-    dsimp only
     rw [qRight_one_left, γ.target]
 
 theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflRight p.1 p.2 :=
   continuous_uncurry_iff.mp <|
     (continuous_snd.comp continuous_fst).eval <|
-      continuous_qRight.comp <| continuous_snd.prod_mk <| continuous_fst.comp continuous_fst
+      continuous_qRight.comp <| continuous_snd.prodMk <| continuous_fst.comp continuous_fst
 
 theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by
   ext t
-  simp only [delayReflRight, trans_apply, refl_extend, Path.coe_mk_mk, Function.comp_apply,
+  simp only [delayReflRight, trans_apply, Path.coe_mk_mk,
     refl_apply]
   split_ifs with h; swap
   on_goal 1 => conv_rhs => rw [← γ.target]
@@ -224,7 +221,7 @@ def delayReflLeft (θ : I) (γ : Path x y) : Path x y :=
 theorem continuous_delayReflLeft : Continuous fun p : I × Path x y => delayReflLeft p.1 p.2 :=
   Path.continuous_symm.comp <|
     continuous_delayReflRight.comp <|
-      continuous_fst.prod_mk <| Path.continuous_symm.comp continuous_snd
+      continuous_fst.prodMk <| Path.continuous_symm.comp continuous_snd
 
 theorem delayReflLeft_zero (γ : Path x y) : delayReflLeft 0 γ = (Path.refl x).trans γ := by
   simp only [delayReflLeft, delayReflRight_zero, trans_symm, refl_symm, Path.symm_symm]

@@ -79,9 +79,15 @@ theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
 
 open Set
 
-theorem mk₂ (h: ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S) :
+theorem mk₂ (h : ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S) :
     FiniteInter (insert (univ : Set α) S) where
   univ_mem := Set.mem_insert Set.univ S
   inter_mem s hs t ht := by aesop
 
 end FiniteInter
+
+/-- This is a hybrid of `Set.biUnion_empty` and `Finset.biUnion_empty` (the index set on the LHS is
+the empty finset, but `s` is a family of sets, not finsets). -/
+theorem Set.biUnion_empty_finset {ι X : Type*} {s : ι → Set X} :
+    ⋃ i ∈ (∅ : Finset ι), s i = ∅ := by
+  simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]

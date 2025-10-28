@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Basic
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Pointwise
 import Mathlib.Topology.Order.Basic
 
 /-!
@@ -28,7 +28,13 @@ open Convex
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜] [TopologicalSpace E] [TopologicalSpace F]
+/-- A set is strictly convex if the open segment between any two distinct points lies is in its
+interior. This basically means "convex and not flat on the boundary". -/
+def StrictConvex (𝕜 : Type*) {E : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E]
+    [AddCommMonoid E] [SMul 𝕜 E] (s : Set E) : Prop :=
+  s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ interior s
+
+variable [Semiring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E] [TopologicalSpace F]
 
 section AddCommMonoid
 
@@ -36,15 +42,9 @@ variable [AddCommMonoid E] [AddCommMonoid F]
 
 section SMul
 
-variable (𝕜)
 variable [SMul 𝕜 E] [SMul 𝕜 F] (s : Set E)
 
-/-- A set is strictly convex if the open segment between any two distinct points lies is in its
-interior. This basically means "convex and not flat on the boundary". -/
-def StrictConvex : Prop :=
-  s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ interior s
-
-variable {𝕜 s}
+variable {s}
 variable {x y : E} {a b : 𝕜}
 
 theorem strictConvex_iff_openSegment_subset :
@@ -136,13 +136,13 @@ theorem StrictConvex.is_linear_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {
 
 section LinearOrderedCancelAddCommMonoid
 
-variable [TopologicalSpace β] [LinearOrderedCancelAddCommMonoid β] [OrderTopology β] [Module 𝕜 β]
-  [OrderedSMul 𝕜 β]
+variable [TopologicalSpace β] [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
+  [OrderTopology β] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
 
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
   refine strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => ?_
-  rcases hxy.lt_or_lt with hlt | hlt <;> [skip; rw [openSegment_symm]] <;>
+  rcases hxy.lt_or_gt with hlt | hlt <;> [skip; rw [openSegment_symm]] <;>
     exact
       (openSegment_subset_Ioo hlt).trans
         (isOpen_Ioo.subset_interior_iff.2 <| Ioo_subset_Icc_self.trans <| hs.out ‹_› ‹_›)
@@ -239,7 +239,7 @@ end continuous_add
 
 section ContinuousSMul
 
-variable [LinearOrderedField 𝕝] [Module 𝕝 E] [ContinuousConstSMul 𝕝 E]
+variable [Field 𝕝] [Module 𝕝 E] [ContinuousConstSMul 𝕝 E]
   [LinearMap.CompatibleSMul E E 𝕜 𝕝] {s : Set E} {x : E}
 
 theorem StrictConvex.smul (hs : StrictConvex 𝕜 s) (c : 𝕝) : StrictConvex 𝕜 (c • s) := by
@@ -257,9 +257,9 @@ end AddCommGroup
 
 end OrderedSemiring
 
-section OrderedCommSemiring
+section CommSemiring
 
-variable [OrderedCommSemiring 𝕜] [TopologicalSpace E]
+variable [CommSemiring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E]
 
 section AddCommGroup
 
@@ -280,17 +280,18 @@ theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
 
 end AddCommGroup
 
-end OrderedCommSemiring
+end CommSemiring
 
 section OrderedRing
 
-variable [OrderedRing 𝕜] [TopologicalSpace E] [TopologicalSpace F]
+variable [Ring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E] [TopologicalSpace F]
 
 section AddCommGroup
 
 variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] {s t : Set E} {x y : E}
 
-theorem StrictConvex.eq_of_openSegment_subset_frontier [Nontrivial 𝕜] [DenselyOrdered 𝕜]
+theorem StrictConvex.eq_of_openSegment_subset_frontier
+    [IsOrderedRing 𝕜] [Nontrivial 𝕜] [DenselyOrdered 𝕜]
     (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s) (h : openSegment 𝕜 x y ⊆ frontier s) :
     x = y := by
   obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : 𝕜) 1 zero_lt_one
@@ -300,18 +301,21 @@ theorem StrictConvex.eq_of_openSegment_subset_frontier [Nontrivial 𝕜] [Densel
       (h ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel _ _, rfl⟩).2
         (hs hx hy hxy ha₀ (sub_pos_of_lt ha₁) <| add_sub_cancel _ _)
 
-theorem StrictConvex.add_smul_mem (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hxy : x + y ∈ s)
+theorem StrictConvex.add_smul_mem [AddRightStrictMono 𝕜]
+    (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hxy : x + y ∈ s)
     (hy : y ≠ 0) {t : 𝕜} (ht₀ : 0 < t) (ht₁ : t < 1) : x + t • y ∈ interior s := by
-  have h : x + t • y = (1 - t) • x + t • (x + y) := by match_scalars <;> field_simp
+  have h : x + t • y = (1 - t) • x + t • (x + y) := by match_scalars <;> simp
   rw [h]
   exact hs hx hxy (fun h => hy <| add_left_cancel (a := x) (by rw [← h, add_zero]))
     (sub_pos_of_lt ht₁) ht₀ (sub_add_cancel 1 t)
 
-theorem StrictConvex.smul_mem_of_zero_mem (hs : StrictConvex 𝕜 s) (zero_mem : (0 : E) ∈ s)
+theorem StrictConvex.smul_mem_of_zero_mem [AddRightStrictMono 𝕜]
+    (hs : StrictConvex 𝕜 s) (zero_mem : (0 : E) ∈ s)
     (hx : x ∈ s) (hx₀ : x ≠ 0) {t : 𝕜} (ht₀ : 0 < t) (ht₁ : t < 1) : t • x ∈ interior s := by
   simpa using hs.add_smul_mem zero_mem (by simpa using hx) hx₀ ht₀ ht₁
 
-theorem StrictConvex.add_smul_sub_mem (h : StrictConvex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y)
+theorem StrictConvex.add_smul_sub_mem [AddRightMono 𝕜]
+    (h : StrictConvex 𝕜 s) (hx : x ∈ s) (hy : y ∈ s) (hxy : x ≠ y)
     {t : 𝕜} (ht₀ : 0 < t) (ht₁ : t < 1) : x + t • (y - x) ∈ interior s := by
   apply h.openSegment_subset hx hy hxy
   rw [openSegment_eq_image']
@@ -347,7 +351,7 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [TopologicalSpace E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace E]
 
 section AddCommGroup
 
@@ -380,7 +384,8 @@ Relates `Convex` and `Set.OrdConnected`.
 
 section
 
-variable [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] {s : Set 𝕜}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+  {s : Set 𝕜}
 
 /-- A set in a linear ordered field is strictly convex if and only if it is convex. -/
 @[simp]

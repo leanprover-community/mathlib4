@@ -24,11 +24,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
 /-- A `C^n` (semi)ring is a (semi)ring `R` where addition and multiplication are `C^n`.
 If `R` is a ring, then negation is automatically `C^n`, as it is multiplication with `-1`. -/
 class ContMDiffRing (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
-    (R : Type*) [Semiring R] [TopologicalSpace R]
-    [ChartedSpace H R] extends ContMDiffAdd I n R : Prop where
+    (R : Type*) [Semiring R] [TopologicalSpace R] [ChartedSpace H R] : Prop
+    extends ContMDiffAdd I n R where
   contMDiff_mul : ContMDiff (I.prod I) I n fun p : R × R => p.1 * p.2
-
-@[deprecated (since := "2025-01-09")] alias SmoothRing := ContMDiffRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) ContMDiffRing.toContMDiffMul (I : ModelWithCorners 𝕜 E H) (R : Type*)
@@ -63,9 +61,6 @@ variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [Nontriv
 
 /-- A `C^n` (semi)ring is a topological (semi)ring. This is not an instance for technical reasons,
 see note [Design choices about smooth algebraic structures]. -/
-theorem topologicalSemiring_of_contMDiffRing  [Semiring R] [ContMDiffRing I n R] :
+theorem topologicalSemiring_of_contMDiffRing [Semiring R] [ContMDiffRing I n R] :
     IsTopologicalSemiring R :=
   { continuousMul_of_contMDiffMul I n, continuousAdd_of_contMDiffAdd I n with }
-
-@[deprecated (since := "2025-01-09")]
-alias topologicalSemiring_of_smooth := topologicalSemiring_of_contMDiffRing

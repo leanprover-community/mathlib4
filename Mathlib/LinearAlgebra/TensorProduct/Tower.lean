@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # The `A`-module structure on `M ⊗[R] N`
@@ -20,21 +20,22 @@ In this file, we use the convention that `M`, `N`, `P`, `Q` are all `R`-modules,
 
 ## Main definitions
 
- * `TensorProduct.AlgebraTensorModule.curry`
- * `TensorProduct.AlgebraTensorModule.uncurry`
- * `TensorProduct.AlgebraTensorModule.lcurry`
- * `TensorProduct.AlgebraTensorModule.lift`
- * `TensorProduct.AlgebraTensorModule.lift.equiv`
- * `TensorProduct.AlgebraTensorModule.mk`
- * `TensorProduct.AlgebraTensorModule.map`
- * `TensorProduct.AlgebraTensorModule.mapBilinear`
- * `TensorProduct.AlgebraTensorModule.congr`
- * `TensorProduct.AlgebraTensorModule.rid`
- * `TensorProduct.AlgebraTensorModule.homTensorHomMap`
- * `TensorProduct.AlgebraTensorModule.assoc`
- * `TensorProduct.AlgebraTensorModule.leftComm`
- * `TensorProduct.AlgebraTensorModule.rightComm`
- * `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`
+* `TensorProduct.AlgebraTensorModule.curry`
+* `TensorProduct.AlgebraTensorModule.uncurry`
+* `TensorProduct.AlgebraTensorModule.lcurry`
+* `TensorProduct.AlgebraTensorModule.lift`
+* `TensorProduct.AlgebraTensorModule.lift.equiv`
+* `TensorProduct.AlgebraTensorModule.mk`
+* `TensorProduct.AlgebraTensorModule.map`
+* `TensorProduct.AlgebraTensorModule.mapBilinear`
+* `TensorProduct.AlgebraTensorModule.congr`
+* `TensorProduct.AlgebraTensorModule.rid`
+* `TensorProduct.AlgebraTensorModule.homTensorHomMap`
+* `TensorProduct.AlgebraTensorModule.assoc`
+* `TensorProduct.AlgebraTensorModule.leftComm`
+* `TensorProduct.AlgebraTensorModule.rightComm`
+* `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`
+* `LinearMap.baseChange A f` is the `A`-linear map `A ⊗ f`, for an `R`-linear map `f`.
 
 ## Implementation notes
 
@@ -43,14 +44,12 @@ probably should still implement the less general ones as abbreviations to the mo
 fewer type arguments.
 -/
 
-suppress_compilation
-
 namespace TensorProduct
 
 namespace AlgebraTensorModule
 
-universe uR uA uB uM uN uP uQ uP' uQ'
-variable {R : Type uR} {A : Type uA} {B : Type uB}
+universe uR uS uA uB uM uN uP uQ uP' uQ'
+variable {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB}
 variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ} {P' : Type uP'} {Q' : Type uQ'}
 
 open LinearMap
@@ -166,7 +165,9 @@ def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
 
 The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
 @[simps! apply]
-nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
+nonrec def mk (A M N : Type*) [Semiring A]
+    [AddCommMonoid M] [Module R M] [Module A M] [SMulCommClass R A M]
+    [AddCommMonoid N] [Module R N] : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
   { mk R M N with map_smul' := fun _ _ => rfl }
 
 variable {R A B M N P Q}
@@ -217,6 +218,9 @@ theorem map_smul_left (b : B) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (b �
   ext
   simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
     smul_apply, smul_tmul']
+
+/-- The heterobasic version of `map` coincides with the regular version. -/
+theorem map_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : map f g = TensorProduct.map f g := rfl
 
 variable (A M) in
 /-- Heterobasic version of `LinearMap.lTensor` -/
@@ -347,8 +351,8 @@ protected def rid : M ⊗[R] R ≃ₗ[A] M :=
     (LinearMap.ext <| one_smul _)
     (ext fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
 
-theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M :=
-  LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ => rfl
+/-- The heterobasic version of `rid` coincides with the regular version. -/
+theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M := rfl
 
 variable {R M} in
 @[simp]
@@ -403,6 +407,9 @@ theorem assoc_tmul (m : M) (p : P) (q : Q) :
 theorem assoc_symm_tmul (m : M) (p : P) (q : Q) :
     (assoc R A B M P Q).symm (m ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ q :=
   rfl
+
+/-- The heterobasic version of `assoc` coincides with the regular version. -/
+theorem assoc_eq : assoc R R R M P Q = TensorProduct.assoc R M P Q := rfl
 
 theorem rTensor_tensor [Module R P'] [IsScalarTower R A P'] (g : P →ₗ[A] P') :
     g.rTensor (M ⊗[R] N) =
@@ -465,60 +472,100 @@ theorem leftComm_symm_tmul (m : M) (p : P) (q : Q) :
     (leftComm R A M P Q).symm (p ⊗ₜ (m ⊗ₜ q)) = m ⊗ₜ (p ⊗ₜ q) :=
   rfl
 
+/-- The heterobasic version of `leftComm` coincides with the regular version. -/
+theorem leftComm_eq : leftComm R R M P Q = TensorProduct.leftComm R M P Q := rfl
+
 end leftComm
 
 section rightComm
 
-/-- A tensor product analogue of `mul_right_comm`. -/
-def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
+variable [CommSemiring S] [Module S M] [Module S P] [Algebra S B]
+  [IsScalarTower S B M] [SMulCommClass R S M] [SMulCommClass S R M]
+
+variable (S) in
+/-- A tensor product analogue of `mul_right_comm`.
+
+Suppose we have a diagram of algebras `R → B ← S`,
+and a `B`-module `M`, `S`-module `P`, `R`-module `Q`, then
+```
+(M ⊗ˢ P)      ⎛ M ⎞ ⊗ˢ P
+ ⊗ᴿ       ≅ᴮ  ⎜ ⊗ᴿ⎟
+ Q            ⎝ Q ⎠
+```
+-/
+def rightComm : (M ⊗[S] P) ⊗[R] Q ≃ₗ[B] (M ⊗[R] Q) ⊗[S] P :=
   LinearEquiv.ofLinear
-    (lift <| TensorProduct.lift <| LinearMap.flip <|
-      lcurry R A A M Q ((M ⊗[R] Q) ⊗[A] P) ∘ₗ (mk A A (M ⊗[R] Q) P).flip)
-    (TensorProduct.lift <| lift <| LinearMap.flip <|
-      (TensorProduct.lcurry A M P ((M ⊗[A] P) ⊗[R] Q)).restrictScalars R
-        ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
-    -- explicit `Eq.refl`s here help with performance, but also make it clear that the `ext` are
-    -- letting us prove the result as an equality of pure tensors.
-    (TensorProduct.ext <| ext fun m q => LinearMap.ext fun p => Eq.refl <|
-      (m ⊗ₜ[R] q) ⊗ₜ[A] p)
-    (curry_injective <| TensorProduct.ext' fun m p => LinearMap.ext fun q => Eq.refl <|
-      (m ⊗ₜ[A] p) ⊗ₜ[R] q)
+    (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ
+      (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
+    (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ
+      (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
+    (by ext; simp) (by ext; simp)
 
 variable {M N P Q}
 
 @[simp]
 theorem rightComm_tmul (m : M) (p : P) (q : Q) :
-    rightComm R A M P Q ((m ⊗ₜ p) ⊗ₜ q) = (m ⊗ₜ q) ⊗ₜ p :=
+    rightComm R S B M P Q ((m ⊗ₜ p) ⊗ₜ q) = (m ⊗ₜ q) ⊗ₜ p :=
   rfl
 
 @[simp]
-theorem rightComm_symm_tmul (m : M) (p : P) (q : Q) :
-    (rightComm R A M P Q).symm ((m ⊗ₜ q) ⊗ₜ p) = (m ⊗ₜ p) ⊗ₜ q :=
+theorem rightComm_symm :
+    (rightComm R S B M P Q).symm = rightComm S R B M Q P :=
   rfl
+
+theorem rightComm_symm_tmul (m : M) (p : P) (q : Q) :
+    (rightComm R S B M P Q).symm ((m ⊗ₜ q) ⊗ₜ p) = (m ⊗ₜ p) ⊗ₜ q :=
+  rfl
+
+/-- The heterobasic version of `leftComm` coincides with the regular version. -/
+theorem rightComm_eq [Module R P] : rightComm R R R M P Q = TensorProduct.rightComm R M P Q := rfl
 
 end rightComm
 
 section tensorTensorTensorComm
 variable [Module R P] [IsScalarTower R A P]
 
-/-- Heterobasic version of `tensorTensorTensorComm`. -/
+variable [Algebra A B] [IsScalarTower A B M]
+variable [CommSemiring S] [Algebra R S] [Algebra S B] [Module S M] [Module S N]
+variable [IsScalarTower R S M] [SMulCommClass A S M] [SMulCommClass S A M]
+  [IsScalarTower S B M] [IsScalarTower R S N]
+
+variable (S)
+
+/-- Heterobasic version of `tensorTensorTensorComm`.
+
+Suppose we have towers of algebras `R → S → B` and `R → A → B`, and
+a `B`-module `M`, `S`-module `N`, `A`-module `P`, `R`-module `Q`, then
+```
+(M ⊗ˢ N)      ⎛ M ⎞ ⊗ˢ ⎛ N ⎞
+ ⊗ᴬ       ≅ᴮ  ⎜ ⊗ᴬ⎟    ⎜ ⊗ᴿ⎟
+(P ⊗ᴿ Q)      ⎝ P ⎠    ⎝ Q ⎠
+```
+-/
 def tensorTensorTensorComm :
-    (M ⊗[R] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[A] (M ⊗[A] P) ⊗[R] (N ⊗[R] Q) :=
-(assoc R A A (M ⊗[R] N) P Q).symm
-  ≪≫ₗ congr (rightComm R A M P N).symm (1 : Q ≃ₗ[R] Q)
-  ≪≫ₗ assoc R _ _ (M ⊗[A] P) N Q
+    (M ⊗[S] N) ⊗[A] (P ⊗[R] Q) ≃ₗ[B] (M ⊗[A] P) ⊗[S] (N ⊗[R] Q) :=
+  (assoc R A B (M ⊗[S] N) P Q).symm
+    ≪≫ₗ congr (rightComm A S B M N P) (.refl R Q)
+    ≪≫ₗ assoc R _ _ (M ⊗[A] P) N Q
 
 variable {M N P Q}
 
 @[simp]
 theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
-    tensorTensorTensorComm R A M N P Q ((m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q) :=
+    tensorTensorTensorComm R S A B M N P Q ((m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
 @[simp]
+theorem tensorTensorTensorComm_symm :
+    (tensorTensorTensorComm R S A B M N P Q).symm = tensorTensorTensorComm R A S B M P N Q := rfl
+
 theorem tensorTensorTensorComm_symm_tmul (m : M) (n : N) (p : P) (q : Q) :
-    (tensorTensorTensorComm R A M N P Q).symm ((m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q)) = (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) :=
+    (tensorTensorTensorComm R S A B M N P Q).symm ((m ⊗ₜ p) ⊗ₜ (n ⊗ₜ q)) = (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) :=
   rfl
+
+/-- The heterobasic version of `tensorTensorTensorComm` coincides with the regular version. -/
+theorem tensorTensorTensorComm_eq :
+    tensorTensorTensorComm R R R R M N P Q = TensorProduct.tensorTensorTensorComm R M N P Q := rfl
 
 end tensorTensorTensorComm
 
@@ -527,6 +574,121 @@ end CommSemiring
 end AlgebraTensorModule
 
 end TensorProduct
+
+namespace LinearMap
+
+open TensorProduct
+
+/-!
+### The base-change of a linear map of `R`-modules to a linear map of `A`-modules
+-/
+
+
+section Semiring
+
+variable {R A B M N P : Type*} [CommSemiring R]
+variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+variable [Module R M] [Module R N] [Module R P]
+variable (r : R) (f g : M →ₗ[R] N)
+
+variable (A) in
+/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`.
+
+This "base change" operation is also known as "extension of scalars". -/
+def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
+  AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
+
+@[simp]
+theorem baseChange_tmul (a : A) (x : M) : f.baseChange A (a ⊗ₜ x) = a ⊗ₜ f x :=
+  rfl
+
+theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
+  rfl
+
+@[simp]
+theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
+  ext
+  simp [baseChange_eq_ltensor, -baseChange_tmul]
+
+@[simp]
+theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
+  ext
+  simp
+
+@[simp]
+theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
+  ext
+  simp
+
+@[simp]
+lemma baseChange_id : (.id : M →ₗ[R] M).baseChange A = .id := by
+  ext; simp
+
+lemma baseChange_comp (g : N →ₗ[R] P) :
+    (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
+  ext; simp
+
+variable (R M) in
+@[simp]
+lemma baseChange_one : (1 : Module.End R M).baseChange A = 1 := baseChange_id
+
+lemma baseChange_mul (f g : Module.End R M) :
+    (f * g).baseChange A = f.baseChange A * g.baseChange A := by
+  ext; simp
+
+variable (R A M N)
+
+/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
+def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
+  AlgebraTensorModule.congr (.refl _ _) e
+
+/-- `baseChange` as a linear map.
+
+When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/
+@[simps]
+def baseChangeHom : (M →ₗ[R] N) →ₗ[R] A ⊗[R] M →ₗ[A] A ⊗[R] N where
+  toFun := baseChange A
+  map_add' := baseChange_add
+  map_smul' := baseChange_smul
+
+/-- `baseChange` as an `AlgHom`. -/
+@[simps!]
+def _root_.Module.End.baseChangeHom : Module.End R M →ₐ[R] Module.End A (A ⊗[R] M) :=
+  .ofLinearMap (LinearMap.baseChangeHom _ _ _ _) (baseChange_one _ _) baseChange_mul
+
+lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
+    (f ^ n).baseChange A = f.baseChange A ^ n :=
+  map_pow (Module.End.baseChangeHom _ _ _) f n
+
+variable {R A M N} in
+theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
+    (φ.toLinearMap.rTensor N) (f.baseChange A t)  =
+      (f.baseChange B) (φ.toLinearMap.rTensor M t) := by
+  simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply]
+
+end Semiring
+
+section Ring
+
+variable {R A B M N : Type*} [CommRing R]
+variable [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable (f g : M →ₗ[R] N)
+
+@[simp]
+theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A := by
+  ext
+  simp [tmul_sub]
+
+@[simp]
+theorem baseChange_neg : (-f).baseChange A = -f.baseChange A := by
+  ext
+  simp [tmul_neg]
+
+end Ring
+
+end LinearMap
 
 namespace Submodule
 
@@ -540,42 +702,34 @@ an `A`-submodule of `A ⊗ M`.
 
 This "base change" operation is also known as "extension of scalars". -/
 def baseChange : Submodule A (A ⊗[R] M) :=
-  span A <| p.map (TensorProduct.mk R A M 1)
-
-@[simp]
-lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange]
-
-@[simp]
-lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
-  rw [baseChange, map_top, eq_top_iff']
-  intro x
-  refine x.induction_on (by simp) (fun a y ↦ ?_) (fun _ _ ↦ Submodule.add_mem _)
-  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
-  refine smul_mem _ _ (subset_span ?_)
-  simp
+  LinearMap.range (p.subtype.baseChange A)
 
 variable {A p} in
 lemma tmul_mem_baseChange_of_mem (a : A) {m : M} (hm : m ∈ p) :
-    a ⊗ₜ[R] m ∈ p.baseChange A := by
-  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
-  exact smul_mem (baseChange A p) a (subset_span ⟨m, hm, rfl⟩)
+    a ⊗ₜ[R] m ∈ p.baseChange A :=
+  ⟨a ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
+
+lemma baseChange_eq_span : p.baseChange A = span A (p.map (TensorProduct.mk R A M 1)) := by
+  refine le_antisymm ?_ ?_
+  · rw [baseChange, LinearMap.range_le_iff_comap, eq_top_iff,
+      ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..), span_le]
+    refine fun _ ⟨a, m, h⟩ ↦ ?_
+    rw [← h, SetLike.mem_coe, mem_comap, LinearMap.baseChange_tmul, ← mul_one a, ← smul_eq_mul,
+      ← smul_tmul']
+    exact smul_mem _ a (subset_span ⟨m, m.2, rfl⟩)
+  · refine span_le.2 fun _ ⟨m, hm, h⟩ ↦ h ▸ ⟨1 ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
+
+@[simp]
+lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange_eq_span]
+
+@[simp]
+lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
+  rw [eq_top_iff, ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..)]
+  exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
 
 @[simp]
 lemma baseChange_span (s : Set M) :
     (span R s).baseChange A = span A (TensorProduct.mk R A M 1 '' s) := by
-  simp only [baseChange, map_coe]
-  refine le_antisymm (span_le.mpr ?_) (span_mono <| Set.image_subset _ subset_span)
-  rintro - ⟨m : M, hm : m ∈ span R s, rfl⟩
-  apply span_induction (p := fun m' _ ↦ (1 : A) ⊗ₜ[R] m' ∈ span A (TensorProduct.mk R A M 1 '' s))
-    (hx := hm)
-  · intro m hm
-    exact subset_span ⟨m, hm, rfl⟩
-  · simp
-  · intro m₁ m₂ _ _ hm₁ hm₂
-    rw [tmul_add]
-    exact Submodule.add_mem _ hm₁ hm₂
-  · intro r m' _ hm'
-    rw [tmul_smul, ← one_smul A ((1 : A) ⊗ₜ[R] m'), ← smul_assoc]
-    exact smul_mem _ (r • 1) hm'
+  rw [baseChange_eq_span, map_span, span_span_of_tower]
 
 end Submodule

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Multiset.Nodup
 
 /-!
 # Disjoint sum of multisets
@@ -22,7 +21,7 @@ open Sum
 
 namespace Multiset
 
-variable {α β : Type*} (s : Multiset α) (t : Multiset β)
+variable {α β γ : Type*} (s : Multiset α) (t : Multiset β)
 
 /-- Disjoint sum of multisets. -/
 def disjSum : Multiset (α ⊕ β) :=
@@ -48,7 +47,6 @@ theorem mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ �
 @[simp]
 theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s := by
   rw [mem_disjSum, or_iff_left]
-  -- Porting note: Previous code for L62 was: simp only [exists_eq_right]
   · simp only [inl.injEq, exists_eq_right]
   rintro ⟨b, _, hb⟩
   exact inr_ne_inl hb
@@ -56,7 +54,6 @@ theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s := by
 @[simp]
 theorem inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t := by
   rw [mem_disjSum, or_iff_right]
-  -- Porting note: Previous code for L72 was: simp only [exists_eq_right]
   · simp only [inr.injEq, exists_eq_right]
   rintro ⟨a, _, ha⟩
   exact inl_ne_inr ha
@@ -90,5 +87,9 @@ protected theorem Nodup.disjSum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).No
   refine ((hs.map inl_injective).add_iff <| ht.map inr_injective).2 ?_
   rw [disjoint_map_map]
   exact fun _ _ _ _ ↦ inr_ne_inl.symm
+
+theorem map_disjSum (f : α ⊕ β → γ) :
+    (s.disjSum t).map f = s.map (f <| .inl ·) + t.map (f <| .inr ·) := by
+  simp_rw [disjSum, map_add, map_map, Function.comp_def]
 
 end Multiset

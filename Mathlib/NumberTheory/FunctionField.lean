@@ -3,7 +3,6 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Ashvni Narayanan
 -/
-import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.FieldTheory.RatFunc.Degree
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
@@ -15,14 +14,15 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 This file defines a function field and the ring of integers corresponding to it.
 
 ## Main definitions
- - `FunctionField Fq F` states that `F` is a function field over the (finite) field `Fq`,
-   i.e. it is a finite extension of the field of rational functions in one variable over `Fq`.
- - `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
-    as the integral closure of `Fq[X]` in the function field.
- - `FunctionField.inftyValuation` : The place at infinity on `Fq(t)` is the nonarchimedean
-    valuation on `Fq(t)` with uniformizer `1/t`.
- - `FunctionField.FqtInfty` : The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the
-    valuation at infinity.
+
+- `FunctionField Fq F` states that `F` is a function field over the (finite) field `Fq`,
+  i.e. it is a finite extension of the field of rational functions in one variable over `Fq`.
+- `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
+  as the integral closure of `Fq[X]` in the function field.
+- `FunctionField.inftyValuation` : The place at infinity on `Fq(t)` is the nonarchimedean
+  valuation on `Fq(t)` with uniformizer `1/t`.
+- `FunctionField.FqtInfty` : The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the
+  valuation at infinity.
 
 ## Implementation notes
 The definitions that involve a field of fractions choose a canonical field of fractions,
@@ -32,8 +32,8 @@ adding them back in lemmas when they are needed.
 
 ## References
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1970algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
 function field, ring of integers
@@ -42,7 +42,7 @@ function field, ring of integers
 
 noncomputable section
 
-open scoped nonZeroDivisors Polynomial Multiplicative
+open scoped nonZeroDivisors Polynomial WithZero
 
 variable (Fq F : Type*) [Field Fq] [Field F]
 
@@ -64,7 +64,7 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     intro c x
     rw [Algebra.smul_def, Algebra.smul_def]
     congr
-    refine congr_fun (f := fun c => algebraMap Fqt F (e c)) ?_ c -- Porting note: Added `(f := _)`
+    refine congr_fun (f := fun c => algebraMap Fqt F (e c)) ?_ c
     refine IsLocalization.ext (nonZeroDivisors Fq[X]) _ _ ?_ ?_ ?_ ?_ ?_ <;> intros <;>
       simp only [map_one, map_mul, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h
@@ -74,12 +74,15 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 
+namespace FunctionField
+
 theorem algebraMap_injective [Algebra Fq[X] F] [Algebra (RatFunc Fq) F]
     [IsScalarTower Fq[X] (RatFunc Fq) F] : Function.Injective (⇑(algebraMap Fq[X] F)) := by
   rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]
   exact (algebraMap (RatFunc Fq) F).injective.comp (IsFractionRing.injective Fq[X] (RatFunc Fq))
 
-namespace FunctionField
+@[deprecated (since := "2025-03-03")]
+alias _root_.algebraMap_injective := FunctionField.algebraMap_injective
 
 /-- The function field analogue of `NumberField.ringOfIntegers`:
 `FunctionField.ringOfIntegers Fq Fqt F` is the integral closure of `Fq[t]` in `F`.
@@ -138,19 +141,21 @@ end ringOfIntegers
 
 section InftyValuation
 
+open Multiplicative WithZero
+
 variable [DecidableEq (RatFunc Fq)]
 
 /-- The valuation at infinity is the nonarchimedean valuation on `Fq(t)` with uniformizer `1/t`.
 Explicitly, if `f/g ∈ Fq(t)` is a nonzero quotient of polynomials, its valuation at infinity is
-`Multiplicative.ofAdd(degree(f) - degree(g))`. -/
-def inftyValuationDef (r : RatFunc Fq) : ℤₘ₀ :=
-  if r = 0 then 0 else ↑(Multiplicative.ofAdd r.intDegree)
+`exp (degree(f) - degree(g))`. -/
+def inftyValuationDef (r : RatFunc Fq) : ℤᵐ⁰ :=
+  if r = 0 then 0 else exp r.intDegree
 
 theorem InftyValuation.map_zero' : inftyValuationDef Fq 0 = 0 :=
   if_pos rfl
 
 theorem InftyValuation.map_one' : inftyValuationDef Fq 1 = 1 :=
-  (if_neg one_ne_zero).trans <| by rw [RatFunc.intDegree_one, ofAdd_zero, WithZero.coe_one]
+  (if_neg one_ne_zero).trans <| by simp
 
 theorem InftyValuation.map_mul' (x y : RatFunc Fq) :
     inftyValuationDef Fq (x * y) = inftyValuationDef Fq x * inftyValuationDef Fq y := by
@@ -159,8 +164,7 @@ theorem InftyValuation.map_mul' (x y : RatFunc Fq) :
   · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
   · by_cases hy : y = 0
     · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
-    · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithZero.coe_mul, WithZero.coe_inj,
-        ← ofAdd_add, RatFunc.intDegree_mul hx hy]
+    · simp_all [RatFunc.intDegree_mul]
 
 theorem InftyValuation.map_add_le_max' (x y : RatFunc Fq) :
     inftyValuationDef Fq (x + y) ≤ max (inftyValuationDef Fq x) (inftyValuationDef Fq y) := by
@@ -176,51 +180,50 @@ theorem InftyValuation.map_add_le_max' (x y : RatFunc Fq) :
       · rw [inftyValuationDef, if_pos hxy]; exact zero_le'
       · rw [inftyValuationDef, inftyValuationDef, inftyValuationDef, if_neg hx, if_neg hy,
           if_neg hxy]
-        rw [le_max_iff, WithZero.coe_le_coe, Multiplicative.ofAdd_le, WithZero.coe_le_coe,
-          Multiplicative.ofAdd_le, ← le_max_iff]
-        exact RatFunc.intDegree_add_le hy hxy
+        simpa using RatFunc.intDegree_add_le hy hxy
 
 @[simp]
 theorem inftyValuation_of_nonzero {x : RatFunc Fq} (hx : x ≠ 0) :
-    inftyValuationDef Fq x = Multiplicative.ofAdd x.intDegree := by
+    inftyValuationDef Fq x = exp x.intDegree := by
   rw [inftyValuationDef, if_neg hx]
 
 /-- The valuation at infinity on `Fq(t)`. -/
-def inftyValuation : Valuation (RatFunc Fq) ℤₘ₀ where
+def inftyValuation : Valuation (RatFunc Fq) ℤᵐ⁰ where
   toFun := inftyValuationDef Fq
   map_zero' := InftyValuation.map_zero' Fq
   map_one' := InftyValuation.map_one' Fq
   map_mul' := InftyValuation.map_mul' Fq
   map_add_le_max' := InftyValuation.map_add_le_max' Fq
 
-@[simp]
 theorem inftyValuation_apply {x : RatFunc Fq} : inftyValuation Fq x = inftyValuationDef Fq x :=
   rfl
 
 @[simp]
 theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
-    inftyValuationDef Fq (RatFunc.C k) = Multiplicative.ofAdd (0 : ℤ) := by
-  have hCk : RatFunc.C k ≠ 0 := (map_ne_zero _).mpr hk
-  rw [inftyValuationDef, if_neg hCk, RatFunc.intDegree_C]
+    inftyValuation Fq (RatFunc.C k) = 1 := by
+  simp [inftyValuation_apply, hk]
 
 @[simp]
-theorem inftyValuation.X : inftyValuationDef Fq RatFunc.X = Multiplicative.ofAdd (1 : ℤ) := by
-  rw [inftyValuationDef, if_neg RatFunc.X_ne_zero, RatFunc.intDegree_X]
+theorem inftyValuation.X : inftyValuation Fq RatFunc.X = exp 1 := by
+  simp [inftyValuation_apply, inftyValuationDef, if_neg RatFunc.X_ne_zero, RatFunc.intDegree_X]
+
+lemma inftyValuation.X_zpow (m : ℤ) : inftyValuation Fq (RatFunc.X ^ m) = exp m := by simp
+
+theorem inftyValuation.X_inv : inftyValuation Fq (1 / RatFunc.X) = exp (-1) := by
+  rw [one_div, ← zpow_neg_one, inftyValuation.X_zpow]
 
 -- Dropped attribute `@[simp]` due to issue described here:
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.60synthInstance.2EmaxHeartbeats.60.20error.20but.20only.20in.20.60simpNF.60
 theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
-    inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) =
-      Multiplicative.ofAdd (p.natDegree : ℤ) := by
-  have hp' : algebraMap Fq[X] (RatFunc Fq) p ≠ 0 := by simpa
-  rw [inftyValuationDef, if_neg hp', RatFunc.intDegree_polynomial]
+    inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) = exp (p.natDegree : ℤ) := by
+  rw [inftyValuationDef, if_neg (by simpa), RatFunc.intDegree_polynomial]
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/
-def inftyValuedFqt : Valued (RatFunc Fq) ℤₘ₀ :=
+def inftyValuedFqt : Valued (RatFunc Fq) ℤᵐ⁰ :=
   Valued.mk' <| inftyValuation Fq
 
 theorem inftyValuedFqt.def {x : RatFunc Fq} :
-    @Valued.v (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x = inftyValuationDef Fq x :=
+    (inftyValuedFqt Fq).v x = inftyValuationDef Fq x :=
   rfl
 
 /-- The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the valuation at infinity. -/
@@ -235,12 +238,9 @@ instance : Inhabited (FqtInfty Fq) :=
   ⟨(0 : FqtInfty Fq)⟩
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
-instance valuedFqtInfty : Valued (FqtInfty Fq) ℤₘ₀ :=
-  @Valued.valuedCompletion _ _ _ _ (inftyValuedFqt Fq)
+instance valuedFqtInfty : Valued (FqtInfty Fq) ℤᵐ⁰ := (inftyValuedFqt Fq).valuedCompletion
 
-theorem valuedFqtInfty.def {x : FqtInfty Fq} :
-    Valued.v x = @Valued.extension (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x :=
-  rfl
+theorem valuedFqtInfty.def {x : FqtInfty Fq} : Valued.v x = (inftyValuedFqt Fq).extension x := rfl
 
 end InftyValuation
 

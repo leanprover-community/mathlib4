@@ -55,7 +55,7 @@ then `L a x` is positive real for all real `x` larger than `abscissaOfAbsConv a`
 lemma positive {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha₁ : 0 < a 1) {x : ℝ} (hx : abscissaOfAbsConv a < x) :
     0 < LSeries a x := by
   rw [LSeries]
-  refine tsum_pos ?_ (fun n ↦ term_nonneg (ha₀ n) x) 1 <| term_pos one_ne_zero ha₁ x
+  refine Summable.tsum_pos ?_ (fun n ↦ term_nonneg (ha₀ n) x) 1 <| term_pos one_ne_zero ha₁ x
   exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <| by simpa only [ofReal_re] using hx
 
 /-- If all values of `a : ℕ → ℂ` are nonnegative reals and `a 1`

@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Equitable
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Tactic.ApplyFun
 
@@ -55,9 +55,7 @@ theorem IsEquipartition.card_parts_eq_average (hP : P.IsEquipartition) (ht : t �
 theorem IsEquipartition.card_part_eq_average_iff (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     #t = #s / #P.parts ↔ #t ≠ #s / #P.parts + 1 := by
   have a := hP.card_parts_eq_average ht
-  have b : ¬(#t = #s / #P.parts ∧ #t = #s / #P.parts + 1) := by
-    by_contra h; exact absurd (h.1 ▸ h.2) (lt_add_one _).ne
-  tauto
+  cutsat
 
 theorem IsEquipartition.average_le_card_part (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     #s / #P.parts ≤ #t := by
@@ -135,7 +133,7 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
         _ ≤ #P.parts * (#s / #P.parts) + #s % #P.parts := Nat.le_add_right ..
         _ = _ := Nat.div_add_mod ..
     · rw [← Nat.div_add_mod #s #P.parts]
-      exact add_lt_add_of_le_of_lt (mul_le_mul_left' (by omega) _) ((hg (f a).1).mp c)
+      exact add_lt_add_of_le_of_lt (mul_le_mul_left' (by cutsat) _) ((hg (f a).1).mp c)
   let z' : s → Fin #s := fun a ↦ ⟨z a, less a⟩
   have bij : z'.Bijective := by
     refine (bijective_iff_injective_and_card z').mpr ⟨fun a b e ↦ ?_, by simp⟩

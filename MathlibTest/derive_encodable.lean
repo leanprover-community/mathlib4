@@ -28,15 +28,18 @@ example : Encodable (T Nat) := inferInstance
 /--
 error: failed to synthesize
   Encodable (ℕ → Bool)
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in example : Encodable (Nat → Bool) := inferInstance
 
 /-- info: 96964472478917 -/
-#guard_msgs in #eval Encodable.encode <| T.a 3 true T.b
+#guard_msgs in
+#eval Encodable.encode <| T.a 3 true T.b
 
 /-- info: some (T.a 3 true (T.b)) -/
-#guard_msgs in #eval (Encodable.decode 96964472478917 : Option <| T Nat)
+#guard_msgs in
+#eval (Encodable.decode 96964472478917 : Option <| T Nat)
 
 
 /-!
@@ -60,7 +63,7 @@ example : Encodable T2 := inferInstance
 /-!
 Not supported: indexed types
 -/
-/-- error: default handlers have not been implemented yet, class: 'Encodable' types: [Idx] -/
+/-- error: None of the deriving handlers for class `Encodable` applied to `Idx` -/
 #guard_msgs in
 inductive Idx : Nat → Type where
   | a (i : Nat) (j : Nat) : Idx (i + j)
@@ -69,7 +72,7 @@ inductive Idx : Nat → Type where
 /-!
 Not supported: nested inductive types
 -/
-/-- error: default handlers have not been implemented yet, class: 'Encodable' types: [Nested] -/
+/-- error: None of the deriving handlers for class `Encodable` applied to `Nested` -/
 #guard_msgs in
 inductive Nested where
   | mk (xs : List Nested)
@@ -78,7 +81,7 @@ inductive Nested where
 /-!
 Not supported: reflexive inductive types
 -/
-/-- error: default handlers have not been implemented yet, class: 'Encodable' types: [Reflex] -/
+/-- error: None of the deriving handlers for class `Encodable` applied to `Reflex` -/
 #guard_msgs in
 inductive Reflex where
   | mk (f : Bool → Reflex)

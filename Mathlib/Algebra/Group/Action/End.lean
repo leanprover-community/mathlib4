@@ -24,7 +24,7 @@ assert_not_exists MonoidWithZero
 
 open Function (Injective Surjective)
 
-variable {G M N α : Type*}
+variable {G M N A α : Type*}
 
 /-! ### Tautological actions -/
 
@@ -45,6 +45,9 @@ This is generalized to bundled endomorphisms by:
 * `RingHom.applyMulSemiringAction`
 * `RingAut.applyMulSemiringAction`
 * `AlgEquiv.applyMulSemiringAction`
+* `RelHom.applyMulAction`
+* `RelEmbedding.applyMulAction`
+* `RelIso.applyMulAction`
 -/
 instance applyMulAction : MulAction (Function.End α) α where
   smul := (· <| ·)
@@ -85,6 +88,14 @@ protected lemma smul_def {α : Type*} (f : Perm α) (a : α) : f • a = f a := 
 /-- `Equiv.Perm.applyMulAction` is faithful. -/
 instance applyFaithfulSMul (α : Type*) : FaithfulSMul (Perm α) α := ⟨Equiv.ext⟩
 
+/-- The permutation group of `α` acts transitively on `α`. -/
+instance : MulAction.IsPretransitive (Perm α) α := by
+  rw [MulAction.isPretransitive_iff]
+  classical
+  intro x y
+  use Equiv.swap x y
+  simp
+
 end Equiv.Perm
 
 /-! #### Tautological action by `MulAut` -/
@@ -97,6 +108,16 @@ instance applyMulAction : MulAction (MulAut M) M where
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
+
+/-- The tautological action by `MulAut M` on `M`.
+
+This generalizes `Function.End.applyMulAction`. -/
+instance applyMulDistribMulAction : MulDistribMulAction (MulAut M) M where
+  smul := (· <| ·)
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+  smul_one := map_one
+  smul_mul := map_mul
 
 @[simp] protected lemma smul_def (f : MulAut M) (a : M) : f • a = f a := rfl
 
@@ -150,7 +171,7 @@ variable [AddMonoid M]
 
 When `M` is a group, see `AddAction.toPermHom`. -/
 def AddAction.toEndHom [AddAction M α] : M →+ Additive (Function.End α) :=
-  MonoidHom.toAdditive'' MulAction.toEndHom
+  MulAction.toEndHom.toAdditiveRight
 
 /-- The additive action induced by a hom to `Additive (Function.End α)`
 
@@ -177,7 +198,39 @@ variable (G α) [AddGroup G] [AddAction G α]
 /-- Given an action of an additive group `G` on a set `α`, each `g : G` defines a permutation of
 `α`. -/
 @[simps!]
-def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) :=
-  MonoidHom.toAdditive'' <| MulAction.toPermHom ..
+def AddAction.toPermHom : G →+ Additive (Equiv.Perm α) := (MulAction.toPermHom ..).toAdditiveRight
 
 end AddGroup
+
+section MulDistribMulAction
+variable (M) [Group G] [Monoid M] [MulDistribMulAction G M]
+
+/-- Each element of the group defines a multiplicative monoid isomorphism.
+
+This is a stronger version of `MulAction.toPerm`. -/
+@[simps +simpRhs]
+def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
+  { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
+
+variable (G) in
+/-- Each element of the group defines a multiplicative monoid isomorphism.
+
+This is a stronger version of `MulAction.toPermHom`. -/
+@[simps]
+def MulDistribMulAction.toMulAut : G →* MulAut M where
+  toFun := MulDistribMulAction.toMulEquiv M
+  map_one' := MulEquiv.ext (one_smul _)
+  map_mul' _ _ := MulEquiv.ext (mul_smul _ _)
+
+end MulDistribMulAction
+
+section Arrow
+variable [Group G] [MulAction G A] [Monoid M]
+
+attribute [local instance] arrowMulDistribMulAction
+
+/-- Given groups `G H` with `G` acting on `A`, `G` acts by
+multiplicative automorphisms on `A → H`. -/
+@[simps!] def mulAutArrow : G →* MulAut (A → M) := MulDistribMulAction.toMulAut _ _
+
+end Arrow

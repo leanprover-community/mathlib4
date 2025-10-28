@@ -47,12 +47,18 @@ protected def subtype : S' →ₗ[R] M where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+variable {S'} in
+@[simp]
+lemma subtype_apply (x : S') :
+    SMulMemClass.subtype S' x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (SMulMemClass.subtype S') :=
+  Subtype.coe_injective
+
 @[simp]
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-protected alias coeSubtype := SMulMemClass.coe_subtype
 
 end SMulMemClass
 
@@ -72,17 +78,21 @@ variable (p)
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 protected def subtype : p →ₗ[R] M where
   toFun := Subtype.val
-  map_add' := by simp [coe_smul]
-  map_smul' := by simp [coe_smul]
+  map_add' := by simp
+  map_smul' := by simp
 
+variable {p} in
+@[simp]
 theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
+
+lemma subtype_injective :
+    Function.Injective p.subtype :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype : (Submodule.subtype p : p → M) = Subtype.val :=
   rfl
-
-@[deprecated (since := "2024-09-27")] alias coeSubtype := coe_subtype
 
 theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
@@ -135,7 +145,9 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
   rfl
 
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
-linear map M₂ → p. -/
+linear map M₂ → p.
+
+See also `LinearMap.codLift`. -/
 def codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) (h : ∀ c, f c ∈ p) : M →ₛₗ[σ₁₂] p where
   toFun c := ⟨f c, h c⟩
   map_add' _ _ := by simp
@@ -155,6 +167,31 @@ theorem comp_codRestrict (p : Submodule R₃ M₃) (h : ∀ b, g b ∈ p) :
 theorem subtype_comp_codRestrict (p : Submodule R₂ M₂) (h : ∀ b, f b ∈ p) :
     p.subtype.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
+
+section
+
+variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
+(p : M₂' →ₗ[R₂] M₂) (hp : Injective p) (h : ∀ c, f c ∈ range p)
+
+/-- A linear map `f : M → M₂` whose values lie in the image of an injective linear map
+`p : M₂' → M₂` admits a unique lift to a linear map `M → M₂'`. -/
+noncomputable def codLift :
+    M →ₛₗ[σ₁₂] M₂' where
+  toFun c := (h c).choose
+  map_add' b c := by apply hp; simp_rw [map_add, (h _).choose_spec, ← map_add, (h _).choose_spec]
+  map_smul' r c := by apply hp; simp_rw [map_smul, (h _).choose_spec, LinearMap.map_smulₛₗ]
+
+@[simp] theorem codLift_apply (x : M) :
+    (f.codLift p hp h x) = (h x).choose :=
+  rfl
+
+@[simp]
+theorem comp_codLift :
+    p.comp (f.codLift p hp h) = f := by
+  ext x
+  rw [comp_apply, codLift_apply, (h x).choose_spec]
+
+end
 
 /-- Restrict domain and codomain of a linear map. -/
 def restrict (f : M →ₗ[R] M₁) {p : Submodule R M} {q : Submodule R M₁} (hf : ∀ x ∈ p, f x ∈ q) :
@@ -196,9 +233,8 @@ lemma restrict_smul_one
 lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R M}
     (hf : MapsTo f p p) (hg : MapsTo g p p) :
     Commute (f.restrict hf) (g.restrict hg) := by
-  change _ * _ = _ * _
-  conv_lhs => rw [mul_eq_comp, ← restrict_comp]; congr; rw [← mul_eq_comp, h.eq]
-  rfl
+  change (f ∘ₗ g).restrict (hf.comp hg) = (g ∘ₗ f).restrict (hg.comp hf)
+  congr 1
 
 theorem subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
     (hf : ∀ x ∈ p, f x ∈ q) : q.subtype.comp (f.restrict hf) = f.domRestrict p :=
@@ -227,31 +263,31 @@ theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂]
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
 
-theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End R N}
-    {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ} (hG : G ^ k = 0) :
-    g ^ k = 0 := by
+theorem _root_.Module.End.submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M}
+    {g : Module.End R N} {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ}
+    (hG : G ^ k = 0) : g ^ k = 0 := by
   ext m
   have hg : N.subtype.comp (g ^ k) m = 0 := by
-    rw [← commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
+    rw [← Module.End.commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
   simpa using hg
 
 section
 
 variable {f' : M →ₗ[R] M}
 
-theorem pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p) (x : M)
-    (hx : x ∈ p) : (f' ^ n) x ∈ p := by
+theorem _root_.Module.End.pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ)
+    (h : ∀ x ∈ p, f' x ∈ p) (x : M) (hx : x ∈ p) : (f' ^ n) x ∈ p := by
   induction n generalizing x with
   | zero => simpa
   | succ n ih =>
     simpa only [iterate_succ, coe_comp, Function.comp_apply, restrict_apply] using ih _ (h _ hx)
 
-theorem pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
-    (h' := pow_apply_mem_of_forall_mem n h) :
+theorem _root_.Module.End.pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
+    (h' := Module.End.pow_apply_mem_of_forall_mem n h) :
     (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
   ext x
   have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ restrict_coe_apply _ _ _
-  simp [coe_pow, this.iterate_right _ _]
+  simp [Module.End.coe_pow, this.iterate_right _ _]
 
 end
 
@@ -304,9 +340,7 @@ theorem inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) :=
 variable (p p')
 
 theorem subtype_comp_inclusion (p q : Submodule R M) (h : p ≤ q) :
-    q.subtype.comp (inclusion h) = p.subtype := by
-  ext ⟨b, hb⟩
-  rfl
+    q.subtype.comp (inclusion h) = p.subtype := rfl
 
 end AddCommMonoid
 

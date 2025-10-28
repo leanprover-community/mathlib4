@@ -47,8 +47,7 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
   · intro _ _
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`
-    dsimp only
+    -- Porting note: proof was `simp`
     rw [Prod.ext_iff]
     simp
 
@@ -62,7 +61,7 @@ def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
     -- Porting note: was `simpa [graph] using h`
     simp only [graph, Finset.mem_image, Finset.mem_univ, true_and] at h
     obtain ⟨i', hi'⟩ := h
-    obtain ⟨-, rfl⟩ := Prod.mk.inj_iff.mp hi'
+    obtain ⟨-, rfl⟩ := Prod.mk_inj.mp hi'
     simpa
 
 @[simp]
@@ -104,7 +103,7 @@ variable {n : ℕ} {α : Type*}
 
 /-- If `f₀ ≤ f₁ ≤ f₂ ≤ ⋯` is a sorted `m`-tuple of elements of `α`, then for any `j : Fin m` and
 `a : α` we have `j < #{i | fᵢ ≤ a}` iff `fⱼ ≤ a`. -/
-theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α := α) LE.le]
+theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableLE α]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Monotone f) (j : Fin m) :
     j < Fintype.card {i // f i ≤ a} ↔ f j ≤ a := by
   suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a by
@@ -118,20 +117,16 @@ theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α 
     apply hw.ne'
     have he := Fintype.card_congr <| Equiv.sumCompl <| q'
     have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q (h1 _)))
-    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by
-      conv_rhs => rw [← Fintype.card_fin m]
-      exact Fintype.card_subtype_le _
-    rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_right_eq_self] at he
+    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by omega
+    rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_eq_left] at he
   intro _ h
   contrapose! h
   rw [← Fin.card_Iio, Fintype.card_subtype]
   refine Finset.card_mono (fun i => Function.mtr ?_)
-  simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio]
-  intro hij hia
-  apply h
-  exact (h_sorted (le_of_not_lt hij)).trans hia
+  rw [Finset.mem_filter_univ, Finset.mem_Iio]
+  exact fun hij hia ↦ h ((h_sorted (le_of_not_gt hij)).trans hia)
 
-theorem lt_card_ge_iff_apply_ge_of_antitone [PartialOrder α] [DecidableRel (α := α) LE.le]
+theorem lt_card_ge_iff_apply_ge_of_antitone [Preorder α] [DecidableLE α]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Antitone f) (j : Fin m) :
     j < Fintype.card {i // a ≤ f i} ↔ a ≤ f j :=
   lt_card_le_iff_apply_le_of_monotone _ (OrderDual.toDual a) h_sorted.dual_right j
@@ -139,6 +134,13 @@ theorem lt_card_ge_iff_apply_ge_of_antitone [PartialOrder α] [DecidableRel (α 
 /-- If two permutations of a tuple `f` are both monotone, then they are equal. -/
 theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
     (hfσ : Monotone (f ∘ σ)) (hfτ : Monotone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
+  ofFn_injective <|
+    eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
+      hfσ.ofFn_sorted hfτ.ofFn_sorted
+
+/-- If two permutations of a tuple `f` are both antitone, then they are equal. -/
+theorem unique_antitone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
+    (hfσ : Antitone (f ∘ σ)) (hfτ : Antitone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
   ofFn_injective <|
     eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
       hfσ.ofFn_sorted hfτ.ofFn_sorted

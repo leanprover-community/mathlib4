@@ -16,7 +16,7 @@ This file defines the kernel of a linear map.
 
 * `LinearMap.ker`: the kernel of a linear map as a submodule of the domain
 
-## Notations
+## Notation
 
 * We continue to use the notations `M →ₛₗ[σ] M₂` and `M →ₗ[R] M₂` for the type of semilinear
   (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
@@ -69,10 +69,14 @@ theorem ker_id : ker (LinearMap.id : M →ₗ[R] M) = ⊥ :=
 theorem map_coe_ker (f : F) (x : ker f) : f x = 0 :=
   mem_ker.1 x.2
 
-theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : f.ker.toAddSubmonoid = (AddMonoidHom.mker f) :=
+theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubmonoid = (AddMonoidHom.mker f) :=
   rfl
 
-theorem comp_ker_subtype (f : M →ₛₗ[τ₁₂] M₂) : f.comp f.ker.subtype = 0 :=
+theorem le_ker_iff_comp_subtype_eq_zero {N : Submodule R M} {f : M →ₛₗ[τ₁₂] M₂} :
+    N ≤ ker f ↔ f ∘ₛₗ N.subtype = 0 := by
+  rw [SetLike.le_def, LinearMap.ext_iff, Subtype.forall]; rfl
+
+theorem comp_ker_subtype (f : M →ₛₗ[τ₁₂] M₂) : f.comp (ker f).subtype = 0 :=
   LinearMap.ext fun x => mem_ker.1 x.2
 
 theorem ker_comp (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ₂₃] M₃) :
@@ -85,7 +89,7 @@ theorem ker_le_ker_comp (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ�
 theorem ker_sup_ker_le_ker_comp_of_commute {f g : M →ₗ[R] M} (h : Commute f g) :
     ker f ⊔ ker g ≤ ker (f ∘ₗ g) := by
   refine sup_le_iff.mpr ⟨?_, ker_le_ker_comp g f⟩
-  rw [← mul_eq_comp, h.eq, mul_eq_comp]
+  rw [← Module.End.mul_eq_comp, h.eq, Module.End.mul_eq_comp]
   exact ker_le_ker_comp f g
 
 @[simp]
@@ -122,8 +126,15 @@ theorem ker_restrict [AddCommMonoid M₁] [Module R M₁] {p : Submodule R M} {q
 theorem ker_zero : ker (0 : M →ₛₗ[τ₁₂] M₂) = ⊤ :=
   eq_top_iff'.2 fun x => by simp
 
+@[simp]
 theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
   ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
+
+theorem exists_ne_zero_of_sSup_eq_top {f : M →ₛₗ[τ₁₂] M₂} (h : f ≠ 0) (s : Set (Submodule R M))
+    (hs : sSup s = ⊤) : ∃ m ∈ s, f ∘ₛₗ m.subtype ≠ 0 := by
+  contrapose! h
+  simp_rw [← ker_eq_top, eq_top_iff, ← hs, sSup_le_iff, le_ker_iff_comp_subtype_eq_zero]
+  exact h
 
 @[simp]
 theorem _root_.AddMonoidHom.coe_toIntLinearMap_ker {M M₂ : Type*} [AddCommGroup M] [AddCommGroup M₂]
@@ -142,7 +153,7 @@ def iterateKer (f : M →ₗ[R] M) : ℕ →o Submodule R M where
   monotone' n m w x h := by
     obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le w
     rw [LinearMap.mem_ker] at h
-    rw [LinearMap.mem_ker, add_comm, pow_add, LinearMap.mul_apply, h, LinearMap.map_zero]
+    rw [LinearMap.mem_ker, add_comm, pow_add, Module.End.mul_apply, h, LinearMap.map_zero]
 
 end AddCommMonoid
 
@@ -172,12 +183,9 @@ theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
     (hd : Disjoint p (ker f)) : Set.InjOn f s := fun _ hx _ hy =>
   disjoint_ker'.1 hd _ (h hx) _ (h hy)
 
-variable (F)
-
+variable (F) in
 theorem _root_.LinearMapClass.ker_eq_bot : ker f = ⊥ ↔ Injective f := by
   simpa [disjoint_iff_inf_le] using disjoint_ker' (f := f) (p := ⊤)
-
-variable {F}
 
 theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective f :=
   LinearMapClass.ker_eq_bot _
@@ -237,7 +245,7 @@ theorem comap_bot (f : F) : comap f ⊥ = ker f :=
 
 @[simp]
 theorem ker_subtype : ker p.subtype = ⊥ :=
-  ker_eq_bot_of_injective fun _ _ => Subtype.ext_val
+  ker_eq_bot_of_injective fun _ _ => Subtype.ext
 
 @[simp]
 theorem ker_inclusion (p p' : Submodule R M) (h : p ≤ p') : ker (inclusion h) = ⊥ := by

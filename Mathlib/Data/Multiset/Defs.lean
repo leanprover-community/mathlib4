@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Perm.Subperm
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Quot
 import Mathlib.Order.Monotone.Defs
 import Mathlib.Order.RelClasses
@@ -97,15 +98,14 @@ theorem lift_coe {α β : Type*} (x : List α) (f : List α → β)
 theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ ~ l₂ :=
   Quotient.eq
 
--- Porting note: new instance;
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move to better place
+-- (upstream to Batteries?)
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (isSetoid α l₁ l₂) :=
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
--- Porting note: `Quotient.recOnSubsingleton₂ s₁ s₂` was in parens which broke elaboration
 instance decidableEq [DecidableEq α] : DecidableEq (Multiset α)
   | s₁, s₂ => Quotient.recOnSubsingleton₂ s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq_iff_equiv
 
@@ -161,6 +161,7 @@ theorem Subset.trans {s t u : Multiset α} : s ⊆ t → t ⊆ u → s ⊆ u := 
 theorem subset_iff {s t : Multiset α} : s ⊆ t ↔ ∀ ⦃x⦄, x ∈ s → x ∈ t :=
   Iff.rfl
 
+@[gcongr]
 theorem mem_of_subset {s t : Multiset α} {a : α} (h : s ⊆ t) : a ∈ s → a ∈ t :=
   @h _
 
@@ -181,7 +182,7 @@ instance : PartialOrder (Multiset α) where
   le_trans := by rintro ⟨l₁⟩ ⟨l₂⟩ ⟨l₃⟩; exact @Subperm.trans _ _ _ _
   le_antisymm := by rintro ⟨l₁⟩ ⟨l₂⟩ h₁ h₂; exact Quot.sound (Subperm.antisymm h₁ h₂)
 
-instance decidableLE [DecidableEq α] : DecidableRel ((· ≤ ·) : Multiset α → Multiset α → Prop) :=
+instance decidableLE [DecidableEq α] : DecidableLE (Multiset α) :=
   fun s t => Quotient.recOnSubsingleton₂ s t List.decidableSubperm
 
 section
@@ -196,8 +197,10 @@ alias Le.subset := subset_of_le
 theorem mem_of_le (h : s ≤ t) : a ∈ s → a ∈ t :=
   mem_of_subset (subset_of_le h)
 
-theorem not_mem_mono (h : s ⊆ t) : a ∉ t → a ∉ s :=
+theorem notMem_mono (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| @h _
+
+@[deprecated (since := "2025-05-23")] alias not_mem_mono := notMem_mono
 
 @[simp]
 theorem coe_le {l₁ l₂ : List α} : (l₁ : Multiset α) ≤ l₂ ↔ l₁ <+~ l₂ :=
@@ -230,10 +233,11 @@ theorem eq_of_le_of_card_le {s t : Multiset α} (h : s ≤ t) : card t ≤ card 
 theorem card_lt_card {s t : Multiset α} (h : s < t) : card s < card t :=
   lt_of_not_ge fun h₂ => _root_.ne_of_lt h <| eq_of_le_of_card_le (le_of_lt h) h₂
 
-@[mono]
+@[gcongr, mono]
 theorem card_mono : Monotone (@card α) := fun _a _b => card_le_card
 
-lemma card_strictMono : StrictMono (card : Multiset α → ℕ) := fun _ _ ↦ card_lt_card
+@[gcongr]
+lemma card_strictMono : StrictMono (@card α) := fun _ _ ↦ card_lt_card
 
 /-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
 instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
@@ -355,6 +359,12 @@ theorem Nodup.ext {s t : Multiset α} : Nodup s → Nodup t → (s = t ↔ ∀ a
 
 theorem le_iff_subset {s t : Multiset α} : Nodup s → (s ≤ t ↔ s ⊆ t) :=
   Quotient.inductionOn₂ s t fun _ _ d => ⟨subset_of_le, d.subperm⟩
+
+theorem nodup_of_le {s t : Multiset α} (h : s ≤ t) : Nodup t → Nodup s :=
+  Multiset.leInductionOn h fun {_ _} => Nodup.sublist
+
+instance nodupDecidable [DecidableEq α] (s : Multiset α) : Decidable (Nodup s) :=
+  Quotient.recOnSubsingleton s fun l => l.nodupDecidable
 
 end Nodup
 

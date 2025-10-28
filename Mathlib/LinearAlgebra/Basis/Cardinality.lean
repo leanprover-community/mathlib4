@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Kim Morrison
 -/
 import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
+import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.SetTheory.Cardinal.Pigeonhole
 
 /-!
 # Results relating bases and cardinality.
@@ -13,7 +14,7 @@ import Mathlib.SetTheory.Cardinal.Cofinality
 
 section Finite
 
-open Basis Cardinal Set Submodule Finsupp
+open Module Basis Cardinal Set Submodule Finsupp
 
 universe u v w w'
 
@@ -21,7 +22,15 @@ variable {R : Type u} {M : Type v}
 
 section Semiring
 
-variable [Semiring R] [AddCommMonoid M] [Nontrivial R] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
+
+lemma finite_of_span_finite_eq_top_finsupp [Nontrivial M] {ι : Type*} {s : Set (ι →₀ M)}
+    (hs : s.Finite) (hsspan : span R s = ⊤) : Finite ι :=
+  suffices ⋃ i ∈ s, i.support = .univ from
+    .of_finite_univ (this ▸ hs.biUnion fun _ _ ↦ by simp)
+  have ⟨x, hx⟩ := exists_ne (0 : M)
+  eq_univ_of_forall fun j ↦ (top_unique (hsspan.ge.trans (span_le_supported_biUnion_support R s)) ▸
+    mem_top (x := single j x)) ((mem_support_single ..).mpr ⟨rfl, hx⟩)
 
 -- One might hope that a finite spanning set implies that any linearly independent set is finite.
 -- While this is true over a division ring
@@ -38,36 +47,11 @@ variable [Semiring R] [AddCommMonoid M] [Nontrivial R] [Module R M]
 /--
 Over any nontrivial ring, the existence of a finite spanning set implies that any basis is finite.
 -/
-lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = ⊤) {ι : Type w}
-    (b : Basis ι R M) : Finite ι := by
-  classical
-  haveI := hw.to_subtype
-  cases nonempty_fintype w
-  -- We'll work by contradiction, assuming `ι` is infinite.
-  rw [← not_infinite_iff_finite]
-  intro i
-  -- Let `S` be the union of the supports of `x ∈ w` expressed as linear combinations of `b`.
-  -- This is a finite set since `w` is finite.
-  let S : Finset ι := Finset.univ.sup fun x : w => (b.repr x).support
-  let bS : Set M := b '' S
-  have h : ∀ x ∈ w, x ∈ span R bS := by
-    intro x m
-    rw [← b.linearCombination_repr x, span_image_eq_map_linearCombination, Submodule.mem_map]
-    use b.repr x
-    simp only [and_true, eq_self_iff_true, Finsupp.mem_supported]
-    rw [Finset.coe_subset, ← Finset.le_iff_subset]
-    exact Finset.le_sup (f := fun x : w ↦ (b.repr ↑x).support) (Finset.mem_univ (⟨x, m⟩ : w))
-  -- Thus this finite subset of the basis elements spans the entire module.
-  have k : span R bS = ⊤ := eq_top_iff.2 (le_trans s.ge (span_le.2 h))
-  -- Now there is some `x : ι` not in `S`, since `ι` is infinite.
-  obtain ⟨x, nm⟩ := Infinite.exists_not_mem_finset S
-  -- However it must be in the span of the finite subset,
-  have k' : b x ∈ span R bS := by
-    rw [k]
-    exact mem_top
-  -- giving the desire contradiction.
-  simp only [self_mem_span_image, Finset.mem_coe, bS] at k'
-  exact nm k'
+lemma basis_finite_of_finite_spans [Nontrivial R] {s : Set M} (hs : s.Finite)
+    (hsspan : span R s = ⊤) {ι : Type w} (b : Basis ι R M) : Finite ι := by
+  have := congr(($hsspan).map b.repr)
+  rw [← span_image, Submodule.map_top, LinearEquivClass.range] at this
+  exact finite_of_span_finite_eq_top_finsupp (hs.image _) this
 
 end Semiring
 
@@ -85,7 +69,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     ⋃ k, ((b.repr (v k)).support : Set ι) = Set.univ := by
   -- If that's not the case,
   by_contra h
-  simp only [← Ne.eq_def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
+  simp only [← Ne.eq_def, ne_univ_iff_exists_notMem, mem_iUnion, not_exists_not,
     Finsupp.mem_support_iff, Finset.mem_coe] at h
   -- We have some basis element `b i` which is not in the support of any of the `v k`.
   obtain ⟨i, w⟩ := h
@@ -102,7 +86,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     apply LinearIndependent.linearIndepOn_id
     rw [linearIndependent_iffₛ]
     intro l l' z
-    simp_rw [linearCombination_option, v', Option.elim'] at z
+    simp_rw [linearCombination_option, v', Option.elim] at z
     change _ + linearCombination R v l.some = _ + linearCombination R v l'.some at z
     -- We have some equality between linear combinations of `b i` and the `v k`,
     -- and want to show the coefficients are equal.

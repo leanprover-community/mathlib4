@@ -165,10 +165,6 @@ theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rf
 instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 
 instance : AddCommGroup (Poly α) where
-  add := ((· + ·) : Poly α → Poly α → Poly α)
-  neg := (Neg.neg : Poly α → Poly α)
-  sub := Sub.sub
-  zero := 0
   nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
   zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩)
   add_zero _ := by ext; simp_rw [add_apply, zero_apply, add_zero]
@@ -177,16 +173,13 @@ instance : AddCommGroup (Poly α) where
   add_assoc _ _ _ := by ext; simp_rw [add_apply, ← add_assoc]
   neg_add_cancel _ := by ext; simp_rw [add_apply, neg_apply, neg_add_cancel, zero_apply]
 
-instance : AddGroupWithOne (Poly α) :=
-  { (inferInstance : AddCommGroup (Poly α)) with
-      one := 1
-      natCast := fun n => Poly.const n
-      intCast := Poly.const }
+instance : AddGroupWithOne (Poly α) where
+  natCast := fun n => Poly.const n
+  intCast := Poly.const
 
 instance : CommRing (Poly α) where
   __ := (inferInstance : AddCommGroup (Poly α))
   __ := (inferInstance : AddGroupWithOne (Poly α))
-  mul := (· * ·)
   npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
   mul_zero _ := by ext; rw [mul_apply, zero_apply, mul_zero]
   zero_mul _ := by ext; rw [mul_apply, zero_apply, zero_mul]
@@ -214,7 +207,7 @@ def sumsq : List (Poly α) → Poly α
   | [] => 0
   | p::ps => p * p + sumsq ps
 
-theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
+@[simp] theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
   | [] => le_refl 0
   | p::ps => by
     rw [sumsq]
@@ -222,20 +215,7 @@ theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
 
 theorem sumsq_eq_zero (x) : ∀ l, sumsq l x = 0 ↔ l.Forall fun a : Poly α => a x = 0
   | [] => eq_self_iff_true _
-  | p::ps => by
-    rw [List.forall_cons, ← sumsq_eq_zero _ ps]; rw [sumsq]
-    exact
-      ⟨fun h : p x * p x + sumsq ps x = 0 =>
-        have : p x = 0 :=
-          eq_zero_of_mul_self_eq_zero <|
-            le_antisymm
-              (by
-                rw [← h]
-                have t := add_le_add_left (sumsq_nonneg x ps) (p x * p x)
-                rwa [add_zero] at t)
-              (mul_self_nonneg _)
-        ⟨this, by simpa [this] using h⟩,
-      fun ⟨h1, h2⟩ => by rw [add_apply, mul_apply, h1, h2]; rfl⟩
+  | p::ps => by simp [sumsq, add_eq_zero_iff_of_nonneg, mul_self_nonneg, sumsq_eq_zero]
 
 end
 
@@ -287,16 +267,13 @@ theorem inject_dummies (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f
     ∃ q : Poly (α ⊕ γ), ∀ v, S v ↔ ∃ t, q (v ⊗ t) = 0 :=
   ⟨p.map (inl ⊗ inr ∘ f), fun v => (h v).trans <| inject_dummies_lem f g inv _ _⟩
 
-variable (β)
-
+variable (β) in
 theorem reindex_dioph (f : α → β) : Dioph S → Dioph {v | v ∘ f ∈ S}
   | ⟨γ, p, pe⟩ => ⟨γ, p.map (inl ∘ f ⊗ inr), fun v =>
       (pe _).trans <|
         exists_congr fun t =>
           suffices v ∘ f ⊗ t = (v ⊗ t) ∘ (inl ∘ f ⊗ inr) by simp [this]
           funext fun s => by rcases s with a | b <;> rfl⟩
-
-variable {β}
 
 theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     Dioph {v | l.Forall fun S : Set (α → ℕ) => v ∈ S} := by
@@ -306,13 +283,12 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     let ⟨β, pl, h⟩ := this
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction l with | nil => exact ⟨ULift Empty, [], fun _ => by simp⟩ | cons S l IH =>
-  simp? at d says simp only [List.forall_cons] at d
+  obtain ⟨⟨β, p, pe⟩, dl⟩ := (List.forall_cons _ _ _).mp d
   exact
-    let ⟨⟨β, p, pe⟩, dl⟩ := d
     let ⟨γ, pl, ple⟩ := IH dl
     ⟨β ⊕ γ, p.map (inl ⊗ inr ∘ inl)::pl.map fun q => q.map (inl ⊗ inr ∘ inr),
       fun v => by
-      simp; exact
+      simpa using
         Iff.trans (and_congr (pe v) (ple v))
           ⟨fun ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ =>
             ⟨m ⊗ n, by
@@ -333,8 +309,10 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
                       v ⊗ t ∘ inr
                     from funext fun s => by rcases s with a | b <;> rfl] at hq ⟩⟩⟩⟩
 
+/-- Diophantine sets are closed under intersection. -/
 theorem inter (d : Dioph S) (d' : Dioph S') : Dioph (S ∩ S') := DiophList.forall [S, S'] ⟨d, d'⟩
 
+/-- Diophantine sets are closed under union. -/
 theorem union : ∀ (_ : Dioph S) (_ : Dioph S'), Dioph (S ∪ S')
   | ⟨β, p, pe⟩, ⟨γ, q, qe⟩ =>
     ⟨β ⊕ γ, p.map (inl ⊗ inr ∘ inl) * q.map (inl ⊗ inr ∘ inr), fun v => by
@@ -344,14 +322,12 @@ theorem union : ∀ (_ : Dioph S) (_ : Dioph S'), Dioph (S ∪ S')
             (exists_congr fun t =>
               (@mul_eq_zero _ _ _ (p ((v ⊗ t) ∘ (inl ⊗ inr ∘ inl)))
                   (q ((v ⊗ t) ∘ (inl ⊗ inr ∘ inr)))).symm))
-      -- Porting note: putting everything on the same line fails
-      · refine inject_dummies_lem _ ?_ ?_ _ _
-        · exact some ⊗ fun _ => none
-        · exact fun _ => by simp only [elim_inl]
-      -- Porting note: putting everything on the same line fails
-      · refine inject_dummies_lem _ ?_ ?_ _ _
-        · exact (fun _ => none) ⊗ some
-        · exact fun _ => by simp only [elim_inr]⟩
+      · -- Porting note: putting everything on the same line fails
+        refine inject_dummies_lem _ (some ⊗ fun _ => none) ?_ _ _
+        exact fun _ => by simp only [elim_inl]
+      · -- Porting note: putting everything on the same line fails
+        refine inject_dummies_lem _ ((fun _ => none) ⊗ some) ?_ _ _
+        exact fun _ => by simp only [elim_inr]⟩
 
 /-- A partial function is Diophantine if its graph is Diophantine. -/
 def DiophPFun (f : (α → ℕ) →. ℕ) : Prop :=
@@ -370,7 +346,8 @@ theorem ex_dioph {S : Set (α ⊕ β → ℕ)} : Dioph S → Dioph {v | ∃ x, v
       ⟨fun ⟨x, hx⟩ =>
         let ⟨t, ht⟩ := (pe _).1 hx
         ⟨x ⊗ t, by
-          simp; rw [show (v ⊗ x ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ x) ⊗ t from
+          simp only [Poly.map_apply]
+          rw [show (v ⊗ x ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ x) ⊗ t from
             funext fun s => by rcases s with a | b <;> try { cases a <;> rfl }; rfl]
           exact ht⟩,
         fun ⟨t, ht⟩ =>
@@ -407,7 +384,7 @@ theorem diophFn_iff_pFun (f : (α → ℕ) → ℕ) : DiophFn f = @DiophPFun α 
 
 theorem abs_poly_dioph (p : Poly α) : DiophFn fun v => (p v).natAbs :=
   of_no_dummies _ ((p.map some - Poly.proj none) * (p.map some + Poly.proj none))
-    fun v => (by dsimp; exact Int.eq_natAbs_iff_mul_eq_zero)
+    fun v => (by dsimp; exact Int.natAbs_eq_iff_mul_eq_zero)
 
 theorem proj_dioph (i : α) : DiophFn fun v => v i :=
   abs_poly_dioph (Poly.proj i)
@@ -437,18 +414,16 @@ open Vector3
 
 open scoped Vector3
 
--- Porting note: Fails because declaration is in an imported module
-set_option allowUnsafeReducibility true in
-attribute [local reducible] Vector3
-
 theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Vector3 ℕ n → ℕ}
     (df : DiophFn f) : Dioph {v : Vector3 ℕ n | (f v::v) ∈ S} :=
   Dioph.ext (diophFn_comp1 (reindex_dioph _ (none::some) d) df) (fun v => by
     dsimp
-    -- Porting note: `congr` use to be enough here
-    suffices ((f v ::ₒ v) ∘ none :: some) = f v :: v by rw [this]; rfl
+    -- TODO: `apply iff_of_eq` is required here, even though `congr!` works on iff below.
+    apply iff_of_eq
+    congr 1
     ext x; cases x <;> rfl)
 
+/-- Deleting the first component preserves the Diophantine property. -/
 theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
     Dioph {v : Fin2 n → ℕ | ∃ x, (x::v) ∈ S} :=
   ext (ex1_dioph <| reindex_dioph _ (none::some) d) fun v =>
@@ -469,8 +444,8 @@ theorem diophFn_compn :
   | 0, S, d, f => fun _ =>
     ext (reindex_dioph _ (id ⊗ Fin2.elim0) d) fun v => by
       dsimp
-      -- Porting note: `congr` use to be enough here
-      suffices v ∘ (id ⊗ elim0) = v ⊗ fun i ↦ f i v by rw [this]
+      -- TODO: `congr! 1; ext` should be equivalent to `congr! 1 with x` but that does not work.
+      congr! 1
       ext x; obtain _ | _ | _ := x; rfl
   | succ n, S, d, f =>
     f.consElim fun f fl => by
@@ -481,17 +456,16 @@ theorem diophFn_compn :
                 reindex_diophFn inl df)
               fun v => by
                 dsimp
-                -- Porting note: `congr` use to be enough here
-                suffices (f (v ∘ inl) ::ₒ v) ∘ (some ∘ inl ⊗ none :: some ∘ inr) =
-                    v ∘ inl ⊗ f (v ∘ inl) :: v ∘ inr by rw [this]
+                -- TODO: `congr! 1; ext` should be equivalent to `congr! 1 with x`
+                -- but that does not work.
+                congr! 1
                 ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
             @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr)) this _ dfl
           ext this fun v => by
             dsimp
-            -- Porting note: `congr` use to be enough here
-            suffices (v ⊗ f v :: fun i ↦ fl i v) = v ⊗ fun i ↦ (f :: fl) i v by rw [this]
-            ext x; obtain _ | _ | _ := x <;> rfl
+            congr! 3 with x
+            obtain _ | _ | _ := x <;> rfl
 
 theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α → ℕ) → ℕ) n)
     (df : VectorAllP DiophFn f) : Dioph {v | (fun i => f i v) ∈ S} :=
@@ -504,22 +478,28 @@ theorem diophFn_comp {f : Vector3 ℕ n → ℕ} (df : DiophFn f) (g : Vector3 (
     exact ⟨proj_dioph none, (vectorAllP_iff_forall _ _).2 fun i =>
           reindex_diophFn _ <| (vectorAllP_iff_forall _ _).1 dg _⟩
 
+@[inherit_doc]
 scoped notation:35 x " D∧ " y => Dioph.inter x y
 
+@[inherit_doc]
 scoped notation:35 x " D∨ " y => Dioph.union x y
 
+@[inherit_doc]
 scoped notation:30 "D∃" => Dioph.vec_ex1_dioph
 
+/-- Local abbreviation for `Fin2.ofNat'` -/
 scoped prefix:arg "&" => Fin2.ofNat'
 
 theorem proj_dioph_of_nat {n : ℕ} (m : ℕ) [IsLT m n] : DiophFn fun v : Vector3 ℕ n => v &m :=
   proj_dioph &m
 
+/-- Projection preserves Diophantine functions. -/
 scoped prefix:100 "D&" => Dioph.proj_dioph_of_nat
 
 theorem const_dioph (n : ℕ) : DiophFn (const (α → ℕ) n) :=
   abs_poly_dioph (Poly.const n)
 
+/-- The constant function is Diophantine. -/
 scoped prefix:100 "D." => Dioph.const_dioph
 
 section
@@ -532,38 +512,51 @@ theorem dioph_comp2 {S : ℕ → ℕ → Prop} (d : Dioph fun v : Vector3 ℕ 2 
 theorem diophFn_comp2 {h : ℕ → ℕ → ℕ} (d : DiophFn fun v : Vector3 ℕ 2 => h (v &0) (v &1)) :
     DiophFn fun v => h (f v) (g v) := diophFn_comp d [f, g] ⟨df, dg⟩
 
+/-- The set of places where two Diophantine functions are equal is Diophantine. -/
 theorem eq_dioph : Dioph fun v => f v = g v :=
   dioph_comp2 df dg <|
     of_no_dummies _ (Poly.proj &0 - Poly.proj &1) fun v => by
       exact Int.ofNat_inj.symm.trans ⟨@sub_eq_zero_of_eq ℤ _ (v &0) (v &1), eq_of_sub_eq_zero⟩
 
+@[inherit_doc]
 scoped infixl:50 " D= " => Dioph.eq_dioph
 
+/-- Diophantine functions are closed under addition. -/
 theorem add_dioph : DiophFn fun v => f v + g v :=
   diophFn_comp2 df dg <| abs_poly_dioph (@Poly.proj (Fin2 2) &0 + @Poly.proj (Fin2 2) &1)
 
+@[inherit_doc]
 scoped infixl:80 " D+ " => Dioph.add_dioph
 
+/-- Diophantine functions are closed under multiplication. -/
 theorem mul_dioph : DiophFn fun v => f v * g v :=
   diophFn_comp2 df dg <| abs_poly_dioph (@Poly.proj (Fin2 2) &0 * @Poly.proj (Fin2 2) &1)
 
+@[inherit_doc]
 scoped infixl:90 " D* " => Dioph.mul_dioph
 
+/-- The set of places where one Diophantine function is at most another is Diophantine. -/
 theorem le_dioph : Dioph {v | f v ≤ g v} :=
   dioph_comp2 df dg <|
     ext ((D∃) 2 <| D&1 D+ D&0 D= D&2) fun _ => ⟨fun ⟨_, hx⟩ => le.intro hx, le.dest⟩
 
+@[inherit_doc]
 scoped infixl:50 " D≤ " => Dioph.le_dioph
 
+/-- The set of places where one Diophantine function is less than another is Diophantine. -/
 theorem lt_dioph : Dioph {v | f v < g v} := df D+ D.1 D≤ dg
 
+@[inherit_doc]
 scoped infixl:50 " D< " => Dioph.lt_dioph
 
+/-- The set of places where two Diophantine functions are unequal is Diophantine. -/
 theorem ne_dioph : Dioph {v | f v ≠ g v} :=
   ext (df D< dg D∨ dg D< df) fun v => by dsimp; exact lt_or_lt_iff_ne (α := ℕ)
 
+@[inherit_doc]
 scoped infixl:50 " D≠ " => Dioph.ne_dioph
 
+/-- Diophantine functions are closed under subtraction. -/
 theorem sub_dioph : DiophFn fun v => f v - g v :=
   diophFn_comp2 df dg <|
     (diophFn_vec _).2 <|
@@ -574,18 +567,19 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               rcases o with (ae | ⟨yz, x0⟩)
               · rw [ae, add_tsub_cancel_right]
               · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
-              rintro rfl
-              rcases le_total y z with yz | zy
-              · exact Or.inr ⟨yz, tsub_eq_zero_iff_le.mpr yz⟩
-              · exact Or.inl (tsub_add_cancel_of_le zy).symm⟩
+              cutsat⟩
 
+@[inherit_doc]
 scoped infixl:80 " D- " => Dioph.sub_dioph
 
+/-- The set of places where one Diophantine function divides another is Diophantine. -/
 theorem dvd_dioph : Dioph fun v => f v ∣ g v :=
   dioph_comp ((D∃) 2 <| D&2 D= D&1 D* D&0) [f, g] ⟨df, dg⟩
 
+@[inherit_doc]
 scoped infixl:50 " D∣ " => Dioph.dvd_dioph
 
+/-- Diophantine functions are closed under the modulo operation. -/
 theorem mod_dioph : DiophFn fun v => f v % g v :=
   have : Dioph fun v : Vector3 ℕ 3 => (v &2 = 0 ∨ v &0 < v &2) ∧ ∃ x : ℕ, v &0 + v &2 * x = v &1 :=
     (D&2 D= D.0 D∨ D&0 D< D&2) D∧ (D∃) 3 <| D&1 D+ D&3 D* D&0 D= D&2
@@ -602,13 +596,18 @@ theorem mod_dioph : DiophFn fun v => f v % g v :=
                 exact ⟨or_iff_not_imp_left.2 fun h => mod_lt _ (Nat.pos_of_ne_zero h), x / y,
                   mod_add_div _ _⟩⟩
 
+@[inherit_doc]
 scoped infixl:80 " D% " => Dioph.mod_dioph
 
+/-- The set of places where two Diophantine functions are congruent modulo a third
+is Diophantine. -/
 theorem modEq_dioph {h : (α → ℕ) → ℕ} (dh : DiophFn h) : Dioph fun v => f v ≡ g v [MOD h v] :=
   df D% dh D= dg D% dh
 
-scoped notation " D≡ " => Dioph.modEq_dioph
+@[inherit_doc]
+scoped notation "D≡ " => Dioph.modEq_dioph
 
+/-- Diophantine functions are closed under integer division. -/
 theorem div_dioph : DiophFn fun v => f v / g v :=
   have :
     Dioph fun v : Vector3 ℕ 3 =>
@@ -632,23 +631,13 @@ theorem div_dioph : DiophFn fun v => f v / g v :=
 
 end
 
+@[inherit_doc]
 scoped infixl:80 " D/ " => Dioph.div_dioph
 
 open Pell
 
 theorem pell_dioph :
     Dioph fun v : Vector3 ℕ 4 => ∃ h : 1 < v &0, xn h (v &1) = v &2 ∧ yn h (v &1) = v &3 := by
-  have proof := D.1 D< D&0 D∧ D&1 D≤ D&3 D∧
-      ((D&2 D= D.1 D∧ D&3 D= D.0) D∨
-      ((D∃) 4 <| (D∃) 5 <| (D∃) 6 <| (D∃) 7 <| (D∃) 8 <|
-      D&7 D* D&7 D- (D&5 D* D&5 D- D.1) D* D&8 D* D&8 D= D.1 D∧
-      D&4 D* D&4 D- (D&5 D* D&5 D- D.1) D* D&3 D* D&3 D= D.1 D∧
-      D&2 D* D&2 D- (D&0 D* D&0 D- D.1) D* D&1 D* D&1 D= D.1 D∧
-      D.1 D< D&0 D∧ (D≡ (D&0) (D.1) (D.4 D* D&8)) D∧ (D≡ (D&0) (D&5) (D&4)) D∧
-      D.0 D< D&3 D∧ D&8 D* D&8 D∣ D&3 D∧
-      (D≡ (D&2) (D&7) (D&4)) D∧
-      (D≡ (D&1) (D&6) (D.4 D* (D&8)))))
-  -- Porting note: copying directly `proof` in the proof of the following have fails
   have : Dioph {v : Vector3 ℕ 4 |
     1 < v &0 ∧ v &1 ≤ v &3 ∧
     (v &2 = 1 ∧ v &3 = 0 ∨
@@ -659,8 +648,17 @@ theorem pell_dioph :
       1 < b ∧ b ≡ 1 [MOD 4 * v &3] ∧ b ≡ v &0 [MOD u] ∧
       0 < w ∧ v &3 * v &3 ∣ w ∧
       s ≡ v &2 [MOD u] ∧
-      t ≡ v &1 [MOD 4 * v &3])} := by
-    exact proof
+      t ≡ v &1 [MOD 4 * v &3])} :=
+  (D.1 D< D&0 D∧ D&1 D≤ D&3 D∧
+    ((D&2 D= D.1 D∧ D&3 D= D.0) D∨
+    ((D∃) 4 <| (D∃) 5 <| (D∃) 6 <| (D∃) 7 <| (D∃) 8 <|
+    D&7 D* D&7 D- (D&5 D* D&5 D- D.1) D* D&8 D* D&8 D= D.1 D∧
+    D&4 D* D&4 D- (D&5 D* D&5 D- D.1) D* D&3 D* D&3 D= D.1 D∧
+    D&2 D* D&2 D- (D&0 D* D&0 D- D.1) D* D&1 D* D&1 D= D.1 D∧
+    D.1 D< D&0 D∧ (D≡ (D&0) (D.1) (D.4 D* D&8)) D∧ (D≡ (D&0) (D&5) (D&4)) D∧
+    D.0 D< D&3 D∧ D&8 D* D&8 D∣ D&3 D∧
+    (D≡ (D&2) (D&7) (D&4)) D∧
+    (D≡ (D&1) (D&6) (D.4 D* (D&8))))) :)
   exact Dioph.ext this fun v => matiyasevic.symm
 
 theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h (v &1)⟩ :=
@@ -673,16 +671,6 @@ theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h
 /-- A version of **Matiyasevic's theorem** -/
 theorem pow_dioph {f g : (α → ℕ) → ℕ} (df : DiophFn f) (dg : DiophFn g) :
     DiophFn fun v => f v ^ g v := by
-  have proof :=
-    let D_pell := pell_dioph.reindex_dioph (Fin2 9) [&4, &8, &1, &0]
-    (D&2 D= D.0 D∧ D&0 D= D.1) D∨ (D.0 D< D&2 D∧
-    ((D&1 D= D.0 D∧ D&0 D= D.0) D∨ (D.0 D< D&1 D∧
-    ((D∃) 3 <| (D∃) 4 <| (D∃) 5 <| (D∃) 6 <| (D∃) 7 <| (D∃) 8 <| D_pell D∧
-    (D≡ (D&1) (D&0 D* (D&4 D- D&7) D+ D&6) (D&3)) D∧
-    D.2 D* D&4 D* D&7 D= D&3 D+ (D&7 D* D&7 D+ D.1) D∧
-    D&6 D< D&3 D∧ D&7 D≤ D&5 D∧ D&8 D≤ D&5 D∧
-    D&4 D* D&4 D- ((D&5 D+ D.1) D* (D&5 D+ D.1) D- D.1) D* (D&5 D* D&2) D* (D&5 D* D&2) D= D.1))))
-  -- Porting note: copying directly `proof` in the proof of the following have fails
   have : Dioph {v : Vector3 ℕ 3 |
     v &2 = 0 ∧ v &0 = 1 ∨ 0 < v &2 ∧
     (v &1 = 0 ∧ v &0 = 0 ∨ 0 < v &1 ∧
@@ -691,8 +679,15 @@ theorem pow_dioph {f g : (α → ℕ) → ℕ} (df : DiophFn f) (dg : DiophFn g)
       x ≡ y * (a - v &1) + v &0 [MOD t] ∧
       2 * a * v &1 = t + (v &1 * v &1 + 1) ∧
       v &0 < t ∧ v &1 ≤ w ∧ v &2 ≤ w ∧
-      a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1)} := by
-    exact proof
+      a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1)} :=
+  (D&2 D= D.0 D∧ D&0 D= D.1) D∨ (D.0 D< D&2 D∧
+    ((D&1 D= D.0 D∧ D&0 D= D.0) D∨ (D.0 D< D&1 D∧
+    ((D∃) 3 <| (D∃) 4 <| (D∃) 5 <| (D∃) 6 <| (D∃) 7 <| (D∃) 8 <|
+    pell_dioph.reindex_dioph (Fin2 9) [&4, &8, &1, &0] D∧
+    (D≡ (D&1) (D&0 D* (D&4 D- D&7) D+ D&6) (D&3)) D∧
+    D.2 D* D&4 D* D&7 D= D&3 D+ (D&7 D* D&7 D+ D.1) D∧
+    D&6 D< D&3 D∧ D&7 D≤ D&5 D∧ D&8 D≤ D&5 D∧
+    D&4 D* D&4 D- ((D&5 D+ D.1) D* (D&5 D+ D.1) D- D.1) D* (D&5 D* D&2) D* (D&5 D* D&2) D= D.1))) :)
   exact diophFn_comp2 df dg <| (diophFn_vec _).2 <| Dioph.ext this fun v => Iff.symm <|
     eq_pow_of_pell.trans <| or_congr Iff.rfl <| and_congr Iff.rfl <| or_congr Iff.rfl <|
        and_congr Iff.rfl <|

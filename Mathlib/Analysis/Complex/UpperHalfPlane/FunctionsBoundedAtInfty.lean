@@ -10,7 +10,7 @@ import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 /-!
 # Bounded at infinity
 
-For complex valued functions on the upper half plane, this file defines the filter
+For complex-valued functions on the upper half plane, this file defines the filter
 `UpperHalfPlane.atImInfty` required for defining when functions are bounded at infinity and zero at
 infinity. Both of which are relevant for defining modular forms.
 -/
@@ -58,13 +58,9 @@ theorem isBoundedAtImInfty_iff {α : Type*} [Norm α] {f : ℍ → α} :
   simp [IsBoundedAtImInfty, BoundedAtFilter, Asymptotics.isBigO_iff, Filter.Eventually,
     atImInfty_mem]
 
-@[deprecated (since := "2024-08-27")] alias _root_.bounded_mem := isBoundedAtImInfty_iff
-
 theorem isZeroAtImInfty_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
     IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ ε :=
   (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by simp
-
-@[deprecated (since := "2024-08-27")] alias _root_.zero_at_im_infty := isZeroAtImInfty_iff
 
 theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α}
     (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
@@ -82,5 +78,12 @@ lemma tendsto_coe_atImInfty :
   simpa only [atImInfty, tendsto_comap_iff, Function.comp_def,
     funext UpperHalfPlane.coe_im] using tendsto_comap
 
+lemma tendsto_smul_atImInfty {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
+    Tendsto (fun τ ↦ g • τ) atImInfty atImInfty := by
+  suffices Tendsto (fun τ ↦ |g 0 0 / g 1 1| * τ.im) atImInfty atTop by
+    simpa [atImInfty, Function.comp_def, im_smul, num, denom, hg, abs_div, abs_mul,
+      abs_of_pos (UpperHalfPlane.im_pos _), mul_div_right_comm]
+  apply tendsto_comap.const_mul_atTop
+  simpa [Matrix.det_fin_two, hg] using g.det_ne_zero
 
 end UpperHalfPlane

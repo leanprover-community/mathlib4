@@ -14,10 +14,10 @@ as a Noetherian integrally closed commutative ring (domain) of Krull dimension a
 
 ## Main definitions
 
- - `IsDedekindRing` defines a Dedekind ring as a commutative ring that is
-   Noetherian, integrally closed in its field of fractions and has Krull dimension at most one.
-   `isDedekindRing_iff` shows that this does not depend on the choice of field of fractions.
- - `IsDedekindDomain` defines a Dedekind domain as a Dedekind ring that is a domain.
+- `IsDedekindRing` defines a Dedekind ring as a commutative ring that is
+  Noetherian, integrally closed in its field of fractions and has Krull dimension at most one.
+  `isDedekindRing_iff` shows that this does not depend on the choice of field of fractions.
+- `IsDedekindDomain` defines a Dedekind domain as a Dedekind ring that is a domain.
 
 ## Implementation notes
 
@@ -35,7 +35,7 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
@@ -96,8 +96,8 @@ This is exactly `IsDedekindDomain` minus the `IsDomain` hypothesis.
 The integral closure condition is independent of the choice of field of fractions:
 use `isDedekindRing_iff` to prove `IsDedekindRing` for a given `fraction_map`.
 -/
-class IsDedekindRing
-  extends IsNoetherian A A, DimensionLEOne A, IsIntegralClosure A A (FractionRing A) : Prop
+class IsDedekindRing : Prop
+  extends IsNoetherian A A, DimensionLEOne A, IsIntegralClosure A A (FractionRing A)
 
 /-- An integral domain is a Dedekind domain if and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
@@ -123,8 +123,8 @@ use `isDedekindDomain_iff` to prove `IsDedekindDomain` for a given `fraction_map
 This is the default implementation, but there are equivalent definitions,
 `IsDedekindDomainDvr` and `IsDedekindDomainInv`.
 -/
-class IsDedekindDomain
-  extends IsDomain A, IsDedekindRing A : Prop
+class IsDedekindDomain : Prop
+  extends IsDomain A, IsDedekindRing A
 
 attribute [instance 90] IsDedekindDomain.toIsDomain
 
@@ -140,7 +140,7 @@ instance [IsDomain A] [IsDedekindRing A] : IsDedekindDomain A where
 /-- An integral domain is a Dedekind domain iff and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
 In particular, this definition does not depend on the choice of this fraction field. -/
-theorem isDedekindDomain_iff (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K] :
+theorem isDedekindDomain_iff (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K] :
     IsDedekindDomain A ↔
       IsDomain A ∧ IsNoetherianRing A ∧ DimensionLEOne A ∧
         ∀ {x : K}, IsIntegral A x → ∃ y, algebraMap A K y = x :=
@@ -154,3 +154,12 @@ instance (priority := 100) IsPrincipalIdealRing.isDedekindDomain
     IsDedekindDomain A :=
   { PrincipalIdealRing.isNoetherianRing, Ring.DimensionLEOne.principal_ideal_ring A,
     UniqueFactorizationMonoid.instIsIntegrallyClosed with }
+
+variable {R} in
+theorem IsLocalRing.primesOver_eq [IsLocalRing A] [IsDedekindDomain A] [Algebra R A]
+    [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    Ideal.primesOver p A = {IsLocalRing.maximalIdeal A} := by
+  refine Set.eq_singleton_iff_nonempty_unique_mem.mpr ⟨?_, fun P hP ↦ ?_⟩
+  · obtain ⟨w', hmax, hover⟩ := Ideal.exists_ideal_liesOver_maximal_of_isIntegral p A
+    exact ⟨w', hmax.isPrime, hover⟩
+  · exact IsLocalRing.eq_maximalIdeal <| hP.1.isMaximal (Ideal.ne_bot_of_mem_primesOver hp0 hP)

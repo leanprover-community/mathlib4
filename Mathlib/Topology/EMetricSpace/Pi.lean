@@ -26,21 +26,20 @@ section Pi
 
 open Finset
 
-variable {π : β → Type*} [Fintype β]
+variable {X : β → Type*} [Fintype β]
 
--- Porting note: reordered instances
-instance [∀ b, EDist (π b)] : EDist (∀ b, π b) where
+instance [∀ b, EDist (X b)] : EDist (∀ b, X b) where
   edist f g := Finset.sup univ fun b => edist (f b) (g b)
 
-theorem edist_pi_def [∀ b, EDist (π b)] (f g : ∀ b, π b) :
+theorem edist_pi_def [∀ b, EDist (X b)] (f g : ∀ b, X b) :
     edist f g = Finset.sup univ fun b => edist (f b) (g b) :=
   rfl
 
-theorem edist_le_pi_edist [∀ b, EDist (π b)] (f g : ∀ b, π b) (b : β) :
+theorem edist_le_pi_edist [∀ b, EDist (X b)] (f g : ∀ b, X b) (b : β) :
     edist (f b) (g b) ≤ edist f g :=
   le_sup (f := fun b => edist (f b) (g b)) (Finset.mem_univ b)
 
-theorem edist_pi_le_iff [∀ b, EDist (π b)] {f g : ∀ b, π b} {d : ℝ≥0∞} :
+theorem edist_pi_le_iff [∀ b, EDist (X b)] {f g : ∀ b, X b} {d : ℝ≥0∞} :
     edist f g ≤ d ↔ ∀ b, edist (f b) (g b) ≤ d :=
   Finset.sup_le_iff.trans <| by simp only [Finset.mem_univ, forall_const]
 
@@ -56,7 +55,7 @@ a pseudoemetric space.
 This construction would also work for infinite products, but it would not give rise
 to the product topology. Hence, we only formalize it in the good situation of finitely many
 spaces. -/
-instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetricSpace (∀ b, π b) where
+instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (X b)] : PseudoEMetricSpace (∀ b, X b) where
   edist_self f := bot_unique <| Finset.sup_le <| by simp
   edist_comm f g := by simp [edist_pi_def, edist_comm]
   edist_triangle _ g _ := edist_pi_le_iff.2 fun b => le_trans (edist_triangle _ (g b) _)
@@ -77,14 +76,14 @@ section Pi
 
 open Finset
 
-variable {π : β → Type*} [Fintype β]
+variable {X : β → Type*} [Fintype β]
 
 /-- The product of a finite number of emetric spaces, with the max distance, is still
 an emetric space.
 This construction would also work for infinite products, but it would not give rise
 to the product topology. Hence, we only formalize it in the good situation of finitely many
 spaces. -/
-instance emetricSpacePi [∀ b, EMetricSpace (π b)] : EMetricSpace (∀ b, π b) :=
+instance emetricSpacePi [∀ b, EMetricSpace (X b)] : EMetricSpace (∀ b, X b) :=
   .ofT0PseudoEMetricSpace _
 
 end Pi

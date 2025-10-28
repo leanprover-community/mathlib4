@@ -43,10 +43,10 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have
 * `MeasureTheory.addContent_union_le`: for `s, t ∈ C`, `m (s ∪ t) ≤ m s + m t`
 * `MeasureTheory.addContent_le_diff`: for `s, t ∈ C`, `m s - m t ≤ m (s \ t)`
 * `IsSetRing.addContent_of_union`: a function on a ring of sets which is additive on pairs of
-disjoint sets defines an additive content
+  disjoint sets defines an additive content
 * `addContent_iUnion_eq_sum_of_tendsto_zero`: if an additive content is continuous at `∅`, then
-its value on a countable disjoint union is the sum of the values
-* `MeasureTheory.addContent_iUnion_le_of_addContent_iUnion_eq_tsum`: if an `AddContent` is
+  its value on a countable disjoint union is the sum of the values
+* `MeasureTheory.isSigmaSubadditive_of_addContent_iUnion_eq_tsum`: if an `AddContent` is
   σ-additive on a set ring, then it is σ-subadditive.
 
 -/
@@ -74,7 +74,7 @@ instance : Inhabited (AddContent C) :=
     empty' := by simp
     sUnion' := by simp }⟩
 
-instance : DFunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
+instance : FunLike (AddContent C) (Set α) ℝ≥0∞ where
   coe m s := m.toFun s
   coe_injective' m m' _ := by
     cases m
@@ -165,7 +165,7 @@ theorem eq_add_disjointOfDiff_of_subset (hC : IsSetSemiring C)
   conv_lhs => rw [← hC.sUnion_insert_disjointOfDiff ht hs hst]
   rw [← coe_insert, addContent_sUnion]
   · rw [sum_insert]
-    exact hC.nmem_disjointOfDiff ht hs
+    exact hC.notMem_disjointOfDiff ht hs
   · rw [coe_insert]
     exact Set.insert_subset hs (hC.subset_disjointOfDiff ht hs)
   · rw [coe_insert]
@@ -191,8 +191,7 @@ lemma addContent_sUnion_le_sum {m : AddContent C} (hC : IsSetSemiring C)
     simp only [disjiUnion_eq_biUnion, coe_biUnion, mem_coe]
     exact (Exists.choose_spec (hC.disjointOfUnion_props h_ss)).2.2.2.2.2
   rw [h3, addContent_sUnion h1 h2, sum_disjiUnion]
-  · apply sum_le_sum
-    intro x hx
+  · gcongr with x hx
     refine sum_addContent_le_of_subset hC (hC.disjointOfUnion_subset h_ss hx)
       (hC.pairwiseDisjoint_disjointOfUnion_of_mem h_ss hx) (h_ss hx)
       (fun _ s ↦ hC.subset_of_mem_disjointOfUnion h_ss hx s)
@@ -229,7 +228,7 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     (hf_disj : Pairwise (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
-  refine tsum_le_of_sum_le ENNReal.summable fun I ↦ ?_
+  refine ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_
   classical
   rw [← Finset.sum_image_of_disjoint addContent_empty (hf_disj.pairwiseDisjoint _)]
   refine sum_addContent_le_of_subset hC (I := I.image f) ?_ ?_ hf_Union ?_
@@ -307,12 +306,28 @@ lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
   classical
   induction S using Finset.induction with
   | empty => simp
-  | @insert i S hiS h =>
+  | insert i S hiS h =>
     rw [Finset.sum_insert hiS]
     simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     simp only [Finset.mem_insert, forall_eq_or_imp] at hs
     refine (addContent_union_le hC hs.1 (hC.biUnion_mem S hs.2)).trans ?_
     exact add_le_add le_rfl (h hs.2)
+
+lemma addContent_biUnion_eq {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
+    {S : Finset ι} (hs : ∀ n ∈ S, s n ∈ C) (hS : (S : Set ι).PairwiseDisjoint s) :
+    m (⋃ i ∈ S, s i) = ∑ i ∈ S, m (s i) := by
+  classical
+  induction S using Finset.induction with
+  | empty => simp
+  | insert i S hiS h =>
+    rw [Finset.sum_insert hiS]
+    simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
+    simp only [Finset.mem_insert, forall_eq_or_imp] at hs
+    simp only [Finset.coe_insert, Set.pairwiseDisjoint_insert] at hS
+    rw [← h hs.2 hS.1]
+    refine addContent_union hC hs.1 (hC.biUnion_mem S hs.2) ?_
+    rw [disjoint_iUnion₂_right]
+    exact fun j hjS ↦ hS.2 j hjS (ne_of_mem_of_not_mem hjS hiS).symm
 
 lemma le_addContent_diff (m : AddContent C) (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
     m s - m t ≤ m (s \ t) := by
@@ -352,10 +367,10 @@ def IsSetRing.addContent_of_union (m : Set α → ℝ≥0∞) (hC : IsSetRing C)
     classical
     induction I using Finset.induction with
     | empty => simp only [Finset.coe_empty, Set.sUnion_empty, Finset.sum_empty, m_empty]
-    | @insert s I hsI h =>
+    | insert s I hsI h =>
       rw [Finset.coe_insert] at *
       rw [Set.insert_subset_iff] at h_ss
-      rw [Set.pairwiseDisjoint_insert_of_not_mem] at h_dis
+      rw [Set.pairwiseDisjoint_insert_of_notMem] at h_dis
       swap; · exact hsI
       have h_sUnion_mem : ⋃₀ ↑I ∈ C := by
         rw [Set.sUnion_eq_biUnion]
@@ -397,6 +412,41 @@ theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddCont
   rw [← addContent_accumulate m hC h_disj hf]
   exact addContent_mono hC.isSetSemiring (hC.accumulate_mem hf n) hUf
     (Set.accumulate_subset_iUnion _)
+
+/-- If an additive content is σ-additive on a set ring, then the content of a monotone sequence of
+sets tends to the content of the union. -/
+theorem tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum (hC : IsSetRing C)
+    (m_iUnion : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : (⋃ i, f i) ∈ C)
+      (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i))
+    ⦃f : ℕ → Set α⦄ (hf_mono : Monotone f) (hf : ∀ i, f i ∈ C) (hf_Union : ⋃ i, f i ∈ C) :
+    Tendsto (fun n ↦ m (f n)) atTop (𝓝 (m (⋃ i, f i))) := by
+  rw [← iUnion_disjointed, m_iUnion _ (hC.disjointed_mem hf) (by rwa [iUnion_disjointed])
+      (disjoint_disjointed f)]
+  have h n : m (f n) = ∑ i ∈ range (n + 1), m (disjointed f i) := by
+    nth_rw 1 [← addContent_accumulate _ hC (disjoint_disjointed f) (hC.disjointed_mem hf),
+    ← hf_mono.partialSups_eq, ← partialSups_disjointed, partialSups_eq_biSup, Accumulate]
+    rfl
+  simp_rw [h]
+  refine (tendsto_add_atTop_iff_nat (f := (fun k ↦ ∑ i ∈ range k, m (disjointed f i))) 1).2 ?_
+  exact ENNReal.tendsto_nat_tsum _
+
+/-- If an additive content is σ-additive on a set ring, then it is σ-subadditive. -/
+theorem isSigmaSubadditive_of_addContent_iUnion_eq_tsum (hC : IsSetRing C)
+    (m_iUnion : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : (⋃ i, f i) ∈ C)
+      (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i)) :
+    m.IsSigmaSubadditive := by
+  intro f hf hf_Union
+  have h_tendsto : Tendsto (fun n ↦ m (partialSups f n)) atTop (𝓝 (m (⋃ i, f i))) := by
+    rw [← iSup_eq_iUnion, ← iSup_partialSups_eq]
+    refine tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum hC m_iUnion
+      (partialSups_monotone f) (hC.partialSups_mem hf) ?_
+    rwa [← iSup_eq_iUnion, iSup_partialSups_eq]
+  have h_tendsto' : Tendsto (fun n ↦ ∑ i ∈ range (n + 1), m (f i)) atTop (𝓝 (∑' i, m (f i))) := by
+    rw [tendsto_add_atTop_iff_nat (f := (fun k ↦ ∑ i ∈ range k, m (f i))) 1]
+    exact ENNReal.tendsto_nat_tsum _
+  refine le_of_tendsto_of_tendsto' h_tendsto h_tendsto' fun _ ↦ ?_
+  rw [partialSups_eq_biUnion_range]
+  exact addContent_biUnion_le hC (fun _ _ ↦ hf _)
 
 end IsSetRing
 

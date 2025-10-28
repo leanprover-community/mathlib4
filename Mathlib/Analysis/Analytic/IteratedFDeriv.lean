@@ -3,7 +3,7 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
 import Mathlib.Data.Fintype.Perm
 
@@ -132,7 +132,7 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
     ContinuousLinearMap.coe_id', id_eq, g]
   congr 1
   symm
-  simp [coe_fn_mk, inv_apply, Perm.inv_def,
+  simp [inv_apply, Perm.inv_def,
     ofBijective_symm_apply_apply, Function.Embedding.equivOfFiniteSelfEmbedding]
 
 private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
@@ -247,6 +247,12 @@ theorem AnalyticOn.iteratedFDerivWithin_comp_perm
   conv_rhs => rw [← Equiv.sum_comp (Equiv.mulLeft σ)]
   simp only [coe_mulLeft, Perm.coe_mul, Function.comp_apply]
 
+theorem AnalyticOn.domDomCongr_iteratedFDerivWithin
+    (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (σ : Perm (Fin n)) :
+    (iteratedFDerivWithin 𝕜 n f s x).domDomCongr σ = iteratedFDerivWithin 𝕜 n f s x := by
+  ext
+  exact h.iteratedFDerivWithin_comp_perm hs hx _ _
+
 /-- The `n`-th iterated derivative of an analytic function on a set is symmetric. -/
 theorem ContDiffWithinAt.iteratedFDerivWithin_comp_perm
     (h : ContDiffWithinAt 𝕜 ω f s x) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ} (v : Fin n → E)
@@ -259,6 +265,13 @@ theorem ContDiffWithinAt.iteratedFDerivWithin_comp_perm
   rw [← this]
   exact AnalyticOn.iteratedFDerivWithin_comp_perm hu.analyticOn (hs.inter u_open) ⟨hx, xu⟩ _ _
 
+theorem ContDiffWithinAt.domDomCongr_iteratedFDerivWithin
+    (h : ContDiffWithinAt 𝕜 ω f s x) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {n : ℕ}
+    (σ : Perm (Fin n)) :
+    (iteratedFDerivWithin 𝕜 n f s x).domDomCongr σ = iteratedFDerivWithin 𝕜 n f s x := by
+  ext
+  exact h.iteratedFDerivWithin_comp_perm hs hx _ _
+
 /-- The `n`-th iterated derivative of an analytic function is symmetric. -/
 theorem AnalyticOn.iteratedFDeriv_comp_perm
     (h : AnalyticOn 𝕜 f univ) {n : ℕ} (v : Fin n → E) (σ : Perm (Fin n)) :
@@ -266,9 +279,19 @@ theorem AnalyticOn.iteratedFDeriv_comp_perm
   rw [← iteratedFDerivWithin_univ]
   exact h.iteratedFDerivWithin_comp_perm uniqueDiffOn_univ (mem_univ x) _ _
 
+theorem AnalyticOn.domDomCongr_iteratedFDeriv (h : AnalyticOn 𝕜 f univ) {n : ℕ} (σ : Perm (Fin n)) :
+    (iteratedFDeriv 𝕜 n f x).domDomCongr σ = iteratedFDeriv 𝕜 n f x := by
+  rw [← iteratedFDerivWithin_univ]
+  exact h.domDomCongr_iteratedFDerivWithin uniqueDiffOn_univ (mem_univ x) _
+
 /-- The `n`-th iterated derivative of an analytic function is symmetric. -/
 theorem ContDiffAt.iteratedFDeriv_comp_perm
     (h : ContDiffAt 𝕜 ω f x) {n : ℕ} (v : Fin n → E) (σ : Perm (Fin n)) :
     iteratedFDeriv 𝕜 n f x (v ∘ σ) = iteratedFDeriv 𝕜 n f x v := by
   rw [← iteratedFDerivWithin_univ]
   exact h.iteratedFDerivWithin_comp_perm uniqueDiffOn_univ (mem_univ x) _ _
+
+theorem ContDiffAt.domDomCongr_iteratedFDeriv (h : ContDiffAt 𝕜 ω f x) {n : ℕ} (σ : Perm (Fin n)) :
+    (iteratedFDeriv 𝕜 n f x).domDomCongr σ = iteratedFDeriv 𝕜 n f x := by
+  rw [← iteratedFDerivWithin_univ]
+  exact h.domDomCongr_iteratedFDerivWithin uniqueDiffOn_univ (mem_univ x) _

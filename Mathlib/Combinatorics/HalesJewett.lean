@@ -3,11 +3,11 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Finite.Prod
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # The Hales-Jewett theorem
@@ -65,6 +65,7 @@ combinatorial line, Ramsey theory, arithmetic progression
 -/
 
 open Function
+open scoped Finset
 
 universe u v
 variable {η α ι κ : Type*}
@@ -139,7 +140,7 @@ variable {η' α' ι' : Type*}
 def reindex (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') : Subspace η' α' ι' where
   idxFun i := (l.idxFun <| eι.symm i).map eα eη
   proper e := (eι.exists_congr fun i ↦ by cases h : idxFun l i <;>
-    simp [*, funext_iff, Equiv.eq_symm_apply]).1 <| l.proper <| eη.symm e
+    simp [*, Equiv.eq_symm_apply]).1 <| l.proper <| eη.symm e
 
 @[simp] lemma reindex_apply (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') (x i) :
     l.reindex eη eα eι x i = eα (l (eα.symm ∘ x ∘ eη) <| eι.symm i) := by
@@ -191,7 +192,7 @@ lemma coe_injective [Nontrivial α] : Injective ((⇑) : Line α ι → α → �
   rintro l m hlm
   ext i a
   obtain ⟨b, hba⟩ := exists_ne a
-  simp only [Option.mem_def, funext_iff] at hlm ⊢
+  simp only [funext_iff] at hlm ⊢
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · cases hi : idxFun m i <;> simpa [@eq_comm _ a, hi, h, hba] using hlm b i
   · cases hi : idxFun l i <;> simpa [@eq_comm _ a, hi, h, hba] using hlm b i
@@ -271,13 +272,13 @@ structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
 
 instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
   refine ⟨⟨0, fun _ => none, fun h => ?_, Multiset.nodup_zero⟩⟩
-  simp only [Multiset.not_mem_zero, IsEmpty.forall_iff]
+  simp only [Multiset.notMem_zero, IsEmpty.forall_iff]
 
 /-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`
 `l.map f` is the identity at `i` if `l` is, and constantly `f y` if `l` is constantly `y` at `i`. -/
 def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι where
   idxFun i := (l.idxFun i).map f
-  proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none']⟩
+  proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none]⟩
 
 /-- A point in `ι → α` and a line in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
 def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (ι ⊕ ι') where
@@ -299,7 +300,7 @@ theorem apply_def (l : Line α ι) (x : α) : l x = fun i => (l.idxFun i).getD x
 theorem apply_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i = none) : l x i = x := by
   simp only [Option.getD_none, h, l.apply_def]
 
-lemma apply_some (h : l.idxFun i = some a) : l x i = a := by simp [l.apply_def, h]
+lemma apply_some (h : l.idxFun i = some a) : l x i = a := by simp [h]
 
 @[simp]
 theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
@@ -456,10 +457,9 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none) with hs
-  refine
-    ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, ?_⟩, ∑ i ∈ sᶜ, ((l.idxFun i).map ?_).getD 0,
-      c, ?_⟩
+  set s : Finset ι := {i | l.idxFun i = none} with hs
+  refine ⟨#s, Finset.card_pos.mpr ⟨l.proper.choose, ?_⟩, ∑ i ∈ sᶜ, ((l.idxFun i).map ?_).getD 0,
+    c, ?_⟩
   · rw [hs, Finset.mem_filter]
     exact ⟨Finset.mem_univ _, l.proper.choose_spec⟩
   · exact fun m => m
@@ -477,7 +477,7 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
     intro i hi
     rw [hs, Finset.compl_filter, Finset.mem_filter] at hi
     obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
-    simp [← hy, Option.map_some', Option.getD]
+    simp [← hy, Option.map_some, Option.getD]
 
 namespace Subspace
 

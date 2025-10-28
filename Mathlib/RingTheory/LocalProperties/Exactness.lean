@@ -5,7 +5,10 @@ Authors: Sihan Su, Yongle Hu, Yi Song
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.LocalProperties.Submodule
+import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+import Mathlib.Algebra.Module.LocalizedModule.Away
 
 /-!
 # Local properties about linear maps
@@ -13,8 +16,8 @@ import Mathlib.RingTheory.Localization.Away.Basic
 In this file, we show that
 injectivity, surjectivity, bijectivity and exactness of linear maps are local properties.
 More precisely, we show that these can be checked at maximal ideals and on standard covers.
-
 -/
+
 open Submodule LocalizedModule Ideal LinearMap
 
 section isLocalized_maximal
@@ -29,17 +32,17 @@ variable
   [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
-  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule.AtPrime P (f P)]
   (Nₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Nₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Nₚ P)]
   (g : ∀ (P : Ideal R) [P.IsMaximal], N →ₗ[R] Nₚ P)
-  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (g P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule.AtPrime P (g P)]
   (Lₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Lₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Lₚ P)]
   (h : ∀ (P : Ideal R) [P.IsMaximal], L →ₗ[R] Lₚ P)
-  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (h P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule.AtPrime P (h P)]
   (F : M →ₗ[R] N) (G : N →ₗ[R] L)
 
 theorem injective_of_isLocalized_maximal
@@ -117,17 +120,17 @@ variable
   [∀ r : s, AddCommMonoid (Mₚ r)]
   [∀ r : s, Module R (Mₚ r)]
   (f : ∀ r : s, M →ₗ[R] Mₚ r)
-  [∀ r : s, IsLocalizedModule (.powers r.1) (f r)]
+  [∀ r : s, IsLocalizedModule.Away r.1 (f r)]
   (Nₚ : ∀ _ : s, Type*)
   [∀ r : s, AddCommMonoid (Nₚ r)]
   [∀ r : s, Module R (Nₚ r)]
   (g : ∀ r : s, N →ₗ[R] Nₚ r)
-  [∀ r : s, IsLocalizedModule (.powers r.1) (g r)]
+  [∀ r : s, IsLocalizedModule.Away r.1 (g r)]
   (Lₚ : ∀ _ : s, Type*)
   [∀ r : s, AddCommMonoid (Lₚ r)]
   [∀ r : s, Module R (Lₚ r)]
   (h : ∀ r : s, L →ₗ[R] Lₚ r)
-  [∀ r : s, IsLocalizedModule (.powers r.1) (h r)]
+  [∀ r : s, IsLocalizedModule.Away r.1 (h r)]
   (F : M →ₗ[R] N) (G : N →ₗ[R] L)
 
 theorem injective_of_isLocalized_span
@@ -192,3 +195,49 @@ lemma exact_of_localized_span
     _ (fun _ ↦ mkLinearMap _ _) f g h
 
 end localized_span
+
+section IsLocalization
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S]
+variable {s : Set R} (hs : span s = ⊤)
+  (Rᵣ : s → Type*) [∀ r, CommSemiring (Rᵣ r)] [∀ r, Algebra R (Rᵣ r)]
+  (Sᵣ : s → Type*) [∀ r, CommSemiring (Sᵣ r)] [∀ r, Algebra S (Sᵣ r)]
+variable (f : R →+* S) [∀ r, IsLocalization.Away r.val (Rᵣ r)]
+    [∀ r, IsLocalization.Away (f r.val) (Sᵣ r)]
+include hs
+
+lemma injective_of_isLocalization_of_span_eq_top
+    (h : ∀ r : s, Function.Injective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
+    Function.Injective f := by
+  algebraize [f]
+  letI (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
+  have (r : s) : IsScalarTower R S (Sᵣ r) := IsScalarTower.of_algebraMap_eq' rfl
+  have : ∀ r, IsLocalization.Away (algebraMap R S r.val) (Sᵣ r) := ‹_›
+  letI (r : s) : Algebra (Rᵣ r) (Sᵣ r) := localizationAlgebra (.powers r.val) S
+  have (r : s) : IsScalarTower R (Rᵣ r) (Sᵣ r) :=
+    .of_algebraMap_eq <| by simp [RingHom.algebraMap_toAlgebra]
+  apply injective_of_isLocalized_span s hs Rᵣ (fun r : s ↦ Algebra.linearMap _ _) _
+    (fun r : s ↦ ((IsScalarTower.toAlgHom R S (Sᵣ r)).toLinearMap)) (Algebra.linearMap R S)
+  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using h
+
+lemma surjective_of_isLocalization_of_span_eq_top
+    (h : ∀ r : s, Function.Surjective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
+    Function.Surjective f := by
+  algebraize [f]
+  letI (r : s) : Algebra R (Sᵣ r) := (algebraMap S (Sᵣ r)).comp f |>.toAlgebra
+  have (r : s) : IsScalarTower R S (Sᵣ r) := IsScalarTower.of_algebraMap_eq' rfl
+  have : ∀ r, IsLocalization.Away (algebraMap R S r.val) (Sᵣ r) := ‹_›
+  letI (r : s) : Algebra (Rᵣ r) (Sᵣ r) := localizationAlgebra (.powers r.val) S
+  have (r : s) : IsScalarTower R (Rᵣ r) (Sᵣ r) :=
+    .of_algebraMap_eq <| by simp [RingHom.algebraMap_toAlgebra]
+  apply surjective_of_isLocalized_span s hs Rᵣ (fun r : s ↦ Algebra.linearMap _ _) _
+    (fun r : s ↦ ((IsScalarTower.toAlgHom R S (Sᵣ r)).toLinearMap)) (Algebra.linearMap R S)
+  simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using h
+
+lemma bijective_of_isLocalization_of_span_eq_top
+    (h : ∀ r : s, Function.Bijective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
+    Function.Bijective f :=
+  ⟨injective_of_isLocalization_of_span_eq_top hs _ _ _ (fun r ↦ (h r).1),
+    surjective_of_isLocalization_of_span_eq_top hs _ _ _ (fun r ↦ (h r).2)⟩
+
+end IsLocalization

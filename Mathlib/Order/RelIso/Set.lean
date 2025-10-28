@@ -48,9 +48,7 @@ end RelHomClass
 
 namespace RelIso
 
-@[simp]
-theorem range_eq (e : r ≃r s) : Set.range e = Set.univ :=
-  e.surjective.range_eq
+theorem range_eq (e : r ≃r s) : Set.range e = Set.univ := by simp
 
 end RelIso
 
@@ -113,6 +111,13 @@ instance (r : α → α → Prop) [IsStrictOrder α r] (p : α → Prop) : IsStr
 instance (r : α → α → Prop) [IsWellOrder α r] (p : α → Prop) : IsWellOrder _ (Subrel r p) where
 
 end Subrel
+
+/-- If a proposition holds for all elements, then the `Subrel` is equivalent to the original
+relation. -/
+@[simps! apply symm_apply]
+def RelIso.subrelUnivIso {p : α → Prop} (h : ∀ x, p x) : Subrel r p ≃r r where
+  toEquiv := Equiv.subtypeUnivEquiv h
+  map_rel_iff' := by simp
 
 /-- Restrict the codomain of a relation embedding. -/
 def RelEmbedding.codRestrict (p : Set β) (f : r ↪r s) (H : ∀ a, f a ∈ p) : r ↪r Subrel s (· ∈ p) :=

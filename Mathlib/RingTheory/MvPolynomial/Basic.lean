@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MvPolynomial.Degrees
+import Mathlib.Data.DFinsupp.Small
 import Mathlib.Data.Fintype.Pi
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
@@ -37,7 +38,7 @@ Generalise to noncommutative (semi)rings
 
 noncomputable section
 
-open Set LinearMap Submodule
+open Set LinearMap Module Submodule
 
 universe u v
 
@@ -45,10 +46,15 @@ variable (σ : Type u) (R : Type v) [CommSemiring R] (p m : ℕ)
 
 namespace MvPolynomial
 
+instance {σ : Type*} {R : Type*} [CommSemiring R]
+    [Small.{u} R] [Small.{u} σ] :
+    Small.{u} (MvPolynomial σ R) :=
+  inferInstanceAs (Small.{u} ((σ →₀ ℕ) →₀ R))
+
 section CharP
 
 instance [CharP R p] : CharP (MvPolynomial σ R) p where
-  cast_eq_zero_iff' n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
+  cast_eq_zero_iff n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
 
 end CharP
 
@@ -154,31 +160,5 @@ instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
   Module.Finite.of_basis (basisRestrictSupport R _)
 
 end Degree
-
-section Algebra
-
-variable {R S σ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-
-/--
-If `S` is an `R`-algebra, then `MvPolynomial σ S` is a `MvPolynomial σ R` algebra.
-
-Warning: This produces a diamond for
-`Algebra (MvPolynomial σ R) (MvPolynomial σ (MvPolynomial σ S))`. That's why it is not a
-global instance.
--/
-noncomputable def algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPolynomial σ S) :=
-  (MvPolynomial.map (algebraMap R S)).toAlgebra
-
-attribute [local instance] algebraMvPolynomial
-
-@[simp]
-lemma algebraMap_def :
-    algebraMap (MvPolynomial σ R) (MvPolynomial σ S) = MvPolynomial.map (algebraMap R S) :=
-  rfl
-
-instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
-  IsScalarTower.of_algebraMap_eq' (by ext; simp)
-
-end Algebra
 
 end MvPolynomial

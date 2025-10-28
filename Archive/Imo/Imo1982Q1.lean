@@ -44,7 +44,7 @@ In the latter case we derive a contradiction, because if `f 1982 = 661` then
 namespace Imo1982Q1
 
 structure IsGood (f : ℕ+ → ℕ) : Prop where
-  /-- The function satisfies the functional relation-/
+  /-- The function satisfies the functional relation. -/
   rel: ∀ m n : ℕ+, f (m + n) = f m + f n ∨ f (m + n) = f m + f n + 1
   f₂ : f 2 = 0
   hf₃ : 0 < f 3
@@ -68,11 +68,7 @@ lemma f₃ : f 3 = 1 := by
   rw [hf.f₁, hf.f₂, add_zero, zero_add] at h
   exact h.resolve_left hf.hf₃.ne'
 
-lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by
-  have h := hf.rel m n
-  rcases h with ( hl | hr )
-  · rw [hl]
-  · rw [hr]; nth_rewrite 1 [← add_zero (f n), ← add_assoc]; apply add_le_add_right (by norm_num)
+lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by have h := hf.rel m n; grind
 
 lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
   induction n with
@@ -80,7 +76,7 @@ lemma superhomogeneous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
   | succ n' ih =>
     calc
     ↑(n' + 1) * f m = ↑n' * f m + f m := by rw [PNat.add_coe, add_mul, PNat.val_ofNat, one_mul]
-    _ ≤ f (n' * m) + f m := add_le_add_right ih (f m)
+    _ ≤ f (n' * m) + f m := by gcongr
     _ ≤ f (n' * m + m) := hf.superadditive
     _ = f ((n' + 1) * m) := by congr; rw [add_mul, one_mul]
 
@@ -115,10 +111,10 @@ lemma imo1982_q1 {f : ℕ+ → ℕ} (hf : IsGood f) : f 1982 = 660 := by
   rw [f_1980, hf.f₂, add_zero] at h
   apply h.resolve_right
   intro hr
-  suffices h : 3334 ≤ 3333 by norm_num at h
+  suffices h : 3334 ≤ 3333 by simp at h
   calc
     3334 = 5 * f 1982 + 29 * f 3 + f 2 := by rw [hf.f₃, hf.f₂, hr, add_zero, mul_one]
-    (5 : ℕ+) * f 1982 + (29 : ℕ+) * f 3 + f 2 ≤ f (5 * 1982 + 29 * 3) + f 2 :=
-      add_le_add_right hf.superlinear _
+    (5 : ℕ+) * f 1982 + (29 : ℕ+) * f 3 + f 2 ≤ f (5 * 1982 + 29 * 3) + f 2 := by
+      grw [hf.superlinear]
     _ ≤ f (5 * 1982 + 29 * 3 + 2) := hf.superadditive
     _ = 3333 := hf.f_9999

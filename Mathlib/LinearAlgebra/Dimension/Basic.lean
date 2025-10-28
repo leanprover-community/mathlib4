@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.LinearAlgebra.LinearIndependent.Basic
+import Mathlib.Data.Set.Card
 
 /-!
 # Dimension of modules and vector spaces
@@ -51,10 +52,14 @@ We define this as the supremum of the cardinalities of linearly independent subs
 The supremum may not be attained, see https://mathoverflow.net/a/263053.
 
 For a free module over any ring satisfying the strong rank condition
-(e.g. left-noetherian rings, commutative rings, and in particular division rings and fields),
+(e.g. left-Noetherian rings, commutative rings, and in particular division rings and fields),
 this is the same as the dimension of the space (i.e. the cardinality of any basis).
 
-In particular this agrees with the usual notion of the dimension of a vector space. -/
+In particular this agrees with the usual notion of the dimension of a vector space.
+
+See also `Module.finrank` for a `ℕ`-valued function which returns the correct value
+for a finite-dimensional vector space (but 0 for an infinite-dimensional vector space).
+-/
 @[stacks 09G3 "first part"]
 protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.1)
@@ -62,11 +67,10 @@ protected irreducible_def Module.rank : Cardinal :=
 theorem rank_le_card : Module.rank R M ≤ #M :=
   (Module.rank_def _ _).trans_le (ciSup_le' fun _ ↦ mk_set_le _)
 
-lemma nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s } :=
+instance nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s} :=
   ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
 
 end
-
 
 namespace LinearIndependent
 variable [Semiring R] [AddCommMonoid M] [Module R M]
@@ -91,6 +95,10 @@ theorem cardinal_le_rank {ι : Type v} {v : ι → M}
 theorem cardinal_le_rank' {s : Set M}
     (hs : LinearIndependent R (fun x => x : s → M)) : #s ≤ Module.rank R M :=
   hs.cardinal_le_rank
+
+theorem _root_.LinearIndepOn.encard_le_toENat_rank {ι : Type*} {v : ι → M} {s : Set ι}
+    (hs : LinearIndepOn R v s) : s.encard ≤ (Module.rank R M).toENat := by
+  simpa using OrderHom.mono (β := ℕ∞) Cardinal.toENat hs.linearIndependent.cardinal_lift_le_rank
 
 end LinearIndependent
 
@@ -138,7 +146,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R → R') (j : M ≃+ M')
     lift.{v'} (Module.rank R M) = lift.{v} (Module.rank R' M') :=
   (lift_rank_le_of_surjective_injective i j hi.2 j.injective hc).antisymm <|
     lift_rank_le_of_injective_injectiveₛ i j.symm hi.1
-      j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by erw [hc, j.apply_symm_apply]
+      j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by simp_all
 end
 
 section
@@ -221,7 +229,7 @@ theorem lift_rank_le_of_surjective_injective
   refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingHom.coe_comp, comp_apply] at this
-  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, ZeroHom.coe_coe, this]
+  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R ≃+* R'` and `j : S ≃+* S'` are
 ring isomorphisms, such that `R → R' → S'` and `R → S → S'` commute,
@@ -232,7 +240,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
   refine _root_.lift_rank_eq_of_equiv_equiv i j i.bijective fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
-  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
+  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, this]
 
 variable {S' : Type v} [Semiring S'] [Algebra R' S']
 
@@ -304,9 +312,7 @@ theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
 
 lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
-    Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
-
-@[deprecated (since := "2024-09-30")] alias rank_le_of_submodule := Submodule.rank_mono
+    Subtype.eq <| show x = y from Subtype.ext_iff.1 eq
 
 /-- Two linearly equivalent vector spaces have the same dimension, a version with different
 universes. -/
@@ -353,8 +359,6 @@ theorem Submodule.rank_le (s : Submodule R M) : Module.rank R s ≤ Module.rank 
   rw [← rank_top R M]
   exact rank_mono le_top
 
-@[deprecated (since := "2024-10-02")] alias rank_submodule_le := Submodule.rank_le
-
 theorem LinearMap.lift_rank_le_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     lift.{v} (Module.rank R M') ≤ lift.{v'} (Module.rank R M) := by
   rw [← rank_range_of_surjective f h]
@@ -365,17 +369,6 @@ theorem LinearMap.rank_le_of_surjective (f : M →ₗ[R] M₁) (h : Surjective f
   rw [← rank_range_of_surjective f h]
   apply rank_range_le
 
-@[nontriviality, simp]
-theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
-  haveI := Module.subsingleton R M
-  have : Nonempty { s : Set M // LinearIndepOn R id s} := ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
-  rw [Module.rank_def, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
-  · rintro ⟨s, hs⟩
-    rw [Cardinal.mk_le_one_iff_set_subsingleton]
-    apply subsingleton_of_subsingleton
-  intro w hw
-  exact ⟨⟨{0}, LinearIndepOn.of_subsingleton⟩, hw.trans_eq (Cardinal.mk_singleton _).symm⟩
-
 lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (L L' : Submodule R M) {s : S} (hr : IsSMulRegular M s)
     (h : ∀ x ∈ L, s • x ∈ L') :
@@ -383,8 +376,27 @@ lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Modul
   ((Algebra.lsmul S R M s).restrict h).rank_le_of_injective <|
     fun _ _ h ↦ by simpa using hr (Subtype.ext_iff.mp h)
 
-@[deprecated (since := "2024-11-21")]
-alias rank_le_of_smul_regular := rank_le_of_isSMulRegular
+variable (R R' M) in
+lemma Module.rank_top_le_rank_of_isScalarTower [Module R' M]
+    [SMulWithZero R R'] [IsScalarTower R R' M] [FaithfulSMul R R'] [IsScalarTower R R' R'] :
+    Module.rank R' M ≤ Module.rank R M := by
+  rw [Module.rank, Module.rank]
+  exact ciSup_le' fun ⟨s, hs⟩ ↦ le_ciSup_of_le (Cardinal.bddAbove_range _)
+    ⟨s, hs.restrict_scalars (by simpa [← faithfulSMul_iff_injective_smul_one])⟩ le_rfl
+
+variable (R R') in
+lemma Module.lift_rank_bot_le_lift_rank_of_isScalarTower (T : Type w) [Module R R']
+    [NonAssocSemiring T] [Module R T] [Module R' T] [IsScalarTower R' T T] [FaithfulSMul R' T]
+    [IsScalarTower R R' T] :
+    Cardinal.lift.{w} (Module.rank R R') ≤ Cardinal.lift (Module.rank R T) :=
+  LinearMap.lift_rank_le_of_injective ((LinearMap.toSpanSingleton R' T 1).restrictScalars R) <|
+    (faithfulSMul_iff_injective_smul_one R' T).mp ‹_›
+
+variable (R R') in
+lemma Module.rank_bot_le_rank_of_isScalarTower (T : Type u') [Module R R'] [NonAssocSemiring T]
+    [Module R T] [Module R' T] [IsScalarTower R' T T] [FaithfulSMul R' T] [IsScalarTower R R' T] :
+    Module.rank R R' ≤ Module.rank R T := by
+  simpa using Module.lift_rank_bot_le_lift_rank_of_isScalarTower R R' T
 
 end
 

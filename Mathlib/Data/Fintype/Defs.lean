@@ -87,7 +87,7 @@ variable [Fintype α] {s t : Finset α}
 def univ : Finset α :=
   @Fintype.elems α _
 
-@[simp]
+@[simp, grind ←]
 theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 
@@ -107,10 +107,12 @@ theorem coe_eq_univ : (s : Set α) = Set.univ ↔ s = univ := by rw [← coe_uni
 @[simp]
 theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
 
+theorem mem_filter_univ {p : α → Prop} [DecidablePred p] : ∀ x, x ∈ univ.filter p ↔ p x := by simp
+
 end Finset
 
 namespace Mathlib.Meta
-open Lean Elab Term Meta Batteries.ExtendedBinder
+open Lean Elab Term Meta Batteries.ExtendedBinder Parser.Term PrettyPrinter.Delaborator SubExpr
 
 /-- Elaborate set builder notation for `Finset`.
 
@@ -131,8 +133,6 @@ See also
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
 * `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator handling syntax of the
   form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
-
-TODO: Write a delaborator
 -/
 @[term_elab setBuilder]
 def elabFinsetBuilderSetOf : TermElab
@@ -162,16 +162,44 @@ def elabFinsetBuilderSetOf : TermElab
     elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (singleton $a)ᶜ)) expectedType?
   | _, _ => throwUnsupportedSyntax
 
+/-- Delaborator for `Finset.filter`. The `pp.funBinderTypes` option controls whether
+to show the domain type when the filter is over `Finset.univ`. -/
+@[app_delab Finset.filter] def delabFinsetFilter : Delab :=
+  whenPPOption getPPNotation do
+  let #[_, p, _, t] := (← getExpr).getAppArgs | failure
+  guard p.isLambda
+  let i ← withNaryArg 1 <| withBindingBodyUnusedName (pure ⟨·⟩)
+  let p ← withNaryArg 1 <| withBindingBody i.getId delab
+  if t.isAppOfArity ``Finset.univ 2 then
+    if ← getPPOption getPPFunBinderTypes then
+      let ty ← withNaryArg 0 delab
+      `({$i:ident : $ty | $p})
+    else
+      `({$i:ident | $p})
+  -- check if `t` is of the form `s₀ᶜ`, in which case we display `x ∉ s₀` instead
+  else if t.isAppOfArity ``HasCompl.compl 3 then
+    let #[_, _, s₀] := t.getAppArgs | failure
+    -- if `s₀` is a singleton, we can even use the notation `x ≠ a`
+    if s₀.isAppOfArity ``Singleton.singleton 4 then
+      let t ← withNaryArg 3 <| withNaryArg 2 <| withNaryArg 3 delab
+      `({$i:ident ≠ $t | $p})
+    else
+      let t ← withNaryArg 3 <| withNaryArg 2 delab
+      `({$i:ident ∉ $t | $p})
+  else
+    let t ← withNaryArg 3 delab
+    `({$i:ident ∈ $t | $p})
+
 end Mathlib.Meta
 
-open Finset Function
+open Finset
 
 namespace Fintype
 
 instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
-  decidable_of_iff (∀ a ∈ @Fintype.elems α _, f a = g a)
-    (by simp [funext_iff, Fintype.complete])
+  decidable_of_iff (∀ a ∈ @univ α _, f a = g a)
+    (by simp [funext_iff])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=

@@ -3,7 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.MeasureTheory.PiSystem
 
 /-!
@@ -19,7 +19,7 @@ generate the σ-algebra on the indexed product of `α i`s.
 
 noncomputable section
 
-open Function Set Filter MeasurableSpace Encodable
+open Function Set MeasurableSpace Encodable
 
 variable {ι : Type*} {α : ι → Type*}
 
@@ -76,7 +76,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
       ext; simp_rw [mem_univ_pi]; apply forall_congr'; intro i'
       by_cases h : i' = i
       · subst h; simp
-      · rw [← Ne] at h; simp [h]
+      · simp [h]
     rw [this, ← iUnion_univ_pi]
     apply MeasurableSet.iUnion
     intro n; apply measurableSet_generateFrom

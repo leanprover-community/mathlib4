@@ -20,9 +20,12 @@ If this number is above the current `maxHeartbeats`, we also print a `Try this:`
 -/
 
 
-open Lean Elab Command Meta
+open Lean Elab Command Meta Linter
 
 namespace Mathlib.CountHeartbeats
+
+-- This file mentions bare `set_option maxHeartbeats` by design: do not warn about this.
+set_option linter.style.setOption false
 
 open Tactic
 
@@ -33,7 +36,8 @@ def runTacForHeartbeats (tac : TSyntax `Lean.Parser.Tactic.tacticSeq) (revert : 
     TacticM Nat := do
   let start ← IO.getNumHeartbeats
   let s ← saveState
-  evalTactic tac
+  withOptions (fun opts => opts.set ``Elab.async false) do
+    evalTactic tac
   if revert then restoreState s
   return (← IO.getNumHeartbeats) - start
 
@@ -79,25 +83,32 @@ elab "#count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
   logVariation counts
 
 /--
+Round down the number `n` to the nearest thousand, if `approx` is `true`.
+-/
+def roundDownIf (n : Nat) (approx : Bool) : String :=
+  if approx then s!"approximately {(n / 1000) * 1000}" else s!"{n}"
+
+set_option linter.style.maxHeartbeats false in
+/--
 `#count_heartbeats in cmd` counts the heartbeats used in the enclosed command `cmd`.
 Use `#count_heartbeats` to count the heartbeats in *all* the following declarations.
 
 This is most useful for setting sufficient but reasonable limits via `set_option maxHeartbeats`
-for long running declarations.
+for long-running declarations.
 
 If you do so, please resist the temptation to set the limit as low as possible.
 As the `simp` set and other features of the library evolve,
 other contributors will find that their (likely unrelated) changes
 have pushed the declaration over the limit.
-`count_heartbearts in` will automatically suggest a `set_option maxHeartbeats` via "Try this:"
+`count_heartbeats in` will automatically suggest a `set_option maxHeartbeats` via "Try this:"
 using the least number of the form `2^k * 200000` that suffices.
 
-Note that that internal heartbeat counter accessible via `IO.getNumHeartbeats`
-has granularity 1000 times finer that the limits set by `set_option maxHeartbeats`.
+Note that the internal heartbeat counter accessible via `IO.getNumHeartbeats`
+has granularity 1000 times finer than the limits set by `set_option maxHeartbeats`.
 As this is intended as a user command, we divide by 1000.
 
 The optional `approximately` keyword rounds down the heartbeats to the nearest thousand.
-This is helps make the tests more stable to small changes in heartbeats.
+This helps make the tests more stable to small changes in heartbeats.
 To use this functionality, use `#count_heartbeats approximately in cmd`.
 -/
 elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : command => do
@@ -107,8 +118,7 @@ elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : 
   finally
     let finish ← IO.getNumHeartbeats
     let elapsed := (finish - start) / 1000
-    let roundElapsed :=
-      if approx.isSome then s!"approximately {(elapsed / 1000) * 1000}" else s!"{elapsed}"
+    let roundElapsed := roundDownIf elapsed approx.isSome
     let max := (← Command.liftCoreM getMaxHeartbeats) / 1000
     if elapsed < max then
       logInfo
@@ -124,14 +134,7 @@ elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : 
         Lean.Meta.Tactic.TryThis.addSuggestion (← getRef)
           (← set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd))
 
-/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
-elab "count_heartbeats" : tactic =>
-  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
-
-/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
-elab "count_heartbeats" : command =>
-  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
-
+set_option linter.style.maxHeartbeats false in
 /--
 Guard the minimal number of heartbeats used in the enclosed command.
 
@@ -142,21 +145,28 @@ an error message will be generated if a minimization step makes the slow behavio
 The default number of minimal heartbeats is the value of `maxHeartbeats` (typically 200000).
 Alternatively, you can specify a number of heartbeats to guard against,
 using the syntax `guard_min_heartbeats n in cmd`.
+
+The optional `approximately` keyword rounds down the heartbeats to the nearest thousand.
+This helps make the tests more stable to small changes in heartbeats.
+To use this functionality, use `guard_min_heartbeats approximately (n)? in cmd`.
 -/
-elab "guard_min_heartbeats " n:(num)? "in" ppLine cmd:command : command => do
+elab "guard_min_heartbeats " approx:(&"approximately ")? n:(num)? "in" ppLine cmd:command :
+    command => do
   let max := (← Command.liftCoreM getMaxHeartbeats) / 1000
   let n := match n with
            | some j => j.getNat
            | none => max
   let start ← IO.getNumHeartbeats
   try
-    elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
+    elabCommand (← `(command| set_option Elab.async false in set_option maxHeartbeats 0 in $cmd))
   finally
     let finish ← IO.getNumHeartbeats
     let elapsed := (finish - start) / 1000
     if elapsed < n then
-      logInfo m!"Used {elapsed} heartbeats, which is less than the minimum of {n}."
+      logInfo m!"Used {roundDownIf elapsed approx.isSome} heartbeats, \
+                which is less than the minimum of {n}."
 
+set_option linter.style.maxHeartbeats false in
 /--
 Run a command, optionally restoring the original state, and report just the number of heartbeats.
 -/
@@ -193,12 +203,10 @@ end CountHeartbeats
 end Mathlib
 
 /-!
-#  The "countHeartbeats" linter
+# The "countHeartbeats" linter
 
-The "countHeartbeats" linter counts the hearbeats of every declaration.
+The "countHeartbeats" linter counts the heartbeats of every declaration.
 -/
-
-open Lean Elab Command
 
 namespace Mathlib.Linter
 
@@ -232,14 +240,14 @@ namespace CountHeartbeats
 
 @[inherit_doc Mathlib.Linter.linter.countHeartbeats]
 def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.countHeartbeats (← getOptions) do
+  unless getLinterValue linter.countHeartbeats (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
   let mut msgs := #[]
   if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
     let s ← get
-    if Linter.getLinterValue linter.countHeartbeatsApprox (← getOptions) then
+    if getLinterValue linter.countHeartbeatsApprox (← getLinterOptions) then
       elabCommand (← `(command| #count_heartbeats approximately in $(⟨stx⟩)))
     else
       elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))

@@ -11,15 +11,15 @@ import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 In this file, we define a structure `RelativeCellComplex` which expresses
 that a morphism `f : X ⟶ Y` is a transfinite composition of morphisms,
-all of which consists in attaching cells. Here, we allow a different
+all of which consist in attaching cells. Here, we allow a different
 family of authorized cells at each step. For example, (relative)
-CW-complexes are defined in the file `Mathlib.Topology.CWComplex.Abstract.Basic`
+CW-complexes are defined in the file `Mathlib/Topology/CWComplex/Abstract/Basic.lean`
 by requiring that at the `n`th step, we attach `n`-disks along their
 boundaries.
 
 This structure `RelativeCellComplex` is also used in the
 formalization of the small object argument,
-see the file `Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument`.
+see the file `Mathlib/CategoryTheory/SmallObject/IsCardinalForSmallObjectArgument.lean`.
 
 ## References
 * https://ncatlab.org/nlab/show/small+object+argument
@@ -37,7 +37,7 @@ variable {C : Type u} [Category.{v} C]
   {α : J → Type t} {A B : (j : J) → α j → C}
   (basicCell : (j : J) → (i : α j) → A j i ⟶ B j i) {X Y : C} (f : X ⟶ Y)
 
-/-- Let `J` be a well ordered type. Assume that for each `j : J`, we
+/-- Let `J` be a well-ordered type. Assume that for each `j : J`, we
 have a family `basicCell j` of morphisms. A relative cell complex
 is a morphism `f : X ⟶ Y` which is a transfinite composition of morphisms
 in such a way that at the step `j : J`, we attach cells in the family `basicCell j`. -/
@@ -76,15 +76,15 @@ lemma hom_ext {Z : C} {φ₁ φ₂ : Y ⟶ Z} (h₀ : f ≫ φ₁ = f ≫ φ₂)
   refine c.isColimit.hom_ext (fun j ↦ ?_)
   dsimp
   induction j using SuccOrder.limitRecOn with
-  | hm j hj =>
+  | isMin j hj =>
     obtain rfl := hj.eq_bot
     simpa [← cancel_epi c.isoBot.inv] using h₀
-  | hs j hj hj' =>
+  | succ j hj hj' =>
     apply (c.attachCells j hj).hom_ext
     · simpa using hj'
     · intro i
-      simpa only [Category.assoc, Cells.ι] using h ({ hj := hj, k := i })
-  | hl j hj hj' =>
+      simpa only [Category.assoc, Cells.ι] using h ({ hj := hj, k := i, .. })
+  | isSuccLimit j hj hj' =>
     exact (c.F.isColimitOfIsWellOrderContinuous j hj).hom_ext
       (fun ⟨k, hk⟩ ↦ by simpa using hj' k hk)
 

@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.Algebra.Group.Action.End
-import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.Subgroup.Simple
 
@@ -46,7 +45,7 @@ structure IwasawaStructure where
   /-- The subgroups of the Iwasawa structure -/
   T : α → Subgroup M
   /-- The commutativity property of the subgroups -/
-  is_comm : ∀ x : α, (T x).IsCommutative
+  is_comm : ∀ x : α, IsMulCommutative (T x)
   /-- The conjugacy property of the subgroups -/
   is_conj : ∀ g : M, ∀ x : α, T (g • x) = MulAut.conj g • T x
   /-- The subgroups generate the group -/
@@ -89,6 +88,6 @@ theorem isSimpleGroup [Nontrivial M] (is_perfect : commutator M = ⊤)
     intro x
     rw [one_smul]
     exact Set.eq_univ_iff_forall.mp h x ⟨n, hn⟩
-   | inr h => exact Or.inr (top_le_iff.mp (le_trans (ge_of_eq is_perfect) h))
+  | inr h => exact Or.inr (top_le_iff.mp (le_trans (ge_of_eq is_perfect) h))
 
 end MulAction.IwasawaStructure

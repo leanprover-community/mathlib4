@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Defs
 /-!
 # Prime spectrum of a commutative (semi)ring
 
-For the Zariski topology, see `Mathlib.RingTheory.Spectrum.Prime.Topology`.
+For the Zariski topology, see `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 
 (It is also naturally endowed with a sheaf of rings,
 which is constructed in `AlgebraicGeometry.StructureSheaf`.)
@@ -33,9 +33,13 @@ whereas we denote subsets of prime spectra with `t`, `t'`, etc...
 The contents of this file draw inspiration from <https://github.com/ramonfmir/lean-scheme>
 which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
 and Chris Hughes (on an earlier repository).
+
+## References
+* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 -/
 
--- A dividing line between this file and `Mathlib.RingTheory.Spectrum.Prime.Topology` is
+-- A dividing line between this file and `Mathlib/RingTheory/Spectrum/Prime/Topology.lean` is
 -- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
 
@@ -54,23 +58,26 @@ section CommSemiRing
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
 
+lemma nonempty_iff_nontrivial : Nonempty (PrimeSpectrum R) ↔ Nontrivial R := by
+  refine ⟨fun ⟨p⟩ ↦ ⟨0, 1, fun h ↦ p.2.ne_top ?_⟩, fun h ↦ ?_⟩
+  · simp [Ideal.eq_top_iff_one p.asIdeal, ← h]
+  · obtain ⟨I, hI⟩ := Ideal.exists_maximal R
+    exact ⟨⟨I, hI.isPrime⟩⟩
+
+lemma isEmpty_iff_subsingleton : IsEmpty (PrimeSpectrum R) ↔ Subsingleton R := by
+  rw [← not_iff_not, not_isEmpty_iff, not_subsingleton_iff_nontrivial, nonempty_iff_nontrivial]
+
 instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
-  let ⟨I, hI⟩ := Ideal.exists_maximal R
-  ⟨⟨I, hI.isPrime⟩⟩
+  nonempty_iff_nontrivial.mpr inferInstance
 
 /-- The prime spectrum of the zero ring is empty. -/
 instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
-  ⟨fun x ↦ x.isPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
+  isEmpty_iff_subsingleton.mpr inferInstance
+
+lemma nontrivial (p : PrimeSpectrum R) : Nontrivial R :=
+  nonempty_iff_nontrivial.mp ⟨p⟩
 
 variable (R S)
-
-/-- The prime spectrum is in bijection with the set of prime ideals. -/
-@[simps]
-def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
-  toFun I := ⟨I.asIdeal, I.2⟩
-  invFun I := ⟨I, I.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
   Set.ext fun J ↦
@@ -91,7 +98,7 @@ noncomputable def primeSpectrumProd :
     Equiv.ofBijective (primeSpectrumProdOfSum R S) (by
         constructor
         · rintro (⟨I, hI⟩ | ⟨J, hJ⟩) (⟨I', hI'⟩ | ⟨J', hJ'⟩) h <;>
-          simp only [mk.injEq, Ideal.prod.ext_iff, primeSpectrumProdOfSum] at h
+          simp only [mk.injEq, Ideal.prod_inj, primeSpectrumProdOfSum] at h
           · simp only [h]
           · exact False.elim (hI.ne_top h.left)
           · exact False.elim (hJ.ne_top h.right)
@@ -170,13 +177,13 @@ section Gc
 
 variable (R)
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc :
     @GaloisConnection (Ideal R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun I => zeroLocus I) fun t =>
       vanishingIdeal t :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s => zeroLocus s) fun t =>
       vanishingIdeal t := by
@@ -204,6 +211,9 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
 
 theorem nilradical_eq_iInf : nilradical R = iInf asIdeal := by
   apply range_asIdeal R ▸ nilradical_eq_sInf R
+
+@[simp] theorem vanishingIdeal_univ : vanishingIdeal Set.univ = nilradical R := by
+  rw [vanishingIdeal, iInf_univ, nilradical_eq_iInf]
 
 @[simp]
 theorem zeroLocus_radical (I : Ideal R) : zeroLocus (I.radical : Set R) = zeroLocus I :=
@@ -237,6 +247,10 @@ theorem zeroLocus_bot : zeroLocus ((⊥ : Ideal R) : Set R) = Set.univ :=
   (gc R).l_bot
 
 @[simp]
+lemma zeroLocus_nilradical : zeroLocus (nilradical R : Set R) = Set.univ := by
+  rw [nilradical, zeroLocus_radical, Ideal.zero_eq_bot, zeroLocus_bot]
+
+@[simp]
 theorem zeroLocus_singleton_zero : zeroLocus ({0} : Set R) = Set.univ :=
   zeroLocus_bot
 
@@ -249,7 +263,7 @@ theorem vanishingIdeal_empty : vanishingIdeal (∅ : Set (PrimeSpectrum R)) = �
   simpa using (gc R).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set R} (h : (1 : R) ∈ s) : zeroLocus s = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [Set.eq_empty_iff_forall_notMem]
   intro x hx
   rw [mem_zeroLocus] at hx
   have x_prime : x.asIdeal.IsPrime := by infer_instance
@@ -280,18 +294,11 @@ theorem vanishingIdeal_eq_top_iff {s : Set (PrimeSpectrum R)} : vanishingIdeal s
   rw [← top_le_iff, ← subset_zeroLocus_iff_le_vanishingIdeal, Submodule.top_coe, zeroLocus_univ,
     Set.subset_empty_iff]
 
-theorem zeroLocus_eq_top_iff (s : Set R) :
-    zeroLocus s = ⊤ ↔ s ⊆ nilradical R := by
-  constructor
-  · intro h x hx
-    refine nilpotent_iff_mem_prime.mpr (fun J hJ ↦ ?_)
-    have hJz : ⟨J, hJ⟩ ∈ zeroLocus s := by
-      rw [h]
-      trivial
-    exact (mem_zeroLocus _ _).mpr hJz hx
-  · rw [eq_top_iff]
-    intro h p _
-    apply Set.Subset.trans h (nilradical_le_prime p.asIdeal)
+theorem zeroLocus_eq_univ_iff (s : Set R) :
+    zeroLocus s = Set.univ ↔ s ⊆ nilradical R := by
+  rw [← Set.univ_subset_iff, subset_zeroLocus_iff_subset_vanishingIdeal, vanishingIdeal_univ]
+
+@[deprecated (since := "2025-04-05")] alias zeroLocus_eq_top_iff := zeroLocus_eq_univ_iff
 
 theorem zeroLocus_sup (I J : Ideal R) :
     zeroLocus ((I ⊔ J : Ideal R) : Set R) = zeroLocus I ∩ zeroLocus J :=
@@ -358,9 +365,12 @@ theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
   rw [mem_vanishingIdeal] at hf hg
   apply Submodule.add_mem <;> solve_by_elim
 
-theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
+theorem mem_compl_zeroLocus_iff_notMem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
+
+@[deprecated (since := "2025-05-23")]
+alias mem_compl_zeroLocus_iff_not_mem := mem_compl_zeroLocus_iff_notMem
 
 @[simp]
 lemma zeroLocus_insert_zero (s : Set R) : zeroLocus (insert 0 s) = zeroLocus s := by
@@ -375,25 +385,6 @@ lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
   ext; simp [Set.subset_def, ← Set.image_smul, Ideal.unit_mul_mem_iff_mem _ hr]
 
 section Order
-
-/-!
-## The specialization order
-
-We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
-This is exactly the specialization order.
-See the corresponding section at `Mathlib.RingTheory.Spectrum.Prime.Topology`.
--/
-
-instance : PartialOrder (PrimeSpectrum R) :=
-  PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
-
-@[simp]
-theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
-  Iff.rfl
-
-@[simp]
-theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
-  Iff.rfl
 
 instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
   bot := ⟨⊥, Ideal.bot_prime⟩
@@ -411,9 +402,17 @@ lemma isMax_iff {x : PrimeSpectrum R} :
   obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
   exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
 
+lemma zeroLocus_eq_singleton (m : Ideal R) [m.IsMaximal] :
+    zeroLocus m = {⟨m, inferInstance⟩} := by
+  ext I
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp only [mem_zeroLocus, SetLike.coe_subset_coe] at h
+    simpa using PrimeSpectrum.ext_iff.mpr (Ideal.IsMaximal.eq_of_le ‹_› I.2.ne_top h).symm
+  · simp [Set.mem_singleton_iff.mp h]
+
 lemma isMin_iff {x : PrimeSpectrum R} :
     IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
-  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
+  change IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
   simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
   exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
 
@@ -426,14 +425,12 @@ open Submodule
 variable (R : Type u) [CommRing R] [IsNoetherianRing R]
 variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
-/-- In a noetherian ring, every ideal contains a product of prime ideals
-([samuel, § 3.3, Lemma 3]). -/
+/-- In a Noetherian ring, every ideal contains a product of prime ideals
+([samuel1967, § 3.3, Lemma 3]). -/
 theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
-  -- Porting note: Need to specify `P` explicitly
-  refine IsNoetherian.induction
-    (P := fun I => ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I)
-    (fun (M : Ideal R) hgt => ?_) I
+  induction I using IsNoetherian.induction with | hgt M hgt =>
+  change Ideal R at M
   by_cases h_prM : M.IsPrime
   · use {⟨M, h_prM⟩}
     rw [Multiset.map_singleton, Multiset.prod_singleton]
@@ -450,26 +447,22 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
   obtain ⟨Wy, h_Wy⟩ := hgt (M + span R {y}) (lt_add _ hy)
   use Wx + Wy
   rw [Multiset.map_add, Multiset.prod_add]
-  apply le_trans (Submodule.mul_le_mul h_Wx h_Wy)
+  apply le_trans (mul_le_mul' h_Wx h_Wy)
   rw [add_mul]
   apply sup_le (show M * (M + span R {y}) ≤ M from Ideal.mul_le_right)
   rw [mul_add]
   apply sup_le (show span R {x} * M ≤ M from Ideal.mul_le_left)
   rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
 
-/-- In a noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
+/-- In a Noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
   product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
-  product or prime ideals ([samuel, § 3.3, Lemma 3]) -/
+  product or prime ideals ([samuel1967, § 3.3, Lemma 3]) -/
 theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}
     (h_nzI : I ≠ ⊥) :
     ∃ Z : Multiset (PrimeSpectrum A),
       Multiset.prod (Z.map asIdeal) ≤ I ∧ Multiset.prod (Z.map asIdeal) ≠ ⊥ := by
-  revert h_nzI
-  -- Porting note: Need to specify `P` explicitly
-  refine IsNoetherian.induction (P := fun I => I ≠ ⊥ → ∃ Z : Multiset (PrimeSpectrum A),
-      Multiset.prod (Z.map asIdeal) ≤ I ∧ Multiset.prod (Z.map asIdeal) ≠ ⊥)
-    (fun (M : Ideal A) hgt => ?_) I
-  intro h_nzM
+  induction I using IsNoetherian.induction with | hgt M hgt =>
+  change Ideal A at M
   have hA_nont : Nontrivial A := IsDomain.toNontrivial
   by_cases h_topM : M = ⊤
   · rcases h_topM with rfl
@@ -480,7 +473,7 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
   by_cases h_prM : M.IsPrime
   · use ({⟨M, h_prM⟩} : Multiset (PrimeSpectrum A))
     rw [Multiset.map_singleton, Multiset.prod_singleton]
-    exact ⟨le_rfl, h_nzM⟩
+    exact ⟨le_rfl, h_nzI⟩
   obtain ⟨x, hx, y, hy, h_xy⟩ := (Ideal.not_isPrime_iff.mp h_prM).resolve_left h_topM
   have lt_add : ∀ z ∉ M, M < M + span A {z} := by
     intro z hz
@@ -491,7 +484,7 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
   obtain ⟨Wy, h_Wy_le, h_Wx_ne⟩ := hgt (M + span A {y}) (lt_add _ hy) (ne_bot_of_gt (lt_add _ hy))
   use Wx + Wy
   rw [Multiset.map_add, Multiset.prod_add]
-  refine ⟨le_trans (Submodule.mul_le_mul h_Wx_le h_Wy_le) ?_, mt Ideal.mul_eq_bot.mp ?_⟩
+  refine ⟨le_trans (mul_le_mul' h_Wx_le h_Wy_le) ?_, mt Ideal.mul_eq_bot.mp ?_⟩
   · rw [add_mul]
     apply sup_le (show M * (M + span A {y}) ≤ M from Ideal.mul_le_right)
     rw [mul_add]

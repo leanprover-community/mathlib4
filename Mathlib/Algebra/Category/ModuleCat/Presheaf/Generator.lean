@@ -68,25 +68,24 @@ lemma freeYonedaEquiv_comp {M N : PresheafOfModules.{v} R} {X : C}
 
 variable (R) in
 /-- The set of `PresheafOfModules.{v} R` consisting of objects of the
-form `(free R).obj (yoneda.obj X)` for some `X`.  -/
-def freeYoneda : Set (PresheafOfModules.{v} R) := Set.range (yoneda ⋙ free R).obj
+form `(free R).obj (yoneda.obj X)` for some `X`. -/
+def freeYoneda : ObjectProperty (PresheafOfModules.{v} R) := .ofObj (yoneda ⋙ free R).obj
 
 namespace freeYoneda
 
-instance : Small.{u} (freeYoneda R) := by
-  let π : C → freeYoneda R := fun X ↦ ⟨_, ⟨X, rfl⟩⟩
-  have hπ : Function.Surjective π := by rintro ⟨_, ⟨X, rfl⟩⟩; exact ⟨X, rfl⟩
-  exact small_of_surjective hπ
+instance : ObjectProperty.Small.{u} (freeYoneda R) := by
+  dsimp [freeYoneda]
+  infer_instance
 
 variable (R)
 
-lemma isSeparating : IsSeparating (freeYoneda R) := by
+lemma isSeparating : ObjectProperty.IsSeparating (freeYoneda R) := by
   intro M N f₁ f₂ h
   ext ⟨X⟩ m
   obtain ⟨g, rfl⟩ := freeYonedaEquiv.surjective m
-  exact congr_arg freeYonedaEquiv (h _ ⟨X, rfl⟩ g)
+  exact congr_arg freeYonedaEquiv (h _ ⟨X⟩ g)
 
-lemma isDetecting : IsDetecting (freeYoneda R) :=
+lemma isDetecting : ObjectProperty.IsDetecting (freeYoneda R) :=
   (isSeparating R).isDetecting
 
 end freeYoneda
@@ -98,10 +97,10 @@ instance wellPowered {C₀ : Type u} [SmallCategory C₀] (R₀ : C₀ᵒᵖ ⥤
 /-- The type of elements of a presheaf of modules. A term of this type is a pair
 `⟨X, a⟩` with `X : Cᵒᵖ` and `a : M.obj X`. -/
 abbrev Elements {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{u}}
-  (M : PresheafOfModules.{v} R) := ((toPresheaf R).obj M ⋙ forget Ab).Elements
+    (M : PresheafOfModules.{v} R) := ((toPresheaf R).obj M ⋙ forget Ab).Elements
 
 /-- Given a presheaf of modules `M`, this is a constructor for the type `M.Elements`. -/
-abbrev elementsMk {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{u}}
+noncomputable abbrev elementsMk {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{u}}
     (M : PresheafOfModules.{v} R) (X : Cᵒᵖ) (x : M.obj X) : M.Elements :=
   Functor.elementsMk _ X x
 

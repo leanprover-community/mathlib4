@@ -14,11 +14,11 @@ namespace Relator
 universe u₁ u₂ v₁ v₂
 
 /- TODO(johoelzl):
- * should we introduce relators of datatypes as recursive function or as inductive
-predicate? For now we stick to the recursor approach.
- * relation lift for datatypes, Π, Σ, set, and subtype types
- * proof composition and identity laws
- * implement method to derive relators from datatype
+* should we introduce relators of datatypes as recursive function or as inductive
+  predicate? For now we stick to the recursor approach.
+* relation lift for datatypes, Π, Σ, set, and subtype types
+* proof composition and identity laws
+* implement method to derive relators from datatype
 -/
 
 section
@@ -27,12 +27,12 @@ variable {α : Sort u₁} {β : Sort u₂} {γ : Sort v₁} {δ : Sort v₂}
 variable (R : α → β → Prop) (S : γ → δ → Prop)
 
 /-- The binary relations `R : α → β → Prop` and `S : γ → δ → Prop` induce a binary
-    relation on functions `LiftFun : (α → γ) → (β → δ) → Prop`. -/
+relation on functions `LiftFun : (α → γ) → (β → δ) → Prop`. -/
 def LiftFun (f : α → γ) (g : β → δ) : Prop :=
-  ∀⦃a b⦄, R a b → S (f a) (g b)
+  ∀ ⦃a b⦄, R a b → S (f a) (g b)
 
 /-- `(R ⇒ S) f g` means `LiftFun R S f g`. -/
-infixr:40 " ⇒ " => LiftFun
+scoped infixr:40 " ⇒ " => LiftFun
 
 end
 
@@ -50,11 +50,11 @@ def LeftTotal : Prop := ∀ a, ∃ b, R a b
 def BiTotal : Prop := LeftTotal R ∧ RightTotal R
 
 /-- A relation is "left unique" if every element on the right is paired with at
-    most one element on the left. -/
+most one element on the left. -/
 def LeftUnique : Prop := ∀ ⦃a b c⦄, R a c → R b c → a = b
 
 /-- A relation is "right unique" if every element on the left is paired with at
-    most one element on the right. -/
+most one element on the right. -/
 def RightUnique : Prop := ∀ ⦃a b c⦄, R a b → R a c → b = c
 
 /-- A relation is "bi-unique" if it is both left unique and right unique. -/
@@ -63,21 +63,21 @@ def BiUnique : Prop := LeftUnique R ∧ RightUnique R
 variable {R}
 
 lemma RightTotal.rel_forall (h : RightTotal R) :
-    ((R ⇒ (· → ·)) ⇒ (· → ·)) (fun p => ∀i, p i) (fun q => ∀i, q i) :=
+    ((R ⇒ (· → ·)) ⇒ (· → ·)) (fun p => ∀ i, p i) (fun q => ∀ i, q i) :=
   fun _ _ Hrel H b => Exists.elim (h b) (fun _ Rab => Hrel Rab (H _))
 
 lemma LeftTotal.rel_exists (h : LeftTotal R) :
-    ((R ⇒ (· → ·)) ⇒ (· → ·)) (fun p => ∃i, p i) (fun q => ∃i, q i) :=
+    ((R ⇒ (· → ·)) ⇒ (· → ·)) (fun p => ∃ i, p i) (fun q => ∃ i, q i) :=
   fun _ _ Hrel ⟨a, pa⟩ => (h a).imp fun _ Rab => Hrel Rab pa
 
 lemma BiTotal.rel_forall (h : BiTotal R) :
-    ((R ⇒ Iff) ⇒ Iff) (fun p => ∀i, p i) (fun q => ∀i, q i) :=
+    ((R ⇒ Iff) ⇒ Iff) (fun p => ∀ i, p i) (fun q => ∀ i, q i) :=
   fun _ _ Hrel =>
     ⟨fun H b => Exists.elim (h.right b) (fun _ Rab => (Hrel Rab).mp (H _)),
       fun H a => Exists.elim (h.left a) (fun _ Rab => (Hrel Rab).mpr (H _))⟩
 
 lemma BiTotal.rel_exists (h : BiTotal R) :
-    ((R ⇒ Iff) ⇒ Iff) (fun p => ∃i, p i) (fun q => ∃i, q i) :=
+    ((R ⇒ Iff) ⇒ Iff) (fun p => ∃ i, p i) (fun q => ∃ i, q i) :=
   fun _ _ Hrel =>
     ⟨fun ⟨a, pa⟩ => (h.left a).imp fun _ Rab => (Hrel Rab).1 pa,
       fun ⟨b, qb⟩ => (h.right b).imp fun _ Rab => (Hrel Rab).2 qb⟩
@@ -102,16 +102,16 @@ variable {r : α → β → Prop}
 lemma LeftUnique.flip (h : LeftUnique r) : RightUnique (flip r) :=
   fun _ _ _ h₁ h₂ => h h₁ h₂
 
-lemma rel_and : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·∧·) (·∧·) :=
+lemma rel_and : ((· ↔ ·) ⇒ (· ↔ ·) ⇒ (· ↔ ·)) (· ∧ ·) (· ∧ ·) :=
   fun _ _ h₁ _ _ h₂ => and_congr h₁ h₂
 
-lemma rel_or : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·∨·) (·∨·) :=
+lemma rel_or : ((· ↔ ·) ⇒ (· ↔ ·) ⇒ (· ↔ ·)) (· ∨ ·) (· ∨ ·) :=
   fun _ _ h₁ _ _ h₂ => or_congr h₁ h₂
 
-lemma rel_iff : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·↔·) (·↔·) :=
+lemma rel_iff : ((· ↔ ·) ⇒ (· ↔ ·) ⇒ (· ↔ ·)) (· ↔ ·) (· ↔ ·) :=
   fun _ _ h₁ _ _ h₂ => iff_congr h₁ h₂
 
-lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (·↔·)) (·=·) (·=·) :=
+lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (· ↔ ·)) (· = ·) (· = ·) :=
   fun _ _ h₁ _ _ h₂ => ⟨fun h => hr.right h₁ <| h.symm ▸ h₂, fun h => hr.left h₁ <| h.symm ▸ h₂⟩
 
 open Function

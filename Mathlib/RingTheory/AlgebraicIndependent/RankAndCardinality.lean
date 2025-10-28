@@ -64,7 +64,7 @@ theorem IsTranscendenceBasis.lift_rank_eq_max_lift
 theorem Algebra.Transcendental.rank_eq_cardinalMk
     (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E] [Algebra.Transcendental F E] :
     Module.rank F E = #E := by
-  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' _ (algebraMap F E).injective
+  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' F E
   haveI := hx.nonempty_iff_transcendental.2 ‹_›
   simpa [← hx.lift_cardinalMk_eq_max_lift] using hx.lift_rank_eq_max_lift
 

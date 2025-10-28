@@ -30,7 +30,6 @@ localization at an element.
 
 -/
 
--- Porting note: added to make the syntax work below.
 open scoped TensorProduct
 
 universe u v w
@@ -49,7 +48,7 @@ This is equivalent to "for every `R`-algebra, every square-zero ideal
 See `Algebra.FormallyUnramified.iff_comp_injective`. -/
 @[mk_iff, stacks 00UM]
 class FormallyUnramified : Prop where
-  subsingleton_kaehlerDifferential : Subsingleton (Ω[A⁄R])
+  subsingleton_kaehlerDifferential : Subsingleton Ω[A⁄R]
 
 attribute [instance] FormallyUnramified.subsingleton_kaehlerDifferential
 
@@ -82,8 +81,7 @@ theorem iff_comp_injective :
   · intros; exact comp_injective _ ‹_›
   · intro H
     constructor
-    rw [← not_nontrivial_iff_subsingleton]
-    intro h
+    by_contra! h
     obtain ⟨f₁, f₂, e⟩ := (KaehlerDifferential.endEquiv R A).injective.nontrivial
     apply e
     ext1
@@ -115,7 +113,7 @@ theorem ext [FormallyUnramified R A] (hI : IsNilpotent I) {g₁ g₂ : A →ₐ[
     (H : ∀ x, Ideal.Quotient.mk I (g₁ x) = Ideal.Quotient.mk I (g₂ x)) : g₁ = g₂ :=
   FormallyUnramified.lift_unique I hI g₁ g₂ (AlgHom.ext H)
 
-theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type*} [CommRing C]
+theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type*} [Ring C]
     (f : B →+* C) (hf : IsNilpotent <| RingHom.ker f) (g₁ g₂ : A →ₐ[R] B)
     (h : f.comp ↑g₁ = f.comp (g₂ : A →+* B)) : g₁ = g₂ :=
   FormallyUnramified.lift_unique _ hf _ _
@@ -125,12 +123,12 @@ theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type*} [CommRing C]
       simpa only [Ideal.Quotient.eq, Function.comp_apply, AlgHom.coe_comp, Ideal.Quotient.mkₐ_eq_mk,
         RingHom.mem_ker, map_sub, sub_eq_zero])
 
-theorem ext' [FormallyUnramified R A] {C : Type*} [CommRing C] (f : B →+* C)
+theorem ext' [FormallyUnramified R A] {C : Type*} [Ring C] (f : B →+* C)
     (hf : IsNilpotent <| RingHom.ker f) (g₁ g₂ : A →ₐ[R] B) (h : ∀ x, f (g₁ x) = f (g₂ x)) :
     g₁ = g₂ :=
   FormallyUnramified.lift_unique_of_ringHom f hf g₁ g₂ (RingHom.ext h)
 
-theorem lift_unique' [FormallyUnramified R A] {C : Type*} [CommRing C]
+theorem lift_unique' [FormallyUnramified R A] {C : Type*} [Ring C]
     [Algebra R C] (f : B →ₐ[R] C) (hf : IsNilpotent <| RingHom.ker (f : B →+* C))
     (g₁ g₂ : A →ₐ[R] B) (h : f.comp g₁ = f.comp g₂) : g₁ = g₂ :=
   FormallyUnramified.ext' _ hf g₁ g₂ (AlgHom.congr_fun h)
@@ -163,7 +161,7 @@ end
 
 instance {R : Type*} [CommRing R] : FormallyUnramified R R := by
   rw [iff_comp_injective]
-  intros B _ _ _ _ f₁ f₂ _
+  intro B _ _ _ _ f₁ f₂ _
   exact Subsingleton.elim _ _
 
 section OfEquiv
@@ -283,15 +281,14 @@ instance [FormallyUnramified R S] (M : Submonoid S) : FormallyUnramified R (Loca
   have := of_isLocalization (Rₘ := Localization M) M
   .comp _ S _
 
+set_option linter.unusedSectionVars false in
 /-- This actually does not need the localization instance, and is stated here again for
 consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 
- The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
- without the need to change anything (including removing redundant arguments). -/
--- @[nolint unusedArguments] -- Porting note: removed
+The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
+without the need to change anything (including removing redundant arguments). -/
+@[nolint unusedArguments]
 theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
-  -- Porting note: added
-  let _ := M
   FormallyUnramified.of_comp R Rₘ Sₘ
 
 theorem localization_map [FormallyUnramified R S] :

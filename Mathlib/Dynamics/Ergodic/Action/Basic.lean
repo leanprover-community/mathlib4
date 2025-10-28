@@ -24,8 +24,8 @@ if for any (null) measurable set `s`,
 if it is a.e.-invariant under each scalar addition `(g +ᵥ ·)`, `g : G`,
 then it is either null or conull.
 -/
-class ErgodicVAdd (G α : Type*) [VAdd G α] {_ : MeasurableSpace α} (μ : Measure α)
-    extends VAddInvariantMeasure G α μ : Prop where
+class ErgodicVAdd (G α : Type*) [VAdd G α] {_ : MeasurableSpace α} (μ : Measure α) : Prop
+    extends VAddInvariantMeasure G α μ where
   aeconst_of_forall_preimage_vadd_ae_eq {s : Set α} : MeasurableSet s →
     (∀ g : G, (g +ᵥ ·) ⁻¹' s =ᵐ[μ] s) → EventuallyConst s (ae μ)
 
@@ -36,8 +36,8 @@ if it is a.e.-invariant under each scalar multiplication `(g • ·)`, `g : G`,
 then it is either null or conull.
 -/
 @[to_additive, mk_iff]
-class ErgodicSMul (G α : Type*) [SMul G α] {_ : MeasurableSpace α} (μ : Measure α)
-    extends SMulInvariantMeasure G α μ : Prop where
+class ErgodicSMul (G α : Type*) [SMul G α] {_ : MeasurableSpace α} (μ : Measure α) : Prop
+    extends SMulInvariantMeasure G α μ where
   aeconst_of_forall_preimage_smul_ae_eq {s : Set α} : MeasurableSet s →
     (∀ g : G, (g • ·) ⁻¹' s =ᵐ[μ] s) → EventuallyConst s (ae μ)
 

@@ -3,7 +3,7 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Data.Seq.Seq
+import Mathlib.Data.Seq.Defs
 import Mathlib.Algebra.Field.Defs
 
 /-!
@@ -181,8 +181,7 @@ def GenContFract.IsSimpContFract (g : GenContFract α)
     [One α] : Prop :=
   ∀ (n : ℕ) (aₙ : α), g.partNums.get? n = some aₙ → aₙ = 1
 
-variable (α)
-
+variable (α) in
 /-- A *simple continued fraction* (scf) is a generalized continued fraction (gcf) whose partial
 numerators are equal to one.
 $$
@@ -197,8 +196,6 @@ It is encoded as the subtype of gcfs that satisfy `GenContFract.IsSimpContFract`
 -/
 def SimpContFract [One α] :=
   { g : GenContFract α // g.IsSimpContFract }
-
-variable {α}
 
 -- Interlude: define some expected coercions.
 namespace SimpContFract
@@ -227,15 +224,12 @@ def SimpContFract.IsContFract [One α] [Zero α] [LT α]
   ∀ (n : ℕ) (bₙ : α),
     (↑s : GenContFract α).partDens.get? n = some bₙ → 0 < bₙ
 
-variable (α)
-
+variable (α) in
 /-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
 denominators are all positive. It is the subtype of scfs that satisfy `SimpContFract.IsContFract`.
 -/
 def ContFract [One α] [Zero α] [LT α] :=
   { s : SimpContFract α // s.IsContFract }
-
-variable {α}
 
 /-! Interlude: define some expected coercions. -/
 

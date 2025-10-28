@@ -44,9 +44,9 @@ lemma pow_dvd_add_pow_of_pow_eq_zero_right (hp : n + m ≤ p + 1) (h_comm : Comm
   refine Finset.dvd_sum fun ⟨i, j⟩ hij ↦ ?_
   replace hij : i + j = p := by simpa using hij
   apply dvd_nsmul_of_dvd
-  rcases le_or_lt m i with (hi : m ≤ i) | (hi : i + 1 ≤ m)
+  rcases le_or_gt m i with (hi : m ≤ i) | (hi : i + 1 ≤ m)
   · exact dvd_mul_of_dvd_left (pow_dvd_pow x hi) _
-  · simp [pow_eq_zero_of_le (by omega : n ≤ j) hy]
+  · simp [pow_eq_zero_of_le (by cutsat : n ≤ j) hy]
 
 lemma pow_dvd_add_pow_of_pow_eq_zero_left (hp : n + m ≤ p + 1) (h_comm : Commute x y)
     (hx : x ^ n = 0) : y ^ m ∣ (x + y) ^ p :=
@@ -101,9 +101,7 @@ lemma dvd_mul_sub_mul_mul_left_of_dvd {p a b c d x y : R}
   obtain ⟨k1, hk1⟩ := h1
   obtain ⟨k2, hk2⟩ := h2
   refine ⟨d * k1 - b * k2, ?_⟩
-  rw [show (a * d - b * c) * x = a * x * d - c * x * b by ring, eq_sub_of_add_eq hk1,
-    eq_sub_of_add_eq hk2]
-  ring
+  grind
 
 lemma dvd_mul_sub_mul_mul_right_of_dvd {p a b c d x y : R}
     (h1 : p ∣ a * x + b * y) (h2 : p ∣ c * x + d * y) : p ∣ (a * d - b * c) * y :=
@@ -117,3 +115,24 @@ lemma dvd_mul_sub_mul_mul_gcd_of_dvd {p a b c d x y : R} [IsDomain R] [GCDMonoid
     dvd_mul_sub_mul_mul_right_of_dvd h1 h2⟩
 
 end CommRing
+
+section misc
+
+variable [Ring R] [LinearOrder R] {x y : R}
+
+@[simp]
+theorem associated_abs_left_iff :
+    Associated |x| y ↔ Associated x y := by
+  obtain h | h := abs_choice x <;>
+  simp [h]
+
+@[simp]
+theorem associated_abs_right_iff :
+    Associated x |y| ↔ Associated x y := by
+  rw [Associated.comm, associated_abs_left_iff, Associated.comm]
+
+alias ⟨_, Associated.abs_left⟩ := associated_abs_left_iff
+
+alias ⟨_, Associated.abs_right⟩ := associated_abs_right_iff
+
+end misc

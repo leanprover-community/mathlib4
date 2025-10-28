@@ -71,8 +71,8 @@ section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] extends
-  SubsemiringClass S R, NegMemClass S R : Prop
+class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] : Prop
+    extends SubsemiringClass S R, NegMemClass S R
 
 -- See note [lower instance priority]
 instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
@@ -84,7 +84,7 @@ instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : T
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
 
 namespace SubringClass
@@ -116,12 +116,18 @@ def subtype (s : S) : s →+* R :=
   { SubmonoidClass.subtype s, AddSubgroupClass.subtype s with
     toFun := (↑) }
 
+variable {s} in
+@[simp]
+lemma subtype_apply (x : s) :
+    SubringClass.subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
 @[simp]
 theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
@@ -148,12 +154,34 @@ add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
 
--- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
--- projection `s.toSubmonoid`
-
 instance : SetLike (Subring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+initialize_simps_projections Subring (carrier → coe, as_prefix coe)
+
+/-- The actual `Subring` obtained from an element of a `SubringClass`. -/
+@[simps]
+def ofClass {S R : Type*} [Ring R] [SetLike S R] [SubringClass S R]
+    (s : S) : Subring R where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  neg_mem' := neg_mem
+  one_mem' := one_mem _
+
+instance (priority := 100) : CanLift (Set R) (Subring R) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ 1 ∈ s ∧
+      (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ ∀ {x}, x ∈ s → -x ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        one_mem' := h.2.2.1
+        mul_mem' := h.2.2.2.1
+        neg_mem' := h.2.2.2.2 },
+      rfl ⟩
 
 instance : SubringClass (Subring R) R where
   zero_mem s := s.zero_mem'
@@ -161,8 +189,6 @@ instance : SubringClass (Subring R) R where
   one_mem s := s.one_mem'
   mul_mem {s} := s.mul_mem'
   neg_mem {s} := s.neg_mem'
-
-initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 
 /-- Turn a `Subring` into a `NonUnitalSubring` by forgetting that it contains `1`. -/
 def toNonUnitalSubring (S : Subring R) : NonUnitalSubring R where __ := S
@@ -327,11 +353,16 @@ def subtype (s : Subring R) : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
 
 @[simp]
+lemma subtype_apply {s : Subring R} (x : s) :
+    s.subtype x = x := rfl
+
+lemma subtype_injective (s : Subring R) :
+    Function.Injective s.subtype :=
+  s.toSubmonoid.subtype_injective
+
+@[simp]
 theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
 
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
@@ -345,10 +376,6 @@ theorem coe_intCast (n : ℤ) : ((n : s) : R) = n := rfl
 theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=
   rfl
 
--- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
--- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
-@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
@@ -356,10 +383,6 @@ theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ 
 theorem coe_toSubmonoid (s : Subring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 
--- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
--- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
-@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_toAddSubgroup {s : Subring R} {x : R} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 

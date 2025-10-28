@@ -28,7 +28,7 @@ partial def casesMatching (matcher : Expr → MetaM Bool) (recursive := false) (
     throwError "no match"
   else
     return result
-  where
+where
   /-- Auxiliary for `casesMatching`. Accumulates generated subgoals in `acc`. -/
   go (g : MVarId) (acc : Array MVarId := #[]) : MetaM (Array MVarId) :=
     g.withContext do

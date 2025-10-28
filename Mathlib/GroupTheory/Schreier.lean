@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.Abelianization.Defs
 import Mathlib.GroupTheory.Commutator.Finite
 import Mathlib.GroupTheory.Transfer
 
@@ -25,7 +25,7 @@ In this file we prove Schreier's lemma.
 -/
 
 
-open scoped Pointwise
+open scoped Finset Pointwise
 
 section CommGroup
 
@@ -57,8 +57,6 @@ theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
 end CommGroup
 
 namespace Subgroup
-
-open MemRightTransversals
 
 variable {G : Type*} [Group G] {H : Subgroup G} {R S : Set G}
 
@@ -127,7 +125,7 @@ theorem closure_mul_image_eq_top' [DecidableEq G] {R S : Finset G}
 variable (H)
 
 theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (S : Set G) = ⊤) :
-    ∃ T : Finset H, T.card ≤ H.index * S.card ∧ closure (T : Set H) = ⊤ := by
+    ∃ T : Finset H, #T ≤ H.index * #S ∧ closure (T : Set H) = ⊤ := by
   letI := H.fintypeQuotientOfFiniteIndex
   haveI : DecidableEq G := Classical.decEq G
   obtain ⟨R₀, hR, hR1⟩ := H.exists_isComplement_right 1
@@ -137,12 +135,11 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
   replace hR1 : (1 : G) ∈ R := by rwa [Set.mem_toFinset]
   refine ⟨_, ?_, closure_mul_image_eq_top' hR hR1 hS⟩
   calc
-    _ ≤ (R * S).card := Finset.card_image_le
-    _ ≤ (R ×ˢ S).card := Finset.card_image_le
-    _ = R.card * S.card := R.card_product S
+    _ ≤ #(R * S) := Finset.card_image_le
+    _ ≤ #R * #S := Finset.card_mul_le
     _ = H.index * S.card := congr_arg (· * S.card) ?_
   calc
-    R.card = Fintype.card R := (Fintype.card_coe R).symm
+    #R = Fintype.card R := (Fintype.card_coe R).symm
     _ = _ := (Fintype.card_congr hR.rightQuotientEquiv).symm
     _ = Fintype.card (G ⧸ H) := QuotientGroup.card_quotient_rightRel H
     _ = H.index := by rw [index_eq_card, Nat.card_eq_fintype_card]
@@ -160,8 +157,8 @@ theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
   obtain ⟨S, hS₀, hS⟩ := Group.rank_spec G
   obtain ⟨T, hT₀, hT⟩ := exists_finset_card_le_mul H hS
   calc
-    Group.rank H ≤ T.card := Group.rank_le H hT
-    _ ≤ H.index * S.card := hT₀
+    Group.rank H ≤ #T := Group.rank_le hT
+    _ ≤ H.index * #S := hT₀
     _ = H.index * Group.rank G := congr_arg (H.index * ·) hS₀
 
 variable (G)
@@ -178,7 +175,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   -- Rewrite as `|Z(G) ∩ G'| * [G' : Z(G) ∩ G'] ∣ [G : Z(G)] ^ ([G : Z(G)] * n) * [G : Z(G)]`
   rw [← ((center G).subgroupOf (_root_.commutator G)).card_mul_index, pow_succ]
   -- We have `h1 : [G' : Z(G) ∩ G'] ∣ [G : Z(G)]`
-  have h1 := relindex_dvd_index_of_normal (center G) (_root_.commutator G)
+  have h1 := relIndex_dvd_index_of_normal (center G) (_root_.commutator G)
   -- So we can reduce to proving `|Z(G) ∩ G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n)`
   refine mul_dvd_mul ?_ h1
   -- We know that `[G' : Z(G) ∩ G'] < ∞` by `h1` and `hG`
@@ -212,17 +209,17 @@ theorem card_commutator_le_of_finite_commutatorSet [Finite (commutatorSet G)] :
   rw [card_commutator_closureCommutatorRepresentatives] at h2
   replace h1 :=
     h1.trans
-      (Nat.pow_le_pow_of_le_right Finite.card_pos (rank_closureCommutatorRepresentatives_le G))
+      (Nat.pow_le_pow_right Finite.card_pos (rank_closureCommutatorRepresentatives_le G))
   replace h2 := h2.trans (pow_dvd_pow _ (add_le_add_right (mul_le_mul_right' h1 _) 1))
   rw [← pow_succ] at h2
   refine (Nat.le_of_dvd ?_ h2).trans (Nat.pow_le_pow_left h1 _)
-  exact pow_pos (Nat.pos_of_ne_zero FiniteIndex.finiteIndex) _
+  exact pow_pos (Nat.pos_of_ne_zero FiniteIndex.index_ne_zero) _
 
 /-- A theorem of Schur: A group with finitely many commutators has finite commutator subgroup. -/
 instance [Finite (commutatorSet G)] : Finite (_root_.commutator G) := by
   have h2 := card_commutator_dvd_index_center_pow (closureCommutatorRepresentatives G)
   refine Nat.finite_of_card_ne_zero fun h => ?_
   rw [card_commutator_closureCommutatorRepresentatives, h, zero_dvd_iff] at h2
-  exact FiniteIndex.finiteIndex (pow_eq_zero h2)
+  exact FiniteIndex.index_ne_zero (eq_zero_of_pow_eq_zero h2)
 
 end Subgroup

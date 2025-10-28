@@ -16,7 +16,7 @@ import Mathlib.Data.Nat.Prime.Basic
 This file defines the primorial function (the product of primes less than or equal to some bound),
 and proves that `primorial n ≤ 4 ^ n`.
 
-## Notations
+## Notation
 
 We use the local notation `n#` for the primorial of `n`: that is, the product of the primes less
 than or equal to `n`.
@@ -38,14 +38,13 @@ theorem primorial_pos (n : ℕ) : 0 < n# :=
 
 theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# := by
   refine prod_congr ?_ fun _ _ ↦ rfl
-  rw [range_succ, filter_insert, if_neg fun h ↦ not_even_iff_odd.2 hn _]
+  rw [range_add_one, filter_insert, if_neg fun h ↦ not_even_iff_odd.2 hn _]
   exact fun h ↦ h.even_sub_one <| mt succ.inj hn1
 
 theorem primorial_add (m n : ℕ) :
     (m + n)# = m# * ∏ p ∈ Ico (m + 1) (m + n + 1) with p.Prime, p := by
   rw [primorial, primorial, ← Ico_zero_eq_range, ← prod_union, ← filter_union, Ico_union_Ico_eq_Ico]
-  exacts [Nat.zero_le _, add_le_add_right (Nat.le_add_right _ _) _,
-    disjoint_filter_filter <| Ico_disjoint_Ico_consecutive _ _ _]
+  exacts [Nat.zero_le _, by cutsat, disjoint_filter_filter <| Ico_disjoint_Ico_consecutive _ _ _]
 
 theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (m + n) m :=
   calc
@@ -78,4 +77,4 @@ theorem primorial_le_4_pow (n : ℕ) : n# ≤ 4 ^ n := by
     · calc
         (n + 1)# = n# := primorial_succ hn ho
         _ ≤ 4 ^ n := ihn n n.lt_succ_self
-        _ ≤ 4 ^ (n + 1) := pow_le_pow_of_le_right four_pos n.le_succ
+        _ ≤ 4 ^ (n + 1) := Nat.pow_le_pow_right four_pos n.le_succ

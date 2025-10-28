@@ -36,7 +36,7 @@ register_option linter.hashCommand : Bool := {
 
 namespace HashCommandLinter
 
-open Lean Elab
+open Lean Elab Linter
 
 open Command in
 /-- Exactly like `withSetOptionIn`, but recursively discards nested uses of `in`.
@@ -65,12 +65,12 @@ This means that CI will eventually fail on `#`-commands, but does not stop it fr
 However, in order to avoid local clutter, when `warningAsError` is `false`, the linter
 logs a warning only for the `#`-commands that do not already emit a message. -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
-  if Linter.getLinterValue linter.hashCommand (← getOptions) &&
+  if getLinterValue linter.hashCommand (← getLinterOptions) &&
     ((← get).messages.reportedPlusUnreported.isEmpty || warningAsError.get (← getOptions))
   then
     if let some sa := stx.getHead? then
       let a := sa.getAtomVal
-      if (a.get ⟨0⟩ == '#' && ! allowed_commands.contains a) then
+      if (a.front == '#' && ! allowed_commands.contains a) then
         let msg := m!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'"
         if warningAsError.get (← getOptions) then
           logInfoAt sa (msg ++ " [linter.hashCommand]")

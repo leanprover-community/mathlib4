@@ -37,7 +37,7 @@ theorem P_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
   | zero => simp only [P_f_0_eq]
   | succ n =>
     simp only [P_succ, comp_add, comp_id, HomologicalComplex.add_f_apply, HomologicalComplex.comp_f,
-      add_right_eq_self]
+      add_eq_left]
     exact (HigherFacesVanish.of_P q n).comp_Hσ_eq_zero (Nat.succ_le_iff.mp hqn)
 
 theorem Q_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :

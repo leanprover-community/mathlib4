@@ -3,11 +3,9 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Jujian Zhang
 -/
-
-import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
@@ -35,6 +33,8 @@ the following isomorphisms:
 Quotient, Tensor Product
 
 -/
+
+assert_not_exists Cardinal
 
 namespace TensorProduct
 
@@ -106,7 +106,7 @@ noncomputable def quotientTensorEquiv (m : Submodule R M) :
     simp only [Submodule.map_sup]
     erw [Submodule.map_id, Submodule.map_id]
     simp only [sup_eq_left]
-    rw [map_range_eq_span_tmul, map_range_eq_span_tmul]
+    rw [range_map_eq_span_tmul, range_map_eq_span_tmul]
     simp)
 
 @[simp]
@@ -136,7 +136,7 @@ noncomputable def tensorQuotientEquiv (n : Submodule R N) :
     simp only [Submodule.map_sup]
     erw [Submodule.map_id, Submodule.map_id]
     simp only [sup_eq_right]
-    rw [map_range_eq_span_tmul, map_range_eq_span_tmul]
+    rw [range_map_eq_span_tmul, range_map_eq_span_tmul]
     simp)
 
 @[simp]
@@ -158,8 +158,9 @@ noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
     ((R ⧸ I) ⊗[R] M) ≃ₗ[R] M ⧸ (I • (⊤ : Submodule R M)) :=
   quotientTensorEquiv M I ≪≫ₗ
   (Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <| by
-    erw [← LinearMap.range_comp, ← (Submodule.topEquiv.lTensor I).range_comp,
-      Submodule.smul_eq_map₂, map₂_eq_range_lift_comp_mapIncl]
+    rw [← Submodule.map_coe_toLinearMap, ← LinearMap.range_comp,
+      ← (Submodule.topEquiv.lTensor I).range_comp, Submodule.smul_eq_map₂,
+      map₂_eq_range_lift_comp_mapIncl]
     exact congr_arg _ (TensorProduct.ext' fun _ _ ↦  rfl))
 
 variable (M) in
@@ -227,5 +228,29 @@ lemma tensorQuotEquivQuotSMul_comp_mk (I : Ideal R) :
       Submodule.mkQ (I • ⊤) :=
   Eq.symm <| (LinearEquiv.toLinearMap_symm_comp_eq _ _).mp <|
     tensorQuotEquivQuotSMul_symm_comp_mkQ I
+
+variable (S : Type*) [CommRing S] [Algebra R S]
+
+/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`, then `S ⧸ IS` is
+  isomorphic to `S ⊗[R] (R ⧸ I)` as `S` modules. -/
+noncomputable def _root_.Ideal.qoutMapEquivTensorQout {I : Ideal R} :
+    (S ⧸ I.map (algebraMap R S)) ≃ₗ[S] S ⊗[R] (R ⧸ I) where
+  __ := LinearEquiv.symm <| tensorQuotEquivQuotSMul S I ≪≫ₗ Submodule.quotEquivOfEq _ _ (by simp)
+    ≪≫ₗ Submodule.Quotient.restrictScalarsEquiv R _
+  map_smul' := by
+    rintro _ ⟨_⟩
+    congr
+
+variable (M) in
+/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`,
+  then `S ⊗[R] M ⧸ I(S ⊗[R] M)` is isomorphic to `S ⊗[R] (M ⧸ IM)` as `S` modules. -/
+noncomputable def tensorQuotMapSMulEquivTensorQuot (I : Ideal R) :
+    ((S ⊗[R] M) ⧸ I.map (algebraMap R S) • (⊤ : Submodule S (S ⊗[R] M))) ≃ₗ[S]
+    S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) :=
+  (tensorQuotEquivQuotSMul (S ⊗[R] M) (I.map (algebraMap R S))).symm ≪≫ₗ
+    TensorProduct.comm S (S ⊗[R] M) _ ≪≫ₗ AlgebraTensorModule.cancelBaseChange R S S _ M ≪≫ₗ
+      AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (LinearEquiv.refl R M) ≪≫ₗ
+        AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
+          (tensorQuotEquivQuotSMul M I).baseChange R S _ _
 
 end TensorProduct

@@ -3,14 +3,16 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.TypeTags.Hom
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Notation.Prod
+import Mathlib.Tactic.Spread
 
 /-!
 # Additive and multiplicative equivalences associated to `Multiplicative` and `Additive`.
 -/
 
+assert_not_exists Finite Fintype
 
 variable {ι G H : Type*}
 
@@ -30,8 +32,6 @@ def AddEquiv.toMultiplicative [AddZeroClass G] [AddZeroClass H] :
     left_inv := f.left_inv
     right_inv := f.right_inv
     map_add' := map_mul f }
-  left_inv x := by ext; rfl
-  right_inv x := by ext; rfl
 
 /-- Reinterpret `G ≃* H` as `Additive G ≃+ Additive H`. -/
 @[simps]
@@ -49,56 +49,72 @@ def MulEquiv.toAdditive [MulOneClass G] [MulOneClass H] :
     left_inv := f.left_inv
     right_inv := f.right_inv
     map_mul' := map_add f }
-  left_inv x := by ext; rfl
-  right_inv x := by ext; rfl
 
 /-- Reinterpret `Additive G ≃+ H` as `G ≃* Multiplicative H`. -/
 @[simps]
-def AddEquiv.toMultiplicative' [MulOneClass G] [AddZeroClass H] :
+def AddEquiv.toMultiplicativeRight [MulOneClass G] [AddZeroClass H] :
     Additive G ≃+ H ≃ (G ≃* Multiplicative H) where
   toFun f :=
-  { toFun := AddMonoidHom.toMultiplicative' f.toAddMonoidHom
-    invFun := AddMonoidHom.toMultiplicative'' f.symm.toAddMonoidHom
+  { toFun := f.toAddMonoidHom.toMultiplicativeRight
+    invFun := f.symm.toAddMonoidHom.toMultiplicativeLeft
     left_inv := f.left_inv
     right_inv := f.right_inv
     map_mul' := map_add f }
   invFun f :=
-  { toFun := AddMonoidHom.toMultiplicative'.symm f.toMonoidHom
-    invFun := AddMonoidHom.toMultiplicative''.symm f.symm.toMonoidHom
+  { toFun := f.toMonoidHom.toAdditiveLeft
+    invFun := f.symm.toMonoidHom.toAdditiveRight
     left_inv := f.left_inv
     right_inv := f.right_inv
     map_add' := map_mul f }
-  left_inv x := by ext; rfl
-  right_inv x := by ext; rfl
 
-/-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H` as. -/
-abbrev MulEquiv.toAdditive' [MulOneClass G] [AddZeroClass H] :
+@[deprecated (since := "2025-09-19")]
+alias AddEquiv.toMultiplicative' := AddEquiv.toMultiplicativeRight
+
+/-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H`. -/
+abbrev MulEquiv.toAdditiveLeft [MulOneClass G] [AddZeroClass H] :
     G ≃* Multiplicative H ≃ (Additive G ≃+ H) :=
-  AddEquiv.toMultiplicative'.symm
+  AddEquiv.toMultiplicativeRight.symm
+
+@[deprecated (since := "2025-09-19")] alias MulEquiv.toAdditive' := MulEquiv.toAdditiveLeft
 
 /-- Reinterpret `G ≃+ Additive H` as `Multiplicative G ≃* H`. -/
 @[simps]
-def AddEquiv.toMultiplicative'' [AddZeroClass G] [MulOneClass H] :
+def AddEquiv.toMultiplicativeLeft [AddZeroClass G] [MulOneClass H] :
     G ≃+ Additive H ≃ (Multiplicative G ≃* H) where
   toFun f :=
-  { toFun := AddMonoidHom.toMultiplicative'' f.toAddMonoidHom
-    invFun := AddMonoidHom.toMultiplicative' f.symm.toAddMonoidHom
+  { toFun := f.toAddMonoidHom.toMultiplicativeLeft
+    invFun := f.symm.toAddMonoidHom.toMultiplicativeRight
     left_inv := f.left_inv
     right_inv := f.right_inv
     map_mul' := map_add f }
   invFun f :=
-  { toFun := AddMonoidHom.toMultiplicative''.symm f.toMonoidHom
-    invFun := AddMonoidHom.toMultiplicative'.symm f.symm.toMonoidHom
+  { toFun := f.toMonoidHom.toAdditiveRight
+    invFun := f.symm.toMonoidHom.toAdditiveLeft
     left_inv := f.left_inv
     right_inv := f.right_inv
     map_add' := map_mul f }
-  left_inv x := by ext; rfl
-  right_inv x := by ext; rfl
+
+@[deprecated (since := "2025-09-19")]
+alias AddEquiv.toMultiplicative'' := AddEquiv.toMultiplicativeLeft
 
 /-- Reinterpret `Multiplicative G ≃* H` as `G ≃+ Additive H` as. -/
-abbrev MulEquiv.toAdditive'' [AddZeroClass G] [MulOneClass H] :
+abbrev MulEquiv.toAdditiveRight [AddZeroClass G] [MulOneClass H] :
     Multiplicative G ≃* H ≃ (G ≃+ Additive H) :=
-  AddEquiv.toMultiplicative''.symm
+  AddEquiv.toMultiplicativeLeft.symm
+
+@[deprecated (since := "2025-09-19")] alias MulEquiv.toAdditive'' := MulEquiv.toAdditiveRight
+
+/-- The multiplicative version of an additivized monoid is mul-equivalent to itself. -/
+@[simps! apply symm_apply]
+def MulEquiv.toMultiplicative_toAdditive [MulOneClass G] :
+    Multiplicative (Additive G) ≃* G :=
+  AddEquiv.toMultiplicativeLeft <| MulEquiv.toAdditive (.refl _)
+
+/-- The additive version of an multiplicativized additive monoid is add-equivalent to itself. -/
+@[simps! apply symm_apply]
+def AddEquiv.toAdditive_toMultiplicative [AddZeroClass G] :
+    Additive (Multiplicative G) ≃+ G :=
+  MulEquiv.toAdditiveLeft <| AddEquiv.toMultiplicative (.refl _)
 
 /-- Multiplicative equivalence between multiplicative endomorphisms of a `MulOneClass` `M`
 and additive endomorphisms of `Additive M`. -/
@@ -120,8 +136,6 @@ def MulEquiv.piMultiplicative (K : ι → Type*) [∀ i, Add (K i)] :
     Multiplicative (∀ i : ι, K i) ≃* (∀ i : ι, Multiplicative (K i)) where
   toFun x := fun i ↦ Multiplicative.ofAdd <| x.toAdd i
   invFun x := Multiplicative.ofAdd fun i ↦ (x i).toAdd
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 variable (ι) (G) in
@@ -136,8 +150,6 @@ def AddEquiv.piAdditive (K : ι → Type*) [∀ i, Mul (K i)] :
     Additive (∀ i : ι, K i) ≃+ (∀ i : ι, Additive (K i)) where
   toFun x := fun i ↦ Additive.ofMul <| x.toMul i
   invFun x := Additive.ofMul fun i ↦ (x i).toMul
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_add' _ _ := rfl
 
 variable (ι) (G) in
@@ -153,12 +165,12 @@ variable (G) (H)
 /-- `Additive (Multiplicative G)` is just `G`. -/
 @[simps!]
 def AddEquiv.additiveMultiplicative [AddZeroClass G] : Additive (Multiplicative G) ≃+ G :=
-  MulEquiv.toAdditive' (MulEquiv.refl (Multiplicative G))
+  MulEquiv.toAdditiveLeft (MulEquiv.refl (Multiplicative G))
 
 /-- `Multiplicative (Additive H)` is just `H`. -/
 @[simps!]
 def MulEquiv.multiplicativeAdditive [MulOneClass H] : Multiplicative (Additive H) ≃* H :=
-  AddEquiv.toMultiplicative'' (AddEquiv.refl (Additive H))
+  AddEquiv.toMultiplicativeLeft (AddEquiv.refl (Additive H))
 
 /-- `Multiplicative (G × H)` is equivalent to `Multiplicative G × Multiplicative H`. -/
 @[simps]
@@ -167,8 +179,6 @@ def MulEquiv.prodMultiplicative [Add G] [Add H] :
   toFun x := (Multiplicative.ofAdd x.toAdd.1,
     Multiplicative.ofAdd x.toAdd.2)
   invFun := fun (x, y) ↦ Multiplicative.ofAdd (x.toAdd, y.toAdd)
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 /-- `Additive (G × H)` is equivalent to `Additive G × Additive H`. -/
@@ -178,8 +188,6 @@ def AddEquiv.prodAdditive [Mul G] [Mul H] :
   toFun x := (Additive.ofMul x.toMul.1,
     Additive.ofMul x.toMul.2)
   invFun := fun (x, y) ↦ Additive.ofMul (x.toMul, y.toMul)
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_add' _ _ := rfl
 
 end

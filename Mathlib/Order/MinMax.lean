@@ -116,8 +116,8 @@ theorem max_eq_right_iff : max a b = b ↔ a ≤ b :=
   sup_eq_right
 
 /-- For elements `a` and `b` of a linear order, either `min a b = a` and `a ≤ b`,
-    or `min a b = b` and `b < a`.
-    Use cases on this lemma to automate linarith in inequalities -/
+or `min a b = b` and `b < a`.
+Use cases on this lemma to automate linarith in inequalities -/
 theorem min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a := by
   by_cases h : a ≤ b
   · left
@@ -126,8 +126,8 @@ theorem min_cases (a b : α) : min a b = a ∧ a ≤ b ∨ min a b = b ∧ b < a
     exact ⟨min_eq_right (le_of_lt (not_le.mp h)), not_le.mp h⟩
 
 /-- For elements `a` and `b` of a linear order, either `max a b = a` and `b ≤ a`,
-    or `max a b = b` and `a < b`.
-    Use cases on this lemma to automate linarith in inequalities -/
+or `max a b = b` and `a < b`.
+Use cases on this lemma to automate linarith in inequalities -/
 theorem max_cases (a b : α) : max a b = a ∧ b ≤ a ∨ max a b = b ∧ a < b :=
   @min_cases αᵒᵈ _ a b
 
@@ -166,7 +166,6 @@ instance min_idem : Std.IdempotentOp (α := α) min where
 theorem min_lt_max : min a b < max a b ↔ a ≠ b :=
   inf_lt_sup
 
--- Porting note: was `by simp [lt_max_iff, max_lt_iff, *]`
 theorem max_lt_max (h₁ : a < c) (h₂ : b < d) : max a b < max c d :=
   max_lt (lt_max_of_lt_left h₁) (lt_max_of_lt_right h₂)
 

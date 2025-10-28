@@ -3,10 +3,8 @@ Copyright (c) 2021 Eric Weiser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Ring.Subring.Pointwise
-import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Pointwise actions on subalgebras.
@@ -26,7 +24,7 @@ theorem mul_toSubmodule_le (S T : Subalgebra R A) :
     (Subalgebra.toSubmodule S)* (Subalgebra.toSubmodule T) ≤ Subalgebra.toSubmodule (S ⊔ T) := by
   rw [Submodule.mul_le]
   intro y hy z hz
-  show y * z ∈ S ⊔ T
+  change y * z ∈ S ⊔ T
   exact mul_mem (Algebra.mem_sup_left hy) (Algebra.mem_sup_right hz)
 
 /-- As submodules, subalgebras are idempotent. -/
@@ -39,8 +37,6 @@ theorem isIdempotentElem_toSubmodule (S : Subalgebra R A) :
   · intro x hx1
     rw [← mul_one x]
     exact Submodule.mul_mem_mul hx1 (show (1 : A) ∈ S from one_mem S)
-
-@[deprecated (since := "2025-01-12")] alias mul_self := isIdempotentElem_toSubmodule
 
 /-- When `A` is commutative, `Subalgebra.mul_toSubmodule_le` is strict. -/
 theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
@@ -78,7 +74,7 @@ scoped[Pointwise] attribute [instance] Subalgebra.pointwiseMulAction
 
 open Pointwise
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (m : R') (S : Subalgebra R A) : ↑(m • S) = m • (S : Set A) :=
   rfl
 

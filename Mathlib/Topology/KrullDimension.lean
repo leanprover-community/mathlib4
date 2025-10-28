@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 import Mathlib.Order.KrullDimension
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Closeds
 
 /-!
 # The Krull dimension of a topological space
 
-The Krull dimension of a topological space is the order theoretic Krull dimension applied to the
+The Krull dimension of a topological space is the order-theoretic Krull dimension applied to the
 collection of all its subsets that are closed and irreducible. Unfolding this definition, it is
 the length of longest series of closed irreducible subsets ordered by inclusion.
 -/
@@ -34,8 +35,8 @@ def IrreducibleCloseds.map {f : X → Y} (hf1 : Continuous f) (hf2 : IsClosedMap
     (c : IrreducibleCloseds X) :
     IrreducibleCloseds Y where
   carrier := f '' c
-  is_irreducible' := c.is_irreducible'.image f hf1.continuousOn
-  is_closed' := hf2 c c.is_closed'
+  isIrreducible' := c.isIrreducible.image f hf1.continuousOn
+  isClosed' := hf2 c c.isClosed
 
 /--
 Taking images under a closed embedding is strictly monotone on the preorder of irreducible closeds.
@@ -51,9 +52,6 @@ to the Krull dimension of `Y`.
 theorem IsClosedEmbedding.topologicalKrullDim_le (f : X → Y) (hf : IsClosedEmbedding f) :
     topologicalKrullDim X ≤ topologicalKrullDim Y :=
   krullDim_le_of_strictMono _ (IrreducibleCloseds.map_strictMono hf)
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.topologicalKrullDim_le := IsClosedEmbedding.topologicalKrullDim_le
 
 /-- The topological Krull dimension is invariant under homeomorphisms -/
 theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :

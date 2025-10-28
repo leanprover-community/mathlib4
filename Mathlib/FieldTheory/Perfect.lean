@@ -16,20 +16,20 @@ In this file we define perfect fields, together with a generalisation to (commut
 prime characteristic.
 
 ## Main definitions / statements:
- * `PerfectRing`: a ring of characteristic `p` (prime) is said to be perfect in the sense of Serre,
-   if its absolute Frobenius map `x ↦ xᵖ` is bijective.
- * `PerfectField`: a field `K` is said to be perfect if every irreducible polynomial over `K` is
-   separable.
- * `PerfectRing.toPerfectField`: a field that is perfect in the sense of Serre is a perfect field.
- * `PerfectField.toPerfectRing`: a perfect field of characteristic `p` (prime) is perfect in the
-   sense of Serre.
- * `PerfectField.ofCharZero`: all fields of characteristic zero are perfect.
- * `PerfectField.ofFinite`: all finite fields are perfect.
- * `PerfectField.separable_iff_squarefree`: a polynomial over a perfect field is separable iff
-   it is square-free.
- * `Algebra.IsAlgebraic.isSeparable_of_perfectField`, `Algebra.IsAlgebraic.perfectField`:
-   if `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable,
-   and `L` is also a perfect field.
+* `PerfectRing`: a ring of characteristic `p` (prime) is said to be perfect in the sense of Serre,
+  if its absolute Frobenius map `x ↦ xᵖ` is bijective.
+* `PerfectField`: a field `K` is said to be perfect if every irreducible polynomial over `K` is
+  separable.
+* `PerfectRing.toPerfectField`: a field that is perfect in the sense of Serre is a perfect field.
+* `PerfectField.toPerfectRing`: a perfect field of characteristic `p` (prime) is perfect in the
+  sense of Serre.
+* `PerfectField.ofCharZero`: all fields of characteristic zero are perfect.
+* `PerfectField.ofFinite`: all finite fields are perfect.
+* `PerfectField.separable_iff_squarefree`: a polynomial over a perfect field is separable iff
+  it is square-free.
+* `Algebra.IsAlgebraic.isSeparable_of_perfectField`, `Algebra.IsAlgebraic.perfectField`:
+  if `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable,
+  and `L` is also a perfect field.
 
 -/
 
@@ -115,7 +115,7 @@ theorem iterateFrobeniusEquiv_one_apply (x : R) : iterateFrobeniusEquiv R p 1 x 
   rw [iterateFrobeniusEquiv_def, pow_one]
 
 @[simp]
-theorem iterateFrobeniusEquiv_zero  : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
+theorem iterateFrobeniusEquiv_zero : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
   RingEquiv.ext (iterateFrobeniusEquiv_zero_apply R p)
 
 @[simp]
@@ -357,8 +357,8 @@ variable [PerfectRing R p]
 a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
 noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
-  ((frobeniusEquiv R p).image _).trans <| .Set.ofEq <| show _ '' setOf (· ∈ _) = setOf (· ∈ _) by
-    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f), Finset.mem_val,
+  ((frobeniusEquiv R p).image _).trans <| .setCongr <| show _ '' setOf (· ∈ _) = setOf (· ∈ _) by
+    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f),
       Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
       frobeniusEquiv_apply]
 
@@ -371,9 +371,9 @@ It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowEquivRoots_apply`. -/
 noncomputable def rootsExpandPowEquivRoots (n : ℕ) :
     (expand R (p ^ n) f).roots.toFinset ≃ f.roots.toFinset :=
   ((iterateFrobeniusEquiv R p n).image _).trans <|
-    .Set.ofEq <| show _ '' (setOf (· ∈ _)) = setOf (· ∈ _) by
+    .setCongr <| show _ '' (setOf (· ∈ _)) = setOf (· ∈ _) by
     classical simp_rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n),
-      Finset.mem_val, Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
+      Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
       EquivLike.coe_coe, iterateFrobeniusEquiv_apply]
 
 @[simp]

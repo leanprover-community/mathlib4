@@ -7,6 +7,7 @@ import Batteries.Tactic.Alias
 import Mathlib.Data.Int.Notation
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.AssertExists
+import Mathlib.Tactic.Push.Attr
 
 /-!
 # Cast of integers to function types
@@ -26,15 +27,17 @@ variable {ι : Type*} {π : ι → Type*} [∀ i, IntCast (π i)]
 
 instance instIntCast : IntCast (∀ i, π i) where intCast n _ := n
 
+@[simp]
 theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl
 
-@[simp]
+@[push ←]
 theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
   rfl
 
 end Pi
 
+@[simp]
 theorem Sum.elim_intCast_intCast {α β γ : Type*} [IntCast γ] (n : ℤ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   Sum.elim_lam_const_lam_const (γ := γ) n

@@ -19,12 +19,35 @@ assert_not_exists RelIso
 
 universe u v w
 
+section neg_mul
+
+variable {R S : Type*} [Mul R] [HasDistribNeg R] [SetLike S R] [MulMemClass S R] {s : S}
+
+/-- This lemma exists for `aesop`, as `aesop` simplifies `-x * y` to `-(x * y)` before applying
+unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
+@[aesop unsafe 80% (rule_sets := [SetLike])]
+theorem neg_mul_mem {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s := by
+  simpa using mul_mem hx hy
+
+/-- This lemma exists for `aesop`, as `aesop` simplifies `x * -y` to `-(x * y)` before applying
+unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
+@[aesop unsafe 80% (rule_sets := [SetLike])]
+theorem mul_neg_mem {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s := by
+  simpa using mul_mem hx hy
+
+-- doesn't work without the above `aesop` lemmas
+example {x y z : R} (hx : x ∈ s) (hy : -y ∈ s) (hz : z ∈ s) :
+    x * (-y) * z ∈ s := by aesop
+
+end neg_mul
+
 variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R]
 
 /-- `NonUnitalSubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both an additive submonoid and also a multiplicative subsemigroup. -/
 class NonUnitalSubsemiringClass (S : Type*) (R : outParam (Type u)) [NonUnitalNonAssocSemiring R]
-  [SetLike S R] extends AddSubmonoidClass S R : Prop where
+    [SetLike S R] : Prop
+  extends AddSubmonoidClass S R where
   mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
 
 -- See note [lower instance priority]
@@ -56,12 +79,17 @@ instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
 def subtype : s →ₙ+* R :=
   { AddSubmonoidClass.subtype s, MulMemClass.subtype s with toFun := (↑) }
 
+variable {s} in
+@[simp]
+theorem subtype_apply (x : s) : subtype s x = x :=
+  rfl
+
+theorem subtype_injective : Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
 @[simp]
 theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
 
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
 instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
@@ -75,7 +103,6 @@ instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
     fun _ _ => rfl
 
 /-! Note: currently, there are no ordered versions of non-unital rings. -/
-
 
 end NonUnitalSubsemiringClass
 
@@ -95,6 +122,25 @@ namespace NonUnitalSubsemiring
 instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+/-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/
+@[simps]
+def ofClass {S R : Type*} [NonUnitalNonAssocSemiring R] [SetLike S R]
+    [NonUnitalSubsemiringClass S R] (s : S) : NonUnitalSubsemiring R where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+
+instance (priority := 100) : CanLift (Set R) (NonUnitalSubsemiring R) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s)
+    where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        mul_mem' := h.2.2 },
+      rfl ⟩
 
 instance : NonUnitalSubsemiringClass (NonUnitalSubsemiring R) R where
   zero_mem {s} := AddSubmonoid.zero_mem' s.toAddSubmonoid

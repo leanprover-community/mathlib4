@@ -12,7 +12,7 @@ import Mathlib.Algebra.Ring.Opposite
 This file defines a ring involution as a structure extending `R ≃+* Rᵐᵒᵖ`,
 with the additional fact `f.involution : (f (f x).unop).unop = x`.
 
-## Notations
+## Notation
 
 We provide a coercion to a function `R → Rᵐᵒᵖ`.
 
@@ -37,8 +37,8 @@ add_decl_doc RingInvo.toRingEquiv
 
 /-- `RingInvoClass F R` states that `F` is a type of ring involutions.
 You should extend this class when you extend `RingInvo`. -/
-class RingInvoClass (F R : Type*) [Semiring R] [EquivLike F R Rᵐᵒᵖ]
-  extends RingEquivClass F R Rᵐᵒᵖ : Prop where
+class RingInvoClass (F R : Type*) [Semiring R] [EquivLike F R Rᵐᵒᵖ] : Prop
+  extends RingEquivClass F R Rᵐᵒᵖ where
   /-- Every ring involution must be its own inverse -/
   involution : ∀ (f : F) (x), (f (f x).unop).unop = x
 
@@ -87,7 +87,7 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
 theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
 
--- Porting note: remove Coe instance, not needed
+-- We might want to restore the below instance if we remove `RingEquivClass.toRingEquiv`.
 -- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
 --   ⟨RingInvo.toRingEquiv⟩
 

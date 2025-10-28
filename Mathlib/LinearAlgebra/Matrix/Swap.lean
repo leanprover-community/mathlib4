@@ -15,7 +15,7 @@ on the left (resp. on the right), swaps the `i`-th row with the `j`-th row
 (resp. the `i`-th column with the `j`-th column).
 
 Swap matrices are a special case of *elementary matrices*. For transvections see
-`Mathlib.LinearAlgebra.Matrix.Transvection`.
+`Mathlib/LinearAlgebra/Matrix/Transvection.lean`.
 
 ## Implementation detail
 
@@ -43,7 +43,7 @@ lemma transpose_swap (i j : n) : (swap R i j).transpose = swap R i j := by
   simp [swap]
 
 @[simp]
-lemma conjTranspose_swap {R : Type*} [Semiring R] [StarRing R] (i j : n) :
+lemma conjTranspose_swap {R : Type*} [NonAssocSemiring R] [StarRing R] (i j : n) :
     (swap R i j).conjTranspose = swap R i j := by
   simp [swap]
 
@@ -53,7 +53,7 @@ section
 variable {R n m : Type*} [Semiring R] [DecidableEq n]
 
 @[simp]
-lemma map_swap {S : Type*} [Semiring S] (f : R →+* S) (i j : n) :
+lemma map_swap {S : Type*} [NonAssocSemiring S] (f : R →+* S) (i j : n) :
     (swap R i j).map f = swap S i j := by
   simp [swap]
 

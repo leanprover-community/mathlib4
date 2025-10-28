@@ -34,8 +34,8 @@ variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
   to themselves form a module. -/
-structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] extends
-  AddSubmonoid M, SubMulAction R M : Type v
+structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] : Type v
+    extends AddSubmonoid M, SubMulAction R M
 
 /-- Reinterpret a `Submodule` as an `AddSubmonoid`. -/
 add_decl_doc Submodule.toAddSubmonoid
@@ -51,14 +51,47 @@ instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
+
+@[simp] lemma carrier_eq_coe (s : Submodule R M) : s.carrier = s := rfl
+
+/-- The actual `Submodule` obtained from an element of a `SMulMemClass` and `AddSubmonoidClass`. -/
+@[simps]
+def ofClass {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [SetLike S M]
+    [AddSubmonoidClass S M] [SMulMemClass S R M] (s : S) : Submodule R M where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  smul_mem' := SMulMemClass.smul_mem
+
+/-- Construct a submodule from closure under two-element linear combinations.
+I.e., a nonempty set closed under two-element linear combinations is a submodule. -/
+@[simps]
+def ofLinearComb (C : Set M) (nonempty : C.Nonempty)
+    (linearComb : ∀ x ∈ C, ∀ y ∈ C, ∀ a b : R, a • x + b • y ∈ C) :
+    Submodule R M where
+  carrier := C
+  zero_mem' := by
+    obtain ⟨x, hx⟩ := nonempty
+    simpa [zero_smul, add_zero] using linearComb x hx x hx 0 0
+  add_mem' {x y} hx hy := by simpa [one_smul] using linearComb x hx y hy 1 1
+  smul_mem' c x hx := by simpa using linearComb x hx x hx c 0
+
+instance (priority := 100) : CanLift (Set M) (Submodule R M) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ ∀ (r : R) {x}, x ∈ s → r • x ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        smul_mem' := h.2.2 },
+      rfl ⟩
+
 instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
   zero_mem _ := AddSubmonoid.zero_mem' _
   add_mem := AddSubsemigroup.add_mem' _
 
 instance smulMemClass : SMulMemClass (Submodule R M) R M where
   smul_mem {s} c _ h := SubMulAction.smul_mem' s.toSubMulAction c h
-
-initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 
 @[simp]
 theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=
@@ -86,7 +119,7 @@ theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :
 theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 
-@[simp]
+@[deprecated SetLike.coe_set_eq (since := "2025-04-20")]
 theorem carrier_inj : p.carrier = q.carrier ↔ p = q :=
   (SetLike.coe_injective (A := Submodule R M)).eq_iff
 
@@ -95,7 +128,7 @@ equalities. -/
 @[simps]
 protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M where
   carrier := s
-  zero_mem' := by simpa [hs] using p.zero_mem'
+  zero_mem' := by simp [hs]
   add_mem' := hs.symm ▸ p.add_mem'
   smul_mem' := by simpa [hs] using p.smul_mem'
 
@@ -109,8 +142,6 @@ theorem toAddSubmonoid_injective : Injective (toAddSubmonoid : Submodule R M →
 theorem toAddSubmonoid_inj : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
   toAddSubmonoid_injective.eq_iff
 
-@[deprecated (since := "2024-12-29")] alias toAddSubmonoid_eq := toAddSubmonoid_inj
-
 @[simp]
 theorem coe_toAddSubmonoid (p : Submodule R M) : (p.toAddSubmonoid : Set M) = p :=
   rfl
@@ -120,8 +151,6 @@ theorem toSubMulAction_injective : Injective (toSubMulAction : Submodule R M →
 
 theorem toSubMulAction_inj : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
   toSubMulAction_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toSubMulAction_eq := toSubMulAction_inj
 
 @[simp]
 theorem coe_toSubMulAction (p : Submodule R M) : (p.toSubMulAction : Set M) = p :=
@@ -163,14 +192,9 @@ variable {p q : Submodule R M}
 variable {r : R} {x y : M}
 variable (p)
 
--- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
--- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
-@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 
-@[simp]
 protected theorem zero_mem : (0 : M) ∈ p :=
   zero_mem _
 
@@ -188,6 +212,18 @@ theorem smul_of_tower_mem [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (h
 theorem smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M] (g : G) :
     g • x ∈ p ↔ x ∈ p :=
   p.toSubMulAction.smul_mem_iff' g
+
+@[simp]
+lemma smul_mem_iff'' [Invertible r] :
+    r • x ∈ p ↔ x ∈ p := by
+  refine ⟨fun h ↦ ?_, p.smul_mem r⟩
+  rw [← invOf_smul_smul r x]
+  exact p.smul_mem _ h
+
+lemma smul_mem_iff_of_isUnit (hr : IsUnit r) :
+    r • x ∈ p ↔ x ∈ p :=
+  let _ : Invertible r := hr.invertible
+  smul_mem_iff'' p
 
 instance add : Add p :=
   ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
@@ -213,7 +249,7 @@ protected theorem nonempty : (p : Set M).Nonempty :=
 
 @[simp]
 theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
-  Subtype.ext_iff_val
+  Subtype.ext_iff
 
 variable {p}
 
@@ -294,8 +330,6 @@ theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → A
 @[simp]
 theorem toAddSubgroup_inj : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toAddSubgroup_eq := toAddSubgroup_inj
 
 protected theorem sub_mem : x ∈ p → y ∈ p → x - y ∈ p :=
   sub_mem

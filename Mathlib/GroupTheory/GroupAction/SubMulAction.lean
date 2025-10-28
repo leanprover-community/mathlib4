@@ -24,7 +24,7 @@ For most uses, typically `Submodule R M` is more powerful.
 * `SubMulAction.mulAction'` - the `MulAction S M` transferred to the subtype when
   `IsScalarTower S R M`.
 * `SubMulAction.isScalarTower` - the `IsScalarTower S R M` transferred to the subtype.
-* `SubMulAction.inclusion` — the inclusion of a submulaction, as an equivariant map
+* `SubMulAction.inclusion` — the inclusion of a `SubMulAction`, as an equivariant map
 
 ## Tags
 
@@ -61,7 +61,7 @@ class VAddMemClass (S : Type*) (R : outParam Type*) (M : Type*) [VAdd R M] [SetL
 
 attribute [to_additive] SMulMemClass
 
-attribute [aesop safe 10 apply (rule_sets := [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
+attribute [aesop 90% (rule_sets := [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
 lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
@@ -83,14 +83,18 @@ variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
-@[to_additive "A subset closed under the additive action inherits that action."]
+@[to_additive /-- A subset closed under the additive action inherits that action. -/]
 instance (priority := 50) smul : SMul R s :=
   ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
 
+@[to_additive] instance (priority := 50) [SMul T M] [SMulMemClass S T M] [SMulCommClass T R M] :
+    SMulCommClass T R s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
+
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
-theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α] [SMul M N]
-    [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
+@[to_additive] theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α]
+    [SMul M N] [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
     SMulMemClass S M α :=
   { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
@@ -102,14 +106,10 @@ instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO lower priority not actually there
--- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO lower priority not actually there
--- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp)]
 theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = ⟨r • x, smul_mem r hx⟩ :=
   rfl
@@ -132,9 +132,12 @@ variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
 
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
-@[to_additive "A subset closed under the additive action inherits that action."]
+@[to_additive /-- A subset closed under the additive action inherits that action. -/]
 instance (priority := 50) smul' : SMul M s where
   smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
+
+instance (priority := 50) : IsScalarTower M N s where
+  smul_assoc m n x := Subtype.ext (smul_assoc m n x.1)
 
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul_of_tower (r : M) (x : s) : (↑(r • x) : α) = r • (x : α) :=
@@ -149,6 +152,12 @@ theorem mk_smul_of_tower_mk (r : M) (x : α) (hx : x ∈ s) :
 theorem smul_of_tower_def (r : M) (x : s) :
     r • x = ⟨r • x, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩ :=
   rfl
+
+@[to_additive] instance (priority := 50) [SMulCommClass M N α] : SMulCommClass M N s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
+
+@[to_additive] instance (priority := 50) [SMulCommClass N M α] : SMulCommClass N M s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
 
 end OfTower
 
@@ -190,8 +199,8 @@ theorem ext {p q : SubMulAction R M} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
 
 /-- Copy of a sub_mul_action with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
-@[to_additive "Copy of a sub_mul_action with a new `carrier` equal to the old one.
-  Useful to fix definitional equalities."]
+@[to_additive /-- Copy of a sub_mul_action with a new `carrier` equal to the old one.
+  Useful to fix definitional equalities. -/]
 protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAction R M where
   carrier := s
   smul_mem' := hs.symm ▸ p.smul_mem'
@@ -208,7 +217,7 @@ theorem copy_eq (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : p.copy s hs
 instance : Bot (SubMulAction R M) where
   bot :=
     { carrier := ∅
-      smul_mem' := fun _c h => Set.not_mem_empty h }
+      smul_mem' := fun _c h => Set.notMem_empty h }
 
 @[to_additive]
 instance : Inhabited (SubMulAction R M) :=
@@ -231,25 +240,25 @@ theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
 @[to_additive]
 instance : SMul R p where smul c x := ⟨c • x.1, smul_mem _ c x.2⟩
 
-variable {p}
-
+variable {p} in
 @[to_additive (attr := norm_cast, simp)]
 theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
--- Porting note: no longer needed because of defeq structure eta
-
-variable (p)
-
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
-@[to_additive "Embedding of a submodule `p` to the ambient space `M`."]
+@[to_additive /-- Embedding of a submodule `p` to the ambient space `M`. -/]
 protected def subtype : p →[R] M where
   toFun := Subtype.val
-  map_smul' := by simp [val_smul]
+  map_smul' := by simp
 
+variable {p} in
 @[to_additive (attr := simp)]
 theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
+
+lemma subtype_injective :
+    Function.Injective p.subtype :=
+  Subtype.coe_injective
 
 @[to_additive]
 theorem subtype_eq_val : (SubMulAction.subtype p : p → M) = Subtype.val :=
@@ -264,23 +273,27 @@ variable [hA : SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `MulAction` over `SMulMemClass`.
 /-- A `SubMulAction` of a `MulAction` is a `MulAction`. -/
-@[to_additive "A `SubAddAction` of an `AddAction` is an `AddAction`."]
+@[to_additive /-- A `SubAddAction` of an `AddAction` is an `AddAction`. -/]
 instance (priority := 75) toMulAction : MulAction R S' :=
   Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
 
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
-@[to_additive "The natural `AddActionHom` over `R` from a `SubAddAction` of `M` to `M`."]
+@[to_additive /-- The natural `AddActionHom` over `R` from a `SubAddAction` of `M` to `M`. -/]
 protected def subtype : S' →[R] M where
   toFun := Subtype.val; map_smul' _ _ := rfl
+
+variable {S'} in
+@[simp]
+lemma subtype_apply (x : S') :
+    SMulMemClass.subtype S' x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (SMulMemClass.subtype S') :=
+  Subtype.coe_injective
 
 @[to_additive (attr := simp)]
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-protected alias coeSubtype := SubMulAction.SMulMemClass.coe_subtype
-@[deprecated (since := "2025-02-18")]
-protected alias _root_.SubAddAction.SMulMemClass.coeSubtype := SubAddAction.SMulMemClass.coe_subtype
 
 end SMulMemClass
 
@@ -335,7 +348,6 @@ variable (p : SubMulAction R M)
 /-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
 @[to_additive]
 instance mulAction' : MulAction S p where
-  smul := (· • ·)
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 
@@ -392,6 +404,14 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
     MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
   rw [← Subgroup.toSubmonoid_inj]
   exact stabilizer_of_subMul.submonoid m
+
+/-- SubMulAction on the complement of an invariant subset -/
+@[to_additive /-- SubAddAction on the complement of an invariant subset -/]
+instance : HasCompl (SubMulAction R M) where
+  compl s := ⟨sᶜ, by simp⟩
+
+@[to_additive]
+theorem compl_def (s : SubMulAction R M) : sᶜ.carrier = (s : Set M)ᶜ := rfl
 
 end MulActionGroup
 
@@ -453,12 +473,12 @@ end SubMulAction
 
 namespace SubMulAction
 
-/- The inclusion of a SubMulaction, as an equivariant map -/
+/- The inclusion of a `SubMulAction`, as an equivariant map -/
 variable {M α : Type*} [Monoid M] [MulAction M α]
 
 
 /-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
-@[to_additive  "The inclusion of a SubAddAction into the ambient set, as an equivariant map."]
+@[to_additive /-- The inclusion of a SubAddAction into the ambient set, as an equivariant map. -/]
 def inclusion (s : SubMulAction M α) : s →[M] α where
 -- The inclusion map of the inclusion of a SubMulAction
   toFun := Subtype.val

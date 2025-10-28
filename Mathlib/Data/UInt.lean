@@ -3,9 +3,11 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.BitVec
+
 
 /-!
 # Adds Mathlib specific instances to the `UIntX` data types.
@@ -22,8 +24,7 @@ version also interferes more with software-verification use-cases, which is reas
 cautious here.
 -/
 
-example : (0 : UInt8) = ⟨0⟩ := rfl
-
+-- these theorems are fragile, so do them first
 set_option hygiene false in
 run_cmd
   for typeName' in [`UInt8, `UInt16, `UInt32, `UInt64, `USize] do
@@ -31,58 +32,86 @@ run_cmd
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
 
-      instance : Neg $typeName where
-        neg a := mk ⟨-a.val⟩
+      open $typeName (toBitVec_mul) in
+      protected theorem toBitVec_nsmul (n : ℕ) (a : $typeName) :
+          (n • a).toBitVec = n • a.toBitVec := by
+        rw [Lean.Grind.Semiring.nsmul_eq_natCast_mul, toBitVec_mul,
+          nsmul_eq_mul, BitVec.natCast_eq_ofNat]
+        rfl
 
-      instance : Pow $typeName ℕ where
-        pow a n := mk ⟨a.val ^ n⟩
+      attribute [local instance] natCast intCast
 
-      instance : SMul ℕ $typeName where
-        smul n a := mk ⟨n • a.val⟩
+      @[simp, int_toBitVec]
+      protected theorem toBitVec_natCast (n : ℕ) :
+          (n : $typeName).toBitVec = n := rfl
 
-      instance : SMul ℤ $typeName where
-        smul z a := mk ⟨z • a.val⟩
+      open $typeName (toBitVec_neg) in
+      @[simp, int_toBitVec]
+      protected theorem toBitVec_intCast (z : ℤ) :
+          (z : $typeName).toBitVec = z := by
+        obtain ⟨z, rfl | rfl⟩ := z.eq_nat_or_neg
+        · erw [intCast_ofNat]; rfl
+        · rw [intCast_neg, toBitVec_neg]
+          erw [intCast_ofNat]
+          simp
 
-      lemma neg_def (a : $typeName) : -a = ⟨⟨-a.val⟩⟩ := rfl
+      open $typeName (toBitVec_mul toBitVec_intCast) in
+      @[simp, int_toBitVec]
+      protected theorem toBitVec_zsmul (z : ℤ) (a : $typeName) :
+          (z • a).toBitVec = z • a.toBitVec := by
+        change (z * a).toBitVec = BitVec.ofInt _ z * a.toBitVec
+        rw [toBitVec_mul]
+        congr 1
+        rw [toBitVec_intCast]
+        rfl
 
-      lemma pow_def (a : $typeName) (n : ℕ) : a ^ n = ⟨⟨a.val ^ n⟩⟩ := rfl
+    end $typeName
+  ))
 
-      lemma nsmul_def (n : ℕ) (a : $typeName) : n • a = ⟨⟨n • a.val⟩⟩ := rfl
+-- Note that these construct no new data, so cannot form diamonds with core.
+set_option hygiene false in
+run_cmd
+  for typeName' in [`UInt8, `UInt16, `UInt32, `UInt64, `USize] do
+  let typeName := Lean.mkIdent typeName'
+  Lean.Elab.Command.elabCommand (← `(
+    namespace $typeName
 
-      lemma zsmul_def (z : ℤ) (a : $typeName) : z • a = ⟨⟨z • a.val⟩⟩ := rfl
-
-      open $typeName (eq_of_val_eq) in
-      lemma val_injective : Function.Injective val := @eq_of_val_eq
+      open $typeName (eq_of_toFin_eq) in
+      lemma toFin_injective : Function.Injective toFin := @eq_of_toFin_eq
 
       open $typeName (eq_of_toBitVec_eq) in
       lemma toBitVec_injective : Function.Injective toBitVec := @eq_of_toBitVec_eq
 
+      open $typeName (toBitVec_one toBitVec_mul toBitVec_pow) in
       instance instCommMonoid : CommMonoid $typeName :=
         Function.Injective.commMonoid toBitVec toBitVec_injective
-          rfl (fun _ _ => rfl) (fun _ _ => rfl)
+          toBitVec_one (fun _ _ => toBitVec_mul) (fun _ _ => toBitVec_pow _ _)
 
+      open $typeName (
+        toBitVec_zero toBitVec_add toBitVec_mul toBitVec_neg toBitVec_sub toBitVec_nsmul
+        toBitVec_zsmul) in
       instance instNonUnitalCommRing : NonUnitalCommRing $typeName :=
         Function.Injective.nonUnitalCommRing toBitVec toBitVec_injective
-          rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-          (fun _ _ => rfl) (fun _ _ => rfl)
+          toBitVec_zero (fun _ _ => toBitVec_add) (fun _ _ => toBitVec_mul) (fun _ => toBitVec_neg)
+          (fun _ _ => toBitVec_sub)
+          (fun _ _ => toBitVec_nsmul _ _) (fun _ _ => toBitVec_zsmul _ _)
 
-      local instance instNatCast : NatCast $typeName where
-        natCast n := mk n
+      attribute [local instance] intCast natCast
 
-      local instance instIntCast : IntCast $typeName where
-        intCast z := mk z
-
-      lemma natCast_def (n : ℕ) : (n : $typeName) = ⟨n⟩ := rfl
-
-      lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
-
+      open $typeName (
+        toBitVec_zero toBitVec_one toBitVec_add toBitVec_mul toBitVec_neg
+        toBitVec_sub toBitVec_nsmul toBitVec_zsmul toBitVec_pow
+        toBitVec_natCast toBitVec_intCast) in
       local instance instCommRing : CommRing $typeName :=
         Function.Injective.commRing toBitVec toBitVec_injective
-          rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-          (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
+          toBitVec_zero toBitVec_one (fun _ _ => toBitVec_add) (fun _ _ => toBitVec_mul)
+          (fun _ => toBitVec_neg) (fun _ _ => toBitVec_sub)
+          (fun _ _ => toBitVec_nsmul _ _) (fun _ _ => toBitVec_zsmul _ _)
+          (fun _ _ => toBitVec_pow _ _)
+          toBitVec_natCast toBitVec_intCast
 
       namespace CommRing
-      attribute [scoped instance] instCommRing instNatCast instIntCast
+      attribute [scoped instance] instCommRing natCast intCast
       end CommRing
 
     end $typeName
@@ -91,9 +120,10 @@ run_cmd
   let docString :=
     s!"To use this instance, use `open scoped {typeName'}.CommRing`.\n\n" ++
     "See the module docstring for an explanation"
-  Lean.addDocString (typeName'.mkStr "instCommRing") docString
-  Lean.addDocString (typeName'.mkStr "instNatCast") docString
-  Lean.addDocString (typeName'.mkStr "instIntCast") docString
+  Lean.addDocStringCore (typeName'.mkStr "instCommRing") docString
+  -- TODO: add these docstrings in core?
+  -- Lean.addDocStringCore (typeName'.mkStr "instNatCast") docString
+  -- Lean.addDocStringCore (typeName'.mkStr "instIntCast") docString
 
 namespace UInt8
 

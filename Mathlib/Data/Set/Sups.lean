@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.NAry
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.SupClosed
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Set family operations
@@ -19,7 +19,7 @@ This file defines a few binary operations on `Set α` for use in set family comb
 
 ## Notation
 
-We define the following notation in locale `SetFamily`:
+We define the following notation in scope `SetFamily`:
 * `s ⊻ t`
 * `s ⊼ t`
 
@@ -62,8 +62,7 @@ protected def hasSups : HasSups (Set α) :=
   ⟨image2 (· ⊔ ·)⟩
 
 scoped[SetFamily] attribute [instance] Set.hasSups
--- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
--- instance
+
 open SetFamily
 
 variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
@@ -151,7 +150,7 @@ lemma subset_sups_self : s ⊆ s ⊻ s := fun _a ha ↦ mem_sups.2 ⟨_, ha, _, 
 lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed s := sups_subset_iff
 
 @[simp] lemma sups_eq_self : s ⊻ s = s ↔ SupClosed s :=
-  subset_sups_self.le.le_iff_eq.symm.trans sups_subset_self
+  subset_sups_self.le.ge_iff_eq'.symm.trans sups_subset_self
 
 lemma sep_sups_le (s t : Set α) (a : α) :
     {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by ext; aesop
@@ -192,8 +191,7 @@ protected def hasInfs : HasInfs (Set α) :=
   ⟨image2 (· ⊓ ·)⟩
 
 scoped[SetFamily] attribute [instance] Set.hasInfs
--- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
--- instance
+
 open SetFamily
 
 variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
@@ -281,7 +279,7 @@ lemma subset_infs_self : s ⊆ s ⊼ s := fun _a ha ↦ mem_infs.2 ⟨_, ha, _, 
 lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed s := infs_subset_iff
 
 @[simp] lemma infs_self : s ⊼ s = s ↔ InfClosed s :=
-  subset_infs_self.le.le_iff_eq.symm.trans infs_self_subset
+  subset_infs_self.le.ge_iff_eq'.symm.trans infs_self_subset
 
 lemma sep_infs_le (s t : Set α) (a : α) :
     {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by ext; aesop
@@ -295,11 +293,7 @@ theorem iUnion_image_inf_right : ⋃ b ∈ t, (· ⊓ b) '' s = s ⊼ t :=
   iUnion_image_right _
 
 @[simp]
-theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t = s ⊼ t := by
-  have : (s ×ˢ t).image (uncurry (· ⊓ ·)) = Set.image2 (fun x x_1 => x ⊓ x_1) s t := by
-    simp only [Set.image_uncurry_prod]
-  rw [← this]
-  exact image_uncurry_prod _ _ _
+theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t = s ⊼ t := rfl
 
 theorem infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) := image2_assoc inf_assoc
 
@@ -344,7 +338,7 @@ open SetFamily
 theorem upperClosure_sups [SemilatticeSup α] (s t : Set α) :
     upperClosure (s ⊻ t) = upperClosure s ⊔ upperClosure t := by
   ext a
-  simp only [SetLike.mem_coe, mem_upperClosure, Set.mem_sups, exists_and_left, exists_prop,
+  simp only [SetLike.mem_coe, mem_upperClosure, Set.mem_sups,
     UpperSet.coe_sup, Set.mem_inter_iff]
   constructor
   · rintro ⟨_, ⟨b, hb, c, hc, rfl⟩, ha⟩
@@ -356,8 +350,7 @@ theorem upperClosure_sups [SemilatticeSup α] (s t : Set α) :
 theorem lowerClosure_infs [SemilatticeInf α] (s t : Set α) :
     lowerClosure (s ⊼ t) = lowerClosure s ⊓ lowerClosure t := by
   ext a
-  simp only [SetLike.mem_coe, mem_lowerClosure, Set.mem_infs, exists_and_left, exists_prop,
-    LowerSet.coe_sup, Set.mem_inter_iff]
+  simp only [SetLike.mem_coe, mem_lowerClosure, Set.mem_infs]
   constructor
   · rintro ⟨_, ⟨b, hb, c, hc, rfl⟩, ha⟩
     exact ⟨⟨b, hb, ha.trans inf_le_left⟩, c, hc, ha.trans inf_le_right⟩

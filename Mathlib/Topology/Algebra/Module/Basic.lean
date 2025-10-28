@@ -18,7 +18,7 @@ import Mathlib.LinearAlgebra.Quotient.Defs
 We use the class `ContinuousSMul` for topological (semi) modules and topological vector spaces.
 -/
 
-assert_not_exists Star.star
+assert_not_exists Cardinal TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise
@@ -38,6 +38,14 @@ theorem ContinuousSMul.of_nhds_zero [IsTopologicalRing R] [IsTopologicalAddGroup
     rw [← nhds_prod_eq] at hmul
     refine continuous_of_continuousAt_zero₂ (AddMonoidHom.smul : R →+ M →+ M) ?_ ?_ ?_ <;>
       simpa [ContinuousAt]
+
+variable (R M) in
+omit [TopologicalSpace R] in
+/-- A topological module over a ring has continuous negation.
+
+This cannot be an instance, because it would cause search for `[Module ?R M]` with unknown `R`. -/
+theorem ContinuousNeg.of_continuousConstSMul [ContinuousConstSMul R M] : ContinuousNeg M where
+  continuous_neg := by simpa using continuous_const_smul (T := M) (-1 : R)
 
 end
 
@@ -102,7 +110,7 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
     [TopologicalSpace M] [TopologicalSpace R] [SeparableSpace R]
     [ContinuousAdd M] [ContinuousSMul R M] {s : Set M} (hs : IsSeparable s) :
     IsSeparable (Submodule.span R s : Set M) := by
-  rw [span_eq_iUnion_nat]
+  rw [Submodule.span_eq_iUnion_nat]
   refine .iUnion fun n ↦ .image ?_ ?_
   · have : IsSeparable {f : Fin n → R × M | ∀ (i : Fin n), f i ∈ Set.univ ×ˢ s} := by
       apply isSeparable_pi (fun i ↦ .prod (.of_separableSpace Set.univ) hs)
@@ -112,10 +120,8 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
 
 namespace Submodule
 
-variable {α β : Type*} [TopologicalSpace β]
-
-instance topologicalAddGroup [Ring α] [AddCommGroup β] [Module α β] [IsTopologicalAddGroup β]
-    (S : Submodule α β) : IsTopologicalAddGroup S :=
+instance topologicalAddGroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    [TopologicalSpace M] [IsTopologicalAddGroup M] (S : Submodule R M) : IsTopologicalAddGroup S :=
   inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup)
 
 end Submodule
@@ -142,7 +148,7 @@ def Submodule.topologicalClosure (s : Submodule R M) : Submodule R M :=
   { s.toAddSubmonoid.topologicalClosure with
     smul_mem' := s.mapsTo_smul_closure }
 
-@[simp]
+@[simp, norm_cast]
 theorem Submodule.topologicalClosure_coe (s : Submodule R M) :
     (s.topologicalClosure : Set M) = closure (s : Set M) :=
   rfl
@@ -191,6 +197,49 @@ theorem Submodule.isClosed_or_dense_of_isCoatom (s : Submodule R M) (hs : IsCoat
 
 end closure
 
+namespace Submodule
+
+variable {ι R : Type*} {M : ι → Type*} [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+  [∀ i, TopologicalSpace (M i)] [DecidableEq ι]
+
+/-- If `s i` is a family of submodules, each is in its module,
+then the closure of their span in the indexed product of the modules
+is the product of their closures.
+
+In case of a finite index type, this statement immediately follows from `Submodule.iSup_map_single`.
+However, the statement is true for an infinite index type as well. -/
+theorem closure_coe_iSup_map_single (s : ∀ i, Submodule R (M i)) :
+    closure (↑(⨆ i, (s i).map (LinearMap.single R M i)) : Set (∀ i, M i)) =
+      Set.univ.pi fun i ↦ closure (s i) := by
+  rw [← closure_pi_set]
+  refine (closure_mono ?_).antisymm <| closure_minimal ?_ isClosed_closure
+  · exact SetLike.coe_mono <| iSup_map_single_le
+  · simp only [Set.subset_def, mem_closure_iff]
+    intro x hx U hU hxU
+    rcases isOpen_pi_iff.mp hU x hxU with ⟨t, V, hV, hVU⟩
+    refine ⟨∑ i ∈ t, Pi.single i (x i), hVU ?_, ?_⟩
+    · simp_all [Finset.sum_pi_single]
+    · exact sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_map_of_mem <| hx _ <| Set.mem_univ _
+
+/-- If `s i` is a family of submodules, each is in its module,
+then the closure of their span in the indexed product of the modules
+is the product of their closures.
+
+In case of a finite index type, this statement immediately follows from `Submodule.iSup_map_single`.
+However, the statement is true for an infinite index type as well.
+
+This version is stated in terms of `Submodule.topologicalClosure`,
+thus assumes that `M i`s are topological modules over `R`.
+However, the statement is true without assuming continuity of the operations,
+see `Submodule.closure_coe_iSup_map_single` above. -/
+theorem topologicalClosure_iSup_map_single [∀ i, ContinuousAdd (M i)]
+    [∀ i, ContinuousConstSMul R (M i)] (s : ∀ i, Submodule R (M i)) :
+    topologicalClosure (⨆ i, (s i).map (LinearMap.single R M i)) =
+      pi Set.univ fun i ↦ (s i).topologicalClosure :=
+  SetLike.coe_injective <| closure_coe_iSup_map_single _
+
+end Submodule
+
 section Pi
 
 theorem LinearMap.continuous_on_pi {ι : Type*} {R : Type*} {M : Type*} [Finite ι] [Semiring R]
@@ -218,7 +267,7 @@ variable [ContinuousAdd M₂] {σ : R →+* S} {l : Filter α}
 
 /-- Constructs a bundled linear map from a function and a proof that this function belongs to the
 closure of the set of linear maps. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (Set.range ((↑) : (M₁ →ₛₗ[σ] M₂) → M₁ → M₂))) : M₁ →ₛₗ[σ] M₂ :=
   { addMonoidHomOfMemClosureRangeCoe f hf with
@@ -226,7 +275,7 @@ def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
       (Set.range_subset_iff.2 LinearMap.map_smulₛₗ) hf }
 
 /-- Construct a bundled linear map from a pointwise limit of linear maps -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def linearMapOfTendsto (f : M₁ → M₂) (g : α → M₁ →ₛₗ[σ] M₂) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →ₛₗ[σ] M₂ :=
   linearMapOfMemClosureRangeCoe f <|
@@ -246,7 +295,6 @@ namespace Submodule
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
   (S : Submodule R M)
 
--- Porting note: This is required in Lean4.
 instance _root_.QuotientModule.Quotient.topologicalSpace : TopologicalSpace (M ⧸ S) :=
   inferInstanceAs (TopologicalSpace (Quotient S.quotientRel))
 

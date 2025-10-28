@@ -5,8 +5,11 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.DefView
 import Lean.Util.CollectAxioms
-import Mathlib.Init
 import ImportGraph.Imports
+import ImportGraph.RequiredModules
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-! # `#min_imports in` a command to find minimal imports
 
@@ -65,12 +68,13 @@ def getSyntaxNodeKinds : Syntax → NameSet
   | .ident _ _ nm _ => NameSet.empty.insert nm
   | _ => {}
 
-/-- extracts the names of the declarations in `env` on which `decl` depends. -/
--- source:
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Counting.20prerequisites.20of.20a.20theorem/near/425370265
-def getVisited (env : Environment) (decl : Name) : NameSet :=
-  let (_, { visited, .. }) := CollectAxioms.collect decl |>.run env |>.run {}
-  visited
+/-- Extracts the names of the declarations in `env` on which `decl` depends. -/
+def getVisited (decl : Name) : CommandElabM NameSet := do
+  unless (← hasConst decl) do
+    return {}
+  -- without resetting the state, the "unused tactics" linter gets confused?
+  let st ← get
+  liftCoreM decl.transitivelyUsedConstants <* set st
 
 /-- `getId stx` takes as input a `Syntax` `stx`.
 If `stx` contains a `declId`, then it returns the `ident`-syntax for the `declId`.
@@ -172,7 +176,7 @@ def getDeclName (cmd : Syntax) : CommandElabM Name := do
     -- failing everything, use the current namespace followed by the visible name
     return ns ++ id1.getId)
 
-/--`getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/-- `getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 declaration names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
@@ -190,12 +194,12 @@ def getAllDependencies (cmd id : Syntax) :
   let env ← getEnv
   let nm ← getDeclName cmd
   -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
-  return getVisited env nm
-              |>.append (getVisited env id.getId)
+  return (← getVisited nm)
+              |>.append (← getVisited id.getId)
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
 
-/--`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/-- `getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
@@ -227,7 +231,7 @@ Assuming that `importNames` are module names,
 it returns the `NameSet` consisting of a minimal collection of module names whose transitive
 closure is enough to parse (and elaborate) `cmd`. -/
 def getIrredundantImports (env : Environment) (importNames : NameSet) : NameSet :=
-  importNames.diff (env.findRedundantImports importNames.toArray)
+  importNames \ (env.findRedundantImports importNames.toArray)
 
 /-- `minImpsCore stx id` is the internal function to elaborate the `#min_imports in` command.
 It collects the irredundant imports to parse and elaborate `stx` and logs
@@ -247,10 +251,10 @@ def minImpsCore (stx id : Syntax) : CommandElabM Unit := do
 
 /-- `#min_imports in cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
 to find a collection of minimal imports that should be sufficient for `cmd` to work. -/
-syntax (name := minImpsStx) "#min_imports" "in" command : command
+syntax (name := minImpsStx) "#min_imports" " in " command : command
 
 @[inherit_doc minImpsStx]
-syntax "#min_imports" "in" term : command
+syntax "#min_imports" " in " term : command
 
 elab_rules : command
   | `(#min_imports in $cmd:command) => do

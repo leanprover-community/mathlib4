@@ -29,7 +29,7 @@ Kleene star.
 
 ## Notation
 
-`a∗` is notation for `kstar a` in locale `Computability`.
+`a∗` is notation for `kstar a` in scope `Computability`.
 
 ## References
 
@@ -104,18 +104,14 @@ abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemS
     le := fun a b ↦ a + b = b
     le_refl := h
     le_trans := fun a b c hab hbc ↦ by
-      simp only
       rw [← hbc, ← add_assoc, hab]
     le_antisymm := fun a b hab hba ↦ by rwa [← hba, add_comm]
     sup := (· + ·)
     le_sup_left := fun a b ↦ by
-      simp only
       rw [← add_assoc, h]
     le_sup_right := fun a b ↦ by
-      simp only
       rw [add_comm, add_assoc, h]
     sup_le := fun a b c hab hbc ↦ by
-      simp only
       rwa [add_assoc, hbc]
     bot := 0
     bot_le := zero_add }
@@ -132,12 +128,13 @@ scoped[Computability] attribute [simp] add_eq_sup
 theorem add_idem (a : α) : a + a = a := by simp
 
 lemma natCast_eq_one {n : ℕ} (nezero : n ≠ 0) : (n : α) = 1 := by
-  induction n, Nat.one_le_iff_ne_zero.mpr nezero using Nat.le_induction with
+  rw [← Nat.one_le_iff_ne_zero] at nezero
+  induction n, nezero using Nat.le_induction with
   | base => exact Nat.cast_one
   | succ x _ hx => rw [Nat.cast_add, hx, Nat.cast_one, add_idem 1]
 
 lemma ofNat_eq_one {n : ℕ} [n.AtLeastTwo] : (ofNat(n) : α) = 1 :=
-  natCast_eq_one <| Nat.not_eq_zero_of_lt Nat.AtLeastTwo.prop
+  natCast_eq_one <| Nat.ne_zero_of_lt Nat.AtLeastTwo.prop
 
 theorem nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
   | 0, h => (h rfl).elim
@@ -158,18 +155,18 @@ theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
   add_le_iff.2 ⟨ha, hb⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toOrderedAddCommMonoid :
-    OrderedAddCommMonoid α :=
-  { ‹IdemSemiring α› with
-    add_le_add_left := fun a b hbc c ↦ by
+instance (priority := 100) IdemSemiring.toIsOrderedAddMonoid :
+    IsOrderedAddMonoid α :=
+  { add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
-      exact sup_le_sup_left hbc _ }
+      grw [hbc] }
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd :
-    CanonicallyOrderedAdd α :=
-  { exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
-    le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
+    CanonicallyOrderedAdd α where
+  exists_add_of_le h := ⟨_, h.add_eq_right.symm⟩
+  le_add_self a b := add_eq_left_iff_le.1 <| by rw [add_assoc, add_idem]
+  le_self_add a b := add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem]
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toMulLeftMono : MulLeftMono α :=
@@ -201,11 +198,9 @@ theorem mul_kstar_le_self : b * a ≤ b → b * a∗ ≤ b :=
 theorem kstar_mul_le_self : a * b ≤ b → a∗ * b ≤ b :=
   KleeneAlgebra.kstar_mul_le_self _ _
 
-theorem mul_kstar_le (hb : b ≤ c) (ha : c * a ≤ c) : b * a∗ ≤ c :=
-  (mul_le_mul_right' hb _).trans <| mul_kstar_le_self ha
+theorem mul_kstar_le (hb : b ≤ c) (ha : c * a ≤ c) : b * a∗ ≤ c := by grw [hb, mul_kstar_le_self ha]
 
-theorem kstar_mul_le (hb : b ≤ c) (ha : a * c ≤ c) : a∗ * b ≤ c :=
-  (mul_le_mul_left' hb _).trans <| kstar_mul_le_self ha
+theorem kstar_mul_le (hb : b ≤ c) (ha : a * c ≤ c) : a∗ * b ≤ c := by grw [hb, kstar_mul_le_self ha]
 
 theorem kstar_le_of_mul_le_left (hb : 1 ≤ b) : b * a ≤ b → a∗ ≤ b := by
   simpa using mul_kstar_le hb
@@ -249,9 +244,7 @@ theorem kstar_idem (a : α) : a∗∗ = a∗ :=
 @[simp]
 theorem pow_le_kstar : ∀ {n : ℕ}, a ^ n ≤ a∗
   | 0 => (pow_zero _).trans_le one_le_kstar
-  | n + 1 => by
-    rw [pow_succ']
-    exact (mul_le_mul_left' pow_le_kstar _).trans mul_kstar_le_kstar
+  | n + 1 => by grw [pow_succ', pow_le_kstar, mul_kstar_le_kstar]
 
 end KleeneAlgebra
 
@@ -308,6 +301,7 @@ instance : KleeneAlgebra (∀ i, π i) :=
     mul_kstar_le_self := fun _ _ h _ ↦ mul_kstar_le_self <| h _
     kstar_mul_le_self := fun _ _ h _ ↦ kstar_mul_le_self <| h _ }
 
+@[push ←]
 theorem kstar_def (a : ∀ i, π i) : a∗ = fun i ↦ (a i)∗ :=
   rfl
 

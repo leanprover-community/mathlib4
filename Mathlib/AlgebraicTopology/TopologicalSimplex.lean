@@ -5,9 +5,8 @@ Authors: Johan Commelin, Adam Topaz
 -/
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
-import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.Topology.Category.TopCat.ULift
 import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Topological simplices
@@ -17,6 +16,7 @@ topological `n`-simplex.
 This is used to define `TopCat.toSSet` in `AlgebraicTopology.SingularSet`.
 -/
 
+universe u
 
 noncomputable section
 
@@ -47,7 +47,7 @@ lemma toTopObj_one_coe_add_coe_eq_one (f : ⦋1⦌.toTopObj) : (f 0 : ℝ) + f 1
   rw [toTopObj_one_add_eq_one]
 
 instance (x : SimplexCategory) : Nonempty x.toTopObj :=
-  ⟨⟨Pi.single (I := Fin _) 0 1, (show ∑ _, _ = _ by simp)⟩⟩
+  ⟨⟨Pi.single 0 1, (show ∑ _, _ = _ by simp)⟩⟩
 
 instance : Unique ⦋0⦌.toTopObj :=
   ⟨⟨1, show ∑ _, _ = _ by simp [toType_apply]⟩, fun f ↦ by ext i; fin_cases i; simp⟩
@@ -67,7 +67,7 @@ def toTopObjOneHomeo : ⦋1⦌.toTopObj ≃ₜ I where
 open unitInterval in
 instance (x : SimplexCategory) : PathConnectedSpace x.toTopObj := by
   refine ⟨inferInstance, ?_⟩
-  intros f g
+  intro f g
   dsimp [toTopObj, toType_apply] at f g ⊢
   refine ⟨⟨fun j ↦ ⟨toNNReal (symm j) • f.1 + toNNReal j • g.1, ?_⟩, ?_⟩, ?_, ?_⟩
   · ext; simp [Finset.sum_add_distrib, ← Finset.mul_sum, f.2, g.2]
@@ -92,22 +92,23 @@ theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i :
     toTopMap f g i = ∑ j ∈ Finset.univ.filter (f · = i), g j :=
   rfl
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (toTopMap f) := by
   refine Continuous.subtype_mk (continuous_pi fun i => ?_) _
   dsimp only [coe_toTopMap]
   exact continuous_finset_sum _ (fun j _ => (continuous_apply _).comp continuous_subtype_val)
 
-/-- The functor associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
+/-- The functor `SimplexCategory ⥤ TopCat.{0}`
+associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
 @[simps obj map]
-def toTop : SimplexCategory ⥤ TopCat where
+def toTop₀ : SimplexCategory ⥤ TopCat.{0} where
   obj x := TopCat.of x.toTopObj
-  map f := TopCat.ofHom ⟨toTopMap f, by continuity⟩
+  map f := TopCat.ofHom ⟨toTopMap f, by fun_prop⟩
   map_id := by
     classical
     intro Δ
     ext f
-    simp [Finset.sum_filter, CategoryTheory.id_apply]
+    simp [Finset.sum_filter]
   map_comp := fun f g => by
     classical
     ext h : 3
@@ -117,5 +118,11 @@ def toTop : SimplexCategory ⥤ TopCat where
       · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
       · tauto
     · apply Set.pairwiseDisjoint_filter
+
+/-- The functor `SimplexCategory ⥤ TopCat.{u}`
+associating the topological `n`-simplex to `⦋n⦌ : SimplexCategory`. -/
+@[simps! obj map, pp_with_univ]
+def toTop : SimplexCategory ⥤ TopCat.{u} :=
+  toTop₀ ⋙ TopCat.uliftFunctor
 
 end SimplexCategory

@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Regular.Basic
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Polynomial
-import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Cramer's rule and adjugate matrices
@@ -28,8 +26,8 @@ We prove the adjugate behaves like `det A • A⁻¹`.
 
 ## Main definitions
 
- * `Matrix.cramer A b`: the vector output by Cramer's rule on `A` and `b`.
- * `Matrix.adjugate A`: the adjugate (or classical adjoint) of the matrix `A`.
+* `Matrix.cramer A b`: the vector output by Cramer's rule on `A` and `b`.
+* `Matrix.adjugate A`: the adjugate (or classical adjoint) of the matrix `A`.
 
 ## References
 
@@ -202,7 +200,7 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
   intro σ _
   congr 1
   by_cases h : i = σ j
-  · -- Everything except `(i , j)` (= `(σ j , j)`) is given by A, and the rest is a single `1`.
+  · -- Everything except `(i, j)` (= `(σ j, j)`) is given by A, and the rest is a single `1`.
     congr
     ext j'
     subst h
@@ -227,12 +225,10 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
 theorem adjugate_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m α) :
     adjugate (A.submatrix e e) = (adjugate A).submatrix e e := by
   ext i j
+  have : (fun j ↦ Pi.single i 1 <| e.symm j) = Pi.single (e i) 1 :=
+    Function.update_comp_equiv (0 : n → α) e.symm i 1
   rw [adjugate_apply, submatrix_apply, adjugate_apply, ← det_submatrix_equiv_self e,
-    updateRow_submatrix_equiv]
-  -- Porting note: added
-  suffices (fun j => Pi.single i 1 (e.symm j)) = Pi.single (e i) 1 by
-    erw [this]
-  exact Function.update_comp_equiv _ e.symm _ _
+    updateRow_submatrix_equiv, this]
 
 theorem adjugate_reindex (e : m ≃ n) (A : Matrix m m α) :
     adjugate (reindex e e A) = reindex e e (adjugate A) :=
@@ -247,8 +243,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
   have : b = ∑ i, b i • (Pi.single i 1 : n → α) := by
     refine (pi_eq_sum_univ b).trans ?_
     congr with j
-    -- Porting note: needed to help `Pi.smul_apply`
-    simp [Pi.single_apply, eq_comm, Pi.smul_apply (b j)]
+    simp [Pi.single_apply, eq_comm]
   conv_lhs =>
     rw [this]
   ext k
@@ -280,7 +275,7 @@ if the determinant is not a unit. A sufficient (but still not necessary) conditi
 divides `b`. -/
 @[simp]
 theorem mulVec_cramer (A : Matrix n n α) (b : n → α) : A *ᵥ cramer A b = A.det • b := by
-  rw [cramer_eq_adjugate_mulVec, mulVec_mulVec, mul_adjugate, smul_mulVec_assoc, one_mulVec]
+  rw [cramer_eq_adjugate_mulVec, mulVec_mulVec, mul_adjugate, smul_mulVec, one_mulVec]
 
 theorem adjugate_subsingleton [Subsingleton n] (A : Matrix n n α) : adjugate A = 1 := by
   ext i j
@@ -387,8 +382,9 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
       A 0 0 * A 1 1 - A 0 1 * A 1 0] := by
   ext i j
   rw [adjugate_fin_succ_eq_det_submatrix, det_fin_two]
-  fin_cases i <;> fin_cases j <;> simp [updateRow, Fin.succAbove, Fin.lt_def] <;> ring
+  fin_cases i <;> fin_cases j <;> simp [Fin.succAbove, Fin.lt_def] <;> ring
 
+set_option linter.style.commandStart false in -- Use spaces to format a matrix.
 @[simp]
 theorem adjugate_fin_three_of (a b c d e f g h i : α) :
     adjugate !![a, b, c; d, e, f; g, h, i] =
@@ -457,7 +453,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
     intro
     rw [RingHom.map_adjugate, f'_inv]
   have f'_g_mul : ∀ M N : Matrix n n α, f' (g M * g N) = M * N := by
-    intros M N
+    intro M N
     rw [RingHom.map_mul, f'_inv, f'_inv]
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M
@@ -496,7 +492,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
   suffices adjugate (adjugate A') = det A' ^ (Fintype.card n - 2) • A' by
     rw [← mvPolynomialX_mapMatrix_aeval ℤ A, ← AlgHom.map_adjugate, ← AlgHom.map_adjugate, this,
       ← AlgHom.map_det, ← map_pow (MvPolynomial.aeval fun p : n × n ↦ A p.1 p.2),
-      AlgHom.mapMatrix_apply, AlgHom.mapMatrix_apply, Matrix.map_smul' _ _ _ (_root_.map_mul _)]
+      AlgHom.mapMatrix_apply, AlgHom.mapMatrix_apply, Matrix.map_smul' _ _ _ (map_mul _)]
   have h_card' : Fintype.card n - 2 + 1 = Fintype.card n - 1 := by simp [h_card]
   have is_reg : IsSMulRegular (MvPolynomial (n × n) ℤ) (det A') := fun x y =>
     mul_left_cancel₀ (det_mvPolynomialX_ne_zero n ℤ)

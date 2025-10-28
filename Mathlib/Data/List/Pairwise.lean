@@ -76,6 +76,24 @@ theorem Pairwise.rel_head [IsRefl α R] (h₁ : l.Pairwise R) (ha : a ∈ l) :
     R (l.head <| ne_nil_of_mem ha) a :=
   h₁.rel_head_of_rel_head_head ha (refl_of ..)
 
+theorem Pairwise.rel_dropLast_getLast (h : l.Pairwise R) (ha : a ∈ l.dropLast) :
+    R a (l.getLast <| ne_nil_of_mem <| dropLast_subset _ ha) := by
+  rw [← pairwise_reverse] at h
+  rw [getLast_eq_head_reverse]
+  exact h.rel_head_tail (by rwa [tail_reverse, mem_reverse])
+
+theorem Pairwise.rel_getLast_of_rel_getLast_getLast (h₁ : l.Pairwise R) (ha : a ∈ l)
+    (hlast : R (l.getLast <| ne_nil_of_mem ha) (l.getLast <| ne_nil_of_mem ha)) :
+    R a (l.getLast <| ne_nil_of_mem ha) := by
+  rw [← dropLast_concat_getLast (ne_nil_of_mem ha), mem_append, List.mem_singleton] at ha
+  exact ha.elim h₁.rel_dropLast_getLast (· ▸ hlast)
+
+theorem Pairwise.rel_getLast [IsRefl α R] (h₁ : l.Pairwise R) (ha : a ∈ l) :
+    R a (l.getLast <| ne_nil_of_mem ha) :=
+  h₁.rel_getLast_of_rel_getLast_getLast ha (refl_of ..)
+
+protected alias ⟨Pairwise.of_reverse, Pairwise.reverse⟩ := pairwise_reverse
+
 /-! ### Pairwise filtering -/
 
 protected alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.CauSeq.Basic
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Ring.Action.Rat
 import Mathlib.Tactic.FastInstance
 
 /-!
@@ -21,7 +21,7 @@ open CauSeq
 
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
 -- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Cauchy`.
@@ -39,7 +39,7 @@ def mk : CauSeq _ abv → Cauchy abv :=
 theorem mk_eq_mk (f : CauSeq _ abv) : @Eq (Cauchy abv) ⟦f⟧ (mk f) :=
   rfl
 
-theorem mk_eq {f g : CauSeq _ abv} : mk f = mk g ↔ f ≈ g :=
+theorem mk_eq {f g : CauSeq _ abv} : mk f = mk g ↔ LimZero (f - g) :=
   Quotient.eq
 
 /-- The map from the original ring into the Cauchy completion. -/
@@ -134,6 +134,9 @@ theorem ofRat_mul (x y : β) :
     ofRat (x * y) = (ofRat x * ofRat y : Cauchy abv) :=
   congr_arg mk (const_mul _ _)
 
+theorem ofRat_injective : Function.Injective (ofRat : β → Cauchy abv) := fun x y h => by
+  simpa [ofRat, mk_eq, ← const_sub, const_limZero, sub_eq_zero] using h
+
 private theorem zero_def : 0 = mk (abv := abv) 0 :=
   rfl
 
@@ -158,11 +161,14 @@ def ofRatRingHom : β →+* (Cauchy abv) where
 theorem ofRat_sub (x y : β) : ofRat (x - y) = (ofRat x - ofRat y : Cauchy abv) :=
   congr_arg mk (const_sub _ _)
 
+noncomputable instance Cauchy.instNonTrivial [Nontrivial β] : Nontrivial (Cauchy abv) :=
+  ofRat_injective.nontrivial
+
 end
 
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
@@ -175,7 +181,7 @@ end
 
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance instNNRatCast : NNRatCast (Cauchy abv) where nnratCast q := ofRat q
@@ -190,7 +196,7 @@ noncomputable instance : Inv (Cauchy abv) :=
     (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
       have := limZero_congr fg
       by_cases hf : LimZero f
-      · simp [hf, this.1 hf, Setoid.refl]
+      · simp [hf, this.1 hf]
       · have hg := mt this.2 hf
         simp only [hf, dite_false, hg]
         have If : mk (inv f hf) * mk f = 1 := mk_eq.2 (inv_mul_cancel hf)
@@ -236,7 +242,6 @@ lemma ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) :=
 
 /-- The Cauchy completion forms a division ring. -/
 noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
-  exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   inv_zero := inv_zero
   mul_inv_cancel _ := CauSeq.Completion.mul_inv_cancel
   nnqsmul := (· • ·)
@@ -246,9 +251,9 @@ noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   nnqsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ NNRat.smul_def _ _
   qsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ Rat.smul_def _ _
 
-/-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
+/-- Show the first 10 items of a representative of this equivalence class of Cauchy sequences.
 
-The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
+The representative chosen is the one passed in the VM to `Quot.mk`, so two Cauchy sequences
 converging to the same number may be printed differently.
 -/
 unsafe instance [Repr β] : Repr (Cauchy abv) where
@@ -261,7 +266,7 @@ end
 
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv]
 
 /-- The Cauchy completion forms a field. -/
@@ -272,7 +277,7 @@ end
 
 end CauSeq.Completion
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 namespace CauSeq
 
@@ -345,13 +350,16 @@ theorem lim_neg (f : CauSeq β abv) : lim (-f) = -lim f :=
       rw [const_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg]
       exact Setoid.symm (equiv_lim f))
 
+theorem lim_sub (f g : CauSeq β abv) : lim f - lim g = lim (f - g) := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, ← lim_neg, lim_add f (-g)]
+
 theorem lim_eq_zero_iff (f : CauSeq β abv) : lim f = 0 ↔ LimZero f :=
   ⟨fun h => by
     have hf := equiv_lim f
     rw [h] at hf
     exact (limZero_congr hf).mpr (const_limZero.mpr rfl),
    fun h => by
-    have h₁ : f = f - const abv 0 := ext fun n => by simp [sub_apply, const_apply]
+    have h₁ : f = f - const abv 0 := ext fun n => by simp
     rw [h₁] at h
     exact lim_eq_of_equiv_const h⟩
 
@@ -378,7 +386,7 @@ theorem lim_inv {f : CauSeq β abv} (hf : ¬LimZero f) : lim (inv f hf) = (lim f
           (inv f hf - const abv (lim f)⁻¹ -
             (const abv (lim f) - f) * (inv f hf * const abv (lim f)⁻¹)) := by
               rw [sub_mul, ← sub_add, sub_sub, sub_add_eq_sub_sub, sub_right_comm, sub_add]
-              show LimZero
+              change LimZero
                 (inv f hf - const abv (lim f) * (inv f hf * const abv (lim f)⁻¹) -
                   (const abv (lim f)⁻¹ - f * (inv f hf * const abv (lim f)⁻¹)))
               exact sub_limZero

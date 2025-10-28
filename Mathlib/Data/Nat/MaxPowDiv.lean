@@ -42,14 +42,13 @@ end Nat
 namespace Nat.maxPowDiv
 
 theorem go_succ {k p n : ℕ} : go (k+1) p n = go k p n + 1 := by
-  induction k, p, n using go.induct
+  fun_induction go
   case case1 h ih =>
-    unfold go
-    simp only [if_pos h]
-    exact ih
+    conv_lhs => unfold go
+    simpa [if_pos h] using ih
   case case2 h =>
-    unfold go
-    simp only [if_neg h]
+    conv_lhs => unfold go
+    simp [if_neg h]
 
 @[simp]
 theorem zero_base {n : ℕ} : maxPowDiv 0 n = 0 := by
@@ -96,14 +95,14 @@ theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
   · rw [if_neg h]
     simp
 
-theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : 0 < n) (h : p ^ pow ∣ n) :
+theorem le_of_dvd {p n pow : ℕ} (hp : 1 < p) (hn : n ≠ 0) (h : p ^ pow ∣ n) :
     pow ≤ p.maxPowDiv n := by
   have ⟨c, hc⟩ := h
   have : 0 < c := by
     apply Nat.pos_of_ne_zero
     intro h'
     rw [h',mul_zero] at hc
-    exact not_eq_zero_of_lt hn hc
+    omega
   simp [hc, base_pow_mul hp this]
 
 end maxPowDiv

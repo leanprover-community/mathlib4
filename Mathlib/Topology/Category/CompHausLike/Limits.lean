@@ -111,9 +111,7 @@ lemma finiteCoproduct.ι_jointly_surjective (R : finiteCoproduct X) :
 
 lemma finiteCoproduct.ι_desc_apply {B : CompHausLike P} {π : (a : α) → X a ⟶ B} (a : α) :
     ∀ x, finiteCoproduct.desc X π (finiteCoproduct.ι X a x) = π a x := by
-  intro x
-  change (ι X a ≫ desc X π) _ = _
-  simp only [ι_desc]
+  tauto
 
 instance : HasCoproduct X where
   exists_colimit := ⟨finiteCoproduct.cofan X, finiteCoproduct.isColimit X⟩
@@ -137,7 +135,7 @@ attribute [instance] HasExplicitFiniteCoproducts.hasProp
 
 instance [HasExplicitFiniteCoproducts.{w} P] (α : Type w) [Finite α] :
     HasColimitsOfShape (Discrete α) (CompHausLike P) where
-  has_colimit _ := hasColimitOfIso Discrete.natIsoFunctor
+  has_colimit _ := hasColimit_of_iso Discrete.natIsoFunctor
 
 instance [HasExplicitFiniteCoproducts.{w} P] : HasFiniteCoproducts (CompHausLike.{max u w} P) where
   out n := by
@@ -154,9 +152,6 @@ lemma finiteCoproduct.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (finiteCoproduct.ι X a) :=
   .sigmaMk (σ := fun a ↦ X a)
 
-@[deprecated (since := "2024-10-18")]
-alias finiteCoproduct.openEmbedding_ι := finiteCoproduct.isOpenEmbedding_ι
-
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (Sigma.ι X a) := by
@@ -166,9 +161,6 @@ lemma Sigma.isOpenEmbedding_ι (a : α) :
   ext x
   change (Sigma.ι X a ≫ _) x = _
   simp
-
-@[deprecated (since := "2024-10-18")]
-alias Sigma.openEmbedding_ι := Sigma.isOpenEmbedding_ι
 
 /-- The functor to `TopCat` preserves finite coproducts if they exist. -/
 instance (P) [HasExplicitFiniteCoproducts.{0} P] :
@@ -311,7 +303,7 @@ class HasExplicitPullbacks : Prop where
 attribute [instance] HasExplicitPullbacks.hasProp
 
 instance [HasExplicitPullbacks P] : HasPullbacks (CompHausLike P) where
-  has_limit F := hasLimitOfIso (diagramIsoCospan F).symm
+  has_limit F := hasLimit_of_iso (diagramIsoCospan F).symm
 
 variable (P) in
 /--
@@ -349,7 +341,7 @@ theorem hasPullbacksOfInclusions
 noncomputable instance [HasExplicitPullbacksOfInclusions P] :
     PreservesPullbacksOfInclusions (compHausLikeToTop P) :=
   { preservesPullbackInl := by
-      intros X Y Z f
+      intro X Y Z f
       infer_instance }
 
 instance [HasExplicitPullbacksOfInclusions P] : FinitaryExtensive (CompHausLike P) :=
@@ -368,7 +360,7 @@ section Terminal
 variable {P : TopCat.{u} → Prop}
 
 /-- A one-element space is terminal in `CompHaus` -/
-def isTerminalPUnit [HasProp P PUnit.{u+1}] :
+def isTerminalPUnit [HasProp P PUnit.{u + 1}] :
     IsTerminal (CompHausLike.of P PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ CompHausLike.of P PUnit.{u + 1}) := fun _ ↦
     ⟨⟨ofHom _ ⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩

@@ -76,6 +76,10 @@ theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
   · simp [hn, posLog]
   · simp [posLog_eq_log, Nat.one_le_iff_ne_zero.2 hn]
 
+/-- The function `log⁺` equals `log (max 1 _)` for non-negative real numbers. -/
+theorem posLog_eq_log_max_one {x : ℝ} (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
+  grind [le_abs, posLog_eq_log, log_one, max_eq_left, log_nonpos, posLog_def]
+
 /-- The function `log⁺` is monotone on the positive axis. -/
 theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
   intro x hx y hy hxy
@@ -86,6 +90,10 @@ theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
     have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 (not_le.1 h))) hxy
     simp only [this, and_true, ge_iff_le]
     linarith
+
+@[gcongr]
+lemma posLog_le_posLog {x y : ℝ} (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
+  monotoneOn_posLog hx (hx.trans hxy) hxy
 
 /-!
 ## Estimates for Products
@@ -114,11 +122,9 @@ only two factors. -/
 theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
     log⁺ (∏ t ∈ s, f t) ≤ ∑ t ∈ s, log⁺ (f t) := by
   classical
-  apply Finset.induction (p := fun (S : Finset α) ↦ (log⁺ (∏ t ∈ S, f t) ≤ ∑ t ∈ S, log⁺ (f t)))
-  · -- Empty set
-    simp [posLog]
-  · -- Non empty set
-    intro a s ha hs
+  induction s using Finset.induction with
+  | empty => simp [posLog]
+  | insert a s ha hs =>
     calc log⁺ (∏ t ∈ insert a s, f t)
     _ = log⁺ (f a * ∏ t ∈ s, f t) := by rw [Finset.prod_insert ha]
     _ ≤ log⁺ (f a) + log⁺ (∏ t ∈ s, f t) := posLog_mul
@@ -146,7 +152,7 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     apply monotoneOn_posLog (by simp) (by simp [Finset.sum_nonneg])
     simp [Finset.abs_sum_le_sum_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t_max|) := by
-    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp [Finset.sum_nonneg]; positivity)
+    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp; positivity)
     apply Finset.sum_le_sum (fun i ih ↦ ht_max.2 i ih)
   _ = log⁺ (s.card * |f t_max|) := by
     simp [Finset.sum_const]
@@ -160,5 +166,13 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 multiple summands. -/
 theorem posLog_add {a b : ℝ} : log⁺ (a + b) ≤ log 2 + log⁺ a + log⁺ b := by
   convert posLog_sum Finset.univ ![a, b] using 1 <;> simp [add_assoc]
+
+/--
+Variant of `posLog_add` for norms of elements in normed additive commutative groups, using
+monotonicity of `log⁺` and the triangle inequality.
+-/
+lemma posLog_norm_add_le {E : Type*} [NormedAddCommGroup E] (a b : E) :
+    log⁺ ‖a + b‖ ≤ log⁺ ‖a‖ + log⁺ ‖b‖ + log 2 := by
+  grw [norm_add_le, posLog_add, add_rotate]
 
 end Real

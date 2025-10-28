@@ -46,8 +46,7 @@ structure SemidirectProduct (φ : G →* MulAut N) where
   right : G
   deriving DecidableEq
 
--- Porting note: unknown attribute
--- attribute [pp_using_anonymous_constructor] SemidirectProduct
+attribute [pp_using_anonymous_constructor] SemidirectProduct
 
 @[inherit_doc]
 notation:35 N " ⋊[" φ:35 "] " G:35 => SemidirectProduct N G φ
@@ -178,12 +177,10 @@ theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.
 def equivProd : N ⋊[φ] G ≃ N × G where
   toFun x := ⟨x.1, x.2⟩
   invFun x := ⟨x.1, x.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The group isomorphism between a semidirect product with respect to the trivial map
   and the product. -/
-@[simps (config := {rhsMd := .default})]
+@[simps (rhsMd := .default)]
 def mulEquivProd : N ⋊[1] G ≃* N × G :=
   { equivProd with map_mul' _ _ := rfl }
 
@@ -192,7 +189,7 @@ section lift
 variable (fn : N →* H) (fg : G →* H)
   (h : ∀ g, fn.comp (φ g).toMonoidHom = (MulAut.conj (fg g)).toMonoidHom.comp fn)
 
-/-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H`  -/
+/-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H` -/
 def lift : N ⋊[φ] G →* H where
   toFun a := fn a.1 * fg a.2
   map_one' := by simp

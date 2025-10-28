@@ -3,9 +3,9 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!
 
@@ -110,9 +110,9 @@ theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
   refine le_antisymm ?_ (mul_le.2 fun m hm n hn ↦ ⟨⟨m, hm⟩ ⊗ₜ[R] ⟨n, hn⟩, rfl⟩)
   rintro _ ⟨x, rfl⟩
   induction x with
-  | zero => rw [_root_.map_zero]; exact zero_mem _
+  | zero => rw [map_zero]; exact zero_mem _
   | tmul a b => exact mul_mem_mul a.2 b.2
-  | add a b ha hb => rw [_root_.map_add]; exact add_mem ha hb
+  | add a b ha hb => rw [map_add]; exact add_mem ha hb
 
 /-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural `R`-linear map
 `M ⊗[R] N →ₗ[R] M * N` induced by multiplication in `S`,

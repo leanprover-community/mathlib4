@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
@@ -32,7 +32,7 @@ open scoped Pointwise
 variable {ι α β M G H : Type*} [AddCommGroup G]
 
 /-- Translation of a function in a group by an element of that group.
-`τ a f` is defined as `x ↦ f (x - a)`.  -/
+`τ a f` is defined as `x ↦ f (x - a)`. -/
 def translate (a : G) (f : G → α) : G → α := fun x ↦ f (x - a)
 
 @[inherit_doc] scoped[translate] notation "τ " => translate

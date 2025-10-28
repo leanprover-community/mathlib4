@@ -6,6 +6,11 @@ Authors: Violeta Hernández Palacios
 import Mathlib.Algebra.CharP.Two
 import Mathlib.SetTheory.Nimber.Basic
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Nimber.Field` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Nimber multiplication and division
@@ -16,7 +21,7 @@ form a field.
 
 It's possible to show the existence of the nimber inverse implicitly via the simplicity theorem.
 Instead, we employ the explicit formula given in [On Numbers And Games][conway2001] (p. 56), which
-uses mutual induction and mimicks the definition for the surreal inverse. This definition `invAux`
+uses mutual induction and mimics the definition for the surreal inverse. This definition `invAux`
 "accidentally" gives the inverse of `0` as `1`, which the real inverse corrects.
 
 ## Todo
@@ -76,8 +81,8 @@ private theorem mul_nonempty (a b : Nimber.{u}) :
 
 theorem exists_of_lt_mul (h : c < a * b) : ∃ a' < a, ∃ b' < b, a' * b + a * b' + a' * b' = c := by
   rw [mul_def] at h
-  have := not_mem_of_lt_csInf' h
-  rwa [Set.not_mem_compl_iff] at this
+  have := notMem_of_lt_csInf' h
+  rwa [Set.notMem_compl_iff] at this
 
 theorem mul_le_of_forall_ne (h : ∀ a' < a, ∀ b' < b, a' * b + a * b' + a' * b' ≠ c) :
     a * b ≤ c := by
@@ -187,10 +192,10 @@ protected theorem mul_assoc (a b c : Nimber) : a * b * c = a * (b * c) := by
 termination_by (a, b, c)
 
 instance : IsCancelMulZero Nimber where
-  mul_left_cancel_of_ne_zero ha h := by
+  mul_left_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.mul_add, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_left ha)
-  mul_right_cancel_of_ne_zero ha h := by
+  mul_right_cancel_of_ne_zero ha _ _ h := by
     rw [← add_eq_zero, ← Nimber.add_mul, mul_eq_zero] at h
     exact add_eq_zero.1 (h.resolve_right ha)
 
@@ -288,12 +293,14 @@ theorem invAux_ne_zero (a : Nimber) : invAux a ≠ 0 := by
 
 theorem mem_invSet_of_lt_invAux (h : b < invAux a) : b ∈ invSet a := by
   rw [invAux] at h
-  have := not_mem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
-  rwa [Set.not_mem_compl_iff] at this
+  have := notMem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
+  rwa [Set.notMem_compl_iff] at this
 
-theorem invAux_not_mem_invSet (a : Nimber) : invAux a ∉ invSet a := by
+theorem invAux_notMem_invSet (a : Nimber) : invAux a ∉ invSet a := by
   rw [invAux]
   exact csInf_mem (invSet_nonempty a)
+
+@[deprecated (since := "2025-05-23")] alias invAux_not_mem_invSet := invAux_notMem_invSet
 
 theorem invAux_mem_invSet_of_lt (ha : a ≠ 0) (hb : a < b) : invAux a ∈ invSet b := by
   have H := cons_mem_invSet ha hb (zero_mem_invSet b)
@@ -322,7 +329,7 @@ private theorem mul_inv_cancel_aux (a : Nimber) :
       exact H₁ _ hb H
     · rw [← mul_right_inj' (invAux_ne_zero a'), ← mul_assoc, mul_comm _ a',
         (mul_inv_cancel_aux a').2 ha', one_mul] at H
-      exact invAux_not_mem_invSet a (H ▸ cons_mem_invSet ha' ha hb)
+      exact invAux_notMem_invSet a (H ▸ cons_mem_invSet ha' ha hb)
   · rw [one_le_iff_ne_zero, mul_ne_zero_iff]
     exact ⟨ha₀, invAux_ne_zero a⟩
 termination_by a

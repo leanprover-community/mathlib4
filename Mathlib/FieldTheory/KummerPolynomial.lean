@@ -28,12 +28,12 @@ lemma root_X_pow_sub_C_pow (n : ℕ) (a : K) :
 
 lemma root_X_pow_sub_C_ne_zero {n : ℕ} (hn : 1 < n) (a : K) :
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 :=
-  mk_ne_zero_of_natDegree_lt (monic_X_pow_sub_C _ (Nat.not_eq_zero_of_lt hn))
+  mk_ne_zero_of_natDegree_lt (monic_X_pow_sub_C _ (Nat.ne_zero_of_lt hn))
     X_ne_zero <| by rwa [natDegree_X_pow_sub_C, natDegree_X]
 
 lemma root_X_pow_sub_C_ne_zero' {n : ℕ} {a : K} (hn : 0 < n) (ha : a ≠ 0) :
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 := by
-  obtain (rfl|hn) := (Nat.succ_le_iff.mpr hn).eq_or_lt
+  obtain (rfl | hn) := (Nat.succ_le_iff.mpr hn).eq_or_lt
   · rw [pow_one]
     intro e
     refine mk_ne_zero_of_natDegree_lt (monic_X_sub_C a) (C_ne_zero.mpr ha) (by simp) ?_
@@ -80,7 +80,7 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
   rw [mul_comm, pow_mul, map_pow, hq] at H
   have : degree q = 0 := by
     simpa [isUnit_iff_degree_eq_zero, degree_X_pow_sub_C,
-      Nat.pos_iff_ne_zero, (mul_ne_zero_iff.mp hn).2] using H.2 _ q rfl
+      Nat.pos_iff_ne_zero, (mul_ne_zero_iff.mp hn).2] using H.2 rfl
   apply_fun degree at hq
   simp only [this, ← pow_mul, mul_comm k m, degree_X_pow_sub_C, Nat.pos_iff_ne_zero.mpr hn,
     Nat.pos_iff_ne_zero.mpr (mul_ne_zero_iff.mp hn).2, degree_mul, ← map_pow, add_zero,
@@ -103,7 +103,6 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
     (X_pow_sub_C_ne_zero hp.pos a) (this.trans natDegree_X_pow_sub_C.symm).ge).irreducible hg
   -- Suppose `deg g ≠ p`.
   by_contra h
-  have : Fact (Irreducible g) := ⟨hg⟩
   -- Let `r` be a root of `g`, then `N_K(r) ^ p = N_K(r ^ p) = N_K(a) = a ^ (deg g)`.
   have key : (Algebra.norm K (AdjoinRoot.root g)) ^ p = a ^ g.natDegree := by
     have := eval₂_eq_zero_of_dvd_of_eval₂_eq_zero _ _ hg' (AdjoinRoot.eval₂_root g)

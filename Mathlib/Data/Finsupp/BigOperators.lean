@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Data.Finset.Pairwise
 
 /-!
@@ -34,13 +34,13 @@ it is a member of the support of a member of the collection:
 
 variable {ι M : Type*} [DecidableEq ι]
 
-theorem List.support_sum_subset [AddMonoid M] (l : List (ι →₀ M)) :
+theorem List.support_sum_subset [AddZeroClass M] (l : List (ι →₀ M)) :
     l.sum.support ⊆ l.foldr (Finsupp.support · ⊔ ·) ∅ := by
-  induction' l with hd tl IH
-  · simp
-  · simp only [List.sum_cons, Finset.union_comm]
-    refine Finsupp.support_add.trans (Finset.union_subset_union ?_ IH)
-    rfl
+  induction l with
+  | nil => simp
+  | cons hd tl IH =>
+    simp only [List.sum_cons]
+    exact Finsupp.support_add.trans (Finset.union_subset_union Finset.Subset.rfl IH)
 
 theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M)) :
     s.sum.support ⊆ (s.map Finsupp.support).sup := by
@@ -54,11 +54,12 @@ theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :
     x ∈ l.foldr (Finsupp.support · ⊔ ·) ∅ ↔ ∃ f ∈ l, x ∈ f.support := by
-  simp only [Finset.sup_eq_union, List.foldr_map, Finsupp.mem_support_iff, exists_prop]
-  induction' l with hd tl IH
-  · simp
-  · simp only [foldr, Function.comp_apply, Finset.mem_union, Finsupp.mem_support_iff, ne_eq, IH,
-      find?, mem_cons, exists_eq_or_imp]
+  simp only [Finset.sup_eq_union, Finsupp.mem_support_iff]
+  induction l with
+  | nil => simp
+  | cons hd tl IH =>
+    simp only [foldr, Finset.mem_union, Finsupp.mem_support_iff, ne_eq, IH,
+      mem_cons, exists_eq_or_imp]
 
 theorem Multiset.mem_sup_map_support_iff [Zero M] {s : Multiset (ι →₀ M)} {x : ι} :
     x ∈ (s.map Finsupp.support).sup ↔ ∃ f ∈ s, x ∈ f.support :=
@@ -72,13 +73,14 @@ theorem Finset.mem_sup_support_iff [Zero M] {s : Finset (ι →₀ M)} {x : ι} 
 
 open scoped Function -- required for scoped `on` notation
 
-theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
+theorem List.support_sum_eq [AddZeroClass M] (l : List (ι →₀ M))
     (hl : l.Pairwise (_root_.Disjoint on Finsupp.support)) :
     l.sum.support = l.foldr (Finsupp.support · ⊔ ·) ∅ := by
-  induction' l with hd tl IH
-  · simp
-  · simp only [List.pairwise_cons] at hl
-    simp only [List.sum_cons, List.foldr_cons, Function.comp_apply]
+  induction l with
+  | nil => simp
+  | cons hd tl IH =>
+    simp only [List.pairwise_cons] at hl
+    simp only [List.sum_cons, List.foldr_cons]
     rw [Finsupp.support_add_eq, IH hl.right, Finset.sup_eq_union]
     suffices _root_.Disjoint hd.support (tl.foldr (fun x y ↦ (Finsupp.support x ⊔ y)) ∅) by
       exact Finset.disjoint_of_subset_right (List.support_sum_subset _) this
@@ -92,14 +94,14 @@ theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
 theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
     (hs : s.Pairwise (_root_.Disjoint on Finsupp.support)) :
     s.sum.support = (s.map Finsupp.support).sup := by
-  induction' s using Quot.inductionOn with a
+  induction s using Quot.inductionOn with | _ a
   obtain ⟨l, hl, hd⟩ := hs
   suffices a.Pairwise (_root_.Disjoint on Finsupp.support) by
     convert List.support_sum_eq a this
     dsimp only [Function.comp_def]
-    simp only [quot_mk_to_coe'', map_coe, sup_coe, Finset.le_eq_subset,
+    simp only [quot_mk_to_coe'', map_coe, sup_coe,
       Finset.sup_eq_union, Finset.bot_eq_empty, List.foldr_map]
-  simp only [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.coe_eq_coe] at hl
+  simp only [Multiset.quot_mk_to_coe'', Multiset.coe_eq_coe] at hl
   exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h
 
 theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))

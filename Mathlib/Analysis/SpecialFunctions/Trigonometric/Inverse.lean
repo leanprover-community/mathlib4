@@ -65,8 +65,16 @@ theorem strictMonoOn_arcsin : StrictMonoOn arcsin (Icc (-1) 1) :=
   (Subtype.strictMono_coe _).comp_strictMonoOn <|
     sinOrderIso.symm.strictMono.strictMonoOn_IccExtend _
 
+@[gcongr]
+theorem arcsin_lt_arcsin {x y : ℝ} (hx : -1 ≤ x) (hlt : x < y) (hy : y ≤ 1) :
+    arcsin x < arcsin y :=
+  strictMonoOn_arcsin ⟨hx, hlt.le.trans hy⟩ ⟨hx.trans hlt.le, hy⟩ hlt
+
 theorem monotone_arcsin : Monotone arcsin :=
   (Subtype.mono_coe _).comp <| sinOrderIso.symm.monotone.IccExtend _
+
+@[gcongr]
+theorem arcsin_le_arcsin {x y : ℝ} (h : x ≤ y) : arcsin x ≤ arcsin y := monotone_arcsin h
 
 theorem injOn_arcsin : InjOn arcsin (Icc (-1) 1) :=
   strictMonoOn_arcsin.injOn
@@ -124,8 +132,8 @@ theorem arcsin_le_iff_le_sin' {x y : ℝ} (hy : y ∈ Ico (-(π / 2)) (π / 2)) 
     arcsin x ≤ y ↔ x ≤ sin y := by
   rcases le_total x (-1) with hx₁ | hx₁
   · simp [arcsin_of_le_neg_one hx₁, hy.1, hx₁.trans (neg_one_le_sin _)]
-  rcases lt_or_le 1 x with hx₂ | hx₂
-  · simp [arcsin_of_one_le hx₂.le, hy.2.not_le, (sin_le_one y).trans_lt hx₂]
+  rcases lt_or_ge 1 x with hx₂ | hx₂
+  · simp [arcsin_of_one_le hx₂.le, hy.2.not_ge, (sin_le_one y).trans_lt hx₂]
   exact arcsin_le_iff_le_sin ⟨hx₁, hx₂⟩ (mem_Icc_of_Ico hy)
 
 theorem le_arcsin_iff_sin_le {x y : ℝ} (hx : x ∈ Icc (-(π / 2)) (π / 2)) (hy : y ∈ Icc (-1 : ℝ) 1) :
@@ -204,7 +212,7 @@ theorem pi_div_two_eq_arcsin {x} : π / 2 = arcsin x ↔ 1 ≤ x :=
 
 @[simp]
 theorem pi_div_two_le_arcsin {x} : π / 2 ≤ arcsin x ↔ 1 ≤ x :=
-  (arcsin_le_pi_div_two x).le_iff_eq.trans pi_div_two_eq_arcsin
+  (arcsin_le_pi_div_two x).ge_iff_eq'.trans pi_div_two_eq_arcsin
 
 @[simp]
 theorem arcsin_eq_neg_pi_div_two {x : ℝ} : arcsin x = -(π / 2) ↔ x ≤ -1 :=
@@ -216,7 +224,7 @@ theorem neg_pi_div_two_eq_arcsin {x} : -(π / 2) = arcsin x ↔ x ≤ -1 :=
 
 @[simp]
 theorem arcsin_le_neg_pi_div_two {x} : arcsin x ≤ -(π / 2) ↔ x ≤ -1 :=
-  (neg_pi_div_two_le_arcsin x).le_iff_eq.trans arcsin_eq_neg_pi_div_two
+  (neg_pi_div_two_le_arcsin x).ge_iff_eq'.trans arcsin_eq_neg_pi_div_two
 
 @[simp]
 theorem pi_div_four_le_arcsin {x} : π / 4 ≤ arcsin x ↔ √2 / 2 ≤ x := by
@@ -227,9 +235,9 @@ theorem pi_div_four_le_arcsin {x} : π / 4 ≤ arcsin x ↔ √2 / 2 ≤ x := by
 theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) := fun x h => by
   rwa [mem_Ioo, ← arcsin_lt_pi_div_two, ← neg_pi_div_two_lt_arcsin, arcsin_sin h.1.le h.2.le]
 
-/-- `Real.sin` as a `PartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
+/-- `Real.sin` as an `OpenPartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
 @[simp]
-def sinPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+def sinPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := sin
   invFun := arcsin
   source := Ioo (-(π / 2)) (π / 2)
@@ -306,6 +314,16 @@ lemma arccos_eq_of_eq_cos (hy₀ : 0 ≤ y) (hy₁ : y ≤ π) (hxy : x = cos y)
 theorem strictAntiOn_arccos : StrictAntiOn arccos (Icc (-1) 1) := fun _ hx _ hy h =>
   sub_lt_sub_left (strictMonoOn_arcsin hx hy h) _
 
+@[gcongr]
+lemma arccos_lt_arccos {x y : ℝ} (hx : -1 ≤ x) (hlt : x < y) (hy : y ≤ 1) :
+    arccos y < arccos x := by
+  unfold arccos; gcongr <;> assumption
+
+@[gcongr]
+lemma arccos_le_arccos {x y : ℝ} (hlt : x ≤ y) : arccos y ≤ arccos x := by unfold arccos; gcongr
+
+theorem antitone_arccos : Antitone arccos := fun _ _ ↦ arccos_le_arccos
+
 theorem arccos_injOn : InjOn arccos (Icc (-1) 1) :=
   strictAntiOn_arccos.injOn
 
@@ -377,7 +395,7 @@ theorem tan_arccos (x : ℝ) : tan (arccos x) = √(1 - x ^ 2) / x := by
 -- The junk values for `arccos` and `sqrt` make this true even for `1 < x`.
 theorem arccos_eq_arcsin {x : ℝ} (h : 0 ≤ x) : arccos x = arcsin (√(1 - x ^ 2)) :=
   (arcsin_eq_of_sin_eq (sin_arccos _)
-      ⟨(Left.neg_nonpos_iff.2 (div_nonneg pi_pos.le (by norm_num))).trans (arccos_nonneg _),
+      ⟨(Left.neg_nonpos_iff.2 (div_nonneg pi_pos.le (by simp))).trans (arccos_nonneg _),
         arccos_le_pi_div_two.2 h⟩).symm
 
 -- The junk values for `arcsin` and `sqrt` make this true even for `1 < x`.
@@ -388,3 +406,68 @@ theorem arcsin_eq_arccos {x : ℝ} (h : 0 ≤ x) : arcsin x = arccos (√(1 - x 
       ((arcsin_le_pi_div_two _).trans (div_le_self pi_pos.le one_le_two))
 
 end Real
+
+open Real
+
+/-!
+### Convenience dot notation lemmas
+-/
+
+namespace Filter.Tendsto
+
+variable {α : Type*} {l : Filter α} {x : ℝ} {f : α → ℝ}
+
+protected theorem arcsin (h : Tendsto f l (𝓝 x)) : Tendsto (arcsin <| f ·) l (𝓝 (arcsin x)) :=
+  (continuous_arcsin.tendsto _).comp h
+
+theorem arcsin_nhdsLE (h : Tendsto f l (𝓝[≤] x)) :
+    Tendsto (arcsin <| f ·) l (𝓝[≤] (arcsin x)) := by
+  refine ((continuous_arcsin.tendsto _).inf <| MapsTo.tendsto fun y hy ↦ ?_).comp h
+  exact monotone_arcsin hy
+
+theorem arcsin_nhdsGE (h : Tendsto f l (𝓝[≥] x)) : Tendsto (arcsin <| f ·) l (𝓝[≥] (arcsin x)) :=
+  ((continuous_arcsin.tendsto _).inf <| MapsTo.tendsto fun _ ↦ arcsin_le_arcsin).comp h
+
+protected theorem arccos (h : Tendsto f l (𝓝 x)) : Tendsto (arccos <| f ·) l (𝓝 (arccos x)) :=
+  (continuous_arccos.tendsto _).comp h
+
+theorem arccos_nhdsLE (h : Tendsto f l (𝓝[≤] x)) : Tendsto (arccos <| f ·) l (𝓝[≥] (arccos x)) :=
+  ((continuous_arccos.tendsto _).inf <| MapsTo.tendsto fun _ ↦ arccos_le_arccos).comp h
+
+theorem arccos_nhdsGE (h : Tendsto f l (𝓝[≥] x)) :
+    Tendsto (arccos <| f ·) l (𝓝[≤] (arccos x)) := by
+  refine ((continuous_arccos.tendsto _).inf <| MapsTo.tendsto fun y hy ↦ ?_).comp h
+  simp only [mem_Ici, mem_Iic] at hy ⊢
+  exact antitone_arccos hy
+
+end Filter.Tendsto
+
+variable {X : Type*} [TopologicalSpace X] {f : X → ℝ} {s : Set X} {x : X}
+
+protected nonrec theorem ContinuousWithinAt.arcsin (h : ContinuousWithinAt f s x) :
+    ContinuousWithinAt (arcsin <| f ·) s x :=
+  h.arcsin
+
+protected nonrec theorem ContinuousWithinAt.arccos (h : ContinuousWithinAt f s x) :
+    ContinuousWithinAt (arccos <| f ·) s x :=
+  h.arccos
+
+protected nonrec theorem ContinuousAt.arcsin (h : ContinuousAt f x) :
+    ContinuousAt (arcsin <| f ·) x :=
+  h.arcsin
+
+protected nonrec theorem ContinuousAt.arccos (h : ContinuousAt f x) :
+    ContinuousAt (arccos <| f ·) x :=
+  h.arccos
+
+protected theorem ContinuousOn.arcsin (h : ContinuousOn f s) : ContinuousOn (arcsin <| f ·) s :=
+  fun x hx ↦ (h x hx).arcsin
+
+protected theorem ContinuousOn.arccos (h : ContinuousOn f s) : ContinuousOn (arccos <| f ·) s :=
+  fun x hx ↦ (h x hx).arccos
+
+protected theorem Continuous.arcsin (h : Continuous f) : Continuous (arcsin <| f ·) :=
+  continuous_arcsin.comp h
+
+protected theorem Continuous.arccos (h : Continuous f) : Continuous (arccos <| f ·) :=
+  continuous_arccos.comp h

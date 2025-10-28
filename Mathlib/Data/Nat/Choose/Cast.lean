@@ -23,7 +23,7 @@ section DivisionSemiring
 variable [DivisionSemiring K] [CharZero K]
 
 theorem cast_choose {a b : ℕ} (h : a ≤ b) : (b.choose a : K) = b ! / (a ! * (b - a)!) := by
-  have : ∀ {n : ℕ}, (n ! : K) ≠ 0 := Nat.cast_ne_zero.2 (factorial_ne_zero _)
+  have : ∀ {n : ℕ}, (n ! : K) ≠ 0 := Nat.cast_ne_zero.2 (by positivity)
   rw [eq_div_iff_mul_eq (mul_ne_zero this this)]
   rw_mod_cast [← mul_assoc, choose_mul_factorial_mul_factorial h]
 
@@ -39,6 +39,11 @@ end DivisionSemiring
 
 section DivisionRing
 variable [DivisionRing K] [CharZero K]
+
+theorem cast_choose_eq_descPochhammer_div (a b : ℕ) :
+    (a.choose b : K) = (descPochhammer K b).eval ↑a / b ! := by
+  rw [eq_div_iff_mul_eq (cast_ne_zero.2 b.factorial_ne_zero : (b ! : K) ≠ 0), ← cast_mul,
+    mul_comm, ← descFactorial_eq_factorial_mul_choose, descPochhammer_eval_eq_descFactorial]
 
 theorem cast_choose_two (a : ℕ) : (a.choose 2 : K) = a * (a - 1) / 2 := by
   rw [← cast_descFactorial_two, descFactorial_eq_factorial_mul_choose, factorial_two, mul_comm,

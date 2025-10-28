@@ -3,7 +3,6 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Eric Wieser
 -/
-import Mathlib.Analysis.Normed.Lp.PiLp
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -11,28 +10,31 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 
 In this file we provide the following non-instances for norms on matrices:
 
-* The elementwise norm:
+* The elementwise norm (with `open scoped Matrix.Norms.Elementwise`):
 
   * `Matrix.seminormedAddCommGroup`
   * `Matrix.normedAddCommGroup`
   * `Matrix.normedSpace`
-  * `Matrix.boundedSMul`
+  * `Matrix.isBoundedSMul`
+  * `Matrix.normSMulClass`
 
-* The Frobenius norm:
+* The Frobenius norm (with `open scoped Matrix.Norms.Frobenius`):
 
   * `Matrix.frobeniusSeminormedAddCommGroup`
   * `Matrix.frobeniusNormedAddCommGroup`
   * `Matrix.frobeniusNormedSpace`
   * `Matrix.frobeniusNormedRing`
   * `Matrix.frobeniusNormedAlgebra`
-  * `Matrix.frobeniusBoundedSMul`
+  * `Matrix.frobeniusIsBoundedSMul`
+  * `Matrix.frobeniusNormSMulClass`
 
-* The $L^\infty$ operator norm:
+* The $L^\infty$ operator norm (with `open scoped Matrix.Norms.Operator`):
 
   * `Matrix.linftyOpSeminormedAddCommGroup`
   * `Matrix.linftyOpNormedAddCommGroup`
   * `Matrix.linftyOpNormedSpace`
-  * `Matrix.linftyOpBoundedSMul`
+  * `Matrix.linftyOpIsBoundedSMul`
+  * `Matrix.linftyOpNormSMulClass`
   * `Matrix.linftyOpNonUnitalSemiNormedRing`
   * `Matrix.linftyOpSemiNormedRing`
   * `Matrix.linftyOpNonUnitalNormedRing`
@@ -44,11 +46,13 @@ of a matrix.
 
 The norm induced by the identification of `Matrix m n 𝕜` with
 `EuclideanSpace n 𝕜 →L[𝕜] EuclideanSpace m 𝕜` (i.e., the ℓ² operator norm) can be found in
-`Analysis.CStarAlgebra.Matrix`. It is separated to avoid extraneous imports in this file.
+`Mathlib/Analysis/CStarAlgebra/Matrix.lean` and `open scoped Matrix.Norms.L2Operator`.
+It is separated to avoid extraneous imports in this file.
 -/
 
 noncomputable section
 
+open WithLp
 open scoped NNReal Matrix
 
 namespace Matrix
@@ -69,7 +73,6 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) :=
   Pi.seminormedAddCommGroup
-
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -128,23 +131,31 @@ theorem norm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_conjTranspose A
 
 instance [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m α) :=
-  ⟨norm_conjTranspose⟩
+  ⟨(le_of_eq <| norm_conjTranspose ·)⟩
 
 @[simp]
-theorem nnnorm_col (v : m → α) : ‖col ι v‖₊ = ‖v‖₊ := by
+theorem nnnorm_replicateCol (v : m → α) : ‖replicateCol ι v‖₊ = ‖v‖₊ := by
   simp [nnnorm_def, Pi.nnnorm_def]
 
-@[simp]
-theorem norm_col (v : m → α) : ‖col ι v‖ = ‖v‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_col v
+@[deprecated (since := "2025-03-20")] alias nnnorm_col := nnnorm_replicateCol
 
 @[simp]
-theorem nnnorm_row (v : n → α) : ‖row ι v‖₊ = ‖v‖₊ := by
+theorem norm_replicateCol (v : m → α) : ‖replicateCol ι v‖ = ‖v‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_replicateCol v
+
+@[deprecated (since := "2025-03-20")] alias norm_col := norm_replicateCol
+
+@[simp]
+theorem nnnorm_replicateRow (v : n → α) : ‖replicateRow ι v‖₊ = ‖v‖₊ := by
   simp [nnnorm_def, Pi.nnnorm_def]
 
+@[deprecated (since := "2025-03-20")] alias nnnorm_row := nnnorm_replicateRow
+
 @[simp]
-theorem norm_row (v : n → α) : ‖row ι v‖ = ‖v‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_row v
+theorem norm_replicateRow (v : n → α) : ‖replicateRow ι v‖ = ‖v‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_replicateRow v
+
+@[deprecated (since := "2025-03-20")] alias norm_row := norm_replicateRow
 
 @[simp]
 theorem nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
@@ -163,7 +174,6 @@ theorem norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖v�
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_diagonal v
 
 /-- Note this is safe as an instance as it carries no data. -/
--- Porting note: not yet implemented: `@[nolint fails_quickly]`
 instance [Nonempty n] [DecidableEq n] [One α] [NormOneClass α] : NormOneClass (Matrix n n α) :=
   ⟨(norm_diagonal _).trans <| norm_one⟩
 
@@ -180,9 +190,16 @@ section NormedSpace
 attribute [local instance] Matrix.seminormedAddCommGroup
 
 /-- This applies to the sup norm of sup norm. -/
-protected theorem boundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
-    [BoundedSMul R α] : BoundedSMul R (Matrix m n α) :=
-  Pi.instBoundedSMul
+protected theorem isBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+    [IsBoundedSMul R α] : IsBoundedSMul R (Matrix m n α) :=
+  Pi.instIsBoundedSMul
+
+@[deprecated (since := "2025-03-10")] protected alias boundedSMul := Matrix.isBoundedSMul
+
+/-- This applies to the sup norm of sup norm. -/
+protected theorem normSMulClass [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+    [NormSMulClass R α] : NormSMulClass R (Matrix m n α) :=
+  Pi.instNormSMulClass
 
 variable [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α]
 
@@ -191,6 +208,17 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 protected def normedSpace : NormedSpace R (Matrix m n α) :=
   Pi.normedSpace
+
+namespace Norms.Elementwise
+
+attribute [scoped instance]
+  Matrix.seminormedAddCommGroup
+  Matrix.normedAddCommGroup
+  Matrix.normedSpace
+  Matrix.isBoundedSMul
+  Matrix.normSMulClass
+
+end Norms.Elementwise
 
 end NormedSpace
 
@@ -225,10 +253,17 @@ protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
 
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
-protected theorem linftyOpBoundedSMul
-    [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [BoundedSMul R α] :
-    BoundedSMul R (Matrix m n α) :=
-  (by infer_instance : BoundedSMul R (m → PiLp 1 fun j : n => α))
+protected theorem linftyOpIsBoundedSMul
+    [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [IsBoundedSMul R α] :
+    IsBoundedSMul R (Matrix m n α) :=
+  (by infer_instance : IsBoundedSMul R (m → PiLp 1 fun j : n => α))
+
+/-- This applies to the sup norm of L1 norm. -/
+@[local instance]
+protected theorem linftyOpNormSMulClass
+    [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [NormSMulClass R α] :
+    NormSMulClass R (Matrix m n α) :=
+  (by infer_instance : NormSMulClass R (m → PiLp 1 fun j : n => α))
 
 /-- Normed space instance (using sup norm of L1 norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -244,8 +279,7 @@ variable [SeminormedAddCommGroup α]
 
 theorem linfty_opNorm_def (A : Matrix m n α) :
     ‖A‖ = ((Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
-  -- Porting note: added
-  change ‖fun i => (WithLp.equiv 1 _).symm (A i)‖ = _
+  change ‖fun i => toLp 1 (A i)‖ = _
   simp [Pi.norm_def, PiLp.nnnorm_eq_of_L1]
 
 theorem linfty_opNNNorm_def (A : Matrix m n α) :
@@ -253,21 +287,29 @@ theorem linfty_opNNNorm_def (A : Matrix m n α) :
   Subtype.ext <| linfty_opNorm_def A
 
 @[simp]
-theorem linfty_opNNNorm_col (v : m → α) : ‖col ι v‖₊ = ‖v‖₊ := by
+theorem linfty_opNNNorm_replicateCol (v : m → α) : ‖replicateCol ι v‖₊ = ‖v‖₊ := by
   rw [linfty_opNNNorm_def, Pi.nnnorm_def]
   simp
 
-@[simp]
-theorem linfty_opNorm_col (v : m → α) : ‖col ι v‖ = ‖v‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_col v
+@[deprecated (since := "2025-03-20")] alias linfty_opNNNorm_col := linfty_opNNNorm_replicateCol
 
 @[simp]
-theorem linfty_opNNNorm_row (v : n → α) : ‖row ι v‖₊ = ∑ i, ‖v i‖₊ := by
+theorem linfty_opNorm_replicateCol (v : m → α) : ‖replicateCol ι v‖ = ‖v‖ :=
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_replicateCol v
+
+@[deprecated (since := "2025-03-20")] alias linfty_opNorm_col := linfty_opNorm_replicateCol
+
+@[simp]
+theorem linfty_opNNNorm_replicateRow (v : n → α) : ‖replicateRow ι v‖₊ = ∑ i, ‖v i‖₊ := by
   simp [linfty_opNNNorm_def]
 
+@[deprecated (since := "2025-03-20")] alias linfty_opNNNorm_row := linfty_opNNNorm_replicateRow
+
 @[simp]
-theorem linfty_opNorm_row (v : n → α) : ‖row ι v‖ = ∑ i, ‖v i‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_row v).trans <| by simp [NNReal.coe_sum]
+theorem linfty_opNorm_replicateRow (v : n → α) : ‖replicateRow ι v‖ = ∑ i, ‖v i‖ :=
+  (congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_replicateRow v).trans <| by simp [NNReal.coe_sum]
+
+@[deprecated (since := "2025-03-20")] alias linfty_opNorm_row := linfty_opNNNorm_replicateRow
 
 @[simp]
 theorem linfty_opNNNorm_diagonal [DecidableEq m] (v : m → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
@@ -308,8 +350,9 @@ theorem linfty_opNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ 
   linfty_opNNNorm_mul _ _
 
 theorem linfty_opNNNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖₊ ≤ ‖A‖₊ * ‖v‖₊ := by
-  rw [← linfty_opNNNorm_col (ι := Fin 1) (A *ᵥ v), ← linfty_opNNNorm_col v (ι := Fin 1)]
-  exact linfty_opNNNorm_mul A (col (Fin 1) v)
+  rw [← linfty_opNNNorm_replicateCol (ι := Fin 1) (A *ᵥ v),
+    ← linfty_opNNNorm_replicateCol v (ι := Fin 1)]
+  exact linfty_opNNNorm_mul A (replicateCol (Fin 1) v)
 
 theorem linfty_opNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖ ≤ ‖A‖ * ‖v‖ :=
   linfty_opNNNorm_mulVec _ _
@@ -323,7 +366,7 @@ the norm of a matrix. -/
 protected def linftyOpNonUnitalSemiNormedRing [NonUnitalSeminormedRing α] :
     NonUnitalSeminormedRing (Matrix n n α) :=
   { Matrix.linftyOpSeminormedAddCommGroup, Matrix.instNonUnitalRing with
-    norm_mul := linfty_opNorm_mul }
+    norm_mul_le := linfty_opNorm_mul }
 
 /-- The `L₁-L∞` norm preserves one on non-empty matrices. Note this is safe as an instance, as it
 carries no data. -/
@@ -428,6 +471,20 @@ variable [DecidableEq n]
 
 end
 
+namespace Norms.Operator
+attribute [scoped instance]
+  Matrix.linftyOpSeminormedAddCommGroup
+  Matrix.linftyOpNormedAddCommGroup
+  Matrix.linftyOpNormedSpace
+  Matrix.linftyOpIsBoundedSMul
+  Matrix.linftyOpNormSMulClass
+  Matrix.linftyOpNonUnitalSemiNormedRing
+  Matrix.linftyOpSemiNormedRing
+  Matrix.linftyOpNonUnitalNormedRing
+  Matrix.linftyOpNormedRing
+  Matrix.linftyOpNormedAlgebra
+end Norms.Operator
+
 end LinftyOp
 
 /-! ### The Frobenius norm
@@ -441,7 +498,7 @@ section frobenius
 
 open scoped Matrix
 
-/-- Seminormed group instance (using frobenius norm) for matrices over a seminormed group. Not
+/-- Seminormed group instance (using the Frobenius norm) for matrices over a seminormed group. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -449,21 +506,30 @@ def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
   inferInstanceAs (SeminormedAddCommGroup (PiLp 2 fun _i : m => PiLp 2 fun _j : n => α))
 
-/-- Normed group instance (using frobenius norm) for matrices over a normed group.  Not
+/-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
 def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
   (by infer_instance : NormedAddCommGroup (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
 
-/-- This applies to the frobenius norm. -/
+/-- This applies to the Frobenius norm. -/
 @[local instance]
-theorem frobeniusBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
-    [BoundedSMul R α] :
-    BoundedSMul R (Matrix m n α) :=
-  (by infer_instance : BoundedSMul R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
+theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+    [IsBoundedSMul R α] :
+    IsBoundedSMul R (Matrix m n α) :=
+  (by infer_instance : IsBoundedSMul R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
 
-/-- Normed space instance (using frobenius norm) for matrices over a normed space.  Not
+/-- This applies to the Frobenius norm. -/
+@[local instance]
+theorem frobeniusNormSMulClass [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+    [NormSMulClass R α] :
+    NormSMulClass R (Matrix m n α) :=
+  (by infer_instance : NormSMulClass R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
+
+@[deprecated (since := "2025-03-10")] alias frobeniusBoundedSMul := frobeniusIsBoundedSMul
+
+/-- Normed space instance (using the Frobenius norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -477,10 +543,9 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
 theorem frobenius_nnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
-  -- Porting note: added, along with `WithLp.equiv_symm_pi_apply` below
-  change ‖(WithLp.equiv 2 _).symm fun i => (WithLp.equiv 2 _).symm fun j => A i j‖₊ = _
+  change ‖toLp 2 fun i => toLp 2 fun j => A i j‖₊ = _
   simp_rw [PiLp.nnnorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two,
-    WithLp.equiv_symm_pi_apply]
+    PiLp.toLp_apply]
 
 theorem frobenius_norm_def (A : Matrix m n α) :
     ‖A‖ = (∑ i, ∑ j, ‖A i j‖ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) :=
@@ -498,7 +563,7 @@ theorem frobenius_norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, �
 @[simp]
 theorem frobenius_nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ := by
   rw [frobenius_nnnorm_def, frobenius_nnnorm_def, Finset.sum_comm]
-  simp_rw [Matrix.transpose_apply]  -- Porting note: added
+  simp_rw [Matrix.transpose_apply]
 
 @[simp]
 theorem frobenius_norm_transpose (A : Matrix m n α) : ‖Aᵀ‖ = ‖A‖ :=
@@ -516,29 +581,35 @@ theorem frobenius_norm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A 
 
 instance frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
     NormedStarGroup (Matrix m m α) :=
-  ⟨frobenius_norm_conjTranspose⟩
+  ⟨(le_of_eq <| frobenius_norm_conjTranspose ·)⟩
 
 @[simp]
-theorem frobenius_norm_row (v : m → α) : ‖row ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
+lemma frobenius_norm_replicateRow (v : m → α) : ‖replicateRow ι v‖ = ‖toLp 2 v‖ := by
   rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [row_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+  simp only [replicateRow_apply, Real.rpow_two, PiLp.toLp_apply]
+
+@[deprecated (since := "2025-03-20")] alias frobenius_norm_row := frobenius_norm_replicateRow
 
 @[simp]
-theorem frobenius_nnnorm_row (v : m → α) : ‖row ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
-  Subtype.ext <| frobenius_norm_row v
+lemma frobenius_nnnorm_replicateRow (v : m → α) : ‖replicateRow ι v‖₊ = ‖toLp 2 v‖₊ :=
+  Subtype.ext <| frobenius_norm_replicateRow v
+
+@[deprecated (since := "2025-03-20")] alias frobenius_nnnorm_row := frobenius_nnnorm_replicateRow
 
 @[simp]
-theorem frobenius_norm_col (v : n → α) : ‖col ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
-  simp_rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [col_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+lemma frobenius_norm_replicateCol (v : n → α) : ‖replicateCol ι v‖ = ‖toLp 2 v‖ := by
+  simp [frobenius_norm_def, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
+
+@[deprecated (since := "2025-03-20")] alias frobenius_norm_col := frobenius_norm_replicateCol
 
 @[simp]
-theorem frobenius_nnnorm_col (v : n → α) : ‖col ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
-  Subtype.ext <| frobenius_norm_col v
+lemma frobenius_nnnorm_replicateCol (v : n → α) : ‖replicateCol ι v‖₊ = ‖toLp 2 v‖₊ :=
+  Subtype.ext <| frobenius_norm_replicateCol v
+
+@[deprecated (since := "2025-03-20")] alias frobenius_nnnorm_col := frobenius_nnnorm_replicateCol
 
 @[simp]
-theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
-    ‖diagonal v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ := by
+lemma frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖toLp 2 v‖₊ := by
   simp_rw [frobenius_nnnorm_def, ← Finset.sum_product', Finset.univ_product_univ,
     PiLp.nnnorm_eq_of_L2]
   let s := (Finset.univ : Finset n).map ⟨fun i : n => (i, i), fun i j h => congr_arg Prod.fst h⟩
@@ -551,8 +622,7 @@ theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
     exact Finset.mem_map.not.mp his ⟨i.1, Finset.mem_univ _, Prod.ext rfl h⟩
 
 @[simp]
-theorem frobenius_norm_diagonal [DecidableEq n] (v : n → α) :
-    ‖diagonal v‖ = ‖(WithLp.equiv 2 _).symm v‖ :=
+lemma frobenius_norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖toLp 2 v‖ :=
   (congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_diagonal v :).trans rfl
 
 end SeminormedAddCommGroup
@@ -561,9 +631,9 @@ theorem frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α
     ‖(1 : Matrix n n α)‖₊ = .sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
   calc
     ‖(diagonal 1 : Matrix n n α)‖₊
-    _ = ‖(WithLp.equiv 2 (n → α)).symm (Function.const _ 1)‖₊ := frobenius_nnnorm_diagonal _
+    _ = ‖toLp 2 (Function.const _ 1)‖₊ := frobenius_nnnorm_diagonal _
     _ = .sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
-      rw [PiLp.nnnorm_equiv_symm_const (ENNReal.ofNat_ne_top (n := 2))]
+      rw [PiLp.nnnorm_toLp_const (ENNReal.ofNat_ne_top (n := 2))]
       simp [NNReal.sqrt_eq_rpow]
 
 section RCLike
@@ -576,27 +646,23 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
   gcongr with i _ j
   rw [← NNReal.rpow_le_rpow_iff one_half_pos, ← NNReal.rpow_mul,
     mul_div_cancel₀ (1 : ℝ) two_ne_zero, NNReal.rpow_one, NNReal.mul_rpow]
-  have :=
-    @nnnorm_inner_le_nnnorm α _ _ _ _ ((WithLp.equiv 2 <| _ → α).symm fun j => star (A i j))
-      ((WithLp.equiv 2 <| _ → α).symm fun k => B k j)
-  simpa only [WithLp.equiv_symm_pi_apply, PiLp.inner_apply, RCLike.inner_apply, starRingEnd_apply,
+  simpa only [PiLp.toLp_apply, PiLp.inner_apply, RCLike.inner_apply', starRingEnd_apply,
     Pi.nnnorm_def, PiLp.nnnorm_eq_of_L2, star_star, nnnorm_star, NNReal.sqrt_eq_rpow,
-    NNReal.rpow_two] using this
+    NNReal.rpow_two] using nnnorm_inner_le_nnnorm (𝕜 := α) (toLp 2 (star <| A i ·)) (toLp 2 (B · j))
 
 theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   frobenius_nnnorm_mul A B
 
-/-- Normed ring instance (using frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
+/-- Normed ring instance (using the Frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
 def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) :=
   { Matrix.frobeniusSeminormedAddCommGroup, Matrix.instRing with
-    norm := Norm.norm
-    norm_mul := frobenius_norm_mul
+    norm_mul_le := frobenius_norm_mul
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-/-- Normed algebra instance (using frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
+/-- Normed algebra instance (using the Frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[local instance]
@@ -607,5 +673,16 @@ def frobeniusNormedAlgebra [DecidableEq m] [NormedField R] [NormedAlgebra R α] 
 end RCLike
 
 end frobenius
+
+namespace Norms.Frobenius
+attribute [scoped instance]
+  Matrix.frobeniusSeminormedAddCommGroup
+  Matrix.frobeniusNormedAddCommGroup
+  Matrix.frobeniusNormedSpace
+  Matrix.frobeniusNormedRing
+  Matrix.frobeniusNormedAlgebra
+  Matrix.frobeniusIsBoundedSMul
+  Matrix.frobeniusNormSMulClass
+end Norms.Frobenius
 
 end Matrix

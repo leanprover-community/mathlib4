@@ -35,7 +35,7 @@ We also construct the canonical epimorphism `K.πTruncGE e : K ⟶ K.truncGE e`.
 
 ## TODO
 * show that `K.πTruncGE e : K ⟶ K.truncGE e` induces an isomorphism
-in homology in degrees in the image of `e.f`.
+  in homology in degrees in the image of `e.f`.
 
 -/
 
@@ -167,7 +167,6 @@ noncomputable def truncGE'Map : K.truncGE' e ⟶ L.truncGE' e where
     else
       (K.truncGE'XIso e rfl hi).hom ≫ φ.f (e.f i) ≫ (L.truncGE'XIso e rfl hi).inv
   comm' i j hij := by
-    dsimp
     rw [dif_neg (e.not_boundaryGE_next hij)]
     by_cases hi : e.BoundaryGE i
     · rw [dif_pos hi]
@@ -384,6 +383,10 @@ instance [K.IsStrictlySupported e] : IsIso (K.πTruncGE e) := by
     refine ⟨0, ?_, ?_⟩
     all_goals
       apply (isZero_X_of_isStrictlySupported _ e i' hn).eq_of_src
+
+lemma isIso_πTruncGE_iff : IsIso (K.πTruncGE e) ↔ K.IsStrictlySupported e :=
+  ⟨fun _ ↦ isStrictlySupported_of_iso (asIso (K.πTruncGE e)).symm e,
+    fun _ ↦ inferInstance⟩
 
 end
 

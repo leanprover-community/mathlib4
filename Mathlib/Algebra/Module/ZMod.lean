@@ -82,6 +82,12 @@ theorem toZModLinearMap_injective : Function.Injective <| toZModLinearMap n (M :
 @[simp]
 theorem coe_toZModLinearMap (f : M →+ M₁) : ⇑(f.toZModLinearMap n) = f := rfl
 
+/-- `AddMonoidHom.toZModLinearMap` as an equivalence. -/
+def toZModLinearMapEquiv : (M →+ M₁) ≃+ (M →ₗ[ZMod n] M₁) where
+  toFun f := f.toZModLinearMap n
+  invFun g := g
+  map_add' f₁ f₂ := by ext; simp
+
 end AddMonoidHom
 
 namespace AddSubgroup
@@ -92,8 +98,6 @@ See also: `AddSubgroup.toIntSubmodule`, `AddSubmonoid.toNatSubmodule`. -/
 def toZModSubmodule : AddSubgroup M ≃o Submodule (ZMod n) M where
   toFun S := { S with smul_mem' := fun c _ h ↦ ZMod.smul_mem (K := S) h c }
   invFun := Submodule.toAddSubgroup
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 
 @[simp]

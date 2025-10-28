@@ -3,7 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
 /-!
 # Exponentially tilted measures
@@ -60,11 +60,11 @@ lemma tilted_const' (μ : Measure α) (c : ℝ) :
   | inr h0 =>
     simp only [Measure.tilted, withDensity_const, integral_const, smul_eq_mul]
     by_cases h_univ : μ Set.univ = ∞
-    · simp only [h_univ, ENNReal.top_toReal, zero_mul, log_zero, div_zero, ENNReal.ofReal_zero,
-        zero_smul, ENNReal.inv_top]
+    · simp only [measureReal_def, h_univ, ENNReal.toReal_top, zero_mul, div_zero,
+      ENNReal.ofReal_zero, zero_smul, ENNReal.inv_top]
     congr
     rw [div_eq_mul_inv, mul_inv, mul_comm, mul_assoc, inv_mul_cancel₀ (exp_pos _).ne', mul_one,
-      ← ENNReal.toReal_inv, ENNReal.ofReal_toReal]
+      measureReal_def, ← ENNReal.toReal_inv, ENNReal.ofReal_toReal]
     simp [h0.out]
 
 lemma tilted_const (μ : Measure α) [IsProbabilityMeasure μ] (c : ℝ) :
@@ -236,13 +236,13 @@ lemma integral_exp_tilted (f g : α → ℝ) :
   | inr h0 =>
     rw [integral_tilted f]
     simp_rw [smul_eq_mul]
-    have : ∀ x, (rexp (f x) / ∫ (x : α), rexp (f x) ∂μ) * rexp (g x)
-        = (rexp ((f + g) x) / ∫ (x : α), rexp (f x) ∂μ) := by
+    have : ∀ x, (exp (f x) / ∫ x, exp (f x) ∂μ) * exp (g x)
+        = (exp ((f + g) x) / ∫ x, exp (f x) ∂μ) := by
       intro x
       rw [Pi.add_apply, exp_add]
       ring
     simp_rw [this, div_eq_mul_inv]
-    rw [integral_mul_right]
+    rw [integral_mul_const]
 
 lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) :
     (μ.tilted f).tilted g = μ.tilted (f + g) := by
@@ -256,11 +256,8 @@ lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) 
       integral_exp_tilted f, Pi.add_apply, exp_add]
     congr 1
     simp only [Pi.add_apply]
-    field_simp
-    ring_nf
-    congr 1
-    rw [mul_assoc, mul_inv_cancel₀, mul_one]
-    exact (integral_exp_pos hf).ne'
+    have := (integral_exp_pos hf).ne'
+    simp [field]
 
 lemma tilted_comm (hf : Integrable (fun x ↦ exp (f x)) μ) {g : α → ℝ}
     (hg : Integrable (fun x ↦ exp (g x)) μ) :
@@ -272,7 +269,6 @@ lemma tilted_neg_same' (hf : Integrable (fun x ↦ exp (f x)) μ) :
     (μ.tilted f).tilted (-f) = (μ Set.univ)⁻¹ • μ := by
   rw [tilted_tilted hf]; simp
 
-@[simp]
 lemma tilted_neg_same [IsProbabilityMeasure μ] (hf : Integrable (fun x ↦ exp (f x)) μ) :
     (μ.tilted f).tilted (-f) = μ := by
   simp [hf]
@@ -290,10 +286,31 @@ lemma absolutelyContinuous_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) : �
       simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
       exact fun _ ↦ div_pos (exp_pos _) (integral_exp_pos hf)
 
+lemma integrable_tilted_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : α → ℝ} (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → E) :
+    Integrable g (μ.tilted f) ↔ Integrable (fun x ↦ exp (f x) • g x) μ := by
+  by_cases hμ : μ = 0
+  · simp [hμ]
+  have hf_meas : AEMeasurable f μ := aemeasurable_of_aemeasurable_exp hf.1.aemeasurable
+  rw [Measure.tilted, integrable_withDensity_iff_integrable_smul₀' (by fun_prop) (by simp)]
+  calc Integrable (fun x ↦ (ENNReal.ofReal (exp (f x) / ∫ a, exp (f a) ∂μ)).toReal • g x) μ
+  _ ↔ Integrable (fun x ↦ (exp (f x) / ∫ a, exp (f a) ∂μ) • g x) μ := by
+    congr! with a
+    rw [ENNReal.toReal_ofReal]
+    positivity
+  _ ↔ Integrable (fun x ↦ (∫ a, exp (f a) ∂μ)⁻¹ • exp (f x) • g x) μ := by
+    congr! 2 with a
+    rw [smul_smul, div_eq_inv_mul]
+  _ ↔ Integrable (fun x ↦ exp (f x) • g x) μ := by
+    rw [integrable_fun_smul_iff]
+    simp only [ne_eq, inv_eq_zero]
+    have : NeZero μ := ⟨hμ⟩
+    exact (integral_exp_pos hf).ne'
+
 lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :
     μ.rnDeriv (ν.tilted f)
-      =ᵐ[ν] fun x ↦ ENNReal.ofReal (exp (- f x) * ∫ x, exp (f x) ∂ν) * μ.rnDeriv ν x := by
+      =ᵐ[ν] fun x ↦ ENNReal.ofReal (exp (-f x) * ∫ x, exp (f x) ∂ν) * μ.rnDeriv ν x := by
   cases eq_zero_or_neZero ν with
   | inl h => simp_rw [h, ae_zero, Filter.EventuallyEq]; exact Filter.eventually_bot
   | inr h0 =>
@@ -311,10 +328,10 @@ lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν
 lemma toReal_rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :
     (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
-      =ᵐ[ν] fun x ↦ exp (- f x) * (∫ x, exp (f x) ∂ν) * (μ.rnDeriv ν x).toReal := by
+      =ᵐ[ν] fun x ↦ exp (-f x) * (∫ x, exp (f x) ∂ν) * (μ.rnDeriv ν x).toReal := by
   filter_upwards [rnDeriv_tilted_right μ ν hf] with x hx
   rw [hx]
-  simp only [ENNReal.toReal_mul, gt_iff_lt, mul_eq_mul_right_iff, ENNReal.toReal_ofReal_eq_iff]
+  simp only [ENNReal.toReal_mul, mul_eq_mul_right_iff, ENNReal.toReal_ofReal_eq_iff]
   exact Or.inl (by positivity)
 
 variable (μ) in
