@@ -473,7 +473,12 @@ theorem toContinuousLinearEquivOfDetNeZero_apply (f : E →L[𝕜] E) (hf : f.de
 theorem coe_toContinuousLinearEquivOfDetNeZero (f : E →L[𝕜] E) (hf : f.det ≠ 0) :
     (f.toContinuousLinearEquivOfDetNeZero hf : E →L[𝕜] E) = f := by
   ext x
-  exact toContinuousLinearEquivOfDetNeZero_apply f hf x
+  rfl
+
+@[simp]
+theorem toContinuousLinearEquivOfDetNeZero_apply (f : E →L[𝕜] E) (hf : f.det ≠ 0) (x : E) :
+    f.toContinuousLinearEquivOfDetNeZero hf x = f x :=
+  rfl
 
 theorem _root_.Matrix.toLin_finTwoProd_toContinuousLinearMap (a b c d : 𝕜) :
     LinearMap.toContinuousLinearMap
