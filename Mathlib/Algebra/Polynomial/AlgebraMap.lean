@@ -364,6 +364,10 @@ theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
 theorem aeval_X_left_apply (p : R[X]) : aeval X p = p :=
   AlgHom.congr_fun (@aeval_X_left R _) p
 
+lemma aeval_X_left_eq_map [CommSemiring S] [Algebra R S] (p : R[X]) :
+    aeval X p = map (algebraMap R S) p :=
+  rfl
+
 theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A) (φ X) p := by
   rw [← aeval_def, aeval_algHom, aeval_X_left, AlgHom.comp_id]
 
