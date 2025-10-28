@@ -12,11 +12,11 @@ import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 In this file, we apply the generalised implicit function theorem to the more familiar case and show
 that the implicit function preserves the smoothness class of the implicit equation.
 
-Let `E` and `F` be real or complex Banach spaces. Let `f : E × F → F` be a function that is $C^n$ at
-a point `(a, b) : E × F`, where `n ≥ 1`. Let `f'` be the derivative of `f` at `(a, b)`. If the range
-of `f'` is all of `F`, and the kernel of `f'` is the subspace `E × {0}` in `E × F`, then there
-exists a function `φ : E → F` such that `φ a = b`, and `f x (φ x) = f a b` holds for all `x` in a
-neighbourhood of `a`. Furthoremore, `φ` is $C^n$ at `a`.
+Let `E`, `F`, and `G` be real or complex Banach spaces. Let `f : E × F → G` be a function that is
+$C^n$ at a point `(a, b) : E × F`, where `n ≥ 1`. Let `f'` be the derivative of `f` at `(a, b)`. If
+the range of `f'` is all of `G`, and the kernel of `f'` is the subspace `E × {0}` in `E × F`, then
+there exists a function `φ : E → F` such that `φ a = b`, and `f x (φ x) = f a b` holds for all `x`
+in a neighbourhood of `a`. Furthoremore, `φ` is $C^n$ at `a`.
 
 ## TODO
 * Local uniqueness of the implicit function
@@ -56,7 +56,8 @@ lead to a $C^n$ implicit function `φ : E → F`. -/
 structure IsContDiffImplicitAt {𝕜 : Type*} [RCLike 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
-    (n : WithTop ℕ∞) (f : E × F → F) (f' : E × F →L[𝕜] F) (a : E × F) : Prop where
+    {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    (n : WithTop ℕ∞) (f : E × F → G) (f' : E × F →L[𝕜] G) (a : E × F) : Prop where
   hasFDerivAt : HasFDerivAt f f' a
   contDiffAt : ContDiffAt 𝕜 n f a
   range_eq_top : range f' = ⊤
@@ -69,12 +70,13 @@ variable
   {𝕜 : Type*} [RCLike 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
-  {n : WithTop ℕ∞} {f : E × F → F} {f' : E × F →L[𝕜] F} {a : E × F}
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
+  {n : WithTop ℕ∞} {f : E × F → G} {f' : E × F →L[𝕜] G} {a : E × F}
 
 /-- We record the parameters of our specific case in order to apply the general implicit function
 theorem. -/
 def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
-    ImplicitFunctionData 𝕜 (E × F) E F where
+    ImplicitFunctionData 𝕜 (E × F) E G where
   leftFun := Prod.fst
   leftDeriv := ContinuousLinearMap.fst 𝕜 E F
   rightFun := f
@@ -96,7 +98,7 @@ lemma implicitFunctionData_prodFun (h : IsContDiffImplicitAt n f f' a) :
 
 /-- The implicit function provided by the general theorem, from which we construct the more useful
 form `IsContDiffImplicitAt.implicitFunction`. -/
-noncomputable def implicitFunctionAux (h : IsContDiffImplicitAt n f f' a) : E → F → E × F :=
+noncomputable def implicitFunctionAux (h : IsContDiffImplicitAt n f f' a) : E → G → E × F :=
   h.implicitFunctionData.implicitFunction
 
 lemma implicitFunctionAux_fst (h : IsContDiffImplicitAt n f f' a) :
