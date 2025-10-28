@@ -49,7 +49,7 @@ instance : RingHomClass (A →ₜ+* B) A B where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
 
-instance instContinuousMapClass : ContinuousMapClass (A →ₜ+* B) A B where
+instance TopCommRingCat.instContinuousMapClass : ContinuousMapClass (A →ₜ+* B) A B where
   map_continuous f := f.continuous_toFun
 
 def ContinuousRingHom.id (A : Type*) [Ring A] [TopologicalSpace A] [IsTopologicalRing A] :

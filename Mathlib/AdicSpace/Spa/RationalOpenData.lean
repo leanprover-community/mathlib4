@@ -405,8 +405,9 @@ lemma mul_left.aux₁ (U : OpenAddSubgroup A) : ∃ (V : OpenAddSubgroup A),
   rw [Set.mem_smul_set] at hx
   obtain ⟨x, hx, rfl⟩ := hx
   simp only [SetLike.mem_coe] at hx ⊢
-  induction' hx using Submodule.span_induction with y mem y z hy hz hy' hz' r' y hy hy'
-  · obtain ⟨y, hy, rfl⟩ := mem
+  induction hx using Submodule.span_induction with
+  | mem y mem =>
+    obtain ⟨y, hy, rfl⟩ := mem
     rw [Set.mem_mul] at hy
     obtain ⟨t, ht, u, hu, rfl⟩ := hy
     simp only [LinearMap.coe_mk, AddHom.coe_mk, map_mul, smul_eq_mul, φ]
@@ -419,11 +420,13 @@ lemma mul_left.aux₁ (U : OpenAddSubgroup A) : ∃ (V : OpenAddSubgroup A),
       simpa
     · apply Submodule.mem_span_of_mem
       use u
-  · simp
-  · rw [smul_add]
+  | zero => simp
+  | add x y hx hy _ _ =>
+    rw [smul_add]
     apply Submodule.add_mem
     all_goals assumption
-  · simp only [smul_eq_mul, Algebra.mul_smul_comm]
+  | smul a x hx _ =>
+    simp only [smul_eq_mul, Algebra.mul_smul_comm]
     apply Submodule.smul_mem
     simpa
 
@@ -442,10 +445,12 @@ lemma mul_left.aux₂ (s' : Submonoid.powers r.s) (U : OpenAddSubgroup A) :
     ∃ (V : OpenAddSubgroup A),
       r.invPower s' • (ringSubgroupsBasisFamily r V) ≤ ringSubgroupsBasisFamily r U := by
   obtain ⟨_, ⟨n, rfl⟩⟩ := s'
-  induction' n with k hk
-  · use U
+  induction n with
+  | zero =>
+    use U
     simp [rationalOpenData.invPower]
-  · obtain ⟨W, hW⟩ := hk
+  | succ k hk =>
+    obtain ⟨W, hW⟩ := hk
     obtain ⟨V, hV⟩ := mul_left.aux₁ r W
     refine ⟨V, le_trans ?_ hW⟩
     dsimp
@@ -457,8 +462,8 @@ there exists an open subgroup V of A, such that a • Dspan V ≤ Dspan U. -/
 lemma mul_left (a : r.Localization)
     (U : OpenAddSubgroup A) : ∃ (V : OpenAddSubgroup A), a • (ringSubgroupsBasisFamily r V) ≤
       ringSubgroupsBasisFamily r U := by
-  induction' a using Localization.induction_on with a
-  obtain ⟨a', s'⟩ := a
+  induction a using Localization.induction_on with | H y =>
+  obtain ⟨a', s'⟩ := y
   obtain ⟨W, hW⟩ := mul_left.aux₂ r s' U
   obtain ⟨V, hV⟩ := left_mul_subset r W a'
   use V
