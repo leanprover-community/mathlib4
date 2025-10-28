@@ -195,8 +195,8 @@ theorem bell_succ (n : ℕ) :
   rw [Nat.bell]
 
 theorem bell_succ' (n : ℕ) :
-  Nat.bell (n + 1) = ∑ ij ∈ Finset.antidiagonal n, Nat.choose n ij.1 *
-    Nat.bell ij.2 := by
+  Nat.bell (n + 1) =
+    ∑ ij ∈ Finset.antidiagonal n, Nat.choose n ij.1 * Nat.bell ij.2 := by
   rw [Nat.bell_succ, Finset.Nat.sum_antidiagonal_eq_sum_range_succ
     (fun x y => Nat.choose n x * Nat.bell y) n, Finset.sum_range]
 
