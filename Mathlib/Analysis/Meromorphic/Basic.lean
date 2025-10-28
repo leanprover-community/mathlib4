@@ -55,7 +55,7 @@ namespace MeromorphicAt
 @[fun_prop]
 lemma id (x : 𝕜) : MeromorphicAt id x := analyticAt_id.meromorphicAt
 
-@[fun_prop]
+@[fun_prop, simp]
 lemma const (e : E) (x : 𝕜) : MeromorphicAt (fun _ ↦ e) x :=
   analyticAt_const.meromorphicAt
 
@@ -109,7 +109,7 @@ lemma fun_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Me
 
 @[deprecated (since := "2025-05-09")] alias mul' := fun_mul
 
-/-- Finite products of meromorphic functions are analytic. -/
+/-- Finite products of meromorphic functions are meromorphic. -/
 @[fun_prop]
 theorem prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
     (h : ∀ σ, MeromorphicAt (f σ) x) :
@@ -117,18 +117,39 @@ theorem prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
   classical
   induction s using Finset.induction with
   | empty =>
-    rw [Finset.prod_empty]
+    simp only [Finset.prod_empty]
     exact analyticAt_const.meromorphicAt
   | insert σ s hσ hind =>
     rw [Finset.prod_insert hσ]
     exact (h σ).mul hind
 
-/-- Finite products of meromorphic functions are analytic. -/
+/-- Finite products of meromorphic functions are meromorphic. -/
 @[fun_prop]
 theorem fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
     (h : ∀ σ, MeromorphicAt (f σ) x) :
     MeromorphicAt (fun z ↦ ∏ n ∈ s, f n z) x := by
   convert prod h (s := s)
+  simp
+
+/-- Finite sums of meromorphic functions are meromorphic. -/
+@[fun_prop]
+theorem sum {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → E} {x : 𝕜} (h : ∀ σ, MeromorphicAt (f σ) x) :
+    MeromorphicAt (∑ n ∈ s, f n) x := by
+  classical
+  induction s using Finset.induction with
+  | empty =>
+    simp only [Finset.sum_empty]
+    exact analyticAt_const.meromorphicAt
+  | insert σ s hσ hind =>
+    rw [Finset.sum_insert hσ]
+    exact (h σ).add hind
+
+/-- Finite sums of meromorphic functions are meromorphic. -/
+@[fun_prop]
+theorem fun_sum {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → E} {x : 𝕜}
+    (h : ∀ σ, MeromorphicAt (f σ) x) :
+    MeromorphicAt (fun z ↦ ∑ n ∈ s, f n z) x := by
+  convert sum h (s := s)
   simp
 
 @[fun_prop]
@@ -401,17 +422,28 @@ lemma mul : MeromorphicOn (s * t) U := fun x hx ↦ (hs x hx).mul (ht x hx)
 include hs ht in
 lemma fun_mul : MeromorphicOn (fun z ↦ s z * t z) U := fun x hx ↦ (hs x hx).mul (ht x hx)
 
-/-- Finite products of meromorphic functions are analytic. -/
+/-- Finite products of meromorphic functions are meromorphic. -/
 lemma prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (h : ∀ σ, MeromorphicOn (f σ) U) :
     MeromorphicOn (∏ n ∈ s, f n) U :=
   fun z hz ↦ MeromorphicAt.prod (fun σ ↦ h σ z hz)
 
-/-- Finite products of meromorphic functions are analytic. -/
+/-- Finite products of meromorphic functions are meromorphic. -/
 lemma fun_prod {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (h : ∀ σ, MeromorphicOn (f σ) U) :
     MeromorphicOn (fun z ↦ ∏ n ∈ s, f n z) U :=
   fun z hz ↦ MeromorphicAt.fun_prod (fun σ ↦ h σ z hz)
+
+/-- Finite sums of meromorphic functions are meromorphic. -/
+lemma sum {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → E} (h : ∀ σ, MeromorphicOn (f σ) U) :
+    MeromorphicOn (∑ n ∈ s, f n) U :=
+  fun z hz ↦ MeromorphicAt.sum (fun σ ↦ h σ z hz)
+
+/-- Finite sums of meromorphic functions are meromorphic. -/
+lemma fun_sum {U : Set 𝕜} {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → E}
+    (h : ∀ σ, MeromorphicOn (f σ) U) :
+    MeromorphicOn (fun z ↦ ∑ n ∈ s, f n z) U :=
+  fun z hz ↦ MeromorphicAt.fun_sum (fun σ ↦ h σ z hz)
 
 include hs in
 lemma inv : MeromorphicOn s⁻¹ U := fun x hx ↦ (hs x hx).inv
