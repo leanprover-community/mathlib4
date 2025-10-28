@@ -50,8 +50,10 @@ theorem tendsto_const_div_atTop_nhds_zero_nat {𝕜 : Type*} [Semifield 𝕜] [C
   simpa only [mul_zero, div_eq_mul_inv] using
     (tendsto_const_nhds (x := C)).mul tendsto_inv_atTop_nhds_zero_nat
 
-theorem tendsto_one_div_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ 1 / (n : ℝ)) atTop (𝓝 0) :=
-  tendsto_const_div_atTop_nhds_zero_nat 1
+theorem tendsto_one_div_atTop_nhds_zero_nat {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
+    [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
+    Tendsto (fun n : ℕ ↦ 1 / (n : 𝕜)) atTop (𝓝 0) := by
+  simp [tendsto_inv_atTop_nhds_zero_nat]
 
 theorem EReal.tendsto_const_div_atTop_nhds_zero_nat {C : EReal} (h : C ≠ ⊥) (h' : C ≠ ⊤) :
     Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
@@ -61,10 +63,11 @@ theorem EReal.tendsto_const_div_atTop_nhds_zero_nat {C : EReal} (h : C ≠ ⊥) 
   rw [this, ← coe_zero, tendsto_coe]
   exact _root_.tendsto_const_div_atTop_nhds_zero_nat C.toReal
 
-theorem tendsto_one_div_add_atTop_nhds_zero_nat :
-    Tendsto (fun n : ℕ ↦ 1 / ((n : ℝ) + 1)) atTop (𝓝 0) :=
-  suffices Tendsto (fun n : ℕ ↦ 1 / (↑(n + 1) : ℝ)) atTop (𝓝 0) by simpa
-  (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_zero_nat 1)
+theorem tendsto_one_div_add_atTop_nhds_zero_nat {𝕜 : Type*} [Semifield 𝕜] [CharZero 𝕜]
+    [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜] :
+    Tendsto (fun n : ℕ ↦ 1 / ((n : 𝕜) + 1)) atTop (𝓝 0) :=
+  suffices Tendsto (fun n : ℕ ↦ 1 / (↑(n + 1) : 𝕜)) atTop (𝓝 0) by simpa
+  (tendsto_add_atTop_iff_nat 1).2 tendsto_one_div_atTop_nhds_zero_nat
 
 theorem tendsto_algebraMap_inv_atTop_nhds_zero_nat {𝕜 : Type*} (A : Type*)
     [Semifield 𝕜] [CharZero 𝕜] [TopologicalSpace 𝕜] [ContinuousSMul ℚ≥0 𝕜]
