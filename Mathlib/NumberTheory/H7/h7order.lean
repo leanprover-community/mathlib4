@@ -351,11 +351,17 @@ lemma change_deriv (R : ℂ → ℂ) :  deriv^[k] (deriv R) z = deriv (deriv^[k]
               }
           rw [this, ← this]
           exact id (Eq.symm this)}
-
+--r2 analytic
+-- use k=r
+-- use z0= l0'+1
+-- R is R
+-- for the application
+-- one of R1 is R'
+--R2 is junk
 lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
-  (hf : AnalyticAt ℂ R z) (hf : ∀ z : ℂ, AnalyticAt ℂ R₁ z)
+  (hf : AnalyticAt ℂ R z) (hf1 : ∀ z : ℂ, AnalyticAt ℂ R₁ z)
   (hR₁ : ∀ z, R z  = (z - z₀)^r * R₁ z) :
-  ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, deriv^[k] R z =
+  ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, (∀ z : ℂ, AnalyticAt ℂ R₂ z) ∧  deriv^[k] R z =
    (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by { stop
       intros k hkr
       induction' k with k IH
@@ -364,7 +370,6 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
           Pi.zero_apply, mul_zero, add_zero]
         rw [hR₁ z]
         simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
-        left
         sorry
       · simp only [Function.iterate_succ, Function.comp_apply]
         obtain ⟨R₂, hR₂⟩ := IH (Nat.le_of_succ_le hkr)
@@ -372,7 +377,8 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
         use (0)
         have : deriv (fun z => (z - z₀)^(r - k) *
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z =
-             (z - z₀) ^ (r - (k + 1)) * (↑r.factorial / ↑(r - (k + 1)).factorial * R₁ z + (z - z₀) * R₂ z)
+             (z - z₀) ^ (r - (k + 1)) *
+              (↑r.factorial / ↑(r - (k + 1)).factorial * R₁ z + (z - z₀) * R₂ z)
               := sorry
         have :  deriv (deriv^[k] R) z =
           deriv (fun z => (z - z₀)^(r - k) *

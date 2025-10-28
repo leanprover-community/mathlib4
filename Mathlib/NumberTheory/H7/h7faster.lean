@@ -3571,13 +3571,11 @@ def SRl0 : ℂ → ℂ := fun z =>
     (∏ k' ∈ Finset.range (h7.m) \ {↑(h7.l₀' q hq0 h2mq)},
     ((h7.l₀' q hq0 h2mq - (k' + 1)) / (z - (k' + 1 : ℂ))) ^ (h7.r q hq0 h2mq))
 
-
-
 def SRl (l' : Fin (h7.m)) : ℂ → ℂ := fun z =>
   (h7.R' q hq0 h2mq l') z *
     (h7.r q hq0 h2mq).factorial *
     ((z - (h7.l₀' q hq0 h2mq + 1 : ℂ)) ^ (-(h7.r q hq0 h2mq) : ℤ)) *
-    (∏ k' ∈ (Finset.range (h7.m) \ {↑(h7.l₀' q hq0 h2mq : ℕ)} ∪ {↑(l' : ℕ)}),
+    (∏ k' ∈ (Finset.range (h7.m) \ ({↑(h7.l₀' q hq0 h2mq : ℕ)} ∪ {↑(l' : ℕ)})),
       ((h7.l₀' q hq0 h2mq - (k' + 1)) / (z - (k' + 1 : ℂ))) ^ (h7.r q hq0 h2mq)) *
     (((h7.l₀' q hq0 h2mq)- (l' + 1)) ^ (h7.r q hq0 h2mq))
 
@@ -3825,9 +3823,6 @@ lemma SRl_is_analytic_at_ball_of_radius_one (l' : Fin (h7.m)) (hl : l' ≠ h7.l�
         cases' hu with h1 h2
         · intros HC
           sorry
-        · rw [← h2] at hx
-          intros HC
-          sorry
 
   · exact analyticOn_const
 
@@ -3863,35 +3858,29 @@ lemma holS :
   intros z
   by_cases H : ∃ (k' : Fin (h7.m)), z = (k' : ℂ) + 1
   by_cases Hzl0 : z = h7.l₀' q hq0 h2mq + 1
-  ·
-    obtain ⟨l', hl'⟩ := H
-    apply AnalyticAtEq
-    · sorry
-    · sorry
-    · intros z hz
-      have : z ∈ S.U h7 := by {
-      unfold S.U ks
-      sorry
-    }
-      have hlneq :  l' ≠ h7.l₀' q hq0 h2mq := by  {
-        intro Hcontra
+  · clear H
+   -- obtain ⟨l', hl'⟩ := H
+    apply AnalyticAtEq (f := h7.SRl0 q hq0 h2mq) (U := (Metric.ball (h7.l₀' q hq0 h2mq + 1) 1))
+    · rw [Hzl0]
+      refine IsOpen.mem_nhds ?_ ?_
+      simp only [Metric.isOpen_ball]
+      simp only [Metric.mem_ball, dist_self, zero_lt_one]
+    · rw [Hzl0]
+      simp only [Metric.mem_ball, dist_self, zero_lt_one]
+    · clear Hzl0
+      intros z hz
+      have: ↑↑(h7.l₀' q hq0 h2mq) + 1 ∈ S.U h7 := by {
         sorry
-        --apply Hzl0
-        --rw [hl', Hcontra]
-        }
-      refine h7.S_eq_SR q hq0 h2mq l' hlneq this
-    · apply AnalyticOnAt
-      · sorry
-      ·
-        have hl : l' ≠ h7.l₀' q hq0 h2mq := sorry
-        rw [AnalyticOnEquiv]
-        · refine h7.SRl0_is_analytic_at_ball_of_radius_one q hq0 h2mq
-        · intros z hz
-          have : z ∈ S.U h7 := by sorry
-          have := h7.SR_eq_SRl0 q hq0 h2mq this
-          rw [this]
-    · exact (Metric.ball (h7.l₀' q hq0 h2mq + 1) 1)
-
+      }
+      have := h7.SR_eq_SRl0 q hq0 h2mq this
+      sorry
+      -- lemma "equality on ball"?
+    · apply AnalyticOnAt (f:= h7.SRl0 q hq0 h2mq)
+      · change (Metric.ball (↑↑(h7.l₀' q hq0 h2mq) + 1) 1) ∈ nhds z
+        rw [Hzl0]
+        apply Metric.ball_mem_nhds
+        simp only [zero_lt_one]
+      · exact (h7.SRl0_is_analytic_at_ball_of_radius_one q hq0 h2mq)
   · obtain ⟨l', hl'⟩ := H
     apply AnalyticAtEq
     · sorry
@@ -3973,6 +3962,8 @@ lemma holS :
       rw [HC]}
       exact this
 
+#exit
+
 lemma hcauchy (l' : Fin (h7.m)) :
   (2 * ↑Real.pi * I)⁻¹ * (∮ z in C(0, h7.m *(1 + (h7.r q hq0 h2mq / q))),
   (z - h7.l₀' q hq0 h2mq)⁻¹ * (h7.S q hq0 h2mq) z) = (h7.S q hq0 h2mq) (h7.l₀' q hq0 h2mq) := by
@@ -4001,7 +3992,7 @@ lemma hcauchy (l' : Fin (h7.m)) :
 
 --#check sys_coe_bar
 def sys_coeff_foo_S : ρᵣ h7 q hq0 h2mq = Complex.log (h7.α) ^ (-(h7.r q hq0 h2mq : ℤ)) *
-   (h7.S q hq0 h2mq) (↑↑(h7.l₀' q hq0 h2mq)) := by {
+   (h7.S q hq0 h2mq) (↑↑(h7.l₀' q hq0 h2mq) + 1) := by {
   dsimp [ρᵣ]
   congr
   have HAE : AnalyticAt ℂ (R h7 q hq0 h2mq) (h7.l₀' q hq0 h2mq + 1) :=
@@ -4018,7 +4009,7 @@ def sys_coeff_foo_S : ρᵣ h7 q hq0 h2mq = Complex.log (h7.α) ^ (-(h7.r q hq0 
   simp only [tsub_self, pow_zero, Nat.factorial_zero,
     Nat.cast_one, div_one, one_mul] at this
   obtain ⟨R2,hR2⟩ := this
-  rw [hR2]
+  --rw [hR2]
   sorry
 }
 
@@ -4498,7 +4489,7 @@ lemma norm_sub_l0_lower_bound_on_sphere_inv :
   have := h7.norm_sub_l0_lower_bound_on_sphere q hq0 h2mq hz
   rw [← inv_div] at this
   simp only [mem_sphere_iff_norm, sub_zero, inv_div, one_div, ge_iff_le] at *
-
+  sorry
 
 
 include hz in
@@ -4608,8 +4599,11 @@ lemma abs_denom : norm (((z - (h7.l₀' q hq0 h2mq : ℂ)) ^ (-(h7.r q hq0 h2mq 
               refine Nat.le_add_right_of_le ?_
               exact Fin.is_le'
             }
+            have : ‖↑↑((h7.l₀' q hq0 h2mq : ℕ) : ℂ) - ((x:ℕ) : ℂ )‖= (h7.l₀' q hq0 h2mq : ℂ) - (x :ℂ) := by {
+              sorry
 
-
+            }
+            sorry
           }
 
           simp only [mem_sdiff, Finset.mem_range, Finset.mem_singleton] at hx
