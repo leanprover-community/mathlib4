@@ -5,7 +5,6 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 /-!
 # Spaces where indicators of closed sets have decreasing approximations by continuous functions
