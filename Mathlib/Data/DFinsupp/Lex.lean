@@ -76,6 +76,10 @@ theorem lex_lt_iff_of_unique [Unique ι] [∀ i, LT (α i)] [Preorder ι] {x y :
     x < y ↔ x default < y default :=
   lex_iff_of_unique
 
+theorem colex_lt_iff_of_unique [Unique ι] [∀ i, LT (α i)] [Preorder ι] {x y : Colex (Π₀ i, α i)} :
+    x < y ↔ x default < y default :=
+  lex_iff_of_unique
+
 variable [LinearOrder ι]
 
 instance Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
@@ -105,6 +109,10 @@ theorem lex_le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Lex
     x ≤ y ↔ x default ≤ y default := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, lex_lt_iff_of_unique, ← ofLex.apply_eq_iff_eq,
     DFunLike.ext_iff, Unique.forall_iff]
+
+theorem colex_le_iff_of_unique [Unique ι] [∀ i, PartialOrder (α i)] {x y : Colex (Π₀ i, α i)} :
+    x ≤ y ↔ x default ≤ y default :=
+  lex_le_iff_of_unique (ι := ιᵒᵈ)
 
 section LinearOrder
 
