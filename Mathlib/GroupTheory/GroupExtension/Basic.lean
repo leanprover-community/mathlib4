@@ -24,18 +24,18 @@ namespace GroupExtension
 variable {E : Type*} [Group E] (S : GroupExtension N E G)
 
 /-- The isomorphism `E ⧸ S.rightHom.ker ≃* G` induced by `S.rightHom` -/
-@[to_additive "The isomorphism `E ⧸ S.rightHom.ker ≃+ G` induced by `S.rightHom`"]
+@[to_additive /-- The isomorphism `E ⧸ S.rightHom.ker ≃+ G` induced by `S.rightHom` -/]
 noncomputable def quotientKerRightHomEquivRight : E ⧸ S.rightHom.ker ≃* G :=
   QuotientGroup.quotientKerEquivOfSurjective S.rightHom S.rightHom_surjective
 
 /-- The isomorphism `E ⧸ S.inl.range ≃* G` induced by `S.rightHom` -/
-@[to_additive "The isomorphism `E ⧸ S.inl.range ≃+ G` induced by `S.rightHom`"]
+@[to_additive /-- The isomorphism `E ⧸ S.inl.range ≃+ G` induced by `S.rightHom` -/]
 noncomputable def quotientRangeInlEquivRight : E ⧸ S.inl.range ≃* G :=
   (QuotientGroup.quotientMulEquivOfEq S.range_inl_eq_ker_rightHom).trans
     S.quotientKerRightHomEquivRight
 
 /-- An arbitrarily chosen section -/
-@[to_additive surjInvRightHom "An arbitrarily chosen section"]
+@[to_additive surjInvRightHom /-- An arbitrarily chosen section -/]
 noncomputable def surjInvRightHom : S.Section where
   toFun := Function.surjInv S.rightHom_surjective
   rightInverse_rightHom := Function.surjInv_eq S.rightHom_surjective
@@ -93,8 +93,7 @@ initialize_simps_projections Section (toFun → apply)
 
 /-- The composition of an isomorphism between equivalent group extensions and a section -/
 @[to_additive (attr := simps!)
-      "The composition of an isomorphism between equivalent additive group extensions and a
-      section"]
+/-- The composition of an isomorphism between equivalent additive group extensions and a section -/]
 def equivComp : S'.Section where
   toFun := equiv ∘ σ
   rightInverse_rightHom g := by
@@ -108,10 +107,10 @@ variable {S}
 variable {E' : Type*} [Group E'] {S' : GroupExtension N E' G}
 
 /-- An equivalence of group extensions from a homomorphism making a commuting diagram. Such a
-    homomorphism is necessarily an isomorphism. -/
+homomorphism is necessarily an isomorphism. -/
 @[to_additive
-      "An equivalence of additive group extensions from a homomorphism making a commuting diagram.
-      Such a homomorphism is necessarily an isomorphism."]
+/-- An equivalence of additive group extensions from a homomorphism making a commuting diagram.
+Such a homomorphism is necessarily an isomorphism. -/]
 noncomputable def ofMonoidHom (f : E →* E') (comp_inl : f.comp S.inl = S'.inl)
     (rightHom_comp : S'.rightHom.comp f = S.rightHom) : S.Equiv S' where
   __ := f
@@ -182,18 +181,18 @@ end Splitting
 namespace IsConj
 
 /-- `N`-conjugacy is reflexive. -/
-@[to_additive "`N`-conjugacy is reflexive."]
+@[to_additive /-- `N`-conjugacy is reflexive. -/]
 theorem refl (s : S.Splitting) : S.IsConj s s :=
   ⟨1, by simp only [map_one, inv_one, one_mul, mul_one]⟩
 
 /-- `N`-conjugacy is symmetric. -/
-@[to_additive "`N`-conjugacy is symmetric."]
+@[to_additive /-- `N`-conjugacy is symmetric. -/]
 theorem symm {s₁ s₂ : S.Splitting} (h : S.IsConj s₁ s₂) : S.IsConj s₂ s₁ := by
   obtain ⟨n, hn⟩ := h
   exact ⟨n⁻¹, by simp only [hn, map_inv]; group⟩
 
 /-- `N`-conjugacy is transitive. -/
-@[to_additive "`N`-conjugacy is transitive."]
+@[to_additive /-- `N`-conjugacy is transitive. -/]
 theorem trans {s₁ s₂ s₃ : S.Splitting} (h₁ : S.IsConj s₁ s₂) (h₂ : S.IsConj s₂ s₃) :
     S.IsConj s₁ s₃ := by
   obtain ⟨n₁, hn₁⟩ := h₁
@@ -201,7 +200,7 @@ theorem trans {s₁ s₂ s₃ : S.Splitting} (h₁ : S.IsConj s₁ s₂) (h₂ :
   exact ⟨n₁ * n₂, by simp only [hn₁, hn₂, map_mul]; group⟩
 
 /-- The setoid of splittings with `N`-conjugacy -/
-@[to_additive "The setoid of splittings with `N`-conjugacy"]
+@[to_additive /-- The setoid of splittings with `N`-conjugacy -/]
 def setoid : Setoid S.Splitting where
   r := S.IsConj
   iseqv :=
@@ -212,7 +211,7 @@ def setoid : Setoid S.Splitting where
 end IsConj
 
 /-- The `N`-conjugacy classes of splittings -/
-@[to_additive "The `N`-conjugacy classes of splittings"]
+@[to_additive /-- The `N`-conjugacy classes of splittings -/]
 def ConjClasses := Quotient <| IsConj.setoid S
 
 end GroupExtension

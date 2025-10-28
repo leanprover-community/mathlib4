@@ -11,7 +11,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 This file defines algebraic functions as the image of the `algebraMap R[X] (R → S)`.
 -/
 
-assert_not_exists IsIntegralClosure LinearIndependent LocalRing MvPolynomial
+assert_not_exists IsIntegralClosure LinearIndependent IsLocalRing MvPolynomial
 
 open Polynomial
 
@@ -46,30 +46,17 @@ theorem polynomial_smul_apply' [CommSemiring R] [Semiring S] [Algebra R S] [SMul
 
 variable [CommSemiring R] [CommSemiring S] [CommSemiring T] [Algebra R S] [Algebra S T]
 
--- Porting note: the proofs in this definition used `funext` in term-mode, but I was not able
--- to get them to work anymore.
 /-- This is not an instance for the same reasons as `Polynomial.hasSMulPi'`. -/
 noncomputable def Polynomial.algebraPi : Algebra R[X] (S → T) where
   __ := Polynomial.hasSMulPi' R S T
   algebraMap :=
-  { toFun := fun p z => algebraMap S T (aeval z p)
-    map_one' := by
-      funext z
-      simp only [Polynomial.aeval_one, Pi.one_apply, map_one]
-    map_mul' := fun f g => by
-      funext z
-      simp only [Pi.mul_apply, map_mul]
-    map_zero' := by
-      funext z
-      simp only [Polynomial.aeval_zero, Pi.zero_apply, map_zero]
-    map_add' := fun f g => by
-      funext z
-      simp only [Polynomial.aeval_add, Pi.add_apply, map_add] }
-  commutes' := fun p f => by
-    funext z
-    exact mul_comm _ _
-  smul_def' := fun p f => by
-    funext z
+  { toFun p z := algebraMap S T (aeval z p)
+    map_one' := funext fun z => by simp only [Pi.one_apply, map_one]
+    map_mul' _ _ := funext fun z => by simp only [Pi.mul_apply, map_mul]
+    map_zero' := funext fun z => by simp only [Pi.zero_apply, map_zero]
+    map_add' _ _ := funext fun z => by simp only [Pi.add_apply, map_add] }
+  commutes' _ _ := funext fun z => by exact mul_comm _ _
+  smul_def' _ _ := funext fun z => by
     simp only [polynomial_smul_apply', Algebra.algebraMap_eq_smul_one, RingHom.coe_mk,
       MonoidHom.coe_mk, OneHom.coe_mk, Pi.mul_apply, Algebra.smul_mul_assoc, one_mul]
 

@@ -56,7 +56,7 @@ theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
 @[simp]
 theorem mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by
   suffices n ≤ l ∧ l < n + (m - n) ↔ n ≤ l ∧ l < m by simp [Ico, this]
-  omega
+  cutsat
 
 theorem eq_nil_of_le {n m : ℕ} (h : m ≤ n) : Ico n m = [] := by
   simp [Ico, Nat.sub_eq_zero_iff_le.mpr h]
@@ -81,7 +81,7 @@ theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
   dsimp only [Ico]
   convert range'_append using 2
   · rw [Nat.one_mul, Nat.add_sub_cancel' hnm]
-  · omega
+  · cutsat
 
 @[simp]
 theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by
@@ -100,7 +100,7 @@ theorem bagInter_consecutive (n m l : Nat) :
 @[simp]
 theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by
   dsimp [Ico]
-  simp [range', Nat.add_sub_cancel_left]
+  simp [Nat.add_sub_cancel_left]
 
 theorem succ_top {n m : ℕ} (h : n ≤ m) : Ico n (m + 1) = Ico n m ++ [m] := by
   rwa [← succ_singleton, append_consecutive]
@@ -114,12 +114,16 @@ theorem eq_cons {n m : ℕ} (h : n < m) : Ico n m = n :: Ico (n + 1) m := by
 theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
   simp [Ico, Nat.sub_sub_self (succ_le_of_lt h)]
 
-theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
+theorem isChain_succ (n m : ℕ) : IsChain (fun a b => b = succ a) (Ico n m) := by
   by_cases h : n < m
   · rw [eq_cons h]
-    exact chain_succ_range' _ _ 1
+    unfold List.Ico
+    exact isChain_range' _ (_ + 1) 1
   · rw [eq_nil_of_le (le_of_not_gt h)]
-    trivial
+    exact .nil
+
+@[deprecated (since := "2025-09-19")]
+alias chain'_succ := isChain_succ
 
 theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
 

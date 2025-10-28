@@ -25,7 +25,7 @@ However, the Fubini step does not make sense for lack of integrability, and the 
 To gain integrability, one multiplies with a Gaussian function `exp (-c⁻¹ ‖w‖^2)`, with a large
 (but finite) `c`. As this function converges pointwise to `1` when `c → ∞`, we get
 `∫_w exp (2 I π ⟪w, v⟫) 𝓕 f (w) dw = lim_c ∫_w exp (-c⁻¹ ‖w‖^2 + 2 I π ⟪w, v⟫) 𝓕 f (w) dw`.
-One can perform Fubini on the right hand side for fixed `c`, writing the integral as
+One can perform Fubini on the right-hand side for fixed `c`, writing the integral as
 `∫_x (∫_w exp (-c⁻¹‖w‖^2 + 2 I π ⟪w, v - x⟫ dw)) f x dx`.
 The middle factor is the Fourier transform of a more and more flat function
 (converging to the constant `1`), hence it becomes more and more concentrated, around the
@@ -133,7 +133,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
   have B : Tendsto
       (fun (c : ℝ) ↦ ∫ w : V, ((c^(1/2 : ℝ)) ^ finrank ℝ V * φ ((c^(1/2 : ℝ)) • (v - w))) • f w)
       atTop (𝓝 (f v)) :=
-    A.comp (tendsto_rpow_atTop (by norm_num))
+    A.comp (tendsto_rpow_atTop (by simp))
   apply B.congr'
   filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
   congr with w
@@ -147,7 +147,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
   · norm_cast
     simp only [one_div, norm_smul, Real.norm_eq_abs, mul_pow, sq_abs, neg_mul, neg_inj,
       ← rpow_natCast, ← rpow_mul hc.le, mul_assoc]
-    norm_num
+    simp
 
 end Real
 

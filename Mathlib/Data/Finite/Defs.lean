@@ -132,11 +132,11 @@ class Infinite (α : Sort*) : Prop where
   /-- assertion that `α` is `¬Finite` -/
   not_finite : ¬Finite α
 
-@[simp]
+@[simp, push]
 theorem not_finite_iff_infinite : ¬Finite α ↔ Infinite α :=
   ⟨Infinite.mk, fun h => h.1⟩
 
-@[simp]
+@[simp, push]
 theorem not_infinite_iff_finite : ¬Infinite α ↔ Finite α :=
   not_finite_iff_infinite.not_right.symm
 
@@ -172,8 +172,6 @@ section Set
 /-!
 ### Finite sets
 -/
-
-open Set Function
 
 variable {α : Type u} {β : Type v}
 

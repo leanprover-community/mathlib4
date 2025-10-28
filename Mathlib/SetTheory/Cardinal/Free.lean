@@ -3,9 +3,10 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Daniel Weber
 -/
-import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+import Mathlib.Algebra.Ring.TransferInstance
 import Mathlib.Data.Finsupp.Fintype
+import Mathlib.Data.ZMod.Defs
 import Mathlib.GroupTheory.FreeGroup.Reduce
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.SetTheory.Cardinal.Arithmetic
@@ -111,7 +112,7 @@ See also `Infinite.nonempty_field`. -/
 instance nonempty_commRing [Nonempty α] : Nonempty (CommRing α) := by
   obtain hR | hR := finite_or_infinite α
   · obtain ⟨x⟩ := nonempty_fintype α
-    have : NeZero (Fintype.card α) := ⟨by inhabit α; simp⟩
+    have : NeZero (Fintype.card α) := ⟨by simp⟩
     classical
     obtain ⟨e⟩ := Fintype.truncEquivFin α
     exact ⟨open scoped Fin.CommRing in e.commRing⟩

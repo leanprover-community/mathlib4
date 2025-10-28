@@ -66,8 +66,7 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
     algebraMap_end_apply, AlgEquiv.toRingEquiv_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_coe, IsLocalization.algEquiv_apply,
     IsLocalization.map_id_mk']
-  simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
-    IsLocalization.map_id_mk']
+  simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul]
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma mem_freeLocus_iff_tensor (p : PrimeSpectrum R)
@@ -236,8 +235,7 @@ lemma rankAtStalk_eq_zero_of_subsingleton [Subsingleton M] :
 lemma nontrivial_of_rankAtStalk_pos (h : 0 < rankAtStalk (R := R) M) :
     Nontrivial M := by
   by_contra! hn
-  have : Subsingleton M := not_nontrivial_iff_subsingleton.mp hn
-  simp [rankAtStalk, this] at h
+  simp at h
 
 lemma rankAtStalk_eq_of_equiv {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
     rankAtStalk (R := R) M = rankAtStalk N := by
@@ -276,7 +274,7 @@ lemma rankAtStalk_pi {ι : Type*} [Finite ι] (M : ι → Type*)
     free_of_flat_of_isLocalRing
   simp_rw [rankAtStalk, e.finrank_eq, Module.finrank_pi_fintype, finsum_eq_sum_of_fintype]
 
-lemma rankAtStalk_eq_finrank_tensorProduct (p : PrimeSpectrum R):
+lemma rankAtStalk_eq_finrank_tensorProduct (p : PrimeSpectrum R) :
     rankAtStalk M p =
       finrank (Localization.AtPrime p.asIdeal) (Localization.AtPrime p.asIdeal ⊗[R] M) := by
   let e : LocalizedModule p.asIdeal.primeCompl M ≃ₗ[Localization.AtPrime p.asIdeal]
@@ -297,8 +295,8 @@ lemma rankAtStalk_eq_zero_iff_notMem_support (p : PrimeSpectrum R) :
   simp [← finrank_eq_rank, h]
 
 lemma rankAtStalk_pos_iff_mem_support (p : PrimeSpectrum R) :
-    0 < rankAtStalk M p ↔ p ∈ support R M := by
-  rw [← not_iff_not, Nat.pos_iff_ne_zero, not_not, rankAtStalk_eq_zero_iff_notMem_support]
+    0 < rankAtStalk M p ↔ p ∈ support R M :=
+  Nat.pos_iff_ne_zero.trans (rankAtStalk_eq_zero_iff_notMem_support _).not_left
 
 lemma rankAtStalk_eq_zero_iff_subsingleton :
     rankAtStalk (R := R) M = 0 ↔ Subsingleton M := by
@@ -338,7 +336,7 @@ lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSp
 lemma rankAtStalk_tensorProduct (N : Type*) [AddCommGroup N] [Module R N] [Module.Finite R N]
     [Module.Flat R N] : rankAtStalk (M ⊗[R] N) = rankAtStalk M * rankAtStalk (R := R) N := by
   ext p
-  let e : Localization.AtPrime p.asIdeal ⊗[R] M ⊗[R] N ≃ₗ[Localization.AtPrime p.asIdeal]
+  let e : Localization.AtPrime p.asIdeal ⊗[R] (M ⊗[R] N) ≃ₗ[Localization.AtPrime p.asIdeal]
       (Localization.AtPrime p.asIdeal ⊗[R] M) ⊗[Localization.AtPrime p.asIdeal]
         (Localization.AtPrime p.asIdeal ⊗[R] N) :=
     (AlgebraTensorModule.assoc _ _ _ _ _ _).symm ≪≫ₗ

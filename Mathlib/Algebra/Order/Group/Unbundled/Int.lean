@@ -37,7 +37,7 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
   | (n : ℕ) => abs_of_nonneg <| ofNat_zero_le _
   | -[_+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
 
-@[simp, norm_cast] lemma natCast_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
+@[norm_cast] lemma natCast_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
 
 theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
 
@@ -78,7 +78,7 @@ theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := b
       simp only [negSucc_ne_zero, abs_eq_natAbs, natAbs_negSucc, succ_eq_add_one,
         Int.natCast_add, cast_ofNat_Int, add_eq_right, natCast_eq_zero, false_or, reduceNeg]
       rw [negSucc_eq]
-      omega
+      cutsat
 
 theorem one_le_abs {z : ℤ} (h₀ : z ≠ 0) : 1 ≤ |z| :=
   add_one_le_iff.mpr (abs_pos.mpr h₀)
@@ -87,10 +87,10 @@ lemma eq_zero_of_abs_lt_dvd {m x : ℤ} (h1 : m ∣ x) (h2 : |x| < m) : x = 0 :=
   by_contra h
   have := Int.natAbs_le_of_dvd_ne_zero h1 h
   rw [Int.abs_eq_natAbs] at h2
-  omega
+  cutsat
 
 lemma abs_sub_lt_of_lt_lt {m a b : ℕ} (ha : a < m) (hb : b < m) : |(b : ℤ) - a| < m := by
-  rw [abs_lt]; omega
+  rw [abs_lt]; cutsat
 
 /-! #### `/`  -/
 
@@ -123,8 +123,11 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
       | -[m+1], 0 => Nat.zero_le _
       | -[m+1], n + 1 => Nat.succ_le_succ (Nat.div_le_self _ _))
 
-theorem abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
+theorem abs_sign_of_ne_zero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
   rw [abs_eq_natAbs, natAbs_sign_of_ne_zero hz, Int.ofNat_one]
+
+@[deprecated (since := "2025-09-03")]
+alias abs_sign_of_nonzero := abs_sign_of_ne_zero
 
 protected theorem sign_eq_ediv_abs' (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]

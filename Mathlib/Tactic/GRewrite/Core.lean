@@ -116,11 +116,12 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         are rewritten, or specify what the rewritten expression should be and use 'gcongr'."
     let eNew ← if rhs.hasBinderNameHint then eNew.resolveBinderNameHint else pure eNew
     -- construct the implication proof using `gcongr`
-    let template := eAbst.instantiate1 (← mkFreshExprSyntheticOpaqueMVar default)
+    let hole ← mkFreshExprMVar default
+    let template := eAbst.instantiate1 hole
     let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
     let imp := if forwardImp then mkImp e eNew else mkImp eNew e
     let gcongrGoal ← mkFreshExprMVar imp
-    let (_, _, sideGoals) ← gcongrGoal.mvarId!.gcongr template [] (inGRewrite := true)
+    let (_, _, sideGoals) ← gcongrGoal.mvarId!.gcongr template [] (grewriteHole := hole.mvarId!)
       (mainGoalDischarger := GRewrite.dischargeMain hrel)
     -- post-process the metavariables
     postprocessAppMVars `grewrite goal newMVars binderInfos
