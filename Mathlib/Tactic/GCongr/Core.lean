@@ -209,12 +209,13 @@ def getRel (e : Expr) : Option (Name × Expr × Expr) :=
 
 /-- Construct the `GCongrLemma` data from a given lemma. -/
 def makeGCongrLemma (declName : Name) (declTy : Expr) (numHyps prio : Nat) : MetaM GCongrLemma := do
-  withReducible <| forallBoundedTelescope declTy numHyps fun xs targetTy => do
+  withDefault <| forallBoundedTelescope declTy numHyps fun xs targetTy => withReducible do
     let fail {α} (m : MessageData) : MetaM α := throwError "\
       @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
-      {m} in the conclusion of {declTy}"
+      {m} in {targetTy}"
     -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
     let some (relName, lhs, rhs) := getRel (← whnf targetTy) | fail "No relation found"
+    let lhs := lhs.headBeta; let rhs := rhs.headBeta -- this is required for `Monotone fun x => ⋯`
     let some (head, lhsArgs) := getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
     let some (head', rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
     unless head == head' && lhsArgs.size == rhsArgs.size do
@@ -300,7 +301,13 @@ initialize registerBuiltinAttribute {
     -- Since there is only one possible arity at which the `gcongr` lemma will be accepted,
     -- we simply attempt to process the lemmas at the different possible arities.
     try
-      gcongrExt.add (← makeGCongrLemma decl declTy arity prio) kind
+      -- If the head constant is a monotonicity constant, we want it to be unfolded.
+      -- We achieve this by increasing the arity
+      let arity' := match declTy.getForallBody.getAppFn.constName? with
+        | `Monotone | `Antitone | `StrictMono | `StrictAnti => arity + 3
+        | `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn => arity + 5
+        | _ => arity
+      gcongrExt.add (← makeGCongrLemma decl declTy arity' prio) kind
     catch e => try
       guard (1 ≤ arity)
       gcongrExt.add (← makeGCongrLemma decl declTy (arity - 1) prio) kind
@@ -428,14 +435,15 @@ def _root_.Lean.MVarId.applyWithArity (mvarId : MVarId) (e : Expr) (arity : Nat)
     let targetType ← mvarId.getType
     let eType      ← inferType e
     let (newMVars, binderInfos) ← do
-      let (newMVars, binderInfos, eType) ← forallMetaTelescopeReducing eType arity
+      -- we use `withDefault` so that we can unfold `Monotone`
+      let (newMVars, binderInfos, eType) ← withDefault <| forallMetaTelescopeReducing eType arity
       if (← isDefEqApply cfg.approx eType targetType) then
         pure (newMVars, binderInfos)
       else
         let conclusionType? ← if arity = 0 then
           pure none
         else
-          let (_, _, r) ← forallMetaTelescopeReducing eType arity
+          let (_, _, r) ← withDefault <| forallMetaTelescopeReducing eType arity
           pure (some r)
         throwApplyError mvarId eType conclusionType? targetType term?
     postprocessAppMVars `apply mvarId newMVars binderInfos
