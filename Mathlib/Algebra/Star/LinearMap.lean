@@ -5,6 +5,7 @@ Authors: Monica Omar
 -/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.Algebra.Star.TensorProduct
 
 /-!
 # Intrinsic star operation on `E →ₗ[R] F`
@@ -71,17 +72,25 @@ theorem intrinsicStar_comp (f : E →ₗ[R] F) (g : G →ₗ[R] E) :
 @[simp] theorem intrinsicStar_zero : star (0 : E →ₗ[R] F) = 0 := by ext; simp
 
 section NonUnitalNonAssocSemiring
-variable {E : Type*} [NonUnitalNonAssocSemiring E] [StarRing E] [Module R E]
-  [StarModule R E] [SMulCommClass R E E] [IsScalarTower R E E]
+variable {R' E F G H : Type*} [CommSemiring R'] [StarRing R']
+  [NonUnitalNonAssocSemiring E] [StarRing E] [Module R E] [Module R' E]
+  [StarModule R E] [StarModule R' E] [SMulCommClass R E E] [IsScalarTower R E E]
+  [NonUnitalNonAssocSemiring F] [StarRing F] [Module R' F] [StarModule R' F]
+  [NonUnitalNonAssocSemiring G] [StarRing G] [Module R' G] [StarModule R' G]
+  [NonUnitalNonAssocSemiring H] [StarRing H] [Module R' H] [StarModule R' H]
 
 theorem intrinsicStar_mulLeft (x : E) : star (mulLeft R x) = mulRight R (star x) := by ext; simp
 
 theorem intrinsicStar_mulRight (x : E) : star (mulRight R x) = mulLeft R (star x) := by
   rw [star_eq_iff_star_eq, intrinsicStar_mulLeft, star_star]
 
--- TODO: when we have `Star (E ⊗[R] F)` (PR #27290), we can do these two:
--- `star (mul' R E) = mul' R E ∘ₗ TensorProduct.comm R E E`
--- `star (f ⊗ₘ g) = star f ⊗ₘ star g`
+theorem intrinsicStar_mul' [SMulCommClass R' E E] [IsScalarTower R' E E] :
+    star (mul' R' E) = mul' R' E ∘ₗ TensorProduct.comm R' E E :=
+  TensorProduct.ext' fun _ _ ↦ by simp
+
+theorem _root_.TensorProduct.intrinsicStar_map (f : E →ₗ[R'] F) (g : G →ₗ[R'] H) :
+    star (TensorProduct.map f g) = TensorProduct.map (star f) (star g) :=
+  TensorProduct.ext' fun _ _ ↦ by simp
 
 end NonUnitalNonAssocSemiring
 
