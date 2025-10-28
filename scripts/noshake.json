@@ -201,6 +201,7 @@
  ["Batteries.Tactic.Basic",
   "Mathlib.Mathport.Syntax",
   "Mathlib.Tactic.Linter",
+  "Mathlib.Tactic.Common",
   "Mathlib.Init"],
  "ignore":
  {"Mathlib.Util.Notation3": ["Lean.Elab.AuxDef", "Lean.Elab.BuiltinCommand"],
