@@ -64,7 +64,7 @@ theorem ext {x y : AssociatedGraded F F_lt} (w : ∀ i, x i = y i) : x = y :=
 
 variable [DecidableEq ι]
 
-theorem of_eq_of_ne (i j : ι) (x : GradedPiece F F_lt i) (h : i ≠ j) : (of x) j = 0 :=
+theorem of_eq_of_ne (i j : ι) (x : GradedPiece F F_lt i) (h : j ≠ i) : (of x) j = 0 :=
   DirectSum.of_eq_of_ne i j x h
 
 @[simp]
