@@ -28,14 +28,16 @@ def isValVal (c : Config) (e : Expr) : Bool :=
   e.isAppOf c.inner && e.getAppArgs.any (fun e ↦ containsOuter c e)
 
 partial
-def find (c : Config) : InfoTree → Array (TermInfo × Bool)
+def find (c : Config) : InfoTree → Array (TermInfo × Syntax × Bool)
   | .node k args =>
     let kargs := (args.map (find c)).foldl (· ++ ·) #[]
     if let .ofTermInfo i := k then
-      if isTermApp i.stx && (i.stx.find? (isBadSyntax c)).isSome then
-        #[(i, (i.expr.find? (isValVal c)).isSome)] ++ kargs
+      if isTermApp i.stx then
+        match i.stx.find? (isBadSyntax c) with
+        | some stx => #[(i, stx, (i.expr.find? (isValVal c)).isSome)] ++ kargs
+        | none => kargs
       else
-        #[(i, false)] ++ kargs
+        kargs
     else kargs
   | .context _ t => find c t
   | _ => default
@@ -51,10 +53,10 @@ def innerOuterLinter (c : Config) : Linter where
       return
     let trees ← getInfoTrees
     for tree in trees.map (find c) do
-      for (info, relevant) in tree do
+      for (info, stx, relevant) in tree do
         unless relevant do continue
         Linter.logLintIf linter.innerOuter info.stx
-          m!"{info.stx} uses explicit syntax for {c.inner} ({c.outer} ?_)"
+          m!"{stx} uses explicit syntax for {c.inner} ({c.outer} ?_)"
 
 def homBase : Config where
   outer := `AlgebraicGeometry.PresheafedSpace.Hom.base
