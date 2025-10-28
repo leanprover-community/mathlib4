@@ -100,11 +100,11 @@ lemma mem_range_iff_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (
 
 lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
     {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {f : ∀ i, Y i ⟶ X}
-    (H : ⋃ i, Set.range (f i).base = Set.univ) : Surjective (Limits.Sigma.desc f) := by
+    (H : ⋃ i, Set.range (f i) = Set.univ) : Surjective (Limits.Sigma.desc f) := by
   refine ⟨fun x ↦ ?_⟩
   simp_rw [Set.eq_univ_iff_forall, Set.mem_iUnion] at H
   obtain ⟨i, x, rfl⟩ := H x
-  use (Limits.Sigma.ι (fun i ↦ Y i) i).base x
+  use Limits.Sigma.ι (fun i ↦ Y i) i x
   rw [← Scheme.Hom.comp_apply, Limits.Sigma.ι_desc]
 
 instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover (Scheme.precoverage P)) :
@@ -194,7 +194,7 @@ lemma Scheme.Hom.denseRange (f : X ⟶ Y) [IsDominant f] : DenseRange f :=
 instance (priority := 100) [Surjective f] : IsDominant f := ⟨f.surjective.denseRange⟩
 
 instance [IsDominant f] [IsDominant g] : IsDominant (f ≫ g) :=
-  ⟨g.denseRange.comp f.denseRange g.base.hom.2⟩
+  ⟨g.denseRange.comp f.denseRange g.continuous⟩
 
 instance : MorphismProperty.IsMultiplicative @IsDominant where
   id_mem := fun _ ↦ inferInstance
