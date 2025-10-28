@@ -271,10 +271,6 @@ lemma equiv_chgUniv (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M] {X Y : C}
 
 end ChangeOfUniverse
 
-section Map
-
-end Map
-
 end SmallShiftedHom
 
 end Localization
