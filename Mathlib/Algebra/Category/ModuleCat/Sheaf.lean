@@ -81,9 +81,9 @@ instance : (forget.{v} R).ReflectsIsomorphisms := (fullyFaithfulForget R).reflec
 def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj X) :=
   forget _ ⋙ PresheafOfModules.evaluation _ X
 
-/-- The forget functor `SheafOfModules R ⥤ Sheaf J AddCommGrp`. -/
+/-- The forget functor `SheafOfModules R ⥤ Sheaf J AddCommGrpCat`. -/
 @[simps]
-noncomputable def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGrp.{v} where
+noncomputable def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGrpCat.{v} where
   obj M := ⟨_, M.isSheaf⟩
   map f := { val := (forget R ⋙ PresheafOfModules.toPresheaf R.val).map f }
 
@@ -97,14 +97,14 @@ noncomputable def forgetToSheafModuleCat
     SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.1.obj X)) where
   obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1,
     Presheaf.isSheaf_of_isSheaf_comp _ _
-      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrp.{w}) M.isSheaf⟩
+      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrpCat.{w}) M.isSheaf⟩
   map f := { val := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
 /-- The canonical isomorphism between
-`SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGrp.{v}`
+`SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGrpCat.{v}`
 and `SheafOfModules.forget R ⋙ PresheafOfModules.toPresheaf R.val`. -/
 noncomputable def toSheafCompSheafToPresheafIso :
-    toSheaf R ⋙ sheafToPresheaf J AddCommGrp.{v} ≅
+    toSheaf R ⋙ sheafToPresheaf J AddCommGrpCat.{v} ≅
       forget R ⋙ PresheafOfModules.toPresheaf R.val := Iso.refl _
 
 instance : (toSheaf.{v} R).Faithful :=
@@ -149,14 +149,14 @@ def sectionsFunctor : SheafOfModules.{v} R ⥤ Type _ where
   obj := sections
   map f := sectionsMap f
 
-variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
+variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 variable (R) in
 /-- The obvious free sheaf of modules of rank `1`. -/
 @[simps]
 noncomputable def unit : SheafOfModules R where
   val := PresheafOfModules.unit R.val
-  isSheaf := ((sheafCompose J (forget₂ RingCat.{u} AddCommGrp.{u})).obj R).cond
+  isSheaf := ((sheafCompose J (forget₂ RingCat.{u} AddCommGrpCat.{u})).obj R).cond
 
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : SheafOfModules R`. -/
 noncomputable def unitHomEquiv (M : SheafOfModules R) :
@@ -193,7 +193,7 @@ abbrev IsLocallyInjective : Prop :=
   Presheaf.IsLocallyInjective J ((PresheafOfModules.toPresheaf R).map f)
 
 variable {N : PresheafOfModules.{v} R} (hN : Presheaf.IsSheaf J N.presheaf)
-  [J.WEqualsLocallyBijective AddCommGrp.{v}]
+  [J.WEqualsLocallyBijective AddCommGrpCat.{v}]
   [IsLocallySurjective J f] [IsLocallyInjective J f]
 
 variable {J}
