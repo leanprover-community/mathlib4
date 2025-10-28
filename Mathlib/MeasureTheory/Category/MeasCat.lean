@@ -91,7 +91,8 @@ def Giry : CategoryTheory.Monad MeasCat where
   toFunctor := Measure
   η :=
     { app := fun X => ⟨@Measure.dirac X.1 X.2, Measure.measurable_dirac⟩
-      naturality := fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun a => (Measure.map_dirac hf a).symm }
+      naturality :=
+        fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun a => (Measure.map_dirac hf a).symm }
   μ :=
     { app := fun X => ⟨@Measure.join X.1 X.2, Measure.measurable_join⟩
       naturality := fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun μ => Measure.join_map_map hf μ }
