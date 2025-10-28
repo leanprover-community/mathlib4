@@ -37,6 +37,7 @@ theorem teichmullerAux_sModEq (x : Perfection (R ⧸ I) p) (m : ℕ) :
   rw [teichmullerAux, pow_succ' p, pow_mul]
   exact .pow_prime_pow (CharP.mem p I) <| by simp [SModEq.ideal, coeff_pow_p']
 
+/-- `teichmullerAux` as an adic Cauchy sequence. -/
 noncomputable def teichmullerCauchy (x : Perfection (R ⧸ I) p) :
     AdicCompletion.AdicCauchySequence I R :=
   .mk _ _ _ <| by simpa using teichmullerAux_sModEq x
