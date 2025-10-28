@@ -95,6 +95,9 @@ theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
 theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
   simp [one_eq_span]
 
+instance : AddCommMonoidWithOne (Submodule R A) where
+  add_comm := sup_comm
+
 variable {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 instance : SMul (Submodule R A) (Submodule R M) where
@@ -246,15 +249,11 @@ protected theorem one_mul : (1 : Submodule R A) * M = M :=
 
 variable {M}
 
-@[mono]
-theorem mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
-  smul_mono hmp hnq
+instance : MulLeftMono (Submodule R A) where
+  elim _M _N _P hNP := smul_mono_right _ hNP
 
-theorem mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P :=
-  smul_mono_left h
-
-theorem mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P :=
-  smul_mono_right _ h
+instance : MulRightMono (Submodule R A) where
+  elim _ _ _ := smul_mono_left
 
 theorem mul_comm_of_commute (h : ∀ m ∈ M, ∀ n ∈ N, Commute m n) : M * N = N * M :=
   toAddSubmonoid_injective <| AddSubmonoid.mul_comm_of_commute h
@@ -546,7 +545,7 @@ lemma mem_smul_iff_inv_mul_mem {S} [DivisionSemiring S] [Algebra R S] {x : S} {p
   · rintro ⟨a, ha : a ∈ p, rfl⟩; simpa [inv_mul_cancel_left₀ hx]
   · exact fun h ↦ ⟨_, h, by simp [mul_inv_cancel_left₀ hx]⟩
 
-lemma mul_mem_smul_iff {S} [CommRing S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
+lemma mul_mem_smul_iff {S} [Ring S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
     (hx : x ∈ nonZeroDivisors S) :
     x * y ∈ x • p ↔ y ∈ p := by
   simp [mem_smul_pointwise_iff_exists, mul_cancel_left_mem_nonZeroDivisors hx]
@@ -563,8 +562,6 @@ instance idemSemiring : IdemSemiring (Submodule R A) where
   bot_le _ := bot_le
 
 instance : IsOrderedRing (Submodule R A) where
-  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_left' h _
-  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_right' h _
 
 variable (M)
 
@@ -767,7 +764,7 @@ theorem setSemiring_smul_def (s : SetSemiring A) (P : Submodule R A) :
 theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
     (h₁ : SetSemiring.down (α := A) s ⊆ SetSemiring.down (α := A) t)
     (h₂ : M ≤ N) : s • M ≤ t • N :=
-  mul_le_mul (span_mono h₁) h₂
+  mul_le_mul' (span_mono h₁) h₂
 
 theorem singleton_smul (a : A) (M : Submodule R A) :
     Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
@@ -818,8 +815,7 @@ theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
   rw [← one_le, le_div_iff_mul_le, one_mul]
 
 theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
-  refine (mul_one I).symm.trans_le ?_
-  apply mul_le_mul_right (one_le_one_div.mpr hI)
+  simpa using mul_le_mul_left' (one_le_one_div.mpr hI) _
 
 theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
   rw [Submodule.mul_le]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Order.Partition.Equipartition
 
 /-!
@@ -86,8 +87,7 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
 
 theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1) := by
   rw [cliqueFree_iff]
-  by_contra h
-  rw [not_isEmpty_iff] at h
+  by_contra! h
   obtain ⟨f, ha⟩ := h
   simp only [turanGraph, top_adj] at ha
   obtain ⟨x, y, d, c⟩ := Fintype.exists_ne_map_eq_of_card_lt (fun x ↦
@@ -113,7 +113,7 @@ lemma exists_isTuranMaximal (hr : 0 < r) :
   let c := {H : SimpleGraph V | H.CliqueFree (r + 1)}
   have cn : c.toFinset.Nonempty := ⟨⊥, by
     rw [Set.toFinset_setOf, mem_filter_univ]
-    exact cliqueFree_bot (by omega)⟩
+    exact cliqueFree_bot (by cutsat)⟩
   obtain ⟨S, Sm, Sl⟩ := exists_max_image c.toFinset (#·.edgeFinset) cn
   use S, inferInstance
   rw [Set.mem_toFinset] at Sm
@@ -139,7 +139,7 @@ lemma degree_eq_of_not_adj (h : G.IsTuranMaximal r) (hn : ¬G.Adj s t) :
   classical
   use G.replaceVertex s t, inferInstance, cf.replaceVertex s t
   have := G.card_edgeFinset_replaceVertex_of_not_adj hn
-  omega
+  cutsat
 
 /-- In a Turán-maximal graph, non-adjacency is transitive. -/
 lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj s u) :
@@ -163,12 +163,12 @@ lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj 
     · simpa only [eq, not_adj_replaceVertex_same, false_iff]
     · rw [G.adj_replaceVertex_iff_of_ne s nst eq]
   have l2 : (G.replaceVertex s t).degree u = G.degree u - 1 := by
-    rw [degree, degree, ← card_singleton t, ← card_sdiff (by simp [h.symm])]
+    rw [degree, degree, ← card_singleton t, ← card_sdiff_of_subset (by simp [h.symm])]
     congr 1; ext v
     simp only [mem_neighborFinset, mem_sdiff, mem_singleton, replaceVertex]
     split_ifs <;> simp_all [adj_comm]
   have l3 : 0 < G.degree u := by rw [G.degree_pos_iff_exists_adj u]; use t, h.symm
-  omega
+  cutsat
 
 variable (h : G.IsTuranMaximal r)
 include h
@@ -228,7 +228,7 @@ theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
   rw [G.card_edgeFinset_replaceVertex_of_adj ha,
     degree_eq_card_sub_part_card h, small_eq, degree_eq_card_sub_part_card h, large_eq]
   have : #large ≤ Fintype.card V := by simpa using card_le_card large.subset_univ
-  omega
+  cutsat
 
 lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
   by_contra! l
@@ -255,8 +255,7 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (Fintype.card V
   have cf : G.CliqueFree r := by
     simp_rw [← cliqueFinset_eq_empty_iff, cliqueFinset, filter_eq_empty_iff, mem_univ,
       forall_true_left, isNClique_iff, and_comm, not_and, isClique_iff, Set.Pairwise]
-    #adaptation_note /-- 2025-07-19 added `-congrConsts` -/
-    intro z zc; push_neg; simp_rw -congrConsts [h.not_adj_iff_part_eq]
+    intro z zc; push_neg; simp_rw [h.not_adj_iff_part_eq]
     exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦
       fp.part_mem.2 (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y
@@ -309,5 +308,111 @@ theorem isTuranMaximal_turanGraph (hr : 0 < r) : (turanGraph n r).IsTuranMaximal
 theorem isTuranMaximal_iff_nonempty_iso_turanGraph (hr : 0 < r) :
     G.IsTuranMaximal r ↔ Nonempty (G ≃g turanGraph (Fintype.card V) r) :=
   ⟨fun h ↦ h.nonempty_iso_turanGraph, fun h ↦ isTuranMaximal_of_iso h.some hr⟩
+
+/-! ### Number of edges in the Turán graph -/
+
+private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
+    ∑ w ∈ range r, (if c % r ≠ (n + w) % r then 1 else 0) = r - 1 := by
+  rcases r.eq_zero_or_pos with rfl | hr; · simp
+  suffices #{i ∈ range r | c % r = (n + i) % r} = 1 by
+    rw [← card_filter, ← this]; apply Nat.eq_sub_of_add_eq'
+    rw [filter_card_add_filter_neg_card_eq_card, card_range]
+  apply le_antisymm
+  · change #{i ∈ range r | _ ≡ _ [MOD r]} ≤ 1
+    rw [card_le_one_iff]; intro w x mw mx
+    simp only [mem_filter, mem_range] at mw mx
+    have := mw.2.symm.trans mx.2
+    rw [Nat.ModEq.add_iff_left rfl] at this
+    change w % r = x % r at this
+    rwa [Nat.mod_eq_of_lt mw.1, Nat.mod_eq_of_lt mx.1] at this
+  · rw [one_le_card]; use ((r - 1) * n + c) % r
+    simp only [mem_filter, mem_range]; refine ⟨Nat.mod_lt _ hr, ?_⟩
+    rw [Nat.add_mod_mod, ← add_assoc, ← one_add_mul, show 1 + (r - 1) = r by cutsat,
+      Nat.mul_add_mod_self_left]
+
+lemma card_edgeFinset_turanGraph_add :
+    #(turanGraph (n + r) r).edgeFinset =
+    #(turanGraph n r).edgeFinset + n * (r - 1) + r.choose 2 := by
+  rw [← mul_right_inj' two_ne_zero]
+  simp_rw [mul_add, ← sum_degrees_eq_twice_card_edges,
+    degree, neighborFinset_eq_filter, turanGraph, card_filter]
+  conv_lhs =>
+    enter [2, v]
+    rw [Fin.sum_univ_eq_sum_range fun w ↦ if v % r ≠ w % r then 1 else 0, sum_range_add]
+  rw [sum_add_distrib,
+    Fin.sum_univ_eq_sum_range fun v ↦ ∑ w ∈ range n, if v % r ≠ w % r then 1 else 0,
+    Fin.sum_univ_eq_sum_range fun v ↦ ∑ w ∈ range r, if v % r ≠ (n + w) % r then 1 else 0,
+    sum_range_add, sum_range_add, add_assoc, add_assoc]
+  congr 1; · simp [← Fin.sum_univ_eq_sum_range]
+  rw [← add_assoc, sum_comm]; simp_rw [ne_comm, ← two_mul]; congr
+  · conv_rhs => rw [← card_range n, ← smul_eq_mul, ← sum_const]
+    congr!; exact sum_ne_add_mod_eq_sub_one
+  · rw [mul_comm 2, Nat.choose_two_right, Nat.div_two_mul_two_of_even (Nat.even_mul_pred_self r)]
+    conv_rhs => enter [1]; rw [← card_range r]
+    rw [← smul_eq_mul, ← sum_const]
+    congr!; exact sum_ne_add_mod_eq_sub_one
+
+/-- The exact formula for the number of edges in `turanGraph n r`. -/
+theorem card_edgeFinset_turanGraph {n r : ℕ} :
+    #(turanGraph n r).edgeFinset =
+    (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) + (n % r).choose 2 := by
+  rcases r.eq_zero_or_pos with rfl | hr
+  · rw [Nat.mod_zero, tsub_self, zero_mul, Nat.zero_div, zero_add]
+    have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
+    rw [Fintype.card_fin] at this; convert this; exact turanGraph_zero
+  · have ring₁ (n) : (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) =
+        n % r * (n / r) * (r - 1) + r * (r - 1) * (n / r) ^ 2 / 2 := by
+      nth_rw 1 [← Nat.mod_add_div n r, Nat.sq_sub_sq, add_tsub_cancel_left,
+        show (n % r + r * (n / r) + n % r) * (r * (n / r)) * (r - 1) =
+          (2 * ((n % r) * (n / r) * (r - 1)) + r * (r - 1) * (n / r) ^ 2) * r by grind]
+      rw [Nat.mul_div_mul_right _ _ hr, Nat.mul_add_div zero_lt_two]
+    rcases lt_or_ge n r with h | h
+    · rw [Nat.mod_eq_of_lt h, tsub_self, zero_mul, Nat.zero_div, zero_add]
+      have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
+      rw [Fintype.card_fin] at this; convert this
+      rw [turanGraph_eq_top]; exact .inr h.le
+    · let n' := n - r
+      have n'r : n = n' + r := by omega
+      rw [n'r, card_edgeFinset_turanGraph_add, card_edgeFinset_turanGraph, ring₁, ring₁,
+        add_rotate, ← add_assoc, Nat.add_mod_right, Nat.add_div_right _ hr]
+      congr 1
+      have rd : 2 ∣ r * (r - 1) := (Nat.even_mul_pred_self _).two_dvd
+      rw [← Nat.div_mul_right_comm rd, ← Nat.div_mul_right_comm rd, ← Nat.choose_two_right]
+      have ring₂ : n' % r * (n' / r + 1) * (r - 1) + r.choose 2 * (n' / r + 1) ^ 2 =
+          n' % r * (n' / r + 1) * (r - 1) + r.choose 2 +
+          r.choose 2 * 2 * (n' / r) + r.choose 2 * (n' / r) ^ 2 := by grind
+      rw [ring₂, ← add_assoc]; congr 1
+      rw [← add_rotate, ← add_rotate _ _ (r.choose 2)]; congr 1
+      rw [Nat.choose_two_right, Nat.div_mul_cancel rd, mul_add_one, add_mul, ← add_assoc,
+        ← add_rotate, add_comm _ (_ *_)]; congr 1
+      rw [← mul_rotate, ← add_mul, add_comm, mul_comm _ r, Nat.div_add_mod n' r]
+
+/-- A looser (but simpler than `card_edgeFinset_turanGraph`) bound on the number of edges in
+`turanGraph n r`. -/
+theorem mul_card_edgeFinset_turanGraph_le :
+    2 * r * #(turanGraph n r).edgeFinset ≤ (r - 1) * n ^ 2 := by
+  grw [card_edgeFinset_turanGraph, mul_add, Nat.mul_div_le]
+  rw [tsub_mul, ← Nat.sub_add_comm]; swap
+  · grw [Nat.mod_le]
+    exact Nat.zero_le _
+  rw [Nat.sub_le_iff_le_add, mul_comm, Nat.add_le_add_iff_left, Nat.choose_two_right,
+    ← Nat.mul_div_assoc _ (Nat.even_mul_pred_self _).two_dvd, mul_assoc,
+    mul_div_cancel_left₀ _ two_ne_zero, ← mul_assoc, ← mul_rotate, sq, ← mul_rotate (r - 1)]
+  gcongr ?_ * _
+  rcases r.eq_zero_or_pos with rfl | hr; · cutsat
+  rw [Nat.sub_one_mul, Nat.sub_one_mul, mul_comm]
+  exact Nat.sub_le_sub_left (Nat.mod_lt _ hr).le _
+
+theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
+    let n := Fintype.card V;
+    #G.edgeFinset ≤ (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) + (n % r).choose 2 := by
+  rcases r.eq_zero_or_pos with rfl | hr
+  · rw [cliqueFree_one, ← Fintype.card_eq_zero_iff] at cf
+    simp_rw [zero_tsub, mul_zero, Nat.mod_zero, Nat.div_zero, zero_add]
+    exact card_edgeFinset_le_card_choose_two
+  · obtain ⟨H, _, maxH⟩ := exists_isTuranMaximal (V := V) hr
+    convert maxH.2 _ cf
+    rw [((isTuranMaximal_iff_nonempty_iso_turanGraph hr).mp maxH).some.card_edgeFinset_eq,
+      card_edgeFinset_turanGraph]
 
 end SimpleGraph

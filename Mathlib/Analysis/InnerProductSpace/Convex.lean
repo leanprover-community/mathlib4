@@ -41,4 +41,3 @@ instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConve
     rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
     ring_nf
     gcongr⟩
-

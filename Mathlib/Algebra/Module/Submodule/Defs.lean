@@ -64,6 +64,19 @@ def ofClass {S R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [SetLike
   zero_mem' := zero_mem _
   smul_mem' := SMulMemClass.smul_mem
 
+/-- Construct a submodule from closure under two-element linear combinations.
+I.e., a nonempty set closed under two-element linear combinations is a submodule. -/
+@[simps]
+def ofLinearComb (C : Set M) (nonempty : C.Nonempty)
+    (linearComb : ∀ x ∈ C, ∀ y ∈ C, ∀ a b : R, a • x + b • y ∈ C) :
+    Submodule R M where
+  carrier := C
+  zero_mem' := by
+    obtain ⟨x, hx⟩ := nonempty
+    simpa [zero_smul, add_zero] using linearComb x hx x hx 0 0
+  add_mem' {x y} hx hy := by simpa [one_smul] using linearComb x hx y hy 1 1
+  smul_mem' c x hx := by simpa using linearComb x hx x hx c 0
+
 instance (priority := 100) : CanLift (Set M) (Submodule R M) (↑)
     (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ ∀ (r : R) {x}, x ∈ s → r • x ∈ s) where
   prf s h :=
@@ -236,7 +249,7 @@ protected theorem nonempty : (p : Set M).Nonempty :=
 
 @[simp]
 theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
-  Subtype.ext_iff_val
+  Subtype.ext_iff
 
 variable {p}
 
@@ -272,14 +285,6 @@ variable (p)
 
 instance addCommMonoid : AddCommMonoid p := fast_instance%
   { p.toAddSubmonoid.toAddCommMonoid with }
-
-instance isLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd p :=
-  p.toAddSubmonoid.isLeftCancelAdd
-
-instance isRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd p :=
-  p.toAddSubmonoid.isRightCancelAdd
-
-instance isCancelAdd [IsCancelAdd M] : IsCancelAdd p where
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%

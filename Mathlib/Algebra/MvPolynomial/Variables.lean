@@ -151,7 +151,6 @@ theorem vars_C_mul (a : A) (ha : a ≠ 0) (φ : MvPolynomial σ A) :
   simp only [mem_vars, mem_support_iff]
   apply exists_congr
   intro d
-  apply and_congr _ Iff.rfl
   rw [coeff_C_mul, mul_ne_zero_iff, eq_true ha, true_and]
 
 end IsDomain
@@ -305,7 +304,7 @@ theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j
   classical
   simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h
 
-lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : q.vars.toSet ⊆ s)
+lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : (q.vars : Set σ) ⊆ s)
     [∀ i, Decidable (i ∈ s)] :
     MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q = q := by
   rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]

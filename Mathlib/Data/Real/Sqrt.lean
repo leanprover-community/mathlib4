@@ -169,10 +169,10 @@ theorem sqrt_mul_self_eq_abs (x : ℝ) : √(x * x) = |x| := by
 
 theorem sqrt_sq_eq_abs (x : ℝ) : √(x ^ 2) = |x| := by rw [sq, sqrt_mul_self_eq_abs]
 
-@[simp]
+@[simp, grind =]
 theorem sqrt_zero : √0 = 0 := by simp [Real.sqrt]
 
-@[simp]
+@[simp, grind =]
 theorem sqrt_one : √1 = 1 := by simp [Real.sqrt]
 
 @[simp]
@@ -186,11 +186,12 @@ theorem sqrt_lt_sqrt_iff (hx : 0 ≤ x) : √x < √y ↔ x < y :=
 theorem sqrt_lt_sqrt_iff_of_pos (hy : 0 < y) : √x < √y ↔ x < y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_lt_coe, NNReal.sqrt_lt_sqrt, toNNReal_lt_toNNReal_iff hy]
 
-@[gcongr, bound]
+@[bound]
 theorem sqrt_le_sqrt (h : x ≤ y) : √x ≤ √y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt]
   exact toNNReal_le_toNNReal h
 
+@[gcongr]
 theorem sqrt_monotone : Monotone Real.sqrt :=
   fun _ _ ↦ sqrt_le_sqrt
 
@@ -248,6 +249,16 @@ theorem sqrt_eq_zero' : √x = 0 ↔ x ≤ 0 := by
 theorem sqrt_ne_zero (h : 0 ≤ x) : √x ≠ 0 ↔ x ≠ 0 := by rw [not_iff_not, sqrt_eq_zero h]
 
 theorem sqrt_ne_zero' : √x ≠ 0 ↔ 0 < x := by rw [← not_le, not_iff_not, sqrt_eq_zero']
+
+/-- Variant of `sq_sqrt` without a non-negativity assumption on `x`. -/
+theorem sq_sqrt' : √x ^ 2 = max x 0 := by
+  rcases lt_trichotomy x 0 with _ | _ | _ <;> grind [sqrt_eq_zero', sq_sqrt]
+
+-- Add the rule for `√x ^ 2` to the grind whiteboard whenever we see a real square root.
+grind_pattern sq_sqrt' => √x
+
+-- Check that `grind` can discharge non-zero goals for square roots of positive numerals.
+example : √7 ≠ 0 := by grind
 
 @[simp]
 theorem sqrt_pos : 0 < √x ↔ 0 < x :=
@@ -313,6 +324,9 @@ lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
   rw [← sq_lt_sq₀ (by positivity) (by positivity), mul_pow, Real.sq_sqrt (by positivity)]
   norm_num
 
+lemma inv_sqrt_two_sub_one : (√2 - 1)⁻¹ = √2 + 1 := by
+  grind
+
 @[simp]
 theorem sqrt_mul {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by
   simp_rw [Real.sqrt, ← NNReal.coe_mul, NNReal.coe_inj, Real.toNNReal_mul hx, NNReal.sqrt_mul]
@@ -337,9 +351,7 @@ variable {x y : ℝ}
 
 @[simp]
 theorem div_sqrt : x / √x = √x := by
-  rcases le_or_gt x 0 with h | h
-  · rw [sqrt_eq_zero'.mpr h, div_zero]
-  · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
+  grind
 
 theorem sqrt_div_self' : √x / x = 1 / √x := by rw [← div_sqrt, one_div_div, div_sqrt]
 

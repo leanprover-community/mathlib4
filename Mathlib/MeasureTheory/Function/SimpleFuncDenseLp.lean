@@ -34,7 +34,7 @@ by a sequence of simple functions.
 
 For `E` finite-dimensional, simple functions `α →ₛ E` are dense in L^∞ -- prove this.
 
-## Notations
+## Notation
 
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 * `α →₁ₛ[μ] E`: the type of `L1` simple functions `α → β`.
@@ -703,11 +703,6 @@ variable {G : Type*} [NormedAddCommGroup G]
 
 theorem coeFn_le [PartialOrder G] (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
-
-instance instAddLeftMono [PartialOrder G] [IsOrderedAddMonoid G] :
-    AddLeftMono (Lp.simpleFunc G p μ) := by
-  refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
-  exact add_le_add_left hg₁₂ f
 
 variable (p μ G)
 

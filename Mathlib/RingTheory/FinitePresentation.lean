@@ -66,11 +66,8 @@ theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentati
   refine ⟨fun h => ?_, fun hfp => Algebra.FiniteType.of_finitePresentation⟩
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.1 h
   refine ⟨n, f, hf, ?_⟩
-  have hnoet : IsNoetherianRing (MvPolynomial (Fin n) R) := by infer_instance
-  -- Porting note: rewrote code to help typeclass inference
-  rw [isNoetherianRing_iff] at hnoet
-  letI : Module (MvPolynomial (Fin n) R) (MvPolynomial (Fin n) R) := Semiring.toModule
-  convert hnoet.noetherian (RingHom.ker f.toRingHom)
+  exact (inferInstance : IsNoetherianRing (MvPolynomial (Fin n) R)).noetherian
+    (RingHom.ker f.toRingHom)
 
 /-- If `e : A ≃ₐ[R] B` and `A` is finitely presented, then so is `B`. -/
 theorem equiv [FinitePresentation R A] (e : A ≃ₐ[R] B) : FinitePresentation R B := by
@@ -94,7 +91,7 @@ theorem equiv [FinitePresentation R A] (e : A ≃ₐ[R] B) : FinitePresentation 
 variable (R)
 
 /-- The ring of polynomials in finitely many variables is finitely presented. -/
-protected instance mvPolynomial (ι : Type*) [Finite ι] :
+private lemma mvPolynomial_aux (ι : Type*) [Finite ι] :
     FinitePresentation R (MvPolynomial ι R) where
   out := by
     cases nonempty_fintype ι
@@ -102,17 +99,6 @@ protected instance mvPolynomial (ι : Type*) [Finite ι] :
     exact
       ⟨Fintype.card ι, eqv, eqv.surjective,
         ((RingHom.injective_iff_ker_eq_bot _).1 eqv.injective).symm ▸ Submodule.fg_bot⟩
-
-/-- `R` is finitely presented as `R`-algebra. -/
-instance self : FinitePresentation R R :=
-  -- Porting note: replaced `PEmpty` with `Empty`
-  equiv (MvPolynomial.isEmptyAlgEquiv R Empty)
-
-/-- `R[X]` is finitely presented as `R`-algebra. -/
-instance polynomial : FinitePresentation R R[X] :=
-  -- Porting note: replaced `PUnit` with `Unit`
-  letI := FinitePresentation.mvPolynomial R Unit
-  equiv (MvPolynomial.pUnitAlgEquiv R)
 
 variable {R}
 
@@ -142,7 +128,7 @@ theorem iff :
   · rintro ⟨n, f, hf⟩
     exact ⟨n, RingHom.ker f.toRingHom, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
   · rintro ⟨n, I, e, hfg⟩
-    letI := (FinitePresentation.mvPolynomial R _).quotient hfg
+    letI := (FinitePresentation.mvPolynomial_aux R _).quotient hfg
     exact equiv e
 
 /-- An algebra is finitely presented if and only if it is a quotient of a polynomial ring whose
@@ -165,16 +151,14 @@ theorem iff_quotient_mvPolynomial' :
     simpa using Submodule.fg_bot
 
 universe v in
--- Porting note: make universe level explicit to ensure `ι, ι'` has the same universe level
 /-- If `A` is a finitely presented `R`-algebra, then `MvPolynomial (Fin n) A` is finitely presented
 as `R`-algebra. -/
-theorem mvPolynomial_of_finitePresentation [FinitePresentation.{w₁, w₂} R A]
-    (ι : Type v) [Finite ι] :
-    FinitePresentation.{w₁, max v w₂} R (MvPolynomial ι A) := by
-  have hfp : FinitePresentation.{w₁, w₂} R A := inferInstance
+theorem mvPolynomial_of_finitePresentation [FinitePresentation R A] (ι : Type v) [Finite ι] :
+    FinitePresentation R (MvPolynomial ι A) := by
+  have hfp : FinitePresentation R A := inferInstance
   rw [iff_quotient_mvPolynomial'] at hfp ⊢
   classical
-  -- Porting note: use the same universe level
+  -- Make universe level `v` explicit so it matches that of `ι`
   obtain ⟨(ι' : Type v), _, f, hf_surj, hf_ker⟩ := hfp
   let g := (MvPolynomial.mapAlgHom f).comp (MvPolynomial.sumAlgEquiv R ι ι').toAlgHom
   cases nonempty_fintype (ι ⊕ ι')
@@ -198,6 +182,22 @@ theorem trans [Algebra A B] [IsScalarTower R A B] [FinitePresentation R A]
   letI : FinitePresentation R (MvPolynomial (Fin n) A ⧸ I) :=
     (mvPolynomial_of_finitePresentation _).quotient hfg
   exact equiv (e.restrictScalars R)
+
+/-- The ring of polynomials in finitely many variables is finitely presented. -/
+protected instance mvPolynomial [FinitePresentation R A] (ι : Type*) [Finite ι] :
+    FinitePresentation R (MvPolynomial ι A) :=
+  have := FinitePresentation.mvPolynomial_aux A ι; .trans _ A _
+
+/-- `R` is finitely presented as `R`-algebra. -/
+instance self : FinitePresentation R R :=
+  have := FinitePresentation.mvPolynomial_aux R Empty
+  equiv (MvPolynomial.isEmptyAlgEquiv R Empty)
+
+/-- `R[X]` is finitely presented as `R`-algebra. -/
+instance polynomial [FinitePresentation R A] : FinitePresentation R A[X] :=
+  letI := FinitePresentation.mvPolynomial R A Unit
+  have := equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} A)
+  .trans _ A _
 
 open MvPolynomial
 
@@ -427,13 +427,11 @@ theorem of_finiteType [IsNoetherianRing A] {f : A →+* B} : f.FiniteType ↔ f.
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FinitePresentation) (hf : f.FinitePresentation) :
     (g.comp f).FinitePresentation := by
-  -- Porting note: specify `Algebra` instances to get `SMul`
   algebraize [f, g, g.comp f]
   exact Algebra.FinitePresentation.trans A B C
 
 theorem of_comp_finiteType (f : A →+* B) {g : B →+* C} (hg : (g.comp f).FinitePresentation)
     (hf : f.FiniteType) : g.FinitePresentation := by
-  -- Porting note: need to specify some instances
   algebraize [f, g, g.comp f]
   exact Algebra.FinitePresentation.of_restrict_scalars_finitePresentation A B C
 

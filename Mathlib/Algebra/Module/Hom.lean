@@ -24,6 +24,16 @@ We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidH
 
 variable {R S M A B : Type*}
 
+namespace ZeroHom
+
+instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] :
+    Module R (ZeroHom A B) where
+  __ : MulActionWithZero _ _ := ZeroHom.instMulActionWithZero
+  add_smul _ _ _ := ext fun _ => add_smul _ _ _
+  smul_add _ _ _ := ext fun _ => smul_add _ _ _
+
+end ZeroHom
+
 /-! ### Instances for `AddMonoidHom` -/
 
 namespace AddMonoidHom
