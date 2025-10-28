@@ -202,13 +202,30 @@ open ComplexOrder in
 
 /-- A symmetric projection is positive. -/
 @[aesop 10% apply, grind →]
-theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
+theorem IsSymmetricProjection.isPositive {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
     p.IsPositive :=
   hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
 
+@[deprecated (since := "2025-10-17")] alias IsPositive.of_isSymmetricProjection :=
+  IsSymmetricProjection.isPositive
+
 /-- A star projection operator is positive. -/
-@[deprecated (since := "19-08-2025")]
-alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
+@[deprecated (since := "2025-08-19")]
+alias IsPositive.of_isStarProjection := IsSymmetricProjection.isPositive
+
+theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
+    (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ range p ≤ range q := by
+  refine ⟨fun ⟨h1, h2⟩ a ha ↦ ?_, fun hpq ↦ (hp.sub_of_range_le_range hq hpq).isPositive⟩
+  specialize h2 a
+  have hh {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) : RCLike.re ⟪T a, a⟫_𝕜 = ‖T a‖ ^ 2 := by
+    conv_lhs => rw [← hT.isIdempotentElem]
+    rw [Module.End.mul_apply, hT.isSymmetric]
+    exact inner_self_eq_norm_sq _
+  simp_rw [sub_apply, inner_sub_left, map_sub, hh hq, hh hp,
+    hp.isIdempotentElem.mem_range_iff.mp ha, sub_nonneg, sq_le_sq, abs_norm] at h2
+  obtain ⟨U, _, rfl⟩ := isSymmetricProjection_iff_eq_coe_starProjection.mp hq
+  simpa [Submodule.starProjection_coe_eq_isCompl_projection] using
+    U.mem_iff_norm_starProjection _ |>.mpr <| le_antisymm (U.norm_starProjection_apply_le a) h2
 
 end LinearMap
 
@@ -459,3 +476,17 @@ theorem IsIdempotentElem.TFAE [CompleteSpace E] {p : E →L[𝕜] E} (hp : IsIde
   tfae_finish
 
 end ContinuousLinearMap
+
+/-- `U.starProjection ≤ V.starProjection` iff `U ≤ V`. -/
+theorem Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+    U.starProjection ≤ V.starProjection ↔ U ≤ V := by
+  simp_rw [← coe_le_coe_iff, isSymmetricProjection_starProjection _
+      |>.le_iff_range_le_range <| isSymmetricProjection_starProjection _,
+    starProjection_coe_eq_isCompl_projection, IsCompl.projection_range]
+
+/-- `U.starProjection = V.starProjection` iff `U = V`. -/
+theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
+    U.starProjection = V.starProjection ↔ U = V := by
+  simp only [le_antisymm_iff, ← starProjection_le_starProjection_iff]
