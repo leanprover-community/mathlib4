@@ -85,13 +85,9 @@ def IsHamiltonian.supportGetEquiv (hp : p.IsHamiltonian) : Fin p.support.length 
 `Fin p.support.length` and `α`. -/
 def IsHamiltonian.getVertEquiv (hp : p.IsHamiltonian) : Fin p.support.length ≃ α where
   toFun := p.getVert ∘ Fin.val
-  invFun := supportGetEquiv hp |>.invFun
-  left_inv i := by
-    have := i.prop
-    grind [getVert_eq_support_getElem, supportGetEquiv, List.getEquivOfForallCountEqOne,
-      List.Nodup.getEquivOfForallMemList, Equiv.invFun_as_coe, List.idxOf_getElem, length_support]
-  right_inv a := (getVert_eq_support_getElem _ <| by grind [length_support]).trans <|
-      p.support.getElem_idxOf <| hp.supportGetEquiv.symm a |>.prop
+  invFun := hp.supportGetEquiv.invFun
+  left_inv := p.getVert_comp_val_eq_get_support ▸ hp.supportGetEquiv.left_inv
+  right_inv := p.getVert_comp_val_eq_get_support ▸ hp.supportGetEquiv.right_inv
 
 /-- A Hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) : Prop extends p.IsCycle where
