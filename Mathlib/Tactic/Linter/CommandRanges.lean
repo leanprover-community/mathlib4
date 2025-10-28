@@ -7,7 +7,7 @@ Authors: Damiano Testa
 import Mathlib.Init -- `import Lean.Elab.Command` is enough
 
 /-!
-#  The "commandRanges" linter
+# The "commandRanges" linter
 
 The "commandRanges" linter simply logs the `getRange?` and the `getRangeWithTrailing?`
 for each command.
@@ -50,7 +50,7 @@ def commandRangesLinter : Linter where run stx := do
     return
   let ranges :=
     if let some rg := stx.getRange? then #[rg.start, rg.stop] else #[]
-  let ranges : Array String.Pos.Raw :=
+  let ranges : Array String.Pos :=
     if let some rg := stx.getRangeWithTrailing? then ranges.push rg.stop else ranges
   logInfo m!"{ranges}"
 
