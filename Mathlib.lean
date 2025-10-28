@@ -1194,6 +1194,7 @@ import Mathlib.Algebra.Star.StarProjection
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.Subsemiring
+import Mathlib.Algebra.Star.TensorProduct
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Algebra.Symmetrized
 import Mathlib.Algebra.TrivSqZeroExt
@@ -2516,6 +2517,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.CatCospanTransform
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Connected
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
@@ -5363,6 +5365,7 @@ import Mathlib.Probability.CDF
 import Mathlib.Probability.CondVar
 import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.ConditionalProbability
+import Mathlib.Probability.Decision.Risk.Basic
 import Mathlib.Probability.Decision.Risk.Defs
 import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Beta
@@ -5481,6 +5484,7 @@ import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequenc
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupHomology.FiniteCyclic
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
