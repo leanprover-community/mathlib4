@@ -8,7 +8,7 @@ import Mathlib.Control.Functor
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
 import Batteries.Tactic.Lint.Basic
-import Batteries.Data.List.Lemmas
+import Batteries.Data.List.Basic
 import Batteries.Logic
 
 /-!
@@ -223,23 +223,6 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
 instance instSProd : SProd (List α) (List β) (List (α × β)) where
   sprod := List.product
 
-section Chain
-
-instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
-    Decidable (Chain R a l) := by
-  induction l generalizing a with
-  | nil => exact decidable_of_decidable_of_iff (p := True) (by simp)
-  | cons b as ih =>
-    haveI := ih; exact decidable_of_decidable_of_iff (p := (R a b ∧ Chain R b as)) (by simp)
-
-instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
-    Decidable (Chain' R l) := by
-  cases l
-  · exact inferInstanceAs (Decidable True)
-  · exact inferInstanceAs (Decidable (Chain _ _ _))
-
-end Chain
-
 /-- `dedup l` removes duplicates from `l` (taking only the last occurrence).
   Defined as `pwFilter (≠)`.
 
@@ -255,6 +238,7 @@ def destutter' (R : α → α → Prop) [DecidableRel R] : α → List α → Li
   | a, h :: l => if R a h then a :: destutter' R h l else destutter' R a l
 
 -- TODO: should below be "lazily"?
+-- TODO: Remove destutter' as we have removed chain'
 /-- Greedily create a sublist of `l` such that, for every two adjacent elements `a, b ∈ l`,
 `R a b` holds. Mostly used with ≠; for example, `destutter (≠) [1, 2, 2, 1, 1] = [1, 2, 1]`,
 `destutter (≠) [1, 2, 3, 3] = [1, 2, 3]`, `destutter (<) [1, 2, 5, 2, 3, 4, 9] = [1, 2, 5, 9]`. -/
@@ -403,9 +387,9 @@ def zipWith5 (f : α → β → γ → δ → ε → ζ) : List α → List β �
   | x :: xs, y :: ys, z :: zs, u :: us, v :: vs => f x y z u v :: zipWith5 f xs ys zs us vs
   | _, _, _, _, _ => []
 
-/-- Given a starting list `old`, a list of booleans and a replacement list `new`,
+/-- Given a starting list `old`, a list of Booleans and a replacement list `new`,
 read the items in `old` in succession and either replace them with the next element of `new` or
-not, according as to whether the corresponding boolean is `true` or `false`. -/
+not, according as to whether the corresponding Boolean is `true` or `false`. -/
 def replaceIf : List α → List Bool → List α → List α
   | l, _, [] => l
   | [], _, _ => []

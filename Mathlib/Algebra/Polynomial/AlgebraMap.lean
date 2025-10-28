@@ -574,7 +574,7 @@ theorem eval_mul_X_sub_C {p : R[X]} (r : R) : (p * (X - C r)).eval r = 0 := by
   have bound :=
     calc
       (p * (X - C r)).natDegree ≤ p.natDegree + (X - C r).natDegree := natDegree_mul_le
-      _ ≤ p.natDegree + 1 := add_le_add_left (natDegree_X_sub_C_le _) _
+      _ ≤ p.natDegree + 1 := by grw [natDegree_X_sub_C_le]
       _ < p.natDegree + 2 := lt_add_one _
   rw [sum_over_range' _ _ (p.natDegree + 2) bound]
   swap
@@ -698,7 +698,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   obtain hi | rfl | hi := lt_trichotomy i l
   · have hj : m < j := by omega
     rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
-  · omega
+  · cutsat
   · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
 termination_by Q.natDegree
 

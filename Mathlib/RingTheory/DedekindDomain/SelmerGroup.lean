@@ -38,7 +38,7 @@ This file defines the Selmer group $K(S, n)$ and some basic facts.
 * TODO: proofs of exactness of the sequence.
 * TODO: proofs of finiteness for global fields.
 
-## Notations
+## Notation
 
 * `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
 
@@ -68,6 +68,7 @@ namespace IsDedekindDomain
 
 noncomputable section
 
+open WithZero
 open scoped WithZero nonZeroDivisors
 
 universe u v
@@ -98,8 +99,7 @@ theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
   simp_rw [IsLocalization.toLocalizationMap_sec, SubmonoidClass.coe_subtype,
     if_neg <| IsLocalization.sec_fst_ne_zero x.ne_zero,
     if_neg (nonZeroDivisors.coe_ne_zero _),
-    valuationOfNeZeroToFun, ofAdd_sub, ofAdd_neg, div_inv_eq_mul, WithZero.coe_mul,
-    WithZero.coe_inv, inv_inv]
+    ← exp_neg, ← exp_add, valuationOfNeZeroToFun, ← sub_eq_add_neg, exp]
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
@@ -127,11 +127,8 @@ theorem valuation_of_unit_eq (x : Rˣ) :
     gcongr
     exact v.intValuation_le_one _
 
--- Porting note: invalid attribute 'semireducible', declaration is in an imported module
--- attribute [local semireducible] MulOpposite
-
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
-def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
+def valuationOfNeZeroMod (n : ℕ) : (K / n) →* Multiplicative (ZMod n) :=
   -- TODO: this definition does a lot of defeq abuse between `Multiplicative` and `Additive`,
   -- so we need `erw` below.
   (Int.quotientZMultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
@@ -145,7 +142,7 @@ def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
 
 @[simp]
 theorem valuation_of_unit_mod_eq (n : ℕ) (x : Rˣ) :
-    v.valuationOfNeZeroMod n (Units.map (algebraMap R K : R →* K) x : K/n) = 1 := by
+    v.valuationOfNeZeroMod n (Units.map (algebraMap R K : R →* K) x : K / n) = 1 := by
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [valuationOfNeZeroMod, MonoidHom.comp_apply, ← QuotientGroup.coe_mk',
     QuotientGroup.map_mk' (G := Kˣ) (N := MonoidHom.range (powMonoidHom n)),
@@ -159,7 +156,7 @@ end HeightOneSpectrum
 variable {S S' : Set <| HeightOneSpectrum R} {n : ℕ}
 
 /-- The Selmer group `K⟮S, n⟯`. -/
-def selmerGroup : Subgroup <| K/n where
+def selmerGroup : Subgroup <| K / n where
   carrier := {x : K/n | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuationOfNeZeroMod n x = 1}
   one_mem' _ _ := by rw [map_one]
   mul_mem' hx hy v hv := by rw [map_mul, hx v hv, hy v hv, one_mul]
@@ -225,7 +222,7 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
       by simp only [powMonoidHom_apply, RingHom.toMonoidHom_eq_coe, map_pow]⟩
 
 /-- The injection induced by the natural homomorphism from `Rˣ` to `K⟮∅, n⟯`. -/
-def fromUnitLift [Fact <| 0 < n] : (R/n) →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ :=
+def fromUnitLift [Fact <| 0 < n] : (R / n) →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ :=
   (QuotientGroup.kerLift _).comp
     (QuotientGroup.quotientMulEquivOfEq (fromUnit_ker (R := R))).symm.toMonoidHom
 

@@ -113,7 +113,7 @@ theorem prod_eq_one (h : ∀ x ∈ s, f x = 1) : ∏ x ∈ s, f x = 1 := calc
 @[to_additive (attr := simp)
 /-- In an additive monoid whose only unit is `0`, a sum is equal to `0` iff all terms are `0`. -/]
 lemma prod_eq_one_iff [Subsingleton Mˣ] : ∏ i ∈ s, f i = 1 ↔ ∀ i ∈ s, f i = 1 := by
-  induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
+  induction s using Finset.cons_induction <;> simp [*]
 
 @[deprecated (since := "2025-03-31")] alias prod_eq_one_iff' := prod_eq_one_iff
 
@@ -220,9 +220,6 @@ lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι 
 theorem prod_sumElim (s : Finset ι) (t : Finset κ) (f : ι → M) (g : κ → M) :
     ∏ x ∈ s.disjSum t, Sum.elim f g x = (∏ x ∈ s, f x) * ∏ x ∈ t, g x := by simp
 
-@[deprecated (since := "2025-02-20")] alias prod_sum_elim := prod_sumElim
-@[deprecated (since := "2025-02-20")] alias sum_sum_elim := sum_sumElim
-
 @[to_additive]
 theorem prod_biUnion [DecidableEq ι] {s : Finset κ} {t : κ → Finset ι}
     (hs : Set.PairwiseDisjoint (↑s) t) : ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
@@ -245,6 +242,9 @@ variable [DecidableEq κ]
 lemma prod_fiberwise_eq_prod_filter (s : Finset ι) (t : Finset κ) (g : ι → κ) (f : ι → M) :
     ∏ j ∈ t, ∏ i ∈ s with g i = j, f i = ∏ i ∈ s with g i ∈ t, f i := by
   rw [← prod_disjiUnion, disjiUnion_filter_eq]
+  #adaptation_note /-- 2025-09-12 (kmill) copied from private lemma pairwiseDisjoint_fibers -/
+  intro x' hx y' hy hne
+  simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
 
 @[to_additive]
 lemma prod_fiberwise_eq_prod_filter' (s : Finset ι) (t : Finset κ) (g : ι → κ) (f : κ → M) :
@@ -258,6 +258,9 @@ lemma prod_fiberwise_eq_prod_filter' (s : Finset ι) (t : Finset κ) (g : ι →
 lemma prod_fiberwise_of_maps_to {g : ι → κ} (h : ∀ i ∈ s, g i ∈ t) (f : ι → M) :
     ∏ j ∈ t, ∏ i ∈ s with g i = j, f i = ∏ i ∈ s, f i := by
   rw [← prod_disjiUnion, disjiUnion_filter_eq_of_maps_to h]
+  #adaptation_note /-- 2025-09-12 (kmill) copied from private lemma pairwiseDisjoint_fibers -/
+  intro x' hx y' hy hne
+  simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
 
 @[to_additive]
 lemma prod_fiberwise_of_maps_to' {g : ι → κ} (h : ∀ i ∈ s, g i ∈ t) (f : κ → M) :
@@ -335,7 +338,6 @@ theorem prod_filter (p : ι → Prop) [DecidablePred p] (f : ι → M) :
 @[to_additive]
 theorem prod_eq_single_of_mem {s : Finset ι} {f : ι → M} (a : ι) (h : a ∈ s)
     (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) : ∏ x ∈ s, f x = f a := by
-  haveI := Classical.decEq ι
   calc
     ∏ x ∈ s, f x = ∏ x ∈ {a}, f x := by
       { refine (prod_subset ?_ ?_).symm
@@ -520,7 +522,7 @@ theorem exists_ne_one_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : ∃ a ∈ s,
 @[to_additive]
 theorem prod_range_succ_comm (f : ℕ → M) (n : ℕ) :
     (∏ x ∈ range (n + 1), f x) = f n * ∏ x ∈ range n, f x := by
-  rw [range_succ, prod_insert notMem_range_self]
+  rw [range_add_one, prod_insert notMem_range_self]
 
 @[to_additive]
 theorem prod_range_succ (f : ℕ → M) (n : ℕ) :
@@ -835,6 +837,12 @@ lemma prod_dvd_prod_of_dvd (f g : ι → M) (h : ∀ i ∈ s, f i ∣ g i) :
     ∏ i ∈ s, f i ∣ ∏ i ∈ s, g i :=
   Multiset.prod_dvd_prod_of_dvd _ _ h
 
+@[to_additive]
+theorem prod_map_equiv (e : ι ≃ κ) : (s.map e).prod (f ∘ e.symm) = s.prod f := by simp
+
+@[to_additive]
+theorem prod_comp_equiv {f : κ → M} (e : ι ≃ κ) : s.prod (f ∘ e) = (s.map e).prod f := by simp
+
 end CommMonoid
 
 section CancelCommMonoid
@@ -865,10 +873,10 @@ lemma prod_insert_div (ha : a ∉ s) (f : ι → G) :
 theorem prod_erase_eq_div {a : ι} (h : a ∈ s) : ∏ x ∈ s.erase a, f x = (∏ x ∈ s, f x) / f a := by
   rw [eq_div_iff_mul_eq', prod_erase_mul _ _ h]
 
-/-- A telescoping product along `{0, ..., n - 1}` of a commutative group valued function reduces to
+/-- A telescoping product along `{0, ..., n - 1}` of a commutative-group-valued function reduces to
 the ratio of the last and first factors. -/
-@[to_additive /-- A telescoping sum along `{0, ..., n - 1}` of an additive commutative group valued
-function reduces to the difference of the last and first terms. -/]
+@[to_additive /-- A telescoping sum along `{0, ..., n - 1}` of a function valued in a commutative
+additive group reduces to the difference of the last and first terms. -/]
 lemma prod_range_div (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f (i + 1) / f i) = f n / f 0 := by
   apply prod_range_induction <;> simp
 
@@ -940,7 +948,7 @@ theorem card_disjiUnion (s : Finset ι) (t : ι → Finset M) (h) :
     #(s.disjiUnion t h) = ∑ a ∈ s, #(t a) :=
   Multiset.card_bind _ _
 
-theorem card_biUnion [DecidableEq M] {t : ι → Finset M} (h : s.toSet.PairwiseDisjoint t) :
+theorem card_biUnion [DecidableEq M] {t : ι → Finset M} (h : (s : Set ι).PairwiseDisjoint t) :
     #(s.biUnion t) = ∑ u ∈ s, #(t u) := by simpa using sum_biUnion h (M := ℕ) (f := 1)
 
 theorem card_biUnion_le [DecidableEq M] {s : Finset ι} {t : ι → Finset M} :
@@ -953,7 +961,7 @@ theorem card_biUnion_le [DecidableEq M] {s : Finset ι} {t : ι → Finset M} :
       _ ≤ ∑ a ∈ insert a s, #(t a) := by grind
 
 theorem card_eq_sum_card_fiberwise [DecidableEq M] {f : ι → M} {s : Finset ι} {t : Finset M}
-    (H : s.toSet.MapsTo f t) : #s = ∑ b ∈ t, #{a ∈ s | f a = b} := by
+    (H : (s : Set ι).MapsTo f t) : #s = ∑ b ∈ t, #{a ∈ s | f a = b} := by
   simp only [card_eq_sum_ones, sum_fiberwise_of_maps_to H]
 
 theorem card_eq_sum_card_image [DecidableEq M] (f : ι → M) (s : Finset ι) :

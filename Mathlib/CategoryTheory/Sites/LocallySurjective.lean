@@ -361,7 +361,7 @@ instance epi_of_isLocallySurjective' {F₁ F₂ : Sheaf J (Type w)} (φ : F₁ �
     [IsLocallySurjective φ] : Epi φ where
   left_cancellation {Z} f₁ f₂ h := by
     ext X x
-    apply (Presieve.isSeparated_of_isSheaf J Z.1 ((isSheaf_iff_isSheaf_of_type _ _).1 Z.2) _
+    apply (((isSheaf_iff_isSheaf_of_type _ _).1 Z.2).isSeparated _
       (Presheaf.imageSieve_mem J φ.val x)).ext
     rintro Y f ⟨s : F₁.val.obj (op Y), hs : φ.val.app _ s = F₂.val.map f.op x⟩
     dsimp

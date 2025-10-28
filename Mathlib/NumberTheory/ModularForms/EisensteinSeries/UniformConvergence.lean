@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
 
-import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
@@ -58,10 +58,10 @@ lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤
       ↑ₕ(fun (z : ℍ) ↦ ∑ x ∈ s, eisSummand k x z)) (↑ₕ(eisensteinSeries_SIF a k).toFun)
           Filter.atTop {z : ℂ | 0 < z.im} := by
   rw [← Subtype.coe_image_univ {z : ℂ | 0 < z.im}]
-  apply TendstoLocallyUniformlyOn.comp (s := ⊤) _ _ _ (PartialHomeomorph.continuousOn_symm _)
+  apply TendstoLocallyUniformlyOn.comp (s := ⊤) _ _ _ (OpenPartialHomeomorph.continuousOn_symm _)
   · simp only [SlashInvariantForm.toFun_eq_coe, Set.top_eq_univ, tendstoLocallyUniformlyOn_univ]
     apply eisensteinSeries_tendstoLocallyUniformly hk
-  · simp only [IsOpenEmbedding.toPartialHomeomorph_target, Set.top_eq_univ, mapsTo_range_iff,
+  · simp only [IsOpenEmbedding.toOpenPartialHomeomorph_target, Set.top_eq_univ, mapsTo_range_iff,
     Set.mem_univ, forall_const]
 
 end EisensteinSeries

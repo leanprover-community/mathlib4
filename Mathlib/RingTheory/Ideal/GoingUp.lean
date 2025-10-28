@@ -236,8 +236,8 @@ theorem IsIntegralClosure.comap_ne_bot [Nontrivial R] {I : Ideal A} (I_ne_bot : 
 
 theorem IsIntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
     I.comap (algebraMap R A) = ⊥ → I = ⊥ := by
-  -- Porting note: `imp_of_not_imp_not` seems not existing
-  contrapose; exact (IsIntegralClosure.comap_ne_bot S)
+  contrapose
+  exact IsIntegralClosure.comap_ne_bot S
 
 end IsIntegralClosure
 

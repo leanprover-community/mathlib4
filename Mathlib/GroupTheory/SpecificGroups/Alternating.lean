@@ -281,7 +281,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         (⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ : alternatingGroup (Fin 5)) ∈
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
-      -- Porting note: added `:` to help the elaborator
+      -- Porting note: added `:` to help the elaborator (otherwise we get a timeout)
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 
@@ -328,7 +328,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   · simp at ha
   · have h04 : (0 : Fin 5) ≠ 4 := by decide
     have h13 : (1 : Fin 5) ≠ 3 := by decide
-    rw [Disjoint.cycleType, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
+    rw [Disjoint.cycleType_mul, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
       card_support_swap h04, card_support_swap h13]
     · simp
     · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]

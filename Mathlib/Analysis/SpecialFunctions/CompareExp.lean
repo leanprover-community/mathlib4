@@ -88,8 +88,6 @@ theorem tendsto_abs_re (hl : IsExpCmpFilter l) : Tendsto (fun z : ℂ => |z.re|)
 theorem tendsto_norm (hl : IsExpCmpFilter l) : Tendsto norm l atTop :=
   tendsto_atTop_mono abs_re_le_norm hl.tendsto_abs_re
 
-@[deprecated (since := "2025-02-17")] alias tendsto_abs := tendsto_norm
-
 theorem isLittleO_log_re_re (hl : IsExpCmpFilter l) : (fun z => Real.log z.re) =o[l] re :=
   Real.isLittleO_log_id_atTop.comp_tendsto hl.tendsto_re
 
@@ -135,8 +133,6 @@ theorem isLittleO_log_norm_re (hl : IsExpCmpFilter l) : (fun z => Real.log ‖z�
             rwa [max_eq_right hle, Real.norm_eq_abs, Real.norm_eq_abs, abs_of_pos (Real.log_pos H),
               ← Real.log_pow, Real.log_le_iff_le_exp (pow_pos (one_pos.trans H) _),
               abs_of_pos (one_pos.trans h₁)]
-
-@[deprecated (since := "2025-02-17")] alias isLittleO_log_abs_re := isLittleO_log_norm_re
 
 /-!
 ### Main results

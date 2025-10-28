@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
 import Mathlib.Geometry.Euclidean.Circumcenter
+import Mathlib.Geometry.Euclidean.Sphere.Tangent
 
 /-!
 # Angles in circles and sphere.
@@ -65,6 +66,78 @@ theorem two_zsmul_oangle_sub_eq_two_zsmul_oangle_sub_of_norm_eq {x₁ x₂ y z :
 end Orientation
 
 namespace EuclideanGeometry
+
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
+
+namespace Sphere
+
+open Real InnerProductSpace InnerProductGeometry
+
+/-- **Thales' theorem**: The angle inscribed in a semicircle is a right angle. -/
+theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter {p₁ p₂ p₃ : P} {s : Sphere P}
+    (hd : s.IsDiameter p₁ p₃) :
+    ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ s := by
+  rw [mem_sphere', EuclideanGeometry.angle,
+    ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
+  let o := s.center
+  have h_center : o = midpoint ℝ p₁ p₃ := hd.midpoint_eq_center.symm
+  rw [← vsub_add_vsub_cancel p₁ o p₂, ← vsub_add_vsub_cancel p₃ o p₂,
+    inner_add_left, inner_add_right, inner_add_right]
+  have h_opp : p₁ -ᵥ o = -(p₃ -ᵥ o) := by
+    rw [h_center, left_vsub_midpoint, right_vsub_midpoint, ← smul_neg, neg_vsub_eq_vsub_rev]
+  rw [h_opp, inner_neg_left, inner_neg_left, real_inner_comm (p₃ -ᵥ o) (o -ᵥ p₂)]
+  ring_nf
+  rw [neg_add_eq_zero, real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub,
+    real_inner_self_eq_norm_sq, ← dist_eq_norm_vsub, sq_eq_sq₀ dist_nonneg dist_nonneg,
+    mem_sphere.mp hd.right_mem]
+  exact eq_comm
+
+/-- **Thales' theorem**: For three distinct points, the angle at the second point
+is a right angle if and only if the second point lies on the sphere having the first and third
+points as diameter endpoints. -/
+theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter {p₁ p₂ p₃ : P} :
+    ∠ p₁ p₂ p₃ = π / 2 ↔ p₂ ∈ Sphere.ofDiameter p₁ p₃ :=
+  angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter (Sphere.isDiameter_ofDiameter p₁ p₃)
+
+alias thales_theorem := angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter
+
+/-- For a tangent line to a sphere, the angle between the line and the radius at the tangent point
+equals `π / 2`. -/
+theorem IsTangentAt.angle_eq_pi_div_two {s : Sphere P} {p q : P} {as : AffineSubspace ℝ P}
+    (h : s.IsTangentAt p as) (hq_mem : q ∈ as) :
+    ∠ q p s.center = π / 2 := by
+  have h1 := IsTangentAt.inner_left_eq_zero_of_mem h hq_mem
+  rw [inner_eq_zero_iff_angle_eq_pi_div_two] at h1
+  rw [angle, ← neg_vsub_eq_vsub_rev _ s.center, angle_neg_right, h1]
+  linarith
+
+/-- If the angle between the line `p q` and the radius at `p` equals `π / 2`, then the line `p q` is
+tangent to the sphere at `p`. -/
+theorem IsTangentAt_of_angle_eq_pi_div_two {s : Sphere P} {p q : P} (h : ∠ q p s.center = π / 2)
+    (hp : p ∈ s) :
+    s.IsTangentAt p line[ℝ, p, q] := by
+  have hp_mem := left_mem_affineSpan_pair ℝ p q
+  refine ⟨hp, hp_mem, ?_⟩
+  have h_ortho : ⟪q -ᵥ p, p -ᵥ s.center⟫ = 0 := by
+    rwa [angle, ← inner_eq_zero_iff_angle_eq_pi_div_two, ← neg_vsub_eq_vsub_rev p s.center,
+      inner_neg_right, neg_eq_zero] at h
+  have hq : q ∈ s.orthRadius p := by
+    simp [Sphere.mem_orthRadius_iff_inner_left, h_ortho]
+  rw [affineSpan_le]
+  have hp : p ∈ s.orthRadius p := by
+    simp [Sphere.self_mem_orthRadius]
+  simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff]
+  exact ⟨hp, hq⟩
+
+/-- A line through `p` is tangent to the sphere at `p` if and only if the angle between the line and
+the radius at `p` equals `π / 2`. -/
+theorem IsTangentAt_iff_angle_eq_pi_div_two {s : Sphere P} {p q : P} (hp : p ∈ s) :
+    s.IsTangentAt p line[ℝ, p, q] ↔ ∠ q p s.center = π / 2 := by
+  exact ⟨fun h ↦ IsTangentAt.angle_eq_pi_div_two h (right_mem_affineSpan_pair ℝ p q),
+    fun h ↦ IsTangentAt_of_angle_eq_pi_div_two h hp⟩
+
+end Sphere
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]

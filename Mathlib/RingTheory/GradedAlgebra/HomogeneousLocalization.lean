@@ -57,9 +57,9 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 * `HomogeneousLocalization.isLocalRing`: `HomogeneousLocalization 𝒜 x` is a local ring when `x` is
   the complement of some prime ideals.
 
-* `HomogeneousLocalization.map`: Let `A` and `B` be two graded rings and `g : A → B` a grading
-  preserving ring map. If `P ≤ A` and `Q ≤ B` are submonoids such that `P ≤ g⁻¹(Q)`, then `g`
-  induces a ring map between the homogeneous localization of `A` at `P` and the homogeneous
+* `HomogeneousLocalization.map`: Let `A` and `B` be two graded rings and `g : A → B` a
+  grading-preserving ring map. If `P ≤ A` and `Q ≤ B` are submonoids such that `P ≤ g⁻¹(Q)`, then
+  `g` induces a ring map between the homogeneous localization of `A` at `P` and the homogeneous
   localization of `B` at `Q`.
 
 ## References
@@ -150,13 +150,13 @@ end SMul
 
 variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 
+open GradedOne in
 instance : One (NumDenSameDeg 𝒜 x) where
   one :=
     { deg := 0
-      -- Porting note: Changed `one_mem` to `GradedOne.one_mem`
-      num := ⟨1, GradedOne.one_mem⟩
-      den := ⟨1, GradedOne.one_mem⟩
-      den_mem := Submonoid.one_mem _ }
+      num := ⟨1, one_mem⟩
+      den := ⟨1, one_mem⟩
+      den_mem := one_mem _ }
 
 @[simp]
 theorem deg_one : (1 : NumDenSameDeg 𝒜 x).deg = 0 :=
@@ -170,8 +170,9 @@ theorem num_one : ((1 : NumDenSameDeg 𝒜 x).num : A) = 1 :=
 theorem den_one : ((1 : NumDenSameDeg 𝒜 x).den : A) = 1 :=
   rfl
 
+open GradedOne in
 instance : Zero (NumDenSameDeg 𝒜 x) where
-  zero := ⟨0, 0, ⟨1, GradedOne.one_mem⟩, Submonoid.one_mem _⟩
+  zero := ⟨0, 0, ⟨1, one_mem⟩, one_mem _⟩
 
 @[simp]
 theorem deg_zero : (0 : NumDenSameDeg 𝒜 x).deg = 0 :=
@@ -185,12 +186,12 @@ theorem num_zero : (0 : NumDenSameDeg 𝒜 x).num = 0 :=
 theorem den_zero : ((0 : NumDenSameDeg 𝒜 x).den : A) = 1 :=
   rfl
 
+open GradedMul in
 instance : Mul (NumDenSameDeg 𝒜 x) where
   mul p q :=
     { deg := p.deg + q.deg
-      -- Porting note: Changed `mul_mem` to `GradedMul.mul_mem`
-      num := ⟨p.num * q.num, GradedMul.mul_mem p.num.prop q.num.prop⟩
-      den := ⟨p.den * q.den, GradedMul.mul_mem p.den.prop q.den.prop⟩
+      num := ⟨p.num * q.num, mul_mem p.num.prop q.num.prop⟩
+      den := ⟨p.den * q.den, mul_mem p.den.prop q.den.prop⟩
       den_mem := Submonoid.mul_mem _ p.den_mem q.den_mem }
 
 @[simp]
@@ -228,8 +229,6 @@ theorem den_add (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 + c2).den : A) = c1.den * 
   rfl
 
 instance : CommMonoid (NumDenSameDeg 𝒜 x) where
-  one := 1
-  mul := (· * ·)
   mul_assoc _ _ _ := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
   one_mul _ := ext _ (zero_add _) (one_mul _) (one_mul _)
   mul_one _ := ext _ (add_zero _) (mul_one _) (mul_one _)
@@ -239,9 +238,9 @@ instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
   pow c n :=
     ⟨n • c.deg, @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.num,
       @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.den, by
-        induction' n with n ih
-        · simp only [coe_gnpow, pow_zero, one_mem]
-        · simpa only [pow_succ, coe_gnpow] using x.mul_mem ih c.den_mem⟩
+        induction n with
+        | zero => simp only [coe_gnpow, pow_zero, one_mem]
+        | succ n ih => simpa only [pow_succ, coe_gnpow] using x.mul_mem ih c.den_mem⟩
 
 @[simp]
 theorem deg_pow (c : NumDenSameDeg 𝒜 x) (n : ℕ) : (c ^ n).deg = n • c.deg :=
@@ -537,7 +536,7 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
   refine ⟨fun h1 ↦ ?_, IsUnit.map (algebraMap _ _)⟩
   rcases h1 with ⟨⟨a, b, eq0, eq1⟩, rfl : a = f.val⟩
   obtain ⟨f, rfl⟩ := mk_surjective f
-  obtain ⟨b, s, rfl⟩ := IsLocalization.mk'_surjective 𝔭.primeCompl b
+  obtain ⟨b, s, rfl⟩ := IsLocalization.exists_mk'_eq 𝔭.primeCompl b
   rw [val_mk, Localization.mk_eq_mk', ← IsLocalization.mk'_mul, IsLocalization.mk'_eq_iff_eq_mul,
     one_mul, IsLocalization.eq_iff_exists (M := 𝔭.primeCompl)] at eq0
   obtain ⟨c, hc : _ = c.1 * (f.den.1 * s.1)⟩ := eq0
