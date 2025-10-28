@@ -178,6 +178,10 @@ theorem closedAbsConvexHull_closure_eq_closedAbsConvexHull {s : Set E} :
       (closure_subset_closedAbsConvexHull (𝕜 := 𝕜) (E := E))))
     ((closedAbsConvexHull 𝕜).monotone subset_closure)
 
+@[simp]
+theorem closedAbsConvexHull_empty : closedAbsConvexHull 𝕜 (∅ : Set E) = ∅ :=
+  subset_eq_empty (closedAbsConvexHull_min (fun _ a ↦ a) AbsConvex.empty isClosed_empty) rfl
+
 end AbsolutelyConvex
 
 section NormedField
