@@ -11,9 +11,31 @@ import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!
-# The special linear group
+# The special linear group of a module
 
-see also `Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup`
+If `R` is a commutative ring and `V` is an `R`-module,
+we define `SpecialLinearGroup R V` as the subtype of
+linear equivalences `V ≃ₗ[R] V` with determinant 1.
+When `V` doesn't have a finite basis, the determinant is defined by 1
+and the definition gives `V ≃ₗ[R] V`.
+The interest of this definition is that `SpecialLinearGroup R V`
+has a group structure. (Starting from linear maps wouldn't have worked.)
+
+The file is constructed parallel to the one defining `Matrix.SpecialLinearGroup`.
+
+We provide `SpecialLinearGroup.toLinearEquiv`: the canonical map
+from `SpecialLinearGroup R V` to `V ≃ₗ[R] V`, as a monoid hom.
+
+When `V` is free and finite over `R`, we define
+* `SpecialLinearGroup.dualMap`
+* `SpecialLinearGroup.baseChange`
+
+We define `Matrix.SpecialLinaerGruop.toLin'_equiv`: the mul equivalence
+from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R (n → R)`
+and its variant
+`Matrix.SpecialLinearGroup.toLin_equiv`,
+from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R V`,
+associated with a finite basis of `V`.
 
 -/
 
@@ -42,6 +64,7 @@ section rankOne
 
 variable [Nontrivial R] [Module.Free R V] [Module.Finite R V]
 
+-- Move to other file ?
 theorem _root_.exists_linearEquiv_of_finrank_eq_one (d1 : Module.finrank R V = 1) :
     Nonempty (R ≃ₗ[R] V) := by
   let ⟨ι, b⟩ := (Module.Free.exists_basis R V).some
@@ -133,6 +156,7 @@ instance : Pow (SpecialLinearGroup R V) ℤ where
 instance : Inhabited (SpecialLinearGroup R V) :=
   ⟨1⟩
 
+-- TODO: move?
 theorem _root_.LinearMap.det_dualMap
     [Module.Free R V] [Module.Finite R V] (f : V →ₗ[R] V) :
     f.dualMap.det = f.det := by
@@ -142,7 +166,6 @@ theorem _root_.LinearMap.det_dualMap
   rw [← LinearMap.det_toMatrix b, ← LinearMap.det_toMatrix b.dualBasis]
   rw [LinearMap.dualMap_def, LinearMap.toMatrix_transpose]
   simp only [Matrix.det_transpose, LinearMap.det_toMatrix]
-
 
 /-- The transpose of an element in `SpecialLinearGroup R V`. -/
 def dualMap
