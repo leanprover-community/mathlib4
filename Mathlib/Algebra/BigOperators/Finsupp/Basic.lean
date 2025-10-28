@@ -282,24 +282,19 @@ theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f
 theorem sum_zero [Zero M] [AddCommMonoid N] {f : α →₀ M} : (f.sum fun _ _ => (0 : N)) = 0 :=
   Finset.sum_const_zero
 
-theorem sum_eq_one_iff [NeZero 1] (d : α →₀ ℕ) :
-    sum d (fun _ n ↦ n) = 1 ↔ ∃ a, d = single a 1 := by
+theorem sum_eq_one_iff (d : α →₀ ℕ) : sum d (fun _ n ↦ n) = 1 ↔ ∃ a, d = single a 1 := by
   classical
   refine ⟨fun h1 ↦ ?_, ?_⟩
-  · have hd0 : d ≠ 0 := fun h ↦ by simp [h] at h1
+  · have hd0 : d ≠ 0 := (by simp [·] at h1)
     obtain ⟨a, ha⟩ := ne_iff.mp hd0
-    rw [coe_zero, Pi.zero_apply, ne_eq] at ha
-    rw [← add_sum_erase' _ a _ (fun _ ↦ rfl), Nat.add_eq_one_iff] at h1
-    rcases h1 with (⟨ha', _⟩ | ⟨ha, ha'⟩)
-    · exact absurd ha' ha
-    · use a
-      simp only [sum, support_erase, sum_eq_zero_iff, mem_erase] at ha'
-      ext b
-      by_cases hb : b = a
-      · rw [hb, single_eq_same, ha]
-      · rw [single_eq_of_ne hb]
-        simp only [mem_support_iff, and_imp] at ha'
-        simpa [erase_ne hb] using ha' b hb
+    obtain ⟨hda, hda'⟩ : d a = 1 ∧ ∀ (i : α), ¬i = a → d i = 0 := by
+      rw [← add_sum_erase' _ a _ (fun _ ↦ rfl), Nat.add_eq_one_iff, or_iff_not_imp_left] at h1
+      simp_all +contextual [sum, support_erase, sum_eq_zero_iff, mem_erase, erase_ne]
+    use a
+    ext b
+    by_cases hb : b = a
+    · rw [hb, single_eq_same, hda]
+    · simpa only [single_eq_of_ne hb] using hda' b hb
   · rintro ⟨a, rfl⟩
     rw [sum_eq_single a ?_ (fun _ ↦ rfl), single_eq_same]
     exact fun _ _ hba ↦ single_eq_of_ne hba
