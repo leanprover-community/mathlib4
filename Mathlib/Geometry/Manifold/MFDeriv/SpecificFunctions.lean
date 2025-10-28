@@ -590,8 +590,12 @@ lemma mfderivWithin_prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' → N'}
     (hf : MDifferentiableWithinAt I J f s x) (hg : MDifferentiableWithinAt I' J' g t x')
     (hs : UniqueMDiffWithinAt I s x) (ht : UniqueMDiffWithinAt I' t x') :
     mfderivWithin (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) (x, x')
-      = (mfderivWithin I J f s x).prodMap (mfderivWithin I' J' g t x') :=
-  (hf.hasMFDerivWithinAt.prodMap (hg.hasMFDerivWithinAt)).mfderivWithin (hs.prod ht)
+      = (mfderivWithin I J f s x).prodMap (mfderivWithin I' J' g t x') := by
+  have hf' : HasMFDerivWithinAt I J f (Prod.fst '' s ×ˢ t) (x, x').1 (mfderivWithin I J f s x) := by
+    apply hf.hasMFDerivWithinAt.mono (by grind)
+  have : HasMFDerivWithinAt I' J' g (Prod.snd '' s ×ˢ t) (x, x').2 (mfderivWithin I' J' g t x') := by
+    apply hg.hasMFDerivWithinAt.mono (by grind)
+  apply (hf'.prodMap this).mfderivWithin (hs.prod ht)
 
 lemma mfderiv_prodMap {x' : M'} {f : M → N} {g : M' → N'}
     (hf : MDifferentiableAt I J f x) (hg : MDifferentiableAt I' J' g x') :
@@ -602,6 +606,7 @@ lemma mfderiv_prodMap {x' : M'} {f : M → N} {g : M' → N'}
   exact mfderivWithin_prodMap hf.mdifferentiableWithinAt hg.mdifferentiableWithinAt
     (uniqueMDiffWithinAt_univ I) (uniqueMDiffWithinAt_univ I')
 
+#exit
 end prodMap
 
 @[simp, mfld_simps]
