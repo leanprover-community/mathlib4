@@ -382,11 +382,8 @@ variable {K}
 
 theorem eq_of_valuation_isEquiv_valuation {p q : HeightOneSpectrum R}
     (hpq : (valuation K p).IsEquiv (valuation K q)) : p = q := by
-  contrapose hpq
-  rw [HeightOneSpectrum.ext_iff, Ideal.ext_iff, not_forall] at hpq
-  obtain ⟨x, hx⟩ := hpq
-  rw [Valuation.isEquiv_iff_val_lt_one, not_forall]
-  exact ⟨algebraMap R K x, by simpa [valuation_lt_one_iff_mem]⟩
+  simp_all [Valuation.isEquiv_iff_val_lt_one, HeightOneSpectrum.ext_iff, Ideal.ext_iff,
+    ← valuation_lt_one_iff_mem (K := K)]
 
 /-! ### Completions with respect to adic valuations
 
