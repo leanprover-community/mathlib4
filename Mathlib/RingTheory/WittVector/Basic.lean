@@ -258,17 +258,15 @@ theorem map_surjective (f : R →+* S) (hf : Surjective f) : Surjective (map f :
 theorem map_coeff (f : R →+* S) (x : 𝕎 R) (n : ℕ) : (map f x).coeff n = f (x.coeff n) :=
   rfl
 
+variable (R) in
 @[simp]
-theorem map_id (R : Type*) [CommRing R] :
-    WittVector.map (RingHom.id R) = RingHom.id (𝕎 R) := by
-  ext
-  simp
+theorem map_id : WittVector.map (RingHom.id R) = RingHom.id (𝕎 R) := by
+  ext; simp
 
-theorem map_eq_zero_iff {p : ℕ} {R S : Type*} [CommRing R] [CommRing S] [Fact (Nat.Prime p)]
-    (f : R →+* S) {x : WittVector p R} :
+theorem map_eq_zero_iff (f : R →+* S) {x : WittVector p R} :
     ((map f) x) = 0 ↔ ∀ n, f (x.coeff n) = 0 := by
   refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
-  · apply_fun (fun x ↦ x.coeff n) at h
+  · apply_fun (·.coeff n) at h
     simpa using h
   · ext n
     simpa using h n
@@ -299,12 +297,9 @@ theorem pow_dvd_ghostComponent_of_dvd_coeff {x : 𝕎 R} {n : ℕ}
   have : (MvPolynomial.aeval x.coeff) ((MvPolynomial.monomial (R := ℤ)
       (Finsupp.single i (p ^ (n - i)))) (p ^ i)) = ((p : R) ^ i) * (x.coeff i) ^ (p ^ (n - i)) := by
     simp [MvPolynomial.aeval_monomial, map_pow]
-  rw [this]
-  have : n + 1 = (n - i) + 1 + i := by omega
-  nth_rw 1 [this]
-  rw [pow_add, mul_comm]
+  rw [this, show n + 1 = (n - i) + 1 + i by omega, pow_add, mul_comm]
   apply mul_dvd_mul_left
-  refine (pow_dvd_pow_of_dvd ?_ _).trans (b := (x.coeff i) ^ (n - i + 1)) (pow_dvd_pow _ ?_)
+  refine (pow_dvd_pow_of_dvd ?_ _).trans (pow_dvd_pow _ ?_)
   · exact hx i (Nat.le_of_lt_succ hi)
   · exact ((n - i).lt_two_pow_self).succ_le.trans
         (pow_left_mono (n - i) (Nat.Prime.two_le Fact.out))
