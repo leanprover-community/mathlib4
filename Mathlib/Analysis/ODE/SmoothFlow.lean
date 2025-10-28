@@ -80,6 +80,7 @@ lemma continuous_implicitEquationAux (hf : ContinuousOn f u) (x₀ : E) (α : C(
     simp_rw [mem_prod, mem_setOf_eq] at h
     obtain ⟨hx, hα⟩ := h
     apply Continuous.add (by fun_prop)
+    -- repetition
     have : (fun t : Icc tmin tmax ↦ ∫ τ in t₀..t, f (α (projIcc tmin tmax (le_of_Icc t₀) τ))) =
         (fun t ↦ ∫ τ in t₀..t, f (α (projIcc tmin tmax (le_of_Icc t₀) τ))) ∘
           (fun t : Icc tmin tmax ↦ (t : ℝ)) := by rfl
@@ -123,12 +124,39 @@ set_option linter.unusedVariables false in
 noncomputable def implicitEquation.rightDerivAux (f' : E → E →L[ℝ] E) (x : E)
     (α : C(Icc tmin tmax, E)) :
     C(Icc tmin tmax, E) → Icc tmin tmax → E :=
-  fun dα t ↦ -dα t + ∫ τ in t₀..t,
+  fun dα ↦ -dα + fun t : Icc tmin tmax ↦ ∫ τ in t₀..t,
     f' (α (projIcc tmin tmax (le_of_Icc t₀) τ)) (dα (projIcc tmin tmax (le_of_Icc t₀) τ))
 
-lemma implicitEquation.continuous_rightDerivAux (f' : E → E →L[ℝ] E) (x : E)
-    (α dα : C(Icc tmin tmax, E)) :
-    Continuous (implicitEquation.rightDerivAux t₀ f' x α dα) := by sorry
+-- need that f' is continuous on u
+lemma implicitEquation.continuous_rightDerivAux {f' : E → E →L[ℝ] E} (hf' : ContinuousOn f' u)
+    (x : E) (α dα : C(Icc tmin tmax, E)) :
+    Continuous (implicitEquation.rightDerivAux t₀ f' x α dα) := by
+  rw [implicitEquation.rightDerivAux]
+  apply Continuous.add (Continuous.neg (ContinuousMapClass.map_continuous _))
+  have : (fun t : Icc tmin tmax ↦ ∫ τ in t₀..t,
+    f' (α (projIcc tmin tmax (le_of_Icc t₀) τ)) (dα (projIcc tmin tmax (le_of_Icc t₀) τ))) =
+      (fun t ↦ ∫ τ in t₀..t,
+        f' (α (projIcc tmin tmax (le_of_Icc t₀) τ)) (dα (projIcc tmin tmax (le_of_Icc t₀) τ))) ∘
+      (fun t : Icc tmin tmax ↦ (t : ℝ)) := by rfl
+  rw [this]
+  apply ContinuousOn.comp_continuous (s := Icc tmin tmax) _ (by fun_prop) (by simp)
+  nth_rw 14 [← Set.uIcc_of_le (le_of_Icc t₀)]
+  apply intervalIntegral.continuousOn_primitive_interval'
+  · apply ContinuousOn.intervalIntegrable
+    -- use Continuous.comp₂ on the uncurry of f', but need to first show that uncurry f' is cont
+    have : (fun x ↦ (f' (α (projIcc tmin tmax (le_of_Icc t₀) x)))
+          (dα (projIcc tmin tmax (le_of_Icc t₀) x))) =
+        fun x ↦ curry (uncurry (fun y y' ↦ f' y y')) (α (projIcc tmin tmax (le_of_Icc t₀) x))
+          ((dα (projIcc tmin tmax (le_of_Icc t₀) x))) := by
+      rfl
+    rw [this]
+    apply Continuous.comp_continuousOn'
+    ·
+
+      sorry
+    · sorry
+  · rw [Set.uIcc_of_le (le_of_Icc t₀)]
+    exact Subtype.coe_prop _
 
 noncomputable def implicitEquation.rightDerivAux' (f' : E → E →L[ℝ] E) (x : E)
     (α : C(Icc tmin tmax, E)) :
