@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 /-!
@@ -17,8 +18,8 @@ In spaces with the `HasOuterApproxClosed` property, finite Borel measures are un
 by the integrals of bounded continuous functions. Also weak convergence of finite measures and
 convergence in distribution for random variables behave somewhat well in spaces with this property.
 
-In such spaces, the product measure is characterized by the integrals of products of bounded
-continuous functions.
+Finite measures over products of such spaces are characterized by the integrals of products of
+bounded continuous functions.
 
 ## Main definitions
 
@@ -34,9 +35,11 @@ continuous functions.
   closed set tend to the measure of the set.
 * `ext_of_forall_lintegral_eq_of_IsFiniteMeasure`: Two finite measures are equal if the integrals
   of all bounded continuous functions with respect to both agree.
-* `Measure.eq_prod_of_boundedContinuousFunction`: The product of two finite measures `μ` and `ν`
-  is the only finite measure `ξ` such that for all real bounded continuous functions `f` and `g`
-  we have `∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`.
+* `ext_of_integral_mul_boundedContinuousFunction`: A finite measure on a product space is
+  characterized by the integrals of products of real and bounded continuous functions.
+* `Measure.eq_prod_of_integral_mul_boundedContinuousFunction`: The product of two finite measures
+  `μ` and `ν` is the only finite measure `ξ` such that for all real bounded continuous functions
+  `f` and `g` we have `∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`.
 
 -/
 
@@ -289,18 +292,16 @@ namespace Measure
 variable {X Y : Type*}
   {mX : MeasurableSpace X} [TopologicalSpace X] [BorelSpace X] [HasOuterApproxClosed X]
   {mY : MeasurableSpace Y} [TopologicalSpace Y] [BorelSpace Y] [HasOuterApproxClosed Y]
-  {μ : Measure X} [IsFiniteMeasure μ] {ν : Measure Y} [IsFiniteMeasure ν]
-  {ξ : Measure (X × Y)}
+  {μ ν : Measure (X × Y)}
 
-/-- The product of two finite measures is the only measure `ξ` such that for all nonnegative
-bounded continuous functions `f` and `g` we have
-`∫⁻ z, f z.1 * g z.2 ∂ξ = ∫⁻ x, f x ∂μ * ∫⁻ y, g y ∂ν`. -/
-lemma eq_prod_of_boundedContinuousFunction_nnreal
+/-- A finite measure on a product space is characterized by the integrals of products of
+bounded nonnegative continuous functions. -/
+lemma ext_of_lintegral_mul_boundedContinuousFunction [IsFiniteMeasure μ]
     (h : ∀ (f : X →ᵇ ℝ≥0) (g : Y →ᵇ ℝ≥0),
-      ∫⁻ ω, f ω.1 * g ω.2 ∂ξ = (∫⁻ ω, f ω ∂μ) * (∫⁻ ω, g ω ∂ν)) :
-    ξ = μ.prod ν := by
-  have hξ : ξ univ = (μ.prod ν) univ := by convert h 1 1 <;> simp [← prod_prod]
-  have : IsFiniteMeasure ξ := ⟨by simp [hξ]⟩
+      ∫⁻ z, f z.1 * g z.2 ∂μ = ∫⁻ z, f z.1 * g z.2 ∂ν) :
+    μ = ν := by
+  have hμν : μ univ = ν univ := by convert h 1 1 <;> simp
+  have : IsFiniteMeasure ν := ⟨by simp [← hμν]⟩
   let π : Set (Set (X × Y)) :=
     {s | ∃ (F : Set X) (G : Set Y), IsClosed F ∧ IsClosed G ∧ s = F ×ˢ G}
   have hπ1 : IsPiSystem π := by
@@ -317,52 +318,69 @@ lemma eq_prod_of_boundedContinuousFunction_nnreal
         exact measurableSet_generateFrom ⟨Set.univ, t, isClosed_univ, ht, by rw [Set.univ_prod]⟩
     · rintro - ⟨s₁, s₂, hs₁, hs₂, rfl⟩
       exact hs₁.measurableSet.prod hs₂.measurableSet
-  refine ext_of_generate_finite π hπ2 hπ1 ?_ hξ
+  refine ext_of_generate_finite π hπ2 hπ1 ?_ hμν
   rintro - ⟨s₁, s₂, hs₁, hs₂, rfl⟩
-  rw [prod_prod]
-  have := ENNReal.Tendsto.mul (HasOuterApproxClosed.tendsto_lintegral_apprSeq hs₁ μ) (by simp)
-    (HasOuterApproxClosed.tendsto_lintegral_apprSeq hs₂ ν) (by simp)
-  refine (tendsto_nhds_unique this ?_).symm
-  simp_rw [← h, ← ENNReal.coe_mul]
-  have : ξ (s₁ ×ˢ s₂) = ∫⁻ ω, (s₁.indicator 1 ω.1 * s₂.indicator 1 ω.2 : ℝ≥0) ∂ξ := by
-    simp_rw [← Set.indicator_prod_one,
-      ← lintegral_indicator_one (hs₁.measurableSet.prod hs₂.measurableSet)]
-    congr with
-    simp only [Prod.mk.eta, ENNReal.coe_indicator, Pi.one_apply, ENNReal.coe_one]
-    rfl
-  rw [this]
-  refine tendsto_lintegral_filter_of_dominated_convergence 1 (Eventually.of_forall <| by fun_prop)
-    (Eventually.of_forall fun n ↦ ae_of_all _ fun ω ↦ ?_) (by simp) (ae_of_all _ fun _ ↦ ?_)
-  · grw [HasOuterApproxClosed.apprSeq_apply_le_one, HasOuterApproxClosed.apprSeq_apply_le_one]
+  have (z : X × Y) := ENNReal.continuous_coe.tendsto _ |>.comp <|
+    (tendsto_pi_nhds.1 (HasOuterApproxClosed.tendsto_apprSeq hs₁) z.1).mul
+    (tendsto_pi_nhds.1 (HasOuterApproxClosed.tendsto_apprSeq hs₂) z.2)
+  simp_rw [show (fun _ ↦ 1 : X → ℝ≥0) = 1 from rfl, show (fun _ ↦ 1 : Y → ℝ≥0) = 1 from rfl,
+    ← Set.indicator_prod_one] at this
+  have h1 : Tendsto (fun n ↦ ∫⁻ z, (hs₁.apprSeq n z.1 * hs₂.apprSeq n z.2 : ℝ≥0) ∂μ)
+      atTop (𝓝 (∫⁻ z, ((s₁ ×ˢ s₂).indicator 1 z : ℝ≥0) ∂μ)) := by
+    refine tendsto_lintegral_filter_of_dominated_convergence 1
+      (Eventually.of_forall <| by fun_prop) (Eventually.of_forall fun n ↦ ae_of_all _ fun ω ↦ ?_)
+      (by simp) (ae_of_all _ this)
+    grw [HasOuterApproxClosed.apprSeq_apply_le_one, HasOuterApproxClosed.apprSeq_apply_le_one]
     simp
-  exact (ENNReal.continuous_coe.tendsto _).comp <|
-    ((tendsto_pi_nhds.1 <| HasOuterApproxClosed.tendsto_apprSeq hs₁) _).mul
-    ((tendsto_pi_nhds.1 <| HasOuterApproxClosed.tendsto_apprSeq hs₂) _)
+  have h2 : Tendsto (fun n ↦ ∫⁻ z, (hs₁.apprSeq n z.1 * hs₂.apprSeq n z.2 : ℝ≥0) ∂μ)
+      atTop (𝓝 (∫⁻ z, ((s₁ ×ˢ s₂).indicator 1 z : ℝ≥0) ∂ν)) := by
+    simp_rw [coe_mul, h]
+    refine tendsto_lintegral_filter_of_dominated_convergence 1
+      (Eventually.of_forall <| by fun_prop) (Eventually.of_forall fun n ↦ ae_of_all _ fun ω ↦ ?_)
+      (by simp) (ae_of_all _ this)
+    grw [HasOuterApproxClosed.apprSeq_apply_le_one, HasOuterApproxClosed.apprSeq_apply_le_one]
+    simp
+  convert tendsto_nhds_unique h1 h2 <;> simp [hs₁.measurableSet.prod hs₂.measurableSet]
 
-/-- The product of two finite measures `μ` and `ν` is the only finite measure `ξ` such that
-for all real bounded continuous functions `f` and `g` we have
-`∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`. -/
-lemma eq_prod_of_boundedContinuousFunction [IsFiniteMeasure ξ]
+/-- A finite measure on a product space is characterized by the integrals of products of
+real and bounded continuous functions. -/
+lemma ext_of_integral_mul_boundedContinuousFunction [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : ∀ (f : X →ᵇ ℝ) (g : Y →ᵇ ℝ),
-      ∫ ω, f ω.1 * g ω.2 ∂ξ = (∫ ω, f ω ∂μ) * (∫ ω, g ω ∂ν)) :
-    ξ = μ.prod ν := by
-  refine eq_prod_of_boundedContinuousFunction_nnreal fun f g ↦ ?_
-  apply (toReal_eq_toReal_iff' (lintegral_lt_top_of_nnreal ξ
+      ∫ z, f z.1 * g z.2 ∂μ = ∫ z, f z.1 * g z.2 ∂ν) :
+    μ = ν := by
+  refine ext_of_lintegral_mul_boundedContinuousFunction fun f g ↦ ?_
+  apply (toReal_eq_toReal_iff' (lintegral_lt_top_of_nnreal μ
     ((f.compContinuous ⟨@Prod.fst X Y, continuous_fst⟩) *
       (g.compContinuous ⟨@Prod.snd X Y, continuous_snd⟩))).ne
-    (mul_lt_top (lintegral_lt_top_of_nnreal μ _) (lintegral_lt_top_of_nnreal ν _)).ne).1
+    (lintegral_lt_top_of_nnreal ν
+    ((f.compContinuous ⟨@Prod.fst X Y, continuous_fst⟩) *
+      (g.compContinuous ⟨@Prod.snd X Y, continuous_snd⟩))).ne).1
   simp only [BoundedContinuousFunction.coe_mul, coe_compContinuous, ContinuousMap.coe_mk,
-    Pi.mul_apply, Function.comp_apply, ENNReal.coe_mul, toReal_mul]
-  have : (∫⁻ ω, f ω.1 * g ω.2 ∂ξ).toReal = ∫ ω, (f ω.1).toReal * (g ω.2).toReal ∂ξ := by
+    Pi.mul_apply, Function.comp_apply, ENNReal.coe_mul]
+  have {μ : Measure (X × Y)} :
+      (∫⁻ z, f z.1 * g z.2 ∂μ).toReal = ∫ z, (f z.1).toReal * (g z.2).toReal ∂μ := by
     rw [integral_eq_lintegral_of_nonneg_ae]
     · simp
     · exact Eventually.of_forall fun _ ↦ by positivity
     exact AEStronglyMeasurable.mul
       (continuous_coe.aestronglyMeasurable.comp_measurable (by fun_prop))
       (continuous_coe.aestronglyMeasurable.comp_measurable (by fun_prop))
-  rw [this, toReal_lintegral_coe_eq_integral, toReal_lintegral_coe_eq_integral]
+  simp_rw [this]
   exact h ⟨⟨fun x ↦ (f x), by fun_prop⟩, f.map_bounded'⟩
     ⟨⟨fun x ↦ (g x), by fun_prop⟩, g.map_bounded'⟩
+
+variable {μ : Measure X} [IsFiniteMeasure μ] {ν : Measure Y} [IsFiniteMeasure ν]
+  {ξ : Measure (X × Y)} [IsFiniteMeasure ξ]
+
+/-- The product of two finite measures `μ` and `ν` is the only finite measure `ξ` such that
+for all real bounded continuous functions `f` and `g` we have
+`∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`. -/
+lemma eq_prod_of_integral_mul_boundedContinuousFunction
+    (h : ∀ (f : X →ᵇ ℝ) (g : Y →ᵇ ℝ),
+      ∫ z, f z.1 * g z.2 ∂ξ = (∫ x, f x ∂μ) * (∫ y, g y ∂ν)) :
+    ξ = μ.prod ν := by
+  refine ext_of_integral_mul_boundedContinuousFunction fun f g ↦ ?_
+  rw [h, integral_prod_mul]
 
 end Measure
 
