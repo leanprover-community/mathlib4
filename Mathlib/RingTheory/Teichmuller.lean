@@ -119,6 +119,8 @@ variable (p I) in
   __ := teichmuller p I
   map_zero' := teichmuller_zero
 
+@[simp] lemma teichmuller₀_toMonoidHom : (teichmuller₀ p I).toMonoidHom = teichmuller p I := rfl
+
 theorem mk_teichmuller (x : Perfection (R ⧸ I) p) :
     Ideal.Quotient.mk I (teichmuller p I x) = coeff _ p 0 x := by
   have := teichmuller_sModEq <| Ideal.Quotient.mk_out <| coeff _ p 0 x
