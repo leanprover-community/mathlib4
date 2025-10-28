@@ -3,7 +3,7 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Topology.Separation.Basic
 
 /-!
@@ -57,7 +57,7 @@ lemma tendsto_ite {β : Type*} {p : ι → Prop} [DecidablePred p] {q : Prop} [D
       simp only [hi]
     apply Tendsto.congr' obs
     by_cases hq : q
-    · simp only [hq, iff_true, ite_true]
+    · simp only [hq, ite_true]
       apply le_trans _ haF
       simp only [principal_singleton, le_pure_iff, mem_map, Set.mem_singleton_iff,
         Set.preimage_const_of_mem, univ_mem]

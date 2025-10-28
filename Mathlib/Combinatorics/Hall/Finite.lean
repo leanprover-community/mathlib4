@@ -56,8 +56,8 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   · have ha' : #s' < #(s'.biUnion fun x => t x) := by
       convert ha he fun h => by simpa [← h] using mem_univ x using 2
       ext x
-      simp only [mem_image, mem_biUnion, exists_prop, SetCoe.exists, exists_and_right,
-        exists_eq_right, Subtype.coe_mk]
+      simp only [mem_image, mem_biUnion, SetCoe.exists, exists_and_right,
+        exists_eq_right]
     rw [← erase_biUnion]
     by_cases hb : a ∈ s'.biUnion fun x => t x
     · rw [card_erase_of_mem hb]
@@ -110,7 +110,7 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
     by_cases h₁ : z₁ = x <;> by_cases h₂ : z₂ = x <;>
       simp [h₁, h₂, hfinj.eq_iff, key, key.symm]
   · intro z
-    simp only [ne_eq, Set.mem_setOf_eq]
+    simp only
     split_ifs with hz
     · rwa [hz]
     · specialize hfr ⟨z, hz⟩
@@ -132,18 +132,18 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     (s' : Finset (sᶜ : Set ι)) : #s' ≤ #(s'.biUnion fun x' => t x' \ s.biUnion t) := by
   haveI := Classical.decEq ι
   have disj : Disjoint s (s'.image fun z => z.1) := by
-    simp only [disjoint_left, not_exists, mem_image, exists_prop, SetCoe.exists, exists_and_right,
-      exists_eq_right, Subtype.coe_mk]
+    simp only [disjoint_left, not_exists, mem_image, SetCoe.exists, exists_and_right,
+      exists_eq_right]
     intro x hx hc _
     exact absurd hx hc
   have : #s' = #(s ∪ s'.image fun z => z.1) - #s := by
     simp [disj, card_image_of_injective _ Subtype.coe_injective, Nat.add_sub_cancel_left]
   rw [this, hus]
   refine (Nat.sub_le_sub_right (ht _) _).trans ?_
-  rw [← card_sdiff]
-  · refine (card_le_card ?_).trans le_rfl
+  rw [← card_sdiff_of_subset]
+  · gcongr
     intro t
-    simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union, exists_and_right,
+    simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union,
       exists_imp]
     rintro x (hx | ⟨x', hx', rfl⟩) rat hs
     · exact False.elim <| (hs x) <| And.intro hx rat
@@ -184,10 +184,6 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     rwa [Fintype.card_coe, card_compl_lt_iff_nonempty]
   rcases ih t'' card_ι''_le (hall_cond_of_compl hus ht) with ⟨f'', hf'', hsf''⟩
   -- Put them together
-  have f'_mem_biUnion : ∀ (x') (hx' : x' ∈ s), f' ⟨x', hx'⟩ ∈ s.biUnion t := by
-    intro x' hx'
-    rw [mem_biUnion]
-    exact ⟨x', hx', hsf' _⟩
   have f''_notMem_biUnion : ∀ (x'') (hx'' : x'' ∉ s), f'' ⟨x'', hx''⟩ ∉ s.biUnion t := by
     intro x'' hx''
     have h := hsf'' ⟨x'', hx''⟩
@@ -195,14 +191,11 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     exact h.2
   have im_disj :
       ∀ (x' x'' : ι) (hx' : x' ∈ s) (hx'' : x'' ∉ s), f' ⟨x', hx'⟩ ≠ f'' ⟨x'', hx''⟩ := by
-    intro x x' hx' hx'' h
-    apply f''_notMem_biUnion x' hx''
-    rw [← h]
-    apply f'_mem_biUnion x
+    grind
   refine ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_, ?_⟩
   · refine hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x
-    simp only [of_eq_true]
+    simp only
     split_ifs with h
     · exact hsf' ⟨x, h⟩
     · exact sdiff_subset (hsf'' ⟨x, h⟩)

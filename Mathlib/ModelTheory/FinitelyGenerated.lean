@@ -240,7 +240,7 @@ instance Fg.instCountable_embedding (N : Type*) [L.Structure N]
   FG.countable_embedding N h
 
 theorem FG.of_finite [Finite M] : FG L M := by
-  simp only [fg_def, Substructure.FG.of_finite, topEquiv.toEquiv.finite_iff]
+  simp only [fg_def, Substructure.FG.of_finite]
 
 theorem FG.finite [L.IsRelational] (h : FG L M) : Finite M :=
   Finite.of_finite_univ (Substructure.FG.finite (fg_def.1 h))
@@ -269,7 +269,7 @@ theorem cg_iff_countable [Countable (Σ l, L.Functions l)] : CG L M ↔ Countabl
   rw [cg_def, Substructure.cg_iff_countable, topEquiv.toEquiv.countable_iff]
 
 theorem cg_of_countable [Countable M] : CG L M := by
-  simp only [cg_def, Substructure.cg_of_countable, topEquiv.toEquiv.countable_iff]
+  simp only [cg_def, Substructure.cg_of_countable]
 
 theorem FG.cg (h : FG L M) : CG L M :=
   cg_def.2 (fg_def.1 h).cg
@@ -315,7 +315,7 @@ theorem Substructure.countable_fg_substructures_of_countable [Countable M] :
     intro S S' h
     apply Subtype.eq
     rw [(Exists.choose_spec S.prop).symm, (Exists.choose_spec S'.prop).symm]
-    exact congr_arg ((closure L) ∘ Finset.toSet) h
+    exact congr_arg (closure L ∘ SetLike.coe) h
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
 instance Substructure.instCountable_fg_substructures_of_countable [Countable M] :

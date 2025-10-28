@@ -75,12 +75,12 @@ individually, rather than jointly via their tensor product.
 Note that `R` plays no role but it is convenient to make this generalisation to support the cases
 `R = ℕ` and `R = ℤ` which both show up naturally. See also `Subbimodule.baseChange`. -/
 @[simps]
-noncomputable def mk (p : AddSubmonoid M) (hA : ∀ (a : A) {m : M}, m ∈ p → a • m ∈ p)
+def mk (p : AddSubmonoid M) (hA : ∀ (a : A) {m : M}, m ∈ p → a • m ∈ p)
     (hB : ∀ (b : B) {m : M}, m ∈ p → b • m ∈ p) : Submodule (A ⊗[R] B) M :=
   { p with
     carrier := p
     smul_mem' := fun ab m =>
-      TensorProduct.induction_on ab (fun _ => by simpa only [zero_smul] using p.zero_mem)
+      TensorProduct.induction_on ab (fun _ => by simp only [zero_smul, SetLike.mem_coe, zero_mem])
         (fun a b hm => by simpa only [TensorProduct.Algebra.smul_def] using hA a (hB b hm))
         fun z w hz hw hm => by simpa only [add_smul] using p.add_mem (hz hm) (hw hm) }
 
@@ -95,7 +95,7 @@ theorem smul_mem' (p : Submodule (A ⊗[R] B) M) (b : B) {m : M} (hm : m ∈ p) 
 /-- If `A` and `B` are also `Algebra`s over yet another set of scalars `S` then we may "base change"
 from `R` to `S`. -/
 @[simps!]
-noncomputable def baseChange (S : Type*) [CommSemiring S] [Module S M] [Algebra S A] [Algebra S B]
+def baseChange (S : Type*) [CommSemiring S] [Module S M] [Algebra S A] [Algebra S B]
     [IsScalarTower S A M] [IsScalarTower S B M] (p : Submodule (A ⊗[R] B) M) :
     Submodule (A ⊗[S] B) M :=
   mk p.toAddSubmonoid (smul_mem p) (smul_mem' p)
@@ -124,13 +124,13 @@ variable [AddCommGroup M] [Module R M] [Module S M] [SMulCommClass R S M]
 /-- A `Submodule` over `R ⊗[ℕ] S` is naturally also a `Submodule` over the canonically-isomorphic
 ring `R ⊗[ℤ] S`. -/
 @[simps!]
-noncomputable def toSubbimoduleInt (p : Submodule (R ⊗[ℕ] S) M) : Submodule (R ⊗[ℤ] S) M :=
+def toSubbimoduleInt (p : Submodule (R ⊗[ℕ] S) M) : Submodule (R ⊗[ℤ] S) M :=
   baseChange ℤ p
 
 /-- A `Submodule` over `R ⊗[ℤ] S` is naturally also a `Submodule` over the canonically-isomorphic
 ring `R ⊗[ℕ] S`. -/
 @[simps!]
-noncomputable def toSubbimoduleNat (p : Submodule (R ⊗[ℤ] S) M) : Submodule (R ⊗[ℕ] S) M :=
+def toSubbimoduleNat (p : Submodule (R ⊗[ℤ] S) M) : Submodule (R ⊗[ℕ] S) M :=
   baseChange ℕ p
 
 end Ring

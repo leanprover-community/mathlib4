@@ -135,7 +135,7 @@ If every nonconstant polynomial over `k` has a root, then `k` is algebraically c
 @[stacks 09GR "(3) ⟹ (4)"]
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
     IsAlgClosed k := by
-  refine ⟨fun p ↦ Or.inr ?_⟩
+  refine ⟨fun p ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq _
   have : Irreducible (q * C (leadingCoeff q)⁻¹) := by
     classical
@@ -263,9 +263,6 @@ theorem surjective_restrictDomain_of_isAlgebraic {E : Type*}
     Function.Surjective fun φ : E →ₐ[K] M ↦ φ.restrictDomain L :=
   fun f ↦ IntermediateField.exists_algHom_of_splits'
     (E := E) f fun s ↦ ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits_codomain _⟩
-
-@[deprecated (since := "2024-11-15")]
-alias surjective_comp_algebraMap_of_isAlgebraic := surjective_restrictDomain_of_isAlgebraic
 
 variable [Algebra.IsAlgebraic K L] (K L M)
 
@@ -413,7 +410,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
     AlgEquiv.coe_ringEquiv, RingEquiv.coe_toRingHom]
   conv_lhs => rw [← hSR.symm_apply_apply x]
-  show equivOfAlgebraic' R S L M (algebraMap R L (hSR x)) = _
+  change equivOfAlgebraic' R S L M (algebraMap R L (hSR x)) = _
   rw [AlgEquiv.commutes]
 
 /-- Algebraic closure of isomorphic fields are isomorphic -/
@@ -501,7 +498,7 @@ theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
   · simp [hg0]
   by_cases hdf0 : derivative f = 0
   · rw [eq_C_of_derivative_eq_zero hdf0]
-    simp only [eval_C, derivative_C, zero_mul, dvd_zero, implies_true]
+    simp only [derivative_C, zero_mul, dvd_zero, implies_true]
   have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
   classical rw [Splits.dvd_iff_roots_le_roots (IsAlgClosed.splits f) hf0 hdg, Multiset.le_iff_count]
   simp only [count_roots, rootMultiplicity_mul hdg]

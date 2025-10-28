@@ -39,6 +39,7 @@ show these are equivalent in `Sym.symEquivSym'`.
 -/
 def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
+deriving [DecidableEq α] → DecidableEq _
 
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
@@ -46,11 +47,6 @@ def Sym (α : Type*) (n : ℕ) :=
 
 instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
   ⟨Sym.toMultiset⟩
-
--- The following instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance {α : Type*} {n : ℕ} [DecidableEq α] : DecidableEq (Sym α n) :=
-  inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
@@ -206,7 +202,7 @@ def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α 
 @[simp]
 theorem erase_mk [DecidableEq α] (m : Multiset α)
     (hc : Multiset.card m = n + 1) (a : α) (h : a ∈ m) :
-    (mk m hc).erase a h =mk (m.erase a)
+    (mk m hc).erase a h = mk (m.erase a)
         (by rw [Multiset.card_erase_of_mem h, hc, Nat.add_one, Nat.pred_succ]) :=
   rfl
 
@@ -463,7 +459,6 @@ theorem append_inj_left {s s' : Sym α n} (t : Sym α n') : s.append t = s'.appe
 
 theorem append_comm (s : Sym α n') (s' : Sym α n') :
     s.append s' = Sym.cast (add_comm _ _) (s'.append s) := by
-  ext
   simp [append, add_comm]
 
 @[simp, norm_cast]

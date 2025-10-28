@@ -42,17 +42,11 @@ def Tor (n : ℕ) : C ⥤ C ⥤ C where
   map f := NatTrans.leftDerived ((tensoringLeft C).map f) n
 
 /-- An alternative definition of `Tor`, where we left-derive in the first factor instead. -/
-@[simps! obj_obj map_app]
+@[simps! obj_obj map_app obj_map]
 def Tor' (n : ℕ) : C ⥤ C ⥤ C :=
   Functor.flip
     { obj := fun X => Functor.leftDerived ((tensoringRight C).obj X) n
       map := fun f => NatTrans.leftDerived ((tensoringRight C).map f) n }
-
--- Porting note: this specific lemma was added because otherwise the internals of
--- `NatTrans.leftDerived` leaks into the RHS (it was already so in mathlib)
-@[simp]
-lemma Tor'_obj_map (n : ℕ) {X Y : C} (Z : C) (f : X ⟶ Y) :
-    ((Tor' C n).obj Z).map f = (NatTrans.leftDerived ((tensoringRight C).map f) n).app Z := rfl
 
 /-- The higher `Tor` groups for `X` and `Y` are zero if `Y` is projective. -/
 lemma isZero_Tor_succ_of_projective (X Y : C) [Projective Y] (n : ℕ) :
