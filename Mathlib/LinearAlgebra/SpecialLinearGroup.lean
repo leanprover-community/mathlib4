@@ -42,6 +42,10 @@ associated with a finite basis of `V`.
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
 variable (R V) in
+/-- The special linear group of a module.
+
+This is only meaningful when the module is finite and free,
+for otherwise, it coincides with the group of linear equivalences. -/
 abbrev SpecialLinearGroup := { u : V ≃ₗ[R] V // u.det = 1 }
 
 namespace SpecialLinearGroup
@@ -113,7 +117,7 @@ noncomputable def LinearEquiv.smul_id_of_rank_one (d1 : Module.finrank R V = 1) 
   right_inv u :=
     ((exists_unique_eq_smul_id_of_finrank_eq_one d1 u).choose_spec.1).symm
 
-instance subsingleton_of_subsingleton (d1 : Module.finrank R V = 1) :
+theorem subsingleton_of_subsingleton (d1 : Module.finrank R V = 1) :
     Subsingleton (SpecialLinearGroup R V) where
   allEq u v := by
     ext x
@@ -270,6 +274,7 @@ def baseChange : SpecialLinearGroup R V →* SpecialLinearGroup S (S ⊗[R] V) w
 
 end baseChange
 
+/-- The isomorphism between special linear groups of isomorphic modules. -/
 def congr_linEquiv {W : Type*} [AddCommGroup W] [Module R W]
     (e : V ≃ₗ[R] W) :
     SpecialLinearGroup R V ≃* SpecialLinearGroup R W where
@@ -287,6 +292,7 @@ section Matrix
 
 variable {n : Type*} [Fintype n] [DecidableEq n] (b : Module.Basis n R V)
 
+/-- The canonical isomorphism from `SL(n, R)` to the special linear group of the module `n → R`. -/
 def _root_.Matrix.SpecialLinearGroup.toLin'_equiv :
     Matrix.SpecialLinearGroup n R ≃* SpecialLinearGroup R (n → R) where
   toFun A := ⟨Matrix.SpecialLinearGroup.toLin' A,
@@ -302,10 +308,12 @@ def _root_.Matrix.SpecialLinearGroup.toLin'_equiv :
     simp [← LinearEquiv.toLinearMap_inj, Matrix.SpecialLinearGroup.toLin']
   map_mul' A B := Subtype.coe_injective (by simp)
 
+/-- The isomorphism from `Matrix.SpecialLinearGroup n R`
+to the special linear group of a module associated with a basis of that module. -/
 noncomputable def _root_.Matrix.SpecialLinearGroup.toLin_equiv
     (b : Module.Basis n R V) :
     Matrix.SpecialLinearGroup n R ≃* SpecialLinearGroup R V :=
   Matrix.SpecialLinearGroup.toLin'_equiv.trans
-    (SpecialLinearGroup.congr_linEquiv b.repr'.symm)
+    (SpecialLinearGroup.congr_linEquiv (b.repr.trans (Finsupp.linearEquivFunOnFinite R R n)).symm)
 
 end Matrix
