@@ -917,6 +917,19 @@ theorem ofLeftInverse_symm_apply {g : S → R} {f : R →+* S} (h : Function.Lef
 def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
 
+/-- A ring isomorphism `e : R ≃+* S` descends to subrings `s' ≃+* s` provided
+`x ∈ s' ↔ e x ∈ s`. -/
+@[simps!]
+def restrict {R : Type u} {S : Type v} [NonAssocSemiring R] [NonAssocSemiring S]
+    {σR : Type*} {σS : Type*} [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R]
+    [SubsemiringClass σS S] (e : R ≃+* S) (s' : σR) (s : σS) (h : ∀ x, x ∈ s' ↔ e x ∈ s) :
+    s' ≃+* s where
+  __ := RingHom.restrict e _ _ fun _ ↦ (h _).1
+  invFun := RingHom.restrict e.symm _ _ fun y hy ↦ by
+    obtain ⟨x, rfl⟩ := e.surjective y; simp [(h _).2 hy]
+  left_inv y := by simp [← Subtype.val_inj]
+  right_inv x := by simp [← Subtype.val_inj]
+
 end RingEquiv
 
 namespace Subring
