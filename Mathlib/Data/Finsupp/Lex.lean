@@ -72,12 +72,20 @@ theorem lex_lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Lex (α →
     x < y ↔ x default < y default :=
   lex_iff_of_unique
 
+theorem colex_lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Colex (α →₀ N)} :
+    x < y ↔ x default < y default :=
+  lex_lt_iff_of_unique (α := αᵒᵈ)
+
 variable [LinearOrder α]
 
 instance Lex.isStrictOrder [PartialOrder N] :
     IsStrictOrder (Lex (α →₀ N)) (· < ·) where
   irrefl _ := lt_irrefl (α := Lex (α → N)) _
   trans _ _ _ := lt_trans (α := Lex (α → N))
+
+instance Colex.isStrictOrder [∀ i, PartialOrder (α i)] :
+    IsStrictOrder (Colex (α →₀ N)) (· < ·) :=
+  Lex.isStrictOrder (ι := ιᵒᵈ)
 
 /-- The partial order on `Finsupp`s obtained by the lexicographic ordering.
 See `Finsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
@@ -87,17 +95,36 @@ instance Lex.partialOrder [PartialOrder N] : PartialOrder (Lex (α →₀ N)) wh
   __ := PartialOrder.lift (fun x : Lex (α →₀ N) ↦ toLex (⇑(ofLex x)))
     (DFunLike.coe_injective (F := Finsupp α N))
 
+/-- The partial order on `Finsupp`s obtained by the colexicographic ordering.
+See `Finsupp.Colex.linearOrder` for a proof that this partial order is in fact linear. -/
+instance Colex.partialOrder [PartialOrder N] : PartialOrder (Colex (α →₀ N)) where
+  lt := (· < ·)
+  le x y := ⇑(ofColex x) = ⇑(ofColex y) ∨ x < y
+  __ := PartialOrder.lift (fun x : Colex (α →₀ N) ↦ toColex (⇑(ofColex x)))
+    (DFunLike.coe_injective (F := Finsupp α N))
+
 /-- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
   lt := (· < ·)
   le := (· ≤ ·)
   __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
 
+/-- The linear order on `Finsupp`s obtained by the colexicographic ordering. -/
+instance Colex.linearOrder [LinearOrder N] : LinearOrder (Colex (α →₀ N)) where
+  lt := (· < ·)
+  le := (· ≤ ·)
+  __ := LinearOrder.lift' (toColex ∘ toDFinsupp ∘ ofColex) finsuppEquivDFinsupp.injective
+
 theorem lex_le_iff_of_unique [Unique α] [PartialOrder N] {x y : Lex (α →₀ N)} :
     x ≤ y ↔ x default ≤ y default := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, lex_lt_iff_of_unique, ← ofLex.apply_eq_iff_eq,
     DFunLike.ext_iff, Unique.forall_iff]
 
+theorem colex_le_iff_of_unique [Unique α] [PartialOrder N] {x y : Colex (α →₀ N)} :
+    x ≤ y ↔ x default ≤ y default :=
+  lex_le_iff_of_unique (α := αᵒᵈ)
+
+-- TODO: generalize to pi types
 theorem Lex.single_strictAnti : StrictAnti fun (a : α) ↦ toLex (single a 1) := by
   intro a b h
   simp only [LT.lt, Finsupp.lex_def]
@@ -108,12 +135,22 @@ theorem Lex.single_strictAnti : StrictAnti fun (a : α) ↦ toLex (single a 1) :
     simp only [Finsupp.single_eq_of_ne hd.ne, Finsupp.single_eq_of_ne (hd.trans h).ne]
   · simp [h.ne']
 
+theorem Colex.single_strictMono : StrictMono fun (a : α) ↦ toColex (single a 1) :=
+  fun _ _ h ↦ Lex.single_strictAnti (α := αᵒᵈ) h
+
 theorem Lex.single_lt_iff {a b : α} : toLex (single b 1) < toLex (single a 1) ↔ a < b :=
   Lex.single_strictAnti.lt_iff_gt
+
+theorem Colex.single_lt_iff {a b : α} : toColex (single a 1) < toColex (single b 1) ↔ a < b :=
+  Colex.single_strictMono.lt_iff_lt
 
 theorem Lex.single_le_iff {a b : α} : toLex (single b 1) ≤ toLex (single a 1) ↔ a ≤ b :=
   Lex.single_strictAnti.le_iff_ge
 
+theorem Colex.single_le_iff {a b : α} : toColex (single a 1) ≤ toColex (single b 1) ↔ a ≤ b :=
+  Colex.single_strictMono.le_iff_le
+
+@[deprecated Lex.single_strictAnti (since := "2025-10-28")]
 theorem Lex.single_antitone : Antitone fun (a : α) ↦ toLex (single a 1) :=
   Lex.single_strictAnti.antitone
 
@@ -121,6 +158,9 @@ variable [PartialOrder N]
 
 theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
   fun a b h ↦ DFinsupp.toLex_monotone (id h : ∀ i, (toDFinsupp a) i ≤ (toDFinsupp b) i)
+
+theorem toColex_monotone : Monotone (@toColex (α →₀ N)) :=
+  toLex_monotone (α := αᵒᵈ)
 
 @[deprecated lex_lt_iff (since := "2025-10-12")]
 theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
@@ -148,7 +188,13 @@ variable [AddLeftStrictMono N]
 instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (α →₀ N)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 
+instance Colex.addLeftStrictMono : AddLeftStrictMono (Colex (α →₀ N)) :=
+  Lex.addLeftStrictMono (α := αᵒᵈ)
+
 instance Lex.addLeftMono : AddLeftMono (Lex (α →₀ N)) :=
+  addLeftMono_of_addLeftStrictMono _
+
+instance Colex.addLeftMono : AddLeftMono (Colex (α →₀ N)) :=
   addLeftMono_of_addLeftStrictMono _
 
 end Left
@@ -161,7 +207,13 @@ instance Lex.addRightStrictMono : AddRightStrictMono (Lex (α →₀ N)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + f j) (lta j ja), add_lt_add_right ha _⟩⟩
 
+instance Colex.addRightStrictMono : AddRightStrictMono (Colex (α →₀ N)) :=
+  Lex.addRightStrictMono (α := αᵒᵈ)
+
 instance Lex.addRightMono : AddRightMono (Lex (α →₀ N)) :=
+  addRightMono_of_addRightStrictMono _
+
+instance Colex.addRightMono : AddRightMono (Colex (α →₀ N)) :=
   addRightMono_of_addRightStrictMono _
 
 end Right
@@ -177,11 +229,21 @@ instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd 
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 
+instance Colex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] :
+    OrderBot (Colex (α →₀ N)) where
+  bot := 0
+  bot_le _ := Finsupp.toColex_monotone bot_le
+
 instance Lex.isOrderedCancelAddMonoid
     [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
     IsOrderedCancelAddMonoid (Lex (α →₀ N)) where
   add_le_add_left _ _ h _ := add_le_add_left (α := Lex (α → N)) h _
   le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (α → N))
+
+instance Colex.isOrderedCancelAddMonoid
+    [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
+    IsOrderedCancelAddMonoid (Colex (α →₀ N)) :=
+  Lex.isOrderedCancelAddMonoid (α := αᵒᵈ)
 
 end OrderedAddMonoid
 
