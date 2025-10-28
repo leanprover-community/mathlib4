@@ -48,23 +48,23 @@ and a monomial order `m : MonomialOrder σ`.
   `f` and `g`.
 
 * `m.degree_mul_of_mul_leadingCoeff_ne_zero` : if the product of the leading coefficients
-  is non zero, then the degree is the sum of the degrees.
+  is nonzero, then the degree is the sum of the degrees.
 
 * `m.leadingCoeff_mul_of_mul_leadingCoeff_ne_zero` : if the product of the leading coefficients
-  is non zero, then the leading coefficient is that product.
+  is nonzero, then the leading coefficient is that product.
 
 * `m.degree_mul_of_isRegular_left`, `m.degree_mul_of_isRegular_right` and `m.degree_mul`
-  assert the  equality when the leading coefficient of `f` or `g` is regular,
+  assert the equality when the leading coefficient of `f` or `g` is regular,
   or when `R` is a domain and `f` and `g` are nonzero.
 
 * `m.leadingCoeff_mul_of_isRegular_left`, `m.leadingCoeff_mul_of_isRegular_right`
   and `m.leadingCoeff_mul` say that `m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g`
 
 * `m.degree_pow_of_pow_leadingCoeff_ne_zero` : is the `n`th power of the leading coefficient
-  of `f` is non zero, then the degree of `f ^ n` is `n • (m.degree f)`
+  of `f` is nonzero, then the degree of `f ^ n` is `n • (m.degree f)`
 
 * `m.leadingCoeff_pow_of_pow_leadingCoeff_ne_zero` : is the `n`th power of the leading coefficient
-  of `f` is non zero, then the leading coefficient of `f ^ n` is that power.
+  of `f` is nonzero, then the leading coefficient of `f ^ n` is that power.
 
 * `m.degree_prod_of_regular` : the degree of a product of polynomials whose leading coefficients
   are regular is the sum of their degrees.
@@ -369,10 +369,8 @@ theorem degree_mul_le {f g : MvPolynomial σ R} :
       rw [m.coeff_eq_zero_of_lt this, mul_zero]
     simp only [not_lt] at hd
     apply lt_of_add_lt_add_left (a := m.toSyn d)
-    simp only [← map_add, hde]
-    apply lt_of_le_of_lt _ hc
-    simp only [map_add]
-    exact add_le_add_right hd _
+    grw [← map_add _ _ e, hd, ← map_add, hde]
+    exact hc
 
 /-- Multiplicativity of leading coefficients -/
 theorem coeff_mul_of_add_of_degree_le {f g : MvPolynomial σ R} {a b : σ →₀ ℕ}

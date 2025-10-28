@@ -237,10 +237,6 @@ theorem nhds_ne_subtype_neBot_iff {S : Set X} {x : S} :
     (𝓝[≠] x).NeBot ↔ (𝓝[≠] (x : X) ⊓ 𝓟 S).NeBot := by
   rw [neBot_iff, neBot_iff, not_iff_not, nhds_ne_subtype_eq_bot_iff]
 
-theorem discreteTopology_subtype_iff {S : Set X} :
-    DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
-  simp_rw [discreteTopology_iff_nhds_ne, SetCoe.forall', nhds_ne_subtype_eq_bot_iff]
-
 end Top
 
 /-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
@@ -403,11 +399,11 @@ theorem Continuous.subtype_map {f : X → Y} (h : Continuous f) {q : Y → Prop}
   (h.comp continuous_subtype_val).subtype_mk _
 
 theorem IsOpenMap.subtype_map {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y} (hs : IsOpen s)
-    (hst : ∀ x, s x → t (f x)) : IsOpenMap (Subtype.map f hst) :=
+    (hst : ∀ x ∈ s, f x ∈ t) : IsOpenMap (Subtype.map f hst) :=
   (hf.comp hs.isOpenMap_subtype_val).subtype_mk _
 
 theorem IsClosedMap.subtype_map {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
-    (hs : IsClosed s) (hst : ∀ x, s x → t (f x)) : IsClosedMap (Subtype.map f hst) :=
+    (hs : IsClosed s) (hst : ∀ x ∈ s, f x ∈ t) : IsClosedMap (Subtype.map f hst) :=
   (hf.comp hs.isClosedMap_subtype_val).subtype_mk _
 
 theorem continuous_inclusion {s t : Set X} (h : s ⊆ t) : Continuous (inclusion h) :=
@@ -1060,7 +1056,7 @@ variable [Finite ι] [∀ i, DiscreteTopology (A i)]
 
 /-- A finite product of discrete spaces is discrete. -/
 instance Pi.discreteTopology : DiscreteTopology (∀ i, A i) :=
-  singletons_open_iff_discrete.mp fun x => by
+  discreteTopology_iff_isOpen_singleton.mpr fun x => by
     rw [← univ_pi_singleton]
     exact isOpen_set_pi finite_univ fun i _ => (isOpen_discrete {x i})
 
