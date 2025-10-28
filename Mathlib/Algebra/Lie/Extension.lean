@@ -184,7 +184,7 @@ end Algebra
 section ofTwoCocycle
 
 variable [LieRing N] [LieAlgebra R N] [IsLieAbelian N] [LieRingModule M N] [LieModule R M N]
-  [LieModule.IsTrivial M N] (c : twoCocycle R M N)
+  (c : twoCocycle R M N)
 
 /-- An extension of Lie algebras defined by a 2-cocycle. -/
 def ofTwoCocycle : Extension R N M where
