@@ -303,43 +303,30 @@ lemma eq_prod_of_boundedContinuousFunction_nnreal
     ((tendsto_pi_nhds.1 <| HasOuterApproxClosed.tendsto_apprSeq hs₁) _).mul
     ((tendsto_pi_nhds.1 <| HasOuterApproxClosed.tendsto_apprSeq hs₂) _)
 
-lemma omg' {Ω₁ : Type*}
-    [MeasurableSpace Ω₁] [TopologicalSpace Ω₁] [HasOuterApproxClosed Ω₁]
-    [BorelSpace Ω₁] {μ : Measure Ω₁} [IsFiniteMeasure μ]
-    {Ω₂ : Type*}
-    [MeasurableSpace Ω₂] [TopologicalSpace Ω₂] [HasOuterApproxClosed Ω₂]
-    [BorelSpace Ω₂] {ν : Measure Ω₂} [IsFiniteMeasure ν]
-    {ξ : Measure (Ω₁ × Ω₂)} [IsFiniteMeasure ξ]
-    (h : ∀ (f : Ω₁ →ᵇ ℝ) (g : Ω₂ →ᵇ ℝ),
+/-- The product of two finite measures is the only finite measure `ξ` such that for all real
+bounded continuous functions `f` and `g` we have
+`∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`. -/
+lemma eq_prod_of_boundedContinuousFunction [IsFiniteMeasure ξ]
+    (h : ∀ (f : X →ᵇ ℝ) (g : Y →ᵇ ℝ),
       ∫ ω, f ω.1 * g ω.2 ∂ξ = (∫ ω, f ω ∂μ) * (∫ ω, g ω ∂ν)) :
     ξ = μ.prod ν := by
-  apply eq_prod_of_boundedContinuousFunction_nnreal
-  intro f g
-  simp_rw [← ENNReal.coe_mul]
-  apply (ENNReal.toReal_eq_toReal_iff' (lintegral_lt_top_of_nnreal ξ
-      ((f.compContinuous ⟨Prod.fst (β := Ω₂), continuous_fst⟩) *
-          (g.compContinuous ⟨Prod.snd (α := Ω₁), continuous_snd⟩))).ne
-      (ENNReal.mul_lt_top (lintegral_lt_top_of_nnreal μ _) (lintegral_lt_top_of_nnreal ν _)).ne).mp
-  simp only [coe_mul, coe_compContinuous, ContinuousMap.coe_mk, Pi.mul_apply, Function.comp_apply,
-    ENNReal.coe_mul, ENNReal.toReal_mul]
+  refine eq_prod_of_boundedContinuousFunction_nnreal fun f g ↦ ?_
+  apply (toReal_eq_toReal_iff' (lintegral_lt_top_of_nnreal ξ
+    ((f.compContinuous ⟨@Prod.fst X Y, continuous_fst⟩) *
+      (g.compContinuous ⟨@Prod.snd X Y, continuous_snd⟩))).ne
+    (mul_lt_top (lintegral_lt_top_of_nnreal μ _) (lintegral_lt_top_of_nnreal ν _)).ne).1
+  simp only [BoundedContinuousFunction.coe_mul, coe_compContinuous, ContinuousMap.coe_mk,
+    Pi.mul_apply, Function.comp_apply, ENNReal.coe_mul, toReal_mul]
   have : (∫⁻ ω, f ω.1 * g ω.2 ∂ξ).toReal = ∫ ω, (f ω.1).toReal * (g ω.2).toReal ∂ξ := by
     rw [integral_eq_lintegral_of_nonneg_ae]
     · simp
     · exact Eventually.of_forall fun _ ↦ by positivity
-    · apply StronglyMeasurable.aestronglyMeasurable
-      apply StronglyMeasurable.mul
-      · change StronglyMeasurable ((fun x ↦ (f x : ℝ)) ∘ Prod.fst)
-        apply StronglyMeasurable.comp_measurable
-        · exact Continuous.stronglyMeasurable (by fun_prop)
-        fun_prop
-      · change StronglyMeasurable ((fun x ↦ (g x : ℝ)) ∘ Prod.snd)
-        apply StronglyMeasurable.comp_measurable
-        · exact Continuous.stronglyMeasurable (by fun_prop)
-        fun_prop
+    exact AEStronglyMeasurable.mul
+      (continuous_coe.aestronglyMeasurable.comp_measurable (by fun_prop))
+      (continuous_coe.aestronglyMeasurable.comp_measurable (by fun_prop))
   rw [this, toReal_lintegral_coe_eq_integral, toReal_lintegral_coe_eq_integral]
-  exact h ⟨⟨fun x => (f x).toReal, Continuous.comp' NNReal.continuous_coe f.continuous⟩,
-      f.map_bounded'⟩ ⟨⟨fun x => (g x).toReal, Continuous.comp' NNReal.continuous_coe g.continuous⟩,
-      g.map_bounded'⟩
+  exact h ⟨⟨fun x ↦ (f x), by fun_prop⟩, f.map_bounded'⟩
+    ⟨⟨fun x ↦ (g x), by fun_prop⟩, g.map_bounded'⟩
 
 end Measure
 
