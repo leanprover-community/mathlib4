@@ -574,11 +574,6 @@ class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction 
 
 export MulDistribMulAction (smul_one)
 
-instance (G R S : Type*) [Monoid G] [Monoid R] [MulDistribMulAction G R] [SMul G S] [MulAction R S]
-    [IsScalarTower G R S] : SMulDistribClass G R S where
-  smul_distrib_smul g r s := by
-    rw [← one_smul R s, ← smul_assoc g (1 : R) s, smul_one, one_smul, smul_assoc]
-
 section MulDistribMulAction
 variable [Monoid M] [Monoid N] [MulDistribMulAction M N]
 
