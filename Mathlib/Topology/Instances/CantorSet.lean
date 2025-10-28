@@ -10,6 +10,7 @@ import Mathlib.Data.Stream.Init
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Field
 
 /-!
 # Ternary Cantor Set
@@ -211,25 +212,14 @@ noncomputable def cantorStep (x : ℝ) : ℝ :=
 
 theorem cantorStep_mem_cantorSet {x : ℝ} (hx : x ∈ cantorSet) : cantorStep x ∈ cantorSet := by
   simp only [cantorStep]
-  rw [cantorSet_eq_union_halves, Set.mem_union, Set.mem_image] at hx
-  split_ifs with h
-  · rcases hx with ⟨y, hy, hx⟩ | ⟨y, hy, hx⟩
-    · rw [← hx]
-      ring_nf
-      exact hy
-    · rw [← hx] at h
-      apply cantorSet_subset_unitInterval at hy
-      simp only [one_div, Set.mem_Icc] at h hy
-      linarith
-  · rcases hx with ⟨y, hy, hx⟩ | ⟨y, hy, hx⟩
-    · rw [← hx] at h
-      apply cantorSet_subset_unitInterval at hy
-      absurd h
-      simp only [one_div, Set.mem_Icc] at hy ⊢
-      constructor <;> linarith
-    · rw [← hx]
-      ring_nf
-      exact hy
+  obtain ⟨y, hy, rfl | rfl⟩ : ∃ y ∈ cantorSet, y / 3 = x ∨ (2 + y) / 3 = x := by
+    rw [cantorSet_eq_union_halves] at hx
+    grind
+  all_goals
+    have := cantorSet_subset_unitInterval hy
+    simp only [Set.mem_Icc] at this ⊢
+    field_simp
+    grind
 
 /-- The infinite sequence obtained by repeatedly applying `cantorStep` to `x`. -/
 noncomputable def cantorSequence (x : ℝ) : Stream' ℝ :=
@@ -257,34 +247,27 @@ noncomputable def cantorToBinary (x : ℝ) : Stream' Bool :=
 /-- Given `x` in the Cantor set, return its ternary representation `(d₀, d₁, …)`
 using only digits `0` and `2`, such that `x = 0.d₀d₁...` in base-3. -/
 noncomputable def cantorToTernary (x : ℝ) : Stream' (Fin 3) :=
-  (cantorToBinary x).map (fun b ↦ cond b 2 0)
+  (cantorToBinary x).map (cond · 2 0)
 
 theorem cantorToTernary_ne_one {x : ℝ} {n : ℕ} : (cantorToTernary x).get n ≠ 1 := by
   intro h
-  simp only [cantorToTernary, Fin.isValue, Stream'.get_map] at h
-  generalize (cantorToBinary x).get n = b at h
-  cases b <;> simp at h
+  grind [cantorToTernary, Fin.isValue, Stream'.get_map]
+
+theorem cantorSequence_get_succ (x : ℝ) (n : ℕ) :
+    (cantorSequence x).get (n + 1) =
+      3 * ((cantorSequence x).get n - 3^n * ofDigitsTerm (cantorToTernary x).get n) := by
+  simp only [cantorSequence, ofDigitsTerm, cantorToTernary, cantorToBinary, Set.mem_Icc,
+    Bool.if_true_right, Bool.or_false, Stream'.get_map, Bool.cond_not, Bool.cond_decide,
+    Stream'.get_succ_iterate', cantorStep]
+  split_ifs <;> simp
+  field
 
 theorem cantorSequence_eq_self_sub_sum_cantorToTernary (x : ℝ) (n : ℕ) :
     (cantorSequence x).get n =
     (x - ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x).get i) * 3^n := by
   induction n with
   | zero => simp [cantorSequence]
-  | succ n ih => symm; calc
-    _ = 3 * (((x - ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x).get i) * 3 ^ n) -
-        3^n * ofDigitsTerm (cantorToTernary x).get n) := by
-      rw [pow_succ, Finset.sum_range_succ]
-      ring
-    _ = 3 * ((cantorSequence x).get n - 3^n * ofDigitsTerm (cantorToTernary x).get n) := by
-      rw [ih]
-    _ = _ := by
-      simp only [cantorSequence]
-      conv_rhs => simp only [Stream'.get_succ_iterate']
-      simp only [cantorToTernary, cantorToBinary, cantorSequence, ofDigitsTerm, Stream'.get_map]
-      set y := (Stream'.iterate cantorStep x).get n
-      split_ifs with h_if <;> simp only [cantorStep, h_if] <;> simp
-      field_simp
-      ring
+  | succ n ih => rw [cantorSequence_get_succ, ih, Finset.sum_range_succ]; ring
 
 theorem ofDigits_cantorToTernary_sum_le {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
     ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i ≤ x := by
@@ -310,8 +293,7 @@ theorem ofDigits_cantorToTernary {x : ℝ} (hx : x ∈ cantorSet) :
   rw [HasSum.tsum_eq]
   rw [hasSum_iff_tendsto_nat_of_summable_norm]
   swap
-  · conv => arg 1; ext; rw [norm_eq_abs, abs_of_nonneg (by simp [ofDigitsTerm])]
-    exact summable_ofDigitsTerm
+  · simpa only [norm_of_nonneg ofDigitsTerm_nonneg] using summable_ofDigitsTerm
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le (g := fun n ↦ x - (3⁻¹ : ℝ)^n) (h := fun _ ↦ x)
   · rw [← tendsto_sub_nhds_zero_iff]
     simp only [sub_sub_cancel_left]
