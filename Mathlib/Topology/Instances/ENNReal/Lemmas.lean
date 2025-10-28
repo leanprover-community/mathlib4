@@ -514,7 +514,7 @@ theorem exists_frequently_lt_of_liminf_ne_top' {ι : Type*} {l : Filter ι} {x :
   simp_rw [not_exists, not_frequently, not_lt] at h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
-  filter_upwards [h (-r)] with i hi using(le_neg.1 hi).trans (neg_le_abs _)
+  filter_upwards [h (-r)] with i hi using (le_neg.1 hi).trans (neg_le_abs _)
 
 theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x : ι → ℝ}
     (hf : liminf (fun i => (Real.nnabs (x i) : ℝ≥0∞)) l ≠ ∞)
@@ -767,7 +767,7 @@ theorem tsum_biUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (s : Set ι) (
 
 theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
     ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑ i ∈ s, ∑' x : t i, f x :=
-  (tsum_biUnion_le_tsum f s.toSet t).trans_eq (Finset.tsum_subtype s fun i => ∑' x : t i, f x)
+  (tsum_biUnion_le_tsum f s t).trans_eq (Finset.tsum_subtype s fun i => ∑' x : t i, f x)
 
 theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι → Set α) :
     ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := by
@@ -1407,14 +1407,14 @@ lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
 @[simp, norm_cast]
 lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u) :
     limsup u f = limsup (fun i ↦ (u i : ℝ≥0∞)) f := by
-  refine eq_of_forall_nnreal_iff fun r ↦ ?_
+  refine eq_of_forall_nnreal_le_iff fun r ↦ ?_
   rw [coe_le_coe, le_limsup_iff, le_limsup_iff]
   simp [forall_ennreal]
 
 @[simp, norm_cast]
 lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) u) :
     liminf u f = liminf (fun i ↦ (u i : ℝ≥0∞)) f := by
-  refine eq_of_forall_nnreal_iff fun r ↦ ?_
+  refine eq_of_forall_nnreal_le_iff fun r ↦ ?_
   rw [coe_le_coe, le_liminf_iff, le_liminf_iff]
   simp [forall_ennreal]
 
@@ -1440,7 +1440,7 @@ theorem limsup_add_of_right_tendsto_zero {u : Filter ι} {g : ι → ℝ≥0∞}
   rw [Filter.limsup_le_iff']
   rintro a hba
   filter_upwards [hb, ENNReal.tendsto_nhds_zero.1 hg _ <| tsub_pos_of_lt hba] with i hf hg
-  calc  f i + g i
+  calc f i + g i
     _ ≤ b + g i := by gcongr
     _ ≤ a := add_le_of_le_tsub_left_of_le hba.le hg
 
