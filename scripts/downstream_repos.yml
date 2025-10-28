@@ -45,6 +45,12 @@
     build: build-project.yml
     docs: blueprint.yml
     release-tag: create-release.yml
+- github: https://github.com/leanprover-community/flt-regular
+  default_branch: master
+  name: Fermat's Last Theorem for regular primes
+  workflows:
+    build: push.yml
+    docs: push.yml
 - github: https://github.com/leanprover-community/sphere-eversion
   default_branch: master
   name: The sphere eversion project
