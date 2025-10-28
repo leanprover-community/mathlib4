@@ -70,8 +70,9 @@ def pthRootMonoidHom : Perfection M p →* Perfection M p where
 
 variable {M p}
 
-@[ext]
-theorem ext' {f g : Perfection M p} (h : ∀ n, coeffMonoidHom M p n f = coeffMonoidHom M p n g) :
+@[ext low]
+theorem extMonoid {f g : Perfection M p}
+    (h : ∀ n, coeffMonoidHom M p n f = coeffMonoidHom M p n g) :
     f = g :=
   Subtype.eq <| funext h
 
@@ -80,14 +81,25 @@ theorem coeffMonoidHom_mk (f : ℕ → M) (hf) (n : ℕ) : coeffMonoidHom M p n 
 
 theorem coeffMonoidHom_pthRootMonoidHom (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom M p n (pthRootMonoidHom M p f) = coeffMonoidHom M p (n + 1) f := rfl
+attribute [local simp] coeffMonoidHom_pthRootMonoidHom
 
 theorem coeffMonoidHom_pow_p (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom M p (n + 1) (f ^ p) = coeffMonoidHom M p n f := by
   rw [map_pow]; exact f.2 n
 
+@[simp]
 theorem coeffMonoidHom_pow_p' (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom M p (n + 1) f ^ p = coeffMonoidHom M p n f :=
   f.2 n
+
+instance perfectRing : PerfectRing (Perfection M p) p where
+  bijective_frobenius := Function.bijective_iff_has_inverse.mpr
+    ⟨pthRootMonoidHom M p, fun x ↦ by ext; simp, fun x ↦ by ext; simp⟩
+
+@[simp]
+theorem pthRootMonoidHom_eq_powMulEquiv_symm :
+    pthRootMonoidHom M p = (powMulEquiv (Perfection M p) p).symm :=
+  MonoidHom.ext fun x ↦ (MulEquiv.eq_symm_apply _).mpr <| by ext; simp
 
 theorem coeffMonoidHom_pow_p_pow (f : Perfection M p) (m n : ℕ) :
     coeffMonoidHom M p (m + n) (f ^ p ^ n) = coeffMonoidHom M p m f :=
@@ -106,12 +118,6 @@ theorem coeffMonoidHom_iterate_powMonoidHom' (f : Perfection M p) (n m : ℕ) (h
     coeffMonoidHom M p n ((powMonoidHom p)^[m] f) = coeffMonoidHom M p (n - m) f := by
   rw [← coeffMonoidHom_iterate_powMonoidHom f (n - m) m, Nat.sub_add_cancel hmn]
 
-theorem pthRootMonoidHom_powMonoidHom : (pthRootMonoidHom M p).comp (powMonoidHom p) = .id _ := by
-  ext; simp [coeffMonoidHom_pthRootMonoidHom, coeffMonoidHom_pow_p']
-
-theorem powMonoidHom_pthRootMonoidHom : (powMonoidHom p).comp (pthRootMonoidHom M p) = .id _ :=
-  pthRootMonoidHom_powMonoidHom
-
 /-- Given monoids `M` and `N`, with `M` being perfect,
 any homomorphism `M →+* N` can be lifted uniquely to a homomorphism `M →* Perfection N p`. -/
 @[simps]
@@ -121,8 +127,8 @@ noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRin
     { toFun r := ⟨fun n ↦ f ((powMulEquiv M (p ^ n)).symm r), fun n ↦ by
         rw [← map_pow, powMulEquiv_pow, pow_succ, MulAut.mul_def, MulEquiv.symm_trans_apply,
           powMulEquiv_symm_pow_p, ← powMulEquiv_pow]⟩
-      map_one' := ext' fun _ ↦ by simp_rw [coeffMonoidHom_mk, map_one]
-      map_mul' x y := ext' fun _ ↦ by simp_rw [map_mul, coeffMonoidHom_mk] }
+      map_one' := extMonoid fun _ ↦ by simp_rw [coeffMonoidHom_mk, map_one]
+      map_mul' x y := extMonoid fun _ ↦ by simp_rw [map_mul, coeffMonoidHom_mk] }
   invFun := (coeffMonoidHom N p 0).comp
   left_inv f := by
     ext m
@@ -141,11 +147,10 @@ def mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N] (φ : M �
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
 
-instance perfectRing : PerfectRing (Perfection M p) p where
-  bijective_frobenius := Function.bijective_iff_has_inverse.mpr
-    ⟨pthRootMonoidHom M p,
-     (congr($powMonoidHom_pthRootMonoidHom ·)),
-     (congr($pthRootMonoidHom_powMonoidHom ·))⟩
+@[simp]
+theorem coeffMonoidHom_mapMonoidHom (p : ℕ) {M N : Type*} [CommMonoid M] [CommMonoid N]
+    (φ : M →* N) (f : Perfection M p) (n : ℕ) :
+    coeffMonoidHom N p n (mapMonoidHom p φ f) = φ (coeffMonoidHom M p n f) := rfl
 
 end CommMonoid
 
@@ -189,7 +194,7 @@ variable {R p}
 
 @[ext]
 theorem ext {f g : Perfection R p} (h : ∀ n, coeff R p n f = coeff R p n g) : f = g :=
-  ext' h
+  extMonoid h
 
 @[simp]
 theorem coeff_mk (f : ℕ → R) (hf) (n : ℕ) : coeff R p n ⟨f, hf⟩ = f n := rfl
@@ -214,11 +219,11 @@ theorem coeff_iterate_frobenius' (f : Perfection R p) (n m : ℕ) (hmn : m ≤ n
     coeff R p n ((frobenius _ p)^[m] f) = coeff R p (n - m) f :=
   coeffMonoidHom_iterate_powMonoidHom' _ _ _ hmn
 
-theorem pthRoot_frobenius : (pthRoot R p).comp (frobenius _ p) = RingHom.id _ :=
-  RingHom.coe_monoidHom_injective pthRootMonoidHom_powMonoidHom
+theorem pthRoot_frobenius : (pthRoot R p).comp (frobenius _ p) = RingHom.id _ := by
+  ext; simp [pthRoot, frobenius]
 
 theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ :=
-  RingHom.coe_monoidHom_injective powMonoidHom_pthRootMonoidHom
+  pthRoot_frobenius
 
 theorem coeff_add_ne_zero {f : Perfection R p} {n : ℕ} (hfn : coeff R p n f ≠ 0) (k : ℕ) :
     coeff R p (n + k) f ≠ 0 :=
