@@ -75,15 +75,6 @@ theorem isPrecomplete_iff :
           ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
-theorem IsPrecomplete.exists_limit_of_succ [IsPrecomplete I M]
-    (f : ℕ → M) (h : ∀ ⦃m⦄, f (m + 1) ≡ f m [SMOD I ^ m • (⊤ : Submodule R M)]) :
-    ∃ L, ∀ (n : ℕ), f n ≡ L [SMOD I ^ n • (⊤ : Submodule R M)] := by
-  refine prec' f fun {m n} le ↦ ?_
-  induction le with
-  | refl => rfl
-  | step le ih => refine ih.trans <| h.symm.mono <| Submodule.smul_mono_left <|
-      Ideal.pow_le_pow_right le
-
 variable (I M)
 
 /-- The Hausdorffification of a module with respect to an ideal. -/

@@ -30,18 +30,22 @@ noncomputable def teichmullerAux (x : Perfection (R ⧸ I) p) : ℕ → R
   | n+1 => (coeff _ p n x).out ^ p ^ n
 
 theorem teichmullerAux_sModEq (x : Perfection (R ⧸ I) p) (m : ℕ) :
-    x.teichmullerAux (m + 1) ≡ x.teichmullerAux m [SMOD I ^ m] := by
+    x.teichmullerAux m ≡ x.teichmullerAux (m + 1) [SMOD I ^ m] := by
   obtain _ | m := m
   · simp
+  symm
   rw [teichmullerAux, pow_succ' p, pow_mul]
   exact .pow_prime_pow (CharP.mem p I) <| by simp [SModEq.ideal, coeff_pow_p']
+
+noncomputable def teichmullerCauchy (x : Perfection (R ⧸ I) p) :
+    AdicCompletion.AdicCauchySequence I R :=
+  .mk _ _ _ <| by simpa using teichmullerAux_sModEq x
 
 variable [IsAdicComplete I R]
 
 theorem exists_teichmullerFun (x : Perfection (R ⧸ I) p) :
-    ∃ y : R, ∀ n, x.teichmullerAux n ≡ y [SMOD I ^ n • (⊤ : Ideal R)] := by
-  refine IsPrecomplete.exists_limit_of_succ _ fun m ↦ ?_
-  simpa using teichmullerAux_sModEq x m
+    ∃ y : R, ∀ n, x.teichmullerAux n ≡ y [SMOD I ^ n • (⊤ : Ideal R)] :=
+  IsPrecomplete.prec' _ (teichmullerCauchy x).2
 
 /-- Given an `I`-adically complete ring `R`, where `p ∈ I`, this is the underlying function of the
 Teichmüller map. It is defined as the limit of `p^n`-th powers of arbitrary lifts in `R` of the
@@ -56,7 +60,7 @@ theorem teichmullerFun_sModEq {x : Perfection (R ⧸ I) p} {y : R} {n : ℕ}
   rw [smul_eq_mul, Ideal.mul_top] at this
   exact this.symm.trans <| SModEq.pow_prime_pow (CharP.mem p I) <| by simp [SModEq.ideal, h]
 
-theorem teichmullerFun_spec {x : Perfection (R ⧸ I) p} {y : R}
+theorem teichmullerFun_spec' {x : Perfection (R ⧸ I) p} {y : R}
     (h : ∃ N, ∀ n ≥ N, ∃ z, Ideal.Quotient.mk I z = coeff _ p n x ∧
       z ^ p ^ n ≡ y [SMOD I ^ (n + 1)]) :
     teichmullerFun x = y := by
@@ -69,6 +73,11 @@ theorem teichmullerFun_spec {x : Perfection (R ⧸ I) p} {y : R}
   · obtain ⟨z, hz₁, hz₂⟩ := h n hn
     exact ((teichmullerFun_sModEq hz₁).trans hz₂).mono <| Ideal.pow_le_pow_right (by omega)
 
+theorem teichmullerFun_spec {x : Perfection (R ⧸ I) p} {y : R}
+    (h : ∀ n, ∃ z, Ideal.Quotient.mk I z = coeff _ p n x ∧ z ^ p ^ n ≡ y [SMOD I ^ (n + 1)]) :
+    teichmullerFun x = y :=
+  teichmullerFun_spec' ⟨0, fun n _ ↦ h n⟩
+
 variable (p I) in
 /-- Given an `I`-adically complete ring `R`, and a prime number `p` with `p ∈ I`, this is the
 multiplicative map from `Perfection (R ⧸ I) p` to `R` itself. Specifically, it is defined as the
@@ -76,9 +85,9 @@ limit of `p^n`-th powers of arbitrary lifts in `R` of the `n`-th component from 
 `R ⧸ I`. -/
 noncomputable def teichmuller : Perfection (R ⧸ I) p →* R where
   toFun := teichmullerFun
-  map_one' := teichmullerFun_spec ⟨0, fun _ _ ↦ ⟨1, by simp; rfl⟩⟩
+  map_one' := teichmullerFun_spec fun _ ↦ ⟨1, by simp; rfl⟩
   map_mul' x y := by
-    refine teichmullerFun_spec ⟨0, fun n _ ↦ ?_⟩
+    refine teichmullerFun_spec fun n ↦ ?_
     refine ⟨(coeff _ p n x).out * (coeff _ p n y).out, by simp, ?_⟩
     rw [mul_pow]
     refine (teichmullerFun_sModEq ?_).symm.mul (teichmullerFun_sModEq ?_).symm <;> simp
@@ -88,15 +97,26 @@ theorem teichmuller_sModEq {x : Perfection (R ⧸ I) p} {y : R} {n : ℕ}
     teichmuller p I x ≡ y ^ p ^ n [SMOD I ^ (n + 1)] :=
   teichmullerFun_sModEq h
 
-theorem teichmuller_spec {x : Perfection (R ⧸ I) p} {y : R}
+theorem teichmuller_spec' {x : Perfection (R ⧸ I) p} {y : R}
     (h : ∃ N, ∀ n ≥ N, ∃ z, Ideal.Quotient.mk I z = coeff _ p n x ∧
       z ^ p ^ n ≡ y [SMOD I ^ (n + 1)]) :
+    teichmuller p I x = y :=
+  teichmullerFun_spec' h
+
+theorem teichmuller_spec {x : Perfection (R ⧸ I) p} {y : R}
+    (h : ∀ n, ∃ z, Ideal.Quotient.mk I z = coeff _ p n x ∧ z ^ p ^ n ≡ y [SMOD I ^ (n + 1)]) :
     teichmuller p I x = y :=
   teichmullerFun_spec h
 
 @[simp] theorem teichmuller_zero : teichmuller p I 0 = 0 :=
   have : p ≠ 0 := Nat.Prime.ne_zero Fact.out
-  teichmuller_spec ⟨0, fun n _ ↦ ⟨0, by simp [zero_pow (pow_ne_zero n this)]; rfl⟩⟩
+  teichmuller_spec fun n ↦ ⟨0, by simp [zero_pow (pow_ne_zero n this)]; rfl⟩
+
+variable (p I) in
+/-- `teichmuller` as a `MonoidWithZeroHom` -/
+@[simps!] noncomputable def teichmuller₀ : Perfection (R ⧸ I) p →*₀ R where
+  __ := teichmuller p I
+  map_zero' := teichmuller_zero
 
 theorem mk_teichmuller (x : Perfection (R ⧸ I) p) :
     Ideal.Quotient.mk I (teichmuller p I x) = coeff _ p 0 x := by

@@ -37,9 +37,6 @@ namespace PreTilt
 variable {O : Type*} [CommRing O] {p : ℕ} [Fact (Nat.Prime p)] [Fact ¬IsUnit (p : O)]
 variable [IsAdicComplete (span {(p : O)}) O]
 
--- MOVE
-instance _root_.ModP.charP' : CharP (O ⧸ span {(p : O)}) p := ModP.charP O p
-
 /--
 Given a `p`-adically complete ring `O`, this is the
 multiplicative map from `PreTilt O p` to `O` itself. Specifically, it is

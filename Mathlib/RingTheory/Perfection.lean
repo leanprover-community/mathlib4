@@ -335,8 +335,16 @@ instance commRing : CommRing (ModP O p) :=
 instance charP [Fact p.Prime] [hvp : Fact (¬ IsUnit (p : O))] : CharP (ModP O p) p :=
   CharP.quotient O p <| hvp.1
 
+instance charP' [Fact p.Prime] [hvp : Fact (¬ IsUnit (p : O))] :
+    CharP (O ⧸ Ideal.span {(p : O)}) p :=
+  charP O p
+
 instance nontrivial [hp : Fact p.Prime] [Fact (¬ IsUnit (p : O))] : Nontrivial (ModP O p) :=
   CharP.nontrivial_of_char_ne_one hp.1.ne_one
+
+instance nontrivial' [hp : Fact p.Prime] [Fact (¬ IsUnit (p : O))] :
+    Nontrivial (O ⧸ Ideal.span {(p : O)}) :=
+  nontrivial O p
 
 end ModP
 
